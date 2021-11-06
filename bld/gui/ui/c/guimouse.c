@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,21 +34,21 @@
 #include "guiwind.h"
 #include "guixutil.h"
 
-bool GUIGetMousePosn( gui_window *wnd, gui_point *point )
+bool GUIAPI GUIGetMousePosn( gui_window *wnd, gui_point *point )
 {
-    gui_coord   coord;
+    guix_point  scr_point;
     ORD         row;
     ORD         col;
 
     if( uimouseinstalled() ) {
         uivmousepos( NULL, &row, &col );
-        coord.x = (gui_ord)col;
-        coord.y = (gui_ord)row;
+        scr_point.x = col;
+        scr_point.y = row;
     } else {
-        coord.x = 0;
-        coord.y = 0;
+        scr_point.x = 0;
+        scr_point.y = 0;
         return( false );
     }
-    GUIMakeRelative( wnd, &coord, point );
+    GUIMakeRelative( wnd, &scr_point, point );
     return( true );
 }

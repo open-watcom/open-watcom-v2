@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@ static int              imageMax;
  *                    color as it should be, etc.)
  *                  - the caller is responsible for deleting the bitmap
  */
-HBITMAP CreateViewBitmap( img_node *mdi_node )
+WPI_HBITMAP CreateViewBitmap( img_node *mdi_node )
 {
     WPI_PRES    pres;
     WPI_PRES    xorandpres;
@@ -60,9 +60,9 @@ HBITMAP CreateViewBitmap( img_node *mdi_node )
     WPI_PRES    freehandpres;
     HDC         xoranddc;
     HDC         memdc;
-    HBITMAP     newbitmap;
-    HBITMAP     oldxorandbitmap;
-    HBITMAP     oldbitmap;
+    WPI_HBITMAP new_hbitmap;
+    WPI_HBITMAP oldxorand_hbitmap;
+    WPI_HBITMAP old_hbitmap;
     HBRUSH      brush;
     HBRUSH      oldbrush;
     img_node    *node;
@@ -80,7 +80,7 @@ HBITMAP CreateViewBitmap( img_node *mdi_node )
     pres = _wpi_getpres( HWND_DESKTOP );
     xorandpres = _wpi_createcompatiblepres( pres, Instance, &xoranddc );
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
-    newbitmap = _wpi_createcompatiblebitmap( pres, node->width, node->height );
+    new_hbitmap = _wpi_createcompatiblebitmap( pres, node->width, node->height );
     _wpi_releasepres( HWND_DESKTOP, pres );
 
     _wpi_torgbmode( mempres );
@@ -90,7 +90,7 @@ HBITMAP CreateViewBitmap( img_node *mdi_node )
 #ifdef __OS2_PM__
     _wpi_preparemono( mempres, BLACK, bkcolor );
 #endif
-    oldbitmap = _wpi_selectbitmap( mempres, newbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, new_hbitmap );
 
     brush = _wpi_createsolidbrush( bkcolor );
     oldbrush = _wpi_selectbrush( mempres, brush );
@@ -101,10 +101,10 @@ HBITMAP CreateViewBitmap( img_node *mdi_node )
 
     GetFreeHandPresentationSpaces( NULL, &freehandpres, NULL );
     if( freehandpres == (WPI_PRES)NULL ) {
-        oldxorandbitmap = _wpi_selectbitmap( xorandpres, node->handbitmap );
+        oldxorand_hbitmap = _wpi_selectbitmap( xorandpres, node->and_hbitmap );
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
                      xorandpres, 0, 0, SRCAND );
-        _wpi_selectbitmap( xorandpres, oldxorandbitmap );
+        _wpi_selectbitmap( xorandpres, oldxorand_hbitmap );
     } else {
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
                      freehandpres, 0, 0, SRCAND );
@@ -112,68 +112,68 @@ HBITMAP CreateViewBitmap( img_node *mdi_node )
 
     GetFreeHandPresentationSpaces( NULL, NULL, &freehandpres );
     if( freehandpres == (WPI_PRES)NULL ) {
-        oldxorandbitmap = _wpi_selectbitmap( xorandpres, node->hxorbitmap );
+        oldxorand_hbitmap = _wpi_selectbitmap( xorandpres, node->xor_hbitmap );
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
                      xorandpres, 0, 0, SRCINVERT );
-        _wpi_selectbitmap( xorandpres, oldxorandbitmap );
+        _wpi_selectbitmap( xorandpres, oldxorand_hbitmap );
     } else {
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
                      freehandpres, 0, 0, SRCINVERT );
     }
 
     _wpi_deletecompatiblepres( xorandpres, xoranddc );
-    _wpi_selectbitmap( mempres, oldbitmap );
+    _wpi_selectbitmap( mempres, old_hbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
 
-    return( newbitmap );
+    return( new_hbitmap );
 
 } /* CreateViewBitmap */
 
 /*
  * DuplicateBitmap - produces a duplicate of the bitmap
  */
-HBITMAP DuplicateBitmap( HBITMAP hbitmap )
+WPI_HBITMAP DuplicateBitmap( WPI_HBITMAP hbitmap )
 {
     HDC         srcdc;
     WPI_PRES    srcpres;
-    HDC         destdc;
-    WPI_PRES    destpres;
+    HDC         dstdc;
+    WPI_PRES    dstpres;
     WPI_PRES    pres;
     int         width;
     int         height;
     int         planes;
     int         bitspixel;
-    HBITMAP     newbitmap;
-    HBITMAP     oldbitmap;
-    HBITMAP     oldnewbitmap;
+    WPI_HBITMAP new_hbitmap;
+    WPI_HBITMAP old_hbitmap;
+    WPI_HBITMAP oldnew_hbitmap;
 
     _wpi_getbitmapparms( hbitmap, &width, &height, &planes, NULL, &bitspixel );
     pres = _wpi_getpres( HWND_DESKTOP );
     srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );
-    destpres = _wpi_createcompatiblepres( pres, Instance, &destdc );
+    dstpres = _wpi_createcompatiblepres( pres, Instance, &dstdc );
     _wpi_releasepres( HWND_DESKTOP, pres );
 
-    newbitmap = _wpi_createbitmap( width, height, planes, bitspixel, NULL );
+    new_hbitmap = _wpi_createbitmap( width, height, planes, bitspixel, NULL );
 
-    oldbitmap = _wpi_selectbitmap( srcpres, hbitmap );
-    oldnewbitmap = _wpi_selectbitmap( destpres, newbitmap );
+    old_hbitmap = _wpi_selectbitmap( srcpres, hbitmap );
+    oldnew_hbitmap = _wpi_selectbitmap( dstpres, new_hbitmap );
 
-    _wpi_bitblt( destpres, 0, 0, width, height, srcpres, 0, 0, SRCCOPY );
+    _wpi_bitblt( dstpres, 0, 0, width, height, srcpres, 0, 0, SRCCOPY );
 
-    _wpi_selectbitmap( srcpres, oldbitmap );
-    _wpi_selectbitmap( destpres, oldnewbitmap );
+    _wpi_selectbitmap( srcpres, old_hbitmap );
+    _wpi_selectbitmap( dstpres, oldnew_hbitmap );
 
     _wpi_deletecompatiblepres( srcpres, srcdc );
-    _wpi_deletecompatiblepres( destpres, destdc );
-    return( newbitmap );
+    _wpi_deletecompatiblepres( dstpres, dstdc );
+    return( new_hbitmap );
 
 } /* DuplicateBitmap */
 
 /*
  * IEStretchBlt
  */
-static BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
-                                     int nWidthDest, int nHeightDest,
+static BOOL IEStretchBlt( WPI_PRES hdcDst, int nXOriginDst, int nYOriginDst,
+                                     int nWidthDst, int nHeightDst,
                    WPI_PRES hdcSrc, int nXOriginSrc, int nYOriginSrc,
                                     int nWidthSrc, int nHeightSrc,
                    DWORD fdwRop, int bitcount )
@@ -186,24 +186,24 @@ static BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
     int                 sw, sh, dw, dh;
     WPI_PRES            srcpres;
     HDC                 srcdc;
-    HBITMAP             oldbitmap;
-    HBITMAP             newbitmap;
+    WPI_HBITMAP         old_hbitmap;
+    WPI_HBITMAP         new_hbitmap;
 
-    num_strips.x = nWidthDest / 256;
+    num_strips.x = nWidthDst / 256;
     num_strips.x++;
 #if 0
-    if( nWidthDest > 32 ) {
+    if( nWidthDst > 32 ) {
         /* use the version that returns exact bytes needed for bits */
-        linesize = BITS_INTO_BYTES( (unsigned long)(nWidthDest * bitcount), 1 );
+        linesize = BITS_INTO_BYTES( (unsigned long)(nWidthDst * bitcount), 1 );
     } else {
         /* use the version that rounds up to 32 bits */
-        linesize = BITS_TO_BYTES( (unsigned long)(nWidthDest * bitcount), 1 );
+        linesize = BITS_TO_BYTES( (unsigned long)(nWidthDst * bitcount), 1 );
     }
 #else
     /* use the version that rounds up to 32 bits */
-    linesize = BITS_TO_BYTES( (unsigned long)(nWidthDest * bitcount), 1 );
+    linesize = BITS_TO_BYTES( (unsigned long)(nWidthDst * bitcount), 1 );
 #endif
-    num_strips.y = ((unsigned long)nHeightDest * linesize) / (16 * 1024);
+    num_strips.y = ((unsigned long)nHeightDst * linesize) / (16 * 1024);
     num_strips.y++;
 
     if( num_strips.x > nWidthSrc ) {
@@ -219,41 +219,41 @@ static BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
     }
 
     slines.x = nWidthSrc / num_strips.x;
-    dlines.x = ((unsigned long)slines.x * (unsigned long)nWidthDest) /
+    dlines.x = ((unsigned long)slines.x * (unsigned long)nWidthDst) /
                (unsigned long)nWidthSrc;
 
     slines.y = nHeightSrc / num_strips.y;
-    dlines.y = ((unsigned long)slines.y * (unsigned long)nHeightDest) /
+    dlines.y = ((unsigned long)slines.y * (unsigned long)nHeightDst) /
                (unsigned long)nHeightSrc;
 
-    srcpres = _wpi_createcompatiblepres( hdcDest, Instance, &srcdc );
-    newbitmap = _wpi_createcompatiblebitmap( hdcDest, dlines.x, dlines.y );
-    oldbitmap = _wpi_selectbitmap( srcpres, newbitmap );
+    srcpres = _wpi_createcompatiblepres( hdcDst, Instance, &srcdc );
+    new_hbitmap = _wpi_createcompatiblebitmap( hdcDst, dlines.x, dlines.y );
+    old_hbitmap = _wpi_selectbitmap( srcpres, new_hbitmap );
 
     sw = slines.x;
     dw = dlines.x;
     for( x = 0; slines.x * x <= nWidthSrc; x++ ) {
         if( slines.x * x + sw > nWidthSrc ) {
             sw = nWidthSrc - x * slines.x;
-            dw = nWidthDest - x * dlines.x;
+            dw = nWidthDst - x * dlines.x;
         }
         sh = slines.y;
         dh = dlines.y;
         for( y = 0; slines.y * y <= nHeightSrc; y++ ) {
             if( slines.y * y + sh > nHeightSrc ) {
                 sh = nHeightSrc - y * slines.y;
-                dh = nHeightDest - y * dlines.y;
+                dh = nHeightDst - y * dlines.y;
             }
             _wpi_stretchblt( srcpres, 0, 0, dw, dh, hdcSrc,
                              nXOriginSrc + slines.x * x, nYOriginSrc + slines.y * y,
                              sw, sh, fdwRop );
-            _wpi_bitblt( hdcDest, nXOriginDest + dlines.x * x,
-                         nYOriginDest + dlines.y * y, dw, dh, srcpres, 0, 0, SRCCOPY );
+            _wpi_bitblt( hdcDst, nXOriginDst + dlines.x * x,
+                         nYOriginDst + dlines.y * y, dw, dh, srcpres, 0, 0, SRCCOPY );
         }
     }
 
-    _wpi_selectbitmap( srcpres, oldbitmap );
-    _wpi_deletebitmap( newbitmap );
+    _wpi_selectbitmap( srcpres, old_hbitmap );
+    _wpi_deletebitmap( new_hbitmap );
     _wpi_deletecompatiblepres( srcpres, srcdc );
 
     return( TRUE );
@@ -266,17 +266,17 @@ static BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
  *              - returns a handle to the bitmap
  *              - the bitmap must be deleted by the calling routine
  */
-HBITMAP EnlargeImage( HWND hwnd )
+WPI_HBITMAP EnlargeImage( HWND hwnd )
 {
     WPI_PRES    pres;
     WPI_PRES    srcpres;
-    WPI_PRES    destpres;
+    WPI_PRES    dstpres;
     HDC         srcdc;
-    HDC         destdc;
-    HBITMAP     oldbitmap;
-    HBITMAP     newbitmap;
-    HBITMAP     olddestbitmap;
-    HBITMAP     viewbitmap;
+    HDC         dstdc;
+    WPI_HBITMAP old_hbitmap;
+    WPI_HBITMAP new_hbitmap;
+    WPI_HBITMAP olddst_hbitmap;
+    WPI_HBITMAP view_hbitmap;
     img_node    *node;
     WPI_RECT    rc;
     short       width;
@@ -290,7 +290,7 @@ HBITMAP EnlargeImage( HWND hwnd )
         return( NULL );
     }
 
-    viewbitmap = CreateViewBitmap( node );
+    view_hbitmap = CreateViewBitmap( node );
     _wpi_getclientrect( hwnd, &rc );
     /*
      * I add this so that if the window's client rect doesn't fit on the
@@ -307,31 +307,31 @@ HBITMAP EnlargeImage( HWND hwnd )
 
     pres = _wpi_getpres( HWND_DESKTOP );
     srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );
-    destpres = _wpi_createcompatiblepres( pres, Instance, &destdc );
-    newbitmap = _wpi_createcompatiblebitmap( pres, _wpi_getwidthrect( rc ),
+    dstpres = _wpi_createcompatiblepres( pres, Instance, &dstdc );
+    new_hbitmap = _wpi_createcompatiblebitmap( pres, _wpi_getwidthrect( rc ),
                                                    _wpi_getheightrect( rc ) );
     _wpi_releasepres( HWND_DESKTOP, pres );
-    GetObject( newbitmap, sizeof( BITMAP ), &bm );
+    GetObject( new_hbitmap, sizeof( BITMAP ), &bm );
 
-    _wpi_torgbmode( destpres );
+    _wpi_torgbmode( dstpres );
     _wpi_torgbmode( srcpres );
-    olddestbitmap = _wpi_selectbitmap( destpres, newbitmap );
-    oldbitmap = _wpi_selectbitmap( srcpres, viewbitmap );
+    olddst_hbitmap = _wpi_selectbitmap( dstpres, new_hbitmap );
+    old_hbitmap = _wpi_selectbitmap( srcpres, view_hbitmap );
     height = node->height;
     width = node->width;
 
-    IEStretchBlt( destpres, 0, 0, _wpi_getwidthrect( rc ),
+    IEStretchBlt( dstpres, 0, 0, _wpi_getwidthrect( rc ),
                   _wpi_getheightrect( rc ), srcpres, 0, 0, width, height,
                   SRCCOPY, bm.bmBitsPixel );
 
-    _wpi_selectbitmap( srcpres, oldbitmap );
+    _wpi_selectbitmap( srcpres, old_hbitmap );
     _wpi_deletecompatiblepres( srcpres, srcdc );
-    _wpi_deletebitmap( viewbitmap );
+    _wpi_deletebitmap( view_hbitmap );
 
-    _wpi_selectbitmap( destpres, olddestbitmap );
-    _wpi_deletecompatiblepres( destpres, destdc );
+    _wpi_selectbitmap( dstpres, olddst_hbitmap );
+    _wpi_deletecompatiblepres( dstpres, dstdc );
 
-    return( newbitmap );
+    return( new_hbitmap );
 
 } /* EnlargeImage */
 
@@ -342,7 +342,7 @@ void SetIsSaved( HWND hwnd, bool issaved )
 {
     img_node    *node;
     img_node    *next_icon;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        title[_MAX_EXT + _MAX_FNAME + 2];
     char        *main_title;
 
@@ -444,7 +444,7 @@ void OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT
  */
 void GetFnameFromPath( const char *fullpath, char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( strnicmp( fullpath, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
         strcpy( fname, fullpath );
@@ -699,7 +699,7 @@ void SetMenus( img_node *node )
 /*
  * ConvertToDIBitmap - convert the device dependent bitmap to a DI bitmap
  */
-void ConvertToDIBitmap( HBITMAP hbitmap )
+void ConvertToDIBitmap( WPI_HBITMAP hbitmap )
 {
     HDC         hdc;
     BITMAPINFO  *bmi;

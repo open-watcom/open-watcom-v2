@@ -15,13 +15,13 @@ The
 .id &funcb.
 function uses system call 0x49 to release memory that was
 previously allocated by
-.kw _dos_allocmem
-.ct .li .
+.reffunc _dos_allocmem
+.period
 The value contained in
 .arg segment
 is the one returned by a previous call to
-.kw _dos_allocmem
-.ct .li .
+.reffunc _dos_allocmem
+.period
 .np
 For 32-bit DOS applications, it is recommended that the corresponding
 DPMI services be used.

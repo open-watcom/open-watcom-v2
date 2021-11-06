@@ -34,7 +34,7 @@
 .****************************************************************************/
 You can use complex search strings known as
 .keyword regular expressions
-:period.
+.period
 Certain characters have special meaning in a regular expression, they are:
 .millust begin
 ^ $ . [ ( ) | ? + * \ ~ @
@@ -51,4 +51,4 @@ ab\.c\$
 .millust end
 For information on regular expressions, see
 :HDREF refid='rxchap'.
-:period.
+.period

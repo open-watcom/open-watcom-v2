@@ -17,7 +17,7 @@ The
 .id &funcb.
 function tests for any punctuation character such as a comma
 (,) or a period (.).
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The
@@ -30,7 +30,7 @@ The
 function returns a non-zero value when the argument is a
 printable wide character that is neither the space wide character nor
 a wide character for which
-.kw iswalnum
+.reffunc iswalnum
 is true.
 .do end
 Otherwise, zero is returned.

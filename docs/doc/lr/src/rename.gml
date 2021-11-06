@@ -16,8 +16,8 @@ function causes the file whose name is indicated by the string
 .arg old
 to be renamed to the name given by the string
 .arg new
-.ct .li .
-.im widefun1
+.period
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

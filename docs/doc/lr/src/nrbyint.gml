@@ -13,12 +13,12 @@ to a nearby integer without the possibility of throwing
 an exception.  The direction of the rounding is determined by
 the current value of
 .kw fegetround
-.ct .li .
+.period
 .desc end
 .return begin
-The rounded value of 
+The rounded value of
 .arg x
-.ct .li .
+.period
 .return end
 .see begin
 .seelist fegetround fesetround rint round trunc

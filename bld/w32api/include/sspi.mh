@@ -1130,6 +1130,7 @@ typedef SECURITY_PACKAGE_OPTIONS    *PSECURITY_PACKAGE_OPTIONS;
 
 /* GUIDs */
 #ifdef _SEC_WINNT_AUTH_TYPES
+#pragma off (unreferenced)
 static const GUID   SEC_WINNT_AUTH_DATA_TYPE_PASSWORD =
     { 0x28BFC32F, 0x10F6, 0x4738, { 0x98, 0xD1, 0x1A, 0xC0, 0x61, 0xDF, 0x71, 0x6A } };
 static const GUID   SEC_WINNT_AUTH_DATA_TYPE_CERT =
@@ -1140,6 +1141,7 @@ static const GUID   CREDUIWIN_STRUCTURE_TYPE_SSPIPFC =
     { 0x3C3E93D9, 0xD96B, 0x49B5, { 0x94, 0xA7, 0x45, 0x85, 0x92, 0x08, 0x83, 0x37 } };
 static const GUID   SSPIPFC_STRUCTURE_TYPE_CREDUI_CONTEXT =
     { 0xC2FFFE6F, 0x503D, 0x4C3D, { 0xA9, 0x5E, 0xBC, 0xE8, 0x21, 0x21, 0x3D, 0x44 } };
+#pragma on (unreferenced)
 #endif
 
 /* Functions in KSECDD.SYS and SECUR32.DLL */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,38 +93,43 @@ int         WndGadgetSecondary = GADGET_FIRST_SECONDARY;
 wnd_attr    WndGadgetAttr = WND_HOTSPOT;
 int         MaxGadgetLength;
 
+#define WINDOW_DEFS \
+    pick( "CLose",        WndClose          ) \
+    pick( "CURSORStart",  WndCursorStart    ) \
+    pick( "CURSOREnd",    WndCursorEnd      ) \
+    pick( "CURSORDown",   WndCursorDown     ) \
+    pick( "CURSORLeft",   WndCursorLeft     ) \
+    pick( "CURSORRight",  WndCursorRight    ) \
+    pick( "CURSORUp",     WndCursorUp       ) \
+    pick( "Dump",         WndDumpFile       ) \
+    pick( "Log",          WndDumpLog        ) \
+    pick( "FINDNext",     ProcWndFindNext   ) \
+    pick( "FINDPrev",     ProcWndFindPrev   ) \
+    pick( "Next",         ToWndChooseNew    ) \
+    pick( "PAGEDown",     WndPageDown       ) \
+    pick( "PAGEUp",       WndPageUp         ) \
+    pick( "POpup",        ProcWndPopUp      ) \
+    pick( "SEarch",       ProcWndSearch     ) \
+    pick( "SCROLLDown",   WndScrollDown     ) \
+    pick( "SCROLLUp",     WndScrollUp       ) \
+    pick( "SCROLLTop",    WndScrollTop      ) \
+    pick( "SCROLLBottom", WndScrollBottom   ) \
+    pick( "TABLeft",      ProcWndTabLeft    ) \
+    pick( "TABRight",     ProcWndTabRight   ) \
+    pick( "MAXimize",     WndMaximizeWindow ) \
+    pick( "MINimize",     WndMinimizeWindow ) \
+    pick( "REStore",      WndRestoreWindow  ) \
+    pick( "TIle",         ProcPUINYI        ) \
+    pick( "CAscade",      ProcPUINYI        ) \
+    pick( "Move",         ProcPUINYI        ) \
+    pick( "SIze",         ProcPUINYI        ) \
+    pick( "PRevious",     ProcPUINYI        )
+
 static const char WindowNameTab[] =
 {
-    "CLose\0"
-    "CURSORStart\0"
-    "CURSOREnd\0"
-    "CURSORDown\0"
-    "CURSORLeft\0"
-    "CURSORRight\0"
-    "CURSORUp\0"
-    "Dump\0"
-    "Log\0"
-    "FINDNext\0"
-    "FINDPrev\0"
-    "Next\0"
-    "PAGEDown\0"
-    "PAGEUp\0"
-    "POpup\0"
-    "SEarch\0"
-    "SCROLLDown\0"
-    "SCROLLUp\0"
-    "SCROLLTop\0"
-    "SCROLLBottom\0"
-    "TABLeft\0"
-    "TABRight\0"
-    "MAXimize\0"
-    "MINimize\0"
-    "REStore\0"
-    "TIle\0"
-    "CAscade\0"
-    "Move\0"
-    "SIze\0"
-    "PRevious\0"
+    #define pick(t,p)   t "\0"
+    WINDOW_DEFS
+    #undef pick
 };
 
 static void ToWndChooseNew( a_window wnd )
@@ -136,36 +141,9 @@ static void ToWndChooseNew( a_window wnd )
 
 static void (* const WndJmpTab[])( a_window ) =
 {
-    &WndClose,
-    &WndCursorStart,
-    &WndCursorEnd,
-    &WndCursorDown,
-    &WndCursorLeft,
-    &WndCursorRight,
-    &WndCursorUp,
-    &WndDumpFile,
-    &WndDumpLog,
-    &ProcWndFindNext,
-    &ProcWndFindPrev,
-    &ToWndChooseNew,
-    &WndPageDown,
-    &WndPageUp,
-    &ProcWndPopUp,
-    &ProcWndSearch,
-    &WndScrollDown,
-    &WndScrollUp,
-    &WndScrollTop,
-    &WndScrollBottom,
-    &ProcWndTabLeft,
-    &ProcWndTabRight,
-    &WndMaximizeWindow,
-    &WndMinimizeWindow,
-    &WndRestoreWindow,
-    &ProcPUINYI,
-    &ProcPUINYI,
-    &ProcPUINYI,
-    &ProcPUINYI,
-    &ProcPUINYI,
+    #define pick(t,p)   p,
+    WINDOW_DEFS
+    #undef pick
 };
 
 wnd_metrics WndNormal =      { 5, 25,  0,  0 };
@@ -181,7 +159,7 @@ wnd_metrics *WndMetrics[] = {
     #undef pick
 };
 
-wnd_metrics NoMetrics = { 0, 0, 0, 0 };
+
 
 bool DbgWndSearch( a_window wnd, bool from_top, int direction )
 {
@@ -557,7 +535,7 @@ void WndSetOpenNoShow( void )
 a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
                                     wnd_class_wv wndclass, void *extra,
                                     gui_resource *icon,
-                                    int title_size, bool vdrag )
+                                    int title_rows, bool vdrag )
 {
     a_window            wnd;
     wnd_create_struct   info;
@@ -593,7 +571,7 @@ a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     info.wndclass = wndclass;
     info.extra = extra;
     info.colour = GetWndColours( wndclass );
-    info.title_size = title_size;
+    info.title_rows = title_rows;
     info.style |= GUI_INIT_INVISIBLE;
 #if defined( GUI_IS_GUI ) && defined( __OS2__ )
     info.style &= ~GUI_CHANGEABLE_FONT;
@@ -601,7 +579,7 @@ a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     if( _IsOn( SW_DETACHABLE_WINDOWS ) )
         info.style |= GUI_POPUP;
     if( !vdrag )
-        info.scroll &= ~GUI_VDRAG;
+        info.scroll_style &= ~GUI_VDRAG;
     wnd = WndCreateWithStruct( &info );
     if( wnd == NULL )
         return( wnd );

@@ -46,7 +46,7 @@ template<class T> class WStringObjectList : public WVList {
         T &stringAt( int index );
         const char *cStringAt( int index );
         const char *cString( int first=0, int last=-1 );
-        int parseIn( const char *str );
+        int parseIn( const char *str, bool nullterm=false );
 };
 
 
@@ -58,6 +58,7 @@ template<class T> class WStringObjectList : public WVList {
 #define END_TOKEN       2
 #define IN_FILENAME     3
 #define END_FILENAME    4
+#define PARSING_END     5
 
 
 
@@ -98,10 +99,9 @@ template<class T> const char *WStringObjectList<T>::cStringAt( int index ) {
 }
 
 
-template<class T> const char *WStringObjectList<T>::cString( int first,
-                                                             int last ) {
-/***********************************************************************/
-
+template<class T> const char *WStringObjectList<T>::cString( int first, int last )
+/********************************************************************************/
+{
     static T str;
     str = "";
     if( last < 0 )
@@ -119,128 +119,128 @@ template<class T> const char *WStringObjectList<T>::cString( int first,
 }
 
 
-template<class T> int WStringObjectList<T>::parseIn( const char *str ) {
-/**********************************************************************/
+template<class T> int WStringObjectList<T>::parseIn( const char *str, bool nullterm )
+/***********************************************************************************/
     // This function will implement a "half" finite state machine to parse
     // the given string, i.e. final states for acceptance/rejection of tokens
     // is not considered; the input string will simply be parsed for tokens
     // and each token will be added to the list.  This FSM takes tokens to
-    // be delimited by spaces or double quotes (").
-
+    // be delimited by spaces or double quotes (") or by NULL characters.
+{
     int state = BETWEEN_TOKENS;         //initial state
 
     if( str != NULL ) {
         T *temp = new T();
         int i = 0;
-        char ch = str[i];
+        char ch;
 
-        for( ; ch != '\0'; ) {
+        for( ; state != PARSING_END; ) {
+            ch = str[i];
             switch( state ) {
-                case BETWEEN_TOKENS: {  //between "words" or tokens
-                    switch( ch ) {
-                        case ' ': {     //leading/trailing blanks, therefore ignore
-                            i++;
-                            break;
-                        }
-                        case '"':  {    //beginning of filename
-                            temp->concat( ch );
-                            state = IN_FILENAME;
-                            i++;
-                            break;
-                        }
-                        case '\0': {    //end of input string
-                            state = END_TOKEN;
-                            break;
-                        }
-                        default: {      //beginning of a "word" or token
-                            temp->concat( ch );
-                            state = IN_TOKEN;
-                            i++;
-                            break;
-                        }
-                    }
+            case BETWEEN_TOKENS:    //between "words" or tokens
+                switch( ch ) {
+                case ' ':           //leading/trailing blanks, therefore ignore
+                    i++;
                     break;
-                }
-                case IN_TOKEN: {        //in the middle of a "word" or token
-                     switch( ch ) {
-                        case '"': {     //start of filename
-                            temp->concat( ch );
-                            state = IN_FILENAME;
-                            i++;
-                            break;
-                        }
-                        case ' ': {     //end of "word" or token
-                            state = END_TOKEN;
-                            break;
-                        }
-                        case '\0': {    //end of input string
-                            state = END_TOKEN;
-                            break;
-                        }
-                        default: {      //any other char, therefore add
-                            temp->concat( ch );
-                            i++;
-                            break;
-                        }
-                    }
+                case '"':           //beginning of filename
+                    temp->concat( ch );
+                    state = IN_FILENAME;
+                    i++;
                     break;
-                }
-                case IN_FILENAME: {     //in the middle of a filename
-                    switch( ch ) {
-                        case '"': {     //end of filename reached? need to check
-                            temp->concat( ch );
-                            state = END_FILENAME;
-                            break;
-                        }
-                        default: {      //anything else is allowed
-                            temp->concat( ch );
-                            break;
-                        }
-                    }
+                case '\0':          //end of input string
+                    state = END_TOKEN;
+                    if( nullterm )
+                        i++;
+                    break;
+                default:            //beginning of a "word" or token
+                    temp->concat( ch );
+                    state = IN_TOKEN;
                     i++;
                     break;
                 }
-                case END_FILENAME: {    //has the end of the filename been reached?
-                    switch( ch ) {
-                        case ' ': {     //end of filename (and token)
-                            state = END_TOKEN;
-                            break;
-                        }
-                        case '\0': {    //end of input string
-                            state = END_TOKEN;
-                            break;
-                        }
-                        case '"': {     //check again for end of filename
-                            temp->concat( ch ); //used to check for consecutive "
-                            i++;
-                            break;
-                        }
-                        default: {      //anything else -> still in middle of filename
-                            temp->concat( ch );
-                            state = IN_FILENAME;
-                            i++;
-                            break;
-                        }
-                    }
+                break;
+            case IN_TOKEN:          //in the middle of a "word" or token
+                switch( ch ) {
+                case '"':           //start of filename
+                    temp->concat( ch );
+                    state = IN_FILENAME;
+                    i++;
+                    break;
+                case ' ':           //end of "word" or token
+                    state = END_TOKEN;
+                    break;
+                case '\0':          //end of input string
+                    state = END_TOKEN;
+                    if( nullterm )
+                        i++;
+                    break;
+                default:            //any other char, therefore add
+                    temp->concat( ch );
+                    i++;
                     break;
                 }
-                case END_TOKEN: {       //end of "word" or token, therefore add to list
-                    if( temp->size() > 0 ) {
-                        add( temp );
-                        temp = new T();
-                    }
+                break;
+            case IN_FILENAME:       //in the middle of a filename
+                switch( ch ) {
+                case '"':           //end of filename reached? need to check
+                    temp->concat( ch );
+                    state = END_FILENAME;
+                    i++;
+                    break;
+                case '\0':          //end of input string
+                    state = END_TOKEN;
+                    if( nullterm )
+                        i++;
+                    break;
+                default:            //anything else is allowed
+                    temp->concat( ch );
+                    i++;
+                    break;
+                }
+                break;
+            case END_FILENAME:      //has the end of the filename been reached?
+                switch( ch ) {
+                case ' ':           //end of filename (and token)
+                    state = END_TOKEN;
+                    break;
+                case '"':           //check again for end of filename
+                    temp->concat( ch ); //used to check for consecutive "
+                    i++;
+                    break;
+                case '\0':          //end of input string
+                    state = END_TOKEN;
+                    if( nullterm )
+                        i++;
+                    break;
+                default:            //anything else -> still in middle of filename
+                    temp->concat( ch );
+                    state = IN_FILENAME;
+                    i++;
+                    break;
+                }
+                break;
+            case END_TOKEN:         //end of "word" or token or input string
+                if( temp->size() > 0 ) {
+                    // end of "word" or token, therefore add to list
+                    add( temp );
+                    temp = new T();
+                }
+                if( ch == '\0' ) {
+                    //end of input string
+                    state = PARSING_END;
+                } else {
+                    //end of "word" or token
                     state = BETWEEN_TOKENS;
                     i++;
-                    break;
                 }
+                break;
             }
-            ch = str[i];                //get the next char from input string
         }
         if( temp->size() > 0 ) {        //add last item, if necessary
             add( temp );
-            temp = new T();
+        } else {
+            delete temp;
         }
-        delete temp;
     }
     return( count() );
 }

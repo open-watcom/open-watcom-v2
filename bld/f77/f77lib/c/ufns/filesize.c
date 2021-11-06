@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include <fcntl.h>
 #include "rundat.h"
 #include "ftnapi.h"
-#include "fio.h"
+#include "posutil.h"
 
 
 intstar4        __fortran FILESIZE( intstar4 *unit ) {
@@ -53,7 +53,7 @@ intstar4        __fortran FILESIZE( intstar4 *unit ) {
     for( fcb = Files; fcb != NULL; fcb = fcb->link ) {
         if( *unit == fcb->unitid ) {
             if( fcb->fileptr != NULL )
-                return( filelength( fcb->fileptr->handle ) );
+                return( filelength( FGetFileHandle( fcb->fileptr ) ) );
             break;
         }
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@
         if( !__LibCThreadInit() )
             return;
   #elif defined(__QNX__)
-  #elif defined(__WARP__)
+  #elif defined(__OS2__)
   #elif defined(__LINUX__)
         if( __InitThreadProcessing() == NULL )
             return;

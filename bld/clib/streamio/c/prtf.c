@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,12 +30,6 @@
 ****************************************************************************/
 
 
-#define __LONG_LONG_SUPPORT__
-
-#if !defined( __NETWARE__ ) && !defined( __UNIX__ ) && !defined(__RDOS__) && !defined(__RDOSDEV__)
-    #define USE_MBCS_TRANSLATION
-#endif
-
 #include "variety.h"
 #include "widechar.h"
 #ifdef SAFE_PRINTF
@@ -45,7 +40,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#if defined( __WIDECHAR__ ) || defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) || defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
 #include "prtscncf.h"
@@ -116,14 +111,14 @@ static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, SPECS __SLIB *specs )
 }
 
 static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
-                                        my_va_list *pargs,
+                                        MY_VA_LIST *pargs,
                                         SPECS __SLIB *specs )
 {
     specs->_pad_char = STRING( ' ' );
     ctl = evalflags( ctl, specs );
     specs->_fld_width = 0;
     if( *ctl == STRING( '*' ) ) {
-        specs->_fld_width = va_arg( pargs->v, int );
+        specs->_fld_width = va_arg( VA_LIST_DATA( pargs ), int );
         if( specs->_fld_width < 0 ) {
             specs->_fld_width = - specs->_fld_width;
             specs->_flags |= SPF_LEFT_ADJUST;
@@ -139,7 +134,7 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
         specs->_prec = 0;
         ctl++;
         if( *ctl == STRING( '*' ) ) {
-            specs->_prec = va_arg( pargs->v, int );
+            specs->_prec = va_arg( VA_LIST_DATA( pargs ), int );
             if( specs->_prec < 0 )
                 specs->_prec = -1;
             ctl++;
@@ -160,13 +155,11 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
     }
     switch( *ctl ) {
     case STRING( 'l' ):
-#if defined( __LONG_LONG_SUPPORT__ )
         if( ctl[1] == STRING( 'l' ) ) {
             specs->_flags |= SPF_LONG_LONG;
             ctl += 2;
             break;
         }
-#endif
         /* fall through */
     ZSPEC_CASE_LONG
     TSPEC_CASE_LONG
@@ -183,7 +176,6 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
         specs->_flags |= SPF_SHORT;
         ctl++;
         break;
-#if defined( __LONG_LONG_SUPPORT__ )
     case STRING( 'I' ):
         if(( ctl[1] == STRING( '6' ) ) && ( ctl[2] == STRING( '4' ) )) {
             specs->_flags |= SPF_LONG_LONG;
@@ -192,7 +184,6 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
         break;
     JSPEC_CASE_LLONG
         /* fall through */
-#endif
     case STRING( 'L' ):
         specs->_flags |= SPF_LONG_DOUBLE | SPF_LONG_LONG;
         ctl++;
@@ -248,7 +239,7 @@ static int far_other_strlen( FAR_STRING s, int precision )
 #else
     int                 len = 0;
     _OTHER_FAR_STRING   ptr = (_OTHER_FAR_STRING)s;
-  #if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+  #if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
     char                mbBuf[MB_CUR_MAX];
     int                 chBytes;
 
@@ -356,7 +347,7 @@ static void FixedPoint_Format( CHAR_TYPE *buf, long value, SPECS __SLIB *specs )
     }
 }
 
-static void float_format( CHAR_TYPE *buffer, my_va_list *pargs, SPECS __SLIB *specs )
+static void float_format( CHAR_TYPE *buffer, MY_VA_LIST *pargs, SPECS __SLIB *specs )
 {
 #ifdef __WIDECHAR__
     unsigned char       mbBuffer[BUF_SIZE*MB_CUR_MAX];
@@ -441,7 +432,7 @@ static void SetZeroPad( SPECS __SLIB *specs )
 }
 
 
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
 static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs,
                                slib_callback_t *out_putc )
 {
@@ -467,7 +458,7 @@ static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs,
 #endif
 
 
-#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
 static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
                                  slib_callback_t *out_putc )
 {
@@ -495,21 +486,19 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
 #endif
 
 
-static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
+static FAR_STRING formstring( CHAR_TYPE *buffer, MY_VA_LIST *pargs,
                               SPECS __SLIB *specs, CHAR_TYPE *null_string )
 {
     FAR_STRING              arg;
     int                     length;
     int                     radix;
-#if defined( __LONG_LONG_SUPPORT__ )
     unsigned long long      long_long_value;
-#endif
     unsigned long           long_value;
     unsigned int            int_value;
 #if defined( __FAR_SUPPORT__ )
     unsigned int            seg_value;
 #endif
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
     int                     bytes;
 #endif
 
@@ -521,42 +510,35 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
     specs->_n1 = specs->_nz1 =
     specs->_n2 = specs->_nz2 = 0;
 
-    if( ( specs->_character == STRING( 'b' ) ) ||
-        ( specs->_character == STRING( 'o' ) ) ||
-        ( specs->_character == STRING( 'u' ) ) ||
-        ( specs->_character == STRING( 'x' ) ) ||
-        ( specs->_character == STRING( 'X' ) ) ) {
-#if defined( __LONG_LONG_SUPPORT__ )
+    switch( specs->_character ) {
+    case STRING( 'b' ):
+    case STRING( 'o' ):
+    case STRING( 'u' ):
+    case STRING( 'x' ):
+    case STRING( 'X' ):
         if( specs->_flags & SPF_LONG_LONG ) {
-            long_long_value = va_arg( pargs->v, unsigned long long );
-        } else
-#endif
-        if( specs->_flags & SPF_LONG ) {
-            long_value = va_arg( pargs->v, unsigned long );
+            long_long_value = va_arg( VA_LIST_DATA( pargs ), unsigned long long );
+        } else if( specs->_flags & SPF_LONG ) {
+            long_value = va_arg( VA_LIST_DATA( pargs ), unsigned long );
         } else {
-            long_value = va_arg( pargs->v, unsigned );
+            long_value = va_arg( VA_LIST_DATA( pargs ), unsigned );
             if( specs->_flags & SPF_SHORT ) {
                 long_value = (unsigned short)long_value;
             } else if( specs->_flags & SPF_CHAR ) {
                 long_value = (unsigned char)long_value;
             }
         }
-    } else
-
-    if( ( specs->_character == STRING( 'd' ) ) ||
-        ( specs->_character == STRING( 'i' ) ) ) {
-
-#if defined( __LONG_LONG_SUPPORT__ )
+        break;
+    case STRING( 'd' ):
+    case STRING( 'i' ):
         if( specs->_flags & SPF_LONG_LONG ) {
-            long_long_value = va_arg( pargs->v, long long );
-        } else
-#endif
-        if( specs->_flags & SPF_LONG ) {
-            long_value = va_arg( pargs->v, long );
+            long_long_value = va_arg( VA_LIST_DATA( pargs ), long long );
+        } else if( specs->_flags & SPF_LONG ) {
+            long_value = va_arg( VA_LIST_DATA( pargs ), long );
         } else {
-            long_value = va_arg( pargs->v, int );
+            long_value = va_arg( VA_LIST_DATA( pargs ), int );
             if( specs->_flags & SPF_SHORT ) {
-                long_value = (short) long_value;
+                long_value = (short)long_value;
             } else if( specs->_flags & SPF_CHAR ) {
                 long_value = (signed char)long_value;
             }
@@ -564,34 +546,28 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
         {
             int negative = FALSE;
 
-#if defined( __LONG_LONG_SUPPORT__ )
             if( specs->_flags & SPF_LONG_LONG ) {
                 if( (long long)long_long_value < 0 ) {
                     negative = TRUE;
                 }
-            } else
-#endif
-            if( (long)long_value < 0 ) {
+            } else if( (long)long_value < 0 ) {
                 negative = TRUE;
             }
             if( negative ) {
                 buffer[specs->_n0++] = STRING( '-' );
 
-#if defined( __LONG_LONG_SUPPORT__ )
                 if( specs->_flags & SPF_LONG_LONG ) {
                     long_long_value = -long_long_value;
                 } else {
-#endif
                     long_value = -long_value;
-#if defined( __LONG_LONG_SUPPORT__ )
                 }
-#endif
             } else if( specs->_flags & SPF_FORCE_SIGN ) {
                 buffer[specs->_n0++] = STRING( '+' );
             } else if( specs->_flags & SPF_BLANK ) {
                 buffer[specs->_n0++] = STRING( ' ' );
             }
         }
+        break;
     }
 
     radix  = 10;                        /* base 10 for 'd', 'i' and 'u' */
@@ -599,7 +575,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
     case STRING( 'f' ):
     case STRING( 'F' ):
         if( specs->_flags & SPF_SHORT ) {       /* "%hf"  13-jun-91 */
-            long_value = va_arg( pargs->v, long );
+            long_value = va_arg( VA_LIST_DATA( pargs ), long );
             FixedPoint_Format( buffer, long_value, specs );
             specs->_n1 = far_strlen( buffer, -1 );
             break;
@@ -626,19 +602,19 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
         buffer[0] = NULLCHAR;       // assume null pointer
 #if defined( __FAR_SUPPORT__ )
         if( specs->_flags & SPF_FAR ) {
-            CHAR_TYPE _WCFAR *temp = va_arg( pargs->v, CHAR_TYPE _WCFAR * );
+            CHAR_TYPE _WCFAR *temp = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE _WCFAR * );
 
             if( temp ) {
                 arg = temp;
             }
         } else if( specs->_flags & SPF_NEAR ) {
-            CHAR_TYPE _WCNEAR *temp = va_arg( pargs->v, CHAR_TYPE _WCNEAR * );
+            CHAR_TYPE _WCNEAR *temp = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE _WCNEAR * );
 
             if( temp ) {
                 arg = (void *)temp;
             }
         } else {
-            CHAR_TYPE *temp = va_arg( pargs->v, CHAR_TYPE * );
+            CHAR_TYPE *temp = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE * );
 
             if( temp ) {
                 arg = temp;
@@ -646,7 +622,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
         }
 #else
         {
-            CHAR_TYPE *temp = va_arg( pargs->v, CHAR_TYPE * );
+            CHAR_TYPE *temp = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE * );
 
             if( temp ) {
                 arg = temp;
@@ -677,7 +653,6 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
             }
         } else
 #endif
-
 #ifdef __WIDECHAR__
         if( specs->_flags & SPF_SHORT ) {
 #else
@@ -697,15 +672,12 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
     case STRING( 'x' ):
     case STRING( 'X' ):
         if( specs->_flags & SPF_ALT ) {
-#if defined( __LONG_LONG_SUPPORT__ )
             if( specs->_flags & SPF_LONG_LONG ) {
                 if( long_long_value != 0 ) {
                     buffer[specs->_n0++] = STRING( '0' );
                     buffer[specs->_n0++] = specs->_character;
                 }
-            } else
-#endif
-            if( long_value != 0 ) {
+            } else if( long_value != 0 ) {
                 buffer[specs->_n0++] = STRING( '0' );
                 buffer[specs->_n0++] = specs->_character;
             }
@@ -735,7 +707,6 @@ processNumericTypes:
 
         arg = &buffer[ specs->_n0 ];
 
-#if defined( __LONG_LONG_SUPPORT__ )
         if( specs->_flags & SPF_LONG_LONG ) {
             if(( specs->_prec == 0 ) && ( long_long_value == 0 )) {
                 *arg = NULLCHAR;
@@ -743,19 +714,17 @@ processNumericTypes:
             } else {
                 __F_NAME(ulltoa,_ulltow)( long_long_value, &buffer[specs->_n0], radix );
                 if( specs->_character == STRING( 'X' ) ) {
-                    __F_NAME(strupr,_wcsupr)( buffer );
+                    __F_NAME(_strupr,_wcsupr)( buffer );
                 }
                 length = far_strlen( arg, -1 );
             }
-        } else
-#endif
-        if(( specs->_prec == 0 ) && ( long_value == 0 )) {
+        } else if(( specs->_prec == 0 ) && ( long_value == 0 )) {
             *arg = NULLCHAR;
             length = 0;
         } else {
             __F_NAME(ultoa,_ultow)( long_value, &buffer[specs->_n0], radix );
             if( specs->_character == STRING( 'X' ) ) {
-                __F_NAME(strupr,_wcsupr)( buffer );
+                __F_NAME(_strupr,_wcsupr)( buffer );
             }
             length = far_strlen( arg, -1 );
         }
@@ -801,10 +770,10 @@ processNumericTypes:
         }
 #endif
         specs->_flags &= ~(SPF_BLANK | SPF_FORCE_SIGN);
-        int_value = va_arg( pargs->v, unsigned );               /* offset */
+        int_value = va_arg( VA_LIST_DATA( pargs ), unsigned );               /* offset */
 #if defined( __FAR_SUPPORT__ )
         if( specs->_flags & SPF_FAR ) {
-            seg_value = va_arg( pargs->v, unsigned ) & 0xFFFF; /* segment */
+            seg_value = va_arg( VA_LIST_DATA( pargs ), unsigned ) & 0xFFFF; /* segment */
             /* use "unsigned short" for 386 instead of "unsigned" */
             fmt4hex( seg_value, buffer, 4 );
             buffer[4] = STRING( ':' );
@@ -816,19 +785,19 @@ processNumericTypes:
         fmt4hex( int_value, buffer, sizeof( unsigned ) * 2 );
 #endif
         if( specs->_character == STRING( 'P' ) ) {
-            __F_NAME(strupr,_wcsupr)( buffer );
+            __F_NAME(_strupr,_wcsupr)( buffer );
         }
         specs->_n0 = far_strlen( arg, -1 );
         break;
 
     case STRING( 'c' ):
-#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
         if( specs->_flags & SPF_SHORT ) {
             char *      mbPtr;
             char        mbBuf[MB_CUR_MAX];
             wchar_t     wc;
 
-            mbPtr = va_arg( pargs->v, char* );
+            mbPtr = va_arg( VA_LIST_DATA( pargs ), char* );
             mbBuf[0] = mbPtr[0];
             if( _ismbblead( (unsigned char)mbBuf[0] ) )
                 mbBuf[1] = mbPtr[1];
@@ -837,16 +806,16 @@ processNumericTypes:
                 buffer[0] = wc;
             }
         } else {
-            buffer[0] = va_arg( pargs->v, int );
+            buffer[0] = va_arg( VA_LIST_DATA( pargs ), int );
         }
         specs->_n1 = 1;
-#elif !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#elif !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
         specs->_n1 = 1;
         if( specs->_flags & SPF_LONG ) {
             char        mbBuf[MB_CUR_MAX];
             wchar_t     wc;
 
-            wc = va_arg( pargs->v, int );
+            wc = va_arg( VA_LIST_DATA( pargs ), int );
             if( wctomb( mbBuf, wc ) != -1 ) {
                 buffer[0] = mbBuf[0];
                 if( _ismbblead( (unsigned char)mbBuf[0] ) ) {
@@ -855,17 +824,17 @@ processNumericTypes:
                 }
             }
         } else {
-            buffer[0] = va_arg( pargs->v, int );
+            buffer[0] = va_arg( VA_LIST_DATA( pargs ), int );
         }
 #else
         specs->_n1 = 1;
-        buffer[0] = va_arg( pargs->v, int );
+        buffer[0] = va_arg( VA_LIST_DATA( pargs ), int );
 #endif
         break;
 
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
     case STRING( 'C' ):
-        bytes = wctomb( buffer, va_arg( pargs->v, int ) );
+        bytes = wctomb( buffer, va_arg( VA_LIST_DATA( pargs ), int ) );
 //      if( bytes != -1  &&  bytes <= specs->_prec ) {
         if( bytes != -1 ) { /* Normative Addendum 4.5.3.3.1: no precision */
             specs->_n1 = bytes;
@@ -923,10 +892,10 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
         } else {
             ++ctl;
             {
-                my_va_list  pargs;
-                pargs = MY_VA_LIST( args );
-                ctl = getprintspecs( ctl, &pargs, &specs );
-                MY_VA_LIST( args ) = pargs;
+                MY_VA_LIST  margs;
+                margs = MY_VA_LIST_DATA( args );
+                ctl = getprintspecs( ctl, &margs, &specs );
+                MY_VA_LIST_DATA( args ) = margs;
             }
 
             specs._character = *ctl++;
@@ -962,10 +931,8 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
                     *((FAR_SHORT)iptr) = specs._output_count;
                 } else if( specs._flags & SPF_LONG ) {
                     *((FAR_LONG)iptr) = specs._output_count;
-#if defined( __LONG_LONG_SUPPORT__ )
                 } else if( specs._flags & SPF_LONG_LONG ) {
                     *((FAR_INT64)iptr) = specs._output_count;
-#endif
                 } else {
                     *iptr = specs._output_count;
                 }
@@ -1015,10 +982,10 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
 #endif  /* SAFE_PRINTF */
 
                 {
-                    my_va_list  pargs;
-                    pargs = MY_VA_LIST( args );
-                    arg = formstring( buffer, &pargs, &specs, &null_char );
-                    MY_VA_LIST( args ) = pargs;
+                    MY_VA_LIST  margs;
+                    margs = MY_VA_LIST_DATA( args );
+                    arg = formstring( buffer, &margs, &specs, &null_char );
+                    MY_VA_LIST_DATA( args ) = margs;
                 }
                 specs._fld_width -= specs._n0  +
                                     specs._nz0 +
@@ -1045,11 +1012,11 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
                     --specs._nz0;
                 }
                 if( specs._character == STRING( 's' ) ) {
-#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                     if( specs._flags & SPF_SHORT ) {
                         write_skinny_string( (FAR_ASCII_STRING)arg, &specs, out_putc );
                     } else
-#elif !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#elif !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                     if( specs._flags & SPF_LONG ) {
                         write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
                     } else
@@ -1061,7 +1028,7 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
                         }
                     }
                 }
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                 else if( specs._character == WIDE_CHAR_STRING ) {
                     write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
                 } else

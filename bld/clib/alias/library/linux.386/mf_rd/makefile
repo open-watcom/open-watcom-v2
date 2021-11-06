@@ -5,7 +5,6 @@ model      = mf
 system     = linux
 linkage    = static
 
-clib_release = 0
+lib_debug = 1
 
 !include $(clib_dir)/mklib.mif
-!include ../../../deps.mif

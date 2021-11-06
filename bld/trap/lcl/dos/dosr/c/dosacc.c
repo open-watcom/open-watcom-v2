@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -222,7 +222,7 @@ char *hex( unsigned long num )
     #define hex( n )
 #endif
 
-trap_retval ReqGet_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
@@ -248,7 +248,7 @@ trap_retval ReqGet_sys_config( void )
 }
 
 
-trap_retval ReqMap_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     word            seg;
     int             count;
@@ -266,11 +266,11 @@ trap_retval ReqMap_addr( void )
         break;
     }
     if( Flags & F_BoundApp ) {
-        segment = MK_FP( SegmentChain, 14 );
+        segment = _MK_FP( SegmentChain, 14 );
         for( count = NumSegments - seg; count != 0; --count ) {
-            segment = MK_FP( *segment, 14 );
+            segment = _MK_FP( *segment, 14 );
         }
-        ret->out_addr.segment = FP_SEG( segment ) + 1;
+        ret->out_addr.segment = _FP_SEG( segment ) + 1;
     } else {
         ret->out_addr.segment = DOSTaskPSP() + seg;
         if( (Flags & F_Com_file) == 0 ) {
@@ -283,7 +283,7 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqMachine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -296,7 +296,7 @@ trap_retval ReqMachine_data( void )
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-trap_retval ReqChecksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     unsigned_8          __far *ptr;
     unsigned long       sum = 0;
@@ -306,7 +306,7 @@ trap_retval ReqChecksum_mem( void )
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
-    ptr = MK_FP( acc->in_addr.segment, acc->in_addr.offset );
+    ptr = _MK_FP( acc->in_addr.segment, acc->in_addr.offset );
     for( len = acc->len; len != 0; --len ) {
         sum += *ptr++;
     }
@@ -325,7 +325,7 @@ static bool IsInterrupt( addr48_ptr addr, unsigned length )
 }
 
 
-trap_retval ReqRead_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     bool            int_tbl;
     read_mem_req    *acc;
@@ -343,14 +343,14 @@ trap_retval ReqRead_mem( void )
         len = 0x10000 - acc->mem_addr.offset;
     }
     MoveBytes( acc->mem_addr.segment, acc->mem_addr.offset,
-               FP_SEG( data ), FP_OFF( data ), len );
+               _FP_SEG( data ), _FP_OFF( data ), len );
     if( int_tbl )
         ClrIntVecs();
     return( len );
 }
 
 
-trap_retval ReqWrite_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     bool            int_tbl;
     write_mem_req   *acc;
@@ -370,7 +370,7 @@ trap_retval ReqWrite_mem( void )
     if( ( acc->mem_addr.offset + len ) > 0xffff ) {
         len = 0x10000 - acc->mem_addr.offset;
     }
-    MoveBytes( FP_SEG( data ), FP_OFF( data ),
+    MoveBytes( _FP_SEG( data ), _FP_OFF( data ),
                acc->mem_addr.segment, acc->mem_addr.offset, len );
     if( int_tbl )
         ClrIntVecs();
@@ -379,7 +379,7 @@ trap_retval ReqWrite_mem( void )
 }
 
 
-trap_retval ReqRead_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     read_io_req     *acc;
     void            *data;
@@ -403,7 +403,7 @@ trap_retval ReqRead_io( void )
 }
 
 
-trap_retval ReqWrite_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_req        *acc;
     write_io_ret        *ret;
@@ -429,7 +429,7 @@ trap_retval ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRead_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
@@ -445,7 +445,7 @@ trap_retval ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     mad_registers       *mr;
 
@@ -482,7 +482,7 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
     return( EXE_UNKNOWN );
 }
 
-trap_retval ReqProg_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     addr_seg        psp;
     pblock          parmblock;
@@ -524,7 +524,7 @@ trap_retval ReqProg_load( void )
     len = GetTotalSizeIn() - ( parm - name ) - sizeof( prog_load_req );
     if( len > 126 )
         len = 126;
-    dst = MK_FP( psp, CMD_OFFSET + 1 );
+    dst = _MK_FP( psp, CMD_OFFSET + 1 );
     for( ; len > 0; --len ) {
         ch = *parm++;
         if( ch == '\0' ) {
@@ -535,7 +535,7 @@ trap_retval ReqProg_load( void )
         *dst++ = ch;
     }
     *dst = '\r';
-    *(byte __far *)MK_FP( psp, CMD_OFFSET ) = FP_OFF( dst ) - ( CMD_OFFSET + 1 );
+    *(byte __far *)_MK_FP( psp, CMD_OFFSET ) = _FP_OFF( dst ) - ( CMD_OFFSET + 1 );
     parmblock.envstring = 0;
     parmblock.commandln.segment = psp;
     parmblock.commandln.offset =  CMD_OFFSET;
@@ -614,7 +614,7 @@ trap_retval ReqProg_load( void )
 
                 BoundAppLoading = true;
                 RunProg( &TaskRegs, &TaskRegs );
-                loc_brk_opcode = MK_FP(TaskRegs.CS, TaskRegs.EIP);
+                loc_brk_opcode = _MK_FP(TaskRegs.CS, TaskRegs.EIP);
                 if( *loc_brk_opcode == BRKPOINT ) {
                     *loc_brk_opcode = saved_opcode;
                 }
@@ -639,7 +639,7 @@ trap_retval ReqProg_load( void )
 }
 
 
-trap_retval ReqProg_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
@@ -661,7 +661,7 @@ out( "done AccKillProg\r\n" );
 }
 
 
-trap_retval ReqSet_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     watch_point         *curr;
     set_watch_req       *wp;
@@ -677,7 +677,7 @@ trap_retval ReqSet_watch( void )
         curr = WatchPoints + WatchCount;
         curr->addr.segment = wp->watch_addr.segment;
         curr->addr.offset = wp->watch_addr.offset;
-        curr->value = *(dword __far *)MK_FP( wp->watch_addr.segment, wp->watch_addr.offset );
+        curr->value = *(dword __far *)_MK_FP( wp->watch_addr.segment, wp->watch_addr.offset );
         curr->linear = ( (dword)wp->watch_addr.segment << 4 ) + wp->watch_addr.offset;
         curr->len = wp->size;
         curr->linear &= ~( curr->len - 1 );
@@ -697,13 +697,13 @@ trap_retval ReqSet_watch( void )
     return( sizeof( *wr ) );
 }
 
-trap_retval ReqClear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     WatchCount = 0;
     return( 0 );
 }
 
-trap_retval ReqSet_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     opcode_type     __far *loc_brk_opcode;
     set_break_req   *acc;
@@ -712,7 +712,7 @@ trap_retval ReqSet_break( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    loc_brk_opcode = MK_FP( acc->break_addr.segment, acc->break_addr.offset );
+    loc_brk_opcode = _MK_FP( acc->break_addr.segment, acc->break_addr.offset );
     ret->old = *loc_brk_opcode;
     *loc_brk_opcode = BRKPOINT;
     if( *loc_brk_opcode != BRKPOINT ) {
@@ -723,12 +723,12 @@ trap_retval ReqSet_break( void )
 }
 
 
-trap_retval ReqClear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req     *bp;
 
     bp = GetInPtr( 0 );
-    *(opcode_type __far *)MK_FP( bp->break_addr.segment, bp->break_addr.offset ) = bp->old;
+    *(opcode_type __far *)_MK_FP( bp->break_addr.segment, bp->break_addr.offset ) = bp->old;
     GotABadBreak = false;
     return( 0 );
 }
@@ -902,17 +902,17 @@ static trap_elen ProgRun( bool step )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     return( ProgRun( false ) );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
     return( ProgRun( true ) );
 }
 
-trap_retval ReqGet_next_alias( void )
+trap_retval TRAP_CORE( Get_next_alias )( void )
 {
     get_next_alias_ret  *ret;
 
@@ -922,7 +922,7 @@ trap_retval ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     get_lib_name_ret    *ret;
 
@@ -931,7 +931,7 @@ trap_retval ReqGet_lib_name( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_err_text( void )
+trap_retval TRAP_CORE( Get_err_text )( void )
 {
     static const char *const DosErrMsgs[] = {
         #define pick( a, b )    b,
@@ -952,7 +952,7 @@ trap_retval ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-trap_retval ReqGet_message_text( void )
+trap_retval TRAP_CORE( Get_message_text )( void )
 {
     static const char * const ExceptionMsgs[] = {
         #define pick(a,b) b,

@@ -21,9 +21,9 @@ The
 .id &funcb.
 function calculates the length of the string pointed to by
 .arg s
-.ct .li .
+.period
 
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin
@@ -43,7 +43,7 @@ then
 .id &funcb.
 returns
 .arg maxsize
-.ct .li .
+.period
 At most the first
 .arg maxsize
 characters of

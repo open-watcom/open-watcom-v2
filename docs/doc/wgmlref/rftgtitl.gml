@@ -1,6 +1,6 @@
 :H2.TITLE
 :xmp
-Format&gml. &gml.TITLE \(stitle='character string'\).<text>
+Format&gml. &gml.TITLE [stitle='character string'].<text>
 :exmp
 :I2 refid='gttitle' pg=major.gttitle
 :p.This tag is used to specify the title of the document.

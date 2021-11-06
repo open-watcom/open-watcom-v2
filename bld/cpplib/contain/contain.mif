@@ -12,4 +12,6 @@ objs_cpp = &
 pch_flags = -fh=pch01.pch
 pch_flags_x = -fh=$(x_subdir)/pch01.pch
 
+dep_dirs_x = $(x_subdir)
+
 !include $(cpplib_dir)/mklib.mif

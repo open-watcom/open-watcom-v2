@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,14 +34,14 @@
 
 
 extern void         SDInitIO( void );
-extern void         SDInitAttr( void );
-extern void         SDSetAttr( f_attrs attr );
 extern void         SDScratch( const char *name );
-extern file_handle  SDOpen( const char *name, int mode );
+extern file_handle  SDOpen( const char *name, const char *mode );
+extern file_handle  SDOpenText( const char *name, const char *mode );
 extern void         SDClose( file_handle fp );
-extern size_t       SDRead( file_handle fp, void *buff, size_t len );
+extern size_t       SDReadText( file_handle fp, char *buff, size_t len );
 extern void         SDWrite( file_handle fp, const void *buff, size_t len );
-extern void         SDSeek( file_handle fp, unsigned_32 rec_num, size_t rec_size );
+extern void         SDWriteTextNL( file_handle fp, const char *buff, size_t len );
+extern void         SDWriteCCChar( file_handle fp, char asa, bool nolf );
 extern void         SDRewind( file_handle fp );
 extern bool         SDEof( file_handle fp );
-extern bool         SDError( file_handle fp, char *buff );
+extern bool         SDError( file_handle fp, char *buff, size_t max_len );

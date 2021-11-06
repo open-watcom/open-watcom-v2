@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,6 @@
 #include <stdlib.h>
 #include "guistyle.h"
 #include "guixutil.h"
-#include "guiscale.h"
 #include "guicontr.h"
 #include "guixwind.h"
 #include "guicombo.h"
@@ -44,6 +44,13 @@
 //#include "guixhook.h"
 #include "ctl3dcvr.h"
 #include "guirdlg.h"
+#include "wclbproc.h"
+#ifdef __NT__
+    #undef _WIN32_IE
+    #define _WIN32_IE   0x0400
+    #include <commctrl.h>
+#endif
+#include "oswincls.h"
 
 
 typedef struct dialog_wnd_node {
@@ -55,9 +62,11 @@ extern  bool            EditControlHasFocus;
 
 controls_struct GUIControls[GUI_NUM_CONTROL_CLASSES] = {
 #if defined( __NT__ ) && !defined( _WIN64 )
-    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,style,xstyle_nt},
+    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,classn,style,xstyle_nt},
+#elif defined( __OS2__ )
+    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,classn_os2,style},
 #else
-    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,style},
+    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,classn,style},
 #endif
     #include "_guicont.h"
     #undef pick
@@ -121,11 +130,11 @@ static void GUIDeleteCtrlWnd( gui_window *wnd )
  *                     given id
  */
 
-control_item *GUIGetControlByID( gui_window *parent, gui_ctl_id id )
+control_item *GUIGetControlByID( gui_window *parent_wnd, gui_ctl_id id )
 {
     control_item * curr;
 
-    for( curr = parent->controls; curr != NULL; curr = curr->next ) {
+    for( curr = parent_wnd->controls; curr != NULL; curr = curr->next ) {
         if( curr->id == id ) {
             return( curr );
         }
@@ -138,11 +147,11 @@ control_item *GUIGetControlByID( gui_window *parent, gui_ctl_id id )
  *                       given HWND
  */
 
-control_item * GUIGetControlByHwnd( gui_window *parent, HWND control )
+control_item * GUIGetControlByHwnd( gui_window *parent_wnd, HWND control )
 {
     control_item        *curr;
 
-    for( curr = parent->controls; curr != NULL; curr = curr->next ) {
+    for( curr = parent_wnd->controls; curr != NULL; curr = curr->next ) {
         if( curr->hwnd == control ) {
             return( curr );
         }
@@ -155,57 +164,54 @@ control_item * GUIGetControlByHwnd( gui_window *parent, HWND control )
  *                    gui_window for the given class
  */
 
-control_item *GUIControlInsert( gui_window *parent, gui_control_class control_class,
+control_item *GUIControlInsert( gui_window *parent_wnd, gui_control_class control_class,
                                 HWND hwnd, gui_control_info *ctl_info,
                                 WPI_WNDPROC win_call_back )
 {
     control_item        *item;
 
     item = (control_item *)GUIMemAlloc( sizeof( control_item ) );
-    if( item == NULL ) {
-        return( NULL );
+    if( item != NULL ) {
+        item->control_class = control_class;
+        item->text = ctl_info->text;
+        item->style = ctl_info->style;
+        item->checked = ctl_info->style & GUI_STYLE_CONTROL_CHECKED;
+        item->id = ctl_info->id;
+        item->next = NULL;
+        item->hwnd = hwnd;
+        item->win_call_back = win_call_back;
+        item->next = parent_wnd->controls;
+        parent_wnd->controls = item;
     }
-    item->control_class = control_class;
-    item->text = ctl_info->text;
-    item->style = ctl_info->style;
-    item->checked = ctl_info->style & GUI_STYLE_CONTROL_CHECKED;
-    item->id = ctl_info->id;
-    item->next = NULL;
-    item->hwnd = hwnd;
-    item->win_call_back = win_call_back;
-    item->next = parent->controls;
-    parent->controls = item;
     return( item );
 }
 
-control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent )
+control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent_wnd )
 {
     control_item        *item;
     HWND                phwnd;
+    gui_control_class   control_class;
 
     phwnd = _wpi_getparent( hwnd );
-    if( ( parent == NULL ) || ( phwnd != parent->hwnd ) ) {
+    if( ( parent_wnd == NULL ) || ( phwnd != parent_wnd->hwnd ) ) {
         return( NULL );
     }
     item = (control_item *)GUIMemAlloc( sizeof( control_item ) );
-    if( item == NULL ) {
-        return( NULL );
+    if( item != NULL ) {
+        memset( item, 0, sizeof( control_item ) );
+        control_class = GUIGetControlClassFromHWND( hwnd );
+        if( control_class == GUI_BAD_CLASS ) {
+            GUIMemFree( item );
+            return( NULL );
+        }
+        item->control_class = control_class;
+        item->style = GUIGetControlStylesFromHWND( hwnd, control_class );
+        item->id = _wpi_getdlgctrlid( hwnd );
+        item->next = NULL;
+        item->hwnd = hwnd;
+        item->next = parent_wnd->controls;
+        parent_wnd->controls = item;
     }
-    memset( item, 0, sizeof( control_item ) );
-    item->control_class = GUIGetControlClassFromHWND( hwnd );
-    if( item->control_class == GUI_BAD_CLASS ) {
-        GUIMemFree( item );
-        return( NULL );
-    }
-
-    item->style = GUIGetControlStylesFromHWND( hwnd, item->control_class );
-
-    item->id = _wpi_getdlgctrlid( hwnd );
-    item->next = NULL;
-    item->hwnd = hwnd;
-    item->next = parent->controls;
-    parent->controls = item;
-
     return( item );
 }
 
@@ -289,38 +295,21 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
     win_call_back = info->win_call_back;
     switch( message ) {
 #ifndef __OS2_PM__
-    case WM_SETFOCUS :
+    case WM_SETFOCUS:
         EditControlHasFocus = true;
         break;
-    case WM_KILLFOCUS :
+    case WM_KILLFOCUS:
         EditControlHasFocus = false;
         break;
-    case WM_MOUSEACTIVATE :
+    case WM_MOUSEACTIVATE:
         return( true );
         break;
-    case WM_CHAR :
-        if( EditControlHasFocus ) {
-            if( GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
-                GUIGetKeyState( &key_control.key_state.state );
-                if( key_control.key_state.key == GUI_KEY_ENTER ) {
-                    key_control.id = info->id;
-                    if( GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control ) ) {
-                        return( 0L );
-                    }
-                }
-            }
-        //} else {
-            //if( GUICurrWnd != NULL ) {
-                //GUISendMessage( GUICurrWnd->hwnd, message, wparam, lparam );
-            //}
-        }
-        break;
-    case WM_KEYDOWN :
+    case WM_KEYDOWN:
         if( EditControlHasFocus ) {
             if( GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
                 switch( key_control.key_state.key ) {
-                case GUI_KEY_UP :
-                case GUI_KEY_DOWN :
+                case GUI_KEY_UP:
+                case GUI_KEY_DOWN:
                     key_control.id = info->id;
                     GUIGetKeyState( &key_control.key_state.state );
                     GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control );
@@ -332,14 +321,15 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
             //}
         }
         break;
-#else
-    case WM_CHAR :
+#endif
+    case WM_CHAR:
         if( EditControlHasFocus ) {
+#ifdef __OS2_PM__
             if( !IS_KEY_UP( wparam ) && GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
                 switch( key_control.key_state.key ) {
-                //case GUI_KEY_ENTER :
-                case GUI_KEY_UP :
-                case GUI_KEY_DOWN :
+                //case GUI_KEY_ENTER:
+                case GUI_KEY_UP:
+                case GUI_KEY_DOWN:
                     key_control.id = info->id;
                     GUIGetKeyState( &key_control.key_state.state );
                     if( GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control ) ) {
@@ -347,13 +337,23 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
                     }
                 }
             }
+#else
+            if( GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
+                GUIGetKeyState( &key_control.key_state.state );
+                if( key_control.key_state.key == GUI_KEY_ENTER ) {
+                    key_control.id = info->id;
+                    if( GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control ) ) {
+                        return( 0L );
+                    }
+                }
+            }
+#endif
         //} else {
             //if( GUICurrWnd != NULL ) {
                 //GUISendMessage( GUICurrWnd->hwnd, message, wparam, lparam );
             //}
         }
         break;
-#endif
     case WM_RBUTTONUP:
         break;
     case WM_NCDESTROY:
@@ -373,7 +373,7 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
     control_item        *info;
     WPI_WNDPROC         win_call_back;
     WPI_PRES            hdc;
-    WPI_RECT            rect;
+    WPI_RECT            wpi_rect;
     HWND                parent;
     gui_window          *wnd;
 
@@ -390,8 +390,8 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
     switch( message ) {
     case WM_ERASEBKGND:
         hdc = _wpi_getpres( hwnd );
-        _wpi_getupdaterect( hwnd, &rect );
-        _wpi_fillrect( hdc, &rect, (WPI_COLOUR)0, wnd->bk_brush );
+        _wpi_getupdaterect( hwnd, &wpi_rect );
+        _wpi_fillrect( hdc, &wpi_rect, (WPI_COLOUR)0, wnd->bk_brush );
         _wpi_releasepres( hwnd, hdc );
         break;
     }
@@ -401,23 +401,35 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
 WPI_WNDPROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
 {
     WPI_WNDPROC old;
+#ifdef __OS2_PM__
     WPI_WNDPROC new;
+#endif
 
     //CvrCtl3dSubclassCtl( hwnd );
 
     switch( control_class ) {
-    case GUI_EDIT_COMBOBOX :
+    case GUI_EDIT_COMBOBOX:
         return( GUISubClassEditCombobox( hwnd ) );
     case GUI_EDIT:
     case GUI_EDIT_MLE:
+#ifdef __OS2_PM__
         new = (WPI_WNDPROC)_wpi_makeprocinstance( (WPI_PROC)GUIEditFunc, GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
+#else
+        old = (WPI_WNDPROC)GET_WNDPROC( hwnd );
+        SET_WNDPROC( hwnd, (LONG_PTR)MakeProcInstance_WND( GUIEditFunc, GUIMainHInst ) );
+#endif
         return( old );
     case GUI_GROUPBOX:
+#ifdef __OS2_PM__
         new = (WPI_WNDPROC)_wpi_makeprocinstance( (WPI_PROC)GUIGroupBoxFunc, GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
+#else
+        old = (WPI_WNDPROC)GET_WNDPROC( hwnd );
+        SET_WNDPROC( hwnd, (LONG_PTR)MakeProcInstance_WND( GUIGroupBoxFunc, GUIMainHInst ) );
+#endif
         return( old );
-    default :
+    default:
         return( NULL );
     }
 }
@@ -435,14 +447,14 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
      * everything is in a group of one, except GUI_STYLE_CONTROL_GROUPs, which are
      * grouped properly.
      */
-    if( !( ctl_info->scroll & GUI_INIT_INVISIBLE ) ) {
+    if( !( ctl_info->style & GUI_INIT_INVISIBLE ) ) {
         ret_style |= WS_VISIBLE;
     }
 #ifndef __OS2_PM__
-    if( ctl_info->scroll & GUI_VSCROLL ) {
+    if( ctl_info->scroll_style & GUI_VSCROLL ) {
         ret_style |= WS_VSCROLL;
     }
-    if( ctl_info->scroll & GUI_HSCROLL ) {
+    if( ctl_info->scroll_style & GUI_HSCROLL ) {
         ret_style |= WS_HSCROLL;
     }
 #endif
@@ -480,7 +492,7 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
     }
 
     switch( ctl_info->control_class ) {
-    case GUI_LISTBOX :
+    case GUI_LISTBOX:
         if( ctl_info->style & GUI_STYLE_CONTROL_NOINTEGRALHEIGHT ) {
             ret_style |= LBS_NOINTEGRALHEIGHT;
         }
@@ -493,13 +505,13 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
         }
 #endif
 #ifdef __OS2_PM__
-        if( ctl_info->scroll & GUI_HSCROLL ) {
+        if( ctl_info->scroll_style & GUI_HSCROLL ) {
             ret_style |= LS_HORZSCROLL;
         }
 #endif
         break;
-    case GUI_COMBOBOX :
-    case GUI_EDIT_COMBOBOX :
+    case GUI_COMBOBOX:
+    case GUI_EDIT_COMBOBOX:
         if( ctl_info->style & GUI_STYLE_CONTROL_NOINTEGRALHEIGHT ) {
             ret_style |= CBS_NOINTEGRALHEIGHT;
         }
@@ -534,7 +546,7 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
     return( ret_style );
 }
 
-static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_coord pos, gui_coord size )
+static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent_wnd, const guix_coord *scr_pos, const guix_coord *scr_size )
 {
     DWORD       style;
     HWND        hwnd;
@@ -552,7 +564,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_c
     style = GUISetControlStyle( ctl_info );
     if( ctl_info->text != NULL ) {
         switch( ctl_info->control_class ) {
-        case GUI_LISTBOX :
+        case GUI_LISTBOX:
             style |= WS_CAPTION;
             break;
         }
@@ -572,19 +584,19 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_c
     style &= ~WS_VISIBLE;  /* create invisible -- if GUIAlloc fails, window
                             * will never show
                             */
-    if( parent != NULL ) {
+    if( parent_wnd != NULL ) {
         style |= WS_CHILD;
     }
 
 #if defined( __OS2_PM__ )
-    _wpi_createanywindow( GUIControls[ctl_info->control_class].classname,
-                  new_text, style, pos.x, pos.y, size.x, size.y,
-                  parent->hwnd, (HMENU)ctl_info->id, GUIMainHInst,
+    _wpi_createanywindow( (PSZ)GUIControls[ctl_info->control_class].classname,
+                  new_text, style, scr_pos->x, scr_pos->y, scr_size->x, scr_size->y,
+                  parent_wnd->hwnd, (HMENU)ctl_info->id, GUIMainHInst,
                   pctldata, &hwnd, ctl_info->id, &hwnd );
 #elif defined( __WINDOWS__ )
     hwnd = CreateWindow( GUIControls[ctl_info->control_class].classname,
-                  new_text, style, pos.x, pos.y, size.x, size.y,
-                  parent->hwnd, (HMENU)ctl_info->id, GUIMainHInst, NULL );
+                  new_text, style, scr_pos->x, scr_pos->y, scr_size->x, scr_size->y,
+                  parent_wnd->hwnd, (HMENU)ctl_info->id, GUIMainHInst, NULL );
 #else
     // We do this crud to get 3d edges on edit controls, listboxes, and
     // comboboxes -rnk 07/07/95
@@ -597,7 +609,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_c
   #endif
 
     hwnd = CreateWindowEx( xstyle, GUIControls[ctl_info->control_class].classname,
-        new_text, style, pos.x, pos.y, size.x, size.y, parent->hwnd,
+        new_text, style, scr_pos->x, scr_pos->y, scr_size->x, scr_size->y, parent_wnd->hwnd,
         (HMENU)ctl_info->id, GUIMainHInst, NULL );
 
     /* From here to #else, new by RR 2003.12.05 */
@@ -636,36 +648,36 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_c
  * GUIAddControl - add the given control to the parent window
  */
 
-bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout )
+bool GUIAPI GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout )
 {
-    gui_coord           pos;
-    gui_coord           size;
+    guix_coord          scr_pos;
+    guix_coord          scr_size;
     HWND                hwnd;
     control_item        *item;
-    gui_window          *parent;
+    gui_window          *parent_wnd;
 
     plain = plain;
     standout = standout;
-    parent = ctl_info->parent;
-    GUICalcLocation( &ctl_info->rect, &pos, &size, parent->hwnd );
-    hwnd = CreateControl( ctl_info, parent, pos, size );
+    parent_wnd = ctl_info->parent;
+    GUICalcLocation( &ctl_info->rect, &scr_pos, &scr_size, parent_wnd->hwnd );
+    hwnd = CreateControl( ctl_info, parent_wnd, &scr_pos, &scr_size );
     if( hwnd == NULLHANDLE ) {
         return( false );
     }
-    item = GUIControlInsert( parent, ctl_info->control_class, hwnd, ctl_info, NULL );
+    item = GUIControlInsert( parent_wnd, ctl_info->control_class, hwnd, ctl_info, NULL );
     if( item == NULL ) {
         return( false );
     }
-    if( GUIGetCtrlWnd( parent->hwnd ) == NULL ) {
-        if( !GUIInsertCtrlWnd( parent ) ) {
-            GUIControlDelete( parent, ctl_info->id );
+    if( GUIGetCtrlWnd( parent_wnd->hwnd ) == NULL ) {
+        if( !GUIInsertCtrlWnd( parent_wnd ) ) {
+            GUIControlDelete( parent_wnd, ctl_info->id );
             return( false );
         }
     }
-    GUIInitControl( item, parent, NULL );
+    GUIInitControl( item, parent_wnd, NULL );
 #ifndef __OS2_PM__
     if( ctl_info->control_class == GUI_DEFPUSH_BUTTON ) {
-        GUISendMessage( parent->hwnd, DM_SETDEFID, ctl_info->id, 0 );
+        GUISendMessage( parent_wnd->hwnd, DM_SETDEFID, ctl_info->id, 0 );
     }
 #endif
     if( (ctl_info->style & GUI_STYLE_CONTROL_INIT_INVISIBLE) == 0 ) {
@@ -674,7 +686,7 @@ bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colou
     return( true );
 }
 
-void GUIEnumControls( gui_window *wnd, CONTRENUMCALLBACK *func, void *param )
+void GUIAPI GUIEnumControls( gui_window *wnd, CONTRENUMCALLBACK *func, void *param )
 {
     control_item        *curr;
 
@@ -732,7 +744,7 @@ bool GUICheckRadioButton( gui_window *wnd, gui_ctl_id id )
     return( false );
 }
 
-bool GUIDeleteControl( gui_window *wnd, gui_ctl_id id )
+bool GUIAPI GUIDeleteControl( gui_window *wnd, gui_ctl_id id )
 {
     control_item        *control;
 
@@ -745,7 +757,7 @@ bool GUIDeleteControl( gui_window *wnd, gui_ctl_id id )
     return( false );
 }
 
-bool GUILimitEditText( gui_window *wnd, gui_ctl_id id, int len )
+bool GUIAPI GUILimitEditText( gui_window *wnd, gui_ctl_id id, int len )
 {
     control_item        *control;
     HWND                hwnd;
@@ -776,17 +788,17 @@ static void ShowControl( gui_window *wnd, gui_ctl_id id, int show_flag )
     }
 }
 
-void GUIHideControl( gui_window *wnd, gui_ctl_id id )
+void GUIAPI GUIHideControl( gui_window *wnd, gui_ctl_id id )
 {
     ShowControl( wnd, id, SW_HIDE );
 }
 
-void GUIShowControl( gui_window *wnd, gui_ctl_id id )
+void GUIAPI GUIShowControl( gui_window *wnd, gui_ctl_id id )
 {
     ShowControl( wnd, id, SW_SHOW );
 }
 
-bool GUIIsControlVisible( gui_window *wnd, gui_ctl_id id )
+bool GUIAPI GUIIsControlVisible( gui_window *wnd, gui_ctl_id id )
 {
     control_item        *control;
 

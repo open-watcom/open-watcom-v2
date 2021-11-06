@@ -1,12 +1,13 @@
+.POSIX:
 # This makefile ought to be POSIX compatible, ie. maximally simple. No vendor
 # specific extensions, no 'clever' tricks here. That means the stupid hard
 # tabs, too!
 
 INCS = -I. -I../h -I../../watcom/h -I../../lib_misc/h $(DEFS)
-DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=$(OWCYEAR)
+DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP -D_POSIX_C_SOURCE=200112L -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=$(OWCYEAR)
 CFLAGS = -g -O2 $(INCS)
 
-all: $(OWBINDIR)/wmake
+all: $(OWBINDIR)/$(OWOBJDIR)/wmake
 
 # Unfortunately there appears to be no portable way of specifying source
 # directories. So we use brute force - it's just this one makefile, once we
@@ -78,7 +79,7 @@ wsplice.exe: wsplice.o clibext.o
 	$(CC) -g wsplice.o clibext.o -o $@
 
 usage.gh : ../h/usage.sp wsplice.exe
-	./wsplice.exe -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' ../h/usage.sp $@
+	./wsplice.exe -kENGLISH -f 'pick((MSG_USAGE_BASE+%#%+), "%s", "")' ../h/usage.sp $@
 
 cretype.exe : ../c/cretype.c
 	$(CC) -I../../watcom/h -o $@ $?
@@ -86,7 +87,7 @@ cretype.exe : ../c/cretype.c
 isarray.gh : cretype.exe
 	./cretype.exe $@
 
-$(OWBINDIR)/wmake: wmake.exe
+$(OWBINDIR)/$(OWOBJDIR)/wmake: wmake.exe
 	cp wmake.exe $@
 
 wmake.exe: usage.gh isarray.gh $(OBJS)

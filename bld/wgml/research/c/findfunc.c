@@ -348,7 +348,7 @@ static int check_directory( void )
             /* Search the table. */
 
             for( i = 0; i < dev_func_cnt; i++ ) {
-                if( !memicmp( dev_funcs[i].func_name, cur_token->start, cur_token->count ) ) {
+                if( strnicmp( dev_funcs[i].func_name, cur_token->start, cur_token->count ) == 0 ) {
                     break;
                 }
             }

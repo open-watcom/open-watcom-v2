@@ -14,21 +14,21 @@ function.
 The
 .kw DOSEXIT
 function is called whenever
-.kw main
+.reffunc main
 returns, or
-.kw exit
-, or
-.kw _Exit
+.reffunc exit
+.ct , or
+.reffunc _Exit
 or
-.kw _exit
+.reffunc _exit
 are explicity called.
 .np
 If the child process did not terminate normally, then the high order byte
 of the status word will be set to 0, and the low order byte will contain
 one of the following values:
 .begnote $setptnt 6
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 1
 Hard-error abort
 .note 2

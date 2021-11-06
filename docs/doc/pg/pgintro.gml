@@ -1,12 +1,12 @@
 .chap &product Application Development
 .*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 :HBMP 'pguide.bmp' i
 .do end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 :HBMP 'fpguide.bmp' i
 .do end
 .do end

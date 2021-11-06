@@ -28,12 +28,12 @@ fakeide.exe : fakeide.lnk fakeide.obj consread.obj
     wlink @fakeide.lnk name fakeide file fakeide file consread
 
 fakeide.lnk : makefile
-    @%create  $^@
-    @%append $^@ SYSTEM  $(SYSTEM)
-    @%append $^@ OPTION  caseexact, quiet, eliminate, map, show
-    @%append $^@ OPTION  stack=64k, offset=64k
-    @%append $^@ DEBUG   all
-    @%append $^@ LIBRARY $(PROJECT).lib
+    @%create  $@
+    @%append $@ SYSTEM  $(SYSTEM)
+    @%append $@ OPTION  caseexact, quiet, eliminate, map, show
+    @%append $@ OPTION  stack=64k, offset=64k
+    @%append $@ DEBUG   all
+    @%append $@ LIBRARY $(PROJECT).lib
 
 
 global: .symbolic

@@ -1,11 +1,10 @@
 .func jgetmoji _fjgetmoji
 .synop begin
 #include <jstring.h>
-JSTRING jgetmoji( const JCHAR *str, JMOJI *c );
+JSTRING jgetmoji( const JCHAR *s, JMOJI *c );
 .ixfunc2 '&Jstring' &funcb
-.if &farfnc eq 1 .do begin
-FJSTRING __far _fjgetmoji( const JCHAR __far *str,
-                           JMOJI __far *c );
+.if &farfnc ne 0 .do begin
+FJSTRING _fjgetmoji( const JCHAR __far *s, JMOJI __far *c );
 .ixfunc2 '&Jstring' &ffunc
 .do end
 .synop end
@@ -22,15 +21,15 @@ and
 .id &ffunc.
 functions place
 .do end
-the next single- or double-byte character from the start of the Kanji
+the next single-byte or double-byte character from the start of the Kanji
 string specified by
-.arg str
+.arg s
 in the wide character pointed to by
 .arg c
-.ct .li .
+.period
 If the second-half of a double-byte character is NULL, then the
 returned wide character is NULL.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
@@ -47,9 +46,9 @@ functions return
 .do end
 a pointer to the next character to be obtained from the string.
 If
-.arg str
+.arg s
 points at a null character then
-.arg str
+.arg s
 is returned.
 .return end
 .see begin

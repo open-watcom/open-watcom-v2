@@ -14,6 +14,6 @@ when read permission is intended for the file.
 The
 .id &funcb.
 function applies the current file permission mask
-to the specified permissions (see
-.kw umask
-.ct ).
+to the specified permissions 
+.seeref umask
+.period

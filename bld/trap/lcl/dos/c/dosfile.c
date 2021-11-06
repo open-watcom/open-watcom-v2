@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ const char DosExtList[] = DOSEXTLIST;
 
 static const seek_info  local_seek_method[] = { TIO_SEEK_SET, TIO_SEEK_CUR, TIO_SEEK_END };
 
-trap_retval ReqFile_get_config( void )
+trap_retval TRAP_FILE( get_config )( void )
 {
     file_get_config_ret *ret;
 
@@ -68,7 +68,7 @@ trap_retval ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_open( void )
+trap_retval TRAP_FILE( open )( void )
 {
     tiny_ret_t      rc;
     int             mode;
@@ -93,7 +93,7 @@ trap_retval ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_seek( void )
+trap_retval TRAP_FILE( seek )( void )
 {
     tiny_ret_t      rc;
     file_seek_req   *acc;
@@ -108,7 +108,7 @@ trap_retval ReqFile_seek( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_read( void )
+trap_retval TRAP_FILE( read )( void )
 {
     tiny_ret_t      rc;
     file_read_req   *acc;
@@ -130,7 +130,7 @@ trap_retval ReqFile_read( void )
     return( sizeof( *ret ) + len );
 }
 
-trap_retval ReqFile_write( void )
+trap_retval TRAP_FILE( write )( void )
 {
     tiny_ret_t      rc;
     file_write_req  *acc;
@@ -144,7 +144,7 @@ trap_retval ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_write_console( void )
+trap_retval TRAP_FILE( write_console )( void )
 {
     tiny_ret_t              rc;
     file_write_console_ret  *ret;
@@ -156,7 +156,7 @@ trap_retval ReqFile_write_console( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_close( void )
+trap_retval TRAP_FILE( close )( void )
 {
     tiny_ret_t      rc;
     file_close_req  *acc;
@@ -169,7 +169,7 @@ trap_retval ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_erase( void )
+trap_retval TRAP_FILE( erase )( void )
 {
     tiny_ret_t      rc;
     file_erase_ret  *ret;
@@ -260,7 +260,7 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
 }
 
 
-trap_retval ReqFile_string_to_fullpath( void )
+trap_retval TRAP_FILE( string_to_fullpath )( void )
 {
     char                        *name;
     char                        *fullname;
@@ -288,7 +288,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     return( sizeof( *ret ) + 1 + strlen( fullname ) );
 }
 
-trap_retval ReqFile_run_cmd( void )
+trap_retval TRAP_FILE( run_cmd )( void )
 {
     file_run_cmd_ret    *ret;
 #if defined(__WINDOWS__)

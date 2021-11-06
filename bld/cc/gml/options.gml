@@ -1,190 +1,235 @@
-:cmt
-:cmt GML Macros used:
-:cmt
-:cmt    :chain. <option> <usage text>           options that start with <option>
-:cmt                                            can be chained together i.e.,
-:cmt                                            -oa -ox -ot => -oaxt
-:cmt    :option. <option> <synonym> ...         define an option
-:cmt    :target. <arch1> <arch2> ...            valid for these architectures
-:cmt    :ntarget. <arch1> <arch2> ...           not valid for these architectures
-:cmt    :immediate. <fn>                        <fn> is called when option parsed
-:cmt    :code. <source-code>                    <source-code> is executed when option parsed
-:cmt    :enumerate. <field> [<value>]           option is one value in <name> enumeration
-:cmt    :number. [<fn>] [<default>]             =<n> allowed; call <fn> to check
-:cmt    :id. [<fn>]                             =<id> req'd; call <fn> to check
-:cmt    :char.[<fn>]                            =<char> req'd; call <fn> to check
-:cmt    :file.                                  =<file> req'd
-:cmt    :path.                                  =<path> req'd
-:cmt    :special. <fn> [<arg_usage_text>]       call <fn> to parse option
-:cmt    :optional.                              value is optional
-:cmt    :noequal.                               args can't have option '='
-:cmt    :argequal. <char>                       args use <char> instead of '='
-:cmt    :internal.                              option is undocumented
-:cmt    :prefix.                                prefix of a :special. option
-:cmt    :usagegrp. <option> <usage text>        group of options that start with <option>
-:cmt                                            they are chained together in usage text only
-:cmt    :usage. <text>                          English usage text
-:cmt    :jusage. <text>                         Japanese usage text
-:cmt    :title.                                 English title usage text
-:cmt    :jtitle.                                Japanese title usage text
-:cmt    :page.                                  text for paging usage message
-:cmt    :nochain.                               option isn't chained with other options
-:cmt    :timestamp.                             kludge to record "when" an option
-:cmt                                            is set so that dependencies
-:cmt                                            between options can be simulated
-:cmt
-:cmt Global macros
-:cmt
-:cmt    :noequal.                               args can't have option '='
-:cmt    :argequal. <char>                       args use <char> instead of '='
-:cmt
-
-:cmt    where:
-:cmt        <arch>:     i86, 386, axp, any, dbg, qnx, ppc, linux, sparc, haiku
-
-:cmt    Translations are required for the :jtitle. and :jusage. tags
-:cmt    if there is no text associated with the tag.
+:cmt.*****************************************************************************
+:cmt.*
+:cmt.*                            Open Watcom Project
+:cmt.*
+:cmt.* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+:cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+:cmt.*
+:cmt.*  ========================================================================
+:cmt.*
+:cmt.*    This file contains Original Code and/or Modifications of Original
+:cmt.*    Code as defined in and that are subject to the Sybase Open Watcom
+:cmt.*    Public License version 1.0 (the 'License'). You may not use this file
+:cmt.*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+:cmt.*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+:cmt.*    provided with the Original Code and Modifications, and is also
+:cmt.*    available at www.sybase.com/developer/opensource.
+:cmt.*
+:cmt.*    The Original Code and all software distributed under the License are
+:cmt.*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+:cmt.*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+:cmt.*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+:cmt.*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+:cmt.*    NON-INFRINGEMENT. Please see the License for the specific language
+:cmt.*    governing rights and limitations under the License.
+:cmt.*
+:cmt.*  ========================================================================
+:cmt.*
+:cmt.* Description:  C compiler command line options.
+:cmt.*
+:cmt.*     UTF-8 encoding, Â¥
+:cmt.*
+:cmt.*****************************************************************************
+:cmt.
+:cmt.
+:cmt. GML Macros used:
+:cmt.
+:cmt.   :chain. <option> <usage text>               options that start with <option>
+:cmt.                                                   can be chained together i.e.,
+:cmt.                                                   -oa -ox -ot => -oaxt
+:cmt.   :target. <targ1> <targ2> ...                valid for these targets
+:cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
+:cmt.   :usageogrp. <option> <usage text>           group of options that start with <option>
+:cmt.                                                   are chained together in usage
+:cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
+:cmt.                                                   are chained together in usage
+:cmt.   :page. <text>                               English text for paging usage message
+:cmt.   :jpage. <text>                              Japanese text for paging usage message
+:cmt.   :title. <text>                              English title usage text
+:cmt.   :jtitle. <text>                             Japanese title usage text
+:cmt.   :titleu. <text>                             English title usage text for QNX resource file
+:cmt.   :jtitleu. <text>                            Japanese title usage text for QNX resource file
+:cmt.
+:cmt.   :option. <option> <synonym> ...             define an option
+:cmt.   :immediate. <fn> [<usage argid>]            <fn> is called when option parsed
+:cmt.   :code. <source-code>                        <source-code> is executed when option parsed
+:cmt.   :enumerate. <name> [<option>]               option is one value in <name> enumeration
+:cmt.   :number. [<fn>] [<default>] [<usage argid>] =<num> allowed; call <fn> to check
+:cmt.   :id. [<fn>] [<usage argid>]                 =<id> req'd; call <fn> to check
+:cmt.   :char. [<fn>] [<usage argid>]               =<char> req'd; call <fn> to check
+:cmt.   :file. [<usage argid>]                      =<file> req'd
+:cmt.   :path. [<usage argid>]                      =<path> req'd
+:cmt.   :special. <fn> [<usage argid>]              call <fn> to parse option
+:cmt.   :usage. <text>                              English usage text
+:cmt.   :jusage. <text>                             Japanese usage text
+:cmt.
+:cmt.   :optional.                                  value is optional
+:cmt.   :internal.                                  option is undocumented
+:cmt.   :prefix.                                    prefix of a :special. option
+:cmt.   :nochain.                                   option isn't chained with other options
+:cmt.   :timestamp.                                 kludge to record "when" an option
+:cmt.                                                   is set so that dependencies
+:cmt.                                                   between options can be simulated
+:cmt.   :negate.                                    negate option value
+:cmt.   :group. <num>                               group <num> to which option is included
+:cmt.
+:cmt. Global macros
+:cmt.
+:cmt.   :noequal.                                   args can't have option '='
+:cmt.   :argequal. <char>                           args use <char> instead of '='
+:cmt.
+:cmt. where <targ>:
+:cmt.               default - any, dbg
+:cmt.               architecture - i86, 386, x64, axp, ppc, mps, sparc
+:cmt.               host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
+:cmt.               extra - targ1, targ2
+:cmt.
+:cmt.   Translations are required for the :jtitle. and :jusage. tags
+:cmt.   if there is no text associated with the tag.
 
 
 :title. Usage: wccaxp [options] file [options]
-:jtitle. g—p•û–@: wccaxp [options] file [options]
+:jtitle. ä½¿ç”¨æ–¹æ³•: wccaxp [options] file [options]
 :target. axp
 
 :title. Usage: wccppc [options] file [options]
-:jtitle. g—p•û–@: wccppc [options] file [options]
+:jtitle. ä½¿ç”¨æ–¹æ³•: wccppc [options] file [options]
 :target. ppc
 
 :title. Usage: wccmps [options] file [options]
-:jtitle. g—p•û–@: wccmps [options] file [options]
+:jtitle. ä½¿ç”¨æ–¹æ³•: wccmps [options] file [options]
 :target. mps
 
 :title. Usage: wcc386 [options] file [options]
-:jtitle. g—p•û–@: wcc386 [options] file [options]
+:jtitle. ä½¿ç”¨æ–¹æ³•: wcc386 [options] file [options]
+:titleu. Usage: %C [options] file [options]
+:jtitleu. ä½¿ç”¨æ–¹æ³•: %C [options] file [options]
 :target. 386
 
 :title. Usage: wcc [options] file [options]
-:jtitle. g—p•û–@: wcc [options] file [options]
+:jtitle. ä½¿ç”¨æ–¹æ³•: wcc [options] file [options]
+:titleu. Usage: %C [options] file [options]
+:jtitleu. ä½¿ç”¨æ–¹æ³•: %C [options] file [options]
 :target. i86
 
 :title. Options:
-:jtitle. ƒIƒvƒVƒ‡ƒ“:
-:target. bsd linux osx qnx haiku
-
-:title.  :          ( /option is also accepted )
-:jtitle. :          ( /option‚àg—p‚Å‚«‚Ü‚· )
+:jtitle. ã‚ªãƒ—ã‚·ãƒ§ãƒ³:
+:target. any
+:title.  .         ( /option is also accepted )
+:jtitle. .         ( /optionã‚‚ä½¿ç”¨ã§ãã¾ã™ )
 :target. any
 :ntarget. bsd linux osx qnx haiku
 
 :page. (Press return to continue)
-:jusage. (ƒŠƒ^[ƒ“‚ğ‰Ÿ‚·‚ÆC‘±s‚µ‚Ü‚·)
+:jusage. (ãƒªã‚¿ãƒ¼ãƒ³ã‚’æŠ¼ã™ã¨ï¼Œç¶šè¡Œã—ã¾ã™)
 
 :chain. p Preprocess source file
-:jusage. p ƒ\[ƒXƒtƒ@ƒCƒ‹‚ğ‘Oˆ—‚µ‚Ü‚·
+:jusage. p ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰å‡¦ç†ã—ã¾ã™
 :chain. o Optimization
-:jusage. o Å“K‰»
+:jusage. o æœ€é©åŒ–
 
 :option. h ?
 :target. any
 :nochain.
 :usage. print this message
-:jusage. ‚±‚ÌƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚·
+:jusage. ã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã—ã¾ã™
 
 :option. 0
 :target. i86
 :enumerate. arch_i86
 :usage. 8086 instructions
-:jusage. 8086 –½—ß
+:jusage. 8086 å‘½ä»¤
 
 :option. 1
 :target. i86
 :enumerate. arch_i86
 :usage. 186 instructions
-:jusage. 186 –½—ß
+:jusage. 186 å‘½ä»¤
 
 :option. 2
 :target. i86
 :enumerate. arch_i86
 :usage. 286 instructions
-:jusage. 286 –½—ß
+:jusage. 286 å‘½ä»¤
 
 :option. 3
 :target. i86
 :enumerate. arch_i86
 :usage. 386 instructions
-:jusage. 386 –½—ß
+:jusage. 386 å‘½ä»¤
 
 :option. 4
 :target. i86
 :enumerate. arch_i86
 :usage. 386 instructions, optimize for 486
-:jusage. 386 –½—ß, 486—pÅ“K‰»
+:jusage. 386 å‘½ä»¤, 486ç”¨æœ€é©åŒ–
 
 :option. 5
 :target. i86
 :enumerate. arch_i86
 :usage. 386 instructions, optimize for Pentium
-:jusage. 386 –½—ß, Pentium—pÅ“K‰»
+:jusage. 386 å‘½ä»¤, Pentiumç”¨æœ€é©åŒ–
 
 :option. 6
 :target. i86
 :enumerate. arch_i86
 :usage. 386 instructions, optimize for Pentium Pro
-:jusage. 386 –½—ß, Pentium Pro—pÅ“K‰»
+:jusage. 386 å‘½ä»¤, Pentium Proç”¨æœ€é©åŒ–
 
 :option. 3r 3
 :target. 386
 :enumerate. arch_386
 :usage. 386 register calling conventions
-:jusage. 386 ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. 386 ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 3s
 :target. 386
 :enumerate. arch_386
 :usage. 386 stack calling conventions
-:jusage. 386 ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. 386 ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 4r 4
 :target. 386
 :enumerate. arch_386
 :usage. 486 register calling conventions
-:jusage. 486 ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. 486 ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 4s
 :target. 386
 :enumerate. arch_386
 :usage. 486 stack calling conventions
-:jusage. 486 ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. 486 ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 5r 5
 :target. 386
 :enumerate. arch_386
 :usage. Pentium register calling conventions
-:jusage. Pentium ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. Pentium ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 5s
 :target. 386
 :enumerate. arch_386
 :usage. Pentium stack calling conventions
-:jusage. Pentium ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. Pentium ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 6r 6
 :target. 386
 :enumerate. arch_386
 :usage. Pentium Pro register calling conventions
-:jusage. Pentium Pro ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. Pentium Pro ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 6s
 :target. 386
 :enumerate. arch_386
 :usage. Pentium Pro stack calling conventions
-:jusage. Pentium Pro ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. Pentium Pro ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :option. aa
 :target. any
 :usage. allow non const initializers for local aggregates or unions
 :jusage.
 
-:usagegrp. ad Make Dependency Information
+:usageogrp. ad Make Dependency Information
 
 :option. ad
 :target. any
@@ -237,91 +282,91 @@
 :option. as
 :target. axp
 :usage. assume short integers are aligned
-:jusage. short ®”‚ª®—ñ‚µ‚Ä‚¢‚é‚Æ‰¼’è‚µ‚Ü‚·
+:jusage. short æ•´æ•°ãŒæ•´åˆ—ã—ã¦ã„ã‚‹ã¨ä»®å®šã—ã¾ã™
 
-:usagegrp. b Application type
+:usageogrp. b Application type
 
 :option. bc
 :target. any
 :usage. build target is a console application
-:jusage. \’zƒ^[ƒQƒbƒg‚ÍƒRƒ“ƒ\[ƒ‹¥ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Å‚·
+:jusage. æ§‹ç¯‰ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¯ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ï½¥ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ã™
 
 :option. bd
 :target. any
 :usage. build target is a dynamic link library (DLL)
-:jusage. \’zƒ^[ƒQƒbƒg‚Íƒ_ƒCƒiƒ~ƒbƒN¥ƒŠƒ“ƒN¥ƒ‰ƒCƒuƒ‰ƒŠ‚Å‚·(DLL)
+:jusage. æ§‹ç¯‰ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¯ãƒ€ã‚¤ãƒŠãƒŸãƒƒã‚¯ï½¥ãƒªãƒ³ã‚¯ï½¥ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã§ã™(DLL)
 
 :option. bg
 :target. any
 :usage. build target is a GUI application
-:jusage. \’zƒ^[ƒQƒbƒg‚ÍGUIƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Å‚·
+:jusage. æ§‹ç¯‰ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¯GUIã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ã™
 
 :option. bm
 :target. any
 :usage. build target is a multi-thread environment
-:jusage. \’zƒ^[ƒQƒbƒg‚Íƒ}ƒ‹ƒ`ƒXƒŒƒbƒhŠÂ‹«‚Å‚·
+:jusage. æ§‹ç¯‰ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¯ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç’°å¢ƒã§ã™
 
 :option. br
 :target. 386 axp ppc
 :usage. build target uses DLL version of C/C++ run-time library
-:jusage. \’zƒ^[ƒQƒbƒg‚ÍDLL”Å‚ÌC/C++Àsƒ‰ƒCƒuƒ‰ƒŠ‚ğg—p‚µ‚Ü‚·
+:jusage. æ§‹ç¯‰ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¯DLLç‰ˆã®C/C++å®Ÿè¡Œæ™‚ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’ä½¿ç”¨ã—ã¾ã™
 
 :option. bt
 :target. any
 :nochain.
-:id.
+:id. . <os>
 :optional.
-:usage. build target is operating system <id>
-:jusage. \’zƒ^[ƒQƒbƒg‚ÍƒIƒyƒŒ[ƒeƒBƒ“ƒO¥ƒVƒXƒeƒ€ <id>
+:usage. build target is operating system <os>
+:jusage. æ§‹ç¯‰ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¯ã‚ªãƒšãƒ¬ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ï½¥ã‚·ã‚¹ãƒ†ãƒ  <os>
 
 :option. bw
 :target. any
 :usage. build target is a default windowing application
-:jusage. \’zƒ^[ƒQƒbƒg‚ÍƒfƒtƒHƒ‹ƒg¥ƒEƒBƒ“ƒhƒE¥ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Å‚·
+:jusage. æ§‹ç¯‰ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï½¥ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï½¥ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ã™
 
-:usagegrp. d Debugging Information
+:usageogrp. d Debugging Information
 
 :option. d0
 :target. any
 :enumerate. debug_info
 :timestamp.
 :usage. none
-:jusage. ƒfƒoƒbƒOî•ñ‚Í‚ ‚è‚Ü‚¹‚ñ
+:jusage. ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã¯ã‚ã‚Šã¾ã›ã‚“
 
 :option. d1
 :target. any
 :enumerate. debug_info
 :timestamp.
 :usage. only line numbers
-:jusage. s”Ô†ƒfƒoƒbƒOî•ñ
+:jusage. è¡Œç•ªå·ãƒ‡ãƒãƒƒã‚°æƒ…å ±
 
 :option. d1+
 :target. any
 :enumerate. debug_info
 :timestamp.
 :usage. only line numbers
-:jusage. s”Ô†ƒfƒoƒbƒOî•ñ
+:jusage. è¡Œç•ªå·ãƒ‡ãƒãƒƒã‚°æƒ…å ±
 
 :option. d2
 :target. any
 :enumerate. debug_info
 :timestamp.
 :usage. symbolic information
-:jusage. Š®‘SƒVƒ“ƒ{ƒ‹ƒfƒoƒbƒOî•ñ
+:jusage. å®Œå…¨ã‚·ãƒ³ãƒœãƒ«ãƒ‡ãƒãƒƒã‚°æƒ…å ±
 
 :option. d2~
 :target. any
 :enumerate. debug_info
 :timestamp.
 :usage. -d2 but without type names
-:jusage. Œ^–¼‚È‚µ‚ÌŠ®‘SƒVƒ“ƒ{ƒ‹ƒfƒoƒbƒOî•ñ
+:jusage. å‹åãªã—ã®å®Œå…¨ã‚·ãƒ³ãƒœãƒ«ãƒ‡ãƒãƒƒã‚°æƒ…å ±
 
 :option. d3
 :target. any
 :enumerate. debug_info
 :timestamp.
 :usage. symbolic information with unreferenced type names
-:jusage. QÆ‚³‚ê‚Ä‚¢‚È‚¢Œ^–¼‚ğŠÜ‚ŞŠ®‘SƒVƒ“ƒ{ƒ‹ƒfƒoƒbƒOî•ñ
+:jusage. å‚ç…§ã•ã‚Œã¦ã„ãªã„å‹åã‚’å«ã‚€å®Œå…¨ã‚·ãƒ³ãƒœãƒ«ãƒ‡ãƒãƒƒã‚°æƒ…å ±
 
 :option. d9
 :target. any
@@ -336,21 +381,21 @@
 :nochain.
 :special. scanDefinePlus
 :usage. allow extended -d macro definitions
-:jusage. Šg’£‚³‚ê‚½ -d ƒ}ƒNƒ’è‹`‚ğ‹–‰Â‚µ‚Ü‚·
+:jusage. æ‹¡å¼µã•ã‚ŒãŸ -d ãƒã‚¯ãƒ­å®šç¾©ã‚’è¨±å¯ã—ã¾ã™
 
 :option. db
 :target. any
 :nochain.
 :prefix.
 :usage. generate browsing information
-:jusage. ƒuƒ‰ƒEƒYî•ñ‚ğ¶¬‚µ‚Ü‚·
+:jusage. ãƒ–ãƒ©ã‚¦ã‚ºæƒ…å ±ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. d
 :target. any
 :nochain.
 :special. scanDefine <name>[=text]
 :usage. same as #define name [text] before compilation
-:jusage. ƒRƒ“ƒpƒCƒ‹‘O‚Ì #define name [text] ‚Æ“¯‚¶
+:jusage. ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«å‰ã® #define name [text] ã¨åŒã˜
 
 :option. ec
 :target. any
@@ -359,7 +404,7 @@
 :usage. emit code coverage gear
 :jusage.
 
-:usagegrp. ec Default calling convention
+:usageogrp. ec Default calling convention
 
 :option. ecc
 :target. i86 386
@@ -423,29 +468,29 @@
 :option. ee
 :target. i86 386
 :usage. call epilogue hook routine
-:jusage. ƒGƒsƒ[ƒO¥ƒtƒbƒNƒ‹[ƒ`ƒ“‚ğŒÄ‚Ño‚µ‚Ü‚·
+:jusage. ã‚¨ãƒ”ãƒ­ãƒ¼ã‚°ï½¥ãƒ•ãƒƒã‚¯ãƒ«ãƒ¼ãƒãƒ³ã‚’å‘¼ã³å‡ºã—ã¾ã™
 
 :option. ef
 :target. any
 :usage. use full path names in error messages
-:jusage. ƒGƒ‰[ƒƒbƒZ[ƒW‚ÉŠ®‘SƒpƒX–¼‚ğg—p‚µ‚Ü‚·
+:jusage. ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å®Œå…¨ãƒ‘ã‚¹åã‚’ä½¿ç”¨ã—ã¾ã™
 
 :option. ei
 :target. any
 :enumerate. enum_size
 :usage. force enum base type to use at least an int
-:jusage. enumŒ^‚Ìƒx[ƒXŒ^‚Æ‚µ‚ÄintŒ^ˆÈã‚Ì‘å‚«‚³‚ğg—p‚µ‚Ü‚·
+:jusage. enumå‹ã®ãƒ™ãƒ¼ã‚¹å‹ã¨ã—ã¦intå‹ä»¥ä¸Šã®å¤§ãã•ã‚’ä½¿ç”¨ã—ã¾ã™
 
 :option. em
 :target. any
 :enumerate. enum_size
 :usage. force enum base type to use minimum integral type
-:jusage. enumŒ^‚Ìƒx[ƒXŒ^‚Æ‚µ‚ÄÅ¬‚Ì®”Œ^‚ğg—p‚µ‚Ü‚·
+:jusage. enumå‹ã®ãƒ™ãƒ¼ã‚¹å‹ã¨ã—ã¦æœ€å°ã®æ•´æ•°å‹ã‚’ä½¿ç”¨ã—ã¾ã™
 
 :option. en
 :target. any
 :usage. emit routine names in the code segment
-:jusage. ƒ‹[ƒ`ƒ“–¼‚ğƒR[ƒhƒZƒOƒƒ“ƒg‚Éo—Í‚µ‚Ü‚·
+:jusage. ãƒ«ãƒ¼ãƒãƒ³åã‚’ã‚³ãƒ¼ãƒ‰ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã«å‡ºåŠ›ã—ã¾ã™
 
 :option. eoc
 :target. axp ppc mps
@@ -466,29 +511,29 @@
 :target. any
 :number. checkPrologSize 0
 :usage. call prologue hook routine with <num> stack bytes available
-:jusage. <num>ƒoƒCƒg‚ÌƒXƒ^ƒbƒN‚ğg—p‚·‚éƒvƒƒ[ƒO¥ƒtƒbƒN¥ƒ‹[ƒ`ƒ“‚ğŒÄ‚Ño‚µ‚Ü‚·
+:jusage. <num>ãƒã‚¤ãƒˆã®ã‚¹ã‚¿ãƒƒã‚¯ã‚’ä½¿ç”¨ã™ã‚‹ãƒ—ãƒ­ãƒ­ãƒ¼ã‚°ï½¥ãƒ•ãƒƒã‚¯ï½¥ãƒ«ãƒ¼ãƒãƒ³ã‚’å‘¼ã³å‡ºã—ã¾ã™
 
 :option. eq
 :target. any
 :immediate. handleOptionEQ
 :usage. do not display error messages (but still write to .err file)
-:jusage. ƒGƒ‰[ƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚¹‚ñ(‚µ‚©‚µ.errƒtƒ@ƒCƒ‹‚É‚Í‘‚«‚İ‚Ü‚·)
+:jusage. ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã—ã¾ã›ã‚“(ã—ã‹ã—.errãƒ•ã‚¡ã‚¤ãƒ«ã«ã¯æ›¸ãè¾¼ã¿ã¾ã™)
 
 :option. et
 :target. 386
 :usage. emit Pentium profiling code
-:jusage. Pentiumƒvƒƒtƒ@ƒCƒŠƒ“ƒO¥ƒR[ƒh‚ğ¶¬‚µ‚Ü‚·
+:jusage. Pentiumãƒ—ãƒ­ãƒ•ã‚¡ã‚¤ãƒªãƒ³ã‚°ï½¥ã‚³ãƒ¼ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. ez
 :target. 386
 :usage. generate PharLap EZ-OMF object files
-:jusage. PharLap EZ-OMFƒIƒuƒWƒFƒNƒg¥ƒtƒ@ƒCƒ‹‚ğ¶¬‚µ‚Ü‚·
+:jusage. PharLap EZ-OMFã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï½¥ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. e
 :target. any
 :number. checkErrorLimit
 :usage. set limit on number of error messages
-:jusage. ƒGƒ‰[ƒƒbƒZ[ƒW”‚Ì§ŒÀ‚ğİ’è‚µ‚Ü‚·
+:jusage. ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ•°ã®åˆ¶é™ã‚’è¨­å®šã—ã¾ã™
 
 :option. fh
 :target. any
@@ -496,7 +541,7 @@
 :optional.
 :timestamp.
 :usage. use pre-compiled header (PCH) file
-:jusage. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[(PCH)‚ğg—p‚µ‚Ü‚·
+:jusage. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼(PCH)ã‚’ä½¿ç”¨ã—ã¾ã™
 
 :option. fhq
 :target. any
@@ -524,19 +569,19 @@
 :file.
 :optional.
 :usage. set object file name
-:jusage. ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚ğİ’è‚µ‚Ü‚·
+:jusage. ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¨­å®šã—ã¾ã™
 
 :option. fr
 :target. any
 :file.
 :optional.
 :usage. set error file name
-:jusage. ƒGƒ‰[¥ƒtƒ@ƒCƒ‹–¼‚ğİ’è‚µ‚Ü‚·
+:jusage. ã‚¨ãƒ©ãƒ¼ï½¥ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¨­å®šã—ã¾ã™
 
 :option. ft
 :target. any
 :usage. check for truncated versions of file names
-:jusage. Ø‚è‹l‚ß‚½ƒtƒ@ƒCƒ‹–¼‚ğƒ`ƒFƒbƒN‚µ‚Ü‚·
+:jusage. åˆ‡ã‚Šè©°ã‚ãŸãƒ•ã‚¡ã‚¤ãƒ«åã‚’ãƒã‚§ãƒƒã‚¯ã—ã¾ã™
 
 :option. fti
 :target. any
@@ -546,42 +591,42 @@
 :option. fx
 :target. any
 :usage. do not check for truncated versions of file names
-:jusage. Ø‚è‹l‚ß‚½ƒtƒ@ƒCƒ‹–¼‚ğƒ`ƒFƒbƒN‚µ‚Ü‚¹‚ñ
+:jusage. åˆ‡ã‚Šè©°ã‚ãŸãƒ•ã‚¡ã‚¤ãƒ«åã‚’ãƒã‚§ãƒƒã‚¯ã—ã¾ã›ã‚“
 
-:usagegrp. fp Generate Floating-point code
+:usageogrp. fp Generate Floating-point code
 
 :option. fpc
 :target. i86 386
 :nochain.
 :enumerate. intel_fpu_model
 :usage. calls to floating-point library
-:jusage. •‚“®¬”“_ƒ‰ƒCƒuƒ‰ƒŠ‚ğŒÄ‚Ño‚µ‚Ü‚·
+:jusage. æµ®å‹•å°æ•°ç‚¹ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’å‘¼ã³å‡ºã—ã¾ã™
 
 :option. fpi
 :target. i86 386
 :nochain.
 :enumerate. intel_fpu_model
 :usage. inline 80x87 instructions with emulation
-:jusage. ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“•t‚«ƒCƒ“ƒ‰ƒCƒ“80x87–½—ß
+:jusage. ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ä»˜ãã‚¤ãƒ³ãƒ©ã‚¤ãƒ³80x87å‘½ä»¤
 
 :option. fpi87
 :target. i86 386
 :nochain.
 :enumerate. intel_fpu_model
 :usage. inline 80x87 instructions
-:jusage. ƒCƒ“ƒ‰ƒCƒ“80x87–½—ß
+:jusage. ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³80x87å‘½ä»¤
 
 :option. fp2 fp287
 :target. i86 386
 :enumerate. intel_fpu_level
 :usage. 80287 FPU code
-:jusage. 80287•‚“®¬”“_ƒR[ƒh‚ğ¶¬‚µ‚Ü‚·
+:jusage. 80287æµ®å‹•å°æ•°ç‚¹ã‚³ãƒ¼ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. fp3 fp387
 :target. i86 386
 :enumerate. intel_fpu_level
 :usage. 80387 FPU code
-:jusage. 80387•‚“®¬”“_ƒR[ƒh‚ğ¶¬‚µ‚Ü‚·
+:jusage. 80387æµ®å‹•å°æ•°ç‚¹ã‚³ãƒ¼ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. fp5
 :target. i86 386
@@ -599,239 +644,239 @@
 :target. i86 386
 :nochain.
 :usage. generate backward compatible 80x87 code
-:jusage. ƒo[ƒWƒ‡ƒ“9.0ˆÈ‘O‚ÆŒİŠ·‚Ì80x87ƒR[ƒh‚ğ¶¬‚µ‚Ü‚·
+:jusage. ãƒãƒ¼ã‚¸ãƒ§ãƒ³9.0ä»¥å‰ã¨äº’æ›ã®80x87ã‚³ãƒ¼ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. fpd
 :target. i86 386
 :nochain.
 :usage. enable Pentium FDIV bug check
-:jusage. Pentium FDIVƒ`ƒFƒbƒN‚ğ‚µ‚Ü‚·
+:jusage. Pentium FDIVãƒã‚§ãƒƒã‚¯ã‚’ã—ã¾ã™
 
 :option. g
 :target. i86 386
-:id.
+:id. . <name>
 :usage. set code group name
-:jusage. ƒR[ƒh¥ƒOƒ‹[ƒv–¼‚ğİ’è‚µ‚Ü‚·
+:jusage. ã‚³ãƒ¼ãƒ‰ï½¥ã‚°ãƒ«ãƒ¼ãƒ—åã‚’è¨­å®šã—ã¾ã™
 
-:usagegrp. h Debugging Information format
+:usageogrp. h Debugging Information format
 
 :option. hw
-:target. i86 386 
+:target. i86 386
 :enumerate. dbg_output
 :usage. generate Watcom debugging information
-:jusage. WatcomƒfƒoƒbƒOî•ñ‚ğ¶¬‚µ‚Ü‚·
+:jusage. Watcomãƒ‡ãƒãƒƒã‚°æƒ…å ±ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. hd
 :target. any
 :enumerate. dbg_output
 :usage. generate DWARF debugging information
-:jusage. DWARFƒfƒoƒbƒOî•ñ‚ğ¶¬‚µ‚Ü‚·
+:jusage. DWARFãƒ‡ãƒãƒƒã‚°æƒ…å ±ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. hc
 :target. any
 :enumerate. dbg_output
 :usage. generate Codeview debugging information
-:jusage. CodeviewƒfƒoƒbƒOî•ñ‚ğ¶¬‚µ‚Ü‚·
+:jusage. Codeviewãƒ‡ãƒãƒƒã‚°æƒ…å ±ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. i
 :target. any
 :path.
 :usage. add directory to list of include directories
-:jusage. ƒCƒ“ƒNƒ‹[ƒhEƒfƒBƒŒƒNƒgƒŠ‚ÌƒŠƒXƒg‚ğ’Ç‰Á‚µ‚Ü‚·
+:jusage. ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ»ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒªã‚¹ãƒˆã‚’è¿½åŠ ã—ã¾ã™
 
 :option. j
 :target. any
 :usage. change char default from unsigned to signed
-:jusage. charŒ^‚ÌƒfƒtƒHƒ‹ƒg‚ğunsigned‚©‚çsigned‚É•ÏX‚µ‚Ü‚·
+:jusage. charå‹ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚’unsignedã‹ã‚‰signedã«å¤‰æ›´ã—ã¾ã™
 
-:usagegrp. m Memory model
-:jusage. ƒƒ‚ƒŠEƒ‚ƒfƒ‹
+:usageogrp. m Memory model
+:jusage. ãƒ¡ãƒ¢ãƒªãƒ»ãƒ¢ãƒ‡ãƒ«
 
 :option. mc
 :target. i86 386
 :enumerate. mem_model
 :usage. compact - small code/large data
-:jusage. ƒRƒ“ƒpƒNƒg¥ƒƒ‚ƒŠ¥ƒ‚ƒfƒ‹(ƒXƒ‚[ƒ‹¥ƒR[ƒh/ƒ‰[ƒW¥ƒf[ƒ^)
+:jusage. ã‚³ãƒ³ãƒ‘ã‚¯ãƒˆï½¥ãƒ¡ãƒ¢ãƒªï½¥ãƒ¢ãƒ‡ãƒ«(ã‚¹ãƒ¢ãƒ¼ãƒ«ï½¥ã‚³ãƒ¼ãƒ‰/ãƒ©ãƒ¼ã‚¸ï½¥ãƒ‡ãƒ¼ã‚¿)
 
 :option. mf
 :target. 386
 :enumerate. mem_model
 :usage. flat - small code/small data assuming CS=DS=SS=ES
-:jusage. ƒtƒ‰ƒbƒg¥ƒƒ‚ƒŠ¥ƒ‚ƒfƒ‹(ƒXƒ‚[ƒ‹¥ƒR[ƒh/CS=DS=SS=ES‚ğ‰¼’è‚µ‚½ƒXƒ‚[ƒ‹¥ƒf[ƒ^)
+:jusage. ãƒ•ãƒ©ãƒƒãƒˆï½¥ãƒ¡ãƒ¢ãƒªï½¥ãƒ¢ãƒ‡ãƒ«(ã‚¹ãƒ¢ãƒ¼ãƒ«ï½¥ã‚³ãƒ¼ãƒ‰/CS=DS=SS=ESã‚’ä»®å®šã—ãŸã‚¹ãƒ¢ãƒ¼ãƒ«ï½¥ãƒ‡ãƒ¼ã‚¿)
 
 :option. mh
 :target. i86
 :enumerate. mem_model
 :usage. huge - large code/huge data
-:jusage. ƒqƒ…[ƒW¥ƒƒ‚ƒŠ¥ƒ‚ƒfƒ‹(ƒ‰[ƒW¥ƒR[ƒh/ƒqƒ…[ƒW¥ƒf[ƒ^)
+:jusage. ãƒ’ãƒ¥ãƒ¼ã‚¸ï½¥ãƒ¡ãƒ¢ãƒªï½¥ãƒ¢ãƒ‡ãƒ«(ãƒ©ãƒ¼ã‚¸ï½¥ã‚³ãƒ¼ãƒ‰/ãƒ’ãƒ¥ãƒ¼ã‚¸ï½¥ãƒ‡ãƒ¼ã‚¿)
 
 :option. ml
 :target. i86 386
 :enumerate. mem_model
 :usage. large - large code/large data
-:jusage. ƒ‰[ƒW¥ƒƒ‚ƒŠ¥ƒ‚ƒfƒ‹(ƒ‰[ƒW¥ƒR[ƒh/ƒ‰[ƒW¥ƒf[ƒ^)
+:jusage. ãƒ©ãƒ¼ã‚¸ï½¥ãƒ¡ãƒ¢ãƒªï½¥ãƒ¢ãƒ‡ãƒ«(ãƒ©ãƒ¼ã‚¸ï½¥ã‚³ãƒ¼ãƒ‰/ãƒ©ãƒ¼ã‚¸ï½¥ãƒ‡ãƒ¼ã‚¿)
 
 :option. mm
 :target. i86 386
 :enumerate. mem_model
 :usage. medium - large code/small data
-:jusage. ƒ~ƒfƒBƒAƒ€¥ƒƒ‚ƒŠ¥ƒ‚ƒfƒ‹(ƒ‰[ƒW¥ƒR[ƒh/ƒXƒ‚[ƒ‹¥ƒf[ƒ^)
+:jusage. ãƒŸãƒ‡ã‚£ã‚¢ãƒ ï½¥ãƒ¡ãƒ¢ãƒªï½¥ãƒ¢ãƒ‡ãƒ«(ãƒ©ãƒ¼ã‚¸ï½¥ã‚³ãƒ¼ãƒ‰/ã‚¹ãƒ¢ãƒ¼ãƒ«ï½¥ãƒ‡ãƒ¼ã‚¿)
 
 :option. ms
 :target. i86 386
 :enumerate. mem_model
 :usage. small - small code/small data (defaul)
-:jusage. ƒXƒ‚[ƒ‹¥ƒƒ‚ƒŠ¥ƒ‚ƒfƒ‹(ƒXƒ‚[ƒ‹¥ƒR[ƒh/ƒXƒ‚[ƒ‹¥ƒf[ƒ^)
+:jusage. ã‚¹ãƒ¢ãƒ¼ãƒ«ï½¥ãƒ¡ãƒ¢ãƒªï½¥ãƒ¢ãƒ‡ãƒ«(ã‚¹ãƒ¢ãƒ¼ãƒ«ï½¥ã‚³ãƒ¼ãƒ‰/ã‚¹ãƒ¢ãƒ¼ãƒ«ï½¥ãƒ‡ãƒ¼ã‚¿)
 
 :option. nc
 :target. i86 386
-:id.
+:id. . <name>
 :usage. set code class name
-:jusage. ƒR[ƒh¥ƒNƒ‰ƒX–¼‚ğİ’è‚µ‚Ü‚·
+:jusage. ã‚³ãƒ¼ãƒ‰ï½¥ã‚¯ãƒ©ã‚¹åã‚’è¨­å®šã—ã¾ã™
 
 :option. nd
 :target. i86 386
-:id.
+:id. . <name>
 :usage. set data segment name
-:jusage. ƒf[ƒ^¥ƒZƒOƒƒ“ƒg–¼‚ğİ’è‚µ‚Ü‚·
+:jusage. ãƒ‡ãƒ¼ã‚¿ï½¥ã‚»ã‚°ãƒ¡ãƒ³ãƒˆåã‚’è¨­å®šã—ã¾ã™
 
 :option. nm
 :target. any
 :file.
 :usage. set module name
-:jusage. ƒ‚ƒWƒ…[ƒ‹–¼‚ğİ’è‚µ‚Ü‚·
+:jusage. ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«åã‚’è¨­å®šã—ã¾ã™
 
 :option. nt
 :target. i86 386
-:id.
+:id. . <name>
 :usage. set name of text segment
-:jusage. ƒeƒLƒXƒg¥ƒZƒOƒƒ“ƒg–¼‚ğİ’è‚µ‚Ü‚·
+:jusage. ãƒ†ã‚­ã‚¹ãƒˆï½¥ã‚»ã‚°ãƒ¡ãƒ³ãƒˆåã‚’è¨­å®šã—ã¾ã™
 
 :option. oa
 :target. any
 :usage. relax aliasing constraints
-:jusage. ƒGƒCƒŠƒAƒX‚Ì§–ñ‚ğŠÉ˜a‚µ‚Ü‚·
+:jusage. ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã®åˆ¶ç´„ã‚’ç·©å’Œã—ã¾ã™
 
 :option. ob
 :target. any
 :usage. enable branch prediction
-:jusage. •ªŠò—\‘ª‚É‚»‚Á‚½ƒR[ƒh‚ğ¶¬‚µ‚Ü‚·
+:jusage. åˆ†å²äºˆæ¸¬ã«ãã£ãŸã‚³ãƒ¼ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. oc
 :target. i86 386
 :usage. disable <call followed by return> to <jump> optimization
-:jusage. <call followed by return>‚©‚ç<jump>‚ÌÅ“K‰»‚ğ–³Œø‚É‚µ‚Ü‚·
+:jusage. <call followed by return>ã‹ã‚‰<jump>ã®æœ€é©åŒ–ã‚’ç„¡åŠ¹ã«ã—ã¾ã™
 
 :option. od
 :target. any
 :enumerate. opt_level
 :timestamp.
 :usage. disable all optimizations
-:jusage. ‚·‚×‚Ä‚ÌÅ“K‰»‚ğ–³Œø‚É‚µ‚Ü‚·
+:jusage. ã™ã¹ã¦ã®æœ€é©åŒ–ã‚’ç„¡åŠ¹ã«ã—ã¾ã™
 
 :option. oe
 :target. any
 :number. checkOENumber 100
 :usage. expand user functions inline (<num> controls max size)
-:jusage. ƒ†[ƒUŠÖ”‚ğƒCƒ“ƒ‰ƒCƒ““WŠJ‚µ‚Ü‚·(<num>‚ÍÅ‘å»²½Ş‚ğ§Œä‚µ‚Ü‚·)
+:jusage. ãƒ¦ãƒ¼ã‚¶é–¢æ•°ã‚’ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³å±•é–‹ã—ã¾ã™(<num>ã¯æœ€å¤§ï½»ï½²ï½½ï¾ã‚’åˆ¶å¾¡ã—ã¾ã™)
 
 :option. of
 :target. i86 386
 :usage. generate traceable stack frames as needed
-:jusage. •K—v‚É‰‚¶‚ÄƒgƒŒ[ƒX‰Â”\‚ÈƒXƒ^ƒbƒN¥ƒtƒŒ[ƒ€‚ğ¶¬‚µ‚Ü‚·
+:jusage. å¿…è¦ã«å¿œã˜ã¦ãƒˆãƒ¬ãƒ¼ã‚¹å¯èƒ½ãªã‚¹ã‚¿ãƒƒã‚¯ï½¥ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. of+
 :target. i86 386
 :usage. always generate traceable stack frames
-:jusage. í‚ÉƒgƒŒ[ƒX‰Â”\‚ÈƒXƒ^ƒbƒN¥ƒtƒŒ[ƒ€‚ğ¶¬‚µ‚Ü‚·
+:jusage. å¸¸ã«ãƒˆãƒ¬ãƒ¼ã‚¹å¯èƒ½ãªã‚¹ã‚¿ãƒƒã‚¯ï½¥ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. oh
 :target. any
 :usage. enable expensive optimizations (longer compiles)
-:jusage. Å“K‰»‚ğŒJ‚è•Ô‚µ‚Ü‚·(ƒRƒ“ƒpƒCƒ‹‚ª’·‚­‚È‚è‚Ü‚·)
+:jusage. æœ€é©åŒ–ã‚’ç¹°ã‚Šè¿”ã—ã¾ã™(ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãŒé•·ããªã‚Šã¾ã™)
 
 :option. oi
 :target. any
 :usage. expand intrinsic functions inline
-:jusage. ‘g‚İŠÖ”‚ğƒCƒ“ƒ‰ƒCƒ““WŠJ‚µ‚Ü‚·
+:jusage. çµ„è¾¼ã¿é–¢æ•°ã‚’ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³å±•é–‹ã—ã¾ã™
 
 :option. ok
 :target. any
 :usage. include prologue/epilogue in flow graph
-:jusage. ƒvƒƒ[ƒO‚ÆƒGƒsƒ[ƒO‚ğƒtƒ[§Œä‰Â”\‚É‚µ‚Ü‚·
+:jusage. ãƒ—ãƒ­ãƒ­ãƒ¼ã‚°ã¨ã‚¨ãƒ”ãƒ­ãƒ¼ã‚°ã‚’ãƒ•ãƒ­ãƒ¼åˆ¶å¾¡å¯èƒ½ã«ã—ã¾ã™
 
 :option. ol
 :target. any
 :usage. enable loop optimizations
-:jusage. ƒ‹[ƒvÅ“K‰»‚ğ‰Â”\‚É‚µ‚Ü‚·
+:jusage. ãƒ«ãƒ¼ãƒ—æœ€é©åŒ–ã‚’å¯èƒ½ã«ã—ã¾ã™
 
 :option. ol+
 :target. any
 :usage. enable loop unrolling optimizations
-:jusage. ƒ‹[ƒvEƒAƒ“ƒ[ƒŠƒ“ƒO‚Åƒ‹[ƒvÅ“K‰»‚ğ‰Â”\‚É‚µ‚Ü‚·
+:jusage. ãƒ«ãƒ¼ãƒ—ãƒ»ã‚¢ãƒ³ãƒ­ãƒ¼ãƒªãƒ³ã‚°ã§ãƒ«ãƒ¼ãƒ—æœ€é©åŒ–ã‚’å¯èƒ½ã«ã—ã¾ã™
 
 :option. om
 :target. i86 386
 :usage. generate inline code for math functions
-:jusage. ZpŠÖ”‚ğƒCƒ“ƒ‰ƒCƒ“‚Ì80x87ƒR[ƒh‚Å“WŠJ‚µ‚Ä¶¬‚µ‚Ü‚·
+:jusage. ç®—è¡“é–¢æ•°ã‚’ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³ã®80x87ã‚³ãƒ¼ãƒ‰ã§å±•é–‹ã—ã¦ç”Ÿæˆã—ã¾ã™
 
 :option. on
 :target. any
 :usage. allow numerically unstable optimizations
-:jusage. ”’l“I‚É‚â‚â•s³Šm‚É‚È‚é‚ª‚æ‚è‚‘¬‚ÈÅ“K‰»‚ğ‰Â”\‚É‚µ‚Ü‚·
+:jusage. æ•°å€¤çš„ã«ã‚„ã‚„ä¸æ­£ç¢ºã«ãªã‚‹ãŒã‚ˆã‚Šé«˜é€Ÿãªæœ€é©åŒ–ã‚’å¯èƒ½ã«ã—ã¾ã™
 
 :option. oo
 :target. any
 :usage. continue compilation if low on memory
-:jusage. ƒƒ‚ƒŠ‚ª‘«‚è‚È‚­‚È‚Á‚Ä‚àƒRƒ“ƒpƒCƒ‹‚ğŒp‘±‚µ‚Ü‚·
+:jusage. ãƒ¡ãƒ¢ãƒªãŒè¶³ã‚Šãªããªã£ã¦ã‚‚ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚’ç¶™ç¶šã—ã¾ã™
 
 :option. op
 :target. any
 :usage. generate consistent floating-point results
-:jusage. ˆêŠÑ‚µ‚½•‚“®¬”“_ŒvZ‚ÌŒ‹‰Ê‚ğ¶¬‚µ‚Ü‚·
+:jusage. ä¸€è²«ã—ãŸæµ®å‹•å°æ•°ç‚¹è¨ˆç®—ã®çµæœã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. or
 :target. any
 :usage. reorder instructions for best pipeline usage
-:jusage. Å“K‚ÈƒpƒCƒvƒ‰ƒCƒ“‚ğg—p‚·‚é‚½‚ß‚É–½—ß‚ğ•À‚×‘Ö‚¦‚Ü‚·
+:jusage. æœ€é©ãªãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚’ä½¿ç”¨ã™ã‚‹ãŸã‚ã«å‘½ä»¤ã‚’ä¸¦ã¹æ›¿ãˆã¾ã™
 
 :option. os
 :target. any
 :enumerate. opt_size_time
 :timestamp.
 :usage. favor code size over execution time in optimizations
-:jusage. ÀsŠÔ‚æ‚èƒR[ƒhƒTƒCƒY‚ÌÅ“K‰»‚ğ—Dæ‚µ‚Ü‚·
+:jusage. å®Ÿè¡Œæ™‚é–“ã‚ˆã‚Šã‚³ãƒ¼ãƒ‰ã‚µã‚¤ã‚ºã®æœ€é©åŒ–ã‚’å„ªå…ˆã—ã¾ã™
 
 :option. ot
 :target. any
 :enumerate. opt_size_time
 :timestamp.
 :usage. favor execution time over code size in optimizations
-:jusage. ƒR[ƒhƒTƒCƒY‚æ‚èÀsŠÔ‚ÌÅ“K‰»‚ğ—Dæ‚µ‚Ü‚·
+:jusage. ã‚³ãƒ¼ãƒ‰ã‚µã‚¤ã‚ºã‚ˆã‚Šå®Ÿè¡Œæ™‚é–“ã®æœ€é©åŒ–ã‚’å„ªå…ˆã—ã¾ã™
 
 :option. ou
 :target. any
 :usage. all functions must have unique addresses
-:jusage. ‚·‚×‚Ä‚ÌŠÖ”‚Í‚»‚ê‚¼‚êŒÅ—L‚ÌƒAƒhƒŒƒX‚ğ•K‚¸‚¿‚Ü‚·
+:jusage. ã™ã¹ã¦ã®é–¢æ•°ã¯ãã‚Œãã‚Œå›ºæœ‰ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å¿…ãšæŒã¡ã¾ã™
 
 :option. ox
 :target. i86 386
 :enumerate. opt_level
 :timestamp.
 :usage. equivalent to -obmiler -s
-:jusage. -obmiler -s‚Æ“¯“™
+:jusage. -obmiler -sã¨åŒç­‰
 
 :option. ox
 :target. axp ppc mps
 :enumerate. opt_level
 :timestamp.
 :usage. equivalent to -obiler -s
-:jusage. -obiler -s‚Æ“¯“™
+:jusage. -obiler -sã¨åŒç­‰
 
 :option. oz
 :target. any
 :usage. NULL points to valid memory in the target environment
-:jusage. NULL‚ÍAƒ^[ƒQƒbƒgŠÂ‹«“à‚Ì—LŒø‚Èƒƒ‚ƒŠ‚ğw‚µ‚Ü‚·
+:jusage. NULLã¯ã€ã‚¿ãƒ¼ã‚²ãƒƒãƒˆç’°å¢ƒå†…ã®æœ‰åŠ¹ãªãƒ¡ãƒ¢ãƒªã‚’æŒ‡ã—ã¾ã™
 
 :option. pil
 :target. any
@@ -841,111 +886,116 @@
 
 :option. p
 :target. any
+:usage. preprocess source file
+:jusage. ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã®å‰å‡¦ç†
+
+:option. p#
+:target. any
 :char.
 :internal.
 :usage. set preprocessor delimiter to something other than '#'
-:jusage. ƒvƒŠƒvƒƒZƒbƒT‚Ì‹æØ‚è‹L†‚ğ'#'ˆÈŠO‚Ì‰½‚©‚Éİ’è‚µ‚Ü‚·
+:jusage. ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µã®åŒºåˆ‡ã‚Šè¨˜å·ã‚’'#'ä»¥å¤–ã®ä½•ã‹ã«è¨­å®šã—ã¾ã™
 
 :option. pl
 :target. any
 :usage. insert #line directives
-:jusage. #line‹[—–½—ß‚ğ‘}“ü‚µ‚Ü‚·
+:jusage. #lineæ“¬ä¼¼å‘½ä»¤ã‚’æŒ¿å…¥ã—ã¾ã™
 
 :option. pc
 :target. any
 :usage. preserve comments
-:jusage. ƒRƒƒ“ƒg‚ğc‚µ‚Ü‚·
+:jusage. ã‚³ãƒ¡ãƒ³ãƒˆã‚’æ®‹ã—ã¾ã™
 
 :option. pw
 :target. any
 :number. checkPPWidth
 :usage. wrap output lines at <num> columns. Zero means no wrap.
-:jusage. o—Ís‚ğ<num>Œ…‚ÅÜ‚è•Ô‚µ‚Ü‚·. 0‚ÍÜ‚è•Ô‚µ‚Ü‚¹‚ñ.
+:jusage. å‡ºåŠ›è¡Œã‚’<num>æ¡ã§æŠ˜ã‚Šè¿”ã—ã¾ã™. 0ã¯æŠ˜ã‚Šè¿”ã—ã¾ã›ã‚“.
 
 :option. q
 :target. any
 :usage. operate quietly (display only error messages)
-:jusage. –³ƒƒbƒZ[ƒWƒ‚[ƒh‚Å“®ì‚µ‚Ü‚·(ƒGƒ‰[ƒƒbƒZ[ƒW‚Ì‚İ•\¦‚³‚ê‚Ü‚·)
+:jusage. ç„¡ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ¢ãƒ¼ãƒ‰ã§å‹•ä½œã—ã¾ã™(ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®ã¿è¡¨ç¤ºã•ã‚Œã¾ã™)
 
 :option. r
 :target. i86 386
 :usage. save/restore segment registers across calls
-:jusage. ŠÖ”ŒÄ‚Ño‚µ‚Ì‘OŒã‚ÅƒZƒOƒƒ“ƒgƒŒƒWƒXƒ^‚ğ‘Ş”ğ/ƒŠƒXƒgƒA‚µ‚Ü‚·
+:jusage. é–¢æ•°å‘¼ã³å‡ºã—ã®å‰å¾Œã§ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ¬ã‚¸ã‚¹ã‚¿ã‚’é€€é¿/ãƒªã‚¹ãƒˆã‚¢ã—ã¾ã™
 
 :option. ri
 :target. i86 386
 :usage. return chars and shorts as ints
-:jusage. ‘S‚Ä‚ÌŠÖ”‚Ìˆø”‚Æ–ß‚è’l‚ğintŒ^‚É•ÏŠ·‚µ‚Ü‚·
+:jusage. å…¨ã¦ã®é–¢æ•°ã®å¼•æ•°ã¨æˆ»ã‚Šå€¤ã‚’intå‹ã«å¤‰æ›ã—ã¾ã™
 
 :option. s
 :target. any
 :usage. remove stack overflow checks
-:jusage. ƒXƒ^ƒbƒNƒI[ƒoƒtƒ[Eƒ`ƒFƒbƒN‚ğíœ‚µ‚Ü‚·
+:jusage. ã‚¹ã‚¿ãƒƒã‚¯ã‚ªãƒ¼ãƒãƒ•ãƒ­ãƒ¼ãƒ»ãƒã‚§ãƒƒã‚¯ã‚’å‰Šé™¤ã—ã¾ã™
 
 :option. sg
 :target. i86 386
 :usage. generate calls to grow the stack
-:jusage. ƒXƒ^ƒbƒN‚ğ‘‰Á‚·‚éŒÄ‚Ño‚µ‚ğ¶¬‚µ‚Ü‚·
+:jusage. ã‚¹ã‚¿ãƒƒã‚¯ã‚’å¢—åŠ ã™ã‚‹å‘¼ã³å‡ºã—ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. si
 :target. axp
 :usage. generate calls to initialize local storage
-:jusage. ƒ[ƒJƒ‹¥ƒƒ‚ƒŠ‚ğ‰Šú‰»‚·‚éŒÄ‚Ño‚µ‚ğ¶¬‚µ‚Ü‚·
+:jusage. ãƒ­ãƒ¼ã‚«ãƒ«ï½¥ãƒ¡ãƒ¢ãƒªã‚’åˆæœŸåŒ–ã™ã‚‹å‘¼ã³å‡ºã—ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. st
 :target. i86 386
 :usage. touch stack through SS first
-:jusage. ‚Ü‚¸Å‰‚ÉSS‚ğ’Ê‚µ‚ÄƒXƒ^ƒbƒNEƒ^ƒbƒ`‚µ‚Ü‚·
+:jusage. ã¾ãšæœ€åˆã«SSã‚’é€šã—ã¦ã‚¹ã‚¿ãƒƒã‚¯ãƒ»ã‚¿ãƒƒãƒã—ã¾ã™
 
 :option. tp
 :target. any
-:id.
-:usage. set #pragma on( <id> )
-:jusage. #pragma on( <id> )‚ğİ’è‚µ‚Ü‚·
+:id. . <name>
+:usage. set #pragma on( <name> )
+:jusage. #pragma on( <name> )ã‚’è¨­å®šã—ã¾ã™
 
 :option. u
 :target. any
 :special. scanUndefine [=<name>]
 :usage. undefine macro name
-:jusage. ƒ}ƒNƒ–¼‚ğ–¢’è‹`‚É‚µ‚Ü‚·
+:jusage. ãƒã‚¯ãƒ­åã‚’æœªå®šç¾©ã«ã—ã¾ã™
 
 :option. v
 :target. any
 :usage. output function declarations to .def file
-:jusage. .defƒtƒ@ƒCƒ‹‚ÉŠÖ”éŒ¾‚ğo—Í‚µ‚Ü‚·
+:jusage. .defãƒ•ã‚¡ã‚¤ãƒ«ã«é–¢æ•°å®£è¨€ã‚’å‡ºåŠ›ã—ã¾ã™
 
 :option. vcap
 :target. 386 axp
 :usage. VC++ compatibility: alloca allowed in argument lists
-:jusage. VC++ ŒİŠ·«: ˆø”ƒŠƒXƒg‚Ì’†‚Åalloca‚ğg—p‚Å‚«‚Ü‚·
+:jusage. VC++ äº’æ›æ€§: å¼•æ•°ãƒªã‚¹ãƒˆã®ä¸­ã§allocaã‚’ä½¿ç”¨ã§ãã¾ã™
 
-:usagegrp. w Warning control
+:usageogrp. w Warning control
 
 :option. w
 :target. any
 :enumerate. warn_level
 :number. checkWarnLevel
 :usage. set warning level number
-:jusage. ŒxƒŒƒxƒ‹”Ô†‚ğİ’è‚µ‚Ü‚·
+:jusage. è­¦å‘Šãƒ¬ãƒ™ãƒ«ç•ªå·ã‚’è¨­å®šã—ã¾ã™
 
 :option. wcd
 :target. any
 :number.
 :multiple.
 :usage. disable warning message <num>
-:jusage. Œx§Œä: ŒxƒƒbƒZ[ƒW<num>‚ğ‹Ö~‚µ‚Ü‚·
+:jusage. è­¦å‘Šåˆ¶å¾¡: è­¦å‘Šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸<num>ã‚’ç¦æ­¢ã—ã¾ã™
 
 :option. wce
 :target. any
 :number.
 :multiple.
 :usage. enable warning message <num>
-:jusage. Œx§Œä: ŒxƒƒbƒZ[ƒW <num> ‚Ì•\¦‚ğ‚µ‚Ü‚·
+:jusage. è­¦å‘Šåˆ¶å¾¡: è­¦å‘Šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ <num> ã®è¡¨ç¤ºã‚’ã—ã¾ã™
 
 :option. we
 :target. any
 :usage. treat all warnings as errors
-:jusage. ‚·‚×‚Ä‚ÌŒx‚ğƒGƒ‰[‚Æ‚µ‚Äˆµ‚¢‚Ü‚·
+:jusage. ã™ã¹ã¦ã®è­¦å‘Šã‚’ã‚¨ãƒ©ãƒ¼ã¨ã—ã¦æ‰±ã„ã¾ã™
 
 :option. wo
 :target. i86
@@ -963,7 +1013,7 @@
 :target. any
 :enumerate. warn_level
 :usage. set warning level to maximum setting
-:jusage. ŒxƒŒƒxƒ‹‚ğÅ‘åİ’è‚É‚µ‚Ü‚·
+:jusage. è­¦å‘Šãƒ¬ãƒ™ãƒ«ã‚’æœ€å¤§è¨­å®šã«ã—ã¾ã™
 
 :option. x
 :target. any
@@ -976,14 +1026,14 @@
 :nochain.
 :internal.
 :usage. indexed global variables
-:jusage. ƒCƒ“ƒfƒbƒNƒX•t‚«ƒOƒ[ƒoƒ‹•Ï”
+:jusage. ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ä»˜ãã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
 
 :option. xbsa
 :target. any
 :nochain.
 :internal.
 :usage. do not align segments if at all possible
-:jusage. 
+:jusage.
 
 :option. xd
 :target. axp
@@ -1002,20 +1052,20 @@
 :target. any
 :enumerate. iso
 :usage. disable extensions (i.e., accept only ISO/ANSI C)
-:jusage. Šg’£‹@”\‚ğg—p•s‰Â‚É‚µ‚Ü‚·(‚Â‚Ü‚è, ISO/ANSI C‚Ì‚İó‚¯•t‚¯‚Ü‚·)
+:jusage. æ‹¡å¼µæ©Ÿèƒ½ã‚’ä½¿ç”¨ä¸å¯ã«ã—ã¾ã™(ã¤ã¾ã‚Š, ISO/ANSI Cã®ã¿å—ã‘ä»˜ã‘ã¾ã™)
 
 :option. z\A
 :target. any
 :enumerate. iso
 :usage. disable all extensions (strict ISO/ANSI C)
-:jusage. Šg’£‹@”\‚ğg—p•s‰Â‚É‚µ‚Ü‚·(‚Â‚Ü‚è, ISO/ANSI C‚Ì‚İó‚¯•t‚¯‚Ü‚·)
+:jusage. æ‹¡å¼µæ©Ÿèƒ½ã‚’ä½¿ç”¨ä¸å¯ã«ã—ã¾ã™(ã¤ã¾ã‚Š, ISO/ANSI Cã®ã¿å—ã‘ä»˜ã‘ã¾ã™)
 
 :option. za99
 :target. any
 :internal.
 :enumerate. iso
 :usage. disable extensions (i.e., accept only ISO/ANSI C99)
-:jusage. Šg’£‹@”\‚ğg—p•s‰Â‚É‚µ‚Ü‚·(‚Â‚Ü‚è, ISO/ANSI C99‚Ì‚İó‚¯•t‚¯‚Ü‚·)
+:jusage. æ‹¡å¼µæ©Ÿèƒ½ã‚’ä½¿ç”¨ä¸å¯ã«ã—ã¾ã™(ã¤ã¾ã‚Š, ISO/ANSI C99ã®ã¿å—ã‘ä»˜ã‘ã¾ã™)
 
 :option. zam
 :target. any
@@ -1025,30 +1075,30 @@
 :option. zc
 :target. i86 386
 :usage. place const data into the code segment
-:jusage. ƒŠƒeƒ‰ƒ‹•¶š—ñ‚ğƒR[ƒhƒZƒOƒƒ“ƒg‚É“ü‚ê‚Ü‚·
+:jusage. ãƒªãƒ†ãƒ©ãƒ«æ–‡å­—åˆ—ã‚’ã‚³ãƒ¼ãƒ‰ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã«å…¥ã‚Œã¾ã™
 
 :option. zdf
 :target. i86 386
 :enumerate. ds_peg
 :usage. DS floats (i.e. not fixed to DGROUP)
-:jusage. DS‚ğ•‚“®‚É‚µ‚Ü‚·(‚Â‚Ü‚èDGROUP‚ÉŒÅ’è‚µ‚Ü‚¹‚ñ)
+:jusage. DSã‚’æµ®å‹•ã«ã—ã¾ã™(ã¤ã¾ã‚ŠDGROUPã«å›ºå®šã—ã¾ã›ã‚“)
 
 :option. zdp
 :target. i86 386
 :enumerate. ds_peg
 :usage. DS is pegged to DGROUP
-:jusage. DS‚ğDGROUP‚ÉŒÅ’è‚µ‚Ü‚·
+:jusage. DSã‚’DGROUPã«å›ºå®šã—ã¾ã™
 
 :option. zdl
 :target. 386
 :usage. load DS directly from DGROUP
-:jusage. DGROUP‚©‚çDS‚É’¼Úƒ[ƒh‚µ‚Ü‚·
+:jusage. DGROUPã‹ã‚‰DSã«ç›´æ¥ãƒ­ãƒ¼ãƒ‰ã—ã¾ã™
 
 :option. ze
 :target. any
 :enumerate. iso
 :usage. enable extensions (i.e., near, far, export, etc.)
-:jusage. Šg’£‹@”\‚ğg—p‰Â”\‚É‚µ‚Ü‚·(‚Â‚Ü‚è, near, far, export, “™.)
+:jusage. æ‹¡å¼µæ©Ÿèƒ½ã‚’ä½¿ç”¨å¯èƒ½ã«ã—ã¾ã™(ã¤ã¾ã‚Š, near, far, export, ç­‰.)
 
 :option. zev
 :target. any
@@ -1070,62 +1120,62 @@
 :target. i86 386
 :enumerate. fs_peg
 :usage. FS floats (i.e. not fixed to a segment)
-:jusage. FS‚ğ•‚“®‚É‚µ‚Ü‚·(‚Â‚Ü‚è, 1‚Â‚ÌƒZƒOƒƒ“ƒg‚ÉŒÅ’è‚µ‚Ü‚¹‚ñ)
+:jusage. FSã‚’æµ®å‹•ã«ã—ã¾ã™(ã¤ã¾ã‚Š, 1ã¤ã®ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã«å›ºå®šã—ã¾ã›ã‚“)
 
 :option. zfp
 :target. i86 386
 :enumerate. fs_peg
 :usage. FS is pegged to a segment
-:jusage. FS‚ğ1‚Â‚ÌƒZƒOƒƒ“ƒg‚ÉŒÅ’è‚µ‚Ü‚·
+:jusage. FSã‚’1ã¤ã®ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã«å›ºå®šã—ã¾ã™
 
 :option. zgf
 :target. i86 386
 :enumerate. gs_peg
 :usage. GS floats (i.e. not fixed to a segment)
-:jusage. GS‚ğ•‚“®‚É‚µ‚Ü‚·(‚Â‚Ü‚è, 1‚Â‚ÌƒZƒOƒƒ“ƒg‚ÉŒÅ’è‚µ‚Ü‚¹‚ñ)
+:jusage. GSã‚’æµ®å‹•ã«ã—ã¾ã™(ã¤ã¾ã‚Š, 1ã¤ã®ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã«å›ºå®šã—ã¾ã›ã‚“)
 
 :option. zgp
 :target. i86 386
 :enumerate. gs_peg
 :usage. GS is pegged to a segment
-:jusage. GS‚ğ1‚Â‚ÌƒZƒOƒƒ“ƒg‚ÉŒÅ’è‚µ‚Ü‚·
+:jusage. GSã‚’1ã¤ã®ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã«å›ºå®šã—ã¾ã™
 
 :option. zg
 :target. any
 :usage. generate function prototypes using base types
-:jusage. Šî–{Œ^‚ğg—p‚µ‚½ŠÖ”ƒvƒƒgƒ^ƒCƒv‚ğ¶¬‚µ‚Ü‚·
+:jusage. åŸºæœ¬å‹ã‚’ä½¿ç”¨ã—ãŸé–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—ã‚’ç”Ÿæˆã—ã¾ã™
 
-:usagegrp. zk Multi-byte/Unicode character support
+:usageogrp. zk Multi-byte/Unicode character support
 
 :option. zk0 zk
 :target. any
 :enumerate. char_set
 :usage. Kanji
-:jusage. 2ƒoƒCƒg•¶šƒTƒ|[ƒg: “ú–{Œê
+:jusage. 2ãƒã‚¤ãƒˆæ–‡å­—ã‚µãƒãƒ¼ãƒˆ: æ—¥æœ¬èª
 
 :option. zk1
 :target. any
 :enumerate. char_set
 :usage. Chinese/Taiwanese
-:jusage. 2ƒoƒCƒg•¶šƒTƒ|[ƒg: ’†‘Œê/‘ä˜pŒê
+:jusage. 2ãƒã‚¤ãƒˆæ–‡å­—ã‚µãƒãƒ¼ãƒˆ: ä¸­å›½èª/å°æ¹¾èª
 
 :option. zk2
 :target. any
 :enumerate. char_set
 :usage. Korean
-:jusage. 2ƒoƒCƒg•¶šƒTƒ|[ƒg: ŠØ‘Œê
+:jusage. 2ãƒã‚¤ãƒˆæ–‡å­—ã‚µãƒãƒ¼ãƒˆ: éŸ“å›½èª
 
 :option. zk0u
 :target. any
 :enumerate. char_set
 :usage. translate double-byte Kanji to Unicode
-:jusage. 2ƒoƒCƒgŠ¿š‚ğUnicode‚É•ÏŠ·‚µ‚Ü‚·
+:jusage. 2ãƒã‚¤ãƒˆæ¼¢å­—ã‚’Unicodeã«å¤‰æ›ã—ã¾ã™
 
 :option. zkl
 :target. any
 :enumerate. char_set
 :usage. local installed language
-:jusage. 2ƒoƒCƒg•¶šƒTƒ|[ƒg: ƒ[ƒJƒ‹‚ÉƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚½Œ¾Œê
+:jusage. 2ãƒã‚¤ãƒˆæ–‡å­—ã‚µãƒãƒ¼ãƒˆ: ãƒ­ãƒ¼ã‚«ãƒ«ã«ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚ŒãŸè¨€èª
 
 :option. zku8
 :target. any
@@ -1138,22 +1188,22 @@
 :enumerate. char_set
 :number.
 :usage. load Unicode translate table for specified code page
-:jusage. w’è‚µ‚½ƒR[ƒhƒy[ƒW‚ÌUnicode•ÏŠ·ƒe[ƒuƒ‹‚ğƒ[ƒh‚µ‚Ü‚·
+:jusage. æŒ‡å®šã—ãŸã‚³ãƒ¼ãƒ‰ãƒšãƒ¼ã‚¸ã®Unicodeå¤‰æ›ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ãƒ­ãƒ¼ãƒ‰ã—ã¾ã™
 
 :option. zl
 :target. any
 :usage. remove default library information
-:jusage. ƒfƒtƒHƒ‹ƒg¥ƒ‰ƒCƒuƒ‰ƒŠî•ñ‚ğíœ‚µ‚Ü‚·
+:jusage. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï½¥ãƒ©ã‚¤ãƒ–ãƒ©ãƒªæƒ…å ±ã‚’å‰Šé™¤ã—ã¾ã™
 
 :option. zld
 :target. any
 :usage. remove file dependency information
-:jusage. ƒtƒ@ƒCƒ‹ˆË‘¶î•ñ‚ğíœ‚µ‚Ü‚·
+:jusage. ãƒ•ã‚¡ã‚¤ãƒ«ä¾å­˜æƒ…å ±ã‚’å‰Šé™¤ã—ã¾ã™
 
 :option. zlf
 :target. any
 :usage. always generate default library information
-:jusage. ƒfƒtƒHƒ‹ƒg¥ƒ‰ƒCƒuƒ‰ƒŠî•ñ‚ğí‚É¶¬‚µ‚Ü‚·
+:jusage. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï½¥ãƒ©ã‚¤ãƒ–ãƒ©ãƒªæƒ…å ±ã‚’å¸¸ã«ç”Ÿæˆã—ã¾ã™
 
 :option. zls
 :target. any
@@ -1163,18 +1213,18 @@
 :option. zm
 :target. any
 :usage. emit functions in separate segments
-:jusage. ŠeŠÖ”‚ğ•Ê‚ÌƒZƒOƒƒ“ƒg‚É“ü‚ê‚Ü‚·
+:jusage. å„é–¢æ•°ã‚’åˆ¥ã®ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã«å…¥ã‚Œã¾ã™
 
 :option. zp
 :target. any
 :number. checkPacking
 :usage. pack structure members with alignment {1,2,4,8,16}
-:jusage. \‘¢‘Ìƒƒ“ƒo[‚ğ{1,2,4,8,16}‚É®—ñ‚µ‚ÄƒpƒbƒN‚µ‚Ü‚·
+:jusage. æ§‹é€ ä½“ãƒ¡ãƒ³ãƒãƒ¼ã‚’{1,2,4,8,16}ã«æ•´åˆ—ã—ã¦ãƒ‘ãƒƒã‚¯ã—ã¾ã™
 
 :option. zpw
 :target. any
 :usage. output warning when padding is added in a class
-:jusage. ƒNƒ‰ƒX‚ÉƒpƒfƒBƒ“ƒO‚ª’Ç‰Á‚³‚ê‚½‚Æ‚«‚ÉŒx‚µ‚Ü‚·
+:jusage. ã‚¯ãƒ©ã‚¹ã«ãƒ‘ãƒ‡ã‚£ãƒ³ã‚°ãŒè¿½åŠ ã•ã‚ŒãŸã¨ãã«è­¦å‘Šã—ã¾ã™
 
 :option. zps
 :target. axp
@@ -1184,7 +1234,7 @@
 :option. zq
 :target. any
 :usage. operate quietly (display only error messages)
-:jusage. –³ƒƒbƒZ[ƒWƒ‚[ƒh‚Å“®ì‚µ‚Ü‚·(ƒGƒ‰[ƒƒbƒZ[ƒW‚Ì‚İ•\¦‚³‚ê‚Ü‚·)
+:jusage. ç„¡ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ¢ãƒ¼ãƒ‰ã§å‹•ä½œã—ã¾ã™(ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®ã¿è¡¨ç¤ºã•ã‚Œã¾ã™)
 
 :option. zro
 :target. any
@@ -1192,57 +1242,57 @@
 :jusage.
 
 :option. zri
-:target. 386
+:target. i86 386
 :usage. inline floating point rounding calls
 :jusage.
 
 :option. zs
 :target. any
 :usage. syntax check only
-:jusage. \•¶ƒ`ƒFƒbƒN‚Ì‚İ‚ğs‚¢‚Ü‚·
+:jusage. æ§‹æ–‡ãƒã‚§ãƒƒã‚¯ã®ã¿ã‚’è¡Œã„ã¾ã™
 
 :option. zt
 :target. i86 386
 :number. CmdX86CheckThreshold 256
 :usage. far data threshold (i.e., larger objects go in far memory)
-:jusage. farƒf[ƒ^•~‹’l(‚Â‚Ü‚è, •~‹’l‚æ‚è‘å‚«‚¢ƒIƒuƒWƒFƒNƒg‚ğfarƒƒ‚ƒŠ‚É’u‚«‚Ü‚·)
+:jusage. farãƒ‡ãƒ¼ã‚¿æ•·å±…å€¤(ã¤ã¾ã‚Š, æ•·å±…å€¤ã‚ˆã‚Šå¤§ãã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’farãƒ¡ãƒ¢ãƒªã«ç½®ãã¾ã™)
 
 :option. zu
 :target. i86 386
 :usage. SS != DGROUP (i.e., do not assume stack is in data segment)
-:jusage. SS != DGROUP (‚Â‚Ü‚è, ƒXƒ^ƒbƒN‚ªƒf[ƒ^ƒZƒOƒƒ“ƒg‚É‚ ‚é‚Æ‰¼’è‚µ‚Ü‚¹‚ñ)
+:jusage. SS != DGROUP (ã¤ã¾ã‚Š, ã‚¹ã‚¿ãƒƒã‚¯ãŒãƒ‡ãƒ¼ã‚¿ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã«ã‚ã‚‹ã¨ä»®å®šã—ã¾ã›ã‚“)
 
 :option. z\w
 :target. i86
 :enumerate. win
 :usage. generate code for Microsoft Windows
-:jusage. Microsoft Windows—p‚ÌƒR[ƒh‚ğ¶¬‚µ‚Ü‚·
+:jusage. Microsoft Windowsç”¨ã®ã‚³ãƒ¼ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. z\W
 :target. i86
 :enumerate. win
 :usage. more efficient Microsoft Windows entry sequences
-:jusage. ‚æ‚èŒø‰Ê“I‚ÈMicrosoft WindowsƒGƒ“ƒgƒŠƒR[ƒh—ñ‚ğ¶¬‚µ‚Ü‚·
+:jusage. ã‚ˆã‚ŠåŠ¹æœçš„ãªMicrosoft Windowsã‚¨ãƒ³ãƒˆãƒªã‚³ãƒ¼ãƒ‰åˆ—ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. zw
 :target. 386
 :enumerate. win
 :usage. generate code for Microsoft Windows
-:jusage. Microsoft Windows—p‚ÌƒR[ƒh‚ğ¶¬‚µ‚Ü‚·
+:jusage. Microsoft Windowsç”¨ã®ã‚³ãƒ¼ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. z\ws
 :target. i86
 :enumerate. win
 :usage. generate code for Microsoft Windows with smart callbacks
-:jusage. ƒXƒ}[ƒg¥ƒR[ƒ‹ƒoƒbƒN‚ğ‚·‚éMicrosoft Windows—pƒR[ƒh‚ğ¶¬‚µ‚Ü‚·
+:jusage. ã‚¹ãƒãƒ¼ãƒˆï½¥ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ã™ã‚‹Microsoft Windowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. z\Ws
 :target. i86
 :enumerate. win
 :usage. generate code for Microsoft Windows with smart callbacks
-:jusage. ƒXƒ}[ƒg¥ƒR[ƒ‹ƒoƒbƒN‚ğ‚·‚éMicrosoft Windows—pƒR[ƒh‚ğ¶¬‚µ‚Ü‚·
+:jusage. ã‚¹ãƒãƒ¼ãƒˆï½¥ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ã™ã‚‹Microsoft Windowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’ç”Ÿæˆã—ã¾ã™
 
 :option. zz
 :target. 386
 :usage. remove "@size" from __stdcall function names (10.0 compatible)
-:jusage. "@size"‚ğ__stdcallŠÖ”–¼‚©‚çíœ‚µ‚Ü‚·(10.0‚Æ‚ÌŒİŠ·«)
+:jusage. "@size"ã‚’__stdcallé–¢æ•°åã‹ã‚‰å‰Šé™¤ã—ã¾ã™(10.0ã¨ã®äº’æ›æ€§)

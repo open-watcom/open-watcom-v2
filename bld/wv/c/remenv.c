@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ static trap_shandle     SuppEnvId = 0;
 
 bool InitEnvSupp( void )
 {
-    SuppEnvId = GetSuppId( ENV_SUPP_NAME );
+    SuppEnvId = GETSUPPID( ENV_SUPP_NAME );
     if( SuppEnvId != 0 )
         return( true );
     return( false );

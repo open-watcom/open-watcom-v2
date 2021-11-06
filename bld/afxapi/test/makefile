@@ -37,23 +37,23 @@ alt_error = 00
 test_cflags_386 += -we -w0 -zq -fh -D_CONSOLE $(inc_dirs_sys) -I"../nt"
 
 .error
-    @%append $(%error_file) $(%error_msg)
+    @%append $(%ERROR_FILE) $(%ERROR_MSG)
 
 .cpp: $(afxapitest_dir)
 .cpp.obj:
-    @set error_msg=failure to compile $^@
+    @set ERROR_MSG=failure to compile $@
     $(wpp_$(arch)) $[@ $(test_cflags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
 
 .rc: $(afxapitest_dir)
 .rc.res:
-    @set error_msg=failure to compile $^@
+    @set ERROR_MSG=failure to compile $@
     wrc -q -r -fo=$@ $[@
 
 .obj.$(exe):
-    @set error_msg=failure to link $^@
-    $(linker) name $^@ @test.lnk $(opt_link_$^*) file $[@
-    @set error_msg=failure to execute $^@
-    @%append exec.out PASS executing $^@
+    @set ERROR_MSG=failure to link $@
+    $(linker) name $@ @test.lnk $(opt_link_$^*) file $[@
+    @set ERROR_MSG=failure to execute $@
+    @%append exec.out PASS executing $@
     $(run) $(exec_prefix)$@ >>exec.out
     rm $[@
 
@@ -62,8 +62,8 @@ test_cflags_386 += -we -w0 -zq -fh -D_CONSOLE $(inc_dirs_sys) -I"../nt"
     $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
 
 test : .symbolic start_test $(test_exes) ./chk_exec.exe
-    @set error_file=error.out
-    @set error_msg=failure to complete test stream
+    @set ERROR_FILE=error.out
+    @set ERROR_MSG=failure to complete test stream
     %write error.out OK
     $]@ exec.out >>error.out
     diff -b error.out error.chk
@@ -71,33 +71,33 @@ test : .symbolic start_test $(test_exes) ./chk_exec.exe
     %append $(log_file) PASS $(%__CWD__)
 
 string04.$(exe) : string04.obj string04.res
-    @set error_msg=failure to link $^@
-    $(linker) name $^@ @test.lnk file $[@
-    @set error_msg=failure to add resources to $^@
+    @set ERROR_MSG=failure to link $@
+    $(linker) name $@ @test.lnk file $[@
+    @set ERROR_MSG=failure to add resources to $@
     wrc -q $]@
-    @set error_msg=failure to execute $^@
-    @%append exec.out PASS executing $^@
-    $(run) $(exec_prefix)$^@ >>exec.out
+    @set ERROR_MSG=failure to execute $@
+    @%append exec.out PASS executing $@
+    $(run) $(exec_prefix)$@ >>exec.out
 
 start_test : .symbolic test.lnk
     %create exec.out
-    @set error_file=exec.out
-    @set path=..\dnt386.dll;..\dnt386u.dll;..\nt386.dll;..\nt386u.dll;$(%path)
+    @set ERROR_FILE=exec.out
+    @set PATH=..\dnt386.dll;..\dnt386u.dll;..\nt386.dll;..\nt386u.dll;$(%PATH)
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
 
 test.lnk : makefile
-    %create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ OPTION quiet, noredef
-    @%append $^@ LIBPATH ../dnt386
-    @%append $^@ LIBPATH ../dnt386.dll
-    @%append $^@ LIBPATH ../dnt386u
-    @%append $^@ LIBPATH ../dnt386u.dll
-    @%append $^@ LIBPATH ../nt386
-    @%append $^@ LIBPATH ../nt386.dll
-    @%append $^@ LIBPATH ../nt386u
-    @%append $^@ LIBPATH ../nt386u.dll
+    %create $@
+    @%append $@ $(ldebug_$(arch))
+    @%append $@ $(lnk_$(arch))
+    @%append $@ OPTION quiet, noredef
+    @%append $@ LIBPATH ../dnt386
+    @%append $@ LIBPATH ../dnt386.dll
+    @%append $@ LIBPATH ../dnt386u
+    @%append $@ LIBPATH ../dnt386u.dll
+    @%append $@ LIBPATH ../nt386
+    @%append $@ LIBPATH ../nt386.dll
+    @%append $@ LIBPATH ../nt386u
+    @%append $@ LIBPATH ../nt386u.dll
 
 save : .symbolic
     @if exist exec.out %ren exec.out s$(arch)_$(alt_error).sav

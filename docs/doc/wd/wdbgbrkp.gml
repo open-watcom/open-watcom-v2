@@ -90,7 +90,7 @@ set breakpoints in the assembly window in a similar fashion. Setting a
 break-on-write breakpoint is equally simple. Select the variable with
 the right mouse button and choose
 .popup Break
-.dot
+.period
 .np
 .ix 'breakpoint' 'state'
 Break points have three states.  They are:
@@ -177,8 +177,7 @@ If the current line does not contain any executable code, the
 breakpoint is set on the closest preceding line of code that does
 contain executable code. When you choose
 .mi At Cursor
-.ct ,
-the Breakpoint dialog appears.
+.ct , the Breakpoint dialog appears.
 .*
 .menuitem New
 .*
@@ -243,7 +242,7 @@ later debugging session.
 .ix 'breakpoint' 'restoring'
 Restore a set of breakpoints that were saved by using
 .menuref 'Save' 'Break'
-.dot
+.period
 .*
 .endmenu
 .*
@@ -356,8 +355,7 @@ command again.
 .np
 When you choose
 .mi New
-.ct ,
-this field is empty. You can type any valid address expression in this
+.ct , this field is empty. You can type any valid address expression in this
 field. It can be the name of a function, global variable. Refer to the
 section entitled :HDREF refid='videxpr'. for more information about
 address expressions.
@@ -416,7 +414,7 @@ In older versions of the debugger and traps, the break on write feature
 is really a break on change: the debugger will only stop execution if the
 breakpoint is hit and the value of the watched data has been changed.
 For the current version of the debugger this is the still the default
-behaviour but can be modified. Refer to :HDREF refid='dlgopt'. to change 
+behaviour but can be modified. Refer to :HDREF refid='dlgopt'. to change
 the breakpoint behaviour to true break-on-write.
 .endnote
 .note Countdown

@@ -4,7 +4,7 @@
 size_t wcstombs( char *s, const wchar_t *pwcs, size_t n );
 .ixfunc2 '&Wide' &funcb
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 #include <mbstring.h>
 size_t _fwcstombs( char __far *s,
                    const wchar_t __far *pwcs,
@@ -25,7 +25,7 @@ array pointed to by
 into a sequence of multibyte characters and stores them in the
 array pointed to by
 .arg s
-.ct .li .
+.period
 The
 .id &funcb.
 function stops if a multibyte character would exceed the limit of
@@ -36,14 +36,10 @@ At most
 bytes of the array pointed to by
 .arg s
 will be modified.
-.im farparm
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
-If an invalid multibyte character is encountered, the
-.id &funcb.
-function
-returns
-.mono (size_t)&minus.1.
+.im _mbsret3
 Otherwise, the
 .id &funcb.
 function returns the number of array elements

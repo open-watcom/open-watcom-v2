@@ -9,7 +9,7 @@ The
 function uses system call 0x68 to flush to disk the DOS
 buffers associated with the file indicated by
 .arg handle
-.ct .li .
+.period
 It also forces an update on the corresponding disk directory and the
 file allocation table.
 .desc end
@@ -22,7 +22,7 @@ Otherwise, it returns an OS error code and sets
 accordingly.
 .return end
 .see begin
-.seelist _dos_commit _dos_close _dos_creat _dos_open _dos_write flush
+.seelist _dos_commit _dos_close _dos_creat _dos_open _dos_write fflush
 .see end
 .exmp begin
 #include <stdio.h>

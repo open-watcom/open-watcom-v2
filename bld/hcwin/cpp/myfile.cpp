@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,13 +46,13 @@ MYFILE:  Special purpose file handling
 const uint_8 File::_isOpen = 0x10;
 
 File::File( char const filename[], uint_8 type )
+ : _shortName( 0 )
 // Open the file and record the name.
 {
     char    mode[3] = "rb";
-    size_t  length = strlen( filename ) + 1;
 
-    _shortName = new char[length];
-    memcpy( _shortName, filename, length );
+    _shortName.resize( strlen( filename ) + 1 );
+    strcpy( _shortName, filename );
 
     if( type & WRITE ) {
         mode[0] = 'w';
@@ -76,7 +77,7 @@ File::File()
       _fp( NULL ),
       _badFile( true ),
       _fullName( NULL ),
-      _shortName( NULL )
+      _shortName( 0 )
 {
     // empty
 }
@@ -85,14 +86,9 @@ bool File::open( char const filename[], uint_8 type )
 // Open the file and record the name.
 {
     char mode[3] = "rb";
-    size_t length = strlen( filename ) + 1;
 
-    if( _shortName != NULL ) {
-        _shortName = (char *)renew( _shortName, length );
-    } else {
-        _shortName = new char[length];
-    }
-    memcpy( _shortName, filename, length );
+    _shortName.resize( strlen( filename ) + 1 );
+    strcpy( _shortName, filename );
 
     if( type & WRITE ) {
         mode[0] = 'w';
@@ -126,8 +122,6 @@ File::~File()
 {
     if( _fullName )
         delete[] _fullName;
-    if( _shortName )
-        delete[] _shortName;
     if( _fp ) {
         fclose( _fp );
     }

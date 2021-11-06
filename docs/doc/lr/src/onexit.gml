@@ -1,13 +1,16 @@
-.func onexit
+.func _onexit onexit
 .synop begin
+.deprec
 #include <stdlib.h>
+onexit_t _onexit( _onexit_t func );
+.ixfunc2 '&Process' _onexit
 onexit_t onexit( onexit_t func );
-.ixfunc2 '&Process' &funcb
+.ixfunc2 '&Process' onexit
 .synop end
 .desc begin
 The
 .id &funcb.
- function is passed the address of function
+function is passed the address of function
 .arg func
 to be called when the program terminates normally.
 Successive calls to
@@ -24,11 +27,11 @@ NOTE: The
 .id &funcb.
 function is not an ISO C function.
 The ISO C standard function
-.kw atexit
-does the same thing that
-.id &funcb.
-does and should be used instead of &funcb
-where ISO C portability is concerned.
+.reffunc atexit
+does the same thing.
+.np
+.deprfunc _onexit atexit
+.deprfunc onexit atexit
 .desc end
 .return begin
 The
@@ -39,7 +42,7 @@ if the registration succeeds,
 NULL if it fails.
 .return end
 .see begin
-.seelist onexit abort atexit exit _Exit _exit
+.seelist abort atexit exit _Exit _exit
 .see end
 .exmp begin
 #include <stdio.h>
@@ -49,9 +52,9 @@ void main()
   {
     extern void func1(void), func2(void), func3(void);
 .exmp break
-    onexit( func1 );
-    onexit( func2 );
-    onexit( func3 );
+    _onexit( func1 );
+    _onexit( func2 );
+    _onexit( func3 );
     printf( "Do this first.\n" );
   }
 .exmp break

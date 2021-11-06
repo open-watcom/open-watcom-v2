@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,7 +106,7 @@ static void preSpawn( void )
 static void postSpawn( long rc )
 {
     restorePrompt();
-    VarAddGlobalLong( "Sysrc", rc );
+    GlobVarAddLong( GLOBVAR_SYSTEM_RETCODE, rc );
     UpdateCurrentDirectory();
 
 #ifndef __WIN__
@@ -680,7 +680,8 @@ vi_rc EnterHexKey( void )
     /*
      * get value
      */
-    ptr = SkipLeadingSpaces( st );
+    ptr = st;
+    SKIP_SPACES( ptr );
     val = (char)strtol( ptr, NULL, 0 );
     if( val == '\0' ) {
         return( ERR_INVALID_VALUE );
@@ -729,17 +730,17 @@ vi_rc DoVersion( void )
  */
 char *StrMerge( int cnt, char *str, ... )
 {
-    va_list     arg;
+    va_list     args;
     char        *n;
 
-    va_start( arg, str );
+    va_start( args, str );
     for( ; cnt-- > 0; ) {
-        n = va_arg( arg, char * );
+        n = va_arg( args, char * );
         if( n != NULL ) {
             strcat( str, n );
         }
     }
-    va_end( arg );
+    va_end( args );
     return( str );
 
 } /* StrMerge */
@@ -846,35 +847,35 @@ vi_rc FancySetGen( void )
 vi_rc ToggleToolbar( void )
 {
     char    cmd[14];
-    sprintf( cmd, "set%stoolbar", EditFlags.Toolbar ? " no" : " " );
+    sprintf( cmd, "set %stoolbar", EditFlags.Toolbar ? "no" : "" );
     return( RunCommandLine( cmd ) );
 }
 
 vi_rc ToggleStatusbar( void )
 {
     char    cmd[17];
-    sprintf( cmd, "set%sstatusinfo", EditFlags.StatusInfo ? " no" : " " );
+    sprintf( cmd, "set %sstatusinfo", EditFlags.StatusInfo ? "no" : "" );
     return( RunCommandLine( cmd ) );
 }
 
 vi_rc ToggleColorbar( void )
 {
     char    cmd[15];
-    sprintf( cmd, "set%scolorbar", EditFlags.Colorbar ? " no" : " " );
+    sprintf( cmd, "set %scolorbar", EditFlags.Colorbar ? "no" : "" );
     return( RunCommandLine( cmd ) );
 }
 
 vi_rc ToggleSSbar( void )
 {
     char    cmd[15];
-    sprintf( cmd, "set%sssbar", EditFlags.SSbar ? " no" : " " );
+    sprintf( cmd, "set %sssbar", EditFlags.SSbar ? "no" : "" );
     return( RunCommandLine( cmd ) );
 }
 
 vi_rc ToggleFontbar( void )
 {
     char    cmd[14];
-    sprintf( cmd, "set%sfontbar", EditFlags.Fontbar ? " no" : " " );
+    sprintf( cmd, "set %sfontbar", EditFlags.Fontbar ? "no" : "" );
     return( RunCommandLine( cmd ) );
 }
 

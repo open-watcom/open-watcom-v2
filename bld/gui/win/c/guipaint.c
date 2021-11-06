@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,10 @@
 
 
 #include "guiwind.h"
-#include "guixscal.h"
 #include "guicolor.h"
 #include "guipaint.h"
 #include "guixwind.h"
+#include "guiscale.h"
 
 
 /*
@@ -48,7 +49,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     PAINTSTRUCT *prev_ps;
     gui_row_num row_num;
     PAINTSTRUCT ps;
-    WPI_RECT    fill_area;
+    WPI_RECT    wpi_rect;
 #ifdef __OS2_PM__
     ULONG       flags;
     RECTL       client;
@@ -63,18 +64,17 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     wnd->ps = &ps;
     wnd->hdc = _wpi_beginpaint( hwnd, NULLHANDLE, wnd->ps );
     _wpi_torgbmode( wnd->hdc );
-    _wpi_getpaintrect( wnd->ps, &fill_area );
+    _wpi_getpaintrect( wnd->ps, &wpi_rect );
 #ifdef __OS2_PM__
-    fill_area = *(wnd->ps);
+    wpi_rect = *(wnd->ps);
     if( isdlg ) {
-        _wpi_inflaterect( GUIMainHInst, &fill_area, 10, 10);
+        _wpi_inflaterect( GUIMainHInst, &wpi_rect, 10, 10);
     }
-    WinFillRect( wnd->hdc, &fill_area, GUIGetBack( wnd, GUI_BACKGROUND ) );
+    WinFillRect( wnd->hdc, &wpi_rect, GUIGetBack( wnd, GUI_BACKGROUND ) );
 #endif
 #if defined( __NT__ )
     if( isdlg ) {
-        _wpi_fillrect( wnd->hdc, &fill_area, GUIGetBack( wnd, GUI_BACKGROUND ),
-                       wnd->bk_brush );
+        _wpi_fillrect( wnd->hdc, &wpi_rect, GUIGetBack( wnd, GUI_BACKGROUND ), wnd->bk_brush );
     }
 #endif
     if( wnd->font != NULL ) {
@@ -275,10 +275,10 @@ void GUIFreePaintHandles( gui_paint_info *pinfo, int force )
 #ifdef __OS2_PM__
     //bmp = _wpi_selectbitmap( pinfo->compatible_pres, pinfo->old_bmp );
     _wpi_getoldbitmap( pinfo->compatible_pres, pinfo->old_bmp );
-    pinfo->old_bmp = NULLHANDLE;
-    if( pinfo->draw_bmp != NULLHANDLE ) {
+    pinfo->old_bmp = WPI_NULL;
+    if( pinfo->draw_bmp != WPI_NULL ) {
         _wpi_deletebitmap( pinfo->draw_bmp );
-        pinfo->draw_bmp = NULLHANDLE;
+        pinfo->draw_bmp = WPI_NULL;
     }
     if( pinfo->compatible_pres != NULLHANDLE ) {
         _wpi_deletecompatiblepres( pinfo->compatible_pres,

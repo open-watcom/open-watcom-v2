@@ -23,7 +23,7 @@ int snwprintf( wchar_t *buf,
 The
 .id &funcb.
 function is equivalent to the
-.kw fprintf
+.reffunc fprintf
 function, except that the argument
 .arg buf
 specifies a character array into which the generated output is placed,
@@ -33,13 +33,13 @@ string.
 The maximum number of characters to store, including a terminating
 null character, is specified by
 .arg count
-.ct .li .
+.period
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .if &'length(&wfunc.) ne 0 .do begin
 The argument
 .arg buf
@@ -49,7 +49,7 @@ written to a stream.
 The maximum number of wide characters to store, including a
 terminating null wide character, is specified by
 .arg count
-.ct .li .
+.period
 .do end
 .desc end
 .*
@@ -64,7 +64,7 @@ character, or a negative value if an encoding error occurred.
 Thus, the null-terminated output has been completely written if and only
 if the returned value is nonnegative and less than
 .arg count
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .id &wfunc.
@@ -76,7 +76,7 @@ or a negative value if an encoding error occurred.
 Thus, the null-terminated output has been completely written if and only
 if the returned value is nonnegative and less than
 .arg count
-.ct .li .
+.period
 .do end
 .im errnoref
 .return end

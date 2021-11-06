@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,11 +66,9 @@ static vi_rc readKeyData( void )
 #else
     rc = ReadDataFile( "keys.dat", &CharTokens, key_alloc, key_save, true );
 #endif
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
-    keysRead = true;
-    return( ERR_NO_ERR );
+    if( rc == ERR_NO_ERR )
+        keysRead = true;
+    return( rc );
 
 } /* readKeyData */
 
@@ -109,7 +108,6 @@ vi_rc MapKey( int flag, const char *data )
     if( *keystr == '\0' ) {
         return( ERR_INVALID_MAP );
     }
-    data = SkipLeadingSpaces( data );
 
     /*
      * get key we are using
@@ -481,15 +479,14 @@ vi_rc ExecuteBuffer( void )
         return( rc );
     }
     rc = GetSavebufString( &data );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
+    if( rc == ERR_NO_ERR ) {
+        rc = AddKeyMap( &scr, data );
+        MemFree( data );
+        if( rc == ERR_NO_ERR ) {
+            rc = RunKeyMap( &scr, 1L );
+        }
+        MemFree( scr.data );
     }
-    rc = AddKeyMap( &scr, data );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
-    rc = RunKeyMap( &scr, 1L );
-    MemFree( scr.data );
     return( rc );
 
 } /* ExecuteBuffer */
@@ -497,7 +494,7 @@ vi_rc ExecuteBuffer( void )
 /*
  * LookUpCharToken - look up to token for a specified character
  */
-char *LookUpCharToken( vi_key key, bool want_single )
+const char *LookUpCharToken( vi_key key, bool want_single )
 {
     int         i;
     static int  num = 0;

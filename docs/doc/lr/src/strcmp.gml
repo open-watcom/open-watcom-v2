@@ -4,7 +4,7 @@
 int strcmp( const char *s1, const char *s2 );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Compare' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fstrcmp( const char __far *s1,
               const char __far *s2 );
 .do end
@@ -40,10 +40,11 @@ function compares the string pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
-.ct .li .
-.im farparm
-.im widefun1
-.im mbsfunc
+.period
+.farfuncp &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
+.mbcsfunc &mfunc. &funcb.
+.farfuncp &fmfunc. &mfunc.
 .desc end
 .return begin
 The
@@ -53,10 +54,10 @@ than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by
 .arg s2
-.ct .li .
+.period
 .return end
 .see begin
-.seelist strcmp strcmpi stricmp strncmp strnicmp
+.seelist strcmp _stricmp strncmp _strnicmp strcasecmp strncasecmp
 .see end
 .exmp begin
 #include <stdio.h>

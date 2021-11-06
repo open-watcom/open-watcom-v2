@@ -1,5 +1,5 @@
-.gfunc getfontinfo
-.gsynop begin 
+.gfunc _getfontinfo
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _getfontinfo( struct _fontinfo _FAR *info );
 .do end
@@ -13,28 +13,28 @@ The
 .id &funcb.
 &routine returns information about the currently selected font.
 Fonts are selected with the
-.kw _setfont
+.reffunc _setfont
 &routine..
 The font information is returned in the
 .id _fontinfo
 structure indicated by the argument
 .arg info
-.ct .li .
+.period
 The structure contains the following fields:
 .begterm 15
-.note type
+.termnx type
 1 for a vector font, 0 for a bit-mapped font
-.note ascent
+.termnx ascent
 distance from top of character to baseline in pixels
-.note pixwidth
+.termnx pixwidth
 character width in pixels (0 for a proportional font)
-.note pixheight
+.termnx pixheight
 character height in pixels
-.note avgwidth
+.termnx avgwidth
 average character width in pixels
-.note filename
+.termnx filename
 name of the file containing the current font
-.note facename
+.termnx facename
 name of the current font
 .endterm
 .desc end

@@ -1,12 +1,12 @@
 .func sem_post
 .synop begin
 #include <semaphore.h>
-int sem_post(sem_t *semaphore);    
+int sem_post(sem_t *semaphore);
 .synop end
 .desc begin
 The
 .id &funcb.
-function unlocks a semaphore pointed to by the 
+function unlocks a semaphore pointed to by the
 .arg semaphore
 argument.  Unlocking releases the semaphore and signals
 any waiting threads appropriately.
@@ -31,5 +31,5 @@ is
 .see begin
 .seelist sem_destroy sem_init sem_post sem_trywait sem_wait
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

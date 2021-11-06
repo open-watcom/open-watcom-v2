@@ -299,7 +299,8 @@ The &fn. returns the inverse hyperbolic tangent of
 This form of the &fn. creates a default &obj. with value zero for both
 the real and imaginary components.
 :RSLTS.
-This form of the &fn. produces a default &obj.:PERIOD.
+This form of the &fn. produces a default &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.real
@@ -318,7 +319,8 @@ This form of the &fn. creates a &obj. with the same value as
 :ARG.num
 :PERIOD.
 :RSLTS.
-This form of the &fn. produces a &obj.:PERIOD.
+This form of the &fn. produces a &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.real
@@ -342,7 +344,8 @@ If no imaginary component is specified,
 :ARG.imag
 takes the default value of zero.
 :RSLTS.
-This form of the &fn. produces a &obj.:PERIOD.
+This form of the &fn. produces a &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.real
@@ -357,7 +360,8 @@ This form of the &fn. produces a &obj.:PERIOD.
 :SNPCD cd_idx='d'.Complex::~~Complex();
 :eSNPL.
 :SMTICS.
-The &fn. destroys the &obj.:PERIOD.
+The &fn. destroys the &obj.
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -456,9 +460,11 @@ raised to the power
 :SNPF index='imag'.double Complex::imag();
 :eSNPL.
 :SMTICS.
-The &fn. extracts the imaginary component of the &obj.:PERIOD.
+The &fn. extracts the imaginary component of the &obj.
+:PERIOD.
 :RSLTS.
-The &fn. returns the imaginary component of the &obj.:PERIOD.
+The &fn. returns the imaginary component of the &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.imag
 :SAL typ='fun'.real
@@ -597,7 +603,8 @@ The &fn. is used to multiply
 :ARG.num1
 by
 :ARG.num2
-yielding a &obj.:PERIOD.
+yielding a &obj.
+:PERIOD.
 :P.
 The first &fn. multiplies two &obj.s.
 :P.
@@ -605,7 +612,8 @@ The second &fn. multiplies a &obj. and a floating-point value.
 In effect, the real and imaginary components of the &obj.
 are multiplied by the floating-point value.
 :P.
-The third &fn. multiplies a floating-point value and a &obj.:PERIOD.
+The third &fn. multiplies a floating-point value and a &obj.
+:PERIOD.
 In effect, the real and imaginary components of the &obj.
 are multiplied by the floating-point value.
 :INCLUDE file='cpx_op'.
@@ -633,7 +641,8 @@ and
 :SMTICS.
 The &fn. is used to multiply the
 :ARG.num
-argument into the &obj.:PERIOD.
+argument into the &obj.
+:PERIOD.
 :P.
 The first form of the &fn. multiplies the &obj. by the
 :MONO.Complex
@@ -663,10 +672,12 @@ The &fn. returns a reference to the target of the assignment.
 :eSNPL.
 :SMTICS.
 The unary &fn. is provided for completeness.
-It performs no operation on the &obj.:PERIOD.
+It performs no operation on the &obj.
+:PERIOD.
 :RSLTS.
 The unary &fn. returns a &obj. with the same value as the original
-&obj.:PERIOD.
+&obj.
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.operator~b+
 :SAL typ='mfun'.operator~b+=
@@ -686,17 +697,21 @@ The &fn. is used to add
 :ARG.num1
 to
 :ARG.num2
-yielding a &obj.:PERIOD.
+yielding a &obj.
+:PERIOD.
 :P.
 The first &fn. adds two &obj.s.
 :P.
 The second &fn. adds a &obj. and a floating-point value.
 In effect, the floating-point value is added to the real component
-of the &obj.:PERIOD.
+of the &obj.
+:PERIOD.
 :P.
-The third &fn. adds a floating-point value and a &obj.:PERIOD.
+The third &fn. adds a floating-point value and a &obj.
+:PERIOD.
 In effect, the floating-point value is added to the real component
-of the &obj.:PERIOD.
+of the &obj.
+:PERIOD.
 :INCLUDE file='cpx_op'.
 :RSLTS.
 The &fn. returns a &obj. that is the sum of
@@ -723,10 +738,12 @@ and
 :SMTICS.
 The &fn. is used to add
 :ARG.num
-to the value of the &obj.:PERIOD.
+to the value of the &obj.
+:PERIOD.
 The second form of the &fn. adds
 :ARG.num
-to the real component of the &obj.:PERIOD.
+to the real component of the &obj.
+:PERIOD.
 :INCLUDE file='cpx_asgn'.
 :RSLTS.
 The &fn. returns a reference to the target of the assignment.
@@ -771,17 +788,20 @@ The &fn. is used to subtract
 :ARG.num2
 from
 :ARG.num1
-yielding a &obj.:PERIOD.
+yielding a &obj.
+:PERIOD.
 :P.
 The first &fn. computes the difference between two &obj.s.
 :P.
 The second &fn. computes the difference between a &obj.
 and a floating-point value.
 In effect, the floating-point value is subtracted from the real component
-of the &obj.:PERIOD.
+of the &obj.
+:PERIOD.
 :P.
 The third &fn. computes the difference between a floating-point value and a
-&obj.:PERIOD.
+&obj.
+:PERIOD.
 In effect, the real component of the result is
 :ARG.num1
 minus the real component of
@@ -817,10 +837,12 @@ and
 :SMTICS.
 The &fn. is used to subtract
 :ARG.num
-from the value of the &obj.:PERIOD.
+from the value of the &obj.
+:PERIOD.
 The second form of the &fn. subtracts
 :ARG.num
-from the real component of the *obj.:PERIOD.
+from the real component of the *obj.
+:PERIOD.
 :INCLUDE file='cpx_asgn'.
 :RSLTS.
 The &fn. returns a reference to the target of the assignment.
@@ -846,7 +868,8 @@ The &fn. is used to divide
 :ARG.num1
 by
 :ARG.num2
-yielding a &obj.:PERIOD.
+yielding a &obj.
+:PERIOD.
 :P.
 The first &fn. divides two &obj.s.
 :P.
@@ -854,7 +877,8 @@ The second &fn. divides a &obj. by a floating-point value. In effect, the
 real and imaginary components of the complex number are divided by the
 floating-point value.
 :P.
-The third &fn. divides a floating-point value by a &obj.:PERIOD.
+The third &fn. divides a floating-point value by a &obj.
+:PERIOD.
 Conceptually, the
 floating-point value is converted to a &obj. and then the division is done.
 :INCLUDE file='cpx_op'.
@@ -943,7 +967,8 @@ The &fn. is used to set the value of the &obj. to
 :PERIOD.
 The first assignment operator copies the value of
 :ARG.num
-into the &obj.:PERIOD.
+into the &obj.
+:PERIOD.
 :P.
 The second assignment operator sets the real component of the &obj. to
 :ARG.num
@@ -1008,7 +1033,8 @@ If the imaginary portion is omitted, zero is assumed.
 While reading a &obj., whitespace is ignored before and between the various
 components of the number if the
 :MONO.ios::skipws
-bit is set in &fmtflags.:PERIOD.
+bit is set in &fmtflags.
+:PERIOD.
 :RSLTS.
 The &fn. returns a reference to
 :ARG.strm
@@ -1086,9 +1112,11 @@ raised to the power a &obj. that is
 :SNPF index='real'.double Complex::real();
 :eSNPL.
 :SMTICS.
-The &fn. extracts the real component of the &obj.:PERIOD.
+The &fn. extracts the real component of the &obj.
+:PERIOD.
 :RSLTS.
-The &fn. returns the real component of the &obj.:PERIOD.
+The &fn. returns the real component of the &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.imag
 :SAL typ='fun'.real

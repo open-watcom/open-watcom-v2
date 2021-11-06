@@ -6,20 +6,18 @@ parsedlg_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
-objs = parsedlg.obj
+#
+# cflags
+#
+.c: ../c
 
 inc_dirs = -I"../h" -I"$(watcom_dir)/h"
 
-.c: ../c
+# explicit rules
+#################
 
-$(proj_name).exe : $(objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $(objs) $(bld_ldflags)
-! else
-    $(cl) $(clflags) $(objs) $(ldflags)
-! endif
-!else
-    $(linker) name $@ $(lflags) file {$(objs)}
-!endif
+#
+# EXE
+#
+exetarg_objs = parsedlg.obj
+!include exetarg.mif

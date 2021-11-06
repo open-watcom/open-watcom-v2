@@ -12,11 +12,25 @@ womp_trmem = 1
 !include wres.mif
 !include trmem.mif
 
-inc_dirs = -I. -I"$(womp_dir)/h"
-
+#
+# cflags
+#
 .c: ../c;$(trmem_dir)
 
-objs =              &
+inc_dirs = -I. -I"$(womp_dir)/h"
+
+extra_cpp_flags_memory = $(trmem_cpp_flags)
+
+extra_c_flags_memory = $(trmem_cover_cflags)
+
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_prebuild_objs =  usage.gh wompmsg.gh
+exetarg_objs = &
     array.obj       &
     can2ms0.obj     &
     can2ms1.obj     &
@@ -50,35 +64,29 @@ objs =              &
     segment.obj     &
     wat2can0.obj    &
     wat2can1.obj    &
-    wpmsg.obj	    &
+    wpmsg.obj       &
     $(trmem_objs)
+exetarg_libs       = $(wres_lib)
+exetarg_res_wresui = wresui.res
+!include exetarg.mif
 
-extra_cpp_flags_memory = $(trmem_cpp_flags)
+#
+# rc and others
+#
+rcui_inc_dirs = -I. -I.. -I"../h" -I"$(wrc_dir)/h"
 
-extra_c_flags_memory = $(trmem_cover_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
+wresui.res : ../h/$(proj_name).rc
+    @%make echo_rc
+    $(rcui8)
 
-$(proj_name).exe : wmpmsg.gh wresui.res $(objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(wres_lib) $(ldflags)
-!else
-    $(linker) name $^@ $(lflags) file { $(objs) } lib $(wres_lib)
-!endif
-    @%make bind_res_wresui
-
-wmpmsg.gh : $(womp_dir)/womp.msg
+wompmsg.gh : ../womp.msg
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-wresui.res :  usage.grc ../h/$(proj_name).rc
-    @%make echo_rc
-    $(rc_aui) $(extra_rc_flags) -I"$(womp_dir)" -I"$(wrc_dir)/h" $]@ -fo=$^@
-
-usage.grc : ../usage.sp
+usage.gh : ../usage.sp
     @%make echo_wsplice
-    $(wsplice) -kIS_RC -kENGLISH -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@
+    $(wsplice) -kENGLISH -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
 
-usagej.grc : ../usage.sp
+usagej.gh : ../usage.sp
     @%make echo_wsplice
-    $(wsplice) -kIS_RC -kJAPANESE -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@
+    $(wsplice) -kJAPANESE -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@

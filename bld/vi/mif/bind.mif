@@ -25,5 +25,5 @@ bind_lang_data = &
     rc.dat &
     sql.dat &
     wml.dat
-bind_data = error.dat errmsg.dat keys.dat
+bind_data = error.dat keys.dat
 bind_files = $(bind_compiled) $(bind_data) $(bind_lang_data)

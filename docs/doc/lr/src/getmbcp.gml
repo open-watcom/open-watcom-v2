@@ -12,8 +12,8 @@ function returns the current multibyte code page number.
 The
 .id &funcb.
 function returns the current multibyte code page.
-A return value of zero indicates that a single byte code page is in
-use.
+A return value of zero indicates that a single-byte character code page
+is in use.
 .return end
 .see begin
 .im seeismbb

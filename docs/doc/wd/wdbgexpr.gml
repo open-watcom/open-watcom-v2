@@ -1,9 +1,10 @@
 .chap *refid=videxpr &dbgname Expression Handling
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .ix 'expressions' 'handling of'
 .np
 The &dbgname is capable of handling a wide variety of expressions.
@@ -52,7 +53,7 @@ lower level commands such
 .kw Examine
 and
 .kw Modify
-.ct .li .
+.period
 If the notation for a particular command argument is <address>,
 it is an address expression.
 If it ends in just "expr" then it is a normal expression.
@@ -709,13 +710,13 @@ expression operators are supported.
 These operators are used in identifying the object to be operated
 upon.
 .begnote
-.mnote []
+.note []
 subscripting, substringing
-.mnote ()
+.note ()
 function call
-.mnote .
+.note .
 field selection
-.mnote ->
+.note ->
 field selection using a pointer
 .endnote
 .np
@@ -723,50 +724,51 @@ The following sections describe the operators presented above.
 .beglevel
 .*
 .keep
+.*
 .section Assignment Operators for the C Grammar
 .*
 .begnote
-.mnote =
+.note =
 Assignment:
 The value on the right is assigned to the object on the left.
-.mnote +=
+.note +=
 Additive assignment:
 The value of the object on the left is augmented by the value on the
 right.
-.mnote -=
+.note -=
 Subtractive assignment:
 The value of the object on the left is reduced by the value on the
 right.
-.mnote *=
+.note *=
 Multiplicative assignment:
 The value of the object on the left is multiplied by the value on the
 right.
-.mnote /=
+.note /=
 Division assignment:
 The value of the object on the left is divided by the value on the
 right.
-.mnote %=
+.note %=
 Modulus assignment:
 The object on the left is updated with MOD(left,right).
 The result is the remainder when the value of the object on the left
 is divided by the value on the right.
-.mnote &=
+.note &=
 Bit-wise AND:
 The bits in the object on the left are ANDed with the bits of the
 value on the right.
-.mnote |=
+.note |=
 Bit-wise inclusive OR:
 The bits in the object on the left are ORed with the bits of the
 value on the right.
-.mnote ^=
+.note ^=
 Bit-wise exclusive OR:
 The bits in the object on the left are exclusively ORed with the bits
 of the value on the right.
-.mnote <<=
+.note <<=
 Left shift:
 The bits in the object on the left are shifted to the left by the
 amount of the value on the right.
-.mnote >>=
+.note >>=
 Right shift:
 The bits in the object on the left are shifted to the right by the
 amount of the value on the right.
@@ -780,13 +782,13 @@ The debugger treats registers as unsigned items.
 .section Logical Operators for the C Grammar
 .*
 .begnote
-.mnote &&
+.note &&
 Logical conjunction:
 The logical AND of the value on the left and the value on the right is
 produced.
 If either of the values on the left or right is equal to 0 then the
 result is 0; otherwise the result is 1.
-.mnote ||
+.note ||
 Logical inclusive disjunction:
 The logical OR of the value on the left and the value on the right is
 produced.
@@ -800,14 +802,14 @@ evaluation).
 .section Bit Operators for the C Grammar
 .*
 .begnote
-.mnote &
+.note &
 Bit-wise AND:
 The bits of the value on the left and the value on the right are
 ANDed.
-.mnote |
+.note |
 Bit-wise OR:
 The bits of the value on the left and the value on the right are ORed.
-.mnote ^
+.note ^
 Bit-wise exclusive OR:
 The bits of the value on the left and the value on the right are
 exclusively ORed.
@@ -816,27 +818,27 @@ exclusively ORed.
 .section Relational Operators for the C Grammar
 .*
 .begnote
-.mnote ==
+.note ==
 Equal:
 If the value on the left is equal to the value on the right then the
 result is 1; otherwise the result is 0.
-.mnote !=
+.note !=
 Not equal:
 If the value on the left is not equal to the value on the right then
 the result is 1; otherwise the result is 0.
-.mnote <
+.note <
 Less than:
 If the value on the left is less than the value on the right then the
 result is 1; otherwise the result is 0.
-.mnote <=
+.note <=
 Less than or equal:
 If the value on the left is less than or equal to the value on the
 right then the result is 1; otherwise the result is 0.
-.mnote >
+.note >
 Greater than:
 If the value on the left is greater than the value on the right then
 the result is 1; otherwise the result is 0.
-.mnote >=
+.note >=
 Greater than or equal:
 If the value on the left is greater than or equal to the value on the
 right then the result is 1; otherwise the result is 0.
@@ -845,11 +847,11 @@ right then the result is 1; otherwise the result is 0.
 .section Arithmetic/Logical Shift Operators for the C Grammar
 .*
 .begnote
-.mnote <<
+.note <<
 Left shift:
 The bits of the value on the left are shifted to the left by the
 amount described by the value on the right.
-.mnote >>
+.note >>
 Right shift:
 The bits of the value on the left are shifted to the right by the
 amount described by the value on the right.
@@ -863,19 +865,19 @@ The debugger treats registers as unsigned items.
 .section Binary Arithmetic Operators for the C Grammar
 .*
 .begnote
-.mnote +
+.note +
 Addition:
 The value on the right is added to the value on the left.
-.mnote ~_
+.note ~_
 Subtraction:
 The value on the right is subtracted from the value on the left.
-.mnote *
+.note *
 Multiplication:
 The value on the left is multiplied by the value on the right.
-.mnote /
+.note /
 Division:
 The value on the left is divided by the value on the right.
-.mnote %
+.note %
 Modulus:
 The modulus of the value on the left with respect to the value on the
 right is produced.
@@ -884,37 +886,38 @@ the value on the right.
 .endnote
 .*
 .keep
+.*
 .section Unary Arithmetic Operators for the C Grammar
 .*
 .begnote
-.mnote +
+.note +
 Plus:
 The result is the value on the right.
-.mnote ~_
+.note ~_
 Minus:
 The result is the negation of the value on the right.
-.mnote ~~
+.note ~~
 Bit-wise complement:
 The result is the bit-wise complement of the value on the right.
-.mnote !
+.note !
 Logical complement:
 If the value on the right is equal to 0 then the result is 1;
 otherwise it is 0.
-.mnote ++
+.note ++
 Increment:
 Both prefix and postfix operators are supported.
 If the object is on the right, it is pre-incremented by 1 (e.g., ++x).
 If the object is on the left, it is post-incremented by 1 (e.g., x++).
-.mnote ~_ ~_
+.note ~_ ~_
 Decrement:
 Both prefix and postfix operators are supported.
 If the object is on the right, it is pre-decremented by 1 (e.g., --x).
 If the object is on the left, it is post-decremented by 1 (e.g., x--).
-.mnote &
+.note &
 Address of:
 The result is the address (segment:offset) of the object on the right
 (e.g., &main).
-.mnote *
+.note *
 Points:
 The result is the value stored at the location addressed by the value
 on the right (e.g., *(ds:100), *string.loc).
@@ -928,7 +931,7 @@ var:  (SS:0100) = 0152
       (SS:0102) = 1240
       (SS:0104) = EEEE
 .code end
-.mnote %
+.note %
 Value at address:
 The result is the value stored at the location addressed by the value
 on the right (e.g., %(ds:100), %string.loc).
@@ -949,16 +952,16 @@ languages.
 .section Special Unary Operators for the C Grammar
 .*
 .begnote
-.mnote sizeof unary_expression
+.note sizeof unary_expression
 .exam begin 2
 sizeof tyme
 sizeof (*tyme)
 .exam end
-.mnote sizeof(type_name)
+.note sizeof(type_name)
 .exam begin 1
 sizeof( struct tm )
 .exam end
-.mnote (type_name) unary_expression
+.note (type_name) unary_expression
 The type conversion operator
 .sy (type_name)
 is used to convert an item from one type to another.
@@ -977,7 +980,7 @@ scalar_type ::= "char" | "int" | "float" | "double"
 (float) 4
 (int) 3.1415926
 .exam end
-.mnote [type_name] unary_expression
+.note [type_name] unary_expression
 You can force the debugger to treat a memory reference as a particular
 type of value by using a type coercion operator.
 A type specification is placed inside brackets as shown above.
@@ -1034,7 +1037,7 @@ keyword when
 or
 .kw long
 are specified.
-.mnote ?
+.note ?
 Existence test:
 The "?" unary operator may be used to test for the existence of
 a symbol.
@@ -1052,7 +1055,7 @@ Automatic symbols exist only in the current function.
 .section Binary Address Operator for the C Grammar
 .*
 .begnote
-.mnote :
+.note :
 Memory locations can be referenced by using the binary ":" operator
 and a combination of constants, register names, and symbol names.
 In the Intel 80x86 architecture, a memory reference requires a segment
@@ -1076,7 +1079,7 @@ can be expressions.
 .section Primary Expression Operators for the C Grammar
 .*
 .begnote
-.mnote []
+.note []
 Elements of an array can be identified using subscript expressions.
 Consider the following 3-dimensional array defined in the "C"
 language.
@@ -1124,7 +1127,7 @@ processortype[0][0][0]
 processortype[0][0][1]
 processortype[0][1][0]
 .exam end
-.mnote ()
+.note ()
 The function call operators appear to the right of a symbol name and
 identify a function call in an expression.
 The parentheses can contain arguments.
@@ -1133,7 +1136,7 @@ ClearScreen()
 PosCursor( 10, 20 )
 Line( 15, 1, 30, '-', '+', '-' )
 .exam end
-.mnote .
+.note .
 The "." operator indicates field selection in a structure.
 In the following example,
 .id tyme2
@@ -1143,7 +1146,7 @@ is a field in the structure.
 .exam begin 1
 tyme2.tm_year
 .exam end
-.mnote ->
+.note ->
 The "->" operator indicates field selection when using a pointer
 to a structure.
 In the following example,
@@ -1257,8 +1260,8 @@ which is a
 .id DERIVED
 type.
 To display all the fields of
-.id x,
-you can type cast it as follows.
+.id x
+.ct , you can type cast it as follows.
 .exam begin 1
 *(DERIVED *)p
 .exam end
@@ -1313,7 +1316,8 @@ The example above permits us to set a breakpoint at the source code for the
 function
 .id foo
 in the class
-.id BASE.
+.id BASE
+.period
 .millust begin
     virtual void foo()
     {
@@ -1344,7 +1348,8 @@ base::~~base
 .np
 The examples above permit us to reference the source code for the
 constructor and destructor functions in the class
-.id BASE.
+.id BASE
+.period
 .*
 .endlevel
 .*
@@ -1419,11 +1424,11 @@ expression operators are supported.
 These operators are used in identifying the object to be operated
 upon.
 .begnote
-.mnote ()
+.note ()
 subscripting, substringing, or function call
-.mnote .
+.note .
 field selection
-.mnote ->
+.note ->
 field selection using a pointer
 .endnote
 .np
@@ -1443,43 +1448,43 @@ The following sections describe the operators presented above.
 .section Assignment Operators for the FORTRAN Grammar
 .*
 .begnote
-.mnote =
+.note =
 Assignment:
 The value on the right is assigned to the object on the left.
-.mnote +=
+.note +=
 Additive assignment:
 The object on the left is augmented by the value on the right.
-.mnote -=
+.note -=
 Subtractive assignment:
 The object on the left is reduced by the value on the right.
-.mnote *=
+.note *=
 Multiplicative assignment:
 The object on the left is multiplied by the value on the right.
-.mnote /=
+.note /=
 Division assignment:
 The object on the left is divided by the value on the right.
-.mnote %=
+.note %=
 Modulus assignment:
 The object on the left is updated with MOD(left,right).
 The result is the remainder when the value of the object on the left
 is divided by the value on the right.
-.mnote &=
+.note &=
 Bit-wise AND:
 The bits in the object on the left are ANDed with the bits of the
 value on the right.
-.mnote |=
+.note |=
 Bit-wise inclusive OR:
 The bits in the object on the left are ORed with the bits of the
 value on the right.
-.mnote ^=
+.note ^=
 Bit-wise exclusive OR:
 The bits in the object on the left are exclusively ORed with the bits
 of the value on the right.
-.mnote <<=
+.note <<=
 Left shift:
 The bits in the object on the left are shifted to the left by the
 amount of the value on the right.
-.mnote >>=
+.note >>=
 Right shift:
 The bits in the object on the left are shifted to the right by the
 amount of the value on the right.
@@ -1493,23 +1498,23 @@ The debugger treats registers as unsigned items.
 .section Logical Operators for the FORTRAN Grammar
 .*
 .begnote
-.mnote .EQV.
+.note .EQV.
 Logical equivalence:
 The logical equivalence of the value on the left and the value on the
 right is produced.
-.mnote .NEQV.
+.note .NEQV.
 Logical non-equivalence:
 The logical non-equivalence of the value on the left and the value on
 the right is produced.
-.mnote .OR.
+.note .OR.
 Logical inclusive disjunction:
 The logical OR of the value on the left and the value on the right is
 produced.
-.mnote .AND.
+.note .AND.
 Logical conjunction:
 The logical AND of the value on the left and the value on the right is
 produced.
-.mnote .NOT.
+.note .NOT.
 Logical negation:
 The logical complement of the value on the right is produced.
 .endnote
@@ -1517,14 +1522,14 @@ The logical complement of the value on the right is produced.
 .section Bit Operators for the FORTRAN Grammar
 .*
 .begnote
-.mnote |
+.note |
 Bit-wise OR:
 The bits of the value on the left and the value on the right are ORed.
-.mnote ^
+.note ^
 Bit-wise exclusive OR:
 The bits of the value on the left and the value on the right are
 exclusively ORed.
-.mnote &
+.note &
 Bit-wise AND:
 The bits of the value on the left and the value on the right are
 ANDed.
@@ -1533,27 +1538,27 @@ ANDed.
 .section Relational Operators for the FORTRAN Grammar
 .*
 .begnote
-.mnote .EQ.
+.note .EQ.
 Equal:
 If the value on the left is equal to the value on the right then the
 result is 1; otherwise the result is 0.
-.mnote .NE.
+.note .NE.
 Not equal:
 If the value on the left is not equal to the value on the right then
 the result is 1; otherwise the result is 0.
-.mnote .LT.
+.note .LT.
 Less than:
 If the value on the left is less than the value on the right then the
 result is 1; otherwise the result is 0.
-.mnote .LE.
+.note .LE.
 Less than or equal:
 If the value on the left is less than or equal to the value on the
 right then the result is 1; otherwise the result is 0.
-.mnote .GT.
+.note .GT.
 Greater than:
 If the value on the left is greater than the value on the right then
 the result is 1; otherwise the result is 0.
-.mnote .GE.
+.note .GE.
 Greater than or equal:
 If the value on the left is greater than or equal to the value on the
 right then the result is 1; otherwise the result is 0.
@@ -1562,11 +1567,11 @@ right then the result is 1; otherwise the result is 0.
 .section Arithmetic/Logical Shift Operators for the FORTRAN Grammar
 .*
 .begnote
-.mnote <<
+.note <<
 Left shift:
 The bits of the value on the left are shifted to the left by the
 amount described by the value on the right.
-.mnote >>
+.note >>
 Right shift:
 The bits of the value on the left are shifted to the right by the
 amount described by the value on the right.
@@ -1580,7 +1585,7 @@ The debugger treats registers as unsigned items.
 .section Concatenation Operator for the FORTRAN Grammar
 .*
 .begnote
-.mnote //
+.note //
 String concatenation:
 The concatenation of the character string value on the left and right
 is formed.
@@ -1589,25 +1594,25 @@ is formed.
 .section Binary Arithmetic Operators for the FORTRAN Grammar
 .*
 .begnote
-.mnote +
+.note +
 Addition:
 The value on the right is added to the value on the left.
-.mnote ~_
+.note ~_
 Subtraction:
 The value on the right is subtracted from the value on the left.
-.mnote *
+.note *
 Multiplication:
 The value on the left is multiplied by the value on the right.
-.mnote /
+.note /
 Division:
 The value on the left is divided by the value on the right.
-.mnote %
+.note %
 Modulus:
 The modulus of the value on the left with respect to the value on the
 right is produced.
 The result is the remainder when the value on the left is divided by
 the value on the right.
-.mnote **
+.note **
 Exponentiation:
 This operation is not supported by the debugger.
 .endnote
@@ -1615,30 +1620,30 @@ This operation is not supported by the debugger.
 .section Unary Arithmetic Operators for the FORTRAN Grammar
 .*
 .begnote
-.mnote +
+.note +
 Plus:
 The result is the value on the right.
-.mnote ~_
+.note ~_
 Minus:
 The result is the negation of the value on the right.
-.mnote ~~
+.note ~~
 Bit-wise complement:
 The result is the bit-wise complement of the value on the right.
-.mnote ++
+.note ++
 Increment:
 Both prefix and postfix operators are supported.
 If the object is on the right, it is pre-incremented by 1 (e.g., ++x).
 If the object is on the left, it is post-incremented by 1 (e.g., x++).
-.mnote ~_ ~_
+.note ~_ ~_
 Decrement:
 Both prefix and postfix operators are supported.
 If the object is on the right, it is pre-decremented by 1 (e.g., --x).
 If the object is on the left, it is post-decremented by 1 (e.g., x--).
-.mnote &
+.note &
 Address of:
 The result is the address (segment:offset) of the object on the right
 (e.g., &main).
-.mnote *
+.note *
 Points:
 The result is the value stored at the location addressed by the value
 on the right (e.g., *(ds:100), *string.loc).
@@ -1652,7 +1657,7 @@ var:  (SS:0100) = 0152
       (SS:0102) = 1240
       (SS:0104) = EEEE
 .code end
-.mnote %
+.note %
 Value at address:
 The result is the value stored at the location addressed by the value
 on the right (e.g., %(ds:100), %string.loc).
@@ -1673,7 +1678,7 @@ language.
 .section Special Unary Operators for the FORTRAN Grammar
 .*
 .begnote
-.mnote ?
+.note ?
 Existence test:
 The "?" unary operator may be used to test for the existence of
 a symbol.
@@ -1691,7 +1696,7 @@ Automatic symbols exist only in the current subprogram.
 .section Binary Address Operator for the FORTRAN Grammar
 .*
 .begnote
-.mnote :
+.note :
 Memory locations can be referenced by using the binary ":" operator
 and a combination of constants, register names, and symbol names.
 In the Intel 80x86 architecture, a memory reference requires a segment
@@ -1715,9 +1720,9 @@ can be expressions.
 .section Primary Expression Operators for the FORTRAN Grammar
 .*
 .begnote
-.mnote ()
+.note ()
 Elements of an array can be identified using subscript expressions.
-.mnote .
+.note .
 The "." operator indicates field selection in a structure.
 This operator is useful in mixed language applications where part of
 the application is written in the C or C++ programming language.
@@ -1729,7 +1734,7 @@ is a field in the structure.
 .millust begin
 tyme2.tm_year
 .millust end
-.mnote ->
+.note ->
 The "->" operator indicates field selection when using a pointer
 to a structure.
 This operator is useful in mixed language applications where part of

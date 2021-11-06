@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -850,7 +850,7 @@ static  int     Div10L( double val ) {
     int         retn;
 
        //  check for a NaN or Inf value
-    unsigned short int * ui = (unsigned short int *) & val;
+    unsigned short * ui = (unsigned short *)&val;
     if ( (ui [3] & 0x7FF0) == 0x7FF0 ) {    /* NaN or Inf */
         return( INT_MAX );
     }

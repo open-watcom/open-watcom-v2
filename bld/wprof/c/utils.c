@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,19 +35,21 @@
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
-#include "wio.h"
 #include "common.h"
-#if defined( __WINDOWS__ ) || defined( __NT__ )
+#if defined( __DOS__ )
+    #include <i86.h>
+    #include "tinyio.h"
+    #include "int10.h"
+    #include "realmod.h"
+#elif defined( __WINDOWS__ )
     #include <windows.h>
-#endif
-#if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __NT__ )
-    #if defined( __WATCOMC__ )
-        #include "tinyio.h"
-    #endif
+#elif defined( __NT__ )
+    #include <windows.h>
 #elif defined( __OS2__ )
     #define INCL_DOS
     #include "os2.h"
 #elif defined( __UNIX__ )
+    #include <unistd.h>
     #if defined( __WATCOMC__ )
         #include <process.h>
     #endif
@@ -68,6 +70,7 @@
 #include "sampinfo.h"
 #include "wpdata.h"
 #include "pathgrp2.h"
+#include "autoenv.h"
 
 #include "clibext.h"
 
@@ -86,7 +89,7 @@ char   *DipExePathList = NULL;
 void ReplaceExt( char * path, char * addext )
 /*******************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 #if defined(__UNIX__)
@@ -101,13 +104,13 @@ void ReplaceExt( char * path, char * addext )
 static char *findFile( char *fullname, const char *name, char *path_list )
 /************************************************************************/
 {
-    int             fh;
+    FILE            *fp;
     char            *p;
     char            c;
 
-    fh = open( name, O_RDONLY | O_BINARY, S_IREAD );
-    if( fh != -1 ) {
-        close( fh );
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        fclose( fp );
         strcpy( fullname, name );
         return( fullname );
     }
@@ -118,16 +121,16 @@ static char *findFile( char *fullname, const char *name, char *path_list )
                 ++path_list;
                 if( IS_PATH_LIST_SEP( c ) )
                     break;
-                *p = c;
+                *p++ = c;
             } while( (c = *path_list) != NULLCHAR );
             c = p[-1];
             if( !IS_PATH_SEP( c ) ) {
                 *p++ = DIR_SEP;
             }
-            strcat( p, name );
-            fh = open( fullname, O_RDONLY | O_BINARY, S_IREAD );
-            if( fh != -1 ) {
-                close( fh );
+            strcpy( p, name );
+            fp = fopen( fullname, "rb" );
+            if( fp != NULL ) {
+                fclose( fp );
                 return( fullname );
             }
         }
@@ -159,7 +162,7 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
     memcpy( realname, name, name_len );
     realname[name_len] = '\0';
     if( ext != NULL && *ext != NULLCHAR ) {
-        PGROUP2     pg;
+        pgroup2     pg;
 
         _splitpath2( realname, pg.buffer, NULL, NULL, &pg.fname, NULL );
         _makepath( realname, NULL, NULL, pg.fname, ext );
@@ -229,6 +232,8 @@ void InitPaths( void )
     char        *p;
 #endif
 
+    watcom_setup_env();
+
     env = getenv( PATH_NAME );
     FilePathList = AddPath( FilePathList, env );
     HelpPathList = AddPath( HelpPathList, env );
@@ -258,23 +263,11 @@ void InitPaths( void )
 #endif
 }
 
-#if defined( __DOS__ )
-extern void DoRingBell( void );
-#pragma aux DoRingBell = \
-        "push ebp"      \
-        "mov  ax,0e07h" \
-        "int 10h"       \
-        "pop  ebp"      \
-    __parm              [] \
-    __value             \
-    __modify __exact    [__ax]
-#endif
-
 void Ring( void )
 /***************/
 {
 #if defined( __DOS__ )
-    DoRingBell();
+    _BIOSVideoRingBell( BIOSData( BDATA_ACT_VPAGE, unsigned char ) );
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
     MessageBeep( 0 );
 #elif defined( __QNX__ ) || defined( __LINUX__ )
@@ -288,7 +281,7 @@ void Ring( void )
 void AssertionFailed( char * file, unsigned line )
 /************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        buff[ 13 + _MAX_FNAME ];
     size_t      size;
 

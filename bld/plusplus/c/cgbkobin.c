@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,10 +47,10 @@ static DTREG_OBJ* ringDtregObj;     // DTREG_OBJ entries (function)
 static DTREG_OBJ* ringDtregObjMod;  // DTREG_OBJ entries (module)
 
 
-static TYPE arrayOrStructType   // PUT TYPE INTO CONICAL FORM
+static TYPE arrayOrClassType    // PUT TYPE INTO CONICAL FORM
     ( TYPE type )               // - the type
 {
-    TYPE retn = StructType( type );
+    TYPE retn = ClassType( type );
     if( NULL == retn ) {
         retn = ArrayType( type );
     }
@@ -160,7 +161,7 @@ OBJ_INIT* ObjInitArray(         // GET OBJ_INIT FOR INDEXING
         init_base_type = ObjInitArrayBaseType( init );
         if( init_base_type == NULL ) {
             if( base_type == NULL ) {
-                base_type = StructType( init->type );
+                base_type = ClassType( init->type );
             } else {
                 break;
             }
@@ -205,7 +206,7 @@ OBJ_INIT* ObjInitClass(         // GET OBJ_INIT FOR A CLASS
 
     clss = ObjInitTop();
     DbgVerify( clss != NULL, "ObjInitClass -- no class element" );
-    DbgVerify( StructType( clss->type ) != NULL
+    DbgVerify( ClassType( clss->type ) != NULL
              , "ObjInitClass -- not class type" );
     for( ; ; ) {
         init = objInitNext( clss );
@@ -229,7 +230,7 @@ OBJ_INIT* ObjInitPush(          // PUSH INITIALIZATION OBJECT (HAS COMPONENTS)
     OBJ_INIT* init;             // - new object
 
     init = VstkPush( &stack_object_init );
-    init->type = arrayOrStructType( type );
+    init->type = arrayOrClassType( type );
     init->se = NULL;
     init->ctor_test = NULL;
     init->reg = NULL;

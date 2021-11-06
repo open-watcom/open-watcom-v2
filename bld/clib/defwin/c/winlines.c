@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,6 @@
     #define INCL_WIN
     #include <wos2.h>
 #else
-    #define WIN32_NICE_AND_FAT
     #define INCLUDE_COMMDLG_H
     #include <wwindows.h>
 #endif
@@ -46,6 +45,7 @@
 #if defined(__WINDOWS__) && !defined(__386__)
 #pragma library("commdlg");
 #endif
+
 
 /*
  * createNewEntry - build a new line number entry

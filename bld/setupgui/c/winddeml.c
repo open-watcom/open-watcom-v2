@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -445,17 +445,13 @@ static bool linkCreateGroup( const VBUF *group )
 /**********************************************/
 {
     VBUF            dir_name;
-    int             rc;
+    bool            ok;
 
     VbufInit( &dir_name );
     get_group_name( &dir_name, group );
-    rc = mkdir_vbuf( &dir_name );
+    ok = ( mkdir_vbuf( &dir_name ) == 0 || errno == EEXIST || errno == EACCES );
     VbufFree( &dir_name );
-    if( rc == -1 && errno != EEXIST ) {
-        return( false );
-    } else {
-        return( true );
-    }
+    return( ok );
 }
 
 static void delete_dir( const VBUF *dir )

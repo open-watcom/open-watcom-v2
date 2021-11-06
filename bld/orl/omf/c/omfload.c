@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,12 +40,11 @@
 #include "omfmunge.h"
 #include "omforl.h"
 
+
 /* Local definitions
  */
 #define MAX_REC_SIZE    65536
 #define TWO_BYTE_MASK   0x80
-
-#define OmfGetFrame(b)  (omf_frame)OmfGetUWord( (b), 2 )
 
 
 static void             setInitialData( omf_file_handle ofh )
@@ -78,11 +78,11 @@ omf_sec_offset  OmfGetUWord( omf_bytes buffer, int wordsize )
 
     result = 0;
     switch( wordsize ) {
-    case( 4 ):
+    case 4:
         result |= buffer[3] << 24;
         result |= buffer[2] << 16;
         /* fall through */
-    case( 2 ):
+    case 2:
         result |= buffer[1] << 8;
         /* fall through */
     default:
@@ -93,13 +93,21 @@ omf_sec_offset  OmfGetUWord( omf_bytes buffer, int wordsize )
 }
 
 
+unsigned_16 OmfGetU16( omf_bytes buffer )
+{
+    assert( buffer );
+
+    return( ( buffer[1] << 8 ) | buffer[0] );
+}
+
+
 omf_sec_addend    OmfGetSWord( omf_bytes buffer, int wordsize )
 {
     omf_sec_offset  result;
 
     result = OmfGetUWord( buffer, wordsize );
     switch( wordsize ) {
-    case( 2 ):
+    case 2:
         if( result & 0x8000 )
             result |= 0xFFFF0000;
         break;
@@ -107,7 +115,7 @@ omf_sec_addend    OmfGetSWord( omf_bytes buffer, int wordsize )
         if( result & 0x80 )
             result |= 0xFFFFFF00;
         break;
-    case( 4 ):
+    case 4:
         break;
     }
     return( (omf_sec_addend)result );
@@ -123,21 +131,21 @@ static bool check32Bit( omf_file_handle ofh, omf_rectyp typ )
 static orl_sec_alignment getAlignment( int val )
 {
     switch( val ) {
-    case( ALIGN_ABS ):          /* absolute segment - no alignment      */
-    case( ALIGN_BYTE ):         /* relocatable seg - byte aligned       */
+    case ALIGN_ABS:             /* absolute segment - no alignment      */
+    case ALIGN_BYTE:            /* relocatable seg - byte aligned       */
         return( 0 );
-    case( ALIGN_WORD ):         /* relocatable seg - word aligned       */
+    case ALIGN_WORD:            /* relocatable seg - word aligned       */
         return( 1 );
-    case( ALIGN_PARA ):         /* relocatable seg - para aligned       */
+    case ALIGN_PARA:            /* relocatable seg - para aligned       */
         return( 4 );
-    case( ALIGN_PAGE ):         /* relocatable seg - page aligned       */
+    case ALIGN_PAGE:            /* relocatable seg - page aligned       */
         return( 8 );
-    case( ALIGN_DWORD ):        /* relocatable seg - dword aligned      */
+    case ALIGN_DWORD:           /* relocatable seg - dword aligned      */
                                 /* 32-bit ALIGN_UNABS unnamed absolute  *
                                  * segment, this is currently not       *
                                  * supported by the linker.             */
         return( 2 );
-    case( ALIGN_LTRELOC ):      /* load-time relocatable segment        */
+    case ALIGN_LTRELOC:         /* load-time relocatable segment        */
                                 /* 32-bit ALIGN_4KPAGE relocatable      *
                                  * seg - 4k page aligned                */
         return( 12 );
@@ -159,7 +167,7 @@ static orl_return       loadRecord( omf_file_handle ofh )
     buff = _ClientRead( ofh, 2 );
     if( buff == NULL )
         return( ORL_ERROR );
-    len = (unsigned short)OmfGetUWord( buff, 2 );
+    len = OmfGetU16( buff );
     if( len == 0 )
         return( ORL_ERROR );
     ofh->parsebuf = _ClientRead( ofh, len );
@@ -209,19 +217,61 @@ static omf_idx loadIndex( omf_bytes *buffer, omf_rec_size *len )
     return( idx );
 }
 
+static omf_frame loadFrameNumber( omf_bytes *buffer, omf_rec_size *len )
+{
+    omf_frame       frame_num;
+
+    frame_num = OmfGetU16( *buffer );
+    *buffer += 2;
+    *len -= 2;
+    return( frame_num );
+}
+
+static void GetFrame( unsigned char method, ORL_STRUCT( omf_thread_fixup ) *thread, omf_bytes *buffer, omf_rec_size *len )
+{
+    thread->method = method;
+    switch( method ) {
+    case FRAME_SEG:                 /* segment index                */
+    case FRAME_GRP:                 /* group index                  */
+    case FRAME_EXT:                 /* external index               */
+        thread->idx = loadIndex( buffer, len );
+        break;
+    case FRAME_ABS:                 /* absolute frame number        */
+        thread->idx = loadFrameNumber( buffer, len );
+        break;
+    default:
+        thread->idx = 0;
+        break;
+    }
+}
+
+static void GetTarget( unsigned char method, ORL_STRUCT( omf_thread_fixup ) *thread, omf_bytes *buffer, omf_rec_size *len )
+{
+    thread->method = method;
+    switch( method ) {
+    case TARGET_SEG:                /* segment index                */
+    case TARGET_GRP:                /* group index                  */
+    case TARGET_EXT:                /* external index               */
+        thread->idx = loadIndex( buffer, len );
+        break;
+    case TARGET_ABS:                /* absolute frame number        */
+        thread->idx = loadFrameNumber( buffer, len );
+        break;
+    default:
+        thread->idx = 0;
+        break;
+    }
+}
 
 static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, omf_bytes *buffer, omf_rec_size *cur )
 {
     omf_bytes           buf;
     omf_rec_size        len;
     unsigned_8          m;
-    int                 location;
+    omf_fix_loc         fix_loc;
     int                 offset;
-    unsigned_8          fmethod;
-    omf_idx             fidx = 0;
-    unsigned_8          thred;
-    unsigned_8          tmethod;
-    omf_idx             tidx;
+    ORL_STRUCT( omf_thread_fixup ) fthread;
+    ORL_STRUCT( omf_thread_fixup ) tthread;
     unsigned_8          datum;
     omf_rec_size        wordsize;
     omf_sec_addend      disp;
@@ -239,50 +289,37 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
     len = *cur;
 
     datum = buf[0];
-    m = ( (datum & 0x40) != 0 );
-    location = ( datum >> 2 ) & 0x0f;
+    m = ( (datum & FIXUPP_MBIT) != 0 );
+    fix_loc = (omf_fix_loc)(( datum >> 2 ) & 0x0f);
     offset = ( (datum & 0x03) << 8 ) | buf[1];
     datum = buf[2];
     buf += 3;
     len -= 3;
-
-    if( 0x80 & datum ) {
-        thred = ( datum >> 4 ) & 0x03;
-        fmethod = ofh->frame_thred[thred].method;
-        fidx = ofh->frame_thred[thred].idx;
+    /*
+     * frame processing
+     */
+    if( datum & FIXDAT_FTHREAD ) {
+        fthread = ofh->frame_thread[( datum >> 4 ) & 3];
     } else {
-        fmethod = ( datum >> 4 ) & 0x07;
-        switch( fmethod ) {
-        case( FRAME_SEG ):                  /* segment index                */
-        case( FRAME_GRP ):                  /* group index                  */
-        case( FRAME_EXT ):                  /* external index               */
-            fidx = loadIndex( &buf, &len );
-            break;
-        case( FRAME_LOC ):                  /* frame containing location    */
-        case( FRAME_ABS ):                  /* absolute frame number        */
-        case( FRAME_TARG ):                 /* frame same as target         */
-        case( FRAME_NONE ):                 /* no frame                     */
-            fidx = 0;
-            break;
-        }
+        GetFrame( ( datum >> 4 ) & 7, &fthread, &buf, &len );
     }
-
-    if( 0x08 & datum ) {
-        thred = datum & 0x03;
-        tmethod = ofh->target_thred[thred].method;
-        tidx = ofh->target_thred[thred].idx;
+    /*
+     * target processing
+     */
+    if( datum & FIXDAT_TTHREAD ) {
+        tthread = ofh->target_thread[datum & 3];
     } else {
-        tmethod = datum & 0x07;
-        tidx = loadIndex( &buf, &len );
-        if( fmethod == FRAME_TARG ) {
+        GetTarget( datum & 3, &tthread, &buf, &len );
+        if( fthread.method == FRAME_TARG ) {
             /* fmethod becomes the same as tmethod (1 of first 3)
              */
-            fmethod = tmethod & 0x03;
-            fidx = tidx;
+            fthread = tthread;
         }
     }
-
-    if( datum & 0x04 ) {
+    /*
+     * target displacement processing
+     */
+    if( datum & FIXDAT_PBIT ) {
         disp = 0;
     } else {
         disp = OmfGetSWord( buf, wordsize );
@@ -292,7 +329,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
 
     *buffer = buf;
     *cur = len;
-    return( OmfAddFixupp( ofh, is32, m, location, offset, fmethod, fidx, tmethod, tidx, disp ) );
+    return( OmfAddFixupp( ofh, is32, m, fix_loc, offset, &fthread, &tthread, disp ) );
 }
 
 
@@ -300,11 +337,7 @@ static orl_return       processThreadFixup( omf_file_handle ofh, omf_bytes *buff
 {
     omf_bytes           buf;
     omf_rec_size        len;
-    unsigned_8          d;
-    unsigned_8          method;
-    unsigned_8          thred;
     unsigned_8          datum;
-    omf_thred_fixup     thredp;
 
     assert( ofh );
     assert( buffer );
@@ -317,24 +350,19 @@ static orl_return       processThreadFixup( omf_file_handle ofh, omf_bytes *buff
     len = *cur;
 
     datum = buf[0];
-    d = ( (datum & 0x40) != 0 );
-    method = ( datum >> 2 ) & 0x07;
-    thred = datum & 0x03;
     buf++;
     len--;
 
-    if( d ) {
-        thredp = &ofh->frame_thred[thred];
+    if( datum & 0x40 ) {
+        /*
+         * frame thread processing
+         */
+        GetFrame( ( datum >> 2 ) & 7, &ofh->frame_thread[datum & 3], &buf, &len );
     } else {
-        thredp = &ofh->target_thred[thred];
-    }
-
-    thredp->method = method;
-
-    /* If Index expected
-     */
-    if( !d || ( method < 3 ) ) {
-        thredp->idx = loadIndex( &buf, &len );
+        /*
+         * target thread processing
+         */
+        GetTarget( ( datum >> 2 ) & 3, &ofh->target_thread[datum & 3], &buf, &len );
     }
 
     *buffer = buf;
@@ -384,21 +412,26 @@ static orl_return       doCOMENT( omf_file_handle ofh )
         return( return_val );
 
     switch( class ) {
-    case( CMT_WAT_PROC_MODEL ):
-    case( CMT_MS_PROC_MODEL ):
+    case CMT_DISASM_DIRECTIVE:
+        ofh->status |= OMF_STATUS_WATCOM;
+        break;
+    case CMT_WAT_PROC_MODEL:
+        ofh->status |= OMF_STATUS_WATCOM;
+        /* fall through */
+    case CMT_MS_PROC_MODEL:
         /* Determine CPU
          */
         if( len == 0 )
             break;
         switch( *buffer ) {
-        case( '2' ):
-        case( '0' ):
+        case '2':
+        case '0':
             /* 16 bit code
              */
             ofh->machine_type = ORL_MACHINE_TYPE_I8086;
             _SetWordSize( ofh->flags, ORL_FILE_FLAG_16BIT_MACHINE );
             break;
-        case( '3' ):
+        case '3':
         default:
             ofh->machine_type = ORL_MACHINE_TYPE_I386;
             _SetWordSize( ofh->flags, ORL_FILE_FLAG_32BIT_MACHINE );
@@ -409,7 +442,7 @@ static orl_return       doCOMENT( omf_file_handle ofh )
          * see dmpobj source code for format of this coment record
          */
         break;
-    case( CMT_EASY_OMF ):
+    case CMT_EASY_OMF:
         /* Pharlap Sucks!!!!
          * Their weird object files forces us to do this crap
          */
@@ -420,7 +453,7 @@ static orl_return       doCOMENT( omf_file_handle ofh )
             ofh->status |= OMF_STATUS_ARCH_SET;
         }
         break;
-    case( CMT_MS_OMF ):
+    case CMT_MS_OMF:
         /* If we see the "New OMF" COMENT record, we need to see if it
          * contains the debug info style information. If it isn't CodeView,
          * we don't want to parse LINNUM records as they will be in different
@@ -558,10 +591,10 @@ static orl_return       doCOMDEF( omf_file_handle ofh, omf_rectyp typ )
         buffer += slen;
         loadIndex( &buffer, &len );
         switch( buffer[0] ) {
-        case( COMDEF_NEAR ):
+        case COMDEF_NEAR:
             slen = 1;
             break;
-        case( COMDEF_FAR ):
+        case COMDEF_FAR:
             slen = 2;
             break;
         default:
@@ -575,11 +608,11 @@ static orl_return       doCOMDEF( omf_file_handle ofh, omf_rectyp typ )
                 return( ORL_ERROR );
             if( buffer[0] & COMDEF_LEAF_SIZE ) {
                 switch( buffer[0] ) {
-                case( COMDEF_LEAF_4 ):  dec++;
+                case COMDEF_LEAF_4:  dec++;
                     /* fall through */
-                case( COMDEF_LEAF_3 ):  dec++;
+                case COMDEF_LEAF_3:  dec++;
                     /* fall through */
-                case( COMDEF_LEAF_2 ):  dec += 2;
+                case COMDEF_LEAF_2:  dec += 2;
                     break;
                 default:
                     return( ORL_ERROR );
@@ -615,8 +648,8 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
     buffer = ofh->parsebuf;
 
     switch( typ ) {
-    case( CMD_LINSYM ):
-    case( CMD_LINSYM32 ):
+    case CMD_LINSYM:
+    case CMD_LINSYM32:
         buffer++;
         len--;
         name = loadIndex( &buffer, &len );
@@ -624,21 +657,21 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
             return( ORL_ERROR );
         seg = 0;
         break;
-    case( CMD_LINNUM ):
-    case( CMD_LINNUM32 ):
+    case CMD_LINNUM:
+    case CMD_LINNUM32:
         switch( ofh->debug_style ) {
-        case( OMF_DBG_STYLE_CODEVIEW ):
+        case OMF_DBG_STYLE_CODEVIEW:
             // We have MS style line numbers.
             loadIndex( &buffer, &len );
             seg = loadIndex( &buffer, &len );
             if( seg == 0 )
                 return( ORL_OKAY );
             break;
-        case( OMF_DBG_STYLE_HLL ):
+        case OMF_DBG_STYLE_HLL:
             // We have IBM HLL style line numbers.
             // TODO
             return( ORL_OKAY );
-        case( OMF_DBG_STYLE_UNKNOWN ):
+        case OMF_DBG_STYLE_UNKNOWN:
             // We don't know what this is. Do not attempt to parse.
             return( ORL_OKAY );
         }
@@ -656,7 +689,7 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
     while( len ) {
         if( len < ( wordsize + 2 ) )
             return( ORL_ERROR );
-        line = (unsigned_16)OmfGetUWord( buffer, 2 );
+        line = OmfGetU16( buffer );
         buffer += 2;
         len -= 2;
         offset = OmfGetUWord( buffer, wordsize );
@@ -706,9 +739,7 @@ static orl_return       doPUBDEF( omf_file_handle ofh, omf_rectyp typ )
     if( seg == 0 ) {
         if( len < 2 )
             return( ORL_ERROR );
-        frame = OmfGetFrame( buffer );
-        buffer += 2;
-        len -= 2;
+        frame = loadFrameNumber( &buffer, &len );
     }
 
     while( len ) {
@@ -808,12 +839,15 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
         if( ofh->status & OMF_STATUS_EASY_OMF ) {
             // FIXME !!! it looks bugy, frame should be 16-bit and offset ?
             // I can not found any information about it
-            frame = OmfGetFrame( buffer );
+            frame = loadFrameNumber( &buffer, &len );
         } else {
-            frame = OmfGetFrame( buffer );
+            frame = loadFrameNumber( &buffer, &len );
         }
-        buffer += 3;
-        len -= 3;
+        /*
+         * skip one byte
+         */
+        buffer += 1;
+        len -= 1;
         if( len < ( wordsize + 3 ) ) {
             return( ORL_ERROR );
         }
@@ -923,7 +957,7 @@ static orl_return       doFIXUPP( omf_file_handle ofh, omf_rectyp typ )
          * and act upon it
          */
         datum = buffer[0];
-        if( datum & 0x80 ) {
+        if( datum & FIXUPP_FIXUP ) {
             return_val = processExplicitFixup( ofh, is32, &buffer, &len );
         } else {
             return_val = processThreadFixup( ofh, &buffer, &len );
@@ -1133,9 +1167,7 @@ static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
         group = loadIndex( &buffer, &len );
         seg = loadIndex( &buffer, &len );
         if( seg == 0 && group == 0 ) {
-            frame = OmfGetFrame( buffer );
-            buffer += 2;
-            len -= 2;
+            frame = loadFrameNumber( &buffer, &len );
         }
     }
 
@@ -1150,96 +1182,96 @@ static orl_return   procRecord( omf_file_handle ofh, omf_rectyp typ )
     assert( ofh );
 
     switch( typ ) {
-    case( CMD_COMENT ):         /* comment record                       */
+    case CMD_COMENT:            /* comment record                       */
         return( doCOMENT( ofh ) );
 
-    case( CMD_MODEND ):         /* end of module record                 */
-    case( CMD_MODEND32 ):       /* 32-bit end of module record          */
+    case CMD_MODEND:            /* end of module record                 */
+    case CMD_MODEND32:          /* 32-bit end of module record          */
         return( doMODEND( ofh, typ ) );
 
-    case( CMD_EXTDEF ):         /* import names record                  */
-    case( CMD_LEXTDEF ):        /* local import names record            */
-    case( CMD_LEXTDEF32 ):      /* 32-bit local import names record     */
+    case CMD_EXTDEF:            /* import names record                  */
+    case CMD_LEXTDEF:           /* local import names record            */
+    case CMD_LEXTDEF32:         /* 32-bit local import names record     */
         return( doEXTDEF( ofh, typ ) );
 
-    case( CMD_CEXTDEF ):        /* external reference to a COMDAT       */
+    case CMD_CEXTDEF:           /* external reference to a COMDAT       */
         return( doCEXTDEF( ofh, typ ) );
 
-    case( CMD_PUBDEF ):         /* export names record                  */
-    case( CMD_PUBDEF32 ):       /* 32-bit export names record           */
-    case( CMD_LPUBDEF ):        /* static export names record           */
-    case( CMD_LPUBDEF32 ):      /* static export names record           */
+    case CMD_PUBDEF:            /* export names record                  */
+    case CMD_PUBDEF32:          /* 32-bit export names record           */
+    case CMD_LPUBDEF:           /* static export names record           */
+    case CMD_LPUBDEF32:         /* static export names record           */
         return( doPUBDEF( ofh, typ ) );
 
-    case( CMD_LNAMES ):         /* list of names record                 */
-    case( CMD_LLNAMES ):        /* a "local" lnames                     */
+    case CMD_LNAMES:            /* list of names record                 */
+    case CMD_LLNAMES:           /* a "local" lnames                     */
         return( doLNAMES( ofh, typ ) );
 
-    case( CMD_SEGDEF ):         /* segment definition record            */
-    case( CMD_SEGDEF32 ):       /* 32-bit segment definition            */
+    case CMD_SEGDEF:            /* segment definition record            */
+    case CMD_SEGDEF32:          /* 32-bit segment definition            */
         return( doSEGDEF( ofh, typ ) );
 
-    case( CMD_GRPDEF ):         /* group definition record              */
+    case CMD_GRPDEF:            /* group definition record              */
         return( doGRPDEF( ofh ) );
 
-    case( CMD_FIXUPP ):         /* relocation record                    */
-    case( CMD_FIXUPP32 ):       /* 32-bit relocation record             */
+    case CMD_FIXUPP:            /* relocation record                    */
+    case CMD_FIXUPP32:          /* 32-bit relocation record             */
         return( doFIXUPP( ofh, typ ) );
 
-    case( CMD_LEDATA ):         /* object record                        */
-    case( CMD_LEDATA32 ):       /* 32-bit object record                 */
+    case CMD_LEDATA:            /* object record                        */
+    case CMD_LEDATA32:          /* 32-bit object record                 */
         return( doLEDATA( ofh, typ ) );
 
-    case( CMD_LIDATA ):         /* repeated data record                 */
-    case( CMD_LIDATA32 ):       /* 32-bit repeated data record          */
+    case CMD_LIDATA:            /* repeated data record                 */
+    case CMD_LIDATA32:          /* 32-bit repeated data record          */
         return( doLIDATA( ofh, typ ) );
 
-    case( CMD_COMDAT ):         /* initialized communal data record     */
-    case( CMD_COMDAT32 ):       /* initialized 32-bit communal data rec */
+    case CMD_COMDAT:            /* initialized communal data record     */
+    case CMD_COMDAT32:          /* initialized 32-bit communal data rec */
         return( doCOMDAT( ofh, typ ) );
 
-    case( CMD_COMDEF ):         /* communal definition                  */
-    case( CMD_LCOMDEF ):        /* local comdev                         */
+    case CMD_COMDEF:            /* communal definition                  */
+    case CMD_LCOMDEF:           /* local comdev                         */
         return( doCOMDEF( ofh, typ ) );
 
-    case( CMD_THEADR ):         /* additonal header record              */
+    case CMD_THEADR:            /* additonal header record              */
         return( doTHEADR( ofh ) );
 
-    case( CMD_LINNUM ):         /* line number record                   */
-    case( CMD_LINNUM32 ):       /* 32-bit line number record.           */
-    case( CMD_LINSYM ):         /* LINNUM for a COMDAT                  */
-    case( CMD_LINSYM32 ):       /* 32-bit LINNUM for a COMDAT           */
+    case CMD_LINNUM:            /* line number record                   */
+    case CMD_LINNUM32:          /* 32-bit line number record.           */
+    case CMD_LINSYM:            /* LINNUM for a COMDAT                  */
+    case CMD_LINSYM32:          /* 32-bit LINNUM for a COMDAT           */
         return( doLINNUM( ofh, typ ) );
 
-    case( CMD_BAKPAT ):         /* backpatch record (for Quick C)       */
-    case( CMD_BAKPAT32 ):       /* 32-bit backpatch record              */
-    case( CMD_NBKPAT ):         /* named backpatch record (MS C++)      */
-    case( CMD_NBKPAT32 ):       /* 32-bit named backpatch record        */
+    case CMD_BAKPAT:            /* backpatch record (for Quick C)       */
+    case CMD_BAKPAT32:          /* 32-bit backpatch record              */
+    case CMD_NBKPAT:            /* named backpatch record (MS C++)      */
+    case CMD_NBKPAT32:          /* 32-bit named backpatch record        */
         return( doBAKPAT( ofh, typ ) );
 
-    case( CMD_RHEADR ):         /* These records are simply ignored     */
-    case( CMD_REGINT ):         /****************************************/
-    case( CMD_REDATA ):
-    case( CMD_RIDATA ):
-    case( CMD_OVLDEF ):
-    case( CMD_ENDREC ):
-    case( CMD_BLKDEF ):         /* block definition record              */
-    case( CMD_BLKDEF32 ):       /* weird extension for QNX MAX assembler*/
-    case( CMD_BLKEND ):         /* block end record                     */
-    case( CMD_BLKEND32 ):       /* _might_ be used by QNX MAX assembler */
-    case( CMD_DEBSYM ):
-    case( CMD_LHEADR ):
-    case( CMD_PEDATA ):
-    case( CMD_PIDATA ):
-    case( CMD_LOCSYM ):
-    case( CMD_LIBHED ):
-    case( CMD_LIBNAM ):
-    case( CMD_LIBLOC ):
-    case( CMD_LIBDIC ):
-    case( CMD_ALIAS ):          /* alias definition record              */
-    case( CMD_VERNUM ):         /* TIS version number record            */
-    case( CMD_VENDEXT ):        /* TIS vendor extension record          */
-    case( CMD_TYPDEF ):         /* type definition record               */
+    case CMD_RHEADR:            /* These records are simply ignored     */
+    case CMD_REGINT:            /****************************************/
+    case CMD_REDATA:
+    case CMD_RIDATA:
+    case CMD_OVLDEF:
+    case CMD_ENDREC:
+    case CMD_BLKDEF:            /* block definition record              */
+    case CMD_BLKDEF32:          /* weird extension for QNX MAX assembler*/
+    case CMD_BLKEND:            /* block end record                     */
+    case CMD_BLKEND32:          /* _might_ be used by QNX MAX assembler */
+    case CMD_DEBSYM:
+    case CMD_LHEADR:
+    case CMD_PEDATA:
+    case CMD_PIDATA:
+    case CMD_LOCSYM:
+    case CMD_LIBHED:
+    case CMD_LIBNAM:
+    case CMD_LIBLOC:
+    case CMD_LIBDIC:
+    case CMD_ALIAS:             /* alias definition record              */
+    case CMD_VERNUM:            /* TIS version number record            */
+    case CMD_VENDEXT:           /* TIS vendor extension record          */
+    case CMD_TYPDEF:            /* type definition record               */
         return( loadRecord( ofh ) );
 
     default:
@@ -1289,10 +1321,10 @@ orl_return      OmfParseScanTab( omf_bytes buffer, omf_rec_size len, omf_scan_ta
     assert( st_entry );
 
     switch( buffer[0] ) {
-    case( DDIR_SCAN_TABLE ):
+    case DDIR_SCAN_TABLE:
         wordsize = 2;
         break;
-    case( DDIR_SCAN_TABLE_32 ):
+    case DDIR_SCAN_TABLE_32:
         wordsize = 4;
         break;
     default:

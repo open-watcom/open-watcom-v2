@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,12 +56,7 @@
 #define RMR_MOD_DIR     6
 #define RMR_MOD_IND     0x80
 
-#define D0      (0 << S_RMR_MOD)
-#define D8      (1 << S_RMR_MOD)
-#define D16     (2 << S_RMR_MOD)
 
-#define INDICES 8
-#define BP_INDEX 6
 static  hw_reg_set IndexTab[] = {
     HW_D_2( HW_BX, HW_SI ),
     HW_D_2( HW_BX, HW_DI ),
@@ -81,38 +76,35 @@ static void OpndSizeIf( void )
     }
 }
 
-static  byte    DoIndex( hw_reg_set regs )
-/****************************************/
+byte    DoIndex( hw_reg_set regs )
+/********************************/
 {
     int i;
 
-    for( i = 0; i < INDICES; ++i ) {
+    for( i = 0; i < sizeof( IndexTab ) / sizeof( IndexTab[0] ); i++ ) {
         if( HW_Equal( regs, IndexTab[i] ) ) {
-            break;
+            return( i << S_RMR_RM );
         }
     }
-    if( i >= INDICES ) {
-        _Zoiks( ZOIKS_033 );
-    }
-    i <<= S_RMR_RM;
-    return( i );
+    _Zoiks( ZOIKS_033 );
+    return( 0 );
 }
 
 
-static  byte    Displacement( signed_32 val, hw_reg_set regs )
-/************************************************************/
+byte    Displacement( signed_32 val, hw_reg_set regs )
+/****************************************************/
 {
     HW_CTurnOff( regs, HW_SEGS );
     if( val == 0 && !HW_CEqual( regs, HW_BP ) )
-        return( D0 );
+        return( DISP0 );
     if( val <= 127 && val >= -128 ) {
         AddByte( val & 0xff );
-        return( D8 );
+        return( DISP8 );
     } else {
         val &= 0xffff;
         AddByte( val );
         AddByte( val >> 8 );
-        return( D16 );
+        return( DISPW );
     }
 }
 
@@ -137,7 +129,7 @@ static  byte    DoDisp( name *op, hw_reg_set regs )
         val += NewBase( temp_base ) + base->v.offset - temp_base->v.offset;
         dmod = Displacement( val, regs );
     } else {
-        dmod = D16;
+        dmod = DISPW;
         ILen += 2;
         DoSymRef( op->i.base, val, false );
     }
@@ -278,7 +270,7 @@ void    LayLeaRegOp( instruction *ins )
         if( right->c.const_type == CONS_ABSOLUTE ) {
             Inst[RMR] |= Displacement( right->c.lo.int_value, left->r.reg );
         } else {
-            Inst[RMR] |= D16;
+            Inst[RMR] |= DISPW;
             DoRelocConst( right, U2 );
         }
     } else {
@@ -364,9 +356,8 @@ void    LayModRM( name *op )
         if( base->t.location == NO_LOCATION ) {
             _Zoiks( ZOIKS_030 );
         }
-        Inst[RMR] |= Displacement( NewBase( base ) + op->v.offset
-                                        - base->v.offset, HW_BP )
-                         + ( BP_INDEX << S_RMR_RM );
+        Inst[RMR] |= Displacement( NewBase( base ) + op->v.offset - base->v.offset, HW_BP );
+        Inst[RMR] |= DoIndex( HW_BP );
         break;
     case N_INDEXED:
         CheckSize();
@@ -407,7 +398,8 @@ void    LayModRM( name *op )
                 HW_CTurnOff( regs, HW_SEGS );
             }
         }
-        Inst[RMR] |= DoDisp( op, regs ) + DoIndex( regs );
+        Inst[RMR] |= DoDisp( op, regs );
+        Inst[RMR] |= DoIndex( regs );
         break;
     case N_REGISTER:
         LayRMRegOp( op );
@@ -644,32 +636,6 @@ void    Pow2Div( instruction *ins )
     default:
         break;
     }
-}
-
-void    GenUnkLea( pointer value )
-/********************************/
-{
-    LayOpword( M_LEA );
-    OpndSize( HW_SP );
-    LayReg( HW_SP );
-    Inst[RMR] |= D16;
-    ILen += 2;
-    DoAbsPatch( value, 2 );
-    Inst[RMR] |= DoIndex( HW_BP );
-}
-
-void    GenLeaSP( int offset )
-/*****************************
-    LEA         sp,offset[bp]
-*/
-{
-    _Code;
-    LayOpword( M_LEA );
-    OpndSize( HW_SP );
-    LayReg( HW_SP );
-    Inst[RMR] |= Displacement( offset, HW_BP );
-    Inst[RMR] |= DoIndex( HW_BP );
-    _Emit;
 }
 
 void    GFstp10( type_length where )

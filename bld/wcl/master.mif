@@ -1,28 +1,14 @@
-proj_name = wcl
-
-!ifndef wcl_autodepends
-wcl_autodepends = .AUTODEPEND
-!endif
-
-wcl_trmem = 1
-
-owcc_specs = specs.owc
-!ifdef bootstrap
-name       = b$(name)
-owcc_specs = b$(owcc_specs)
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 !include trmem.mif
 
-objs = clcommon.obj $(trmem_objs)
-!ifdef target_cpu
-objs += wcl.obj
-!else
-objs += owcc.obj getopt.obj quit.obj
-!endif
+#
+# cflags
+#
+.c: ../../c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
+
+inc_dirs = -I. -I.. -I"../../h"
 
 extra_cpp_flags_clcommon = $(trmem_cpp_flags)
 
@@ -30,38 +16,43 @@ extra_c_flags_owcc     = -I"$(posix_dir)/h"
 extra_c_flags_getopt   = -I"$(posix_dir)/h"
 extra_c_flags_quit     = -I"$(posix_dir)/h"
 extra_c_flags_clcommon = $(trmem_cover_cflags)
-extra_c_flags_trmem    = $(trmem_cflags)
 
-extra_deps_ = owcchelp.gh $(owcc_specs)
+#
+# lflags
+#
+extra_l_flags_dos_i86 = option stack=4k
 
-inc_dirs = -I. -I.. -I"../../h"
+# explicit rules
+#################
 
-.c: ../../c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
+owcc_specs = specs.owc
+!ifdef bootstrap
+owcc_specs = b$(owcc_specs)
+!endif
 
-# systems where version resources must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
+#
+# EXE
+#
+!ifndef target_cpu
+exetarg_prebuild_objs = usage.gh $(owcc_specs)
+!else
+exetarg_prebuild_objs = usage.gh
+!endif
+!ifdef target_cpu
+exetarg_objs          = clcommon.obj $(trmem_objs) wcl.obj
+!else
+exetarg_objs          = clcommon.obj $(trmem_objs) owcc.obj getopt.obj quit.obj
+!endif
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
+!include exetarg.mif
 
-verrc_exe = $(name)
+#
+# rc and others
+#
+#verrc_exe = $(proj_name)
 verrc_exe_skel = ../../exever.rc
 !include verrc.mif
-
-$(name).exe : $(extra_deps_$(target_cpu)) $(objs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $(objs) $(bld_ldflags)
-! else
-    $(cl) $(clflags) $(objs) $(ldflags)
-! endif
-!else
-    $(linker) name $^@ $(lflags) file {$(objs)}
-!endif
-    @%make bind_res_version_exe
-
-owcchelp.gh: ../../owcchelp.sp $(__MAKEFILES__)
-    @%make echo_wsplice
-    $(wsplice) -f "\"%s\"," $[@ $@
 
 $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
     @%make echo_wsplice
@@ -69,4 +60,28 @@ $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
     $(wsplice) -k Pspecs $[@ - | sed -f ../../convtool.sed >$@
 !else
     $(wsplice) -k Pspecs $[@ $@
+!endif
+
+# optencod options and targets for various hosts
+!ifdef exetarg_qnx_res
+optencod_opt_qnx    = -u $(exetarg_qnx_res)
+!endif
+#optencod_enc_linux  = -utf8
+!ifeq release 0
+optencod_targ_dbg   = dbg
+!endif
+
+opt_targets = $(target_cpu) $(host_os) $(optencod_targ_dbg) $(optencod_targ_$(target_cpu))
+
+!ifdef target_cpu
+usage.gh $(exetarg_$(host_os)_res) : ../../h/wclopts.gml $(__MAKEFILES__)
+!else
+usage.gh $(exetarg_$(host_os)_res) : ../../h/owccopts.gml $(__MAKEFILES__)
+!endif
+    @%make echo_optencod
+    $(noecho)optencod -c -q $(optencod_opt_$(host_os)) $[@ . . $@ $(opt_targets)
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
 !endif

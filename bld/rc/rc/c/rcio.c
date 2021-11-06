@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,12 +64,14 @@
 
 #define MAX_INCLUDE_DEPTH   16
 
+typedef struct file_loc {
+    struct file_loc     *prev;
+    char                *Filename;
+    unsigned            LineNo;
+    bool                IsCOrHFile;
+} file_loc;
+
 typedef struct FileStackEntry {
-    struct {
-        char                *Filename;
-        unsigned            LineNo;
-        bool                IsCOrHFile;
-    }                   loc;
     char                *Filename;
     bool                IsOpen;
     FILE                *fp;
@@ -85,6 +87,7 @@ typedef struct FileStack {
     /* + 1 for the before first entry */
     FileStackEntry      Stack[MAX_INCLUDE_DEPTH + 1];
     FileStackEntry      *Current;
+    file_loc            *Location;
 } FileStack;
 
 /* EofChar points to the memory location after the last character currently */
@@ -104,13 +107,66 @@ static FileStack    InStack;
 /* All other routines (except TextInputInit and TextInputShutdown) operate */
 /* on the current file which is the one at the top of the stack */
 
-static void freeCurrentFileNames( void )
-/**************************************/
+static void freeCurrentFileName( void )
+/*************************************/
 {
-    RESFREE( InStack.Current->loc.Filename );
     RESFREE( InStack.Current->Filename );
-    InStack.Current->loc.Filename = NULL;
     InStack.Current->Filename = NULL;
+}
+
+static bool checkCurrentFileType( const char *filename )
+/******************************************************/
+{
+    pgroup2     pg;
+    bool        isCOrH;
+
+    isCOrH = false;
+    _splitpath2( filename, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    /* if this is a c or h file ext will be '.', '[ch]', '\0' */
+    if( pg.ext[0] == '.' && pg.ext[1] != '\0' && pg.ext[2] == '\0' ) {
+        switch( pg.ext[1] ) {
+        case 'c':
+        case 'C':
+        case 'h':
+        case 'H':
+            isCOrH = true;
+            break;
+        }
+    }
+    return( isCOrH );
+
+} /* checkCurrentFileType */
+
+static file_loc *addLocation( file_loc *prev, const char *filename )
+/******************************************************************/
+{
+    file_loc    *loc;
+
+    if( prev == NULL || strcmp( prev->Filename, filename ) != 0 ) {
+        loc = RESALLOC( sizeof( file_loc ) );
+        if( loc != NULL ) {
+            loc->prev = prev;
+            loc->IsCOrHFile = checkCurrentFileType( filename );
+            loc->Filename = RESALLOC( strlen( filename ) + 1 );
+            strcpy( loc->Filename, filename );
+            return( loc );
+        }
+    }
+    return( prev );
+}
+
+static file_loc *removeLocation( file_loc *loc )
+/**********************************************/
+{
+    file_loc    *prev;
+
+    prev = NULL;
+    if( loc != NULL ) {
+        prev = loc->prev;
+        RESFREE( loc->Filename );
+        RESFREE( loc );
+    }
+    return( prev );
 }
 
 static void saveCurrentFileOffset( void )
@@ -200,7 +256,7 @@ static bool RcIoPopTextInputFile( void )
 /**************************************/
 {
     closeFile( InStack.Current );
-    freeCurrentFileNames();
+    freeCurrentFileName();
     InStack.Current--;
     if( IsEmptyFileStack( InStack ) ) {
         return( true );
@@ -216,11 +272,15 @@ static void RcIoTextInputInit( void )
     InStack.Buffer = RESALLOC( IO_BUFFER_SIZE );
     InStack.BufferSize = IO_BUFFER_SIZE;
     InStack.Current = InStack.Stack;
+    InStack.Location = NULL;
 } /* RcIoTextInputInit */
 
 static bool RcIoTextInputShutdown( void )
 /***************************************/
 {
+    while( InStack.Location != NULL ) {
+        InStack.Location = removeLocation( InStack.Location );
+    }
     if( InStack.Buffer != NULL ) {
         RESFREE( InStack.Buffer );
         InStack.Buffer = NULL;
@@ -253,7 +313,7 @@ static bool RcIoPushTextInputFile( const char *filename )
     /* open file and set up the file info */
     error = openNewFile( filename );
     if( error ) {
-        freeCurrentFileNames();
+        freeCurrentFileName();
         InStack.Current--;
     } else {
         error = readCurrentFileBuffer();
@@ -265,74 +325,46 @@ static bool RcIoPushTextInputFile( const char *filename )
 const char *RcIoGetCurrentFileName( void )
 /****************************************/
 {
-    if( IsEmptyFileStack( InStack ) ) {
+    if( InStack.Location == NULL ) {
         return( NULL );
     } else {
-        return( InStack.Current->loc.Filename );
+        return( InStack.Location->Filename );
     }
 } /* RcIoGetCurrentFileName */
 
 unsigned RcIoGetCurrentFileLineNo( void )
 /***************************************/
 {
-    if( IsEmptyFileStack( InStack ) ) {
+    if( InStack.Location == NULL ) {
         return( 0 );
     } else {
-        return( InStack.Current->loc.LineNo );
+        return( InStack.Location->LineNo );
     }
 } /* RcIoGetCurrentFileLineNo */
-
-static bool checkCurrentFileType( void )
-/**************************************/
-{
-    PGROUP2     pg;
-    bool        isCOrH;
-
-    isCOrH = false;
-    _splitpath2( InStack.Current->loc.Filename, pg.buffer, NULL, NULL, NULL, &pg.ext );
-    /* if this is a c or h file ext will be '.', '[ch]', '\0' */
-    if( pg.ext[0] == '.' && pg.ext[1] != '\0' && pg.ext[2] == '\0' ) {
-        switch( pg.ext[1] ) {
-        case 'c':
-        case 'C':
-        case 'h':
-        case 'H':
-            isCOrH = true;
-            break;
-        }
-    }
-    return( isCOrH );
-
-} /* checkCurrentFileType */
 
 void RcIoSetCurrentFileInfo( unsigned lineno, const char *filename )
 /******************************************************************/
 {
-    if( !IsEmptyFileStack( InStack ) ) {
-        InStack.Current->loc.LineNo = lineno;
-        if( filename != NULL ) {
-            if( InStack.Current->loc.Filename == NULL ) {
-                InStack.Current->loc.Filename = RESALLOC( strlen( filename ) + 1 );
-                strcpy( InStack.Current->loc.Filename, filename );
-                InStack.Current->loc.IsCOrHFile = checkCurrentFileType();
-            } else if( strcmp( InStack.Current->loc.Filename, filename ) != 0 ) {
-                RESFREE( InStack.Current->loc.Filename );
-                InStack.Current->loc.Filename = RESALLOC( strlen( filename ) + 1 );
-                strcpy( InStack.Current->loc.Filename, filename );
-                InStack.Current->loc.IsCOrHFile = checkCurrentFileType();
-            }
-        }
+    file_loc    *loc;
+
+    loc = InStack.Location;
+    if( loc == NULL || lineno == 1 ) {
+        loc = addLocation( loc, filename );
+    } else if( strcmp( loc->Filename, filename ) != 0 ) {
+        loc = removeLocation( loc );
     }
+    loc->LineNo = lineno;
+    InStack.Location = loc;
 } /* RcIoSetCurrentFileInfo */
 
 bool RcIoIsCOrHFile( void )
 /*************************/
 /* returns true if the current file is a .c or .h file, false otherwise */
 {
-    if( IsEmptyFileStack( InStack ) ) {
+    if( InStack.Location == NULL ) {
         return( false );
     } else {
-        return( InStack.Current->loc.IsCOrHFile );
+        return( InStack.Location->IsCOrHFile );
     }
 } /* RcIoIsCOrHFile */
 
@@ -344,7 +376,7 @@ static int GetLogChar( void )
     newchar = *(unsigned char *)InStack.NextChar;
     assert( newchar > 0 );
     if( newchar == '\n' ) {
-        InStack.Current->loc.LineNo++;
+        InStack.Location->LineNo++;
     }
 
     InStack.NextChar++;
@@ -484,26 +516,51 @@ static bool Pass1InitRes( void )
     return( false );
 } /* Pass1InitRes */
 
+static const char *get_parent_filename( void **cookie )
+/*****************************************************/
+{
+    file_loc  **last;
+
+    if( cookie != NULL ) {
+        last = (file_loc **)cookie;
+        if( *last == NULL ) {
+            *last = InStack.Location;
+        } else {
+            *last = (*last)->prev;
+        }
+        if( *last != NULL ) {
+            return( (*last)->Filename );
+        }
+    }
+    return( NULL );
+}
+
 int RcFindSourceFile( const char *name, char *fullpath )
 /******************************************************/
 {
-    return( PP_IncludePathFind( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
+    return( PP_IncludePathFind( name, strlen( name ), fullpath, PPINCLUDE_USR, get_parent_filename ) );
+}
+
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    return( CharSetLen[*(unsigned char *)p] + 1 );
 }
 
 static bool PreprocessInputFile( void )
 /*************************************/
 {
-    unsigned    flags;
+    pp_flags    ppflags;
     char        rcdefine[13];
     char        **cppargs;
     char        *p;
     int         rc;
 
-    flags = PPFLAG_EMIT_LINE | PPFLAG_IGNORE_INCLUDE;
+    ppflags = PPFLAG_EMIT_LINE | PPFLAG_IGNORE_INCLUDE;
     if( CmdLineParms.IgnoreCWD ) {
-        flags |= PPFLAG_IGNORE_CWD;
+        ppflags |= PPFLAG_IGNORE_CWD;
     }
-    rc = PP_FileInit2( CmdLineParms.InFileName, flags, NULL, CharSetLen );
+    rc = PP_FileInit( CmdLineParms.InFileName, ppflags, NULL );
     if( rc != 0 ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
         return( true );

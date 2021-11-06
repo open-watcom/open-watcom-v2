@@ -40,6 +40,7 @@
         .386p
         .387
 
+        INCLUDE winintrf.inc
         INCLUDE win30vxd.inc
         INCLUDE wdebug.inc
 
@@ -82,26 +83,6 @@ C_InUse         db ?
 C_PutPending    db ?
 C_ServerName    db MAX_SERVER_NAME dup(?)
 Conv_struct     ends
-
-Interrupt_struct struc
-I_SaveEAX               dd ?
-I_SaveEBX               dd ?
-I_SaveECX               dd ?
-I_SaveEDX               dd ?
-I_SaveEDI               dd ?
-I_SaveESI               dd ?
-I_SaveEFLAGS            dd ?
-I_SaveEBP               dd ?
-I_SaveEIP               dd ?
-I_SaveESP               dd ?
-I_SaveSS                dw ?
-I_SaveCS                dw ?
-I_SaveDS                dw ?
-I_SaveES                dw ?
-I_SaveFS                dw ?
-I_SaveGS                dw ?
-I_InterruptNumber       dw ?
-Interrupt_struct        ends
 
 ;Declare_Virtual_Device WDEBUG, 3, 0, WGod_Control, Debug_Device_ID, 0f0000000h
 Declare_Watcom_Debug_Virtual_Device 3, 0, WGod_Control, Debug_Device_ID, 00000001h
@@ -348,58 +329,58 @@ ReflectTo16Bit PROC near
         mov     esi,HotEventHandle
         VxDcall Cancel_VM_Event
         pop     edx
+
 no_cancel:
         mov     RealFault,0
-
         mov     eax,RealESP
-        mov     [edx.I_SaveESP],eax
+        mov     [edx.SaveESP],eax
         mov     eax,RealEIP
-        mov     [edx.I_SaveEIP],eax
+        mov     [edx.SaveEIP],eax
         mov     eax,RealEFlags
-        mov     [edx.I_SaveEFLAGS],eax
+        mov     [edx.SaveEFLAGS],eax
         mov     ax,RealCS
-        mov     [edx.I_SaveCS],ax
+        mov     [edx.SaveCS],ax
         mov     ax,RealSS
-        mov     [edx.I_SaveSS],ax
-
+        mov     [edx.SaveSS],ax
         jmp     short was_special
+
 not_special:
         mov     eax,[ebp.Client_ESP]
-        mov     [edx.I_SaveESP],eax
+        mov     [edx.SaveESP],eax
         mov     eax,[ebp.Client_EIP]
-        mov     [edx.I_SaveEIP],eax
+        mov     [edx.SaveEIP],eax
         mov     eax,[ebp.Client_EFlags]
-        mov     [edx.I_SaveEFLAGS],eax
+        mov     [edx.SaveEFLAGS],eax
         mov     ax,[ebp.Client_CS]
-        mov     [edx.I_SaveCS],ax
+        mov     [edx.SaveCS],ax
         mov     ax,[ebp.Client_SS]
-        mov     [edx.I_SaveSS],ax
-was_special:
+        mov     [edx.SaveSS],ax
 
+was_special:
         mov     eax,[ebp.Client_EAX]
-        mov     [edx.I_SaveEAX],eax
+        mov     [edx.SaveEAX],eax
         mov     eax,[ebp.Client_EBX]
-        mov     [edx.I_SaveEBX],eax
+        mov     [edx.SaveEBX],eax
         mov     eax,[ebp.Client_ECX]
-        mov     [edx.I_SaveECX],eax
+        mov     [edx.SaveECX],eax
         mov     eax,[ebp.Client_EDX]
-        mov     [edx.I_SaveEDX],eax
+        mov     [edx.SaveEDX],eax
         mov     eax,[ebp.Client_ESI]
-        mov     [edx.I_SaveESI],eax
+        mov     [edx.SaveESI],eax
         mov     eax,[ebp.Client_EDI]
-        mov     [edx.I_SaveEDI],eax
+        mov     [edx.SaveEDI],eax
         mov     eax,[ebp.Client_EBP]
-        mov     [edx.I_SaveEBP],eax
+        mov     [edx.SaveEBP],eax
         mov     ax,[ebp.Client_DS]
-        mov     [edx.I_SaveDS],ax
+        mov     [edx.SaveDS],ax
         mov     ax,[ebp.Client_ES]
-        mov     [edx.I_SaveES],ax
+        mov     [edx.SaveES],ax
         mov     ax,[ebp.Client_FS]
-        mov     [edx.I_SaveFS],ax
+        mov     [edx.SaveFS],ax
         mov     ax,[ebp.Client_GS]
-        mov     [edx.I_SaveGS],ax
+        mov     [edx.SaveGS],ax
         mov     ax,FaultType
-        mov     [edx.I_InterruptNumber],ax
+        mov     [edx.InterruptNumber],ax
 
 ;*
 ;*** point application at special code segment to handle the fault
@@ -2717,37 +2698,37 @@ EndProc SVC_GetInterruptCallback
 ;*****************************************************************************
 BeginProc SVC_RestartFromInterrupt
         mov     edx,ICDataFlat
-        mov     eax,[edx.I_SaveEAX]
+        mov     eax,[edx.SaveEAX]
         mov     [ebp.Client_EAX],eax
-        mov     eax,[edx.I_SaveEBX]
+        mov     eax,[edx.SaveEBX]
         mov     [ebp.Client_EBX],eax
-        mov     eax,[edx.I_SaveECX]
+        mov     eax,[edx.SaveECX]
         mov     [ebp.Client_ECX],eax
-        mov     eax,[edx.I_SaveEDX]
+        mov     eax,[edx.SaveEDX]
         mov     [ebp.Client_EDX],eax
-        mov     eax,[edx.I_SaveESI]
+        mov     eax,[edx.SaveESI]
         mov     [ebp.Client_ESI],eax
-        mov     eax,[edx.I_SaveEDI]
+        mov     eax,[edx.SaveEDI]
         mov     [ebp.Client_EDI],eax
-        mov     eax,[edx.I_SaveEBP]
+        mov     eax,[edx.SaveEBP]
         mov     [ebp.Client_EBP],eax
-        mov     eax,[edx.I_SaveESP]
+        mov     eax,[edx.SaveESP]
         mov     [ebp.Client_ESP],eax
-        mov     eax,[edx.I_SaveEIP]
+        mov     eax,[edx.SaveEIP]
         mov     [ebp.Client_EIP],eax
-        mov     eax,[edx.I_SaveEFLAGS]
+        mov     eax,[edx.SaveEFLAGS]
         mov     [ebp.Client_EFlags],eax
-        mov     ax,[edx.I_SaveCS]
+        mov     ax,[edx.SaveCS]
         mov     [ebp.Client_CS],ax
-        mov     ax,[edx.I_SaveDS]
+        mov     ax,[edx.SaveDS]
         mov     [ebp.Client_DS],ax
-        mov     ax,[edx.I_SaveES]
+        mov     ax,[edx.SaveES]
         mov     [ebp.Client_ES],ax
-        mov     ax,[edx.I_SaveFS]
+        mov     ax,[edx.SaveFS]
         mov     [ebp.Client_FS],ax
-        mov     ax,[edx.I_SaveGS]
+        mov     ax,[edx.SaveGS]
         mov     [ebp.Client_GS],ax
-        mov     ax,[edx.I_SaveSS]
+        mov     ax,[edx.SaveSS]
         mov     [ebp.Client_SS],ax
         pop     eax
         ret

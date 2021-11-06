@@ -670,7 +670,8 @@ log file. The Log File Data section lists the various types of
 information that can be included in a log file. If the check box for a
 piece of information is marked then that type of information will be
 written to the log file. The options in this section are:
-.begpoint $break Log File Data
+.begpoint $break
+.pointhdr Log File Data
 .point Memory Dump
 When this box is checked, a Memory Dump dialog is displayed whenever a
 log file entry is made. This dialog allows you to select the regions

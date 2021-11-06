@@ -5,6 +5,6 @@ model      = mf
 system     = os2
 linkage    = dynamic
 
-clib_release = 0
+lib_debug = 1
 
 !include $(clib_dir)/mrglib.mif

@@ -11,7 +11,6 @@ Reviewer: Not reviewed
 Missing members:
 :UL.
 :LI.err... need to look throught the standard
-:LI.
 :eUL.
 .*
 Completed members:

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +38,17 @@ PICK( RT_U4FS,        "__U4FS",      OP_CONVERT, U4,   RL_DX_AX, RL_,      RL_DX
 PICK( RT_I4FS,        "__I4FS",      OP_CONVERT, I4,   RL_DX_AX, RL_,      RL_DX_AX )
 PICK( RT_U4FD,        "__U4FD",      OP_CONVERT, U4,   RL_DX_AX, RL_,      RL_8 )
 PICK( RT_I4FD,        "__I4FD",      OP_CONVERT, I4,   RL_DX_AX, RL_,      RL_8 )
+PICK1( RT_U4FL,        "__U4FL",      OP_CONVERT, U4,   RL_DX_AX, RL_,      RL_ )
+PICK1( RT_I4FL,        "__I4FL",      OP_CONVERT, I4,   RL_DX_AX, RL_,      RL_ )
 PICK( RT_U8FS,        "__U8FS",      OP_CONVERT, U8,   RL_8,     RL_,      RL_DX_AX )
 PICK( RT_I8FS,        "__I8FS",      OP_CONVERT, I8,   RL_8,     RL_,      RL_DX_AX )
 PICK( RT_U8FD,        "__U8FD",      OP_CONVERT, U8,   RL_8,     RL_,      RL_8 )
 PICK( RT_I8FD,        "__I8FD",      OP_CONVERT, I8,   RL_8,     RL_,      RL_8 )
+PICK1( RT_U8FL,        "__U8FL",      OP_CONVERT, U8,   RL_8,     RL_,      RL_ )
+PICK1( RT_I8FL,        "__I8FL",      OP_CONVERT, I8,   RL_8,     RL_,      RL_ )
 PICK( RT_FSFD,        "__FSFD",      OP_CONVERT, FS,   RL_DX_AX, RL_,      RL_8 )
+PICK1( RT_FSFL,        "__FSFL",      OP_CONVERT, FS,   RL_DX_AX, RL_,      RL_ )
+PICK1( RT_FDFL,        "__FDFL",      OP_CONVERT, FD,   RL_8,     RL_,      RL_ )
 
 /* Following types have both truncation and rounding */
 PICK( RT_FSI4,        "__FSI4",      OP_CONVERT, FS,   RL_DX_AX, RL_,      RL_DX_AX )
@@ -60,14 +67,28 @@ PICK( RT_FDI8,        "__FDI8",      OP_CONVERT, FD,   RL_8,     RL_,      RL_8 
 PICK( RT_RDI8,        "__RDI8",      OP_ROUND,   FD,   RL_8,     RL_,      RL_8 )
 PICK( RT_FDU8,        "__FDU8",      OP_CONVERT, FD,   RL_8,     RL_,      RL_8 )
 PICK( RT_RDU8,        "__RDU8",      OP_ROUND,   FD,   RL_8,     RL_,      RL_8 )
+PICK1( RT_FLI4,        "__FLI4",      OP_CONVERT, FL,   RL_,      RL_,      RL_DX_AX )
+PICK1( RT_RLI4,        "__RLI4",      OP_ROUND,   FL,   RL_,      RL_,      RL_DX_AX )
+PICK1( RT_FLU4,        "__FLU4",      OP_CONVERT, FL,   RL_,      RL_,      RL_DX_AX )
+PICK1( RT_RLU4,        "__RLU4",      OP_ROUND,   FL,   RL_,      RL_,      RL_DX_AX )
+PICK1( RT_FLI8,        "__FLI8",      OP_CONVERT, FL,   RL_,      RL_,      RL_8 )
+PICK1( RT_RLI8,        "__RLI8",      OP_ROUND,   FL,   RL_,      RL_,      RL_8 )
+PICK1( RT_FLU8,        "__FLU8",      OP_CONVERT, FL,   RL_,      RL_,      RL_8 )
+PICK1( RT_RLU8,        "__RLU8",      OP_ROUND,   FL,   RL_,      RL_,      RL_8 )
 
 PICK( RT_U8FS7,       "__U8FS7",     OP_CONVERT, U8,   RL_8,     RL_,      RL_DX_AX )
 PICK( RT_U8FD7,       "__U8FD7",     OP_CONVERT, U8,   RL_8,     RL_,      RL_8 )
+PICK1( RT_U8FL7,       "__U8FL7",     OP_CONVERT, U8,   RL_8,     RL_,      RL_ )
 PICK( RT_FSU87,       "__FSU87",     OP_CONVERT, FS,   RL_DX_AX, RL_,      RL_8 )
 PICK( RT_FDU87,       "__FDU87",     OP_CONVERT, FD,   RL_8,     RL_,      RL_8 )
+PICK1( RT_FLU87,       "__FLU87",     OP_CONVERT, FL,   RL_,      RL_,      RL_8 )
 
 PICK( RT_FDFS,        "__FDFS",      OP_CONVERT, FD,   RL_8,     RL_,      RL_DX_AX )
 PICK( RT_RDFS,        "__RDFS",      OP_ROUND,   FD,   RL_8,     RL_,      RL_DX_AX )
+PICK1( RT_FLFS,        "__FLFS",      OP_CONVERT, FL,   RL_,      RL_,      RL_DX_AX )
+PICK1( RT_RLFS,        "__RLFS",      OP_ROUND,   FL,   RL_,      RL_,      RL_DX_AX )
+PICK1( RT_FLFD,        "__FLFD",      OP_CONVERT, FL,   RL_,      RL_,      RL_8 )
+PICK1( RT_RLFD,        "__RLFD",      OP_ROUND,   FL,   RL_,      RL_,      RL_8 )
 
 /* Following types are runtime routines to do arithmetic */
 PICK( RT_FSA,         "__FSA",       OP_ADD,     FS,   RL_DX_AX, RL_CX_BX, RL_DX_AX )
@@ -87,6 +108,12 @@ PICK( RT_EDD,         "__EDD",       OP_DIV,     FD,   RL_8,     RL_8,     RL_8 
 PICK( RT_FDC,         "__FDC",       OP_CMP,     FD,   RL_8,     RL_8,     RL_ )
 PICK( RT_EDC,         "__EDC",       OP_CMP,     FD,   RL_8,     RL_8,     RL_ )
 PICK( RT_FDN,         "__FDN",       OP_NEGATE,  FD,   RL_8,     RL_,      RL_8 )
+PICK1( RT_FLA,         "__FLA",       OP_ADD,     FL,   RL_,      RL_,      RL_ )
+PICK1( RT_FLS,         "__FLS",       OP_SUB,     FL,   RL_,      RL_,      RL_ )
+PICK1( RT_FLM,         "__FLM",       OP_MUL,     FL,   RL_,      RL_,      RL_ )
+PICK1( RT_FLD,         "__FLD",       OP_DIV,     FL,   RL_,      RL_,      RL_ )
+PICK1( RT_FLC,         "__FLC",       OP_CMP,     FL,   RL_,      RL_,      RL_ )
+PICK1( RT_FLN,         "__FLN",       OP_NEGATE,  FL,   RL_,      RL_,      RL_ )
 PICK( RT_I4M,         "__I4M",       OP_MUL,     I4,   RL_DX_AX, RL_CX_BX, RL_DX_AX )
 PICK( RT_I4D,         "__I4D",       OP_DIV,     I4,   RL_DX_AX, RL_CX_BX, RL_DX_AX )
 PICK( RT_I4MOD,       "__I4D",       OP_MOD,     I4,   RL_DX_AX, RL_CX_BX, RL_CX_BX )
@@ -105,10 +132,10 @@ PICK( RT_U8D,         "__U8DQ",      OP_DIV,     U8,   RL_8,     RL_8,     RL_8 
 PICK( RT_U8DE,        "__U8DQE",     OP_DIV,     U8,   RL_8,     RL_8,     RL_8 )
 PICK( RT_U8MOD,       "__U8DR",      OP_MOD,     U8,   RL_8,     RL_8,     RL_8 )
 PICK( RT_U8MODE,      "__U8DRE",     OP_MOD,     U8,   RL_8,     RL_8,     RL_8 )
-PICK( RT_I8RS,        "__I8LS",      OP_LSHIFT,  I8,   RL_8,     RL_SI,    RL_8 )
-PICK( RT_I8LS,        "__I8RS",      OP_RSHIFT,  I8,   RL_8,     RL_SI,    RL_8 )
-PICK( RT_U8RS,        "__U8LS",      OP_LSHIFT,  U8,   RL_8,     RL_SI,    RL_8 )
-PICK( RT_U8LS,        "__U8RS",      OP_RSHIFT,  U8,   RL_8,     RL_SI,    RL_8 )
+PICK( RT_I8LS,        "__I8LS",      OP_LSHIFT,  I8,   RL_8,     RL_SI,    RL_8 )
+PICK( RT_I8RS,        "__I8RS",      OP_RSHIFT,  I8,   RL_8,     RL_SI,    RL_8 )
+PICK( RT_U8LS,        "__U8LS",      OP_LSHIFT,  U8,   RL_8,     RL_SI,    RL_8 )
+PICK( RT_U8RS,        "__U8RS",      OP_RSHIFT,  U8,   RL_8,     RL_SI,    RL_8 )
 
 PICK( RT_PTS,         "__PTS",       OP_SUB,     PT,   RL_DX_AX, RL_CX_BX, RL_DX_AX )
 PICK( RT_PTC,         "__PTC",       OP_CMP,     PT,   RL_DX_AX, RL_CX_BX, RL_ )
@@ -119,6 +146,7 @@ PICK( RT_CHOP,        "__CHP",       OP_CALL,    0,    RL_,      RL_,      RL_ )
 PICK( RT_SCAN1,       "__SCN1",      OP_SELECT,  0,    RL_AL,    RL_,      RL_ )
 PICK( RT_SCAN2,       "__SCN2",      OP_SELECT,  0,    RL_AX,    RL_,      RL_ )
 PICK( RT_SCAN4,       "__SCN4",      OP_SELECT,  0,    RL_DX_AX, RL_,      RL_ )
+PICK( RT_GETDS,       "__GETDS",     OP_CALL,    0,    RL_,      RL_,      RL_ )
 PICK( RT_EPIHOOK,     "__EPI",       OP_CALL,    0,    RL_,      RL_,      RL_ )
 PICK( RT_PROHOOK,     "__PRO",       OP_CALL,    0,    RL_,      RL_,      RL_ )
 

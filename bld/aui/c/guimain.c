@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,7 +173,7 @@ static void WndMoveResize( a_window wnd )
         if( wnd->current.row >= wnd->rows ) {
             save_curr = wnd->current;
             WndDirtyCurr( wnd );
-            WndScroll( wnd, wnd->current.row - wnd->rows + 1 );
+            WndVScroll( wnd, wnd->current.row - wnd->rows + 1 );
             wnd->current = save_curr;
             wnd->current.row = wnd->rows - 1;
         }
@@ -213,7 +214,7 @@ static void DoMainGUIEventProc( void *_spawnp )
     gui_key             key;
     gui_keystate        state;
     gui_ctl_id          id;
-    int                 scroll;
+    int                 vscroll;
     gui_mcursor_handle  old_cursor;
 
     gui_window          *gui = ((spawn_parms *)_spawnp)->gui;
@@ -264,8 +265,8 @@ static void DoMainGUIEventProc( void *_spawnp )
         WndHourGlass( old_cursor );
         break;
     case GUI_SCROLL_VERTICAL:
-        GUI_GET_SCROLL( parm, scroll );
-        WndScroll( wnd, scroll );
+        GUI_GET_SCROLL( parm, vscroll );
+        WndVScroll( wnd, vscroll );
         break;
     case GUI_SCROLL_UP:
         WndScrollUp( wnd );

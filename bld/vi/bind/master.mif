@@ -10,6 +10,6 @@ edbind_autodepends = .AUTODEPEND
 
 inc_dirs = -I"../../h"
 
-objs = edbind.obj
+exetarg_objs = edbind.obj myio.obj
 
 !include exetarg.mif

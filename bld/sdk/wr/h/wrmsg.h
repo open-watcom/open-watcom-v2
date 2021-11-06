@@ -33,7 +33,7 @@
 #ifndef WRMSG_INCLUDED
 #define WRMSG_INCLUDED
 
-#include "rcmsg.gh"
+#include "wrmsg.rh"
 
 /****************************************************************************/
 /* function prototypes                                                      */

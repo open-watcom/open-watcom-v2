@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,16 +52,6 @@ static bool isIgnorable( char c, const char *ign )
 } /* isIgnorable */
 
 /*
- * SkipLeadingSpaces - skip leading spaces in a string
- */
-char *SkipLeadingSpaces( const char *buff )
-{
-    SKIP_SPACES( buff );
-    return( (char *)buff );
-
-} /* SkipLeadingSpaces */
-
-/*
  * TranslateTabs
  */
 void TranslateTabs( char *buff )
@@ -80,22 +71,22 @@ void TranslateTabs( char *buff )
 } /* TranslateTabs */
 
 /*
- * GetStringWithPossibleQuote2
+ * GetNextWordOrString
  */
-vi_rc GetStringWithPossibleQuote2( const char **pbuff, char *st, bool allow_slash )
+vi_rc GetNextWordOrString( const char **pbuff, char *st )
 {
     const char  *buff = *pbuff;
 
     SKIP_SPACES( buff );
-    if( allow_slash && *buff == '/' ) {
+    if( *buff == '/' ) {
         buff = GetNextWord( buff, st, SingleSlash );
         if( *buff == '/' ) {
-            ++buff;
+            SKIP_CHAR_SPACES( buff );
         }
     } else if( *buff == '"' ) {
-        buff = GetNextWord( buff, st, SingleQuote );
+        buff = GetNextWord( buff, st, SingleDQuote );
         if( *buff == '"' ) {
-            ++buff;
+            SKIP_CHAR_SPACES( buff );
         }
     } else {
         buff = GetNextWord1( buff, st );
@@ -106,18 +97,12 @@ vi_rc GetStringWithPossibleQuote2( const char **pbuff, char *st, bool allow_slas
     }
     return( ERR_NO_ERR );
 
-} /* GetStringWithPossibleQuote2 */
-
-vi_rc GetStringWithPossibleQuote( const char **pbuff, char *st )
-{
-    return( GetStringWithPossibleQuote2( pbuff, st, true ) );
-
-} /* GetStringWithPossibleQuote */
+} /* GetNextWordOrString */
 
 /*
  * GetNextWord1 - get next space delimited word in buff
  */
-char *GetNextWord1( const char *buff, char *res )
+const char *GetNextWord1( const char *buff, char *res )
 {
     char    c;
 
@@ -126,8 +111,10 @@ char *GetNextWord1( const char *buff, char *res )
      * get word
      */
     for( ; (c = *buff) != '\0'; ++buff ) {
-        if( isspace( c ) )
+        if( isspace( c ) ) {
+            SKIP_CHAR_SPACES( buff );
             break;
+        }
         *res++ = c;
     }
     *res = '\0';
@@ -138,7 +125,7 @@ char *GetNextWord1( const char *buff, char *res )
 /*
  * GetNextWord2 - get next space or alternate character delimited word in buff
  */
-char *GetNextWord2( const char *buff, char *res, char alt_delim )
+const char *GetNextWord2( const char *buff, char *res, char alt_delim )
 {
     char    c;
 
@@ -147,19 +134,19 @@ char *GetNextWord2( const char *buff, char *res, char alt_delim )
      * get word
      */
     for( ; (c = *buff) != '\0'; ++buff ) {
-        if( c == alt_delim ) {
-            break;
-        }
         if( isspace( c ) ) {
-            ++buff;
-            SKIP_SPACES( buff );
+            SKIP_CHAR_SPACES( buff );
+            c = *buff;
             break;
         }
+        if( c == alt_delim )
+            break;
         *res++ = c;
     }
     *res = '\0';
-    if( *buff == alt_delim )
-        ++buff;
+    if( c == alt_delim ) {
+        SKIP_CHAR_SPACES( buff );
+    }
     return( (char *)buff );
 
 } /* GetNextWord2 */
@@ -167,7 +154,7 @@ char *GetNextWord2( const char *buff, char *res, char alt_delim )
 /*
  * GetNextWord - get next word in buff
  */
-char *GetNextWord( const char *buff, char *res, const char *ign )
+const char *GetNextWord( const char *buff, char *res, const char *ign )
 {
     size_t      ign_len;
     char        c;
@@ -337,14 +324,14 @@ int GetNumberOfTokens( const char *list )
 /*
  * GetLongestTokenLength - return length of longest token in token string
  */
-int GetLongestTokenLength( const char *list )
+size_t GetLongestTokenLength( const char *list )
 {
-    int         max_len = 0, len;
+    size_t      max_len = 0, len;
     const char  *t;
 
     for( t = list; *t != '\0'; t += len + 1 ) {
         len = strlen( t );
-        if( len > max_len ) {
+        if( max_len < len ) {
             max_len = len;
         }
     }
@@ -384,7 +371,7 @@ char **BuildTokenList( int num, char *list )
 /*
  * GetTokenString - return token string
  */
-char *GetTokenString( const char *list, int num )
+const char *GetTokenString( const char *list, int num )
 {
     int         i = 0;
     const char  *t;
@@ -428,7 +415,7 @@ char *GetTokenStringCVT( const char *list, int num, char *dst, bool lowercase )
         src++;
     }
     if( lowercase ) {
-        while( (*dst = tolower( *src )) != '\0' ) {
+        while( (*dst = (char)tolower( *(unsigned char *)src )) != '\0' ) {
             ++src;
             ++dst;
         }

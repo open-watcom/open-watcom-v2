@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +48,6 @@
 
 #define LIB_ALLOC   lib_nmalloc
 #define LIB_FREE    lib_nfree
-
-/* P_OVERLAY macro expands to a variable, not a constant! */
-#define OLD_P_OVERLAY   2
 
 #define FALSE   0
 
@@ -117,7 +115,7 @@ _WCRTLINK int execve( const CHAR_TYPE * path,
     __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
     _RWD_errno = ENOENT;
     if( ext[0] != '\0' ) {
-        if( __F_NAME(stricmp,wcscmp)( ext, __F_NAME(".bat",L".bat") ) == 0 )
+        if( __F_NAME(_stricmp,_wcsicmp)( ext, __F_NAME(".bat",L".bat") ) == 0 )
         {
             retval = -1; /* assume file doesn't exist */
             if( file_exists( p ) ) goto spawn_command_com;

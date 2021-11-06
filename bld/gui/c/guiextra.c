@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
  * GUISetExtra -- store the extra word for the application
  */
 
-void GUISetExtra( gui_window *wnd, void *extra )
+void GUIAPI GUISetExtra( gui_window *wnd, void *extra )
 {
     wnd->extra = extra;
 }
@@ -45,7 +46,7 @@ void GUISetExtra( gui_window *wnd, void *extra )
  * GUIGetExtra -- get the extra word for the application
  */
 
-void *GUIGetExtra( gui_window *wnd )
+void * GUIAPI GUIGetExtra( gui_window *wnd )
 {
     return( wnd->extra );
 }

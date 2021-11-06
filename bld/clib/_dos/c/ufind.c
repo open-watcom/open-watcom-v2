@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,14 +48,14 @@ _WCRTLINK unsigned _wdos_findfirst( const wchar_t *path, unsigned attr, struct _
     char                mbPath[MB_CUR_MAX * _MAX_PATH];
 
     /*** Find using MBCS buffer ***/
-    if( wcstombs( mbPath, path, sizeof( mbPath ) ) == -1 ) {
+    if( wcstombs( mbPath, path, sizeof( mbPath ) ) == (size_t)-1 ) {
         mbPath[0] = '\0';
     }
     rc = _dos_findfirst( mbPath, attr, &mbBuf );
     if( rc == 0 ) {
         /*** Transfer returned info to _wfind_t buffer ***/
         memcpy( buf, &mbBuf, sizeof( struct find_t ) );
-        if( mbstowcs( buf->name, mbBuf.name, sizeof( buf->name ) / sizeof( wchar_t ) ) == -1 ) {
+        if( mbstowcs( buf->name, mbBuf.name, sizeof( buf->name ) / sizeof( wchar_t ) ) == (size_t)-1 ) {
             return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
         }
     }
@@ -69,14 +70,14 @@ _WCRTLINK unsigned _wdos_findnext( struct _wfind_t *buf )
 
     /*** Find using MBCS buffer ***/
     memcpy( &mbBuf, buf, sizeof( struct find_t ) );
-    if( wcstombs( mbBuf.name, buf->name, sizeof( mbBuf.name ) ) == -1 )
+    if( wcstombs( mbBuf.name, buf->name, sizeof( mbBuf.name ) ) == (size_t)-1 )
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
 
     rc = _dos_findnext( &mbBuf );
     if( rc == 0 ) {
         /*** Transfer returned info to _wfind_t buffer ***/
         memcpy( buf, &mbBuf, sizeof( struct find_t ) );
-        if( mbstowcs( buf->name, mbBuf.name, sizeof( buf->name ) / sizeof( wchar_t ) ) == -1 ) {
+        if( mbstowcs( buf->name, mbBuf.name, sizeof( buf->name ) / sizeof( wchar_t ) ) == (size_t)-1 ) {
             return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
         }
     }

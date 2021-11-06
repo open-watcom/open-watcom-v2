@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,6 +74,7 @@ const char FAR BuiltIns[] = {
 
 #if defined( __DOS__ )
     "__MSDOS__=\n"
+    "__DOS__=\n"
 
 #elif defined( __NT__ )
     "__NT__=\n"

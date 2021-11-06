@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,9 +68,6 @@
 #define MH2IH( mh )     (((mh&0xffff0000)==0)?NULL:II2IH(MH_IMAGE(mh)))
 
 #define NO_IMAGE_IDX    ((image_idx)-1)
-
-#define STRXX(x)        #x
-#define STRX(x)         STRXX(x)
 
 enum artificial_pointers {
     AP_NEAR2 = 1,
@@ -138,11 +135,11 @@ static const unsigned_8 MgrHdlSize[] = {
 
 char DIPDefaults[] = {
 #ifdef USE_FILENAME_VERSION
-    "dwarf"  STRX( USE_FILENAME_VERSION ) "\0"
-    "watcom" STRX( USE_FILENAME_VERSION ) "\0"
-    "codevi" STRX( USE_FILENAME_VERSION ) "\0"
-    "mapsym" STRX( USE_FILENAME_VERSION ) "\0"
-    "export" STRX( USE_FILENAME_VERSION ) "\0"
+    "dwarf"  QUOTED( USE_FILENAME_VERSION ) "\0"
+    "watcom" QUOTED( USE_FILENAME_VERSION ) "\0"
+    "codevi" QUOTED( USE_FILENAME_VERSION ) "\0"
+    "mapsym" QUOTED( USE_FILENAME_VERSION ) "\0"
+    "export" QUOTED( USE_FILENAME_VERSION ) "\0"
 #else
     "dwarf\0"
     "watcom\0"

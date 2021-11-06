@@ -6,7 +6,7 @@
 .synote 6
 .mnote name
 is a valid FORTRAN symbolic name.
-.endnote
+.esynote
 .np
 The
 .kw REMOTE BLOCK

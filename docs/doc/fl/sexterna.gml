@@ -7,7 +7,7 @@
 .mnote p
 is the name of an external procedure, dummy procedure or block data
 subprogram.
-.endnote
+.esynote
 .np
 The
 .kw EXTERNAL

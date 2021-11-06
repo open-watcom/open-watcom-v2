@@ -1,17 +1,17 @@
-[ DEFAULT type="s" cond="samples" where="c jc ac" dir="src" ]
-usr="_matherr.c"
-usr="calendar.c"
-usr="calendar.cpp"
-usr="calendar.jc"
-usr="grdemo.c"
-usr="grdemo.cpp"
-usr="hello.c"
-usr="hello.cpp"
-usr="memos.c"
-usr="memos.def"
-usr="memos.h"
-usr="pgdemo.c"
-usr="pmhello.c"
-#usr="shapes.c"		// Moved?
-#usr="shapes.cpp"	// Moved?
-usr="winhello.c"
+[ DEFAULT type="s" cond="samples" where="c jc ac" ]
+dir="samples/misc"   usr="_matherr.c"
+dir="samples/misc"   usr="calendar.c"
+dir="samples/misc"   usr="calendar.cpp"
+dir="samples/misc"   usr="calendar.jc"
+dir="samples/misc"   usr="grdemo.c"
+dir="samples/misc"   usr="grdemo.cpp"
+dir="samples/misc"   usr="hello.c"
+dir="samples/misc"   usr="hello.cpp"
+dir="samples/misc"   usr="memos.c"
+dir="samples/misc"   usr="memos.def"
+dir="samples/misc"   usr="memos.h"
+dir="samples/misc"   usr="pgdemo.c"
+dir="samples/misc"   usr="pmhello.c"
+#dir="samples/misc"   usr="shapes.c"         // Moved?
+#dir="samples/misc"   usr="shapes.cpp"       // Moved?
+dir="samples/misc"   usr="winhello.c"

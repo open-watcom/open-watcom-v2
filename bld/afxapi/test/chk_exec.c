@@ -17,7 +17,6 @@ size_t plen[2];
 int main( int argc, char **argv )
 {
     FILE        *fp;
-    char        *chk;
     size_t      len;
     unsigned    line;
     unsigned    flip;
@@ -37,9 +36,7 @@ int main( int argc, char **argv )
     plen[1] = strlen( prefix[1] );
     line = 0;
     flip = 0;
-    for( ;; ) {
-        chk = fgets( buff, sizeof( buff ), fp );
-        if( chk == NULL ) break;
+    for( ; fgets( buff, sizeof( buff ), fp ) != NULL; ) {
         ++line;
         len = plen[flip];
         if( memcmp( buff, prefix[flip], len ) ) {

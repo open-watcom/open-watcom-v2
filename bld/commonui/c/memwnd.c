@@ -1085,8 +1085,8 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         break;
     case WM_NCDESTROY:
         if( info != NULL ) {
-            if( info->asm != NULL ) {
-                MemFree( info->asm );
+            if( info->asm_info != NULL ) {
+                MemFree( info->asm_info );
             }
             MemFree( info );
         }
@@ -1346,7 +1346,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
     info->base = CurBase;
 #endif
     info->offset = info->base;
-    info->asm = NULL;
+    info->asm_info = NULL;
     if( MemConfigInfo.allowmult != WND_MULTI ) {
         info->curwnd = true;
         CurWindow = NULLHANDLE;

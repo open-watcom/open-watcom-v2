@@ -1,5 +1,5 @@
-.gfunc scrolltextwindow
-.gsynop begin 
+.gfunc _scrolltextwindow
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _scrolltextwindow( short rows );
 .do end
@@ -13,7 +13,7 @@ The
 .id &funcb.
 &routine scrolls the lines in the current text window.
 A text window is defined with the
-.kw _settextwindow
+.reffunc _settextwindow
 &routine..
 By default, the text window is the entire screen.
 .np
@@ -26,17 +26,17 @@ A negative value means to scroll the text window down or towards the bottom
 of the screen.
 Specifying a number of rows greater than the height of the text window
 is equivalent to clearing the text window with the
-.kw _clearscreen
+.reffunc _clearscreen
 &routine..
 .np
 Two constants are defined that can be used with the
 .id &funcb.
 &routine:
 .begterm 15
-.uterm GSCROLLUP
+.uterm _GSCROLLUP
 the contents of the text window are scrolled up (towards the top of the
 screen) by one row
-.uterm GSCROLLDOWN
+.uterm _GSCROLLDOWN
 the contents of the text window are scrolled down (towards the bottom of the
 screen) by one row
 .endterm

@@ -105,4 +105,4 @@ template = &
 	dgrxcfg.$(ext)  &
 	dgqrfilt.$(ext) &
 	dgquery.$(ext)  &
-	dgvwsym.$(ext) 
+	dgvwsym.$(ext)

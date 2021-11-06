@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,14 +83,14 @@ extern  void            XBitNeqv(ftn_type *,ftn_type *);
 extern  void            XBitOr(ftn_type *,ftn_type *);
 extern  void            XBitAnd(ftn_type *,ftn_type *);
 extern  void            XBitNot(ftn_type *,ftn_type *);
-extern  void            XICmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
-extern  void            XRCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
-extern  void            XDCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
-extern  void            XECmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
-extern  void            XCCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
-extern  void            XQCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
-extern  void            XXCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
-extern  void            XChCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
+extern  void            XICmp(ftn_type *,ftn_type *,const logstar1 *);
+extern  void            XRCmp(ftn_type *,ftn_type *,const logstar1 *);
+extern  void            XDCmp(ftn_type *,ftn_type *,const logstar1 *);
+extern  void            XECmp(ftn_type *,ftn_type *,const logstar1 *);
+extern  void            XCCmp(ftn_type *,ftn_type *,const logstar1 *);
+extern  void            XQCmp(ftn_type *,ftn_type *,const logstar1 *);
+extern  void            XXCmp(ftn_type *,ftn_type *,const logstar1 *);
+extern  void            XChCmp(ftn_type *,ftn_type *,const logstar1 *);
 
 extern  void            GenExp( TYPE typ );
 extern  void            ExpI( TYPE typ, ftn_type *base, intstar4 exponent );

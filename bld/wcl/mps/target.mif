@@ -1,6 +1,14 @@
-name = wclmps
+!ifdef bootstrap
+proj_name = bwclmps
+bwclmps_autodepends = .AUTODEPEND
+!else
+proj_name = wclmps
+wclmps_autodepends = .AUTODEPEND
+!endif
 
 target_cpu = mps
+
+wclmps_trmem = 1
 
 extra_cpp_flags = -DWCLMPS
 

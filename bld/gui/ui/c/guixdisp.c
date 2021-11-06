@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,35 +85,35 @@ typedef struct string_info {
 
 /* control definition for each control that can be in the dialog */
 static control_pairs MessageControls[] = {
- {  DLG_BUTTON( NULL,           GUI_RET_ABORT,  0, 0, BUTTON_WIDTH ),   CTLT_ABORT       },
- {  DLG_BUTTON( NULL,           GUI_RET_CANCEL, 0, 0, BUTTON_WIDTH ),   CTLT_CANCEL      },
- {  DLG_BUTTON( NULL,           GUI_RET_IGNORE, 0, 0, BUTTON_WIDTH ),   CTLT_IGNORE      },
- {  DLG_BUTTON( NULL,           GUI_RET_NO,     0, 0, BUTTON_WIDTH ),   CTLT_NO          },
- {  DLG_DEFBUTTON( NULL,        GUI_RET_OK,     0, 0, BUTTON_WIDTH ),   CTLT_OK          },
- {  DLG_BUTTON( NULL,           GUI_RET_RETRY,  0, 0, BUTTON_WIDTH ),   CTLT_RETRY       },
- {  DLG_BUTTON( NULL,           GUI_RET_YES,    0, 0, BUTTON_WIDTH ),   CTLT_YES         },
- {  DLG_STRING( "!",                            0, 0, 1 ),              CTLT_EXCLAMATION },
- {  DLG_STRING( "?",                            0, 0, 1 ),              CTLT_QUESTION    },
- {  DLG_STRING( "i",                            0, 0, 1 ),              CTLT_INFORMATION },
- {  DLG_STRING( NULL,                           0, 0, 5 ),              CTLT_STOP        }
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_ABORT,  0, 0, BUTTON_WIDTH ),   CTLT_ABORT       },
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_CANCEL, 0, 0, BUTTON_WIDTH ),   CTLT_CANCEL      },
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_IGNORE, 0, 0, BUTTON_WIDTH ),   CTLT_IGNORE      },
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_NO,     0, 0, BUTTON_WIDTH ),   CTLT_NO          },
+    { GUI_CTL_DEFBUTTON( NULL,  GUI_RET_OK,     0, 0, BUTTON_WIDTH ),   CTLT_OK          },
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_RETRY,  0, 0, BUTTON_WIDTH ),   CTLT_RETRY       },
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_YES,    0, 0, BUTTON_WIDTH ),   CTLT_YES         },
+    { GUI_CTL_STRING( "!",                      0, 0, 1 ),              CTLT_EXCLAMATION },
+    { GUI_CTL_STRING( "?",                      0, 0, 1 ),              CTLT_QUESTION    },
+    { GUI_CTL_STRING( "i",                      0, 0, 1 ),              CTLT_INFORMATION },
+    { GUI_CTL_STRING( NULL,                     0, 0, 5 ),              CTLT_STOP        }
 };
 
 /* static text controls used for displaying message */
-static gui_control_info StaticMessage = DLG_STRING( NULL, TEXT_START_COL, TEXT_ROW, 0 );
+static gui_control_info StaticMessage = GUI_CTL_STRING( NULL, TEXT_START_COL, TEXT_ROW, 0 );
 
 /* information about the controls needed for each gui_message_type */
 static message_types ControlsNeeded[] = {
-  { GUI_ABORT_RETRY_IGNORE,     3,      CTLT_ABORT | CTLT_IGNORE | CTLT_RETRY   },
-  { GUI_EXCLAMATION,            1,      CTLT_EXCLAMATION | CTLT_OK              },
-  { GUI_INFORMATION,            1,      CTLT_INFORMATION | CTLT_OK              },
-  { GUI_QUESTION,               1,      CTLT_QUESTION | CTLT_OK                 },
-  { GUI_STOP,                   1,      CTLT_STOP | CTLT_OK                     },
-  { GUI_OK,                     1,      CTLT_OK                                 },
-  { GUI_OK_CANCEL,              2,      CTLT_OK | CTLT_CANCEL                   },
-  { GUI_RETRY_CANCEL,           2,      CTLT_RETRY | CTLT_CANCEL                },
-  { GUI_YES_NO,                 2,      CTLT_YES | CTLT_NO                      },
-  { GUI_YES_NO_CANCEL,          3,      CTLT_YES | CTLT_NO | CTLT_CANCEL        },
-  { GUI_SYSTEMMODAL,            0,      CTLT_NO_CONTROL                         }
+    { GUI_ABORT_RETRY_IGNORE,   3,  CTLT_ABORT | CTLT_IGNORE | CTLT_RETRY   },
+    { GUI_EXCLAMATION,          1,  CTLT_EXCLAMATION | CTLT_OK              },
+    { GUI_INFORMATION,          1,  CTLT_INFORMATION | CTLT_OK              },
+    { GUI_QUESTION,             1,  CTLT_QUESTION | CTLT_OK                 },
+    { GUI_STOP,                 1,  CTLT_STOP | CTLT_OK                     },
+    { GUI_OK,                   1,  CTLT_OK                                 },
+    { GUI_OK_CANCEL,            2,  CTLT_OK | CTLT_CANCEL                   },
+    { GUI_RETRY_CANCEL,         2,  CTLT_RETRY | CTLT_CANCEL                },
+    { GUI_YES_NO,               2,  CTLT_YES | CTLT_NO                      },
+    { GUI_YES_NO_CANCEL,        3,  CTLT_YES | CTLT_NO | CTLT_CANCEL        },
+    { GUI_SYSTEMMODAL,          0,  CTLT_NO_CONTROL                         }
 };
 
 static bool MessagesInitialized = false;
@@ -148,7 +148,7 @@ static void InitMessageControls( void )
         case CTLT_STOP:
             MessageControls[j].ctl_info.text = LIT( Stop_Bang );
             break;
-        default :
+        default:
             break;
         }
     }
@@ -158,31 +158,31 @@ static void InitMessageControls( void )
  * DisplayMessageGUIEventProc - callback function for dialog box
  */
 
-static bool DisplayMessageGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool DisplayMessageGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_message_return *ret;
     gui_ctl_id          id;
 
-    ret = GUIGetExtra( gui );
+    ret = GUIGetExtra( wnd );
     switch( gui_ev ) {
-    case GUI_CONTROL_CLICKED :
+    case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
-        case GUI_RET_ABORT :
-        case GUI_RET_CANCEL :
-        case GUI_RET_IGNORE :
-        case GUI_RET_NO :
-        case GUI_RET_OK :
-        case GUI_RET_RETRY :
-        case GUI_RET_YES :
+        case GUI_RET_ABORT:
+        case GUI_RET_CANCEL:
+        case GUI_RET_IGNORE:
+        case GUI_RET_NO:
+        case GUI_RET_OK:
+        case GUI_RET_RETRY:
+        case GUI_RET_YES:
             *ret = (gui_message_return)id;
-            GUICloseDialog( gui );
+            GUICloseDialog( wnd );
             return( true );
-        default :
+        default:
             break;
         }
         break;
-    default :
+    default:
         break;
     }
     return( false );
@@ -196,22 +196,24 @@ static bool DisplayMessageGUIEventProc( gui_window *gui, gui_event gui_ev, void 
 
 static char *tabFilter( const char *message )
 {
-    char *new_message;
-    char *start;
-    int  tab_pos;
+    char    *new_message;
+    char    *start;
+    size_t  tab_pos;
+    size_t  len;
 
     /* allocate another chunk of memory since */
     /* reallocating space for string literals is a no no */
     new_message = (char *)GUIStrDup( message, NULL );
     for( ;; ) {
         tab_pos = strcspn( new_message, "\t" );
-        if( tab_pos == strlen( new_message ) )
+        len = strlen( new_message );
+        if( tab_pos == len )
             break;      /* no more tabs */
-        new_message = (char *)GUIMemRealloc( new_message, strlen( new_message ) + TAB_SIZE + 1 );
+        new_message = (char *)GUIMemRealloc( new_message, len + TAB_SIZE + 1 );
         /* don't forget the NULL */
         start = new_message + tab_pos;
         memmove( start + TAB_SIZE, start + 1, strlen( start + 1 ) + 1 );
-        strnset( start, ' ', TAB_SIZE );
+        memset( start, ' ', TAB_SIZE );
     }
     return( new_message );
 }
@@ -315,29 +317,19 @@ static void freeStringControls( int num_controls, string_info *info )
 
 
 /*
- * UpdateCols -- increase number of columns needed according to size
- *               and location of control
- */
-
-static int UpdateCols( gui_control_info *ctl_info, int cols )
-{
-    if( cols < ctl_info->rect.x - DLG_COL_0 + ctl_info->rect.width - DLG_COL_0 )
-        cols = ctl_info->rect.x - DLG_COL_0 + ctl_info->rect.width - DLG_COL_0;
-    return( cols );
-}
-
-/*
  * AdjustVert -- adjust the vertical position of buttons and icons according
  *               to the number of lines of text ( also adjusts cols )
  */
 
-static int AdjustVert( int *cols, control_types controls_to_use,
+static int AdjustVert( gui_text_ord *pcols, control_types controls_to_use,
                 gui_control_info *controls_info, int num_controls,
                 int num_string_controls )
 {
     int num_buttons;
     int i;
     int j;
+    gui_text_ord cols;
+    gui_text_ord end;
 
     if( !MessagesInitialized ) {
         InitMessageControls();
@@ -346,25 +338,29 @@ static int AdjustVert( int *cols, control_types controls_to_use,
 
     i = num_string_controls;
     num_buttons = 0;
+    cols = *pcols;
     for( j = 0; j < GUI_ARRAY_SIZE( MessageControls ); j++ ) {
         if( ( i < num_controls ) && ( controls_to_use & MessageControls[j].type ) ) {
             memcpy( &controls_info[i], &MessageControls[j].ctl_info, sizeof( gui_control_info ) );
             switch( controls_info[i].control_class ) {
-            case GUI_PUSH_BUTTON :
-            case GUI_DEFPUSH_BUTTON :
+            case GUI_PUSH_BUTTON:
+            case GUI_DEFPUSH_BUTTON:
                 num_buttons ++;
-                controls_info[i].rect.y = DLG_ROW( BUTTON_ROW + num_string_controls  - 1 );
+                controls_info[i].rect.y = BUTTON_ROW + num_string_controls - 1;
                 break;
-            case GUI_STATIC :
-                controls_info[i].rect.y = DLG_ROW( ICON_ROW + ( num_string_controls - 1 ) / 2 );
+            case GUI_STATIC:
+                controls_info[i].rect.y = ICON_ROW + ( num_string_controls - 1 ) / 2;
                 break;
-            default :
+            default:
                 break;
             }
-            *cols = UpdateCols( &controls_info[i], *cols );
+            end = TEXT_START_COL + controls_info[i].rect.width;
+            if( cols < end )
+                cols = end;
             i++;
         }
     }
+    *pcols = cols;
     return( num_buttons );
 }
 
@@ -372,7 +368,7 @@ static int AdjustVert( int *cols, control_types controls_to_use,
  * CentreButtons -- centre the buttons horizontally
  */
 
-static void CentreButtons( int cols, int num_buttons, gui_control_info *controls_info, int num_controls )
+static void CentreButtons( gui_text_ord cols, int num_buttons, gui_control_info *controls_info, int num_controls )
 {
     int button_number;
     int space_per_button;
@@ -385,13 +381,13 @@ static void CentreButtons( int cols, int num_buttons, gui_control_info *controls
     }
     for( i = 0; i < num_controls; i++ ) {
         switch( controls_info[i].control_class ) {
-        case GUI_PUSH_BUTTON :
-        case GUI_DEFPUSH_BUTTON :
+        case GUI_PUSH_BUTTON:
+        case GUI_DEFPUSH_BUTTON:
             button_number++;
-            controls_info[i].rect.x = DLG_COL( space_per_button
-              * button_number - ( ( space_per_button + BUTTON_WIDTH ) / 2 ) );
+            controls_info[i].rect.x = space_per_button * button_number
+                                    - ( ( space_per_button + BUTTON_WIDTH ) / 2 );
             break;
-        default :
+        default:
             break;
         }
     }
@@ -401,36 +397,22 @@ static void CentreButtons( int cols, int num_buttons, gui_control_info *controls
  * GUIDisplayMessage -- display the message, return the user's response
  */
 
-gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message,
+gui_message_return GUIAPI GUIDisplayMessage( gui_window *wnd, const char *message,
                                       const char *title, gui_message_type type )
 {
-    int                 rows;
-    int                 cols;
+    gui_text_ord        rows;
+    gui_text_ord        cols;
+    gui_text_ord        end;
     gui_control_info    *controls_info;
     int                 num_controls;
     int                 num_string_controls;
     gui_message_return  ret;
     int                 i;
     control_types       controls_to_use;
-//    int                 mess_length;
-    int                 title_length;
     string_info         *strings;
     int                 num_buttons;
 
     /* unused parameters */ (void)wnd;
-
-/*
-    if( message != NULL ) {
-        mess_length = strlen( message );
-    } else {
-        mess_length = 0;
-    }
-*/
-    if( title != NULL ) {
-        title_length = strlen( title );
-    } else {
-        title_length = 0;
-    }
 
     /* figure out the number of icon and button controls and which ones */
     num_controls = 0;
@@ -457,17 +439,24 @@ gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message,
         return( GUI_RET_CANCEL );
     }
 
-    cols = title_length + 2;
+    if( title != NULL ) {
+        cols = strlen( title ) + 2;
+    } else {
+        cols = 2;
+    }
 
     /* create GUI_STATIC controls, as many as required */
     if( num_string_controls > 0 ) {
         for( i = 0; i < num_string_controls; i++ ) {
             uiyield();
             StaticMessage.text = strings[i].text;
-            StaticMessage.rect.width = DLG_COL( strings[i].length );
-            StaticMessage.rect.y = DLG_ROW( TEXT_ROW + i );
+            StaticMessage.rect.width = strings[i].length;
+            StaticMessage.rect.y = TEXT_ROW + i;
             memcpy( &controls_info[i], &StaticMessage, sizeof( gui_control_info ) );
-            cols = UpdateCols( &controls_info[i], cols );
+            end = TEXT_START_COL + controls_info[i].rect.width;
+            if( cols < end ) {
+                cols = end;
+            }
         }
     }
     rows = num_string_controls + BUTTON_ROW + 1;

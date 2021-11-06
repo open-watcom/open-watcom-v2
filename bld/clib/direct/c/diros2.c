@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -211,7 +211,7 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
     DIR_TYPE        tmp;
     DIR_TYPE        *dirp;
     int             i;
-    auto CHAR_TYPE  pathname[_MAX_PATH + 6];
+    CHAR_TYPE       pathname[_MAX_PATH + 6];
 
     tmp.d_attr = _A_SUBDIR;
     tmp.d_first = _DIR_CLOSED;

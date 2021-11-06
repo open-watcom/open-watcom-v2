@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,62 +38,62 @@
 
 /*       Target dependent set of hardware registers available */
 
-HW_DEFINE_SIMPLE( HW_G0,     0x0001U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G1,     0x0002U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G2,     0x0004U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G3,     0x0008U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G4,     0x0010U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G5,     0x0020U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G6,     0x0040U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G7,     0x0080U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G8,     0x0100U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G9,     0x0200U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G10,    0x0400U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G11,    0x0800U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G12,    0x1000U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G13,    0x2000U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G14,    0x4000U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_G15,    0x8000U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_Y0,     0x0000U, 0x0001U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_Y0d,    0x0000U, 0x0002U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_Y2,     0x0000U, 0x0004U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_Y2d,    0x0000U, 0x0008U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_Y4,     0x0000U, 0x0010U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_Y4d,    0x0000U, 0x0020U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_Y6,     0x0000U, 0x0040U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_Y6d,    0x0000U, 0x0080U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_FULL,   0xffffU, 0xffffU, 0xffffU, 0xffffU );
-HW_DEFINE_SIMPLE( HW_UNUSED, 0x0000U, 0xff00U, 0xffffU, 0xffffU );
-HW_DEFINE_SIMPLE( HW_EMPTY,  0x0000U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_SEGS,   0x0000U, 0x0000U, 0x0000U, 0x0000U );
+HW_DEFINE_SIMPLE( HW_G0,     0x00000001U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G1,     0x00000002U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G2,     0x00000004U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G3,     0x00000008U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G4,     0x00000010U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G5,     0x00000020U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G6,     0x00000040U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G7,     0x00000080U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G8,     0x00000100U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G9,     0x00000200U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G10,    0x00000400U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G11,    0x00000800U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G12,    0x00001000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G13,    0x00002000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G14,    0x00004000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_G15,    0x00008000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_Y0,     0x00010000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_Y0d,    0x00020000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_Y2,     0x00040000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_Y2d,    0x00080000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_Y4,     0x00100000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_Y4d,    0x00200000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_Y6,     0x00400000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_Y6d,    0x00800000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_FULL,   0xffffffffU, 0xffffffffU );
+HW_DEFINE_SIMPLE( HW_UNUSED, 0xff000000U, 0xffffffffU );
+HW_DEFINE_SIMPLE( HW_EMPTY,  0x00000000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_SEGS,   0x00000000U, 0x00000000U );
 
-#define HW_DEFINE_COMPOUND( x ) \
-enum {                                                             \
-                                                                   \
-HW_D0_##x    = (HW_Y0_##x+HW_Y0d_##x),           \
-HW_D2_##x    = (HW_Y2_##x+HW_Y2d_##x),           \
-HW_D4_##x    = (HW_Y4_##x+HW_Y4d_##x),           \
-HW_D6_##x    = (HW_Y6_##x+HW_Y6d_##x),           \
-                                                                   \
-HW_E0_##x    = (HW_D0_##x+HW_D2_##x),            \
-HW_E4_##x    = (HW_D4_##x+HW_D6_##x),            \
-                                                                   \
-HW_FLTS_##x  = (HW_E0_##x+HW_E4_##x),            \
-                                                                   \
-HW_EVEN_##x  = (HW_G0_##x+HW_G2_##x+HW_G4_##x    \
-                                 +HW_G6_##x+HW_G8_##x+HW_G10_##x   \
-                                 +HW_G12_##x+HW_G14_##x),          \
-                                                                   \
-HW_ODD_##x   = (HW_G1_##x+HW_G3_##x+HW_G5_##x    \
-                                 +HW_G7_##x+HW_G9_##x+HW_G11_##x   \
-                                 +HW_G13_##x+HW_G15_##x),          \
-                                                                   \
-HW_SNGL_##x  = (HW_Y0_##x+HW_Y2_##x+HW_Y4_##x    \
-                                 +HW_Y6_##x),                      \
-                                                                   \
-HW_G0_G1_G2_##x=(HW_G0_##x+HW_G1_##x+HW_G2_##x),  \
-                                                                   \
-HW__COMPOUND_END_##x                                               \
+#define HW_DEFINE_COMPOUND( x )         \
+enum {                                  \
+                                        \
+HW_D0_##x    = (HW_Y0_##x+HW_Y0d_##x),  \
+HW_D2_##x    = (HW_Y2_##x+HW_Y2d_##x),  \
+HW_D4_##x    = (HW_Y4_##x+HW_Y4d_##x),  \
+HW_D6_##x    = (HW_Y6_##x+HW_Y6d_##x),  \
+                                        \
+HW_E0_##x    = (HW_D0_##x+HW_D2_##x),   \
+HW_E4_##x    = (HW_D4_##x+HW_D6_##x),   \
+                                        \
+HW_FLTS_##x  = (HW_E0_##x+HW_E4_##x),   \
+                                        \
+HW_EVEN_##x  = (HW_G0_##x+HW_G2_##x+HW_G4_##x                       \
+                                 +HW_G6_##x+HW_G8_##x+HW_G10_##x    \
+                                 +HW_G12_##x+HW_G14_##x),           \
+                                                                    \
+HW_ODD_##x   = (HW_G1_##x+HW_G3_##x+HW_G5_##x                       \
+                                 +HW_G7_##x+HW_G9_##x+HW_G11_##x    \
+                                 +HW_G13_##x+HW_G15_##x),           \
+                                                                    \
+HW_SNGL_##x  = (HW_Y0_##x+HW_Y2_##x+HW_Y4_##x                       \
+                                 +HW_Y6_##x),                       \
+                                                                    \
+HW_G0_G1_G2_##x=(HW_G0_##x+HW_G1_##x+HW_G2_##x),                    \
+                                        \
+HW__COMPOUND_END_##x                    \
 }
 
 HW_ITER( HW_DEFINE_COMPOUND );

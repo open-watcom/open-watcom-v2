@@ -1,9 +1,10 @@
 .chap *refid=wasm The &asmname.
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'assembler'
 This chapter describes the &asmname..
@@ -20,9 +21,9 @@ The &asmname command line syntax is the following.
 .np
 The square brackets [ ] denote items which are optional.
 .begnote
-.mnote &asmcmd
+.note &asmcmd
 is the name of the &asmname..
-.mnote asm_file
+.note asm_file
 is the filename specification of the assembler source file to be
 assembled.
 A default filename extension of ".a" is assumed when no extension is
@@ -36,7 +37,7 @@ File Specification              Extension
 /home/john.doe/foo.bar          .bar
 /home/john.doe/foo.goo.bar      .bar
 .exam end
-.mnote options
+.note options
 is a list of valid &asmname options, each preceded by a dash
 ("&minus.").
 Options may be specified in any order.
@@ -49,22 +50,22 @@ Options may be specified in any order.
 .np
 The square brackets [ ] denote items which are optional.
 .begnote
-.mnote &asmcmdup
+.note &asmcmdup
 is the name of the &asmname..
-.mnote d:
+.note d:
 is an optional drive specification such as "A:", "B:", etc.
 If not specified, the default drive is assumed.
-.mnote path
+.note path
 is an optional path specification such as "\PROGRAMS\ASM\".
 If not specified, the current directory is assumed.
-.mnote filename
+.note filename
 is the file name of the assembler source file to be assembled.
-.mnote ext
+.note ext
 is the file extension of the assembler source file to be assembled.
 If omitted, a file extension of "&axt" is assumed.
 If the period "." is specified but not the extension, the file is
 assumed to have no file extension.
-.mnote options
+.note options
 is a list of valid options, each preceded by a slash
 ("/") or a dash ("&minus.").
 Options may be specified in any order.
@@ -146,6 +147,9 @@ same as ".587" or ".587p"
 same as ".687" or ".687p"
 .note i=<directory>
 add directory to list of include directories
+.notebreak
+Note: to be host platform independent the form like i="../h"
+(quoted path and forward slash separator) is recommended.
 .note j or s
 force signed types to be used for signed values
 .note m{t,s,m,c,l,h,f}
@@ -300,8 +304,11 @@ pushcontext    .radix         record         .repeat
 .np
 There are a few specific features in &asmname.
 .np
+.*
 .beglevel
+.*
 .section Naming convention
+.*
 .millust begin
                  Procedure   Variable
 Convention         Name        Name
@@ -324,7 +331,9 @@ In STDCALL procedures name 'nn' is overall parametrs size in bytes.
 STDCALL symbols mangling is suppressed by -zzo command line option (WASM backward compatible).
 .endnote
 .np
+.*
 .section &company "C" name mangler
+.*
 .millust begin
 Command line     Procedure   Variable
   option           Name        Name
@@ -334,7 +343,9 @@ Command line     Procedure   Variable
 3,4,5,6 with s      '*'        '*'
 .millust end
 .np
+.*
 .section Calling convention
+.*
 .millust begin
                       Parameters    Parameters   Cleanup caller
 Convention   Vararg    passed by       order         stack
@@ -362,7 +373,8 @@ except case when vararg parameter is used.
 .dm errnote begin
 .   .se *ctxn=&'substr(&*,1,&'pos(' ',&*)-1)
 .   .se *ttl$=&'substr(&*,&'pos(' ',&*)+1)
-.   .note &*ctxn &*ttl$
+.   .note &*ctxn
+.   &*ttl$
 .*  .us &*ttl$
 .dm errnote end
 .*

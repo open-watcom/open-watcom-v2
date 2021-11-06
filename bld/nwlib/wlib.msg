@@ -1,194 +1,62 @@
+/* UTF-8 encoding, Â¥ */
+
 pick( ERR_BAD_LIBRARY,      "'%s' is an invalid library",
-                "'%s'‚Í•s“KØ‚Èƒ‰ƒCƒuƒ‰ƒŠ‚Å‚·" )
+                "'%s'ã¯ä¸é©åˆ‡ãªãƒ©ã‚¤ãƒ–ãƒ©ãƒªã§ã™" )
 pick( ERR_BAD_OBJECT,       "'%s' is an invalid object file",
-                "'%s'‚Í•s“KØ‚ÈƒIƒuƒWƒFƒNƒgEƒtƒ@ƒCƒ‹‚Å‚·" )
+                "'%s'ã¯ä¸é©åˆ‡ãªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™" )
 pick( ERR_BAD_DLL,      "'%s' is an invalid dll",
-                "'%s'•s“KØ‚ÈDLL‚Å‚·" )
+                "'%s'ä¸é©åˆ‡ãªDLLã§ã™" )
 pick( ERR_CANT_FIND,        "Cannot find file '%s'",
-                "ƒtƒ@ƒCƒ‹'%s'‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                "ãƒ•ã‚¡ã‚¤ãƒ«'%s'ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick( ERR_CREATING_LIBRARY, "Cannot open '%s' - library will be created",
-                "'%s'‚ğƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñ - ƒ‰ƒCƒuƒ‰ƒŠ‚ğì¬‚µ‚Ü‚·" )
+                "'%s'ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã§ãã¾ã›ã‚“ - ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’ä½œæˆã—ã¾ã™" )
 pick( ERR_DIR_NOT_EXIST,    "Directory '%s' does not exist",
-                "ƒfƒBƒŒƒNƒgƒŠ'%s'‚Í‘¶İ‚µ‚Ü‚¹‚ñ" )
+                "ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª'%s'ã¯å­˜åœ¨ã—ã¾ã›ã‚“" )
 pick( ERR_DUPLICATE_OPTION, "Duplicate option near '%s'",
-                "'%s'‚Ì•t‹ß‚ÌƒIƒvƒVƒ‡ƒ“‚Í2“xw’è‚³‚ê‚Ä‚¢‚Ü‚·" )
+                "'%s'ã®ä»˜è¿‘ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã¯2åº¦æŒ‡å®šã•ã‚Œã¦ã„ã¾ã™" )
 pick( ERR_DUPLICATE_SYMBOL, "Duplicate symbol '%s' ignored.",
-                "‚Qd‚ÌƒVƒ“ƒ{ƒ‹'%s'‚ğ–³‹‚µ‚Ü‚·" )
+                "ï¼’é‡ã®ã‚·ãƒ³ãƒœãƒ«'%s'ã‚’ç„¡è¦–ã—ã¾ã™" )
 pick( ERR_CANT_READ,        "Error reading '%s'. %s.",
-                "“Ç‚İ‚İƒGƒ‰[ '%s'. %s." )
+                "èª­ã¿è¾¼ã¿ã‚¨ãƒ©ãƒ¼ '%s'. %s." )
 pick( ERR_CANT_WRITE,       "Error writing '%s'. %s.",
-                "‘‚«‚İƒGƒ‰[ '%s'. %s." )
+                "æ›¸ãè¾¼ã¿ã‚¨ãƒ©ãƒ¼ '%s'. %s." )
 pick( ERR_DELETE_AND_CREATE,    "Files can not be extracted using the -n option",
-                "-nƒIƒvƒVƒ‡ƒ“‚ğw’è‚·‚é‚Æƒtƒ@ƒCƒ‹‚ğæ‚èo‚·‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ" )
+                "-nã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’æŒ‡å®šã™ã‚‹ã¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å–ã‚Šå‡ºã™ã“ã¨ã¯ã§ãã¾ã›ã‚“" )
 pick( ERR_BAD_CMDLINE,      "Invalid command line near '%s'",
-                "'%s'‚Ì•t‹ß‚ÌƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Ìw’è‚ª•s“KØ‚Å‚·" )
+                "'%s'ã®ä»˜è¿‘ã®ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã®æŒ‡å®šãŒä¸é©åˆ‡ã§ã™" )
 pick( ERR_BAD_OPTION,       "Invalid option '-%c'",
-                "•s“KØ‚ÈƒIƒvƒVƒ‡ƒ“ '-%c'" )
+                "ä¸é©åˆ‡ãªã‚ªãƒ—ã‚·ãƒ§ãƒ³ '-%c'" )
 pick( ERR_NO_LIBNAME,       "Library name required on command line",
-                "ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Åƒ‰ƒCƒuƒ‰ƒŠ–¼‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢" )
+                "ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã§ãƒ©ã‚¤ãƒ–ãƒ©ãƒªåã‚’æŒ‡å®šã—ã¦ãã ã•ã„" )
 pick( ERR_TWO_LIBNAMES,     "Library name specified twice near '%s'",
-                "ƒ‰ƒCƒuƒ‰ƒŠ–¼‚ª'%s'‚Ì•t‹ß‚Å‚Q“xw’è‚³‚ê‚Ä‚¢‚Ü‚·" )
+                "ãƒ©ã‚¤ãƒ–ãƒ©ãƒªåãŒ'%s'ã®ä»˜è¿‘ã§ï¼’åº¦æŒ‡å®šã•ã‚Œã¦ã„ã¾ã™" )
 pick( ERR_NO_MEMORY,        "Out of memory",
-                "ƒƒ‚ƒŠ•s‘«‚Å‚·" )
+                "ãƒ¡ãƒ¢ãƒªä¸è¶³ã§ã™" )
 pick( ERR_CANT_DELETE,      "Unable to find module '%s' for deletion",
-                "íœ‚·‚éƒ‚ƒWƒ…[ƒ‹'%s'‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                "å‰Šé™¤ã™ã‚‹ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«'%s'ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick( ERR_CANT_EXTRACT,     "Unable to find module '%s' for extraction",
-                "æ‚èo‚·ƒ‚ƒWƒ…[ƒ‹'%s'‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                "å–ã‚Šå‡ºã™ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«'%s'ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick( ERR_CANT_OPEN,        "Unable to open file '%s'. %s.",
-                "ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñ '%s'. %s." )
+                "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã§ãã¾ã›ã‚“ '%s'. %s." )
 pick( ERR_CANT_REMOVE,      "Unable to remove file '%s'",
-                "ƒtƒ@ƒCƒ‹'%s'‚ğíœ‚Å‚«‚Ü‚¹‚ñ" )
+                "ãƒ•ã‚¡ã‚¤ãƒ«'%s'ã‚’å‰Šé™¤ã§ãã¾ã›ã‚“" )
 pick( ERR_CANT_REPLACE,     "Unable to replace contents of file '%s'. %s",
-                "ƒtƒ@ƒCƒ‹‚Ì“à—e‚ğ’u‚«Š·‚¦‚ç‚ê‚Ü‚¹‚ñ '%s'. %s" )
+                "ãƒ•ã‚¡ã‚¤ãƒ«ã®å†…å®¹ã‚’ç½®ãæ›ãˆã‚‰ã‚Œã¾ã›ã‚“ '%s'. %s" )
 pick( ERR_NO_SYMBOLS,       "Library contains no external symbols",
-                "ƒ‰ƒCƒuƒ‰ƒŠ‚Ì’†‚É‚ÍŠO•”ƒVƒ“ƒ{ƒ‹‚ª“ü‚Á‚Ä‚¢‚Ü‚¹‚ñ" )
+                "ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ä¸­ã«ã¯å¤–éƒ¨ã‚·ãƒ³ãƒœãƒ«ãŒå…¥ã£ã¦ã„ã¾ã›ã‚“" )
 pick( ERR_NOT_LIB,      "Cannot add %s object to %s library",
-                "%s ƒIƒuƒWƒFƒNƒg‚ğLIBƒ‰ƒCƒuƒ‰ƒŠ‚É’Ç‰Á‚Å‚«‚Ü‚¹‚ñ" )
+                "%s ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’LIBãƒ©ã‚¤ãƒ–ãƒ©ãƒªã«è¿½åŠ ã§ãã¾ã›ã‚“" )
 pick( ERR_CANT_DO_IMPORT,   "Unable to create %s import library from '%s'",
-                "%sƒCƒ“ƒ|[ƒgEƒ‰ƒCƒuƒ‰ƒŠ‚ğ'%s'‚©‚çì‚ê‚Ü‚¹‚ñ" )
+                "%sã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒ»ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’'%s'ã‹ã‚‰ä½œã‚Œã¾ã›ã‚“" )
 pick( ERR_NO_PROCESSOR,     "No processor specified.  Using %s",
-                "ƒvƒƒZƒbƒT‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB%s‚Æ‚µ‚Äˆµ‚¢‚Ü‚·" )
+                "ãƒ—ãƒ­ã‚»ãƒƒã‚µãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚%sã¨ã—ã¦æ‰±ã„ã¾ã™" )
 pick( ERR_NO_TYPE,      "No import type specified.  Using %s",
-                "ƒCƒ“ƒ|[ƒg‚Ì•û‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB%s‚Æ‚µ‚Äˆµ‚¢‚Ü‚·" )
+                "ã‚¤ãƒ³ãƒãƒ¼ãƒˆã®æ–¹ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚%sã¨ã—ã¦æ‰±ã„ã¾ã™" )
 pick( ERR_NO_EXPORTS,       "No exports in '%s'",
-                "'%s'‚ÉƒGƒNƒXƒ|[ƒg‚Í‚ ‚è‚Ü‚¹‚ñ" )
+                "'%s'ã«ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã¯ã‚ã‚Šã¾ã›ã‚“" )
 pick( ERR_PAGE_RANGE,       "Page size out of range",
-                "ƒy[ƒW‚Ì‘å‚«‚³‚Í”ÍˆÍ‚ğ’´‚¦‚Ä‚¢‚Ü‚·" )
+                "ãƒšãƒ¼ã‚¸ã®å¤§ãã•ã¯ç¯„å›²ã‚’è¶…ãˆã¦ã„ã¾ã™" )
 pick( ERR_MIXED_OBJ,        "Can not put %s and %s objects in same library",
-                "ƒIƒuƒWƒFƒNƒg%s‚Æ%s‚ğ“¯‚¶ƒ‰ƒCƒuƒ‰ƒŠ‚É“ü‚ê‚ç‚ê‚Ü‚¹‚ñ" )
+                "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ%sã¨%sã‚’åŒã˜ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã«å…¥ã‚Œã‚‰ã‚Œã¾ã›ã‚“" )
 pick( ERR_LIB_TOO_LARGE,    "Library too large.  Recommend splitting the library into two or trying a page_bound larger than %s.",
-                "ƒ‰ƒCƒuƒ‰ƒŠ‚ª‘å‚«‚·‚¬‚Ü‚·Bƒ‰ƒCƒuƒ‰ƒŠ‚ğ‚Q‚Â‚É•ªŠ„‚·‚é‚©A%s‚æ‚èpage_bound‚ğ‚à‚Á‚Æ‘å‚«‚­‚·‚é‚±‚Æ‚ğ„§‚µ‚Ü‚·B" )
-pick( USAGE_WLIB_FIRST,     "wlib  { <option> } <library_name> [ <commands> ]" ,
-                "wlib  { <option> } <library_name> [ <commands> ]" )
-pick( USAGE_WLIB_01,        "Where:" ,
-                "ŠeƒtƒB[ƒ‹ƒh‚ÍˆÈ‰º‚Ì’Ê‚è‚Å‚·:" )
-pick( USAGE_WLIB_02,        "  <option>    ::= -b                       (don't create .bak file)" ,
-                "  <option>    ::= -b                       (.bakƒtƒ@ƒCƒ‹‚ğì¬‚µ‚Ü‚¹‚ñ)" )
-pick( USAGE_WLIB_03,        "                | -c                       (case sensitive)" ,
-                "                | -c                       (‘å•¶š¬•¶š‚ğ‹æ•Ê‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_04,        "                | -d = <object_output_directory>" ,
-                "                | -d = <object_output_directory>" )
-pick( USAGE_WLIB_05,        "                | -l [ = <list_file_name> ]" ,
-                "                | -l [ = <list_file_name> ]" )
-pick( USAGE_WLIB_06,        "                | -m                       (display C++ mangled names)" ,
-                "                | -m                       (C++‚Ìƒ}ƒ“ƒOƒ‹ƒh–¼‚ğ•\¦‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_07,        "                | -n                       (always create a new library)" ,
-                "                | -n                       (í‚ÉV‚µ‚¢ƒ‰ƒCƒuƒ‰ƒŠ‚ğì¬‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_08,        "                | -o = <out_library_name>" ,
-                "                | -o = <out_library_name>" )
-pick( USAGE_WLIB_09,        "                | -p = <record_size>       (set OMF library page size)" ,
-                "                | -p = <record_size>       (set OMF library page size)" )
-pick( USAGE_WLIB_10,        "                | -q                       (don't print header)" ,
-                "                | -q                       (‹N“®ƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚¹‚ñ)" )
-pick( USAGE_WLIB_11,        "                | -s                       (strip line number debug info)" ,
-                "                | -s                       (strip line number debug info)" )
-pick( USAGE_WLIB_12,        "                | -t                       (trim THEADR pathnames)" ,
-                "                | -t                       (THEADR ƒpƒX–¼‚ğíœ‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_13,        "                | -v                       (print header)" ,
-                "                | -v                       (print header)" )
-pick( USAGE_WLIB_14,        "                | -x                       (explode all objects in library)" ,
-                "                | -x                       (ƒ‰ƒCƒuƒ‰ƒŠ‚©‚ç‚·‚×‚Ä‚ÌƒIƒuƒWƒFƒNƒg‚ğæ‚èo‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_15,        "                | -zld                     (strip file dependency info)" ,
-                "                | -zld                     (strip file dependency info)" )
-pick( USAGE_WLIB_16,        "                | -h                       (display this screen)" ,
-                "                | -h                       (‚±‚Ì‰æ–Ê‚ğ•\¦‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_17,        "                | -?                       (display this screen)" ,
-                "                | -?                       (‚±‚Ì‰æ–Ê‚ğ•\¦‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_18,        "" ,
-                "" )
-pick( USAGE_WLIB_19,        "                | -fa                      (output AR format library)" ,
-                "                | -fa                      (ARŒ`®×²ÌŞ×Ø‚ğo—Í‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_20,        "                | -fab                     (output AR format (BSD) library)" ,
-                "                | -fab                     (ARŒ`®×²ÌŞ×Ø‚ğo—Í‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_21,        "                | -fac                     (output AR format (COFF) library)" ,
-                "                | -fac                     (ARŒ`®×²ÌŞ×Ø‚ğo—Í‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_22,        "                | -fag                     (output AR format (GNU) library)" ,
-                "                | -fag                     (ARŒ`®×²ÌŞ×Ø‚ğo—Í‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_23,        "                | -fm                      (output MLIB format library)" ,
-                "                | -fm                      (MLIBŒ`®ƒ‰ƒCƒuƒ‰ƒŠ‚ğo—Í‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_24,        "                | -fo                      (output OMF format library)" ,
-                "                | -fo                      (OMFŒ`®ƒ‰ƒCƒuƒ‰ƒŠ‚ğo—Í‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_25,        "                | -i<r|n><o|n>      (resident|non-resident table)(ordinal|name)" ,
-                "                | -i<r|n><o|n>      (r:Ú¼ŞÃŞİÄ|n:”ñÚ¼ŞÃŞİÄÃ°ÌŞÙ)(o:˜”|n:–¼‘O)" )
-pick( USAGE_WLIB_26,        "                | -i6                      (generate X64 import records)" ,
-                "                | -i6                      (X64Cƒ“ƒ|[ƒg¥ƒŒƒR[ƒh‚ğ¶¬‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_27,        "                | -ia                      (generate AXP import records)" ,
-                "                | -ia                      (AXP²İÎß°Ä¥Úº°ÄŞ‚ğ¶¬‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_28,        "                | -ii                      (generate X86 import records)" ,
-                "                | -ii                      (X86ƒCƒ“ƒ|[ƒg¥ƒŒƒR[ƒh‚ğ¶¬‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_29,        "                | -ip                      (generate PPC import records)" ,
-                "                | -ip                      (PPCƒCƒ“ƒ|[ƒg¥ƒŒƒR[ƒh‚ğ¶¬‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_30,        "                | -ie                      (generate ELF import records)" ,
-                "                | -ie                      (ELFƒCƒ“ƒ|[ƒg¥ƒŒƒR[ƒh‚ğ¶¬‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_31,        "                | -ic                      (generate COFF import records)" ,
-                "                | -ic                      (COFF²İÎß°Ä¥Úº°ÄŞ‚ğ¶¬‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_32,        "                | -icl                     (generate 'long' COFF imp. records)" ,
-                "                | -icl                     (COFF²İÎß°Ä¥Úº°ÄŞ‚ğ¶¬‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_33,        "                | -io                      (generate OMF import records)" ,
-                "                | -io                      (OMFƒCƒ“ƒ|[ƒg¥ƒŒƒR[ƒh‚ğ¶¬‚µ‚Ü‚·)" )
-pick( USAGE_WLIB_34,        "" ,
-                "" )
-pick( USAGE_WLIB_35,        "  <commands>  ::= <cmd> <commands>" ,
-                "  <commands>  ::= <cmd> <commands>" )
-pick( USAGE_WLIB_36,        "                | @<env_var> <commands>" ,
-                "                | @<ŠÂ‹«•Ï”> <commands>" )
-pick( USAGE_WLIB_37,        "                | @<cmd_file> <commands>" ,
-                "                | @<cmd_file> <commands>" )
-pick( USAGE_WLIB_38,        "" ,
-                "" )
-pick( USAGE_WLIB_39,        "  <cmd_file>  ::= file which contains { <cmd> }" ,
-                "  <cmd_file>  ::= { <cmd> }‚ğŠÜ‚Şƒtƒ@ƒCƒ‹" )
-pick( USAGE_WLIB_40,        "" ,
-                "" )
-pick( USAGE_WLIB_41,        "  <cmd>       ::= +<object_file_name>      (add file)" ,
-                "  <cmd>       ::= +<µÌŞ¼Şª¸Ä¥Ì§²Ù–¼>       (ƒtƒ@ƒCƒ‹‚Ì’Ç‰Á)" )
-pick( USAGE_WLIB_42,        "                | +<library_file_name>.lib (add library)" ,
-                "                | +<×²ÌŞ×Ø¥Ì§²Ù–¼>.lib     (ƒ‰ƒCƒuƒ‰ƒŠ‚Ì’Ç‰Á)" )
-pick( USAGE_WLIB_43,        "                | ++<symbol_name>.<DLL_name>[.<export_name>][.<ordinal>]",
-                "                | ++<ƒVƒ“ƒ{ƒ‹–¼>.<DLL–¼>[.<ƒGƒNƒXƒ|[ƒg–¼>][.<˜”>]" )
-pick( USAGE_WLIB_44,        "                | -<module_name>           (delete)" ,
-                "                | -<ƒ‚ƒWƒ…[ƒ‹–¼>          (íœ)" )
-pick( USAGE_WLIB_45,        "                | -+<object_file_name>     (replace)" ,
-                "                | -+<µÌŞ¼Şª¸Ä¥Ì§²Ù–¼>      (“ü‚ê‘Ö‚¦)" )
-pick( USAGE_WLIB_46,        "                | +-<object_file_name>     (replace)" ,
-                "                | +-<µÌŞ¼Şª¸Ä¥Ì§²Ù–¼>      (“ü‚ê‘Ö‚¦)" )
-#ifdef __UNIX__
-pick( USAGE_WLIB_47,        "                | :<module_name>[=<object_file_name>]  (extract)" ,
-                "                | *<µÌŞ¼Şª¸Ä¥Ì§²Ù–¼>       (æ‚èo‚µ)" )
-#else
-pick( USAGE_WLIB_47,        "                | *<module_name>[=<object_file_name>]  (extract)" ,
-                "                | *<µÌŞ¼Şª¸Ä¥Ì§²Ù–¼>       (æ‚èo‚µ)" )
-#endif
-#ifdef __UNIX__
-pick( USAGE_WLIB_48,        "                | -:<module_name>[=<object_file_name>] (extract and delete)" ,
-                "                | -*<µÌŞ¼Şª¸Ä¥Ì§²Ù–¼>      (æ‚èo‚µ‚Æíœ)" )
-#else
-pick( USAGE_WLIB_48,        "                | -*<module_name>[=<object_file_name>] (extract and delete)" ,
-                "                | -*<µÌŞ¼Şª¸Ä¥Ì§²Ù–¼>      (æ‚èo‚µ‚Æíœ)" )
-#endif
-#ifdef __UNIX__
-pick( USAGE_WLIB_49,        "                | :-<module_name>[=<object_file_name>] (extract and delete)" ,
-                "                | *-<µÌŞ¼Şª¸Ä¥Ì§²Ù–¼>      (æ‚èo‚µ‚Æíœ)" )
-#else
-pick( USAGE_WLIB_49,        "                | *-<module_name>[=<object_file_name>] (extract and delete)" ,
-                "                | *-<µÌŞ¼Şª¸Ä¥Ì§²Ù–¼>      (æ‚èo‚µ‚Æíœ)" )
-#endif
-pick( USAGE_WLIB_50,        "" ,
-                "" )
-#ifdef __UNIX__
-pick( USAGE_WLIB_51,        "The default filename extensions are lib, bak, lst, o and lbc." ,
-                "ƒfƒtƒHƒ‹ƒg‚Ìƒtƒ@ƒCƒ‹Šg’£q‚ÍAlib, bak, lst, obj, lbc‚Å‚·B" )
-#else
-pick( USAGE_WLIB_51,        "The default filename extensions are lib, bak, lst, obj and lbc." ,
-                "ƒfƒtƒHƒ‹ƒg‚Ìƒtƒ@ƒCƒ‹Šg’£q‚ÍAlib, bak, lst, obj, lbc‚Å‚·B" )
-#endif
-pick( USAGE_WLIB_LAST,      "Enclose a file name with quotes, i.e. 'filename', if it contains '-' or '@'.",
-                "Ì§²Ù–¼‚É'-'‚â'@'‚ªŠÜ‚Ü‚ê‚é‚Æ‚«‚ÍA'filename'‚Ì‚æ‚¤‚Éˆø—p•„‚ÅÌ§²Ù–¼‚ğˆÍ‚İ‚Ü‚·" )
-pick( USAGE_AR_FIRST,       "ar  -d [-v] archive file..." ,
-                "ar  -d [-v] ƒA[ƒJƒCƒu–¼ ƒtƒ@ƒCƒ‹–¼..." )
-pick( USAGE_AR_1,       "ar  -r [-cuv] archive file..." ,
-                "ar  -r [-cuv] ƒA[ƒJƒCƒu–¼ ƒtƒ@ƒCƒ‹–¼..." )
-pick( USAGE_AR_2,       "ar  -t [-v] archive [file...]" ,
-                "ar  -t [-v] ƒA[ƒJƒCƒu–¼ [ƒtƒ@ƒCƒ‹–¼...]" )
-pick( USAGE_AR_LAST,        "ar  -x [-v] archive [file...]" ,
-                "ar  -x [-v] ƒA[ƒJƒCƒu–¼ [ƒtƒ@ƒCƒ‹–¼...]" )
+                "ãƒ©ã‚¤ãƒ–ãƒ©ãƒªãŒå¤§ãã™ãã¾ã™ã€‚ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’ï¼’ã¤ã«åˆ†å‰²ã™ã‚‹ã‹ã€%sã‚ˆã‚Špage_boundã‚’ã‚‚ã£ã¨å¤§ããã™ã‚‹ã“ã¨ã‚’æ¨å¥¨ã—ã¾ã™ã€‚" )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,6 @@
 ****************************************************************************/
 
 
-pick( SOURCE, "Source\0" )
-pick( ASM, "Assembly\0" )
-pick( MIX, "Mixed\0" )
+pick( "Source",   LEVEL_SOURCE )
+pick( "Assembly", LEVEL_ASM    )
+pick( "Mixed",    LEVEL_MIX    )

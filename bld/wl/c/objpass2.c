@@ -49,6 +49,7 @@
 #include "permdata.h"
 #include "objpass2.h"
 
+
 lobject_data            CurrRec;
 
 void ObjPass2( void )

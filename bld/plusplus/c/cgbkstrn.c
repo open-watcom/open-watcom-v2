@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,12 @@
 #include "ring.h"
 #include "vstk.h"
 #include "initdefs.h"
+#include "preproc.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+    #include "pragdefn.h"
+#endif
+
 
 typedef struct                  // SYM_TRANS -- symbol translation
 {   SYMBOL src;                 // - source SYMBOL
@@ -50,12 +57,9 @@ typedef struct                  // SYM_TRANS -- symbol translation
 
 #ifndef NDEBUG
 
-    #include "toggle.h"
-    #include "pragdefn.h"
-
     static void dump( const char* msg, SYM_TRANS* tr )
     {
-        if( PragDbgToggle.dump_exec_ic ) {
+        if( TOGGLEDBG( dump_exec_ic ) ) {
             printf( "SYM_TRANS( %s ) src(%p) tgt(%p) id(%x)\n"
                   , msg
                   , tr->src
@@ -106,7 +110,7 @@ void SymTransPush(              // ADD A SYMBOL TO BE TRANSLATED
     tr->src = src;
     tr->tgt = tgt;
     tr->id  = sym_trans_id;
-    dump( "defined", tr );
+    dump( PPOPERATOR_DEFINED, tr );
 }
 
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,37 +60,39 @@
 
 class HPJScanner
 {
-    InFile  *_input;
+    InFile          *_input;
 
-    char    *_curLine;
-    int     _lineSize;
-    int     _lineNum;
+    Buffer<char>    _curLine;
+    size_t          _lineSize;
+    int             _lineNum;
 
     // Some buffering is needed for the "tokLine" function.
-    int     _bufPos;
-    char    _bufChar;
+    size_t          _bufPos;
+    char            _bufChar;
 
     // Assignment of HPJScanner's is not allowed.
-    HPJScanner( HPJScanner const & ) {};
+    HPJScanner( HPJScanner const & ) : _curLine( 0 ) {};
     HPJScanner &    operator=( HPJScanner const & ) { return *this; };
 
 public:
     HPJScanner( InFile *src );
-    ~HPJScanner();
+    ~HPJScanner() {};
 
     // Functions to access the raw data.
-    int     lineNum() { return _lineNum; };
-    char    &operator[]( int i ) { return _curLine[i]; };
+    int             lineNum() { return _lineNum; };
+    char            &operator[]( size_t i ) { return _curLine[i]; };
     operator char *() { return _curLine; };
 
-    int     getLine();          // Get a new line.
-    char    *getArg( int start_pos );   // Read an argument.
-    char    *tokLine();         // Tokenize a line.
-    char    *endTok();
+    size_t          getLine();                      // Get a new line.
+    char            *getArg( size_t start_pos );    // Read an argument.
+    char            *tokLine();                     // Tokenize a line.
+    char            *endTok();
 
-    bool    open( char const filename[] );
-    void    close() { _input->close(); };
-    char const  *name() const { return _input->name(); };
+    void            chkLineSize( size_t size );     // Check line size.
+
+    bool            open( char const filename[] );
+    void            close() { _input->close(); };
+    char const      *name() const { return _input->name(); };
 };
 
 
@@ -113,24 +115,24 @@ class HPJReader
     HFSDirectory    *_dir;      // The directory to send info to.
     Pointers        *_theFiles; // Other components of the .HLP file.
 
-    StrNode *_root;     // The main search path.
-    StrNode *_rtfFiles; // List of rtf files to compile.
+    StrNode         *_root;     // The main search path.
+    StrNode         *_rtfFiles; // List of rtf files to compile.
 
-    char    *_homeDir;  // The home directory (used when searching)
+    char            *_homeDir;  // The home directory (used when searching)
 
-    bool    _oldPhrases;    // Flag -- Use old phrase table?
+    bool            _oldPhrases;    // Flag -- Use old phrase table?
 
-    Baggage     **_bagFiles;    // List of baggage files.
-    int         _numBagFiles;   // number of baggage files specified.
+    Baggage         **_bagFiles;    // List of baggage files.
+    int             _numBagFiles;   // number of baggage files specified.
 
-    int     skipSection();      // Skip a section of the file.
-    int     handleBaggage();    // Read the [Baggage] section.
-    int     handleOptions();    // Read the [Options] section.
-    int     handleConfig();     // Read the [Config] section.
-    int     handleFiles();      // Read the [Files] section.
-    int     handleMap();        // Read the [Map] section.
-    int     handleBitmaps();    // Read the [Bitmaps] section.
-    int     handleWindows();    // Read the [Windows] section.
+    size_t  skipSection();      // Skip a section of the file.
+    size_t  handleBaggage();    // Read the [Baggage] section.
+    size_t  handleOptions();    // Read the [Options] section.
+    size_t  handleConfig();     // Read the [Config] section.
+    size_t  handleFiles();      // Read the [Files] section.
+    size_t  handleMap();        // Read the [Map] section.
+    size_t  handleBitmaps();    // Read the [Bitmaps] section.
+    size_t  handleWindows();    // Read the [Windows] section.
 
     char    *_winParamBuf;
     char    *nextWinParam();    // Helper function for handleWindows().

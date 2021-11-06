@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,29 +42,28 @@ extern int _STACKLOW;
 
 #define NUM_TRDS 3
 #define STK_SIZE 4096
-char Stacks[NUM_TRDS][STK_SIZE];
+unsigned char Stacks[NUM_TRDS][STK_SIZE];
 int  Trds;
 long  TrdsSem = 0;
 
 
-#define delay( i, x ) for( i = 0; i < x; ++i )
-void trd(void) {
-
+#define delay( ix, xx ) for( ix = 0; ix < xx; ++ix )
+static void trd(void)
+{
     long i;
     long j;
-    long k;
 
     _MARK_( "Thread active" );
-    delay( j, 300 ) {
-        delay( k, 200 );
+    delay( i, 300 ) {
+        delay( j, 200 );
     }
     _MARK_( "Thread done" );
 #if 0
-    delay( j, 300 ) {
-        delay( k, 300 );
+    delay( i, 300 ) {
+        delay( j, 300 );
     }
-    delay( j, 300 ) {
-        delay( k, 400 );
+    delay( i, 300 ) {
+        delay( j, 400 );
     }
 #endif
     DosSemRequest( &TrdsSem, -1L );

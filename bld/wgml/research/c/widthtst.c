@@ -69,14 +69,14 @@
  * Returns:
  *      the same length in horizontal_base_units.
  */
- 
+
 static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, wgml_font * in_font )
 {
     uint32_t    divisor;
     uint64_t    units;
     uint32_t    width;
 
-    /* The conversion is done using this formula: 
+    /* The conversion is done using this formula:
      * horizontal_base_units * font_height/100 * in_units
      * ------------------------------------------------
      *                     scale_basis
@@ -114,7 +114,7 @@ static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, wgml_fo
  * Returns:
  *      the sum of the widths of the count characters starting with *text.
  */
- 
+
 uint32_t cop_text_width( char *text, uint32_t count, font_number font )
 {
     int             i;

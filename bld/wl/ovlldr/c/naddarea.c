@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +42,10 @@ void __far _ovl_addarea( unsigned segment, unsigned size )
 {
     area_list_ptr area;
 
-    if( size < 3 ) return;
+    if( size < 3 )
+        return;
     __OVLINITAREA__( segment, size );
-    area = MK_FP( segment, 0 );
+    area = _MK_FP( segment, 0 );
     area->next = __OVLAREALIST__;
     __OVLAREALIST__ = segment;
 }

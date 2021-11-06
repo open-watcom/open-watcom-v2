@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,7 @@
 #include "specials.h"
 #include "library.h"
 #include "procfile.h"
+#include "objio.h"
 
 #include "clibext.h"
 
@@ -64,23 +65,29 @@ static bool SearchAndProcLibFile( file_list *lib, const char *name )
         return( false );
     }
     lib->flags |= STAT_LIB_USED;
+#ifdef _EXE
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         if( lib->flags & STAT_LIB_FIXED ) {
             lp->modinfo |= MOD_FIXED;
         }
         DistribAddMod( lp, lib->ovlref );
     } else {
+#endif
         for( prev = &LibModules; *prev != NULL; ) { /*  find end of list */
             prev = &(*prev)->n.next_mod;
         }
         *prev = lp;
+#ifdef _EXE
     }
+#endif
     CurrMod = lp;
     ObjPass1();
     CacheClose( lib, 1 );
+#ifdef _EXE
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         DistribFinishMod( lp );
     }
+#endif
     if( FindLibTrace( lp ) ) {
         TraceSymList( lp->publist );
     }
@@ -125,9 +132,50 @@ bool ModNameCompare( const char *tname, const char *membname )
     namestart = GetBaseName( tname, 0, &lentheadr );
     lenmember = strlen( membname );
     if( lentheadr == lenmember ) {
-        if( memicmp( namestart, membname, lenmember ) == 0 ) {
+        if( strnicmp( namestart, membname, lenmember ) == 0 ) {
             return( true );
         }
     }
     return( false );
+}
+
+file_list *AddObjLib( const char *name, lib_priority priority )
+/*************************************************************/
+{
+    file_list   **owner;
+    file_list   **new_owner;
+    file_list   *lib;
+
+    DEBUG(( DBG_OLD, "Adding Object library name %s", name ));
+    /* search for new library position in linked list */
+    for( owner = &ObjLibFiles; (lib = *owner) != NULL; owner = &lib->next_file ) {
+        if( lib->priority < priority )
+            break;
+        /* end search if library already exists with same or a higher priority */
+        if( FNAMECMPSTR( lib->infile->name.u.ptr, name ) == 0 ) {
+            return( lib );
+        }
+    }
+    new_owner = owner;
+    /* search for library definition with a lower priority */
+    for( ; (lib = *owner) != NULL; owner = &lib->next_file ) {
+        if( FNAMECMPSTR( lib->infile->name.u.ptr, name ) == 0 ) {
+            /* remove library entry from linked list */
+            *owner = lib->next_file;
+            break;
+        }
+    }
+    /* if we need to add one */
+    if( lib == NULL ) {
+        lib = AllocNewFile( NULL );
+        lib->infile = AllocUniqueFileEntry( name, UsrLibPath );
+        lib->infile->status |= INSTAT_LIBRARY | INSTAT_OPEN_WARNING;
+        LinkState |= LS_LIBRARIES_ADDED;
+    }
+    /* put it to new position and setup priority */
+    lib->next_file = *new_owner;
+    *new_owner = lib;
+    lib->priority = priority;
+
+    return( lib );
 }

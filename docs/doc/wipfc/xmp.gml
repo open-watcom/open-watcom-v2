@@ -1,4 +1,5 @@
 .section *refid='xmp' xmp
+.*
 .ix 'xmp'
 .ix 'Block' 'xmp'
 .ix 'Example'

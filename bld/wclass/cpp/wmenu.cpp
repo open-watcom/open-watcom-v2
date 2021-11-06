@@ -137,9 +137,9 @@ void WEXPORT WMenu::setItemText( const char *text, int index ) {
     if( owner() ) {
         if( owner()->handle() ) {
             if( isFloatingPopup() ) {
-                GUISetMenuText( owner()->handle(), item->menuId(), (char *)text, true );
+                GUISetMenuText( owner()->handle(), item->menuId(), text, true );
             }
-            GUISetMenuText( owner()->handle(), item->menuId(), (char *)text, false );
+            GUISetMenuText( owner()->handle(), item->menuId(), text, false );
         }
     }
 }

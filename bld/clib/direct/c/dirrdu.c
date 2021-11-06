@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -48,7 +48,7 @@ static int IsMatch( struct dirent *dir, const char *fname )
     char       ch;
 
     strcpy( tmp, fname );
-    strupr( tmp );
+    _strupr( tmp );
     fptr = tmp;
 
     if( strlen( sptr ) == 0 )
@@ -175,14 +175,14 @@ _WCRTLINK DIR *opendir( const char *name )
                 size--;
             }
             ptr++;
-            strupr( ptr );
+            _strupr( ptr );
             strcpy( parent->d_match_mask, ptr );
             *ptr = 0;
             handle = RdosOpenDir( tmp );
         } else {
             handle = RdosOpenDir( "." );
             strcpy( tmp, name );
-            strupr( tmp );
+            _strupr( tmp );
             strcpy( parent->d_match_mask, tmp );
         }
     } else {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,16 +36,15 @@
 //
 
 #include "ftnstd.h"
-#include <string.h>
 #include "mkname.h"
 
 #include "clibext.h"
 
 
-int     CopyMaxStr( const char *str, char *buff, int max_len )
-//============================================================
+size_t  CopyMaxStr( const char *str, char *buff, size_t max_len )
+//===============================================================
 {
-    int         len;
+    size_t  len;
 
     len = strlen( str );
     if( len > max_len ) {
@@ -56,10 +55,10 @@ int     CopyMaxStr( const char *str, char *buff, int max_len )
     return( len );
 }
 
-int     MakeName( const char *fn, const char *extn, char *buff )
+size_t  MakeName( const char *fn, const char *extn, char *buff )
 //==============================================================
 {
-    int         len;
+    size_t  len;
 
     len = CopyMaxStr( fn, buff, _MAX_PATH - 1 );
     if( extn != NULL ) {
@@ -71,5 +70,4 @@ int     MakeName( const char *fn, const char *extn, char *buff )
     }
     return( len );
 }
-
 

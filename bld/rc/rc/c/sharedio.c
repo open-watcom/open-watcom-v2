@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,7 @@
 #include "clibext.h"
 
 
+#if !defined( INSIDE_WLINK ) || defined( _OS2 )
 #define MAX_OPEN_RESFILES       6
 
 typedef struct {
@@ -326,3 +328,4 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
         RESFREE( type );
     }
 }
+#endif

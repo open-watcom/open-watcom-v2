@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,7 @@ typedef void    __exit_fn( void );
 static __exit_fn    * _HUGEDATA _ExitList[EXIT_LIMIT];
 static int          _ExitCount;
 
-_WRTLFCONV int atexit( void (* func)( void ) )
+_WRTLFCONV int atexit( void (_WCCALLBACK * func)( void ) )
 {
     if( _ExitCount < EXIT_LIMIT ) {
         _ExitList[_ExitCount++] = (__exit_fn *)func;

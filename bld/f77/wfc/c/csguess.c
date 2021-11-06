@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +63,7 @@ void    CpAdmit(void) {
 
 // Process an ADMIT statement.
 
-    if( ( CSHead->typ == CS_GUESS ) | ( CSHead->typ == CS_ADMIT ) ) {
+    if( ( CSHead->typ == CS_GUESS ) || ( CSHead->typ == CS_ADMIT ) ) {
         GBranch( CSHead->bottom );
         GLabel( CSHead->branch );
         FreeLabel( CSHead->branch );
@@ -81,7 +82,7 @@ void    CpEndGuess(void) {
 
 // Process an ENDGUESS statement.
 
-    if( ( CSHead->typ == CS_GUESS ) | ( CSHead->typ == CS_ADMIT ) ) {
+    if( ( CSHead->typ == CS_GUESS ) || ( CSHead->typ == CS_ADMIT ) ) {
         GLabel( CSHead->branch );
         GLabel( CSHead->bottom );
         FreeLabel( CSHead->branch );

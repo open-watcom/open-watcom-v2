@@ -63,8 +63,8 @@
 #include "dbgerr.h"
 
 
-char                XConfig[2048];
-char                *DbgTerminal;
+char                XConfig[2048] = { 0 };
+char                *DbgTerminal = NULL;
 int                 DbgConsole;
 int                 PrevConsole;
 int                 InitConsole;
@@ -420,15 +420,6 @@ void PopErrBox( const char *buff )
     WriteText( STD_ERR, buff, strlen( buff ) );
 }
 
-static const char SysOptNameTab[] = {
-    "Console\0"
-    "XConfig\0"
-    ""
-};
-
-enum { OPT_CONSOLE, OPT_XCONFIG };
-
-
 void SetNumLines( int num )
 {
     if( num < 10 || num > 999 )
@@ -445,25 +436,9 @@ void SetNumColumns( int num )
 
 bool ScreenOption( const char *start, unsigned len, int pass )
 {
-    char        *p;
+    /* unused parameters */ (void)start; (void)len; (void)pass;
 
-    switch( Lookup( SysOptNameTab, start, len ) ) {
-    case OPT_CONSOLE:
-        _Free( DbgTerminal );
-        DbgTerminal = GetFileName( pass );
-        break;
-    case OPT_XCONFIG:
-        WantEquals();
-        p = XConfig + strlen( XConfig );
-        *p++ = ' ';
-        GetRawItem( p );
-        if( pass == 1 )
-            XConfig[0] = NULLCHAR;
-        break;
-    default:
-        return( false );
-    }
-    return( true );
+    return( false );
 }
 
 void ScreenOptInit( void )

@@ -8,9 +8,9 @@ unsigned int _freect( size_t size );
 The
 .id &funcb.
 function returns the number of times that
-.kw _nmalloc
+.reffunc _nmalloc
 (or
-.kw malloc
+.reffunc malloc
 in small data models)
 can be called to allocate a item of
 .arg size
@@ -18,7 +18,7 @@ bytes.
 In the tiny, small and medium memory models, the default data segment
 is only extended as needed to satisfy requests for memory allocation.
 Therefore, you will need to call
-.kw _nheapgrow
+.reffunc _nheapgrow
 in these memory models before calling &funcb
 in order to get a meaningful result.
 .desc end

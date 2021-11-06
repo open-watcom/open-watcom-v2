@@ -1,14 +1,15 @@
-.func tell _tell _telli64
+.func _tell _telli64 tell
+.ansiname _tell
 .synop begin
 #include <&iohdr>
+off_t _tell( int &fd );
+.ixfunc2 '&OsIo' _tell
+__int64 _telli64( int &fd );
+.ixfunc2 '&OsIo' _telli64
+
+.deprec
 &off_t tell( int &fd );
 .ixfunc2 '&OsIo' &funcb
-.if &'length(&_func.) ne 0 .do begin
-off_t _tell( int &fd );
-.ixfunc2 '&OsIo' &_func
-.do end
-__int64 _telli64( int &fd );
-.ixfunc2 '&OsIo' &func64
 .synop end
 .*
 .desc begin
@@ -19,21 +20,22 @@ system level.
 The
 .arg &fd
 value is the file &handle returned by a successful execution of the
-.kw open
+.reffunc open
 function.
 .np
 The returned value may be used in conjunction with the
-.kw lseek
+.reffunc lseek
 function to reset the current file position.
-.im ansiconf
 .np
 The &func64 function is similar to the
 .id &funcb.
 function but returns a
 64-bit file position.
 This value may be used in conjunction with the
-.kw _lseeki64
+.reffunc _lseeki64
 function to reset the current file position.
+.np
+.deprfunc tell _tell
 .desc end
 .*
 .return begin
@@ -82,14 +84,14 @@ void main( void )
     if( &fd != -1 ) {
 
         /* print file position */
-        printf( "%ld\n", tell( &fd ) );
+        printf( "%ld\n", _tell( &fd ) );
 
         /* write the text */
         size_written = write( &fd, buffer,
                               sizeof( buffer ) );
 
         /* print file position */
-        printf( "%ld\n", tell( &fd ) );
+        printf( "%ld\n", _tell( &fd ) );
 
         /* close the file */
         close( &fd );

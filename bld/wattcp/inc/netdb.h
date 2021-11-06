@@ -118,13 +118,17 @@ struct  protoent {
 #include <sys/cdefs.h>
 #endif
 
+#ifndef __SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+
 __BEGIN_DECLS
 
 void            endhostent     (void);
 void            endnetent      (void);
 void            endprotoent    (void);
 void            endservent     (void);
-struct hostent  *gethostbyaddr (const char *, int, int);
+struct hostent  *gethostbyaddr (const char *, socklen_t, int);
 struct hostent  *gethostbyname (const char *);
 struct hostent  *gethostbyname2(const char *, int);
 struct hostent  *gethostent    (void);

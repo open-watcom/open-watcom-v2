@@ -10,7 +10,7 @@ The
 function can be used to associate a buffer with the file
 designated by
 .arg fp
-.ct .li .
+.period
 If this function is used, it must be called after the file has been
 opened and before it has been read or written.
 If the argument

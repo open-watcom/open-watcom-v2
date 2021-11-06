@@ -115,7 +115,7 @@ static cop_driver *resize_cop_driver( cop_driver *in_driver, size_t in_size )
 
 /*  Function parse_finish_block().
  *  Processes a single FinishBlock. This may be called up to two times when
- *  parsing a .COP file encoding a :DRIVER block. 
+ *  parsing a .COP file encoding a :DRIVER block.
  *
  *  Note: although a :FINISH block can contain more than one :VALUE block, and
  *  gendev will put more than one CodeBlock into the .COP file, wgml only
@@ -142,7 +142,7 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, char **current, ch
 
     code_block *    cop_codeblocks  = NULL;
     code_text *     code_text_ptr   = NULL;
-    uint8_t         designator;    
+    uint8_t         designator;
     uint8_t *       text_ptr        = NULL;
     uint16_t        count;
     size_t          size;
@@ -181,14 +181,14 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, char **current, ch
         IN_DRV_ADD_OFF( sizeof( code_text ) );
 
         /* Get the CodeBlocks. */
-        
+
         cop_codeblocks = get_code_blocks( current, count, base, "END :FINISH" );
         if( cop_codeblocks == NULL ) {
             free( in_driver );
             in_driver = NULL;
             return( in_driver );
         }
-        
+
         /* Initialize the code_text struct. */
 
         if( cop_codeblocks[0].designator != 0x00 ) {
@@ -248,14 +248,14 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, char **current, ch
         IN_DRV_ADD_OFF( sizeof( code_text ) );
 
         /* Get the CodeBlocks. */
-        
+
         cop_codeblocks = get_code_blocks( current, count, base, "DOCUMENT :FINISH" );
         if( cop_codeblocks == NULL ) {
             free( in_driver );
             in_driver = NULL;
             return( in_driver );
         }
-        
+
         /* Initialize the code_text struct. */
 
         if( cop_codeblocks[0].designator != 0x00 ) {
@@ -323,7 +323,7 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, char **current, ch
  *      NULL on failure.
  */
 
-static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver, 
+static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
                                        fontstyle_block * fontstyle_block_ptr,
                                        p_buffer **p_buffer_set,
                                        char **current, uint8_t count )
@@ -413,7 +413,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
     IN_DRV_ADD_OFF( count );
 
     /* Acquire the type. */
-        
+
     fread( string_ptr, count, 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         free( in_driver );
@@ -456,7 +456,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
     }
 
     /* Now get the P-buffers. */
-        
+
     *p_buffer_set = get_p_buffer( in_file );
     if( *p_buffer_set == NULL) {
         free( in_driver );
@@ -474,13 +474,13 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
 
     memcpy_s( &count16, sizeof( count16 ), *current, sizeof( count16 ) );
     *current += sizeof( count16 );
-    
+
     /* If the count is 0, we are done: the P-buffer is empty. */
 
     if( count16 == 0 ) return( in_driver );
 
     /* Get the CodeBlocks, after displaying the current font style name. */
-        
+
     printf( "Fontstyle: %s\n", string_ptr );
     cop_codeblocks = get_code_blocks( current, count16, (*p_buffer_set)->buffer, ":FONTSTYLE" );
     if( cop_codeblocks == NULL ) {
@@ -505,7 +505,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
                    cop_codeblocks[i].cb05_flag, cop_codeblocks[i].lp_flag, cop_codeblocks[i].pass);
             continue;
         }
-        
+
         switch( cop_codeblocks[i].designator ) {
         case 0x04 :
 
@@ -1006,7 +1006,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
 
 /*  Function parse_init_block().
  *  Processes a single InitBlock. This may be called up to two times when
- *  parsing a .COP file encoding a :DRIVER block. 
+ *  parsing a .COP file encoding a :DRIVER block.
  *
  *  Parameters:
  *      in_driver contains the cop_driver being initialized.
@@ -1030,7 +1030,7 @@ static cop_driver * parse_init_block( cop_driver * in_driver, char **current, ch
     init_block *    init_block_ptr  = NULL;
     init_text *     init_text_ptr   = NULL;
     int             i;
-    uint8_t         designator;    
+    uint8_t         designator;
     uint8_t *       text_ptr        = NULL;
     uint16_t        count;
     size_t          size;
@@ -1065,14 +1065,14 @@ static cop_driver * parse_init_block( cop_driver * in_driver, char **current, ch
         IN_DRV_ADD_OFF( sizeof( init_block ) );
 
         /* Get the CodeBlocks. */
-        
+
         cop_codeblocks = get_code_blocks( current, count, base, "START :INIT" );
         if( cop_codeblocks == NULL ) {
             free( in_driver );
             in_driver = NULL;
             return( in_driver );
         }
-        
+
         /* Add the init_text struct instances. */
 
         size = count * sizeof( init_text );
@@ -1158,14 +1158,14 @@ static cop_driver * parse_init_block( cop_driver * in_driver, char **current, ch
         IN_DRV_ADD_OFF( sizeof( init_block ) );
 
         /* Get the CodeBlocks. */
-        
+
         cop_codeblocks = get_code_blocks( current, count, base, "DOCUMENT :INIT" );
         if( cop_codeblocks == NULL ) {
             free( in_driver );
             in_driver = NULL;
             return( in_driver );
         }
-        
+
         /* Add the init_text struct instances. */
 
         size = count * sizeof( init_text );
@@ -1234,7 +1234,7 @@ static cop_driver * parse_init_block( cop_driver * in_driver, char **current, ch
         free( in_driver );
         in_driver = NULL;
         return( in_driver );
-    }    
+    }
 
     return( in_driver );
 }
@@ -1265,13 +1265,13 @@ bool is_drv_file( FILE * in_file)
     /* Verify that the descriminator is for a .COP driver file */
 
     if( memcmp( descriminator, "DRV", 3 ) ) return( false );
-    
+
     return( true );
 }
 
 /* Function parse_driver().
  *  Constructs a cop_driver instance from the given input stream.
- *  
+ *
  *  Parameters:
  *      in_file points to the first byte of a .COP file encoding a :DRIVER
  *          struct after the "DEV" descriminator.
@@ -1285,7 +1285,7 @@ bool is_drv_file( FILE * in_file)
 cop_driver * parse_driver( FILE * in_file )
 {
     /* The cop_driver instance. */
-    
+
     cop_driver *        out_driver              = NULL;
 
     /* Used to acquire string attributes. */
@@ -1320,7 +1320,7 @@ cop_driver * parse_driver( FILE * in_file )
     size_t              size;
 
     /* Initialize the out_driver. */
-        
+
     out_driver = malloc( START_SIZE );
     if( out_driver == NULL )
         return( out_driver );
@@ -1475,7 +1475,7 @@ cop_driver * parse_driver( FILE * in_file )
 
         /* Reset to the start of the next P-buffer's data. */
 
-        if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+        if( (current - p_buffer_set->buffer) % 80 != 0 ) {
             factor = (current - p_buffer_set->buffer) / 80;
             factor++;
             current = p_buffer_set->buffer + factor * 80;
@@ -1499,12 +1499,12 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Reset to the start of the next P-buffer's data. */
 
-    if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+    if( (current - p_buffer_set->buffer) % 80 != 0 ) {
         factor = (current - p_buffer_set->buffer) / 80;
         factor++;
         current = p_buffer_set->buffer + factor * 80;
     }
-    
+
     /* Parse the FinishFuncs */
 
     /* Get the number of FinishBlocks. */
@@ -1536,7 +1536,7 @@ cop_driver * parse_driver( FILE * in_file )
 
         /* Reset to the start of the next P-buffer's data. */
 
-        if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+        if( (current - p_buffer_set->buffer) % 80 != 0 ) {
             factor = (current - p_buffer_set->buffer) / 80;
             factor++;
             current = p_buffer_set->buffer + factor * 80;
@@ -1557,10 +1557,10 @@ cop_driver * parse_driver( FILE * in_file )
         out_driver = NULL;
         return( out_driver );
     }
-    
+
     /* Reset to the start of the next P-buffer's data. */
 
-    if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+    if( (current - p_buffer_set->buffer) % 80 != 0 ) {
         factor = (current - p_buffer_set->buffer) / 80;
         factor++;
         current = p_buffer_set->buffer + factor * 80;
@@ -1616,7 +1616,7 @@ cop_driver * parse_driver( FILE * in_file )
         }
 
         /* Get the CodeBlock. */
-        
+
         cop_codeblocks = get_code_blocks( &current, count16, p_buffer_set->buffer, ":NEWLINE" );
         if( cop_codeblocks == NULL ) {
             free( p_buffer_set );
@@ -1663,16 +1663,16 @@ cop_driver * parse_driver( FILE * in_file )
 
         /* Reset to the start of the next P-buffer's data. */
 
-        if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+        if( (current - p_buffer_set->buffer) % 80 != 0 ) {
             factor = (current - p_buffer_set->buffer) / 80;
             factor++;
             current = p_buffer_set->buffer + factor * 80;
         }
-    }    
-        
+    }
+
     /* Reset to the start of the next P-buffer's data. */
 
-    if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+    if( (current - p_buffer_set->buffer) % 80 != 0 ) {
         factor = (current - p_buffer_set->buffer) / 80;
         factor++;
         current = p_buffer_set->buffer + factor * 80;
@@ -1696,7 +1696,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Reset to the start of the next P-buffer's data. */
 
-    if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+    if( (current - p_buffer_set->buffer) % 80 != 0 ) {
         factor = (current - p_buffer_set->buffer) / 80;
         factor++;
         current = p_buffer_set->buffer + factor * 80;
@@ -1752,7 +1752,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Reset to the start of the next P-buffer's data. */
 
-    if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+    if( (current - p_buffer_set->buffer) % 80 != 0 ) {
         factor = (current - p_buffer_set->buffer) / 80;
         factor++;
         current = p_buffer_set->buffer + factor * 80;
@@ -1810,7 +1810,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Reset to the start of the next P-buffer's data. */
 
-    if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+    if( (current - p_buffer_set->buffer) % 80 != 0 ) {
         factor = (current - p_buffer_set->buffer) / 80;
         factor++;
         current = p_buffer_set->buffer + factor * 80;
@@ -1829,14 +1829,14 @@ cop_driver * parse_driver( FILE * in_file )
 
         /* Reset to the start of the next P-buffer's data. */
 
-        if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+        if( (current - p_buffer_set->buffer) % 80 != 0 ) {
             factor = (current - p_buffer_set->buffer) / 80;
             factor++;
             current = p_buffer_set->buffer + factor * 80;
         }
 
     } else {
-        
+
         /* Add the fontswitch_block structs. */
 
         size = out_driver->fontswitches.count * sizeof( fontswitch_block );
@@ -1858,9 +1858,9 @@ cop_driver * parse_driver( FILE * in_file )
         for( i = 0; i < out_driver->fontswitches.count; i++ ) {
 
             /* The type is a null-terminated character string. */
-            
+
             length = strlen( current );
-            
+
             if( length == 0 ) {
                 printf_s( ":FONTSWITCH block %i has no 'type'\n", i );
                 free( p_buffer_set );
@@ -1906,9 +1906,9 @@ cop_driver * parse_driver( FILE * in_file )
                 out_driver = NULL;
                 return( out_driver );
             } else {
-            
+
                 /* Get the CodeBlock(s). */
-        
+
                 cop_codeblocks = get_code_blocks( &current, count16, p_buffer_set->buffer, ":FONTSWITCH" );
                 if( cop_codeblocks == NULL ) {
                     free( p_buffer_set );
@@ -1919,7 +1919,7 @@ cop_driver * parse_driver( FILE * in_file )
                 }
 
                 /* Process the CodeBlocks. */
-            
+
                 fontswitch_block_ptr[i].startvalue = NULL;
                 fontswitch_block_ptr[i].endvalue = NULL;
 
@@ -1948,7 +1948,7 @@ cop_driver * parse_driver( FILE * in_file )
                         /* Now get the CodeBlock. */
 
                         size = code_text_ptr->count = cop_codeblocks[j].count;
-                
+
                         if( out_driver->allocated_size < (out_driver->next_offset + size) ) {
                             out_driver = resize_cop_driver( out_driver, size );
                             if( out_driver == NULL ) {
@@ -1991,7 +1991,7 @@ cop_driver * parse_driver( FILE * in_file )
                         /* Now get the CodeBlock. */
 
                         size = code_text_ptr->count = cop_codeblocks[j].count;
-                
+
                         if( out_driver->allocated_size < (out_driver->next_offset + size) ) {
                             out_driver = resize_cop_driver( out_driver, size );
                             if( out_driver == NULL ) {
@@ -2029,7 +2029,7 @@ cop_driver * parse_driver( FILE * in_file )
 
             /* Reset to the start of the next P-buffer's data. */
 
-            if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+            if( (current - p_buffer_set->buffer) % 80 != 0 ) {
                 factor = (current - p_buffer_set->buffer) / 80;
                 factor++;
                 current = p_buffer_set->buffer + factor * 80;
@@ -2056,15 +2056,15 @@ cop_driver * parse_driver( FILE * in_file )
             out_driver = NULL;
             return( out_driver );
         }
-    } 
+    }
 
     free( p_buffer_set );
     p_buffer_set = NULL;
-    
+
     /* Parse the FontstyleGroup. */
 
     /* Get the data_count and ensure it is not 0. */
-    
+
     fread( &count8, sizeof( count8 ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         free( out_driver );
@@ -2121,7 +2121,7 @@ cop_driver * parse_driver( FILE * in_file )
     /* Note: see the Wiki for the file structure. It is a little odd. */
 
     /* The initial ShortFontstyleBlock must be processed separately. */
-    
+
     out_driver = parse_font_style( in_file, out_driver, fontstyle_block_ptr, &p_buffer_set, &current, count8 );
     if( out_driver == NULL )
         return( out_driver );
@@ -2152,12 +2152,12 @@ cop_driver * parse_driver( FILE * in_file )
                 out_driver = NULL;
                 return( out_driver );
             }
-        } 
+        }
         free(p_buffer_set);
         p_buffer_set = NULL;
-        
+
         /* Get the data_count and ensure it is not 0. */
-    
+
         fread( &count8, sizeof( count8 ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             free( out_driver );
@@ -2177,10 +2177,10 @@ cop_driver * parse_driver( FILE * in_file )
             return( out_driver );
         fontstyle_block_ptr = OUT_DRV_MAP( out_driver->fontstyles.fontstyleblocks );
     }
-    
+
     /* Reset to the start of the next P-buffer's data. */
 
-    if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+    if( (current - p_buffer_set->buffer) % 80 != 0 ) {
         factor = (current - p_buffer_set->buffer) / 80;
         factor++;
         current = p_buffer_set->buffer + factor * 80;
@@ -2241,7 +2241,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Reset to the start of the next P-buffer's data. */
 
-    if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+    if( (current - p_buffer_set->buffer) % 80 != 0 ) {
         factor = (current - p_buffer_set->buffer) / 80;
         factor++;
         current = p_buffer_set->buffer + factor * 80;
@@ -2304,10 +2304,10 @@ cop_driver * parse_driver( FILE * in_file )
     /* The thickness is present only if the HlineBlock was present. */
 
     if( out_driver->hline.text == NULL) {
-        
+
         /* Reset to the start of the next P-buffer's data */
 
-        if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+        if( (current - p_buffer_set->buffer) % 80 != 0 ) {
             factor = (current - p_buffer_set->buffer) / 80;
             factor++;
             current = p_buffer_set->buffer + factor * 80;
@@ -2315,19 +2315,19 @@ cop_driver * parse_driver( FILE * in_file )
     } else {
 
         /* The thickness halted the set of P-buffers so it is exhausted. */
-        
+
         free( p_buffer_set );
         p_buffer_set = NULL;
 
         /* Get the thickness */
-    
+
         fread( &count8, sizeof( count8 ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             free( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
-    
+
         switch( count8 ) {
         case 0x02:
 
@@ -2362,7 +2362,7 @@ cop_driver * parse_driver( FILE * in_file )
             return( out_driver );
         }
     }
-    
+
     /* Parse the VlineBlock. */
 
     /* If there was an HlineBlock, then get the next set of P-buffers. */
@@ -2442,10 +2442,10 @@ cop_driver * parse_driver( FILE * in_file )
     /* The thickness is present only if the VlineBlock was present. */
 
     if( out_driver->vline.text == NULL ) {
-        
+
         /* Reset to the start of the next P-buffer's data. */
 
-        if( (current - p_buffer_set->buffer) % 80 != 0 ) { 
+        if( (current - p_buffer_set->buffer) % 80 != 0 ) {
             factor = (current - p_buffer_set->buffer) / 80;
             factor++;
             current = p_buffer_set->buffer + factor * 80;
@@ -2453,19 +2453,19 @@ cop_driver * parse_driver( FILE * in_file )
     } else {
 
         /* The thickness halted the set of P-buffers so it is exhausted. */
-        
+
         free( p_buffer_set );
         p_buffer_set = NULL;
 
         /* Get the thickness. */
-    
+
         fread( &count8, sizeof( count8 ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             free( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
-    
+
         switch( count8 ) {
         case 0x02:
 
@@ -2500,7 +2500,7 @@ cop_driver * parse_driver( FILE * in_file )
             return( out_driver );
         }
     }
-    
+
     /* Parse the DboxBlock. */
 
     /* If there was a VlineBlock, then get the final set of P-buffers. */
@@ -2526,7 +2526,7 @@ cop_driver * parse_driver( FILE * in_file )
 
         current = p_buffer_set->buffer;
     }
-    
+
     /* Now parse the FunctionsBlock. */
 
     cop_functions = parse_functions_block( &current, p_buffer_set->buffer, ":DBOX" );
@@ -2586,16 +2586,16 @@ cop_driver * parse_driver( FILE * in_file )
     /* The thickness is present only if DboxBlock was present. */
 
     if( out_driver->dbox.text != NULL) {
-        
+
         /* Get the thickness. */
-    
+
         fread( &count8, sizeof( count8 ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             free( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
-    
+
         switch( count8 ) {
         case 0x02:
 
@@ -2648,7 +2648,7 @@ cop_driver * parse_driver( FILE * in_file )
             }
         }
     }
-    
+
     if( out_driver->inits.document != NULL ) {
         OUT_DRV_REMAP( inits.document );
         if(out_driver->inits.document->codeblock != NULL ) {
@@ -2660,21 +2660,21 @@ cop_driver * parse_driver( FILE * in_file )
             }
         }
     }
-    
+
     if( out_driver->finishes.end != NULL ) {
         OUT_DRV_REMAP( finishes.end );
         if(out_driver->finishes.end->text != NULL ) {
             OUT_DRV_REMAP( finishes.end->text );
         }
     }
-    
+
     if( out_driver->finishes.document != NULL ) {
         OUT_DRV_REMAP( finishes.document );
         if(out_driver->finishes.document->text != NULL ) {
             OUT_DRV_REMAP( finishes.document->text );
         }
     }
-    
+
     if( out_driver->newlines.newlineblocks != NULL ) {
         OUT_DRV_REMAP( newlines.newlineblocks );
         for( i = 0; i < out_driver->newlines.count; i++ ) {

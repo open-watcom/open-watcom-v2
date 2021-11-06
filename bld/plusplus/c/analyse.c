@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,8 +47,6 @@ ANALYSE.C -- analyse parsed tree of tokens
 #include "fnovload.h"
 #include "calldiag.h"
 #include "fold.h"
-#include "dbg.h"
-#include "toggle.h"
 #include "codegen.h"
 #include "defarg.h"
 #include "fnbody.h"
@@ -61,7 +60,9 @@ ANALYSE.C -- analyse parsed tree of tokens
 #   include "initdefs.h"
 #endif
 #ifndef NDEBUG
-#   include "pragdefn.h"
+    #include "dbg.h"
+    #include "pragdefn.h"
+    #include "togglesd.h"
 #endif
 #include "mngless.h"
 
@@ -1113,8 +1114,8 @@ typedef enum {
 
 
 // The following table sets the actions for a non-error combination of
-// OPCL_RTN_CODE.
-// The table must be in the same order as OPCL_RTN_CODES.
+// OPNCL_RTN_CODE.
+// The table must be in the same order as OPNCL_RTN_CODES.
 
 static OPAC *opcomb_actions[] = {
     #define OPR_RTN(a) opac_ ## a
@@ -1122,40 +1123,40 @@ static OPAC *opcomb_actions[] = {
     #undef OPR_RTN
 };
 
-typedef enum            // OPCL -- operands classification
-{   OPCL_PTR            // - ptr operand
-,   OPCL_ARITH          // - arithmetic operand
-,   OPCL_PTR_PTR        // - binary( ptr, ptr ) or unary( ptr )
-                            = OPCL_PTR * 2 + OPCL_PTR
-,   OPCL_PTR_ARITH      // - binary( ptr, arith )
-                            = OPCL_PTR * 2 + OPCL_ARITH
-,   OPCL_ARITH_PTR      // - binary( arith, ptr )
-                            = OPCL_ARITH * 2 + OPCL_PTR
-,   OPCL_ARITH_ARITH    // - binary( arith, arith ) or unary( arith )
-                            = OPCL_ARITH * 2 + OPCL_ARITH
-,   OPCL_OTHER          // - anything else
-,   OPCL_MAX            // - number of classifications
-} OPCL;
+typedef enum            // OPNCL -- operands classification
+{   OPNCL_PTR           // - ptr operand
+,   OPNCL_ARITH         // - arithmetic operand
+,   OPNCL_PTR_PTR       // - binary( ptr, ptr ) or unary( ptr )
+                            = OPNCL_PTR * 2 + OPNCL_PTR
+,   OPNCL_PTR_ARITH     // - binary( ptr, arith )
+                            = OPNCL_PTR * 2 + OPNCL_ARITH
+,   OPNCL_ARITH_PTR     // - binary( arith, ptr )
+                            = OPNCL_ARITH * 2 + OPNCL_PTR
+,   OPNCL_ARITH_ARITH   // - binary( arith, arith ) or unary( arith )
+                            = OPNCL_ARITH * 2 + OPNCL_ARITH
+,   OPNCL_OTHER         // - anything else
+,   OPNCL_MAX           // - number of classifications
+} OPNCL;
 
-static OPR_RTN_CODE opr_rtn_table[][OPCL_MAX] = {
-#include "ppopsan.h"
+static OPR_RTN_CODE opr_rtn_table[][OPNCL_MAX] = {
+    #include "ppopsan.h"
 };
 
 
 typedef struct                  // ERROR_CODES
-{   OPCL reqd_kind;             // - required for left operand, when binary
+{   OPNCL reqd_kind;            // - required for left operand, when binary
     unsigned err_unary;         // - error when a unary operator
     unsigned err_left;          // - error when left operand is bad
     unsigned err_right;         // - error when right operand is bad
 } ERROR_CODES;
 
-static ERROR_CODES errs_not_arith = {   OPCL_ARITH
+static ERROR_CODES errs_not_arith = {   OPNCL_ARITH
                                     ,   ERR_EXPR_MUST_BE_ARITHMETIC
                                     ,   ERR_LEFT_EXPR_MUST_BE_ARITHMETIC
                                     ,   ERR_RIGHT_EXPR_MUST_BE_ARITHMETIC
                                     };
 
-static ERROR_CODES errs_not_int =   {   OPCL_ARITH
+static ERROR_CODES errs_not_int =   {   OPNCL_ARITH
                                     ,   ERR_EXPR_MUST_BE_INTEGRAL
                                     ,   ERR_LEFT_EXPR_MUST_BE_INTEGRAL
                                     ,   ERR_RIGHT_EXPR_MUST_BE_INTEGRAL
@@ -1508,30 +1509,10 @@ static void warnUselessCompare( // WARN IF COMPARISON IS USELESS (CONSTANT)
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
 {
-    PTREE       op1, op2;
-    bool        constant_right;
-    bool        constant_left;
-    CGOP        cgop;
-
-    op1 = NULL;
-    op2 = NULL;
-    constant_right = false;
-    constant_left = false;
-    op1 = NULL;
-    op2 = NULL;
-    cgop = expr->cgop;
     if( NodeIsConstantInt( right ) ) {
-        constant_right = true;
-        op1 = left;
-        op2 = right;
+        warnIfUseless( left, right, expr->cgop, expr );
     } else if ( NodeIsConstantInt( left ) ) {
-        constant_left = true;
-        op1 = right;
-        op2 = left;
-        cgop = commRelOp( cgop );
-    }
-    if( constant_left || constant_right ) {
-        warnIfUseless( op1, op2, cgop, expr );
+        warnIfUseless( right, left, commRelOp( expr->cgop ), expr );
     }
 }
 
@@ -1623,14 +1604,14 @@ static TYPE analyse_err_left(   // ANALYSE KIND OF ERROR MESSAGE TO WRITE
 
 static TYPE analyse_err(        // ANALYSE KIND OF ERROR MESSAGE TO WRITE
     PTREE expr,                 // - expression in error
-    OPCL left_kind,             // - kind of operand on left
+    OPNCL left_kind,            // - kind of operand on left
     ERROR_CODES *msgs )         // - messages
 {
     MSG_NUM msg;                // - message code to be used
 
     if( expr->op == PT_UNARY ) {
         msg = msgs->err_unary;
-    } else if( left_kind == OPCL_OTHER ) {
+    } else if( left_kind == OPNCL_OTHER ) {
         msg = msgs->err_left;
     } else if( left_kind == msgs->reqd_kind ) {
         msg = msgs->err_right;
@@ -1777,13 +1758,13 @@ static bool ptr_scales(         // TEST IF EXPRESSION IF PTR. IS SCALABLE
 }
 
 
-static OPCL classify_operand(   // CLASSIFY OPERAND AS PTR, ARITH, OTHER
+static OPNCL classify_operand(  // CLASSIFY OPERAND AS PTR, ARITH, OTHER
     PTREE operand )             // - the operand
 {
-    OPCL retn;                  // - classification
+    OPNCL retn;                 // - classification
     TYPE type;                  // - operand type
 
-    retn = OPCL_OTHER;
+    retn = OPNCL_OTHER;
     if( operand != NULL ) {
         type = operand->type;
         if( type != NULL ) {
@@ -1800,15 +1781,15 @@ static OPCL classify_operand(   // CLASSIFY OPERAND AS PTR, ARITH, OTHER
             case PT_IC :
                 type = TypedefModifierRemove( type );
                 if( NULL != PointerTypeEquivalent( type ) ) {
-                    retn = OPCL_PTR;
+                    retn = OPNCL_PTR;
                 } else if( NULL != ArithType( type ) ) {
-                    retn = OPCL_ARITH;
+                    retn = OPNCL_ARITH;
                 }
                 break;
             // While nullptr is neither a pointer nor an arithmetic type,
             // it should act like 0 on most occasions.
             case PT_PTR_CONSTANT :
-                retn = OPCL_ARITH;
+                retn = OPNCL_ARITH;
                 break;
             default :
                 break;
@@ -1877,7 +1858,7 @@ static PTREE convertCtor(       // CONVERT CTOR EXPRESSION
             *a_left = MakeNodeSymbol( ctor );
             PTreeExtractLocn( expr , &(*a_left)->locn );
         }
-        if( NULL == StructType( type ) ) {
+        if( NULL == ClassType( type ) ) {
             PTREE old = expr;
             expr = old->u.subtree[1];
             if( expr == NULL ) {
@@ -2520,7 +2501,7 @@ static bool diagThisMemberFun(  // DIAGNOSE NON-STATIC MEMBER FUNCTION
 
 static bool allowClassCastAsLValue( PTREE *p_expr )
 {
-    TYPE class_type = StructType( NodeType( *p_expr ) );
+    TYPE class_type = ClassType( NodeType( *p_expr ) );
     bool ok;
 
     if( class_type == NULL ) {
@@ -2651,9 +2632,9 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
     PTREE right;                // - right operand
     PTREE temp;                 // - temporary operand
     TYPE type;                  // - type to be used
-    OPCL index_left;            // - operand index (left)
-    OPCL index_right;           // - operand index (right)
-    OPCL index;                 // - operands index
+    OPNCL index_left;           // - operand index (left)
+    OPNCL index_right;          // - operand index (right)
+    OPNCL index;                // - operands index
     OPR_RTN_CODE action_code;   // - code for actions
     TEMP_TYPE temp_class;       // - SYMC_... for next temporary
     OPAC *ap;                   // - actions pointer
@@ -2726,8 +2707,8 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         expr = orig;
     }
     index = index_left * 2 + index_right;
-    if( index > OPCL_OTHER ) {
-        index = OPCL_OTHER;
+    if( index > OPNCL_OTHER ) {
+        index = OPNCL_OTHER;
     }
     if( left == NULL ) {
         type = NULL;
@@ -2765,7 +2746,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         case ERR__ONLY_AP :
             if( expr->op == PT_UNARY ) {
                 type = operandError( expr, ERR_NOT_PTR_ARITH );
-            } else if( ( index_left == OPCL_ARITH ) || ( index_left == OPCL_PTR ) ) {
+            } else if( ( index_left == OPNCL_ARITH ) || ( index_left == OPNCL_PTR ) ) {
                 type = operandError( expr, ERR_RIGHT_NOT_PTR_ARITH );
             } else {
                 type = operandError( expr, ERR_LEFT_NOT_PTR_ARITH );
@@ -2793,7 +2774,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
             type = operandError( expr, ERR_SEGOP_OPERANDS );
             break;
         case DIAG_FUNC_LEFT :
-            if( index_left != OPCL_PTR )
+            if( index_left != OPNCL_PTR )
                 continue;
 #if 0
             if( analyseAddrOfFunc( &expr->u.subtree[0]
@@ -2811,7 +2792,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
             break;
         case DIAG_FUNC_MANY1 :
           { unsigned resolution;    // - used for resolution of func. addr
-            if( index_right != OPCL_PTR )
+            if( index_right != OPNCL_PTR )
                 continue;
             resolution = ADDRFN_RESOLVE_ONE
                        | ADDRFN_RESOLVE_MANY
@@ -2832,7 +2813,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
           } continue;
         case DIAG_FUNC_MANY2 :
           { unsigned resolution;    // - used for resolution of func. addr
-            if( index_right != OPCL_PTR )
+            if( index_right != OPNCL_PTR )
                 continue;
             resolution = ADDRFN_RESOLVE_ONE
                        | ADDRFN_RESOLVE_MANY
@@ -2851,7 +2832,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
             }
           } continue;
         case DIAG_FUNC_RIGHT_ONE :
-            if( index_right != OPCL_PTR )
+            if( index_right != OPNCL_PTR )
                 continue;
             if( ! analyseAddrOfFunc( &expr->u.subtree[1], ADDRFN_RESOLVE_ONE ) )
                 break;
@@ -3115,7 +3096,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         case REQD_CLASS_PTR_LEFT :
             if( ( type->id == TYP_POINTER )
               &&( 0 == ( type->flag & TF1_REFERENCE ) )
-              &&( NULL != StructType( type->of ) ) )
+              &&( NULL != ClassType( type->of ) ) )
                 continue;
             exprError( left, ERR_NOT_CLASS_PTR );
             PTreeErrorNode( expr );
@@ -3125,7 +3106,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
             if( left->flags & PTF_LVALUE ) {
                 cltype = ClassTypeForType( type );
             } else {
-                cltype = StructType( type );
+                cltype = ClassType( type );
             }
             if( NULL == cltype ) {
                 exprError( expr, ERR_NOT_CLASS );
@@ -3341,7 +3322,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         case RESULT_RETURN :
           { TYPE type_l;        // - left type
             type = BindTemplateClass( type, &expr->locn, false );
-            if( NULL != StructType( type ) ) {
+            if( NULL != ClassType( type ) ) {
                 expr = AnalyseReturnClassVal( expr );
                 if( expr->op == PT_ERROR ) {
                     break;
@@ -3486,7 +3467,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
                 PTreeErrorExpr( left, ERR_MEMB_PTR_FUNC_NOT_CALLED );
                 break;
             }
-            class_type = StructType( ArrayBaseType( type ) );
+            class_type = ClassType( ArrayBaseType( type ) );
             class_type = BindTemplateClass( class_type, &expr->locn, false );
             if( class_type != NULL && ! TypeDefined( class_type ) ) {
                 PTreeSetErrLoc( expr );
@@ -4369,11 +4350,11 @@ static PTREE run_traversals(    // ANALYZE EXPRESSION VIA TRAVERSALS
 {
 #ifndef NDEBUG
     expr = DbgCommaInsertion( expr );
-    if( PragDbgToggle.dump_ptree ) {
+    if( TOGGLEDBG( dump_ptree ) ) {
         DumpCommentary( "Parse tree to be analyzed semantically" );
         DumpPTree( expr );
     }
-    if( PragDbgToggle.print_ptree ) {
+    if( TOGGLEDBG( print_ptree ) ) {
         DumpCommentary( "Parse tree to be analyzed semantically" );
         DbgPrintPTREE( expr );
     }

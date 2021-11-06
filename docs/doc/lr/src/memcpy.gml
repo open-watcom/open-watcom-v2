@@ -7,7 +7,7 @@ void *memcpy( void *dst,
               const void *src,
               size_t length );
 .ixfunc2 '&Copy' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 void __far *_fmemcpy( void __far *dst,
                       const void __far *src,
                       size_t length );
@@ -33,13 +33,13 @@ characters from the buffer pointed to by
 .arg src
 into the buffer pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects is not guaranteed to work properly.
 See the
-.kw memmove
+.reffunc memmove
 function if you wish to copy objects that overlap.
-.im farfunc
-.im widefun1
+.farfunc &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The argument
 .arg length
@@ -54,7 +54,7 @@ is returned.
 .return end
 .*
 .see begin
-.seelist memchr memcmp memcpy memicmp memmove memset memcpy_s memmove_s
+.seelist memchr memcmp memcpy _memicmp memmove memset memcpy_s memmove_s
 .see end
 .*
 .exmp begin

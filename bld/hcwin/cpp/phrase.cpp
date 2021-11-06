@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +35,12 @@
 #include "phrase.h"
 #include "compress.h"
 
-#define NEW_USAGE   "Usage: phrase filename"
+#define NEW_USAGE       "Usage: phrase filename"
 
-#define HASH_SIZE   691
-#define PTBL_SIZE   1720
+#define HASH_SIZE       691
+#define PTBL_SIZE       1720
 #define MAX_DATA_SIZE   0xFFFF
+#define STR_BLOCK       80
 
 
 struct Edge;    // Forward declaration.
@@ -51,18 +52,17 @@ struct Edge;    // Forward declaration.
 
 struct Phrase
 {
-    char        *_str;
-    unsigned    _len;
-    unsigned    _bufLen;
+    Buffer<char>    _str;
+    unsigned        _len;
 
-    int         _numUses;
-    Edge        *_firstEdge;
+    int             _numUses;
+    Edge            *_firstEdge;
 
-    Phrase      *_next;
+    Phrase          *_next;
 
-    int         _val;
+    int             _val;
 
-    static Pool *_pool;
+    static Pool     *_pool;
     static void initPool() { _pool = new Pool( sizeof( Phrase ) , PTBL_SIZE ); };
     static void freePool() { delete _pool; };
 
@@ -70,60 +70,65 @@ struct Phrase
     void operator delete( void *p, size_t ) { _pool->release( p ); };
 
     Phrase();
-    Phrase( Phrase const &p );
-    ~Phrase();
+    Phrase( Phrase &p );
+    ~Phrase() {};
 
-    Phrase &    operator=( Phrase const &p );
+    Phrase &    operator=( Phrase &p );
     int         operator>( Phrase const &p );
+
+    void        chkBufSize( unsigned new_len=0 );
 };
 
 Pool *Phrase::_pool = NULL;
 
 
+// Check line size.
+
+void Phrase::chkBufSize( unsigned new_len )
+{
+    if( new_len ) {
+    } else if( _len < _str.len() ) {
+        return;
+    } else {
+        new_len = 2 * _str.len();
+    }
+    _str.resize( new_len );
+}
+
 //  Phrase::Phrase  --default constructor.
 
 Phrase::Phrase()
-    : _bufLen( 80 )     // Arbitrary large value
+    : _str( STR_BLOCK ),    // Arbitrary large value
+      _len( 0 )
 {
-    _str = new char[_bufLen];
 }
 
 
 //  Phrase::Phrase  --copy constructor.
 
-Phrase::Phrase( Phrase const &p )
-    : _numUses( 1 ),
+Phrase::Phrase( Phrase &p )
+    : _str( p._len ),
+      _len( p._len ),
+      _numUses( 1 ),
       _firstEdge( NULL ),
       _next( NULL )
 {
-    _bufLen = p._len;
-    _len = p._len;
-    _str = new char[_len];
-    memcpy( _str, p._str, _len * sizeof( char ) );
+    memcpy( _str, p._str, _len );
 }
 
 
 //  Phrase::operator=   --Assignment operator.
 
-Phrase & Phrase::operator=( Phrase const &p )
+Phrase & Phrase::operator=( Phrase &p )
 {
-    _bufLen = p._len;
     _len = p._len;
-    _str = (char *)renew( _str, _len * sizeof( char ) );
-    memcpy( _str, p._str, _len * sizeof( char ) );
+    _str.resize( _len );
+    memcpy( _str, p._str, _len );
     _numUses = 1;
     _firstEdge = NULL;
     _next = NULL;
 
     return *this;
-}
-
-
-//  Phrase::~Phrase --destructor.
-
-Phrase::~Phrase()
-{
-    delete[] _str;
 }
 
 
@@ -142,37 +147,26 @@ int Phrase::operator>( Phrase const &p )
 
 struct P_String
 {
-    char        *_str;
-    unsigned    _len;
-    unsigned    _index;
-    P_String    *_next;
+    Buffer<char>    _str;
+    unsigned        _index;
+    P_String        *_next;
 
-    P_String( Phrase const &p );
-    ~P_String();
+    P_String( Phrase &p );
+    ~P_String() {};
 
 private:
     // Assignment of P_Strings is not permitted.
-    P_String( P_String const & ) {};
+    P_String( P_String const & ) : _str( 0 ) {};
     P_String &  operator=( P_String const & ) { return *this; };
 };
 
 
 //  P_String::P_String  --Constructor.
 
-P_String::P_String( Phrase const &p )
-    : _next( NULL )
+P_String::P_String( Phrase &p )
+    : _str( p._len ), _next( NULL )
 {
-    _len = p._len;
-    _str = new char[_len];
-    memcpy( _str, p._str, _len );
-}
-
-
-//  P_String::~P_String --Destructor.
-
-P_String::~P_String()
-{
-    delete[] _str;
+    memcpy( _str, p._str, p._len );
 }
 
 
@@ -195,62 +189,60 @@ struct Edge
 
 class PTable
 {
-    Pool        *_edges;
+    Pool                *_edges;
 
-    Phrase      **_phrases;
-    unsigned    _size;
-    unsigned    _maxSize;
+    Buffer<Phrase *>    _hptable;
 
-    Phrase      **_hptable;
+    Buffer<Phrase *>    _phrases;
+    unsigned            _size;
 
-    unsigned    _iterPos;
-    bool        _initialized;
+    unsigned            _iterPos;
+    bool                _initialized;
 
     // Helper function for heapsort-ing.
-    void    heapify( unsigned start );
+    void                heapify( unsigned start );
+
+    // Helper function for hashing.
+    size_t              getHash( const char *str, size_t len );
 
     // Assignment of PTable's is not permitted, so it's private.
-    PTable( PTable const & ) {};
+    PTable( PTable const & ) : _hptable( 0 ), _phrases( 0 ) {};
     PTable &    operator=( PTable const & ) { return *this; };
 
 public:
     PTable();
     ~PTable();
 
-    Phrase      *match( char * &start );
-    Phrase      *find( Phrase *other );
-    int         &follows( Phrase *first, Phrase *second );
+    Phrase              *match( char * &start );
+    Phrase              *find( Phrase *other );
+    int                 &follows( Phrase *first, Phrase *second );
 
-    void        insert( Phrase *p );
+    void                insert( Phrase *p );
 
     //  Access function.
-    unsigned    size() { return _size; };
+    unsigned            size() { return _size; };
 
     // Iter functions.
-    void        start();
-    Phrase      *next();
+    void                start();
+    Phrase              *next();
 
-    void        clear();
-    void        prune();
+    void                clear();
+    void                prune();
 };
 
 
 //  PTable::PTable  --Constructor.
 
 PTable::PTable()
-    : _size( 0 ),
-      _maxSize( PTBL_SIZE ),
+    : _hptable( 0 ),
+      _phrases( 0 ),
+      _size( 0 ),
       _initialized( false )
 {
     _edges = new Pool( sizeof( Edge ) );
 
-    _phrases = new Phrase *[_maxSize];
-    // Set all of _phrases to NULL.
-    memset( _phrases, 0, _maxSize * sizeof( Phrase * ) );
-
-    _hptable = new Phrase *[HASH_SIZE];
-    // Set all of _phrases to NULL.
-    memset( _hptable, 0, HASH_SIZE * sizeof( Phrase * ) );
+    _phrases.resizeNull( PTBL_SIZE );
+    _hptable.resizeNull( HASH_SIZE );
 }
 
 
@@ -259,32 +251,40 @@ PTable::PTable()
 PTable::~PTable()
 {
     // Delete any phrases remaining in the Pool.
-    if( _phrases ) {
-        for( unsigned i = 0; i < _size; i++ ) {
-            delete _phrases[i];
-        }
-        delete[] _phrases;
+    for( size_t i = 0; i < _size; i++ ) {
+        delete _phrases[i];
     }
-
-    if( _edges )
+    _size = _hptable.len();
+    for( size_t i = 0; i < _size; i++ ) {
+        delete _hptable[i];
+    }
+    if( _edges ) {
         delete _edges;
-    if( _hptable ) {
-        delete[] _hptable;
     }
 }
 
 
-//  PTable::match   --Find the best match for a character string.
-
 #define PH_MIN_LEN  3
+
+size_t PTable::getHash( const char *str, size_t len )
+{
+    uint_32 h_val = 0;
+
+    if( len > PH_MIN_LEN )
+        len = PH_MIN_LEN;
+    memcpy( &h_val, str, len );
+    return( h_val % HASH_SIZE );
+}
+
+//  PTable::match   --Find the best match for a character string.
 
 Phrase *PTable::match( char * &start )
 {
-    unsigned    length;
-    uint_32     h_val;
+    size_t      length;
+    size_t      h_val;
     Phrase      *result;
 
-    length = (unsigned)strlen( start );
+    length = strlen( start );
     if( length == 0 ) {
         return NULL;
     }
@@ -293,9 +293,8 @@ Phrase *PTable::match( char * &start )
 
     if( length >= PH_MIN_LEN ) {
         // First, try to find a match based on the first three characters.
-        h_val = 0;
-        memcpy( &h_val, start, PH_MIN_LEN );
-        for( result = _hptable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+        h_val = getHash( start, length );
+        for( result = _hptable[h_val]; result != NULL; result = result->_next ) {
             if( result->_len <= length ) {
                 break;
             }
@@ -320,9 +319,8 @@ Phrase *PTable::match( char * &start )
                 }
             }
         }
-        h_val = 0;
-        memcpy( &h_val, start, length );
-        for( result = _hptable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+        h_val = getHash( start, length );
+        for( result = _hptable[h_val]; result != NULL; result = result->_next ) {
             if( result->_len <= length ) {
                 break;
             }
@@ -358,19 +356,13 @@ Phrase *PTable::match( char * &start )
 
 Phrase *PTable::find( Phrase *other )
 {
-    uint_32     h_val;
+    size_t      h_val;
     Phrase      *result;
     unsigned    len = other->_len;
     char        *str = other->_str;
 
-    h_val = 0;
-    if( len < PH_MIN_LEN ) {
-        memcpy( &h_val, str, len );
-    } else {
-        memcpy( &h_val, str, PH_MIN_LEN );
-    }
-
-    for( result = _hptable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+    h_val = getHash( str, len );
+    for( result = _hptable[h_val]; result != NULL; result = result->_next ) {
         if( result->_len <= len ) {
             break;
         }
@@ -397,7 +389,7 @@ int &PTable::follows( Phrase *first, Phrase *second )
 
     for( current = first->_firstEdge; current != NULL; current = current->_next ) {
         if( current->_dest == second ) {
-            return current->_val;
+            return( current->_val );
         }
     }
     current = (Edge *)_edges->get();
@@ -405,7 +397,7 @@ int &PTable::follows( Phrase *first, Phrase *second )
     current->_val = 0;
     current->_next = first->_firstEdge;
     first->_firstEdge = current;
-    return current->_val;
+    return( current->_val );
 }
 
 
@@ -414,16 +406,13 @@ int &PTable::follows( Phrase *first, Phrase *second )
 void PTable::insert( Phrase *p )
 {
     Phrase  *current, *temp;
-    uint_32 h_val = 0;
-    if( p->_len < PH_MIN_LEN ) {
-        memcpy( &h_val, p->_str, p->_len );
-    } else {
-        memcpy( &h_val, p->_str, PH_MIN_LEN );
-    }
+    size_t  h_val;
+    size_t  len = p->_len;
 
+    h_val = getHash( p->_str, len );
     temp = NULL;
-    for( current = _hptable[h_val % HASH_SIZE]; current != NULL; current = current->_next ) {
-        if( current->_len <= p->_len )
+    for( current = _hptable[h_val]; current != NULL; current = current->_next ) {
+        if( current->_len <= len )
             break;
         temp = current;
     }
@@ -431,14 +420,11 @@ void PTable::insert( Phrase *p )
     if( temp != NULL ) {
         temp->_next = p;
     } else {
-        _hptable[h_val % HASH_SIZE] = p;
+        _hptable[h_val] = p;
     }
 
-    if( _size == _maxSize ) {
-        _phrases = (Phrase **)renew( _phrases, 2 * _maxSize * sizeof( Phrase * ) );
-        // Set the new part of _phrases to NULL.
-        memset( _phrases + _maxSize, 0, _maxSize * sizeof( Phrase * ) );
-        _maxSize *= 2;
+    if( _size == _phrases.len() ) {
+        _phrases.resizeNull( 2 * _size );
     }
     _phrases[_size++] = p;
 }
@@ -530,8 +516,8 @@ void PTable::prune()
     // Toss out memory we no longer need.
     delete _edges;
     _edges = NULL;
-    delete[] _hptable;
-    _hptable = NULL;
+
+    _hptable.resize( 0 );
 
     // Heapsort the Phrases to get the top (PTBL_SIZE) Phrases.
     old_size = _size;
@@ -580,14 +566,13 @@ void PTable::prune()
     for( i = 0; i < _size; i++ ) {
         delete _phrases[i];
     }
-    while( _size < old_size ) {
-        if( _phrases[_size]->_val > 4 )
+    for( ; i < old_size; i++ ) {
+        if( _phrases[i]->_val > 4 )
             break;
-        delete _phrases[_size];
-        _size++;
+        delete _phrases[i];
     }
-    memmove( _phrases, _phrases + _size, ( old_size - _size ) * sizeof( Phrase * ) );
-    _size = old_size - _size;
+    _size = old_size - i;
+    memmove( _phrases, _phrases + i, _size * sizeof( Phrase * ) );
 }
 
 
@@ -597,8 +582,8 @@ void PTable::prune()
 HFPhrases::HFPhrases( HFSDirectory * d_file, bool (*firstf)(InFile *), bool (*nextf)(InFile *) )
     : _oldPtable( NULL ),
       _newPtable( NULL ),
-      _result( NULL ),
-      _hptable( NULL ),
+      _result( 0 ),
+      _hptable( 0 ),
       _numPhrases( 0 ),
       _size( 0 ),
       _nextf( nextf ),
@@ -618,14 +603,8 @@ HFPhrases::~HFPhrases()
         delete _oldPtable;
     if( _newPtable )
         delete _newPtable;
-    if( _result ) {
-        for( unsigned i = 0; i < _resultSize ; i++ ) {
-            delete _result[i];
-        }
-        delete[] _result;
-    }
-    if( _hptable ) {
-        delete[] _hptable;
+    for( unsigned i = 0; i < _resultSize ; i++ ) {
+        delete _result[i];
     }
 }
 
@@ -638,7 +617,7 @@ uint_32 HFPhrases::size()
         return _size;
     }
 
-    if( _result == NULL ) {
+    if( _result.len() == 0 ) {
         createQueue( "phrases.ph" );
     }
 
@@ -652,8 +631,8 @@ uint_32 HFPhrases::size()
 
     for( i = 0; i < _numPhrases; i++ ) {
         string = _result[i];
-        _phSize += string->_len;
-        _size += sizeof( uint_16 ) + reader.compress( string->_str, string->_len );
+        _phSize += string->_str.len();
+        _size += sizeof( uint_16 ) + reader.compress( string->_str, string->_str.len() );
     }
 
     return _size;
@@ -675,7 +654,7 @@ int HFPhrases::dump( OutFile *dest )
     uint_16 curr_size = (uint_16)( ( _numPhrases + 1 ) * sizeof( uint_16 ) );
     for( i = 0; i < _numPhrases; i++ ) {
         dest->write( curr_size );
-        curr_size = (uint_16)( curr_size + _result[i]->_len );
+        curr_size = (uint_16)( curr_size + _result[i]->_str.len() );
     }
     dest->write( curr_size );
 
@@ -685,7 +664,7 @@ int HFPhrases::dump( OutFile *dest )
 
     for( i = 0; i < _numPhrases; i++ ) {
         string = _result[i];
-        reader.compress( string->_str, string->_len );
+        reader.compress( string->_str, string->_str.len() );
     }
     reader.flush();
 
@@ -837,10 +816,7 @@ void HFPhrases::readPhrases()
                 } else if( !found_text && !isspace( *end ) ) {
                     found_text = true;
                 }
-                if( phr._len == phr._bufLen ) {
-                    phr._str = (char *)renew( phr._str, 2 * phr._bufLen );
-                    phr._bufLen *= 2;
-                }
+                phr.chkBufSize();
                 phr._str[phr._len++] = *end++;
             }
 
@@ -913,11 +889,8 @@ void HFPhrases::readPhrases()
                     getnext = false;
                 } else {
                     // Set phr to (next + lookahead).
-                    phr._len = next->_len + lookahead->_len + 1;
-                    if( phr._bufLen < phr._len ) {
-                        phr._bufLen = phr._len;
-                        phr._str = (char *)renew( phr._str, phr._len );
-                    }
+                    phr.chkBufSize( next->_len + lookahead->_len + 1 );
+                    phr._len = phr._str.len();
                     memcpy( phr._str, next->_str, next->_len );
                     phr._str[next->_len] = ' ';
                     memcpy( phr._str + next->_len + 1, lookahead->_str, lookahead->_len );
@@ -982,15 +955,15 @@ void HFPhrases::readPhrases()
 
 void HFPhrases::initHashPTable()
 {
-    uint_32 hvalue;
+    uint_32     hvalue;
     P_String    *curr_str;
 
-    if( _hptable == NULL ) {
-        _hptable = new P_String *[HASH_SIZE];
+    if( _hptable.len() == 0 ) {
+        _hptable.resize( HASH_SIZE );
     }
     memset( _hptable, 0, HASH_SIZE * sizeof( P_String * ) );
 
-    for( unsigned i = 0; i < _resultSize; i++ ) {
+    for( size_t i = 0; i < _resultSize; i++ ) {
         curr_str = _result[i];
         memcpy( &hvalue, curr_str->_str, PH_MIN_LEN );
         hvalue &= 0xFFFFFF;
@@ -1009,12 +982,12 @@ void HFPhrases::initHashPTable()
 void HFPhrases::createQueue( char const *path )
 {
     Phrase      *current;
-    unsigned    i;
+    size_t      i;
 
     _newPtable->prune();
 
-    _resultSize = _newPtable->size();
-    _result = new P_String *[_resultSize];
+    _result.resize( _newPtable->size() );
+    _resultSize = _result.len();
 
     _newPtable->start();
 
@@ -1025,7 +998,7 @@ void HFPhrases::createQueue( char const *path )
     for( i = 0; (current = _newPtable->next()) != NULL; i++ ) {
         _result[i] = new P_String( *current );
 
-        ph_file.write( _result[i]->_str, _result[i]->_len );
+        ph_file.write( _result[i]->_str, _result[i]->_str.len() );
         ph_file.write( (uint_8)'\r' );
         ph_file.write( (uint_8)'\n' );
 
@@ -1054,12 +1027,11 @@ int HFPhrases::oldTable( char const *path )
     }
 
     Phrase      current;
-    unsigned    ptable_size = PTBL_SIZE;
 //    int         done = 0;
     int         c = '\0';
     unsigned    totalsize;  // Size of the phrase data loaded.
 
-    _result = new P_String *[ptable_size];
+    _result.resize( PTBL_SIZE );
     _resultSize = 0;
     current._len = 0;
     totalsize = 2;  // Size of first 2-byte phrase index.
@@ -1072,9 +1044,8 @@ int HFPhrases::oldTable( char const *path )
                     break;
                 }
 
-                if( _resultSize == ptable_size ) {
-                    _result = (P_String **)renew( _result, 2 * ptable_size * sizeof( Phrase * ) );
-                    ptable_size *= 2;
+                if( _resultSize == _result.len() ) {
+                    _result.resize( 2 * _resultSize );
                 }
                 _result[_resultSize] = new P_String( current );
                 _result[_resultSize]->_index = _resultSize;
@@ -1082,10 +1053,7 @@ int HFPhrases::oldTable( char const *path )
                 current._len = 0;
             }
         } else {
-            if( current._len == current._bufLen ) {
-                current._str = (char *)renew( current._str, 2 * current._bufLen );
-                current._bufLen *= 2;
-            }
+            current.chkBufSize();
             current._str[current._len++] = (char)c;
         }
     }
@@ -1101,12 +1069,12 @@ int HFPhrases::oldTable( char const *path )
 //  HFPhrases::replace  --Go through a block of text and replace
 //            common phrases where they appear.
 
-void HFPhrases::replace( char * dst, char const *src, unsigned & len )
+void HFPhrases::replace( char * dst, char const *src, size_t & len )
 {
     uint_32     hvalue = 0;
     P_String    *current, *best;
-    unsigned    read_pos = 0;
-    unsigned    write_pos = 0;
+    size_t      read_pos = 0;
+    size_t      write_pos = 0;
 
     if( len > 2 ) {
         while( read_pos < len - 2 ) {
@@ -1115,8 +1083,8 @@ void HFPhrases::replace( char * dst, char const *src, unsigned & len )
 
             best = NULL;
             for( current = _hptable[hvalue]; current != NULL; current = current->_next ) {
-                if( current->_len <= len - read_pos && memcmp( current->_str, src + read_pos, current->_len ) == 0 ) {
-                    if( best == NULL || best->_len < current->_len ) {
+                if( current->_str.len() <= len - read_pos && memcmp( current->_str, src + read_pos, current->_str.len() ) == 0 ) {
+                    if( best == NULL || best->_str.len() < current->_str.len() ) {
                         best = current;
                     }
                 }
@@ -1140,7 +1108,7 @@ void HFPhrases::replace( char * dst, char const *src, unsigned & len )
                 // See "phrases.doc".
                 char c = (char)( (best->_index & 0x7f) << 1 );
                 dst[write_pos++] = (char)( (( best->_index >> 7 ) & 0xF) + 1 );
-                read_pos += best->_len;
+                read_pos += best->_str.len();
                 if( src[read_pos] == ' ' ) {
                     c |= 0x1;
                     read_pos++;

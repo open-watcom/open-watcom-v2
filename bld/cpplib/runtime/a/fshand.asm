@@ -35,38 +35,30 @@
 ; FSHAND.ASM -- routine providing signature of our FS handler
 ;
 
-ifdef __NT__
-THUNK   equ         ___wcpp_4_fs_handler_
-HANDLER equ         ___wcpp_4_fs_handler_rtn_
-else
-  ifndef __386__
-    suffix equ 1
-  elseifndef __OS2__
-    ifdef __REGISTER__
-      suffix equ 1
-    endif
-  endif
-  ifdef suffix
-THUNK   equ         __wcpp_4_fs_handler__
-HANDLER equ         __wcpp_4_fs_handler_rtn__
-  else
-THUNK   equ         __wcpp_4_fs_handler_
-HANDLER equ         __wcpp_4_fs_handler_rtn_
-  endif
-endif
+;
+; Calling convention depends on Operating system
+;
+; NT        __cdecl
+; OS/2      __system
+; others    __watcall
 
         name        FSHAND
-        extern      HANDLER : proc
 
-_text   segment byte public 'code'
+ifdef __NT__
+        extern      C __wcpp_4_fs_handler_rtn_ : proc
+        public      C __wcpp_4_fs_handler_
+else
+        extern      __wcpp_4_fs_handler_rtn_ : proc
+        public      __wcpp_4_fs_handler_
+endif
+
+_TEXT   segment byte public 'code'
 
 assume cs:_text
 
-        public      THUNK
+__wcpp_4_fs_handler_    proc
 
-THUNK   proc        near
-
-        jmp HANDLER
+        jmp __wcpp_4_fs_handler_rtn_
         db  'W'
         db  'A'
         db  'T'
@@ -74,8 +66,8 @@ THUNK   proc        near
         db  'O'
         db  'M'
 
-THUNK   endp
+__wcpp_4_fs_handler_    endp
 
-_text   ends
+_TEXT   ends
 
         end

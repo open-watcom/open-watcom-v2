@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>                  /* For non-Berkeley systems */
@@ -195,7 +197,7 @@ void open_archive( bool read )
     }
 
     /* NOSTRICT */
-    ar_block = (union record *)valloc( (unsigned)blocksize );
+    ar_block = (union record *)malloc( (unsigned)blocksize );
     if( !ar_block ) {
         fprintf( stderr,
                 "tar: could not allocate memory for blocking factor %d\n", blocking );

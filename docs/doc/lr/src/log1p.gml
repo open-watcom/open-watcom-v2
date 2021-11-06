@@ -9,16 +9,16 @@ The
 .id &funcb.
 function computes the natural logarithm of one plus
 .arg x
-.ct .li . For small values of
+.period For small values of
 .arg x
 this function provides far better accuracy than using the
-.kw log
+.reffunc log
 function directly.
 .desc end
 .return begin
 If successful, the return value is the logarithm of one plus
 .arg x
-.ct .li .  When the argument is -1.0, the function returns
+.period  When the argument is -1.0, the function returns
 infinity.  If the value of
 .arg x
 is less than -1.0, the function returns NAN.

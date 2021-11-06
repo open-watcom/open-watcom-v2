@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,18 +65,6 @@ typedef struct _NEWSTARTDATA {  /* stdata */
     ULONG   ObjectBuffLen;
 } NEWSTARTDATA;
 
-#define SSF_TYPE_DEFAULT        0
-#define SSF_TYPE_FULLSCREEN     1
-#define SSF_TYPE_WINDOWABLEVIO  2
-#define SSF_TYPE_PM             3
-#define SSF_TYPE_VDM            4
-#define SSF_TYPE_GROUP          5
-#define SSF_TYPE_DLL            6
-#define SSF_TYPE_WINDOWEDVDM    7
-#define SSF_TYPE_PDD            8
-#define SSF_TYPE_VDD            9
-
-
 /* Global Information Segment */
 
 typedef struct __GINFOSEG {      /* gis */
@@ -131,14 +119,6 @@ typedef struct __LINFOSEG {      /* lis */
     HMODULE hmod;
     SEL     selDS;
 } __LINFOSEG;
-
-/* Process Type codes (local information segment typeProcess field)           */
-
-#define _PT_FULLSCREEN              0 /* Full screen application               */
-#define _PT_REALMODE                1 /* Real mode process                     */
-#define _PT_WINDOWABLEVIO           2 /* VIO windowable application            */
-#define _PT_PM                      3 /* Presentation Manager application      */
-#define _PT_DETACHED                4 /* Detached application                  */
 
 #endif
 

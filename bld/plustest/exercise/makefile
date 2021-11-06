@@ -34,7 +34,7 @@ alt_error=00
 
 test_flags += -w0
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifeq alt_error 08
 add_br_ = $(br_opt)
@@ -60,11 +60,8 @@ stack_386=opt stack=16k
 stack_i86=opt stack=8k
 stack_axp=opt stack=16k
 
-test : .symbolic start clean start_test test.lnk $(exes) common_set_result
-    @%make clean
-
-start_test : .symbolic
-    @%make common_start_test
+test : .symbolic start test.lnk $(exes)
+    $(noecho)%make common_set_result
 
 clean : .procedure
     @%make echo_clean

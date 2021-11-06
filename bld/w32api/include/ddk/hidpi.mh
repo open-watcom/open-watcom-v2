@@ -50,7 +50,7 @@ typedef PUCHAR  PHIDP_REPORT_DESCRIPTOR;
 #define HIDP_STATUS_I8242_TRANS_UNKNOWN     HIDP_STATUS_I8042_TRANS_UNKNOWN
 
 /* All structures in this file get four-byte packing. */
-#include <pshpack4.h>
+:include pshpack4.sp
 
 /* Opaque data types */
 typedef struct _HIDP_PREPARSED_DATA *PHIDP_PREPARSED_DATA;
@@ -253,7 +253,7 @@ typedef HIDP_KEYBOARD_MODIFIER_STATE    *PHIDP_KEYBOARD_MODIFIER_STATE;
 typedef BOOLEAN (NTAPI *PHIDP_INSERT_SCANCODES)( PVOID, PCHAR, ULONG );
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 /* Functions in HIDPARSE.SYS and HID.DLL */
 NTSTATUS __stdcall  HidP_GetButtonCaps( HIDP_REPORT_TYPE, PHIDP_BUTTON_CAPS, PUSHORT, PHIDP_PREPARSED_DATA );

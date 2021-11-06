@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 #include <io.h>
 #include <stdlib.h>
-#include "rcdefs.rh"
+#include "ide.rh"
 #include "banner.h"
 
 #include "vpemain.hpp"
@@ -69,7 +69,7 @@
 #include "wflashp.hpp"
 #include "vhelpstk.hpp"
 #include "veditdlg.hpp"
-#include "ide.h"
+#include "ide.gh"
 #include "autoenv.h"
 
 #include "clibext.h"
@@ -94,7 +94,30 @@ MAINOBJECT( VpeMain, COORD_USER, 10240, 10240 )
 #define _pModel ((MProject*)model())
 
 Define( VpeMain )
-static char pFilter[] = { "Project Files (*.wpj)\0*.wpj\0All Files (*.*)\0*.*\0\0" };
+
+static char pFilter[] = {
+    "Project Files (*.wpj)\0*.wpj\0"
+    "All Files (*.*)\0*.*\0"
+    "\0"
+};
+#if 0
+static char cFilter[] = {
+    "Executables (*.exe)\0*.exe\0"
+    "Static Libraries (*.lib)\0*.lib\0"
+    "Dynamic Libraries (*.dll)\0*.dll\0"
+    "All Files (*.*)\0*.*\0"
+    "\0"
+};
+#else
+static char cFilter[] = {
+    "Target Files (*.tgt)\0*.tgt\0"
+    "Executables (*.exe)\0*.exe\0"
+    "Static Libraries (*.lib)\0*.lib\0"
+    "Dynamic Libraries (*.dll)\0*.dll\0"
+    "All Files (*.*)\0*.*\0"
+    "\0"
+};
+#endif
 
 static WHotSpots _hotSpotList( 4 );
 
@@ -472,7 +495,8 @@ void VpeMain::buildMenuBar()
     WPopupMenu* pop7 = makeMenu( &popup7, toolBar );
     menuBar->insertPopup( pop7, 7 );
     helpcnt = _config->helpactions().count();
-    if( helpcnt > 0 ) pop7->insertSeparator();
+    if( helpcnt > 0 )
+        pop7->insertSeparator();
     for( i = 0; i < helpcnt; i++ ) {
         action = (MAction *)_config->helpactions()[i];
         action->menuName( &mname );
@@ -1090,9 +1114,7 @@ bool VpeMain::validateProjectName( WFileName& fn )
     if( fn.size() > 0 ) {
 //        fn.toLower();
         if( fn.legal() ) {
-            if( strlen( fn.ext() ) == 0 ) {
-                fn.setExt( ".wpj" );
-            }
+            fn.setExtIfNone( "wpj" );
             return( true );
         }
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Project name '%s' is invalid", (const char*)fn );
@@ -1538,7 +1560,6 @@ WStyle VpeMain::vCompStyle()
 
 bool VpeMain::addComponent( WMenuItem* )
 {
-static char cFilter[] = { "Target Files (*.tgt)\0*.tgt\0Executables (*.exe)\0*.exe\0Static Libraries (*.lib)\0*.lib\0Dynamic Libraries (*.dll)\0*.dll\0All Files (*.*)\0*.*\0\0" };
     bool ok = false;
     HelpStack.push( HLP_ADDING_A_TARGET );
     VCompDialog dlg( this, "New Target", _project, cFilter );
@@ -1591,7 +1612,7 @@ void VpeMain::removeComponent( WMenuItem* )
     _activeVComp->setFocus();
     MComponent* comp = (MComponent*)_activeVComp->model();
     WFileName target( *comp->target() );
-    target.setExt( ".tgt" );
+    target.setExt( "tgt" );
     if( confirm( "Are you sure you wish to remove '%s'?", target ) ) {
         delete _compViews.removeSame( _activeVComp );
         delete _project->removeComponent( comp );
@@ -1603,8 +1624,6 @@ void VpeMain::renameComponent( WMenuItem* )
     HelpStack.push( HLP_RENAMING_A_TARGET );
     _activeVComp->setFocus();
     VComponent* vcomp = _activeVComp;
-//static char cFilter[] = { "Executables (*.exe)\0*.exe\0Static Libraries (*.lib)\0*.lib\0Dynamic Libraries (*.dll)\0*.dll\0All Files (*.*)\0*.*\0\0" };
-static char cFilter[] = { "Target Files (*.tgt)\0*.tgt\0Executables (*.exe)\0*.exe\0Static Libraries (*.lib)\0*.lib\0Dynamic Libraries (*.dll)\0*.dll\0All Files(*.*)\0*.*\0\0" };
     VCompDialog dlg( this, "Rename Target", _project, cFilter );
     MComponent* comp = vcomp->component();
     WFileName fn( comp->relFilename() );
@@ -2008,7 +2027,8 @@ void VpeMain::runBatch( const WString& cmd )
                 _activeVComp->setFocus();
             }
         }
-        if( !_msgLog ) return;
+        if( !_msgLog )
+            return;
         WFileName dir; dir.getCWD( false );
         _msgLog->setDirectory( dir );
         _msgLog->runCommand( cmd );
@@ -2025,7 +2045,7 @@ void VpeMain::executeBrowse( const WString& cmd )
     WStringList x( cmd );
     bat.concat( _config->browse() );
     if( x.stringAt(0) == "Open" ) {
-        bat.concat( " " );
+        bat.concat( ' ' );
         bat.concat( x.cString( 1 ) );
     }
 

@@ -54,7 +54,7 @@ using std::wctype;
 using std::towlower;
 using std::towupper;
 
-:: C99 functions in ctype.h that are currently considered extensions.
+:: C99 functions in wctype.h that are currently considered extensions.
 :include extc99.sp
 using std::iswblank;
 :include extepi.sp

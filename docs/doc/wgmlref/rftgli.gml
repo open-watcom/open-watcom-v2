@@ -1,6 +1,6 @@
 :H2.LI
 :XMP.
-Format&gml. &gml.LI \(id='id-name'\).<paragraph elements>
+Format&gml. &gml.LI [id='id-name'].<paragraph elements>
                            <basic document elements>
 :eXMP.
 :I2 refid='gtli' pg=major.gtli

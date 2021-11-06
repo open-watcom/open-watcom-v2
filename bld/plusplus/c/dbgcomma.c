@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +33,13 @@
 
 #include "plusplus.h"
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
 #include "name.h"
 #include "cgfront.h"
 #include "initdefs.h"
 #include "dbg.h"
+
 
 #define RTN_COMMA_AT "__dbg_comma_at"
 #define RTN_COMMA_OP "__dbg_comma_op"

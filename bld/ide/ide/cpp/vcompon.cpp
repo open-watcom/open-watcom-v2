@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@
 #include "whotpbox.hpp"
 
 #include "objautod.h"
-#include "rcdefs.rh"
+#include "ide.rh"
 #include "autodep.h"
 
 #include "clibext.h"
@@ -146,8 +146,10 @@ VComponent* WEXPORT VComponent::createSelf( WObjectFile& p )
     WRect r; p.readObject( &r );
 #if 1   //this can be removed when WRect is upgraded to handle legitimate
         //negative coordinates
-    if( r.x() < 0 ) r.x( 0 );
-    if( r.y() < 0 ) r.y( 0 );
+    if( r.x() < 0 )
+        r.x( 0 );
+    if( r.y() < 0 )
+        r.y( 0 );
 #endif
     if( p.version() < 36 ) {
         r.w( (WOrdinal)((long)r.w()*10240/640) );
@@ -199,8 +201,10 @@ void WEXPORT VComponent::writeSelf( WObjectFile& p )
     WRect r; getNormalRectangle( r );
     p.writeObject( &r, FORCE );
     char wState = W_NORMAL;
-    if( isMinimized() ) wState = W_MINIMIZED;
-    if( isMaximized() ) wState = W_MAXIMIZED;
+    if( isMinimized() )
+        wState = W_MINIMIZED;
+    if( isMaximized() )
+        wState = W_MAXIMIZED;
     p.writeObject( wState );
     p.writeObject( _parent );
     WFileName tgt( _component->relFilename() );
@@ -249,8 +253,11 @@ void VComponent::createControls()
             action->name( text );
             int bw = getTextExtentX( text );
             int bh = getTextExtentY( text );
-            if( BW < bw ) BW = bw;
-            if( BH < bh ) BH = bh;
+            if( BW < bw )
+                BW = bw;
+            if( BH < bh ) {
+                BH = bh;
+            }
         }
     }
 
@@ -296,9 +303,9 @@ bool VComponent::okToInclude( MItem* item, bool warn, MItem* dupitem )
         }
         return( false );
     }
-    WFileName fullName( *item ); fullName.absoluteTo( _component->filename() );
-    WFileName fullTarget; target()->absName( fullTarget );
-    if( fullName.match( fullTarget, matchAll ) ) {
+    WFileName fullNameItem( *item ); fullNameItem.absoluteTo( _component->filename() );
+    WFileName fullNameTarget; target()->absName( fullNameTarget );
+    if( fullNameItem.match( fullNameTarget, matchAll ) ) {
         if( warn ) {
             WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                                       "'%s' cannot include itself",
@@ -331,8 +338,7 @@ bool VComponent::newItem( WFileName& fn, bool warn, bool mark, unsigned owner )
             }
         }
     }
-    MRule* rule = _config->findMatchingRule( fn, target()->rule(),
-                      _component->mask() );
+    MRule* rule = _config->findMatchingRule( fn, target()->rule(), _component->mask() );
     if( rule ) {
         MItem* item = new MItem( fn, _component, rule );
         if( okToInclude( item, warn ) ) {
@@ -463,11 +469,11 @@ void VComponent::mRenameItem( WMenuItem* )
         WFileName fn( *m );
         bool done = false;
         for( ; !done ; ) {
-            if( !inp.getInput( fn, "Enter new filename" ) ) break;
+            if( !inp.getInput( fn, "Enter new filename" ) )
+                break;
 //            fn.toLower();
             fn.removeQuotes();
-            MRule* rule = _config->findMatchingRule( fn, target()->rule(),
-                              _component->mask() );
+            MRule* rule = _config->findMatchingRule( fn, target()->rule(), _component->mask() );
             if( rule ) {
                 MItem* item = new MItem( fn, _component, rule );
                 if( okToInclude( item, true, m ) ) {
@@ -566,8 +572,7 @@ static rtn_status captureName( time_t, char* name, void* data )
     MComponent* comp = ((CapData*)data)->comp;
     WPickList* incList = ((CapData*)data)->incList;
     WFileName fn( name ); //fn.toLower();
-    MRule* rule = _config->findMatchingRule(
-        fn, comp->target()->rule(), comp->mask() );
+    MRule* rule = _config->findMatchingRule( fn, comp->target()->rule(), comp->mask() );
     if( rule ) {
         incList->add( new MItem( fn, comp, rule ) );
     }
@@ -640,9 +645,7 @@ void WEXPORT VComponent::updateView()
     fn.setExt( target()->ext() );
     WString text( fn );
     if( _config->debug() ) {
-        text.concat( " '" );
-        text.concat( target()->rule()->tag() );
-        text.concat( "'" );
+        text.concatf( " '%s'", (const char *)target()->rule()->tag() );
     }
     setText( text );
 
@@ -705,7 +708,13 @@ void WEXPORT VComponent::renameComponent( WFileName& fn, MRule* rule, WString& m
 #else
 void WEXPORT VComponent::renameComponent()
 {
-static char cFilter[] = { "Executables(*.exe)\0*.exe\0Static Libraries(*.lib)\0*.lib\0Dynamic Libraries(*.dll)\0*.dll\0All files(*.*)\0*.*\0\0" };
+    static char cFilter[] = {
+        "Executables(*.exe)\0*.exe\0"
+        "Static Libraries(*.lib)\0*.lib\0"
+        "Dynamic Libraries(*.dll)\0*.dll\0"
+        "All files(*.*)\0*.*\0"
+        "\0"
+    };
     VCompDialog dlg( this, "Rename Target", _parent->project(), cFilter );
     WFileName fn( _component->relFilename() );
     fn.setExt( target()->ext() );
@@ -797,7 +806,9 @@ void VComponent::actionError( MItem* item, const WString& actionName )
 {
     WString t;
     for( size_t i = 0; i < actionName.size(); i++ ) {
-        if( actionName[i] != '&' ) t.concat( (char)tolower( actionName[i] ) );
+        if( actionName[i] != '&' ) {
+            t.concat( (char)tolower( actionName[i] ) );
+        }
     }
     WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "You cannot %s '%s'", (const char*)t, (const char*)*item );
 }
@@ -845,7 +856,9 @@ void VComponent::beginFileList( unsigned owner ) {
     cnt = items.count();
     for( i = 0; i < cnt; i++ ) {
         cur = (MItem *)items[i];
-        if( cur->owner() == owner ) cur->setVisited( false );
+        if( cur->owner() == owner ) {
+            cur->setVisited( false );
+        }
     }
 }
 

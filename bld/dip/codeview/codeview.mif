@@ -1,7 +1,7 @@
 !ifdef %OWUSE_FILENAME_VERSION
-name = codevi$(bld_ver)
+dllname = codevi$(bld_ver)
 !else
-name = codeview
+dllname = codeview
 !endif
 
 imp_objs = &
@@ -17,5 +17,7 @@ imp_objs = &
 
 extra_incs = -I"$(lib_misc_dir)/h"
 extra_srcs = $(lib_misc_dir)/c
+
+extra_dllbase = $(dip_dllbase_$(host_os)_$(host_cpu)_codeview)
 
 !include ../../master.mif

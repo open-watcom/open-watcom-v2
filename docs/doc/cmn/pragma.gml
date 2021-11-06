@@ -8,63 +8,6 @@
 .gt prgbeg delete
 .gt prgend delete
 .*
-.dm @id begin
-:HP2.&*.
-.dm @id end
-.gt id add @id cont
-.*
-.dm @eid begin
-:eHP2.&*
-.dm @eid end
-.gt eid add @eid cont
-.*
-.dm @op begin
-:HP2.[:eHP2.&*
-.dm @op end
-.gt op add @op cont
-.*
-.dm @eop begin
-:HP2.]:eHP2.&*
-.dm @eop end
-.gt eop add @eop cont
-.*
-.dm @rp begin
-:HP2.{:eHP2.&*
-.dm @rp end
-.gt rp add @rp cont
-.*
-.dm @erp begin
-:HP2.}:eHP2.&*
-.dm @erp end
-.gt erp add @erp cont
-.*
-.dm @or begin
-:HP2.|:eHP2.&*
-.dm @or end
-.gt or add @or cont
-.*
-.if '&lang' eq 'FORTRAN 77' .do begin
-.dm @prgbeg begin
-*$pragma&*
-.dm @prgbeg end
-.gt prgbeg add @prgbeg cont
-.*
-.dm @prgend begin
-.dm @prgend end
-.gt prgend add @prgend cont texterror tagnext
-.do end
-.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.dm @prgbeg begin
-#pragma&*.
-.dm @prgbeg end
-.gt prgbeg add @prgbeg cont
-.*
-.dm @prgend begin
-:HP2.[:eHP2.;:HP2.]:eHP2.
-.dm @prgend end
-.gt prgend add @prgend cont texterror tagnext
-.do end
-.*
 .if '&lang' eq 'FORTRAN 77' .do begin
 :set symbol="pragma" value="*$pragma".
 :set symbol="epragma" value="".
@@ -92,7 +35,7 @@
 .*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 :set symbol="pragma" value="#pragma".
-:set symbol="epragma" value="~;".
+:set symbol="epragma" value="".
 :set symbol="function" value="function".
 :set symbol="functions" value="functions".
 :set symbol="ufunction" value="Function".
@@ -193,11 +136,63 @@
 :set symbol="pragdsbl" value="prgds32".
 .do end
 .*
+.dm @id begin
+:HP2.&*.
+.dm @id end
+.gt id add @id cont
+.*
+.dm @eid begin
+:eHP2.&*
+.dm @eid end
+.gt eid add @eid cont
+.*
+.dm @op begin
+:HP2.[:eHP2.&*
+.dm @op end
+.gt op add @op cont
+.*
+.dm @eop begin
+:HP2.]:eHP2.&*
+.dm @eop end
+.gt eop add @eop cont
+.*
+.dm @rp begin
+:HP2.{:eHP2.&*
+.dm @rp end
+.gt rp add @rp cont
+.*
+.dm @erp begin
+:HP2.}:eHP2.&*
+.dm @erp end
+.gt erp add @erp cont
+.*
+.dm @or begin
+:HP2.|:eHP2.&*
+.dm @or end
+.gt or add @or cont
+.*
+.dm @prgbeg begin
+&pragma.&*.
+.dm @prgbeg end
+.gt prgbeg add @prgbeg cont
+.*
+.if '&lang' eq 'FORTRAN 77' .do begin
+.dm @prgend begin
+.dm @prgend end
+.gt prgend add @prgend cont texterror tagnext
+.do end
+.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.dm @prgend begin
+:HP2.[:eHP2.;:HP2.]:eHP2.
+.dm @prgend end
+.gt prgend add @prgend cont texterror tagnext
+.do end
+.*
 .chap *refid=&pragref. &pragttl.
 .*
 .im pragstx
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .if '&machine' eq '8086' .do begin
 .   .   .helppref 16-bit:
 .   .do end
@@ -221,61 +216,90 @@ pragmas that describe the way structures are stored in memory
 .do end
 .bull
 pragmas that provide auxiliary information used for
-.if '&cmpclass' eq 'load-n-go' .do begin
-argument passing.
-.do end
-.el .do begin
 code generation
-.do end
 .endbull
 .*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.*
 .section Using Pragmas to Specify Options
 .*
 .np
 .ix 'pragma options'
 .ix 'options' 'using pragmas'
-Currently, the following options can be specified with pragmas:
-.ix 'unreferenced option'
-.ix 'check_stack option'
-.begnote
-.note unreferenced
+The following describes the form of the pragma to specify option.
+.mbox begin
+:prgbeg. :id.on:eid. ( :id.option_name:eid. :rp. :id.option_name:eid.:erp. ) :prgend.
+:prgbeg. :id.off:eid. ( :id.option_name:eid. :rp. :id.option_name:eid.:erp. ) :prgend.
+:prgbeg. :id.pop:eid. ( :id.option_name:eid. :rp. :id.option_name:eid.:erp. ) :prgend.
+.mbox end
+.synote
+.note on
+activates option.
+.note off
+deactivates option.
+.note pop
+restore option to previous setting.
+.esynote
+The first two forms all push the previous setting before establishing
+the new setting.
+.synote
+.note option_name
+is a name of the option to be manipulate.
+.esynote
+.np
+It is also possible to specify more than one option in a pragma as
+illustrated by the following example.
+.millust begin
+&pragma on (check_stack unreferenced)&epragma
+.millust end
+.*
+.beglevel
+.*
+.section "unreferenced" Option
+.*
+.np
 .ix 'unreferenced option'
 .ix 'options' 'unreferenced'
 The "unreferenced" option controls the way &cmpname handles unused
 symbols.
-For example,
 .millust begin
-#pragma on (unreferenced);
+&pragma on (unreferenced)&epragma
 .millust end
-.pc
 will cause &cmpname to issue warning messages for all unused symbols.
 This is the default.
-Specifying
 .millust begin
-#pragma off (unreferenced);
+&pragma off (unreferenced)&epragma
 .millust end
-.pc
 will cause &cmpname to ignore unused symbols.
+.millust begin
+&pragma pop (unreferenced)&epragma
+.millust end
+will returns to previous settings of "unreferenced" option.
+.pc
 Note that if the warning level is not high enough, warning messages
 for unused symbols will not be issued even if "unreferenced" was
 specified.
-.note check_stack
+.*
+.section "check_stack" Option
+.*
+.np
 .ix 'check_stack option'
 .ix 'options' 'check_stack'
 The "check_stack" option controls the way stack overflows are to be
 handled.
-For example,
 .millust begin
-#pragma on (check_stack);
+&pragma on (check_stack)&epragma
 .millust end
-.pc
-will cause stack overflows to be detected and
+will cause stack overflows to be detected.
 .millust begin
-#pragma off (check_stack);
+&pragma off (check_stack)&epragma
 .millust end
-.pc
 will cause stack overflows to be ignored.
+.millust begin
+&pragma pop (check_stack)&epragma
+.millust end
+will returns to previous settings of "check_stack" option.
+.pc
 When "check_stack" is on, &cmpname will generate a run-time call
 to a stack-checking routine at the start of every routine compiled.
 This run-time routine will issue an error if a stack overflow occurs
@@ -292,37 +316,35 @@ your program is not in error
 size.
 This is done by linking your application again and specifying the
 "STACK" option to the &lnkname with a larger stack size.
+.*
+.section "reuse_duplicate_strings" Option (C only)
+.*
 .np
-It is also possible to specify more than one option in a pragma as
-illustrated by the following example.
-.millust begin
-#pragma on (check_stack unreferenced);
-.millust end
-.note reuse_duplicate_strings (C only)
 .ix 'reuse_duplicate_strings option'
 .ix 'options' 'reuse_duplicate_strings'
-(C Only) The "reuse_duplicate_strings" option controls the way
+The "reuse_duplicate_strings" option controls the way
 &cmpcname handles identical strings in an expression.
-For example,
 .millust begin
-#pragma on (reuse_duplicate_strings);
+&pragma on (reuse_duplicate_strings)&epragma
 .millust end
-.pc
 will cause &cmpcname to reuse identical strings in an expression.
 This is the default.
-Specifying
 .millust begin
-#pragma off (reuse_duplicate_strings);
+&pragma off (reuse_duplicate_strings)&epragma
 .millust end
-.pc
 will cause &cmpcname to generate additional copies of the identical
 string.
+.millust begin
+&pragma pop (reuse_duplicate_strings)&epragma
+.millust end
+will returns to previous settings of "reuse_duplicate_strings" option.
+.pc
 The following example shows where this may be of importance to the way
 the application behaves.
 .exam begin
 #include <stdio.h>
 
-#pragma off (reuse_duplicate_strings)
+&pragma off (reuse_duplicate_strings)&epragma
 
 
 void poke( char *, char * );
@@ -345,134 +367,32 @@ HelXo world
 HelXY world
 */
 .exam end
-.endnote
 .*
-.do end
+.section "inline" Option (C only)
 .*
-.section *refid=&praglib Using Pragmas to Specify Default Libraries
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .np
-.ix 'pragmas' 'specifying default libraries'
-.ix 'default libraries' 'using pragmas'
-Default libraries are specified in special object module records.
-Library names are extracted from these special records by the
-&lnkname..
-When unresolved references remain after processing all object modules
-specified in linker "FILE" directives, these default libraries are
-searched after all libraries specified in linker "LIBRARY" directives
-have been searched.
-.np
-By default, that is if no library pragma is specified, the &cmpname
-compiler generates, in the object file defining the main program,
-default libraries corresponding to the memory model and floating-point
-model used to compile the file.
-For example, if you have compiled the source file containing
-.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.if '&machine' eq '8086' .do begin
-the main program for the medium memory model and the floating-point
-calls floating-point model, the libraries "clibm" and "mathm" will be
-.do end
-.if '&machine' eq '80386' .do begin
-the main program for the flat memory model and the floating-point
-calls floating-point model, the libraries "clib3r" and "math3r" will
-be
-.do end
-.do end
-.if '&lang' eq 'FORTRAN 77' .do begin
-.if '&machine' eq '8086' .do begin
-the main program for the medium memory model and the floating-point
-calls floating-point model, the library "flibm" will be
-.do end
-.if '&machine' eq '80386' .do begin
-the main program for the flat memory model and the floating-point
-calls floating-point model, the library "flib" will be
-.do end
-.do end
-placed in the object file.
-.do end
-.if '&cmpclass' eq 'load-n-go' .do begin
-.np
-The library pragma can be used to specify object libraries that are to
-be searched by &product when resolving references to undefined
-symbols.
-.ix '&ccmdup options' 'link'
-These libraries will only be searched when the "link" compiler option
+.ix 'inline option'
+.ix 'options' 'inline'
+The "inline" option controls the way &cmpcname emits user functions.
+.millust begin
+&pragma on (inline)&epragma
+.millust end
+will cause &cmpcname to emit user functions inline.
+.millust begin
+&pragma off (inline)&epragma
+.millust end
+will cause &cmpcname to not emit user functions inline.
+.millust begin
+&pragma pop (inline)&epragma
+.millust end
+will returns to previous settings of "inline" option.
+.pc
+Note that additional rules are checked for user functions, so the
+functions do not have to be emited inline even if the "inline" option
 has been specified.
-.do end
-.el .do begin
-.np
-If you wish to add your own default libraries to this list, you can do
-so with a library pragma.
-.do end
-Consider the following example.
-.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.millust begin
-#pragma library (mylib);
-.millust end
-.do end
-.if '&lang' eq 'FORTRAN 77' .do begin
-.millust begin
-*$pragma library mylib
-.millust end
-.do end
-.pc
-The name "mylib" will be added to the list of default libraries
-.if '&cmpclass' eq 'load-n-go' .do begin
-searched by &product when resolving undefined references.
-.do end
-.el .do begin
-specified in the object file.
-.do end
-.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.np
-If the library specification contains characters such as '&pc', ':' or
-',' (i.e., any character not allowed in a C identifier), you must
-enclose it in double quotes as in the following example.
-.millust begin
-.if '&target' eq 'QNX' .do begin
-#pragma library ("&pathnam.&libdir.&pc.graph.lib");
-.do end
-.el .do begin
-#pragma library ("&pathnam.&libdir16.&pc.dos&pc.graph.lib");
-#pragma library ("&pathnam.&libdir32.&pc.dos&pc.graph.lib");
-.do end
-.millust end
-.do end
-.np
-If you wish to specify more than one library in a library pragma you
-must separate them with spaces as in the following example.
-.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.millust begin
-.if '&target' eq 'QNX' .do begin
-#pragma library (mylib "&pathnam.&libdir.&pc.graph.lib");
-.do end
-.el .do begin
-#pragma library (mylib "&pathnam.&libdir16.&pc.dos&pc.graph.lib");
-#pragma library (mylib "&pathnam.&libdir32.&pc.dos&pc.graph.lib");
-.do end
-.millust end
-.do end
-.if '&lang' eq 'FORTRAN 77' .do begin
-.millust begin
-.if '&target' eq 'QNX' .do begin
-*$pragma library mylib &pathnam.&libdir.&pc.graph.lib
-.do end
-.el .do begin
-*$pragma library mylib &pathnam.&libdir16.&pc.dos&pc.graph.lib
-*$pragma library mylib &pathnam.&libdir32.&pc.dos&pc.graph.lib
-.do end
-.millust end
-.if '&cmpclass' ne 'load-n-go' .do begin
-.np
-If no libraries are specified as in the following example,
-.millust begin
-*$pragma library
-.millust end
-.pc
-the run-time libraries corresponding to the memory and floating-point models
-used to compile the file will be generated.
-.do end
+.*
+.endlevel
+.*
 .do end
 .*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
@@ -498,7 +418,7 @@ is either a name or an identifier of the symbol to be aliased.
 is either a name or an identifier of the symbol that references to
 .id alias
 will be replaced with.
-.endnote
+.esynote
 .np
 Consider the following example.
 .millust begin
@@ -509,7 +429,7 @@ void fn( void )
     var = 3;
 }
 
-#pragma alias ( var, "other_var" );
+&pragma alias ( var, "other_var" )&epragma
 .millust end
 .pc
 Instead of
@@ -535,13 +455,13 @@ The following describes the form of the "alloc_text" pragma.
 is the name of the text segment.
 .note fn
 is the name of a function.
-.endnote
+.esynote
 .np
 Consider the following example.
 .millust begin
 extern int fn1(int);
 extern int fn2(void);
-#pragma alloc_text ( my_text, fn1, fn2 );
+&pragma alloc_text ( my_text, fn1, fn2 )&epragma
 .millust end
 .pc
 The code for the functions
@@ -549,7 +469,8 @@ The code for the functions
 and
 .id fn2
 will be placed in the segment
-.id my_text.
+.id my_text
+.period
 Note: function prototypes for the named functions must exist prior
 to the "alloc_text" pragma.
 .*
@@ -572,7 +493,7 @@ Also,
 may be a macro as in:
 .millust begin
 #define seg_name "MY_CODE_SEG"
-#pragma code_seg ( seg_name );
+&pragma code_seg ( seg_name )&epragma
 .millust end
 .note class_name
 is the optional class name of the text segment and may be enclosed in quotes.
@@ -583,13 +504,13 @@ Also,
 may be a macro as in:
 .millust begin
 #define class_name "MY_CODE"
-#pragma code_seg ( "MY_CODE_SEG", class_name );
+&pragma code_seg ( "MY_CODE_SEG", class_name )&epragma
 .millust end
-.endnote
+.esynote
 .np
 Consider the following example.
 .millust begin
-#pragma code_seg ( my_text );
+&pragma code_seg ( my_text )&epragma
 
 int incr( int i )
 {
@@ -607,12 +528,13 @@ The code for the functions
 and
 .id decr
 will be placed in the segment
-.id my_text.
+.id my_text
+.period
 .np
 To return to the default segment, do not specify any string between
 the opening and closing parenthesis.
 .millust begin
-#pragma code_seg ();
+&pragma code_seg ()&epragma
 .millust end
 .*
 .section The COMMENT Pragma
@@ -647,11 +569,11 @@ See the section entitled :HDREF refid='&praglib'. for more information.
 .note "comment_string"
 is an optional string literal that provides additional information
 for some comment types.
-.endnote
+.esynote
 .np
 Consider the following example.
 .millust begin
-#pragma comment ( lib, "mylib" );
+&pragma comment ( lib, "mylib" )&epragma
 .millust end
 .*
 .section The DATA_SEG Pragma
@@ -673,7 +595,7 @@ Also,
 may be a macro as in:
 .millust begin
 #define seg_name "MY_DATA_SEG"
-#pragma data_seg ( seg_name );
+&pragma data_seg ( seg_name )&epragma
 .millust end
 .note class_name
 is the optional class name of the data segment and may be enclosed in quotes.
@@ -682,13 +604,13 @@ Also,
 may be a macro as in:
 .millust begin
 #define class_name "MY_CLASS"
-#pragma data_seg ( "MY_DATA_SEG", class_name );
+&pragma data_seg ( "MY_DATA_SEG", class_name )&epragma
 .millust end
-.endnote
+.esynote
 .np
 Consider the following example.
 .millust begin
-#pragma data_seg ( my_data );
+&pragma data_seg ( my_data )&epragma
 
 static int i;
 static int j;
@@ -699,12 +621,13 @@ The data for
 and
 .id j
 will be placed in the segment
-.id my_data.
+.id my_data
+.period
 .np
 To return to the default segment, do not specify any string between
 the opening and closing parenthesis.
 .millust begin
-#pragma data_seg ();
+&pragma data_seg ()&epragma
 .millust end
 .*
 .section *refid=&pragdsbl. The DISABLE_MESSAGE Pragma
@@ -743,7 +666,7 @@ See also the description of :HDREF refid='&pragenbl.'..
 .ix 'class information'
 The "dump_object_model" pragma causes the C++ compiler to print
 information about the object model for an indicated
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 class or an enumeration name to the diagnostics file.
 .ix 'enumeration' 'information'
 .ix 'enumeration' 'values'
@@ -753,7 +676,7 @@ class.
 .do end
 For class names, this information includes the offsets and sizes of
 fields within the class and within base classes.
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 For enumeration names, this information consists of a list of all the
 enumeration constants with their values.
 .do end
@@ -761,14 +684,14 @@ enumeration constants with their values.
 The general form of the "dump_object_model" pragma is as follows.
 .mbox begin
 :prgbeg. dump_object_model :id.class:eid. :prgend.
-.if &version ge 107 .do begin
 :prgbeg. dump_object_model :id.enumeration:eid. :prgend.
-.do end
-:id.class ::= a defined C++ class free of errors:eid.
-.if &version ge 107 .do begin
-:id.enumeration ::= a defined C++ enumeration name:eid.
-.do end
 .mbox end
+.synote
+.note class
+a defined C++ class free of errors
+.note enumeration
+a defined C++ enumeration name
+.esynote
 .np
 This pragma is designed to be used for information purposes only.
 .*
@@ -799,7 +722,7 @@ avoid interpretation as an octal constant).
 .np
 See also the description of :HDREF refid='&pragdsbl.'..
 .*
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .*
 .section The ENUM Pragma
 .*
@@ -812,10 +735,10 @@ subsequent
 declarations.
 The forms of the "enum" pragma are as follows.
 .mbox begin
-:prgbeg. enum int :prgend.
-:prgbeg. enum minimum :prgend.
-:prgbeg. enum original :prgend.
-:prgbeg. enum pop :prgend.
+:prgbeg. enum :id.int:eid. :prgend.
+:prgbeg. enum :id.minimum:eid. :prgend.
+:prgbeg. enum :id.original:eid. :prgend.
+:prgbeg. enum :id.pop:eid. :prgend.
 .mbox end
 .synote
 .note int
@@ -837,7 +760,7 @@ establishing the new setting.
 .*
 .do end
 .*
-.section The ERROR Pragma
+.section The ERROR Pragma (C++ only)
 .*
 .np
 .ix 'pragmas' 'error'
@@ -846,12 +769,12 @@ The "error" pragma can be used to issue an error message with the
 specified text.
 The following describes the form of the "error" pragma.
 .mbox begin
-:prgbeg. error :id."error text":eid. :prgend.
+:prgbeg. error :id."error text":eid. :rp. :id."error text":eid.:erp.:prgend.
 .mbox end
 .synote
 .note "error text"
 is the text of the message that you wish to display.
-.endnote
+.esynote
 .np
 You should use the ISO
 .kw #error
@@ -864,11 +787,11 @@ The following is an example.
 #elseif defined(__86__)
     ...
 #else
-#pragma error ( "neither __386__ or __86__ defined" );
+&pragma error ( "neither __386__ or __86__ defined" )&epragma
 #endif
 .millust end
 .*
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .*
 .section The EXTREF Pragma
 .*
@@ -931,7 +854,7 @@ The following describes the form of the "function" pragma.
 .synote
 .note fn
 is the name of a function.
-.endnote
+.esynote
 .np
 Suppose the following source code was compiled using the "om" option
 so that when one of the special math functions is referenced, the
@@ -947,16 +870,13 @@ causing the function
 to be treated as a regular user-defined function.
 .millust begin
 #include <math.h>
-#pragma function( sin );
+&pragma function( sin )&epragma
 
 double test( double x )
 {
     return( sin( x ) );
 }
 .millust end
-
-
-
 .*
 .section The INCLUDE_ALIAS Pragma
 .*
@@ -977,11 +897,11 @@ The form of the "include_alias" pragma follows.
 is the name referenced in include directives in source code.
 .note real_name
 is the translated name that the compiler will reference instead.
-.endnote
+.esynote
 .np
 The following is an example.
 .millust begin
-#pragma include_alias( "LongFileName.h", "lfn.h" )
+&pragma include_alias( "LongFileName.h", "lfn.h" )&epragma
 #include "LongFileName.h"
 .millust end
 In the example, the compiler will attempt to read lfn.h when LongFileName.h
@@ -989,7 +909,7 @@ was included.
 .np
 Note that only simple textual substitution is performed. The aliased name
 must match exactly, including double quotes or angle brackets, as well as
-any directory separators. 
+any directory separators.
 Also, double quotes and angle brackets may not be mixed a single pragma.
 .np
 The value of the predefined
@@ -1014,24 +934,26 @@ be used.
 .np
 The general form of the "initialize" pragma is as follows.
 .mbox begin
-:prgbeg. initialize :op.before :or. after:eop. :id.priority:eid. :prgend.
-
-:id.priority ::=:eid. :id.n:eid. :or. library :or. program
+:prgbeg. initialize :op.before :or. after:eop. :id.n:eid. :prgend.
+:prgbeg. initialize :op.before :or. after:eop. :id.library:eid. :prgend.
+:prgbeg. initialize :op.before :or. after:eop. :id.program:eid. :prgend.
 .mbox end
+Priority is a number and must be in the range 0-255. The larger the priority,
+the later the point at which initialization will occur.
 .synote
 .note n
-is a number representing the priority and must be in the range 0-255.
-The larger the priority, the later the point at which initialization will
-occur.
+is a number in the range 0-255
+.note library
+the keyword represents a priority of 32 and can be used for class
+libraries that require initialization before the program is initialized.
+.note program
+the keyword represents a priority of 64 and is the default priority
+for any compiled code.
 .esynote
 .np
 Priorities in the range 0-20 are reserved for the C++ compiler.
 This is to ensure that proper initialization of the C++ run-time system
 takes place before the execution of your program.
-The "library" keyword represents a priority of 32 and can be used for class
-libraries that require initialization before the program is initialized.
-The "program" keyword represents a priority of 64 and is the default priority
-for any compiled code.
 Specifying "before" adjusts the priority by subtracting one.
 Specifying "after" adjusts the priority by adding one.
 .np
@@ -1040,7 +962,7 @@ initialization of static data in the file will take place before
 initialization of all other static data in the program since a priority of
 63 will be assigned.
 .exam begin
-#pragma initialize before program
+&pragma initialize before program&epragma
 .exam end
 .pc
 If we specify "after" instead of "before", the initialization of the
@@ -1049,12 +971,12 @@ data in the program since a priority of 65 will be assigned.
 .np
 Note that the following is equivalent to the "before" example
 .exam begin
-#pragma initialize 63
+&pragma initialize 63&epragma
 .exam end
 .pc
 and the following is equivalent to the "after" example.
 .exam begin
-#pragma initialize 65
+&pragma initialize 65&epragma
 .exam end
 .pc
 The use of the "before", "after", and "program" keywords are more
@@ -1067,7 +989,7 @@ library will take place before initialization of static data defined by the
 program.
 The following "initialize" pragma can be used to achieve this.
 .exam begin
-#pragma initialize library
+&pragma initialize library&epragma
 .exam end
 .*
 .section The INLINE_DEPTH Pragma (C++ Only)
@@ -1084,7 +1006,8 @@ expansion of in-line functions will occur for a call.
 .np
 The form of the "inline_depth" pragma is as follows.
 .mbox begin
-:prgbeg. inline_depth :op.(:eop. :id.n:eid. :op.):eop. :prgend.
+:prgbeg. inline_depth :id.n:eid. :prgend.
+:prgbeg. inline_depth ( :id.n:eid. ) :prgend.
 .mbox end
 .synote
 .note n
@@ -1118,7 +1041,8 @@ The "inline_recursion" pragma controls the recursive expansion of
 inline functions.
 The form of the "inline_recursion" pragma is as follows.
 .mbox begin
-:prgbeg. inline_recursion :op.(:eop. on :or. off :op.):eop. :prgend.
+:prgbeg. inline_recursion on :or. off :prgend.
+:prgbeg. inline_recursion ( on :or. off ) :prgend.
 .mbox end
 .np
 Specifying "on" will enable expansion of recursive inline functions.
@@ -1148,7 +1072,7 @@ The following describes the form of the "intrinsic" pragma.
 .synote
 .note fn
 is the name of a function.
-.endnote
+.esynote
 .np
 Suppose the following source code was compiled without using the "oi" option
 so that no function had the intrinsic attribute.
@@ -1158,13 +1082,131 @@ function to be used,
 we could specify the function in an "intrinsic" pragma.
 .millust begin
 #include <math.h>
-#pragma intrinsic( sin );
+&pragma intrinsic( sin )&epragma
 
 double test( double x )
 {
     return( sin( x ) );
 }
 .millust end
+.*
+.section *refid=&praglib The LIBRARY Pragma
+.*
+.np
+.ix 'pragmas' 'specifying default libraries'
+.ix 'default libraries' 'using pragmas'
+Default libraries are specified in special object module records.
+Library names are extracted from these special records by the
+&lnkname..
+When unresolved references remain after processing all object modules
+specified in linker "FILE" directives, these default libraries are
+searched after all libraries specified in linker "LIBRARY" directives
+have been searched.
+.np
+By default, that is if no library pragma is specified, the &cmpname
+compiler generates, in the object file defining the main program,
+default libraries corresponding to the memory model and floating-point
+model used to compile the file.
+For example, if you have compiled the source file containing
+.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.if '&machine' eq '8086' .do begin
+the main program for the medium memory model and the floating-point
+calls floating-point model, the libraries "clibm" and "mathm" will be
+.do end
+.if '&machine' eq '80386' .do begin
+the main program for the flat memory model and the floating-point
+calls floating-point model, the libraries "clib3r" and "math3r" will
+be
+.do end
+.do end
+.if '&lang' eq 'FORTRAN 77' .do begin
+.if '&machine' eq '8086' .do begin
+the main program for the medium memory model and the floating-point
+calls floating-point model, the library "flibm" will be
+.do end
+.if '&machine' eq '80386' .do begin
+the main program for the flat memory model and the floating-point
+calls floating-point model, the library "flib" will be
+.do end
+.do end
+placed in the object file.
+.np
+If you wish to add your own default libraries to this list, you can do
+so with a library pragma.
+.np
+.ix 'pragmas' 'library'
+.ix 'library pragma'
+The following describes the form of the "library" pragma.
+.mbox begin
+:prgbeg. library ( :id.library_name:eid. :rp. :id.library_name:eid.:erp. ) :prgend.
+.mbox end
+.synote
+.note library_name
+library name to be added to the list of default libraries specified in
+the object file.
+.esynote
+.np
+Consider the following example.
+.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.millust begin
+&pragma library (mylib)&epragma
+.millust end
+.do end
+.if '&lang' eq 'FORTRAN 77' .do begin
+.millust begin
+&pragma library mylib&epragma
+.millust end
+.do end
+.pc
+The name "mylib" will be added to the list of default libraries
+specified in the object file.
+.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+If the library specification contains characters such as '&pc', ':' or
+',' (i.e., any character not allowed in a C identifier), you must
+enclose it in double quotes as in the following example.
+.millust begin
+.if '&target' eq 'QNX' .do begin
+&pragma library ("&pathnam.&libdir.&pc.graph.lib")&epragma
+.do end
+.el .do begin
+&pragma library ("&pathnam.&libdir16.&pc.dos&pc.graph.lib")&epragma
+&pragma library ("&pathnam.&libdir32.&pc.dos&pc.graph.lib")&epragma
+.do end
+.millust end
+.do end
+.np
+If you wish to specify more than one library in a library pragma you
+must separate them with spaces as in the following example.
+.if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.millust begin
+.if '&target' eq 'QNX' .do begin
+&pragma library (mylib "&pathnam.&libdir.&pc.graph.lib")&epragma
+.do end
+.el .do begin
+&pragma library (mylib "&pathnam.&libdir16.&pc.dos&pc.graph.lib")&epragma
+&pragma library (mylib "&pathnam.&libdir32.&pc.dos&pc.graph.lib")&epragma
+.do end
+.millust end
+.do end
+.if '&lang' eq 'FORTRAN 77' .do begin
+.millust begin
+.if '&target' eq 'QNX' .do begin
+&pragma library mylib &pathnam.&libdir.&pc.graph.lib&epragma
+.do end
+.el .do begin
+&pragma library mylib &pathnam.&libdir16.&pc.dos&pc.graph.lib&epragma
+&pragma library mylib &pathnam.&libdir32.&pc.dos&pc.graph.lib&epragma
+.do end
+.millust end
+.np
+If no libraries are specified as in the following example,
+.millust begin
+&pragma library&epragma
+.millust end
+.pc
+the run-time libraries corresponding to the memory and floating-point models
+used to compile the file will be generated.
+.do end
 .*
 .section The MESSAGE Pragma
 .*
@@ -1175,19 +1217,19 @@ The "message" pragma can be used to issue a message with the specified
 text to the standard output without terminating compilation.
 The following describes the form of the "message" pragma.
 .mbox begin
-:prgbeg. message ( :id."message text":eid. ) :prgend.
+:prgbeg. message ( :id."message text":eid. :rp. :id."message text":eid.:erp. ) :prgend.
 .mbox end
 .synote
 .note "message text"
 is the text of the message that you wish to display.
-.endnote
+.esynote
 .np
 The following is an example.
 .millust begin
 #if defined(__386__)
     ...
 #else
-#pragma message ( "assuming 16-bit compile" );
+&pragma message ( "assuming 16-bit compile" )&epragma
 #endif
 .millust end
 .*
@@ -1208,7 +1250,7 @@ Assume that the file "foo.h" contains the following text.
 .exam begin
 #ifndef _FOO_H_INCLUDED
 #define _FOO_H_INCLUDED
-#pragma once
+&pragma once&epragma
     .
     .
     .
@@ -1232,17 +1274,29 @@ files and reduce the time required to compile an application.
 .ix 'pack pragma'
 The "pack" pragma can be used to control the way in which structures
 are stored in memory.
-There are 4 forms of the "pack" pragma.
+The forms of the "pack" pragma are as follows.
+.mbox begin
+:prgbeg. pack ( :id.n:eid. ) :prgend.
+:prgbeg. pack ( push, :id.n:eid. ) :prgend.
+:prgbeg. pack ( push ) :prgend.
+:prgbeg. pack ( pop ) :prgend.
+.mbox end
 .np
 The following form of the "pack" pragma can be used to change the
 alignment of structures and their fields in memory.
-.mbox begin
-:prgbeg. pack ( :id.n:eid. ) :prgend.
-.mbox end
+.millust begin
+&pragma pack ( n )&epragma
+.millust end
+The following form of the "pack" pragma saves the current alignment amount
+on an internal stack before alignment amount change.
+.millust begin
+&pragma pack ( push, n )&epragma
+.millust end
+.np
 .synote
 .note n
 is 1, 2, 4, 8 or 16 and specifies the method of alignment.
-.endnote
+.esynote
 .np
 The alignment of structure members is described in the following
 table.
@@ -1274,7 +1328,7 @@ according to row 8.
 If the largest member of structure "x" is 16 bytes then "x" is aligned
 according to row 16.
 .np
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .if '&machine' eq '8086' .do begin
 If no value is specified in the "pack" pragma, a default value of 2 is
 used.
@@ -1293,21 +1347,15 @@ compiler command line option.
 .np
 The following form of the "pack" pragma can be used to save the current
 alignment amount on an internal stack.
-.mbox begin
-:prgbeg. pack ( push ) :prgend.
-.mbox end
-.np
-The following form of the "pack" pragma can be used to save the current
-alignment amount on an internal stack and set the current alignment.
-.mbox begin
-:prgbeg. pack ( push, :id.number:eid. ) :prgend.
-.mbox end
+.millust begin
+&pragma pack ( push )&epragma
+.millust end
 .np
 The following form of the "pack" pragma can be used to restore the
 previous alignment amount from an internal stack.
-.mbox begin
-:prgbeg. pack ( pop ) :prgend.
-.mbox end
+.millust begin
+&pragma pack ( pop )&epragma
+.millust end
 .*
 .section The READ_ONLY_FILE Pragma
 .*
@@ -1348,7 +1396,8 @@ detected.
 .np
 The form of the "template_depth" pragma is as follows.
 .mbox begin
-:prgbeg. template_depth :op.(:eop. :id.n:eid. :op.):eop. :prgend.
+:prgbeg. template_depth :id.n:eid. :prgend.
+:prgbeg. template_depth ( :id.n:eid. ) :prgend.
 .mbox end
 .synote
 .note n
@@ -1367,7 +1416,7 @@ will be 100.
 The following example of recursive template expansion illustrates why
 this pragma can be useful.
 .exam begin
-#pragma template_depth(10);
+&pragma template_depth(10)&epragma
 
 template <class T>
 struct S {
@@ -1436,22 +1485,12 @@ The line continuing the pragma must start with a comment character
 .ix 'pragmas' 'auxiliary'
 .ix 'auxiliary pragma'
 Auxiliary pragmas are used to describe attributes that affect
-.if '&cmpclass' eq 'load-n-go' .do begin
-the method used for passing arguments.
-.do end
-.el .do begin
 code generation.
-.do end
 Initially, the compiler defines a default set of attributes.
 Each auxiliary pragma refers to one of the following.
 .autopoint
 .point
-.if '&cmpclass' = 'load-n-go' .do begin
-a symbol (such as a subroutine or function)
-.do end
-.el .do begin
 a symbol (such as a variable or function)
-.do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .point
 a type definition that resolves to a function type
@@ -1487,10 +1526,8 @@ set of attributes.
 The resulting attributes are used by all symbols that have not been
 specifically referenced by a previous auxiliary pragma.
 .np
-.if '&cmpclass' ne 'load-n-go' .do begin
 Note that all auxiliary pragmas are processed before code generation
 begins.
-.do end
 Consider the following example.
 .millust begin
 code in which symbol x is referenced
@@ -1502,7 +1539,8 @@ code in which symbol z is referenced
 .millust end
 .np
 Auxiliary attributes are assigned to
-.id x,
+.id x
+.ct ,
 .id y
 and
 .id z
@@ -1515,19 +1553,22 @@ is assigned the initial default attributes merged with the attributes
 specified by
 .id <attrs_2>
 and
-.id <attrs_3>.
+.id <attrs_3>
+.period
 .note
 Symbol
 .id y
 is assigned the initial default attributes merged with the attributes
 specified by
-.id <attrs_1>.
+.id <attrs_1>
+.period
 .note
 Symbol
 .id z
 is assigned the initial default attributes merged with the attributes
 specified by
-.id <attrs_2>.
+.id <attrs_2>
+.period
 .endnote
 .*
 .section Alias Names
@@ -1594,8 +1635,8 @@ Let us look at an example in which the symbol is a type definition.
 .millust begin
 typedef void (func_type)(int);
 
-#pragma aux push_args parm [];
-#pragma aux ( func_type, push_args );
+&pragma aux push_args parm []&epragma
+&pragma aux ( func_type, push_args )&epragma
 
 extern func_type rtn1;
 extern func_type rtn2;
@@ -1607,14 +1648,15 @@ that specifies the mechanism to be used to pass arguments.
 The mechanism is to pass all arguments on the stack.
 The second auxiliary pragma associates the attributes specified
 in the first pragma with the type definition
-.id func_type.
+.id func_type
+.period
 Since
 .id rtn1
 and
 .id rtn2
 are of type
-.id func_type,
-arguments to either of those functions will be passed on the stack.
+.id func_type
+.ct , arguments to either of those functions will be passed on the stack.
 .do end
 .el .do begin
 are passed by value.
@@ -1641,40 +1683,41 @@ Consider the following example.
 .ix 'Microsoft' 'C calling convention'
 .ix 'calling convention' 'Microsoft C'
 .millust begin
-#pragma aux MS_C "_*"                                  \
+&pragma aux MS_C "_*"                                  \
                  parm caller []                        \
                  value struct float struct routine [ax]\
-                 modify [ax bx cx dx es];
-#pragma aux (MS_C) rtn1;
-#pragma aux (MS_C) rtn2;
-#pragma aux (MS_C) rtn3;
+                 modify [ax bx cx dx es]&epragma
+&pragma aux (MS_C) rtn1&epragma
+&pragma aux (MS_C) rtn2&epragma
+&pragma aux (MS_C) rtn3&epragma
 .millust end
 .do end
 .if '&machine' eq '80386' .do begin
 .ix 'MetaWare' 'High C calling convention'
 .ix 'calling convention' 'MetaWare High C'
 .millust begin
-#pragma aux HIGH_C "*"                                 \
+&pragma aux HIGH_C "*"                                 \
                    parm caller []                      \
                    value no8087                        \
-                   modify [eax ecx edx fs gs];
-#pragma aux (HIGH_C) rtn1;
-#pragma aux (HIGH_C) rtn2;
-#pragma aux (HIGH_C) rtn3;
+                   modify [eax ecx edx fs gs]&epragma
+&pragma aux (HIGH_C) rtn1&epragma
+&pragma aux (HIGH_C) rtn2&epragma
+&pragma aux (HIGH_C) rtn3&epragma
 .millust end
 .do end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-*$pragma aux WC "*_" parm (value)
-*$pragma aux (WC) rtn1
-*$pragma aux (WC) rtn2
-*$pragma aux (WC) rtn3
+&pragma aux WC "*_" parm (value)&epragma
+&pragma aux (WC) rtn1&epragma
+&pragma aux (WC) rtn2&epragma
+&pragma aux (WC) rtn3&epragma
 .millust end
 .do end
 .pc
 The routines
-.id rtn1,
+.id rtn1
+.ct ,
 .id rtn2
 and
 .id rtn3
@@ -1687,11 +1730,12 @@ Note that register ES must also be specified in the "modify" register
 set when using a memory model that is not a small data model.
 .do end
 Whenever calls are made to
-.id rtn1,
+.id rtn1
+.ct ,
 .id rtn2
 and
-.id rtn3,
-the &other_cmp calling convention will be used.
+.id rtn3
+.ct , the &other_cmp calling convention will be used.
 .if '&lang' eq 'FORTRAN 77' .do begin
 Note that arguments must be passed by value.
 .ix 'passing arguments by value'
@@ -1703,11 +1747,12 @@ Note that if the attributes of
 change, only one pragma needs to be changed.
 If we had not used an alias name and specified the attributes in each
 of the three pragmas for
-.id rtn1,
+.id rtn1
+.ct ,
 .id rtn2
 and
-.id rtn3,
-we would have to change all three pragmas.
+.id rtn3
+.ct , we would have to change all three pragmas.
 This approach also reduces the amount of memory required by the
 compiler to process the source file.
 .warn
@@ -1718,10 +1763,9 @@ If
 .id &alias_name
 appeared in your source code, it would assume the attributes specified
 in the pragma for
-.id &alias_name..
+.id &alias_name.
+.period
 .ewarn
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .section Predefined Aliases
 .*
@@ -1817,7 +1861,7 @@ or
 .kwm system
 are identical to
 .kwm __syscall
-.ct .li .
+.period
 .do end
 .note __watcall
 .ix 'alias names' '__watcall'
@@ -1843,10 +1887,10 @@ The following describes the attributes of the above alias names.
 &pragcont           parm caller [] \
 &pragcont           value struct float struct routine [&ax] \
 .if '&machine' eq '80386' .do begin
-&pragcont           modify [eax ecx edx]
+&pragcont           modify [eax ecx edx]&epragma
 .do end
 .if '&machine' eq '8086' .do begin
-&pragcont           modify [ax bx cx dx es]
+&pragcont           modify [ax bx cx dx es]&epragma
 .do end
 .millust end
 .autonote Notes:
@@ -1880,10 +1924,10 @@ made.
 &pragcont           parm reverse routine [] \
 &pragcont           value struct float struct caller [] \
 .if '&machine' eq '8086' .do begin
-&pragcont           modify [ax bx cx dx es]
+&pragcont           modify [ax bx cx dx es]&epragma
 .do end
 .if '&machine' eq '80386' .do begin
-&pragcont           modify [eax ebx ecx edx]
+&pragcont           modify [eax ebx ecx edx]&epragma
 .do end
 .millust end
 .autonote Notes:
@@ -1921,7 +1965,7 @@ restored when a call is made.
 &pragma aux __stdcall "_*@nnn" \
 &pragcont           parm routine [] \
 &pragcont           value struct struct caller [] \
-&pragcont           modify [eax ecx edx]
+&pragcont           modify [eax ecx edx]&epragma
 .millust end
 .autonote Notes:
 .note
@@ -1953,7 +1997,7 @@ made.
 &pragma aux __syscall "*" \
 &pragcont           parm caller [] \
 &pragcont           value struct struct caller [] \
-&pragcont           modify [eax ecx edx]
+&pragcont           modify [eax ecx edx]&epragma
 .millust end
 .autonote Notes:
 .note
@@ -1978,10 +2022,14 @@ made.
 .do end
 .*
 .if '&machine' eq '80386' .do begin
+.*
 .section Predefined "__watcall" Alias (register calling convention)
+.*
 .do end
 .el .do begin
+.*
 .section Predefined "__watcall" Alias
+.*
 .do end
 .*
 .millust begin
@@ -1992,7 +2040,7 @@ made.
 .if '&machine' eq '8086' .do begin
 &pragcont           parm routine [ax bx cx dx] \
 .do end
-&pragcont           value struct caller
+&pragcont           value struct caller&epragma
 .millust end
 .autonote Notes:
 .note
@@ -2006,7 +2054,7 @@ right to left. The calling routine will remove the arguments if any
 were pushed on the stack.
 .note
 When a structure is returned, the caller allocates space on the stack.
-The address of the allocated space is put into &siup register. 
+The address of the allocated space is put into &siup register.
 The called routine then places the return value there.
 Upon returning from the call, register &axup will contain address of
 the space allocated for the return value.
@@ -2018,13 +2066,14 @@ All registers must be preserved by the called routine.
 .endnote
 .*
 .if '&machine' eq '80386' .do begin
+.*
 .section Predefined "__watcall" Alias (stack calling convention)
 .*
 .millust begin
 &pragma aux __watcall "*" \
 &pragcont           parm caller [] \
 &pragcont           value no8087 struct caller \
-&pragcont           modify [eax ecx edx 8087]
+&pragcont           modify [eax ecx edx 8087]&epragma
 .millust end
 .autonote Notes:
 .note
@@ -2052,9 +2101,6 @@ preserved by the called routine.
 .*
 .endlevel
 .*
-.do end
-.* end of if '&cmpclass' ne 'load-n-go'
-.*
 .section Alternate Names for Symbols
 .*
 .np
@@ -2072,8 +2118,8 @@ is any character string enclosed in double quotes.
 .esynote
 .pc
 When specifying
-.id obj_name,
-some characters have a special meaning:
+.id obj_name
+.ct , some characters have a special meaning:
 .synote
 .note *
 is unmodified symbol name
@@ -2180,8 +2226,6 @@ by the following example.
 The above auxiliary pragma specifies that all names will be prefixed
 and suffixed by an underscore character ('_').
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 .section Describing Calling Information
 .*
 .np
@@ -2215,8 +2259,7 @@ way a &function is to be called.
     or
 :prgbeg. aux :id.sym:eid. = :id.in_line:eid. :prgend.
 
-:id.in_line ::= { const | (:eid.seg:id. id) | (:eid.offset:id. id) | (:eid.reloff:id. id)
-                    | (:eid.float:id. fpinst) | :eid.":id.asm:eid." :id.}:eid.
+:id.in_line ::= { const | (:eid.seg:id. id) | (:eid.offset:id. id) | (:eid.reloff:id. id) | (:eid.float:id. fpinst) | :eid.":id.asm:eid." :id.}:eid.
 .mbox end
 .do end
 .* ---------------------------------------
@@ -2228,8 +2271,7 @@ way a &function is to be called.
     or
 :prgbeg. aux :id.sym:eid. = :id.in_line:eid. :prgend.
 
-:id.in_line ::= { const | (:eid.seg:id. id) | (:eid.offset:id. id) | (:eid.reloff:id. id)
-                    | :eid.":id.asm:eid." :id.}:eid.
+:id.in_line ::= { const | (:eid.seg:id. id) | (:eid.offset:id. id) | (:eid.reloff:id. id) | :eid.":id.asm:eid." :id.}:eid.
 .mbox end
 .do end
 .* ---------------------------------------
@@ -2289,10 +2331,12 @@ so that special fixups are applied to the 80x87 instruction.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .note seg
 specifies the segment of the symbol
-.id id.
+.id id
+.period
 .note offset
 specifies the offset of the symbol
-.id id.
+.id id
+.period
 .note reloff
 specifies the relative offset of the symbol
 .id id
@@ -2304,7 +2348,8 @@ is an assembly language instruction or directive.
 .pc
 In the following example, &cmpname will generate a far call to the
 &function
-.id myrtn.
+.id myrtn
+.period
 .millust begin
 &pragma aux myrtn far&epragma
 .millust end
@@ -2316,7 +2361,8 @@ for a memory model with a small code model.
 .np
 In the following example, &cmpname will generate a near call to the
 &function
-.id myrtn.
+.id myrtn
+.period
 .millust begin
 &pragma aux myrtn near&epragma
 .millust end
@@ -2337,20 +2383,20 @@ is called an in-line &function..
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 void mode4(void);
-#pragma aux mode4 =                \
+&pragma aux mode4 =                \
     0xb4 0x00       /* mov AH,0 */ \
     0xb0 0x04       /* mov AL,4 */ \
     0xcd 0x10       /* int 10H  */ \
-    modify [ AH AL ];
+    modify [ AH AL ]&epragma
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-*$pragma aux mode4 =    \
+&pragma aux mode4 =    \
 *    zb4 z00            \ mov AH,0
 *    zb0 z04            \ mov AL,4
 *    zcd z10            \ int 10h
-*    modify [ AH AL ]
+*    modify [ AH AL ]&epragma
 .millust end
 .do end
 .pc
@@ -2379,20 +2425,20 @@ the binary encoding of the assembly language instructions.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 void mode4(void);
-#pragma aux mode4 =     \
+&pragma aux mode4 =     \
     "mov AH,0",         \
     "mov AL,4",         \
     "int 10H"           \
-    modify [ AH AL ];
+    modify [ AH AL ]&epragma
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-*$pragma aux mode4 =    \
+&pragma aux mode4 =    \
 *    "mov AH,0"         \
 *    "mov AL,4"         \
 *    "int 10H"          \
-*    modify [ AH AL ]
+*    modify [ AH AL ]&epragma
 .millust end
 .do end
 .if '&machine' eq '8086' .do begin
@@ -2408,14 +2454,14 @@ The following example generates the 80x87 "square root" instruction.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 double mysqrt(double);
-#pragma aux mysqrt parm [8087] = \
-    float 0xd9 0xfa /* fsqrt */;
+&pragma aux mysqrt parm [8087] = \
+    float 0xd9 0xfa /* fsqrt */&epragma
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-*$pragma aux mysqrt parm( value ) [8087] = \
-*            float zd9fa
+&pragma aux mysqrt parm( value ) [8087] = \
+*            float zd9fa&epragma
 .millust end
 .do end
 .do end
@@ -2432,8 +2478,8 @@ is called.
 .millust begin
 extern void myalias(void);
 void myrtn(void);
-#pragma aux myrtn =                     \
-    0xe8 reloff myalias /* near call */;
+&pragma aux myrtn =                     \
+    0xe8 reloff myalias /* near call */&epragma
 .millust end
 .pc
 In the following example, a far call to the function
@@ -2444,8 +2490,8 @@ is called.
 .millust begin
 extern void myalias(void);
 void myrtn(void);
-#pragma aux myrtn =                                \
-    0x9a offset myalias seg myalias /* far call */;
+&pragma aux myrtn =                                \
+    0x9a offset myalias seg myalias /* far call */&epragma
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' and '&machine' eq '80386' .do begin
@@ -2582,9 +2628,6 @@ is a &function name.
 .*
 .endlevel
 .*
-.do end
-.* end of if '&cmpclass' ne 'load-n-go'
-.*
 .section Describing Argument Information
 .*
 .np
@@ -2595,7 +2638,6 @@ Using auxiliary pragmas, you can describe the calling convention that
 This is particularly useful when interfacing to &functions that have
 been compiled by other compilers or &functions written in other
 programming languages.
-.if '&cmpclass' ne 'load-n-go' .do begin
 .np
 The general form of an auxiliary pragma that describes argument
 passing is the following.
@@ -2636,7 +2678,6 @@ argument passing.
 A register set is a list of registers separated by spaces and enclosed
 in square brackets.
 .esynote
-.do end
 .*
 .beglevel
 .*
@@ -2655,7 +2696,6 @@ the chapter entitled "Assembly Language Considerations".
 .np
 The following form of the auxiliary pragma can be used to alter the
 default calling mechanism used for passing arguments.
-.if '&cmpclass' ne 'load-n-go' .do begin
 .cp 15
 .mbox begin
 :prgbeg. aux :id.sym:eid. parm ( :id.arg_attr:eid. :rp., :id.arg_attr:eid.:erp. )
@@ -2670,19 +2710,6 @@ default calling mechanism used for passing arguments.
 
 :id.d_attr ::=:eid. :op.far :or. near:eop.
 .mbox end
-.do end
-.el .do begin
-.cp 11
-.mbox begin
-:prgbeg. aux :id.sym:eid. parm ( :id.arg_attr:eid. :rp., :id.arg_attr:eid.:erp. )
-
-:id.arg_attr ::=:eid. value:id. :op.:id.v_attr:eid.:eop. :or. reference :op.:id.r_attr:eid.:eop.
-
-:id.v_attr ::=:eid. far :or. near :or. *1 :or. *2 :or. *4 :or. *8
-
-:id.r_attr ::=:eid. :op.far :or. near:eop.
-.mbox end
-.do end
 .synote
 .note sym
 is a &function name.
@@ -2696,15 +2723,12 @@ of a string descriptor.
 This is the default calling mechanism.
 If "NEAR" or "FAR" is specified, a near pointer or far pointer is passed
 regardless of the memory model used at compile-time.
-.if '&cmpclass' ne 'load-n-go' .do begin
 .np
 If the "DESCRIPTOR" attribute is specified, a pointer to the string descriptor
 is passed.
 This is the default.
 If the "NODESCRIPTOR" attribute is specified, a pointer to the the actual
 character data is passed instead of a pointer to the string descriptor.
-.do end
-.if '&cmpclass' ne 'load-n-go' .do begin
 .note DATA_REFERENCE
 .ix 'arguments' 'passing by data reference'
 specifies that arguments are to be passed by data reference.
@@ -2713,7 +2737,6 @@ For character items, a pointer to the actual character data (instead of the
 string descriptor) is passed.
 If "NEAR" or "FAR" is specified, a near pointer or far pointer is passed
 regardless of the memory model used at compile-time.
-.do end
 .note VALUE
 .ix 'arguments' 'passing by value'
 specifies that arguments are to be passed by value.
@@ -2733,18 +2756,11 @@ descriptor is passed.
 The string descriptor contains the address of the actual character data and
 the number of characters.
 When character arguments are passed by
-.if '&cmpclass' ne 'load-n-go' .do begin
 value or data reference,
-.do end
-.el .do begin
-value,
-.do end
 the address of the actual character data is passed instead of the address
 of a string descriptor.
 Character arguments are passed by value by specifying the "VALUE"
-.if '&cmpclass' ne 'load-n-go' .do begin
 or "DATA_REFERENCE"
-.do end
 attribute.
 If "NEAR" or "FAR" is specified, a near pointer or far pointer to the
 character data is passed regardless of the memory model used at compile-time.
@@ -2774,13 +2790,13 @@ For example, if an argument of type
 is passed to a subprogram that
 has an argument attribute of "VALUE*8", the argument will be converted to
 .bd DOUBLE PRECISION
-.ct .li .
+.period
 If an argument of type
 .bd DOUBLE PRECISION
 is passed to a subprogram that
 has an argument attribute of "VALUE*4", the argument will be converted to
 .bd REAL
-.ct .li .
+.period
 If an argument of type
 .bd INTEGER*4
 is passed to a subprogram that
@@ -2789,7 +2805,7 @@ converted to
 .bd INTEGER*2
 or
 .bd INTEGER*1
-.ct .li .
+.period
 If an argument of type
 .bd INTEGER*2
 is passed to a subprogram that
@@ -2798,7 +2814,7 @@ converted to
 .bd INTEGER*4
 or
 .bd INTEGER*1
-.ct .li .
+.period
 If an argument of type
 .bd INTEGER*1
 is passed to a subprogram that
@@ -2807,17 +2823,16 @@ converted to
 .bd INTEGER*4
 or
 .bd INTEGER*2
-.ct .li .
+.period
 .note
 If the number of arguments exceeds the number of entries in the
 argument-attribute list, the last attribute will be assumed for the
 remaining arguments.
 .endnote
 .np
-.if '&cmpclass' ne 'load-n-go' .do begin
 Consider the following example.
 .millust begin
-*$pragma aux printf "*_" parm (value) caller []
+&pragma aux printf "*_" parm (value) caller []&epragma
       character cr/z0d/, nullchar/z00/
       call printf( 'values: %ld, %ld'//cr//nullchar,
      1             77, 31410 )
@@ -2835,22 +2850,6 @@ arguments, all passed on the stack (an empty register set was
 specified), and that the caller must remove the arguments from the
 stack.
 .do end
-.el .do begin
-Consider the following example.
-.millust begin
-*$pragma aux c_function "*_" parm (value)
-      call c_function( 383, 13143, 1033 )
-      end
-.millust end
-.pc
-The function
-.id c_function
-is a function compiled using &company C.
-It is called with three arguments, all passed by value.
-.do end
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .section Passing Arguments in Registers
 .*
@@ -3098,13 +3097,13 @@ unchanged.
 Consider the following example.
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-*$pragma aux myrtn parm (value) \
-*                       [&ax &bx &cx &dx] [&bp &si]
+&pragma aux myrtn parm (value) \
+*                       [&ax &bx &cx &dx] [&bp &si]&epragma
 .millust end
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
-#pragma aux myrtn parm [&ax &bx &cx &dx] [&bp &si];
+&pragma aux myrtn parm [&ax &bx &cx &dx] [&bp &si]&epragma
 .millust end
 .do end
 .pc
@@ -3112,7 +3111,7 @@ Suppose
 .id myrtn
 is a routine with 3 arguments each of type
 .bd &arg_2_regs
-.ct .li .
+.period
 .if '&lang' eq 'FORTRAN 77' .do begin
 Note that the arguments are passed by value.
 .do end
@@ -3125,7 +3124,7 @@ The second argument will be passed in the register pair &cxup:&bxup..
 The third argument will be pushed on the stack since &bpup:&siup is
 not a valid register pair for arguments of type
 .bd &arg_2_regs
-.ct .li .
+.period
 .endpoint
 .np
 It is possible for registers from the second register set to be used
@@ -3133,13 +3132,13 @@ before registers from the first register set are used.
 Consider the following example.
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-*$pragma aux myrtn parm (value) \
-*                       [&ax &bx &cx &dx] [&si &di]
+&pragma aux myrtn parm (value) \
+*                       [&ax &bx &cx &dx] [&si &di]&epragma
 .millust end
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
-#pragma aux myrtn parm [&ax &bx &cx &dx] [&si &di];
+&pragma aux myrtn parm [&ax &bx &cx &dx] [&si &di]&epragma
 .millust end
 .do end
 .pc
@@ -3150,7 +3149,7 @@ the first of type
 .bd &int
 and the second and third of type
 .bd &arg_2_regs
-.ct .li .
+.period
 .if '&lang' eq 'FORTRAN 77' .do begin
 Note that all arguments are passed by value.
 .do end
@@ -3195,13 +3194,13 @@ used.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 void mycopy( char near *, char *, int );
-#pragma aux mycopy parm [&siup] [&diup] [&cxup];
+&pragma aux mycopy parm [&siup] [&diup] [&cxup]&epragma
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-*$pragma aux mycopy parm (value) \
-*                        [&siup] [&diup] [&cxup]
+&pragma aux mycopy parm (value) \
+*                        [&siup] [&diup] [&cxup]&epragma
       character*10  dst
       call mycopy( dst, '0123456789', 10 )
       ...
@@ -3225,25 +3224,26 @@ the description of the argument list must be very explicit.
 To achieve this, &cmpname assumes that each register set corresponds
 to an argument.
 Consider the following DOS example of an in-line &function called
-.id scrollactivepgup.
+.id scrollactivepgup
+.period
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
 void scrollactivepgup(char,char,char,char,char,char);
-#pragma aux scrollactivepgup = \
+&pragma aux scrollactivepgup = \
     "mov AH,6"   \
     "int 10h"    \
     parm [ch] [cl] [dh] [dl] [al] [bh] \
-    modify [ah];
+    modify [ah]&epragma
 .millust end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-*$pragma aux scrollactivepgup =        \
+&pragma aux scrollactivepgup =        \
 *   "mov AH,6"                         \
 *   "int 10h"                          \
 *   parm (value)                       \
 *        [ch] [cl] [dh] [dl] [al] [bh] \
-*   modify [ah]
+*   modify [ah]&epragma
 .millust end
 .do end
 .np
@@ -3287,12 +3287,12 @@ In general, &cmpname assigns the following types to register sets.
 A register set consisting of a single 8-bit register (1 byte) is
 assigned a type of
 .bd &uchar
-.ct .li .
+.period
 .note
 A register set consisting of a single 16-bit register (2 bytes) is
 assigned a type of
 .bd &ushort_int
-.ct .li .
+.period
 .note
 A register set consisting of
 .if '&machine' eq '8086' .do begin
@@ -3304,7 +3304,7 @@ a single 32-bit register
 (4 bytes) is assigned
 a type of
 .bd &ulong_int
-.ct .li .
+.period
 .note
 A register set consisting of
 .if '&machine' eq '8086' .do begin
@@ -3315,7 +3315,7 @@ two 32-bit
 .do end
 registers (8 bytes) is assigned a type of
 .bd &double
-.ct .li .
+.period
 .endnote
 .if '&lang' eq 'FORTRAN 77' .do begin
 .np
@@ -3356,7 +3356,7 @@ the new default is assumed.
 Consider the following example.
 It describes the pragma required to call the C "printf" function.
 .millust begin
-*$pragma aux printf "*_" parm (value) caller []
+&pragma aux printf "*_" parm (value) caller []&epragma
       character cr/z0d/, nullchar/z00/
       call printf( 'value is %ld'//cr//nullchar,
      1             7143 )
@@ -3368,7 +3368,7 @@ actual character data terminated by a null character.
 By default, the address of a string descriptor is passed for arguments
 of type
 .bd CHARACTER
-.ct .li .
+.period
 See the chapter entitled "Assembly Language Considerations" for more
 information on string descriptors.
 The second argument is of type
@@ -3440,7 +3440,6 @@ function returns its value is the following.
 .ix 'struct caller (pragma)'
 .mbox begin
 :prgbeg. aux :id.sym:eid. value :rp.no8087 :or. :id.reg_set:eid. :or. :id.struct_info:eid.:erp. :prgend.
-.millust break
 
 :id.struct_info ::=:eid. struct :rp.float :or. struct :or. :id.(:eid.routine :or. caller:id.):eid. :or. :id.reg_set:eid.:erp.
 .mbox end
@@ -3562,10 +3561,14 @@ unchanged.
 .endnote
 .*
 .if '&lang' eq 'FORTRAN 77' .do begin
+.*
 .section Returning Structures and Complex Numbers
+.*
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.*
 .section Returning Structures
+.*
 .do end
 .*
 .np
@@ -3599,7 +3602,7 @@ register that is to be used to point to the return value.
 .ix 'struct caller (pragma)'
 .ix 'struct routine (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. value struct :id.(:eid.caller:or.routine:id.):eid. :id.reg_set:eid. :prgend.
+:prgbeg. aux :id.sym:eid. value struct :id.(:eid.caller :or. routine:id.):eid. :id.reg_set:eid. :prgend.
 .mbox end
 .synote
 .note sym
@@ -3789,7 +3792,7 @@ is a &function name.
 Consider the following example.
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-*$pragma aux exitrtn aborts
+&pragma aux exitrtn aborts&epragma
       ...
       call exitrtn()
       end
@@ -3797,7 +3800,7 @@ Consider the following example.
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
-#pragma aux exitrtn aborts;
+&pragma aux exitrtn aborts&epragma
 extern void exitrtn(void);
 
 void rtn()
@@ -3814,13 +3817,18 @@ For example, it may call
 to return to the system.
 In this case, &cmpname generates a "jmp" instruction instead of a
 "call" instruction to invoke
-.id exitrtn.
+.id exitrtn
+.period
 .*
 .if '&lang' eq 'FORTRAN 77' .do begin
+.*
 .section Describing How &ufunctions Use Variables in Common
+.*
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.*
 .section Describing How &ufunctions Use Memory
+.*
 .do end
 .*
 .np
@@ -3865,7 +3873,7 @@ Consider the following example.
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
-#pragma off (check_stack);
+&pragma off (check_stack)&epragma
 
 extern void myrtn(void);
 
@@ -4068,7 +4076,7 @@ Group: 'DGROUP' CONST,_DATA
 
 Segment: '_TEXT' BYTE USE32  00000036 bytes
 
-#pragma off (check_stack);
+&pragma off (check_stack)&epragma
 
 extern void myrtn(void);
 
@@ -4124,7 +4132,7 @@ Group: 'DGROUP' CONST,_DATA
 
 Segment: '_TEXT' BYTE  0026 bytes
 
-#pragma off (check_stack);
+&pragma off (check_stack)&epragma
 
 extern void MyRtn( void );
 
@@ -4190,7 +4198,7 @@ Group: 'DGROUP' _DATA,LDATA,CDATA,BLK
 
 Segment: 'FMAIN_TEXT' BYTE USE32  00000030 bytes
 
-*$pragma aux myrtn modify nomemory
+&pragma aux myrtn modify nomemory&epragma
         integer i
         common /blk/ i
  0000  52                FMAIN           push    edx
@@ -4260,7 +4268,7 @@ Group: 'DGROUP' _DATA,LDATA,CDATA,BLK
 
 Segment: 'FMAIN_TEXT' BYTE  00000024 bytes
 
-*$pragma aux myrtn modify nomemory
+&pragma aux myrtn modify nomemory&epragma
         integer*2 i
         common /blk/ i
  0000  52                FMAIN           push    dx
@@ -4332,8 +4340,8 @@ Group: 'DGROUP' CONST,_DATA
 
 Segment: '_TEXT' BYTE USE32  00000030 bytes
 
-#pragma off (check_stack);
-#pragma aux myrtn modify nomemory;
+&pragma off (check_stack)&epragma
+&pragma aux myrtn modify nomemory&epragma
 
 .code break
 extern void myrtn(void);
@@ -4388,10 +4396,10 @@ Group: 'DGROUP' CONST,_DATA
 
 Segment: '_TEXT' BYTE  0022 bytes
 
-#pragma off (check_stack);
+&pragma off (check_stack)&epragma
 
 extern void MyRtn( void );
-#pragma aux MyRtn modify nomemory;
+&pragma aux MyRtn modify nomemory&epragma
 
 int i = { 1033 };
 
@@ -4442,8 +4450,8 @@ Notice that the value of
 .id i
 is in register &dxup after completion of the "while" loop.
 After the call to
-.id myrtn,
-the value of
+.id myrtn
+.ct , the value of
 .id i
 is not loaded from memory into a register to perform the final
 addition.
@@ -4459,7 +4467,8 @@ indirectly by
 .do end
 .id Rtn
 and hence register &dxup contains the correct value of
-.id i.
+.id i
+.period
 .np
 The preceding auxiliary pragma deals with routines that modify
 .if '&lang' eq 'FORTRAN 77' .do begin
@@ -4518,7 +4527,7 @@ Group: 'DGROUP' _DATA,LDATA,CDATA,BLK
 
 Segment: 'FMAIN_TEXT' BYTE USE32  0000002a bytes
 
-*$pragma aux myrtn parm nomemory modify nomemory
+&pragma aux myrtn parm nomemory modify nomemory&epragma
         integer i
         common /blk/ i
  0000  52                FMAIN           push    edx
@@ -4587,7 +4596,7 @@ Group: 'DGROUP' _DATA,LDATA,CDATA,BLK
 
 Segment: 'FMAIN_TEXT' BYTE  00000020 bytes
 
-*$pragma aux myrtn parm nomemory modify nomemory
+&pragma aux myrtn parm nomemory modify nomemory&epragma
         integer*2 i
         common /blk/ i
  0000  52                FMAIN           push    dx
@@ -4658,8 +4667,8 @@ Group: 'DGROUP' CONST,_DATA
 
 Segment: '_TEXT' BYTE USE32  0000002a bytes
 
-#pragma off (check_stack);
-#pragma aux myrtn parm nomemory modify nomemory;
+&pragma off (check_stack)&epragma
+&pragma aux myrtn parm nomemory modify nomemory&epragma
 
 .code break
 extern void myrtn(void);
@@ -4713,10 +4722,10 @@ Group: 'DGROUP' CONST,_DATA
 
 Segment: '_TEXT' BYTE  001e bytes
 
-#pragma off (check_stack);
+&pragma off (check_stack)&epragma
 
 extern void MyRtn( void );
-#pragma aux MyRtn parm nomemory modify nomemory;
+&pragma aux MyRtn parm nomemory modify nomemory&epragma
 
 int i = { 1033 };
 
@@ -4766,7 +4775,8 @@ Notice that after completion of the "while" loop we did not have to
 update
 .id i
 with the value in register &dxup before calling
-.id myrtn.
+.id myrtn
+.period
 The auxiliary pragma informs the compiler that
 .id myrtn
 does not reference any
@@ -4781,7 +4791,8 @@ indirectly by
 so updating
 .id i
 was not necessary before calling
-.id myrtn.
+.id myrtn
+.period
 .keep 12
 .*
 .section Describing the Registers Modified by a &ufunction
@@ -4851,18 +4862,18 @@ told it that "GetSP" does not modify any register whatsoever.
 .exam begin
 unsigned GetSP(void);
 #if defined(__386__)
-#pragma aux GetSP = value [esp] modify exact [];
+&pragma aux GetSP = value [esp] modify exact []&epragma
 #else
-#pragma aux GetSP = value [sp] modify exact [];
+&pragma aux GetSP = value [sp] modify exact []&epragma
 #endif
 .exam end
 .do end
 .if '&lang' eq 'FORTRAN 77' .do begin
 .exam begin
 *$ifdef __386__
-*$pragma aux GetSP = value [esp] modify exact []
+&pragma aux GetSP = value [esp] modify exact []&epragma
 *$else
-*$pragma aux GetSP = value [sp] modify exact []
+&pragma aux GetSP = value [sp] modify exact []&epragma
 *$endif
 
       program main
@@ -4884,10 +4895,10 @@ As mentioned in an earlier section, the following pragma defines the
 calling convention for functions compiled by MetaWare's High C
 compiler.
 .millust begin
-#pragma aux HIGH_C "*"                                 \
+&pragma aux HIGH_C "*"                                 \
                    parm caller []                      \
                    value no8087                        \
-                   modify [eax ecx edx fs gs];
+                   modify [eax ecx edx fs gs]&epragma
 .millust end
 .pc
 Note that register ES must also be specified in the "modify" register
@@ -4924,10 +4935,10 @@ calling convention for functions compiled by Microsoft C.
 .ix 'Microsoft' 'C calling convention'
 .ix 'calling convention' 'Microsoft C'
 .millust begin
-#pragma aux MS_C "_*"                                  \
+&pragma aux MS_C "_*"                                  \
                  parm caller []                        \
                  value struct float struct routine [ax]\
-                 modify [ax bx cx dx es];
+                 modify [ax bx cx dx es]&epragma
 .millust end
 .np
 Let us discuss this pragma in detail.
@@ -5132,7 +5143,7 @@ Consider the following example.
 .cp 16
 .if '&lang' eq 'FORTRAN 77' .do begin
 .millust begin
-*$pragma aux myrtn parm (value) [8087];
+&pragma aux myrtn parm (value) [8087]&epragma
 
       real x
       double precision y
@@ -5153,7 +5164,7 @@ Consider the following example.
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
-#pragma aux myrtn parm [8087];
+&pragma aux myrtn parm [8087]&epragma
 
 void main()
 {
@@ -5255,7 +5266,7 @@ is a register set containing the string "8087", i.e. [8087].
 .section Preserving 80x87 Floating-Point Registers Across Calls
 .*
 .np
-.if &version le 90 .do begin
+.if &vermacro le 900 .do begin
 As described in the section entitled "Using the 80x87 to Pass
 Arguments", four of the eight 80x87 floating-point registers are used
 for a &function's local variables.
@@ -5291,9 +5302,7 @@ in the 80x87 cache before calling the specified routine.
 .*
 .endlevel
 .*
-.do end
-.*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .if '&machine' eq '8086' .do begin
 .   .   .helppref
 .   .do end

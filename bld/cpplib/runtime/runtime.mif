@@ -9,7 +9,7 @@ prefix_x = runx
 
 !ifeq processor axp
 objs_asm =
-!else
+!else ifeq processor 386
 objs_asm = fshand.obj
 !endif
 
@@ -23,17 +23,14 @@ dbg_objs_c = rtdbgst.obj rtdbgcom.obj
 
 !ifdef fs_registration
 require_registration = y
+!else ifdef pd_registration
 !else
-!   ifdef pd_registration
-!   else
+require_registration = y
 sysind_registration = y
-!   endif
 !endif
 
 !ifdef sysind_registration
-require_registration = y
-objs_reg = ljmpdtor.obj &
-           ljmpinit.obj
+objs_reg = ljmpdtor.obj ljmpinit.obj
 !else
 objs_reg =
 !endif
@@ -157,5 +154,8 @@ pch_flags_x_stablcl = -fh=$(x_subdir)/pch07.pch
 pch_flags_x_undefmbd = -fh=$(x_subdir)/pch07.pch
 pch_flags_rtdbgst = -fh=pch08.pch
 pch_flags_x_rtdbgst = -fh=$(x_subdir)/pch08.pch
+
+dep_dirs = $(x_subdir)
+dep_dirs_x = $(x_subdir)
 
 !include $(cpplib_dir)/mklib.mif

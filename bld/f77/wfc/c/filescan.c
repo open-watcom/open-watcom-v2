@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +41,9 @@
 
 static char         ForExtn[] = { "for" };
 
-char    *SDFName( char *fn ) {
-//============================
-
+char *SDFName( const char *fn )
+//=============================
+{
     char        *start;
     char        chr;
 
@@ -53,45 +53,51 @@ char    *SDFName( char *fn ) {
     }
 #endif
     for(;;) {
-        start = fn;
+        start = (char *)fn;
         for(;;) {
             chr = *fn;
-            if( chr == NULLCHAR ) return( start );
+            if( chr == NULLCHAR )
+                return( start );
             fn++;
 #if ! defined( __UNIX__ )
-            if( chr == '\\' ) break;
+            if( chr == '\\' )
+                break;
 #endif
-            if( chr == '/' ) break;
+            if( chr == '/' ) {
+                break;
+            }
         }
     }
 }
 
 
-char    *SDExtn( char *fn, char *default_extn ) {
+char *SDSplitExtn( char *fn, char *default_extn )
 //===============================================
-
+{
     char        *src_extn;
     char        chr;
 
-    src_extn = NULL;
     fn = SDFName( fn );
+    src_extn = NULL;
     for(;;) {
         chr = *fn;
-        if( chr == NULLCHAR ) break;
+        if( chr == NULLCHAR )
+            break;
         if( chr == '.' ) {
             src_extn = fn;
         }
         fn++;
     }
-    if( src_extn == NULL ) return( default_extn );
+    if( src_extn == NULL )
+        return( default_extn );
     *src_extn = NULLCHAR;
     ++src_extn;
     return( src_extn );
 }
 
 
-char    *SDSrcExtn( char *fn ) {
+char *SDSplitSrcExtn( char *fn )
 //==============================
-
-    return( SDExtn( fn, ForExtn ) );
+{
+    return( SDSplitExtn( fn, ForExtn ) );
 }

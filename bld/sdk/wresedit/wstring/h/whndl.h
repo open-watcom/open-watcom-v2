@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +49,6 @@ extern int              WUnRegisterEditSession( WStringHandle );
 extern WStringEditInfo  *WGetEditSessionInfo( WStringHandle );
 extern WStringHandle    WGetEditSessionHandle( WStringEditInfo *info );
 extern int              WIsValidHandle( WStringHandle );
-extern int              WIsStringDialogMessage( MSG *msg, HACCEL acel_table );
+extern bool             WIsStringDialogMessage( MSG *msg, HACCEL acel_table );
 
 #endif

@@ -1,6 +1,6 @@
 # remap fpu to processor
 plib_086 = 086
-plib_087 = 086 
+plib_087 = 086
 plib_286 = 286
 plib_287 = 286
 plib_386 = 386

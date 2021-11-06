@@ -1,76 +1,42 @@
 .func _mbsnextc _fmbsnextc _strnextc _wcsnextc
 .synop begin
-.sr func=_strnextc
 #include <mbstring.h>
-unsigned int _mbsnextc( const unsigned char *string );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
-.if &farfnc eq 1 .do begin
-unsigned int _fmbsnextc(
-                    const unsigned char __far *string );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+unsigned int _mbsnextc( const unsigned char *s );
+.ixfunc2 '&String' _mbsnextc
+.ixfunc2 '&Multibyte' _mbsnextc
+.if &farfnc ne 0 .do begin
+unsigned int _fmbsnextc( const unsigned char __far *s );
+.ixfunc2 '&String' _fmbsnextc
+.ixfunc2 '&Multibyte' _fmbsnextc
 .do end
 #include <tchar.h>
-unsigned int _strnextc( const char *string );
-.ixfunc2 '&String' &funcb
-unsigned int _wcsnextc( const wchar_t *string ) {
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Wide' &wfunc
+unsigned int _strnextc( const char *s );
+.ixfunc2 '&String' _strnextc
+unsigned int _wcsnextc( const wchar_t *s ) {
+.ixfunc2 '&String' _wcsnextc
+.ixfunc2 '&Wide' _wcsnextc
 .synop end
 .desc begin
 The
-.id &mfunc.
-function returns the integer value of the next
-multibyte-character in
-.arg string
+.id &funcb.
+function returns the integer value of the next multi-byte
+character in
+.arg s
 .ct , without advancing the string pointer.
-.id &mfunc.
-recognizes multibyte character sequences according to the
-multibyte code page currently in use.
-.np
-The header file
-.hdrfile tchar.h
-defines the generic-text routine
-.kw _tcsnextc
-.ct .li .
-This macro maps to
-.id &mfunc.
-if
-.kw _MBCS
-has been defined, or to
-.id &wfunc.
-if
-.kw _UNICODE
-has been defined.
-Otherwise
-.kw _tcsnextc
-maps to &funcb..
 .id &funcb.
-and
-.id &wfunc.
-are single-byte character string and wide-character
-string versions of &mfunc..
-.id &funcb.
-and
-.id &wfunc.
-are provided only for this mapping and should not be
-used otherwise.
-.id &funcb.
-returns the integer value of the next single-byte character in
-the string.
-.id &wfunc.
-returns the integer value of the next wide character in the
-string.
+recognizes multi-byte character sequences according to the
+multi-byte character code page currently in use.
+.farfuncp &ffunc. &funcb.
+.tcsfunc _tcsnextc &funcb. _strnextc &wfunc.
 .desc end
 .return begin
 These functions return the integer value of the next character
-(single-byte, wide, or multibyte) pointed to by
-.arg string
-.ct .li .
+(multi-byte, wide, or single-byte) pointed to by
+.arg s
+.period
 .return end
 .see begin
-.seelist _mbsnextc _strdec _strinc _strninc
+.seelist _mbsnextc _mbsdec _mbsinc _mbsninc
 .see end
 .exmp begin
 #include <stdio.h>

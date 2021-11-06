@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +33,11 @@
 
 #include <dos.h>
 #include "uidef.h"
-#include "biosui.h"
 #include "uiforce.h"
+#include "realmod.h"
 
+
+#define MILLISEC_PER_TICK   55L
 
 MOUSETIME UIAPI uiclock( void )
 /*****************************
@@ -43,7 +45,7 @@ MOUSETIME UIAPI uiclock( void )
  * used for mouse & timer delays
  */
 {
-    return( BIOSData( BIOS_SYSTEM_CLOCK, unsigned long ) );
+    return( BIOSData( BDATA_SYSTEM_CLOCK, unsigned long ) );
 }
 
 unsigned UIAPI uiclockdelay( unsigned milli )
@@ -52,7 +54,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
  * dependant units - used to set mouse & timer delays
  */
 {
-    return( ( milli * 18L ) / 1000L );
+    return( ( milli + MILLISEC_PER_TICK / 2 ) / MILLISEC_PER_TICK );
 }
 
 void UIAPI uiflush( void )

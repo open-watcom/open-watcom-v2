@@ -1,9 +1,10 @@
 .func bcopy
 .synop begin
-#include <string.h>
+.deprec
+#include <strings.h>
 void bcopy( const void *src, void *dst, size_t n );
-.ixfunc2 '&String' &funcb
-.ixfunc2 '&Copy' &funcb
+.ixfunc2 '&String' bcopy
+.ixfunc2 '&Copy' bcopy
 .synop end
 .desc begin
 The
@@ -12,14 +13,14 @@ function copies the byte string pointed to by
 .arg src
 (including any null characters) into the array pointed to by
 .arg dst
-.ct .li .
+.period
 The number of bytes to copy is specified by
 .arg n
-.ct .li .
+.period
 Copying of overlapping objects is guaranteed to work properly.
 .np
 Note that this function is similar to the ISO C
-.kw memmove
+.reffunc memmove
 function but the order of arguments is different
 (new code should use the ISO C function).
 .desc end
@@ -33,7 +34,7 @@ function has no return value.
 .see end
 .exmp begin
 #include <stdio.h>
-#include <string.h>
+#include <strings.h>
 
 void main()
   {

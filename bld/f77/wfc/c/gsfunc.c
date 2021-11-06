@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,10 +62,8 @@ void    GSFCall( itnode *sfunc ) {
 
     EmitOp( FC_SF_CALL );
     OutPtr( sfunc->sym_ptr );
-    arg = sfunc->sym_ptr->u.ns.si.sf.header->parm_list;
-    while( arg != NULL ) {
+    for( arg = sfunc->sym_ptr->u.ns.si.sf.header->parm_list; arg != NULL; arg = arg->link ) {
         OutPtr( arg->shadow );
-        arg = arg->link;
     }
     OutPtr( NULL );
     if( sfunc->typ == FT_CHAR ) {

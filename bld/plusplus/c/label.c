@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1049,7 +1049,7 @@ static void saveBLK_INIT( void *e, carve_walk_base *d )
 
 void LabelPCHWrite( LAB_MEM *p )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     PCHWriteCVIndex( CarveLastValidIndex( p->carve ) );
     labelBlockPCHWrite( p->carve, p->blk_hdr );
@@ -1062,7 +1062,7 @@ void LabelPCHWrite( LAB_MEM *p )
 void LabelPCHRead( LAB_MEM *p )
 {
     BLK_INIT *b;
-    auto cvinit_t data;
+    cvinit_t data;
 
     p->carve = CarveRestart( p->carve );
     CarveMapOptimize( p->carve, PCHReadCVIndex() );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,10 +49,9 @@
 #include "thread.h"
 #include "rttraps.h"
 #include "rt_init.h"
+#include "widechar.h"   /* C run-time library internal variable */
+#include "initarg.h"    /* C run-time library internal variable */
 
-
-// C run-time library internal variable
-extern char *_LpPgmName;
 
 #if defined( __WINDOWS__ )
   #if defined( __386__ )
@@ -130,7 +129,7 @@ unsigned        RTSysInit( void ) {
         PIB     *ppib;
 
         DosGetInfoBlocks( &ptib, &ppib );
-        if( ppib->pib_ultype == 3 ) {
+        if( ppib->pib_ultype == PT_PM ) {
             if( _WindowsStdout == NULL ) {
                 __FAppType = FAPP_GUI;
             } else {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +121,7 @@ bool WCreateAccelEditWindow( WAccelEditInfo *einfo, HINSTANCE inst )
                                           WAccelEditWinProc, (LPARAM)einfo );
 
     if( einfo->edit_dlg == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     tabstop = 85;
@@ -140,7 +141,7 @@ bool WResizeAccelEditWindow( WAccelEditInfo *einfo, RECT *prect )
     RECT  crect;
 
     if( einfo == NULL || einfo->edit_dlg == NULL || prect == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( einfo->show_ribbon ) {
@@ -167,7 +168,7 @@ bool WResizeAccelEditWindow( WAccelEditInfo *einfo, RECT *prect )
     SetWindowPos( einfo->edit_dlg, (HWND)NULL, 0, ribbon_depth,
                   width, height, SWP_NOZORDER );
 
-    return( TRUE );
+    return( true );
 }
 
 static void WExpandEditWindowItem( HWND hDlg, int id, RECT *prect )
@@ -252,7 +253,7 @@ bool WGetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry, bool che
 
     symbol = NULL;
     flags = 0;
-    force_ascii = FALSE;
+    force_ascii = false;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL && entry != NULL);
 
@@ -400,7 +401,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     bool        dup;
 
     if( dlg == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( combo_change ) {
@@ -410,7 +411,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     }
 
     if( *symbol == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( **symbol == '\0' ) {
@@ -418,7 +419,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     }
 
     if( *symbol == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     strupr( *symbol );
@@ -445,7 +446,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 *id = 0;
                 WRMemFree( *symbol );
                 *symbol = NULL;
-                return( FALSE );
+                return( false );
             }
         }
     } else {
@@ -455,7 +456,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
         *symbol = NULL;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WSetEditWindowFlags( HWND dlg, uint_16 flags )
@@ -502,11 +503,11 @@ bool WGetEditWindowFlags( HWND dlg, uint_16 *flags )
     bool ok, is_virt;
 
     ok = (dlg != (HWND)NULL);
-
+    is_virt = false;
     if( ok ) {
         if( IsDlgButtonChecked( dlg, IDM_ACCEDVIRT ) ) {
             *flags |= ACCEL_VIRTKEY;
-            is_virt = TRUE;
+            is_virt = true;
         }
 
         if( !IsDlgButtonChecked( dlg, IDM_ACCEDFLASH ) ) {
@@ -538,7 +539,7 @@ bool WSetEditWinResName( WAccelEditInfo *einfo )
                                     einfo->info->res_name ) );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WSetVirtKey( HWND hDlg, bool is_virt )
@@ -720,10 +721,10 @@ static bool WQueryChangeEntry( WAccelEditInfo *einfo )
     }
 
     if( ret == IDYES ) {
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 void WDoHandleSelChange( WAccelEditInfo *einfo, bool change, bool reset )

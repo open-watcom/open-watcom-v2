@@ -1,0 +1,22 @@
+# This file produced by MS2WLINK
+system os2v2 dll initglobal
+file obj.obj
+option modname=TEST23
+# definition file segments keyword handled differently in WLINK
+segment 'C16A'  preload executeread iopl conforming
+segment 'C16B'  preload executeread
+segment 'C16C'  preload executeread iopl
+segment 'C32A'  preload executeread
+segment 'C16D'  preload executeread
+segment 'C32B'  preload executeread
+segment 'D16R0'  shared readonly
+segment 'D16A'  preload
+segment 'D32A'  preload shared
+segment 'D32B'  shared
+segment 'SWL'  shared
+segment 'D16B'  preload shared
+export Func1 2
+export Func2.5 14
+export Func3 62
+# iopl value is invalid
+export Func4

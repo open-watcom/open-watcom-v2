@@ -16,13 +16,13 @@ OBJS = msgstrmc.obj &
 compiler = /d1 /w4 /zq /ox /os /xs /zm /ml
 
 msgstrmc.lnk : makefile $(OBJS)
-    %create $^@
-#   @%append $^@ SYSTEM pharlap
-    @%append $^@ SYSTEM dos
-    @%append $^@ OPTION quiet, strip, map, show
-    @%append $^@ NAME   $^*
-    @%append $^@ DEBUG  all
-    @for %i in ( $(OBJS) ) do @%append $^@ FILE %i
+    %create $@
+#   @%append $@ SYSTEM pharlap
+    @%append $@ SYSTEM dos
+    @%append $@ OPTION quiet, strip, map, show
+    @%append $@ NAME   $^*
+    @%append $@ DEBUG  all
+    @for %i in ( $(OBJS) ) do @%append $@ FILE %i
 
 msgstrmc.exe : $(OBJS) makefile msgstrmc.lnk
     $(linker) @msgstrmc

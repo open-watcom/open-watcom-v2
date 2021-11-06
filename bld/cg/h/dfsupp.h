@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,6 @@ extern void     DFAbbrevDef( void );
 extern void     DFOutReg( dw_loc_id locid, name *reg );
 extern void     DFOutRegInd( dw_loc_id locid, name *reg );
 extern uint     DFStkReg( void );
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
 extern uint     DFDisplayReg( void );
 #endif

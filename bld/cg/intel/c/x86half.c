@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ bool    IndexOverlaps( instruction *ins, opcnt i )
     return( false );
 }
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     #define HALF_WORD       U1
     #define LONG_WORD       U4
     #define LONG_WORD_S     I4

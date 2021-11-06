@@ -46,11 +46,11 @@ test.exe: $(objects) $(link_cmds)
     $(linker) @$(link_cmds)
 
 linkpgm.lnk: $(__MAKEFILES__) ../local.mif
-    @%create $^@
-    @%append $^@ NAME    test
-    @%append $^@ OPTION  quiet, eliminate, map, show
-    @%append $^@ DEBUG   all
-    @for %i in ($(objects)) do @%append $^@ FILE    %i
+    @%create $@
+    @%append $@ NAME    test
+    @%append $@ OPTION  quiet, eliminate, map, show
+    @%append $@ DEBUG   all
+    @for %i in ($(objects)) do @%append $@ FILE    %i
 
 clean: .SYMBOLIC
     @if exist *.exe del *.exe

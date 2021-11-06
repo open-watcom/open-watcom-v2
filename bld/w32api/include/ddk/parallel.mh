@@ -466,10 +466,12 @@ typedef enum {
 } P1284_HW_MODE;
 
 /* Mode qualifiers */
+#pragma off (unreferenced)
 static UCHAR    ModeQualifier[MODE_LEN_1284_3] =
     { 0xAA, 0x55, 0x00, 0xFF, 0x87, 0x78, 0xFF };
 static UCHAR    LegacyZipModeQualifier[LEGACYZIP_MODE_LEN] =
     { 0x00, 0x3C, 0x20 };
+#pragma on (unreferenced)
 
 /* Other macros */
 #define TEST_ECR_FIFO( p1, p2 ) (((p1) & ECR_FIFO_MASK) == (p2))

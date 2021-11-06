@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,11 +58,11 @@
 /****************************************************************************/
 
 bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
-                      HINSTANCE inst, HELP_CALLBACK help_callback )
+                      HINSTANCE inst, HELPFUNC help_callback )
 {
     char            *name;
     bool            ok;
-    HELP_CALLBACK   hcb;
+    HELPFUNC        hcb;
 
     /* unused parameters */ (void)inst;
 
@@ -78,16 +79,16 @@ bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
     }
 
     if( ok ) {
-        hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)help_callback, inst );
-        ok = ( hcb != (HELP_CALLBACK)NULL );
+        hcb = MakeProcInstance_HELP( help_callback, inst );
+        ok = ( hcb != NULL );
     }
 
     if( ok ) {
         ok = WRChangeMemFlags( parent, name, mflags, hcb );
     }
 
-    if( hcb != (HELP_CALLBACK)NULL ) {
-        FreeProcInstance( (FARPROC)hcb );
+    if( hcb != NULL ) {
+        FreeProcInstance_HELP( hcb );
     }
 
     if( name != NULL ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@ static  bool    (*UpdatedMenu)( void )                  = NULL;
 static  bool    (*NewWindow)( HWND )                    = NULL;
 static  void    (*MDIMaximize)(bool, gui_window *)      = NULL;
 static  bool    (*IsMDIChildWindow)(gui_window *)       = NULL;
-static  void    (*SetMDIRestoredSize)(HWND, WPI_RECT *) = NULL;
+static  void    (*SetMDIRestoredSize)(HWND, const WPI_RECT *) = NULL;
 
 void GUISetMDIProcessMessage( bool (*func)(gui_window *, HWND, WPI_MSG, WPI_PARAM1,
                               WPI_PARAM2, WPI_MRESULT *) )
@@ -123,14 +123,14 @@ void GUIMDIMaximize( bool max, gui_window *wnd )
     }
 }
 
-void GUISetSetMDIRestoredSize( void (*func)(HWND, WPI_RECT *) )
+void GUISetSetMDIRestoredSize( void (*func)(HWND, const WPI_RECT *) )
 {
     SetMDIRestoredSize = func;
 }
 
-void GUISetMDIRestoredSize( HWND hwnd, WPI_RECT *rect )
+void GUISetMDIRestoredSize( HWND hwnd, const WPI_RECT *wpi_rect )
 {
     if( SetMDIRestoredSize != NULL ) {
-        (*SetMDIRestoredSize)( hwnd, rect );
+        (*SetMDIRestoredSize)( hwnd, wpi_rect );
     }
 }

@@ -32,13 +32,53 @@
 #include "vi.h"
 #include "win.h"
 
-uint_32 BIOSGetColorRegister( unsigned short a ) { return( 0 ); }
-void BIOSSetNoBlinkAttr( void ) {}
-void BIOSSetBlinkAttr( void ) {}
-void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b ) {}
-void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col ) {}
-unsigned short BIOSGetCursor( unsigned char page ) { return 0; }
-int KeyboardInit( void ) { return 0; }
-unsigned BIOSGetKeyboard( unsigned *scan ) { if( scan != NULL ) *scan = 0; return VI_KEY( NULL ); }
-bool BIOSKeyboardHit( void ) { return 0; }
-void MyVioShowBuf( size_t offset, unsigned nchars ) {}
+uint_32 BIOSGetColorRegister( unsigned short a )
+{
+    /* unused parameters */ (void)a;
+
+    return( 0 );
+}
+
+void    BIOSSetBlinkAttr( unsigned char on )
+{
+    /* unused parameters */ (void)on;
+}
+
+void    BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
+{
+    /* unused parameters */ (void)reg; (void)r; (void)g; (void)b;
+}
+
+void    BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col )
+{
+    /* unused parameters */ (void)page; (void)row; (void)col;
+}
+
+unsigned short  BIOSGetCursorPos( unsigned char page )
+{
+    /* unused parameters */ (void)page;
+
+    return( 0 );
+}
+
+int     KeyboardInit( void )
+{
+    return( 0 );
+}
+
+unsigned    BIOSGetKeyboard( unsigned *scan )
+{
+    if( scan != NULL )
+        *scan = 0;
+    return( VI_KEY( NULL ) );
+}
+
+bool    BIOSKeyboardHit( void )
+{
+    return( 0 );
+}
+
+void    MyVioShowBuf( size_t offset, unsigned nchars )
+{
+    /* unused parameters */ (void)offset; (void)nchars;
+}

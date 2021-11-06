@@ -21,7 +21,7 @@ and stores them in the array pointed to by
 until end-of-file is encountered or a new-line character is read.
 Any new-line character is discarded, and a null character is placed
 immediately after the last character read into the array.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .id &wfunc.
@@ -30,14 +30,14 @@ of multibyte characters (if present) from the input stream pointed to
 by
 .kw stdin
 .ct , converts them to wide characters, and stores them in the
-wide-character array pointed to by
+wide character array pointed to by
 .arg buf
-until end-of-file is encountered or a wide-character new-line
+until end-of-file is encountered or a wide character new-line
 character is read.
 .do end
 .np
 It is recommended that
-.kw fgets
+.reffunc fgets
 be used instead of
 .id &funcb.
 because data beyond the array

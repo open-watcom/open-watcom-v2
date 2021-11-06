@@ -8,7 +8,7 @@ void hfree( void __huge *ptr );
 The
 .id &funcb.
 function deallocates a memory block previously allocated by the
-.kw halloc
+.reffunc halloc
 function.
 The argument
 .arg ptr

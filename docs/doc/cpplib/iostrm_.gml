@@ -29,7 +29,8 @@ same object. The
 :MONO.fstream
 and
 :MONO.strstream
-classes are examples of classes derived from the &cls.:PERIOD.
+classes are examples of classes derived from the &cls.
+:PERIOD.
 :HDG.Protected Member Functions
 The following protected member functions are declared:
 :MFNL.
@@ -70,8 +71,10 @@ object.
 This form of the &fn. is only used implicitly by the compiler
 when it generates a constructor for a derived class.
 :RSLTS.
-The &fn. produces an initialized &obj.:PERIOD.
-&badbit. is set in the &errstate.:PERIOD.
+The &fn. produces an initialized &obj.
+:PERIOD.
+&badbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -97,12 +100,14 @@ will continue to use the
 :MONO.streambuf
 object.
 :RSLTS.
-The &fn. produces an initialized &obj.:PERIOD.
+The &fn. produces an initialized &obj.
+:PERIOD.
 If there is no
 :MONO.streambuf
 object currently associated with the
 :ARG.strm
-parameter, &badbit. is set in the &errstate.:PERIOD.
+parameter, &badbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -128,10 +133,12 @@ parameter is a pointer to a
 object, which should be connected to the source and sink of characters for
 the stream.
 :RSLTS.
-The &fn. produces an initialized &obj.:PERIOD.
+The &fn. produces an initialized &obj.
+:PERIOD.
 If the
 :ARG.sb
-parameter is &null., &badbit. is set in the &errstate.:PERIOD.
+parameter is &null., &badbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -147,7 +154,8 @@ parameter is &null., &badbit. is set in the &errstate.:PERIOD.
 The &fn. does not do anything explicit.
 The
 :MONO.ios
-destructor is called for that portion of the &obj.:PERIOD.
+destructor is called for that portion of the &obj.
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -174,7 +182,8 @@ parameter.
 The &fn. returns a reference to the &obj. that is the target of the
 assignment. If the
 :ARG.sb
-parameter is &null., &badbit. is set in the &errstate.:PERIOD.
+parameter is &null., &badbit. is set in the &errstate.
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public'.operator =
@@ -197,5 +206,6 @@ If there is no
 :MONO.streambuf
 object currently associated with the
 :ARG.strm
-parameter, &badbit. is set in the &errstate.:PERIOD.
+parameter, &badbit. is set in the &errstate.
+:PERIOD.
 :eLIBF.

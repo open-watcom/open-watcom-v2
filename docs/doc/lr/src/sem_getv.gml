@@ -1,7 +1,7 @@
 .func sem_getvalue
 .synop begin
 #include <semaphore.h>
-int sem_getvalue(sem_t *semaphore, int *dest);    
+int sem_getvalue(sem_t *semaphore, int *dest);
 .synop end
 .desc begin
 The
@@ -32,5 +32,5 @@ is
 .see begin
 .seelist sem_destroy sem_init sem_post sem_trywait sem_wait
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

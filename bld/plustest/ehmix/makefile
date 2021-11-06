@@ -30,7 +30,7 @@ exec_chk_386 = linux386.chk
 exec_chk_386 = nt386.chk
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifeq alt_error 00
 test_flags += $(br_opt)
@@ -46,15 +46,13 @@ stack_axp=opt stack=64k
 # ehmix.c requires more than 64kB memory for code
 #
 !ifeq arch i86
-test : .symbolic start clean start_test
+test : .symbolic start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
-!else
-test : .symbolic start clean start_test test.lnk ehmix.$(exe) common_set_result_display
-!endif
     @%make clean
-
-start_test : .symbolic
-    @%make common_start_test
+!else
+test : .symbolic start test.lnk ehmix.$(exe)
+    $(noecho)%make common_set_result_display
+!endif
 
 clean : .procedure
     @%make echo_clean

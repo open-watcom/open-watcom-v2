@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
                 result_type_class = U2;
                 break;
             case 2:
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
                 if( ! _CPULevel( CPU_386 ) ) {
                     shift = 0;
                     result_type_class = 0;
@@ -173,7 +173,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
     return( false );
 }
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 
 static bool isPushX2( instruction *ins )
 /**************************************/
@@ -261,7 +261,7 @@ static  bool    NotByteMove( instruction *ins )
 }
 
 
-static  bool    IsLESDS( instruction *ins, instruction *next )
+static  bool    IsLDSES( instruction *ins, instruction *next )
 /************************************************************/
 {
     if( G( ins ) != G_RM1 && G( ins ) != G_MOVAM )
@@ -274,20 +274,19 @@ static  bool    IsLESDS( instruction *ins, instruction *next )
 }
 
 
-static  void    CheckLDSES( instruction *seg, instruction *reg,
-                            bool seg_first )
-/*************************************************************/
+static  void    CheckLDSES( instruction *seg, instruction *reg, bool seg_first )
+/******************************************************************************/
 {
     hw_reg_set  tmp;
 
-    if( !HW_COvlap( seg->result->r.reg, HW_DS_ES_FS_GS ) )
+    if( !HW_COvlap( seg->result->r.reg, HW_DS_ES_SS_FS_GS ) )
         return;
     if( !AdjacentMem( seg->operands[0], reg->operands[0], U2 ) )
         return;
     if( seg->operands[0]->n.class == N_INDEXED ) {
         // special case of using result of seg
         if( seg_first ) {
-            // don't think we can get here - using one of DS|ES|FS|GS as index reg?!?
+            // don't think we can get here - using one of DS|ES|SS|FS|GS as index reg?!?
             if( HW_Ovlap( reg->operands[0]->i.index->r.reg, seg->result->r.reg ) ) {
                 return;
             }
@@ -320,9 +319,9 @@ void    OptSegs( void )
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                 next = ins->head.next;
                 if( NotByteMove( ins ) && NotByteMove( next ) ) {
-                    if( IsLESDS( ins, next ) ) {
+                    if( IsLDSES( ins, next ) ) {
                         CheckLDSES( next, ins, false );
-                    } else if( IsLESDS( next, ins ) ) {
+                    } else if( IsLDSES( next, ins ) ) {
                         CheckLDSES( ins, next, true );
                     }
                 }
@@ -348,7 +347,7 @@ void    OptSegs( void )
                         next = tmp;
                     }
                 }
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
                 /* The scoreboarder may split "and ax,imm" into
                    "xor ah,ah; and al,imm". This is sometimes useful
                    (ah can be eliminated for

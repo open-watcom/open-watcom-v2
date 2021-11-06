@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,13 +38,9 @@
     #include <direct.h>
 #endif
 #include <string.h>
-#include "watcom.h"
-#include "stdui.h"
+#include "bool.h"
 #include "help.h"
 #include "helpmem.h"
-#include "helpio.h"
-#include "index.h"
-#include "search.h"
 #include "filelist.h"
 #include "pathgrp2.h"
 
@@ -133,11 +129,11 @@ static void sortFileList( FileList *list )
     qsort( list->items, list->used, sizeof( FileInfo * ), compareStr );
 }
 
-static void scanDirectory( char *buf, FileList *list )
+static FileList *scanDirectory( char *buf, FileList *list )
 {
     DIR                 *dirp;
     struct dirent       *dire;
-    PGROUP2             pg;
+    pgroup2             pg;
     unsigned            len;
 
     dirp = opendir( buf );
@@ -159,9 +155,10 @@ static void scanDirectory( char *buf, FileList *list )
         }
         closedir( dirp );
     }
+    return( list );
 }
 
-static void doFillFileList( const char *path, FileList *list )
+static FileList *doFillFileList( const char *path, FileList *list )
 {
     char                done;
     char                *path_start;
@@ -198,15 +195,16 @@ static void doFillFileList( const char *path, FileList *list )
         if( buf[len] == '/' || buf[len] == '\\' )
             buf[len] = '\0';
 #endif
-        scanDirectory( buf, list );
+        list = scanDirectory( buf, list );
         if( done )
             break;
         p = path_end + 1;
     }
     HelpMemFree( path_start );
+    return( list );
 }
 
-static void fillFileList( HelpSrchPathItem *srch, FileList *list )
+static FileList *fillFileList( HelpSrchPathItem *srch, FileList *list )
 {
     unsigned    i;
     const char  *cur;
@@ -231,19 +229,20 @@ static void fillFileList( HelpSrchPathItem *srch, FileList *list )
         if( done )
             break;
         if( cur != NULL ) {
-            doFillFileList( cur, list );
+            list = doFillFileList( cur, list );
         }
     }
+    return( list );
 }
 
 static FileList *initFileList( void )
 {
-    FileList    *ret;
+    FileList    *list;
 
-    ret = HelpMemAlloc( sizeof( FileList ) + MAX_HELPFILES * sizeof( FileInfo* ) );
-    ret->allocated = MAX_HELPFILES;
-    ret->used = 0;
-    return( ret );
+    list = HelpMemAlloc( sizeof( FileList ) + MAX_HELPFILES * sizeof( FileInfo* ) );
+    list->allocated = MAX_HELPFILES;
+    list->used = 0;
+    return( list );
 }
 
 void PrintHelpFiles( HelpSrchPathItem *srch )
@@ -251,7 +250,7 @@ void PrintHelpFiles( HelpSrchPathItem *srch )
     FileList    *list;
 
     list = initFileList();
-    fillFileList( srch, list );
+    list = fillFileList( srch, list );
     sortFileList( list );
     printFileList( list );
     freeFileList( list );

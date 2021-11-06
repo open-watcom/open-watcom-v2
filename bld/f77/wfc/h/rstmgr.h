@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,5 +43,5 @@ extern sym_id   FindEqSetShadow( sym_id sym );
 extern sym_id   STFnShadow( sym_id sym );
 extern sym_id   STShadow( sym_id sym );
 extern void     STUnShadow( sym_id sym );
-extern sym_id   STName( char *name, uint length );
-extern sym_id   STCommon( char *name, uint length );
+extern sym_id   STName( const char *name, size_t length );
+extern sym_id   STCommon( const char *name, size_t length );

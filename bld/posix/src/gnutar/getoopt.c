@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #if defined( __WATCOMC__ ) || defined( __UNIX__ )
 #include <unistd.h>
 #endif
@@ -82,7 +84,7 @@ int getoldopt( int argc, char **argv, char *optstring )
                 key--;
                 return EOF;
         }
-        place = index(optstring, c);
+        place = strchr(optstring, c);
 
         if (place == NULL || c == ':')
         {

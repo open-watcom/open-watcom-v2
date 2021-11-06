@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -242,7 +242,6 @@ extern PTREE PTreeSymbol( SYMBOL, char * );
 extern PTREE PTreeThis( void );
 extern PTREE PTreeCDtorExtra( void );
 extern PTREE PTreeLiteral( STRING_CONSTANT );
-extern PTREE PTreeLiteralWide( STRING_CONSTANT );
 extern PTREE PTreeDupExpr( PTREE );
 extern PTREE PTreeType( TYPE );
 extern PTREE PTreeForceIntegral( PTREE );

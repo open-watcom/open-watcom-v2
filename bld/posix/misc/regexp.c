@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,6 +67,9 @@
 #include <string.h>
 #include <ctype.h>
 #include "regexp.h"
+#if !defined( ALLOC ) || !defined( FREE )
+#include <stdlib.h>
+#endif
 
 
 /* IMPORTANT: must have ^$\\ FIRST */
@@ -105,7 +108,10 @@ char    *MagicString = "()";
 
 #if !defined( ALLOC )
 #define ALLOC           malloc
-#include <stdlib.h>
+#endif
+
+#if !defined( FREE )
+#define FREE            free
 #endif
 
 #ifdef STANDALONE_RX
@@ -287,43 +293,43 @@ regexp *RegComp( const char *instr )
     const char  *exp;
     char        buff[MAX_STR*2];
     int         flags;
-    bool        ignmag;
     unsigned    j;
     size_t      i, k, len;
 
-    ignmag = false;
 #ifdef WANT_EXCLAMATION
     if( instr[0] == '!' ) {
         instr++;
-        ignmag = true;
+        exp = instr;
+    } else {
+#endif
+        /*
+         * flip roles of magic chars
+         */
+        if( !MAGICFLAG && MAGICSTR != NULL ) {
+            j = 0;
+            k = strlen( instr );
+            for( i = 0; i < k; i++ ) {
+                if( instr[i] == '\\' ) {
+                    if( strchr( MAGICSTR, instr[i + 1] ) == NULL ) {
+                        buff[j++] = '\\';
+                    }
+                    i++;
+                } else {
+                    if( strchr( MAGICSTR, instr[i] ) != NULL ) {
+                        buff[j++] = '\\';
+                    }
+                }
+                buff[j++] = instr[i];
+
+            }
+            buff[j] = 0;
+            exp = buff;
+        } else {
+            exp = instr;
+        }
+#ifdef WANT_EXCLAMATION
     }
 #endif
-
-    /*
-     * flip roles of magic chars
-     */
-    if( !ignmag && ( !MAGICFLAG && MAGICSTR != NULL ) ) {
-        j = 0;
-        k = strlen( instr );
-        for( i = 0; i < k; i++ ) {
-            if( instr[i] == '\\' ) {
-                if( strchr( MAGICSTR, instr[i + 1] ) == NULL ) {
-                    buff[j++] = '\\';
-                }
-                i++;
-            } else {
-                if( strchr( MAGICSTR, instr[i] ) != NULL ) {
-                    buff[j++] = '\\';
-                }
-            }
-            buff[j++] = instr[i];
-
-        }
-        buff[j] = 0;
-        exp = buff;
-    } else {
-        exp = instr;
-    }
 
     regError( ERR_NO_ERR );
     if( exp == NULL ) {
@@ -349,6 +355,7 @@ regexp *RegComp( const char *instr )
     regcode = (reg_node *)r->program;
     regc( MAGIC );
     if( reg( 0, &flags ) == NULL ) {
+        FREE( r );
         return( NULL );
     }
 

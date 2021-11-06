@@ -128,11 +128,11 @@ sub set_prev_changeno
 sub batch_output_make_change_objdir
 {
     if ($OStype eq 'UNIX') {
-        print BATCH 'if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi';
+        print BATCH 'if [ ! -d $OWBINDIR/$OWOBJDIR ]; then mkdir $OWBINDIR/$OWOBJDIR; fi';
         print BATCH 'if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi';
         print BATCH 'cd $OWOBJDIR';
     } else {
-        print BATCH 'if not exist %OWBINDIR% mkdir %OWBINDIR%';
+        print BATCH 'if not exist %OWBINDIR%\\%OWOBJDIR% mkdir %OWBINDIR%\\%OWOBJDIR%';
         print BATCH 'if not exist %OWOBJDIR% mkdir %OWOBJDIR%';
         print BATCH 'cd %OWOBJDIR%';
     }
@@ -180,35 +180,35 @@ sub batch_output_build_wmake_builder
     print BATCH "cd $OW"; print BATCH 'cd bld'; print BATCH 'cd wmake';
     batch_output_make_change_objdir();
     if ($OStype eq 'UNIX') {
-        print BATCH 'rm -f $OWBINDIR/wmake >>$OWBINDIR/bootx.log 2>&1';
+        print BATCH 'rm -f $OWBINDIR/$OWOBJDIR/wmake >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
         if ($TOOLS eq 'WATCOM') {
-            print BATCH 'wmake -h -f ../wmake clean >>$OWBINDIR/bootx.log 2>&1';
-            print BATCH 'wmake -h -f ../wmake >>$OWBINDIR/bootx.log 2>&1';
+            print BATCH 'wmake -h -f ../wmake clean >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
+            print BATCH 'wmake -h -f ../wmake >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
         } else {
-            print BATCH 'make -f ../posmake clean >>$OWBINDIR/bootx.log 2>&1';
-            print BATCH 'make -f ../posmake >>$OWBINDIR/bootx.log 2>&1';
+            print BATCH 'make -f ../posmake clean >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
+            print BATCH 'make -f ../posmake >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
         }
     } else {
-        print BATCH 'if exist %OWBINDIR%\\wmake.exe del %OWBINDIR%\\wmake.exe >>%OWBINDIR%\\bootx.log 2>&1';
+        print BATCH 'if exist %OWBINDIR%\\%OWOBJDIR%\\wmake.exe del %OWBINDIR%\\%OWOBJDIR%\\wmake.exe >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
         if ($TOOLS eq 'WATCOM') {
-            print BATCH 'wmake -h -f ..\\wmake clean >>%OWBINDIR%\\bootx.log 2>&1';
-            print BATCH 'wmake -h -f ..\\wmake >>%OWBINDIR%\\bootx.log 2>&1';
+            print BATCH 'wmake -h -f ..\\wmake clean >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
+            print BATCH 'wmake -h -f ..\\wmake >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
         } else {
-            print BATCH 'nmake -nologo -f ..\\nmake clean >>%OWBINDIR%\\bootx.log 2>&1';
-            print BATCH 'nmake -nologo -f ..\\nmake >>%OWBINDIR%\\bootx.log 2>&1';
+            print BATCH 'nmake -nologo -f ..\\nmake clean >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
+            print BATCH 'nmake -nologo -f ..\\nmake >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
         }
     }
     # Create new builder tool, previous clean removed it.
     print BATCH "cd $OW"; print BATCH 'cd bld'; print BATCH 'cd builder';
     batch_output_make_change_objdir();
     if ($OStype eq 'UNIX') {
-        print BATCH 'rm -f $OWBINDIR/builder >>$OWBINDIR/bootx.log 2>&1';
-        print BATCH '$OWBINDIR/wmake -h -f ../binmake bootstrap=1 clean >>$OWBINDIR/bootx.log 2>&1';
-        print BATCH '$OWBINDIR/wmake -h -f ../binmake bootstrap=1 builder.exe >>$OWBINDIR/bootx.log 2>&1';
+        print BATCH 'rm -f $OWBINDIR/$OWOBJDIR/builder >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
+        print BATCH '$OWBINDIR/$OWOBJDIR/wmake -h -f ../binmake clean >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
+        print BATCH '$OWBINDIR/$OWOBJDIR/wmake -h -f ../binmake bootstrap=1 >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
     } else {
-        print BATCH 'if exist %OWBINDIR%\\builder.exe del %OWBINDIR%\\builder.exe >>%OWBINDIR%\\bootx.log 2>&1';
-        print BATCH '%OWBINDIR%\\wmake -h -f ..\\binmake bootstrap=1 clean >>%OWBINDIR%\\bootx.log 2>&1';
-        print BATCH '%OWBINDIR%\\wmake -h -f ..\\binmake bootstrap=1 builder.exe >>%OWBINDIR%\\bootx.log 2>&1';
+        print BATCH 'if exist %OWBINDIR%\\%OWOBJDIR%\\builder.exe del %OWBINDIR%\\%OWOBJDIR%\\builder.exe >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
+        print BATCH '%OWBINDIR%\\%OWOBJDIR%\\wmake -h -f ..\\binmake clean >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
+        print BATCH '%OWBINDIR%\\%OWOBJDIR%\\wmake -h -f ..\\binmake bootstrap=1 >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
     }
 }
 
@@ -232,9 +232,9 @@ sub make_boot_batch
     print BATCH "$setenv OWDOCBUILD=0";
     print BATCH "$setenv OWDOCQUIET=1";
     if ($OStype eq 'UNIX') {
-        print BATCH 'if [ -f $OWBINDIR/bootx.log ]; then rm $OWBINDIR/bootx.log; fi';
+        print BATCH 'if [ -f $OWBINDIR/$OWOBJDIR/bootx.log ]; then rm $OWBINDIR/$OWOBJDIR/bootx.log; fi';
     } else {
-        print BATCH "if exist %OWBINDIR%\\bootx.log del %OWBINDIR%\\bootx.log";
+        print BATCH "if exist %OWBINDIR%\\%OWOBJDIR%\\bootx.log del %OWBINDIR%\\%OWOBJDIR%\\bootx.log";
     }
     # Create fresh builder tools, to prevent lockup build server
     # if builder tools from previous build are somehow broken
@@ -513,6 +513,7 @@ sub run_tests
     my($fresult)    = 'fail';
     my($presult)    = 'fail';
     my($crtlresult) = 'fail';
+    my($mathresult) = 'fail';
 
     # Run regression tests for the Fortran, C, C++ compilers and WASM.
 
@@ -521,14 +522,15 @@ sub run_tests
     print REPORT 'REGRESSION TESTS COMPLETED : ', get_datetime();
     print REPORT '';
 
-    $fresult    = process_log("\tFortran Compiler :", "$OW\/bld\/f77test\/result.log");
-    $cresult    = process_log("\tC Compiler       :", "$OW\/bld\/ctest\/result.log");
-    $presult    = process_log("\tC++ Compiler     :", "$OW\/bld\/plustest\/result.log");
-    $aresult    = process_log("\tWASM             :", "$OW\/bld\/wasmtest\/result.log");
-    $crtlresult = process_log("\tC run-time libr. :", "$OW\/bld\/clibtest\/result.log");
+    $fresult    = process_log("\tFortran Compiler    :", "$OW\/bld\/f77test\/result.log");
+    $cresult    = process_log("\tC Compiler          :", "$OW\/bld\/ctest\/result.log");
+    $presult    = process_log("\tC++ Compiler        :", "$OW\/bld\/plustest\/result.log");
+    $aresult    = process_log("\tWASM                :", "$OW\/bld\/wasmtest\/result.log");
+    $crtlresult = process_log("\tC run-time libr.    :", "$OW\/bld\/clibtest\/result.log");
+    $mathresult = process_log("\tMath run-time libr. :", "$OW\/bld\/mathtest\/result.log");
     print REPORT '';
 
-    if ($aresult eq 'success' && $cresult eq 'success' && $fresult eq 'success' && $presult eq 'success' && $crtlresult eq 'success') {
+    if ($aresult eq 'success' && $cresult eq 'success' && $fresult eq 'success' && $presult eq 'success' && $crtlresult eq 'success' && $mathresult eq 'success') {
         return 'success';
     } else {
         return 'fail';

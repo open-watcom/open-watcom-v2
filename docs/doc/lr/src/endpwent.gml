@@ -12,7 +12,7 @@ void endpwent( void );
 The
 .id &funcb.
 function closes the system's password database after calls to
-.id getpwent 
+.id getpwent
 are complete.
 .desc end
 .see begin
@@ -41,5 +41,5 @@ void main()
   }
 .blkcode end
 .exmp end
-.class POSIX
+.class POSIX 1003.1
 .system

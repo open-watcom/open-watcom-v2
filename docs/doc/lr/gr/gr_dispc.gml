@@ -1,5 +1,5 @@
-.gfunc displaycursor
-.gsynop begin 
+.gfunc _displaycursor
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _displaycursor( short mode );
 .do end
@@ -21,9 +21,9 @@ The
 .arg mode
 argument can have one of the following values:
 .begterm 15
-.uterm GCURSORON
+.uterm _GCURSORON
 the cursor will be displayed
-.uterm GCURSOROFF
+.uterm _GCURSOROFF
 the cursor will not be displayed
 .endterm
 .desc end
@@ -32,7 +32,7 @@ The
 .id &funcb.
 &routine returns the previous setting for
 .arg mode
-.ct .li .
+.period
 .return end
 .see begin
 .seelist _gettextcursor _settextcursor

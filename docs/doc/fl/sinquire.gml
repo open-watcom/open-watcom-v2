@@ -31,7 +31,7 @@ where
 is a character expression whose value when trailing blanks are
 removed is the name of a file being inquired about.
 The file need not exist or be connected to a unit.
-.endnote
+.esynote
 .exam begin
       LOGICAL EX, OD
       INTEGER NUM
@@ -72,7 +72,7 @@ If the optional
 .kw UNIT=
 specifier is omitted then the
 specifier must be the first item in the list of specifiers.
-.endnote
+.esynote
 .exam begin
       LOGICAL EX, OD
       CHARACTER*30 FN
@@ -117,7 +117,7 @@ specifiers are also supported.
 .millust end
 .xt end
 .begnote $break
-.mnote IOSTAT = ios
+.note IOSTAT = ios
 is an
 .us input/output status specifier.
 The integer
@@ -125,7 +125,7 @@ variable or integer array element
 .id ios
 is defined with zero if no error condition exists or a
 positive integer value if an error condition exists.
-.mnote ERR = s
+.note ERR = s
 is an
 .us error specifier
 and
@@ -134,7 +134,7 @@ is a statement label.
 When an error occurs, execution is transferred to the statement
 labelled by
 .id s.
-.mnote EXIST = ex
+.note EXIST = ex
 .id ex
 is a logical variable or logical array element.
 .np
@@ -143,7 +143,7 @@ with the specified name; otherwise the value .FALSE. is assigned.
 .np
 Inquire by unit: The value .TRUE. is assigned if the specified
 unit exists; otherwise the value .FALSE. is assigned.
-.mnote OPENED = od
+.note OPENED = od
 .id od
 is a logical variable or logical array element.
 .np
@@ -152,19 +152,19 @@ file is connected to a unit; otherwise the value .FALSE. is assigned.
 .np
 Inquire by unit: The value .TRUE. is assigned if the specified
 unit is connected to a file; otherwise the value .FALSE. is assigned.
-.mnote NUMBER = num
+.note NUMBER = num
 .id num
 is an integer variable or integer array element that is assigned the
 value of the unit number to which the file is connected.
 If no unit is connected to the file then
 .id num
 becomes undefined.
-.mnote NAMED = nmd
+.note NAMED = nmd
 .id nmd
 is a logical variable or logical array element name that is assigned
 the value .TRUE. if the file has a name; otherwise the value .FALSE.
 is assigned.
-.mnote NAME = fn
+.note NAME = fn
 .id fn
 is a character variable or character array element.
 .xt on
@@ -184,7 +184,7 @@ specification of an
 .kw OPEN
 statement (e.g., the file name returned may have additional system
 qualifications attached to it).
-.mnote ACCESS = acc
+.note ACCESS = acc
 .id acc
 is a character variable or character array element.
 .xt on
@@ -200,7 +200,7 @@ It is assigned the value
 .mono 'DIRECT'
 if the file is connected for direct access.
 It is assigned an undefined value if there is no connection.
-.mnote SEQUENTIAL = seq
+.note SEQUENTIAL = seq
 .id seq
 is a character variable or character array element.
 .xt on
@@ -226,7 +226,7 @@ whether or not
 .kw SEQUENTIAL
 is included in the set of allowed
 access methods for the file.
-.mnote DIRECT = dir
+.note DIRECT = dir
 .id dir
 is a character variable or character array element.
 .xt on
@@ -251,7 +251,7 @@ if &product is unable to determine whether or
 not
 .kw DIRECT
 is included in the set of allowed access methods for the file.
-.mnote FORM = fm
+.note FORM = fm
 .id fm
 is a character variable or character array element.
 .xt on
@@ -268,7 +268,7 @@ formatted input/output, the value
 if the file is
 connected for unformatted input/output, or an undefined value if
 there is no connection.
-.mnote FORMATTED = fmt
+.note FORMATTED = fmt
 .id fmt
 is a character variable or character array element.
 .xt on
@@ -291,7 +291,7 @@ is not included in the set of allowed forms for the file, or
 if &product is unable to determine whether or not
 .kw FORMATTED
 is included in the set of allowed forms for the file.
-.mnote UNFORMATTED = unf
+.note UNFORMATTED = unf
 .id unf
 is a character variable or character array element.
 .xt on
@@ -314,7 +314,7 @@ is not included in the set of allowed forms for the file, or
 if &product is unable to determine whether or not
 .kw UNFORMATTED
 is included in the set of allowed forms for the file.
-.mnote RECL = rcl
+.note RECL = rcl
 .id rcl
 is an integer variable or integer array element that is assigned
 the value of the record length of the file connected for direct
@@ -332,7 +332,7 @@ The
 .kw RECL=
 specifier is also allowed if the file is connected for sequential access.
 .xt off
-.mnote NEXTREC = nr
+.note NEXTREC = nr
 .id nr
 is an integer variable or integer array element that is
 assigned the value
@@ -347,7 +347,7 @@ If the file is not connected for direct access or if the position of
 the file can not be determined because of an input/output error then
 .id nr
 becomes undefined.
-.mnote BLANK = blnk
+.note BLANK = blnk
 .id blnk
 is a character variable or character array element.
 .xt on
@@ -368,7 +368,7 @@ formatted input/output,
 .id blnk
 becomes undefined.
 .cp 7
-.mnote ACTION = act
+.note ACTION = act
 .xt on
 .id act
 is a character variable or character array element.
@@ -384,7 +384,7 @@ if data can only be written from the file, and
 .mono 'READWRITE'
 if data can be both read and written.
 .xt off
-.mnote CARRIAGECONTROL = cc
+.note CARRIAGECONTROL = cc
 .xt on
 .id cc
 is a character variable or character array element.
@@ -400,7 +400,7 @@ control character and
 if no interpretation is placed on the first character of each record.
 .xt off
 .keep 11
-.mnote RECORDTYPE = rct
+.note RECORDTYPE = rct
 .xt on
 .id rct
 is a character variable or character array element.
@@ -414,7 +414,7 @@ The value assigned depends on the system on which you are running the
 program.
 See the compiler User's Guide for a discussion of record types.
 .xt off
-.mnote BLOCKSIZE = bl
+.note BLOCKSIZE = bl
 .xt on
 .id bl
 is an integer variable or integer array element.

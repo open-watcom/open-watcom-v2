@@ -19,12 +19,12 @@ The
 function deletes the file whose name is the string
 pointed to by
 .arg path
-.ct .li .
+.period
 This function is equivalent to the
-.kw remove
+.reffunc remove
 function.
 .im ansiconf
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The &funcb

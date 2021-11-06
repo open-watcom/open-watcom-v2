@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,13 +101,9 @@ extern window       *Windows[MAX_WINDS + 1];
 #define WIND_BOTTOM_BORDER  1
 
 #ifndef __VIO__
-    #define MAKE_ATTR( w, a, b )        (viattr_t)( (a) + (b) * 16 )
+    #define MAKE_ATTR( w, a, b )    (viattr_t)( (a) + (b) * 16 )
 #else
-    #ifdef __CURSES__
-        #define MAKE_ATTR( w, a, b )    WindowAttr( w, a, b )
-    #else
-        #define MAKE_ATTR( w, a, b )    (viattr_t)( (a) + ((b) & 7) * 16 )
-    #endif
+    #define MAKE_ATTR( w, a, b )    (viattr_t)( (a) + ((b) & 7) * 16 )
 #endif
 
 #ifdef __NT__

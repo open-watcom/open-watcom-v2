@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@ _WCRTLINK int int86( int no, union REGS *in, union REGS * out )
 
 _WCRTLINK int int86x( int no, union REGS *in, union REGS *out, struct SREGS *sr )
 {
-    return( _clib_int86x( no, in, out,sr ) );
+    return( _clib_int86x( no, in, out, sr ) );
 }
 
 _WCRTLINK void intr( int no, union REGPACK *r )

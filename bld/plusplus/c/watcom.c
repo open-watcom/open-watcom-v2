@@ -45,11 +45,7 @@
 #error Unknown System
 #endif
 
-#ifdef __OSI__
-#define ConsoleMessage(text)    puts(text)
-#else
 #define ConsoleMessage(text)    MsgDisplayLine( text )
-#endif
 
 int CBanner( void )
 {

@@ -1,4 +1,4 @@
 clibtest_name = streamio
 
-srcfile = $(clib_dir)/streamio/c/iotest.c
+srcfile = c/iotest.c
 !include ../master.mif

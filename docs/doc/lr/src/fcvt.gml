@@ -45,7 +45,7 @@ The integer pointed to by
 will contain 0 if the number is positive, and non-zero if the number
 is negative.
 .im ansiconf
-.im widefun3
+.widefunc &wfunc. &funcb. <ret>
 .desc end
 .return begin
 The
@@ -53,7 +53,7 @@ The
 function returns a pointer to a static buffer containing the
 converted string of digits.
 Note:
-.kw ecvt
+.reffunc ecvt
 and
 .id &funcb.
 both use the same static buffer.

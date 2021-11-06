@@ -1,5 +1,5 @@
 :P.
-The &rsvarea., &getarea., and &putarea. pointer functions return the following
+The &resvarea., &getarea., and &putarea. pointer functions return the following
 values:
 .sk
 .fo off

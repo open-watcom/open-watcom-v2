@@ -83,20 +83,20 @@ strategy with which the modules in the library have been compiled.
 .begnote
 .ix 'FORTRAN 77 libraries' 'medium'
 .ix 'medium model' 'libraries'
-.mnote M
+.note M
 denotes a version of the 16-bit &product libraries which have been
 compiled for the "medium" memory model (big code, small data).
 .ix 'FORTRAN 77 libraries' 'large'
 .ix 'large model' 'libraries'
 .ix 'FORTRAN 77 libraries' 'huge'
 .ix 'huge model' 'libraries'
-.mnote L
+.note L
 denotes a version of the 16-bit &product libraries which have been
 compiled for the "large" or "huge" memory models (big code, big data
 or huge data).
 .ix 'FORTRAN 77 libraries' 'in-line 80x87 instructions'
 .ix 'in-line 80x87 instructions' 'libraries'
-.mnote 7
+.note 7
 denotes a version of the &product libraries which should be used when
 compiling with the "fpi" or "fpi87"
 option.
@@ -105,7 +105,7 @@ Otherwise the libraries have been compiled using the "fpc" compiler option.
 .ix 'flat model' 'libraries'
 .ix 'FORTRAN 77 libraries' 'small'
 .ix 'small model' 'libraries'
-.mnote S
+.note S
 denotes a version of the 32-bit &product libraries which have been
 compiled using the "sc" option (stack calling conventions).
 .endnote

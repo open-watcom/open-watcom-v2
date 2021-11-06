@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,17 +51,20 @@ static void __SLIB_CALLBACK con_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 }
 
 
-_WCRTLINK int vcprintf( const char *format, va_list arg )
+_WCRTLINK int vcprintf( const char *format, va_list args )
 {
-    return( __prtf( NULL, format, arg, con_putc ) );
+    return( __prtf( NULL, format, args, con_putc ) );
 }
 
 
 _WCRTLINK int cprintf( const char *format, ... )
 {
-    auto va_list    args;
+    va_list     args;
+    int         ret;
 
     va_start( args, format );
-    return( __prtf( NULL, format, args, con_putc ) );
+    ret = __prtf( NULL, format, args, con_putc );
+    va_end( args );
+    return( ret );
 }
 

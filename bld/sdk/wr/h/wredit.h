@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,8 +50,8 @@
 
 extern void WRSetEditWithStr( const char *cp, HWND hDlg, int id );
 extern char *WRGetStrFromEdit( HWND hDlg, int id, bool *mod );
-extern void WRSetEditWithSLONG( signed long val, int base, HWND hDlg, int id );
-extern bool WRGetSLONGFromEdit( HWND hDlg, int id, bool *mod, signed long *value );
+extern void WRSetEditWithSLONG( long val, int base, HWND hDlg, int id );
+extern bool WRGetSLONGFromEdit( HWND hDlg, int id, bool *mod, long *value );
 extern void WRSetEditWithULONG( unsigned long val, int base, HWND hDlg, int id );
 extern char *WRGetStrFromListBox( HWND hDlg, int id, int index );
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,10 +49,10 @@ static bool GUISelect( gui_window *wnd, gui_ctl_id id, bool set, WPI_PARAM2 lpar
     case GUI_EDIT:
         msg = ( set ) ? EM_SETSEL : EM_GETSEL;
         break;
-    case GUI_EDIT_COMBOBOX :
+    case GUI_EDIT_COMBOBOX:
         msg = ( set ) ? CB_SETEDITSEL : CB_GETEDITSEL;
         break;
-    default :
+    default:
         return( false );
     }
 #ifdef __OS2_PM__
@@ -63,7 +64,7 @@ static bool GUISelect( gui_window *wnd, gui_ctl_id id, bool set, WPI_PARAM2 lpar
 #endif
 }
 
-bool GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select )
+bool GUIAPI GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select )
 {
 #ifdef __OS2_PM__
     return( GUISelect( wnd, id, true, (WPI_PARAM2)MAKELONG( 0, ( select ) ? 255 : 0 ), NULL ) );
@@ -72,12 +73,12 @@ bool GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select )
 #endif
 }
 
-bool GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end )
+bool GUIAPI GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end )
 {
     return( GUISelect( wnd, id, true, (WPI_PARAM2)MAKELONG( start, end ), NULL ) );
 }
 
-bool GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end )
+bool GUIAPI GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end )
 {
     bool        ret;
     WPI_MRESULT result;
@@ -92,7 +93,7 @@ bool GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end )
     return( ret );
 }
 
-void GUIScrollCaret( gui_window *wnd, gui_ctl_id id )
+void GUIAPI GUIScrollCaret( gui_window *wnd, gui_ctl_id id )
 {
     WPI_MRESULT result;
 #ifdef  __NT__

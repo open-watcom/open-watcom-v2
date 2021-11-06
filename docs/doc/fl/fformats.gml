@@ -1,9 +1,10 @@
 .chap *refid=fformat Format
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 A
 .us format
@@ -36,7 +37,7 @@ is the statement label used by an I/O statement to identify the
 statement.
 .mnote fs
 is a format specification which will be described later.
-.endnote
+.esynote
 .exam begin
       REAL X
       X = 234.43
@@ -50,7 +51,8 @@ In the previous example, the
 statement uses the format specification in the
 .kw FORMAT
 statement whose statement label is 100 to display the value of
-.id X.
+.id X
+.period
 .*
 .section FORMAT as a Character Expression
 .*
@@ -125,12 +127,13 @@ is a repeatable edit descriptor.
 is a nonrepeatable edit descriptor.
 .mnote fs
 is a format specification with a nonempty list
-.id flist.
+.id flist
+.period
 .mnote r
 is a positive unsigned integer constant called a
 .us repeat specification.
 .ix 'format' 'repeat specification'
-.endnote
+.esynote
 .np
 The comma separating the items of
 .id flist
@@ -140,7 +143,11 @@ can be omitted in the following cases.
 Between a
 .id P
 edit descriptor and an
-.id F, E, D
+.id F
+.ct ,
+.id E
+.ct ,
+.id D
 or
 .id G
 edit descriptor which immediately follows.
@@ -152,7 +159,8 @@ Before or after a colon edit descriptor.
 .np
 .xt begin
 &product allows the omission of a comma between the items of
-.id flist.
+.id flist
+.period
 Care should be taken when omitting commas between edit descriptors.
 For example, the format specification
 .mono (I5 2I3)
@@ -201,7 +209,19 @@ edit descriptors are also supported.
 .xt end
 .synote
 .mnote ~b
-.id I, F, E, D, G, L, A
+.id I
+.ct ,
+.id F
+.ct ,
+.id E
+.ct ,
+.id D
+.ct ,
+.id G
+.ct ,
+.id L
+.ct ,
+.id A
 and
 .id Z
 indicate the method of editing.
@@ -215,7 +235,7 @@ are positive unsigned integer constants.
 and
 .id m
 are unsigned integer constants.
-.endnote
+.esynote
 .*
 .section Nonrepeatable Edit Descriptors
 .*
@@ -259,7 +279,32 @@ nonrepeatable edit descriptors are also supported.
 .synote
 .mnote ~b
 Apostrophe,
-.id H, T, TL, TR, X, /, :, S, SP, SS, P, BN, BZ,
+.id H
+.ct ,
+.id T
+.ct ,
+.id TL
+.ct ,
+.id TR
+.ct ,
+.id X
+.ct ,
+.id /
+.ct ,
+.id :
+.ct ,
+.id S
+.ct ,
+.id SP
+.ct ,
+.id SS
+.ct ,
+.id P
+.ct ,
+.id BN
+.ct ,
+.id BZ
+.ct ,
 .xt on
 .id \
 and
@@ -277,7 +322,7 @@ are positive unsigned integer constants.
 .np
 .id k
 is an optionally signed integer constant.
-.endnote
+.esynote
 .np
 .xt begin
 &product allows edit descriptors to be specified using lower case
@@ -291,7 +336,23 @@ Edit descriptors are used to describe the way the editing between
 internal representation of data and the characters of a record in a file
 is to take place.
 When the edit descriptors
-.id I, F, E, D, G, L, A, H, Z
+.id I
+.ct ,
+.id F
+.ct ,
+.id E
+.ct ,
+.id D
+.ct ,
+.id G
+.ct ,
+.id L
+.ct ,
+.id A
+.ct ,
+.id H
+.ct ,
+.id Z
 or apostrophe are
 processed, they process a sequence of characters called a
 .us field.
@@ -340,8 +401,8 @@ The
 edit descriptor causes the
 .id n
 characters following the
-.id H,
-including blanks, to be written.
+.id H
+.ct , including blanks, to be written.
 Like the apostrophe edit descriptor, it can only appear in a format
 specification used for output.
 .exam begin
@@ -372,8 +433,10 @@ statement.
 .ix 'TR edit descriptor'
 .ix 'X  edit descriptor'
 The
-.id T,
-.id TL,
+.id T
+.ct ,
+.id TL
+.ct ,
 .id TR
 and
 .id X
@@ -475,7 +538,8 @@ descriptor has no effect.
 .*
 .np
 The
-.id S,
+.id S
+.ct ,
 .id SP
 and
 .id SS
@@ -488,9 +552,12 @@ and
 edit descriptors control optional plus characters in
 numeric output fields.
 They only effect the
-.id I,
-.id F,
-.id E,
+.id I
+.ct ,
+.id F
+.ct ,
+.id E
+.ct ,
 .id D
 and
 .id G
@@ -541,8 +608,10 @@ is an optionally signed integer constant called the
 The value of the scale factor is zero at the beginning of each I/O
 statement.
 The scale factor applies to all subsequent
-.id F,
-.id E,
+.id F
+.ct ,
+.id E
+.ct ,
 .id D
 and
 .id G
@@ -551,8 +620,10 @@ The scale factor affects editing in the following way.
 .autopoint
 .point
 On input with
-.id F,
-.id E,
+.id F
+.ct ,
+.id E
+.ct ,
 .id D
 and
 .id G
@@ -563,8 +634,10 @@ by
 .mono 10**k.
 .point
 On input with
-.id F,
-.id E,
+.id F
+.ct ,
+.id E
+.ct ,
 .id D
 and
 .id G
@@ -587,7 +660,8 @@ editing, the simple real constant
 part of the data is multiplied by
 .id 10**k
 and the exponent is reduced by
-.id k.
+.id k
+.period
 .point
 On output with
 .id G
@@ -617,9 +691,12 @@ and
 edit descriptors are used to describe the interpretation
 of embedded blanks in numeric input fields.
 They only effect
-.id I,
-.id F,
-.id E,
+.id I
+.ct ,
+.id F
+.ct ,
+.id E
+.ct ,
 .id D
 and
 .id G
@@ -720,8 +797,10 @@ A field of all blanks is always zero.
 Plus signs are optional.
 .point
 On input, with
-.id F,
-.id E,
+.id F
+.ct ,
+.id E
+.ct ,
 .id D
 and
 .id G
@@ -730,7 +809,8 @@ in the edit descriptor is overridden by a decimal point appearing
 in the input field.
 .point
 On output, the plus sign is optional and is determined by the
-.id S,
+.id S
+.ct ,
 .id SP
 and
 .id SS
@@ -745,8 +825,10 @@ number of characters in the representation is less than the field width.
 On output, if the number of characters in the external representation
 is greater than the field width or an exponent exceeds its specified
 length using
-.id Ew.dEe,
-.id Gw.dEe,
+.id Ew.dEe
+.ct ,
+.id Gw.dEe
+.ct ,
 .id Ew.dDe
 or
 .id Gw.dDe
@@ -767,7 +849,8 @@ and
 .ix 'edit descriptor' 'numeric' 'I'
 edit descriptors indicate that the field width
 of the field to be edited is
-.id w.
+.id w
+.period
 The item in the I/O list must be of type integer; on input the
 I/O list item will be defined by integer data, on output the I/O
 list item must be defined with an integer datum.
@@ -792,7 +875,8 @@ digits are to be displayed with leading zeroes if necessary.
 The value of
 .id m
 must be less than or equal to the value of
-.id w.
+.id w
+.period
 If
 .id m
 is zero and the value of the datum is zero, then the output
@@ -812,8 +896,10 @@ statement in the previous example is the string:
 .*
 .np
 The
-.id F,
-.id E,
+.id F
+.ct ,
+.id E
+.ct ,
 .id D
 and
 .id G
@@ -912,7 +998,8 @@ statement in the previous example is the string:
 .*
 .np
 The
-.id Ew.d,
+.id Ew.d
+.ct ,
 .id Dw.d
 and
 .id Ew.dEe
@@ -922,8 +1009,8 @@ edit descriptors indicate that the field
 .ix 'D edit descriptor'
 .ix 'edit descriptor' 'numeric' 'D'
 width is
-.id w,
-the fractional part contains
+.id w
+.ct , the fractional part contains
 .id d
 digits unless a scale
 factor greater than one is in effect, and the exponent consists of
@@ -951,7 +1038,7 @@ are the
 most significant digits of the value after rounding.
 .mnote exp
 is a decimal exponent.
-.endnote
+.esynote
 .np
 The form of the exponent is as follows.
 .autopoint
@@ -1058,7 +1145,8 @@ edit descriptor on input; on output the only difference is that the
 letter
 .id D
 is used to mark the exponent instead of the letter
-.id E.
+.id E
+.period
 .xt end
 .*
 .section *refid=gedit G Editing
@@ -1072,8 +1160,8 @@ edit descriptors indicate that the field
 .ix 'D edit descriptor'
 .ix 'edit descriptor' 'numeric' 'D'
 width is
-.id w,
-the fractional part contains
+.id w
+.ct , the fractional part contains
 .id d
 digits unless a scale
 factor greater than one is in effect, and the exponent consists of
@@ -1154,10 +1242,12 @@ determines the editing as shown in the following table.
 .synote 8
 .mnote <w-n>
 stands for the integer represented by evaluating
-.id w-n.
+.id w-n
+.period
 .mnote <d-1>
 stands for the integer represented by evaluating
-.id d-1.
+.id d-1
+.period
 .mnote n
 is 4 for
 .id Gw.d
@@ -1166,7 +1256,7 @@ editing and
 for
 .id Gw.dEe
 editing.
-.endnote
+.esynote
 .exam begin
       PRINT '(1H<,G12.6,1H>,1H<,G12.4E4,1H>)', .5, .5
       END
@@ -1187,8 +1277,10 @@ data, the editing
 .ix 'complex edit descriptor'
 .ix 'edit descriptor' 'numeric' 'complex'
 of a complex datum is specified by two successive pairs of
-.id F,
-.id E,
+.id F
+.ct ,
+.id E
+.ct ,
 .id D
 or
 .id G
@@ -1209,7 +1301,8 @@ The
 .ix 'edit descriptor' 'L'
 edit descriptor is used for I/O list items of type logical.
 The field width is
-.id w.
+.id w
+.period
 .np
 On input the I/O list item will become defined with a datum of
 type logical.
@@ -1269,7 +1362,8 @@ On output, the I/O list item must be defined with character data.
 If
 .id w
 is specified in the edit descriptor, the field width is
-.id w;
+.id w
+.ct ;
 otherwise the field width is the number of characters in the I/O
 list item.
 .keep
@@ -1291,15 +1385,15 @@ is specified in
 input editing so that
 .id w
 is greater than
-.id len,
-the rightmost
+.id len
+.ct , the rightmost
 .id len
 characters of the input field will be taken.
 If
 .id w
 is less than
-.id len,
-then the
+.id len
+.ct , then the
 .id w
 characters in the input field will be taken and padded with
 .id len-w
@@ -1312,8 +1406,8 @@ is specified in
 output editing so that
 .id w
 is greater than
-.id len,
-then the output field will consist of
+.id len
+.ct , then the output field will consist of
 .id w-len
 blanks followed by the
 .id len
@@ -1321,8 +1415,8 @@ characters of the I/O list item.
 If
 .id w
 is less than or equal to
-.id len,
-the output field will consist of the first
+.id len
+.ct , the output field will consist of the first
 .id w
 characters of the I/O list item.
 .exam begin
@@ -1351,7 +1445,8 @@ The
 .id Zw
 edit descriptor can be used for I/O list items of any type.
 The field width is
-.id w.
+.id w
+.period
 .xt end
 .np
 On output,
@@ -1536,14 +1631,15 @@ A null value.
 is an unsigned, nonzero integer constant.
 .mnote c
 is a constant.
-.endnote
+.esynote
 .pc
 The
 .id r*c
 form is equivalent to
 .id r
 successive occurrences of
-.id c.
+.id c
+.period
 The
 .id r*
 form is equivalent to
@@ -1551,7 +1647,8 @@ form is equivalent to
 successive occurrences of the null value.
 In these two forms, blanks are permitted only where they are allowed
 in the constant
-.id c.
+.id c
+.period
 .np
 A
 .us value separator
@@ -1724,8 +1821,8 @@ The number of constants must be less than or equal to the number of
 elements in the array.
 Successive occurrences of the same constant may be represented in the
 form
-.id r*constant,
-where
+.id r*constant
+.ct , where
 .id r
 is a non-zero integer constant specifying the number of times the
 constant is to occur.

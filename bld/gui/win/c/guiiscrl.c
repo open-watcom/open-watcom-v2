@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,10 +39,10 @@
  * InitScroll -- Init the scrolling position for the window
  */
 
-void static InitScroll( gui_window *wnd, int bar, int pos )
+static void InitScroll( gui_window *wnd, int bar, guix_ord pos )
 {
-    int old;
-    int max;
+    guix_ord old;
+    guix_ord max;
 
     if( GUIScrollOn( wnd, bar ) ) {
         if( pos >= 0 ) {
@@ -64,7 +65,7 @@ void static InitScroll( gui_window *wnd, int bar, int pos )
  * GUIInitVScrollRow -- Init the vertical scrolling position for the window
  */
 
-void GUIInitVScrollRow( gui_window *wnd, int vscroll_pos )
+void GUIAPI GUIInitVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
 {
     InitScroll( wnd, SB_VERT, GUIFromTextY( vscroll_pos, wnd ) );
 }
@@ -73,7 +74,7 @@ void GUIInitVScrollRow( gui_window *wnd, int vscroll_pos )
  * GUIInitHScrollCol -- Init the horizontal scrolling position for the window
  */
 
-void GUIInitHScrollCol( gui_window *wnd, int hscroll_pos )
+void GUIAPI GUIInitHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos )
 {
     InitScroll( wnd, SB_HORZ, GUIFromTextX( hscroll_pos, wnd ) );
 }
@@ -82,30 +83,28 @@ void GUIInitHScrollCol( gui_window *wnd, int hscroll_pos )
  * GUIInitVScroll -- Init the vertical scrolling position for the window
  */
 
-void GUIInitVScroll( gui_window * wnd, gui_ord vscroll_pos )
+void GUIAPI GUIInitVScroll( gui_window *wnd, gui_ord vscroll_pos )
 {
-    gui_coord coord;
+    guix_ord    scr_y;
 
-    coord.y = vscroll_pos;
-    GUIScaleToScreenR( &coord );
-    if( ( vscroll_pos != 0 ) && ( coord.y == 0 ) ) {
-        coord.y++;
+    scr_y = GUIScaleToScreenV( vscroll_pos );
+    if( ( vscroll_pos != 0 ) && ( scr_y == 0 ) ) {
+        scr_y++;
     }
-    InitScroll( wnd, SB_VERT, coord.y );
+    InitScroll( wnd, SB_VERT, scr_y );
 }
 
 /*
  * GUIInitHScroll -- Init the horizontal scrolling position for the window
  */
 
-void GUIInitHScroll( gui_window * wnd, gui_ord hscroll_pos )
+void GUIAPI GUIInitHScroll( gui_window *wnd, gui_ord hscroll_pos )
 {
-    gui_coord coord;
+    guix_ord    scr_x;
 
-    coord.x = hscroll_pos;
-    GUIScaleToScreenR( &coord );
-    if( ( hscroll_pos != 0 ) && ( coord.x == 0 ) ) {
-        coord.x++;
+    scr_x = GUIScaleToScreenH( hscroll_pos );
+    if( ( hscroll_pos != 0 ) && ( scr_x == 0 ) ) {
+        scr_x++;
     }
-    InitScroll( wnd, SB_HORZ, coord.x );
+    InitScroll( wnd, SB_HORZ, scr_x );
 }

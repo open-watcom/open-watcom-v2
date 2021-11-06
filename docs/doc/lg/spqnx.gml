@@ -12,8 +12,6 @@
 :set symbol="libvarname" value="LIB".
 :set symbol="tmpvarname" value="TMPDIR".
 .*
-.im qnxfiles
-.*
 .chap *refid=qnxchap The QNX Executable File Format
 .*
 .im wlintro
@@ -91,7 +89,6 @@ is any of the following:
 .note # comment
 .note @ directive_file
 .endnote
-.cw ;
 :CMT. .synote
 :CMT. .im objfile
 :CMT. .im libfile

@@ -323,8 +323,8 @@ non-space characters on the line.
 1     1
 A   $C1
 $C2 $40
-)   \\  )
-175 \\  2  6  7
+)   \  )
+175 \  2  6  7
 &gml.eOUTTRANS.
 :FIGCAP.Example of the OUTTRANS Block
 :EFIG.

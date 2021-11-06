@@ -36,10 +36,10 @@ separated by blanks and are passed to
 as an array of pointers
 to character strings in the parameter
 .arg argv
-.ct .li .
+.period
 The number of arguments found is passed in the parameter
 .arg argc
-.ct .li .
+.period
 The first element of
 .arg argv
 will be a pointer to a character string containing the program name.
@@ -69,7 +69,7 @@ passes the single argument
 .np
 The command line arguments can also be obtained in its original
 format by using the
-.kw getcmd
+.reffunc getcmd
 function.
 .if '&machsys' eq 'QNX' .do begin
 .np
@@ -93,14 +93,14 @@ In this case, you will not be able to return an exit code from &funcb
 using a
 .kw return
 statement but must use the
-.kw exit
+.reffunc exit
 function to do so.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
 .id &wfunc.
-function is a user-defined wide-character version of &funcb
-that operates with wide-character strings.
+function is a user-defined wide character version of &funcb
+that operates with wide character strings.
 If this function is present in the application, then it will be called
 by the run-time system startup code (and the
 .id &funcb.
@@ -119,14 +119,14 @@ and the same considerations will apply.
 .if '&machsys' ne 'QNX' .do begin
 .np
 The
-.kw WinMain
+.reffunc WinMain
 function is called by the system as the initial entry point for a
 Windows-based application.
 The
-.kw wWinMain
-function is a wide-character version of
-.kw WinMain
-.ct .li .
+.reffunc wWinMain
+function is a wide character version of
+.reffunc WinMain
+.period
 .begterm 10
 .termhd1 Parameters
 .termhd2 Meaning
@@ -180,7 +180,7 @@ original size and position (same as
 .endterm
 .np
 The
-.kw WinMain
+.reffunc WinMain
 function initializes an application, and then performs a message
 retrieval-and-dispatch loop that is the top-level control structure for
 the remainder of the application's execution.
@@ -188,7 +188,7 @@ The loop terminates when a
 .kw WM_QUIT
 message is received.
 At that point,
-.kw WinMain
+.reffunc WinMain
 exits the application, returning the value passed in the
 .kw WM_QUIT
 message's
@@ -225,7 +225,7 @@ system).
 .if '&machsys' ne 'QNX' .do begin
 .np
 If the
-.kw WinMain
+.reffunc WinMain
 function terminates before entering the message loop, it should
 return 0.
 Otherwise, it should terminate when it receives a

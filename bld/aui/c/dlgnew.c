@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,9 +49,9 @@
 #define DLG_SIZE_DATA   4,      W,      70
 
 #define DLGNEW_CTLS() \
-    pick_p4id( EDIT,    DLG_EDIT,       "",   C0, R0, W - 1 ) \
-    pick_p4id( OK,      DLG_DEFBUTTON,  NULL, B1, R1, B1 + BW ) \
-    pick_p4id( CANCEL,  DLG_BUTTON,     NULL, B2, R1, B2 + BW )
+    pick_p4id( EDIT,    GUI_CTL_EDIT,       "",   C0, R0, W - C0 ) \
+    pick_p4id( OK,      GUI_CTL_DEFBUTTON,  NULL, B1, R1, BW + 1 ) \
+    pick_p4id( CANCEL,  GUI_CTL_BUTTON,     NULL, B2, R1, BW + 1 )
 
 enum {
     DUMMY_ID = 100,
@@ -107,7 +108,7 @@ static bool dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 bool    DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls,
-                    int num_controls, GUICALLBACK *gui_call_back, int rows, int cols, int max_cols )
+                    int num_controls, GUICALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols )
 {
     dlgnew_ctl  dlgnew;
     int         len;

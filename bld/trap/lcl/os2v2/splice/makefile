@@ -18,16 +18,25 @@ sys_dll  = 1
 !include defrule.mif
 !include deftarg.mif
 
-objs = splice.obj
-
-extra_cpp_flags = -DMD_x86
-
-extra_l_flags_dll = op oneautodata
+#
+# cflags
+#
+.c: ../c
 
 inc_dirs = -I"../h" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
 
-.c: ../c
+extra_cpp_flags = -DMD_x86
 
-wdsplice.dll : $(objs) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) file {$(objs)}
+#
+# lflags
+#
+extra_l_flags_dll = op oneautodata
+
+# explicit rules
+#################
+
+#
+# DLL
+#
+dlltarg_objs = splice.obj
+!include dlltarg.mif

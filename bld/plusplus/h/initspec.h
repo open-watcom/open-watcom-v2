@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,6 +63,7 @@
 
 EXIT_BEG( mem_management )      // memory manager
   EXIT_REG( memmgr )
+  EXIT_REG( membuf )
 EXIT_END
 
 // constraints:
@@ -127,6 +129,7 @@ EXIT_BEG( cpp_preproc )         // pre-processing generally
   EXIT_REG( pragma_extref )
   EXIT_REG( ppexpn )
   EXIT_REG( assembler )
+  EXIT_REG( toggles_stack )
 EXIT_END
 
 EXIT_BEG( cpp_preproc_only )    // pre-processing only

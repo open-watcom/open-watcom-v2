@@ -9,7 +9,7 @@ The
 function places the values of the segment registers into
 the structure located by
 .arg seg_regs
-.ct .li .
+.period
 .desc end
 .return begin
 No value is returned.

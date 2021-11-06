@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Declarations related to exports and imports.
 *
 ****************************************************************************/
 
@@ -42,6 +41,7 @@ typedef struct entry_export {
     boolbit                 isanonymous : 1;
     boolbit                 isfree      : 1;
     boolbit                 isprivate   : 1;
+    boolbit                 isiopl      : 1;
     symbol                  *sym;
     char                    *impname;
     targ_addr               addr;
@@ -55,9 +55,9 @@ extern void             MSImportKeyword( symbol *, const length_name *, const le
 extern dll_sym_info     *AllocDLLInfo( void );
 extern void             FreeImport( dll_sym_info * );
 extern entry_export     *AllocExport( const char *, size_t );
-extern void             AssignOrdinals( void );
 extern char             *ImpModuleName( dll_sym_info * );
 extern bool             IsSymElfImported( symbol * );
 extern bool             IsSymElfExported( symbol * );
 extern bool             IsSymElfImpExp( symbol * );
 extern void             KillDependantSyms( symbol * );
+extern void             CheckExport( const char *, ordinal_t, bool );

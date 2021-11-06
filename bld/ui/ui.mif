@@ -1,5 +1,4 @@
 proj_name = ui
-name = ui
 
 ui_trmem = 1
 
@@ -12,6 +11,9 @@ ui_autodepends = .autodepend
 
 !include ../../client.mif       # define ui_os macro
 
+#
+# cflags
+#
 .c: ../c;../../c;$(extra_cdir);$(trmem_dir)
 
 inc_dirs = -I"../h" $(ui_inc_dirs)
@@ -33,9 +35,21 @@ extra_c_flags_win     = -zu
 extra_c_flags_qnx_386 = -4r
 
 # memory tracker routines
-extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_uialloc = $(trmem_cover_cflags)
 
+#
+# lflags
+#
+extra_l_flags = op st=32k
+extra_l_flags_nov = opt st=10k opt description 'Sample NLM' &
+    debug novell module clib import @$(nwoss_dir)/common/imp/ownwos.imp
+
+# explicit rules
+#################
+
+#
+# objects
+#
 common_objs = &
     uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
     uiballoc.obj uiband.obj   uibarf.obj   uibattr.obj  &
@@ -92,58 +106,26 @@ common_objs = &
 !error Host OS $$($(ui_os)) is unset. Review and correct ui/client.mif make file!
 !endif
 
-objs = $(common_objs) $(trmem_objs) $($(ui_os))
-
-$(name).lib: $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
+#
+# EXE's TEST
+#
+!ifdef sample
+exetarg_prebuild_objs = ui.lib
+exetarg_objs = sample.obj sampdial.obj
+exetarg_libs = $(ui_lib)
+exetarg_name = sample
+!include exetarg.mif
 !endif
 
-!ifeq SAMPLE_MODE WIN_C_M_J
-sample.exe : samplew.obj sampdial.obj $(ui_lib) $(__MAKEFILES__)
-    $(noecho)%create sample.lnk
-    @%append sample.lnk system windows op m D A library {$(ui_lib)}
-    @%append sample.lnk n sample
-    @%append sample.lnk f samplew f sampdial
-    @%append sample.lnk import DEATH GDI.121
-    @%append sample.lnk import RESURRECTION GDI.122
-    @%make echo_link
-    $(linker) @sample.lnk
-!else ifeq SAMPLE_MODE WIN_C_M
-sample.exe : samplew.obj sampdial.obj swap.obj $(ui_lib) $(__MAKEFILES__)
-    $(noecho)%create sample.lnk
-    @%append sample.lnk system windows op m D A library {$(ui_lib)}
-    @%append sample.lnk n sample
-    @%append sample.lnk f samplew f sampdial f swap
-    @%append sample.lnk import DEATH GDI.121
-    @%append sample.lnk import RESURRECTION GDI.122
-    @%make echo_link
-    $(linker) @sample.lnk
-!else
-sample.$(exe_ext) : sample.obj sampdial.obj $(name).lib $(__MAKEFILES__)
-!ifdef __WATCOM_TOOLS__
-    $(noecho)%create $^&.lnk
-!ifeq host_os nov
-    @%append $^&.lnk opt st=10k
-    @%append $^&.lnk opt de 'Sample NLM'
-    @%append $^&.lnk debug novell
-    @%append $^&.lnk module clib
-    @%append $^&.lnk import @$(nwoss_dir)/common/imp/ownwos.imp
-!else
-    @%append $^&.lnk op st=32k
-!endif
-!endif
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) sample.obj sampdial.obj $(ui_lib) $(ldflags)
-!else
-    $(linker) name $@ $(lflags) file {sample.obj sampdial.obj} lib {$(ui_lib)} @$^&.lnk
-!endif
-!endif
+#
+# LIB
+#
+libtarg_objs = $(common_objs) $(trmem_objs) $($(ui_os))
+!include  libtarg.mif
 
+#
+# rc and others
+#
 !ifeq host_os qnx
 ctkeyb.obj : ctkeyb.c conesc.gh
 !endif

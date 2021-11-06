@@ -12,22 +12,19 @@ ide2make_autodepends = .AUTODEPEND
 !include $(idelib_dir)/client.mif
 !include $(wclass_dir)/client.mif
 
-objs = bviper.obj
+#
+# cflags
+#
+.cpp: ../cpp
 
 inc_dirs = -I"../h" $(idelib_inc_dirs) $(wclass_inc_dirs)
 
-.cpp: ../cpp
+# explicit rules
+#################
 
-libs = $(idelib_lib) $(wclass_lib)
-
-$(proj_name).exe : $(objs) $(libs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $(objs) $(libs) $(bld_ldflags)
-! else
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-! endif
-!else
-    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
-!endif
+#
+# EXE
+#
+exetarg_objs = ide2make.obj
+exetarg_libs = $(idelib_lib) $(wclass_lib)
+!include exetarg.mif

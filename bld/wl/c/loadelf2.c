@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,9 @@
 #include "strtab.h"
 #include <string.h>
 
+
+#ifdef _ELF
+
 static unsigned_8       PrimeNos[] = {
   2,      3,      5,      7,     11,     13,     17,     19,     23,     29,
  31,     37,     41,     43,     47,     53,     59,     61,     67,     71,
@@ -62,7 +66,8 @@ static unsigned FindClosestPrime( unsigned num )
     primetab = PrimeNos;
     do {
         prime = *primetab;
-        if( prime > num ) break;
+        if( prime > num )
+            break;
         primetab++;
     } while( *primetab > 0 );
     return( prime );
@@ -128,13 +133,13 @@ unsigned FindSymIdxElfSymTable( ElfSymTable *tab, symbol *sym )
 {
     unsigned_32 hash;
     unsigned_32 idx;
-    symbol *s;
+    symbol      *idxsym;
 
     hash = ElfHash( sym->name.u.ptr ) % tab->numBuckets;
     idx = tab->buckets[hash];
     DbgAssert( idx < tab->maxElems );
-    for( s = tab->table[idx]; s != NULL && s != sym;
-        idx = tab->chains[idx], s = tab->table[idx] ) {
+    for( idxsym = tab->table[idx]; idxsym != NULL && idxsym != sym;
+        idx = tab->chains[idx], idxsym = tab->table[idx] ) {
         DbgAssert( idx < tab->maxElems );
     }
     return( idx );
@@ -146,9 +151,9 @@ static unsigned_16 ElfSymSecNum( ElfHdr *hdr, symbol *sym, group_entry *group )
     int secnum;
 
     secnum = hdr->i.grpbase;
-    if( IsSymElfImported(sym) ) {
+    if( IsSymElfImported( sym ) ) {
         return( SHN_UNDEF );
-    } else if( IS_SYM_COMMUNAL(sym) ) {
+    } else if( IS_SYM_COMMUNAL( sym ) ) {
         return( SHN_COMMON );
     } else if( group == NULL ) {
         return( SHN_ABS );
@@ -166,26 +171,26 @@ static void SetElfSym( ElfHdr *hdr, Elf32_Sym *elfsym, symbol *sym )
     int         type;
     group_entry *group;
 
-    elfsym->st_value = SymbolAbsAddr(sym);
+    elfsym->st_value = SymbolAbsAddr( sym );
     elfsym->st_size = 0;
     bind = STB_GLOBAL;
     if( sym->info & SYM_STATIC ) {       // determine binding
         bind = STB_LOCAL;
-    } else if( IS_SYM_REGULAR(sym) || IS_SYM_IMPORTED(sym) ||
-               IS_SYM_ALIAS(sym) || IS_SYM_COMMUNAL(sym) ) {
-    } else if( IS_SYM_WEAK_REF(sym) ) {
+    } else if( IS_SYM_REGULAR( sym ) || IS_SYM_IMPORTED( sym ) ||
+               IS_SYM_ALIAS( sym ) || IS_SYM_COMMUNAL( sym ) ) {
+    } else if( IS_SYM_WEAK_REF( sym ) ) {
         bind = STB_WEAK;
     } else {
         DbgAssert(0);
     }
-    if( IS_SYM_GROUP(sym) ) {
+    if( IS_SYM_GROUP( sym ) ) {
         type = STT_SECTION;
     } else {
         type = STT_NOTYPE;
     }
     elfsym->st_info = ELF32_ST_INFO(bind, type);
     elfsym->st_other = 0;
-    group = SymbolGroup(sym);
+    group = SymbolGroup( sym );
     elfsym->st_shndx = ElfSymSecNum( hdr, sym, group );
 
 }
@@ -253,3 +258,5 @@ void ZapElfSymTable( ElfSymTable *tab )
     _LnkFree( tab->chains );
     _LnkFree( tab );
 }
+
+#endif

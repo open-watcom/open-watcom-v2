@@ -6,11 +6,11 @@ void endhostent( void );
 .desc begin
 The
 .id &funcb.
-function closes the network host database at /etc/hosts. If the 
+function closes the network host database at /etc/hosts. If the
 network host database is not open, this call results in no actions.
 .desc end
 .see begin
 .seelist gethostent sethostent
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

@@ -31,48 +31,33 @@
 
 #define PMAKE_COMMAND_SIZE  512
 
-typedef enum {
-    TARGET_NOT_USED,
-    TARGET_USED,
-    TARGET_ALL,
-    TARGET_OPERATOR_AND,
-    TARGET_OPERATOR_OR,
-    TARGET_OPERATOR_NOT
-} target_flags;
+typedef unsigned        priority_type;
+
+typedef unsigned        depth_type;
+#define MAX_DEPTH       INT_MAX
 
 typedef struct pmake_list {
     struct pmake_list   *next;
-    unsigned            priority;
-    unsigned            depth;
+    priority_type       priority;
+    depth_type          depth;
     char                dir_name[1];    /* variable sized */
 } pmake_list;
 
-typedef struct target_list {
-    struct target_list  *next;
-    size_t              len;
-    target_flags        flags;
-    char                string[1];      /* variable sized */
-} target_list;
-
 typedef struct {
-    unsigned    verbose : 1;
-    unsigned    notargets : 1;
-    unsigned    reverse : 1;
-    unsigned    batch : 1;
-    unsigned    display : 1;
-    unsigned    optimize : 1;
-    unsigned    want_help : 1;
-    unsigned    signaled : 1;
-    unsigned    ignore_errors : 1;
-    unsigned    levels;
+    boolbit     reverse         : 1;
+    boolbit     batch           : 1;
+    boolbit     display         : 1;
+    boolbit     optimize        : 1;
+    boolbit     want_help       : 1;
+    boolbit     signaled        : 1;
+    boolbit     ignore_errors   : 1;
     char        *command;
     char        *cmd_args;
     char        *makefile;
     pmake_list  *dir_list;
-    target_list *targ_list;
 } pmake_data;
 
-extern pmake_data   *PMakeBuild( const char *cmd );
+extern pmake_data   *PMakeBuild( pmake_data *, const char *cmd );
 extern void         PMakeCommand( pmake_data *, char * );
 extern void         PMakeCleanup( pmake_data * );
 

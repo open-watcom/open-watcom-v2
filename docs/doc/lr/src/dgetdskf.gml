@@ -4,10 +4,10 @@
 unsigned _dos_getdiskfree( unsigned drive,
                         struct diskfree_t *diskspace );
 struct diskfree_t {
-        unsigned short total_clusters;
-        unsigned short avail_clusters;
-        unsigned short sectors_per_cluster;
-        unsigned short bytes_per_sector;
+    unsigned short  total_clusters;
+    unsigned short  avail_clusters;
+    unsigned short  sectors_per_cluster;
+    unsigned short  bytes_per_sector;
 };
 .ixfunc2 '&DosFunc' &funcb
 .synop end
@@ -17,13 +17,13 @@ The
 function uses system call 0x36 to obtain useful information
 on the disk drive specified by
 .arg drive
-.ct .li .
+.period
 Specify 0 for the default drive, 1 for drive A, 2 for drive B, etc.
 The information about the drive is returned in the structure
 .kw diskfree_t
 pointed to by
 .arg diskspace
-.ct .li .
+.period
 .desc end
 .return begin
 The

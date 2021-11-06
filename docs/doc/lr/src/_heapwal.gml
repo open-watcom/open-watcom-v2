@@ -20,8 +20,8 @@ int _fheapwalk( struct _heapinfo *entry );
 int _nheapwalk( struct _heapinfo *entry );
 
 struct _heapinfo {
-    void __far *_pentry;   /* heap pointer */
-    size_t     _size;      /* heap entry size */
+    void __far *_pentry;   /* heap pointer             */
+    size_t     _size;      /* heap entry size          */
     int        _useflag;   /* heap entry 'in-use' flag */
 };
 #define _USEDENTRY      0
@@ -31,9 +31,9 @@ struct _heapinfo {
 The
 .id &funcb.
 functions along with
-.kw _heapchk
+.reffunc _heapchk
 and
-.kw _heapset
+.reffunc _heapset
 are provided for debugging heap related problems in programs.
 .np
 The
@@ -71,12 +71,12 @@ Near heap (inside the default data segment)
 In a small data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _nheapwalk
+.reffunc _nheapwalk
 function; in a large data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _fheapwalk
+.reffunc _fheapwalk
 function.
 .desc end
 .return begin

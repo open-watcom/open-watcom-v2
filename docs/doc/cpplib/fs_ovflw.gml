@@ -21,11 +21,13 @@ buffer was set up in step 1.
 is not &eof., it is added to the &putarea., if possible.
 :LI.Any characters in the &putarea. are written to the file.
 :LI.The &putarea. pointers are updated to reflect the new state of the
-&putarea.:PERIOD.
+&putarea.
+:PERIOD.
 If the write did not complete, the unwritten portion of the
 &putarea. is still present. If the &putarea. was full before the write,
 :ARG.ch
-(if not &eof.) is placed at the start of the &putarea.:PERIOD.
+(if not &eof.) is placed at the start of the &putarea.
+:PERIOD.
 Otherwise, the
 &putarea. is empty.
 :eOL.

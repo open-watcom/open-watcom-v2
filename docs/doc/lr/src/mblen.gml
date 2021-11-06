@@ -5,7 +5,7 @@
 #include <mbstring.h>
 int mblen( const char *s, size_t n );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmblen( const char __far *s, size_t n );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
@@ -16,13 +16,13 @@ The
 function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg s
-.ct .li .
+.period
 At most
 .arg n
 bytes of the array pointed to by
 .arg s
 will be examined.
-.im farfunc
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 If
@@ -37,8 +37,8 @@ is not a NULL pointer, the
 .id &funcb.
 function returns:
 .begnote $setptnt 6
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 0
 if
 .arg s

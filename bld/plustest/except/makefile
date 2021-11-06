@@ -21,12 +21,12 @@ test_flags += -I"../positive/source"
 
 test_flags_386 = -mf
 test_flags_i86 = -mc
-test_flags_axp = 
+test_flags_axp =
 
 dos_exec_chk_i86 = execdos.chk
 dos_exec_chk_386 = execdos.chk
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifeq alt_error 00
 add_br_ = $(br_opt)
@@ -77,11 +77,8 @@ stack_386=opt stack=32k
 stack_i86=opt stack=8k
 stack_axp=opt stack=32k
 
-test : .symbolic start clean start_test $(batch_sym) test.lnk $(exes) common_set_result
-    @%make clean
-
-start_test : .symbolic
-    @%make common_start_test
+test : .symbolic start $(batch_sym) test.lnk $(exes)
+    $(noecho)%make common_set_result
 
 !ifdef BATCH_TEST
 $(batch_lnk) : $(__MAKEFILES__)

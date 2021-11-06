@@ -13,9 +13,9 @@ For example, in code page 932,
 'A' through 'Z', 'a' through 'z', or '0' through '9' and its
 corresponding double-byte versions are alphanumeric (among others).
 An alphanumeric character is any character for which
-.kw _ismbcalpha
+.reffunc _ismbcalpha
 or
-.kw _ismbcdigit
+.reffunc _ismbcdigit
 is true.
 .desc end
 .return begin

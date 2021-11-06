@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 
 #include "coff.h"
 
-#pragma pack( 1 )
+#include "pushpck1.h"
 
 typedef uint_32         coff_offset;
 
@@ -58,4 +59,4 @@ typedef struct coff_section_info {
 
 extern void COFFFileEmit( owl_file_handle );
 
-#pragma pack()
+#include "poppck.h"

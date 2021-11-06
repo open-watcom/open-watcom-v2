@@ -20,7 +20,7 @@ test_flags += -ei -I.. -w0 -D__OS2__
 
 test_flags_i86 = -ml
 
-!include testenv1.mif
+!include testenv.mif
 !include base/lib.mif
 !include io/lib.mif
 
@@ -56,8 +56,8 @@ extra_run_wordcnt = <test/wordcnt.cpp
 .c : test;base;io
 .cpp : test;base;io
 
-test : .symbolic start clean start_test base.lib io.lib test.lnk $(exes) common_set_result
-    @%make clean
+test : .symbolic start base.lib io.lib test.lnk $(exes)
+    $(noecho)%make common_set_result
 
 dkbtrtst.$(exe) : dkbtrtst.obj
     @set ERROR_MSG=*** failure to link $^&
@@ -66,11 +66,11 @@ dkbtrtst.$(exe) : dkbtrtst.obj
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    @%make set_path_rtdll
+    @%make set_run_path
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
-    @%make set_old_path
+    @%make set_old_run_path
     @%append $(%ERROR_FILE) PASS executing $^&
 
 perstest.$(exe) : perstest.obj
@@ -80,15 +80,12 @@ perstest.$(exe) : perstest.obj
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    @%make set_path_rtdll
+    @%make set_run_path
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
-    @%make set_old_path
+    @%make set_old_run_path
     @%append $(%ERROR_FILE) PASS executing $^&
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

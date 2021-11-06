@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of stricmp() and _wcsicmp().
+* Description:  Implementation of _stricmp() and _wcsicmp().
 *
 ****************************************************************************/
 
@@ -40,7 +41,7 @@
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
  int __simple__wcsicmp( const CHAR_TYPE *s, const CHAR_TYPE *t ) {
 #else
- _WCRTLINK int __F_NAME(stricmp,_wcsicmp)( const CHAR_TYPE *s, const CHAR_TYPE *t ) {
+ _WCRTLINK int __F_NAME(_stricmp,_wcsicmp)( const CHAR_TYPE *s, const CHAR_TYPE *t ) {
 #endif
     UCHAR_TYPE c1;
     UCHAR_TYPE c2;

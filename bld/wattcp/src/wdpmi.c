@@ -28,7 +28,7 @@
 
 #ifndef OLD_TURBOC  /* preprocessor in tcc <=2.01 have troubles here */
 
-#ifdef __WATCOM386__
+#ifdef WATCOM386
   /*
    * Values for '_Extender'
    */
@@ -55,7 +55,7 @@
   extern char        _Extender;
   extern char        _ExtenderSubtype;
 
-#elif defined(__BORLAND386__)
+#elif defined(BORLAND386)
   #undef  FP_SEG
   #undef  FP_OFF
   #define FP_SEG(p) _DS
@@ -146,7 +146,7 @@ int dpmi_real_interrupt (int intr, struct DPMI_regs *reg)
   return ((r.w.cflag & 1) == 0);  /* Return 0 if failed */
 }
 
-int dpmi_alloc_callback (void (*callback)(), struct DPMI_callback *cb)
+int dpmi_alloc_callback (void (*callback)(void), struct DPMI_callback *cb)
 {
   union  REGS  r;
   struct SREGS s;
@@ -176,7 +176,7 @@ int dpmi_cpu_type (void)
   if (r.w.cflag & 1)
      return (-1);
   return (r.h.cl);
-} 
+}
 
 int dpmi_dos_yield (void)
 {
@@ -189,7 +189,7 @@ int dpmi_dos_yield (void)
 #endif /* USES_DPMI_API */
 
 
-#if defined(__WATCOM386__)
+#if defined(WATCOM386)
   static void unlock_cstart (void)
   {
   #if (DOSX & DOS4GW)
@@ -241,7 +241,7 @@ int dpmi_dos_yield (void)
     return (0);
   }
 
-#elif defined(__BORLAND386__) && (DOSX == WDOSX)
+#elif defined(BORLAND386) && (DOSX == WDOSX)
   static int is_wdosx (void)
   {
     __asm {
@@ -354,7 +354,7 @@ int dpmi_dos_yield (void)
     }
     return (0);
   }
-#endif /* __WATCOM386__ */
+#endif /* WATCOM386 */
 
 #if (DOSX & PHARLAP) && 0    /* test (don't use) */
   unsigned cdecl mwargstack; /* linking Metaware libs with bcc32 app. */

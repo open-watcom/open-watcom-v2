@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -203,11 +203,13 @@ extern WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hd
 
     #define _wpi_deletecompatiblepres( pres, hdc ) DeleteDC( pres )
 
-    #define _wpi_selectbitmap( pres, new_bmp ) SelectObject( pres, new_bmp )
+    #define _wpi_selectbitmap( pres, new_hbitmap ) SelectObject( pres, new_hbitmap )
 
-    #define _wpi_getoldbitmap( pres, bmp ) SelectObject( pres, bmp )
+    #define _wpi_getoldbitmap( pres, hbitmap ) SelectObject( pres, hbitmap )
 
-    #define _wpi_deletebitmap( bmp ) DeleteObject( bmp )
+    #define _wpi_deletebitmap( hbitmap ) DeleteObject( hbitmap )
+
+    #define _wpi_makewpibitmap( hbitmap ) ( hbitmap )
 
     #define _wpi_translateaccelerator( inst, hwnd, accel, msg ) \
                                     TranslateAccelerator( hwnd, accel, msg )
@@ -220,7 +222,9 @@ extern WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hd
 
     #define _wpi_loadbitmap( inst, id ) LoadBitmap( inst, id )
 
-extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
+    #define _wpi_loadsysbitmap( inst, id ) LoadBitmap( inst, id )
+
+extern void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight );
 
     #define _wpi_getpres( hdl ) GetDC( hdl )
 
@@ -456,7 +460,7 @@ extern void _wpi_getintwrectvalues( WPI_RECT rect, int *left, int *top,
     #define _wpi_isdialogmessage( wpi_hwnd, wpi_msg ) \
                                         IsDialogMessage( wpi_hwnd, wpi_msg )
 
-    #define _wpi_ismessage( msg, id ) ( (msg).message == (id) )
+    #define _wpi_ismessage( qmsg, id ) ( (qmsg)->message == (id) )
 
     #define _wpi_isntdblclk( parm1, parm2 ) \
                  (GET_WM_COMMAND_CMD( parm1, parm2 ) != LBN_DBLCLK)
@@ -504,21 +508,21 @@ extern void _wpi_getintwrectvalues( WPI_RECT rect, int *left, int *top,
 extern void _wpi_setqmsgvalues( WPI_QMSG *qmsg, HWND hwnd, WPI_MSG wpi_msg,
                         WPI_PARAM1 wparam, WPI_PARAM2 lparam, ULONG wpi_time,
                         WPI_POINT pt );
-extern void _wpi_getqmsgvalues( WPI_QMSG qmsg, HWND *hwnd, WPI_MSG *wpi_msg,
+extern void _wpi_getqmsgvalues( WPI_QMSG *qmsg, HWND *hwnd, WPI_MSG *wpi_msg,
                         WPI_PARAM1 *wparam, WPI_PARAM2 *lparam, ULONG *wpi_time,
                         WPI_POINT *pt );
 
-    #define _wpi_qmsgmessage( pwpi_qmsg ) ((pwpi_qmsg)->message)
+    #define _wpi_qmsgmessage( qmsg ) ((qmsg)->message)
 
-    #define _wpi_qmsgparam1( pwpi_qmsg ) ((pwpi_qmsg)->wParam)
+    #define _wpi_qmsgparam1( qmsg ) ((qmsg)->wParam)
 
-    #define _wpi_qmsgparam2( pwpi_qmsg ) ((pwpi_qmsg)->lParam)
+    #define _wpi_qmsgparam2( qmsg ) ((qmsg)->lParam)
 
     #define _wpi_drawhwnd( drw ) ((drw)->hwndItem)
 
     #define _wpi_drawpres( drw ) ((drw)->hDC)
 
-extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg );
+extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg );
 
     #define _wpi_resumethread( thread_id ) \
                             PostAppMessage( thread_id, WM_QUIT, NULL, NULL )
@@ -779,9 +783,9 @@ extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *tm,
 
     #define _wpi_getwindowtextlength( hwnd ) GetWindowTextLength( hwnd )
 
-    #define _wpi_getbitmapbits(bmp, size, bits) GetBitmapBits( bmp, size, bits )
+    #define _wpi_getbitmapbits(hbitmap, size, bits) GetBitmapBits( hbitmap, size, bits )
 
-    #define _wpi_setbitmapbits(bmp, size, bits) SetBitmapBits( bmp, size, bits )
+    #define _wpi_setbitmapbits(hbitmap, size, bits) SetBitmapBits( hbitmap, size, bits )
 
     #define _wpi_getobject( obj, len, into ) GetObject( obj, len, into )
 
@@ -901,7 +905,7 @@ extern void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
     #define _wpi_ptvisible( pres, pt ) PtVisible( pres, pt )
 
 extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
-                                                    int *width, int *height );
+                                    WPI_RECTDIM *width, WPI_RECTDIM *height );
 
     #define _wpi_arc( pres, x1, y1, x2, y2, x3, y3, x4, y4 ) \
         Arc( pres, x1, y1, x2, y2, x3, y3, x4, y4 )
@@ -1060,7 +1064,7 @@ extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
     #define _wpi_writeprivateprofilestring( hini, app, key, data, name ) \
         WritePrivateProfileString( app, key, data, name );
 
-extern void _wpi_getbitmapparms( HBITMAP bitmap, int *width, int *height,
+extern void _wpi_getbitmapparms( WPI_HBITMAP hbitmap, int *width, int *height,
                             int *planes, int *widthbytes, int *bitspixel );
     #define _wpi_getbitmapstruct( hbitmap, pinfo ) \
                 GetObject( hbitmap, sizeof(WPI_BITMAP), (pinfo) )
@@ -1090,6 +1094,8 @@ extern void _wpi_getbitmapparms( HBITMAP bitmap, int *width, int *height,
 #define GET_WM_MOUSEMOVE_POSY( parm1, parm2 ) _wpi_getmousey( parm1, parm2 )
 
     #define GET_WM_INITMENU_MENU( parm1, parm2 ) (HMENU) parm1
+
+    #define GET_WM_HSCROLL_CMD( wp, lp ) GET_WM_HSCROLL_CODE( wp, lp )
 
     #define GET_WM_VSCROLL_CMD( wp, lp ) GET_WM_VSCROLL_CODE( wp, lp )
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,21 +62,21 @@ void    CpExternal(void) {
         if( ReqName( NAME_EXT_PROC ) ) {
             sym = LkSym();
             flags = sym->u.ns.flags;
-            if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-                if( ( flags & SY_EXTERNAL ) != 0 ) {
+            if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
+                if( (flags & SY_EXTERNAL) != 0 ) {
                     Error( SR_EXTRNED_TWICE );
-                } else if( ( flags & SY_INTRINSIC ) != 0 ) {
+                } else if( (flags & SY_INTRINSIC) != 0 ) {
                     Error( SR_INTRNSC_EXTRN );
                 }
-            } else if( ( flags & SY_USAGE ) != 0 ) {
+            } else if( (flags & SY_USAGE) != 0 ) {
                 IllName( sym );
             } else {
                 flags = SY_USAGE | SY_SUBPROGRAM | SY_EXTERNAL;
-                if( ( sym->u.ns.flags & SY_TYPE ) != 0 ) {
+                if( (sym->u.ns.flags & SY_TYPE) != 0 ) {
                     flags |= SY_FUNCTION;
                 }
                 sym->u.ns.flags |= flags;
-                if( ( Options & OPT_REFERENCE ) == 0 ) {
+                if( (Options & OPT_REFERENCE) == 0 ) {
                     sym->u.ns.flags |= SY_RELAX_EXTERN;
                 }
             }

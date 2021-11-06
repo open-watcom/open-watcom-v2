@@ -6,7 +6,7 @@ unsigned char *_mbsnbcpy( unsigned char *dst,
                     size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Copy' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 unsigned char __far *_fmbsnbcpy( unsigned char __far *dst,
                            const unsigned char __far *src,
                            size_t n );
@@ -23,7 +23,7 @@ bytes from the string pointed to by
 .arg src
 into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects is not guaranteed to work properly.
 .np
 If the string pointed to by
@@ -41,14 +41,14 @@ If the string pointed to by
 is longer than
 .arg n
 characters, then the result will not be terminated by a null character.
-.im farfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The
 .id &funcb.
 function returns the value of
 .arg dst
-.ct .li .
+.period
 .return end
 .see begin
 .seelist _mbsnbcpy strcpy strdup

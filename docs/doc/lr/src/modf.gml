@@ -15,14 +15,14 @@ It stores the integral part as a
 .id double
 in the object pointed to by
 .arg iptr
-.ct .li .
+.period
 .desc end
 .return begin
 The
 .id &funcb.
 function returns the signed fractional part of
 .arg value
-.ct .li .
+.period
 .return end
 .see begin
 .seelist modf frexp ldexp

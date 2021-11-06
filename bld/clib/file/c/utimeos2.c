@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,14 +60,15 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
 #ifdef __WIDECHAR__
     char        mbPath[MB_CUR_MAX * _MAX_PATH]; /* single-byte char */
 
-    if( wcstombs( mbPath, fn, sizeof( mbPath ) ) == -1 ) {
+    if( wcstombs( mbPath, fn, sizeof( mbPath ) ) == (size_t)-1 ) {
         mbPath[0] = '\0';
     }
 #endif
-    rc = DosOpen( (PSZ)__F_NAME(fn,mbPath), &handle, &actiontaken, 0ul, _A_NORMAL,
-                     OPENFLAG_FAIL_IF_NOT_EXISTS | OPENFLAG_OPEN_IF_EXISTS,
-                     OPENMODE_DENY_NONE | OPENMODE_ACCESS_RDWR,
-                     0ul );
+    rc = DosOpen( (PSZ)__F_NAME(fn,mbPath), &handle, &actiontaken, 0,
+                    FILE_NORMAL,
+                    OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
+                    OPEN_SHARE_DENYNONE | OPEN_ACCESS_READWRITE,
+                    0 );
     if( rc != 0 ) {
         return( __set_errno_dos( rc ) );
     }

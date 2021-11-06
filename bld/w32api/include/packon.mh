@@ -6,4 +6,4 @@
 
 :include readonly.sp
 
-#pragma pack( 1 )
+#pragma pack( __push, 1 )

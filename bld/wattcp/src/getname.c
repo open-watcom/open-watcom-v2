@@ -11,7 +11,7 @@
 
 #if defined(USE_BSD_FUNC)
 
-int getsockname (int s, struct sockaddr *name, int *namelen)
+int getsockname (int s, struct sockaddr *name, socklen_t *namelen)
 {
   Socket *socket = _socklist_find (s);
 
@@ -43,7 +43,7 @@ int getsockname (int s, struct sockaddr *name, int *namelen)
   return (0);
 }
 
-int getpeername (int s, struct sockaddr *name, int *namelen)
+int getpeername (int s, struct sockaddr *name, socklen_t *namelen)
 {
   Socket *socket = _socklist_find (s);
 

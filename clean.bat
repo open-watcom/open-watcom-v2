@@ -1,9 +1,7 @@
 @echo off
 set NUL=NUL
-if not '%OS%' == 'Windows_NT' goto skip_nt
-set NUL=
-:skip_nt
-if not exist %OWBINDIR%\builder.exe goto no_builder
+if '%OS%' == 'Windows_NT' set NUL=
+if not exist %OWBINDIR%\%OWOBJDIR%\builder.exe goto nobuilder
 REM delete the builder and wmake build directories
 if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.exe del %OWSRCDIR%\builder\%OWOBJDIR%\*.exe
 if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.obj del %OWSRCDIR%\builder\%OWOBJDIR%\*.obj
@@ -26,10 +24,10 @@ cd %OWSRCDIR%
 builder -i clean
 builder -i bootclean
 REM Finally delete the builder and wmake executables
-if exist %OWBINDIR%\builder.exe del %OWBINDIR%\builder.exe
-goto wmake_del
-:no_builder
+if exist %OWBINDIR%\%OWOBJDIR%\builder.exe del %OWBINDIR%\%OWOBJDIR%\builder.exe
+goto wmakedel
+:nobuilder
 echo Cannot find builder - did you run build.bat?
-:wmake_del
-if exist %OWBINDIR%\wmake.exe del %OWBINDIR%\wmake.exe
+:wmakedel
+if exist %OWBINDIR%\%OWOBJDIR%\wmake.exe del %OWBINDIR%\%OWOBJDIR%\wmake.exe
 cd %OWROOT%

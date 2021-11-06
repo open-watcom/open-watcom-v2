@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,22 +51,20 @@
 #include "gtypes.h"
 
 
-sym_id  GStartCat( uint num_args, uint size ) {
-//===========================================
-
+sym_id  GStartCat( uint num_args, size_t size )
+//=============================================
 // Start cconcatenation into a temporary.
-
+{
     /* unused parameters */ (void)num_args; (void)size;
 
     return( NULL );
 }
 
 
-sym_id  GTempString( uint size ) {
+sym_id  GTempString( size_t size )
 //================================
-
 // Generate a static temporary string.
-
+{
     sym_id     sym_ptr;
 
     sym_ptr = StaticAlloc( sizeof( string ), FT_CHAR );
@@ -74,11 +73,10 @@ sym_id  GTempString( uint size ) {
 }
 
 
-void    GStopCat( uint num_args, sym_id result ) {
-//===============================================
-
+void    GStopCat( uint num_args, sym_id result )
+//==============================================
 // Finish concatenation into a temporary.
-
+{
     /* unused parameters */ (void)result;
 
     CITNode->sym_ptr = GTempString( CITNode->size );
@@ -97,24 +95,24 @@ void    GStopCat( uint num_args, sym_id result ) {
 }
 
 
-void    GCatArg( itnode *itptr ) {
-//================================
-
+void    GCatArg( itnode *itptr )
+//==============================
 // Emit a character string to be concatenated.
+{
 
     /* unused parameters */ (void)itptr;
 }
 
 
-static  uint    SrcChar( itnode *op ) {
-//====================================
-
+static  size_t  SrcChar( itnode *op )
+//===================================
+{
     if( op->opn.us & USOPN_SS1 )
         return( op->value.st.ss_size );
-    if( ( op->opn.us & USOPN_WHAT ) == USOPN_CON ) { // character constant
+    if( (op->opn.us & USOPN_WHAT) == USOPN_CON ) { // character constant
         return( op->sym_ptr->u.lt.length );
     }
-    if( ( op->opn.us & USOPN_WHAT ) == USOPN_NNL ) { // character variable
+    if( (op->opn.us & USOPN_WHAT) == USOPN_NNL ) { // character variable
         if( op->sym_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
@@ -125,19 +123,19 @@ static  uint    SrcChar( itnode *op ) {
 }
 
 
-static  uint    TargChar( itnode *op ) {
-//=====================================
-
+static  size_t  TargChar( itnode *op )
+//====================================
+{
     if( op->opn.us & USOPN_SS1 )
         return( op->value.st.ss_size );
-    if( ( op->opn.us & USOPN_WHAT ) == USOPN_NNL ) { // character variable
+    if( (op->opn.us & USOPN_WHAT) == USOPN_NNL ) { // character variable
         if( op->sym_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
             return( op->sym_ptr->u.ns.xt.size );
         }
     }
-    if( ( op->opn.us & USOPN_WHAT ) == USOPN_NWL ) { // character array
+    if( (op->opn.us & USOPN_WHAT) == USOPN_NWL ) { // character array
         if( op->sym_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
@@ -148,15 +146,14 @@ static  uint    TargChar( itnode *op ) {
 }
 
 
-void    AsgnChar( void ) {
-//========================
-
+void    AsgnChar( void )
+//======================
 // Perform character assignment.
-
+{
     itnode      *save_cit;
     uint        num_args;
-    uint        i;
-    uint        j;
+    size_t      i;
+    size_t      j;
 
     save_cit = CITNode;
     AdvanceITPtr();
@@ -169,7 +166,7 @@ void    AsgnChar( void ) {
             EmitOp( FC_CHAR_1_MOVE );
             DumpType( MapTypes( FT_INTEGER, i ), i );
             GenChar1Op( CITNode );
-            if( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_CON ) {
+            if( (CITNode->opn.us & USOPN_WHAT) == USOPN_CON ) {
                 CITNode->sym_ptr->u.lt.flags &= ~LT_SCB_TMP_REFERENCE;
             }
             CITNode = save_cit;

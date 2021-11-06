@@ -6,37 +6,40 @@ proj_name = appwiz
 
 !include $(gui_dir)/client.mif
 
-objs = &
-    appwiz.obj &
-    errmsg.obj &
-    projtype.obj
-
-libs = $(gui_lib)
-
-gendeps = rcstr.gh $(objs) $(libs) appwiz.lnk appwiz.res
-
+#
+# cflags
+#
 .c : ../c
 
 inc_dirs = -I. -I"../h" $(gui_inc_dirs)
 
-all : appwiz.exe .SYMBOLIC
+# explicit rules
+#################
 
-appwiz.exe: $(gendeps)
-    @%make echo_link
-    $(linker) name $^@ @appwiz.lnk
-    @%make bind_res
+#
+# EXE
+#
+exetarg_prebuild_objs = rcstr.gh
+exetarg_objs          = appwiz.obj errmsg.obj projtype.obj
+exetarg_libs          = $(gui_lib)
+exetarg_res           = $(proj_name).res
+exetarg_nt_manif_386  = ntmanif.res
+exetarg_nt_manif_x64  = ntmanif.res
+!include exetarg.mif
 
-appwiz.lnk : makefile ../master.mif
-    $(noecho)%create appwiz.lnk
-    @%append appwiz.lnk $(lflags)
-    @%append appwiz.lnk option verbose
-    @for %i in ( $(objs) ) do @%append appwiz.lnk file %i
-    @for %i in ( $(libs) ) do @%append appwiz.lnk lib %i
+#
+# rc and others
+#
+rc_inc_dirs = -I"../h"
+
+$(proj_name).res : ../h/appwiz.rc .AUTODEPEND
+    @%make echo_rc
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $]@ -fo=$@
+
+ntmanif.res : ../h/ntmanif.rc
+    @%make echo_rc
+    $(rc) $(rc_flags) $(rc_inc_path) $< -fo=$@
 
 rcstr.gh : ../h/appwiz.msg
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
-
-appwiz.res : ../h/appwiz.rc .AUTODEPEND
-    @%make echo_rc
-    $(rc) $(rc_flags) -ad -I"../h" $(inc_dirs_sys_$(host_os)) $]@ -fo=$^@

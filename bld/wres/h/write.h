@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,10 @@
 #include "mresfmt.h"
 
 typedef size_t ConvToUnicode_fn( size_t, const char *, char * );
+typedef size_t ConvToMultiByte_fn( size_t, const char *, char * );
 
-extern ConvToUnicode_fn *ConvToUnicode;
+extern ConvToUnicode_fn     *ConvToUnicode;
+extern ConvToMultiByte_fn   *ConvToMultiByte;
 
 extern bool ResWriteUint8( uint_8 newint, FILE *fp );
 extern bool ResWriteUint16( uint_16 newint, FILE *fp );
@@ -47,8 +50,7 @@ extern bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp );
 extern bool WResWriteResRecord( const WResResInfo *res, FILE *fp );
 extern bool WResWriteTypeRecord( const WResTypeInfo *type, FILE *fp );
 extern bool WResWriteWResID( const WResID *name, FILE *fp );
-extern bool WResWriteWResIDName( const WResIDName *name, FILE *fp );
-extern bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, FILE *fp );
+extern bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp );
 extern bool WResWriteHeaderRecord( const WResHeader *header, FILE *fp );
 extern bool WResWriteExtHeader( const WResExtHeader *ext_head, FILE *fp );
 extern void MResFreeResourceHeader( MResResourceHeader *oldheader );

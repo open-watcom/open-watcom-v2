@@ -185,8 +185,8 @@ $67H$$Set Handle Count                         $None
 .tb
 .np
 This list of functions is excerpted from
-:CIT.The MS-DOS Encyclopedia:eCIT., Copyright (c) 1988 by Microsoft Press.
-All Rights Reserved.
+.book The MS-DOS Encyclopedia
+, Copyright (c) 1988 by Microsoft Press. All Rights Reserved.
 .autonote
 .note
 For Function 29H, DS:ESI and ES:EDI contain pointer values that are not

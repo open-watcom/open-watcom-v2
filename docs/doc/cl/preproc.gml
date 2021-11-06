@@ -1,8 +1,8 @@
 .ix 'preprocessor'
 .pp
 The
-.us preprocessor,
-as its name suggests,
+.us preprocessor
+.ct , as its name suggests,
 is that part of the C compiler which processes certain directives
 embedded in the source file(s) in advance of the actual compilation
 of the program. Specifically, the preprocessor allows a source file
@@ -55,9 +55,8 @@ and
 directives are each contained on one
 line (after concatenation of lines ending with
 .mono \
-..ct ),
-while the
-conditional compilation directives span multiple lines.
+.ct ), while the conditional compilation directives span
+multiple lines.
 .pp
 A preprocessor directive is not terminated by a semi-colon.
 .*
@@ -107,9 +106,7 @@ may not contain a >
 character, and if any of the characters ' (quote),
 " (double-quote) or /* (start comment) occur in
 .mono name
-..ct ,
-the behavior
-is undefined.
+.ct , the behavior is undefined.
 ..do end
 .*
 .************************************************************************
@@ -138,8 +135,7 @@ may not contain a " (double-quote) character, and if any
 of the characters ' (quote), \ (backslash), or /* (start comment)
 occur in
 .mono name
-..ct ,
-the behavior is undefined.
+.ct , the behavior is undefined.
 ..do end
 .*
 .************************************************************************
@@ -169,9 +165,7 @@ forms described above (including
 .mono <
 and
 .mono >
-..ct ,
-or quotes),
-in which case the
+.ct , or quotes), in which case the
 .kwpp #include
 is processed in the corresponding manner.
 .pp
@@ -234,10 +228,9 @@ and if it evaluates to a non-zero value, then the body of the
 is processed by the preprocessor.
 Processing of the body ends when a corresponding
 .kwpp #elif
-..ct ,
+.ct ,
 .kwpp #else
-..ct ,
-or the terminating
+.ct , or the terminating
 .kwpp #endif
 is encountered.
 .pp
@@ -258,18 +251,18 @@ or
 If neither of these directives are present, then the preprocessor
 skips to the
 .kwpp #endif
-..ct ..li .
+.period
 Any preprocessing directives within the
 body of the
 .kwpp #if
 are not processed, but they are examined in order to determine
 any nested directives, in order to find the matching
 .kwpp #elif
-..ct ,
+.ct ,
 .kwpp #else
 or
 .kwpp #endif
-..ct ..li .
+.period
 .pp
 The
 .us constant-expression
@@ -288,7 +281,7 @@ Each identifier that is a macro name is replaced (as described below),
 and remaining identifiers
 are replaced with
 .mono 0L
-..ct ..li .
+.period
 All values are converted to long integers
 using the usual arithmetic conversions.
 After each item has been converted, the evaluation of the expression
@@ -358,10 +351,10 @@ of the
 evaluates to zero,
 the preprocessor looks for a corresponding
 .kwpp #elif
-..ct ..li .
+.period
 This directive means "else if", and has a similar form as
 .kwpp #if
-..ct :
+.ct :
 .ppix #elif
 .cillust begin
 .kwpp #elif
@@ -375,7 +368,7 @@ An
 .kwpp #elif
 may only be placed inside the body of an
 .kwpp #if
-..ct ..li .
+.period
 The body of the
 .kwpp #elif
 is processed only if the
@@ -391,8 +384,7 @@ skips to the next corresponding
 .kwpp #elif
 or
 .kwpp #else
-..ct ,
-or to the
+.ct , or to the
 .kwpp #endif
 if neither of these directives is present.
 .pp
@@ -427,7 +419,7 @@ directive is,
 .millust #endif
 and marks the end of the
 .kwpp #if
-..ct ..li .
+.period
 .pp
 The following are examples of conditional inclusion of source lines:
 .millust begin

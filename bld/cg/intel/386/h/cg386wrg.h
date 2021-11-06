@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,5 +37,7 @@
 #define HW_xDX      HW_EDX
 #define HW_xSI      HW_ESI
 #define HW_xDI      HW_EDI
+#define HW_xBP      HW_EBP
+#define HW_xSP      HW_ESP
 #define HW_DS_xSI   HW_DS_ESI
 #define HW_ES_xDI   HW_ES_EDI

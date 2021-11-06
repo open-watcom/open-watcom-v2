@@ -118,7 +118,7 @@ void wintr_disable(void) { on_isr8 = 0; }
     setitimer (ITIMER_REAL, &tim, NULL);
   }
 
-#elif defined (__WATCOM386__) && (DOSX & (DOS4GW|WDOSX))
+#elif defined(WATCOM386) && (DOSX & (DOS4GW|WDOSX))
   static void (__interrupt __far *oldint)(void);
 
   static void __interrupt __far NewTimer (void)
@@ -159,7 +159,7 @@ void wintr_disable(void) { on_isr8 = 0; }
     _dos_setvect (TIMER_INTR, NewTimer);
   }
 
-#elif defined (__BORLAND386__) && (DOSX == WDOSX)
+#elif defined (BORLAND386) && (DOSX == WDOSX)
   void wintr_shutdown (void)
   {
     UNFINISHED();

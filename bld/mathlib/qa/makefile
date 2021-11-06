@@ -79,7 +79,7 @@ mathtest = ../c/mathtest.c
 
 tiny_opts = -za99 -d0 -os -DTINY_MEMORY -s -zq -fo=$^*.obj $(inc_path)
 comp_opts = -za99 -d2 -zq -fo=$^*.obj $(inc_path)
-link_opts = NAME $^* OPTION quiet, map, eliminate DEBUG all 
+link_opts = NAME $^* OPTION quiet, map, eliminate DEBUG all
 
 !ifdef __UNIX__
 
@@ -155,7 +155,7 @@ do1_fpis.exe : $(mathtest)
 
 do1_fpcs.exe : $(mathtest)
     $(cc_i86) $[@ $(tiny_opts) -dFIRSTHALF -ms -fpc -bt=dos
-    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj 
+    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
 
 do2_fpis.exe : $(mathtest)
     $(cc_i86) $[@ $(tiny_opts) -dSECONDHALF -ms -fpi -bt=dos
@@ -163,7 +163,7 @@ do2_fpis.exe : $(mathtest)
 
 do2_fpcs.exe : $(mathtest)
     $(cc_i86) $[@ $(tiny_opts) -dSECONDHALF -ms -fpc -bt=dos
-    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj 
+    $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
 
 do1_fpic.exe : $(mathtest)
     $(cc_i86) $[@ $(tiny_opts) -dFIRSTHALF -mc -fpi -bt=dos

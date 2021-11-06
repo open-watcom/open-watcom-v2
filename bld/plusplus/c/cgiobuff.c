@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,6 @@
 #include "ring.h"
 #include "iosupp.h"
 #include "fname.h"
-#include "toggle.h"
-#include "dbg.h"
 #include "stats.h"
 #include "cgdata.h"
 #include "icopmask.h"
@@ -47,6 +46,12 @@
 #include "conpool.h"
 #include "pcheader.h"
 #include "cgio.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+    #include "pragdefn.h"
+    #include "togglesd.h"
+#endif
+
 
 #define CGIOBUFF_CHECK  (-(int)(sizeof(CGIOBUFF)|1))
 
@@ -59,7 +64,6 @@
 
 #ifndef NDEBUG
 #define DICT_SIZE       4
-#include "pragdefn.h"
 #else
 #define DICT_SIZE       128
 #endif
@@ -438,11 +442,11 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
 #ifndef NDEBUG
     DbgAssert( ins->opcode != IC_EOF );
     if( icMaskTable[ins->opcode] & ICOPM_BRINFO ) {
-        if( PragDbgToggle.browse_emit ) {
+        if( TOGGLEDBG( browse_emit ) ) {
             DumpCgFront( "BiEm", ctl->disk_addr, ctl->free_offset, ins );
         }
     } else {
-        if( PragDbgToggle.dump_emit_ic ) {
+        if( TOGGLEDBG( dump_emit_ic ) ) {
             DumpCgFront( "Emit", ctl->disk_addr, ctl->free_offset, ins );
         }
         if( ICOpTypes[ins->opcode] == ICOT_SYM ) {
@@ -494,12 +498,12 @@ static void dumpRead            // DBG: TRACE AN INSTRUCTION READ
     char * prefix = NULL;       // - NULL or prefix when tracing
 
     if( IC_EOF != curr->opcode && (icMaskTable[curr->opcode] & ICOPM_BRINFO) ) {
-        if( PragDbgToggle.browse_read ) {
+        if( TOGGLEDBG( browse_read ) ) {
             prefix = "BiRd";
         }
-    } else if( PragDbgToggle.dump_exec_ic ) {
+    } else if( TOGGLEDBG( dump_exec_ic ) ) {
         prefix = exec;
-    } else if( PragDbgToggle.callgraph_scan ) {
+    } else if( TOGGLEDBG( callgraph_scan ) ) {
         prefix = scan;
     }
     if( NULL != prefix ) {
@@ -796,11 +800,11 @@ void CgioBuffZap(               // ZAP A WRITTEN AREA OF A BUFFER
     ctl = findRdBuffer( zap.block );
 #ifndef NDEBUG
     if( icMaskTable[ins->opcode] & ICOPM_BRINFO ) {
-        if( PragDbgToggle.browse_emit ) {
+        if( TOGGLEDBG( browse_emit ) ) {
             DumpCgFront( "ZAP ", zap.block, zap.offset, ins );
         }
     } else {
-        if( PragDbgToggle.dump_emit_ic ) {
+        if( TOGGLEDBG( dump_emit_ic ) ) {
             DumpCgFront( "ZAP ", zap.block, zap.offset, ins );
         }
     }

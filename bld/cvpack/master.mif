@@ -2,22 +2,40 @@ proj_name = cvpack
 
 cvpack_autodepends = .autodepend
 
-inc_dirs = -I"../hpp"
-
-extra_cxx_flags = -xs
-extra_l_flags   = #op eliminate
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-objs =  cvpack.obj retrieve.obj cverror.obj packtype.obj
-objs += subsect.obj cssymbol.obj makeexe.obj symdis.obj
-objs += typemap.obj typearay.obj typercrd.obj common.obj
-
+#
+# cflags
+#
 .cpp : ../cpp
 .hpp : ../hpp
 
-cvpack.exe : $(objs) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) FILE { $(objs) }
+inc_dirs = -I"../hpp"
+
+extra_cxx_flags = -xs
+
+#
+# lflags
+#
+extra_l_flags   = #op eliminate
+
+# explicit rules
+#################
+
+exetarg_objs = &
+    cvpack.obj &
+    retrieve.obj &
+    cverror.obj &
+    packtype.obj &
+    subsect.obj &
+    cssymbol.obj &
+    makeexe.obj &
+    symdis.obj &
+    typemap.obj &
+    typearay.obj &
+    typercrd.obj &
+    common.obj
+!include exetarg.mif
+

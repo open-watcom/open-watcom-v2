@@ -308,7 +308,7 @@ bool NewImage( image_type img_type, const char *filename )
     short               height;
     short               bcount;
     img_node            node;
-    PGROUP2             pg;
+    pgroup2             pg;
     bool                ok;
 
     // If filename is not NULL and we don't know the image type,

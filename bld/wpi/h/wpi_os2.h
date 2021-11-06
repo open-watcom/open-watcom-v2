@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -253,21 +253,21 @@ extern void _wpi_releasepres( HWND hwnd, WPI_PRES pres );
 extern void _wpi_setqmsgvalues( WPI_QMSG *qmsg, HWND hwnd, WPI_MSG message,
                         WPI_PARAM1 parm1, WPI_PARAM2 parm2, ULONG wpi_time,
                         WPI_POINT wpi_pt );
-extern void _wpi_getqmsgvalues( WPI_QMSG qmsg, HWND *hwnd, WPI_MSG *message,
+extern void _wpi_getqmsgvalues( WPI_QMSG *qmsg, HWND *hwnd, WPI_MSG *message,
                         WPI_PARAM1 *parm1, WPI_PARAM2 *parm2, ULONG *wpi_time,
                         WPI_POINT *wpi_pt );
 
-    #define _wpi_qmsgmessage( pwpi_qmsg ) (pwpi_qmsg)->msg
+    #define _wpi_qmsgmessage( qmsg ) ((qmsg)->msg)
 
-    #define _wpi_qmsgparam1( pwpi_qmsg ) (pwpi_qmsg)->mp1
+    #define _wpi_qmsgparam1( qmsg ) ((qmsg)->mp1)
 
-    #define _wpi_qmsgparam2( pwpi_qmsg ) (pwpi_qmsg)->mp2
+    #define _wpi_qmsgparam2( qmsg ) ((qmsg)->mp2)
 
     #define _wpi_drawhwnd( drw ) (drw)->hwnd
 
     #define _wpi_drawpres( drw ) (drw)->hps
 
-extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg );
+extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg );
 
     #define _wpi_resumethread( thread_id ) DosResumeThread( thread_id )
 
@@ -312,7 +312,7 @@ extern int _wpi_devicecapableinch( WPI_PRES pres, int what );
 
     #define _wpi_getcurrpos( pres, pt ) GpiQueryCurrentPosition( pres, pt )
 
-extern HBRUSH _wpi_createpatternbrush( WPI_HANDLE bitmap );
+extern HBRUSH _wpi_createpatternbrush( WPI_HBITMAP hbitmap );
 extern HBRUSH _wpi_createsolidbrush( WPI_COLOUR colour );
 extern HBRUSH _wpi_createnullbrush( void );
 extern HPEN _wpi_createnullpen( void );
@@ -438,9 +438,10 @@ extern void _wpi_deleteos2normpres( WPI_PRES pres );
 extern WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hdc );
 extern void _wpi_deletepres( WPI_PRES pres, HDC hdc );
 extern void _wpi_deletecompatiblepres( WPI_PRES pres, HDC hdc );
-extern WPI_HANDLE _wpi_selectbitmap( WPI_PRES pres, WPI_HANDLE bitmap );
-extern void _wpi_getoldbitmap( WPI_PRES pres, WPI_HANDLE oldobj );
-extern void _wpi_deletebitmap( WPI_HANDLE bmp );
+extern WPI_HBITMAP _wpi_selectbitmap( WPI_PRES pres, WPI_HBITMAP hbitmap );
+extern void _wpi_getoldbitmap( WPI_PRES pres, WPI_HBITMAP old_hbitmap );
+extern void _wpi_deletebitmap( WPI_HBITMAP hbitmap );
+extern WPI_HBITMAP _wpi_makewpibitmap( HBITMAP hbitmap );
 
     #define _wpi_translateaccelerator( inst, hwnd, accel, msg ) \
                             WinTranslateAccel( (inst).hab, hwnd, accel, msg )
@@ -452,10 +453,11 @@ extern void _wpi_deletebitmap( WPI_HANDLE bmp );
 
     #define _wpi_releasescreenpres( hps ) // nothing
 
-extern WPI_HANDLE _wpi_loadbitmap( WPI_INST inst, int id );
-extern void _wpi_getbitmapdim( WPI_HANDLE hbmp, int *pwidth, int *pheight );
+extern WPI_HBITMAP _wpi_loadbitmap( WPI_INST inst, int id );
+extern WPI_HBITMAP _wpi_loadsysbitmap( WPI_INST inst, int id );
+extern void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight );
 extern WPI_PRES _wpi_getpres( HWND hwnd );
-extern WPI_HANDLE _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height );
+extern WPI_HBITMAP _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height );
 
     #define _wpi_preparesyscolour() WinSetSysColors( HWND_DESKTOP, LCOL_RESET, \
                                     LCOLF_INDRGB, 0L, (ULONG) 0, (PLONG) NULL )
@@ -626,7 +628,7 @@ extern int _wpi_selectcliprgn( WPI_PRES pres, HRGN rgn );
     #define _wpi_ismsgkeyup( msg, parm1 ) \
          ( msg == WM_CHAR && (SHORT1FROMMP( parm1 ) == KC_KEYUP ) )
 
-    #define _wpi_isdown( parm1, parm2 ) ( !( (int) parm2 & KC_KEYUP ) )
+    #define _wpi_isdown( parm1, parm2 ) ( (parm2 & KC_KEYUP) == 0 )
 
 extern HFILE _wpi_fileopen( LPSTR filename, int format );
 extern HFILE _wpi_filecreate( LPSTR filename, int format );
@@ -637,7 +639,7 @@ extern PM1632_FILESIZETYPE _wpi_fileread( HFILE hfile, void *buf,
                                                     PM1632_FILESIZETYPE size );
 
     #define _wpi_isdialogmessage( win_hld, wpi_msg ) ( (wpi_msg)->hwnd == win_hld )
-    #define _wpi_ismessage( wpi_msg, id ) ( (wpi_msg).msg == id )
+    #define _wpi_ismessage( qmsg, id ) ( (qmsg)->msg == (id) )
 
     #define _wpi_isntdblclk( parm1, parm2 ) SHORT2FROMMP( parm1 ) != LN_ENTER
 
@@ -992,8 +994,8 @@ extern WPI_PROC _wpi_loadprocedure( WPI_INST inst, HMODULE mod, LPSTR proc );
 
     #define _wpi_getwindowtextlength( hwnd ) WinQueryWindowTextLength( hwnd )
 
-extern LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits );
-extern LONG _wpi_setbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits );
+extern LONG _wpi_getbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits );
+extern LONG _wpi_setbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits );
 
     #define _wpi_getobject( obj, len, info ) len
 
@@ -1111,7 +1113,7 @@ extern void _wpi_getoldpen( WPI_PRES pres, HPEN oldobj );
     #define _wpi_ptvisible( pres, pt ) GpiPtVisible( pres, pt )
 
 extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
-                                                    int *width, int *height );
+                                    WPI_RECTDIM *width, WPI_RECTDIM *height );
 extern int _wpi_setrop2( WPI_PRES pres, int mode );
 
     #define _wpi_defwindowproc(hwnd, msg, mp1, mp2) \
@@ -1147,11 +1149,11 @@ extern BOOL _wpi_iswindow( WPI_INST inst, HWND hwnd );
 
     #define _wpi_selectpalette(hps, hpal) GpiSelectPalette(hps, hpal)
 
-extern int _wpi_getdibits( WPI_PRES pres, WPI_HANDLE bitmap, UINT start,
+extern int _wpi_getdibits( WPI_PRES pres, WPI_HBITMAP hbitmap, UINT start,
             UINT slcount, BYTE *buffer, WPI_BITMAPINFO *info, UINT notused );
-extern WPI_HANDLE _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info,
+extern WPI_HBITMAP _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info,
                     ULONG opt, BYTE *data, WPI_BITMAPINFO *table, int opt2 );
-extern HBITMAP _wpi_createbitmap( int width, int height, int planes,
+extern WPI_HBITMAP _wpi_createbitmap( int width, int height, int planes,
                                                     int bitcount, BYTE *bits );
 
     #define _wpi_fatalappexit( inst, num, string ) WinTerminate( (inst).hab )
@@ -1201,8 +1203,7 @@ extern void _wpi_wpirecttorect( WPI_RECT *src_rc, RECT *dest_rc );
     #define _wpi_destroycursor( hptr ) WinDestroyPointer( hptr )
 
 extern HCURSOR _wpi_setcursor( HCURSOR newcursor );
-extern void _wpi_setclipboarddata( WPI_INST inst, UINT format, WPI_HANDLE data,
-                                                                BOOL is_bitmap);
+extern void _wpi_setclipboarddata( WPI_INST inst, UINT format, WPI_HANDLE data, BOOL is_bitmap );
 extern WPI_HANDLE _wpi_getclipboarddata( WPI_INST inst, UINT format );
 
     #define _wpi_emptyclipboard( inst ) WinEmptyClipbrd( (inst).hab )
@@ -1238,9 +1239,9 @@ extern int _wpi_getprivateprofilestring( HINI hini, LPSTR app,
     #define _wpi_writeprivateprofilestring( hini, app, key, data, name ) \
             PrfWriteProfileString( hini, app, key, data )
 
-extern void _wpi_getbitmapparms( WPI_HANDLE hbitmap, int *width, int *height,
+extern void _wpi_getbitmapparms( WPI_HBITMAP hbitmap, int *width, int *height,
                         int *planes, int *notused1, int *bitcount );
-extern LONG _wpi_getbitmapstruct( WPI_HANDLE bitmap, WPI_BITMAP *info );
+extern LONG _wpi_getbitmapstruct( WPI_HBITMAP hbitmap, WPI_BITMAP *info );
 #define _wpi_bitmapwidth( pinfo ) (pinfo)->cx
 #define _wpi_bitmapheight( pinfo ) (pinfo)->cy
 #define _wpi_bitmapbitcount( pinfo ) (pinfo)->cBitCount
@@ -1264,7 +1265,11 @@ extern BOOL _wpi_isiconic( HWND hwnd );
 
     #define GET_WM_INITMENU_MENU( parm1, parm2 ) (HMENU) parm2
 
+    #define GET_WM_HSCROLL_CMD( parm1, parm2 ) SHORT2FROMMP( parm2 )
+
     #define GET_WM_VSCROLL_CMD( parm1, parm2 ) SHORT2FROMMP( parm2 )
+
+    #define GET_WM_HSCROLL_POS( parm1, parm2 ) SHORT1FROMMP( parm2 )
 
     #define GET_WM_VSCROLL_POS( parm1, parm2 ) SHORT1FROMMP( parm2 )
 

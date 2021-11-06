@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,27 @@
 #include "typedef.h"
 #include "cgapi.h"
 
+/*
+ * FP80BIT_DEVELOPMENT macro switch on all development changes for 80-bit FP stuff
+ * it is Work-In-Progress therefore __FP80BIT macro is used for guard original code
+ * this macro must be used for any new code which can change existing behaviour
+ * now CG use internaly 80-bit FP for FPU inline code and front end long double type
+ * is mapped to double type
+ *
+ * initialy all mapping from long double to double type were removed that front end
+ * long double type is recognized by CG, but appropriate missing stuff for long double
+ * type in CG must be implemented
+ *
+ * as soon as work will finish then these macros can be removed
+ */
+
+//#define FP80BIT_DEVELOPMENT
+
+#ifdef FP80BIT_DEVELOPMENT
+#define __FP80BIT(ld,d)                 ld
+#else
+#define __FP80BIT(ld,d)                 d
+#endif
 
 #define _IsPowerOfTwo( x )              ( ( (x) & ( 1 - (x) ) ) == (x) )
 

@@ -1,9 +1,9 @@
 
 /*
  * Internet Group Management Protocol (IGMP) as per RFC 1112.
- * 
+ *
  * This protocol is to allow multicast routers to establish group
- * membership on attached networks. Thus allowing the router to not send 
+ * membership on attached networks. Thus allowing the router to not send
  * data that is not needed.
  *
  * Jim Martin
@@ -25,6 +25,7 @@
 #include "pcstat.h"
 #include "pcsed.h"
 #include "pctcp.h"
+#include "pcigmp.h"
 
 #if defined(USE_MULTICAST)
 
@@ -38,7 +39,7 @@ struct IGMP_PKT {
 #include <sys/packoff.h>
 
 
-/* 
+/*
  * igmp_handler - handles the incoming IGMP packets
  *
  * void igmp_handler (in_Header *ip)
@@ -107,9 +108,9 @@ void igmp_handler (const in_Header *ip, BOOL broadcast)
          break;
   }
 }
-         
 
-/* 
+
+/*
  * igmp_report - send a IGMP Report packet
  *
  * int igmp_report (DWORD ip)

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "global.h"
 #include "fmemmgr.h"
 #include "rstutils.h"
@@ -39,24 +38,25 @@
 #include "cgmagic.h"
 
 
-static  sym_id  AddNameList( const char *name, uint length )
-//==========================================================
+static  sym_id  AddNameList( const char *name, size_t length )
+//============================================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
 {
     sym_id      sym;
 
-    sym = FMemAlloc( sizeof( name_list ) + AllocName( length ) );
+    sym = FMemAlloc( sizeof( name_list ) + length );
     sym->u.nl.name_len = length;
     sym->u.nl.address = NULL;
     sym->u.nl.dbh = 0;
     memcpy( &sym->u.nl.name, name, length );
+    sym->u.nl.name[length] = NULLCHAR;
     return( sym );
 }
 
 
-sym_id  FindNameList( const char *name, uint len )
-//================================================
+sym_id  FindNameList( const char *name, size_t len )
+//==================================================
 // Search symbol table for given name.
 {
     sym_id      head;
@@ -75,8 +75,8 @@ sym_id  FindNameList( const char *name, uint len )
 }
 
 
-sym_id  STNameList( const char *name, uint length )
-//=================================================
+sym_id  STNameList( const char *name, size_t length )
+//===================================================
 // Lookup the specified name list name in the symbol table.
 {
     sym_id      sym;

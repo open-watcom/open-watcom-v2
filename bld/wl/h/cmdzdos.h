@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,11 @@
 ****************************************************************************/
 
 
-extern bool ProcZdos( void );
-extern bool ProcZdosSYS( void );
-extern bool ProcZdosHWD( void );
-extern bool ProcZdosFSD( void );
+#ifdef _ZDOS
+
+extern void SetZdosFmt( void );
+extern void FreeZdosFmt( void );
+
+extern bool ProcZdosFormat( void );
+
+#endif

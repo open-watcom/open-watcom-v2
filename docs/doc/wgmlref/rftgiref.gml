@@ -1,12 +1,12 @@
 :H2.IREF
 :xmp
 Format&gml. &gml.IREF refid='id-name'
-              \(pg=start
+              [pg=start
                   end
                   major
-                  'character string'\)
-              \(see='character string'\)
-              \(seeid='id-name'\).
+                  'character string']
+              [see='character string']
+              [seeid='id-name'].
 :exmp
 :I1.index reference
 :I2 refid='gtiref' pg=major.gtiref

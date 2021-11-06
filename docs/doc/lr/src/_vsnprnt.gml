@@ -3,17 +3,17 @@
 #include <stdarg.h>
 #include <stdio.h>
 int _vsnprintf( char *buf,
-		size_t count,
-		const char *format,
-		va_list arg );
+                size_t count,
+                const char *format,
+                va_list arg );
 .ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdarg.h>
 #include <wchar.h>
 int _vsnwprintf( wchar_t *buf,
-		size_t count,
-		const wchar_t *format,
-		va_list arg );
+                size_t count,
+                const wchar_t *format,
+                va_list arg );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
@@ -25,10 +25,10 @@ function formats data under control of the
 .arg format
 control string and stores the result in
 .arg buf
-.ct .li .
+.period
 The maximum number of characters to store is specified by
 .arg count
-.ct .li .
+.period
 A null character is placed at the end of the generated character
 string if fewer than
 .arg count
@@ -36,18 +36,18 @@ characters were stored.
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
 The
 .id &funcb.
 function is equivalent to the
-.kw _snprintf
+.reffunc _snprintf
 function, with the variable argument list replaced with
 .arg arg
 .ct , which has been initialized by the
-.kw va_start
+.reffunc va_start
 macro.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .if &'length(&wfunc.) ne 0 .do begin
 The argument
 .arg buf
@@ -56,7 +56,7 @@ is to be written, rather than converted to multibyte characters and
 written to a stream.
 The maximum number of wide characters to write is specified by
 .arg count
-.ct .li .
+.period
 A null wide character is placed at the end of the generated wide
 character string if fewer than
 .arg count

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +44,6 @@
 
 #define IPF_TRANS_LEN           50
 
-#define MAX_TABS                100     // up to 100 tab stops
-
 static int          Curr_head_level = 0;
 static int          Curr_head_skip = 0;
 
@@ -79,19 +78,16 @@ static bool         Blank_line_sfx = true;
 static char         *Trans_str = NULL;
 static size_t       Trans_len = 0;
 
-static unsigned     Tab_list[MAX_TABS];
-static int          tabs_num = 0;
-
 static void draw_line( section_def *section )
 /*******************************************/
 {
     int         i;
 
-    trans_add_str( ":cgraphic.\n", section );
-    for( i = BOX_LINE_SIZE; i > 0; --i ) {
+    trans_add_str_nl( ":cgraphic.", section );
+    for( i = BOX_LINE_SIZE; i > 0; i-- ) {
         trans_add_char( BOX_HBAR, section );
     }
-    trans_add_str( "\n:ecgraphic.\n", section );
+    trans_add_str_nl( "\n:ecgraphic.", section );
 }
 
 static size_t translate_char_ipf( char ch, char *buf )
@@ -127,7 +123,7 @@ static char *translate_str_ipf( const char *str )
     char                *ptr;
 
     len = 1;
-    for( t_str = str; *t_str != '\0'; ++t_str ) {
+    for( t_str = str; *t_str != '\0'; t_str++ ) {
         len += translate_char_ipf( *t_str, buf );
     }
     if( len > Trans_len ) {
@@ -138,7 +134,7 @@ static char *translate_str_ipf( const char *str )
         Trans_len = len;
     }
     ptr = Trans_str;
-    for( t_str = str; *t_str != '\0'; ++t_str ) {
+    for( t_str = str; *t_str != '\0'; t_str++ ) {
         len = translate_char_ipf( *t_str, buf );
         strcpy( ptr, buf );
         ptr += len;
@@ -163,61 +159,21 @@ static size_t trans_add_str_ipf( const char *str, section_def *section )
     size_t      len;
 
     len = 0;
-    for( ; *str != '\0'; ++str ) {
+    for( ; *str != '\0'; str++ ) {
         len += trans_add_char_ipf( *str, section );
     }
     return( len );
 }
 
-static size_t trans_add_list( char *list, section_def *section, char *ptr )
-/*************************************************************************/
+static tab_size tab_align( tab_size ch_len, section_def *section )
+/****************************************************************/
 {
-    size_t      len;
-
-    len = trans_add_str( list, section );
-    ++ptr;
-    if( *ptr == 'c' ) {
-        len += trans_add_str( " compact", section );
-    }
-    len += trans_add_str( ".\n", section );
-    return( len );
-}
-
-static void read_tabs( char *tab_line )
-/*************************************/
-{
-    char        *ptr;
-    unsigned    tabcol;
-
-    Tab_xmp_char = *tab_line;
-    tabs_num = 0;
-    tabcol = 0;
-    for( ptr = strtok( tab_line + 1, " " ); ptr != NULL; ptr = strtok( NULL, " " ) ) {
-        if( *ptr == '+' ) {
-            tabcol += atoi( ptr + 1 );
-        } else {
-            tabcol = atoi( ptr );
-        }
-        Tab_list[tabs_num++] = tabcol;
-    }
-}
-
-static size_t tab_align( size_t ch_len, section_def *section )
-/************************************************************/
-{
-    int         i;
-    size_t      len;
-    size_t      j;
+    tab_size    i;
+    tab_size    len;
 
     // find the tab we should use
-    len = 1;
-    for( i = 0; i < tabs_num; i++ ) {
-        if( Tab_list[i] > ch_len ) {
-            len = Tab_list[i] - ch_len;
-            break;
-        }
-    }
-    for( j = len; j > 0; j-- ) {
+    len = Tabs_align( ch_len );
+    for( i = len; i > 0; i-- ) {
         trans_add_char_ipf( ' ', section );
     }
     return( len );
@@ -252,13 +208,15 @@ void ipf_trans_line( char *line_buf, section_def *section )
 
     switch( ch ) {
     case WHP_TABXMP:
-        if( *skip_blanks( ptr + 1 ) == '\0' ) {
+        ptr = skip_blanks( ptr + 1 );
+        if( *ptr == '\0' ) {
             Tab_xmp = false;
-            trans_add_str( ":exmp.\n", section );
+            trans_add_str_nl( ":exmp.", section );
             Blank_line_sfx = false;     // remove following blanks
         } else {
-            read_tabs( ptr + 1 );
-            trans_add_str( ":xmp.\n", section );
+            Tab_xmp_char = *ptr++;
+            Tabs_read( ptr );
+            trans_add_str_nl( ":xmp.", section );
             Tab_xmp = true;
             Blank_line_pfx = false;     // remove preceding blanks
         }
@@ -275,40 +233,65 @@ void ipf_trans_line( char *line_buf, section_def *section )
         draw_line( section );
         Blank_line_sfx = false;
         return;
-    case WHP_OLIST_START:
-        trans_add_list( ":ol", section, ptr );
-        Blank_line_pfx = false;
-        return;
     case WHP_LIST_START:
-        trans_add_list( ":ul", section, ptr );
-        Blank_line_pfx = false;
-        return;
     case WHP_DLIST_START:
-        trans_add_str( ":dl break=all tsize=5.\n", section );
-        Blank_line_pfx = false;
-        return;
+    case WHP_OLIST_START:
     case WHP_SLIST_START:
-        trans_add_list( ":sl", section, ptr );
+        NewList( ptr, 0, false );
+        switch( ch ) {
+        case WHP_OLIST_START:
+            trans_add_str( ":ol", section );
+            break;
+        case WHP_LIST_START:
+            trans_add_str( ":ul", section );
+            break;
+        case WHP_DLIST_START:
+            trans_add_str( ":dl break=all tsize=5", section );
+            break;
+        case WHP_SLIST_START:
+            trans_add_str( ":sl", section );
+            break;
+        }
+        if( ptr[1] == WHP_LIST_COMPACT )
+            trans_add_str( " compact", section );
+        trans_add_str_nl( ".", section );
         Blank_line_pfx = false;
-        return;
-    case WHP_SLIST_END:
-        trans_add_str( ":esl.\n", section );
-        Blank_line_sfx = false;
-        return;
-    case WHP_OLIST_END:
-        trans_add_str( ":eol.\n", section );
-        Blank_line_sfx = false;
+        if( ch == WHP_DLIST_START ) {
+            if( ptr[1] == WHP_LIST_COMPACT )
+                ptr++;
+            ptr = skip_blanks( ptr + 1 );
+            if( *ptr != '\0' ) {
+                /* due to a weakness in GML, the definition term must be
+                   allowed on the same line as the definition tag. So
+                   if its there, continue */
+                break;
+            }
+        }
         return;
     case WHP_LIST_END:
-        trans_add_str( ":eul.\n", section );
-        Blank_line_sfx = false;
-        return;
     case WHP_DLIST_END:
-        trans_add_str( ":edl.\n", section );
+    case WHP_OLIST_END:
+    case WHP_SLIST_END:
+        switch( ch ) {
+        case WHP_SLIST_END:
+            trans_add_str_nl( ":esl.", section );
+            break;
+        case WHP_OLIST_END:
+            trans_add_str_nl( ":eol.", section );
+            break;
+        case WHP_LIST_END:
+            trans_add_str_nl( ":eul.", section );
+            break;
+        case WHP_DLIST_END:
+            trans_add_str_nl( ":edl.", section );
+            break;
+        }
         Blank_line_sfx = false;
+        PopList();
         return;
     case WHP_LIST_ITEM:
     case WHP_DLIST_TERM:
+    case WHP_DLIST_DESC:
         /* eat blank lines before list items and terms */
         Blank_line_pfx = false;
         break;
@@ -341,7 +324,7 @@ void ipf_trans_line( char *line_buf, section_def *section )
 
     if( Blank_line_pfx ) {
         if( Blank_line_sfx ) {
-            line_len += trans_add_str( ".br\n", section );
+            line_len += trans_add_str_nl( ".br", section );
         }
         Blank_line_pfx = false;
     }
@@ -356,10 +339,18 @@ void ipf_trans_line( char *line_buf, section_def *section )
 
     Blank_line_sfx = true;
 
-    ch = *ptr;
-    if( ch != WHP_LIST_ITEM && ch != WHP_DLIST_TERM && ch != WHP_DLIST_DESC && !Tab_xmp ) {
-        /* a .br in front of li and dt would generate extra spaces */
-        line_len += trans_add_str( ".br\n", section );
+    if( !Tab_xmp ) {
+        ch = *ptr;
+        switch( ch ) {
+        case WHP_LIST_ITEM:
+        case WHP_DLIST_TERM:
+        case WHP_DLIST_DESC:
+            break;
+        default:
+            /* a .br in front of li and dt would generate extra spaces */
+            line_len += trans_add_str_nl( ".br", section );
+            break;
+        }
     }
 
     term_fix = false;
@@ -372,63 +363,59 @@ void ipf_trans_line( char *line_buf, section_def *section )
             }
             trans_add_char( '\n', section );
             break;
-        } else if( ch == WHP_HLINK || ch == WHP_DFN ) {
+        }
+        switch( ch ) {
+        case WHP_FLINK:
+            ptr++;
+            file_name = ptr;
+            ptr = strchr( file_name, WHP_FLINK );
+            if( ptr == NULL ) {
+                error( ERR_BAD_LINK_DFN );
+            }
+            *ptr = '\0';
+            /* fall through */
+        case WHP_HLINK:
+        case WHP_DFN:
             Curr_ctx->empty = false;
             /* there are no popups in IPF, so treat them as links */
-            ctx_name = ptr + 1;
-            ptr = strchr( ptr + 1, ch );
+            ptr++;
+            ctx_name = ptr;
+            ptr = strchr( ctx_name, ch );
             if( ptr == NULL ) {
                 error( ERR_BAD_LINK_DFN );
             }
-            *ptr = '\0';
-            ctx_text = ptr + 1;
-            ptr = strchr( ctx_text + 1, ch );
+            *ptr++ = '\0';
+            ctx_text = ptr;
+            ptr = strchr( ctx_text, ch );
             if( ptr == NULL ) {
                 error( ERR_BAD_LINK_DFN );
             }
-            *ptr = '\0';
-            add_link( ctx_name );
-            sprintf( buf, ":link reftype=hd refid=%s.", ctx_name );
-            line_len += trans_add_str( buf, section );
-            line_len += trans_add_str_ipf( ctx_text, section );
-            ch_len += strlen( ctx_text );
-            line_len += trans_add_str( ":elink.", section );
-            ++ptr;
-        } else if( ch == WHP_FLINK ) {
-            Curr_ctx->empty = false;
-            file_name = strchr( ptr + 1, ch );
-            if( file_name == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            ctx_name = strchr( file_name + 1, ch );
-            if( ctx_name == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            ctx_text = strchr( ctx_name + 1, ch );
-            if( ctx_text == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            *ctx_text = '\0';
-            ctx_text = ctx_name + 1;
-            *ctx_name = '\0';
-            ctx_name = file_name + 1;
-            *file_name = '\0';
-            file_name = ptr + 1;
-            sprintf( buf, ":link reftype=launch object='view.exe' "
+            *ptr++ = '\0';
+            if( ch == WHP_FLINK ) {
+                sprintf( buf, ":link reftype=launch object='view.exe' "
                           "data='%s %s'.", file_name, ctx_name );
+            } else {
+                add_link( ctx_name );
+                sprintf( buf, ":link reftype=hd refid=%s.", ctx_name );
+            }
             line_len += trans_add_str( buf, section );
             line_len += trans_add_str_ipf( ctx_text, section );
             ch_len += strlen( ctx_text );
             line_len += trans_add_str( ":elink.", section );
-            ptr = ctx_text + strlen( ctx_text ) + 1;
-        } else if( ch == WHP_LIST_ITEM ) {
+            break;
+        case WHP_LIST_ITEM:
             /* list item */
+            Curr_list->number++;
             line_len += trans_add_str( ":li.", section );
             ptr = skip_blanks( ptr + 1 );
-        } else if( ch == WHP_DLIST_DESC ) {
+            break;
+        case WHP_DLIST_DESC:
+            Curr_list->number++;
             trans_add_str( ":dd.", section );
             ptr = skip_blanks( ptr + 1 );
-        } else if( ch == WHP_DLIST_TERM ) {
+            Blank_line_sfx = false;
+            break;
+        case WHP_DLIST_TERM:
             /* definition list term */
             ptr = skip_blanks( ptr + 1 );
             if( *ptr == WHP_FONTSTYLE_START ) {  /* avoid nesting */
@@ -439,10 +426,12 @@ void ipf_trans_line( char *line_buf, section_def *section )
                 term_fix = true;
                 Blank_line_sfx = false;
             }
-        } else if( ch == WHP_CTX_KW ) {
-            end = strchr( ptr + 1, WHP_CTX_KW );
-            len = end - ptr - 1;
-            memcpy( buf, ptr + 1, len );
+            break;
+        case WHP_CTX_KW:
+            ptr++;
+            end = strchr( ptr, WHP_CTX_KW );
+            len = end - ptr;
+            memcpy( buf, ptr, len );
             buf[len] = '\0';
             add_ctx_keyword( Curr_ctx, buf );
             ptr = end + 1;
@@ -450,42 +439,44 @@ void ipf_trans_line( char *line_buf, section_def *section )
                 /* kludge fix cuz of GML: GML thinks that keywords are
                    are real words, so it puts a space after them.
                    This should fix that */
-                ++ptr;
+                ptr++;
             }
-        } else if( ch == WHP_PAR_RESET ) {
+            break;
+        case WHP_PAR_RESET:
             /* this can be ignored for IPF */
-            ++ptr;
-        } else if( ch == WHP_BMP ) {
+            ptr++;
+            break;
+        case WHP_BMP:
             Curr_ctx->empty = false;
-            ++ptr;
+            ptr++;
             ch = *ptr;
-            ptr += 2;
-            end = strchr( ptr, WHP_BMP );
-            *end = '\0';
+            file_name = ptr + 2;
+            ptr = strchr( file_name, WHP_BMP );
+            *ptr++ = '\0';
             switch( ch ) {
             case 'i':
-                sprintf( buf, ":artwork runin name='%s'.", ptr );
+                sprintf( buf, ":artwork runin name='%s'.", file_name );
                 break;
             case 'l':
-                sprintf( buf, ":artwork align=left name='%s'.", ptr );
+                sprintf( buf, ":artwork align=left name='%s'.", file_name );
                 break;
             case 'r':
-                sprintf( buf, ":artwork align=right name='%s'.", ptr );
+                sprintf( buf, ":artwork align=right name='%s'.", file_name );
                 break;
             case 'c':
-                sprintf( buf, ":artwork align=center name='%s'.", ptr );
+                sprintf( buf, ":artwork align=center name='%s'.", file_name );
                 break;
             default:
                 *buf = '\0';
                 break;
             }
             line_len += trans_add_str( buf, section );
-            ptr = end + 1;
-        } else if( ch == WHP_FONTSTYLE_START ) {
-            ++ptr;
+            break;
+        case WHP_FONTSTYLE_START:
+            ptr++;
             end = strchr( ptr, WHP_FONTSTYLE_START );
             font_idx = 0;
-            for( ; ptr != end; ++ptr ) {
+            for( ; ptr != end; ptr++ ) {
                 switch( *ptr ) {
                 case 'b':
                     font_idx |= FONT_STYLE_BOLD;
@@ -501,18 +492,19 @@ void ipf_trans_line( char *line_buf, section_def *section )
             }
             line_len += trans_add_str( Font_match[font_idx], section );
             Font_list[Font_list_curr] = font_idx;
-            ++Font_list_curr;
-            ++ptr;
-        } else if( ch == WHP_FONTSTYLE_END ) {
-            --Font_list_curr;
+            Font_list_curr++;
+            ptr++;
+            break;
+        case WHP_FONTSTYLE_END:
+            Font_list_curr--;
             line_len += trans_add_str( Font_end[Font_list[Font_list_curr]], section );
-            ++ptr;
-        } else if( ch == WHP_FONTTYPE ) {
-            ++ptr;
+            ptr++;
+            break;
+        case WHP_FONTTYPE:
+            ptr++;
             end = strchr( ptr, WHP_FONTTYPE );
-            *end = '\0';
+            *end++ = '\0';
             strcpy( buf, ":font facename=" );
-
             if( Ipf_or_Html_Real_font ) {
                 /* This code supports fonts in the expected
                    manor, but not in the usual IPF way. In IPF, font switching
@@ -528,10 +520,9 @@ void ipf_trans_line( char *line_buf, section_def *section )
                     strcat( buf, "Courier" );
                 }
                 line_len += trans_add_str( buf, section );
-                ptr = end + 1;
-                end = strchr( ptr, WHP_FONTTYPE );
-                *end = '\0';
-                sprintf( buf, " size=%dx10.", atoi( ptr ) );
+                ptr = strchr( end, WHP_FONTTYPE );
+                *ptr++ = '\0';
+                sprintf( buf, " size=%dx10.", (int)strtol( end, NULL, 10 ) );
             } else {
                 /* this code turns all font changes to the default system
                    font, except for Courier. This is the normal IPF way */
@@ -543,14 +534,12 @@ void ipf_trans_line( char *line_buf, section_def *section )
                     /* default system font */
                     strcat( buf, " size=0x0." );
                 }
-                ptr = end + 1;
-                end = strchr( ptr, WHP_FONTTYPE );
+                ptr = strchr( end, WHP_FONTTYPE ) + 1;
             }
-
             line_len += trans_add_str( buf, section );
-            ptr = end + 1;
-        } else {
-            ++ptr;
+            break;
+        default:
+            ptr++;
             Curr_ctx->empty = false;
             if( Tab_xmp && ch == Tab_xmp_char ) {
                 len = tab_align( ch_len, section );
@@ -559,13 +548,14 @@ void ipf_trans_line( char *line_buf, section_def *section )
                 ptr = skip_blanks( ptr );
             } else {
                 line_len += trans_add_char_ipf( ch, section );
-                ++ch_len;
+                ch_len++;
             }
             if( line_len > 120 && ch == ' ' && !Tab_xmp ) {
                 /* break onto the next line */
                 line_len = 0;
                 trans_add_char( '\n', section );
             }
+            break;
         }
     }
 }
@@ -624,11 +614,11 @@ static void output_ctx_hdr( ctx_def *ctx )
             key = keylist->key;
             ptr = key->keyword;
             if( !key->duplicate ) {
-                fputs( ":i1.", Out_file );
+                whp_fprintf( Out_file, ":i1." );
             } else {
                 if( key->defined_ctx == ctx ) {
                     /* this is the first instance. :i1 and :i2 */
-                    fprintf( Out_file, ":i1 id=%d.%s\n",
+                    whp_fprintf( Out_file, ":i1 id=%d.%s\n",
                                     key->id, translate_str_ipf( ptr ) );
                 }
 
@@ -638,11 +628,10 @@ static void output_ctx_hdr( ctx_def *ctx )
                        Skip it! */
                     continue;
                 }
-                fprintf( Out_file, ":i2 refid=%d.", key->id );
+                whp_fprintf( Out_file, ":i2 refid=%d.", key->id );
                 ptr = ctx->title;
             }
-            fputs( translate_str_ipf( ptr ), Out_file );
-            fputc( '\n', Out_file );
+            whp_fprintf( Out_file, "%s\n", translate_str_ipf( ptr ) );
         }
     }
     if( Ipf_or_Html_Real_font ) {
@@ -666,7 +655,7 @@ static void output_ctx_sections( ctx_def *ctx )
 
     for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
-            whp_fwrite( section->section_text, 1, section->section_size, Out_file );
+            whp_fwrite( Out_file, section->section_text, 1, section->section_size );
         }
     }
 }

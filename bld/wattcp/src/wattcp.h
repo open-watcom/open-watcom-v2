@@ -1,5 +1,5 @@
 #ifndef __WATTCP_H
-#define __WATTCP_H    
+#define __WATTCP_H
 
 /*
  * Our basic types
@@ -12,13 +12,6 @@ typedef BYTE            eth_address[6];
 typedef BYTE            ax25_address[7];
 
 #define mac_address eth_address /* our emphasis is no longer on Ethernet */
-
-typedef int (*ProtoHandler) (void *sock, BYTE *data, int len,
-                             void *tcp_phdr, void *udp_hdr);
-
-typedef int (*UserHandler)  (void *sock);
-
-typedef int (*sol_upcall)   (void *socket, int icmp_type);
 
 #if defined(__HIGHC__) || defined(__GNUC__)
   typedef unsigned long long  uint64;
@@ -33,7 +26,7 @@ typedef int (*sol_upcall)   (void *socket, int icmp_type);
  * Until C compilers support C++ namespaces, we use this
  * prefix for our namespace.
  */
-#define NAMESPACE(x)    _w32_ ## x     
+#define NAMESPACE(x)    _w32_ ## x
 
 
 #include "target.h"        /* portability macros & defines */
@@ -109,12 +102,35 @@ typedef int (*sol_upcall)   (void *socket, int icmp_type);
 #define ICMP_PROTO       1
 #define IGMP_PROTO       2
 
-#define TCP_MODE_BINARY  0       /* default mode */
+/*
+ * control bits for 'sockmode' used by 'sock_mode' function
+ */
+
+#define TCP_MODE_BINARY  0      /* default to binary mode */
 #define TCP_MODE_ASCII   1
-#define UDP_MODE_CHK     0       /* default to having checksums */
-#define UDP_MODE_NOCHK   2       /* turn off checksums */
-#define TCP_MODE_NAGLE   0       /* Nagle algorithm */
+#define UDP_MODE_CHK     0      /* default to having checksums */
+#define UDP_MODE_NOCHK   2
+#define TCP_MODE_NAGLE   0      /* default to Nagle algorithm */
 #define TCP_MODE_NONAGLE 4
+
+#define SOCK_MODE_MASK   (TCP_MODE_ASCII | UDP_MODE_NOCHK | TCP_MODE_NONAGLE)
+
+/*
+ * status bits for 'sockmode' used internaly
+ */
+
+#define TCP_MODE_SAWCR   0x2000 /* for ASCII sockets - S. Lawson */
+#define TCP_MODE_LOCAL   0x4000
+
+/*
+ * macros to handle 'sockmode'
+ */
+
+#define SETON_SOCKMODE(s,m)     (s).sockmode |= (m)
+#define SETOFF_SOCKMODE(s,m)    (s).sockmode &= ~(m)
+#define ISON_SOCKMODE(s,m)      ((s).sockmode & (m))
+#define ISOFF_SOCKMODE(s,m)     (((s).sockmode & (m)) == 0)
+
 
 /*
  * These are the IP options
@@ -145,7 +161,8 @@ typedef int (*sol_upcall)   (void *socket, int icmp_type);
 #define TCPOPT_CCNEW     12      /* T/TCP CC options (rfc1644) */
 #define TCPOPT_CCECHO    13      /* T/TCP CC options (rfc1644) */
 
-#define TCP_MAX_WINSHIFT 14      /* maximum window shift */
+#define TCP_MAXWIN       65535   /* largest value for (unscaled) window */
+#define TCP_MAX_WINSHIFT 14      /* maximum window shift for (scaled) window */
 
 /*
  * These are the ICMP messages. Should be same as in <netinet/ip_icmp.h>
@@ -218,7 +235,7 @@ typedef struct in_Header {
         WORD   checksum;
         DWORD  source;
         DWORD  destination;
-      } in_Header;
+    } in_Header;
 
 #define IP_CE      0x8000     /* `in_Header.frag_ofs' masks: */
 #define IP_DF      0x4000     /*   Congestion Experienced */
@@ -230,10 +247,10 @@ typedef struct in_Header {
 /*
  * IP packet incuding header and data
  */
-typedef struct ip_Packet {    
+typedef struct ip_Packet {
         in_Header head;
         BYTE      data [MAX_IP_DATA];
-      } ip_Packet;
+    } ip_Packet;
 
 
 /*
@@ -244,7 +261,7 @@ typedef struct udp_Header {
         WORD   dstPort;
         WORD   length;
         WORD   checksum;
-      } udp_Header;
+    } udp_Header;
 
 typedef struct tcp_Header {
         WORD   srcPort;
@@ -257,7 +274,7 @@ typedef struct tcp_Header {
         WORD   window;
         WORD   checksum;
         WORD   urgent;
-      } tcp_Header;
+    } tcp_Header;
 
 #define tcp_FlagFIN   0x01
 #define tcp_FlagSYN   0x02
@@ -277,7 +294,7 @@ typedef struct tcp_PseudoHeader {
         BYTE   protocol;
         WORD   length;
         WORD   checksum;
-      } tcp_PseudoHeader;
+    } tcp_PseudoHeader;
 
 /*
  * Internet Group Management Protocol Packet
@@ -288,7 +305,7 @@ typedef struct IGMP_packet {
         BYTE   mbz;
         WORD   checksum;
         DWORD  address;
-      } IGMP_packet;
+    } IGMP_packet;
 
 #define IGMP_VERSION  1
 #define IGMP_QUERY    1
@@ -308,7 +325,7 @@ typedef struct arp_Header {
         DWORD       srcIPAddr;
         eth_address dstEthAddr;
         DWORD       dstIPAddr;
-      } arp_Header;
+    } arp_Header;
 
 #define rarp_Header arp_Header
 
@@ -342,9 +359,16 @@ typedef struct arp_Header {
 #define tcp_StateTIMEWT   10     /* dally after sending final FINACK */
 #define tcp_StateCLOSED   11     /* FINACK received */
 
-#define tcp_MaxBufSize    2048   /* maximum bytes to buffer on input */
-#define udp_MaxBufSize    tcp_MaxBufSize
-#define tcp_MaxTxBufSize  tcp_MaxBufSize        /* and on tcp output */
+#define udp_MaxBufSize    2048   /* maximum bytes to buffer on udp input */
+#define tcp_MaxBufSize    2048   /* maximum bytes to buffer on tcp input */
+#define tcp_MaxTxBufSize  tcp_MaxBufSize            /* and on tcp output */
+
+/*
+ * Fields common to any socket definition.
+ */
+
+#define SOCKET_COMMON                                                       \
+        WORD         ip_type           /* protocol type */
 
 /*
  * Fields common to UDP & TCP socket definition.
@@ -353,100 +377,113 @@ typedef struct arp_Header {
  */
 
 #define UDP_TCP_COMMON                                                      \
-        WORD         ip_type;          /* UDP_PROTO or TCPPROTO */          \
-        BYTE         ttl;              /* Time To Live */                   \
-        BYTE         fill_1;                                                \
-        const char  *err_msg;          /* null when all is ok */            \
-        void       (*usr_yield)(void); /* yield while waiting */            \
-        sol_upcall   sol_callb;        /* socket-layer callback (icmp) */   \
-        BYTE         rigid;                                                 \
-        BYTE         stress;                                                \
-        WORD         sockmode;         /* a logical OR of bits */           \
-        DWORD        usertimer;        /* ip_timer_set, ip_timer_timeout */ \
-        ProtoHandler protoHandler;     /* call with incoming data */        \
-        eth_address  hisethaddr;       /* peer's ethernet address */        \
-        WORD         fill_2;                                                \
+    BYTE         ttl;               /* Time To Live */                      \
+    BYTE         fill_1;                                                    \
+    const char  *err_msg;           /* null when all is ok */               \
+    void       (*usr_yield)(void);  /* yield while waiting */               \
+    sol_upcall   sol_callb;         /* socket-layer callback (icmp) */      \
+    BYTE         rigid;                                                     \
+    BYTE         stress;                                                    \
+    WORD         sockmode;          /* a logical OR of bits */              \
+    DWORD        usertimer;         /* ip_timer_set, ip_timer_timeout */    \
+    ProtoHandler protoHandler;      /* call with incoming data */           \
+    eth_address  hisethaddr;        /* peer's ethernet address */           \
+    WORD         fill_2;                                                    \
                                                                             \
-        DWORD        myaddr;           /* my ip-address */                  \
-        DWORD        hisaddr;          /* peer's internet address */        \
-        WORD         hisport;          /* peer's source port */             \
-        WORD         myport;           /* my source port */                 \
-        WORD         locflags;         /* local option flags */             \
-        WORD         fill_3;                                                \
+    DWORD        myaddr;            /* my ip-address */                     \
+    DWORD        hisaddr;           /* peer's internet address */           \
+    WORD         hisport;           /* peer's source port */                \
+    WORD         myport;            /* my source port */                    \
+    WORD         locflags;          /* local option flags */                \
+    WORD         fill_3;                                                    \
                                                                             \
-        UINT         queuelen;         /* optional Tx queue length */       \
-        const BYTE  *queue;                                                 \
+    UINT         queuelen;          /* optional Tx queue length */          \
+    const BYTE  *queue;                                                     \
                                                                             \
-        int          rdatalen;         /* Rx length, must be signed */      \
-        UINT         maxrdatalen;                                           \
-        BYTE        *rdata;                    /* received data pointer */  \
-        BYTE         rddata[tcp_MaxBufSize+1]; /* received data buffer */   \
-        DWORD        safetysig                 /* magic marker */
+    int          rx_datalen;        /* Rx length, must be signed */         \
+    UINT         rx_maxdatalen;                                             \
+    BYTE        *rx_data;           /* received data pointer */
+
+typedef int (*ProtoHandler) (union sock_type *sk, BYTE *data, int len,
+                             tcp_PseudoHeader *tcp_phdr, udp_Header *udp_hdr);
+
+typedef int (*UserHandler)  (union sock_type *sk);
+
+typedef int (*sol_upcall)   (union sock_type *sk, int icmp_type);
 
 /*
  * UDP socket definition
  */
 typedef struct udp_Socket {
         struct udp_Socket *next;
+        SOCKET_COMMON;
         UDP_TCP_COMMON;
-      } udp_Socket;
+        BYTE   rx_buf[udp_MaxBufSize+1]; /* received data buffer */
+        DWORD  safetysig;           /* magic marker */
+    } udp_Socket;
 
 /*
  * TCP Socket definition (fields common to udp_Socket must come first)
  */
 typedef struct tcp_Socket {
-        struct  tcp_Socket *next;  /* link to next tcp-socket */
+        struct tcp_Socket *next;    /* link to next tcp-socket */
+        SOCKET_COMMON;
         UDP_TCP_COMMON;
+        BYTE   rx_buf[tcp_MaxBufSize+1]; /* received data buffer */
+        DWORD  safetysig;           /* magic marker */
 
-        UINT   state;              /* tcp connection state */
-        DWORD  acknum;             /* data ACK'ed */
-        DWORD  seqnum;             /* sequence number */
+        UINT   state;               /* tcp connection state */
+        DWORD  acknum;              /* data ACK'ed */
+        DWORD  seqnum;              /* sequence number */
 
 #if defined(USE_DEBUG)
-        DWORD  last_acknum[2];     /* for pcdbug.c; to follow SEQ/ACK */
-        DWORD  last_seqnum[2];     /* increments */
+        DWORD  last_acknum[2];      /* for pcdbug.c; to follow SEQ/ACK */
+        DWORD  last_seqnum[2];      /* increments */
 #endif
 
-        DWORD  timeout;            /* timeout, in milliseconds */
-        BYTE   unhappy;            /* flag, indicates retransmitting segt's */
-        BYTE   recent;             /* 1 if recently transmitted */
-        WORD   flags;              /* tcp flags for last packet sent */
+        DWORD  timeout;             /* timeout, in milliseconds */
+        BYTE   unhappy;             /* flag, indicates retransmitting segt's */
+        BYTE   recent;              /* 1 if recently transmitted */
+        WORD   flags;               /* tcp flags for last packet sent */
 
-        UINT   window;             /* other guy's window */
-        UINT   datalen;            /* number of bytes of data to send */
-        int    unacked;            /* unacked data, must be signed */
+        UINT   window;              /* other guy's window */
+        int    unacked;             /* unacked data, must be signed */
 
-        BYTE   cwindow;            /* Congestion window */
-        BYTE   wwindow;            /* Van Jacobson's algorithm */
+        BYTE   cwindow;             /* Congestion window */
+        BYTE   wwindow;             /* Van Jacobson's algorithm */
         WORD   fill_4;
 
-        DWORD  vj_sa;              /* VJ's alg, standard average   (SRTT) */
-        DWORD  vj_sd;              /* VJ's alg, standard deviation (RTTVAR) */
-        DWORD  vj_last;            /* last transmit time */
-        UINT   rto;                /* retransmission timeout */
-        BYTE   karn_count;         /* count of packets */
-        BYTE   tos;                /* priority */
+        DWORD  vj_sa;               /* VJ's alg, standard average   (SRTT) */
+        DWORD  vj_sd;               /* VJ's alg, standard deviation (RTTVAR) */
+        DWORD  vj_last;             /* last transmit time */
+        UINT   rto;                 /* retransmission timeout */
+        BYTE   karn_count;          /* count of packets */
+        BYTE   tos;                 /* priority */
         WORD   fill_5;
 
-        DWORD  rtt_time;           /* Round Trip Time value */
-        DWORD  rtt_lasttran;       /* RTT at last transmission */
+        DWORD  rtt_time;            /* Round Trip Time value */
+        DWORD  rtt_lasttran;        /* RTT at last transmission */
 
-        DWORD  ts_sent;            /* last TimeStamp value sent */
-        DWORD  ts_recent;          /* last TimeStamp value received */
-        DWORD  ts_echo;            /* last TimeStamp echo received */
+        DWORD  ts_sent;             /* last TimeStamp value sent */
+        DWORD  ts_recent;           /* last TimeStamp value received */
+        DWORD  ts_echo;             /* last TimeStamp echo received */
 
         UINT   max_seg;
-        DWORD  missed_seg[2];      /* S. Lawson - handle one dropped segment */
-        DWORD  inactive_to;        /* for the inactive flag */
-        DWORD  datatimer;          /* EE 99.08.23, note broken connections */
+        DWORD  missed_seg[2];       /* S. Lawson - handle one dropped segment */
+        DWORD  inactive_to;         /* for the inactive flag */
+        DWORD  datatimer;           /* EE 99.08.23, note broken connections */
         int    sock_delay;
 
-        BYTE   send_wscale;        /* to-do!!: window scales shifts, tx/rx */
-        BYTE   recv_wscale;
+        BYTE   tx_wscale;           /* to-do!!: window scales shifts, tx/rx */
+        BYTE   rx_wscale;
 
-        BYTE   data[tcp_MaxBufSize+1]; /* data for transmission */
-        DWORD  safetytcp;              /* extra magic marker */
-      } tcp_Socket;
+        UINT   tx_datalen;          /* TX length, number of bytes of data to send */
+        UINT   tx_maxdatalen;
+        BYTE   *tx_data;            /* transmission data pointer */
+
+        BYTE   tx_buf[tcp_MaxTxBufSize+1]; /* data buffer for transmission */
+        DWORD  safetytcp;           /* extra magic marker */
+    } tcp_Socket;
 
 
 /*
@@ -454,38 +491,50 @@ typedef struct tcp_Socket {
  */
 typedef struct raw_Socket {
         struct raw_Socket *next;
-        WORD   ip_type;               /* same ofs as for udp/tcp Socket */
-        BOOL   used;                  /* used flag; packet not read yet */
+        SOCKET_COMMON;
+        BOOL   used;                /* used flag; packet not read yet */
         struct in_Header ip;
-        BYTE   data [MAX_FRAG_SIZE];  /* room for 1 jumbo IP packet */
-      } raw_Socket;
+        BYTE   data [MAX_FRAG_SIZE]; /* room for 1 jumbo IP packet */
+    } raw_Socket;
+
+/*
+ * shared fields socket structure definition
+ */
+typedef struct u_Socket {
+        struct u_Socket *next;
+        SOCKET_COMMON;
+        UDP_TCP_COMMON;
+        BYTE   rx_buf[1];           /* received data buffer */
+    } u_Socket;
 
 /*
  * sock_type used for socket I/O
  */
 typedef union sock_type {
+        union sock_type *next;
         udp_Socket udp;
         tcp_Socket tcp;
         raw_Socket raw;
-      } sock_type;
+        u_Socket   u;
+    } sock_type;
 
 typedef struct watt_sockaddr {
         WORD   s_type;
         WORD   s_port;
         DWORD  s_ip;
         BYTE   s_spares[6];    /* unused in TCP realm */
-      } watt_sockaddr;
+    } watt_sockaddr;
 
 /*
  * A simple RTT cache based on Phil Karn's KA9Q.
  * # of TCP round-trip-time cache entries
  */
-#define RTTCACHE  16  
+#define RTTCACHE  16
 
 struct tcp_rtt {
        DWORD ip;
        UINT  rto;
-     };
+    };
 
 /*
  * Stuff for Multicast Support - JRM 6/7/93
@@ -502,7 +551,7 @@ typedef struct multicast {
         BYTE        processes;      /* number of interested processes    */
         DWORD       replytime;      /* IGMP query reply timer            */
         BYTE        active;         /* is this an active entry           */
-      } multicast;
+    } multicast;
 
 #endif /* __WATTCP_H */
 

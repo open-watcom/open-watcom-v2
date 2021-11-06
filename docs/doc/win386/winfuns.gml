@@ -76,26 +76,26 @@ The &fn_or_macs in this section are all classified as "WIN386"
 .endpoint
 .in &INDlvl
 .*
-.fnc AllocAlias16                   aalias.gml   DOS
-.fnc AllocHugeAlias16               ahalias.gml  DOS
-.fnc _Call16                        call16.gml   DOS
-.fnc DefineDLLEntry                 ddllent.gml  DOS
-.fnc DefineUserProc16               defp16.gml   DOS
-.fnc FreeAlias16                    falias.gml   DOS
-.fnc FreeHugeAlias16                fhalias.gml  DOS
-.fnc FreeIndirectFunctionHandle     freeindr.gml DOS
+.fnc AllocAlias16                   AllocAlias16                   aalias.gml   DOS
+.fnc AllocHugeAlias16               AllocHugeAlias16               ahalias.gml  DOS
+.fnc _Call16                        _Call16                        call16.gml   DOS
+.fnc DefineDLLEntry                 DefineDLLEntry                 ddllent.gml  DOS
+.fnc DefineUserProc16               DefineUserProc16               defp16.gml   DOS
+.fnc FreeAlias16                    FreeAlias16                    falias.gml   DOS
+.fnc FreeHugeAlias16                FreeHugeAlias16                fhalias.gml  DOS
+.fnc FreeIndirectFunctionHandle     FreeIndirectFunctionHandle     freeindr.gml DOS
 .* .fnc GetCallbackRoutine
-.fnc GetIndirectFunctionHandle      getindr.gml  DOS
-.fnc GetProc16                      getp16.gml   DOS
+.fnc GetIndirectFunctionHandle      GetIndirectFunctionHandle      getindr.gml  DOS
+.fnc GetProc16                      GetProc16                      getp16.gml   DOS
 .* .fnc Invoke16BitFunction
-.fnc InvokeIndirectFunction         invindr.gml  DOS
-.fnc MapAliasToFlat                 mapa2f.gml   DOS
-.fnc MK_FP16                        mkfp16.gml   DOS
-.fnc MK_FP32                        mkfp32.gml   DOS
-.fnc MK_LOCAL32                     mklcl32.gml  DOS
-.fnc PASS_WORD_AS_POINTER           pwap.gml     DOS
+.fnc InvokeIndirectFunction         InvokeIndirectFunction         invindr.gml  DOS
+.fnc MapAliasToFlat                 MapAliasToFlat                 mapa2f.gml   DOS
+.fnc MK_FP16                        MK_FP16                        mkfp16.gml   DOS
+.fnc MK_FP32                        MK_FP32                        mkfp32.gml   DOS
+.fnc MK_LOCAL32                     MK_LOCAL32                     mklcl32.gml  DOS
+.fnc PASS_WORD_AS_POINTER           PASS_WORD_AS_POINTER           pwap.gml     DOS
 .* .fnc ReleaseCallbackRoutine
-.fnc ReleaseProc16                  relp16.gml   DOS
+.fnc ReleaseProc16                  ReleaseProc16                  relp16.gml   DOS
 .* .fnc SetProc
 .* .fnc TryAlias
 .* .fnc vGetCallbackRoutine

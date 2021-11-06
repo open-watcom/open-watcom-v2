@@ -18,10 +18,10 @@ The
 function tests for any printable character including space
 ('&sysrb').
 The
-.kw isgraph
+.reffunc isgraph
 function is similar, except that the space character is excluded
 from the character set being tested.
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

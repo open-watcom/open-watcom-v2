@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +58,7 @@
                            _debug( ltoa( n, buff, 16 ) );   \
                          }
 
-#define GET_ENV_FROM_PSP()  (*(addr_seg __far *)MK_FP(_psp, 0x2c))
+#define GET_ENV_FROM_PSP()  (*(addr_seg __far *)_MK_FP(_psp, 0x2c))
 
 typedef struct {
     uint_16     limit;
@@ -159,8 +160,8 @@ static void restore_vects( void __far **rmvtable, void __far **pmvtable )
     int                 intnb;
 
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
-        TinyDPMISetRealVect( intnb, FP_SEG( rmvtable[intnb] ),
-                             FP_OFF( rmvtable[intnb] ) );
+        TinyDPMISetRealVect( intnb, _FP_SEG( rmvtable[intnb] ),
+                             _FP_OFF( rmvtable[intnb] ) );
         TinyDPMISetProtectVect( intnb, pmvtable[intnb] );
     }
 }
@@ -177,7 +178,7 @@ static void interrupt rm_66_handler( unsigned pmcs, unsigned pmds )
     _debug( "Hi from rm_66_handler" );
     PMProcCalled = 0;
     _debug( "raw switching to the debugger's protected mode" );
-    DoRawSwitch( RawRMtoPMAddr, RawPMtoRMAddr, FP_OFF( &PMProc ), &PMRegs );
+    DoRawSwitch( RawRMtoPMAddr, RawPMtoRMAddr, _FP_OFF( &PMProc ), &PMRegs );
     _debug( "made it back to rm_66_handler" );
     _debug( PMProcCalled ? "PMProc was called" : "PMProc was NOT called" );
     SaveState( RESTORE_STATE, RMStateMem, SavePMState );
@@ -197,7 +198,7 @@ static void hook_vects( void __far *pmaddr, void __far *rmaddr,
     if( oldrmaddr ) {
         *oldrmaddr = (void __far *)TinyDPMIGetRealVect( 0x66 );
     }
-    if( TinyDPMISetRealVect( 0x66, FP_SEG( rmaddr ), FP_OFF( rmaddr ) ) ) {
+    if( TinyDPMISetRealVect( 0x66, _FP_SEG( rmaddr ), _FP_OFF( rmaddr ) ) ) {
         _debug( "error hooking real mode vector 0x66" );
     }
 }
@@ -236,7 +237,7 @@ extern void main( void )
     Envseg = GET_ENV_FROM_PSP();
     switchaddr = GetPModeAddr( &dpmisize );
     dpmimem = malloc( dpmisize + 15 );
-    dpmiseg = FP_SEG( dpmimem ) + ( FP_OFF( dpmimem ) + 15 ) / 16;
+    dpmiseg = _FP_SEG( dpmimem ) + ( _FP_OFF( dpmimem ) + 15 ) / 16;
     if( ( switchaddr == NULLFAR ) || ( dpmimem == NULL ) ) {
         _debug( "error, DPMI host is not present" );
     } else if( !EnterPMode( switchaddr, dpmiseg ) ) {
@@ -248,7 +249,7 @@ extern void main( void )
         } else {
 
             segread( &PMRegs );
-            hook_vects( MK_FP( PMRegs.cs, FP_OFF( &PM66Handler ) ),
+            hook_vects( _MK_FP( PMRegs.cs, _FP_OFF( &PM66Handler ) ),
                         &rm_66_handler, &OldPMHandler, &OldRMHandler );
             _debug( "doing an int 0x66" );
             DoInt66( PMRegs.cs, PMRegs.ds );
@@ -256,7 +257,7 @@ extern void main( void )
             _debug( "raw switching to real mode" );
             save_vects( RMVTable, PMVTable );
             DoRawSwitch( RawPMtoRMAddr, RawRMtoPMAddr,
-                         FP_OFF( &start_shell ), &RMRegs );
+                         _FP_OFF( &start_shell ), &RMRegs );
             _debug( "made it back to the debugger's protected mode" );
             restore_vects( RMVTable, PMVTable );
             hook_vects( OldPMHandler, OldRMHandler, NULLFAR, NULLFAR );

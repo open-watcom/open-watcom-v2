@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,10 +38,6 @@
 #include "preproc.h"
 #include "cppexit.h"
 
-enum {
-    EL_NEW_LINE = 0x01,
-    EL_NULL     = 0
-};
 
 static unsigned skipChars;              // how many initial chars to skip
 static unsigned maxLineSize;            // how often to insert newline
@@ -85,11 +82,11 @@ void PpSetWidth(                // SET WIDTH FOR PREPROCESSING
 }
 
 #if 0
-static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
+void CppEmitPoundLine( LINE_NO line, const char *fname, unsigned control )
 {
     if( CompFlags.cpp_line_wanted ) {
         if( CppPrinting() ) {
-            if( CompFlags.line_comments ) {
+            if( CompFlags.cpp_line_comments ) {
                 fputc( '/', CppFile );
                 fputc( '/', CppFile );
                 fputc( ' ', CppFile );
@@ -102,11 +99,11 @@ static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
     }
 }
 #else
-static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
+void CppEmitPoundLine( LINE_NO line, const char *fname, unsigned control )
 {
     if( CompFlags.cpp_line_wanted ) {
         if( CppPrinting() ) {
-            if( CompFlags.line_comments ) {
+            if( CompFlags.cpp_line_comments ) {
                 if( control & EL_NEW_LINE ) {
                     // do zip: the correct position is immediately after comment
                 } else {
@@ -134,20 +131,6 @@ static void emitPoundLine( LINE_NO line, const char *fname, unsigned control )
     }
 }
 #endif
-
-void EmitLine(                  // EMIT #LINE DIRECTIVE, IF REQ'D
-    LINE_NO line_num,           // - line number
-    const char *filename )      // - file name
-{
-    emitPoundLine( line_num, filename, EL_NULL );
-}
-
-void EmitLineNL(                // EMIT #LINE DIRECTIVE ON ITS OWN LINE, IF REQ'D
-    LINE_NO line_num,           // - line number
-    const char *filename )      // - file name
-{
-    emitPoundLine( line_num, filename, EL_NEW_LINE );
-}
 
 void PpInit(                    // INITIALIZE PREPROCESSING
     void )
@@ -234,7 +217,7 @@ void PrtChar(                   // PRINT PREPROC CHAR IF REQ'D
 
 static void printMangledId( IDMANGLE *id )
 {
-    auto char buff[32];
+    char buff[32];
 
     sprintf( buff, "_%u_", id->index );
     PrtString( buff );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,120 +32,120 @@
 
 
 #include "guiwind.h"
-#include "guix.h"
 
-bool GUIChangeFont( gui_window *wnd )
+
+bool GUIAPI GUIChangeFont( gui_window *wnd )
 {
     /* unused parameters */ (void)wnd;
 
     return( false );
 }
 
-char *GUIGetFontInfo( gui_window *wnd )
+char * GUIAPI GUIGetFontInfo( gui_window *wnd )
 {
     /* unused parameters */ (void)wnd;
 
     return( NULL );
 }
 
-bool GUISetFontInfo( gui_window *wnd, char *info )
+bool GUIAPI GUISetFontInfo( gui_window *wnd, char *info )
 {
     /* unused parameters */ (void)wnd; (void)info;
 
     return( false );
 }
 
-bool GUISetSystemFont( gui_window *wnd, bool fixed )
+bool GUIAPI GUISetSystemFont( gui_window *wnd, bool fixed )
 {
     /* unused parameters */ (void)wnd; (void)fixed;
 
     return( false );
 }
 
-bool GUIFontsSupported( void )
+bool GUIAPI GUIFontsSupported( void )
 {
     return( false );
 }
 
-char *GUIGetFontFromUser( char *fontinfo )
+char * GUIAPI GUIGetFontFromUser( char *fontinfo )
 {
     /* unused parameters */ (void)fontinfo;
 
     return( NULL );
 }
 
-gui_mcursor_handle GUISetMouseCursor( gui_mcursor_type type )
+gui_mcursor_handle GUIAPI GUISetMouseCursor( gui_mcursor_type type )
 {
     switch( type ) {
-    case GUI_ARROW_CURSOR :
-    case GUI_HOURGLASS_CURSOR :
-    case GUI_CROSS_CURSOR :
+    case GUI_ARROW_CURSOR:
+    case GUI_HOURGLASS_CURSOR:
+    case GUI_CROSS_CURSOR:
         return( (void *)"" );
     default:
         return( NULL );
     }
 }
 
-void GUIResetMouseCursor( gui_mcursor_handle old )
+void GUIAPI GUIResetMouseCursor( gui_mcursor_handle old )
 {
     /* unused parameters */ (void)old;
 }
 
-bool GUI3DDialogInit( void )
+bool GUIAPI GUI3DDialogInit( void )
 {
     return( false );
 }
 
-void GUI3DDialogFini( void )
+void GUIAPI GUI3DDialogFini( void )
 {
 }
 
-bool GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent )
+bool GUIAPI GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, gui_ord extentx )
 {
-    /* unused parameters */ (void)wnd; (void)id; (void)extent;
+    /* unused parameters */ (void)wnd; (void)id; (void)extentx;
 
     return( false );
 }
 
-bool GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable )
+bool GUIAPI GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)enable;
 
     return( false );
 }
 
-bool GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id )
+bool GUIAPI GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id )
 {
     /* unused parameters */ (void)wnd; (void)id;
 
     return( false );
 }
 
-void GUIHideControl( gui_window *wnd, gui_ctl_id id )
+void GUIAPI GUIHideControl( gui_window *wnd, gui_ctl_id id )
 {
     /* unused parameters */ (void)wnd; (void)id;
 }
 
-void GUIShowControl( gui_window *wnd, gui_ctl_id id )
+void GUIAPI GUIShowControl( gui_window *wnd, gui_ctl_id id )
 {
     /* unused parameters */ (void)wnd; (void)id;
 }
 
-bool GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end )
+bool GUIAPI GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)start; (void)end;
 
     return( false );
 }
 
-bool GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end )
+bool GUIAPI GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)start; (void)end;
 
     return( false );
 }
 
-void GUIScrollCaret( gui_window *wnd, gui_ctl_id id )
+void GUIAPI GUIScrollCaret( gui_window *wnd, gui_ctl_id id )
 {
     /* unused parameters */ (void)wnd; (void)id;
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,9 +109,9 @@ static void jumpExtend( int far_flag )
 
     p = buffer + getJumpNegation( AsmBuffer[i].u.token, buffer );
     if( far_flag ) {
-        next_ins_size = Code->use32 ? 7 : 5;
+        next_ins_size = ( Code->use32 ) ? 7 : 5;
     } else {
-        next_ins_size = Code->use32 ? 5 : 3;
+        next_ins_size = ( Code->use32 ) ? 5 : 3;
     }
     sprintf( buffer + strlen( buffer ), " SHORT $+%d ", next_ins_size + 2 );
     InputQueueLine( buffer );
@@ -355,7 +356,7 @@ bool jmp( expr_list *opndx, int *flags )
                 break;
             }
 
-            if( (Code->info.cpu&P_CPU_MASK) < P_386 && IS_JMP( Code->info.token ) ) {
+            if( (Code->info.cpu & P_CPU_MASK) < P_386 && IS_JMP( Code->info.token ) ) {
                 /* look into jump extension */
                 switch( Code->info.token ) {
                 case T_JMP:
@@ -599,7 +600,7 @@ bool jmp( expr_list *opndx, int *flags )
             fixup_type = FIX_RELOFF8;
             break;
         default:
-            if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
+            if( (Code->info.cpu & P_CPU_MASK) >= P_386 ) {
                 switch( Code->mem_type ) {
                 case MT_SHORT:
                     fixup_option = OPTJ_EXPLICIT;

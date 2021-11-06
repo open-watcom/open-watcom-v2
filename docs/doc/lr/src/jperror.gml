@@ -10,11 +10,10 @@ The
 .id &funcb.
 function prints, on the file designated by
 .kw stderr
-.ct,
-the Kanji error message corresponding to the error number
+.ct , the Kanji error message corresponding to the error number
 contained in
 .kw errno
-.ct .li .
+.period
 The
 .id &funcb.
 function is implemented as follows:
@@ -36,7 +35,7 @@ The
 .id &funcb.
 function returns no value.
 Because the function uses the
-.kw fprintf
+.reffunc fprintf
 function,
 .kw errno
 can be set when an error is detected during the execution of

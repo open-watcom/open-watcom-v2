@@ -8,7 +8,6 @@ target_os  = dos
 srv = ser
 which = TRAP
 remote_link = 1
-builtin_trap = 1
 
 extra_objs = serint.obj serdos.obj busywait.obj
 

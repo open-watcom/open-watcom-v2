@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include "guixutil.h"
 #include "guixdlg.h"
 
-unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id )
+unsigned GUIAPI GUIIsChecked( gui_window *wnd, gui_ctl_id id )
 {
     unsigned    ret;
 
@@ -43,7 +44,7 @@ unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id )
     return( ret & 0x3 );
 }
 
-bool GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned check )
+bool GUIAPI GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned check )
 {
     if( ( check == GUI_CHECKED ) && (wnd->flags & IS_RES_DIALOG) == 0 ) {
         if( GUIIsChecked( wnd, id ) != GUI_CHECKED ) {

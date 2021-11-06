@@ -12,7 +12,7 @@ the range 0 to
 .kw RAND_MAX
 (32767).
 The sequence can be started at different values by calling the
-.kw srand
+.reffunc srand
 function.
 .desc end
 .return begin

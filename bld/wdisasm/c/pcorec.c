@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@ static  uint_32         DataOffset;
  */
 static  void            ThreadFix( uint_16 );
 static  void            FixupFix( uint_16 );
-static  fixup           *FixField( char, int, char );
+static  fixup           *FixField( omf_fix_loc, int, char );
 static  code_block      *IteratedData( void );
 static  void            DecodeLIData( code_block * );
 static  void            Add2List( handle **, handle * );
@@ -350,23 +351,30 @@ static  void  FixupFix( uint_16 locat )
 {
     fixup               *fix;
     char                M;
-    char                LOC;
+    omf_fix_loc         fix_loc;
 
     M = ( locat & 0x40 ) << 1;
     /* we take 4-bits as if every record is a Microsoft Fixup rec */
-    LOC = ( locat >> 2 ) & 0x0f;
-    if( IsPharLap && LOC > LOC_BASE_OFFSET_32 ) {
-        Error( ERR_INV_FIXUP_LOC, false );
-        return;
+    fix_loc = ( locat >> 2 ) & 0x0f;
+    if( IsPharLap ) {
+        if( fix_loc > LOC_PHARLAP_BASE_OFFSET_32 ) {
+            Error( ERR_INV_FIXUP_LOC, false );
+            return;
+        }
+    } else {
+        if( fix_loc == LOC_PHARLAP_BASE_OFFSET_32 ) {
+            Error( ERR_INV_FIXUP_LOC, false );
+            return;
+        }
     }
     DataOffset = ( ( locat & 3 ) << 8 ) | GetByte();
-    fix = FixField( LOC, 1, M );
+    fix = FixField( fix_loc, 1, M );
     AddFix( Segment, fix );
 }
 
 
-static  fixup  *FixField( char LOC, int is_valid_loc, char M )
-/************************************************************/
+static  fixup  *FixField( omf_fix_loc fix_loc, int is_valid_loc, char M )
+/***********************************************************************/
 /*
     is_valid_loc == 1 is used to parse a FIXUP
     is_valid_loc == 0 is used to parse fields such as the MODEND start
@@ -383,17 +391,17 @@ static  fixup  *FixField( char LOC, int is_valid_loc, char M )
     char                TARGT;
     char                FRAME;
 
-    if( ! IsPharLap && is_valid_loc ) {
+    if( !IsPharLap && is_valid_loc ) {
         /* we want PharLap OMF fixup LOC's... so we'll just translate here */
-        switch( LOC ) {
-        case LOC_MS_LINK_OFFSET:        LOC = LOC_OFFSET;           break;
-        case LOC_MS_OFFSET_32:      /* fall through */
-        case LOC_MS_LINK_OFFSET_32:     LOC = LOC_OFFSET_32;        break;
-        case LOC_MS_BASE_OFFSET_32:     LOC = LOC_BASE_OFFSET_32;   break;
+        switch( fix_loc ) {
+        case LOC_OFFSET_LOADER:         fix_loc = LOC_OFFSET;                   break;
+        case LOC_OFFSET_32:             /* fall through */
+        case LOC_OFFSET_32_LOADER:      fix_loc = LOC_PHARLAP_OFFSET_32;        break;
+        case LOC_BASE_OFFSET_32:        fix_loc = LOC_PHARLAP_BASE_OFFSET_32;   break;
         }
     }
     fix_dat = GetByte();
-    fix = NewFixup( LOC | M );
+    fix = NewFixup( fix_loc | M );
     FRAME = ( fix_dat & 0x70 ) >> 4;
     F = fix_dat & 0x80;
     if( F ) {
@@ -421,7 +429,7 @@ static  fixup  *FixField( char LOC, int is_valid_loc, char M )
         }
     }
     if( is_valid_loc ) {
-        switch( LOC ) {
+        switch( fix_loc ) {
         case LOC_OFFSET_LO:
             fix->imp_address += Addr( DataOffset ) & 0xff;
             break;
@@ -435,13 +443,13 @@ static  fixup  *FixField( char LOC, int is_valid_loc, char M )
             fix->imp_address += Addr( DataOffset );
             fix->seg_address += Addr( DataOffset + 2 );
             break;
-        case LOC_OFFSET_32:
+        case LOC_PHARLAP_OFFSET_32:
             fix->imp_address += Addr32( DataOffset );
             break;
         case LOC_OFFSET_HI:
             fix->imp_address += Addr( DataOffset ) >> 8;
             break;
-        case LOC_BASE_OFFSET_32:
+        case LOC_PHARLAP_BASE_OFFSET_32:
             fix->imp_address += Addr32( DataOffset );
             fix->seg_address += Addr( DataOffset + 4 );
             break;
@@ -591,8 +599,10 @@ void ComDat()
         seg->id = lname;
         seg->attr = attr;
         seg->u.com.align = align;
-        if( seg_id != 0 ) seg->u.com.seg = GetTab( seg_id, SegTab, true );
-        if( grp_id != 0 ) seg->u.com.grp = GetTab( grp_id, GrpTab, true );
+        if( seg_id != 0 )
+            seg->u.com.seg = GetTab( seg_id, SegTab, true );
+        if( grp_id != 0 )
+            seg->u.com.grp = GetTab( grp_id, GrpTab, true );
         switch( attr & COMDAT_ALLOC_MASK ) {
         case COMDAT_EXPLICIT:
             seg->use_32 = seg->u.com.seg->use_32;
@@ -762,8 +772,7 @@ static  code_block  *IteratedData()
         } while( ++i <= num_bytes );
         block->data[ 0 ] = num_bytes;
     } else {
-        block = AllocMem( sizeof( code_block ) + blk_count * sizeof( char * )
-                          - sizeof( char ) );
+        block = AllocMem( sizeof( code_block ) + blk_count * sizeof( char * ) - sizeof( char ) );
         i = 0;
         do {
             ((ptr_table)block->data)[ i ] = IteratedData();

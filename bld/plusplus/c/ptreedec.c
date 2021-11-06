@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,11 @@
 #include "initdefs.h"
 #include "fnbody.h"
 #include "pcheader.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+    #include "fmttype.h"
+#endif
+
 
 #define PTD_DEFS                /* PTD_KIND -- kinds of entries             */\
  PTD_DEF( PTD_CTORCOMP )        /* - ctored component (code)                */\
@@ -302,7 +308,7 @@ static SYMBOL dtorForType       // LOCATE DTOR FOR TYPE
 {
     SYMBOL dtor;                // - NULL or DTOR for type
 
-    type = StructType( type );
+    type = ClassType( type );
     if( NULL == type ) {
         dtor = NULL;
     } else if( TypeReallyDtorable( type ) ) {
@@ -938,7 +944,7 @@ static void savePtd( void *p, carve_walk_base *d )
 
 pch_status PCHWritePtds( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     CarveWalkAllFree( carvePTD, markFreePtd );
     CarveWalkAll( carvePTD, savePtd, &data );
@@ -949,7 +955,7 @@ pch_status PCHWritePtds( void )
 pch_status PCHReadPtds( void )
 {
     PTD *r;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carvePTD, &data );
     for( ; (r = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -998,9 +1004,6 @@ pch_status PCHFiniPtds( bool writing )
 
 
 #ifndef NDEBUG
-
-#include "dbg.h"
-#include "fmttype.h"
 
 static char const *name_kind[] =    // names
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,41 +44,40 @@
 #endif
 #include "rterrno.h"
 #include "thread.h"
+#include "_process.h"
+#include "_environ.h"
 
 
 _WCRTLINK int __F_NAME(spawnlp,_wspawnlp)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
-    va_list             ap;
-    int                 rc;
+    va_list             args1;
+    ARGS_TYPE_ARR       args;
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-    va_list             bp;
-    const CHAR_TYPE     **a;
-    const CHAR_TYPE     **tmp;
+    ARGS_TYPE           *tmp;
     int                 num;
 #endif
 
-    arg0 = arg0;
-    va_start(ap, path);
+    /* unused parameters */ (void)arg0;
 
+    va_start( args1, path );
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-    memcpy( &bp, &ap, sizeof( ap ) );
+    num = 1;
+    while( ARGS_NEXT_VA( args1 ) != NULL )
+        num++;
+    va_end( args1 );
 
-    for( num = 1; va_arg( ap, CHAR_TYPE * ); ++num )
-        ;
-
-    a = (const CHAR_TYPE **)alloca( num * sizeof( CHAR_TYPE * ) );
-    if( !a ) {
+    args = tmp = alloca( num * sizeof( ARGS_TYPE ) );
+    if( args == NULL ) {
         _RWD_errno = ENOMEM;
         return( -1 );
     }
 
-    for( tmp = a; num > 0; --num )
-        *tmp++ = (CHAR_TYPE *)va_arg( bp, CHAR_TYPE * );
-
-    rc = __F_NAME(spawnvp,_wspawnvp)( mode, path, a );
+    va_start( args1, path );
+    while( num-- > 0 )
+        *tmp++ = ARGS_NEXT_VA( args1 );
 #else
-    rc = __F_NAME(spawnvp,_wspawnvp)( mode, path, (const CHAR_TYPE **)ap[0] );
-    va_end( ap );
+    args = ARGS_ARRAY_VA( args1 );
 #endif
-    return( rc );
+    va_end( args1 );
+    return( __F_NAME(spawnvp,_wspawnvp)( mode, path, args ) );
 } /* spawnlp() */

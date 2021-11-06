@@ -53,6 +53,8 @@ static int      Len[] = { 5, 2, 3 };
 static int      ResourceId[] = { 28728, 26659, 30000 };
 static char     *Errors[] = { &Err1, &Err2, &Err3 };
 
+/* local Callback function prototypes */
+extern MRESULT EXPENTRY MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 );
 
 MRESULT EXPENTRY MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
 //============================================================================
@@ -68,7 +70,7 @@ MRESULT EXPENTRY MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
         ++CurrLocation;
         break;
     case WM_PAINT:
-        ps = WinBeginPaint( hwnd, NULL, NULL );
+        ps = WinBeginPaint( hwnd, NULLHANDLE, NULL );
         WinQueryWindowRect( hwnd, &rcl );
         WinFillRect( ps, &rcl, CLR_WHITE );
         WinEndPaint( ps );
@@ -117,11 +119,11 @@ int     main() {
     style = FCF_TITLEBAR | FCF_SYSMENU | FCF_SIZEBORDER | FCF_MINMAX |
             FCF_SHELLPOSITION | FCF_TASKLIST;
     FrameHandle = WinCreateStdWindow( HWND_DESKTOP, WS_VISIBLE, &style,
-                                      "WATCOM", "", 0, NULL, 0,
+                                      "WATCOM", "", 0, NULLHANDLE, 0,
                                       &WinHandle );
     if( FrameHandle == 0 ) return( 0 );
 
-    while( WinGetMsg( AnchorBlock, &qmsg, NULL, 0, 0 ) ) {
+    while( WinGetMsg( AnchorBlock, &qmsg, NULLHANDLE, 0, 0 ) ) {
         WinDispatchMsg( AnchorBlock, &qmsg );
     }
 

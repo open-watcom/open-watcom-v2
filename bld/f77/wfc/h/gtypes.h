@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-extern void         DumpType( TYPE typ, uint size );
-extern void         DumpTypes( TYPE typ1, uint size1, TYPE typ2, uint size2 );
+extern void         DumpType( TYPE typ, size_t size );
+extern void         DumpTypes( TYPE typ1, size_t size1, TYPE typ2, size_t size2 );
 extern void         GenType( itnode *op );
 extern void         GenTypes( itnode *op1, itnode *op2 );

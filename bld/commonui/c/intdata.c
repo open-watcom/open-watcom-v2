@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,13 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  Save/restore register state.
+* Description:  Save/restore Windows 3.x interrupt data.
 *
 ****************************************************************************/
 
 
 #include "commonui.h"
-#include "wdebug.h"
+#include "winintrf.h"
 #include "intdata.h"
 
 /*
@@ -46,16 +47,16 @@ void SaveState( interrupt_struct *idata, fault_frame *ff )
     idata->EDI = ff->EDI;
     idata->ESI = ff->ESI;
     idata->EBP = ff->EBP;
-    idata->ESP = ff->ESP + EXCESS_CRAP_ON_STACK;
+    idata->ESP = ff->ESP + sizeof( int_frame );
     idata->EBX = ff->EBX;
     idata->EDX = ff->EDX;
     idata->ECX = ff->ECX;
-    idata->EAX = (ff->oldEAX & 0xFFFF0000) + ff->AX;
-    idata->EBP = ff->oldEBP;
-    idata->EFlags = ff->FLAGS;
-    idata->EIP = ff->IP;
-    idata->CS = ff->CS;
-    idata->InterruptNumber = ff->intnumber;
+    idata->EAX = (ff->oldEAX & 0xFFFF0000) + ff->intf.AX;
+    idata->EBP = ff->intf.oldEBP;
+    idata->EFlags = ff->intf.FLAGS;
+    idata->EIP = ff->intf.IP;
+    idata->CS = ff->intf.CS;
+    idata->InterruptNumber = ff->intf.intnumber;
 
 } /* SaveState */
 
@@ -71,14 +72,14 @@ void RestoreState( interrupt_struct *idata, fault_frame *ff )
     ff->DS = idata->DS;
     ff->EDI = idata->EDI;
     ff->ESI = idata->ESI;
-    ff->oldEBP = idata->EBP;
-    ff->ESP = idata->ESP - EXCESS_CRAP_ON_STACK;
+    ff->intf.oldEBP = idata->EBP;
+    ff->ESP = idata->ESP - sizeof( int_frame );
     ff->EBX = idata->EBX;
     ff->EDX = idata->EDX;
     ff->ECX = idata->ECX;
-    ff->AX = idata->EAX;
-    ff->IP = idata->EIP;
-    ff->CS = idata->CS;
-    ff->FLAGS = idata->EFlags;
+    ff->intf.AX = idata->EAX;
+    ff->intf.IP = idata->EIP;
+    ff->intf.CS = idata->CS;
+    ff->intf.FLAGS = idata->EFlags;
 
 } /* RestoreState */

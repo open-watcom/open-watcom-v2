@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -368,7 +368,7 @@ static  hw_reg_set        *ParmSets[] = {
     DblPtrRegs,             /* PT*/
     DoubleRegs,             /* FS*/
     QuadReg,                /* FD*/
-    QuadReg,                /* FL*/
+    __FP80BIT(Empty,QuadReg),/* FL*/
     Empty                   /* XX*/
 };
 static  hw_reg_set        *ParmSets8087[] = {
@@ -394,13 +394,13 @@ static  reg_set_index   IsSets[] = {
     RL_WORD,                /* I2*/
     RL_DOUBLE,              /* U4*/
     RL_DOUBLE,              /* I4*/
-    RL_DOUBLE,              /* U8*/
-    RL_DOUBLE,              /* I8*/
+    RL_8,                   /* U8*/
+    RL_8,                   /* I8*/
     RL_DBL_OR_PTR,          /* CP*/
     RL_DBL_OR_PTR,          /* PT*/
     RL_DOUBLE,              /* FS*/
     RL_8,                   /* FD*/
-    RL_8,                   /* FL*/
+    __FP80BIT(RL_,RL_8),    /* FL*/
     RL_                     /* XX*/
 };
 static  reg_set_index   ReturnSets[] = {
@@ -416,7 +416,7 @@ static  reg_set_index   ReturnSets[] = {
     RL_DX_AX,               /* PT*/
     RL_DX_AX,               /* FS*/
     RL_8,                   /* FD*/
-    RL_8,                   /* FL*/
+    __FP80BIT(RL_,RL_8),    /* FL*/
     RL_                     /* XX*/
 };
 static  reg_set_index   Return8087[] = {
@@ -459,13 +459,18 @@ static  reg_set_index   IndexSets[] = {
 /*               intersection given in square matrix for class*/
 /*       }*/
 
+#define INTERSECT_DEFS \
+    pick( ONE_BYTE,   5, OneByteInter ) \
+    pick( TWO_BYTE,   9, TwoByteInter ) \
+    pick( FOUR_BYTE,  6, FourByteInter ) \
+    pick( EIGHT_BYTE, 1, EightByteInter ) \
+    pick( FLOATING,   2, FloatingInter ) \
+    pick( OTHER,      0, OtherInter )
+
 typedef enum {
-    ONE_BYTE,
-    TWO_BYTE,
-    FOUR_BYTE,
-    EIGHT_BYTE,
-    FLOATING,
-    OTHER
+    #define pick(e,w,l) e,
+        INTERSECT_DEFS
+    #undef pick
 } intersect_class;
 
 
@@ -482,13 +487,11 @@ static  reg_class       IntersectInfo[] = {
 };
 
 static  byte    Width[] = {
-    5,              /* ONE_BYTE   */
-    9,              /* TWO_BYTE   */
-    6,              /* FOUR_BYTE  */
-    1,              /* EIGHT_BYTE */
-    2,              /* FLOATING   */
-    0               /* OTHER      */
+    #define pick(e,w,l) w,
+        INTERSECT_DEFS
+    #undef pick
 };
+
 static  reg_set_index   OneByteInter[] = {
 /*   AL      AH      CL      BYTE        LOWBYTE  */
     RL_AL,  RL_,    RL_,    RL_AL,      RL_AL,          /* AL */
@@ -546,12 +549,9 @@ static  reg_set_index   OtherInter[] = {
 };
 
 static  reg_set_index   *InterTable[] = {
-    OneByteInter,       /* ONE_BYTE   */
-    TwoByteInter,       /* TWO_BYTE   */
-    FourByteInter,      /* FOUR_BYTE  */
-    EightByteInter,     /* EIGHT_BYTE */
-    FloatingInter,      /* FLOATING   */
-    OtherInter          /* others     */
+    #define pick(e,w,l) l,
+        INTERSECT_DEFS
+    #undef pick
 };
 
 void            InitRegTbl( void )
@@ -699,10 +699,10 @@ type_class_def  RegClass( hw_reg_set regs )
 
     if( HW_COvlap( regs, HW_FLTS ) ) {
         if( HW_CEqual( regs, HW_ST0 ) )
-            return( FD );
+            return( __FP80BIT(FL,FD) );
         for( possible = STIReg; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
             if( HW_Equal( regs, *possible ) ) {
-                return( FD );
+                return( __FP80BIT(FL,FD) );
             }
         }
     } else {
@@ -936,7 +936,7 @@ bool    IsStackReg( name *sp )
         return( false );
     if( sp->n.class != N_REGISTER )
         return( false );
-    if( !HW_CEqual( sp->r.reg, HW_SP ) )
+    if( !HW_COvlap( sp->r.reg, HW_SP ) )
         return( false );
     return( true );
 }

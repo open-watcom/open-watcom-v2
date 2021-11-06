@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,16 +41,16 @@
 
 TableOrData tableOrData( ResDirEntry *dir );
 pe_va getDirNameRva( ResDirEntry *dir );
-long int getDirNameAbs( ResDirEntry *dir, ExeFile *exeFile );
-long int getDirChildAbs( ResDirEntry *dir, ExeFile *exeFile );
-long int getResDataRva( ResDataEntry *data, ExeFile *exeFile );
-long int getResDataAbs( ResDataEntry *data, ExeFile *exeFile );
+long getDirNameAbs( ResDirEntry *dir, ExeFile *exeFile );
+long getDirChildAbs( ResDirEntry *dir, ExeFile *exeFile );
+long getResDataRva( ResDataEntry *data, ExeFile *exeFile );
+long getResDataAbs( ResDataEntry *data, ExeFile *exeFile );
 bool openExeFile( ExeFile *exeFile, Parameters *param );
 bool readExeHeaders( ExeFile *exeFile );
 bool findResourceObject( ExeFile *exeFile );
-bool loadTableEntry( ResTableEntry *table, ExeFile *exeFile, long int addr );
+bool loadTableEntry( ResTableEntry *table, ExeFile *exeFile, long addr );
 bool loadDirEntry( ResDirEntry *dir, ExeFile *exeFile );
-bool loadDataEntry( ResDataEntry *data, ExeFile *exeFile, long int addr );
+bool loadDataEntry( ResDataEntry *data, ExeFile *exeFile, long addr );
 bool loadAllResources( ExeFile *exeFile );
 void freeAllResources( ExeFile *exeFile );
 

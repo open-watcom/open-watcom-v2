@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,10 +76,10 @@ size_t ResSizeVerBlockHeader( VerBlockHeader *head, bool use_unicode, WResTarget
         key_size *= 2;
     if( res_os == WRES_OS_WIN32 ) {
         /* the NT key field begins 2 bytes from a 32 bit boundary */
-        padding = RES_PADDING( key_size + 2, sizeof( uint_32 ) );
+        padding = RES_PADDING_DWORD( key_size + 2 );
         fixed_size = 3 * sizeof( uint_16 );
     } else {
-        padding = RES_PADDING( key_size, sizeof( uint_32 ) );
+        padding = RES_PADDING_DWORD( key_size );
         fixed_size = 2 * sizeof( uint_16 );
     }
     return( fixed_size + key_size + padding );
@@ -117,6 +118,8 @@ size_t ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
         }
         if( use_unicode ) {
             size = ConvToUnicode( size, item->Value.String, NULL );
+        } else {
+            size = ConvToMultiByte( size, item->Value.String, NULL );
         }
     }
     return( size );

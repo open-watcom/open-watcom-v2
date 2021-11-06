@@ -1,15 +1,11 @@
 .func jstrncpy _fjstrncpy
 .synop begin
 #include <jstring.h>
-JSTRING jstrncpy( JCHAR *dst,
-                  const JCHAR *src,
-                  size_t n );
+JSTRING jstrncpy( JCHAR *dst, const JCHAR *src, size_t n );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jcopy' &funcb
-.if &farfnc eq 1 .do begin
-FJSTRING __far _fjstrncpy( JCHAR __far *dst,
-                           const JCHAR __far *src,
-                           size_t n );
+.if &farfnc ne 0 .do begin
+FJSTRING _fjstrncpy( JCHAR __far *dst, const JCHAR __far *src, size_t n );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jcopy' &ffunc
 .do end
@@ -29,14 +25,14 @@ functions copy
 .do end
 no more than
 .arg n
-single- or double-byte characters from the Kanji string pointed to by
+single-byte or double-byte characters from the Kanji string pointed to by
 .arg src
 into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects is not guaranteed to work properly.
 See the
-.kw memmove
+.reffunc memmove
 function if you wish to copy objects that overlap.
 .pp
 If the Kanji string pointed to by
@@ -53,9 +49,9 @@ If the Kanji string pointed to by
 .arg src
 is longer than
 .arg n
-single- or double-byte characters, then the result will not be
+single-byte or double-byte characters, then the result will not be
 terminated by a null character.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
@@ -72,7 +68,7 @@ functions return
 .do end
 the value of
 .arg dst
-.ct .li .
+.period
 .return end
 .see begin
 .seelist jstrncpy strcpy strdup strncpy

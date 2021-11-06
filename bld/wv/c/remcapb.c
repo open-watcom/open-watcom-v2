@@ -23,7 +23,7 @@ static bool CapabilitiesGet8ByteBreakpointSupport( void )
     capabilities_get_8b_bp_req  acc;
     capabilities_get_8b_bp_ret  ret;
 
-    if( SuppCapabilitiesId == 0 ) 
+    if( SuppCapabilitiesId == 0 )
         return( false );
 
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_8B_BP );
@@ -42,7 +42,7 @@ static bool CapabilitiesSet8ByteBreakpointSupport( bool status )
     capabilities_set_8b_bp_req  acc;
     capabilities_set_8b_bp_ret  ret;
 
-    if( SuppCapabilitiesId == 0 ) 
+    if( SuppCapabilitiesId == 0 )
         return( false );
 
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_8B_BP );
@@ -63,7 +63,7 @@ static bool CapabilitiesGetExactBreakpointSupport( void )
     capabilities_get_8b_bp_ret  ret;
 
 
-    if( SuppCapabilitiesId == 0 ) 
+    if( SuppCapabilitiesId == 0 )
         return( false );
 
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_EXACT_BP );
@@ -73,7 +73,7 @@ static bool CapabilitiesGetExactBreakpointSupport( void )
         return( false );
     } else {
         /* The trap may support it, but it is not possible currently */
-        SupportsExactBreakpoints = ret.status ? true : false;        
+        SupportsExactBreakpoints = ret.status ? true : false;
         return( true );
     }
 }
@@ -83,7 +83,7 @@ static bool CapabilitiesSetExactBreakpointSupport( bool status )
     capabilities_set_8b_bp_req  acc;
     capabilities_set_8b_bp_ret  ret;
 
-    if( SuppCapabilitiesId == 0 ) 
+    if( SuppCapabilitiesId == 0 )
         return( false );
 
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_EXACT_BP );
@@ -93,7 +93,7 @@ static bool CapabilitiesSetExactBreakpointSupport( bool status )
     if( ret.err != 0 ) {
         return( false );
     } else {
-        _SwitchSet( SW_BREAK_ON_WRITE, ret.status ? true : false ); 
+        _SwitchSet( SW_BREAK_ON_WRITE, ret.status ? true : false );
         return( true );
     }
 }
@@ -132,8 +132,8 @@ bool InitCapabilities( void )
     Supports8ByteBreakpoints = false;
     SupportsExactBreakpoints = false;
 
-    SuppCapabilitiesId = GetSuppId( CAPABILITIES_SUPP_NAME );
-    if( SuppCapabilitiesId == 0 ) 
+    SuppCapabilitiesId = GETSUPPID( CAPABILITIES_SUPP_NAME );
+    if( SuppCapabilitiesId == 0 )
         return( false );
 
     CapabilitiesGet8ByteBreakpointSupport();

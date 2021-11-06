@@ -52,21 +52,23 @@
 .* .ty &*
 .dm debug end
 .*
-.dm widefunc begin
+.dm chkwfunc begin
+.sr *fx=&'strip(&*1,'L','_')
 .sr iswidefn=1
-.if '&*1(1:2)' eq '_w' and '&*1(1:7)' ne '_wrapon' and '&*1(1:6)' ne '_write' .me
-.if '&*1(1:2)' eq 'wc' or '&*1(1:4)' eq 'wmem' .me
-.if '&*1(1:3)' eq 'tow' .me
-.if '&*1(1:3)' eq 'isw' .me
-.if '&*1(1:4)' eq 'wasc' .me
-.if '&*1(1:5)' eq '__isw' .me
-.if &'pos('wprintf',&*1) ne 0 .me
-.if &'pos('wscanf',&*1) ne 0 .me
-.if '&'right(&*1,2)' eq 'wc' or '&'right(&*1,2)' eq 'ws' .me
-.if '&'right(&*1,3)' eq 'tow' .me
-.if '&'right(&*1,5)' eq 'wchar' .me
+.* far function
+.if '&*fx(1:1)' eq 'w' and '&*fx(1:6)' ne 'wrapon' and '&*fx(1:5)' ne 'write' .me
+.if '&*fx(1:2)' eq 'wc' or '&*fx(1:4)' eq 'wmem' .me
+.if '&*fx(1:3)' eq 'tow' .me
+.if '&*fx(1:3)' eq 'isw' .me
+.if '&*fx(1:4)' eq 'wasc' .me
+.if &'pos('wprintf',&*fx) ne 0 .me
+.if &'pos('wscanf',&*fx) ne 0 .me
+.if '&*fx(1:3)' ne 'fmb' and '&*fx(1:2)' ne 'mb' and '&'right(&*fx,2)' eq 'wc' .me
+.if '&*fx(1:3)' ne 'fmb' and '&*fx(1:2)' ne 'mb' and '&'right(&*fx,2)' eq 'ws' .me
+.if '&'right(&*fx,4)' eq 'itow' or '&'right(&*fx,4)' eq 'ltow' .me
+.if '&'right(&*fx,5)' eq 'wchar' .me
 .sr iswidefn=0
-.dm widefunc end
+.dm chkwfunc end
 .*
 .dm addclinf begin
 .sr *cltxt=''
@@ -75,7 +77,7 @@
 .if &*0 gt 1 .do begin
 .   .se *cltxt=is &'substr(&*.,&'length(&*1)+1)
 .do end
-.widefunc &*1
+.chkwfunc &*1
 .if &iswidefn. ne 0 .do begin
 .   .if '&*1(1:1).' ne '_' .sr *clatr=1
 .do end
@@ -90,6 +92,36 @@
 .se $$fnc(&__fnx.)=&*1
 .dm addsyinf end
 .*
+.dm ftopsect begin
+.cp 10
+.if &e'&dohelp eq 0 .do begin
+.   .sr *ban=&headtext$.
+.   .if &syslc. gt 3 .do begin
+.   .   .in
+.   .   .tb 1 _/&syscl.
+.   .   .tb set $
+$$
+.   .   .tb set
+.   .   .tb
+.   .do end
+.   .sr headtext$=&*ban.
+:H5.&*
+.   .sr *attrs=''
+.do end
+.el .do begin
+.   .funcref &'strip(&*1.,'T',',')
+.   .sr *top='&'translate(&frefid.,`&trto.`,`&trfrom.`)'
+:ZH2 ctx='&*top.'.&*
+.   .pu 1 .ixsect &*
+.   .pu 1 .ixsectid &*top.
+.   .sr *attrs='*ctx='&*top.''
+.do end
+.sr headtxt0$=&*
+.sr headtxt1$=&*
+.sr SCTlvl=1
+.cntents &*attrs. &*
+.dm ftopsect end
+.*
 .dm funkw begin
 .se *fnd=&'vecpos(&*1,fnclst)
 .if &*fnd. eq 0 .do begin
@@ -97,14 +129,14 @@
 .   .me
 .do end
 .if &__sysl(&*fnd.) eq 0 .ty ***WARNING*** &*1 not defined in liblist7.gml
-.if |&fncttl.| eq || .do begin
+.if &'length(&fncttl.) eq 0 .do begin
 .   .sr fncttl=&*1
 .do end
-.el .if '&funcgrp.' eq '' .do begin
+.el .if &'length(&funcgrp.) eq 0 .do begin
 .   .sr fncttl=&fncttl., &*1
 .do end
-.if '&funcb' eq '' .sr funcb=&*1
-.if '&funcn' eq '' .sr funcn=&'strip(&*1,'L','_')
+.if &'length(&funcb.) eq 0 .sr funcb=&*1
+.if &'length(&funcn.) eq 0 .sr funcn=&'strip(&*1,'L','_')
 .addsyinfo &*1
 .* try to classify type of function
 .if &'pos('i64',&*1) ne 0 .do begin
@@ -115,9 +147,11 @@
 .   .   .sr func64=&*1
 .   .do end
 .do end
-.widefunc &*1
+.chkwfunc &*1
 .if &iswidefn ne 0 .do begin
-.   .sr wfunc=&*1
+.   .if &'length(&wfunc.) eq 0 .do begin
+.   .   .sr wfunc=&*1
+.   .do end
 .do end
 .el .if '&*1' eq '_&funcn' .do begin
 .   .sr _func=&*1
@@ -154,22 +188,22 @@
 .*  .func norm _norm __norm _wnorm _fnorm _mbsnorm
 .*
 .dm func begin
-.if |&*1| ne |end| .do begin
+.if &'compare(&*1.,'end') ne 0 .do begin
 .   .sr *cnt=&*0
 .   .sr *i=1
 .   .funcinit
-.   .if |&*1| eq |begin| .do begin
+.   .if &'compare(&*1.,'begin') eq 0 .do begin
 .   .   .sr *i=&*i.+1
 .   .   .sr *cnt=&*cnt.-1
 .   .do end
-.   .if &'&*cnt ne 0 .do begin
+.   .if &'max(&*cnt.,0) ne 0 .do begin
 .   .   .sr *j=&*i.+1
 .   .   .sr *first=&*&*i.
 .   .   .sr *second=&*&*j.
-.   .   .if '&*second' eq 'Functions' .do begin
+.   .   .if &'compare(&*second.,'Functions') eq 0 .do begin
 .   .   .   .sr fncttl=&*first. &*second.
 .   .   .   .sr funcgrp=&'strip(&*first.,'T',',')
-.   .   .   .if |&'right(&funcgrp,&'length(&grpsfx.))| eq |&grpsfx.| .do begin
+.   .   .   .if &'compare(&'right(&funcgrp,&'length(&grpsfx.)).,&grpsfx.) eq 0 .do begin
 .   .   .   .   .sr groupfun=1
 .   .   .   .   .addclinf &funcgrp
 .   .   .   .do end
@@ -179,14 +213,14 @@
 .   .   .do end
 .   .do end
 .do end
-.if |&*1| ne |begin| .do begin
+.if &'compare(&*1.,'begin') ne 0 .do begin
 .*  generate title and start of code (declaration)
-.   .topsect &fncttl.
-.   .if '&funcgrp.' ne '' .do begin
-.   .   .sr function=&funcgrp.
+.   .if &'length(&funcgrp.) ne 0 .do begin
+.   .   .sr functiong=&funcgrp.
 .   .   .ixm '&funcgrp. Functions'
 .   .do end
-.   .el .sr function=&funcb.
+.   .el .sr functiong=&funcb.
+.   .ftopsect &fncttl.
 .   .sr *i=0
 .   .pe &__fnx.;.sr *i=&*i.+1;.ixm '&$$fnc(&*i.)'
 .do end
@@ -196,9 +230,9 @@
 .* func2 create an index entry for &* also
 .*
 .dm func2 begin
-:cmt .if &e'&dohelp eq 1 .xmpoff
+:cmt .if &e'&dohelp ne 0 .xmpoff
 .funkw &*
-:cmt. .if &e'&dohelp eq 1 .xmpon
+:cmt. .if &e'&dohelp ne 0 .xmpon
 .dm func2 end
 .*
 .dm fungroup begin
@@ -210,7 +244,7 @@
 .* The funcw macro explicitly declares the "wide" name of a function
 .*
 .dm funcw begin
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .  .sr wfunc=&*
 .do end
 .dm funcw end
@@ -227,33 +261,33 @@
 .*
 .dm ixfunc2 begin
 .if &'vecpos(&*2,fnclst) ne 0 .do begin
-.if &e'&dohelp eq 1 .xmpoff
+.if &e'&dohelp ne 0 .xmpoff
 .ix '&*1' '&*2'
-.if &e'&dohelp eq 1 .xmpon
+.if &e'&dohelp ne 0 .xmpon
 .do end
 .dm ixfunc2 end
 .*
 .dm desc begin
-.if '&*' eq 'begin' .newtext Description:
-.el .if '&*' eq 'end' .oldtext
+.if &'compare(&*.,'begin') eq 0 .newtext Description:
+.el .if &'compare(&*.,'end') eq 0 .oldtext
 .dm desc end
 .*
 .dm exmp begin
-.if '&*' eq 'begin' .do begin
+.if &'compare(&*.,'begin') eq 0 .do begin
 .cp 8
 .newcode Example:
 .do end
-.el .if '&*' eq 'end' .endcode
-.el .if '&*' eq 'break' .brkcode
-.el .if '&*' eq 'output' .outcode
+.el .if &'compare(&*.,'end') eq 0 .endcode
+.el .if &'compare(&*.,'break') eq 0 .brkcode
+.el .if &'compare(&*.,'output') eq 0 .outcode
 .dm exmp end
 .*
 .dm synop begin
-.if '&*' eq 'begin' .do begin
+.if &'compare(&*.,'begin') eq 0 .do begin
 .   .cp 5
 .   .newcode Synopsis:
 .do end
-.el .if '&*' eq 'end' .do begin
+.el .if &'compare(&*.,'end') eq 0 .do begin
 .   .endcode
 .do end
 .dm synop end
@@ -261,7 +295,8 @@
 .dm seexmp begin
 .newtext Example:
 See example provided with
-.mono &*..
+.mono &*
+.period
 .oldtext
 .dm seexmp end
 .*
@@ -273,7 +308,7 @@ See example provided with
 .dm newcode end
 .*
 .dm endcode begin
-.if '&XMPset' eq 'on' .xmpoff
+.if &'compare(&XMPset.,'on') eq 0 .xmpoff
 .listend
 .sr XMPlin=0
 .dm endcode end
@@ -284,29 +319,29 @@ See example provided with
 .*
 .dm outcode begin
 .sk 1
-.if '&XMPset' eq 'on' .xmpoff
+.if &'compare(&XMPset.,'on') eq 0 .xmpoff
 produces the following:
 .xmpon
 .sk 1
 .dm outcode end
 .*
 .dm return begin
-.if '&*' eq 'begin' .newtext Returns:
-.el .if '&*' eq 'end' .oldtext
+.if &'compare(&*.,'begin') eq 0 .newtext Returns:
+.el .if &'compare(&*.,'end') eq 0 .oldtext
 .dm return end
 .*
 .dm error begin
-.if '&*' eq 'begin' .do begin
+.if &'compare(&*.,'begin') eq 0 .do begin
 .newtext Errors:
 When an error has occurred,
 .kw errno
 contains a value indicating the type of error that has been detected.
 .do end
-.el .if '&*' eq 'end' .oldtext
+.el .if &'compare(&*.,'end') eq 0 .oldtext
 .dm error end
 .*
 .dm begterm begin
-.if '&*1' ne '' .do begin
+.if &'length(&*1.) ne 0 .do begin
 .begnote $setptnt &*.
 .do end
 .el .do begin
@@ -330,14 +365,14 @@ contains a value indicating the type of error that has been detected.
 .do end
 .el .do begin
 :cmt.   :ZDD.:SF font=2.&*:eSF.
-:ZDT.&termhd1$.~b~b~b~b~b&*
+:ZDTHD3.&termhd1$.~b~b~b~b~b&*
 .do end
 .dm termhd2 end
 .*
 .dm term begin
-.if '&*1' eq '.arg' .termhi &*2
-.el .if '&*1' eq '.kw' .termhi &*2
-.el .if '&*1' eq '.mono' .termhi &*2
+.if &'compare(&*1.,'.arg') eq 0 .termhi &*2
+.el .if &'compare(&*1.,'.kw') eq 0 .termhi &*2
+.el .if &'compare(&*1.,'.mono') eq 0 .termhi &*2
 .el .termhi &*
 .dm term end
 .*
@@ -394,17 +429,17 @@ Prototype in
 .dm idbold end
 .*
 .dm clitm begin
-.if |&*| ne || .do begin
+.if &'length(&*.) ne 0 .do begin
 .   .ct &*
 .   .br
 .do end
 .dm clitm end
 .*
 .dm ansiname begin
-.if '&*' eq '' .me
+.if &'length(&*.) eq 0 .me
 .sr *i=0
 ...loopa .sr *i=&*i.+1
-.   .if '&*' eq '&__clnam(&*i.)' .do begin
+.   .if &'compare(&*.,&__clnam(&*i.).) eq 0 .do begin
 .   .   .if &__clatr(&*i.) lt 2 .sr __clatr(&*i.)=&__clatr(&*i.).+2
 .   .   .me
 .   .do end
@@ -415,7 +450,7 @@ Prototype in
 .sr *i=1
 ...loopc .se *i=&*i.+1
 .   .sr *clatr=&__clatr(&*i.).
-.   .if '&__cltxt(&*i.)' ne '' .do begin
+.   .if &'length(&__cltxt(&*i.).) ne 0 .do begin
 .   .   .if &clatr ge 2 .do begin
 .   .   .   .clitm &__clnam(&*i) &__cltxt(&*i.), conforms to ANSI naming conventions
 .   .   .do end
@@ -436,8 +471,8 @@ Prototype in
 .*
 .dm class begin
 .sr *extr=0
-.if |&*1| ne |end| .do begin
-.   .if |&*1| eq |begin| .do begin
+.if &'compare(&*1.,'end') ne 0 .do begin
+.   .if &'compare(&*1.,'begin') eq 0 .do begin
 .   .   .sr __class=&*2
 .   .   .sr *all=&'strip(&'substr(&*,6),'L',' ')
 .   .do end
@@ -448,8 +483,8 @@ Prototype in
 .   .listnew Classification:
 .   .if &__clx. gt 1 and '&all' ne '&grfun' .do begin
 .   .   .sr *i=1
-.   .   .pe &__clx.-1;.sr *i=&*i.+1;.if '&__cltxt(&*i.).' ne '' or &__clatr(&*i.). ge 2 .sr *extr=1
-.   .   .if '&__class.' eq 'ISO' or '&__class.' eq 'POSIX' .do begin
+.   .   .pe &__clx.-1;.sr *i=&*i.+1;.if &'length(&__cltxt(&*i.).) ne 0 or &__clatr(&*i.). ge 2 .sr *extr=1
+.   .   .if &'compare(&__class.,'ISO') eq 0 or &'compare(&__class.,'POSIX') eq 0 .do begin
 .   .   .   .sr *i=1
 .   .   .   .pe &__clx.-1;.sr *i=&*i.+1;.if '&__clnam(&*i.,1:1).' eq '_' .sr *extr=1
 .   .   .do end
@@ -459,7 +494,7 @@ Prototype in
 .   .do end
 .   .el .do begin
 .   .   .clitm &*all
-.   .   .if '&__class.' eq 'ISO' or '&__class.' eq 'POSIX' .do begin
+.   .   .if &'compare(&__class.,'ISO') eq 0 or &'compare(&__class.,'POSIX') eq 0 .do begin
 .   .   .   .listclas 1
 .   .   .do end
 .   .   .el .do begin
@@ -467,20 +502,20 @@ Prototype in
 .   .   .do end
 .   .do end
 .do end
-.if |&*1| ne |begin| .do begin
+.if &'compare(&*1.,'begin') ne 0 .do begin
 .   .listend
 .do end
 .dm class end
 .*
 .dm system begin
-.if '&__class' eq 'WIN386' .me
+.if &'compare(&__class.,'WIN386') eq 0 .me
 .if '&machsys' eq 'WIN32' .me
 .se *stm=0
 .se *flg=0
 ...loopsys
 .se *stm=&*stm.+1
 .sysstr &$$fnc(&*stm.)
-.if '&$$str' ne '' .do begin
+.if &'length(&$$str.) ne 0 .do begin
 .   .if &*flg. eq 0 .do begin
 .   .   .se *flg=1
 .   .   .listnew Systems:
@@ -501,31 +536,43 @@ Prototype in
 .*
 .dm see begin
 .se seecnt=0
-.if '&*' eq 'begin' .newtext See Also:
-.el .if '&*' eq 'end' .oldtext
+.if &'compare(&*.,'begin') eq 0 .newtext See Also:
+.el .if &'compare(&*.,'end') eq 0 .oldtext
 .dm see end
 .*
-.dm seelist begin
-.se *i=1
-.se *j=2
-.pe &*0.
-.   .seekw '&function.' &*&*i. &*&*j.;.se *i=&*i.+1;.se *j=&*i.+1
-.dm seelist end
+.dm ofuncref begin
+.if &e'&dohelp eq 0 .do begin
+.   .mono &frefid.
+.do end
+.el .do begin
+:QREF top='&frefid.' str='&*'.
+.do end
+.dm ofuncref end
+.*
+.dm reffunc begin
+.funcref &*1.
+.if '&freffnd.' ne '0' .do begin
+.   .ix '&*'
+.   .ofuncref &*.
+.do end
+.dm reffunc end
+.*
+.dm seeref begin
+(see the
+.reffunc &*1.
+&routine)
+.dm seeref end
 .*
 .dm seekw begin
-.if '&*2' ne '' .do begin
-.   .if '&*2' ne 'Functions' .do begin
-.   .   .if '&*1' ne '&*2' .do begin
-.   .   .   .if &'vecpos(&*2,fnclst) ne 0 .do begin
-.   .   .   .   .if &seecnt. ne 0 .ct,
+.if &'length(&*2.) ne 0 .do begin
+.   .if &'compare(&*2.,'Functions') ne 0 .do begin
+.   .   .if &'compare(&*1.,&*2.) ne 0 .do begin
+.   .   .   .funcref &*2.
+.   .   .   .if '&freffnd.' ne '0' .do begin
+.   .   .   .   .if &seecnt. ne 0 .ct ,
 .   .   .   .   .se seecnt=1
-.   .   .   .   .if &e'&dohelp eq 0 .do begin
-.   .   .   .   .   .mono &*2
-.   .   .   .   .do end
-.   .   .   .   .el .do begin
-:QREF str='&*2'.
-.   .   .   .   .do end
-.   .   .   .   .if '&*3' eq 'Functions' .do begin
+.   .   .   .   .ofuncref &*2.
+.   .   .   .   .if &'compare(&*3.,'Functions') eq 0 .do begin
 &*3
 .   .   .   .   .do end
 .   .   .   .do end
@@ -534,6 +581,13 @@ Prototype in
 .do end
 .dm seekw end
 .*
+.dm seelist begin
+.se *i=1
+.se *j=2
+.pe &*0.
+.   .seekw '&functiong.' &*&*i. &*&*j.;.se *i=&*i.+1;.se *j=&*i.+1
+.dm seelist end
+.*
 .dm seeall begin
 .newtext See also:
 All functions starting with &mn.&*&emn.~...
@@ -541,21 +595,21 @@ All functions starting with &mn.&*&emn.~...
 .dm seeall end
 .*
 .dm blkcode begin
-.if '&*' eq 'begin' .do begin
-.   .if '&XMPset' eq 'of' .do begin
+.if &'compare(&*.,'begin') eq 0 .do begin
+.   .if &'compare(&XMPset.,'of') eq 0 .do begin
 .   .   .xmpon
 .   .   .sk 1 c
 .   .do end
 .do end
-.el .if '&*' eq 'end' .do begin
-.   .if '&XMPset' ne 'on' .er ***error*** blkcode misuse
+.el .if &'compare(&*.,'end') eq 0 .do begin
+.   .if &'compare(&XMPset.,'on') ne 0 .er ***error*** blkcode misuse
 .   .xmpoff
 .do end
 .dm blkcode end
 .*
 .dm blktext begin
-.if '&*' eq 'begin' .do begin
-.   .if '&XMPset' eq 'on' .do begin
+.if &'compare(&*.,'begin') eq 0 .do begin
+.   .if &'compare(&XMPset.,'on') eq 0 .do begin
 .   .   .xmpoff
 .   .do end
 .   .se BLKlin=&sysfnum.-1
@@ -567,14 +621,14 @@ All functions starting with &mn.&*&emn.~...
 .   .do end
 .   .co on
 .do end
-.el .if '&*' eq 'end' .do begin
+.el .if &'compare(&*.,'end') eq 0 .do begin
 .do end
 .el .er ***error*** blktext misuse
 .dm blktext end
 .*
 .dm emp begin
-.if '&*' eq 'begin' .empon
-.el .if '&*' eq 'end' .empoff
+.if &'compare(&*.,'begin') eq 0 .empon
+.el .if &'compare(&*.,'end') eq 0 .empoff
 .dm emp end
 .*
 .dm empon begin
@@ -638,5 +692,158 @@ command
 .ix 'QNX command' '&*'
 .dm qnxcmd end
 .*
+.dm period begin
+.ct .li .
+.dm period end
+.*
 :cmt. include 'Safer C Library' related macros
 :INCLUDE file='safecmac'.
+.*
+.dm farfunc begin
+.if &farfnc ne 0 .do begin
+.pc
+The
+.id &*1.
+function is a data model independent form of the
+.id &*2.
+function.
+It accepts far pointer arguments and returns a far pointer.
+It is most useful in mixed memory model applications.
+.do end
+.dm farfunc end
+.*
+.dm farfuncp begin
+.if &farfnc ne 0 .do begin
+.pc
+The
+.id &*1.
+function is a data model independent form of the
+.id &*2.
+function that accepts far pointer arguments.
+It is most useful in mixed memory model applications.
+.do end
+.dm farfuncp end
+.*
+.dm mbcsfunc begin
+.pc
+The
+.id &*1.
+function is a multi-byte character version of
+.id &*2.
+that operates with multi-byte character strings.
+.dm mbcsfunc end
+.*
+.dm sbcsfunc begin
+.pc
+The
+.id &*1.
+function is a single-byte character version of
+.id &*2.
+that operates with single-byte character strings.
+.dm sbcsfunc end
+.*
+.dm widefunc begin
+.pc
+The
+.id &*1.
+function is a wide character version of
+.id &*2.
+.if &'length(&*3.) eq 0 .do begin
+that operates with wide character strings.
+.do end
+.el .if &'compare(&*3.,'<char>') eq 0 .do begin
+that operates with wide character argument.
+.do end
+.el .if &'compare(&*3.,'<form>') eq 0 .do begin
+.period
+It accepts a wide character string argument for
+.arg format
+and produces wide character output.
+.do end
+.el .if &'compare(&*3.,'<ret>') eq 0 .do begin
+except that it produces a wide character string.
+.do end
+.el .do begin
+&*3..
+.do end
+.dm widefunc end
+.*
+.dm widegrp begin
+.pc
+The
+.id &*1.&grpsfx.
+functions are similar to their counterparts but operate on
+wide character strings.
+.dm widegrp end
+.*
+.dm tcshdr begin
+The header file
+.hdrfile tchar.h
+defines the generic-text
+.if &'length(&*2.) eq 0 .do begin
+macro
+.kw &*1.
+.do end
+.el .do begin
+macros
+.kw &*1.
+and
+.kw &*2.
+.do end
+.period
+.dm tcshdr end
+.*
+.dm tcsbody begin
+.br
+The
+.id &*1.
+macro maps to
+.id &*2.
+if
+.kw _MBCS
+has been defined, or to the
+.id &*4.
+macro if
+.kw _UNICODE
+has been defined, otherwise it maps to
+.id &*3.
+macro.
+.dm tcsbody end
+.*
+.dm tcsfoot begin
+.br
+The
+.id &*1.
+and
+.id &*2.
+macros are provided only for this mapping and
+should not be used otherwise.
+.dm tcsfoot end
+.*
+.dm tcsfunc begin
+.pc
+.tcshdr &*1.
+.tcsbody &*1. &*2. &*3. &*4.
+.br
+.id &*3.
+and
+.id &*4.
+are single-byte character string and wide character
+string versions of
+.id &*2.
+.period
+.tcsfoot &*3. &*4.
+.dm tcsfunc end
+.*
+.dm deprec begin
+** deprecated **
+.dm deprec end
+.*
+.dm deprfunc begin
+The
+.id &*1.
+function is deprecated, use
+.reffunc &*2.
+instead.
+.dm deprfunc end
+.*

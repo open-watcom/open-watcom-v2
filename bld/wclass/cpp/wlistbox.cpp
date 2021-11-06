@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -167,10 +167,10 @@ int WEXPORT WListBox::insertString( const char *s, int index ) {
     int         newIndex;
 
     if( index < 0 ) {
-        GUIAddText( parent()->handle(), controlId(), (char *)s );
+        GUIAddText( parent()->handle(), controlId(), s );
         newIndex = count() - 1;
     } else {
-        GUIInsertText( parent()->handle(), controlId(), index, (char *)s );
+        GUIInsertText( parent()->handle(), controlId(), index, s );
         newIndex = index;
     }
     if( count() == 1 ) {

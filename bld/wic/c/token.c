@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ typedef struct {
     int16 colNum;
     char *fileName;
     FILE *file;
-    long int filePos;
+    long filePos;
     TStates state;       /* tokenizer state */
     char  nextChar;      /* 2-char lookahead is only needed to detect '\' */
     char  _nextNextChar; /* followed by newline and get rid of it. */
@@ -448,7 +449,7 @@ static WicErrors scanStr(pTokData tokData)
 
 static WicErrors scanChar(pTokData tokData)
 {
-    register int i;
+    int i;
     unsigned long value;
     char charVal;
     WicErrors retVal = ERR_NONE;

@@ -8,7 +8,7 @@
 is the name of a
 .kw REMOTE BLOCK
 located in the same program unit.
-.endnote
+.esynote
 .np
 The
 .kw EXECUTE

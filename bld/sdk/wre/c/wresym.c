@@ -48,6 +48,7 @@
 #include "wresym.h"
 #include "wresdefn.h"
 #include "pathgrp2.h"
+#include "wclbhelp.h"
 
 #include "clibext.h"
 
@@ -184,11 +185,19 @@ static void WREAddSymbols( WRHashTable *table )
     PP_MacrosWalk( addsym_func, &data );
 }
 
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
+
 static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
 {
     char                *name;
     int                 c;
-    unsigned            flags;
+    pp_flags            ppflags;
     char                *inc_path;
     WREGetFileStruct    gf;
     unsigned            pp_count;
@@ -224,7 +233,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
     WRESetWaitCursor( TRUE );
 
     if( ok ) {
-        flags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
+        ppflags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
         inc_path = NULL;
         ret = setjmp( SymEnv );
         if( ret ) {
@@ -235,7 +244,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
     }
 
     if( ok ) {
-        ok = !PP_FileInit( name, flags, inc_path );
+        ok = !PP_FileInit( name, ppflags, inc_path );
         if( !ok ) {
             WREDisplayErrorMsg( WRE_NOLOADHEADERFILE );
         }
@@ -331,15 +340,15 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
 bool WREEditResourceSymbols( WREResInfo *info )
 {
     WRHashEntryFlags    flags;
-    HELP_CALLBACK       hcb;
+    HELPFUNC            hcb;
     bool                ok;
 
-    hcb = (HELP_CALLBACK)NULL;
+    hcb = NULL;
     ok = (info != NULL && info->symbol_table != NULL);
 
     if( ok ) {
-        hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
-        ok = (hcb != (HELP_CALLBACK)NULL);
+        hcb = MakeProcInstance_HELP( WREHelpRoutine, WREGetAppInstance() );
+        ok = (hcb != NULL);
     }
 
     if( ok ) {
@@ -349,8 +358,8 @@ bool WREEditResourceSymbols( WREResInfo *info )
 
     // ***** call routine to update the edit sessions *****
 
-    if( hcb != (HELP_CALLBACK)NULL ) {
-        FreeProcInstance( (FARPROC)hcb );
+    if( hcb != NULL ) {
+        FreeProcInstance_HELP( hcb );
     }
 
     return( ok );
@@ -401,7 +410,7 @@ bool WRECreateDLGInclude( WResDir *dir, const char *include )
 
 char *WRECreateSymFileName( const char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        fn_path[_MAX_PATH];
 
     if( fname == NULL ) {
@@ -418,7 +427,7 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
 {
     char        inc_path[_MAX_PATH];
     char        fn_path[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *symbol_file;
     bool        prompt;
     bool        ret;

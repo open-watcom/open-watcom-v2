@@ -13,30 +13,25 @@ is found.  The routine will query the local database only.
 .np
 The structure returned is defined as:
 .blkcode begin
-struct netent {
-    char     *n_name;       /* official network name */
-    char     **n_aliases;   /* alias list */
-    int      n_addrtype;    /* address type */
-    uint32_t n_net;         /* network number */
-};
+.im strucnet
 .blkcode end
 .np
-The pointer returned by 
+The pointer returned by
 .id &funcb.
-points to a private location, and the user should free neither 
+points to a private location, and the user should free neither
 the pointer itself nor any of its constituent structure members.
 Subsequent calls to this function may result in the values
 changing.
 .np
 This function is not thread-safe.  Other calls to this function
-or to other functions accessing the hostname database may affect 
+or to other functions accessing the hostname database may affect
 the return value from this function.
 .desc end
 .return begin
 If a matching host is found, the return value will be non-NULL.
 The returned pointer should not be freed by the calling routine.
 .np
-The addresses are contained in the 
+The addresses are contained in the
 .kw n_aliases
 member as a NULL-terminated list, and this structure entry will
 never be NULL.
@@ -47,5 +42,5 @@ will be NULL.
 .see begin
 .seelist getnetent getnetbyaddr
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

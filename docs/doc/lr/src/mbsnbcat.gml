@@ -6,7 +6,7 @@ unsigned char *_mbsnbcat( unsigned char *dst,
                                  size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Concats' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 unsigned char __far *_fmbsnbcat( unsigned char __far *dst,
                            const unsigned char __far *src,
                                               size_t n );
@@ -23,7 +23,7 @@ bytes of the string pointed to by
 .arg src
 to the end of the string pointed to by
 .arg dst
-.ct .li .
+.period
 If the byte immediately preceding the null character in
 .arg dst
 is a lead byte, the initial byte of
@@ -33,26 +33,26 @@ Otherwise, the initial byte of
 .arg src
 overwrites the terminating null character at the end of
 .arg dst
-.ct .li .
+.period
 If the last byte to be copied from
 .arg src
 is a lead byte, the lead byte is not copied and a null character
 replaces it in
 .arg dst
-.ct .li .
+.period
 In any case, a terminating null character is always appended to the
 result.
-.im farfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The
 .id &funcb.
 function returns the value of
 .arg dst
-.ct .li .
+.period
 .return end
 .see begin
-.seelist _mbsnbcat _mbsnbcmp _mbsnbcpy _mbsnbicnp _mbsnbset
+.seelist _mbsnbcat _mbsnbcmp _mbsnbcpy _mbsnbicmp _mbsnbset
 .seelist _mbsnccnt strncat strcat
 .see end
 .exmp begin

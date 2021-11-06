@@ -29,7 +29,7 @@ common_objs =  &
         gtxtpool.obj &
         gutil.obj    &
         wgmlmsg.obj
- 
+
 #
 # output device related
 #
@@ -43,7 +43,7 @@ dev_objs =  &
         cophdr.obj   &
         devfuncs.obj &
         outbuff.obj
- 
+
 #
 # gml tag related
 #
@@ -71,7 +71,7 @@ gml_objs =  &
         gxl.obj      &
         gxmp.obj     &
         gxxref.obj
- 
+
 #
 # layout tag scanning related
 #
@@ -116,7 +116,7 @@ lay_objs =  &
         glxl.obj     &
         glxmp.obj    &
         glxxfont.obj
- 
+
 #
 # script control word or function related
 #
@@ -164,5 +164,5 @@ scr_objs =  &
         gstitr.obj   &
         gsty.obj     &
         gsus.obj
- 
+
 objs = wgml.obj $(common_objs) $(scr_objs) $(gml_objs) $(lay_objs) $(dev_objs) $(trmem_objs)

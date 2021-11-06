@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,8 @@
 #include "mad.h"
 #include "madregs.h"
 #include "miscx87.h"
-#include "fault.h"
+#include "dbgeemsg.h"
+#include "dbgrmsg.h"
 #include "di386cli.h"
 
 /*
@@ -84,8 +86,6 @@ extern DWORD    __far NewESP;
 
 extern WORD     __far RetHow;
 
-#define EXCESS_CRAP_ON_STACK    (sizeof( int_frame ) )
-
 bool                WasInt32 = false;
 struct fp_state     FPResult;
 
@@ -106,7 +106,7 @@ static void saveState( volatile fault_frame *ff )
     IntResult.ESI = ff->ESI;
     // we modify ESP be the "real" esp; i.e., the one without the
     // excess crap pushed on by Windows before giving us the fault
-    IntResult.ESP = ff->ESP+EXCESS_CRAP_ON_STACK;
+    IntResult.ESP = ff->ESP + sizeof( int_frame );
     IntResult.EBX = ff->EBX;
     IntResult.EDX = ff->EDX;
     IntResult.ECX = ff->ECX;
@@ -134,21 +134,21 @@ static void restoreState( volatile fault_frame *ff )
      * because do not have data segment addressability when we need it
      * (when we go to push it onto a new stack)
      */
-    wptr = MK_FP( CSAlias, FP_OFF( &NewAX ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &NewAX ) );
     *wptr = (WORD) IntResult.EAX;
-    wptr = MK_FP( CSAlias, FP_OFF( &NewCS ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &NewCS ) );
     *wptr = IntResult.CS;
-    wptr = MK_FP( CSAlias, FP_OFF( &NewIP ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &NewIP ) );
     *wptr = (WORD) IntResult.EIP;
-    wptr = MK_FP( CSAlias, FP_OFF( &NewFLAGS ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &NewFLAGS ) );
     *wptr = (WORD) IntResult.EFlags;
-    wptr = MK_FP( CSAlias, FP_OFF( &OldretCS ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &OldretCS ) );
     *wptr = ff->intf.retCS;
-    wptr = MK_FP( CSAlias, FP_OFF( &OldretIP ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &OldretIP ) );
     *wptr = ff->intf.retIP;
-    wptr = MK_FP( CSAlias, FP_OFF( &Oldintnumber ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &Oldintnumber ) );
     *wptr = ff->intf.intnumber;
-    wptr = MK_FP( CSAlias, FP_OFF( &Oldhandle ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &Oldhandle ) );
     *wptr = ff->intf.handle;
 
     ff->SS = IntResult.SS;
@@ -159,7 +159,7 @@ static void restoreState( volatile fault_frame *ff )
     ff->EDI = IntResult.EDI;
     ff->ESI = IntResult.ESI;
     // have ESP include the excess crap again
-    ff->ESP = IntResult.ESP-EXCESS_CRAP_ON_STACK;
+    ff->ESP = IntResult.ESP - sizeof( int_frame );
     ff->EBX = IntResult.EBX;
     ff->EDX = IntResult.EDX;
     ff->ECX = IntResult.ECX;
@@ -189,8 +189,8 @@ static void newStack( WORD SS, DWORD ESP )
     WORD        __far *wptr;
     DWORD       __far *dwptr;
 
-    wptr = MK_FP( CSAlias, FP_OFF( &NewSS ) );
-    dwptr = MK_FP( CSAlias, FP_OFF( &NewESP ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &NewSS ) );
+    dwptr = _MK_FP( CSAlias, _FP_OFF( &NewESP ) );
 
     *wptr = SS;
     *dwptr = ESP;
@@ -204,13 +204,13 @@ static void newStack( WORD SS, DWORD ESP )
  * the code segment because we lack data segemtn addressability when we
  * need it.
  */
-static void setRetHow( WORD rc )
+static void setRetHow( appl_action appl_act )
 {
-    WORD        __far *wptr;
+    appl_action     __far *wptr;
 
-    wptr = MK_FP( CSAlias, FP_OFF( &RetHow ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &RetHow ) );
 
-    *wptr = rc;
+    *wptr = appl_act;
 
 } /* setRetHow */
 
@@ -251,9 +251,9 @@ volatile int AVolatileInt;
  * for a 32-bit fault), re-enable the hot key for async stopping,
  * and return to IntHandler to allow it to restart the debuggee.
  */
-void __loadds __cdecl FaultHandler( volatile fault_frame ff )
+void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
 {
-    restart_opts        rc=CHAIN;
+    appl_action         appl_act = CHAIN;
     private_msg         pmsg = FAULT_HIT;
     WORD                sig[2];
 
@@ -345,18 +345,17 @@ void __loadds __cdecl FaultHandler( volatile fault_frame ff )
     /*
      * switch to debugger
      */
-    while( 1 ) {
-        if( !ToDebugger( pmsg ) ) break;
-        rc = DebugeeWaitForMessage();
-        if( rc == RUN_REDIRECT ) {
+    while( ToDebugger( pmsg ) ) {
+        appl_act = DebugeeWaitForMessage();
+        if( appl_act == RUN_REDIRECT ) {
             ExecuteRedirect();
-        } else if( rc == ACCESS_SEGMENT ) {
-            AVolatileInt = *(LPINT) MK_FP( SegmentToAccess+1, 0 );
+        } else if( appl_act == ACCESS_SEGMENT ) {
+            AVolatileInt = *(LPINT)_MK_FP( SegmentToAccess+1, 0 );
         } else {
             break;
         }
     }
-    Out((OUT_RUN,"***** ---> restarting app, rc=%d",rc));
+    Out((OUT_RUN,"***** ---> restarting app, rc=%d", (int)appl_act));
 
     if( FPUType >= X86_387 ) {
         Write387( &FPResult );
@@ -374,7 +373,7 @@ void __loadds __cdecl FaultHandler( volatile fault_frame ff )
     TaskAtFault = NULL;
 
     FaultHandlerEntered = false;
-    setRetHow( rc );
+    setRetHow( appl_act );
     UseHotKey( 1 );
 
 } /* FaultHandler */

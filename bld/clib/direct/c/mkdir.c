@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,11 @@
     #include <mbstring.h>
 #endif
 #include "seterrno.h"
+#include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
+
 
 #ifdef _M_I86
   #ifdef __BIG_DATA__
@@ -70,8 +75,36 @@ extern unsigned __mkdir_sfn( const char *path );
     AUX_INFO
 
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
-static tiny_ret_t _mkdir_lfn( const char *path )
-/**********************************************/
+
+#ifdef _M_I86
+extern lfn_ret_t __mkdir_lfn( const char *path );
+  #ifdef __BIG_DATA__
+    #pragma aux __mkdir_lfn =   \
+            "push   ds"         \
+            "xchg   ax,dx"      \
+            "mov    ds,ax"      \
+            "mov    ax,7139h"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    ds"         \
+            "call __lfnerror_0" \
+        __parm __caller     [__dx __ax] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx]
+  #else
+    #pragma aux __mkdir_lfn =   \
+            "mov    ax,7139h"   \
+            "stc"               \
+            "int 21h"           \
+            "call __lfnerror_0" \
+        __parm __caller     [__dx] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx]
+  #endif
+#endif
+
+static lfn_ret_t _mkdir_lfn( const char *path )
+/*********************************************/
 {
 #ifdef _M_I86
     return( __mkdir_lfn( path ) );
@@ -83,17 +116,11 @@ static tiny_ret_t _mkdir_lfn( const char *path )
     dpmi_rm.ds  = RM_TB_PARM1_SEGM;
     dpmi_rm.edx = RM_TB_PARM1_OFFS;
     dpmi_rm.eax = 0x7139;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( 0 );
+    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
 #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ && !__WIDECHAR__ */
 
 _WCRTLINK int __F_NAME(mkdir,_wmkdir)( const CHAR_TYPE *path )
 /************************************************************/
@@ -110,13 +137,16 @@ _WCRTLINK int __F_NAME(mkdir,_wmkdir)( const CHAR_TYPE *path )
     return( mkdir( mbcsPath ) );
 #else
   #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    if( _RWD_uselfn ) {
+        lfn_ret_t   rc;
 
-    if( _RWD_uselfn && TINY_OK( rc = _mkdir_lfn( path ) ) ) {
-        return( 0 );
-    }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos( TINY_INFO( rc ) ) );
+        rc = _mkdir_lfn( path );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            return( 0 );
+        }
     }
   #endif
     return( __mkdir_sfn( path ) );

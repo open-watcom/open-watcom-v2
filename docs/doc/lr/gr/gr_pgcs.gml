@@ -1,4 +1,4 @@
-.gfuncms pg_chartscatter
+.gfuncms _pg_chartscatter
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_chartscatter( chartenv _FAR *env,
@@ -42,7 +42,7 @@ of data contained in the arrays
 .arg x
 and
 .arg y
-.ct .li .
+.period
 The argument
 .arg n
 specifies the number of values to chart.
@@ -73,7 +73,7 @@ The number of values used from each series is given by the argument
 .arg n
 is less than or equal to
 .arg dim
-.ct .li .
+.period
 The argument
 .arg labels
 is an array of &strings..

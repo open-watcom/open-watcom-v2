@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ struct BtreePage
     BtreePage   *_nextPage;     // Next page in this level.
     uint_16     _thisPage;      // Index # of this page.
     uint_32     _size;          // Size of the page
-    uint_32     _maxSize;       // The page size; used for dumping
+    uint_32     _pageSize;      // The page size; used for dumping
     BtreeData   *_entries;      // Pointer to BtreeData list.
     BtreePage   *_parent;       // Parent page.
     BtreePage   *_firstChild;   // First child page.
@@ -62,7 +63,7 @@ struct BtreePage
 
     bool        needSplit( uint_32 size );
 
-    BtreePage( uint_32 max_size, BtreePage *ancestor, BtreePage *descendant=NULL );
+    BtreePage( uint_32 pageSize, BtreePage *ancestor, BtreePage *descendant=NULL );
     ~BtreePage();
 };
 
@@ -134,11 +135,11 @@ BtreePage *BtreeData::seekNext( BtreePage *first )
 
 #define TREEPAGE_HEADER_SIZE    4
 
-BtreePage::BtreePage( uint_32 max_size, BtreePage *ancestor, BtreePage *descendant )
+BtreePage::BtreePage( uint_32 pageSize, BtreePage *ancestor, BtreePage *descendant )
         : _numEntries( 0 ),
           _prevPage( NULL ),
           _nextPage( NULL ),
-          _maxSize( max_size ),
+          _pageSize( pageSize ),
           _entries( NULL ),
           _parent( ancestor ),
           _firstChild( descendant )
@@ -173,12 +174,12 @@ BtreePage::~BtreePage()
 
 int BtreePage::dump( OutFile *dest )
 {
-    uint_32     amount_left = _maxSize;
+    uint_32     amount_left = _pageSize;
 
     // Spit out the page header.
     dest->write( (uint_8)0 );
     dest->write( (uint_8)0 );
-    dest->write( _numEntries );
+    dest->write( (uint_16)_numEntries );
     amount_left -= TREEPAGE_HEADER_SIZE;
 
     // If this a leaf node, print the indices of the previous
@@ -250,7 +251,7 @@ int BtreePage::split()
         return 0;
 
     // Create a new page, and modify the assorted pointers.
-    sibling = new BtreePage( _maxSize, _parent, current->child() );
+    sibling = new BtreePage( _pageSize, _parent, current->child() );
     sibling->_prevPage = this;
     sibling->_nextPage = _nextPage;
     if( _nextPage != NULL ) {
@@ -269,8 +270,8 @@ int BtreePage::split()
         if( current->bnext() != NULL ) {
             current->bnext()->bprev( NULL );
         }
-        sibling->_numEntries = (uint_16) (_numEntries-cur_num-1);
-        sibling->_size = _size-cur_size-current->size();
+        sibling->_numEntries = (uint_16)( _numEntries - cur_num - 1 );
+        sibling->_size = _size - cur_size - current->size();
     } else {
         sibling->_entries = current;
         if( current->bprev() != NULL ) {
@@ -279,13 +280,13 @@ int BtreePage::split()
             _entries = NULL;
         }
         current->bprev( NULL );
-        sibling->_numEntries = (uint_16) (_numEntries-cur_num);
-        sibling->_size = _size-cur_size;
+        sibling->_numEntries = (uint_16)( _numEntries - cur_num );
+        sibling->_size = _size - cur_size;
     }
 
     // Record the fact that we've lost data.
     _numEntries = cur_num;
-    _size = cur_size + TREEPAGE_HEADER_SIZE + sizeof(uint_16);
+    _size = cur_size + TREEPAGE_HEADER_SIZE + sizeof( uint_16 );
     if( _firstChild == NULL ) {
         _size += sizeof( uint_16 );
     }
@@ -343,23 +344,31 @@ bool BtreePage::needSplit( uint_32 size )
     if( _firstChild != NULL ) {
         cur_size += num * sizeof( uint_16 );
     }
-    return( cur_size > _maxSize || num >= (uint_16)~1 );
+    return( cur_size > _pageSize || num >= (uint_16)~1 );
 }
 
 
 
 //  Btree::Btree
 
-Btree::Btree( char const *magnum, uint_32 max_size )
+Btree::Btree( bool dir, char const *format )
         : _numLevels( 1 ),
           _totalEntries( 0 ),
           _numPages( 0 ),
           _numSplits( 0 ),
           _size( 0 ),
-          _maxSize( max_size ),
-          _magic( magnum )
+          _format( format )
 {
-    _root = new BtreePage( max_size, NULL );
+    if( dir ) {
+        // directory internal file b-tree
+        _flags = 0x0402;
+        _pageSize = 0x0400; // 1k
+    } else {
+        // other internal files b-tree
+        _flags = 0x0002;
+        _pageSize = 0x0800; // 2k
+    }
+    _root = new BtreePage( _pageSize, NULL );
 }
 
 
@@ -401,7 +410,7 @@ void Btree::insert( BtreeData *newdata )
 
     // If the _root page has to be split, do it now.
     if( _root->needSplit( 0 ) ) {
-        BtreePage *newroot = new BtreePage( _maxSize, NULL, _root );
+        BtreePage *newroot = new BtreePage( _pageSize, NULL, _root );
         _root->_parent = newroot;
         _root->split();
         _root = newroot;
@@ -437,10 +446,9 @@ void Btree::killPage( BtreePage *start )
 
 uint_32 Btree::size()
 {
-    if( !_size ) {
+    if( _size == 0 ) {
         labelPages( _root );
-        _size = ( _numPages * _maxSize );
-        _size += 38;    // The size of the b-tree header.
+        _size = ( _numPages * _pageSize ) + BTREE_HEADER_SIZE;
     }
     return _size;
 }
@@ -451,15 +459,21 @@ uint_32 Btree::size()
 
 int Btree::dump( OutFile *dest )
 {
-    uint_16     header[6] = {
-        0x0000, _numSplits, _root->_thisPage,
-        0xFFFF, _numPages, _numLevels
-    };
+    char        format[16];
 
-    // Write the magic number and header information.
-    dest->write( _magic, _magNumSize );
-    dest->write( header, 6, sizeof( uint_16 ) );
-    dest->write( _totalEntries );
+    strncpy( format, _format, sizeof( format ) );
+    // Write the b-tree header information.
+    dest->write( (uint_16)0x293B ); // magic
+    dest->write( (uint_16)_flags );
+    dest->write( (uint_16)_pageSize );
+    dest->write( format, sizeof( format ) );
+    dest->write( (uint_16)0 );
+    dest->write( (uint_16)_numSplits );
+    dest->write( (uint_16)_root->_thisPage );
+    dest->write( (uint_16)-1 );
+    dest->write( (uint_16)_numPages );
+    dest->write( (uint_16)_numLevels );
+    dest->write( (uint_32)_totalEntries );
 
     // Dump all of the pages recursively.
     dumpPage( dest, _root );

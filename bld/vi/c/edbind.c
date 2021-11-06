@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,14 +39,14 @@
 #include "watcom.h"
 #include "bool.h"
 #include "banner.h"
-#include "pathgrp.h"
 #include "bnddata.h"
 #include "pathgrp2.h"
+#include "myio.h"
 
 #include "clibext.h"
 
 
-#define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
+#define SKIP_SPACES(s)  while( isspace( *s ) ) s++
 
 #define MAX_LINE_LEN    1024
 #define COPY_SIZE       (0x8000 - 512)  /* QNX read/write size limitation */
@@ -79,11 +79,11 @@ static void Banner( void )
  */
 static void Abort( char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    vprintf( str, al );
-    va_end( al );
+    va_start( args, str );
+    vprintf( str, args );
+    va_end( args );
     printf( "\n" );
     exit( 1 );
 
@@ -94,12 +94,12 @@ static void Abort( char *str, ... )
  */
 static void MyPrintf( char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 
     if( !qflag ) {
-        va_start( al, str );
-        vprintf( str, al );
-        va_end( al );
+        va_start( args, str );
+        vprintf( str, args );
+        va_end( args );
     }
 
 } /* MyPrintf */
@@ -279,17 +279,6 @@ static void Usage( char *msg )
 } /* Usage */
 
 /*
- * SkipLeadingSpaces - skip leading spaces in a string
- */
-static char *SkipLeadingSpaces( const char *buff )
-{
-    while( isspace( *buff ) )
-        ++buff;
-    return( (char *)buff );
-
-} /* SkipLeadingSpaces */
-
-/*
  * MyAlloc - allocate memory, failing if cannot
  */
 static void *MyAlloc( size_t size )
@@ -316,7 +305,7 @@ int main( int argc, char *argv[] )
     bind_size           fi;
     FILE                *fp;
     struct stat         fs;
-    PGROUP2             pg;
+    pgroup2             pg;
     char                path[_MAX_PATH];
     char                tmppath[_MAX_PATH];
     bind_size           data_len;
@@ -383,15 +372,9 @@ int main( int argc, char *argv[] )
         if( fp == NULL ) {
             Abort( "Could not open %s", bindfile );
         }
-        while( (ptr = fgets( buff3, MAX_LINE_LEN, fp )) != NULL ) {
-            for( len = strlen( ptr ); len && isWSorCtrlZ( ptr[len - 1] ); --len ) {
-                ptr[len - 1] = '\0';
-            }
-            if( ptr[0] == '\0' ) {
-                continue;
-            }
-            ptr = SkipLeadingSpaces( ptr );
-            if( ptr[0] == '#' ) {
+        while( (ptr = myfgets( buff3, MAX_LINE_LEN, fp )) != NULL ) {
+            SKIP_SPACES( ptr );
+            if( ptr[0] == '\0' || ptr[0] == '#' ) {
                 continue;
             }
             dats[FileCount] = MyAlloc( strlen( ptr ) + 1 );
@@ -441,14 +424,9 @@ int main( int argc, char *argv[] )
             index[fi] = data_len;
             lines = 0;
             len1 = 0;
-            while( (ptr = fgets( buff3, MAX_LINE_LEN, fp )) != NULL ) {
-                for( len = strlen( ptr ); len && isWSorCtrlZ( ptr[len - 1] ); --len )
-                    ptr[len - 1] = '\0';
-                if( ptr[0] == '\0' ) {
-                    continue;
-                }
-                ptr = SkipLeadingSpaces( ptr );
-                if( ptr[0] == '#' ) {
+            while( (ptr = myfgets( buff3, MAX_LINE_LEN, fp )) != NULL ) {
+                SKIP_SPACES( ptr );
+                if( ptr[0] == '\0' || ptr[0] == '#' ) {
                     continue;
                 }
                 len = strlen( ptr );

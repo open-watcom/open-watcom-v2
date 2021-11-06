@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,14 +50,18 @@ typedef struct aux_info {
         char            *objname;       // also used by pre-compiled header
         unsigned        use;            // use count
         aux_flags       flags;
-        unsigned        index;          // for C/C++ pre-compiled header
-  #ifdef BY_C_FRONT_END
+  #if defined( BY_C_FRONT_END )
+        unsigned        index;          // for C pre-compiled header
     #if _CPU == 370
         linkage_regs    *linkage;
     #endif
     #if _CPU == _AXP
         char            *except_rtn;
     #endif
+  #elif defined( BY_CPP_FRONT_END )
+        unsigned        index;          // for C++ pre-compiled header
+  #elif defined( BY_FORTRAN_FRONT_END )
+        pass_by         *arg_info;
   #endif
 } aux_info;
 
@@ -80,15 +85,17 @@ typedef struct aux_info {
 #define MAX_BUILTIN_AUXINFO 9
 #endif
 
-global aux_info          BuiltinAuxInfo[MAX_BUILTIN_AUXINFO];
+extern aux_info     *DftCallConv;
 
-extern  void    PragmaAuxInfoInit( int );
-extern  void    SetAuxStackConventions( void );
-extern  void    SetAuxWatcallInfo( void );
-extern  void    SetAuxDefaultInfo( void );
-extern  int     IsAuxParmsBuiltIn( hw_reg_set *parms );
-extern  int     IsAuxInfoBuiltIn( aux_info *info );
-extern  char    *VarNamePattern( aux_info *inf );
+extern aux_info     BuiltinAuxInfo[MAX_BUILTIN_AUXINFO];
+
+extern void         AuxInfoInit( int );
+extern void         SetAuxStackConventions( void );
+extern void         SetAuxWatcallInfo( void );
+extern void         SetDefaultAuxInfo( void );
+extern int          IsAuxParmsBuiltIn( hw_reg_set *parms );
+extern int          IsAuxInfoBuiltIn( aux_info *info );
+extern char         *VarNamePattern( aux_info *inf );
 
 #endif
 

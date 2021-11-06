@@ -1,22 +1,22 @@
-.func sopen _sopen _wsopen
+.func _sopen _wsopen sopen
 .synop begin
 #include <&iohdr>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <share.h>
-int sopen( const char *filename,
-           int access, int share, ... );
-.ixfunc2 '&OsIo' &funcb
-.if &'length(&_func.) ne 0 .do begin
 int _sopen( const char *filename,
            int access, int share, ... );
-.ixfunc2 '&OsIo' &_func
-.do end
+.ixfunc2 '&OsIo' _sopen
 .if &'length(&wfunc.) ne 0 .do begin
 int _wsopen( const wchar_t *filename,
            int access, int share, ... );
-.ixfunc2 '&OsIo' &wfunc
+.ixfunc2 '&OsIo' _wsopen
+
+.deprec
+int sopen( const char *filename,
+           int access, int share, ... );
+.ixfunc2 '&OsIo' sopen
 .do end
 .synop end
 .desc begin
@@ -26,10 +26,10 @@ function opens a file at the operating system level for
 shared access.
 The name of the file to be opened is given by
 .arg filename
-.ct .li .
+.period
 The file will be accessed according to the access mode specified by
 .arg access
-.ct .li .
+.period
 When the file is to be created, the optional argument must be given
 which establishes the future access permissions for the file.
 Additionally, the sharing mode of the file is given by the
@@ -81,18 +81,18 @@ open( path, oflag, ... );
 .millust end
 is the same as:
 .millust begin
-sopen( path, oflag, SH_COMPAT, ... );
+_sopen( path, oflag, SH_COMPAT, ... );
 .millust end
 .np
 Note that the
 .id &funcb.
 function call ignores advisory locks which may
 have been set by the
-.kw fcntl
+.reffunc fcntl
 .ct ,
-.kw lock
+.reffunc lock
 .ct , or
-.kw locking
+.reffunc locking
 functions.
 .do end
 .el .do begin
@@ -100,6 +100,8 @@ functions.
 You should consult the technical documentation for the DOS system that
 you are using for more detailed information about these sharing modes.
 .do end
+.np
+.deprfunc sopen _sopen
 .desc end
 .return begin
 If successful,
@@ -139,19 +141,19 @@ void main( void )
     /* open a file for output                  */
     /* replace existing file if it exists      */
 
-    &fd = sopen( "file",
+    &fd = _sopen( "file",
                 O_WRONLY | O_CREAT | O_TRUNC,
                 SH_DENYWR,
                 S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
 
     /* read a file which is assumed to exist   */
 
-    &fd = sopen( "file", O_RDONLY, SH_DENYWR );
+    &fd = _sopen( "file", O_RDONLY, SH_DENYWR );
 
     /* append to the end of an existing file   */
     /* write a new file if file does not exist */
 
-    &fd = sopen( "file",
+    &fd = _sopen( "file",
                 O_WRONLY | O_CREAT | O_APPEND,
                 SH_DENYWR,
                 S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );

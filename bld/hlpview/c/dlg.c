@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,15 +33,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "watcom.h"
 #include "helpmem.h"
-#include "helpchar.h"
-#include "stdui.h"
+#include "search.h"
 #include "uivedit.h"
 #include "uiledit.h"
-#include "uidialog.h"
-#include "helpio.h"
-#include "search.h"
+#include "wibhelp.h"
 
 #include "clibext.h"
 
@@ -134,8 +130,8 @@ static bool GetListBoxItem( const void *data_handle, unsigned item, char *buf, u
                 if( buflen == 1 ) {
                     break;
                 }
-                if( *name == HELP_ESCAPE ) {
-                    name ++;
+                if( *name == IB_ESCAPE ) {
+                    name++;
                     continue;
                 }
                 *buf = *name;
@@ -167,7 +163,7 @@ static void fillListBox( const char *name )
 static void copyLBLinetoEditCtl( unsigned index )
 {
     char        *lb_item;
-    unsigned    len;
+    size_t      len;
 
     lb_item = uimalloc( MAX_EDIT_LINE_LEN );
     GetListBoxItem( &listData, index, lb_item, MAX_EDIT_LINE_LEN );
@@ -182,7 +178,7 @@ static void copyLBLinetoEditCtl( unsigned index )
 void HelpDialogCallBack( a_dialog *info )
 {
     char                buf[_MAX_PATH];
-    unsigned            len;
+    size_t              len;
 
     if( info != curHelpDialog )
         return;

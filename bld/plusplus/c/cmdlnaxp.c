@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +38,6 @@
 #include "codegen.h"
 #include "pragdefn.h"
 #include "compinfo.h"
-#ifdef __OSI__
- #include "ostype.h"
-#endif
 
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
@@ -266,25 +263,25 @@ void CmdSysAnalyse( OPT_STORAGE *data )
 
     GenSwitches &= ~( DBG_CV | DBG_DF | DBG_PREDEF );
     switch( data->dbg_output ) {
-    case OPT_dbg_output_hd:
+    case OPT_ENUM_dbg_output_hd:
     default:
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
         GenSwitches |= DBG_DF;
         break;
-    case OPT_dbg_output_hda:
+    case OPT_ENUM_dbg_output_hda:
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
         GenSwitches |= DBG_DF | DBG_PREDEF;
         break;
 #if 0
-    case OPT_dbg_output_hw:
+    case OPT_ENUM_dbg_output_hw:
         GenSwitches &= ~( DBG_CV | DBG_DF | DBG_PREDEF );
         break;
 #endif
-    case OPT_dbg_output_hc:
+    case OPT_ENUM_dbg_output_hc:
         GenSwitches |= DBG_CV;
         break;
     }
@@ -319,7 +316,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->si ) {
         TargetSwitches |= STACK_INIT;
     }
-    if( data->iso == OPT_iso_za ) {
+    if( data->iso == OPT_ENUM_iso_za ) {
         TargetSwitches &= ~I_MATH_INLINE;
     }
     if( data->vcap ) {

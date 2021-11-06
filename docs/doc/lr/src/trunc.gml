@@ -10,9 +10,9 @@ The
 function truncates the argument
 .arg x
 to the appropriate integer.  The function is equivalent to
-.kw floor
-for positive numbers and 
-.kw ceil
+.reffunc floor
+for positive numbers and
+.reffunc ceil
 for negative numbers.
 .desc end
 .return begin

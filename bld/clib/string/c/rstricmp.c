@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of stricmp() for RISC architectures.
+* Description:  Implementation of _stricmp() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -35,8 +36,8 @@
 #include "riscstr.h"
 
 
-int __F_NAME(stricmp,_wcsicmp)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
-/************************************************************************/
+int __F_NAME(_stricmp,_wcsicmp)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
+/*************************************************************************/
 {
     UINT            *dw1 = ROUND(s1); // round down to dword
     UINT            *dw2 = ROUND(s2);

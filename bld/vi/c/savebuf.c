@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -286,9 +287,10 @@ vi_rc GetSavebufString( char **data )
             return( rc );
         }
         tmp = &clip;
-    } else
-#endif
+    } else if( SavebufNumber >= MAX_SAVEBUFS ) {
+#else
     if( SavebufNumber >= MAX_SAVEBUFS ) {
+#endif
         tmp = &SpecialSavebufs[SavebufNumber - MAX_SAVEBUFS];
     } else {
         tmp = &Savebufs[SavebufNumber];
@@ -303,7 +305,7 @@ vi_rc GetSavebufString( char **data )
     case SAVEBUF_NOP:
         return( ERR_EMPTY_SAVEBUF );
     case SAVEBUF_LINE:
-        len = strlen( tmp->u.data );
+        len = strlen( tmp->u.data ) + 1;
         break;
     case SAVEBUF_FCBS:
         for( cfcb = tmp->u.fcbs.head; cfcb != NULL; cfcb = cfcb->next ) {
@@ -311,11 +313,11 @@ vi_rc GetSavebufString( char **data )
         }
         break;
     }
-    rc = ERR_NO_ERR;
     if( len > MAX_STR * 4 ) {
         rc = ERR_SAVEBUF_TOO_BIG;
     } else {
-        p = *data = MemAlloc( len );
+        rc = ERR_NO_ERR;
+        *data = p = MemAlloc( len );
         switch( tmp->type ) {
         case SAVEBUF_LINE:
             strcpy( p, tmp->u.data );
@@ -407,10 +409,10 @@ void AddLineToSavebuf( char *data, int scol, int ecol )
     }
 #endif
     if( j >= MAX_SAVEBUFS ) {
-        LastSavebuf = (char) j + (char) 'a' - (char) MAX_SAVEBUFS;
+        LastSavebuf = (char)j + (char)'a' - (char)MAX_SAVEBUFS;
         tmp = &SpecialSavebufs[j - MAX_SAVEBUFS];
     } else {
-        LastSavebuf = (char) j + (char) '1';
+        LastSavebuf = (char)j + (char)'1';
         tmp = &Savebufs[j];
         rotateSavebufs( j );
     }
@@ -483,10 +485,10 @@ void AddFcbsToSavebuf( fcb_list *fcblist, bool duplflag )
     }
 #endif
     if( j >= MAX_SAVEBUFS ) {
-        LastSavebuf = (char) j + (char) 'a' - (char) MAX_SAVEBUFS;
+        LastSavebuf = (char)j + (char)'a' - (char)MAX_SAVEBUFS;
         tmp = &SpecialSavebufs[j - MAX_SAVEBUFS];
     } else {
-        LastSavebuf = (char) j + (char) '1';
+        LastSavebuf = (char)j + (char)'1';
         tmp = &Savebufs[j];
         rotateSavebufs( j );
     }
@@ -595,7 +597,7 @@ vi_rc SetSavebufNumber( const char *data )
     data = GetNextWord1( data, st );
     if( st[0] != '\0' ) {
         if( st[1] != '\0' ) {
-            Error( GetErrorMsg( ERR_INVALID_SAVEBUF), st[0] );
+            Error( GetErrorMsg( ERR_INVALID_SAVEBUF ), st[0] );
             return( DO_NOT_CLEAR_MESSAGE_WINDOW );
         }
 #ifdef __WIN__
@@ -608,7 +610,7 @@ vi_rc SetSavebufNumber( const char *data )
             } else if( st[0] >= 'a' && st[0] <= 'z' ) {
                 SavebufNumber = st[0] - 'a' + MAX_SAVEBUFS;
             } else {
-                Error( GetErrorMsg( ERR_INVALID_SAVEBUF), st[0] );
+                Error( GetErrorMsg( ERR_INVALID_SAVEBUF ), st[0] );
                 return( DO_NOT_CLEAR_MESSAGE_WINDOW );
             }
 #ifdef __WIN__

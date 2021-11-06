@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,6 @@
 #include "ring.h"
 #include "ringname.h"
 #include "cgdata.h"
-#include "toggle.h"
 #include "pragdefn.h"
 #include "pdefn2.h"
 #include "context.h"
@@ -50,9 +50,14 @@
 #include "cgback.h"
 #include "vstk.h"
 #include "vbuf.h"
+#include "toggles.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+#endif
 
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
+
 
 static  RINGNAMECTL undef_names =       // #UNDEF NAMES LIST
 {   NULL                                // - ring
@@ -227,7 +232,7 @@ static void defineFeatureMacros( void )
     char        *end_watcom;
     char        *end_feature;
     const char  **p;
-    auto char   buff[128];
+    char        buff[128];
     static const char *feature[] = {
         "BOOL",
         "MUTABLE",
@@ -292,7 +297,7 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
     PreDefineStringMacro( "__WATCOM_CPLUSPLUS__=" _MACROSTR( _BLDVER ) );
     // #if __WATCOM_REVISION__ >= 8
     PreDefineStringMacro( "__WATCOM_REVISION__=8" );
-    if( !PragToggle.check_stack ) {
+    if( !TOGGLE( check_stack ) ) {
         DefSwitchMacro( "S" );
     }
     RingNameFree( &undef_names );
@@ -305,8 +310,6 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     GblPackAmount = PackAmount;
     SrcFileSetTab( DEF_TAB_WIDTH );
     RingNameInit( &undef_names );
-    PragToggle.check_stack = true;
-    PragToggle.unreferenced = true;
     DataThreshold = 32767;
     OptSize = 50;
     WholeFName = NULL;
@@ -324,11 +327,15 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     CompFlags.check_truncated_fnames = true;
     CompFlags.inline_functions = true;
 
+    memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );
+#ifndef NDEBUG
+    memset( &PragmaDbgToggles, 0, sizeof( PragmaDbgToggles ) );
+#endif
+    TOGGLE( check_stack ) = true;
+    TOGGLE( unreferenced ) = true;
+
     SetAuxWatcallInfo();
 
-    HeadPacks = NULL;
-    HeadEnums = NULL;
-    FreePrags = NULL;
     CgBackSetInlineDepth( DEFAULT_INLINE_DEPTH );
     CgBackSetOeSize( 0 );
     CgBackSetInlineRecursion( false );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,8 +65,8 @@
 #include "proclist.h"
 
 
-extern  void            (* const __FAR GenOprTable[])(TYPE, TYPE, OPTR);
-extern  void            (* const __FAR ConstTable[])(TYPE, TYPE, OPTR);
+extern  void            (* const GenOprTable[])(TYPE, TYPE, OPTR);
+extern  void            (* const ConstTable[])(TYPE, TYPE, OPTR);
 
 /* Forward declarations */
 static  void    InlineCnvt( void );
@@ -77,7 +78,7 @@ static  void    LowColon( void );
 static  void    AddSS( int number );
 
 
-static const OPTR __FAR OprNum[] = {
+static const OPTR   OprNum[] = {
     #define pick(id,opr_index,proc_index) proc_index,
     #include "oprdefn.h"
     #undef pick
@@ -119,7 +120,7 @@ typedef enum {
     #undef pick
 } move;
 
-static  const move    __FAR OprSeqMat[] = {
+static  const move    OprSeqMat[] = {
 //                                                                       |o   /
 //                                                                       |p  /
 //                                                                       |r /
@@ -188,13 +189,13 @@ static  const move    __FAR OprSeqMat[] = {
 #define LEGALOPR_TAB_COLS       13
 #define LEGALOPR_TAB_SIZE       169
 
-static  const unsigned_16     __FAR LegalOprsB[] = { /*                                |
+static  const unsigned_16     LegalOprsB[] = { /*                                |
                                                                                        |
  opnd1  (binary)                                                                       | opnd2
                                                                                        |
 log1 log4  int1   int2   int4   real   dble   xtnd   cmplx  dcmplx xcmplex char struct |
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-                                                                                               
+
 LOG,  LOG,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE, FLDOP, // log*1
 LOG,  LOG,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE, FLDOP, // log*4
 NONE, NONE, INUMOP,INUMOP,INUMOP,NUMOP, NUMOP, NUMOP, NUMOP, NUMOP, NUMOP, NONE, FLDOP, // int*1
@@ -211,7 +212,7 @@ NONE, NONE, NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,
 };
 
 
-static  const unsigned_16     __FAR LegalOprsU[] = { /*
+static  const unsigned_16     LegalOprsU[] = { /*
 
  opnd2 (unary)
 
@@ -222,7 +223,7 @@ NOT, NOT, IPLMIN,IPLMIN,IPLMIN, PLMIN, PLMIN, PLMIN, PLMIN, PLMIN, PLMIN,  NONE,
 };
 
 
-static const byte __FAR OprIndex[] = {
+static const byte   OprIndex[] = {
     #define pick(id,opr_index,proc_index) opr_index,
     #include "oprdefn.h"
     #undef pick
@@ -247,7 +248,8 @@ static  bool    SimpleScript( itnode *op ) {
 static  int     SameScripts( itnode *op1, itnode *op2 ) {
 //=======================================================
 
-    if( !SimpleScript( op1 ) ) return( 0 );
+    if( !SimpleScript( op1 ) )
+        return( 0 );
     if( (op1->opn.us & USOPN_WHAT) == USOPN_NONE ) {
         if( (op2->opn.us & USOPN_WHAT) == USOPN_CON ) {
             return( ITIntValue( op2 ) );
@@ -269,9 +271,9 @@ static  int     SameScripts( itnode *op1, itnode *op2 ) {
 }
 
 
-bool    OptimalChSize( uint size ) {
+bool    OptimalChSize( size_t size )
 //==================================
-
+{
     return( ( size == 1 ) || ( size == 2 ) || ( size == 4 ) );
 }
 
@@ -584,13 +586,14 @@ static  void    USCleanUp( void ) {
 }
 
 
-static  bool    DoGenerate( TYPE typ1, TYPE typ2, uint *res_size ) {
-//================================================================
-
+static  bool    DoGenerate( TYPE typ1, TYPE typ2, size_t *res_size )
+//==================================================================
+{
     if( CITNode->link->opr == OPR_EQU ) {
         ResultType = typ1;
         *res_size = CITNode->size;
-        if( (ASType & AST_ASF) || CkAssignOk() ) return( true );
+        if( (ASType & AST_ASF) || CkAssignOk() )
+            return( true );
         return( false );
     } else {
         if( ( ( typ1 == FT_DOUBLE ) && ( typ2 == FT_COMPLEX ) ) ||
@@ -675,7 +678,7 @@ static  void    Generate( void ) {
     OPR         opr;
     itnode      *next;
     unsigned_16 mask;
-    uint        res_size;
+    size_t      res_size;
 
     next = CITNode->link;
     if( next->opn.ds == DSOPN_PHI ) {
@@ -1120,6 +1123,7 @@ static  void    InlineCnvt( void ) {
                 func_type = FT_XCOMPLEX;
                 break;
             }
+            /* fall through */
         case IF_DCMPLX:
         case IF_QCMPLX:
             if( RecNextOpr( OPR_COM ) ) {
@@ -1288,14 +1292,14 @@ static  void    InlineCnvt( void ) {
     cit = CITNode->list;
     CITNode->typ = func_type;
     CITNode->size = TypeSize( func_type );
-    SetOpn( CITNode, cit->opn.us & USOPN_WHERE );
+    SetOpn( CITNode, (cit->opn.us & USOPN_WHERE) );
     CITNode->list = NULL;
     UpdateNode( CITNode, cit );
     FreeITNodes( cit );
 }
 
 
-static  void (* const __FAR RtnTable[])(void) = {
+static  void (* const RtnTable[])(void) = {
     #define pick(id,proc) proc,
     #include "rtntable.h"
     #undef pick

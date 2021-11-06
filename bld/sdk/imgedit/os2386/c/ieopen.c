@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,8 +115,8 @@ static bool readInImageFile( const char *fullname )
         node[i].hotspot.y = imgfile->resources[i].yhotspot;
 
         image = GetPMImageBits( imgfile, fp, i );
-        node[i].handbitmap = PMImageToAndBitmap( image, imgfile, i );
-        node[i].hxorbitmap = PMImageToWinXorBitmap(image, imgfile, i, Instance);
+        node[i].and_hbitmap = PMImageToAndBitmap( image, imgfile, i );
+        node[i].xor_hbitmap = PMImageToWinXorBitmap(image, imgfile, i, Instance);
         node[i].num_of_images = imgfile->count;
         node[i].viewhwnd = NULL;
         if( i > 0 ) {
@@ -151,23 +151,23 @@ static bool readInImageFile( const char *fullname )
  */
 static bool readInBitmapFile( const char *fullname )
 {
-    HBITMAP             hrealbitmap;
-    HBITMAP             hbitmap;
-    HBITMAP             oldbmp1;
-    HBITMAP             oldbmp2;
+    HBITMAP             real_hbitmap;
+    WPI_HBITMAP         hbitmap;
+    WPI_HBITMAP         old_hbitmap1;
+    WPI_HBITMAP         old_hbitmap2;
     BITMAPINFOHEADER2   info;
     img_node            node;
     WPI_PRES            pres;
     WPI_PRES            srcpres;
     HDC                 srcdc;
-    WPI_PRES            destpres;
-    HDC                 destdc;
+    WPI_PRES            dstpres;
+    HDC                 dstdc;
     char                text[HINT_TEXT_LEN];
     char                filename[_MAX_FNAME + _MAX_EXT];
 
     // NOTE that ReadPMBitmapFile returns an actual hbitmap!!
-    hrealbitmap = ReadPMBitmapFile( HMainWindow, fullname, &info );
-    hbitmap = MakeWPIBitmap( hrealbitmap );
+    real_hbitmap = ReadPMBitmapFile( HMainWindow, fullname, &info );
+    hbitmap = _wpi_makewpibitmap( real_hbitmap );
     GetFnameFromPath( fullname, filename );
 
     if( hbitmap ) {
@@ -194,27 +194,26 @@ static bool readInBitmapFile( const char *fullname )
         if( node.bitcount == 1 ) {
             pres = _wpi_getpres( HWND_DESKTOP );
             srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );
-            destpres = _wpi_createcompatiblepres( pres, Instance, &destdc );
+            dstpres = _wpi_createcompatiblepres( pres, Instance, &dstdc );
             _wpi_releasepres( HWND_DESKTOP, pres );
 
             _wpi_torgbmode( srcpres );
-            _wpi_torgbmode( destpres );
+            _wpi_torgbmode( dstpres );
 
-            node.hxorbitmap = _wpi_createbitmap( node.width, node.height, 1, 1,
-                                                                        NULL );
-            _wpi_preparemono( destpres, BLACK, WHITE );
+            node.xor_hbitmap = _wpi_createbitmap( node.width, node.height, 1, 1, NULL );
+            _wpi_preparemono( dstpres, BLACK, WHITE );
 
-            oldbmp1 = _wpi_selectbitmap( srcpres, hbitmap );
-            oldbmp2 = _wpi_selectbitmap( destpres, node.hxorbitmap );
-            _wpi_bitblt( destpres, 0, 0, node.width, node.height, srcpres,
+            old_hbitmap1 = _wpi_selectbitmap( srcpres, hbitmap );
+            old_hbitmap2 = _wpi_selectbitmap( dstpres, node.xor_hbitmap );
+            _wpi_bitblt( dstpres, 0, 0, node.width, node.height, srcpres,
                                         0, 0, SRCCOPY );
-            _wpi_selectbitmap( srcpres, oldbmp1 );
-            _wpi_selectbitmap( destpres, oldbmp2 );
+            _wpi_selectbitmap( srcpres, old_hbitmap1 );
+            _wpi_selectbitmap( dstpres, old_hbitmap2 );
             _wpi_deletecompatiblepres( srcpres, srcdc );
-            _wpi_deletecompatiblepres( destpres, destdc );
+            _wpi_deletecompatiblepres( dstpres, dstdc );
             _wpi_deletebitmap( hbitmap );
         } else {
-            node.hxorbitmap = hbitmap;
+            node.xor_hbitmap = hbitmap;
         }
 
         strcpy( node.fname, fullname );
@@ -256,7 +255,7 @@ static bool initOpenFileInfo( const char *fullfile, image_type img_type )
  */
 static bool updateOpenFileInfo( const char *fname )
 {
-    PGROUP2             pg;
+    pgroup2             pg;
     size_t              len;
 
     _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, &pg.ext );
@@ -375,7 +374,7 @@ char *GetInitOpenDir( void )
  */
 void OpenFileOnStart( const char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     FILE        *fp;
     char        text[HINT_TEXT_LEN];
     char        filename[_MAX_FNAME + _MAX_EXT];

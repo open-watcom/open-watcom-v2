@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,14 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
+#include <time.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+    #include <utime.h>
+    #include <fnmatch.h>
+#else
+    #include <sys/utime.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef __UNIX__
@@ -38,14 +46,9 @@
 #else
     #include <direct.h>
 #endif
-#if defined( __UNIX__ ) || defined( __WATCOMC__ )
-    #include <fnmatch.h>
-#endif
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
-#include <ctype.h>
-#include <time.h>
 #ifdef __RDOS__
     #include "rdos.h"
 #endif
@@ -67,6 +70,7 @@
 #include "msuffix.h"
 #include "mupdate.h"
 #include "mvecstr.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -747,7 +751,7 @@ STATIC bool percentErase( char *arg )
         PrtMsg( INF | PRNTSTR, fn );
     } else {
         *p = NULLCHAR;      /* terminate file name */
-        if( unlink( fn ) == 0 ) {
+        if( remove( fn ) == 0 ) {
             ok = true;
         }
     }
@@ -937,8 +941,7 @@ STATIC RET_T handleSet( char *cmd )
     char        *p;         /* we walk cmd with this        */
     char        *name;      /* beginning of variable name   */
     char        *endname;   /* end of name                  */
-    ENV_TRACKER *env;       /* space allocated for envvar   */
-    int         retcode;    /* from putenv                  */
+    int         retcode;    /* from setenv                  */
 
     assert( cmd != NULL );
 
@@ -965,15 +968,10 @@ STATIC RET_T handleSet( char *cmd )
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_SET] );
         return( RET_ERROR );
     }
-
     *endname = NULLCHAR;        /* null terminate name */
-
     ++p;                        /* advance to character after '=' */
 
-    /* +1 for '=' (already +1 for NULLCHAR in ENV_TRACKER) */
-    env = MallocSafe( sizeof( *env ) + 1 + ( endname - name ) + strlen( p ) );
-    FmtStr( env->value, "%s=%s", name, p );
-    retcode = PutEnvSafe( env );
+    retcode = SetEnvSafe( name, p );
     if( retcode != 0 ) {
         return( RET_ERROR );
     }
@@ -1454,7 +1452,7 @@ STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
         rc = rmdir( name );
     } else {
         inf_msg = "file";
-        rc = unlink( name );
+        rc = remove( name );
     }
     if( rc != 0 && flags->bForce && errno == EACCES ) {
         rc = chmod( name, PMODE_RW );
@@ -1462,7 +1460,7 @@ STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
             if( dir ) {
                 rc = rmdir( name );
             } else {
-                rc = unlink( name );
+                rc = remove( name );
             }
         }
     }
@@ -1486,14 +1484,12 @@ static bool IsDotOrDotDot( const char *fname )
     return( fname[0] == '.' && ( fname[1] == NULLCHAR || ( fname[1] == '.' && fname[2] == NULLCHAR ) ) );
 }
 
-#ifdef __UNIX__
 static bool chk_is_dir( const char *name )
 {
     struct stat     s;
 
     return( stat( name, &s ) == 0 && S_ISDIR( s.st_mode ) );
 }
-#endif
 
 static bool doRM( const char *fullpath, const rm_flags *flags )
 {
@@ -1619,15 +1615,10 @@ STATIC bool processRM( const char *name, const rm_flags *flags )
             return( RecursiveRM( ".", flags ) );
         } else if( strpbrk( name, WILD_METAS ) != NULL ) {
             /* don't process wild cards on directories */
+        } else if( chk_is_dir( name ) ) {
+            return( RecursiveRM( name, flags ) );
         } else {
-            struct stat buf;
-            if( stat( name, &buf ) == 0 ) {
-                if( S_ISDIR( buf.st_mode ) ) {
-                    return( RecursiveRM( name, flags ) );
-                } else {
-                    return( remove_item( name, flags, false ) );
-                }
-            }
+            return( remove_item( name, flags, false ) );
         }
         return( true );
     } else {
@@ -1678,6 +1669,8 @@ STATIC RET_T handleMkdirSyntaxError( void )
     return( RET_ERROR );
 }
 
+#define DOMKDIR(d)  (MKDIR(d) == 0 || errno == EEXIST || errno == EACCES)
+
 STATIC bool processMkdir( char *path, bool mkparents )
 /****************************************************/
 {
@@ -1703,19 +1696,16 @@ STATIC bool processMkdir( char *path, bool mkparents )
             *p = NULLCHAR;
 
             /* create directory */
-            if( MKDIR( path ) ) {
-                /* if exist then continue to next level */
-                if( errno != EEXIST ) {
-                    /* Can not create directory for some reason */
-                    return( false );
-                }
+            if( !DOMKDIR( path ) ) {
+                /* Can not create directory for some reason */
+                return( false );
             }
             /* put back the path separator */
             *p = save_char;
         }
         return( true );
     } else {
-        return( MKDIR( path ) == 0 );
+        return( DOMKDIR( path ) );
     }
 }
 
@@ -1758,6 +1748,138 @@ STATIC RET_T handleMkdir( char *cmd )
     }
     return( RET_SUCCESS );
 }
+
+static FILE *open_file( const char *name, const char *mode )
+/**********************************************************/
+{
+    FILE    *fp;
+
+    fp = fopen( name, mode );
+    if( fp == NULL )
+        PrtMsg( ERR | ERROR_OPENING_FILE, name );
+    return( fp );
+}
+
+static bool close_file( FILE *fp, const char *name )
+/**************************************************/
+{
+    if( fp != NULL ) {
+        if( fclose( fp ) ) {
+            PrtMsg( ERR | ERROR_CLOSING_FILE, name );
+            return( false );
+        }
+    }
+    return( true );
+}
+
+static size_t read_block( void *buf, size_t len, FILE *fp, const char *name )
+/***************************************************************************/
+{
+    size_t readlen;
+
+    readlen = fread( buf, 1, len, fp );
+    if( ferror( fp ) )
+        PrtMsg( ERR | READ_ERROR, name );
+    return( readlen );
+}
+
+static size_t write_block( const void *buf, size_t len, FILE *fp, const char *name )
+/**********************************************************************************/
+{
+    size_t writelen;
+
+    writelen = fwrite( buf, 1, len, fp );
+    if( ferror( fp ) )
+        PrtMsg( ERR | ERROR_WRITING_FILE, name );
+    return( writelen );
+}
+
+STATIC bool processCopy( const char *src, const char *dst )
+/*********************************************************/
+{
+    FILE            *fps;
+    FILE            *fpd;
+    bool            ok;
+    char            buf[FILE_BUFFER_SIZE];
+    size_t          len;
+    pgroup2         pg;
+    struct stat     st;
+    struct utimbuf  dsttimes;
+
+    if( chk_is_dir( dst ) ) {
+        _splitpath2( src, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+        _makepath( buf, NULL, dst, pg.fname, pg.ext );
+        dst = strcpy( pg.buffer, buf );
+    }
+    ok = false;
+    fps = open_file( src, "rb" );
+    if( fps != NULL ) {
+        fpd = open_file( dst, "wb" );
+        if( fpd != NULL ) {
+            while( (len = read_block( buf, FILE_BUFFER_SIZE, fps, src )) == FILE_BUFFER_SIZE ) {
+                if( len != write_block( buf, len, fpd, dst ) ) {
+                    break;
+                }
+            }
+            if( len != FILE_BUFFER_SIZE ) {
+                ok = ( len == write_block( buf, len, fpd, dst ) );
+            }
+            ok &= close_file( fpd, dst );
+
+            stat( src, &st );
+            dsttimes.actime = st.st_atime;
+            dsttimes.modtime = st.st_mtime;
+            utime( dst, &dsttimes );
+            /*
+             * copy permissions: mostly necessary for the "x" bit
+             * some files is copied with the read-only permission
+             */
+            chmod( dst, st.st_mode );
+        }
+        ok &= close_file( fps, src );
+    }
+    return( ok );
+}
+
+STATIC bool handleCopy( char *arg )
+/***********************************
+ * "COPY" {ws}+ <source file> {ws}+ <destination file>
+ */
+{
+    char        *p;
+    char        *fn1, *fn2;
+
+    assert( arg != NULL );
+
+    if( Glob.noexec ) {
+        return( RET_SUCCESS );
+    }
+
+    /* Get first LFN */
+    p = arg + 4;    /* skip "COPY" */
+    p = SkipWS( p );
+    p = CmdGetFileName( p, &fn1, true );
+    if( *p == NULLCHAR || !cisws( *p ) ) {
+        PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_COPY] );
+        PrtMsg( INF | PRNTSTR, "First file" );
+        PrtMsg( INF | PRNTSTR, fn1 );
+        return( RET_ERROR );
+    }
+    *p++ = NULLCHAR;        /* terminate first file name */
+    /* skip ws after first and before second file name */
+    p = SkipWS( p );
+    /* Get second LFN as well */
+    p = CmdGetFileName( p, &fn2, true );
+    if( *p != NULLCHAR && !cisws( *p ) ) {
+        PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_COPY] );
+        return( RET_ERROR );
+    }
+    *p = NULLCHAR;          /* terminate second file name */
+    if( processCopy( fn1, fn2 ) )
+        return( RET_SUCCESS );
+    return( RET_ERROR );
+}
+
 
 STATIC RET_T handleRmdir( char *cmd )
 /************************************
@@ -1857,43 +1979,40 @@ STATIC UINT16 makeTmpEnv( char *arg )
  */
 {
     UINT16      tmp;
-    char        buf[20];    /* "WMAKExxxxx=" + NULLCHAR = 11 + room for FmtStr */
+    char        name[20];   /* " @WMAKE%d" */
     size_t      len;
-    ENV_TRACKER *env;
+    size_t      len1;
 
     tmp = 1;
     for( ;; ) {
-        FmtStr( buf, "WMAKE%d", tmp );
-        if( getenv( buf ) == NULL ) {
+        FmtStr( name, " @WMAKE%d", tmp );
+        if( getenv( name + 2 ) == NULL ) {
             break;
         }
         ++tmp;
     }
+    len1 = strlen( name );
     len = strlen( arg );
-    if( len < 13 ) {     /* need room for " @WMAKExxxxx" */
+    if( len < len1 ) {      /* need room for " @WMAKE%d" in arg */
         return( 0 );
     }
-                        /* "WMAKExxxxx=" + arg + NULLCHAR */
-    env = MallocSafe( sizeof( ENV_TRACKER ) + len + 12 );
-    FmtStr( env->value, "WMAKE%d=%s", tmp, arg );
-    if( PutEnvSafe( env ) != 0 ) {
+    if( SetEnvSafe( name + 2, arg ) != 0 ) {
         return( 0 );
     }
-    FmtStr( arg, " @WMAKE%d", tmp );
+    strcpy( arg, name );    /* copy " @WMAKE%d" to arg */
     return( tmp );
 }
 
 STATIC void killTmpEnv( UINT16 tmp )
 /**********************************/
 {
-    ENV_TRACKER *env;
+    char        name[20];    /* "WMAKE%d" */
 
     if( tmp == 0 ) {
         return;
     }
-    env = MallocSafe( sizeof( ENV_TRACKER ) + 20 );
-    FmtStr( env->value, "WMAKE%d=", tmp );
-    PutEnvSafe( env );
+    FmtStr( name, "WMAKE%d", tmp );
+    SetEnvSafe( name, NULL );
 }
 #else
 STATIC UINT16 makeTmpEnv( const char *cmd )
@@ -1966,9 +2085,10 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
 
 #if defined( __DOS__ )
     {
-        char    ext[_MAX_EXT];
+        char    ext_buf[10];
+        char    *ext;
 
-        _splitpath( cmdname, NULL, NULL, NULL, ext );
+        _splitpath2( cmdname, ext_buf, NULL, NULL, NULL, &ext );
         if( ext[0] == '.' ) {
             FixName( ext );
             /* if extension specified let the shell handle it */
@@ -2019,6 +2139,7 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         case COM_RM:    my_ret = handleRM( cmd );           break;
         case COM_MKDIR: my_ret = handleMkdir( cmd );        break;
         case COM_RMDIR: my_ret = handleRmdir( cmd );        break;
+        case COM_COPY:  my_ret = handleCopy( cmd );         break;
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
         case COM_CD:
         case COM_CHDIR: my_ret = handleCD( cmd );           break;

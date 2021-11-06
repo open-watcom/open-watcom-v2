@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +33,11 @@
 
 #include "ftnstd.h"
 #include <ctype.h>
-#include <stdio.h>
-#include <string.h>
 #include "global.h"
 #include "dw.h"
 #include "dwarf.h"
 #include "errcod.h"
 #include "cioconst.h"
-#include "omodes.h"
 #include "exeelf.h"
 #include "browscli.h"
 #include "fmemmgr.h"
@@ -176,10 +173,10 @@ static Elf32_Shdr section_header_template = {
 static void mywrite( file_handle fp, const void *data, size_t len, const char *filename )
 /***************************************************************************************/
 {
-    char            err_msg[ERR_BUFF_SIZE+1];
+    char    err_msg[ERR_BUFF_SIZE + 1];
 
     SDWrite( fp, data, len );
-    if( SDError( fp, err_msg ) ) {
+    if( SDError( fp, err_msg, sizeof( err_msg ) ) ) {
         Error( SM_IO_WRITE_ERR, filename, err_msg );
         CSuicide();
     }
@@ -188,9 +185,9 @@ static void mywrite( file_handle fp, const void *data, size_t len, const char *f
 static void chkIOErr( file_handle fp, int error, const char *filename )
 /*********************************************************************/
 {
-    char            err_msg[ERR_BUFF_SIZE+1];
+    char    err_msg[ERR_BUFF_SIZE + 1];
 
-    if( SDError( fp, err_msg ) ) {
+    if( SDError( fp, err_msg, sizeof( err_msg ) ) ) {
         Error( error, filename, err_msg );
         CSuicide();
     }
@@ -311,21 +308,10 @@ static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
         memcpy( ( dw_sections[sect].u2.data + dw_sections[sect].offset ), block, size );
         break;
     case( FILE_SECTION ):
-        {
-            size_t          length;
-            unsigned        amount;
-
-            amount = INT_MAX;
-            length = size;
-            while( length > 0 ) {
-                if( amount > length )
-                    amount = (unsigned)length;
-                if( fwrite( block, amount, 1, dw_sections[sect].u1.fp ) != 1 ) {
-                    Error( SM_IO_WRITE_ERR, dw_sections[sect].u2.filename, strerror( errno ) );
-                    CSuicide();
-                }
-                block = (char *)block + amount;
-                length -= amount;
+        if( size > 0 ) {
+            if( fwrite( block, size, 1, dw_sections[sect].u1.fp ) != 1 ) {
+                Error( SM_IO_WRITE_ERR, dw_sections[sect].u2.filename, strerror( errno ) );
+                CSuicide();
             }
         }
         break;
@@ -510,8 +496,7 @@ void CLIDump( const char *filename )
 {
     file_handle     fp;
 
-    SDSetAttr( REC_FIXED | SEEK );
-    fp = SDOpen( filename, WRITE_FILE );
+    fp = SDOpen( filename, "wb" );
     chkIOErr( fp, SM_OPENING_FILE, filename );
     CLILock();
     CLIRewind();
@@ -525,7 +510,7 @@ void CLIFini( void )
     dw_sectnum      sect;
 
     for( sect = 0; sect < DW_DEBUG_MAX; sect++ ) {
-        if( ( dw_sections[sect].sec_type == FILE_SECTION ) && dw_sections[sect].u1.fp != NULL ) {
+        if( ( dw_sections[sect].sec_type == FILE_SECTION ) && ( dw_sections[sect].u1.fp != NULL ) ) {
             fclose( dw_sections[sect].u1.fp );
         } else if( ( dw_sections[sect].sec_type == MEM_SECTION ) && dw_sections[sect].u2.data != NULL ) {
             FMemFree( dw_sections[sect].u2.data );

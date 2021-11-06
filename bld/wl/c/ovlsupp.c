@@ -56,6 +56,8 @@
 #include "clibext.h"
 
 
+#ifdef _EXE
+
 overlay_ref         OvlSectNum;         /* OvlSectNum value 0 is reserved for Root */
 seg_leader          *OvlSeg;            /* pointer to seg_leader for overlaytab */
 unsigned_16         OvlAreaSize;
@@ -68,7 +70,6 @@ static symbol       *OvlVecStart;       /* symbol entry for overlay vector start
 static symbol       *OvlVecEnd;         /* symbol entry for overlay vector end */
 static targ_addr    OvlvecAddr;         /* address of overlay vectors */
 static targ_addr    Stash;
-
 static group_entry  *OvlGroup;          /* pointer to group for overlay table   */
 static targ_addr    OvltabAddr;         /* address of overlay tables            */
 static unsigned     OvltabSize;         /* size of overlay tables               */
@@ -139,7 +140,7 @@ static void WriteVectors( void )
     n = 0;
     for( vectnode = OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
         OvlGetVecAddr( ++n, &addr );
-        sym = vectnode->entry;
+        sym = vectnode->sym;
         WriteMap( "%a section %d : %S",
                   &addr, sym->p.seg->u.leader->class->section->ovlref, sym );
     }
@@ -384,7 +385,7 @@ void OvlVectorize( symbol *sym )
     sym->u.d.ovlstate &= ~OVL_NO_VECTOR;
     sym->u.d.ovlstate |= OVL_FORCE;
     _PermAlloc( vectnode, sizeof( vecnode ) );
-    vectnode->entry = sym;
+    vectnode->sym = sym;
     LinkList( &OvlVectors, vectnode );
     DEBUG(( DBG_OLD, "Vectorize %d %S", VecNum, sym ));
 }
@@ -421,7 +422,7 @@ static void OvlRefVector( symbol *sym )
 void OvlTryRefVector( symbol *sym )
 /*********************************/
 {
-    if( (LinkState & LS_SEARCHING_LIBRARIES) && FmtData.u.dos.distribute ) {
+    if( FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) {
         RefDistribSym( sym );
     } else {
         OvlRefVector( sym );
@@ -553,7 +554,7 @@ static void ShortVectors( symbol *loadsym )
             LnkMsg( ERR+MSG_VECT_RANGE, "sd", "short (1)", vecnum );
         }
         _HostU16toTarg( diff, vectdata.ldr_addr );
-        loadsym = vectnode->entry;
+        loadsym = vectnode->sym;
         _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovlref, vectdata.sec_num );
         temp = vectoff + offsetof( svector, target ) + sizeof( unsigned_16 );
         diff = MK_REAL_ADDR( loadsym->addr.seg, loadsym->addr.off ) - temp;
@@ -593,7 +594,7 @@ static void LongVectors( symbol *loadsym )
             LnkMsg( ERR+MSG_VECT_RANGE, "sd", "long", vecnum );
         }
         _HostU16toTarg( diff, vectdata.u.v.ldr_addr );
-        loadsym = vectnode->entry;
+        loadsym = vectnode->sym;
         _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovlref, vectdata.u.v.sec_num );
         _HostU16toTarg( loadsym->addr.off, vectdata.target.off );
         if( FmtData.u.dos.dynamic ) {
@@ -802,3 +803,5 @@ void OvlSetTableLoc( group_entry *group, unsigned long loc )
         OvlTabOffset = loc;
     }
 }
+
+#endif

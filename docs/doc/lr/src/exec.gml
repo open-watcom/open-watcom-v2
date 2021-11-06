@@ -101,12 +101,12 @@ int _wexecvpe( file, argv, envp );
 .synop end
 .desc begin
 The
-.idbold &function.
+.idbold &functiong.
 functions load and execute a new child process, named by
 .arg path
 or
 .arg file
-.ct .li .
+.period
 If the child process is successfully loaded, it replaces the current
 process in memory.
 No return is made to the original program.
@@ -116,7 +116,7 @@ No return is made to the original program.
 .np
 Arguments are passed to the child process by supplying one or more
 pointers to character strings as arguments in the
-.idbold &function.
+.idbold &functiong.
 call.
 .if '&machsys' ne 'QNX' .do begin
 These character strings are concatenated with spaces inserted to separate
@@ -126,23 +126,21 @@ DOS systems.
 .do end
 .np
 The arguments may be passed as a list of arguments (
-.ct .kw execl
-.ct,
-.kw execle
-.ct,
-.kw execlp
-.ct,
-and
-.kw execlpe
-.ct )
-or as a vector of pointers (
-.ct .kw execv
-.ct,
-.kw execve
-.ct,
-.kw execvp
+.ct .reffunc execl
+.ct ,
+.reffunc execle
+.ct ,
+.reffunc execlp
 .ct , and
-.kw execvpe
+.reffunc execlpe
+.ct ) or as a vector of pointers (
+.ct .reffunc execv
+.ct ,
+.reffunc execve
+.ct ,
+.reffunc execvp
+.ct , and
+.reffunc execvpe
 .ct ).
 At least one argument,
 .arg arg0
@@ -163,22 +161,22 @@ pointer.
 .np
 The environment for the invoked program is inherited from the parent
 process when you use the
-.kw execl
+.reffunc execl
 .ct ,
-.kw execlp
+.reffunc execlp
 .ct ,
-.kw execv
+.reffunc execv
 .ct , and
-.kw execvp
+.reffunc execvp
 functions.
 The
-.kw execle
+.reffunc execle
 .ct ,
-.kw execlpe
+.reffunc execlpe
 .ct ,
-.kw execve
+.reffunc execve
 .ct , and
-.kw execvpe
+.reffunc execvpe
 functions allow a different environment to be passed to the child process
 through the
 .arg envp
@@ -207,34 +205,34 @@ values have been defined with the
 .if '&machsys' eq 'QNX' .do begin
 .qnxcmd export
 or by the successful execution of the
-.kw putenv
+.reffunc putenv
 or
-.kw setenv
+.reffunc setenv
 functions.
 .do end
 .el .do begin
 .doscmd SET
 or by the successful execution of the
-.kw putenv
+.reffunc putenv
 function.
 .do end
 A program may read these values with the
-.kw getenv
+.reffunc getenv
 function.
 .*==========================================
 .np
 The
-.kw execvpe
+.reffunc execvpe
 and
-.kw execlpe
+.reffunc execlpe
 functions are extensions to POSIX 1003.1.
 .*==========================================
-.im widefun5
+.widegrp &wfunc.
 .*==========================================
 .desc end
 .return begin
 When the invoked program is successfully initiated, no return occurs.
-When an error is detected while invoking the indicated program, &function
+When an error is detected while invoking the indicated program, &functiong
 returns &minus.1 and
 .kw errno
 is set to indicate the error.
@@ -242,7 +240,7 @@ is set to indicate the error.
 .error begin
 .if '&machsys' eq 'QNX' .do begin
 See the
-.kw qnx_spawn
+.reffunc qnx_spawn
 function for a description of possible
 .kw errno
 values.
@@ -268,7 +266,10 @@ Not enough memory is available to execute the child process.
 .*==========================================
 .see begin
 .seelist abort atexit exit _Exit _exit
-.seelist getcmd getenv main putenv qnx_spawn qnx_spawn_options
+.seelist getcmd getenv main putenv
+.if '&machsys' eq 'QNX' .do begin
+.seelist qnx_spawn qnx_spawn_options
+.do end
 .seelist spawn&grpsfx
 .seelist system
 .see end

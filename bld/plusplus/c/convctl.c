@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,9 @@
 #include "template.h"
 #include "class.h"
 #include "dumpapi.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
 
 
 static CNV_DIAG diagImpossible  // DIAGNOSIS FOR IMPOSSIBLE CONVERT FAILURE
@@ -144,7 +148,7 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
             if( ctype->unmod->flag & TF1_REFERENCE ) {
                 TYPE refed = ctype->unmod->of;
                 ctype->reference = true;
-                cl_type = StructType( refed );
+                cl_type = ClassType( refed );
             }
             break;
         case RKD_FUNCTION :
@@ -159,7 +163,7 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
         }
     }
     if( NULL != cl_type ) {
-        cl_type = StructType( cl_type );
+        cl_type = ClassType( cl_type );
         if( ClassCorrupted( cl_type ) ) {
             cl_type = NULL;
             ctype->kind = RKD_ERROR;
@@ -883,13 +887,13 @@ static void checkClassValue(    // CHECK THAT FUNC. ARG.S, RETURN ARE NOT CLASS
     unsigned i;                 // - number of args
     arg_list *alist;            // - function arguments
 
-    if( NULL != StructType( ftype->of ) ) {
+    if( NULL != ClassType( ftype->of ) ) {
         PTreeWarnExpr( expr, msg );
     } else {
         alist = ftype->u.f.args;
         i = alist->num_args;
         while( i-- > 0 ) {
-            if( StructType( alist->type_list[i] ) ) {
+            if( NULL != ClassType( alist->type_list[i] ) ) {
                 PTreeWarnExpr( expr, msg );
                 break;
             }
@@ -1418,8 +1422,6 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
 
 
 #ifndef NDEBUG
-
-#include "dbg.h"
 
 static char const * const rkdstr[] = {
     #define dfnRKD(a) # a

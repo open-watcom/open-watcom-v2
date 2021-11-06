@@ -72,9 +72,9 @@ code_block * get_code_blocks( char **current, uint16_t cb_count, char *base, cha
     char            second_byte[3];
     uint8_t         i;
 
-    /* Allocate the out_block. */ 
-             
-    out_block = (code_block * ) malloc( sizeof( code_block ) * cb_count ); 
+    /* Allocate the out_block. */
+
+    out_block = (code_block * ) malloc( sizeof( code_block ) * cb_count );
 
     /* Initialize each code_block struct instance. */
 
@@ -86,7 +86,7 @@ code_block * get_code_blocks( char **current, uint16_t cb_count, char *base, cha
         position = difference % 80;
 
         /* Get the designator, shifting it if necessary. */
-            
+
         if( position == 79 ) {
             printf_s( "Parsing %s block: CodeBlock %i has a shifted designator\n", block, i);
             display_hex_char( junk_byte, **current );
@@ -99,17 +99,17 @@ code_block * get_code_blocks( char **current, uint16_t cb_count, char *base, cha
         *current += 1;
 
         /* Get the cb05_flag. */
-            
+
         memcpy_s( &out_block[i].cb05_flag, 1, *current, 1 );
         *current += 1;
 
         /* Get the lp_flag. */
-            
+
         memcpy_s( &out_block[i].lp_flag, 1, *current, 1 );
         *current += 1;
 
         /* Get the pass, shifting it if necessary. */
-            
+
         if( position == 76 ) {
             printf_s( "Parsing %s block: CodeBlock %i has a shifted pass.\n", block, i);
             display_hex_char( junk_byte, **current );
@@ -123,7 +123,7 @@ code_block * get_code_blocks( char **current, uint16_t cb_count, char *base, cha
         *current += 2;
 
         /* Get the count, shifting it if necessary. */
-            
+
         if( position == 74 ) {
             printf_s( "Parsing %s block: CodeBlock %i has a shifted count\n", block, i);
             display_hex_char( junk_byte, **current );
@@ -140,12 +140,12 @@ code_block * get_code_blocks( char **current, uint16_t cb_count, char *base, cha
 
         if( &out_block[i].count == 0 ) {
             out_block[i].text = NULL;
-        } else {                        
+        } else {
             out_block[i].text = *current;
             *current += out_block[i].count;
         }
     }
-        
+
     return( out_block );
 }
 
@@ -197,7 +197,7 @@ p_buffer * get_p_buffer( FILE * in_file )
     fseek( in_file, -1 * ((81 * p_count) + 1), SEEK_CUR );
     if( ferror( in_file ) || feof( in_file ) ) return( out_buffer );
 
-    /* Allocate the out_buffer. */ 
+    /* Allocate the out_buffer. */
 
     out_buffer = (p_buffer *) malloc( sizeof( p_buffer ) + 80 * p_count);
     if( out_buffer == NULL ) return( out_buffer );
@@ -209,7 +209,7 @@ p_buffer * get_p_buffer( FILE * in_file )
     /* Now get the data into the out_buffer. */
 
     for( i = 0; i < p_count; i++ ) {
-        test_char = fgetc( in_file );    
+        test_char = fgetc( in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             free( out_buffer );
             out_buffer = NULL;

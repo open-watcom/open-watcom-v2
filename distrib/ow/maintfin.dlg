@@ -1,12 +1,13 @@
+# UTF-8 encoding, Â¥
 name=MaintainFinal
 condition=PreviousInstall UnInstall !
 static_text=\
         //1"@ will now copy all selected components"\
-        //2"@ ‚Í‚·‚×‚Ä‚Ì‘I‘ğ‚³‚ê‚½ƒRƒ“ƒ|[ƒlƒ“ƒg‚ğƒRƒs[‚µ, "\
+        //2"@ ã¯ã™ã¹ã¦ã®é¸æŠã•ã‚ŒãŸã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’ã‚³ãƒ”ãƒ¼ã—, "\
         //0
 static_text=\
         //1"and remove any un-selected components."\
-        //2"‘I‘ğ‚³‚ê‚Ä‚¢‚È‚¢ƒRƒ“ƒ|[ƒlƒ“ƒg‚ğíœ‚µ‚Ü‚·."\
+        //2"é¸æŠã•ã‚Œã¦ã„ãªã„ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å‰Šé™¤ã—ã¾ã™."\
         //0
 static_text=
 include=poc.dlg

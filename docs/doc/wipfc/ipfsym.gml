@@ -3,10 +3,10 @@
 .*
 .np
 Special symbols can be incorporated into OS/2 help file by using entity references in the form of
-&symbol-name. Each entity reference begins with the '&' character and ends with the '.' character. 
-New symbols can be created by using the nameit command (see :HDREF refid=nameit.), but each 
-language encoding has a pre-defined set of symbols associated with it. For the en_US locale (and 
-other locales using the IBM 850 code page), the predefined symbols are as follows (symbols that 
+&symbol-name. Each entity reference begins with the '&' character and ends with the '.' character.
+New symbols can be created by using the nameit command (see :HDREF refid=nameit.), but each
+language encoding has a pre-defined set of symbols associated with it. For the en_US locale (and
+other locales using the IBM 850 code page), the predefined symbols are as follows (symbols that
 cannot appear in this document are left blank):
 .*
 .millust begin

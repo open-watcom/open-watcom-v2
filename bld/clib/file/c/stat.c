@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of stat().
+* Description:  DOS and Windows 3.x implementation of stat().
 *
 ****************************************************************************/
 
@@ -36,6 +37,7 @@
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dos.h>
 #include <io.h>
 #include <fcntl.h>
 #include <string.h>
@@ -47,16 +49,13 @@
 #else
     #include <ctype.h>
 #endif
+#include "rtdata.h"
 #include "rterrno.h"
+#include "tinyio.h"
 #include "_doslfn.h"
-#ifndef __OSI__
 #include "_dtaxxx.h"
-#endif
 #include "dosdir.h"
 #include "d2ttime.h"
-#ifdef __INT64__
-#include "int64.h"
-#endif
 #include "thread.h"
 #include "pathmac.h"
 
@@ -69,7 +68,6 @@
 {
     struct stat         buf32;
     int                 rc;
-    INT_TYPE            tmp;
 
     /*** Get the info using non-64bit version ***/
     rc = __F_NAME(stat,_wstat)( path, &buf32 );
@@ -82,8 +80,7 @@
         buf->st_uid = buf32.st_uid;
         buf->st_gid = buf32.st_gid;
         buf->st_rdev = buf32.st_rdev;
-        _clib_U32ToU64( buf32.st_size, tmp );
-        buf->st_size = GET_REALINT64(tmp);
+        buf->st_size = (unsigned long)buf32.st_size;
         buf->st_atime = buf32.st_atime;
         buf->st_mtime = buf32.st_mtime;
         buf->st_ctime = buf32.st_ctime;
@@ -181,7 +178,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
 #if defined(__WIDECHAR__)
         char    mbPath[MB_CUR_MAX * _MAX_PATH];
 
-        if( wcstombs( mbPath, path, sizeof( mbPath ) ) == -1 ) {
+        if( wcstombs( mbPath, path, sizeof( mbPath ) ) == (size_t)-1 ) {
             mbPath[0] = '\0';
         }
 #endif
@@ -196,7 +193,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
             handle = __F_NAME(open,_wopen)( path, O_WRONLY );
             if( handle != -1 ) {
                 canwrite = 1;
-                if( __F_NAME(fstat,_wfstat)( handle, buf ) == -1 ) {
+                if( fstat( handle, buf ) == -1 ) {
                     rc = _RWD_errno;
                 } else {
                     fstatok = 1;
@@ -207,7 +204,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
             if( handle != -1 ) {
                 canread = 1;
                 if( !fstatok ) {
-                    if( __F_NAME(fstat,_wfstat)( handle, buf ) == -1 ) {
+                    if( fstat( handle, buf ) == -1 ) {
                         rc = _RWD_errno;
                     }
                 }

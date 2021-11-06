@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "errcod.h"
 #include "opr.h"
 #include "opn.h"
@@ -65,8 +64,8 @@ void    FreeITNodes( itnode *head ) {
     itnode      *next;
 
     while( head != NULL ) {
-        if( ( ( head->opn.us & USOPN_WHAT ) == USOPN_NWL ) ||
-            ( ( head->opn.us & USOPN_WHAT ) == USOPN_ASS ) ) {
+        if( ( (head->opn.us & USOPN_WHAT) == USOPN_NWL ) ||
+            ( (head->opn.us & USOPN_WHAT) == USOPN_ASS ) ) {
             if( head->list != NULL ) {
                 FreeITNodes( head->list );
             }
@@ -104,13 +103,13 @@ char    *MkNodeStr( itnode *itptr ) {
 
 // Put a NULLCHAR at the end of the "opnd" string of an itnode.
 
-    uint        opnd_size;
+    size_t      opnd_size;
     char        *str;
 
     opnd_size = itptr->opnd_size;
     str = FMemAlloc( opnd_size + sizeof( char ) );
     memcpy( str, itptr->opnd, opnd_size );
-    str[ opnd_size ] = NULLCHAR;
+    str[opnd_size] = NULLCHAR;
     return( str );
 }
 
@@ -129,7 +128,7 @@ bool    CmpNode2Str( itnode *itptr, char *str ) {
 
 // Compare the "opnd" field of an itnode to a string.
 
-    uint        str_len;
+    size_t      str_len;
 
     str_len = strlen( str );
     if( itptr->opnd_size != str_len )
@@ -406,7 +405,7 @@ bool    BitOn( unsigned_16 bits ) {
 
 // Check if "flags" field of CITNode has ANY of specified BITS on.
 
-    return( ( CITNode->flags & bits ) != 0 );
+    return( (CITNode->flags & bits) != 0 );
 }
 
 
@@ -436,7 +435,7 @@ bool    ClassIs( unsigned_16 class ) {
 // Return true if current itnode has specified variable class.
 // ( SY_COMMON, SY_SUBPROGRAM, ... )
 
-    return( ( CITNode->flags & SY_CLASS ) == class );
+    return( (CITNode->flags & SY_CLASS) == class );
 }
 
 

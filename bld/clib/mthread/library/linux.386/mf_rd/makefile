@@ -6,6 +6,6 @@ system     = linux
 linkage    = static
 mthreaded=1
 
-clib_release = 0
+lib_debug = 1
 
 !include $(clib_dir)/mklib.mif

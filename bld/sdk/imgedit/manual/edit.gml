@@ -25,7 +25,7 @@ menu in the menu bar and are displayed on the function bar.
 The first edit feature that &imgname supplies is a multiple undo and
 redo capacity.  The number of operations that &imgname stores is
 dependent on the amount of memory available in the current Windows
-session, the number of images currently being edited and 
+session, the number of images currently being edited and
 the size of the images being edited.  The storage of large bitmaps
 requires more memory than for small images.  Hence the number of
 recorded operations for large bitmaps may be less than the number of
@@ -37,12 +37,12 @@ considering the following rules:
 :UL compact.
 :LI.close any Windows applications not currently being used as these
 expend memory
-:LI.have as few images open as possible in &imgname 
+:LI.have as few images open as possible in &imgname
 :LI.keep the image dimensions small if at all possible
 :eUL.
 While these rules are useful to bear in mind, the worst that will
 happen if they are not followed is that the number of operations
-recorded will be less than the total number of operations.  This 
+recorded will be less than the total number of operations.  This
 means that you may not be able to undo
 :ITALICS.all
 operations.
@@ -51,11 +51,11 @@ An operation can be a number of things.  For most of the tools an
 operation consists of the time from when the mouse button is pressed
 down until it is released.  In general, whenever the image is altered
 an operation is recorded.  The exception is the setting of the hot
-spot for a cursor.  This operation cannot be undone.  
+spot for a cursor.  This operation cannot be undone.
 :P.
-To undo an operation select 
+To undo an operation select
 :HILITE.Undo
-from the 
+from the
 :HILITE.Edit
 menu or hit
 :HILITE.Ctrl
@@ -69,10 +69,10 @@ operations as are recorded by &imgname
 :PERIOD.
 The number of remaining operations will be displayed in the
 :ITALICS.hint text
-section of the status window.  
+section of the status window.
 :P.
 An operation that is undone, can afterwards be redone.  This is
-useful if you have changed an image and forget what the change was. 
+useful if you have changed an image and forget what the change was.
 You are able to undo the operations and then redo them again.  Since
 the redo operation undoes an undo operation, the
 redo operation can only be performed after an undo operation.  As
@@ -81,7 +81,7 @@ other than an undo, all redo operations
 are removed.  As consecutive undo operations are performed, the redo
 stack grows.  To redo an undone operation, select
 :HILITE.Redo
-from the 
+from the
 :HILITE.Edit
 menu or hit
 :HILITE.Ctrl
@@ -96,7 +96,7 @@ will display the number of possible redo operations remaining.
 
 :P.
 A final undo operation pertains only to opened files or new files
-that have been saved.  The 
+that have been saved.  The
 :HILITE.Restore
 item can be selected from the
 :HILITE.Edit
@@ -122,12 +122,12 @@ Cutting and copying are similar operations, both being used in
 conjunction with the region selecting tool.  The difference between
 the functions is that cutting a region will fill that region with whiteness
 and copying a region will leave the image unchanged.  Both functions
-copy the selected region to the Windows clipboard. 
+copy the selected region to the Windows clipboard.
 To cut a
 region, indicate the region to be cut with the region selecting tool.
 Select
 :HILITE.Cut
-from the 
+from the
 :HILITE.Edit
 menu, press
 :HILITE.Ctrl-X
@@ -139,13 +139,13 @@ without a region specified will cut the entire image to the clipboard.
 :P.
 To copy a selected region, simply select
 :HILITE.Copy
-from the 
+from the
 :HILITE.Edit
 menu, press
 :HILITE.Ctrl-C
 or click on the copy button in the function bar.  The rectangle
 displaying the selected region will disappear and that region will be
-copied to the Windows clipboard; however, the image will not change. 
+copied to the Windows clipboard; however, the image will not change.
 If a copy is selected without a region specified, the entire image is
 copied to the clipboard.  The
 :ITALICS.hint text
@@ -159,7 +159,7 @@ being edited.
 The first and most common form of pasting is the normal paste which
 one obtains by selecting
 :HILITE.Paste
-from the 
+from the
 :HILITE.Edit
 menu, pressing
 :HILITE.Ctrl-V
@@ -226,7 +226,7 @@ screen colors will be interpreted as normal solid colors in the bitmap.
 :SECTION.Transformations on Images
 &imgname allows the basic geometric transformations of shifting,
 rotating and reflecting.  These operations can alter the entire image
-or only a selected region.  
+or only a selected region.
 :SUBSECT.Shifting an Image
 One can shift an image a specified number of pixels in any of four
 directions: up, down, left or right.  The number of pixels the image
@@ -259,7 +259,7 @@ you may choose the desired axis under the
 :HILITE.Flip
 item in the
 :HILITE.Edit
-menu.  
+menu.
 :eSUBSECT.
 :SUBSECT.Image Rotation
 &imgname also supports the rotation of an image by 90 degrees in
@@ -278,14 +278,14 @@ when the region for rotating is not perfectly square.
 The first type of rotation is a
 :ITALICS.simple
 rotation.  This type of rotation will rotate the image around the
-center of the selected area, only clipping the region if necessary. 
+center of the selected area, only clipping the region if necessary.
 If the region is not perfectly square, part of the previous location
 of the selected area will be filled with whiteness.  If you are
 rotating only a selected region, the selected region will also change
 to be consistent with the rotation.  This is the
 default type of rotation.
 :P.
-The second type of rotation could be called a 
+The second type of rotation could be called a
 :ITALICS.stretch
 rotation.  When this type of rotation is selected from the Current
 Settings dialog, the selected area is rotated and then stretched or
@@ -310,12 +310,12 @@ region to be rotated is a perfect square, all these rotation types
 will have the same effect.
 :P.
 To rotate a region either click on the desired rotation button on the
-function bar or select the rotation direction from the 
+function bar or select the rotation direction from the
 :HILITE.Rotate
 item in the
 :HILITE.Edit
 menu.  The Current Settings dialog contains a check box indicating
-whether or not the region should remain selected after a rotation. 
+whether or not the region should remain selected after a rotation.
 If this box is checked, the area you rotate will remain selected
 after it is rotated.  If it is not checked, the selected region will
 no longer remain highlighted after a rotation.
@@ -327,7 +327,7 @@ affect the entire image or simply a selected area.
 &imgname allows the user to clear the image (erase the contents of the
 image window).  To clear the entire image select
 :HILITE.Clear
-from the 
+from the
 :HILITE.Edit
 menu.  You can also hit the
 :HILITE.Delete
@@ -338,7 +338,7 @@ proceed to click on the clear button, hit the
 :HILITE.Delete
 key or choose
 :HILITE.Clear
-from the 
+from the
 :HILITE.Edit
 menu.
 :eSUBSECT.
@@ -349,9 +349,9 @@ edit window as part of your image.  To use this function, click on
 the snap button in the function bar or choose
 :HILITE.Snap
 from the
-:HILITE.Edit 
+:HILITE.Edit
 menu.  Upon doing so, &imgname will minimize itself and you will see
-a rectangle on the screen which you may move around with the mouse. 
+a rectangle on the screen which you may move around with the mouse.
 This rectangle represents the size of the image you are snapping.  Move
 the rectangle so that it covers the image you wish to snap and click
 on the left mouse button.  &imgname will return with the area under
@@ -363,7 +363,7 @@ pixels.  White pixels remain white.  Hence,
 an image with many colors may appear quite different when converted
 into a monochrome image.
 :P.
-You can also restrict the snap function to a region which you select. 
+You can also restrict the snap function to a region which you select.
 By selecting a region first and then selecting the snap function the
 image you capture will fill only the region you have selected.  As
 with the rotation, the region you have selected will remain displayed

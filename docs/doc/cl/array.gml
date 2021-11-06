@@ -28,9 +28,9 @@ in the following cases:
 a parameter to a function is declared as
 "array of
 .us type
-..ct " (in which case the compiler alters the type to be "pointer to
+.ct " (in which case the compiler alters the type to be "pointer to
 .us type
-..ct "),
+.ct "),
 .bull
 an array object has external linkage
 (extern)
@@ -45,7 +45,7 @@ the array is fully declared later in the same module.
 An array of undetermined size is an
 .ix 'incomplete type'
 .us incomplete type
-..ct ..li .
+.period
 .keep begin
 .pp
 An array declaration is of the following form:
@@ -58,14 +58,14 @@ constant-expression
 .monooff
 .cor
 type identifier
-..ct .mono [] = {
+.ct .mono [] = {
 initializer-list
 .monoon
 };
 .monooff
 .cor
 type identifier
-..ct .mono [
+.ct .mono [
 constant-expression
 .mono ] = {
 initializer-list
@@ -89,8 +89,7 @@ of elements in the array, and
 is a list of values
 (of type
 .us type
-..ct )
-to be assigned to successive elements of the array.
+.ct ) to be assigned to successive elements of the array.
 .*
 .************************************************************************
 ..if '&target' eq 'PC 370' ..th ..do begin

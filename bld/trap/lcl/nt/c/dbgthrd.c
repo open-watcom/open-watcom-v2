@@ -254,7 +254,6 @@ static DWORD WINAPI ControlFunc( LPVOID parm )
     return( 0 ); // thread over!
 }
 
-#pragma library(advapi32)
 static BOOL MyDebugActiveProcess( DWORD dwPidToDebug )
 {
     HANDLE              Token;
@@ -392,7 +391,7 @@ static BOOL StartDebuggee( void )
     SERVICE_STATUS      status;
     DWORD               i;
     char                buff[_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
 
     ParseServiceStuff( Shared.name, &dll_name, &service_name, &dll_destination, &service_parm );
     service = NULL;

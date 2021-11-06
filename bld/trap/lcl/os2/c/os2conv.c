@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,7 +166,7 @@ void __far *MakeSegmentedPointer( ULONG val )
     buff.Cmd = DBG_C_LinToSel;
     buff.Addr = val;
     CallDosDebug( &buff );
-    return( MK_FP( (USHORT) buff.Value, (USHORT) buff.Index ) );
+    return( _MK_FP( (USHORT)buff.Value, (USHORT)buff.Index ) );
 
 } /* MakeSegmentedPointer */
 
@@ -233,7 +234,8 @@ ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset )
  */
 void __far * MakeItSegmentedNumberOne( USHORT seg, ULONG offset )
 {
-    if( !IsFlatSeg( seg ) ) return( MK_FP( seg, (USHORT) offset ) );
+    if( !IsFlatSeg( seg ) )
+        return( _MK_FP( seg, (USHORT) offset ) );
     return( MakeSegmentedPointer( offset ) );
 
 } /* MakeItSegmentedNumberOne */

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,7 @@
 #include "ring.h"
 #include "stack.h"
 #include "carve.h"
-#include "toggle.h"
 #include "decl.h"
-#include "dbg.h"
 #include "datainit.h"
 #include "rtfuns.h"
 #include "label.h"
@@ -53,8 +52,11 @@
 #include "datadtor.h"
 #include "initdefs.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
+    #include "dbg.h"
+    #include "pragdefn.h"
+    #include "togglesd.h"
 #endif
+
 
 #define BLOCK_NEST      16
 #define BLOCK_QUEUE     16
@@ -91,8 +93,8 @@ static unsigned bitMask[] = {       // for bitfields
 #define _dumpDtor( x )
 #define _dumpDtorSymbol( x )
 #else
-#define __DUMP_INIT ( PragDbgToggle.dump_init )
-#define __DUMP_DTOR ( __DUMP_INIT || ( PragDbgToggle.dump_data_dtor ) )
+#define __DUMP_INIT TOGGLEDBG( dump_init )
+#define __DUMP_DTOR ( __DUMP_INIT || TOGGLEDBG( dump_data_dtor ) )
 #define _fatal( x )             CFatal( x )
 #define _dump( x )              if( __DUMP_INIT ) puts( x )
 #define _dumpPTree( x )         if( __DUMP_INIT ) DumpPTree( x )
@@ -314,7 +316,7 @@ static void dataInitEmitAutoAssign( SYMBOL dst, SYMBOL src )
     currInit->emit_code = 1;
 #if 0
     size = currInit->nest->padded_size;
-    type = MakeArrayType( size );
+    type = MakeArrayTypeAndSize( size );
     if( size == 0 ) {
         currInit->auto_type = type;
     }
@@ -521,7 +523,7 @@ static target_size_t dataInitFieldSize( INITIALIZE_INFO *entry )
     curr = entry->u.c.curr;
     curr_off = curr->u.member_offset;
     next = curr;
-    flags = StructType( entry->type )->flag;
+    flags = ClassType( entry->type )->flag;
     if( flags & TF1_UNION ) {
         for(;;) {
             DbgAssert( next != NULL );
@@ -615,11 +617,11 @@ static TYPE_SIG *dataInitTypeSigFind( TYPE base_type, TYPE_SIG_ACCESS access )
     return( sig );
 }
 
-static TYPE arrayBaseStructType( // GET STRUCT TYPE OF ARRAY BASE TYPE
+static TYPE arrayBaseClassType( // GET CLASS TYPE OF ARRAY BASE TYPE
     TYPE type )                 // - array type
 {
     type = ArrayBaseType( type );
-    type = StructType( type );
+    type = ClassType( type );
     return( type );
 }
 
@@ -733,16 +735,16 @@ static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
         type = dtorableObjectType( info );
         if( type != NULL ) {
             if( info->target == DT_ARRAY ) {
-                unsigned index;
+                target_size_t index;
                 TYPE artype;
                 TYPE eltype;
-                eltype = arrayBaseStructType( info->type );
+                eltype = arrayBaseClassType( info->type );
                 index = info->u.a.index;
                 for( prev = info->previous; prev != NULL; prev = prev->previous ) {
                     if( prev->target != DT_ARRAY )
                         break;
                     artype = ArrayType( prev->type );
-                    if( eltype != arrayBaseStructType( artype ) )
+                    if( eltype != arrayBaseClassType( artype ) )
                         break;
                     index += prev->u.a.index * artype->u.a.array_size;
                 }
@@ -1563,7 +1565,7 @@ static TYPE dataInitAdvanceField( INITIALIZE_INFO *entry )
     entry->u.c.curr = curr;
     if( curr != NULL ) {
         type = curr->sym_type;
-        flags = StructType( entry->type )->flag;
+        flags = ClassType( entry->type )->flag;
         if(( flags & TF1_UNION ) == 0 ) {
             return( type );
         }
@@ -1583,7 +1585,7 @@ static void dataInitPadOutHuge( INITIALIZE_INFO *top )
     target_size_t     diff;
     target_size_t     increment;
 
-    if( top->padded_size < top->offset ) {
+    if( top->offset > top->padded_size ) {
         top->offset = top->padded_size;
     }
     diff = top->padded_size - top->offset;
@@ -1615,7 +1617,7 @@ static void dataInitPadOut( INITIALIZE_INFO *top )
     switch( top->target ) {
     case DT_ARRAY:
         if( top->padded_size != 0 ) {
-            if( top->padded_size < top->offset ) {
+            if( top->offset > top->padded_size ) {
                 top->offset = top->padded_size;
             }
             diff = top->padded_size - top->offset;
@@ -1648,7 +1650,7 @@ static void dataInitPadOut( INITIALIZE_INFO *top )
         break;
     case DT_SCALAR:
     case DT_CLASS:
-        if( top->padded_size < top->offset ) {
+        if( top->offset > top->padded_size ) {
             top->offset = top->padded_size;
         }
         diff = top->padded_size - top->offset;
@@ -1760,8 +1762,8 @@ static void dataInitStashString( PTREE expr )
     target_size_t size;
     target_size_t dim;
 
-    size = (target_size_t)StringByteLength( expr->u.string );
-    dim = (target_size_t)StringAWStrLen( expr->u.string );
+    size = expr->u.string->len;
+    dim = StringAWStrLen( expr->u.string );
     switch( currInit->location ) {
     case DL_INTERNAL_AUTO:
         mayNeedAutoStaticInitCopy();

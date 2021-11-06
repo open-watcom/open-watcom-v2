@@ -2,9 +2,9 @@
 
 find -name \*~ -delete
 if [ -z "$OWROOT" ]; then
-    source ./setvars.sh
+    . ./setvars.sh
 fi
-if [ ! -f $OWBINDIR/builder ]; then
+if [ ! -f $OWBINDIR/$OWOBJDIR/builder ]; then
     echo Cannot find builder - did you run build.sh?
 else
     cd $OWSRCDIR
@@ -15,6 +15,6 @@ fi
 if [ -d $OWSRCDIR/builder/$OWOBJDIR ]; then rm -rf $OWSRCDIR/builder/$OWOBJDIR; fi
 if [ -d $OWSRCDIR/wmake/$OWOBJDIR ]; then rm -rf $OWSRCDIR/wmake/$OWOBJDIR; fi
 # Finally delete the builder and wmake executables
-rm -f $OWBINDIR/builder
-rm -f $OWBINDIR/wmake
+rm -f $OWBINDIR/$OWOBJDIR/builder
+rm -f $OWBINDIR/$OWOBJDIR/wmake
 cd $OWROOT

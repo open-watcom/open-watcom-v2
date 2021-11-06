@@ -25,6 +25,7 @@ contains the structures used for storing the memos:
 ..im memos2
 .*
 ..pa
+.*
 .section The memos.c File
 .*
 .pp

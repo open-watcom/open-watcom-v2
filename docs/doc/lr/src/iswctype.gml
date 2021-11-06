@@ -13,11 +13,11 @@ function determines whether the wide character
 .arg wc
 has the property described by
 .arg desc
-.ct .li .
+.period
 Valid values of
 .arg desc
 are defined by the use of the
-.kw wctype
+.reffunc wctype
 function.
 .np
 The twelve expressions listed below have a truth-value equivalent to a
@@ -72,7 +72,7 @@ the wide character
 .arg wc
 has the property described by
 .arg desc
-.ct .li .
+.period
 .return end
 .*
 .see begin

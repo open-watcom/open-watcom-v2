@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -273,7 +273,7 @@ static void dmp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off, unsigned_32 
     unsigned_32     addr_size;
     size_t          i;
     unsigned_32     export_rva;
-    PGROUP2         pg;
+    pgroup2         pg;
 
     _splitpath2( Name, pg.buffer, NULL, NULL, &pg.fname, NULL );
     strupr( pg.fname );

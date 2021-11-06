@@ -2,8 +2,8 @@
 The file
 .hdrfile sys/stat.h
 contains definitions for the structure
-.kw stat
-.ct .li .
+.reffunc stat
+.period
 .if '&machsys' ne 'QNX' .do begin
 .begterm 10
 .termhd1 Field
@@ -67,9 +67,9 @@ the originating name space
 .endterm
 .np
 The structure
-.kw _stati64
+.reffunc _stati64
 differs from
-.kw stat
+.reffunc stat
 in the following way:
 .begterm
 .term st_size
@@ -110,7 +110,7 @@ The value
 supplied to the macros is the value of the
 .kw st_mode
 field of a
-.kw stat
+.reffunc stat
 structure.
 The macro evaluates to a non-zero value if the test is true and zero
 if the test is false.
@@ -119,7 +119,7 @@ if the test is false.
 The following bits are encoded within the
 .kw st_mode
 field of a
-.kw stat
+.reffunc stat
 structure.
 .begterm 12 $compact
 .termhd1 Mask
@@ -153,7 +153,7 @@ is the bitwise inclusive OR of
 .kw S_IWUSR
 .ct , and
 .kw S_IXUSR
-.ct .li .
+.period
 .begterm 12 $compact
 .termhd1 Mask
 .if '&machsys' eq 'QNX' .do begin
@@ -179,7 +179,7 @@ is the bitwise inclusive OR of
 .kw S_IWGRP
 .ct , and
 .kw S_IXGRP
-.ct .li .
+.period
 .begterm 12 $compact
 .termhd1 Mask
 .if '&machsys' eq 'QNX' .do begin
@@ -205,7 +205,7 @@ is the bitwise inclusive OR of
 .kw S_IWOTH
 .ct , and
 .kw S_IXOTH
-.ct .li .
+.period
 .begterm 12 $compact
 .termhd1 Mask
 .termhd2 Meaning

@@ -20,7 +20,7 @@ test_flags_i86 = -mm -zm
 
 exec_chk_i86 = execi86.chk
 
-!include testenv1.mif
+!include testenv.mif
 
 extra_run_istmit1 = <istmit1.in
 
@@ -34,11 +34,8 @@ opt_link = FILE tempbuf.obj, random.obj
 
 !include stl_test.mif
 
-test : .symbolic start clean start_test test.lnk tempbuf.obj random.obj $(tests) common_set_result_display
-    @%make clean
-
-start_test : .symbolic
-    @%make common_start_test
+test : .symbolic start test.lnk tempbuf.obj random.obj $(tests)
+    $(noecho)%make common_set_result_display
 
 clean : .procedure
     @%make echo_clean

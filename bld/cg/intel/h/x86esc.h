@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 
 extern void     DoAbsPatch( abspatch_handle *handle, int len );
-extern void     DoFunnyRef( int segover );
 extern void     DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixup_types fixup_type );
 extern void     DoSymRef( name *opnd, offset val, bool base );
 extern void     DoSegRef( segment_id segid );

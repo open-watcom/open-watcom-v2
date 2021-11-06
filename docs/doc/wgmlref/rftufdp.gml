@@ -11,7 +11,7 @@ At this point you can process the document with the selected options.
 .choose
 .mouse
 Point to the highlighted area near the bottom of the screen labeled
-'F7=Format and Print Document' and &op.\.
+'F7=Format and Print Document' and click.
 .keyboard
 Press the &key.F7&ekey. key.
 .echoose
@@ -32,7 +32,7 @@ a &mono.PS&emono. file type.
 In the previous example, the disk file &mono.manual.ps&emono. would contain
 the formatted output.
 :P.
-Pressing the &f7. key causes the document to be formatted.
+Pressing the &key.F7&ekey. key causes the document to be formatted.
 If there are no errors, the resulting document file is printed.
 If the printing process seems to take a very long time,
 the most common reason is that a printer is not connected to your computer.
@@ -62,14 +62,14 @@ Each menu name can be 'pulled down' to select from a number of
 menu item choices.
 .choose
 .mouse
-Point to the &menu.Control&emenu. menu and press the &ptr. &bt.\.
-&udr. the &ptr. to the &menu.Help&emenu. item and release the &bt.\.
+Point to the &menu.Control&emenu. menu and press the mouse button.
+Drag the mouse to the &menu.Help&emenu. item and release the button.
 Pressing the &g_escape. key will return you to the document screen.
 .keyboard
 While pressing the &key.Alt&ekey. key, pressing the &key.C&ekey. key
 will pull down the &menu.Control&emenu. menu.
 Use the cursor keys to select the &menu.Help&emenu. item and press
-&g_enter.\.
+&g_enter..
 Pressing the &g_escape. key will return you to the document screen.
 :P.
 While pressing the &key.Alt&ekey. key,

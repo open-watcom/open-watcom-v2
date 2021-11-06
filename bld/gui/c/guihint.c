@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,19 +38,19 @@
 static bool SetStructNum( hints_info *hintsinfo, hint_type type, const gui_hint_items *hints )
 {
     switch( type ) {
-    case MENU_HINT :
+    case MENU_HINT:
         hintsinfo->menu = *hints;
         return( true );
-    case TOOL_HINT :
+    case TOOL_HINT:
         hintsinfo->tool = *hints;
         return( true );
-    case FLOAT_HINT :
+    case FLOAT_HINT:
         hintsinfo->floating = *hints;
         return( true );
-    case GUI_HINT :
+    case GUI_HINT:
         hintsinfo->gui = *hints;
         return( true );
-    default :
+    default:
         return( false );
     }
 }
@@ -57,19 +58,19 @@ static bool SetStructNum( hints_info *hintsinfo, hint_type type, const gui_hint_
 static bool GetStructNum( hints_info *hintsinfo, hint_type type, gui_hint_items *hints )
 {
     switch( type ) {
-    case MENU_HINT :
+    case MENU_HINT:
         *hints = hintsinfo->menu;
         return( true );
-    case TOOL_HINT :
+    case TOOL_HINT:
         *hints = hintsinfo->tool;
         return( true );
-    case FLOAT_HINT :
+    case FLOAT_HINT:
         *hints = hintsinfo->floating;
         return( true );
-    case GUI_HINT :
+    case GUI_HINT:
         *hints = hintsinfo->gui;
         return( true );
-    default :
+    default:
         return( false );
     }
 }
@@ -160,7 +161,7 @@ bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
     return( false );
 }
 
-bool GUISetMenuHintText( gui_window *wnd, gui_ctl_id id, const char *text )
+bool GUIAPI GUISetMenuHintText( gui_window *wnd, gui_ctl_id id, const char *text )
 {
     return( HintTextSet( &wnd->hintsinfo, id, MENU_HINT, text ) );
 }

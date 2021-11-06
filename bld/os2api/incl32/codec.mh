@@ -11,7 +11,7 @@
 
 :include cpluspro.sp
 
-#pragma pack(4)
+:include pshpack4.sp
 
 #ifdef INCL_AUDIO_CODEC
  #define INCL_AUDIO_CODEC_ONLY
@@ -300,7 +300,7 @@ typedef struct _MMVIDEOHEADER {
 
 #endif
 
-#pragma pack()
+:include poppack.sp
 
 :include cplusepi.sp
 

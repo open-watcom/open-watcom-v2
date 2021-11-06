@@ -113,7 +113,7 @@ Windows application).
 Note that resource compiler options may be specified by using the "R"
 option of
 .kw WBIND
-.ct .li .
+.period
 .*
 .section What size of function pointers passed to Windows?
 .*
@@ -131,7 +131,7 @@ either Windows gives it to you (via
 .kw GetProcAddr
 .ct , for example), or you obtain a pointer from the supervisor, via
 .kw GetProc16
-.ct .li .
+.period
 .np
 Function pointers obtained from Windows may either be fed into other
 Windows functions requiring function pointers, or called indirectly
@@ -238,7 +238,7 @@ For example, to access the memory returned by
 .kw GlobalLock
 requires the use of
 .kw MK_FP32
-.ct .li .
+.period
 To access any pointer passed to you (in a callback routine)
 requires the use of
 .kw MK_FP32
@@ -291,8 +291,8 @@ FreeAlias16( dwAlias );
 When I get the
 .id lpCreateParams
 parameter in
-.id WM_CREATE,
-I don't get the original
+.id WM_CREATE
+.ct , I don't get the original
 .id dwAlias
 but something else which looks like another alias to me.
 So the question is: Must the
@@ -310,8 +310,8 @@ argument is a pointer to a struct which contains 3 pointers. Aliases are not
 created for the 3 pointers inside the struct. If you need to have this done,
 then you will have to create the aliases yourself. If you create aliases for
 the parameters to
-.id CreateWindowEx,
-then you must call the
+.id CreateWindowEx
+.ct , then you must call the
 .id _16CreateWindowEx
 function which will not create any aliases.
 .np

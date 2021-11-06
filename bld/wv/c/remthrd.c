@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ trap_shandle    SuppThreadId = 0;
 
 bool InitThreadSupp( void )
 {
-    SuppThreadId = GetSuppId( THREAD_SUPP_NAME );
+    SuppThreadId = GETSUPPID( THREAD_SUPP_NAME );
     return( SuppThreadId != 0 );
 }
 

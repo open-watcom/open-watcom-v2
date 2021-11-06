@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +43,11 @@
 #include "rewrite.h"
 #include "initdefs.h"
 #include "pcheader.h"
-#include "dbg.h"
 #include "context.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
+
 
 /*
     The "rewrite file" consists of a string of tokens, each of which is
@@ -1093,7 +1097,7 @@ void RewriteToken( void )
     case T_STRING:
     case T_LSTRING:
         len = getString( r, &rt, &stop, Buffer );
-        TokenLen = len + 1;
+        TokenLen = len;
         break;
     case T_CONSTANT:
         getBinary( r, &rt, &stop, (uint_8*)&ConstType, sizeof( ConstType ) );

@@ -34,7 +34,8 @@ For each project with name X you wish to have on the build machine,
 must be set to the directory containing the project. That is, if you want the
 code generator on your machine (and who wouldn't?), it is officially
 named cg (see Project Names below) and so you would define
-.id cg_dir.
+.id cg_dir
+.period
 .np
 Alternatively, if all of your projects are in directories which correspond
 to their project names under a common directory, you can set dev_dir and
@@ -47,17 +48,17 @@ to take any extra action to use it.
 Alternatively, you can do the above and then redefine
 .id X_dir
 for any projects which are not under the
-.id dev_dir.
-
+.id dev_dir
+.period
+.*
 .section Project Names
 .*
 .np
 .ix 'names'
-
 Each project must be given a unique name, which should also be a valid
 directory name under FAT file systems (8.3 convention).
 .np
-
+.*
 .section Makefiles
 .*
 .np
@@ -129,8 +130,7 @@ When referring to other projects, a makefile should use the
 .id X_dir
 macro, where X is the name of the project.
 .endnote
-
-
+.*
 .section Requirements To Build
 .*
 .np
@@ -205,15 +205,16 @@ in along with the project and built as part of the build process (so that
 we don't have to check in zillions of binaries for all supported platforms). An
 important future consideration will be the ability to build on a different
 architecture. Please try and avoid weirdo tools that have no hope of running
-on an Alpha or PPC running NT or on Linux. These tools should be referenced 
+on an Alpha or PPC running NT or on Linux. These tools should be referenced
 from the makefile as
-.id $(bld_dir)\tool.
+.id $(bld_dir)\tool
+.period
 If your tool cannot run under a particular OS, you should at least put
 a batchfile in that bin which echoes a message to that effect (to alert
 people to the fact that you've just made their life difficult).
-More general tools (yacc, re2c, w32bind) that are likely to be used by several
+More general tools (yacc, re2c) that are likely to be used by several
 projects should be copied up into the build/bin directory.
-
+.*
 .section The Runtime DLL Libraries
 .*
 .np
@@ -222,8 +223,7 @@ If you set
 .id $(proj_name)_rtdll
 = 1, the -br switch should be thrown for you automatically, providing the
 target os supports it.
-
-
+.*
 .section Memory Trackers
 .*
 .np
@@ -240,8 +240,7 @@ is set to 1, and disable it otherwise.
 .np
 The source to the memory tracker can be found in
 .us bld\trmem.
-
-
+.*
 .section The Clean Target
 .*
 .np
@@ -262,8 +261,7 @@ every part of a project can be built from scratch, ensuring that there
 will be no nasty surprises when stuff breaks for people after a clean
 install just because you had a generated file hanging around and never
 discovered that it can no longer be made.
-
-
+.*
 .section Pmake Support
 .*
 .np
@@ -335,8 +333,7 @@ whatnot installed and/or cannot run some or all of the platform specific
 tools required during builds. And this situation is the norm rather than
 exception &mdash only dedicated build servers usually have all necessary
 files in place.
-
-
+.*
 .section Misc Conventions
 .*
 .np
@@ -352,8 +349,8 @@ Also, it is suggested that the object file directory name be a combination
 of the
 .id host_os
 followed by the
-.id host_cpu,
-if convenient. For example, NT versions for the PPC should be genned into
+.id host_cpu
+.ct , if convenient. For example, NT versions for the PPC should be genned into
 a ntppc directory. If a directory structure which is different than this
 is used for some reason, then comments explaining exactly what is built
 where would be nice in the
@@ -369,8 +366,8 @@ This is also why the macro names are somewhat counterintuitive &mdash most
 people would think of the
 .id host_os
 and
-.id host_cpu,
-as target OS and CPU. However, the 'target' designation is reserved for
+.id host_cpu
+.ct , as target OS and CPU. However, the 'target' designation is reserved for
 the target architecture of the generated binary. In the above case of
 a compiler that runs on Alpha AXP NT and produces 386 code, the makefile
 contains:
@@ -379,7 +376,7 @@ host_os    = nt
 host_cpu   = axp
 target_cpu = 386
 .millust end
-
+.*
 .section DLLs and Windowed Apps
 .*
 .np
@@ -394,7 +391,7 @@ as normal, and then, if creating a windowed app, set
 = 1. If creating a DLL, set
 .id sys_dll
 = 1. Delightfully simple.
-
+.*
 .section Include Paths
 .*
 .np
@@ -422,13 +419,15 @@ which is part of the default include directory set.
 If it needs to, a project can override any and all of these &mdash for instance,
 the clib needs to be built with the next release header files, and so would
 redefine
-.id inc_dirs_lang.
+.id inc_dirs_lang
+.period
 .np
 Any OS-specific header files needed by the project can be set in
 .id inc_dirs_$(host_os)
 &mdash again, this should not include the standard system
 header files, which will be defined in
-.id inc_dirs_sys_$(host_os).
+.id inc_dirs_sys_$(host_os)
+.period
 .np
 Note that the build system previously used to set the
 .id INCLUDE
@@ -440,7 +439,7 @@ means that all include paths must be prepended with a -I switch, for example:
 .millust begin
 inc_dirs_sys_nt    = -I$(lang_root)\h\nt
 .millust end
-
+.*
 .section Executive Summary
 .*
 .np
@@ -511,9 +510,9 @@ host_cpu = y
 .np
 That's it! The only downside is that sticking to these guidelines will make
 everyone's life less exciting.
-
-
+.*
 .chap Technical Notes
+.*
 .section 32-bit Windows run-time DLLs
 .*
 .np
@@ -550,7 +549,7 @@ traversing the build tree, deciding which projects to build for what platforms,
 logging the results to a file, and copying the finished software into the
 release tree (rel), making fully automated builds a possibility. If nothing
 goes wrong that is.
-
+.*
 .section Builder
 .*
 .np
@@ -592,7 +591,7 @@ Common commands:
 .note builder clean
 &mdash erase object files, executables, etc. so you can build from scratch
 .endnote
-
+.*
 .section Pmake
 .*
 .np
@@ -687,7 +686,7 @@ occasionally have this problem doesn't mean we have to as well!
 Passing the automated tests can never completely guarantee that everything
 works perfectly as designed, but it does let you sleep easier at night,
 comfortable in the knowledge that there aren't any really major problems.
-
+.*
 .section Running the tests
 .*
 .np

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +33,11 @@
 #ifndef _UIATTRS_H_
 #define _UIATTRS_H_
 
-typedef struct a_colour {
-    unsigned    red   : 6;
-    unsigned    green : 6;
-    unsigned    blue  : 6;
-} a_colour;
+#define BRIGHT              0x08
+#define UNDERLINE           0x01
+#define BLINK               0x80
+#define BLACK               0x00
+#define WHITE               0x07
 
 enum {
     FG_BLACK,
@@ -78,6 +79,15 @@ enum {
     C_BROWN,
     C_WHITE
 };
+#define C_BR_BLACK          (BRIGHT | C_BLACK)
+#define C_BR_BLUE           (BRIGHT | C_BLUE)
+#define C_BR_RED            (BRIGHT | C_RED)
+#define C_BR_WHITE          (BRIGHT | C_WHITE)
+#ifdef __UNIX__
+  #define C_BR_WHITE_ON_WH  C_BROWN
+#else
+  #define C_BR_WHITE_ON_WH  C_BR_WHITE
+#endif
 
 enum {
     VGA_BLACK,
@@ -98,13 +108,17 @@ enum {
     VGA_WHITE
 };
 
-#define         BRIGHT                  0x08
-#define         UNDERLINE               0x01
-#define         BLINK                   0x80
-#define         BLACK                   0x00
-#define         WHITE                   0x07
+#define BR_WHITE            (BRIGHT | WHITE)
+#define BR_UNDERLINE        (BRIGHT | UNDERLINE)
 
-#define         _bg( a )                ( (a) << 4 )
-#define         _fg( a )                (a)
+#define _bg( a )            ((a) << 4)
+#define _fg( a )            (a)
+#define _attr( b, f )       (((b) << 4) | (f))
+
+typedef struct a_colour {
+    unsigned    red   : 6;
+    unsigned    green : 6;
+    unsigned    blue  : 6;
+} a_colour;
 
 #endif

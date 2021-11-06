@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,9 +186,6 @@ static mad_entry *MADFind( dig_arch arch )
     return( NULL );
 }
 
-#define quoted(x)   # x
-#define strx(x)     quoted(x)
-
 /*
  *      Control Routines
  */
@@ -201,7 +198,7 @@ mad_status      MADInit( void )
         const char      *desc;
     } list[] = {
 #ifdef USE_FILENAME_VERSION
-        #define pick(enum,file,desc) {DIG_ ## enum,file strx(USE_FILENAME_VERSION),desc},
+        #define pick(enum,file,desc) {DIG_ ## enum,file QUOTED(USE_FILENAME_VERSION),desc},
 #else
         #define pick(enum,file,desc) {DIG_ ## enum,file,desc},
 #endif

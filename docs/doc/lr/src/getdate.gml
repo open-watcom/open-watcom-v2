@@ -4,10 +4,10 @@
 void _dos_getdate( struct dosdate_t *date );
 
 struct dosdate_t {
-        unsigned char day;      /* 1-31 */
-        unsigned char month;    /* 1-12 */
-        unsigned short year;    /* 1980-2099 */
-        unsigned char dayofweek;/* 0-6 (0=Sunday) */
+    unsigned char  day;       /* 1-31           */
+    unsigned char  month;     /* 1-12           */
+    unsigned short year;      /* 1980-2099      */
+    unsigned char  dayofweek; /* 0-6 (0=Sunday) */
 };
 .ixfunc2 '&DosFunc' &funcb
 .synop end
@@ -19,7 +19,7 @@ The date information is returned in a
 .kw dosdate_t
 structure pointed to by
 .arg date
-.ct .li .
+.period
 .desc end
 .return begin
 The

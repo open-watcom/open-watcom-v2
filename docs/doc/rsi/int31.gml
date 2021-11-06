@@ -1659,8 +1659,8 @@ Pass the following information:
 If the call succeeds, the carry flag is clear and AX contains the
 coprocessor status.
 .begnote $compact
-:DTHD.Bit
-:DDHD.Significance
+.notehd1 Bit
+.notehd2 Significance
 .note 0
 MPv (MP bit in the virtual MSW/CR0).
 .br
@@ -1735,8 +1735,8 @@ Pass the following information:
 .point AX = 0E01H
 .point BX = coprocessor bits
 .begnote $compact
-:DTHD.Bit
-:DDHD.Significance
+.notehd1 Bit
+.notehd2 Significance
 .note 0
 New value of MPv bit for client's virtual CR0.
 .br

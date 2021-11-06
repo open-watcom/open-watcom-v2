@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +37,15 @@
   #define PutDosByte(x,d) (*(byte __far *)RMLinToPM(x,1)=d)
   #define PutDosLong(x,d) (*(unsigned long __far *)RMLinToPM(x,1)=d)
 #else
-  #define GetDosByte(x)   (*(byte __far *)MK_FP(Meg1,x))
-  #define GetDosLong(x)   (*(unsigned long __far *)MK_FP(Meg1,x))
-  #define PutDosByte(x,d) (*(byte __far *)MK_FP(Meg1,x)=d)
-  #define PutDosLong(x,d) (*(unsigned long __far *)MK_FP(Meg1,x)=d)
+  #define GetDosByte(x)   (*(byte __far *)_MK_FP(Meg1,x))
+  #define GetDosLong(x)   (*(unsigned long __far *)_MK_FP(Meg1,x))
+  #define PutDosByte(x,d) (*(byte __far *)_MK_FP(Meg1,x)=d)
+  #define PutDosLong(x,d) (*(unsigned long __far *)_MK_FP(Meg1,x)=d)
 #endif
 
 #if defined(DOS4G)
   extern void             __far *RMLinToPM( unsigned long linear_addr, int pool );
 #else
-  #define RMLinToPM(x,y)  MK_FP(Meg1,x)
+  #define RMLinToPM(x,y)  _MK_FP(Meg1,x)
 #endif
 extern void               CallRealMode( unsigned long dos_addr );

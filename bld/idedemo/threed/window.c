@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -256,8 +257,8 @@ void _wtextdone( WPI_FONT font )
     _wpi_deletefont( font );
 }
 
-static void textdim( char *text_line, text_def *text, int *width, int *height )
-/*****************************************************************************/
+static void textdim( char *text_line, text_def *text, WPI_RECTDIM *width, WPI_RECTDIM *height )
+/*********************************************************************************************/
 {
     WPI_FONT            font_hld;
     WPI_FONT            old_font;
@@ -277,8 +278,8 @@ static void textdim( char *text_line, text_def *text, int *width, int *height )
     _wtextdone( font_hld );
 }
 
-static void textdim_font( char *text_line, WPI_FONT font_hld, int *width, int *height )
-/*************************************************************************************/
+static void textdim_font( char *text_line, WPI_FONT font_hld, WPI_RECTDIM *width, WPI_RECTDIM *height )
+/*****************************************************************************************************/
 {
     WPI_FONT            old_font;
 
@@ -297,8 +298,8 @@ float _ptextwidth( char *text_line, text_def *text )
 /* return text width in percentage screen width of text line. If text_line
    is NULL, assume 1 character */
 {
-    int                 pix_width;
-    int                 pix_height;
+    WPI_RECTDIM         pix_width;
+    WPI_RECTDIM         pix_height;
     float               width;
 
     textdim( text_line, text, &pix_width, &pix_height );
@@ -330,8 +331,8 @@ float _ptextheight( text_def *text )
 /**********************************/
 /* return height of 1 char */
 {
-    int                 pix_width;
-    int                 pix_height;
+    WPI_RECTDIM         pix_width;
+    WPI_RECTDIM         pix_height;
     float               height;
 
     textdim( NULL, text, &pix_width, &pix_height );
@@ -345,8 +346,8 @@ float _wtextheight( text_def *text )
 /**********************************/
 /* return text height in window coords of text line */
 {
-    int                 pix_width;
-    int                 pix_height;
+    WPI_RECTDIM         pix_width;
+    WPI_RECTDIM         pix_height;
     float               height;
 
     textdim( NULL, text, &pix_width, &pix_height );
@@ -360,8 +361,8 @@ float _wtextheight_font( char *text, WPI_FONT font )
 /**************************************************/
 /* returns text height in window coords using the given font */
 {
-    int             pix_height;
-    int             pix_width;
+    WPI_RECTDIM     pix_height;
+    WPI_RECTDIM     pix_width;
     float           height;
 
     if( Text_path == TEXT_VERTICAL ) {
@@ -396,8 +397,8 @@ float _wtextwidth( char *text_line, text_def *text )
 /* return text width in window coords of text line. If text_line
    is NULL, assume 1 character */
 {
-    int                 pix_width;
-    int                 pix_height;
+    WPI_RECTDIM         pix_width;
+    WPI_RECTDIM         pix_height;
     float               width;
 
     textdim( text_line, text, &pix_width, &pix_height );
@@ -412,8 +413,8 @@ float _wtextwidth_font( char *text_line, WPI_FONT font )
 /* return text width in window coords of text line. If text_line
    is NULL, assume 1 character */
 {
-    int                 pix_width;
-    int                 pix_height;
+    WPI_RECTDIM         pix_width;
+    WPI_RECTDIM         pix_height;
     float               width;
 
     if( Text_path == TEXT_VERTICAL ) {
@@ -468,8 +469,8 @@ void _wtextout( char *text, float x, float y, int hor_align, int ver_align, void
     int                 py1;
     int                 px2;
     int                 py2;
-    int                 width;
-    int                 height;
+    WPI_RECTDIM         width;
+    WPI_RECTDIM         height;
     WPI_FONT            font;
 
     font = (WPI_FONT) wfont;

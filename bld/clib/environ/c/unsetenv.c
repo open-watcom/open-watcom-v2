@@ -24,19 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of unsetenv().
+* Description:  Implementation of (_w)unsetenv().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <env.h>
 
 
-_WCRTLINK int unsetenv( const char *name )
+_WCRTLINK int __F_NAME(unsetenv,_wunsetenv)( const CHAR_TYPE *name )
 {
-    /* use setenv instead of more eficient __findenv */
+    /* use (_w)setenv instead of more eficient __findenv */
     /* because we need sync between SBCS and Wide environment */
-    return( setenv( name, NULL, 1 ) );
+    return( __F_NAME(setenv,_wsetenv)( name, NULL, 1 ) );
 }

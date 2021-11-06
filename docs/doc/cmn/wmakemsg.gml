@@ -7,7 +7,8 @@ message that are replaced with some other string.
 .dm makenote begin
 .   .se *ctxn=&'substr(&*,1,&'pos(' ',&*)-1)
 .   .se *ttl$=&'substr(&*,&'pos(' ',&*)+1)
-.   .note &*ctxn &*ttl$
+.   .note &*ctxn
+.   &*ttl$
 .*  .us &*ttl$
 .dm makenote end
 .*
@@ -92,6 +93,9 @@ message that are replaced with some other string.
 .makenote 76 in writing file %E
 .makenote 77 User Break Encountered
 .makenote 78 Error in Memory Tracking Encountered
+.cw !
 .makenote 79 Makefile may be Microsoft; try /ms switch
+.cw ;
+.makenote 80 Expecting double quote character to end open string
 .*
 .endnote

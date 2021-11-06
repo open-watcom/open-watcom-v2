@@ -3,9 +3,8 @@
 #include <mbstring.h>
 #include <mbctype.h> (for manifest constants)
 int _mbsbtype( const unsigned char *mbstr, int count );
-.if &farfnc eq 1 .do begin
-int _fmbsbtype( const unsigned char __far *mbstr,
-                int count );
+.if &farfnc ne 0 .do begin
+int _fmbsbtype( const unsigned char __far *mbstr, int count );
 .do end
 .synop end
 .desc begin
@@ -17,12 +16,13 @@ The function examines only the byte at offset
 .arg count
 in
 .arg mbstr
-.ct , ignoring invalid characters before the specified byte
+.ct , ignoring invalid characters before the specified byte.
 .np
 .us Note:
 A similar function was called
-.kw nthctype
+.reffunc nthctype
 in earlier versions.
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 The

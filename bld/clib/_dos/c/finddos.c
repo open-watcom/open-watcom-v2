@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +34,34 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mbstring.h>
+#include <dos.h>
 #include "seterrno.h"
+#include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 #include "_dtaxxx.h"
 #include "extender.h"
 
+
+#define MOV_DTA             \
+        "mov    ecx,43"     \
+        "rep movsb"
+
+#define MOV_DATA_TO_DTA     \
+        "mov    esi,edx"    \
+        "mov    edi,ebx"    \
+        MOV_DTA
+
+#define MOV_DATA_FROM_DTA   \
+        "mov    esi,ebx"    \
+        "mov    edi,edx"    \
+        "mov    ebx,ds"     \
+        "push   es"         \
+        "pop    ds"         \
+        "mov    es,ebx"     \
+        MOV_DTA             \
+        "mov    ds,ebx"
 
 //#define CMP_EXTENDER_INTEL  "cmp  _Extender,9"
 #define CMP_EXTENDER_INTEL  0x80 0x3D __offset _Extender DOSX_INTEL
@@ -112,32 +135,6 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         __modify __exact    [__ax]
 
   #endif
-#elif defined( __OSI__ )    // 32-bit near data
-    #pragma aux __dos_find_first_dta = \
-            _MOV_AH DOS_FIND_FIRST \
-            _INT_21             \
-            "call __doserror_"  \
-        __parm __caller     [__edx] [__ecx] [__ebx] \
-        __value             [__eax] \
-        __modify __exact    [__eax]
-
-    #pragma aux __dos_find_next_dta = \
-            _MOV_AX_W 0 DOS_FIND_NEXT \
-            _INT_21             \
-            "call __doserror_"  \
-        __parm __caller     [__edx] \
-        __value             [__eax] \
-        __modify __exact    [__eax]
-
-    #pragma aux __dos_find_close_dta = \
-            _MOV_AX_W 1 DOS_FIND_NEXT \
-            _INT_21             \
-            "call __doserror_"  \
-            "xor    eax,eax"    \
-        __parm __caller     [__edx] \
-        __value             [__eax] \
-        __modify __exact    [__eax]
-
 #elif defined( __CALL21__ )    // 32-bit near data
     #pragma aux __dos_find_first_dta = \
             _MOV_AH DOS_SET_DTA \
@@ -223,6 +220,57 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
 #endif
 
 #ifdef __WATCOM_LFN__
+
+#if defined( _M_I86 )
+extern lfn_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind_t __far *lfndta );
+  #ifdef __BIG_DATA__
+    #pragma aux __dos_find_first_lfn = \
+            "push   ds"         \
+            "xchg   ax,dx"      \
+            "mov    ds,ax"      \
+            "mov    si,1"       \
+            "mov    ax,714Eh"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    ds"         \
+            "call __lfnerror_ax" \
+        __parm __caller     [__dx __ax] [__cx] [__es __di] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __cx __dx __si]
+  #else
+    #pragma aux __dos_find_first_lfn = \
+            "mov    si,1"       \
+            "mov    ax,714Eh"   \
+            "stc"               \
+            "int 21h"           \
+            "call __lfnerror_ax" \
+        __parm __caller     [__dx] [__cx] [__es __di] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __cx __dx __si]
+  #endif
+
+extern lfn_ret_t __dos_find_next_lfn( unsigned handle, lfnfind_t __far *lfndta );
+#pragma aux __dos_find_next_lfn = \
+        "mov    si,1"           \
+        "mov    ax,714fh"       \
+        "stc"                   \
+        "int 21h"               \
+        "call __lfnerror_0"     \
+    __parm __caller     [__bx] [__es __di] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __cx __dx __si]
+
+extern lfn_ret_t __dos_find_close_lfn( unsigned handle );
+#pragma aux __dos_find_close_lfn = \
+        "mov    ax,71A1h"       \
+        "stc"                   \
+        "int 21h"               \
+        "call __lfnerror_0"     \
+    __parm __caller     [__bx]  \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __dx]
+#endif
+
 static void convert_to_find_t( struct find_t *fdta, lfnfind_t *lfndta )
 /*********************************************************************/
 {
@@ -237,13 +285,14 @@ static void convert_to_find_t( struct find_t *fdta, lfnfind_t *lfndta )
     strcpy( fdta->name, ( *lfndta->lfn != '\0' ) ? lfndta->lfn : lfndta->sfn );
 }
 
-static tiny_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfind_t *lfndta )
-/*******************************************************************************************/
+static lfn_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfind_t *lfndta )
+/******************************************************************************************/
 {
 #ifdef _M_I86
     return( __dos_find_first_lfn( path, attrib, lfndta ) );
 #else
     call_struct     dpmi_rm;
+    lfn_ret_t       rc;
 
     strcpy( RM_TB_PARM1_LINEAR, path );
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
@@ -254,25 +303,21 @@ static tiny_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfin
     dpmi_rm.ecx = attrib;
     dpmi_rm.esi = 1;
     dpmi_rm.eax = 0x714E;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
+    if( (rc = __dpmi_dos_call_lfn_ax( &dpmi_rm )) >= 0 ) {
+        memcpy( lfndta, RM_TB_PARM2_LINEAR, sizeof( *lfndta ) );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
-    }
-    memcpy( lfndta, RM_TB_PARM2_LINEAR, sizeof( *lfndta ) );
-    return( dpmi_rm.ax );
+    return( rc );
 #endif
 }
 
-static tiny_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
-/************************************************************************/
+static lfn_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
+/***********************************************************************/
 {
 #ifdef _M_I86
     return( __dos_find_next_lfn( handle, lfndta ) );
 #else
     call_struct     dpmi_rm;
+    lfn_ret_t       rc;
 
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.es  = RM_TB_PARM1_SEGM;
@@ -280,20 +325,15 @@ static tiny_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
     dpmi_rm.ebx = handle;
     dpmi_rm.esi = 1;
     dpmi_rm.eax = 0x714F;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
+    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+        memcpy( lfndta, RM_TB_PARM1_LINEAR, sizeof( *lfndta ) );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
-    }
-    memcpy( lfndta, RM_TB_PARM1_LINEAR, sizeof( *lfndta ) );
-    return( 0 );
+    return( rc );
 #endif
 }
 
-static tiny_ret_t _dos_find_close_lfn( unsigned handle )
-/******************************************************/
+static lfn_ret_t _dos_find_close_lfn( unsigned handle )
+/*****************************************************/
 {
 #ifdef _M_I86
     return( __dos_find_close_lfn( handle ) );
@@ -303,36 +343,33 @@ static tiny_ret_t _dos_find_close_lfn( unsigned handle )
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.ebx = handle;
     dpmi_rm.eax = 0x71A1;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( 0 );
+    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
 #endif
 }
-#endif //__WATCOM_LFN__
+
+#endif /* __WATCOM_LFN__ */
 
 _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attrib,
                                                            struct find_t *fdta )
 /******************************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    lfnfind_t       lfndta;
-    tiny_ret_t      rc = 0;
-
     DTALFN_SIGN_OF( fdta->reserved )   = 0;
     DTALFN_HANDLE_OF( fdta->reserved ) = 0;
-    if( _RWD_uselfn && TINY_OK( rc = _dos_find_first_lfn( path, attrib, &lfndta ) ) ) {
-        convert_to_find_t( fdta, &lfndta );
-        DTALFN_SIGN_OF( fdta->reserved )   = _LFN_SIGN;
-        DTALFN_HANDLE_OF( fdta->reserved ) = TINY_INFO( rc );
-        return( 0 );
-    }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+    if( _RWD_uselfn ) {
+        lfnfind_t   lfndta;
+        lfn_ret_t   rc;
+
+        rc = _dos_find_first_lfn( path, attrib, &lfndta );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            convert_to_find_t( fdta, &lfndta );
+            DTALFN_SIGN_OF( fdta->reserved )   = _LFN_SIGN;
+            DTALFN_HANDLE_OF( fdta->reserved ) = LFN_INFO( rc );
+            return( 0 );
+        }
     }
 #endif
     return( __dos_find_first_dta( path, attrib, fdta ) );
@@ -343,16 +380,18 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *fdta )
 /*****************************************************/
 {
 #ifdef __WATCOM_LFN__
-    lfnfind_t       lfndta;
-    tiny_ret_t      rc;
-
     if( IS_LFN( fdta->reserved ) ) {
+        lfnfind_t   lfndta;
+        lfn_ret_t   rc;
+
         rc = _dos_find_next_lfn( DTALFN_HANDLE_OF( fdta->reserved ), &lfndta );
-        if( TINY_OK( rc ) ) {
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
             convert_to_find_t( fdta, &lfndta );
             return( 0 );
         }
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
     }
 #endif
     return( __dos_find_next_dta( fdta ) );
@@ -363,21 +402,21 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *fdta )
 /******************************************************/
 {
 #if defined( __WATCOM_LFN__ )
-    tiny_ret_t      rc;
-
     if( IS_LFN( fdta->reserved ) ) {
-        if( TINY_OK( rc = _dos_find_close_lfn( DTALFN_HANDLE_OF( fdta->reserved ) ) ) )
+        lfn_ret_t   rc;
+
+        rc = _dos_find_close_lfn( DTALFN_HANDLE_OF( fdta->reserved ) );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
             return( 0 );
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+        }
     }
-#elif !defined( __OSI__ )
+#else
 
     /* unused parameters */ (void)fdta;
 
 #endif
-#ifdef __OSI__
-    return( __dos_find_close_dta( fdta ) );
-#else
     return( 0 );
-#endif
 }

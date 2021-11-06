@@ -2,9 +2,8 @@
 .synop begin
 #include <jstring.h>
 JSTRING jstrcat( JCHAR *dst, const JCHAR *src );
-.if &farfnc eq 1 .do begin
-FJSTRING __far _fjstrcat( JCHAR __far *dst,
-                          const JCHAR __far *src );
+.if &farfnc ne 0 .do begin
+FJSTRING _fjstrcat( JCHAR __far *dst, const JCHAR __far *src );
 .do end
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jconcat' &funcb
@@ -29,13 +28,13 @@ a copy of the Kanji string pointed to by
 (including the terminating null character)
 to the end of the Kanji string pointed to by
 .arg dst
-.ct .li .
+.period
 The first character of
 .arg src
 overwrites the null character at the end of
 .arg dst
-.ct .li .
-.im ffarfunc
+.period
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The value of

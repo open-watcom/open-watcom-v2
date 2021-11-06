@@ -60,7 +60,8 @@
     { "inetcfg", CTLTYPE_INETCFG }, \
 }
 
-#pragma pack(1)
+:include pshpack1.sp
+
 struct ipovly {
     caddr_t ih_next, ih_prev;
     u_char  ih_x1;
@@ -92,7 +93,8 @@ struct  ipasfrag {
     struct   ipasfrag *ipf_next;
     struct   ipasfrag *ipf_prev;
 };
-#pragma pack()
+
+:include poppack.sp
 
 struct  ipstat {
     u_long ips_total;

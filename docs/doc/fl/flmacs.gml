@@ -9,21 +9,25 @@
 .dm statemnt end
 .*
 .dm synote begin
-.   .if '&*' eq '' .do begin
+.   .if &'length(&*.) eq 0 .do begin
 .   .   .begnote $setptnt 4
 .   .do end
 .   .el .do begin
 .   .   .begnote $setptnt &*
 .   .do end
 .   .if &e'&dohelp eq 0 .do begin
-.   :DTHD.where:
-.   :DDHD.~b
+.   .   :DTHD.where:
+.   .   :DDHD.~b
 .   .do end
 .   .el .do begin
-.   :ZDTHD.where:
-.   :ZDDHD.~b
+.   .   :ZDTHD3.where:
+.   .   :ZDDHD3.~b
 .   .do end
 .dm synote end
+.*
+.dm esynote begin
+.   .endnote
+.dm esynote end
 .*
 .dm mnote begin
 .   .note &*
@@ -31,7 +35,7 @@
 .*
 .dm exam begin
 .  .if '&*1' eq 'begin' .do begin
-.  .  .if '&*2' ne '' .do begin
+.  .  .if &'length(&*2.) ne 0 .do begin
 .  .  .  .cp &*2
 .  .  .do end
 .  .  .el .do begin
@@ -96,40 +100,40 @@
 .dm box begin
 .se *tmplvl=&WDWlvl-3
 .if '&*1' eq 'on' .do begin
-.   .if '&*2' ne '' .sr *t0=1+&*2
-.   .if '&*3' ne '' .sr *t1=1+&*3
-.   .if '&*4' ne '' .sr *t2=1+&*4
-.   .if '&*5' ne '' .sr *t3=1+&*5
-.   .if '&*6' ne '' .sr *t4=1+&*6
-.   .if '&*7' ne '' .sr *t5=1+&*7
-.   .if '&*8' ne '' .sr *t6=1+&*8
-.   .if '&*9' ne '' .sr *t7=1+&*9
-.   .if '&*10' ne '' .sr *t8=1+&*10
+.   .if &'length(&*2.) ne 0 .sr *t0=1+&*2
+.   .if &'length(&*3.) ne 0 .sr *t1=1+&*3
+.   .if &'length(&*4.) ne 0 .sr *t2=1+&*4
+.   .if &'length(&*5.) ne 0 .sr *t3=1+&*5
+.   .if &'length(&*6.) ne 0 .sr *t4=1+&*6
+.   .if &'length(&*7.) ne 0 .sr *t5=1+&*7
+.   .if &'length(&*8.) ne 0 .sr *t6=1+&*8
+.   .if &'length(&*9.) ne 0 .sr *t7=1+&*9
+.   .if &'length(&*10.) ne 0 .sr *t8=1+&*10
 :cmt..   .cp &*tmplvl
 .   .xtnada
 .   .in 0
 .   .tb set \
 .   .tb &*t0 &*t1 &*t2 &*t3 &*t4 &*t5 &*t6 &*t7 &*t8
 .   .bx on &*2 &*3 &*4 &*5 &*6 &*7 &*8 &*9 &*10
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeon
 .   .do end
 .do end
 .el .if '&*' eq 'off' .do begin
 .   .tb set
 .   .tb
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeoff
 .   .do end
 .   .bx off
 .   .in &INDlvl
 .do end
 .el .do begin
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeoff
 .   .do end
 .   .bx
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeon
 .   .do end
 .do end
@@ -138,15 +142,15 @@
 .dm bxt begin
 .se *tmplvl=&WDWlvl-3
 .if '&*1' eq 'on' .do begin
-.   .if '&*2' ne '' .sr *t0=1+&*2
-.   .if '&*3' ne '' .sr *t1=1+&*3
-.   .if '&*4' ne '' .sr *t2=1+&*4
-.   .if '&*5' ne '' .sr *t3=1+&*5
-.   .if '&*6' ne '' .sr *t4=1+&*6
-.   .if '&*7' ne '' .sr *t5=1+&*7
-.   .if '&*8' ne '' .sr *t6=1+&*8
-.   .if '&*9' ne '' .sr *t7=1+&*9
-.   .if '&*10' ne '' .sr *t8=1+&*10
+.   .if &'length(&*2.) ne 0 .sr *t0=1+&*2
+.   .if &'length(&*3.) ne 0 .sr *t1=1+&*3
+.   .if &'length(&*4.) ne 0 .sr *t2=1+&*4
+.   .if &'length(&*5.) ne 0 .sr *t3=1+&*5
+.   .if &'length(&*6.) ne 0 .sr *t4=1+&*6
+.   .if &'length(&*7.) ne 0 .sr *t5=1+&*7
+.   .if &'length(&*8.) ne 0 .sr *t6=1+&*8
+.   .if &'length(&*9.) ne 0 .sr *t7=1+&*9
+.   .if &'length(&*10.) ne 0 .sr *t8=1+&*10
 .   .cp &*tmplvl
 .   .se $$bextrb=&*2
 .   .se $$bextre=&*3
@@ -155,14 +159,14 @@
 .   .tb set \
 .   .tb &*t0 &*t2 &*t3 &*t4 &*t5 &*t6 &*t7 &*t8 &*t1
 .   .bx on &*2 &*4 &*5 &*6 &*7 &*8 &*9 &*10 &*3
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeon
 .   .do end
 .do end
 .el .if '&*' eq 'off' .do begin
 .   .tb set
 .   .tb
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeoff
 .   .do end
 .   .bx off
@@ -170,11 +174,11 @@
 .   .xtxmp end &$$bextrb &$$bextre
 .do end
 .el .do begin
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeoff
 .   .do end
 .   .bx
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeon
 .   .do end
 .do end
@@ -315,7 +319,7 @@
 .dm xtnada end
 .do end
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .dm xt begin
 .   .if '&*' eq 'on' .do begin
 .   .do end

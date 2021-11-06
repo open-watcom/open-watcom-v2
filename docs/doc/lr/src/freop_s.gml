@@ -61,14 +61,14 @@ the
 .arg stream
 to that specified by
 .arg mode
-,as if the name of the file currently associated with
+.ct , as if the name of the file currently associated with
 the stream had been used. It is implementation-defined which changes of mode are
 permitted (if any), and under what circumstances.
 The
 .id &funcb.
 function first attempts to close any file that is associated with
 .arg stream
-.ct .li .
+.period
 Failure to close the file is ignored. The error and end-of-file indicators for the stream are
 cleared.
 If the file was opened successfully, then the pointer to FILE pointed to by
@@ -77,7 +77,7 @@ will be set to the value of stream. Otherwise, the pointer to FILE
 pointed to by
 .arg newstreamptr
 will be set to a null pointer.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin
@@ -91,7 +91,7 @@ returns a non-zero value.
 .see begin
 .seelist freopen_s _dos_open fclose fcloseall fdopen fopen fopen_s freopen
 .seelist freopen_s _fsopen _grow_handles _hdopen open _open_osfhandle
-.seelist freopen_s _popen sopen
+.seelist freopen_s _popen _sopen
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__ 1

@@ -4,7 +4,7 @@
 char *strchr( const char *s, int c );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Search' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrchr( const char __far *s, int c );
 .ixfunc2 '&String' &ffunc
 .ixfunc2 '&Search' &ffunc
@@ -40,11 +40,12 @@ function locates the first occurrence of
 .arg c
 (converted to a char) in the string pointed to by
 .arg s
-.ct .li .
+.period
 The terminating null character is considered to be part of the string.
-.im farfunc
-.im widefun1
-.im mbsfunc
+.farfunc &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
+.mbcsfunc &mfunc. &funcb.
+.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
 The

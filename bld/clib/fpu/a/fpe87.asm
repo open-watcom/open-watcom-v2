@@ -273,14 +273,14 @@ ifdef __MT__
           mov   si,es:[si]              ; - ...
           shl   si,1                    ; - turn into index
           shl   si,1                    ; - ...
-          add   si,__ThreadData         ; - get pointer to thread data
+          add   si,__ThreadData         ; - get pointer to thread data (see thread.h declaration)
           mov   es,__ThreadData+2       ; - ...
           les   si,es:[si]              ; - ...
-          xchg  ax,es:[si]              ; - set new stack low, and get old one
+          xchg  ax,es:[si]              ; - set new stack low, and get old one (see thread.h declaration)
           push  ax                      ; - save current stack low
           mov   ax,cx                   ; - set floating point status
           call  __FPE_handler           ; - call user's handler
-          pop   es:[si]                 ; - restore stack low
+          pop   es:[si]                 ; - restore stack low (see thread.h declaration)
 
 else
           push  _STACKLOW               ; - save current stack low

@@ -25,18 +25,18 @@ characters, the string pointed to by
 .arg src
 to the buffer pointed to by
 .arg dst
-.ct .li .
+.period
 The transformation uses the collating sequence selected by the
-.kw setlocale
+.reffunc setlocale
 function so that two transformed strings will compare identically
 (using the
-.kw strncmp
+.reffunc strncmp
 function)
 to a comparison of the original two strings using the
-.kw strcoll
+.reffunc strcoll
 function.
 The function will be equivalent to the
-.kw strncpy
+.reffunc strncpy
 function (except there is no padding of the
 .arg dst
 argument with null characters when the argument
@@ -47,13 +47,13 @@ characters)
 when the collating sequence is selected from the
 .mono "C"
 locale.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 For &wfunc, after the string transformation, a call to
-.kw wcscmp
+.reffunc wcscmp
 with the two transformed strings yields results identical to those of a
 call to
-.kw wcscoll
+.reffunc wcscoll
 applied to the original two strings.
 .id &wfunc.
 and

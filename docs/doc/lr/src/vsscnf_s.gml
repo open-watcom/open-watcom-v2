@@ -3,16 +3,16 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdarg.h>
 #include <stdio.h>
-int vsscanf_s( const char * restrict s,
+int vsscanf_s( const char * restrict str,
                const char * restrict format,
-	       va_list arg );
+               va_list arg );
 .ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdarg.h>
 #include <wchar.h>
-int vswscanf_s( const wchar_t * restrict s,
+int vswscanf_s( const wchar_t * restrict str,
                 const wchar_t * restrict format,
-		va_list arg );
+                va_list arg );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
@@ -20,7 +20,7 @@ int vswscanf_s( const wchar_t * restrict s,
 .*
 .rtconst begin
 Neither
-.arg s
+.arg str
 not
 .arg format
 shall be a null pointer.
@@ -39,17 +39,17 @@ performed input before discovering the runtime-constraint violation.
 The
 .id &funcb.
 function is equivalent to
-.kw sscanf_s
+.reffunc sscanf_s
 .ct , with the variable argument list replaced by
 .arg arg
 .ct , which shall have been initialized by the
-.kw va_start
+.reffunc va_start
 macro (and possibly subsequent
-.kw va_arg
+.reffunc va_arg
 calls). The
 .id &funcb.
 function does not invoke the
-.kw va_end
+.reffunc va_end
 macro.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -58,11 +58,11 @@ The
 function is identical to
 .id &funcb.
 except that it accepts
-wide-character string arguments for
-.arg s
+wide character string arguments for
+.arg str
 and
 .arg format
-.ct .li .
+.period
 .do end
 .desc end
 .*
@@ -109,8 +109,8 @@ void main( void )
     sfind( "Friday August 0013 2004",
             "%s %s %d %d",
              weekday, sizeof( weekday ),
-	     month, sizeof( month ),
-	     &day, &year );
+             month, sizeof( month ),
+             &day, &year );
     printf_s( "\n%s, %s %d, %d\n",
             weekday, month, day, year );
 }

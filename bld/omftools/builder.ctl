@@ -14,24 +14,24 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/objchg.exe   <OWBINDIR>/objchg<CMDEXT>
-    <CPCMD> <OWOBJDIR>/objfind.exe  <OWBINDIR>/objfind<CMDEXT>
-    <CPCMD> <OWOBJDIR>/objlist.exe  <OWBINDIR>/objlist<CMDEXT>
-    <CPCMD> <OWOBJDIR>/objxdef.exe  <OWBINDIR>/objxdef<CMDEXT>
-    <CPCMD> <OWOBJDIR>/objxref.exe  <OWBINDIR>/objxref<CMDEXT>
+    <CPCMD> <OWOBJDIR>/objchg.exe   <OWBINDIR>/<OWOBJDIR>/objchg<CMDEXT>
+    <CPCMD> <OWOBJDIR>/objfind.exe  <OWBINDIR>/<OWOBJDIR>/objfind<CMDEXT>
+    <CPCMD> <OWOBJDIR>/objlist.exe  <OWBINDIR>/<OWOBJDIR>/objlist<CMDEXT>
+    <CPCMD> <OWOBJDIR>/objxdef.exe  <OWBINDIR>/<OWOBJDIR>/objxdef<CMDEXT>
+    <CPCMD> <OWOBJDIR>/objxref.exe  <OWBINDIR>/<OWOBJDIR>/objxref<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/objchg<CMDEXT>
-    rm -f <OWBINDIR>/objchg<CMDEXT>
-    echo rm -f <OWBINDIR>/objfind<CMDEXT>
-    rm -f <OWBINDIR>/objfind<CMDEXT>
-    echo rm -f <OWBINDIR>/objlist<CMDEXT>
-    rm -f <OWBINDIR>/objlist<CMDEXT>
-    echo rm -f <OWBINDIR>/objxdef<CMDEXT>
-    rm -f <OWBINDIR>/objxdef<CMDEXT>
-    echo rm -f <OWBINDIR>/objxref<CMDEXT>
-    rm -f <OWBINDIR>/objxref<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/objchg<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/objchg<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/objfind<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/objfind<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/objlist<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/objlist<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/objxdef<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/objxdef<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/objxref<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/objxref<CMDEXT>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

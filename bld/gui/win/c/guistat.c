@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,56 +53,50 @@ static void DoFreeStatus( void )
     StatusWndFini();
 }
 
-static void SetStatusRect( HWND parent, WPI_RECT *status, int x, int height )
+static void SetStatusRect( HWND parent, WPI_RECT *status_wpi_rect, guix_ord x, guix_ord height )
 {
-    WPI_RECT    client;
-    GUI_RECTDIM left, right, top, bottom;
-    int         y, h;
+    WPI_RECT    wpi_rect;
+    WPI_RECTDIM left, right, top, bottom;
+    guix_ord    y;
+    guix_ord    h;
 
-    _wpi_getclientrect( parent, &client );
-    _wpi_getrectvalues( client, &left, &top, &right, &bottom );
+    _wpi_getclientrect( parent, &wpi_rect );
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
     y = _wpi_cvth_y_plus1( bottom - height, bottom - top );
     h = _wpi_cvth_y_plus1( bottom - top, bottom - top );
-    _wpi_setwrectvalues( status, x, y, right - left, h );
+    _wpi_setwrectvalues( status_wpi_rect, x, y, right - left, h );
 }
 
 static void DoResizeStatus( gui_window *wnd )
 {
-    WPI_RECT    status;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECT    wpi_rect;
+    WPI_RECTDIM left, top, right, bottom;
 
     if( GUIHasStatus( wnd ) ) {
-        _wpi_getwindowrect( wnd->status, &status );
-        _wpi_mapwindowpoints( HWND_DESKTOP, wnd->root, (WPI_LPPOINT)&status, 2 );
-        _wpi_getrectvalues( status, &left, &top, &right, &bottom );
+        _wpi_getwindowrect( wnd->status, &wpi_rect );
+        _wpi_mapwindowpoints( HWND_DESKTOP, wnd->root, (WPI_LPPOINT)&wpi_rect, 2 );
+        _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
         /* maintain height and left position of status window -- tie the
            rest to the client are of the parent */
-        SetStatusRect( wnd->root, &status, left, bottom - top );
-        _wpi_getrectvalues( status, &left, &top, &right, &bottom );
+        SetStatusRect( wnd->root, &wpi_rect, left, bottom - top );
+        _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
         _wpi_movewindow( wnd->status, left, top, right - left, bottom - top, TRUE );
     }
 }
 
-static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height,
-                            WPI_RECT *rect )
+static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height, WPI_RECT *wpi_rect )
 {
     gui_text_metrics    metrics;
-    gui_coord           size;
-    gui_coord           pos;
+    guix_ord            size_y;
 
-    pos.x = x;
-    GUIScaleToScreenR( &pos );
     if( height == 0 ) {
         GUIGetTextMetrics( wnd, &metrics );
-        size.y = metrics.max.y;
+        /* windows is 2 pixels higher than client */
+        size_y = GUIScaleToScreenV( metrics.max.y ) + TOTAL_VERT + 2;
     } else {
-        size.y = height;
+        size_y = GUIScaleToScreenV( height );
     }
-    GUIScaleToScreenR( &size );
-    if( height == 0 ) {
-        size.y += TOTAL_VERT + 2; /* windows is 2 pixels higher than client */
-    }
-    SetStatusRect( wnd->root, rect, pos.x, size.y );
+    SetStatusRect( wnd->root, wpi_rect, GUIScaleToScreenH( x ), size_y );
 }
 
 /*
@@ -111,10 +105,10 @@ static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height,
  *                          Tie the rest to the parent window.
  */
 
-bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
+bool GUIAPI GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
                             gui_colour_set *colour )
 {
-    WPI_RECT            status_rect;
+    WPI_RECT    wpi_rect;
 
     colour = colour;
     if( wnd->root == NULLHANDLE ) {
@@ -126,9 +120,8 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
         return( false );
     }
     GUIStatusWnd = StatusWndStart();
-    CalcStatusRect( wnd, x, height, &status_rect );
-    wnd->status = StatusWndCreate( GUIStatusWnd, wnd->root, &status_rect,
-                                   GUIMainHInst, NULL );
+    CalcStatusRect( wnd, x, height, &wpi_rect );
+    wnd->status = StatusWndCreate( GUIStatusWnd, wnd->root, &wpi_rect, GUIMainHInst, NULL );
     if( wnd->status == NULLHANDLE ) {
         return( false );
     }
@@ -137,7 +130,7 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
     return( true );
 }
 
-bool GUIDrawStatusText( gui_window *wnd, const char *text )
+bool GUIAPI GUIDrawStatusText( gui_window *wnd, const char *text )
 {
     WPI_PRES    pres;
     const char  *out_text;
@@ -159,13 +152,13 @@ bool GUIDrawStatusText( gui_window *wnd, const char *text )
     return( true );
 }
 
-bool GUIHasStatus( gui_window *wnd )
+bool GUIAPI GUIHasStatus( gui_window *wnd )
 {
     return( wnd->status != NULLHANDLE );
 }
 
 
-bool GUICloseStatusWindow( gui_window *wnd )
+bool GUIAPI GUICloseStatusWindow( gui_window *wnd )
 {
     HWND        status;
     if( !GUIHasStatus( wnd ) ) {
@@ -178,16 +171,16 @@ bool GUICloseStatusWindow( gui_window *wnd )
     return( true );
 }
 
-bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
+bool GUIAPI GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
 {
-    WPI_RECT    status;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECT    wpi_rect;
+    WPI_RECTDIM left, top, right, bottom;
 
     if( !GUIHasStatus( wnd ) ) {
         return( false );
     }
-    CalcStatusRect( wnd, x, height, &status );
-    _wpi_getrectvalues( status, &left, &top, &right, &bottom );
+    CalcStatusRect( wnd, x, height, &wpi_rect );
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
     _wpi_movewindow( wnd->status, left, top, right - left, bottom - top, TRUE );
     GUIResizeBackground( wnd, true );
     return( true );

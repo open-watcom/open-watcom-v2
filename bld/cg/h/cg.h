@@ -71,6 +71,7 @@ typedef enum {
     EXTN_BASENAME,      /* return symbol base name */
     EXTN_PATTERN,       /* return symbol name pattern */
     EXTN_PRMSIZE,       /* return symbol parameters size */
+    EXTN_IMPPREFIX,     /* return symbol import prefix */
     EXTN_CALLBACKNAME,  /* return callback function name */
 } extn_request;
 

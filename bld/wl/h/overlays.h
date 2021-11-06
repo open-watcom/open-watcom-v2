@@ -31,6 +31,8 @@
 ****************************************************************************/
 
 
+#ifdef _EXE
+
 extern seg_leader       *OvlSeg;
 extern unsigned_16      OvlAreaSize;
 extern overlay_ref      OvlSectNum;
@@ -68,3 +70,5 @@ extern void             OvlFillOutFilePtrs( void );
 extern void             OvlTryDefVector( symbol * );
 extern void             OvlTryUseVector( symbol *, extnode * );
 extern void             OvlPass2( void );
+
+#endif

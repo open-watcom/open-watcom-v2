@@ -1,5 +1,5 @@
-.gfunc getbkcolor
-.gsynop begin 
+.gfunc _getbkcolor
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 long _FAR _getbkcolor( void );
 .do end

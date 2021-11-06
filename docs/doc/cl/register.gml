@@ -4,8 +4,7 @@
 An object that is declared within a function, and whose
 declaration includes the keyword
 .kw register
-..ct ,
-is considered to have automatic storage duration.
+.ct , is considered to have automatic storage duration.
 The
 .kw register
 keyword merely provides a hint to the compiler that this object
@@ -50,7 +49,7 @@ The &wlooc. compiler may place
 .* .kw signed
 .* and
 .* .kw unsigned
-.* ..ct ) values in registers.
+.* .ct ) values in registers.
 any integer, floating-point or pointer values in registers.
 .pp
 The compiler will decide which objects will be placed in registers.

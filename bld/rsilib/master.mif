@@ -2,16 +2,35 @@ proj_name = rsilib
 
 rsilib_autodepends = .autodepend
 
-fpu_flags_dos_i86 = -fpc
+rsilib_nofpu = 1
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c: ../c
+
+inc_dirs = -I"$(d16api_dir)/include" -I"../h"
+
+extra_c_flags = -zu
+
+#
+# aflags
+#
 .asm: ../asm
 
-rsilib_objs = &
+extra_a_flags = $(model_switch_$(host_cpu))
+
+# explicit rules
+#################
+
+#
+# LIB
+#
+libtarg_objs = &
     tsf32exc.obj &
     fixtrap.obj &
     mem32.obj &
@@ -36,13 +55,6 @@ rsilib_objs = &
     seldsali.obj &
     selfree.obj &
     segrealo.obj
+libtarg_name = $(proj_name)$(memory_model_i86)
+!include libtarg.mif
 
-extra_c_flags = -zu
-
-extra_a_flags = $(model_switch_$(host_cpu))
-
-inc_dirs = -I"$(d16api_dir)/include" -I"../h"
-
-rsilib$(memory_model_i86).lib : $(rsilib_objs) $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) $(rsilib_objs)

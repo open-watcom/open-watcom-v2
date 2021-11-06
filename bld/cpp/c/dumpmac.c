@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 
 
 static void dumpheap( void )
+/**************************/
 {
 #if 0
     struct _heapinfo h;
@@ -44,43 +46,53 @@ static void dumpheap( void )
         status = _heapwalk( &h );
         if( status != _HEAPOK )
             break;
-        printf( "%s block at %Fp of size %4.4X\r\n",
+        printf( "%s block at %Fp of size %4.4X\n",
                 (h._useflag == _USEDENTRY ? "USED": "FREE"),
                 h._pentry, h._size );
     }
     switch( status ) {
     case _HEAPEND:
-        printf( "OK - end of heap\r\n" );
+        printf( "OK - end of heap\n" );
         break;
     case _HEAPEMPTY:
-        printf( "OK - heap is empty\r\n" );
+        printf( "OK - heap is empty\n" );
         break;
     case _HEAPBADBEGIN:
-        printf( "ERROR - heap is damaged\r\n" );
+        printf( "ERROR - heap is damaged\n" );
         break;
     case _HEAPBADPTR:
-        printf( "ERROR - bad pointer to heap\r\n" );
+        printf( "ERROR - bad pointer to heap\n" );
         break;
     case _HEAPBADNODE:
-        printf( "ERROR - bad node in heap\r\n" );
+        printf( "ERROR - bad node in heap\n" );
         break;
     }
 #endif
 }
 
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
+
 int main( int argc, char *argv[] )
+/********************************/
 {
     int         c;
+    int         rc;
 
     dumpheap();
     if( argc < 2 ) {
-        printf( "Usage: dumpmac filename\r\n" );
+        printf( "Usage: dumpmac filename\n" );
         exit( 1 );
     }
     PP_Init( ( argv[2] != NULL ) ? argv[2][0] : '#' );
-    if( PP_FileInit( argv[1], 0, NULL ) != 0 ) {
+    if( PP_FileInit( argv[1], PPFLAG_NONE, NULL ) != 0 ) {
         PP_Fini();
-        printf( "Unable to open '%s'\r\n", argv[1] );
+        printf( "Unable to open '%s'\n", argv[1] );
         exit( 1 );
     }
     for( ;; ) {
@@ -92,7 +104,7 @@ int main( int argc, char *argv[] )
     PP_Dump_Macros();
     dumpheap();
     PP_FileFini();
-    PP_Fini();
+    rc = PP_Fini();
     dumpheap();
-    return( 0 );
+    return( ( rc ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }

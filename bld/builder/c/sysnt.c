@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include <direct.h>
 #include <string.h>
 #include <ctype.h>
-#include <dos.h>
 #include <process.h>
 #include <fcntl.h>
 #include <io.h>
@@ -44,12 +44,14 @@
 
 
 #define TITLESIZE 256
+#define BUFSIZE   256
 
 char    Title[TITLESIZE];
 
 static void SysInitTitle( int argc, char *argv[] )
 {
-    int i;
+    int     i;
+    size_t  len;
 
     strcpy( Title, "Builder " );
     for( i = 1; i < argc; i++ ) {
@@ -59,21 +61,26 @@ static void SysInitTitle( int argc, char *argv[] )
         strcat( Title, " " );
     }
     strcat( Title, "[" );
-    getcwd( Title + strlen( Title ), (int)( TITLESIZE - strlen( Title ) - 2 ) );
+    len = strlen( Title );
+    if( getcwd( Title + len, (int)( TITLESIZE - len - 2 ) ) == NULL )
+        Title[len] = '\0';
     strcat( Title, "]" );
     SetConsoleTitle( Title );
 }
 
 static void SysSetTitle( char *title )
 {
-    char        *end;
+    char    *end;
+    size_t  len;
 
     title = title;
     end = strchr( Title, ']' );
     *( end + 1 ) = '\0';
 
     strcat( Title, " (" );
-    getcwd( Title + strlen( Title ), (int)( TITLESIZE - strlen( Title ) - 2 ) );
+    len = strlen( Title );
+    if( getcwd( Title + len, (int)( TITLESIZE - len - 2 ) ) == NULL )
+        Title[len] = '\0';
     strcat( Title, ")" );
     SetConsoleTitle( Title );
 }
@@ -163,11 +170,25 @@ int SysChdir( const char *dir )
     return( rc );
 }
 
+static void convert_buffer( char *src, size_t len )
+{
+    char    *dst;
+    char    c;
+
+    dst = src;
+    while( len-- > 0 ) {
+        if( (c = *src++) != '\r' ) {
+            *dst++ = c;
+        }
+    }
+    *dst = '\0';
+}
+
 int SysRunCommand( const char *cmd )
 {
     DWORD               rc;
     DWORD               bytes_read;
-    char                buff[256 + 1];
+    char                buff[BUFSIZE + 1];
     HANDLE              pipe_input;
     PROCESS_INFORMATION pinfo;
 
@@ -182,19 +203,9 @@ int SysRunCommand( const char *cmd )
     }
     if( pipe_input != INVALID_HANDLE_VALUE ) {
         for( ;; ) {
-            char    *dst;
-            DWORD   i;
-
-            ReadFile( pipe_input, buff, sizeof( buff ) - 1, &bytes_read, NULL );
-            if( bytes_read == 0 )
+            if( ReadFile( pipe_input, buff, sizeof( buff ) - 1, &bytes_read, NULL ) == 0 || bytes_read == 0 )
                 break;
-            dst = buff;
-            for( i = 0; i < bytes_read; ++i ) {
-                if( buff[i] != '\r' ) {
-                    *dst++ = buff[i];
-                }
-            }
-            *dst = '\0';
+            convert_buffer( buff, bytes_read );
             Log( Quiet, "%s", buff );
         }
         CloseHandle( pipe_input );

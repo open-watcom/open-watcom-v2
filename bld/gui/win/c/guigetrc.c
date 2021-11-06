@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,38 +38,27 @@
 #include "guiscale.h"
 
 
-gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pos )
+gui_text_ord GUIAPI GUIGetRow( gui_window *wnd, const gui_point *in_pos )
 {
-    int         height;
-    gui_ord     row;
-    gui_point   pos;
-
-
-    pos = *in_pos;
     GUIGetMetrics( wnd );
-    height = AVGYCHAR( GUItm );
-
-    GUIScaleToScreenRPt( &pos );
-    row = pos.y / height;
-    return( row );
+    return( GUIScaleToScreenV( in_pos->y ) / AVGYCHAR( GUItm ) );
 }
 
-gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pos )
+gui_text_ord GUIAPI GUIGetCol( gui_window *wnd, const char *text, const gui_point *in_pos )
 {
-    int         width;
-    bool        got_new;
-    gui_point   pos;
+    gui_text_ord    width;
+    guix_ord        scr_x;
+    bool            got_new;
 
     got_new = GUIGetTheDC( wnd );
     GUIGetMetrics( wnd );
-    pos = *in_pos;
-    GUIScaleToScreenRPt( &pos );
-    width = pos.x / MAXXCHAR( GUItm );
-    while( ( width < strlen( text ) ) && ( GUIGetTextExtentX( wnd, text, width ) <= pos.x ) ) {
+    scr_x = GUIScaleToScreenH( in_pos->x );
+    width = scr_x / MAXXCHAR( GUItm );
+    while( ( width < strlen( text ) ) && ( GUIGetTextExtentX( wnd, text, width ) <= scr_x ) ) {
         width++ ;
     }
     if( got_new ) {
         GUIReleaseTheDC( wnd );
     }
-    return( (gui_ord)( width - 1 ) );
+    return( width - 1 );
 }

@@ -3,17 +3,17 @@
 #include <bios.h>
 unsigned short _bios_disk( unsigned service,
                            struct diskinfo_t *diskinfo );
-struct  diskinfo_t {        /* disk parameters     */
-        unsigned command;   /* command             */
-        unsigned drive;     /* drive number        */
-        unsigned head;      /* head number         */
-        unsigned cylinder;  /* cylinder number     */
-        unsigned data_len;  /* data length         */
-        unsigned sector_len;/* sector length       */
-        unsigned sector;    /* start sector number */
-        unsigned nsectors;  /* number of sectors   */
-        void _far *buffer;  /* data buffer         */
-        void _far *result;  /* result buffer       */
+struct  diskinfo_t {      /* disk parameters     */
+    unsigned  command;    /* command             */
+    unsigned  drive;      /* drive number        */
+    unsigned  head;       /* head number         */
+    unsigned  cylinder;   /* cylinder number     */
+    unsigned  data_len;   /* data length         */
+    unsigned  sector_len; /* sector length       */
+    unsigned  sector;     /* start sector number */
+    unsigned  nsectors;   /* number of sectors   */
+    void _far *buffer;    /* data buffer         */
+    void _far *result;    /* result buffer       */
 };
 .ixfunc2 '&BiosFunc' &funcb
 .synop end
@@ -22,7 +22,7 @@ The
 .id &funcb.
 function makes disk access operations specified by
 .arg service
-.ct .li .
+.period
 Please exercise caution when using this function because it accesses
 disks directly.
 Information for the desired
@@ -31,7 +31,7 @@ is passed the
 .kw diskinfo_t
 structure pointed to by
 .arg diskinfo
-.ct .li .
+.period
 The value for
 .arg service
 can be one of the following values:
@@ -46,7 +46,7 @@ _DISK_WRITE        _DISK_WRITEDDAM
 .np
 In the following description, <sector> etc. means the field of the structure
 .kw diskinfo_t
-.ct .li .
+.period
 .begterm 12
 .termhd1 Value
 .termhd2 Meaning
@@ -150,8 +150,8 @@ argument.
 The meaning of the status or result information is described below.
 The possible values are:
 .begnote $compact
-.termhd1 Value
-.termhd2 Status information or result status information
+.notehd1 Value
+.notehd2 Status information or result status information
 .sr ptntelmt = 0
 .note 0x00
 Normal end/Ready status

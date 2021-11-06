@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -424,7 +424,7 @@ carve_t CarveRestart( carve_t cv )
     free_t *free_list;
 
 #ifdef DUMP_MEMORY
-    if( !PragDbgToggle.dump_memory ) {
+    if( !TOGGLEDBG( dump_memory ) ) {
         carve_t old_cv = cv;
         restoreFromZapped( old_cv );
         old_cv->free_list = (void *)-1;
@@ -863,9 +863,9 @@ pch_status PCHWriteTest( void )
 {
     void *mlist;
     unsigned terminator = CARVE_NULL_INDEX;
-    auto carve_walk_base dm;
-    auto carve_walk_base d1;
-    auto carve_walk_base d2;
+    carve_walk_base dm;
+    carve_walk_base d1;
+    carve_walk_base d2;
 
     CarveWalkAllFree( carveMASTER, markFreeMaster );
     CarveWalkAllFree( carveSLAVE1, markFreeSlave1 );
@@ -887,7 +887,7 @@ pch_status PCHReadTest( void )
     SLAVE1 *s1;
     SLAVE2 *s2;
     cv_index mi;
-    auto cvinit_t data;
+    cvinit_t data;
 
     PCHRead( &masterList, sizeof( masterList ) );
     masterList = CarveMapIndex( carveMASTER, masterList );

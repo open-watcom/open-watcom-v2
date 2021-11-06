@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,12 @@
 #include "buffer.h"
 #include "disdwarf.h"
 #include "memfuncs.h"
+#if defined( __UNIX__ ) && defined( __WATCOMC__ )
+  #if ( __WATCOMC__ < 1300 )
+    // fix for OW 1.9
+    #include <limits.h>
+  #endif
+#endif
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -77,7 +83,7 @@ static void NoSource( char *file )
 
 static void OpenSourceFileExts( const char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *src_filename;
     int         i;
 
@@ -129,7 +135,7 @@ static orl_linnum SortLineNums( orl_linnum old_lines, orl_table_index inumlines 
 
 static char *getNextLine( void )
 {
-    long int len, pos;
+    long len, pos;
     char *buff;
     int c;
 

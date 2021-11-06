@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 
 #include "rctypes.h"
 
+
 #define DB_CHAR                 1
 
 #define MB_NONE                 0
@@ -41,6 +43,7 @@
 #define DB_WANSUNG_KOREAN       3
 #define DB_SIMPLIFIED_CHINESE   4
 #define MB_UTF8                 5
+#define MB_UTF8_KANJI           6
 
 typedef struct FRStrings {
     struct FRStrings    *next;
@@ -78,9 +81,9 @@ typedef struct RCParams {
     boolbit     GenAutoDep      : 1;    /* generate autodependency info for wmake */
     boolbit     FindAndReplace  : 1;    /* a check to see whether for this option */
     boolbit     Prepend         : 1;
-    unsigned    MBCharSupport   : 3;    /* which of the zk switches is set */
     unsigned    SegmentSorting  : 2;    /* which segment sorting method to use */
     unsigned    TargetOS        : 2;
+    char        MBCharSupport;          /* which of the zk switches is set */
     char        *InFileName;
     char        *InExeFileName;
     char        *OutResFileName;

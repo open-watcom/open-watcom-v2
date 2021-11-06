@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#if !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+#if defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
 #ifdef __WIDECHAR__
@@ -57,22 +57,26 @@
 
 
 #ifndef __NETWARE__
-static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHAR_TYPE *newvalue )
+static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHAR_TYPE *value )
+/*
+ * return 0 if succeded
+ * otherwise return -1
+ */
 {
-    int                 len;
-    CHAR_TYPE           *env_str;
-    const CHAR_TYPE     *old_val;
-    const CHAR_TYPE     **envp;
+    int             len;
+    CHAR_TYPE       *env_str;
+    CHAR_TYPE       *old_val;
+    CHAR_TYPE       **envp;
 
-    envp = (const CHAR_TYPE **)__F_NAME(_RWD_environ,_RWD_wenviron);
+    envp = __F_NAME(_RWD_environ,_RWD_wenviron);
     len = __F_NAME(strlen,wcslen)( name );
     old_val = _RWD_env_mask[index] ? envp[index] : NULL;
-    env_str = lib_realloc( (void *)old_val, ( len + __F_NAME(strlen,wcslen)( newvalue ) + 2 ) * sizeof( CHAR_TYPE ) );
+    env_str = lib_realloc( old_val, ( len + 1 + __F_NAME(strlen,wcslen)( value ) + 1 ) * sizeof( CHAR_TYPE ) );
     if( env_str == NULL )
         return( -1 );
     memcpy( env_str, name, len * sizeof( CHAR_TYPE ) );
     env_str[len] = STRING( '=' );
-    __F_NAME(strcpy,wcscpy)( &env_str[len + 1], newvalue );
+    __F_NAME(strcpy,wcscpy)( &env_str[len + 1], value );
     envp[index] = env_str;
 #ifndef __WIDECHAR__
     _RWD_env_mask[index] = 1;     /* indicate string alloc'd */
@@ -81,32 +85,33 @@ static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHA
 }
 #endif
 
+int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *value, int overwrite )
 /*
- * if newvalue == NULL then find all matching entries and delete them
- * if newvalue != NULL then find first matching entry in evironment list and setup new value
+ * if value == NULL then find all matching entries and delete them
+ * if value != NULL then find first matching entry in evironment list and setup new value
+ *
+ * return 0 if succeded
+ * otherwise return -1
  */
-
-int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newvalue, int overwrite )
 {
 #ifdef __NETWARE__
 
-    /* unused parameters */ (void)name; (void)newvalue; (void)overwrite;
+    /* unused parameters */ (void)name; (void)value; (void)overwrite;
 
     return( -1 );
 #else
-    int     rc;
+    int     index;
 
     /* unused parameters */ (void)overwrite;
 
-  #ifdef __WIDECHAR__
-    if( _RWD_wenviron == NULL ) {
-        __create_wide_environment();
+    CHECK_WIDE_ENV();
+    if( value == NULL ) {
+        return( __F_NAME(__findenvdel,__wfindenvdel)( name ) );
     }
-  #endif
-    rc = __F_NAME(__findenv,__wfindenv)( name, ( newvalue == NULL ) );
-    if( rc > 0 ) {
-        rc = __F_NAME(addenv,waddenv)( rc - 1, name, newvalue );
+    index = __F_NAME(__findenvadd,__wfindenvadd)( name );
+    if( index < 0 ) {
+        return( -1 );
     }
-    return( rc );
+    return( __F_NAME(addenv,waddenv)( index, name, value ) );
 #endif
 }

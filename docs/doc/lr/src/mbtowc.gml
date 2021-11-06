@@ -3,7 +3,7 @@
 #include <stdlib.h>
 int mbtowc( wchar_t *pwc, const char *s, size_t n );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 #include <mbstring.h>
 int _fmbtowc( wchar_t __far *pwc,
               const char __far *s,
@@ -23,7 +23,7 @@ If the multibyte character is valid and
 .arg pwc
 is not a NULL pointer, the code is stored in the object pointed to by
 .arg pwc
-.ct .li .
+.period
 At most
 .arg n
 bytes of the array pointed to by
@@ -35,7 +35,7 @@ The
 function does not examine more than
 .kw MB_CUR_MAX
 bytes.
-.im farparm
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 If
@@ -50,8 +50,8 @@ is not a NULL pointer, the
 .id &funcb.
 function returns:
 .begnote $setptnt 6
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 0
 if
 .arg s

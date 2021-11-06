@@ -5,13 +5,13 @@
 #endif
 
 #if defined( CSETUP )
-BITMAPX( "../res/wcc.bmp" )
+BITMAPX( "wcc.bmp" )
 #elif defined( JCSETUP )
-BITMAPX( "../res/wcc.bmp" )
+BITMAPX( "wcc.bmp" )
 #elif defined( F77SETUP )
-BITMAPX( "../res/f77.bmp" )
+BITMAPX( "f77.bmp" )
 #elif defined( JFSETUP )
-BITMAPX( "../res/f77.bmp" )
+BITMAPX( "f77.bmp" )
 #else
-BITMAPX( "../res/generic.bmp" )
+BITMAPX( "generic.bmp" )
 #endif

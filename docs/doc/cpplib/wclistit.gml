@@ -13,23 +13,23 @@ the list, the current iterator position is undefined.
 The &cls. are the templated classes used to create iterator objects
 for constant single and double linked list objects.  These classes may be
 used to iterate over non-constant lists, but the
-.MONO WC&lpref.DListIter<Type>
+:MONO.WC&lpref.DListIter<Type>
 and
-.MONO WC&lpref.SListIter<Type>
+:MONO.WC&lpref.SListIter<Type>
 classes provide additional functionality for only non-constant lists.
 .do end
 .el .do begin
 The &cls. are the templated classes used to create iterator objects
 for single and double linked list objects.  These classes can be used only
 for non-constant lists.  The
-.MONO WC&lpref.DConstListIter<Type>
+:MONO.WC&lpref.DConstListIter<Type>
 and
-.MONO WC&lpref.SConstListIter<Type>
+:MONO.WC&lpref.SConstListIter<Type>
 classes are provided to iterate over constant lists.
 .do end
 :P.
 In the description of each member function, the text
-.MONO Type
+:MONO.Type
 is used to indicate the list element type specified as the template parameter.
 :P.
 :CMT. state WCIterExcept as base class
@@ -125,12 +125,12 @@ In the iterators for double linked lists only:
 :SMTICS.
 The &fn. is the default constructor for the class and initializes the
 iterator with no list to operate on.  The
-.MONO reset
+:MONO.reset
 member function must be called to provide the iterator with a list to
 iterate over.
 :RSLTS.
 The &fn. creates an initialized
-.MONO WC&lpref.&lconst.SListIter
+:MONO.WC&lpref.&lconst.SListIter
 object.
 :SALSO.
 :SAL typ='fun'.WC&lpref.&lconst.SListIter
@@ -148,20 +148,21 @@ object.
 :SMTICS.
 The &fn. is a constructor for the class.
 The value passed as a parameter is a
-.MONO WC&lpref.SList
+:MONO.WC&lpref.SList
 list object.
 The iterator will be initialized for that list object and positioned before the
 first list element.
 To position the iterator to a valid element within the list, increment
 it using any of the
-.MONO operator ++,
-.MONO operator (),
-or
-.MONO operator +=
+:MONO.operator ++
+:CONT.,
+:MONO.operator ()
+:CONT., or
+:MONO.operator +=
 operators.
 :RSLTS.
 The &fn. creates an initialized
-.MONO WC&lpref.&lconst.SListIter
+:MONO.WC&lpref.&lconst.SListIter
 object positioned before the first element in the list.
 :SALSO.
 :SAL typ='fun'.~~WC&lpref.&lconst.SListIter
@@ -184,7 +185,7 @@ The &fn. is the destructor for the class.
 :INCLUDE file='_DTOR2'.
 :RSLTS.
 The
-.MONO &lobjtype.
+:MONO.&lobjtype.
 object is destroyed.
 :SALSO.
 :SAL typ='fun'.WC&lpref.&lconst.SListIter
@@ -200,12 +201,12 @@ object is destroyed.
 :SMTICS.
 The &fn. is the default constructor for the class and initializes the
 iterator with no list to operate on.  The
-.MONO reset
+:MONO.reset
 member function must be called to provide the iterator with a list to
 iterate over.
 :RSLTS.
 The &fn. creates an initialized
-.MONO WC&lpref.&lconst.DListIter
+:MONO.WC&lpref.&lconst.DListIter
 object.
 :SALSO.
 :SAL typ='fun'.WC&lpref.&lconst.DListIter
@@ -223,20 +224,21 @@ object.
 :SMTICS.
 The &fn. is a constructor for the class.
 The value passed as a parameter is the
-.MONO WC&lpref.DList
+:MONO.WC&lpref.DList
 list object.
 The iterator will be initialized for that list object and positioned before the
 first list element.
 To position the iterator to a valid element within the list, increment
 it using any of the
-.MONO operator ++,
-.MONO operator (),
-or
-.MONO operator +=
+:MONO.operator ++
+:CONT.,
+:MONO.operator ()
+:CONT., or
+:MONO.operator +=
 operators.
 :RSLTS.
 The &fn. creates an initialized
-.MONO WC&lpref.&lconst.DListIter
+:MONO.WC&lpref.&lconst.DListIter
 object positioned before the first list element.
 :SALSO.
 :SAL typ='fun'.WC&lpref.&lconst.DListIter
@@ -260,7 +262,7 @@ The &fn. is the destructor for the class.
 :INCLUDE file='_DTOR2'.
 :RSLTS.
 The
-.MONO &lobjtype.
+:MONO.&lobjtype.
 object is destroyed.
 :SALSO.
 :SAL typ='fun'.WC&lpref.&lconst.DListIter
@@ -280,14 +282,14 @@ The new element is inserted after the current iterator item.
 :P.
 .ITERATOR_UNDEFINED
 The element is not appended.  If the
-.MONO undef_iter
+:MONO.undef_iter
 .ix 'undef_iter' 'exception'
 exception is enabled, it is thrown.
 .*
 .if &lpref. ne Isv .th .do begin
 :P.
 If the append fails, the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory'
 exception is thrown, if enabled in the list being iterated over.
 The list remains unchanged.
@@ -315,7 +317,7 @@ is returned if the append fails.
 :SMTICS.
 The &fn. returns a pointer to the list container object.
 If the iterator has not been initialized with a list object, and the
-.MONO undef_iter
+:MONO.undef_iter
 .ix 'undef_iter' 'exception'
 exception is enabled, the exception is thrown.
 :RSLTS.
@@ -352,7 +354,7 @@ position.
 :P.
 .ITERATOR_UNDEFINED
 In this case the
-.MONO undef_item
+:MONO.undef_item
 .ix 'undef_item'
 exception is thrown, if enabled.
 :RSLTS.
@@ -397,14 +399,14 @@ so the &fn. is not allowed with single linked lists.
 :P.
 .ITERATOR_UNDEFINED
 The element is not inserted.  If the
-.MONO undef_iter
+:MONO.undef_iter
 .ix 'undef_iter' 'exception'
 exception is enabled, the exception is thrown.
 .*
 .if &lpref. ne Isv .th .do begin
 :P.
 If the insert fails and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory'
 exception is enabled in the list being iterated over, the exception is
 thrown.
@@ -437,7 +439,8 @@ If the previous current item was the last element in the list, the
 iterator is positioned after the end of the list.
 :P.
 The &fn. has the same semantics as the pre-increment operator,
-.MONO operator ++.
+:MONO.operator ++
+:PERIOD.
 :P.
 If the iterator was positioned before the first element in the list,
 the current item will be set to the first element in the list.
@@ -446,7 +449,7 @@ the list.
 :P.
 If the iterator is not associated with a list or the iterator
 position before the increment was past the last element the list, the
-.MONO undef_iter
+:MONO.undef_iter
 .ix 'undef_iter' 'exception'
 exception is thrown, if enabled.
 :RSLTS
@@ -483,7 +486,8 @@ If the previous current item was the last element in the list, the
 iterator is positioned after the end of the list.
 :P.
 The &fn. has the same semantics as the call operator,
-.MONO operator ().
+:MONO.operator ()
+:PERIOD.
 :P.
 If the iterator was positioned before the first element in the list,
 the current item will be set to the first element in the list.
@@ -492,7 +496,7 @@ the list.
 :P.
 If the iterator is not associated with a list or the iterator
 position before the increment was past the last element the list, the
-.MONO undef_iter
+:MONO.undef_iter
 .ix 'undef_iter' 'exception'
 exception is thrown, if enabled.
 :RSLTS
@@ -530,13 +534,13 @@ operation will set the current item to be the given element in the list.
 :P.
 If the current item was after the last element in the list previous to
 the iteration, and the
-.MONO undef_iter
+:MONO.undef_iter
 .ix 'undef_iter' 'exception'
 exception is enabled, the exception will be thrown.
 Attempting to increment the iterator
 position more than element after the end of the list, or by less than one
 element causes the
-.MONO iter_range
+:MONO.iter_range
 .ix 'iter_range' 'exception'
 exception to be thrown, if enabled.
 :RSLTS
@@ -581,7 +585,7 @@ the current item will be set to the last element.
 :P.
 If the iterator is not associated with a list or the iterator
 position previous to the decrement was before the first element the list, the
-.MONO undef_iter
+:MONO.undef_iter
 .ix 'undef_iter' 'exception'
 exception is thrown, if enabled.
 :RSLTS
@@ -621,12 +625,12 @@ the end of the list.
 :P.
 If the current item was before the first element in the list previous to
 the iteration, and the
-.MONO undef_iter
+:MONO.undef_iter
 .ix 'undef_iter' 'exception'
 exception is enabled, the exception will be thrown.
 Attempting to decrement the iterator position more than one element before
 the beginning of the list, or by less than one element causes the
-.MONO iter_range
+:MONO.iter_range
 .ix 'iter_range' 'exception'
 exception to be thrown, if enabled.
 :RSLTS

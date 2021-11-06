@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
+#include "cfheader.h"
 
 /*  Function parse_header().
  *  Determine if the current position of the input stream points to the
@@ -77,13 +78,13 @@ int parse_header( FILE * in_file, char * type )
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
     /* If neither a version 3 or a version 4 header, it is not a COP file. */
-    
+
     /* Check for a version 3 header. */
 
     if( version != 0x000a ) {
 
         /* Check for a version 4 header. */
-        
+
         if( version != 0x000c ) return( FAILURE );
     }
 
@@ -93,7 +94,7 @@ int parse_header( FILE * in_file, char * type )
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
     /* Skip the text_version. */
-    
+
     fseek( in_file, count, SEEK_CUR );
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
@@ -102,11 +103,11 @@ int parse_header( FILE * in_file, char * type )
     *type = fgetc( in_file );
 
     /* If there is no more data, this is not a valid .COP file. */
-    
+
     if( ferror( in_file ) || feof( in_file ) ) return( FAILURE );
 
     /* Valid header, more data exists, return the file type byte. */
-    
+
     return( SUCCESS );
 }
 

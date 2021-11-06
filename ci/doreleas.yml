@@ -1,0 +1,51 @@
+parameters:
+  update:    'false'
+  fullset:   'false'
+  arch:      ''
+  disp:      ''
+  title:     ''
+  tag:       ''
+  timestamp: ''
+
+steps:
+    - ${{ if eq(parameters.update, 'true') }}:
+      - task: GitHubRelease@0
+        displayName: "Delete Release"
+        continueOnError: true
+        inputs:
+          gitHubConnection: 'open-watcom-v2-releases'
+          action: 'delete'
+          tag: '${{ parameters.tag }}'
+    - task: GitHubRelease@0
+      displayName: "${{ parameters.disp }}"
+      ${{ if not(eq(parameters.update, 'true')) }}:
+        condition: eq(variables.owreleasecommit, '')
+      inputs:
+        gitHubConnection: 'open-watcom-v2-releases'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        target: '$(Build.SourceVersion)'
+        tagSource: 'manual'
+        tag: '${{ parameters.tag }}'
+        title: '${{ parameters.title }}'
+        releaseNotesSource: 'input'
+        ${{ if eq(parameters.update, 'true') }}:
+          releaseNotes: 'Last updated ${{ parameters.timestamp }}'
+        ${{ if not(eq(parameters.update, 'true')) }}:
+          releaseNotes: 'Created ${{ parameters.timestamp }}'
+        ${{ if eq(parameters.arch, 'nt') }}:
+          ${{ if eq(parameters.fullset, 'true') }}:
+            assets: |
+              distrib\ow\bin\open-watcom-*
+              distrib\ow\bin\ow-snapshot.tar.gz
+          ${{ if not(eq(parameters.fullset, 'true')) }}:
+            assets: $(owroot)\ow-snapshot.tar.gz
+        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
+          ${{ if eq(parameters.fullset, 'true') }}:
+            assets: |
+              distrib/ow/bin/open-watcom-*
+              distrib/ow/bin/ow-snapshot.tar.gz
+          ${{ if not(eq(parameters.fullset, 'true')) }}:
+            assets: $(owroot)/ow-snapshot.tar.gz
+        isPreRelease: true
+        addChangeLog: false

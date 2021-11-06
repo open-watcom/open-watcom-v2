@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +68,7 @@ static wnd_info W7Info = {
     W7Refresh,
     W7GetLine,
     NoMenuItem,
-    NoScroll,
+    NoVScroll,
     NoBegPaint,
     NoEndPaint,
     NoModify,
@@ -83,7 +84,7 @@ a_window W7Open( void )
     wnd_create_struct   info;
 
     WndInitCreateStruct( &info );
-    info.scroll |= GUI_VTRACK;
+    info.scroll_style |= GUI_VTRACK;
     info.title = "Numbers";
     info.info = &W7Info;
     info.wndclass = CLASS_W1;

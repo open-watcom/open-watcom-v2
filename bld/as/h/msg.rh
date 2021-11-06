@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +31,18 @@
 ****************************************************************************/
 
 
-#define MSG_LANG_SPACING    1000
+#if defined( INCL_MSGTEXT )
 
-#define AS_MSG_BASE         1
+#define MSG_AS_BASE         0
+
+#else
+
+#define MSG_LANG_SPACING    13000
+
+#define MSG_AS_BASE         1
+#define MSG_USAGE_BASE      100
+
+#endif
 
 #if defined( _STANDALONE_ )
 #include "msg.gh"

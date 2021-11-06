@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,18 +35,19 @@
 #include "guixutil.h"
 #include "guiscale.h"
 
-void GUIGetAbsRect( gui_window *wnd, gui_rect *rect )
+void GUIAPI GUIGetAbsRect( gui_window *wnd, gui_rect *rect )
 {
     HWND        hwnd;
-    WPI_RECT    win;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECT    wpi_rect;
+    WPI_RECTDIM left, top, right, bottom;
+    guix_rect   scr_rect;
 
     hwnd = GUIGetParentFrameHWND( wnd );
-    _wpi_getwindowrect( hwnd, &win );
-    _wpi_getwrectvalues( win, &left, &top, &right, &bottom );
-    rect->width = _wpi_getwidthrect( win );
-    rect->height = _wpi_getheightrect( win );
-    rect->x = left;
-    rect->y = _wpi_cvtc_y_plus1( HWND_DESKTOP, top );
-    GUIScreenToScaleRect( rect );
+    _wpi_getwindowrect( hwnd, &wpi_rect );
+    _wpi_getwrectvalues( wpi_rect, &left, &top, &right, &bottom );
+    scr_rect.s_width = _wpi_getwidthrect( wpi_rect );
+    scr_rect.s_height = _wpi_getheightrect( wpi_rect );
+    scr_rect.s_x = left;
+    scr_rect.s_y = _wpi_cvtc_y_plus1( HWND_DESKTOP, top );
+    GUIScreenToScaleRect( &scr_rect, rect );
 }

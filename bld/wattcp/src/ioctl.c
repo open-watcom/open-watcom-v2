@@ -75,9 +75,11 @@ static int file_ioctrl (Socket *socket, long cmd, char *argp)
            SOCK_ERR (EBADF);
            return (-1);
          }
-         if (socket->so_state & SS_PRIV)  /* must be SOCK_DGRAM */
-              len = sock_recv_used (socket->udp_sock);
-         else len = sock_rbused ((sock_type*)socket->tcp_sock);
+         if (socket->so_type == SOCK_DGRAM && (socket->so_state & SS_PRIV)) {
+            len = sock_recv_used (socket->proto_sock);
+         } else {
+            len = sock_rbused (socket->proto_sock);
+         }
 
          SOCK_DEBUGF ((socket, " %d", len));
          if (len >= 0)
@@ -85,14 +87,11 @@ static int file_ioctrl (Socket *socket, long cmd, char *argp)
          break;
 
     case FIONBIO:                 /* set nonblocking I/O on/off */
-         if (socket->so_type != SOCK_STREAM)
-         {
-           SOCK_ERR (EBADF);
-           return (-1);
+         if (*argp) {
+             socket->so_state |=  SS_NBIO;
+         } else {
+             socket->so_state &= ~SS_NBIO;
          }
-         if (*argp)
-              socket->so_state |=  SS_NBIO;
-         else socket->so_state &= ~SS_NBIO;
          SOCK_DEBUGF ((socket, " %d", (socket->so_state & SS_NBIO) ? 1 : 0));
          break;
 
@@ -607,32 +606,32 @@ int main (void)
 {
   struct ifreq ifr;
   struct sockaddr_in *sin;
-  int    sock, on = 1;
+  int    s, on = 1;
 
   dbug_init();
 
-  sock = socket (AF_INET, SOCK_DGRAM, 0);
-  assert (sock);
-  assert (setsockopt(sock, SOL_SOCKET, SO_DEBUG, &on,sizeof(on)) == 0);
+  s = socket (AF_INET, SOCK_DGRAM, 0);
+  assert (s);
+  assert (setsockopt(s, SOL_SOCKET, SO_DEBUG, &on,sizeof(on)) == 0);
 
   ifr.ifr_addr.sa_family = AF_UNSPEC;  /* get MAC-address */
 
-  assert (ioctlsocket (sock, SIOCGIFADDR, (char*)&ifr) == 0);
+  assert (ioctlsocket (s, SIOCGIFADDR, (char*)&ifr) == 0);
   printf ("Interface `%s':\n\t ether-addr: %s\n",
           ifr.ifr_name,
           eth_addr_string ((struct ether_addr*)&ifr.ifr_addr.sa_data));
 
-  assert (ioctlsocket (sock, SIOCGIFBRDADDR, (char*)&ifr) == 0);
+  assert (ioctlsocket (s, SIOCGIFBRDADDR, (char*)&ifr) == 0);
   printf ("\t bcast-addr: %s\n",
           eth_addr_string ((struct ether_addr*)&ifr.ifr_addr.sa_data));
 
   ifr.ifr_addr.sa_family = AF_INET;
 
-  assert (ioctlsocket (sock, SIOCGIFADDR, (char*)&ifr) == 0);
+  assert (ioctlsocket (s, SIOCGIFADDR, (char*)&ifr) == 0);
   sin = (struct sockaddr_in*) &ifr.ifr_addr;
   printf ("\t inet-addr:  %s\n", inet_ntoa (sin->sin_addr));
 
-  assert (close_s(sock) >= 0);
+  assert (close_s(s) >= 0);
   return (0);
 }
 

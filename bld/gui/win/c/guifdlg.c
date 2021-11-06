@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#if defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
     #pragma library( "commdlg.lib" );
 #endif
 
@@ -71,7 +71,7 @@ static  bool    hookFileDlg = false;
 static  bool    hookFileDlg = true;
 #endif
 
-void GUIHookFileDlg( bool hook )
+void GUIAPI GUIHookFileDlg( bool hook )
 {
     hookFileDlg = hook;
 }
@@ -92,23 +92,25 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     ULONG               flen;
     int                 new_drive;
     int                 old_drive;
-    PGROUP2             pg1;
-    PGROUP2             pg2;
+    pgroup2             pg1;
+    pgroup2             pg2;
     char                *cwd;
 
     cwd = getcwd( pg2.buffer, sizeof( pg2.buffer ) );
-    pg1.dir[0] = '\0';
     if( cwd != NULL ) {
         _splitpath2( cwd, pg1.buffer, NULL, &pg1.dir, NULL, NULL );
+    } else {
+        pg1.dir = "";
     }
 
     new_drive = 0;
-    pg2.dir[0] = '\0';
     if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' ) {
         _splitpath2( ofn->initial_dir, pg2.buffer, &pg2.drive, &pg2.dir, NULL, NULL );
         if( pg2.drive[0] != '\0' && pg2.drive[1] == ':' ) {
             new_drive = tolower( (unsigned char)pg2.drive[0] ) - 'a' + 1;
         }
+    } else {
+        pg2.dir = "";
     }
 
     memset( &fdlg, 0 , sizeof( fdlg ) );
@@ -127,7 +129,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         fdlg.fl |= FDS_MULTIPLESEL;
     }
 
-    fdlg.pszTitle = ofn->title;
+    fdlg.pszTitle = (char *)ofn->title;
 
     if( ofn->file_name != NULL ) {
         strncpy( fdlg.szFullFile, ofn->file_name, CCHMAXPATH );

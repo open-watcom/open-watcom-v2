@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "make.h"
+#include <ctype.h>
 #include "wio.h"
 #include "mcache.h"
 #include "mmemory.h"
@@ -47,7 +48,10 @@
     #include "tinyio.h"
 #else
   #if defined( __OS2__ )
+    #define INCL_DOSMODULEMGR
+    #define INCL_DOSERRORS
     #define INCL_DOSMISC
+    #define INCL_ORDINALS
     #include <os2.h>
   #endif
 #endif
@@ -78,6 +82,7 @@ extern void __far *_DOS_list_of_lists( void );
 
 #endif
 
+static ENV_TRACKER  *envList;
 
 #if defined( __DOS__ )
 
@@ -126,13 +131,13 @@ int OSCorrupted( void )
     UINT16      new_chain_seg;
 
     first_MCB = _DOS_list_of_lists();
-    if( FP_OFF( first_MCB ) == 1 ) {    /* next instr will hang! */
+    if( _FP_OFF( first_MCB ) == 1 ) {    /* next instr will hang! */
         /* list of lists DOS call may have been interrupted */
         return( 1 );
     }
     chain_seg = first_MCB[-1];
     for( ;; ) {
-        chain = MK_FP( chain_seg, 0 );
+        chain = _MK_FP( chain_seg, 0 );
         if( chain->id == 'Z' ) {
             break;
         }
@@ -401,48 +406,180 @@ void InitSignals( void )
     signal( SIGINT, breakHandler );
 }
 
-#if defined( __OS2__ ) && !defined( _M_I86 )
+#if defined( __OS2__ )
+
+/* Older versions of OS/2 did not support BEGIN/ENDLIBPATH.
+ * Dynamically query the API entrypoints to prevent load failures.
+ */
+
 #define BEGPATHNAME "BEGINLIBPATH"
 #define ENDPATHNAME "ENDLIBPATH"
 
 static char os2BegLibPath[1024] = "";
 static char os2EndLibPath[1024] = "";
+
+static APIRET   (APIENTRY *fnDosQueryExtLIBPATH)( PSZ, ULONG ) = NULL;
+static APIRET   (APIENTRY *fnDosSetExtLIBPATH)( PSZ, ULONG ) = NULL;
+
+#define NODLLENTRY      ((PFN)-1)
+
+static bool ensure_loaded( ULONG ord, PFN *fn )
+{
+    char    old_lpath[1024];
+    HMODULE hmod;
+
+    if( *fn != NULL )
+        return( *fn != NODLLENTRY );
+    if( DosLoadModule( old_lpath, sizeof( old_lpath ), "DOSCALLS", &hmod ) == NO_ERROR ) {
+        if( DosQueryProcAddr( hmod, ord, NULL, fn ) == NO_ERROR ) {
+            return( true );
+        }
+    }
+    *fn = NODLLENTRY;
+    return( false );
+}
+
 #endif
 
 char *GetEnvExt( const char *str )
 {
-#if defined( __OS2__ ) && !defined( _M_I86 )
+#if defined( __OS2__ )
+    char    *rc;
+
+    rc = NULL;
     if( strcmp( str, BEGPATHNAME ) == 0 ) {
-        if( os2BegLibPath[0] == '\0' ) {
-            if( DosQueryExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH ) ) {
-                return( NULL );
+        if( ensure_loaded( ORD_DOS32QUERYEXTLIBPATH, (PFN *)&fnDosQueryExtLIBPATH ) ) {
+            rc = os2BegLibPath;
+            if( os2BegLibPath[0] == '\0' ) {
+                if( fnDosQueryExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH ) ) {
+                    rc = NULL;
+                }
             }
         }
-        return( os2BegLibPath );
+        return( rc );
     }
     if( strcmp( str, ENDPATHNAME ) == 0 ) {
-        if( os2EndLibPath[0] == '\0' ) {
-            if( DosQueryExtLIBPATH( os2EndLibPath, END_LIBPATH ) ) {
-                return( NULL );
+        if( ensure_loaded( ORD_DOS32QUERYEXTLIBPATH, (PFN *)&fnDosQueryExtLIBPATH ) ) {
+            rc = os2EndLibPath;
+            if( os2EndLibPath[0] == '\0' ) {
+                if( fnDosQueryExtLIBPATH( os2EndLibPath, END_LIBPATH ) ) {
+                    rc = NULL;
+                }
             }
         }
-        return( os2EndLibPath );
+        return( rc );
     }
 #endif
     return( getenv( str ) );
 }
 
-int PutEnvExt( const char *str )
+int SetEnvExt( ENV_TRACKER *env )
 {
-#if defined( __OS2__ ) && !defined( _M_I86 )
-    if( strncmp( str, BEGPATHNAME "=", sizeof( BEGPATHNAME "=" ) - 1 ) == 0 ) {
-        strcpy( os2BegLibPath, str + sizeof( BEGPATHNAME "=" ) - 1 );
-        return( DosSetExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH ) );
+#if defined( __OS2__ )
+    int     rc;
+
+    rc = -1;
+    if( strcmp( env->name, BEGPATHNAME ) == 0 ) {
+        if( ensure_loaded( ORD_DOS32SETEXTLIBPATH, (PFN *)&fnDosSetExtLIBPATH ) ) {
+            if( env->value == NULL )
+                env->value = "";
+            strcpy( os2BegLibPath, env->value );
+            rc = fnDosSetExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH );
+        }
+        return( rc );
     }
-    if( strncmp( str, ENDPATHNAME "=", sizeof( ENDPATHNAME "=" ) - 1 ) == 0 ) {
-        strcpy( os2EndLibPath, str + sizeof( ENDPATHNAME "=" ) - 1 );
-        return( DosSetExtLIBPATH( os2EndLibPath, END_LIBPATH ) );
+    if( strcmp( env->name, ENDPATHNAME ) == 0 ) {
+        if( ensure_loaded( ORD_DOS32SETEXTLIBPATH, (PFN *)&fnDosSetExtLIBPATH ) ) {
+            if( env->value == NULL )
+                env->value = "";
+            strcpy( os2EndLibPath, env->value );
+            rc = fnDosSetExtLIBPATH( os2EndLibPath, END_LIBPATH );
+        }
+        return( rc );
     }
 #endif
-    return( putenv( str ) );
+#if defined( _MSC_VER )
+    return( putenv( env->name ) );
+#else
+  #if !defined( __WATCOMC__ )
+    if( env->value == NULL )
+        return( unsetenv( env->name ) );
+  #endif
+    return( setenv( env->name, env->value, true ) );
+#endif
 }
+
+int SetEnvSafe( const char *name, const char *value )
+/****************************************************
+ * This function takes over responsibility for freeing env
+ */
+{
+    char        *p;
+    ENV_TRACKER **walk;
+    ENV_TRACKER *old;
+    int         rc;
+    size_t      len;
+    size_t      len1;
+    ENV_TRACKER *env;
+
+    len = strlen( name );
+    len1 = ( value == NULL ) ? 0 : strlen( value );
+    env = MallocSafe( sizeof( ENV_TRACKER ) + len + len1 + 1 );
+    // upper case the name
+    p = env->name;
+    while( *name != NULLCHAR ) {
+        *p++ = ctoupper( *name++ );
+    }
+#ifdef _MSC_VER
+    *p++ = '=';
+    len++;  /* include '=' character to search */
+#else
+    *p++ = NULLCHAR;
+#endif
+    if( value == NULL ) {
+        env->value = NULL;
+        *p = NULLCHAR;
+    } else {
+        env->value = p;
+        strcpy( env->value, value );
+    }
+    rc = SetEnvExt( env );          // put into environment
+    if( *p == NULLCHAR ) {
+        rc = 0;                     // we are deleting the envvar, ignore errors
+    }
+    for( walk = &envList; *walk != NULL; walk = &(*walk)->next ) {
+#ifdef _MSC_VER
+        if( strncmp( (*walk)->name, env->name, len ) == 0 ) {
+#else
+        if( strcmp( (*walk)->name, env->name ) == 0 ) {
+#endif
+            break;
+        }
+    }
+    old = *walk;
+    if( old != NULL ) {
+        *walk = old->next;          // unlink old entry from chain
+        FreeSafe( old );            // ...
+    }
+    if( env->value != NULL ) {
+        env->next = envList;        // we put new entry into chain
+        envList = env;              // ...
+    } else {
+        FreeSafe( env );            // we're deleting the entry
+    }
+    return( rc );
+}
+
+
+#if !defined(NDEBUG) || defined(DEVELOPMENT)
+void SetEnvFini( void )
+/*********************/
+{
+    ENV_TRACKER *cur;
+
+    while( (cur = envList) != NULL ) {
+        envList = cur->next;
+        FreeSafe( cur );
+    }
+}
+#endif

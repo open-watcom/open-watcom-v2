@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #define INCLUDE_COMMDLG_H
 #include <wwindows.h>
 #include "win.h"
+
 
 /*
  * copyString - copy from string to memory
@@ -80,17 +81,17 @@ static unsigned char getClassOrdinal( const char *classname )
 
     if( classname == NULL ) {
         class_ordinal = 0;
-    } else if( stricmp( classname, "combobox" ) == 0 ) {
+    } else if( _stricmp( classname, "combobox" ) == 0 ) {
         class_ordinal = 0x85;
-    } else if( stricmp( classname, "scrollbar" ) == 0 ) {
+    } else if( _stricmp( classname, "scrollbar" ) == 0 ) {
         class_ordinal = 0x84;
-    } else if( stricmp( classname, "listbox" ) == 0 ) {
+    } else if( _stricmp( classname, "listbox" ) == 0 ) {
         class_ordinal = 0x83;
-    } else if( stricmp( classname, "static" ) == 0 ) {
+    } else if( _stricmp( classname, "static" ) == 0 ) {
         class_ordinal = 0x82;
-    } else if( stricmp( classname, "edit" ) == 0 ) {
+    } else if( _stricmp( classname, "edit" ) == 0 ) {
         class_ordinal = 0x81;
-    } else if( stricmp( classname, "button" ) == 0 ) {
+    } else if( _stricmp( classname, "button" ) == 0 ) {
         class_ordinal = 0x80;
     } else {
         class_ordinal = 0;
@@ -310,10 +311,10 @@ INT_PTR _DynamicDialogBox( DLGPROCx dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HAND
     DLGPROC     dlgproc;
     INT_PTR     rc;
 
-    dlgproc = (DLGPROC)MakeProcInstance( (FARPROCx)dlgfn, inst );
+    dlgproc = MakeProcInstance_DLG( dlgfn, inst );
     rc = DialogBoxIndirect( inst, TEMPLATE_LOCK( dlgtemplate ), hwnd, dlgproc );
     TEMPLATE_UNLOCK( dlgtemplate );
-    FreeProcInstance( (FARPROC)dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     GlobalFree( dlgtemplate );
     return( rc );
 

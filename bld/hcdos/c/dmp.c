@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,58 +32,88 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <string.h>
-#include "index.h"
+#include "bool.h"
+#include "helpidx.h"
 
-char    Buffer[HLP_PAGE_SIZE];
+
+static char     Buffer[HLP_PAGE_SIZE];
 
 
-void PrintHeader( HelpHeader *header )
+static void ReadHeader( &header, fp )
+{
+    uint_32 u32;
+    uint_16 u16;
+
+    fread( &u32, sizeof( u32 ), 1, fp );
+    header->sig1 = u32;
+    fread( &u32, sizeof( u32 ), 1, fp );
+    header->sig2 = u32;
+    fread( &u16, sizeof( u16 ), 1, fp );
+    header->ver_maj = u16;
+    fread( &u16, sizeof( u16 ), 1, fp );
+    header->ver_min = u16;
+    fread( &u16, sizeof( u16 ), 1, fp );
+    header->indexpagecnt = u16;
+    fread( &u16, sizeof( u16 ), 1, fp );
+    header->datapagecnt = u16;
+    fread( &u32, sizeof( u32 ), 1, fp );
+    header->topiccnt = u32;
+    if( header->ver_maj == HELP_MAJ_V1 ) {
+        u16 = 0;
+    } else {
+        fread( &u16, sizeof( u16 ), 1, fp );
+    }
+    header->str_size = u16;
+    fseek( fp, 6 * sizeof( uint_16 ), SEEK_CUR );
+}
+
+
+static void PrintHeader( const HelpHeader *header )
 {
     printf( "HELP HEADER\n" );
-    printf( "    signature 1            %08lX\n", header->sig[0] );
-    printf( "    signature 2            %08lX\n", header->sig[1] );
+    printf( "    signature 1            %08lX\n", header->sig1 );
+    printf( "    signature 2            %08lX\n", header->sig2 );
     printf( "    version maj            %04X\n", header->ver_maj );
     printf( "    version min            %04X\n", header->ver_min );
     printf( "    index page count       %d\n", header->indexpagecnt );
     printf( "    data page count        %d\n", header->datapagecnt );
     printf( "    topic count            %d\n", header->topiccnt );
-    if( header->sig[0] == HELP_SIG_1 && header->sig[1] == HELP_SIG_2
-        && header->ver_maj == HELP_MAJ_VER
+    if( header->sig1 == HELP_SIG_1 && header->sig2 == HELP_SIG_2
+        && ( header->ver_maj == HELP_MAJ_V1
+          || header->ver_maj == HELP_MAJ_VER )
         && header->ver_min == HELP_MIN_VER ) {
         printf( "    Header info OK\n" );
     }
 }
 
 
-void PrintStrings( char *buf )
+static void PrintStrings( const char *buf )
 {
-    uint_16     str_cnt;
-    uint_16     *len;
-    uint_16     i;
+    uint_16         str_cnt;
+    const uint_16   *str_len;
+    uint_16         i;
 
     str_cnt = *(uint_16 *)buf;
     buf += sizeof( uint_16 );
-    len = (uint_16 *)buf;
+    str_len = (uint_16 *)buf;
     buf += str_cnt * sizeof( uint_16 );
     printf( "DEFAULT HELP TOPIC AND DESCRIPTION:\n" );
     for( i = 0; i < str_cnt; i++ ) {
-        if( *len != 0 ) {
+        if( *str_len != 0 ) {
             printf( "    %s\n", buf );
         }
-        buf += *len++;
+        buf += *str_len++;
     }
 }
 
 
-void PrintItemIndex( HelpHeader *header  )
+static void PrintItemIndex( const HelpHeader *header  )
 {
     unsigned            i;
-    uint_16             *ptr;
+    const uint_16       *ptr;
 
-    ptr = (uint_16 *) Buffer;
+    ptr = (uint_16 *)Buffer;
     printf( "HELP ITEM INDEX\n" );
     for( i = 0; i < header->datapagecnt; i++ ) {
         printf( "    data page %3d    item index %d\n",
@@ -91,11 +122,11 @@ void PrintItemIndex( HelpHeader *header  )
 }
 
 
-void PrintDataPage( unsigned cnt )
+static void PrintDataPage( unsigned cnt )
 {
-    PageIndexEntry      *entry;
-    char                *strings;
-    unsigned            i;
+    const PageIndexEntry    *entry;
+    const char              *strings;
+    unsigned                i;
 
     entry = (PageIndexEntry *)(Buffer + sizeof( HelpPageHeader ) );
     strings = Buffer + sizeof( HelpPageHeader ) +
@@ -109,10 +140,10 @@ void PrintDataPage( unsigned cnt )
 }
 
 
-void PrintIndexPage( unsigned cnt )
+static void PrintIndexPage( unsigned cnt )
 {
-    HelpIndexEntry      *entry;
-    unsigned            i;
+    const HelpIndexEntry    *entry;
+    unsigned                i;
 
     entry = (HelpIndexEntry *)(Buffer + sizeof( HelpPageHeader ));
     for( i = 0; i < cnt; i++ ) {
@@ -122,9 +153,9 @@ void PrintIndexPage( unsigned cnt )
 }
 
 
-void PrintPage( void )
+static void PrintPage( void )
 {
-    HelpPageHeader      *header;
+    const HelpPageHeader    *header;
 
     header = (HelpPageHeader *)Buffer;
     printf( "***************************************************************\n" );
@@ -143,7 +174,7 @@ void PrintPage( void )
 
 void main( int argc, char *argv[] )
 {
-    int         fp;
+    FILE        *fp;
     HelpHeader  header;
     unsigned    i;
 
@@ -151,19 +182,19 @@ void main( int argc, char *argv[] )
         printf( "Usage: helpdump <help file name>\n" );
         return;
     }
-    fp = open( argv[1], O_RDONLY | O_BINARY );
-    if( fp == -1 ) {
+    fp = fopen( argv[1], "rb" );
+    if( fp == NULL ) {
         printf( "Unable to open %s\n", argv[1] );
         return;
     }
-    read( fp, &header, sizeof( HelpHeader ) );
+    ReadHeader( &header, fp );
     PrintHeader( &header );
-    read( fp, Buffer, header.str_size );
+    fread( Buffer, header.str_size, 1, fp );
     PrintStrings( Buffer );
-    read( fp, Buffer, header.datapagecnt * sizeof( uint_16 ) );
+    fread( Buffer, header.datapagecnt * sizeof( uint_16 ), 1, fp );
     PrintItemIndex( &header );
     for( i = 0; i < header.indexpagecnt + header.datapagecnt; i++ ) {
-        read( fp, Buffer, HLP_PAGE_SIZE );
+        fread( Buffer, HLP_PAGE_SIZE, 1, fp );
         PrintPage();
     }
 }

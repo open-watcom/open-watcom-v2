@@ -10,14 +10,14 @@ The
 function computes the value of the error function, also
 known as the Gauss error function, for the argument
 .arg x
-.ct .li .
+.period
 .desc end
 .return begin
-For non-infinite values of 
+For non-infinite values of
 .arg x
 the function returns the value of the error function.  For positive
 infinity or negative infinity the function returns positive or
-negative one respectively.  For not-a-number the function returns 
+negative one respectively.  For not-a-number the function returns
 NAN.
 .return end
 .see begin

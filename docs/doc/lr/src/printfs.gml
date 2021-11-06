@@ -31,12 +31,10 @@ an optional
 .us type length
 specification: one of "hh", "h", "l", "ll", "j", "z", "t", "L", "I64", "w"
 .if &farfnc eq 0 .do begin
-.ct
-; and
+.ct ; and
 .do end
 .el .do begin
-.ct ,
-"N" or "W"; and
+.ct , "N" or "W"; and
 .do end
 .bull
 a character that specifies the type of conversion to be performed: one of
@@ -171,10 +169,10 @@ converted length to an object of type
 character string composed of 8-bit characters.
 .np
 For
-.kw printf
+.reffunc printf
 and related byte input/output functions, this specifier is redundant.
 For
-.kw wprintf
+.reffunc wprintf
 and related wide character input/output functions, this specifier is
 required if the argument string is to be treated as an 8-bit ASCII
 character string; otherwise it will be treated as a wide character
@@ -201,12 +199,12 @@ wide character string (a string composed of characters of type
 .ct ).
 .np
 For
-.kw printf
+.reffunc printf
 and related byte input/output functions, this specifier is required if
 the argument string is to be treated as a wide character string;
 otherwise it will be treated as an 8-bit ASCII character string.
 For
-.kw wprintf
+.reffunc wprintf
 and related wide character input/output functions, this specifier is
 redundant.
 .millust begin
@@ -434,9 +432,10 @@ to right in the string; otherwise, indeterminate results will occur.
 .ix 'NaN'
 If the value corresponding to a floating-point specifier is infinity, or
 not a number (NaN), then the output will be "inf" or "-inf" for infinity,
-and "nan" or "-nan" for NaN's. If the conversion specifier is an uppercase
-character (ie. "E", "F", or "G"), the output will be uppercase as well
-("INF", "NAN"), otherwise the output will be lowercase as noted above.
+and "nan" or "-nan" for NaN's.
+If the conversion specifier is an uppercase character (ie. "E", "F", or "G"),
+the output will be uppercase as well ("INF", "NAN"), otherwise the output
+will be lowercase as noted above.
 .np
 The pointer size specification ("N" or "W") is only effective on platforms
 that use a segmented memory model, although it is always recognized.

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #endif
 #include "banner.h"
 #include "main.h"
+#include "usage.h"
 
 #include "clibext.h"
 
@@ -120,14 +121,22 @@ char *WlibGetEnv( const char *name )
 {
     char *env;
 
-    if( !ideInfo->ignore_env && IdeCbs != NULL ) {
-        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env ) ) {
-            return( env );
+#if 0
+    /* don't ignore environment, it is used for internal wlib setup only */
+    if( !ideInfo->ignore_env ) {
+#endif
+        if( IdeCbs != NULL ) {
+            if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env ) ) {
+                return( env );
+            }
         }
+#if 0
     }
+#endif
     return( NULL );
 
 }
+
 void FatalResError( char *msg )
 {
     IDEMsgInfo          msg_info;
@@ -195,14 +204,19 @@ void Message( char *buff, ... )
 
 #define NUM_ROWS        24
 
-static void ConsoleMessage( const char *msg )
+static void ConsoleMessage( const char *msgfmt, ... )
 {
+    va_list             arglist;
+    char                msg[512];
     IDEMsgInfo          msg_info;
 
+    va_start( arglist, msgfmt );
+    vsnprintf( msg, 512, msgfmt, arglist );
     if( IdeCbs != NULL ) {
         IdeMsgInit( &msg_info, IDEMSGSEV_BANNER, msg );
         IDEFN( PrintWithInfo )( IdeHdl, &msg_info );
     }
+    va_end( arglist );
 }
 
 static bool Wait_for_return( void )
@@ -210,8 +224,10 @@ static bool Wait_for_return( void )
 // return true if we should stop printing
 {
     int         c;
+    char        buff[MAX_ERROR_SIZE];
 
-    ConsoleMessage( "    (Press Return to continue)" );
+    MsgGet( MSG_USAGE_WLIB_BASE, buff );
+    ConsoleMessage( buff );
     c = getchar();
     return( c == 'q' || c == 'Q' );
 }
@@ -221,7 +237,6 @@ void Usage( void )
 {
     char                buff[MAX_ERROR_SIZE];
     int                 str;
-    int                 str_first;
     int                 str_last;
     int                 count;
     bool                console_tty;
@@ -234,13 +249,24 @@ void Usage( void )
             ++count;
         }
         if( Options.ar ) {
-            str_first = USAGE_AR_FIRST;
-            str_last = USAGE_AR_LAST;
+            str = MSG_USAGE_AR_BASE;
         } else {
-            str_first = USAGE_WLIB_FIRST;
-            str_last = USAGE_WLIB_LAST;
+            str = MSG_USAGE_WLIB_BASE + 1;
         }
-        for( str = str_first; str <= str_last; ++str ) {
+        MsgGet( str++, buff );
+        if( Options.ar ) {
+            str_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
+            ConsoleMessage( buff, Options.ar_name );
+        } else {
+            str_last = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT;
+#ifdef BOOTSTRAP
+            ConsoleMessage( buff, "bwlib" );
+#else
+            ConsoleMessage( buff, "wlib" );
+#endif
+        }
+        ++count;
+        for( ; str < str_last; ++str ) {
             if( console_tty ) {
                 if( count == NUM_ROWS - 2 ) {
                     if( Wait_for_return() )

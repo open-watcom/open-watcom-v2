@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@ extern void        XPush( cg_name cgname );
 extern cg_name     SymIndex( sym_id sym, cg_name i );
 extern cg_name     SymAddr( sym_id sym );
 extern cg_name     SymValue( sym_id sym );
-extern char        *StackBuffer( int * len );
 extern void        DXPush( intstar4 val );
 extern void        SymPush( sym_id val );
 extern cg_name     XPop( void );
@@ -46,4 +46,4 @@ extern cg_name     StkElement( int idx );
 extern void        PopStkElements( int num );
 extern intstar4    DXPop( void );
 extern sym_id      SymPop( void );
-extern cg_name     IntegerConstant( ftn_type *value, uint size );
+extern cg_name     IntegerConstant( ftn_type *value, size_t size );

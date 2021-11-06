@@ -7,15 +7,15 @@ double exp2( double x );
 .desc begin
 The
 .id &funcb.
-function computes 2.0 raised to the value 
+function computes 2.0 raised to the value
 .arg x
-.ct .li .  The current implementation uses a simple power
+.period  The current implementation uses a simple power
 calculation.
 .desc end
 .return begin
 The function returns two to the power
 .arg x
-.ct .li .
+.period
 .return end
 .see begin
 .seelist exp pow

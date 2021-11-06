@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +148,7 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host, const char *in
 
 void MConfig::writeConfig()
 {
-    _filename.setExt( ".cfc" );
+    _filename.setExt( "cfc" );
     WObjectFile of( 9 );
     if( of.open( _filename, OStyleWrite ) ) {
         of.writeObject( this );
@@ -222,7 +223,8 @@ bool MConfig::readFile( const WFileName& filename, bool reqd )
             } else if( tok == "IncludeFile" ) {
                 WFileName fn;
                 fil.token( fn );
-                if( !readFile( fn, false ) ) break;
+                if( !readFile( fn, false ) )
+                    break;
                 fil.token( tok );
             } else if( tok == "HostMask" ) {
                 fil.token( _hostMask );
@@ -306,7 +308,7 @@ void WEXPORT MConfig::writeSelf( WObjectFile& p )
 void MConfig::configMsgLog( WTokenFile& fil, WString& tok )
 {
     fil.token( tok );
-    for(;;) {
+    for( ;; ) {
         if( tok == "Scan" ) {
             _logScanPatterns.add( new WString( fil.token( tok ) ) );
             fil.token( tok );
@@ -375,7 +377,7 @@ void MConfig::configProject( WTokenFile& fil, WString& tok )
     WString     target_os( "" );
 
     fil.token( tok );
-    for(;;) {
+    for( ;; ) {
         if( tok == "Editor" ) {
             // just ignore this and set things to the defaults
             // read all the stuff
@@ -408,14 +410,14 @@ void MConfig::configProject( WTokenFile& fil, WString& tok )
             fil.token( tok );
             while( tok == "Command" ) {
                 _before.concat( fil.token( tok ) );
-                _before.concat( "\n" );
+                _before.concat( '\n' );
                 fil.token( tok );
             }
         } else if( tok == "After" ) {
             fil.token( tok );
             while( tok == "Command" ) {
                 _after.concat( fil.token( tok ) );
-                _after.concat( "\n" );
+                _after.concat( '\n' );
             }
         } else if( tok == "Filter" ) {
             fil.token( tok );
@@ -527,9 +529,13 @@ void MConfig::kludgeMask( WString& str )
         WString temp;
         for( size_t i=0; i<str.size(); i++ ) {
             temp.concat( str[i] );
-            if( _kludge == 3 && i == 0 ) temp.concat( '?' );
-            if( _version > 1 && _kludge == 3 && i == 2 ) temp.concat( '?' );
-            if( _version > 1 && _kludge == 4 && i == 3 ) temp.concat( '?' );
+            if( _kludge == 3 && i == 0 )
+                temp.concat( '?' );
+            if( _version > 1 && _kludge == 3 && i == 2 )
+                temp.concat( '?' );
+            if( _version > 1 && _kludge == 4 && i == 3 ) {
+                temp.concat( '?' );
+            }
         }
         str = temp;
     }
@@ -566,13 +572,17 @@ void MConfig::enumAccel( WObject *obj, bcbk fn )
         action = (MAction *)_actions[i];
         key = action->menuAccel();
         if( key != WKeyNone ) {
-            if( (obj->*fn)( key ) ) return;
+            if( (obj->*fn)( key ) ) {
+                return;
+            }
         }
     }
     icount = _rules.count();
     for( i=0; i < icount; i++ ) {
         MRule   *rule;
         rule = (MRule *)_rules[i];
-        if( rule->enumAccel( obj, fn ) ) return;
+        if( rule->enumAccel( obj, fn ) ) {
+            return;
+        }
     }
 }

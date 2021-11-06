@@ -217,7 +217,7 @@ static void _scanCurrArg(char *currArg) {
     default:
         {
             char driveDir[_MAX_DRIVE+_MAX_DIR+10];
-            PGROUP2 pg;
+            pgroup2 pg;
             int len;
 
             _splitpath2( currArg, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );

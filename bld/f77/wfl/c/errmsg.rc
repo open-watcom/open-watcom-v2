@@ -1,8 +1,0 @@
-#include "macro.h"
-#include "wreslang.rh"
-
-#define MSG_LANG_BASE 0
-#include "errmsg.grc"
-#undef MSG_LANG_BASE
-#define MSG_LANG_BASE (RLE_JAPANESE*MSG_LANG_SPACING)
-#include "jerrmsg.grc"

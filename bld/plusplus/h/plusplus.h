@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,9 +49,13 @@
 #include "bool.h"
 #include "wcpp.h"
 #include "target.h"
-#if defined( __WATCOMC__ ) && !defined( NDEBUG )
-#include "wtrap.h"
+#ifndef NDEBUG
+  #if defined( __WATCOMC__ )
+    #include "wtrap.h"
+  #endif
 #endif
+#include "dbgzap.h"
+
 
 #define ARRAY_SIZE( array ) ( sizeof( array ) / sizeof( array[0] ) )
 #define PAD_UNSIGNED unsigned :0;
@@ -116,12 +120,11 @@ typedef const struct idname *NAME;      // name pointer
     #define DbgAssert( cond )   if( !(cond) ) CFatal( #cond __location )
     #define DbgStmt( stmt )     stmt
     #define XTRA_RPT
-    #define IfDbgToggle( n )    if( PragDbgToggle.n )
+    #define IfDbgToggle( n )    if( TOGGLEDBG( n ) )
 
     #define DbgNever()          (CFatal( "should never execute this" __location ))
     #define DbgUseless()        (CFatal( "this code isn't useless!" __location ))
 #else
-    #include "toggle.h"
     #define DbgVerify( cond, msg )
     #define DbgDefault( msg )
     #define DbgAssert( cond )
@@ -131,7 +134,6 @@ typedef const struct idname *NAME;      // name pointer
     #define DbgNever()
     #define DbgUseless()
 #endif
-#include "dbgzap.h"
 
 typedef unsigned MSG_NUM;           // - message number
 
@@ -239,10 +241,11 @@ struct _src_file {                              // SOURCE FILE (PERMANENT)
 };
 
 typedef enum {
-    #define pick( a, b, c ) a,
+    #define pick(a,b,c,d)   a,
     #include "auxinfo.h"
     #undef pick
-} magic_word_idx;
+    M_SIZE
+} magic_words;
 
 #include "symtype.h"
 #include "symbol.h"

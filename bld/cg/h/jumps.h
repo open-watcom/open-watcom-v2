@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 
 #define _OutShortD( addr )      OutDataByte( addr - AskLocation() - 1 )
 #define _OutFarSeg( seg )       OutDataShort( seg )
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     #define _OutOpndSize
     #define _OutFarD( seg, off )    OutDataShort( seg ); \
                                     OutDataShort( off )

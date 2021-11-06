@@ -1,5 +1,5 @@
-.gfuncw getcurrentposition
-.gsynop begin 
+.gfuncw _getcurrentposition
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _getcurrentposition( void );
 
@@ -29,19 +29,19 @@ when a new video
 mode is selected.
 It is changed
 by successful calls to the
-.kw _arc
+.reffunc _arc
 .ct ,
-.kw _moveto
+.reffunc _moveto
 and
-.kw _lineto
+.reffunc _lineto
 &routines as well as the
-.kw _setviewport
+.reffunc _setviewport
 &routine..
 .pp
 Note that the output position for graphics output differs from that
 for text output.
 The output position for text output can be set by use of the
-.kw _settextposition
+.reffunc _settextposition
 &routine..
 .desc end
 .return begin

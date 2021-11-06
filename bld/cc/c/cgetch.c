@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -133,7 +133,6 @@ static bool ReadBuffer( FCB *srcfcb )
     }
     if( ( read_amount < SRC_BUF_SIZE ) && ( last_char != '\n' ) ) {
         srcfcb->no_eol = true;                  // emit warning later so line # is right
-        srcfcb->src_buf[read_amount++] = '\n';  // mark end of buffer
     }
     srcfcb->src_buf[read_amount] = '\0';
     srcfcb->src_end += read_amount;             // mark end of buffer
@@ -232,7 +231,7 @@ static char translateTriGraph( char c )
     for( p = TriGraphs; p->tri != '\0'; ++p ) {
         if( c == p->tri ) {
             if( CompFlags.extensions_enabled ) {
-                if( NestLevel == SkipLevel ) {
+                if( SkipLevel == NestLevel ) {
                     CompFlags.trigraph_alert = true;
                 }
             }
@@ -269,10 +268,10 @@ static int tryBackSlashNewLine( void )
         nc = getTestCharFromFile();
     }
     if( nc == '\n' ) {
-        if( CompFlags.scanning_cpp_comment && NestLevel == SkipLevel ) {
+        if( CompFlags.scanning_cpp_comment && SkipLevel == NestLevel ) {
             CWarn1( WARN_SPLICE_IN_CPP_COMMENT, ERR_SPLICE_IN_CPP_COMMENT );
         }
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             if( CompFlags.in_pragma ) {
                 CppPrtChar( '\\' );
                 CppPrtChar( '\n' );
@@ -280,8 +279,7 @@ static int tryBackSlashNewLine( void )
                 CppPrtChar( '\n' );
             }
         }
-        SrcFile->src_line_cnt++;
-        SrcFile->src_loc.line++;
+        NewLineStartPos( SrcFile );
         SrcFileLoc = SrcFile->src_loc;
 //      SrcFile->column = 0;
         return( GetNextChar() );
@@ -335,6 +333,9 @@ int GetCharCheckFile( int c )
              * source file.
              */
             CurrChar = '\0';
+            if( SrcFile->no_eol ) {
+                CurrChar = '\n';
+            }
             if( SrcFile->src_ptr == SrcFile->src_end + 1 ) {
                 if( !ReadBuffer( SrcFile ) ) {
                     return( GetNextChar() );
@@ -342,8 +343,7 @@ int GetCharCheckFile( int c )
             }
             return( CurrChar );
         case '\n':
-            SrcFile->src_line_cnt++;
-            SrcFile->src_loc.line++;
+//            NewLineStartPos( SrcFile );
 //          SrcFile->column = 0;
             break;
         case '\t':
@@ -497,9 +497,11 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
         srcfcb->src_buf = src_buffer;
         src_buffer[0] = '\0';
         flist = AddFlist( filename );
+        FNameFullPath( flist );
         srcfcb->src_name = flist->name;
         srcfcb->src_line_cnt = 0;
-        srcfcb->src_loc.line = 1;
+        srcfcb->src_loc.line = 0;
+        srcfcb->src_loc.column = 0;
         srcfcb->src_loc.fno = flist->index;
         SrcFileLoc = srcfcb->src_loc;
         srcfcb->src_flist = flist;
@@ -509,7 +511,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
         srcfcb->prev_file = SrcFile;
         srcfcb->prev_currchar = CurrChar;
 #if _CPU == 370
-        srcfcb->colum = 0;     /* init colum, trunc info */
+        srcfcb->column = 0;     /* init colum, trunc info */
         srcfcb->trunc = 0;
         srcfcb->prevcount = 0;
 #endif
@@ -521,7 +523,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
         }
         srcfcb->rseekpos = 0;
         srcfcb->typ = typ;
-        srcfcb->no_eol = 0;
+        srcfcb->no_eol = false;
         SrcFile = srcfcb;
         CurrChar = '\n';    /* set next character to newline */
         return( true );
@@ -567,6 +569,7 @@ void CloseFCB( FCB *srcfcb )
         source_loc  err_loc;
 
         err_loc.line = srcfcb->src_line_cnt;
+        err_loc.column = srcfcb->src_loc.column;
         err_loc.fno = srcfcb->src_flist->index;
         SetErrLoc( &err_loc );
         CWarn1( WARN_NO_EOL_BEFORE_EOF, ERR_NO_EOL_BEFORE_EOF );
@@ -590,12 +593,12 @@ void CloseFCB( FCB *srcfcb )
                 }
             }
         }
-        if( CompFlags.cpp_output ) {
-            EmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, true );
+        if( CompFlags.cpp_mode ) {
+            CppEmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, true );
         }
     } else {
         SrcLineCount = srcfcb->src_line_cnt;
-        CurrChar = EOF_CHAR;
+        CurrChar = LCHR_EOF;
     }
     FCB_Free( srcfcb );
 }

@@ -4,10 +4,10 @@
 ..tb &firsttab. +18 +18
 .kwon
 $&kwbased.   $&kwfortran. $&kwiseg16.
-$&kwicdecl.  $&kwhuge.    $&kwsegment. 
-$&kwcdecl.   $&kwinline.  $&kwsegname. 
-$&kwdeclspec.$&kwint64.   $&kwself.   
-$&kwiexport. $&kwintrpt.  $&kwstdcall. 
+$&kwicdecl.  $&kwhuge.    $&kwsegment.
+$&kwcdecl.   $&kwinline.  $&kwsegname.
+$&kwdeclspec.$&kwint64.   $&kwself.
+$&kwiexport. $&kwintrpt.  $&kwstdcall.
 $&kwexport.  $&kwloadds.  $&kwisyscall.
 $&kwfar.     $&kwnear.    $&kwsyscall.
 $&kwifar16.  $&kwipacked. $&kwisystem.

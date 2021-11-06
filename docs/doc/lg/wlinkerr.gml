@@ -2,6 +2,9 @@
 .if &e'&dohelp eq 0 .do begin
 :INCLUDE file='wnohelp'.
 .do end
+.el .do begin
+:INCLUDE file='whelp'.
+.do end
 :INCLUDE file='fmtmacro'.
 :INCLUDE file='gmlmacs'.
 :INCLUDE file='xdefs'.
@@ -14,7 +17,7 @@
 .*
 :BODY.
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 :exhelp
 :include file='&book..idx'
 :include file='&book..tbl'

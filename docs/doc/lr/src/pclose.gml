@@ -9,7 +9,7 @@ The
 function closes the pipe associated with
 .arg fp
 and waits for the subprocess created by
-.kw popen
+.reffunc popen
 to terminate.
 .desc end
 .return begin
@@ -25,8 +25,8 @@ set appropriately.
 .return end
 .error begin
 .begterm 12
-:DTHD.Constant
-:DDHD.Meaning
+.termhd1 Constant
+.termhd2 Meaning
 .term EINTR
 The
 .id &funcb.

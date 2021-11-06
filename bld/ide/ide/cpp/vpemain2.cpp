@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 #include <stdio.h>
 #include <io.h>
 #include <stdlib.h>
-#include "rcdefs.rh"
+#include "ide.rh"
 #include "banner.h"
 
 #include "vpemain.hpp"
@@ -70,7 +71,7 @@
 #include "wflashp.hpp"
 #include "vhelpstk.hpp"
 #include "veditdlg.hpp"
-#include "ide.h"
+#include "ide.gh"
 #include "mitem.hpp"
 #include "inifile.hpp"
 
@@ -102,7 +103,7 @@ void VpeMain::cForPBProject( WFileName &pj, bool nt ) {
             _project = new MProject( pj );
             attachModel( _project );
             WFileName targname( pj );
-            targname.setExt( ".dll" );
+            targname.setExt( "dll" );
             MRule *rule = _config->findMatchingRule( targname, mask );
             MComponent* mcomp = new MComponent( _project, rule, mask, targname );
             _project->addComponent( mcomp );
@@ -182,8 +183,10 @@ void VpeMain::readIdeInit()
 
     WRect sc;
     WSystemMetrics::screenCoordinates( sc );
-    if( width == 0 ) width = sc.w() * 3/4;
-    if( height == 0 ) height = sc.h() * 9/10;
+    if( width == 0 )
+        width = sc.w() * 3/4;
+    if( height == 0 )
+        height = sc.h() * 9/10;
 
     sc.w( width );
     sc.h( height );
@@ -358,7 +361,8 @@ bool VpeMain::execute( const WString& cmd )
     size_t icount = strlen( cmd );
     for( size_t i = 0; i < icount; ) {
         WString cbuff;
-        while( isspace( cmd[i] ) ) i++;
+        while( isspace( cmd[i] ) )
+            i++;
         for( ; i < icount; ) {
             char ch = cmd[i];
             i++;

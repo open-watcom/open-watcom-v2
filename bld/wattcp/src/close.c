@@ -50,11 +50,10 @@ int closesocket (int s)
 static int close_stream (int s)
 {
   Socket    *socket = _socklist_find (s);
-  sock_type *sk     = (sock_type*)socket->tcp_sock;
+  sock_type *sk;
   int  i, listen_abort = 0;
 
-  if ((socket->so_state & SS_ISDISCONNECTING) && socket->close_time)
-  {
+  if ((socket->so_state & SS_ISDISCONNECTING) && socket->close_time) {
     SOCK_DEBUGF ((socket, ", close already called"));
     SOCK_ERR (EBADF);
     return (-1);
@@ -62,38 +61,30 @@ static int close_stream (int s)
 
   /* Save memory and abort listen() socket and queue now.
    */
-  if (socket->so_options & SO_ACCEPTCONN)
-  { 
+  sk = socket->proto_sock;
+  if (socket->so_options & SO_ACCEPTCONN) {
     SOCK_DEBUGF ((socket, ", listen abort, backlog %d", socket->backlog));
     listen_abort = 1;
-    for (i = 0; i < socket->backlog && i < SOMAXCONN; i++)
-    {
-      sock_type *tcb = (sock_type*) socket->listen_queue[i];
-      if (tcb)
-      {
-        tcb->tcp.rdatalen = 0;   /* flush Rx data */
-        sock_abort (tcb);
-        free (tcb);
+    for (i = 0; i < socket->backlog && i < SOMAXCONN; i++) {
+      sock_type *tcb_sk = socket->listen_queue[i];
+      if (tcb_sk != NULL) {
+        tcb_sk->tcp.rx_datalen = 0;      /* flush Rx data */
+        sock_abort (tcb_sk);
+        free (tcb_sk);
         socket->listen_queue[i] = NULL;
       }
     }
-  }
-  else if (sk)
-  {
-    sk->tcp.rdatalen = 0;
+  } else if (sk != NULL) {
+    sk->tcp.rx_datalen = 0;
     sock_flush (sk);
     sock_close (sk);
   }
 
-  if (listen_abort || !socket->local_addr)
-  {
-    /* 's' is a listening socket or we never received any thing, kill it now.
-     */
+  if (listen_abort || !socket->local_addr) {
+    /* 's' is a listening socket or we never received any thing, kill it now. */
     SOCK_DEBUGF ((socket, ", fast kill!"));
     SOCK_DEL_FD (s);
-  }
-  else
-  {
+  } else {
     /* sock_daemon() will free socket from list and inuse array.
      * Local port is marked for reuse after TCP_LINGERTIME (2min).
      */
@@ -110,10 +101,10 @@ static int close_stream (int s)
  */
 static int close_dgram (int s)
 {
-  Socket    *socket = _socklist_find (s);      /* 'socket' is non-NULL */
-  sock_type *sk     = (sock_type*)socket->udp_sock;
+  Socket    *socket = _socklist_find (s);   /* 'socket' is non-NULL */
+  sock_type *sk = socket->proto_sock;
 
-  sk->udp.rdatalen = 0;   /* flush Rx data */
+  sk->udp.rx_datalen = 0;    /* flush Rx data */
   sock_close (sk);
   socket->so_state |= (SS_ISDISCONNECTING | SS_CANTSENDMORE);
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@ typedef enum {
     LS_LINK_ERROR           = CONSTU32( 0x00000008 ),
     LS_FMT_SPECIFIED        = CONSTU32( 0x00000010 ),
     LS_FMT_DECIDED          = CONSTU32( 0x00000020 ),
-    LS_FMT_SEEN_32_BIT      = CONSTU32( 0x00000040 ),
+    LS_FMT_SEEN_32BIT       = CONSTU32( 0x00000040 ),
     LS_FMT_SEEN_IMPORT_CMT  = CONSTU32( 0x00000080 ),
     LS_PROC_LIBS_ADDED      = CONSTU32( 0x00000100 ),
     LS_FMT_INITIALIZED      = CONSTU32( 0x00000200 ),
@@ -98,7 +98,7 @@ typedef enum {
     LS_GOT_PREV_STRUCTS     = CONSTU32( 0x00200000 ),
     LS_DOSSEG_FLAG          = CONSTU32( 0x00400000 ),
     LS_SPEC_ORDER_FLAG      = CONSTU32( 0x00800000 ),
-    LS_FMT_SEEN_64_BIT      = CONSTU32( 0x01000000 ),
+    LS_FMT_SEEN_64BIT       = CONSTU32( 0x01000000 ),
 } stateflag;
 
 #define LS_HAVE_MACHTYPE_MASK   (LS_HAVE_I86_CODE | LS_HAVE_X64_CODE | LS_HAVE_ALPHA_CODE | LS_HAVE_PPC_CODE | LS_HAVE_MIPS_CODE)
@@ -151,9 +151,9 @@ typedef enum {
 /* Default File Extension Enumeration, see ldefext.h */
 
 typedef enum {
-    #define pick1(enum,text) enum,
+    #define pick(enum,text) enum,
     #include "ldefext.h"
-    #undef pick1
+    #undef pick
 } file_defext;
 
 

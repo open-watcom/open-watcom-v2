@@ -1,5 +1,4 @@
 proj_name = gui
-name = gui
 
 !ifndef bootstrap
 gui_trmem = 1
@@ -8,8 +7,6 @@ gui_trmem = 1
 !ifndef gui_autodepends
 gui_autodepends = .AUTODEPEND
 !endif
-
-.EXTENSIONS: .msg
 
 !include cproj.mif
 !include defrule.mif
@@ -22,6 +19,40 @@ gui_autodepends = .AUTODEPEND
 !include wres.mif
 !include trmem.mif
 
+#
+# cflags
+#
+.c: ../c;../../c;$(hlpview_dir)/c;$(trmem_dir)
+
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) &
+    $(wpi_inc_dirs) $(ui_inc_dirs) $(wres_inc_dirs)
+
+!ifeq sys_windowed 1
+extra_cpp_flags     = -DGUI_IS_GUI
+extra_cpp_flags_os2 = -D__OS2_PM__
+!endif
+
+extra_c_flags = -fh
+
+extra_c_flags_axp = -ai -aq
+extra_c_flags_i86 = -zu
+
+extra_c_flags_nov = -4s
+extra_c_flags_win = -zw
+extra_c_flags_win_i86 = -zW
+
+!ifndef bootstrap
+# memory tracker cover routines
+extra_c_flags_guimem = $(trmem_cover_cflags)
+!endif
+
+# explicit rules
+#################
+
+#
+# LIB
+#
+libtarg_prebuild_objs = guimsgs.gh
 common_objs = &
     guicreat.obj   &
     guihint.obj    &
@@ -61,55 +92,16 @@ common_objs = &
     guiclass.obj   &
     guimenub.obj   &
     guitoolb.obj
-
 mem_objs = &
     guimem.obj     &
     $(trmem_objs)
+libtarg_objs = $(common_objs) $(mem_objs) $(sysobjs)
+libtarg_libs = $(wpi_lib) $(commonui_lib)
+!include libtarg.mif
 
-
-objs = $(common_objs) $(mem_objs) $(extra_objs) $(sysobjs)
-
-libs = $(wpi_lib) $(commonui_lib)
-
-!ifeq sys_windowed 1
-extra_cpp_flags = -DGUI_IS_GUI
-!endif
-
-!ifeq sys_windowed 1
-extra_cpp_flags_os2 = -D__OS2_PM__
-!endif
-
-extra_c_flags = -fh
-
-extra_c_flags_axp = -ai -aq
-extra_c_flags_i86 = -zu
-
-extra_c_flags_nov = -4s
-extra_c_flags_win = -zw
-extra_c_flags_win_i86 = -zW
-
-!ifndef bootstrap
-# memory tracker routines
-extra_c_flags_trmem = $(trmem_cflags)
-
-# memory tracker cover routines
-extra_c_flags_guimem = $(trmem_cover_cflags)
-!endif
-
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) $(wpi_inc_dirs) $(ui_inc_dirs) $(wres_inc_dirs)
-
-.c:     ../c;../../c;$(hlpview_dir)/c;$(trmem_dir)
-.h:     ../h;../../h
-.msg:   ../../h
-
-$(name).lib : guimsgs.gh $(objs) $(libs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs) $(libs)
-!else
-    $(librarian) $(libflags) $(objs) $(libs)
-!endif
-
+#
+# rc and others
+#
 guimsgs.gh : ../../h/gui.msg
     @%make echo_awk
     $(awk) -v prefix=GUI_LITERAL_ -v base=GUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

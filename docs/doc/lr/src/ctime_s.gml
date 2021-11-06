@@ -27,7 +27,7 @@ shall be a null pointer.
 .arg maxsize
 shall not be less than 26 and shall not be greater than
 .arg RSIZE_MAX
-.ct .li .
+.period
 If there is a runtime-constraint violation,
 .arg s[0]
 is set to a null character if
@@ -36,7 +36,7 @@ is not a null pointer and
 .arg maxsize
 is not equal zero and is not greater than
 .arg RSIZE_MAX
-.ct .li .
+.period
 .rtconst end
 .*
 .desc begin

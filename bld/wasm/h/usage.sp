@@ -86,6 +86,3 @@ Options:                    ( /option is also supported )
         -zq or -q           メッセージ等の出力をしません
         -?                  このメッセージを表示します
 :endsegment
-:segment IS_RC
-.
-:endsegment

@@ -62,7 +62,7 @@ void SplitFile( long size, long max_size, char * input_file )
 /***********************************************************/
 {
     char                fullname[_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
     FILE                *bigfile, *smallfile;
     char                *buffer;
     int                 len_read;

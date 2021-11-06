@@ -1,2 +1,9 @@
+proj_name = cl386
+
 target_cpu = 386
+
+!ifndef cl386_autodepends
+cl386_autodepends = .AUTODEPEND
+!endif
+
 !include ../../cl.mif

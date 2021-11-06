@@ -7,7 +7,7 @@ CC = bwcl386
 !endif
 
 all : .symbolic
-    $(CC) -fe=exercise -fo=exercise -I"../dos" -zq <<
+    $(CC) -fe=exercise -fo=exercise -I"../dos/h" -zq <<
 $#include <stdio.h>
 $#include <limits.h>
 
@@ -18,12 +18,10 @@ int main( void )
     printf( "CHAR_MIN      = %ld\n", (long)CHAR_MIN );
     printf( "INT_MAX       = %ld\n", (long)INT_MAX );
     printf( "INT_MIN       = %ld\n", (long)INT_MIN );
-#ifdef __WATCOM_INT64__
-    printf( "LLONG_MAX     = %lld\n",       LLONG_MAX );
-    printf( "LLONG_MIN     = %lld\n",       LLONG_MIN );
-    printf( "LONGLONG_MAX  = %lld\n",       LONGLONG_MAX );
-    printf( "LONGLONG_MIN  = %lld\n",       LONGLONG_MIN );
-#endif
+    printf( "LLONG_MAX     = %lld\n",      LLONG_MAX );
+    printf( "LLONG_MIN     = %lld\n",      LLONG_MIN );
+    printf( "LONGLONG_MAX  = %lld\n",      LONGLONG_MAX );
+    printf( "LONGLONG_MIN  = %lld\n",      LONGLONG_MIN );
     printf( "LONG_MAX      = %ld\n", (long)LONG_MAX );
     printf( "LONG_MIN      = %ld\n", (long)LONG_MIN );
     printf( "MB_LEN_MAX    = %ld\n", (long)MB_LEN_MAX );
@@ -33,27 +31,21 @@ int main( void )
     printf( "SHRT_MIN      = %ld\n", (long)SHRT_MIN );
     printf( "UCHAR_MAX     = %ld\n", (long)UCHAR_MAX );
     printf( "UINT_MAX      = %u\n",        UINT_MAX );
-#ifdef __WATCOM_INT64__
-    printf( "ULLONG_MAX    = %llu\n",       ULLONG_MAX );
-    printf( "ULONGLONG_MAX = %llu\n",       ULONGLONG_MAX );
-#endif
+    printf( "ULLONG_MAX    = %llu\n",      ULLONG_MAX );
+    printf( "ULONGLONG_MAX = %llu\n",      ULONGLONG_MAX );
     printf( "ULONG_MAX     = %lu\n",       ULONG_MAX );
     printf( "USHRT_MAX     = %ld\n", (long)USHRT_MAX );
     printf( "_I16_MAX      = %ld\n", (long)_I16_MAX );
     printf( "_I16_MIN      = %ld\n", (long)_I16_MIN );
     printf( "_I32_MAX      = %ld\n", (long)_I32_MAX );
     printf( "_I32_MIN      = %ld\n", (long)_I32_MIN );
-#ifdef __WATCOM_INT64__
-    printf( "_I64_MAX      = %lld\n",       _I64_MAX );
-    printf( "_I64_MIN      = %lld\n",       _I64_MIN );
-#endif
+    printf( "_I64_MAX      = %lld\n",      _I64_MAX );
+    printf( "_I64_MIN      = %lld\n",      _I64_MIN );
     printf( "_I8_MAX       = %ld\n", (long)_I8_MAX );
     printf( "_I8_MIN       = %ld\n", (long)_I8_MIN );
     printf( "_UI16_MAX     = %ld\n", (long)_UI16_MAX );
     printf( "_UI32_MAX     = %lu\n",       _UI32_MAX );
-#ifdef __WATCOM_INT64__
-    printf( "_UI64_MAX     = %llu\n",       _UI64_MAX );
-#endif
+    printf( "_UI64_MAX     = %llu\n",      _UI64_MAX );
     printf( "_UI8_MAX      = %ld\n", (long)_UI8_MAX );
     return( 0 );
 }

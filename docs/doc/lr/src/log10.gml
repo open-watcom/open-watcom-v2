@@ -9,7 +9,7 @@ The
 .id &funcb.
 function computes the logarithm (base 10) of
 .arg x
-.ct .li .
+.period
 A domain error occurs if the argument is negative.
 A range error occurs if the argument is zero.
 .desc end

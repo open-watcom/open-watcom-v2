@@ -18,7 +18,7 @@ The
 function tests for any hexadecimal-digit character.
 These characters are the digits ('0' through '9') and the letters ('a'
 through 'f') and ('A' through 'F').
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

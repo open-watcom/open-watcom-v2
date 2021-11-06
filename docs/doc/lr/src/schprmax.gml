@@ -14,7 +14,7 @@ argument.
 .return begin
 If successful, the function will return the maximum priority allowed
 for the given scheduling policy. If the call fails, the
-return value is -1 and 
+return value is -1 and
 .kw errno
 is appropriately set.
 .return end
@@ -31,5 +31,5 @@ does not represent a valid scheduling policy
 .see begin
 .seelist sched_get_priority_min
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

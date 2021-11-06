@@ -14,10 +14,10 @@ wint_t getwchar( void );
 The
 .id &funcb.
 function is equivalent to
-.kw getc
+.reffunc getc
 with the argument
 .kw stdin
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -26,10 +26,10 @@ function is similar to
 .id &funcb.
 except that it is equivalent
 to
-.kw getwc
+.reffunc getwc
 with the argument
 .kw stdin
-.ct .li .
+.period
 .do end
 .desc end
 .return begin
@@ -38,17 +38,17 @@ The
 function returns the next character from the input stream
 pointed to by
 .kw stdin
-.ct .li .
+.period
 If the stream is at end-of-file, the end-of-file indicator is set and
 .id &funcb.
 returns
 .kw EOF
-.ct .li .
+.period
 If a read error occurs, the error indicator is set and
 .id &funcb.
 returns
 .kw EOF
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -56,17 +56,17 @@ The
 function returns the next wide character from the input
 stream pointed to by
 .kw stdin
-.ct .li .
+.period
 If the stream is at end-of-file, the end-of-file indicator is set and
 .id &wfunc.
 returns
 .kw WEOF
-.ct .li .
+.period
 If a read error occurs, the error indicator is set and
 .id &wfunc.
 returns
 .kw WEOF
-.ct .li .
+.period
 If an encoding error occurs,
 .kw errno
 is set to
@@ -75,7 +75,7 @@ and
 .id &wfunc.
 returns
 .kw WEOF
-.ct .li .
+.period
 .do end
 .np
 .im errnoref

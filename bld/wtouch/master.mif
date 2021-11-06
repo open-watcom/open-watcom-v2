@@ -8,46 +8,49 @@ wtouch_autodepends = .AUTODEPEND
 
 !include wres.mif
 
-.EXTENSIONS: .msg .vi .rc .sp
+#
+# cflags
+#
+.c: ..
 
 inc_dirs = -I. -I.. -I"$(clib_dir)/h"
 
-.c .msg .vi .rc .sp: ..
+# explicit rules
+#################
 
-objs =  touch.obj    &
-        dtparse.obj  &
-        wtmsg.obj
+#
+# EXE
+#
+exetarg_prebuild_objs = usage.gh msg.gh
+exetarg_objs          = touch.obj dtparse.obj wtmsg.obj
+exetarg_libs          = $(wres_lib)
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
+exetarg_res_wresui    = wresui.res
+exetarg_qnx_res       = usage.u
+!include exetarg.mif
 
-libs = $(wres_lib)
-
-# systems where version resources must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-
+#
+# rc and others
+#
 !include verrc.mif
 
-$(proj_name).exe : msg.gh $(objs) $(libs) wresui.res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-    $(linker) name $^@ $(lflags) file { $(objs) } lib {$(libs)}
-!endif
-    @%make bind_res_version_exe
-    @%make bind_res_wresui
-
-wresui.res : $(proj_name).rc $(proj_name).msg usage.gh usagej.gh msg.gh $(__MAKEFILES__)
+wresui.res : ../wtouch.rc ../wtouch.msg usage.gh usagej.gh msg.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $[@ -fo=$^@
+    $(rcui8)
 
-usage.gh : usage.sp $(__MAKEFILES__)
+usage.gh : ../usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -kIS_RC -kENGLISH -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
+    $(wsplice) -kENGLISH -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
 
-usagej.gh : usage.sp $(__MAKEFILES__)
+usagej.gh : ../usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -kIS_RC -kJAPANESE -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
+    $(wsplice) -kJAPANESE -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
 
-msg.gh : $(proj_name).msg $(__MAKEFILES__)
+msg.gh : ../wtouch.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+
+usage.u : ../usage.sp $(__MAKEFILES__)
+    @%make echo_wsplice
+    $(wsplice) -u $[@ $@

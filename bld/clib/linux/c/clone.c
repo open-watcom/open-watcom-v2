@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -84,7 +84,7 @@ _WCRTLINK pid_t clone( int (*__fn)(void *), void *__child_stack, int __flags, vo
 
     /* The number of optional args expected */
     int n;
-    va_list additional;
+    va_list args1;
 
     ppid = NULL;
     ctid = NULL;
@@ -102,14 +102,14 @@ _WCRTLINK pid_t clone( int (*__fn)(void *), void *__child_stack, int __flags, vo
         n = 1;
 
     /* Process optional arguments, if any */
-    va_start(additional, args);
+    va_start(args1, args);
     if(n > 0)
-        ppid = va_arg(additional, pid_t *);
+        ppid = va_arg(args1, pid_t *);
     if(n > 1)
-        tls = va_arg(additional, struct user_desc *);
+        tls = va_arg(args1, struct user_desc *);
     if(n > 2)
-        ctid = va_arg(additional, pid_t *);
-    va_end(additional);
+        ctid = va_arg(args1, pid_t *);
+    va_end(args1);
 
     /* Store what we need in our stack space.  Once clone occurs, our
      * stack should be positioned just beyond these three arguments.

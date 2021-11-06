@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2021 The Open Watcom Contributors. All Rights Reserved.
 * Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 * Copyright (c) 1987-1992 Rational Systems, Incorporated. All Rights Reserved.
 *
@@ -212,9 +212,9 @@ static TSF32 FarPtr find_user_code( TSF32 FarPtr client )
         we update the break address accordingly.
     */
     while( curr_tsf->prev_tsf32 != NULL_PTR ) {
-        curr_tsf = makeptr( FP_SEG( curr_tsf ), curr_tsf->prev_tsf32 );
+        curr_tsf = makeptr( _FP_SEG( curr_tsf ), curr_tsf->prev_tsf32 );
 #if DEBUGHOTKEY
-        outs( "TSF at" ); outi( FP_OFF( curr_tsf ) ); outs( " cs:ip=" );
+        outs( "TSF at" ); outi( _FP_OFF( curr_tsf ) ); outs( " cs:ip=" );
         outi( curr_tsf->cs ); outi( (int)curr_tsf->eip ); outs( "\n\r" );
         outs( "user sel" ); outi( user_sel ); outs( "\n\r" );
 #endif
@@ -223,7 +223,7 @@ static TSF32 FarPtr find_user_code( TSF32 FarPtr client )
             debug_hook function is conveniently exported from that
             segment.
         */
-        if( curr_tsf->cs > FP_SEG( debug_hook ) ) {
+        if( curr_tsf->cs > _FP_SEG( debug_hook ) ) {
             client = curr_tsf;
             break;
         }
@@ -253,7 +253,7 @@ static void check_hotkey( int eip_mod, TSF32 FarPtr client )
         hotkey_hit = 0;
 #ifdef DEBUGHOTKEY
         outs( "hotkey seen " );
-        outi( FP_OFF( client ) );
+        outi( _FP_OFF( client ) );
         outi( client->cs ); outi( (int)client->eip ); outs( "\r\n" );
 #endif
         D32DebugSetBreak( client->eip + eip_mod, client->cs, 0, &saved_opcode, &hotkey_opcode );
@@ -643,22 +643,22 @@ int D32DebugInit( TSF32 FarPtr process_regs, int hkey )
         int             strat;
 
         strat = rsi_mem_strategy( MForceLow );
-        lowmem_cs.w.sel = rsi_seg_realloc( FP_SEG( rm15_handler ) );
+        lowmem_cs.w.sel = rsi_seg_realloc( _FP_SEG( rm15_handler ) );
         rsi_mem_strategy( strat );
         if( lowmem_cs.w.sel == NULL_SEL )
             return( 1 );
-        lowmem_cs.w.off = FP_OFF( rm15_handler );
+        lowmem_cs.w.off = _FP_OFF( rm15_handler );
         lowmem_cs.pv = rsi_get_rm_ptr( lowmem_cs.pv );
 
         /* Set up INT 15h chain to previous handler, and prepare to store
            address of passup handler (5, 1B, or 23) in hotkey_passup.
         */
-        org15p.w.sel = rsi_sel_data_alias( FP_SEG( &org15_handler ) );
+        org15p.w.sel = rsi_sel_data_alias( _FP_SEG( &org15_handler ) );
         if( org15p.w.sel == NULL_PTR )
             return( 1 );
-        org15p.w.off = FP_OFF( &org15_handler );
+        org15p.w.off = _FP_OFF( &org15_handler );
         hotkeyp.w.sel = org15p.w.sel;
-        hotkeyp.w.off = FP_OFF( &hotkey_passup );
+        hotkeyp.w.off = _FP_OFF( &hotkey_passup );
 
         /* Store passup hotkey address.
         */
@@ -679,8 +679,8 @@ int D32DebugInit( TSF32 FarPtr process_regs, int hkey )
             passup, and that makes an explicit hook unnecessary.  If it's not
             the hotkey, we don't attempt to handle it at all.
         */
-        rsi_rm_set_vector( INT_CTRL_BREAK_KEY, MK_FP( lowmem_cs.w.sel, FP_OFF( rm1B_handler ) ) );
-        rsi_rm_set_vector( INT_CTRL_C_KEY, MK_FP( lowmem_cs.w.sel, FP_OFF( passup_hotkey ) ) );
+        rsi_rm_set_vector( INT_CTRL_BREAK_KEY, _MK_FP( lowmem_cs.w.sel, _FP_OFF( rm1B_handler ) ) );
+        rsi_rm_set_vector( INT_CTRL_C_KEY, _MK_FP( lowmem_cs.w.sel, _FP_OFF( passup_hotkey ) ) );
         rsi_sel_free( org15p.w.sel );
     }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
  * GUIIsChecked -- find out if the given control is checked
  */
 
-unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id )
+unsigned GUIAPI GUIIsChecked( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_radio     *radio;
@@ -48,13 +49,13 @@ unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id )
     field = GUIGetField( wnd, id );
     if( field != NULL ) {
         switch( field->typ ) {
-        case FLD_RADIO :
+        case FLD_RADIO:
             radio = field->u.radio;
             if( radio->group->value == ID2EV( id ) ) {
                 ret = GUI_CHECKED;
             }
             break;
-        case FLD_CHECK :
+        case FLD_CHECK:
             check = field->u.check;
             if( _checked( check ) ) {
                 ret = GUI_CHECKED;
@@ -69,7 +70,7 @@ unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id )
  * GUISetChecked -- set the given control as checked or not checked
  */
 
-bool GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned checked )
+bool GUIAPI GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned checked )
 {
     VFIELD      *field;
     a_radio     *radio;
@@ -86,7 +87,7 @@ bool GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned checked )
         checked = GUI_NOT_CHECKED;
     }
     switch( field->typ ) {
-    case FLD_RADIO :
+    case FLD_RADIO:
         radio = field->u.radio;
         prev_radio_id = EV2ID( radio->group->value );
         if( checked ) {
@@ -98,11 +99,11 @@ bool GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned checked )
         }
         GUIRefreshControl( wnd, prev_radio_id );
         break;
-    case FLD_CHECK :
+    case FLD_CHECK:
         check = field->u.check;
         check->val = checked;
         break;
-    default :
+    default:
         return( false );
     }
     GUIRefreshControl( wnd, id );

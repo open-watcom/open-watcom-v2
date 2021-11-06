@@ -49,5 +49,5 @@ The system was unable to allocate resources for a new timer
 .see begin
 .seelist timer_gettime timer_settime timer_delete timer_getoverrun
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

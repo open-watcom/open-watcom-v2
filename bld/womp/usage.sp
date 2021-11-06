@@ -51,6 +51,3 @@ These options apply to .wmp files
 @file   オプションに関して[.wmp]ファイルを読みます
 #       #から行末までを無視します(ｺﾒﾝﾄ)
 :endsegment
-:segment IS_RC
-.
-:endsegment

@@ -38,7 +38,7 @@ test_flags_386 += -fpi87-fp5-mf
 test_flags_i86 += -fpi87-fp5-ml
 test_flags_axp +=
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifeq alt_error 02
 test_flags += $(br_opt)
@@ -62,11 +62,8 @@ exes = &
     rsa.$(exe)      &
     waste.$(exe)
 
-test : .symbolic start clean start_test test.lnk $(exes) common_set_result
-    @%make clean
-
-start_test : .symbolic
-    @%make common_start_test
+test : .symbolic start test.lnk $(exes)
+    $(noecho)%make common_set_result
 
 dmc.$(exe) : dmc.obj
     @%make set_path_wlink
@@ -74,12 +71,12 @@ dmc.$(exe) : dmc.obj
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@
     @%make set_old_path
     @%append $(%ERROR_FILE) --------$^*--------
-    $(noecho)crlf -u dmc.cpp dmctest.out
-    @%make set_path_rtdll
-    $(run) $(exec_prefix)$@ c dmctest.out dmc.out >>$(%ERROR_FILE)
-    $(run) $(exec_prefix)$@ d dmc.out cpp.out >>$(%ERROR_FILE)
-    @%make set_old_path
-    diff -b cpp.out dmctest.out >>$(%ERROR_FILE)
+    -$(noecho)crlf -u dmc.cpp dmctest.out
+    @%make set_run_path
+    -$(run) $(exec_prefix)$@ c dmctest.out dmc.out >>$(%ERROR_FILE)
+    -$(run) $(exec_prefix)$@ d dmc.out cpp.out >>$(%ERROR_FILE)
+    @%make set_old_run_path
+    -diff -b cpp.out dmctest.out >>$(%ERROR_FILE)
 
 clean : .procedure
     @%make echo_clean

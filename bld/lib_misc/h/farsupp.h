@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +33,6 @@
 #ifndef _FARSUPP_H_INCLUDED
 #define _FARSUPP_H_INCLUDED
 
-#ifdef __LONG_LONG_SUPPORT__
-  #include "clibi64.h"
-#endif
-
 /* Only support near/far pointers on 16-bit targets, extended DOS
  * and Win386. Ideally we might want to test for non-flat memory model.
  */
@@ -48,20 +45,18 @@
 #endif
 
 #ifdef __WIDECHAR__
-  typedef wchar_t       _FAR_SUPPORT_   *FAR_STRING;
+  typedef wchar_t           _FAR_SUPPORT_   *FAR_STRING;
 #else
-  typedef char          _FAR_SUPPORT_   *FAR_STRING;
+  typedef char              _FAR_SUPPORT_   *FAR_STRING;
 #endif
-  typedef char          _FAR_SUPPORT_   *FAR_ASCII_STRING;
-  typedef wchar_t       _FAR_SUPPORT_   *FAR_WIDE_STRING;
-  typedef int           _FAR_SUPPORT_   *FAR_INT;
-  typedef signed char   _FAR_SUPPORT_   *FAR_CHAR;
-  typedef short         _FAR_SUPPORT_   *FAR_SHORT;
-  typedef long          _FAR_SUPPORT_   *FAR_LONG;
-  typedef float         _FAR_SUPPORT_   *FAR_FLOAT;
-  typedef double        _FAR_SUPPORT_   *FAR_DOUBLE;
-#ifdef __LONG_LONG_SUPPORT__
-  typedef UINT64_TYPE   _FAR_SUPPORT_   *FAR_INT64;
-#endif
+  typedef char              _FAR_SUPPORT_   *FAR_ASCII_STRING;
+  typedef wchar_t           _FAR_SUPPORT_   *FAR_WIDE_STRING;
+  typedef int               _FAR_SUPPORT_   *FAR_INT;
+  typedef signed char       _FAR_SUPPORT_   *FAR_CHAR;
+  typedef short             _FAR_SUPPORT_   *FAR_SHORT;
+  typedef long              _FAR_SUPPORT_   *FAR_LONG;
+  typedef float             _FAR_SUPPORT_   *FAR_FLOAT;
+  typedef double            _FAR_SUPPORT_   *FAR_DOUBLE;
+  typedef unsigned __int64  _FAR_SUPPORT_   *FAR_INT64;
 
 #endif

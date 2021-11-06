@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include "guigadgt.h"
 #include "guixinit.h"
 #include "guixwind.h"
+#include "guidraw.h"
 
 
 static  int             ScrollOffset    =       1;
@@ -68,42 +69,39 @@ bool GUIDrawGadgetLine( p_gadget gadget )
     return( false );
 }
 
-static void SetScrollAttrs( gui_window *wnd, ATTR *scroll_bar,
-                            ATTR *scroll_icon )
+static void SetScrollAttrs( gui_window *wnd, ATTR *scroll_bar, ATTR *scroll_icon )
 {
     bool                active;
-    gui_draw_char       offset;
+    int                 inactive;
 
-    *scroll_bar = UIData->attrs[ATTR_SCROLL_BAR];
-    *scroll_icon = UIData->attrs[ATTR_SCROLL_ICON];
     active = ( wnd == GUICurrWnd ) || ( wnd->parent == NULL );
-    offset = 0;
+    inactive = 0;
     if( active ) {
-        UIData->attrs[ATTR_SCROLL_BAR]  = WNDATTR( wnd, GUI_FRAME_ACTIVE );
-        UIData->attrs[ATTR_SCROLL_ICON] = WNDATTR( wnd, GUI_FRAME_ACTIVE );
+        *scroll_bar  = uisetattr( ATTR_SCROLL_BAR,  WNDATTR( wnd, GUI_FRAME_ACTIVE ) );
+        *scroll_icon = uisetattr( ATTR_SCROLL_ICON, WNDATTR( wnd, GUI_FRAME_ACTIVE ) );
     } else {
         if( (GUIGetWindowStyles() & GUI_INACT_SAME) == 0 ) {
-            offset = GUI_INACTIVE_OFFSET;
+            inactive = 1;
         }
-        UIData->attrs[ATTR_SCROLL_BAR]  = WNDATTR( wnd, GUI_FRAME_INACTIVE );
-        UIData->attrs[ATTR_SCROLL_ICON] = WNDATTR( wnd, GUI_FRAME_INACTIVE );
+        *scroll_bar  = uisetattr( ATTR_SCROLL_BAR,  WNDATTR( wnd, GUI_FRAME_INACTIVE ) );
+        *scroll_icon = uisetattr( ATTR_SCROLL_ICON, WNDATTR( wnd, GUI_FRAME_INACTIVE ) );
     }
-    VertScrollFrame[0] = GUIGetCharacter( GUI_VERT_SCROLL + offset );
-    HorzScrollFrame[0] = GUIGetCharacter( GUI_HOR_SCROLL + offset);
-    SliderChar[0] = GUIGetCharacter( GUI_SCROLL_SLIDER + offset);
-    LeftPoint[0] = GUIGetCharacter( GUI_LEFT_SCROLL_ARROW + offset);
-    RightPoint[0] = GUIGetCharacter( GUI_RIGHT_SCROLL_ARROW + offset);
-    UpPoint[0] = GUIGetCharacter( GUI_UP_SCROLL_ARROW + offset);
-    DownPoint[0] =  GUIGetCharacter( GUI_DOWN_SCROLL_ARROW + offset);
+    VertScrollFrame[0] = DRAWC( VERT_SCROLL, inactive );
+    HorzScrollFrame[0] = DRAWC( HOR_SCROLL, inactive );
+    SliderChar[0] = DRAWC( SCROLL_SLIDER, inactive );
+    LeftPoint[0] = DRAWC( LEFT_SCROLL_ARROW, inactive );
+    RightPoint[0] = DRAWC( RIGHT_SCROLL_ARROW, inactive );
+    UpPoint[0] = DRAWC( UP_SCROLL_ARROW, inactive );
+    DownPoint[0] =  DRAWC( DOWN_SCROLL_ARROW, inactive );
 }
 
 static void ResetScrollAttrs( ATTR scroll_bar, ATTR scroll_icon )
 {
-    UIData->attrs[ATTR_SCROLL_BAR] = scroll_bar;
-    UIData->attrs[ATTR_SCROLL_ICON] = scroll_icon;
-    VertScrollFrame[0] = GUIGetCharacter( GUI_DIAL_VERT_SCROLL );
-    UpPoint[0] = GUIGetCharacter( GUI_DIAL_UP_SCROLL_ARROW );
-    DownPoint[0] =  GUIGetCharacter( GUI_DIAL_DOWN_SCROLL_ARROW );
+    uisetattr( ATTR_SCROLL_BAR,  scroll_bar );
+    uisetattr( ATTR_SCROLL_ICON, scroll_icon );
+    VertScrollFrame[0] = DRAWC1( DIAL_VERT_SCROLL );
+    UpPoint[0] = DRAWC1( DIAL_UP_SCROLL_ARROW );
+    DownPoint[0] =  DRAWC1( DIAL_DOWN_SCROLL_ARROW );
 }
 
 
@@ -177,7 +175,7 @@ void GUIInitGadget( p_gadget gadget, ORD start, ORD length, ORD anchor )
 
 bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
                       ORD anchor, ORD start, ORD length,
-                      p_gadget *gadget_ptr, gui_scroll_styles style )
+                      p_gadget *gadget_ptr, gui_scroll_styles scroll_style )
 {
     p_gadget    gadget;
 
@@ -201,12 +199,12 @@ bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
         gadget->backward = EV_SCROLL_UP;
         gadget->pageforward = EV_SCROLL_PAGE_DOWN;
         gadget->pagebackward = EV_SCROLL_PAGE_UP;
-        if( style & GUI_VDRAG ) {
+        if( scroll_style & GUI_VDRAG ) {
             gadget->slider = EV_SCROLL_VERTICAL;
         } else {
             gadget->slider = EV_NO_EVENT;
         }
-        if( style & GUI_VTRACK ) {
+        if( scroll_style & GUI_VTRACK ) {
             gadget->flags = GADGET_TRACK;
         } else {
             gadget->flags = GADGET_NONE;
@@ -216,12 +214,12 @@ bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
         gadget->backward = EV_SCROLL_LEFT;
         gadget->pageforward = EV_SCROLL_RIGHT_PAGE;
         gadget->pagebackward = EV_SCROLL_LEFT_PAGE;
-        if( style & GUI_HDRAG ) {
+        if( scroll_style & GUI_HDRAG ) {
             gadget->slider = EV_SCROLL_HORIZONTAL;
         } else {
             gadget->slider = EV_NO_EVENT;
         }
-        if( style & GUI_HTRACK ) {
+        if( scroll_style & GUI_HTRACK ) {
             gadget->flags = GADGET_TRACK;
         } else {
             gadget->flags = GADGET_NONE;
@@ -235,4 +233,3 @@ int GUIGetScrollOffset( void )
 {
     return( ScrollOffset );
 }
-

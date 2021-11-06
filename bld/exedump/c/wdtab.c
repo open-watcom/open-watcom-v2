@@ -39,6 +39,11 @@
 
 struct  int_entry_pnt     *Entry_pnts = NULL;
 
+static  char    *bund_types[] = {
+    "EMPTY", "ENTRY16", "GATE16", "ENTRY32",
+    "ENTRYFWD", "Unknown", "Unknown", "Unknown"
+};
+
 /*
  * Read a resident/nonresident name and ordinal
  */
@@ -219,6 +224,11 @@ static void dmp_ent_type( unsigned_8 type, unsigned_16 ordinal )
         if( ent_bund16.e32_flags & ENTRY_SHARED ) {
             Wdputs( "  SHARED DATA" );
         }
+        if( ent_bund16.e32_flags & 0xF8 ) {
+            Wdputs( "  " );
+            Puthex( ent_bund16.e32_flags >> 3, 2 );
+            Wdputs( " parm words" );
+        }
         break;
     case FLT_BNDL_GATE16:
         Wread( &gate_bund, sizeof( flat_bundle_gate16 ) );
@@ -236,6 +246,11 @@ static void dmp_ent_type( unsigned_8 type, unsigned_16 ordinal )
         if( gate_bund.e32_flags & ENTRY_SHARED ) {
             Wdputs( "  SHARED DATA" );
         }
+        if( gate_bund.e32_flags & 0xF8 ) {
+            Wdputs( "  " );
+            Puthex( gate_bund.e32_flags >> 3, 2 );
+            Wdputs( " parm words" );
+        }
         break;
     case FLT_BNDL_ENTRY32:
         Wread( &ent_bund32, sizeof( flat_bundle_entry32 ) );
@@ -251,6 +266,11 @@ static void dmp_ent_type( unsigned_8 type, unsigned_16 ordinal )
         if( ent_bund32.e32_flags & ENTRY_SHARED ) {
             Wdputs( "  SHARED DATA" );
         }
+        if( ent_bund32.e32_flags & 0xF8 ) {
+            Wdputs( "  " );
+            Puthex( ent_bund32.e32_flags >> 3, 2 );
+            Wdputs( " parm words" );
+        }
         break;
     case FLT_BNDL_ENTRYFWD:
         Wread( &ent_bund_fwd, sizeof( flat_bundle_entryfwd ) );
@@ -262,11 +282,8 @@ static void dmp_ent_type( unsigned_8 type, unsigned_16 ordinal )
         Puthex( ent_bund_fwd.modord, 4 );
         Wdputs( "   offset or ordinal = " );
         Puthex( ent_bund_fwd.value, 8 );
-        if( ent_bund_fwd.e32_flags & ENTRY_EXPORTED ) {
-            Wdputs( "  EXPORTED" );
-        }
-        if( ent_bund_fwd.e32_flags & ENTRY_SHARED ) {
-            Wdputs( "  SHARED DATA" );
+        if( ent_bund_fwd.e32_flags & 1 ) {
+            Wdputs( "  IMPORT BY ORDINAL" );
         }
         break;
     }
@@ -295,6 +312,8 @@ static void dmp_ent_tab( unsigned_32 ent_tab )
         Puthex( ent_bund_pfx.b32_cnt, 2 );
         Wdputslc( "\ntype = " );
         Puthex( ent_bund_pfx.b32_type, 2 );
+        Wdputs( "  " );
+        Wdputs( bund_types[ ent_bund_pfx.b32_type & 0x7 ] );
         if( ent_bund_pfx.b32_type != FLT_BNDL_EMPTY ) {
             Wread( &object, sizeof( object ) );
             Wdputslc( "\nobject number = " );
@@ -414,7 +433,7 @@ static void dmp_an_ord( struct int_entry_pnt *find )
     Puthex( find->offset, 4 );
     Wdputs( " parm " );
     flag = find->ent_flag;
-    Puthex( flag >> IOPL_WORD_SHIFT, 4 );
+    Puthex( flag >> 3, 2 );
     if( flag & ENTRY_EXPORTED ) {
         Wdputs( " EXPORTED" );
     }

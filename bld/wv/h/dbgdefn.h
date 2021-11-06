@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,18 +59,18 @@ typedef unsigned                error_handle;
 typedef int                     file_handle;
 #define NIL_HANDLE              ((file_handle)-1)
 
-typedef unsigned_8 debug_level; enum {
-    #define pick( a,b ) a,
+typedef enum debug_level {
+    #define pick(t,e)   e,
     #include "dbglevel.h"
     #undef pick
-};
+} debug_level;
 
-typedef unsigned_8 screen_state; enum {
-        DBG_SCRN_ACTIVE  = 0x01,
-        DBG_SCRN_VISIBLE = 0x02,
-        USR_SCRN_ACTIVE  = 0x04,
-        USR_SCRN_VISIBLE = 0x08
-};
+typedef enum screen_state {
+    DBG_SCRN_ACTIVE  = 0x01,
+    DBG_SCRN_VISIBLE = 0x02,
+    USR_SCRN_ACTIVE  = 0x04,
+    USR_SCRN_VISIBLE = 0x08
+} screen_state;
 
 #ifdef _M_I86
 #define ENUMU32(x)      x ## UL
@@ -107,29 +108,29 @@ typedef enum {
     UP_SYM_CHANGE           = (UP_SYMBOLS_LOST | UP_SYMBOLS_ADDED)
 } update_flags;
 
-typedef unsigned_8 task_status; enum {
-        TASK_NONE,
-        TASK_NOT_LOADED,
-        TASK_NEW
-};
+typedef enum task_status {
+    TASK_NONE,
+    TASK_NOT_LOADED,
+    TASK_NEW
+} task_status;
 
-typedef unsigned_8 memory_expr; enum {
-        EXPR_CODE,
-        EXPR_DATA,
-        EXPR_GIVEN
-};
+typedef enum memory_expr {
+    EXPR_CODE,
+    EXPR_DATA,
+    EXPR_GIVEN
+} memory_expr;
 
-typedef unsigned_8 cnvaddr_option; enum {
+typedef enum cnvaddr_option {
     CAO_NORMAL_PLUS,
     CAO_OMIT_PLUS,
     CAO_NO_PLUS
-};
+} cnvaddr_option;
 
-typedef unsigned_8 trace_cmd_type; enum {
-    #define pick( a,b ) a,
+typedef enum trace_cmd_type {
+    #define pick(t,e)   e,
     #include "_dbgtrac.h"
     #undef pick
-};
+} trace_cmd_type;
 
 typedef struct {
     unsigned char use;
@@ -165,12 +166,12 @@ typedef struct {
 #define DECIMAL_WORD_LEN    5               // 65535
 #define DECIMAL_DWORD_LEN   10              // 4294967295
 
-#define OVL_MAP_CURR    0
-#define OVL_MAP_EXE     1
+#define OVL_MAP_CURR        0
+#define OVL_MAP_EXE         1
 
 typedef enum {
-    #define pick( a,b,c ) a,
-    #include "_dbgcmd.h"
+    #define pick(t,e,c)     e,
+    #include "_dbgcmds.h"
     #undef pick
 } wd_cmd;
 

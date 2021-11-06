@@ -301,7 +301,7 @@ item or typing commands.
 The debugger comes with a standard set of accelerators that you can
 view by choosing
 .menuref 'Accelerators' 'Window'
-.dot
+.period
 .np
 If you are used to the CodeView debugger, you should be comfortable
 with the &dbgname.'s default set of accelerators.
@@ -311,7 +311,7 @@ To select Turbo accelerators, choose
 .menuref 'Accelerator' 'Window'
 then select
 .menuref 'TD Keys' 'Action'
-.dot
+.period
 .*
 .beglevel
 .*
@@ -528,8 +528,7 @@ Save the debugger's current configuration. This saves the positions
 and sizes of all windows as well as all options and settings. By
 default, this information is saved into the file
 .fi setup.dbg
-.ct ,
-however, you can save this information into another file to
+.ct , however, you can save this information into another file to
 create alternate debugger configurations.
 .*
 .menuitem Load Setup
@@ -642,7 +641,7 @@ Use the Window Options dialog to define options related to the
 debugger's various windows.
 All of these options appear in a dialog when you choose
 .menuref 'Window Options' 'File'
-.dot
+.period
 .np
 The Window Options dialog allows you to set options for the following
 windows:
@@ -1033,7 +1032,7 @@ output from debugger commands
 .np
 You can send the contents of any window to the Log window by selecting
 .menuref 'To Log' 'Window'
-.dot
+.period
 This allows you to save a window's contents and review it later.
 .*
 .section *refid=wndacl The Accelerator Window

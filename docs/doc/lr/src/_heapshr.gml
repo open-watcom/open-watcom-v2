@@ -26,9 +26,9 @@ functions attempt to shrink the heap to its smallest
 possible size by returning all free entries at the end of the heap
 back to the system.
 This can be used to free up as much memory as possible before using the
-.kw system
+.reffunc system
 function or one of the
-.kw spawn&grpsfx
+.reffunc spawn&grpsfx
 functions.
 .np
 The various
@@ -54,15 +54,15 @@ Near heap (inside the default data segment)
 In a small data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _nheapshrink
+.reffunc _nheapshrink
 function; in a large data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _fheapshrink
+.reffunc _fheapshrink
 function.
 It is identical to the
-.kw _heapmin
+.reffunc _heapmin
 function.
 .desc end
 .return begin

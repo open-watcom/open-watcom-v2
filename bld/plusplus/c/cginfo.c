@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,6 +67,10 @@
 #include "dwarfid.h"
 #include "cgfront.h"
 #include "feprotos.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+#endif
+
 
 #if _INTEL_CPU && ( _CPU != 8086 )
     extern const inline_funcs Fs_Functions[];   // FS PRAGMAS
@@ -370,7 +374,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
     DbgAssert( mask == 0 || (attr & FE_COMMON) == 0 );
     attr &= ~mask;
 #ifndef NDEBUG
-    if( PragDbgToggle.auxinfo ) {
+    if( TOGGLEDBG( auxinfo ) ) {
         printf( "FeAttr( %p = %s ) -> %x\n"
               , (void *)sym
               , GetMangledName( sym )
@@ -728,6 +732,8 @@ const char *FEExtName( cg_sym_handle sym, int request ) {
         return( GetNamePattern( sym ) );
     case EXTN_PRMSIZE:
         return( (const char *)(pointer_uint)GetParmsSize( sym ) );
+    case EXTN_IMPPREFIX:
+        return( ( TargetSystem == TS_NT ) ? "__imp_" : NULL );
     case EXTN_CALLBACKNAME:
         return( CallbackName( sym ) );
     default:
@@ -1421,7 +1427,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case DEFAULT_IMPORT_RESOLVE :
         retn = ExtrefResolve( sym, &res_info );
   #ifndef NDEBUG
-        if( PragDbgToggle.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "DEFAULT_IMPORT_RESOLVE[%p]: %s ==> %s\n", sym
                   , GetMangledName( sym )
                   , retn == NULL ? "0" : GetMangledName( retn ) );
@@ -1432,7 +1438,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotRetn();
         retn = ExtrefImportType( &res_info );
   #ifndef NDEBUG
-        if( PragDbgToggle.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "  IMPORT_TYPE[%p]: %s <%p>\n"
                   , sym, GetMangledName( sym ), retn );
         }
@@ -1443,7 +1449,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotSym();
         retn = ExtrefVirtualSymbol( &res_info );
   #ifndef NDEBUG
-        if( PragDbgToggle.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "  NEXT_/CONDITIONAL/_IMPORT: %s\n"
                   , GetMangledName( retn ) );
         }
@@ -1452,7 +1458,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case CONDITIONAL_SYMBOL :
         retn = sym;
   #ifndef NDEBUG
-        if( PragDbgToggle.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "  CONDITIONAL_SYMBOL: %s\n"
                   , GetMangledName( retn ) );
         }
@@ -1461,7 +1467,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case VIRT_FUNC_REFERENCE :
   #ifndef NDEBUG
         DbgNotRetn();
-        if( ( PragDbgToggle.extref )
+        if( ( TOGGLEDBG( extref ) )
           &&( sym->id == SYMC_VIRTUAL_FUNCTION ) ) {
             SYMBOL vsym;
             vsym = sym->u.virt_fun;
@@ -1481,7 +1487,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotRetn();
         retn = ExtrefNextVfunSym( sym );
   #ifndef NDEBUG
-        if( PragDbgToggle.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "  VIRT_FUNC_NEXT_REFERENCE[%p]: <%p>\n", sym, retn );
         }
   #endif
@@ -1490,7 +1496,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotSym();
         retn = ExtrefVfunSym( sym );
   #ifndef NDEBUG
-        if( PragDbgToggle.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "  VIRT_FUNC_SYM[%p]: %s\n"
                   , sym, GetMangledName( retn ) );
         }
@@ -1527,7 +1533,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         break;
     }
 #ifndef NDEBUG
-    if( PragDbgToggle.auxinfo ) {
+    if( TOGGLEDBG( auxinfo ) ) {
         printf( "FeAuxInfo( %p, %x ) -> %p\n", sym, request, retn );
         if( isSym && ( NULL != sym )) {
             printf( "  sym = %s\n", GetMangledName( sym ) );

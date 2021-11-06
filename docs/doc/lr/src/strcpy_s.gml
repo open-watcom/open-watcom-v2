@@ -27,13 +27,13 @@ shall be a null pointer.
 .arg s1max
 shall not be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 .arg s1max
 shall not equal zero.
 .arg s1max
 shall be greater than
 .arg strnlen_s(s2, s1max)
-.ct .li .
+.period
 Copying shall not take place between objects that overlap.
 .np
 If there is a runtime-constraint violation, then if
@@ -42,8 +42,8 @@ is not a null pointer and
 .arg s1max
 is greater than zero and not greater than
 .kw RSIZE_MAX
-, then
-.kw strcpy_s
+.ct , then
+.reffunc strcpy_s
 sets
 .arg s1[0]
 to the null character.
@@ -56,7 +56,7 @@ function copies the string pointed to by
 .arg s2
 (including the terminating null character) into the array pointed to by
 .arg s1
-.ct .li .
+.period
 
 All elements following the terminating null character (if any) written by
 .id &funcb.
@@ -68,7 +68,7 @@ characters pointed to by
 take unspecified values when
 .id &funcb.
 returns.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 .saferet

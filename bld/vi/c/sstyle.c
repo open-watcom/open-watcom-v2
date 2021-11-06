@@ -85,35 +85,35 @@ static void getNextBlock( ss_block *ss_new, char *text, int text_col,
     }
 
     switch( CurrentInfo->fsi.Language ) {
-    case LANG_NONE:
+    case VI_LANG_NONE:
         getText( ss_new, text + text_col );
         break;
-    case LANG_HTML:
-    case LANG_WML:
+    case VI_LANG_HTML:
+    case VI_LANG_WML:
         GetHTMLBlock( ss_new, text + text_col, text_col );
         break;
-    case LANG_GML:
+    case VI_LANG_GML:
         GetGMLBlock( ss_new, text + text_col, text_col );
         break;
-    case LANG_MAKEFILE:
+    case VI_LANG_MAKEFILE:
         GetMkBlock( ss_new, text + text_col, text_col );
         break;
-    case LANG_FORTRAN:
+    case VI_LANG_FORTRAN:
         GetFORTRANBlock( ss_new, text + text_col, text_col );
         break;
-    case LANG_PERL:
-    case LANG_AWK:
+    case VI_LANG_PERL:
+    case VI_LANG_AWK:
         GetPerlBlock( ss_new, text + text_col, line, line_no );
         break;
-    case LANG_C:
-    case LANG_CPP:
-    case LANG_JAVA:
-    case LANG_SQL:
-    case LANG_BAT:
-    case LANG_BASIC:
-    case LANG_DBTEST:
-    case LANG_RC:
-    case LANG_USER:
+    case VI_LANG_C:
+    case VI_LANG_CPP:
+    case VI_LANG_JAVA:
+    case VI_LANG_SQL:
+    case VI_LANG_BAT:
+    case VI_LANG_BASIC:
+    case VI_LANG_DBTEST:
+    case VI_LANG_RC:
+    case VI_LANG_USER:
     default:
         GetCBlock( ss_new, text + text_col, line, line_no );
         break;
@@ -326,32 +326,32 @@ void SSDifBlock( ss_block *ss_old, char *text, int start_col,
     index = 0;
     anychange = false;
     switch( CurrentInfo->fsi.Language ) {
-    case LANG_C:
-    case LANG_CPP:
-    case LANG_JAVA:
-    case LANG_SQL:
-    case LANG_BAT:
-    case LANG_BASIC:
-    case LANG_DBTEST:
-    case LANG_RC:
-    case LANG_USER:
+    case VI_LANG_C:
+    case VI_LANG_CPP:
+    case VI_LANG_JAVA:
+    case VI_LANG_SQL:
+    case VI_LANG_BAT:
+    case VI_LANG_BASIC:
+    case VI_LANG_DBTEST:
+    case VI_LANG_RC:
+    case VI_LANG_USER:
         InitCLine( text );
         break;
-    case LANG_FORTRAN:
+    case VI_LANG_FORTRAN:
         InitFORTRANLine( text, line_no );
         break;
-    case LANG_HTML:
-    case LANG_WML:
+    case VI_LANG_HTML:
+    case VI_LANG_WML:
         InitHTMLLine( text );
         break;
-    case LANG_GML:
+    case VI_LANG_GML:
         InitGMLLine( text );
         break;
-    case LANG_MAKEFILE:
+    case VI_LANG_MAKEFILE:
         InitMkLine( text );
         break;
-    case LANG_PERL:
-    case LANG_AWK:
+    case VI_LANG_PERL:
+    case VI_LANG_AWK:
         InitPerlLine( text );
         break;
     }
@@ -409,38 +409,38 @@ bool SSKillsFlags( char ch )
 
     if( CurrentInfo != NULL ) {
         switch( CurrentInfo->fsi.Language ) {
-        case LANG_C:
-        case LANG_CPP:
-        case LANG_JAVA:
-        case LANG_SQL:
-        case LANG_BAT:
-        case LANG_BASIC:
-        case LANG_PERL:
-        case LANG_DBTEST:
-        case LANG_RC:
-        case LANG_AWK:
-        case LANG_USER:
+        case VI_LANG_C:
+        case VI_LANG_CPP:
+        case VI_LANG_JAVA:
+        case VI_LANG_SQL:
+        case VI_LANG_BAT:
+        case VI_LANG_BASIC:
+        case VI_LANG_PERL:
+        case VI_LANG_DBTEST:
+        case VI_LANG_RC:
+        case VI_LANG_AWK:
+        case VI_LANG_USER:
             if( ch == '#' || ch == '"' || ch == '/' || ch == '*' ) {
                 return( true );
             }
             break;
-        case LANG_FORTRAN:
+        case VI_LANG_FORTRAN:
             if( ch == '\'' ) {
                 return( true );
             }
             break;
-        case LANG_HTML:
-        case LANG_WML:
+        case VI_LANG_HTML:
+        case VI_LANG_WML:
             if( ch == '<' || ch == '>' ) {
                 return( true );
             }
             break;
-        case LANG_GML:
+        case VI_LANG_GML:
             if( ch == ':' || ch == '.' ) {
                 return( true );
             }
             break;
-        case LANG_MAKEFILE:
+        case VI_LANG_MAKEFILE:
             if( ch == '#' ) {
                 return( true );
             }
@@ -454,32 +454,32 @@ void SSInitLanguageFlags( linenum line_no )
 {
     if( CurrentInfo != NULL ) {
         switch( CurrentInfo->fsi.Language ) {
-        case LANG_C:
-        case LANG_CPP:
-        case LANG_JAVA:
-        case LANG_SQL:
-        case LANG_BAT:
-        case LANG_BASIC:
-        case LANG_DBTEST:
-        case LANG_RC:
-        case LANG_USER:
+        case VI_LANG_C:
+        case VI_LANG_CPP:
+        case VI_LANG_JAVA:
+        case VI_LANG_SQL:
+        case VI_LANG_BAT:
+        case VI_LANG_BASIC:
+        case VI_LANG_DBTEST:
+        case VI_LANG_RC:
+        case VI_LANG_USER:
             InitCFlags( line_no );
             break;
-        case LANG_FORTRAN:
+        case VI_LANG_FORTRAN:
             InitFORTRANFlags( line_no );
             break;
-        case LANG_HTML:
-        case LANG_WML:
+        case VI_LANG_HTML:
+        case VI_LANG_WML:
             InitHTMLFlags( line_no );
             break;
-        case LANG_GML:
+        case VI_LANG_GML:
             InitGMLFlags( line_no );
             break;
-        case LANG_MAKEFILE:
+        case VI_LANG_MAKEFILE:
             InitMkFlags( line_no );
             break;
-        case LANG_PERL:
-        case LANG_AWK:
+        case VI_LANG_PERL:
+        case VI_LANG_AWK:
             InitPerlFlags( line_no );
             break;
         }
@@ -490,32 +490,32 @@ void SSInitLanguageFlagsGivenValues( ss_flags *flags )
 {
     if( CurrentInfo != NULL ) {
         switch( CurrentInfo->fsi.Language ) {
-        case LANG_C:
-        case LANG_CPP:
-        case LANG_JAVA:
-        case LANG_SQL:
-        case LANG_BAT:
-        case LANG_BASIC:
-        case LANG_DBTEST:
-        case LANG_RC:
-        case LANG_USER:
+        case VI_LANG_C:
+        case VI_LANG_CPP:
+        case VI_LANG_JAVA:
+        case VI_LANG_SQL:
+        case VI_LANG_BAT:
+        case VI_LANG_BASIC:
+        case VI_LANG_DBTEST:
+        case VI_LANG_RC:
+        case VI_LANG_USER:
             InitCFlagsGivenValues( &flags->c );
             break;
-        case LANG_FORTRAN:
+        case VI_LANG_FORTRAN:
             InitFORTRANFlagsGivenValues( &flags->f );
             break;
-        case LANG_HTML:
-        case LANG_WML:
+        case VI_LANG_HTML:
+        case VI_LANG_WML:
             InitHTMLFlagsGivenValues( &flags->h );
             break;
-        case LANG_GML:
+        case VI_LANG_GML:
             InitGMLFlagsGivenValues( &flags->g );
             break;
-        case LANG_MAKEFILE:
+        case VI_LANG_MAKEFILE:
             InitMkFlagsGivenValues( &flags->m );
             break;
-        case LANG_PERL:
-        case LANG_AWK:
+        case VI_LANG_PERL:
+        case VI_LANG_AWK:
             InitPerlFlagsGivenValues( &flags->p );
             break;
         }
@@ -526,32 +526,32 @@ void SSGetLanguageFlags( ss_flags *flags )
 {
     if( CurrentInfo != NULL ) {
         switch( CurrentInfo->fsi.Language ) {
-        case LANG_C:
-        case LANG_CPP:
-        case LANG_JAVA:
-        case LANG_SQL:
-        case LANG_BAT:
-        case LANG_BASIC:
-        case LANG_DBTEST:
-        case LANG_RC:
-        case LANG_USER:
+        case VI_LANG_C:
+        case VI_LANG_CPP:
+        case VI_LANG_JAVA:
+        case VI_LANG_SQL:
+        case VI_LANG_BAT:
+        case VI_LANG_BASIC:
+        case VI_LANG_DBTEST:
+        case VI_LANG_RC:
+        case VI_LANG_USER:
             GetCFlags( &flags->c );
             break;
-        case LANG_FORTRAN:
+        case VI_LANG_FORTRAN:
             GetFORTRANFlags( &flags->f );
             break;
-        case LANG_HTML:
-        case LANG_WML:
+        case VI_LANG_HTML:
+        case VI_LANG_WML:
             GetHTMLFlags( &flags->h );
             break;
-        case LANG_GML:
+        case VI_LANG_GML:
             GetGMLFlags( &flags->g );
             break;
-        case LANG_MAKEFILE:
+        case VI_LANG_MAKEFILE:
             GetMkFlags( &flags->m );
             break;
-        case LANG_PERL:
-        case LANG_AWK:
+        case VI_LANG_PERL:
+        case VI_LANG_AWK:
             GetPerlFlags( &flags->p );
             break;
         }

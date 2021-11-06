@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,10 +73,9 @@ void    STComDump( void )
     unsigned_32 end_common;
     unsigned_32 size;
 
-    com_blk = BList;
-    while( com_blk != NULL ) {
+    for( com_blk = BList; com_blk != NULL; com_blk = com_blk->u.ns.link ) {
         if( ( com_blk->u.ns.si.cb.first == NULL ) &&
-            ( com_blk->u.ns.flags & SY_SAVED ) ) {
+            (com_blk->u.ns.flags & SY_SAVED) ) {
             NameErr( SA_COMBLK_EMPTY, com_blk );
         } else {
             extend_beg = NULL;
@@ -105,7 +104,8 @@ void    STComDump( void )
                     offset = 0;
                     for(;;) {
                         eq_ext = sym->u.ns.si.va.vi.ec_ext;
-                        if( eq_ext->ec_flags & LEADER ) break;
+                        if( eq_ext->ec_flags & LEADER )
+                            break;
                         offset += eq_ext->offset;
                         sym = eq_ext->link_eqv;
                     }
@@ -134,7 +134,8 @@ void    STComDump( void )
                 }
                 BIOutComSymbol( name_in_com );
                 eq_ext = name_in_com->u.ns.si.va.vi.ec_ext;
-                if( eq_ext->ec_flags & LAST_IN_COMMON ) break;
+                if( eq_ext->ec_flags & LAST_IN_COMMON )
+                    break;
                 name_in_com = eq_ext->link_com;
             }
             BIEndComBlock();
@@ -143,7 +144,6 @@ void    STComDump( void )
             }
             SetComBlkSize( com_blk, end_common );
         }
-        com_blk = com_blk->u.ns.link;
     }
 }
 

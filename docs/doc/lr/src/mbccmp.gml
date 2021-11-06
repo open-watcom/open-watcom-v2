@@ -4,7 +4,7 @@
 int _mbccmp( const unsigned char *s1,
              const unsigned char *s2 );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmbccmp( const unsigned char __far *s1,
               const unsigned char __far *s2 );
 .ixfunc2 '&Multibyte' &ffunc
@@ -17,8 +17,8 @@ function compares one multibyte character from
 .arg s1
 to one multibyte character from
 .arg s2
-.ct .li .
-.im farparm
+.period
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
@@ -35,8 +35,8 @@ functions return
 .do end
 the following values.
 .begnote
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note < 0
 multibyte character at
 .arg s1

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +119,7 @@ static  bool    DoWndKeyChoose( a_window wnd, int ch )
     scrolled = 0;
     if( wnd->keyindex == 0 ) {
         WndDirtyCurr( wnd );
-        scrolled = WndScrollAbs( wnd, -wnd->title_size );
+        scrolled = WndVScrollAbs( wnd, -wnd->title_rows );
         WndNoCurrent( wnd );
     }
     if( !WndHasCurrent( wnd ) ) {
@@ -144,7 +145,7 @@ static  bool    DoWndKeyChoose( a_window wnd, int ch )
             if( row < wnd->rows ) {
                 wnd->current.row = row;
             } else {
-                scrolled = WndScroll( wnd, row - wnd->rows / 2 );
+                scrolled = WndVScroll( wnd, row - wnd->rows / 2 );
                 wnd->current.row = row - scrolled;
             }
             WndDirtyCurr( wnd );
@@ -157,7 +158,7 @@ static  bool    DoWndKeyChoose( a_window wnd, int ch )
             return( true );
         }
     }
-    WndScroll( wnd, -scrolled );
+    WndVScroll( wnd, -scrolled );
     wnd->current = saved_curr;
     return( false );
 }

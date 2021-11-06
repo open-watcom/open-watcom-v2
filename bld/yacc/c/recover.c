@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@ static AddError()
     a_reduce_action *rx, *ry, *redun;
     int i;
     a_word *defined, *conflict, *rset;
-    short int *at;
+    short *at;
 
     trans = CALLOC( nsym, a_shift_action );
     rx = redun = CALLOC( npro + 1, a_reduce_action );
@@ -52,7 +53,7 @@ static AddError()
     }
     defined = rset;
     s = CALLOC( nstate, a_state * );
-    at = CALLOC( nstate, short int );
+    at = CALLOC( nstate, short );
     s = t = CALLOC( nstate + 1, a_state * );
     for( x = statelist; x != NULL; x = x->next ) {
          Mark( *x );

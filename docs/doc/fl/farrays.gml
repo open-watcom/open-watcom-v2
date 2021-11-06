@@ -1,9 +1,10 @@
 .chap *refid=farrays Arrays
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 An array is a non-empty collection of data.
 Arrays allow a convenient way of manipulating large quantities of data.
@@ -46,7 +47,7 @@ is:
 is the symbolic name of the array
 .mnote d
 is a dimension declarator.
-.endnote
+.esynote
 .np
 The number of dimensions of the array is determined by the number
 of dimension declarators appearing in the array declarator.
@@ -73,7 +74,7 @@ has the following form:
 is the lower dimension bound.
 .mnote hi
 is the upper dimension bound.
-.endnote
+.esynote
 .np
 The lower and upper dimension bounds must be integer expressions and
 the upper dimension bound must be greater than or equal to the lower
@@ -84,10 +85,12 @@ The meaning of this will be discussed later.
 If the lower dimension bound is not specified then a default of 1
 is assumed.
 The size of a dimension is defined as
-.id hi &minus. lo + 1.
+.id hi &minus. lo + 1
+.period
 Note that if the lower dimension bound is not specified the size of the
 dimension is just
-.id hi.
+.id hi
+.period
 The size of the array (or the number of elements in the array)
 is defined as the product of all the sizes of the
 dimensions of the array.
@@ -141,7 +144,7 @@ is the array name.
 is a subscript.
 .mnote s
 is a subscript expression.
-.endnote
+.esynote
 .np
 Each
 .us subscript expression
@@ -383,7 +386,7 @@ the size of the dummy array is
 .us r.
 .note
 If the corresponding actual argument is a character array name,
-character array element or a substrung character array element which
+character array element or a substring character array element which
 begins at character
 .us t
 of an array with
@@ -483,7 +486,8 @@ The first
 statement is used to allocate the array
 .id A
 with bounds
-.id 1:N.
+.id 1:N
+.period
 The second
 .kw ALLOCATE
 statement is used to allocate the array

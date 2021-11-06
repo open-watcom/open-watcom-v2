@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +43,8 @@ static an_undo_stack    *lastStack;
  */
 static void setBaseImage( img_node *node, an_undo_stack *stack )
 {
-    stack->firstxor = DuplicateBitmap( node->hxorbitmap );
-    stack->firstand = DuplicateBitmap( node->handbitmap );
+    stack->firstxor_hbitmap = DuplicateBitmap( node->xor_hbitmap );
+    stack->firstand_hbitmap = DuplicateBitmap( node->and_hbitmap );
 
 } /* setBaseImage */
 
@@ -78,34 +78,34 @@ static void moveToUndo( an_undo_stack *stack )
 /*
  * copyBitmaps - copy the XOR and the AND bitmaps
  */
-static void copyBitmaps( img_node *node, HBITMAP xorbitmap, HBITMAP andbitmap )
+static void copyBitmaps( img_node *node, WPI_HBITMAP xor_hbitmap, WPI_HBITMAP and_hbitmap )
 {
     WPI_PRES            pres;
-    HDC                 destdc;
-    WPI_PRES            destpres;
+    HDC                 dstdc;
+    WPI_PRES            dstpres;
     HDC                 srcdc;
     WPI_PRES            srcpres;
-    HBITMAP             oldsrc;
-    HBITMAP             olddest;
+    WPI_HBITMAP         oldsrc_hbitmap;
+    WPI_HBITMAP         olddst_hbitmap;
 
     pres = _wpi_getpres( node->viewhwnd );
-    destpres = _wpi_createcompatiblepres( pres, Instance, &destdc );
+    dstpres = _wpi_createcompatiblepres( pres, Instance, &dstdc );
     srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );
     _wpi_releasepres( node->viewhwnd, pres );
 
-    oldsrc = _wpi_selectbitmap( srcpres, xorbitmap );
-    olddest = _wpi_selectbitmap( destpres, node->hxorbitmap );
-    _wpi_bitblt( destpres, 0, 0, node->width, node->height, srcpres, 0, 0, SRCCOPY );
-    _wpi_getoldbitmap( srcpres, oldsrc );
-    _wpi_getoldbitmap( destpres, olddest );
+    oldsrc_hbitmap = _wpi_selectbitmap( srcpres, xor_hbitmap );
+    olddst_hbitmap = _wpi_selectbitmap( dstpres, node->xor_hbitmap );
+    _wpi_bitblt( dstpres, 0, 0, node->width, node->height, srcpres, 0, 0, SRCCOPY );
+    _wpi_getoldbitmap( srcpres, oldsrc_hbitmap );
+    _wpi_getoldbitmap( dstpres, olddst_hbitmap );
 
-    oldsrc = _wpi_selectbitmap( srcpres, andbitmap );
-    olddest = _wpi_selectbitmap( destpres, node->handbitmap );
-    _wpi_bitblt( destpres, 0, 0, node->width, node->height, srcpres, 0, 0, SRCCOPY );
-    _wpi_getoldbitmap( srcpres, oldsrc );
-    _wpi_getoldbitmap( destpres, olddest );
-    _wpi_deletecompatiblepres( srcpres, oldsrc );
-    _wpi_deletecompatiblepres( destpres, olddest );
+    oldsrc_hbitmap = _wpi_selectbitmap( srcpres, and_hbitmap );
+    olddst_hbitmap = _wpi_selectbitmap( dstpres, node->and_hbitmap );
+    _wpi_bitblt( dstpres, 0, 0, node->width, node->height, srcpres, 0, 0, SRCCOPY );
+    _wpi_getoldbitmap( srcpres, oldsrc_hbitmap );
+    _wpi_getoldbitmap( dstpres, olddst_hbitmap );
+    _wpi_deletecompatiblepres( srcpres, srcdc );
+    _wpi_deletecompatiblepres( dstpres, dstdc );
 
 } /* copyBitmaps */
 
@@ -119,8 +119,8 @@ static void deleteRedoStack( an_undo_stack *stack )
     while( stack->top_redo != NULL ) {
         new_top = stack->top_redo->next;
         stack->top_redo->next = NULL;
-        _wpi_deletebitmap( stack->top_redo->xorbitmap );
-        _wpi_deletebitmap( stack->top_redo->andbitmap );
+        _wpi_deletebitmap( stack->top_redo->xor_hbitmap );
+        _wpi_deletebitmap( stack->top_redo->and_hbitmap );
         MemFree( stack->top_redo );
         stack->top_redo = new_top;
         stack->redocount = 0;
@@ -250,10 +250,10 @@ static void deleteFromBottom( an_undo_stack *stack )
     }
 
     temp = stack->bottom_undo->previous;
-    _wpi_deletebitmap( stack->firstxor );
-    _wpi_deletebitmap( stack->firstand );
-    stack->firstxor = stack->bottom_undo->xorbitmap;
-    stack->firstand = stack->bottom_undo->andbitmap;
+    _wpi_deletebitmap( stack->firstxor_hbitmap );
+    _wpi_deletebitmap( stack->firstand_hbitmap );
+    stack->firstxor_hbitmap = stack->bottom_undo->xor_hbitmap;
+    stack->firstand_hbitmap = stack->bottom_undo->and_hbitmap;
     stack->bottom_undo->previous = NULL;
     MemFree( stack->bottom_undo );
 
@@ -286,8 +286,8 @@ static void moveFromTop( an_undo_stack *stack, bool add_to_redo )
     }
 
     if( !add_to_redo ) {
-        _wpi_deletebitmap( stack->top_undo->xorbitmap );
-        _wpi_deletebitmap( stack->top_undo->andbitmap );
+        _wpi_deletebitmap( stack->top_undo->xor_hbitmap );
+        _wpi_deletebitmap( stack->top_undo->and_hbitmap );
         stack->top_undo->next = NULL;
         MemFree( stack->top_undo );
     } else {
@@ -360,8 +360,8 @@ void RecordImage( HWND hwnd )
         }
     }
     undo_node->previous = NULL;
-    undo_node->xorbitmap = DuplicateBitmap( image_node->hxorbitmap );
-    undo_node->andbitmap = DuplicateBitmap( image_node->handbitmap );
+    undo_node->xor_hbitmap = DuplicateBitmap( image_node->xor_hbitmap );
+    undo_node->and_hbitmap = DuplicateBitmap( image_node->and_hbitmap );
 
     if( stack->opcount == 0 ) {
         undo_node->next = NULL;
@@ -407,9 +407,9 @@ void UndoOp( void )
 
     moveFromTop( stack, true );
     if( stack->top_undo == NULL ) {
-        copyBitmaps( node, stack->firstxor, stack->firstand );
+        copyBitmaps( node, stack->firstxor_hbitmap, stack->firstand_hbitmap );
     } else {
-        copyBitmaps( node, stack->top_undo->xorbitmap, stack->top_undo->andbitmap );
+        copyBitmaps( node, stack->top_undo->xor_hbitmap, stack->top_undo->and_hbitmap );
     }
     stack->opcount--;
     stack->redocount++;
@@ -462,7 +462,7 @@ void CheckForUndo( img_node *node )
         _wpi_enablemenuitem( hmenu, IMGED_REDO, FALSE, FALSE );
     }
 
-    if( stack->original_xor != NULL ) {
+    if( stack->originalxor_hbitmap != NULL ) {
         _wpi_enablemenuitem( hmenu, IMGED_REST, TRUE, FALSE );
     } else {
         _wpi_enablemenuitem( hmenu, IMGED_REST, FALSE, FALSE );
@@ -496,11 +496,11 @@ void CreateUndoStack( img_node *node )
     new_stack->previous = NULL;
 
     if( node->issaved ) {
-        new_stack->original_xor = DuplicateBitmap( node->hxorbitmap );
-        new_stack->original_and = DuplicateBitmap( node->handbitmap );
+        new_stack->originalxor_hbitmap = DuplicateBitmap( node->xor_hbitmap );
+        new_stack->originaland_hbitmap = DuplicateBitmap( node->and_hbitmap );
     } else {
-        new_stack->original_xor = NULL;
-        new_stack->original_and = NULL;
+        new_stack->originalxor_hbitmap = NULL;
+        new_stack->originaland_hbitmap = NULL;
     }
     setBaseImage( node, new_stack );
 
@@ -518,11 +518,11 @@ void CreateUndoStack( img_node *node )
          * the original bitmaps.  Otherwise, the 'Restore' option is grayed.
          */
         if( nexticon->issaved ) {
-            next_stack->original_xor = DuplicateBitmap( nexticon->hxorbitmap );
-            next_stack->original_and = DuplicateBitmap( nexticon->handbitmap );
+            next_stack->originalxor_hbitmap = DuplicateBitmap( nexticon->xor_hbitmap );
+            next_stack->originaland_hbitmap = DuplicateBitmap( nexticon->and_hbitmap );
         } else {
-            next_stack->original_xor = NULL;
-            next_stack->original_and = NULL;
+            next_stack->originalxor_hbitmap = NULL;
+            next_stack->originaland_hbitmap = NULL;
         }
         setBaseImage( nexticon, next_stack );
 
@@ -581,11 +581,11 @@ void DeleteUndoStack( HWND hwnd )
             i++;
         }
 
-        _wpi_deletebitmap( stack->firstxor );
-        _wpi_deletebitmap( stack->firstand );
-        if( stack->original_xor != NULL ) {
-            _wpi_deletebitmap( stack->original_xor );
-            _wpi_deletebitmap( stack->original_and );
+        _wpi_deletebitmap( stack->firstxor_hbitmap );
+        _wpi_deletebitmap( stack->firstand_hbitmap );
+        if( stack->originalxor_hbitmap != NULL ) {
+            _wpi_deletebitmap( stack->originalxor_hbitmap );
+            _wpi_deletebitmap( stack->originaland_hbitmap );
         }
         nexticon_stack = stack->nexticon;
         MemFree( stack );
@@ -632,7 +632,7 @@ void RedoOp( void )
         return;
     }
 
-    copyBitmaps( node, stack->top_redo->xorbitmap, stack->top_redo->andbitmap );
+    copyBitmaps( node, stack->top_redo->xor_hbitmap, stack->top_redo->and_hbitmap );
     moveToUndo( stack );
     stack->opcount++;
     stack->redocount--;
@@ -642,7 +642,7 @@ void RedoOp( void )
     InvalidateRect( node->viewhwnd, NULL, TRUE );
     BlowupImage( node->hwnd, NULL );
 
-    if( stack->original_xor != NULL && node->issaved ) {
+    if( stack->originalxor_hbitmap != NULL && node->issaved ) {
         SetIsSaved( node->hwnd, false );
     }
 
@@ -664,11 +664,11 @@ void ResetUndoStack( img_node *node )
         stack->opcount--;
     }
 
-    _wpi_deletebitmap( stack->firstxor );
-    _wpi_deletebitmap( stack->firstand );
+    _wpi_deletebitmap( stack->firstxor_hbitmap );
+    _wpi_deletebitmap( stack->firstand_hbitmap );
 
-    stack->firstxor = DuplicateBitmap( node->hxorbitmap );
-    stack->firstand = DuplicateBitmap( node->handbitmap );
+    stack->firstxor_hbitmap = DuplicateBitmap( node->xor_hbitmap );
+    stack->firstand_hbitmap = DuplicateBitmap( node->and_hbitmap );
 
 } /* ResetUndoStack */
 
@@ -692,11 +692,11 @@ void RestoreImage( void )
         return;
     }
 
-    if( stack->original_xor == NULL ) {
+    if( stack->originalxor_hbitmap == NULL ) {
         return;
     }
 
-    copyBitmaps( node, stack->original_xor, stack->original_and );
+    copyBitmaps( node, stack->originalxor_hbitmap, stack->originaland_hbitmap );
 
     PrintHintTextByID( WIE_IMAGERESTORED, NULL );
 
@@ -730,12 +730,12 @@ void AllowRestoreOption( img_node *node )
         return;
     }
 
-    if( stack->original_xor != NULL ) {
-        _wpi_deletebitmap( stack->original_xor );
-        _wpi_deletebitmap( stack->original_and );
+    if( stack->originalxor_hbitmap != NULL ) {
+        _wpi_deletebitmap( stack->originalxor_hbitmap );
+        _wpi_deletebitmap( stack->originaland_hbitmap );
     }
-    stack->original_xor = DuplicateBitmap( node->hxorbitmap );
-    stack->original_and = DuplicateBitmap( node->handbitmap );
+    stack->originalxor_hbitmap = DuplicateBitmap( node->xor_hbitmap );
+    stack->originaland_hbitmap = DuplicateBitmap( node->and_hbitmap );
 
 } /* AllowRestoreOption */
 
@@ -790,8 +790,8 @@ void AddIconUndoStack( img_node *node )
     new_stack->top_redo = NULL;
     new_stack->modified = false;
     new_stack->nexticon = NULL;
-    new_stack->original_xor = NULL;
-    new_stack->original_and = NULL;
+    new_stack->originalxor_hbitmap = NULL;
+    new_stack->originaland_hbitmap = NULL;
     setBaseImage( node, new_stack );
 
     stack->nexticon = new_stack;
@@ -864,11 +864,11 @@ void DelIconUndoStack( img_node *node, int index )
         stack->opcount--;
     }
 
-    _wpi_deletebitmap( stack->firstxor );
-    _wpi_deletebitmap( stack->firstand );
-    if( stack->original_xor != NULL ) {
-        _wpi_deletebitmap( stack->original_xor );
-        _wpi_deletebitmap( stack->original_and );
+    _wpi_deletebitmap( stack->firstxor_hbitmap );
+    _wpi_deletebitmap( stack->firstand_hbitmap );
+    if( stack->originalxor_hbitmap != NULL ) {
+        _wpi_deletebitmap( stack->originalxor_hbitmap );
+        _wpi_deletebitmap( stack->originaland_hbitmap );
     }
     MemFree( stack );
 

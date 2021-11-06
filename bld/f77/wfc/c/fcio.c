@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,9 @@
 #include "global.h"
 #include "fcdatad.h"
 #include "wf77defs.h"
+#include "wf77aux.h"
 #include "wf77cg.h"
-#include "wf77auxd.h"
 #include "tmpdefs.h"
-#include "rtconst.h"
 #include "types.h"
 #include "emitobj.h"
 #include "fctypes.h"
@@ -48,7 +47,6 @@
 #include "fcstring.h"
 #include "fcsubscr.h"
 #include "fctemp.h"
-#include "fcrtns.h"
 #include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
@@ -165,7 +163,7 @@ static  void    StructIO( struct field *fd ) {
     sym_id      big_map = NULL;
     unsigned_32 size;
 
-    while( fd != NULL ) {
+    for( ; fd != NULL; fd = &fd->link->u.fd ) {
         if( fd->typ == FT_STRUCTURE ) {
             if( fd->dim_ext != NULL ) {
                 StructIOArrayStruct( (sym_id)fd );
@@ -174,19 +172,16 @@ static  void    StructIO( struct field *fd ) {
             }
         } else if( fd->typ == FT_UNION ) {
             size = 0;
-            map = fd->xt.sym_record;
-            while( map != NULL ) { // find biggest map
+            for( map = fd->xt.sym_record; map != NULL; map = map->u.sd.link ) { // find biggest map
                 if( map->u.sd.size > size ) {
                     size = map->u.sd.size;        // 91/08/01 DJG
                     big_map = map;
                 }
-                map = map->u.sd.link;
             }
             StructIO( big_map->u.sd.fl.fields );
         } else {
             StructIOItem( (sym_id)fd );
         }
-        fd = &fd->link->u.fd;
     }
 }
 
@@ -785,10 +780,8 @@ void    FCSetNml( void ) {
     call = InitCall( RT_SET_NML );
     nl = GetPtr();
     ReverseList( (void **)&nl->u.nl.group_list );
-    ge = nl->u.nl.group_list;
-    while( ge != NULL ) {
+    for( ge = nl->u.nl.group_list; ge != NULL; ge = ge->link ) {
         CGAddParm( call, SymAddr( ge->sym ), TY_POINTER );
-        ge = ge->link;
     }
     ReverseList( (void **)&nl->u.nl.group_list );
     CGAddParm( call, CGBackName( nl->u.nl.address, TY_POINTER ), TY_POINTER );

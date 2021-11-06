@@ -18,11 +18,11 @@ function tests if the argument
 .arg c
 is an alphabetic character ('a' to 'z' and 'A' to 'Z').
 An alphabetic character is any character for which
-.kw isupper
+.reffunc isupper
 or
-.kw islower
+.reffunc islower
 is true.
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The
@@ -35,18 +35,18 @@ The
 .id &wfunc.
 function returns a non-zero value only for wide characters
 for which
-.kw iswupper
+.reffunc iswupper
 or
-.kw iswlower
+.reffunc iswlower
 is true, or any wide character that is one of an
 implementation-defined set for which none of
-.kw iswcntrl
+.reffunc iswcntrl
 .ct ,
-.kw iswdigit
+.reffunc iswdigit
 .ct ,
-.kw iswpunct
+.reffunc iswpunct
 .ct , or
-.kw iswspace
+.reffunc iswspace
 is true.
 .do end
 .return end

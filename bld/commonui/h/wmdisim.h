@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,6 +65,6 @@ bool    MDIHitClose( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpara
 bool    MDIIsSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void    MDIResizeContainer( void );
 void    MDIContainerResized( void );
-void    MDISetOrigSize( HWND hwnd, WPI_RECT *rect );
+void    MDISetOrigSize( HWND hwnd, const WPI_RECT *rect );
 
 #endif /* _WMDISIM_H_INCLUDED */

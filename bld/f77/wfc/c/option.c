@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +32,6 @@
 
 #include "ftnstd.h"
 #include <ctype.h>
-#include <string.h>
-#include <stdio.h>
 #include "progsw.h"
 #include "errcod.h"
 #include "cpopt.h"
@@ -50,85 +48,97 @@
 #include "charset.h"
 #include "fmacros.h"
 #include "option.h"
-#include "boot77.h"
+#include "compcfg.h"
+#include "wf77prag.h"
+#include "fcdatad.h"
+#include "cioconst.h"
 
 
-extern  void            ProcPragma( char * );
+// Compiler directives defines
 
-extern  uint            DataThreshold;
+#define COMP_DIRS_DEFS \
+COMP_DIR( INCLUDE ) \
+COMP_DIR( EJECT ) \
+COMP_DIR( PRAGMA ) \
+COMP_DIR( IFDEF ) \
+COMP_DIR( IFNDEF ) \
+COMP_DIR( ENDIF ) \
+COMP_DIR( ELSE ) \
+COMP_DIR( ELSEIFDEF ) \
+COMP_DIR( ELSEIFNDEF ) \
+COMP_DIR( DEFINE ) \
+COMP_DIR( UNDEFINE )
 
-/* Forward declarations */
-static  int     GetDirective( char *buff );
-static  void    ScanOpts( char *buff );
-static  void    CompoundOptOption( char *buff );
+enum {
+    CD_NULL = 0,
+    #define COMP_DIR(c) CD_ ## c,
+    COMP_DIRS_DEFS
+    #undef COMP_DIR
+};
 
-// Compiler directives
-
-#define CD_INCLUDE      1
-#define CD_EJECT        2
-#define CD_PRAGMA       3
-#define CD_IFDEF        4
-#define CD_IFNDEF       5
-#define CD_ENDIF        6
-#define CD_ELSE         7
-#define CD_ELIFDEF      8
-#define CD_ELIFNDEF     9
-#define CD_DEFINE       10
-#define CD_UNDEFINE     11
-
-static const char __FAR * const __FAR CompDrctvs[] = {
-    "INCLUDE",
-    "EJECT",
-    "PRAGMA",
-    "IFDEF",
-    "IFNDEF",
-    "ENDIF",
-    "ELSE",
-    "ELSEIFDEF",
-    "ELSEIFNDEF",
-    "DEFINE",
-    "UNDEFINE",
+static const char * const CompDrctvs[] = {
+    #define COMP_DIR(c) #c ,
+    COMP_DIRS_DEFS
+    #undef COMP_DIR
     NULL
 };
 
-#define DISK_MASK       (OPT_TYPE|OPT_PRINT)
+#define DISK_MASK       (OPT_TYPE | OPT_PRINT)
 
 // Used for matching OZOpts bits
-#define _BitsMatched( bits, ptrn )      (((bits & ptrn) ^ ptrn) == 0)
+#define _BitsMatched( bits, ptrn )      ((((bits) & (ptrn)) ^ (ptrn)) == 0)
 
-static  char    *SkipOpt( char *buff ) {
+
+static char *SkipOpt( const char *buff )
 //======================================
-
 // Skip over an option.
-
-    while( isalnum( *buff ) ) {
+{
+    while( isalnum( *buff ) )
         buff++;
-    }
-    return( buff );
+    return( (char *)buff );
 }
 
 
-static  bool    GetValue( opt_entry *optn, char *ptr, char **val ) {
-//==================================================================
+static char *SkipToken( const char *buff )
+//========================================
+{
+    while( *buff != NULLCHAR && *buff != ' ' && *buff != '\t' )
+        buff++;
+    return( (char *)buff );
+}
 
+
+char *SkipBlanks( const char *buff )
+//==================================
+{
+    while( ( *buff == ' ' ) || ( *buff == '\f' ) || ( *buff == '\t' ) )
+        buff++;
+    return( (char *)buff );
+}
+
+
+static bool GetValue( opt_entry *optn, const char *ptr, const char **val )
+//========================================================================
 // Get pointer to option value.
+{
+    bool    ok;
 
-    *val = SkipBlanks( ptr );
-    if( ( **val != '=' ) && ( **val != '#' ) ) {
-        Warning( CO_NEED_EQUALS, optn->option );
-        return( false );
+    ptr = SkipBlanks( ptr );
+    ok = ( *ptr == '=' || *ptr == '#' );
+    if( ok ) {
+        ptr = SkipBlanks( ptr + 1 );
     } else {
-        *val = SkipBlanks( *val + sizeof( char ) );
-        return( true );
+        Warning( CO_NEED_EQUALS, optn->option );
     }
+    *val = ptr;
+    return( ok );
 }
 
 
-static  void    BitOption( opt_entry *optn, bool negated ) {
-//==========================================================
-
+static void   BitOption( opt_entry *optn, bool negated )
+//======================================================
 // Process an option that has a bit value.
-
+{
     ftnoption   opt_bit;
 
     opt_bit = optn->value;
@@ -142,8 +152,8 @@ static  void    BitOption( opt_entry *optn, bool negated ) {
             SetLst( true );
         }
         // SAVE turns off AUTOMATIC and vice-versa
-        if( opt_bit & ( OPT_SAVE | OPT_AUTOMATIC ) ) {
-            NewOptions &= ~( OPT_SAVE | OPT_AUTOMATIC );
+        if( opt_bit & (OPT_SAVE | OPT_AUTOMATIC) ) {
+            NewOptions &= ~(OPT_SAVE | OPT_AUTOMATIC);
         }
         NewOptions |= opt_bit;
     } else if( opt_bit & OPT_NO_NO ) {
@@ -157,11 +167,10 @@ static  void    BitOption( opt_entry *optn, bool negated ) {
 }
 
 
-static  void    XLOption( opt_entry *optn, bool negated ) {
-//=========================================================
-
+static  void    XLOption( opt_entry *optn, bool negated )
+//=======================================================
 // Extend source line beyond column 72.
-
+{
     /* unused parameters */ (void)optn;
 
     if( negated ) {
@@ -172,38 +181,25 @@ static  void    XLOption( opt_entry *optn, bool negated ) {
 }
 
 
-static  char    *SkipToken( char *buff ) {
-//========================================
-
-    for(;;) {
-        if( *buff == NULLCHAR ) break;
-        if( *buff == ' ' ) break;
-        if( *buff == '\t' ) break;
-        buff++;
-    }
-    return( buff );
-}
-
-
-static  void    DefOption( opt_entry *optn, char *ptr ) {
+static void DefOption( opt_entry *optn, const char *ptr )
 //=======================================================
-
 // Define a macro.
-
+{
     /* unused parameters */ (void)optn;
 
     MacroDEFINE( ptr, SkipToken( ptr ) - ptr );
 }
 
 
-static  void    PathOption( opt_entry *optn, char *ptr )
-//============================================================
+static void PathOption( opt_entry *optn, const char *ptr )
+//========================================================
 // Process "INCPATH=" option.
 {
     char        *p;
     char        *old_list;
-    int         old_len;
-    int         len;
+    size_t      old_len;
+    size_t      len;
+    const char  *end;
 
     /* unused parameters */ (void)optn;
 
@@ -212,10 +208,10 @@ static  void    PathOption( opt_entry *optn, char *ptr )
     if( ptr[0] == '"' && ptr[len - 1] == '"' ) {
         len -= 2;
         ++ptr;
-        ptr[len] = NULLCHAR;
     }
     if( len == 0 )
         return;
+    end = ptr + len;
     if( IncludePath == NULL ) {
         p = IncludePath = FMemAlloc( len + 1 );
     } else {
@@ -229,7 +225,7 @@ static  void    PathOption( opt_entry *optn, char *ptr )
     while( *ptr != NULLCHAR ) {
         if( p != IncludePath )
             *p++ = PATH_LIST_SEP;
-        ptr = GetPathElement( ptr, NULL, &p );
+        ptr = GetPathElement( ptr, end, &p );
     }
     *p = NULLCHAR;
 }
@@ -243,7 +239,7 @@ void    FIncludePathInit( void )
 
     FIncludePath = NULL;
     env = getenv( "FINCLUDE" );
-    if( env != NULL && *env != '\0' ) {
+    if( env != NULL && *env != NULLCHAR ) {
         len = strlen( env );
         p = FIncludePath = FMemAlloc( len + 1 );
         while( *env != NULLCHAR ) {
@@ -263,20 +259,19 @@ void    FIncludePathFini( void )
     }
 }
 
-void    FiniProcCmd( void ) {
-//===========================
-
+void    FiniProcCmd( void )
+//=========================
+{
     if( IncludePath != NULL ) {
         FMemFree( IncludePath );
     }
 }
 
 
-static  unsigned_32     OptV( opt_entry *optn, char *ptr ) {
-//==========================================================
-
+static unsigned_32 OptV( opt_entry *optn, const char *ptr )
+//=========================================================
 // Process an option that requires a value.
-
+{
     unsigned_32 number;
 
     if( !isdigit( *ptr ) ) {
@@ -286,23 +281,24 @@ static  unsigned_32     OptV( opt_entry *optn, char *ptr ) {
     for(;;) {
         number = 10 * number + ( *ptr - '0' );
         ptr++;
-        if( isdigit( *ptr ) == 0 ) break;
+        if( isdigit( *ptr ) == 0 ) {
+            break;
+        }
     }
     return( number );
 }
 
 
 
-#define _Excl( excl_bits )  if( opt_bit & ( excl_bits ) ) {       \
-                                CGOpts &= ~( excl_bits );         \
+#define _Excl( excl_bits )  if( opt_bit & (excl_bits) ) {       \
+                                CGOpts &= ~(excl_bits);         \
                             }
 
 
-static  void    CGOption( opt_entry *optn, bool negated ) {
-//=========================================================
-
+static void CGOption( opt_entry *optn, bool negated )
+//===================================================
 // Process a code generator option.
-
+{
     unsigned_32 opt_bit;
 
     opt_bit = optn->value;
@@ -330,15 +326,14 @@ static  void    CGOption( opt_entry *optn, bool negated ) {
 }
 
 
-#define _OZExcl( excl_bits )  if( opt_bit & ( excl_bits ) ) {       \
-                                   OZOpts &= ~( excl_bits );        \
+#define _OZExcl( excl_bits )  if( opt_bit & (excl_bits) ) {       \
+                                   OZOpts &= ~(excl_bits);        \
                               }
 
-static  void    OZOption( opt_entry *optn, bool negated ) {
-//=========================================================
-
+static void OZOption( opt_entry *optn, bool negated )
+//===================================================
 // Process a optimization option.
-
+{
     unsigned_32 opt_bit;
 
     opt_bit = optn->value;
@@ -353,16 +348,15 @@ static  void    OZOption( opt_entry *optn, bool negated ) {
 }
 
 
-#define _CPUExcl( excl_bits )  if( opt_bit & ( excl_bits ) ) {       \
-                                   CPUOpts &= ~( excl_bits );        \
+#define _CPUExcl( excl_bits )  if( opt_bit & (excl_bits) ) {       \
+                                   CPUOpts &= ~(excl_bits);        \
                                }
 
 #if _CPU == 8086 || _CPU == 386
-static  void    CPUOption( opt_entry *optn, bool negated ) {
-//==========================================================
-
+static  void    CPUOption( opt_entry *optn, bool negated )
+//========================================================
 // Process a code generator option.
-
+{
     unsigned_32 opt_bit;
 
     opt_bit = optn->value;
@@ -385,31 +379,28 @@ static  void    CPUOption( opt_entry *optn, bool negated ) {
 #endif
 
 
-static  void    DTOption( opt_entry *optn, char *ptr ) {
+static void DTOption( opt_entry *optn, const char *ptr )
 //======================================================
-
 // Process "DT=" option.
-
+{
     DataThreshold = OptV( optn, ptr );
 }
 
 
-static  void    FOOption( opt_entry *optn, char *ptr ) {
+static void FOOption( opt_entry *optn, const char *ptr )
 //======================================================
-
 // Process "FO=" option.
-
+{
     /* unused parameters */ (void)optn;
 
     ObjName = ptr;
 }
 
 
-static  void    NegOption( opt_entry *optn, bool negated ) {
-//==========================================================
-
+static  void    NegOption( opt_entry *optn, bool negated )
+//========================================================
 // Turn off bit option.
-
+{
     /* unused parameters */ (void)optn; (void)negated;
 
     NewOptions &= ~optn->value;
@@ -419,49 +410,42 @@ static  void    NegOption( opt_entry *optn, bool negated ) {
 }
 
 
-static  void    ChiOption( opt_entry *optn, bool negated ) {
-//==========================================================
-
+static  void    ChiOption( opt_entry *optn, bool negated )
+//========================================================
+{
     /* unused parameters */ (void)optn; (void)negated;
 
     __UseChineseCharSet();
-    NewOptions &= ~( OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN );
+    NewOptions &= ~(OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN);
     NewOptions |= OPT_CHINESE;
 }
 
 
-static  void    JapOption( opt_entry *optn, bool negated ) {
-//==========================================================
-
+static  void    JapOption( opt_entry *optn, bool negated )
+//========================================================
+{
     /* unused parameters */ (void)optn; (void)negated;
 
     __UseJapaneseCharSet();
-    NewOptions &= ~( OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN );
+    NewOptions &= ~(OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN);
     NewOptions |= OPT_JAPANESE;
 }
 
 
-static  void    KorOption( opt_entry *optn, bool negated ) {
+static  void    KorOption( opt_entry *optn, bool negated )
 //==========================================================
-
+{
     /* unused parameters */ (void)optn; (void)negated;
 
     __UseKoreanCharSet();
-    NewOptions &= ~( OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN );
+    NewOptions &= ~(OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN);
     NewOptions |= OPT_KOREAN;
 }
 
-
-#define opt( name, bit, flags, actionstr, actionneg, desc ) name, desc, flags, bit, actionstr, actionneg
-
-#include "optinfo.h"
-
-
-static  bool    OptMatch( char *buff, const char __FAR *list, bool value ) {
-//=======================================================================
-
+static bool OptMatch( const char *buff, const char *list, bool value )
+//==========================================================================
 // Determine if option matches.
-
+{
     for(;;) {
         if( *buff == NULLCHAR )
             break;
@@ -499,11 +483,10 @@ static  bool    OptMatch( char *buff, const char __FAR *list, bool value ) {
 }
 
 
-static  opt_entry       *GetOptn( char *buff, bool *negated ) {
-//=============================================================
-
+static opt_entry *GetOptn( const char *buff, bool *negated )
+//==========================================================
 // Parse an option.
-
+{
     opt_entry   *optn;
 
     optn = CompOptns;
@@ -513,50 +496,17 @@ static  opt_entry       *GetOptn( char *buff, bool *negated ) {
         buff += 2 * sizeof( char );
     }
     for( optn = CompOptns; optn->option != NULL; ++optn ) {
-        if( optn->flags & CTG )
-            continue;
-        if( OptMatch( buff, optn->option, optn->flags & VAL ) ) {
+        if( OptMatch( buff, optn->option, (optn->flags & VAL) ) ) {
             return( optn );
         }
     }
     return( NULL );
 }
 
-void    CmdOption( char *buff ) {
-//===============================
-
-// Process an option that can appear on the command line.
-
-    opt_entry   *optn;
-    bool        negated;
-    char        *value;
-
-    optn = GetOptn( buff, &negated );
-    if( optn == NULL ) {
-        // Check if we've encountered a compound optimization option
-        if( tolower( buff[0] ) == 'o' && strlen(buff) > 2 )
-            CompoundOptOption( buff );
-        else
-            Warning( CO_NOT_RECOG, buff );
-    } else {
-        if( optn->flags & VAL ) {
-            if( negated ) {
-                Warning( CO_BAD_NO, optn->option );
-            }
-            if( GetValue( optn, SkipOpt( buff ), &value ) ) {
-                optn->proc_rtnstr( optn, value );
-            }
-        } else {
-            optn->proc_rtnbool( optn, negated );
-        }
-    }
-}
-
-
-static  void  CompoundOptOption( char *buff ) {
-//===============================
-
+static void CompoundOptOption( const char *buff )
+//===============================================
 // Process a "compound" optimization option - multiple in one option
+{
     char        single_opt[4];
     int         i;
     int         opt_i;
@@ -564,110 +514,53 @@ static  void  CompoundOptOption( char *buff ) {
     single_opt[0] = buff[0];
     i = 0;
 
-    while( buff[++i] != '\0' ) {
+    while( buff[++i] != NULLCHAR ) {
         opt_i = 1;
         single_opt[opt_i++] = buff[i];
 
         switch( tolower( buff[i] ) ) {
-            case 'l':
-                if( buff[i+1] == '+' )
-                    single_opt[opt_i++] = buff[++i];
-                break;
-            case 'b':
-                if( tolower( buff[i+1] ) == 'p' )
-                    single_opt[opt_i++] = buff[++i];
-                break;
-            case 'd':
-                if( tolower( buff[i+1] ) == 'o' )
-                    single_opt[opt_i++] = buff[++i];
-                break;
+        case 'l':
+            if( buff[i+1] == '+' )
+                single_opt[opt_i++] = buff[++i];
+            break;
+        case 'b':
+            if( tolower( buff[i+1] ) == 'p' )
+                single_opt[opt_i++] = buff[++i];
+            break;
+        case 'd':
+            if( tolower( buff[i+1] ) == 'o' )
+                single_opt[opt_i++] = buff[++i];
+            break;
         }
 
-        single_opt[opt_i] = '\0';
+        single_opt[opt_i] = NULLCHAR;
         CmdOption( single_opt );
     }
 }
 
 
-void    SrcOption( void ) {
-//===================
-
-// Process an option that can appear only in the source input stream.
-
-    int         directive;
-    char        *buff;
-
-    buff = &SrcBuff[ 2 ];
-    directive = GetDirective( buff );
-    if( directive == CD_INCLUDE ) {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
-        CurrFile->flags |= INC_PENDING;
-    } else if( directive == CD_EJECT ) {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
-        LFNewPage();
-    } else if( directive == CD_PRAGMA ) {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
-        ComPrint();
-        ProcPragma( SkipOpt( buff ) );
-    } else if( directive == CD_DEFINE ) {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
-        ComPrint();
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroDEFINE( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_UNDEFINE ) {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
-        ComPrint();
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroUNDEFINE( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_IFDEF ) {
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroIFDEF( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_ELIFDEF ) {
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroELIFDEF( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_IFNDEF ) {
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroIFNDEF( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_ELIFNDEF ) {
-        buff = SkipBlanks( SkipOpt( buff ) );
-        MacroELIFNDEF( buff, SkipToken( buff ) - buff );
-    } else if( directive == CD_ELSE ) {
-        MacroELSE();
-    } else if( directive == CD_ENDIF ) {
-        MacroENDIF();
-    } else {
-        if( ProgSw & PS_SKIP_SOURCE ) return;
-        ComPrint();
-        ScanOpts( buff );
-        // consider:
-        //      c$warn
-        //      c$notime=5
-        // CO-04 will not be issued unless /warn or c$warn is done.  But
-        // in the above case isn't updated unless we do this.
-        Options = NewOptions;
-    }
-}
-
-
-static  void    OptWarning( int warn, char *opt ) {
+static void OptWarning( int warn, const char *opt )
 //=================================================
-
 // Issue an option warning message.
+{
+    size_t      len;
+    char        buffer[ERR_BUFF_SIZE + 1];
 
-    char        *ptr;
-
-    ptr = SkipToken( opt );
-    *ptr = NULLCHAR;
-    Warning( warn, opt );
+    len = SkipToken( opt ) - opt;
+    if( len > ERR_BUFF_SIZE )
+        len = ERR_BUFF_SIZE;
+    memcpy( buffer, opt, len );
+    buffer[len] = NULLCHAR;
+    Warning( warn, buffer );
 }
 
 
-static  void    ScanOpts( char *buff ) {
+static void ScanOpts( const char *buff )
 //======================================
-
+{
     opt_entry   *optn;
     bool        negated;
-    char        *value;
+    const char  *value;
     bool        first_opt;
 
     if( strlen( SrcBuff ) > LastColumn ) {
@@ -686,7 +579,7 @@ static  void    ScanOpts( char *buff ) {
             break;
         }
         first_opt = false;
-        if( ( optn->flags & SRC ) == 0 ) {
+        if( (optn->flags & SRC) == 0 ) {
             Warning( CO_NOT_IN_SOURCE, optn->option );
             buff = SkipOpt( buff );
         } else {
@@ -707,13 +600,12 @@ static  void    ScanOpts( char *buff ) {
 }
 
 
-static  int     GetDirective( char *buff ) {
-//==========================================
-
+static int GetDirective( const char *buff )
+//=========================================
 // Parse a compiler directive.
-
+{
     int         offset;
-    const char  __FAR * const __FAR *drctv;
+    const char  * const *drctv;
 
     drctv = CompDrctvs;
     offset = 0;
@@ -727,11 +619,10 @@ static  int     GetDirective( char *buff ) {
 }
 
 
-static  char    *GetOptName( char *buffer, char *opt_name ) {
+static char *GetOptName( char *buffer, const char *opt_name )
 //===========================================================
-
 // Print option name.
-
+{
     char        *buff;
 
     buff = buffer + sizeof( char );
@@ -745,11 +636,106 @@ static  char    *GetOptName( char *buffer, char *opt_name ) {
 }
 
 
-void    PrtOptions( void ) {
-//====================
+void CmdOption( const char *buff )
+//================================
+// Process an option that can appear on the command line.
+{
+    opt_entry   *optn;
+    bool        negated;
+    const char  *value;
 
+    optn = GetOptn( buff, &negated );
+    if( optn == NULL ) {
+        // Check if we've encountered a compound optimization option
+        if( tolower( buff[0] ) == 'o' && strlen(buff) > 2 ) {
+            CompoundOptOption( buff );
+        } else {
+            Warning( CO_NOT_RECOG, buff );
+        }
+    } else {
+        if( optn->flags & VAL ) {
+            if( negated ) {
+                Warning( CO_BAD_NO, optn->option );
+            }
+            if( GetValue( optn, SkipOpt( buff ), &value ) ) {
+                optn->proc_rtnstr( optn, value );
+            }
+        } else {
+            optn->proc_rtnbool( optn, negated );
+        }
+    }
+}
+
+
+void    SrcOption( void )
+//=======================
+// Process an option that can appear only in the source input stream.
+{
+    int         directive;
+    const char  *buff;
+
+    buff = &SrcBuff[ 2 ];
+    directive = GetDirective( buff );
+    if( directive == CD_INCLUDE ) {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        CurrFile->flags |= INC_PENDING;
+    } else if( directive == CD_EJECT ) {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        LFNewPage();
+    } else if( directive == CD_PRAGMA ) {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        ComPrint();
+        ProcPragma( SkipOpt( buff ) );
+    } else if( directive == CD_DEFINE ) {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        ComPrint();
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroDEFINE( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_UNDEFINE ) {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        ComPrint();
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroUNDEFINE( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_IFDEF ) {
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroIFDEF( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_ELSEIFDEF ) {
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroELIFDEF( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_IFNDEF ) {
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroIFNDEF( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_ELSEIFNDEF ) {
+        buff = SkipBlanks( SkipOpt( buff ) );
+        MacroELIFNDEF( buff, SkipToken( buff ) - buff );
+    } else if( directive == CD_ELSE ) {
+        MacroELSE();
+    } else if( directive == CD_ENDIF ) {
+        MacroENDIF();
+    } else {
+        if( ProgSw & PS_SKIP_SOURCE )
+            return;
+        ComPrint();
+        ScanOpts( buff );
+        // consider:
+        //      c$warn
+        //      c$notime=5
+        // CO-04 will not be issued unless /warn or c$warn is done.  But
+        // in the above case isn't updated unless we do this.
+        Options = NewOptions;
+    }
+}
+
+
+void    PrtOptions( void )
+//========================
 // Display current options in listing file.
-
+{
     opt_entry   *optn;
     char        buffer[30];
     char        *buff;
@@ -764,7 +750,8 @@ void    PrtOptions( void ) {
         if( optn->flags & VAL ) {
             // the following check will only work if
             // OPT_DEFINE is a "VAL" option
-            if( optn->value == OPT_DEFINE ) continue;
+            if( optn->value == OPT_DEFINE )
+                continue;
             if( optn->value == CGOPT_DATA_THRESH ) {
                 number = DataThreshold;
             }
@@ -772,7 +759,8 @@ void    PrtOptions( void ) {
             *buff = '=';
             ++buff;
             if( optn->value == OPT_INCPATH ) {
-                if( IncludePath == NULL ) continue;
+                if( IncludePath == NULL )
+                    continue;
                 *buff = NULLCHAR;
                 PrtLst( buffer );
                 PrtLst( IncludePath );
@@ -780,7 +768,8 @@ void    PrtOptions( void ) {
                 continue;
             }
             if( optn->value == CGOPT_OBJ_NAME ) {
-                if( ObjName == NULL ) continue;
+                if( ObjName == NULL )
+                    continue;
                 *buff = NULLCHAR;
                 PrtLst( buffer );
                 PrtLst( ObjName );
@@ -793,30 +782,49 @@ void    PrtOptions( void ) {
         } else {
             if( optn->flags & CG ) {
                 if( optn->flags & NEG ) {
-                    if( CGOpts & optn->value ) continue;
+                    if( CGOpts & optn->value ) {
+                        continue;
+                    }
                 } else {
-                    if( ( CGOpts & optn->value ) == 0 ) continue;
+                    if( (CGOpts & optn->value) == 0 ) {
+                        continue;
+                    }
                 }
             } else if( optn->flags & CPU ) {
                 if( optn->flags & NEG ) {
-                    if( CPUOpts & optn->value ) continue;
+                    if( CPUOpts & optn->value ) {
+                        continue;
+                    }
                 } else {
-                    if( ( CPUOpts & optn->value ) == 0 ) continue;
+                    if( (CPUOpts & optn->value) == 0 ) {
+                        continue;
+                    }
                 }
             } else if( optn->flags & OZ ) {
                 if( optn->flags & NEG ) {
-                    if( _BitsMatched( OZOpts, optn->value ) ) continue;
+                    if( _BitsMatched( OZOpts, optn->value ) ) {
+                        continue;
+                    }
                 } else {
-                    if( !_BitsMatched( OZOpts, optn->value ) ) continue;
+                    if( !_BitsMatched( OZOpts, optn->value ) ) {
+                        continue;
+                    }
                 }
-            } else
-            if( optn->value == OPT_XLINE ) {
-                if( LastColumn == LAST_COL ) continue;
             } else {
-                if( optn->flags & NEG ) {
-                    if( Options & optn->value ) continue;
+                if( optn->value == OPT_XLINE ) {
+                    if( LastColumn == LAST_COL ) {
+                        continue;
+                    }
                 } else {
-                    if( ( Options & optn->value ) == 0 ) continue;
+                    if( optn->flags & NEG ) {
+                        if( Options & optn->value ) {
+                            continue;
+                        }
+                    } else {
+                        if( (Options & optn->value) == 0 ) {
+                            continue;
+                        }
+                    }
                 }
             }
             GetOptName( buffer, optn->option );
@@ -827,3 +835,9 @@ void    PrtOptions( void ) {
     PrtLstNL( "" );
     LFSkip();
 }
+
+opt_entry       CompOptns[] = {
+    #define opt( name, bit, flags, actionstr, actionneg ) { name, flags, bit, actionstr, actionneg },
+    #include "wfcopts.h"
+    #undef opt
+};

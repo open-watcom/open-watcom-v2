@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ int main( int argc, char *argv[] )
 
     InitMem();
     EXEName = _cmdname( buffer );
-    VarAddGlobalStr( "OS", "unix" );
+    GlobVarAddStr( GLOBVAR_OS, "unix" );
     Comspec = getenv( "SHELL" );
     InitializeEditor();
     EditMain();

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,14 +119,14 @@ static void EnableMDIMenus( gui_window *root, bool enable )
     }
 }
 
-static bool MDIAddMenu( gui_window *wnd, gui_window *parent, const gui_menu_items *menus )
+static bool MDIAddMenu( gui_window *wnd, gui_window *parent_wnd, const gui_menu_items *menus )
 {
     int         i;
     bool        has_items;
     bool        found_flag;
     gui_window  *root;
 
-    if( GUIMDI && ( parent == NULL ) ) {
+    if( GUIMDI && ( parent_wnd == NULL ) ) {
         found_flag = false;
         has_items = false;
         for( i = 0; i < menus->num_items; i++ ) {
@@ -196,13 +196,13 @@ void MDIDeleteMenu( gui_ctl_id id )
     }
 }
 
-void MDIResetMenus( gui_window *wnd, gui_window *parent, const gui_menu_items *menus )
+void MDIResetMenus( gui_window *wnd, gui_window *parent_wnd, const gui_menu_items *menus )
 {
     gui_window  *root;
     int         i;
     int         num_mdi_items;
 
-    if( !MDIAddMenu( wnd, parent, menus ) ) {
+    if( !MDIAddMenu( wnd, parent_wnd, menus ) ) {
         return;
     }
     root = GUIGetRootWindow();
@@ -219,7 +219,7 @@ void MDIResetMenus( gui_window *wnd, gui_window *parent, const gui_menu_items *m
     }
 }
 
-bool GUIEnableMDIMenus( bool enable )
+bool GUIAPI GUIEnableMDIMenus( bool enable )
 {
     int         i;
     gui_window  *root;
@@ -318,18 +318,18 @@ void BroughtToFront( gui_window *wnd )
 
 gui_window *FindNextMDIMenuWindowNotInArray( gui_window *wnd, gui_window *avoid )
 {
-    gui_window  *start, *next, *parent;
+    gui_window  *start, *next, *parent_wnd;
     bool        done;
 
     done = false;
     start = next = wnd;
-    parent = GUIGetParentWindow( wnd );
+    parent_wnd = GUIGetParentWindow( wnd );
     while( !done ) {
         next = GUIGetNextWindow( next );
         if( next == NULL ) {
             next = GUIGetFirstSibling( start );
         }
-        if( parent != GUIGetParentWindow( next ) ) {
+        if( parent_wnd != GUIGetParentWindow( next ) ) {
             continue;
         }
         if( next == start ) {

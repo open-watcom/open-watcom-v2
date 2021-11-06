@@ -5,7 +5,7 @@
 #include <string.h>
 void *memchr( const void *buf, int ch, size_t length );
 .ixfunc2 '&Search' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 void __far *_fmemchr( const void __far *buf,
                       int ch,
                       size_t length );
@@ -26,9 +26,9 @@ function locates the first occurrence of
 .arg length
 characters of the object pointed to by
 .arg buf
-.ct .li .
-.im farfunc
-.im widefun1
+.period
+.farfunc &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The argument
 .arg length
@@ -43,7 +43,7 @@ function returns a pointer to the located character, or
 if the character does not occur in the object.
 .return end
 .see begin
-.seelist memchr memcmp memcpy memicmp memset
+.seelist memchr memcmp memcpy _memicmp memset
 .see end
 .exmp begin
 #include <stdio.h>

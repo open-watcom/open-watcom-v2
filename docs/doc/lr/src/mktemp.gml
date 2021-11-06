@@ -17,10 +17,10 @@ function creates a unique filename by modifying the
 .arg template
 argument.
 .id &funcb.
-automatically handles multibyte-character string arguments as
-appropriate, recognizing multibyte-character sequences according to
+automatically handles multi-byte character string arguments as
+appropriate, recognizing multi-byte character sequences according to
 the multibyte code page currently in use by the run-time system.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .np
 The string
 .arg template
@@ -61,7 +61,7 @@ The
 .id &funcb.
 function returns a pointer to the modified
 .arg template
-.ct .li .
+.period
 The
 .id &funcb.
 function returns NULL if

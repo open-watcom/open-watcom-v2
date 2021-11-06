@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,22 +33,54 @@
 #include "cvars.h"
 #include "cgswitch.h"
 #include "caux.h"
+#include "cmacadd.h"
 
 
 #define CURR_SYM_HANDLE() ((SYM_HANDLE)(pointer_uint)NextSymHandle)
 
-unsigned    SymTypedef;
+typedef struct sym_stats {
+    unsigned    get;
+    unsigned    getptr;
+    unsigned    replace;
+    unsigned    read;
+    unsigned    write;
+} sym_stats;
 
-static  void    NewSym( void );
+typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 
-static unsigned Cached_sym_num;
-static void     *Cached_sym_addr;
-static struct sym_stats {
-    unsigned    get, getptr, replace, read, write;
-} SymStats;
-static unsigned FirstSymInBuf;
-static char     *SymBufPtr;
-static unsigned NextSymHandle;
+typedef struct seg_info {
+    SEGADDR_T           index;          /* segment #, EMS page #, disk seek # */
+    boolbit             allocated : 1;  /* 1 => has been allocated */
+} seg_info;
+
+unsigned            SymTypedef;
+
+static unsigned     Cached_sym_num;
+static void         *Cached_sym_addr;
+static sym_stats    SymStats;
+static unsigned     FirstSymInBuf;
+static char         *SymBufPtr;
+static unsigned     NextSymHandle;
+static SEGADDR_T    SymBufSegment;              /* segment # for symbol table buffers */
+static seg_info     SymBufSegs[MAX_SYM_SEGS];   /* segments for symbols */
+
+static SEGADDR_T AllocSegment( seg_info *si )
+{
+    /* FEmalloc never returns NULL - it either allocates the memory
+     * or kills the compiler.
+     */
+    si->index = (SEGADDR_T)FEmalloc( 0x04000 );
+    si->allocated = true;
+    return( si->index );
+}
+
+static SEGADDR_T AccessSegment( seg_info *si )
+{
+    if( !si->allocated ) {
+        AllocSegment( si );
+    }
+    return( si->index );
+}
 
 static void NewSym( void )
 {
@@ -102,7 +134,7 @@ void SymFini( void )
     for( seg_num = 0; seg_num < MAX_SYM_SEGS; ++seg_num ) {
         si = &SymBufSegs[seg_num];
         if( si->allocated ) {
-            CSegFree( si->index );
+            FEfree( si->index );
         }
     }
     if( CompFlags.extra_stats_wanted ) {
@@ -158,7 +190,7 @@ SYM_HANDLE SegSymbol( const char *name, segment_id segid )
     sym.name = CMemAlloc( len + 1 );
     sym.name[0] = '.';
     memcpy( &(sym.name[1]), name, len );
-    sym.sym_type = GetType( TYPE_USHORT );
+    sym.sym_type = GetType( TYP_USHORT );
     sym.attribs.stg_class = SC_STATIC;
     sym.level = 1;  // make invisible
     SymReplace( &sym, handle );
@@ -192,14 +224,14 @@ void SpcSymInit( void )
 
     /* first entry into SpecialSyms */
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
-    sym.sym_type = GetType( TYPE_VOID );
+    sym.sym_type = GetType( TYP_VOID );
     SymReplace( &sym, 0 );
 #ifdef __SEH__
     /* create special _try sym */
-    TrySymHandle = SpcSymbol( ".try", GetType( TYPE_VOID ), SC_AUTO );
+    TrySymHandle = SpcSymbol( ".try", GetType( TYP_VOID ), SC_AUTO );
 #endif
     /* create special symbol for "extern unsigned int __near __chipbug" */
-    SymChipBug = SpcSymbol( "__chipbug", GetType( TYPE_UINT ), SC_EXTERN );
+    SymChipBug = SpcSymbol( "__chipbug", GetType( TYP_UINT ), SC_EXTERN );
 
     /* create special symbol table entry for __segname("_CODE") */
     Sym_CS = SegSymbol( "CS", SEG_CODE );
@@ -213,23 +245,23 @@ void SpcSymInit( void )
     SpecialSyms = CURR_SYM_HANDLE();
 
     /* Create special symbol table entries for use by stosw, stosb pragmas
-     * This should be a TYPE_FUNCTION returning pointer to char
+     * This should be a TYP_FUNCTION returning pointer to char
      */
-    ptr2char = PtrNode( GetType( TYPE_CHAR ), FLAG_NONE, SEG_DATA );
-    typ = TypeNode( TYPE_FUNCTION, ptr2char );
+    ptr2char = PtrNode( GetType( TYP_CHAR ), FLAG_NONE, SEG_DATA );
+    typ = TypeNode( TYP_FUNCTION, ptr2char );
 
     /* The ".stosw" functions are done through internal AUX entries */
 
-    SymSTOW  = MakeFunction( "_inline_.stosw", GetType( TYPE_VOID ) );
-    SymSTOWB = MakeFunction( "_inline_.stoswb", GetType( TYPE_VOID ) );
-    SymMIN   = MakeFunction( "_inline_.min", GetType( TYPE_UINT ) );
-    SymMAX   = MakeFunction( "_inline_.max", GetType( TYPE_UINT ) );
-    SymMEMCMP= MakeFunction( "_inline_memcmp", GetType( TYPE_INT ) );
-    typ = TypeNode( TYPE_FUNCTION, GetType(TYPE_INT) );
+    SymSTOW  = MakeFunction( "_inline_.stosw", GetType( TYP_VOID ) );
+    SymSTOWB = MakeFunction( "_inline_.stoswb", GetType( TYP_VOID ) );
+    SymMIN   = MakeFunction( "_inline_.min", GetType( TYP_UINT ) );
+    SymMAX   = MakeFunction( "_inline_.max", GetType( TYP_UINT ) );
+    SymMEMCMP= MakeFunction( "_inline_memcmp", GetType( TYP_INT ) );
+    typ = TypeNode( TYP_FUNCTION, GetType( TYP_INT ) );
 #if _CPU == 386
-    SymSTOD  = MakeFunction( "_inline_.stosd", GetType( TYPE_VOID ) );
-    SymSTOSB = MakeFunction( "__STOSB", GetType( TYPE_VOID ) );
-    SymSTOSD = MakeFunction( "__STOSD", GetType( TYPE_VOID ) );
+    SymSTOD  = MakeFunction( "_inline_.stosd", GetType( TYP_VOID ) );
+    SymSTOSB = MakeFunction( "__STOSB", GetType( TYP_VOID ) );
+    SymSTOSD = MakeFunction( "__STOSD", GetType( TYP_VOID ) );
 #endif
 #ifdef __SEH__
     SymTryInit = MakeFunction( "__TryInit", typ );
@@ -376,7 +408,7 @@ static SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
     hsym->sym_type = NULL;
     if( sym->attribs.stg_class == SC_TYPEDEF ) {
         typ = sym->sym_type;
-        typ = TypeNode( TYPE_TYPEDEF, typ );
+        typ = TypeNode( TYP_TYPEDEF, typ );
         typ->u.typedefn = sym_handle;
         sym->sym_type = typ;
         hsym->sym_type = typ;
@@ -546,7 +578,7 @@ static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
             } else if( (sym->flags & SYM_ASSIGNED) == 0 ) {
                 typ = sym->sym_type;
                 SKIP_TYPEDEFS( typ );
-                if( sym->attribs.stg_class != SC_STATIC && typ->decl_type != TYPE_ARRAY ) {
+                if( sym->attribs.stg_class != SC_STATIC && typ->decl_type != TYP_ARRAY ) {
                     CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, name );
                 }
             }
@@ -569,8 +601,8 @@ static void ChkIncomplete( SYMPTR sym, SYM_NAMEPTR name )
             }
             typ = sym->sym_type;
             SKIP_TYPEDEFS( typ );
-            if( SizeOfArg( typ ) == 0 && typ->decl_type != TYPE_FUNCTION
-              && typ->decl_type != TYPE_DOT_DOT_DOT ) {
+            if( SizeOfArg( typ ) == 0 && typ->decl_type != TYP_FUNCTION
+              && typ->decl_type != TYP_DOT_DOT_DOT ) {
                 if( sym->attribs.stg_class != SC_EXTERN ) {
                     CErr2p( ERR_INCOMPLETE_TYPE, name );
                 }
@@ -845,7 +877,7 @@ static SYM_HASHPTR FreeSym( void )
                     if( sym.attribs.stg_class == SC_NONE ) {
                         typ = sym.sym_type;
                         SKIP_TYPEDEFS( typ );
-                        if( typ->decl_type == TYPE_ARRAY ) {
+                        if( typ->decl_type == TYP_ARRAY ) {
                             if( typ->u.array->dimension == 0 ) {
                                 typ->u.array->dimension = 1;
                             }
@@ -1069,12 +1101,12 @@ static void PurgeTags( TAGPTR tag_head )
     for( ; (tag = tag_head) != NULL; ) {
         tag_head = tag->next_tag;
         tag_type = tag->sym_type->decl_type;
-        if( tag_type == TYPE_STRUCT || tag_type == TYPE_UNION ) {
+        if( tag_type == TYP_STRUCT || tag_type == TYP_UNION ) {
             for( ; (field = tag->u.field_list) != NULL; ) {
                 tag->u.field_list = field->next_field;
                 CMemFree( field );
             }
-        } else {    /* tag_type == TYPE_ENUM */
+        } else {    /* tag_type == TYP_ENUM */
             PurgeEnums( tag->u.enum_list );
         }
         CMemFree( tag );

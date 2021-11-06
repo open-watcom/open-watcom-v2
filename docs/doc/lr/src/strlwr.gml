@@ -1,33 +1,34 @@
-.func strlwr _strlwr _fstrlwr _wcslwr _mbslwr _fmbslwr
+.func _strlwr _fstrlwr _wcslwr _mbslwr _fmbslwr strlwr
+.ansiname _strlwr
 .synop begin
 #include <string.h>
-char *strlwr( char *s1 );
-.ixfunc2 '&String' &funcb
-.if &'length(&_func.) ne 0 .do begin
 char *_strlwr( char *s1 );
 .ixfunc2 '&String' &_func
-.do end
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrlwr( char __far *s1 );
-.ixfunc2 '&String' &ffunc
+.ixfunc2 '&String' _strlwr
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 wchar_t *_wcslwr( wchar_t *s1 );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Wide' &wfunc
+.ixfunc2 '&String' _wcslwr
+.ixfunc2 '&Wide' _wcslwr
 .do end
 .if &'length(&mfunc.) ne 0 .do begin
 #include <mbstring.h>
 unsigned char *_mbslwr( unsigned char *s1 );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
+.ixfunc2 '&String' _mbslwr
+.ixfunc2 '&Multibyte' _mbslwr
 .do end
 .if &'length(&fmfunc.) ne 0 .do begin
 unsigned char __far *_fmbslwr( unsigned char __far *s1 );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&String' _fmbslwr
+.ixfunc2 '&Multibyte' _fmbslwr
 .do end
+
+.deprec
+char *strlwr( char *s1 );
+.ixfunc2 '&String' strlwr
 .synop end
 .desc begin
 The
@@ -35,12 +36,14 @@ The
 function replaces the string
 .arg s1
 with lowercase characters by invoking the
-.kw tolower
+.reffunc tolower
 function for each character in the string.
-.im ansiconf
-.im farfunc
-.im widefun1
-.im mbsffunc
+.farfunc &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
+.mbcsfunc &mfunc. &funcb.
+.farfunc &fmfunc. &mfunc.
+.np
+.deprfunc strlwr _strlwr
 .desc end
 .return begin
 The address of the original string
@@ -48,7 +51,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist strlwr strupr
+.seelist _strlwr _strupr
 .see end
 .exmp begin
 #include <stdio.h>
@@ -59,7 +62,7 @@ char source[] = { "A mixed-case STRING" };
 void main()
   {
     printf( "%s\n", source );
-    printf( "%s\n", strlwr( source ) );
+    printf( "%s\n", _strlwr( source ) );
     printf( "%s\n", source );
   }
 .exmp output

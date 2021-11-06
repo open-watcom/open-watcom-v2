@@ -1,5 +1,5 @@
-.gfunc getvideoconfig
-.gsynop begin 
+.gfunc _getvideoconfig
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 struct videoconfig _FAR * _FAR _getvideoconfig
     ( struct videoconfig _FAR *config );
@@ -18,32 +18,32 @@ The information is returned in the
 .id videoconfig
 structure indicated by the argument
 .arg config
-.ct .li .
+.period
 The structure contains the following fields (all are
 .id &short
 fields):
 .begterm 15
-.note numxpixels
+.termnx numxpixels
 number of pixels in x-axis
-.note numypixels
+.termnx numypixels
 number of pixels in y-axis
-.note numtextcols
+.termnx numtextcols
 number of text columns
-.note numtextrows
+.termnx numtextrows
 number of text rows
-.note numcolors
+.termnx numcolors
 number of actual colors
-.note bitsperpixel
+.termnx bitsperpixel
 number of bits in a pixel value
-.note numvideopages
+.termnx numvideopages
 number of video pages
-.note mode
+.termnx mode
 current video mode
-.note adapter
+.termnx adapter
 adapter type
-.note monitor
+.termnx monitor
 monitor type
-.note memory
+.termnx memory
 number of kilobytes (1024 characters) of video memory
 .endterm
 .keep begin
@@ -52,23 +52,23 @@ The
 .mono adapter
 field will contain one of the following values:
 .begterm 15
-.uterm NODISPLAY
+.uterm _NODISPLAY
 no display adapter attached
-.uterm UNKNOWN
+.uterm _UNKNOWN
 unknown adapter/monitor type
-.uterm MDPA
+.uterm _MDPA
 Monochrome Display/Printer Adapter
-.uterm CGA
+.uterm _CGA
 Color Graphics Adapter
-.uterm HERCULES
+.uterm _HERCULES
 Hercules Monochrome Adapter
-.uterm MCGA
+.uterm _MCGA
 Multi-Color Graphics Array
-.uterm EGA
+.uterm _EGA
 Enhanced Graphics Adapter
-.uterm VGA
+.uterm _VGA
 Video Graphics Array
-.uterm SVGA
+.uterm _SVGA
 SuperVGA Adapter
 .endterm
 .keep end
@@ -78,15 +78,15 @@ The
 .mono monitor
 field will contain one of the following values:
 .begterm 15
-.uterm MONO
+.uterm _MONO
 regular monochrome
-.uterm COLOR
+.uterm _COLOR
 regular color
-.uterm ENHANCED
+.uterm _ENHANCED
 enhanced color
-.uterm ANALOGMONO
+.uterm _ANALOGMONO
 analog monochrome
-.uterm ANALOGCOLOR
+.uterm _ANALOGCOLOR
 analog color
 .endterm
 .keep end

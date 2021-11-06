@@ -14,6 +14,16 @@ fscopy_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-wfscopy.exe : fscopy.obj $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $^@ $(lflags) file $[@
+#
+# cflags
+#
+
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = fscopy.obj
+exetarg_name = wfscopy
+!include exetarg.mif

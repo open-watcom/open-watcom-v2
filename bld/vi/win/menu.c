@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -504,9 +504,8 @@ vi_rc StartMenu( const char *data )
         return( ERR_INVALID_MENU );
     }
 
-    GetStringWithPossibleQuote( &data, name );
-    GetStringWithPossibleQuote( &data, help );
-    data = SkipLeadingSpaces( data );
+    GetNextWordOrString( &data, name );
+    GetNextWordOrString( &data, help );
     need_hook = false;
     if( data[0] != '\0' ) {
         need_hook = true;
@@ -534,9 +533,8 @@ vi_rc MenuItem( const char *data )
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    GetStringWithPossibleQuote( &data, name );
-    GetStringWithPossibleQuote( &data, help );
-    data = SkipLeadingSpaces( data );
+    GetNextWordOrString( &data, name );
+    GetNextWordOrString( &data, help );
     TranslateTabs( name );
     addItemToMenu( currMenu, name, help, data, false );
     return( ERR_NO_ERR );
@@ -553,10 +551,9 @@ vi_rc AddMenuItem( const char *data )
     char        help[MAX_STR];
     menu        *m;
 
-    GetStringWithPossibleQuote( &data, menu_name );
-    GetStringWithPossibleQuote( &data, name );
-    GetStringWithPossibleQuote( &data, help );
-    data = SkipLeadingSpaces( data );
+    GetNextWordOrString( &data, menu_name );
+    GetNextWordOrString( &data, name );
+    GetNextWordOrString( &data, help );
     m = findMenu( rootMenu, menu_name );
     if( m != NULL ) {
         addItemToMenu( m, name, help, data, false );
@@ -652,7 +649,6 @@ vi_rc DoMenuDelete( const char *data )
 {
     menu    *m;
 
-    data = SkipLeadingSpaces( data );
     m = specialMenu( data );
     if( m == NULL ) {
         m = findMenu( rootMenu, data );

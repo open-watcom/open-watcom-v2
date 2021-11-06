@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,9 @@
 
 static HHOOK hookHandle;
 //static FARPROC debugHookInstance;
+
+/* exported DebugHook function prototypes */
+DWORD FAR PASCAL DebugHook( int ncode, WPARAM wparam, LPARAM lparam );
 
 /*
  * DebugHook - don't allow any hook functions in debugee to get called

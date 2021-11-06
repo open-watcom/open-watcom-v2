@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,14 +66,12 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
     /*
      * get counts
      */
-    if( SpecialFgets( buff, sizeof( buff ) - 1, &gf ) ) {
+    if( (ptr = SpecialFgets( buff, sizeof( buff ) - 1, &gf )) == NULL ) {
         SpecialFclose( &gf );
         return( ERR_INVALID_DATA_FILE );
     }
-    dcnt = atoi( buff );
+    dcnt = atoi( ptr );
     hasvals = fn_alloc( dcnt );
-    buffdata = NULL;
-    ptr = NULL;
 
     /*
      * read all tokens
@@ -81,20 +79,21 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
      * create list of tokens separated by '\0'
      * list is terminated by two '\0' characters
      */
+    buffdata = NULL;
     size = 0;
     for( i = 0; i < dcnt; i++ ) {
-        if( SpecialFgets( buff, sizeof( buff ) - 1, &gf ) ) {
-            SpecialFclose( &gf );
-            return( ERR_INVALID_DATA_FILE );
+        if( (ptr = SpecialFgets( buff, sizeof( buff ) - 1, &gf )) == NULL ) {
+            /* error */
+            break;
         }
         if( hasvals ) {
-            ptr = GetNextWord1( buff, token );
+            ptr = GetNextWord1( ptr, token );
             if( *token == '\0' ) {
-                SpecialFclose( &gf );
-                return( ERR_INVALID_DATA_FILE );
+                /* error */
+                break;
             }
         } else {
-            strcpy( token, buff );
+            strcpy( token, ptr );
         }
         // add space for token terminator
         len = strlen( token ) + 1;
@@ -108,13 +107,18 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
         if( hasvals ) {
             ptr = GetNextWord1( ptr, token );
             if( *token == '\0' ) {
-                SpecialFclose( &gf );
-                return( ERR_INVALID_DATA_FILE );
+                /* error */
+                break;
             }
             fn_save( i, token );
         }
     }
     SpecialFclose( &gf );
+    if( i < dcnt ) {
+        if( buffdata != NULL )
+            MemFree( buffdata );
+        return( ERR_INVALID_DATA_FILE );
+    }
     *buffer = buffdata;
     return( ERR_NO_ERR );
 

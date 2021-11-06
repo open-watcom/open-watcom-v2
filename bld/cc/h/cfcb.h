@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +31,6 @@
 
 
 #define SRC_BUF_SIZE            4096
-
-#define EOF_CHAR                256
-#define MACRO_CHAR              257
 
 typedef struct fcb_struct {                 /* file control block structure */
     char                    *src_name;      /* pointer to file name (alias) */

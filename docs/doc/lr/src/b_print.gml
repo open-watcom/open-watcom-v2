@@ -12,7 +12,7 @@ The
 function uses INT 0x17 to perform printer output
 services to the printer specified by
 .arg port
-.ct .li .
+.period
 The values for service are:
 .begterm 12
 .termhd1 Value
@@ -22,15 +22,15 @@ Sends the low-order byte of
 .arg data
 to the printer specified by
 .arg port
-.ct .li .
+.period
 .term _PRINTER_INIT
 Initializes the printer specified by
 .arg port
-.ct .li .
+.period
 .term _PRINTER_STATUS
 Get the status of the printer specified by
 .arg port
-.ct .li .
+.period
 .endterm
 .desc end
 .return begin
@@ -38,8 +38,8 @@ The
 .id &funcb.
 function returns a printer status byte defined as follows:
 .begnote $compact
-.termhd1 Bit
-.termhd2 Meaning
+.notehd1 Bit
+.notehd2 Meaning
 .setptnt 0 14
 .sr ptntelmt = 0
 .note bit 0 (0x01)

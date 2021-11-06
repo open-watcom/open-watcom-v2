@@ -9,7 +9,7 @@ The 16-bit signed words in
 are each independently shifted to the right by the scalar shift count
 in
 .arg count
-.ct .li .
+.period
 The high-order bits of each element are filled with the initial value
 of the sign bit of each element.
 The shift count is interpreted as unsigned.

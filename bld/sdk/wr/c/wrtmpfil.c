@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,7 @@ int WRAPI WRGetLastError( void )
 
 bool WRAPI WRReadEntireFile( const char *fname, BYTE **data, size_t *size )
 {
-    long int    s;
+    long        s;
     bool        ok;
     FILE        *fh;
     size_t      len;
@@ -179,8 +179,8 @@ bool WRAPI WRCopyFile( const char *dst_name, const char *src_name )
 
 bool WRAPI WRRenameFile( const char *new, const char *old )
 {
-    PGROUP2     pg1;    /* old */
-    PGROUP2     pg2;    /* new */
+    pgroup2     pg1;    /* old */
+    pgroup2     pg2;    /* new */
 
     if( new == NULL || old == NULL ) {
         return( false );
@@ -208,9 +208,9 @@ bool WRAPI WRBackupFile( const char *name, bool use_rename )
 {
     char        fn_path[_MAX_PATH];
     char        ext[_MAX_EXT + 1];
-    PGROUP2     pg;
+    pgroup2     pg;
     size_t      len;
-    bool        ret;
+    bool        ok;
 
     if( name == NULL ) {
         return( false );
@@ -230,16 +230,16 @@ bool WRAPI WRBackupFile( const char *name, bool use_rename )
     _makepath( fn_path, pg.drive, pg.dir, pg.fname, ext );
 
     if( use_rename ) {
-        ret = WRRenameFile( fn_path, name );
+        ok = WRRenameFile( fn_path, name );
     } else {
-        ret = WRCopyFile( fn_path, name );
+        ok = WRCopyFile( fn_path, name );
     }
 
-    if( !ret ) {
+    if( !ok ) {
         WRPrintErrorMsg( WR_BACKUPFAILED, name, fn_path, strerror( WRGetLastError() ) );
     }
 
-    return( ret );
+    return( ok );
 }
 
 void WRAPI WRFreeTempFileName( char *name )
@@ -254,8 +254,8 @@ char * WRAPI WRGetTempFileName( const char *ext )
     const char  *dir;
     size_t      len;
     char        fn_path[_MAX_PATH + 1];
-    PGROUP2     pg1;
-    PGROUP2     pg2;
+    pgroup2     pg1;
+    pgroup2     pg2;
 
     if( (dir = getenv( "TMP" )) != NULL || (dir = getenv( "TEMP" )) != NULL ||
         (dir = getenv( "TMPDIR" )) != NULL || (dir = getenv( "TEMPDIR" )) != NULL ) {

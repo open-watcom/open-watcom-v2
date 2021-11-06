@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,9 @@
 #ifndef NDEBUG
     #include "pragdefn.h"
     #include "dbg.h"
-    #include "toggle.h"
+    #include "togglesd.h"
 #endif
+
 
 typedef struct promo PROMO;
 struct promo                    // DUPLICATED EXPRESSION TO BE PROMOTED
@@ -216,7 +218,7 @@ static void setAncestor(        // SET ANCESTRY FOR CURRENT NODE
                     }
                 } RingIterEnd( srch )
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_dups ) {
+            if( TOGGLEDBG( dump_dups ) ) {
                 printf( "Node %p ", zap_left );
                 printPromo( promo, "-- added to promotion ring" );
             }
@@ -276,7 +278,7 @@ static PTREE dupProc(           // PROCESS NODE IN TREE
         }
     }
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_dups && NULL != promoHdr ) {
+    if( TOGGLEDBG( dump_dups ) && NULL != promoHdr ) {
         printf( "Node %p ", dup );
         printPromoRing( promoHdr, "Duplicates Ring" );
     }
@@ -293,7 +295,7 @@ PTREE NodePromoteDups(          // PROMOTE/REMOVE DUPLICATE NODES
 
 #ifndef NDEBUG
     DbgAssert( dup != NULL );
-    if( PragDbgToggle.dump_dups ) {
+    if( TOGGLEDBG( dump_dups ) ) {
         printf( "Original Tree\n\n" );
         DumpPTree( dup );
     }
@@ -305,7 +307,7 @@ PTREE NodePromoteDups(          // PROMOTE/REMOVE DUPLICATE NODES
     dup = PTreeTraversePostfix( dup, &dupProc );
     DbgVerify( promoHdr == NULL, "NodePromoteDups -- common nodes not found" );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_dups ) {
+    if( TOGGLEDBG( dump_dups ) ) {
         printPromoRing( promoRing, "Promotion Ring" );
         printf( "Original Tree\n\n" );
         DbgPrintPTREE( dup );
@@ -314,7 +316,7 @@ PTREE NodePromoteDups(          // PROMOTE/REMOVE DUPLICATE NODES
     RingIterBegSafe( promoRing, promo ) {
         dupPromote( promo );
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_dups ) {
+        if( TOGGLEDBG( dump_dups ) ) {
             printf( "promo[%p]: ", promo );
             printPromo( promo, "Unduplicated Tree\n" );
             DbgPrintPTREE( dup );

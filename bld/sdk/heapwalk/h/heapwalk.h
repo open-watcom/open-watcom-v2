@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,14 +181,14 @@ char *GetGlobalTextItem( unsigned i );
 char *GetLocalTextItem( unsigned i );
 
 /* hwproc.c */
-BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+LRESULT __export FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 void EndAdd( void );
 
 /* hwsort.c */
 void SortHeapList( void );
 
 /* hwdisp.c */
-BOOL __export FAR PASCAL ItemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+LRESULT __export FAR PASCAL ItemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 void ShowHeapObject( HWND lbhdl );
 
 /* hwsave.c */
@@ -213,7 +214,7 @@ void MyFreeAllMem( void );
 void DoNBytes( HWND parent, WORD type );
 
 /* hwlocal.c */
-BOOL __export FAR PASCAL LocalHeapProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+LRESULT __export FAR PASCAL LocalHeapProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 BOOL FormatLocalHeapListItem( char *line, unsigned index );
 int  SortByLocalType( LOCALENTRY **, LOCALENTRY ** );
 void LocalWalk( heap_list *item );
@@ -241,7 +242,7 @@ HWND *MakePushWin( HWND hwnd, const char *str, WORD cnt, ... );
 void KillPushWin( HWND *push );
 
 /* hwmonit */
-BOOL __export FAR PASCAL LocalMonitorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+LRESULT __export FAR PASCAL LocalMonitorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 void BeginMonitor( heap_list *item );
 
 /* hwtable */

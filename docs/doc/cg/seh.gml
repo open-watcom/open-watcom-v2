@@ -75,7 +75,7 @@ The following is a contrived example of the use of
 .kw  _try
 and
 .kw _finally
-.ct .li .
+.period
 .exam begin
 #include <stdio.h>
 #include <stdlib.h>
@@ -140,7 +140,7 @@ One way is to exit the
 .us try
 block using a statement like
 .kw return
-.ct .li .
+.period
 The other way is to fall through the end of the
 .us try
 block and into the
@@ -651,7 +651,8 @@ expression after the
 .kw _except
 keyword evaluates to
 .ix 'EXCEPTION_EXECUTE_HANDLER'
-.id EXCEPTION_EXECUTE_HANDLER.
+.id EXCEPTION_EXECUTE_HANDLER
+.period
 The expression can be quite complex and can involve the execution of a
 function that returns one of the permissible values.
 The expression is called the exception "filter" since it determines
@@ -731,7 +732,8 @@ The exception is caused by the second instruction which contains a
 pointer to the referenced memory location (i.e., 0) in register EAX.
 .ix 'EXCEPTION_CONTINUE_EXECUTION'
 This is the instruction that will be repeated when the filter returns
-.id EXCEPTION_CONTINUE_EXECUTION.
+.id EXCEPTION_CONTINUE_EXECUTION
+.period
 Since EAX did not get changed by our fix, the exception will reoccur.
 Fortunately,
 .id NullP
@@ -890,21 +892,21 @@ block.
 .np
 .ix 'EXCEPTION_EXECUTE_HANDLER'
 When it finds one, the filter is executed and, if the result is
-.id EXCEPTION_EXECUTE_HANDLER,
-then the
+.id EXCEPTION_EXECUTE_HANDLER
+.ct , then the
 .us except
 block is executed after performing a global unwind.
 .np
 .ix 'EXCEPTION_CONTINUE_EXECUTION'
 If the result is
-.id EXCEPTION_CONTINUE_EXECUTION,
-the run-time system resumes execution at the instruction that
+.id EXCEPTION_CONTINUE_EXECUTION
+.ct , the run-time system resumes execution at the instruction that
 caused the exception.
 .np
 .ix 'EXCEPTION_CONTINUE_SEARCH'
 If the result is
-.id EXCEPTION_CONTINUE_SEARCH,
-the run-time system continues its search for an
+.id EXCEPTION_CONTINUE_SEARCH
+.ct , the run-time system continues its search for an
 .us except
 block with a filter that returns one of the other possible values.
 If it does not find any exception handler that is prepared to handle
@@ -931,14 +933,17 @@ chain until it got to
 which had an
 .us except
 filter that evaluated to
-.id EXCEPTION_EXECUTE_HANDLER.
+.id EXCEPTION_EXECUTE_HANDLER
+.period
 It then performed a global unwind in which the
 .us try/finally
 blocks of
-.id func_level4,
-.id func_level3,
-.id func_level2,
-and
+.id func_level4
+.ct ,
+.id func_level3
+.ct ,
+.id func_level2
+.ct , and
 .id func_level1
 were executed.
 After this, the exception handler in

@@ -1,4 +1,5 @@
 .section *refid='color' color
+.*
 .ix 'color'
 .ix 'Formatting' 'color'
 .tag begin
@@ -10,6 +11,7 @@ is specified or the next heading tag (h1 - h6) is reached.
 This sets the foreground color of the text.
 .tattr bc=default | black | blue | red | pink | green | cyan | yellow | neutral | brown (a synonym for neutral) | darkgray | darkblue | darkred | darkpink | darkgreen | darkcyan | palegray
 This sets the background color of the text.
+.tattrend
 .tclass Formatting
 .tcont Text, Formatting, In-line, Block, List-block
 .tag end

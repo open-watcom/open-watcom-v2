@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,8 +125,8 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
     HDC         memdc;
     WPI_PRES    mempres;
     WPI_RECT    client;
-    HBITMAP     oldbitmap;
-    HBITMAP     newbitmap;
+    WPI_HBITMAP old_hbitmap;
+    WPI_HBITMAP new_hbitmap;
     HWND        hwnd;
     img_node    *node;
     bool        new_pres;
@@ -141,8 +141,8 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
         hwnd = node->hwnd;
     }
 
-    newbitmap = EnlargeImage( hwnd );
-    if( newbitmap == NULL ) {
+    new_hbitmap = EnlargeImage( hwnd );
+    if( new_hbitmap == NULL ) {
         return;
     }
 
@@ -152,7 +152,7 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
         new_pres = true;
     }
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
-    oldbitmap = _wpi_selectbitmap( mempres, newbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, new_hbitmap );
 
     if( ImgedConfigInfo.grid_on ) {
         showGrid( hwnd, mempres );
@@ -163,8 +163,8 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
         RedrawPrevClip( hwnd );   // Redraw if there was a clip region specified.
     }
 
-    _wpi_getoldbitmap( mempres, oldbitmap );
-    _wpi_deletebitmap( newbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
+    _wpi_deletebitmap( new_hbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
 
     if( new_pres ) {
@@ -464,10 +464,10 @@ void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
         height = (short)pointSize.y;
     } else if( !gridvisible && toolType == IMGED_BRUSH ) {
         area_x = 0;
-        if( xpos > brushsize )
+        if( xpos > brushsize / 2 )
             area_x = ( xpos - brushsize / 2 ) * pointSize.x;
         area_y = 0;
-        if( ypos > brushsize )
+        if( ypos > brushsize / 2 )
             area_y = ( ypos - brushsize / 2 ) * pointSize.y;
         width = (short)(brushsize * pointSize.x);
         height = (short)(brushsize * pointSize.y);
@@ -486,11 +486,11 @@ void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
         height = (short)(pointSize.y - 1);
     } else {
         area_x = 0;
-        if( xpos > brushsize )
+        if( xpos > brushsize / 2 )
             area_x = ( xpos - brushsize / 2 ) * pointSize.x;
         ++area_x;
         area_y = 0;
-        if( ypos > brushsize )
+        if( ypos > brushsize / 2 )
             area_y = ( ypos - brushsize / 2 ) * pointSize.y;
         ++area_y;
         width = (short)(pointSize.x - 1);
@@ -696,7 +696,7 @@ void DisplayRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mouse
     if( imgstart_pt.x > tmpe )
         imgstart_pt.x = tmpe;
     imgend_pt.x = tmps;
-    if( imgend_pt.x > tmpe )
+    if( imgend_pt.x < tmpe )
         imgend_pt.x = tmpe;
     imgend_pt.x++;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -116,7 +116,7 @@ LPDISPATCH COleDispatchDriver::DetachDispatch()
 
 void COleDispatchDriver::InvokeHelperV( DISPID dwDispID, WORD wFlags, VARTYPE vtRet,
                                         void *pvRet, const BYTE *pbParamInfo,
-                                        va_list argList )
+                                        va_list args )
 /*******************************************************/
 {
     int         cParams = strlen( (const char *)pbParamInfo );
@@ -148,44 +148,44 @@ void COleDispatchDriver::InvokeHelperV( DISPID dwDispID, WORD wFlags, VARTYPE vt
         }
         switch( dp.rgvarg[j].vt ) {
         case VT_I2:
-            dp.rgvarg[j].iVal = va_arg( argList, SHORT );
+            dp.rgvarg[j].iVal = va_arg( args, SHORT );
             break;
         case VT_I4:
-            dp.rgvarg[j].lVal = va_arg( argList, LONG );
+            dp.rgvarg[j].lVal = va_arg( args, LONG );
             break;
         case VT_R4:
-            dp.rgvarg[j].fltVal = va_arg( argList, FLOAT );
+            dp.rgvarg[j].fltVal = va_arg( args, FLOAT );
             break;
         case VT_R8:
-            dp.rgvarg[j].dblVal = va_arg( argList, DOUBLE );
+            dp.rgvarg[j].dblVal = va_arg( args, DOUBLE );
             break;
         case VT_CY:
-            dp.rgvarg[j].cyVal = *va_arg( argList, CY * );
+            dp.rgvarg[j].cyVal = *va_arg( args, CY * );
             break;
         case VT_DATE:
-            dp.rgvarg[j].date = va_arg( argList, DATE );
+            dp.rgvarg[j].date = va_arg( args, DATE );
             break;
         case VT_BSTR:
-            dp.rgvarg[j].bstrVal = ::SysAllocString( va_arg( argList, LPCOLESTR ) );
+            dp.rgvarg[j].bstrVal = ::SysAllocString( va_arg( args, LPCOLESTR ) );
             break;
         case VT_DISPATCH:
-            dp.rgvarg[j].pdispVal = va_arg( argList, LPDISPATCH );
+            dp.rgvarg[j].pdispVal = va_arg( args, LPDISPATCH );
             break;
         case VT_ERROR:
-            dp.rgvarg[j].scode = va_arg( argList, SCODE );
+            dp.rgvarg[j].scode = va_arg( args, SCODE );
             break;
         case VT_BOOL:
-            dp.rgvarg[j].boolVal = va_arg( argList, BOOL ) ? VARIANT_TRUE : VARIANT_FALSE;
+            dp.rgvarg[j].boolVal = va_arg( args, BOOL ) ? VARIANT_TRUE : VARIANT_FALSE;
             break;
         case VT_VARIANT:
-            memcpy( &dp.rgvarg[j], &va_arg( argList, VARIANTARG ), sizeof( VARIANTARG ) );
+            memcpy( &dp.rgvarg[j], &va_arg( args, VARIANTARG ), sizeof( VARIANTARG ) );
             break;
         case VT_UNKNOWN:
-            dp.rgvarg[j].punkVal = va_arg( argList, LPUNKNOWN );
+            dp.rgvarg[j].punkVal = va_arg( args, LPUNKNOWN );
             break;
 #ifndef _UNICODE
         case VT_BSTRA:
-            lpsz1 = va_arg( argList, LPCSTR );
+            lpsz1 = va_arg( args, LPCSTR );
             nLen = strlen( lpsz1 ) + 1;
             lpsz2 = new OLECHAR[nLen];
             ::MultiByteToWideChar( CP_ACP, 0L, lpsz1, -1, lpsz2, nLen );
@@ -195,80 +195,80 @@ void COleDispatchDriver::InvokeHelperV( DISPID dwDispID, WORD wFlags, VARTYPE vt
             break;
 #endif
         case VT_I1:
-            dp.rgvarg[j].cVal = va_arg( argList, CHAR );
+            dp.rgvarg[j].cVal = va_arg( args, CHAR );
             break;
         case VT_UI1:
-            dp.rgvarg[j].bVal = va_arg( argList, BYTE );
+            dp.rgvarg[j].bVal = va_arg( args, BYTE );
             break;
         case VT_UI2:
-            dp.rgvarg[j].uiVal = va_arg( argList, USHORT );
+            dp.rgvarg[j].uiVal = va_arg( args, USHORT );
             break;
         case VT_UI4:
-            dp.rgvarg[j].ulVal = va_arg( argList, ULONG );
+            dp.rgvarg[j].ulVal = va_arg( args, ULONG );
             break;
         case VT_I8:
-            dp.rgvarg[j].llVal = va_arg( argList, LONGLONG );
+            dp.rgvarg[j].llVal = va_arg( args, LONGLONG );
             break;
         case VT_UI8:
-            dp.rgvarg[j].ullVal = va_arg( argList, ULONGLONG );
+            dp.rgvarg[j].ullVal = va_arg( args, ULONGLONG );
             break;
         case VT_BYREF | VT_I2:
-            dp.rgvarg[j].piVal = va_arg( argList, SHORT * );
+            dp.rgvarg[j].piVal = va_arg( args, SHORT * );
             break;
         case VT_BYREF | VT_I4:
-            dp.rgvarg[j].plVal = va_arg( argList, LONG * );
+            dp.rgvarg[j].plVal = va_arg( args, LONG * );
             break;
         case VT_BYREF | VT_R4:
-            dp.rgvarg[j].pfltVal = va_arg( argList, FLOAT * );
+            dp.rgvarg[j].pfltVal = va_arg( args, FLOAT * );
             break;
         case VT_BYREF | VT_R8:
-            dp.rgvarg[j].pdblVal = va_arg( argList, DOUBLE * );
+            dp.rgvarg[j].pdblVal = va_arg( args, DOUBLE * );
             break;
         case VT_BYREF | VT_CY:
-            dp.rgvarg[j].pcyVal = va_arg( argList, CY * );
+            dp.rgvarg[j].pcyVal = va_arg( args, CY * );
             break;
         case VT_BYREF | VT_DATE:
-            dp.rgvarg[j].pdate = va_arg( argList, DATE * );
+            dp.rgvarg[j].pdate = va_arg( args, DATE * );
             break;
         case VT_BYREF | VT_BSTR:
-            dp.rgvarg[j].pbstrVal = va_arg( argList, BSTR * );
+            dp.rgvarg[j].pbstrVal = va_arg( args, BSTR * );
             break;
         case VT_BYREF | VT_DISPATCH:
-            dp.rgvarg[j].ppdispVal = va_arg( argList, LPDISPATCH * );
+            dp.rgvarg[j].ppdispVal = va_arg( args, LPDISPATCH * );
             break;
         case VT_BYREF | VT_ERROR:
-            dp.rgvarg[j].pscode = va_arg( argList, SCODE * );
+            dp.rgvarg[j].pscode = va_arg( args, SCODE * );
             break;
         case VT_BYREF | VT_BOOL:
-            pBool = va_arg( argList, BOOL * );
+            pBool = va_arg( args, BOOL * );
             ASSERT( pBool != NULL );
             arrBoolArgs.Add( pBool );
             dp.rgvarg[j].pboolVal = (VARIANT_BOOL *)pBool;
             *dp.rgvarg[j].pboolVal = *pBool ? VARIANT_TRUE : VARIANT_FALSE;
             break;
         case VT_BYREF | VT_VARIANT:
-            dp.rgvarg[j].pvarVal = va_arg( argList, VARIANTARG * );
+            dp.rgvarg[j].pvarVal = va_arg( args, VARIANTARG * );
             break;
         case VT_BYREF | VT_UNKNOWN:
-            dp.rgvarg[j].ppunkVal = va_arg( argList, LPUNKNOWN * );
+            dp.rgvarg[j].ppunkVal = va_arg( args, LPUNKNOWN * );
             break;
         case VT_BYREF | VT_I1:
-            dp.rgvarg[j].pcVal = va_arg( argList, CHAR * );
+            dp.rgvarg[j].pcVal = va_arg( args, CHAR * );
             break;
         case VT_BYREF | VT_UI1:
-            dp.rgvarg[j].pbVal = va_arg( argList, BYTE * );
+            dp.rgvarg[j].pbVal = va_arg( args, BYTE * );
             break;
         case VT_BYREF | VT_UI2:
-            dp.rgvarg[j].puiVal = va_arg( argList, USHORT * );
+            dp.rgvarg[j].puiVal = va_arg( args, USHORT * );
             break;
         case VT_BYREF | VT_UI4:
-            dp.rgvarg[j].pulVal = va_arg( argList, ULONG * );
+            dp.rgvarg[j].pulVal = va_arg( args, ULONG * );
             break;
         case VT_BYREF | VT_I8:
-            dp.rgvarg[j].pllVal = va_arg( argList, LONGLONG * );
+            dp.rgvarg[j].pllVal = va_arg( args, LONGLONG * );
             break;
         case VT_BYREF | VT_UI8:
-            dp.rgvarg[j].pullVal = va_arg( argList, ULONGLONG * );
+            dp.rgvarg[j].pullVal = va_arg( args, ULONGLONG * );
             break;
         }
     }
@@ -386,10 +386,10 @@ void AFX_CDECL COleDispatchDriver::InvokeHelper( DISPID dwDispID, WORD wFlags, V
                                                  void *pvRet, const BYTE *pbParamInfo, ... )
 /******************************************************************************************/
 {
-    va_list argList;
-    va_start( argList, pbParamInfo );
-    InvokeHelperV( dwDispID, wFlags, vtRet, pvRet, pbParamInfo, argList );
-    va_end( argList );
+    va_list args;
+    va_start( args, pbParamInfo );
+    InvokeHelperV( dwDispID, wFlags, vtRet, pvRet, pbParamInfo, args );
+    va_end( args );
 }
 
 void AFX_CDECL COleDispatchDriver::SetProperty( DISPID dwDispID, VARTYPE vtProp, ... )
@@ -406,14 +406,12 @@ void AFX_CDECL COleDispatchDriver::SetProperty( DISPID dwDispID, VARTYPE vtProp,
         bParamInfo[0] = VT_BSTRA;
     }
 #endif
-    va_list argList;
-    va_start( argList, vtProp );
+    va_list args;
+    va_start( args, vtProp );
     if( vtProp == VT_DISPATCH ) {
-        InvokeHelperV( dwDispID, DISPATCH_PROPERTYPUTREF, VT_EMPTY, NULL, bParamInfo,
-                       argList );
+        InvokeHelperV( dwDispID, DISPATCH_PROPERTYPUTREF, VT_EMPTY, NULL, bParamInfo, args );
     } else {
-        InvokeHelperV( dwDispID, DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, bParamInfo,
-                       argList );
+        InvokeHelperV( dwDispID, DISPATCH_PROPERTYPUT, VT_EMPTY, NULL, bParamInfo, args );
     }
-    va_end( argList );
+    va_end( args );
 }

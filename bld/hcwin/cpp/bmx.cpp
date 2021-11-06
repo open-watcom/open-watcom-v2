@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -208,7 +209,7 @@ int Bitmap::dump( OutFile *dest )
     _bitsPerPix *= 2;
     if( _bitsPerPix >= 2*MIN_16BIT ) {
         _bitsPerPix += 1;
-        dest->write( _bitsPerPix );
+        dest->write( (uint_16)_bitsPerPix );
     } else {
         dest->write( (uint_8)_bitsPerPix );
     }
@@ -216,7 +217,7 @@ int Bitmap::dump( OutFile *dest )
     _width *= 2;
     if( _width >= 2*MIN_32BIT ) {
         _width += 1;
-        dest->write( _width );
+        dest->write( (uint_32)_width );
     } else {
         dest->write( (uint_16)_width );
     }
@@ -224,7 +225,7 @@ int Bitmap::dump( OutFile *dest )
     _height *= 2;
     if( _height >= 2*MIN_32BIT ) {
         _height += 1;
-        dest->write( _height );
+        dest->write( (uint_32)_height );
     } else {
         dest->write( (uint_16)_height );
     }
@@ -232,7 +233,7 @@ int Bitmap::dump( OutFile *dest )
     _colsUsed *= 2;
     if( _colsUsed >= 2*MIN_32BIT ) {
         _colsUsed += 1;
-        dest->write( _colsUsed );
+        dest->write( (uint_32)_colsUsed );
     } else {
         dest->write( (uint_16)_colsUsed );
     }
@@ -243,13 +244,13 @@ int Bitmap::dump( OutFile *dest )
     _pixSize *= 2;
     if( _pixSize >= 2 * MIN_32BIT ) {
         _pixSize += 1;
-        dest->write( _pixSize );
+        dest->write( (uint_32)_pixSize );
     } else {
         dest->write( (uint_16)_pixSize );
     }
 
     dest->write( (uint_16)0 );
-    dest->write( _objOffset );
+    dest->write( (uint_32)_objOffset );
     dest->write( (uint_32)0 );
 
     // now write the colour table and pixel data.
@@ -330,8 +331,10 @@ HFBitmaps::HFBitmaps( HFSDirectory *d_file ) : _dfile(d_file)
     _usedFiles = NULL;
 
     _startDir = new char[_MAX_PATH];
-    getcwd( _startDir, _MAX_PATH );
-
+    if( getcwd( _startDir, _MAX_PATH ) == NULL ) {
+        _startDir[0] = '.';
+        _startDir[1] = '\0';
+    }
     _numImages = 0;
 }
 
@@ -397,8 +400,15 @@ void HFBitmaps::addToPath( char const path[] )
         memcpy( temp->_name, arg, j );
         temp->_name[j] = '\0';
         temp->_next = NULL;
-        if( chdir( temp->_name ) == 0 ) {
-            chdir( _startDir );
+        if( chdir( temp->_name ) ) {
+            HCWarning( HPJ_BADDIR, temp->_name );
+            delete[] temp->_name;
+            delete temp;
+        } else if( chdir( _startDir ) ) {
+            HCWarning( HPJ_BADDIR, _startDir );
+            delete[] temp->_name;
+            delete temp;
+        } else {
             if( current == NULL ) {
                 _root = temp;
                 current = _root;
@@ -406,10 +416,6 @@ void HFBitmaps::addToPath( char const path[] )
                 current->_next = temp;
                 current = current->_next;
             }
-        } else {
-            HCWarning( HPJ_BADDIR, temp->_name );
-            delete[] temp->_name;
-            delete temp;
         }
         arg += j;
         if( arg[0] != '\0' ) {
@@ -429,9 +435,12 @@ void HFBitmaps::note( char const name[] )
 
     InFile  *bmp = new InFile( name, true );
     for( curdir = _root; bmp->bad() && curdir != NULL; curdir = curdir->_next ) {
-        chdir( curdir->_name );
+        if( chdir( curdir->_name ) )
+            continue;
         bmp->open( name );
-        chdir( _startDir );
+        if( chdir( _startDir ) ) {
+            HCWarning( HPJ_BADDIR, _startDir );
+        }
     }
     if( bmp->bad() ) {
         HCWarning( FILE_ERR, name );
@@ -439,7 +448,8 @@ void HFBitmaps::note( char const name[] )
         return;
     }
     bmp->reset();
-    bmp->read( &magic );
+    if( bmp->read( &magic ) == 0 )
+        throw ImageNotSupported();  // EXCEPTION
     switch( magic ) {
     case BITMAP_MAGIC:
     case SHG1_MAGIC:
@@ -523,9 +533,12 @@ uint_16 HFBitmaps::use( char const name[] )
         // Now we have to search for the file.
         bmp = new InFile( name, true );
         for( curdir = _root; bmp->bad() && curdir != NULL; curdir = curdir->_next ) {
-            chdir( curdir->_name );
+            if( chdir( curdir->_name ) )
+                continue;
             bmp->open( name, true );
-            chdir( _startDir );
+            if( chdir( _startDir ) ) {
+                HCWarning( HPJ_BADDIR, _startDir );
+            }
         }
 
         if( bmp->bad() ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,7 @@
 *               It is most useful in mix memory model applications.
 **/
 
-_WCRTLINK size_t _WCI86FAR _fbtom( const JCHAR _WCFAR *s, size_t nb )
+_WCRTLINK size_t _fbtom( const JCHAR _WCFAR *s, size_t nb )
 {
     size_t count;
     const JCHAR _WCFAR *ss;

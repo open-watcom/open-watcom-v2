@@ -12,7 +12,7 @@ function writes a word (two bytes), determined by
 .arg value
 .ct , to the 80x86 hardware port whose number is given by
 .arg port
-.ct .li .
+.period
 .im portdesc
 .im privity
 .desc end

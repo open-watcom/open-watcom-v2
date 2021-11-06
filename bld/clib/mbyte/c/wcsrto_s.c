@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,10 +46,10 @@ _WCRTLINK errno_t _NEARFAR(wcsrtombs_s,_fwcsrtombs_s)(
                            rsize_t len,
                            mbstate_t _FFAR * __restrict ps )
 {
-    int                     bytesConverted = 0;
+    size_t                  bytesConverted = 0;
     const wchar_t _FFAR *   wcPtr;
     unsigned char           mbc[MB_LEN_MAX+1];
-    int                     ret = 0;
+    size_t                  ret = 0;
 
     errno_t                 rc = -1;
     const char             *msg = NULL;
@@ -74,24 +75,25 @@ _WCRTLINK errno_t _NEARFAR(wcsrtombs_s,_fwcsrtombs_s)(
             if(__check_constraint_a_gt_b_msg( msg, dstmax, 0 )) {
                 for( ;; ) {
                     if( *wcPtr != '\0' ) {
-                        if(srcend < wcPtr) break;             //no null found
+                        if(srcend < wcPtr)
+                            break;              //no null found
                         ret = _NEARFAR(wcrtomb,_fwcrtomb)( (char *)mbc, *wcPtr, ps );
-                        if( ret > 0 ) {
-                            wcPtr++;
-                            bytesConverted += ret;
-                        } else if( ret == 0) {
+                        if( ret == (size_t)-1 ) {
+                            *retval = ret;
+                            break;              //encoding error
+                        } else if( ret == 0 ) {
                             break;
                         } else {
-                            *retval = -1;
-                            break;               //encoding error
+                            wcPtr++;
+                            bytesConverted += ret;
                         }
                     } else {
                         break;
                     }
                 }
-                if( ret >= 0 ) {                          //no encoding error
-                  *retval = bytesConverted;
-                  rc = 0;
+                if( ret != (size_t)-1 ) {       //no encoding error
+                    *retval = bytesConverted;
+                    rc = 0;
                 }
             }
         } else {
@@ -105,9 +107,10 @@ _WCRTLINK errno_t _NEARFAR(wcsrtombs_s,_fwcsrtombs_s)(
                 dstend = dst + dstmax;
                 /*** Process the characters, one by one ***/
                 for( ;; ) {
-
                     ret = _NEARFAR(wcrtomb,_fwcrtomb)( (char *)mbc, *wcPtr, ps );
-                    if( ret > 0 ) {
+                    if( ret == (size_t)-1 ) {
+                        break;
+                    } else {
                         if( *mbc != '\0' ) {
                             if( len >= ret ) {
                                 _NEARFAR(_mbccpy,_fmbccpy)( (unsigned char _FFAR *)dst, mbc );
@@ -124,14 +127,12 @@ _WCRTLINK errno_t _NEARFAR(wcsrtombs_s,_fwcsrtombs_s)(
                         } else {
                             break;
                         }
-                    } else {
-                        break;
                     }
                 }
                 if( msg == NULL ) {
-                    if( ret >= 0 ) {                          //no encoding error
-                      *retval = bytesConverted;
-                      rc = 0;
+                    if( ret != (size_t)-1 ) {       //no encoding error
+                        *retval = bytesConverted;
+                        rc = 0;
                     }
                 }
             }
@@ -150,7 +151,7 @@ _WCRTLINK errno_t _NEARFAR(wcsrtombs_s,_fwcsrtombs_s)(
         if((dst != NULL) && (dstmax > 0) && __lte_rsizmax( dstmax ))
             *dststart  = '\0';
         if(retval != NULL)
-            *retval = -1;
+            *retval = (size_t)-1;
         // Now call the handler
         __rtct_fail( __func__, msg, NULL );
     }

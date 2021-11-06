@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@ MY_FILE         OldFile;
 
 static char     newName[_MAX_PATH];
 static char     oldName[_MAX_PATH];
-static PGROUP2  pgold;
+static pgroup2  pgold;
 
 char *SetOld( const char *name )
 {
@@ -60,7 +60,7 @@ char *SetOld( const char *name )
 char *FindOld( const char *name )
 {
     char        temp[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( temp, NULL, NULL, pg.fname, pg.ext );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,9 +73,9 @@ static bool CompSProg( void )
                 ProcInclude();
                 ComRead();
             } else if( CurrFile->flags & CONC_PENDING ) {
-                if( ( ProgSw & PS_DONT_GENERATE ) &&
-                    ( ( Options & OPT_SYNTAX ) == 0 ) &&
-                    ( ( ProgSw & PS_ERROR ) == 0 ) &&
+                if( (ProgSw & PS_DONT_GENERATE) &&
+                    ( (Options & OPT_SYNTAX) == 0 ) &&
+                    ( (ProgSw & PS_ERROR) == 0 ) &&
                     ( CurrFile->link == NULL ) )
                     break;
                 Conclude();
@@ -87,10 +87,10 @@ static bool CompSProg( void )
             }
         }
         Options = NewOptions;
-        if( ProgSw & ( PS_SOURCE_EOF | PS_END_OF_SUBPROG ) )
+        if( ProgSw & (PS_SOURCE_EOF | PS_END_OF_SUBPROG) )
             break;
         CompStatement();
-        if( ProgSw & ( PS_SOURCE_EOF | PS_END_OF_SUBPROG ) ) {
+        if( ProgSw & (PS_SOURCE_EOF | PS_END_OF_SUBPROG) ) {
             // consider:        call sam
             //                  end
             //          c$include sam
@@ -171,7 +171,7 @@ void CompProg( void )
 
 void InitSubProg( void )
 {
-    ProgSw &= ~( PS_END_OF_SUBPROG | PS_IN_SUBPROGRAM | PS_BLOCK_DATA );
+    ProgSw &= ~(PS_END_OF_SUBPROG | PS_IN_SUBPROGRAM | PS_BLOCK_DATA);
     FrlInit( &ITPool );
     SgmtSw       = 0;
     ArgList      = NULL;
@@ -192,15 +192,15 @@ void FiniSubProg( void )
     if( !Remember.endstmt ) {
         Error( EN_NO_END );
     }
-    if( ( SgmtSw & SG_SYMTAB_RESOLVED ) == 0 ) {
+    if( (SgmtSw & SG_SYMTAB_RESOLVED) == 0 ) {
         STResolve();
         SgmtSw |= SG_SYMTAB_RESOLVED;
     }
-    if(( ProgSw & PS_BLOCK_DATA ) != 0 ) {
+    if( (ProgSw & PS_BLOCK_DATA) != 0 ) {
         GEndBlockData();
-    } else if(( ProgSw & PS_IN_SUBPROGRAM ) != 0 ) {
+    } else if( (ProgSw & PS_IN_SUBPROGRAM) != 0 ) {
         Epilogue();
-    } else if( ( ProgSw & PS_ERROR ) == 0 ) {
+    } else if( (ProgSw & PS_ERROR) == 0 ) {
         GReturn();
     }
     DumpEntries();

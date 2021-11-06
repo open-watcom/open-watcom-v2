@@ -1,5 +1,5 @@
-.gfunc setactivepage
-.gsynop begin 
+.gfunc _setactivepage
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _setactivepage( short pagenum );
 .do end

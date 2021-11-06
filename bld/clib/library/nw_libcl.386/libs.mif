@@ -2,15 +2,19 @@ pfx__ =../../../
 __sfx =/library/$(system).$(processor)/$(libsubdir)/$(libname).lib
 
 libs = $+ &
+    $(pfx__)alias$(__sfx) &
     $(pfx__)fpu$(__sfx) &
     $(pfx__)cgsupp$(__sfx) &
     $(pfx__)convert$(__sfx) &
+    $(pfx__)file$(__sfx) &
     $(pfx__)handleio$(__sfx) &
     $(pfx__)intel$(__sfx) &
+    $(pfx__)memory$(__sfx) &
     $(pfx__)misc$(__sfx) &
     $(pfx__)mthread$(__sfx) &
     $(pfx__)startup$(__sfx) &
     $(pfx__)streamio$(__sfx) &
+    $(pfx__)string$(__sfx) &
     $-
 
 pfx__ =

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,8 +56,8 @@
 #include "x86table.h"
 #include "x86rtrn.h"
 #include "_split.h"
-#include "_x86split.h"
-#include "_x86splt2.h"
+#include "x86splt1.h"
+#include "x86splt2.h"
 #include "_x86rtrn.h"
 #include "_x86half.h"
 
@@ -250,7 +250,7 @@ instruction      *rHIGHLOWMOVE( instruction *ins )
     return( ins );
 }
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     #define     LP              PT
     #define     MOV_SIZE        3
 #else
@@ -450,7 +450,7 @@ static  instruction     *LoadStringOps( instruction *ins,
     *op1 = FakeIndex( ins->operands[0], new_op1 );
     ins->operands[1] = ins->operands[0];
     HW_CTurnOff( new_op1, HW_SS );
-    HW_CTurnOff( new_op1, HW_SP );
+    HW_CTurnOff( new_op1, HW_xSP );
     HW_CTurnOff( new_op1, HW_ES );
     HW_CTurnOff( new_op1, HW_DS );
     ins->zap = &AllocRegName( new_op1 )->r;
@@ -785,8 +785,8 @@ instruction     *rDOLONGPUSH( instruction *ins )
         return( SplitPush( ins, size ) );
     } else {
         HW_CAsgn( hw_ss_sp, HW_SS );
-        HW_CTurnOn( hw_ss_sp, HW_SP );
-        sp = AllocRegName( HW_SP );
+        HW_CTurnOn( hw_ss_sp, HW_xSP );
+        sp = AllocRegName( HW_xSP );
         if( _IsTargetModel( FLOATING_SS ) ) {
             temp = AllocTemp( CP );
             temp_ins = MakeMove( AllocRegName( hw_ss_sp ), temp, CP );

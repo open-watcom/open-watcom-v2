@@ -1,12 +1,15 @@
 .se __idx=0
+.se freffnd=0
+.se frefid=''
 .if &e'&machsys eq 0 .ty ***ERROR*** machsys not defined
 .*
 .dm fnc begin
-.se $$fnd=&'wordpos(&machsys,&*,3)
+.se $$fnd=&'wordpos(&machsys,&*,4)
 .if &$$fnd. ne 0 .do begin
 .  .se __idx=&__idx.+1
 .  .se fnclst(&__idx.)=&*1
-.  .se imblst(&__idx.)=&*2
+.  .se freflst(&__idx.)=&*2
+.  .se imblst(&__idx.)=&*3
 .  .se __sysl(&__idx.)=0
 .do end
 .dm fnc end
@@ -14,7 +17,7 @@
 .* version 10.7 or greater functions
 .*
 .dm fn7 begin
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .  .fnc &*
 .do end
 .dm fn7 end
@@ -22,7 +25,7 @@
 .* version 11.0 or greater functions
 .*
 .dm fn8 begin
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 .  .fnc &*
 .do end
 .dm fn8 end
@@ -31,7 +34,7 @@
 .* corresponding to regular entry (e.g., memccpy)
 .*
 .dm fnf begin
-.if &farfnc. eq 1 .do begin
+.if &farfnc ne 0 .do begin
 .  .fnc &*
 .do end
 .dm fnf end
@@ -40,7 +43,7 @@
 .* corresponding to regular entry (e.g., strcmp)
 .*
 .dm fnm begin
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .  .fnc &*
 .do end
 .dm fnm end
@@ -49,8 +52,8 @@
 .* corresponding to regular entry (e.g., _mbsbtype)
 .*
 .dm fnn begin
-.if &farfnc. eq 1 .do begin
-.if &version ge 107 .do begin
+.if &farfnc ne 0 .do begin
+.if &vermacro ge 1070 .do begin
 .  .fnc &*
 .do end
 .do end
@@ -60,10 +63,24 @@
 .* corresponding to regular entry (e.g., strcmp)
 .*
 .dm fnw begin
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .  .fnc &*
 .do end
 .dm fnw end
+.*
+.dm funcref begin
+.se freffnd=&'vecpos(&*.,fnclst)
+.if &e'&dohelp eq 0 .do begin
+.   .se frefid=&*.
+.do end
+.el .if '&freffnd.' eq '0' .do begin
+.* .   .ty *** &*. - referenced but not defined ***
+.   .se frefid=&*.
+.do end
+.el .do begin
+.   .se frefid=&freflst(&freffnd.).
+.do end
+.dm funcref end
 .*
 .* DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS
 .* 1     2     4     8      16    32    64    128   256     512     1024  2048  4096

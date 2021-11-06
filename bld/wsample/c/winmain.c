@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,8 @@
 #include "sampwin.h"
 #include "wsample.rh"
 #include "wreslang.h"
+#include "wclbproc.h"
+#include "di386cli.h"
 
 
 #define TMPSLEN 256
@@ -78,12 +80,12 @@ static BOOL FAR PASCAL About( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 static void WinMessage( char *str, ... )
 {
     char        st[256];
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    vsprintf( st, str, al );
+    va_start( args, str );
+    vsprintf( st, str, args );
+    va_end( args );
     MessageBox( NULL, st, "Open Watcom Sampler", MB_OK | MB_ICONHAND | MB_TASKMODAL );
-    va_end( al );
 
 } /* WinMessage */
 
@@ -120,7 +122,7 @@ static BOOL StartOutput( short x, short y )
  */
 static long FAR PASCAL MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
 
     switch (message) {
     case WM_TIMER:
@@ -141,9 +143,9 @@ static long FAR PASCAL MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARA
     case WM_COMMAND:
         switch( wparam ) {
         case MSG_ABOUT:
-            proc = MakeProcInstance( (FARPROC)About, InstanceHandle );
-            DialogBox(InstanceHandle, ResName( "AboutBox" ), hwnd, (DLGPROC)proc);
-            FreeProcInstance(proc);
+            dlgproc = MakeProcInstance_DLG( About, InstanceHandle );
+            DialogBox(InstanceHandle, ResName( "AboutBox" ), hwnd, dlgproc);
+            FreeProcInstance_DLG(dlgproc);
             break;
         case MSG_OPT:
             Usage();
@@ -182,7 +184,7 @@ static int WindowsInit( HANDLE inst, int showcmd )
         KillTimer( MainWindowHandle, TIMER_ID);
         return( FALSE );
     }
-    SampSave = MK_FP( handle, 0 );
+    SampSave = _MK_FP( handle, 0 );
 
     wc.style = 0;
     wc.lpfnWndProc = MainDriver;
@@ -239,11 +241,11 @@ static void MyOutput( const char *str, ... )
     static int  tmpOff=0;
     char        buff[256];
     char        c;
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    vsprintf( buff, str, al );
-    va_end( al );
+    va_start( args, str );
+    vsprintf( buff, str, args );
+    va_end( args );
 
     str = buff;
     while( (c = *str) != '\0' ) {
@@ -309,6 +311,8 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
     command_data        cmddat;
     char                FAR_PTR *cmdline;
     char                filename[_MAX_PATH];
+    char                *cmd_line;
+    int                 rc;
 
     /*
      * are we the first? if so, winexec another one of ourselves
@@ -340,7 +344,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
             CloseShop();
             return( FALSE );
         }
-        SharedMemory = MK_FP( h,0 );
+        SharedMemory = _MK_FP( h,0 );
 
         WaitForFirst = TRUE;    /* tell our counterpart to wait for
                                us before starting the timer */
@@ -348,7 +352,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
         parm.wEnvSeg = 0;
         parm.lpCmdLine = (char __far *)"";
         parm.lpCmdShow = (void __far *)&cmddat;
-        parm.dwReserved = 0;
+        parm.lpReserved = NULL;
         newinst = LoadModule( "wsamplew.exe", (LPVOID)&parm );
         if( newinst < HINSTANCE_ERROR ) {
             WinMessage( GET_MESSAGE( MSG_SAMPLE_15 ) );
@@ -376,11 +380,23 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
         GetIData( newinst, &MainWindowHandle, sizeof( MainWindowHandle ) );
         GetIData( newinst, &SampSave, sizeof( SampSave) );
 
+        SysInit();
+        cmd_line = malloc( strlen( cmdline ) + 1 );
+        if( cmd_line != NULL ) {
+            _fstrcpy( cmd_line, cmdline );
+        }
+
         /*
          * start the sampler - our other half will be re-started
          * once we have loaded the task to be sampled.
          */
-        sample_main( cmdline );
+        rc = sample_main( cmd_line );
+
+        if( cmd_line != NULL ) {
+            free( cmd_line );
+        }
+        MsgFini();
+
         CloseShop();
         SendMessage( MainWindowHandle, WM_CLOSE, 0, 0 );
         return( FALSE );

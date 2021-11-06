@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "guiwind.h"
 #include "guiscale.h"
 
-int GUIGetHScrollCol( gui_window * wnd )
+gui_text_ord GUIAPI GUIGetHScrollCol( gui_window * wnd )
 {
     if( wnd->hgadget == NULL ) {
         return( 0 );
@@ -42,7 +43,7 @@ int GUIGetHScrollCol( gui_window * wnd )
     }
 }
 
-int GUIGetVScrollRow( gui_window * wnd )
+gui_text_ord GUIAPI GUIGetVScrollRow( gui_window * wnd )
 {
     if( wnd->vgadget == NULL ) {
         return( 0 );
@@ -51,28 +52,20 @@ int GUIGetVScrollRow( gui_window * wnd )
     }
 }
 
-gui_ord GUIGetHScroll( gui_window * wnd )
+gui_ord GUIAPI GUIGetHScroll( gui_window * wnd )
 {
-    gui_coord coord;
-
     if( wnd->hgadget == NULL ) {
         return( 0 );
     } else {
-        coord.x = wnd->hgadget->pos;
-        GUIScreenToScaleR( &coord );
-        return( coord.x );
+        return( GUIScreenToScaleH( wnd->hgadget->pos ) );
     }
 }
 
-gui_ord GUIGetVScroll( gui_window * wnd )
+gui_ord GUIAPI GUIGetVScroll( gui_window * wnd )
 {
-    gui_coord coord;
-
     if( wnd->vgadget == NULL ) {
         return( 0 );
     } else {
-        coord.y = wnd->vgadget->pos;
-        GUIScreenToScaleR( &coord );
-        return( coord.y );
+        return( GUIScreenToScaleV( wnd->vgadget->pos ) );
     }
 }

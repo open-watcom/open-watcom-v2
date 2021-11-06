@@ -10,6 +10,7 @@ type="e" usr="edbind.exe"
 
 [ DEFAULT dir="binw" cond="winhost" where="c f77 jc jf77" ]
 type="e" usr="viw.exe"
+type="e" usr="viw32.exe"
 
 #######################
 # OS/2
@@ -106,7 +107,6 @@ usr="debug.cfg"
 usr="error.dat"
 usr="keys.dat"
 usr="winbind.dat"
-usr="errmsg.dat"
 usr="edbind.dat"
 usr="skel.dat"
 usr="start.hlp"

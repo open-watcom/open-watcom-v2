@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,13 +76,12 @@
 #define _4MB    (4UL * 1024UL * 1024UL)
 
 #ifdef __DOS__
-    #define MEM_NEAR_PTR(x)     (void *)FP_OFF( x )
+    #define MEM_NEAR_PTR(x)     (void *)_FP_OFF( x )
 #else
     #define MEM_NEAR_PTR(x)     x
 #endif
 
 #ifdef __DOS__
-  #ifndef __OSI__
 extern int _d16ReserveExt( int );
 #pragma aux _d16ReserveExt = \
         "mov cx,ax" \
@@ -97,7 +96,6 @@ extern int _d16ReserveExt( int );
     __parm      [__eax] \
     __value     [__eax] \
     __modify    [__ebx __ecx __edx]
-  #endif
 #endif
 
 #ifdef TRMEM
@@ -234,9 +232,7 @@ static void MemExpand( void )
 void SysSetMemLimit( void )
 {
 #ifdef  __DOS__
-  #ifndef __OSI__
     _d16ReserveExt( MemSize + _1MB );
-  #endif
     MemExpand();
     if( _IsOff( SW_REMOTE_LINK ) && _IsOff( SW_KEEP_HEAP_ENABLED ) ) {
         _heapenable( 0 );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,13 +132,13 @@ static exe_info     new;
 
 static void stats( const char *format, ... )
 {
-    va_list     arg;
+    va_list     args;
 
     if( Verbose ) {
-        va_start( arg, format );
-        vprintf( format, arg );
+        va_start( args, format );
+        vprintf( format, args );
         fflush( stdout );
-        va_end( arg );
+        va_end( args );
     }
 }
 
@@ -705,7 +705,7 @@ static int both_walker( void *_new_blk, void *parm )
     exe_blk         *old_blk;
     exe_mod         *old_mod;
     exe_mod         *new_mod;
-    auto exe_mod    tmp_mod;
+    exe_mod         tmp_mod;
     exe_blk         *new_blk = _new_blk;
 
     last = parm;
@@ -781,7 +781,7 @@ static int only_new_walker( void *_new_blk, void *parm )
     fpos_t          len;
     walker_data     *last;
     exe_mod         *new_mod;
-    auto exe_mod    tmp_mod;
+    exe_mod         tmp_mod;
     exe_blk         *new_blk = _new_blk;
 
     last = parm;
@@ -832,14 +832,14 @@ static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     fpos_t                  curr_offset;
     fpos_t                  debug_header;
     addr48_ptr              seg_addr;
-    auto master_dbg_header  dbg_head;
-    auto section_dbg_header section_head;
-    auto seg_dbg_info       seg_desc;
-    auto mod_dbg_info       mod_name;
-    auto addr_dbg_info      seg_chunk;
-    auto exe_mod            tmp_mod;
+    master_dbg_header       dbg_head;
+    section_dbg_header      section_head;
+    seg_dbg_info            seg_desc;
+    mod_dbg_info            mod_name;
+    addr_dbg_info           seg_chunk;
+    exe_mod                 tmp_mod;
     char                    file_name[_MAX_PATH];
-    PGROUP2                 pg;
+    pgroup2                 pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' )
@@ -934,7 +934,7 @@ static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
 
 void SymbolicDiff( algorithm alg, char *old_exe, char *new_exe )
 {
-    auto walker_data data;
+    walker_data     data;
 
     data.last_offset = 0;
     ProcessExe( new_exe, NewSymName, &new );
@@ -1300,7 +1300,7 @@ static void WriteDiffs( void )
 
 static void AddLevel( const char *name )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     memcpy( LevelBuff, PATCH_LEVEL, sizeof( PATCH_LEVEL ) );
     _splitpath2( name, pg.buffer, NULL, NULL, NULL, &pg.ext );

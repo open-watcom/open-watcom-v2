@@ -1,7 +1,7 @@
 .func sysconf
 .synop begin
 #include <unistd.h>
-long sysconf( int name ); 
+long sysconf( int name );
 .synop end
 .desc begin
 The
@@ -14,8 +14,8 @@ passed.  This implementation currently supports the following inputs:
 .termhd1 Member
 .termhd2 Meaning
 .term _SC_ARG_MAX
-The maximum number of arguments supported by 
-.id execv 
+The maximum number of arguments supported by
+.id execv
 and related arguments
 .term _SC_CHILD_MAX
 The maximum number of per-user child processes
@@ -49,7 +49,7 @@ The available number of physical pages of memory for the system
 If real-time signals are supported, the value of 1 is returned
 .term _SC_SOMAXCONN
 For the socket
-.kw listen
+.reffunc listen
 function, retrieve the largest supported backlog of listen requests
 .endterm
 In this implementation, requesting either _SC_NPROCESSORS_CONF or
@@ -78,5 +78,5 @@ The value of
 is unsupported on this implementation
 .endterm
 .error end
-.class POSIX
+.class POSIX 1003.1
 .system

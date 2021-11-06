@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,17 +35,12 @@
 // REGS         : register information
 //
 
-#include "ftnstd.h"
-#include "wf77auxd.h"
-
-hw_reg_set              StackParms[] = { HW_D( HW_EMPTY ) };
-
 #if _CPU == 8086 || _CPU == 386
-  char                  IF_names[] = "IF@*";
-  char                  IF_Xnames[] = "IF@X*";
+static char             IF_names[] = "IF@*";
+static char             IF_Xnames[] = "IF@X*";
 #elif _CPU == _AXP || _CPU == _PPC
-  char                  IF_names[] = "_IF_*";
-  char                  IF_Xnames[] = "_IF_X*";
+static char             IF_names[] = "_IF_*";
+static char             IF_Xnames[] = "_IF_X*";
 #else
   #error Unknown OS
 #endif
@@ -54,415 +50,395 @@ hw_reg_set              StackParms[] = { HW_D( HW_EMPTY ) };
 static  pass_by         IFArgValue = { NULL, PASS_BY_VALUE };
 static  pass_by         IFArgDescriptor = { NULL, PASS_BY_DESCRIPTOR };
 
-char    *RegNames[] = {
+static const char       *RegNames[] = {
     #define pick(text,regset) text,
     #include "regsdefn.h"
     #undef pick
 };
 
-hw_reg_set  RegValue[] = {
+static hw_reg_set       RegValue[] = {
     #define pick(text,regset) regset,
     #include "regsdefn.h"
     #undef pick
 };
-
-byte            MaxReg = { sizeof( RegNames ) / sizeof( RegNames[0] ) - 1 };
 
 #if _CPU == 8086
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D_5( HW_AX, HW_BX, HW_CX, HW_DX, HW_FLTS ), HW_D( HW_EMPTY ) };
 
-static  hw_reg_set      FortranParms[] =
-    { HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ), HW_D( HW_EMPTY ) };
-
 static  hw_reg_set      IFParms[] =
     { HW_D_5( HW_AX, HW_BX, HW_CX, HW_DX, HW_FLTS ), HW_D( HW_EMPTY ) };
 
-hw_reg_set              WinParms[] =
+static hw_reg_set       WinParms[] =
     { HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ), HW_D( HW_EMPTY ) };
 
-aux_info                RtRtnInfo = {
-        NULL,
+static aux_info                RtRtnInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
+        NULL,
         RtRtnParms,
-        NULL,
+        HW_D( HW_EMPTY ),
         HW_D( HW_SI ),
+        HW_D( HW_FULL ),
         "RT@*",
-        NULL,
-        0 };
+        0,
+        0,
+        NULL
+};
 
-aux_info                RtStopInfo = {
-        NULL,
+static aux_info                RtStopInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
+        NULL,
         RtRtnParms,
-        NULL,
+        HW_D( HW_EMPTY ),
         HW_D( HW_SI ),
+        HW_D( HW_FULL ),
         "RT@*",
-        NULL,
-        0 };
+        0,
+        0,
+        NULL
+};
 
-aux_info                RtVarInfo = {
-        NULL,
+static aux_info                RtVarInfo = {
         FAR_CALL | CALLER_POPS | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
+        NULL,
         StackParms,
-        NULL,
+        HW_D( HW_EMPTY ),
         HW_D( HW_SI ),
+        HW_D( HW_FULL ),
         "RT@*",
-        NULL,
-        0 };
+        0,
+        0,
+        NULL
+};
 
-aux_info                CoRtnInfo = {
-        NULL,
+static aux_info                CoRtnInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
+        NULL,
         RtRtnParms,
-        NULL,
+        HW_D( HW_EMPTY ),
         HW_D( HW_SI ),
+        HW_D( HW_FULL ),
         "RT@*",
-        NULL,
-        0 };
+        0,
+        0,
+        NULL
+};
 
-aux_info               IFXInfo = {
-        NULL,
+static aux_info               IFXInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
+        NULL,
         FortranParms,
-        NULL,
         HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
         IF_Xnames,
-        NULL,
-        0 };
+        0,
+        0,
+        NULL
+};
 
-aux_info                IFInfo = {
-        NULL,
+static aux_info                IFInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        IFParms,
         NULL,
+        IFParms,
         HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
         IF_names,
-        &IFArgValue,
-        0 };
+        0,
+        0,
+        &IFArgValue
+};
 
-aux_info                IFCharInfo = {
-        NULL,
+static aux_info                IFCharInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        IFParms,
         NULL,
+        IFParms,
         HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
         IF_names,
-        &IFArgDescriptor,
-        0 };
+        0,
+        0,
+        &IFArgDescriptor
+};
 
-aux_info                IFChar2Info = {
-        NULL,
+static aux_info                IFChar2Info = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        IFParms,
         NULL,
+        IFParms,
         HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
         IF_Xnames,
-        NULL,
-        0 };
+        0,
+        0,
+        NULL
+};
 
-aux_info                IFVarInfo = {
-        NULL,
+static aux_info                IFVarInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | CALLER_POPS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
+        NULL,
         StackParms,
-        NULL,
         HW_D( HW_EMPTY ),
-        IF_Xnames,
-        &IFArgValue,
-        0 };
-
-aux_info                DefaultInfo = {
-        NULL,
-        FAR_CALL,
+        HW_D( HW_EMPTY ),
         HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        FortranParms,
-        NULL,
-        HW_D( HW_SI ),
-        "^",
-        NULL,
-        0 };
+        IF_Xnames,
+        0,
+        0,
+        &IFArgValue
+};
 
 #elif   _CPU == 386
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D_5( HW_EAX, HW_EBX, HW_ECX, HW_EDX, HW_FLTS ), HW_D( HW_EMPTY ) };
 
-static  hw_reg_set      FortranParms[] =
-    { HW_D_4( HW_EAX, HW_EBX, HW_ECX, HW_EDX ), HW_D( HW_EMPTY ) };
-
 static  hw_reg_set      IFParms[] =
     { HW_D_5( HW_EAX, HW_EBX, HW_ECX, HW_EDX, HW_FLTS ), HW_D( HW_EMPTY ) };
 
-aux_info                RtRtnInfo = {
-        NULL,
+static aux_info                RtRtnInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
+        NULL,
         RtRtnParms,
-        NULL,
+        HW_D( HW_EMPTY ),
         HW_D( HW_ESI ),
+        HW_D( HW_FULL ),
         "RT@*",
-        NULL,
-        0 };
-
-aux_info                RtStopInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        RtRtnParms,
-        NULL,
-        HW_D( HW_ESI ),
-        "RT@*",
-        NULL,
-        0 };
-
-aux_info                RtVarInfo = {
-        NULL,
-        CALLER_POPS | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        StackParms,
-        NULL,
-        HW_D( HW_ESI ),
-        "RT@*",
-        NULL,
-        0 };
-
-aux_info                CoRtnInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        RtRtnParms,
-        NULL,
-        HW_D( HW_ESI ),
-        "RT@*",
-        NULL,
-        0 };
-
-aux_info               IFXInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        FortranParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        IF_Xnames,
-        NULL,
-        0 };
-
-aux_info                IFInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        IFParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        IF_names,
-        &IFArgValue,
-        0 };
-
-aux_info                IFCharInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        IFParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        IF_names,
-        &IFArgDescriptor,
-        0 };
-
-aux_info                IFChar2Info = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        IFParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        IF_Xnames,
-        NULL,
-        0 };
-
-aux_info                IFVarInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED | CALLER_POPS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        StackParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        IF_Xnames,
-        &IFArgValue,
-        0 };
-
-aux_info                DefaultInfo = {
-        NULL,
         0,
-        HW_D( HW_FULL ),
+        0,
+        NULL
+};
+
+static aux_info                RtStopInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
+        NULL,
+        RtRtnParms,
         HW_D( HW_EMPTY ),
-        FortranParms,
-        NULL,
         HW_D( HW_ESI ),
-        "^",
+        HW_D( HW_FULL ),
+        "RT@*",
+        0,
+        0,
+        NULL
+};
+
+static aux_info                RtVarInfo = {
+        CALLER_POPS | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         NULL,
-        0 };
+        StackParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_ESI ),
+        HW_D( HW_FULL ),
+        "RT@*",
+        0,
+        0,
+        NULL
+};
+
+static aux_info                CoRtnInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
+        NULL,
+        RtRtnParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_ESI ),
+        HW_D( HW_FULL ),
+        "RT@*",
+        0,
+        0,
+        NULL
+};
+
+static aux_info               IFXInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED,
+        NULL,
+        FortranParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        IF_Xnames,
+        0,
+        0,
+        NULL
+};
+
+static aux_info                IFInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED,
+        NULL,
+        IFParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        IF_names,
+        0,
+        0,
+        &IFArgValue
+};
+
+static aux_info                IFCharInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED,
+        NULL,
+        IFParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        IF_names,
+        0,
+        0,
+        &IFArgDescriptor
+};
+
+static aux_info                IFChar2Info = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED,
+        NULL,
+        IFParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        IF_Xnames,
+        0,
+        0,
+        NULL
+};
+
+static aux_info                IFVarInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED | CALLER_POPS,
+        NULL,
+        StackParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        IF_Xnames,
+        0,
+        0,
+        &IFArgValue
+};
 
 #elif _CPU == _AXP || _CPU == _PPC
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D( HW_EMPTY )};
 
-static  hw_reg_set      FortranParms[] =
-    { HW_D( HW_EMPTY ) };
-
 static  hw_reg_set      IFParms[] =
     { HW_D( HW_EMPTY ) };
 
-aux_info                RtRtnInfo = {
-        NULL,
+static aux_info                RtRtnInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
+        NULL,
         RtRtnParms,
-        NULL,
         HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
         "__RT_*",
-        NULL,
-        0 };
-
-aux_info                RtStopInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        RtRtnParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        "__RT_*",
-        NULL,
-        0 };
-
-aux_info                RtVarInfo = {
-        NULL,
-        CALLER_POPS | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        StackParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        "__RT_*",
-        NULL,
-        0 };
-
-aux_info                CoRtnInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        RtRtnParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        "__RT_*",
-        NULL,
-        0 };
-
-aux_info               IFXInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        FortranParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        &IF_Xnames,
-        NULL,
-        0 };
-
-aux_info                IFInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        IFParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        &IF_names,
-        &IFArgValue,
-        0 };
-
-aux_info                IFCharInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        IFParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        &IF_names,
-        &IFArgDescriptor,
-        0 };
-
-aux_info                IFChar2Info = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        IFParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        &IF_Xnames,
-        NULL,
-        0 };
-
-aux_info                IFVarInfo = {
-        NULL,
-        NO_MEMORY_READ | NO_MEMORY_CHANGED | CALLER_POPS,
-        HW_D( HW_FULL ),
-        HW_D( HW_EMPTY ),
-        StackParms,
-        NULL,
-        HW_D( HW_EMPTY ),
-        &IF_Xnames,
-        &IFArgValue,
-        0 };
-
-aux_info                DefaultInfo = {
-        NULL,
         0,
+        0,
+        NULL
+};
+
+static aux_info                RtStopInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
+        NULL,
+        RtRtnParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
         HW_D( HW_FULL ),
+        "__RT_*",
+        0,
+        0,
+        NULL
+};
+
+static aux_info                RtVarInfo = {
+        CALLER_POPS | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
+        NULL,
+        StackParms,
         HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        "__RT_*",
+        0,
+        0,
+        NULL
+};
+
+static aux_info                CoRtnInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
+        NULL,
+        RtRtnParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        "__RT_*",
+        0,
+        0,
+        NULL
+};
+
+static aux_info               IFXInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED,
+        NULL,
         FortranParms,
-        NULL,
         HW_D( HW_EMPTY ),
-        "^",
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        IF_Xnames,
+        0,
+        0,
+        NULL
+};
+
+static aux_info                IFInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
-        0 };
+        IFParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        IF_names,
+        0,
+        0,
+        &IFArgValue
+};
+
+static aux_info                IFCharInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED,
+        NULL,
+        IFParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        IF_names,
+        0,
+        0,
+        &IFArgDescriptor
+};
+
+static aux_info                IFChar2Info = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED,
+        NULL,
+        IFParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        IF_Xnames,
+        0,
+        0,
+        NULL
+};
+
+static aux_info                IFVarInfo = {
+        NO_MEMORY_READ | NO_MEMORY_CHANGED | CALLER_POPS,
+        NULL,
+        StackParms,
+        HW_D( HW_EMPTY ),
+        HW_D( HW_EMPTY ),
+        HW_D( HW_FULL ),
+        IF_Xnames,
+        0,
+        0,
+        &IFArgValue
+};
 
 #else
   #error Unknown Platform

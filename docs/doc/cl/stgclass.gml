@@ -44,13 +44,12 @@ have a storage class associated with it.
 .pp
 Only one of these keywords (excluding
 .kw typedef
-..ct ) may be specified in a declaration of
-an object.
+.ct ) may be specified in a declaration of an object.
 .pp
 If an object or function is declared with a storage class, but no
 type specifier, then the type of the object or function is assumed to be
 .kw int
-..ct ..li .
+.period
 .pp
 While a storage class specifier may be placed
 .ix 'storage class' 'following a type specifier'

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,11 +139,11 @@ static void WndDrawTheLine( a_window wnd, wnd_line_piece *line, wnd_row row )
     }
     extent = GUIGetExtentX( wnd->gui, line->text, line->length );
     if( line->extent != WND_MAX_EXTEND ) {
-        if( line->extent > extent ) {
+        if( extent < line->extent ) {
             extent = line->extent;
         }
     }
-    if( line->indent + extent > wnd->max_indent ) {
+    if( wnd->max_indent < line->indent + extent ) {
         wnd->max_indent = line->indent + extent;
     }
 }
@@ -191,7 +192,7 @@ static void    WndPaintRows( a_window wnd, wnd_row start_row, int num )
     prev_attr = 0;
     for( row = start_row; row < start_row + num; ++row ) {
         for( piece = 0; ; ++piece ) {
-            if( row < wnd->title_size ) {
+            if( row < wnd->title_rows ) {
                 row_to_get = row - wnd->top;
             } else {
                 row_to_get = row;

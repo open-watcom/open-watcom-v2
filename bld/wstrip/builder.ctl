@@ -18,12 +18,12 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/wstripx.exe <OWBINDIR>/bwstrip<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwstripx.exe <OWBINDIR>/<OWOBJDIR>/bwstrip<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/bwstrip<CMDEXT>
-    rm -f <OWBINDIR>/bwstrip<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/bwstrip<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/bwstrip<CMDEXT>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

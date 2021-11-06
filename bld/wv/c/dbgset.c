@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,7 @@
 #include "dbgchopt.h"
 #include "dbgsetfn.h"
 #include "dbgsetfg.h"
+#include "dbgmisc.h"
 
 #include "clibext.h"
 
@@ -89,128 +90,76 @@ char    *Language = NULL;
 
 static pending_toggle_list *PendToggleList[MWT_LAST];
 
+#define SET_DEFS \
+    pick( "AUtosave",       AutoSet,                AutoConf,                true  ) \
+    pick( "ASsembly",       AsmSet,                 AsmConf,                 true  ) \
+    pick( "Variable",       VarSet,                 VarConf,                 true  ) \
+    pick( "FUnctions",      FuncSet,                FuncConf,                true  ) \
+    pick( "GLobals",        GlobSet,                GlobConf,                true  ) \
+    pick( "MOdules",        ModSet,                 ModConf,                 true  ) \
+    pick( "REGister",       RegSet,                 RegConf,                 true  ) \
+    pick( "Fpu",            FPUSet,                 FPUConf,                 true  ) \
+    pick( "MMx",            MMXSet,                 MMXConf,                 true  ) \
+    pick( "XMm",            XMMSet,                 XMMConf,                 true  ) \
+    pick( "BEll",           BellSet,                BellConf,                true  ) \
+    pick( "Call",           CallSet,                CallConf,                false ) \
+    pick( "Dclick",         DClickSet,              DClickConf,              true  ) \
+    pick( "Implicit",       ImplicitSet,            ImplicitConf,            true  ) \
+    pick( "INput",          InputSet,               InputConf,               false ) \
+    pick( "Radix",          RadixSet,               RadixConf,               true  ) \
+    pick( "RECursion",      RecursionSet,           RecursionConf,           true  ) \
+    pick( "SEarch",         SearchSet,              SearchConf,              true  ) \
+    pick( "SOurce",         SourceSet,              SourceConf,              true  ) \
+    pick( "SYmbol",         LookSet,                LookConf,                true  ) \
+    pick( "TAb",            TabSet,                 TabConf,                 true  ) \
+    pick( "TYpes",          TypeSet,                TypeConf,                true  ) \
+    pick( "Level",          LevelSet,               LevelConf,               false ) \
+    pick( "LAnguage",       LangSet,                LangConf,                false ) \
+    pick( "MAcro",          MacroSet,               MacroConf,               true  ) \
+    pick( "SUpportroutine", SupportSet,             SupportConf,             true  ) \
+    pick( "BReakonwrite",   BreakOnWriteSet,        BreakOnWriteConf,        true  ) \
+    pick( "DOntexpandhex",  DontExpandHexStringSet, DontExpandHexStringConf, true  )
+
 static const char SetNameTab[] = {
-    "AUtosave\0"
-    "ASsembly\0"
-    "Variable\0"
-    "FUnctions\0"
-    "GLobals\0"
-    "MOdules\0"
-    "REGister\0"
-    "Fpu\0"
-    "MMx\0"
-    "XMm\0"
-    "BEll\0"
-    "Call\0"
-    "Dclick\0"
-    "Implicit\0"
-    "INput\0"
-    "Radix\0"
-    "RECursion\0"
-    "SEarch\0"
-    "SOurce\0"
-    "SYmbol\0"
-    "TAb\0"
-    "TYpes\0"
-    "Level\0"
-    "LAnguage\0"
-    "MAcro\0"
-    "SUpportroutine\0"
-    "BReakonwrite\0"
-    "DOntexpandhex\0"
+    #define pick(t,s,c,f)   t "\0"
+    SET_DEFS
+    #undef pick
 };
 
 static void (* const SetJmpTab[])( void ) = {
-    AutoSet,
-    AsmSet,
-    VarSet,
-    FuncSet,
-    GlobSet,
-    ModSet,
-    RegSet,
-    FPUSet,
-    MMXSet,
-    XMMSet,
-    BellSet,
-    CallSet,
-    DClickSet,
-    ImplicitSet,
-    InputSet,
-    RadixSet,
-    RecursionSet,
-    SearchSet,
-    SourceSet,
-    LookSet,
-    TabSet,
-    TypeSet,
-    LevelSet,
-    LangSet,
-    MacroSet,
-    SupportSet,
-    BreakOnWriteSet,
-    DontExpandHexStringSet,
+    #define pick(t,s,c,f)   s,
+    SET_DEFS
+    #undef pick
 };
 
 static void (* SetConfJmpTab[])( void ) = {
-    AutoConf,
-    AsmConf,
-    VarConf,
-    FuncConf,
-    GlobConf,
-    ModConf,
-    RegConf,
-    FPUConf,
-    MMXConf,
-    XMMConf,
-    BellConf,
-    CallConf,
-    DClickConf,
-    ImplicitConf,
-    InputConf,
-    RadixConf,
-    RecursionConf,
-    SearchConf,
-    SourceConf,
-    LookConf,
-    TabConf,
-    TypeConf,
-    LevelConf,
-    LangConf,
-    MacroConf,
-    SupportConf,
-    BreakOnWriteConf,
-    DontExpandHexStringConf,
-    NULL,
+    #define pick(t,s,c,f)   c,
+    SET_DEFS
+    #undef pick
 };
 
-
-static void (* SetNotAllTab[])( void ) =
-{
-    CallConf,
-    LevelConf,
-    LangConf,
-    InputConf,
-    NULL,
+static bool DoForAll[] = {
+    #define pick(t,s,c,f)   f,
+    SET_DEFS
+    #undef pick
 };
-
-
 
 
 bool SwitchOnOff( void )
 {
     int     cmd;
 
-    cmd = ScanCmd( "ON\0OFf\0" );
+    cmd = SwitchOnOffOnly();
     if( cmd < 0 )
         Error( ERR_LOC, LIT_ENG( ERR_WANT_ON_OFF ) );
     ReqEOC();
-    return( cmd == 0 );
+    return( cmd != false );
 }
 
 
 void ShowSwitch( bool on )
 {
-    GetCmdEntry( "ON\0OFf\0", on ? 0 : 1, TxtBuff );
+    GetSwitchOnly( on, TxtBuff );
     ConfigLine( TxtBuff );
 }
 
@@ -241,7 +190,7 @@ void ProcSet( void )
 
 void ConfigSet( void )
 {
-    DoConfig( GetCmdName( CMD_SET ), SetNameTab, SetConfJmpTab, SetNotAllTab );
+    DoConfig( GetCmdName( CMD_SET ), SetNameTab, SetConfJmpTab, DoForAll );
 }
 
 
@@ -728,18 +677,22 @@ static void ConfWindowSwitches( window_toggle *toggle, int len, const char *sett
         Assembly window
 */
 
-static const char AsmSettings[] = {
-    "Source\0"
-    "NOSource\0"
-    "Hexadecimal\0"
-    "Decimal\0"
-};
+#define ASM_DEFS \
+    pick( "Source",      IDX_ASM_SOURCE   ) \
+    pick( "NOSource",    IDX_ASM_NOSOURCE ) \
+    pick( "Hexadecimal", IDX_ASM_HEX      ) \
+    pick( "Decimal",     IDX_ASM_DECIMAL  )
 
 enum {
-    IDX_ASM_SOURCE,
-    IDX_ASM_NOSOURCE,
-    IDX_ASM_HEX,
-    IDX_ASM_DECIMAL,
+    #define pick(t,e)   e,
+    ASM_DEFS
+    #undef pick
+};
+
+static const char AsmSettings[] = {
+    #define pick(t,e)   t "\0"
+    ASM_DEFS
+    #undef pick
 };
 
 static window_toggle    AsmToggle[] = {
@@ -777,42 +730,35 @@ static void FPUConf( void )
         Variables window
 */
 
-static const char VarSettings[] = {
-    "Entire\0"
-    "Partial\0"
-    "CODe\0"
-    "NOCODe\0"
-    "INherit\0"
-    "NOINherit\0"
-    "COMpiler\0"
-    "NOCOMpiler\0"
-    "PRIvate\0"
-    "NOPRIvate\0"
-    "PROtected\0"
-    "NOPROTected\0"
-    "STatic\0"
-    "NOSTatic\0"
-    "Members\0"
-    "NOMembers\0"
-};
+#define VAR_DEFS \
+    pick( "Entire",      IDX_VAR_ENTIRE      ) \
+    pick( "Partial",     IDX_VAR_PARTIAL     ) \
+    pick( "CODe",        IDX_VAR_CODE        ) \
+    pick( "NOCODe",      IDX_VAR_NOCODE      ) \
+    pick( "INherit",     IDX_VAR_INHERIT     ) \
+    pick( "NOINherit",   IDX_VAR_NOINHERIT   ) \
+    pick( "COMpiler",    IDX_VAR_COMPILER    ) \
+    pick( "NOCOMpiler",  IDX_VAR_NOCOMPILER  ) \
+    pick( "PRIvate",     IDX_VAR_PRIVATE     ) \
+    pick( "NOPRIvate",   IDX_VAR_NOPRIVATE   ) \
+    pick( "PROtected",   IDX_VAR_PROTECTED   ) \
+    pick( "NOPROTected", IDX_VAR_NOPROTECTED ) \
+    pick( "STatic",      IDX_VAR_STATIC      ) \
+    pick( "NOSTatic",    IDX_VAR_NOSTATIC    ) \
+    pick( "Members",     IDX_VAR_MEMBERS     ) \
+    pick( "NOMembers",   IDX_VAR_NOMEMBERS   )
+
 
 enum {
-    IDX_VAR_ENTIRE,
-    IDX_VAR_PARTIAL,
-    IDX_VAR_CODE,
-    IDX_VAR_NOCODE,
-    IDX_VAR_INHERIT,
-    IDX_VAR_NOINHERIT,
-    IDX_VAR_COMPILER,
-    IDX_VAR_NOCOMPILER,
-    IDX_VAR_PRIVATE,
-    IDX_VAR_NOPRIVATE,
-    IDX_VAR_PROTECTED,
-    IDX_VAR_NOPROTECTED,
-    IDX_VAR_STATIC,
-    IDX_VAR_NOSTATIC,
-    IDX_VAR_MEMBERS,
-    IDX_VAR_NOMEMBERS,
+    #define pick(t,e)   e,
+    VAR_DEFS
+    #undef pick
+};
+
+static const char VarSettings[] = {
+    #define pick(t,e)   t "\0"
+    VAR_DEFS
+    #undef pick
 };
 
 static window_toggle VarToggle[] = {
@@ -837,15 +783,20 @@ static void VarConf( void )
     ConfWindowSwitches( VarToggle, ArraySize( VarToggle ), VarSettings, MWT_LAST );
 }
 
-
-static const char FuncSettings[] = {
-    "Typed\0"
-    "All\0"
-};
+#define FUNC_DEFS \
+    pick( "Typed", IDX_FUNC_TYPED ) \
+    pick( "All",   IDX_FUNC_ALL   )
 
 enum {
-    IDX_FUNC_TYPED,
-    IDX_FUNC_ALL,
+    #define pick(t,e)   e,
+    FUNC_DEFS
+    #undef pick
+};
+
+static const char FuncSettings[] = {
+    #define pick(t,e)   t "\0"
+    FUNC_DEFS
+    #undef pick
 };
 
 static window_toggle FuncToggle[] = {

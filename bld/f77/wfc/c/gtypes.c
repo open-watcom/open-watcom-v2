@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@
 #include "gtypes.h"
 
 
-void            DumpType( TYPE typ, uint size ) {
+void            DumpType( TYPE typ, size_t size ) {
 //===============================================
 
 // Emit a single type.
@@ -52,7 +53,7 @@ void            DumpType( TYPE typ, uint size ) {
 }
 
 
-void            DumpTypes( TYPE typ1, uint size1, TYPE typ2, uint size2 ) {
+void            DumpTypes( TYPE typ1, size_t size1, TYPE typ2, size_t size2 ) {
 //=========================================================================
 
 // Emit 2 types.

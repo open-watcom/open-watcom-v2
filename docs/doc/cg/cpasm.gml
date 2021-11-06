@@ -36,7 +36,7 @@ particular processor (such as the 486 or Pentium).
 .section *refid=inlinenv In-line Assembly Language Default Environment
 .*
 .np
-In next table is description of the default in-line assembler 
+In next table is description of the default in-line assembler
 environment in dependency on C/C++ compilers CPU switch for x86 target
 platform.
 ..sk 1

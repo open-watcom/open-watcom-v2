@@ -4,7 +4,7 @@
 div_t div( int numer, int denom );
 
 typedef struct {
-    int quot;     /* quotient */
+    int quot;     /* quotient  */
     int rem;      /* remainder */
 } div_t;
 .synop end
@@ -17,7 +17,7 @@ and remainder of the division of the numerator
 .arg numer
 by the denominator
 .arg denom
-.ct .li .
+.period
 .desc end
 .*
 .return begin
@@ -29,7 +29,7 @@ which contains the fields
 .kw quot
 and
 .kw rem
-.ct .li .
+.period
 .return end
 .*
 .see begin

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,10 +30,6 @@
 
 
 #if defined( _M_IX86 )
-    #pragma aux FMAIN "*";
-    #if defined( __WINDOWS__ ) || defined( __NT__ )
-      #pragma aux FWINMAIN "*";
-    #endif
 
   #if defined( _M_I86 )
     #pragma aux rt_rtn "RT@*" __parm [__ax __bx __cx __dx __8087];
@@ -165,11 +161,6 @@
   #pragma aux (rt_rtn) SetModule;
   #pragma aux (rt_rtn) ADVFillHi;
   #pragma aux (rt_rtn) ADVFillHiLo1;
-
-  #pragma aux (rt_rtn) lg_rtn "LG@*";
-  #pragma aux (lg_rtn) STOP_HOOK;
-  #pragma aux (lg_rtn) PAUSE_HOOK;
-  #pragma aux (lg_rtn) ERR_HOOK;
 #else
   #define PowII         __RT_PowII
   #define PowRR         __RT_PowRR
@@ -319,7 +310,7 @@ extern int      IOInq( void );
 extern int      IOOpen( void );
 extern int      IORew( void );
 extern void     FmtScan( string *fmt, uint extend_format );
-extern void     FmtAScan( char PGM *array, long int num_elts, int elt_size, uint extend_format );
+extern void     FmtAScan( char PGM *array, long num_elts, int elt_size, uint extend_format );
 extern void     Stop( string PGM *ptr );
 extern void     Pause( string PGM *ptr );
 extern void     Cat( uint num_args, string *dest, ... );

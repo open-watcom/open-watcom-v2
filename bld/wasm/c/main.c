@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,18 +38,14 @@
 #include "asmalloc.h"
 #include "fatal.h"
 #include "asmexpnd.h"
-#include "objprs.h"
-#include "genmsomf.h"
-#include "womputil.h"
 #include "swchar.h"
 #include "asminput.h"
 #include "banner.h"
-#ifdef __OSI__
-    #include "ostype.h"
-#endif
 #include "directiv.h"
 #include "standalo.h"
 #include "pathgrp2.h"
+#include "omfgenio.h"
+#include "omfobjre.h"
 
 #include "clibext.h"
 
@@ -58,7 +54,6 @@ extern void             Fatal( unsigned msg, ... );
 extern void             DelErrFile( void );
 
 File_Info               AsmFiles;       // files information
-pobj_state              pobjState;      // object file information for WOMP
 
 struct  option {
     char        *option;
@@ -72,7 +67,7 @@ static struct SWData {
     int     fpu;
 } SWData = {
     false, // real mode CPU instructions set
-    0,     // default CPU 8086
+    -1,    // unspecified CPU
     -1     // unspecified FPU
 };
 
@@ -116,10 +111,12 @@ global_options Options = {
     true,               // mangle stdcall
     false,              // write listing
     true,               // parameters passed by registers
-    MODE_WATCOM,        // assembler mode
+    MODE_WATCOM,        // initial assembler mode from cmdl
+    MODE_WATCOM,        // current assembler mode
     0,                  // locals prefix len
     {'\0','\0','\0'},   // locals prefix
-    0                   // trace stack
+    0,                  // trace stack
+    true                // instructions optimization
 };
 
 static char *CopyOfParm( void )
@@ -188,7 +185,7 @@ static void SetCPUPMC( void )
 {
     char                *tmp;
 
-    for( tmp=OptParm; tmp < OptScanPtr; tmp++ ) {
+    for( tmp = OptParm; tmp < OptScanPtr; tmp++ ) {
         if( *tmp == 'p' ) {
             if( SWData.cpu >= 2 ) { // set protected mode
                 SWData.protect_mode = true;
@@ -223,7 +220,7 @@ static void SetCPUPMC( void )
             *dest = NULLC;
         } else {
             MsgPrintf1( MSG_UNKNOWN_OPTION, CopyOfParm() );
-            exit( 1 );
+            exit( EXIT_ERROR );
         }
     }
     if( SWData.cpu < 3 ) {
@@ -288,51 +285,10 @@ static void SetMM( void )
         buffer[2] = (char)OptValue;
         buffer[3] = '\0';
         MsgPrintf1( MSG_UNKNOWN_OPTION, buffer );
-        exit( 1 );
+        exit( EXIT_ERROR );
     }
 
     memory_model = (char)OptValue;
-}
-
-static void SetMemoryModel( void )
-/********************************/
-{
-    char buffer[20];
-    char *model;
-
-    switch( memory_model ) {
-    case 'c':
-        model = "COMPACT";
-        break;
-    case 'f':
-        model = "FLAT";
-        break;
-    case 'h':
-        model = "HUGE";
-        break;
-    case 'l':
-        model = "LARGE";
-        break;
-    case 'm':
-        model = "MEDIUM";
-        break;
-    case 's':
-        model = "SMALL";
-        break;
-    case 't':
-        model = "TINY";
-        break;
-    default:
-        return;
-    }
-
-    if( Options.mode & MODE_IDEAL ) {
-        strcpy( buffer, "MODEL " );
-    } else {
-        strcpy( buffer, ".MODEL " );
-    }
-    strcat( buffer, model );
-    InputQueueLine( buffer );
 }
 
 static bool isvalidident( char *id )
@@ -419,8 +375,8 @@ static void get_fname( char *token, int type )
 {
     char        name [_MAX_PATH ];
     char        msgbuf[MAX_MESSAGE_SIZE];
-    PGROUP2     pg;
-    PGROUP2     def;
+    pgroup2     pg;
+    pgroup2     def;
 
     /* get filename for source file */
 
@@ -548,7 +504,7 @@ static void usage_msg( void )
 /***************************/
 {
     PrintfUsage();
-    exit(1);
+    exit( EXIT_ERROR );
 }
 
 static void Ignore( void ) {}
@@ -581,6 +537,8 @@ static void Set_N( void ) { set_some_kinda_name( (char)OptValue, CopyOfParm() );
 
 static void Set_O( void ) { Options.allow_c_octals = true; }
 
+static void Set_OD( void ) { Options.optimization = false; }
+
 static void Set_OF( void ) { Options.trace_stack = (char)OptValue; }
 
 static void Set_WE( void ) { Options.warning_error = true; }
@@ -592,13 +550,15 @@ static void SetWarningLevel( void ) { Options.warning_level = (char)OptValue; }
 static void Set_ZCM( void )
 {
     if( OptScanPtr == OptParm || strnicmp( OptParm, "MASM", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode = MODE_MASM6;
+        Options.mode_init = MODE_MASM6;
     } else if( strnicmp( OptParm, "WATCOM", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode = MODE_WATCOM;
+        Options.mode_init = MODE_WATCOM;
     } else if( strnicmp( OptParm, "TASM", OptScanPtr - OptParm ) == 0 ) {
-        Options.mode = MODE_TASM | MODE_MASM5;
+        Options.mode_init = MODE_TASM | MODE_MASM5;
+    } else if( strnicmp( OptParm, "IDEAL", OptScanPtr - OptParm ) == 0 ) {
+        Options.mode_init = MODE_TASM | MODE_IDEAL;
 //    } else if( strnicmp( OptParm, "MASM5", OptScanPtr - OptParm ) == 0 ) {
-//        Options.mode = MODE_MASM5;
+//        Options.mode_init = MODE_MASM5;
     }
 }
 
@@ -674,6 +634,7 @@ static struct option const cmdl_options[] = {
     { "nm=$",   'm',      Set_N },
     { "nt=$",   't',      Set_N },
     { "o",      0,        Set_O },
+    { "od",     0,        Set_OD },
     { "of",     1,        Set_OF },
     { "of+",    2,        Set_OF },
     { "q",      0,        Set_ZQ },
@@ -749,14 +710,12 @@ static void main_init( void )
         AsmFiles.fname[i] = NULL;
     }
     ObjRecInit();
-    GenMSOmfInit();
 }
 
 static void main_fini( void )
 /***************************/
 {
     free_names();
-    GenMSOmfFini();
     AsmShutDown();
 }
 
@@ -765,17 +724,12 @@ static void open_files( void )
 {
     /* open ASM file */
     AsmFiles.file[ASM] = fopen( AsmFiles.fname[ASM], "r" );
-
     if( AsmFiles.file[ASM] == NULL ) {
         Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[ASM] );
     }
 
     /* open OBJ file */
-    pobjState.file_out = ObjWriteOpen( AsmFiles.fname[OBJ] );
-    if( pobjState.file_out == NULL ) {
-        Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[OBJ] );
-    }
-    pobjState.pass = POBJ_WRITE_PASS;
+    ObjWriteOpen();
 
     /* delete any existing ERR file */
     DelErrFile();
@@ -991,7 +945,7 @@ static int ProcOptions( char *str, int *level )
         if( *str == '-' || *str == SwitchChar ) {
             str = ProcessOption( str + 1, str );
             if( str == NULL ) {
-                exit( 1 );
+                exit( EXIT_ERROR );
             }
         } else {  /* collect file name */
             char *beg, *p;
@@ -1054,19 +1008,7 @@ static bool set_build_target( void )
 /**********************************/
 {
     if( Options.build_target == NULL ) {
-#if defined(__OSI__)
-        if( __OS == OS_DOS ) {
-            SetTargName( "DOS", 3 );
-        } else if( __OS == OS_OS2 ) {
-            SetTargName( "OS2", 3 );
-        } else if( __OS == OS_NT ) {
-            SetTargName( "NT", 2 );
-        } else if( __OS == OS_WIN ) {
-            SetTargName( "WINDOWS", 7 );
-        } else {
-            SetTargName( "XXX", 3 );
-        }
-#elif defined(__QNX__)
+#if defined(__QNX__)
         SetTargName( "QNX", 3 );
 #elif defined(__LINUX__)
         SetTargName( "LINUX", 5 );
@@ -1084,8 +1026,6 @@ static bool set_build_target( void )
         SetTargName( "OS2", 3 );
 #elif defined(__NT__)
         SetTargName( "NT", 2 );
-#elif defined(__ZDOS__)
-        SetTargName( "ZDOS", 4 );
 #elif defined(__RDOS__)
         SetTargName( "RDOS", 4 );
 #else
@@ -1098,11 +1038,11 @@ static bool set_build_target( void )
     if( stricmp( Options.build_target, "DOS" ) == 0 ) {
         add_constant( "MSDOS", true );
     } else if( stricmp( Options.build_target, "NETWARE" ) == 0 ) {
-        if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
+        if( SWData.cpu >= 3 ) {
             add_constant( "NETWARE_386", true );
         }
     } else if( stricmp( Options.build_target, "WINDOWS" ) == 0 ) {
-        if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
+        if( SWData.cpu >= 3 ) {
             add_constant( "WINDOWS_386", true );
         }
     } else if( stricmp( Options.build_target, "QNX" ) == 0
@@ -1142,6 +1082,166 @@ static void set_fpu_mode( void )
     }
 }
 
+static void set_cpu_parameters( void )
+/*************************************
+ * initialization is always done
+ * in MASM mode by MASM directives
+ */
+{
+    asm_token   token;
+    char        buffer[MAX_KEYWORD_LEN + 1];
+
+    switch( SWData.cpu ) {
+    case 0:
+        token = T_DOT_8086;
+        break;
+    case 1:
+        token = T_DOT_186;
+        break;
+    case 2:
+        token = ( SWData.protect_mode ) ? T_DOT_286P : T_DOT_286;
+        break;
+    case 3:
+        token = ( SWData.protect_mode ) ? T_DOT_386P : T_DOT_386;
+        break;
+    case 4:
+        token = ( SWData.protect_mode ) ? T_DOT_486P : T_DOT_486;
+        break;
+    case 5:
+        token = ( SWData.protect_mode ) ? T_DOT_586P : T_DOT_586;
+        break;
+    case 6:
+        token = ( SWData.protect_mode ) ? T_DOT_686P : T_DOT_686;
+        break;
+    default:
+        return;
+    }
+    buffer[0] = '.';
+    GetInsString( token, buffer + 1 );
+    InputQueueLine( buffer );
+}
+
+static void set_fpu_parameters( void )
+/*************************************
+ * initialization is always done
+ * in MASM mode by MASM directives
+ */
+{
+    asm_token   token;
+    char        buffer[MAX_KEYWORD_LEN + 1];
+
+    switch( floating_point ) {
+    case NO_FP_ALLOWED:
+        token = T_DOT_NO87;
+        break;
+    case DO_FP_EMULATION:
+    case NO_FP_EMULATION:
+        switch( SWData.fpu ) {
+        case 0:
+        case 1:
+            token = T_DOT_8087;
+            break;
+        case 2:
+            token = T_DOT_287;
+            break;
+        case 3:
+        case 5:
+        case 6:
+            token = T_DOT_387;
+            break;
+        case 7:
+        default: // unspecified FPU
+            // derive FPU from CPU value
+            switch( SWData.cpu ) {
+            case 0:
+            case 1:
+                token = T_DOT_8087;
+                break;
+            case 2:
+                token = T_DOT_287;
+                break;
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                token = T_DOT_387;
+                break;
+            default: // unspecified CPU
+                return;
+            }
+            break;
+        }
+        break;
+    default: // unknown floating_point value
+        return;
+    }
+    buffer[0] = '.';
+    GetInsString( token, buffer + 1 );
+    InputQueueLine( buffer );
+}
+
+static void SetMemoryModel( void )
+/*********************************
+ * initialization is always done
+ * in MASM mode by MASM directives
+ */
+{
+    char buffer[20];
+    char *model;
+
+    switch( memory_model ) {
+    case 'c':
+        model = "COMPACT";
+        break;
+    case 'f':
+        model = "FLAT";
+        break;
+    case 'h':
+        model = "HUGE";
+        break;
+    case 'l':
+        model = "LARGE";
+        break;
+    case 'm':
+        model = "MEDIUM";
+        break;
+    case 's':
+        model = "SMALL";
+        break;
+    case 't':
+        model = "TINY";
+        break;
+    default:
+        return;
+    }
+
+    strcpy( buffer, ".MODEL " );
+    strcat( buffer, model );
+    InputQueueLine( buffer );
+}
+
+static void set_assembler_mode( void )
+/************************************/
+{
+    // setup MASM compatible mode for initialization
+    // TASM mode is setup after initialization by directives
+    if( Options.mode_init & MODE_TASM ) {
+        // if TASM mode then initialize
+        // by appropriate directive
+        if( Options.mode_init & MODE_IDEAL ) {
+            InputQueueLine( "IDEAL" );
+        } else {
+            InputQueueLine( "MASM" );
+        }
+    }
+    // init assembler mode to MASM mode
+    Options.mode = Options.mode_init & ~(MODE_TASM | MODE_IDEAL);
+    // initialization of TASM local labels prefix
+    Options.locals_prefix[0] = '@';
+    Options.locals_prefix[1] = '@';
+    Options.locals_len = 0;
+}
+
 static void parse_cmdline( char **cmdline )
 /*****************************************/
 {
@@ -1151,7 +1251,7 @@ static void parse_cmdline( char **cmdline )
     if( cmdline == NULL || *cmdline == NULL || **cmdline == 0 ) {
         usage_msg();
     }
-    for( ;*cmdline != NULL; ++cmdline ) {
+    for( ; *cmdline != NULL; ++cmdline ) {
         ProcOptions( *cmdline, &level );
     }
     if( AsmFiles.fname[ASM] == NULL ) {
@@ -1166,7 +1266,7 @@ static void do_init_stuff( char **cmdline )
     char        *env;
 
     if( !MsgInit() )
-        exit(1);
+        exit( EXIT_ERROR );
 
     add_constant( "WASM=" _MACROSTR( _BLDVER ), true );
     ForceInclude = AsmStrDup( getenv( "FORCE" ) );
@@ -1181,7 +1281,21 @@ static void do_init_stuff( char **cmdline )
         AddItemToIncludePath( env, NULL );
     PrintBanner();
     open_files();
-    PushLineQueue();
+
+    /*
+     * insert appropriate directives for command line parameters
+     * into input line queue to be processed before any source file
+     */
+    if( memory_model != '\0' ) {
+        if( SWData.cpu < 0 ) {
+            if( memory_model == 'f' ) {
+                SWData.cpu = 3;
+                SWData.protect_mode = true;
+            } else {
+                SWData.cpu = 0;
+            }
+        }
+    }
 }
 
 static void do_fini_stuff( void )
@@ -1210,11 +1324,14 @@ int main( void )
     char       *argv[2];
     int        len;
     char       *buff;
+
 #endif
 
     main_init();
     SwitchChar = _dos_switch_char();
-#ifndef __UNIX__
+#ifdef __UNIX__
+    do_init_stuff( &argv[1] );
+#else
     len = _bgetcmd( NULL, INT_MAX ) + 1;
     buff = malloc( len );
     if( buff != NULL ) {
@@ -1226,112 +1343,29 @@ int main( void )
     }
     do_init_stuff( argv );
     free( buff );
-#else
-    do_init_stuff( &argv[1] );
 #endif
-    SetMemoryModel();
     WriteObjModule();           // main body: parse the source file
     do_fini_stuff();
     main_fini();
     return( Options.error_count ); /* zero if no errors */
 }
 
-static void set_cpu_parameters( void )
-/*****************************/
-{
-    asm_token   token;
-
-    // Start in masm mode
-    Options.mode &= ~MODE_IDEAL;
-    switch( SWData.cpu ) {
-    case 0:
-        token = T_DOT_8086;
-        break;
-    case 1:
-        token = T_DOT_186;
-        break;
-    case 2:
-        token =  SWData.protect_mode ? T_DOT_286P : T_DOT_286;
-        break;
-    case 3:
-        token =  SWData.protect_mode ? T_DOT_386P : T_DOT_386;
-        break;
-    case 4:
-        token =  SWData.protect_mode ? T_DOT_486P : T_DOT_486;
-        break;
-    case 5:
-        token =  SWData.protect_mode ? T_DOT_586P : T_DOT_586;
-        break;
-    case 6:
-        token =  SWData.protect_mode ? T_DOT_686P : T_DOT_686;
-        break;
-    default:
-        return;
-    }
-    cpu_directive( token );
-}
-
-static void set_fpu_parameters( void )
-/*****************************/
-{
-    asm_token   token;
-
-    switch( floating_point ) {
-    case DO_FP_EMULATION:
-    case NO_FP_EMULATION:
-        break;
-    case NO_FP_ALLOWED:
-        cpu_directive( T_DOT_NO87 );
-        return;
-    }
-    switch( SWData.fpu ) {
-    case 0:
-    case 1:
-        token = T_DOT_8087;
-        break;
-    case 2:
-        token = T_DOT_287;
-        break;
-    case 3:
-    case 5:
-    case 6:
-        token = T_DOT_387;
-        break;
-    case 7:
-    default: // unspecified FPU
-        switch( SWData.cpu ) {
-        case 0:
-        case 1:
-            token = T_DOT_8087;
-            break;
-        case 2:
-            token = T_DOT_287;
-            break;
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-            token = T_DOT_387;
-            break;
-        default:
-            return;
-        }
-        break;
-    }
-    cpu_directive( token );
-}
-
 void CmdlParamsInit( void )
 /*************************/
 {
     Code->use32 = false;            // default is 16-bit segment
-    Code->info.cpu = P_86 | P_87;   // default is 8086 CPU and 8087 FPU
+    Code->info.cpu = ModuleInfo.cpu_init;
+    ModuleInfo.def_use32 = ModuleInfo.def_use32_init;
 
-    if( ForceInclude != NULL )
-        InputQueueFile( ForceInclude );
-
+    PushLineQueue();
     set_cpu_parameters();
     set_fpu_parameters();
+    SetMemoryModel();
+    set_assembler_mode();
+
+    if( ForceInclude != NULL ) {
+        InputQueueFile( ForceInclude );
+    }
 }
 
 void FreeForceInclude( void )

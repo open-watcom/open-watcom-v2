@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,8 @@
 
 #include <dos.h>
 #include "uidef.h"
-#include "biosui.h"
+#include "int33.h"
+#include "realmod.h"
 
 
 #define IRET        0xCF
@@ -50,6 +51,6 @@ bool intern mouse_installed( void )
 {
     memptr      vect;
 
-    vect = RealModeData( 0, BIOS_MOUSE * 4, memptr );
+    vect = RealModeData( 0, VECTOR_MOUSE * 4, memptr );
     return( vect.a || RealModeData( vect.s.segment, vect.s.offset, unsigned char ) != IRET );
 }

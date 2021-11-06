@@ -18,13 +18,13 @@
 :include pshpackl.sp
 :endsegment
 
-/* 
+/*
  *  ISO C types
  */
 :keep EXTWCHART
 :include wchar_t.sp
 :remove EXTWCHART
-/* 
+/*
  *  POSIX 1003.1 types
  */
 :include off_t.sp
@@ -34,7 +34,7 @@
 
 :endsegment
 :segment LINUX
-/* 
+/*
  *  LINUX types
  */
 :include ext.sp
@@ -163,16 +163,16 @@
  */
 
 typedef struct flock {
-    short int   l_type;
-    short int   l_whence;
+    short       l_type;
+    short       l_whence;
     off_t       l_start;
     off_t       l_len;
     long        l_sysid;
     pid_t       l_pid;
 #ifdef _M_I86
-    short int   l_pid_pad;
+    short       l_pid_pad;
 #endif
-    short int   zero[3];
+    short       zero[3];
 } flock_t;
 
 :elsesegment DOS | RDOS
@@ -206,32 +206,40 @@ typedef struct flock {
 /*
  *  POSIX 1003.1 Prototypes.
  */
-_WCRTLINK extern int open( const char *__path, int __oflag, ... );
-_WCRTLINK extern int sopen( const char *__path, int __oflag, int __share, ... );
-_WCRTLINK extern int creat( const char *__path, mode_t __mode );
+:include open.sp
+:include creat.sp
 
 :include ext.sp
-_WCRTLINK extern int _open( const char *__path, int __oflag, ... );
-_WCRTLINK extern int _sopen( const char *__path, int __oflag, int __share, ... );
-_WCRTLINK extern int _creat( const char *__path, mode_t __mode );
+:: MS extension version
+:include sopen.sp
+
+:keep ANSINAME
+:include open.sp
+:include creat.sp
+:include sopen.sp
+:remove ANSINAME
 
 :: Wide character version
-_WCRTLINK extern int _wopen( const wchar_t *, int, ... );
-_WCRTLINK extern int _wsopen( const wchar_t *, int, int, ... );
-_WCRTLINK extern int _wcreat( const wchar_t *, mode_t );
+:keep WIDE
+:segment DOS | LINUX | QNX
+:include open.sp
+:include creat.sp
+:include sopen.sp
+:endsegment
+:remove WIDE
 :include extepi.sp
 
 :segment LINUX | QNX
-_WCRTLINK extern int fcntl( int __fildes, int __cmd, ... );
+_WCRTLINK extern int        fcntl( int __fildes, int __cmd, ... );
 
 :endsegment
 :segment QNX
 struct _io_open; /* for C++ */
 
-_WCRTLINK extern int __fcntl_slib( int, int, int, struct flock * );
-_WCRTLINK extern int __open_slib( const char *__path, int __oflag, mode_t __mode );
-_WCRTLINK extern int __sopen_slib( const char *__path, int __oflag, int __share, mode_t __mode );
-_WCRTLINK extern int __resolve_net( unsigned, int, struct _io_open *, const char *, unsigned, char * );
+_WCRTLINK extern int        __fcntl_slib( int, int, int, struct flock * );
+_WCRTLINK extern int        __open_slib( const char *__path, int __oflag, mode_t __mode );
+_WCRTLINK extern int        __sopen_slib( const char *__path, int __oflag, int __share, mode_t __mode );
+_WCRTLINK extern int        __resolve_net( unsigned, int, struct _io_open *, const char *, unsigned, char * );
 
 :endsegment
 :include poppack.sp

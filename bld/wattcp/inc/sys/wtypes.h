@@ -48,10 +48,21 @@
 #include <sys/types.h>
 #endif
 
-#if defined(__SMALL__) || defined(__LARGE__)
-  typedef unsigned long u_int;    /* too many headers assume u_int is 32-bit */
+#if !defined(socklen_t)
+  typedef int           socklen_t;
+  #define socklen_t     socklen_t
+#endif
+
+#if defined( __WATCOMC__ )
+  #if defined(_M_I86)
+    typedef unsigned long u_int;    /* too many headers assume u_int is 32-bit */
+  #else
+    typedef unsigned int  u_int;
+  #endif
+#elif defined(__SMALL__) || defined(__LARGE__)
+    typedef unsigned long u_int;    /* too many headers assume u_int is 32-bit */
 #else
-  typedef unsigned int  u_int;
+    typedef unsigned int  u_int;
 #endif
 
 typedef unsigned char   u_char;
@@ -84,4 +95,3 @@ typedef long            int32_t;
 #endif
 
 #endif
-

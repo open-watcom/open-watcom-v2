@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@
 /*
  * SrcAssign - assign a value to a variable
  */
-vi_rc SrcAssign( const char *data, vlist *vl )
+vi_rc SrcAssign( const char *data, vars_list *vl )
 {
     int         i, j, k, l;
     long        val;
@@ -69,11 +70,7 @@ vi_rc SrcAssign( const char *data, vlist *vl )
      *  strchr %a ch
      *  substr %a n1 n2
      */
-    data = GetNextWord1( data, tmp );
-    if( *tmp == '\0' ) {
-        return( ERR_SRC_INVALID_ASSIGN );
-    }
-    if( !VarName( name, tmp, vl ) ) {
+    if( !ReadVarName( &data, name, vl ) ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
     data = GetNextWord1( data, tmp );
@@ -83,12 +80,10 @@ vi_rc SrcAssign( const char *data, vlist *vl )
     if( stricmp( tmp, "=" ) != 0 ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
-    data = SkipLeadingSpaces( data );
-
     if( data[0] == '/' || data[0] == '"' ) {
         check_end = false;
         if( data[0] == '"' ) {
-            data = GetNextWord( data, tmp, SingleQuote );
+            data = GetNextWord( data, tmp, SingleDQuote );
             if( data[0] == '"' ) {
                 check_end = true;
             }
@@ -99,8 +94,9 @@ vi_rc SrcAssign( const char *data, vlist *vl )
             }
         }
         if( check_end ) {
-            for( ++data; data[0] != '\0'; data++ ) {
-                switch( data[0] ) {
+            SKIP_CHAR_SPACES( data );
+            while( data[0] != '\0' ) {
+                switch( *data++ ) {
                 case 't':
                     timeflag = true;
                     break;
@@ -130,11 +126,7 @@ vi_rc SrcAssign( const char *data, vlist *vl )
         }
         j = Tokenize( StrTokens, tmp, false );
         if( j != TOK_INVALID ) {
-            data = GetNextWord1( data, tmp );
-            if( *tmp == '\0' ) {
-                return( ERR_SRC_INVALID_ASSIGN );
-            }
-            if( !VarName( tmp1, tmp, vl ) ) {
+            if( !ReadVarName( &data, tmp1, vl ) ) {
                 return( ERR_SRC_INVALID_ASSIGN );
             }
             v = VarFind( tmp1, vl );

@@ -176,6 +176,7 @@ This opens the
 dialog where you enter the name of the Browser database file you are
 creating.
 .figure *depth='1.32' *scale=56 *file='brow1' Use the New Browser File dialog to create a new Browser database file.
+.np
 .step Type the name and path
 of the new Browser database file.
 .orstep Click on the
@@ -219,6 +220,7 @@ module file is enabled.
 .step Continue with steps 4 and 5
 until you have added all desired module files to the component list.
 .figure *depth='2.32' *scale=52 *file='brow2' The Modules dialog displays the selected module files.
+.np
 .step Click on
 .us OK
 on the
@@ -328,7 +330,7 @@ This closes the
 .us Open Browser Database File
 dialog.
 .begnote
-.mnote Note:
+.note Note:
 You can have only one database file open at a time.
 If you open a second database file, the &br discards the first and
 displays information for the second.
@@ -861,9 +863,9 @@ Click on
 .us OK
 to close the dialog and update the display.
 .begnote
-.mnote Note:
+.note Note:
 This disables the selected root nodes only for the active view window.
-.endstep
+.endnote
 .*
 .section Enabling Root Nodes
 .*
@@ -903,9 +905,9 @@ Click on
 .us OK
 to close the dialog and update the display.
 .begnote
-.mnote Note:
+.note Note:
 This enables the selected root nodes only for the active view window.
-.endstep
+.endnote
 .*
 .endlevel
 .*
@@ -1696,6 +1698,7 @@ This opens the
 dialog where you specify the information you want
 to appear in detail views for classes.
 .figure *depth='2.30' *scale=52 *file='brow17' Use the Member Filters dialog to select the information to appear in detail views for classes.
+.np
 .step Choose the inheritance level
 from the
 .us Inherited Members
@@ -1751,7 +1754,7 @@ to accept the member filter query.
 This closes the dialog and returns you to the active window.
 .endstep
 .begnote
-.mnote Note:
+.note Note:
 The Default button on the Member Filter dialog resets the query
 to the default settings.
 .endnote
@@ -2057,7 +2060,7 @@ menu without first saving the options, the &br prompts you to save the
 options to a file.
 Refer to the section entitled :HDREF refid='brquit'. for more
 information.
-.endstep
+.endnote
 .begpoint $break
 .point Save Options
 Selecting

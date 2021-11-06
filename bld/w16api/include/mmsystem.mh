@@ -19,7 +19,7 @@
 
 :include cpluspro.sp
 
-#pragma pack( __push, 1 )
+:include pshpack1.sp
 
 /* Multimedia primitive data types */
 #ifndef RC_INVOKED
@@ -1558,7 +1558,7 @@ DWORD WINAPI    waveOutMessage( HWAVEOUT, UINT, DWORD, DWORD );
 
 #endif /* RC_INVOKED */
 
-#pragma pack( __pop )
+:include poppack.sp
 
 :include cplusepi.sp
 

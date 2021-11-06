@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,8 @@
 #include "gdefn.h"
 #if !defined( _DEFAULT_WINDOWS )
 #include "gbios.h"
+#include "8x8font.h"
+#include "hercfont.h"
 #endif
 
 
@@ -81,8 +83,8 @@ void _PutChar( short row, short col, short ch )
     old_text = _wpi_settextcolor( dc, _Col2RGB( colour ) );
     old_bk   = _wpi_setbackcolour( dc, _CurrBkColor );
 
-    temp[ 0 ] = ch;
-    temp[ 1 ] = '\0';
+    temp[0] = ch;
+    temp[1] = '\0';
 
     y2 = y + char_height;
     x2 = x + _wpi_metricmaxcharwidth( font_info );
@@ -113,10 +115,6 @@ void _PutChar( short row, short col, short ch )
 #define _HERC_HEIGHT    14
 #define _DEFAULT_HEIGHT 8
 #define _FONT_WIDTH     8
-
-
-extern char _WCI86FAR   _HercFont[256][_HERC_HEIGHT];
-extern char _WCI86FAR   _8x8BitMap;
 
 
 void _PutChar( short row, short col, short ch )
@@ -160,10 +158,10 @@ void _PutChar( short row, short col, short ch )
         char_height = _CurrState->vc.numypixels / _CurrState->vc.numtextrows;
         if( char_height < _HERC_HEIGHT ) {
             font_height = _DEFAULT_HEIGHT;
-            mask = &_8x8BitMap + _FONT_WIDTH * ch;
+            mask = _8x8Font + _FONT_WIDTH * ch;
         } else {
             font_height = _HERC_HEIGHT;
-            mask = &_HercFont[ ch ];
+            mask = _HercFont + ch;
         }
         // centre the character in given space
         x = col * _FONT_WIDTH;
@@ -200,7 +198,7 @@ void _PutChar( short row, short col, short ch )
         }
         if( space == 2 ) {      // duplicate bottom row also
             ( *setup )( x, y, colour );
-            ( *fill )( _Screen.mem, colour, *(mask-1), _FONT_WIDTH, 0 );
+            ( *fill )( _Screen.mem, colour, *( mask - 1 ), _FONT_WIDTH, 0 );
         }
         _ResetDevice();
 #if defined( VERSION2 )

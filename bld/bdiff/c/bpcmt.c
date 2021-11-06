@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ static void Usage( void );
 
 static char *Buffer;
 static char *Usetext[] = {
-    "Usage: BPCMT comment_file patch_file",
+    "Usage: bpcmt comment_file patch_file",
     NULL
 };
 
@@ -55,7 +55,7 @@ void main( int argc, char *argv[] )
 {
     size_t      size, bufsize;
     char        outfile[_MAX_PATH], infile[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
     FILE        *fpin, *fpout, *fpcmt;
     char        *pos;
 

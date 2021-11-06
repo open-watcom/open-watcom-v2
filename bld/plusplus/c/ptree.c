@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -277,32 +278,20 @@ PTREE PTreeReplaceRight( PTREE expr, PTREE new_right )
 }
 
 
-static PTREE strLiteral         // MAKE A STRING LITERAL NODE
-    ( STRING_CONSTANT str       // - the string
-    , type_id base )            // - the base type
+PTREE PTreeLiteral( STRING_CONSTANT str )
+/****************************************
+ * MAKE A STRING LITERAL TREE NODE
+ */
 {
     PTREE new_tree;
-    target_size_t str_len;
 
-    str_len = (target_size_t)StringAWStrLen( str );
     new_tree = PTreeAlloc();
     new_tree->op = PT_STRING_CONSTANT;
     new_tree->u.string = str;
-    new_tree->type = MakeArrayOf( str_len, GetBasicType( base ) );
+    new_tree->type = MakeArrayOf( StringAWStrLen( str ),
+                        GetBasicType( ( str->flags & STRLIT_WIDE ) ? TYP_WCHAR : TYP_CHAR ) );
     new_tree->flags |= PTF_LVALUE | PTF_LV_CHECKED;
     return( new_tree );
-}
-
-PTREE PTreeLiteral( STRING_CONSTANT str )
-/***************************************/
-{
-    return( strLiteral( str, TYP_CHAR ) );
-}
-
-PTREE PTreeLiteralWide( STRING_CONSTANT str )
-/*******************************************/
-{
-    return( strLiteral( str, TYP_WCHAR ) );
 }
 
 PTREE PTreeStringLiteralConcat( PTREE left, PTREE right )
@@ -317,7 +306,7 @@ PTREE PTreeStringLiteralConcat( PTREE left, PTREE right )
     PTreeExtractLocn( right, &err_locn );
     left_str = left->u.string;
     right_str = right->u.string;
-    if( left_str->wide_string != right_str->wide_string ) {
+    if( (left_str->flags & STRLIT_WIDE) != (right_str->flags & STRLIT_WIDE) ) {
         PTreeSetErrLoc( right );
         CErr1( ERR_MISMATCHED_WIDE_STRING_CONCATENATION );
     }
@@ -325,11 +314,7 @@ PTREE PTreeStringLiteralConcat( PTREE left, PTREE right )
     if( ! SrcFileAreTLSameLine( &(left->locn), &(right->locn) ) ) {
         StringConcatDifferentLines( new_str );
     }
-    if( new_str->wide_string ) {
-        new_literal = strLiteral( new_str, TYP_WCHAR );
-    } else {
-        new_literal = strLiteral( new_str, TYP_CHAR );
-    }
+    new_literal = PTreeLiteral( new_str );
     PTreeSetLocn( new_literal, &err_locn );
     PTreeFree( left );
     PTreeFree( right );
@@ -1299,7 +1284,7 @@ static PTREE useScopeIfPossible( PTREE scoped_thing, PTREE id )
     if( old_scope_tree != NULL ) {
         scope = old_scope_tree->u.id.scope;
         if( scope != NULL ) {
-            class_type = StructType( old_scope_tree->type );
+            class_type = ClassType( old_scope_tree->type );
             new_scope_tree = PTreeType( class_type );
             new_scope_tree->u.type.scope = scope;
             new_scope_tree = PTreeCopySrcLocation( new_scope_tree, old_scope_tree );
@@ -1351,7 +1336,7 @@ PTREE MakeScopedDestructorId( PTREE scoped_tilde, PTREE id )
     } else {
         tree = useScopeIfPossible( scoped_tilde, NULL );
         if( tree != NULL ) {
-            class_type = StructType( tree->u.subtree[0]->type );
+            class_type = ClassType( tree->u.subtree[0]->type );
             unbound_type = NULL;
             if( class_type->flag & TF1_UNBOUND ) {
                 unbound_type = class_type;
@@ -1629,7 +1614,7 @@ bool IsStringConstant( PTREE node, bool *multi_line_concat )
     ok = false;
     if( node->op == PT_STRING_CONSTANT ) {
         str = node->u.string;
-        if( str->concat && str->multi_line ) {
+        if( (str->flags & STRLIT_CONCAT) && (str->flags & STRLIT_MLINE) ) {
             *multi_line_concat = true;
         }
         ok = true;
@@ -1817,7 +1802,7 @@ static void savePTree( void *p, carve_walk_base *d )
     float_handle save_float;
     unsigned fp_len;
     PTREE save_subtree[2];
-    auto char buff[128];
+    char buff[128];
 
     if( s->op == PT_FREE ) {
         return;
@@ -1933,7 +1918,7 @@ static void savePTree( void *p, carve_walk_base *d )
 
 pch_status PCHWritePTrees( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     CarveWalkAllFree( carvePTREE, markFreePTree );
     CarveWalkAll( carvePTREE, savePTree, &data );
@@ -1946,8 +1931,8 @@ pch_status PCHReadPTrees( void )
 {
     PTREE r;
     unsigned len;
-    auto cvinit_t data;
-    auto char buff[128];
+    cvinit_t data;
+    char buff[128];
 
     CarveInitStart( carvePTREE, &data );
     for( ; (r = PCHReadCVIndexElement( &data )) != NULL; ) {

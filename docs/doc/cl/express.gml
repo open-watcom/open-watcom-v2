@@ -22,7 +22,7 @@ a mixture of,
 .ix 'parentheses'
 parentheses
 .mono ()
-..ct , which indicate to the compiler the desired grouping
+.ct , which indicate to the compiler the desired grouping
 of operations,
 .note
 .ix 'precedence'
@@ -70,7 +70,7 @@ it is important to understand
 the term
 .ix 'lvalue'
 .us lvalue
-..ct ..li .
+.period
 .pp
 An
 .us lvalue
@@ -87,7 +87,7 @@ or a function. The term
 .us lvalue
 is derived from
 .us l
-..ct eft
+.ct eft
 .us value,
 which refers to the fact that an
 .us lvalue
@@ -113,11 +113,10 @@ is an
 whose type is not an array or an incomplete type,
 whose declaration does not contain the keyword
 .kw const
-..ct ,
-and, if it is a structure or union, then none of its members contains
-the keyword
+.ct , and, if it is a structure or union,
+then none of its members contains the keyword
 .kw const
-..ct ..li .
+.period
 .*
 .* .keep begin
 .section Primary Expressions
@@ -163,7 +162,7 @@ A string literal is a primary expression whose
 type is
 "array of
 .kw char
-..ct ".
+.ct ".
 A string literal is also an
 .us lvalue
 (but is not modifiable).
@@ -238,31 +237,28 @@ where
 .mono array
 must have the type "array of
 .us type
-..ct " or
-"pointer to
+.ct " or "pointer to
 .us type
-..ct ", and
+.ct ", and
 .mono index
 must have an integral type. The result has
 type "
-..ct .us type
-..ct ".
+.ct .us type
+.ct ".
 .pp
 .mono array[index]
 is equivalent to
 .mono (*(array+index))
-..ct ,
-or the
+.ct , or the
 ..se hyphenmode=&syshy
 ..hy off
 .mono index
-..ct -th
+.ct -th
 ..hy &hyphenmode
 element of the array
 .mono array
-..ct ,
-where the first
-element is numbered zero. Note that
+.ct , where the first element is numbered zero.
+Note that
 .mono index
 is scaled automatically
 to account for the size of the elements of
@@ -297,7 +293,7 @@ A
 followed by parentheses containing zero or more comma-separated
 expressions is a
 .us function-call-expression
-..ct ..li .
+.period
 The postfix-expression denotes the function to be called, and must
 evaluate to a pointer to a function.
 .* returning
@@ -355,12 +351,12 @@ and
 .kw short int
 are converted to
 .kw int
-..ct ,
-while
+.ct , while
 .kw float
 values are converted to
 .kw double
-..ct ..li .)
+.period
+.ct )
 When the function definition is encountered, if the parameter
 types do not match the default argument promotions, then
 the behavior is undefined. (Usually, the parameters to the function
@@ -376,9 +372,8 @@ undefined.
 If the
 .ix 'ellipsis'
 ellipsis (
-..ct .mono ,...
-..ct )
-notation is used in a function prototype,
+.ct .mono ,...
+.ct ) notation is used in a function prototype,
 then those arguments in a function call that correspond to the
 ellipsis have only the default argument promotions performed on
 them.
@@ -469,11 +464,11 @@ the operand is incremented or decremented by 1, adjusted for the
 type of the operand. For example, if the operand is declared to be
 a "pointer to
 .us type
-..ct ", then the increment or decrement will be by the value
+.ct ", then the increment or decrement will be by the value
 .monoon
 sizeof(&SYSRB.:HP1.type:eHP1.&SYSRB.)
 .monooff
-..ct ..li .
+.period
 .pp
 The result of both post-increment and post-decrement (if it is just
 a subexpression of a larger expression)
@@ -595,18 +590,17 @@ type of the operand.
 For example, if the operand is declared to be
 a "pointer to
 .us type
-..ct ", then the increment or decrement will be by the value
+.ct ", then the increment or decrement will be by the value
 .monoon
 sizeof(&SYSRB.:HP1.type:eHP1.&SYSRB.)
-..ct ..li .
+.period
 .monooff
 .pp
 The expression
 .mono ++obj
 is equivalent to
 .mono (obj&SYSRB.+=&SYSRB.1)
-..ct ,
-while
+.ct , while
 ..se hyphenmode=&syshy
 ..hy off
 .mono --obj
@@ -639,17 +633,16 @@ object that is not a bit-field and is not declared with the
 .kw register
 storage-class specifier.
 If the type of the operand is "
-..ct .us type
-..ct ",
-then the type of the result is "pointer to
+.ct .us type
+.ct ", then the type of the result is "pointer to
 .us type
-..ct " and the result is the address of the operand.
+.ct " and the result is the address of the operand.
 .pp
 If the type of the operand is "array of
 .us type
-..ct ", then the type of the result is "pointer to
+.ct ", then the type of the result is "pointer to
 .us type
-..ct " and the result is the address of the first element of the array.
+.ct " and the result is the address of the first element of the array.
 .pp
 The
 .mono *
@@ -667,13 +660,12 @@ or
 operator. Its operand must be a pointer type, except that it may not
 be a pointer to
 .kw void
-..ct ..li .
+.period
 If the operand is a "pointer to
 .us type
-..ct ", then the type of the result is "
-..ct .us type
-..ct ",
-and the result is the object to which the operand points.
+.ct ", then the type of the result is "
+.ct .us type
+.ct ", and the result is the object to which the operand points.
 .pp
 No checking is performed to ensure that the value of the pointer is
 valid. If an invalid pointer value is used, the behavior of
@@ -780,12 +772,11 @@ the operand, effectively turning 0 bits to 1, and 1 bits to 0.
 .* .mono obj
 .* is declared to be
 .* .kw unsigned long
-.* ..ct ,
-.* then
+.* .ct , then
 .* .mono ~~obj
 .* is equivalent to
 .* .mono (4294967295U-obj)
-.* ..ct ..li .
+.* .period
 .* If
 .* .mono obj
 .* is declared to be any other unsigned type,
@@ -793,7 +784,7 @@ the operand, effectively turning 0 bits to 1, and 1 bits to 0.
 .* .mono ~~obj
 .* is equivalent to
 .* .mono (65535U-obj)
-.* ..ct ..li .
+.* .period
 .* .pp
 .* With &wc386.,
 .* if
@@ -802,11 +793,11 @@ the operand, effectively turning 0 bits to 1, and 1 bits to 0.
 .* .kw unsigned int
 .* or
 .* .kw unsigned long
-.* ..ct , then
+.* .ct , then
 .* .mono ~~obj
 .* is equivalent to
 .* .mono (4294967295U-obj)
-.* ..ct ..li .
+.* .period
 .* If
 .* .mono obj
 .* is declared to be any other unsigned type,
@@ -814,7 +805,7 @@ the operand, effectively turning 0 bits to 1, and 1 bits to 0.
 .* .mono ~~obj
 .* is equivalent to
 .* .mono (65535U-obj)
-.* ..ct ..li .
+.* .period
 .* .shade end
 .* ..do end
 .* ..if '&target' eq 'PC 370' ..th ..do begin
@@ -823,7 +814,7 @@ the operand, effectively turning 0 bits to 1, and 1 bits to 0.
 .* .mono ~~obj
 .* is equivalent to
 .* .mono (4294967295U-obj)
-.* ..ct ..li .
+.* .period
 .* .shade end
 .* ..do end
 .*
@@ -842,7 +833,7 @@ operator.
 Its operand must be a scalar type (not a structure, union or array).
 The result type is
 .kw int
-..ct ..li .
+.period
 If the operand has the value zero, then the result value is 1.
 If the operand has some other value, then the result is 0.
 .*
@@ -875,9 +866,7 @@ or a type in parentheses.
 In either case, the type must not be a function, bit-field
 or incomplete type (such as
 .kw void
-..ct ,
-or an array that has not had
-its length declared).
+.ct , or an array that has not had its length declared).
 .pp
 Note that an expression operand to
 .kw sizeof
@@ -916,7 +905,7 @@ For the &wcboth. compilers, the macro
 .kw size_t
 is
 .kw unsigned int
-..ct ..li .
+.period
 .shade end
 ..do end
 ..if '&target' eq 'PC 370' ..th ..do begin
@@ -926,7 +915,7 @@ For the &wlooc. compiler, the macro
 .kw size_t
 is
 .kw unsigned int
-..ct ..li .
+.period
 .shade end
 ..do end
 .*
@@ -1005,11 +994,10 @@ named type. This is called a
 Both the type name and the operand type must be scalar (not a
 structure, union or array), unless the type name is
 .kw void
-..ct ..li .
+.period
 If the type name is
 .kw void
-..ct ,
-the operand type must be a complete type
+.ct , the operand type must be a complete type
 (not an array of unknown size, or a structure or union that has
 not yet been defined).
 .pp
@@ -1019,12 +1007,12 @@ Pointers may be freely converted from "pointer to
 .ix 'pointer' 'to void'
 .ix 'void' 'pointer to'
 .kw void
-..ct " to any other pointer type without
+.ct " to any other pointer type without
 using an explicit cast operator.
 Pointers also may be converted
 from any pointer type to "pointer to
 .kw void
-..ct ".
+.ct ".
 .pp
 A pointer may be converted to a pointer to another type.
 However,
@@ -1098,22 +1086,17 @@ implementation-defined.
 .shade begin
 With &wc286.,
 for the purposes of conversion between pointers and integers,
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 pointers are treated as
 .kw unsigned int
-..ct ..li .
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.period
+.kw &kwfar.
 and
-.kwix &kwhuge_sp.
-.kwfont &kwhuge.
+.kw &kwhuge.
 pointers are treated as
 .kw unsigned long int
-..ct ,
-with the pointer's segment value in the high-order
-(most significant)
-two bytes.
+.ct , with the pointer's segment value in the high-order
+(most significant) two bytes.
 All the usual integer conversion rules then apply.
 Note that
 huge
@@ -1123,26 +1106,20 @@ are not normalized in any way.
 .shade begin
 With &wc386.,
 for the purposes of conversion between pointers and integers,
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 pointers are treated as
 .kw unsigned int
-..ct ..li .
-.kwix &kwfar16_sp.
-.kwfont &kwfar16.
+.period
+.kw &kwfar16.
 and
-.kwix &kwisg16_sp.
-.kwfont &kwiseg16.
+.kw &kwiseg16.
 pointers are also treated as
 .kw unsigned int
-..ct ,
-with the pointer's segment value in the high-order
-(most significant)
-two bytes.
+.ct , with the pointer's segment value in the high-order
+(most significant) two bytes.
 All the usual integer conversion rules then apply.
 Note that
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 pointers may not be converted to an integer without losing
 the segment information.
 .shade end
@@ -1153,7 +1130,7 @@ With &wlooc.,
 for the purposes of conversion between pointers and integers,
 pointers are treated as
 .kw unsigned int
-..ct ..li .
+.period
 All the usual integer conversion rules then apply.
 .*
 .shade end
@@ -1296,8 +1273,7 @@ For integral types
 .mono a
 and
 .mono b
-..ct ,
-if
+.ct , if
 .mono b
 is not zero, then
 .monoon
@@ -1305,7 +1281,7 @@ is not zero, then
 .monooff
 will equal
 .mono a
-..ct ..li .
+.period
 .*
 .keep begin
 .section Additive Operators
@@ -1340,7 +1316,7 @@ If one of the operands is a pointer, then the other operand must
 have an integral type.
 The pointer operand may not be a pointer to
 .kw void
-..ct ..li .
+.period
 Before being added to the pointer value, the integral value is
 multiplied by the size of the object to which the pointer points. The
 result type is the same as the pointer operand type.
@@ -1378,14 +1354,14 @@ integral value is multiplied by the size of the object to which the
 pointer points.
 The pointer operand may not be a pointer to
 .kw void
-..ct ..li .
+.period
 The result type is the same type as the pointer operand.
 .pp
 If both operands are pointers to the same type, the difference is
 divided by the size of the type, representing the difference of
 the subscripts of the two array members (assuming the type is "array of
 .us type
-..ct ").
+.ct ").
 The type of the result is implementation-defined, and is represented
 by
 .ix 'ptrdiff_t'
@@ -1404,8 +1380,7 @@ With &wcboth.,
 .kw ptrdiff_t
 is
 .kw int
-..ct ,
-unless the
+.ct , unless the
 .ix 'memory model' 'huge'
 .ix 'huge memory model'
 huge memory model is being used, in which case
@@ -1413,7 +1388,7 @@ huge memory model is being used, in which case
 .kw ptrdiff_t
 is
 .kw long int
-..ct ..li .
+.period
 .shade end
 ..do end
 ..if '&target' eq 'PC 370' ..th ..do begin
@@ -1423,7 +1398,7 @@ With &wlooc., the type of
 .kw ptrdiff_t
 is
 .kw int
-..ct ..li .
+.period
 .shade end
 ..do end
 .*
@@ -1476,7 +1451,7 @@ Another interpretation is that
 .mono op
 is multiplied by 2 raised to the power
 .mono amt
-..ct ..li .
+.period
 .pp
 The
 .mono >>
@@ -1505,7 +1480,7 @@ then
 .mono op
 is divided by 2 raised to the power
 .mono amt
-..ct ..li .
+.period
 Effectively, the low bits shifted out of
 .mono op
 are discarded, zero bits are filled on the left,
@@ -1599,7 +1574,7 @@ Each of the symbols
 yields the value 1 if the relation is true, and 0 if the relation
 is false. The result type is
 .kw int
-..ct ..li .
+.period
 .pp
 If both operands have arithmetic type, then the usual arithmetic
 conversions are performed on them.
@@ -1660,7 +1635,7 @@ and
 yield the value 1 if the relation is true, and 0 if the relation
 is false. The result type is
 .kw int
-..ct ..li .
+.period
 .pp
 If both operands have arithmetic type, then the usual arithmetic
 conversions are performed on them.
@@ -1670,10 +1645,9 @@ then they are pointers to the same object.
 .pp
 If both operands are pointers and one is a pointer to
 .kw void
-..ct ,
-then the other is converted to a pointer to
+.ct , then the other is converted to a pointer to
 .kw void
-..ct ..li .
+.period
 .pp
 If one of the operands is a pointer, the other may be a null pointer
 constant (zero).
@@ -1917,7 +1891,7 @@ is 1.
 Otherwise, the result is zero.
 The result type is
 .kw int
-..ct ..li .
+.period
 .pp
 If the first operand is zero, then the second operand is not
 evaluated.
@@ -1953,7 +1927,7 @@ is 1.
 Otherwise, the result is zero (both operands are zero).
 The result type is
 .kw int
-..ct ..li .
+.period
 .pp
 If the first operand is not zero, then the second operand is not
 evaluated.
@@ -2009,11 +1983,9 @@ then the result has that type.
 If both operands are pointers, and one is
 "pointer to
 .kw void
-..ct ",
-then the result type is
-"pointer to
+.ct ", then the result type is "pointer to
 .kw void
-..ct ".
+.ct ".
 .pp
 If one operand is a pointer, and the other is a null pointer constant
 (0), the result type is that of the pointer.
@@ -2113,7 +2085,7 @@ both are pointers to the same type,
 .bull
 both are pointers and one is a pointer to
 .kw void
-..ct ,
+.ct ,
 .bull
 the left operand is a pointer, and the right is a
 .ix 'null pointer'
@@ -2176,8 +2148,7 @@ a&SYSRB.=&SYSRB.a
 .monooff
 .us op
 .mono (b)
-..ct ,
-except that the left operand
+.ct , except that the left operand
 .mono a
 is evaluated only once.
 .pp
@@ -2221,7 +2192,7 @@ the function
 has one parameter, which has the value
 2 times
 .mono pi
-..ct ..li .
+.period
 .keep break
 .uillust begin
 .monoon

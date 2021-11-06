@@ -6,7 +6,7 @@ int _mbsnbcmp( const unsigned char *s1,
                size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Compare' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmbsnbcmp( const unsigned char __far *s1,
                 const unsigned char __far *s2,
                 size_t n );
@@ -23,8 +23,8 @@ bytes from the string pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
-.ct .li .
-.im farparm
+.period
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 The
@@ -34,16 +34,16 @@ than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by
 .arg s2
-.ct .li .
+.period
 .id &funcb.
 is similar to
-.kw _mbsncmp
+.reffunc _mbsncmp
 .ct , except that
 .id &funcb.
-compares strings by bytes rather than by characters.
+compares strings by length in bytes rather than by length in characters.
 .return end
 .see begin
-.seelist _mbsnbcat _mbsnbcmp _mbsnbicmp strncmp strnicmp
+.seelist _mbsnbcat _mbsnbcmp _mbsnbicmp strncmp _strnicmp
 .see end
 .exmp begin
 #include <stdio.h>

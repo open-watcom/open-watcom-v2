@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "vi.h"
 #include "posix.h"
 #include "win.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 #ifdef __WIN__
     #include "utils.h"
 #endif
@@ -124,7 +124,7 @@ vi_rc EditFile( const char *name, bool dammit )
      */
     strcpy( cdir, CurrentDirectory );
     reset_dir = false;
-    name = SkipLeadingSpaces( name );
+    SKIP_SPACES( name );
     if( name[0] == '$' ) {
         ++name;
         usedir = true;
@@ -132,7 +132,15 @@ vi_rc EditFile( const char *name, bool dammit )
     mask[0] = '\0';
     fn[0] = '\0';
 //    if( NextWord1FN( name, fn ) <= 0 )
-    if( GetStringWithPossibleQuote2( &name, fn, false ) != ERR_NO_ERR ) {
+    if( *name == '"' ) {
+        name = GetNextWord( name, fn, SingleDQuote );
+        if( *name == '"' ) {
+            SKIP_CHAR_SPACES( name );
+        }
+    } else {
+        name = GetNextWord1( name, fn );
+    }
+    if( *fn == '\0' ) {
         usedir = true;
         mask[0] = '*';
         mask[1] = '\0';
@@ -252,38 +260,22 @@ vi_rc EditFile( const char *name, bool dammit )
                     /* directory has changed -- check with full path
                      * note that this will fail if an absolute path
                      * was specified thus we do the regular check first */
-                    char    path[FILENAME_MAX];
-                    PGROUP  pg;
+                    char        path[FILENAME_MAX];
+                    pgroup2     pg1;
+                    pgroup2     pg2;
 
-                    _splitpath( il->CurrentFile->name, pg.drive, pg.dir, pg.fname, pg.ext );
-                    if( pg.drive[0] == '\0' ) {
-                        _splitpath( il->CurrentFile->home, pg.drive, NULL, NULL, NULL );
+                    _splitpath2( il->CurrentFile->name, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+                    _splitpath2( il->CurrentFile->home, pg2.buffer, &pg2.drive, &pg2.dir, NULL, NULL );
+                    if( pg1.drive[0] == '\0' ) {
+                        pg1.drive = pg2.drive;
                     }
-                    strcpy( path, il->CurrentFile->home );
-                    len = strlen( path );
-                    if( len > 0 ) {
-                        switch( path[len - 1] ) {
-                        case FILE_SEP:
-#if !defined( __UNIX__ )
-                        case ALT_FILE_SEP:
-                        case DRV_SEP:
-#endif
-                            break;
-                        default:
-                            path[len++] = FILE_SEP;
-                            path[len] = '\0';
-                            break;
-                        }
+                    if( pg1.dir[0] == '\0' ) {
+                        pg1.dir = pg2.dir;
+                    } else if( pg1.dir[0] != '\\' && pg1.dir[0] != '/' ) {
+                        strcat( pg2.dir, pg1.dir );
+                        pg1.dir = pg2.dir;
                     }
-                    if( pg.dir[0] == '\0' ) {
-                        _splitpath( path, NULL, pg.dir, NULL, NULL );
-                    } else if( pg.dir[0] != FILE_SEP ) {
-                        char dir2[_MAX_DIR];
-                        _splitpath( path, NULL, dir2, NULL, NULL );
-                        strcat( dir2, pg.dir );
-                        strcpy( pg.dir, dir2 );
-                    }
-                    _makepath( path, pg.drive, pg.dir, pg.fname, pg.ext );
+                    _makepath( path, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
 
                     if( SameFile( path, currfn ) ) {
                         break;
@@ -473,7 +465,6 @@ vi_rc OpenWindowOnFile( const char *data )
     vi_rc       rc;
     window_id   wid;
 
-    data = SkipLeadingSpaces( data );
     if( data[0] == '\0' ) {
         data = NULL;
     }

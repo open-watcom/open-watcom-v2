@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +46,9 @@ static COLORREF         colorPalette[16] = {
 /*
  * getTheBitmapBits - different for PM and Windows
  */
-static void getTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
+static void getTheBitmapBits( WPI_HBITMAP hbitmap, long bcount, BYTE *bits )
 {
-    _wpi_getbitmapbits( bitmap, bcount, bits );
+    _wpi_getbitmapbits( hbitmap, bcount, bits );
 
 } /* getTheBitmapBits */
 
@@ -57,7 +57,7 @@ static void getTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
 /*
  * getTheBitmapBits - different for PM and Windows
  */
-static void getTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
+static void getTheBitmapBits( WPI_HBITMAP hbitmap, long bcount, BYTE *bits )
 {
     BITMAP              bm;
     BITMAPINFO          *bmi;
@@ -69,7 +69,7 @@ static void getTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
     RGBQUAD             *rgb;
 
     bcount = bcount;
-    GetObject( bitmap, sizeof( BITMAP ), &bm );
+    GetObject( hbitmap, sizeof( BITMAP ), &bm );
     bc = bm.bmPlanes * bm.bmBitsPixel;
     size = DIB_INFO_SIZE( bc );
     bmi = MemAlloc( size );
@@ -96,7 +96,7 @@ static void getTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
     memcpy( bmi->bmiColors, rgb, RGBQ_SIZE( h->biBitCount ) );
     MemFree( rgb );
 
-    GetDIBits( memdc, bitmap, 0, bm.bmHeight, NULL, bmi, DIB_RGB_COLORS );
+    GetDIBits( memdc, hbitmap, 0, bm.bmHeight, NULL, bmi, DIB_RGB_COLORS );
     if( bmi->bmiHeader.biSizeImage == 0 ) {
 #if 0
         if( bm.bmWidth > 32 ) {
@@ -108,7 +108,7 @@ static void getTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
         bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( bm.bmWidth * bc, bm.bmHeight );
 #endif
     }
-    GetDIBits( memdc, bitmap, 0, bm.bmHeight, bits, bmi, DIB_RGB_COLORS );
+    GetDIBits( memdc, hbitmap, 0, bm.bmHeight, bits, bmi, DIB_RGB_COLORS );
 
     DeleteDC( memdc );
     MemFree( bmi );
@@ -120,7 +120,7 @@ static void getTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
 /*
  * GetTheBits - gets the bits for the bitmap
  */
-bitmap_bits *GetTheBits( HBITMAP bitmap )
+bitmap_bits *GetTheBits( WPI_HBITMAP hbitmap )
 {
     int         width;
     int         height;
@@ -128,7 +128,7 @@ bitmap_bits *GetTheBits( HBITMAP bitmap )
     int         planes;
     bitmap_bits *info;
 
-    _wpi_getbitmapparms( bitmap, &width, &height, &planes, NULL, &bitspixel );
+    _wpi_getbitmapparms( hbitmap, &width, &height, &planes, NULL, &bitspixel );
 
     info = MemAlloc( sizeof( bitmap_bits ) );
     info->bitcount = planes * bitspixel;
@@ -145,7 +145,7 @@ bitmap_bits *GetTheBits( HBITMAP bitmap )
     info->bits = MemAlloc( info->byte_count );
 
 //    ret = _wpi_getbitmapbits( bitmap, info->byte_count, info->bits );
-    getTheBitmapBits( bitmap, info->byte_count, info->bits );
+    getTheBitmapBits( hbitmap, info->byte_count, info->bits );
     return( info );
 
 } /* GetTheBits */
@@ -256,9 +256,9 @@ void MySetPixel( bitmap_bits *bits, int x, int y, COLORREF color )
 /*
  * setTheBitmapBits - set bits for PM
  */
-static void setTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
+static void setTheBitmapBits( WPI_HBITMAP hbitmap, long bcount, BYTE *bits )
 {
-    _wpi_setbitmapbits( bitmap, bcount, bits );
+    _wpi_setbitmapbits( hbitmap, bcount, bits );
 
 } /* _wpi_setTheBitmapBits */
 
@@ -267,7 +267,7 @@ static void setTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
 /*
  * setTheBitmapBits - set bits for Windows
  */
-static void setTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
+static void setTheBitmapBits( WPI_HBITMAP hbitmap, long bcount, BYTE *bits )
 {
     BITMAP              bm;
     BITMAPINFO          *bmi;
@@ -279,7 +279,7 @@ static void setTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
     int                 bc;
 
     bcount = bcount;
-    GetObject( bitmap, sizeof( BITMAP ), &bm );
+    GetObject( hbitmap, sizeof( BITMAP ), &bm );
     bc = bm.bmPlanes * bm.bmBitsPixel;
     size = DIB_INFO_SIZE( bc );
     bmi = MemAlloc( size );
@@ -306,7 +306,7 @@ static void setTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
     memcpy( bmi->bmiColors, rgb, RGBQ_SIZE( h->biBitCount ) );
     MemFree( rgb );
 
-    GetDIBits( memdc, bitmap, 0, bm.bmHeight, NULL, bmi, DIB_RGB_COLORS );
+    GetDIBits( memdc, hbitmap, 0, bm.bmHeight, NULL, bmi, DIB_RGB_COLORS );
     if( bmi->bmiHeader.biSizeImage == 0 ) {
 #if 0
         if( bm.bmWidth > 32 ) {
@@ -318,7 +318,7 @@ static void setTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
         bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( bm.bmWidth * bc, bm.bmHeight );
 #endif
     }
-    SetDIBits( memdc, bitmap, 0, bm.bmHeight, bits, bmi, DIB_RGB_COLORS );
+    SetDIBits( memdc, hbitmap, 0, bm.bmHeight, bits, bmi, DIB_RGB_COLORS );
 
     DeleteDC( memdc );
     MemFree( bmi );
@@ -331,11 +331,11 @@ static void setTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
  * FreeTheBits - frees the bits associated with bits and sets the bitmap
  *               bits if requested
  */
-void FreeTheBits( bitmap_bits *info, HBITMAP bitmap, bool setbits )
+void FreeTheBits( bitmap_bits *info, WPI_HBITMAP hbitmap, bool setbits )
 {
     if( setbits ) {
-        setTheBitmapBits( bitmap, info->byte_count, info->bits );
-//      _wpi_setbitmapbits( bitmap, info->byte_count, info->bits );
+        setTheBitmapBits( hbitmap, info->byte_count, info->bits );
+//      _wpi_setbitmapbits( hbitmap, info->byte_count, info->bits );
     }
     MemFree( info->bits );
     MemFree( info );

@@ -227,20 +227,26 @@ using std::wscanf;
 #define _BYTE_ORIENTED  1               /* byte-oriented stream */
 #define _WIDE_ORIENTED  2               /* wide-oriented stream */
 
+:: ISO C definition
+#define TMP_MAX         (26*26*26)      /*  Max times tmpnam can be called  */
 :segment LINUX | QNX
-:include extunix.sp
-#define L_cuserid   14                  /*  Max length of login names       */
-#define L_ctermid   16                  /*  Max length of terminal names    */
-#define P_tmpdir    "/usr/tmp"          /*  Temporary file directory        */
-:include extepi.sp
-
-#define L_tmpnam    255                 /*  Max length of tmp file names    */
+#define L_tmpnam        255             /*  Max length of tmp file names    */
 :elsesegment
-#define L_tmpnam    13
-#define _P_tmpdir   "\\"                /* used by _tempnam */
-#define _wP_tmpdir  L"\\"               /* used by _wtempnam */
+#define L_tmpnam        13              /*  Max length of tmp file names    */
 :endsegment
-#define TMP_MAX     (26*26*26)          /*  Max times tmpnam can be called  */
+:: POSIX definition
+:include extunix.sp
+#define L_cuserid       14              /*  Max length of login names       */
+#define L_ctermid       16              /*  Max length of terminal names    */
+:segment LINUX | QNX
+#define P_tmpdir        "/usr/tmp"      /*  Temporary file directory        */
+:elsesegment
+#define P_tmpdir        "\\"            /* used by _tempnam */
+#define wP_tmpdir       L"\\"           /* used by _wtempnam */
+#define _P_tmpdir       P_tmpdir
+#define _wP_tmpdir     wP_tmpdir
+:endsegment
+:include extepi.sp
 
 :include size_t.sp
 
@@ -289,7 +295,7 @@ _WCRTDATA extern __w_FILE  _WCDATA __iob[];
 #define stderr  ((__w_FILE *)&__iob[2])     /* standard error file  */
 :segment DOS
 :include ext.sp
-#if defined(__DOS__) || defined(__WINDOWS__) || defined(__OSI__)
+#if defined(__DOS__) || defined(__WINDOWS__)
 #define stdaux  ((__w_FILE *)&__iob[3])     /* standard auxiliary file  */
 #define stdprn  ((__w_FILE *)&__iob[4])     /* standard printer file  */
 #endif
@@ -329,7 +335,7 @@ _WCRTLINK extern int        fputs( const char *__s, FILE *__fp );
 _WCRTLINK extern size_t     fread( void *__ptr, size_t __size, size_t __n, FILE *__fp );
 _WCRTLINK extern FILE       *freopen( const char *__filename, const char *__mode, FILE *__fp );
 _WCRTLINK extern int        fscanf( FILE*__fp, const char *__format, ... );
-_WCRTLINK extern int        fseek( FILE *__fp, long int __offset, int __whence );
+_WCRTLINK extern int        fseek( FILE *__fp, long __offset, int __whence );
 _WCRTLINK extern int        fsetpos( FILE *__fp, const fpos_t *__pos );
 _WCRTLINK extern long       ftell( FILE *__fp );
 _WCRTLINK extern size_t     fwrite( const void *__ptr, size_t __size, size_t __n, FILE *__fp );
@@ -345,8 +351,8 @@ _WCRTLINK extern int        printf( const char *__format, ... );
 _WCRTLINK extern int        putc( int __c, FILE *__fp );
 _WCRTLINK extern int        putchar( int __c );
 _WCRTLINK extern int        puts( const char *__s );
-_WCRTLINK extern int        remove( const char *__filename );
-_WCRTLINK extern int        rename( const char *__old, const char *__new );
+:include remove.sp
+:include rename.sp
 _WCRTLINK extern void       rewind( FILE *__fp );
 _WCRTLINK extern int        scanf( const char *__format, ... );
 _WCRTLINK extern void       setbuf( FILE *__fp, char *__buf );
@@ -354,7 +360,7 @@ _WCRTLINK extern int        setvbuf( FILE *__fp, char *__buf, int __mode, size_t
 _WCRTLINK extern int        sprintf( char *__s, const char *__format, ... );
 _WCRTLINK extern int        sscanf( const char *__s, const char *__format, ... );
 _WCRTLINK extern FILE       *tmpfile( void );
-_WCRTLINK extern char       *tmpnam( char *__s );
+:include tmpnam.sp
 _WCRTLINK extern int        ungetc( int __c, FILE *__fp );
 _WCRTLINK extern int        vfprintf( FILE *__fp, const char *__format, __va_list __arg );
 _WCRTLINK extern int        vprintf( const char *__format, __va_list __arg );
@@ -380,7 +386,10 @@ _WCRTLINK extern int        _getw( __w_FILE *__fp );
 _WCRTLINK extern int        _pclose( __w_FILE *__fp );
 _WCRTLINK extern __w_FILE   *_popen( const char *__command, const char *__mode );
 _WCRTLINK extern int        _putw( int __binint, __w_FILE *__fp );
-_WCRTLINK extern char       *_tempnam( const char *__dir, const char *__prefix );
+:include tempnam.sp
+:keep ANSINAME
+:include tempnam.sp
+:remove ANSINAME
 
 :: Wide character version
 :include nsstd.sp
@@ -410,9 +419,11 @@ _WCRTLINK extern int        wscanf( const wchar_t *, ... );
 
 /* These names are not part of C89 or C99. */
 
-_WCRTLINK extern int        _fseeki64( __w_FILE *__fp, long long int __offset, int __whence );
+:segment DOS | LINUX | QNX
+_WCRTLINK extern int        _fseeki64( __w_FILE *__fp, long long __offset, int __whence );
 _WCRTLINK extern long long  _ftelli64( __w_FILE *__fp );
 
+:endsegment
 :segment LINUX
 _WCRTLINK extern int        fseeko( __w_FILE *__fp, off_t __offset, int __whence );
 _WCRTLINK extern off_t      ftello( __w_FILE *__fp );
@@ -453,10 +464,6 @@ _WCRTLINK extern __w_FILE   *_wfreopen( const wchar_t *, const wchar_t *, __w_FI
 _WCRTLINK extern __w_FILE   *_wfsopen( const wchar_t *__filename, const wchar_t *__mode, int __shflag );
 _WCRTLINK extern void       _wperror( const wchar_t * );
 _WCRTLINK extern __w_FILE   *_wpopen( const wchar_t *__command, const wchar_t *__mode );
-_WCRTLINK extern int        _wremove( const wchar_t * );
-_WCRTLINK extern int        _wrename( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t    *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
-_WCRTLINK extern wchar_t    *_wtmpnam( wchar_t * );
 _WCRTLINK extern int        _vbwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
 _WCRTLINK extern int        _vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
 _WCRTLINK extern int        vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
@@ -465,6 +472,14 @@ _WCRTLINK extern __w_wint_t fgetwchar( void );
 _WCRTLINK extern __w_wint_t fputwchar( __w_wint_t );
 _WCRTLINK extern wchar_t    *getws( wchar_t * );
 _WCRTLINK extern int        putws( const wchar_t * );
+:keep WIDE
+:segment DOS
+:include remove.sp
+:include rename.sp
+:include tempnam.sp
+:include tmpnam.sp
+:endsegment
+:remove WIDE
 
 :segment QNX
 #ifdef _this_belongs_in_a_private_qnx_header

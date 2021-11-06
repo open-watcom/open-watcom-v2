@@ -17,31 +17,31 @@ void _fheapgrow( void );
 .synop end
 .desc begin
 The
-.kw _nheapgrow
+.reffunc _nheapgrow
 function attempts to grow the near heap to the maximum size of 64K.
 You will want to do this in the small data models if you are using both
-.kw malloc
+.reffunc malloc
 and
-.kw _fmalloc
+.reffunc _fmalloc
 or
-.kw halloc
-.ct .li .
+.reffunc halloc
+.period
 Once a call to
-.kw _fmalloc
+.reffunc _fmalloc
 or
-.kw halloc
+.reffunc halloc
 has been made, you may not be able to allocate any memory with
-.kw malloc
+.reffunc malloc
 unless space has been reserved for the near heap using either
-.kw malloc
-.ct,
-.kw sbrk
+.reffunc malloc
+.ct ,
+.reffunc sbrk
 or
-.kw _nheapgrow
-.ct .li .
+.reffunc _nheapgrow
+.period
 .np
 The
-.kw _fheapgrow
+.reffunc _fheapgrow
 function doesn't do anything to the heap because the far heap will be
 extended automatically when needed.
 If the current far heap cannot be extended, then another far heap will be
@@ -50,12 +50,12 @@ started.
 In a small data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _nheapgrow
+.reffunc _nheapgrow
 function; in a large data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _fheapgrow
+.reffunc _fheapgrow
 function.
 .desc end
 .return begin

@@ -20,10 +20,12 @@
 :endsegment
 :include cpluspro.sp
 
-/* 
+:segment DOS
+/*
  *  ISO C types
  */
 :include wchar_t.sp
+:endsegment
 :segment DOS | LINUX | RDOS
 /*
  *  POSIX 1003.1 types
@@ -31,35 +33,16 @@
 :include pid_t.sp
 
 :endsegment
-/*
- *  POSIX 1003.1 Prototypes
- */
-_WCRTLINK extern int    execl( const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    execle( const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    execlp( const char *__file, const char *__arg0, ... );
-_WCRTLINK extern int    execv( const char *__path, const char *const __argv[] );
-_WCRTLINK extern int    execve( const char *__path, const char *const __argv[], const char *const __envp[] );
-_WCRTLINK extern int    execvp( const char *__file, const char *const __argv[] );
-
-:segment LINUX | QNX
+::
+:: Start of extension section
+::
 :include ext.sp
-::
-:: Begin of extension section
-::
-:endsegment
-_WCRTLINK extern int    _execl( const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    _execle( const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    _execlp( const char *__file, const char *__arg0, ... );
-_WCRTLINK extern int    _execv( const char *__path, const char *const __argv[] );
-_WCRTLINK extern int    _execve( const char *__path, const char *const __argv[], const char *const __envp[] );
-_WCRTLINK extern int    _execvp( const char *__file, const char *const __argv[] );
 
 :segment QNX
 /*
  *  Spawn flags passed to qnx_spawn()
  *  These are unique to QNX
  */
-
 #define _SPAWN_DEBUG        0x0001
 #define _SPAWN_HOLD         0x0002
 #define _SPAWN_BGROUND      0x0004
@@ -71,6 +54,103 @@ _WCRTLINK extern int    _execvp( const char *__file, const char *const __argv[] 
 #define _SPAWN_SETSID       0x0100
 #define _SPAWN_NOHUP        0x0200
 
+:endsegment
+/* mode flags for spawnxxx routines */
+:segment DOS
+_WCRTDATA extern int __p_overlay;
+
+:endsegment
+#define _P_WAIT             0
+#define _P_NOWAIT           1
+:segment DOS
+#define _P_OVERLAY          __p_overlay
+:elsesegment
+#define _P_OVERLAY          2
+:endsegment
+#define _P_NOWAITO          3
+:segment DOS
+#ifdef __NT__
+#define _P_DETACH           4
+#endif
+:endsegment
+#define _OLD_P_OVERLAY      2
+
+#define P_WAIT              _P_WAIT
+#define P_NOWAIT            _P_NOWAIT
+#define P_OVERLAY           _P_OVERLAY
+#define P_NOWAITO           _P_NOWAITO
+:segment DOS
+#ifdef __NT__
+#define P_DETACH            _P_DETACH
+#endif
+:endsegment
+#define OLD_P_OVERLAY       _OLD_P_OVERLAY
+
+:segment DOS | RDOS
+/* values for __action_code used with cwait() */
+
+#define WAIT_CHILD          0
+#define WAIT_GRANDCHILD     1
+
+:endsegment
+:include extepi.sp
+::
+:: End of extension section
+::
+
+/*
+ *  POSIX 1003.1 Prototypes
+ */
+:include pxexec.sp
+
+:: These functions from the standard library need to be in namspace std
+:: in C++ to avoid conflicts on using declarations if standard headers
+:: are also included.
+#ifdef __cplusplus
+namespace std {
+#endif
+:include abort.sp
+:include exit.sp
+:include getenv.sp
+:include system.sp
+#ifdef __cplusplus
+} // namespace std
+using std::abort;
+using std::exit;
+using std::getenv;
+using std::system;
+#endif /* __cplusplus not defined */
+
+:include _exit.sp
+:include _pxexit.sp
+
+:include setenv.sp
+:include putenv.sp
+
+:include getpid.sp
+
+:include wait.sp
+
+::
+:: Start of extension section
+::
+:include ext.sp
+
+:include msexec.sp
+
+:keep ANSINAME
+:include pxexec.sp
+:include msexec.sp
+:remove ANSINAME
+
+:keep WIDE
+:segment DOS
+:include pxexec.sp
+:include msexec.sp
+
+:endsegment
+:remove WIDE
+:segment QNX
 struct _proc_spawn;     /* for C++ */
 
 extern pid_t qnx_spawn( int __mode, struct _proc_spawn *__msgbuf, nid_t __node,
@@ -83,40 +163,6 @@ extern pid_t tfork( char *__stk_addr, unsigned __stk_size, int (*__func)(void*),
 #endif
 
 :endsegment
-/* mode flags for spawnxxx routines */
-_WCRTDATA extern int __p_overlay;
-
-#define _P_WAIT     0
-#define _P_NOWAIT   1
-#define _P_OVERLAY  __p_overlay
-#define _P_NOWAITO  3
-#define _OLD_P_OVERLAY  _P_OVERLAY
-:segment DOS
-#ifdef __NT__
-#define _P_DETACH   4
-#endif
-:endsegment
-
-#define P_WAIT      _P_WAIT
-#define P_NOWAIT    _P_NOWAIT
-#define P_OVERLAY   _P_OVERLAY
-#define P_NOWAITO   _P_NOWAITO
-:segment DOS
-#ifdef __NT__
-#define P_DETACH    _P_DETACH
-#endif
-:endsegment
-
-/*
- *  Prototypes for non-POSIX functions
- */
-
-_WCRTLINK extern int    execlpe( const char *__file, const char *__arg0, ... );
-_WCRTLINK extern int    execvpe( const char *__file, const char *const __argv[], const char *const __envp[] );
-
-_WCRTLINK extern int    _execlpe( const char *__file, const char *__arg0, ... );
-_WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[], const char *const __envp[] );
-
 :segment RDOS
  _WCRTLINK extern int  _beginthread(
                 void (_WCCALLBACK *__start_address)(void *), int __prio,
@@ -152,84 +198,55 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
                 unsigned (__stdcall *__start_address)(void *),
                 void *__arglist, unsigned __initflag, unsigned *__thrdaddr );
   #pragma intrinsic(_beginthread,_beginthreadex)
-  _WCRTLINK extern void _endthreadex( unsigned __retval );
+  _WCRTLINK extern void     _endthreadex( unsigned __retval );
 :include thrdhndl.sp
  #else
   _WCRTLINK extern int  _beginthread( void (_WCCALLBACK *__start_address)(void *),
-      void *__stack_bottom, unsigned __stack_size, void *__arglist );
+                        void *__stack_bottom, unsigned __stack_size, void *__arglist );
   #pragma intrinsic(_beginthread)
  #endif
- _WCRTLINK extern void  _endthread( void );
+ _WCRTLINK extern void      _endthread( void );
 #endif
 :endsegment
 
 :segment DOS | RDOS
-/* values for __action_code used with cwait() */
-
-#define WAIT_CHILD      0
-#define WAIT_GRANDCHILD 1
-
-_WCRTLINK extern int    cwait( int *__status, int __process_id, int __action_code );
-_WCRTLINK extern int    _cwait( int *__status, int __process_id, int __action_code );
+:: MS deprecated
+_WCRTLINK extern int        cwait( int *__status, int __process_id, int __action_code );
+::
+_WCRTLINK extern int        _cwait( int *__status, int __process_id, int __action_code );
 
 :endsegment
-:: These functions from the standard library need to be in namspace std
-:: in C++ to avoid conflicts on using declarations if standard headers
-:: are also included.
-:include process1.sp
-
-:include _exit.sp
-
 :segment LINUX | QNX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
 :endsegment
-_WCRTLINK extern char   *getcmd( char *__buffer );
-_WCRTLINK extern int    _bgetcmd( char *__buffer, int __len );
-_WCRTLINK extern char   *_cmdname( char *__name );
+_WCRTLINK extern char       *getcmd( char *__buffer );
+_WCRTLINK extern int        _bgetcmd( char *__buffer, int __len );
+_WCRTLINK extern char       *_cmdname( char *__name );
 :segment LINUX | QNX
 #endif
 :endsegment
-_WCRTLINK extern int    putenv( const char *__string );
-_WCRTLINK extern int    spawnl( int __mode, const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    spawnle( int __mode, const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    spawnlp( int __mode, const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    spawnlpe( int __mode, const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    spawnv( int __mode, const char *__path, const char * const *__argv );
-_WCRTLINK extern int    spawnve( int __mode, const char *__path, const char * const *__argv, const char * const *__envp );
-_WCRTLINK extern int    spawnvp( int __mode, const char *__path, const char * const *__argv );
-_WCRTLINK extern int    spawnvpe( int __mode, const char *__path, const char * const *__argv, const char * const *__envp );
 
-_WCRTLINK extern int    _spawnl( int __mode, const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    _spawnle( int __mode, const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    _spawnlp( int __mode, const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    _spawnlpe( int __mode, const char *__path, const char *__arg0, ... );
-_WCRTLINK extern int    _spawnv( int __mode, const char *__path, const char * const *__argv );
-_WCRTLINK extern int    _spawnve( int __mode, const char *__path, const char * const *__argv, const char * const *__envp );
-_WCRTLINK extern int    _spawnvp( int __mode, const char *__path, const char * const *__argv );
-_WCRTLINK extern int    _spawnvpe( int __mode, const char *__path, const char * const *__argv, const char * const *__envp );
+:include msspawn.sp
 
-_WCRTLINK extern wchar_t *_wgetenv( const wchar_t *__name );
-_WCRTLINK extern int    _wsetenv( const wchar_t *__name, const wchar_t *__newvalue, int __overwrite );
-_WCRTLINK extern int    _wputenv( const wchar_t *__env_string );
+:keep ANSINAME
+:include msspawn.sp
 
-_WCRTLINK extern int    _wexecl( const wchar_t *__path, const wchar_t *__arg0, ... );
-_WCRTLINK extern int    _wexecle( const wchar_t *__path, const wchar_t *__arg0, ... );
-_WCRTLINK extern int    _wexeclp( const wchar_t *__file, const wchar_t *__arg0, ... );
-_WCRTLINK extern int    _wexecv( const wchar_t *__path, const wchar_t *const __argv[] );
-_WCRTLINK extern int    _wexecve( const wchar_t *__path, const wchar_t *const __argv[], const wchar_t *const __envp[] );
-_WCRTLINK extern int    _wexecvp( const wchar_t *__file, const wchar_t *const __argv[] );
-_WCRTLINK extern int    _wexeclpe( const wchar_t *__file, const wchar_t *__arg0, ... );
-_WCRTLINK extern int    _wexecvpe( const wchar_t *__file, const wchar_t *const __argv[], const wchar_t *const __envp[] );
-_WCRTLINK extern int    _wspawnl( int __mode, const wchar_t *__path, const wchar_t *__arg0, ... );
-_WCRTLINK extern int    _wspawnle( int __mode, const wchar_t *__path, const wchar_t *__arg0, ... );
-_WCRTLINK extern int    _wspawnlp( int __mode, const wchar_t *__path, const wchar_t *__arg0, ... );
-_WCRTLINK extern int    _wspawnlpe( int __mode, const wchar_t *__path, const wchar_t *__arg0, ... );
-_WCRTLINK extern int    _wspawnv( int __mode, const wchar_t *__path, const wchar_t * const *__argv );
-_WCRTLINK extern int    _wspawnve( int __mode, const wchar_t *__path, const wchar_t * const *__argv, const wchar_t * const *__envp );
-_WCRTLINK extern int    _wspawnvp( int __mode, const wchar_t *__path, const wchar_t * const *__argv );
-_WCRTLINK extern int    _wspawnvpe( int __mode, const wchar_t *__path, const wchar_t * const *__argv, const wchar_t * const *__envp );
-_WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
+:include putenv.sp
 
+:include getpid.sp
+:remove ANSINAME
+
+:keep WIDE
+:segment DOS
+:include getenv.sp
+:include putenv.sp
+:include setenv.sp
+:include system.sp
+
+:include msspawn.sp
+
+:endsegment
+:remove WIDE
 :segment DOS | RDOS
 :segment DOS
 #ifdef __NT__
@@ -247,21 +264,15 @@ _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
 :endsegment
 
 :endsegment
-_WCRTLINK extern pid_t  getpid( void );
-_WCRTLINK extern pid_t  _getpid( void );
-_WCRTLINK extern pid_t  wait( int *__status );
-
 :segment LINUX
-_WCRTLINK extern pid_t  gettid( void );
+_WCRTLINK extern pid_t      gettid( void );
 
 :endsegment
-:segment LINUX | QNX
+:include extepi.sp
 ::
 :: End of extension section
 ::
-:include extepi.sp
 
-:endsegment
 :include cplusepi.sp
 
 #endif

@@ -30,7 +30,7 @@ parentheses.
 If
 .id len
 is not specified, the length is 1.
-.endnote
+.esynote
 .*
 .section Extended IMPLICIT Statement
 .*
@@ -113,7 +113,7 @@ can be
 .mono (*)
 or any positive integer.
 .endnote
-.endnote
+.esynote
 .*
 .section IMPLICIT NONE Statement
 .*

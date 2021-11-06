@@ -44,7 +44,7 @@ test_flags_axp = -d2
 alt_error = 08
 !else ifdef test9
 test_flags_386 = -d1-oe-zri-mf
-test_flags_i86 = -d1-oe-ms
+test_flags_i86 = -d1-oe-zri-ms
 test_flags_axp = -d1-oe
 alt_error = 09
 !else
@@ -54,7 +54,7 @@ test_flags_axp = -ox-d1
 alt_error = 00
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 !include ../positive.mif
 
 !ifeq alt_error 00
@@ -70,8 +70,8 @@ stack_i86 = opt stack=12k
 .c: source
 .p: source
 
-test : .symbolic start clean start_test test.lnk $(positive_exes) test_set_result
-    %make clean
+test : .symbolic start test.lnk $(positive_exes) test_set_result
+    $(noecho)%make common_set_result_check
 
 check_result : .procedure
     -diff -b error.out error.chk
@@ -79,10 +79,6 @@ check_result : .procedure
 test_set_result : .symbolic ./chk_exec.exe
     -@%write error.out OK
     -$]@ exec.out >> error.out
-    $(noecho)%make common_set_result_check
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

@@ -90,8 +90,7 @@ since the storage for that object is defined elsewhere.
 An object declared in a block,
 without the keyword
 .kw extern
-..ct ,
-may not be redeclared within the same block,
+.ct , may not be redeclared within the same block,
 except in a block contained within the current block.
 .*
 .section Expression Statements
@@ -104,7 +103,7 @@ assignment operator.
 The result of the expression is discarded. This discarding may be
 made explicit by casting the expression as a
 .kw void
-..ct ..li .
+.period
 .pp
 For example, the statement,
 .millust begin
@@ -113,8 +112,7 @@ count = 3;
 .pc
 consists of the expression
 .mono count = 3
-..ct ,
-which has the side effect of assigning the value 3 to the object
+.ct , which has the side effect of assigning the value 3 to the object
 .mono count.
 The result of the expression is 3, with the type the same as the
 type of
@@ -193,9 +191,9 @@ then based on the result selects from a set of statements. These
 statements are then executed.
 .*
 .section The if Statement
+.*
 .ix 'if statement'
 .ix 'statement' 'if'
-.*
 .pp
 .cillust begin
 .mono if(
@@ -235,14 +233,13 @@ if( delay > 5 ) {
 .pp
 In the classic case of the dangling
 .kw else
-..ct ,
-the
+.ct , the
 .kw else
 is bound to the nearest
 .kw if
 that does not yet have an
 .kw else
-..ct ..li .
+.period
 For example,
 .millust begin
 if( x > 0 )
@@ -262,8 +259,7 @@ is false, because the
 .kw else
 is bound to the second
 .kw if
-..ct ,
-not the first.
+.ct , not the first.
 To correct this example, it would have to be changed to,
 .millust begin
 if( x > 0 ) {
@@ -304,9 +300,9 @@ However, jumping into a block is poor
 programming practice, since it makes the program difficult to follow.
 .*
 .section The switch Statement
+.*
 .ix 'switch statement'
 .ix 'statement' 'switch'
-.*
 .cillust begin
 .mono switch(
 expression
@@ -423,13 +419,13 @@ the following output is produced:
 Iteration statements control looping. There are three forms of
 iteration statements:
 .kw while
-..ct ,
+.ct ,
 .kw do
-..ct /
-..ct .kw while
+.ct /
+.ct .kw while
 and
 .kw for
-..ct ..li .
+.period
 .pp
 The controlling expression must have a scalar type.
 The
@@ -507,8 +503,8 @@ expression
 .pp
 The evaluation of the controlling expression takes place after each
 execution of the loop body (
-..ct .us statement
-..ct ).
+.ct .us statement
+.ct ).
 If the expression evaluates to zero the first time, the loop body
 is executed exactly once.
 .pp
@@ -643,7 +639,7 @@ statement is executed which exits the function.
 This is sometimes called
 .ix 'loop forever'
 .us loop forever
-..ct ..li .
+.period
 .cillust begin
 .monoon
 for( i = 0; i <= 100; ++i )
@@ -659,14 +655,13 @@ is incremented by one. The loop is executed 101 times, with
 .mono i
 having the successive values
 .mono 0
-..ct ,
+.ct ,
 .mono 1
-..ct ,
+.ct ,
 .mono 2 ... 99
-..ct ,
+.ct ,
 .mono 100
-..ct ,
-and having the value
+.ct , and having the value
 .mono 101
 after termination of the loop.
 .cillust begin
@@ -694,19 +689,19 @@ a specific place in a program, without executing any other intervening
 statements.
 There are four jump statements:
 .kw goto
-..ct ,
+.ct ,
 .kw continue
-..ct ,
+.ct ,
 .kw break
 and
 .kw return
-..ct ..li .
+.period
 .beglevel
 .*
 .section The goto Statement
+.*
 .ix 'goto statement'
 .ix 'statement' 'goto'
-.*
 .cillust begin
 .mono goto
 identifier:MSEMI.
@@ -732,9 +727,9 @@ statement be used, at most, to jump
 blocks, never into them.
 .*
 .section The continue Statement
+.*
 .ix 'continue statement'
 .ix 'statement' 'continue'
-.*
 .millust begin
 continue;
 .millust end
@@ -750,14 +745,14 @@ In a
 .kw while
 statement, the jump is effectively back to the
 .kw while
-..ct ..li .
+.period
 .pp
 In a
 .ix 'continue statement' 'in a do'
 .kw do
 statement, the jump is effectively down to the
 .kw while
-..ct ..li .
+.period
 .pp
 In a
 .ix 'continue statement' 'in a for'
@@ -772,9 +767,9 @@ statement, which is often an increment or decrement, is then
 executed before control is returned to the top of the loop.
 .*
 .section The break Statement
+.*
 .ix 'break statement'
 .ix 'statement' 'break'
-.*
 .millust begin
 break;
 .millust end
@@ -803,21 +798,19 @@ that contains the
 .kw break
 is enclosed inside another loop or
 .kw switch
-..ct ,
-only the
-inner-most loop or
+.ct , only the inner-most loop or
 .kw switch
 is terminated.
 The
 .kw goto
 statement may be used to terminate more than one loop or
 .kw switch
-..ct ..li .
+.period
 .*
 .section The return Statement
+.*
 .ix 'return statement'
 .ix 'statement' 'return'
-.*
 .cillust begin
 .monoon
 &SYSRB.&SYSRB.&SYSRB.&SYSRB.return:MSEMI.
@@ -855,8 +848,7 @@ statement within that function may return a value.
 .pp
 If the function is declared as having a return type of other than
 .kw void
-..ct ,
-then any
+.ct , then any
 .kw return
 statement with an expression
 will evaluate the expression and convert it to the return type.

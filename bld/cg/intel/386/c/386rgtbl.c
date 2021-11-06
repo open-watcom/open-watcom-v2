@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,8 +58,8 @@ static  hw_reg_set      Reg64Order[] = {
     HW_D_1( HW_EDI ),
     HW_D_1( HW_EDX ),
     HW_D_1( HW_ECX ),
-    HW_D_1( HW_BP ),
-    HW_D_1( HW_SP ),
+    HW_D_1( HW_EBP ),
+    HW_D_1( HW_ESP ),
     HW_D_1( HW_EMPTY )
 };
 static  hw_reg_set      Empty[] = {
@@ -192,7 +192,7 @@ static hw_reg_set       FarPointerRegs[] = {
     HW_D_2( HW_DS, HW_ECX ),
     HW_D_2( HW_DS, HW_ESI ),
     HW_D_2( HW_DS, HW_EDI ),
-    HW_D_2( HW_DS, HW_BP ),
+    HW_D_2( HW_DS, HW_EBP ),
 
     HW_D_2( HW_ES, HW_EAX ),
     HW_D_2( HW_ES, HW_EDX ),
@@ -200,7 +200,7 @@ static hw_reg_set       FarPointerRegs[] = {
     HW_D_2( HW_ES, HW_ECX ),
     HW_D_2( HW_ES, HW_ESI ),
     HW_D_2( HW_ES, HW_EDI ),
-    HW_D_2( HW_ES, HW_BP ),
+    HW_D_2( HW_ES, HW_EBP ),
 
     HW_D_2( HW_FS, HW_EAX ),
     HW_D_2( HW_FS, HW_EDX ),
@@ -208,7 +208,7 @@ static hw_reg_set       FarPointerRegs[] = {
     HW_D_2( HW_FS, HW_ECX ),
     HW_D_2( HW_FS, HW_ESI ),
     HW_D_2( HW_FS, HW_EDI ),
-    HW_D_2( HW_FS, HW_BP ),
+    HW_D_2( HW_FS, HW_EBP ),
 
     HW_D_2( HW_GS, HW_EAX ),
     HW_D_2( HW_GS, HW_EDX ),
@@ -216,7 +216,7 @@ static hw_reg_set       FarPointerRegs[] = {
     HW_D_2( HW_GS, HW_ECX ),
     HW_D_2( HW_GS, HW_ESI ),
     HW_D_2( HW_GS, HW_EDI ),
-    HW_D_2( HW_GS, HW_BP ),
+    HW_D_2( HW_GS, HW_EBP ),
 
     HW_D_2( HW_SS, HW_EAX ),
     HW_D_2( HW_SS, HW_EDX ),
@@ -224,7 +224,7 @@ static hw_reg_set       FarPointerRegs[] = {
     HW_D_2( HW_SS, HW_ECX ),
     HW_D_2( HW_SS, HW_ESI ),
     HW_D_2( HW_SS, HW_EDI ),
-    HW_D_2( HW_SS, HW_BP ),
+    HW_D_2( HW_SS, HW_EBP ),
 
     HW_D_1( HW_EMPTY )
 };
@@ -235,7 +235,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_DS, HW_ECX ),
     HW_D_2( HW_DS, HW_ESI ),
     HW_D_2( HW_DS, HW_EDI ),
-    HW_D_2( HW_DS, HW_BP ),
+    HW_D_2( HW_DS, HW_EBP ),
 
     HW_D_2( HW_ES, HW_EAX ),
     HW_D_2( HW_ES, HW_EDX ),
@@ -243,7 +243,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_ES, HW_ECX ),
     HW_D_2( HW_ES, HW_ESI ),
     HW_D_2( HW_ES, HW_EDI ),
-    HW_D_2( HW_ES, HW_BP ),
+    HW_D_2( HW_ES, HW_EBP ),
 
     HW_D_2( HW_FS, HW_EAX ),
     HW_D_2( HW_FS, HW_EDX ),
@@ -251,7 +251,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_FS, HW_ECX ),
     HW_D_2( HW_FS, HW_ESI ),
     HW_D_2( HW_FS, HW_EDI ),
-    HW_D_2( HW_FS, HW_BP ),
+    HW_D_2( HW_FS, HW_EBP ),
 
     HW_D_2( HW_GS, HW_EAX ),
     HW_D_2( HW_GS, HW_EDX ),
@@ -259,7 +259,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_GS, HW_ECX ),
     HW_D_2( HW_GS, HW_ESI ),
     HW_D_2( HW_GS, HW_EDI ),
-    HW_D_2( HW_GS, HW_BP ),
+    HW_D_2( HW_GS, HW_EBP ),
 
     HW_D_2( HW_SS, HW_EAX ),
     HW_D_2( HW_SS, HW_EDX ),
@@ -267,7 +267,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_SS, HW_ECX ),
     HW_D_2( HW_SS, HW_ESI ),
     HW_D_2( HW_SS, HW_EDI ),
-    HW_D_2( HW_SS, HW_BP ),
+    HW_D_2( HW_SS, HW_EBP ),
 
     HW_D_2( HW_CS, HW_EAX ),
     HW_D_2( HW_CS, HW_EDX ),
@@ -275,7 +275,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_CS, HW_ECX ),
     HW_D_2( HW_CS, HW_ESI ),
     HW_D_2( HW_CS, HW_EDI ),
-    HW_D_2( HW_CS, HW_BP ),
+    HW_D_2( HW_CS, HW_EBP ),
 
     HW_D_1( HW_EMPTY )
 };
@@ -293,8 +293,8 @@ static  hw_reg_set      DoubleRegs[] = {
     HW_D_1( HW_EBX ),
     HW_D_1( HW_ESI ),
     HW_D_1( HW_EDI ),
-    HW_D_1( HW_BP ),
-    HW_D_1( HW_SP ),
+    HW_D_1( HW_EBP ),
+    HW_D_1( HW_ESP ),
     HW_D_1( HW_EMPTY )
 };
 static  hw_reg_set      DoubleParmRegs[] = {
@@ -304,8 +304,8 @@ static  hw_reg_set      DoubleParmRegs[] = {
     HW_D_1( HW_ECX ),
     HW_D_1( HW_ESI ),
     HW_D_1( HW_EDI ),
-    HW_D_1( HW_BP ),
-    HW_D_1( HW_SP ),
+    HW_D_1( HW_EBP ),
+    HW_D_1( HW_ESP ),
     HW_D_1( HW_EMPTY )
 };
 static  hw_reg_set      QuadReg[] = {
@@ -324,12 +324,12 @@ static  hw_reg_set      QuadReg[] = {
     HW_D_2( HW_EDI, HW_ESI ),
     HW_D_2( HW_ESI, HW_EBX ),
     HW_D_2( HW_EBX, HW_EAX ),
-    HW_D_2( HW_BP,  HW_EAX ),
-    HW_D_2( HW_BP,  HW_EDX ),
-    HW_D_2( HW_BP,  HW_EBX ),
-    HW_D_2( HW_BP,  HW_ECX ),
-    HW_D_2( HW_BP,  HW_ESI ),
-    HW_D_2( HW_BP,  HW_EDI ),
+    HW_D_2( HW_EBP, HW_EAX ),
+    HW_D_2( HW_EBP, HW_EDX ),
+    HW_D_2( HW_EBP, HW_EBX ),
+    HW_D_2( HW_EBP, HW_ECX ),
+    HW_D_2( HW_EBP, HW_ESI ),
+    HW_D_2( HW_EBP, HW_EDI ),
     HW_D_1( HW_EMPTY )
 };
 static  hw_reg_set      ST0Reg[] = {
@@ -395,7 +395,7 @@ static  reg_set_index   ClassSets[] = {
     RL_,                    /* PT */
     RL_,                    /* FS */
     RL_8,                   /* FD */
-    RL_8,                   /* FL */ // FIXME - long double
+    __FP80BIT(RL_,RL_8),    /* FL */
     RL_                     /* XX */
 };
 
@@ -528,14 +528,19 @@ static  reg_set_index   IndexSets[] = {
             intersection given in square matrix for class
  */
 
+#define INTERSECT_DEFS \
+    pick( ONE_BYTE,   4, OneByteInter ) \
+    pick( TWO_BYTE,   7, TwoByteInter ) \
+    pick( FOUR_BYTE,  6, FourByteInter ) \
+    pick( SIX_BYTE,   3, SixByteInter ) \
+    pick( EIGHT_BYTE, 3, EightByteInter ) \
+    pick( FLOATING,   2, FloatingInter ) \
+    pick( OTHER,      0, OtherInter )
+
 typedef enum {
-    ONE_BYTE,
-    TWO_BYTE,
-    FOUR_BYTE,
-    SIX_BYTE,
-    EIGHT_BYTE,
-    FLOATING,
-    OTHER
+    #define pick(e,w,l) e,
+        INTERSECT_DEFS
+    #undef pick
 } intersect_class;
 
 
@@ -552,13 +557,9 @@ static  reg_class       IntersectInfo[] = {
 };
 
 static  byte    Width[] = {
-    4,              /* ONE_BYTE   */
-    7,              /* TWO_BYTE   */
-    6,              /* FOUR_BYTE  */
-    3,              /* SIX_BYTE   */
-    3,              /* EIGHT_BYTE */
-    2,              /* FLOATING   */
-    0               /* OTHER      */
+    #define pick(e,w,l) w,
+        INTERSECT_DEFS
+    #undef pick
 };
 
 static  reg_set_index   OneByteInter[] = {
@@ -623,13 +624,9 @@ static  reg_set_index   OtherInter[] = {
 };
 
 static  reg_set_index   *InterTable[] = {
-    OneByteInter,           /* ONE_BYTE   */
-    TwoByteInter,           /* TWO_BYTE   */
-    FourByteInter,          /* FOUR_BYTE  */
-    SixByteInter,           /* SIX_BYTE   */
-    EightByteInter,         /* EIGHT_BYTE */
-    FloatingInter,          /* FLOATING   */
-    OtherInter              /* others     */
+    #define pick(e,w,l) l,
+        INTERSECT_DEFS
+    #undef pick
 };
 
 void            InitRegTbl( void )
@@ -815,10 +812,10 @@ type_class_def  RegClass( hw_reg_set regs )
 
     if( HW_COvlap( regs, HW_FLTS ) ) {
         if( HW_CEqual( regs, HW_ST0 ) )
-            return( FD );
+            return( __FP80BIT(FL,FD) );
         for( possible = STIReg; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
             if( HW_Equal( regs, *possible ) ) {
-                return( FD );
+                return( __FP80BIT(FL,FD) );
             }
         }
         return( XX );
@@ -931,6 +928,12 @@ hw_reg_set      FullReg( hw_reg_set regs )
     }
     if( HW_COvlap( regs, HW_ESI ) ) {
         HW_CTurnOn( regs, HW_ESI );
+    }
+    if( HW_COvlap( regs, HW_EBP ) ) {
+        HW_CTurnOn( regs, HW_EBP );
+    }
+    if( HW_COvlap( regs, HW_ESP ) ) {
+        HW_CTurnOn( regs, HW_ESP );
     }
     return( regs );
 }
@@ -1108,8 +1111,8 @@ hw_reg_set      FixedRegs( void )
 {
     hw_reg_set  fixed;
 
-    HW_CAsgn( fixed, HW_SP );
-    HW_CTurnOn( fixed, HW_BP );
+    HW_CAsgn( fixed, HW_ESP );
+    HW_CTurnOn( fixed, HW_EBP );
     HW_CTurnOn( fixed, HW_SS );
     HW_CTurnOn( fixed, HW_CS );
     if( _IsntTargetModel( FLOATING_DS ) )
@@ -1133,7 +1136,7 @@ bool    IsStackReg( name *sp )
         return( false );
     if( sp->n.class != N_REGISTER )
         return( false );
-    if( !HW_CEqual( sp->r.reg, HW_SP ) )
+    if( !HW_COvlap( sp->r.reg, HW_ESP ) )
         return( false );
     return( true );
 }
@@ -1142,7 +1145,7 @@ bool    IsStackReg( name *sp )
 hw_reg_set      StackReg( void )
 /******************************/
 {
-    return( HW_SP );
+    return( HW_ESP );
 }
 
 
@@ -1150,8 +1153,8 @@ hw_reg_set      DisplayReg( void )
 /********************************/
 {
     if( CurrProc->targ.sp_frame )
-        return( HW_SP );
-    return( HW_BP );
+        return( HW_ESP );
+    return( HW_EBP );
 }
 
 

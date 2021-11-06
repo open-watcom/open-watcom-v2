@@ -6,9 +6,9 @@
 These functions provide the ability to control how the allocation and
 freeing of memory is performed, allowing for more efficient
 memory handling than the general purpose global
-:MONO operator new()
+:MONO.operator new()
 and
-:MONO operator delete()
+:MONO.operator delete()
 can provide.
 Memory management optimizations may potentially be made through the
 :HP1.allocator:eHP1. and :HP1.deallocator:eHP1. functions, but are not
@@ -20,11 +20,11 @@ The :HP1.allocator:eHP1.
 function shall return a pointer to allocated memory of size at least the
 argument, or zero(0) if the allocation cannot be performed.  Initialization
 of the memory returned is performed by the
-.MONO &lobjtype.
+:MONO.&lobjtype.
 class.
 :P.
 The
-.MONO &lobjtype.
+:MONO.&lobjtype.
 class calls the :HP1.deallocator:eHP1. function only on
 .ix 'dealloctor' 'function'
 memory allocated by the :HP1.allocator:eHP1. function.

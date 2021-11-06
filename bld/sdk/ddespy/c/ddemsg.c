@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -434,38 +434,44 @@ static void setHorzExtent( DDEWndInfo *info, char *text )
 
 } /* setHorzExtent */
 
+static LRESULT writeBuf( char *out_buf, DDEWndInfo *info )
+{
+    LRESULT ret;
+
+    ret = 0;
+    if( ConfigInfo.screen_out ) {
+        setHorzExtent( info, out_buf );
+        ret = SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)out_buf );
+    }
+    LogOut( out_buf );
+    return( ret );
+}
+
 /*
  * RecordMsg
  */
-void RecordMsg( char *buf )
+void RecordMsg( const char *ptr )
 {
     DDEWndInfo          *info;
     LRESULT             ret;
-    char                *ptr;
-    char                *start;
+    char                *out_ptr;
+    char                out_buf[2 * MARK_LEN];
+    char                c;
 
-    ptr = buf;
-    start = buf;
+    ret = 0;
     info = (DDEWndInfo *)GET_WNDINFO( DDEMainWnd );
-    while( *ptr != '\0' ) {
-        if( *ptr == '\n' ) {
-            *ptr = '\0';
-            if( ConfigInfo.screen_out ) {
-                setHorzExtent( info, start );
-                SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)start );
-            }
-            LogOut( start );
-            *ptr = '\n';
-            start = ptr + 1;
+    while( (c = *ptr++) != '\0' ) {
+        if( c == '\n' ) {
+            *out_ptr = '\0';
+            ret = writeBuf( out_buf, info );
+            out_ptr = out_buf;
+        } else {
+            *out_ptr++ = c;
         }
-        ptr++;
     }
-    if( start != ptr ) {
-        if( ConfigInfo.screen_out ) {
-            setHorzExtent( info, start );
-            ret = SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)start );
-        }
-        LogOut( start );
+    if( out_buf != out_ptr ) {
+        *out_ptr = '\0';
+        ret = writeBuf( out_buf, info );
     }
     if( ConfigInfo.scroll && ConfigInfo.screen_out ) {
         SendMessage( info->list.box, LB_SETTOPINDEX, (WPARAM)ret, 0L );
@@ -793,7 +799,7 @@ static void processMsgStruct( char *buf, MONMSGSTRUCT *info, bool posted )
  */
 HDDEDATA CALLBACK DDEProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2, HDDEDATA hdata, ULONG_PTR data1, ULONG_PTR data2 )
 {
-    char        buf[400];
+    char        buf[2 * MARK_LEN];
     void        *info;
 
     //RecordMsg( "In Message Proc..." );

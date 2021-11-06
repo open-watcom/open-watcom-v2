@@ -33,7 +33,6 @@ common_objs = &
     $(_subdir_)cdecl2.obj &
     $(_subdir_)cdinit.obj &
     $(_subdir_)cdump.obj &
-    $(_subdir_)cems.obj &
     $(_subdir_)cenum.obj &
     $(_subdir_)cerror.obj &
     $(_subdir_)cfeinfo.obj &
@@ -49,6 +48,7 @@ common_objs = &
     $(_subdir_)cpragma.obj &
     $(_subdir_)cpurge.obj &
     $(_subdir_)cscan.obj &
+    $(_subdir_)cscanbuf.obj &
     $(_subdir_)csizeof.obj &
     $(_subdir_)cstats.obj &
     $(_subdir_)cstring.obj &
@@ -63,7 +63,6 @@ common_objs = &
     $(_subdir_)watcom.obj &
     $(_subdir_)cgetch.obj &
     $(_subdir_)cmacadd.obj &
-    $(_subdir_)cmacsupp.obj &
     $(_subdir_)asmalloc.obj &
     $(_subdir_)asmmsg.obj &
     $(_subdir_)jis2unic.obj &
@@ -85,6 +84,7 @@ common_objs = &
     $(_subdir_)treewalk.obj &
     $(_subdir_)pathlist.obj &
     $(_subdir_)mngless.obj &
+    $(_subdir_)ppexpn.obj &
     $(_subdir_)unicode.obj
 
 !ifeq release 0

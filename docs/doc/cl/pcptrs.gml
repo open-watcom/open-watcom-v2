@@ -1,4 +1,5 @@
 .keep begin
+.*
 .section &ptr86.
 .*
 .pp
@@ -256,7 +257,7 @@ important to declare each type properly.
 .pp
 The following sections describe how to override the current memory model.
 .*
-.section The &kwfar_sp. Keyword for &wc286.
+.section The &kwfar. Keyword for &wc286.
 .*
 .pp
 When the big code memory model is in effect,
@@ -276,44 +277,36 @@ pointers to
 .us far
 objects. However, when either the small code or small data model
 is being used, the keyword
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 may be used to override to the big model.
 .pp
 The
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 keyword
 is a type qualifier that modifies the token that follows it.
 If
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 precedes
 .mono *
 (as in
-.mono &kwfar. *
-..ct ),
-then the pointer points to something far. Otherwise, if
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
+*), then the pointer points to something far. Otherwise, if
+.kw &kwfar.
 precedes the identifier of the object or function being declared
 (as in
-.mono &kwfar. x)
-..ct ,
-then the object itself is far.
+.kw &kwfar.
+x), then the object itself is far.
 .pp
 The keyword
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 can only be applied to function and object names
 and the indirection (pointer) symbol
 .mono *
-..ct ..li .
+.period
 Parameters to functions may
 .us not
 be declared as
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 since they are always in the 64K data area that is near.
 .shade begin
 &wc286. provides the predefined macros
@@ -322,14 +315,12 @@ and
 .mkw _far
 for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
-.kwix &kwfar_sp.
-.kwfont &kwfar.
-..ct ..li .
+.kw &kwfar.
+.period
 .shade end
 .pp
 The following examples illustrate the use of the
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 keyword.
 The examples assume that the
 small memory model (small code, small data)
@@ -366,8 +357,7 @@ to be a pointer (which is far) to an integer (which is far).
 .discuss end
 .pp
 When declaring a function, placing the keyword
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 in front of the function name causes the compiler to treat the function
 as being far. It is important, if the function is called before its
 definition, that a
@@ -420,7 +410,7 @@ which is a pointer
 .* (which is near)
 to a far function that returns a
 .kw float
-..ct ..li .
+.period
 .discuss end
 .keep begin
 .millust begin
@@ -434,7 +424,7 @@ they reside in the 64K data area that is always near.
 .discuss end
 .keep end
 .*
-.section The &kwnear_sp. Keyword for &wc286.
+.section The &kwnear. Keyword for &wc286.
 .*
 .pp
 When the small code memory model is in effect,
@@ -454,35 +444,28 @@ pointers to
 .us near
 objects. However, when either the big code or big data model
 is being used, the keyword
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 may be used to override to the small model.
 .pp
 The
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 keyword
 is a type qualifier that modifies the token that follows it.
 If
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 precedes
 .mono *
 (as in
-.mono &kwnear. *
-..ct ),
-then the pointer points to something near. Otherwise, if
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
+*), then the pointer points to something near. Otherwise, if
+.kw &kwnear.
 precedes the identifier of the object or function being declared
 (as in
-.mono &kwnear. x)
-..ct ,
-then the object itself is near.
+.kw &kwnear.
+x), then the object itself is near.
 .pp
 The keyword
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 can only be applied to function and object names
 and the indirection (pointer) symbol
 .mono *.
@@ -493,14 +476,12 @@ and
 .mkw _near
 for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
-.kwix &kwnear_sp.
-.kwfont &kwnear.
-..ct ..li .
+.kw &kwnear.
+.period
 .shade end
 .pp
 The following examples illustrate the use of the
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 keyword.
 These examples assume that the large memory module
 (big code, big data)
@@ -511,9 +492,8 @@ extern int &kwnear. * x;
 .discuss begin
 declares the object
 .mono x
-to be a pointer to a near integer.
-(
-..ct .mono x
+to be a pointer to a near integer. (
+.ct .mono x
 is not necessarily
 within the 64K data area that is near, but the integer that it
 points to is.)
@@ -524,9 +504,8 @@ extern int * &kwnear. nx;
 .discuss begin
 declares the object
 .mono nx
-to be near, and is a pointer to a far integer.
-(
-..ct .mono nx
+to be near, and is a pointer to a far integer. (
+.ct .mono nx
 is within the 64K data area that is near, but the integer that it
 points to might not be.)
 .discuss end
@@ -536,9 +515,8 @@ extern int &kwnear. * &kwnear. nnx;
 .discuss begin
 declares the object
 .mono nnx
-to be near, and is a pointer to a near integer.
-(
-..ct .mono nnx
+to be near, and is a pointer to a near integer. (
+.ct .mono nnx
 and the integer that it points to are both within the 64K data area
 that is near.)
 .discuss end
@@ -574,26 +552,22 @@ Even using the big data model, each object is restricted in size
 to 64K.
 Some applications will need to get beyond this limitation.
 The &wc286. compiler provides the keyword
-.kwix &kwhuge_sp.
-.kwfont &kwhuge.
+.kw &kwhuge.
 to describe those objects that exceed 64K in size. The code generated
 for these objects is less efficient than for
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 objects.
 .pp
 The declaration of such objects follows the same pattern as above, with
 the keyword
-.kwix &kwhuge_sp.
-.kwfont &kwhuge.
+.kw &kwhuge.
 preceding the name of the object if the object itself is bigger than
 64K, or preceding the
 .mono *
 if the pointer is to an object that is bigger than 64K.
 .pp
 The keyword
-.kwix &kwhuge_sp.
-.kwfont &kwhuge.
+.kw &kwhuge.
 can only be applied to arrays.
 Huge objects may be used in both the small and big data models.
 .shade begin
@@ -603,14 +577,12 @@ and
 .mkw _huge
 for convenience and compatibility with the Microsoft C compiler.
 They may be used in place of
-.kwix &kwhuge_sp.
-.kwfont &kwhuge.
-..ct ..li .
+.kw &kwhuge.
+.period
 .shade end
 .pp
 These examples illustrate the use of the
-.kwix &kwhuge_sp.
-.kwfont &kwhuge.
+.kw &kwhuge.
 keyword. They assume that big code, small data
 .ix 'memory model' 'medium'
 .ix 'medium memory model'
@@ -661,11 +633,9 @@ will not be able to access such regions.
 .pp
 Like the 16-bit version of &wcgeneric. (for the 8086 and 80286),
 &wc386. uses the
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 and
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 keywords to describe objects that are either in the normal data space
 or elsewhere.
 .pp
@@ -711,46 +681,40 @@ that the small memory model is being used, since it is the most likely
 to be used.
 .*
 .beglevel
-.section The &kwfar_sp. Keyword for &wc386.
+.section The &kwfar. Keyword for &wc386.
 .*
 .pp
 The
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 keyword is a type qualifier that modifies the token that follows it.
 If
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 precedes
 .mono *
 (as in
-.mono &kwfar. *
-..ct ), then the pointer points to something that is far (not in the
+.kw &kwfar.
+*), then the pointer points to something that is far (not in the
 normal data region).
 Otherwise, if
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 precedes the identifier of the object or function being declared (as in
-.mono &kwfar. x
-..ct ), then the object or function is far.
+.kw &kwfar.
+x), then the object or function is far.
 .pp
 The keyword
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 can only be applied to function and object names and the
 indirection (pointer) symbol
 .mono *
-..ct ..li .
+.period
 Parameters to functions may
 .us not
 be declared as
-.kwix &kwfar_sp.
-.kwfont &kwfar.
-..ct , since they are always in the normal data region.
+.kw &kwfar.
+.ct , since they are always in the normal data region.
 .pp
 These examples illustrate the use of the
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 keyword, and assume that the small memory model is being used.
 .millust begin
 int &kwfar. * ptr;
@@ -785,8 +749,7 @@ to be a pointer (which is far) to an integer (which is far).
 .discuss end
 .pp
 When declaring a function, placing the keyword
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 in front of the function name causes the compiler to treat the function
 as being far. It is important, if the function is called before its
 definition, that a
@@ -838,7 +801,7 @@ which is a pointer
 .* which is near
 to a far function that returns a
 .kw char
-..ct ..li .
+.period
 .discuss end
 .keep break
 .millust begin
@@ -853,52 +816,45 @@ they reside in the normal data area that is always near.
 .discuss end
 .keep end
 .*
-.section The &kwnear_sp. Keyword for &wc386.
+.section The &kwnear. Keyword for &wc386.
 .*
 .pp
 The
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 keyword is a type qualifier that modifies the token that follows it.
 If
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 precedes
 .mono *
 (as in
-.mono &kwnear. *
-..ct ), then the pointer points to something that is near (in the
+.kw &kwnear.
+*), then the pointer points to something that is near (in the
 normal data region).
 Otherwise, if
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 precedes the identifier of the object or function being declared (as in
-.mono &kwnear. x
-..ct ), then the object or function is near.
+.kw &kwnear.
+x), then the object or function is near.
 .pp
 The keyword
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 can only be applied to function and object names and the
 indirection (pointer) symbol
 .mono *
-..ct ..li .
+.period
 .pp
 For programmers using the small memory model, the
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 keyword is not required, but may be useful for making
 the program more readable.
 .* .pp
 .* In fact, the
-.* .kwix &kwnear_sp.
-.* .kwfont &kwnear.
+.* .kw &kwnear.
 .* keyword has no effect.
 .* Since &wc386. only supports one memory model, where all of the
 .* program's data is always near (there is no option to make it far),
 .* the
-.* .kwix &kwnear_sp.
-.* .kwfont &kwnear.
+.* .kw &kwnear.
 .* keyword is most useful for making the program more readable.
 .*
 ..im ptr16

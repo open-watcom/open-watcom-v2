@@ -347,7 +347,7 @@ void Usage( void )
 }
 
 
-static char *skip( char *ptr )
+static const char *skip( const char *ptr )
 {
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
@@ -355,10 +355,10 @@ static char *skip( char *ptr )
 }
 
 
-unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
+unsigned GetNumber( unsigned min, unsigned max, const char **atstr, unsigned base )
 /* handles command line items of the sort "b=23" (up to base 16) */
 {
-    char        *scan;
+    const char  *scan;
     int         c;
     unsigned    res;
     unsigned    value;
@@ -395,24 +395,26 @@ unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
     return( res );
 }
 
-static bool check_delimiter( char c )
+static const char *skip_command( const char *str )
 {
-    switch( c ) {
-    case ' ':
-#ifdef __DOS__
-    case '/':
-    case '-':
-#endif
-    case '\t':
-    case '\0':
-    case '<':
-    case '>':
-    case '|':
-        return( true );
-    default:
-        break;
+    for( ;; ) {
+        switch( *str ) {
+        case ' ':
+    #ifdef __DOS__
+        case '/':
+        case '-':
+    #endif
+        case '\t':
+        case '\0':
+        case '<':
+        case '>':
+        case '|':
+            return( str );
+        default:
+            str++;
+            break;
+        }
     }
-    return( false );
 }
 
 #define CNV_CEIL( size )    ((size * 1024U                            \
@@ -420,9 +422,11 @@ static bool check_delimiter( char c )
         / sizeof( samp_address ))
 
 
-static char *Parse( char *line, char arg[], char **eoc )
+static const char *Parse( const char *line, char arg[], const char **eoc )
 {
-    char        *cmd, *ptr;
+    const char  *cmd;
+    char        *p;
+    const char  *ptr;
     int         c, len;
 
     InitTimerRate();
@@ -444,7 +448,7 @@ static char *Parse( char *line, char arg[], char **eoc )
         switch( c ) {
 #ifndef __WINDOWS__
         case 'b':
-            Ceiling = CNV_CEIL( GetNumber( MN_CEIL, MX_CEIL, (char **)&cmd, 10 ) );
+            Ceiling = CNV_CEIL( GetNumber( MN_CEIL, MX_CEIL, &cmd, 10 ) );
             break;
 #endif
         case 'c':
@@ -456,16 +460,15 @@ static char *Parse( char *line, char arg[], char **eoc )
                 fatal();
             }
             ++cmd;
-            ptr = SampName;
+            p = SampName;
             while( *cmd != '\t' && *cmd != ' ' && *cmd != '\0' ) {
-                *ptr = *cmd;
-                ++ptr;
-                ++cmd;
+                *p++ = *cmd;
+                cmd++;
             }
-            *ptr = '\0';
+            *p = '\0';
             break;
         default:
-            SysParseOptions( c, (char **)&cmd );
+            SysParseOptions( c, &cmd );
             break;
         }
     }
@@ -477,8 +480,7 @@ static char *Parse( char *line, char arg[], char **eoc )
     Margin = SafeMargin();
 
     /* scan over command name */
-    for( ptr = cmd; !check_delimiter( *ptr ); ++ptr )
-        ;
+    ptr = skip_command( cmd );
     /* collect program arguments - arg will contain DOS-style command tail,
      * possibly truncated (max 126 usable chars).
      */
@@ -522,51 +524,22 @@ void AllocSamples( unsigned tid )
     LastSampleIndex = 0;
 }
 
-#if defined( __WINDOWS__ )
-int sample_main( char __far *win_cmd )
-#else
-int main( int argc, char **argv )
-#endif
+int sample_main( char *cmd_line )
 {
-    char        *cmd_line;
     char        *arg;
-    char        *cmd;
+    const char  *cmd;
     char        *tmp_cmd;
-    char        *eoc;
-    int         cmdlen;
+    const char  *eoc;
 
-#if defined( __WINDOWS__ )
-#elif !defined( __WATCOMC__ )
-    _argv = argv;
-    _argc = argc;
-#else
-    /* unused parameters */ (void)argc; (void)argv;
-#endif
-
-    SysInit();
-#if !defined( __WINDOWS__ )
-    if( !MsgInit() )
-        fatal();
-
-    /* Command line may be several KB large on most OSes */
-    cmdlen = _bgetcmd( NULL, 0 );
-    cmd_line = malloc( cmdlen + 1 );
-    arg = malloc( cmdlen + 1 );
-    if( ( cmd_line == NULL ) || ( arg == NULL ) ) {
-        OutputMsgNL( MSG_SAMPLE_BUFF );
-        fatal();
+    arg = NULL;
+    if( cmd_line != NULL ) {
+        arg = malloc( strlen( cmd_line ) + 1 );
     }
-    getcmd( cmd_line );
-#else
-    cmdlen = cmdlen;
-    cmd_line = malloc( 256 ); /* Just hope for the best */
-    arg = malloc( 256 );
-    if( ( cmd_line == NULL ) || ( arg == NULL ) ) {
+    if( arg == NULL ) {
         OutputMsgNL( MSG_SAMPLE_BUFF );
-        fatal();
+        return( 1 );
     }
-    _fstrcpy( cmd_line, win_cmd );
-#endif
+
     tmp_cmd = cmd_line;
     while( *tmp_cmd != '\0' )
         ++tmp_cmd;
@@ -574,7 +547,7 @@ int main( int argc, char **argv )
         ;
     *++tmp_cmd = '\0';
     cmd = Parse( cmd_line, arg, &eoc );    /* will set Ceiling, Margin, TimerMult, cmd, and arg */
-    GetProg( cmd, eoc );
+    GetProg( cmd, eoc - cmd_line );
 
     AllocSamples( 1 );
 
@@ -586,13 +559,13 @@ int main( int argc, char **argv )
 
     if( !VersionCheck() ) {
         OutputMsgNL( MSG_VERSION );
-        fatal();
+        return( 1 );
     }
 
 #ifndef __WINDOWS__
     if( SampCreate( SampName ) != 0 ) {
         OutputMsgNL( MSG_SAMPLE_FILE );
-        fatal();
+        return( 1 );
     }
 #endif
     SampWrite( PREFIX_STRING, sizeof( PREFIX_STRING ) );
@@ -623,8 +596,40 @@ int main( int argc, char **argv )
      * at the end. We pass both and let the callee pick & choose.
      */
     StartProg( cmd, ExeName, eoc, arg );
-    MsgFini();
-    free( cmd_line );
     free( arg );
     return( 0 );
 }
+
+#if !defined( __WINDOWS__ )
+int main( int argc, char **argv )
+{
+    char        *cmd_line;
+    int         rc;
+
+#if !defined( __WATCOMC__ )
+    _argv = argv;
+    _argc = argc;
+#else
+    /* unused parameters */ (void)argc; (void)argv;
+#endif
+
+    SysInit();
+    if( !MsgInit() )
+        fatal();
+
+    /* Command line may be several KB large on most OSes */
+    cmd_line = malloc( _bgetcmd( NULL, 0 ) + 1 );
+    if( cmd_line != NULL ) {
+        getcmd( cmd_line );
+    }
+
+    rc = sample_main( cmd_line );
+
+    if( cmd_line != NULL ) {
+        free( cmd_line );
+    }
+
+    MsgFini();
+    return( rc );
+}
+#endif

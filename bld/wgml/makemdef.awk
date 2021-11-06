@@ -5,7 +5,6 @@ BEGIN {
         printf( "OUTFILE variable must be set!\n" ) > "/dev/stderr"
         exit 1
     }
-    printf( "#define MSG_LANG_SPACING    1000\n\n" ) > OUTFILE
     printf( "#define MSG_BASE %d\n\n", base ) > OUTFILE
     num = 1
 }

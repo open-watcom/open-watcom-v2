@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +34,12 @@
 #include "plusplus.h"
 #include "ppops.h"
 #include "vbuf.h"
-#include "dbg.h"
 #include "fmttype.h"
 #include "template.h"
 #include "fmtsym.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
 
 #include "clibext.h"
 
@@ -63,15 +66,16 @@ static const char *fmtSymCgop( CGOP number )
     const char *name;                 // - name
 
     static const char *opNames[] = {  // - opcode names (binary,unary)
-    #include "ppopssym.h"
+        #include "ppopssym.h"
     };
 
-    if( number >= ( sizeof( opNames ) / sizeof( opNames[0] ) ) ) {
-        name = "***INVALID CGOP***";
-    } else if( strlen( opNames[number] ) == 0 ) {
-        name = "***INVALID CGOP LENGTH***";
-    } else {
+    if( number < ARRAY_SIZE( opNames ) ) {
         name = opNames[number];
+        if( name[0] == '\0' ) {
+            name = "***INVALID CGOP LENGTH***";
+        }
+    } else {
+        name = "***INVALID CGOP***";
     }
     return( name );
 }
@@ -255,9 +259,9 @@ void FormatTemplateParmScope( VBUF *parms, SCOPE parm_scope )
     SYMBOL sym;
     const char *delim;
     TYPE type;
-    auto VBUF sym_parm;
-    auto VBUF type_parm_prefix;
-    auto VBUF type_parm_suffix;
+    VBUF sym_parm;
+    VBUF type_parm_prefix;
+    VBUF type_parm_suffix;
 
     VbufInit( parms );
     if( parm_scope == NULL ) {
@@ -316,7 +320,7 @@ void FormatTemplateParms( VBUF *parms, TYPE class_type )
 
 static void fmtTemplateParms( VBUF *pvbuf, TYPE class_type )
 {
-    auto VBUF parms;
+    VBUF parms;
 
     FormatTemplateParms( &parms, class_type );
     VbufConcVbufRev( pvbuf, &parms );

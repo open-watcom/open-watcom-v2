@@ -15,16 +15,15 @@ wint_t putwc( wint_t c, FILE *fp );
 The
 .id &funcb.
 function is equivalent to
-.kw fputc
-.ct,
-except it may be implemented as a macro.
+.reffunc fputc
+.ct , except it may be implemented as a macro.
 The
 .id &funcb.
 function writes the character specified by the argument
 .arg c
 to the output stream designated by
 .arg fp
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -45,7 +44,7 @@ occurs, the error indicator is set and
 .id &funcb.
 returns
 .kw EOF
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -55,7 +54,7 @@ error occurs, the error indicator is set and
 .id &wfunc.
 returns
 .kw WEOF
-.ct .li .
+.period
 .do end
 .np
 .im errnoref

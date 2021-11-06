@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,28 +41,27 @@
  *                    contents of window wnd are bad.
  */
 
-void GUIWndDirtyRect( gui_window *wnd, gui_rect *rect )
+void GUIAPI GUIWndDirtyRect( gui_window *wnd, const gui_rect *rect )
 {
-    gui_rect    my_rect;
-    WPI_RECT    win_rect;
+    guix_rect   scr_rect;
+    WPI_RECT    wpi_rect;
     int         left, top, right, bottom;
 
-    my_rect = *rect;
-    GUIScaleToScreenRect( &my_rect );
-    left = my_rect.x;
+    GUIScaleToScreenRect( rect, &scr_rect );
+    left = scr_rect.s_x;
     if( GUI_DO_HSCROLL( wnd ) ) {
         left -= GUIGetScrollPos( wnd, SB_HORZ );
     }
-    top = my_rect.y;
+    top = scr_rect.s_y;
     if( GUI_DO_VSCROLL( wnd ) ) {
         top -= GUIGetScrollPos( wnd, SB_VERT );
     }
-    right = left + my_rect.width;
-    bottom = top + my_rect.height;
-    _wpi_setwrectvalues( &win_rect, left, top, right, bottom );
-    _wpi_cvtc_rect_plus1( wnd->hwnd, &win_rect );
+    right = left + scr_rect.s_width;
+    bottom = top + scr_rect.s_height;
+    _wpi_setwrectvalues( &wpi_rect, left, top, right, bottom );
+    _wpi_cvtc_rect_plus1( wnd->hwnd, &wpi_rect );
     //GUIInvalidatePaintHandles( wnd );
-    _wpi_invalidaterect( wnd->hwnd, &win_rect, TRUE );
+    _wpi_invalidaterect( wnd->hwnd, &wpi_rect, TRUE );
     _wpi_updatewindow( wnd->hwnd );
 }
 

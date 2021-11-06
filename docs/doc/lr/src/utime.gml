@@ -23,7 +23,7 @@ int _wutime( const wchar_t *path,
 .do end
 
 struct utimbuf {
-    time_t   actime;    /* access time */
+    time_t   actime;    /* access time       */
     time_t   modtime;   /* modification time */
 };
 .synop end
@@ -37,7 +37,7 @@ or directory
 .do end
 identified by
 .arg path
-.ct .li .
+.period
 .im ansiconf
 .np
 If the
@@ -86,7 +86,7 @@ function is identical to
 .id &funcb.
 except that
 .arg path
-points to a wide-character string.
+points to a wide character string.
 .do end
 .desc end
 .return begin

@@ -26,8 +26,8 @@ Physical source lines are
 .ix 'line' 'continuation'
 joined together
 wherever a line is terminated by a backslash (
-..ct .mono \
-..ct )
+.ct .mono \
+.ct )
 character.
 Effectively, the
 .mono \

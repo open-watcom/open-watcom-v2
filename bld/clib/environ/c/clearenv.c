@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,36 +35,54 @@
 #include <env.h>
 #include "liballoc.h"
 #include "rtdata.h"
+#include "_environ.h"
+
 
 /* Note - clearenv() is always called at library exit */
 
 _WCRTLINK int (clearenv)( void )
 {
-#ifndef __NETWARE__
-    char    **envp;
-    char    *env_str;
-    int     index;
-
-    if( _RWD_environ != NULL ) {
-        for( envp = _RWD_environ; env_str = *envp; ++envp ) {
-            if( _RWD_env_mask != NULL ) {
-                index = envp - _RWD_environ;
-                if( _RWD_env_mask[ index ] != 0 ) {
-                    lib_free( (void *)env_str );
-                }
-                *envp = NULL;
-            }
-        }
-        if( _RWD_env_mask != NULL ) {
-            lib_free( _RWD_environ );
-        }
-        envp = lib_malloc( sizeof(char *) + sizeof(char) );
-        if( envp == NULL ) return( -1 );
-        _RWD_environ = envp;
-        *_RWD_environ = NULL;
-        _RWD_env_mask = ((char *)envp) + sizeof(char *);
-        *_RWD_env_mask = 0;
-    }
-#endif
+#ifdef __NETWARE__
     return( 0 );                /* success */
+#else
+    int     index;
+    int     rc;
+
+    rc = 0;
+    if( _RWD_environ != NULL ) {
+        index = 0;
+        while( _RWD_environ[index] != NULL ) {
+            if( _RWD_env_mask[index] != 0 ) {
+                lib_free( _RWD_environ[index] );
+            }
+            index++;
+        }
+        lib_free( _RWD_environ );
+        _RWD_environ = lib_malloc( ENVARR_SIZE( 0 ) );
+        if( _RWD_environ == NULL ) {
+            _RWD_env_mask = NULL;
+            rc = -1;
+        } else {
+            _RWD_environ[0] = NULL;
+            _RWD_env_mask = (char *)&_RWD_environ[1];
+        }
+    }
+  #ifdef CLIB_USE_OTHER_ENV
+    if( _RWD_wenviron != NULL ) {
+        index = 0;
+        while( _RWD_wenviron[index] != NULL ) {
+            lib_free( _RWD_wenviron[index] );
+            index++;
+        }
+        lib_free( _RWD_wenviron );
+        _RWD_wenviron = lib_malloc( ENVARR_SIZE( 0 ) );
+        if( _RWD_wenviron == NULL ) {
+            rc = -1;
+        } else {
+            _RWD_wenviron[0] = NULL;
+        }
+    }
+  #endif
+    return( rc );
+#endif
 }

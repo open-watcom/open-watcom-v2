@@ -4,4 +4,3 @@ system=winnt
 linkage=dynamic
 
 !include $(clib_dir)/mklib.mif
-!include ../../../deps.mif

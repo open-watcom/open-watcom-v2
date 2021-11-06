@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,12 +83,12 @@ static void __far *getHugePointer( void __far *ptr, unsigned off )
     DWORD       poff;
     WORD        pseg;
 
-    pseg = FP_SEG( ptr );
-    poff = FP_OFF( ptr );
+    pseg = _FP_SEG( ptr );
+    poff = _FP_OFF( ptr );
     poff += off;
     pseg += (poff >> 16) * 8;
     poff &= 0xffff;
-    return( MK_FP( pseg, poff ) );
+    return( _MK_FP( pseg, poff ) );
 
 } /* getHugePointer */
 #endif

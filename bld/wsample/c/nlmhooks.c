@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,7 @@ static intrptr HookVect( intrptr new_intrptr, int vect )
     temp = idt_table->hoffs;
     temp <<= 16;
     temp += idt_table->loffs;
-    old_intrptr = MK_FP( idt_table->select, temp );
+    old_intrptr = _MK_FP( idt_table->select, temp );
     temp = (unsigned)new_intrptr;
     Disable();
     idt_table->hoffs = temp >> 16;

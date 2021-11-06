@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,22 +36,22 @@
 #include "guixutil.h"
 #include "guirect.h"
 
-bool GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
+bool GUIAPI GUIResizeControl( gui_window *wnd, gui_ctl_id id, const gui_rect *rect )
 {
-    gui_coord   pos;
-    gui_coord   size;
+    guix_coord  scr_pos;
+    guix_coord  scr_size;
     HWND        control;
 
     control = _wpi_getdlgitem( wnd->hwnd, id );
     if( control != NULLHANDLE ) {
-        GUICalcLocation( rect, &pos, &size, wnd->hwnd );
-        _wpi_movewindow( control, pos.x, pos.y, size.x, size.y, TRUE );
+        GUICalcLocation( rect, &scr_pos, &scr_size, wnd->hwnd );
+        _wpi_movewindow( control, scr_pos.x, scr_pos.y, scr_size.x, scr_size.y, TRUE );
         return( true );
     }
     return( false );
 }
 
-bool GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
+bool GUIAPI GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
 {
     HWND        control;
 

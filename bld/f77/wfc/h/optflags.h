@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,8 @@
 
 #define CMD     0x01    // option allowed on command line
 #define SRC     0x02    // option allowed in source stream
-#define CTG     0x04    // identifies a category of options
-#define VAL     0x08    // option requires a value
-#define CG      0x10    // option is for code generator
-#define CPU     0x40    // option is a CPU target
-#define OZ      0x80    // option is an optimization
-#define NEG     0x20    // option turns off bits
+#define VAL     0x04    // option requires a value
+#define CG      0x08    // option is for code generator
+#define NEG     0x10    // option turns off bits
+#define CPU     0x20    // option is a CPU target
+#define OZ      0x40    // option is an optimization

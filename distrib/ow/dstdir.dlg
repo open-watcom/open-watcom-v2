@@ -1,7 +1,8 @@
+# UTF-8 encoding, Â¥
 name=DstDir
 dynamic_text=dstdir_1,\
         //1"Install %AppName% in:"\
-        //2"%AppName% ‚Ì?C?“?X?g?[?‹?æ‚ğw’è‚µ‚Ä‰º‚³‚¢:"\
+        //2"%AppName% ã®ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«å…ˆã‚’æŒ‡å®šã—ã¦ä¸‹ã•ã„:"\
         //0
 edit_control=DstDir,@WATCOM
 static_text=

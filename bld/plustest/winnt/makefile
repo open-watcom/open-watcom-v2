@@ -16,7 +16,7 @@ alt_error=00
 
 test_flags += -w0
 
-!include testenv1.mif
+!include testenv.mif
 
 test_flags += $(incl_sys_nt)
 
@@ -29,27 +29,27 @@ test_flags += $(br_opt)
 stack_386 = op stack=128k
 
 !ifndef __NT__
-test : .symbolic start clean start_test
+test : .symbolic start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
-!else ifeq arch i86
-test : .symbolic start clean start_test
-    $(noecho)%append $(log_file) PASS $(%__CWD__)
-!else ifeq targ_env_386 wnt386
-test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe) test_set_result
-!else ifdef __NT386__
-test : .symbolic start clean start_test
-    $(noecho)%append $(log_file) PASS $(%__CWD__)
-!else
-test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe) test_set_result
-!endif
     @%make clean
+!else ifeq arch i86
+test : .symbolic start
+    $(noecho)%append $(log_file) PASS $(%__CWD__)
+    @%make clean
+!else ifeq targ_env_386 wnt386
+test : .symbolic start tomdll.dll test.lnk tomexe.$(exe) test_set_result
+    $(noecho)%make common_set_result_display
+!else ifdef __NT386__
+test : .symbolic start
+    $(noecho)%append $(log_file) PASS $(%__CWD__)
+    @%make clean
+!else
+test : .symbolic start tomdll.dll test.lnk tomexe.$(exe) test_set_result
+    $(noecho)%make common_set_result_display
+!endif
 
 test_set_result : .symbolic
-    cat tomexe.out >>$(%ERROR_FILE)
-    $(noecho)%make common_set_result_display
-
-start_test : .symbolic
-    @%make common_start_test
+    cat tom.out >>$(%ERROR_FILE)
 
 tomdll.dll : tomdll.obj tomdll.lnk
     @%make set_path_wlink
@@ -63,12 +63,12 @@ tomdll.obj : tomdll.c
     @%make set_old_path
 
 tomdll.lnk : $(__MAKEFILES__)
-    $(noecho)%create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_any)
-    @%append $^@ SYSTEM nt dll initinstance terminstance reference __DLLstart_
-    @%append $^@ OPTION map, caseexact, stack=128k, quiet
-    @%append $^@ FILE tomdll.obj
+    $(noecho)%create $@
+    @%append $@ $(ldebug_$(arch))
+    @%append $@ $(lnk_any)
+    @%append $@ SYSTEM nt dll initinstance terminstance reference __DLLstart_
+    @%append $@ OPTION map, caseexact, stack=128k, quiet
+    @%append $@ FILE tomdll.obj
 
 clean : .procedure
     @%make echo_clean

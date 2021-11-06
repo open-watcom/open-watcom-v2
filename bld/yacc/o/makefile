@@ -62,16 +62,16 @@ yacc.exe : $(common_objs) $(table_objs) yacc.lnk
     wlink DEBUG line $(dos_386_lnk) NAME $^* @$]@
 
 yacc.lnk : makefile
-    @%write $^@ OPTION quiet, map
-    @for %i in ( $(common_objs) $(table_objs) ) do @%append $^@ FILE %i
+    @%write $@ OPTION quiet, map
+    @for %i in ( $(common_objs) $(table_objs) ) do @%append $@ FILE %i
 
 iyacc.lnk : makefile
-    @%write $^@ OPTION quiet, map
-    @for %i in ( $(common_objs) $(ins_objs) ) do @%append $^@ FILE %i
+    @%write $@ OPTION quiet, map
+    @for %i in ( $(common_objs) $(ins_objs) ) do @%append $@ FILE %i
 
 syacc.lnk : makefile
-    @%write $^@ OPTION quiet, map
-    @for %i in ( $(common_objs) $(small_objs) ) do @%append $^@ FILE %i
+    @%write $@ OPTION quiet, map
+    @for %i in ( $(common_objs) $(small_objs) ) do @%append $@ FILE %i
 
 global : .symbolic
     rm -f *.obj *.ex? *.map *.lnk ytab.* *.tmp

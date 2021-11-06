@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,6 @@
 #include "pragdefn.h"
 #include "cgback.h"
 #include "ring.h"
-#include "dbg.h"
 #include "dw.h"
 #include "cppdwarf.h"
 #include "dwarfdbg.h"
@@ -50,6 +50,10 @@
 #include "name.h"
 #include "icopmask.h"
 #include "fmttype.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
+
 
 #define _typeHasForwardDwarfHandle( type ) \
 ( ((type)->dbgflag & (TF2_SYMDBG|TF2_DWARF_FWD)) == (TF2_SYMDBG|TF2_DWARF_FWD) )
@@ -129,10 +133,10 @@ static void type_reset( TYPE type )
     }
 }
 
-static void type_update( TYPE type, type_dbgflag mask, dw_handle dh )
-/*******************************************************************/
+static void type_update( TYPE type, type_dbgflag flags, dw_handle dh )
+/********************************************************************/
 {
-    type->dbgflag = (type->dbgflag & ~TF2_DWARF ) | mask;
+    type->dbgflag = (type->dbgflag & ~TF2_DWARF ) | flags;
     type->dbg.handle = dh;
 }
 
@@ -146,8 +150,8 @@ static void sym_reset( SYMBOL sym )
     }
 }
 
-static void sym_update( SYMBOL sym, symbol_flag2 mask, dw_handle dh )
-/*******************************************************************/
+static void sym_update( SYMBOL sym, symbol_flag2 flags, dw_handle dh )
+/********************************************************************/
 {
     #ifndef NDEBUG
     if( sym->flag2 & SYMF2_CG_HANDLE ) {
@@ -155,7 +159,7 @@ static void sym_update( SYMBOL sym, symbol_flag2 mask, dw_handle dh )
         CFatal( "dwarf: handle for sym busy" );
     }
     #endif
-    sym->flag2 |= mask;
+    sym->flag2 |= flags;
     if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
         sym->locn->u.dwh = dh;
     }
@@ -764,7 +768,7 @@ static dw_handle dwarfTypedef( TYPE type, DC_CONTROL control )
         uint      flags;
         type_update( type, TF2_DWARF_DEF, dh );
         sym = type->u.t.sym;
-        of_type = StructType( type->of );
+        of_type = ClassType( type->of );
         if( (of_type == type->of)
          && (of_type->u.c.info->unnamed)
          && (sym->name->containing == of_type->u.c.scope->enclosing) ) {
@@ -1300,8 +1304,8 @@ static void dwarf_block_open( SYMBOL sym )
 static void dwarfProcessFunction( CGFILE *file_ctl )
 /**************************************************/
 {
-    register CGVALUE ins_value; // - value on intermediate-code instruction
-    CGINTER *ins;               // - next intermediate-code instruction
+    CGVALUE ins_value;      // - value on intermediate-code instruction
+    CGINTER *ins;           // - next intermediate-code instruction
     dw_linenum line;
     dw_column column;
     dw_handle dh;
@@ -1648,7 +1652,7 @@ static dw_handle dwarfSymbol( SYMBOL sym, DC_CONTROL control )
         dwarfLocation( sym );
     }
     if( SymIsClassDefinition( sym ) ) {
-        dh = dwarfClass( StructType( sym->sym_type ), control );
+        dh = dwarfClass( ClassType( sym->sym_type ), control );
     } else if( SymIsEnumDefinition( sym ) ) {
         dh = dwarfEnum( EnumType( sym->sym_type ), control );
     } else if( SymIsInjectedTypedef( sym ) ) {
@@ -1806,7 +1810,7 @@ extern dbg_type DwarfDebugSym( SYMBOL sym )
 
     if( SymIsTypedef( sym ) ) {
         if( SymIsClassDefinition( sym ) ) {
-            dh = dwarfClass( StructType( sym->sym_type ), DC_DEFINE );
+            dh = dwarfClass( ClassType( sym->sym_type ), DC_DEFINE );
         } else if( SymIsEnumDefinition( sym ) ) {
             dh = dwarfEnum( EnumType( sym->sym_type ), DC_DEFINE );
         } else if( SymIsInjectedTypedef( sym ) ) {

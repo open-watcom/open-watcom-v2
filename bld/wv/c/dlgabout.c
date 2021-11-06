@@ -39,6 +39,8 @@
 #include "dlgabout.h"
 
 
+#define AboutSize	GetAboutSizeText()
+
 void    DlgAbout( void )
 {
     int         i;
@@ -46,7 +48,7 @@ void    DlgAbout( void )
 
     p = StrCopy( LIT_ENG( Empty ), TxtBuff );
     for( i = 0; i < AboutSize; ++i ) {
-        p = StrCopy( "\r", StrCopy( AboutMessage[i], p ) );
+        p = StrCopy( "\r", StrCopy( GetAboutMessage( i ), p ) );
     }
     Say2( LIT_DUI( About_The_WATCOM_Debugger ), TxtBuff );
 }

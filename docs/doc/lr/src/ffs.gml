@@ -9,7 +9,7 @@ The
 .id &funcb.
 finds the first bit set, beginning with the least significant bit, in
 .arg i
-.ct .li .
+.period
 Bits are numbered starting at one (the least significant bit).
 .desc end
 .return begin
@@ -42,5 +42,5 @@ int main( void )
 1
 5
 .exmp end
-.class POSIX
+.class POSIX 1003.1
 .system

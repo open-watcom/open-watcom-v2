@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -165,11 +165,21 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
     char      *   txt;
     char          hxstring[TAG_NAME_LENGTH +1];
     char          lvlc;
+    bool          ok;
 
-    if( !GlobFlags.index ) {          // index option not active
-        scan_start = scan_stop;         // ignore tag
+    ok = false;
+    if( !GlobFlags.index ) {    // index option not active
+        scan_start = scan_stop; // ignore tag
         return;
     }
+
+    pgtext      = NULL;
+    pgtextlen   = 0;
+    printtxt    = NULL;
+    printtxtlen = 0;
+    seetext     = NULL;
+    seetextlen  = 0;
+
     lvlc = '0' + hx_lvl;
     *hxstring = GML_char;         // construct tagname for possible error msg
     strcpy( hxstring + 1, gml_tagname( gtag ) );
@@ -179,19 +189,13 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
         (ProcFlags.doc_sect_nxt >= doc_sect_gdoc)) ) {
 
         g_err( err_tag_before_gdoc, hxstring );
-        err_count++;
-        file_mac_info();
-        scan_start = scan_stop;
-        return;
+        goto err_cleanup;
     }
 
     if( hx_lvl > 1 ) {          // test for missing previous parent index tag
         if( ixhtag[hx_lvl - 1] == NULL ) {
             g_err( err_parent_undef );
-            err_count++;
-            file_mac_info();
-            scan_start = scan_stop;
-            return;
+            goto err_cleanup;
         }
     }
 
@@ -203,12 +207,10 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
     seeidseen = false;
 
     ixewk     = NULL;
+    ixhwk     = NULL;
+    refwk     = NULL;
+    rswk      = NULL;
     pgvalue   = pgnone;
-    pgtext    = NULL;
-    pgtextlen = 0;
-    printtxt  = NULL;
-    printtxtlen = 0;
-    seetext   = NULL;
 
     wkpage    = page + 1;
     p         = scan_start;
@@ -255,18 +257,12 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                     if( rewk != NULL ) {
                         if( rewk->lineno != reid.lineno ) {
                             g_err( inf_id_duplicate );
-                            err_count++;
-                            file_mac_info();
-                            scan_start = scan_stop;
-                            return;
+                            goto err_cleanup;
                         }
                     }
                 } else {                // not allowed for :IREF
                     g_err( err_refid_not_allowed, hxstring );
-                    err_count++;
-                    file_mac_info();
-                    scan_start = scan_stop;
-                    return;
+                    goto err_cleanup;
                 }
             }
             scan_start = p;
@@ -289,18 +285,12 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                     if( refwk == NULL ) {   // refid not in dict
                         if( GlobFlags.lastpass ) {// this is an error
                             g_err( inf_id_unknown );// during lastpass
-                            err_count++;
-                            file_mac_info();
-                            scan_start = scan_stop;
-                            return;
+                            goto err_cleanup;
                         }
                     }
                 } else {                // not allowed for :I1 and :IHx
                     g_err( err_refid_not_allowed, hxstring );
-                    err_count++;
-                    file_mac_info();
-                    scan_start = scan_stop;
-                    return;
+                    goto err_cleanup;
                 }
             }
             scan_start = p;
@@ -384,10 +374,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                     seeseen = true;
                 } else {                // not allowed for :IH3, :Ix
                     g_err( err_refid_not_allowed, hxstring );
-                    err_count++;
-                    file_mac_info();
-                    scan_start = scan_stop;
-                    return;
+                    goto err_cleanup;
                 }
             }
             continue;
@@ -409,18 +396,12 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                     if( rswk == NULL ) {// not in dict, this is an error
                         if( GlobFlags.lastpass ) {  // during lastpass
                             g_err( inf_id_unknown );
-                            err_count++;
-                            file_mac_info();
-                            scan_start = scan_stop;
-                            return;
+                            goto err_cleanup;
                         }
                     }
                 } else {                // not allowed for :IH3, :Ix :IREF
                     g_err( err_refid_not_allowed, hxstring );
-                    err_count++;
-                    file_mac_info();
-                    scan_start = scan_stop;
-                    return;
+                    goto err_cleanup;
                 }
             }
             scan_start = p;
@@ -463,10 +444,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
 
         if( !refidseen ) {              // refid= missing
             g_err( err_att_missing );
-            err_count++;
-            file_mac_info();
-            scan_start = scan_stop;
-            return;
+            goto err_cleanup;
         }
         if( GlobFlags.lastpass ) {
             if( refidseen && (refwk != NULL) ) {
@@ -521,9 +499,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                 }
             }
         }
-    } else                              // :Ix :IHx tags
-
-    if( ((hxstring[2] == lvlc) ) ) {    // test for :Ix
+    } else if( ((hxstring[2] == lvlc) ) ) {     // :Ix :IHx tags // test for :Ix
 
     /***********************************************************************/
     /* processing for :Ix                                                  */
@@ -606,9 +582,7 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
                 }
             }
         }
-    } else                              // :IHx
-
-    if( ((hxstring[3] == lvlc) ) ) {    // test for :IHx
+    } else if( ((hxstring[3] == lvlc) ) ) {     // :IHx     // test for :IHx
 
     /***********************************************************************/
     /* processing for :IHx                                                 */
@@ -637,15 +611,13 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
         if( seeseen ) {
             pgvalue = pgsee;
             if( ixhwk->entry == NULL ) {
-                ixewk = fill_ix_e_blk( &(ixhwk->entry), ixhwk, pgvalue,
-                                       seetext, seetextlen );
+                ixewk = fill_ix_e_blk( &(ixhwk->entry), ixhwk, pgvalue, seetext, seetextlen );
             } else {
                 ixewk = ixhwk->entry;
                 while( ixewk->next != NULL ) {  // find last entry
                     ixewk = ixewk->next;
                 }
-                ixewk = fill_ix_e_blk( &(ixewk->next), ixhwk, pgvalue,
-                                       seetext, seetextlen );
+                ixewk = fill_ix_e_blk( &(ixewk->next), ixhwk, pgvalue, seetext, seetextlen );
             }
         } else {
             if( seeidseen ) {
@@ -681,7 +653,12 @@ static  void    gml_ixxx_common( gml_tag gtag, int hx_lvl )
         memcpy( refwork, &reid, sizeof( reid ) );
         add_ref_entry( &iref_dict, refwork );
     }
-
+    ok = true;
+err_cleanup:
+    if( !ok ) {
+        err_count++;
+        file_mac_info();
+    }
     if( pgtext != NULL ) {
         mem_free( pgtext );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,7 @@
 #include "banner.h"
 #include "rc.h"
 #include "rccore.h"
+#include "usage.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -59,10 +60,6 @@
 extern void InitGlobs( void );
 extern void FiniGlobs( void );
 extern void RCmain( void );
-
-#ifdef __OSI__
-extern char *_Copyright;
-#endif
 
 jmp_buf     jmpbuf_RCFatalError;
 
@@ -224,33 +221,26 @@ static bool console_tty = false;
 static void RcIoPrintUsage( void )
 /********************************/
 {
-    PGROUP2     pg;
     int         index;
     char        buf[256];
-    char        imageName[_MAX_PATH];
     int         count;
 
     count = RcIoPrintBanner();
-    _cmdname( imageName );
-#ifdef __OSI__
-    if( _Copyright != NULL ) {
-        ConsoleMessage( "%s\n", _Copyright );
-        ++count;
-    }
-#endif
     if( console_tty && count ) {
         ConsoleMessage( "\n" );
         ++count;
     }
-    _splitpath2( imageName, pg.buffer, NULL, NULL, &pg.fname, NULL );
-    strlwr( pg.fname );
-
-    index = USAGE_MSG_FIRST;
-    GetRcMsg( index, buf, sizeof( buf ) );
-    ConsoleMessage( buf, pg.fname );
+    index = MSG_USAGE_BASE;
+    GetRcMsg( index++, buf, sizeof( buf ) );
+    GetRcMsg( index++, buf, sizeof( buf ) );
+#ifdef BOOTSTRAP
+    ConsoleMessage( buf, "bwrc" );
+#else
+    ConsoleMessage( buf, "wrc" );
+#endif
     ConsoleMessage( "\n" );
     ++count;
-    for( ++index; index <= USAGE_MSG_LAST; index++ ) {
+    for( ; index < MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
         if( console_tty ) {
             if( count == NUM_ROWS - 2 ) {
                 if( Wait_for_return() )

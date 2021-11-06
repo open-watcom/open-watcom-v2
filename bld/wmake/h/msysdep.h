@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,8 +68,8 @@
 # define EXIT_WARN          1       /* return from aborted -q (Query) make  */
 # define EXIT_ERROR         2       /* return after errors in parsing       */
 # define EXIT_FATAL         4       /* return after fatal error             */
-# define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
-# define MAX_TOK_SIZE       130     /* Maximum token size                   */
+# define MIN_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
+# define MIN_TOK_SIZE       130     /* Maximum token size                   */
 # define LINE_BUFF          80      /* length of one-line user input buffer */
 # define DLL_CMD_ENTRY      "???"   /* entry-pt for .DLL version of command */
 
@@ -85,8 +86,8 @@
 # define EXIT_WARN          1       /* return from aborted -q (Query) make  */
 # define EXIT_ERROR         2       /* return after errors in parsing       */
 # define EXIT_FATAL         4       /* return after fatal error             */
-# define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
-# define MAX_TOK_SIZE       130     /* Maximum token size                   */
+# define MIN_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
+# define MIN_TOK_SIZE       130     /* Maximum token size                   */
 # define LINE_BUFF          80      /* length of one-line user input buffer */
 # define DLL_CMD_ENTRY      "EXEC_CMD"   /* entry-pt for .DLL version of command */
 
@@ -103,8 +104,8 @@
 # define EXIT_WARN          1       /* return from aborted -q (Query) make  */
 # define EXIT_ERROR         2       /* return after errors in parsing       */
 # define EXIT_FATAL         4       /* return after fatal error             */
-# define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
-# define MAX_TOK_SIZE       130     /* Maximum token size                   */
+# define MIN_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
+# define MIN_TOK_SIZE       130     /* Maximum token size                   */
 # define LINE_BUFF          80      /* length of one-line user input buffer */
 # define DLL_CMD_ENTRY      "???"   /* entry-pt for .DLL version of command */
 
@@ -122,8 +123,8 @@
 # define EXIT_WARN          1       /* return from aborted -q (Query) make  */
 # define EXIT_ERROR         2       /* return after errors in parsing       */
 # define EXIT_FATAL         4       /* return after fatal error             */
-# define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
-# define MAX_TOK_SIZE       130     /* Maximum token size                   */
+# define MIN_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
+# define MIN_TOK_SIZE       130     /* Maximum token size                   */
 # define LINE_BUFF          80      /* length of one-line user input buffer */
 # define DLL_CMD_ENTRY      "EXEC_CMD"   /* entry-pt for .DLL version of command */
 
@@ -149,21 +150,8 @@
 #define MAKEFINI_NAME   "makefini"
 #define TOOLSINI_NAME   "tools.ini"
 
-/*
- * Sanity checks
- */
-#if MAX_TOK_SIZE < _MAX_PATH
-#undef MAX_TOK_SIZE
-#define MAX_TOK_SIZE    _MAX_PATH
-#endif
-#if MAX_TOK_SIZE < _MAX_PATH2
-#undef MAX_TOK_SIZE
-#define MAX_TOK_SIZE    _MAX_PATH2
-#endif
-#if MAX_SUFFIX < _MAX_EXT
-#undef MAX_SUFFIX
-#define MAX_SUFFIX      _MAX_EXT
-#endif
+#define MAX_TOK_SIZE    ((MIN_TOK_SIZE < _MAX_PATH2)?_MAX_PATH2:MIN_TOK_SIZE)
+#define MAX_SUFFIX      ((MIN_SUFFIX < _MAX_EXT)?_MAX_EXT:MIN_SUFFIX)
 
 typedef enum {
     SOA_NOT_AN_OBJ,
@@ -186,6 +174,12 @@ typedef enum {
     AUTO_DEP_RES
 } auto_dep_type;
 
+typedef struct EnvTracker {
+    struct EnvTracker   *next;
+    char                *value;
+    char                name[1];
+} ENV_TRACKER;
+
 extern int          SwitchChar( void );
 extern int          OSCorrupted( void );
 extern bool         TouchFile( const char *name );
@@ -198,6 +192,10 @@ extern void         CheckForBreak( void );
 extern void         InitSignals( void );
 extern void         DLLFini( void );
 extern char         *GetEnvExt( const char *str );
-extern int          PutEnvExt( const char *str );
+extern int          SetEnvExt( ENV_TRACKER *env );
+extern int          SetEnvSafe( const char *name, const char *value );
+#if !defined(NDEBUG) || defined(DEVELOPMENT)
+extern void         SetEnvFini( void );
+#endif
 
 #endif

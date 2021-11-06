@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 #include "dumpins.h"
 #include "dumpfpu.h"
 
-#if ( _TARGET & ( _TARG_IAPX86 | _TARG_80386 ) )
+#if ( _TARGET & ( _TARG_8086 | _TARG_80386 ) )
 
 #include "i87sched.h"
 #include "gen8087.h"
@@ -43,26 +44,25 @@
 void    DumpSeqs( void )
 /**********************/
 {
-    int         i, j;
-    temp_entry  *temp;
+    int                 i;
+    virtual_st_locn     virtual_locn;
+    temp_entry          *temp;
+    actual_st_locn      actual_locn;
 
     if( STLocations ) {
         DumpLiteral( "seq: " );
         for( i = 0; i < MaxSeq; ++i ) {
-            DumpChar( (char)i + 'a' );
+            DumpChar( (char)( i + 'a' ) );
             DumpChar( ' ' );
         }
         DumpNL();
-        for( j = VIRTUAL_0; j < VIRTUAL_NONE; ++j ) {
+        for( virtual_locn = VIRTUAL_0; virtual_locn < VIRTUAL_NONE; virtual_locn++ ) {
             DumpLiteral( "  " );
-            DumpChar( (char)j + '0' );
+            DumpChar( (char)( virtual_locn + '0' ) );
             DumpLiteral( ": " );
             for( i = 0; i < MaxSeq; ++i ) {
-                if( RegSTLoc( i, j ) == ACTUAL_NONE ) {
-                    DumpChar( 'X' );
-                } else {
-                    DumpChar( (char)RegSTLoc( i, j ) + '0' );
-                }
+                actual_locn = RegSTLoc( i, virtual_locn );
+                DumpChar( (actual_locn == ACTUAL_NONE) ? 'X' : (char)( actual_locn + '0' ) );
                 DumpChar( ' ' );
             }
             DumpNL();
@@ -75,7 +75,7 @@ void    DumpSeqs( void )
         DumpOperand( temp->op );
         DumpNL();
         DumpLiteral( "Location: " );
-        DumpChar( temp->actual_locn == ACTUAL_NONE ? 'X': (char)(temp->actual_locn) + '0' );
+        DumpChar( (temp->actual_locn == ACTUAL_NONE) ? 'X': (char)( temp->actual_locn + '0' ) );
         DumpLiteral( " Savings: " );
         DumpInt( temp->savings );
         if( temp->cached )
@@ -255,7 +255,7 @@ bool    DumpFPUIns87( instruction *ins )
 void    DumpFPUIns( instruction *ins )
 /************************************/
 {
-#if ( _TARGET & ( _TARG_IAPX86 | _TARG_80386 ) )
+#if ( _TARGET & ( _TARG_8086 | _TARG_80386 ) )
     (void)DumpFPUIns87( ins );
 #else
     /* unused parameters */ (void)ins;

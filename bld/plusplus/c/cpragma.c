@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,6 @@
 #include "template.h"
 #include "pcheader.h"
 #include "name.h"
-#include "stack.h"
 #include "ring.h"
 #include "fnovload.h"
 #include "cginlibs.h"
@@ -52,6 +51,10 @@
 #include "ialias.h"
 #include "cgfront.h"
 #include "compinfo.h"
+#include "toggles.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+#endif
 // from \watcom\h
 #include "rtprior.h"
 
@@ -65,13 +68,40 @@
 #define PCH_LIST_TERM       ((unsigned)-1)
 #define PCH_GLOBAL_PACK     ((unsigned)-1)
 
-typedef struct {                // PRAG_EXT_REF -- extref's pragma'd
+typedef struct prag_ext_ref {   // PRAG_EXT_REF -- extref's pragma'd
     void    *next;              // - next in ring
     SYMBOL  symbol;             // - extref symbol
     char    name[1];            // - extref name
-} PRAG_EXT_REF;
+} prag_ext_ref;
 
-static PRAG_EXT_REF *pragmaExtrefs; // ring of pragma'd extref symbols
+typedef struct prag_stack {
+    struct prag_stack   *next;
+    unsigned            value;
+} prag_stack;
+
+pragma_toggles          PragmaToggles;
+#ifndef NDEBUG
+pragma_dbg_toggles      PragmaDbgToggles;
+#endif
+
+#define pick( x ) static prag_stack *TOGGLE_STK( x );
+#include "togdef.h"
+#undef pick
+static prag_stack       *TOGGLE_STK( pack );
+static prag_stack       *TOGGLE_STK( enum );
+static prag_stack       *FreePrags;
+
+static prag_ext_ref     *pragmaExtrefs; // ring of pragma'd extref symbols
+
+static struct magic_words_data {
+    const char  *name;
+    AUX_INFO    *info;
+} magicWords[] = {
+    #define pick(a,b,c,d) { b, d },
+    #include "auxinfo.h"
+    #undef pick
+};
+
 
 static void init                // MODULE INITIALIZATION
     ( INITFINI* defn )
@@ -277,7 +307,7 @@ static void pragMessage(        // #PRAGMA MESSAGE
         NextToken();
         if( CurToken == T_STRING ) {
             collectStrings( &str );
-            CErr2p( WARN_USER_WARNING_MSG, VbufString( &str ) );
+            MsgDisplayBanner( VbufString( &str ) );
             VbufFree( &str );
         }
         MustRecog( T_RIGHT_PAREN );
@@ -431,21 +461,6 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
 }
 
 
-static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
-    unsigned level )            // - level to be validated
-{
-    bool ok;                    // - return: true ==> good level
-
-    if( level > WLEVEL_MAX ) {
-        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        ok = false;
-    } else {
-        ok = true;
-    }
-    return( ok );
-}
-
-
 // forms: #pragma warning # level   (change message # to have level "level)
 //      : #pragma warning * level   (change all messages to have level "level)
 //
@@ -478,12 +493,10 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
         if( CurToken == T_CONSTANT ) {
             level = U32Fetch( Constant64 );
             NextToken();
-            if( warnLevelValidate( level ) ) {
-                if( change_all ) {
-                    WarnChangeLevels( level );
-                } else {
-                    WarnChangeLevel( level, msgnum );
-                }
+            if( change_all ) {
+                WarnChangeLevels( level );
+            } else {
+                WarnChangeLevel( level, msgnum );
             }
         } else {
             CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
@@ -564,36 +577,15 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
     PPCTL_DISABLE_MACROS();
 }
 
-void PragmaSetToggle(           // SET TOGGLE
-    bool set_flag )             // - true ==> set flag
-{
-    #define toggle_pick( x ) \
-        if( strcmp( Buffer, #x ) == 0 ) {       \
-            PragDbgToggle.x = set_flag;         \
-            return;                             \
-        }
-    #include "dbgtogg.h"
-    #undef toggle_pick
-
-    #define toggle_pick( x ) \
-        if( strcmp( Buffer, #x ) == 0 ) {       \
-            PragToggle.x = set_flag;            \
-            return;                             \
-        }
-    #include "tognam.h"
-    #undef toggle_pick
-}
-
-
-static void pragFlag(           // SET TOGGLES
-    bool set_flag )             // - true ==> set flag
+static void pragOptions(        // SET TOGGLES
+    int func )                  // - true ==> set flag
 {
     PPCTL_ENABLE_MACROS();
     NextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
         while( IS_ID_OR_KEYWORD( CurToken ) ) {
-            PragmaSetToggle( set_flag );
+            PragmaSetToggle( Buffer, func, true );
             NextToken();
         }
         MustRecog( T_RIGHT_PAREN );
@@ -661,28 +653,61 @@ static void pragInitialize(     // #pragma initialize ...
     CompInfo.init_priority = (unsigned char)priority;
 }
 
-static void pushPrag( PRAG_STACK **h, unsigned value )
+static prag_stack *stackPush( prag_stack **header, prag_stack *element )
+/**********************************************************************/
 {
-    PRAG_STACK *stack_entry;
-
-    stack_entry = StackPop( &FreePrags );
-    if( stack_entry == NULL ) {
-        stack_entry = CPermAlloc( sizeof( *stack_entry ) );
-    }
-    stack_entry->value = value;
-    StackPush( h, stack_entry );
+    element->next = *header;
+    *header = element;
+    return( element );
 }
 
-static bool popPrag( PRAG_STACK **h, unsigned *pvalue )
+static prag_stack *stackPop( prag_stack **header )
+/************************************************/
 {
-    PRAG_STACK *pack_entry;
+    prag_stack  *element;
 
-    pack_entry = StackPop( h );
-    if( pack_entry != NULL ) {
+    element = *header;
+    if( element != NULL ) {
+        *header = element->next;
+    }
+    return( element );
+}
+
+static void freeStack( prag_stack **header )
+/******************************************/
+{
+    prag_stack  *element;
+
+    while( (element = *header) != NULL ) {
+        *header = element->next;
+        CMemFree( element );
+    }
+}
+
+static void pushPrag( prag_stack **header, unsigned value )
+/*********************************************************/
+{
+    prag_stack *stack_entry;
+
+    stack_entry = stackPop( &FreePrags );
+    if( stack_entry == NULL ) {
+        stack_entry = CMemAlloc( sizeof( *stack_entry ) );
+    }
+    stack_entry->value = value;
+    stackPush( header, stack_entry );
+}
+
+static bool popPrag( prag_stack **header, unsigned *pvalue )
+/**********************************************************/
+{
+    prag_stack *stack_entry;
+
+    stack_entry = stackPop( header );
+    if( stack_entry != NULL ) {
         if( pvalue != NULL ) {
-            *pvalue = pack_entry->value;
+            *pvalue = stack_entry->value;
         }
-        StackPush( &FreePrags, pack_entry );
+        stackPush( &FreePrags, stack_entry );
         return( true );
     }
     return( false );
@@ -711,16 +736,16 @@ static void pragEnum            // #pragma enum PARSING
     PPCTL_ENABLE_MACROS();
     NextToken();
     if( PragRecogId( "int" ) ) {
-        pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = true;
     } else if( PragRecogId( "minimum" ) ) {
-        pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = false;
     } else if( PragRecogId( "original" ) ) {
-        pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = CompFlags.original_enum_setting;
     } else if( PragRecogId( "pop" ) ) {
-        if( popPrag( &HeadEnums, &make_enums_an_int ) ) {
+        if( popPrag( &TOGGLE_STK( enum ), &make_enums_an_int ) ) {
             CompFlags.make_enums_an_int = ( make_enums_an_int != 0 );
         }
     }
@@ -761,10 +786,10 @@ static void pragInitSeg(     // #pragma init_seg ...
 static void parseExtRef(     // PARSE SYMBOL NAME
     void )
 {
-    PRAG_EXT_REF *entry;
+    prag_ext_ref *entry;
 
     if( CurToken == T_STRING ) {
-        entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + TokenLen + 1 );
+        entry = RingAlloc( &pragmaExtrefs, offsetof( prag_ext_ref, name ) + TokenLen + 1 );
         memcpy( entry->name, Buffer, TokenLen + 1 );
         entry->symbol = NULL;
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
@@ -792,7 +817,7 @@ static void parseExtRef(     // PARSE SYMBOL NAME
                 sym = NULL;
             }
             if( sym != NULL ) {
-                entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + 1 );
+                entry = RingAlloc( &pragmaExtrefs, offsetof( prag_ext_ref, name ) + 1 );
                 entry->symbol = sym;
                 entry->name[0] = '\0';
             }
@@ -831,7 +856,7 @@ static void pragExtRef(
 void PragmaExtrefsValidate      // VALIDATE EXTREFS FOR PRAGMAS
     ( void )
 {
-    PRAG_EXT_REF* entry;        // - current entry
+    prag_ext_ref    *entry;     // - current entry
 
     RingIterBeg( pragmaExtrefs, entry ) {
         if( entry->symbol != NULL ) {
@@ -853,7 +878,7 @@ void PragmaExtrefsValidate      // VALIDATE EXTREFS FOR PRAGMAS
 void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
     ( void )
 {
-    PRAG_EXT_REF* entry;        // - current entry
+    prag_ext_ref    *entry;     // - current entry
 
     RingIterBeg( pragmaExtrefs, entry ) {
         if( entry->symbol != NULL ) {
@@ -910,7 +935,7 @@ static void pragDumpObjectModel( // DUMP OBJECT MODEL
                 TYPE type = sname->name_type->sym_type;
                 if( TypeDefined( type ) ) {
                     TYPE dump_type;
-                    dump_type = StructType( type );
+                    dump_type = ClassType( type );
                     if( dump_type != NULL ) {
                         DumpObjectModelClass( dump_type );
                     } else {
@@ -1209,16 +1234,16 @@ static void pragPack(           // #PRAGMA PACK
         switch( CurToken ) {
         case T_ID:
             if( PragRecogId( "pop" ) ) {
-                popPrag( &HeadPacks, &PackAmount );
+                popPrag( &TOGGLE_STK( pack ), &PackAmount );
             } else if( PragRecogId( "push" ) ) {
                 if( CurToken == T_RIGHT_PAREN ) {
-                    pushPrag( &HeadPacks, PackAmount );
+                    pushPrag( &TOGGLE_STK( pack ), PackAmount );
                 } else {
                     if( ExpectingToken( T_COMMA ) ) {
                         NextToken();
                     }
                     if( CurToken == T_CONSTANT ) {
-                        pushPrag( &HeadPacks, PackAmount );
+                        pushPrag( &TOGGLE_STK( pack ), PackAmount );
                         PackAmount = VerifyPackAmount( U32Fetch( Constant64 ) );
                         NextToken();
                     } else {
@@ -1294,9 +1319,11 @@ void CPragma( void )                  // PROCESS A PRAGMA
         }
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
         if( pragmaNameRecog( "on" ) ) {
-            pragFlag( true );
+            pragOptions( 1 );
         } else if( pragmaNameRecog( "off" ) ) {
-            pragFlag( false );
+            pragOptions( 0 );
+        } else if( pragmaNameRecog( "pop" ) ) {
+            pragOptions( -1 );
         } else if( pragmaNameRecog( "aux" ) || pragmaNameRecog( "linkage" ) ) {
             PragAux();
         } else if( pragmaNameRecog( "library" ) ) {
@@ -1368,7 +1395,7 @@ void CPragma( void )                  // PROCESS A PRAGMA
 }
 
 
-void PragInit(
+void PragmaAuxInit(
     void )
 {
     WatcallInfo.use = 2;
@@ -1385,47 +1412,18 @@ void PragInit(
 }
 
 
-static struct {
-    const char  *name;
-    AUX_INFO    *info;
-} magicWords[] = {
-    #define pick( a, b, c ) { b , c },
-    #include "auxinfo.h"
-    #undef pick
-};
-
-static magic_word_idx lookupMagicKeyword(   // LOOKUP A MAGIC KEYWORD
+static AUX_INFO *lookupMagicKeyword(        // LOOKUP A MAGIC KEYWORD
     const char *name )                      // - name to be looked up
 {
-    magic_word_idx  i;
+    magic_words     mword;
 
     name = SkipUnderscorePrefix( name, NULL, true );
-    for( i = 0; i < M_UNKNOWN; i++ ) {
-        if( strcmp( magicWords[i].name + 2, name ) == 0 ) {
-            break;
+    for( mword = 0; mword < M_SIZE; mword++ ) {
+        if( strcmp( magicWords[mword].name + 2, name ) == 0 ) {
+            return( magicWords[mword].info );
         }
     }
-    return( i );
-}
-
-static const char *retrieveName( magic_word_idx m_type )
-{
-    return( magicWords[m_type].name );
-}
-
-
-#if _INTEL_CPU
-static magic_word_idx MagicKeyword( // LOOKUP A MAGIC KEYWORD FROM BUFFER
-    void )
-{
-    return( lookupMagicKeyword( Buffer ) );
-}
-#endif
-
-static AUX_INFO *MagicKeywordInfo(  // LOOKUP A MAGIC KEYWORD FROM BUFFER
-    void )
-{
-    return( magicWords[lookupMagicKeyword( Buffer )].info );
+    return( NULL );
 }
 
 
@@ -1442,80 +1440,63 @@ void CreateAux(                 // CREATE AUX ID
 }
 
 
-static bool setAuxInfo(         // SET CURRENT INFO. STRUCTURE
-    magic_word_idx m_type,      // - type to be set
-    bool create_new )           // - true if we want a new aux_info
-{
-    bool found;
-
-    found = true;
-    CurrInfo = magicWords[m_type].info;
-    if( CurrInfo == NULL ) {
-        if( create_new ) {
-            CreateAux( Buffer );
-        } else {
-            found = false;
-        }
-    }
-    return( found );
-}
-
 bool PragmaName( AUX_INFO *pragma, const char **id )
 /**************************************************/
 {
-    *id = NULL;
     if( pragma == &DefaultInfo ) {
-        return( true );
-    }
-    if( pragma == &CdeclInfo ) {
-        *id = retrieveName( M_CDECL );
+        *id = NULL;
+    } else if( pragma == &CdeclInfo ) {
+        *id = magicWords[M_CDECL].name;
     } else if( pragma == &PascalInfo ) {
-        *id = retrieveName( M_PASCAL );
+        *id = magicWords[M_PASCAL].name;
     } else if( pragma == &FortranInfo ) {
-        *id = retrieveName( M_FORTRAN );
+        *id = magicWords[M_FORTRAN].name;
     } else if( pragma == &SyscallInfo ) {
-        *id = retrieveName( M_SYSCALL );
+        *id = magicWords[M_SYSCALL].name;
     } else if( pragma == &OptlinkInfo ) {
-        *id = retrieveName( M_OPTLINK );
+        *id = magicWords[M_OPTLINK].name;
     } else if( pragma == &StdcallInfo ) {
-        *id = retrieveName( M_STDCALL );
+        *id = magicWords[M_STDCALL].name;
     } else if( pragma == &FastcallInfo ) {
-        *id = retrieveName( M_FASTCALL );
+        *id = magicWords[M_FASTCALL].name;
     } else if( pragma == &WatcallInfo ) {
-        *id = retrieveName( M_WATCALL );
+        *id = magicWords[M_WATCALL].name;
+    } else {
+        *id = AuxRetrieve( pragma );
+        return( false );
     }
-    if( *id != NULL ) {
-        return( true );
-    }
-    *id = AuxRetrieve( pragma );
-    return( false );
+    return( true );
 }
 
 
 #if _INTEL_CPU
 void SetCurrInfo(               // SET CURRENT INFO. STRUCTURE
-    void )
+    const char *name )
 {
-    setAuxInfo( MagicKeyword(), true );
+    CurrInfo = lookupMagicKeyword( name );
+    if( CurrInfo == NULL ) {
+        CreateAux( name );
+    }
 }
 #endif
 
 
-void PragCurrAlias(             // LOCATE ALIAS FOR PRAGMA
-    void )
+AUX_INFO *PragmaAuxAlias(       // LOCATE ALIAS FOR PRAGMA
+    const char *name )
 {
-    AUX_ENTRY *search;
+    AUX_ENTRY *aux;
+    AUX_INFO  *info;
 
-    search = NULL;
-    CurrAlias = MagicKeywordInfo();
-    if( CurrAlias == NULL ) {
-        search = AuxLookup( Buffer );
-        if( search != NULL ) {
-            CurrAlias = search->info;
+    info = lookupMagicKeyword( name );
+    if( info == NULL ) {
+        aux = AuxLookup( name );
+        if( aux != NULL ) {
+            info = aux->info;
         } else {
-            CurrAlias = &DefaultInfo;
+            info = &DefaultInfo;
         }
     }
+    return( info );
 }
 
 
@@ -1542,7 +1523,7 @@ static void copyObjName(         // COPY OBJECT PORTION
     }
 }
 
-void PragEnding(                // PROCESS END OF PRAGMA
+void PragmaAuxEnding(           // PROCESS END OF PRAGMA
     bool set_sym )              // - true ==> set SYMBOL's aux_info
 {
     if( CurrEntry != NULL ) {
@@ -1582,17 +1563,13 @@ void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
 #endif
 
 
-AUX_INFO *PragmaLookup( const char *name, magic_word_idx index )
-/**************************************************************/
+AUX_INFO *PragmaLookup( const char *name )
+/****************************************/
 {
     AUX_ENTRY *ent;
 
-    if( index != M_UNKNOWN ) {
-        if( setAuxInfo( index, false ) ) {
-            return( CurrInfo );
-        }
-    }
-    if( setAuxInfo( lookupMagicKeyword( name ), false ) ) {
+    CurrInfo = lookupMagicKeyword( name );
+    if( CurrInfo != NULL ) {
         return( CurrInfo );
     }
     ent = AuxLookup( name );
@@ -1603,20 +1580,31 @@ AUX_INFO *PragmaLookup( const char *name, magic_word_idx index )
 }
 
 
+AUX_INFO *PragmaLookupMagic( magic_words mword )
+/**********************************************/
+{
+    return( magicWords[mword].info );
+}
+
+
 AUX_INFO *GetTargetHandlerPragma    // GET PRAGMA FOR FS HANDLER
     ( void )
 {
     AUX_INFO *prag;
 
     prag = NULL;
-    switch( TargetSystem ) {
-    case TS_NT:
-        prag = &CdeclInfo;
-        break;
-    case TS_OS2:
-        prag = &SyscallInfo;
-        break;
+#if _CPU == 386
+    if( CompFlags.fs_registration ) {
+        switch( TargetSystem ) {
+        case TS_NT:
+            prag = &CdeclInfo;
+            break;
+        case TS_OS2:
+            prag = &SyscallInfo;
+            break;
+        }
     }
+#endif
     return( prag );
 }
 
@@ -1772,8 +1760,8 @@ bool ReverseParms( AUX_INFO *pragma )
     return( false );
 }
 
-bool GetPragAuxAliasInfo( void )
-/******************************/
+bool GetPragmaAuxAliasInfo( void )
+/********************************/
 {
     char buff[256];
 
@@ -1783,7 +1771,7 @@ bool GetPragAuxAliasInfo( void )
     NextToken();
     if( !IS_ID_OR_KEYWORD( CurToken ) )         // error
         return( false );
-    PragCurrAlias();
+    CurrAlias = PragmaAuxAlias( Buffer );
     strcpy( buff, Buffer );
     NextToken();
     if( CurToken == T_RIGHT_PAREN ) {           // #pragma aux (alias) symbol ....
@@ -1794,8 +1782,8 @@ bool GetPragAuxAliasInfo( void )
         NextToken();
         if( IS_ID_OR_KEYWORD( CurToken ) ) {
             CreateAux( buff );
-            GetPragAuxAlias();
-            PragEnding( true );
+            GetPragmaAuxAlias();
+            PragmaAuxEnding( true );
         }
     }
     return( false );
@@ -1803,31 +1791,25 @@ bool GetPragAuxAliasInfo( void )
 
 static void writePacks( void )
 {
-    PRAG_STACK *pack_entry;
-    PRAG_STACK *reversed_packs;
+    prag_stack *stack_entry;
+    prag_stack *reversed_entries;
     unsigned pack_amount;
 
-    reversed_packs = NULL;
-    for( ;; ) {
-        pack_entry = StackPop( &HeadPacks );
-        if( pack_entry == NULL )
-            break;
-        StackPush( &reversed_packs, pack_entry );
+    reversed_entries = NULL;
+    while( (stack_entry = stackPop( &TOGGLE_STK( pack ) )) != NULL ) {
+        stackPush( &reversed_entries, stack_entry );
     }
-    for( ;; ) {
-        pack_entry = StackPop( &reversed_packs );
-        if( pack_entry == NULL )
-            break;
-        pack_amount = pack_entry->value;
-        PCHWriteUInt( pack_amount );
-        StackPush( &HeadPacks, pack_entry );
+    while( (stack_entry = stackPop( &reversed_entries )) != NULL ) {
+        PCHWriteUInt( stack_entry->value );
+        stackPush( &TOGGLE_STK( pack ), stack_entry );
     }
-    pack_amount = PCH_GLOBAL_PACK;
-    PCHWriteUInt( pack_amount );
-    if( HeadPacks != NULL ) {
+    PCHWriteUInt( PCH_LIST_TERM );
+    if( TOGGLE_STK( pack ) != NULL ) {
         pack_amount = PackAmount;
     } else if( PackAmount != GblPackAmount ) {
         pack_amount = PackAmount;
+    } else {
+        pack_amount = PCH_GLOBAL_PACK;
     }
     PCHWriteUInt( pack_amount );
 }
@@ -1836,11 +1818,11 @@ static void readPacks( void )
 {
     unsigned pack_amount;
 
-    while( HeadPacks != NULL ) {
-        popPrag( &HeadPacks, &PackAmount );
+    while( TOGGLE_STK( pack ) != NULL ) {
+        popPrag( &TOGGLE_STK( pack ), &PackAmount );
     }
-    for( ; (pack_amount = PCHReadUInt()) != PCH_LIST_TERM; ) {
-        pushPrag( &HeadPacks, pack_amount );
+    while( (pack_amount = PCHReadUInt()) != PCH_LIST_TERM ) {
+        pushPrag( &TOGGLE_STK( pack ), pack_amount );
     }
     pack_amount = PCHReadUInt();
     if( pack_amount == PCH_GLOBAL_PACK ) {
@@ -1851,39 +1833,32 @@ static void readPacks( void )
 
 static void writeEnums( void )
 {
-    PRAG_STACK *enum_entry;
-    PRAG_STACK *reversed_enums;
+    prag_stack *stack_entry;
+    prag_stack *reversed_entries;
     unsigned enum_int;
 
-    reversed_enums = NULL;
-    for( ;; ) {
-        enum_entry = StackPop( &HeadPacks );
-        if( enum_entry == NULL )
-            break;
-        StackPush( &reversed_enums, enum_entry );
+    reversed_entries = NULL;
+    while( (stack_entry = stackPop( &TOGGLE_STK( enum ) )) != NULL ) {
+        stackPush( &reversed_entries, stack_entry );
     }
-    for( ;; ) {
-        enum_entry = StackPop( &reversed_enums );
-        if( enum_entry == NULL )
-            break;
-        enum_int = enum_entry->value;
+    while( (stack_entry = stackPop( &reversed_entries )) != NULL ) {
+        enum_int = stack_entry->value;
         PCHWriteUInt( enum_int );
-        StackPush( &HeadPacks, enum_entry );
+        stackPush( &TOGGLE_STK( enum ), stack_entry );
     }
-    enum_int = PCH_LIST_TERM;
-    PCHWriteUInt( enum_int );
-    PCHWriteUInt( CompFlags.make_enums_an_int );
+    PCHWriteUInt( PCH_LIST_TERM );
+    PCHWriteUInt( ( CompFlags.make_enums_an_int != 0 ) );
 }
 
 static void readEnums( void )
 {
     unsigned enum_int;
 
-    while( HeadEnums != NULL ) {
-        popPrag( &HeadEnums, NULL );
+    while( TOGGLE_STK( enum ) != NULL ) {
+        popPrag( &TOGGLE_STK( enum ), NULL );
     }
-    for( ; (enum_int = PCHReadUInt()) != PCH_LIST_TERM; ) {
-        pushPrag( &HeadEnums, enum_int );
+    while( (enum_int = PCHReadUInt()) != PCH_LIST_TERM ) {
+        pushPrag( &TOGGLE_STK( enum ), enum_int );
     }
     CompFlags.make_enums_an_int = ( PCHReadUInt() != 0 );
 }
@@ -1891,7 +1866,7 @@ static void readEnums( void )
 static void writeExtrefs( void )
 {
     unsigned        len;
-    PRAG_EXT_REF    *e;
+    prag_ext_ref    *e;
 
     RingIterBeg( pragmaExtrefs, e ) {
         if( e->symbol != NULL ) {
@@ -1913,16 +1888,16 @@ static void readExtrefs( void )
 {
     SYMBOL       sym;
     unsigned     len;
-    PRAG_EXT_REF *entry;
+    prag_ext_ref *entry;
 
     RingFree( &pragmaExtrefs );
     while( (sym = SymbolPCHRead()) != NULL ) {
-        entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + 1 );
+        entry = RingAlloc( &pragmaExtrefs, offsetof( prag_ext_ref, name ) + 1 );
         entry->symbol = sym;
         entry->name[0] = '\0';
     }
     while( (len = PCHReadUInt()) != 0 ) {
-        entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + len + 1 );
+        entry = RingAlloc( &pragmaExtrefs, offsetof( prag_ext_ref, name ) + len + 1 );
         PCHRead( entry->name, len + 1 );
         entry->symbol = NULL;
     }
@@ -1933,7 +1908,7 @@ pch_status PCHReadPragmaData( void )
     unsigned depth;
     unsigned value;
 
-    PCHReadVar( PragToggle );
+    PCHReadVar( PragmaToggles );
     CgInfoLibPCHRead();
     readPacks();
     readEnums();
@@ -1952,7 +1927,7 @@ pch_status PCHWritePragmaData( void )
     unsigned depth;
     unsigned value;
 
-    PCHWriteVar( PragToggle );
+    PCHWriteVar( PragmaToggles );
     CgInfoLibPCHWrite();
     writePacks();
     writeEnums();
@@ -1979,3 +1954,67 @@ pch_status PCHFiniPragmaData( bool writing )
 
     return( PCHCB_OK );
 }
+
+void PragmaSetToggle(           // SET TOGGLE
+    const char *name,           // - toggle name
+    int func,                   // - -1/0/1 ==> func pop/off/on
+    bool push )                 // - true ==> push current value on stack
+{
+#ifndef NDEBUG
+    #define pick( x ) \
+        if( strcmp( name, #x ) == 0 ) { \
+            if( func == -1 ) { \
+            } else { \
+                TOGGLEDBG( x ) = ( func != 0 ); \
+            } \
+            return; \
+        }
+    #include "togdefd.h"
+    #undef pick
+#endif
+    #define pick( x ) \
+        if( strcmp( name, #x ) == 0 ) { \
+            if( func == -1 ) { \
+                unsigned    value; \
+                if( popPrag( &TOGGLE_STK( x ), &value ) ) { \
+                    TOGGLE( x ) = ( value != 0 ); \
+                } \
+            } else { \
+                if( push ) { \
+                    pushPrag( &TOGGLE_STK( x ), TOGGLE( x ) ); \
+                } \
+                TOGGLE( x ) = ( func != 0 ); \
+            } \
+            return; \
+        }
+    #include "togdef.h"
+    #undef pick
+}
+
+static void togglesInit(    // INITIALIZE TOGGLES
+    INITFINI* defn )
+{
+    /* unused parameters */ (void)defn;
+
+    #define pick( x ) TOGGLE_STK( x ) = NULL;
+    #include "togdef.h"
+    #undef pick
+    TOGGLE_STK( pack ) = NULL;
+    TOGGLE_STK( enum ) = NULL;
+    FreePrags = NULL;
+}
+
+static void togglesFini(    // FINALIZE TOGGLES
+    INITFINI* defn )
+{
+    /* unused parameters */ (void)defn;
+
+    #define pick( x )   freeStack( &TOGGLE_STK( x ) );
+    #include "togdef.h"
+    #undef pick
+    freeStack( &TOGGLE_STK( pack ) );
+    freeStack( &TOGGLE_STK( enum ) );
+    freeStack( &FreePrags );
+}
+
+INITDEFN( toggles_stack, togglesInit, togglesFini )

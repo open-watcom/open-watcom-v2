@@ -47,7 +47,6 @@ line.
 .ix '&setcmdup' '&wclvarup32 environment variable'
 .exam begin 3
 &prompt.&setcmd &setdelim.&wclvar16=&sw.d1 &sw.ot&setdelim
-
 &prompt.&setcmd &setdelim.&wclvar32=&sw.d1 &sw.ot&setdelim
 .exam end
 .pc

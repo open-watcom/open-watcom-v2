@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -169,14 +170,13 @@ void WdeHandleDrawItem( DRAWITEMSTRUCT *dis )
         check_bitmap = LoadBitmap( NULL, MAKEINTRESOURCE( OBM_CHECK ) );
         GetObject( check_bitmap, sizeof( BITMAP ), &check_bm );
         if( dis->itemState & ODS_SELECTED ) {
-            back_brush = CreateSolidBrush( GetSysColor( COLOR_HIGHLIGHT ) );
             back_color = GetSysColor( COLOR_HIGHLIGHT );
             fore_color = GetSysColor( COLOR_HIGHLIGHTTEXT );
         } else {
-            back_brush = CreateSolidBrush( GetSysColor( COLOR_MENU ) );
             back_color = GetSysColor( COLOR_MENU );
             fore_color = GetSysColor( COLOR_MENUTEXT );
         }
+        back_brush = CreateSolidBrush( back_color );
         FillRect( dis->hDC, &dis->rcItem, back_brush );
         mem_dc = CreateCompatibleDC( dis->hDC );
         old_bitmap = SelectObject( mem_dc, od_data->hbmp );

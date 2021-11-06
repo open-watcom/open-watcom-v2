@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,30 +33,26 @@
 
 #include "guiwind.h"
 
-void GUIGetSystemMetrics( gui_system_metrics *metrics )
+void GUIAPI GUIGetSystemMetrics( gui_system_metrics *pmetrics )
 {
-    gui_text_metrics    tm;
+    gui_text_metrics    metrics;
 
-    if( metrics != NULL ) {
-        GUIGetTextMetrics( NULL, &tm );
-        metrics->resize_border.x = tm.max.x; /* don't need to scale 0 */
-        metrics->resize_border.y = tm.max.x;
-        metrics->mouse = uimouseinstalled();
-        if( UIData != NULL ) {
-            metrics->colour = ( UIData->colour != M_MONO );
-        } else {
-            metrics->colour = false;
-        }
-        metrics->top_left.x = tm.max.x;
-        metrics->top_left.y = tm.max.y;
-        metrics->bottom_right.x = tm.max.x;
-        metrics->bottom_right.y = tm.max.y;
-        metrics->scrollbar_size.x = 0;
-        metrics->scrollbar_size.y = 0;
-        metrics->dialog_top_left_size.x = tm.max.x;
-        metrics->dialog_top_left_size.y = tm.max.y;
-        metrics->dialog_bottom_right_size.x = tm.max.x;
-        metrics->dialog_bottom_right_size.y = tm.max.y;
-        metrics->caption_size = tm.max.y;
+    if( pmetrics != NULL ) {
+        GUIGetTextMetrics( NULL, &metrics );
+        pmetrics->resize_border.x = metrics.max.x; /* don't need to scale 0 */
+        pmetrics->resize_border.y = metrics.max.y;
+        pmetrics->mouse = uimouseinstalled();
+        pmetrics->colour = ( UIData != NULL && UIData->colour != M_MONO );
+        pmetrics->top_left.x = metrics.max.x;
+        pmetrics->top_left.y = metrics.max.y;
+        pmetrics->bottom_right.x = metrics.max.x;
+        pmetrics->bottom_right.y = metrics.max.y;
+        pmetrics->scrollbar_size.x = 0;
+        pmetrics->scrollbar_size.y = 0;
+        pmetrics->dialog_top_left_size.x = metrics.max.x;
+        pmetrics->dialog_top_left_size.y = metrics.max.y;
+        pmetrics->dialog_bottom_right_size.x = metrics.max.x;
+        pmetrics->dialog_bottom_right_size.y = metrics.max.y;
+        pmetrics->caption_size = metrics.max.y;
     }
 }

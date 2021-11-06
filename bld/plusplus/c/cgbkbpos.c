@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,10 +38,13 @@
 #include "codegen.h"
 #include "cgbackut.h"
 #include "ring.h"
-#include "toggle.h"
 #include "vstk.h"
 #include "initdefs.h"
 #include "dumpapi.h"
+#ifndef NDEBUG
+    #include "pragdefn.h"
+    #include "togglesd.h"
+#endif
 
 
 struct blk_posn                 // BLK_POSN -- current block position
@@ -58,14 +62,12 @@ static VSTK_CTL stack_blk_posn;     // stack: current block position
 #ifdef NDEBUG
     #define DbgDumpBlkPosn(a,b)
 #else
-    #include "pragdefn.h"
-
 
 static void DbgDumpBlkPosn(     // DUMP A BLK_POSN
     BLK_POSN* bpos,             // - entry
     const char* text )          // - text
 {
-    if( PragDbgToggle.dump_blk_posn ) {
+    if( TOGGLEDBG( dump_blk_posn ) ) {
         printf( "%s BLK_POSN[%p] scope(%p) posn(%p)\n"
                 "    last_method(%d) starting(%p) temp_beg(%p) temp_end(%p)\n"
               , text
@@ -77,7 +79,7 @@ static void DbgDumpBlkPosn(     // DUMP A BLK_POSN
               , bpos->temp_beg
               , bpos->temp_end );
     }
-    if( PragDbgToggle.dump_blk_posn || PragDbgToggle.dump_exec_ic ) {
+    if( TOGGLEDBG( dump_blk_posn ) || TOGGLEDBG( dump_exec_ic ) ) {
         FN_CTL* fctl = FnCtlTop();
         printf( "** function dtm(%d) scope dtm(%d)\n"
               , fctl->func_dtor_method

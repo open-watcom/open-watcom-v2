@@ -9,7 +9,7 @@ The
 .id &funcb.
 functions are used to transfer control to a user-defined
 error handler if the
-.kw new
+.reffunc new
 operator fails to allocate memory.
 The argument
 .arg pNewHandler
@@ -17,7 +17,7 @@ is the name of a function of type
 .kw PFV
 or
 .kw PFU
-.ct .li .
+.period
 .begterm 12
 .termhd1 Type
 .termhd2 Description

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@ void MakeBitmap( img_node *node, bool isnew )
     HDC                 hdc;
     WPI_PRES            pres;
     WPI_PRES            mempres;
-    HBITMAP             oldbitmap;
+    WPI_HBITMAP         old_hbitmap;
 
     if( isnew ) {
         InitXorAndBitmaps( node );
@@ -55,14 +55,14 @@ void MakeBitmap( img_node *node, bool isnew )
          */
         pres = _wpi_getpres( HWND_DESKTOP );
         mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
-        node->handbitmap = _wpi_createbitmap( node->width, node->height, 1, 1, NULL );
+        node->and_hbitmap = _wpi_createbitmap( node->width, node->height, 1, 1, NULL );
         _wpi_releasepres( HWND_DESKTOP, pres );
 
         _wpi_torgbmode( mempres );
-        oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
+        old_hbitmap = _wpi_selectbitmap( mempres, node->and_hbitmap );
         _wpi_patblt( mempres, 0, 0, node->width, node->height, BLACKNESS );
 
-        _wpi_getoldbitmap( mempres, oldbitmap );
+        _wpi_getoldbitmap( mempres, old_hbitmap );
         _wpi_deletecompatiblepres( mempres, hdc );
     }
 
@@ -95,7 +95,7 @@ void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
     HDC         memdc;
     WPI_PRES    pres;
     WPI_PRES    mempres;
-    HBITMAP     oldbitmap;
+    WPI_HBITMAP old_hbitmap;
 //    HDC         anddc;
 
 //    anddc = anddc;
@@ -106,7 +106,7 @@ void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
     _wpi_torgbmode( mempres );
     hpen = _wpi_createpen( PS_SOLID, 0, xorcolor );
     oldpen = _wpi_selectpen( mempres, hpen );
-    oldbitmap = _wpi_selectbitmap( mempres, activeImage->hxorbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, activeImage->xor_hbitmap );
 
     _wpi_movetoex( mempres, startpt, NULL );
     _wpi_lineto( mempres, endpt );
@@ -114,7 +114,7 @@ void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
 
     _wpi_getoldpen( mempres, oldpen );
     _wpi_deletepen( hpen );
-    _wpi_getoldbitmap( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
 
     if( activeImage->imgtype == BITMAP_IMG ) {
         _wpi_deletecompatiblepres( mempres, memdc );
@@ -123,7 +123,7 @@ void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
 
     hpen = _wpi_createpen( PS_SOLID, 0, andcolor );
     oldpen = _wpi_selectpen( mempres, hpen );
-    oldbitmap = _wpi_selectbitmap( mempres, activeImage->handbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, activeImage->and_hbitmap );
 
     _wpi_movetoex( mempres, startpt, NULL );
     _wpi_lineto( mempres, endpt );
@@ -131,7 +131,7 @@ void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
 
     _wpi_getoldpen( mempres, oldpen );
     _wpi_deletepen( hpen );
-    _wpi_getoldbitmap( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
 //    _wpi_deletecompatiblepres( mempres, anddc );
 
 } /* LineXorAnd */
@@ -150,7 +150,7 @@ void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
     WPI_PRES    mempres;
     HDC         memdc;
     WPI_PRES    pres;
-    HBITMAP     oldbitmap;
+    WPI_HBITMAP old_hbitmap;
     int         left;
     int         top;
     int         right;
@@ -164,7 +164,7 @@ void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
 
     hpen = _wpi_createpen( PS_SOLID, 0, xorcolor );
     oldpen = _wpi_selectpen( mempres, hpen );
-    oldbitmap = _wpi_selectbitmap( mempres, activeImage->hxorbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, activeImage->xor_hbitmap );
 
     if( fFillRgn ) {
         hbrush = _wpi_createsolidbrush( xorcolor );
@@ -183,7 +183,7 @@ void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
     _wpi_getoldpen( mempres, oldpen );
     _wpi_deletepen( hpen );
     _wpi_getoldbrush( mempres, oldbrush );
-    _wpi_getoldbitmap( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
     if( fFillRgn ) {
         _wpi_deletebrush( hbrush );
     } else {
@@ -197,7 +197,7 @@ void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
 
     hpen = _wpi_createpen( PS_SOLID, 0, andcolor );
     oldpen = _wpi_selectpen( mempres, hpen );
-    oldbitmap = _wpi_selectbitmap( mempres, activeImage->handbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, activeImage->and_hbitmap );
 
     if( fFillRgn ) {
         hbrush = _wpi_createsolidbrush( andcolor );
@@ -214,7 +214,7 @@ void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
     _wpi_getoldpen( mempres, oldpen );
     _wpi_deletepen( hpen );
     _wpi_getoldbrush( mempres, oldbrush );
-    _wpi_getoldbitmap( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
     if( fFillRgn ) {
         _wpi_deletebrush( hbrush );
     } else {

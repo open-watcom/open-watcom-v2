@@ -32,7 +32,7 @@
 #include <string.h>
 #include "linkstd.h"
 #include "exephar.h"
-#include "pharlap.h"
+#include "loadphar.h"
 #include "alloc.h"
 #include "msg.h"
 #include "reloc.h"
@@ -43,6 +43,10 @@
 #include "dbgall.h"
 #include "fileio.h"
 #include "loadfile.h"
+#include "cmdutils.h"
+
+
+#ifdef _PHARLAP
 
 #define HEAD_SIZE 0x180
 #define RTP_SIZE  0x080
@@ -86,7 +90,7 @@ static unsigned_32 WritePharRelocs( void )
     RELOC_INFO  *temp;
 
     temp = Root->reloclist;             // don't want to modify original
-    return DumpMaxRelocList( &temp, 0 );
+    return( DumpMaxRelocList( &temp, 0 ) );
 }
 
 static void WritePharSimple( unsigned_32 start )
@@ -120,10 +124,12 @@ static void WritePharSimple( unsigned_32 start )
     _HostU16toTarg( header_size / 16, header.hdr_size );
     extra = MemorySize() - file_size + header_size + 0xfff;
     temp = FmtData.u.phar.mindata + extra;
-    if( temp < FmtData.u.phar.mindata ) temp = 0xffffffff;
+    if( temp < FmtData.u.phar.mindata )
+        temp = 0xffffffff;
     _HostU16toTarg( temp >> 12, header.min_data );
     temp = FmtData.u.phar.maxdata + extra;
-    if( temp < FmtData.u.phar.maxdata ) temp = 0xffffffff;
+    if( temp < FmtData.u.phar.maxdata )
+        temp = 0xffffffff;
     _HostU16toTarg( temp >> 12, header.max_data );
     _HostU32toTarg( StackAddr.off, header.ESP );
     _HostU16toTarg( 0, header.checksum );
@@ -165,7 +171,8 @@ static void WriteDescriptor( unsigned_32 base, unsigned_32 limit,
     if( flags & DR_IS_USER ) {
         desc.bits2 |= DESC_GENERAL;
     }
-    if( limit > 0 ) limit--;
+    if( limit > 0 )
+        limit--;
     if( limit >= _1MB ) {
         limit >>= 12;
         desc.bits2 |= DESC_GRANULARITY_BIT;
@@ -230,20 +237,34 @@ static unsigned_32 WritePharSegData( void )
 static unsigned_32  WriteRTPBlock( void )
 /***************************************/
 {
-    symbol *        symptr;
+    symbol          *sym;
+    rtpblock        rtpblk;
+    unsigned_32     offset;
 
-    FmtData.u.phar.params->signature = RTP_SIGNATURE;
     if( FmtData.u.phar.breaksym != NULL ) {
-        symptr = FindISymbol( FmtData.u.phar.breaksym );
-        if( symptr == NULL ) {
+        sym = FindISymbol( FmtData.u.phar.breaksym );
+        if( sym == NULL ) {
             LnkMsg( WRN+MSG_BREAKSYM_NOT_FOUND, "s", FmtData.u.phar.breaksym );
-            FmtData.u.phar.params->realbreak = 0;
+            offset = 0;
         } else {
-            FmtData.u.phar.params->realbreak = symptr->addr.off;
+            offset = sym->addr.off;
         }
+    } else {
+        offset = FmtData.u.phar.realbreak;
     }
-    WriteLoad( FmtData.u.phar.params, sizeof( rtpblock ) );
-    PadLoad( RTP_SIZE - sizeof( rtpblock ) );
+    _HostU16toTarg( RTP_SIGNATURE, rtpblk.signature );
+    _HostU16toTarg( FmtData.u.phar.minreal, rtpblk.minreal );
+    _HostU16toTarg( FmtData.u.phar.maxreal, rtpblk.maxreal );
+    _HostU16toTarg( FmtData.u.phar.minibuf, rtpblk.minibuf );
+    _HostU16toTarg( FmtData.u.phar.maxibuf, rtpblk.maxibuf );
+    _HostU16toTarg( FmtData.u.phar.nistack, rtpblk.nistack );
+    _HostU16toTarg( FmtData.u.phar.istksize, rtpblk.istksize );
+    _HostU16toTarg( FmtData.u.phar.callbufs, rtpblk.callbufs );
+    _HostU32toTarg( offset, rtpblk.realbreak );
+    _HostU16toTarg( FmtData.u.phar.extender_flags, rtpblk.extender_flags );  /* for undocumented "runtime flags" */
+    _HostU16toTarg( FmtData.u.phar.unpriv, rtpblk.unpriv );
+    WriteLoad( &rtpblk, sizeof( rtpblk ) );
+    PadLoad( RTP_SIZE - sizeof( rtpblk ) );
     return( RTP_SIZE );
 }
 
@@ -265,7 +286,7 @@ static unsigned_32 WriteSIT( void )
         WriteLoad( &sit, sizeof( seg_info_table ) );
         size += sizeof( seg_info_table );
     }
-    return size;
+    return( size );
 }
 
 static void WritePharExtended( unsigned_32 start )
@@ -352,10 +373,12 @@ static void WritePharExtended( unsigned_32 start )
         _HostU32toTarg( 0, header.tss_size );
         extra = MemorySize() - file_size + image_offset;
         temp = FmtData.u.phar.mindata + extra;
-        if( temp < FmtData.u.phar.mindata ) temp = 0xffffffff;
+        if( temp < FmtData.u.phar.mindata )
+            temp = 0xffffffff;
         _HostU32toTarg( temp, header.min_extra );
         temp = FmtData.u.phar.maxdata + extra;
-        if( temp < FmtData.u.phar.maxdata ) temp = 0xffffffff;
+        if( temp < FmtData.u.phar.maxdata )
+            temp = 0xffffffff;
         _HostU32toTarg( temp, header.max_extra );
         _HostU16toTarg( 0, header.SS );
         _HostU16toTarg( 0, header.CS );
@@ -386,3 +409,13 @@ void FiniPharLapLoadFile( void )
         WritePharSimple( start );
     }
 }
+
+void CheckPharLapData( void )
+/***************************/
+{
+    if( (FmtData.type & MK_PHAR_FLAT) && (LinkState & LS_HAVE_16BIT_CODE) && (CmdFlags & CF_HAVE_REALBREAK) == 0 ) {
+        LnkMsg( WRN+MSG_NO_REALBREAK_WITH_16BIT, NULL );
+    }
+}
+
+#endif

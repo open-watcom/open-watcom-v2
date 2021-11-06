@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@ typedef enum {
     POPS2               = 0x80
 } fp_attr;
 
-enum {
+typedef enum {
     VIRTUAL_0,
     VIRTUAL_1,
     VIRTUAL_2,
@@ -52,9 +53,9 @@ enum {
     VIRTUAL_6,
     VIRTUAL_7,
     VIRTUAL_NONE
-};
+} virtual_st_locn;
 
-enum {
+typedef enum {
     ACTUAL_0,
     ACTUAL_1,
     ACTUAL_2,
@@ -64,17 +65,17 @@ enum {
     ACTUAL_6,
     ACTUAL_7,
     ACTUAL_NONE
-};
+} actual_st_locn;
 
 typedef struct {
-    byte        actual_locn[VIRTUAL_NONE];
+    actual_st_locn      actual_locn[VIRTUAL_NONE];
 } st_seq;
 
 typedef struct temp_entry {
     struct temp_entry   *next;
     name                *op;
     name                *actual_op;
-    byte                actual_locn;
+    actual_st_locn      actual_locn;
     instruction         *first;
     instruction         *last;
     instruction         *entry;

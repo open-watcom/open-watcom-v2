@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,18 +57,49 @@ enum {
     SRC_T_NULL
 };
 
-#define SRC_HOOK_WRITE          0x0001
-#define SRC_HOOK_READ           0x0002
-#define SRC_HOOK_BUFFIN         0x0004
-#define SRC_HOOK_BUFFOUT        0x0008
-#define SRC_HOOK_COMMAND        0x0010
-#define SRC_HOOK_MODIFIED       0x0020
-#define SRC_HOOK_MENU           0x0040
-#define SRC_HOOK_MOUSE_LINESEL  0x0080
-#define SRC_HOOK_MOUSE_CHARSEL  0x0100
-#define SRC_HOOK_DDE            0x0200
+#define IS_LOCALVAR(n)      (n[0] < 'A' || n[0] > 'Z')
 
-typedef int         hooktype;
+#define GLOBVAR_COLUMN          "C"
+#define GLOBVAR_ROW             "R"
+#define GLOBVAR_FILEHOME        "H"
+#define GLOBVAR_FILEFULLNAME    "F"
+#define GLOBVAR_FILEDRIVE       "D"
+#define GLOBVAR_FILEPATH        "P"
+#define GLOBVAR_FILENAME        "N"
+#define GLOBVAR_FILEEXT         "E"
+#define GLOBVAR_FILEMODIFIED    "M"
+#define GLOBVAR_USER_FILEDRIVE  "D1"
+#define GLOBVAR_USER_FILEPATH   "P1"
+
+#define GLOBVAR_COMMAND_BUFFER  "Com"
+#define GLOBVAR_INIPATH         "IniPath"
+#define GLOBVAR_LINELEN         "LineLen"
+#define GLOBVAR_OS              "OS"
+#define GLOBVAR_OS386           "OS386"
+#define GLOBVAR_OSX64           "OSX64"
+#define GLOBVAR_WINDOW_HEIGHT   "SH"
+#define GLOBVAR_SYSTEM_RETCODE  "Sysrc"
+#define GLOBVAR_WINDOW_WIDTH    "SW"
+
+#define SRCHOOK_DEFS \
+    pick( SRC_HOOK_WRITE,           0x0001, "Wrhook"      ) \
+    pick( SRC_HOOK_READ,            0x0002, "Rdhook"      ) \
+    pick( SRC_HOOK_BUFFIN,          0x0004, "Buffinhook"  ) \
+    pick( SRC_HOOK_BUFFOUT,         0x0008, "Buffouthook" ) \
+    pick( SRC_HOOK_COMMAND,         0x0010, "Cmdhook"     ) \
+    pick( SRC_HOOK_MODIFIED,        0x0020, "Modhook"     ) \
+    pick( SRC_HOOK_MENU,            0x0040, "Menuhook"    ) \
+    pick( SRC_HOOK_MOUSE_LINESEL,   0x0080, "MLselhook"   ) \
+    pick( SRC_HOOK_MOUSE_CHARSEL,   0x0100, "MCselhook"   ) \
+    pick( SRC_HOOK_DDE,             0x0200, "DDEhook"     )
+
+typedef enum hooktype {
+    SRC_HOOK_NONE           = 0,
+    #define pick(e,m,t)     e = m,
+    SRCHOOK_DEFS
+    #undef pick
+} hooktype;
+
 typedef char        *label;
 typedef unsigned    srcline;
 
@@ -105,18 +137,16 @@ typedef struct labels {
     unsigned short  cnt;
 } labels;
 
-typedef unsigned short  var_len;
-
 typedef struct vars {
     struct vars *next, *prev;
     char        *value;
-    var_len     len;
+    size_t      len;
     char        name[1];
 } vars;
 
-typedef struct vlist {
+typedef struct vars_list {
     vars    *head, *tail;
-} vlist;
+} vars_list;
 
 typedef enum {
     SRCFILE_NONE = 0,
@@ -170,9 +200,6 @@ typedef struct resident {
  */
 extern const char _NEAR   StrTokens[];
 extern const char _NEAR   SourceTokens[];
-extern char         *ErrorTokens;
-extern int          *ErrorValues;
-extern vars         *VarHead, *VarTail;
 extern long         CurrentSrcLabel;
 extern srcline      CurrentSrcLine;
 extern int          CurrentSrcToken;
@@ -182,7 +209,7 @@ extern int          CurrentSrcToken;
  */
 
 /* srcassgn.c */
-extern vi_rc    SrcAssign( const char *, vlist * );
+extern vi_rc    SrcAssign( const char *data, vars_list *vl );
 
 /* srccs.c */
 extern void     CSInit( void );
@@ -200,16 +227,16 @@ extern void     CSContinue( void );
 extern void     CSQuif( const char *data );
 
 /* srcexpnd.c */
-extern char     *Expand( char *, const char *, vlist * );
+extern char     *Expand( char *, const char *data, vars_list *vl );
 
 /* srcexpr.c */
-extern vi_rc    SrcExpr( sfile *, vlist * );
+extern vi_rc    SrcExpr( sfile *, vars_list *vl );
 
 /* srcfile.c */
-extern vi_rc    SrcOpen( sfile *, vlist *, files *, const char * );
-extern vi_rc    SrcRead( sfile *, files *, const char *, vlist * );
-extern vi_rc    SrcWrite( sfile *, files *, const char *, vlist * );
-extern vi_rc    SrcClose( sfile *, vlist *, files *, const char * );
+extern vi_rc    SrcOpen( sfile *, files *, const char *data, vars_list *vl );
+extern vi_rc    SrcRead( sfile *, files *, const char *data, vars_list *vl );
+extern vi_rc    SrcWrite( sfile *, files *, const char *data, vars_list *vl );
+extern vi_rc    SrcClose( sfile *, files *, const char *data, vars_list *vl );
 
 /* srcgen.c */
 extern vi_rc    PreProcess( const char *, sfile **, labels * );
@@ -230,33 +257,35 @@ extern int      FindLabel( labels *labs, const char *lbl );
 /* srchook.c */
 extern vi_rc    SourceHook( hooktype, vi_rc );
 extern vars     *GetHookVar( hooktype num );
-extern vi_rc    SourceHookData( hooktype num, char *data );
+extern vi_rc    SourceHookWithData( hooktype num, char *data );
 extern void     HookScriptCheck( void );
 extern vi_rc    InvokeColSelHook( int sc, int ec );
 extern vi_rc    InvokeLineSelHook( linenum s, linenum e );
 extern vi_rc    InvokeMenuHook( int menunum, int line );
 
 /* srcif.c */
-extern vi_rc    SrcIf( sfile **, vlist * );
-extern vi_rc    GetErrorTokenValue( int *, const char * );
-extern vi_rc    ReadErrorTokens( void );
+extern vi_rc    SrcIf( sfile **, vars_list *vl );
 
 /* srcinp.c */
-extern vi_rc    SrcInput( const char *, vlist * );
-extern void     SrcGet( const char *, vlist * );
+extern vi_rc    SrcInput( const char *data, vars_list *vl );
+extern void     SrcGet( const char *data, vars_list *vl );
 
 /* srcnextw.c */
-extern vi_rc    SrcNextWord( const char *, vlist * );
+extern vi_rc    SrcNextWord( const char *data, vars_list * );
 
 /* srcvar.c */
-extern void     VarAddGlobalStr( const char *, const char * );
-extern void     VarAddRandC( void );
-extern void     VarAddGlobalLong( const char *, long );
-extern void     VarAddStr( const char *, const char *, vlist * );
-extern void     VarListDelete( vlist * );
-extern bool     VarName( char *, const char *, vlist * );
-extern vars     *VarFind( const char *, vlist * );
+extern void     GlobVarAddStr( const char *name, const char *value );
+extern void     GlobVarAddLong( const char *name, long value );
+extern void     GlobVarAddRowAndCol( void );
+extern void     GlobVarFini( void );
+extern vars     *GlobVarFind( const char *name );
+extern vars     *VarFind( const char *name, vars_list *vl );
+extern void     VarAddStr( const char *name, const char *value, vars_list *vl );
+extern void     VarAddLong( const char *name, long value, vars_list *vl );
+extern void     VarListDelete( vars_list *vl );
+extern bool     VarName( char *name, const char *data, vars_list *vl );
+extern bool     ReadVarName( const char **data, char *name, vars_list *vl );
 
-extern bool     RunWindowsCommand( const char *, vi_rc *, vlist * );
+extern bool     RunWindowsCommand( const char *data, vi_rc *rc, vars_list *vl );
 
 #endif

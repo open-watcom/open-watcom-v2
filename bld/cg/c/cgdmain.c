@@ -59,10 +59,14 @@ cg_interface *_CGDLLEXPORT BEDLLInit( fe_interface *func_table )
 void _CGDLLEXPORT BEDLLFini( cg_interface *func_table )
 /*****************************************************/
 {
+    /* unused parameters */ (void)func_table;
+
     // nothing yet
 }
 
 int __stdcall LibMain( unsigned_32 hdll, unsigned_32 reason, void *reserved )
 {
+    /* unused parameters */ (void)hdll; (void)reason; (void)reserved;
+
     return( 1 );
 }

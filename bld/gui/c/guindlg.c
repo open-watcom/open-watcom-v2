@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,14 +38,14 @@
 #if !defined( __NT__ ) || !defined( GUI_IS_GUI )
 static gui_colour_set DlgWndColours[GUI_NUM_ATTRS + 1] = {
   /* Fore              Back        */
-  { GUI_BRIGHT_BLUE,  GUI_BRIGHT_WHITE },   /* GUI_MENU_PLAIN     */
-  { GUI_BRIGHT_WHITE, GUI_BLUE },           /* GUI_MENU_STANDOUT  */
-  { GUI_WHITE,        GUI_BRIGHT_WHITE },   /* GUI_BACKGROUND     */
-  { GUI_RED,          GUI_WHITE },          /* GUI_TITLE_ACTIVE   */
-  { GUI_GREY,         GUI_WHITE },          /* GUI_TITLE_INACTIVE */
-  { GUI_BRIGHT_BLUE,  GUI_WHITE },          /* GUI_FRAME_ACTIVE   */
-  { GUI_GREY,         GUI_WHITE },          /* GUI_FRAME_INACTIVE */
-  { GUI_BRIGHT_CYAN,  GUI_CYAN }            /* GUI_FIRST_UNUSED   */
+  { GUI_BR_BLUE,  GUI_BR_WHITE },   /* GUI_MENU_PLAIN     */
+  { GUI_BR_WHITE, GUI_BLUE },       /* GUI_MENU_STANDOUT  */
+  { GUI_WHITE,    GUI_BR_WHITE },   /* GUI_BACKGROUND     */
+  { GUI_RED,      GUI_WHITE },      /* GUI_TITLE_ACTIVE   */
+  { GUI_GREY,     GUI_WHITE },      /* GUI_TITLE_INACTIVE */
+  { GUI_BR_BLUE,  GUI_WHITE },      /* GUI_FRAME_ACTIVE   */
+  { GUI_GREY,     GUI_WHITE },      /* GUI_FRAME_INACTIVE */
+  { GUI_BR_CYAN,  GUI_CYAN }        /* GUI_FIRST_UNUSED   */
 };
 #endif
 
@@ -69,29 +69,7 @@ static gui_create_info DlgControl = {
 
 static bool DlgModal = false;
 
-static bool DlgRelocNum( gui_ord *pnum, int adjust, gui_coord *charuse )
-{
-    gui_ord     num;
-
-    num = *pnum;
-    if( num >= DLG_ROW_0 && num <= DLG_ROW_n ) {
-        num -= DLG_ROW( 0 );
-        num += adjust;
-        num *= charuse->y;
-    } else if( num >= DLG_COL_0 && num <= DLG_COL_n ) {
-        num -= DLG_COL( 0 );
-        num += adjust;
-        num *= charuse->x;
-    } else {
-        return( false );
-    }
-    *pnum = num;
-    return( true );
-}
-
-
-static void GetHalfAndAdjust( gui_coord *charuse,
-                              gui_coord *half, gui_ord *char_ui_adjust )
+static void GetHalfAndAdjust( gui_coord *charuse, gui_coord *half, gui_ord *char_ui_adjust )
 {
     half->x = charuse->x / 2;
     half->y = charuse->y / 2;
@@ -108,26 +86,22 @@ static void DlgSetCtlSizes( gui_control_info *controls_info,
 {
     gui_coord   half;
     gui_ord     char_ui_adjust;
-    bool        reloc;
 
     /* unused parameters */ (void)charspace;
 
     GetHalfAndAdjust( charuse, &half, &char_ui_adjust );
     while( --num >= 0 ) {
-        if( DlgRelocNum( &controls_info->rect.x, 1, charuse ) ) {
-            controls_info->rect.x += half.x;
-        }
-        if( DlgRelocNum( &controls_info->rect.y, 0, charuse ) ) {
-            controls_info->rect.y += half.y + char_ui_adjust;
-        }
-        reloc = false;
-        if( DlgRelocNum( &controls_info->rect.width, 0, charuse ) ) {
-            reloc = true;
-        }
-        if( DlgRelocNum( &controls_info->rect.height, 0, charuse ) ) {
-            reloc = true;
-        }
-        if( reloc ) {
+        if( controls_info->style & GUI_STYLE_CONTROL_CHARCOORD ) {
+            controls_info->rect.x = ( controls_info->rect.x + 1 ) * charuse->x + half.x;
+            controls_info->rect.y = controls_info->rect.y * charuse->y + half.y + char_ui_adjust;
+            switch( controls_info->control_class ) {
+            case GUI_GROUPBOX:
+                controls_info->rect.width = controls_info->rect.width * charuse->x - half.x;
+                break;
+            default:
+                controls_info->rect.width = controls_info->rect.width * charuse->x;
+                break;
+            }
             switch( controls_info->control_class ) {
 #ifdef __OS2_PM__
             // brutal hack to get OS/2 and Windows dialogs to look the same.
@@ -136,19 +110,20 @@ static void DlgSetCtlSizes( gui_control_info *controls_info,
                 break;
 #endif
             case GUI_GROUPBOX:
-                controls_info->rect.width -= half.x;
-                controls_info->rect.height -= half.y;
+                controls_info->rect.height = controls_info->rect.height * charuse->y - half.y;
                 break;
-            default :
+            default:
+                controls_info->rect.height = controls_info->rect.height * charuse->y;
                 break;
             }
+            controls_info->style &= ~GUI_STYLE_CONTROL_CHARCOORD;
         }
         ++controls_info;
     }
 }
 
-static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, int rows,
-                        int cols, gui_coord *charuse )
+static void DlgSetSize( gui_window *parent_wnd, gui_create_info *dlg_info, gui_text_ord rows,
+                        gui_text_ord cols, gui_coord *charuse )
 {
     gui_rect            max_size;
     gui_rect            rect;
@@ -159,7 +134,7 @@ static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, int rows,
     GetHalfAndAdjust( charuse, &half, &char_ui_adjust );
     GUIGetSystemMetrics( &metrics );
     GUIGetScale( &max_size );
-    dlg_info->rect.width = (cols+3) * charuse->x + metrics.dialog_top_left_size.x +
+    dlg_info->rect.width = ( cols + 3 ) * charuse->x + metrics.dialog_top_left_size.x +
                       metrics.dialog_bottom_right_size.x;
     dlg_info->rect.height= rows * charuse->y + metrics.dialog_top_left_size.y +
                       metrics.dialog_bottom_right_size.y + char_ui_adjust;
@@ -171,14 +146,14 @@ static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, int rows,
     }
     dlg_info->rect.x = max_size.x + ( max_size.width - dlg_info->rect.width ) / 2;
     dlg_info->rect.y = max_size.y + ( max_size.height - dlg_info->rect.height ) / 2;
-    if( parent != NULL ) {
-        GUIGetClientRect( parent, &rect );
+    if( parent_wnd != NULL ) {
+        GUIGetClientRect( parent_wnd, &rect );
         dlg_info->rect.x -= rect.x;
         dlg_info->rect.y -= rect.y;
     }
 }
 
-static void doDlgOpen( gui_window *parent, const char *title, int rows, int cols,
+static void doDlgOpen( gui_window *parent_wnd, const char *title, gui_text_ord rows, gui_text_ord cols,
                      gui_control_info *controls_info, int num_controls,
                      GUICALLBACK *gui_call_back, void *extra, bool sys )
 {
@@ -189,7 +164,7 @@ static void doDlgOpen( gui_window *parent, const char *title, int rows, int cols
     DlgControl.title = title;
     DlgControl.gui_call_back = gui_call_back;
     DlgControl.extra = extra;
-    DlgControl.parent = parent;
+    DlgControl.parent = parent_wnd;
     GUIGetDlgTextMetrics( &metrics );
     charspace.x = metrics.max.x;
     charspace.y = metrics.max.y;
@@ -202,7 +177,7 @@ static void doDlgOpen( gui_window *parent, const char *title, int rows, int cols
     charuse.y = ( 7 * metrics.avg.y ) / 4;
 #endif
     GUITruncToPixel( &charuse );
-    DlgSetSize( parent, &DlgControl, rows, cols, &charuse );
+    DlgSetSize( parent_wnd, &DlgControl, rows, cols, &charuse );
     DlgSetCtlSizes( controls_info, num_controls, &charuse, &charspace );
     if( sys || DlgModal ) {
         GUICreateSysModalDialog( &DlgControl, num_controls, controls_info );
@@ -211,25 +186,25 @@ static void doDlgOpen( gui_window *parent, const char *title, int rows, int cols
     }
 }
 
-void GUISetModalDlgs( bool modal )
+void GUIAPI GUISetModalDlgs( bool modal )
 {
     DlgModal = modal;
 }
 
-void GUIDlgOpen( const char *title, int rows, int cols, gui_control_info *controls_info,
+void GUIAPI GUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info,
                  int num_controls, GUICALLBACK *gui_call_back, void *extra )
 {
     doDlgOpen( NULL, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
-void GUIModalDlgOpen( gui_window *parent, const char *title, int rows, int cols,
+void GUIAPI GUIModalDlgOpen( gui_window *parent_wnd, const char *title, gui_text_ord rows, gui_text_ord cols,
                       gui_control_info *controls_info, int num_controls,
                       GUICALLBACK *gui_call_back, void *extra )
 {
-    doDlgOpen( parent, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
+    doDlgOpen( parent_wnd, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
-void GUISysModalDlgOpen( const char *title, int rows, int cols,
+void GUIAPI GUISysModalDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
                          gui_control_info *controls_info, int num_controls,
                          GUICALLBACK *gui_call_back, void *extra )
 {

@@ -8,7 +8,7 @@ The
 .id &funcb.
 function causes memory located at
 .arg address
-measuring 
+measuring
 .arg len
 bytes to be held in physical memory until unlocked or
 the process terminates.
@@ -40,5 +40,5 @@ The calling process lacks the approriate permissions
 .see begin
 .seelist mlockall munlock munlockall
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

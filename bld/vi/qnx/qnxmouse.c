@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -194,7 +195,7 @@ void InitMouse( void )
     EditFlags.UseMouse = true;
 
     qnx_osinfo( 0, &osinfo );
-    sysTime = MK_FP( osinfo.timesel, 0 );
+    sysTime = _MK_FP( osinfo.timesel, 0 );
 
     SetMousePosition( EditVars.WindMaxWidth / 2 - 1, EditVars.WindMaxHeight / 2 - 1 );
     SetMouseSpeed( EditVars.MouseSpeed );

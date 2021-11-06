@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,8 +42,8 @@
 
 #define OVLNUM(x) ((x-__OVLTAB__.entries)+1)
 
-#define OVLTAB_OK(x) (FP_OFF(x)<FP_OFF(__OVLTABEND__))
-#define OVLVEC_OK(x) (FP_OFF(x)<FP_OFF(__OVLENDVEC__))
+#define OVLTAB_OK(x) (_FP_OFF(x)<_FP_OFF(__OVLTABEND__))
+#define OVLVEC_OK(x) (_FP_OFF(x)<_FP_OFF(__OVLENDVEC__))
 
 #define WALK_ALL_OVL(x) for(x=__OVLTAB__.entries;OVLTAB_OK(x);++x)
 #define WALK_ALL_VECT(x) for(x=__OVLSTARTVEC__;OVLVEC_OK(x);++x)

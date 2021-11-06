@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@ DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
     DWORD       rc = 0;
 
     if( WDebug386 ) {
-        rc = CopyMemory386( FP_SEG(buff), FP_OFF(buff), sel, off,  size );
+        rc = CopyMemory386( _FP_SEG( buff ), _FP_OFF( buff ), sel, off,  size );
     } else if( DebugeeTask != NULL ) {
         rc = MemoryRead( sel, off, buff, size );
     }
@@ -63,7 +63,7 @@ DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
     DWORD       rc = 0;
 
     if( WDebug386 ) {
-        rc = CopyMemory386( sel, off, FP_SEG(buff), FP_OFF(buff), size );
+        rc = CopyMemory386( sel, off, _FP_SEG( buff ), _FP_OFF( buff ), size );
     } else if( DebugeeTask != NULL ) {
         rc = MemoryWrite( sel, off, buff, size );
     }
@@ -71,7 +71,7 @@ DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
 
 } /* WriteMem */
 
-trap_retval ReqRead_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
     LPVOID              data;
@@ -84,7 +84,7 @@ trap_retval ReqRead_mem( void )
     return( len );
 }
 
-trap_retval ReqWrite_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     trap_elen           len;
     LPVOID              data;
@@ -100,7 +100,7 @@ trap_retval ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqChecksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     DWORD               offset;
     trap_elen           length;

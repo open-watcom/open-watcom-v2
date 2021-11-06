@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +34,12 @@
 #include "asmalloc.h"
 #if defined( _STANDALONE_ )
 #include "directiv.h"
+#include "omfqueue.h"
 #include "queues.h"
 #include "hash.h"
 #include "myassert.h"
 #include "asmstruc.h"
+#include "pcobj.h"
 #endif
 
 #include "clibext.h"
@@ -100,7 +103,7 @@ static char *InitAsmSym( struct asm_sym *sym, const char *name )
         sym->offset = 0;
         sym->public = false;
         sym->referenced = false;
-        sym->langtype = LANG_NONE;
+        sym->langtype = WASM_LANG_NONE;
         sym->first_size = 0;
         sym->first_length = 0;
         sym->total_size = 0;
@@ -245,7 +248,7 @@ struct asm_sym *AsmLookup( const char *name )
         return NULL;
     }
 #if defined( _STANDALONE_ )
-    if( Options.mode & MODE_IDEAL ) {
+    if( Options.mode & MODE_TASM ) {
         if( Options.locals_len ) {
             if( memcmp( name, Options.locals_prefix, Options.locals_len ) == 0
                 && name[Options.locals_len] != '\0' ) {
@@ -265,6 +268,8 @@ struct asm_sym *AsmLookup( const char *name )
                 return( sym );
             }
         }
+    }
+    if( Options.mode & MODE_IDEAL ) {
         if( Definition.struct_depth != 0 ) {
             structure = &Definition.curr_struct->sym;
             sym = FindStructureMember( structure, name );
@@ -577,7 +582,7 @@ static void log_segment( struct asm_sym *sym, struct asm_sym *group )
 
         if( seg->group == group ) {
             LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
-            if( seg->use_32 ) {
+            if( seg->use32 ) {
                 LstMsg( "32 Bit   %08lX ", seg->current_loc );
             } else {
                 LstMsg( "16 Bit   %04lX     ", seg->current_loc );
@@ -642,19 +647,19 @@ static const char *get_sym_lang( struct asm_sym *sym )
 /****************************************************/
 {
     switch( sym->langtype ) {
-    case LANG_C:
+    case WASM_LANG_C:
         return( "C" );
-    case LANG_BASIC:
+    case WASM_LANG_BASIC:
         return( "BASIC" );
-    case LANG_FORTRAN:
+    case WASM_LANG_FORTRAN:
         return( "FORTRAN" );
-    case LANG_PASCAL:
+    case WASM_LANG_PASCAL:
         return( "PASCAL" );
-    case LANG_WATCOM_C:
+    case WASM_LANG_WATCOM_C:
         return( "WATCOM_C" );
-    case LANG_STDCALL:
+    case WASM_LANG_STDCALL:
         return( "STDCALL" );
-    case LANG_SYSCALL:
+    case WASM_LANG_SYSCALL:
         return( "SYSCALL" );
     default:
         return( "" );
@@ -682,7 +687,7 @@ static void log_symbol( struct asm_sym *sym )
         if( cst->count && cst->data[0].class != TC_NUM ) {
             LstMsg( "Text     %s\n", cst->data[0].string_ptr );
         } else {
-            LstMsg( "Number   %04Xh\n", cst->count ? cst->data[0].u.value : 0 );
+            LstMsg( "Number   %04Xh\n", ( cst->count ) ? cst->data[0].u.value : 0 );
         }
     } else if( sym->state == SYM_INTERNAL && !IS_SYM_COUNTER( sym->name ) ) {
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );

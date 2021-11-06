@@ -1,4 +1,4 @@
 clibtest_name = safefmt
 
-srcfile = $(clib_dir)/streamio/c/safefmt.c
+srcfile = c/safefmt.c
 !include ../master.mif

@@ -16,14 +16,14 @@ When creating a single linked intrusive list, the &cls. is used to derive the
 user defined class that holds the data to be inserted into the list.
 :P.
 The
-.MONO wclcom.h
+:MONO.wclcom.h
 header file is included by the
-.MONO wclist.h
+:MONO.wclist.h
 header file.
 There is no need to explicitly include the
-.MONO wclcom.h
+:MONO.wclcom.h
 header file unless the
-.MONO wclist.h
+:MONO.wclist.h
 header file is not included.
 No errors will result if it is included unnecessarily.
 :P.
@@ -35,7 +35,8 @@ typed as a &obj. will not invoke the destructor of the derived class.
 :CMT. :MONO.WCIsvSList
 :CMT. and
 :CMT. :MONO.WCValSList
-:CMT. are examples of classes derived from the &cls.:PERIOD.
+:CMT. are examples of classes derived from the &cls.
+:PERIOD.
 :HDG.Public Member Functions
 The following public member functions are declared:
 :MFNL.
@@ -55,11 +56,13 @@ The following public member functions are declared:
 :SNPCD cd_idx='c'.WCSLink();
 :eSNPL.
 :SMTICS.
-The &fn. creates an &obj.:PERIOD.
+The &fn. creates an &obj.
+:PERIOD.
 The &fn. is used implicitly by the compiler
 when it generates a constructor for a derived class.
 :RSLTS.
-The &fn. produces an initialized &obj.:PERIOD.
+The &fn. produces an initialized &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.

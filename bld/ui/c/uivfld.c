@@ -73,7 +73,7 @@ static ui_event setfield( VSCREEN *vs, VFIELDEDIT *header, VFIELD_EDIT *cur, ORD
         prev = header->curfield;
         if( prev != NULL ) {
             /* change attribute on field being left */
-            uivtextput( vs, prev->row, prev->col, header->exit, header->buffer, prev->length );
+            uivtextput( vs, prev->row, prev->col, header->exit_attr, header->buffer, prev->length );
         }
         header->prevfield = prev;
         header->curfield = cur;
@@ -183,7 +183,7 @@ ui_event UIAPI uivfieldedit( VSCREEN *vs, VFIELDEDIT *header )
             area.row = cur->row;
             area.col = cur->col;
             area.width = cur->length;
-            uivattribute( vs, area, header->exit );
+            uivattribute( vs, area, header->exit_attr );
         }
     }
     if( header->cursor ) {
@@ -218,7 +218,7 @@ ui_event UIAPI uivfieldedit( VSCREEN *vs, VFIELDEDIT *header )
                 header->dirty = true;
                 header->delpending = false;
             }
-            uivtextput( vs, cur->row, cur->col, header->enter, header->buffer, cur->length );
+            uivtextput( vs, cur->row, cur->col, header->enter_attr, header->buffer, cur->length );
         }
     }
     if( header->oktomodify ) {
@@ -290,7 +290,7 @@ ui_event UIAPI uivfieldedit( VSCREEN *vs, VFIELDEDIT *header )
                 if( cur != NULL ) {
                     ui_ev = movecursor( vs, header, 0, cur->col + buffer.index - vs->cursor_col );
                     if( buffer.dirty && ( ui_ev == EV_NO_EVENT ) ) {
-                        uivtextput( vs, cur->row, cur->col, header->enter, header->buffer, cur->length );
+                        uivtextput( vs, cur->row, cur->col, header->enter_attr, header->buffer, cur->length );
                     }
                 } else {
                     ui_ev = EV_NO_EVENT;

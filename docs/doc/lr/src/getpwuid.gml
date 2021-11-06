@@ -13,13 +13,13 @@ not found or an error occurs, a null pointer will be returned.
 The structure returned is defined as:
 .blkcode begin
 struct passwd {
-    char        *pw_name;       /* user's login name */
-    char        *pw_passwd;     /* user's password   */
-    uid_t       pw_uid;         /* user ID number    */
-    gid_t       pw_gid;         /* group ID number   */
-    char        *pw_gecos;      /* real name         */
-    char        *pw_dir;        /* home directory    */
-    char        *pw_shell;      /* initial program   */
+    char    *pw_name;       /* user's login name */
+    char    *pw_passwd;     /* user's password   */
+    uid_t   pw_uid;         /* user ID number    */
+    gid_t   pw_gid;         /* group ID number   */
+    char    *pw_gecos;      /* real name         */
+    char    *pw_dir;        /* home directory    */
+    char    *pw_shell;      /* initial program   */
 };
 .blkcode end
 .np
@@ -27,9 +27,9 @@ On most modern Linux implementations, the resulting password
 will simply be 'x' as passwords are not normally stored in the
 password database itself.
 .np
-The pointer returned by 
+The pointer returned by
 .id &funcb.
-points to a static location, and the user should free neither 
+points to a static location, and the user should free neither
 the pointer itself nor any of its consituent structure members.
 .np
 This function is not thread-safe.  Other calls to functions
@@ -63,5 +63,5 @@ void main()
   }
 .blkcode end
 .exmp end
-.class POSIX
+.class POSIX 1003.1
 .system

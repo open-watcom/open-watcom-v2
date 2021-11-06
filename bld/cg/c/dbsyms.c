@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #ifndef NDEBUG
 #include "echoapi.h"
 #endif
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
 #include "wvsyms.h"
 #endif
 #include "dw.h"
@@ -118,8 +118,8 @@ uint    _CGAPI DBSrcFile( cchar_ptr fname )
     return( index );
 }
 
-char *SrcFNoFind( uint fno )
-/**************************/
+const char *SrcFNoFind( uint fno )
+/********************************/
 {
     uint        index;
     fname_lst   *curr;
@@ -342,7 +342,7 @@ void CueMap( cue_ctl *ctl, cue_state *base )
 void DmpCue( cue_idx cue  )
 {
     cue_state   state;
-    char        *fname;
+    const char  *fname;
 
     if( CueFind( cue,  &state ) ) {
         fname = SrcFNoFind( state.fno );
@@ -382,7 +382,7 @@ void    InitDbgInfo( void )
         DFInitDbgInfo();
     } else if( _IsModel( DBG_CV ) ) {
         CVInitDbgInfo();
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {
         WVInitDbgInfo();
 #endif
@@ -399,7 +399,7 @@ void    FiniDbgInfo( void )
         DFFiniDbgInfo();
     } else if( _IsModel( DBG_CV ) ) {
         CVFiniDbgInfo();
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {
         WVFiniDbgInfo();
 #endif
@@ -421,7 +421,7 @@ void _CGAPI     DBSrcCue( uint fno, uint line, uint col )
 {
     cue_idx     idx;
     bool        hasxcue;
-//  char       *fname;
+//    const char  *fname;
 
 #ifndef NDEBUG
     EchoAPI( "\nDBsrcCue( %i, %i, %i )\n", fno, line, col );
@@ -511,7 +511,7 @@ void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
                     DFGenStatic( sym, loc );
                 } else if( _IsModel( DBG_CV ) ) {
                     CVGenStatic( sym, loc, false );
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
                 } else {
                     WVGenStatic( sym , loc );
 #endif
@@ -563,7 +563,7 @@ void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
         //
     } else if( _IsModel( DBG_CV ) ) {
         //
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {
         WVObjectPtr( ptr_type );
 #endif
@@ -709,7 +709,7 @@ void    DbgSetBase( void )
         /* nothing */
     } else if( _IsModel( DBG_CV ) ) {
         CVSetBase();
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {
         WVSetBase();
 #endif
@@ -747,7 +747,7 @@ void    DbgRetLoc( void )
     if( CurrProc->targ.debug->reeturn == NULL ) {
         loc = DBLocInit();
         loc = LocReg( loc, AllocRegName( CurrProc->state.return_reg ) );
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
         if( CurrProc->targ.return_points == NULL ) {
             /* nothing to do */
         } else if( CurrProc->state.attr & ROUTINE_ALLOCS_RETURN ) {
@@ -875,7 +875,7 @@ void    DbgBlkEnd( dbg_block *blk, offset lc )
         DFBlkEnd( blk, lc );
     } else if( _IsModel( DBG_CV ) ) {
         CVBlkEnd( blk, lc );
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {
         WVBlkEnd( blk, lc );
 #endif
@@ -903,7 +903,7 @@ void    DbgRtnEnd( dbg_rtn *rtn, offset lc )
         DFRtnEnd( rtn, lc );
     } else if( _IsModel( DBG_CV ) ) {
         CVRtnEnd( rtn, lc );
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     } else {
         WVRtnEnd( rtn, lc );
 #endif

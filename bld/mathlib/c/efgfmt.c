@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@
 
 /* NB: This code assumes ASCII character encoding. Probably not unreasonable. */
 
-FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, my_va_list *args, _mbcs_SPECS __SLIB *specs )
+FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, MY_VA_LIST *pargs, _mbcs_SPECS __SLIB *specs )
 {
     int         digits;
     int         fmt;
@@ -70,10 +71,10 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, my_va_list *args, _mbcs_SPECS 
         cvt.flags |= F_DOT;
     }
     if( (specs->_flags & SPF_LONG_DOUBLE) && !_LDisDouble() ) {
-        ld = va_arg( args->v, long_double );
+        ld = va_arg( VA_LIST_DATA( pargs ), long_double );
         cvt.flags |= LONG_DOUBLE;
     } else {
-        double_value = va_arg( args->v, double );
+        double_value = va_arg( VA_LIST_DATA( pargs ), double );
 
 #ifdef _LONG_DOUBLE_
         /* convert this double into a long double */

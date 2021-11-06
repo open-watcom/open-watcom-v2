@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of _fstrset() - far strset().
+* Description:  Implementation of _fstrset() - far _strset().
 *
 ****************************************************************************/
 
@@ -35,8 +36,8 @@
 
 #ifdef _M_I86
 
-extern char _WCFAR *fast_strset( char _WCFAR *, char );
-#pragma aux fast_strset = \
+extern char _WCFAR *fast__strset( char _WCFAR *, char );
+#pragma aux fast__strset = \
         "push ds"           \
         "push si"           \
         "push ax"           \
@@ -63,7 +64,7 @@ extern char _WCFAR *fast_strset( char _WCFAR *, char );
 _WCRTLINK char _WCFAR *_fstrset( char _WCFAR *s, int c )
 {
 //#ifdef _M_I86
-    //return( fast_strset( s, c ) );
+    //return( fast__strset( s, c ) );
 //#else
     char _WCFAR     *p;
 

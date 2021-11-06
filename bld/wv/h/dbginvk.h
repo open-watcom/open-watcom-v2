@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,9 @@
 
 #define IN_BUFF_SIZE    64
 
-typedef unsigned_8 inv_flags; enum { AT_EOF = 0x1 };
+typedef enum inv_flags {
+    AT_EOF = 0x1
+} inv_flags;
 
 typedef struct invokes {
     char_ring           *prmlst;

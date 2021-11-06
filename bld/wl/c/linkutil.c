@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include <setjmp.h>
 #include <sys/types.h>
 #include "linkstd.h"
+#include "walloca.h"
 #include "pcobj.h"
 #include "newmem.h"
 #include "alloc.h"
@@ -64,6 +65,20 @@ typedef struct {
 typedef struct {
     class_walk_fn   *cbfn;
 } class_walk_data;
+
+/* Default File Extension array, see ldefext.h */
+
+static const char       *DefExt[] = {
+    #define pick(enum,text) text,
+    #include "ldefext.h"
+    #undef pick
+};
+
+static unsigned char    DefExtLen[] = {
+    #define pick(enum,text) sizeof( text ) - 1,
+    #include "ldefext.h"
+    #undef pick
+};
 
 void WriteNulls( f_handle file, size_t len, const char *name )
 /************************************************************/
@@ -108,7 +123,7 @@ bool TestBit( byte *array, unsigned num )
 {
     byte        mask;
 
-    mask = 1 << ( num % 8 );
+    mask = 1 << (num % 8);
     num /= 8;
     return( (*( array + num ) & mask) != 0 );
 }
@@ -119,7 +134,7 @@ void ClearBit( byte *array, unsigned num )
 {
     byte        mask;
 
-    mask = 1 << ( num % 8 );
+    mask = 1 << (num % 8);
     num /= 8;
     array += num;
     *array &= ~mask;
@@ -313,7 +328,7 @@ obj_name_list *AddNameTable( const char *name, size_t len, bool is_mod, obj_name
     return( imp );
 }
 
-unsigned_16 blog_16( unsigned_16 value )
+unsigned_16 log2_16( unsigned_16 value )
 /**************************************/
 // This calculates the binary log of value, truncating decimals.
 {
@@ -333,7 +348,7 @@ unsigned_16 blog_16( unsigned_16 value )
     return( log );
 }
 
-unsigned_16 blog_32( unsigned_32 value )
+unsigned_16 log2_32( unsigned_32 value )
 /**************************************/
 // This calculates the binary log of a 32-bit value, truncating decimals.
 {
@@ -403,8 +418,8 @@ void VMemQSort( virt_mem base, size_t n, size_t width,
     size_t          i;
     size_t          count;
     size_t          sp;
-    auto virt_mem   base_stack[MAXDEPTH];
-    auto size_t     n_stack[MAXDEPTH];
+    virt_mem        base_stack[MAXDEPTH];
+    size_t          n_stack[MAXDEPTH];
 
     sp = 0;
     for( ; ; ) {
@@ -630,4 +645,103 @@ offset FindLinearAddr2( targ_addr *addr )
         return( addr->off + group->linear + FmtData.base );
     }
     return( addr->off );
+}
+
+file_list *AllocNewFile( member_list *member )
+/********************************************/
+{
+    file_list       *new_entry;
+
+    _PermAlloc( new_entry, sizeof( file_list ) );
+    new_entry->next_file = NULL;
+    new_entry->flags = DBIFlag;
+    new_entry->strtab = NULL;
+    new_entry->u.member = member;
+    if( member != NULL ) {
+        new_entry->flags |= STAT_HAS_MEMBER;
+    }
+    return( new_entry );
+}
+
+char *FileName( const char *buff, size_t len, file_defext etype, bool force )
+/***************************************************************************/
+{
+    const char  *namptr;
+    const char  *namstart;
+    char        *ptr;
+    size_t      cnt;
+    size_t      namelen;
+    char        c;
+    size_t      extlen;
+
+
+    for( namptr = buff + len; namptr != buff; --namptr ) {
+        c = namptr[-1];
+        if( IS_PATH_SEP( c ) ) {
+            break;
+        }
+    }
+    namstart = namptr;
+    cnt = len - ( namptr - buff );
+    if( cnt == 0 ) {
+        DUPSTR_STACK( ptr, buff, len );
+        LnkMsg( LOC+LINE+FTL+MSG_INV_FILENAME, "s", ptr );
+    }
+    namelen = cnt;
+    namptr = buff + len - 1;
+    while( --cnt != 0 && *namptr != '.' ) {
+        namptr--;
+    }
+    if( force || *namptr != '.' ) {
+        if( force && etype == E_MAP ) {         // op map goes in current dir.
+            buff = namstart;
+            len = namelen;
+        }
+        if( cnt != 0 ) {
+            len = namptr - buff;
+        }
+        extlen = DefExtLen[etype];
+        _ChkAlloc( ptr, len + 1 + extlen + 1 );
+        memcpy( ptr, buff, len );
+        if( extlen > 0 ) {
+            ptr[len++] = '.';
+            memcpy( ptr + len, DefExt[etype], extlen );
+            len += extlen;
+        }
+        ptr[len] = '\0';
+    } else {
+        ptr = ChkToString( buff, len );
+    }
+    return( ptr );
+}
+
+static int stricmp_wrapper( const void *s1, const void *s2 )
+/**********************************************************/
+{
+    return( stricmp( s1, s2 ) );
+}
+
+section *NewSection( void )
+/*************************/
+{
+    section             *sect;
+
+    _ChkAlloc( sect, sizeof( section ) );
+    sect->next_sect = NULL;
+    sect->classlist = NULL;
+    sect->orderlist = NULL;
+    sect->areas = NULL;
+    sect->files = NULL;
+    sect->modFilesHashed = CreateHTable( 256, StringiHashFunc, stricmp_wrapper, ChkLAlloc, LFree );
+    sect->mods = NULL;
+    sect->reloclist = NULL;
+    SET_ADDR_UNDEFINED( sect->sect_addr );
+    sect->ovlref = 0;
+    sect->parent = NULL;
+    sect->relocs = 0;
+    sect->size = 0;
+    sect->outfile = NULL;
+    sect->u.dist_mods = NULL;
+    sect->dbg_info = NULL;
+    return( sect );
 }

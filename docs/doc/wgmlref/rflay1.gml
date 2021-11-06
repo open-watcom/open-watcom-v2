@@ -4,13 +4,13 @@ Define the characteristics of the abstract section
 and the abstract heading.
 :INCLUDE file='rfltabs'.
 :DL
-:SET symbol=local value='abstract heading.'.
+:SET symbol=local value='abstract heading'.
 :INCLUDE file='rflapos'.
 If the abstract heading is not displayed (the header attribute
 has a value of NO), the post-skip value has no effect.
 :INCLUDE file='rflapts'.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 pre_top_skip and post_skip attributes
 (see :HDREF refid='fnlink'.).
@@ -36,14 +36,14 @@ the page number to always be reset after the title page.
 Define the characteristics of the address entity.
 :INCLUDE file='rfltadd'.
 :DL.
-:SET symbol=local value='address.'.
+:SET symbol=local value='address'.
 :INCLUDE file='rflalad'.
 :INCLUDE file='rflarad'.
 :INCLUDE file='rflapgp'.
     address
 :INCLUDE file='rflapgp2'.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 left_adjust, right_adjust and pre_skip attributes of the
 &gml.ADDRESS tag, and the skip attribute of the &gml.ALINE tag
@@ -66,9 +66,8 @@ All of the attributes, with the exception of the spacing value, apply
 to the :HP2.&gml.h1:eHP2. tag while in the appendix section.
 :INCLUDE file='rfltapp'.
 :DL.
-:SET symbol=local value='appendix heading.'.
+:SET symbol=local value='appendix heading'.
 :INCLUDE file='rflaina'.
-    appendix heading.
 :INCLUDE file='rflapts'.
 :INCLUDE file='rflapos'.
 If the appendix heading is not displayed, the post-skip is
@@ -76,7 +75,7 @@ ignored.
 :INCLUDE file='rflaspc'.
 appendix section.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 indent, post_skip and pre_top_skip attributes
 (see :HDREF refid='fnlink'.).
@@ -145,7 +144,7 @@ before the :HP2.&gml.h1:eHP2. heading text.
 Define the characteristics of the attention entity in the letter format.
 :INCLUDE file='rfltattn'.
 :DL.
-:SET symbol=local value='attention text.'.
+:SET symbol=local value='attention text'.
 :INCLUDE file='rflalad'.
 :INCLUDE file='rflapgp'.
 attention text
@@ -176,27 +175,27 @@ the attention string defined by the :HP1.attn_string:eHP1. attribute.
 Define the characteristics of the author entity.
 :INCLUDE file='rfltauth'.
 :DL.
-:SET symbol=local value='author lines.'.
+:SET symbol=local value='author lines'.
 :INCLUDE file='rflalad'.
 :INCLUDE file='rflarad'.
 :INCLUDE file='rflapgp'.
     author line
 :INCLUDE file='rflapgp2'.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 left_adjust, right_adjust, pre_skip and skip attributes
 (see :HDREF refid='fnlink'.).
 :INCLUDE file='rflapes'.
 :INCLUDE file='rflaskp'.
-&local.
+&local..
 :EDL.
 :H3.BACKM
 :P.
 Define the characteristics of the back material section.
 :INCLUDE file='rfltback'.
 :DL.
-:SET symbol=local value='back material.'.
+:SET symbol=local value='back material'.
 :INCLUDE file='rflapos'.
 If the back material heading is not displayed (the header attribute
 has a value of NO), the post-skip value has no effect.
@@ -555,7 +554,7 @@ All banner regions must be deleted before a banner definition will be removed.
 Define the characteristics of the body section.
 :INCLUDE file='rfltbody'.
 :DL.
-:SET symbol=local value='body.'.
+:SET symbol=local value='body'.
 :INCLUDE file='rflapos'.
 If the body heading is not displayed (the header attribute
 has a value of NO), the post-skip value has no effect.
@@ -589,7 +588,7 @@ citation text.
 Define the characteristics of the close entity in the letter format.
 :INCLUDE file='rfltclos'.
 :DL.
-:SET symbol=local value='close.'.
+:SET symbol=local value='close'.
 :INCLUDE file='rflapes'.
 :DT.depth
 :I2 refid='ladepth'.ladepth
@@ -647,7 +646,7 @@ date text.
 The font value is linked to the
 left_adjust, right_adjust and pre_skip attributes
 (see :HDREF refid='fnlink'.).
-:SET symbol=local value='date.'.
+:SET symbol=local value='date'.
 :INCLUDE file='rflapes'.
 :EDL.
 :H3.DD
@@ -722,7 +721,7 @@ specific document element.
 Define the characteristics of the distribution list entity.
 :INCLUDE file='rfltdist'.
 :DL.
-:SET symbol=local value='distribution list.'.
+:SET symbol=local value='distribution list'.
 :INCLUDE file='rflapts'.
 :INCLUDE file='rflaskp'.
 items of the distribution list.
@@ -735,7 +734,7 @@ indent, skip and pre_top_skip attributes
 :I2 refid='lainden'.lainden
 :DD.The indent attribute accepts any valid horizontal space unit.
     The indent value is the offset from the left margin for the
-    &local.
+    &local..
 :DT.page_eject
 :I2 refid='lapage_'.lapage_
 :DD.This attribute accepts the keyword values :hp1.yes:ehp1.
@@ -748,7 +747,7 @@ indent, skip and pre_top_skip attributes
 Define the characteristics of the document number entity.
 :INCLUDE file='rfltdoc'.
 :DL.
-:SET symbol=local value='document number.'.
+:SET symbol=local value='document number'.
 :INCLUDE file='rflalad'.
 :INCLUDE file='rflarad'.
 :INCLUDE file='rflapgp'.
@@ -771,7 +770,7 @@ The specified string precedes the document number in the output document.
 Define the characteristics of the definition list entity.
 :INCLUDE file='rfltdl'.
 :DL.
-:SET symbol=local value='definition list.'.
+:SET symbol=local value='definition list'.
 :SET symbol=loc2 value='dl'.
 :INCLUDE file='rflalev'.
 :INCLUDE file='rflalin'.
@@ -802,9 +801,9 @@ definition list item.
 Define the characteristics of the definition term entity.
 :INCLUDE file='rfltdt'.
 :DL.
-:SET symbol=local value='definition term.'.
+:SET symbol=local value='definition term'.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 left_indent, right_indent, pre_skip, post_skip, skip and align attributes
 of the :HP2.&gml.dl:eHP2. tag,
@@ -832,10 +831,10 @@ Mark the end of a banner region definition.
 Mark the end of the close entity in the letter tag format.
 :INCLUDE file='rflteclo'.
 :DL.
-:SET symbol=local value='typist mark.'.
+:SET symbol=local value='typist mark'.
 :INCLUDE file='rflapes'.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 pre_skip attribute
 (see :HDREF refid='fnlink'.).
@@ -849,12 +848,12 @@ Mark the end of a layout definition.
 Define the characteristics of the figure entity.
 :INCLUDE file='rfltfig'.
 :DL.
-:SET symbol=local value='figure.'.
+:SET symbol=local value='figure'.
 :INCLUDE file='rflalad'.
 :INCLUDE file='rflarad'.
 :INCLUDE file='rflapes'.
 :INCLUDE file='rflapos'.
-&local.
+&local..
 :INCLUDE file='rflaspc'.
 figure.
 :INCLUDE file='rflafon'.
@@ -887,7 +886,7 @@ left_adjust, right_adjust, pre_skip and post_skip attributes
 Define the characteristics of the figure caption entity.
 :INCLUDE file='rfltfigc'.
 :DL.
-:SET symbol=local value='figure caption.'.
+:SET symbol=local value='figure caption'.
 :INCLUDE file='rflapli'.
 :INCLUDE file='rflafon'.
 figure caption text.
@@ -926,7 +925,7 @@ attribute to the figure caption delimiter inclusive.
 Define the characteristics of the figure description entity.
 :INCLUDE file='rfltfigd'.
 :DL.
-:SET symbol=local value='figure description.'.
+:SET symbol=local value='figure description'.
 :INCLUDE file='rflapli'.
 If the previous tag was :HP2.&gml.figcap:eHP2., this value is ignored.
 :INCLUDE file='rflafon'.
@@ -968,15 +967,15 @@ size attribute
 Define the characteristics of the footnote entity.
 :INCLUDE file='rfltfn'.
 :DL.
-:SET symbol=local value='footnote.'.
+:SET symbol=local value='footnote'.
 :INCLUDE file='rflalii'.
     footnote.
 :SET symbol=loca1 value='footnote number'.
 :INCLUDE file='rflaaln'.
     footnote.
-:SET symbol=local value='footnotes are output.'.
+:SET symbol=local value='footnotes are output'.
 :INCLUDE file='rflapli'.
-:SET symbol=local value='footnote.'.
+:SET symbol=local value='footnote'.
 :INCLUDE file='rflaskp'.
     the footnotes.
 :INCLUDE file='rflaspc'.
@@ -1020,14 +1019,14 @@ footnote reference number.
 Define the characteristics of the FROM entity in the letter tag format.
 :INCLUDE file='rfltfrom'.
 :DL.
-:SET symbol=local value='FROM text.'.
+:SET symbol=local value='FROM text'.
 :INCLUDE file='rflalad'.
 :INCLUDE file='rflapgp'.
 from text
 :INCLUDE file='rflapgp2'.
 :INCLUDE file='rflapts'.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 left_adjust, page_position and pre_top_skip attributes
 (see :HDREF refid='fnlink'.).
@@ -1045,7 +1044,7 @@ glossary description.
 Define the characteristics of the glossary list entity.
 :INCLUDE file='rfltgl'.
 :DL.
-:SET symbol=local value='glossary list.'.
+:SET symbol=local value='glossary list'.
 :SET symbol=loc2 value='gl'.
 :INCLUDE file='rflalev'.
 :INCLUDE file='rflalin'.
@@ -1071,9 +1070,9 @@ glossary list item.
 Define the characteristics of the glossary term entity.
 :INCLUDE file='rfltgt'.
 :DL.
-:SET symbol=local value='glossary term.'.
+:SET symbol=local value='glossary term'.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 left_indent, right_indent, pre_skip, post_skip, skip and align attributes
 of the :HP2.&gml.gl:eHP2. tag
@@ -1128,11 +1127,10 @@ Define the characteristics of a heading tag, where
 :I2 refid='lth5'.lth5
 :I2 refid='lth6'.lth6
 :DL.
-:SET symbol=local value='heading.'.
+:SET symbol=local value='heading'.
 :SET symbol=loca1 value='headings'.
 :INCLUDE file='rflgroup'.
 :INCLUDE file='rflaina'.
-    heading.
 :INCLUDE file='rflapts'.
 :INCLUDE file='rflapos'.
 :INCLUDE file='rflapes'.

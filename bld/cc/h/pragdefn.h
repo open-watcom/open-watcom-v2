@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,16 +65,14 @@ typedef struct alt_inline_funcs {
     inline_funcs    alt_ifunc;
 } alt_inline_funcs;
 
-typedef struct toggle {
-    char *name;
-    int flag;
-} toggle;
+#ifndef global
+#define global  extern
+#endif
 
 global aux_entry        *AuxList;
 global aux_info         *CurrAlias;
 global aux_entry        *CurrEntry;
 global aux_info         *CurrInfo;
-global aux_info         *DftCallConv;
 
 #if _CPU == 386
 global aux_info         STOSBInfo;

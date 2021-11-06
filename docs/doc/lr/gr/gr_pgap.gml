@@ -1,5 +1,5 @@
-.gfunc pg_analyzepie
-.gsynop begin 
+.gfunc _pg_analyzepie
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_analyzepie( chartenv _FAR *env,
                            char _FAR * _FAR *cat,
@@ -32,7 +32,7 @@ and
 .arg explode
 arguments.
 The arguments are the same as for the
-.kw _pg_chartpie
+.reffunc _pg_chartpie
 &routine..
 .desc end
 .return begin

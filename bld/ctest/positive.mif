@@ -26,8 +26,9 @@ opt_cmdln03 = /dX /DXX /uXX /DXXX /uXXX /UXXX /dXXX /DXXXX /uXXXX /DXXXX /uXXXX
 opt_cmdln04 = /dCMDMAC -DCMD1= /DCMD2$#
 opt_cmdln05 = -dXN2=2 -dXS1="a-/ b"-dXN1=2 -dXS2#"a-/ b"
 opt_cmp02 = -za99
-opt_init21  = -za99
-opt_init22  = -za99
+opt_float04 = -za99
+opt_init21 = -za99
+opt_init22 = -za99
 opt_opt09 = -za
 opt_opt41 = -ot -ol+
 opt_opt45 = -za99
@@ -252,6 +253,7 @@ positive_tests = &
     src01.$(exe) &
     str01.$(exe) &
     str02.$(exe) &
+    struct01.$(exe) &
     switch01.$(exe) &
     thread01.$(exe) &
     thread02.$(exe) &

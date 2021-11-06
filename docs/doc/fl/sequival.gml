@@ -6,7 +6,7 @@
 .synote 7
 .mnote nlist
 is a list of at least two names, each name separated by a comma.
-.endnote
+.esynote
 .np
 The names appearing in
 .id nlist
@@ -43,7 +43,7 @@ element of the array.
 If a character substring appears in an
 .kw EQUIVALENCE
 statement, the substring defined by the substring expression must be
-properly contained in the character entity being substrung.
+properly contained in the character entity being substring.
 A character name used by itself is equivalent to specifying the first
 character of the character variable.
 .exam begin

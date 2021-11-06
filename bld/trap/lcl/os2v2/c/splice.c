@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,23 +58,23 @@ static long OpenFile( char *name, ULONG mode, int flags )
     APIRET      rc;
 
     if( flags & OPEN_CREATE ) {
-        openflags = 0x12;
-        openmode = 0x2042;
+        openflags = OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_REPLACE_IF_EXISTS;
+        openmode = OPEN_FLAGS_FAIL_ON_ERROR | OPEN_SHARE_DENYNONE | OPEN_ACCESS_READWRITE;
     } else {
-        openflags = 0x01;
-        openmode = mode | 0x2040;
+        openflags = OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS;
+        openmode = OPEN_FLAGS_FAIL_ON_ERROR | OPEN_SHARE_DENYNONE | mode;
     }
     if( flags & OPEN_PRIVATE ) {
-        openmode |= 0x80;
+        openmode |= OPEN_FLAGS_NOINHERIT;
     }
-    rc = DosOpen( name,          /* name */
-                 &hdl,           /* handle to be filled in */
-                 &action,        /* action taken */
-                 0,              /* initial allocation */
-                 0,              /* normal file */
-                 openflags,      /* open the file */
-                 openmode,       /* deny-none, inheritance */
-                 0 );             /* reserved */
+    rc = DosOpen( name,         /* name */
+                 &hdl,          /* handle to be filled in */
+                 &action,       /* action taken */
+                 0,             /* initial allocation */
+                 FILE_NORMAL,   /* normal file */
+                 openflags,     /* open the file */
+                 openmode,      /* deny-none, inheritance */
+                 0 );           /* reserved */
     if( rc != 0 )
         return 0xFFFF0000 | rc;
     return( hdl );

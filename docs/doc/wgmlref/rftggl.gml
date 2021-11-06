@@ -1,7 +1,7 @@
 :H2.GL
 :XMP.
-Format&gml. &gml.GL \(compact\)
-            \(termhi=term-highlight\).
+Format&gml. &gml.GL [compact]
+            [termhi=term-highlight].
 :eXMP.
 :I1.glossary list
 :I2 refid='gtgl' pg=major.gtgl

@@ -249,8 +249,8 @@ Memory Interfaces:
 .np
 The information provided by RMINFO includes:
 :CMT. .begnote $break
-:CMT. :DTHD.Measurement
-:CMT. :DDHD.Purpose
+:CMT. .notehd1 Measurement
+:CMT. .notehd2 Purpose
 :CMT. .note Triple fault flag
 :CMT. .ix 'triple fault flag'
 :CMT. Whether triple faulting is used to switch back to real mode from
@@ -294,7 +294,8 @@ The information provided by RMINFO includes:
 :CMT. Whether your system has any software using extended memory under the
 :CMT. VCPI discipline.
 .*
-.begnote Machine and Environment:
+.begnote
+.notehdr Machine and Environment:
 .note Processor:
 processor type, coprocessor present/not present
 .note Machine type:
@@ -331,7 +332,8 @@ VCPI discipline.
 .note DOS/16M resident with private/public memory
 .endnote
 .*
-.begnote Switching Functions:
+.begnote
+.notehdr Switching Functions:
 .note A20 switching:
 .note To PM switch:
 reset catch:
@@ -352,7 +354,8 @@ reset uncatch:
 .note Switch control flags:   xxxxh
 .endnote
 .*
-.begnote Memory Interfaces:
+.begnote
+.notehdr Memory Interfaces:
 .note (VCPI remapping in effect)
 .note DPMI may provide: xxxxxK returnable
 .note VCPI may provide: xxxxxK returnable

@@ -79,7 +79,7 @@ static WRSaveIntoData   *WInitSaveData( WStringBlock *, WResID *, WResLangType *
 static bool WSaveObjectToRC( WStringEditInfo *einfo, const char *filename,
                              bool shadow, bool append )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        fn_path[_MAX_PATH];
 
     if( einfo == NULL || filename == NULL ) {

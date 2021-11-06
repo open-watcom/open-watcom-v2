@@ -1,0 +1,31 @@
+# Makefile to create static LIB
+#
+# input macros:
+#
+# libtarg_name          name of library, default is $(proj_name)
+#                       extension of library name is always .lib
+# libtarg_prebuild_objs files which must be available, but not directly added to library
+# libtarg_objs          object files which are added to library
+# libtarg_libs          libraries which are added to library
+# libtarg_opts          extra OW librarian options
+#
+# All objects are include in dependant list
+#
+!ifndef libtarg_name
+libtarg_name = $(proj_name)
+!endif
+$(libtarg_name).lib : $+$(libtarg_prebuild_objs) $(libtarg_objs) $(libtarg_libs)$- &
+        $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+    @%make echo_lib
+    $(blib) $(bld_libflags) $+$(libtarg_objs) $(libtarg_libs)$-
+!else if $(__WATCOM_TOOLS__) >= 1300
+    @%make echo_lib
+    $(librarian) $(libflags) $+$(libtarg_opts) $(libtarg_objs) $(libtarg_libs)$-
+!else
+    $(noecho)%create $(libtarg_name).lbc
+    @for %o in ($+$(libtarg_opts) $(libtarg_objs) $(libtarg_libs)$-) &
+        do @%append $(libtarg_name).lbc %o
+    @%make echo_lib
+    $(bld_lib) @$(libtarg_name).lbc
+!endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,7 +172,7 @@ DWORD WriteMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 
 }
 
-trap_retval ReqRead_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     WORD            seg;
     ULONG_PTR       offset;
@@ -195,7 +195,7 @@ trap_retval ReqRead_mem( void )
     return( length );
 }
 
-trap_retval ReqWrite_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     WORD            seg;
     ULONG_PTR       offset;
@@ -221,7 +221,7 @@ trap_retval ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqChecksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     ULONG_PTR           offset;
     WORD                length;

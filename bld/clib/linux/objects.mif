@@ -1,5 +1,5 @@
-#                    d16 d32 dpm nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
-#===================================================================================================
+#                       d16 d32 dpm nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+#===========================================================================================================
 !inject __atomic.obj                                                                    l32 lpc lmp
 !inject __futex.obj                                                                     l32 lpc lmp
 !inject __lseek.obj                                                                     l32 lpc lmp
@@ -43,7 +43,6 @@
 !inject getpwuid.obj                                                                    l32 lpc lmp
 !inject getrlim.obj                                                                     l32 lpc lmp
 !inject gettid.obj                                                                      l32 lpc lmp
-!inject gettmofd.obj                                                                    l32 lpc lmp
 !inject getuid.obj                                                                      l32 lpc lmp
 !inject ioctl.obj                                                                       l32 lpc lmp
 !inject ioperm.obj                                                                      l32 lpc lmp

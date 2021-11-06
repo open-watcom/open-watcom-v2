@@ -8,9 +8,8 @@ memory_model_i86 = s
 !include defrule.mif
 !include deftarg.mif
 
-objs = exe2bin.obj
-
 .c: ..
 
-$(proj_name).exe : $(objs)
-        $(cl) $(clflags) $< $(ldflags)
+exetarg_objs = exe2bin.obj
+
+!include exetarg.mif

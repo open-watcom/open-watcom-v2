@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +32,7 @@
 
 #include "as.h"
 #include "wreslang.h"
-
-#ifdef _STANDALONE_
-
+#ifndef INCL_MSGTEXT
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
@@ -41,79 +40,95 @@
 #include "wresset2.h"
 
 #include "clibext.h"
+#endif
 
-#else
 
-#define TXT_MSG_LANG_SPACING    (ABS_REF_NOT_ALLOWED - AS_MSG_BASE + 1)
+#ifdef INCL_MSGTEXT
 
 // No res file to use. Just compile in the messages...
 static char *asMessages[] = {
     #define pick( id, e_msg, j_msg )    e_msg,
     #include "as.msg"
+#if defined( _STANDALONE_ )
+    #include "usage.gh"
+#endif
     #undef pick
 #if 0
 //#if defined( JAPANESE )
     #define pick( id, e_msg, j_msg )    j_msg,
     #include "as.msg"
+#if defined( _STANDALONE_ )
+    #include "usage.gh"
+#endif
     #undef pick
 #endif
 };
 
-#define TXT_MSG_SIZE    ArraySize( asMessages )
-
-#endif
-
-static unsigned         msgShift;
-
-#ifdef _STANDALONE_
+#else
 
 static HANDLE_INFO      hInstance = {0};
 
 #endif
 
+
+static unsigned         msgShift = 0;
+
+#if defined( _STANDALONE_ )
 bool AsMsgInit( void )
 //********************
 {
-#ifdef _STANDALONE_
+#ifdef INCL_MSGTEXT
+  #if 0
+    enum {
+        MSG_LANG_SPACING = 0
+        #define pick(c,e,j) + 1
+        #include "as.msg"
+    #if defined( _STANDALONE_ )
+        #include "usage.gh"
+    #endif
+        #undef pick
+    };
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+  #endif
+    return( true );
+#else
     char        name[_MAX_PATH];
 
     hInstance.status = 0;
     if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
         msgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( AsMsgGet( USAGE_1, AsResBuffer ) ) {
+        if( AsMsgGet( MSG_AS_BASE, AsResBuffer ) ) {
             return( true );
         }
     }
     CloseResFile( &hInstance );
     printf( NO_RES_MESSAGE );
     return( false );
-#else
-    msgShift = _WResLanguage() * TXT_MSG_LANG_SPACING;
-    if( msgShift >= TXT_MSG_SIZE )
-        msgShift = 0;
-    msgShift -= AS_MSG_BASE;
-    return( true );
 #endif
 }
+#endif
 
 bool AsMsgGet( int resourceid, char *buffer )
 //*******************************************
 {
-#ifdef _STANDALONE_
+#ifdef INCL_MSGTEXT
+    strcpy( buffer, asMessages[resourceid + msgShift] );
+#else
     if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + msgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
-#else
-    strcpy( buffer, asMessages[resourceid + msgShift] );
 #endif
     return( true );
 }
 
-void AsMsgFini( void ) {
-//**********************
-
-#ifdef _STANDALONE_
+#if defined( _STANDALONE_ )
+void AsMsgFini( void )
+//********************
+{
+#ifdef INCL_MSGTEXT
+#else
     CloseResFile( &hInstance );
 #endif
 }
+#endif

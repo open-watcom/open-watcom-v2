@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Utility to create setup.inf files for Watcom installer.
+* Description:  Utility to create setup.inf file for Watcom installers.
 *
 ****************************************************************************/
 
@@ -35,22 +35,36 @@
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
+#include <sys/stat.h>
 #ifndef __UNIX__
     #include <direct.h>
     #include <dos.h>
 #endif
+#ifdef __NT__
+    #include <windows.h>
+#endif
 #include "bool.h"
-#include "wio.h"
 #include "iopath.h"
+#include "encodlng.h"
+#include "cvttable.h"
 
 #include "clibext.h"
 
+
+#define SECTION_BUF_SIZE 8192   // allow long text strings
 
 #define BLOCKSIZE       512
 
 #define RoundUp( size, limit )  ( ( ( size + limit - 1 ) / limit ) * limit )
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
+
+#define IS_WS(c)        ((c) == ' ' || (c) == '\t')
+#define SKIP_WS(p)      while(IS_WS(*(p))) (p)++
+
+#define IS_ASCII(c)     (c < 0x80)
+
+typedef int (*comp_fn)(const void *,const void *);
 
 typedef struct path_info {
     struct path_info    *next;
@@ -94,6 +108,13 @@ enum {
     DELETE_DIR
 };
 
+enum {
+    MKINF_LANG_NULL = 0,
+    #define LANG_DEF( id, dbcs )        MKINF_LANG_ ## id ,
+    LANG_DEFS
+    #undef LANG_DEF
+};
+
 static char                 *Product;
 static char                 *RelRoot;
 static char                 *Setup = NULL;
@@ -121,7 +142,8 @@ static LIST                 *ForceDLLInstallList = NULL;
 static LIST                 *AssociationList = NULL;
 static LIST                 *ErrMsgList = NULL;
 static LIST                 *SetupErrMsgList = NULL;
-static int                  Lang = 1;
+static int                  Lang = MKINF_LANG_English;
+static bool                 Utf8 = false;
 static bool                 Upgrade = false;
 static bool                 Verbose = false;
 static bool                 IgnoreMissingFiles = false;
@@ -129,6 +151,72 @@ static bool                 CreateMissingFiles = false;
 static LIST                 *Include = NULL;
 static const char           MksetupInf[] = "mksetup.inf";
 
+/*
+ * Shift-JIS (CP932) lead byte ranges
+ * 0x81-0x9F
+ * 0xE0-0xFC
+ */
+static cvt_chr cvt_table_932[] = {
+    #define pickb(s,u) {s, u},
+    #define picki(s,u)
+    #include "cp932uni.h"
+    #undef picki
+    #undef pickb
+};
+
+static int compare_utf8( const cvt_chr *p1, const cvt_chr *p2 )
+/*************************************************************/
+{
+    return( p1->u - p2->u );
+}
+
+static size_t utf8_to_cp932( const char *src, size_t src_len, char *dst )
+/***********************************************************************/
+{
+    size_t      i;
+    size_t      o;
+    cvt_chr     x;
+    cvt_chr     *p;
+
+    o = 0;
+    for( i = 0; i < src_len && o < SECTION_BUF_SIZE - 6; i++ ) {
+        x.u = (unsigned char)src[i];
+        if( IS_ASCII( x.u ) ) {
+            /*
+             * ASCII (0x00-0x7F), no conversion
+             */
+            dst[o++] = (char)x.u;
+        } else {
+            /*
+             * UTF-8 to UNICODE conversion
+             */
+            if( (x.u & 0xF0) == 0xE0 ) {
+                x.u &= 0x0F;
+                x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            } else {
+                x.u &= 0x1F;
+            }
+            x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            /*
+             * UNICODE to CP932 encoding conversion
+             */
+            p = bsearch( &x, cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+            if( p == NULL ) {
+                printf( "unknown unicode character: 0x%4.4X\n", x.u );
+                x.s = '?';
+            } else {
+                x.s = p->s;
+            }
+            if( x.s > 0xFF ) {
+                /* write lead byte first */
+                dst[o++] = (char)(x.s >> 8);
+            }
+            dst[o++] = (char)x.s;
+        }
+    }
+    dst[o] = '\0';
+    return( o );
+}
 
 static void ConcatDirElem( char *dir, const char *elem )
 /******************************************************/
@@ -145,23 +233,36 @@ static void ConcatDirElem( char *dir, const char *elem )
     strcpy( dir + len, elem );
 }
 
+static char     lines_buffer[SECTION_BUF_SIZE];
 
-static char *mygets( char *buf, int max_len, FILE *fp )
-/*****************************************************/
+static char *mygets( char *buf, int max_len_buf, FILE *fp )
+/*********************************************************/
 {
     char        *p,*q,*start;
-    int         lang;
+    char        *d;
+    static int  last_lang = MKINF_LANG_NULL;
     size_t      got;
+    size_t      len;
+    size_t      max_len = SECTION_BUF_SIZE;
+
+    /* unused parameters */ (void)max_len_buf;
 
     /* syntax is //nstring//mstring//0 */
 
-    p = buf;
+    /* concatenate multiple lines into lines_buffer if \\ character on the end of line */
+    p = lines_buffer;
     for( ;; ) {
-        if( fgets( p, max_len, fp ) == NULL )
+        if( fgets( p, (int)max_len, fp ) == NULL ) {
+            if( feof( fp ) ) {
+                if( p != lines_buffer ) {
+                    p[0] = '\0';
+                    break;
+                }
+            }
             return( NULL );
+        }
         q = p;
-        while( *q == ' ' || *q == '\t' )
-            ++q;
+        SKIP_WS( q );
         got = strlen( q );
         if( p != q )
             memmove( p, q, got + 1 );
@@ -182,30 +283,34 @@ static char *mygets( char *buf, int max_len, FILE *fp )
         p += got;
         max_len -= got;
     }
-    p = buf;
+    p = lines_buffer;
+    d = buf;
     while( *p != '\0' ) {
         if( p[0] == '/' && p[1] == '/' && isdigit( p[2] ) ) {
             start = p;
-            lang = p[2] - '0';
-            if( lang == 0 ) {
-                memmove( start, start + 3, strlen( start + 3 ) + 1 );
-                continue;
-            }
+            last_lang = p[2] - '0';
             p += 3;
-            while( p[0] != '/' || p[1] != '/' ) {
-                ++p;
-            }
-            if( lang == Lang ) {
-                memmove( start, start + 3, strlen( start + 3 ) + 1 );
-                p -= 3;
-            } else {
-                memmove( start, p, strlen( p ) + 1 );
-                p = start;
+            if( last_lang != MKINF_LANG_NULL ) {
+                /* search next end */
+                while( p[0] != '/' || p[1] != '/' || !isdigit( p[2] ) ) {
+                    ++p;
+                }
+                if( last_lang == Lang ) {
+                    if( !Utf8 && last_lang == MKINF_LANG_Japanese ) {
+                        utf8_to_cp932( start + 3, p - ( start + 3 ), d );
+                        d += strlen( d );
+                    } else {
+                        len = p - ( start + 3 );
+                        memcpy( d, start + 3, len );
+                        d += len;
+                    }
+                }
             }
         } else {
-            ++p;
+            *d++ = *p++;
         }
     }
+    *d = '\0';
     return( buf );
 }
 
@@ -264,6 +369,8 @@ bool CheckParms( int *pargc, char **pargv[] )
                 new->next = NULL;
                 new->item = strdup( &(*pargv)[1][2] );
                 AddToList( new, &Include );
+            } else if( tolower( (*pargv)[1][1] ) == 'u' && tolower( (*pargv)[1][2] ) == 't' && tolower( (*pargv)[1][3] ) == 'f' && (*pargv)[1][4] == '8') {
+                Utf8 = true;
             } else if( tolower( (*pargv)[1][1] ) == 'u' ) {
                 Upgrade = true;
             } else if( tolower( (*pargv)[1][1] ) == 'v' ) {
@@ -297,6 +404,11 @@ bool CheckParms( int *pargc, char **pargv[] )
     if( stat( RelRoot, &stat_buf ) != 0 ) {  // exists
         printf( "\nDirectory '%s' does not exist\n", RelRoot );
         return( false );
+    }
+    if( Lang == MKINF_LANG_Japanese ) {
+        if( !Utf8 ) {
+            qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+        }
     }
     return( true );
 }
@@ -416,16 +528,19 @@ static int mkdir_nested( const char *path )
 {
 #ifdef __UNIX__
     struct stat sb;
+#elif defined( __NT__ )
+    DWORD       attr;
 #else
     unsigned    attr;
 #endif
-    char        pathname[FILENAME_MAX];
+    char        pathname[_MAX_PATH + 1];
     char        *p;
     char        *end;
     char        c;
 
     p = pathname;
-    strncpy( pathname, path, FILENAME_MAX );
+    strncpy( pathname, path, _MAX_PATH );
+    pathname[_MAX_PATH] = '\0';
     end = pathname + strlen( pathname );
 
 #ifndef __UNIX__
@@ -448,6 +563,9 @@ static int mkdir_nested( const char *path )
         /* check if pathname exists */
 #ifdef __UNIX__
         if( stat( pathname, &sb ) == -1 ) {
+#elif defined( __NT__ )
+        attr = GetFileAttributes( pathname );
+        if( attr == INVALID_FILE_ATTRIBUTES ) {
 #else
         if( _dos_getfileattr( pathname, &attr ) != 0 ) {
 #endif
@@ -466,6 +584,8 @@ static int mkdir_nested( const char *path )
             /* make sure it really is a directory */
 #ifdef __UNIX__
             if( !S_ISDIR( sb.st_mode ) ) {
+#elif defined( __NT__ )
+            if( (attr & FILE_ATTRIBUTE_DIRECTORY) == 0 ) {
 #else
             if( (attr & _A_SUBDIR) == 0 ) {
 #endif
@@ -480,7 +600,7 @@ static int mkdir_nested( const char *path )
 }
 
 bool AddFile( char *path, char *old_path, char type, char redist, char *file, const char *rel_file, char *dst_var, const char *cond )
-/***********************************************************************************************************************/
+/***********************************************************************************************************************************/
 {
     int                 path_dir, old_path_dir, target;
     FILE_INFO           *newitem, *curr, **owner;
@@ -966,8 +1086,6 @@ static bool processLine( const char *line, LIST **list )
     return( false );
 }
 
-#define SECTION_BUF_SIZE 8192   // allow long text strings
-
 static char     SectionBuf[SECTION_BUF_SIZE];
 
 void ReadSection( FILE *fp, const char *section, LIST **list )
@@ -980,8 +1098,8 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
     found = false;
     for( ;; ) {
         if( mygets( SectionBuf, sizeof( SectionBuf ), fp ) == NULL ) {
-            fclose( fp );
             if( file_curr-- > 0 ) {
+                fclose( fp );
                 fp = file_stack[file_curr];
                 continue;
             }
@@ -993,6 +1111,10 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
             if( stricmp( SectionBuf, section ) == 0 ) {
                 found = true;
             } else if( found ) {
+                while( file_curr-- > 0 ) {
+                    fclose( fp );
+                    fp = file_stack[file_curr];
+                }
                 break;
             }
         } else if( found ) {
@@ -1003,11 +1125,11 @@ void ReadSection( FILE *fp, const char *section, LIST **list )
                 file_stack[file_curr++] = fp;
                 fp = PathOpen( SectionBuf + sizeof( STRING_include ) - 1 );
             } else if( processLine( SectionBuf, list ) ) {
-                fclose( fp );
                 while( file_curr-- > 0 ) {
-                    fp = file_stack[file_curr];
                     fclose( fp );
+                    fp = file_stack[file_curr];
                 }
+                fclose( fp );
                 printf( "\nOut of memory\n" );
                 exit( 1 );
             }
@@ -1032,6 +1154,7 @@ void ReadInfFile( void )
     }
     sprintf( ver_buf, "[%s]", Product );
     ReadSection( fp, ver_buf, &AppSection );
+    fclose( fp );
 }
 
 
@@ -1128,7 +1251,7 @@ static void DumpFile( FILE *out, const char *fname )
             for( ; mygets( buf, SECTION_BUF_SIZE, in ) != NULL; ) {
                 if( strnicmp( buf, STRING_include, sizeof( STRING_include ) - 1 ) == 0 ) {
                     DumpFile( out, buf + sizeof( STRING_include ) - 1 );
-                } else {
+                } else if( buf[0] != '#' ) {
                     fputs( buf, out );
                     fputc( '\n', out );
                 }
@@ -1152,7 +1275,6 @@ static void CreateScript( long init_size, unsigned padding )
     PATH_INFO           *path;
     LIST                *list;
     LIST                *list2;
-    unsigned            nfiles;
 
     /* unused parameters */ (void)init_size;
 
@@ -1184,7 +1306,6 @@ static void CreateScript( long init_size, unsigned padding )
         fprintf( fp, "%s,%d,%d\n", path->path, path->target, path->parent );
     }
 
-    nfiles = 0;
     fprintf( fp, "\n[Files]\n" );
     for( curr = FileList; curr != NULL; curr = curr->next ) {
         fprintf( fp, "%s,", curr->pack );
@@ -1459,13 +1580,15 @@ int main( int argc, char *argv[] )
     printf( "Reading Info File...\n" );
     ReadInfFile();
     ok = ReadList( fp );
-    if( !ok )
+    fclose( fp );
+    if( !ok ) {
         return( 1 );
+    }
     printf( "Checking for duplicate files...\n" );
     ok = CheckForDuplicateFiles();
-    if( !ok )
+    if( !ok ) {
         return( 1 );
-    fclose( fp );
+    }
     if( !CreateMissingFiles ) {
         printf( "Making script...\n" );
         MakeScript();
@@ -1474,3 +1597,4 @@ int main( int argc, char *argv[] )
     setupFini();
     return( 0 );
 }
+

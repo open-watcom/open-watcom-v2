@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@ MTool::MTool( WTokenFile& fil, WString& tok )
     fil.token( _tag );
     fil.token( _name );
     fil.token( tok );
-    for(;;) {
+    for( ;; ) {
         if( tok == "Family" ) {
             _families.add( new MFamily( fil, tok ) );
         } else if( tok == "IncludeTool" ) {

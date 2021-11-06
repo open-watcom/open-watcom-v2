@@ -8,7 +8,7 @@
 is a statement label
 .mnote i
 is an integer variable name
-.endnote
+.esynote
 .np
 The statement label
 .id s

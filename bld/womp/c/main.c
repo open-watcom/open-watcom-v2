@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,7 +105,7 @@ static void cleanupHandler( void )
         }
         for( p = outputFile; p != &outputFile[ _MAX_PATH ]; ++p ) {
             if( *p == '\0' ) {
-                unlink( outputFile );
+                remove( outputFile );
                 break;
             }
             if( ! isprint( *p ) ) break;

@@ -5,7 +5,7 @@
 .np
 This option is valid for 16-bit DOS "EXE" files.
 By default, the &lnkname writes a "MZ" executable header which is just large
-enough to contain all necessary data. 
+enough to contain all necessary data.
 The "FULLHEADER" option may be used to force the header size to 64 bytes, plus
 the size of relocation records.
 The format of the "FULLHEADER" option (short form "FULLH") is as

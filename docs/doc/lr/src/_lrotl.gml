@@ -12,7 +12,7 @@ function rotates the unsigned long integer, determined by
 .arg value
 .ct , to the left by the number of bits specified in
 .arg shift
-.ct .li .
+.period
 .desc end
 .return begin
 The rotated value is returned.

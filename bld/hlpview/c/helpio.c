@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +39,12 @@
 #include "watcom.h"
 #include "helpio.h"
 
+#include "clibext.h"
+
 
 static int seekTypeConvTable[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
-HELPIO long int HelpFileLen( FILE *fp )
+HELPIO long HelpFileLen( FILE *fp )
 {
     unsigned long   old;
     long            len;
@@ -58,23 +60,19 @@ HELPIO size_t HelpRead( FILE *fp, void *buf, size_t len )
     return( fread( buf, 1, len, fp ) );
 }
 
-HELPIO long int HelpSeek( FILE *fp, long int offset, HelpSeekType where )
+HELPIO long HelpSeek( FILE *fp, long offset, HelpSeekType where )
 {
     return( fseek( fp, offset, seekTypeConvTable[where] ) );
 }
 
-HELPIO long int HelpTell( FILE *fp )
+HELPIO long HelpTell( FILE *fp )
 {
     return( ftell( fp ) );
 }
 
 HELPIO FILE *HelpOpen( const char *path )
 {
-#ifdef __UNIX__
-    return( fopen( path, "r" ) );
-#else
     return( fopen( path, "rb" ) );
-#endif
 }
 
 HELPIO int HelpClose( FILE *fp )

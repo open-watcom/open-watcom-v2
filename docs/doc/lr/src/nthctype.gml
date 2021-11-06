@@ -1,10 +1,10 @@
 .func nthctype _fnthctype
 .synop begin
 #include <jstring.h>
-int nthctype( const char * str, size_t n );
+int nthctype( const char *s, size_t n );
 .ixfunc2 '&Jstring' &funcb
-.if &farfnc eq 1 .do begin
-int far _fnthctype( const char far * str, size_t n );
+.if &farfnc ne 0 .do begin
+int _fnthctype( const char far *s, size_t n );
 .ixfunc2 '&Jstring' &ffunc
 .do end
 .synop end
@@ -24,8 +24,8 @@ functions return
 the type of an 8-bit character indicated as a byte offset
 .arg n
 from the start of the string
-.arg str
-.ct .li .
+.arg s
+.period
 .begterm 10
 .termhd1 Constant
 .termhd2 Meaning
@@ -45,21 +45,21 @@ is
 (-1) The byte is not valid as second byte of a double-byte character
 or it is the null character,
 .endterm
-.im ffarparm
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 If the character is a null character,
 .id &funcb.
 returns
 .kw CT_ILGL
-.ct .li .
+.period
 If the offset
 .arg n
 is beyond the end of the string,
 .id &funcb.
 returns
 .kw CT_ILGL
-.ct .li .
+.period
 In all other cases, it returns one of
 .kw CT_ANK
 .ct ,
@@ -68,7 +68,7 @@ In all other cases, it returns one of
 .kw CT_KJ2
 .ct , or
 .kw CT_ILGL
-.ct .li .
+.period
 .return end
 .see begin
 .seelist chkctype iskanji iskanji2 jiszen nthctype
@@ -90,7 +90,7 @@ void main()
 .exmp break
     for( i = 0; i < 9; i++ )
         printf( "%s\n",
-            types[ 1 + nthctype( "abA¡Bc", i ) ]
+            types[ 1 + nthctype( "ab?A¡?Bc", i ) ]
             );
   }
 .exmp output

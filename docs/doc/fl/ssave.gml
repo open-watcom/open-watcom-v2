@@ -7,7 +7,7 @@
 .mnote a
 is a named common block preceded and followed by a slash (/), a
 variable name or an array name.
-.endnote
+.esynote
 .np
 The
 .kw SAVE

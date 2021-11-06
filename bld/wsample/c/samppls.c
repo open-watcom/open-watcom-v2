@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -214,14 +215,14 @@ static void FixTime( void )
     SetBiosClk( count );
 }
 
-void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
     PTR386      addr;
     char        buff[BSIZE];
     int         len;
     seg_offset  where;
 
-    /* unused parameters */ (void)cmd;
+    /* unused parameters */ (void)cmd; (void)full_args;
 
     SampleIndex = 0;
     CurrTick  = 0L;
@@ -233,7 +234,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     check( dbg_edebug() );
     GrabVects();
     FixTime();
-    if( dbg_load( prog, NULL, dos_args ) != 0 ) {
+    if( dbg_load( (UCHAR *)prog, NULL, (UCHAR *)dos_args ) != 0 ) {
         OutputMsgParmNL( MSG_SAMPLE_2, prog );
         ReleVects();
         MsgFini();
@@ -309,7 +310,7 @@ void SysDefaultOptions( void )
     RateChanged = 0;
 }
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     switch( c ) {
     case 'r':
@@ -321,4 +322,9 @@ void SysParseOptions( char c, char **cmd )
         fatal();
         break;
     }
+}
+
+void OutputNL( void )
+{
+    Output( "\r\n" );
 }

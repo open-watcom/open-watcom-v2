@@ -15,44 +15,44 @@ The
 function obtains information about the next matching file
 name from the argument
 .arg dirp
-.ct .li .
+.period
 The argument
 .arg dirp
 is the value returned from the
-.kw opendir
+.reffunc opendir
 function.
 The
 .id &funcb.
 function can be called repeatedly to obtain the list of file
 names contained in the directory specified by the pathname given to
-.kw opendir
-.ct .li .
+.reffunc opendir
+.period
 The function
-.kw closedir
+.reffunc closedir
 must be called to close the directory and free the memory allocated by
-.kw opendir
-.ct .li .
+.reffunc opendir
+.period
 .im dirent
 .if '&machsys' eq 'QNX' .do begin
 .np
 The result of using a directory stream after one of the
-.kw exec
+.reffunc exec&grpsfx
 or
-.kw spawn
+.reffunc spawn&grpsfx
 family of functions is undefined.
 After a call to the
-.kw fork
+.reffunc fork
 function, either the parent or the child (but not both) may continue
 processing the directory stream using
-.kw readdir
+.reffunc readdir
 or
-.kw rewinddir
+.reffunc rewinddir
 or both.
 If both the parent and child processes use these functions, the result
 is undefined.
 Either or both processes may use
-.kw closedir
-.ct .li .
+.reffunc closedir
+.period
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -61,7 +61,7 @@ The
 function is identical to
 .id &funcb.
 except that it reads a
-directory of wide-character filenames.
+directory of wide character filenames.
 .im _wdirent
 .do end
 .desc end

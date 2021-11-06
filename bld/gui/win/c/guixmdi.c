@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,10 +78,10 @@ static void SetStyle( HWND hwnd, bool max )
         style |= WS_VSCROLL+WS_HSCROLL;
         style &= ~( COMMON_STYLES | WS_THICKFRAME | WS_CAPTION );
     } else {
-        if( wnd->scroll & GUI_HSCROLL ) {
+        if( wnd->scroll_style & GUI_HSCROLL ) {
             style |= WS_HSCROLL;
         }
-        if( wnd->scroll & GUI_VSCROLL ) {
+        if( wnd->scroll_style & GUI_VSCROLL ) {
             style |= WS_VSCROLL;
         }
         if( wnd->style & GUI_RESIZEABLE ) {
@@ -101,8 +102,8 @@ static void SetStyle( HWND hwnd, bool max )
 static void EndMaxRestore( HWND hwnd )
 {
     gui_window  *wnd;
-    WPI_RECT    rect;
-    gui_coord   size;
+    WPI_RECT    wpi_rect;
+    guix_coord  scr_size;
 
     wnd = GUIGetWindow( hwnd );
     if( GUI_HSCROLL_ON( wnd ) ) {
@@ -112,10 +113,10 @@ static void EndMaxRestore( HWND hwnd )
         GUISetRangePos( wnd, SB_VERT );
     }
     DoingMaxRestore = false;
-    _wpi_getwindowrect( hwnd, &rect );
-    size.x = _wpi_getwidthrect( rect );
-    size.y = _wpi_getheightrect( rect );
-    GUIDoResize( wnd, hwnd, &size );
+    _wpi_getwindowrect( hwnd, &wpi_rect );
+    scr_size.x = _wpi_getwidthrect( wpi_rect );
+    scr_size.y = _wpi_getheightrect( wpi_rect );
+    GUIDoResize( wnd, hwnd, &scr_size );
 }
 
 static void SetWindowTitle( HWND hwnd )
@@ -171,9 +172,9 @@ static void MDIMaximize( bool max, gui_window *wnd )
 #endif
 }
 
-static void SetMDIRestoredSize( HWND hwnd, WPI_RECT *rect )
+static void SetMDIRestoredSize( HWND hwnd, const WPI_RECT *wpi_rect )
 {
-    MDISetOrigSize( hwnd, rect );
+    MDISetOrigSize( hwnd, wpi_rect );
 }
 
 static bool IsMDIChildWindow( gui_window *wnd )
@@ -229,7 +230,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
     if( wnd->root == hwnd ) {
         /* message for root window */
         switch( msg ) {
-        case WM_DESTROY :
+        case WM_DESTROY:
             MDIClearMaximizedMenuConfig();
             break;
 #ifndef __OS2_PM__
@@ -240,7 +241,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
             }
             break;
 #endif
-        case WM_COMMAND :
+        case WM_COMMAND:
             if( DoneMDIInit && MDIIsSysCommand( hwnd, msg, wparam, lparam ) ) {
                 *ret = 0;
                 return( true );
@@ -248,24 +249,24 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
             id = _wpi_getid( wparam );
             if( _wpi_ismenucommand( wparam, lparam ) && IS_MDIMENU( id ) ) {
                 switch( id ) {
-                case GUI_MDI_CASCADE :
+                case GUI_MDI_CASCADE:
                     MDICascade();
                     break;
-                case GUI_MDI_TILE_HORZ :
+                case GUI_MDI_TILE_HORZ:
                     MDITile( true );
                     break;
-                case GUI_MDI_TILE_VERT :
+                case GUI_MDI_TILE_VERT:
                     MDITile( false );
                     break;
-                case GUI_MDI_ARRANGE_ICONS :
+                case GUI_MDI_ARRANGE_ICONS:
                     ArrangeIcons = true;
                     MDICascade();
                     ArrangeIcons = false;
                     break;
-                case GUI_MDI_MORE_WINDOWS :
+                case GUI_MDI_MORE_WINDOWS:
                     GUIMDIMoreWindows();
                     break;
-                default :
+                default:
                     if( IS_MDIWIN( id ) ) {
                         /* window selected */
                         GUIMDIBringToFront( GUIMDIGetWindow( id ) );
@@ -278,7 +279,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
         /* child window */
         switch( msg ) {
 #ifndef __OS2_PM__
-        case WM_WINDOWPOSCHANGING :
+        case WM_WINDOWPOSCHANGING:
             if( ArrangeIcons ) {
                 /* arrange icons is really a cascade but don't allow
                    no-iconic windows to move */
@@ -291,32 +292,32 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
             }
             break;
         case WM_SYSCHAR:
-        case WM_SYSKEYDOWN :
-        case WM_SYSKEYUP :
+        case WM_SYSKEYDOWN:
+        case WM_SYSKEYUP:
             *ret = GUISendMessage( GUIGetTopParentHWND( hwnd ), msg, wparam, lparam );
             return( true );
             break;
 #endif
-        case WM_MOVE :
-        case WM_SIZE :
+        case WM_MOVE:
+        case WM_SIZE:
             if( DoingMaxRestore ) {
                 *ret = 0;
                 return( true );
             }
             break;
 #ifndef __OS2_PM__
-        case WM_MOUSEACTIVATE :
+        case WM_MOUSEACTIVATE:
             SetFocus( hwnd );
             *ret = MA_ACTIVATE;
             return( true );
 #else
-        case WM_ACTIVATE :
+        case WM_ACTIVATE:
             if( wparam ) {
                 SetFocus( hwnd );
                 return( true );
             }
 #endif
-        case WM_GETMINMAXINFO :
+        case WM_GETMINMAXINFO:
             /* don't want app to fool with this */
             *ret = _wpi_defwindowproc( hwnd, msg, wparam, lparam );
             return( true );
@@ -327,7 +328,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
     } else if( wnd->hwnd == hwnd ) {
         /* container window */
         switch( msg ) {
-        case WM_SIZE :
+        case WM_SIZE:
             MDIContainerResized();
             break;
         }
@@ -399,7 +400,7 @@ static void Cascade( gui_window *root, int num_windows, gui_rect *rect,
     GUIEnumChildWindows( root, &GUIInternalCascadeWindows, &info );
 }
 
-bool GUICascadeWindows( void )
+bool GUIAPI GUICascadeWindows( void )
 {
     gui_rect            rect;
     int                 num_windows;

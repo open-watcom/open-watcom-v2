@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +47,9 @@
 #include "dbgexdat.h"
 
 
-extern void             WndMemInspect( address, char *, unsigned, mad_type_handle );
-extern void             WndIOInspect( address *, mad_type_handle );
-extern void             WndAddrInspect( address );
+extern void     WndMemInspect( address, char *, unsigned, mad_type_handle );
+extern void     WndIOInspect( address *, mad_type_handle );
+extern void     WndAddrInspect( address );
 
 
 /*
@@ -113,14 +114,20 @@ static void TypeExam( void )
     }
 }
 
+#define FMT_DEFS \
+    pick( "Assembly", AsmExam ) \
+    pick( "Source",   SrcExam )
+
 static const char FmtNameTab[] = {
-    "Assembly\0"
-    "Source\0"
+    #define pick(t,p)   t "\0"
+    FMT_DEFS
+    #undef pick
 };
 
 static void (* const ExamJmpTab[])( void ) = {
-    &AsmExam,
-    &SrcExam,
+    #define pick(t,p)   p,
+    FMT_DEFS
+    #undef pick
 };
 
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +32,10 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #ifndef __UNIX__
     #include <direct.h>
 #endif
-#include "watcom.h"
-#include "stdui.h"
 #include "help.h"
 #include "helpmem.h"
 #include "iopath.h"
@@ -55,7 +54,7 @@ static HelpSrchPathItem         *srch_List;
 
 void SetHelpFileDefExt( const char *name, char *buff )
 {
-    PGROUP2      pg;
+    pgroup2      pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' )

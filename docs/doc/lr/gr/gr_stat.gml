@@ -1,5 +1,5 @@
-.gfunc grstatus
-.gsynop begin 
+.gfunc _grstatus
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _grstatus( void );
 .do end

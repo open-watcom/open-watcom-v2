@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -31,8 +32,10 @@
 
 .386p
 
-extrn   _FaultHandler:near
-extrn   TERMINATEAPP:far
+include toolhelp.inc
+include winintrf.inc
+include winfault.inc
+
 
 DGROUP group _DATA
 _DATA segment word public 'DATA'  use16
@@ -141,9 +144,9 @@ INTHANDLER PROC far
         push    cs:_OldretCS
         push    cs:_OldretIP
 skiprl:
-        cmp     cs:_RetHow,0            ; kill application?
+        cmp     cs:_RetHow,KILL_APP     ; kill application?
         je      KillApp
-        cmp     cs:_RetHow,1
+        cmp     cs:_RetHow,RESTART_APP
         je      RestartApp              ; restart application?
 
         retf                            ; neither, must chain
@@ -155,7 +158,7 @@ RestartApp:
 KillApp:
         add     sp,10                   ; Point to IRET frame
         push    0                       ; kill current task
-        push    1                       ; NO_UAE_BOX
+        push    NO_UAE_BOX
         call    TERMINATEAPP
         retf
 

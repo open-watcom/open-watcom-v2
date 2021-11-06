@@ -103,21 +103,20 @@ typedef struct Socket {
         unsigned            fd_duped;    /* FSEXT reference counting */
         DWORD               cookie;      /* memory cookie / marker */
         DWORD               keepalive;   /* keepalive timeout */
-        udp_Socket         *udp_sock;    /* actual state and Rx/Tx data is in */
-        tcp_Socket         *tcp_sock;    /*  one of these pointers */
-        raw_Socket         *raw_sock;    /* !!to-do: make linked-list of bufs */
+        sock_type          *proto_sock;  /* actual state and Rx/Tx data is in */
+                                         /* !!to-do: make linked-list of bufs */
         recv_buf          **bcast_pool;  /* buffers for INADDR_ANY sockets */
 
         /* listen-queue for incoming tcp connections
          */
         int                 backlog;
-        tcp_Socket         *listen_queue [SOMAXCONN];
+        sock_type          *listen_queue[SOMAXCONN];
         DWORD               syn_timestamp[SOMAXCONN]; /* got SYN at [msec] */
 
         /* low-water marks for send add receive
          */
-        unsigned            send_lowat;
-        unsigned            recv_lowat;
+        unsigned            tx_lowat;
+        unsigned            rx_lowat;
 
       } Socket;
 
@@ -126,39 +125,25 @@ typedef struct Socket {
  * Various sizes
  */
 #if (DOSX)
-  #define DEFAULT_RCV_WIN   (16*1024)      /* default receive window, 16kB */
   #define MAX_DGRAMS        5              /* # of datagrams for broadcast */
   #define MAX_RAW_BUFS      2              /* # of raw_Socket in list      */
   #define MAX_SOCKETS       3000           /* # of sockets to handle */
-  #define MAX_TCP_RECV_BUF  (1024*1024-1)  /* Max size for SO_RCVBUF */
-  #define MAX_TCP_SEND_BUF  (USHRT_MAX-1)
-  #define MAX_UDP_RECV_BUF  (USHRT_MAX-1)
-  #define MAX_UDP_SEND_BUF  (USHRT_MAX-1)
-  #define MAX_RAW_RECV_BUF  (USHRT_MAX-1)
-  #define MAX_RAW_SEND_BUF  (USHRT_MAX-1)
 #else
-  #define DEFAULT_RCV_WIN   (16*1024)
   #define MAX_DGRAMS        2
   #define MAX_SOCKETS       512
-  #define MAX_TCP_RECV_BUF  (unsigned)TCP_MAXWIN  /* 64kB */
-  #define MAX_TCP_SEND_BUF  (USHRT_MAX-1)
-  #define MAX_UDP_RECV_BUF  (USHRT_MAX-1)
-  #define MAX_UDP_SEND_BUF  (USHRT_MAX-1)
-  #define MAX_RAW_RECV_BUF  (USHRT_MAX-1)
-  #define MAX_RAW_SEND_BUF  (USHRT_MAX-1)
 #endif
 
-#define DEFAULT_SEND_LOWAT  0
-#define DEFAULT_RECV_LOWAT  0
+#define DEFAULT_TX_LOWAT    0
+#define DEFAULT_RX_LOWAT    0
 
 /*
  * Let first socket (non-djgpp) start above 0 in order not to
  * confuse sockets with stdin/stdout/stderr handles.
  */
 #ifdef __DJGPP__
-  #define SK_FIRST  0   /* first socket will always be >3 */
+  #define S_FIRST  0    /* first socket will always be >3 */
 #else
-  #define SK_FIRST  3   /* skip handles 0-2 */
+  #define S_FIRST  3    /* skip handles 0-2 */
 #endif
 
 
@@ -316,8 +301,8 @@ extern void   *_sock_calloc   (const char *file, unsigned line, size_t size);
 extern Socket *_sock_del_fd   (const char *file, unsigned line, int sock);
 extern Socket *_socklist_find (int s);
 extern int     _sock_dos_fd   (int s);
-extern int     _sock_half_open(const tcp_Socket *tcp);
-extern int     _sock_append   (tcp_Socket **tcp);
+extern int     _sock_half_open(const sock_type *sk);
+extern int     _sock_append   (sock_type **skp);
 
 /*
  * Debugging of BSD-socket API. Writes to "sk_debug.device"
@@ -331,7 +316,7 @@ extern void _sock_enter_scope (void);
 extern void _sock_leave_scope (void);
 extern void bsd_fortify_print (const char *buf);
 
-extern void _sock_debugf (const Socket *sock, const char *fmt, ...)
+extern void _sock_debugf (const Socket *socket, const char *fmt, ...)
 #ifdef __GNUC__
   __attribute__((format(printf,2,3)))
 #endif

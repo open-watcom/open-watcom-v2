@@ -12,7 +12,7 @@
 !inject cmp       all qnx           #
 !inject comm      all qnx           #
 !inject compress  all qnx           #
-!inject cp        all     boot      # build doc test
+!inject cp        all               #
 !inject cut       all qnx           #
 !inject date      all qnx           #
 !inject dev       all qnx           #

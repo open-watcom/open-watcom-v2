@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -344,7 +344,7 @@ void mark_fixupp( OPNDTYPE determinant, operand_idx index )
 
 bool store_fixup( operand_idx index )
 /***********************************/
-/* Store the fixup information in a WOMP fixup record */
+/* Store the fixup information in a OMF output fixup record */
 {
     struct asmfixup     *fixnode;
 
@@ -380,7 +380,7 @@ static bool MakeFpFixup( const char *patch_name )
             dir->sym.offset = 0;
             dir->sym.referenced = true;
             dir->sym.mem_type = MT_FAR;
-            SetMangler( &dir->sym, "N", LANG_NONE );
+            SetMangler( &dir->sym, "N", WASM_LANG_NONE );
         }
     }
     if( dir != NULL ) {

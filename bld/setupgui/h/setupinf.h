@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ typedef enum {
 } append_mode;
 
 typedef unsigned long long      disk_size;
-typedef signed long long        disk_ssize;
+typedef long long               disk_ssize;
 
 // Possible return values from sending the SIM_INITIALIZE message.
 typedef enum {
@@ -136,7 +136,6 @@ extern bool             SimSubFileIsNLM( int parm, int subfile );
 extern bool             SimSubFileIsDLL( int parm, int subfile );
 extern bool             SimSubFileReadOnly( int parm, int subfile );
 extern long             SimSubFileSize( int parm, int subfile );
-extern void             SaveState( void );
 extern long             SimInit( const VBUF *inf_name );
 extern void             SimSetTargTempDisk( int parm, char disk );
 extern const char       *SimGetTargTempDisk( int parm );
@@ -202,7 +201,7 @@ extern bool             SimCalcTargetSpaceNeeded( void );
 extern void             CheckDLLCount( const char * );
 extern void             SimCalcAddRemove( void );
 extern void             SimSetNeedGetDiskSizes( void );
-extern void             MsgPut( int resourceid, va_list arglist );
+extern void             MsgPut( int resourceid, va_list args );
 extern void             FreeAllStructs( void );
 extern bool             EvalCondition( const char *str );
 extern bool             SimTargetNeedsUpdate( int parm );
@@ -219,7 +218,7 @@ extern int              SimNumUpgrades( void );
 extern const char       *SimGetUpgradeName( int );
 extern vhandle          MakeDummyVar( void );
 
-extern bool             GetOptionVarValue( vhandle var_handle, bool is_minimal );
+extern bool             GetOptionVarValue( vhandle var_handle );
 extern char             *TrimQuote( char * );
 extern void             SetDefaultAutoSetValue( vhandle var_handle );
 extern bool             CheckForceDLLInstall( const VBUF *name );

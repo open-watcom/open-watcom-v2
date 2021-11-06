@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,7 @@
 #include "vbuf.h"
 #include "fmttype.h"
 #include "codegen.h"
+
 
 static carve_t carveNode;       // memory: nodes
 static carve_t carveLine;       // memory: lines
@@ -366,7 +367,7 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
         type_add = printTypes;
         break;
     case PT_STRING_CONSTANT :
-        stxvcpy( buffer, pnode->u.string->string, pnode->u.string->len );
+        memcpy( buffer, pnode->u.string->string, pnode->u.string->len );
         type_add = printTypes;
         break;
     case PT_TYPE :

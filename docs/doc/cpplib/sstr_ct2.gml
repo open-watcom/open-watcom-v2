@@ -1,4 +1,5 @@
-These forms of the &fn. create an initialized &obj.:PERIOD.
+These forms of the &fn. create an initialized &obj.
+:PERIOD.
 Dynamic allocation is not used. The buffer is specified by the
 :ARG.str
 and
@@ -22,4 +23,5 @@ Reading commences at
 :PERIOD.
 .do end
 :RSLTS.
-This form of the &fn. creates an initialized &obj.:PERIOD.
+This form of the &fn. creates an initialized &obj.
+:PERIOD.

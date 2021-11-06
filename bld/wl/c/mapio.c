@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,8 +105,8 @@ void StartTime( void )
 static char *PutDec( char *ptr, unsigned num )
 /*********************************************/
 {
-    *ptr++ = ( num / 10 ) % 10 + '0';
-    *ptr++ = num % 10 + '0';
+    *ptr++ = (( num / 10 ) % 10) + '0';
+    *ptr++ = (num % 10) + '0';
     return( ptr );
 }
 
@@ -804,7 +804,7 @@ static void PrintSymTrace( void *_info )
 }
 
 void WriteUndefined( void )
-/********************************/
+/*************************/
 {
     if( SymTraceList != NULL ) {
         WriteBox( MSG_MAP_BOX_TRACE_SYM );
@@ -861,6 +861,30 @@ void WriteLibsUsed( void )
     }
 }
 
+static const char *getStubName( void )
+/************************************/
+{
+#ifdef _OS2
+    if( FmtData.u.os2fam.no_stub ) {
+        return( "none" );
+    }
+    if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+        return( FmtData.u.os2fam.stub_file_name );
+    }
+#endif
+#ifdef _DOS16M
+    if( FmtData.type & MK_DOS16M ) {
+        return( FmtData.u.d16m.stub );
+    }
+#endif
+#ifdef _PHARLAP
+    if( FmtData.type & MK_PHAR_LAP ) {
+        return( FmtData.u.phar.stub );
+    }
+#endif
+    return( NULL );
+}
+
 void MapSizes( void )
 /**************************/
 /*
@@ -868,6 +892,7 @@ void MapSizes( void )
 */
 {
     char        msg_buff[RESOURCE_MAX_SIZE];
+    const char  *stubname;
 
     if( UndefList != NULL ) {
         WriteMapNL( 1 );
@@ -888,14 +913,9 @@ void MapSizes( void )
     if( (FmtData.type & MK_NOVELL) == 0 && ( !FmtData.dll || (FmtData.type & MK_PE) ) ) {
         Msg_Write_Map( MSG_MAP_ENTRY_PT_ADDR, &StartInfo.addr );
     }
-    if( FmtData.u.os2.no_stub ) {
-        Msg_Write_Map( MSG_MAP_STUB_FILE, "none" );
-    } else if( ( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) && FmtData.u.os2.stub_file_name != NULL ) {
-        Msg_Write_Map( MSG_MAP_STUB_FILE, FmtData.u.os2.stub_file_name );
-    } else if( (FmtData.type & MK_DOS16M) && FmtData.u.d16m.stub != NULL ) {
-        Msg_Write_Map( MSG_MAP_STUB_FILE, FmtData.u.d16m.stub );
-    } else if( (FmtData.type & MK_PHAR_LAP) && FmtData.u.phar.stub != NULL ) {
-        Msg_Write_Map( MSG_MAP_STUB_FILE, FmtData.u.phar.stub );
+    stubname = getStubName();
+    if( stubname != NULL ) {
+        Msg_Write_Map( MSG_MAP_STUB_FILE, stubname );
     }
 }
 
@@ -949,8 +969,8 @@ void WriteMapNL( unsigned count )
     }
 }
 
-static size_t MapPrint( const char *str, va_list *args )
-/******************************************************/
+static size_t MapPrint( const char *str, va_list args )
+/*****************************************************/
 {
     char        buff[MAX_MSG_SIZE];
     size_t      len;
@@ -960,11 +980,11 @@ static size_t MapPrint( const char *str, va_list *args )
     return( len );
 }
 
-void DoWriteMap( const char *format, va_list *arglist )
-/*****************************************************/
+void DoWriteMap( const char *format, va_list args )
+/*************************************************/
 {
     if( MapFlags & MAP_FLAG ) {
-        MapPrint( format, arglist );
+        MapPrint( format, args );
         WriteMapNL( 1 );
     }
 }
@@ -972,17 +992,17 @@ void DoWriteMap( const char *format, va_list *arglist )
 void WriteMap( const char *format, ... )
 /**************************************/
 {
-    va_list arglist;
+    va_list args;
 
-    va_start( arglist, format );
-    DoWriteMap( format, &arglist );
-    va_end( arglist );
+    va_start( args, format );
+    DoWriteMap( format, args );
+    va_end( args );
 }
 
 void WriteFormat( size_t col, const char *str, ... )
 /****************************************************/
 {
-    va_list         arglist;
+    va_list         args;
     size_t          num;
     static  char    Blanks[]={"                                      "};
 
@@ -995,9 +1015,9 @@ void WriteFormat( size_t col, const char *str, ... )
         }
         MapCol += num;
         BufWrite( Blanks, num );
-        va_start( arglist, str );
-        MapCol += MapPrint( str, &arglist );
-        va_end( arglist );
+        va_start( args, str );
+        MapCol += MapPrint( str, args );
+        va_end( args );
     }
 }
 

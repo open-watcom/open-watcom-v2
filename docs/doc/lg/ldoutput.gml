@@ -51,8 +51,8 @@ the offset is subtracted from it. Any gaps filled with the value specified
 through "OPTION FILLCHAR" (default is 0).
 .np
 For hex files, the linear address (after subtracting the offset) is used to
-determine the output record generated. Records contain 16 bytes, unless a 
-gap occurs prior to that in which case the record is shorter, and a new 
+determine the output record generated. Records contain 16 bytes, unless a
+gap occurs prior to that in which case the record is shorter, and a new
 record starts after the gap. There are three types of Intel Hex records. The
 oldest and most widely used is HEX80, which can only deal with 16-bit
 addresses. For many ROM-based applications, this is enough, especially once
@@ -94,7 +94,7 @@ ensuring seamless compatibility and migration to large file sizes.
 If "STARTREC" is specified for "OUTPUT HEX", the penultimate record in the
 file (just before the end record) will be a start address record. The value
 of the start address will be determined by the module start record in an
-object file, typically the result of an "END start" assembler directive. 
+object file, typically the result of an "END start" assembler directive.
 If the start address is less than 65536 (always for 16-bit applications, and
 where applicable for 32-bit applications), a type 03 record with segment and
 offset values will be emitted. If the start address is equal to or greater

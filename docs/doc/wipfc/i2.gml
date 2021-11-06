@@ -1,4 +1,5 @@
 .section *refid='i2' i2
+.*
 .ix 'i2'
 .ix 'Indexing' 'secondary entry'
 .ix 'Block' 'i2'
@@ -12,8 +13,9 @@ The id of the primary index entry to which this belongs.
 .tattr global
 For HLP files, allows this entry to also appear in the global index.
 .tattr sortkey='key-text'.index-text
-Specify a string used to sort this entry in the index, and a string to use in its place. In other words, place 
+Specify a string used to sort this entry in the index, and a string to use in its place. In other words, place
 index-text where key-text would sort in index.
+.tattrend
 .tno Conditions
 Cannot appear in a fn/efn footnote. If the global flag is set for the i1 tag, it must be set for the i2 tag.
 .tclass Block

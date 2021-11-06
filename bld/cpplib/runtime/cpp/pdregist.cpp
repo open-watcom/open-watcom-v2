@@ -381,7 +381,7 @@ RW_DTREG* CPPLIB( pd_top )      // LOOK THRU PD ENTRIES FOR FIRST R/W ENTRY
 extern "C"
 void CPPLIB( pd_dump_rws )      // DEBUGGING -- DUMP R/W, R/O data structure
                                 // - watcom block
-    ( register void (*dump_rw)( RW_DTREG*, RO_DTREG* )
+    ( void (*dump_rw)( RW_DTREG*, RO_DTREG* )
     , void (*dump_pd)( PData* ) // - non-watcom block
     )
 {

@@ -1,5 +1,5 @@
-.gfunc getactivepage
-.gsynop begin 
+.gfunc _getactivepage
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _getactivepage( void );
 .do end

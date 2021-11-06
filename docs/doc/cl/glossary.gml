@@ -194,7 +194,7 @@ and
 .monoon
 '\n'
 .monooff
-..ct ).
+.ct ).
 .*
 .************************************************************************
 .*
@@ -290,11 +290,11 @@ The floating-point
 .us type
 is represented by one of the keywords
 .kw float
-..ct ,
+.ct ,
 .kw double
 or
 .kw long double
-..ct ..li .
+.period
 .*
 .note function
 .ix 'function'
@@ -349,8 +349,7 @@ points.
 .ix 'index'
 An index (or
 .us subscript
-..ct )
-is a number used to reference an element of an
+.ct ) is a number used to reference an element of an
 .us array.
 It is an integral value. The first element of an array has the index
 zero.
@@ -385,36 +384,35 @@ An integer is a
 that is a subset of the mathematical set of integers. It is
 represented by the keyword
 .kw int
-..ct ,
-and has a number of variations including
+.ct , and has a number of variations including
 .kw signed char
-..ct ,
+.ct ,
 .kw unsigned char
-..ct ,
+.ct ,
 .kw short signed int
-..ct ,
+.ct ,
 .kw short unsigned int
-..ct ,
+.ct ,
 .kw signed int
-..ct ,
+.ct ,
 .kw unsigned int
-..ct ,
+.ct ,
 .kw long signed int
-..ct ,
+.ct ,
 .kw long unsigned int
-..ct ,
+.ct ,
 .kw long long signed int
 and
 .kw long long unsigned int
-..ct ..li .
+.period
 .*
 .note integral promotion
 .ix 'integral promotion'
 An object or constant that is a
 .kw char
-..ct ,
+.ct ,
 .kw short int
-..ct ,
+.ct ,
 .kw int
 bit-field, or of
 .kw enum
@@ -425,7 +423,7 @@ type, that is used in an expression, is promoted to an
 is large enough to contain all possible values of the smaller
 type) or
 .kw unsigned int
-..ct ..li .
+.period
 .*
 .note keyword
 .ix 'keyword'
@@ -519,17 +517,15 @@ In particular, if
 .mono E
 is declared as a "pointer to
 .kw int
-..ct ",
-then both
+.ct ", then both
 .mono E
 and
 .mono *E
 are lvalues having the respective types "pointer to
 .kw int
-..ct "
-and
+.ct " and
 .kw int
-..ct ..li .
+.period
 .*
 .note macro
 .ix 'macro'
@@ -599,7 +595,7 @@ and is called the null character. It is represented by the
 .mono \0
 in a string, or as the character constant
 .mono '\0'
-..ct ..li .
+.period
 .*
 .note object
 .ix 'object'
@@ -744,15 +740,15 @@ The
 .kw signed
 may be used with the types
 .kw char
-..ct ,
+.ct ,
 .kw short int
-..ct ,
+.ct ,
 .kw int
-..ct ,
+.ct ,
 .kw long int
 and
 .kw long long int
-..ct ..li .
+.period
 .*
 .note statement
 .ix 'statement'
@@ -781,9 +777,8 @@ concatenated into one string literal. The value of a string literal is
 the sequence of characters within the quotes, plus a
 .us null character
 (
-..ct .mono \0
-..ct )
-placed at the end.
+.ct .mono \0
+.ct ) placed at the end.
 .*
 .note structure
 .ix 'structure'
@@ -798,8 +793,7 @@ storage locations.
 .ix 'subscript'
 A subscript (or
 .us index
-..ct )
-is a number used to reference an element of an
+.ct ) is a number used to reference an element of an
 .us array.
 It is a non-negative integral value. The first element of an array has
 the subscript zero.
@@ -841,8 +835,7 @@ such as whether the value is
 .kw signed
 or
 .kw unsigned
-..ct ,
-and what range of values it may contain.
+.ct , and what range of values it may contain.
 .*
 .note undefined behavior
 .ix 'undefined behavior'
@@ -869,15 +862,15 @@ The
 .kw unsigned
 may be used with the types
 .kw char
-..ct ,
+.ct ,
 .kw short int
-..ct ,
+.ct ,
 .kw int
-..ct ,
+.ct ,
 .kw long int
 and
 .kw long long int
-..ct ..li .
+.period
 .*
 .note variable
 .ix 'variable'
@@ -897,8 +890,7 @@ The
 is a special type that really indicates "no particular type". An
 object that is a "pointer to
 .kw void
-..ct " may not be used to point at
-anything without it first being
+.ct " may not be used to point at anything without it first being
 .us cast
 to the appropriate type.
 .pp

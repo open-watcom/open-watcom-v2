@@ -40,6 +40,8 @@
 #include "msg.h"
 #include "mvecstr.h"
 
+#include "clibext.h"
+
 
 STATIC MTOKEN_T lexFormQualifier( MTOKEN_T tok )
 /***********************************************

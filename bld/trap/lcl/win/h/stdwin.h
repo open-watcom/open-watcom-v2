@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,8 @@
 #include "trpcomm.h"
 #include "trperr.h"
 #include "packet.h"
+#include "winintrf.h"
+
 
 #define MAGIC_COOKIE    0x66600666L
 typedef enum {
@@ -60,14 +63,6 @@ typedef enum {
     RELEASE_DEBUGEE,
     KILLING_DEBUGEE
 } debugger_state;
-
-typedef enum {
-    KILL_APP=0,
-    RESTART_APP,
-    CHAIN,
-    RUN_REDIRECT,
-    ACCESS_SEGMENT
-} restart_opts;
 
 #define NIL_HANDLE      -1
 
@@ -103,12 +98,11 @@ extern HTASK                    DebuggerTask;
 extern HTASK                    DebugeeTask;
 extern HINSTANCE                DebugeeInstance;
 extern DWORD                    WindowsFlags;
-extern struct interrupt_struct  IntResult;
+extern interrupt_struct         IntResult;
 extern struct fp_state          FPResult;
 extern volatile debugger_state  DebuggerState;
 extern break_point              StopNewTask;
 extern DWORD                    SystemDebugState;
-extern volatile restart_opts    AppMessage;
 extern DWORD                    TerminateCSIP;
 extern HWND                     DebuggerWindow;
 extern int                      ModuleTop;
@@ -123,7 +117,7 @@ extern BOOL                     DebugDebugeeOnly;
 extern HTASK                    TaskAtFault;
 extern WORD                     Win386Sig[];
 extern WORD                     Win386SigRev[];
-extern FARPROC                  SubClassProcInstance;
+//extern FARPROC                  SubClassProcInstance;
 extern bool                     HardModeRequired;
 extern bool                     InputLocked;
 extern bool                     ForceHardMode;
@@ -178,19 +172,10 @@ void SetInputLock( bool lock_status );
 void EnterSoftMode( void );
 void ExitSoftMode( void );
 //long FAR PASCAL SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam );
-DWORD FAR PASCAL DebugHook( int ncode, WPARAM wparam, LPARAM lparam );
-restart_opts DebugeeWaitForMessage( void );
-LRESULT FAR PASCAL DefaultProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
-BOOL FAR PASCAL EnumTaskWindowsFunc( HWND hwnd, LPARAM lparam );
-BOOL FAR PASCAL EnumChildWindowsFunc( HWND hwnd, LPARAM lparam );
 
 /* dbghook.c */
 void FiniDebugHook( void );
 void InitDebugHook( void );
-
-/* dbgrmsg.c */
-private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task, WORD dbgeemsg );
-BOOL ToDebugger( private_msg pmsg );
 
 /* int.asm */
 void FAR PASCAL IntHandler( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,8 +60,8 @@ typedef enum {
 #define WLEVEL_ERROR    0
 #define WLEVEL_DEFAULT  1
 #define WLEVEL_WX       (WLEVEL_MAX - 1)
-#define WLEVEL_ENABLE   1
-#define WLEVEL_DISABLE  15
+#define WLEVEL_ENABLED  1
+#define WLEVEL_DISABLED WLEVEL_MAX
 #define WLEVEL_NOTE     -1
 
 typedef struct suicide_call_back SUICIDE_CALLBACK;

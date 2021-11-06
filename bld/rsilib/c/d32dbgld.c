@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2021 The Open Watcom Contributors. All Rights Reserved.
 * Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 * Copyright (c) 1987-1992 Rational Systems, Incorporated. All Rights Reserved.
 *
@@ -133,9 +133,9 @@ static void set_program_name( const char *filename )
     */
 retry:
     oldenv = rsi_abs_address( makeptr( env_sel, 0 ) );
-    blockp = MK_FP( rsi_sel_new_absolute( oldenv - 0x10, 0 ), 0 );
+    blockp = _MK_FP( rsi_sel_new_absolute( oldenv - 0x10, 0 ), 0 );
     blocksize = blockp->size;
-    rsi_sel_free( FP_SEG( blockp ) );
+    rsi_sel_free( _FP_SEG( blockp ) );
 
     /* See if we have room to stuff the new name into the existing MCB;
         if not, we will have to allocate a new, larger environment block.
@@ -335,7 +335,7 @@ int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr 
         unsigned char   FarPtr dst;
 
         len = _fstrlen( cmdtail );
-        dst = MK_FP( (SELECTOR)tspv->es, 0x80 );
+        dst = _MK_FP( (SELECTOR)tspv->es, 0x80 );
         _fmemcpy( dst + 1, cmdtail, len );
         dst[0] = len;
         dst[len + 1] = '\r';

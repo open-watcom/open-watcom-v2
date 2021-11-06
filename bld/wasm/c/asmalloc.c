@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,21 +135,6 @@ void AsmFree( void *ptr )
     }
 }
 
-void *MemAlloc( size_t size )
-{
-    void        *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), memHandle );
-#else
-    ptr = malloc( size );
-#endif
-    if( ptr == NULL ) {
-        Fatal( MSG_OUT_OF_MEMORY );
-    }
-    return( ptr );
-}
-
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -157,17 +142,6 @@ void *wres_alloc( size_t size )
 #else
     return( malloc( size ) );
 #endif
-}
-
-void MemFree( void *ptr )
-{
-    if( ptr != NULL ) {
-#ifdef TRMEM
-        _trmem_free( ptr, _trmem_guess_who(), memHandle );
-#else
-        free( ptr );
-#endif
-    }
 }
 
 void wres_free( void *ptr )

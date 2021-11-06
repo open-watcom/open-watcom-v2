@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,7 @@ void __shrink_iomode( void )
 AYI(__shrink_iomode,INIT_PRIORITY_IOSTREAM);
 
 
-#if defined(__WARP__)
+#if defined(__OS2__) && !defined(_M_I86)
 
 static void __preinit_iomode_os2(void)
 {

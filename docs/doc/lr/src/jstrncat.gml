@@ -1,15 +1,11 @@
 .func jstrncat _fjstrncat
 .synop begin
 #include <jstring.h>
-JSTRING jstrncat( JCHAR *dst,
-                  const JCHAR *src,
-                  size_t n );
+JSTRING jstrncat( JCHAR *dst, const JCHAR *src, size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Concats' &funcb
-.if &farfnc eq 1 .do begin
-FJSTRING __far _fjstrncat( JCHAR __far *dst,
-                           const JCHAR __far *src,
-                           size_t n );
+.if &farfnc ne 0 .do begin
+FJSTRING _fjstrncat( JCHAR __far *dst, const JCHAR __far *src, size_t n );
 .ixfunc2 '&String' &ffunc
 .ixfunc2 '&Concats' &ffunc
 .do end
@@ -33,14 +29,14 @@ single or double-byte characters of the Kanji string pointed to by
 .arg src
 to the end of the Kanji string pointed to by
 .arg dst
-.ct .li .
+.period
 The first character of
 .arg src
 overwrites the null character at the end of
 .arg dst
-.ct .li .
+.period
 A terminating null character is always appended to the result.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
@@ -57,7 +53,7 @@ functions return
 .do end
 the value of
 .arg dst
-.ct .li .
+.period
 .return end
 .see begin
 .seelist jstrcat jstrncat strcat strncat

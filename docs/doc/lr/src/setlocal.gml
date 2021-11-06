@@ -18,7 +18,7 @@ according to the category given by
 .arg category
 and the locale specified by
 .arg locale
-.ct .li .
+.period
 A
 .us locale
 affects the collating sequence (the order in which characters compare
@@ -26,16 +26,16 @@ with one another), the way in which certain character-handling functions
 operate, the decimal-point character that is used in formatted
 input/output and string conversion, and the format and names used in
 the time string produced by the
-.kw strftime
+.reffunc strftime
 function.
 .np
 Potentially, there may be many such environments.
 &company C/C++ supports only the
 .mono "C"
 locale and so invoking this function will have no effect upon the
-behavior of a program at present.  Specifying the 
+behavior of a program at present.  Specifying the
 .mono "POSIX"
-locale is supported for POSIX compatibility and equivalent to 
+locale is supported for POSIX compatibility and equivalent to
 specifying the
 .mono "C"
 locale.
@@ -68,7 +68,7 @@ is executed.
 .blkcode begin
     setlocale( LC_ALL, "C" );
 .blkcode end
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 If the selection is successful, a string is returned to indicate

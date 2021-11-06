@@ -8,10 +8,12 @@ the &cmpcname compilers.
 Diagnostic messages are issued during compilation and execution.
 .np
 The messages listed in the following sections contain references to
-.id %s,
+.id %s
+.ct ,
 .id %d
 and
-.id %u.
+.id %u
+.period
 They represent strings that are substituted by the &cmpcname.
 compilers to make the error message more exact.
 .id %d

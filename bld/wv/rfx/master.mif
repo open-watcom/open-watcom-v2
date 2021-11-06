@@ -1,12 +1,9 @@
 #
 # Open Watcom Debugger makefile (RFX)
 #
-
 proj_name = rfx
 
 rfx_autodepends = .AUTODEPEND
-
-.EXTENSIONS : .str
 
 !include cproj.mif
 !include defrule.mif
@@ -15,40 +12,40 @@ rfx_autodepends = .AUTODEPEND
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/trpcli.mif
 
-inc_dirs = -I.. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(dig_dir)/c"
-inc_dirs_nt = -I"$(clib_dir)/h"
+#
+# cflags
+#
+.c: ..;../../$(host_os)/c;../../c;$(dig_srcs)
+
+inc_dirs = -I.. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(dig_dir)/c" -I"$(clib_dir)/h"
 
 extra_cpp_flags = -DBUILD_RFX
 !ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 
-objs = rfx.obj        &
-       rfxacc.obj     &
-       remmisc.obj    &
-       remfile.obj    &
-       doserr.obj     &
-       dbgfile.obj    &
-       dbgtoggl.obj   &
-       local$(host_os).obj &
-       $(trp_objs)
+#
+# aflags
+#
+.asm: ..
 
-objs += $(host_os)filio.obj &
+# explicit rules
+#################
 
-!ifeq host_os dos
-objs += inthdlrs.obj
-!endif
-
-.str: $(wv_dir)/h
-
-.c: ..;../$(host_os)$(host_cpu);$(wv_dir)/$(host_os)/c;$(wv_dir)/c;$(dig_srcs)
-
-.asm: ..;../$(host_os)i86
-
-rfx.exe : $(objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-    $(linker) name $^@ $(lflags) file { $(objs) }
-!endif
+#
+# EXE
+#
+exetarg_objs_dos = inthdlrs.obj
+exetarg_objs = &
+    rfx.obj        &
+    rfxacc.obj     &
+    remmisc.obj    &
+    remfile.obj    &
+    doserr.obj     &
+    dbgfile.obj    &
+    dbgtoggl.obj   &
+    local$(host_os).obj &
+    $(trp_objs)    &
+    $(host_os)filio.obj &
+    $(exetarg_objs_$(host_os))
+!include exetarg.mif

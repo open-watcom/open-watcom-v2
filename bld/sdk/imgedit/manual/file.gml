@@ -97,7 +97,7 @@ from the file menu or hit
 :HILITE.Shift
 and
 :HILITE.F4
-or click on the open button on the function bar.  
+or click on the open button on the function bar.
 To open an image, you must give
 the name of the file including the directory in which it can be
 found.  The following dialog box displays this.
@@ -106,11 +106,11 @@ Different file types and their extensions are listed in a list box at the
 bottom of the open dialog box.
 The list box on the left lists the files in the
 current directory matching the extension given.  The current
-directory is displayed graphically on the right of the dialog box. 
+directory is displayed graphically on the right of the dialog box.
 Once you have chosen the image to open click on the
 :HILITE.OK
 button and the image will be displayed in the
-view window and enlarged in the edit window.  
+view window and enlarged in the edit window.
 :P.
 There are restrictions on the kinds of files that can be
 opened.  The file must be in a valid Windows 3.x file format for
@@ -120,11 +120,11 @@ or equal to 512x512 pixels.  If you attempt to open an image which
 does not meet these specifications, an error message will appear
 informing you why the image could not be opened.  Once an image is
 opened, the status window will
-contain information on the type of image, the dimensions of the image 
+contain information on the type of image, the dimensions of the image
 and the number of colors it has.
 :eSUBSECT.
 :SECTION.Saving Images
-Once you are ready to save an image you can use the 
+Once you are ready to save an image you can use the
 :HILITE.Save
 or
 :HILITE.Save As
@@ -132,24 +132,24 @@ options found in the
 :HILITE.File
 menu.  The difference between the two save operations is that
 :HILITE.Save
-assumes that the image is already named and the 
+assumes that the image is already named and the
 :HILITE.Save As
 operation lets you specify a filename for the image.  The save
-button on the function bar represents the 
+button on the function bar represents the
 :HILITE.Save
-function.  There is no button to represent the 
-:HILITE.Save As 
+function.  There is no button to represent the
+:HILITE.Save As
 operation.
 :P.
 If the file you are editing is named (that is, the edit window
-contains a name other than 
+contains a name other than
 :ITALICS.(Untitled)(x)
 where
 :ITALICS x
 is some number) then choosing
 :HILITE.Save
 :CONT.,
-hitting 
+hitting
 :HILITE.F3
 or clicking on the save button in the function bar will save the file
 with its current name.  If the image you are editing is not named or
@@ -186,19 +186,19 @@ Since &imgname allows you to have a number of images open at the same
 time, you must explicitly close an image when you are finished
 editing it.  There are a variety of ways to close an image.  Choosing
 :HILITE.Close
-from the 
+from the
 :HILITE.File
-menu is the most obvious way to close the current 
-image being edited.  Other ways to close an image are to double click on the 
+menu is the most obvious way to close the current
+image being edited.  Other ways to close an image are to double click on the
 system menu button in the top left corner of the edit window
-or select 
-:HILITE.Close 
+or select
+:HILITE.Close
 from the system menu of the edit window you wish to close.  If the
 image you wish to close is not saved, &imgname. will ask if you want
 to save the file before closing it.  You will easily be able to determine
 whether a file has been edited since it was last saved  by looking at
 the title in the edit window.  If an asterisk (*) appears after the
-filename, it is not saved. 
+filename, it is not saved.
 :P.
 Choosing
 :HILITE.Close All
@@ -207,11 +207,11 @@ from the
 menu will close all of the images currently being edited.  If any of
 the images are not saved, &imgname. will ask you to confirm the
 closing of that image.  At this point, you may save the file or close
-it without saving it first.  
+it without saving it first.
 :SECTION.Exiting &imgname.
-To exit &imgname you can select 
+To exit &imgname you can select
 :HILITE.Exit
-from the 
+from the
 :HILITE.File
 menu.  This will close all the images once again asking you to
 confirm the closing of any images that are not saved.  Once all

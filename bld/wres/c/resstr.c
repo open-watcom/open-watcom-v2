@@ -64,7 +64,7 @@ bool ResWriteStringTableBlock( StringTableBlock *currblock, bool use_unicode, FI
     int     stringid;
 
     for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK; stringid++ ) {
-        if( WResWriteWResIDNameUni( currblock->String[stringid], use_unicode, fp ) ) {
+        if( WResWriteWResIDName( currblock->String[stringid], use_unicode, fp ) ) {
             return( true );
         }
     }

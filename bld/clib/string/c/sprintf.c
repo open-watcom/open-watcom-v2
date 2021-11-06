@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,20 +52,26 @@
 _WCRTLINK int swprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, ... )
 {
     va_list         args;
+    int             ret;
 
     va_start( args, format );
-    return( vswprintf( dest, n, format, args ) );
+    ret = vswprintf( dest, n, format, args );
+    va_end( args );
+    return( ret );
 }
 #endif
 
 _WCRTLINK int __F_NAME(sprintf,_swprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *format, ... )
 {
     va_list         args;
+    int             ret;
 
     va_start( args, format );
 #ifdef __WIDECHAR__
-    return( _vswprintf( dest, format, args ) );
+    ret = _vswprintf( dest, format, args );
 #else
-    return( vsprintf( dest, format, args ) );
+    ret = vsprintf( dest, format, args );
 #endif
+    va_end( args );
+    return( ret );
 }

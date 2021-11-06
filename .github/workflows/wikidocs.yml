@@ -6,17 +6,28 @@ name: WikiDocs
 
 on:
   push:
-    branch:
-      - master
     paths:
       - '.github/workflows/wikidocs.yml'
-      - 'docs/*'
-      - 'bld/cg/doc/*'
-      - 'bld/dwarf/dw/doc/*'
-      - 'bld/wv/doc/*'
-
+      - 'docs/**'
+      - 'bld/cc/gml/**'
+      - 'bld/cg/doc/**'
+      - 'bld/dwarf/dw/doc/**'
+      - 'bld/f77/wfc/gml/**'
+      - 'bld/plusplus/gml/**'
+      - 'bld/wpi/doc/**'
+      - 'bld/wv/doc/**'
 jobs:
+  info:
+    name: Info
+    runs-on: windows-latest
+    steps:
+    - name: Branch Info
+      env:
+        MESSAGE: ${{ github.ref }}
+      shell: cmd
+      run: echo %MESSAGE%
   boot:
+    if: github.ref == 'refs/heads/master'
     name: Build Tools
     runs-on: windows-latest
     steps:
@@ -28,7 +39,7 @@ jobs:
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
           set OWROOT=%GITHUB_WORKSPACE%
           call %OWROOT%\cmnvars.bat
-          mkdir %OWBINDIR%
+          mkdir %OWBINDIR%\%OWOBJDIR%
           REM build OW wmake
           mkdir %OWSRCDIR%\wmake\%OWOBJDIR%
           cd %OWSRCDIR%\wmake\%OWOBJDIR%
@@ -36,7 +47,7 @@ jobs:
           REM build OW builder
           mkdir %OWSRCDIR%\builder\%OWOBJDIR%
           cd %OWSRCDIR%\builder\%OWOBJDIR%
-          %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
+          %OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1
           REM build OW tools
           cd %OWSRCDIR%\watcom
           builder boot
@@ -191,4 +202,3 @@ jobs:
         git add -v -f .
         git commit -v -m "GitHub Workflow build"
         git push -v
-

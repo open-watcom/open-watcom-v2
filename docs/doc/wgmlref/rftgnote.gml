@@ -6,6 +6,6 @@ Format&gml. &gml.NOTE.<paragraph elements>
 :p.This tag signals the start of a note.
 The paragraph elements are formatted with some emphasizing text, such as
 the default text
-"Note:\b", in front of the paragraph elements.
+"Note:~b", in front of the paragraph elements.
 :p.A note may be used wherever a basic document element is
 permitted to appear.

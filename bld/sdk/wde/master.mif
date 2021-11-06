@@ -1,15 +1,10 @@
 proj_name = wde
-name = wde
 
 !ifndef wde_autodepends
 wde_autodepends = .AUTODEPEND
 !endif
 
 wde_trmem = 1
-
-.EXTENSIONS: .res .rc
-
-wde_winver =
 
 sys_windowed = 1
 
@@ -26,6 +21,14 @@ memory_model_i86 = l
 !include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
 
+#
+# cflags
+#
+.c : ../$(host_os)/c;../c;$(cpp_c_dirs);$(watcom_dir)/c
+
+inc_dirs = -I. -I"../$(host_os)/h" -I"../h" -I"$(fmedit_dir)/dev" $(commonui_inc_dirs) &
+    $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs) $(wpi_inc_dirs)
+
 extra_cpp_flags   = -DWDE
 
 extra_cpp_flags_nt = -DNOUSE3D
@@ -36,7 +39,6 @@ extra_c_flags     = -fh
 
 extra_c_flags_win = -zw-zc
 
-extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 
 !ifdef __WATCOM_TOOLS__
@@ -45,83 +47,68 @@ extra_c_flags_ppexpr = -zm -fh=preproc.pch
 extra_c_flags_ppmacro = -zm -fh=preproc.pch
 !endif
 
-cpp_objs = preproc.obj ppexpr.obj ppmacro.obj ppenv.obj
-
-objs =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
-        wdedefin.obj wdeedit.obj  wdefbase.obj wdefbutt.obj wdefcbox.obj &
-        wdefcntl.obj wdefcust.obj wdefdiag.obj wdefdlg.obj  wdefedit.obj &
-        wdefinit.obj wdeflbox.obj wdefmenu.obj wdefont.obj  wdefordr.obj &
-        wdefscrl.obj wdefstat.obj wdefutil.obj wdegeted.obj wdegetfn.obj &
-        wdehash.obj  wdehints.obj wdeinfo.obj  wdelist.obj  wdedlgut.obj &
-        wdemain.obj  wdemsgbx.obj wdeopts.obj  &
-        wderes.obj   wderesin.obj wdesdlg.obj  wdesdup.obj  &
-        wdestat.obj  wdestyle.obj &
-        wdesym.obj   wdetest.obj  &
-        wdetfile.obj wdetoolb.obj &
-        wdemem.obj wdewait.obj wdedefsz.obj wdetxtsz.obj &
-        wdetmenu.obj wdectool.obj wdezordr.obj wderibbn.obj &
-        wdeselft.obj wdei2mem.obj wdeldres.obj wdesvres.obj wdesvobj.obj &
-        wdestken.obj wdectl3d.obj wdesvdlg.obj wdedde.obj &
-        wdeclear.obj wdecurr.obj wdegoto.obj &
-        wdefsbar.obj wdeflvw.obj wdeftvw.obj wdefhdr.obj wdeftabc.obj &
-        wdefani.obj wdefupdn.obj wdeftrak.obj wdefprog.obj wdefhtky.obj &
-        windlg.obj windlg32.obj pathlist.obj $(cpp_objs)
-
-objs_win = wdedispa.obj
-
-objs = $(objs) $(objs_$(host_os))
-
-# where to look for various files
-.c : ../$(host_os)/c;../c;$(cpp_c_dirs);$(watcom_dir)/c
-
-inc_dirs  = -I. -I"../$(host_os)/h" -I"../h" -I"$(fmedit_dir)/dev" $(commonui_inc_dirs)
-inc_dirs += $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs) $(wpi_inc_dirs)
-
-rc_inc_dirs = -I"../res" -I"$(fmedit_dir)/dev" $(commonui_inc_dirs)
-
+#
+# lflags
+#
 extra_l_flags_nt = op heap=16k commit heap=8k
-extra_l_flags_win  = op stack=32k, rwr
-extra_l_flags_win += library commdlg, ddeml
-
-libs = $(fmedit_dir)/$(host_os)$(host_cpu)/fmedit.lib &
-        $(wr_lib) $(wpi_lib) $(commonui_lib) $(wres_lib)
-
-# systems where version resource must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-
-!include verrc.mif
-
-$(name).exe: rcstr.gh $(objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-    $(noecho)%create $^&.lnk
-    @%append $^&.lnk $(lflags)
-    @for %i in ($(objs)) do @%append $^&.lnk file %i
-    @for %i in ($(libs)) do @%append $^&.lnk lib %i
-    @%make echo_link
-    $(linker) name $^@ @$^&.lnk
-!endif
-    @%make bind_res_add_version_exe
-
-# implicit rules
-#################
-.rc.res: $(__MAKEFILES__) .AUTODEPEND
-    @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(rc_inc_path) $[@ -fo=$^@
+extra_l_flags_win  = op stack=32k, rwr library commdlg, ddeml
 
 # explicit rules
 #################
+
+#
+# EXE
+#
+exetarg_prebuild_objs = rcstr.gh
+exetarg_cpp_objs      = preproc.obj ppexpr.obj ppmacro.obj ppenv.obj
+exetarg_objs = &
+    wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
+    wdedefin.obj wdeedit.obj  wdefbase.obj wdefbutt.obj wdefcbox.obj &
+    wdefcntl.obj wdefcust.obj wdefdiag.obj wdefdlg.obj  wdefedit.obj &
+    wdefinit.obj wdeflbox.obj wdefmenu.obj wdefont.obj  wdefordr.obj &
+    wdefscrl.obj wdefstat.obj wdefutil.obj wdegeted.obj wdegetfn.obj &
+    wdehash.obj  wdehints.obj wdeinfo.obj  wdelist.obj  wdedlgut.obj &
+    wdemain.obj  wdemsgbx.obj wdeopts.obj  &
+    wderes.obj   wderesin.obj wdesdlg.obj  wdesdup.obj  &
+    wdestat.obj  wdestyle.obj &
+    wdesym.obj   wdetest.obj  &
+    wdetfile.obj wdetoolb.obj &
+    wdemem.obj wdewait.obj wdedefsz.obj wdetxtsz.obj &
+    wdetmenu.obj wdectool.obj wdezordr.obj wderibbn.obj &
+    wdeselft.obj wdei2mem.obj wdeldres.obj wdesvres.obj wdesvobj.obj &
+    wdestken.obj wdectl3d.obj wdesvdlg.obj wdedde.obj &
+    wdeclear.obj wdecurr.obj wdegoto.obj &
+    wdefsbar.obj wdeflvw.obj wdeftvw.obj wdefhdr.obj wdeftabc.obj &
+    wdefani.obj wdefupdn.obj wdeftrak.obj wdefprog.obj wdefhtky.obj &
+    windlg.obj windlg32.obj pathlist.obj $(exetarg_cpp_objs) $(objs_$(host_os))
+exetarg_libs          = $(fmedit_dir)/$(objs_subdir)/fmedit.lib &
+    $(wr_lib) $(wpi_lib) $(commonui_lib) $(wres_lib)
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
+exetarg_res           = $(proj_name).res
+exetarg_nt_manif_386  = ntmanif.res
+exetarg_nt_manif_x64  = ntmanif.res
+!include exetarg.mif
+
+#
+# rc and others
+#
+!include verrc.mif
+
+rc_inc_dirs = -I"../res" -I"$(fmedit_dir)/dev" $(commonui_inc_dirs)
+
+$(proj_name).res: ../res/wde.rc $(__MAKEFILES__) .AUTODEPEND
+    @%make echo_rc
+    $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(rc_inc_path) $[@ -fo=$@
+
+ntmanif.res : ../res/ntmanif.rc
+    @%make echo_rc
+    $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+
 rcstr.gh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh : ../res/wde.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -o$^@ $[@
-
-$(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
-    @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(rc_inc_path) $[@ -fo=$^@
+    $(cpp) $(rc_ui_flags) -o$@ $[@

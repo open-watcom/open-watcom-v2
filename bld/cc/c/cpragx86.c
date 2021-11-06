@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,8 +150,8 @@ static void InitAuxInfo( void )
     AuxInfoFlg.f_8087_returns = false;
 }
 
-static void CopyAuxInfo( void )
-/*****************************/
+static void PragmaAuxEnd( void )
+/******************************/
 {
     hw_reg_set      default_flt_n_seg;
     hw_reg_set      flt_n_seg;
@@ -200,22 +200,23 @@ static void CopyAuxInfo( void )
         }
         HW_TurnOff( CurrInfo->save, AuxInfo.save );
     }
+    PragmaAuxEnding();
 }
 
-bool GetPragAuxAlias( void )
+bool GetPragmaAuxAlias( void )
 {
     bool    isfar16;
 
     isfar16 = PragRecogId( "far16" );
     if( IS_ID_OR_KEYWORD( CurToken ) ) {
-        CurrAlias = SearchPragAuxAlias( Buffer );
+        CurrAlias = PragmaAuxAlias( Buffer );
         PPNextToken();
     }
     if( CurToken == T_RIGHT_PAREN )
         PPNextToken();
     if( isfar16 )
         AuxInfo.flags |= AUX_FLAG_FAR16;
-    CopyAuxInfo();
+    PragmaAuxEnd();
     return( true );
 }
 
@@ -281,7 +282,7 @@ static int AsmPtrType( TYPEPTR typ, type_modifiers flags )
 {
 
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type == TYPE_FUNCTION ) {
+    if( typ->decl_type == TYP_FUNCTION ) {
         return( AsmCodePtrType( flags ) );
     } else if( flags & (FLAG_FAR|FLAG_HUGE) ) {
         return( SYM_DFAR );
@@ -306,19 +307,19 @@ static int AsmType( TYPEPTR typ, type_modifiers flags )
 {
     SKIP_TYPEDEFS( typ );
     switch( typ->decl_type ) {
-    case TYPE_STRUCT:
-    case TYPE_UNION:
+    case TYP_STRUCT:
+    case TYP_UNION:
         return( SYM_INT1 );
-    case TYPE_ARRAY:
+    case TYP_ARRAY:
         return( AsmType( typ->object, flags ) );
-    case TYPE_FIELD:
-    case TYPE_UFIELD:
+    case TYP_FIELD:
+    case TYP_UFIELD:
         return( AsmDataType[typ->u.f.field_type] );
-    case TYPE_FUNCTION:
+    case TYP_FUNCTION:
         return( AsmCodePtrType( flags ) );
-    case TYPE_POINTER:
+    case TYP_POINTER:
         return( AsmPtrType( typ->object, typ->u.p.decl_flags ) );
-    case TYPE_ENUM:
+    case TYP_ENUM:
         typ = typ->object;
         /* fall through */
     default:
@@ -894,7 +895,7 @@ void PragAux( void )
     InitAuxInfo();
     PPCTL_ENABLE_MACROS();
     PPNextToken();
-    if( GetPragAuxAliasInfo() ) {
+    if( GetPragmaAuxAliasInfo() ) {
         SetCurrInfo( Buffer );
         PPNextToken();
         PragObjNameInfo( &AuxInfo.objname );
@@ -952,10 +953,14 @@ void PragAux( void )
                for the use of this pragma. This is done by saying the pragma
                modifies the [E]SP register. A kludge, but it works.
             */
-            HW_CTurnOn( AuxInfo.save, HW_SP );
+            AuxInfo.cclass |= GENERATE_STACK_FRAME;
+#if _CPU == 8086
+//            HW_CTurnOff( AuxInfo.save, HW_SP );
+#else
+//            HW_CTurnOff( AuxInfo.save, HW_ESP );
+#endif
         }
-        CopyAuxInfo();
-        PragEnding();
+        PragmaAuxEnd();
     }
     PPCTL_DISABLE_MACROS();
 }
@@ -1003,17 +1008,22 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
                for the use of this pragma. This is done by saying the pragma
                modifies the [E]SP register. A kludge, but it works.
             */
-            HW_CTurnOff( CurrInfo->save, HW_SP );
+            CurrInfo->cclass |= GENERATE_STACK_FRAME;
+#if _CPU == 8086
+//            HW_CTurnOff( CurrInfo->save, HW_SP );
+#else
+//            HW_CTurnOff( CurrInfo->save, HW_ESP );
+#endif
         }
         CurrEntry->info = CurrInfo;
         CurrEntry->next = AuxList;
         AuxList = CurrEntry;
         CurrEntry = NULL;
-        sym_handle = MakeFunction( name, FuncNode( GetType( TYPE_VOID ), FLAG_NONE, NULL ) );
+        sym_handle = MakeFunction( name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
         tree = LeafNode( OPR_FUNCNAME );
         tree->op.u2.sym_handle = sym_handle;
         tree = ExprNode( tree, OPR_CALL, NULL );
-        tree->u.expr_type = GetType( TYPE_VOID );
+        tree->u.expr_type = GetType( TYP_VOID );
         AddStmt( tree );
     }
 }

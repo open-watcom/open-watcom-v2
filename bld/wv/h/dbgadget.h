@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,10 @@
 
 
 enum {
-    #define pick( a,b,c,d,e,f ) a,
+    #define pick( a,b,c,d,e,f )     a,
     #include "gadgets.h"
     #undef pick
-    #define pick( a,b,c,d,e,f ) SECONDARY_##a,
+    #define pick( a,b,c,d,e,f )     SECONDARY_##a,
     #include "gadgets.h"
     #undef pick
     GADGET_SPLASH

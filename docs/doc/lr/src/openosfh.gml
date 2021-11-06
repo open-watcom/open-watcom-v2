@@ -9,9 +9,9 @@ The
 function allocates a POSIX-level file handle and sets it to
 point to the operating system's internal file handle specified by
 .arg osfhandle
-.ct .li .
+.period
 The value returned by
-.kw _get_osfhandle
+.reffunc _get_osfhandle
 can be used as an argument to the
 .id &funcb.
 function.
@@ -22,12 +22,12 @@ When two or more manifest constants are used to form the
 argument, the constants are combined with the bitwise-OR operator (|).
 .np
 The example below demonstrates the use of the
-.kw _get_osfhandle
+.reffunc _get_osfhandle
 and
 .id &funcb.
 functions.
 Note that the example shows how the
-.kw dup2
+.reffunc dup2
 function can be used to obtain almost identical functionality.
 .np
 When the POSIX-level file handles associated with one OS file handle
@@ -35,7 +35,7 @@ are closed, the first one closes successfully but the others return
 an error (since the first call close the file and released the OS file
 handle).
 So it is important to call
-.kw close
+.reffunc close
 at the right time, i.e., after all I/O operations are completed to the
 file.
 .desc end
@@ -48,7 +48,7 @@ Otherwise, it returns -1.
 .see begin
 .seelist close _dos_open dup2 fdopen fopen freopen _fsopen
 .seelist _get_osfhandle _grow_handles _hdopen open
-.seelist _open_osfhandle _os_handle _popen sopen
+.seelist _open_osfhandle _os_handle _popen _sopen
 .see end
 .exmp begin
 #include <stdio.h>

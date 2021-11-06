@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <wwindows.h>
-#include <ddeml.h>
+#include "wclbdde.h"
 #include "wedit.h"
 #include "dllmain.h"
 
@@ -48,7 +49,7 @@ static  HCONV       dde_hConv;
 static  DWORD       idInstance;
 static  HINSTANCE   hInstance;
 static  BOOL        bConnected = FALSE;
-static  FARPROC     VIW_DdeCallback_inst;
+static  PFNCALLBACK VIW_DdeCallback_inst;
 
 static BOOL doReset( void )
 {
@@ -111,9 +112,9 @@ int EDITAPI EDITConnect( void )
 
     // initialize our idInstance in ddeml
     if( idInstance == 0 ) {
-        VIW_DdeCallback_inst = MakeProcInstance( (FARPROC)VIW_DdeCallback, hInstance );
-        if( DdeInitialize( &idInstance, (PFNCALLBACK)VIW_DdeCallback_inst, APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
-            FreeProcInstance( VIW_DdeCallback_inst );
+        VIW_DdeCallback_inst = MakeProcInstance_DDE( VIW_DdeCallback, hInstance );
+        if( DdeInitialize( &idInstance, VIW_DdeCallback_inst, APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
+            FreeProcInstance_DDE( VIW_DdeCallback_inst );
             return( FALSE );
         }
     }
@@ -179,6 +180,9 @@ int EDITAPI EDITConnect( void )
 
     if( dde_hConv != 0 ) {
         bConnected = TRUE;
+    }
+    if( !bConnected ) {
+        FreeProcInstance_DDE( VIW_DdeCallback_inst );
     }
 
     return( bConnected );
@@ -252,7 +256,7 @@ int EDITAPI EDITDisconnect( void )
 {
     if( idInstance != 0 ) {
         DdeUninitialize( idInstance );
-        FreeProcInstance( VIW_DdeCallback_inst );
+        FreeProcInstance_DDE( VIW_DdeCallback_inst );
         idInstance = 0;
     }
     doReset();

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +83,8 @@ void    STDump( void ) {
         NList = IFList;
         IFList = NULL;
     }
-    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 )
+        return;
     ProgSw |= PS_SYMTAB_PROCESS;
     DumpStmtNos();              // must be before DumpMagSyms()
     DumpNameLists();            // dump the namelist data structures
@@ -110,7 +112,8 @@ static  bool    CkInCommon( sym_id sym ) {
         leader = sym;
         for(;;) {
             eq_ext = leader->u.ns.si.va.vi.ec_ext;
-            if( eq_ext->ec_flags & LEADER ) break;
+            if( eq_ext->ec_flags & LEADER )
+                break;
             offset += eq_ext->offset;
             leader = eq_ext->link_eqv;
         }
@@ -229,10 +232,9 @@ static  void    DumpLocalVars( void ) {
     unsigned_16 subprog_type;
     sym_id      sym;
 
-    sym = NList;
-    while( sym != NULL ) {
+    for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
         flags = sym->u.ns.flags;
-        class = flags & SY_CLASS;
+        class = (flags & SY_CLASS);
         if( class == SY_VARIABLE ) {
             if( (sym != ReturnValue) && (sym != EPValue) ) {
                 CkSymDeclared( sym );
@@ -245,7 +247,7 @@ static  void    DumpLocalVars( void ) {
             if( (flags & (SY_REFERENCED | SY_EXTERNAL)) == 0 ) {
                 UnrefSym( sym );
             }
-            subprog_type = flags & SY_SUBPROG_TYPE;
+            subprog_type = (flags & SY_SUBPROG_TYPE);
             if( subprog_type == SY_REMOTE_BLOCK ) {
                 if( (flags & SY_RB_DEFINED) == 0 ) {
                     NameErr( SP_RB_UNDEFINED, sym );
@@ -263,20 +265,17 @@ static  void    DumpLocalVars( void ) {
                 UnrefSym( sym );
             }
         }
-        sym = sym->u.ns.link;
     }
     // Common block list must be dumped after the name list so that the
     // SY_COMMON_INIT bit gets set in the common block flags
     // before we add the common block to the global list so that we can
     // detect whether common blocks appear in more than one block data
     // subprogram.
-    sym = BList;
-    while( sym != NULL ) {    // common block list
+    for( sym = BList; sym != NULL; sym = STFreeName( sym ) ) {    // common block list
         if( (SgmtSw & SG_BIG_SAVE) || (Options & OPT_SAVE) ) {
             sym->u.ns.flags |= SY_SAVED;
         }
         AddCB2GList( sym );
-        sym = STFreeName( sym );
     }
     BList = NULL;
     // Free NList after processing it since we need to compute offsets
@@ -309,7 +308,8 @@ static  void    CkDataOk( sym_id sym ) {
     unsigned_16 flags;
 
     flags = sym->u.ns.flags;
-    if( (flags & SY_DATA_INIT) == 0 ) return;
+    if( (flags & SY_DATA_INIT) == 0 )
+        return;
     name = sym;
     if( flags & SY_IN_EC ) {
         if( flags & SY_IN_COMMON ) {
@@ -317,7 +317,8 @@ static  void    CkDataOk( sym_id sym ) {
         } else { // if( flags & SY_IN_EQUIV ) {
             for(;;) {
                 eq_ext = sym->u.ns.si.va.vi.ec_ext;
-                if( (eq_ext->ec_flags & LEADER) != 0 ) break;
+                if( (eq_ext->ec_flags & LEADER) != 0 )
+                    break;
                 sym = eq_ext->link_eqv;
             }
             if( (eq_ext->ec_flags & MEMBER_IN_COMMON) == 0 ) {
@@ -350,9 +351,12 @@ bool    StmtNoRef( sym_id sn ) {
 
 // Check if statement number has been referenced.
 
-    if( StNumbers.wild_goto ) return( true );
-    if( (sn->u.st.flags & SN_AFTR_BRANCH) == 0 ) return( true );
-    if( sn->u.st.flags & (SN_ASSIGNED | SN_BRANCHED_TO) ) return( true );
+    if( StNumbers.wild_goto )
+        return( true );
+    if( (sn->u.st.flags & SN_AFTR_BRANCH) == 0 )
+        return( true );
+    if( sn->u.st.flags & (SN_ASSIGNED | SN_BRANCHED_TO) )
+        return( true );
     return( false );
 }
 
@@ -366,8 +370,7 @@ static  void    DumpStmtNos( void ) {
     unsigned_16 sn_flags;
     unsigned_32 st_number;
 
-    sn = SList;
-    while( sn != NULL ) {
+    for( sn = SList; sn != NULL; sn = STFree( sn ) ) {
         sn_flags = sn->u.st.flags;
         st_number = GetStmtNum( sn );
         if( (sn_flags & SN_DEFINED) == 0 ) {
@@ -377,7 +380,6 @@ static  void    DumpStmtNos( void ) {
                 Warning( ST_UNREFERENCED, st_number );
             }
         }
-        sn = STFree( sn );
     }
     SList = NULL;
 }
@@ -406,7 +408,8 @@ static  void    DumpStrings( void ) {
     }
     for( ; MList != NULL; MList = STFree( MList ) ) {
         // check if shadow for function return value
-        if( MList->u.ns.flags & SY_PS_ENTRY ) continue;
+        if( MList->u.ns.flags & SY_PS_ENTRY )
+            continue;
         if( MList->u.ns.u1.s.typ == FT_CHAR ) {
             if( ( MList->u.ns.xt.size != 0 ) && (Options & OPT_AUTOMATIC) == 0 ) {
                 AllocGlobal( MList->u.ns.xt.size, false );
@@ -428,10 +431,8 @@ static  void    DumpNameLists( void ) {
     sym_id      sym;
     unsigned_16 flags;
 
-    nl = NmList;
-    while( nl != NULL ) {
-        ge = nl->u.nl.group_list;
-        while( ge != NULL ) {
+    for( nl = NmList; nl != NULL; nl = nl->u.nl.link ) {
+        for( ge = nl->u.nl.group_list; ge != NULL; ge = ge->link ) {
             sym = ge->sym;
             flags = sym->u.ns.flags;
             // do error checks
@@ -441,9 +442,6 @@ static  void    DumpNameLists( void ) {
                 STNmListName( nl, buff2 );
                 Error( VA_BAD_SYM_IN_NAMELIST, buff1, buff2 );
             }
-
-            ge = ge->link;
         }
-        nl = nl->u.nl.link;
     }
 }

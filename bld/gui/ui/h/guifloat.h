@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,6 @@
 ****************************************************************************/
 
 
-extern ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *menuitems,
+extern ui_event GUICreateMenuPopup( gui_window *wnd, guix_point *scr_location, UIMENUITEM *menuitems,
                                         gui_mouse_track track, gui_ctl_id *curr_id );
 extern void     GUIProcessMenuCurr( UIMENUITEM *currmenuitem );

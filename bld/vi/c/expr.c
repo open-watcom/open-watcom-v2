@@ -339,7 +339,7 @@ static token nextToken( void )
                         break;
                     }
                 }
-           } else if( strcmp( tokenBuff, "config" ) == 0 ) {
+            } else if( strcmp( tokenBuff, "config" ) == 0 ) {
                 constantVal = EditFlags.Color * 100 + EditFlags.BlackAndWhite * 10 +
                     EditFlags.Monocolor;
             } else if( strcmp( tokenBuff, "rdonly" ) == 0 ) {
@@ -376,10 +376,8 @@ static token nextToken( void )
                 constantVal = ddeNums[j];
 #endif
             } else {
-                ReadErrorTokens();
-                j = Tokenize( ErrorTokens, tokenBuff, true );
-                if( j != TOK_INVALID ) {
-                    constantVal = ErrorValues[j];
+                if( GetErrorTokenValue( &j, tokenBuff ) == ERR_NO_ERR ) {
+                    constantVal = j;
                 } else {
                     currToken = T_STRING;
                 }

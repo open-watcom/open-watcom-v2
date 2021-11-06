@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
-#include <stdio.h>
 #include "progsw.h"
 #include "extnsw.h"
 #include "errcod.h"
@@ -47,7 +45,6 @@
 #include "charset.h"
 #include "fmacros.h"
 #include "option.h"
-#include "boot77.h"
 
 
 static void Comment( void )
@@ -99,20 +96,24 @@ void ComRead( void )
     done_scan = false;
     for(;;) {
         ReadSrc();
-        if( ProgSw & PS_SOURCE_EOF ) break;
-        if( CurrFile->flags & CONC_PENDING ) break;
+        if( ProgSw & PS_SOURCE_EOF )
+            break;
+        if( CurrFile->flags & CONC_PENDING )
+            break;
         // column starts off before current column
         column = FIRST_COL - 1;
         cursor = SrcBuff;
         ch = *cursor;
         if( ( ch != 'C' ) && ( ch != 'c' ) && ( ch != '*' ) ) {
-            if( ProgSw & PS_SKIP_SOURCE ) continue;
+            if( ProgSw & PS_SKIP_SOURCE )
+                continue;
             if( ( ch == 'D' ) || ( ch == 'd' ) ) {
                 if( (ExtnSw & XS_D_IN_COLUMN_1) == 0 ) {
                     Extension( CC_D_IN_COLUMN_1 );
                     ExtnSw |= XS_D_IN_COLUMN_1;
                 }
-                if( !CompileDebugStmts() ) continue;
+                if( !CompileDebugStmts() )
+                    continue;
                 ch = ' ';
             }
             // not a comment (but it might be a blank line)
@@ -121,7 +122,8 @@ void ComRead( void )
             stno_found = false;
             for(;;) {
                 chtype = CharSetInfo.character_set[ (unsigned char)ch ];
-                if( chtype == C_EL ) break;
+                if( chtype == C_EL )
+                    break;
                 if( ( chtype == C_CM ) && ( column != CONT_COL - 1 ) ) {
                     if( (ExtnSw & XS_EOL_COMMENT) == 0 ) {
                         Extension( CC_EOL_COMMENT );
@@ -177,14 +179,20 @@ void ComRead( void )
                     break;
                 }
             }
-            if( done_scan ) break;
-            if( stmt_type != STMT_COMMENT ) break;
+            if( done_scan )
+                break;
+            if( stmt_type != STMT_COMMENT ) {
+                break;
+            }
         }
         Comment();
         // quit if the comment simulates EOF (i.e. C$DATA)
-        if( ProgSw & PS_SOURCE_EOF ) break;
+        if( ProgSw & PS_SOURCE_EOF )
+            break;
         // quit if c$include encountered
-        if( CurrFile->flags & INC_PENDING ) break;
+        if( CurrFile->flags & INC_PENDING ) {
+            break;
+        }
     }
     Cursor = cursor;
     Column = column - 1;
@@ -231,7 +239,8 @@ void ComPrint( void )
 {
     char        buffer[8];
 
-    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 )
+        return;
     FmtInteger( buffer, CurrFile->rec, 7 );
     PrintLineInfo( buffer );
 }
@@ -241,7 +250,8 @@ void LinePrint( void )
     char        buffer[8];
 
     ISNNumber++;
-    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 )
+        return;
     FmtInteger( buffer, CurrFile->rec, 7 );
     PrintLineInfo( buffer );
 }

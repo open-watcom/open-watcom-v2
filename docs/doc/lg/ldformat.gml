@@ -10,23 +10,25 @@ The format of the "FORMAT" directive (short form "FORM") is as follows.
     FORMAT form
 
     form ::= DOS [COM]
-                | ZDOS [SYS | HWD | FSD]
-                | RAW [BIN | HEX]
-                | WINDOWS [win_dll] [MEMORY] [FONT]
-                | WINDOWS VXD [DYNAMIC]
-                | WINDOWS NT [TNT | RDOS] [dll_attrs]
-                | OS2 [os2_type] [dll_attrs | os2_attrs]
-                | PHARLAP [EXTENDED | REX | SEGMENTED]
-                | NOVELL [NLM | LAN | DSK | NAM | 'number'] 'description'
-                | QNX [FLAT]
-                | ELF [DLL]
+            | ZDOS [SYS | HWD | FSD]
+            | RAW [BIN | HEX]
+            | WINDOWS [win_dll_attrs] [MEMORY] [FONT]
+            | WINDOWS VXD [STATIC | DYNAMIC]
+            | WINDOWS NT [TNT] [nt_dll_attrs]
+            | OS2 [FLAT | LE | LX] [os2_dll_attrs | os2_attrs]
+            | PHARLAP [EXTENDED | REX | SEGMENTED]
+            | NOVELL [NLM | LAN | DSK | NAM | 'number'] 'description'
+            | QNX [FLAT]
+            | ELF [DLL]
+            | RDOS [DEV | BIN | MBOOT]
 
-    win_dll ::= DLL [INITGLOBAL | INITINSTANCE]
+    win_dll_attrs ::= DLL [INITGLOBAL | INITINSTANCE]
 
-    dll_attrs ::= DLL [INITGLOBAL | INITINSTANCE]
-                      [TERMINSTANCE | TERMGLOBAL]
+    nt_dll_attrs ::= DLL [INITGLOBAL | INITINSTANCE | INITTHREAD
+                      [TERMINSTANCE | TERMGLOBAL | TERMTHREAD]]
 
-    os2_type ::= FLAT | LE | LX
+    os2_dll_attrs ::= DLL [INITGLOBAL | INITINSTANCE
+                      [TERMINSTANCE | TERMGLOBAL]]
 
     os2_attrs ::= PM | PMCOMPATIBLE | FULLSCREEN
                         | PHYSDEVICE | VIRTDEVICE
@@ -156,7 +158,7 @@ The name of the file will have extension "386". Note that this default
 extension can be overridden by using the "NAME" directive to name
 the driver file.
 .np
-Specifying "DYNAMIC" (short form "DYN") , dynamicaly loadable driver will
+Specifying "DYNAMIC" (short form "DYN"), dynamicaly loadable driver will
 be generated (only for Windows 3.11 or 9x). By default the &lnkname
 generate staticaly loadable driver (for Windows 3.x or 9x).
 .if '&target' ne 'QNX' .do begin
@@ -177,10 +179,6 @@ extender is created.
 A "PL" format (rather than "PE") executable is created so that
 the Phar Lap TNT DOS extender will always run the application
 (including under Windows NT).
-.np
-.ix 'RDOS'
-If "RDOS" is specified, an executable for the RDOS operating system
-is created.
 .np
 If "DLL" (short form "DL") is specified, a Dynamic Link Library will
 be generated in which case the name of the executable file will have
@@ -413,13 +411,13 @@ This is a 32 bit value that corresponds to Novell allocated NLM types.
 .np
 These are the current defined values:
 .begpoint
-.point 0 
+.point 0
 Specifies a standard NLM (default extension .NLM)
 .point 1
 Specifies a disk driver module (default extension .DSK)
-.point 2 
+.point 2
 Specifies a namespace driver module (default extension .NAM)
-.point 3 
+.point 3
 Specifies a LAN driver module (default extension .LAN)
 .point 4
 Specifies a utility NLM (default extension .NLM)
@@ -487,6 +485,22 @@ directive to name the executable file.
 .np
 For more information on QNX executable file formats,
 see the chapter entitled :HDREF refid='qnxchap'..
+.mnote RDOS
+tells the &lnkname to generate a RDOS special executable file.
+.np
+If "DEV" is specified, a device driver file is created.
+.np
+If "BIN" is specified, a binary executable file is created.
+.np
+If "MBOOT" is specified, a 16-bit multi-boot executable file
+is created.
+.np
+The name of the executable file will have
+the extension "dev" for device driver or "bin" for binary
+or multi-boot executable.
+Note that these default extensions can be overridden by using the
+"NAME" directive to name the executable file.
+.*
 .mnote ELF
 tells the &lnkname to generate an ELF format executable file.
 .np
@@ -527,4 +541,14 @@ If 16-bit object files are encountered, a 16-bit Windows executable
 will be created.
 If 32-bit object files are encountered, a 32-bit Win32 executable will
 be created.
+.note RDOS
+If 16-bit object files are encountered, a 16-bit DOS executable will
+be created.
+If 32-bit object files are encountered, a 32-bit RDOS executable
+will be created.
+.note Linux
+If 16-bit object files are encountered, a 16-bit DOS executable will
+be created.
+If 32-bit object files are encountered, a 32-bit ELF executable
+will be created.
 .endnote

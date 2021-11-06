@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,14 +62,16 @@
 #include "rtti.h"
 #include "dumpapi.h"
 #include "compinfo.h"
-
-
 #ifndef NDEBUG
     #include "dbg.h"
     #include "pragdefn.h"
+    #include "togglesd.h"
+#endif
 
+
+#ifndef NDEBUG
     static void _DUMP_CGRF( char *msg, SYMBOL sym ) {
-        if( PragDbgToggle.callgraph ) {
+        if( TOGGLEDBG( callgraph ) ) {
             VBUF vbuf;
             printf( msg, DbgSymNameFull( sym, &vbuf ) );
             VbufFree( &vbuf );
@@ -153,7 +155,7 @@ static void forceGeneration(    // FORCE CODE FILE TO BE GENERATED
 
     static void _printScanInt( const char* msg, unsigned val )
     {
-        if( PragDbgToggle.callgraph_scan ) {
+        if( TOGGLEDBG( callgraph_scan ) ) {
             printf( msg, val );
         }
     }
@@ -951,7 +953,7 @@ static void markAsGen(          // MARK CODE FILE TO BE GENERATED
                 SegmentMarkUsed( func->segid );
             }
         #ifndef NDEBUG
-            if( PragDbgToggle.dump_emit_ic ) {
+            if( TOGGLEDBG( dump_emit_ic ) ) {
                 VBUF vbuf;
                 printf( "Selected code file: %s\n", DbgSymNameFull( func, &vbuf ) );
                 VbufFree( &vbuf );
@@ -1148,7 +1150,7 @@ static void removeCodeFile(     // REMOVE CODE FILE FOR FUNCTION
     cgfile = nodeCgFile( node );
     if( node->inline_fun ) {
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_emit_ic || PragDbgToggle.callgraph ) {
+        if( TOGGLEDBG( dump_emit_ic ) || TOGGLEDBG( callgraph ) ) {
             VBUF vbuf;
             printf( "Removed inline code file: %s\n", DbgSymNameFull( func, &vbuf ) );
             VbufFree( &vbuf );
@@ -1159,7 +1161,7 @@ static void removeCodeFile(     // REMOVE CODE FILE FOR FUNCTION
         func->flag &= ~SYMF_REFERENCED;
     } else if ( SymIsRegularStaticFunc( func ) ) {
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_emit_ic || PragDbgToggle.callgraph ) {
+        if( TOGGLEDBG( dump_emit_ic ) || TOGGLEDBG( callgraph ) ) {
             VBUF vbuf;
             printf( "Removed static code file: %s\n", DbgSymNameFull( func, &vbuf ) );
             VbufFree( &vbuf );
@@ -1310,7 +1312,7 @@ static bool setFunctionStab(    // SET STATE-TABLE INFO. FOR FUNCTION
             cgfile->u.s.stab_gen = stab_gen;
             cgfile->cond_flags = max_cond_flags;
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_emit_ic || PragDbgToggle.callgraph || PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_emit_ic ) || TOGGLEDBG( callgraph ) || TOGGLEDBG( dump_stab ) ) {
                 VBUF vbuf;
                 SYMBOL func = cgfile->symbol;
                 if( state_table ) {
@@ -1340,10 +1342,10 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
 #ifndef NDEBUG
     bool dbg_dump_exec;
 
-    dbg_dump_exec = PragDbgToggle.dump_exec_ic;
-    PragDbgToggle.dump_exec_ic = false;
-    if( PragDbgToggle.callgraph_scan ) {
-        PragDbgToggle.callgraph = true;
+    dbg_dump_exec = TOGGLEDBG( dump_exec_ic );
+    TOGGLEDBG( dump_exec_ic ) = false;
+    if( TOGGLEDBG( callgraph_scan ) ) {
+        TOGGLEDBG( callgraph ) = true;
     }
 #endif
     vft_defs = NULL;
@@ -1446,8 +1448,8 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
     }
     VstkClose( &ctl.calls );
 #ifndef NDEBUG
-    PragDbgToggle.dump_exec_ic = dbg_dump_exec;
-    if( PragDbgToggle.callgraph ) {
+    TOGGLEDBG( dump_exec_ic ) = dbg_dump_exec;
+    if( TOGGLEDBG( callgraph ) ) {
         CgrfDump( &ctl );
     }
 #endif

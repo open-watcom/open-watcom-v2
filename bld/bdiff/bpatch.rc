@@ -1,4 +1,4 @@
-#include "bpatch.h"
+#include "bpatch.rh"
 #include "wreslang.rh"
 
 STRINGTABLE
@@ -8,8 +8,10 @@ BEGIN
     #include "bpatch.msg"
   #if defined( BPATCH )
     #include "pusage.gh"
-  #else
+  #elif defined( BDIFF )
     #include "dusage.gh"
+  #else
+    (MSG_USAGE_FIRST + RLE_ENGLISH * MSG_LANG_SPACING), [ " " ]
   #endif
 
     #undef pick
@@ -19,8 +21,10 @@ BEGIN
     #include "bpatch.msg"
   #if defined( BPATCH )
     #include "pusagej.gh"
-  #else
+  #elif defined( BDIFF )
     #include "dusage.gh"
+  #else
+    (MSG_USAGE_FIRST + RLE_JAPANESE * MSG_LANG_SPACING), [ " " ]
   #endif
 
     #undef pick

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +55,7 @@ typedef enum {
     WR_HASHENTRY_LAST           = 0xffff
 } WRHashEntryFlags;
 
-typedef signed long WRHashValue;
+typedef long WRHashValue;
 
 typedef struct WRHashEntryStruct {
     struct WRHashEntryStruct    *name_next;
@@ -107,9 +108,9 @@ WRDLLENTRY extern void                 WRAPI WRStripSymbol( char *symbol );
 WRDLLENTRY extern bool                 WRAPI WRIsValidSymbol( const char *symbol );
 WRDLLENTRY extern void                 WRAPI WRValueListFree( WRHashValueList *list );
 WRDLLENTRY extern WRHashValueList *    WRAPI WRLookupValue( WRHashTable *table, WRHashValue value );
-WRDLLENTRY extern int                  WRAPI WRValueExists( WRHashTable *table, WRHashValue value );
+WRDLLENTRY extern bool                 WRAPI WRValueExists( WRHashTable *table, WRHashValue value );
 WRDLLENTRY extern char *               WRAPI WRResolveValue( WRHashTable *, WRHashValue );
-WRDLLENTRY extern bool                 WRAPI WREditSym( HWND parent, WRHashTable **table, WRHashEntryFlags *flags, HELP_CALLBACK help_callback );
+WRDLLENTRY extern bool                 WRAPI WREditSym( HWND parent, WRHashTable **table, WRHashEntryFlags *flags, HELPFUNC help_callback );
 WRDLLENTRY extern bool                 WRAPI WRDeleteDLGInclude( WResDir dir );
 WRDLLENTRY extern bool                 WRAPI WRCreateDLGInclude( WResDir *dir, const char *include );
 

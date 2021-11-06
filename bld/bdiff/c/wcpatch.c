@@ -31,7 +31,11 @@
 
 
 #include "bdiff.h"
+#ifdef __UNIX__
+#include <dirent.h>
+#else
 #include <direct.h>
+#endif
 #include "wpatchio.h"
 #include "wpatch.h"
 #include "newfile.h"
@@ -39,6 +43,8 @@
 
 #include "clibext.h"
 
+
+#define SKIP_ENTRY(e)   ((e->d_attr & _A_SUBDIR) && e->d_name[0] == '.' && (e->d_name[1] == '\0' || dire->d_name[1] == '.' && e->d_name[2] == '\0'))
 
 struct {
     size_t  origSrcDirLen;
@@ -56,10 +62,10 @@ void main( int argc, char *argv[] )
 {
     MsgInit();
     if( argc != 4 ) {
-        printf( "Usage: WCPATCH source-dir target-dir patchfile\n" );
-        printf( "where source-dir is the directory containing the original files,\n" );
-        printf( "target-dir is the directory containing the modified files,\n" );
-        printf( "and patchfile is the path to store the resulting patchfile in.\n\n" );
+        printf( "Usage: wcpatch source-dir target-dir patchfile\n" );
+        printf( "    where source-dir is the directory containing the original files,\n" );
+        printf( "    target-dir is the directory containing the modified files,\n" );
+        printf( "    and patchfile is the path to store the resulting patchfile in.\n\n" );
         exit( -2 );
     } else {
         printf( "Watcom Create Patch (WCPATCH) version 11.0\n" );
@@ -109,25 +115,23 @@ void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
     struct dirent   *dire;
     int             file = 0;
     int             dir  = 0;
+    char            *diritem;
 
     for( ; (dire = readdir( dirp )) != NULL; ) {
+        if( SKIP_ENTRY( dire ) )
+            continue;
+        diritem = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
+        strcpy( diritem, dire->d_name );
+        strlwr( diritem );
         if( ( dire->d_attr & _A_SUBDIR ) == 0 ) {
             /* must be a file */
-            Files[file] = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );;
-            strcpy( Files[file], dire->d_name );
-            strlwr( Files[file] );
-            file += 1;
+            Files[file++] = diritem;
             if( file >= 1000 ) {
                 perror( "File limit in directory is 1000." );
             }
         } else {
             /* must be a directory */
-            Dirs[dir] = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
-            strcpy( Dirs[dir], dire->d_name );
-            strlwr( Dirs[dir] );
-            if( strcmp( Dirs[dir], "." ) != 0 && strcmp( Dirs[dir], ".." ) != 0 ) {
-                dir += 1;
-            }
+            Dirs[dir++] = diritem;
             if( dir >= 500 ) {
                 perror( "Subdirectory limit is 500." );
             }

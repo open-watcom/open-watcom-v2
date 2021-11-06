@@ -1,6 +1,6 @@
 .chap FORTRAN Source Program Format
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .np
 The following sections describe input rules for FORTRAN source
 programs.
@@ -262,9 +262,11 @@ Apostrophe and H edit descriptors in format specifications.
 For example, the symbolic name
 .id A B
 is the same as the symbolic name
-.id AB.
+.id AB
+.period
 .*
 .keep 12
+.*
 .section Significance of Lower Case Characters (Extension)
 .*
 .np
@@ -281,9 +283,10 @@ Apostrophe and H edit descriptors in format specifications.
 .endpoint
 .np
 Hence,
-.id TOTAL,
-.id total,
-and
+.id TOTAL
+.ct ,
+.id total
+.ct , and
 .id Total
 represent the same symbolic name and
 .id 3F10.2

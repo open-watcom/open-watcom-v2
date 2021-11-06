@@ -21,7 +21,7 @@ test_flags = -zq -I"$(%WATCOM)/h"
 
 test_flags_i86 += -zw -bt=windows -DSTRICT
 
-!include testenv1.mif
+!include testenv.mif
 
 test_flags_i86 += $(incl_sys_win)
 test_flags_386 += $(incl_sys_nt)
@@ -70,15 +70,15 @@ wmsgdlg.obj &
 wwinmain.obj
 
 !ifeq arch i86
-test : .symbolic start clean start_test test.$(exe)
+test : .symbolic start test.$(exe)
 !else ifeq arch 386
 !ifeq targ_env_386 wnt386
-test : .symbolic start clean start_test test.$(exe)
+test : .symbolic start test.$(exe)
 !else
-test : .symbolic start clean start_test
+test : .symbolic start
 !endif
 !else
-test : .symbolic start clean start_test
+test : .symbolic start
 !endif
     @%append $(log_file) PASS $(%__CWD__)
     @%make clean
@@ -106,9 +106,6 @@ test1.lnk : makefile $(objs)
     @%append $@ SYSTEM nt_win
 !endif
     @for %i in ( $(objs) ) do @%append $@ FILE %i
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

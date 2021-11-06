@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -305,14 +305,7 @@ static char *CopyEnv( void )
     char        __far *envarea;
     uint_16     envsize;
 
-#ifdef __OSI__
-    {
-        extern char *_EnvPtr;
-        envarea = _EnvPtr;
-    }
-#else
-    envarea = MK_FP( *(addr_seg __far *)MK_FP( _psp, PSP_ENVSEG_OFF ), 0 );
-#endif
+    envarea = _MK_FP( *(addr_seg __far *)_MK_FP( _psp, PSP_ENVSEG_OFF ), 0 );
     envsize = EnvAreaSize( envarea );
     PMData->envseg = DPMIAllocateDOSMemoryBlock( _NBPARAS( envsize ) );
     if( PMData->envseg.pm == 0 ) {
@@ -358,15 +351,15 @@ static char *SetTrapHandler( void )
             if( sel < 0 ) {
                 return( TC_ERR_CANT_LOAD_TRAP );
             }
-            DPMIGetDescriptor( FP_SEG( PMData ), &desc );
+            DPMIGetDescriptor( _FP_SEG( PMData ), &desc );
             PMData->pmode_cs = sel;
             desc.xtype.use32 = 0;
             desc.type.execute = 1;
             DPMISetDescriptor( sel, &desc );
             PMData->pmode_eip = RM_OFF( BackFromRealMode );
-            PMData->pmode_ds  = FP_SEG( &PMData );
+            PMData->pmode_ds  = _FP_SEG( &PMData );
             PMData->pmode_es  = PMData->pmode_ds;
-            PMData->pmode_ss  = FP_SEG( &dummy );
+            PMData->pmode_ss  = _FP_SEG( &dummy );
             IntrState = IS_DPMI;
         }
     }

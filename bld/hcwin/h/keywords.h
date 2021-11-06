@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +58,6 @@ class HFKwbtree : public Dumpable
     HFKwdata    *_dataFile;
     HFKwmap     *_mapFile;
     bool        _haveSetOffsets;
-    static char const   _keyMagic[];
 
     // Assignment of HFKwbtree's is not allowed.
     HFKwbtree( HFKwbtree const & ) {};

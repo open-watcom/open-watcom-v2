@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,35 +65,35 @@ void GUISetSystemMenuFlags( gui_window *wnd )
 
     for( i = 0; i < NUM_SYSTEM_MENUS; i++ ) {
         switch( menuitems[i].event ) {
-        case EV_SYS_MENU_MOVE :
+        case EV_SYS_MENU_MOVE:
             if( GUI_WND_MAXIMIZED( wnd ) ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             } else {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             }
             break;
-        case EV_SYS_MENU_SIZE :
+        case EV_SYS_MENU_SIZE:
             if( GUI_WND_MINIMIZED( wnd ) || (wnd->style & GUI_RESIZEABLE) == 0 ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             } else {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             }
             break;
-        case EV_SYS_MENU_MINIMIZE :
+        case EV_SYS_MENU_MINIMIZE:
             if( GUI_WND_MINIMIZED( wnd ) || (wnd->style & GUI_MINIMIZE) == 0 ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             } else {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             }
             break;
-        case EV_SYS_MENU_MAXIMIZE :
+        case EV_SYS_MENU_MAXIMIZE:
             if( GUI_WND_MAXIMIZED( wnd ) || (wnd->style & GUI_MAXIMIZE) == 0 ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             } else {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             }
             break;
-        case EV_SYS_MENU_RESTORE :
+        case EV_SYS_MENU_RESTORE:
             if( GUI_WND_MAXIMIZED( wnd ) || GUI_WND_MINIMIZED( wnd ) ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             } else {
@@ -113,13 +113,13 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
         menuitems[i].event = SystemMenu[i].event;
         menuitems[i].flags = SystemMenu[i].flags;
         switch( menuitems[i].event ) {
-        case EV_SYS_MENU_MOVE :
+        case EV_SYS_MENU_MOVE:
             menuitems[i].name = GUIStrDup( LIT( Move ), &ok );
             if( !ok ) {
                 return( false );
             }
             break;
-        case EV_SYS_MENU_SIZE :
+        case EV_SYS_MENU_SIZE:
             menuitems[i].name = GUIStrDup( LIT( Size ), &ok );
             if( !ok ) {
                 return( false );
@@ -128,14 +128,14 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;
-        case EV_SYS_MENU_RESTORE :
+        case EV_SYS_MENU_RESTORE:
             menuitems[i].name = GUIStrDup( LIT( Restore ), &ok );
             if( !ok ) {
                 return( false );
             }
             GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             break;
-        case EV_SYS_MENU_MINIMIZE :
+        case EV_SYS_MENU_MINIMIZE:
             menuitems[i].name = GUIStrDup( LIT( Minimize ), &ok );
             if( !ok ) {
                 return( false );
@@ -144,7 +144,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;
-        case EV_SYS_MENU_MAXIMIZE :
+        case EV_SYS_MENU_MAXIMIZE:
             menuitems[i].name = GUIStrDup( LIT( Maximize ), &ok );
             if( !ok ) {
                 return( false );
@@ -153,7 +153,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;
-        case EV_SYS_MENU_CLOSE :
+        case EV_SYS_MENU_CLOSE:
             menuitems[i].name = GUIStrDup( LIT( Close ), &ok );
             if( !ok ) {
                 return( false );
@@ -170,22 +170,22 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
 void GUIProcessSystemMenuEvent( ui_event ui_ev, gui_window *wnd )
 {
     switch( ui_ev ) {
-    case EV_SYS_MENU_RESTORE :
+    case EV_SYS_MENU_RESTORE:
         GUIZoomWnd( wnd, GUI_NONE );
         break;
-    case EV_SYS_MENU_MOVE :
+    case EV_SYS_MENU_MOVE:
         GUIStartKeyboardMoveResize( wnd, true );
         break;
-    case EV_SYS_MENU_SIZE :
+    case EV_SYS_MENU_SIZE:
         GUIStartKeyboardMoveResize( wnd, false );
         break;
-    case EV_SYS_MENU_MINIMIZE :
+    case EV_SYS_MENU_MINIMIZE:
         GUIZoomWnd( wnd, GUI_MINIMIZE );
         break;
-    case EV_SYS_MENU_MAXIMIZE :
+    case EV_SYS_MENU_MAXIMIZE:
         GUIZoomWnd( wnd, GUI_MAXIMIZE );
         break;
-    case EV_SYS_MENU_CLOSE :
+    case EV_SYS_MENU_CLOSE:
         GUICloseWnd( wnd );
         break;
     }

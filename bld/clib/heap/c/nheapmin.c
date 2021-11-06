@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,12 +75,12 @@ _WCRTLINK int _nheapmin( void )
     return( _nheapshrink() );
 }
 
-#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
     defined(__CALL21__) || defined(__RDOS__) || defined(__DOS_EXT__)
 
 static int __ReturnMemToSystem( heapblk_nptr heap )
 {
-  #if defined(__WARP__)
+  #if defined(__OS2__) && !defined(_M_I86)
     if( DosFreeMem( (PBYTE)heap ) )
         return( -1 );
   #elif defined(__NT__)
@@ -138,7 +139,7 @@ int __nheapshrink( void )
 _WCRTLINK int _nheapshrink( void )
 {
     int         rc;
-#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
     defined(__CALL21__) || defined(__RDOS__)
 #else
     heapblk_nptr    heap;
@@ -150,7 +151,7 @@ _WCRTLINK int _nheapshrink( void )
     // Shrink by adjusting _curbrk
 
     _AccessNHeap();
-#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
     defined(__CALL21__) || defined(__RDOS__)
     rc = __nheapshrink();
 #else
@@ -171,7 +172,7 @@ _WCRTLINK int _nheapshrink( void )
                 // only shrink if we can shave off at MINIMAL_LEN
               && last_free->len >= MINIMAL_LEN
                 /* make sure there hasn't been an external change in _curbrk */
-              && sbrk( 0 ) == (void_nptr)BLK2CPTR( end_tag ) ) {
+              && sbrk( 0 ) == (void_nptr)BLK2CSTG( end_tag ) ) {
                 /* calculate adjustment factor */
                 if( heap->len - last_free->len > sizeof( heapblk ) ) {
                     // this miniheapblk is still being used
@@ -199,7 +200,7 @@ _WCRTLINK int _nheapshrink( void )
                     }
 #endif
                     SET_BLK_END( last_free );
-                    new_brk = (unsigned)BLK2CPTR( last_free );
+                    new_brk = (unsigned)BLK2CSTG( last_free );
                 } else {
                     // this miniheapblk is not used, we can remove it
                     if( heap->prev.nptr != NULL ) { // Not the first miniheapblk

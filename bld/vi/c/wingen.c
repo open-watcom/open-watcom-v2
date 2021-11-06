@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,16 +59,16 @@ vi_rc NewMessageWindow( void )
  */
 void Message1( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        tmp[MAX_STR];
 
     if( !EditFlags.EchoOn || BAD_ID( message_window_id ) ) {
         return;
     }
     ClearWindow( message_window_id );
-    va_start( al, str );
-    MyVSprintf( tmp, str, al );
-    va_end( al );
+    va_start( args, str );
+    MyVSprintf( tmp, str, args );
+    va_end( args );
     tmp[EditVars.WindMaxWidth - 1] = '\0';
 
     if( !EditFlags.LineDisplay ) {
@@ -84,16 +84,16 @@ void Message1( const char *str, ... )
  */
 void Message1Box( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        tmp[MAX_STR];
 
     if( !EditFlags.EchoOn || BAD_ID( message_window_id ) ) {
         return;
     }
     ClearWindow( message_window_id );
-    va_start( al, str );
-    MyVSprintf( tmp, str, al );
-    va_end( al );
+    va_start( args, str );
+    MyVSprintf( tmp, str, args );
+    va_end( args );
     tmp[EditVars.WindMaxWidth - 1] = '\0';
 
     if( !EditFlags.LineDisplay ) {
@@ -109,15 +109,15 @@ void Message1Box( const char *str, ... )
  */
 void Message2( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        tmp[MAX_STR];
 
     if( !EditFlags.EchoOn || BAD_ID( message_window_id ) ) {
         return;
     }
-    va_start( al, str );
-    MyVSprintf( tmp,str, al );
-    va_end( al );
+    va_start( args, str );
+    MyVSprintf( tmp, str, args );
+    va_end( args );
     tmp[EditVars.WindMaxWidth - 1] = '\0';
 
     if( !EditFlags.LineDisplay ) {
@@ -134,12 +134,12 @@ void Message2( const char *str, ... )
  */
 vi_rc WPrintfLine( window_id wid, int line, const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        tmp[MAX_STR];
 
-    va_start( al, str );
-    MyVSprintf( tmp, str, al );
-    va_end( al );
+    va_start( args, str );
+    MyVSprintf( tmp, str, args );
+    va_end( args );
     tmp[EditVars.WindMaxWidth - 1] = '\0';
 
     return( DisplayLineInWindow( wid, line, tmp ) );
@@ -236,8 +236,8 @@ bool ColumnInWindow( int col, int *diff )
  */
 void SetWindowSizes( void )
 {
-    VarAddGlobalLong( "SW", EditVars.WindMaxWidth );
-    VarAddGlobalLong( "SH", EditVars.WindMaxHeight );
+    GlobVarAddLong( GLOBVAR_WINDOW_WIDTH, EditVars.WindMaxWidth );
+    GlobVarAddLong( GLOBVAR_WINDOW_HEIGHT, EditVars.WindMaxHeight );
     EditVars.SpinX = EditVars.WindMaxWidth - 15;
     EditVars.ClockX = EditVars.WindMaxWidth - 9;
     filecw_info.area.x2 = EditVars.WindMaxWidth - 5;

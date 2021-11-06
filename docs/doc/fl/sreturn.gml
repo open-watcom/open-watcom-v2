@@ -6,7 +6,7 @@
 .synote
 .mnote e
 is an integer expression.
-.endnote
+.esynote
 .np
 A
 .kw RETURN

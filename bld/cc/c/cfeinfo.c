@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,7 +149,7 @@ bool VarParm( SYMPTR sym )
         SKIP_TYPEDEFS( fn_typ );
         if( fn_typ->u.fn.parms != NULL ) {
             for( parm_types = fn_typ->u.fn.parms; (typ = *parm_types) != NULL; ++parm_types ) {
-                if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
+                if( typ->decl_type == TYP_DOT_DOT_DOT ) {
                     return( true );
                 }
             }
@@ -431,7 +431,7 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
     if( inf == &DefaultInfo ) {
         typ = sym->sym_type;
         SKIP_DUMMY_TYPEDEFS( typ );
-        if( typ->decl_type == TYPE_TYPEDEF ) {
+        if( typ->decl_type == TYP_TYPEDEF ) {
             SymGet( &sym_typedef, typ->u.typedefn );
             if( sym_typedef.name != NULL ) {
                 ent = AuxLookup( sym_typedef.name );
@@ -703,16 +703,16 @@ static unsigned GetParmsSize( SYM_HANDLE sym_handle )
     SymGet( &sym, sym_handle );
     fn_typ = sym.sym_type;
     SKIP_TYPEDEFS( fn_typ );
-    if( fn_typ->decl_type == TYPE_FUNCTION ) {
+    if( fn_typ->decl_type == TYP_FUNCTION ) {
         if( fn_typ->u.fn.parms != NULL ) {
             for( parm_types = fn_typ->u.fn.parms; (typ = *parm_types) != NULL; ++parm_types ) {
-                if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
+                if( typ->decl_type == TYP_DOT_DOT_DOT ) {
                     total_parm_size = (unsigned)-1;
                     break;
                 }
 
                 SKIP_TYPEDEFS( typ );
-                if( typ->decl_type == TYPE_VOID )
+                if( typ->decl_type == TYP_VOID )
                     break;
 
                 parm_size = _RoundUp( TypeSize( typ ), TARGET_INT );
@@ -790,6 +790,8 @@ const char *FEExtName( CGSYM_HANDLE sym_handle, int request )
         return( GetNamePattern( (SYM_HANDLE)sym_handle ) );
     case EXTN_PRMSIZE:
         return( (const char *)(pointer_uint)GetParmsSize( (SYM_HANDLE)sym_handle ) );
+    case EXTN_IMPPREFIX:
+        return( ( TargSys == TS_NT ) ? "__imp_" : NULL );
     case EXTN_CALLBACKNAME:
     default:
         return( NULL );
@@ -1043,9 +1045,9 @@ static CGPOINTER NextImportS( int index, aux_class request )
 */
 CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 {
-    aux_info             *inf;
-    auto SYM_ENTRY       sym;
-    static hw_reg_set    save_set;
+    aux_info            *inf;
+    SYM_ENTRY           sym;
+    static hw_reg_set   save_set;
 
     switch( request ) {
     case SOURCE_LANGUAGE:
@@ -1134,14 +1136,9 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         return( (CGPOINTER)SegPeggedReg( (segment_id)(pointer_uint)req_handle ) );
     case DBG_DWARF_PRODUCER:
         return( (CGPOINTER)DWARF_PRODUCER_ID );
-    default:
-        break;
-    }
-
-    inf = FindInfo( &sym, req_handle );
-    switch( request ) {
     case SAVE_REGS:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         } else {
             sym.mods = 0;
@@ -1153,16 +1150,22 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 
   #ifdef __SEH__
         if( (SYM_HANDLE)req_handle == SymTryInit ) {
+    #if _CPU == 8086
             HW_CTurnOff( save_set, HW_SP );
+    #else
+            HW_CTurnOff( save_set, HW_ESP );
+    #endif
         }
   #endif
         return( (CGPOINTER)&save_set );
     case RETURN_REG:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         }
         return( (CGPOINTER)&inf->returns );
     case CALL_BYTES:
+        inf = FindInfo( &sym, req_handle );
         return( (CGPOINTER)inf->code );
     case PARM_REGS:
   #ifdef __SEH__
@@ -1173,7 +1176,8 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
             return( (CGPOINTER)TryParms );
         }
   #endif
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
             if( inf->code == NULL && VarFunc( &sym ) ) {
                 return( (CGPOINTER)DefaultVarParms );
@@ -1181,7 +1185,8 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         }
         return( (CGPOINTER)inf->parms );
     case STRETURN_REG:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         }
         return( (CGPOINTER)&inf->streturn );
@@ -1203,9 +1208,9 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 */
 CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 {
-    aux_info                *inf;
-    auto SYM_ENTRY          sym;
-    static hw_reg_set       save_set;
+    aux_info            *inf;
+    SYM_ENTRY           sym;
+    static hw_reg_set   save_set;
 
     switch( request ) {
     case SOURCE_LANGUAGE:
@@ -1258,14 +1263,9 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
     case DEPENDENCY_NAME:
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
-    default:
-        break;
-    }
-
-    inf = FindInfo( &sym, req_handle );
-    switch( request ) {
     case SAVE_REGS:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         } else {
             sym.mods = 0;
@@ -1273,14 +1273,17 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         save_set = inf->save;
         return( (CGPOINTER)&save_set );
     case RETURN_REG:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         }
         return( (CGPOINTER)&inf->returns );
     case CALL_BYTES:
+        inf = FindInfo( &sym, req_handle );
         return( (CGPOINTER)inf->code );
     case PARM_REGS:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
             if( inf->code == NULL && VarFunc( &sym ) ) {
                 return( (CGPOINTER)DefaultVarParms );

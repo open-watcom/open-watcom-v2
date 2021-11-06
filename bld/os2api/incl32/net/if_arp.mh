@@ -53,7 +53,8 @@
 #define ARPOP_INVREQUEST 8
 #define ARPOP_INVREPLY   9
 
-#pragma pack(1)
+:include pshpack1.sp
+
 struct  arphdr {
     u_short ar_hrd;
     u_short ar_pro;
@@ -67,9 +68,12 @@ struct  arphdr {
     u_char  ar_tpa[];
 #endif
 };
-#pragma pack()
 
-#pragma pack(4)
+:include poppack.sp
+
+
+:include pshpack4.sp
+
 struct arpreq {
     struct   sockaddr arp_pa;
     struct   sockaddr arp_ha;
@@ -83,6 +87,7 @@ struct arpreq_tr {
     u_short  arp_rcf;
     u_short  arp_rseg[8];
 };
-#pragma pack()
+
+:include poppack.sp
 
 #endif

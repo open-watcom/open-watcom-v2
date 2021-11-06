@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,8 +80,8 @@ WRESEDLLENTRY extern int         WRESEAPI WAccelCloseSession( WAccelHandle, int 
 WRESEDLLENTRY extern WAccelHandle WRESEAPI WAccelStartEdit( WAccelInfo * );
 WRESEDLLENTRY extern WAccelInfo  *WRESEAPI WAccelEndEdit( WAccelHandle );
 WRESEDLLENTRY extern WAccelInfo  *WRESEAPI WAccelGetEditInfo( WAccelHandle );
-WRESEDLLENTRY extern int         WRESEAPI WAccelIsModified( WAccelHandle );
-WRESEDLLENTRY extern int         WRESEAPI WAccelIsDlgMsg( MSG *msg );
+WRESEDLLENTRY extern bool        WRESEAPI WAccelIsModified( WAccelHandle );
+WRESEDLLENTRY extern bool        WRESEAPI WAccelIsDlgMsg( MSG *msg );
 WRESEDLLENTRY extern void        WRESEAPI WAccelShowWindow( WAccelHandle hndl, int show );
 WRESEDLLENTRY extern void        WRESEAPI WAccelBringToFront( WAccelHandle hndl );
 

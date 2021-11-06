@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +35,24 @@
 #include "msg.h"
 
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "pusage.gh"
+    #undef pick
+};
+
 static void PrintBanner( void )
 {
     static bool banner_printed = false;
 
     if( !banner_printed ) {
         banner_printed = true;
+#ifdef BPATCH
         printf( banner1w( "BPATCH", _BPATCH_VERSION_ ) "\n" );
+#else
+        printf( banner1w( "BDUMP", _BPATCH_VERSION_ ) "\n" );
+#endif
         printf( banner2 "\n" );
         printf( banner2a( 1990 ) "\n" );
         printf( banner3 "\n" );
@@ -48,7 +60,7 @@ static void PrintBanner( void )
     }
 }
 
-static void Usage( const char *name )
+static void Usage( void )
 {
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
@@ -56,9 +68,13 @@ static void Usage( const char *name )
     i = MSG_USAGE_FIRST;
     PrintBanner();
     GetMsg( msgbuf, i );
-    printf( msgbuf, name );
+#ifdef BPATCH
+    printf( msgbuf, "bpatch" );
+#else
+    printf( msgbuf, "bdump" );
+#endif
     printf( "\n" );
-    for( i = i + 1; i <= MSG_USAGE_LAST; i++ ) {
+    for( i = i + 1; i < MSG_USAGE_FIRST + MSG_USAGE_COUNT; i++ ) {
         GetMsg( msgbuf, i );
         if( msgbuf[0] == 0 )
             break;
@@ -81,7 +97,7 @@ void main( int argc, char **argv )
     if( !MsgInit() )
         exit( EXIT_FAILURE );
     if( argc < 2 )
-        Usage( argv[0] );
+        Usage();
     for( i = 1; argv[i] != NULL; ++i ) {
         if( argv[i][0] == '-' ) {
             switch( tolower( argv[i][1] ) ) {
@@ -99,11 +115,11 @@ void main( int argc, char **argv )
                 printlevel = true;
                 break;
             default:
-                Usage( argv[0] );
+                Usage();
                 break;
             }
         } else if( argv[i][0] == '?' ) {
-            Usage( argv[0] );
+            Usage();
         } else {
             if( patchname != NULL ) {
                 if( doprompt ) {

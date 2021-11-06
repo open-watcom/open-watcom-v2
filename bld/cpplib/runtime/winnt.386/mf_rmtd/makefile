@@ -10,6 +10,6 @@ linkage    = static
 mthreaded  = 1
 fs_registration = yes
 
-cpplib_release = 0
+lib_debug = 1
 
 !include $(cpplib_dir)/runtime/runtime.mif

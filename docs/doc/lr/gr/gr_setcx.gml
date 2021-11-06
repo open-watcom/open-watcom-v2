@@ -1,5 +1,5 @@
-.gfuncw setcharspacing
-.gsynop begin 
+.gfuncw _setcharspacing
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _setcharspacing( short space );
 
@@ -19,7 +19,7 @@ The
 &routines set the current character spacing to have the value
 of the argument
 .arg space
-.ct .li .
+.period
 For the
 .id &funcb.
 &routine,
@@ -33,7 +33,7 @@ represents a length along the x-axis in the window coordinate system.
 .np
 The character spacing specifies the additional space to
 leave between characters when a text string is displayed with the
-.kw _grtext
+.reffunc _grtext
 &routine..
 A negative value can be specified to cause the characters to be
 drawn closer together.

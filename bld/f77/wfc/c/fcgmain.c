@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +33,7 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "wf77defs.h"
-#include "cg.h"
-#include "cgaux.h"
-#include "cgswitch.h"
+#include "wf77aux.h"
 #include "fcodes.h"
 #include "cpopt.h"
 #include "fcgbls.h"
@@ -43,7 +41,6 @@
 #include "cgflags.h"
 #include "wf77segs.h"
 #include "wf77labe.h"
-#include "wf77auxd.h"
 #include "wf77info.h"
 #include "compcfg.h"
 #include "emitobj.h"
@@ -52,8 +49,6 @@
 #include "tmpdefs.h"
 #include "fctemp.h"
 #include "fcgmain.h"
-#include "rtconst.h"
-#include "fcrtns.h"
 #include "inline.h"
 #include "fcstack.h"
 #include "cgswitch.h"
@@ -93,11 +88,11 @@ void    CGGenSub( void ) {
 // Finalize code generator after compiling a subprogram.
 
     InitStack();
-    if( ( CGFlags & CG_STARTED ) == 0 ) {
+    if( (CGFlags & CG_STARTED) == 0 ) {
         CGStart();
     }
     if( CGFlags & CG_INIT ) {
-        if( ( ProgSw & PS_ERROR ) == 0 ) {
+        if( (ProgSw & PS_ERROR) == 0 ) {
             InitSubSegs();
             InitLabels();
             InitRtRtns();
@@ -143,7 +138,7 @@ static  void    CGStart( void ) {
     if( BELoad( NULL ) ) {
         CGFlags |= CG_LOADED;
         cpu = 0;
-        cg_opts = FORTRAN_ALIASING|RELAX_ALIAS;
+        cg_opts = FORTRAN_ALIASING | RELAX_ALIAS;
 #if COMP_CFG_CG_FPE
         if( (OZOpts & OZOPT_O_LOOP_INVAR) == 0 ) {
             cg_opts |= ENABLE_FP_EXCEPTIONS;

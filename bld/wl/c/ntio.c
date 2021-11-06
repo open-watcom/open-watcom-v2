@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,11 +47,6 @@
 #include "clibext.h"
 
 
-#ifdef __OSI__
-//If or when OSI builds are re-enabled, we need to find the header for this
-//extern  char    *_BreakFlagPtr;
-#endif
-
 static int      OpenFiles;      // the number of open files
 static unsigned LastResult;
 static bool     CaughtBreak;    // set to true if break hit.
@@ -67,17 +63,10 @@ void TrapBreak( int sig_num )
 void CheckBreak( void )
 /*********************/
 {
-#ifdef __OSI__
-    if( *_BreakFlagPtr ) {
-        *_BreakFlagPtr = 0;
-        LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
-    }
-#else
     if( CaughtBreak ) {
         CaughtBreak = false;                  /* prevent recursion */
         LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
     }
-#endif
 }
 
 void SetBreak( void )
@@ -307,11 +296,11 @@ void QClose( f_handle file, const char *name )
 long QLSeek( f_handle file, long position, int start, const char *name )
 /**********************************************************************/
 {
-    long int    h;
+    long    h;
 
     CheckBreak();
     h = lseek( file, position, start );
-    if( h == -1 && name != NULL ) {
+    if( h == -1L && name != NULL ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     }
     return( h );
@@ -418,7 +407,7 @@ bool QModTime( const char *name, time_t *time )
 
     result = stat( name, &buf );
     *time = buf.st_mtime;
-    return result != 0;
+    return( result != 0 );
 }
 
 time_t QFModTime( int handle )
@@ -427,7 +416,7 @@ time_t QFModTime( int handle )
     struct stat buf;
 
     fstat( handle, &buf );
-    return buf.st_mtime;
+    return( buf.st_mtime );
 }
 
 int WaitForKey( void )

@@ -107,7 +107,6 @@ rt += &
     rdwr.obj &
     rtutls.obj &
     rtinq.obj &
-    rfmterr.obj &
     rfmtemit.obj &
     rfmtinit.obj &
     rfmtexec.obj &
@@ -120,7 +119,6 @@ rt += &
     ioerr.obj &
     stop.obj &
     pause.obj &
-    rfmttab.obj &
     rcat.obj &
     rtcat.obj &
     rmove.obj &
@@ -150,14 +148,12 @@ both += &
     errrtns.obj &
     errgrp.obj &
     errmsg.obj &
-    fmtboth.obj &
     fmtcnvt.obj &
     fmtscan.obj &
     hexcnv.obj &
     japanese.obj &
     korean.obj &
     lexcmp.obj &
-    lexstcmp.obj &
     rtspawn.obj &
     sbcsutil.obj
 
@@ -166,7 +162,6 @@ both += &
 #===============================================================================
 # dep_rt
 !inject fwinmain.obj                 nt nta ntp                     w16 w32
-!inject intovfrt.obj                    nta
 !inject realvec.obj          d32
 #===============================================================================
 
@@ -216,9 +211,9 @@ dep_both += &
     posget.obj &
     posopen.obj &
     posput.obj &
-    posrew.obj &
     posseek.obj &
     postrunc.obj &
+    posutil.obj &
     sdfile.obj
 
 

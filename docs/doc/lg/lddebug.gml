@@ -356,7 +356,7 @@ the debugging information placed in the executable file by the
 Note that global symbol information generated using "DEBUG NOVELL"
 cannot be removed by
 .kw &stripcmdup
-.ct .li .
+.period
 .np
 For more information on this utility,
 see the chapter entitled "The &stripname" in the

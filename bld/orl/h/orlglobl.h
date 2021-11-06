@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,7 +93,7 @@ ORL_STRUCT( orl_linnum ) {
 
 typedef struct orl_funcs {
     void        *(*cli_read)( FILE *, size_t );
-    int         (*cli_seek)( FILE *, long int, int );
+    int         (*cli_seek)( FILE *, long, int );
     void        *(*cli_alloc)( size_t );
     void        (*cli_free)( void * );
 } orl_funcs;

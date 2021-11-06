@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +82,7 @@
 #ifdef NO_STRRCHR
 char  *strrchr(char *s,int c)
 {
-    register int count;
+    int count;
 
     while (*s){
         s++;
@@ -157,7 +158,7 @@ SIGTYPE onintr( int signum )
 
     if (!zcat_flg && !keep_error){
         fclose(stdout);
-        unlink ( ofname );
+        remove( ofname );
     }
     exit ( ERROR );
 }
@@ -170,7 +171,7 @@ SIGTYPE oops( int signum )    /* wild pointer -- assume bad input */
         fprintf ( stderr, "%s: corrupt input: %s\n",prog_name,ifname);
     if (!zcat_flg && !keep_error){
         fclose(stdout);
-        unlink ( ofname );
+        remove( ofname );
     }
     exit ( ERROR );
 }
@@ -207,7 +208,7 @@ void copystat( void )
         if (!do_decomp)
             exit(ERROR);
         else
-            return;     /* otherwise will unlink outfile */
+            return;     /* otherwise will remove outfile */
     } else if (exit_stat == OK) {  /* ***** Successful Compression ***** */
         mode = statbuf.st_mode & 07777;
         if (chmod(ofname, mode))        /* Copy modes */
@@ -220,7 +221,7 @@ void copystat( void )
         utime(ofname,&timep);   /* Update last accessed and modified times */
         if (!keep){
             fclose(stdin);
-            if (unlink(ifname)) /* Remove input file */
+            if (remove(ifname)) /* Remove input file */
                 perror(ifname);
             if(!quiet)
                 fprintf(stderr, " -- replaced with %s", ofname);
@@ -234,7 +235,7 @@ void copystat( void )
 
     /* Unsuccessful return -- one of the tests failed */
     fclose(stdout);
-    if (unlink(ofname))
+    if (remove(ofname))
         perror(ofname);
 }
 void version( void )

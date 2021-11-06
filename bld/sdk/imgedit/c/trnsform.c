@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,15 +42,15 @@ void FlipImage( WORD whichway )
     img_node    *node;
     short       width;
     short       height;
-    short       destwidth;
-    short       destheight;
+    short       dstwidth;
+    short       dstheight;
     short       new_left;
     short       new_top;
     WPI_RECT    dims;
-    HBITMAP     xorflip;
-    HBITMAP     oldflip;
-    HBITMAP     oldbitmap;
-    HBITMAP     andflip;
+    WPI_HBITMAP xorflip_hbitmap;
+    WPI_HBITMAP oldflip_hbitmap;
+    WPI_HBITMAP old_hbitmap;
+    WPI_HBITMAP andflip_hbitmap;
     WPI_PRES    pres;
     WPI_PRES    mempres;
     HDC         memdc;
@@ -78,15 +78,15 @@ void FlipImage( WORD whichway )
 
     pres = _wpi_getpres( HWND_DESKTOP );
     if( node->bitcount == 1 ) {
-        xorflip = _wpi_createbitmap( width, height, 1, 1, NULL );
+        xorflip_hbitmap = _wpi_createbitmap( width, height, 1, 1, NULL );
     } else {
 #if 1
-        xorflip = _wpi_createcompatiblebitmap( pres, width, height );
+        xorflip_hbitmap = _wpi_createcompatiblebitmap( pres, width, height );
 #else
-        xorflip = _wpi_createbitmap( width, height, ColorPlanes, BitsPerPixel, NULL );
+        xorflip_hbitmap = _wpi_createbitmap( width, height, ColorPlanes, BitsPerPixel, NULL );
 #endif
     }
-    andflip = _wpi_createbitmap( width, height, 1, 1, NULL );
+    andflip_hbitmap = _wpi_createbitmap( width, height, 1, 1, NULL );
 
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
     flippres = _wpi_createcompatiblepres( pres, Instance, &flipdc );
@@ -95,41 +95,41 @@ void FlipImage( WORD whichway )
     _wpi_getrectvalues( dims, &left, &top, &right, &bottom );
     _wpi_preparemono( flippres, BLACK, WHITE );
 
-    oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
-    oldflip = _wpi_selectbitmap( flippres, xorflip );
+    old_hbitmap = _wpi_selectbitmap( mempres, node->xor_hbitmap );
+    oldflip_hbitmap = _wpi_selectbitmap( flippres, xorflip_hbitmap );
     _wpi_bitblt( flippres, 0, 0, width, height, mempres, left, top, SRCCOPY );
-    _wpi_getoldbitmap( mempres, oldbitmap );
-    _wpi_getoldbitmap( flippres, oldflip );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
+    _wpi_getoldbitmap( flippres, oldflip_hbitmap );
 
-    oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
-    oldflip = _wpi_selectbitmap( flippres, andflip );
+    old_hbitmap = _wpi_selectbitmap( mempres, node->and_hbitmap );
+    oldflip_hbitmap = _wpi_selectbitmap( flippres, andflip_hbitmap );
     _wpi_bitblt( flippres, 0, 0, width, height, mempres, left, top, SRCCOPY );
 
     if( whichway == IMGED_FLIPVERT ) {
-        destwidth = -1 * width;
+        dstwidth = -1 * width;
         new_left = right - 1;
         new_top = top;
-        destheight = height;
+        dstheight = height;
     } else {
-        destwidth = width;
+        dstwidth = width;
         new_left = left;
         new_top = bottom - 1;
-        destheight = -1 * height;
+        dstheight = -1 * height;
     }
 
-    _wpi_stretchblt( mempres, new_left, new_top, destwidth, destheight,
+    _wpi_stretchblt( mempres, new_left, new_top, dstwidth, dstheight,
                      flippres, 0, 0, width, height, SRCCOPY );
-    _wpi_getoldbitmap( mempres, oldbitmap );
-    oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
-    _wpi_getoldbitmap( flippres, oldflip );
-    oldflip = _wpi_selectbitmap( flippres, xorflip );
-    _wpi_stretchblt( mempres, new_left, new_top, destwidth, destheight,
+    _wpi_getoldbitmap( mempres, old_hbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, node->xor_hbitmap );
+    _wpi_getoldbitmap( flippres, oldflip_hbitmap );
+    oldflip_hbitmap = _wpi_selectbitmap( flippres, xorflip_hbitmap );
+    _wpi_stretchblt( mempres, new_left, new_top, dstwidth, dstheight,
                      flippres, 0, 0, width, height, SRCCOPY );
-    _wpi_getoldbitmap( mempres, oldbitmap );
-    _wpi_getoldbitmap( flippres, oldflip );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
+    _wpi_getoldbitmap( flippres, oldflip_hbitmap );
 
-    _wpi_deletebitmap( xorflip );
-    _wpi_deletebitmap( andflip );
+    _wpi_deletebitmap( xorflip_hbitmap );
+    _wpi_deletebitmap( andflip_hbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
     _wpi_deletecompatiblepres( flippres, flipdc );
 
@@ -153,7 +153,7 @@ void FlipImage( WORD whichway )
  * clipIntoArea - clip the bitmaps into the area when rotating
  */
 static void clipIntoArea( img_node *node, WPI_RECT *rect,
-                          HBITMAP rotxorbmp, HBITMAP rotandbmp )
+                          WPI_HBITMAP rotxor_hbitmap, WPI_HBITMAP rotand_hbitmap )
 {
     WPI_PRES    pres;
     WPI_PRES    xorpres;
@@ -164,10 +164,10 @@ static void clipIntoArea( img_node *node, WPI_RECT *rect,
     HDC         rotxordc;
     WPI_PRES    rotandpres;
     HDC         rotanddc;
-    HBITMAP     oldxor;
-    HBITMAP     oldand;
-    HBITMAP     oldxorrot;
-    HBITMAP     oldandrot;
+    WPI_HBITMAP oldxor_hbitmap;
+    WPI_HBITMAP oldand_hbitmap;
+    WPI_HBITMAP oldxorrot_hbitmap;
+    WPI_HBITMAP oldandrot_hbitmap;
     short       width;
     short       height;
     WPI_POINT   centre_pt;
@@ -227,10 +227,10 @@ static void clipIntoArea( img_node *node, WPI_RECT *rect,
     _wpi_torgbmode( rotxorpres );
     _wpi_torgbmode( rotandpres );
 
-    oldxor = _wpi_selectbitmap( xorpres, node->hxorbitmap );
-    oldand = _wpi_selectbitmap( andpres, node->handbitmap );
-    oldxorrot = _wpi_selectbitmap( rotxorpres, rotxorbmp );
-    oldandrot = _wpi_selectbitmap( rotandpres, rotandbmp );
+    oldxor_hbitmap = _wpi_selectbitmap( xorpres, node->xor_hbitmap );
+    oldand_hbitmap = _wpi_selectbitmap( andpres, node->and_hbitmap );
+    oldxorrot_hbitmap = _wpi_selectbitmap( rotxorpres, rotxor_hbitmap );
+    oldandrot_hbitmap = _wpi_selectbitmap( rotandpres, rotand_hbitmap );
 
     _wpi_patblt( xorpres, left, top, width, height, WHITENESS );
     _wpi_patblt( andpres, left, top, width, height, BLACKNESS );
@@ -240,10 +240,10 @@ static void clipIntoArea( img_node *node, WPI_RECT *rect,
     _wpi_bitblt( andpres, topleft.x, topleft.y, new_width, new_height,
                  rotandpres, start_x, start_y, SRCCOPY );
 
-    _wpi_getoldbitmap( xorpres, oldxor );
-    _wpi_getoldbitmap( andpres, oldand );
-    _wpi_getoldbitmap( rotxorpres, oldxorrot );
-    _wpi_getoldbitmap( rotandpres, oldandrot );
+    _wpi_getoldbitmap( xorpres, oldxor_hbitmap );
+    _wpi_getoldbitmap( andpres, oldand_hbitmap );
+    _wpi_getoldbitmap( rotxorpres, oldxorrot_hbitmap );
+    _wpi_getoldbitmap( rotandpres, oldandrot_hbitmap );
     _wpi_deletecompatiblepres( xorpres, xordc );
     _wpi_deletecompatiblepres( andpres, anddc );
     _wpi_deletecompatiblepres( rotxorpres, rotxordc );
@@ -259,7 +259,7 @@ static void clipIntoArea( img_node *node, WPI_RECT *rect,
  * stretchIntoArea - stretch the rotated image into the area specified
  */
 static void stretchIntoArea( img_node *node, WPI_RECT *rect,
-                             HBITMAP rotxorbmp, HBITMAP rotandbmp )
+                             WPI_HBITMAP rotxor_hbitmap, WPI_HBITMAP rotand_hbitmap )
 {
     WPI_PRES    pres;
     WPI_PRES    xorpres;
@@ -270,10 +270,10 @@ static void stretchIntoArea( img_node *node, WPI_RECT *rect,
     HDC         rotxordc;
     WPI_PRES    rotandpres;
     HDC         rotanddc;
-    HBITMAP     oldxor;
-    HBITMAP     oldand;
-    HBITMAP     oldxorrot;
-    HBITMAP     oldandrot;
+    WPI_HBITMAP oldxor_hbitmap;
+    WPI_HBITMAP oldand_hbitmap;
+    WPI_HBITMAP oldxorrot_hbitmap;
+    WPI_HBITMAP oldandrot_hbitmap;
     short       width;
     short       height;
     WPI_RECTDIM left;
@@ -298,10 +298,10 @@ static void stretchIntoArea( img_node *node, WPI_RECT *rect,
     _wpi_torgbmode( rotxorpres );
     _wpi_torgbmode( rotandpres );
 
-    oldxor = _wpi_selectbitmap( xorpres, node->hxorbitmap );
-    oldand = _wpi_selectbitmap( andpres, node->handbitmap );
-    oldxorrot = _wpi_selectbitmap( rotxorpres, rotxorbmp );
-    oldandrot = _wpi_selectbitmap( rotandpres, rotandbmp );
+    oldxor_hbitmap = _wpi_selectbitmap( xorpres, node->xor_hbitmap );
+    oldand_hbitmap = _wpi_selectbitmap( andpres, node->and_hbitmap );
+    oldxorrot_hbitmap = _wpi_selectbitmap( rotxorpres, rotxor_hbitmap );
+    oldandrot_hbitmap = _wpi_selectbitmap( rotandpres, rotand_hbitmap );
 
     _wpi_setstretchbltmode( xorpres, STRETCH_COLOR );
     _wpi_stretchblt( xorpres, left, top, width, height, rotxorpres, 0, 0,
@@ -310,10 +310,10 @@ static void stretchIntoArea( img_node *node, WPI_RECT *rect,
     _wpi_setstretchbltmode( andpres, STRETCH_COLOR );
     _wpi_stretchblt( andpres, left, top, width, height, rotandpres, 0, 0,
                      height, width, SRCCOPY );
-    _wpi_getoldbitmap( xorpres, oldxor );
-    _wpi_getoldbitmap( andpres, oldand );
-    _wpi_getoldbitmap( rotxorpres, oldxorrot );
-    _wpi_getoldbitmap( rotandpres, oldandrot );
+    _wpi_getoldbitmap( xorpres, oldxor_hbitmap );
+    _wpi_getoldbitmap( andpres, oldand_hbitmap );
+    _wpi_getoldbitmap( rotxorpres, oldxorrot_hbitmap );
+    _wpi_getoldbitmap( rotandpres, oldandrot_hbitmap );
     _wpi_deletecompatiblepres( xorpres, xordc );
     _wpi_deletecompatiblepres( andpres, anddc );
     _wpi_deletecompatiblepres( rotxorpres, rotxordc );
@@ -328,8 +328,8 @@ static void stretchIntoArea( img_node *node, WPI_RECT *rect,
 /*
  * simpleRotate - simply rotate the image around the center of the given rectangle
  */
-static void simpleRotate( img_node *node, WPI_RECT *rect, HBITMAP rotxorbmp,
-                          HBITMAP rotandbmp, bool rectexists )
+static void simpleRotate( img_node *node, WPI_RECT *rect, WPI_HBITMAP rotxor_hbitmap,
+                          WPI_HBITMAP rotand_hbitmap, bool rectexists )
 {
     WPI_POINT   topleft;
     WPI_POINT   centre_pt;
@@ -342,10 +342,10 @@ static void simpleRotate( img_node *node, WPI_RECT *rect, HBITMAP rotxorbmp,
     WPI_PRES    rotxorpres;
     HDC         rotanddc;
     WPI_PRES    rotandpres;
-    HBITMAP     oldxor;
-    HBITMAP     oldand;
-    HBITMAP     oldxorrot;
-    HBITMAP     oldandrot;
+    WPI_HBITMAP oldxor_hbitmap;
+    WPI_HBITMAP oldand_hbitmap;
+    WPI_HBITMAP oldxorrot_hbitmap;
+    WPI_HBITMAP oldandrot_hbitmap;
     short       width;
     short       height;
     WPI_RECT    new_rect = { 0 };
@@ -380,10 +380,10 @@ static void simpleRotate( img_node *node, WPI_RECT *rect, HBITMAP rotxorbmp,
     _wpi_torgbmode( rotxorpres );
     _wpi_torgbmode( rotandpres );
 
-    oldxor = _wpi_selectbitmap( xorpres, node->hxorbitmap );
-    oldand = _wpi_selectbitmap( andpres, node->handbitmap );
-    oldxorrot = _wpi_selectbitmap( rotxorpres, rotxorbmp );
-    oldandrot = _wpi_selectbitmap( rotandpres, rotandbmp );
+    oldxor_hbitmap = _wpi_selectbitmap( xorpres, node->xor_hbitmap );
+    oldand_hbitmap = _wpi_selectbitmap( andpres, node->and_hbitmap );
+    oldxorrot_hbitmap = _wpi_selectbitmap( rotxorpres, rotxor_hbitmap );
+    oldandrot_hbitmap = _wpi_selectbitmap( rotandpres, rotand_hbitmap );
 
     _wpi_getwrectvalues( *rect, &left, &top, &right, &bottom );
     _wpi_patblt( xorpres, left, top, width, height, WHITENESS );
@@ -392,10 +392,10 @@ static void simpleRotate( img_node *node, WPI_RECT *rect, HBITMAP rotxorbmp,
     _wpi_bitblt( xorpres, topleft.x, topleft.y, height, width, rotxorpres, 0, 0, SRCCOPY );
     _wpi_bitblt( andpres, topleft.x, topleft.y, height, width, rotandpres, 0, 0, SRCCOPY );
 
-    _wpi_getoldbitmap( xorpres, oldxor );
-    _wpi_getoldbitmap( andpres, oldand );
-    _wpi_getoldbitmap( rotxorpres, oldxorrot );
-    _wpi_getoldbitmap( rotandpres, oldandrot );
+    _wpi_getoldbitmap( xorpres, oldxor_hbitmap );
+    _wpi_getoldbitmap( andpres, oldand_hbitmap );
+    _wpi_getoldbitmap( rotxorpres, oldxorrot_hbitmap );
+    _wpi_getoldbitmap( rotandpres, oldandrot_hbitmap );
     _wpi_deletecompatiblepres( xorpres, xordc );
     _wpi_deletecompatiblepres( andpres, anddc );
     _wpi_deletecompatiblepres( rotxorpres, rotxordc );
@@ -430,7 +430,7 @@ static void IEPrintRotateAmt( int amt )
  * rotateTheImage - create the rotated bitmaps
  */
 static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
-                            HBITMAP rotxorbmp, HBITMAP rotandbmp )
+                            WPI_HBITMAP rotxor_hbitmap, WPI_HBITMAP rotand_hbitmap )
 {
     WPI_PRES    pres;
     WPI_PRES    rotxorpres;
@@ -439,9 +439,9 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
     HDC         xordc;
     WPI_PRES    rotandpres;
     HDC         rotanddc;
-    HBITMAP     oldandrot;
-    HBITMAP     oldxorrot;
-    HBITMAP     oldxor;
+    WPI_HBITMAP oldandrot_hbitmap;
+    WPI_HBITMAP oldxorrot_hbitmap;
+    WPI_HBITMAP oldxor_hbitmap;
     short       new_height;
     short       new_width;
     long        i;
@@ -463,7 +463,7 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
 
     new_height = (short)_wpi_getwidthrect( *rect );
     new_width = (short)_wpi_getheightrect( *rect );
-    oldxor = NULL;
+    oldxor_hbitmap = NULL;
 
     amt_done = prev_amt = 0L;
     total_amt = (long)new_height * (long)new_width;
@@ -479,17 +479,17 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
 
         _wpi_torgbmode( rotxorpres );
         _wpi_torgbmode( rotandpres );
-        oldxorrot = _wpi_selectbitmap( rotxorpres, rotxorbmp );
-        oldandrot = _wpi_selectbitmap( rotandpres, rotandbmp );
+        oldxorrot_hbitmap = _wpi_selectbitmap( rotxorpres, rotxor_hbitmap );
+        oldandrot_hbitmap = _wpi_selectbitmap( rotandpres, rotand_hbitmap );
 
         _wpi_patblt( rotxorpres, 0, 0, new_width, new_height, WHITENESS );
         _wpi_patblt( rotandpres, 0, 0, new_width, new_height, BLACKNESS );
-        _wpi_getoldbitmap( rotxorpres, oldxorrot );
-        _wpi_getoldbitmap( rotandpres, oldandrot );
+        _wpi_getoldbitmap( rotxorpres, oldxorrot_hbitmap );
+        _wpi_getoldbitmap( rotandpres, oldandrot_hbitmap );
         _wpi_deletecompatiblepres( rotandpres, rotanddc );
 
-        _imged_getthebits( xorbits, xorpres, node->hxorbitmap, oldxor );
-        _imged_getthebits( rotxorbits, rotxorpres, rotxorbmp, oldxorrot );
+        _imged_getthebits( xorbits, xorpres, node->xor_hbitmap, oldxor_hbitmap );
+        _imged_getthebits( rotxorbits, rotxorpres, rotxor_hbitmap, oldxorrot_hbitmap );
         if( whichway == ROTATE_COUNTERCLOCKWISE ) {
             for( y = 0; y < new_height; y++ ) {
                 for( x = 0; x < new_width; x++ ) {
@@ -520,17 +520,17 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
                 }
             }
         }
-        _imged_freethebits( xorbits, xorpres, node->hxorbitmap, false, oldxor );
-        _imged_freethebits( rotxorbits, rotxorpres, rotxorbmp, true, oldxorrot );
+        _imged_freethebits( xorbits, xorpres, node->xor_hbitmap, false, oldxor_hbitmap );
+        _imged_freethebits( rotxorbits, rotxorpres, rotxor_hbitmap, true, oldxorrot_hbitmap );
         _wpi_deletecompatiblepres( xorpres, xordc );
         _wpi_deletecompatiblepres( rotxorpres, rotxordc );
 
     } else {
         // We can use the bits.c routines for icons and cursors.
-        xorbits = GetTheBits( node->hxorbitmap );
-        andbits = GetTheBits( node->handbitmap );
-        rotxorbits = GetTheBits( rotxorbmp );
-        rotandbits = GetTheBits( rotandbmp );
+        xorbits = GetTheBits( node->xor_hbitmap );
+        andbits = GetTheBits( node->and_hbitmap );
+        rotxorbits = GetTheBits( rotxor_hbitmap );
+        rotandbits = GetTheBits( rotand_hbitmap );
 
         if( whichway != IMGED_ROTATECC ) {
             for( y = 0; y < new_height; y++ ) {
@@ -567,10 +567,10 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
                 }
             }
         }
-        FreeTheBits( xorbits, node->hxorbitmap, false );
-        FreeTheBits( andbits, node->handbitmap, false );
-        FreeTheBits( rotxorbits, rotxorbmp, true );
-        FreeTheBits( rotandbits, rotandbmp, true );
+        FreeTheBits( xorbits, node->xor_hbitmap, false );
+        FreeTheBits( andbits, node->and_hbitmap, false );
+        FreeTheBits( rotxorbits, rotxor_hbitmap, true );
+        FreeTheBits( rotandbits, rotand_hbitmap, true );
     }
 
 } /* rotateTheImage */
@@ -581,8 +581,8 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
 void RotateImage( WORD whichway )
 {
     img_node    *node;
-    HBITMAP     rotxorbmp;
-    HBITMAP     rotandbmp;
+    WPI_HBITMAP rotxor_hbitmap;
+    WPI_HBITMAP rotand_hbitmap;
     HCURSOR     prevcursor;
     int         rotate_type;
     WPI_RECT    rotate_rect;
@@ -612,32 +612,32 @@ void RotateImage( WORD whichway )
     }
 
     if( node->bitcount == 1 ) {
-        rotxorbmp = _wpi_createbitmap( new_width, new_height, 1, 1, NULL );
+        rotxor_hbitmap = _wpi_createbitmap( new_width, new_height, 1, 1, NULL );
     } else {
 #if 1
         pres = _wpi_getpres( HWND_DESKTOP );
-        rotxorbmp = _wpi_createcompatiblebitmap( pres, new_width, new_height );
+        rotxor_hbitmap = _wpi_createcompatiblebitmap( pres, new_width, new_height );
         _wpi_releasepres( HWND_DESKTOP, pres );
 #else
-        rotxorbmp = _wpi_createbitmap( new_width, new_height, ColorPlanes,
+        rotxor_hbitmap = _wpi_createbitmap( new_width, new_height, ColorPlanes,
                                        BitsPerPixel, NULL );
 #endif
     }
-    rotandbmp = _wpi_createbitmap( new_width, new_height, 1, 1, NULL );
+    rotand_hbitmap = _wpi_createbitmap( new_width, new_height, 1, 1, NULL );
 
-    rotateTheImage( node, whichway, &rotate_rect, rotxorbmp, rotandbmp );
+    rotateTheImage( node, whichway, &rotate_rect, rotxor_hbitmap, rotand_hbitmap );
 
     rotate_type = GetRotateType();
     if( rotate_type == SIMPLE_ROTATE ) {
-        simpleRotate( node, &rotate_rect, rotxorbmp, rotandbmp, rectexists );
+        simpleRotate( node, &rotate_rect, rotxor_hbitmap, rotand_hbitmap, rectexists );
     } else if( rotate_type == CLIP_ROTATE ) {
-        clipIntoArea( node, &rotate_rect, rotxorbmp, rotandbmp );
+        clipIntoArea( node, &rotate_rect, rotxor_hbitmap, rotand_hbitmap );
     } else {
-        stretchIntoArea( node, &rotate_rect, rotxorbmp, rotandbmp );
+        stretchIntoArea( node, &rotate_rect, rotxor_hbitmap, rotand_hbitmap );
     }
 
-    _wpi_deletebitmap( rotxorbmp );
-    _wpi_deletebitmap( rotandbmp );
+    _wpi_deletebitmap( rotxor_hbitmap );
+    _wpi_deletebitmap( rotand_hbitmap );
 
     if( whichway == IMGED_ROTATECC ) {
         PrintHintTextByID( WIE_IMAGEROTATEDCCW, NULL );
@@ -658,8 +658,8 @@ void ClearImage( void )
     WPI_PRES            andpres;
     HDC                 xormemdc;
     HDC                 andmemdc;
-    HBITMAP             oldxor;
-    HBITMAP             oldand;
+    WPI_HBITMAP         oldxor_hbitmap;
+    WPI_HBITMAP         oldand_hbitmap;
     img_node            *node;
     WPI_RECT            clear_area;
     WPI_RECTDIM         left;
@@ -685,8 +685,8 @@ void ClearImage( void )
     andpres = _wpi_createcompatiblepres( pres, Instance, &andmemdc );
     _wpi_releasepres( HWND_DESKTOP, pres );
 
-    oldxor = _wpi_selectbitmap( xorpres, node->hxorbitmap );
-    oldand = _wpi_selectbitmap( andpres, node->handbitmap );
+    oldxor_hbitmap = _wpi_selectbitmap( xorpres, node->xor_hbitmap );
+    oldand_hbitmap = _wpi_selectbitmap( andpres, node->and_hbitmap );
 
     _wpi_getwrectvalues( clear_area, &left, &top, &right, &bottom );
     width = _wpi_getwidthrect( clear_area );
@@ -695,8 +695,8 @@ void ClearImage( void )
     _wpi_patblt( xorpres, left, top, width, height, WHITENESS );
     _wpi_patblt( andpres, left, top, width, height, BLACKNESS );
 
-    _wpi_getoldbitmap( xorpres, oldxor );
-    _wpi_getoldbitmap( andpres, oldand );
+    _wpi_getoldbitmap( xorpres, oldxor_hbitmap );
+    _wpi_getoldbitmap( andpres, oldand_hbitmap );
     _wpi_deletecompatiblepres( xorpres, xormemdc );
     _wpi_deletecompatiblepres( andpres, andmemdc );
 
@@ -712,10 +712,10 @@ void ClearImage( void )
  */
 void ShiftImage( WORD shiftdirection )
 {
-    HBITMAP     dup_and;
-    HBITMAP     dup_xor;
-    HBITMAP     oldbitmap;
-    HBITMAP     oldsrcbitmap;
+    WPI_HBITMAP dupand_hbitmap;
+    WPI_HBITMAP dupxor_hbitmap;
+    WPI_HBITMAP old_hbitmap;
+    WPI_HBITMAP oldsrc_hbitmap;
     WPI_PRES    pres;
     HDC         memdc;
     WPI_PRES    mempres;
@@ -723,8 +723,8 @@ void ShiftImage( WORD shiftdirection )
     WPI_PRES    srcpres;
     short       x_src;
     short       y_src;
-    short       x_dest;
-    short       y_dest;
+    short       x_dst;
+    short       y_dst;
     short       width;
     short       height;
     short       min_width;
@@ -744,8 +744,8 @@ void ShiftImage( WORD shiftdirection )
         return;
     }
 
-    dup_and = DuplicateBitmap( node->handbitmap );
-    dup_xor = DuplicateBitmap( node->hxorbitmap );
+    dupand_hbitmap = DuplicateBitmap( node->and_hbitmap );
+    dupxor_hbitmap = DuplicateBitmap( node->xor_hbitmap );
 
     pres = _wpi_getpres( HWND_DESKTOP );
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
@@ -766,18 +766,18 @@ void ShiftImage( WORD shiftdirection )
 
     _wpi_getwrectvalues( rect, &left, &top, &right, &bottom );
 
-    oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, node->and_hbitmap );
     _wpi_patblt( mempres, left, top, width, height, BLACKNESS );
-    _wpi_getoldbitmap( mempres, oldbitmap );
-    oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, node->xor_hbitmap );
     _wpi_patblt( mempres, left, top, width, height, WHITENESS );
 
-    oldsrcbitmap = _wpi_selectbitmap( srcpres, dup_xor );
+    oldsrc_hbitmap = _wpi_selectbitmap( srcpres, dupxor_hbitmap );
 
     x_src = (short)left;
     y_src = (short)top;
-    x_dest =(short)left;
-    y_dest = (short)top;
+    x_dst = (short)left;
+    y_dst = (short)top;
     min_width = (short)min( ImgedConfigInfo.shift, width );
     min_height = (short)min( ImgedConfigInfo.shift, height );
     rgn_width = width;
@@ -792,7 +792,7 @@ void ShiftImage( WORD shiftdirection )
 
     case IMGED_RIGHT:
         width -= min_width;
-        x_dest = x_dest + min_width;
+        x_dst = x_dst + min_width;
         message = WIE_IMAGESHIFTEDRIGHT;
         break;
 
@@ -810,10 +810,10 @@ void ShiftImage( WORD shiftdirection )
     case IMGED_DOWN:
 #ifndef __OS2_PM__
         height -= min_height;
-        y_dest = y_dest + min_height;
+        y_dst = y_dst + min_height;
 #else
         height += min_height;
-        y_dest = y_dest - min_height;
+        y_dst = y_dst - min_height;
 #endif
         message = WIE_IMAGESHIFTEDDOWN;
         break;
@@ -822,36 +822,36 @@ void ShiftImage( WORD shiftdirection )
         break;
     }
 
-    _wpi_bitblt( mempres, x_dest, y_dest, width, height, srcpres, x_src, y_src, SRCCOPY );
-    _wpi_getoldbitmap( srcpres, oldsrcbitmap );
-    oldsrcbitmap = _wpi_selectbitmap( srcpres, dup_and );
-    _wpi_getoldbitmap( mempres, oldbitmap );
-    oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
-    _wpi_bitblt( mempres, x_dest, y_dest, width, height, srcpres, x_src, y_src, SRCCOPY );
+    _wpi_bitblt( mempres, x_dst, y_dst, width, height, srcpres, x_src, y_src, SRCCOPY );
+    _wpi_getoldbitmap( srcpres, oldsrc_hbitmap );
+    oldsrc_hbitmap = _wpi_selectbitmap( srcpres, dupand_hbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, node->and_hbitmap );
+    _wpi_bitblt( mempres, x_dst, y_dst, width, height, srcpres, x_src, y_src, SRCCOPY );
 
     if( IsShiftWrap() ) {
         switch( shiftdirection ) {
         case IMGED_LEFT:
             width = min_width;
             x_src = (short)left;
-            x_dest = (short)(right - width);
+            x_dst = (short)(right - width);
             break;
 
         case IMGED_RIGHT:
             width = min_width;
-            x_dest = (short)left;
+            x_dst = (short)left;
             x_src = (short)(right - width);
             break;
 
         case SHIFT_UP:
             height = min_height;
             y_src = (short)top;
-            y_dest = (short)(bottom - height);
+            y_dst = (short)(bottom - height);
             break;
 
         case SHIFT_DOWN:
             height = min_height;
-            y_dest = (short)top;
+            y_dst = (short)top;
             y_src = (short)(bottom - height);
             break;
 
@@ -859,22 +859,22 @@ void ShiftImage( WORD shiftdirection )
             break;
         }
 
-        _wpi_bitblt( mempres, x_dest, y_dest, width, height, srcpres,
+        _wpi_bitblt( mempres, x_dst, y_dst, width, height, srcpres,
                      x_src, y_src, SRCCOPY );
-        _wpi_getoldbitmap( srcpres, oldsrcbitmap );
-        _wpi_getoldbitmap( mempres, oldbitmap );
-        oldsrcbitmap = _wpi_selectbitmap( srcpres, dup_xor );
-        oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
-        _wpi_bitblt( mempres, x_dest, y_dest, width, height, srcpres,
+        _wpi_getoldbitmap( srcpres, oldsrc_hbitmap );
+        _wpi_getoldbitmap( mempres, old_hbitmap );
+        oldsrc_hbitmap = _wpi_selectbitmap( srcpres, dupxor_hbitmap );
+        old_hbitmap = _wpi_selectbitmap( mempres, node->xor_hbitmap );
+        _wpi_bitblt( mempres, x_dst, y_dst, width, height, srcpres,
                      x_src, y_src, SRCCOPY );
     }
-    _wpi_getoldbitmap( srcpres, oldsrcbitmap );
-    _wpi_getoldbitmap( mempres, oldbitmap );
+    _wpi_getoldbitmap( srcpres, oldsrc_hbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
     _wpi_deletecompatiblepres( srcpres, srcdc );
     _wpi_deletecompatiblepres( mempres, memdc );
 
-    _wpi_deletebitmap( dup_xor );
-    _wpi_deletebitmap( dup_and );
+    _wpi_deletebitmap( dupxor_hbitmap );
+    _wpi_deletebitmap( dupand_hbitmap );
 
     RecordImage( node->hwnd );
     BlowupImage( node->hwnd, NULL );

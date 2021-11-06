@@ -1,5 +1,4 @@
 proj_name = browse
-name = wbrw
 
 !ifndef browse_autodepends
 browse_autodepends = .AUTODEPEND
@@ -7,19 +6,11 @@ browse_autodepends = .AUTODEPEND
 
 browse_trmem = 1
 
-doc_path_dos = $(docs_dir)/dos
-doc_path_nt  = $(docs_dir)/nt
-doc_path_os2 = $(docs_dir)/os2
-doc_path_win = $(docs_dir)/win
+docs_host_dir = $(docs_dir)/$(host_os)
 
-wbrw_h_dos = $(doc_path_dos)/wbrw.h
-wbrw_h_os2 = $(doc_path_os2)/wbrw.h
-wbrw_h_win = $(doc_path_win)/wbrw.h
-wbrw_h_nt  = $(doc_path_nt)/wbrw.h
+additional_clean = $(docs_host_dir)/wbrw.gh
 
-additional_cleanup = $(wbrw_h_dos) $(wbrw_h_os2) $(wbrw_h_win) $(wbrw_h_nt)
-
-.extensions: .gpp .res .rc
+.extensions: .gpp
 
 sys_windowed = 1
 
@@ -36,30 +27,15 @@ sys_windowed = 1
 
 !include ../template.mif
 
+#
+# cflags
+#
 .c: ../cpp;../merge/c;$(posix_dir)/misc;$(lib_misc_dir)/c;$(trmem_dir)
 .cpp: ../cpp;../brg/cpp
 .gpp: ../gen
-.rc: ../res
 
-ext = obj
-objs = $+$(template)$- rxwrap.obj
-
-objs += brmem.obj $(trmem_objs)
-!ifeq release 0
-objs += debuglog.obj
-!endif
-
-!ifdef gen_browse_file
-ext = mbr
-mbr_files = $+$(template)$-
-!endif
-
-doc_inc_dirs_dos    = -I"$(doc_path_os2)"
-doc_inc_dirs_nt     = -I"$(doc_path_nt)"
-doc_inc_dirs_os2    = -I"$(doc_path_os2)"
-doc_inc_dirs_win    = -I"$(doc_path_win)"
-
-inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) $(doc_inc_dirs_$(host_os)) $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
+inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) -I"$(docs_host_dir)" &
+    $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
 extra_cpp_flags = -DNOPERSIST=1
 !ifeq release 0
@@ -87,13 +63,10 @@ extra_c_flags_i86 += -zW
 extra_c_flags_rxwrap = -I"$(posix_dir)/h" $(incl_file_opts)brmem.h
 extra_c_flags_demangle = -I"$(lib_misc_dir)/h"
 extra_c_flags_brmem = $(trmem_cover_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
 
-#linker
-libs_dos = $(ui_lib)
-
-libs     = $(gui_lib) $(libs_$(host_os)) $(dwarfr_lib) $(wclass_lib)
-
+#
+# lflags
+#
 lflags_win_i86  = sys windows font mem op stack=16k
 lflags_dos_386  = sys pharlap
 
@@ -108,45 +81,74 @@ extra_l_flags_nt_axp = op undefsok
 extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 extra_l_flags_os2 =
 
-# systems where version resource must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
+# explicit rules
+#################
 
-verrc_exe = $(name)
-!include verrc.mif
+!ifdef gen_browse_file
+ext = mbr
+mbr_files = $+$(template)$-
+!endif
 
-all: $(wbrw_h_$(host_os)) $(name).exe .SYMBOLIC
+ext = obj
+objs      = $+$(template)$- rxwrap.obj brmem.obj $(trmem_objs)
 
-$(name).exe : $(objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
-    @%make bind_res_add_version_exe
+!ifeq release 0
+objs_dbg  = debuglog.obj
+!endif
+
+#
+# EXE
+#
+exetarg_prebuild_objs = $(docs_host_dir)/wbrw.gh
+exetarg_objs          = $(objs) $(objs_dbg)
+exetarg_libs_dos      = $(ui_lib)
+exetarg_libs          = $(gui_lib) $(exetarg_libs_$(host_os)) $(dwarfr_lib) $(wclass_lib)
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
+exetarg_res           = $(exetarg_name).res
+exetarg_nt_manif_386  = ntmanif.res
+exetarg_nt_manif_x64  = ntmanif.res
+exetarg_name          = wbrw
+!include exetarg.mif
 !ifdef gen_browse_file
     $(noecho)%create browser.wbr
     @for %i in ($(mbr_files)) do @%append browser.wbr file %i
 !endif
 
+#
+# rc and others
+#
+verrc_exe = $(exetarg_name)
+!include verrc.mif
+
+rc_inc_dirs = -I"../res/bmp" -I"../res/dlg" -I"../res/cur" -I"../res" -I"../h"
+
+!ifeq host_os os2
+$(exetarg_name).res : ../res/wbrwpm.rc
+    @%make echo_rc
+    $(rc) $(rc_flags) -I"../res/ico_pm" $(rc_inc_path) $< -fo=$@
+!else
+$(exetarg_name).res : ../res/wbrw.rc
+    @%make echo_rc
+    $(rc) $(rc_flags) -I"../res/ico" $(rc_inc_path) $< -fo=$@
+!endif
+
+ntmanif.res : ../res/ntmanif.rc
+    @%make echo_rc
+    $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+
+curr_dir=$+$(%__CWD__)$-
+
+$(docs_host_dir) : .SYMBOLIC
+    $(noecho)cd $@
+
+$(docs_host_dir)/wbrw.gh : $(docs_host_dir) .ALWAYS
+    $(noecho)!$(nested_wmake) -h -f ../mif/onebook.mif hbook=wbrw header=1 dotarget=$(host_os)
+    $(noecho)cd $(curr_dir)
+
+# implicit rules
+#################
+
 .gpp.obj: .AUTODEPEND
     @%make echo_cxx
     $(cxx) $(cflags) $(extra_cxx_flags) $(extra_cpp_flags_$[&) $(extra_c_flags_$[&) $(inc_path) $[@
-
-!ifdef wbrw_h_$(host_os)
-curr_dir=$+$(%__CWD__)$-
-
-$(doc_path_$(host_os)) : .SYMBOLIC
-    $(noecho)cd $@
-
-$(wbrw_h_$(host_os)): $(doc_path_$(host_os)) .ALWAYS
-    $(noecho)!wmake -h -f ../mif/onebook.mif hbook=wbrw header=1 dotarget=$(host_os)
-    $(noecho)cd $(curr_dir)
-!endif
-
-!ifeq host_os os2
-$(name).res : wbrwpm.rc
-    @%make echo_rc
-    $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
-!else
-$(name).res : wbrw.rc
-    @%make echo_rc
-    $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
-!endif

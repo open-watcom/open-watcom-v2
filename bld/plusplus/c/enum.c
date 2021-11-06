@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,7 +141,7 @@ static struct enum_range const range_table[] =
 #error unknown _CPU
 #endif
 
-#define ENUM_RNG_MAX ( sizeof(range_table) / sizeof(range_table[0]) )
+#define ENUM_RNG_MAX ARRAY_SIZE( range_table )
 
 
 // Note: During overloading, it is a standard conversion from an enum to

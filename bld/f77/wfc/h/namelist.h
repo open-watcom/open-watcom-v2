@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,8 @@ typedef struct name_list {
     struct grp_entry    *group_list;            // entries in namelist
     obj_addr            address;                // address of namelist data
     db_handle           dbh;                    // dwarf handle
-    byte                name_len;               // length of namelist name
-    char                name[STD_SYMLEN];       // namelist name
+    size_t              name_len;               // length of namelist name
+    char                name[1];                // namelist name
 } name_list;
 
 typedef struct grp_entry {

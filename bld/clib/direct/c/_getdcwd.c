@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +32,13 @@
 
 #include "variety.h"
 #include <string.h>
+#include <dos.h>
 #include "liballoc.h"
+#include "rtdata.h"
 #include "seterrno.h"
+#include "doserror.h"
 #include "_direct.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 
 
@@ -66,43 +71,70 @@ extern unsigned __getdcwd_sfn( char *buff, unsigned char drv );
     AUX_INFO
 
 #ifdef __WATCOM_LFN__
-static tiny_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
-/**************************************************************/
+
+#ifdef _M_I86
+extern lfn_ret_t ___getdcwd_lfn( char *path, unsigned char drv );
+  #ifdef __BIG_DATA__
+    #pragma aux ___getdcwd_lfn = \
+            "push   ds"         \
+            "mov    ds,cx"      \
+            "mov    ax,7147h"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    ds"         \
+            "call __lfnerror_0" \
+        __parm __caller     [__cx __si] [__dl] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx]
+  #else
+    #pragma aux ___getdcwd_lfn = \
+            "mov    ax,7147h"   \
+            "stc"               \
+            "int 21h"           \
+            "call __lfnerror_0" \
+        __parm __caller     [__si] [__dl] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx]
+  #endif
+#endif
+
+static lfn_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
+/*************************************************************/
 {
   #ifdef _M_I86
     return( ___getdcwd_lfn( buff, drv ) );
   #else
     call_struct     dpmi_rm;
+    lfn_ret_t       rc;
 
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.ds  = RM_TB_PARM1_SEGM;
     dpmi_rm.esi = RM_TB_PARM1_OFFS;
     dpmi_rm.edx = drv;
     dpmi_rm.eax = 0x7147;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
+    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+        strcpy( buff, RM_TB_PARM1_LINEAR );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
-    }
-    strcpy( buff, RM_TB_PARM1_LINEAR );
-    return( 0 );
+    return( rc );
   #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ */
 
 unsigned __getdcwd( char *buff, unsigned char drv )
 /*************************************************/
 {
 #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    if( _RWD_uselfn ) {
+        lfn_ret_t  rc;
 
-    if( _RWD_uselfn && TINY_OK( rc = __getdcwd_lfn( buff, drv ) ) ) {
-        return( 0 );
-    }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+        rc = __getdcwd_lfn( buff, drv );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            return( 0 );
+        }
     }
 #endif
     return( __getdcwd_sfn( buff, drv ) );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +35,10 @@
 #define _GUIXHOT_H_
 
 typedef struct hotspot_info {
-    HBITMAP     bitmap;
-    gui_coord   size;
+    guix_coord      size;
+    WPI_HBITMAP     hbitmap;
 } hotspot_info;
 
-extern void GUIDrawBitmap( int hot_spot, WPI_PRES hdc,
-                           int nDrawX, int nDrawY,
-                           WPI_COLOUR bkcolour );
+extern void GUIDrawBitmap( int hotspot_no, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_COLOUR bkcolour );
+
 #endif // _GUIXHOT_H_

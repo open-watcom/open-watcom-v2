@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -500,7 +501,7 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
 
     repeat = OmfGetUWord( ptr, wordsize );
     ptr += wordsize;
-    block = OmfGetUWord( ptr, 2 );
+    block = OmfGetU16( ptr );
     ptr += 2;
 
     lo = used;
@@ -552,7 +553,7 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
 
                 /* insert into new fixup queue
                  */
-                if( ofh->lidata->new_fixup ) {
+                if( ofh->lidata->new_fixup != NULL ) {
                     ofh->lidata->last_fixup->next = ntr;
                 } else {
                     ofh->lidata->new_fixup = ntr;
@@ -637,8 +638,8 @@ static orl_return       expandPrevLIData( omf_file_handle ofh )
      */
     while( ofh->lidata->new_fixup != NULL ) {
         ftr = ofh->lidata->new_fixup;
-        return_val = OmfAddFixupp( ofh, ftr->is32, ftr->mode, ftr->location, ftr->offset,
-                            ftr->fmethod, ftr->fidx, ftr->tmethod, ftr->tidx, ftr->disp );
+        return_val = OmfAddFixupp( ofh, ftr->is32, ftr->mode, ftr->fix_loc, ftr->offset,
+                            &ftr->fthread, &ftr->tthread, ftr->disp );
         if( return_val != ORL_OKAY )
             break;
         ofh->lidata->new_fixup = ftr->next;
@@ -762,7 +763,7 @@ static omf_sec_offset   calcLIDataLength( bool is32, omf_bytes *input, omf_rec_s
         return( 0 );
     repeat = OmfGetUWord( buffer, wordsize );
     buffer += wordsize;
-    block = OmfGetUWord( buffer, 2 );
+    block = OmfGetU16( buffer );
     buffer += 2;
     size -= tmp;
 
@@ -1089,15 +1090,27 @@ orl_return OmfAddBakpat( omf_file_handle ofh, unsigned_8 loctype, omf_sec_offset
 }
 
 
-orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location, omf_sec_offset offset,
-                            int fmethod, omf_idx fidx, int tmethod, omf_idx tidx, omf_sec_addend disp )
+orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, bool mode, omf_fix_loc fix_loc,
+                        omf_sec_offset offset, ORL_STRUCT( omf_thread_fixup ) *fthread,
+                        ORL_STRUCT( omf_thread_fixup ) *tthread, omf_sec_addend disp )
 {
     omf_tmp_fixup           ftr;
     ORL_STRUCT( orl_reloc ) *orel;
     omf_sec_handle          sh;
     omf_grp_handle          grp;
+    ORL_STRUCT( omf_thread_fixup ) frame;
 
     assert( ofh );
+
+    /*
+     * remap FRAME_LOC to FRAME_SEG of curr segment
+     */
+    if( fthread->method == FRAME_LOC ) {
+        frame.method = FRAME_SEG;
+        frame.idx = ofh->work_sec->assoc.seg.seg_id;
+    } else {
+        frame = *fthread;
+    }
 
     if( ofh->status & OMF_STATUS_ADD_LIDATA ) {
         assert( ofh->work_sec );
@@ -1108,19 +1121,12 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
             return( ORL_OUT_OF_MEMORY );
         memset( ftr, 0, ORL_STRUCT_SIZEOF( omf_tmp_fixup ) );
 
-        if( fmethod == FRAME_LOC ) {
-            fmethod = FRAME_SEG;
-            fidx = ofh->work_sec->assoc.seg.seg_id;
-        }
-
         ftr->is32 = is32;
         ftr->mode = mode;
-        ftr->location = location;
+        ftr->fix_loc = fix_loc;
         ftr->offset = offset;
-        ftr->fmethod = fmethod;
-        ftr->fidx = fidx;
-        ftr->tmethod = tmethod;
-        ftr->tidx = tidx;
+        ftr->fthread = frame;
+        ftr->tthread = *tthread;
         ftr->disp = disp;
 
         if( ofh->lidata->last_fixup ) {
@@ -1137,9 +1143,10 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
         return( ORL_OUT_OF_MEMORY );
     memset( orel, 0, ORL_STRUCT_SIZEOF( orl_reloc ) );
 
-    switch( location ) {
-    case( LOC_OFFSET_LO ):              /* relocate lo byte of offset   */
-        /* should be 8 rather then 16, fix later
+    switch( fix_loc ) {
+    case( LOC_OFFSET_LO ):
+        /*
+         * relocate lo byte of offset
          */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_8;
@@ -1147,41 +1154,84 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
             orel->type = ORL_RELOC_TYPE_REL_8;
         }
         break;
-    case( LOC_OFFSET ):                 /* relocate offset              */
+    case( LOC_OFFSET ):
+        /*
+         * relocate 16-bit offset
+         */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_16;
         } else {
             orel->type = ORL_RELOC_TYPE_REL_16;
         }
         break;
-    case( LOC_BASE ):                   /* relocate segment             */
-            orel->type = ORL_RELOC_TYPE_SEGMENT;
+    case( LOC_BASE ):
+        /*
+         * relocate segment
+         */
+        orel->type = ORL_RELOC_TYPE_SEGMENT;
         break;
-    case( LOC_BASE_OFFSET ):            /* relocate segment and offset  */
+    case( LOC_BASE_OFFSET ):
+        /*
+         * relocate segment and 16-bit offset
+         */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_16_SEG;
         } else {
             orel->type = ORL_RELOC_TYPE_REL_16_SEG;
         }
         break;
-    case( LOC_OFFSET_HI ):              /* relocate hi byte of offset   */
+    case( LOC_OFFSET_HI ):
+        /*
+         * relocate hi byte of offset
+         */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_HI_8;
         } else {
             orel->type = ORL_RELOC_TYPE_REL_HI_8;
         }
         break;
-    case( LOC_OFFSET_32 ):              /* relocate 32-bit offset       */
-    case( LOC_MS_OFFSET_32 ):           /* MS 32-bit offset             */
-    case( LOC_MS_LINK_OFFSET_32 ):      /* like OFFSET_32, ldr resolved */
+    case( LOC_OFFSET_LOADER ):
+        if( ofh->status & OMF_STATUS_EASY_OMF ) {
+            /*
+             * Pharlap, relocate 32-bit offset
+             */
+            if( mode ) {
+                orel->type = ORL_RELOC_TYPE_WORD_32;
+            } else {
+                orel->type = ORL_RELOC_TYPE_REL_32;
+            }
+            break;
+        }
+        /*
+         * relocate 16-bit offset, loader resolved
+         */
+        if( mode ) {
+            orel->type = ORL_RELOC_TYPE_WORD_16;
+        } else {
+            orel->type = ORL_RELOC_TYPE_REL_16;
+        }
+        break;
+    case( LOC_OFFSET_32 ):
+    case( LOC_OFFSET_32_LOADER ):
+        /*
+         * relocate 32-bit offset
+         * relocate 32-bit offset, loader resolved
+         */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_32;
         } else {
             orel->type = ORL_RELOC_TYPE_REL_32;
         }
         break;
-    case( LOC_BASE_OFFSET_32 ):         /* relocate seg and 32bit offset*/
-    case( LOC_MS_BASE_OFFSET_32 ):      /* MS 48-bit pointer            */
+    case( LOC_PHARLAP_BASE_OFFSET_32 ):
+        /*
+         * Pharlap, relocate segment and 32-bit offset
+         */
+        if( (ofh->status & OMF_STATUS_EASY_OMF) == 0 ) {
+            return( ORL_ERROR );
+        }
+        /* fall through */
+    case( LOC_BASE_OFFSET_32 ):         /* relocate 48-bit pointer            */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_32_SEG;
         } else {
@@ -1191,8 +1241,8 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
     default:
         return( ORL_ERROR );
     }
-
-    /* no section for fixups to refer to
+    /*
+     * no section for fixups to refer to
      */
     if( ofh->work_sec == NULL )
         return( ORL_ERROR );
@@ -1201,54 +1251,45 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
     orel->section = (orl_sec_handle)(ofh->work_sec);
     orel->addend = disp;
 
-    if( fmethod == FRAME_LOC ) {
-        fmethod = FRAME_SEG;
-        fidx = ofh->work_sec->assoc.seg.seg_id;
-    }
-
-    switch( tmethod ) {
-    case( TARGET_SEGWD ):            /* segment index with displacement      */
-    case( TARGET_SEG ):              /* segment index, no displacement       */
-        sh = findSegment( ofh, tidx );
+    switch( tthread->method ) {
+    case TARGET_SEG:            /* segment index      */
+        sh = findSegment( ofh, tthread->idx );
         if( sh == NULL )
             return( ORL_ERROR );
         orel->symbol = (orl_symbol_handle)(sh->assoc.seg.sym);
         break;
-    case( TARGET_GRPWD ):            /* group index with displacement        */
-    case( TARGET_GRP ):              /* group index, no displacement         */
-        grp = findGroup( ofh, tidx );
+    case TARGET_GRP:            /* group index        */
+        grp = findGroup( ofh, tthread->idx );
         if( grp == NULL )
             return( ORL_ERROR );
         orel->symbol = (orl_symbol_handle)(grp->sym);
         break;
-    case( TARGET_EXTWD ):            /* external index with displacement     */
-    case( TARGET_EXT ):              /* external index, no displacement      */
-        orel->symbol = (orl_symbol_handle)(findExtDefSym( ofh, tidx ));
+    case TARGET_EXT:            /* external index     */
+        orel->symbol = (orl_symbol_handle)(findExtDefSym( ofh, tthread->idx ));
         if( orel->symbol == NULL )
             return( ORL_ERROR );
         break;
-    case( TARGET_ABSWD ):            /* abs frame num with displacement      */
-    case( TARGET_ABS ):              /* abs frame num, no displacement       */
+    case TARGET_ABS:            /* abs frame num      */
         break;
     default:
         return( ORL_ERROR );
     }
 
-    switch( fmethod ) {
+    switch( frame.method ) {
     case( FRAME_SEG ):                      /* segment index                */
-        sh = findSegment( ofh, fidx );
+        sh = findSegment( ofh, frame.idx );
         if( sh == NULL )
             return( ORL_ERROR );
         orel->frame = (orl_symbol_handle)(sh->assoc.seg.sym);
         break;
     case( FRAME_GRP ):                      /* group index                  */
-        grp = findGroup( ofh, fidx );
+        grp = findGroup( ofh, frame.idx );
         if( grp == NULL )
             return( ORL_ERROR );
         orel->frame = (orl_symbol_handle)(grp->sym);
         break;
     case( FRAME_EXT ):                      /* external index               */
-        orel->frame = (orl_symbol_handle)(findExtDefSym( ofh, fidx ));
+        orel->frame = (orl_symbol_handle)(findExtDefSym( ofh, frame.idx ));
         if( orel->frame == NULL )
             return( ORL_ERROR );
         break;
@@ -1260,6 +1301,9 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
         orel->frame = orel->symbol;
         break;
     case( FRAME_LOC ):                      /* frame containing location    */
+        /*
+         * FRAME_LOC is already remap to FRAME_SEG of curr segment
+         */
         assert( 0 );
     }
 

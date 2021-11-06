@@ -32,6 +32,8 @@
 
 #ifdef __UNIX__
 extern int      DbgConHandle;   /* Debugger's console file handle */
+extern char     *DbgTerminal;
+extern char     XConfig[2048];
 #endif
 
 extern void     Ring_Bell( void );

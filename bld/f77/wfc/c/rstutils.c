@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "segsw.h"
 #include "global.h"
 #include "cpopt.h"
@@ -66,27 +66,17 @@ char    *STGetName( sym_id sym, char *buff ) {
 }
 
 
-uint    AllocName( uint length ) {
-//================================
-
-// Determine how much space to allocate for the name of a symbol.
-
-    if( length <= STD_SYMLEN ) return( 0 );
-    return( length - STD_SYMLEN );
-}
-
-
-sym_id  STAdd( char *name, int length ) {
-//=======================================
-
+sym_id STAdd( const char *name, size_t length )
+//=============================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
-
+{
     sym_id    sym;
 
-    sym = FMemAlloc( sizeof( symbol ) + AllocName( length ) );
+    sym = FMemAlloc( sizeof( named_symbol ) + length );
     sym->u.ns.u2.name_len = length;
     memcpy( &sym->u.ns.name, name, length );
+    sym->u.ns.name[length] = NULLCHAR;
     sym->u.ns.flags = 0;
     sym->u.ns.u1.s.xflags = 0;
     if( (Options & OPT_REFERENCE) == 0 ) {

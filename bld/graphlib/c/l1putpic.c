@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,7 +75,7 @@ void _L1PutPic( short px, short py, short line_len,
         _ErrorStatus = _GRNOOUTPUT;                 /* image is completely  */
         return;                                     /* outside view port    */
     }
-    pic = &image->buffer;
+    pic = image->buffer;
     skip_left = x1 - px;        /* # of pixels to the left of the viewport  */
     skip_down = y1 - py;                /* # of pixels above the viewport   */
     if( skip_down > 0 ) {                               /* point to start   */
@@ -115,7 +115,7 @@ void _L1PutPic( short px, short py, short line_len,
             }
             if( tmp != NULL ) {
                 for( t = 0; t < line_len; ++t ) {
-                    tmp[ t ] = *pic;
+                    tmp[t] = *pic;
                     ++pic;      // the PIA function will handle this properly
                 }
                 ( *copy )( _Screen.mem, tmp, dx, ( _Screen.bit_pos << 8 ) + bit_offset, plane_len );

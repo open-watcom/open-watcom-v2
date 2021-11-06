@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,17 +36,15 @@
 
 
 /*
- * GUIGetPoint -- Get the point in win at extent in row
+ * GUIGetPoint -- Get the point in win at extentx in row
  */
 
-void GUIGetPoint( gui_window * wnd, gui_ord extent, gui_ord row, gui_point *point )
+void GUIAPI GUIGetPoint( gui_window *wnd, gui_ord extentx, gui_text_ord row, gui_point *point )
 {
     if( point == NULL ) {
         return;
     }
-    point->x = extent;
-    GUIScaleToScreenRPt( point );
     GUIGetMetrics( wnd );
-    point->y = row * AVGYCHAR( GUItm );
-    GUIScreenToScaleRPt( point );
+    point->x = GUIScreenToScaleH( GUIScaleToScreenH( extentx ) );
+    point->y = GUIScreenToScaleV( row * AVGYCHAR( GUItm ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,11 +105,11 @@ void WREShutdownRibbon( void )
 
     for( i = 0; i < NUM_TOOLS; i++ ) {
         if( WRERibbonInfo->items[i].flags != ITEM_BLANK ) {
-            if( WRERibbonInfo->items[i].u.bmp == WRERibbonInfo->items[i].depressed ) {
+            if( WRERibbonInfo->items[i].u.hbitmap == WRERibbonInfo->items[i].depressed ) {
                 WRERibbonInfo->items[i].depressed = (HBITMAP)NULL;
             }
-            if( WRERibbonInfo->items[i].u.bmp != NULL ) {
-                DeleteObject( WRERibbonInfo->items[i].u.bmp );
+            if( WRERibbonInfo->items[i].u.hbitmap != NULL ) {
+                DeleteObject( WRERibbonInfo->items[i].u.hbitmap );
             }
             if( WRERibbonInfo->items[i].depressed != NULL ) {
                 DeleteObject( WRERibbonInfo->items[i].depressed );
@@ -237,14 +237,14 @@ bool WREInitRibbon( HINSTANCE inst )
 
     for( i = 0; i < NUM_TOOLS; i++ ) {
         if( WRERibbonNames[i].up ) {
-            WRERibbonInfo->items[i].u.bmp = LoadBitmap( inst, WRERibbonNames[i].up );
+            WRERibbonInfo->items[i].u.hbitmap = LoadBitmap( inst, WRERibbonNames[i].up );
             WRERibbonInfo->items[i].id = WRERibbonNames[i].menu_id;
             WRERibbonInfo->items[i].flags = ITEM_DOWNBMP;
             if( WRERibbonNames[i].down ) {
                 WRERibbonInfo->items[i].depressed =
                     LoadBitmap( inst, WRERibbonNames[i].down );
             } else {
-                WRERibbonInfo->items[i].depressed = WRERibbonInfo->items[i].u.bmp;
+                WRERibbonInfo->items[i].depressed = WRERibbonInfo->items[i].u.hbitmap;
             }
             if( !( WRERibbonNames[i].tip_id > 0 && LoadString( inst, WRERibbonNames[i].tip_id, WRERibbonInfo->items[i].tip, MAX_TIP ) > 0 ) ) {
                 WRERibbonInfo->items[i].tip[0] = '\0';

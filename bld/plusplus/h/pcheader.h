@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@ enum {
 #endif
 
 #define PHH_MAJOR               0x03
-#define PHH_MINOR               0x31
+#define PHH_MINOR               0x32
 
 #define TEXT_HEADER_SIZE        40
 #ifdef __UNIX__
@@ -205,32 +205,32 @@ typedef enum {
 
 // PROTOTYPES
 
-extern void PCHActivate( void );
-extern void PCHSetFileName( char * );
-extern void PCHeaderCreate( char * );
-extern pch_absorb PCHeaderAbsorb( char * );
-extern void PCHWrite( void const *, unsigned );
-extern void PCHWriteUnaligned( void const *, unsigned );
-extern void *PCHRead( void *, unsigned );
-extern void *PCHReadUnaligned( void *, unsigned );
-extern unsigned PCHReadUInt( void );
-extern unsigned PCHReadUIntUnaligned( void );
-extern void PCHWriteUInt( unsigned );
-extern void PCHRelocStart( pch_reloc_index );
-extern void PCHRelocStop( pch_reloc_index );
-extern void PCHPerformReloc( pch_reloc_index );
-extern void PCHWarn2p( unsigned, void * );
-extern NAME PCHDebugInfoName( void );
-extern void PCHFlushBuffer( void );
-extern char *PCHFileName( void );
+extern void         PCHActivate( void );
+extern void         PCHSetFileName( char * );
+extern void         PCHeaderCreate( char * );
+extern pch_absorb   PCHeaderAbsorb( char * );
+extern void         PCHWrite( void const *, unsigned );
+extern void         PCHWriteUnaligned( void const *, unsigned );
+extern void         *PCHRead( void *, unsigned );
+extern void         *PCHReadUnaligned( void *, unsigned );
+extern unsigned     PCHReadUInt( void );
+extern unsigned     PCHReadUIntUnaligned( void );
+extern void         PCHWriteUInt( unsigned );
+extern void         PCHRelocStart( pch_reloc_index );
+extern void         PCHRelocStop( pch_reloc_index );
+extern void         PCHPerformReloc( pch_reloc_index );
+extern void         PCHWarn2p( unsigned, void * );
+extern NAME         PCHDebugInfoName( void );
+extern void         PCHFlushBuffer( void );
+extern char         *PCHFileName( void );
 
-extern void *PCHReadCVIndexElement( cvinit_t * );
+extern void         *PCHReadCVIndexElement( cvinit_t * );
 
 #ifdef OPT_BR
-long PCHSeek( long offset, int type );
+extern long         PCHSeek( long offset, int type );
 #endif
 #ifndef NDEBUG
-extern void PCHVerifyFile( void *handle );
+extern void         PCHVerifyFile( void *handle );
 #else
 #define  PCHVerifyHandle( handle ) handle = handle
 #endif

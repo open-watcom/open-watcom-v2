@@ -16,11 +16,11 @@ The values for service are:
 .term _TIME_GETCLOCK
 Places the current system clock value in the location pointed to by
 .arg timeval
-.ct .li .
+.period
 .term _TIME_SETCLOCK
 Sets the system clock to the value in the location pointed to by
 .arg timeval
-.ct .li .
+.period
 .endterm
 .np
 The area pointed to by the argument
@@ -28,7 +28,7 @@ The area pointed to by the argument
 has the following structure.
 .begnote
 .note timeval+0
-Year (BCD 00-99)
+Year (BCD 0-99)
 .note timeval+1
 The upper 4 bits is the month (in the range 1-12).
 The lower 4 bits is the day (in the range 0-6).

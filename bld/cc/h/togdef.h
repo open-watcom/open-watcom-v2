@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,16 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C compiler toggles controllable through pragmas.
 *
 ****************************************************************************/
 
 
-TOGDEF( check_stack,              TOGGLE_CHECK_STACK )
-TOGDEF( unreferenced,             TOGGLE_UNREFERENCED )
-TOGDEF( inline,                   TOGGLE_INLINE )
-TOGDEF( dump_cg,                  TOGGLE_DUMP_CG )
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
-TOGDEF( reuse_duplicate_strings,  TOGGLE_REUSE_DUPLICATE_STRINGS )
-#endif
+/*    name                   */
+pick( check_stack )
+pick( unreferenced )
+pick( inline )
+pick( reuse_duplicate_strings )

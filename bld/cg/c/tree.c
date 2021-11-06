@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,7 @@
 #include "feprotos.h"
 #include "cgprotos.h"
 
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
     #include "x86segs.h"
 #endif
 #ifndef NDEBUG
@@ -301,7 +301,7 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
         rtipe = TypeInteger;
     }
     if( tipe->refno == TY_DEFAULT ) {
-        return( ClassType( mat_type_class[TypeClass( ltipe ) * XX + TypeClass( rtipe )] ) );
+        return( TypeOfTypeClass( mat_type_class[TypeClass( ltipe ) * XX + TypeClass( rtipe )] ) );
     }
 #if _TARGET & 0
     return( tipe );
@@ -334,7 +334,7 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
 #endif
 }
 
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
 static bool RHSLongPointer( tn rite )
 {
     if( rite->class == TN_LEAF && rite->u.addr->format == NF_ADDR ) {
@@ -536,7 +536,7 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
         left = TGConvert( left, tipe );
         rite = TGConvert( rite, tipe );
         break;
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
     case O_CONVERT: /* based pointer junk */
         left = TGConvert( left, TypeAddress( TY_NEAR_POINTER ) );
         if( !RHSLongPointer( rite ) ) {
@@ -651,7 +651,7 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
         break;
     case O_TIMES:
         tipe = ResultType( left, rite, tipe, BinMat, false );
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         if( tipe->refno == TY_INT_4 &&
             left->tipe->length <= 2 && rite->tipe->length <= 2 ) {
             left = TGConvert( left, TypeInteger );
@@ -1655,7 +1655,7 @@ an  TNFlow( tn node )
 }
 
 
-#if _TARGET != _TARG_IAPX86
+#if _TARGET != _TARG_8086
     #define JUST_USE_SHIFTS
 #endif
 
@@ -2051,7 +2051,7 @@ an  TNUnary( tn node )
     return( retv );
 }
 
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
 static an   MakeBased( an left, an rite, type_def *tipe )
 /********************************************************
     Create a far pointer from the ashes of a near pointer on the left

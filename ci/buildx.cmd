@@ -1,11 +1,17 @@
 @set OWECHO=off
 @if "%OWDEBUG%" == "1" set OWECHO=on
 @echo %OWECHO%
-SETLOCAL EnableDelayedExpansion
-REM Script to build the Open Watcom bootstrap tools
-REM By Microsoft Visual Studio
 REM ...
-call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+REM Script to build the Open Watcom bootstrap tools
+REM ...
+if "%OWTOOLS%" == "WATCOM" (
+    set PATH=%WATCOM_PATH%
+)
+if "%OWTOOLS%" == "VISUALC" (
+    if "%OWTOOLSV%" == "VS2017" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+    if "%OWTOOLSV%" == "VS2019" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
+    if "%OWTOOLSV%" == "VS2022" call "C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Auxiliary\Build\vcvarsall.bat" amd64
+)
 REM ...
 @echo %OWECHO%
 REM ...
@@ -22,6 +28,8 @@ set OWHHC=%OWCIBIN32%\hhc.exe
 REM ...
 call %OWROOT%\cmnvars.bat
 REM ...
+set OWVERBOSE=1
+REM ...
 @echo %OWECHO%
 REM ...
 if "%OWDEBUG%" == "1" (
@@ -30,18 +38,23 @@ if "%OWDEBUG%" == "1" (
     echo LIBPATH="%LIBPATH%"
 )
 REM ...
+SETLOCAL EnableDelayedExpansion
 set RC=0
 cd %OWSRCDIR%
 if "%OWBUILD_STAGE%" == "boot" (
-    mkdir %OWBINDIR%
+    mkdir %OWBINDIR%\%OWOBJDIR%
     mkdir %OWSRCDIR%\wmake\%OWOBJDIR%
     cd %OWSRCDIR%\wmake\%OWOBJDIR%
-    nmake -f ..\nmake
+    if "%OWTOOLS%" == "WATCOM" (
+        wmake -f ..\wmake
+    ) else (
+        nmake -f ..\nmake
+    )
     set RC=!ERRORLEVEL!
     if not %RC% == 1 (
-    	mkdir %OWSRCDIR%\builder\%OWOBJDIR%
-    	cd %OWSRCDIR%\builder\%OWOBJDIR%
-        %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
+        mkdir %OWSRCDIR%\builder\%OWOBJDIR%
+        cd %OWSRCDIR%\builder\%OWOBJDIR%
+        %OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1
         set RC=!ERRORLEVEL!
         if not %RC% == 1 (
             cd %OWSRCDIR%
@@ -60,8 +73,8 @@ REM    set RC=!ERRORLEVEL!
 )
 if "%OWBUILD_STAGE%" == "docs" (
     REM register all Help Compilers DLL's
-    %systemroot%\SysWoW64\regsvr32 -u -s itcc.dll
-    %systemroot%\SysWoW64\regsvr32 -s %OWCIBIN32%\itcc.dll
+    regsvr32 -u -s itcc.dll
+    regsvr32 -s %OWCIBIN32%\itcc.dll
     builder docs %OWDOCTARGET%
     set RC=!ERRORLEVEL!
 )

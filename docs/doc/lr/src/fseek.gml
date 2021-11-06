@@ -10,22 +10,22 @@ The
 function changes the read/write position of the file
 specified by
 .arg fp
-.ct .li .
+.period
 This position defines the character that will be read or written on
 the next I/O operation on the file.
 The argument
 .arg fp
 is a file pointer returned by
-.kw fopen
+.reffunc fopen
 or
-.kw freopen
-.ct .li .
+.reffunc freopen
+.period
 The argument
 .arg offset
 is the position to seek to relative to one of three positions
 specified by the argument
 .arg where
-.ct .li .
+.period
 Allowable values for
 .arg where
 are:
@@ -50,22 +50,22 @@ The
 .id &funcb.
 function clears the end-of-file indicator and undoes any
 effects of the
-.kw ungetc
+.reffunc ungetc
 function on the same file.
 .np
 The
-.kw ftell
+.reffunc ftell
 function can be used to obtain the current position in the file before
 changing it.
 The position can be restored by using the value returned by
-.kw ftell
+.reffunc ftell
 in a subsequent call to
 .id &funcb.
 with the
 .arg where
 parameter set to
 .kw SEEK_SET
-.ct .li .
+.period
 .desc end
 .return begin
 The

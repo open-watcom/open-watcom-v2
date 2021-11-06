@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include "stdrdos.h"
 #include "debug.h"
 
-trap_retval ReqAsync_go( void )
+trap_retval TRAP_ASYNC( go )( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread;
@@ -84,11 +85,11 @@ trap_retval ReqAsync_go( void )
                     ret->conditions |= COND_WATCH;
 
                 if( HasFaultOccurred( thread ) )
-                    ret->conditions |= COND_EXCEPTION;                
+                    ret->conditions |= COND_EXCEPTION;
             }
         } else {
             ret->conditions     |= COND_RUNNING;
-        }            
+        }
     } else
         ret->conditions |= COND_TERMINATE;
 
@@ -107,7 +108,7 @@ trap_retval ReqAsync_go( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqAsync_step( void )
+trap_retval TRAP_ASYNC( step )( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread;
@@ -155,11 +156,11 @@ trap_retval ReqAsync_step( void )
                     ret->conditions |= COND_TRACE;
 
                 if( HasFaultOccurred( thread ) )
-                    ret->conditions |= COND_EXCEPTION;                
+                    ret->conditions |= COND_EXCEPTION;
             }
         } else {
             ret->conditions     |= COND_RUNNING;
-        }            
+        }
     } else
         ret->conditions |= COND_TERMINATE;
 
@@ -178,7 +179,7 @@ trap_retval ReqAsync_step( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqAsync_poll( void )
+trap_retval TRAP_ASYNC( poll )( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread;
@@ -225,11 +226,11 @@ trap_retval ReqAsync_poll( void )
                     ret->conditions |= COND_TRACE;
 
                 if( HasFaultOccurred( thread ) )
-                    ret->conditions |= COND_EXCEPTION;                
+                    ret->conditions |= COND_EXCEPTION;
             }
         } else {
             ret->conditions     |= COND_RUNNING;
-        }            
+        }
     } else
         ret->conditions |= COND_TERMINATE;
 
@@ -248,7 +249,7 @@ trap_retval ReqAsync_poll( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqAsync_stop( void )
+trap_retval TRAP_ASYNC( stop )( void )
 {
     async_go_ret            *ret;
 
@@ -262,7 +263,7 @@ trap_retval ReqAsync_stop( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqAsync_add_break( void )
+trap_retval TRAP_ASYNC( add_break )( void )
 {
     async_add_break_req *acc;
     struct TDebug       *obj;
@@ -288,7 +289,7 @@ trap_retval ReqAsync_add_break( void )
     return( 0 );
 }
 
-trap_retval ReqAsync_remove_break( void )
+trap_retval TRAP_ASYNC( remove_break )( void )
 {
     async_remove_break_req *acc;
     struct TDebug          *obj;

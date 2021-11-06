@@ -24,6 +24,7 @@ tests = test01 &
 	test20 &
 	test21 &
 	test22 &
+	test23 &
 
 all : $(TESTS) .symbolic
     @echo ms2wlink tests PASS
@@ -93,4 +94,7 @@ test21 : .symbolic
 
 test22 : .symbolic
     $(MSWL) @rsp7.lnk | diff - $@.chk
+
+test23 : .symbolic
+    $(MSWL) /XLX obj,,,,def8 | diff - $@.chk
 

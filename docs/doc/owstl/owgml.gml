@@ -13,7 +13,7 @@
 .gt TOOL add mono
 
 .* ------------------------------------------------------------------
-.* use the put comand before anything happens so file is created ready for 
+.* use the put comand before anything happens so file is created ready for
 .* first pass, otherwise error thrown
 .pu 9 .*
 .gt AUTHOR add @author att

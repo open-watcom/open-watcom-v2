@@ -1,5 +1,5 @@
-.gfuncwxy getimage
-.gsynop begin 
+.gfuncwxy _getimage
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _getimage( short x1, short y1,
                      short x2, short y2,
@@ -53,11 +53,11 @@ The buffer
 .arg image
 must be large enough to contain the image (the size of the image
 can be determined by using the
-.kw _imagesize
+.reffunc _imagesize
 &routine).
 The image may be displayed upon the screen at some later time
 by using the
-.kw _putimage
+.reffunc _putimage
 &routines..
 .desc end
 .if '&lang' eq 'C' .do begin

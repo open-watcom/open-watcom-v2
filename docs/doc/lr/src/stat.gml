@@ -28,32 +28,32 @@ The
 functions obtain information about the file or directory
 referenced in
 .arg path
-.ct .li .
+.period
 This information is placed in the structure located at the address
 indicated by
 .arg buf
-.ct .li .
+.period
 .im statdesc
 .im ansiconf
 .np
 The
-.kw _stati64
+.reffunc _stati64
 .ct ,
-.kw _wstat
+.reffunc _wstat
 .ct , and
-.kw _wstati64
+.reffunc _wstati64
 functions differ from
 .id &funcb.
 in the type of structure that they are
 asked to fill in.
 The
-.kw _wstat
+.reffunc _wstat
 and
-.kw _wstati64
+.reffunc _wstati64
 functions deal with wide character strings.
 The differences in the structures are described above.
 The
-.kw lstat
+.reffunc lstat
 function is identical to
 .id &funcb.
 on non-UNIX platforms.
@@ -64,7 +64,7 @@ on non-UNIX platforms.
 .term EACCES
 Search permission is denied for a component of
 .arg path
-.ct .li .
+.period
 .if '&machsys' eq 'QNX' .do begin
 .term EIO
 A physical error occurred on the block device.
@@ -85,7 +85,10 @@ is not a directory.
 .endterm
 .error end
 .see begin
-.seelist stat fstat fsys_stat fsys_fstat
+.seelist stat fstat
+.if '&machsys' eq 'QNX' .do begin
+.seelist fsys_stat fsys_fstat
+.do end
 .see end
 .exmp begin
 #include <stdio.h>
@@ -100,5 +103,5 @@ void main()
     }
 }
 .exmp end
-.class POSIX
+.class POSIX 1003.1
 .system

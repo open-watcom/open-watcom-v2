@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +38,9 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
-#include <dos.h>
 #include <string.h>
 #include <ctype.h>
+#include <direct.h>
 #include "misc.h"
 #include "getopt.h"
 #include "argvenv.h"
@@ -152,15 +152,17 @@ static drive_type doGetDriveType( int drv )
 #endif
         drv = toupper( drv );
         DosQCurDisk( &disk, &map );
-        for( i='A';i<='Z';i++ ) {
+        for( i = 'A'; i <= 'Z'; i++ ) {
             if( drv == i ) {
                 if( map & 1 ) {
                     fname[0] = tolower( i );
                     fname[1] = ':';
                     fname[2] = 0;
-                    rc = DosOpen( fname, &hf, &act, 0, 0,
-                                0x0001,
-                                0x0040 | 0x8000, 0L );
+                    rc = DosOpen( fname, &hf, &act, 0,
+                                FILE_NORMAL,
+                                OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
+                                OPEN_FLAGS_DASD | OPEN_SHARE_DENYNONE | OPEN_ACCESS_READONLY,
+                                0 );
                     if( rc == 0 ) {
                         DosQHandType( hf, &type, &act );
                         DosClose( hf );
@@ -184,22 +186,6 @@ static drive_type doGetDriveType( int drv )
 #endif
 
 } /* doGetDriveType */
-
-unsigned _dos_getdiskfree( unsigned dnum, struct diskfree_t *df )
-{
-    FSALLOCATE  fs;
-    unsigned    rc;
-
-    rc = DosQFSInfo( dnum, 1, (PVOID) &fs, sizeof( fs ) );
-    if( rc ) {
-        return( rc );
-    }
-    df->sectors_per_cluster = fs.cSectorUnit;
-    df->total_clusters = fs.cUnit;
-    df->avail_clusters = fs.cUnitAvail;
-    df->bytes_per_sector = fs.cbSector;
-    return( 0 );
-}
 
 #elif defined( __NT__ )
 
@@ -249,7 +235,7 @@ static void doDF( int drive )
     if( dt == DRIVE_IS_REMOTE && !includeNetwork ) {
         return;
     }
-    if( _dos_getdiskfree( toupper( drive ) - 'A' +1, &df ) == 0 ) {
+    if( _getdiskfree( toupper( drive ) - 'A' + 1, &df ) == 0 ) {
         cl_bytes = (unsigned long long)df.sectors_per_cluster * (unsigned long long)df.bytes_per_sector;
         total = ( df.total_clusters * cl_bytes ) / 1024;
         avail = ( df.avail_clusters * cl_bytes ) / 1024;

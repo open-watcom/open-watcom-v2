@@ -9,18 +9,18 @@ The
 function returns the operating system's internal file handle
 that corresponds to the POSIX-level file handle specified by
 .arg posixhandle
-.ct .li .
+.period
 .np
 The value returned by
 .id &funcb.
 can be used as an argument to the
-.kw _open_osfhandle
+.reffunc _open_osfhandle
 function which can be used to connect a second POSIX-level handle to
 an open file.
 .np
 The example below demonstrates the use of these two functions.
 Note that the example shows how the
-.kw dup2
+.reffunc dup2
 function can be used to obtain almost identical functionality.
 .np
 When the POSIX-level file handles associated with one OS file handle
@@ -28,7 +28,7 @@ are closed, the first one closes successfully but the others return
 an error (since the first call close the file and released the OS file
 handle).
 So it is important to call
-.kw close
+.reffunc close
 at the right time, i.e., after all I/O operations are completed to the
 file.
 .desc end
@@ -38,7 +38,7 @@ If successful,
 returns an operating system file handle
 corresponding to
 .arg posixhandle
-.ct .li .
+.period
 Otherwise, it returns -1 and sets
 .kw errno
 to

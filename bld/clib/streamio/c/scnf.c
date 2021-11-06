@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,12 +30,6 @@
 ****************************************************************************/
 
 
-#define __LONG_LONG_SUPPORT__
-
-#if !defined( __NETWARE__ ) && !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
-    #define USE_MBCS_TRANSLATION
-#endif
-
 #include "variety.h"
 #include "widechar.h"
 #ifdef SAFE_SCANF
@@ -52,7 +47,7 @@
 #include "scanf.h"
 #include "prtscncf.h"
 #include "fixpoint.h"
-#if defined( __WIDECHAR__ ) || defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) || defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
 #include "setbits.h"
@@ -86,12 +81,12 @@
 /* Macros to reduce the already large number of ifdefs in the code */
 #ifdef SAFE_SCANF
 
-    #define GET_MAXELEM(x)      x = va_arg( arg->v, size_t )
+    #define GET_MAXELEM(p,x)    x = va_arg( VA_LIST_DATA( p ), size_t )
     #define DEFINE_VARS(x,y)    size_t x, y = 0
     #define CHECK_ELEMS(x,y,z)  if( x < ++y ) return( z )
 #else
 
-    #define GET_MAXELEM(x)
+    #define GET_MAXELEM(p,x)
     #define DEFINE_VARS(x,y)
     #define CHECK_ELEMS(x,y,z)
 
@@ -167,13 +162,11 @@ static const CHAR_TYPE *get_opt( const CHAR_TYPE *opt_str, PTR_SCNF_SPECS specs 
         ++opt_str;
         break;
     case STRING( 'l' ):
-#if defined( __LONG_LONG_SUPPORT__ )
         if( opt_str[1] == STRING( 'l' ) ) {
             specs->long_long_var = 1;
             opt_str += 2;
             break;
         }
-#endif
         /* fall through */
     ZSPEC_CASE_LONG
     TSPEC_CASE_LONG
@@ -181,23 +174,19 @@ static const CHAR_TYPE *get_opt( const CHAR_TYPE *opt_str, PTR_SCNF_SPECS specs 
         specs->long_var = 1;
         ++opt_str;
         break;
-#if defined( __LONG_LONG_SUPPORT__ )
     JSPEC_CASE_LLONG
         /* fall through */
-#endif
     case STRING( 'L' ):
         specs->long_double_var = 1;
         specs->long_long_var = 1;
         ++opt_str;
         break;
-#if defined( __LONG_LONG_SUPPORT__ )
     case STRING( 'I' ):
         if( opt_str[1] == STRING( '6' ) && opt_str[2] == STRING( '4' ) ) {
             specs->long_long_var = 1;
             opt_str += 3;
         }
         break;
-#endif
 #if defined( TSPEC_IS_INT ) || defined( ZSPEC_IS_INT )
     TSPEC_CASE_INT      /* If either 't' or 'z' spec corresponds to 'int',  */
     ZSPEC_CASE_INT      /* we need to parse and ignore the spec.            */
@@ -232,7 +221,7 @@ static int scan_white( PTR_SCNF_SPECS specs )
 /*
  * scan_char -- handles %c and %C
  */
-static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
+static int scan_char( PTR_SCNF_SPECS specs, MY_VA_LIST *pargs )
 {
     int             len;
     int             width;
@@ -243,16 +232,16 @@ static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
     if( specs->assign ) {
 #if defined( __FAR_SUPPORT__ )
         if( specs->far_ptr ) {
-            str = va_arg( arg->v, CHAR_TYPE _WCFAR * );
+            str = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE _WCFAR * );
         } else if( specs->near_ptr ) {
-            str = va_arg( arg->v, CHAR_TYPE _WCNEAR * );
+            str = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE _WCNEAR * );
         } else {
-            str = va_arg( arg->v, CHAR_TYPE * );
+            str = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE * );
         }
 #else
-        str = va_arg( arg->v, CHAR_TYPE * );
+        str = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE * );
 #endif
-        GET_MAXELEM( maxelem );
+        GET_MAXELEM( pargs, maxelem );
     }
     len = 0;
     if( (width = specs->width) == -1 )
@@ -265,7 +254,7 @@ static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
         --width;
         if( specs->assign ) {
             CHECK_ELEMS( maxelem, nelem, -1 );
-#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
             if( specs->short_var ) {
                 // target is MBCS and source is WIDE
                 // MBCS <- WIDE
@@ -287,7 +276,7 @@ static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
                 // WIDE <- WIDE
                 *str++ = c;
             }
-#elif defined( USE_MBCS_TRANSLATION )
+#elif defined( CLIB_USE_MBCS_TRANSLATION )
             if( specs->long_var ) {
                 // target is WIDE and source is MBCS
                 // WIDE <- MBCS
@@ -337,7 +326,7 @@ static INTCHAR_TYPE cgetw( PTR_SCNF_SPECS specs )
 /*
  * scan_string -- handles %s and %S
  */
-static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
+static int scan_string( PTR_SCNF_SPECS specs, MY_VA_LIST *pargs )
 {
     INTCHAR_TYPE            c;
     int                     len;
@@ -355,16 +344,16 @@ static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
     if( specs->assign ) {
 #if defined( __FAR_SUPPORT__ )
         if( specs->far_ptr ) {
-            str = va_arg( arg->v, char _WCFAR * );
+            str = va_arg( VA_LIST_DATA( pargs ), char _WCFAR * );
         } else if( specs->near_ptr ) {
-            str = va_arg( arg->v, char _WCNEAR * );
+            str = va_arg( VA_LIST_DATA( pargs ), char _WCNEAR * );
         } else {
-            str = va_arg( arg->v, char * );
+            str = va_arg( VA_LIST_DATA( pargs ), char * );
         }
 #else
-        str = va_arg( arg->v, char * );
+        str = va_arg( VA_LIST_DATA( pargs ), char * );
 #endif
-        GET_MAXELEM( maxelem );
+        GET_MAXELEM( pargs, maxelem );
     }
     len = 0;
     for( ;; ) {
@@ -384,7 +373,7 @@ static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
         if( specs->assign ) {
             CHECK_ELEMS( maxelem, nelem, -1 );
             if( chsize == 1 ) {
-#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                 // target is MBCS and source is WIDE
                 // WIDE <- MBCS
                 char        mbBuf[MB_CUR_MAX];
@@ -404,7 +393,7 @@ static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
                 *str++ = TO_ASCII( c );
 #endif
             } else {
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                 // target is WIDE and source is MBCS
                 // WIDE <- MBCS
                 wchar_t     wc;
@@ -449,21 +438,21 @@ done:
 /*
  * report_scan -- handles %n
  */
-static void report_scan( PTR_SCNF_SPECS specs, my_va_list *arg, int match )
+static void report_scan( PTR_SCNF_SPECS specs, MY_VA_LIST *pargs, int match )
 {
     FAR_INT         iptr;
 
     if( specs->assign ) {
 #if defined( __FAR_SUPPORT__ )
         if( specs->far_ptr ) {
-            iptr = va_arg( arg->v, int _WCFAR * );
+            iptr = va_arg( VA_LIST_DATA( pargs ), int _WCFAR * );
         } else if( specs->near_ptr ) {
-            iptr = va_arg( arg->v, int _WCNEAR * );
+            iptr = va_arg( VA_LIST_DATA( pargs ), int _WCNEAR * );
         } else {
-            iptr = va_arg( arg->v, int * );
+            iptr = va_arg( VA_LIST_DATA( pargs ), int * );
         }
 #else
-        iptr = va_arg( arg->v, int * );
+        iptr = va_arg( VA_LIST_DATA( pargs ), int * );
 #endif
         if( specs->char_var ) {
             *((FAR_CHAR)iptr) = match;
@@ -471,10 +460,8 @@ static void report_scan( PTR_SCNF_SPECS specs, my_va_list *arg, int match )
             *((FAR_SHORT)iptr) = match;
         } else if( specs->long_var ) {
             *((FAR_LONG)iptr) = match;
-#if defined( __LONG_LONG_SUPPORT__ )
         } else if( specs->long_long_var ) {
             *((FAR_INT64)iptr) = match;
-#endif
         } else {
             *iptr = match;
         }
@@ -508,7 +495,7 @@ static const char *makelist( const char *format, unsigned char *scanset )
 /*
  * scan_arb -- handles %[
  */
-static int scan_arb( PTR_SCNF_SPECS specs, my_va_list *arg, const CHAR_TYPE **format )
+static int scan_arb( PTR_SCNF_SPECS specs, MY_VA_LIST *pargs, const CHAR_TYPE **format )
 {
     unsigned            width;
     FAR_STRING          str;
@@ -532,16 +519,16 @@ static int scan_arb( PTR_SCNF_SPECS specs, my_va_list *arg, const CHAR_TYPE **fo
     if( specs->assign ) {
 #if defined( __FAR_SUPPORT__ )
         if( specs->far_ptr ) {
-            str = va_arg( arg->v, CHAR_TYPE _WCFAR * );
+            str = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE _WCFAR * );
         } else if( specs->near_ptr ) {
-            str = va_arg( arg->v, CHAR_TYPE _WCNEAR * );
+            str = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE _WCNEAR * );
         } else {
-            str = va_arg( arg->v, CHAR_TYPE * );
+            str = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE * );
         }
 #else
-        str = va_arg( arg->v, CHAR_TYPE * );
+        str = va_arg( VA_LIST_DATA( pargs ), CHAR_TYPE * );
 #endif
-        GET_MAXELEM( maxelem );
+        GET_MAXELEM( pargs, maxelem );
     }
     len = 0;
     for( width = specs->width; width > 0; --width ) {
@@ -592,7 +579,7 @@ static int scan_arb( PTR_SCNF_SPECS specs, my_va_list *arg, const CHAR_TYPE **fo
  * scan_float -- handles floating point numerical conversion
  *               *** should implement buffer overflow protection ***
  */
-static int scan_float( PTR_SCNF_SPECS specs, my_va_list *arg )
+static int scan_float( PTR_SCNF_SPECS specs, MY_VA_LIST *pargs )
 {
     double          value;
     char            *num_str, buf[80];
@@ -712,14 +699,14 @@ done:
             }
 #if defined( __FAR_SUPPORT__ )
             if( specs->far_ptr ) {
-                fptr = va_arg( arg->v, float _WCFAR * );
+                fptr = va_arg( VA_LIST_DATA( pargs ), float _WCFAR * );
             } else if( specs->near_ptr ) {
-                fptr = va_arg( arg->v, float _WCNEAR * );
+                fptr = va_arg( VA_LIST_DATA( pargs ), float _WCNEAR * );
             } else {
-                fptr = va_arg( arg->v, float * );
+                fptr = va_arg( VA_LIST_DATA( pargs ), float * );
             }
 #else
-            fptr = va_arg( arg->v, float * );
+            fptr = va_arg( VA_LIST_DATA( pargs ), float * );
 #endif
             if( specs->short_var ) {
                 *((FAR_LONG) fptr) = at.uWhole;
@@ -748,7 +735,7 @@ static int radix_value( INTCHAR_TYPE c )
 /*
  * scan_int -- handles integer numeric conversion
  */
-static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_flag )
+static int scan_int( PTR_SCNF_SPECS specs, MY_VA_LIST *pargs, int base, int sign_flag )
 {
     long                value;
     int                 len;
@@ -757,13 +744,10 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
     int                 minus;
     int                 digit;
     FAR_INT             iptr;
-#if defined( __LONG_LONG_SUPPORT__ )
     unsigned long long  long_value;
     FAR_INT64           llptr;
 
     long_value = 0;
-#endif
-
     value = 0;
     pref_len = len = 0;
     for( ;; ) {
@@ -823,7 +807,6 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
             }
         }
     }
-#if defined( __LONG_LONG_SUPPORT__ )
     if( specs->long_long_var ) {
         for( ;; ) {
             digit = radix_value( c );
@@ -846,9 +829,7 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
                 long_value = long_value * base + digit;
             }
         }
-    } else
-#endif
-    {
+    } else {
         for( ;; ) {
             digit = radix_value( c );
             if( digit >= base )
@@ -874,7 +855,6 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
 ugdone:
     uncget( c, specs );
 done:
-#if defined( __LONG_LONG_SUPPORT__ )
     if( specs->long_long_var ) {
         if( minus ) {
             long_value =- long_value;
@@ -882,23 +862,21 @@ done:
         if( len > 0 ) {
             len += pref_len;
             if( specs->assign ) {
-  #if defined( __FAR_SUPPORT__ )
+#if defined( __FAR_SUPPORT__ )
                 if( specs->far_ptr ) {
-                    llptr = va_arg( arg->v, unsigned long long _WCFAR * );
+                    llptr = va_arg( VA_LIST_DATA( pargs ), unsigned long long _WCFAR * );
                 } else if( specs->near_ptr ) {
-                    llptr = va_arg( arg->v, unsigned long long _WCNEAR * );
+                    llptr = va_arg( VA_LIST_DATA( pargs ), unsigned long long _WCNEAR * );
                 } else {
-                    llptr = va_arg( arg->v, unsigned long long * );
+                    llptr = va_arg( VA_LIST_DATA( pargs ), unsigned long long * );
                 }
-  #else
-                llptr = va_arg( arg->v, unsigned long long * );
-  #endif
+#else
+                llptr = va_arg( VA_LIST_DATA( pargs ), unsigned long long * );
+#endif
                 *llptr = long_value;
             }
         }
-    } else
-#endif
-    {
+    } else {
         if( minus ) {
             value = -value;
         }
@@ -907,14 +885,14 @@ done:
             if( specs->assign ) {
 #if defined( __FAR_SUPPORT__ )
                 if( specs->far_ptr ) {
-                    iptr = va_arg( arg->v, int _WCFAR * );
+                    iptr = va_arg( VA_LIST_DATA( pargs ), int _WCFAR * );
                 } else if( specs->near_ptr ) {
-                    iptr = va_arg( arg->v, int _WCNEAR * );
+                    iptr = va_arg( VA_LIST_DATA( pargs ), int _WCNEAR * );
                 } else {
-                    iptr = va_arg( arg->v, int * );
+                    iptr = va_arg( VA_LIST_DATA( pargs ), int * );
                 }
 #else
-                iptr = va_arg( arg->v, int * );
+                iptr = va_arg( VA_LIST_DATA( pargs ), int * );
 #endif
                 if( specs->char_var ) {
                     *((FAR_CHAR)iptr) = value;
@@ -937,7 +915,7 @@ done:
 /*
  * null_arg -- check for a null pointer passed in arguments
  */
-static int null_arg( PTR_SCNF_SPECS specs, my_va_list *arg )
+static int null_arg( PTR_SCNF_SPECS specs, MY_VA_LIST *pargs )
 {
     FAR_STRING      str;
     va_list         args_copy;
@@ -945,7 +923,7 @@ static int null_arg( PTR_SCNF_SPECS specs, my_va_list *arg )
     /* unused parameters */ (void)specs;
 
     str = NULL;
-    va_copy( args_copy, arg->v );
+    va_copy( args_copy, VA_LIST_DATA( pargs ) );
 #if defined( __FAR_SUPPORT__ )
     if( specs->far_ptr ) {
         str = va_arg( args_copy, CHAR_TYPE _WCFAR * );
@@ -998,9 +976,9 @@ int __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *format, va_
     int             match_len;
     INTCHAR_TYPE    c;
     CHAR_TYPE       fmt_chr;
-    my_va_list      margs;
+    MY_VA_LIST      margs;
 
-    margs = MY_VA_LIST( args );
+    margs = MY_VA_LIST_DATA( args );
 
     char_match = items_assigned = items_converted = 0;
     specs->eoinp = FALSE;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -260,7 +260,7 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
     } else if( !(targ->attr.precious || targ->attr.symbolic) ) {
         if( !Glob.hold && targExists( targ ) ) {
             if( Glob.erase || GetYes( SHOULD_FILE_BE_DELETED ) ) {
-                if( unlink( targ->node.name ) != 0 ) {
+                if( remove( targ->node.name ) != 0 ) {
                     PrtMsg( FTL | SYSERR_DELETING_ITEM, targ->node.name );
                     ExitFatal();
                     // never return
@@ -730,7 +730,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
 STATIC RET_T tryImply( TARGET *targ, bool must )
 /**********************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     RET_T       ret;
 
     if( Glob.block ) {
@@ -951,8 +951,10 @@ bool Update( TARGET *targ )
     }
 
     target_exists = targExists( targ );
-    if( target_exists || targ->attr.symbolic || Glob.ignore ) {
-        // Target exists or it is symbolic or we're ignoring errors,
+//    if( target_exists || targ->attr.symbolic || Glob.ignore ) {
+//        // Target exists or it is symbolic or we're ignoring errors,
+    if( target_exists || targ->attr.symbolic ) {
+        // Target exists or it is symbolic,
         // therefore everyone's happy and we can charge forward
         PrtMsg( DBG | INF | TARGET_IS_UPDATED, targ->node.name );
     } else {

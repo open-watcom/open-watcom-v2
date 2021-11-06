@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@ typedef struct TOOLDISPLAYINFO {
     DWORD       style;              /* style of toolbar window */
     toolhook_fn hook;               /* function called before toolbar window proc */
     helphook_fn helphook;           /* function called when help text is needed */
-    HBITMAP     background;         /* background of depressed button (0 == default) */
+    WPI_HBITMAP background;         /* background of depressed button (0 == default) */
     HBRUSH      foreground;         /* color of mono bitmap when depressed (0 == default) */
     boolbit     is_fixed    : 1;    /* is toolbar fixed or floating? */
     boolbit     use_tips    : 1;    /* use tool tips? */
@@ -67,23 +67,23 @@ typedef struct TOOLDISPLAYINFO {
 
 typedef struct TOOLITEMINFO {
     union {
-        HBITMAP bmp;            /* handle to bitmap to display */
-        WORD    blank_space;    /* space if item is blank */
+        WPI_HBITMAP hbitmap;        /* handle to bitmap to display */
+        WORD        blank_space;    /* space if item is blank */
     } u;
-    HBITMAP     depressed;      /* bitmap to show when button is depressed */
-    ctl_id      id;             /* should be unique for each item */
-    WORD        flags;          /* see list of flags above */
-    char        tip[MAX_TIP];   /* tool tip string */
+    WPI_HBITMAP depressed;          /* bitmap to show when button is depressed */
+    ctl_id      id;                 /* should be unique for each item */
+    WORD        flags;              /* see list of flags above */
+    char        tip[MAX_TIP];       /* tool tip string */
 } TOOLITEMINFO;
 
 typedef struct tool {
     struct tool *next;
     union {
-        HBITMAP bitmap;
-        WORD    blank_space;
+        WPI_HBITMAP hbitmap;
+        WORD        blank_space;
     } u;
     WPI_RECT    area;
-    HBITMAP     depressed;
+    WPI_HBITMAP depressed;
     ctl_id      id;
     UINT        flags;
     WORD        state;
@@ -99,7 +99,7 @@ typedef struct toolbar {
     helphook_fn helphook;
     WPI_POINT   button_size;
     WPI_POINT   border;
-    HBITMAP     background;
+    WPI_HBITMAP background;
     HBRUSH      foreground;
     HBRUSH      bgbrush;
     int         border_width;
@@ -122,9 +122,9 @@ void    ToolBarSetState( toolbar *, ctl_id id, WORD state );
 WORD    ToolBarGetState( toolbar *bar, ctl_id id );
 void    ToolBarDestroy ( toolbar *bar );
 void    ToolBarFini( toolbar * );
-void    ToolBarDrawBitmap( WPI_PRES pres, WPI_POINT size, WPI_POINT org, HBITMAP bitmap );
+void    ToolBarDrawBitmap( WPI_PRES pres, WPI_POINT size, WPI_POINT org, WPI_HBITMAP hbitmap );
 void    UpdateToolBar( toolbar *bar );
-void    ChangeToolButtonBitmap( toolbar *bar, ctl_id id, HBITMAP newbmp );
+void    ChangeToolButtonBitmap( toolbar *bar, ctl_id id, WPI_HBITMAP hbitmap );
 bool    HasToolAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 bool    FindToolIDAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, ctl_id *id );
 #ifndef __OS2_PM__

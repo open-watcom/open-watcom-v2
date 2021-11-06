@@ -183,9 +183,10 @@ and
 require two arguments.
 .autopoint
 .point
-The first argument is an interrupt number. These subroutines will generate 
+The first argument is an interrupt number. These subroutines will generate
 the software interrupt given by the this argument. The type must be
-.id INTEGER.
+.id INTEGER
+.period
 .point
 The second argument is an
 .id INTEGER
@@ -202,7 +203,7 @@ When control is returned from
 .id FINTR
 or
 .id FINTRF
-, it contains the values of the registers after the software interrupt
+.ct , it contains the values of the registers after the software interrupt
 has completed.
 The registers are mapped onto the array
 .id REGS
@@ -240,7 +241,7 @@ Difference between
 .id FINTR
 and
 .id FINTRF
-is that 
+is that
 .id FINTR
 reset CPU flags before generate the software interrupt, but
 .id FINTRF
@@ -413,8 +414,6 @@ included in the
 environment variable so that the compiler can locate the include file.
 .endnote
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 .section INTEGER Function FSIGNAL
 .*
 .np
@@ -426,8 +425,8 @@ The INTEGER function
 allows your application to respond to certain events that occur during
 execution.
 .begnote $setptnt 12
-:DTHD.Event
-:DDHD.Meaning
+.notehd1 Event
+.notehd2 Meaning
 .note SIGBREAK
 .ix 'Ctrl/Break'
 an interactive attention (Ctrl/Break on keyboard) is signalled
@@ -510,8 +509,6 @@ In this case, we want to retrieve the value of
 from memory each time the loop is iterated.
 .endnote
 .*
-.do end
-.*
 .section INTEGER Function FSPAWN
 .*
 .np
@@ -575,8 +572,8 @@ included in the
 environment variable so that the compiler can locate the include file.
 .note
 The INTEGER function
-.id FSYSTEM,
-which is described in a later section, implements a more general form
+.id FSYSTEM
+.ct , which is described in a later section, implements a more general form
 of the example given above.
 We recommend its use.
 .endnote
@@ -630,8 +627,6 @@ included in the
 environment variable so that the compiler can locate the include file.
 .endnote
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 .section Subroutine FTRACEBACK
 .*
 .np
@@ -684,8 +679,6 @@ included in the
 environment variable so that the compiler can locate the include file.
 .endnote
 .*
-.do end
-.*
 .section Subroutine GETDAT
 .*
 .np
@@ -699,10 +692,11 @@ allows an application to obtain the current date.
 The subroutine
 .id GETDAT
 has three arguments of type
-.id INTEGER*2.
+.id INTEGER*2
+.period
 When control is returned from
-.id GETDAT,
-they contain the year, month and day
+.id GETDAT
+.ct , they contain the year, month and day
 of the current date.
 .np
 The following program prints the current date in the form
@@ -743,10 +737,11 @@ allows an application to obtain the current time.
 The subroutine
 .id GETTIM
 has four arguments of type
-.id INTEGER*2.
+.id INTEGER*2
+.period
 When control is returned from
-.id GETTIM,
-they contain the hours, minutes, seconds, and hundredths of seconds
+.id GETTIM
+.ct , they contain the hours, minutes, seconds, and hundredths of seconds
 of the current time.
 .np
 The following program prints the current time in the form
@@ -868,8 +863,6 @@ included in the
 environment variable so that the compiler can locate the include file.
 .endnote
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 .section Math Error Functions
 .*
 .np
@@ -982,8 +975,6 @@ The include file :FNAME.mathcode.fi:eFNAME. is included by the file
 It defines the information that is contained in the error information
 argument that is passed to all math error functions.
 .*
-.do end
-.*
 .section INTEGER Function SEEKUNIT
 .*
 .np
@@ -1046,8 +1037,6 @@ environment variable so that the compiler can locate the include file.
 .note
 A value of -1 is returned if the requested positioning cannot be done.
 .endnote
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .section INTEGER Function SETJMP/Subroutine LONGJMP
 .*
@@ -1136,8 +1125,6 @@ included in the
 environment variable so that the compiler can locate these include
 files.
 .endnote
-.*
-.do end
 .*
 .section INTEGER Function SETSYSHANDLE
 .*
@@ -1281,8 +1268,8 @@ In the following example, 100 random numbers are printed.
 .autonote Notes:
 .note
 Upon each invocation of
-.id URAND,
-the seed argument is updated by the random number generator.
+.id URAND
+.ct , the seed argument is updated by the random number generator.
 Therefore, the argument must not be a constant and, once the seed
 value has been set, it must
 .us not

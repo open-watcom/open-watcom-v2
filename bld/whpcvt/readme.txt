@@ -51,31 +51,33 @@ The WHP File Format:
     anything else means actual text.
 
 
-    '¥' (180/0xB4) Include On.
+    WHP_EXCLUDE_OFF (180/0xB4) Include On.
         - Column 0, no following text. Default at start.
         - Text from the next line and on is to be included in processing.
 
-    '√' (195/0xC3) Include Off.
+    WHP_EXCLUDE_ON (195/0xC3) Include Off.
         - Column 0, no following text.
         - Text from the next line and on is to be excluded completely
           until the next '>' character is encountered. Include On/Off
           are not 'stackable'; the next include on always turns
           on processing.
 
-    '˜' (247/0xF7) Topic Definition.
+    WHP_CTX_DEF (247/0xF7) Topic Definition.
         - Column 0.
-        - format: ˜<level>˜[¯|ß]<ctx_name>˜<title>[˜<browse_list>[˜<keywords>]]
+        - format: WHP_CTX_DEF<level>WHP_CTX_DEF[WHP_TOPIC_NOLN|WHP_TOPIC_LN]
+                  <ctx_name>WHP_CTX_DEF<title>
+                  [WHP_CTX_DEF<browse_list>[WHP_CTX_DEF<keywords>]]
         - <level> is the heading level of this topic. This is
           used for OS/2 IPF help, as well as in RTF and InfoBench "up"
           buttons. Heading levels can be skipped.
           Valid heading levels are from 0 to 6.
-        - '¯' (248/0xF8) Popup definition topic. Indicates that the
+        - WHP_TOPIC_NOLN (248/0xF8) Popup definition topic. Indicates that the
           <title> should not appear in a non-scrolling region at the
           top of the topic. The title will scroll with the topic text.
-        - 'ß' (167/0xA7) Normal definition topic (default). Indicates that
-          the <title> will appear in a non-scrolling region at
-          the top of the topic. The title will not scroll
-          away as the topic is scrolled.
+        - WHP_TOPIC_LN (167/0xA7) Normal definition topic (default).
+          Indicates that the <title> will appear in a non-scrolling region at
+          the top of the topic. The title will not scroll away as the topic
+          is scrolled.
         - <ctx_name> is the help topic context name for the topic. Blanks
           (and other non-variable-like characters) are not allowed
           in this name.
@@ -88,23 +90,23 @@ The WHP File Format:
           topic belongs to.
         - Topic text may follow immediately, or a topic section.
 
-    '' (127/0x7F) Hyperlink.
+    WHP_HLINK (127/0x7F) Hyperlink.
         - in text lines, not split across lines.
-        - format: <ctx_name><text>
+        - format: WHP_HLINK<ctx_name>WHP_HLINK<text>WHP_HLINK
         - <ctx_name> is the help topic context name to which this hyperlink
           should go.
         - <text> is any arbitrary text which represents the hyperlink.
 
-    'Í' (234/0xEA) Definition popup.
+    WHP_DFN (234/0xEA) Definition popup.
         - in text lines, not split across lines.
-        - format: Í<ctx_name>Í<text>Í
+        - format: WHP_DFN<ctx_name>WHP_DFN<text>WHP_DFN
         - <ctx_name> is the help topic context name to which this popup
           definition should go.
         - <text> is any arbitrary text which represents the definition link.
 
-    'Ó' (238/0xEE) Topic Section.
+    WHP_TOPIC (238/0xEE) Topic Section.
         - column 0.
-        - format: Ó<ctx_name>[Ó<order_nun>]
+        - format: WHP_TOPIC<ctx_name>[WHP_TOPIC<order_nun>]
         - defines a new topic section for <ctx_name>.
         - if no <order_num> is provided, then this section is placed
           as the next unordered topic.
@@ -112,133 +114,141 @@ The WHP File Format:
           by its order number (lowest first). Ordered sections come
           after unordered sections. <order_num> can be 0 or greater.
 
-    '“' (210/0xD2) Unordered List Start.
+    WHP_LIST_START (210/0xD2) Unordered List Start.
          - column 0. No following text.
-         - format: “[c]
+         - format: WHP_LIST_START[c]
          - starts an unordered list (with bullets).
          - 'c' is optional, and indicates a compact list (no spaces
            between list items). Otherwise, spacing is as indicated
            in the definition.
 
-    '»' (200/0xC8) Order List Start.
+    WHP_OLIST_START (200/0xC8) Order List Start.
         - column 0. No following text.
-         - format: »[c]
+         - format: WHP_OLIST_START[c]
         - starts an ordered and numbered list.
          - 'c' is optional, and indicates a compact list (no spaces
            between list items). Otherwise, spacing is as indicated
            in the definition.
 
-    '’' (213/0xD5) Simple List Start.
+    WHP_SLIST_START (213/0xD5) Simple List Start.
         - column 0. No following text.
-         - format: ’[c]
+         - format: WHP_SLIST_START[c]
         - starts a simple list (no bullets).
          - 'c' is optional, and indicates a compact list (no spaces
            between list items). Otherwise, spacing is as indicated
            in the definition.
 
-    ' ' (202/0xCA) Definition List Start.
+    WHP_DLIST_START (202/0xCA) Definition List Start.
         - column 0. No following text.
         - starts a definition list.
 
-    'Ã' (204/0xCC) Definition List Term.
+    WHP_DLIST_TERM (204/0xCC) Definition List Term.
         - column 0.
-        - format: Ã<term>
+        - format: WHP_DLIST_TERM<term>
         - The text lines after the term are displayed below the term
           as paragraphs.
         - There is no closer for defn terms since font styling and
           other effects can be inserted.
 
-    'π' (185/0xB9) Definition Description.
+    WHP_DLIST_DESC (185/0xB9) Definition Description.
         - column 0. Followed by text for the definition description.
         - Starts a definition description.
 
-    '”' (211/0xD3) List item.
+    WHP_LIST_ITEM (211/0xD3) List item.
         - column 0. Followed by text for the list item.
         - Item for a unordered, ordered or simple list.
         - ALL list types can be nested arbitrarily.
 
-    '‘' (212/0xD4) Unordered List End.
+    WHP_LIST_END (212/0xD4) Unordered List End.
         - column 0. No following text.
         - ends an unordered list.
 
-    '…' (201/0xC9) Order List End.
+    WHP_OLIST_END (201/0xC9) Order List End.
         - column 0. No following text.
         - ends an ordered list.
 
-    'À' (203/0xCB) Definition List End.
+    WHP_DLIST_END (203/0xCB) Definition List End.
         - column 0. No Following text.
         - ends a definition list.
 
-    '÷' (214/0xD6) Simple list End.
+    WHP_SLIST_END (214/0xD6) Simple list End.
         - column 0. No Following text.
         - ends a simple list.
 
-    'Ï' (236/0xEC) Keyword.
+    WHP_CTX_KW (236/0xEC) Keyword.
         - in text lines, or on their own lines.
-        - format: Ï<keyword>Ï
+        - format: WHP_CTX_KW<keyword>WHP_CTX_KW
         - <keyword> is added to the list of keywords for the current topic.
         - If a line is defined containing only keywords, it does not
           generate a blank line.
 
-    'û' (158/0x9E) Paragraph Reset.
+    WHP_PAR_RESET (158/0x9E) Paragraph Reset.
         - in text lines.
         - causes the next paragraph to be reset properly. Useful
           for RTF, when boxing and other wierd stuff require a
           paragraph reset to gets things back to normal.
 
-    'ü' (159/0x9F) Include On and Eat Blank Line.
+    WHP_EXCLUDE_OFF_BLANK (159/0x9F) Include On and Eat Blank Line.
         - Column 0.
         - same as Include On, but also eats the next blank line, if any.
 
-    '∞' (176/0xB0) Bitmap Picture.
+    WHP_BMP (176/0xB0) Bitmap Picture.
         - in text lines.
-        - format: ∞i|l|r|c∞<file>∞
+        - format: WHP_BMP[i|l|r|c]WHP_BMP<file>WHP_BMP
         - 'i' is for inline, 'l' for left, 'r' for right, and 'c' for centered.
         - <file> is the name of the bitmap file.
 
-    'Ô' (239/0xEF) Font Style.
+    WHP_FONTSTYLE_START (239/0xEF) Font Style start (used by GML WHELPDRV driver).
         - in text lines.
-        - format: Ô<font_styles>Ô {with ending '' later}
+        - format: WHP_FONTSTYLE_START<font_styles>WHP_FONTSTYLE_START 
+          {with ending WHP_FONTSTYLE_END later}
         - <font_styles> is any combination of the following characters:
           b (bold), i (italic), u (underline), s (underscore).
-        - The ending '' restores the font to plain with no styles. Hence,
-          font stylings do NOT nest (this is due the the stupidity of
-          OS/2 IPF).
+        - The ending WHP_FONTSTYLE_END restores the font to plain with no
+          styles. Hence, font stylings do NOT nest (this is due the the 
+          stupidity of OS/2 IPF).
 
-    '' (240/0xF0) Font Style End.
+    WHP_FONTSTYLE_END (240/0xF0) Font Style end (used by GML WHELPDRV driver).
         - in text lines.
         - see 'Font Style'.
 
-    'ù' (157/0x9D) Font Type.
+    WHP_FONTTYPE (157/0x9D) Font Type (used by GML WHELPDRV driver).
         - in text lines.
-        - format: ù<facename>ù<point_size>ù
+        - format: WHP_FONTTYPE<facename>WHP_FONTTYPE<point_size>WHP_FONTTYPE
         - valid facenames are recognized by the following subwords:
           Courier, Helv, Roman, Tmns, Symbol.
         - common point sizes are: 8, 10, 12, 14, 18, 24.
         - the Windows default is Helv 10.
 
-    '€' (219/0xDB) Box On.
+    WHP_BOX_ON (219/0xDB) Box On.
         - column 0. No Following text.
         - turns box mode on
 
-    '˛' (254/0xFE) Box Off.
+    WHP_BOX_OFF (254/0xFE) Box Off.
         - column 0. No Following text.
         - turns box mode off
 
-    '™' (170/0xAA) Tab example.
-        - format 1: ™<char> [<stops>]*
+    WHP_TABXMP (170/0xAA) Tab example.
+        - format 1: WHP_TABXMP<char> [<stops>]*
             - setups up a tabbed example.
-        - format 2: ™
+        - format 2: WHP_TABXMP
             - ends a tabbed example.
 
-    'Ë' (232/0xE8) File hyperlink.
+    WHP_FLINK (232/0xE8) File hyperlink.
         - in text lines, not split across lines.
-        - format: Ë<file_name>Ë<topic_title>Ë<text>Ë
+        - format: WHP_FLINK<file_name>WHP_FLINK<topic_title>WHP_FLINK
+                  <text>WHP_FLINK
         - <file_name> is the name of help file to jump to.
         - <topic_title> is the help topic name to which this hyperlink
           should go.
         - <text> is any arbitrary text which represents the hyperlink.
 
+    WHP_SPACE_NOBREAK (255/0xff) Hard space.
+        - in text lines.
+        - format: WHP_SPACE_NOBREAK
+
+    WHP_UP_TOPIC (160/0xA0) Up topic ?
+        ?
 
 Windows Online Help Structure:
 ==============================

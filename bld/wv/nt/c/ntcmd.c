@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,20 +40,27 @@
 #include "dbglkup.h"
 
 
-static const char SysOptNameTab[] = {
-    "Popups\0"
 #ifdef __AXP__
-    "XXAT\0"
-    "XXAE\0"
+#define SYS_OPT_DEFS \
+    pick( "Popups", OPT_POPUPS          ) \
+    pick( "XXAT",   OPT_ALIGN_TRAP      ) \
+    pick( "XXAE",   OPT_ALIGN_EMULATE   )
+#else
+#define SYS_OPT_DEFS \
+    pick( "Popups", OPT_POPUPS          )
 #endif
-};
 
 enum {
-    OPT_POPUPS,
-    OPT_ALIGN_TRAP,
-    OPT_ALIGN_EMULATE
+    #define pick(t,e)   e,
+    SYS_OPT_DEFS
+    #undef pick
 };
 
+static const char SysOptNameTab[] = {
+    #define pick(t,e)   t "\0"
+    SYS_OPT_DEFS
+    #undef pick
+};
 
 bool OptDelim( char ch )
 {

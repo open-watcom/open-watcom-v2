@@ -338,7 +338,7 @@ void DoneLastEvent( vi_rc rc, bool is_dotmode )
 void EditMain( void )
 {
     vi_rc       rc;
-    char        *msg = NULL;
+    const char  *msg = NULL;
     bool        doclear;
 
     /*

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 
 
 gui_colour_set          WndStatusColour = {
-    GUI_BRIGHT_WHITE,
+    GUI_BR_WHITE,
     GUI_BLUE
 };
 
@@ -62,57 +62,57 @@ static gui_colour_set   WndDlgColours[] = {
 };
 
 gui_colour_set WndColours[] = {
-    { GUI_WHITE,        GUI_BLUE },             /* GUI_MENU_PLAIN    */
-    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_STANDOUT */
-    { GUI_GREY,         GUI_BLUE },             /* GUI_MENU_GRAYED */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* GUI_MENU_ACTIVE    */
-    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE_STANDOUT */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* GUI_BACKGROUND */
-    { GUI_BRIGHT_YELLOW,GUI_BLUE },             /* GUI_MENU_FRAME */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_TITLE_INACTIVE    */
-    { GUI_BLUE,         GUI_CYAN },             /* GUI_FRAME_ACTIVE    */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_INACTIVE    */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED_ACTIVE */
-    { GUI_GREY,         GUI_CYAN },             /* GUI_FRAME_RESIZE    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_CONTROL_BACKGROUND */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* WND_PLAIN    */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* WND_TABSTOP == ACTIVE  */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* WND_SELECTED */
-    { GUI_RED,          GUI_BRIGHT_WHITE },     /* WND_STANDOUT */
-    { GUI_RED,          GUI_BRIGHT_WHITE },     /* WND_HOTSPOT */
-    { GUI_BRIGHT_RED,   GUI_BLACK },            /* WND_STANDOUT_TABSTOP */
+    { GUI_WHITE,     GUI_BLUE },        /* GUI_MENU_PLAIN           */
+    { GUI_BR_WHITE,  GUI_BLUE },        /* GUI_MENU_STANDOUT        */
+    { GUI_GREY,      GUI_BLUE },        /* GUI_MENU_GRAYED          */
+    { GUI_BR_WHITE,  GUI_BLACK },       /* GUI_MENU_ACTIVE          */
+    { GUI_BR_YELLOW, GUI_BLACK },       /* GUI_MENU_ACTIVE_STANDOUT */
+    { GUI_BLACK,     GUI_BR_WHITE },    /* GUI_BACKGROUND           */
+    { GUI_BR_YELLOW, GUI_BLUE },        /* GUI_MENU_FRAME           */
+    { GUI_GREY,      GUI_BR_WHITE },    /* GUI_TITLE_INACTIVE       */
+    { GUI_BLUE,      GUI_CYAN },        /* GUI_FRAME_ACTIVE         */
+    { GUI_GREY,      GUI_BR_WHITE },    /* GUI_FRAME_INACTIVE       */
+    { GUI_BR_WHITE,  GUI_RED },         /* GUI_ICON                 */
+    { GUI_GREY,      GUI_BLACK },       /* GUI_MENU_GRAYED_ACTIVE   */
+    { GUI_GREY,      GUI_CYAN },        /* GUI_FRAME_RESIZE         */
+    { GUI_GREY,      GUI_BLACK },       /* GUI_CONTROL_BACKGROUND   */
+    { GUI_BLACK,     GUI_BR_WHITE },    /* WND_PLAIN                */
+    { GUI_BR_WHITE,  GUI_BLACK },       /* WND_TABSTOP == ACTIVE    */
+    { GUI_BR_WHITE,  GUI_RED },         /* WND_SELECTED             */
+    { GUI_RED,       GUI_BR_WHITE },    /* WND_STANDOUT             */
+    { GUI_RED,       GUI_BR_WHITE },    /* WND_HOTSPOT              */
+    { GUI_BR_RED,    GUI_BLACK },       /* WND_STANDOUT_TABSTOP     */
 };
 
 int WndNumColours = { ArraySize( WndColours ) };
 
 #define ATTR_BITS() \
-    pick( DBG_ATTR_ACTIVE,      0x0001,    "Active" ) \
-    pick( DBG_ATTR_SELECTED,    0x0002,    "SElected" ) \
-    pick( DBG_ATTR_STANDOUT,    0x0004,    "STandout" ) \
-    pick( DBG_ATTR_DISABLED,    0x0008,    "Disabled" ) \
-    pick( DBG_ATTR_PLAIN,       0x0010,    "Plain" ) \
-    pick( DBG_ATTR_FRAME,       0x0020,    "Frame" ) \
-    pick( DBG_ATTR_ICON,        0x0040,    "ICon" ) \
-    pick( DBG_ATTR_MENU,        0x0080,    "MEnu" ) \
-    pick( DBG_ATTR_TITLE,       0x0100,    "TItle" ) \
-    pick( DBG_ATTR_BUTTON,      0x0200,    "BUtton" ) \
-    pick( DBG_ATTR_SHADOW,      0x0400,    "SHadow" )
+    pick( "Active",   DBG_ATTR_ACTIVE,   0x0001 ) \
+    pick( "SElected", DBG_ATTR_SELECTED, 0x0002 ) \
+    pick( "STandout", DBG_ATTR_STANDOUT, 0x0004 ) \
+    pick( "Disabled", DBG_ATTR_DISABLED, 0x0008 ) \
+    pick( "Plain",    DBG_ATTR_PLAIN,    0x0010 ) \
+    pick( "Frame",    DBG_ATTR_FRAME,    0x0020 ) \
+    pick( "ICon",     DBG_ATTR_ICON,     0x0040 ) \
+    pick( "MEnu",     DBG_ATTR_MENU,     0x0080 ) \
+    pick( "TItle",    DBG_ATTR_TITLE,    0x0100 ) \
+    pick( "BUtton",   DBG_ATTR_BUTTON,   0x0200 ) \
+    pick( "SHadow",   DBG_ATTR_SHADOW,   0x0400 )
 
 typedef enum {
-    #define pick(e,v,t) e = v,
+    #define pick(t,e,v)     e = v,
         ATTR_BITS()
     #undef pick
 } attr_bits;
 
 static const char AttrNameTab[] = {
-    #define pick(e,v,t) t "\0"
+    #define pick(t,e,v)     t "\0"
         ATTR_BITS()
     #undef pick
 };
 
 static attr_bits AttrBits[] = {
-    #define pick(e,v,t) e,
+    #define pick(t,e,v)     e,
         ATTR_BITS()
     #undef pick
 };
@@ -153,34 +153,34 @@ static attr_map DlgAttrMap[] = {
 };
 
 #define COLOUR_BITS() \
-    pick( CLR_BLACK,    0x0001,    "BLAck" ) \
-    pick( CLR_BLUE,     0x0002,    "BLUe" ) \
-    pick( CLR_BRIGHT,   0x0004,    "BRIght" ) \
-    pick( CLR_BROWN,    0x0008,    "BROwn" ) \
-    pick( CLR_CYAN,     0x0010,    "Cyan" ) \
-    pick( CLR_GRAY,     0x0020,    "GRAy" ) \
-    pick( CLR_GREEN,    0x0040,    "GREEn" ) \
-    pick( CLR_GREY,     0x0080,    "GREY" ) \
-    pick( CLR_MAGENTA,  0x0100,    "MAgenta" ) \
-    pick( CLR_RED,      0x0200,    "Red" ) \
-    pick( CLR_WHITE,    0x0400,    "White" ) \
-    pick( CLR_YELLOW,   0x0800,    "Yellow" )
+    pick( "BLAck",   CLR_BLACK,   0x0001 ) \
+    pick( "BLUe",    CLR_BLUE,    0x0002 ) \
+    pick( "BRIght",  CLR_BRIGHT,  0x0004 ) \
+    pick( "BROwn",   CLR_BROWN,   0x0008 ) \
+    pick( "Cyan",    CLR_CYAN,    0x0010 ) \
+    pick( "GRAy",    CLR_GRAY,    0x0020 ) \
+    pick( "GREEn",   CLR_GREEN,   0x0040 ) \
+    pick( "GREY",    CLR_GREY,    0x0080 ) \
+    pick( "MAgenta", CLR_MAGENTA, 0x0100 ) \
+    pick( "Red",     CLR_RED,     0x0200 ) \
+    pick( "White",   CLR_WHITE,   0x0400 ) \
+    pick( "Yellow",  CLR_YELLOW,  0x0800 )
 
 typedef enum {
     CLR_NONE = 0,
-    #define pick(e,v,t) e = v,
+    #define pick(t,e,v)     e = v,
         COLOUR_BITS()
     #undef pick
 } colour_bits;
 
 static const char ColourNameTab[] = {
-    #define pick(e,v,t) t "\0"
+    #define pick(t,e,v)     t "\0"
         COLOUR_BITS()
     #undef pick
 };
 
 static colour_bits ColourBits[] = {
-    #define pick(e,v,t) e,
+    #define pick(t,e,v)     e,
         COLOUR_BITS()
     #undef pick
 };
@@ -191,23 +191,23 @@ typedef struct {
 } colour_map;
 
 static colour_map ColourMap[] = {
-    { GUI_BLACK,                CLR_BLACK },
-    { GUI_BLUE,                 CLR_BLUE },
-    { GUI_GREEN,                CLR_GREEN },
-    { GUI_CYAN,                 CLR_CYAN },
-    { GUI_RED,                  CLR_RED },
-    { GUI_MAGENTA,              CLR_MAGENTA },
-    { GUI_BROWN,                CLR_BROWN },
-    { GUI_WHITE,                CLR_WHITE },
-    { GUI_GREY,                 CLR_GREY },
-    { GUI_BRIGHT_BLUE,          CLR_BRIGHT+CLR_BLUE },
-    { GUI_BRIGHT_GREEN,         CLR_BRIGHT+CLR_GREEN },
-    { GUI_BRIGHT_CYAN,          CLR_BRIGHT+CLR_CYAN },
-    { GUI_BRIGHT_RED,           CLR_BRIGHT+CLR_RED },
-    { GUI_BRIGHT_MAGENTA,       CLR_BRIGHT+CLR_MAGENTA },
-    { GUI_BRIGHT_YELLOW,        CLR_YELLOW },
-    { GUI_BRIGHT_YELLOW,        CLR_BRIGHT+CLR_BROWN },
-    { GUI_BRIGHT_WHITE,         CLR_BRIGHT+CLR_WHITE },
+    { GUI_BLACK,        CLR_BLACK },
+    { GUI_BLUE,         CLR_BLUE },
+    { GUI_GREEN,        CLR_GREEN },
+    { GUI_CYAN,         CLR_CYAN },
+    { GUI_RED,          CLR_RED },
+    { GUI_MAGENTA,      CLR_MAGENTA },
+    { GUI_BROWN,        CLR_BROWN },
+    { GUI_WHITE,        CLR_WHITE },
+    { GUI_GREY,         CLR_GREY },
+    { GUI_BR_BLUE,      CLR_BRIGHT+CLR_BLUE },
+    { GUI_BR_GREEN,     CLR_BRIGHT+CLR_GREEN },
+    { GUI_BR_CYAN,      CLR_BRIGHT+CLR_CYAN },
+    { GUI_BR_RED,       CLR_BRIGHT+CLR_RED },
+    { GUI_BR_MAGENTA,   CLR_BRIGHT+CLR_MAGENTA },
+    { GUI_BR_YELLOW,    CLR_YELLOW },
+    { GUI_BR_YELLOW,    CLR_BRIGHT+CLR_BROWN },
+    { GUI_BR_WHITE,     CLR_BRIGHT+CLR_WHITE },
 };
 
 wnd_attr WndMapTabAttr( wnd_attr wndattr )

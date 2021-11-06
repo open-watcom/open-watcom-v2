@@ -18,7 +18,7 @@ test_flags += -w0 -I../source
 
 test_flags_i86 = -mm -zm
 
-!include testenv1.mif
+!include testenv.mif
 
 stack_386=opt stack=128k
 stack_i86=opt stack=32k
@@ -34,17 +34,15 @@ extra_run_demo = <demo.in
 #
 
 !ifeq arch i86
-test : .symbolic start clean start_test
+test : .symbolic start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
-!else
-test : .symbolic start clean start_test test.lnk demo.$(exe) common_set_result_display
-!endif
     @%make clean
+!else
+test : .symbolic start test.lnk demo.$(exe)
+    $(noecho)%make common_set_result_display
+!endif
 
 demo.$(exe) : demo.obj tempbuf.obj
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

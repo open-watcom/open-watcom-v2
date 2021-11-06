@@ -3,10 +3,10 @@
 #include <&doshdr>
 unsigned _dos_settime( struct dostime_t *time );
 struct dostime_t {
-        unsigned char hour;     /* 0-23 */
-        unsigned char minute;   /* 0-59 */
-        unsigned char second;   /* 0-59 */
-        unsigned char hsecond;  /* 1/100 second; 0-99 */
+    unsigned char hour;     /* 0-23               */
+    unsigned char minute;   /* 0-59               */
+    unsigned char second;   /* 0-59               */
+    unsigned char hsecond;  /* 1/100 second; 0-99 */
 };
 .ixfunc2 '&DosFunc' &funcb
 .synop end
@@ -18,7 +18,7 @@ The time information is passed in a
 .kw dostime_t
 structure pointed to by
 .arg time
-.ct .li .
+.period
 .desc end
 .return begin
 The

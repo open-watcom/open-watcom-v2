@@ -1,8 +1,9 @@
+# UTF-8 encoding, Â¥
 name=Final
 condition=PreviousInstall !
 static_text=\
         //1"@ will now copy any selected files"\
-        //2"@ ‘I‘ğ‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ğƒRƒs[‚µ‚Ü‚·"\
+        //2"@ é¸æŠã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚³ãƒ”ãƒ¼ã—ã¾ã™"\
         //0
 static_text=
 include=poc.dlg

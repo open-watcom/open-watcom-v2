@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,6 @@
 
 #include "_windows.hpp"
 #include "wobject.hpp"
-#include "wres.hpp"
 
 WCLASS WToolBar;
 WCLASS WToolBarItem;
@@ -44,7 +44,7 @@ typedef void (WObject::*cbtbi)( WToolBarItem *m );
 
 WCLASS WToolBarItem : public WObject {
     public:
-        WEXPORT WToolBarItem( const char *text, WResource tool, WObject *client,
+        WEXPORT WToolBarItem( const char *text, WResourceId tool_id, WObject *client,
                               cbtbi pick, const char *htext = NULL,
                               const char *tip = NULL );
         WEXPORT ~WToolBarItem();

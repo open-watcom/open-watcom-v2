@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 #include "ftnstd.h"
 #include <ctype.h>
-#include <string.h>
 #include "errcod.h"
 #include "opr.h"
 #include "opn.h"
@@ -47,7 +47,6 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
-#include "hexcnv.h"
 #include "csloops.h"
 #include "proctbl.h"
 #include "data.h"
@@ -263,7 +262,7 @@ static  bool    HexConst(void) {
 // Check for a hexadecimal constant specifier.
 
     char        *hex_data;
-    uint        hex_len;
+    size_t      hex_len;
     sym_id      sym;
 
     hex_data = CITNode->opnd;
@@ -275,7 +274,7 @@ static  bool    HexConst(void) {
             return( false );
         sym = SymFind( hex_data, hex_len );
         if( sym != NULL ) {
-            if( ( sym->u.ns.flags & SY_CLASS ) == SY_PARAMETER ) {
+            if( (sym->u.ns.flags & SY_CLASS) == SY_PARAMETER ) {
                 return( false );
             }
         }
@@ -413,26 +412,57 @@ static  void    GetSConst( void ) {
 }
 
 
-uint MkHexConst( char *hex_data, char *dst, uint hex_len ) {
-//====================================================================
+static char    Hex( char data )
+//=============================
+{
+    if( isdigit( (unsigned char)data ) == 0 ) {
+        data += 9;
+    }
+    data &= 0x0f;
+    return( data );
+}
 
-    uint        len;
 
-    len = HSToB( hex_data, hex_len, dst );
-    if( len != ( hex_len + 1 ) / 2 )
+size_t MkHexConst( const char *src, char *dst, size_t src_len )
+//=============================================================
+{
+    size_t      length;
+
+    length = 0;
+    if( ( src_len % 2 ) != 0 ) {
+        if( isxdigit( (unsigned char)src[0] ) == 0 )
+            return( 0 );
+        if( dst != NULL ) {
+            *dst++ = Hex( *src );
+        }
+        length++;
+        src++;
+        src_len--;
+    }
+    while( src_len != 0 ) {
+        if( isxdigit( (unsigned char)src[0] ) == 0 || isxdigit( (unsigned char)src[1] ) == 0 )
+            break;
+        if( dst != NULL ) {
+            *dst++ = Hex( src[0] ) * 0x10 + Hex( src[1] );
+        }
+        length++;
+        src += 2;
+        src_len -= 2;
+    }
+    if( src_len > 0 )
         return( 0 );
-    return( len );
+    return( length );
 }
 
 
 static  void    CkFlags( void ) {
 //=========================
 
-    if( ( InitVar->u.ns.flags & SY_CLASS ) != SY_VARIABLE ) {
+    if( (InitVar->u.ns.flags & SY_CLASS) != SY_VARIABLE ) {
         ClassNameErr( DA_ILL_NAME, InitVar );
-    } else if( ( InitVar->u.ns.flags & SY_SUB_PARM ) != 0 ) {
+    } else if( (InitVar->u.ns.flags & SY_SUB_PARM) != 0 ) {
         ClassNameErr( DA_ILL_NAME, InitVar );
-    } else if((InitVar->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( InitVar )) {
+    } else if( (InitVar->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( InitVar ) ) {
         IllName( InitVar );
     } else {
         // Don't set SY_TYPE otherwise we won't be able to detect whether

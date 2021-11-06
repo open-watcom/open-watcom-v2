@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,28 +40,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "target.h"
-
-#ifndef _CPU
-    #error _CPU macro not defined
-#endif
-
-#if _CPU != 8086
-    /* enable Structured Exception Handling for all 32-bit targets */
-    #define __SEH__
-#endif
-
-#ifdef __UNIX__
-    #define FNAMECMPSTR     strcmp      /* for case sensitive file systems */
-#else
-    #define FNAMECMPSTR     stricmp     /* for case insensitive file systems */
-#endif
-
-#define CMPLIT(s,c) memcmp( s, c, sizeof( c ) )
-#define CPYLIT(s,c) memcpy( s, c, sizeof( c ) )
-
-typedef char        *MACADDR_T; /* contains actual pointer to block of memory */
-typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
-
+#include "cconst.h"
 #include "dw.h"
 #include "ctypes.h"
 #include "macro.h"
@@ -69,11 +48,8 @@ typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 #include "csegid.h"
 #include "ctokens.h"
 #include "cerrs.h"
-#include "toggle.h"
 #include "cmsg.h"
 #include "pragdefn.h"
-
-#define CArraySize(x)   (sizeof( x ) / sizeof( *x ))
 
 global char         *PCH_Start;         // start of precompiled memory block
 global char         *PCH_End;           // end of precompiled memory block
@@ -84,7 +60,7 @@ global SYMPTR       *PCH_SymArray;      // array of symbol table pointers from P
 global unsigned     PCH_MaxSymHandle;   // number of symbols in PCH_SymArray
 global int          DebugFlag;
 global TOKEN        CurToken;
-global int          BadTokenInfo;
+global msg_codes    BadTokenInfo;
 global size_t       TokenLen;
 global source_loc   TokenLoc;
 global source_loc   SrcFileLoc;         /* duplicate of SrcFile->src_line */
@@ -92,7 +68,7 @@ global source_loc   CommentLoc;
 global int          CurrChar;
 global DATA_TYPE    ConstType;
 global unsigned     Constant;
-global uint64       Const64;
+global uint64       Constant64;
 global FCB          *MainSrcFile;       /* primary source file being compiled */
 global FCB          *SrcFile;
 global char         *SrcFName;          /* source file name without suffix */
@@ -103,9 +79,9 @@ global char         *ForcePreInclude;
 #if _CPU == 370
 global char         *AuxName;
 #endif
-global fname_list   *FNames;            /* list of file names processed */
-global rdir_list    *RDirNames;         /* list of read only directorys */
-global ialias_list  *IAliasNames;       /* list of include aliases */
+global FNAMEPTR     FNames;             /* list of file names processed */
+global RDIRPTR      RDirNames;          /* list of read only directorys */
+global IALIASPTR    IAliasNames;        /* list of include aliases */
 global FILE         *ErrFile;           /* error file */
 global FILE         *DefFile;           /* output for func prototypes */
 global FILE         *CppFile;           /* output for preprocessor */
@@ -187,11 +163,9 @@ global MEPTR        UndefMacroList;
 global MEPTR        *MacHash;           /* [MACRO_HASH_SIZE] */
 global ENUMPTR      EnumTable[ID_HASH_SIZE];
 global SYM_HASHPTR  *HashTab;
-global TYPEPTR      BaseTypes[TYPE_LAST_ENTRY];
-global unsigned     CTypeCounts[TYPE_LAST_ENTRY];
+global TYPEPTR      BaseTypes[TYP_LAST_ENTRY];
+global unsigned     CTypeCounts[TYP_LAST_ENTRY];
 
-#define BUF_SIZE    512
-global size_t       BufSize;
 global char         *Buffer;
 global char         *TokenBuf;
 
@@ -201,7 +175,6 @@ global unsigned     TargetSwitches;     /* target specific code generator switch
 global unsigned     ProcRevision;       /* processor revision for c.g. */
 global char         *GenCodeGroup;      /* pointer to code group name */
 global unsigned     ProEpiDataSize;     /* data to be alloc'd for pro/epi hook */
-global int          Toggles;            /* global toggle flags */
 
 global unsigned     ErrLimit;
 #define ERRLIMIT_NOMAX  ((unsigned)-1)
@@ -216,7 +189,7 @@ global int          TmpSymCount;
 global int          LitCount;
 global target_size  LitPoolSize;
 global size_t       MacroSize;
-global ppctl_t      Pre_processing;
+global ppctl_t      PPControl;
 global comp_flags   CompFlags;
 global global_comp_flags GlobalCompFlags;
 global segment_id   SegmentNum;         /* next PRIVATE segment number to use */
@@ -228,7 +201,7 @@ global jmp_buf      *Environment;       /* var for Suicide() */
 
 /* The ValueStack array is also used by CGEN for saving _try block info */
 global TREEPTR      ValueStack[MAX_LEVEL];
-global char         Token[MAX_LEVEL];
+global TOKEN        Token[MAX_LEVEL];
 global token_class  Class[MAX_LEVEL];
 global expr_level_type ExprLevel;
 
@@ -255,13 +228,6 @@ global dbug_type    B_Bool;
 global int          OptSize;            /* 100 => make pgm small as possible */
 global char         __Time[9];          /* "HH:MM:SS" for __TIME__ macro */
 global char         __Date[12];         /* "MMM DD YYYY" for __DATE__ macro */
-
-global struct macro_seg_list {
-    struct macro_seg_list *next;
-    MACADDR_T             macro_seg;
-} *MacSegList;                          /* pointer to list of macro segments */
-
-global MACADDR_T    MacroOffset;        /* first free byte in MacroSegment */
 
 global int          SwitchChar;         /* DOS switch character */
 global int          LoopDepth;          /* current nesting of loop constructs */
@@ -299,7 +265,6 @@ global unsigned     SymBufNum;          /* current buffer in memory */
 global unsigned     SymBufSegNum;       /* segment # containing buffer */
 global unsigned     LastSymBuf;         /* # of last symbol table buffer */
 global unsigned     SymBufDirty;        /* 1 => buffer has been changed */
-global SEGADDR_T    SymBufSegment;      /* segment # for symbol table buffers */
 
 global TYPEPTR      StringType;         /* "unsigned char *" for use by literals */
 global TYPEPTR      ConstCharType;      /* "const char" type */
@@ -311,23 +276,6 @@ typedef struct nested_parm_lists {
 } nested_parm_lists;
 
 global nested_parm_lists    *NestedParms;
-
-#ifndef LARGEST_QUAD_INDEX
-    #define LARGEST_QUAD_INDEX      0xFFFF
-    #define LARGEST_DATA_QUAD_INDEX 0xFFFFF
-#else
-    #define LARGEST_DATA_QUAD_INDEX LARGEST_QUAD_INDEX
-#endif
-#define LARGEST_SYM_INDEX           0xFFFF
-
-#define SYM_BUF_SIZE            1024
-#define SYMS_PER_BUF            (SYM_BUF_SIZE/sizeof(SYM_ENTRY))
-#define SYMBUFS_PER_SEG         16
-#define SYM_SEG_SIZE            (SYM_BUF_SIZE*SYMBUFS_PER_SEG)
-
-#define MAX_SYM_SEGS    (LARGEST_SYM_INDEX/(SYMS_PER_BUF*SYMBUFS_PER_SEG)+1)
-
-global seg_info     SymBufSegs[MAX_SYM_SEGS]; /* segments for symbols */
 
 global STR_HANDLE   StringHash[STRING_HASH_SIZE]; /* string literals */
 global char         *TextSegName;       /* name of the text segment */
@@ -407,6 +355,7 @@ extern void         CompatiblePtrType(TYPEPTR,TYPEPTR,TOKEN);
 extern bool         IdenticalType(TYPEPTR,TYPEPTR);
 extern bool         VerifyType(TYPEPTR,TYPEPTR,SYMPTR);
 extern TYPEPTR      SkipTypeFluff( TYPEPTR typ );
+extern bool         AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 );
 extern void         ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check );
 
 /* ccmain.c */
@@ -416,11 +365,11 @@ extern bool         FrontEnd(char **);
 extern void         FrontEndFini( void );
 extern void         CppComment(int);
 extern bool         CppPrinting(void);
-extern void         CppPutc(int);
-extern void         CppPrtf(char *,...);
+extern void         CppPuts(const char *);
+extern void         CppPutsQuoted(const char *);
 extern void         SetCppWidth(unsigned);
 extern void         CppPrtChar(int);
-extern void         CppPrtToken(void);
+extern void         CppPrtToken(TOKEN);
 extern bool         OpenSrcFile(const char *, src_file_type);
 extern void         CloseSrcFile(FCB *);
 extern void         OpenDefFile(void);
@@ -435,7 +384,7 @@ extern char         *CppFileName(void);
 extern char         *ForceSlash(char *, char );
 extern char         *GetSourceDepName( void );
 extern FNAMEPTR     NextDependency( FNAMEPTR );
-extern void         CppPrtfFilenameErr( const char *filename, src_file_type typ, bool print_error );
+extern void         PrtfFilenameErr( const char *filename, src_file_type typ, bool print_error );
 
 extern FNAMEPTR     AddFlist(char const *);
 extern FNAMEPTR     FileIndexToFName(unsigned);
@@ -447,9 +396,8 @@ extern bool         SrcFileInRDir( FNAMEPTR flist );
 extern void         SrcFileIncludeAlias( const char *alias_name, const char *real_name, bool is_lib );
 extern int          SrcFileTime(char const *,time_t *);
 extern void         SetSrcFNameOnce( void );
-extern void         GetNextToken(void);
-extern void         EmitLine(unsigned,const char *);
-extern void         EmitPoundLine(unsigned,const char *,bool);
+extern TOKEN        GetNextToken(void);
+extern void         CppEmitPoundLine(unsigned,const char *,bool);
 
 extern void         AddIncFile( INCFILE * );
 extern void         AddIncFileList( const char *filename );
@@ -493,11 +441,6 @@ extern void         VarDeclEquals(SYMPTR,SYM_HANDLE);
 extern void         DumpFuncDefn(void);
 extern void         SymDump(void);
 extern char         *DiagGetTypeName(TYPEPTR typ);
-
-/* cems */
-extern void         CSegFree( SEGADDR_T segment );
-extern SEGADDR_T    AccessSegment(seg_info *);
-extern SEGADDR_T    AllocSegment(seg_info *);
 
 /* cenum */
 extern TYPEPTR      EnumDecl(type_modifiers);
@@ -563,7 +506,6 @@ extern void         CastConstValue(TREEPTR,DATA_TYPE);
 extern void         CastConstNode( TREEPTR leaf, TYPEPTR newtyp );
 extern void         DoConstFold(TREEPTR);
 extern void         FoldExprTree(TREEPTR);
-extern bool         BoolConstExpr( void );
 
 /* cgen.c */
 extern void         DoCompile(void);
@@ -623,15 +565,15 @@ extern void         ConBlip( void );
 extern void         MyExit( int ret );
 
 /* cmac1.c */
-extern void         EnlargeBuffer(size_t);
+extern void         InitTokenBuf( size_t );
 extern void         MacroInit(void);
 extern void         MacroAddComp(void);
 extern void         MacroFini(void);
 extern void         MacroPurge(void);
-extern void         GetMacroToken(void);
+extern TOKEN        GetMacroToken(void);
 extern TOKEN        SpecialMacro( MEPTR );
 extern void         DoMacroExpansion( MEPTR );
-extern void         InsertReScanPragmaTokens( char *pragma );
+extern void         InsertReScanPragmaTokens( const char *pragma );
 extern void         InsertToken( TOKEN token, const char *str );
 
 /* cmac2.c */
@@ -641,17 +583,6 @@ extern void         CppStackInit( void );
 extern void         CppStackFini(void);
 extern MEPTR        MacroScan( void );
 extern TOKEN        Process_Pragma( void );
-
-/* cmacadd.c */
-extern void         *PermMemAlloc( size_t amount );
-extern void         FreeMacroSegments(void);
-extern void         *MacroAllocateInSeg( size_t size );
-extern MEPTR        CreateMEntry(const char *, size_t len);
-extern MEPTR        MacroDefine( size_t len, macro_flags mflags );
-extern int          MacroCompare(MEPTR,MEPTR);
-extern void         MacroCopy(const void *,MACADDR_T,size_t);
-extern MEPTR        MacroLookup(const char *);
-extern void         MacroReallocOverflow(size_t,size_t);
 
 /* cmath.c */
 extern TREEPTR      AddOp(TREEPTR,TOKEN,TREEPTR);
@@ -690,7 +621,7 @@ extern void         CGetMsg( char *msgbuf, msg_codes msgnum );
 extern void         InitMsg( void );
 extern void         FiniMsg( void );
 extern char const   *UsageText(void);   // GET INTERNATIONAL USAGE TEXT
-extern msg_type     CGetMsgType( msg_codes msgnum );
+//extern msg_type     CGetMsgType( msg_codes msgnum );
 extern char const   *CGetMsgPrefix( msg_codes msgnum );
 extern int          GetMsgIndex( msg_codes msgnum );
 
@@ -705,15 +636,13 @@ extern void         MergeInclude(void);
 /* cpragma */
 extern void         CPragmaInit( void );
 extern void         CPragmaFini( void );
-extern bool         SetToggleFlag( char const *name, int const value );
+extern void         SetToggleFlag( char const *name, int func, bool push );
 extern void         CPragma(void);
 extern textsegment  *LkSegName(const char *,const char *);
 extern textsegment  *NewTextSeg(const char *,const char *,const char *);
 extern void         PragmaInit(void);
 extern void         PragmaFini(void);
-extern void         PragmaAuxInit(void);
-extern void         PragInit(void);
-extern void         PragEnding(void);
+extern void         PragmaAuxEnding(void);
 extern void         PragObjNameInfo(char **);
 extern bool         PragRecogId(const char *);
 extern bool         PragRecogName(const char *);
@@ -722,7 +651,6 @@ extern int          PragRegIndex(const char *,const char *,size_t,bool);
 extern int          PragRegNumIndex( const char *name, size_t len, int max_reg );
 extern void         PragRegNameErr( const char *regname, size_t regnamelen );
 extern hw_reg_set   *PragManyRegSets(void);
-extern void         PragCurrAlias(const char *);
 extern TOKEN        PragRegSet(void);
 extern void         ChkPragmas(void);
 extern void         CreateAux(const char *);
@@ -733,9 +661,9 @@ extern void         AddLibraryName( const char *, const char );
 extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );
 extern void         SetPackAmount( unsigned amount );
-extern bool         GetPragAuxAliasInfo( void );
-extern aux_info     *SearchPragAuxAlias( const char *name );
-extern bool         GetPragAuxAlias( void );
+extern bool         GetPragmaAuxAliasInfo( void );
+extern aux_info     *PragmaAuxAlias( const char *name );
+extern bool         GetPragmaAuxAlias( void );
 extern const char   *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_compliant_names );
 
 /* cprag??? */
@@ -749,16 +677,16 @@ extern void         InitPurge(void);
 extern void         PurgeMemory(void);
 
 /* cscan */
+extern void         NewLineStartPos( FCB *srcfile );
 extern void         ScanInit( void );
 extern bool         InitPPScan( void );
 extern void         FiniPPScan( bool );
 extern id_hash_idx  CalcHash( const char *, size_t );
 extern unsigned     hashpjw( const char * );
-extern int          ESCChar( int, const unsigned char **, bool * );
 extern void         SkipAhead( void );
 extern TOKEN        ScanToken( void );
 extern void         ReScanInit( const char * );
-extern bool         ReScanToken( void );
+extern TOKEN        ReScanToken( void );
 extern const char   *ReScanPos( void );
 extern TOKEN        KwLookup( const char *, size_t );
 extern TOKEN        NextToken( void );
@@ -886,19 +814,19 @@ extern void         InitStmt( void );
 extern void         SwitchPurge( void );
 
 /* Macros to skip all typedefs and arrive at the underlying type */
-#define SKIP_TYPEDEFS( typeptr )                        \
-    while( typeptr->decl_type == TYPE_TYPEDEF ) {       \
-        typeptr = typeptr->object;                      \
+#define SKIP_TYPEDEFS( typeptr )                    \
+    while( typeptr->decl_type == TYP_TYPEDEF ) {    \
+        typeptr = typeptr->object;                  \
     }
-#define SKIP_DUMMY_TYPEDEFS( typeptr )                  \
-    while( typeptr->decl_type == TYPE_TYPEDEF && (typeptr->type_flags & TF2_DUMMY_TYPEDEF) ) { \
-        typeptr = typeptr->object;                      \
+#define SKIP_DUMMY_TYPEDEFS( typeptr )              \
+    while( typeptr->decl_type == TYP_TYPEDEF && (typeptr->type_flags & TF2_DUMMY_TYPEDEF) ) { \
+        typeptr = typeptr->object;                  \
     }
-#define SKIP_ENUM( typeptr )                            \
-    if( typeptr->decl_type == TYPE_ENUM ) {             \
-        typeptr = typeptr->object;                      \
+#define SKIP_ENUM( typeptr )                        \
+    if( typeptr->decl_type == TYP_ENUM ) {          \
+        typeptr = typeptr->object;                  \
     }
-#define SKIP_ARRAYS( typeptr )                          \
-    while( typeptr->decl_type == TYPE_ARRAY ) {         \
-        typeptr = typeptr->object;                      \
+#define SKIP_ARRAYS( typeptr )                      \
+    while( typeptr->decl_type == TYP_ARRAY ) {      \
+        typeptr = typeptr->object;                  \
     }

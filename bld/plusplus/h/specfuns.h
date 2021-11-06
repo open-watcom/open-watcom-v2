@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,10 +39,10 @@
 // 94/01/28 -- J.W.Welch        -- defined
 
 
-#define SPEC_FUN( code, name ) SPFN_ ## code
-
 typedef enum {
-#include "specfuns.dfn"
+    #define SPEC_FUN( code, name )  SPFN_ ## code
+    #include "_spcfuns.h"
+    #undef SPEC_FUN
 } SPFN;
 
 // PROTOTYPES

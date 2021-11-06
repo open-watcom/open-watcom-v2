@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,7 @@
 #ifdef __WIN__
   #include "winrtns.h"
 #endif
+#include "myio.h"
 
 #include "clibext.h"
 
@@ -57,27 +58,23 @@
 #define AS_FILE_EXT         ".fil"
 #ifdef __UNIX__
     #define EXTRA_EXT       "0000_"
-    #define LOCK_NAME_LEN   22
     #define EXTRA_EXT_OFF   6
     #define CHAR_OFF        16
 #else
     #define CHAR_OFF        6
     #define EXTRA_EXT       ""
-    #define LOCK_NAME_LEN   14
 #endif
 #define TMP_FNAME_LEN       (TMP_NAME_LEN - 6)
 
 #define START_CHAR          'a'
 #define END_CHAR            'h'
 
-#define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
-
 
 static bool     noEraseFileList;
 static char     currTmpName[TMP_NAME_LEN];
-static char     checkFileName[LOCK_NAME_LEN] = AS_FILE EXTRA_EXT "a" AS_FILE_EXT;
-static char     checkFileTmpName[LOCK_NAME_LEN] = AS_FILE EXTRA_EXT "at" EXTRA_EXT AS_FILE_EXT;
-static char     lockFileName[LOCK_NAME_LEN] = AS_LOCK EXTRA_EXT "a" EXTRA_EXT AS_FILE_EXT;
+static char     checkFileName[] = AS_FILE EXTRA_EXT "a" AS_FILE_EXT;
+static char     checkFileTmpName[] = AS_FILE EXTRA_EXT "at" EXTRA_EXT AS_FILE_EXT;
+static char     lockFileName[] = AS_LOCK EXTRA_EXT "a" EXTRA_EXT AS_FILE_EXT;
 static int      lockFileHandle = -1;
 
 /*
@@ -87,17 +84,17 @@ void GetCurrentFilePath( char *path )
 {
     vars        *v;
 
-    v = VarFind( "D", NULL );
-    if( v ) {
+    v = GlobVarFind( GLOBVAR_FILEDRIVE );
+    if( v != NULL ) {
         strcpy( path, v->value );
-        v = VarFind( "P", NULL );
-        if( v ) {
+        v = GlobVarFind( GLOBVAR_FILEPATH );
+        if( v != NULL ) {
             strcat( path, v->value );
-            v = VarFind( "N", NULL );
-            if( v ) {
+            v = GlobVarFind( GLOBVAR_FILENAME );
+            if( v != NULL ) {
                 strcat( path, v->value );
-                v = VarFind( "E", NULL );
-                if( v ) {
+                v = GlobVarFind( GLOBVAR_FILEEXT );
+                if( v != NULL ) {
                     strcat( path, v->value );
                 }
             }
@@ -230,7 +227,7 @@ bool LostFileCheck( void )
     off = strlen( path ) - 5;
     for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
         path[off] = ch;
-        handle = sopen3( path, O_RDONLY | O_TEXT, SH_DENYRW );
+        handle = _sopen3( path, O_RDONLY | O_TEXT, SH_DENYRW );
         if( handle < 0 )
             continue;
         MakeTmpPath( path, checkFileName );
@@ -296,8 +293,7 @@ void AutoSaveInit( void )
     int         handle;
     size_t      off;
 //    int         old_len;
-    size_t      i;
-    char        *p;
+    const char  *p;
 
     /*
      * initialize tmpname
@@ -342,17 +338,13 @@ void AutoSaveInit( void )
         for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
             as_path[off] = (char)ch;
             asl_path[off] = (char)ch;
-            handle = sopen3( as_path, O_RDONLY | O_TEXT, SH_DENYRW );
+            handle = _sopen3( as_path, O_RDONLY | O_TEXT, SH_DENYRW );
             if( handle < 0 )
                 continue;
             fp = fdopen( handle, "r" );
             if( fp != NULL ) {
-                while( (p = fgets( path2, sizeof( path2 ), fp )) != NULL ) {
-                    for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
-                        p[i - 1] = '\0';
-                    }
+                while( (p = myfgets( path2, sizeof( path2 ), fp )) != NULL ) {
                     p = GetNextWord1( p, path );
-                    p = SkipLeadingSpaces( p );
                     NewFile( path, false );
                     ReplaceString( &(CurrentFile->name), p );
                     SetFileWindowTitle( current_window_id, CurrentInfo, true );
@@ -386,7 +378,7 @@ void AutoSaveInit( void )
     off = len + CHAR_OFF;
     for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
         path[off] = (char)ch;
-        lockFileHandle = sopen4( path, O_CREAT | O_TRUNC | O_RDWR | O_TEXT, SH_DENYRW, PMODE_RW );
+        lockFileHandle = _sopen4( path, O_CREAT | O_TRUNC | O_RDWR | O_TEXT, SH_DENYRW, PMODE_RW );
         if( lockFileHandle >= 0 ) {
             break;
         }
@@ -450,8 +442,7 @@ void RemoveFromAutoSaveList( void )
     char        path2[FILENAME_MAX];
     char        data[FILENAME_MAX];
 //    bool        found;
-    size_t      i;
-    char        *p;
+    const char  *p;
 
     if( EditVars.AutoSaveInterval == 0 ) {
         return;
@@ -478,21 +469,14 @@ void RemoveFromAutoSaveList( void )
         fclose( fpi );
         return;
     }
-    while( (p = fgets( path2, sizeof( path2 ), fpi )) != NULL ) {
-        for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
-            p[i - 1] = '\0';
-        }
+    while( (p = myfgets( path2, sizeof( path2 ), fpi )) != NULL ) {
         p = GetNextWord1( p, data );
-        p = SkipLeadingSpaces( p );
         if( strcmp( path, p ) == 0 ) {
             p = MakeTmpPath( path2, CurrentFile->as_name );
             if( strcmp( data, p ) == 0 ) {
 //                found = true;
                 remove( p );
-                while( fgets( data, sizeof( data ), fpi ) != NULL ) {
-                    for( i = strlen( data ); i && isWSorCtrlZ( data[i - 1] ); --i ) {
-                        data[i - 1] = '\0';
-                    }
+                while( myfgets( data, sizeof( data ), fpi ) != NULL ) {
                     MyFprintf( fpo, "%s\n", data );
                 }
                 break;

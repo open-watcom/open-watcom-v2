@@ -1,162 +1,162 @@
 pick( OUT_OF_MEMORY,            "Out of memory",
-                                "������������܂���" )
+                                "メモリが足りません" )
 pick( MAKE_ABORT,               "Make execution terminated",
-                                "MAKE���s���I�����܂���" )
+                                "MAKE実行を終了しました" )
 
 /* the two %c's must be together in these two messages */
 pick( INVALID_OPTION,           "Option %c%c invalid",
-                                "�I�v�V���� %c%c �������ł�" )
+                                "オプション %c%c が無効です" )
 pick( INVALID_FILE_OPTION,      "%c%c must be followed by a filename",
-                                "%c%c�̓t�@�C�����ɑ����Ďw�肵�Ȃ���΂Ȃ�܂���" )
+                                "%c%cはファイル名に続いて指定しなければなりません" )
 
 pick( NO_TARGETS_SPECIFIED,     "No targets specified",
-                                "�^�[�Q�b�g���w�肳��Ă��܂���" )
+                                "ターゲットが指定されていません" )
 pick( MAKEINIT_HAS_TARGET,      "Ignoring first target in MAKEINIT",
-                                "MAKEINIT�̍ŏ��̃^�[�Q�b�g�𖳎����܂�" )
+                                "MAKEINITの最初のターゲットを無視します" )
 pick( EXPECTING_M,              "Expecting a %M",
-                                "%M�łȂ��΂Ȃ�܂���" )
+                                "%Mでなけばなりません" )
 pick( INVALID_MACRO_NAME,       "Invalid macro name %E",
-                                "�����ȃ}�N���� %E" )
+                                "無効なマクロ名 %E" )
 pick( IGNORE_OUT_OF_PLACE_M,    "Ignoring out of place %M",
-                                "%M �𖳎����܂�" )
+                                "%M を無視します" )
 pick( CANNOT_NEST_FURTHER,      "Macros nested too deep",
-                                "�}�N���̃l�X�g���[�����܂�" )
+                                "マクロのネストが深すぎます" )
 pick( UNKNOWN_PERCENT_CMD,      "Unknown internal command",
-                                "�����ȓ����R�}���h�ł�" )
+                                "無効な内部コマンドです" )
 pick( COMMAND_TOO_LONG,         "Program name is too long",
-                                "�R�}���h���C�����������܂�" )
+                                "コマンドラインが長すぎます" )
 pick( CTRL_CHAR_IN_CMD,         "No control characters allowed in options",
-                                "�I�v�V�����w��ł́A���䕶���͎g�p�ł��܂���" )
+                                "オプション指定では、制御文字は使用できません" )
 pick( UNABLE_TO_EXEC,           "Cannot execute %E: %Z",
-                                "���s�� %E: %Z" )
+                                "実行中 %E: %Z" )
 pick( SYNTAX_ERROR_IN,          "Syntax error in %s command",
-                                "%s �R�}���h�ō\���G���[�ł�" )
+                                "%s コマンドで構文エラーです" )
 pick( NO_NESTED_FOR,            "Nested %s loops not allowed",
-                                "�l�X�g���ꂽ %s ���[�v�͂ł��܂���" )
+                                "ネストされた %s ループはできません" )
 pick( MAXIMUM_TOKEN_IS,         "Token too long, maximum size is %d chars",
-                                "�g�[�N�����������܂�,�Œ��� %d �����ł�" )
+                                "トークンが長すぎます,最長は %d 文字です" )
 pick( UNKNOWN_TOKEN,            "Unrecognized or out of place character '%C'",
-                                "�F������Ȃ�������,�����Ȉʒu�ɂ��镶�� '%C'" )
+                                "認識されなかったか,無効な位置にある文字 '%C'" )
 pick( TARGET_ALREADY_M,         "Target %E already declared %M",
-                                "�^�[�Q�b�g %E �͊��� %M �Ɛ錾����Ă��܂�" )
+                                "ターゲット %E は既に %M と宣言されています" )
 pick( CLIST_HAS_NO_OWNER,       "Command list does not belong to any target",
-                                "�R�}���h���X�g���ǂ̃^�[�Q�b�g�ɂ������Ă��܂���" )
+                                "コマンドリストがどのターゲットにも属していません" )
 pick( SUFFIX_DOESNT_EXIST,      "Extension(s) %E not defined",
-                                "�g���q %E ������`�ł�" )
+                                "拡張子 %E が未定義です" )
 pick( NO_EXISTING_FILE_MATCH,   "No existing file matches %E",
-                                "%E �ƈ�v����t�@�C��������܂���" )
+                                "%E と一致するファイルがありません" )
 pick( EXTENSIONS_REVERSED,      "Extensions reversed in implicit rule",
-                                "�g���q�͈Öق̃��[���ŗ\�񂳂�Ă��܂�" )
+                                "拡張子は暗黙のルールで予約されています" )
 pick( MORE_THAN_ONE_CLIST,      "More than one command list found for %E",
-                                "%E �ɑ΂���2�g�ȏ�̃R�}���h���X�g������܂�" )
+                                "%E に対して2組以上のコマンドリストがあります" )
 pick( REDEF_OF_SUFFIX,          "Extension %E declared more than once",
-                                "�g���q %E ��2��ȏ�錾����Ă��܂�" )
+                                "拡張子 %E が2回以上宣言されています" )
 pick( UNK_PREPROC_DIRECTIVE,    "Unknown preprocessor directive: %s",
-                                "�v���v���Z�b�T�^�����߂ł͂���܂���" )
+                                "プリプロセッサ疑似命令ではありません" )
 pick( MACRO_UNDEFINED,          "Macro %E is undefined",
-                                "�}�N�� %E ������`�ł�" )
+                                "マクロ %E が未定義です" )
 pick( IF_NESTED_TOO_DEEP,       "!If statements nested too deep",
-                                "!if ���̃l�X�g���[�����܂�" )
+                                "!if 文のネストが深すぎます" )
 pick( UNMATCHED_WITH_IF,        "!%s has no matching !if",
-                                "!%S �ɂ̓}�b�`���� !if ������܂���" )
+                                "!%S にはマッチする !if がありません" )
 pick( SKIPPING_AFTER_ELSE,      "Skipping !%1 block after !%2",
-                                "!%s �u���b�N���X�L�b�v���܂���(!%s �̌�)" )
+                                "!%s ブロックをスキップしました(!%s の後)" )
 pick( NOT_ALLOWED_AFTER_ELSE,   "%1 not allowed after !%2",
-                                "%1 �� %2 ��ɂ͂ł��܂���" )
+                                "%1 は %2 後にはできません" )
 pick( UNABLE_TO_INCLUDE,        "Opening file %E: %Z",
-                                "�I�[�v���t�@�C�� %E: %Z" )
+                                "オープンファイル %E: %Z" )
 pick( USER_ERROR,               "",
                                 "" )
 pick( EOF_BEFORE_ENDIF,         "!%s pending at end of file",
-                                "�t�@�C���̏I�[�܂ŁA!%s �͏�������܂���" )
+                                "ファイルの終端まで、!%s は処理されません" )
 pick( TRYING_UNDEF_UNDEF,       "Trying to !%s an undefined macro",
-                                "!%s �𖢒�`�ȃ}�N���Ƃ��ď������܂�" )
+                                "!%s を未定義なマクロとして処理します" )
 pick( ATTEMPT_MAKE_SPECIAL,     "Illegal attempt to update special target %E",
-                                "���ʂȃ^�[�Q�b�g %E ��s���ɍX�V���悤�Ƃ��Ă��܂�" )
+                                "特別なターゲット %E を不正に更新しようとしています" )
 pick( RECURSIVE_DEFINITION,     "Target %E is defined recursively",
-                                "�^�[�Q�b�g %E ���ċA�I�ɒ�`����Ă��܂�" )
+                                "ターゲット %E が再帰的に定義されています" )
 pick( UNABLE_TO_MAKE,           "%E does not exist and cannot be made from existing files",
-                                "%E �͂���܂��񂵁A�����̃t�@�C������쐬�ł��܂���" )
+                                "%E はありませんし、既存のファイルから作成できません" )
 pick( TARGET_NOT_MENTIONED,     "Target %E not mentioned in any makefile",
-                                "�^�[�Q�b�g %E �̓��[�N�t�@�C���̂ǂ��ɂ�����܂���" )
+                                "ターゲット %E はメークファイルのどこにもありません" )
 pick( COULD_NOT_TOUCH,          "Could not touch %E",
-                                "%E �̃^�C���E�X�^���v���X�V�ł��܂���" )
+                                "%E のタイム・スタンプを更新できません" )
 pick( NO_DEF_CMDS_FOR_MAKE,     "No %s commands for making %E",
-                                "%s �R�}���h������܂���(%E �̍쐬�ɑΉ�)" )
+                                "%s コマンドがありません(%E の作成に対応)" )
 pick( LAST_CMD_MAKING_RET_BAD,  "Last command making (%L) returned a bad status",
-                                "(%L)���쐬����Ō�̃R�}���h�ɂ��G���[���Ԃ���܂���" )
+                                "(%L)を作成する最後のコマンドによりエラーが返されました" )
 pick( SYSERR_DELETING_ITEM,     "Deleting %E: %Z",
-                                "%E�������܂�: %Z" )
+                                "%Eを消します: %Z" )
 pick( S_COMMAND_RET_BAD,        "%s command returned a bad status",
-                                "%S �R�}���h���G���[�E�X�e�[�^�X��Ԃ��܂���" )
+                                "%S コマンドがエラー・ステータスを返しました" )
 pick( MAXIMUM_STRING_LENGTH,    "Maximum string length exceeded",
-                                "�ő啶���񒷂��z���܂�" )
+                                "最大文字列長を越えます" )
 pick( BARF_CHARACTER,           "Illegal character value %xH in file",
-                                "�t�@�C���ɕs���ȕ����̒l %xH ������܂�" )
+                                "ファイルに不正な文字の値 %xH があります" )
 pick( ASSUMING_SYMBOLIC,        "Assuming %s target is .SYMBOLIC",
-                                "�^�[�Q�b�g�� .%s �ł���Ɖ��肵�܂�" )
+                                "ターゲットは .%s であると仮定します" )
 pick( PERCENT_MAKE_DEPTH,       "Maximum %%make depth exceeded",
-                                "%%make �̐[���̍ő���z���܂�" )
+                                "%%make の深さの最大を越えます" )
 pick( OPENING_FOR_WRITE,        "Opening (%s) for write: %Z",
-                                "�����ނ��߂� (%s) ���I�[�v�����܂�: %Z" )
+                                "書込むために (%s) をオープンします: %Z" )
 pick( DOING_THE_WRITE,          "Unable to write: %Z",
-                                "�����߂܂���: %Z" )
+                                "書込めません: %Z" )
 pick( CHANGING_DIR,             "CD'ing to %E: %Z",
-                                "%E �Ƀf�B���N�g����ύX���܂�: %Z" )
+                                "%E にディレクトリを変更します: %Z" )
 pick( CHANGING_DRIVE,           "Changing to drive %C:",
-                                "�h���C�t %C: �ɕς�܂�" )
+                                "ドライフ %C: に変ります" )
 #if defined( __DOS__ )
 pick( OS_CORRUPTED,             "DOS memory inconsistency detected! System may halt ...",
-                                "DOS��؊Ǘ��ɖ�����������܂����I���т�ΰ�Ă��邩������܂��񥥥" )
+                                "DOSﾒﾓﾘ管理に矛盾が見つかりました！ｼｽﾃﾑがﾎｰﾙﾄするかもしれません･･･" )
 #else
 pick( OS_CORRUPTED,             "OS corruption detected",
-                                "�n�r�����Ă���̂��A������܂���" )
+                                "ＯＳが壊れているのが、見つかりました" )
 #endif
 pick( READ_ERROR,               "While reading (%s): %Z",
-                                "(%s)��ǂݏo���Ă��܂�: %Z" )
+                                "(%s)を読み出しています: %Z" )
 pick( INCOMPATIBLE__OPTIONS,    "Incompatible options",
                                 "Incompatible options" )
 
 pick( PARSE_IFEXPR,             "!IF Parse Error",
-                                "!IF �t�F�[�Y�G���[" )
+                                "!IF フェーズエラー" )
 pick( TMP_PATH_TOO_LONG,        "TMP Path/File Too Long",
-                                "TMP �p�X/�t�@�C�������������܂�" )
+                                "TMP パス/ファイル名が長すぎます" )
 pick( UNEXPECTED_EOF,           "Unexpected End of File",
-                                "�t�@�C�����r���ŏI����Ă��܂�" )
+                                "ファイルが途中で終わっています" )
 pick( NOKEEP_ONLY,              "Only NO(KEEP) allowed here",
-                                "�����ł� NO(KEEP) �������ł��܂�")
+                                "ここでは NO(KEEP) だけができます")
 pick( NON_MATCHING_QUOTE,       "Non-matching \"",
-                                "��v���܂��� \"")
+                                "一致しません \"")
 pick( INVALID_STRING_SUBSTITUTE,"Invalid String Macro Substitution",
-                                "�s�K�؂ȕ�����}�N���u���ł�")
+                                "不適切な文字列マクロ置換です")
 pick( MAX_FILE_LENGTH_EXCEED,   "File Name Length Exceeded",
-                                "�t�@�C�����̒������������z���܂���")
+                                "ファイル名の長さが制限を越えました")
 pick( DOT_DEFAULT_REDEFINITION, "Redefinition of .DEFAULT Command List",
-                                ".DEFAULT �R�}���h�����X�g�̍Ē�`�ł�")
+                                ".DEFAULT コマンド･･リストの再定義です")
 pick( NON_MATCHING_CURL_PAREN,  "Non-matching { In Implicit Rule",
-                                "�Öق̃��[���̒��� \{ ����v���܂���")
+                                "暗黙のルールの中の \{ が一致しません")
 pick( INVALID_SUFSUF,           "Invalid Implicit Rule Definition",
-                                "�s�K�؂ȈÖق̃��[����`�ł�")
+                                "不適切な暗黙のルール定義です")
 pick( PATH_TOO_LONG,            "Path Too Long",
-                                "�p�X���������܂�")
+                                "パスが長すぎます")
 pick( UNABLE_TO_LOAD_DLL,       "Cannot Load/Unload DLL %E",
-                                "DLL �����[�h/�A�����[�h�ł��܂��� %E")
+                                "DLL をロード/アンロードできません %E")
 pick( DLL_BAD_INIT_STATUS,      "Initialization of DLL %E returned a bad status",
-                                "�G���[��X�e�[�^�X��Ԃ�DLL %E ������")
+                                "エラー･ステータスを返すDLL %E 初期化")
 pick( DLL_BAD_RETURN_STATUS,    "DLL %E returned a bad status",
-                                "DLL %E �̓G���[�X�e�[�^�X��Ԃ��܂�")
+                                "DLL %E はエラーステータスを返します")
 pick( ILLEGAL_CHARACTER_IN_MAC, "Illegal Character %C in macro name",
-                                "�}�N���̒��ɕs���ȕ��� %C ������܂�")
+                                "マクロの中に不正な文字 %C があります")
 pick( ERROR_CLOSING_FILE,       "in closing file %E",
-                                "�t�@�C�� %E �����Ƃ�")
+                                "ファイル %E を閉じるとき")
 pick( ERROR_OPENING_FILE,       "in opening file %E",
-                                "�t�@�C�� %E ���J���Ƃ�")
+                                "ファイル %E を開くとき")
 pick( ERROR_WRITING_FILE,       "in writing file %E",
-                                "�t�@�C�� %E ���������ނƂ�")
+                                "ファイル %E を書き込むとき")
 pick( USER_BREAK_ENCOUNTERED,   "User Break Encountered",
-                                "���[�U�ɂ�蒆�f����܂���")
+                                "ユーザにより中断されました")
 pick( ERROR_TRMEM,              "Error in Memory Tracking Encountered",
-                                "�������g���b�L���O���ɃG���[�ɂȂ�܂���")
+                                "メモリトラッキング中にエラーになりました")
 pick( MICROSOFT_MAKEFILE,       "Makefile may be Microsoft; try /ms switch",
                                 "Makefile may be Microsoft; try /ms switch")
 pick( ERROR_STRING_OPEN,        "Expecting double quote character to end open string.",
@@ -170,96 +170,96 @@ pick( ERROR_STRING_OPEN,        "Expecting double quote character to end open st
 /* %M msgs */
 
 pick( M_FORM_QUALIFIER,         "Form Qualifier",
-                                "�t�H�[���E�N�H���t�@�C�A(�`������q)" )
+                                "フォーム・クォリファイア(形式限定子)" )
 pick( M_UNKNOWN_TOKEN,          "Unknown Token",
-                                "�s���ȃg�[�N��" )
+                                "不明なトークン" )
 pick( M_SCOLON,                 "Single-colon",
-                                "�V���O���E�R����" )
+                                "シングル・コロン" )
 pick( M_DCOLON,                 "Double-colon",
-                                "�_�u���E�R����" )
+                                "ダブル・コロン" )
 pick( M_FILENAME,               "Filename",
-                                "�t�@�C����" )
+                                "ファイル名" )
 pick( M_DOTNAME,                "Dot Name",
-                                "�h�b�g��" )
+                                "ドット名" )
 pick( M_CMD,                    "Command",
-                                "�R�}���h" )
+                                "コマンド" )
 pick( M_SUF,                    "Extension",
-                                "�g���q" )
+                                "拡張子" )
 pick( M_SUFSUF,                 "Implied Extension",
-                                "�Öق̊g��" )
+                                "暗黙の拡張" )
 pick( M_PATH,                   "Path Specifier",
-                                "�p�X�̎w��" )
+                                "パスの指定" )
 pick( M_ERROR,                  "Error",
-                                "�G���[" )
+                                "エラー" )
 pick( M_WARNING,                "Warning",
-                                "�x��" )
+                                "警告" )
 
 /* inform/debug msgs */
 
 pick( SKIPPING_BLOCK,           "Skipping !%s block",
-                                "!%s �u���b�N���X�L�b�v���܂�" )
+                                "!%s ブロックをスキップします" )
 pick( ENTERING_BLOCK,           "Entering !%s block",
-                                "!%s �u���b�N�ɓ���܂�" )
+                                "!%s ブロックに入ります" )
 pick( AT_ENDIF,                 "Ending a !if nesting",
-                                "!if �l�X�g���I���܂�" )
+                                "!if ネストを終わります" )
 pick( ENTERING_FILE,            "Entering file %E...",
-                                "�t�@�C�� %E �ɓ���܂��E�E�E" )
+                                "ファイル %E に入ります・・・" )
 pick( FINISHED_FILE,            "...Finished file %E",
-                                "�E�E�E�t�@�C�� %E ���I���܂�" )
+                                "・・・ファイル %E を終わります" )
 pick( PTARG_IS_TYPE_M,          "%E is a %M type target",
-                                "%E �� %M �^�C�v�̃^�[�Q�b�g�ł�" )
+                                "%E は %M タイプのターゲットです" )
 pick( PTARG_DEPENDS_ON,         "    Depends on:",
-                                "    �֘A�F" )
+                                "    関連：" )
 pick( PTARG_TAB_TAB_ENV,        "\t%E",
                                 "\t%E" )
 pick( PTARG_WOULD_EXECUTE_CMDS, "    Updated with these commands:",
-                                "    �����̃R�}���h���g���āA�X�V���܂�" )
+                                "    これらのコマンドを使って、更新します" )
 pick( PTARG_NO_DEPENDENTS,      "    Has no dependents",
-                                "    �֘A������܂���" )
+                                "    関連がありません" )
 pick( PTARG_NAME,               "%E:",
                                 "%E:" )
 pick( PTARG_DOTNAME,            " (.%s)",
                                 " (.%s)" )
 pick( PDOT_CMDS,                "%s commands are:",
-                                "%s �R�}���h�͈ȉ��̂��̂ł��F" )
+                                "%s コマンドは以下のものです：" )
 pick( PSUF_SUFFIX,              "Extension (.%s):",
-                                "�g���q (.%s):" )
+                                "拡張子 (.%s):" )
 pick( PSUF_FOUND_IN,            "    Found in: %s",
-                                "    %s �̒��ɂ���܂�" )
+                                "    %s の中にあります" )
 pick( PSUF_MADE_FROM,           "    Can be made from extension (.%s):",
-                                "    �g���q (.%s) �������܂�" )
+                                "    拡張子 (.%s) から作られます" )
 pick( PSUF_USING_CMDS,          "    Using these commands:",
-                                "    �����̃R�}���h���g���Ă��܂�" )
+                                "    これらのコマンドを使っています" )
 pick( PSUF_OUTPUT_DIR,          "    Output directory: %s",
                                 "    Output directory: %s" )
 pick( PSUF_SOURCE_DIR,          "    Source directory: %s",
                                 "    Source directory: %s" )
 pick( PMAC_NAME_HAS_VALUE,      "$%E has the value (%L)",
-                                "$%E �̒l�� (%L) �ł�" )
+                                "$%E の値は (%L) です" )
 pick( UPDATING_TARGET,          "Updating %E:",
-                                "�X�V���܂��� %E:" )
+                                "更新しました %E:" )
 pick( M_EXPLICIT_RULE,          "has %M explicit rule",
-                                "%M �̗l�Ȗ������[��������܂�" )
+                                "%M の様な明示ルールがあります" )
 pick( M_NO,                     "no",
-                                "������" )
+                                "いいえ" )
 pick( TARGET_IS_UPDATED,        "%E is up to date",
-                                "%E �͍X�V���܂���" )
+                                "%E は更新しました" )
 pick( IMP_ENV_M,                "\t%E %M",
                                 "\t%E %M" )
 pick( M_CHECKING_IMPLICIT,      "checking implicit rules",
-                                "�Öق̃��[�����`�F�b�N��" )
+                                "暗黙のルールをチェック中" )
 pick( M_HAS_NO_IMPLICIT,        "has no implicit rules",
-                                "�Öق̃��[��������܂���" )
+                                "暗黙のルールがありません" )
 pick( M_IS_CLEAR_WITH,          "is clear with implicit rules",
-                                "�Öق̃��[���ŃN�������܂���" )
+                                "暗黙のルールでクリヤしました" )
 pick( M_HAD_TO_BE_UPDATED,      "had to be updated",
-                                "�X�V���K�v�ł�" )
+                                "更新が必要です" )
 pick( M_COULD_NOT_BE_IMPLIED,   "could not be implied",
-                                "�Öق̃��[�����K�p�ł��܂���" )
+                                "暗黙のルールが適用できません" )
 pick( M_YOUNGEST_DATE,          "Youngest Possible  ",
-                                "�\�Ȓ��ł̍ŐV  " )
+                                "可能な中での最新  " )
 pick( M_OLDEST_DATE,            "Oldest Possible    ",
-                                "�\�Ȓ��ł̍Ō�  " )
+                                "可能な中での最古  " )
 pick( GETDATE_MSG,              "\t%s\t%E",
                                 "\t%s\t%E" )
 pick( WILL_BE_BUILT_BECAUSE_OF, "%s will be built because of %s",
@@ -281,13 +281,13 @@ pick( NEWLINE,                  "",
 pick( FAR_STRING,               "%F",
                                 "%F" )
 pick( DO_YOU_WISH_TO_CONT,      "Do you wish to continue",
-                                "���s���܂���" )
+                                "続行しますか" )
 pick( SHOULD_FILE_BE_DELETED,   "Should this file be deleted",
-                                "���̃t�@�C���������܂���" )
+                                "このファイルを消しますか" )
 pick( STRING_YES_NO,            "%M [Yes/No] ? ",
-                                "%M �m(Y)�͂��^(N)�������n�H" )
+                                "%M ［(Y)はい／(N)いいえ］？" )
 pick( PRESS_KEY,                "Press any key...",
-                                "�ǂꂩ�L�[�������Ă�������..." )
+                                "どれかキーを押してください..." )
 
 
 #if defined( __UNIX__ )

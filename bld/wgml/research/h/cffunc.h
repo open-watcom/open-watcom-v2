@@ -33,7 +33,7 @@
 *                   get_p_buffer()
 *                   parse_functions_block()
 *
-* Note:         The field names are intended to correspond to the field names 
+* Note:         The field names are intended to correspond to the field names
 *               shown in the Wiki. The Wiki structs are named when the structs
 *               defined here are defined; they are not identical.
 *

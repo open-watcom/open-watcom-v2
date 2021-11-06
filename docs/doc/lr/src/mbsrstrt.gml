@@ -2,9 +2,9 @@
 The restartable multibyte/wide string conversion functions differ from
 the corresponding internal-state multibyte string functions (
 .ct
-.kw mbstowcs
+.reffunc mbstowcs
 and
-.kw wcstombs
+.reffunc wcstombs
 .ct )
 in that they have an extra argument,
 .arg ps

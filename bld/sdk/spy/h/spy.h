@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,7 +153,7 @@ typedef struct {
 } message;
 
 typedef struct {
-    char            *class_name;
+    const char      *class_name;
     message         *message_array;
     WORD            message_array_size;
 } class_messages;
@@ -178,7 +178,7 @@ typedef struct {
 } style_info;
 
 typedef struct {
-    char            *class_name;
+    const char      *class_name;
     style_info      *style_array;
     WORD            style_array_size;
 } class_styles;
@@ -229,7 +229,7 @@ extern WORD             TotalMessageArraySize;
  */
 
 /* spybox.c */
-extern void             SpyOut( char *msg, LPMSG pmsg, char *class_name );
+extern void             SpyOut( const char *msg, LPMSG pmsg, const char *class_name );
 extern void             CreateSpyBox( HWND );
 extern void             ClearSpyBox( void );
 extern void             SpyMessagePauseToggle( void );
@@ -259,14 +259,14 @@ extern void             GetWindowName( HWND hwnd, char *str );
 extern void             GetClassStyleString( HWND hwnd, char *str, char *sstr );
 extern void             GetWindowStyleString( HWND hwnd, char *str, char *sstr );
 extern void             DumpToComboBox( char *str, HWND cb );
-extern void             FormatSpyMessage( char *msg, LPMSG pmsg, char *res );
+extern void             FormatSpyMessage( const char *msg, LPMSG pmsg, char *res );
 extern void             SetSpyState( spystate ss );
 extern bool             GetFileName( char *ext, file_dlg_type type, char *fname );
 extern bool             InitGblStrings( void );
 
 /* spymsgs.c */
-extern message          *GetMessageDataFromID( UINT msgid, char *class_name );
-extern void             ProcessIncomingMessage( UINT msgid, char *class_name, char *res );
+extern message          *GetMessageDataFromID( UINT msgid, const char *class_name );
+extern void             ProcessIncomingMessage( UINT msgid, const char *class_name, char *res );
 extern void             InitMessages( void );
 extern void             SetFilterMsgs( MsgClass type, bool val, bool is_watch );
 extern bool             *SaveBitState( bool is_watch );

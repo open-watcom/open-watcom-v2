@@ -145,7 +145,7 @@
 #define SPCBHAND_NOSYNC 0x0040
 #define SPCBHAND_PHYS_SEEK 0x0080
 
-#pragma pack(4)
+:include pshpack4.sp
 
 typedef ULONG    HSTREAM;
 typedef HSTREAM  FAR *PHSTREAM;
@@ -198,7 +198,7 @@ typedef struct _SPCB {
     MMTIME  mmtimePerUnit;
 } SPCB, FAR *PSPCB;
 
-#pragma pack(1)
+:include pshpack1.sp
 
 typedef struct _HAND {
     SZ szHandlerClass[MAX_SPI_NAME];
@@ -229,7 +229,7 @@ typedef struct _VSD_DCB {
     ULONG ulReserved2;
 } VSD_DCB, *PVSD_DCB;
 
-#pragma pack()
+:include poppack.sp
 
 #include <evcb.h>
 #include <acb.h>
@@ -493,7 +493,7 @@ typedef struct _PARM_SNDMSG {
     PVOID   pMsg;
 } PARM_SNDMSG, FAR *PPARM_SNDMSG;
 
-#pragma pack()
+:include poppack.sp
 
 ULONG APIENTRY SMHEntryPoint(PVOID);
 ULONG APIENTRY SpiAssociate(HSTREAM,HID,PACB);

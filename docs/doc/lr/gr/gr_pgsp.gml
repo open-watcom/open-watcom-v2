@@ -1,5 +1,5 @@
-.gfunc pg_setpalette
-.gsynop begin 
+.gfunc _pg_setpalette
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_setpalette( paletteentry _FAR *pal );
 .do end
@@ -21,13 +21,13 @@ The argument
 is an array of palette structures containing the new palette.
 Each element of the palette is a structure containing the following fields:
 .begterm 15
-.note color
+.termnx color
 color used to display series
-.note style
+.termnx style
 line style used for line and scatter charts
-.note fill
+.termnx fill
 fill pattern used to fill interior of bar and pie sections
-.note plotchar
+.termnx plotchar
 character plotted on line and scatter charts
 .endterm
 .desc end

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,8 @@
 #include "wio.h"
 #include "watcom.h"
 #include "sopen.h"
+#include "cmacadd.h"
+#include "toggles.h"
 
 #include "clibext.h"
 
@@ -45,7 +47,7 @@ extern  TAGPTR  TagHash[ID_HASH_SIZE + 1];
 
 #define PH_BUF_SIZE     32768
 #define PCH_SIGNATURE   (('H'<<24)|('C'<<16)|('P'<<8)|'W')     /* 'WPCH' */
-#define PCH_VERSION     0x0127
+#define PCH_VERSION     0x0128
 #if defined(_M_I86)
 #define PCH_VERSION_HOST ( ( 1L << 16 ) | PCH_VERSION )
 #elif defined(_M_IX86)
@@ -121,7 +123,7 @@ typedef struct pheader {
     unsigned        pack_amount;    // PackAmount
     unsigned        gen_switches;   // GenSwitches
     unsigned        target_switches;// TargetSwitches
-    int             toggles;        // Toggles
+    pragma_toggles  toggles;        // PragmaToggles
     unsigned        size;
     unsigned        macro_size;
     unsigned        file_count;
@@ -182,7 +184,7 @@ static void InitPHVars( void )
 
 static void CreatePHeader( const char *filename )
 {
-    PH_handle = sopen4( filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYRW, PMODE_RW );
+    PH_handle = _sopen4( filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYRW, PMODE_RW );
     if( PH_handle == -1 ) {
         longjmp( PH_jmpbuf, 1 );
     }
@@ -286,7 +288,7 @@ static void OutPutHeader( void )
     pch.pack_amount       = PackAmount;
     pch.gen_switches      = GenSwitches;
     pch.target_switches   = TargetSwitches;
-    pch.toggles           = Toggles;
+    pch.toggles           = PragmaToggles;
     pch.size              = PH_size - PH_MacroSize;
     pch.macro_size        = PH_MacroSize;
     pch.file_count        = PH_FileCount;
@@ -559,7 +561,7 @@ static void OutPutATag( TAGPTR tag )
     if( rc ) {
         longjmp( PH_jmpbuf, rc );
     }
-    if( sym_type->decl_type == TYPE_ENUM ) {
+    if( sym_type->decl_type == TYP_ENUM ) {
         OutPutEnums( tag->u.enum_list, tag );
     } else {
         OutPutFields( tag->u.field_list );
@@ -630,7 +632,7 @@ static bool WriteType( TYPEPTR typ )
 }
 
 typedef struct type_indices {
-    int     basetype_index[TYPE_LAST_ENTRY];
+    int     basetype_index[TYP_LAST_ENTRY];
     int     stringtype_index;
     int     constchartype_index;
 } type_indices;
@@ -642,7 +644,7 @@ static void OutPutTypeIndexes( void )
     int                 i;
     type_indices        typ_index;
 
-    for( i = TYPE_BOOL; i < TYPE_LAST_ENTRY; i++ ) {
+    for( i = TYP_BOOL; i < TYP_LAST_ENTRY; i++ ) {
         typ = BaseTypes[i];
         if( typ == NULL ) {
             typ_index.basetype_index[i] = 0;
@@ -666,22 +668,22 @@ static void OutPutAType( TYPEPTR typ )
 
     rc = false;
     switch( typ->decl_type ) {
-    case TYPE_ARRAY:
+    case TYP_ARRAY:
         array = typ->u.array;                   // save pointer
         typ->u.array = PCHSetUInt( array->dimension );  // replace with dim
         rc = WriteType( typ );
         typ->u.array = array;                   // restore pointer
         break;
-    case TYPE_STRUCT:
-    case TYPE_UNION:
-    case TYPE_ENUM:
+    case TYP_STRUCT:
+    case TYP_UNION:
+    case TYP_ENUM:
         tag = typ->u.tag;                       // save tag
         typ->u.tag = PCHSetUInt( tag->refno );  // replace with index
         rc = WriteType( typ );
         typ->u.tag = tag;                       // restore tag pointer
         break;
     default:
-        if( typ->decl_type != TYPE_FUNCTION ) {
+        if( typ->decl_type != TYP_FUNCTION ) {
             rc = WriteType( typ );
         }
         break;
@@ -1414,13 +1416,13 @@ static void FixupTypeIndexes( type_indices *typ_index )
     DATA_TYPE   i;
     int         index;
 
-    for( i = TYPE_BOOL; i < TYPE_LAST_ENTRY; ++i ) {
+    for( i = TYP_BOOL; i < TYP_LAST_ENTRY; ++i ) {
         index = typ_index->basetype_index[i];
         if( index != 0 ) {
             BaseTypes[i] = TypeArray + index;
         }
     }
-    VoidParmList[0] = BaseTypes[TYPE_VOID];
+    VoidParmList[0] = BaseTypes[TYP_VOID];
     StringType = TypeArray + typ_index->stringtype_index;
     ConstCharType = TypeArray + typ_index->constchartype_index;
 }
@@ -1437,12 +1439,12 @@ static char *FixupTypes( char *p, unsigned type_count )
     typ = (TYPEPTR)p;
     TypeArray = typ - 1;
     for( ; type_count != 0; --type_count ) {
-        if( typ->decl_type == TYPE_FUNCTION )
+        if( typ->decl_type == TYP_FUNCTION )
             break;
         if( PCHGetUInt( typ->object ) != 0 ) {
             typ->object = TypeArray + PCHGetUInt( typ->object );
         }
-        if( typ->decl_type == TYPE_ARRAY ) {
+        if( typ->decl_type == TYP_ARRAY ) {
             array = (array_info *)CMemAlloc( sizeof( array_info ) );
             array->dimension = PCHGetUInt( typ->u.array );
             array->unspecified_dim = ( array->dimension == 0 );
@@ -1514,9 +1516,9 @@ static char *FixupFields( char *p )
 static void FixupTag( TYPEPTR typ )
 {
     switch( typ->decl_type ) {
-    case TYPE_STRUCT:
-    case TYPE_UNION:
-    case TYPE_ENUM:
+    case TYP_STRUCT:
+    case TYP_UNION:
+    case TYP_ENUM:
         typ->u.tag = TagArray[PCHGetUInt( typ->u.tag )];
         break;
     default:
@@ -1547,7 +1549,7 @@ static char *FixupTags( char *p, unsigned tag_count )
         TagArray[tag->refno] = tag;
         typ = TypeArray + PCHGetUInt( tag->sym_type );
         tag->sym_type = typ;
-        if( typ->decl_type == TYPE_ENUM ) {
+        if( typ->decl_type == TYP_ENUM ) {
             if( tag->u.enum_list != NULL ) {
                 tag->u.enum_list = (ENUMPTR)p;
                 p = FixupEnums( p, tag );
@@ -1692,7 +1694,7 @@ static int FixupDataStructures( char *p, pheader *pch )
     PCH_MaxSymHandle = pch->symbol_count;
     SetNextSymHandle( pch->symbol_count - 1 );
     IncLineCount = pch->incline_count;
-    Toggles = pch->toggles;
+    PragmaToggles = pch->toggles;
     FixupFNames();
     InitDebugTypes();
     InitDebugTags();
@@ -1752,7 +1754,7 @@ bool UsePreCompiledHeader( const char *filename )
     char                *p;
     pheader             pch;
 
-    handle = sopen3( PCH_FileName, O_RDONLY | O_BINARY, SH_DENYWR );
+    handle = _sopen3( PCH_FileName, O_RDONLY | O_BINARY, SH_DENYWR );
     if( handle == -1 ) {
         CompFlags.make_precompiled_header = true;
         return( false );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +94,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     STARTDATA   sd;
     ULONG       session;
     PID         pid;
-    char        pgm_starter;
+    bool        use_exec_pgm;
     int         exec_state;
     int         show;
     USHORT      sess_type;
@@ -111,9 +112,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     }
 
     WFileName exename( pgm );
-    if( *exename.ext() == NULLCHAR ) {
-        exename.setExt( "exe" );
-    }
+    exename.setExtIfNone( "exe" );
 
     // Try to determine full pathname; the process PATH may not be what
     // we started with.
@@ -121,17 +120,16 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     if( searchenv_buf[0] != '\0' )
         pgm = searchenv_buf;
 
-    pgm_starter = PGM_DOSSTARTSESSION;
-    sess_type = SSF_TYPE_DEFAULT;
     rc = DosQueryAppType( (char const *)pgm, &app_type );
     if( rc != 0 )
         return( -1 );
+
+    use_exec_pgm = false;
+    sess_type = SSF_TYPE_DEFAULT;
     if( typ == WWinTypeDefault ) {
         if( app_type & FAPPTYP_DOS ) {
-            pgm_starter = PGM_DOSSTARTSESSION;
             sess_type = SSF_TYPE_WINDOWEDVDM;
-        } else if( app_type & ( FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT ) ) {
-            pgm_starter = PGM_DOSSTARTSESSION;
+        } else if( app_type & (FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT) ) {
             sess_type = SSF_TYPE_31_ENHSEAMLESSVDM;
             args.insertAt( 0, new WString( WINOS2_NAME ) );
             args.insertAt( 1, new WString( WINOS2_PARM ) );
@@ -139,23 +137,28 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             rc = DosGetInfoBlocks( &ptib, &ppib );
             if( rc != 0 )
                 return( -1 );
-            app_type &= FAPPTYP_EXETYPE;
-            if( (app_type == FAPPTYP_WINDOWCOMPAT) ||
-                (app_type == FAPPTYP_NOTWINDOWCOMPAT) ) {
-                // we are starting a full screen or PM-compatible program
-                if( background ) {
-                    // we want the program to execute in the background
-                    pgm_starter = PGM_DOSEXECPGM;
-                } else if( ppib->pib_ultype == FAPPTYP_NOTSPEC ) {
-                    // we are starting the program from a full screen session
-                    pgm_starter = PGM_DOSEXECPGM;
+            // we are starting a full screen or PM-compatible program
+            switch( app_type & FAPPTYP_EXETYPE ) {
+            case FAPPTYP_NOTSPEC:
+                if( ppib->pib_ultype == PT_FULLSCREEN ) {
+                    use_exec_pgm = true;
                 }
-            } else {
-                if( app_type == ppib->pib_ultype ) {
-                    // the program we are starting is the same type
-                    // as its parent
-                    pgm_starter = PGM_DOSEXECPGM;
+                break;
+            case FAPPTYP_NOTWINDOWCOMPAT:
+                if( background || ppib->pib_ultype == PT_FULLSCREEN ) {
+                    use_exec_pgm = true;
                 }
+                break;
+            case FAPPTYP_WINDOWCOMPAT:
+                if( background || ppib->pib_ultype == PT_FULLSCREEN ) {
+                    use_exec_pgm = true;
+                }
+                break;
+            case FAPPTYP_WINDOWAPI:
+                if( ppib->pib_ultype == PT_PM ) {
+                    use_exec_pgm = true;
+                }
+                break;
             }
         }
     } else {
@@ -163,7 +166,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         case WWinTypeFullScreen:
             if( app_type & FAPPTYP_DOS ) {
                 sess_type = SSF_TYPE_VDM;
-            } else if( app_type & ( FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT ) ) {
+            } else if( app_type & (FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT) ) {
                 sess_type = SSF_TYPE_DEFAULT;
                 args.insertAt( 0, new WString( WINOS2_NAME ) );
                 args.insertAt( 1, new WString( WINOS2_PARM ) );
@@ -174,7 +177,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         case WWinTypeWindowed:
             if( app_type & FAPPTYP_DOS ) {
                 sess_type = SSF_TYPE_WINDOWEDVDM;
-            } else if( app_type & ( FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT ) ) {
+            } else if( app_type & (FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT) ) {
                 sess_type = SSF_TYPE_31_ENHSEAMLESSVDM;
             } else {
                 sess_type = SSF_TYPE_WINDOWABLEVIO;
@@ -184,10 +187,8 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     }
 
     WFileName fn( pgm );
-    if( *fn.ext() == NULLCHAR ) {
-        fn.setExt( "exe" );
-    }
-    if( pgm_starter == PGM_DOSEXECPGM ) {
+    fn.setExtIfNone( "exe" );
+    if( use_exec_pgm ) {
         char    *exec_env;
 
         exec_state = EXEC_ASYNC;
@@ -209,7 +210,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         if( rc != 0 )
             return( -1 );
         return( returncodes.codeTerminate );    // process id of child
-    } else { // pgm_starter == PGM_DOSSTARTSESSION
+    } else {
         switch( state ) {
         case WWinStateHide:
             show = SSF_CONTROL_INVISIBLE;

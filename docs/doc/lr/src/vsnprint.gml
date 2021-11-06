@@ -28,26 +28,26 @@ function formats data under control of the
 .arg format
 control string and stores the result in
 .arg buf
-.ct .li .
+.period
 The maximum number of characters to store, including a terminating
 null character, is specified by
 .arg count
-.ct .li .
+.period
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
 The
 .id &funcb.
 function is equivalent to the
-.kw _snprintf
+.reffunc _snprintf
 function, with the variable argument list replaced with
 .arg arg
 .ct , which has been initialized by the
-.kw va_start
+.reffunc va_start
 macro.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .if &'length(&wfunc.) ne 0 .do begin
 The argument
 .arg buf
@@ -57,7 +57,7 @@ written to a stream.
 The maximum number of wide characters to write, including a
 terminating null wide character, is specified by
 .arg count
-.ct .li .
+.period
 .do end
 .desc end
 .*
@@ -72,7 +72,7 @@ character, or a negative value if an encoding error occurred.
 Thus, the null-terminated output has been completely written if and only
 if the returned value is nonnegative and less than
 .arg count
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .id &wfunc.
@@ -84,7 +84,7 @@ or a negative value if an encoding error occurred.
 Thus, the null-terminated output has been completely written if and only
 if the returned value is nonnegative and less than
 .arg count
-.ct .li .
+.period
 .do end
 .im errnoref
 .return end

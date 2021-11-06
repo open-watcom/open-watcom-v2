@@ -1,9 +1,10 @@
 .func bcmp
 .synop begin
-#include <string.h>
+.deprec
+#include <strings.h>
 int bcmp(const void *s1, const void *s2, size_t n);
-.ixfunc2 '&String' &funcb
-.ixfunc2 '&Compare' &funcb
+.ixfunc2 '&String' bcmp
+.ixfunc2 '&Compare' bcmp
 .synop end
 .desc begin
 The
@@ -12,14 +13,14 @@ function compares the byte string pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
-.ct .li .
+.period
 The number of bytes to compare is specified by
 .arg n
-.ct .li .
+.period
 Null characters may be included in the comparision.
 .np
 Note that this function is similar to the ISO C
-.kw memcmp
+.reffunc memcmp
 function but just tests for equality
 (new code should use the ISO C function).
 .desc end
@@ -34,7 +35,7 @@ otherwise it returns 1.
 .see end
 .exmp begin
 #include <stdio.h>
-#include <string.h>
+#include <strings.h>
 
 void main()
   {

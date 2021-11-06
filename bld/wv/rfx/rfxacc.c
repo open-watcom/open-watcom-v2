@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ bool InitRFXSupp( void )
     get_sys_config_req      acc;
 
 #endif
-    SuppRFXId = GetSuppId( RFX_SUPP_NAME );
+    SuppRFXId = GETSUPPID( RFX_SUPP_NAME );
     if( SuppRFXId == 0 )
         return( false );
 #ifdef __NT__

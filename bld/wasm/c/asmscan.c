@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -286,7 +287,7 @@ static bool get_number( token_idx idx, const char **input, char **output )
 #endif
     AsmBuffer[idx].class = TC_NUM;
     if( base == 0 ) {
-        base = first_char_0 ? 8 : 10;
+        base = ( first_char_0 ) ? 8 : 10;
     }
     switch( base ) {
     case 10:
@@ -409,13 +410,21 @@ static bool get_id( token_idx idx, const char **input, char **output )
                 return( RC_OK );
             }
             break;
+        // TASM keywords - initialization
+        case T_MASM:
+        case T_IDEAL:
+            if( (Options.mode_init & MODE_TASM) == 0 ) {
+                return( RC_OK );
+            }
+            break;
         // TASM keywords
         case T_ARG:
         case T_ENUM:
-        case T_IDEAL:
         case T_LOCALS:
-        case T_MASM:
         case T_NOLOCALS:
+        case T_NOWARN:
+        case T_SMART:
+        case T_WARN:
             if( (Options.mode & MODE_TASM) == 0 ) {
                 return( RC_OK );
             }
@@ -437,7 +446,6 @@ static bool get_id( token_idx idx, const char **input, char **output )
         case T_EXITCODE:
         case T_FARDATA:
         case T_MODEL:
-        case T_NOWARN:
         case T_P186:
         case T_P286:
         case T_P286N:
@@ -463,7 +471,6 @@ static bool get_id( token_idx idx, const char **input, char **output )
         case T_STARTUPCODE:
         case T_UDATASEG:
         case T_UFARDATA:
-        case T_WARN:
             if( (Options.mode & MODE_IDEAL) == 0 ) {
                 return( RC_OK );
             }

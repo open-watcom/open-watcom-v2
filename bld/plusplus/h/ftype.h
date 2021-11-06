@@ -32,6 +32,18 @@
 #ifndef _FTYPE_H_INCLUDED
 #define _FTYPE_H_INCLUDED
 
+/*          enum    unix    others */
+#define OFT_DEFS() \
+    pick( OFT_OBJ,  ".o",   ".obj" )    /* - object file                        */ \
+    pick( OFT_PPO,  ".i",   ".i" )      /* - preprocessor output                */ \
+    pick( OFT_ERR,  ".err", ".err" )    /* - error file name                    */ \
+    pick( OFT_MBR,  ".mbr", ".mbr" )    /* - browse file name                   */ \
+    pick( OFT_DEF,  ".def", ".def" )    /* - prototype definitions              */ \
+    pick( OFT_DEP,  ".d",   ".d" )      /* - make-style auto-depend filename    */ \
+    pick( OFT_TRG,  ".o",   ".obj" )    /* - target filename                    */
+#define OFT_BRI_DEFS() \
+    pick( OFT_BRI,  ".brm", ".brm" )    /* - new browser: module information    */
+
 typedef enum {                  // TYPES OF SOURCE FILES
     FT_SRC,                     // - primary source file
     FT_HEADER,                  // - header file (i.e., #include "file.h")
@@ -42,16 +54,12 @@ typedef enum {                  // TYPES OF SOURCE FILES
 } src_file_type;
 
 typedef enum {                  // TYPES OF OUTPUT FILES
-    OFT_OBJ,                    // - object file
-    OFT_PPO,                    // - preprocessor output
-    OFT_ERR,                    // - error file name
-    OFT_MBR,                    // - browse file name
-    OFT_DEF,                    // - prototype definitions
+    #define pick(e,u,o)     e,
+        OFT_DEFS()
 #ifdef OPT_BR
-    OFT_BRI,                    // - new browser: module information
+        OFT_BRI_DEFS()
 #endif
-    OFT_DEP,                    // - make-style auto-depend filename
-    OFT_TRG,                    // - target filename
+    #undef pick
     OFT_SRCDEP,                 // - name of first depend(source) in autodep file
     OFT_MAX
 } out_file_type;

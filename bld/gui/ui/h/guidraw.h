@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,15 +30,11 @@
 ****************************************************************************/
 
 
-#define DRAW( x ) DrawingChars[DRAW_##x]
+#define DRAWC1(x)   DrawingChars[GUI_##x]
 
-enum {
-    #define pick( a,b,c,d,e ) DRAW_##a,
-    #include "_guidraw.h"
-    #undef pick
-    DRAW_LAST
-};
+#define DRAWC(x,i)  DrawingChars[GUI_##x + i]
 
-extern char DrawingChars[];
 
-extern void GUIInitDrawingChars( bool dbcs );
+extern char     DrawingChars[];
+
+extern void     GUIInitDrawingChars( bool dbcs );

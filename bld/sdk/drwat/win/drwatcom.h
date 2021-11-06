@@ -52,6 +52,7 @@
 #include "font.h"
 #include "segmem.h"
 #include "ismod32.h"
+#include "winintrf.h"
 #include "di386cli.h"
 #include "rcstr.gh"
 #include "ldstr.h"
@@ -113,7 +114,7 @@ typedef struct {
 /*
  * global variables
  */
-extern struct interrupt_struct  IntData;
+extern interrupt_struct         IntData;
 extern HANDLE                   Instance;
 extern HTASK                    DeadTask;
 extern TASKENTRY                DTTaskEntry;
@@ -163,9 +164,6 @@ void DoDump( HWND );
 
 /* heapex.c */
 void DoHeapDialog( HWND );
-
-/* inth.asm */
-void FAR PASCAL IntHandler( void );
 
 /* drwatlog.c */
 void StartLogFile( void );

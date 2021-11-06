@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +36,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-_WCRTLINK int inet_aton( const char *cp, struct in_addr *__inp )
+_WCRTLINK int inet_aton( const char *cp, struct in_addr *op )
 {
-    unsigned long int ip = inet_addr( cp );
+    in_addr_t ip = inet_addr( cp );
 
-    if (__inp)
-        __inp->s_addr = ip;
-    return( ip );
+    if( op != NULL )
+        op->s_addr = ip;
+    return( ip != INADDR_NONE );
 }
 

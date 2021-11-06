@@ -70,7 +70,7 @@ The
 .id &funcb.
 macro does not return a value.
 :cmt. Because the function uses the
-:cmt. .kw fprintf
+:cmt. .reffunc fprintf
 :cmt. function to display errors, the
 :cmt. .kw errno
 :cmt. global variable can be set when an output error occurs.

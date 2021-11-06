@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,29 +36,23 @@
 #include "guixutil.h"
 #include "guiscrol.h"
 
-static void SetRange( gui_window *wnd, int bar, unsigned int range, bool text )
+static void SetRange( gui_window *wnd, int bar, guix_ord range, guix_ord text_range )
 {
     int new_range;
-    int screen_size;
+    guix_ord screen_size;
 
     screen_size = GUIGetScrollScreenSize( wnd, bar );
     if( bar == SB_HORZ ) {
         if( !GUI_HSCROLL_ON( wnd ) ) {
             return;
         }
-        wnd->hscroll_range = range;
-        if( text ) {
-            range = GUIFromTextX( range, wnd );
-        }
+        wnd->hscroll_range = text_range;
         wnd->flags |= HRANGE_SET;
     } else {
         if( !GUI_VSCROLL_ON( wnd ) ) {
             return;
         }
-        wnd->vscroll_range = range;
-        if( text ) {
-            range = GUIFromTextY( range, wnd );
-        }
+        wnd->vscroll_range = text_range;
         wnd->flags |= VRANGE_SET;
     }
     new_range = range - screen_size;
@@ -71,87 +66,77 @@ static void SetRange( gui_window *wnd, int bar, unsigned int range, bool text )
  * GUISetHScrollRangeCols
  */
 
-void GUISetHScrollRangeCols( gui_window *wnd, gui_ord range )
+void GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord text_range )
 {
     wnd->flags |= HRANGE_COL;
-    SetRange( wnd, SB_HORZ, range, true );
+    SetRange( wnd, SB_HORZ, GUIFromTextX( text_range, wnd ), text_range );
 }
 
 /*
  * GUISetVScrollRangeRows
  */
 
-void GUISetVScrollRangeRows( gui_window *wnd, gui_ord range )
+void GUIAPI GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord text_range )
 {
     wnd->flags |= VRANGE_ROW;
-    SetRange( wnd, SB_VERT, range, true );
+    SetRange( wnd, SB_VERT, GUIFromTextY( text_range, wnd ), text_range );
 }
 
 /*
  * GUISetHScrollRange
  */
 
-void GUISetHScrollRange( gui_window *wnd, gui_ord range )
+void GUIAPI GUISetHScrollRange( gui_window *wnd, gui_ord range )
 {
-    gui_coord coord;
+    guix_ord    scr_range;
 
     wnd->flags &= ~HRANGE_COL;
-    coord.x = range;
-    GUIScaleToScreenR( &coord );
-    SetRange( wnd, SB_HORZ, coord.x, false );
+    scr_range = GUIScaleToScreenH( range );
+    SetRange( wnd, SB_HORZ, scr_range, scr_range );
 }
 
 /*
  * GUISetVScrollRange
  */
 
-void GUISetVScrollRange( gui_window *wnd, gui_ord range )
+void GUIAPI GUISetVScrollRange( gui_window *wnd, gui_ord range )
 {
-    gui_coord coord;
+    guix_ord    scr_range;
 
     wnd->flags &= ~VRANGE_ROW;
-    coord.y = range;
-    GUIScaleToScreenR( &coord );
-    SetRange( wnd, SB_VERT, coord.y, false );
+    scr_range = GUIScaleToScreenV( range );
+    SetRange( wnd, SB_VERT, scr_range, scr_range );
 }
 
 /*
  * GUIGetHScrollRange
  */
 
-gui_ord GUIGetHScrollRange( gui_window *wnd )
+gui_ord GUIAPI GUIGetHScrollRange( gui_window *wnd )
 {
-    gui_coord   coord;
-
-    coord.x = GUIGetScrollRange( wnd, SB_HORZ );
-    GUIScreenToScaleR( &coord );
-    return( coord.x );
+    return( GUIScreenToScaleH( GUIGetScrollRange( wnd, SB_HORZ ) ) );
 }
 
 /*
  * GUIGetVScrollRange
  */
 
-gui_ord GUIGetVScrollRange( gui_window *wnd )
+gui_ord GUIAPI GUIGetVScrollRange( gui_window *wnd )
 {
-    gui_coord   coord;
-
-    coord.y = GUIGetScrollRange( wnd, SB_VERT );
-    GUIScreenToScaleR( &coord );
-    return( coord.y );
+    return( GUIScreenToScaleV( GUIGetScrollRange( wnd, SB_VERT ) ) );
 }
 
 /*
  * GUIGetVScrollRangeRows
  */
 
-gui_ord GUIGetVScrollRangeRows( gui_window *wnd )
+gui_text_ord GUIAPI GUIGetVScrollRangeRows( gui_window *wnd )
 {
-    gui_ord     range;
+    guix_ord    range;
 
     range = GUIGetScrollRange( wnd, SB_VERT );
     if( range == GUI_NO_ROW ) {
-        return( range );
+        return( GUI_TEXT_NO_ROW );
     } else {
         return( GUIToTextY( range, wnd ) );
     }
@@ -161,13 +146,13 @@ gui_ord GUIGetVScrollRangeRows( gui_window *wnd )
  * GUIGetHScrollRangeCols
  */
 
-gui_ord GUIGetHScrollRangeCols( gui_window *wnd )
+gui_text_ord GUIAPI GUIGetHScrollRangeCols( gui_window *wnd )
 {
-    gui_ord     range;
+    guix_ord    range;
 
     range = GUIGetScrollRange( wnd, SB_HORZ );
     if( range == GUI_NO_COLUMN ) {
-        return( range );
+        return( GUI_TEXT_NO_COLUMN );
     } else {
         return( GUIToTextX( range, wnd ) );
     }

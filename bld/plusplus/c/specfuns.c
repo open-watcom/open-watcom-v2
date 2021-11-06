@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,13 +39,13 @@ typedef struct {
     unsigned length;
 } SPEC_FUNC;
 
-#define SPEC_FUN( code, name ) { name, sizeof(name)-1 }
-
 static SPEC_FUNC funs[] = {     // special functions
-#include "specfuns.dfn"
+    #define SPEC_FUN( code, name ) { name, sizeof(name)-1 }
+    #include "_spcfuns.h"
+    #undef SPEC_FUN
 };
 
-#define SPEC_FUN_END &funs[sizeof( funs ) / sizeof( funs[0] )]
+#define SPEC_FUN_END &funs[ARRAY_SIZE( funs )]
 
 
 SPFN SpecialFunction(           // IDENTIFY SPECIAL FUNCTION

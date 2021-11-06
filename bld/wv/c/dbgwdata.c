@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ WNDOPEN *WndOpenTab[] =
 };
 
 const char          WndNameTab[] = {
-    #define pick( a,b,c,d,e,f ) a
+    #define pick( a,b,c,d,e,f ) a "\0"
     #include "wndnames.h"
     #undef pick
 };

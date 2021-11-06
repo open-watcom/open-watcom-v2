@@ -5,7 +5,6 @@ system=nw_libc
 linkage=static
 convention=stack
 
-clib_release = 0
+lib_debug = 1
 
 !include $(clib_dir)/mklib.mif
-!include ../../../deps.mif

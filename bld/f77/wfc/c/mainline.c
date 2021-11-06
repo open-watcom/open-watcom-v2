@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,37 +34,93 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
-#include <string.h>
 #include "global.h"
 #include "cpopt.h"
 #include "fcgbls.h"
 #include "boot77.h"
-#include "errrtns.h"
-#if defined( __INCL_ERRMSGS__ )
-#include "errincl.h"
-#else
-#include "errrsrc.h"
-#endif
+#include "errutil.h"
 #include "filescan.h"
 #include "sdcline.h"
 #include "fmacros.h"
+#include "cioconst.h"
+#include "inout.h"
+#include "errcod.h"
+#include "fmemmgr.h"
 
 #include "clibext.h"
 
 
-static  char            CmdBuff[2*128];
-
-#if _CPU == 386
-    #define _WFC "wfc386"
+#if _CPU == 8086
+#define WFC_NAME  "wfc"
+#define WFC_ENV   "WFC"
+#elif _CPU == 386
+#define WFC_NAME  "wfc386"
+#define WFC_ENV   "WFC386"
+#elif _CPU == _AXP
+#define WFC_NAME  "wfcaxp"
+#define WFC_ENV   "WFCAXP"
+#elif _CPU == _PPC
+#define WFC_NAME  "wfcppc"
+#define WFC_ENV   "WFCPPC"
 #else
-    #define _WFC "wfc"
+#error Unknown System
 #endif
+
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "usage.gh"
+    #undef pick
+};
+
+static char     CmdBuff[2*128];
 
 #if defined( _M_IX86 )
     unsigned char   _8087   = 0;
     unsigned char   _real87 = 0;
 #endif
 
+static void printfMsg( unsigned msg, ... )
+{
+    va_list     args;
+    char        buff[ERR_BUFF_SIZE];
+
+    va_start( args, msg );
+    vsprintf( buff, GetMsg( msg ), args );
+    va_end( args );
+    TOutNL( buff );
+}
+
+void    ShowUsage( void ) {
+//===================
+
+    unsigned    msg;
+
+    TOutBanner();
+    TOutNL( "" );
+    msg = MSG_USAGE_BASE + 1;
+    printfMsg( msg++, WFC_NAME );
+    TOutNL( "" );
+    while( msg < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
+        printfMsg( msg++ );
+    }
+}
+
+static void FInit( void )
+{
+    char        imageName[_MAX_PATH];
+
+    FMemInit();
+    _cmdname( imageName );
+    ErrorInit( imageName );
+}
+
+static void FFini( void )
+{
+    ErrorFini();
+    FMemErrors();
+    FMemFini();
+}
 
 int     main( int argc, char *argv[] ) {
 //======================================
@@ -73,9 +130,6 @@ int     main( int argc, char *argv[] ) {
     int         ret_code;
     char        *opts[MAX_OPTIONS+1];
     char        *p;
-#if !defined( __INCL_ERRMSGS__ )
-    char        imageName[_MAX_PATH];
-#endif
 
 #if !defined( __WATCOMC__ )
     _argc = argc;
@@ -84,19 +138,12 @@ int     main( int argc, char *argv[] ) {
     /* unused parameters */ (void)argc; (void)argv;
 #endif
 
-#if defined( __INCL_ERRMSGS__ )
-    __InitError();
-    __ErrorInit( NULL );
-#else
-    _cmdname( imageName );
-    __InitResource();
-    __ErrorInit( imageName );
-#endif
+    FInit();
 #if defined( _M_IX86 )
     _real87 = _8087 = 0;
 #endif
-    p = getenv( _WFC );
-    if( p != NULL && *p != '\0' ) {
+    p = getenv( WFC_ENV );
+    if( p != NULL && *p != NULLCHAR ) {
         strcpy( CmdBuff, p );
         p = &CmdBuff[ strlen( p ) ];
         *p = ' ';
@@ -108,14 +155,14 @@ int     main( int argc, char *argv[] ) {
     ret_code = 0;
     InitCompMain();
     if( MainCmdLine( &SrcName, &CmdPtr, opts, CmdBuff ) ) {
-        SrcExtn = SDSrcExtn( SrcName ); // parse the file name in case we get
-        ProcOpts( opts );               // an error in ProcOpts() so error
-        InitPredefinedMacros();         // file can be created
-        ret_code = CompMain( CmdBuff );
+        SrcExtn = SDSplitSrcExtn( SrcName );    // parse the file name in case we get
+        ProcOpts( opts );                       // an error in ProcOpts() so error
+        InitPredefinedMacros();                 // file can be created
+        ret_code = CompMain();
     } else {
         ShowUsage();
     }
     FiniCompMain();
-    __ErrorFini();
+    FFini();
     return( ret_code );
 }

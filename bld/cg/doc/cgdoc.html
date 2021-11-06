@@ -193,13 +193,13 @@ SET_WTK( p, WTK_3167 );
 </PRE>
 <P>The return value structure is defined as follows:
 <PRE>
-typedef union	cg_init_info {
+typedef union   cg_init_info {
   struct {
-    unsigned revision	: 10; /* contains II_REVISION */
-    unsigned target	: 5;  /* has II_TARG_??? */
-    unsigned is_large	: 1;  /* 1 if 16 bit host */
+    unsigned revision   : 10; /* contains II_REVISION */
+    unsigned target     : 5;  /* has II_TARG_??? */
+    unsigned is_large   : 1;  /* 1 if 16 bit host */
   } version;
-  int	  success;
+  int     success;
 } cg_init_info;
 
 enum {
@@ -420,7 +420,7 @@ For example:
 back_handle FEBack( SYMPOINTER sym )
 {
     if( sym->back == NULL ) {
-	sym->back = BENewBack( sym );
+        sym->back = BENewBack( sym );
     }
     return( sym->back );
 }
@@ -2573,7 +2573,7 @@ hw_reg_set regs[] = {
 <DD>Turn on registers <B>c</B> in <B>dst</B>.
 <DT>HW_CTurnOff( dst, c )
 <DD>Turn off registers <B>c</B> in <B>dst</B>.
-<DT>HW_COnlyOn( a, c )
+<DT>HW_COnlyOn( dst, c )
 <DD>Turn off all registers except <B>c</B> in <B>dst</B>.
 <DT>HW_Equal( a, b )
 <DD>Is <B>a</B> equal to <B>b</B>
@@ -2595,7 +2595,7 @@ that has a low part.
 <PRE>
 hw_reg_set low16( hw_reg_set reg )
 {
-    hw_reg_set	low;
+    hw_reg_set  low;
 
     HW_CAsgn( low, HW_EMPTY );
     HW_CTurnOn( low, HW_AX );
@@ -2603,7 +2603,7 @@ hw_reg_set low16( hw_reg_set reg )
     HW_CTurnOn( low, HW_CX );
     HW_CTurnOn( low, HW_DX );
     if( HW_Ovlap( reg, low ) ) {
-	HW_OnlyOn( reg, low );
+        HW_OnlyOn( reg, low );
     }
 }
 </PRE>

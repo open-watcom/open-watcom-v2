@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,14 +48,16 @@
 #include "loadfile.h"
 #include "newmem.h"
 
+
+#ifdef _QNX
+
+#define QNX_MAX_DATA_SIZE (QNX_MAX_REC_SIZE - sizeof( lmf_data ))
+#define VERIFY_END (VERIFY_OFFSET + sizeof( RWEndRec.verify ))
+
 static offset           AmountWritten;
 static bool             InVerifySegment;
 static lmf_rw_end       RWEndRec;
 static group_entry *    CurrGroup;
-
-
-#define QNX_MAX_DATA_SIZE (QNX_MAX_REC_SIZE - sizeof( lmf_data ))
-#define VERIFY_END (VERIFY_OFFSET + sizeof( RWEndRec.verify ))
 
 static void WriteLoadRec( void )
 /******************************/
@@ -134,8 +136,10 @@ static void SetVerifyInfo( void (*wrfn)(char *, virt_mem, unsigned long),
     offset      newstart;
     char *      targ;
 
-    if( AmountWritten + length <= VERIFY_OFFSET ) return;
-    if( AmountWritten >= VERIFY_END ) return;
+    if( AmountWritten + length <= VERIFY_OFFSET )
+        return;
+    if( AmountWritten >= VERIFY_END )
+        return;
     newstart = AmountWritten;
     if( AmountWritten < VERIFY_OFFSET ) {
         data += VERIFY_OFFSET - AmountWritten;
@@ -158,7 +162,7 @@ static bool WriteSegData( void *_sdata, void *_start )
     segdata *sdata = _sdata;
     unsigned long *start = _start;
     unsigned long newpos;
-    signed long pad;
+    long pad;
 
     if( !sdata->isuninit && !sdata->isdead && sdata->length > 0 ) {
         newpos = *start + sdata->a.delta;
@@ -175,7 +179,7 @@ static bool WriteSegData( void *_sdata, void *_start )
         }
         WriteQNXInfo( CopyLoad, sdata->u1.vm_ptr, sdata->length );
     }
-    return false;
+    return( false );
 }
 
 static void DoGroupLeader( void *_seg )
@@ -198,7 +202,8 @@ static void WriteQNXGroup( group_entry *grp, unsigned_32 *segments )
     if( StackSegPtr != NULL && grp == StackSegPtr->group ) {
         segments[seg] -= StackSize;      // stack size gets
     }                                    // added on by QNX loader.
-    if( grp->size == 0 ) return;
+    if( grp->size == 0 )
+        return;
     AmountWritten = 0;
     CurrGroup = grp;
     WriteLoadRec();
@@ -293,16 +298,16 @@ static bool checkGroupFlags( void *_seg, void *_grp )
     if( sflags < 0x10 ) {
         if( (sflags & 1) == 0 ) {       // if can read/write or exec/read
             grp->u.qnxflags &= ~1;      // can for all segments.
-            return true;                // no need to check others
+            return( true );                // no need to check others
         }
     } else {
         // make segments read/write or exec/read unless every segment is specifically
         // set otherwise.
 
         grp->u.qnxflags &= ~1;
-        return true;
+        return( true );
     }
-    return false;
+    return( false );
 }
 
 void SetQNXGroupFlags( void )
@@ -316,7 +321,7 @@ void SetQNXGroupFlags( void )
         if( group->segflags & SEG_DATA ) {
             group->u.qnxflags = QNX_READ_ONLY;      // 1
         } else {
-            group->u.qnxflags = QNX_EXEC_ONLY;     // 3
+            group->u.qnxflags = QNX_EXEC_ONLY;      // 3
         }
         Ring2Lookup( group->leaders, checkGroupFlags, group );
     }
@@ -412,7 +417,7 @@ void FiniQNXLoadFile( void )
     memset( &header, 0, sizeof( header ) );
     header.version = QNX_VERSION;
     header.cflags = (FmtData.u.qnx.flags | (FmtData.u.qnx.priv_level << QNX_PRIV_SHIFT)) & QNX_FLAG_MASK;
-    if( LinkState & LS_FMT_SEEN_32_BIT ) {
+    if( LinkState & LS_FMT_SEEN_32BIT ) {
         header.cflags |= _TCF_32BIT;
     }
     if( FmtData.type & MK_QNX_FLAT ) {
@@ -420,7 +425,7 @@ void FiniQNXLoadFile( void )
     }
     header.fpu = 0;     //NYI: need to set 87, 287, 387
     if( FmtData.cpu_type == 0 ) {        // no model specified, so assume...
-        if( LinkState & LS_FMT_SEEN_32_BIT ) {
+        if( LinkState & LS_FMT_SEEN_32BIT ) {
             header.cpu = 386;
         } else {
             header.cpu = 86;
@@ -455,3 +460,5 @@ unsigned_16 ToQNXIndex( unsigned_16 sel )
 {
     return( QNX_SEL_NUM( sel ) );
 }
+
+#endif

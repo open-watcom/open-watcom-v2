@@ -1,9 +1,9 @@
 :H2.H0, H1, H2, H3, H4, H5, H6
 :XMP.
-Format&gml. &gml.H:HP1.n:eHP1. \(id='id-name'\)
-            \(stitle='character string'\).<text line>
+Format&gml. &gml.H:HP1.n:eHP1. [id='id-name']
+            [stitle='character string'].<text line>
         (:HP1.n:eHP1.=0,1)
-Format&gml. &gml.H:HP1.n:eHP1. \(id='id-name'\).<text line>
+Format&gml. &gml.H:HP1.n:eHP1. [id='id-name'].<text line>
         (:HP1.n:eHP1.=0,1,2,3,4,5,6)
 :eXMP.
 :I2 refid='gth0' pg=major.gth0

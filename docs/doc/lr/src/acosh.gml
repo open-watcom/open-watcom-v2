@@ -11,7 +11,7 @@ The
 .id &funcb.
 function computes the inverse hyperbolic cosine of
 .arg x
-.ct .li .
+.period
 A domain error occurs if the value of
 .arg x
 is less than 1.0.

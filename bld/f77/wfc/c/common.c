@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +90,7 @@ void    CpCommon(void) {
                 sym = LkSym();
                 flags = sym->u.ns.flags;
                 CpError = false;
-                if( ( flags & SY_CLASS ) != SY_VARIABLE ) {
+                if( (flags & SY_CLASS) != SY_VARIABLE ) {
                     IllName( sym );
                 } else if( flags & SY_IN_COMMON ) {
                     NameErr( CM_ALREADY_IN_COM, sym );
@@ -99,7 +100,7 @@ void    CpCommon(void) {
                     Error( SA_SAVED );
                 } else if( flags & SY_DATA_INIT ) {
                     NameErr( ST_DATA_ALREADY, sym );
-                } else if( ( flags & SY_SUBSCRIPTED ) && _Allocatable( sym ) ) {
+                } else if( (flags & SY_SUBSCRIPTED) && _Allocatable( sym ) ) {
                     IllName( sym );
                 }
             }

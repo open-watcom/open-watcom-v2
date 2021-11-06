@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,19 +57,19 @@ void DisplayBitmap( void );
 void DisplayIcon( HWND hwnd );
 BOOL RegisterBitmapClass( void );
 void DisplayMessageTable( void );
-BOOL CALLBACK VerInfoDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
+INT_PTR CALLBACK VerInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 void DisplayStrings( HWND hwnd );
-BOOL CALLBACK StrTableDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
+INT_PTR CALLBACK StrTableDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 LRESULT CALLBACK MenuWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-BOOL CALLBACK GetMenuNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
-BOOL CALLBACK GetDialogNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
-BOOL CALLBACK DispDialogDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
-BOOL CALLBACK GetDataTypeDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
-BOOL CALLBACK GetDataNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
-BOOL CALLBACK DataDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
-BOOL CALLBACK GetCursorNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
-BOOL CALLBACK GetIconNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
-BOOL CALLBACK GetAccelNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
+INT_PTR CALLBACK GetMenuNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+INT_PTR CALLBACK GetDialogNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+INT_PTR CALLBACK DispDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+INT_PTR CALLBACK GetDataTypeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+INT_PTR CALLBACK GetDataNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+INT_PTR CALLBACK DataDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+INT_PTR CALLBACK GetCursorNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+INT_PTR CALLBACK GetIconNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+INT_PTR CALLBACK GetAccelNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 LRESULT CALLBACK BitmapWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-BOOL CALLBACK GetBitmapNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
-BOOL CALLBACK GetMsgNumDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam );
+INT_PTR CALLBACK GetBitmapNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+INT_PTR CALLBACK GetMsgNumDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );

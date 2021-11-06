@@ -24,14 +24,14 @@ function scans input from the character string
 .arg in_string
 under control of the argument
 .arg format
-.ct .li .
+.period
 Following the format string is the list of addresses of items to
 receive values.
 .pp
 The
 .arg format
 string is described under the description of the
-.kw scanf
+.reffunc scanf
 function.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -40,7 +40,7 @@ The
 function is identical to
 .id &funcb.
 except that it accepts a
-wide-character string argument for
+wide character string argument for
 .arg format
 and the input string
 .arg in_string

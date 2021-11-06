@@ -13,7 +13,7 @@ alt_error=00
 
 exec_chk_i86 = execi86.chk
 
-!include testenv1.mif
+!include testenv.mif
 
 exes = &
 addr01.$(exe) &
@@ -124,11 +124,8 @@ stack_386=opt stack=16k
 stack_i86=opt stack=8k
 stack_axp=opt stack=16k
 
-test : .symbolic start clean start_test test.lnk $(exes) common_set_result_display
-    @%make clean
-
-start_test : .symbolic
-    @%make common_start_test
+test : .symbolic start test.lnk $(exes)
+    $(noecho)%make common_set_result_display
 
 clean : .procedure
     @%make echo_clean

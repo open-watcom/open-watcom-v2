@@ -3,28 +3,28 @@ plustest_name = preproc
 
 alt_error=00
 
-!include testenv1.mif
+!include testenv.mif
 
 .c.i:
-    %append $(%ERROR_FILE) @@@ $^@ @@@
+    %append $(%ERROR_FILE) @@@ $@ @@@
     @%make set_path_wpp
     $(wpp_$(arch)) $[@ -w0 -pl -fo=.i -fip
     @%make set_old_path
-    cat $^@ >>$(%ERROR_FILE)
+    cat $@ >>$(%ERROR_FILE)
 
 .c.i1:
-    %append $(%ERROR_FILE) @@@ $^@ @@@
+    %append $(%ERROR_FILE) @@@ $@ @@@
     @%make set_path_wpp
     $(wpp_$(arch)) $[@ -w0 -plc -fo=.i1 -fip
     @%make set_old_path
-    cat $^@ >>$(%ERROR_FILE)
+    cat $@ >>$(%ERROR_FILE)
 
 .c.i0:
-    %append $(%ERROR_FILE) @@@ $^@ @@@
+    %append $(%ERROR_FILE) @@@ $@ @@@
     @%make set_path_wpp
     $(wpp_$(arch)) $[@ -w0 -pl -pw=0 -fo=.i0 -fip
     @%make set_old_path
-    cat $^@ >>$(%ERROR_FILE)
+    cat $@ >>$(%ERROR_FILE)
 
 all_tests = &
     pp01.i &
@@ -47,11 +47,10 @@ all_tests = &
     pp17.i1 &
 
 
-test : .symbolic start clean start_test $(all_tests) common_set_result
-    @%make clean
+test : .symbolic start start_test $(all_tests)
+    $(noecho)%make common_set_result
 
 start_test : .symbolic
-    @%make common_start_test
     $(noecho)%make gen_input
 
 zap_output : .procedure

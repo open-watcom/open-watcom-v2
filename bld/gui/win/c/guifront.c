@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ void ActivateNC( gui_window *wnd, bool activate )
     }
 }
 
-void GUIBringToFront( gui_window *wnd )
+void GUIAPI GUIBringToFront( gui_window *wnd )
 {
     bool        parent_is_dlg;
     bool        same_window;
@@ -95,7 +96,7 @@ void GUIBringToFront( gui_window *wnd )
     }
 }
 
-void GUIActivateNC( gui_window *wnd, bool activate )
+void GUIAPI GUIActivateNC( gui_window *wnd, bool activate )
 {
     ActivateNC( wnd, activate );
 }

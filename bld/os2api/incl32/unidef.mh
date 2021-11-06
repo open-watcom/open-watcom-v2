@@ -3,7 +3,7 @@
  *
 :include crwatcnt.sp
  */
- 
+
 #ifndef _ULS_UNIDEF
 #define _ULS_UNIDEF
 
@@ -252,8 +252,8 @@ UniChar CALLCONV UniTransLower(const LocaleObject,UniChar);
 UniChar CALLCONV UniTransUpper(const LocaleObject,UniChar);
 
 int CALLCONV UniStrtod(const LocaleObject,const UniChar*,UniChar**,double*);
-int CALLCONV UniStrtol(const LocaleObject,const UniChar*,UniChar**,int,long int*);
-int CALLCONV UniStrtoul(const LocaleObject,const UniChar*,UniChar**,int,unsigned long int*);
+int CALLCONV UniStrtol(const LocaleObject,const UniChar*,UniChar**,int,long*);
+int CALLCONV UniStrtoul(const LocaleObject,const UniChar*,UniChar**,int,unsigned long*);
 
 int      CALLCONV UniStrcoll(const LocaleObject,const UniChar*,const UniChar*);
 size_t   CALLCONV UniStrxfrm(const LocaleObject,UniChar*,const UniChar*,size_t);

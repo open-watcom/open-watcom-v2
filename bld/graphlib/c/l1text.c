@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,134 +39,16 @@ extern float            sqrtf( float );
 #pragma aux             sqrtf "*_";
 
 
-/*  Definitions of local functions  */
-
-static void     GetVectors( struct xycoord *, struct xycoord * );
-static void     VecNormalize( short, float, float, struct xycoord * );
-static void     GetAlignment( short *, short * );
-static void     CalcSpacing( struct xycoord *, struct xycoord *,
-                             struct xycoord * );
-static void     CalcSides( struct xycoord *, struct xycoord *, struct xycoord *,
-                           struct xycoord *, struct xycoord *, char _WCI86FAR * );
-static void     CalcTranslation( struct xycoord *, struct xycoord *,
-                           struct xycoord *, struct xycoord *, short, short );
-static void     CalcCorners( struct xycoord _WCI86FAR *, struct xycoord *,
-                             struct xycoord *, struct xycoord *, short, short );
-static void     CalcNominal( struct xycoord *, struct xycoord *,
-                             struct xycoord *, struct xycoord *,
-                             struct xycoord *, char );
-static short    Round( short, short );
-static void     CalcConcat( struct xycoord _WCI86FAR *, struct xycoord *,
-                            struct xycoord *, short, short, short, short );
-static short    _CharWidth( char );
-
-
-void _L1Text( short xpos, short ypos, char _WCI86FAR * str )
-/*=====================================================
-
-    Draw the character string pointed to by "str" at the position
-    (xpos, ypos) using the current graphics text settings.  */
-
+static void VecNormalize( short scale, float dx, float dy, struct xycoord * vect )
+/*================================================================================
+ * Normalize the vector (dx,dy) to scale and return in vect.
+ */
 {
-    short               hor;        /* horizontal alignment */
-    short               vert;       /* vertical alignment   */
-    struct xycoord      up;         /* character up vector  */
-    struct xycoord      base;       /* character base line vector   */
-    struct xycoord      prop;       /* adjustment vector for prop. font */
-    struct xycoord      nommove;    /* nominal displacement vector  */
-    struct xycoord      space;      /* spacing between characters   */
-    struct xycoord      length;     /* horizontal side of parallelogram */
-    struct xycoord      height;     /* vertical side of parallelogram   */
-    struct xycoord      trans;      /* translation for parallelogram    */
-    struct xycoord      corner[4];  /*  0 - lower left  */
-                                    /*  1 - lower right */
-                                    /*  2 - upper right */
-                                    /*  3 - upper left  */
-    if( *str == '\0' ) {
-        _ErrorStatus = _GRNOOUTPUT;
-        return;
-    }
-    if( _TextSettings.height == 0 || _TextSettings.width == 0 ) {
-        _ErrorStatus = _GRNOOUTPUT;
-        return;
-    }
-    GetVectors( &base, &up );
-    GetAlignment( &hor, &vert );
-    CalcSpacing( &base, &up, &space );
-    CalcSides( &length, &height, &base, &up, &space, str );
-    CalcTranslation( &trans, &length, &height, &up, hor, vert );
-    CalcCorners( &corner, &length, &height, &trans, xpos, ypos );
-    if( _TextSettings.txpath == _PATH_UP ) {    /* select proper corner for */
-        xpos = corner[ 0 ].xcoord;              /* text starting position   */
-        ypos = corner[ 0 ].ycoord;
-    } else {
-        xpos = corner[ _TextSettings.txpath ].xcoord;
-        ypos = corner[ _TextSettings.txpath ].ycoord;
-    }
-    if( _TextSettings.txpath == _PATH_RIGHT ||
-        _TextSettings.txpath == _PATH_LEFT ) {
-        while( *str != '\0' ) {
-            CalcNominal( &base, &up, &prop, &nommove, &space, *str );
-            if( _TextSettings.txpath == _PATH_RIGHT ) {
-                _HershDraw( *str, up.xcoord, -up.ycoord,
-                            prop.xcoord, -prop.ycoord, xpos, ypos );
-            } else {
-                _HershDraw( *str, up.xcoord, -up.ycoord,
-                            prop.xcoord, -prop.ycoord,
-                            xpos-prop.xcoord, ypos+prop.ycoord );
-            }
-            xpos += nommove.xcoord;
-            ypos -= nommove.ycoord;
-            str++;
-        }
-    } else {                                        /* path is Up or DOWN   */
-        if( _TextSettings.txpath == _PATH_DOWN ) {
-            xpos -= up.xcoord;                      /* special increment*/
-            ypos += up.ycoord;                      /* for path down    */
-        }
-        while( *str != '\0' ) {
-            CalcNominal( &base, &up, &prop, &nommove, &space, *str );
-            _HershDraw( *str, up.xcoord, -up.ycoord,
-                        prop.xcoord, -prop.ycoord,
-                        xpos + ( length.xcoord-prop.xcoord ) / 2,
-                        ypos - ( length.ycoord-prop.ycoord ) / 2 );
-            xpos += nommove.xcoord;
-            ypos -= nommove.ycoord;
-            str++;
-        }
-    }
-    _RefreshWindow();
-}
+    float           factor;
 
-void _L1TXX( short xpos, short ypos, char _WCI86FAR * str,
-/*========*/ struct xycoord _WCI86FAR * concat, struct xycoord _WCI86FAR * extent )
-
-/*  Inquire the extents of the character drawing parallelogram and
-    return the concatenation point. The concatenation point is the same
-    as the drawing point if it cannot be calculated exactly.    */
-
-{
-    short               hor;        /* horizontal alignment */
-    short               vert;       /* vertical alignment   */
-    struct xycoord      up;         /* character up vector  */
-    struct xycoord      base;       /* character base line vector   */
-    struct xycoord      space;      /* spacing between characters   */
-    struct xycoord      length;     /* horizontal side of parallelogram */
-    struct xycoord      height;     /* vertical side of parallelogram   */
-    struct xycoord      trans;      /* translation for parallelogram    */
-
-    GetVectors( &base, &up );
-    GetAlignment( &hor, &vert );
-    CalcSpacing( &base, &up, &space );
-    CalcSides( &length, &height, &base, &up, &space, str );
-    CalcTranslation( &trans, &length, &height, &up, hor, vert );
-    CalcCorners( extent, &length, &height, &trans, xpos, ypos );
-    if( _TextSettings.txpath == _PATH_RIGHT ||
-        _TextSettings.txpath == _PATH_LEFT ) {
-        CalcConcat( concat, &length, &space, xpos, ypos, hor, vert );
-    } else {
-        CalcConcat( concat, &height, &space, xpos, ypos, hor, vert );
-    }
+    factor = (float) scale / sqrtf( dx * dx + dy * dy );
+    vect->xcoord = dx * factor + roundoff( dx );              /* round result */
+    vect->ycoord = dy * factor + roundoff( dy );
 }
 
 static void GetVectors( struct xycoord * base, struct xycoord * up )
@@ -193,19 +76,6 @@ static void GetVectors( struct xycoord * base, struct xycoord * up )
     upy = basex * aspectratio;
     VecNormalize( _TextSettings.height, upx, upy, up );
     VecNormalize( _TextSettings.width, basex, basey, base );
-}
-
-static void VecNormalize( short scale, float dx, float dy, struct xycoord * vect )
-/*================================================================================
-
-    Normalize the vector (dx,dy) to scale and return in vect.   */
-
-{
-    float           factor;
-
-    factor = (float) scale / sqrtf( dx * dx + dy * dy );
-    vect->xcoord = dx * factor + roundoff( dx );              /* round result */
-    vect->ycoord = dy * factor + roundoff( dy );
 }
 
 static void GetAlignment( short * hor, short * vert )
@@ -253,6 +123,31 @@ static void CalcSpacing( struct xycoord * base, struct xycoord * up,
         space->ycoord = (float)( up->ycoord * _TextSettings.spacing ) /
                                (float) _TextSettings.height;
     }
+}
+
+
+static short _CharWidth( char ch )
+/*==============================*/
+
+/*  This routine returns the width of the character ch scaled to the
+    interval [0,127].   */
+
+{
+    ch = ch;
+//  if( ch >= ' ' && ch <= 0x7e ) {
+//      if( _FontType == _STROKE ) {
+//          if( _PropFont ) {
+//              return( _CurrFont->font.stroke.width[ch] );
+//          } else {
+//              return( _CurrFont->font.stroke.width['A'] );
+//          }
+//      } else {
+//          return( _CurrFont->font.bit.width );
+//      }
+        return( _TextSettings.width );
+//  } else {
+//      return( 0 );
+//  }
 }
 
 static void CalcSides( struct xycoord * length, struct xycoord * height,
@@ -380,6 +275,18 @@ static void CalcCorners( struct xycoord _WCI86FAR * corner, struct xycoord * len
     }
 }
 
+static short Round( short sign, short val )
+/*=======================================*/
+
+{
+    val = val / 2;
+    if( sign >= 0 ) {
+        return( val );
+    } else {
+        return( -val );
+    }
+}
+
 static void CalcNominal( struct xycoord * base, struct xycoord * up,
 /*====================*/ struct xycoord * prop, struct xycoord * nommove,
                          struct xycoord * space, char ch )
@@ -409,18 +316,6 @@ static void CalcNominal( struct xycoord * base, struct xycoord * up,
         _TextSettings.txpath == _PATH_DOWN ) {
         nommove->xcoord = -nommove->xcoord;
         nommove->ycoord = -nommove->ycoord;
-    }
-}
-
-static short Round( short sign, short val )
-/*=======================================*/
-
-{
-    val = val / 2;
-    if( sign >= 0 ) {
-        return( val );
-    } else {
-        return( -val );
     }
 }
 
@@ -465,26 +360,110 @@ static void CalcConcat( struct xycoord _WCI86FAR * concat, struct xycoord * move
 }
 
 
-static short _CharWidth( char ch )
-/*==============================*/
+void _L1Text( short xpos, short ypos, char _WCI86FAR * str )
+/*=====================================================
 
-/*  This routine returns the width of the character ch scaled to the
-    interval [0,127].   */
+    Draw the character string pointed to by "str" at the position
+    (xpos, ypos) using the current graphics text settings.  */
 
 {
-    ch = ch;
-//  if( ch >= ' ' && ch <= 0x7e ) {
-//      if( _FontType == _STROKE ) {
-//          if( _PropFont ) {
-//              return( _CurrFont->font.stroke.width[ ch ] );
-//          } else {
-//              return( _CurrFont->font.stroke.width[ 'A' ] );
-//          }
-//      } else {
-//          return( _CurrFont->font.bit.width );
-//      }
-        return( _TextSettings.width );
-//  } else {
-//      return( 0 );
-//  }
+    short               hor;        /* horizontal alignment */
+    short               vert;       /* vertical alignment   */
+    struct xycoord      up;         /* character up vector  */
+    struct xycoord      base;       /* character base line vector   */
+    struct xycoord      prop;       /* adjustment vector for prop. font */
+    struct xycoord      nommove;    /* nominal displacement vector  */
+    struct xycoord      space;      /* spacing between characters   */
+    struct xycoord      length;     /* horizontal side of parallelogram */
+    struct xycoord      height;     /* vertical side of parallelogram   */
+    struct xycoord      trans;      /* translation for parallelogram    */
+    struct xycoord      corner[4];  /*  0 - lower left  */
+                                    /*  1 - lower right */
+                                    /*  2 - upper right */
+                                    /*  3 - upper left  */
+    if( *str == '\0' ) {
+        _ErrorStatus = _GRNOOUTPUT;
+        return;
+    }
+    if( _TextSettings.height == 0 || _TextSettings.width == 0 ) {
+        _ErrorStatus = _GRNOOUTPUT;
+        return;
+    }
+    GetVectors( &base, &up );
+    GetAlignment( &hor, &vert );
+    CalcSpacing( &base, &up, &space );
+    CalcSides( &length, &height, &base, &up, &space, str );
+    CalcTranslation( &trans, &length, &height, &up, hor, vert );
+    CalcCorners( &corner, &length, &height, &trans, xpos, ypos );
+    if( _TextSettings.txpath == _PATH_UP ) {    /* select proper corner for */
+        xpos = corner[0].xcoord;              /* text starting position   */
+        ypos = corner[0].ycoord;
+    } else {
+        xpos = corner[_TextSettings.txpath].xcoord;
+        ypos = corner[_TextSettings.txpath].ycoord;
+    }
+    if( _TextSettings.txpath == _PATH_RIGHT ||
+        _TextSettings.txpath == _PATH_LEFT ) {
+        while( *str != '\0' ) {
+            CalcNominal( &base, &up, &prop, &nommove, &space, *str );
+            if( _TextSettings.txpath == _PATH_RIGHT ) {
+                _HershDraw( *str, up.xcoord, -up.ycoord,
+                            prop.xcoord, -prop.ycoord, xpos, ypos );
+            } else {
+                _HershDraw( *str, up.xcoord, -up.ycoord,
+                            prop.xcoord, -prop.ycoord,
+                            xpos-prop.xcoord, ypos+prop.ycoord );
+            }
+            xpos += nommove.xcoord;
+            ypos -= nommove.ycoord;
+            str++;
+        }
+    } else {                                        /* path is Up or DOWN   */
+        if( _TextSettings.txpath == _PATH_DOWN ) {
+            xpos -= up.xcoord;                      /* special increment*/
+            ypos += up.ycoord;                      /* for path down    */
+        }
+        while( *str != '\0' ) {
+            CalcNominal( &base, &up, &prop, &nommove, &space, *str );
+            _HershDraw( *str, up.xcoord, -up.ycoord,
+                        prop.xcoord, -prop.ycoord,
+                        xpos + ( length.xcoord-prop.xcoord ) / 2,
+                        ypos - ( length.ycoord-prop.ycoord ) / 2 );
+            xpos += nommove.xcoord;
+            ypos -= nommove.ycoord;
+            str++;
+        }
+    }
+    _RefreshWindow();
+}
+
+void _L1TXX( short xpos, short ypos, char _WCI86FAR * str,
+/*========*/ struct xycoord _WCI86FAR * concat, struct xycoord _WCI86FAR * extent )
+
+/*  Inquire the extents of the character drawing parallelogram and
+    return the concatenation point. The concatenation point is the same
+    as the drawing point if it cannot be calculated exactly.    */
+
+{
+    short               hor;        /* horizontal alignment */
+    short               vert;       /* vertical alignment   */
+    struct xycoord      up;         /* character up vector  */
+    struct xycoord      base;       /* character base line vector   */
+    struct xycoord      space;      /* spacing between characters   */
+    struct xycoord      length;     /* horizontal side of parallelogram */
+    struct xycoord      height;     /* vertical side of parallelogram   */
+    struct xycoord      trans;      /* translation for parallelogram    */
+
+    GetVectors( &base, &up );
+    GetAlignment( &hor, &vert );
+    CalcSpacing( &base, &up, &space );
+    CalcSides( &length, &height, &base, &up, &space, str );
+    CalcTranslation( &trans, &length, &height, &up, hor, vert );
+    CalcCorners( extent, &length, &height, &trans, xpos, ypos );
+    if( _TextSettings.txpath == _PATH_RIGHT ||
+        _TextSettings.txpath == _PATH_LEFT ) {
+        CalcConcat( concat, &length, &space, xpos, ypos, hor, vert );
+    } else {
+        CalcConcat( concat, &height, &space, xpos, ypos, hor, vert );
+    }
 }

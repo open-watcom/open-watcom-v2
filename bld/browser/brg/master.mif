@@ -1,5 +1,4 @@
 proj_name = merge
-name = wbrg
 
 merge_autodepends = .autodepend
 
@@ -9,12 +8,45 @@ merge_trmem = 1
 !include defrule.mif
 !include deftarg.mif
 !include trmem.mif
-!include osi.mif
 
+#
+# cflags
+#
 .c: ../cpp;$(trmem_dir)
 .cpp: ../cpp;$(browse_dir)/cpp
 
-objs = &
+inc_dirs = -I"../h" -I"$(browse_dir)/h" -I"$(dwarfr_dir)/h" -I"$(posix_dir)/h"
+
+extra_cpp_flags     = -DSTANDALONE_MERGER
+!ifndef NDEBUG
+extra_cpp_flags     += -DDEBUG=1 -DINSTRUMENTS=1
+!else
+extra_cpp_flags     += -DDEBUG=0 -DINSTRUMENTS=0
+!endif
+
+extra_cpp_flags_brmem = $(trmem_cpp_flags)
+
+extra_cxx_flags     = -xs-ew
+
+extra_c_flags_brmem  = $(trmem_cover_cflags)
+
+#
+# lflags
+#
+extra_l_flags        = op stack=16k
+extra_l_flags_nt_axp = op undefsok
+extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
+
+# explicit rules
+#################
+
+#
+# EXE
+#
+!ifndef NDEBUG
+exetarg_objs_debug = debuglog.obj
+!endif
+exetarg_objs = &
     blip.obj     &
     dietree.obj  &
     dwmerger.obj &
@@ -40,35 +72,8 @@ objs = &
     elffile.obj  &
     mempool.obj  &
     util.obj     &
-    wtime.obj
-
-!ifndef NDEBUG
-objs += debuglog.obj
-!endif
-objs += brmem.obj $(trmem_objs)
-
-inc_dirs = -I"../h" -I"$(browse_dir)/h" -I"$(dwarfr_dir)/h" -I"$(posix_dir)/h"
-
-extra_cpp_flags     = -DSTANDALONE_MERGER
-!ifndef NDEBUG
-extra_cpp_flags     += -DDEBUG=1 -DINSTRUMENTS=1
-!else
-extra_cpp_flags     += -DDEBUG=0 -DINSTRUMENTS=0
-!endif
-
-extra_cpp_flags_brmem = $(trmem_cpp_flags)
-
-extra_cxx_flags     = -xs-ew
-
-extra_c_flags_trmem  = $(trmem_cflags)
-extra_c_flags_brmem  = $(trmem_cover_cflags)
-
-# linker
-extra_l_flags        = op stack=16k
-extra_l_flags_nt_axp = op undefsok
-extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
-
-$(name).exe : $(objs) $(osildr) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $(lname) $(lflags) file {$(objs)}
-    @%make bind_osildr
+    wtime.obj    &
+    brmem.obj $(trmem_objs) &
+    $(exetarg_objs_debug)
+exetarg_name = wbrg
+!include exetarg.mif

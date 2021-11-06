@@ -10,9 +10,10 @@
 .chap *refid=mdl386 32-bit Memory Models
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'memory models' '32-bit'
 This chapter describes the various 32-bit memory models supported by
@@ -285,10 +286,10 @@ emu387.lib      /mf, /ms    /fpi
 noemu387.lib    /mf, /ms    /fpi87
 .code end
 .do end
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .helppref 32-bit
 .do end
 .im wmemlay
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .helppref
 .do end

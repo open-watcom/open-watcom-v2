@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #define _CGDATA_H_
 
 #include "cgswitch.h"
-#include "toggle.h"
 
 // CGDATA -- C++ data used during code generation
 //
@@ -62,16 +62,6 @@ global  char    WCPPLIB_Name[16];       // C++ runtime library
 
 global  char    MATHLIB_Name[16];       // math runtime library
 global  char    *EmuLib_Name;           // x87 emulator runtime library
-
-typedef struct prag_stack PRAG_STACK;
-struct prag_stack {
-    PRAG_STACK  *next;
-    unsigned    value;
-};
-
-global PRAG_STACK *HeadPacks;
-global PRAG_STACK *HeadEnums;
-global PRAG_STACK *FreePrags;
 
 global char     *TextSegName;           /* name of the text segment */
 global char     *DataSegName;           /* name of the data segment */

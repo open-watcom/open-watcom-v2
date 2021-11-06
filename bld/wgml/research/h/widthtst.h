@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Declares the functions items needed test width computation: 
+* Description:  Declares the functions items needed test width computation:
 *                   cop_text_width()
 ****************************************************************************/
 

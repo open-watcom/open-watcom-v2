@@ -1,11 +1,11 @@
 .func lldiv
 .synop begin
 #include <stdlib.h>
-lldiv_t lldiv( long long int numer, 
+lldiv_t lldiv( long long int numer,
                long long int denom );
 
 typedef struct {
-    long long int quot; /* quotient */
+    long long int quot; /* quotient  */
     long long int rem;  /* remainder */
 } lldiv_t;
 .synop end
@@ -17,7 +17,7 @@ numerator
 .arg numer
 by the denominator
 .arg denom
-.ct .li .
+.period
 .desc end
 .*
 .return begin
@@ -29,8 +29,7 @@ that contains the fields
 .kw quot
 and
 .kw rem
-.ct,
-which are both of type
+.ct , which are both of type
 .id long long int.
 .return end
 .*

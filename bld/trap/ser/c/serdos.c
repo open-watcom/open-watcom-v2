@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,6 +57,7 @@
 #define MSR  (IOBase+6) /* modem status register address */
 
 #define LCR_SETUP   0x03 /* set 8 bits, no parity, 1 stop */
+#define LCR_BREAK   0x40 /* break enable */
 #define LCR_DLAB    0x80 /* divisor latch access bit */
 #define MCR_DTR     0x01 /* Data Terminal Ready control */
 #define MCR_RTS     0x02 /* Request To Send control */
@@ -74,33 +76,37 @@
 #define MSR_CTS         0x10 /* Clear To Send */
 #define MSR_DSR         0x20 /* Data Set Ready */
 
-#define BREAK_TIME      4
 
-int IOBase; /* base com port address */
-int IntVector; /* com interrupt vector to use */
-int ErrorFlag;
-int BreakFlag;
+/*
+ * code and data shared with assembly code in serint.asm
+ */
+int         __near IOBase;         /* base com port address */
+int         __near IntVector;      /* com interrupt vector to use */
+unsigned    __near TimerTicks;
+int         __near ErrorFlag;
+int         __near BreakFlag;
+
+extern void __near ClearBuffer( void );
+extern int  __near GetBufferByte( void );
+extern void __near InitInts( void );
+extern void __near FiniInts( void );
+/*
+ * end of assembly code/data declaration
+ */
 
 static int I8259mBit;
 static int CurrentBaud;
 static char Modem;
-unsigned Ticks;
 
-extern void ClearBuffer( void );
-extern int GetBufferByte( void );
-extern void InitInts( void );
-extern void FiniInts( void );
-
-
-void ZeroWaitCount( void )
+void ResetTimerTicks( void )
 {
-    Ticks = 0;
+    TimerTicks = 0;
 }
 
 
-unsigned WaitCount( void )
+unsigned GetTimerTicks( void )
 {
-    return( Ticks );
+    return( TimerTicks );
 }
 
 
@@ -197,10 +203,10 @@ void SendABreak( void )
     int lcr_value;             /* storing line control register value */
 
     lcr_value = inp( LCR );                /* LCR contents */
-    outp( LCR, lcr_value | 0x40 );         /* set break bit on */
+    outp( LCR, lcr_value | LCR_BREAK );    /* set break bit on */
     SendByte( 0 );                         /* interrupt other side */
-    Wait( BREAK_TIME );                    /* hold it there */
-    lcr_value &= (~0x40);                  /* assure break bit is off */
+    Wait( MSEC2TICK( BREAK_TIME_MS ) );    /* hold it there */
+    lcr_value &= (~LCR_BREAK);             /* assure break bit is off */
     outp( LCR, lcr_value );                /* restore lcr content */
 }
 
@@ -218,7 +224,7 @@ bool TestForBreak( void )
 #endif
 
 
-int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
+static int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
 
 bool Baud( int index )
 {

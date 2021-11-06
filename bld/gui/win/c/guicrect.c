@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,39 +34,39 @@
 #include "guiwind.h"
 #include "guiscale.h"
 
-void GUIGetClientRect( gui_window *wnd, gui_rect *client )
+void GUIAPI GUIGetClientRect( gui_window *wnd, gui_rect *rect )
 {
-    WPI_RECT    rect;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECT    wpi_rect;
+    WPI_RECTDIM left, top, right, bottom;
+    guix_rect   client;
 
-    rect = wnd->hwnd_client_rect;
-    _wpi_mapwindowpoints( wnd->hwnd, HWND_DESKTOP, (WPI_LPPOINT)&rect, 2 );
-    _wpi_getwrectvalues( rect, &left, &top, &right, &bottom );
-    top = _wpi_cvts_y( top );
-    client->x = left;
-    client->y = top;
-    client->width = right - left;
-    client->height = _wpi_getheightrect( rect );
-    GUIClientToScaleRect( client );
+    wpi_rect = wnd->hwnd_client_rect;
+    _wpi_mapwindowpoints( wnd->hwnd, HWND_DESKTOP, (WPI_LPPOINT)&wpi_rect, 2 );
+    _wpi_getwrectvalues( wpi_rect, &left, &top, &right, &bottom );
+    client.s_x = left;
+    client.s_y = _wpi_cvts_y( top );
+    client.s_width = right - left;
+    client.s_height = _wpi_getheightrect( wpi_rect );
+    GUIClientToScaleRect( &client, rect );
 }
 
-bool GUIGetPaintRect( gui_window *wnd, gui_rect *paint )
+bool GUIAPI GUIGetPaintRect( gui_window *wnd, gui_rect *rect )
 {
-    WPI_RECT    rect;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECT    wpi_rect;
+    WPI_RECTDIM left, top, right, bottom;
+    guix_rect   client;
 
     if( ( wnd->hdc == NULLHANDLE ) || ( wnd->ps == NULL ) ) {
         return( false );
     }
 
-    _wpi_getpaintrect( wnd->ps, &rect );
-    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
-    top = _wpi_cvtc_y_plus1( wnd->hwnd, top );
-    paint->x = left;
-    paint->y = top;
-    paint->width = right - left;
-    paint->height = _wpi_getheightrect( rect );
-    GUIClientToScaleRect( paint );
+    _wpi_getpaintrect( wnd->ps, &wpi_rect );
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
+    client.s_x = left;
+    client.s_y = _wpi_cvtc_y_plus1( wnd->hwnd, top );
+    client.s_width = right - left;
+    client.s_height = _wpi_getheightrect( wpi_rect );
+    GUIClientToScaleRect( &client, rect );
 
     return( true );
 }

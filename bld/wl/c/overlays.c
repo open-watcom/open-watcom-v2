@@ -43,6 +43,8 @@
 #include "distrib.h"
 
 
+#ifdef _EXE
+
 static void OvlNumASect( section *sect )
 /**************************************/
 {
@@ -117,3 +119,5 @@ void OvlPass2( void )
     OvlEmitVectors();
     WalkAreas( Root->areas, PSection );
 }
+
+#endif

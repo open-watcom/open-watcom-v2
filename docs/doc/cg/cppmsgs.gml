@@ -6,21 +6,28 @@ the &cmppname compilers.
 Diagnostic messages are issued during compilation and execution.
 .np
 The messages listed in the following sections contain references to
-.id %N,
-.id %S,
-.id %T,
-.id %s,
+.id %N
+.ct ,
+.id %S
+.ct ,
+.id %T
+.ct ,
+.id %s
+.ct ,
 .id %d
 and
-.id %u.
+.id %u
+.period
 They represent strings that are substituted by the &cmppname.
 compilers to make the error message more exact.
 .id %d
 and
 .id %u
 represent a string of digits;
-.id %N,
-.id %S,
+.id %N
+.ct ,
+.id %S
+.ct ,
 .id %T
 and
 .id %s
@@ -84,7 +91,9 @@ Margaret A. Ellis and Bjarne Stroustrup and published by
 Addison-Wesley (ISBN 0-201-51459-1).
 .*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Diagnostic Messages
+.*
 .begnote
 .do end
 .ti set `

@@ -1,4 +1,0 @@
-    @set OWWMAKEVAR1=$(bootstrap)
-    @set OWWMAKEVAR2=$(release)
-    @set OWWMAKEVAR3=$(host_os)
-    @set OWWMAKEVAR4=$(host_cpu)

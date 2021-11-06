@@ -7,81 +7,81 @@ Each of the registers is designated by a special name. Note that the
 registers listed here are applicable when the target is an x86 platorm.
 For other platforms, the register set is different.
 .begnote $compact
-.mnote eax
+.note eax
 32-bit EAX register (32-bit mode only)
-.mnote ax
+.note ax
 16-bit AX register
-.mnote al
+.note al
 8-bit AL register
-.mnote ah
+.note ah
 8-bit AH register
-.mnote ebx
+.note ebx
 32-bit EBX register (32-bit mode only)
-.mnote bx
+.note bx
 16-bit BX register
-.mnote bl
+.note bl
 8-bit BL register
-.mnote bh
+.note bh
 8-bit BH register
-.mnote ecx
+.note ecx
 32-bit ECX register (32-bit mode only)
-.mnote cx
+.note cx
 16-bit CX register
-.mnote cl
+.note cl
 8-bit CL register
-.mnote ch
+.note ch
 8-bit CH register
-.mnote edx
+.note edx
 32-bit EDX register (32-bit mode only)
-.mnote dx
+.note dx
 16-bit DX register
-.mnote dl
+.note dl
 8-bit DL register
-.mnote dh
+.note dh
 8-bit DH register
-.mnote eip
+.note eip
 Instruction pointer register (32-bit mode only)
-.mnote ip
+.note ip
 Instruction pointer register
-.mnote esi
+.note esi
 Source index register (32-bit mode only)
-.mnote si
+.note si
 Source index register
-.mnote edi
+.note edi
 Destination index register (32-bit mode only)
-.mnote di
+.note di
 Destination index register
-.mnote esp
+.note esp
 Stack pointer register (32-bit mode only)
-.mnote sp
+.note sp
 Stack pointer register
-.mnote ebp
+.note ebp
 Base pointer register (32-bit mode only)
-.mnote bp
+.note bp
 Base pointer register
-.mnote cs
+.note cs
 Code segment register
-.mnote ds
+.note ds
 Data segment register
-.mnote es
+.note es
 Extra segment register
-.mnote fs
+.note fs
 Segment register (32-bit mode only)
-.mnote gs
+.note gs
 Segment register (32-bit mode only)
-.mnote ss
+.note ss
 Stack segment register
-.mnote fl
+.note fl
 Flags register
-.mnote efl
+.note efl
 Flags register (32-bit mode only)
-.mnote fl.flg_bit_name
+.note fl.flg_bit_name
 Individual bits in Flags register
 .syntax
 flg_bit_name ::= "c" | "p" | "a" | "z" | "s" | "i" | "d" | "o"
 .esyntax
 .pc
-.mnote efl.flg_bit_name
+.note efl.flg_bit_name
 Individual bits in Flags register
 .syntax
 flg_bit_name ::= "c" | "p" | "a" | "z" | "s" | "i" | "d" | "o"
@@ -91,34 +91,34 @@ The following table lists the full name for each of the flags register
 bits:
 .begnote $compact
 .ix 'registers' 'flags'
-.mnote fl.o, efl.o
+.note fl.o, efl.o
 overflow flag
-.mnote fl.d, efl.d
+.note fl.d, efl.d
 direction flag
-.mnote fl.i, efl.i
+.note fl.i, efl.i
 interrupt flag
-.mnote fl.s, efl.s
+.note fl.s, efl.s
 sign flag
-.mnote fl.z, efl.z
+.note fl.z, efl.z
 zero flag
-.mnote fl.a, efl.a
+.note fl.a, efl.a
 auxiliary carry flag
-.mnote fl.p, efl.p
+.note fl.p, efl.p
 parity flag
-.mnote fl.c, efl.c
+.note fl.c, efl.c
 carry flag
 .endnote
 .pc
 .ix 'registers' 'floating point'
 .ix 'registers' 'st0 - st7'
-.mnote st0 - st7
+.note st0 - st7
 Numeric Data Processor registers (math coprocessor registers)
 .ix 'registers' 'control word'
 .ix 'registers' 'cw'
 .ix '8087' 'registers'
-.mnote cw
+.note cw
 8087 control word (math coprocessor control word)
-.mnote cw.cw_bit_name
+.note cw.cw_bit_name
 Individual bits in the control word
 .syntax
 cw_bit_name ::= "ic" | "rc" | "pc" | "iem" | "pm" |
@@ -128,14 +128,14 @@ cw_bit_name ::= "ic" | "rc" | "pc" | "iem" | "pm" |
 The following table lists the full name for each of the control word
 bits:
 .begnote $compact
-.mnote cw.ic
+.note cw.ic
 infinity control
 .illust begin
 0 = projective
 1 = affine
 .illust end
 .pc
-.mnote cw.rc
+.note cw.rc
 rounding control (2 bits)
 .illust begin
 00 = round to nearest or even
@@ -144,7 +144,7 @@ rounding control (2 bits)
 11 = chop (truncate toward zero)
 .illust end
 .pc
-.mnote cw.pc
+.note cw.pc
 precision control (2 bits)
 .illust begin
 00 = 24 bits
@@ -153,33 +153,33 @@ precision control (2 bits)
 11 = 64 bits
 .illust end
 .pc
-.mnote cw.iem
+.note cw.iem
 interrupt enable mask (8087 only)
 .illust begin
 0 = interrupts enabled
 1 = interrupts disabled (masked)
 .illust end
 .pc
-.mnote cw.pm
+.note cw.pm
 precision (inexact result) mask
-.mnote cw.um
+.note cw.um
 underflow mask
-.mnote cw.om
+.note cw.om
 overflow mask
-.mnote cw.zm
+.note cw.zm
 zero-divide mask
-.mnote cw.dm
+.note cw.dm
 denormalized operand mask
-.mnote cw.im
+.note cw.im
 invalid operand mask
 .endnote
 .pc
 .ix 'registers' 'status word'
 .ix 'registers' 'sw'
 .ix '8087' 'registers'
-.mnote sw
+.note sw
 8087 status word (math coprocessor status word)
-.mnote sw.sw_bit_name
+.note sw.sw_bit_name
 Individual bits in the status word
 .syntax
 sw_bit_name ::=  "b" | "c3" | "st" | "c2" | "c1" |
@@ -190,11 +190,11 @@ sw_bit_name ::=  "b" | "c3" | "st" | "c2" | "c1" |
 The following table lists the full name for each of the status word
 bits:
 .begnote $compact
-.mnote sw.b
+.note sw.b
 busy
-.mnote sw.c3
+.note sw.c3
 condition code bit 3
-.mnote sw.st
+.note sw.st
 stack stop pointer (3 bits)
 .illust begin
 000 = register 0 is stack top
@@ -206,57 +206,57 @@ stack stop pointer (3 bits)
 111 = register 7 is stack top
 .illust end
 .pc
-.mnote sw.c2
+.note sw.c2
 condition code bit 2
-.mnote sw.c1
+.note sw.c1
 condition code bit 1
-.mnote sw.c0
+.note sw.c0
 condition code bit 0
-.mnote sw.es
+.note sw.es
 error summary (287, 387 only)
-.mnote sw.sf
+.note sw.sf
 stack fault (387 only)
-.mnote sw.pe
+.note sw.pe
 precision (inexact result) exception
-.mnote sw.ue
+.note sw.ue
 underflow exception
-.mnote sw.oe
+.note sw.oe
 overflow exception
-.mnote sw.ze
+.note sw.ze
 zero-divide exception
-.mnote sw.de
+.note sw.de
 denormalized operand exception
-.mnote sw.ie
+.note sw.ie
 invalid operation exception
 .endnote
 .pc
 .ix 'MMX registers'
 .ix 'registers' 'MMX'
 .ix 'registers' 'mm0 - mm7'
-.mnote mm0 - mm7
+.note mm0 - mm7
 MMX registers
 .begnote $compact
-.mnote mm0.b0 - mm0.b7
+.note mm0.b0 - mm0.b7
 MMX register component bytes
-.mnote mm0.w0 - mm0.w3
+.note mm0.w0 - mm0.w3
 MMX register component words
-.mnote mm0.d0 - mm0.d1
+.note mm0.d0 - mm0.d1
 MMX register component doublewords
 .endnote
 .pc
 .ix 'XMM registers'
 .ix 'registers' 'XMM'
 .ix 'registers' 'xmm0 - xmm7'
-.mnote xmm0 - xmm7
+.note xmm0 - xmm7
 XMM registers (SSE registers)
 .begnote $compact
-.mnote xmm0.b0 - xmm0.b15
+.note xmm0.b0 - xmm0.b15
 XMM register component bytes
-.mnote xmm0.w0 - xmm0.w7
+.note xmm0.w0 - xmm0.w7
 XMM register component words
-.mnote xmm0.d0 - xmm0.d3
+.note xmm0.d0 - xmm0.d3
 XMM register component doublewords
-.mnote xmm0.q0 - xmm0.q1
+.note xmm0.q0 - xmm0.q1
 XMM register component quadwords
 .endnote
 .endnote
@@ -315,7 +315,7 @@ set to 1, then the first doubleword of the same register is printed.
 The debugger also defines some other special names.
 .begnote
 .ix 'predefined symbol' 'dbg$32'
-.mnote dbg$32
+.note dbg$32
 This debugger symbol represents the mode in which the processor is
 running.
 .begnote $compact
@@ -325,20 +325,20 @@ running.
 32-bit mode
 .endnote
 .ix 'predefined symbol' 'dbg$bp'
-.mnote dbg$bp
+.note dbg$bp
 This debugger symbol represents the register pair SS:BP (16-bit mode)
 or SS:EBP (32-bit mode).
 .exam begin
 ? dbg$bp
 .exam end
 .ix 'predefined symbol' 'dbg$code'
-.mnote dbg$code
+.note dbg$code
 This debugger symbol represents the current code location under
 examination.
 The dot address "." is either set to dbg$code or dbg$data, depending
 on whether you were last looking at code or data.
 .ix 'predefined symbol' 'dbg$cpu'
-.mnote dbg$cpu
+.note dbg$cpu
 This debugger symbol represents the type of central processing unit
 which is in your personal computer system.
 .begnote $compact
@@ -360,26 +360,26 @@ Intel Pentium Pro/II/III processor
 Intel Pentium 4 processor
 .endnote
 .ix 'predefined symbol' 'dbg$ctid'
-.mnote dbg$ctid
+.note dbg$ctid
 This debugger symbol represents the identification number of the
 current execution thread.
 Under environments which do not support threading, the current thread
 ID is always 1. The current execution thread can be selected using the
 Thread window or the Thread command.
 .ix 'predefined symbol' 'dbg$data'
-.mnote dbg$data
+.note dbg$data
 This debugger symbol represents the current data location under
 examination.
 The dot address "." is either set to dbg$code or dbg$data, depending
 on whether you were last looking at code or data.
 .ix 'predefined symbol' 'dbg$etid'
-.mnote dbg$etid
+.note dbg$etid
 This debugger symbol represents the identification number of the
 thread that was executing when the debugger was entered.
 Under environments which do not support threading, the executing thread
 ID is always 1.
 .ix 'predefined symbol' 'dbg$fpu'
-.mnote dbg$fpu
+.note dbg$fpu
 This debugger symbol represents the type of numeric data processor
 (math coprocessor) that is installed in your personal computer system.
 .begnote $compact
@@ -404,14 +404,14 @@ An Intel Pentium Pro/II/III processor integrated FPU is installed
 An Intel Pentium 4 processor integrated FPU is installed
 .endnote
 .ix 'predefined symbol' 'dbg$ip'
-.mnote dbg$ip
+.note dbg$ip
 This debugger symbol represents the register pair CS:IP (16-bit mode)
 or CS:EIP (32-bit mode).
 .exam begin
 ? dbg$ip
 .exam end
 .ix 'predefined symbol' 'dbg$monitor'
-.mnote dbg$monitor
+.note dbg$monitor
 This debugger symbol represents the type of monitor adapter
 which is in use.
 .begnote $compact
@@ -426,7 +426,7 @@ IBM Video Graphics Array (VGA)
 .endnote
 
 .ix 'predefined symbol' 'dbg$ntid'
-.mnote dbg$ntid
+.note dbg$ntid
 This debugger symbol represents the identification number of the
 next execution thread. To iterate through all of the threads in a process,
 you can execute
@@ -449,7 +449,7 @@ while curr_tid != 0 {
 }
 .exam end
 .ix 'predefined symbol' 'dbg$os'
-.mnote dbg$os
+.note dbg$os
 This debugger symbol represents the operating system that is currently
 running the application.
 .begnote $compact
@@ -499,37 +499,37 @@ GNU/Linux
 FreeBSD
 .endnote
 .ix 'predefined symbol' 'dbg$pid'
-.mnote dbg$pid
+.note dbg$pid
 (OS/2, NetWare 386, Linux, QNX, Windows NT, Windows 95 only)
 This debugger symbol contains the process identification value for the
 program being debugged.
 .ix 'predefined symbol' 'dbg$psp'
-.mnote dbg$psp
+.note dbg$psp
 (DOS only) This debugger symbol contains the segment value for the DOS
 "program segment prefix" of the program being debugged.
 .ix 'predefined symbol' 'dbg$radix'
-.mnote dbg$radix
+.note dbg$radix
 This debugger symbol represents the current default numeric
 radix.
 .ix 'predefined symbol' 'dbg$remote'
-.mnote dbg$remote
+.note dbg$remote
 This debugger symbol is 1 if the "REMotefiles" option was specified
 and 0 otherwise.
 .ix 'predefined symbol' 'dbg$sp'
-.mnote dbg$sp
+.note dbg$sp
 This debugger symbol represents the register pair SS:SP (16-bit mode)
 or SS:ESP (32-bit mode).
 .exam begin
 ? dbg$sp
 .exam end
 .ix 'predefined symbol' 'dbg$loaded'
-.mnote dbg$loaded
+.note dbg$loaded
 This debugger symbol is 1 if a program is loaded. Otherwise, it is 0.
 .ix 'predefined symbol' 'dbg$nil'
-.mnote dbg$nil
+.note dbg$nil
 This debugger symbol is the null pointer value.
 .ix 'predefined symbol' 'dbg$src'
-.mnote dbg$src
+.note dbg$src
 This debugger symbol is 1 if you are currently debugging in an area that
 contains debugging information.
 .endnote

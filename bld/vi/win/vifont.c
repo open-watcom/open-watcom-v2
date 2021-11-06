@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -313,7 +313,7 @@ static bool getLogFont( LOGFONT *lf, const char **data )
             getByte( &lf->lfClipPrecision, data ) &&
             getByte( &lf->lfQuality, data ) &&
             getByte( &lf->lfPitchAndFamily, data ) &&
-            GetStringWithPossibleQuote( data, &lf->lfFaceName[0] ) == ERR_NO_ERR );
+            GetNextWordOrString( data, &lf->lfFaceName[0] ) == ERR_NO_ERR );
 }
 
 static bool userPickFont( LOGFONT *lf, HWND parent )
@@ -403,7 +403,6 @@ vi_rc SetFont( const char *data )
      * using the common dialog - or he/she can do the full
      * 'setfont x n n n n n n... ad nauseum to define a font.
      */
-    SKIP_SPACES( data );
     if( *data == '\0' ) {
         if( !userPickFont( &lf, root_window_id ) ) {
             return( ERR_NO_ERR );

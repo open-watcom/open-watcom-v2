@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,21 +114,21 @@ typedef enum {
 #define DIR_START       27
 
 #define DLGFILE_CTLS() \
-    pick_p3(   FILENAME_TITLE,    DLG_STRING,     2,                            0,  11 ) \
-    pick_p3(   DIRECTORIES_TITLE, DLG_STRING,     DIR_START,                    0,  DIR_START + 12 ) \
-    pick_p3id( EDIT,              DLG_EDIT,       2,                            1,  BOX_WIDTH + 3 ) \
-    pick_p3id( DIR_NAME,          DLG_DYNSTRING,  DIR_START,                    1,  DLG_FILE_COLS - 1 ) \
-    pick_p4id( FILE_LIST,         DLG_LIST_BOX,   2,                            3,  2 + BOX_WIDTH,                9 ) \
-    pick_p4id( DIR_LIST,          DLG_LIST_BOX,   DIR_START,                    3,  DIR_START + BOX_WIDTH2,       9 ) \
-    pick_p3id( OK,                DLG_DEFBUTTON,  (DIR_START + BOX_WIDTH2 + 4), 4, (DIR_START + BOX_WIDTH2 + 14) ) \
-    pick_p3id( CANCEL,            DLG_BUTTON,     (DIR_START + BOX_WIDTH2 + 4), 6, (DIR_START + BOX_WIDTH2 + 14) ) \
-    pick_p3(   FILE_TYPES_TITLE,  DLG_STRING,     2,                            11, 20 ) \
-    pick_p4id( FILE_TYPES,        DLG_COMBO_BOX,  2,                            12, 2 + BOX_WIDTH + 3,            15 )
+    pick_p3(   FILENAME_TITLE,    GUI_CTL_STRING,     2,                            0,  10 ) \
+    pick_p3(   DIRECTORIES_TITLE, GUI_CTL_STRING,     DIR_START,                    0,  13 ) \
+    pick_p3id( EDIT,              GUI_CTL_EDIT,       2,                            1,  BOX_WIDTH + 2 ) \
+    pick_p3id( DIR_NAME,          GUI_CTL_DYNSTRING,  DIR_START,                    1,  DLG_FILE_COLS - DIR_START ) \
+    pick_p4id( FILE_LIST,         GUI_CTL_LIST_BOX,   2,                            3,  BOX_WIDTH + 1,  7 ) \
+    pick_p4id( DIR_LIST,          GUI_CTL_LIST_BOX,   DIR_START,                    3,  BOX_WIDTH2 + 1, 7 ) \
+    pick_p3id( OK,                GUI_CTL_DEFBUTTON,  (DIR_START + BOX_WIDTH2 + 4), 4,  11 ) \
+    pick_p3id( CANCEL,            GUI_CTL_BUTTON,     (DIR_START + BOX_WIDTH2 + 4), 6,  11 ) \
+    pick_p3(   FILE_TYPES_TITLE,  GUI_CTL_STRING,     2,                            11, 19 ) \
+    pick_p4id( FILE_TYPES,        GUI_CTL_COMBO_BOX,  2,                            12, BOX_WIDTH + 4,  4 )
 
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
 #define DLGFILE_DRV_CTLS() \
-    pick_p3(   DRIVES_TITLE,      DLG_STRING,     2,                            11, 20 ) \
-    pick_p4id( DRIVES,            DLG_COMBO_BOX,  2,                            12, 2 + BOX_WIDTH + 3,            15 )
+    pick_p3(   DRIVES_TITLE,      GUI_CTL_STRING,     DIR_START + 2,                11, 7 ) \
+    pick_p4id( DRIVES,            GUI_CTL_COMBO_BOX,  DIR_START + 2,                12, BOX_WIDTH + 4,  4 )
 #endif
 
 enum {
@@ -433,16 +433,16 @@ static bool buildFileTypesExts( dlg_info *dlg, const char *data )
 /*
  * goToDir - go to a specified directory
  */
-static bool goToDir( gui_window *gui, char *dir )
+static bool goToDir( gui_window *wnd, char *dir )
 {
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-    PGROUP2     pg;
+    pgroup2     pg;
 #endif
     bool        removed_end;
     size_t      len;
     int         rc;
 
-    /* unused parameters */ (void)gui;
+    /* unused parameters */ (void)wnd;
 
     if( dir == NULL ) {
         return( false );
@@ -510,7 +510,7 @@ static int Compare( const void  *p1, const void *p2 )
         return( -1 );
     }
     /* use regular string comparison for the rest */
-    return( strcasecmp( s1, s2 ) );
+    return( stricmp( s1, s2 ) );
 
 } /* Compare */
 
@@ -603,7 +603,7 @@ static bool isrdonly( struct dirent *dire, char *path )
 /*
  * setFileList - get list of files in current directory
  */
-static bool setFileList( gui_window *gui, const char *ext )
+static bool setFileList( gui_window *wnd, const char *ext )
 {
     char                path[_MAX_PATH];
     DIR                 *dirp;
@@ -613,7 +613,7 @@ static bool setFileList( gui_window *gui, const char *ext )
     int                 num_items;
     char                ext1[_MAX_PATH];
     int                 i;
-    dlg_info            *dlg = GUIGetExtra( gui );
+    dlg_info            *dlg = GUIGetExtra( wnd );
     bool                ok;
 
     num_items = 0;
@@ -655,12 +655,12 @@ static bool setFileList( gui_window *gui, const char *ext )
             closedir( dirp );
         }
     }
-    GUIClearList( gui, CTL_FILE_LIST );
+    GUIClearList( wnd, CTL_FILE_LIST );
     if( num_items > 0 ) {
         if( ok ) {
             qsort( (void *)list, num_items, sizeof( char * ), Compare );
             for( i = 0; i < num_items; i++ ) {
-                GUIAddText( gui, CTL_FILE_LIST, list[i] );
+                GUIAddText( wnd, CTL_FILE_LIST, list[i] );
             }
         }
         freeStringList( &list );
@@ -672,10 +672,10 @@ static bool setFileList( gui_window *gui, const char *ext )
 /*
  * setDirList - set current directory list
  */
-static bool setDirList( gui_window *gui )
+static bool setDirList( gui_window *wnd )
 {
     char                path[_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
     char                drive[_MAX_DRIVE + 3];
     DIR                 *dirp;
     struct dirent       *dire;
@@ -692,7 +692,7 @@ static bool setDirList( gui_window *gui )
     const char          **list;
     bool                ok;
 
-    GUIClearList( gui, CTL_DIR_LIST );
+    GUIClearList( wnd, CTL_DIR_LIST );
     num_items = 0;
     list = NULL;
     ok = true;
@@ -718,7 +718,7 @@ static bool setDirList( gui_window *gui )
     drvlist = GetDriveTextList();
     for( i = 0; drvlist[i] != NULL; i++ ) {
         if( drvlist[i][0] == drive[1] ) {
-            GUISetCurrSelect( gui, CTL_DRIVES, i );
+            GUISetCurrSelect( wnd, CTL_DRIVES, i );
             break;
         }
     }
@@ -773,9 +773,9 @@ static bool setDirList( gui_window *gui )
                 if( ok ) {
                     qsort( (void *)list, num_items, sizeof( char * ), Compare );
                     for( i = 0; i < num_items; i++ ) {
-                        GUIAddText( gui, CTL_DIR_LIST, list[i] );
+                        GUIAddText( wnd, CTL_DIR_LIST, list[i] );
                     }
-                    GUISetCurrSelect( gui, CTL_DIR_LIST, selected_item - 1 );
+                    GUISetCurrSelect( wnd, CTL_DIR_LIST, selected_item - 1 );
                 }
             }
         }
@@ -790,10 +790,10 @@ static bool setDirList( gui_window *gui )
 /*
  * initDialog - initialize all dialog fields
  */
-static bool initDialog( gui_window *gui, const char *ext, const char *name )
+static bool initDialog( gui_window *wnd, const char *ext, const char *name )
 {
     char        path[_MAX_PATH];
-    dlg_info    *dlg = GUIGetExtra( gui );
+    dlg_info    *dlg = GUIGetExtra( wnd );
 
     if( ext != NULL && hasWild( ext ) ) {
         char    *str;
@@ -808,18 +808,18 @@ static bool initDialog( gui_window *gui, const char *ext, const char *name )
         }
         memcpy( str, ext, len );
     }
-    if( !setFileList( gui, dlg->currExt ) ) {
+    if( !setFileList( wnd, dlg->currExt ) ) {
         return( false );
     }
-    if( !setDirList( gui ) ) {
+    if( !setDirList( wnd ) ) {
         return( false );
     }
     getcwd( path, sizeof( path ) );
-    GUISetText( gui, CTL_DIR_NAME, path );
+    GUISetText( wnd, CTL_DIR_NAME, path );
     if( name != NULL && *name != '\0' ) {
-        GUISetText( gui, CTL_EDIT, name );
+        GUISetText( wnd, CTL_EDIT, name );
     } else if( ext != NULL ) {
-        GUISetText( gui, CTL_EDIT, ext );
+        GUISetText( wnd, CTL_EDIT, ext );
     }
     return( true );
 
@@ -828,12 +828,12 @@ static bool initDialog( gui_window *gui, const char *ext, const char *name )
 /*
  * processFileName - process a new file name
  */
-static process_rc processFileName( gui_window *gui )
+static process_rc processFileName( gui_window *wnd )
 {
     char        *tmp;
     char        *txt;
     size_t      len;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[_MAX_PATH];
     char        *buff;
     bool        has_wild;
@@ -841,8 +841,8 @@ static process_rc processFileName( gui_window *gui )
     int         rc;
     dlg_info    *dlg;
 
-    dlg = GUIGetExtra( gui );
-    tmp = GUIGetText( gui, CTL_EDIT );
+    dlg = GUIGetExtra( wnd );
+    tmp = GUIGetText( wnd, CTL_EDIT );
     if( tmp == NULL ) {
         return( PROCESS_FALSE );
     }
@@ -865,22 +865,22 @@ static process_rc processFileName( gui_window *gui )
         rc = stat( txt, &buf );
         if( !rc ) {
             if( S_ISDIR( buf.st_mode ) ) {
-                goToDir( gui, txt );
-                if( !initDialog( gui, dlg->fileExtensions[dlg->currExtIndex], NULL ) ) {
+                goToDir( wnd, txt );
+                if( !initDialog( wnd, dlg->fileExtensions[dlg->currExtIndex], NULL ) ) {
                     return( PROCESS_FAIL );
                 }
                 return( PROCESS_FALSE );
             }
         }
         _makepath( path, pg.drive, pg.dir, NULL, NULL );
-        if( !goToDir( gui, path ) ) {
+        if( !goToDir( wnd, path ) ) {
             return( PROCESS_FALSE );
         }
         if( !rc && (dlg->currOFN->flags & FN_OVERWRITEPROMPT) ) {
             buff = alloca( strlen( txt ) + 100 );
             strcpy( buff, txt );
             strcat( buff, LIT( File_Exists_Replace ) );
-            rc = GUIDisplayMessage( gui, buff, dlg->currOFN->title, GUI_YES_NO );
+            rc = GUIDisplayMessage( wnd, buff, dlg->currOFN->title, GUI_YES_NO );
             if( rc == GUI_RET_NO ) {
                 return( PROCESS_FALSE );
             }
@@ -914,11 +914,11 @@ static process_rc processFileName( gui_window *gui )
         return( PROCESS_TRUE );
     }
     _makepath( path, pg.drive, pg.dir, NULL, NULL );
-    if( !goToDir( gui, path ) ) {
+    if( !goToDir( wnd, path ) ) {
         return( PROCESS_FALSE );
     }
     _makepath( path, NULL, NULL, pg.fname, pg.ext );
-    if( !initDialog( gui, path, NULL ) ) {
+    if( !initDialog( wnd, path, NULL ) ) {
         return( PROCESS_FAIL );
     }
     return( PROCESS_FALSE );
@@ -928,7 +928,7 @@ static process_rc processFileName( gui_window *gui )
 /*
  * ProcessOKorDClick -- user clicked OK or double clicked on a file
  */
-static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
+static void ProcessOKorDClick( gui_window *wnd, gui_ctl_id id  )
 {
     process_rc  prc;
     int         sel;
@@ -938,36 +938,36 @@ static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
     char        *ptr;
     int         i;
     gui_ctl_id  focusid;
-    dlg_info    *dlg = GUIGetExtra( gui );
+    dlg_info    *dlg = GUIGetExtra( wnd );
 
     if( id == CTL_OK ) { /* hit enter or clicked ok */
-        GUIGetFocus( gui, &focusid );
+        GUIGetFocus( wnd, &focusid );
         switch( focusid ) {
-        case CTL_DIR_LIST  :
+        case CTL_DIR_LIST:
             id = focusid;
             break;
-        case CTL_FILE_LIST :
-            ptr = GUIGetText( gui, CTL_FILE_LIST );
-            GUISetText( gui, CTL_EDIT, ptr );
+        case CTL_FILE_LIST:
+            ptr = GUIGetText( wnd, CTL_FILE_LIST );
+            GUISetText( wnd, CTL_EDIT, ptr );
             GUIMemFree( ptr );
             break;
         }
     }
     switch( id ) {
-    case CTL_FILE_LIST :
-    case CTL_OK :
-        prc = processFileName( gui );
+    case CTL_FILE_LIST:
+    case CTL_OK:
+        prc = processFileName( wnd );
         if( prc == PROCESS_TRUE ) {
             dlg->dialogRC = FN_RC_FILE_SELECTED;
-            GUICloseDialog( gui );
+            GUICloseDialog( wnd );
         } else if( prc == PROCESS_FAIL ) {
             dlg->dialogRC = FN_RC_RUNTIME_ERROR;
-            GUICloseDialog( gui );
+            GUICloseDialog( wnd );
         }
         break;
-    case CTL_DIR_LIST :
+    case CTL_DIR_LIST:
         sel = -1;
-        GUIGetCurrSelect( gui, id, &sel );
+        GUIGetCurrSelect( wnd, id, &sel );
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
         path[0] = FILE_SEP_CHAR;
         path[1] = '\0';
@@ -976,7 +976,7 @@ static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
 #endif
         realsel = 0;
         for( i = 0; i < sel; i++ ) {
-            ptr = GUIGetListItem( gui, id, i );
+            ptr = GUIGetListItem( wnd, id, i );
             if( ptr == NULL ) {
                 return;
             }
@@ -996,7 +996,7 @@ static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
             }
             GUIMemFree( optr );
         }
-        ptr = GUIGetListItem( gui, id, sel );
+        ptr = GUIGetListItem( wnd, id, sel );
         if( ptr != NULL ) {
             optr = ptr;
             while( *ptr == INDENT_CHAR ) {
@@ -1004,12 +1004,12 @@ static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
             }
             strcat( path, ptr+1 );
             GUIMemFree( optr );
-            goToDir( gui, path );
-            if( !initDialog( gui, NULL, NULL ) ) {
+            goToDir( wnd, path );
+            if( !initDialog( wnd, NULL, NULL ) ) {
                 dlg->dialogRC = FN_RC_RUNTIME_ERROR;
-                GUICloseDialog( gui );
+                GUICloseDialog( wnd );
             } else {
-                GUISetCurrSelect( gui, id, realsel );
+                GUISetCurrSelect( wnd, id, realsel );
             }
         }
         break;
@@ -1017,20 +1017,20 @@ static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
 
 } /* ProcessOKorDClick */
 
-static void InitTextList( gui_window *gui, gui_ctl_id id, const char **text_list )
+static void InitTextList( gui_window *wnd, gui_ctl_id id, const char **text_list )
 {
     int         i;
 
     for( i = 0; text_list[i] != NULL; i++ ) {
-        GUIAddText( gui, id, text_list[i] );
+        GUIAddText( wnd, id, text_list[i] );
     }
-    GUISetCurrSelect( gui, id, 0 );
+    GUISetCurrSelect( wnd, id, 0 );
 }
 
 /*
  * GetFileNameGUIEventProc - event handler for GetFileName dialog
  */
-static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GetFileNameGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     int         sel;
@@ -1038,28 +1038,28 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     char        path[_MAX_PATH];
 #endif
-    dlg_info    *dlg = GUIGetExtra( gui );
+    dlg_info    *dlg = GUIGetExtra( wnd );
 
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         dlg->initted = false;
-        InitTextList( gui, CTL_FILE_TYPES, GetFileTypesTextList() );
+        InitTextList( wnd, CTL_FILE_TYPES, GetFileTypesTextList() );
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-        InitTextList( gui, CTL_DRIVES, GetDriveTextList() );
+        InitTextList( wnd, CTL_DRIVES, GetDriveTextList() );
 #endif
-        if( !initDialog( gui, dlg->fileExtensions[dlg->currExtIndex], dlg->currOFN->file_name ) ) {
+        if( !initDialog( wnd, dlg->fileExtensions[dlg->currExtIndex], dlg->currOFN->file_name ) ) {
             dlg->dialogRC = FN_RC_FAILED_TO_INITIALIZE;
             break;
         }
         dlg->initted = true;
-        GUISetFocus( gui, CTL_EDIT );
+        GUISetFocus( wnd, CTL_EDIT );
         return( true );
     case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_FILE_LIST:
         case CTL_DIR_LIST:
-            ProcessOKorDClick( gui, id );
+            ProcessOKorDClick( wnd, id );
             return( true );
         }
         break;
@@ -1069,35 +1069,35 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_OK:
-            ProcessOKorDClick( gui, id );
+            ProcessOKorDClick( wnd, id );
             return( true );
         case CTL_CANCEL:
-            GUICloseDialog( gui );
+            GUICloseDialog( wnd );
             return( true );
         case CTL_FILE_LIST:
-            ptr = GUIGetText( gui, id );
-            GUISetText( gui, CTL_EDIT, ptr );
+            ptr = GUIGetText( wnd, id );
+            GUISetText( wnd, CTL_EDIT, ptr );
             GUIMemFree( ptr );
             return( true );
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-        case CTL_DRIVES :
+        case CTL_DRIVES:
             sel = -1;
-            GUIGetCurrSelect( gui, id, &sel );
+            GUIGetCurrSelect( wnd, id, &sel );
             strcpy( path, GetDriveTextList()[sel] );
             path[2] = '\0';
-            goToDir( gui, path );
-            if( !initDialog( gui, NULL, NULL ) ) {
+            goToDir( wnd, path );
+            if( !initDialog( wnd, NULL, NULL ) ) {
                 dlg->dialogRC = FN_RC_RUNTIME_ERROR;
-                GUICloseDialog( gui );
+                GUICloseDialog( wnd );
             }
             return( true );
 #endif
         case CTL_FILE_TYPES:
             sel = -1;
-            GUIGetCurrSelect( gui, id, &sel );
-            if( !initDialog( gui, dlg->fileExtensions[sel], NULL ) ) {
+            GUIGetCurrSelect( wnd, id, &sel );
+            if( !initDialog( wnd, dlg->fileExtensions[sel], NULL ) ) {
                 dlg->dialogRC = FN_RC_RUNTIME_ERROR;
-                GUICloseDialog( gui );
+                GUICloseDialog( wnd );
             }
             return( true );
         }
@@ -1112,7 +1112,7 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
 /*
  * GUIGetFileName - get a file name from the user
  */
-int GUIGetFileName( gui_window *gui, open_file_name *ofn )
+int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 {
     char        olddir[_MAX_PATH];
     dlg_info    dlg;
@@ -1138,13 +1138,13 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
         dlg.dialogRC = FN_RC_NO_FILE_SELECTED;
 
         getcwd( olddir, sizeof( olddir ) );
-        goToDir( gui, ofn->initial_dir );
+        goToDir( wnd, ofn->initial_dir );
 
-        GUIModalDlgOpen( gui, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
+        GUIModalDlgOpen( wnd, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
                     dlgControls, GUI_ARRAY_SIZE( dlgControls ), &GetFileNameGUIEventProc, &dlg );
 
         if( (ofn->flags & FN_CHANGEDIR) == 0 ) {
-            goToDir( gui, olddir );
+            goToDir( wnd, olddir );
         }
     }
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
@@ -1157,7 +1157,7 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
 
 } /* GUIGetFileName */
 
-void GUIHookFileDlg( bool hook )
+void GUIAPI GUIHookFileDlg( bool hook )
 {
     /* unused parameters */ (void)hook;
 }

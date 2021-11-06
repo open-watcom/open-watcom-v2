@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +34,8 @@
 #include <dos.h>
 #include <conio.h>
 #include "uidef.h"
-#include "uidos.h"
-#include "biosui.h"
 #include "uicurshk.h"
+#include "int10.h"
 
 
 extern char     _B000h[];

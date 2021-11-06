@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,28 +34,19 @@
 #ifndef _GUIXSCAL_H_
 #define _GUIXSCAL_H_
 
-#define GUIMulDiv(a,b,c) ((int)(((long)a * (long)b) / (long)c))
-
 extern WPI_TEXTMETRIC   GUItm;
 
-extern void GUIGetScale( gui_rect * rect);
+extern void         GUIClientToScaleRect( const guix_rect *client, gui_rect *rect );
 
-extern void GUIScaleToScreenRect( gui_rect *rect );
-extern void GUIScreenToScaleRect( gui_rect *rect );
+extern guix_ord     GUIFromTextX( gui_text_ord text_ord, gui_window *wnd );
+extern guix_ord     GUIFromTextY( gui_text_ord text_ord, gui_window *wnd );
+extern gui_text_ord GUIToTextX( guix_ord ord, gui_window *wnd );
+extern gui_text_ord GUIToTextY( guix_ord ord, gui_window *wnd );
 
-extern void GUIClientToScaleRect( gui_rect *rect );
+extern void         GUIGetUpdateRows( gui_window *, HWND, gui_text_ord *, gui_text_ord * );
 
-extern void GUIToText( gui_coord *coord, gui_window *wnd );
-extern gui_ord GUIFromTextX( gui_ord ord, gui_window *wnd );
-extern gui_ord GUIFromTextY( gui_ord ord, gui_window *wnd );
-extern void GUIFromText( gui_coord *coord, gui_window *wnd );
-extern gui_ord GUIToTextX( gui_ord ord, gui_window *wnd );
-extern gui_ord GUIToTextY( gui_ord ord, gui_window *wnd );
-
-extern void GUIGetUpdateRows( gui_window *, HWND, gui_ord *, int * );
-
-extern void GUIGetMetrics( gui_window * );
-extern bool GUIGetTheDC( gui_window *wnd );
-extern void GUIReleaseTheDC( gui_window *wnd );
+extern void         GUIGetMetrics( gui_window *wnd );
+extern bool         GUIGetTheDC( gui_window *wnd );
+extern void         GUIReleaseTheDC( gui_window *wnd );
 
 #endif // _GUIXSCAL_H_

@@ -11,7 +11,9 @@ dmndwnt.obj  : ../../../c/dmndwnt.c    ../../../c/dmainwnt.c
 initwarg.obj : ../../../c/initwarg.c   ../../../c/initargv.c
 main3o32.obj : ../../../c/main3o32.c   ../../../c/main2o32.c
 main3wnt.obj : ../../../c/main3wnt.c   ../../../c/main2wnt.c
+main4o32.obj : ../../../c/main4o32.c   ../../../c/main2o32.c
 main4wnt.obj : ../../../c/main4wnt.c   ../../../c/main2wnt.c
+main5o32.obj : ../../../c/main5o32.c   ../../../c/main2o32.c
 main5wnt.obj : ../../../c/main5wnt.c   ../../../c/main2wnt.c
 wargcv.obj   : ../../../c/wargcv.c     ../../../c/argcv.c
 wildwarg.obj : ../../../c/wildwarg.c   ../../../c/wildargv.c

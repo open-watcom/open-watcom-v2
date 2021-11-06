@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +37,13 @@
 #include "uidef.h"
 #include "doscall.h"
 #include "uiforce.h"
-#ifdef _M_I86
-#include "biosui.h"
-#endif
+#include "realmod.h"
 
 
 #define _osmode_REALMODE()  (_osmode == DOS_MODE)
 #define _osmode_PROTMODE()  (_osmode == OS2_MODE)
+
+#define MILLISEC_PER_TICK   55L
 
 MOUSETIME UIAPI uiclock( void )
 /*****************************
@@ -54,7 +54,7 @@ MOUSETIME UIAPI uiclock( void )
 #ifdef _M_I86
     if( _osmode_REALMODE() )
         /* ticks count in BIOS area */
-        return( BIOSData( BIOS_SYSTEM_CLOCK, unsigned long ) );
+        return( BIOSData( BDATA_SYSTEM_CLOCK, unsigned long ) );
 #endif
     return( clock() );
 }
@@ -68,7 +68,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
 #ifdef _M_I86
     if( _osmode_REALMODE() )
         /* convert milliseconds to ticks */
-        return( ( milli * 18L ) / 1000L );
+        return( ( milli + MILLISEC_PER_TICK / 2 ) / MILLISEC_PER_TICK );
 #endif
     return( milli );
 }

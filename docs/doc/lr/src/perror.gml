@@ -16,11 +16,9 @@ The
 .id &funcb.
 function prints, on the file designated by
 .kw stderr
-.ct,
-the error message corresponding to the error number
-contained in
+.ct , the error message corresponding to the error number contained in
 .kw errno
-.ct .li .
+.period
 The
 .id &funcb.
 function writes first the string pointed to by
@@ -29,7 +27,7 @@ to stderr.
 This is followed by a colon (":"), a space, the string returned by
 .mono strerror(errno)
 .ct , and a newline character.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The
@@ -38,7 +36,7 @@ function returns no value.
 Because
 .id &funcb.
 uses the
-.kw fprintf
+.reffunc fprintf
 function,
 .kw errno
 can be set when an error is detected during the execution of

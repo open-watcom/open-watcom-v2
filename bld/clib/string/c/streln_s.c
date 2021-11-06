@@ -41,7 +41,7 @@
 #include "errstr.h"
 
 
-_WCRTLINK size_t __F_NAME(strerrorlen_s,wcserrorlen_s)( errno_t errnum )
+_WCRTLINK size_t __F_NAME(strerrorlen_s,_wcserrorlen_s)( errno_t errnum )
 {
     size_t  m = 0;
     char    *msg;

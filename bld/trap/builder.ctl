@@ -39,6 +39,7 @@ set PROJDIR=<CWD>
     <CCCMD> vdm/dos.srv/vdmserv.exe                 <OWRELROOT>/binw/
     <CCCMD> win/dos.trp/win*.trp                    <OWRELROOT>/binw/
     <CCCMD> win/dos.srv/winserv.exe                 <OWRELROOT>/binw/
+    <CCCMD> win/wsrv.pif                            <OWRELROOT>/binw/
 
     <CCCMD> lcl/os2v2/std/std*.d32                  <OWRELROOT>/binp/
     <CCCMD> net/os2v2.trp/net*.d32                  <OWRELROOT>/binp/

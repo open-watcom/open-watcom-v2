@@ -30,13 +30,13 @@ result to be written to the array pointed to by
 .arg s
 shall not be greater than
 .arg n
-.ct .li .
+.period
 The
 .mono %n
 specifier (modified or not by flags, field width, or precision) shall not
 appear in the string pointed to by
 .arg format
-.ct .li .
+.period
 Any argument to
 .id &funcb.
 corresponding to a
@@ -60,17 +60,17 @@ to the null character.
 The
 .id &funcb.
 function is equivalent to the
-.kw vsprintf
+.reffunc vsprintf
 function except for the explicit runtime-constraints listed above.
 .np
 The
 .id &funcb.
 function, unlike
-.kw vsnprintf_s
+.reffunc vsnprintf_s
 .ct , treats a result too big for the array pointed to by
 .arg s
 as a runtime-constraint violation.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .desc end
 .*
 .return begin

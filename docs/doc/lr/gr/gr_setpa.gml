@@ -1,5 +1,5 @@
-.gfunc setplotaction
-.gsynop begin 
+.gfunc _setplotaction
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _setplotaction( short action );
 .do end

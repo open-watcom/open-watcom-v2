@@ -467,6 +467,8 @@ Verror: xor     ax,ax
 ; the following are DOS code fragments that are used to find the code within
 ; DOS that checks the flags in question (see MSDOS encyclopedia)
 ;
+        ASSUME  ss:nothing
+
 LFnear      LABEL   near
 LFbyte      LABEL   byte
 LFword      LABEL   word
@@ -485,6 +487,8 @@ LF3:    test    ss:LFbyte, 0ffH ; test   ErrorMode,0ffH
         jne     LFnear
         push    ss:LFword
 LF4:    int     28h
+
+        ASSUME  ss:DGROUP
 
 VersionCheck_ endp
 

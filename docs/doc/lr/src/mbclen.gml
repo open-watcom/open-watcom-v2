@@ -3,8 +3,8 @@
 #include <mbstring.h>
 size_t _mbclen( const unsigned char *ch );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
-size_t far _fmbclen( const unsigned char __far *ch );
+.if &farfnc ne 0 .do begin
+size_t _fmbclen( const unsigned char __far *ch );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
 .synop end
@@ -14,8 +14,8 @@ The
 function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg ch
-.ct .li .
-.im farparm
+.period
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 If
@@ -31,8 +31,8 @@ is not a NULL pointer, the
 .id &funcb.
 function returns:
 .begnote $setptnt 6
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 0
 if
 .arg ch

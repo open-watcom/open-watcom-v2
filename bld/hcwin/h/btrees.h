@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,8 @@ struct BtreePage;    // forward declaration.
 
 class BtreeData
 {
-    BtreeData   *_bnext, *_bprev;
+    BtreeData   *_bnext;
+    BtreeData   *_bprev;
     BtreePage   *_child;    // The page below this data.
 
     // Assignment of BtreeData's (or derived classes) is not permitted.
@@ -67,15 +69,15 @@ public:
     BtreePage   *child() { return _child; };
     BtreePage   *child( BtreePage *c ) { _child = c; return c; };
 
-    void    insertSelf( BtreePage *dest );
+    void        insertSelf( BtreePage *dest );
     BtreePage   *seekNext( BtreePage *first );
 
     // Virtual functions to override in a derived class.
     virtual BtreeData   *myKey() = 0;
-    virtual bool    lessThan( BtreeData *other ) = 0;
+    virtual bool        lessThan( BtreeData *other ) = 0;
 
-    virtual uint_32 size() = 0;
-    virtual int     dump( OutFile * dest ) = 0;
+    virtual uint_32     size() = 0;
+    virtual int         dump( OutFile * dest ) = 0;
 };
 
 
@@ -83,38 +85,39 @@ public:
 //  Btree       --The tree class.
 //
 
+#define BTREE_HEADER_SIZE   38
+
 class Btree : public Dumpable
 {
-    uint_16 _numLevels; // Number of levels.
-    uint_32 _totalEntries;  // Number of entries in leaf nodes.
-    uint_16 _numPages;  // Number of pages.
-    uint_16 _numSplits; // Number of page splits.
-    uint_32 _size;      // Total size of the structure.
-    uint_32 _maxSize;   // Page size.
-    char const  *_magic;    // The 'magic' number for the btree.
+    uint_16     _numLevels;     // Number of levels.
+    uint_32     _totalEntries;  // Number of entries in leaf nodes.
+    uint_16     _numPages;      // Number of pages.
+    uint_16     _numSplits;     // Number of page splits.
+    uint_32     _size;          // Total size of the structure.
+    uint_32     _pageSize;      // Page size.
+    char const  *_format;       // The format string for the btree.
+    uint_16     _flags;         // The flags for the btree.
 
     // Some recursive functions to act on the tree.
-    void    labelPages( BtreePage *start );
-    void    dumpPage( OutFile *dest, BtreePage *start );
-    void    killPage( BtreePage *start );
+    void        labelPages( BtreePage *start );
+    void        dumpPage( OutFile *dest, BtreePage *start );
+    void        killPage( BtreePage *start );
 
-    BtreePage       *_root;
+    BtreePage   *_root;
 
     // Assignment of Btree's is not permitted.
     Btree( Btree const & ) {};
     Btree & operator=( Btree const & ) { return *this; };
 
 public:
-    enum { _magNumSize = 22 };  // Size of a "magic number".
-
-    Btree( char const *magnum, uint_32 max_size = 2048L );
+    Btree( bool dir, char const *format );
     ~Btree();
 
     void        insert( BtreeData *newdata );
-    BtreeData       *findNode( BtreeData &keyval );
+    BtreeData   *findNode( BtreeData &keyval );
 
-    uint_32 size();         // Overrides Dumpable::size
-    int     dump( OutFile *dest );  // Overrides Dumpable::dump
+    uint_32     size();                 // Overrides Dumpable::size
+    int         dump( OutFile *dest );  // Overrides Dumpable::dump
 
     friend class BtreeIter;
 };
@@ -126,27 +129,27 @@ public:
 
 class BtreeIter
 {
-    Btree   *_tree;
+    Btree       *_tree;
     BtreePage   *_page;
     BtreeData   *_data;
-    void    goPrev();
-    void    goNext();
+    void        goPrev();
+    void        goNext();
 public:
     BtreeIter( Btree &t );
     BtreeData   *data() { return _data; };
 
-    void    init();
+    void        init();
     BtreeIter&  operator--();       // prefix
-    void    operator--(int);    // postfix
+    void        operator--(int);    // postfix
     BtreeIter&  operator++();       // prefix
-    void    operator++(int);    // postfix
+    void        operator++(int);    // postfix
 
     // I would LOVE for pages to completely transparent to everything
     // outside of this module, but the (expletive deleted) |KWMAP file
     // needs info about the pages of |KWBTREE.  So...
-    uint_16 pageEntries();
-    uint_16 thisPage();
-    void    nextPage();
+    uint_16     pageEntries();
+    uint_16     thisPage();
+    void        nextPage();
 };
 
 #endif

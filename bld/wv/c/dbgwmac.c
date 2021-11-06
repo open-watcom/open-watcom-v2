@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +52,7 @@
 #include "dbgwset.h"
 #include "wndmenu.h"
 #include "menudef.h"
+#include "dbgmisc.h"
 
 
 #define TITLE_SIZE      2
@@ -77,8 +78,6 @@ typedef struct {
     boolbit             creating  : 1;
     boolbit             changing  : 1;
 } mac_window;
-
-extern const char       MainTab[];
 
 static char **WndDisplayNames[] = {
     #define pick( a,b,c,d,e,f ) LITREF_DUI( f ),
@@ -232,7 +231,7 @@ bool MacKeyHit( a_window wnd, gui_key key )
                     if( !MacModWhat( wnd, row ) ) {
                         mac->type = MACRO_COMMAND;
                     }
-                    WndScrollAbs( wnd, row );
+                    WndVScrollAbs( wnd, row );
                     WndNewCurrent( wnd, row, PIECE_WHAT );
                 }
             }
@@ -259,7 +258,7 @@ static bool MacPopupClicked( a_window wnd, gui_ctl_id id )
     p = StrCopy( GetCmdName( CMD_ACCEL ), TxtBuff );
     *p++ = ' ';
     if( wndmac->mac->type == MACRO_MAIN_MENU ) {
-        p = GetCmdEntry( MainTab, 0, p );
+        p = GetCmdMain( p );
         *p++ = ' ';
         main_id = MAIN_MENU_ID( id );
         *p++ = '{';
@@ -638,7 +637,7 @@ wnd_info MacInfo = {
     MacRefresh,
     MacGetLine,
     MacMenuItem,
-    NoScroll,
+    NoVScroll,
     NoBegPaint,
     NoEndPaint,
     MacModify,

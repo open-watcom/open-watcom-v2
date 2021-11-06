@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,6 @@
 #include "fmtdat.h"
 #include "format.h"
 #include "global.h"
-#include "fmttab.h"
 #include "fmterr.h"
 #include "fmtinit.h"
 #include "cgformat.h"
@@ -49,18 +48,16 @@
 #include "fcodes.h"
 #include "gflow.h"
 #include "fmtscan.h"
-#include "cfmttab.h"
 
 
-static  void    FInit( uint fmt_length, char *fmt_string )
-//========================================================
+static  void    FInit( size_t fmt_length, char *fmt_string )
+//==========================================================
 {
     Fmt_start = fmt_string;
     Fmt_end = fmt_string + fmt_length;
     Fmt_paren_level = 0;
     Fmt_charptr = fmt_string;
     Fmt_delimited = NO_DELIM;
-    FmtEmStruct = &CFmtStruct;
 }
 
 
@@ -69,9 +66,12 @@ static  void    FFinish( void )
 {
     if( StmtProc == PR_FMT ) {
         for(;;) {
-            if( *Fmt_charptr != ' ' ) break;
+            if( *Fmt_charptr != ' ' )
+                break;
             ++Fmt_charptr;
-            if( Fmt_charptr >= Fmt_end ) break;
+            if( Fmt_charptr >= Fmt_end ) {
+                break;
+            }
         }
         if( ( Fmt_charptr < Fmt_end ) && ( *Fmt_charptr != '!' ) ) {
             FmtError( FM_NO_EOS );
@@ -79,8 +79,8 @@ static  void    FFinish( void )
     }
 }
 
-void    FScan( uint fmt_length, char *fmt_string, cs_label fmt_label )
-//====================================================================
+void    FScan( size_t fmt_length, char *fmt_string, cs_label fmt_label )
+//======================================================================
 // FORMAT statement parsing (only compile-time).
 {
     FInit( fmt_length, fmt_string );

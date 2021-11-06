@@ -42,7 +42,7 @@ error occurs.
 .im errnoref
 .return end
 .see begin
-.seelist unlock lock locking open sopen
+.seelist unlock lock locking open _sopen
 .see end
 .exmp begin
 #include <stdio.h>

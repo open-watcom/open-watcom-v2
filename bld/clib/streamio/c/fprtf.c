@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,12 +50,12 @@
 static slib_callback_t file_putc; // setup calling convention
 static void __SLIB_CALLBACK file_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    __F_NAME(fputc,fputwc)( (UCHAR_TYPE)op_char, SLIB2CLIB( FILE, specs->_dest ) );
+    __F_NAME(fputc,fputwc)( (UCHAR_TYPE)op_char, GET_SPEC_DEST( FILE, specs ) );
     specs->_output_count++;
 }
 
 
-int __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list arg )
+int __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list args )
 {
     int             not_buffered;
     int             amount_written;
@@ -79,7 +79,7 @@ int __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list arg )
         fp->_flag &= ~_IONBF;
         fp->_flag |= _IOFBF;
     }
-    amount_written = __F_NAME(__prtf,__wprtf)( fp, format, arg, file_putc );
+    amount_written = __F_NAME(__prtf,__wprtf)( fp, format, args, file_putc );
     if( not_buffered ) {
         fp->_flag &= ~_IOFBF;
         fp->_flag |= _IONBF;

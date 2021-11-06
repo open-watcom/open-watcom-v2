@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 
 #include <stdlib.h>
 #include "wresall.h"
-#include "wmemicmp.h"
+#include "wstrcmp.h"
 
 
 int WResIDNameCmp( const WResIDName *name1, const WResIDName *name2 )
@@ -45,12 +46,12 @@ int WResIDNameCmp( const WResIDName *name1, const WResIDName *name2 )
     len = name1->NumChars;
     if( len > name2->NumChars )
         len = name2->NumChars;
-    cmp_rc = WresMemicmp( name1->Name, name2->Name, len );
+    cmp_rc = WresStrnicmp( name1->Name, name2->Name, len );
     if( cmp_rc == 0 ) {
         if( name1->NumChars == name2->NumChars ) {
             return( 0 );
         } else if( name1->NumChars > name2->NumChars ) {
-            /* longer names with the same prefix are greater */
+            /* longer name with the same prefix are greater */
             return( 1 );
         } else {
             return( -1 );

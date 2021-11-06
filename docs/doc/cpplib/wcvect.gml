@@ -9,9 +9,9 @@ and can be resized.
 Elements are inserted into the vector by assigning to a vector index.
 :P.
 The
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 and
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 classes are also available.  They provide a more abstract view of the vector
 and additional functionality, including finding and removing elements.
 
@@ -26,7 +26,7 @@ destructor for a derived class must be called.
 
 :P.
 In the description of each member function, the text
-.MONO Type
+:MONO.Type
 is used to indicate the template parameter defining
 
 .if &lpref. eq Val .do begin
@@ -43,23 +43,24 @@ the type pointed to by the pointers stored in the vector.
 .if &lpref. eq Val .do begin
 
 The &cls requires
-.MONO Type
+:MONO.Type
 to have:
 :P.
 A default constructor (
-.MONO Type::Type()
+:MONO.Type::Type()
 ).
 :P.
 A well defined copy constructor (
-.MONO Type::Type( const Type & )
+:MONO.Type::Type( const Type & )
 ).
 :P.
 The following override of
-.MONO operator new()
+:MONO.operator new()
 only if
-.MONO Type
+:MONO.Type
 overrides the global
-.MONO operator new():
+:MONO.operator new()
+:CONT.:
 :XMPL
 void * operator new( size_t, void *ptr ) { return( ptr ); }
 :eXMPL
@@ -68,7 +69,8 @@ void * operator new( size_t, void *ptr ) { return( ptr ); }
 .el .do begin
 
 The &cls requires nothing from
-.MONO Type.
+:MONO.Type
+:PERIOD.
 
 .do end
 :HDG.Public Member Functions
@@ -113,7 +115,7 @@ in the optional parameter, which defaults to zero.
 
 .if &lpref eq Val .do begin
 All vector elements are initialized with
-.MONO Type's
+:MONO.Type's
 default constructor.
 .do end
 .el .do begin
@@ -143,7 +145,7 @@ by the first parameter.
 .if &lpref eq Val .do begin
 All vector elements are initialized to the value of the second parameter
 using
-.MONO Type's
+:MONO.Type's
 copy constructor.
 .do end
 .el .do begin
@@ -169,12 +171,13 @@ set to the given value.
 :SNPCD cd_idx='c'.WC&lpref.Vector( const WC&lpref.Vector & );
 :eSNPL.
 :SMTICS.
-The &fn. is the copy constructor for the &cls.:PERIOD.
+The &fn. is the copy constructor for the &cls.
+:PERIOD.
 The new vector is created with the same length as the given vector.
 All of the vector elements and exception trap states are copied.
 :P.
 If the new vector cannot be fully created, it will have length zero.  The
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if enabled in the vector being copied.
 :RSLTS.
@@ -192,23 +195,25 @@ The &fn. creates a &obj. which is a copy of the passed vector.
 :SNPCD cd_idx='d'.virtual ~~WC&lpref.Vector();
 :eSNPL.
 :SMTICS.
-The &fn. is the destructor for the &cls.:PERIOD.
+The &fn. is the destructor for the &cls.
+:PERIOD.
 If the vector is not length zero and the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled, the exception is thrown.
 Otherwise, the vector elements are cleared using the
-.MONO clear
+:MONO.clear
 member function.
 
 .if &lpref. eq Ptr .do begin
 The objects which the vector elements point to are not deleted unless the
-.MONO clearAndDestroy
+:MONO.clearAndDestroy
 member function is explicitly called before the destructor is called.
 .do end
 :INCLUDE file='_DTOR'.
 :RSLTS.
-The &fn. destroys an &obj.:PERIOD.
+The &fn. destroys an &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.clear
 .if &lpref. eq Ptr .do begin
@@ -229,7 +234,7 @@ The &fn. is used to clear the vector so that it is of zero length.
 
 .if &lpref. eq Val .do begin
 Elements stored in the vector are destroyed using
-.MONO Type's
+:MONO.Type's
 destructor.
 .do end
 .el .do begin
@@ -280,7 +285,8 @@ vector elements and makes the vector zero length.
 :eSNPL.
 :SMTICS.
 The &fn. is used to find the number of elements which can be stored in
-the &obj.:PERIOD.
+the &obj.
+:PERIOD.
 :RSLTS.
 The &fn. returns the length of the vector.
 :SALSO.
@@ -301,7 +307,7 @@ The &fn. returns the length of the vector.
 .do end
 :eSNPL.
 :SMTICS.
-.MONO operator []
+:MONO.operator []
 is the vector index operator.  A reference to the object stored
 in the vector at the given index is returned.  If a constant vector is
 indexed, a reference to a constant element is returned.
@@ -310,17 +316,17 @@ an element into the vector.
 :P.
 If an attempt to access an element with index greater than or equal to the
 length of a non-constant vector is made and the
-.MONO resize_required
+:MONO.resize_required
 .ix 'resize_required' 'exception'
 exception is enabled, the exception is thrown.  If the exception is not
 enabled, the vector is automatically resized using the
-.MONO resize
+:MONO.resize
 member function to have length the index
 value plus one.
 
 .if &lpref. eq Val .do begin
 New vector elements are initialized using
-.MONO Type's
+:MONO.Type's
 default constructor.
 .do end
 .el .do begin
@@ -328,25 +334,25 @@ New vector elements are initialized to NULL(0).
 .do end
 
 If the resize failed, and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is enabled, the exception is thrown.  If the exception is not
 enabled and the resize failed, the last element is indexed (a new
 element if the vector was zero length).
 If a negative value is used to index the non-constant vector and the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception is enabled, the exception is thrown.  If the exception is not
 enabled and the vector is empty, the
-.MONO resize_required
+:MONO.resize_required
 exception may be thrown.
 :P.
 An attempt to index an empty constant vector may cause one of two
 exceptions to be thrown.  If the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, it is thrown.  Otherwise, the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception is thrown, if enabled.
 If neither exception is enabled, a first vector element is added and
@@ -354,7 +360,7 @@ indexed (so that a reference to a valid element can be returned).
 :P.
 Indexing with a negative value or a value greater than or equal to the
 length of a constant vector causes the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception to be thrown, if enabled.
 :RSLTS.
@@ -377,9 +383,10 @@ The result of the non-constant index operator may be assigned to.
 :SNPF index='operator ='   .WC&lpref.Vector & operator =( const WC&lpref.Vector & );
 :eSNPL.
 :SMTICS.
-The &fn. is the assignment operator for the &cls.:PERIOD.
+The &fn. is the assignment operator for the &cls.
+:PERIOD.
 The left hand side vector is first cleared using the
-.MONO clear
+:MONO.clear
 member function, and then the right hand side vector is copied.
 The left hand side vector is made to have the same length as the right
 hand side.
@@ -387,7 +394,7 @@ All of the vector elements and exception trap states are copied.
 :P.
 If the left hand side vector cannot be fully created, it will have
 zero length.  The
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if enabled in the right hand side vector.
 :RSLTS.
@@ -408,7 +415,8 @@ The &fn. assigns the left hand side vector to be a copy of the right hand side.
 :SNPF index='operator =='.int operator ==( const WC&lpref.Vector & ) const;
 :eSNPL.
 :SMTICS.
-The &fn. is the equivalence operator for the &cls.:PERIOD.
+The &fn. is the equivalence operator for the &cls.
+:PERIOD.
 Two vector objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.
@@ -431,7 +439,7 @@ elements will be copied
 
 .if &lpref eq Val .do begin
 (using
-.MONO Type's
+:MONO.Type's
 copy constructor)
 .do end
 
@@ -439,7 +447,7 @@ into the newly sized vector, and new elements are initialized
 
 .if &lpref eq Val .do begin
 with
-.MONO Type's
+:MONO.Type's
 default constructor.
 .do end
 .el .do begin
@@ -450,7 +458,7 @@ elements are copied.
 
 .if &lpref eq Val .do begin
 The remaining elements are destroyed using
-.MONO Type's
+:MONO.Type's
 destructor.
 .do end
 .el .do begin
@@ -459,11 +467,12 @@ The objects pointed to by the remaining elements are not deleted.
 
 :P.
 If the resize cannot be performed and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is enabled, the exception is thrown.
 :RSLTS.
-The vector is resized to :HP1.new_size:eHP1.:PERIOD.
+The vector is resized to :HP1.new_size:eHP1.
+:PERIOD.
 A TRUE value (non-zero) is returned if the resize is successful.
 A FALSE (zero) result is returned if the resize fails.
 :SALSO.

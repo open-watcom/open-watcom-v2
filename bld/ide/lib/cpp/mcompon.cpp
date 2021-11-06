@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,8 @@ MComponent* WEXPORT MComponent::createSelf( WObjectFile& p )
     WString ruletag;
     p.readObject( &ruletag );
     MRule* rule = _config->findRule( ruletag );
-    if( !rule ) rule = _config->nilRule();
+    if( !rule )
+        rule = _config->nilRule();
     return( new MComponent( project, rule, "", "" ) );
 }
 
@@ -281,7 +282,8 @@ void MComponent::updateItemList( bool update )
                     }
                 }
                 if( !item->parent() ) {
-                    WFileName fn( "*.*" ); fn.setExt( item->ext() );
+                    WFileName fn( "*.*" );
+                    fn.setExt( item->ext() );
                     MItem* m = new MItem( fn, this, item->rule() );
                     item->setParent( m );
                     _items.add( m );
@@ -424,7 +426,7 @@ void MComponent::touchTarget( bool all )
 {
     _target->touchResult();
     if( all ) {
-        initWorkFiles( _workFiles );
+        initWorkFiles();
         for( int i=0; i<_workFiles.count(); i++ ) {
             MItem* m = ((MWorkFile*)_workFiles[i])->item();
             if( !m->isMask() ) {
@@ -446,7 +448,7 @@ void MComponent::getTargetCommand( WString& cmd )
 
 void MComponent::getItemCommand( MItem* item, WString& cmd )
 {
-    initWorkFiles( _workFiles );
+    initWorkFiles();
     for( int i=0; i<_workFiles.count(); i++ ) {
         MWorkFile* w = (MWorkFile*)_workFiles[i];
         if( w->item() == item ) {
@@ -470,7 +472,9 @@ bool MComponent::addFromFilename( WFileName& filename, WString& err )
 
             cnt = _items.count();
             for( ; cnt > 0; cnt-- ) {
-                if( *(MItem *)_items[cnt - 1] == filename ) break;
+                if( *(MItem *)_items[cnt - 1] == filename ) {
+                    break;
+                }
             }
             if( cnt == 0 ) {
                 MItem* item = new MItem( filename, this, rule );
@@ -526,12 +530,10 @@ bool MComponent::addFromMask( WFileName& search, WString& err )
     return( ok );
 }
 
-static char makeExt[] = { ".mk1" };
-
 void MComponent::addMakeFile( ContFile& pmak )
 {
     WFileName mk( _filename );
-    mk.setExt( makeExt );
+    mk.setExt( "mk1" );
     if( mk.needQuotes() ) {
         mk.addQuotes();
     }
@@ -542,7 +544,7 @@ bool MComponent::makeMakeFile( bool long_lines )
 {
     bool ok = true;
     WFileName mk( _filename );
-    mk.setExt( makeExt );
+    mk.setExt( "mk1" );
 
     updateItemList();
 
@@ -554,7 +556,7 @@ bool MComponent::makeMakeFile( bool long_lines )
             ok = false;
         } else {
             tmak.puts( "!define BLANK \"\"\n" );
-            initWorkFiles( _workFiles );
+            initWorkFiles();
 //          for( int i=0; i<_workFiles.count(); i++ ) {
 //              ((MWorkFile*)_workFiles[i])->dump( tmak );
 //          }
@@ -568,26 +570,23 @@ bool MComponent::makeMakeFile( bool long_lines )
     return( ok );
 }
 
-void MComponent::addWorkFiles( WVList& workFiles, SwMode mode, MComponent* comp )
+void MComponent::initWorkFiles()
 {
-    for( int i=0; i<_items.count(); i++ ) {
+    int i;
+
+    for( i = 0; i < _items.count(); i++ ) {
         MItem* m = (MItem*)_items[i];
         WFileName f;
         m->absName( f );
-        MWorkFile* w = new MWorkFile( f, mode, m, comp );
-        workFiles.add( w );
+        MWorkFile* w = new MWorkFile( f, _mode, m, this );
+        _workFiles.add( w );
     }
-}
-
-void MComponent::initWorkFiles( WVList& workFiles )
-{
-    addWorkFiles( workFiles, _mode, this );
-    for( int i=0; i<_workFiles.count(); i++ ) {
+    for( i = 0; i < _workFiles.count(); i++ ) {
         MWorkFile* w = (MWorkFile*)_workFiles[i];
         if( !w->isMask() ) {
             for( int j=0; j<_workFiles.count(); j++ ) {
                 MWorkFile* x = (MWorkFile*)_workFiles[j];
-                if( x->isMask() && w->match( *x, matchFName|matchExt ) ) {
+                if( x->isMask() && w->match( *x, matchFName | matchExt ) ) {
                     w->insertStates( x );
                 }
             }
@@ -603,19 +602,22 @@ void MComponent::finiWorkFiles()
 void MComponent::writeTargetCD( ContFile& mak )
 {
     WFileName path;
-    _filename.path( path, false );
+    const char *drive;
 
+    _filename.path( path, false );
     if( path.match( NULL, matchDir ) ) {
-        path.concat( "\\" );
+        path.concat( '\\' );
     }
-    if( path.drive()[0] != '\0' && path.drive()[1] == ':' )
-        mak.printf( " @%s\n", path.drive() );
+    drive = path.drive();
+    if( drive[0] != '\0' && drive[1] == ':' )
+        mak.printf( " @%s\n", drive );
     mak.printf( " cd %s\n", (const char*)path );
 }
 
 void MComponent::writeRule( ContFile& mak )
 {
-    if( !_target->ismakeable() ) return;
+    if( !_target->ismakeable() )
+        return;
 
     WFileName tgt;
     _target->absName( tgt );
@@ -635,7 +637,8 @@ void MComponent::writeRule( ContFile& mak )
             mak.printf( "%s : %s", (const char*)r, (const char*)*w );
             r.removeQuotes();
             w->removeQuotes();
-            if( _autodepend ) mak.puts( " .AUTODEPEND" );
+            if( _autodepend )
+                mak.puts( " .AUTODEPEND" );
             mak.puts( "\n" );
             WString c;
             w->makeCommand( c, NULL );
@@ -662,7 +665,8 @@ void MComponent::writeRule( ContFile& mak )
             w->relativeTo( _filename );
         }
     }
-    if( _autodepend ) mak.puts( " .AUTODEPEND" );
+    if( _autodepend )
+        mak.puts( " .AUTODEPEND" );
     mak.puts( "\n" );
     bool browseable = writeCBR();
     if( _target->ismakeable() ) {
@@ -699,7 +703,7 @@ void MComponent::expand( WString& c, const MCommand& cmd )
 {
     if( cmd.size() > 0 ) {
         cmd.expand( c, _target, _config->nilTool(), _mask, NULL, _mode );
-        c.concat( "\n" );
+        c.concat( '\n' );
         _project->insertBlanks( c );
     }
 }
@@ -713,7 +717,7 @@ bool MComponent::writeCBR( bool mustExist )
         MWorkFile* w = (MWorkFile*)_workFiles[i];
         if( w->browseable() ) {
             WFileName browfile( _filename );
-            browfile.setExt( ".cbr" );
+            browfile.setExt( "cbr" );
             WFile brow;
             if( brow.open( browfile, OStyleWrite ) ) {
                 WFileName tfile;
@@ -776,7 +780,7 @@ void MComponent::makeNames( const char* spec, WFileName& filename, WFileName& re
 {
     relname = spec;
     relname.noPath( targ );
-    relname.setExt( ".tgt" );
+    relname.setExt( "tgt" );
     filename = relname;
     filename.absoluteTo( _project->filename() );
 }
@@ -784,14 +788,14 @@ void MComponent::makeNames( const char* spec, WFileName& filename, WFileName& re
 bool MComponent::tryBrowse()
 {
     bool rc = false;
-    initWorkFiles( _workFiles );
 
+    initWorkFiles();
     for( int i=0; i<_workFiles.count(); i++ ) {
         MItem* m = ((MWorkFile*)_workFiles[i])->item();
 
         WFileName fn = m->component()->relFilename(); // target file name
         fn.setFName( m->fName() );
-        fn.setExt( ".mbr" );
+        fn.setExt( "mbr" );
 
         if( access( (const char *)fn, F_OK ) == 0 ) {
             rc = true;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,13 +53,14 @@ MRule::MRule( WTokenFile& fil, WString& tok )
     _tool = _config->nilTool();
     if( !fil.eol() ) {
         MTool* tool = _config->findTool( fil.token( tok ) );
-        if( tool ) _tool = tool;
+        if( tool )
+            _tool = tool;
         if( !fil.eol() ) {
             fil.token( _tagMask );
         }
     }
     fil.token( tok );
-    for(;;) {
+    for( ;; ) {
         if( tok == "Command" ) {
             _commands.add( new MCommand( fil, tok ) );
         } else if( tok == "Autodepend" ) {
@@ -214,7 +216,8 @@ MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
             break;
         }
     }
-    if( !found ) o = NULL;
+    if( !found )
+        o = NULL;
     if( found && workFiles ) {
         bool incName = true;
         char afterName = ' ';
@@ -279,7 +282,8 @@ void MRule::expandCommand( WString& cmd, MCommand& s, WFileName* target, WVList*
                 len = 2;
                 WString m;
                 for(; s[i+len] != '\0';) {
-                    if( s[i+len] == EMACRO ) break;
+                    if( s[i+len] == EMACRO )
+                        break;
                     m.concat( s[i+len] );
                     len += 1;
                 }
@@ -318,7 +322,7 @@ void MRule::makeCommand( WString& s, WFileName* target, WVList* workFiles, WStri
         const WString& xm = x->mask();
         if( xm.size() == 0 || xm.match( mask ) ) {
             cmd.concat( *x );
-            cmd.concat( "\n" );
+            cmd.concat( '\n' );
         }
     }
     expandCommand( s, cmd, target, workFiles, mask, stateList, mode, browse );
@@ -338,7 +342,9 @@ bool MRule::enumAccel( WObject *obj, bcbk fn ) {
         key = action->menuAccel();
         if( key != WKeyNone ) {
             rc = (obj->*fn)( key );
-            if( rc ) break;
+            if( rc ) {
+                break;
+            }
         }
     }
     return( rc );

@@ -286,7 +286,7 @@ Open Watcom targets some small machines, an alternative memory
 management strategy might be worth offering as an option. In the
 meantime programmers on such systems should be careful to destroy large
 strings when they are no longer needed rather than, for example, just
-calling 
+calling
 :FUNC.erase.
 .*
 .sect Relationship to vector

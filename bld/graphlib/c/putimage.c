@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ void _WCI86FAR _L2putimage( short x, short y, char _WCI86HUGE *image, short disp
 
 // Move the image from the memory DC to the screen
     _wpi_bitblt( dc, x, desty, picture->picwidth,
-                 picture->picheight, picture->buffer,
+                 picture->picheight, picture->pres,
                  0, 0, Rop );
 
 // Cleanup
@@ -140,7 +140,46 @@ void _WCI86FAR _L2putimage( short x, short y, char _WCI86HUGE *image, short disp
 
 #else
 
-static void             NegImage( char _WCI86HUGE *, long );
+
+static void NegSome( char _WCI86FAR *pic, long size )
+//==============================================
+
+{
+    while( size != 0 ) {
+        *pic = ~(*pic);
+        ++pic;
+        --size;
+    }
+}
+
+#define _64_K           0x10000L
+
+static void NegImage( char _WCI86HUGE *pic, long size )
+/*================================================
+ * This routine negates every byte of the image buffer so that
+ * the image can be displayed in _GPRESET mode.
+ * Note: Huge pointers are no longer guaranteed to be normalized
+ *        and may not be contiguous. Therefore we must negate only
+ *        up to 64K boundaries at a time.
+ */
+{
+#if defined( _M_I86 )
+    long                max;
+
+    max = _64_K - _FP_OFF( pic );       // max before pointer overflows
+    if( size > max ) {
+        NegSome( (char _WCI86FAR *) pic, max );      // bring to 64K boundary
+        pic += max;
+        size -= max;
+        while( size >= _64_K ) {
+            NegSome( (char _WCI86FAR *) pic, _64_K );
+            pic += _64_K;
+            size -= _64_K;
+        }
+    }
+#endif
+    NegSome( (char _WCI86FAR *) pic, size );         // do remaining part
+}
 
 
 void _WCI86FAR _L2putimage( short x, short y, char _WCI86HUGE * image, short dispmode )
@@ -161,55 +200,13 @@ void _WCI86FAR _L2putimage( short x, short y, char _WCI86HUGE * image, short dis
     prev_mode = _setplotaction( dispmode );
     if( dispmode == _GPRESET ) {
         size = (long) ( picture->picheight ) * line_len;
-        NegImage( &picture->buffer, size );
+        NegImage( picture->buffer, size );
     }
     _L1PutPic( x, y, line_len, (struct picture _WCI86HUGE *)image );
     if( dispmode == _GPRESET ) {
-        NegImage( &picture->buffer, size );
+        NegImage( picture->buffer, size );
     }
     _setplotaction( prev_mode );
-}
-
-
-static void NegSome( char _WCI86FAR *pic, long size )
-//==============================================
-
-{
-    while( size != 0 ) {
-        *pic = ~(*pic);
-        ++pic;
-        --size;
-    }
-}
-
-#define _64_K           0x10000L
-
-static void NegImage( char _WCI86HUGE *pic, long size )
-/*================================================
-
-    This routine negates every byte of the image buffer so that
-    the image can be displayed in _GPRESET mode.
-    Note: Huge pointers are no longer guaranteed to be normalized
-          and may not be contiguous. Therefore we must negate only
-          up to 64K boundaries at a time. */
-
-{
-#if defined( _M_I86 )
-    long                max;
-
-    max = _64_K - _FP_OFF( pic );       // max before pointer overflows
-    if( size > max ) {
-        NegSome( (char _WCI86FAR *) pic, max );      // bring to 64K boundary
-        pic += max;
-        size -= max;
-        while( size >= _64_K ) {
-            NegSome( (char _WCI86FAR *) pic, _64_K );
-            pic += _64_K;
-            size -= _64_K;
-        }
-    }
-#endif
-    NegSome( (char _WCI86FAR *) pic, size );         // do remaining part
 }
 
 #endif

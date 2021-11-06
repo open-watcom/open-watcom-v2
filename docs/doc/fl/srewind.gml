@@ -14,15 +14,16 @@ is a list of rewind specifiers separated by commas:
 IOSTAT = ios
 ERR = s
 .millust end
-.endnote
+.esynote
 .np
 Execution of a
 .kw REWIND
 statement causes the file connected to the specified unit to be
 positioned at the beginning (or before the first record) of the file.
-.begnote Rewind Specifiers
+.begnote
+.notehdr Rewind Specifiers
 .setptnt 0 8
-.mnote [UNIT =] u
+.note [UNIT =] u
 .br
 .id u
 is an
@@ -32,7 +33,7 @@ If the optional
 .mono UNIT=
 specifier is omitted then the
 specifier must be the first item in the list of specifiers.
-.mnote IOSTAT = ios
+.note IOSTAT = ios
 .br
 is an
 .us input/output status specifier.
@@ -40,7 +41,7 @@ The integer variable or integer array element
 .id ios
 is defined with zero if no error condition exists or a positive
 integer value if an error condition exists.
-.mnote ERR = s
+.note ERR = s
 .br
 is an
 .us error specifier

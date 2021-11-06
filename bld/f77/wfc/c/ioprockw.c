@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -226,10 +226,8 @@ void    FormatIdd( void ) {
 
     if( RecName() && ( NameListFind() != NULL ) ) {
         BIOutNameList( CITNode->sym_ptr );
-        ge = CITNode->sym_ptr->u.nl.group_list;
-        while( ge != NULL ) {
+        for( ge = CITNode->sym_ptr->u.nl.group_list; ge != NULL; ge = ge->link ) {
             ge->sym->u.ns.flags |= SY_REFERENCED;
-            ge = ge->link;
         }
         GSetNameList( FC_SET_NML );
         KWRememb( IO_NAMELIST );

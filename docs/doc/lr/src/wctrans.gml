@@ -14,7 +14,7 @@ function constructs a value with type
 that describes a mapping between wide characters identified by the
 string argument
 .arg property
-.ct .li .
+.period
 The constructed value is affected by the
 .kw LC_CTYPE
 category of the current locale; the constructed value becomes
@@ -46,7 +46,7 @@ category of the current locale, the
 .id &funcb.
 function returns a non-zero
 value that is valid as the second argument to the
-.kw towctrans
+.reffunc towctrans
 function; otherwise, it returns zero.
 .return end
 .*

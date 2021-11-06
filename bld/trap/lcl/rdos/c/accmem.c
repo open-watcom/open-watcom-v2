@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "debug.h"
 
 
-trap_retval ReqRead_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     void                *data;
     read_mem_req        *acc;
@@ -56,7 +56,7 @@ trap_retval ReqRead_mem( void )
         return( 0 );
 }
 
-trap_retval ReqWrite_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     void                *data;
     int                 len;
@@ -82,7 +82,7 @@ trap_retval ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqChecksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     long                offset;
     int                 segment;

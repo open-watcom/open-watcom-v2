@@ -57,8 +57,8 @@ extern int              Spawn( void (*)( void ) );
 extern void             Suicide( void );
 extern f_handle         FindPath( const char *, char *fullname );
 extern obj_name_list    *AddNameTable( const char *, size_t, bool, obj_name_list ** );
-extern unsigned_16      blog_16( unsigned_16 );
-extern unsigned_16      blog_32( unsigned_32 );
+extern unsigned_16      log2_16( unsigned_16 );
+extern unsigned_16      log2_32( unsigned_32 );
 extern const char       *GetBaseName( const char *, size_t, size_t * );
 extern void             WriteNulls( f_handle, size_t, const char * );
 extern void             VMemQSort( virt_mem, size_t, size_t,
@@ -66,3 +66,6 @@ extern void             VMemQSort( virt_mem, size_t, size_t,
                                     int (*cmpfn)(virt_mem, virt_mem) );
 extern void             InitEnvVars( void );
 extern void             FiniEnvVars( void );
+extern file_list        *AllocNewFile( member_list *member );
+extern char             *FileName( const char *, size_t, file_defext, bool );
+extern section          *NewSection( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,38 +35,17 @@
 #include <dos.h>
 #include <share.h>
 
-enum {
-        OPENFLAG_FAIL_IF_EXISTS         = 0x00,
-        OPENFLAG_OPEN_IF_EXISTS         = 0x01,
-        OPENFLAG_REPLACE_IF_EXISTS      = 0x02,
-        OPENFLAG_FAIL_IF_NOT_EXISTS     = 0x00,
-        OPENFLAG_CREATE_IF_NOT_EXISTS   = 0x10
-};
-
-enum {
-        OPENMODE_DASD                   = 0x8000,
-        OPENMODE_WRITE_THROUGH          = 0x4000,
-        OPENMODE_FAIL_ERRORS            = 0x2000,
-        OPENMODE_INHERITANCE            = 0x0080,
-        OPENMODE_SHARE_MASK             = 0x0070,
-        OPENMODE_DENY_ALL               = 0x0010,
-        OPENMODE_DENY_WRITE             = 0x0020,
-        OPENMODE_DENY_READ              = 0x0030,
-        OPENMODE_DENY_NONE              = 0x0040,
-        OPENMODE_ACCESS_MASK            = 0x0007,
-        OPENMODE_ACCESS_RDONLY          = 0x0000,
-        OPENMODE_ACCESS_WRONLY          = 0x0001,
-        OPENMODE_ACCESS_RDWR            = 0x0002
-};
 
 bhandle myopen( char *name )
 {
     HFILE  hdl;
     ULONG  action;
 
-    if( DosOpen( name, &hdl, &action, 0ul,
-                _A_NORMAL, OPENFLAG_OPEN_IF_EXISTS,
-                OPENMODE_ACCESS_RDWR+SH_DENYNO, 0ul ) == 0 ) {
+    if( DosOpen( name, &hdl, &action, 0,
+                FILE_NORMAL,
+                OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
+                OPEN_SHARE_DENYNONE | OPEN_ACCESS_READWRITE,
+                0 ) == 0 ) {
         return( hdl );
     }
     return( BHANDLE_INVALID );

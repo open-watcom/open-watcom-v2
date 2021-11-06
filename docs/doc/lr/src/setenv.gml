@@ -1,6 +1,6 @@
 .func setenv _setenv _wsetenv
 .synop begin
-#include <env.h>
+#include <stdlib.h>
 int setenv( const char *name,
             const char *newvalue,
             int overwrite );
@@ -52,7 +52,7 @@ with no arguments.
 .do end
 A program can obtain the value for an environment variable by using
 the
-.kw getenv
+.reffunc getenv
 function.
 .np
 The
@@ -60,7 +60,7 @@ The
 function searches the environment list for an entry of the
 form
 .arg name=value
-.ct .li .
+.period
 If no such string is present,
 .id &funcb.
 adds an entry of the form
@@ -76,7 +76,7 @@ or will delete the string
 .arg name=value
 and add the string
 .arg name=newvalue
-.ct .li .
+.period
 .np
 If the
 .arg newvalue
@@ -96,7 +96,7 @@ function will make copies of the strings associated with
 .arg name
 and
 .arg newvalue
-.ct .li .
+.period
 .np
 .if '&machsys' eq 'QNX' .do begin
 The matching is case-sensitive; all lowercase letters are treated
@@ -112,7 +112,7 @@ Entries can also be added to the environment list
 with the
 .qnxcmd export
 or with the
-.kw putenv
+.reffunc putenv
 or
 .id &funcb.
 functions.
@@ -121,14 +121,14 @@ functions.
 with the
 .doscmd set
 or with the
-.kw putenv
+.reffunc putenv
 or
 .id &funcb.
 functions.
 .do end
 .ix 'environment'
 All entries in the environment list can be obtained by using the
-.kw getenv
+.reffunc getenv
 function.
 .np
 To assign a string to a variable and place it in the environment list:
@@ -169,7 +169,7 @@ assignments:
 .millust end
 .do end
 .im ansiconf
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The
@@ -197,7 +197,6 @@ and then display the new string.
 .blkcode begin
 #include <stdio.h>
 #include <stdlib.h>
-#include <env.h>
 
 void main()
   {

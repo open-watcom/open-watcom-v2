@@ -88,7 +88,8 @@
 
 typedef u_long tcp_seq;
 
-#pragma pack(1)
+:include pshpack1.sp
+
 struct tcphdr {
     u_short th_sport;
     u_short th_dport;
@@ -101,6 +102,7 @@ struct tcphdr {
     u_short th_sum;
     u_short th_urp;
 };
-#pragma pack()
+
+:include poppack.sp
 
 #endif

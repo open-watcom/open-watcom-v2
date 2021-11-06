@@ -1,10 +1,10 @@
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'pragma'
-.if '&cmpclass' ne 'load-n-go' .do begin
 A pragma is  a compiler directive that provides the following
 capabilities.
 .begbull
@@ -33,15 +33,14 @@ including DOS and BIOS function calls,
 can be generated in the object code.
 .endbull
 .np
-.do end
 Pragmas are specified in the source file using the
 .kw pragma
 directive.
-A pragma operator of the form, 
-.kw _Pragma 
-( string-literal ) 
+A pragma operator of the form,
+.kw _Pragma
+( "string-literal" )
 is an alternative method of specifying
-.kw pragma 
+.kw pragma
 directives.
 .np
 For example, the following two statements are equivalent.

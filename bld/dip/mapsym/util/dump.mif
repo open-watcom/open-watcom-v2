@@ -6,9 +6,16 @@ symdump_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c: ..
-.h: ..
 
-objs = symdump.obj
+# explicit rules
+#################
 
+#
+# EXE
+#
+exetarg_objs = symdump.obj
 !include exetarg.mif

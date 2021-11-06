@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,37 +37,51 @@
 #include "errcod.h"
 #include "fptraps.h"
 #include "rttraps.h"
+#include "rtfpesig.h"
+#include "rtexcpfl.h"
 
 
-#if (defined( __386__ ) && defined( __OS2__ )) || defined( __NT__ )
-  extern        byte    __ExceptionHandled;
-#endif
+#if !defined( __NETWARE__ ) && !defined( __UNIX__ )
 
-#ifndef __NETWARE__
+static __sigfpe_func   FLIB_FPEHandler;
 
-static void     FLIB_FPEHandler( int sig_num, int xcpt ) {
-//===========================================================
+static void     FLIB_FPEHandler( int sig_num, int fpe_type )
+//==========================================================
+{
+    /* unused parameters */ (void)sig_num;
 
-    sig_num = sig_num;
-    if( (xcpt == FPE_STACKOVERFLOW) || (xcpt == FPE_STACKUNDERFLOW) ) {
+    switch( fpe_type ) {
+    case FPE_STACKOVERFLOW:
+    case FPE_STACKUNDERFLOW:
         RTErr( CP_TERMINATE );
-    } else if( xcpt == FPE_OVERFLOW ) {
+        break;
+    case FPE_OVERFLOW:
         RTErr( KO_FOVERFLOW );
-    } else if( xcpt == FPE_UNDERFLOW ) {
+        break;
+    case FPE_UNDERFLOW:
         RTErr( KO_FUNDERFLOW );
-    } else if( xcpt == FPE_ZERODIVIDE ) {
+        break;
+    case FPE_ZERODIVIDE:
         RTErr( KO_FDIV_ZERO );
-    } else if( xcpt == FPE_SQRTNEG ) {
+        break;
+    case FPE_SQRTNEG:
         RTErr( LI_ARG_NEG );
-    } else if( xcpt == FPE_LOGERR ) {
+        break;
+    case FPE_LOGERR:
         RTErr( LI_ARG_GT_ZERO );
-    } else if( xcpt == FPE_MODERR ) {
+        break;
+    case FPE_MODERR:
         RTErr( LI_ARG_GT_ZERO );
-    } else if( xcpt == FPE_IOVERFLOW ) {
+        break;
+    case FPE_IOVERFLOW:
         RTErr( KO_IOVERFLOW );
-#if (defined( __386__ ) && defined( __OS2__ )) || defined( __NT__ )
-    } else {
+        break;
+#if !defined( _M_I86 )
+#if defined( __OS2__ ) || defined( __NT__ )
+    default:
         __ExceptionHandled = 0;
+        break;
+#endif
 #endif
     }
 }
@@ -83,21 +98,22 @@ void    __MaskDefaultFPE( void ) {
 #endif
 }
 
-#endif
+#endif /* !defined( __NETWARE__ ) && !defined( __UNIX__ ) */
 
 
 void    FPTrapInit( void ) {
 //====================
 
-#ifndef __NETWARE__     /* FP Exceptions can't be trapped under Netware */
+#if !defined( __NETWARE__ ) && !defined( __UNIX__ )
+    /* FP Exceptions can't be trapped under Netware */
     if( __EnableF77RTExceptionHandling() ) {
-        signal( SIGFPE, (__sig_func)FLIB_FPEHandler );
-#if defined( _M_IX86 )
+        SET_SIGFPE( FLIB_FPEHandler );
+  #if defined( _M_IX86 )
     } else {
         // we still want to enable the floating point exceptions (just like
         // signal() does for SIGFPE
         _control87( 0, ( MCW_EM & ~EM_PRECISION ) | 0x80 );
-#endif
+  #endif
     }
     __MaskDefaultFPE();
 #endif

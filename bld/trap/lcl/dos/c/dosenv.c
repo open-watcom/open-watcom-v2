@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ const char __far *DOSEnvFind( char *src )
     char        c1;
     char        c2;
 
-    env = MK_FP( *(unsigned __far *)MK_FP( DbgPSP(), 0x2c ), 0 );
+    env = _MK_FP( *(unsigned __far *)_MK_FP( DbgPSP(), 0x2c ), 0 );
     do {
         p = src;
         do {

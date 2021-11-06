@@ -47,18 +47,18 @@ be achieved by using the movement command.
 :LI.N
 :eUL.
 See the section
-:HDREF refid='srching'
+:HDREF refid='srching'.
 .if '&chapref' eq '1' .do begin
 .se chapref = 0
 in the chapter
-:HDREF page=no refid='modes'
+:HDREF page=no refid='modes'.
 .do end
 for a full description of the searching commands.
 If a search command is specified, then the range that the command
 will act on is from the current position to the position that would
 be achieved by using the search command.
 :LI.The current selected (highlighted) region.  In this case,
-.param &lt.oper&gt.
+.paramt oper
 is the
 .param r
 key.

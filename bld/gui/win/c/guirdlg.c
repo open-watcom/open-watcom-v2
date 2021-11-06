@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,13 @@
 #include "guixdlg.h"
 #include "guirdlg.h"
 #include "guixwind.h"
+#include "wclbproc.h"
+#ifdef __NT__
+    #undef _WIN32_IE
+    #define _WIN32_IE   0x0400
+    #include <commctrl.h>
+#endif
+#include "oswincls.h"
 
 
 /* Local Window callback functions prototypes */
@@ -44,7 +52,7 @@ WPI_INST                        GUIResHInst;
 
 typedef struct GetClassMap {
     gui_control_class   control_class;
-    char                *classname;
+    const char          *osclassname;
     DWORD               style;
     DWORD               mask;
 } GetClassMap;
@@ -53,60 +61,55 @@ typedef struct GetClassMap {
 // note: the order of entries this table is important
 static GetClassMap Map[] =
 {
-    { GUI_RADIO_BUTTON,         "#3",   BS_RADIOBUTTON,         0xf             }
-,   { GUI_CHECK_BOX,            "#3",   BS_CHECKBOX,            0xf             }
-,   { GUI_DEFPUSH_BUTTON,       "#3",   BS_DEFAULT,             BS_DEFAULT      }
-,   { GUI_PUSH_BUTTON,          "#3",   0xffff,                 0xffff          }
-,   { GUI_GROUPBOX,             "#5",   SS_GROUPBOX,            SS_GROUPBOX     }
-,   { GUI_STATIC,               "#5",   0xffff,                 0xffff          }
-,   { GUI_EDIT_COMBOBOX,        "#2",   CBS_DROPDOWN,           CBS_DROPDOWN    }
-,   { GUI_EDIT_COMBOBOX,        "#2",   CBS_SIMPLE,             CBS_SIMPLE      }
-,   { GUI_COMBOBOX,             "#2",   0xffff,                 0xffff          }
-,   { GUI_EDIT,                 "#6",   0xffff,                 0xffff          }
-,   { GUI_EDIT_MLE,             "#10",  0xffff,                 0xffff          }
-,   { GUI_LISTBOX,              "#7",   0xffff,                 0xffff          }
-,   { GUI_SCROLLBAR,            "#8",   0xffff,                 0xffff          }
+    { GUI_RADIO_BUTTON,     WC_SYS_BUTTON,           BS_RADIOBUTTON,     0xf             }
+,   { GUI_CHECK_BOX,        WC_SYS_BUTTON,           BS_CHECKBOX,        0xf             }
+,   { GUI_DEFPUSH_BUTTON,   WC_SYS_BUTTON,           BS_DEFAULT,         BS_DEFAULT      }
+,   { GUI_PUSH_BUTTON,      WC_SYS_BUTTON,           0xffff,             0xffff          }
+,   { GUI_GROUPBOX,         WC_SYS_STATIC,           SS_GROUPBOX,        SS_GROUPBOX     }
+,   { GUI_STATIC,           WC_SYS_STATIC,           0xffff,             0xffff          }
+,   { GUI_EDIT_COMBOBOX,    WC_SYS_COMBOBOX,         CBS_DROPDOWN,       CBS_DROPDOWN    }
+,   { GUI_EDIT_COMBOBOX,    WC_SYS_COMBOBOX,         CBS_SIMPLE,         CBS_SIMPLE      }
+,   { GUI_COMBOBOX,         WC_SYS_COMBOBOX,         0xffff,             0xffff          }
+,   { GUI_EDIT,             WC_SYS_ENTRYFIELD,       0xffff,             0xffff          }
+,   { GUI_EDIT_MLE,         WC_SYS_MLE,              0xffff,             0xffff          }
+,   { GUI_LISTBOX,          WC_SYS_LISTBOX,          0xffff,             0xffff          }
+,   { GUI_SCROLLBAR,        WC_SYS_SCROLLBAR,        0xffff,             0xffff          }
 };
 #else
 // note: the order of entries this table is important
 static GetClassMap Map[] =
 {
-    { GUI_GROUPBOX,             "button",       BS_GROUPBOX,            BS_GROUPBOX             }
-,   { GUI_RADIO_BUTTON,         "button",       BS_RADIOBUTTON,         BS_RADIOBUTTON          }
-,   { GUI_CHECK_BOX,            "button",       BS_CHECKBOX,            BS_CHECKBOX             }
-,   { GUI_DEFPUSH_BUTTON,       "button",       BS_DEFPUSHBUTTON,       BS_DEFPUSHBUTTON        }
-,   { GUI_PUSH_BUTTON,          "button",       0xffff,                 0xffff                  }
-,   { GUI_COMBOBOX,             "combobox",     CBS_DROPDOWNLIST,       CBS_DROPDOWNLIST        }
-,   { GUI_EDIT_COMBOBOX,        "combobox",     CBS_DROPDOWN,           CBS_DROPDOWN            }
-,   { GUI_EDIT_COMBOBOX,        "combobox",     0xffff,                 0xffff                  }
-,   { GUI_EDIT_MLE,             "edit",         ES_MULTILINE,           ES_MULTILINE            }
-,   { GUI_EDIT,                 "edit",         0xffff,                 0xffff                  }
-,   { GUI_LISTBOX,              "listbox",      0xffff,                 0xffff                  }
-,   { GUI_SCROLLBAR,            "scrollbar",    0xffff,                 0xffff                  }
-,   { GUI_STATIC,               "static",       0xffff,                 0xffff                  }
+    { GUI_GROUPBOX,         WC_BUTTON,      BS_GROUPBOX,        BS_GROUPBOX         }
+,   { GUI_RADIO_BUTTON,     WC_BUTTON,      BS_RADIOBUTTON,     BS_RADIOBUTTON      }
+,   { GUI_CHECK_BOX,        WC_BUTTON,      BS_CHECKBOX,        BS_CHECKBOX         }
+,   { GUI_DEFPUSH_BUTTON,   WC_BUTTON,      BS_DEFPUSHBUTTON,   BS_DEFPUSHBUTTON    }
+,   { GUI_PUSH_BUTTON,      WC_BUTTON,      0xffff,             0xffff              }
+,   { GUI_COMBOBOX,         WC_COMBOBOX,    CBS_DROPDOWNLIST,   CBS_DROPDOWNLIST    }
+,   { GUI_EDIT_COMBOBOX,    WC_COMBOBOX,    CBS_DROPDOWN,       CBS_DROPDOWN        }
+,   { GUI_EDIT_COMBOBOX,    WC_COMBOBOX,    0xffff,             0xffff              }
+,   { GUI_EDIT_MLE,         WC_EDIT,        ES_MULTILINE,       ES_MULTILINE        }
+,   { GUI_EDIT,             WC_EDIT,        0xffff,             0xffff              }
+,   { GUI_LISTBOX,          WC_LISTBOX,     0xffff,             0xffff              }
+,   { GUI_SCROLLBAR,        WC_SCROLLBAR,   0xffff,             0xffff              }
+,   { GUI_STATIC,           WC_STATIC,      0xffff,             0xffff              }
 };
 #endif
 
 gui_control_class GUIGetControlClassFromHWND( HWND cntl )
 {
     gui_control_class   control_class;
-    char                classname[15];
+    char                osclassname[GUI_CLASSNAME_MAX + 1];
     DWORD               style;
     int                 index;
 
-    if( !_wpi_getclassname( cntl, classname, sizeof( classname ) ) ) {
-        return( GUI_BAD_CLASS );
-    }
-
-    style = _wpi_getwindowlong( cntl, GWL_STYLE );
     control_class = GUI_BAD_CLASS;
-
-    for( index = 0; ( index < GUI_ARRAY_SIZE( Map ) ) && ( control_class == GUI_BAD_CLASS ); index++ ) {
-        if( ( Map[index].classname != NULL ) && stricmp( Map[index].classname, classname ) == 0 ) {
-            if( Map[index].mask == 0xffff ) {
-                control_class = Map[index].control_class;
-            } else {
-                if( (style & Map[index].mask) == Map[index].style ) {
+    if( _wpi_getclassname( cntl, osclassname, sizeof( osclassname ) ) ) {
+        style = _wpi_getwindowlong( cntl, GWL_STYLE );
+        for( index = 0; ( index < GUI_ARRAY_SIZE( Map ) ) && ( control_class == GUI_BAD_CLASS ); index++ ) {
+            if( stricmp( Map[index].osclassname, osclassname ) == 0 ) {
+                if( Map[index].mask == 0xffff ) {
+                    control_class = Map[index].control_class;
+                } else if( (style & Map[index].mask) == Map[index].style ) {
                     control_class = Map[index].control_class;
                 }
             }
@@ -191,35 +194,52 @@ BOOL CALLBACK InsertResDlgCntlFunc( HWND hwnd, LPARAM lparam )
 
 bool GUIInsertResDialogControls( gui_window *wnd )
 {
-    WPI_ENUMPROC        enumproc;
+#ifdef __OS2_PM__
+    WPI_ENUMPROC        wndenumproc;
 
-    enumproc = _wpi_makeenumprocinstance( InsertResDlgCntlFunc, GUIMainHInst );
-    _wpi_enumchildwindows( wnd->hwnd, enumproc, (LPARAM)wnd );
-    _wpi_freeenumprocinstance( enumproc );
+    wndenumproc = _wpi_makeenumprocinstance( InsertResDlgCntlFunc, GUIMainHInst );
+    _wpi_enumchildwindows( wnd->hwnd, wndenumproc, (LPARAM)wnd );
+    _wpi_freeenumprocinstance( wndenumproc );
+#else
+    WNDENUMPROC         wndenumproc;
 
+    wndenumproc = MakeProcInstance_WNDENUM( InsertResDlgCntlFunc, GUIMainHInst );
+    EnumChildWindows( wnd->hwnd, wndenumproc, (LPARAM)wnd );
+    FreeProcInstance_WNDENUM( wndenumproc );
+#endif
     return( true );
 }
 
 bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUICALLBACK *gui_call_back, void *extra )
 {
+#ifdef __OS2_PM__
     WPI_DLGPROC     dlgproc;
+#else
+    DLGPROC         dlgproc;
+#endif
     HWND            parent_hwnd;
+    bool            ok;
 
     /* unused parameters */ (void)gui_call_back;
 
     parent_hwnd = parent_wnd->hwnd;
     if( parent_hwnd == NULLHANDLE )
         parent_hwnd = HWND_DESKTOP;
+#ifdef __OS2_PM__
     dlgproc = _wpi_makedlgprocinstance( GUIDialogDlgProc, GUIMainHInst );
-    if( dlgproc == NULL ) {
-        return( false );
-    }
-    if( _wpi_dialogbox( parent_hwnd, dlgproc, GUIResHInst, dlg_id, extra ) == -1 ) {
+    ok = ( dlgproc != NULL );
+    if( ok ) {
+        ok = ( _wpi_dialogbox( parent_hwnd, dlgproc, GUIResHInst, dlg_id, extra ) != -1 );
         _wpi_freedlgprocinstance( dlgproc );
-        return( false );
     }
-    _wpi_freedlgprocinstance( dlgproc );
-
-    return( true );
+#else
+    dlgproc = MakeProcInstance_DLG( GUIDialogDlgProc, GUIMainHInst );
+    ok = ( dlgproc != NULL );
+    if( ok ) {
+        ok = ( DialogBoxParam( GUIResHInst, dlg_id, parent_hwnd, dlgproc, (LPARAM)extra ) != -1 );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#endif
+    return( ok );
 }
 

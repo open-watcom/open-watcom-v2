@@ -16,7 +16,7 @@ is open for input or update, the
 .id &funcb.
 function undoes the effect of
 any preceding
-.kw ungetc
+.reffunc ungetc
 operation on the stream.
 If the value of
 .arg fp

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _polygon_wxy( short fill, short numpts,
     short                   needed_bytes;
     short                   x1, y1, x2, y2;
     short                   success;
-    struct xycoord _WCI86FAR *   stack;
+    struct xycoord _WCI86FAR *stack;
 
 
     if( numpts <= 2 ) {

@@ -41,14 +41,15 @@
 #include "fsignal.h"
 
 
-fsig_func   fsignal( intstar4 xcpt, fsig_func handler ) {
-//===========================================================
-
-#if defined( __DOS__ )
+fsig_func   fsignal( intstar4 sig_num, fsig_func handler )
+//========================================================
+{
 
     // C library signal() doesn't handle SIGBREAK, SIGIOVFL, SIGIDIVZ
 
-    if( xcpt == SIGBREAK ) {
+    switch( sig_num ) {
+#if defined( __DOS__ )
+    case SIGBREAK:
         {
             extern      fsig_func __UserBreakHandler;
 
@@ -58,13 +59,10 @@ fsig_func   fsignal( intstar4 xcpt, fsig_func handler ) {
             __UserBreakHandler = handler;
             return( prev_Break );
         }
-    }
+        break;
 #endif
-
-#if defined( __WINDOWS_386__ )
-
-#elif defined( __DOS__ ) || defined( __WINDOWS__ )
-    if( xcpt == SIGIOVFL ) {
+#if defined( __DOS__ ) || defined( __WINDOWS__ ) && defined( _M_I86 )
+    case SIGIOVFL:
         {
             extern      fsig_func __UserIOvFlHandler;
 
@@ -74,8 +72,8 @@ fsig_func   fsignal( intstar4 xcpt, fsig_func handler ) {
             __UserIOvFlHandler = handler;
             return( prev_IOvFl );
         }
-    }
-    if( xcpt == SIGIDIVZ ) {
+        break;
+    case SIGIDIVZ:
         {
             extern      fsig_func __UserIDivZHandler;
 
@@ -85,16 +83,16 @@ fsig_func   fsignal( intstar4 xcpt, fsig_func handler ) {
             __UserIDivZHandler = handler;
             return( prev_IDivZ );
         }
-    }
+        break;
 #endif
-
-    if( xcpt == SIGFPE ) {
+    case SIGFPE:
         if( handler == (fsig_func) SIG_IGN ) {
             _control87( ~0, MCW_EM );
         } else if( handler == (fsig_func) SIG_DFL ) {
             __MaskDefaultFPE();
         }
+        break;
     }
-    handler = (fsig_func) signal( xcpt, (__sig_func) handler );
+    handler = (fsig_func) signal( sig_num, (__sig_func)handler );
     return( handler );
 }

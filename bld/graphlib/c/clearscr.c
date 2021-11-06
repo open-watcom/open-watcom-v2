@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,7 +108,7 @@ void _GrClear( short x1, short y1, short x2, short y2 )
     Clear area of screen in graphics mode. */
 
 {
-    unsigned char       prev_mask[ MASK_LEN ];
+    unsigned char       prev_mask[MASK_LEN];
     grcolor             prev_colour;
     short               prev_action;
 

@@ -17,7 +17,7 @@ The
 .id &funcb.
 function tests for any control character.
 A control character is any character whose value is from 0 through 31.
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

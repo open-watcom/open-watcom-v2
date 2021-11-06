@@ -1,11 +1,11 @@
-.func strerror wcserror
+.func strerror _wcserror
 .synop begin
 #include <string.h>
 char *strerror( int errnum );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Errs' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-wchar_t *wcserror( int errnum );
+wchar_t *_wcserror( int errnum );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Errs' &wfunc
 .ixfunc2 '&Wide' &wfunc
@@ -20,7 +20,7 @@ The
 function maps the error number contained in
 .arg errnum
 to an error message.
-.im widefun3
+.widefunc &wfunc. &funcb. <ret>
 .desc end
 .return begin
 The

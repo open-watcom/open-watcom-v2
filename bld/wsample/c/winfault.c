@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +36,14 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "sampwin.h"
+#include "intdata.h"
+#include "di386cli.h"
 
 
 /*
  * FaultHandler - C handler for a fault
  */
-WORD __cdecl FAR FaultHandler( fault_frame ff )
+appl_action __cdecl __far FaultHandler( fault_frame ff )
 {
     bool        fault32;
     DWORD       offset;
@@ -54,10 +57,10 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
     if( WDebug386 ) {
         fault32 = (bool)GetDebugInterruptData( &IntData );
         if( fault32 ) {
-            ff.intnumber = IntData.InterruptNumber;
+            ff.intf.intnumber = IntData.InterruptNumber;
         }
     }
-    if( ff.intnumber != INT_3 && ff.intnumber != INT_1 ) {
+    if( ff.intf.intnumber != INT_3 && ff.intf.intnumber != INT_1 ) {
         if( fault32 ) {
             DoneWithInterrupt( NULL );
         }
@@ -68,10 +71,10 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
     ff.EBP = (WORD)ff.EBP;
 
     if( !fault32 ) {
-        ff.IP--;
+        ff.intf.IP--;
         SaveState( &IntData, &ff );
     }
-    if( ff.intnumber == INT_1 ) {
+    if( ff.intf.intnumber == INT_1 ) {
         if( WaitForInt1 ) {
             HandleLibLoad( SAMP_CODE_LOAD, WaitForInt1 );
             WaitForInt1 = 0;

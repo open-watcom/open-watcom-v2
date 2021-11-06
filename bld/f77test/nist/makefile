@@ -52,7 +52,7 @@ fflags_axp = -ox-d1
 alt_error = 00
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 !include source/positive.mif
 
 fflags_386 += -INCPath=source #-we-w0
@@ -61,8 +61,8 @@ fflags_axp += -INCPath=source #-we-w0
 
 .for: source
 
-test : .symbolic start clean start_test test.lnk $(positive_exes) test_set_result
-    %make clean
+test : .symbolic start test.lnk $(positive_exes) test_set_result
+    -$(noecho)%make common_set_result_check
 
 check_result : .procedure
     -diff -b error.out error.chk
@@ -70,10 +70,6 @@ check_result : .procedure
 test_set_result : .symbolic ./chk_exec.exe
     -$(noecho)%write error.out OK
     -$]@ exec.out >>error.out
-    -$(noecho)%make common_set_result_check
-
-start_test : .symbolic
-    $(noecho)%make common_start_test
 
 clean : .procedure
     @%make echo_clean

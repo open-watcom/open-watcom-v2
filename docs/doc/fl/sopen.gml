@@ -33,7 +33,7 @@ specifiers are also supported.
     SHARE = shr
 .millust end
 .xt end
-.endnote
+.esynote
 .np
 The
 .kw OPEN
@@ -41,9 +41,10 @@ statement may be used to connect an existing file to a unit,
 create a file that is preconnected, create a file and connect
 it to a unit, or change certain specifications of a connection
 between a file and a unit.
-.begnote Open Specifiers
+.begnote
+.notehdr Open Specifiers
 .cp 6
-.mnote [UNIT =] u
+.note [UNIT =] u
 .br
 .id u
 is an
@@ -54,7 +55,7 @@ If the optional
 specifier is omitted then the specifier must be the first item in
 the list of specifiers.
 .cp 6
-.mnote IOSTAT = ios
+.note IOSTAT = ios
 .br
 is an
 .us input/output status specifier.
@@ -63,7 +64,7 @@ The integer variable or integer array element
 is defined with zero if no error condition exists or a positive
 integer value if an error condition exists.
 .cp 6
-.mnote ERR = s
+.note ERR = s
 .br
 is an
 .us error specifier
@@ -74,7 +75,7 @@ When an error occurs, execution is transferred to the statement
 labelled by
 .id s.
 .cp 6
-.mnote FILE = fin
+.note FILE = fin
 .br
 .id fin
 is a character expression whose value when trailing blanks are
@@ -86,7 +87,7 @@ The name established by &product is described in the
 section entitled :HDREF refid='units'.
 of the chapter entitled :HDREF refid='fio' page=no..
 .cp 6
-.mnote STATUS = sta
+.note STATUS = sta
 .br
 .id sta
 is a character expression whose value when trailing blanks are
@@ -98,7 +99,7 @@ or
 .mono 'UNKNOWN'.
 .begnote $break $setptnt 11
 .cp 6
-.mnote OLD
+.note OLD
 When
 .mono OLD
 is specified, a
@@ -106,7 +107,7 @@ is specified, a
 specifier must be given.
 The file must exist.
 .cp 6
-.mnote NEW
+.note NEW
 When
 .mono NEW
 is specified, a
@@ -118,14 +119,14 @@ Successful execution of the
 statement creates the file and changes the status to
 .mono OLD.
 .cp 6
-.mnote SCRATCH
+.note SCRATCH
 .mono SCRATCH
 may only be specified for an unnamed file (i.e.
 .kw FILE=
 is not allowed).
 When the file is closed, it is deleted.
 .cp 6
-.mnote UNKNOWN
+.note UNKNOWN
 If
 .mono UNKNOWN
 is specified, the status is ignored.
@@ -136,7 +137,7 @@ specifier is omitted then
 is assumed.
 .endnote
 .cp 6
-.mnote ACCESS = acc
+.note ACCESS = acc
 .br
 .id acc
 is a character expression whose value when trailing blanks are
@@ -168,7 +169,7 @@ In all other respects, the file is treated as if
 had been specified.
 .xt off
 .cp 6
-.mnote FORM = fm
+.note FORM = fm
 .br
 .id fm
 is a character expression whose value when trailing blanks are
@@ -195,7 +196,7 @@ set of allowed forms for the file.
 If the file does not exist then the file is created with a set of
 allowed forms that includes the specified form.
 .cp 6
-.mnote RECL = rcl
+.note RECL = rcl
 .br
 .id rcl
 is an integer expression whose value must be positive.
@@ -209,7 +210,7 @@ must be given; otherwise it must be omitted.
 specifier for files opened for sequential access.
 .xt off
 .cp 6
-.mnote BLANK = blnk
+.note BLANK = blnk
 .br
 .id blnk
 is a character expression whose value when trailing blanks are
@@ -232,7 +233,7 @@ is assumed.
 This specifier may only be present for a file being connected for
 formatted input/output.
 .cp 6
-.mnote ACTION = act
+.note ACTION = act
 .br
 .xt on
 .id act
@@ -255,7 +256,7 @@ The default is
 .mono 'READWRITE'.
 .xt off
 .cp 6
-.mnote CARRIAGECONTROL = cc
+.note CARRIAGECONTROL = cc
 .br
 .xt on
 .id cc
@@ -278,7 +279,7 @@ The default is
 .mono 'NO'.
 .xt off
 .cp 6
-.mnote RECORDTYPE = rct
+.note RECORDTYPE = rct
 .br
 .xt on
 .id rct
@@ -293,7 +294,7 @@ See the compiler User's Guide for a discussion of the
 specifier.
 .xt off
 .cp 9
-.mnote BLOCKSIZE = bl
+.note BLOCKSIZE = bl
 .br
 .xt on
 .id bl
@@ -308,7 +309,7 @@ See the compiler User's Guide for a discussion of the
 specifier.
 .xt off
 .cp 6
-.mnote SHARE = shr
+.note SHARE = shr
 .br
 .xt on
 .id shr

@@ -29,8 +29,8 @@
 .  .  ..ty Boxcol parameter error in "&*"
 .  ..do end
 .  ..sr boxcmd = '&boxcmd. +&*width.'
-.  ..if '&*tab.' ne '' ..th ..do begin
-.  .  ..if '&tabcmd.' eq '' ..th ..do begin
+.  ..if &'length(&*tab.) ne 0 ..th ..do begin
+.  .  ..if &'length(&tabcmd.) eq 0 ..th ..do begin
 .  .  .  ..sr tabcmd = '&*tab.'
 .  .  ..do end
 .  .  ..el ..do begin

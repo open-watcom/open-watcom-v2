@@ -15,7 +15,7 @@ observe how memory is being used
 view the contents of memory
 .endbull
 .begnote
-.mnote Note:
+.note Note:
 Under Windows NT, the Heap Walker monitors only the memory used by
 16-bit Windows applications.
 .endnote
@@ -701,7 +701,8 @@ upper left hand corner of the dialog.
 .ix 'Heap Walker' 'Objects menu'
 The items in the Object menu enable you to operate on the individual
 objects on the global heap.
-.begpoint The Object Menu
+.begpoint
+.pointhdr The Object Menu
 .point Show
 View the data stored in an object.
 .point Get Selector
@@ -1233,7 +1234,7 @@ the approximate amounts of memory you have allocated using an Allocation
 function. You should use this information only when using an Allocation
 function.
 .begnote
-.mnote Important:
+.note Important:
 Do not use the Allocation functions under the Windows Debug Kernel as
 they can make your system unstable.
 .endnote

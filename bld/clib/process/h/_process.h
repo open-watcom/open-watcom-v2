@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,28 @@
 #include <malloc.h>
 
 
+#ifdef __WIDECHAR__
+#define ARGS_TYPE           const wchar_t *
+#define ARGS_TYPE_ARR       const wchar_t * const *
+#else
+#define ARGS_TYPE           const char *
+#define ARGS_TYPE_ARR       const char * const *
+#endif
+
+#if defined(__AXP__) || defined(__MIPS__)
+#define ARGS_ARRAY_VA(ap)   (ARGS_TYPE_ARR)((ap).__base)
+#else
+#define ARGS_ARRAY_VA(ap)   (ARGS_TYPE_ARR)(ap)
+#endif
+
+#define ARGS_NEXT_VA(ap)    va_arg((ap), ARGS_TYPE)
+
 typedef int (*execveaddr_type)( const char *__path, const char *const __argv[], const char *const __envp[] );
 
 extern execveaddr_type __execaddr( void );
+#ifdef __DOS__
+extern execveaddr_type  __Exec_addr;
+#endif
 #ifdef __WIDECHAR__
 extern int  __wcenvarg( const wchar_t* const *, const wchar_t* const *, wchar_t**, wchar_t**, unsigned*, size_t*, int );
 extern void __wccmdline( wchar_t *, const wchar_t * const *, wchar_t *, int );
@@ -44,15 +64,13 @@ extern int  __cenvarg( const char* const *, const char* const *, char**, char**,
 extern void __ccmdline( char *, const char * const *, char *, int );
 extern char *__Slash_C( char *switch_c, unsigned char use_slash );
 #endif
-#ifdef __DOS__
-extern execveaddr_type  __Exec_addr;
-#else
-# ifdef __WIDECHAR__
+#if defined( __OS2__ ) || defined( __NT__ )
+#ifdef __WIDECHAR__
 extern int  _wdospawn( int, wchar_t *, wchar_t *, wchar_t *, const wchar_t * const * );
-# else
+#else
 extern int  _dospawn( int, char *, char *, char *, const char * const * );
-# endif
 #endif
-#ifdef __RDOS__
-extern int  _doexec(char *,char *, char *, const char * const *);
+#elif defined( __RDOS__ )
+extern int  _dospawn( int, char *, char *, char *, const char * const * );
+extern int  _doexec( char *, char *, char *, const char * const * );
 #endif

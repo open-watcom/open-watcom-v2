@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,7 @@
 #include "ctl3dcvr.h"
 #include "wclbproc.h"
 #include "guixwind.h"
+#include "oswincls.h"
 
 
 typedef struct {
@@ -52,9 +54,8 @@ WINEXPORT BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 l
 
 BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
 {
-    char        buff[5];
+    char        osclassname[GUI_CLASSNAME_MAX + 1];
     enum_info   *info;
-    int         len;
 
     info = ( enum_info * )lparam;
     if( info == NULL ) {
@@ -63,28 +64,35 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     if( info->success == true ) {
         return( TRUE );
     }
-    len = GetClassName( hwnd, buff, sizeof( buff ) );
-    buff[len] = '\0';
-#ifndef __OS2_PM__
-    //if( strcmp( buff, "#6" ) == 0 ) {
-    if( strcmp( buff, GUIControls[GUI_EDIT].classname ) == 0 ) {
-        info->success = true;
-        info->old = GUIDoSubClass( hwnd, GUI_EDIT );
-        //CvrCtl3dSubclassCtl( hwnd );
+    if( _wpi_getclassname( hwnd, osclassname, sizeof( osclassname ) ) ) {
+        if( stricmp( osclassname, GUIControls[GUI_EDIT].osclassname ) == 0 ) {
+            info->success = true;
+            info->old = GUIDoSubClass( hwnd, GUI_EDIT );
+            //CvrCtl3dSubclassCtl( hwnd );
+        }
     }
-#endif
     return( TRUE );
 }
 
 WPI_WNDPROC GUISubClassEditCombobox( HWND hwnd )
 {
     enum_info           e_info;
-    WPI_ENUMPROC        enumproc;
+#ifdef __OS2_PM__
+    WPI_ENUMPROC        wndenumproc;
+#else
+    WNDENUMPROC         wndenumproc;
+#endif
 
     e_info.success = false;
-    enumproc = _wpi_makeenumprocinstance( GUISubClassEditComboboxEnumFunc, GUIMainHInst );
-    _wpi_enumchildwindows( hwnd, enumproc, (LPARAM)&e_info );
-    _wpi_freeenumprocinstance( enumproc );
+#ifdef __OS2_PM__
+    wndenumproc = _wpi_makeenumprocinstance( GUISubClassEditComboboxEnumFunc, GUIMainHInst );
+    _wpi_enumchildwindows( hwnd, wndenumproc, (LPARAM)&e_info );
+    _wpi_freeenumprocinstance( wndenumproc );
+#else
+    wndenumproc = MakeProcInstance_WNDENUM( GUISubClassEditComboboxEnumFunc, GUIMainHInst );
+    EnumChildWindows( hwnd, wndenumproc, (LPARAM)&e_info );
+    FreeProcInstance_WNDENUM( wndenumproc );
+#endif
     if( e_info.success ) {
         return( e_info.old );
     }

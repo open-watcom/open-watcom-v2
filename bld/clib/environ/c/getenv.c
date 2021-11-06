@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
-#if !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+#if defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
 #ifdef __WIDECHAR__
@@ -42,6 +42,8 @@
 #endif
 #include "rtdata.h"
 #include "_environ.h"
+#include "_tcsstr.h"
+
 
 _WCRTLINK CHAR_TYPE *__F_NAME(getenv,_wgetenv)( const CHAR_TYPE *name )
 {
@@ -51,11 +53,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getenv,_wgetenv)( const CHAR_TYPE *name )
     CHAR_TYPE       **envp;
     CHAR_TYPE       *p;
 
-  #ifdef __WIDECHAR__
-    if( _RWD_wenviron == NULL ) {
-        __create_wide_environment();
-    }
-  #endif
+    CHECK_WIDE_ENV();
 
     /*** Find the environment string ***/
     __ptr_check( name, 0 );

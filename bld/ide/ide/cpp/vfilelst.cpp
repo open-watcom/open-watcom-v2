@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +39,8 @@
 #include <sys/stat.h>
 #include <io.h>
 #include <direct.h>
+#define INCLUDE_COMMDLG_H
 #include <wwindows.h>
-#ifdef __WINDOWS__
-#include <commdlg.h>
-#endif
 #include "getfile.h"
 #include "wstring.hpp"
 #include "wstrlist.hpp"
@@ -99,7 +97,7 @@ static void checkRemoveButton( HWND hwnd )
 static void getFullFname( HWND hwnd, const char *fname, WString *fullname )
 {
     size_t      len;
-    PGROUP2     pg;
+    pgroup2     pg;
 
     /* unused parameters */ (void)hwnd;
 
@@ -140,14 +138,20 @@ static void formRelDir( const char *filedir, const char *tgtdir,WString *dir )
     }
     *dir = "";
     for( ;; ) {
-        while( *tgtdir == '\\' ) tgtdir++;
+        while( *tgtdir == '\\' )
+            tgtdir++;
         if( *tgtdir != '\\' && *tgtdir != '\0' ) {
-            while( *tgtdir != '\\' && *tgtdir != '\0' ) tgtdir++;
+            while( *tgtdir != '\\' && *tgtdir != '\0' )
+                tgtdir++;
             dir->concat( "..\\" );
         }
-        if( *tgtdir == '\0' ) break;
+        if( *tgtdir == '\0' ) {
+            break;
+        }
     }
-    if( *filedir != '\0' ) dir->concat( filedir + 1 );
+    if( *filedir != '\0' ) {
+        dir->concat( filedir + 1 );
+    }
 }
 
 static void getRelFname( HWND hwnd, const char *fname, WString *relname )
@@ -156,7 +160,7 @@ static void getRelFname( HWND hwnd, const char *fname, WString *relname )
     GetFilesInfo    *info;
     WFileName       tgt;
     WFileName       filename;
-    PGROUP2         pg;
+    pgroup2         pg;
 
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     getFullFname( hwnd, fname, &fullpath );
@@ -259,10 +263,13 @@ static void addCurrentFile95( HWND hwnd )
     char        fname[MAX_PATH];
     struct stat buf;
     SendMessage( GetParent( hwnd ), CDM_GETSPEC, MAX_PATH, (LPARAM)fname );
-    if( fname[strlen( fname ) - 1] == '\\' ) return;
+    if( fname[strlen( fname ) - 1] == '\\' )
+        return;
     stat( fname, &buf );
-    if( S_ISDIR( buf.st_mode ) ) return;
-    if( strpbrk( fname, "?*" ) != NULL ) return;
+    if( S_ISDIR( buf.st_mode ) )
+        return;
+    if( strpbrk( fname, "?*" ) != NULL )
+        return;
     addFileToList( hwnd, fname );
 }
 #endif
@@ -306,7 +313,7 @@ static void addAllFiles95( HWND hwnd )
     char            path[_MAX_PATH];
     WIN32_FIND_DATA wfd;
     HANDLE          find_handle;
-    BOOL            found = TRUE;
+    BOOL            found;
     char            *fname;
 
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
@@ -320,6 +327,7 @@ static void addAllFiles95( HWND hwnd )
     _makepath( path, NULL, folder, ext, NULL );
     find_handle = FindFirstFile( path, &wfd );
     if( find_handle != INVALID_HANDLE_VALUE ) {
+        found = TRUE;
         while( found ) {
             if( !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
                 fname = strrchr( wfd.cFileName, '\\' );
@@ -556,7 +564,7 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     OPENFILENAME    of;
     int             rc;
     char            fname[256];
-    PGROUP2         pg;
+    pgroup2         pg;
     char            newpath[_MAX_PATH];
 
     _splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );

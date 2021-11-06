@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,9 +109,13 @@ void VCompDialog::initialize()
         icount = targets.count();
         for( i=0; i < icount; i++ ) {
             curtarg = (MTarget *)targets[i];
-            if( curtarg->mask() == _comp->mask() ) break;
+            if( curtarg->mask() == _comp->mask() ) {
+                break;
+            }
         }
-        if( i == icount ) curtarg = NULL;
+        if( i == icount ) {
+            curtarg = NULL;
+        }
     }
 
     WVList &list = _config->targetOSs();
@@ -121,8 +126,7 @@ void VCompDialog::initialize()
         singletarg = true;
         i = 0;
         _cur_os = *(WString *)list[0];
-        WText* t3 = new WText( this, WRect( 11*sx, 41*sy, 135*sx, rb_hite * sy ),
-                            _cur_os.gets() );
+        WText* t3 = new WText( this, WRect( 11*sx, 41*sy, 135*sx, rb_hite * sy ), _cur_os.gets() );
         t3->show();
     } else {
         singletarg = false;
@@ -158,7 +162,8 @@ void VCompDialog::initialize()
 
     WGroupBox           *gbox;
 
-    if( i < 5 ) i = 5;
+    if( i < 5 )
+        i = 5;
     int boxtop = 29;
     int boxhite = i * rb_hite + 20;
     int boxbottom = boxtop + boxhite;
@@ -228,11 +233,8 @@ bool VCompDialog::legalExt()
     if( i >= 0 ) {
         curtarg = (MTarget *)_tgList[i];
         WString ext1( curtarg->tgtMask().ext() );
+        _fn->setExtIfNone( ext1 );
         WString ext2( _fn->ext() );
-        if( ext2.size() == 0 ) {
-            _fn->setExt( ext1 );
-            return( true );
-        }
         if( ext1 == ext2 ) {
             return( true );
         }
@@ -266,7 +268,7 @@ bool VCompDialog::checkName()
         if( m != _comp ) {
             WFileName cn;
             m->target()->absName( cn );
-            if( fn.match( cn, matchDrive|matchDir ) ) {
+            if( fn.match( cn, matchDrive | matchDir ) ) {
                 if( fn.match( cn, matchFName ) ) {
                     WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                         "Targets '%s' and '%s' have the same name and must be in different directories.", (const char*)*_fn, (const char*)*m->target() );
@@ -296,8 +298,7 @@ void VCompDialog::updateCurOs( void )
     for( i=0; i< icount; i++ ) {
         curtarg = (MTarget *)targets[i];
         if( _cur_os == curtarg->targetOS() ) {
-            curname.printf( "%s [%s]", curtarg->imageName().gets(),
-                                       curtarg->tgtMask().ext() );
+            curname.printf( "%s [%s]", curtarg->imageName().gets(), curtarg->tgtMask().ext() );
             _imagelist->insertString( curname.gets(), pos );
             _tgList.insertAt( pos, curtarg );
             pos++;

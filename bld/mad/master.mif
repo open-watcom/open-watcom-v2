@@ -8,33 +8,11 @@ proj_name = mad
 mad_autodepends = .autodepend
 !endif
 
-additional_cleanup = *.d32 *.mad
+mad_nofpu = 1
 
 !ifeq host_cpu x64
 sys_dll = 1
 !endif
-
-fpu_flags_dos_i86   = -fpc
-fpu_flags_dos_386   = -fpc
-fpu_flags_linux_386 = -fpc
-fpu_flags_nt_386    = -fpc
-fpu_flags_os2_i86   = -fpc
-fpu_flags_os2_386   = -fpc
-fpu_flags_qnx_i86   = -fpc
-fpu_flags_qnx_386   = -fpc
-fpu_flags_rdos_386  = -fpc
-fpu_flags_win_i86   = -fpc
-
-ext_os2_i86   = .dll
-ext_os2_386   = .d32
-ext_qnx_386   = .mad
-ext_linux_386 = .mad
-ext_win_i86   = .dll
-ext_dos_386   = .mad
-ext_nt_386    = .dll
-ext_nt_axp    = .dll
-ext_nt_x64    = .dll
-ext_rdos_386  = .dll
 
 !include cproj.mif
 !include defrule.mif
@@ -43,8 +21,13 @@ ext_rdos_386  = .dll
 
 !include $(disasm_dir)/dis.mif
 
-# cflags stuff
-###############
+#
+# cflags
+#
+.c: ../c;../../c;$(dis_srcs);$(extra_srcs)
+
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(dig_dir)/h" $(dis_includes) $(extra_incs)
+
 extra_cpp_flags = -DMD_$(target_cpu) -DNDIS_$(target_cpu)
 !ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
@@ -57,57 +40,62 @@ extra_c_flags_win = -zc
 extra_c_flags_madimp = -zlf -os     # -os ensures byte align for code
 !endif
 
-# lflags stuff
-###############
-lflags_dll_dos_386   = sys pharlap rex disable 1023,1014
-lflags_dll_linux_386 = sys pharlap_linux rex disable 1023,1014
-lflags_dll_qnx_386   = sys pharlap_qnx disable 1023,1014
+#
+# lflags
+#
+lflags_dll_dos_386   = sys rex_dos
+lflags_dll_linux_386 = sys rex_linux
+lflags_dll_qnx_386   = sys rex_qnx
 lflags_dll_win_i86   = sys windows
 
-extra_l_flags_dll         = $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll         = $(mad_dllbase_$(host_os)_$(host_cpu))
 extra_l_flags_dll_nt_axp  = op dosseg
 extra_l_flags_dll_nt = $(extra_l_flags_dll_nt_$(host_cpu))
 
-##################
+#
+# names
+#
+!ifdef %OWUSE_FILENAME_VERSION
+dlltarg_name = mad$(target_cpu)$(bld_ver)
+!else
+dlltarg_name = mad$(target_cpu)
+!endif
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(dig_dir)/h" $(dis_includes) $(extra_incs)
+verrc_dll = $(dlltarg_name)
+!include verrc.mif
 
-.c: ../c;../../c;$(dis_srcs);$(extra_srcs)
+dlltarg_ext_os2_386   = .d32
+dlltarg_ext_qnx_386   = .mad
+dlltarg_ext_linux_386 = .mad
+dlltarg_ext_dos_386   = .mad
 
-objs =  madimp.obj $(dis_objs) $(imp_objs)
+!ifdef dlltarg_ext_$(host_os)_$(host_cpu)
+dlltarg_ext = $(dlltarg_ext_$(host_os)_$(host_cpu))
+!endif
+!ifndef __WATCOM_TOOLS__
+!ifdef ext_lib_shared
+dlltarg_ext = $(ext_lib_shared)
+!endif
+!endif
+!ifdef dlltarg_ext
+additional_clean = *$(dlltarg_ext)
+!endif
 
 # explicit rules
 ##################
 
-# systems where version resources must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
+#
+# DLL
+#
+dlltarg_prebuild_objs = $(dis_prereq)
+dlltarg_objs          = madimp.obj $(dis_objs) $(imp_objs)
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+!include dlltarg.mif
 
-verrc_dll = $(name)
-!include verrc.mif
-
-!ifdef %OWUSE_FILENAME_VERSION
-xname_basename = mad$(target_cpu)$(bld_ver)
-!else
-xname_basename = mad$(target_cpu)
-!endif
-
-xname = $(xname_basename)$(ext_$(host_os)_$(host_cpu))
-!ifndef __WATCOM_TOOLS__
-!ifdef ext_lib_shared
-xname = $(xname_basename)$(ext_lib_shared)
-!endif
-!endif
-
-$(xname) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags_dll) $(objs) $(ldflags_dll)
-!else
-    $(linker) name $^@ $(lflags_dll) file {$(objs)}
-!endif
-    @%make bind_res_version_dll
-
+#
+# rc and others
+#
 distbls.gh : ./disbuild.exe
     @%make echo_execute
     $(noecho)$[@

@@ -111,6 +111,11 @@ generate 386 instructions based on Intel Pentium Pro instruction
 timings and use stack-based argument passing conventions
 :optref refid='SW6RS'.
 .*
+.note aa
+(C only)
+allow non-constant initializers for local aggregates or unions
+:optref refid='SWaa'.
+.*
 .note ad[=<file_name>]
 generate make style automatic dependency file
 :optref refid='SWad'.
@@ -223,7 +228,7 @@ full symbolic debugging information, without type names
 :CMT. .ix 'options' 'd3'
 full symbolic debugging with unreferenced type names
 :optref refid='SWd3'.
-,*
+.*
 .note d3i
 :CMT. .ix 'options' 'd3i'
 (C++ only)
@@ -413,7 +418,7 @@ generate calls to floating-point library
 :CMT. .ix 'options' 'fpi'
 &286only.
 generate in-line 80x87 instructions with emulation (default)
-.np
+.notebreak
 &386only.
 generate in-line 387 instructions with emulation (default)
 :optref refid='SWfpi'.
@@ -422,7 +427,7 @@ generate in-line 387 instructions with emulation (default)
 :CMT. .ix 'options' 'fpi87'
 &286only.
 generate in-line 80x87 instructions
-.np
+.notebreak
 &386only.
 generate in-line 387 instructions
 :optref refid='SWfpi87'.
@@ -533,16 +538,23 @@ continue processing files (ignore errors)
 .note m{f,s,m,c,l,h}
 :CMT. .ix 'options' 'mf, ms, mm, mc, ml, mh'
 &x86only.
-memory model &mdash.
+memory model
+.notebreak
 mf=flat :optref refid='SWmf'.,
+.notebreak
 ms=small :optref refid='SWms'.,
+.notebreak
 mm=medium :optref refid='SWmm'.,
+.notebreak
 mc=compact :optref refid='SWmc'.,
+.notebreak
 ml=large :optref refid='SWml'.,
+.notebreak
 mh=huge :optref refid='SWmh'.
+.notebreak
 (default is "ms" for 16-bit and Netware, "mf" for 32-bit)
 .*
-.if &e'&wcldesc. eq 1 .do begin
+.if &e'&wcldesc. ne 0 .do begin
 .note mt
 :CMT. .ix '&wclcmdup16 options' 'mt'
 :CMT. .ix '&wclcmdup32 options' 'mt'
@@ -670,11 +682,15 @@ preprocessor ignores #line directives
 :CMT. .ix 'options' 'pc'
 :CMT. .ix 'options' 'pw'
 .*
-preprocess file only, sending output to standard output;
-"c" include comments;
-"e" encrypt identifiers (C++ only);
-"l" include #line directives;
-w=<num> wrap output lines at <num> columns (zero means no wrap)
+preprocess file only, sending output to standard output
+.notebreak
+"c" include comments
+.notebreak
+"e" encrypt identifiers (C++ only)
+.notebreak
+"l" include #line directives
+.notebreak
+"w=<num>" wrap output lines at <num> columns (zero means no wrap)
 :optref refid='SWp'.
 .*
 .note q
@@ -953,7 +969,7 @@ place each function in separate segment (near functions allowed)
 :CMT.(C++ only) use exception-handling for a specific operating system
 :CMT.:optref refid='SWzo'.
 .*
-.note zp[{1,2,4,8,16}]
+.note zp{1,2,4,8,16}
 :CMT. .ix 'options' 'zp'
 set minimal structure packing (member alignment)
 :optref refid='SWzp'.

@@ -17,10 +17,10 @@ bytes is allocated.
 If the value of
 .arg size
 is zero, the
-.kw free
+.reffunc free
 function is called to release the memory pointed to by
 .arg old_blk
-.ct .li .
+.period
 .np
 Otherwise, the
 .id &funcb.
@@ -35,14 +35,14 @@ when
 .arg size
 is sufficiently smaller than the size of
 .arg old_blk
-.ct .li .
+.period
 .bull
 extending the allocated size of the allocated memory block
 .arg old_blk
 if there is a large enough block of unallocated memory immediately
 following
 .arg old_blk
-.ct .li .
+.period
 .bull
 allocating a new block and copying the contents of
 .arg old_blk
@@ -52,7 +52,7 @@ to the new block.
 Because it is possible that a new block will be allocated, no other
 pointers should point into the memory of
 .arg old_blk
-.ct .li .
+.period
 These pointers will point to freed memory, with possible disastrous
 results, when a new block is allocated.
 .np
@@ -151,10 +151,10 @@ bytes is allocated.
 If the value of
 .arg size
 is zero, the corresponding
-.kw free
+.reffunc free
 function is called to release the memory pointed to by
 .arg old_blk
-.ct .li .
+.period
 .np
 Otherwise, the
 .id &funcb.
@@ -169,14 +169,14 @@ when
 .arg size
 is sufficiently smaller than the size of
 .arg old_blk
-.ct .li .
+.period
 .bull
 extending the allocated size of the allocated memory block
 .arg old_blk
 if there is a large enough block of unallocated memory immediately
 following
 .arg old_blk
-.ct .li .
+.period
 .bull
 allocating a new block and copying the contents of
 .arg old_blk
@@ -231,12 +231,12 @@ Near heap (inside the default data segment)
 In a small data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _nrealloc
+.reffunc _nrealloc
 function; in a large data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _frealloc
+.reffunc _frealloc
 function.
 .desc end
 .return begin
@@ -250,7 +250,7 @@ if there is insufficient memory available or if the value of the
 .arg size
 argument is zero.
 The
-.kw _brealloc
+.reffunc _brealloc
 function returns
 .kw _NULLOFF
 if there is insufficient memory available or if the requested size is

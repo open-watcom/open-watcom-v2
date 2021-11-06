@@ -71,7 +71,7 @@
  * has been a net change in the heap since the start_heapcheck() was invoked. The
  * theory here is that, if there is no net change, then anything allocated on the
  * heap in the intermediate code has also been freed. A program showing no net
- * change from the start of main() to the end of main() is not leaking memory. 
+ * change from the start of main() to the end of main() is not leaking memory.
  *
  * The function display_heap() should be used at any point in the program where
  * the state of the heap needs to be determined.
@@ -81,7 +81,7 @@
  *          as it is at the start.
  *      identify regions in a program over which the heap is not the same at the
  *          end as it is at the start.
- *      map heap usage at any number of points in the program. 
+ *      map heap usage at any number of points in the program.
  *
  * The auxiliary function null_buffer() compensates for a minor quirk observed in
  * the Open Watcom runtime: when a file cannot be found, so that a NULL pointer is
@@ -95,7 +95,7 @@
  * start_heapcheck(), it ensures that this unfreeable buffer is allocated before
  * the testing begins.
  */
- 
+
 /* Function declarations. */
 
 #ifdef  __cplusplus

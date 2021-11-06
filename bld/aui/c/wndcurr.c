@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +66,7 @@ bool    WndSetPoint( a_window wnd, void *parm, bool exact,
         row = GUIGetRow( wnd->gui, &point );
     if( row > wnd->rows )
         return( false );
-    if( row < wnd->title_size ) {
+    if( row < wnd->title_rows ) {
         row -= wnd->top;
     }
     last_piece = WND_NO_PIECE;
@@ -107,11 +108,11 @@ bool    WndSetPoint( a_window wnd, void *parm, bool exact,
                 return( true );
             }
         } else {
-            gui_ord     guipos;
+            gui_text_ord    text_pos;
 
-            guipos = GUIGetStringPos( wnd->gui, line.indent, line.text, point.x );
-            if( guipos != GUI_NO_COLUMN ) { // clicked within this piece
-                colidx = (wnd_colidx)guipos;
+            text_pos = GUIGetStringPos( wnd->gui, line.indent, line.text, point.x );
+            if( text_pos != GUI_TEXT_NO_COLUMN ) { // clicked within this piece
+                colidx = (wnd_colidx)text_pos;
                 if( !doing_select && last_extended_tab_piece != WND_NO_PIECE ) {
                     spot->piece = last_extended_tab_piece;
                     spot->colidx = last_extended_tab_colidx;
@@ -159,9 +160,9 @@ void WndMoveCurrent( a_window wnd, wnd_row row, wnd_piece piece )
 {
     WndDirtyCurr( wnd );
     if( row < WndTop( wnd ) ) {
-        WndScroll( wnd, row - WndTop( wnd ) );
+        WndVScroll( wnd, row - WndTop( wnd ) );
     } else if( row >= WndTop( wnd ) + WndRows( wnd ) ) {
-        WndScroll( wnd, row - WndTop( wnd ) - WndRows( wnd ) + 1 );
+        WndVScroll( wnd, row - WndTop( wnd ) - WndRows( wnd ) + 1 );
     }
     WndNewCurrent( wnd, row, piece );
 }
@@ -200,7 +201,7 @@ bool    WndNextCurrent( a_window wnd, bool wrap )
         piece = wnd->current.piece + 1;
         row = wnd->current.row;
     } else {
-        row = wnd->title_size;
+        row = wnd->title_rows;
         piece = 0;
     }
     WndNextRow( wnd, WND_NO_ROW, WND_SAVE_ROW );
@@ -211,7 +212,7 @@ bool    WndNextCurrent( a_window wnd, bool wrap )
             if( line.tabstop ) {
                 WndDirtyCurr( wnd );
                 if( row >= wnd->rows ) {
-                    WndScroll( wnd, row - wnd->rows + 1 );
+                    WndVScroll( wnd, row - wnd->rows + 1 );
                     row = wnd->rows - 1;
                 }
                 wnd->current.row = row;
@@ -266,9 +267,9 @@ bool WndPrevCurrent( a_window wnd, bool wrap )
         }
         if( found_piece != WND_NO_PIECE ) {
             WndDirtyCurr( wnd );
-            if( row < wnd->title_size ) {
-                WndScroll( wnd, row - wnd->title_size );
-                row = wnd->title_size;
+            if( row < wnd->title_rows ) {
+                WndVScroll( wnd, row - wnd->title_rows );
+                row = wnd->title_rows;
             }
             wnd->current.row = row;
             wnd->current.piece = found_piece;
@@ -313,7 +314,7 @@ void     WndCheckCurrentValid( a_window wnd )
         WndLastCurrent( wnd );
     } else {
         if( wnd->current.row >= wnd->rows ) {
-            WndScroll( wnd, wnd->current.row - wnd->rows + 1 );
+            WndVScroll( wnd, wnd->current.row - wnd->rows + 1 );
         }
     }
 }

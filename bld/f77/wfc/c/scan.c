@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "errcod.h"
 #include "extnsw.h"
 #include "stmtsw.h"
@@ -45,7 +45,7 @@
 
 #define COLUMNS 17
 
-static  const token_state __FAR StateTable[][COLUMNS] = {
+static  const token_state   StateTable[][COLUMNS] = {
 
 // AL  EX  SG  DP  DI  HL  AP  OP  SP  TC  BC  EL  CM  OL  HX  CS  DB
   SAN,SAN,SSG,SLL,SNM,SAN,SFQ,SOP,SSP,STC,SBC,SNR,SCM,SAN,SAN,SAN,SDB, // NS
@@ -68,12 +68,17 @@ static  const token_state __FAR StateTable[][COLUMNS] = {
   SLG,SLG,SSO,SSO,SFT,SLG,SSO,SSO,SSP,STC,SBC,SNR,SCM,SLG,SLG,SLG,SDB, // LL
 };
 
-#define BAD_LOG         14
+enum {
+    BAD_LOG = 0
+    #define pick(text,en,opr,std)   +1
+    #include "_logoprs.h"
+    #undef pick
+};
 
-char    *LogTab[] = {
-        "EQ",   "NE",    "LT",    "GT",    "LE",     "GE",
-        "OR",   "AND",   "NOT",   "EQV",   "NEQV",   "XOR",
-        "TRUE", "FALSE", NULL
+const char  *LogTab[] = {
+    #define pick(text,en,opr,std)   text,
+    #include "_logoprs.h"
+    #undef pick
 };
 
 static  char            ExpREA;
@@ -107,7 +112,7 @@ void    InitScan( void ) {
     ExpEXT = 'Q';
     Line = 0;
     State = SNS;
-    TkCrsr = &TokenBuff[ 0 ];
+    TkCrsr = &TokenBuff[0];
     LexToken.stop = TkCrsr;
     LexToken.col = Column;
     LexToken.flags = 0;
@@ -152,9 +157,9 @@ void    Scan( void ) {
         LexToken.line = Line;
         for(;;) {
             ch = *Cursor;
-            ch_class = CharSetInfo.character_set[ ch ];
+            ch_class = CharSetInfo.character_set[ch];
             wasextch |= ch_class;
-            state2 = StateTable[ State ][ ch_class & C_MASK ];
+            state2 = StateTable[State][ch_class & C_MASK];
             switch( state2 ) {
             case SAN :
             case SLG :
@@ -173,7 +178,7 @@ void    Scan( void ) {
                     Column--; // compensate for Column++ and Cursor++
                     Cursor--; // after select
                 } else {
-                    State = StateTable[ State ][ C_AL ];
+                    State = StateTable[State][C_AL];
                     *TkCrsr++ = ch;
                     Cursor++;
                     Column++;
@@ -355,7 +360,7 @@ void    Scan( void ) {
                         Extension( CC_TOO_MANY_CONT );
                         ExtnSw |= XS_CONT_20;
                     }
-                    if( (TkCrsr-TokenBuff) + (LastColumn-CONT_COL) > TOKLEN ) {
+                    if( (TkCrsr - TokenBuff) + (LastColumn - CONT_COL) > TOKLEN ) {
                         TkCrsr = TokenBuff; // so we don't overflow TokenBuff
                         if( (StmtSw & SS_CONT_ERROR_ISSUED) == 0 ) {
                             Error( CC_CONT_OVERFLOW );
@@ -513,15 +518,15 @@ static  void    ScanNum( void ) {
 static  void    LkUpLog( void ) {
 //=========================
 
-    int         index;
+    int         i;
     char        *ptr;
 
-    index = 0;
     ptr = LexToken.start + sizeof( char ); // skip over "."
     *TkCrsr = NULLCHAR;
-    for(;;) {
-        if( strcmp( LogTab[ index ], ptr ) == 0 ) break;
-        if( LogTab[ ++index ] == NULL ) break;
+    for( i = 0; i < BAD_LOG; i++) {
+        if( strcmp( LogTab[i], ptr ) == 0 ) {
+            break;
+        }
     }
-    LexToken.log = index;
+    LexToken.log = i;
 }

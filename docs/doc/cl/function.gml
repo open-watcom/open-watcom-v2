@@ -22,7 +22,7 @@ may be one of
 .kw extern
 or
 .kw static
-..ct ..li .
+.period
 If
 .us storage-class
 is omitted,
@@ -33,7 +33,7 @@ The
 .us return-type
 may be any valid type except an
 .us array
-..ct ..li .
+.period
 If
 .us return-type
 is omitted,
@@ -66,18 +66,14 @@ arguments.
 .pp
 Any parameter declared as "array of
 .us type
-..ct "
-is changed to
-"pointer to
+.ct " is changed to "pointer to
 .us type
-..ct ".
+.ct ".
 Any parameter declared as "
 .us function
-..ct "
-is changed to
-"pointer to
+.ct " is changed to "pointer to
 .us function
-..ct ".
+.ct ".
 .keep begin
 .pp
 The following examples illustrate several function definitions:
@@ -94,8 +90,7 @@ The function
 .mono G
 has one parameter, an integer object named
 .mono x
-..ct ,
-and does not return a value.
+.ct , and does not return a value.
 .discuss end
 .keep break
 .millust void * H( long int len, long int wid )
@@ -106,8 +101,7 @@ has two parameters, long integer objects named
 .mono len
 and
 .mono wid
-..ct ,
-and returns a pointer which does not point to any particular type
+.ct , and returns a pointer which does not point to any particular type
 of object.
 .discuss end
 .keep break
@@ -121,7 +115,7 @@ that is a pointer to a character (string).
 The function also accepts a variable
 number of parameters following
 .mono format
-..ct ..li .
+.period
 The function does not return a result.
 .discuss end
 .keep end
@@ -162,7 +156,7 @@ identifier-list
 .pc
 The
 .us storage-class
-..ct ,
+.ct ,
 .us return-type
 and
 .us identifier
@@ -199,12 +193,11 @@ to a function declared in this manner. The argument of type
 .kw float
 will automatically be promoted to
 .kw double
-..ct ,
-and the parameter will also be promoted to
+.ct , and the parameter will also be promoted to
 .kw double
 (assuming that it was declared as
 .kw float
-..ct ..li ).
+.ct ).
 For similar reasons, it is not possible to pass an object of type
 .kw char
 or
@@ -235,8 +228,7 @@ The function
 .mono G
 has one parameter, an integer object named
 .mono x
-..ct ,
-and does not return a value.
+.ct , and does not return a value.
 This example could have also been written as,
 .millust begin
 void G( x )
@@ -261,8 +253,7 @@ has two parameters, both integer objects named
 .mono len
 and
 .mono wid
-..ct ,
-and returns a pointer which does not point to any particular type
+.ct , and returns a pointer which does not point to any particular type
 of object.
 Any call to this function must ensure that the arguments are long
 integers, either by using an object so declared, or by explicitly
@@ -271,10 +262,9 @@ casting the object to the type.
 .keep end
 .pp
 The last example using the ellipsis (
-..ct .mono ,...
-..ct )
-notation is not
-directly representable using the second form of function definition.
+.ct .mono ,...
+.ct ) notation is not directly representable using the second form
+of function definition.
 With most compilers it is possible to handle variable argument lists
 in this form,
 but knowledge of the mechanism used to pass arguments to functions
@@ -300,8 +290,7 @@ have
 .ix 'automatic storage duration'
 .ix 'storage duration' 'automatic'
 .us automatic storage duration
-..ct ,
-meaning they are created when the function is called, and destroyed
+.ct , meaning they are created when the function is called, and destroyed
 when the function returns to the caller.
 (The value of the object is not preserved between calls
 to the function.)
@@ -313,8 +302,7 @@ have
 .ix 'static storage duration'
 .ix 'storage duration' 'static'
 .us static storage duration
-..ct ,
-meaning they are created once, before the function is ever called, and
+.ct , meaning they are created once, before the function is ever called, and
 destroyed only when the program terminates. Any value placed in such
 an object will remain even after the function has returned, so that
 the next time the function is called the value will still be present
@@ -369,7 +357,7 @@ If no function prototype has been found by the time a call to a function
 is made, all arguments have the default argument promotions performed
 on them, and the return type is assumed to be
 .kw int
-..ct ..li .
+.period
 If the actual definition of the function does not have parameters that
 match the promoted types, the behavior is undefined.
 If the return type is not
@@ -408,8 +396,7 @@ This argument usually describes, in some fashion, how many other
 arguments to expect.
 It may be a simple count, or may involve (as with
 .libfn printf
-..ct )
-an encoding of the number and types of arguments.
+.ct ) an encoding of the number and types of arguments.
 .pp
 All arguments that correspond to a variable argument list have the
 default argument promotions performed on them, since it is not possible
@@ -434,7 +421,7 @@ implementation-specific
 type used to store information about the variable list.
 Within the function, an object must be declared with type
 .kw va_list
-..ct ..li .
+.period
 This object is used by the macros and functions for processing the list.
 .* .pp
 .* In the following examples, it is assumed that the declaration
@@ -465,7 +452,7 @@ and must not have been declared with the storage class
 .ix 'storage class' 'register'
 .ix 'register'
 .kw register
-..ct ..li .
+.period
 .pp
 The macro
 .mkw va_start
@@ -489,13 +476,13 @@ has the form,
 .us parminfo
 is the same object named in the call to
 .mkw va_start
-..ct ..li .
+.period
 .us type
 is the type of argument expected.
 The types expected should only be those that result from the default
 argument promotions (
-..ct .kw int
-..ct ,
+.ct .kw int
+.ct ,
 .kw long int
 and
 .kw long long int
@@ -503,8 +490,7 @@ and their unsigned varieties,
 .kw double
 and
 .kw long double
-..ct ),
-and those that are not subject to promotion
+.ct ), and those that are not subject to promotion
 (pointers, structures and unions).
 The type must be determined
 by the program.
@@ -515,11 +501,10 @@ next parameter in the variable list.
 .pp
 In the case of
 .libfn printf
-..ct ,
-the parameter type expected is determined by the "conversion
-specifications" such as
+.ct , the parameter type expected is determined by the
+"conversion specifications" such as
 .mono %s
-..ct ,
+.ct ,
 .mono %d
 and so on.
 .pp
@@ -527,11 +512,11 @@ The first invocation of the
 .mkw va_arg
 macro (after executing a
 .mkw va_start
-..ct ) returns the value of the parameter following
+.ct ) returns the value of the parameter following
 .us lastparm
 (as specified in
 .mkw va_start
-..ct ). Each subsequent invocation of
+.ct ). Each subsequent invocation of
 .mkw va_arg
 returns the next parameter in the list.
 At each invocation, the value of
@@ -541,8 +526,7 @@ to reflect the processing of the parameter list.
 .pp
 If the type of the next parameter does not match
 .us type
-..ct ,
-or if no parameter was specified, the behavior is undefined.
+.ct , or if no parameter was specified, the behavior is undefined.
 .pp
 The macro
 .ix 'va_end'
@@ -556,7 +540,7 @@ void va_end( va_list :ITAL.parminfo:eITAL. );
 .us parminfo
 is the same object named in the corresponding call to
 .mkw va_start
-..ct ..li .
+.period
 The function
 .mkw va_end
 closes off processing of the variable argument list, which must be
@@ -671,8 +655,7 @@ provided by the operating system (often from the command-line used
 to invoke the program),
 into the strings contained in
 .mono argv
-..ct ,
-is implementation-defined.
+.ct , is implementation-defined.
 .*
 .************************************************************************
 .*
@@ -692,11 +675,11 @@ having the value 5, and the elements of
 .mono argv
 being the strings
 .mono "pgm"
-..ct ,
+.ct ,
 .mono "2+"
-..ct ,
+.ct ,
 .mono "1"
-..ct ,
+.ct ,
 .mono "tokens"
 and
 .mono "one token".

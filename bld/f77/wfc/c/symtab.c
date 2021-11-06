@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,15 +67,14 @@ void    STInit( void ) {
 }
 
 
-sym_id  SymLookup( char *name, uint length ) {
-//===========================================
-
+sym_id SymLookup( const char *name, size_t length )
+//=================================================
 // Lookup a symbol in the symbol table.
-
+{
     sym_id    sym;
 
     sym = STName( name, length );
-    if( ( sym->u.ns.flags & ( SY_TYPE | SY_INTRINSIC ) ) == 0 ) {
+    if( (sym->u.ns.flags & (SY_TYPE | SY_INTRINSIC)) == 0 ) {
         sym->u.ns.xt.size = ImplSize( *name );
         sym->u.ns.u1.s.typ = MapTypes( ImplType( *name ), sym->u.ns.xt.size );
     }
@@ -95,7 +95,7 @@ sym_id  LkSym( void ) {
     CITNode->size = sym->u.ns.xt.size;
     CITNode->typ = sym->u.ns.u1.s.typ;
     if( ( sym->u.ns.u2.name_len > STD_SYMLEN ) &&
-        ( ( ExtnSw & XS_LONG_NAME ) == 0 ) ) {
+        ( (ExtnSw & XS_LONG_NAME) == 0 ) ) {
         NameExt( VA_NAME_LEN_EXT, sym );
         ExtnSw |= XS_LONG_NAME;
     }
@@ -131,20 +131,18 @@ sym_id  LkBlkData( void ) {
 }
 
 
-sym_id  SymFind( char *name, uint length ) {
-//=========================================
-
+sym_id SymFind( const char *name, size_t length )
+//===============================================
 // Determine if a symbol exists in the symbol table.
-
+{
     return( STNameSearch( name, length ) );
 }
 
 
-static  sym_id  ComLookup( char *name, uint length ) {
-//===================================================
-
+static sym_id ComLookup( const char *name, size_t length )
+//========================================================
 // Lookup a common block name.
-
+{
     sym_id      sym;
 
     sym = STCommon( name, length );

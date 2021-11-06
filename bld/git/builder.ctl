@@ -12,12 +12,15 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/cpyright.exe <OWBINDIR>/cpyright<CMDEXT>
+    <CPCMD> <OWOBJDIR>/cpyright.exe <OWBINDIR>/<OWOBJDIR>/cpyright<CMDEXT>
+    <CPCMD> <OWOBJDIR>/cvtutf8.exe  <OWBINDIR>/<OWOBJDIR>/cvtutf8<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/cpyright<CMDEXT>
-    rm -f <OWBINDIR>/cpyright<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/cpyright<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/cpyright<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/cvtutf8<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/cvtutf8<CMDEXT>
 
 [ BLOCK . . ]
 

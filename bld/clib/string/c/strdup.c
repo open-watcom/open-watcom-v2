@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,12 +35,9 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include "libwchar.h"
 #include "strdup.h"
 #include "liballoc.h"
-
-#ifdef __WIDECHAR__
-extern size_t wcslen( const CHAR_TYPE * );
-#endif
 
 
 CHAR_TYPE *__F_NAME(__clib_strdup,__clib_wcsdup)( const CHAR_TYPE *str )
@@ -55,7 +53,7 @@ CHAR_TYPE *__F_NAME(__clib_strdup,__clib_wcsdup)( const CHAR_TYPE *str )
     return( mem );
 }
 
-_WCRTLINK CHAR_TYPE *__F_NAME(strdup,_wcsdup)( const CHAR_TYPE *str )
+_WCRTLINK CHAR_TYPE *__F_NAME(strdup,wcsdup)( const CHAR_TYPE *str )
 {
     return( __F_NAME(__clib_strdup,__clib_wcsdup)( str ) );
 }

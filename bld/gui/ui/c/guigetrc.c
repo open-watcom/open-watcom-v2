@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,36 +39,20 @@
  * GUIGetRow - get the row that the mouse is on
  */
 
-gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pt )
+gui_text_ord GUIAPI GUIGetRow( gui_window *wnd, const gui_point *in_pt )
 {
-    gui_point pt;
-
     /* unused parameters */ (void)wnd;
 
-    pt = *in_pt;
-    GUIScaleToScreenRPt( &pt );
-    if( pt.y >=0 ) {
-        return( (gui_ord) pt.y );
-    } else {
-        return( GUI_NO_ROW );
-    }
+    return( GUIScaleToScreenV( in_pt->y ) );
 }
 
 /*
  * GUIGetCol - get the column that the mouse is on
  */
 
-gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pt )
+gui_text_ord GUIAPI GUIGetCol( gui_window *wnd, const char *text, const gui_point *in_pt )
 {
-    gui_point pt;
-
     /* unused parameters */ (void)wnd; (void)text;
 
-    pt = *in_pt;
-    GUIScaleToScreenRPt( &pt );
-    if( pt.x >=0 ) {
-        return( (gui_ord) pt.x );
-    } else {
-        return( GUI_NO_COLUMN );
-    }
+    return( GUIScaleToScreenH( in_pt->x ) );
 }

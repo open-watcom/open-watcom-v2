@@ -22,11 +22,11 @@
 !endif
 
 wmakept.lnk : makefile
-    @%create  $^@
-    @%append $^@ SYSTEM  os2v2
-    @%append $^@ OPTION  caseexact, quiet, eliminate, map, show
-    @%append $^@ OPTION  dosseg, stack=64k, offset=64k, newfiles
-    @%append $^@ DEBUG   all
+    @%create  $@
+    @%append $@ SYSTEM  os2v2
+    @%append $@ OPTION  caseexact, quiet, eliminate, map, show
+    @%append $@ OPTION  dosseg, stack=64k, offset=64k, newfiles
+    @%append $@ DEBUG   all
 
 wmakept.exe : wmakept.lnk wmakept.obj
     wlink @wmakept.lnk name wmakept file wmakept

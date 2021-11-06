@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,17 +35,16 @@
 #include "posix.h"
 #include "specio.h"
 #include "pathgrp2.h"
+#include "myio.h"
 
 #include "clibext.h"
 
 
 #define MAX_SRC_LINE    512
 
-#define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
-
 const char _NEAR  SingleBlank[] = " ";
 const char _NEAR  SingleSlash[] = "/";
-const char _NEAR  SingleQuote[] = "\"";
+const char _NEAR  SingleDQuote[] = "\"";
 
 int         SourceErrCount = 0;
 line        *WorkLine;
@@ -102,17 +101,17 @@ void *MemRealloc( void *ptr, size_t size )
  */
 char *StrMerge( int cnt, char *str, ... )
 {
-    va_list     arg;
+    va_list     args;
     char        *n;
 
-    va_start( arg, str );
+    va_start( args, str );
     for( ; cnt-- > 0; ) {
-        n = va_arg( arg, char * );
+        n = va_arg( args, char * );
         if( n != NULL ) {
             strcat( str, n );
         }
     }
-    va_end( arg );
+    va_end( args );
     return( str );
 
 } /* StrMerge */
@@ -149,7 +148,7 @@ FILE *GetFromEnvAndOpen( const char *path )
 /*
  * initSource - initialize language variables
  */
-static vi_rc initSource( vlist *vl )
+static vi_rc initSource( vars_list *vl )
 {
     VarAddStr( "*", "", vl );
     return( ERR_NO_ERR );
@@ -159,7 +158,7 @@ static vi_rc initSource( vlist *vl )
 /*
  * finiSource - release language variables
  */
-static void finiSource( labels *lab, vlist *vl, sfile *sf )
+static void finiSource( labels *lab, vars_list *vl, sfile *sf )
 {
     sfile       *curr, *tmp;
 
@@ -184,11 +183,11 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf )
 /*
  * writeScript - write a compiled script
  */
-static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, const char *vn )
+static vi_rc writeScript( const char *fn, sfile *sf, vars_list *vl, srcline *sline, const char *vn )
 {
     sfile       *curr;
     FILE        *foo;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[FILENAME_MAX];
     char        tmp[MAX_SRC_LINE];
     int         token;
@@ -268,18 +267,13 @@ void SpecialFclose( GENERIC_FILE *gf )
 /*
  * SpecialFgets - get from either file or exe
  */
-bool SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
+char *SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
 {
-    size_t      i;
-
-    if( fgets( buff, max_len, gf->data.fp ) == NULL ) {
-        return( true );
+    if( myfgets( buff, max_len, gf->data.fp ) == NULL ) {
+        return( NULL );
     }
     gf->gf.a.currline++;
-    for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
-        buff[i - 1] = '\0';
-    }
-    return( false );
+    return( buff );
 
 } /* SpecialFgets */
 
@@ -287,7 +281,7 @@ bool SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
 static vi_rc Compile( const char *fn, const char *data )
 {
     labels      *lab, lb;
-    vlist       vl;
+    vars_list   vl;
     sfile       *sf;
     char        sname[FILENAME_MAX];
     vi_rc       rc;

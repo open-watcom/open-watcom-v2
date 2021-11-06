@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,10 +62,7 @@ MsgRetType WMessageDialog::domessage( WWindow *parent,
     if( parent != NULL ) {
         handle = parent->handle();
     }
-    MsgRetType ret = (MsgRetType)GUIDisplayMessage( handle,
-                                                    (char *)text,
-                                                    (char *)caption,
-                                                    (gui_message_type)type );
+    MsgRetType ret = (MsgRetType)GUIDisplayMessage( handle, text, caption, (gui_message_type)type );
     return( ret );
 }
 
@@ -78,6 +76,7 @@ MsgRetType WEXPORT WMessageDialog::messagef( WWindow* parent, MsgLevel level,
     MsgRetType rc;
     char* txt = new char [MAX_MESSAGE + 1];
     va_list args;
+
     va_start( args, text );
     vsprintf( (char *)txt, text, args );
     va_end( args );
@@ -114,11 +113,12 @@ MsgRetType WEXPORT WMessageDialog::messager( WWindow* parent, MsgLevel level,
     return( domessage( parent, text, caption, type ) );
 }
 
-void WEXPORT WMessageDialog::info( WWindow* parent, const char *text, ... ) {
-/***************************************************************************/
-
+void WEXPORT WMessageDialog::info( WWindow* parent, const char *text, ... )
+/*************************************************************************/
+{
     char* txt = new char [MAX_MESSAGE + 1];
     va_list args;
+
     va_start( args, text );
     vsprintf( txt, text, args );
     va_end( args );

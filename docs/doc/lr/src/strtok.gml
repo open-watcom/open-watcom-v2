@@ -1,8 +1,8 @@
 .func begin strtok strtok_r _fstrtok _fstrtok_r
 .func2 wcstok ISO C95
-.func2 _mbstok 
+.func2 _mbstok
 .func2 _mbstok_r
-.func2 _fmbstok 
+.func2 _fmbstok
 .func2 _fmbstok_r
 .func end
 .synop begin
@@ -11,7 +11,7 @@ char *strtok( char *s1, const char *s2 );
 char *strtok_r( char *s1, const char *s2, char **p1 );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Search' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrtok( char __far *s1,
                       const char __far *s2 );
 char __far *_fstrtok_r( char __far *s1,
@@ -61,13 +61,13 @@ function is used to break the string pointed to by
 into a sequence of tokens, each of which is delimited by a character
 from the string pointed to by
 .arg s2
-.ct .li .
+.period
 The first call to
 .id &funcb.
 will return a pointer to the first token in
 the string pointed to by
 .arg s1
-.ct .li .
+.period
 Subsequent calls to
 .id &funcb.
 must pass a NULL pointer as the first
@@ -82,7 +82,7 @@ The first call in the sequence searches
 for the first character that is not contained in the current delimiter
 string
 .arg s2
-.ct .li .
+.period
 If no such character is found, then there are no tokens in
 .arg s1
 and the
@@ -97,7 +97,7 @@ contained in the current delimiter string.
 If no such character is found, the current token extends to the end of
 the string pointed to by
 .arg s1
-.ct .li .
+.period
 If such a character is found, it is overwritten by a null character,
 which terminates the current token.
 The
@@ -112,13 +112,13 @@ may modify the original string, that string should be
 duplicated if the string is to be re-used.
 .np
 The reentrant form of this function,
-.kw strtok_r
-, also requires a pointer to a string pointer to be passed.
+.reffunc strtok_r
+.ct , also requires a pointer to a string pointer to be passed.
 This pointer is used internally by the function for subsequent
 calls to perform tokenizing without relying on internal state
 within the function.
-.im farfunc
-.im widefun1
+.farfunc &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The third argument
 .arg ptr
@@ -155,7 +155,8 @@ is similar to that for the
 .id &funcb.
 function.
 .do end
-.im mbsffunc
+.mbcsfunc &mfunc. &funcb.
+.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
 The

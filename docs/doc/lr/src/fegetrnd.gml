@@ -20,8 +20,8 @@ representing the current rounding direction or a negative value if there is no s
 rounding direction macro or the current rounding direction is not determinable.
 .np
 For valid rounding modes see
-.seekw &function. fesetround
-.ct .li .
+.reffunc fesetround
+.period
 .return end
 .*
 .see begin
@@ -37,7 +37,7 @@ void main( void )
     int mode;
     mode = fegetround();
     if ( mode == FE_TONEAREST )
-	    printf( "Nearest\n" );
+        printf( "Nearest\n" );
     else if ( mode == FE_DOWNWARD )
         printf( "Down\n" );
     else if ( mode == FE_TOWARDZERO )

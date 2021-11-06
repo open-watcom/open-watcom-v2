@@ -65,13 +65,13 @@ static bool nextToken( FILE *fh, char *buf, int nbuf )
             buf++;
             nbuf--;
             if( nbuf == 0 ) {
-                return( FALSE );
+                return( false );
             }
             ch = getc( fh );
         }
         ungetc( ch, fh );
         *buf = '\0';
-        return( TRUE );
+        return( true );
     }
     if( ch == '"' ) {
         ch = getc( fh );
@@ -80,20 +80,20 @@ static bool nextToken( FILE *fh, char *buf, int nbuf )
             buf++;
             nbuf--;
             if( nbuf == 0 ) {
-                return( FALSE );
+                return( false );
             }
             ch = getc( fh );
         }
         *buf = '\0';
-        return( TRUE );
+        return( true );
     }
     if( ch == ',' ) {
         *buf = ch;
         buf++;
         *buf = '\0';
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void addProjectType( char *typename, char *friendlyname )
@@ -119,11 +119,11 @@ bool ReadProjectTypes()
     char    token[128];
     char    typename[128];
     char    friendlyname[128];
-    
+
     _searchenv( PROJTYPE_CONFIG_FILE, "PATH", filepath );
     if( filepath[0] == '\0' ) {
         ShowError( APPWIZ_CFG_MISSING, PROJTYPE_CONFIG_FILE );
-        return( FALSE );
+        return( false );
     }
     fh = fopen( filepath, "r" );
     while( !feof( fh ) ) {
@@ -132,17 +132,17 @@ bool ReadProjectTypes()
                 !nextToken( fh, token, 128 ) || strcmp( token, "," ) != 0 ||
                 !nextToken( fh, friendlyname, 128 ) ) {
                 ShowError( APPWIZ_INVALID_PROJTYPES );
-                return( FALSE );
+                return( false );
             }
             addProjectType( typename, friendlyname );
         } else if( !feof( fh ) ) {
             ShowError( APPWIZ_INVALID_PROJTYPES );
-            return( FALSE );
+            return( false );
         }
     }
     fclose( fh );
 
-    return( TRUE );
+    return( true );
 }
 
 void FreeProjectTypes()
@@ -194,8 +194,8 @@ bool GetTemplateFilePath( char *typename, char *filename, char *buffer )
     _searchenv( searchname, "WATCOM", buffer );
     if( buffer[0] == '\0' ) {
         ShowError( APPWIZ_TEMPLATE_MISSING, filename );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,9 @@
 #include "bool.h"
 #include "cpuglob.h"
 #include "wdebug.h"
+#include "winintrf.h"
 #include "di386dll.h"
+
 
 #define MAX_ISTACK      4096
 
@@ -46,12 +49,12 @@ typedef union {
     unsigned short  words[4];
 } idt;
 
-extern DWORD    SaveEAX;
-extern WORD     DPL;
-extern bool     OurOwnInt;
-extern WORD     IDTSel;
-extern WORD     InterruptStackSel;
-extern DWORD    InterruptStackOff;
+extern interrupt_struct IntRegsSave;
+extern WORD             DPL;
+extern bool             OurOwnInt;
+extern WORD             IDTSel;
+extern WORD             InterruptStackSel;
+extern DWORD            InterruptStackOff;
 
 extern void GetIDTSel( void );
 extern void ReleaseIDTSel( void );
@@ -85,7 +88,7 @@ static int     DebuggerCount = 0;
  * - register our interrupt callback routine with WDEBUG.386.  This routine
  *   is invoked whenever a 32-bit fault occurs.  The routine runs on a
  *   stack that we specify.  WDEBUG.386 copies the register information
- *   into the provided structure (&SaveEAX) before it invokes the callback
+ *   into the provided structure (&IntRegsSave) before it invokes the callback
  *   routine. NOTE:  "invoking" the callback routine really means that
  *   WDEBUG.386 changes the registers of the Windows VM such that the
  *   next time it runs, it begins execution at the callback routine.
@@ -111,15 +114,15 @@ int FAR PASCAL SetDebugInterrupts32( void )
     IDTInit( IDTSel );
     HookIDT( ReflectInt1Int3 );
 
-    InterruptStackSel = FP_SEG( IStack );
-    InterruptStackOff = (DWORD) (FP_OFF( IStack ) + MAX_ISTACK-16);
+    InterruptStackSel = _FP_SEG( IStack );
+    InterruptStackOff = (DWORD)( _FP_OFF( IStack ) + MAX_ISTACK - 16 );
 
 
     /*
      * set up to be notified of faults by wgod
      */
     RegisterInterruptCallback( (LPVOID) InterruptCallback,
-                        (LPVOID) &SaveEAX,
+                        (LPVOID) &IntRegsSave,
                         (LPVOID) &IStack[MAX_ISTACK-16] );
 
     return( 1 );
@@ -157,13 +160,13 @@ void FAR PASCAL ResetDebugInterrupts32( void )
  * This routine must be followed by a DoneWithInterrupt call, otherwise
  * the INT1/INT3 IDT hooks will not be restored.
  */
-int FAR PASCAL GetDebugInterruptData( LPVOID data )
+int FAR PASCAL GetDebugInterruptData( interrupt_struct FAR *data )
 {
     if( !OurOwnInt ) {
         return( false );
     }
     if( data != NULL ) {
-        _fmemcpy( data, &SaveEAX, sizeof( interrupt_struct ) );
+        _fmemcpy( data, &IntRegsSave, sizeof( interrupt_struct ) );
     }
     IntAccessed++;
     return( true );
@@ -177,10 +180,10 @@ int FAR PASCAL GetDebugInterruptData( LPVOID data )
  * are copied back to the data area for reloading by WDEBUG.386, and
  * the IDT is reset to point at our int1/3 handler.
  */
-void FAR PASCAL DoneWithInterrupt( LPVOID data )
+void FAR PASCAL DoneWithInterrupt( interrupt_struct FAR *data )
 {
     if( data != NULL ) {
-        _fmemcpy( &SaveEAX, data, sizeof( interrupt_struct ) );
+        _fmemcpy( &IntRegsSave, data, sizeof( interrupt_struct ) );
     }
     IntAccessed--;
     if( IntAccessed <= 0 ) {

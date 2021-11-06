@@ -4,7 +4,7 @@
 imaxdiv_t imaxdiv( intmax_t numer, intmax_t denom );
 
 typedef struct {
-    intmax_t    quot;  /* quotient */
+    intmax_t    quot;  /* quotient  */
     intmax_t    rem;   /* remainder */
 } imaxdiv_t;
 .synop end
@@ -16,7 +16,7 @@ numerator
 .arg numer
 by the denominator
 .arg denom
-.ct .li .
+.period
 .desc end
 .*
 .return begin
@@ -28,8 +28,7 @@ that contains the fields
 .kw quot
 and
 .kw rem
-.ct,
-which are both of type
+.ct , which are both of type
 .id intmax_t.
 .return end
 .*

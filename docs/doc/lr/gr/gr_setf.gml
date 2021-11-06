@@ -1,5 +1,5 @@
-.gfunc setfont
-.gsynop begin 
+.gfunc _setfont
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _setfont( char _FAR *opt );
 .do end
@@ -12,12 +12,11 @@ character*(*) opt
 The
 .id &funcb.
 &routine selects a font from the list of registered fonts
-(see the
-.kw _registerfonts
-&routine).
+.seeref _registerfonts
+.period
 The font selected becomes the current font and is used whenever text
 is displayed with the
-.kw _outgtext
+.reffunc _outgtext
 &routine..
 The &routine will fail if no fonts have been registered, or if a font
 cannot be found that matches the given characteristics.
@@ -30,25 +29,25 @@ The options may be separated by blanks and are not case-sensitive.
 Any number of options may be specified and in any order.
 The available options are:
 .begterm 15
-.note hX
+.termnx hX
 character height X (in pixels)
-.note wX
+.termnx wX
 character width X (in pixels)
-.note f
+.termnx f
 choose a fixed-width font
-.note p
+.termnx p
 choose a proportional-width font
-.note r
+.termnx r
 choose a raster (bit-mapped) font
-.note v
+.termnx v
 choose a vector font
-.note b
+.termnx b
 choose the font that best matches the options
-.note nX
+.termnx nX
 choose font number X (the number of fonts is returned by the
-.kw _registerfonts
+.reffunc _registerfonts
 &routine)
-.note t'facename'
+.termnx t'facename'
 choose a font with specified facename
 .endterm
 .pp
@@ -56,17 +55,17 @@ The facename option is specified as a "t" followed by a facename enclosed
 in single quotes.
 The available facenames are:
 .begterm 15
-.note Courier
+.termnx Courier
 fixed-width raster font with serifs
-.note Helv
+.termnx Helv
 proportional-width raster font without serifs
-.note Tms Rmn
+.termnx Tms Rmn
 proportional-width raster font with serifs
-.note Script
+.termnx Script
 proportional-width vector font that appears similar to hand-writing
-.note Modern
+.termnx Modern
 proportional-width vector font without serifs
-.note Roman
+.termnx Roman
 proportional-width vector font with serifs
 .endterm
 .pp

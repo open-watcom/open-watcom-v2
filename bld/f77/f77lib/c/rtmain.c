@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +31,10 @@
 
 
 #include "ftnstd.h"
-#include "rtenv.h"
-#include "rundat.h"
-#include "errcod.h"
 #include "rtspawn.h"
 #include "rt_init.h"
+#include "rtmain.h"
+
 
 // FORTRAN 77 run-time system must be initialized before we call
 // user's program. Part of the run-time initialization includes
@@ -50,37 +49,33 @@
 #include <win386.h>
 #include "fwinmain.h"
 
-extern  char            __FAppType;
 
-
-intstar4    FWINMAIN( HINSTANCE thisinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow ) {
-//============================================================================
-
+intstar4    FWINMAIN( HINSTANCE thisinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow )
+//========================================================================================
+{
     __FAppType = FAPP_DEFAULT_GUI;
     DefaultWinMain( thisinst, previnst, cmdline, cmdshow, &main );
     return( 1 );
 }
 
 
-int     main( int argc, char *argv[] ) {
-//======================================
+int     main( int argc, char *argv[] )
+//====================================
+{
+    /* unused parameters */ (void)argc; (void)argv;
 
-    argc = argc; argv = argv;
     RTSpawn( &FMAIN );
     return( 0 );
 }
 
 #else
 
-extern  void            FMAIN(void);
+int     main( int argc, char *argv[] )
+//====================================
+{
+    /* unused parameters */ (void)argc; (void)argv;
 
-
-int     main( int argc, char *argv[] ) {
-//======================================
-
-// Call user's program.
-
-    argc = argc; argv = argv;
+    // Call user's program.
     RTSysInit();
     RTSpawn( &FMAIN );
     return( 0 );

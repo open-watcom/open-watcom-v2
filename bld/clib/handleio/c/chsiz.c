@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,16 +44,16 @@
 #include "lseek.h"
 #include "msdos.h"
 
-_WCRTLINK int chsize( int handle, long size )
+_WCRTLINK int _chsize( int handle, long size )
 {
     int         rc;
     long        current_offset, diff;
     unsigned    amount;
-    auto char   buff[512];
+    char        buff[512];
     long        status;
-    
+
     __handle_check( handle, -1 );
-    
+
     current_offset = __lseek( handle, 0L, SEEK_CUR ); /* remember current */
     if( current_offset == -1 )
         return( -1 );
@@ -74,13 +75,13 @@ _WCRTLINK int chsize( int handle, long size )
             }
             diff -= amount;
         } while( diff != 0 );
-        
+
     } else {
         /*** Shrink the file ***/
         status = __lseek( handle, size, SEEK_SET );
         if( status != -1 ) {
             tiny_ret_t rc1;
-            
+
             rc1 = TinyWrite( handle, buff, 0 );
             if( TINY_ERROR( rc1 ) ) {
                 rc = __set_errno_dos( TINY_INFO( rc1 ) );
@@ -92,7 +93,7 @@ _WCRTLINK int chsize( int handle, long size )
             current_offset = size;
         }
     }
-    
+
     status = __lseek( handle, current_offset, SEEK_SET );
     if( status == -1)
         rc = -1;

@@ -6,13 +6,8 @@
 host_os=nt
 host_cpu=386
 
-wv_engine_noui = 1
+wv_engine_noui = dve
 
-all : dve.exe .SYMBOLIC
+wv_drv_objs = stubdb.obj
 
 !include ../../master.mif
-
-dve.exe : $(resfile_dll) stubdb.obj wd.lib $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $^@ sys nt debug all op symf,map file stubdb.obj lib wd.lib
-    @%make bind_res_dll

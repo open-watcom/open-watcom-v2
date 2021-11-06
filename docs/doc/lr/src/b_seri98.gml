@@ -22,7 +22,7 @@ The
 function provides serial communications services to the
 serial port specified by
 .arg port
-.ct .li .
+.period
 The values for
 .arg port
 may be:
@@ -52,14 +52,14 @@ received data length is stored in the
 .mono size
 field of the structure
 .kw com_t
-.ct .li .
+.period
 .term _COM_INIT
 It initializes the serial port specified in the argument
 .arg port
-.ct .li .
+.period
 It uses all fields of the structure
 .kw com_t
-.ct .li .
+.period
 When _COM_CH2 or _COM_CH3 is specified in the argument
 .arg port
 .ct , the
@@ -90,7 +90,7 @@ and the system port information in the field
 .mono buffer+1
 of the structure
 .kw com_t
-.ct .li .
+.period
 .np
 The returned controller information is described below.
 .desc end
@@ -104,8 +104,8 @@ When the
 service is requested the controller information returned is as
 follows:
 .begnote $compact $setptnt 12
-.termhd1 Bit
-.termhd2 Meaning
+.notehd1 Bit
+.notehd2 Meaning
 .note bit 0
 Send status (1=Ready / 0=Busy)
 .note bit 1
@@ -128,8 +128,8 @@ When the
 .kw _COM_STATUS
 service is requested the system port information is as follows:
 .begnote $compact $setptnt 12
-.termhd1 Bit
-.termhd2 Meaning
+.notehd1 Bit
+.notehd2 Meaning
 .note bits 0-4
 Not used
 .note bit 5

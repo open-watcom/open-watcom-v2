@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 // wrsvexe.c
 pick(   WR_NOCONV1632,
         "Conversion between 16 and 32 bit resources are not supported.",

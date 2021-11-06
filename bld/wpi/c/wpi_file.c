@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +48,11 @@ HFILE _wpi_fileopen( LPSTR filename, int format )
         format |= OPEN_SHARE_DENYNONE;
     }
 
-    if( DosOpen( (PSZ)filename, &hfile, &action, 0L, FILE_NORMAL,
+    if( DosOpen( (PSZ)filename, &hfile, &action, 0L,
+                FILE_NORMAL,
                 OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
-                format, 0L ) != 0 ) {
+                format,
+                0 ) != 0 ) {
         hfile = -1;
     }
 #ifdef __FLAT__
@@ -100,9 +103,11 @@ HFILE _wpi_filecreate( LPSTR filename, int format )
         format |= OPEN_SHARE_DENYNONE;
     }
 
-    if( DosOpen( (PSZ)filename, &hfile, &action, 0L, FILE_NORMAL,
+    if( DosOpen( (PSZ)filename, &hfile, &action, 0,
+                FILE_NORMAL,
                 OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_REPLACE_IF_EXISTS,
-                format, 0L ) != 0 ) {
+                format,
+                0 ) != 0 ) {
         hfile = -1;
     }
 

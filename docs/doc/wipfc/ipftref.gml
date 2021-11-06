@@ -6,13 +6,14 @@
 This section acts as a reference, describing how &ipfcmd implements each tag.
 .*
 .section Overview
+.*
 .np
 Tags are the heart of IPF markup and come in four flavors:
 .autopoint
 .point
 Tags that appear in the document header. These tags control how the document behaves.
 .point
-Tags that establish blocks. These tags can contain other tags as well as text. List-blocks and tables are 
+Tags that establish blocks. These tags can contain other tags as well as text. List-blocks and tables are
 special cases in that they can only contain other tags and cannot directly contain text.
 .point
 Tags that are in-line. These tags can contain text or other in-line tags.
@@ -20,7 +21,7 @@ Tags that are in-line. These tags can contain text or other in-line tags.
 Formatting tags that can appear anywhere, but are usually in-line.
 .endpoint
 .np
-This diagram classifies each tag and shows which tags can contain which other tags. Tags that are marked as 
+This diagram classifies each tag and shows which tags can contain which other tags. Tags that are marked as
 containing 'in-line' can also contain formatting and text.
 .millust begin
 Tag Name            Classification
@@ -151,10 +152,11 @@ euserdoc
 .millust end
 .*
 .section Reference
+.*
 .np
 The &ipfname follows the behavior of the IBM OS/2 Help Compiler as documented in the "ipfref.inf"
 help file. This means that the behavior of the two compilers is very similar but not identical, since the
-IBM compiler allows certain things that the documentation says it should not. The entry for each tag that 
+IBM compiler allows certain things that the documentation says it should not. The entry for each tag that
 follows describes how the &ipfname treats each tag.
 .*
 .beglevel

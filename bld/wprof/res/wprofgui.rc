@@ -7,10 +7,6 @@
 #include "rcdef.rh"
 #include "wprof.rc"
 
-#ifdef __NT__
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
-#endif
-
 #ifdef __OS2__
 
 ICON 1          "prof_i.ico"

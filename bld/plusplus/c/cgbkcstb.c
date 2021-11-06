@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,19 +38,20 @@
 #include "codegen.h"
 #include "cgbackut.h"
 #include "ring.h"
-#include "toggle.h"
 #include "initdefs.h"
+#ifndef NDEBUG
+#include "pragdefn.h"
+#include "togglesd.h"
+#endif
+
 
 static carve_t carve_call_stab; // carve control: CALL_STAB
 
-
 #ifndef NDEBUG
-
-#include "pragdefn.h"
 
 static void __dump( const char* text, CALL_STAB* cstb )
 {
-    if( PragDbgToggle.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         printf( "CALL_STAB[%p] %s handle(%p) se(%p) has_cd_arg(%d) cd_arg(%x)\n"
               , cstb
               , text

@@ -1,6 +1,6 @@
 .begpoint $compact $setptnt 8
-:DTHD.Error
-:DDHD.Message
+.pointhd1 Error
+.pointhd2 Message
 .point 0
 "Error 0"
 .point 1

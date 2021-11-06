@@ -3,10 +3,9 @@ processor  = 386
 convention = register
 model      = mf
 system     = linux
-linkage    = static 
+linkage    = static
 mthreaded=1
 
-clib_release = 0
+lib_debug = 1
 
 !include $(clib_dir)/mklib.mif
-!include ../../../deps.mif

@@ -9,17 +9,17 @@ errno_t wcsrtombs_s( size_t * restrict retval,
                      const wchar_t ** restrict src,
                      rsize_t len,
                      mbstate_t * restrict ps);
-.ixfunc2 '&Wide' &funcb
-.ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.ixfunc2 '&Wide' wcsrtombs_s
+.ixfunc2 '&Multibyte' wcsrtombs_s
+.if &farfnc ne 0 .do begin
 errno_t _fwcsrtombs_s( size_t __far * restrict retval,
                        char __far * restrict dst,
                        rsize_t dstmax,
                        const wchar_t __far * __far * restrict src,
                        rsize_t len,
                        mbstate_t __far * restrict ps);
-.ixfunc2 '&Wide' &fwfunc
-.ixfunc2 '&Multibyte' &fwfunc
+.ixfunc2 '&Wide' _fwcsrtombs_s
+.ixfunc2 '&Multibyte' _fwcsrtombs_s
 .do end
 .synop end
 .*
@@ -41,7 +41,7 @@ nor
 .arg dstmax
 shall be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 If
 .arg dst
 is a null
@@ -49,7 +49,7 @@ pointer, then
 .arg dstmax
 shall equal zero. If
 .arg dst
-is not a null pointer,then
+is not a null pointer, then
 .arg dstmax
 shall
 not equal zero. If
@@ -64,13 +64,8 @@ was reached or because an encoding error occurred.
 .np
 If there is a runtime-constraint violation, then
 .id &funcb.
-does the following. If
-.arg retval
-is not a null pointer,then
-.id &funcb.
-sets
-.arg *retval
-to (size_t)(-1).
+does the following.
+.im _mbsret6
 If
 .arg dst
 is not a null pointer and
@@ -93,13 +88,13 @@ indirectly pointed to by
 into a sequence of corresponding multibyte characters that
 begins in the conversion state described by the object pointed to by
 .arg ps
-.ct .li .
+.period
 If
 .arg dst
 is not a null pointer, the converted characters are then stored
 into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Conversion continues up to and including a terminating null wide character,
 which is also stored.
 .np
@@ -114,18 +109,18 @@ character;
 is not a null pointer) when the next multibyte character would exceed the
 limit of n total bytes to be stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 If the wide
 character being converted is the null wide character, then n is the lesser of
 .arg len
 or
 .arg dstmax
-.ct .li .
+.period
 Otherwise, n is the lesser of
 .arg len
 or
 .arg dstmax-1
-.ct .li .
+.period
 :eul.
 If the conversion stops without converting a null wide character and
 .arg dst
@@ -135,7 +130,7 @@ pointer, then a null character is stored into the array pointed to by
 immediately
 following any multibyte characters already stored. Each conversion takes place as if by a
 call to the
-.kw wcrtomb
+.reffunc wcrtomb
 function.
 .np
 If
@@ -151,12 +146,9 @@ conversion state.
 Regardless of whether
 .arg dst
 is or is not a null pointer, if the input conversion encounters a
-wide character that does not correspond to a valid multibyte character, an encoding error
-occurs: the
-.id &funcb.
-function stores the value (size_t)(-1) into
-.arg *retval
-and the conversion state is unspecified. Otherwise, the
+wide character that does not correspond to
+.im _mbsret5
+Otherwise, the
 .id &funcb.
 function stores
 into
@@ -175,7 +167,7 @@ returns.
 .np
 If copying takes place between objects that overlap, the objects take on unspecified
 values.
-.im safefarw
+.farfuncp &ffunc. &funcb.
 .desc end
 .*
 .return begin

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,10 +43,10 @@
 #include "bool.h"
 
 
-_WCRTLINK long long int __F_NAME(atoll,_wtoll)( const CHAR_TYPE *p )  /* convert ASCII string to long long int */
+_WCRTLINK long long __F_NAME(atoll,_wtoll)( const CHAR_TYPE *p )  /* convert ASCII string to long long */
 {
-    unsigned long long int  value = 0;
-    bool                    minus;
+    unsigned long long  value = 0;
+    bool                minus;
 
     __ptr_check( p, 0 );
 

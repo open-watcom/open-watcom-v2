@@ -60,7 +60,7 @@ int main(int argc, char **argv)
     if( Environment.value( "WIPFC" ).empty() ) {
         printBanner();
         std::cout << "The 'WIPFC' environment variable needs to be set. ";
-        std::cout << "It should contain the name of the directory containing .nls and entity.txt" << std::endl;
+        std::cout << "It should contain the name of the directory containing .nls and entity.txt files." << std::endl;
         return retval;
     }
     Environment.add( "IPFCARTWORK" );

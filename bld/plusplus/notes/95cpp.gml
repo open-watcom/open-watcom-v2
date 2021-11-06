@@ -109,7 +109,7 @@ best optimizing compiler.
 New optimizations with regard to identifying functions that do not
 throw exceptions were developed this year.  These techniques reduce
 or eliminate the need for compiler generated "book keeping" code that
-contributes to the bloat of current C++ generated code.  
+contributes to the bloat of current C++ generated code.
 The C++ compiler that contains these optimizations is still in
 development and has not been released yet.
 
@@ -151,7 +151,7 @@ files of source code became an important task.
 :P
 The method we used to solve this problem is called a pre-compiled header file.
 The problems encountered in implementing this feature of the compiler include
-saving and restoring the complete internal state of the compiler.  This 
+saving and restoring the complete internal state of the compiler.  This
 involved research into the latest papers on persistent objects combined
 with some Watcom innovations.  The completed implementation satisfied our
 goal of increased throughput during compilation of C++ source code.
@@ -183,7 +183,7 @@ these opposing forces.
 :H6.The compiler support routines
 
 :P.
-The ISO C++ standard was changed to specify that the life-time of 
+The ISO C++ standard was changed to specify that the life-time of
 temporary objects is the duration of a statement. The WATCOM compiler
 was implemented with life-times being the duration of a scope.
 :P

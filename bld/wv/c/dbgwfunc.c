@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,7 +99,7 @@ static void FuncNoMod( a_window wnd )
 {
     func_window *func = WndFunc( wnd );
 
-    WndScrollAbs( wnd, 0 );
+    WndVScrollAbs( wnd, 0 );
     NameListFree( NameList( func ) );
     WndZapped( wnd );
 }
@@ -304,7 +304,7 @@ wnd_info FuncInfo = {
     FuncRefresh,
     FuncGetLine,
     FuncMenuItem,
-    NoScroll,
+    NoVScroll,
     NoBegPaint,
     NoEndPaint,
     FuncModify,

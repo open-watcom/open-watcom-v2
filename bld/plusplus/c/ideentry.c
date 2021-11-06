@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -253,9 +253,9 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     , const char* opts          // - options
     , IDEBool* fatal_error )    // - addr[ fatality indication ]
 {
-    DLL_DATA dllinfo;                           // - information passed to DLL
-    auto char input[1 + _MAX_PATH + 1];         // - input file name ("<fname>")
-    auto char output[4 + 1 + _MAX_PATH + 1];    //- output file name (-fo="<fname>")
+    DLL_DATA dllinfo;                   // - information passed to DLL
+    char input[1 + _MAX_PATH + 1];      // - input file name ("<fname>")
+    char output[4 + 1 + _MAX_PATH + 1]; //- output file name (-fo="<fname>")
 
     /* unused parameters */ (void)hdl;
 
@@ -276,9 +276,9 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     char **argv,                // - argument vector
     IDEBool* fatal_error )      // - addr[ fatality indication ]
 {
-    DLL_DATA dllinfo;                           // - information passed to DLL
-    auto char input[1 + _MAX_PATH + 1];         // - input file name ("<fname>")
-    auto char output[4 + 1 + _MAX_PATH + 1];    //- output file name (-fo="<fname>")
+    DLL_DATA dllinfo;                   // - information passed to DLL
+    char input[1 + _MAX_PATH + 1];      // - input file name ("<fname>")
+    char output[4 + 1 + _MAX_PATH + 1]; //- output file name (-fo="<fname>")
 
     /* unused parameters */ (void)hdl;
 
@@ -611,7 +611,7 @@ void CppStartFuncMessage( SYMBOL sym )
 /************************************/
 {
 #if defined(wpp_dll)
-    auto VBUF buff;
+    VBUF buff;
 
     DbgAssert( CompFlags.progress_messages );
     if( sym != NULL ) {

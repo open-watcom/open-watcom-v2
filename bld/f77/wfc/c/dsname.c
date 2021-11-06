@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "opr.h"
 #include "opn.h"
 #include "astype.h"
@@ -66,10 +65,10 @@ static  void    ScanningFunction( void );
 static  void    SubProg( void );
 static  void    CkIntrinsic( void );
 
-bool    SubStrung( void ) {
+bool    SubString( void ) {
 //===================
 
-// Determine whether name is substrung or not.
+// Determine whether name is substring or not.
 
     itnode      *save_citnode;
     OPR         opr;
@@ -111,8 +110,8 @@ void    DSName( void ) {
                     CkFieldNoList();
                 }
             } else if( (CITNode->opn.us & USOPN_WHAT) == USOPN_NWL ) {
-                // field better be character and substrung
-                if( ( CITNode->sym_ptr->u.fd.typ != FT_CHAR ) || !SubStrung() ) {
+                // field better be character and substring
+                if( ( CITNode->sym_ptr->u.fd.typ != FT_CHAR ) || !SubString() ) {
                     AdvError( PC_SURP_PAREN );
                 }
             }
@@ -191,7 +190,7 @@ void    DSName( void ) {
         } else if( RecNWL() ) {     // if name with list, not dimensioned
             if( ASType & AST_DIM ) {
                 IllName( sym_ptr );
-            } else if( (CITNode->typ == FT_CHAR) && SubStrung() ) {
+            } else if( (CITNode->typ == FT_CHAR) && SubString() ) {
                 SetTypeUsage( SY_TYPE | SY_USAGE );
             } else {
                 ScanningFunction();
@@ -296,7 +295,7 @@ static  void    SubProg( void ) {
 
     unsigned_16 sp_type;
 
-    sp_type = CITNode->flags & SY_SUBPROG_TYPE;
+    sp_type = (CITNode->flags & SY_SUBPROG_TYPE);
     if( ( sp_type == SY_REMOTE_BLOCK ) || ( sp_type == SY_PROGRAM ) ) {
         IllName( CITNode->sym_ptr );
     } else if( sp_type == SY_STMT_FUNC ) {
@@ -326,7 +325,7 @@ static  void    SubProg( void ) {
             Extension( SR_TRIED_RECURSION );
         }
     } else if( sp_type == SY_FUNCTION ) {
-        if( RecNWL() && SubStrung() && (CITNode->typ == FT_CHAR) &&
+        if( RecNWL() && SubString() && (CITNode->typ == FT_CHAR) &&
             (CITNode->flags & SY_PS_ENTRY) ) {
             GetFunctionShadow();
         } else if( !RecNWL() && (ASType & AST_CNA) == 0 ) {
@@ -481,7 +480,9 @@ void    CkTypeDeclared( void ) {
         flags = CITNode->sym_ptr->u.ns.flags;
         if( (flags & SY_TYPE) == 0 ) {
             if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
-                if( flags & SY_INTRINSIC ) return;
+                if( flags & SY_INTRINSIC ) {
+                    return;
+                }
             }
             NameErr( TY_UNDECLARED, CITNode->sym_ptr );
         }

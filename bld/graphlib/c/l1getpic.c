@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
 #if defined( _DEFAULT_WINDOWS )
     WPI_PRES            dc;
     short               srcy;
+    HDC                 tmp_hdc;
 #else
     short               line_len;       /* length of each line in bytes     */
   #if defined( _M_I86 )
@@ -93,13 +94,14 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
     dc = _Mem_dc;
 
 // Create a memory DC to put the image in
-    image->buffer = _wpi_createcompatiblepres( dc, _GetInst(), &( image->pdc ) );
+    image->pres = _wpi_createcompatiblepres( dc, _GetInst(), &tmp_hdc );
+    image->pdc = tmp_hdc;
     image->bmp = _wpi_createcompatiblebitmap( dc, dx, dy );
-    if( ( image->buffer == NULL ) || ( image->bmp == NULL ) ) {
+    if( ( image->pres == NULL ) || ( image->bmp == NULL ) ) {
          _ErrorStatus = _GRINSUFFICIENTMEMORY;
          return;
     }
-    _wpi_selectbitmap( image->buffer, image->bmp );
+    _wpi_selectbitmap( image->pres, image->bmp );
 
 // Transfer the image to a memory DC
   #if defined( __OS2__ )
@@ -107,7 +109,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
   #else
     srcy = y1;
   #endif
-    _wpi_bitblt( image->buffer, 0, 0, dx, dy, dc, x1, srcy, SRCCOPY );
+    _wpi_bitblt( image->pres, 0, 0, dx, dy, dc, x1, srcy, SRCCOPY );
 
 #else
     image->bpp = _CurrState->vc.bitsperpixel;   /* save bpp - never used ?  */
@@ -117,7 +119,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
 
     dev_ptr = _CurrState->deviceptr;
     copy = dev_ptr->readrow;
-    pic = &image->buffer;
+    pic = image->buffer;
     tmp = NULL;
     setup = dev_ptr->setup;
     for( ; y1 <= y2; ++y1 ) {               /* copy screen image to buffer  */
@@ -134,7 +136,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
             if( tmp != NULL ) {
                 ( *copy )( tmp, _Screen.mem, dx, _Screen.bit_pos, 0 );
                 for( t = 0; t < line_len; ++t ) {
-                    *pic = tmp[ t ];
+                    *pic = tmp[t];
                     ++pic;      // the PIA function will handle this properly
                 }
             } else {

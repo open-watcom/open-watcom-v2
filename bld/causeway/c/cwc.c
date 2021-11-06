@@ -507,9 +507,9 @@ static int ProcessEXE( const char *fname, const char *oname )
     FILE            *fo;
     dos_exe_header  exe_header;
     unsigned_8      *fimg;
-    unsigned_32     ImageLen;
-    unsigned_32     ExeLen;
-    unsigned_32     HeaderLen;
+    size_t          ImageLen;
+    size_t          ExeLen;
+    size_t          HeaderLen;
     unsigned_32     TotalLen;
     unsigned_32     CompressLen;
     signed_32       mem_req;

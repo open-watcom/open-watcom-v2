@@ -1,0 +1,182 @@
+#
+# Pipeline for Release build and upload
+#
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+variables:
+  owroot:           $(Build.SourcesDirectory)
+  owobjdir:         binbuild
+  owgitverbose:     -v
+
+  owimage_lnx:      'ubuntu-18.04'
+  owimage_nt:       'vs2017-win2016'
+  owimage_osx:      'macOS-10.14'
+  owimage_lnxow:    'ubuntu-18.04'
+  owimage_ntow:     'vs2017-win2016'
+  owtools_lnx:      GCC
+  owtools_nt:       VISUALC
+  owtools_osx:      CLANG
+  owtools_lnxow:    WATCOM
+  owtools_ntow:     WATCOM
+  owtoolsv_lnx:     U18
+  owtoolsv_nt:      VS2017
+  owtoolsv_osx:     OSX1014
+  owscript_lnx:     ci/buildx.sh
+  owscript_nt:      ci\buildx.cmd
+  owscript_osx:     ci/buildx.sh
+  owartifactfile:   owartifact.tar.xz
+  owciroot_lnx:     $(owroot)/ci
+  owciroot_nt:      $(owroot)\ci
+  owciroot_osx:     $(owroot)/ci
+  owcibin32:        $(owciroot_nt)\nt386
+  owcibin64:        $(owciroot_nt)\ntx64
+
+stages:
+  - stage: start
+    displayName: "Start"
+    jobs:
+      - job: start
+        pool:
+          vmImage: $(owimage_lnx)
+        steps:
+        - checkout: none
+#  - stage: bootosx
+#    displayName: "Bootstrap OSX"
+#    dependsOn:
+#      - start
+#    jobs:
+#      - template: ci/boot.yml
+#        parameters:
+#          arch:     osx
+#          title:    Bootstrap OSX
+#  - stage: buildosx
+#    displayName: "Build OSX"
+#    dependsOn:
+#      - bootosx
+#    jobs:
+#      - template: ci/build.yml
+#        parameters:
+#          arch:     osx
+#          title:    Build OSX
+  - stage: bootlnx
+    displayName: "Bootstrap Linux"
+    dependsOn:
+      - start
+    jobs:
+      - template: ci/boot.yml
+        parameters:
+          arch:     lnx
+          title:    Bootstrap Linux
+  - stage: buildlnx
+    displayName: "Build Linux"
+    dependsOn:
+      - bootlnx
+    jobs:
+      - template: ci/build.yml
+        parameters:
+          arch:     lnx
+          title:    Build Linux
+  - stage: testslnx
+    displayName: "Tests Linux"
+    dependsOn:
+      - buildlnx
+    jobs:
+      - template: ci/tests.yml
+        parameters:
+          arch:     lnx
+          title:    Tests Linux
+  - stage: installnx
+    displayName: "Installers Build Linux"
+    dependsOn:
+      - testslnx
+      - testsnt
+      - docsnt
+    jobs:
+      - template: ci/install.yml
+        parameters:
+          arch:     lnx
+          title:    Installers Build Linux
+  - stage: release
+    displayName: "GitHub Release"
+    dependsOn:
+      - installnx
+      - instalnt
+    jobs:
+      - template: ci/release.yml
+        parameters:
+          arch:     lnx
+          title:    GitHub Release
+  - stage: bootnt
+    displayName: "Bootstrap Windows"
+    dependsOn:
+      - start
+    jobs:
+      - template: ci/boot.yml
+        parameters:
+          arch:     nt
+          title:    Bootstrap Windows
+  - stage: buildnt
+    displayName: "Build Windows"
+    dependsOn:
+      - bootnt
+    jobs:
+      - template: ci/build.yml
+        parameters:
+          arch:     nt
+          title:    Build Windows
+  - stage: testsnt
+    displayName: "Tests Windows"
+    dependsOn:
+      - buildnt
+    jobs:
+      - template: ci/tests.yml
+        parameters:
+          arch:     nt
+          title:    Tests Windows
+  - stage: docsnt
+    displayName: "Docs Build Windows"
+    dependsOn:
+      - bootnt
+    jobs:
+      - template: ci/docs.yml
+        parameters:
+          arch:     nt
+          title:    Documentation Build DOS
+          doctype:  docdos
+      - template: ci/docs.yml
+        parameters:
+          arch:     nt
+          title:    Documentation Build Html
+          doctype:  dochtml
+      - template: ci/docs.yml
+        parameters:
+          arch:     nt
+          title:    Documentation Build NT
+          doctype:  docnt
+      - template: ci/docs.yml
+        parameters:
+          arch:     nt
+          title:    Documentation Build OS2
+          doctype:  docos2
+      - template: ci/docs.yml
+        parameters:
+          arch:     nt
+          title:    Documentation Build PDF
+          doctype:  docpdf
+      - template: ci/docs.yml
+        parameters:
+          arch:     nt
+          title:    Documentation Build WIN
+          doctype:  docwin
+  - stage: instalnt
+    displayName: "Installers Build Windows"
+    dependsOn:
+      - testsnt
+      - testslnx
+      - docsnt
+    jobs:
+      - template: ci/install.yml
+        parameters:
+          arch:     nt
+          title:    Installers Build Windows

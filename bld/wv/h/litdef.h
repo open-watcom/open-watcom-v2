@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "wdmsg.h"
+#include "wdmsgdef.h"
 #include "litdef.gh"
 
 #define LIT_ENG( x ) _LIT_DBG_ENG_##x

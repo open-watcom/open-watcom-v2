@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 #include <dos.h>
 #define INCL_DOSSIGNALS
 #include <wos2.h>
-#include "rtfpehdl.h"
 #include "sigfunc.h"
 #include "_int23.h"
 
@@ -68,23 +68,4 @@ void __grab_int23( void )
         return;
     DosSetSigHandler( (PFNSIGHANDLER)break_handler, &handler, &action, 2, SIG_CTRLC );
     __int23_exit = restore_handler;
-}
-
-static FPEhandler   *__old_FPE_handler = NULL;
-
-void __restore_FPE_handler( void )
-{
-    if( __old_FPE_handler == NULL ) {
-        return;
-    }
-    _RWD_FPE_handler = __old_FPE_handler;
-    __old_FPE_handler = NULL;
-}
-
-void __grab_FPE_handler( void )
-{
-    if( __old_FPE_handler == NULL ) {
-        __old_FPE_handler = _RWD_FPE_handler;
-        _RWD_FPE_handler = __sigfpe_handler;
-    }
 }

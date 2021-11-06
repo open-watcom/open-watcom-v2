@@ -103,7 +103,7 @@ static int parse_words( const CHAR_TYPE *command, CHAR_TYPE **words )
 
     /*** If an error occurred, free any memory we've allocated ***/
     if( error ) {
-        for( numWords--; numWords>=0; numWords-- ) {
+        for( numWords--; numWords >= 0; numWords-- ) {
             lib_free( words[numWords] );
         }
         return( -1 );
@@ -177,12 +177,8 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
     BOOL                rc;
     HANDLE              osHandle;
     HANDLE              oldHandle;
-#elif defined( __WARP__ )
-    APIRET              rc;
-    HFILE               osHandle;
-    HFILE               oldHandle;
 #elif defined( __OS2__ )
-    USHORT              rc;
+    APIRET              rc;
     HFILE               osHandle;
     HFILE               oldHandle;
 #endif
@@ -206,7 +202,8 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
 #elif defined( __OS2__ )
         oldHandle = (HFILE)-1;                /* duplicate standard input */
         rc = DosDupHandle( STDIN_FILENO, &oldHandle );
-        if( rc != NO_ERROR )  return( 0 );
+        if( rc != NO_ERROR )
+            return( 0 );
         osHandle = STDIN_FILENO;            /* use new standard input */
         rc = DosDupHandle( (HFILE)_os_handle(handles[0]), &osHandle );
         if( rc != NO_ERROR ) {
@@ -278,12 +275,9 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
     HANDLE              osHandle;
     BOOL                rc;
     int                 handleMode;
-#elif defined(__OS2__) && defined(__386__)
+#elif defined( __OS2__ )
     APIRET              rc;
-    ULONG               handleState;
-#elif defined(__OS2__) && !defined(__386__)
-    USHORT              rc;
-    USHORT              handleState;
+    OS_UINT             handleState;
 #endif
     FILE *              fp;
     int                 handles[2];
@@ -348,10 +342,8 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
             return( 0 );
         }
 #endif
-    }
-
-    /*** Make write handle non-inheritable if writing ***/
-    else {
+    } else {
+        /*** Make write handle non-inheritable if writing ***/
 #if defined (__NT__ )
         rc = DuplicateHandle( GetCurrentProcess(),
                               (HANDLE)_os_handle(handles[1]),

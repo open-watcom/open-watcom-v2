@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,8 +72,6 @@ bool                            BlockTransmission;
 
 extern int                      MaxBaud;
 
-#define MILLISEC_PER_TICK       55
-
 #define SERIAL          0x0001
 
 #define SETLINECTRL     0x0042
@@ -91,7 +90,7 @@ extern int                      MaxBaud;
 #define INPUT           0x0001
 #define OUTPUT          0x0002
 
-void ZeroWaitCount( void )
+void ResetTimerTicks( void )
 {
 #ifdef _M_I86
     MSecsAtZero = GInfoSeg->msecs;
@@ -101,7 +100,7 @@ void ZeroWaitCount( void )
 }
 
 
-unsigned WaitCount( void )
+unsigned GetTimerTicks( void )
 {
 #ifdef _M_I86
     return( ( GInfoSeg->msecs - MSecsAtZero ) / MILLISEC_PER_TICK );
@@ -331,7 +330,11 @@ char *ParsePortSpec( const char **spec )
         ComPort = 0;
     }
     name[sizeof( name ) - 2] = port;
-    if( DosOpen( (PSZ)name, &ComPort, &action, 0, 0, 1, 0x12, 0 ) ) {
+    if( DosOpen( (PSZ)name, &ComPort, &action, 0,
+            FILE_NORMAL,
+            OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
+            OPEN_SHARE_DENYREADWRITE | OPEN_ACCESS_READWRITE,
+            0 ) ) {
         ComPort = 0;
         return( TRP_ERR_serial_port_not_available );
     }
@@ -377,8 +380,8 @@ void Wait( unsigned timer_ticks )
 {
     unsigned wait_time;
 
-    wait_time = WaitCount() + timer_ticks;
-    while( WaitCount() < wait_time ) {
+    wait_time = GetTimerTicks() + timer_ticks;
+    while( GetTimerTicks() < wait_time ) {
         DosSleep( MILLISEC_PER_TICK / 2 );      /* half a timer tick */
     }
 }
@@ -401,8 +404,8 @@ char *InitSys( void )
 #endif
         return( TRP_OS2_no_info );
 #ifdef _M_I86
-    GInfoSeg = MK_FP( sel_global, 0 );
-    LInfoSeg = MK_FP( sel_local, 0 );
+    GInfoSeg = _MK_FP( sel_global, 0 );
+    LInfoSeg = _MK_FP( sel_local, 0 );
     if( DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, LInfoSeg->tidCurrent ) )
 #else
     if( DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0 ) )

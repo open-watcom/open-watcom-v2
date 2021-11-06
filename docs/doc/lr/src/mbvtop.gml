@@ -4,7 +4,7 @@
 unsigned char *_mbvtop( unsigned int ch,
                         unsigned char *addr );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 unsigned char __far *_fmbvtop( unsigned int ch,
                         unsigned char __far *addr );
 .ixfunc2 '&Multibyte' &ffunc
@@ -17,15 +17,15 @@ function stores the multibyte character
 .arg ch
 into the string pointed to by
 .arg addr
-.ct .li .
-.im farparm
+.period
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The
 .id &funcb.
 function returns the value of the argument
 .arg addr
-.ct .li .
+.period
 .return end
 .see begin
 .im seembc

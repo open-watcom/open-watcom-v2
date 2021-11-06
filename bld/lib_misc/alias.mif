@@ -1,6 +1,3 @@
-.extensions:
-.extensions: .gmk .dat .obj .c .h
-
 ../objs.gmk : aliases.dat
     rm -f ../objs.gmk ../a/*.gas
 !ifeq verbose 0

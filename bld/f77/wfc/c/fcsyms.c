@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +31,9 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "global.h"
 #include "wf77defs.h"
-#include "wf77auxd.h"
+#include "wf77aux.h"
 #include "wf77cg.h"
 #include "ecflags.h"
 #include "cpopt.h"
@@ -56,7 +56,6 @@
 #include "fcstring.h"
 #include "fcstruct.h"
 #include "fcsyms.h"
-#include "auxlook.h"
 #include "forcstat.h"
 #include "rstmgr.h"
 #include "fccall.h"
@@ -156,9 +155,9 @@ static  temp_handle     MakeTempSCB( int len ) {
 }
 
 
-uint    SymAlign( sym_id sym ) {
-//==============================
-
+size_t  SymAlign( sym_id sym )
+//============================
+{
     switch( sym->u.ns.u1.s.typ ) {
     case FT_LOGICAL_1 :
     case FT_LOGICAL :
@@ -227,7 +226,7 @@ static  unsigned_32     CheckThreshold( sym_id sym, unsigned_32 g_offset ) {
 }
 
 
-static  void    DumpSCB( back_handle scb, back_handle data, uint len,
+static  void    DumpSCB( back_handle scb, back_handle data, size_t len,
                          bool allocatable, signed_32 offset ) {
 //=============================================================
 
@@ -331,9 +330,12 @@ static  void    DumpGlobalSCB( sym_id sym, unsigned_32 g_offset ) {
 bool    SCBRequired( sym_id sym ) {
 //=================================
 
-    if( (Options & OPT_DESCRIPTOR) == 0 ) return( true );
-    if( sym->u.ns.flags & SY_VALUE_PARM ) return( true );
-    if( sym->u.ns.xt.size != 0 ) return( true );
+    if( (Options & OPT_DESCRIPTOR) == 0 )
+        return( true );
+    if( sym->u.ns.flags & SY_VALUE_PARM )
+        return( true );
+    if( sym->u.ns.xt.size != 0 )
+        return( true );
     return( false );
 }
 
@@ -360,7 +362,8 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
         offset = 0;
         for(;;) {
             ce_ext = leader->u.ns.si.va.vi.ec_ext;
-            if( ce_ext->ec_flags & LEADER ) break;
+            if( ce_ext->ec_flags & LEADER )
+                break;
             offset += ce_ext->offset;
             leader = ce_ext->link_eqv;
         }
@@ -530,7 +533,7 @@ void    GenLocalSyms( void ) {
 
     SFSymId = NULL; // for building statement function chain
     BESetSeg( SEG_LDATA );
-    sp_class = SubProgId->u.ns.flags & SY_SUBPROG_TYPE;
+    sp_class = (SubProgId->u.ns.flags & SY_SUBPROG_TYPE);
     if( sp_class != SY_BLOCK_DATA ) {
         if( CommonEntry != NULL ) {
             DefineCommonEntry();
@@ -539,15 +542,14 @@ void    GenLocalSyms( void ) {
         }
     }
     MergeCommonInfo();
-    sym = NList;
-    while( sym != NULL ) {
+    for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
         flags = sym->u.ns.flags;
         if( (flags & SY_CLASS) == SY_VARIABLE ) {
             if( ( sym != EPValue ) && ( sym != ReturnValue ) ) {
                 GSegOffset = DumpVariable( sym, GSegOffset );
             }
         } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
-            sp_type = flags & SY_SUBPROG_TYPE;
+            sp_type = (flags & SY_SUBPROG_TYPE);
             if( sp_type == SY_STMT_FUNC ) {
                 sym->u.ns.si.sf.header->link = SFSymId;
                 SFSymId = sym;
@@ -602,14 +604,15 @@ void    GenLocalSyms( void ) {
                 }
             }
         }
-        sym = sym->u.ns.link;
     }
     if( sp_class != SY_BLOCK_DATA ) {
         for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
             // check for shadow symbol of leader of equivalence set
-            if( sym->u.ns.flags & SY_IN_EQUIV ) continue;
+            if( sym->u.ns.flags & SY_IN_EQUIV )
+                continue;
             // check for shadow symbol of ADV
-            if( sym->u.ns.flags & SY_SUBSCRIPTED ) continue;
+            if( sym->u.ns.flags & SY_SUBSCRIPTED )
+                continue;
             // check for shadow symbol for function return value
             if( sym->u.ns.flags & SY_PS_ENTRY ) {
                 // shadow symbol for function return value
@@ -676,14 +679,12 @@ static  void    DumpNameLists( void ) {
     sym_id      sym;
     byte        nl_info;
 
-    nl = NmList;
-    while( nl != NULL ) {
+    for( nl = NmList; nl != NULL; nl = nl->u.nl.link ) {
         nl->u.nl.address = BENewBack( NULL );
         DGLabel( nl->u.nl.address );
         DGInteger( nl->u.nl.name_len, TY_UINT_1 );
         DGBytes( nl->u.nl.name_len, nl->u.nl.name );
-        ge = nl->u.nl.group_list;
-        while( ge != NULL ) {
+        for( ge = nl->u.nl.group_list; ge != NULL; ge = ge->link ) {
             sym = ge->sym;
             DumpSymName( sym );
             nl_info = 0;
@@ -700,10 +701,8 @@ static  void    DumpNameLists( void ) {
                 DGInteger( nl_info, TY_UINT_1 );
             }
             DGIBytes( BETypeLength( TY_POINTER ), 0 );
-            ge = ge->link;
         }
         DGInteger( 0, TY_UINT_1 );
-        nl = nl->u.nl.link;
     }
 }
 
@@ -773,11 +772,12 @@ static  void    MergeCommonInfo( void ) {
 
     sym_id      sym;
     sym_id      g_sym;
-    uint        len;
+    size_t      len;
 
     for( sym = BList; sym != NULL; sym = sym->u.ns.link ) {
         for( g_sym = GList; ; g_sym = g_sym->u.ns.link ) {
-            if( (g_sym->u.ns.flags & SY_CLASS) != SY_COMMON ) continue;
+            if( (g_sym->u.ns.flags & SY_CLASS) != SY_COMMON )
+                continue;
             len = sym->u.ns.u2.name_len;
             if( len == g_sym->u.ns.u2.name_len ) {
                 if( memcmp( sym->u.ns.name, g_sym->u.ns.name, len ) == 0 ) {
@@ -822,7 +822,8 @@ static  void    DbgVarInfo( sym_id sym ) {
         leader = sym;
         for(;;) {
             ce_ext = leader->u.ns.si.va.vi.ec_ext;
-            if( ce_ext->ec_flags & LEADER ) break;
+            if( ce_ext->ec_flags & LEADER )
+                break;
             offset += ce_ext->offset;
             leader = ce_ext->link_eqv;
         }
@@ -1138,12 +1139,10 @@ static  void    DumpBrTable( void ) {
     CGControl( O_GOTO, NULL, end_sel );
     CGControl( O_LABEL, NULL, GetLabel( StNumbers.branches ) );
     s_handle = CGSelInit();
-    stmt = SList;
-    while( stmt != NULL ) {
+    for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
         if( (stmt->u.st.flags & SN_ASSIGNED) && ( (stmt->u.st.flags & SN_BAD_BRANCH) == 0 ) ) {
             CGSelCase( s_handle, GetStmtLabel( stmt ), stmt->u.st.address );
         }
-        stmt = stmt->u.st.link;
     }
     CGSelOther( s_handle, end_sel );
     CGSelect( s_handle, CGUnary( O_POINTS, CGFEName( WildLabel, TY_INTEGER ), TY_INTEGER ) );
@@ -1161,7 +1160,8 @@ static  void    DumpLitSCBs( void ) {
     back_handle data;
 
     for( sym = LList; sym != NULL; sym = sym->u.lt.link ) {
-        if( (sym->u.lt.flags & LT_EXEC_STMT) == 0 ) continue;
+        if( (sym->u.lt.flags & LT_EXEC_STMT) == 0 )
+            continue;
         if( (sym->u.lt.flags & (LT_SCB_REQUIRED | LT_SCB_TMP_REFERENCE)) == 0 ) {
             continue;
         }
@@ -1230,7 +1230,7 @@ void    FreeLocalBacks( bool free_dbg_handles ) {
                     }
                 }
             }
-        } else if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+        } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
             if( flags & SY_SUB_PARM ) {
                 FreeBackHandle( &sym->u.ns.u3.address );
                 if( (sym->u.ns.u1.s.typ == FT_CHAR) && (CGOpts & CGOPT_DB_LOCALS) ) {
@@ -1238,7 +1238,7 @@ void    FreeLocalBacks( bool free_dbg_handles ) {
                         FreeBackHandle( &sym->u.ns.si.sp.alt_scb );
                     }
                 }
-            } else if( ( flags & SY_SUBPROG_TYPE ) == SY_STMT_FUNC ) {
+            } else if( (flags & SY_SUBPROG_TYPE) == SY_STMT_FUNC ) {
                 FreeBackHandle( &sym->u.ns.u3.address );
                 FreeSFHeader( sym );
             /*
@@ -1328,9 +1328,10 @@ void    FreeGlobalBacks( void ) {
 
     for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
         flags = sym->u.ns.flags;
-        if( ( flags & SY_CLASS ) != SY_SUBPROGRAM ) continue;
-        if( ( ( flags & SY_SUBPROG_TYPE ) != SY_STMT_FUNC ) &&
-            ( ( flags & SY_SUBPROG_TYPE ) != SY_REMOTE_BLOCK ) ) {
+        if( (flags & SY_CLASS) != SY_SUBPROGRAM )
+            continue;
+        if( ( (flags & SY_SUBPROG_TYPE) != SY_STMT_FUNC ) &&
+            ( (flags & SY_SUBPROG_TYPE) != SY_REMOTE_BLOCK ) ) {
             if( sym->u.ns.u3.address != NULL ) {
                 BEFreeBack( sym->u.ns.u3.address );
             }
@@ -1365,7 +1366,7 @@ void    DefineEntryPoint( entry_pt *ep ) {
 
     sp = ep->id;
     if( (Options & OPT_DESCRIPTOR) == 0 ) {
-        if( ( sp->u.ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
+        if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
             if( sp->u.ns.u1.s.typ == FT_CHAR ) {
                 CGParmDecl( ReturnValue, TY_POINTER );
                 CGParmDecl( STArgShadow( ReturnValue ), TY_INTEGER );
@@ -1373,7 +1374,7 @@ void    DefineEntryPoint( entry_pt *ep ) {
         }
     }
     DefineArgs( ep );
-    if( ( sp->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
+    if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         if( ChkForAltRets( ep ) ) {
             CGAutoDecl( ReturnValue, TY_INTEGER );
         }
@@ -1395,13 +1396,12 @@ static  void    DefineCommonEntry( void ) {
 
     entry_pt    *ep;
     parameter   *arg;
-    aux_info    *aux;
+    aux_info    *info;
     pass_by     *arg_aux;
 
-    ep = Entries;
-    while( ep != NULL ) {
-        aux = AuxLookup( ep->id );
-        arg_aux = aux->arg_info;
+    for( ep = Entries; ep != NULL; ep = ep->link ) {
+        info = InfoLookup( ep->id );
+        arg_aux = info->arg_info;
         for( arg = ep->parms; arg != NULL; arg = arg->link ) {
             if( (arg->flags & (ARG_DUPLICATE | ARG_STMTNO)) == 0 ) {
                 DeclareArg( arg, arg_aux );
@@ -1417,9 +1417,8 @@ static  void    DefineCommonEntry( void ) {
                 arg_aux = arg_aux->link;
             }
         }
-        ep = ep->link;
     }
-    if( ( Entries->id->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
+    if( (Entries->id->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         CGParmDecl( EPValue, TY_INTEGER );
         if( EntryWithAltRets() ) {
             CGAutoDecl( ReturnValue, TY_INTEGER );
@@ -1435,13 +1434,13 @@ static  void    DefineCommonEntry( void ) {
 }
 
 
-static  void    DeclareShadowArgs( entry_pt *ep, aux_info *aux ) {
-//================================================================
-
+static  void    DeclareShadowArgs( entry_pt *ep, aux_info *info )
+//===============================================================
+{
     parameter   *arg;
     pass_by     *arg_aux;
 
-    arg_aux = aux->arg_info;
+    arg_aux = info->arg_info;
     for( arg = ep->parms; arg != NULL; arg = arg->link ) {
         if( (arg->flags & ARG_STMTNO) == 0 ) {
             if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
@@ -1467,7 +1466,7 @@ static  void    DeclareArg( parameter *arg, pass_by *arg_aux ) {
     sym_id      arg_id;
 
     arg_id = arg->id;
-    if( ( arg_id->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+    if( (arg_id->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
         arg_type = TY_CODE_PTR;
     } else if( arg_id->u.ns.flags & SY_SUBSCRIPTED ) {
         arg_type = ArrayPtrType( arg_id );
@@ -1508,15 +1507,15 @@ static  void    DefineArgs( entry_pt *ep ) {
 //==========================================
 
     parameter   *arg;
-    aux_info    *aux;
+    aux_info    *info;
     pass_by     *arg_aux;
 
-    aux = AuxLookup( ep->id );
-    if( (aux->cclass & REVERSE_PARMS) ) {
+    info = InfoLookup( ep->id );
+    if( (info->cclass & REVERSE_PARMS) ) {
         ReverseList( (void **)&ep->parms );
-        ReverseList( (void **)&aux->arg_info );
+        ReverseList( (void **)&info->arg_info );
     }
-    arg_aux = aux->arg_info;
+    arg_aux = info->arg_info;
     for( arg = ep->parms; arg != NULL; arg = arg->link ) {
         if( (arg->flags & ARG_STMTNO) == 0 ) {
             DeclareArg( arg, arg_aux );
@@ -1526,10 +1525,10 @@ static  void    DefineArgs( entry_pt *ep ) {
         }
     }
     if( (Options & OPT_DESCRIPTOR) == 0 ) {
-        DeclareShadowArgs( ep, aux );
+        DeclareShadowArgs( ep, info );
     }
-    if( (aux->cclass & REVERSE_PARMS) ) {
+    if( info->cclass & REVERSE_PARMS ) {
         ReverseList( (void **)&ep->parms );
-        ReverseList( (void **)&aux->arg_info );
+        ReverseList( (void **)&info->arg_info );
     }
 }

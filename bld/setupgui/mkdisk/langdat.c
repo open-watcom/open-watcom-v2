@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,9 @@
 
 #define DEFCTLNAME      "files.dat"
 #define DEFCTLENV       "FILES_DAT"
+
+#define IS_WS(c)        ((c) == ' ' || (c) == '\t')
+#define SKIP_WS(p)      while(IS_WS(*(p))) (p)++
 
 typedef struct ctl_file {
     struct ctl_file     *next;
@@ -225,7 +228,7 @@ static int sysChdir( const char *dir )
 static void PushInclude( const char *name )
 {
     include     *new;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *dir;
     char        dir_name[_MAX_PATH];
 
@@ -252,7 +255,9 @@ static void PushInclude( const char *name )
     if( sysChdir( dir_name ) != 0 ) {
         Fatal( "Could not chdir to '%s': %s\n", dir_name, strerror( errno ) );
     }
-    getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
+    if( getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) ) == NULL ) {
+        Fatal( "Could not get current working directory: %s\n", strerror( errno ) );
+    }
 }
 
 static bool PopInclude( void )
@@ -266,16 +271,18 @@ static bool PopInclude( void )
     if( IncludeStk == NULL ) {
         return( false );
     }
-    chdir( IncludeStk->cwd );
+    if( chdir( IncludeStk->cwd ) )
+        Fatal( "Could not chdir to '%s': %s\n", IncludeStk->cwd, strerror( errno ) );
     return( true );
 }
 
 static bool GetALine( char *line, int max_len )
 {
     for( ;; ) {
-        fgets( line, max_len, IncludeStk->fp );
-        if( ferror( IncludeStk->fp ) ) {
-            Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno, strerror( errno ) );
+        if( fgets( line, max_len, IncludeStk->fp ) == NULL ) {
+            if( ferror( IncludeStk->fp ) ) {
+                Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno, strerror( errno ) );
+            }
         }
         if( !feof( IncludeStk->fp ) ) {
             IncludeStk->lineno++;
@@ -643,7 +650,7 @@ static void ProcessDefault( const char *line )
     SKIP_BLANKS( p );
     q = strtok( p, "]" );
     q += strlen( q ) - 1;
-    while( (q >= p) && ((*q == ' ') || (*q == '\t')) )
+    while( (q >= p) && IS_WS( *q ) )
         --q;
     if( *q == '\"' )
         ++q;
@@ -815,23 +822,27 @@ static void ProcessCtlFile( const char *name )
     }
 }
 
-static bool SearchUpDirs( const char *name, char *result )
+static char *SearchUpDirs( const char *name )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *end;
     FILE        *fp;
 
-    _fullpath( result, name, _MAX_PATH );
+    _fullpath( Line, name, sizeof( Line ) );
     for( ;; ) {
-        fp = fopen( result, "r" );
+        fp = fopen( Line, "r" );
         if( fp != NULL ) {
             fclose( fp );
-            return( true );
+            return( Line );
         }
-        _splitpath2( result, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        _splitpath2( Line, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
         end = &pg.dir[strlen( pg.dir ) - 1];
-        if( end == pg.dir )
-            return( false );
+        if( end == pg.dir ) {
+            _searchenv( name, "PATH", Line );
+            if( Line[0] == '\0' )
+                return( NULL );
+            return( Line );
+        }
         if( IS_DIR_SEP( *end ) )
             --end;
         for( ;; ) {
@@ -844,7 +855,7 @@ static bool SearchUpDirs( const char *name, char *result )
             --end;
         }
         *end = '\0';
-        _makepath( result, pg.drive, pg.dir, pg.fname, pg.ext );
+        _makepath( Line, pg.drive, pg.dir, pg.fname, pg.ext );
     }
 }
 
@@ -853,6 +864,7 @@ int main( int argc, char *argv[] )
 {
     ctl_file    *next;
     char        *p;
+    char        *fn;
 
     /* unused parameters */ (void)argc;
 
@@ -866,14 +878,12 @@ int main( int argc, char *argv[] )
         p = getenv( DEFCTLENV );
         if( p == NULL )
             p = DEFCTLNAME;
-        if( !SearchUpDirs( p, Line ) ) {
-            _searchenv( p, "PATH", Line );
-            if( Line[0] == '\0' ) {
-                MClose();
-                Fatal( "Can not find '%s'\n", p );
-            }
+        fn = SearchUpDirs( p );
+        if( fn == NULL ) {
+            MClose();
+            Fatal( "Can not find '%s'\n", p );
         }
-        AddToList( Line, &CtlList );
+        AddToList( fn, &CtlList );
     }
     while( CtlList != NULL ) {
         ProcessCtlFile( CtlList->name );
@@ -886,3 +896,4 @@ int main( int argc, char *argv[] )
     MClose();
     return( 0 );
 }
+

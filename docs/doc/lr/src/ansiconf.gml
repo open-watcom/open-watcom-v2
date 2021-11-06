@@ -5,7 +5,8 @@ The
 .id &_func.
 function is identical to
 .id &funcb.
-.ct .li . Use
+.period
+Use
 .id &_func.
 for ANSI naming conventions.
 .do end

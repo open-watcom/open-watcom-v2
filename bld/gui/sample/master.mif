@@ -5,13 +5,6 @@ name = sample
 guisample_autodepends = .AUTODEPEND
 !endif
 
-rcname=$(name)
-!ifeq sys_windowed 1
-!ifeq host_os os2
-rcname=$(name)pm
-!endif
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -23,75 +16,66 @@ rcname=$(name)pm
 
 !include wres.mif
 
-lnk = sample.lnk
+#
+# cflags
+#
+.c: ../c;$(os_source_dir);$(os_extra_dir)
 
-!ifeq sys_windowed 1
-gui_type_inc_dirs = -I"$(gui_dir)/win/h"
-!else
-gui_type_inc_dirs = -I"$(gui_dir)/ui/h"
-!endif
+inc_dirs = -I. -I"../h" $(gui_inc_dirs) -I"$(gui_dir)/$(gui_type)/h"
 
-inc_dirs = -I. -I"../h" $(gui_inc_dirs) $(gui_type_inc_dirs)
-rcopt = $(inc_dirs) $(commonui_inc_dirs) $(inc_dirs_sys) -I"../res/$(type)" -I"../res" -I"$(watcom_dir)/h"
-
-objs =  dlgstat.obj     &
-        dlgdynam.obj    &
-        dlgtest.obj     &
-        sampdef.obj     &
-        sample.obj
-
-!ifeq sys_windowed 1
-resfile = sample.res
-!else
-resfile = wresui.res
-!endif
-
+#
+# lflags
+#
 extra_l_flags_nov = import @$(nwoss_dir)/common/imp/ownwos.imp
 !ifneq sys_windowed 1
 extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
 !endif
 
-###############
-sample.$(exe_ext) : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(resfile) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(ldflags)
-!else
-        @%write $(lnk) $(lflags)
-!ifeq host_os nov
-        @%append $(lnk) option description 'Sample NLM'
-        @%append $(lnk) debug novell
-!endif
-        @%append $(lnk) option map $(extra_option)
-        @%append $(lnk) option symfile=$(name).sym
-        @%append $(lnk) library {$(gui_lib) $(ui_lib) $(wres_lib)}
-        @for %i in ($(objs)) do @%append $(lnk) file %i
-        $(linker) name $(lname) @$(lnk)
-!endif
-!ifneq sys_windowed 1
-        @%make bind_res_wresui
-!else ifdef win386
-        @%make bind_win386_add_res
-!else
-        @%make bind_res
-!endif
-
-################
-pmsample.exe : pmsample.obj $(gui_lib) $(ui_lib) $(wres_lib) $(lnk) $(__MAKEFILES__)
-        @%append $(lnk) file pmsample.obj
-        $(linker) @$(lnk)
-
-################
-samp2.$(exe_ext) : samp2.obj $(gui_lib) $(ui_lib) $(wres_lib) $(lnk) $(__MAKEFILES__)
-        @%append $(lnk) file samp2.obj
-        $(linker) @$(lnk)
-
-.c:     $(gui_dir)/sample/c;$(os_source_dir);$(os_extra_dir)
-.h:     ../h
-
+#
+# EXE's
+#
+exetarg_objs       = sample.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
+exetarg_libs       = $(gui_lib) $(ui_lib) $(wres_lib)
+exetarg_name       = sample
 !ifeq sys_windowed 1
-sample.res : ../$(rcname).rc ../$(rcname).dlg
-        $(rc) $(rc_flags) -DWINRC $(rcopt) $[@ -fo=$^@
+!ifeq host_os os2
+exetarg_res        = samplepm.res
 !else
-wresui.res : ../$(rcname).rc ../$(rcname).dlg
-        $(rc_aui) $(rcopt) $[@ -fo=$^@
+exetarg_res        = sample.res
 !endif
+!include exetarg.mif
+!undef exetarg_res
+!else
+exetarg_res_wresui = wresui.res
+!include exetarg.mif
+!undef exetarg_res_wresui
+!endif
+
+exetarg_objs       = pmsample.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
+exetarg_name       = pmsample
+!include exetarg.mif
+
+exetarg_objs       = samp2.obj dlgstat.obj dlgdynam.obj dlgtest.obj sampdef.obj
+exetarg_name       = samp2
+!include exetarg.mif
+
+#
+# rc and others
+#
+!ifdef gui_os2pm
+sample_rc_inc_dirs = -I"../res/pm" -I"../res" -I"../h"
+!else
+sample_rc_inc_dirs = -I"../res/win" -I"../res" -I"../h"
+!endif
+
+rc_inc_dirs = -I. $(sample_rc_inc_dirs) $(gui_rc_inc_dirs)  $(commonui_inc_dirs)
+rcui_inc_dirs = -I. $(sample_rc_inc_dirs) $(gui_rc_inc_dirs) $(commonui_inc_dirs)
+
+samplepm.res : ../res/samplepm.rc ../res/samplepm.dlg
+        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+
+sample.res : ../res/sample.rc ../res/sample.dlg
+        $(rc) $(rc_flags) -ad -DWINRC $(rc_inc_path) $[@ -fo=$@
+
+wresui.res : ../res/sample.rc ../res/sample.dlg
+        $(rcui) -ad

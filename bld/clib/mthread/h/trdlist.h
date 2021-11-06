@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,13 +66,13 @@
 #elif defined( __RDOSDEV__ )
   #define GetCurrentThreadId()  (RdosGetThreadHandle())
 #elif defined( __OS2__ )
-  #if defined( __WARP__ )
+  #if defined( _M_I86 )
+    // OS/2 1.x
+    #define GetCurrentThreadId()    (*_threadid)
+  #else
     // OS/2 2.0
     #define GetCurrentThreadId()    (*__threadid())
     extern unsigned                 __threadstack(void);
-  #else
-    // OS/2 1.x
-    #define GetCurrentThreadId()    (*_threadid)
   #endif
 #endif
 

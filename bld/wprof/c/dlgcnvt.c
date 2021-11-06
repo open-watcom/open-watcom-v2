@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,15 +66,15 @@
 #define B3 BUTTON_POS( 3, 3, W, BW )
 
 #define DLGCONVERT_CTLS() \
-    pick_p5(   OUTFILEBOX,  DLG_BOX,            "Output File Name",     C0,   R0,   C1-2, R0+2 ) \
-    pick_p4id( NAME,        DLG_EDIT,           "",                     C0+1, R0+1, C1-3 ) \
-    pick_p4id( BROWSE,      DLG_BUTTON,         "&Browse ...",          C1,   R0+1, W-1 ) \
-    pick_p5(   FORMATBOX,   DLG_BOX,            "Format Type",          C0,   R1,   C1-2, R1+3 ) \
-    pick_p4id( DIF_FMT,     DLG_RADIO_START,    "&DIF Format",          C0+1, R1+1, C1-3 ) \
-    pick_p4id( COMMA_FMT,   DLG_RADIO_END,      "&Comma Format",        C0+1, R1+2, C1-3 ) \
-    pick_p4id( OK,          DLG_DEFBUTTON,      "OK",                   B1,   R2,   B1+BW ) \
-    pick_p4id( DEFAULTS,    DLG_BUTTON,         "&Defaults",            B2,   R2,   B2+BW ) \
-    pick_p4id( CANCEL,      DLG_BUTTON,         "Cancel",               B3,   R2,   B3+BW )
+    pick_p5(   OUTFILEBOX,  GUI_CTL_BOX,            "Output File Name",     C0,   R0,   C1-C0-1, 3 ) \
+    pick_p4id( NAME,        GUI_CTL_EDIT,           "",                     C0+1, R0+1, C1-C0-3 ) \
+    pick_p4id( BROWSE,      GUI_CTL_BUTTON,         "&Browse ...",          C1,   R0+1, W-C1 ) \
+    pick_p5(   FORMATBOX,   GUI_CTL_BOX,            "Format Type",          C0,   R1,   C1-C0-1, 4 ) \
+    pick_p4id( DIF_FMT,     GUI_CTL_RADIO_START,    "&DIF Format",          C0+1, R1+1, C1-C0-3 ) \
+    pick_p4id( COMMA_FMT,   GUI_CTL_RADIO_END,      "&Comma Format",        C0+1, R1+2, C1-C0-3 ) \
+    pick_p4id( OK,          GUI_CTL_DEFBUTTON,      "OK",                   B1,   R2,   BW+1 ) \
+    pick_p4id( DEFAULTS,    GUI_CTL_BUTTON,         "&Defaults",            B2,   R2,   BW+1 ) \
+    pick_p4id( CANCEL,      GUI_CTL_BUTTON,         "Cancel",               B3,   R2,   BW+1 )
 
 enum {
     DUMMY_ID = 100,

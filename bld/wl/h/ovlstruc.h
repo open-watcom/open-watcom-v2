@@ -34,8 +34,8 @@
 /*------------------------------HOST------------------------------------*/
 
 typedef struct vecnode {
-    struct vecnode      *next;
-    symbol *            entry;
+    struct vecnode  *next;
+    symbol          *sym;
 } vecnode;
 
 /*----------------------------------------------------------------------*/

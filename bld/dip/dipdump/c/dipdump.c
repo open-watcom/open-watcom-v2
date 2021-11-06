@@ -455,6 +455,8 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
     size_t          len;
     dip_status      ds;
 
+    /* unused parameters */ (void)ignored;
+
     /* filename */
     buff[0] = '\0';
     len = DIPCueFile( cueh1, buff, sizeof( buff ) );
@@ -733,6 +735,8 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
     char            buff[1024];
     unsigned        len;
     int             i;
+
+    /* unused parameters */ (void)proc;
 
     /*
      * Module.

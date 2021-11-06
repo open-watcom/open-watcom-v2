@@ -11,7 +11,7 @@
 
 :include cpluspro.sp
 
-#pragma pack( __push, 1 )
+:include pshpack1.sp
 
 /* ChooseColor() flags */
 #define CC_RGBINIT              0x00000001L
@@ -274,7 +274,7 @@ HWND WINAPI     ReplaceText( LPFINDREPLACE );
 
 #endif /* RC_INVOKED */
 
-#pragma pack( __pop )
+:include poppack.sp
 
 :include cplusepi.sp
 

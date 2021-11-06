@@ -3,7 +3,7 @@
 
 extern DWORD aton     (const char *text);
 extern int   isaddr   (const char *text);
-extern void  psocket  (const tcp_Socket *s);
+extern void  psocket  (const sock_type *sk);
 extern int   priv_addr(DWORD ip);
 
 extern DWORD aton_dotless   (const char *str);

@@ -7,10 +7,10 @@
 .dm fdbeg begin
 The following functions are defined:
 .if &e'&dohelp eq 0 .do begin
-:DL compact termhi=1 tsize=14.
+:DL compact termhi=1 tsize='14'.
 .do end
 .el .do begin
-:ZDL compact termhi=1 tsize=14.
+:ZDL compact termhi=1 tsize='14'.
 .do end
 .dm fdbeg end
 .*
@@ -20,33 +20,19 @@ The following functions are defined:
 .*  case then the hotlink will not work.
 .*
 .dm fd begin
-.se *fnd=&'vecpos(&*fun.,fnclst)
-.if &*fnd. ne 0 .do begin
-.   .se *lib=&'vecpos(&imblst(&*fnd.).,imblst)
-.   .se *ent=&fnclst(&*lib.)
-.*  there are 8 characters in <*fun="" >
-.   .se *dsc=&'substr(&*,9+&'length(&*fun.))
-.   .if &e'&dohelp eq 0 .do begin
-:DT.&*fun.
-:DD.&*dsc.
+.funcref &*1.
+.if &e'&dohelp eq 0 .do begin
+:DT.&*
+:DD.
+.do end
+.el .do begin
+.   .if '&freffnd.' eq '0' .do begin
+:ZDT.&*
 .   .do end
 .   .el .do begin
-.   .   .if '&*fun.' ne '&*ent.' .do begin
-.   .   .   .sr *text1='&*fun. (see '
-.   .   .   .sr *text2=&*ent.
-.   .   .   .sr *text3=')'
-.   .   .do end
-.   .   .el .do begin
-.   .   .   .sr *text1=''
-.   .   .   .sr *text2=&*fun.
-.   .   .   .sr *text3=''
-.   .   .do end
-.   .   .if '_&*fun.' eq '&*ent.' .do begin
-.   .   .   .ty ***WARNING*** check order of &*fun., &*ent.
-.   .   .do end
-:ZDT.&*text1.:QREF str='&*text2.'.&*text3.
-:ZDD.&*dsc.
+:ZDT.:QREF top='&frefid.' str='&*.'.
 .   .do end
+:ZDD.
 .do end
 .dm fd end
 .*

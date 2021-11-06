@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +31,7 @@
 ****************************************************************************/
 
 
-#include "helpio.h"
 #include "search.h"
-#include "helpchar.h"
 
 #define DEF_EXT         "ihp"
 
@@ -48,13 +46,6 @@
 #define H_MAX_WORDS     80
 
 #define ishelpchr(ch)   (isalnum(ch) || ch=='-')
-
-#define EV_HELP         EV_F1
-
-enum {
-    E_UP = EV_FIRST_UNUSED,
-    E_DOWN
-};
 
 typedef enum {
     HELPLANG_FRENCH,

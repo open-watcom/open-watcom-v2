@@ -28,7 +28,11 @@ test_flags_386 += -fpi87-fp5-mf
 test_flags_i86 += -fpi87-fp5-ml-s
 test_flags_axp +=
 
-!include testenv1.mif
+opt_link_test1 = FILE field.obj
+opt_link_test2 = FILE field.obj
+opt_link_test3 = FILE field.obj
+
+!include testenv.mif
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k
@@ -38,15 +42,8 @@ extra_run_test3 = 1000 1000
 
 exes = test1.$(exe) test2.$(exe) test3.$(exe)
 
-test : .symbolic start clean start_test test.lnk $(exes) common_set_result
-    @%make clean
-
-test1.$(exe) : test1.obj field.obj
-test2.$(exe) : test2.obj field.obj
-test3.$(exe) : test3.obj field.obj
-
-start_test : .symbolic
-    @%make common_start_test
+test : .symbolic start test.lnk field.obj $(exes)
+    $(noecho)%make common_set_result
 
 clean : .procedure
     @%make echo_clean

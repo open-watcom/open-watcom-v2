@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@
  * GUIAddControl -- add the given control to the parent window
  */
 
-bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout )
+bool GUIAPI GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout )
 {
     gui_control *control;
     bool        first_control;
@@ -158,7 +158,7 @@ gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int 
     return( control );
 }
 
-bool GUIDeleteControl( gui_window *wnd, gui_ctl_id id )
+bool GUIAPI GUIDeleteControl( gui_window *wnd, gui_ctl_id id )
 {
 //    gui_control *control;
     gui_rect    rect;
@@ -197,7 +197,7 @@ void GUIFreeAllControls( gui_window *wnd, bool dialog )
     }
 }
 
-bool GUILimitEditText( gui_window *wnd, gui_ctl_id id, int len )
+bool GUIAPI GUILimitEditText( gui_window *wnd, gui_ctl_id id, int len )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)len;
 
@@ -247,7 +247,7 @@ ui_event GUIProcessControlEvent( gui_window *wnd, ui_event ui_ev, gui_ord row, g
     }
 }
 
-void GUIEnumControls( gui_window *wnd, CONTRENUMCALLBACK *func, void *param )
+void GUIAPI GUIEnumControls( gui_window *wnd, CONTRENUMCALLBACK *func, void *param )
 {
     gui_control *curr;
 
@@ -256,7 +256,7 @@ void GUIEnumControls( gui_window *wnd, CONTRENUMCALLBACK *func, void *param )
     }
 }
 
-bool GUIGetControlClass( gui_window *wnd, gui_ctl_id id,
+bool GUIAPI GUIGetControlClass( gui_window *wnd, gui_ctl_id id,
                          gui_control_class *control_class )
 {
     gui_control *control;
@@ -272,14 +272,14 @@ bool GUIGetControlClass( gui_window *wnd, gui_ctl_id id,
     return( false );
 }
 
-bool GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
+bool GUIAPI GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
 {
     VFIELD      *field;
     SAREA       area;
 
     field = GUIGetField( wnd, id );
     if( field != NULL ) {
-        COPYAREA( field->area, area  );
+        COPYRECTX( field->area, area  );
         if( !GUI_IS_DIALOG( wnd ) ) {
             area.row--;
             area.col--;
@@ -290,7 +290,7 @@ bool GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
     return( false );
 }
 
-bool GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
+bool GUIAPI GUIResizeControl( gui_window *wnd, gui_ctl_id id, const gui_rect *rect )
 {
     SAREA       area;
     a_dialog    *ui_dlg_info;
@@ -308,7 +308,7 @@ bool GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
         if( !GUISetDialogArea( wnd, &new_area, rect, &area ) ) {
             return( false );
         }
-        COPYAREA( new_area, field->area );
+        COPYRECTX( new_area, field->area );
         if( !GUI_IS_DIALOG( wnd ) ) {
             GUIWndDirtyRect( wnd, &old_rect );
             GUIRefreshControl( wnd, id );
@@ -319,7 +319,7 @@ bool GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
     return( false );
 }
 
-bool GUIIsControlVisible( gui_window *wnd, gui_ctl_id id )
+bool GUIAPI GUIIsControlVisible( gui_window *wnd, gui_ctl_id id )
 {
     gui_control *control;
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,8 @@
 
 
 #include "wclient.hpp"
+#include "wclbdde.h"
+
 
 WObjectMap WEXPORT WClient::_convMap;
 
@@ -38,9 +41,9 @@ WObjectMap WEXPORT WClient::_convMap;
 HDDEDATA _WEXPORT CALLBACK clientCallback( UINT type, UINT /*fmt*/,
                                            HCONV hconv, HSZ /*hsz1*/,
                                            HSZ /*hsz2*/, HDDEDATA /*hdata*/,
-                                           DWORD /*dwdata1*/,
-                                           DWORD /*dwdata2*/ ) {
-/**************************************************************/
+                                           ULONG_PTR /*dwdata1*/,
+                                           ULONG_PTR /*dwdata2*/ ) {
+/******************************************************************/
 
     WClient* client = (WClient*)WClient::_convMap.findThis( (WHANDLE)hconv );
     if( client != NULL ) {
@@ -67,8 +70,8 @@ WEXPORT WClient::WClient( WObject *owner, cbc notify )
     , _connected( false ) {
 /*************************/
 
-    _procInst = MakeProcInstance( (FARPROC)clientCallback, GUIMainHInst );
-    if( !DdeInitialize( &_procid, (PFNCALLBACK)_procInst, INITFLAGS, 0L ) ) {
+    _procInst = MakeProcInstance_DDE( clientCallback, GUIMainHInst );
+    if( !DdeInitialize( &_procid, _procInst, INITFLAGS, 0L ) ) {
         _ok = true;
     }
 }
@@ -78,9 +81,7 @@ WEXPORT WClient::~WClient() {
 /***************************/
 
     DdeUninitialize( _procid );
-#if !defined(__NT__)
-    FreeProcInstance( _procInst );
-#endif
+    FreeProcInstance_DDE( _procInst );
     _procid = NULL;
 }
 

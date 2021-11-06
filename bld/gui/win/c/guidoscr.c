@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,17 +42,17 @@
 static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, bool chars )
 {
     int         dx, dy;
-    WPI_RECT    client;
+    WPI_RECT    wpi_rect;
     HWND        hwnd;
-    int         multx, multy;
-    GUI_RECTDIM left, top, right, bottom;
+    guix_ord    multx, multy;
+    WPI_RECTDIM left, top, right, bottom;
 #ifdef __OS2_PM__
     int         bottom_adjust;
 #endif
 
     hwnd = GUIGetScrollHWND( wnd );
-    _wpi_getclientrect( wnd->hwnd, &client );
-    _wpi_getrectvalues( client, &left, &top, &right, &bottom );
+    _wpi_getclientrect( wnd->hwnd, &wpi_rect );
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
 #ifdef __OS2_PM__
     bottom_adjust = bottom - GUIGetScrollScreenSize( wnd, SB_VERT );
     top += bottom_adjust;
@@ -61,8 +62,8 @@ static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, b
     multx = 1;
     multy = 1;
     if( chars ) {
-        multx = GUIFromTextX( multx, wnd );
-        multy = GUIFromTextY( multy, wnd );
+        multx = GUIFromTextX( 1, wnd );
+        multy = GUIFromTextY( 1, wnd );
     }
     dx = -cols * multx;
     dy = -rows * multy;
@@ -75,7 +76,7 @@ static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, b
             if( end > bottom ) {
                 end = bottom;
             }
-            top = _wpi_getheightrect( client ) - end;
+            top = _wpi_getheightrect( wpi_rect ) - end;
             //bottom = end + bottom_adjust;
         }
         if( start > -multy ) {
@@ -83,7 +84,7 @@ static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, b
             if( start > bottom ) {
                 start = bottom;
             }
-            bottom = _wpi_getheightrect( client ) - start;
+            bottom = _wpi_getheightrect( wpi_rect ) - start;
             //top = start + bottom_adjust;
         }
 #else
@@ -124,29 +125,29 @@ static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, b
         }
     }
 
-    _wpi_setrectvalues( &client, left, top, right, bottom );
+    _wpi_setrectvalues( &wpi_rect, left, top, right, bottom );
     GUIInvalidatePaintHandles( wnd );
-    _wpi_scrollwindow( hwnd, dx, dy, &client, &client );
+    _wpi_scrollwindow( hwnd, dx, dy, &wpi_rect, &wpi_rect );
     _wpi_updatewindow( hwnd );
 }
 
-void GUIDoVScroll( gui_window *wnd, int rows )
+void GUIAPI GUIDoVScroll( gui_window *wnd, int rows )
 {
     DoScroll( wnd, rows, 0, -1, -1, true );
 }
 
-void GUIDoHScroll( gui_window *wnd, int cols )
+void GUIAPI GUIDoHScroll( gui_window *wnd, int cols )
 {
     DoScroll( wnd, 0, cols, -1, -1, true );
 }
 
 
-void GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end )
+void GUIAPI GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end )
 {
     DoScroll( wnd, rows, 0, start, end, true );
 }
 
-void GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end )
+void GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end )
 {
     DoScroll( wnd, 0, cols, start, end, true );
 }

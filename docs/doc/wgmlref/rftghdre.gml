@@ -1,8 +1,8 @@
 :H2.HDREF
 :xmp
 Format&gml. &gml.HDREF refid='id-name'
-               \(page=yes
-                     no\).
+               [page=yes
+                     no].
 :exmp
 :I1.heading reference
 :I2 refid='gthdref' pg=major.gthdref

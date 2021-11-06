@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,7 +160,7 @@ void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
     aptr = alist->type_list;
     while( num_args-- > 0 ) {
         arg->type = BindTemplateClass( arg->type, &arg->locn, true );
-        if( ( arg->flags & PTF_LVALUE ) && NodeReferencesTemporary( arg->u.subtree[1] ) ) {
+        if( (arg->flags & PTF_LVALUE) && NodeReferencesTemporary( arg->u.subtree[1] ) ) {
             // temporaries may only be bound to const references
             if( NULL == TypeReference( arg->type ) ) {
                 arg->type = MakeConstReferenceTo( arg->type );
@@ -201,7 +202,7 @@ static PTREE arg_fillout(       // FILL OUT A CONVERTED ARGUMENT
 
     right = arg->u.subtree[1];
     arg->type = right->type;
-    arg->flags = (arg->flags & PTF_ARGS ) | right->flags;
+    arg->flags = (arg->flags & PTF_ARGS) | right->flags;
     return( arg );
 }
 
@@ -410,7 +411,7 @@ PTREE NodeConvertCallArgList(   // CONVERT CALL ARGUMENT LIST, AS REQ'D
                     PTreeErrorNode( call_expr );
                     break;
                 }
-                cl_type = StructType( proto );
+                cl_type = ClassType( proto );
                 if( NULL != cl_type ) {
                     if( extern_c_fun ) {
                         if( !passStructOnStack( arg, WARN_EXTERN_C_CLASS_ARG ) ) {
@@ -576,7 +577,7 @@ static bool adjustForVirtualCall(   // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
 
     expr = *node_this;
     this_type = NodeType( expr );
-    this_type = StructType( this_type );
+    this_type = ClassType( this_type );
     if( this_type != NULL ) {
         if( OMR_CLASS_VAL == ObjModelArgument( this_type ) ) {
             expr = NodeAssignTemporary( this_type, expr );
@@ -1169,7 +1170,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
                 expr = PtdCtoredExprType( expr, NULL, type );
             }
         }
-        type = StructType( type );
+        type = ClassType( type );
         if( type != NULL && ! TypeDefined( type ) ) {
             PTreeErrorExpr( expr, ERR_RETURN_UNDEFD_TYPE );
         }

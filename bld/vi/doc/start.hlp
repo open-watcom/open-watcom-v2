@@ -7,21 +7,21 @@ vi [-?-dinqrvz] +<n> -k "keys" [-s <scr> [-p "parm"]] [-t <tag>]
   
  -?         : prints help list
  --         : file is read from stdin, and written to stdout
- -d	    : use default configuration (do not run configuration script)
- -i	    : ignore lost files
+ -d         : use default configuration (do not run configuration script)
+ -i         : ignore lost files
  -n         : no readentirefile
  -q         : causes the editor to run in quiet mode (no screen usage)
- -r	    : recover lost files
+ -r         : recover lost files
  -v         : causes file edited to be a "view only" file
  -z         : causes the editor not terminate file read when finding
- 	      a ctrl-z in the file
+              a ctrl-z in the file
  +<n>       : set to line <n> in the file edited
  -k "keys"  : execute these keys as if they were typed once the editor starts
  -s <scr>   : runs the specified source script file after initalization
               (this will be run after the configuration script)
-	      you may specify up to 10 scripts to be run
+              you may specify up to 10 scripts to be run
  -p "parms" : specify parms for each source script.  multiple parms
- 	      may be specified as long as they are in quotes.
+              may be specified as long as they are in quotes.
  -t <tag>   : edits the file containing the tag <tag>
  -c <cfg>   : runs the specified configuration script. This script
               is just a regular source script, and may be compiled
@@ -32,7 +32,6 @@ Along with the executable, there are a number of files that are needed:
  
 ed.cfg     - startup script (contains configuration)
 keys.dat   - key names
-errmsg.dat - text for all error messages
 error.dat  - symbolic names for errors that can occur (for source scripts)
 
 The editor searches for its special files as follows:

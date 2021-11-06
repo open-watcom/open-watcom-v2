@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +36,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <dos.h>
 #include "seterrno.h"
+#include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
+
 
 #ifdef _M_I86
   #ifdef __BIG_DATA__
@@ -67,8 +73,38 @@ extern unsigned __unlink_sfn( const char *filename );
     AUX_INFO
 
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
-static tiny_ret_t _unlink_lfn( const char *filename )
-/***************************************************/
+
+#ifdef _M_I86
+extern lfn_ret_t __unlink_lfn( const char *filename );
+  #ifdef __BIG_DATA__
+    #pragma aux __unlink_lfn =  \
+            "push   ds"         \
+            "xchg   ax,dx"      \
+            "mov    ds,ax"      \
+            "xor    si,si"      \
+            "mov    ax,7141h"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    ds"         \
+            "call __lfnerror_0" \
+        __parm __caller     [__dx __ax] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx __si]
+  #else
+    #pragma aux __unlink_lfn =  \
+            "xor    si,si"      \
+            "mov    ax,7141h"   \
+            "stc"               \
+            "int 21h"           \
+            "call __lfnerror_0" \
+        __parm __caller     [__dx] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx __si]
+  #endif
+#endif
+
+static lfn_ret_t _unlink_lfn( const char *filename )
+/**************************************************/
 {
 #ifdef _M_I86
     return( __unlink_lfn( filename ) );
@@ -79,19 +115,12 @@ static tiny_ret_t _unlink_lfn( const char *filename )
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.ds  = RM_TB_PARM1_SEGM;
     dpmi_rm.edx = RM_TB_PARM1_OFFS;
-    dpmi_rm.esi = 0;
     dpmi_rm.eax = 0x7141;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( 0 );
+    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
 #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ && !__WIDECHAR__ */
 
 _WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
 /******************************************************************/
@@ -99,19 +128,22 @@ _WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
 #ifdef __WIDECHAR__
     char    mbFilename[MB_CUR_MAX * _MAX_PATH]; /* single-byte char */
 
-    if( wcstombs( mbFilename, filename, sizeof( mbFilename ) ) == -1 ) {
+    if( wcstombs( mbFilename, filename, sizeof( mbFilename ) ) == (size_t)-1 ) {
         mbFilename[0] = '\0';
     }
     return( unlink( mbFilename ) );
 #else
   #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    if( _RWD_uselfn ) {
+        lfn_ret_t   rc;
 
-    if( _RWD_uselfn && TINY_OK( rc = _unlink_lfn( filename ) ) ) {
-        return( 0 );
-    }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos( TINY_INFO( rc ) ) );
+        rc = _unlink_lfn( filename );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            return( 0 );
+        }
     }
   #endif
     return( __unlink_sfn( filename ) );

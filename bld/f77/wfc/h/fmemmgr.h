@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,5 +32,7 @@
 
 extern void     FMemInit( void );
 extern void     FMemFini( void );
+extern void     FMemErrors( void );
 extern void     *FMemAlloc( size_t size );
 extern void     FMemFree( void *p );
+extern char     *FStrDup( const char *buf );

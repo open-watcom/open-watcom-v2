@@ -4,9 +4,9 @@ proj_name = trap
 trap_autodepends = .AUTODEPEND
 !endif
 
-suppress_zc = 1
+trap_nofpu = 1
 
-.EXTENSIONS : .res .rc
+suppress_zc = 1
 
 #
 # Common stuff between trap file and server implementations
@@ -57,18 +57,9 @@ memory_model_i86 = c
 target_sys = $(target_os)
 !endif
 
-fpu_flags_dos_i86   = -fpc
-fpu_flags_dos_386   = -fpc
-fpu_flags_linux_386 = -fpc
-fpu_flags_nt_386    = -fpc
-fpu_flags_os2_i86   = -fpc
-fpu_flags_os2_386   = -fpc
-fpu_flags_qnx_i86   = -fpc
-fpu_flags_qnx_386   = -fpc
-fpu_flags_rdos_386  = -fpc
-fpu_flags_win_i86   = -fpc
-
-additional_cleanup = *.d32 *.trp
+additional_clean_dos = *.trp
+additional_clean_os2 = *.d32
+additional_clean_qnx = usage.u
 
 !ifeq srv lcl
 name = std
@@ -183,7 +174,7 @@ extra_c_flags_win_i86 = -bd
 
 # aflags stuff
 ###############
-extra_a_flags += $(model_switch_$(host_cpu))
+extra_a_flags += $(model_switch_$(host_cpu)) -D$(which)
 !ifeq target_os ads
 extra_a_flags += -3s -DACAD
 !endif
@@ -204,13 +195,15 @@ jtrperr_h = _jerr.gh
 all : .SYMBOLIC $(trperr_h) #$(jtrperr_h)
     @%make $(target)
 
+rcui_inc_dirs = -I"$(trap_dir)/h"
+
 $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" $[@ -o$@
+    $(cpp) $(rc_ui_flags) $(rc_ui_inc_path) $[@ -o$@
 
 $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" $[@ -o$@
+    $(cpp) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) $[@ -o$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldcl
@@ -218,7 +211,7 @@ $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
 
 nversion.tmp: ./mknver.exe $(__MAKEFILES__)
     @%make echo_execute
-    $(noecho)$[@ $^@
+    $(noecho)$[@ $@
 
 !ifndef extra_dobjs
 extra_dobjs = $(extra_objs)
@@ -251,7 +244,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
     $(noecho)%create $^&.lnk
     @%append $^&.lnk $(mode_lflags)
     @%append $^&.lnk op elim
-    @%append $^&.lnk name $^@
+    @%append $^&.lnk name $@
     @%append $^&.lnk $(sys_$(target_cpu)_$(target_sys))
 !ifeq which TRAP
     @%append $^&.lnk op dosseg
@@ -269,12 +262,12 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extr
     $(extra_cmds)
 !endif
 
-dbgstr.lib : dbgstr.obj $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) +$[@
+libtarg_objs = dbgstr.obj
+libtarg_name = dbgstr
+!include libtarg.mif
 
 !ifdef resource_file
-$(resource_file) : wserver.rc
+$(resource_file) : $(trap_dir)/common/wserver.rc
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 !endif
@@ -289,16 +282,9 @@ inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/src" -I"$(nwoss_dir)/common/h"
 .c: ../c;../../c;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
 .cpp: ../c;../../c;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
 .asm: ../asm;../../asm;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(extra_srcs)
-.rc: ../c;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(extra_srcs)
 
 rc_inc_dirs = -I"$(trap_dir)/common"
 
-# implicit rules
-#################
-.rc.res: $(__MAKEFILES__) .AUTODEPEND
-    @%make echo_rc
-    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
-
 usage.u : ../$(srv_prefix).sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -u $< $@
+    $(wsplice) -u $[@ $@

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,7 +159,7 @@ void MProject::setFilename( const WFileName& f )
 void MProject::setMakefile()
 {
     _makefile = _filename;
-    _makefile.setExt( ".mk" );
+    _makefile.setExt( "mk" );
 
     WFileName mkFile( _makefile );
     if( mkFile.needQuotes() ) {
@@ -363,7 +364,8 @@ bool MProject::makeMakeFile( bool long_lines )
             }
         }
     }
-    if( ok ) setNeedsMake( false );
+    if( ok )
+        setNeedsMake( false );
     return( ok );
 }
 

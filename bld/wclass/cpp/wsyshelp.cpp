@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ WEXPORT WSystemHelp::WSystemHelp( WWindow *win, const char *title,
     , _helpInstance( NULL )
 /***************************/
 {
-    _helpInstance = GUIHelpInit( win->handle(), (char *)hlib, (char *)title );
+    _helpInstance = GUIHelpInit( win->handle(), hlib, title );
 }
 
 
@@ -53,7 +53,7 @@ WEXPORT WSystemHelp::~WSystemHelp()
 {
     if( _helpInstance ) {
         if( _helpWindow->handle() ) {
-            GUIHelpFini( _helpInstance, _helpWindow->handle(), (char *)_library );
+            GUIHelpFini( _helpInstance, _helpWindow->handle(), _library );
         }
     }
 }
@@ -68,13 +68,13 @@ bool WEXPORT WSystemHelp::sysHelpContent( void )
 #ifdef __NT__
     if( _chmfile != NULL && *_chmfile != '\0' ) {
         if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
-                             GUI_HELP_CONTENTS, (char *)_chmfile, NULL ) ) {
+                             GUI_HELP_CONTENTS, _chmfile, NULL ) ) {
             return( true );
         }
     }
 #endif
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_CONTENTS, (char *)_library, NULL ) );
+                         GUI_HELP_CONTENTS, _library, NULL ) );
 }
 
 
@@ -88,14 +88,14 @@ bool WEXPORT WSystemHelp::sysHelpOnHelp( void )
 #if 0
     if( _chmfile != NULL && *_chmfile != '\0' ) {
         if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_ON_HELP, (char *)_chmfile, NULL ) ) {
+                         GUI_HELP_ON_HELP, _chmfile, NULL ) ) {
             return( true );
         }
     }
 #endif
 #endif
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_ON_HELP, (char *)_library, NULL ) );
+                         GUI_HELP_ON_HELP, _library, NULL ) );
 }
 
 
@@ -108,13 +108,13 @@ bool WEXPORT WSystemHelp::sysHelpSearch( const char *topic )
 #ifdef __NT__
     if( _chmfile != NULL && *_chmfile != '\0' ) {
         if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
-                             GUI_HELP_SEARCH, (char *)_chmfile, (char *)topic ) ) {
+                             GUI_HELP_SEARCH, _chmfile, topic ) ) {
             return( true );
         }
     }
 #endif
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_SEARCH, (char *)_library, (char *)topic ) );
+                         GUI_HELP_SEARCH, _library, topic ) );
 }
 
 
@@ -127,13 +127,13 @@ bool WEXPORT WSystemHelp::sysHelpTopic( const char *topic )
 #ifdef __NT__
     if( _chmfile != NULL && *_chmfile != '\0' ) {
         if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
-                             GUI_HELP_KEY, (char *)_chmfile, (char *)topic ) ) {
+                             GUI_HELP_KEY, _chmfile, topic ) ) {
             return( true );
         }
     }
 #endif
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_KEY, (char *)_library, (char *)topic ) );
+                         GUI_HELP_KEY, _library, topic ) );
 }
 
 
@@ -146,11 +146,11 @@ bool WEXPORT WSystemHelp::sysHelpId( gui_hlp_id help_id )
 #ifdef __NT__
     if( _chmfile != NULL && *_chmfile != '\0' ) {
         return( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_CONTEXT, (char *)_chmfile, (char *)(pointer_uint)help_id ) );
+                         GUI_HELP_CONTEXT, _chmfile, (const char *)(pointer_uint)help_id ) );
     }
 #endif
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_CONTEXT, (char *)_library, (char *)(pointer_uint)help_id ) );
+                         GUI_HELP_CONTEXT, _library, (const char *)(pointer_uint)help_id ) );
 }
 
 const char * WEXPORT WSystemHelp::getHelpFile( void )

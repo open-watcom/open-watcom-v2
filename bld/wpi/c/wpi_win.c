@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +35,12 @@
 #include <windows.h>
 #include "wpi.h"
 
-void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight )
+void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight )
 /**********************************************************************/
 {
     BITMAP              bmp_info;
 
-    GetObject( bmp, sizeof( BITMAP ), (LPSTR)&bmp_info );
+    GetObject( hbitmap, sizeof( BITMAP ), (LPSTR)&bmp_info );
     *pwidth = bmp_info.bmWidth;
     *pheight = bmp_info.bmHeight;
 } /* _wpi_getbitmapdim */
@@ -184,14 +184,15 @@ WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hdc )
     return( memdc );
 } /* _wpi_createcompatiblepres */
 
-void _wpi_getbitmapparms( HBITMAP bitmap, int *width, int *height, int *planes,
-                                            int *widthbytes, int *bitspixel )
-/******************************************************************/
-/* Note that the 'bitcount' is the same as widthbytes.            */
+void _wpi_getbitmapparms( WPI_HBITMAP hbitmap, int *width, int *height,
+                        int *planes, int *widthbytes, int *bitspixel )
+/*********************************************************************
+ * Note that the 'bitcount' is the same as widthbytes.
+ */
 {
     BITMAP                      bm;
 
-    GetObject( bitmap, sizeof(BITMAP), &bm );
+    GetObject( hbitmap, sizeof(BITMAP), &bm );
 
     if( width ) *width = bm.bmWidth;
     if( height ) *height = bm.bmHeight;
@@ -216,29 +217,29 @@ void _wpi_setqmsgvalues( WPI_QMSG *qmsg, HWND hwnd, WPI_MSG wpi_msg,
     qmsg->pt.y = pt.y;
 } /* _wpi_setqmsgvalues */
 
-void _wpi_getqmsgvalues( WPI_QMSG qmsg, HWND *hwnd, WPI_MSG *wpi_msg,
+void _wpi_getqmsgvalues( WPI_QMSG *qmsg, HWND *hwnd, WPI_MSG *wpi_msg,
                         WPI_PARAM1 *wparam, WPI_PARAM2 *lparam, ULONG *wpi_time,
                         WPI_POINT *pt )
 /***************************************************************************/
 {
     if( hwnd ) {
-        *hwnd = qmsg.hwnd;
+        *hwnd = qmsg->hwnd;
     }
     if( wpi_msg ) {
-        *wpi_msg = qmsg.message;
+        *wpi_msg = qmsg->message;
     }
     if( wparam ) {
-        *wparam = qmsg.wParam;
+        *wparam = qmsg->wParam;
     }
     if( lparam ) {
-        *lparam = qmsg.lParam;
+        *lparam = qmsg->lParam;
     }
     if( wpi_time ) {
-        *wpi_time = qmsg.time;
+        *wpi_time = qmsg->time;
     }
     if( pt ) {
-        pt->x = qmsg.pt.x;
-        pt->y = qmsg.pt.y;
+        pt->x = qmsg->pt.x;
+        pt->y = qmsg->pt.y;
     }
 } /* _wpi_getqmsgvalues */
 
@@ -332,15 +333,15 @@ void _wpi_getcurrpos( WPI_PRES pres, WPI_POINT *pt )
     pt->y = new_pt.y;
 } /* _wpi_getcurrpos */
 
-void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg )
-/******************************************************/
+void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg )
+/*******************************************************/
 {
     thread_id = thread_id;              // not used in windows
 
     for( ;; ) {
-        _wpi_getmessage( NULL, msg, NULLHANDLE, 0, 0 );
+        _wpi_getmessage( NULL, qmsg, NULLHANDLE, 0, 0 );
 
-        if( _wpi_ismessage( (*msg), WM_QUIT ) ) {
+        if( _wpi_ismessage( qmsg, WM_QUIT ) ) {
             break;
         }
     }
@@ -383,15 +384,15 @@ void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
 } /* _wpi_setbmphdrvalues */
 
 void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
-                                                    int *width, int *height )
+                                    WPI_RECTDIM *width, WPI_RECTDIM *height )
 /***************************************************************************/
 {
     SIZE        size;
 
     GetTextExtentPoint( pres, string, len_string, &size );
 
-    *width = (int)size.cx;
-    *height = (int)size.cy;
+    *width = size.cx;
+    *height = size.cy;
 } /* _wpi_gettextextent */
 
 void _wpi_getrestoredrect( HWND hwnd, WPI_RECT *prect )

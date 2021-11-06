@@ -7,4 +7,3 @@ convention=register
 mthreaded=1
 
 !include $(clib_dir)/mklib.mif
-!include ../../../deps.mif

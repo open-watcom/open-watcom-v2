@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +31,10 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
-#include <stdio.h>
 #include "global.h"
 #include "wf77defs.h"
-#include "wf77auxd.h"
 #include "wf77aux.h"
+#include "wf77prag.h"
 #include "wf77info.h"
 #include "fcgbls.h"
 #include "ecflags.h"
@@ -60,11 +58,12 @@
 #include "rststruc.h"
 #include "errinit.h"
 #include "fcsyms.h"
-#include "auxlook.h"
 #include "forcstat.h"
 #include "rstmgr.h"
 #include "fcstack.h"
 #include "fcgmain.h"
+#include "mkname.h"
+#include "rstutils.h"
 
 #include "langenvd.h"
 #if _CPU == 386 || _CPU == 8086
@@ -78,25 +77,21 @@
 #endif
 #include "langenv.h"
 
-#include "cg.h"
+#include "wf77segs.h"
+#include "dwarfid.h"
+
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 
-#include "wf77segs.h"
-#include "dwarfid.h"
-
 #include "clibext.h"
 
-
-extern  int             MakeName(char *,char *,char *);
-extern  char            *STGetName(sym_id,char *);
 
 extern  global_seg      *CurrGSeg;
 extern  global_seg      *GlobalSeg;
 extern  char            ProgName[];
-extern  default_lib     *DefaultLibs;
-extern  dep_info        *DependencyInfo;
+
+segment_id              CurrCodeSegId;
 
 static  void            DefDbgStruct( sym_id sym );
 
@@ -163,8 +158,6 @@ static  void    AllocComBlk( sym_id cb );
                             s = sym->u.ns.si.ms.sym; \
                         }
 
-segment_id              CurrCodeSegId;
-
 #define SYM_MANGLE_PRE          "_COMMON_"
 #define SYM_MANGLE_POST         "_DATA"
 #define SYM_MANGLE_PRE_LEN      8
@@ -175,11 +168,10 @@ static char                     MangleSymBuff[MAX_SYMLEN+4+SYM_MANGLE_LEN];
 #endif
 
 
-static uint     MangleCommonBlockName( sym_id sym, char *buffer,
-                                               bool class ) {
-//===========================================================
-
-    uint        cb_len;
+static size_t   MangleCommonBlockName( sym_id sym, char *buffer, bool class )
+//===========================================================================
+{
+    size_t      cb_len;
 
     cb_len = sym->u.ns.u2.name_len;
     if( CGOpts & CGOPT_MANGLE ) {
@@ -197,9 +189,9 @@ static uint     MangleCommonBlockName( sym_id sym, char *buffer,
 }
 
 
-static  segment_id      AllocSegId( void ) {
-//====================================
-
+static  segment_id      AllocSegId( void )
+//========================================
+{
     segment_id  segid;
 
     segid = CurrSegId;
@@ -208,16 +200,16 @@ static  segment_id      AllocSegId( void ) {
 }
 
 
-void    InitSubSegs( void ) {
-//=====================
-
+void    InitSubSegs( void )
+//=========================
+{
     import_segid = -1;
 }
 
 
-segment_id      AllocImpSegId( void ) {
-//===============================
-
+segment_id      AllocImpSegId( void )
+//===================================
+{
     segment_id  segid;
 
     segid = import_segid--;
@@ -225,14 +217,13 @@ segment_id      AllocImpSegId( void ) {
 }
 
 
-void    InitSegs( void ) {
-//==================
-
+void    InitSegs( void )
+//======================
 // Define segments.
-
+{
     CurrSegId = SEG_FREE;
 #if _CPU == _AXP || _CPU == _PPC
-    BEDefSeg( SEG_TDATA, EXEC|GLOBAL|GIVEN_NAME, TS_SEG_CODE, ALIGN_DWORD );
+    BEDefSeg( SEG_TDATA, EXEC | GLOBAL | GIVEN_NAME, TS_SEG_CODE, ALIGN_DWORD );
     CurrCodeSegId = SEG_TDATA;
 #endif
     BEDefSeg( SEG_CDATA, BACK | INIT | ROM, TS_SEG_CONST, ALIGN_SEGMENT );
@@ -245,11 +236,10 @@ void    InitSegs( void ) {
 }
 
 
-void    FiniSegs( void ) {
-//==================
-
+void    FiniSegs( void )
+//======================
 // Finish segment processing.
-
+{
     sym_id      sym;
 
     for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
@@ -260,20 +250,19 @@ void    FiniSegs( void ) {
 }
 
 
-void    AllocSegs( void ) {
-//===================
-
+void    AllocSegs( void )
+//=======================
 // Allocate segments.
-
+{
     AllocGlobalSegs();
     AllocCommonSegs();
 }
 
 
-void    SubCodeSeg( void ) {
-//====================
-
+void    SubCodeSeg( void )
+//========================
 // Define a code segment for a subprogram.
+{
 #if _CPU == 8086 || _CPU == 386
     DefCodeSeg();
 #endif
@@ -281,9 +270,9 @@ void    SubCodeSeg( void ) {
 
 
 #if _CPU == 8086 || _CPU == 386
-static  unsigned char   *AlignmentSeq( void ) {
-//=============================================
-
+static  unsigned char   *AlignmentSeq( void )
+//===========================================
+{
     if( OZOpts & OZOPT_O_TIME ) {
         return( CodeAlignSeq );
     } else {
@@ -292,11 +281,10 @@ static  unsigned char   *AlignmentSeq( void ) {
 }
 
 
-static  void    DefCodeSeg( void ) {
-//============================
-
+static  void    DefCodeSeg( void )
+//================================
 // Define a code segment.
-
+{
     char            seg_name[MAX_SYMLEN+CS_SUFF_LEN+1];
     unsigned char   *align_info_bytes;
     int             i;
@@ -311,15 +299,14 @@ static  void    DefCodeSeg( void ) {
     }
     BldCSName( seg_name );
     CurrCodeSegId = AllocSegId();
-    BEDefSeg( CurrCodeSegId, EXEC|GLOBAL|GIVEN_NAME, seg_name, alignment );
+    BEDefSeg( CurrCodeSegId, EXEC | GLOBAL | GIVEN_NAME, seg_name, alignment );
 }
 
 
-static  void    BldCSName( char *buff ) {
-//=======================================
-
+static  void    BldCSName( char *buff )
+//=====================================
 // Build code segment name.
-
+{
 #if _CPU == 8086
     strcpy( STGetName( SubProgId, buff ), CSSuff );
 #else
@@ -329,18 +316,16 @@ static  void    BldCSName( char *buff ) {
 #endif
 
 
-static  void    DefineCommonSegs( void ) {
-//==================================
-
+static  void    DefineCommonSegs( void )
+//======================================
 // Define segments for a common blocks.
-
+{
     uint_32     com_size;
     int         seg_count;
     sym_id      sym;
-    int         cb_len;
+    size_t      cb_len;
     int         private;
-
-    char        cb_name[MAX_SYMLEN+4+SYM_MANGLE_LEN];
+    char        cb_name[MAX_SYMLEN + 4 + SYM_MANGLE_LEN];
 
 #if _CPU == 386 || _CPU == 8086
     if( _SmallDataModel( CGOpts ) ) {
@@ -350,7 +335,7 @@ static  void    DefineCommonSegs( void ) {
     }
 #endif
     for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
-        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON )
+        if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
             continue;
 #if _CPU == _AXP || _CPU == _PPC
         if( sym->u.ns.flags & SY_COMMON_INIT ) {
@@ -382,26 +367,24 @@ static  void    DefineCommonSegs( void ) {
 }
 
 
-static  void    AllocCommonSegs( void ) {
-//=================================
-
+static  void    AllocCommonSegs( void )
+//=====================================
 // Allocate segments for a common blocks.
-
+{
     sym_id      sym;
 
     for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
-        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON )
+        if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
             continue;
         AllocComBlk( sym );
     }
 }
 
 
-static  void    AllocComBlk( sym_id cb ) {
-//========================================
-
+static  void    AllocComBlk( sym_id cb )
+//======================================
 // Allocate a common block.
-
+{
     segment_id  segid;
     uint_32     size;
 
@@ -409,11 +392,9 @@ static  void    AllocComBlk( sym_id cb ) {
     BESetSeg( segid );
     cb->u.ns.u3.address = BENewBack( cb );
     DGLabel( cb->u.ns.u3.address );
-    size = GetComBlkSize( cb );
-    while( size > MaxSegSize ) {
+    for( size = GetComBlkSize( cb ); size > MaxSegSize; size -= MaxSegSize ) {
         BESetSeg( segid );
         SegBytes( MaxSegSize );
-        size -= MaxSegSize;
         segid++;
     }
     BESetSeg( segid );
@@ -437,17 +418,16 @@ static  void    SegBytes( uint_32 size )
 }
 
 
-static  void   DefineGlobalSeg( global_seg *seg ) {
-//==========================================================
-
+static  void   DefineGlobalSeg( global_seg *seg )
+//===============================================
 // Define a global segment.
-
+{
     int         private;
     char        g_name[G_DATA_LEN+3];
 
     seg->segid = AllocSegId();
     memcpy( g_name, GData, G_DATA_LEN );
-    itoa( seg->segid - GlobalSeg->segid, &g_name[ G_DATA_LEN ], 10 );
+    itoa( seg->segid - GlobalSeg->segid, &g_name[G_DATA_LEN], 10 );
 
 #if _CPU == 386 || _CPU == 8086
     if( _SmallDataModel( CGOpts ) ) {
@@ -471,42 +451,35 @@ static  void   DefineGlobalSeg( global_seg *seg ) {
 }
 
 
-static  void    DefineGlobalSegs( void ) {
-//==================================
-
+static  void    DefineGlobalSegs( void )
+//======================================
 // Define global segments.
-
+{
     global_seg  *g_seg;
 
-    g_seg = GlobalSeg;
-    while( g_seg != NULL ) {
+    for( g_seg = GlobalSeg; g_seg != NULL; g_seg = g_seg->link ) {
         DefineGlobalSeg( g_seg );
-        g_seg = g_seg->link;
     }
 }
 
 
-static  void    AllocGlobalSegs( void ) {
-//=================================
-
+static  void    AllocGlobalSegs( void )
+//=====================================
 // Allocate global segments.
-
+{
     global_seg  *g_seg;
 
-    g_seg = GlobalSeg;
-    while( g_seg != NULL ) {
+    for( g_seg = GlobalSeg; g_seg != NULL; g_seg = g_seg->link ) {
         BESetSeg( g_seg->segid );
         SegBytes( g_seg->size );
-        g_seg = g_seg->link;
     }
 }
 
 
-static  global_seg      *GSegDesc( uint_32 g_offset ) {
-//=========================================================
-
+static  global_seg      *GSegDesc( uint_32 g_offset )
+//===================================================
 // Find global segment descriptor for given offset.
-
+{
     global_seg  *g_seg;
     uint_32     g_size;
 
@@ -518,17 +491,14 @@ static  global_seg      *GSegDesc( uint_32 g_offset ) {
 }
 
 
-void    DtInit( segment_id segid, seg_offset offset ) {
+void    DtInit( segment_id segid, seg_offset offset )
 //===================================================
-
 // Set to do DATA initialization.
-
+{
     if( offset + DtOffset >= MaxSegSize ) {
         segid++;
-        DtSegOffset = DtOffset - (MaxSegSize - offset);
-        while( DtSegOffset >= MaxSegSize ) {
+        for( DtSegOffset = DtOffset - (MaxSegSize - offset); DtSegOffset >= MaxSegSize; DtSegOffset -= MaxSegSize ) {
             segid++;
-            DtSegOffset -= MaxSegSize;
         }
     } else {
         DtSegOffset = offset + DtOffset;
@@ -545,9 +515,9 @@ struct {
 } CurrDt;
 
 
-static  void    InitBytes( unsigned long size, byte value ) {
-//===========================================================
-
+static  void    InitBytes( unsigned long size, byte value )
+//=========================================================
+{
 #if _CPU == 386
     DGIBytes( size, value );
 #else
@@ -562,9 +532,9 @@ static  void    InitBytes( unsigned long size, byte value ) {
 }
 
 
-static  void    UndefBytes( unsigned long size, byte *data ) {
-//============================================================
-
+static  void    UndefBytes( unsigned long size, byte *data )
+//==========================================================
+{
 #if _CPU == 386
     DGBytes( size, data );
 #else
@@ -579,9 +549,9 @@ static  void    UndefBytes( unsigned long size, byte *data ) {
 }
 
 
-static  void    FlushCurrDt( void ) {
-//=============================
-
+static  void    FlushCurrDt( void )
+//=================================
+{
     if( CurrDt.segid != SEG_NULL ) {
         BESetSeg( CurrDt.segid );
         DGSeek( CurrDt.offset );
@@ -590,9 +560,9 @@ static  void    FlushCurrDt( void ) {
 }
 
 
-static  void    InitCurrDt( void ) {
-//============================
-
+static  void    InitCurrDt( void )
+//================================
+{
     CurrDt.segid = SEG_NULL;
     CurrDt.offset = 0;
     CurrDt.byte_value = 0;
@@ -600,11 +570,10 @@ static  void    InitCurrDt( void ) {
 }
 
 
-void    DtIBytes( byte data, int size ) {
-//=======================================
-
+void    DtIBytes( byte data, int size )
+//=====================================
 // Initialize with specified data.
-
+{
     if( ( DtSegId == CurrDt.segid ) &&
         (DtSegOffset == CurrDt.offset + CurrDt.size) &&
         (data == CurrDt.byte_value) &&
@@ -636,11 +605,10 @@ void    DtIBytes( byte data, int size ) {
 }
 
 
-void    DtStreamBytes( byte *data, int size ) {
-//=============================================
-
+void    DtStreamBytes( byte *data, int size )
+//===========================================
 // Initialize with specified data.
-
+{
     FlushCurrDt();
     InitCurrDt();
     BESetSeg( DtSegId );
@@ -664,11 +632,10 @@ void    DtStreamBytes( byte *data, int size ) {
 }
 
 
-void    DtBytes( byte *data, int size ) {
-//=======================================
-
+void    DtBytes( byte *data, int size )
+//=====================================
 // Initialize with specified data.
-
+{
     byte        byte_value;
     int         i;
 
@@ -683,42 +650,38 @@ void    DtBytes( byte *data, int size ) {
 }
 
 
-void    DtStartSequence( void ) {
-//=========================
-
+void    DtStartSequence( void )
+//=============================
+{
     InitCurrDt();
 }
 
 
-void    DtFiniSequence( void ) {
-//========================
-
+void    DtFiniSequence( void )
+//============================
+{
     FlushCurrDt();
 }
 
 
-segment_id      GetComSegId( sym_id sym, uint_32 offset ) {
-//===========================================================
-
+segment_id      GetComSegId( sym_id sym, uint_32 offset )
+//=======================================================
 // Get segment id of common block for variable in common.
-
+{
     segment_id  segid;
 
-    offset += sym->u.ns.si.va.vi.ec_ext->offset;
     segid = sym->u.ns.si.va.vi.ec_ext->com_blk->u.ns.si.cb.segid;
-    while( offset > MaxSegSize ) {
+    for( offset += sym->u.ns.si.va.vi.ec_ext->offset; offset > MaxSegSize; offset -= MaxSegSize ) {
         segid++;
-        offset -= MaxSegSize;
     }
     return( segid );
 }
 
 
-segment_id      GetDataSegId( sym_id sym ) {
-//==========================================
-
+segment_id      GetDataSegId( sym_id sym )
+//========================================
 // Get segment containing data for given variable.
-
+{
     segment_id  segid;
     uint_32     offset;
     com_eq      *ce_ext;
@@ -754,11 +717,10 @@ segment_id      GetDataSegId( sym_id sym ) {
 }
 
 
-seg_offset      GetGlobalOffset( uint_32 g_offset ) {
-//=======================================================
-
+seg_offset      GetGlobalOffset( uint_32 g_offset )
+//=================================================
 // Find offset in the global segment containing data at given offset.
-
+{
     global_seg  *g_seg;
     uint_32     g_size;
 
@@ -770,11 +732,10 @@ seg_offset      GetGlobalOffset( uint_32 g_offset ) {
 }
 
 
-seg_offset      GetComOffset( uint_32 offset ) {
-//==================================================
-
+seg_offset      GetComOffset( uint_32 offset )
+//============================================
 // Get segment offset in common block for variable in common.
-
+{
     while( offset >= MaxSegSize ) {
         offset -= MaxSegSize;
     }
@@ -782,14 +743,13 @@ seg_offset      GetComOffset( uint_32 offset ) {
 }
 
 
-back_handle FEBack( cg_sym_handle _sym ) {
-//========================================
-
+back_handle FEBack( cg_sym_handle _sym )
+//======================================
 // Return the back handle for the given symbol.
-
+{
     sym_id      sym = _sym;
 
-    if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON ) {
+    if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON ) {
         if( sym->u.ns.u3.address == NULL ) {
             sym->u.ns.u3.address = BENewBack( sym );
         }
@@ -798,11 +758,10 @@ back_handle FEBack( cg_sym_handle _sym ) {
 }
 
 
-seg_offset      GetDataOffset( sym_id sym ) {
-//===========================================
-
+seg_offset      GetDataOffset( sym_id sym )
+//=========================================
 // Get offset in segment containing data for given variable.
-
+{
     seg_offset  seg_offset;
     uint_32     offset;
     com_eq      *ce_ext;
@@ -834,20 +793,18 @@ seg_offset      GetDataOffset( sym_id sym ) {
 }
 
 
-segment_id  GetGlobalSegId( uint_32 g_offset ) {
-//================================================
-
+segment_id  GetGlobalSegId( uint_32 g_offset )
+//============================================
 // Find global segment containing data at given offset.
-
+{
     return( GSegDesc( g_offset )->segid );
 }
 
 
-void    DefTypes( void ) {
-//==================
-
+void    DefTypes( void )
+//======================
 // Define FORTRAN 77 data types.
-
+{
     int         adv_cnt;
     int         adv_size;
     int         total_size;
@@ -919,11 +876,10 @@ void    DefTypes( void ) {
 }
 
 
-void    DefStructs( void ) {
-//====================
-
+void    DefStructs( void )
+//========================
 // Define user-defined data types.
-
+{
     sym_id      sym;
 
     UserType = TY_USER_DEFINED;
@@ -935,7 +891,7 @@ void    DefStructs( void ) {
     }
     if( Options & OPT_AUTOMATIC ) {
         for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
-            if( ( sym->u.ns.flags & SY_CLASS ) != SY_VARIABLE )
+            if( (sym->u.ns.flags & SY_CLASS) != SY_VARIABLE )
                 continue;
             if( sym->u.ns.flags & (SY_SUB_PARM | SY_IN_COMMON) )
                 continue;
@@ -981,34 +937,30 @@ void    DefStructs( void ) {
 }
 
 
-const char  *FEModuleName( void ) {
-//=================================
-
+const char  *FEModuleName( void )
+//===============================
 // Return pointer to module name (no file extension).
-
+{
     return( SDFName( SrcName ) );
 }
 
 
-int     FETrue( void ) {
-//================
-
+int     FETrue( void )
+//====================
 // Return the value for "true".
-
+{
     return( _LogValue( true ) );
 }
 
 
-fe_attr FEAttr( cg_sym_handle _sym ) {
-//====================================
-
+fe_attr FEAttr( cg_sym_handle _sym )
+//==================================
 // Return the front end attributes for the given symbol.
-
 // FE_NOALIAS:  variable can't be modified by an indirect store
 //              (unless its address has been taken)
 // FE_VISIBLE:  variable can be modified by a call even though
 //              it's not global
-
+{
     uint_16     flags;
     fe_attr     attr;
     sym_id      sym = _sym;
@@ -1018,7 +970,7 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
         return( 0 );
     attr = 0;
     flags = sym->u.ns.flags;
-    if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
+    if( (flags & SY_CLASS) == SY_VARIABLE ) {
         // SY_VARIABLE with SY_PS_ENTRY is shadow for function return value
         if( (flags & (SY_SUB_PARM | SY_PS_ENTRY)) == 0 ) {
             if( flags & SY_IN_COMMON ) {
@@ -1066,20 +1018,20 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
                     }
                 }
             }
-            if( ( flags & ( SY_SUBSCRIPTED | SY_IN_COMMON ) ) == 0 ) {
+            if( (flags & (SY_SUBSCRIPTED | SY_IN_COMMON)) == 0 ) {
                 attr |= FE_NOALIAS;
             }
         }
-    } else if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-        if( ( flags & SY_SUBPROG_TYPE ) != SY_STMT_FUNC ) {
-            if( ( flags & SY_SUB_PARM ) == 0 ) {
+    } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
+        if( (flags & SY_SUBPROG_TYPE) != SY_STMT_FUNC ) {
+            if( (flags & SY_SUB_PARM) == 0 ) {
                 attr |= FE_PROC | FE_GLOBAL | FE_STATIC;
-                if( ( flags & SY_PS_ENTRY ) == 0 ) {
+                if( (flags & SY_PS_ENTRY) == 0 ) {
                     attr |= FE_IMPORT;
                 }
             }
         }
-    } else if( ( flags & SY_CLASS ) == SY_COMMON ) {
+    } else if( (flags & SY_CLASS) == SY_COMMON ) {
         attr |= FE_GLOBAL | FE_STATIC | FE_VISIBLE;
     }
     if( (attr & FE_GLOBAL) == 0 ) {
@@ -1089,18 +1041,17 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
 }
 
 
-void    FEGenProc( cg_sym_handle sym, call_handle handle)
-//=======================================================
+void    FEGenProc( cg_sym_handle sym, call_handle handle )
+//========================================================
 {
     /* unused parameters */ (void)sym; (void)handle;
 }
 
 
-segment_id      FESegID( cg_sym_handle _sym ) {
-//=============================================
-
+segment_id      FESegID( cg_sym_handle _sym )
+//===========================================
 // Return identifier of the segment that the given symbol is defined in.
-
+{
     segment_id  segid;
     uint_16     flags;
     uint_16     sp_type;
@@ -1109,8 +1060,8 @@ segment_id      FESegID( cg_sym_handle _sym ) {
     _UnShadow( sym );
     segid = SEG_LDATA;
     flags = sym->u.ns.flags;
-    if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
-        if( ( flags & SY_SUB_PARM ) == 0 ) {
+    if( (flags & SY_CLASS) == SY_VARIABLE ) {
+        if( (flags & SY_SUB_PARM) == 0 ) {
             if( flags & SY_SUBSCRIPTED ) {
                 if( !_Allocatable( sym ) ) {
                     segid = GetDataSegId( sym );
@@ -1119,8 +1070,8 @@ segment_id      FESegID( cg_sym_handle _sym ) {
                 segid = GetDataSegId( sym );
             }
         }
-    } else if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-        sp_type = flags & SY_SUBPROG_TYPE;
+    } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
+        sp_type = (flags & SY_SUBPROG_TYPE);
         if( sp_type != SY_STMT_FUNC ) {
             if( (flags & SY_SUB_PARM) == 0 ) {
                 if( (flags & SY_PS_ENTRY) == 0 ) {
@@ -1138,71 +1089,61 @@ segment_id      FESegID( cg_sym_handle _sym ) {
                 }
             }
         }
-    } else if( ( flags & SY_CLASS ) == SY_COMMON ) {
+    } else if( (flags & SY_CLASS) == SY_COMMON ) {
         segid = sym->u.ns.si.cb.segid;
     }
     return( segid );
 }
 
 
-static char *GetName( sym_id sym ) {
-//==================================
-
+static char *GetName( sym_id sym )
+//================================
 // Return pointer to the name of the given symbol.
-
+{
     if( _MgcIsMagic( sym ) ) {
-        if( ( sym->u.ns.flags & SY_PS_ENTRY ) == 0 ) {
+        if( (sym->u.ns.flags & SY_PS_ENTRY) == 0 ) {
             return( "*MAGIC*" );
         } else {
             sym = sym->u.ns.si.ms.sym;
         }
     }
-    if( ( ( sym->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) &&
-        ( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) ) {
+    if( ( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) &&
+        ( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) ) {
         return( ProgName );
     }
     STExtractName( sym, SymBuff );
     return( SymBuff );
 }
 
+static aux_info *GetAuxInfo( sym_id sym )
+{
+    _UnShadow( sym );
+    return( InfoLookup( sym ) );
+}
+
 static const char *GetBaseName( sym_id sym )
 {
-    int         len;
-    char        *buff;
-    aux_info    *aux;
-
     _UnShadow( sym );
-    buff = StackBuffer( &len );
-    aux = AuxLookup( sym );
-    if( aux->sym_len > 0 ) {
-        strncpy( buff, aux->sym_name, aux->sym_len );
-        buff[ aux->sym_len ] = 0;
-    } else {
-        strncpy( buff, sym->u.ns.name, sym->u.ns.u2.name_len );
-        buff[ sym->u.ns.u2.name_len ] = 0;
-    }
-    return( buff );
+    return( sym->u.ns.name );
 }
 
 static const char *GetNamePattern( sym_id sym )
 {
-    aux_info    *aux;
+    aux_info    *info;
 
-    _UnShadow( sym );
-    aux = AuxLookup( sym );
-    return( aux->objname );
+    info = GetAuxInfo( sym );
+    return( info->objname );
 }
 
 static uint GetParmsSize( sym_id sym )
 {
     uint        args_size;
     pass_by     *arg;
-    aux_info    *aux;
+    aux_info    *info;
 
-    _UnShadow( sym );
-    aux = AuxLookup( sym );
+    info = GetAuxInfo( sym );
     args_size = 0;
-    for( arg = aux->arg_info; arg != NULL; arg = arg->link ) {
+    for( arg = info->arg_info; arg != NULL; arg = arg->link ) {
         if( arg->info & ARG_SIZE_1 ) {
             args_size += 1;
         } else if( arg->info & ARG_SIZE_2 ) {
@@ -1220,11 +1161,10 @@ static uint GetParmsSize( sym_id sym )
     return( args_size );
 }
 
-const char *FEExtName( cg_sym_handle sym, int request ) {
-//=======================================================
-
+const char *FEExtName( cg_sym_handle sym, int request )
+//=====================================================
 // Return symbol name related info for object file.
-
+{
     switch( request ) {
     case EXTN_BASENAME:
         return( GetBaseName( (sym_id)sym ) );
@@ -1232,17 +1172,18 @@ const char *FEExtName( cg_sym_handle sym, int request ) {
         return( GetNamePattern( (sym_id)sym ) );
     case EXTN_PRMSIZE:
         return( (const char *)(pointer_uint)GetParmsSize( (sym_id)sym ) );
+    case EXTN_IMPPREFIX:
+        return( NULL );
     case EXTN_CALLBACKNAME:
     default:
         return( NULL );
     }
 }
 
-const char  *FEName( cg_sym_handle _sym ) {
-//====================================
-
+const char  *FEName( cg_sym_handle _sym )
+//=======================================
 // Return pointer to the name of the given symbol.
-
+{
     sym_id      sym = _sym;
 
     _UnShadow( sym );
@@ -1252,11 +1193,10 @@ const char  *FEName( cg_sym_handle _sym ) {
 }
 
 
-void    *ConstBack( sym_id c_ptr ) {
-//==================================
-
+void    *ConstBack( sym_id c_ptr )
+//================================
 // Get a back handle for a literal.
-
+{
     if( c_ptr->u.cn.address == NULL ) {
         c_ptr->u.cn.address = BENewBack( NULL );
     }
@@ -1264,11 +1204,10 @@ void    *ConstBack( sym_id c_ptr ) {
 }
 
 
-int     FELexLevel( cg_sym_handle _sym ) {
-//========================================
-
+int     FELexLevel( cg_sym_handle _sym )
+//======================================
 // Return scoping level of given symbol.
-
+{
     sym_id      sym = _sym;
 
     _UnShadow( sym );
@@ -1276,12 +1215,11 @@ int     FELexLevel( cg_sym_handle _sym ) {
 }
 
 
-cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe ) {
-//=========================================================================
-
+cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe )
+//======================================================================
 // Return the type that an argument of the given type should be converted
 // to.
-
+{
     /* unused parameters */ (void)parm; (void)fn;
 
     switch( tipe ) {
@@ -1293,10 +1231,11 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe ) {
     case TY_UINT_1:
 #if _CPU == 386
         {
-            aux_info    *aux;
-            aux = AuxLookup( (sym_id)fn );
-            if( aux != NULL ) {
-                if( aux->cclass & FAR16_CALL ) {
+            aux_info    *info;
+
+            info = InfoLookup( (sym_id)fn );
+            if( info != NULL ) {
+                if( info->cclass & FAR16_CALL ) {
                     return( TY_INT_2 );
                 }
             }
@@ -1309,7 +1248,7 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe ) {
 
 
 int     FEMoreMem( size_t size )
-//==================================
+//==============================
 // We can't free any memory for use by the back end.
 {
 
@@ -1319,33 +1258,21 @@ int     FEMoreMem( size_t size )
 }
 
 
-int     FEStackChk( cg_sym_handle _sym ) {
-//========================================
-
+int     FEStackChk( cg_sym_handle _sym )
+//======================================
 // Do we want to generate stack overflow checking in the prologue for the
 // given symbol?
-
+{
     sym_id      sym = _sym;
 
     _UnShadow( sym );
-    return( ( CGOpts & CGOPT_STACK_CHK ) != 0 );
+    return( (CGOpts & CGOPT_STACK_CHK) != 0 );
 }
 
 
-static  char    *AuxName( aux_info *aux, char *buff ) {
-//=====================================================
-
-    if( (aux == &FortranInfo) || (aux == &DefaultInfo) ) {
-        STGetName( SubProgId, buff );
-        return( buff );
-    }
-    return( aux->sym_name );
-}
-
-
-void    FCMessage( fc_msg_class tipe, pointer x ) {
-//=================================================
-
+void    FCMessage( fc_msg_class tipe, pointer x )
+//===============================================
+{
     char        name[MAX_SYMLEN+1];
 
     switch( tipe ) {
@@ -1364,14 +1291,13 @@ void    FCMessage( fc_msg_class tipe, pointer x ) {
     }
 }
 
-void    FEMessage( int msg, pointer x ) {
-//=======================================
-
+void    FEMessage( int msg, pointer x )
+//=====================================
 // Print a message for the back end.
-
+{
     char        name[MAX_SYMLEN+1];
 
-    if( ( CGFlags & CG_INIT ) == 0 ) {
+    if( (CGFlags & CG_INIT) == 0 ) {
         SendStd( x );
         exit( 1 );
     }
@@ -1400,7 +1326,7 @@ void    FEMessage( int msg, pointer x ) {
         Error( CP_BAD_PARM_REGISTER, x );
         break;
     case MSG_BAD_RETURN_REGISTER :
-        Error( CP_BAD_RETURN_REGISTER, AuxName( x, name ) );
+        Error( CP_BAD_RETURN_REGISTER, FEName( x ) );
         break;
     case MSG_REGALLOC_DIED :
     case MSG_SCOREBOARD_DIED :
@@ -1421,7 +1347,7 @@ void    FEMessage( int msg, pointer x ) {
         Error( CP_BACK_END_ERROR, (int)(pointer_uint)x );
         break;
     case MSG_BAD_SAVE :
-        Error( CP_BAD_SAVE, AuxName( x, name ) );
+        Error( CP_BAD_SAVE, FEName( x ) );
         break;
     case MSG_BLIP :
         if( (Options & OPT_QUIET) == 0 ) {
@@ -1442,22 +1368,21 @@ void    FEMessage( int msg, pointer x ) {
 }
 
 
-static  dbg_type        BaseDbgType( TYPE typ, uint size ) {
+static  dbg_type        BaseDbgType( TYPE typ, size_t size )
 //==========================================================
-
+{
     if( typ == FT_CHAR ) {
         return( DBCharBlock( size ) );
     } else {
-        return( DBGTypes[ ParmType( typ, size ) ] );
+        return( DBGTypes[ParmType( typ, size )] );
     }
 }
 
 
-static  dbg_type        GetDbgType( sym_id sym ) {
-//================================================
-
+static  dbg_type        GetDbgType( sym_id sym )
+//==============================================
 // Get debugging information type.
-
+{
     dbg_loc     loc;
     dbg_type    type;
 
@@ -1480,7 +1405,7 @@ static  dbg_type        GetDbgType( sym_id sym ) {
             // character*(*) variable/array
             if( sym->u.ns.flags & SY_VALUE_PARM ) {
                 char    new_name[32];
-                sprintf( new_name, "%s*(*)", DBGNames[ PT_CHAR ] );
+                sprintf( new_name, "%s*(*)", DBGNames[PT_CHAR] );
                 return( DBCharBlockNamed( new_name, 0 ) );
             }
             loc = DBLocInit();
@@ -1500,7 +1425,7 @@ static  dbg_type        GetDbgType( sym_id sym ) {
         return( sym->u.ns.xt.record->dbi );
     } else if( (sym->u.ns.u1.s.typ == FT_CHAR) ) {
         char    new_name[32];
-        sprintf( new_name, "%s*%u", DBGNames[ PT_CHAR ], sym->u.ns.xt.size );
+        sprintf( new_name, "%s*%lu", DBGNames[PT_CHAR], (unsigned long)sym->u.ns.xt.size );
         return( DBCharBlockNamed( new_name, sym->u.ns.xt.size ) );
     } else {
         return( BaseDbgType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) );
@@ -1508,9 +1433,9 @@ static  dbg_type        GetDbgType( sym_id sym ) {
 }
 
 
-static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type ) {
-//=======================================================================
-
+static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type )
+//=====================================================================
+{
     int         dim_cnt;
     intstar4    *bounds;
     intstar4    lo;
@@ -1529,16 +1454,15 @@ static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type ) {
 }
 
 
-static  dbg_type        GetDBGSubProgType( sym_id sym ) {
-//=======================================================
-
+static  dbg_type        GetDBGSubProgType( sym_id sym )
+//=====================================================
 // Get debugging information type for subprograms.
-
+{
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
 #if _CPU == 8086
-        return( DBGTypes[ PT_INT_2 ] );
+        return( DBGTypes[PT_INT_2] );
 #elif _CPU == 386 || _CPU == _AXP || _CPU == _PPC
-        return( DBGTypes[ PT_INT_4 ] );
+        return( DBGTypes[PT_INT_4] );
 #else
         #error Unknown platform
 #endif
@@ -1559,9 +1483,9 @@ static  dbg_type        GetDBGSubProgType( sym_id sym ) {
         // We must assign a return type to bar, assume that it is a subroutine
         // Since we don't really know what it is.
 #if _CPU == 8086
-        return( DBGTypes[ PT_INT_2 ] );
+        return( DBGTypes[PT_INT_2] );
 #elif _CPU == 386 || _CPU == _AXP || _CPU == _PPC
-        return( DBGTypes[ PT_INT_4 ] );
+        return( DBGTypes[PT_INT_4] );
 #else
         #error Unknown platform
 #endif
@@ -1571,11 +1495,10 @@ static  dbg_type        GetDBGSubProgType( sym_id sym ) {
 }
 
 
-static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
-//========================================================================
-
+static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type )
+//======================================================================
 // Define debugging information for subprograms.
-
+{
     dbg_proc    db_proc;
     entry_pt    *ep;
     parameter   *arg;
@@ -1592,7 +1515,7 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
             if( arg->flags & ARG_STMTNO )
                 continue;
             arg_type = GetDbgType( arg->id );
-            if( ( arg->id->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+            if( (arg->id->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
                 arg_type = DBDereference( TY_CODE_PTR,
                                DBEndProc( DBBegProc( TY_CODE_PTR,
                                           GetDBGSubProgType( arg->id ) ) ) );
@@ -1618,26 +1541,23 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
 }
 
 
-static  void    DefDbgFields( sym_id sd, dbg_struct db, uint_32 f_offset ) {
-//==============================================================================
-
+static  void    DefDbgFields( sym_id sd, dbg_struct db, uint_32 f_offset )
+//========================================================================
+{
     sym_id      map;
     sym_id      field;
     uint_32     size;
     dbg_type    db_type;
     char        field_name[MAX_SYMLEN+1];
 
-    field = sd->u.sd.fl.sym_fields;
-    while( field != NULL ) {
+    for( field = sd->u.sd.fl.sym_fields; field != NULL; field = field->u.fd.link ) {
         if( field->u.fd.typ == FT_UNION ) {
             size = 0;
-            map = field->u.fd.xt.sym_record;
-            while( map != NULL ) {
+            for( map = field->u.fd.xt.sym_record; map != NULL; map = map->u.sd.link ) {
                 DefDbgFields( map, db, f_offset );
                 if( size < map->u.sd.size ) {
                     size = map->u.sd.size;
                 }
-                map = map->u.sd.link;
             }
         } else {
             STFieldName( field, field_name );
@@ -1655,16 +1575,14 @@ static  void    DefDbgFields( sym_id sd, dbg_struct db, uint_32 f_offset ) {
             DBAddField( db, f_offset, field_name, db_type );
         }
         f_offset += size;
-        field = field->u.fd.link;
     }
 }
 
 
-static  void    DefDbgStruct( sym_id sym ) {
-//==========================================
-
+static  void    DefDbgStruct( sym_id sym )
+//========================================
 // Define debugging information for structure.
-
+{
     dbg_struct  db;
 
     if( sym->u.sd.dbi != DBG_NIL_TYPE )
@@ -1675,11 +1593,10 @@ static  void    DefDbgStruct( sym_id sym ) {
 }
 
 
-static  dbg_type        DefCommonStruct( sym_id sym ) {
-//=====================================================
-
+static  dbg_type        DefCommonStruct( sym_id sym )
+//===================================================
 // Define debugging information for a COMMON block.
-
+{
     dbg_struct  db;
     uint_32     com_offset;
     uint_32     size;
@@ -1716,27 +1633,26 @@ static  dbg_type        DefCommonStruct( sym_id sym ) {
 }
 
 
-static  void    InitDBGTypes( void ) {
-//==============================
-
+static  void    InitDBGTypes( void )
+//==================================
+{
     int         typ;
 
-    if( DBGTypes[ PT_LOG_1 ] == DBG_NIL_TYPE ) {
+    if( DBGTypes[PT_LOG_1] == DBG_NIL_TYPE ) {
         for( typ = PT_LOG_1; typ <= PT_REAL_16; ++typ ) {
-            DBGTypes[ typ ] = DBScalar( DBGNames[ typ ], MkCGType( typ ) );
+            DBGTypes[typ] = DBScalar( DBGNames[typ], MkCGType( typ ) );
         }
-        DBGTypes[ PT_CPLX_8 ]  = DBFtnType( DBGNames[ PT_CPLX_8 ],  T_DBG_COMPLEX );
-        DBGTypes[ PT_CPLX_16 ] = DBFtnType( DBGNames[ PT_CPLX_16 ], T_DBG_DCOMPLEX );
-        DBGTypes[ PT_CPLX_32 ] = DBFtnType( DBGNames[ PT_CPLX_32 ], T_DBG_XCOMPLEX );
+        DBGTypes[PT_CPLX_8]  = DBFtnType( DBGNames[PT_CPLX_8],  T_DBG_COMPLEX );
+        DBGTypes[PT_CPLX_16] = DBFtnType( DBGNames[PT_CPLX_16], T_DBG_DCOMPLEX );
+        DBGTypes[PT_CPLX_32] = DBFtnType( DBGNames[PT_CPLX_32], T_DBG_XCOMPLEX );
     }
 }
 
 
-dbg_type        FEDbgRetType( cg_sym_handle _sym ) {
-//==================================================
-
+dbg_type        FEDbgRetType( cg_sym_handle _sym )
+//================================================
 // Return the debug type handle for a subprogram.
-
+{
     sym_id      sym = _sym;
 
     _UnShadow( sym );
@@ -1748,9 +1664,9 @@ dbg_type        FEDbgRetType( cg_sym_handle _sym ) {
 }
 
 
-static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
-//=========================================================================
-
+static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type )
+//=======================================================================
+{
     int         dim_cnt;
     int         dim_no;
     int         len;
@@ -1786,11 +1702,10 @@ static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
 }
 
 
-dbg_type        FEDbgType( cg_sym_handle _sym ) {
-//===============================================
-
+dbg_type        FEDbgType( cg_sym_handle _sym )
+//=============================================
 // Return the debug type handle for the given symbol.
-
+{
     dbg_type            db_type;
     act_dim_list        *dim_ptr;
     sym_id              sym = _sym;
@@ -1864,10 +1779,10 @@ dbg_type        FEDbgType( cg_sym_handle _sym ) {
 }
 
 
-char    *GetFullSrcName( void ) {
-//===============================
-
-    int         idx;
+char    *GetFullSrcName( void )
+//=============================
+{
+    size_t      idx;
 
     idx = MakeName( SrcName, SrcExtn, TokenBuff ) + sizeof( char );
     if( _fullpath( &TokenBuff[idx], TokenBuff, TOKLEN-idx ) != NULL ) {
@@ -1878,7 +1793,7 @@ char    *GetFullSrcName( void ) {
 }
 
 pointer FEAuxInfo( pointer req_handle, int request )
-//====================================================
+//==================================================
 // Return specified auxiliary information for given auxiliary entry.
 {
     uint_16     flags;
@@ -1890,33 +1805,40 @@ pointer FEAuxInfo( pointer req_handle, int request )
     char        *fn;
     char        *fe;
     char        *ptr;
+    aux_info    *info;
 
     switch( request ) {
     case CALL_CLASS :
         {
             static call_class CallClass;
 
-            CallClass = ((aux_info *)req_handle)->cclass ^ REVERSE_PARMS;
+            info = GetAuxInfo( req_handle );
+            CallClass = info->cclass ^ REVERSE_PARMS;
             return( (pointer)&CallClass );
         }
     case SAVE_REGS :
-        return( (pointer)&((aux_info *)req_handle)->save );
+        info = GetAuxInfo( req_handle );
+        return( (pointer)&info->save );
     case RETURN_REG :
-        return( (pointer)&((aux_info *)req_handle)->returns );
+        info = GetAuxInfo( req_handle );
+        return( (pointer)&info->returns );
     case PARM_REGS :
-        return( (pointer)((aux_info *)req_handle)->parms );
+        info = GetAuxInfo( req_handle );
+        return( (pointer)info->parms );
     case CALL_BYTES :
 #if _CPU == _AXP || _CPU == _PPC
         return( NULL );
 #else
-        return( (pointer)((aux_info *)req_handle)->code );
+        info = GetAuxInfo( req_handle );
+        return( (pointer)info->code );
 #endif
 #if _CPU == 8086 || _CPU == 386
     case CODE_GROUP :
     case DATA_GROUP :
         return( (pointer)"" );
     case STRETURN_REG :
-        return( (pointer)&((aux_info *)req_handle)->streturn );
+        info = GetAuxInfo( req_handle );
+        return( (pointer)&info->streturn );
 #endif
     case NEXT_IMPORT :
         switch( (int)(pointer_uint)req_handle ) {
@@ -1930,8 +1852,8 @@ pointer FEAuxInfo( pointer req_handle, int request )
             /* fall through */
         case 1:
 #if _CPU == 386 || _CPU == 8086
-            if(( CGFlags & CG_FP_MODEL_80x87 )
-              && ( CGFlags & CG_USED_80x87 ))
+            if( (CGFlags & CG_FP_MODEL_80x87)
+              && (CGFlags & CG_USED_80x87) )
                 return( (pointer)(pointer_uint)2 );
             /* fall through */
         case 2:
@@ -1959,7 +1881,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
             /* fall through */
         case 8:
 #if _CPU == 386 || _CPU == _PPC || _CPU == _AXP
-            if( CGOpts & ( CGOPT_BM | CGOPT_BD ) )
+            if( CGOpts & (CGOPT_BM | CGOPT_BD) )
                 return( (pointer)(pointer_uint)9 );
             /* fall through */
         case 9:
@@ -1979,9 +1901,9 @@ pointer FEAuxInfo( pointer req_handle, int request )
         }
         for( ; ImpSym != NULL; ImpSym = ImpSym->u.ns.link ) {
             flags = ImpSym->u.ns.flags;
-            if(( ( flags & SY_CLASS ) == SY_SUBPROGRAM )
-              && ( flags & SY_EXTERNAL )
-              && ( ( flags & ( SY_SUB_PARM | SY_REFERENCED | SY_RELAX_EXTERN ) ) == 0 )) {
+            if(( (flags & SY_CLASS) == SY_SUBPROGRAM )
+              && (flags & SY_EXTERNAL)
+              && ( (flags & (SY_SUB_PARM | SY_REFERENCED | SY_RELAX_EXTERN)) == 0 )) {
                 return( (pointer)(pointer_uint)1 );
             }
         }
@@ -2036,9 +1958,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
     case SOURCE_NAME :
         return( GetFullSrcName() );
     case AUX_LOOKUP :
-        sym = (sym_id)req_handle;
-        _UnShadow( sym );
-        return( AuxLookup( sym ) );
+        return( req_handle );
     case OBJECT_FILE_NAME :
         if( ObjName == NULL ) {
             MakeName( SDFName( SrcName ), ObjExtn, TokenBuff );
@@ -2049,9 +1969,8 @@ pointer FEAuxInfo( pointer req_handle, int request )
                 memcpy( ptr, ObjName, fn - ObjName );
                 ptr += fn - ObjName;
             }
-            fe = SDExtn( fn, ObjExtn );
-            if(( *fn == NULLCHAR )
-              || (( *fn == '*' ) && ( fn[1] == NULLCHAR ))) {
+            fe = SDSplitExtn( fn, ObjExtn );
+            if(( *fn == NULLCHAR ) || (( *fn == '*' ) && ( fn[1] == NULLCHAR ))) {
                 fn = SDFName( SrcName );
             }
             MakeName( fn, fe, ptr );
@@ -2064,7 +1983,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
 #if _CPU == 8086 || _CPU == 386
     case CLASS_NAME :
         for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
-            if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON )
+            if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
                 continue;
             idx = 0;
             for( com_size = GetComBlkSize( sym ); com_size > MaxSegSize; com_size -= MaxSegSize ) {

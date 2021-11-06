@@ -69,7 +69,7 @@ is any of the following:
 .do end
 .note ELIMINATE
 .note [NO]FARCALLS
-.note FULLHEADER 
+.note FULLHEADER
 :cmt. crashes linker .note INCREMENTAL
 .note MANGLEDNAMES
 .note MAP[=map_file]
@@ -168,7 +168,7 @@ is any of the following:
 .section *refid=useover Using Overlays
 .*
 .np
-.if '&overlay' eq 'no' .do begin
+.if '&overlay' ne 'yes' .do begin
 The creation of overlaid executables is not supported by this version
 of the &lnkname..
 .do end
@@ -273,17 +273,19 @@ end
 The root consists of
 .id file0
 and
-.id file1.
+.id file1
+.period
 .note
 Three overlays are defined.
 The first overlay (overlay #1) contains
-.id file2,
-the second overlay (overlay #2) contains
+.id file2
+.ct , the second overlay (overlay #2) contains
 .id file3
 and
-.id file4,
-and the third overlay (overlay #3) contains
-.id file5.
+.id file4
+.ct , and the third overlay (overlay #3) contains
+.id file5
+.period
 .endnote
 .np
 The following diagram depicts the overlay structure.
@@ -357,11 +359,12 @@ The first is identical to the overlay area defined in the previous
 example.
 The second overlay area contains three overlays; the first overlay
 (overlay #4) contains
-.id file6,
-the second overlay (overlay #5) contains
-.id file7,
-and the third overlay (overlay #6) contains
-.id file8.
+.id file6
+.ct , the second overlay (overlay #5) contains
+.id file7
+.ct , and the third overlay (overlay #6) contains
+.id file8
+.period
 .np
 The following diagram depicts the overlay structure.
 :cmt. :set symbol='c0' value=&sysin+4
@@ -570,19 +573,21 @@ end
 The root contains
 .id file0
 and
-.id file1.
+.id file1
+.period
 .note
 Four overlays are defined.
 The first overlay (overlay #1) contains
-.id file2,
-the second overlay (overlay #2) contains
-.id file3,
-the third overlay (overlay #3) contains
+.id file2
+.ct , the second overlay (overlay #2) contains
+.id file3
+.ct , the third overlay (overlay #3) contains
 .id file4
 and
-.id file5,
-and the fourth overlay (overlay #4) contains
-.id file6.
+.id file5
+.ct , and the fourth overlay (overlay #4) contains
+.id file6
+.period
 .endnote
 .np
 The following diagram depicts the overlay structure.
@@ -788,7 +793,8 @@ module if each module is its own overlay).
 It is possible to add additional overlay areas at run-time so that the
 dynamic overlay manager can use the additional memory.
 A routine has been provided, called
-.id _ovl_addarea.
+.id _ovl_addarea
+.period
 This function is defined as follows.
 .millust begin
 void far _ovl_addarea(unsigned segment,unsigned size);

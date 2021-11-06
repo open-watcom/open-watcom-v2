@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +52,7 @@
 #include "rtdata.h"
 #include "fltsupp.h"
 #include "slibqnx.h"
+#include "_environ.h"
 
 
 #if defined( _M_I86 )
@@ -77,10 +78,10 @@ char    **_argv;                            /* argument vector */
 
 pid_t                   _my_pid;        /* some sort of POSIX dodad */
 struct  _proc_spawn     *__cmd;         /* address of spawn msg */
-char                    *__near __env_mask;
 int (__far * (__far *__f))();           /* Shared library jump table    */
 extern  void __user_init( void );
 #define __user_init() ((int(__far *)(void)) __f[1])()
+
 #endif
 
 static void _WCI86FAR __null_FPE_rtn( int fpe_type )
@@ -128,8 +129,7 @@ static void SetupArgs( struct _proc_spawn *cmd )
 
     envc = cmd->envc;
 
-    environ = cpp = (char **)malloc( (envc + 1) * sizeof( char * ) +
-                    envc * sizeof( char ) );
+    environ = cpp = (char **)malloc( ENVARR_SIZE( envc ) );
     if( environ == NULL ) {
         _Not_Enough_Memory();
         // never return
@@ -213,10 +213,10 @@ static char __far * __SLIB_CALLBACK _s_getenv( const char __far *p )
 
 static char __far * __SLIB_CALLBACK _s_EFG_printf(
     char __far      *buffer,
-    char __far *    __far *args,
+    char __far *    __far *pargs,
     void __far      *specs )
 {
-    return( (*__EFG_printf)( SLIB2CLIB( char, buffer ), SLIB2CLIB( struct my_va_list, args ), SLIB2CLIB( void, specs ) ) );
+    return( (*__EFG_printf)( SLIB2CLIB( char, buffer ), SLIB2CLIB( MY_VA_LIST, pargs ), SLIB2CLIB( void, specs ) ) );
 }
 
 static void setup_slib( void )
@@ -275,10 +275,10 @@ void _CMain( free, n, cmd, stk_bot, pid )
 #pragma aux _s_EFG_printf __far __parm [__eax] [__edx] [__ebx]
 static char *_s_EFG_printf(
     char    *buffer,
-    char    **args,
+    char    **pargs,
     void    *specs )
 {
-    return (*__EFG_printf)( buffer, (struct my_va_list *)args, specs );
+    return (*__EFG_printf)( buffer, (MY_VA_LIST *)pargs, specs );
 }
 
 extern unsigned short   _cs( void );

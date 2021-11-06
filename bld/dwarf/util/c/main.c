@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +98,7 @@ void SetSects( int handle )
         Sections[i].max_offset = sectsizes[i];
 
         if( sectsizes[i] != 0 ) {
-            if( lseek( handle, sections[i], SEEK_SET ) < 0 ) {
+            if( lseek( handle, sections[i], SEEK_SET ) == -1L ) {
                 perror( "" );
             }
             Sections[i].data = malloc( sectsizes[i] );

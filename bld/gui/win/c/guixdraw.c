@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,8 @@
 #include "guixutil.h"
 #include "guiscale.h"
 #include "guigetx.h"
-#include "guixdraw.h"
 #include "guixhot.h"
+#include "guixdraw.h"
 #include "guistr.h"
 #include "guicolor.h"
 
@@ -54,54 +55,62 @@ typedef struct draw_cache {
  *            for the given attributes
  */
 
-static void SetText( gui_window * wnd, WPI_COLOUR fore, WPI_COLOUR back )
+static void SetText( gui_window *wnd, WPI_COLOUR fore, WPI_COLOUR back )
 {
     _wpi_settextcolor( wnd->hdc, _wpi_getnearestcolor( wnd->hdc, fore ) );
     _wpi_setbackcolour( wnd->hdc, _wpi_getnearestcolor( wnd->hdc , back ) );
 }
 
 static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
-                            size_t length, int height, gui_coord *pos,
+                            unsigned in_width, unsigned in_height, const gui_coord *pos,
                             WPI_COLOUR fore, WPI_COLOUR back, gui_ord extentx,
-                            bool draw_extent, int bitmap )
+                            bool draw_extent, int hotspot_no )
 {
-    int         nDrawX, nDrawY;
-    int         lenx;
+    guix_ord    nDrawX;
+    guix_ord    nDrawY;
+    guix_ord    width;
+    guix_ord    height;
     HBRUSH      brush;
     HBRUSH      old_brush;
     HPEN        pen;
     HPEN        old_pen;
     int         old_rop;
     size_t      num_chars;
-    WPI_RECT    rect;
-    gui_coord   indent;
-    int         hscroll_pos;
-    gui_coord   extent;
+    WPI_RECT    wpi_rect;
+    guix_ord    hscroll_pos;
     WPI_COLOUR  colour;
-    GUI_RECTDIM left, top, right, bottom;
-    GUI_RECTDIM paint_left, paint_top, paint_right, paint_bottom;
-    WPI_RECT    paint_rect;
-    WPI_RECT    draw_rect;
+    WPI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM paint_left, paint_top, paint_right, paint_bottom;
     //draw_cache        dcache;
 
     if( ( wnd->hdc == NULLHANDLE ) || ( wnd->ps == NULL ) ||
-        ( ( text == NULL ) && ( bitmap == 0 ) ) ||
-        ( ( bitmap != 0 ) && ( height == 0 ) ) ) {
+        ( ( text == NULL ) && ( hotspot_no == 0 ) ) ||
+        ( ( hotspot_no > 0 ) && ( in_height == 0 ) ) ) {
         return;
     }
     old_rop = 0;
-    old_brush = NULLHANDLE;
-    brush = NULLHANDLE;
-    old_pen = NULLHANDLE;
-    pen = NULLHANDLE;
+    old_brush = WPI_NULL;
+    brush = WPI_NULL;
+    old_pen = WPI_NULL;
+    pen = WPI_NULL;
     GUIGetMetrics( wnd );
-    if( !bitmap ) {
+    if( hotspot_no == 0 ) {
         height = AVGYCHAR( GUItm );
+        num_chars = strlen( text );
+        if( num_chars > in_width ) {
+            num_chars = in_width;
+        }
+        width = GUIGetTextExtentX( wnd, text, num_chars );
+    } else {
+        /* bitmap size */
+        height = in_height;
+        width = in_width;
     }
-    rect = wnd->hwnd_client_rect;
-    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
-    _wpi_getpaintrect( wnd->ps, &paint_rect );
-    _wpi_getwrectvalues( paint_rect, &paint_left, &paint_top, &paint_right, &paint_bottom );
+
+    wpi_rect = wnd->hwnd_client_rect;
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
+    _wpi_getpaintrect( wnd->ps, &wpi_rect );
+    _wpi_getwrectvalues( wpi_rect, &paint_left, &paint_top, &paint_right, &paint_bottom );
     top = paint_top / height * height;
     bottom = ( paint_bottom + height - 1 ) / height * height;
 
@@ -111,114 +120,93 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         hscroll_pos = 0;
     }
 
-    if( bitmap == 0 ) {
-        num_chars = strlen( text );
-        if( num_chars > length ) {
-            num_chars = length;
-        }
-    }
-
-    indent.x = pos->x;
-    indent.y = pos->y;
-    GUIScaleToScreenR( &indent );
-    nDrawY = indent.y;
+    nDrawY = GUIScaleToScreenV( pos->y );
     if( GUI_DO_VSCROLL( wnd ) ) {
         nDrawY -= GUIGetScrollPos( wnd, SB_VERT );
     }
-    nDrawX = left;
-    nDrawX += ( indent.x - hscroll_pos );
-
-    if( bitmap > 0 ) {
-        lenx = length ;
-    } else {
-        lenx = GUIGetTextExtentX( wnd, text, num_chars );
-    }
+    nDrawX = left + GUIScaleToScreenH( pos->x ) - hscroll_pos;
 
     if( draw_extent ) {
         /* blanks out some portion of rest of the line */
         if( extentx != GUI_NO_COLUMN ) {
-            extent.x = extentx;
-            GUIScaleToScreen( &extent );
-            right = nDrawX + extent.x;
+            right = nDrawX + GUIScaleToScreenX( extentx );
         }
     } else {
-        right = nDrawX + lenx;
+        right = nDrawX + width;
     }
-    nDrawY = _wpi_cvth_y_size( nDrawY, _wpi_getheightrect(wnd->hwnd_client_rect), height );
+    nDrawY = _wpi_cvth_y_size( nDrawY, _wpi_getheightrect( wnd->hwnd_client_rect ), height );
 
-    _wpi_setrectvalues( &draw_rect, nDrawX, nDrawY, right, nDrawY+height );
-    if( GUIIsRectInUpdateRect( wnd, &draw_rect ) ) {
+    _wpi_setrectvalues( &wpi_rect, nDrawX, nDrawY, right, nDrawY + height );
+    if( GUIIsRectInUpdateRect( wnd, &wpi_rect ) ) {
         colour = _wpi_getnearestcolor( wnd->hdc, back );
         brush = _wpi_createsolidbrush( colour );
         pen = _wpi_createpen( PS_SOLID, 1, colour );
-        if( pen == NULLHANDLE ) {
+        if( pen == WPI_NULL ) {
             GUIError(LIT( Pen_Failed ));
         }
         old_brush = _wpi_selectbrush( wnd->hdc, brush );
         old_pen = _wpi_selectpen( wnd->hdc, pen );
 #ifdef __OS2_PM__
-        _wpi_rectangle( wnd->hdc, nDrawX, nDrawY+1, right, nDrawY + height - 1 );
+        _wpi_rectangle( wnd->hdc, nDrawX, nDrawY + 1, right, nDrawY + height - 1 );
 #else
-        _wpi_rectangle( wnd->hdc, nDrawX, nDrawY, right, nDrawY + height);
+        _wpi_rectangle( wnd->hdc, nDrawX, nDrawY, right, nDrawY + height );
 #endif
 
         /* if visible even with scrolling */
         if( nDrawX < ( paint_right + hscroll_pos ) ) {
-            if( bitmap > 0 ) {
-                GUIDrawBitmap( bitmap, wnd->hdc, nDrawX, nDrawY, colour);
-            } else {
+            if( hotspot_no == 0 ) {
 #ifdef __OS2_PM__
                 nDrawY += _wpi_metricdescent( GUItm );
 #endif
                 old_rop = _wpi_setrop2( wnd->hdc, R2_COPYPEN );
                 SetText( wnd, fore, back );
                 _wpi_textout( wnd->hdc, nDrawX, nDrawY, text, num_chars );
+            } else {
+                GUIDrawBitmap( hotspot_no, wnd->hdc, nDrawX, nDrawY, colour );
             }
         }
         /* restore old resources */
         if( old_rop != 0 ) {
             _wpi_setrop2( wnd->hdc, old_rop );
         }
-        if( old_brush != NULLHANDLE ) {
+        if( old_brush != WPI_NULL ) {
             _wpi_getoldbrush( wnd->hdc, old_brush );
         }
-        if( brush != NULLHANDLE ) {
+        if( brush != WPI_NULL ) {
             _wpi_deletebrush( brush );
         }
-        if( old_pen != NULLHANDLE ) {
+        if( old_pen != WPI_NULL ) {
             _wpi_getoldpen( wnd->hdc, old_pen );
         }
-        if( pen != NULLHANDLE ) {
+        if( pen != WPI_NULL ) {
             _wpi_deletepen( pen );
         }
     }
 }
 
-void GUIDrawTextBitmapAttr( gui_window *wnd, const char *text, size_t length,
-                            int height, gui_coord *pos,
-                            gui_attr attr, gui_ord extentx,
-                            bool draw_extent, int bitmap )
+void GUIDrawBitmapAttr( gui_window *wnd, const guix_coord *size, const gui_coord *pos, gui_attr attr, int hotspot_no )
 {
     WPI_COLOUR  fore, back;
 
     fore = GUIGetFore( wnd, attr );
     back = GUIGetBack( wnd, attr );
 
-    GUIDrawTextBitmapRGB( wnd, text, length, height, pos, fore, back, extentx,
-                           draw_extent, bitmap );
+    GUIDrawTextBitmapRGB( wnd, NULL, size->x, size->y, pos, fore, back, GUI_NO_COLUMN, false, hotspot_no );
 }
 
-void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *pos,
+void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,
                    gui_attr attr, gui_ord extentx, bool draw_extent )
 {
-    GUIDrawTextBitmapAttr( wnd, text, length, 0, pos, attr, extentx, draw_extent, 0 );
+    WPI_COLOUR  fore, back;
+
+    fore = GUIGetFore( wnd, attr );
+    back = GUIGetBack( wnd, attr );
+
+    GUIDrawTextBitmapRGB( wnd, text, length, 0, pos, fore, back, extentx, draw_extent, 0 );
 }
 
-void GUIXDrawTextRGB( gui_window *wnd, const char *text, size_t length, gui_coord *pos,
-                      gui_rgb fore, gui_rgb back, gui_ord extentx,
-                      bool draw_extent )
+void GUIXDrawTextRGB( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,
+                      gui_rgb fore, gui_rgb back, gui_ord extentx, bool draw_extent )
 {
-    GUIDrawTextBitmapRGB( wnd, text, length, 0, pos, GETRGB(fore), GETRGB(back),
-                          extentx, draw_extent, 0 );
+    GUIDrawTextBitmapRGB( wnd, text, length, 0, pos, GETRGB( fore ), GETRGB( back ), extentx, draw_extent, 0 );
 }
-

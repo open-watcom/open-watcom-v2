@@ -31,7 +31,7 @@ performed input before discovering the runtime-constraint violation.
 The
 .id &funcb.
 function is equivalent to
-.kw fscanf_s
+.reffunc fscanf_s
 with the argument
 .arg stdin
 interposed before the arguments to &funcb.
@@ -42,9 +42,9 @@ The
 function is identical to
 .id &funcb.
 except that it accepts a
-wide-character string argument for
+wide character string argument for
 .arg format
-.ct .li .
+.period
 .do end
 .desc end
 .*

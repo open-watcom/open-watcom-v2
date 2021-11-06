@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "liballoc.h"
 #include "libwin32.h"
 #include "osver.h"
+#include "cvtwc2mb.h"
+
 
 UINT __lib_GetDriveTypeW( LPCWSTR lpRootPathName )
 /************************************************/
@@ -46,20 +49,10 @@ UINT __lib_GetDriveTypeW( LPCWSTR lpRootPathName )
     } else {                                            /* Win95 or Win32s */
         char            *mbRootPathName;
         UINT            osrc;
-        size_t          cvt;
-        size_t          len;
-
-        /*** Allocate some memory ***/
-        len = wcslen( lpRootPathName ) * MB_CUR_MAX + 1;
-        mbRootPathName = lib_malloc( len );
-        if( mbRootPathName == NULL ) {
-            return( FALSE );
-        }
 
         /*** Prepare to call the OS ***/
-        cvt = wcstombs( mbRootPathName, lpRootPathName, len );
-        if( cvt == (size_t)-1 ) {
-            lib_free( mbRootPathName );
+        mbRootPathName = __lib_cvt_wcstombs( lpRootPathName );
+        if( mbRootPathName == NULL ) {
             return( FALSE );
         }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +40,13 @@
 #include <limits.h>
 #if defined( __UNIX__ )
     #include <dirent.h>
+    #include <fnmatch.h>
 #else
     #include <direct.h>
 #endif
 #include "wio.h"
 #include "bool.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -59,7 +61,21 @@
 
 #define READ_ERROR              ((size_t)-1)
 
-#define IsDotOrDotdot(p)        ((p)[0] == '.' && ((p)[1] == '\0' || (p)[1] == '.' && (p)[2] == '\0'))
+#define IsDotOrDotDot(p)        ((p)[0] == '.' && ((p)[1] == '\0' || (p)[1] == '.' && (p)[2] == '\0'))
+
+#ifdef __UNIX__
+    #define PATH_SEP                '/'
+    #define ALL_ITEMS_WILDCARD      "*"
+    #define ENTRY_INVALID(e)        IsDotOrDotDot(e->d_name)
+    #define ENTRY_NOMATCH(n,e)      (fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE) == FNM_NOMATCH)
+    #define ENTRY_SUBDIR(n,e)       chk_is_dir(n)
+#else
+    #define PATH_SEP                '\\'
+    #define ALL_ITEMS_WILDCARD      "*.*"
+    #define ENTRY_INVALID(e)        (IsDotOrDotDot(e->d_name) || (e->d_attr & _A_VOLID))
+    #define ENTRY_NOMATCH(n,e)      (fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE) == FNM_NOMATCH)
+    #define ENTRY_SUBDIR(n,e)       (e->d_attr & _A_SUBDIR)
+#endif
 
 typedef struct dirstack {
     struct dirstack     *prev;
@@ -235,6 +251,13 @@ char *Help[] = {
 NULL
 };
 
+static bool chk_is_dir( const char *name )
+{
+    struct stat     s;
+
+    return( stat( name, &s ) == 0 && S_ISDIR( s.st_mode ) );
+}
+
 static void Error( char *msg, char *other )
 {
     printf( "%s '%s'\r\n", msg, other );
@@ -360,8 +383,8 @@ static void printFileName( void )
         printf( "%s\r\n", buff );
     } else {
         for( i = 0; FName[i] != '\0'; i++ ) {
-            if( FName[i] == '.'  &&  FName[i + 1] == '\\' ) {
-                if( i != 0  &&  FName[i - 1] != '\\' ) {
+            if( FName[i] == '.'  &&  FName[i + 1] == PATH_SEP ) {
+                if( i != 0  &&  FName[i - 1] != PATH_SEP ) {
                     *p = FName[i];
                     p++;
                     *p = FName[i + 1];
@@ -720,12 +743,14 @@ static void extendPath( char *path, char *ext )
 {
     char        *d;
 
-    for( d = Stack->name; *d != '\0'; d++, path++ ) {
-        *path = *d;
+    for( d = Stack->name; *d != '\0'; d++ ) {
+        *path++ = *d;
     }
-    *path = '\\';
-    for( ++path; *ext != '\0'; ext++, path++ ) {
-        *path = *ext;
+    if( ext != NULL && *ext != '\0' ) {
+        *path++ = PATH_SEP;
+        for( ; *ext != '\0'; ext++ ) {
+            *path++ = *ext;
+        }
     }
     *path = '\0';
 }
@@ -735,36 +760,30 @@ static void executeWgrep( void )
     DIR                 *dirp;
     struct dirent       *dire;
     size_t              i;
-    PGROUP2             pg1;
-    PGROUP2             pg2;
-
-    extendPath( PathBuff, CurrPattern );
-
-    _splitpath2( PathBuff, pg1.buffer, NULL, NULL, NULL, &pg1.ext );
+    pgroup2             pg1;
+    pgroup2             pg2;
 
     if( strcmp( CurrPattern, "@@" ) == 0 ) {
         performSearch( CurrPattern );
     } else {
+#if defined( __UNIX__ )
+        extendPath( PathBuff, NULL );
+#else
+        extendPath( PathBuff, CurrPattern );
+#endif
         dirp = opendir( PathBuff );
         if( dirp != NULL ) {
+            _splitpath2( CurrPattern, pg1.buffer, NULL, NULL, NULL, &pg1.ext );
             for( ; !DoneFlag && (dire = readdir( dirp )) != NULL; ) {
-#if defined( __WATCOMC__ ) && !defined( __UNIX__ )
-                if( dire->d_attr & _A_SUBDIR ) {
+                if( ENTRY_INVALID( dire ) )
                     continue;
-                }
-#else
-                {
-                    struct stat sblk;
-                    char tmp_path[_MAX_PATH + 1];
-
-                    strcpy( tmp_path, PathBuff );
-                    extendPath( tmp_path, dire->d_name );
-                    if( stat( tmp_path, &sblk ) == 0 && S_ISDIR( sblk.st_mode ) ) {
-                        continue;
-                    }
-                }
+#if defined( __UNIX__ )
+                if( ENTRY_NOMATCH( CurrPattern, dire ) )
+                    continue;
+                extendPath( pg2.buffer, dire->d_name );
 #endif
-
+                if( ENTRY_SUBDIR( pg2.buffer, dire ) )
+                    continue;
                 if( IgnoreListCnt > 0 ) {
                     _splitpath2( dire->d_name, pg2.buffer, NULL, NULL, NULL, &pg2.ext );
                     if( stricmp( pg1.ext, pg2.ext ) != 0 ) {
@@ -791,31 +810,33 @@ static void processDirectory( void )
     DIR                 *dirp;
     struct dirent       *dire;
     dirstack            *tmp;
+#if defined( __UNIX__ )
+    char                tmp_path[_MAX_PATH + 1];
+#endif
+
+#if defined( __UNIX__ )
+    #define TPATH tmp_path
+#else
+    #define TPATH NULL
+#endif
 
     if( RecurLevels != 0 ) {
-        extendPath( PathBuff, "*.*" );
+#if defined( __UNIX__ )
+        extendPath( PathBuff, NULL );
+#else
+        extendPath( PathBuff, ALL_ITEMS_WILDCARD );
+#endif
         dirp = opendir( PathBuff );
         if( dirp != NULL ) {
             --RecurLevels;
             for( ; !DoneFlag && (dire = readdir( dirp )) != NULL; ) {
-#if defined( __WATCOMC__ ) && !defined( __UNIX__ )
-                if( (dire->d_attr & _A_SUBDIR) == 0 ) {
+                if( ENTRY_INVALID( dire ) )
                     continue;
-                }
-#else
-                {
-                    struct stat sblk;
-                    char tmp_path[_MAX_PATH + 1];
-                    strcpy( tmp_path, PathBuff );
-                    extendPath( tmp_path, dire->d_name );
-                    if( stat( tmp_path, &sblk ) == 0 && !S_ISDIR( sblk.st_mode ) ) {
-                        continue;
-                    }
-                }
+#if defined( __UNIX__ )
+                extendPath( TPATH, dire->d_name );
 #endif
-                if( IsDotOrDotdot( dire->d_name ) ) {
+                if( !ENTRY_SUBDIR( TPATH, dire ) )
                     continue;
-                }
                 if( DoneFlag )
                     break;
                 tmp = (dirstack *)SafeMalloc( sizeof( dirstack ) );
@@ -834,38 +855,41 @@ static void processDirectory( void )
         }
     }
     executeWgrep();
+
+    #undef TPATH
 }
 
 static void nextWgrep( char **paths )
 {
-    struct stat     sblk;
-    PGROUP2         pg;
-    int             dirlen;
+    pgroup2         pg;
+    size_t          dirlen;
 
     Stack = (dirstack *)SafeMalloc( sizeof( dirstack ) );
 
     for( ; *paths != NULL; paths++ ) {
-        if( stat( *paths, &sblk ) == 0 && S_ISDIR( sblk.st_mode ) ) {
+        if( chk_is_dir( *paths ) ) {
             strcpy( Stack->name, *paths );
-            strcpy( CurrPattern, "*.*" );
+            strcpy( CurrPattern, ALL_ITEMS_WILDCARD );
         } else {
             _splitpath2( *paths, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-            if( pg.dir[0] != '\0' ) {
-                dirlen = (int)strlen( pg.dir );
-                if( pg.dir[dirlen - 1] == '\\' || pg.dir[dirlen - 1] == '/' ) {
-                    pg.dir[dirlen] = '.';
-                    pg.dir[dirlen + 1] = '\0';
-                }
-            } else {
+            dirlen = strlen( pg.dir );
+            if( dirlen == 0 ) {
                 pg.dir[0] = '.';
                 pg.dir[1] = '\0';
+            } else if( pg.dir[dirlen - 1] == '\\' || pg.dir[dirlen - 1] == '/' ) {
+                if( dirlen == 1 ) {
+                    pg.dir[dirlen - 1] = PATH_SEP;
+                    pg.dir[dirlen] = '.';
+                    pg.dir[dirlen + 1] = '\0';
+                } else {
+                    pg.dir[dirlen - 1] = '\0';
+                }
             }
             _makepath( Stack->name, pg.drive, pg.dir, NULL, NULL );
             _makepath( CurrPattern, NULL, NULL, pg.fname, pg.ext );
         }
         processDirectory();
     }
-
     free( Stack );
 }
 
@@ -1020,7 +1044,7 @@ static char **parseSearchStrings( char **arg )
             Error( "Cannot open pattern file", *arg + 1 );
         }
         while( i < MAX_SRCH_STRINGS ) {
-            if( !fgets( buff, sizeof( buff ), fp ) )
+            if( fgets( buff, sizeof( buff ), fp ) == NULL )
                 break;
             if( feof( fp ) || (isatty( fileno( fp ) ) && *buff == '\n') )
                 break;
@@ -1165,7 +1189,7 @@ int main( int argc, char **argv ) {
             PrtFiles = false;
             break;
         case 'r':
-            ch = tolower( (unsigned char)argv[0][2] );
+            ch = (char)tolower( (unsigned char)argv[0][2] );
             if( ch == 'o' ) {
                 FileMode = PMODE_W;                    // -ro
             } else if( ch == '\0' ) {
@@ -1247,7 +1271,7 @@ int main( int argc, char **argv ) {
             if( !isatty( STDIN_FILENO ) ) {
                 allfiles[0] = "@@";
             } else {
-                allfiles[0] = "*.*";
+                allfiles[0] = ALL_ITEMS_WILDCARD;
             }
             allfiles[1] = NULL;
             startWgrep( allfiles );

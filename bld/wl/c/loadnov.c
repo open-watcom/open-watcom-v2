@@ -51,6 +51,8 @@
 #include "clibext.h"
 
 
+#ifdef _NOVELL
+
 #define DUMMY_THREAD_NAME " LONG"
 
 static unsigned_32  DbgInfoCount;
@@ -536,7 +538,7 @@ void FiniNovellLoadFile( void )
         if( nov_header.descriptionLength > MAX_DESCRIPTION_LENGTH ) {
             nov_header.descriptionLength = MAX_DESCRIPTION_LENGTH;
             FmtData.description[MAX_DESCRIPTION_LENGTH] = '\0';
-            LnkMsg( WRN+MSG_VALUE_TOO_LARGE, "s", "description" );
+            LnkMsg( WRN+MSG_VALUE_TOO_LARGE, "s", "DESCRIPTION" );
         }
         desc = FmtData.description;
     }
@@ -712,3 +714,5 @@ void FindExportedSyms( void )
         }
     }
 }
+
+#endif

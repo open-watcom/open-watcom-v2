@@ -212,7 +212,7 @@ static void disp_reltab( reloc_table *reltab )
     printf( " relocations in the exe-file." );
 
     for( i = 0; i < reltab->num; i++ ) {
-        if( i % 6 == 0 ) {
+        if( (i % 6) == 0 ) {
             printf( "\n" );
         }
         printf( "0x%08X  ", reltab->reloc[i] );
@@ -308,7 +308,7 @@ static void sort_reltab( reloc_table *reltab )
 
 static int parse_cmdline( arguments *arg, int argc, char *argv[] )
 {
-    PGROUP2 pg;
+    pgroup2 pg;
     int     i;
 
     arg->opt.be_ext   = 0;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,10 +52,11 @@
 #include "wininit.h"
 #include "setevent.h"
 #include "uiwinhk.h"
+#include "int10.h"
 
 
 #define TstMono()       ChkCntrlr( VIDMONOINDXREG )
-#define TstColour()     ChkCntrlr( VIDCOLRINDXREG )
+#define TstColour()     ChkCntrlr( VIDCOLORINDXREG )
 
 static bool             WantFast;
 static int              ScrnLines = 25;
@@ -64,9 +65,9 @@ static mode_types       ScrnMode;
 static display_config   HWDisplay;
 
 static const char ScreenOptNameTab[] = {
-    #define pick_opt(e,t) t "\0"
+    #define pick(t,e)   t "\0"
         SCREEN_OPTS()
-    #undef pick_opt
+    #undef pick
 };
 
 void InitHookFunc( void )
@@ -188,28 +189,22 @@ static bool ChkCntrlr( unsigned port )
 
 static void GetDispConfig( void )
 {
-    unsigned long       info;
-    unsigned char       colour;
-    unsigned char       memory;
-    unsigned char       swtchs;
+    int10_ega_info      info;
     unsigned char       curr_mode;
     hw_display_type     temp;
     unsigned            dev_config;
 
-    dev_config = BIOSDevCombCode();
+    dev_config = _BIOSVideoDevCombCode();
     HWDisplay.active = dev_config & 0xff;
     HWDisplay.alt = (dev_config >> 8) & 0xff;
     if( HWDisplay.active != DISP_NONE )
         return;
     /* have to figure it out ourselves */
-    curr_mode = BIOSGetMode() & 0x7f;
-    info = BIOSEGAInfo();
-    memory = info;
-    colour = info >> 8;
-    swtchs = info >> 16;
-    if( swtchs < 12 && memory <= 3 && colour <= 1 ) {
+    curr_mode = _BIOSVideoGetMode() & 0x7f;
+    info = _BIOSVideoEGAInfo();
+    if( info.switches < 12 && info.mem <= 3 && info.mono <= 1 ) {
         /* we have an EGA */
-        if( colour == 0 ) {
+        if( info.mono == 0 ) {
             HWDisplay.active = DISP_EGA_COLOUR;
             if( TstMono() ) {
                 HWDisplay.alt = DISP_MONOCHROME;
@@ -289,6 +284,8 @@ void UIAPI uirefresh( void )
         _uirefresh();
     }
 }
+
+/*****************************************************************************/
 
 int SwapScrnLines( void )
 {

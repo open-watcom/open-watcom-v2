@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +32,10 @@
 
 
 #include <stddef.h>
-#include "wdebug.h"
 #include "stdwin.h"
 #include "trpsys.h"
+#include "dbgrmsg.h"
+
 
 BYTE                    DLLLoadSaveByte;
 WORD                    DLLLoadIP;
@@ -43,12 +45,12 @@ BOOL                    TraceOn;
 HTASK                   DebuggerTask;
 HTASK                   DebugeeTask;
 HINSTANCE               DebugeeInstance;
-struct interrupt_struct IntResult;
+interrupt_struct        IntResult;
 volatile debugger_state DebuggerState = ACTIVE;
 break_point             StopNewTask;
 DWORD                   SystemDebugState;
 unsigned_8              FPUType;
-volatile restart_opts   AppMessage;
+volatile appl_action    AppMessage;
 DWORD                   TerminateCSIP;
 HWND                    DebuggerWindow;
 bool                    FaultHandlerEntered;

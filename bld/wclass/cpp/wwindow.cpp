@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -365,12 +365,12 @@ void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle )
     if( _parent != NULL ) {
         hparent = _parent->_handle;
     }
-    create_info.title = (char *)title;
+    create_info.title = title;
     create_info.rect.x = r.x();
     create_info.rect.y = r.y();
     create_info.rect.width = r.w();
     create_info.rect.height = r.h();
-    create_info.scroll = _WStyleToScrollStyle( style );
+    create_info.scroll_style = _WStyleToScrollStyle( style );
     create_info.style = (gui_create_styles)( _WStyleToCreateStyle( style ) | exstyle | GUI_INIT_INVISIBLE | GUI_VISIBLE );
     create_info.parent = hparent;
     create_info.menus = NoMenu;
@@ -697,7 +697,7 @@ void WEXPORT WWindow::getText( WString& str )
 void WEXPORT WWindow::setText( const char *text )
 /***********************************************/
 {
-    GUISetWindowText( _handle, (char *)text );
+    GUISetWindowText( _handle, text );
 }
 
 
@@ -1268,12 +1268,12 @@ void WEXPORT WWindow::setUpdates( bool start_update )
 }
 
 
-void WEXPORT WWindow::setIcon( WResource bitmap, char *ch_mode )
-/**************************************************************/
+void WEXPORT WWindow::setIcon( WResourceId bitmap_id, char *ch_mode )
+/*******************************************************************/
 {
     gui_resource        resource;
 
-    resource.res = bitmap;
+    resource.res_id = bitmap_id;
     resource.chars = ch_mode;
     GUISetIcon( _handle, &resource );
 }

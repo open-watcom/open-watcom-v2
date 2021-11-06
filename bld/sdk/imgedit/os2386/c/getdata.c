@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,7 @@ BITMAPINFO2 *GetXorBitmapInfo( img_node *node )
     WPI_PRES                    pres;
     WPI_PRES                    mempres;
     HDC                         memdc;
-    HBITMAP                     oldbitmap;
+    WPI_HBITMAP                 old_hbitmap;
 
     pres = _wpi_getpres( HWND_DESKTOP );
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
@@ -75,11 +76,11 @@ BITMAPINFO2 *GetXorBitmapInfo( img_node *node )
 
     GetBitmapInfoHeader( &bmih, node );
     memcpy( bmi, &bmih, sizeof(WPI_BITMAPINFOHEADER) );
-    oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, node->xor_hbitmap );
 
     GpiQueryBitmapBits( mempres, 0, node->height, NULL, bmi );
 
-    _wpi_getoldbitmap( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
     return( bmi );
 } /* GetXorBitmapInfo */
@@ -97,7 +98,7 @@ BITMAPINFO2 *GetAndBitmapInfo( img_node *node )
     WPI_PRES                    pres;
     WPI_PRES                    mempres;
     HDC                         memdc;
-    HBITMAP                     oldbitmap;
+    WPI_HBITMAP                 old_hbitmap;
 
     pres = _wpi_getpres( HWND_DESKTOP );
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
@@ -113,12 +114,12 @@ BITMAPINFO2 *GetAndBitmapInfo( img_node *node )
     bmih.cclrUsed = 2;
     memcpy( bmi, &bmih, sizeof(WPI_BITMAPINFOHEADER) );
 
-    oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, node->and_hbitmap );
     GpiQueryBitmapBits( mempres, 0, node->height, NULL, bmi );
-    _wpi_getoldbitmap( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
 
-    bmi->cbImage = BITS_TO_BYTES( node->bitcount, 2*node->height );
+    bmi->cbImage = BITS_TO_BYTES( node->bitcount, 2 * node->height );
     bmi->cy = node->height * 2;
     return( bmi );
 } /* GetAndBitmapInfo */
@@ -128,6 +129,6 @@ BITMAPINFO2 *GetAndBitmapInfo( img_node *node )
  */
 void FreeDIBitmapInfo( BITMAPINFO2 *bmi )
 {
-    free (bmi);
+    free( bmi );
 } /* FreeDIBitmapInfo */
 

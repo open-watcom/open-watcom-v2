@@ -102,10 +102,13 @@ The following public member operators are declared:
 :eSNPL.
 :SMTICS.
 The &fn. causes the &obj.'s buffers to be flushed, forcing the contents to
-be written to the actual device connected to the &obj.:PERIOD.
+be written to the actual device connected to the &obj.
+:PERIOD.
 :RSLTS.
-The &fn. returns a reference to the &obj.:PERIOD.
-On failure, &failbit. is set in the &errstate.:PERIOD.
+The &fn. returns a reference to the &obj.
+:PERIOD.
+On failure, &failbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.osfx
 :eSALSO.
@@ -122,7 +125,8 @@ On failure, &failbit. is set in the &errstate.:PERIOD.
 :SMTICS.
 These forms of the &fn. write the
 :ARG.ch
-character into the &obj.:PERIOD.
+character into the &obj.
+:PERIOD.
 :RSLTS.
 These forms of the &fn. return a reference to the &obj. so that further
 insertion operations may be specified in the same statement.
@@ -143,7 +147,8 @@ insertion operations may be specified in the same statement.
 :SMTICS.
 These forms of the &fn. perform a formatted write of the contents of the C string specified by the
 :ARG.str
-parameter to the &obj.:PERIOD.
+parameter to the &obj.
+:PERIOD.
 The characters from
 :ARG.str
 are transferred up to, but not including the terminating null character.
@@ -167,13 +172,16 @@ insertion operations may be specified in the same statement.
 :SMTICS.
 These forms of the &fn. perform a formatted write of the integral value specified by the
 :ARG.num
-parameter to the &obj.:PERIOD.
+parameter to the &obj.
+:PERIOD.
 The integer value is converted to a string of characters which are
-written to the &obj.:PERIOD.
+written to the &obj.
+:PERIOD.
 :ARG.num
 is converted to a base representation depending on the setting of the
 :MONO.ios::basefield
-bits in &fmtflags.:PERIOD.
+bits in &fmtflags.
+:PERIOD.
 If the
 :MONO.ios::oct
 bit is the only bit on, the conversion is to an octal (base 8)
@@ -202,7 +210,8 @@ or
 :MONO.0X
 :CONT., depending on the setting of the
 :MONO.ios::uppercase
-bit in &fmtflags.:PERIOD.
+bit in &fmtflags.
+:PERIOD.
 :P.
 If the value being written is zero, the conversion is to octal, and the
 :MONO.ios::showbase
@@ -228,8 +237,10 @@ or
 :MONO.ABCDEF
 :CONT., depending on the setting of the
 :MONO.ios::uppercase
-in &fmtflags.:PERIOD.
-The string resulting from the conversion is then written to the &obj.:PERIOD.
+in &fmtflags.
+:PERIOD.
+The string resulting from the conversion is then written to the &obj.
+:PERIOD.
 :P.
 If the
 :MONO.ios::internal
@@ -253,11 +264,13 @@ insertion operations may be specified in the same statement.
 :SMTICS.
 These forms of the &fn. perform a formatted write of the floating-point value specified by the
 :ARG.num
-parameter to the &obj.:PERIOD.
+parameter to the &obj.
+:PERIOD.
 The number is converted to either scientific (exponential) form or
 fixed-point form, depending on the setting of the
 :MONO.ios::floatfield
-bits in &fmtflags.:PERIOD.
+bits in &fmtflags.
+:PERIOD.
 If
 :MONO.ios::scientific
 is the only bit set, the conversion is to scientific form. If
@@ -309,11 +322,13 @@ insertion operations may be specified in the same statement.
 :SMTICS.
 This form of the &fn. performs a formatted write of the pointer value specified by the
 :ARG.ptr
-parameter to the &obj.:PERIOD.
+parameter to the &obj.
+:PERIOD.
 The
 :ARG.ptr
 parameter is converted to an implementation-defined string of characters and
-written to the &obj.:PERIOD.
+written to the &obj.
+:PERIOD.
 With the &cmppname implementation, the string starts with
 :MONO.0x
 or
@@ -345,11 +360,13 @@ insertion operations may be specified in the same statement.
 This form of the &fn. transfers the contents of the
 :ARG.sb
 :MONO.streambuf
-object to the &obj.:PERIOD.
+object to the &obj.
+:PERIOD.
 Reading from the
 :MONO.streambuf
 object stops when the read fails. No padding with the &fillchar. takes place
-on output to the &obj.:PERIOD.
+on output to the &obj.
+:PERIOD.
 :RSLTS.
 This form of the &fn. returns a reference to the &obj. so that further
 insertion operations may be specified in the same statement.
@@ -365,7 +382,8 @@ insertion operations may be specified in the same statement.
 :eSNPL.
 :SMTICS.
 These forms of the &fn. are used to implement the non-parameterized
-manipulators for the &cls.:PERIOD.
+manipulators for the &cls.
+:PERIOD.
 The function specified by the
 :ARG.fn
 parameter is called with the &obj. as its parameter.
@@ -385,7 +403,8 @@ This form of the &fn. is used to associate a
 :MONO.streambuf
 object, specified by the
 :ARG.sb
-parameter, with an existing &obj.:PERIOD.
+parameter, with an existing &obj.
+:PERIOD.
 The &obj. is initialized and will use the specified
 :MONO.streambuf
 object for subsequent operations.
@@ -394,7 +413,8 @@ This form of the &fn. returns a reference to the &obj. that is the target of
 the assignment.
 If the
 :ARG.sb
-parameter is &null., &badbit. is set in the &errstate.:PERIOD.
+parameter is &null., &badbit. is set in the &errstate.
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public'.operator =
@@ -426,7 +446,8 @@ If there is no
 :MONO.streambuf
 object currently associated with the
 :ARG.ostrm
-parameter, &badbit. is set in the &errstate.:PERIOD.
+parameter, &badbit. is set in the &errstate.
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public'.opfx
@@ -494,8 +515,10 @@ object.
 This form of the &fn. is only used implicitly by the compiler
 when it generates a constructor for a derived class.
 :RSLTS.
-This form of the &fn. creates an initialized &obj.:PERIOD.
-&badbit. is set in the &errstate.:PERIOD.
+This form of the &fn. creates an initialized &obj.
+:PERIOD.
+&badbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -524,12 +547,14 @@ object will continue to use the
 :MONO.streambuf
 object.
 :RSLTS.
-This form of the &fn. creates an initialized &obj.:PERIOD.
+This form of the &fn. creates an initialized &obj.
+:PERIOD.
 If there is no
 :MONO.streambuf
 object currently associated with the
 :ARG.ostrm
-parameter, &badbit. is set in the &errstate.:PERIOD.
+parameter, &badbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -551,12 +576,15 @@ parameter.
 This function is likely to be used for the creation of an &obj. that is
 associated with the same
 :MONO.streambuf
-object as another &obj.:PERIOD.
+object as another &obj.
+:PERIOD.
 :RSLTS.
-This form of the &fn. creates an initialized &obj.:PERIOD.
+This form of the &fn. creates an initialized &obj.
+:PERIOD.
 If the
 :ARG.sb
-parameter is &null., &badbit. is set in the &errstate.:PERIOD.
+parameter is &null., &badbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -571,7 +599,8 @@ parameter is &null., &badbit. is set in the &errstate.:PERIOD.
 :SMTICS.
 The &fn. does not do anything explicit. The
 :MONO.ios
-destructor is called for that portion of the &obj.:PERIOD.
+destructor is called for that portion of the &obj.
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -592,10 +621,13 @@ The &obj. is destroyed.
 :SMTICS.
 These forms of the &fn. write the
 :ARG.ch
-character to the &obj.:PERIOD.
+character to the &obj.
+:PERIOD.
 :RSLTS.
-These forms of the &fn. return a reference to the &obj.:PERIOD.
-If an error occurs, &failbit. is set in the &errstate.:PERIOD.
+These forms of the &fn. return a reference to the &obj.
+:PERIOD.
+If an error occurs, &failbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.operator~b<<
 :SAL typ='mfun'.write
@@ -620,8 +652,10 @@ call to the
 :MONO.tellp
 member function.
 :RSLTS.
-This from of the &fn. returns a reference to the &obj.:PERIOD.
-If the seek operation fails, &failbit. is set in the &errstate.:PERIOD.
+This from of the &fn. returns a reference to the &obj.
+:PERIOD.
+If the seek operation fails, &failbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.tellp
 :SAL typ='ofun' ocls='istream'.tellg
@@ -640,8 +674,10 @@ This from of the &fn. positions the &obj. to the specified position so that the 
 operation commences from that position.
 :INCLUDE file='seekdir'.
 :RSLTS.
-This from of the &fn. returns a reference to the &obj.:PERIOD.
-If the seek operation fails, &failbit. is set in the &errstate.:PERIOD.
+This from of the &fn. returns a reference to the &obj.
+:PERIOD.
+If the seek operation fails, &failbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.tellp
 :SAL typ='ofun' ocls='istream'.tellg
@@ -682,8 +718,11 @@ The &fn. performs an unformatted write of the characters specified by the
 :ARG.buf
 and
 :ARG.len
-parameters into the &obj.:PERIOD.
+parameters into the &obj.
+:PERIOD.
 :RSLTS.
-These member functions return a reference to the &obj.:PERIOD.
-If an error occurs, &failbit. is set in the &errstate.:PERIOD.
+These member functions return a reference to the &obj.
+:PERIOD.
+If an error occurs, &failbit. is set in the &errstate.
+:PERIOD.
 :eLIBF.

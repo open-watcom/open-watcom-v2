@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,7 +115,7 @@ static CRITICAL_SECTION         costlyReadCntSection;
 static DWORD                    costlyReadCounter;
 static HANDLE                   costlyWriteMutex;
 
-static  CRITICAL_SECTION        dataRefreshSection;
+static CRITICAL_SECTION         dataRefreshSection;
 
 /*
  * getIndex - fill in the titleIndex array

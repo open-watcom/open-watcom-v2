@@ -17,4 +17,5 @@ The connection is made via the C library
 :MONO.open
 function.
 :RSLTS.
-If the open fails, &failbit. is set in the &errstate.:PERIOD.
+If the open fails, &failbit. is set in the &errstate.
+:PERIOD.

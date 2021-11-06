@@ -1,5 +1,5 @@
-.gfunc wrapon
-.gsynop begin 
+.gfunc _wrapon
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _wrapon( short wrap );
 .do end
@@ -14,17 +14,17 @@ The
 &routine is used to control the display of text when
 the text output reaches the right side of the text window.
 This is text displayed with the
-.kw _outtext
+.reffunc _outtext
 and
-.kw _outmem
+.reffunc _outmem
 &routines..
 The
 .arg wrap
 argument can take one of the following values:
 .begterm 15
-.uterm GWRAPON
+.uterm _GWRAPON
 causes lines to wrap at the window border
-.uterm GWRAPOFF
+.uterm _GWRAPOFF
 causes lines to be truncated at the window border
 .endterm
 .desc end

@@ -24,21 +24,17 @@ driver.exe : $(dobj) driver.res $(name).lib
         @%make bind_res
 
 $(name).lib: ..\owindll\$(name).dll
-        wtouch $^@
-        rm $^@
-        wlib $^@ +$[@
-        cp $[@
+        wtouch $@
+        rm $@
+        wlib $@ +$[@
+        copy $[@
+
 
 driver.res : driver.rc driver.dlg
-        $(rc) $(rc_flags) driver.rc -fo=$^@
+        $(rc) $(rc_flags) driver.rc -fo=$@
 
 driver.obj : driver.c
         wcc $[* -bt=windows  -d2 -zW -zq -zq -fpc -w4 -ml -fo=obj\.obj
-
-.EXTENSIONS:
-.EXTENSIONS: .exe
-.EXTENSIONS: .obj
-.EXTENSIONS: .asm .c .h
 
 .obj : obj
 .c : .

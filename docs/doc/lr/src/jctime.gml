@@ -59,17 +59,17 @@ function places the result string in a static buffer that is
 re-used each time
 .id &funcb.
 or
-.kw jasctime
+.reffunc jasctime
 is called.
 .np
 Whenever the
 .id &funcb.
 function is called, the
-.kw tzset
+.reffunc tzset
 function is also called.
 .np
 The calendar time is usually obtained by using the
-.kw time
+.reffunc time
 function.
 That time is Coordinated Universal Time (UTC) (formerly known as
 Greenwich Mean Time (GMT)).

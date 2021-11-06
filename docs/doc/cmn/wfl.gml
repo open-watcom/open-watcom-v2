@@ -55,8 +55,8 @@ A summary of options is displayed on the screen by simply entering the
 .section &wclname Options Summary
 .*
 .begnote $compact $setptnt 12
-:DTHD.General options:
-:DDHD.Description:
+.notehd1 General options:
+.notehd2 Description:
 .note C
 .ix '&wclcmdup16 options' 'C'
 .ix '&wclcmdup32 options' 'C'
@@ -72,8 +72,8 @@ ignore the &wclcmdup16/&wclcmdup32 environment variable
 .*
 .im WFCOPTS
 .begnote $compact $setptnt 12
-:DTHD.Linker options:
-:DDHD.Description:
+.notehd1 Linker options:
+.notehd2 Description:
 .note FD[=<directive_file>]
 .ix '&wclcmdup16 options' 'FD[=<directive_file>]'
 .ix '&wclcmdup32 options' 'FD[=<directive_file>]'
@@ -110,16 +110,19 @@ link a program for the specified system.
 Among the supported systems are:
 .begnote $compact
 .note 286
-16-bit DOS executables (synonym for "DOS") under DOS and
-NT hosted platforms;
-16-bit OS/2 executables (synonym for "OS2") under 32-bit OS/2
-hosted OS/2 session.
+16-bit DOS executables (synonym for "DOS") under DOS, NT and Linux
+.notebreak
+16-bit OS/2 executables (synonym for "OS2") under 32-bit OS/2 hosted OS/2
+session
 .note 386
-32-bit DOS executables (synonym for "DOS4G") under DOS;
-32-bit NT character-mode executables (synonym for "NT") under
-Windows NT;
-32-bit OS/2 executables (synonym for "OS2V2") under 32-bit OS/2
-hosted OS/2 session.
+32-bit DOS executables (synonym for "DOS4G") under DOS
+.notebreak
+32-bit NT character-mode executables (synonym for "NT") under Windows NT
+.notebreak
+32-bit OS/2 executables (synonym for "OS2V2") under 32-bit OS/2 hosted OS/2
+session
+.notebreak
+32-bit Linux executables (synonym for "LINUX") under Linux
 .note COM
 16-bit DOS "COM" files
 .note DOS

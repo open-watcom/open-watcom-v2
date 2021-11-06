@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -38,6 +39,9 @@
 .386p
 .387
 
+include winintrf.inc
+
+
 DGROUP group _DATA
 
 ;*
@@ -61,42 +65,11 @@ public _InterruptStackOff
 ;*
 ;*** save area for registers
 ;*
-_SaveEAX        dd 0
-_SaveEBX        dd 0
-_SaveECX        dd 0
-_SaveEDX        dd 0
-_SaveEDI        dd 0
-_SaveESI        dd 0
-_SaveEFLAGS     dd 0
-_SaveEBP        dd 0
-_SaveEIP        dd 0
-_SaveESP        dd 0
-_SaveSS         dw 0
-_SaveCS         dw 0
-_SaveDS         dw 0
-_SaveES         dw 0
-_SaveFS         dw 0
-_SaveGS         dw 0
-_FaultNumber    dw 0
+public _IntRegsSave
+_IntRegsSave Interrupt_struct    <0>
+
                 dw 0
                 dw 0
-public _SaveEAX
-public _SaveEBX
-public _SaveECX
-public _SaveEDX
-public _SaveEDI
-public _SaveESI
-public _SaveEFLAGS
-public _SaveEBP
-public _SaveEIP
-public _SaveESP
-public _SaveSS
-public _SaveCS
-public _SaveDS
-public _SaveES
-public _SaveFS
-public _SaveGS
-public _FaultNumber
 
 idt             LABEL FWORD
 _idt            db 8 dup(0)
@@ -126,13 +99,13 @@ ReflectInt1Int3_ ENDP
 ; InterruptCallback:
 ;
 ; this code is executed after any 32-bit fault occurs.  WDEBUG.386 traps
-; the fault, copies all the registers to the SaveEAX et al above,
+; the fault, copies all the registers to the _IntRegsSave structure above,
 ; and then sets the Windows VM to start execution here.  We flag
 ; that we got one of our special interrupts, and then do an int 3,
 ; which will be processed by a normal fault handler.
 ;
 ; once we return from the normal fault handler, we make call WDEBUG.386
-; to load all registers from the save area (SaveEAX etc) and restart the
+; to load all registers from the save area _IntRegsSave and restart the
 ; Windows VM at the new location.
 ;
 public InterruptCallback_

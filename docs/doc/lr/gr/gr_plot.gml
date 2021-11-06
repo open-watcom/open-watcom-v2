@@ -6,17 +6,17 @@ function of the original and the supplied pixel values.
 .pp
 The plotting action can have one of the following values:
 .begterm 15
-.uterm GPSET
+.uterm _GPSET
 replace the original screen pixel value with the supplied pixel value
-.uterm GAND
+.uterm _GAND
 replace the original screen pixel value with the
 .us bitwise and
 of the original pixel value and the supplied pixel value
-.uterm GOR
+.uterm _GOR
 replace the original screen pixel value with the
 .us bitwise or
 of the original pixel value and the supplied pixel value
-.uterm GXOR
+.uterm _GXOR
 replace the original screen pixel value with the
 .us bitwise exclusive-or
 of the original pixel value and the supplied pixel value.

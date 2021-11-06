@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,7 +151,7 @@ struct dirent;
 
 vi_rc   MyGetFileSize( const char *, long * );
 void    FormatFileEntry( direct_ent *file, char *res );
-bool    IsDirectory( char *name );
+bool    IsDirectory( const char *name );
 void    GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path );
 
 /* dotmode.c */
@@ -266,10 +266,11 @@ vi_rc   MoveBottomOfPage( range *, long );
 void    StartupError( vi_rc );
 void    FatalError( vi_rc );
 void    Die( const char *, ... );
-char    *GetErrorMsg( vi_rc );
-void    Error( char *, ... );
-void    ErrorBox( char *, ... );
-void    FreeErrorMsgData( void );
+const char *GetErrorMsg( vi_rc );
+void    Error( const char *, ... );
+void    ErrorBox( const char *, ... );
+vi_rc   GetErrorTokenValue( int *, const char * );
+vi_rc   ReadErrorTokens( void );
 void    ErrorFini( void );
 
 /* expandfn.c */
@@ -565,7 +566,7 @@ vi_rc   RunKeyMap( key_map *, long );
 vi_rc   AddKeyMap( key_map *, const char * );
 void    InitKeyMaps( void );
 vi_rc   ExecuteBuffer( void );
-char    *LookUpCharToken( vi_key key, bool want_single );
+const char  *LookUpCharToken( vi_key key, bool want_single );
 void    FiniKeyMaps( void );
 
 /* mark.c */
@@ -647,18 +648,16 @@ vi_rc   SetCurrentColumn( int );
 vi_rc   LocateCmd( const char * );
 
 /* parse.c */
-char    *SkipLeadingSpaces( const char * );
 void    TranslateTabs( char * );
-vi_rc   GetStringWithPossibleQuote( const char **, char * );
-vi_rc   GetStringWithPossibleQuote2( const char **, char *, bool );
-char    *GetNextWord( const char *, char *, const char *);
-char    *GetNextWord1( const char *, char * );
-char    *GetNextWord2( const char *, char *, char );
+vi_rc   GetNextWordOrString( const char **, char * );
+const char  *GetNextWord( const char *, char *, const char *);
+const char  *GetNextWord1( const char *, char * );
+const char  *GetNextWord2( const char *, char *, char );
 int     Tokenize( const char *, const char *, bool );
-int     GetLongestTokenLength( const char * );
+size_t  GetLongestTokenLength( const char * );
 int     GetNumberOfTokens( const char * );
 char    **BuildTokenList( int, char * );
-char    *GetTokenString( const char *, int );
+const char  *GetTokenString( const char *, int );
 char    *GetTokenStringCVT( const char *, int, char *, bool );
 char    *ExpandTokenSet( char *token_no, char *buff );
 int     AddColorToken( char *);
@@ -755,10 +754,6 @@ void    DeleteResidentScripts( void );
 long    MySpawn( const char * );
 void    ResetSpawnScreen( void );
 
-/* srcvar.c */
-void    VarAddGlobalStr( const char *, const char * );
-void    VarFini( void );
-
 /* status.c */
 void    UpdateStatusWindow( void );
 vi_rc   NewStatusWindow( void );
@@ -785,7 +780,7 @@ bool    CursorPositionOffRight( int vc );
 vi_rc   GetCurrentTag( void );
 vi_rc   TagHunt( const char * );
 vi_rc   FindTag( const char * );
-vi_rc   LocateTag( const char *, char *, char * );
+vi_rc   LocateTag( const char *, char *, char *, int );
 
 /* time.c */
 void    GetTimeString( char *st );

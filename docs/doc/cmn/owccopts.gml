@@ -19,7 +19,7 @@ use stack-based argument passing conventions
 generate auto depend makefile fragment
 .*
 .note MF <file>
-change name of makefile style auto depend file. 
+change name of makefile style auto depend file.
 Without this option, the filename is the same as the the base name of the
 source file, with a suffix of ".d".
 .*
@@ -38,7 +38,7 @@ build target is a GUI application
 .*
 .note mthreads
 build target is a multi-thread environment
-.* 
+.*
 .note mrtdll
 build target uses DLL version of C/C++ run-time libraries
 .*
@@ -83,7 +83,7 @@ d3 plus debug inlines; emit inlines as external out-of-line functions
 (C++ only)
 d3 plus debug inlines; emit inlines as static out-of-line functions
 .*
-.note g{w,d,c}
+.note g{watcom,dwarf,codeview}
 set debug output format (&company, Dwarf, Codeview)
 .*
 .note D<name>[=text]
@@ -128,6 +128,10 @@ force file_name to be included in front of the source file text
 .note fo=<file_name>
 set object or preprocessor output file specification
 .*
+.note mhard-emu-float
+&x86only.
+generate inline 80x87 instructions with emulation
+.*
 .note msoft-float
 &x86only.
 generate calls to floating-point library
@@ -169,12 +173,12 @@ continue processing files (ignore errors)
 &x86only.
 select a memory model from these choices:
 .begnote $compact
-.note f;flat 
-.note s;small 
-.note m;medium 
-.note c;compact 
-.note l;large 
-.note h;huge 
+.note f;flat
+.note s;small
+.note m;medium
+.note c;compact
+.note l;large
+.note h;huge
 .note t
 &286only.
 compile code for the small memory model and then use the &lnkname to
@@ -273,7 +277,7 @@ remove stack overflow checks
 generate calls to grow the stack
 .*
 .if '&alpha' eq 'AXP' .do begin
-.note si 
+.note si
 &AXPonly.
 FIXME: translate this!?
 initialize stack frame storage with pattern

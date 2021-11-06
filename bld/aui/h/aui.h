@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,8 +107,8 @@
 #define WndSetTop( w, x )           (w)->top = (x)
 #define WndHasClass( w )            ((w)->wndclass != WND_NO_CLASS)
 #define WndClass( w )               (w)->wndclass
-#define WndTitleSize( w )           (w)->title_size
-#define WndRows( w )                ((w)->rows - (w)->title_size)
+#define WndTitleRows( w )           (w)->title_rows
+#define WndRows( w )                ((w)->rows - (w)->title_rows)
 #define WndMaxRow( w )              (w)->max_row
 #define WndGui( w )                 (w)->gui
 #define WndWidth( w )               (w)->width
@@ -162,7 +162,7 @@ typedef struct wnd_line_piece {
     unsigned    draw_hook       : 1;    // default off
     unsigned    draw_line_hook  : 1;    // default off
     size_t      length;                 // INTERNAL -- do not use
-    char        *hint;                  // set for Hint Text
+    const char  *hint;                  // set for Hint Text
 } wnd_line_piece;
 
 #define WND_NO_EXTEND   0
@@ -174,10 +174,10 @@ typedef struct wnd_create_struct {
     wnd_class           wndclass;
     void                *extra;
     gui_create_styles   style;
-    gui_scroll_styles   scroll;
+    gui_scroll_styles   scroll_style;
     gui_colour_set      *colour;
     gui_rect            rect;
-    wnd_row             title_size;
+    wnd_row             title_rows;
 } wnd_create_struct;
 
 typedef struct wnd_posn {
@@ -246,7 +246,7 @@ typedef struct _a_window {
     int                     hscroll_pending;
     wnd_row                 max_row;
     const char              *select_chars;
-    wnd_row                 title_size;
+    wnd_row                 title_rows;
     gui_ord                 avg_char_x;
     gui_ord                 mid_char_x;
     gui_ctl_id              last_popup;
@@ -279,7 +279,7 @@ typedef struct wnd_info {
     WNDREFRESH              *refresh;
     WNDGETLINE              *getline;
     WNDMENU                 *menuitem;
-    WNDSCROLL               *scroll;
+    WNDSCROLL               *vscroll;
     WNDBEGPAINT             *begpaint;
     WNDENDPAINT             *endpaint;
     WNDMODIFY               *modify;
@@ -301,8 +301,8 @@ extern bool                 DlgPickWithRtn2( const char *title, const void *data
 extern bool                 DlgPick( const char *title, const void *data_handle, int def_item, int num_items, int *choice );
 extern bool                 DlgNew( const char *title, char *buff, size_t buff_len );
 extern bool                 DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls, int num_controls,
-                                            GUICALLBACK *gui_call_back, int rows, int cols, int max_cols );
-extern void                 DlgOpen( const char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
+                                            GUICALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols );
+extern void                 DlgOpen( const char *title, gui_text_ord, gui_text_ord, gui_control_info *, int, GUICALLBACK *, void * );
 extern void                 ResDlgOpen( GUICALLBACK *, void *, int dlg_id );
 extern int                  DlgGetFileName( open_file_name *ofn );
 extern bool                 DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );
@@ -333,8 +333,8 @@ extern void                 WndFixedThumb( a_window );
 extern void                 WndSetThumbPos( a_window, int );
 extern void                 WndSetThumbPercent( a_window, int );
 extern void                 WndSetThumb( a_window );
-extern WNDSCROLL            WndScroll;
-extern WNDSCROLL            WndScrollAbs;
+extern WNDSCROLL            WndVScroll;
+extern WNDSCROLL            WndVScrollAbs;
 
 extern wnd_row              WndCurrRow( a_window );
 extern bool                 WndHasCurrent( a_window );
@@ -381,7 +381,7 @@ extern WNDREFRESH           NoRefresh;
 extern WNDGETLINE           NoGetLine;
 extern WNDMENU              NoMenuItem;
 extern WNDMODIFY            NoModify;
-extern WNDSCROLL            NoScroll;
+extern WNDSCROLL            NoVScroll;
 extern WNDBEGPAINT          NoBegPaint;
 extern WNDENDPAINT          NoEndPaint;
 extern WNDNOTIFY            NoNotify;
@@ -396,7 +396,6 @@ extern WNDGETLINE           WndGetLineAbs;
 extern WNDMENU              WndMenuItem;
 extern WNDMODIFY            WndModify;
 extern WNDMODIFY            WndFirstMenuItem;
-extern WNDSCROLL            WndScroll;
 extern WNDBEGPAINT          WndBegPaint;
 extern WNDENDPAINT          WndEndPaint;
 extern WNDNOTIFY            WndNotify;
@@ -438,7 +437,7 @@ extern bool                 WndTabRight( a_window wnd, bool wrap );
 extern void                 WndCursorStart( a_window wnd );
 extern void                 WndCursorEnd( a_window wnd );
 
-extern gui_ord              WndVScrollWidth( a_window wnd );
+extern gui_ord              WndScrollBarWidth( a_window wnd );
 extern void                 WndResetScroll( a_window wnd );
 extern void                 WndPageDown( a_window wnd );
 extern void                 WndPageUp( a_window wnd );
@@ -468,16 +467,16 @@ extern void                 WndRowDirty( a_window wnd, wnd_row row );
 extern void                 WndRowDirtyImmed( a_window wnd, wnd_row row );
 extern void                 WndDirty( a_window );
 extern void                 WndDirtyCurr( a_window );
-extern void                 WndSetColours( a_window, int, gui_colour_set *);
+extern void                 WndSetColours( a_window, int, gui_colour_set * );
 extern void                 WndBackGround( gui_colour colour );
 extern void                 WndDirtyRect( a_window wnd, gui_ord x, wnd_row y, gui_ord width, wnd_row height );
 
 extern void                 WndReDrawAll( void );
-extern void                 WndSetIcon( a_window, gui_resource *);
+extern void                 WndSetIcon( a_window, gui_resource * );
 extern void                 WndSetMainMenuText( gui_menu_struct * );
 extern void                 WndShowAll( void );
 extern void                 WndShowWndMain( void );
-extern void                 WndInitWndMain( wnd_create_struct *);
+extern void                 WndInitWndMain( wnd_create_struct * );
 extern void                 WndShowWindow( a_window wnd );
 extern void                 WndResizeWindow( a_window wnd, gui_rect * );
 extern void                 WndMinimizeWindow( a_window wnd );
@@ -512,7 +511,7 @@ extern void                 WndEndSessionHook( void );
 extern void                 WndResizeHook( a_window );
 extern void                 WndFontHook( a_window );
 
-extern void                 WndSetTitleSize( a_window, int );
+extern void                 WndSetTitleRows( a_window, int );
 extern void                 WndForcePaint( a_window wnd );
 
 extern bool                 WndDoingSearch;

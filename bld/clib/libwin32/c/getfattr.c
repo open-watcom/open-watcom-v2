@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "liballoc.h"
 #include "libwin32.h"
 #include "osver.h"
+#include "cvtwc2mb.h"
 
 
 DWORD __lib_GetFileAttributesW( LPCWSTR lpFileName )
@@ -47,20 +49,10 @@ DWORD __lib_GetFileAttributesW( LPCWSTR lpFileName )
     } else {                                            /* Win95 or Win32s */
         char *          mbFileName;
         DWORD           osrc;
-        size_t          cvt;
-        size_t          len;
-
-        /*** Allocate some memory ***/
-        len = wcslen( lpFileName ) * MB_CUR_MAX + 1;
-        mbFileName = lib_malloc( len );
-        if( mbFileName == NULL ) {
-            return( INVALID_FILE_ATTRIBUTES );
-        }
 
         /*** Prepare to call the OS ***/
-        cvt = wcstombs( mbFileName, lpFileName, len );
-        if( cvt == (size_t)-1 ) {
-            lib_free( mbFileName );
+        mbFileName = __lib_cvt_wcstombs( lpFileName );
+        if( mbFileName == NULL ) {
             return( INVALID_FILE_ATTRIBUTES );
         }
 

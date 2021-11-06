@@ -9,11 +9,11 @@ The
 function explicitly closes the protocol database.
 .np
 This function is not thread-safe.  Other calls to this function
-or to other functions accessing the protocol database may affect 
+or to other functions accessing the protocol database may affect
 the return value from this function.
 .desc end
 .see begin
 .seelist getprotoent setprotoent getprotobyname getprotobynumber
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

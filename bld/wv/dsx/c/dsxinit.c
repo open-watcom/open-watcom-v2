@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,10 +60,6 @@ static memptr                   Orig28;
 dpmi_dos_block  RMData;
 rm_data         __far *PMData;
 
-#if defined(__OSI__)
-unsigned short  _ExtenderRealModeSelector;
-#endif
-
 #define CTRL_BREAK_VECTOR      0x1b
 
 extern void CheckForBrk(void);
@@ -83,12 +80,12 @@ unsigned_32 MyGetRMVector( unsigned vect )
     void __far  *p;
 
     p = DPMIGetRealModeInterruptVector( vect );
-    return( (FP_SEG( p ) << 16) + (FP_OFF( p ) & 0xffff) );
+    return( (_FP_SEG( p ) << 16) + (_FP_OFF( p ) & 0xffff) );
 }
 
 void MySetRMVector( unsigned vect, unsigned seg, unsigned off )
 {
-    DPMISetRealModeInterruptVector( vect, MK_FP( seg, off ) );
+    DPMISetRealModeInterruptVector( vect, _MK_FP( seg, off ) );
 }
 
 void GrabHandlers( void )
@@ -143,19 +140,6 @@ void KillDebugger( int rc )
 
 void GUImain( void )
 {
-#if defined(__OSI__)
-    long    sel;
-
-    _Extender = DOSX_RATIONAL;
-    sel = DPMIAllocateLDTDescriptors( 1 );
-    if( sel < 0 ) {
-        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
-    }
-    _ExtenderRealModeSelector = sel;
-    if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
-        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
-    }
-#endif
     SaveOrigVectors();
     Orig28.a = MyGetRMVector( 0x28 );
 
@@ -163,7 +147,7 @@ void GUImain( void )
     if( RMData.pm == 0 ) {
         StartupErr( LIT_ENG( Unable_to_alloc_DOS_mem ) );
     }
-    PMData = MK_FP( RMData.pm, 0 );
+    PMData = _MK_FP( RMData.pm, 0 );
     _fmemcpy( PMData, RMSegStart, RMSegEnd - RMSegStart );
     if( _osmajor == 2 ) {
         PMData->fail = 0;

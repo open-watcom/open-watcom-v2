@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,30 +30,30 @@
 *
 ****************************************************************************/
 
-/*    enum          name       */
-pick( DBG_KEY_BACKSPACE,    "BACKSPACE" )
-pick( DBG_KEY_DELETE,       "DELETE" )
-pick( DBG_KEY_DOWN,         "DOWN" )
-pick( DBG_KEY_END,          "END" )
-pick( DBG_KEY_ENTER,        "ENTER" )
-pick( DBG_KEY_ESCAPE,       "ESCAPE" )
-pick( DBG_KEY_F1,           "F1" )
-pick( DBG_KEY_F10,          "F10" )
-pick( DBG_KEY_F11,          "F11" )
-pick( DBG_KEY_F12,          "F12" )
-pick( DBG_KEY_F2,           "F2" )
-pick( DBG_KEY_F3,           "F3" )
-pick( DBG_KEY_F4,           "F4" )
-pick( DBG_KEY_F5,           "F5" )
-pick( DBG_KEY_F6,           "F6" )
-pick( DBG_KEY_F7,           "F7" )
-pick( DBG_KEY_F8,           "F8" )
-pick( DBG_KEY_F9,           "F9" )
-pick( DBG_KEY_HOME,         "HOME" )
-pick( DBG_KEY_INSERT,       "INSERT" )
-pick( DBG_KEY_LEFT,         "LEFT" )
-pick( DBG_KEY_PAGEDOWN,     "PAGEDOWN" )
-pick( DBG_KEY_PAGEUP,       "PAGEUP" )
-pick( DBG_KEY_RIGHT,        "RIGHT" )
-pick( DBG_KEY_TAB,          "TAB" )
-pick( DBG_KEY_UP,           "UP" )
+/*    name          enum               */
+pick( "BACKSPACE",  DBG_KEY_BACKSPACE   )
+pick( "DELETE",     DBG_KEY_DELETE      )
+pick( "DOWN",       DBG_KEY_DOWN        )
+pick( "END",        DBG_KEY_END         )
+pick( "ENTER",      DBG_KEY_ENTER       )
+pick( "ESCAPE",     DBG_KEY_ESCAPE      )
+pick( "F1",         DBG_KEY_F1          )
+pick( "F10",        DBG_KEY_F10         )
+pick( "F11",        DBG_KEY_F11         )
+pick( "F12",        DBG_KEY_F12         )
+pick( "F2",         DBG_KEY_F2          )
+pick( "F3",         DBG_KEY_F3          )
+pick( "F4",         DBG_KEY_F4          )
+pick( "F5",         DBG_KEY_F5          )
+pick( "F6",         DBG_KEY_F6          )
+pick( "F7",         DBG_KEY_F7          )
+pick( "F8",         DBG_KEY_F8          )
+pick( "F9",         DBG_KEY_F9          )
+pick( "HOME",       DBG_KEY_HOME        )
+pick( "INSERT",     DBG_KEY_INSERT      )
+pick( "LEFT",       DBG_KEY_LEFT        )
+pick( "PAGEDOWN",   DBG_KEY_PAGEDOWN    )
+pick( "PAGEUP",     DBG_KEY_PAGEUP      )
+pick( "RIGHT",      DBG_KEY_RIGHT       )
+pick( "TAB",        DBG_KEY_TAB         )
+pick( "UP",         DBG_KEY_UP          )

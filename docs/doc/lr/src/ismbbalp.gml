@@ -9,9 +9,9 @@ The
 function tests if the argument
 .arg ch
 satisfies the condition that one of
-.kw isalpha
+.reffunc isalpha
 or
-.kw _ismbbkalpha
+.reffunc _ismbbkalpha
 is true.
 .np
 For example, in code page 932,

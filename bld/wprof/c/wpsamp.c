@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -376,7 +376,7 @@ static wnd_info     WPSampleInfo = {
     sampleRefresh,
     sampleGetLine,
     sampleMenuItem,
-    NoScroll,
+    NoVScroll,
     NoBegPaint,
     NoEndPaint,
     WndFirstMenuItem,
@@ -421,7 +421,7 @@ STATIC void *sampleCreateWin( void )
     info.info = &WPSampleInfo;
     info.extra = CurrSIOData;
 //    info.colour = GetWndColours( class );
-    info.title_size = STATUS_ROW + 1;
+    info.title_rows = STATUS_ROW + 1;
     info.style |= GUI_INIT_INVISIBLE;
     wnd = WndCreateWithStruct( &info );
     if( wnd == NULL )

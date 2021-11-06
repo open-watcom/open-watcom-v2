@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,14 +124,6 @@ extern void _ReleaseWinLines( void );
  * macros etc
  */
 #define MAX_BUFF        128
-#define MSG_EXIT        1
-#define MSG_FLUSH       2
-#define MSG_WRITE       3
-#define MSG_COPY        4
-#define MSG_SETCLEARINT 5
-#define MSG_ABOUT       6
-#define DLG1_EDIT       10
-#define MSG_WINDOWS     200
 
 #define CTRL_V          'V'-'A'+1
 #define CTRL_U          'U'-'A'+1
@@ -272,11 +264,6 @@ extern MRESULT EXPENTRY _MainDriver( HWND, USHORT, MPARAM, MPARAM );
 extern WINEXPORT LRESULT CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
 #endif
 
-#if defined( __OS2__ )
-/* pmmain.c */
-extern void     _SelectFont( HPS );
-#endif
-
 /* windisp.c */
 extern void     _DisplayAllLines( LPWDATA, int );
 extern void     _ResizeWin( LPWDATA, int, int, int, int );
@@ -297,7 +284,7 @@ extern LPWDATA  _IsWindowedHandle( int handle );
 extern void     _InitFunctionPointers( void );
 extern void     _InitMainWindowData( HANDLE );
 extern void     _FiniMainWindowData( void );
-extern LPWDATA  _AnotherWindowData( HWND hwnd, va_list al );
+extern LPWDATA  _AnotherWindowData( HWND hwnd, va_list args );
 extern void     _FreeWindowData( LPWDATA );
 extern void     _GetWindowNameAndCoords( const char *name, char *dest, int *x1, int *x2, int *y1, int *y2 );
 extern void     _WindowsExit( void );
@@ -337,6 +324,7 @@ extern DWORD    _GetLastLineNumber( LPWDATA w );
 extern HFONT    _SetMyDC( HDC, DWORD, DWORD ) ;
 #else
 extern void     _Error( HWND hwndDlg, char *caption, char *msg );
+extern void     _ResizeWindows( void );
 #endif
 extern int      _MessageLoop( BOOL );
 extern int      _BlockingMessageLoop( BOOL );
@@ -362,6 +350,10 @@ extern void     _MoveToLine( LPWDATA, DWORD, BOOL );
 extern unsigned _NewWindow( const char *name, ... );
 extern int      _CloseWindow( LPWDATA );
 extern void     _ReleaseWindowResources( LPWDATA w );
+#if defined( __OS2__ )
+extern void     _SetWinMenuHandle( HWND hmenu );
+extern HWND     _GetWinMenuHandle( void );
+#endif
 
 /* winpaint.c */
 #if defined( __OS2__ )
@@ -370,7 +362,16 @@ extern void     _RepaintWindow( LPWDATA, PRECT, HPS );
 extern void     _RepaintWindow( LPWDATA, PRECT, HDC );
 #endif
 
+/* pmmain.c */
+#if defined( __OS2__ )
+extern void     _SelectFont( HPS );
+extern void     _CreateFont( LPWDATA );
+#endif
+
+/* winmain.c */
 #if defined( __WINDOWS__ ) || defined( __NT__ )
+extern int      main( int, char ** );
+
 extern int      PASCAL DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
                         LPSTR cmd, int show, int (*pmain)( int, char ** ) );
 extern int      PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show );

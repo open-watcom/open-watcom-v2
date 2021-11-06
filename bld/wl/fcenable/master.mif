@@ -11,30 +11,21 @@ memory_model_i86 = s
 !include deftarg.mif
 !include trmem.mif
 
-objs  = &
-    fcenable.obj &
-    mem.obj &
-    records.obj &
-    $(trmem_objs)
-
-!ifeq host_os os2
-objs += spawn.obj
-!endif
-
+#
+# cflags
+#
 .c: ../c;$(trmem_dir)
 
 inc_dirs = -I"../h"
 inc_dirs_os2 = -I"$(clib_dir)/process/h"
 
-extra_cpp_flags_mem	= $(trmem_cpp_flags)
+extra_cpp_flags_mem = $(trmem_cpp_flags)
 
 extra_c_flags_mem   = $(trmem_cover_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
 
-fcenable.exe : $(objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(ldflags)
-!else
-    $(linker) name $^@ $(lflags) file {$(objs)}
-!endif
+#
+# EXE
+#
+exetarg_objs_os2 = spawn.obj
+exetarg_objs = fcenable.obj mem.obj records.obj $(trmem_objs) $(exetarg_objs_$(host_os))
+!include exetarg.mif

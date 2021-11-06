@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,11 @@
 #include "carve.h"
 #include "pstk.h"
 #include "initdefs.h"
-#include "dbg.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+    #include "togglesd.h"
+    #include "pragdefn.h"
+#endif
 
 
 typedef struct                  // patch_entry -- patch SE state variable
@@ -61,11 +66,8 @@ static PSTK_CTL stack_new_ctors;    // stack: newed ctoring
 
 #ifndef NDEBUG
 
-    #include "toggle.h"
-    #include "pragdefn.h"
-
     static void _peDump( patch_entry* pe, const char* msg ) {
-        if( PragDbgToggle.dump_stab ) {
+        if( TOGGLEDBG( dump_stab ) ) {
             printf( "%s[%p] se[%p] handle[%p]\n"
                   , msg
                   , pe
@@ -237,7 +239,7 @@ static void checkCtorTest(      // ELIMINATE CTOR-TEST IF POSSIBLE
     SE* se = data;
     SE* test = FstabActualPosn();
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         printf( "CallBack: checkCtorTest: se[%p] test[%p]\n"
               , se
               , test );
@@ -417,7 +419,9 @@ SE* DtorForDelBeg(              // DTORING AREA TO BE DELETED: start
                                     , patch
                                     , se_dlt );
         CgExprPush( top_expr, top_type );
+#ifndef NDEBUG
         DbgSetState( "patchForDtorDelBeg", se_dlt );
+#endif
     } else {
         se_dlt = NULL;
     }

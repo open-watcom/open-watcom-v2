@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,15 +30,15 @@
 ****************************************************************************/
 
 
-typedef unsigned_8 node_class; enum {
+typedef enum node_class {
     NODE_ROOT,
     NODE_FIELD,
     NODE_SUBSCR,
     NODE_INHERIT,
     NODE_POINTS,
-};
+} node_class;
 
-typedef unsigned_8 var_gadget_type; enum {
+typedef enum var_gadget_type {
     VARGADGET_NONE,
     VARGADGET_OPEN,
     VARGADGET_CLOSED,
@@ -48,9 +48,9 @@ typedef unsigned_8 var_gadget_type; enum {
     VARGADGET_INHERIT_OPEN,
     VARGADGET_INHERIT_CLOSED,
     VARGADGET_LAST
-};
+} var_gadget_type;
 
-typedef unsigned_8 var_type_bits; enum {
+typedef enum var_type_bits {
     VARNODE_CODE                = 0x01,
     VARNODE_INHERIT             = 0x02,
     VARNODE_COMPILER            = 0x04,
@@ -58,9 +58,9 @@ typedef unsigned_8 var_type_bits; enum {
     VARNODE_PROTECTED           = 0x10,
     VARNODE_THIS                = 0x20,
     VARNODE_STATIC              = 0x40
-};
+} var_type_bits;
 
-typedef unsigned_8 var_display_bits; enum {
+typedef enum var_display_bits {
     VARDISP_HEX                 = 0x01,
     VARDISP_DECIMAL             = 0x02,
     VARDISP_CHARACTER           = 0x04,
@@ -68,10 +68,9 @@ typedef unsigned_8 var_display_bits; enum {
     VARDISP_POINTER             = 0x10,
     // free slot here!
     VARDISP_INHERIT_CLOSED      = 0x40,
-};
+} var_display_bits;
 
 typedef struct var_node {
-
     struct var_node     *next;          // link to next element
 //      VarFirstNode, VarExpandNode, VarNextNode and VarNextRowNode must always be used
 //      when drawing the window. Never reference ->next or ->expand directly
@@ -89,20 +88,20 @@ typedef struct var_node {
     node_class          node_type;      // NODE_ROOT, NODE_SUBSCR or NODE_FIELD
     struct type_display *display_type;  // how should we display this node
 
-    unsigned            pushed          : 1;    // has this expression been pushed on ExprSP?
-    unsigned            popped          : 1;    // has this expression been popped off ExprSP?
-    unsigned            buried          : 1;    // versus on the top of the stack
-    unsigned            is_string       : 1;    // is this a natural character string
+    boolbit             pushed          : 1;    // has this expression been pushed on ExprSP?
+    boolbit             popped          : 1;    // has this expression been popped off ExprSP?
+    boolbit             buried          : 1;    // versus on the top of the stack
+    boolbit             is_string       : 1;    // is this a natural character string
 
-    unsigned            have_type       : 1;    // is ->th valid?
-    unsigned            is_sym_handle   : 1;    // versus a character string
-    unsigned            fake_array      : 1;    // not really an array but expanded as such
-    unsigned            value_valid     : 1;    // are the gadget/str fields accurate?
+    boolbit             have_type       : 1;    // is ->th valid?
+    boolbit             is_sym_handle   : 1;    // versus a character string
+    boolbit             fake_array      : 1;    // not really an array but expanded as such
+    boolbit             value_valid     : 1;    // are the gadget/str fields accurate?
 
-    unsigned            gadget_valid    : 1;    // are the gadget/str fields accurate?
-    unsigned            standout        : 1;    // draw in standout attribute?
-    unsigned            on_top          : 1;    // draw the on_top indicator?
-    unsigned            on_top_valid    : 1;    // is the on_top field valid?
+    boolbit             gadget_valid    : 1;    // are the gadget/str fields accurate?
+    boolbit             standout        : 1;    // draw in standout attribute?
+    boolbit             on_top          : 1;    // draw the on_top indicator?
+    boolbit             on_top_valid    : 1;    // is the on_top field valid?
 
     var_type_bits       bits;           // class of var (inherited, etc)
     var_display_bits    display;        // how to display the sucker

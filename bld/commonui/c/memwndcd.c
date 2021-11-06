@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -304,20 +304,20 @@ static uint_32 genAsmLine( MemWndInfo *info, uint_32 ins_cnt, char *buf )
  * genBackup - Generates a backup reference.
  *             Is32Bit, Limit and Sel must be set before calling this routine
  */
-static void genBackup( AsmInfo *asm )
+static void genBackup( AsmInfo *asm_info )
 {
     uint_32     cnt;
     WORD        *wptr;
     instruction ins;
 
-    if( asm->usage_cnt < MAX_BACKUPS ) {
-        wptr = (WORD *)asm->data;
-        _Offset = wptr[asm->usage_cnt];
-        for( cnt = asm->increment; cnt > 0; cnt-- ) {
+    if( asm_info->usage_cnt < MAX_BACKUPS ) {
+        wptr = (WORD *)asm_info->data;
+        _Offset = wptr[asm_info->usage_cnt];
+        for( cnt = asm_info->increment; cnt > 0; cnt-- ) {
             MiscDoCode( &ins, Is32Bit, &DisasmInfo );
         }
-        asm->usage_cnt++;
-        wptr[asm->usage_cnt] = (WORD)_Offset;
+        asm_info->usage_cnt++;
+        wptr[asm_info->usage_cnt] = (WORD)_Offset;
     }
 
 } /* genBackup */
@@ -326,20 +326,20 @@ static void genBackup( AsmInfo *asm )
  * genBigBackup - Generates a backup reference for a big code item
  *                Is32Bit, Limit and Sel must be set before calling this routine
  */
-static void genBigBackup( AsmInfo *asm )
+static void genBigBackup( AsmInfo *asm_info )
 {
     uint_32     cnt;
     uint_32     *dwptr;
     instruction ins;
 
-    if( asm->usage_cnt < MAX_BACKUPS ) {
-        dwptr = (uint_32 *)asm->data;
-        _Offset = dwptr[asm->usage_cnt];
-        for( cnt = asm->increment; cnt > 0; cnt-- ) {
+    if( asm_info->usage_cnt < MAX_BACKUPS ) {
+        dwptr = (uint_32 *)asm_info->data;
+        _Offset = dwptr[asm_info->usage_cnt];
+        for( cnt = asm_info->increment; cnt > 0; cnt-- ) {
             MiscDoCode( &ins, Is32Bit, &DisasmInfo );
         }
-        asm->usage_cnt++;
-        dwptr[asm->usage_cnt] = _Offset;
+        asm_info->usage_cnt++;
+        dwptr[asm_info->usage_cnt] = _Offset;
     }
 
 } /* genBigBackup */
@@ -350,7 +350,7 @@ static void genBigBackup( AsmInfo *asm )
  */
 uint_32 GetInsCnt( MemWndInfo *info, uint_32 offset )
 {
-    AsmInfo     *asm;
+    AsmInfo     *asm_info;
     uint_32     *dwptr;
     uint_32     old_offset;
     uint_32     ins_cnt;
@@ -361,36 +361,36 @@ uint_32 GetInsCnt( MemWndInfo *info, uint_32 offset )
     Is32Bit = ( info->disp_type == MEMINFO_CODE_32 );
     Sel = info->sel;
     Limit = info->limit;
-    asm = info->asm;
-    if( asm->big ) {
-        dwptr = (uint_32 *)asm->data;
-        while( dwptr[asm->usage_cnt] < offset ) {
-            if( asm->usage_cnt == MAX_BACKUPS ) {
+    asm_info = info->asm_info;
+    if( asm_info->big ) {
+        dwptr = (uint_32 *)asm_info->data;
+        while( dwptr[asm_info->usage_cnt] < offset ) {
+            if( asm_info->usage_cnt == MAX_BACKUPS ) {
                 break;
             }
-            genBigBackup( asm );
+            genBigBackup( asm_info );
         }
         for( i = 0; dwptr[i] <= offset && i < MAX_BACKUPS - 1; i++ );
         i--;
         _Offset = dwptr[i];
-        ins_cnt = i * asm->increment;
+        ins_cnt = i * asm_info->increment;
         while( _Offset <= offset ) {
             old_offset = _Offset;
             MiscDoCode( &ins, Is32Bit, &DisasmInfo );
             ins_cnt++;
         }
     } else {
-        wptr = (WORD *)asm->data;
-        while( wptr[asm->usage_cnt] < offset ) {
-            if( asm->usage_cnt == MAX_BACKUPS ) {
+        wptr = (WORD *)asm_info->data;
+        while( wptr[asm_info->usage_cnt] < offset ) {
+            if( asm_info->usage_cnt == MAX_BACKUPS ) {
                 break;
             }
-            genBackup( asm );
+            genBackup( asm_info );
         }
         for( i = 0; wptr[i] <= offset && i < MAX_BACKUPS - 1; i++ );
         i--;
         _Offset = wptr[i];
-        ins_cnt = i * asm->increment;
+        ins_cnt = i * asm_info->increment;
         while( _Offset <= offset ) {
             old_offset = _Offset;
             MiscDoCode( &ins, Is32Bit, &DisasmInfo );
@@ -547,9 +547,9 @@ static void gotoIns( MemWndInfo *info, uint_32 ins_cnt )
     WORD        *wptr;
     WORD        size;
     WORD        backup_cnt;
-    AsmInfo     *asm;
+    AsmInfo     *asm_info;
 
-    if( info->asm == NULL ) {
+    if( info->asm_info == NULL ) {
         size = sizeof( AsmInfo );
         backup_cnt = MAX_BACKUPS;
         if( info->limit > 0xffff ) {
@@ -557,19 +557,19 @@ static void gotoIns( MemWndInfo *info, uint_32 ins_cnt )
         } else {
             size += backup_cnt * sizeof( WORD );
         }
-        asm = MemAlloc( size );
-        if( asm != NULL ) {
-            info->asm = asm;
-            asm->big = (info->limit > 0xffff);
-            asm->increment = info->limit / backup_cnt;
-            if( asm->increment == 0 ) {
-                asm->increment = 1;
+        asm_info = MemAlloc( size );
+        if( asm_info != NULL ) {
+            info->asm_info = asm_info;
+            asm_info->big = (info->limit > 0xffff);
+            asm_info->increment = info->limit / backup_cnt;
+            if( asm_info->increment == 0 ) {
+                asm_info->increment = 1;
             }
-            asm->usage_cnt = 0;
-            memset( asm->data, 0, 4 );
+            asm_info->usage_cnt = 0;
+            memset( asm_info->data, 0, 4 );
         }
     } else {
-        asm = info->asm;
+        asm_info = info->asm_info;
     }
     Is32Bit = ( info->disp_type == MEMINFO_CODE_32 );
     Sel = info->sel;
@@ -578,38 +578,38 @@ static void gotoIns( MemWndInfo *info, uint_32 ins_cnt )
     /*
      * Generate new backups.
      */
-    if( ins_cnt >= asm->increment * (asm->usage_cnt + 1) && asm != NULL ) {
-        if( asm->big ) {
-            dwptr = (uint_32 *)asm->data;
-            dwptr += asm->usage_cnt;
+    if( ins_cnt >= asm_info->increment * (asm_info->usage_cnt + 1) && asm_info != NULL ) {
+        if( asm_info->big ) {
+            dwptr = (uint_32 *)asm_info->data;
+            dwptr += asm_info->usage_cnt;
             _Offset = *dwptr;
-            cnt = ins_cnt - (ins_cnt % asm->increment);
-            cnt -= asm->usage_cnt * asm->increment;
-            cnt /= asm->increment;
+            cnt = ins_cnt - (ins_cnt % asm_info->increment);
+            cnt -= asm_info->usage_cnt * asm_info->increment;
+            cnt /= asm_info->increment;
             for( ; cnt > 0; cnt-- ) {
-                genBigBackup( asm );
+                genBigBackup( asm_info );
             }
         } else {
-            wptr = (WORD *)asm->data;
-            wptr += asm->usage_cnt;
+            wptr = (WORD *)asm_info->data;
+            wptr += asm_info->usage_cnt;
             _Offset = *(uint_32 *)wptr;
-            cnt = ins_cnt - (ins_cnt % asm->increment);
-            cnt -= asm->usage_cnt * asm->increment;
-            cnt /= asm->increment;
+            cnt = ins_cnt - (ins_cnt % asm_info->increment);
+            cnt -= asm_info->usage_cnt * asm_info->increment;
+            cnt /= asm_info->increment;
             for( ; cnt > 0; cnt-- ) {
-                genBackup( asm );
+                genBackup( asm_info );
             }
         }
     }
-    if( asm != NULL ) {
-        if( asm->big ) {
-            dwptr = (uint_32 *)asm->data;
-            _Offset = dwptr[ins_cnt / asm->increment];
+    if( asm_info != NULL ) {
+        if( asm_info->big ) {
+            dwptr = (uint_32 *)asm_info->data;
+            _Offset = dwptr[ins_cnt / asm_info->increment];
         } else {
-            wptr = (WORD *)asm->data;
-            _Offset = wptr[ins_cnt / asm->increment];
+            wptr = (WORD *)asm_info->data;
+            _Offset = wptr[ins_cnt / asm_info->increment];
         }
-        ins_cnt = ins_cnt % asm->increment;
+        ins_cnt = ins_cnt % asm_info->increment;
     } else {
         _Offset = 0;
     }

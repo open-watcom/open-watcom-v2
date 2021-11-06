@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 
 #include "variety.h"
 
-const short int _BigPow10Table[] = {
+const short _BigPow10Table[] = {
     216,    0xF9C6,0x40C6,0x34E9,0x6CC7,    /* 10**216 */
     108,    0x4E12,0xCC83,0x403D,0x565B,    /* 10**108 */
     54,     0xC9CE,0x8814,0xE187,0x4B24,    /* 10**54  */

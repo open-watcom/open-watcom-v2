@@ -12,14 +12,14 @@ number of
 .arg x
 in the direction towards
 .arg y
-.ct .li .
+.period
 .desc end
 .return begin
 The next representable floating point value after or before
 .arg x
 in the direction of
 .arg y
-.ct .li .
+.period
 .return end
 .exmp begin
 #include <stdio.h>

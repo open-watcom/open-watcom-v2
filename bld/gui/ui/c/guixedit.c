@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include "guix.h"
 #include "guixutil.h"
 #include "guixedit.h"
 #include "guisetup.h"
@@ -79,7 +79,7 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
  * GUISetText - set the text in the given control
  */
 
-bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
+bool GUIAPI GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
 {
     VFIELD              *field;
     a_dialog            *ui_dlg_info;
@@ -99,9 +99,9 @@ bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
         ret = GUISetHotSpotText( field->u.hs, text );
         break;
 
-    case FLD_CHECK :
-    case FLD_RADIO :
-    case FLD_TEXT :
+    case FLD_CHECK:
+    case FLD_RADIO:
+    case FLD_TEXT:
         {
             char    **fldtext;
             char    *new_str;
@@ -120,15 +120,15 @@ bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
         }
         break;
 
-    case FLD_EDIT :
-    case FLD_INVISIBLE_EDIT :
+    case FLD_EDIT:
+    case FLD_INVISIBLE_EDIT:
         edit = (an_edit_control *)field->u.edit;
         break;
-    case FLD_COMBOBOX :
+    case FLD_COMBOBOX:
         combo_box = field->u.combo;
         edit = &combo_box->edit;
         break;
-    default :
+    default:
         return( false );   /* without redrawing field */
     }
     if( ( edit != NULL ) && ( ui_dlg_info != NULL ) ) {
@@ -147,17 +147,16 @@ bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
  * GUIClearText - clear the text in the given control
  */
 
-bool GUIClearText( gui_window *wnd, gui_ctl_id id )
+bool GUIAPI GUIClearText( gui_window *wnd, gui_ctl_id id )
 {
     return( GUISetText( wnd, id, NULL ) );
 }
 
 /* NYI */
 
-bool GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select )
+bool GUIAPI GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select )
 {
     /* unused parameters */ (void)wnd; (void)id, (void)select;
 
     return( false );
 }
-

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <ddeml.h>
 #include <assert.h>
+#include "wclbdde.h"
 #include "weditcw.h"
 #include "wedit.h"
 #include "dllmain.h"
@@ -52,26 +53,7 @@ static  HINSTANCE   hInstance = NULL;
 static  BOOL        bDdemlInitialized = FALSE;
 static  BOOL        bConnected = FALSE;
 static  BOOL        bAppSpawned = FALSE;
-static  FARPROC     lpDdeProc;
-
-#ifdef __WINDOWS__
-
-static WNDENUMPROC MakeProcInstance_WNDENUM( WNDENUMPROC fn, HINSTANCE instance )
-{
-    return( (WNDENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
-}
-
-static void FreeProcInstance_WNDENUM( WNDENUMPROC fn )
-{
-    FreeProcInstance( (FARPROC)fn );
-}
-
-#else
-
-#define MakeProcInstance_WNDENUM(f,i)       ((void)i,f)
-#define FreeProcInstance_WNDENUM(f)         ((void)f)
-
-#endif
+static  PFNCALLBACK lpDdeProc;
 
 static void doReset( void )
 {
@@ -80,7 +62,7 @@ static void doReset( void )
     bDdemlInitialized = FALSE;
     bConnected = FALSE;
     bAppSpawned = FALSE;
-    FreeProcInstance( lpDdeProc );
+    FreeProcInstance_DDE( lpDdeProc );
 }
 
 HDDEDATA __export FAR PASCAL DdeCallback( UINT wType, UINT wFmt, HCONV hConv,
@@ -123,8 +105,9 @@ int __export FAR PASCAL EDITConnect( void )
 
     // initialize our idInstance in ddeml
     if( !bDdemlInitialized ) {
-        lpDdeProc = MakeProcInstance( (FARPROC)DdeCallback, hInstance );
-        if( DdeInitialize( &idInstance, (PFNCALLBACK)lpDdeProc, APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
+        lpDdeProc = MakeProcInstance_DDE( DdeCallback, hInstance );
+        if( DdeInitialize( &idInstance, lpDdeProc, APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
+            FreeProcInstance_DDE( lpDdeProc );
             return( FALSE );
         }
         bDdemlInitialized = TRUE;
@@ -152,6 +135,7 @@ int __export FAR PASCAL EDITConnect( void )
     DdeFreeStringHandle( idInstance, hszTopic );
 
     if( hConv == 0 ) {
+        FreeProcInstance_DDE( lpDdeProc );
         return( FALSE );
     }
 

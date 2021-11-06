@@ -1,0 +1,50 @@
+#
+# Pipeline for Coverity Scan build and upload
+#
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+variables: 
+  owroot:           $(Build.SourcesDirectory)
+  owobjdir:         binbuild
+
+  owimage_lnx:      'ubuntu-20.04'
+  owimage_nt:       'windows-2019'
+  owimage_osx:      'macOS-11'
+  owtools_lnx:      GCC
+  owtools_nt:       VISUALC
+  owtools_osx:      CLANG
+  owtoolsv_lnx:     U20
+  owtoolsv_nt:      VS2019
+  owtoolsv_osx:     OSX11
+  owscript_lnx:     ci/buildx.sh
+  owscript_nt:      ci\buildx.cmd
+  owscript_osx:     ci/buildx.sh
+  owciroot_lnx:     $(owroot)/ci
+  owciroot_nt:      $(owroot)\ci
+  owciroot_osx:     $(owroot)/ci
+  owcibin32:        $(owciroot_nt)\nt386
+  owcibin64:        $(owciroot_nt)\ntx64
+
+stages:
+  - stage: start
+    displayName: "Start"
+    jobs:
+      - job: start
+        pool:
+          vmImage: $(owimage_lnx)
+        steps:
+        - checkout: none
+  - stage: scanlnx
+    displayName: "Coverity Scan Linux"
+    dependsOn:
+      - start
+    jobs:
+      - template: ci/coverity.yml
+        parameters:
+          arch:     lnx
+          title:    Coverity Scan Linux
+      #- template: ci/coverity.yml
+      #  parameters:
+      #    arch:     nt
+      #    title:    Coverity Scan Windows

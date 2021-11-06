@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@ static IDEDRV info = {
     DLL_NAME_STR
 };
 
-int main( int count, char *args[] )
+int main( int argc, char *argv[] )
 /*********************************/
 {
     int retcode;
@@ -61,19 +62,19 @@ int main( int count, char *args[] )
 #endif
 
 #ifndef __WATCOMC__
-    _argv = args;
-    _argc = count;
+    _argv = argv;
+    _argc = argc;
+#elif !defined( __UNIX__ )
+    /* unused parameters */ (void)argc; (void)argv;
 #endif
 #ifndef __UNIX__
-    count = count;
-    args = args;
     len = _bgetcmd( NULL, 0 ) + 1;
     cmd_line = malloc( len );
     _bgetcmd( cmd_line, len );
     retcode = IdeDrvExecDLL( &info, cmd_line );
     free( cmd_line );
 #else
-    retcode = IdeDrvExecDLLArgv( &info, count, args );
+    retcode = IdeDrvExecDLLArgv( &info, argc, argv );
 #endif
     if( retcode != IDEDRV_ERR_INIT_EXEC ) {
         IdeDrvUnloadDLL( &info );               // UNLOAD THE DLL

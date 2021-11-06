@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,14 +36,15 @@
 //
 
 #include "ftnstd.h"
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "rundat.h"
-#include "posio.h"
 #include "units.h"
 #include "ftnapi.h"
 #include "posopen.h"
 #include "poserr.h"
+#include "posutil.h"
 #include "rtsysutl.h"
 #include "rdwr.h"
 
@@ -58,7 +59,7 @@ intstar2        __fortran SYSHANDLE( intstar4 *unit ) {
             if( fcb->fileptr == NULL ) {
                  return( -1 );
             }
-            return( fcb->fileptr->handle );
+            return( FGetFileHandle( fcb->fileptr ) );
         }
     }
     if( *unit == PRE_STANDARD_INPUT ) {
@@ -83,7 +84,7 @@ intstar4        __fortran SETSYSHANDLE( intstar4 *unit, intstar2 *handle ) {
                 break;
             if( fcb->fileptr != NULL ) {
                 Closef( fcb->fileptr );
-                if( Errorf( NULL ) != IO_OK ) {
+                if( !IOOk( NULL ) ) {
                     break;
                 }
             }

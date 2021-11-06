@@ -2,10 +2,9 @@
 .synop begin
 #include <sched.h>
 
-pid_t  clone( int (*fn)(void *), void *child_stack,  
+pid_t  clone( int (*fn)(void *), void *child_stack,
               int flags, void *args, ... );
             /* pid_t *ppid, void *tls, pid_t *ctid */
-            
 .synop end
 .desc begin
 The
@@ -14,7 +13,7 @@ function creates a "clone" of the currently running process that shares
 the address space of the original, parent process, and starts execution
 within the clone process at the
 .arg fn
-function.  The child function is called with 
+function.  The child function is called with
 .arg args
 as its argument, and, once complete, with will terminate with the return
 value of
@@ -49,12 +48,12 @@ Signal handlers and blocked signals should be shared across processes
 .term CLONE_PTRACE
 Allow tracing within the child process (if enabled in the parent)
 .term CLONE_VFORK
-The child can wake the parent via 
+The child can wake the parent via
 .kw mm_release
 .term CLONE_PARENT
 The new child should share the same parent as the cloning process
 .term CLONE_THREAD
-The new process is to be considered a thread, and should be grouped in 
+The new process is to be considered a thread, and should be grouped in
 the same thread group as the parent
 .term CLONE_NEWNS
 The child process is provided a new mount namespace
@@ -72,14 +71,14 @@ argument.  The user must specify the optional
 .arg ptid
 argument if this flag is set.
 .term CLONE_CHILD_CLEARTID
-Clear the thread ID stored in 
+Clear the thread ID stored in
 .arg ctid
 argument.  The user must specify the optional
 .arg ctid
 argument if this flag is set.
-.term CLONE_UNTRACED      
+.term CLONE_UNTRACED
 The parent process cannot force tracing on the child process
-.term CLONE_CHILD_SETTID  
+.term CLONE_CHILD_SETTID
 Store the thread ID of the child process in the
 .arg ctid
 argument.  The user must specify the optional

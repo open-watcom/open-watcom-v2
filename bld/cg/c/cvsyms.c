@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -230,7 +230,7 @@ void    CVObjInitDbgInfo( void )
         cptr = StartSym(  out, SG_COMPILE );
         cptr->language  = SetLang();
         cptr->flags.s = 0; /* set default */
-    #if _TARGET & _TARG_IAPX86
+    #if _TARGET & _TARG_8086
         cptr->flags.f.Mode32 = false;
         cptr->machine = MACH_INTEL_8080;
     #elif _TARGET & _TARG_80386
@@ -336,7 +336,7 @@ static  void FrameVar( cv_out *out, const char *nm, dbg_type tipe, int disp )
 /***  local rel to  frame  *************************************************/
 #if 1     // it seems like BPREL works for AXP so I'll give it a try
 {
-//#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+//#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     cs_bprel   *ptr;
 
     ptr = StartSym(  out, SG_BPREL );
@@ -648,7 +648,7 @@ void    CVProEnd( dbg_rtn *rtn, offset lc )
     tipe = FEDbgType( sym );
     ptr->proctype = tipe;
     ptr->flags.s = 0;
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
         ptr->flags.f.far_ret = true;
     }

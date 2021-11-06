@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -357,7 +357,7 @@ struct stab_defn                    // STAB_DEFN -- state table definition
 typedef struct stab_obj STAB_OBJ;
 struct stab_obj                     // STAB_OBJ -- state table for object
 {   STAB_OBJ        *next;          // - next in ring
-    TYPE            obj;            // - StructType of object
+    TYPE            obj;            // - ClassType of object
     STAB_DEFN       *defn;          // - definition
     STATE_VAR       state_virtual;  // - object: state for last virtual base
     STATE_VAR       state_direct;   // - object: state for last direct base
@@ -1049,6 +1049,11 @@ void DgPtrSymDataOffset(        // GENERATE POINTER FOR A DATA SYMBOL, OFFSET
 void DgPtrSymOff(               // GENERATE POINTER FOR A SYMBOL + OFFSET
     SYMBOL sym,                 // - the symbol
     target_size_t offset )      // - the offset
+;
+void DgString(                  // STORE STRING CONSTANT
+    const char *str,            // - string to store
+    target_size_t len,          // - string length
+    string_literal_flags flags )// - string attributes
 ;
 back_handle DgStringConst(      // STORE STRING CONSTANT WITH NULL
     STRING_CONSTANT str,        // - string to store

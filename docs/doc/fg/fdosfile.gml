@@ -1032,7 +1032,7 @@ The format for a preconnection using the "SET" command is:
 SET unit=file_spec
 .millust end
 .synote
-.note unit
+.mnote unit
 is a FORTRAN unit number in the range 0 to 999.
 .np
 If this form of the "SET" command is used then FORTRAN unit number
@@ -1040,9 +1040,9 @@ If this form of the "SET" command is used then FORTRAN unit number
 is preconnected to the specified file.
 FORTRAN input/output statements which refer to the unit number will
 access the records in the specified file.
-.note file_spec
+.mnote file_spec
 is the file specification of the preconnected file.
-.endnote
+.esynote
 .np
 Here are some sample "SET" commands.
 .exam begin
@@ -1140,8 +1140,8 @@ statement.
 The precedence of a connection between a unit number and a file
 is as follows:
 .begnote
-:DTHD.Precedence:
-:DDHD.User option:
+.notehd1 Precedence:
+.notehd2 User option:
 .note Lowest
 Preconnection Specifications
 .note Highest
@@ -1282,7 +1282,7 @@ The format for defining a logical file name is as follows:
 SET name=file_spec
 .millust end
 .synote
-.note name
+.mnote name
 is any character string.
 The letters in "name" may be specified in upper or lower case.
 Lower case letters are treated as if they had been specified in upper
@@ -1290,9 +1290,9 @@ case.
 Thus "SYSINPUT" and "sysinput" are equivalent.
 Note, however, that blank characters must not be specified before and
 after the "=" character.
-.note file_spec
+.mnote file_spec
 is the file specification of logical file.
-.endnote
+.esynote
 .autonote Notes and Examples:
 .note
 A logical file name may be used in the

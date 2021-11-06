@@ -33,17 +33,17 @@ performed input before discovering the runtime-constraint violation.
 The
 .id &funcb.
 function is equivalent to
-.kw scanf_s
+.reffunc scanf_s
 .ct , with the variable argument list replaced by
 .arg arg
 .ct , which shall have been initialized by the
-.kw va_start
+.reffunc va_start
 macro (and possibly subsequent
-.kw va_arg
+.reffunc va_arg
 calls). The
 .id &funcb.
 function does not invoke the
-.kw va_end
+.reffunc va_end
 macro.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -52,9 +52,9 @@ The
 function is identical to
 .id &funcb.
 except that it accepts a
-wide-character string argument for
+wide character string argument for
 .arg format
-.ct .li .
+.period
 .do end
 .desc end
 .*
@@ -100,8 +100,8 @@ void main( void )
 .exmp break
     find( "%s %s %d %d",
             weekday, sizeof( weekday ),
-	    month, sizeof( month ),
-	    &day, &year );
+            month, sizeof( month ),
+            &day, &year );
     printf_s( "\n%s, %s %d, %d\n",
             weekday, month, day, year );
 }

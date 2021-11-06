@@ -1,6 +1,6 @@
 plustest_name = mscompat
 
-!include testenv1.mif
+!include testenv.mif
 
 files_err = &
 diag0011$(ext) &
@@ -24,9 +24,9 @@ udcnv17$(ext)
 
 .cpp.exe :
     e:\cmds\mclauto.cmd $[*
-    @%make set_path_rtdll
+    @%make set_run_path
     $(run) $(exec_prefix)$[*.exe >> $(%ERROR_FILE)
-    @%make set_old_path
+    @%make set_old_run_path
 
 .cpp.mer :
     e:\cmds\mclauto.cmd $[* /c
@@ -38,11 +38,8 @@ err_out = $+ $(files_err) $-
 ext=.exe
 comp_out = $+ $(files_comp) $-
 
-test : .symbolic start clean start_test $(comp_out) $(err_out) common_set_result
-    @%make clean
-
-start_test : .symbolic
-    @%make common_start_test
+test : .symbolic start $(comp_out) $(err_out)
+    $(noecho)%make common_set_result
 
 clean : .procedure
     @%make echo_clean

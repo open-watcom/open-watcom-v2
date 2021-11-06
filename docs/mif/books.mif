@@ -1,70 +1,69 @@
-# help type         dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-# distributed       yes  no    yes       yes yes  yes  no  yes no       no
-#==============================================================================
-!inject c_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject cbooks                           nt
-!inject cgdoc                                                  wikihtml wikipdf
-!inject cguide      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+# help type         dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
+# distributed       yes  yes  yes       yes yes  yes  no  no    no        no
+#================================================================================
+!inject c_readme    dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject cbooks                          nt
+!inject cgdoc                                                   wikihtml  wikipdf
+!inject cguide      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
 !inject cguideq
 !inject clbtst
-!inject clib        dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject clib        dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
 !inject clib_fox
 !inject clib_nec
 !inject clibnt
 !inject clibqnx
-!inject clr         dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject clr         dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
 !inject clslib
-!inject cpplib      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject ctools      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject cw          dos  html  htmlhelp  nt  os2  pdf  ps      wikihtml wikipdf
-!inject ddespy           html  htmlhelp  nt                win
-!inject devguide                                               wikihtml wikipdf
-!inject drnt             html  htmlhelp  nt                win
-!inject drwatcom         html  htmlhelp  nt                win
-!inject dwdoc                                                           wikipdf
-!inject ebooks                           nt
-!inject editor           html  htmlhelp  nt                win
-!inject f77graph    dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject f77lr       dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject f_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject fbooks                           nt
+!inject cpplib      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject ctools      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject cw          dos       htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject ddespy           win  htmlhelp  nt                html
+!inject devguide                                                wikihtml  wikipdf
+!inject drnt             win  htmlhelp  nt                html
+!inject drwatcom         win  htmlhelp  nt                html
+!inject dwdoc                                                   wikihtml  wikipdf
+!inject ebooks                          nt
+!inject editor           win  htmlhelp  nt                html
+!inject f77graph    dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject f77lr       dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject f_readme    dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject fbooks                          nt
 !inject fmedidoc
-!inject fpguide     dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject ftools      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject fuguide     dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject guitool          html                     pdf  ps      wikihtml wikipdf
-!inject heapwalk         html  htmlhelp  nt                win
-!inject ide              html  htmlhelp  nt  os2           win
-!inject lguide      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject owstl                                                  wikihtml wikipdf
-!inject pguide      dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject resacc           html  htmlhelp  nt                win
-!inject rescomp     dos  html  htmlhelp  nt  os2           win
-!inject resdlg           html  htmlhelp  nt                win
-!inject resedt           html  htmlhelp  nt                win
-!inject resimg           html  htmlhelp  nt                win
-!inject resmnu           html  htmlhelp  nt                win
-!inject resstr           html  htmlhelp  nt                win
-!inject spy              html  htmlhelp  nt                win
-!inject trap                                      pdf  ps      wikihtml wikipdf
-!inject vi          dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject fpguide     dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject ftools      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject fuguide     dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject guitool                                  pdf      html  wikihtml  wikipdf
+!inject heapwalk         win  htmlhelp  nt                html
+!inject ide              win  htmlhelp  nt  os2           html
+!inject lguide      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject owstl                                                   wikihtml  wikipdf
+!inject pguide      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject resacc           win  htmlhelp  nt                html
+!inject rescomp     dos  win  htmlhelp  nt  os2           html
+!inject resdlg           win  htmlhelp  nt                html
+!inject resedt           win  htmlhelp  nt                html
+!inject resimg           win  htmlhelp  nt                html
+!inject resmnu           win  htmlhelp  nt                html
+!inject resstr           win  htmlhelp  nt                html
+!inject spy              win  htmlhelp  nt                html
+!inject vi          dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
 !inject wasaxp
-!inject wbrw             html  htmlhelp  nt  os2           win
-!inject wccerrs     dos  html  htmlhelp  nt  os2           win wikihtml wikipdf
-!inject wd          dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject wddoc                                                  wikihtml wikipdf
-!inject wfcerrs     dos  html  htmlhelp  nt  os2           win
+!inject wbrw             win  htmlhelp  nt  os2           html
+!inject wccerrs     dos  win  htmlhelp  nt  os2           html  wikihtml  wikipdf
+!inject wd          dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject wddoc                                    pdf            wikihtml  wikipdf
+!inject wfcerrs     dos  win  htmlhelp  nt  os2           html  wikihtml  wikipdf
 !inject wjcerrs
-!inject wlnkerrs         html  htmlhelp  nt                win
-!inject wpidoc
-!inject wpperrs     dos  html  htmlhelp  nt  os2           win wikihtml wikipdf
-!inject wprof       dos  html  htmlhelp  nt  os2           win
-!inject wrcerrs          html  htmlhelp  nt                win
-!inject zoom             html  htmlhelp  nt                win
-!inject cmix        dos                      os2           win                  # depends on zoom, etc.
-!inject fmix        dos                      os2           win                  # depends on zoom, etc.
-!inject wgmlref                                   pdf  ps               wikipdf
-!inject wipfc       dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
+!inject wlnkerrs         win  htmlhelp  nt                html
+!inject wpidoc                                   pdf            wikihtml  wikipdf
+!inject wpperrs     dos  win  htmlhelp  nt  os2           html  wikihtml  wikipdf
+!inject wprof       dos  win  htmlhelp  nt  os2           html
+!inject wrcerrs          win  htmlhelp  nt                html
+!inject zoom             win  htmlhelp  nt                html
+!inject cmix        dos  win                os2           html                     # depends on zoom, etc.
+!inject fmix        dos  win                os2           html                     # depends on zoom, etc.
+!inject wgmlref                                  pdf            wikihtml  wikipdf
+!inject wipfc       dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
 
 #
 # check configuration macros
@@ -115,8 +114,8 @@ book_src=foo
 !else ifeq hbook c_readme
 # c_readme
 book_title=$(company) $(bld_ver_str) C/C++ Getting Started
-book_objs=$(objs_gs) $(objs_cg)
-book_objs_ps=$(objs_gs_ps)
+book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp) $(objs_cg)
+book_objs_ps=$(objs_gs_readme_ps)
 book_incs=$(incs_gs);$(incs_cg)
 book_bmroot=$(bmroot_gs)
 book_src=c_readme
@@ -125,7 +124,7 @@ book_multi_chapter=1
 !else ifeq hbook cbooks
 # cbooks
 book_title=$(company) $(bld_ver_str) C/C++ On-line Documentation
-book_objs=$(objs_gs)
+book_objs=$(objs_gs_books)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
 book_src=cbooks
@@ -249,7 +248,7 @@ book_src=cw
 !else ifeq hbook ddespy
 # ddespy
 book_title=$(company) $(bld_ver_str) DDE Spy
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -264,7 +263,7 @@ book_src=devguide
 !else ifeq hbook drnt
 # drnt
 book_title=Dr. Watcom $(bld_ver_str) NT
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -272,7 +271,7 @@ book_src=guitool
 !else ifeq hbook drwatcom
 # drwatcom
 book_title=Dr. Watcom $(bld_ver_str)
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -280,7 +279,7 @@ book_src=guitool
 !else ifeq hbook ebooks
 # ebooks
 book_title=$(company) $(bld_ver_str) Editor On-line Documentation
-book_objs=$(objs_gs)
+book_objs=$(objs_gs_books)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
 book_src=ebooks
@@ -288,7 +287,7 @@ book_src=ebooks
 !else ifeq hbook editor
 # editor
 book_title=$(company) $(bld_ver_str) Editor
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -297,7 +296,8 @@ book_multi_chapter=1
 !else ifeq hbook f_readme
 # f_readme
 book_title=$(company) $(bld_ver_str) FORTRAN 77 Getting Started
-book_objs=$(objs_gs)
+book_objs=$(objs_gs_readme) $(objs_gs_readme_bmp)
+book_objs_ps=$(objs_gs_readme_ps)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
 book_src=f_readme
@@ -323,7 +323,7 @@ book_multi_chapter=1
 !else ifeq hbook fbooks
 # fbooks
 book_title=$(company) $(bld_ver_str) FORTRAN 77 On-line Documentation
-book_objs=$(objs_gs)
+book_objs=$(objs_gs_books)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
 book_src=fbooks
@@ -356,8 +356,8 @@ book_multi_chapter=1
 !else ifeq hbook fuguide
 # fuguide
 book_title=$(company) $(bld_ver_str) FORTRAN 77 User's Guide
-book_objs=$(objs_fg) $(objs_lg) $(objs_cmn)
-book_incs=$(incs_fg);$(incs_lg);$(incs_cmn)
+book_objs=$(objs_fg) $(objs_wfc) $(objs_lg) $(objs_cmn)
+book_incs=$(incs_fg);$(incs_wfc);$(incs_lg);$(incs_cmn)
 book_bmroot=$(bmroot_fg)
 book_src=fuguide
 book_multi_chapter=1
@@ -365,7 +365,7 @@ book_multi_chapter=1
 !else ifeq hbook guitool
 # guitool
 book_title=$(company) $(bld_ver_str) Graphical Tools User's Guide
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_objs_ps=$(objs_gui_ps)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -374,7 +374,7 @@ book_src=guitool
 !else ifeq hbook heapwalk
 # heapwalk
 book_title=$(company) $(bld_ver_str) Heap Walker
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -382,7 +382,7 @@ book_src=guitool
 !else ifeq hbook ide
 # ide
 book_title=$(company) $(bld_ver_str) IDE
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_objs_ps=$(objs_gui_ps)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -416,7 +416,7 @@ book_multi_chapter=1
 !else ifeq hbook resacc
 # resacc
 book_title=$(company) $(bld_ver_str) Accelerator Editor
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -424,7 +424,7 @@ book_src=guitool
 !else ifeq hbook rescomp
 # rescomp
 book_title=$(company) $(bld_ver_str) Resource Compiler
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -432,7 +432,7 @@ book_src=guitool
 !else ifeq hbook resdlg
 # resdlg
 book_title=$(company) $(bld_ver_str) Dialog Editor
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -440,7 +440,7 @@ book_src=guitool
 !else ifeq hbook resedt
 # resedt
 book_title=$(company) $(bld_ver_str) Resource Editor
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -448,7 +448,7 @@ book_src=guitool
 !else ifeq hbook resimg
 # resimg
 book_title=$(company) $(bld_ver_str) Image Editor
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -456,7 +456,7 @@ book_src=guitool
 !else ifeq hbook resmnu
 # resmnu
 book_title=$(company) $(bld_ver_str) Menu Editor
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -464,7 +464,7 @@ book_src=guitool
 !else ifeq hbook resstr
 # resstr
 book_title=$(company) $(bld_ver_str) String Table Editor
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -472,7 +472,7 @@ book_src=guitool
 !else ifeq hbook spy
 # spy
 book_title=$(company) $(bld_ver_str) Spy
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -487,7 +487,7 @@ book_src=wasaxp
 !else ifeq hbook wbrw
 # wbrw
 book_title=$(company) $(bld_ver_str) Source Browser
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -513,21 +513,11 @@ book_src=wdbg
 book_multi_chapter=1
 !define book_os2_help
 
-!else ifeq hbook trap
-# wd
-book_title=$(company) $(bld_ver_str) Trap Developers Guide
-book_objs=$(objs_trap)
-book_objs_ps=$(objs_trap_ps)
-book_incs=$(incs_trap)
-book_src=wtrap
-book_multi_chapter=1
-!define book_os2_help
-
 !else ifeq hbook wfcerrs
 # wfcerrs
 book_title=$(company) $(bld_ver_str) FORTRAN 77 Diagnostic Messages
-book_objs=$(objs_fg)
-book_incs=$(incs_fg)
+book_objs=$(objs_fg) $(objs_wfc)
+book_incs=$(incs_fg);$(incs_wfc)
 book_bmroot=$(bmroot_fg)
 book_src=wfcerrs
 !define book_os2_help
@@ -561,7 +551,7 @@ book_src=wpperrs
 !else ifeq hbook wprof
 # wprof
 book_title=$(company) $(bld_ver_str) Profiler
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -571,7 +561,7 @@ book_multi_chapter=1
 !else ifeq hbook wrcerrs
 # wrcerrs
 book_title=$(company) $(bld_ver_str) Resource Compiler Diagnostic Messages
-book_objs=$(objs_gui)
+book_objs=$(objs_gui) $(objs_gui_bmp)
 book_incs=$(incs_gui)
 book_bmroot=$(bmroot_gui)
 book_src=rcerrs
@@ -580,7 +570,7 @@ book_src=rcerrs
 !else ifeq hbook zoom
 # zoom
 book_title=$(company) $(bld_ver_str) Zoom
-book_objs=$(objs_gui) $(objs_cg)
+book_objs=$(objs_gui) $(objs_gui_bmp) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
 book_src=guitool
@@ -593,7 +583,7 @@ book_incs=$(incs_cgdoc)
 book_src=cgdoc
 
 !else ifeq hbook dwdoc
-# cgdoc
+# dwdoc
 book_title=$(company) $(bld_ver_str) DWARF Writer
 book_objs=$(objs_dwdoc)
 book_incs=$(incs_dwdoc)
@@ -601,15 +591,16 @@ book_src=dwdoc
 
 !else ifeq hbook wddoc
 # wddoc
-book_title=$(company) $(bld_ver_str) Debugger
+book_title=$(company) $(bld_ver_str) Debugger Developers Guide
 book_objs=$(objs_wddoc)
 book_incs=$(incs_wddoc)
 book_src=wddoc
+book_multi_chapter=1
 
 !else ifeq hbook vi
 # vi
 book_title=$(company) $(bld_ver_str) VI Editor
-book_objs=$(objs_vi)
+book_objs=$(objs_vi) $(objs_vi_bmp)
 book_objs_ps=$(objs_vi_ps)
 book_incs=$(incs_vi)
 book_bmroot=$(bmroot_vi)
@@ -619,9 +610,10 @@ book_multi_chapter=1
 !else ifeq hbook wgmlref
 # wgmlref
 book_title=WGML Reference Manual
-book_objs=$(objs_wgmlref)
+book_objs=$(objs_wgmlref) $(objs_wgmlref_bmp)
 book_objs_ps=$(objs_wgmlref_ps)
 book_incs=$(incs_wgmlref)
+book_bmroot=$(bmroot_wgmlref)
 book_src=rfman
 book_multi_chapter=1
 
@@ -639,7 +631,7 @@ book_multi_chapter=1
 
 !else ifeq hbook wpidoc
 # wpidoc
-book_title=$(company) $(bld_ver_str) WATCOM Programming Interface
+book_title=$(company) $(bld_ver_str) WATCOM Windows Programming Interface (WPI)
 book_objs=$(objs_wpidoc)
 book_incs=$(incs_wpidoc)
 book_src=wpidoc

@@ -18,15 +18,15 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/bowcc.exe <OWBINDIR>/bowcc<CMDEXT>
-    <CCCMD> <OWOBJDIR>/bspecs.owc <OWBINDIR>/bspecs.owc
+    <CPCMD> <OWOBJDIR>/bowcc.exe <OWBINDIR>/<OWOBJDIR>/bowcc<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bspecs.owc <OWBINDIR>/<OWOBJDIR>/bspecs.owc
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/bowcc<CMDEXT>
-    rm -f <OWBINDIR>/bowcc<CMDEXT>
-    echo rm -f <OWBINDIR>/bspecs.owc
-    rm -f <OWBINDIR>/bspecs.owc
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/bowcc<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/bowcc<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/bspecs.owc
+    rm -f <OWBINDIR>/<OWOBJDIR>/bspecs.owc
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

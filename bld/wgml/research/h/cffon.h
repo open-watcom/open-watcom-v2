@@ -31,7 +31,7 @@
 *                   is_fon_file()
 *                   parse_font()
 *
-* Note:         The field names are intended to correspond to the field names 
+* Note:         The field names are intended to correspond to the field names
 *               shown in the Wiki. The Wiki structs are named when the structs
 *               defined here are defined; they are not identical.
 *
@@ -57,7 +57,7 @@ typedef struct {
 
 /* This struct embodies the binary form of the :FONT block.
  *
- * The comments within the structs refer to the "blocks" discussed in the Wiki. 
+ * The comments within the structs refer to the "blocks" discussed in the Wiki.
  *
  * The first two fields are used internally and were used for sizing during
  * development

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,9 @@
 #include <stddef.h>
 #include "bool.h"
 #include "machtype.h"
+
+#define QUOTED_STR(x)       #x
+#define QUOTED(x)           QUOTED_STR(x)
 
 #if defined( __WINDOWS__ )
     #define DIGREGISTER     __far __pascal

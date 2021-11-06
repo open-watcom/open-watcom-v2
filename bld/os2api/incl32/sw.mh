@@ -20,7 +20,7 @@
 #define QS_FRAME 1
 #define QS_DIALOG 2
 
-#pragma pack(4)
+:include pshpack4.sp
 
 typedef struct _SMBD {
     CHAR  achText[MAX_SMBDTEXT+1];
@@ -36,7 +36,7 @@ typedef struct _SMBINFO {
     PSMBD    psmbd;
 } SMBINFO, *PSMBINFO;
 
-#pragma pack()
+:include poppack.sp
 
 HWND    EXPENTRY WinCreateSecondaryWindow(HWND,HWND,PFNWP,PDLGTEMPLATE,PVOID);
 BOOL    EXPENTRY WinDefaultSize(HWND);
@@ -101,7 +101,7 @@ ULONG   EXPENTRY WinSecondaryWindow(HWND,HWND,PFNWP,HMODULE,ULONG,PVOID);
 #define GBM_SETTEXTPOSITION 0x0533
 #define GBM_QUERYTEXTPOSITION 0x0534
 
-#pragma pack(1)
+:include pshpack1.sp
 
 typedef struct _GBTNCDATA {
     USHORT  usReserved;
@@ -111,7 +111,7 @@ typedef struct _GBTNCDATA {
     USHORT  aidBitmap[1];
 } GBTNCDATA, *PGBTNCDATA;
 
-#pragma pack()
+:include poppack.sp
 
 BOOL EXPENTRY WinRegisterGraphicButton(VOID);
 

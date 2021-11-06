@@ -21,7 +21,7 @@ function searches for the file specified by
 in the list of directories assigned to the environment variable
 specified by
 .arg env_var
-.ct .li .
+.period
 Common values for
 .arg env_var
 are PATH, LIB and INCLUDE.
@@ -33,11 +33,17 @@ specified by the environment variable is searched.
 .pp
 The full pathname is placed in the buffer pointed to by the argument
 .arg pathname
-.ct .li .
+.period
 If the specified file cannot be found, then
 .arg pathname
 will contain an empty string.
-.im widefun1
+The
+.arg pathname
+buffer should be at least _MAX_PATH characters long to accommodate
+the full length of the constructed path name.
+Otherwise, _searchenv might overrun the pathname buffer and cause
+unexpected behavior.
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The
@@ -45,7 +51,7 @@ The
 function returns no value.
 .return end
 .see begin
-.seelist getenv setenv _splitpath putenv
+.im seeenv
 .see end
 .exmp begin
 #include <stdio.h>

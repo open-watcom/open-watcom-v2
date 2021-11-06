@@ -5,7 +5,7 @@
 .*
 .np
 CauseWay is a 386 DOS extender package for use with &product. C/C++
-programs.  It is provided as a stub executable for which can be easily 
+programs.  It is provided as a stub executable for which can be easily
 linked into DOS extended applications.
 .*
 .section Introduction
@@ -57,7 +57,7 @@ compatible operating system that provides a DPMI or VCPI DOS
 environment.
 .np
 CauseWay is to a large extent compatible with Tenberry Software's DOS/4GW.
-Most applications built for DOS/4GW will run with CauseWay without any 
+Most applications built for DOS/4GW will run with CauseWay without any
 changes.
 .*
 .section CauseWay Memory Requirements
@@ -83,13 +83,13 @@ to the command line.
 .exam begin
 WCL386 &sw.l=CauseWay myprog.c
 .exam end
-This switch can be automated by adding &sw.l#CauseWay to the 
+This switch can be automated by adding &sw.l#CauseWay to the
 .ev WCL386
 environment variable, making CauseWay the default when compiling via WCL386.
 .np
 &product. users linking with WLINK should add the statement
 .mono system CauseWay
-to the link command.  
+to the link command.
 .exam begin
 WLINK system CauseWay file myprog.obj
 .exam end
@@ -107,13 +107,13 @@ using the CauseWay DOS extender.
 .np
 .fi CWSTUB.EXE
 will execute stand-alone LE-format files in the same
-way as 
+way as
 .fi DOS4GW.EXE
 does if the full file name, including extension, is
-listed after CWSTUB, e.g. 
-.mono CWSTUB RUNME.EXE. 
-CWSTUB will override the extender bound to the application EXE, if any, 
-with the CauseWay DOS extender version in 
+listed after CWSTUB, e.g.
+.mono CWSTUB RUNME.EXE.
+CWSTUB will override the extender bound to the application EXE, if any,
+with the CauseWay DOS extender version in
 .fi CWSTUB.EXE.
 .*
 .section Debugging Using WD
@@ -125,18 +125,18 @@ CauseWay files, simply use the &sw.tr=cw command line option.
 .exam begin
 WD &sw.tr=cw myprog
 .exam end
-This process can be automated by adding 
-.mono &sw.tr#cw 
-to your 
-.ev WD 
-environment variable. Use the 
+This process can be automated by adding
+.mono &sw.tr#cw
+to your
+.ev WD
+environment variable. Use the
 .mono set WD=tr#cw
 command.
 .np
 By default, CauseWay uses a Ctrl-Alt keypress to interrupt the WD
 debugger, rather than the Print-Screen key.  This can be changed to any
 two, three, or four keypress value by modifying the ASCII file
-.fi CWHELP.CFG 
+.fi CWHELP.CFG
 at the BreakKeys line.  See comments in this file for
 further detail.  Note that a single keypress value will not work properly.
 .*
@@ -144,30 +144,30 @@ further detail.  Note that a single keypress value will not work properly.
 .*
 .np
 .ix 'virtual memory'
-The 
+The
 .ev TEMP
-, 
+.ct ,
 .ev TMP
-and 
-.ev CAUSEWAY=SWAP 
+and
+.ev CAUSEWAY=SWAP
 environment variables are used by
 CauseWay to determine where to build its virtual memory swap file when
 an application is not operating under Windows or OS/2 (Windows and OS/2
 provide their own virtual memory management).  Since CauseWay has integrated
 virtual memory, disk space is considered part of total memory.  If you
-use the 
+use the
 .ev TEMP
-, 
+.ct ,
 .ev TMP
-or 
-.ev SWAP 
+or
+.ev SWAP
 environment variable to point to a small RAM
 sk or almost full disk, free memory will be affected accordingly.  If
 virtual (disk-based) memory is less than physical (installed on machine)
 memory, Cause Way turns off virtual memory. On the other hand, if you
 have a disk 300MB free, CauseWay will have no problem reporting 300MB
 free memory to your program, provided that virtual memory is not
-inhibited or limited by the 
+inhibited or limited by the
 .ev CAUSEWAY
 environment variable memory settings.
 .np
@@ -184,11 +184,11 @@ and path specification and sufficient free space to being operation. The
 first entry to succeed becomes the swap file drive with no further
 processing of the list. If CauseWay reaches the end of the list without
 finding a valid drive, it disables the virtual memory manager. The order
-of priority is 
+of priority is
 .ev CAUSEWAY=SWAP
-, 
+.ct ,
 .ev TEMP
-, 
+.ct ,
 .ev TMP
 and application execution path.
 .np
@@ -217,8 +217,8 @@ CauseWay automatically sets aside 32KB of low DOS memory for allocation
 and use by developer routines via the GetMemDOS API function. The 32K
 memory block is available even if CauseWay needs to use virtual memory
 just to load an application. The set-aside amount can be increased by
-using the 
-.ev CAUSEWAY 
+using the
+.ev CAUSEWAY
 environment variable LOWMEM option, although the
 additional set-aside goal is not guaranteed to be reached if too little
 conventional memory is left for CauseWay's operating requirements.
@@ -228,36 +228,37 @@ conventional memory is left for CauseWay's operating requirements.
 .np
 CauseWay can make use of three environment variables at runtime:
 .ev TEMP
-, 
+.ct ,
 .ev TMP
-and 
+and
 .ev CAUSEWAY
 .*
 .beglevel
 .*
 .section TEMP and TMP Environment Variables
+.*
 .np
-The 
-.ev TEMP 
-and 
-.ev TMP 
+The
+.ev TEMP
+and
+.ev TMP
 environment variables specify the directory and drive
 where a swap file is built by CauseWay's virtual memory manager (VMM)
 when operating under DOS. Windows and OS/2 provide their own memory
-management functions which override CauseWay's use of the 
-.ev TEMP 
-and 
-.ev TMP
-environment variables. The path indicated by 
-.ev TEMP 
-will be used under DOS
-if both 
+management functions which override CauseWay's use of the
 .ev TEMP
-and 
-.ev TMP 
+and
+.ev TMP
+environment variables. The path indicated by
+.ev TEMP
+will be used under DOS
+if both
+.ev TEMP
+and
+.ev TMP
 environment variables exist. Both settings are
-superseded by the 
-.ev CAUSEWAY=SWAP 
+superseded by the
+.ev CAUSEWAY=SWAP
 environment variable setting.
 .millust begin
 SET TMP=C:\SWAP
@@ -265,12 +266,12 @@ SET TMP=C:\SWAP
 The example above directs the CauseWay DOS extender to create its swap
 file, if any, in the C:\SWAP directory.
 .np
-If no 
+If no
 .ev TEMP
-, 
-.ev TMP 
-and 
-.ev CAUSEWAY=SWAP 
+.ct ,
+.ev TMP
+and
+.ev CAUSEWAY=SWAP
 settings are present or are invalid,
 the current drive is used when creating a swap file.  If free drive
 space is less than physical memory (extended and conventional) available
@@ -278,9 +279,10 @@ at startup, then the DOS extender VMM is disabled, no swap file is
 created, and virtual memory is not available to the application.
 .*
 .section CAUSEWAY Environment Variable
+.*
 .np
-The 
-.ev CAUSEWAY 
+The
+.ev CAUSEWAY
 environment variable controls operation of the DOS extender
 at application runtime.  Eleven (11) options are supported, although
 they are ignored in a Windows or OS/2 DPMI environment.  Use any
@@ -288,9 +290,9 @@ combination of the options in the following format:
 .millust begin
 SET CAUSEWAY=[<setting_1>;][<setting_2>;][<setting_n>;]
 .millust end
-Items in square brackets ([ ]) are optional. Do not actually type the 
-brackets if you use the optional items.  Items in brackets (< >) should 
-be replaced with actual values, separated by semicolons.  Following is 
+Items in square brackets ([ ]) are optional. Do not actually type the
+brackets if you use the optional items.  Items in brackets (< >) should
+be replaced with actual values, separated by semicolons.  Following is
 a description of the valid settings:
 .np
 .begnote
@@ -306,7 +308,7 @@ of memory on machines which do not support more than 64MB under original
 INT 15h method. This method uses INT 15h function 0e801h to determine
 available extended memory, falling back to the original function if
 0e801h fails. Note that old machines may not support this function and
-there is a slight chance that some older machines may not work if this 
+there is a slight chance that some older machines may not work if this
 setting is used.
 .*
 .note DPMI
@@ -323,7 +325,7 @@ memory manager must support DPMI or else this setting is ignored.
 Force CauseWay to use all extended memory and
 sub-allocate memory from the bottom up instead of the default top-down
 approach.  This setting is most useful for processor intensive
-environments which have a small hardware cache that does not cover the 
+environments which have a small hardware cache that does not cover the
 entire physical address range.  Use of this setting
 means that no extended memory will be available for other programs while
 the application is loaded (including shelling to DOS).
@@ -332,8 +334,8 @@ the application is loaded (including shelling to DOS).
 .br
 .ix 'HIMEM setting'
 Set maximum physical (conventional plus extended)
-memory that can be consumed by CauseWay where 
-.mono <nnn> 
+memory that can be consumed by CauseWay where
+.mono <nnn>
 is the decimal number of
 kilobytes that can be consumed.  If memory allocation requests exceed
 this figure, CauseWay will use virtual memory, even if additional
@@ -351,11 +353,11 @@ CauseWay application is active.
 Set DOS (conventional) memory to restrict it from use by
 CauseWay.  This memory is in addition to the default 32KB low DOS memory
 block reserved by CauseWay for use by any applications which need to
-allocate DOS memory.  
-.mono <nnn> 
+allocate DOS memory.
+.mono <nnn>
 is the decimal number of kilobytes to
 reserve.  If there is not enough conventional memory to satisfy the
-.mono <nnn> 
+.mono <nnn>
 request value, then CauseWay will leave all conventional memory
 free that is not required by the extender to operate. Note that this
 option does not guarantee the amount of free DOS memory, just how much
@@ -368,7 +370,7 @@ memory and is using conventional memory to fill memory allocation requests.
 .br
 .ix 'MAXMEM setting'
 Set maximum linear address space provided by CauseWay where
-.mono <nn> 
+.mono <nn>
 is the decimal number of megabytes of linear address space. This
 setting is similar to HIMEM except that it includes any virtual memory.
 For example, MAXMEM:32 on a 16MB memory system restricts VMM disk space
@@ -382,11 +384,11 @@ LOWMEM and HIMEM options.
 .ix 'NAME setting'
 Set a name, without a
 pathspec, to use the virtual memory temporary swap file.  To set a path
-for the swap file, use the 
+for the swap file, use the
 .ev CAUSEWAY=SWAP
-,
+.ct ,
 .ev TEMP
-, or 
+.ct , or
 .ev TMP
 environment variable. The filename
 must be valid, 12 characters or less.  Additional characters are
@@ -440,7 +442,7 @@ allocation requests.
 .ix 'PRE setting'
 Pre-allocates a swap file size, under non-DPMI
 environments, at start-up, where
-.mono <nnn> 
+.mono <nnn>
 is file size in megabytes, not kilobytes (same as MAXMEM).
 .np
 There are at least two uses for this
@@ -470,10 +472,10 @@ to ensure that virtual memory does not exceed the pre-allocation setting.
 .ix 'swap file'
 Set CauseWay's virtual memory manager swap file
 path.  This path takes precedence for choosing the location of a swap
-file over the 
-.ev TEMP 
-and 
-.ev TMP 
+file over the
+.ev TEMP
+and
+.ev TMP
 environment variables.
 .endnote
 .endlevel

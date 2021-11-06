@@ -130,8 +130,8 @@ is an approximate representation of a real number and occupies
 If
 .id m
 is the magnitude of a real number
-.id x,
-then
+.id x
+.ct , then
 .id x
 can be approximated if
 .millust begin
@@ -212,12 +212,12 @@ that of an item of type
 .bd REAL
 or
 .bd REAL*4
-.ct .li .
+.period
 If
 .id m
 is the magnitude of a real number
-.id x,
-then
+.id x
+.ct , then
 .id x
 can be approximated if
 .millust begin
@@ -305,7 +305,7 @@ being the real part and the second the imaginary part.
 The approximation of the real and imaginary parts of a complex number
 is the same degree of approximation used for items of type
 .bd REAL
-.ct .li .
+.period
 .*
 .section COMPLEX*16 Data Type
 .*
@@ -325,7 +325,7 @@ two being the real part and the last two the imaginary part.
 The approximation of the real and imaginary parts of a complex number
 is the same degree of approximation used for items of type
 .bd DOUBLE PRECISION
-.ct .li .
+.period
 .*
 .section CHARACTER Data Type
 .*
@@ -405,7 +405,7 @@ is equivalent to
 .bd COMPLEX
 is equivalent to
 .bd COMPLEX*8
-.ct .li .
+.period
 .ix 'short option'
 If the "short" option is used,
 .bd LOGICAL
@@ -415,7 +415,7 @@ and
 .bd INTEGER
 is equivalent to
 .bd INTEGER*2
-.ct .li .
+.period
 .pc
 .sr c0=&sysin+11
 .sr bs=2
@@ -968,4 +968,5 @@ FORTRAN subroutine as a floating-point exception handler.
 Note the use of the
 .id VOLATILE
 intrinsic function to obtain up-to-date contents of the variable
-.id SIGNAL_COUNT.
+.id SIGNAL_COUNT
+.period

@@ -1,78 +1,80 @@
+/* UTF-8 encoding, Â¥ */
+
 pick( MSG_NO_TIME_STAMP,	"no time-stamp for (%s) -- will use current time",
-				"(%s)‚Ìƒ^ƒCƒ€EƒXƒ^ƒ“ƒv‚ª‚ ‚è‚Ü‚¹‚ñ -- Œ»Ý‚ÌŽžŠÔ‚ðŽg—p‚µ‚Ü‚·" )
+				"(%s)ã®ã‚¿ã‚¤ãƒ ãƒ»ã‚¹ã‚¿ãƒ³ãƒ—ãŒã‚ã‚Šã¾ã›ã‚“ -- ç¾åœ¨ã®æ™‚é–“ã‚’ä½¿ç”¨ã—ã¾ã™" )
 pick( MSG_NO_DATE,		"no date specified for 'd' option",
-				"'d'ƒIƒvƒVƒ‡ƒ“‚Å“ú•t‚¯‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
+				"'d'ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§æ—¥ä»˜ã‘ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“" )
 pick( MSG_NO_FILE,		"no file specified for 'f' option",
-				"'f'ƒIƒvƒVƒ‡ƒ“‚Åƒtƒ@ƒCƒ‹‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
+				"'f'ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§ãƒ•ã‚¡ã‚¤ãƒ«ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“" )
 pick( MSG_NO_TIME,		"no time specified for 't' option",
-				"'t'ƒIƒvƒVƒ‡ƒ“‚ÅŽžŠÔ‚ªŽw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
+				"'t'ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§æ™‚é–“ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“" )
 pick( MSG_UNKNOWN_OPTION,	"unknown option: %s",
-				"–³Œø‚ÈƒIƒvƒVƒ‡ƒ“: %s" )
+				"ç„¡åŠ¹ãªã‚ªãƒ—ã‚·ãƒ§ãƒ³: %s" )
 pick( MSG_CANT_TOUCH,		"unable to touch (%s): %Z",
-				"(%s)‚ðƒ^ƒbƒ`‚Å‚«‚Ü‚¹‚ñ: %Z" )
+				"(%s)ã‚’ã‚¿ãƒƒãƒã§ãã¾ã›ã‚“: %Z" )
 pick( MSG_READ_ONLY,		"unable to touch (%s): %Z (file is read-only)",
-				"(%s)‚ðƒ^ƒbƒ`‚Å‚«‚Ü‚¹‚ñ: %Z(ƒtƒ@ƒCƒ‹‚ªƒŠ[ƒhEƒIƒ“ƒŠ‚Å‚·)" )
+				"(%s)ã‚’ã‚¿ãƒƒãƒã§ãã¾ã›ã‚“: %Z(ãƒ•ã‚¡ã‚¤ãƒ«ãŒãƒªãƒ¼ãƒ‰ãƒ»ã‚ªãƒ³ãƒªã§ã™)" )
 pick( MSG_ERR_CLOSE,		"system error closing (%s): %Z",
-				"(%s)ƒNƒ[ƒYEƒVƒXƒeƒ€EƒGƒ‰[: %Z" )
+				"(%s)ã‚¯ãƒ­ãƒ¼ã‚ºãƒ»ã‚·ã‚¹ãƒ†ãƒ ãƒ»ã‚¨ãƒ©ãƒ¼: %Z" )
 pick( MSG_NO_MATCH,		"no matching files found for (%s)",
-				"(%s)‚Æˆê’v‚·‚éƒtƒ@ƒCƒ‹‚ª‚ ‚è‚Ü‚¹‚ñ" )
+				"(%s)ã¨ä¸€è‡´ã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚Šã¾ã›ã‚“" )
 pick( MSG_CANT_CREATE,		"unable to create file (%s): %Z",
-				"(%s)ƒtƒ@ƒCƒ‹‚ðì¬‚Å‚«‚Ü‚¹‚ñ: %Z" )
+				"(%s)ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã§ãã¾ã›ã‚“: %Z" )
 pick( MSG_CANT_TOUCH_FILE,	"unable to touch file (%s): %Z",
-				"(%s)ƒtƒ@ƒCƒ‹‚Éƒ^ƒbƒ`‚Å‚«‚Ü‚¹‚ñ: %Z" )
+				"(%s)ãƒ•ã‚¡ã‚¤ãƒ«ã«ã‚¿ãƒƒãƒã§ãã¾ã›ã‚“: %Z" )
 pick( MSG_INV_TIME,		"invalid character ('%s') in time",
-				"ŽžŠÔ‚Å–³Œø‚È•¶Žš('%s')‚ª‚ ‚è‚Ü‚·" )
+				"æ™‚é–“ã§ç„¡åŠ¹ãªæ–‡å­—('%s')ãŒã‚ã‚Šã¾ã™" )
 pick( MSG_INV_HOUR,		"invalid hour specified in time",
-				"ŽžŠÔ‚Å–³Œø‚ÈŽž”‚ðŽw’è‚µ‚Ü‚µ‚½" )
+				"æ™‚é–“ã§ç„¡åŠ¹ãªæ™‚æ•°ã‚’æŒ‡å®šã—ã¾ã—ãŸ" )
 pick( MSG_INV_MINUTE,		"invalid minute specified in time",
-				"ŽžŠÔ‚Å–³Œø‚È•ª”‚ðŽw’è‚µ‚Ü‚µ‚½" )
+				"æ™‚é–“ã§ç„¡åŠ¹ãªåˆ†æ•°ã‚’æŒ‡å®šã—ã¾ã—ãŸ" )
 pick( MSG_INV_SECOND,		"invalid second specified in time",
-				"ŽžŠÔ‚Å–³Œø‚È•b”‚ðŽw’è‚µ‚Ü‚µ‚½" )
+				"æ™‚é–“ã§ç„¡åŠ¹ãªç§’æ•°ã‚’æŒ‡å®šã—ã¾ã—ãŸ" )
 pick( MSG_INV_DATE,		"invalid character ('%s') in date",
-				"“ú•t‚Å–³Œø‚È•¶Žš('%s')‚ª‚ ‚è‚Ü‚·" )
+				"æ—¥ä»˜ã§ç„¡åŠ¹ãªæ–‡å­—('%s')ãŒã‚ã‚Šã¾ã™" )
 pick( MSG_INV_YEAR,		"invalid year specified in date",
-				"“ú•t‚Å–³Œø‚È”N‚ðŽw’è‚µ‚Ü‚µ‚½" )
+				"æ—¥ä»˜ã§ç„¡åŠ¹ãªå¹´ã‚’æŒ‡å®šã—ã¾ã—ãŸ" )
 pick( MSG_INV_MONTH,		"invalid month specified in date",
-				"“ú•t‚Å–³Œø‚ÈŒŽ‚ðŽw’è‚µ‚Ü‚µ‚½" )
+				"æ—¥ä»˜ã§ç„¡åŠ¹ãªæœˆã‚’æŒ‡å®šã—ã¾ã—ãŸ" )
 pick( MSG_INV_DAY,		"invalid day specified in date",
-				"“ú•t‚Å–³Œø‚È“ú‚ðŽw’è‚µ‚Ü‚µ‚½" )
+				"æ—¥ä»˜ã§ç„¡åŠ¹ãªæ—¥ã‚’æŒ‡å®šã—ã¾ã—ãŸ" )
 pick( MSG_SYS_ERR_0,		"Error 0",
-				"ƒGƒ‰[ 0" )
+				"ã‚¨ãƒ©ãƒ¼ 0" )
 pick( MSG_SYS_ERR_1,		"No such file or directory",
-				"Žw’è‚³‚ê‚½ƒtƒ@ƒCƒ‹–”‚ÍƒfƒBƒŒƒNƒgƒŠ‚ª‚ ‚è‚Ü‚¹‚ñ" )
+				"æŒ‡å®šã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«åˆã¯ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒã‚ã‚Šã¾ã›ã‚“" )
 pick( MSG_SYS_ERR_2,		"Argument list too big",
-				"ˆø”ƒŠƒXƒg‚ª‘å‚«‚·‚¬‚Ü‚·" )
+				"å¼•æ•°ãƒªã‚¹ãƒˆãŒå¤§ãã™ãŽã¾ã™" )
 pick( MSG_SYS_ERR_3,		"Exec format error",
-				"ŽÀsƒtƒH[ƒ}ƒbƒgEƒGƒ‰[" )
+				"å®Ÿè¡Œãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆãƒ»ã‚¨ãƒ©ãƒ¼" )
 pick( MSG_SYS_ERR_4,		"Bad file number",
-				"ƒtƒ@ƒCƒ‹”Ô†‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·" )
+				"ãƒ•ã‚¡ã‚¤ãƒ«ç•ªå·ãŒé–“é•ã£ã¦ã„ã¾ã™" )
 pick( MSG_SYS_ERR_5,		"Not enough memory",
-				"ƒƒ‚ƒŠ‚ª‘«‚è‚Ü‚¹‚ñ" )
+				"ãƒ¡ãƒ¢ãƒªãŒè¶³ã‚Šã¾ã›ã‚“" )
 pick( MSG_SYS_ERR_6,		"Permission denied",
-				"ƒp[ƒ~ƒbƒVƒ‡ƒ“‹‘”Û‚³‚ê‚Ü‚µ‚½" )
+				"ãƒ‘ãƒ¼ãƒŸãƒƒã‚·ãƒ§ãƒ³æ‹’å¦ã•ã‚Œã¾ã—ãŸ" )
 pick( MSG_SYS_ERR_7,		"File exists",
-				"ƒtƒ@ƒCƒ‹‚ª‘¶Ý‚µ‚Ä‚¢‚Ü‚·" )
+				"ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ã¦ã„ã¾ã™" )
 pick( MSG_SYS_ERR_8,		"Cross-device link",
-				"ƒfƒoƒCƒX‚ð•ÏX‚µ‚Ü‚µ‚½" )
+				"ãƒ‡ãƒã‚¤ã‚¹ã‚’å¤‰æ›´ã—ã¾ã—ãŸ" )
 pick( MSG_SYS_ERR_9,		"Invalid argument",
-				"–³Œø‚Èˆø”‚Å‚·" )
+				"ç„¡åŠ¹ãªå¼•æ•°ã§ã™" )
 pick( MSG_SYS_ERR_10,		"File table overflow",
-				"ƒtƒ@ƒCƒ‹Eƒe[ƒuƒ‹‚ªƒI[ƒoƒtƒ[‚µ‚Ü‚µ‚½" )
+				"ãƒ•ã‚¡ã‚¤ãƒ«ãƒ»ãƒ†ãƒ¼ãƒ–ãƒ«ãŒã‚ªãƒ¼ãƒãƒ•ãƒ­ãƒ¼ã—ã¾ã—ãŸ" )
 pick( MSG_SYS_ERR_11,		"Too many open files",
-				"ƒI[ƒvƒ“Eƒtƒ@ƒCƒ‹‚ª‘½‚·‚¬‚Ü‚·" )
+				"ã‚ªãƒ¼ãƒ—ãƒ³ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ãŒå¤šã™ãŽã¾ã™" )
 pick( MSG_SYS_ERR_12,		"No space left on device",
-				"ƒfƒoƒCƒX‚ÉƒXƒy[ƒX‚ª‚ ‚è‚Ü‚¹‚ñ" )
+				"ãƒ‡ãƒã‚¤ã‚¹ã«ã‚¹ãƒšãƒ¼ã‚¹ãŒã‚ã‚Šã¾ã›ã‚“" )
 pick( MSG_SYS_ERR_13,		"Argument too large",
-				"ˆø”‚ª‘å‚«‚·‚¬‚Ü‚·" )
+				"å¼•æ•°ãŒå¤§ãã™ãŽã¾ã™" )
 pick( MSG_SYS_ERR_14,		"Result too large",
-				"Œ‹‰Ê‚ª‘å‚«‚·‚¬‚Ü‚·" )
+				"çµæžœãŒå¤§ãã™ãŽã¾ã™" )
 pick( MSG_SYS_ERR_15,		"Resource deadlock would occur",
-				"ƒŠƒ\[ƒX‚ÌƒfƒbƒhƒƒbƒN‚ª”­¶‚µ‚Ü‚·" )
+				"ãƒªã‚½ãƒ¼ã‚¹ã®ãƒ‡ãƒƒãƒ‰ãƒ­ãƒƒã‚¯ãŒç™ºç”Ÿã—ã¾ã™" )
 pick( MSG_USAGE_DATE_FORM,	"where: <date> is of the form \"%s\"",
-				"êŠ:  <“ú•t> ‚Í\"%s\"ƒtƒH[ƒ€‚É‚ ‚è‚Ü‚·" )
+				"å ´æ‰€:  <æ—¥ä»˜> ã¯\"%s\"ãƒ•ã‚©ãƒ¼ãƒ ã«ã‚ã‚Šã¾ã™" )
 pick( MSG_USAGE_TIME_FORM,	"       <time> is of the form \"%s\"",
-				"       <ŽžŠÔ> ‚Í\"%s\"ƒtƒH[ƒ€‚É‚ ‚è‚Ü‚·" )
+				"       <æ™‚é–“> ã¯\"%s\"ãƒ•ã‚©ãƒ¼ãƒ ã«ã‚ã‚Šã¾ã™" )
 pick( MSG_USAGE_AM_PM_0,	"       (<time> may be followed by either 'a' or 'p'",
-				"       (<ŽžŠÔ> ‚Í'a'‚©'p'‚ÌŒã‚É‘±‚«‚Ü‚·" )
+				"       (<æ™‚é–“> ã¯'a'ã‹'p'ã®å¾Œã«ç¶šãã¾ã™" )
 pick( MSG_USAGE_AM_PM_1,	"        indicating A.M. or P.M. respectively)",
-				"        A.M.‚©P.M.‚ð‚»‚ê‚¼‚êŽ¦‚µ‚Ü‚·)" )
+				"        A.M.ã‹P.M.ã‚’ãã‚Œãžã‚Œç¤ºã—ã¾ã™)" )

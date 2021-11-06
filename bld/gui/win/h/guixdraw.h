@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,6 @@
 #ifndef _GUIXDRAW_H_
 #define _GUIXDRAW_H_
 
-extern void GUIDrawTextBitmapAttr( gui_window *wnd, const char *text, size_t length,
-                                   int height, gui_coord *pos, gui_attr attr,
-                                   gui_ord extentx,
-                                   bool draw_extent, int bitmap );
+extern void GUIDrawBitmapAttr( gui_window *wnd, const guix_coord *size, const gui_coord *pos, gui_attr attr, int hotspot_no );
+
 #endif // _GUIXDRAW_H_

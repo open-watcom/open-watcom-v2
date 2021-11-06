@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,16 +91,16 @@ static int radix_value( CHAR_TYPE c )
 
 #define hexstr(p) (p[0] == STRING( '0' ) && (p[1] == STRING( 'x' ) || p[1] == STRING( 'X' )))
 
-static unsigned long long int _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base, bool who )
+static unsigned long long _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base, bool who )
 {
-    const CHAR_TYPE         *p;
-    const CHAR_TYPE         *startp;
-    int                     digit;
-    unsigned long long int  value;
-    unsigned long long int  prev_value;
-    bool                    minus;
-    bool                    overflow;   /*overflow is used as a flag so it does not
-                                         *need to be of type CHAR_TYPE */
+    const CHAR_TYPE     *p;
+    const CHAR_TYPE     *startp;
+    int                 digit;
+    unsigned long long  value;
+    unsigned long long  prev_value;
+    bool                minus;
+    bool                overflow;   /* overflow is used as a flag so it does not
+                                     * need to be of type CHAR_TYPE */
 
     if( endptr != NULL )
         *endptr = (CHAR_TYPE *)nptr;
@@ -176,13 +176,13 @@ static unsigned long long int _stoll( const CHAR_TYPE *nptr, CHAR_TYPE **endptr,
 }
 
 
-_WCRTLINK unsigned long long int __F_NAME(strtoull,wcstoull)( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base )
+_WCRTLINK unsigned long long __F_NAME(strtoull,wcstoull)( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base )
 {
     return( _stoll( nptr, endptr, base, false ) );
 }
 
 
-_WCRTLINK long long int __F_NAME(strtoll,wcstoll)( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base )
+_WCRTLINK long long __F_NAME(strtoll,wcstoll)( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base )
 {
     return( _stoll( nptr, endptr, base, true ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,10 +75,9 @@ static bool IsChecked( UIMENUITEM *menuitem )
 static bool MenuConvert( const char *text, unsigned short *flags, char **new, bool checked )
 {
     char        *end;
-    int         length;
-    int         end_length;
+    size_t      length;
+    size_t      end_length;
     char        *new_str;
-    int         char_offset;
 
     if( flags != NULL ) {
         *flags &= ~ITEM_CHAR_OFFSET; /* cancel prev info */
@@ -98,8 +97,7 @@ static bool MenuConvert( const char *text, unsigned short *flags, char **new, bo
         end_length = strlen( end );
     }
     if( flags != NULL ) {
-        char_offset = length - end_length;
-        *flags |= char_offset & ITEM_CHAR_OFFSET;
+        *flags |= ( length - end_length ) & ITEM_CHAR_OFFSET;
     }
     if( end == NULL ) {
         length++; /* no & so need room for NULL as it doesn't replace & */
@@ -239,7 +237,7 @@ static bool GUIGetMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **pmenuitem, 
     return( false );
 }
 
-int GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id )
+int GUIAPI GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id )
 {
     UIMENUITEM  *menuitem;
 
@@ -249,7 +247,7 @@ int GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id )
     return( -1 );
 }
 
-bool GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enable, bool floating )
+bool GUIAPI GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enable, bool floating )
 {
     UIMENUITEM  *menuitem;
     bool        vbar;
@@ -276,7 +274,7 @@ bool GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enable, bool floati
     return( true );
 }
 
-bool GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floating )
+bool GUIAPI GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floating )
 {
     UIMENUITEM  *menuitem;
     bool        vbar;
@@ -304,7 +302,7 @@ bool GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floa
     return( true );
 }
 
-bool GUICheckMenuItem( gui_window *wnd, gui_ctl_id id, bool check, bool floating )
+bool GUIAPI GUICheckMenuItem( gui_window *wnd, gui_ctl_id id, bool check, bool floating )
 {
     bool        vbar;
     UIMENUITEM  *menuitem;
@@ -506,12 +504,12 @@ static bool InsertMenu( gui_window *wnd, const gui_menu_struct *menu, int positi
  */
 
 static bool CreateMenus( gui_window *wnd, const gui_menu_items *menus,
-                         gui_window *parent, gui_create_styles style )
+                         gui_window *parent_wnd, gui_create_styles style )
 {
     int     num_ignore;
     int     i;
 
-    if( parent == NULL ) {
+    if( parent_wnd == NULL ) {
         if( !CreateVBarMenu( wnd, menus, &wnd->vbarmenu ) ) {
             return( false );
         }
@@ -555,8 +553,7 @@ bool GUICreateMenus( gui_window *wnd, gui_create_info *dlg_info )
     if( dlg_info->resource_menu != NULL ) {
         ret = false;
         menus = NoMenu;
-        GUICreateMenuStructFromRes( dlg_info->resource_menu, &menus );
-        if( menus.num_items > 0 ) {
+        if( GUICreateMenuStructFromRes( dlg_info->resource_menu, &menus ) ) {
             ret = CreateMenus( wnd, &menus, dlg_info->parent, dlg_info->style );
             GUIFreeGUIMenuStruct( &menus );
         }
@@ -580,7 +577,7 @@ void GUIFreeMenus( gui_window * wnd )
     }
 }
 
-void GUISetBetweenTitles( int between_titles )
+void GUIAPI GUISetBetweenTitles( int between_titles )
 {
     uisetbetweentitles( between_titles );
 }
@@ -589,7 +586,7 @@ void GUISetBetweenTitles( int between_titles )
  * GUIAppendMenuByIdx
  */
 
-bool GUIAppendMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu )
+bool GUIAPI GUIAppendMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu )
 {
     int     num_items;
 
@@ -636,7 +633,7 @@ static bool DeleteMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **pmenuitems,
  * GUIDeleteMenuItem -- delete the menu item with the given ID
  */
 
-bool GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating )
+bool GUIAPI GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating )
 {
     bool        vbar;
     UIMENUITEM  *menuitem;
@@ -682,7 +679,7 @@ bool GUIDeleteToolbarMenuItem( gui_window *wnd, gui_ctl_id id )
     return( false );
 }
 
-bool GUIResetMenus( gui_window *wnd, const gui_menu_items *menus )
+bool GUIAPI GUIResetMenus( gui_window *wnd, const gui_menu_items *menus )
 {
     toolbarinfo *tbar;
 
@@ -710,7 +707,7 @@ bool GUIResetMenus( gui_window *wnd, const gui_menu_items *menus )
     return( false );
 }
 
-bool GUIEnableMenus( gui_window *wnd, bool enable )
+bool GUIAPI GUIEnableMenus( gui_window *wnd, bool enable )
 {
     int                 i;
     gui_menu_styles     style;
@@ -735,7 +732,7 @@ bool GUIEnableMenus( gui_window *wnd, bool enable )
     return( true );
 }
 
-bool GUIInsertMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu, bool floating )
+bool GUIAPI GUIInsertMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu, bool floating )
 {
     if( floating ) {
         return( InsertMenu( wnd, menu, position, &GUIPopupMenu, true, FLOAT_HINT ) );
@@ -767,7 +764,7 @@ bool GUIInsertMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *m
  *                      the given id
  */
 
-bool GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *menu )
+bool GUIAPI GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *menu )
 {
     bool        vbar;
     UIMENUITEM  *menuitem;
@@ -794,7 +791,7 @@ bool GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *m
  *                  the given window
  */
 
-bool GUIAppendMenu( gui_window *wnd, const gui_menu_struct *menu, bool floating )
+bool GUIAPI GUIAppendMenu( gui_window *wnd, const gui_menu_struct *menu, bool floating )
 {
     if( floating ) {
         return( InsertMenu( wnd, menu, -1, &GUIPopupMenu, true, FLOAT_HINT ) );
@@ -844,15 +841,14 @@ static bool AddMenuItemToPopup( gui_window *wnd, gui_ctl_id id, int position,
  *                        given ID
  */
 
-bool GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id,
+bool GUIAPI GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id,
                            const gui_menu_struct *menu, bool floating )
 {
     return( AddMenuItemToPopup( wnd, id, -1, menu, floating ) );
 }
 
-bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position,
+bool GUIAPI GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position,
                            const gui_menu_struct *menu, bool floating )
 {
     return( AddMenuItemToPopup( wnd, id, position, menu, floating ) );
 }
-

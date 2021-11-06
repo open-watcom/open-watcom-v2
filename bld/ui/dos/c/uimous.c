@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,13 +31,10 @@
 
 #include <dos.h>
 #include "uidef.h"
-#include "uidos.h"
-#include "biosui.h"
+#include "int33.h"
 #include "uimouse.h"
 #include "uibmous.h"
 
-
-#define MOUSE_SCALE     8
 
 unsigned short          Points;         /* Number of lines per character */
 
@@ -48,20 +45,20 @@ static int              MickeyCol;
 void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
 /****************************************************************************************/
 {
-    struct mouse_data   state;
-    char                change;
+    mouse_status    state;
+    char            change;
 
-    MouseDrvCallRetState( 3, &state );
+    _BIOSMouseGetPositionAndButtonStatus( &state );
 
-    *status = state.bx;
+    *status = state.button_status;
 
     if( DrawCursor == NULL ) {
-        *col = state.cx / MOUSE_SCALE;
-        *row = state.dx / MOUSE_SCALE;
+        *col = state.x / MOUSE_SCALE;
+        *row = state.y / MOUSE_SCALE;
     } else {
-        MouseDrvCallRetState( 0x0B, &state );
-        MickeyCol += (short int)state.cx; /* delta of mickeys */
-        MickeyRow += (short int)state.dx; /* delta of mickeys */
+        _BIOSMouseGetMotionCounters( &state );
+        MickeyCol += (short)state.x; /* delta of mickeys */
+        MickeyRow += (short)state.y; /* delta of mickeys */
         if( MickeyRow < 0 ) {
             MickeyRow = 0;
             change = true;
@@ -89,8 +86,8 @@ void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETI
         *row = MickeyRow;
         *col = MickeyCol;
         if( change ) {
-            MouseDrvCall2( 4, 0, *col, *row );
-            MouseDrvCall1( 0x0B );
+            _BIOSMouseSetPointerPosition( *col, *row );
+            _BIOSMouseGetMotionCountersReset();
         }
     }
 
@@ -109,7 +106,7 @@ void uimousespeed( unsigned speed )
         speed = 1;
     }
 
-    MouseDrvCall3( 0x0F, speed, speed * 2, 0, 0 );
+    _BIOSMouseSetMickeysToPixelsRatio( speed, speed * 2 );
     UIData->mouse_speed = speed;
 }
 
@@ -122,14 +119,14 @@ void intern setupmouse( void )
     } else {
         dx = UIData->width * MOUSE_SCALE - 1;
     }
-    MouseDrvCall2( 7, 0, 0, dx );
+    _BIOSMouseSetHorizontalLimitsForPointer( 0, dx );
 
     if( DrawCursor == NULL ) {
         dx = ( UIData->height - 1 ) * MOUSE_SCALE;
     } else {
         dx = UIData->height * Points - 1;
     }
-    MouseDrvCall2( 8, 0, 0, dx );
+    _BIOSMouseSetVerticalLimitsForPointer( 0, dx );
 
     uisetmouseposn( UIData->height / 2 - 1, UIData->width / 2 - 1 );
     MouseInstalled = true;
@@ -147,7 +144,7 @@ bool UIAPI initmouse( init_mode install )
     MouseInstalled = false;
     if( install != INIT_MOUSELESS && mouse_installed() ) {
         if( install == INIT_MOUSE_INITIALIZED ) {
-            if( MouseDrvReset() != MOUSE_DRIVER_OK ) {
+            if( _BIOSMouseDriverReset() != MOUSE_DRIVER_OK ) {
                 install = INIT_MOUSELESS;   /* mouse initialization failed */
             }
         }
@@ -175,10 +172,10 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     MouseRow = row * UIData->mouse_yscale;
     MouseCol = col * UIData->mouse_xscale;
     if( DrawCursor == NULL ) {
-        MouseDrvCall2( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );
+        _BIOSMouseSetPointerPosition( col * MOUSE_SCALE, row * MOUSE_SCALE );
     } else {
-        MouseDrvCall2( 4, 0, MouseCol, MouseRow );
-        MouseDrvCall1( 0x0B );
+        _BIOSMouseSetPointerPosition( MouseCol, MouseRow );
+        _BIOSMouseGetMotionCountersReset();
         MickeyRow = MouseRow; /* initialize these and syncronize the INT B */
         MickeyCol = MouseCol; /* because we keep a running total */
     }

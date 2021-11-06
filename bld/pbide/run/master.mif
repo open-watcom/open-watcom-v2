@@ -6,8 +6,16 @@ run_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c: ..
 
-run.exe : run.obj $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) file {$[@}
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = run.obj
+!include exetarg.mif

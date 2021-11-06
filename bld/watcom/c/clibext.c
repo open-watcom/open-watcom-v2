@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -155,185 +155,11 @@ char *ltoa( long value, char *buffer, int radix )
     return( buffer );
 }
 
-/****************************************************************************
-*
-* Description:  Platform independent _splitpath() implementation.
-*
-****************************************************************************/
-
-#if defined(__UNIX__)
-  #define PC '/'
-#else   /* DOS, OS/2, Windows, Netware */
-  #define PC '\\'
-  #define ALT_PC '/'
-#endif
-
-#ifdef __NETWARE__
-  #undef _MAX_PATH
-  #undef _MAX_SERVER
-  #undef _MAX_VOLUME
-  #undef _MAX_DRIVE
-  #undef _MAX_DIR
-  #undef _MAX_FNAME
-  #undef _MAX_EXT
-
-  #define _MAX_PATH    255 /* maximum length of full pathname */
-  #define _MAX_SERVER  48  /* maximum length of server name */
-  #define _MAX_VOLUME  16  /* maximum length of volume component */
-  #define _MAX_DRIVE   3   /* maximum length of drive component */
-  #define _MAX_DIR     255 /* maximum length of path component */
-  #define _MAX_FNAME   9   /* maximum length of file name component */
-  #define _MAX_EXT     5   /* maximum length of extension component */
-#endif
-
-
-static void copypart( char *buf, const char *p, int len, int maxlen )
-{
-    if( buf != NULL ) {
-        if( len > maxlen )
-            len = maxlen;
-#ifdef __UNIX__
-        memcpy( buf, p, len );
-        buf[len] = '\0';
-#else
-        len = _mbsnccnt( p, len );          /* # chars in len bytes */
-        _mbsncpy( buf, p, len );            /* copy the chars */
-        buf[_mbsnbcnt( buf, len )] = '\0';
-#endif
-    }
-}
-
-#if !defined(_MAX_NODE)
-#define _MAX_NODE   _MAX_DRIVE  /*  maximum length of node name w/ '\0' */
-#endif
-
-/* split full QNX path name into its components */
-
-/* Under QNX we will map drive to node, dir to dir, and
- * filename to (filename and extension)
- *          or (filename) if no extension requested.
- */
-
-/* Under Netware, 'drive' maps to 'volume' */
-
-void _splitpath( const char *path,
-    char *drive, char *dir, char *fname, char *ext )
-{
-    const char *dotp;
-    const char *fnamep;
-    const char *startp;
-    unsigned    ch;
-#ifdef __NETWARE__
-    const char *ptr;
-#endif
-
-    /* take apart specification like -> //0/hd/user/fred/filename.ext for QNX */
-    /* take apart specification like -> c:\fred\filename.ext for DOS, OS/2 */
-
-#if defined(__UNIX__)
-
-    /* process node/drive specification */
-    startp = path;
-    if( path[0] == PC  &&  path[1] == PC ) {
-        path += 2;
-        for( ;; ) {
-            if( *path == '\0' )
-                break;
-            if( *path == PC )
-                break;
-            if( *path == '.' )
-                break;
-  #ifdef __UNIX__
-            path++;
-  #else
-            path = _mbsinc( path );
-  #endif
-        }
-    }
-    copypart( drive, startp, path - startp, _MAX_NODE );
-
-#elif defined(__NETWARE__)
-
-  #ifdef __UNIX__
-    ptr = strchr( path, ':' );
-  #else
-    ptr = _mbschr( path, ':' );
-  #endif
-    if( ptr != NULL ) {
-        if( drive != NULL ) {
-            copypart( drive, path, ptr - path + 1, _MAX_SERVER + _MAX_VOLUME + 1 );
-        }
-  #ifdef __UNIX__
-        path = ptr + 1;
-  #else
-        path = _mbsinc( ptr );
-  #endif
-    } else if( drive != NULL ) {
-        *drive = '\0';
-    }
-
-#else
-
-    /* processs drive specification */
-    if( path[0] != '\0'  &&  path[1] == ':' ) {
-        if( drive != NULL ) {
-            drive[0] = path[0];
-            drive[1] = ':';
-            drive[2] = '\0';
-        }
-        path += 2;
-    } else if( drive != NULL ) {
-        drive[0] = '\0';
-    }
-
-#endif
-
-    /* process /user/fred/filename.ext for QNX */
-    /* process /fred/filename.ext for DOS, OS/2 */
-    dotp = NULL;
-    fnamep = path;
-    startp = path;
-
-    for(;;) {           /* 07-jul-91 DJG -- save *path in ch for speed */
-        if( *path == '\0' )
-            break;
-  #ifdef __UNIX__
-        ch = *path;
-  #else
-        ch = _mbsnextc( path );
-  #endif
-        if( ch == '.' ) {
-            dotp = path;
-            ++path;
-            continue;
-        }
-  #ifdef __UNIX__
-        path++;
-  #else
-        path = _mbsinc( path );
-  #endif
-#if defined(__UNIX__)
-        if( ch == PC ) {
-#else /* DOS, OS/2, Windows, Netware */
-        if( ch == PC  ||  ch == ALT_PC ) {
-#endif
-            fnamep = path;
-            dotp = NULL;
-        }
-    }
-    copypart( dir, startp, fnamep - startp, _MAX_DIR - 1 );
-    if( dotp == NULL )
-        dotp = path;
-    copypart( fname, fnamep, dotp - fnamep, _MAX_FNAME - 1 );
-    copypart( ext,   dotp,   path - dotp,   _MAX_EXT - 1);
-}
-
 #endif /* !_MSC_VER */
 
 /****************************************************************************
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent _splitpath2() implementation.
 *
 ****************************************************************************/
 
@@ -352,9 +178,9 @@ void _splitpath( const char *path,
  */
 
 
-static unsigned char *pcopy( unsigned char **pdst, unsigned char *dst, const unsigned char *b_src, const unsigned char *e_src ) {
-/*========================================================================*/
-
+static unsigned char *pcopy( unsigned char **pdst, unsigned char *dst, const unsigned char *b_src, const unsigned char *e_src )
+/*===========================================================================================================================*/
+{
     size_t    len;
 
     if( pdst == NULL )
@@ -785,7 +611,7 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
     }
 
     return( buff );
-#elif defined(__WARP__)
+#elif defined(__OS2__) && !defined(_M_I86)
     APIRET      rc;
     char        root[4];    /* SBCS: room for drive, ':', '\\', and null */
 
@@ -1116,65 +942,6 @@ char *strupr( char *str )
 *
 ****************************************************************************/
 
-int memicmp( const void *in_s1, const void *in_s2, size_t len )
-{
-    const unsigned char *   s1 = (const unsigned char *)in_s1;
-    const unsigned char *   s2 = (const unsigned char *)in_s2;
-    unsigned char           c1;
-    unsigned char           c2;
-
-    for( ; len; --len ) {
-        c1 = *s1;
-        c2 = *s2;
-        if( c1 >= 'A'  &&  c1 <= 'Z' )
-            c1 += 'a' - 'A';
-        if( c2 >= 'A'  &&  c2 <= 'Z' )
-            c2 += 'a' - 'A';
-        if( c1 != c2 )
-            return( c1 - c2 );
-        ++s1;
-        ++s2;
-    }
-    return( 0 );    /* both operands are equal */
-}
-
-/****************************************************************************
-*
-* Description:  Implementation of tell().
-*
-****************************************************************************/
-
-off_t tell( int handle )
-{
-    return( lseek( handle, 0L, SEEK_CUR ) );
-}
-
-/****************************************************************************
-*
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
-*
-****************************************************************************/
-
-char *strnset( char *str, int c, size_t len )
-{
-    char *p;
-
-    for( p = str; len; --len ) {
-        if( *p == '\0' )
-            break;
-        *p++ = (char)c;
-    }
-    return( str );
-}
-
-/****************************************************************************
-*
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
-*
-****************************************************************************/
-
 char *strrev( char *str )
 /* reverse characters in string */
 {
@@ -1194,47 +961,6 @@ char *strrev( char *str )
         --p2;
     }
     return( str );
-}
-
-/****************************************************************************
-*
-* Description:  Implements POSIX filelength() function
-*
-****************************************************************************/
-
-long filelength( int handle )
-{
-    long        current_posn, file_len;
-
-    current_posn = lseek( handle, 0L, SEEK_CUR );
-    if( current_posn == -1L ) {
-        return( -1L );
-    }
-    file_len = lseek( handle, 0L, SEEK_END );
-    lseek( handle, current_posn, SEEK_SET );
-
-    return( file_len );
-}
-
-/****************************************************************************
-*
-* Description:  Implementation of eof().
-*
-****************************************************************************/
-
-int eof( int handle )         /* determine if at EOF */
-{
-    off_t   current_posn, file_len;
-
-    file_len = filelength( handle );
-    if( file_len == -1L )
-        return( -1 );
-    current_posn = tell( handle );
-    if( current_posn == -1L )
-        return( -1 );
-    if( current_posn == file_len )
-        return( 1 );
-    return( 0 );
 }
 
 #endif /* !_MSC_VER */
@@ -1919,28 +1645,6 @@ int unsetenv( const char *name )
     return( 0 );
 }
 
-unsigned _dos_getfileattr( const char *path, unsigned *dos_attrib )
-{
-    HANDLE              h;
-    WIN32_FIND_DATA     ffd;
-
-    h = FindFirstFile( path, &ffd );
-    if( h == INVALID_HANDLE_VALUE ) {
-        return( __set_errno( ENOENT ) );
-    }
-    *dos_attrib = NT2DOSATTR( ffd.dwFileAttributes );
-    FindClose( h );
-    return( 0 );
-}
-
-unsigned _dos_setfileattr( const char *path, unsigned dos_attrib )
-{
-    if( !SetFileAttributes( path, DOS2NTATTR( dos_attrib ) ) ) {
-        __set_errno( ENOENT );
-    }
-    return( 0 );
-}
-
 #define GET_CHAR(p)       _mbsnextc((const unsigned char *)p)
 #define NEXT_CHAR_PTR(p)  _mbsinc((const unsigned char *)p)
 
@@ -2030,7 +1734,7 @@ void __GetNTShareAttr( unsigned mode, LPDWORD share_mode )
         *share_mode = FILE_SHARE_READ;
         break;
     case OPENMODE_DENY_NONE:
-        *share_mode = FILE_SHARE_READ|FILE_SHARE_WRITE;
+        *share_mode = FILE_SHARE_READ | FILE_SHARE_WRITE;
         break;
     }
 }
@@ -2211,99 +1915,6 @@ int closedir( DIR *dirp )
     return( 0 );
 }
 
-unsigned _dos_open( const char *name, unsigned mode, HANDLE *h )
-{
-    HANDLE      handle;
-    DWORD       rwmode;
-    DWORD       share_mode;
-    DWORD       desired_access;
-    DWORD       nt_attrib;
-
-    rwmode = mode & OPENMODE_ACCESS_MASK;
-
-    __GetNTAccessAttr( rwmode, &desired_access, &nt_attrib );
-    __GetNTShareAttr( mode & (OPENMODE_SHARE_MASK | OPENMODE_ACCESS_MASK), &share_mode );
-    handle = CreateFile( name, desired_access, share_mode, 0, OPEN_EXISTING, nt_attrib, NULL );
-    if( handle == INVALID_HANDLE_VALUE ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    *h = handle;
-    return( 0 );
-}
-
-unsigned _dos_creat( const char *name, unsigned dos_attrib, HANDLE *h )
-{
-    HANDLE      handle;
-    DWORD       desired_access;
-    DWORD       nt_attrib;
-
-    __GetNTCreateAttr( dos_attrib, &desired_access, &nt_attrib );
-    handle = CreateFile( name, desired_access, 0, 0, CREATE_ALWAYS, nt_attrib, NULL );
-    if( handle == INVALID_HANDLE_VALUE ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    *h = handle;
-    return( 0 );
-}
-
-unsigned _dos_close( HANDLE h )
-{
-    if( !CloseHandle( h ) ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    return( 0 );
-}
-
-unsigned _dos_getftime( HANDLE h, unsigned *date, unsigned *time )
-{
-    FILETIME        ctime, atime, wtime;
-    unsigned short  d, t;
-
-    if( GetFileTime( h, &ctime, &atime, &wtime ) ) {
-        __MakeDOSDT( &wtime, &d, &t );
-        *date = d;
-        *time = t;
-        return( 0 );
-    }
-    __set_errno( ENOENT );
-    return( (unsigned)-1 );
-}
-
-unsigned _dos_setftime( HANDLE h, unsigned date, unsigned time )
-{
-    FILETIME    ctime, atime, wtime;
-
-    if( GetFileTime( h, &ctime, &atime, &wtime ) ) {
-        __FromDOSDT( (unsigned short)date, (unsigned short)time, &wtime );
-        if( SetFileTime( h, &ctime, &wtime, &wtime ) ) {
-            return( 0 );
-        }
-    }
-    __set_errno( ENOENT );
-    return( (unsigned)-1 );
-}
-
-unsigned _dos_read( HANDLE h, void *buffer, unsigned count, unsigned *bytes )
-{
-    if( !ReadFile( h, buffer, count, (LPDWORD)bytes, NULL ) ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    return( 0 );
-}
-
-unsigned _dos_write( HANDLE h, void const *buffer, unsigned count, unsigned *bytes )
-{
-    if( !WriteFile( h, buffer, count, (LPDWORD)bytes, NULL ) ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    return( 0 );
-}
-
 char        *optarg;            // pointer to option argument
 int         optind = 1;         // current argv[] index
 int         optopt;             // currently processed chracter
@@ -2474,19 +2085,6 @@ char *get_dllname( char *buf, int len )
     GetModuleFileName( hnd, buf, len );
 #endif
     return( buf );
-}
-
-int _vbprintf( char *s, size_t bufsize, const char *format, __va_list arg )
-{
-    int rc;
-
-    --bufsize;
-    rc = vsnprintf( s, bufsize, format, arg );
-    if( rc < 0 ) {
-        rc = (int)bufsize;
-    }
-    s[bufsize] = '\0';
-    return( rc );
 }
 
 #endif /* ! __WATCOMC__ */

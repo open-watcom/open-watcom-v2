@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,14 +41,14 @@ void InitXorAndBitmaps( img_node *node )
 {
     HDC                 hdc;
     HDC                 memdc;
-    HBITMAP             oldbitmap;
+    HBITMAP             old_hbitmap;
     BITMAPINFOHEADER    bmih;
 
     hdc = GetDC( NULL );
     memdc = CreateCompatibleDC( hdc );
 
     if( node->bitcount == 1 ) {
-        node->hxorbitmap = CreateCompatibleBitmap( memdc, node->width, node->height );
+        node->xor_hbitmap = CreateCompatibleBitmap( memdc, node->width, node->height );
     } else {
         bmih.biSize = sizeof( BITMAPINFOHEADER );
         bmih.biWidth = node->width;
@@ -61,27 +62,27 @@ void InitXorAndBitmaps( img_node *node )
         bmih.biClrUsed = 0;
         bmih.biClrImportant = 0;
 
-        node->hxorbitmap = CreateDIBitmap( hdc, &bmih, 0L, NULL, NULL, 0 );
+        node->xor_hbitmap = CreateDIBitmap( hdc, &bmih, 0L, NULL, NULL, 0 );
     }
     ReleaseDC( NULL, hdc );
 
-    oldbitmap = SelectObject( memdc, node->hxorbitmap);
+    old_hbitmap = SelectObject( memdc, node->xor_hbitmap);
     if( node->imgtype == BITMAP_IMG ) {
         PatBlt( memdc, 0, 0, node->width, node->height, WHITENESS );
     } else {
         PatBlt( memdc, 0, 0, node->width, node->height, BLACKNESS );
     }
-    SelectObject( memdc, oldbitmap );
+    SelectObject( memdc, old_hbitmap );
 
-    node->handbitmap = CreateCompatibleBitmap( memdc, node->width, node->height );
+    node->and_hbitmap = CreateCompatibleBitmap( memdc, node->width, node->height );
 
-    oldbitmap = SelectObject( memdc, node->handbitmap );
+    old_hbitmap = SelectObject( memdc, node->and_hbitmap );
     if( node->imgtype == BITMAP_IMG ) {
         PatBlt( memdc, 0, 0, node->width, node->height, BLACKNESS );
     } else {
         PatBlt( memdc, 0, 0, node->width, node->height, WHITENESS );
     }
-    SelectObject( memdc, oldbitmap );
+    SelectObject( memdc, old_hbitmap );
     DeleteDC( memdc );
 
 } /* InitXorAndBitmaps */

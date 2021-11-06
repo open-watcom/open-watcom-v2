@@ -705,7 +705,8 @@ log file. The Log File Data section lists the various types of
 information that can be included in a log file. If the check box for a
 piece of information is marked then that type of information will be
 written to the log file. The options in this section are:
-.begpoint $break Log File Data
+.begpoint $break
+.pointhdr Log File Data
 .point Stack Trace
 When this option is selected stack trace information for the
 application that caused the exception is written when a log file entry

@@ -64,7 +64,7 @@ void _arp_add_gateway (const char *value, DWORD ip)
   {
     char *subnetp, *maskp;
     char *gateway = strdup (value);
-  
+
     if (!gateway)
        return;
 
@@ -161,7 +161,7 @@ static struct arp_table * _arp_new_entry (void)
 static int _arp_send (const arp_Header *arp, unsigned line)
 {
 #if defined(USE_DEBUG)
-  if (_dbugxmit)
+  if (_dbugxmit != NULL)
     (*_dbugxmit) (NULL, arp, __FILE__, line);
 #else
   ARGSUSED (line);

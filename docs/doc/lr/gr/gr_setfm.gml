@@ -1,5 +1,5 @@
-.gfunc setfillmask
-.gsynop begin 
+.gfunc _setfillmask
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _setfillmask( char _FAR *mask );
 .do end
@@ -13,13 +13,13 @@ The
 .id &funcb.
 &routine sets the current fill mask to the value of the argument
 .arg mask
-.ct .li .
+.period
 .if '&lang' eq 'C' .do begin
 When the value of the
 .arg mask
 argument is
-.id NULL,
-there will be no fill mask set.
+.id NULL
+.ct , there will be no fill mask set.
 .do end
 .pp
 .im gr_fillm

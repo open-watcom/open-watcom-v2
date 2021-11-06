@@ -3,7 +3,7 @@
 #include <mbstring.h>
 int _mbterm( const unsigned char *ch );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmbterm( const unsigned char __far *ch );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
@@ -16,7 +16,7 @@ string pointed to by
 .arg ch
 is a null character or a valid lead byte followed by a null
 character.
-.im farparm
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 The

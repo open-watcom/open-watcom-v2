@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,12 +64,12 @@ static bool BlockName( unsigned_16 rb_defined )
     rb_name = false;
     if( ReqName( NAME_REM_BLOCK ) ) {
         sym_ptr = LkSym();
-        if( ( sym_ptr->u.ns.flags & ~SY_REFERENCED ) == 0 ) {
+        if( (sym_ptr->u.ns.flags & ~SY_REFERENCED) == 0 ) {
             sym_ptr->u.ns.si.rb.entry = NextLabel();
             sym_ptr->u.ns.flags = RB_FLAGS;
         }
-        if( ( ( sym_ptr->u.ns.flags & ~(SY_RB_DEFINED | SY_REFERENCED) ) == RB_FLAGS ) &&
-            ( ( sym_ptr->u.ns.flags & rb_defined ) == 0 ) ) {
+        if( ( (sym_ptr->u.ns.flags & ~(SY_RB_DEFINED | SY_REFERENCED)) == RB_FLAGS ) &&
+            ( (sym_ptr->u.ns.flags & rb_defined) == 0 ) ) {
             sym_ptr->u.ns.flags |= rb_defined;
             rb_name = true;
         } else {
@@ -92,7 +92,7 @@ void CpRemBlock( void )
     GBranch( CSHead->branch );
     if( BlockName( SY_RB_DEFINED ) ) {
         rb = CITNode->sym_ptr;
-        if( ( rb->u.ns.flags & SY_REFERENCED ) == 0 ) {
+        if( (rb->u.ns.flags & SY_REFERENCED) == 0 ) {
             rb->u.ns.si.rb.ref_count = 0;
         }
         rb->u.ns.si.rb.ref_count++;
@@ -151,7 +151,7 @@ void CpExecute( void )
     }
     if( BlockName( 0 ) ) {
         rb = CITNode->sym_ptr;
-        if( ( rb->u.ns.flags & ( SY_RB_DEFINED | SY_REFERENCED ) ) == 0 ) {
+        if( (rb->u.ns.flags & (SY_RB_DEFINED | SY_REFERENCED)) == 0 ) {
             rb->u.ns.si.rb.ref_count = 0;
         }
         rb->u.ns.si.rb.ref_count++;

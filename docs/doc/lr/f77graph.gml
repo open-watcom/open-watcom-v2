@@ -7,17 +7,23 @@
 :set symbol='which' value='F77'.
 :set symbol='machsys' value='DOS'.
 .*
-:INCLUDE lytchg
-:INCLUDE bantop
-:INCLUDE fmtmacro
-:INCLUDE xdefs
-:INCLUDE symbols
-:INCLUDE grsyms
-:INCLUDE grmacs
-:INCLUDE cmanmac
-:INCLUDE libmacs
-:INCLUDE libfuns
-:INCLUDE liblist7
+:INCLUDE file='lytchg'.
+.if &e'&dohelp eq 0 .do begin
+:INCLUDE file='wnohelp'.
+.do end
+.el .do begin
+:INCLUDE file='whelp'.
+.do end
+:INCLUDE file='bantop'.
+:INCLUDE file='fmtmacro'.
+:INCLUDE file='xdefs'.
+:INCLUDE file='symbols'.
+:INCLUDE file='grsyms'.
+:INCLUDE file='grmacs'.
+:INCLUDE file='cmanmac'.
+:INCLUDE file='libmacs'.
+:INCLUDE file='libfuns'.
+:INCLUDE file='liblist7'.
 .*
 :GDOC.
 .*
@@ -32,13 +38,13 @@
 :INCLUDE file='DOCTITLE'.
 :eTITLEP.
 :ABSTRACT.
-:INCLUDE copyrite
-:INCLUDE disclaim
+:INCLUDE file='copyrite'.
+:INCLUDE file='disclaim'.
 .if '&machsys' ne 'QNX' .do begin
-:INCLUDE newslett
+:INCLUDE file='newslett'.
 .do end
 :PREFACE.
-:INCLUDE grpref
+:INCLUDE file='grpref'.
 .pa odd
 :TOC.
 :FIGLIST.
@@ -47,7 +53,7 @@
 .*
 :BODY.
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 :exhelp
 :include file='&book..idx'
 :include file='&book..tbl'
@@ -57,22 +63,20 @@
 .chap Graphics Library
 .*
 .im gfunmacs
-:INCLUDE graphov
+:INCLUDE file='graphov'.
 .im gfunrems
 .*
 .chap Graphics Library &rroutines
 .*
-:INCLUDE gr_fnbeg
-:INCLUDE gr_index
+:INCLUDE file='gr_fnbeg'.
+:INCLUDE file='gr_index'.
 :CMT.   .chap Graphics Examples
-:CMT.   :INCLUDE gr_samp
+:CMT.   :INCLUDE file='gr_samp'.
 .*
 .if &e'&dohelp eq 0 .do begin
 :BACKM.
-.cd set 2
 :INDEX.
 .do end
 .*
-.cd set 1
 .cntents end_of_book
 :eGDOC.

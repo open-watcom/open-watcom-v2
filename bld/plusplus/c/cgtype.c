@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -404,7 +404,7 @@ cg_type CgTypeSym(             // COMPUTE OUTPUT TYPE FOR SYMBOL
 {
     TYPE type = sym->sym_type;
     if( SymIsArgument( sym )
-     && NULL != StructType( type )
+     && NULL != ClassType( type )
      && OMR_CLASS_REF == ObjModelArgument( type ) ) {
         type = MakeReferenceTo( type );
     }

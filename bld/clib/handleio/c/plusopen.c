@@ -121,5 +121,5 @@ _WCRTLINK int __plusplus_open( const char *name, int *pios_mode, int prot )
     }
     prot &= ~(__sh_read|__sh_write|__sh_none);
 
-    return( sopen( name, mode, share, prot ) );
+    return( _sopen( name, mode, share, prot ) );
 }

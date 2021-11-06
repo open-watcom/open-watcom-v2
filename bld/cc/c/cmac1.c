@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +34,21 @@
 #include "scan.h"
 #include "cfeinfo.h"
 #include "dumpapi.h"
+#include "cmacadd.h"
+#include "ppexpn.h"
+#include "cscanbuf.h"
 
 #include "clibext.h"
 
+
+#define MACRO_END_CHAR          'Z'
+#define MACRO_END_STRING        "Z-<end of macro>"
+
+typedef enum exp_state {
+    EXPANDABLE_NO       = 0,    // macro is currently not expandable
+    EXPANDABLE_YES      = 1,    // macro is expandable
+    EXPANDABLE_WSSKIP   = 2     // we skipped over some white space
+} exp_state;
 
 typedef struct tokens {
     struct  tokens  *next;
@@ -72,7 +84,7 @@ extern void         DumpMTokens( MACRO_TOKEN *mtok );
 
 static NESTED_MACRO *NestedMacros;
 static MACRO_TOKEN  *TokenList;
-static size_t       MTokenLen;              /* macro token length */
+static size_t       TokenBufSize;
 
 static MACRO_TOKEN  *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning );
 
@@ -82,7 +94,63 @@ static struct special_macro_names  SpcMacros[] = {
     #undef pick
 };
 
+void InitTokenBuf( size_t size )
+/******************************/
+{
+    TokenBuf = CMemAlloc( size );
+    TokenBufSize = size;
+}
+
+static void EnlargeTokenBuf( size_t size )
+/****************************************/
+{
+    char    *newBuffer;
+
+//    size += 32;     /* TokenBuf size margin */
+    if( size > TokenBufSize ) {
+        size = _RoundUp( size, BUF_SIZE );
+        newBuffer = CMemAlloc( size );
+        memcpy( newBuffer, TokenBuf, TokenBufSize );
+        CMemFree( (void *)TokenBuf );
+        TokenBuf = newBuffer;
+        TokenBufSize = size;
+    }
+}
+
+static size_t WriteTokenBufToken( size_t i, TOKEN t )
+/***************************************************/
+{
+    EnlargeTokenBuf( i + sizeof( TOKEN ) );
+    *(TOKEN *)( TokenBuf + i ) = t;
+    return( i + sizeof( TOKEN ) );
+}
+
+static size_t WriteTokenBufChar( size_t i, char c )
+/*************************************************/
+{
+    EnlargeTokenBuf( i + 1 );
+    TokenBuf[i++] = c;
+    return( i );
+}
+
+static size_t WriteTokenBufMem( size_t i, const char *buf, size_t len )
+/*********************************************************************/
+{
+    EnlargeTokenBuf( i + len );
+    memcpy( TokenBuf + i, buf, len );
+    return( i + len );
+}
+
+static size_t TokenBufRemoveWSToken( size_t i )
+/*********************************************/
+{
+    if( i >= sizeof( TOKEN ) )
+        i -= sizeof( TOKEN );
+    return( i );
+}
+
 static void SpecialMacroAdd( special_macro_names *mac )
+/*****************************************************/
 {
     MEPTR           mentry;
 
@@ -92,14 +160,15 @@ static void SpecialMacroAdd( special_macro_names *mac )
 }
 
 void MacroInit( void )
+/********************/
 {
     mac_hash_idx    h;
     int             i;
 
-    MTokenLen = 0;
     MacroCount = 0;
     MacroPtr = NULL;
     CppStackInit();
+    InitPPexpn();
     NestedMacros = NULL;
     TokenList = NULL;
     UndefMacroList = NULL;
@@ -116,6 +185,7 @@ void MacroInit( void )
 }
 
 void MacroAddComp( void )
+/***********************/
 {
     int             i;
 
@@ -125,13 +195,16 @@ void MacroAddComp( void )
 }
 
 void MacroFini( void )
+/********************/
 {
+    FiniPPexpn();
     CppStackFini();
     MacroPurge();
 }
 
 
 void MacroPurge( void )
+/*********************/
 {
 #if 0
     mac_hash_idx    h;
@@ -147,6 +220,7 @@ void MacroPurge( void )
 }
 
 static void DeleteNestedMacro( void )
+/***********************************/
 {
     MEPTR           mentry;
     NESTED_MACRO    *nested;
@@ -168,65 +242,64 @@ static void DeleteNestedMacro( void )
     }
 }
 
-void GetMacroToken( void )
+TOKEN GetMacroToken( void )
+/*************************/
 {
     MACRO_TOKEN     *mtok;
-    size_t          len;
-    char            *buf;
     bool            keep_token;
-    bool            next_token;
+    TOKEN           token;
 
-    buf = Buffer;
-    buf[0] = '\0';
-    TokenLen = 0;
-    CurToken = T_NULL;
     for( ; (mtok = TokenList) != NULL; ) {
-        CurToken = mtok->token;
-        len = 0;
-        while( (buf[len] = mtok->data[len]) != '\0' ) {
-            len++;
-        }
-        TokenLen = len;
-        keep_token = false;
-        next_token = false;
-        switch( CurToken ) {
-        case T_UNEXPANDABLE_ID:
-            CalcHash( buf, len );
-            if( !CompFlags.doing_macro_expansion ) {
-                CurToken = KwLookup( buf, len );
-                if( CurToken == T__PRAGMA ) {
-                    TokenList = mtok->next;
-                    CMemFree( mtok );
-                    CurToken = Process_Pragma();
-                    mtok = TokenList;
-                    keep_token = true;
-                }
-            }
+        if( (token = mtok->token) != T_NULL ) {
             break;
-        case T_ID:
+        }
+        if( mtok->data[0] == MACRO_END_CHAR ) {     // if end of macro
+            DeleteNestedMacro();
+        }
+        TokenList = mtok->next;
+        CMemFree( mtok );
+    }
+    TokenLen = 0;
+    if( mtok == NULL ) {
+        MacroPtr = NULL;
+        token = T_NULL;
+        Buffer[0] = '\0';
+    } else {
+        /* size of Buffer is OK, token data was processed in Buffer before */
+        while( (Buffer[TokenLen] = mtok->data[TokenLen]) != '\0' ) {
+            TokenLen++;
+        }
+        keep_token = false;
+        switch( token ) {
         case T_SAVED_ID:
-            CalcHash( buf, len );
             if( CompFlags.doing_macro_expansion ) {
-                CurToken = T_ID;
-            } else {
-                CurToken = KwLookup( buf, len );
-                if( CurToken == T__PRAGMA ) {
+                token = T_ID;
+            }
+            /* fall through */
+        case T_ID:
+        case T_UNEXPANDABLE_ID:
+            CalcHash( Buffer, TokenLen );
+            if( !CompFlags.doing_macro_expansion ) {
+                if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
                     TokenList = mtok->next;
                     CMemFree( mtok );
-                    CurToken = Process_Pragma();
+                    token = Process_Pragma();
                     mtok = TokenList;
                     keep_token = true;
+                } else {
+                    token = KwLookup( Buffer, TokenLen );
                 }
             }
             break;
         case T_BAD_TOKEN:
         case T_CONSTANT:
             ReScanInit( mtok->data );
-            ReScanToken();
+            token = ReScanToken();
             break;
         case T_PPNUMBER:
             ReScanInit( mtok->data );
-            if( ReScanToken() ) {   // didn't finish string bad boy
+            token = ReScanToken();
+            if( !CompFlags.rescan_buffer_done ) {   // didn't finish string bad boy
                 const char  *tcur;
                 char        *tbeg;
 
@@ -242,38 +315,24 @@ void GetMacroToken( void )
             }
             break;
         case T_LSTRING:
-            CurToken = T_STRING;
+            token = T_STRING;
             CompFlags.wide_char_string = true;
             break;
         case T_STRING:
             CompFlags.wide_char_string = false;
-            break;
-        case T_BAD_CHAR:
-            break;
-        case T_NULL:
-            if( mtok->data[0] == 'Z' ) {    // if end of macro
-                DeleteNestedMacro();
-            }
-            next_token = true;
-            break;
-        default:
             break;
         }
         if( !keep_token ) {
             TokenList = mtok->next;
             CMemFree( mtok );
         }
-        if( !next_token ) {
-            break;
-        }
     }
-    if( mtok == NULL ) {
-        MacroPtr = NULL;
-    }
+    return( token );
 }
 
 /* returns Dynamically allocated buffer with expanded macro */
 static char *ExpandMacroToken( void )
+/***********************************/
 {
     size_t      i;
     size_t      len;
@@ -329,52 +388,48 @@ static char *ExpandMacroToken( void )
 
 
 TOKEN SpecialMacro( MEPTR mentry )
+/********************************/
 {
-    char            *p;
-    char            *bufp;
+    const char      *p;
 
     CompFlags.wide_char_string = false;
     switch( (special_macros)mentry->parm_count ) {
     case MACRO_LINE:
-        sprintf( Buffer, "%u", TokenLoc.line );
+        TokenLen = sprintf( Buffer, "%u", TokenLoc.line );
         Constant = TokenLoc.line;
-        ConstType = TYPE_INT;
+        ConstType = TYP_INT;
         return( T_CONSTANT );
     case MACRO_FILE:
-        bufp = Buffer;
-        for( p = FileIndexToFName( TokenLoc.fno )->name; (*bufp++ = *p) != '\0'; ++p ) {
-            if( *p == '\\' ) {
-                *bufp++ = '\\';
-            }
-        }
-        break;
+        p = FileIndexToFName( TokenLoc.fno )->name;
+        TokenLen = WriteBufferPosEscStr( 0, &p, false );
+        return( T_STRING );
     case MACRO_DATE:
         strcpy( Buffer, __Date );
-        break;
+        TokenLen = strlen( Buffer );
+        return( T_STRING );
     case MACRO_TIME:
         strcpy( Buffer, __Time );
-        break;
+        TokenLen = strlen( Buffer );
+        return( T_STRING );
     case MACRO_STDC:
-        Buffer[0] = '1';
-        Buffer[1] = '\0';
-        Constant = 1;
-        ConstType = TYPE_INT;
-        return( T_CONSTANT );
     case MACRO_STDC_HOSTED:
         Buffer[0] = '1';
         Buffer[1] = '\0';
+        TokenLen = 1;
         Constant = 1;
-        ConstType = TYPE_INT;
+        ConstType = TYP_INT;
         return( T_CONSTANT );
     case MACRO_STDC_VERSION:
         if( CompFlags.c99_extensions ) {
             CPYLIT( Buffer, "199901L" );
+            TokenLen = LENLIT( "199901L" );
             Constant = 199901;
         } else {
             CPYLIT( Buffer, "199409L" );
+            TokenLen = LENLIT( "199409L" );
             Constant = 199409;
         }
-        ConstType = TYPE_LONG;
+        ConstType = TYP_LONG;
         return( T_CONSTANT );
     case MACRO_FUNCTION:
     case MACRO_FUNC:
@@ -384,54 +439,41 @@ TOKEN SpecialMacro( MEPTR mentry )
                 strcpy( Buffer, CurFunc->name );
             }
         }
-        break;
+        TokenLen = strlen( Buffer );
+        return( T_STRING );
     default:
         Buffer[0] = '\0';
+        TokenLen = 0;
         return( T_NULL );   // shut up the compiler
     }
-    TokenLen = strlen( Buffer );
-    return( T_STRING );
 }
 
 
 static TOKEN NextMToken( void )
+/*****************************/
 {
+    TOKEN   token;
+
     CompFlags.doing_macro_expansion = true;
-    GetMacroToken();
-    if( CurToken == T_NULL ) {
-        CurToken = ScanToken();
+    token = GetMacroToken();
+    if( token == T_NULL ) {
+        token = ScanToken();
     }
     CompFlags.doing_macro_expansion = false;
-    return( CurToken );
+    return( token );
 }
 
-void EnlargeBuffer( size_t size )
-{
-    char       *newBuffer;
-
-    newBuffer = CMemAlloc( size );
-    memcpy( newBuffer, Buffer, BufSize );
-    CMemFree( (void *)Buffer );
-    Buffer = newBuffer;
-    newBuffer = CMemAlloc( size );
-    memcpy( newBuffer, TokenBuf, BufSize );
-    CMemFree( TokenBuf );
-    TokenBuf = newBuffer;
-    BufSize = size;
-}
-
-static void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
+static void SaveParm( MEPTR mentry, size_t len, mac_parm_count parmno,
                      MACRO_ARG *macro_parms, tokens *token_list )
+/*********************************************************************/
 {
     tokens          *token;
     char            *p;
     size_t          total;
 
-    MTOK( TokenBuf + size ) = T_NULL;
-    MTOKINC( size );
-
+    len = WriteTokenBufToken( len, T_NULL );
     if( parmno < GetMacroParmCount( mentry ) ) {
-        p = CMemAlloc( size );
+        p = CMemAlloc( len );
         macro_parms[parmno].arg = p;
         if( p != NULL ) {
             total = 0;
@@ -441,17 +483,18 @@ static void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
                 total += token->length;
                 CMemFree( token );
             }
-            memcpy( &p[total], TokenBuf, size );
+            memcpy( &p[total], TokenBuf, len );
         }
     }
 }
 
 static MACRO_ARG *CollectParms( MEPTR mentry )
+/********************************************/
 {
     size_t          len;
     int             bracket;
-    TOKEN           tok;
-    TOKEN           prev_tok;
+    TOKEN           token;
+    TOKEN           prev_token;
     mac_parm_count  parmno;
     mac_parm_count  parm_count_reqd;
     bool            ppscan_mode;
@@ -467,82 +510,59 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
         }
         parmno = 0;
         do {
-            tok = NextMToken();
-        } while( tok == T_WHITE_SPACE );
-        /* tok will now be a '(' */
+            token = NextMToken();
+        } while( token == T_WHITE_SPACE );
+        /* token will now be a '(' */
         bracket = 0;
         token_head = NULL;
-        MTokenLen = 0;
+        len = 0;
         for( ;; ) {
-            prev_tok = tok;
+            prev_token = token;
             do {
-                tok = NextMToken();
-            } while( tok == T_WHITE_SPACE && MTokenLen == 0 );
-            if( tok == T_EOF || tok == T_NULL ) {
+                token = NextMToken();
+            } while( token == T_WHITE_SPACE && len == 0 );
+            if( token == T_EOF || token == T_NULL ) {
                 CErr2p( ERR_INCOMPLETE_MACRO, mentry->macro_name );
                 break;
             }
-            if( tok == T_BAD_TOKEN && BadTokenInfo == ERR_MISSING_QUOTE ) {
+            if( token == T_BAD_TOKEN && BadTokenInfo == ERR_MISSING_QUOTE ) {
                 CErr1( ERR_MISSING_QUOTE );
-                tok = T_RIGHT_PAREN;
+                token = T_RIGHT_PAREN;
             }
-            if( tok == T_LEFT_PAREN ) {
+            if( token == T_LEFT_PAREN ) {
                 ++bracket;
-            } else if( tok == T_RIGHT_PAREN ) {
+            } else if( token == T_RIGHT_PAREN ) {
                 if( bracket == 0 )
                     break;
                 --bracket;
-            } else if( tok == T_COMMA && bracket == 0
+            } else if( token == T_STRING ) {
+                if( CompFlags.wide_char_string ) {
+                    token = T_LSTRING;
+                }
+            } else if( token == T_COMMA && bracket == 0
               && ( !MacroHasVarArgs( mentry ) || parmno != parm_count_reqd - 1 ) ) {
-                if( prev_tok == T_WHITE_SPACE ) {
-                    MTOKDEC( MTokenLen );
+                if( prev_token == T_WHITE_SPACE ) {
+                    len = TokenBufRemoveWSToken( len );
                 }
                 if( macro_parms != NULL ) {     // if expecting parms
-                    SaveParm( mentry, MTokenLen, parmno, macro_parms, token_head );
+                    SaveParm( mentry, len, parmno, macro_parms, token_head );
                 }
                 ++parmno;
                 token_head = NULL;
-                MTokenLen = 0;
+                len = 0;
                 continue;
             }
-            /* determine size of current token */
-            len = sizeof( TOKEN );
-            switch( tok ) {
+            len = WriteTokenBufToken( len, token );
+            switch( token ) {
             case T_WHITE_SPACE:
-                if( prev_tok == T_WHITE_SPACE )
-                    len = 0;
-                break;
-            case T_STRING:
-                if( CompFlags.wide_char_string ) {
-                    tok = T_LSTRING;
-                }
-                /* fall through */
-            case T_CONSTANT:
-            case T_PPNUMBER:
-            case T_ID:
-            case T_UNEXPANDABLE_ID:
-            case T_BAD_TOKEN:
-                len += TokenLen + 1;
-                break;
-            default:
-                break;
-            }
-            if( MTokenLen + len >= BufSize ) { /* if not enough space */
-                EnlargeBuffer( ( MTokenLen + len ) * 2 );
-            }
-            MTOK( TokenBuf + MTokenLen ) = tok;
-            MTOKINC( MTokenLen );
-            switch( tok ) {
-            case T_WHITE_SPACE:
-                if( prev_tok == T_WHITE_SPACE ) {
-                    MTOKDEC( MTokenLen );
+                if( prev_token == T_WHITE_SPACE ) {
+                    len = TokenBufRemoveWSToken( len );
                 }
                 break;
             case T_BAD_CHAR:
-                TokenBuf[MTokenLen++] = Buffer[0];
+                len = WriteTokenBufChar( len, Buffer[0] );
                 if( Buffer[1] != '\0' ) {
-                     MTOK( TokenBuf + MTokenLen ) = T_WHITE_SPACE;
-                     MTOKINC( MTokenLen );
+                    len = WriteTokenBufToken( len, T_WHITE_SPACE );
                 }
                 break;
             case T_CONSTANT:
@@ -552,20 +572,19 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
             case T_LSTRING:
             case T_STRING:
             case T_BAD_TOKEN:
-                memcpy( TokenBuf + MTokenLen, Buffer, TokenLen + 1 );
-                MTokenLen += TokenLen + 1;
+                len = WriteTokenBufMem( len, Buffer, TokenLen + 1 );
                 break;
             default:
                 break;
             }
         }
-        if( prev_tok == T_WHITE_SPACE ) {
-            MTOKDEC( MTokenLen );
+        if( prev_token == T_WHITE_SPACE ) {
+            len = TokenBufRemoveWSToken( len );
         }
         if( macro_parms != NULL ) {     // if expecting parms
-            SaveParm( mentry, MTokenLen, parmno, macro_parms, token_head );
+            SaveParm( mentry, len, parmno, macro_parms, token_head );
             ++parmno;
-        } else if( MTokenLen != 0 ) {
+        } else if( len != 0 ) {
             ++parmno;                   // will cause "too many parms" error
         }
         if( MacroHasVarArgs( mentry ) && parmno < ( parm_count_reqd - 1 )
@@ -589,13 +608,14 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
 #ifndef NDEBUG
 
 void DumpMDefn( const char *p )
+/*****************************/
 {
     unsigned char   c;
-    TOKEN           tok;
+    TOKEN           token;
 
-    while( (tok = MTOK( p )) != T_NULL ) {
+    while( (token = MTOK( p )) != T_NULL ) {
         MTOKINC( p );
-        switch( tok ) {
+        switch( token ) {
         case T_CONSTANT:
         case T_PPNUMBER:
         case T_ID:
@@ -629,7 +649,7 @@ void DumpMDefn( const char *p )
             MTOKPARMINC( p );
             continue;
         default:
-            printf( "%s", Tokens[tok] );
+            printf( "%s", Tokens[token] );
             continue;
         }
     }
@@ -639,6 +659,7 @@ void DumpMDefn( const char *p )
 
 
 void DumpMTokens( MACRO_TOKEN *mtok )
+/***********************************/
 {
     for( ; mtok != NULL; mtok = mtok->next ) {
         printf( "%s\n", mtok->data );
@@ -648,6 +669,7 @@ void DumpMTokens( MACRO_TOKEN *mtok )
 
 
 void DumpNestedMacros( void )
+/***************************/
 {
     NESTED_MACRO *nested;
 
@@ -659,21 +681,31 @@ void DumpNestedMacros( void )
 #endif
 
 
-static MACRO_TOKEN *BuildAToken( TOKEN token, const char *p )
+static MACRO_TOKEN *BuildAToken( TOKEN token, const char *data )
+/**************************************************************/
 {
     size_t      len;
     MACRO_TOKEN *mtok;
 
-    len = strlen( p ) + 1;
+    len = strlen( data ) + 1;
     mtok = (MACRO_TOKEN *)CMemAlloc( sizeof( MACRO_TOKEN ) - 1 + len );
-    memcpy( mtok->data, p, len );
+    memcpy( mtok->data, data, len );
     mtok->token = token;
     mtok->next = NULL;
     return( mtok );
 }
 
 
+static MACRO_TOKEN **BuildATokenOnEnd( MACRO_TOKEN **ptail, TOKEN token, const char *data )
+/*****************************************************************************************/
+{
+    *ptail = BuildAToken( token, data );
+    return( &(*ptail)->next );
+}
+
+
 static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, TOKEN token, const char *data )
+/*********************************************************************************/
 {
     MACRO_TOKEN *tail;
     MACRO_TOKEN *new;
@@ -692,6 +724,7 @@ static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, TOKEN token, const char *dat
 }
 
 static bool MacroBeingExpanded( MEPTR mentry )
+/********************************************/
 {
     NESTED_MACRO    *nested;
 
@@ -705,20 +738,21 @@ static bool MacroBeingExpanded( MEPTR mentry )
     return( false );
 }
 
-static int Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
+static exp_state isExpandable( MEPTR mentry, MACRO_TOKEN *mtok, bool macro_parm )
+/*******************************************************************************/
 {
     int         lparen;
 
     if( MacroIsSpecial( mentry ) ) {            /* if special macro */
-        return( 1 );
+        return( EXPANDABLE_YES );
     }
     if( !MacroWithParenthesis( mentry ) ) {     /* if () not expected */
         if( macro_parm ) {
             if( MacroBeingExpanded( mentry ) ) {
-                return( 0 );
+                return( EXPANDABLE_NO );
             }
         }
-        return( 1 );
+        return( EXPANDABLE_YES );
     }
     for( ; mtok != NULL; mtok = mtok->next ) {
         if( mtok->token != T_WHITE_SPACE && mtok->token != T_NULL ) {
@@ -728,14 +762,14 @@ static int Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
     if( mtok != NULL ) {
         if( mtok->token == T_LEFT_PAREN ) {
             if( MacroDepth == 1 && !macro_parm )
-                return( 1 );
+                return( EXPANDABLE_YES );
             lparen = 0;
             for( ; (mtok = mtok->next) != NULL; ) {
                 if( mtok->token == T_LEFT_PAREN ) {
                     ++lparen;
                 } else if( mtok->token == T_RIGHT_PAREN ) {
                     if( lparen == 0 )
-                        return( 1 );
+                        return( EXPANDABLE_YES );
                     --lparen;
                 }
             }
@@ -743,15 +777,16 @@ static int Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
     } else if( !macro_parm ) {
         SkipAhead();
         if( CurrChar == '(' ) {
-            return( 1 );
-        } else if( CompFlags.cpp_output ) {
-            return( 2 );
+            return( EXPANDABLE_YES );
+        } else if( CompFlags.cpp_mode ) {
+            return( EXPANDABLE_WSSKIP );
         }
     }
-    return( 0 );
+    return( EXPANDABLE_NO );
 }
 
 static char *GlueTokenToBuffer( MACRO_TOKEN *first, char *gluebuf )
+/*****************************************************************/
 {
     size_t      gluelen;
     size_t      tokenlen;
@@ -776,27 +811,21 @@ static char *GlueTokenToBuffer( MACRO_TOKEN *first, char *gluebuf )
     return( buf );
 }
 
-static MACRO_TOKEN *ReTokenBuffer( char *buffer )
-// retokenize starting at buffer
+static MACRO_TOKEN *ReTokenBuffer( const char *buffer )
+/******************************************************
+ * retokenize starting at buffer
+ */
 {
     MACRO_TOKEN *head;
-    MACRO_TOKEN **lnk;
-    MACRO_TOKEN *new;
+    MACRO_TOKEN **ptail;
     bool        ppscan_mode;
 
     ppscan_mode = InitPPScan();
     ReScanInit( buffer );
     head = NULL;
-    lnk = &head;
-    for( ;; ) {
-        Buffer[0] = '\0';
-        ReScanToken();
-        new = BuildAToken( CurToken, Buffer );
-        *lnk = new;
-        lnk = &new->next;
-        if( CompFlags.rescan_buffer_done ) {
-            break;
-        }
+    ptail = &head;
+    for( CompFlags.rescan_buffer_done = false; !CompFlags.rescan_buffer_done; ) {
+        ptail = BuildATokenOnEnd( ptail, ReScanToken(), Buffer );
     }
     FiniPPScan( ppscan_mode );
     return( head );
@@ -804,17 +833,19 @@ static MACRO_TOKEN *ReTokenBuffer( char *buffer )
 
 
 static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
+/*************************************************/
 {
     MACRO_TOKEN *mtok;
-    MACRO_TOKEN **lnk,**_lnk;// prior lnk
+    MACRO_TOKEN **ptail;
+    MACRO_TOKEN **prev_ptail;   // prior ptail
     MACRO_TOKEN *next;
     char        *buf;
     char        *gluebuf;
 
     gluebuf = NULL;
-    _lnk = NULL;
-    lnk = &head;
-    mtok = *lnk;
+    prev_ptail = NULL;
+    ptail = &head;
+    mtok = *ptail;
     buf = Buffer;
     for( ; mtok != NULL; ) {
         if( mtok->token != T_WHITE_SPACE ) {
@@ -870,53 +901,43 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
                         /* Both ends of ## were empty */
                         mtok = BuildAToken( T_NULL, "P-<placemarker>" );
                     }
-                    *lnk = mtok;  // link in new mtok to mtok's link
-                    while( mtok != NULL && mtok->next != NULL ) {   //position mtok & lnk to last token
-                        _lnk = lnk;
-                        lnk = &mtok->next;
-                        mtok = *lnk;
+                    *ptail = mtok;  // link in new mtok to mtok's link
+                    while( mtok != NULL && mtok->next != NULL ) {   //position mtok & ptail to last token
+                        prev_ptail = ptail;
+                        ptail = &mtok->next;
+                        mtok = *ptail;
                         if( mtok == mtok->next ) {
                             return( head );
                         }
                     }
                     // mtok == last token of retokenizing
-                    // lnk == the pointer which references mtok
+                    // ptail == the pointer which references mtok
                     mtok->next = rem;
                 } else {
-                    if( _lnk ) {
-                        *lnk = rem;
-                        lnk = _lnk;
-                        mtok = *lnk;
+                    if( prev_ptail != NULL ) {
+                        *ptail = rem;
+                        ptail = prev_ptail;
+                        mtok = *ptail;
                     } else {
-                        *lnk = rem;
+                        *ptail = rem;
                         mtok = head;
                     }
                 }
                 continue;          //ready to go
             }
         }
-        _lnk = lnk;
-        lnk = &mtok->next;
-        mtok = *lnk;
+        prev_ptail = ptail;
+        ptail = &mtok->next;
+        mtok = *ptail;
     }
     return( head );
 }
 
-static MACRO_TOKEN **NextString( MACRO_TOKEN **lnk, const char *buf )
-{
-    MACRO_TOKEN *mtok;
-
-    mtok = BuildAToken( T_STRING, buf );
-    *lnk = mtok;
-    lnk = &mtok->next;
-    return( lnk );
-}
-
-
 static MACRO_TOKEN *BuildString( const char *p )
+/**********************************************/
 {
     MACRO_TOKEN     *head;
-    MACRO_TOKEN     **lnk;
+    MACRO_TOKEN     **ptail;
     size_t          i;
     char            c;
     const char      *tokenstr;
@@ -926,14 +947,14 @@ static MACRO_TOKEN *BuildString( const char *p )
     TOKEN           tok;
 
     head = NULL;
-    lnk = &head;
+    ptail = &head;
 
     len = 0;
     if( p != NULL ) {
         bufsize = BUF_SIZE;
         buf = CMemAlloc( bufsize );
         while( MTOK( p ) == T_WHITE_SPACE ) {
-            MTOKINC( p );   //eat leading wspace
+            MTOKINC( p );   //eat leading white space
         }
         while( (tok = MTOK( p )) != T_NULL ) {
             MTOKINC( p );
@@ -998,7 +1019,7 @@ static MACRO_TOKEN *BuildString( const char *p )
         }
         if( len > 0 ) {
             buf[len] = '\0';
-            lnk = NextString( lnk, buf );
+            ptail = BuildATokenOnEnd( ptail, T_STRING, buf );
         }
         CMemFree( buf );
     }
@@ -1007,10 +1028,11 @@ static MACRO_TOKEN *BuildString( const char *p )
 
 
 static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
+/**************************************************************************/
 {
     MACRO_TOKEN     *mtok;
     MACRO_TOKEN     *head;
-    MACRO_TOKEN     **lnk;
+    MACRO_TOKEN     **ptail;
     NESTED_MACRO    *nested;
     const char      *p2;
     char            buf[2];
@@ -1019,7 +1041,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
     mac_parm_count  parmno;
 
     head = NULL;
-    lnk = &head;
+    ptail = &head;
     nested = NestedMacros;
     buf[1] = '\0';
     prev_token = T_NULL;
@@ -1122,9 +1144,9 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
             if( mtok->token != T_WHITE_SPACE ) {
                 prev_token = mtok->token;
             }
-            *lnk = mtok;
-            while( *lnk != NULL ) {
-                lnk = &(*lnk)->next;
+            *ptail = mtok;
+            while( *ptail != NULL ) {
+                ptail = &(*ptail)->next;
             }
         }
     }
@@ -1132,14 +1154,36 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
     return( head );
 }
 
+static void markUnexpandableIds( MACRO_TOKEN *head )
+/**************************************************/
+{
+    NESTED_MACRO    *nested;
+    MACRO_TOKEN     *mtok;
+    size_t          len;
+
+    for( mtok = head; mtok != NULL; mtok = mtok->next ) {
+        if( mtok->token == T_ID ) {
+            len = strlen( mtok->data ) + 1;
+            for( nested = NestedMacros; nested != NULL; nested = nested->next ) {
+                if( memcmp( nested->mentry->macro_name, mtok->data, len ) == 0 ) {
+                    if( !nested->substituting_parms ) {
+                        // change token so it won't be considered a
+                        // candidate as a macro
+                        mtok->token = T_UNEXPANDABLE_ID;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
 static MACRO_TOKEN *MacroExpansion( bool rescanning, MEPTR mentry )
+/*****************************************************************/
 {
     MACRO_ARG       *macro_parms;
     MACRO_TOKEN     *head;
-    MACRO_TOKEN     *mtok;
     NESTED_MACRO    *nested;
-    size_t          len;
-    TOKEN           tok;
 
     nested = (NESTED_MACRO *)CMemAlloc( sizeof( NESTED_MACRO ) );
     nested->mentry = mentry;
@@ -1147,8 +1191,7 @@ static MACRO_TOKEN *MacroExpansion( bool rescanning, MEPTR mentry )
     nested->substituting_parms = false;
     nested->macro_parms = NULL;
     if( MacroIsSpecial( mentry ) ) {    /* if special macro */
-        tok = SpecialMacro( mentry );
-        head = BuildAToken( tok, Buffer );
+        head = BuildAToken( SpecialMacro( mentry ), Buffer );
         nested->next = NestedMacros;
         NestedMacros = nested;
     } else {
@@ -1157,33 +1200,20 @@ static MACRO_TOKEN *MacroExpansion( bool rescanning, MEPTR mentry )
         NestedMacros = nested;
         nested->macro_parms = macro_parms;
         head = BuildMTokenList( (char *)mentry + mentry->macro_defn, macro_parms );
-        for( mtok = head; mtok != NULL; mtok = mtok->next ) {
-            if( mtok->token == T_ID ) {
-                len = strlen( mtok->data ) + 1;
-                for( nested = NestedMacros; nested != NULL; nested = nested->next ) {
-                    if( memcmp( nested->mentry->macro_name, mtok->data, len ) == 0 ) {
-                        if( !nested->substituting_parms ) {
-                            // change token so it won't be considered a
-                            // candidate as a macro
-                            mtok->token = T_UNEXPANDABLE_ID;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        markUnexpandableIds( head );
     }
-    head = AppendToken( head, T_NULL, "Z-<end of macro>" );
+    head = AppendToken( head, T_NULL, MACRO_END_STRING );
     return( head );
 }
 
 static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
+/**************************************************************************/
 {
     MACRO_TOKEN *mtok;
     MACRO_TOKEN *toklist;
     MACRO_TOKEN *prev_tok;
     MACRO_TOKEN *old_tokenlist;
-    int         i;
+    exp_state   i;
     size_t      len;
     char        *buf;
     MEPTR       mentry;
@@ -1213,14 +1243,14 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                             toklist = toklist->next;
                         }
                         toklist->next = TokenList;
-                        i = Expandable( mtok->next, false, mentry );
+                        i = isExpandable( mentry, mtok->next, false );
                         switch( i ) {
-                        case 0:                 // macro is currently not expandable
+                        case EXPANDABLE_NO:     // macro is currently not expandable
                             mtok->token = T_MACRO;
                             toklist->next = NULL;
                             toklist = NULL;
                             break;
-                        case 1:                 // macro is expandable
+                        case EXPANDABLE_YES:    // macro is expandable
                             TokenList = mtok->next;
                             if( head == mtok ) {
                                 head = NULL;
@@ -1231,7 +1261,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                             mtok = TokenList;
                             TokenList = NULL;
                             break;
-                        case 2:                 // we skipped over some white space
+                        case EXPANDABLE_WSSKIP: // we skipped over some white space
                             mtok->token = T_UNEXPANDABLE_ID;
                             toklist->next = NULL;
                             toklist = BuildAToken( T_WHITE_SPACE, " " );
@@ -1242,7 +1272,14 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                         }
                     }
                 } else {                        // expanding a macro parm
-                    if( Expandable( mtok->next, true, mentry ) ) {
+                    i = isExpandable( mentry, mtok->next, true );
+                    switch( i ) {
+                    case EXPANDABLE_NO:         // macro is currently not expandable
+                        prev_tok = mtok;
+                        mtok = mtok->next;      // advance onto next token
+                        break;
+                    case EXPANDABLE_YES:        // macro is expandable
+                    case EXPANDABLE_WSSKIP:     // we skipped over some white space
                         old_tokenlist = TokenList;
                         TokenList = mtok->next;
                         if( head == mtok ) {
@@ -1253,9 +1290,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                         toklist = ExpandNestedMacros( MacroExpansion( false, mentry ), rescanning );
                         mtok = TokenList;
                         TokenList = old_tokenlist;
-                    } else {
-                        prev_tok = mtok;
-                        mtok = mtok->next;      // advance onto next token
+                        break;
                     }
                 }
             } else {
@@ -1265,7 +1300,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
             }
         } else if( mtok->token == T_NULL ) {
             toklist = mtok->next;
-            if( mtok->data[0] == 'Z' ) {        // end of a macro
+            if( mtok->data[0] == MACRO_END_CHAR ) { // end of a macro
                 rescanning = NestedMacros->rescanning;
                 DeleteNestedMacro();
                 CMemFree( mtok );
@@ -1319,6 +1354,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
 }
 
 void DoMacroExpansion( MEPTR mentry )               // called from cscan
+/***********************************/
 {
     MacroDepth = 0;
     TokenList = ExpandNestedMacros( MacroExpansion( false, mentry ), true );
@@ -1332,7 +1368,8 @@ void DoMacroExpansion( MEPTR mentry )               // called from cscan
 }
 
 
-void InsertReScanPragmaTokens( char *pragma )
+void InsertReScanPragmaTokens( const char *pragma )
+/*************************************************/
 {
     MACRO_TOKEN *toklist;
 
@@ -1353,6 +1390,7 @@ void InsertReScanPragmaTokens( char *pragma )
 }
 
 void InsertToken( TOKEN token, const char *str )
+/**********************************************/
 {
     MACRO_TOKEN *toklist;
 

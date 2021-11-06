@@ -1,56 +1,106 @@
-:cmt
-:cmt GML Macros used:
-:cmt
-:cmt    :chain. <char> <usage>                  options that start with <char>
-:cmt                                            can be chained together i.e.,
-:cmt                                            -oa -ox -ot => -oaxt
-:cmt    :option. <option> <synonym> ...         define an option
-:cmt    :target. <arch1> <arch2> ...            valid for these architectures
-:cmt    :ntarget. <arch1> <arch2> ...           not valid for these architectures
-:cmt    :immediate. <fn>                        <fn> is called when option parsed
-:cmt    :code. <source-code>                    <source-code> is executed when option parsed
-:cmt    :enumerate. <field> [<value>]           option is one value in <name> enumeration
-:cmt    :number. [<fn>] [<default>]             =<n> allowed; call <fn> to check
-:cmt    :id. [<fn>]                             =<id> req'd; call <fn> to check
-:cmt    :char.[<fn>]                            =<char> req'd; call <fn> to check
-:cmt    :file.                                  =<file> req'd
-:cmt    :path.                                  =<path> req'd
-:cmt    :special. <fn> [<arg_usage_text>]       call <fn> to parse option
-:cmt    :optional.                              value is optional
-:cmt    :internal.                              option is undocumented
-:cmt    :prefix.                                prefix of a :special. option
-:cmt    :usage. <text>                          English usage text
-:cmt    :jusage. <text>                         Japanese usage text
-:cmt    :title.                                 English title usage text
-:cmt    :jtitle.                                Japanese title usage text
-:cmt    :page.                                  text for paging usage message
-:cmt    :nochain.                               option isn't chained with other options
-:cmt    :timestamp.                             kludge to record "when" an option
-:cmt                                            is set so that dependencies
-:cmt                                            between options can be simulated
-:cmt
-:cmt Global macros
-:cmt
-:cmt    :noequal.                               args can't have option '='
-:cmt    :argequal. <char>                       args use <char> instead of '='
-:cmt
+:cmt.*****************************************************************************
+:cmt.*
+:cmt.*                            Open Watcom Project
+:cmt.*
+:cmt.* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+:cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+:cmt.*
+:cmt.*  ========================================================================
+:cmt.*
+:cmt.*    This file contains Original Code and/or Modifications of Original
+:cmt.*    Code as defined in and that are subject to the Sybase Open Watcom
+:cmt.*    Public License version 1.0 (the 'License'). You may not use this file
+:cmt.*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+:cmt.*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+:cmt.*    provided with the Original Code and Modifications, and is also
+:cmt.*    available at www.sybase.com/developer/opensource.
+:cmt.*
+:cmt.*    The Original Code and all software distributed under the License are
+:cmt.*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+:cmt.*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+:cmt.*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+:cmt.*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+:cmt.*    NON-INFRINGEMENT. Please see the License for the specific language
+:cmt.*    governing rights and limitations under the License.
+:cmt.*
+:cmt.*  ========================================================================
+:cmt.*
+:cmt.* Description:  x86 assembler wasm command line options.
+:cmt.*
+:cmt.*     UTF-8 encoding, Â¥
+:cmt.*
+:cmt.*****************************************************************************
+:cmt.
+:cmt.
+:cmt. GML Macros used:
+:cmt.
+:cmt.	:chain. <option> <usage text>               options that start with <option>
+:cmt.						    	can be chained together i.e.,
+:cmt.						    	-oa -ox -ot => -oaxt
+:cmt.	:target. <targ1> <targ2> ...                valid for these targets
+:cmt.	:ntarget. <targ1> <targ2> ...               not valid for these targets
+:cmt.	:usageogrp. <option> <usage text>           group of options that start with <option>
+:cmt.                                                	are chained together in usage
+:cmt.	:usagegrp. <num> <usage text>               group of options that have group <num>
+:cmt.                                                	are chained together in usage
+:cmt.	:page. <text>                               English text for paging usage message
+:cmt.	:jpage. <text>                              Japanese text for paging usage message
+:cmt.	:title. <text>                              English title usage text
+:cmt.	:jtitle. <text>                             Japanese title usage text
+:cmt.	:titleu. <text>                             English title usage text for QNX resource file
+:cmt.	:jtitleu. <text>                            Japanese title usage text for QNX resource file
+:cmt.
+:cmt.	:option. <option> <synonym> ...             define an option
+:cmt.	:immediate. <fn> [<usage argid>]            <fn> is called when option parsed
+:cmt.	:code. <source-code>                        <source-code> is executed when option parsed
+:cmt.	:enumerate. <name> [<option>]               option is one value in <name> enumeration
+:cmt.	:number. [<fn>] [<default>] [<usage argid>] =<num> allowed; call <fn> to check
+:cmt.	:id. [<fn>] [<usage argid>]		    =<id> req'd; call <fn> to check
+:cmt.	:char. [<fn>] [<usage argid>]		    =<char> req'd; call <fn> to check
+:cmt.	:file. [<usage argid>]			    =<file> req'd
+:cmt.	:path. [<usage argid>]			    =<path> req'd
+:cmt.	:special. <fn> [<usage argid>]		    call <fn> to parse option
+:cmt.	:usage. <text>                              English usage text
+:cmt.	:jusage. <text>                             Japanese usage text
+:cmt.
+:cmt.	:optional.                                  value is optional
+:cmt.	:internal.                                  option is undocumented
+:cmt.	:prefix.                                    prefix of a :special. option
+:cmt.	:nochain.                                   option isn't chained with other options
+:cmt.	:timestamp.                                 kludge to record "when" an option
+:cmt.                                                	is set so that dependencies
+:cmt.                                                	between options can be simulated
+:cmt.	:negate.                                    negate option value
+:cmt.	:group. <num>                               group <num> to which option is included
+:cmt.
+:cmt. Global macros
+:cmt.
+:cmt.	:noequal.                                   args can't have option '='
+:cmt.	:argequal. <char>                           args use <char> instead of '='
+:cmt.
+:cmt. where <targ>:
+:cmt.		    default - any, dbg
+:cmt.		    architecture - i86, 386, x64, axp, ppc, mps, sparc
+:cmt.		    host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
+:cmt.		    extra - targ1, targ2
+:cmt.
+:cmt.	Translations are required for the :jtitle. and :jusage. tags
+:cmt.	if there is no text associated with the tag.
 
-:cmt    where:
-:cmt        <arch>:     i86, 386, axp, any, dbg, qnx, ppc, linux, sparc
 
-:cmt    Translations are required for the :jtitle. and :jusage. tags
-:cmt    if there is no text associated with the tag.
-
-:title. Usage:   wasm [options] asm_file [options] [@env_var]
-:jtitle. g—p•û–@: wasm [options] file [options] [@env_var]
+:title.  Usage: %s [options] asm_file [options] [@env_var]
+:jtitle. ä½¿ç”¨æ–¹æ³•: wasm [options] file [options] [@env_var]
+:titleu.  Usage: %C [options] asm_file [options] [@env_var]
+:jtitleu. ä½¿ç”¨æ–¹æ³•: %C [options] file [options] [@env_var]
 :target. any
 
-:title. Options:
-:jtitle. ƒIƒvƒVƒ‡ƒ“:
-:target. qnx linux
-:title. Options:                    ( /option is also supported )
-:jtitle. ƒIƒvƒVƒ‡ƒ“:                 ( /µÌß¼®İ ‚Å‚àw’è‚Å‚«‚Ü‚· )
-:ntarget. qnx linux
+:title.  Options:
+:jtitle. ã‚ªãƒ—ã‚·ãƒ§ãƒ³:
+:target. any
+:title.  .         ( /option is also accepted )
+:jtitle. .         ( /ï½µï¾Œï¾Ÿï½¼ï½®ï¾ ã§ã‚‚æŒ‡å®šã§ãã¾ã™ )
+:target. any
+:ntarget. bsd linux osx qnx haiku
 
 :page. (Press return to continue)
 :jusage. (Press return to continue)
@@ -58,20 +108,20 @@
 :option. ? h
 :target. any
 :usage. print this message
-:jusage. ‚±‚ÌƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚·
+:jusage. ã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã—ã¾ã™
 
 :option. 0
 :target. any
 :usage. 8086 instructions
-:jusage. 8086 –½—ß
+:jusage. 8086 å‘½ä»¤
 
 :option. 1
 :target. any
 :usage. 80186 instructions
-:jusage. 80186 –½—ß
+:jusage. 80186 å‘½ä»¤
 
 :chain. 2 80286 instructions
-:jusage. 80286 –½—ß
+:jusage. 80286 å‘½ä»¤
 
 :option. 2p
 :target. any
@@ -79,17 +129,17 @@
 :jusage. protected mode instructions
 
 :chain. 3 80386 instructions
-:jusage. 80386 –½—ß
+:jusage. 80386 å‘½ä»¤
 
 :option. 3r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 3s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 3p
 :target. any
@@ -97,17 +147,17 @@
 :jusage. protected mode instructions
 
 :chain. 4 80486 instructions
-:jusage. 80486 –½—ß
+:jusage. 80486 å‘½ä»¤
 
 :option. 4r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 4s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 4p
 :target. any
@@ -115,12 +165,12 @@
 :jusage. protected mode instructions
 
 :chain. 5 Pentium instructions
-:jusage. Pentium –½—ß
+:jusage. Pentium å‘½ä»¤
 
 :option. 5r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 5p
 :target. any
@@ -130,20 +180,20 @@
 :option. 5s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :chain. 6 Pentium Pro instructions
-:jusage. 6 Pentium Pro –½—ß
+:jusage. 6 Pentium Pro å‘½ä»¤
 
 :option. 6r
 :target. any
 :usage. register calling conventions
-:jusage. ƒŒƒWƒXƒ^ŒÄ‚Ño‚µ‹K–ñ
+:jusage. ãƒ¬ã‚¸ã‚¹ã‚¿å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 6s
 :target. any
 :usage. stack calling conventions
-:jusage. ƒXƒ^ƒbƒNŒÄ‚Ño‚µ‹K–ñ
+:jusage. ã‚¹ã‚¿ãƒƒã‚¯å‘¼ã³å‡ºã—è¦ç´„
 
 :option. 6p
 :target. any
@@ -152,12 +202,12 @@
 
 :option. bt
 :target. any
-:id.
+:id. . <os>
 :optional.
-:usage. set the build target to <id>
-:jusage. set the build target to <id>
+:usage. set the build target to <os>
+:jusage. set the build target to <os>
 
-:option. c 
+:option. c
 :target. any
 :usage. disable output OMF COMMENT record about data in code
 :jusage. disable output OMF COMMENT record about data in code
@@ -166,17 +216,17 @@
 :target. any
 :special. scanDefine <name>[=text]
 :usage. define text macro <name>[=text]
-:jusage. ƒeƒLƒXƒgƒ}ƒNƒ‚ğ’è‹`‚µ‚Ü‚· <name>[=text]
+:jusage. ãƒ†ã‚­ã‚¹ãƒˆãƒã‚¯ãƒ­ã‚’å®šç¾©ã—ã¾ã™ <name>[=text]
 
 :option. d1
 :target. any
 :usage. line number debugging support
-:jusage. s”Ô†ƒfƒoƒbƒOî•ñ‚ğo—Í‚µ‚Ü‚·
+:jusage. è¡Œç•ªå·ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã‚’å‡ºåŠ›ã—ã¾ã™
 
-:option. e 
+:option. e
 :target. any
 :usage. stop reading ASM file at END directive
-:jusage. ENDƒfƒBƒŒƒNƒeƒBƒu‚ÅASMƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ‚ğ~‚ß‚Ü‚·
+:jusage. ENDãƒ‡ã‚£ãƒ¬ã‚¯ãƒ†ã‚£ãƒ–ã§ASMãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ã‚’æ­¢ã‚ã¾ã™
 
 :option. e
 :target. any
@@ -195,44 +245,44 @@
 :file.
 :optional.
 :usage. set object file name
-:jusage. ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚ğİ’è‚µ‚Ü‚·
+:jusage. ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¨­å®šã—ã¾ã™
 
-:option. fp0 
+:option. fp0
 :target. any
 :usage. floating-point for 8087
 :jusage. floating-point for 8087
 
-:option. fp2 
+:option. fp2
 :target. any
 :usage. floating-point for 287
 :jusage. floating-point for 287
 
-:option. fp3 
+:option. fp3
 :target. any
 :usage. floating-point for 387
 :jusage. floating-point for 387
 
-:option. fp5 
+:option. fp5
 :target. any
 :usage. floating-point for Pentium
 :jusage. floating-point for Pentium
 
-:option. fp6 
+:option. fp6
 :target. any
 :usage. floating-point for Pentium Pro
 :jusage. floating-point for Pentium Pro
 
-:option. fpc 
+:option. fpc
 :target. any
 :usage. calls to floating-point library
 :jusage. calls to floating-point library
 
-:option. fpi 
+:option. fpi
 :target. any
 :usage. inline 80x87 instructions with emulation
 :jusage. inline 80x87 instructions with emulation
 
-:option. fpi87 
+:option. fpi87
 :target. any
 :usage. inline 80x87 instructions
 :jusage. inline 80x87 instructions
@@ -242,21 +292,21 @@
 :file.
 :optional.
 :usage. set error file name
-:jusage. ƒGƒ‰[ƒtƒ@ƒCƒ‹–¼‚ğw’è‚µ‚Ü‚·
+:jusage. ã‚¨ãƒ©ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«åã‚’æŒ‡å®šã—ã¾ã™
 
 :option. i
 :target. any
 :path.
 :usage. add directory to list of include directories
-:jusage. ƒCƒ“ƒNƒ‹[ƒhEƒfƒBƒŒƒNƒgƒŠ‚ÌƒŠƒXƒg‚ğ’Ç‰Á‚µ‚Ü‚·
+:jusage. ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ»ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒªã‚¹ãƒˆã‚’è¿½åŠ ã—ã¾ã™
 
 :option. j s
 :target. any
 :usage. force signed types to be used for signed values
-:jusage. •„†•t‚«Œ^‚ğ•„†•t‚«’l‚Ì‚½‚ß‚Ég—p‚·‚é‚æ‚¤‚É‚µ‚Ü‚·
+:jusage. ç¬¦å·ä»˜ãå‹ã‚’ç¬¦å·ä»˜ãå€¤ã®ãŸã‚ã«ä½¿ç”¨ã™ã‚‹ã‚ˆã†ã«ã—ã¾ã™
 
 :chain. m Memory model
-:jusage. ƒƒ‚ƒŠEƒ‚ƒfƒ‹
+:jusage. ãƒ¡ãƒ¢ãƒªãƒ»ãƒ¢ãƒ‡ãƒ«
 
 :option. mc
 :target. any
@@ -295,26 +345,26 @@
 
 :option. nc
 :target. any
-:id.
+:id. . <name>
 :internal.
 :usage. set code class name
 :jusage. set code class name
 
 :option. nd
 :target. any
-:id.
+:id. . <name>
 :usage. set data segment name
 :jusage. set data segment name
 
 :option. nm
 :target. any
-:id.
+:id. . <name>
 :usage. set module name
 :jusage. set module name
 
 :option. nt
 :target. any
-:id.
+:id. . <name>
 :usage. set name of text segment
 :jusage. set name of text segment
 
@@ -323,11 +373,17 @@
 :usage. allow C form of octal constants
 :jusage. allow C form of octal constants
 
+:option. od
+:target. any
+:internal.
+:usage. disable all optimization
+:jusage. disable all optimization
+
 :option. zcm
 :target. any
 :special. scanMode [=<mode>]
-:usage. set compatibility mode - watcom (default), masm or tasm
-:jusage. set compatibility mode - watcom (default), masm or tasm
+:usage. set compatibility mode - watcom (default), masm, tasm or ideal
+:jusage. set compatibility mode - watcom (default), masm, tasm or ideal
 
 :option. zld
 :target. any
@@ -337,7 +393,7 @@
 :option. zq q
 :target. any
 :usage. operate quietly
-:jusage. ƒƒbƒZ[ƒW“™‚Ìo—Í‚ğ‚µ‚Ü‚¹‚ñ
+:jusage. ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç­‰ã®å‡ºåŠ›ã‚’ã—ã¾ã›ã‚“
 
 :option. zz
 :target. any

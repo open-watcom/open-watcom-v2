@@ -11,7 +11,7 @@ are statement labels of executable statements that appear
 in the same program unit as the arithmetic
 .kw IF
 statement.
-.endnote
+.esynote
 .np
 The expression
 .id e
@@ -74,7 +74,7 @@ is an executable statement.
 Only certain executable statements are allowed.
 See the section entitled :HDREF refid='stmtcls'. at the beginning of
 this chapter for a list of allowable statements.
-.endnote
+.esynote
 .np
 The expression
 .id e
@@ -164,7 +164,7 @@ The second is a &product extension.
 .synote
 .mnote e
 is a logical expression.
-.endnote
+.esynote
 .np
 The block
 .kw IF
@@ -195,7 +195,7 @@ case the result of the integer expression is compared for inequality
 to the integer value 0.
 .mnote block-label
 is an optional block label.
-.endnote
+.esynote
 .np
 This form of the block
 .kw IF

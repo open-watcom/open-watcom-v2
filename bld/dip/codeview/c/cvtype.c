@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1190,7 +1191,9 @@ search_result TypeSearchTagName( imp_image_handle *iih, lookup_item *li, void *d
     unsigned_32         *array_p;
     const char          *name;
     size_t              len;
-    int                 (*cmp)( const void *, const void *, size_t );
+    const char          *lookup_name;
+    size_t              lookup_len;
+    strcompn_fn         *scompn;
     imp_sym_handle      *ish;
 
     if( MH2IMH( li->mod ) != IMH_NOMOD && MH2IMH( li->mod ) != IMH_GBL ) {
@@ -1219,11 +1222,9 @@ search_result TypeSearchTagName( imp_image_handle *iih, lookup_item *li, void *d
     array_p = VMBlock( iih, array_vm, sizeof( *array_p ) );
     if( array_p == NULL )
         return( SR_FAIL );
-    if( li->case_sensitive ) {
-        cmp = memcmp;
-    } else {
-        cmp = memicmp;
-    }
+    scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
+    lookup_name = li->name.start;
+    lookup_len = li->name.len;
     count = *array_p;
     for( ;; ) {
         if( count == 0 )
@@ -1238,8 +1239,8 @@ search_result TypeSearchTagName( imp_image_handle *iih, lookup_item *li, void *d
         }
         if( name != NULL
           && p->common.code == code
-          && len == li->name.len
-          && cmp( name, li->name.start, len ) == 0 ) {
+          && len == lookup_len
+          && scompn( name, lookup_name, len ) == 0 ) {
             ish = DCSymCreate( iih, d );
             if( ish == NULL )
                 return( SR_FAIL );
@@ -1274,6 +1275,7 @@ static walk_result SymSearch( imp_image_handle *iih, sym_walk_info swi,
     numeric_leaf        val;
     unsigned            count;
     unsigned            idx;
+    strcompn_fn         *scompn;
 
     switch( swi ) {
     case SWI_INHERIT_START:
@@ -1325,15 +1327,10 @@ static walk_result SymSearch( imp_image_handle *iih, sym_walk_info swi,
     }
     if( sd->li->name.len != name_len )
         return( WR_CONTINUE );
+    scompn = ( sd->li->case_sensitive ) ? strncmp : strnicmp;
     sr = SR_NONE;
-    if( sd->li->case_sensitive ) {
-        if( memcmp( name, sd->li->name.start, name_len ) == 0 ) {
-            sr = SR_EXACT;
-        }
-    } else {
-        if( memicmp( name, sd->li->name.start, name_len ) == 0 ) {
-            sr = SR_EXACT;
-        }
+    if( scompn( name, sd->li->name.start, name_len ) == 0 ) {
+        sr = SR_EXACT;
     }
     if( sr != SR_NONE ) {
         sd->sr = SR_EXACT;

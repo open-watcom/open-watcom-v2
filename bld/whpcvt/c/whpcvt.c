@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,7 @@
     pick( ARG_OL,   "ol" ) \
     pick( ARG_UL,   "ul" ) \
     pick( ARG_H,    "h" ) \
+    pick( ARG_HF,   "hf" ) \
     pick( ARG_HH,   "hh" ) \
     pick( ARG_HN,   "hn" ) \
     pick( ARG_B,    "b" ) \
@@ -125,16 +126,24 @@ enum {
 
 /* global variables */
 
-char        *Help_File = NULL;
-char        *Header_File = NULL;
-char        *Footer_File = NULL;
+char            *Help_File = NULL;
+char            *Header_File = NULL;
+char            *Footer_File = NULL;
 
-const char Fonttype_roman[] = "roman";
-const char Fonttype_symbol[] = "symbol";
-const char Fonttype_helv[] = "helv";
-const char Fonttype_courier[] = "courier";
+const char      Fonttype_roman[] = "roman";
+const char      Fonttype_symbol[] = "symbol";
+const char      Fonttype_helv[] = "helv";
+const char      Fonttype_courier[] = "courier";
+
+static list_def Lists[MAX_LISTS] = {
+    { LIST_TYPE_NONE,   0,  0,  false,  false },    // list base
+};
+
+list_def        *Curr_list = &Lists[0];
 
 /* local variables */
+
+static char     *h_file_name = NULL;
 
 static const char *Help_info[] = {
     "Usage: whpcvt [options] <in_file> [<out_file>]",
@@ -248,15 +257,9 @@ static int              Output_type = OUT_RTF;
 
 
 static const char *Error_list[]={
-    "Expecting topic definition, or topic section",
-    "Context topic already exists",
-    "A defined context topic must have a title",
-    "Out of memory",
-    "Bad cross-reference (hyperlink) or definition",
-    "Maximum of 20 nested numbered lists allowed",
-    "Cross-reference (hyperlink) to undefined topic",
-    "Cross-reference (hyperlink) to an empty topic (use -lk option)",
-    "Invalid number of parameters."
+    #define ERROR_DEF(a,b)  b,
+    ERROR_DEFS()
+    #undef ERROR_DEF
 };
 
 static char         *Options_File = NULL;
@@ -270,12 +273,17 @@ static ctx_def      **Ctx_list_end = NULL;
 static keyword_def  *Keyword_list = NULL;
 static int          Keyword_id = 1;
 
+static int          List_level = 0;
+
+static tab_size     tabs_list[MAX_TABS];
+static int          tabs_num = 0;
+
 static void print_help( void )
 /****************************/
 {
     const char      **p;
 
-    for( p = Help_info; *p != NULL; ++p ) {
+    for( p = Help_info; *p != NULL; p++ ) {
         printf( "%s\n", *p );
     }
 }
@@ -375,41 +383,86 @@ static void check_brace( const char *str, size_t len )
 
     if( Brace_check && Output_type == OUT_RTF ) {
         prev_ch = ' ';
-        for( ptr = str; len-- > 0; ++ptr ) {
+        for( ptr = str; len-- > 0; ptr++ ) {
             ch = *ptr;
             if( ch == '{' && prev_ch != '\\' ) {
-                ++Brace_count;
+                Brace_count++;
             } else if( ch == '}' && prev_ch != '\\' ) {
-                --Brace_count;
+                Brace_count--;
             }
             prev_ch = ch;
         }
     }
 }
 
-void whp_fprintf( FILE *file, const char *fmt, ... )
-/**************************************************/
+void Tabs_read( char *ptr )
+/*************************/
 {
-    va_list             arglist;
+    tab_size    tabcol;
+    char        *end;
+
+    tabs_num = 0;
+    tabcol = 0;
+    ptr = skip_blanks( ptr );
+    while( *ptr != '\0' ) {
+        if( *ptr == '+' ) {
+            tabcol += strtol( ptr + 1, &end, 10 );
+        } else {
+            tabcol = strtol( ptr, &end, 10 );
+        }
+        tabs_list[tabs_num++] = tabcol;
+        ptr = skip_blanks( end );
+    }
+}
+
+tab_size Tabs_align( tab_size ch_len )
+/************************************/
+{
+    int         i;
+    tab_size    len;
+
+    // find the tab we should use
+    len = 1;
+    for( i = 0; i < tabs_num; i++ ) {
+        if( tabs_list[i] > ch_len ) {
+            len = tabs_list[i] - ch_len;
+            break;
+        }
+    }
+    return( len );
+}
+
+tab_size Tabs_get( int pos )
+/**************************/
+{
+    if( tabs_num > 0 && pos < tabs_num )
+        return( tabs_list[pos] );
+    return( TAB_UNDEF );
+}
+
+void whp_fprintf( FILE *fp, const char *fmt, ... )
+/************************************************/
+{
+    va_list         args;
 
     if( Chk_buf == NULL ) {
         _new( Chk_buf, 10000 );
     }
 
     if( Chk_buf != NULL ) {
-        va_start( arglist, fmt );
-        vsprintf( Chk_buf, fmt, arglist );
+        va_start( args, fmt );
+        vsprintf( Chk_buf, fmt, args );
+        va_end( args );
         check_brace( Chk_buf, strlen( Chk_buf ) );
-        fputs( Chk_buf, file );
-        va_end( arglist );
+        fputs( Chk_buf, fp );
     }
 }
 
-void whp_fwrite( const char *buf, size_t el_size, size_t num_el, FILE *f )
-/************************************************************************/
+void whp_fwrite( FILE *fp, const char *buf, size_t el_size, size_t num_el )
+/*************************************************************************/
 {
     check_brace( buf, el_size * num_el );
-    fwrite( buf, el_size, num_el, f );
+    fwrite( buf, el_size, num_el, fp );
 }
 
 static char *normalize_fname( char *file, const char *name, const char *fext )
@@ -451,13 +504,13 @@ static int process_args( int argc, char *argv[] )
     int                 i;
     int                 start_arg;
 
-    for( start_arg = 0; start_arg < argc; ++start_arg ) {
+    for( start_arg = 0; start_arg < argc; start_arg++ ) {
 #ifdef __UNIX__
         if( argv[start_arg][0] == '-' ) {
 #else
         if( argv[start_arg][0] == '-' || argv[start_arg][0] == '/' ) {
 #endif
-            for( i = 0; Args[i] != NULL; ++i ) {
+            for( i = 0; Args[i] != NULL; i++ ) {
                 if( stricmp( Args[i], &argv[start_arg][1] ) == 0 ) {
                     break;
                 }
@@ -501,6 +554,14 @@ static int process_args( int argc, char *argv[] )
                 break;
             case ARG_H:
                 Do_def = true;
+                break;
+            case ARG_HF:
+                start_arg++;
+                if( start_arg < argc ) {
+                    h_file_name = normalize_fname( h_file_name, argv[start_arg], NULL );
+                } else {
+                    error_err( ERR_BAD_ARGS );
+                }
                 break;
             case ARG_HH:
                 Do_hdef = true;
@@ -564,7 +625,7 @@ static int process_args( int argc, char *argv[] )
                 break;
             case ARG_RM:
                 start_arg++;
-                if( start_arg < argc && (i = atoi( argv[start_arg] )) >= 0 ) {
+                if( start_arg < argc && (i = strtol( argv[start_arg], NULL, 10 )) >= 0 ) {
                     Right_Margin = i;
                 } else {
                     error_err( ERR_BAD_ARGS );
@@ -572,7 +633,7 @@ static int process_args( int argc, char *argv[] )
                 break;
             case ARG_TAB:
                 start_arg++;
-                if( start_arg < argc && (i = atoi( argv[start_arg] )) >= 0 ) {
+                if( start_arg < argc && (i = strtol( argv[start_arg], NULL, 10 )) >= 0 ) {
                     Text_Indent = i;
                 } else {
                     error_err( ERR_BAD_ARGS );
@@ -607,7 +668,7 @@ static int process_args( int argc, char *argv[] )
                 Do_idx_button = true;
                 break;
             case ARG_TL:
-                ++start_arg;
+                start_arg++;
                 if( start_arg < argc ) {
                     _new( Ipf_or_Html_title, strlen( argv[start_arg] ) + 1 );
                     strcpy( Ipf_or_Html_title, argv[start_arg] );
@@ -619,7 +680,7 @@ static int process_args( int argc, char *argv[] )
                 Title_case = TITLE_CASE_MIXED;
                 break;
             case ARG_DT:
-                ++start_arg;
+                start_arg++;
                 if( start_arg < argc ) {
                     _new( IB_def_topic, strlen( argv[start_arg] ) + 1 );
                     strcpy( IB_def_topic, argv[start_arg] );
@@ -628,7 +689,7 @@ static int process_args( int argc, char *argv[] )
                 }
                 break;
             case ARG_DS:
-                ++start_arg;
+                start_arg++;
                 if( start_arg < argc ) {
                     _new( IB_help_desc, strlen( argv[start_arg] ) + 1 );
                     strcpy( IB_help_desc, argv[start_arg] );
@@ -637,7 +698,7 @@ static int process_args( int argc, char *argv[] )
                 }
                 break;
             case ARG_OF:
-                ++start_arg;
+                start_arg++;
                 if( start_arg < argc ) {
                     Options_File = normalize_fname( Options_File, argv[start_arg], NULL );
                 } else {
@@ -667,6 +728,14 @@ static char *skip_nonblanks( char *ptr )
 /**************************************/
 {
     while( _is_nonblank( *ptr ) )
+        ptr++;
+    return( ptr );
+}
+
+static char *skip_underscores( char *ptr )
+/****************************************/
+{
+    while( *ptr == '_' )
         ptr++;
     return( ptr );
 }
@@ -755,7 +824,7 @@ static int valid_args( int argc, char *argv[] )
             if( opt_file == NULL ) {
                 return( -1 );
             }
-            for( argc = 0 ;; ++argc ) {
+            for( argc = 0 ;; argc++ ) {
                 if( fgets( line, sizeof( line ), opt_file ) == NULL ) {
                     break;
                 }
@@ -767,7 +836,7 @@ static int valid_args( int argc, char *argv[] )
             Options_File = NULL;
 
             _new( argv, argc );
-            for( argc = 0;; ++argc ) {
+            for( argc = 0;; argc++ ) {
                 if( fgets( line, sizeof( line ), opt_file ) == NULL ) {
                     break;
                 }
@@ -778,7 +847,7 @@ static int valid_args( int argc, char *argv[] )
             }
             fclose( opt_file );
             ret = process_args( argc, argv );
-            for( i = 0 ; i < argc; ++i ) {
+            for( i = 0 ; i < argc; i++ ) {
                 free( argv[i] );
             }
             free( argv );
@@ -806,7 +875,7 @@ static int read_char( void )
 #endif
     if( c == EOF )
         return( c );
-    if( (char)c == WHP_SPACE_NOBREAK )
+    if( c == (unsigned char)WHP_SPACE_NOBREAK )
         return( ' ' );  // convert special blanks to regular blanks
     return( c );
 }
@@ -822,14 +891,14 @@ bool read_line( void )
 
     eat_blank = false;
     for( ;; ) {
-        ++Line_num;
+        Line_num++;
         len = 0;
-        for( buf = Line_buf;; ++buf ) {
+        for( buf = Line_buf;; buf++ ) {
             c = read_char();
             if( c == EOF ) {
                 return( false );
             }
-            ++len;
+            len++;
             if( len > Line_buf_size ) {
                 Line_buf_size += BUF_GROW;
                 Line_buf = _realloc( Line_buf, Line_buf_size );
@@ -896,7 +965,7 @@ char *whole_keyword_line( char *ptr )
             /* kludge fix cuz of GML: GML thinks that keywords are
                are real words, so it puts a space after them.
                This should fix that */
-            ++ptr;
+            ptr++;
         }
     }
 
@@ -921,11 +990,20 @@ size_t trans_add_str( const char *str, section_def *section )
     size_t      len;
 
     len = 0;
-    for( ; *str != '\0'; ++str ) {
+    for( ; *str != '\0'; str++ ) {
         len += trans_add_char( *str, section );
     }
 
     return( len );
+}
+
+size_t trans_add_str_nl( const char *str, section_def *section )
+/**************************************************************/
+{
+    size_t      len;
+
+    len = trans_add_str( str, section );
+    return( len + trans_add_char( '\n', section ) );
 }
 
 void add_link( const char *link_name )
@@ -979,7 +1057,7 @@ static void add_key_ctx( keyword_def *key, ctx_def *ctx )
         key->ctx_list_size = 0;
     }
 
-    ++key->ctx_list_size;
+    key->ctx_list_size++;
     if( key->ctx_list_size > key->ctx_list_alloc ) {
         key->ctx_list_alloc += 16;      // grow by a reasonable amount
         _renew( key->ctx_list, key->ctx_list_alloc );
@@ -1006,7 +1084,7 @@ void add_ctx_keyword( ctx_def *ctx, const char *keyword )
             strcpy( key->keyword, keyword );
             key->next = Keyword_list;
             key->id = Keyword_id;
-            ++Keyword_id;
+            Keyword_id++;
             Keyword_list = key;
 
             key->ctx_list = NULL;
@@ -1133,6 +1211,7 @@ static char *skip_prep( char *str )
     char                        *next;
 
     start = skip_blanks( str );
+    start = skip_underscores( start );
     end = skip_nonblanks( start );
     /* now 'end' points to the terminating char after the first word */
     if( start == end ) {
@@ -1220,7 +1299,7 @@ static void add_ctx( ctx_def *ctx, const char *title, char *keywords, const char
     }
     if( keywords != NULL && ctx->keylist == NULL && *skip_blanks( keywords ) != '\0' ) {
         for( ptr = keywords;; ) {
-            for( end = ptr; *end != ',' && *end != ';' && *end != '\0'; ++end );
+            for( end = ptr; *end != ',' && *end != ';' && *end != '\0'; end++ );
             ch = *end;
             *end = '\0';
             if( !find_keyword( ctx, ptr ) ) {
@@ -1291,16 +1370,16 @@ static ctx_def *define_ctx( void )
 
     Delim[0] = WHP_CTX_DEF;
     ptr = strtok( Line_buf + 1, Delim );
-    head_level = atoi( ptr );
+    head_level = strtol( ptr, NULL, 10 );
     ctx_name = strtok( NULL, Delim );
 
     title_fmt = TITLE_FMT_DEFAULT;
     if( *ctx_name == WHP_TOPIC_LN ) {
         title_fmt = TITLE_FMT_LINE;
-        ++ctx_name;
+        ctx_name++;
     } else if( *ctx_name == WHP_TOPIC_NOLN ) {
         title_fmt = TITLE_FMT_NOLINE;
-        ++ctx_name;
+        ctx_name++;
     }
     ctx = find_ctx( ctx_name );
     old_ctx = ctx;
@@ -1309,9 +1388,9 @@ static ctx_def *define_ctx( void )
             printf( "topic already exists: %s\n", ctx_name );
             warning( ERR_CTX_EXISTS );
         }
-        for( i = 0; i < strlen( ctx_name ); ++i ) {
+        for( i = 0; i < strlen( ctx_name ); i++ ) {
             o_ch = ctx_name[i];
-            for( ch = 'A'; ch < 'Z'; ++ch ) {
+            for( ch = 'A'; ch < 'Z'; ch++ ) {
                 ctx_name[i] = ch;
                 if( find_ctx( ctx_name ) == NULL ) {
                     break;
@@ -1380,7 +1459,7 @@ static bool read_ctx_topic( void )
     if( order_str == NULL ) {
         return( read_topic_text( ctx, true, 0 ) );
     } else {
-        return( read_topic_text( ctx, false, atoi( order_str ) ) );
+        return( read_topic_text( ctx, false, strtol( order_str, NULL, 10 ) ) );
     }
 }
 
@@ -1432,7 +1511,7 @@ static void set_browse_numbers( void )
         order = 1;
         for( b_ctx = browse->ctx_list; b_ctx != NULL; b_ctx = b_ctx->next ) {
             b_ctx->ctx->browse_num = order;
-            ++order;
+            order++;
         }
     }
 }
@@ -1565,7 +1644,7 @@ static void compress_kw( keyword_def *kw )
 
     if( Remove_empty ) {
         o_size = kw->ctx_list_size;
-        for( o_idx = 0; o_idx < o_size; ++o_idx ) {
+        for( o_idx = 0; o_idx < o_size; o_idx++ ) {
             if( !kw->ctx_list[o_idx]->empty ) {
                 kw->ctx_list[n_idx] = kw->ctx_list[o_idx];
                 n_idx++;
@@ -1589,7 +1668,7 @@ static void output_kw_file( void )
 
     // output header
     whp_fprintf( KW_file, ":H1.%s\n", Gen_titles[GEN_TITLE_KEYWORD][Title_case] );
-    whp_fprintf( KW_file, ":pb.%cc\n", WHP_SLIST_START );
+    whp_fprintf( KW_file, ":pb.%c%c\n", WHP_SLIST_START, WHP_LIST_COMPACT );
 
     // count the number of keywords in our list
     for( temp_kw = Keyword_list; temp_kw !=NULL; temp_kw = temp_kw->next )
@@ -1642,13 +1721,14 @@ static void output_kw_file( void )
                             // output keyword
                             whp_fprintf( KW_file,
                                         ":pb.%c:pb.%cb%c%s%c\n"
-                                        ":pb.%cc\n",
+                                        ":pb.%c%c\n",
                                         WHP_LIST_ITEM,
                                         WHP_FONTSTYLE_START,
                                         WHP_FONTSTYLE_START,
                                         kw[i]->keyword,
                                         WHP_FONTSTYLE_END,
-                                        WHP_SLIST_START );
+                                        WHP_SLIST_START,
+                                        WHP_LIST_COMPACT );
                             title = true;
                         }
                         whp_fprintf( KW_file, ":pb.%c%c%s%c%s%c\n",
@@ -1743,12 +1823,12 @@ static void output_contents_file( void )
             continue;
         }
         if( ctx->head_level > level ) {
-            for( i = level + 1; i <= ctx->head_level; ++i ) {
-                whp_fprintf( Contents_file, ":pb.%cc\n", WHP_SLIST_START );
+            for( i = level + 1; i <= ctx->head_level; i++ ) {
+                whp_fprintf( Contents_file, ":pb.%c%c\n", WHP_SLIST_START, WHP_LIST_COMPACT );
             }
             level = ctx->head_level;
         } else if( ctx->head_level < level ) {
-            for( i = ctx->head_level + 1; i <=level; ++i ) {
+            for( i = ctx->head_level + 1; i <=level; i++ ) {
                 whp_fprintf( Contents_file, ":pb.%c\n", WHP_SLIST_END );
             }
             level = ctx->head_level;
@@ -1771,7 +1851,7 @@ static void output_contents_file( void )
         }
         whp_fprintf( Contents_file, "\n" );
     }
-    for( i = -1; i < level; ++i ) {
+    for( i = -1; i < level; i++ ) {
         whp_fprintf( Contents_file, ":pb.%c\n", WHP_SLIST_END );
     }
 
@@ -1844,7 +1924,7 @@ static void read_ctx_ids( void )
                 if( stricmp( ptr + strlen( HELP_PREFIX ), ctx->ctx_name ) == 0 ) {
                     ptr = strtok( NULL, Delim );
                     if( ptr != NULL ) {
-                        ctx->ctx_id = atoi( ptr );
+                        ctx->ctx_id = strtol( ptr, NULL, 10 );
                     }
                     break;
                 }
@@ -1868,7 +1948,7 @@ static void set_ctx_ids( void )
 
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( ctx->ctx_id == -1 ) {
-            ++ctx_id;
+            ctx_id++;
             ctx->ctx_id = ctx_id;
         }
     }
@@ -1902,7 +1982,52 @@ static void check_links( void )
     }
 }
 
+void NewList( const char *ptr, int indent, bool list_indent )
+/***********************************************************/
+{
+    list_type   type;
+
+    if( List_level + 1 == MAX_LISTS ) {
+        error( ERR_MAX_LISTS );
+    }
+    List_level++;
+    Curr_list = &Lists[List_level];
+    switch( ptr[0] ) {
+    case WHP_LIST_START:
+        type = LIST_TYPE_UNORDERED;
+        break;
+    case WHP_DLIST_START:
+        type = LIST_TYPE_DEFN;
+        break;
+    case WHP_OLIST_START:
+        type = LIST_TYPE_ORDERED;
+        break;
+    case WHP_SLIST_START:
+        type = LIST_TYPE_SIMPLE;
+        break;
+    default:
+        type = LIST_TYPE_NONE;
+        break;
+    }
+    Curr_list->type = type;
+    Curr_list->number = 0;
+    Curr_list->prev_indent = indent;
+    Curr_list->list_indent = list_indent;
+    Curr_list->compact = ( ptr[1] == WHP_LIST_COMPACT );
+}
+
+void PopList( void )
+/******************/
+{
+    if( List_level == 0 ) {
+        error( ERR_UNBAL_LIST );
+    }
+    List_level--;
+    Curr_list = &Lists[List_level];
+}
+
 static void init_whp( void )
+/**************************/
 {
     switch( Output_type ) {
     case OUT_RTF:
@@ -1938,238 +2063,249 @@ int main( int argc, char *argv[] )
 #endif
 
     file = NULL;
-    rc = -1;
-    if( argc < 1 ) {
-        print_help();
-        goto error_exit;
-    }
+    if( setjmp( Jmp_buf ) ) {
+        if( h_file_name != NULL ) {
+            free( h_file_name );
+        }
+        if( Header_File != NULL ) {
+            free( Header_File );
+        }
+        if( Footer_File != NULL ) {
+            free( Footer_File );
+        }
+        if( Help_File != NULL ) {
+            free( Help_File );
+        }
+        free( file );
 
-    /* This program can be a memory pig, so, to avoid fragmentation,
-       do some big allocs to block out the space */
-    for( size = 10; size > 0; --size ) {
-        start_alloc = malloc( size * 1000 * 1024 );
-        if( start_alloc != NULL ) {
-            free( start_alloc );
+        if( Idx_file != NULL ) {
+            fclose( Idx_file );
+        }
+        if( KW_file != NULL ) {
+            fclose( KW_file );
+        }
+        if( Blist_file != NULL ) {
+            fclose( Blist_file );
+        }
+        if( Contents_file != NULL ) {
+            fclose( Contents_file );
+        }
+        if( Def_file != NULL ) {
+            fclose( Def_file );
+        }
+        if( Hdef_file != NULL ) {
+            fclose( Hdef_file );
+        }
+        if( Out_file != NULL ) {
+            fclose( Out_file );
+        }
+        rc = -1;
+    } else {
+        if( argc < 1 ) {
+            print_help();
+            error_quit();
+        }
+
+        /* This program can be a memory pig, so, to avoid fragmentation,
+           do some big allocs to block out the space */
+        for( size = 10; size > 0; size-- ) {
+            start_alloc = malloc( size * 1000 * 1024 );
+            if( start_alloc != NULL ) {
+                free( start_alloc );
+                break;
+            }
+        }
+
+        argc--;
+        argv++;
+
+        start_arg = valid_args( argc, argv );
+        if( start_arg < 0 ) {
+            print_help();
+            error_quit();
+        }
+
+        file = normalize_fname( file, argv[start_arg], EXT_INPUT_FILE );
+
+        Line_num = 0;
+        In_file = fopen( file, "r" );
+        if( In_file == NULL ) {
+            printf( "Could not open input file: %s\n", file );
+            error_quit();
+        }
+
+        /* this is for the RTF 'Up' button support */
+        if( Output_type == OUT_RTF ) {
+            Help_File = malloc( strlen( file ) + sizeof( EXT_HLP_FILE ) );
+            strcpy( Help_File, file );
+            strcpy( strrchr( Help_File, '.' ), EXT_HLP_FILE );
+        }
+
+        if( Do_index ) {
+            strcpy( strrchr( file, '.' ), EXT_IDX_FILE );
+            Idx_file = fopen( file, "w" );
+            if( Idx_file == NULL ) {
+                printf( "Could not open index file: %s\n", file );
+                error_quit();
+            }
+        }
+
+        if( Do_keywords ) {
+            strcpy( strrchr( file, '.' ), EXT_KW_FILE );
+            KW_file = fopen( file, "w" );
+            if( KW_file == NULL ) {
+                printf( "Could not open index file: %s\n", file );
+                error_quit();
+            }
+        }
+
+        if( Do_blist ) {
+            strcpy( strrchr( file, '.' ), EXT_BLIST_FILE );
+            Blist_file = fopen( file, "w" );
+            if( Blist_file == NULL ) {
+                printf( "Could not open browse list file: %s\n", file );
+                error_quit();
+            }
+        }
+
+        if( Do_contents ) {
+            strcpy( strrchr( file, '.' ), EXT_TBL_FILE );
+            Contents_file = fopen( file, "w" );
+            if( Contents_file == NULL ) {
+                printf( "Could not open table of contents file: %s\n", file );
+                error_quit();
+            }
+        }
+
+        switch( Output_type ) {
+        case OUT_RTF:
+            strcpy( Output_file_ext, EXT_OUTRTF_FILE );
+            break;
+        case OUT_IPF:
+            strcpy( Output_file_ext, EXT_OUTIPF_FILE );
+            break;
+        case OUT_IB:
+            strcpy( Output_file_ext, EXT_OUTIB_FILE );
+            break;
+        case OUT_HTML:
+            strcpy( Output_file_ext, EXT_OUTHTML_FILE );
+            break;
+        case OUT_WIKI:
+            strcpy( Output_file_ext, EXT_OUTWIKI_FILE );
             break;
         }
-    }
 
-    argc--;
-    argv++;
-
-    start_arg = valid_args( argc, argv );
-    if( start_arg < 0 ) {
-        print_help();
-        goto error_exit;
-    }
-
-    file = normalize_fname( file, argv[start_arg], EXT_INPUT_FILE );
-
-    Line_num = 0;
-    In_file = fopen( file, "r" );
-    if( In_file == NULL ) {
-        printf( "Could not open input file: %s\n", file );
-        goto error_exit;
-    }
-
-    /* this is for the RTF 'Up' button support */
-    if( Output_type == OUT_RTF ) {
-        Help_File = malloc( strlen( file ) + sizeof( EXT_HLP_FILE ) );
-        strcpy( Help_File, file );
-        strcpy( strrchr( Help_File, '.' ), EXT_HLP_FILE );
-    }
-
-    if( Do_index ) {
-        strcpy( strrchr( file, '.' ), EXT_IDX_FILE );
-        Idx_file = fopen( file, "w" );
-        if( Idx_file == NULL ) {
-            printf( "Could not open index file: %s\n", file );
-            goto error_exit;
+        if( argc == start_arg + 1 ) {
+            strcpy( strrchr( file, '.' ), Output_file_ext );
+        } else {
+            file = normalize_fname( file, argv[start_arg + 1], Output_file_ext );
         }
-    }
-
-    if( Do_keywords ) {
-        strcpy( strrchr( file, '.' ), EXT_KW_FILE );
-        KW_file = fopen( file, "w" );
-        if( KW_file == NULL ) {
-            printf( "Could not open index file: %s\n", file );
-            goto error_exit;
+        Out_file = fopen( file, "w" );
+        if( Out_file == NULL ) {
+            printf( "Could not open output file: %s\n", file );
+            error_quit();
         }
-    }
 
-    if( Do_blist ) {
-        strcpy( strrchr( file, '.' ), EXT_BLIST_FILE );
-        Blist_file = fopen( file, "w" );
-        if( Blist_file == NULL ) {
-            printf( "Could not open browse list file: %s\n", file );
-            goto error_exit;
-        }
-    }
+        init_whp();
 
-    if( Do_contents ) {
-        strcpy( strrchr( file, '.' ), EXT_TBL_FILE );
-        Contents_file = fopen( file, "w" );
-        if( Contents_file == NULL ) {
-            printf( "Could not open table of contents file: %s\n", file );
-            goto error_exit;
-        }
-    }
+        read_whp_file();
 
-    switch( Output_type ) {
-    case OUT_RTF:
-        strcpy( Output_file_ext, EXT_OUTRTF_FILE );
-        break;
-    case OUT_IPF:
-        strcpy( Output_file_ext, EXT_OUTIPF_FILE );
-        break;
-    case OUT_IB:
-        strcpy( Output_file_ext, EXT_OUTIB_FILE );
-        break;
-    case OUT_HTML:
-        strcpy( Output_file_ext, EXT_OUTHTML_FILE );
-        break;
-    case OUT_WIKI:
-        strcpy( Output_file_ext, EXT_OUTWIKI_FILE );
-        break;
-    }
+        set_browse_numbers();
 
-    if( argc == start_arg + 1 ) {
-        strcpy( strrchr( file, '.' ), Output_file_ext );
-    } else {
-        file = normalize_fname( file, argv[start_arg + 1], Output_file_ext );
-    }
-    Out_file = fopen( file, "w" );
-    if( Out_file == NULL ) {
-        printf( "Could not open output file: %s\n", file );
-        goto error_exit;
-    }
+        fclose( In_file );
+        In_file = NULL;
 
-    if( 0 != setjmp( Jmp_buf ) ) {
-        goto error_exit;
-    }
-
-    init_whp();
-
-    read_whp_file();
-
-    set_browse_numbers();
-
-    fclose( In_file );
-    In_file = NULL;
-
-    if( Do_ctx_ids ) {
-        strcpy( strrchr( file, '.' ), EXT_DEF_FILE );
-        In_file = fopen( file, "r" );
-        if( In_file != NULL ) {
-            read_ctx_ids();
-            fclose( In_file );
-            In_file = NULL;
-        }
-    }
-    set_ctx_ids();
-
-    if( Do_def ) {
-        strcpy( strrchr( file, '.' ), EXT_DEF_FILE );
-        Def_file = fopen( file, "w" );
-        if( Def_file == NULL ) {
-            printf( "Could not open define file: %s\n", file );
-            goto error_exit;
-        }
-    }
-
-    if( Do_hdef ) {
-        strcpy( strrchr( file, '.' ), EXT_HDEF_FILE );
-        Hdef_file = fopen( file, "w" );
-        if( Hdef_file == NULL ) {
-            printf( "Could not open help define file: %s\n", file );
-            goto error_exit;
-        }
-    }
-
-    check_links();
-
-    switch( Output_type ) {
-    case OUT_RTF:
-        Brace_check = true;
-        rtf_output_file();
-        Brace_check = false;
-        if( Brace_count != 0 ) {
-            if( Brace_count < 0 ) {
-                printf( "Too many braces ('}'). Off by %d\n", -Brace_count );
+        if( Do_ctx_ids ) {
+            if( h_file_name != NULL ) {
+                In_file = fopen( h_file_name, "r" );
             } else {
-                printf( "Not enough braces ('}'). Off by %d\n", Brace_count );
+                strcpy( strrchr( file, '.' ), EXT_DEF_FILE );
+                In_file = fopen( file, "r" );
             }
-            goto error_exit;
+            if( In_file != NULL ) {
+                read_ctx_ids();
+                fclose( In_file );
+                In_file = NULL;
+            }
         }
-        break;
-    case OUT_IPF:
-        ipf_output_file();
-        break;
-    case OUT_IB:
-        ib_output_file();
-        break;
-    case OUT_HTML:
-        html_output_file();
-        break;
-    case OUT_WIKI:
-        wiki_output_file();
-        break;
-    }
-    if( Do_contents ) {
-        /* do this before sorting the context lists */
-        output_contents_file();
-    }
-    sort_ctx_list();
-    if( Do_index ) {
-        output_idx_file();
-    }
-    if( Do_keywords ) {
-        output_kw_file();
-    }
-    if( Do_blist ) {
-        output_blist_file();
-    }
-    if( Do_def ) {
-        output_def_file();
-    }
-    if( Do_hdef ) {
-        output_hdef_file();
-    }
-    rc = 0;
+        set_ctx_ids();
 
-error_exit:
+        if( Do_def ) {
+            if( h_file_name != NULL ) {
+                Def_file = fopen( h_file_name, "w" );
+                if( Def_file == NULL ) {
+                    printf( "Could not open define file: %s\n", h_file_name );
+                    error_quit();
+                }
+            } else {
+                strcpy( strrchr( file, '.' ), EXT_DEF_FILE );
+                Def_file = fopen( file, "w" );
+                if( Def_file == NULL ) {
+                    printf( "Could not open define file: %s\n", file );
+                    error_quit();
+                }
+            }
+        }
 
-    if( Header_File != NULL ) {
-        free( Header_File );
-    }
-    if( Footer_File != NULL ) {
-        free( Footer_File );
-    }
-    if( Help_File != NULL ) {
-        free( Help_File );
-    }
-    free( file );
+        if( Do_hdef ) {
+            strcpy( strrchr( file, '.' ), EXT_HDEF_FILE );
+            Hdef_file = fopen( file, "w" );
+            if( Hdef_file == NULL ) {
+                printf( "Could not open help define file: %s\n", file );
+                error_quit();
+            }
+        }
 
-    if( Idx_file != NULL ) {
-        fclose( Idx_file );
-    }
-    if( KW_file != NULL ) {
-        fclose( KW_file );
-    }
-    if( Blist_file != NULL ) {
-        fclose( Blist_file );
-    }
-    if( Contents_file != NULL ) {
-        fclose( Contents_file );
-    }
-    if( Def_file != NULL ) {
-        fclose( Def_file );
-    }
-    if( Hdef_file != NULL ) {
-        fclose( Hdef_file );
-    }
-    if( Out_file != NULL ) {
-        fclose( Out_file );
+        check_links();
+
+        switch( Output_type ) {
+        case OUT_RTF:
+            Brace_check = true;
+            rtf_output_file();
+            Brace_check = false;
+            if( Brace_count != 0 ) {
+                if( Brace_count < 0 ) {
+                    printf( "Too many braces ('}'). Off by %d\n", -Brace_count );
+                } else {
+                    printf( "Not enough braces ('}'). Off by %d\n", Brace_count );
+                }
+                error_quit();
+            }
+            break;
+        case OUT_IPF:
+            ipf_output_file();
+            break;
+        case OUT_IB:
+            ib_output_file();
+            break;
+        case OUT_HTML:
+            html_output_file();
+            break;
+        case OUT_WIKI:
+            wiki_output_file();
+            break;
+        }
+        if( Do_contents ) {
+            /* do this before sorting the context lists */
+            output_contents_file();
+        }
+        sort_ctx_list();
+        if( Do_index ) {
+            output_idx_file();
+        }
+        if( Do_keywords ) {
+            output_kw_file();
+        }
+        if( Do_blist ) {
+            output_blist_file();
+        }
+        if( Do_def ) {
+            output_def_file();
+        }
+        if( Do_hdef ) {
+            output_hdef_file();
+        }
+        rc = 0;
     }
 
     return( rc );

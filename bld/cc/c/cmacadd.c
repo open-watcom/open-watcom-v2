@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,35 +33,24 @@
 
 #include "cvars.h"
 #include <stddef.h>
+#include "cmacadd.h"
 
 
 #define macroSizeAlign(x)   _RoundUp( (x), sizeof( int ) )
 
-static MACADDR_T    MacroSegment;       /* segment for macro definitions */
-static size_t       MacroSegmentLimit;  /* remaining free bytes in MacroSegment */
+typedef char        *MACADDR_T;         /* contains actual pointer to block of memory */
 
-MEPTR CreateMEntry( const char *name, size_t len )
-{
-    MEPTR   mentry;
-    size_t  size;
+typedef struct macro_seg_list {
+    struct macro_seg_list   *next;
+    MACADDR_T               macro_seg;
+} macro_seg_list;
 
-    if( len == 0 ) {
-        len = strlen( name );
-    }
-    size = offsetof( MEDEFN, macro_name ) + len + 1;
-    MacroReallocOverflow( size, 0 );
-    mentry = (MEPTR)MacroOffset;
-    memcpy( mentry->macro_name, name, len );
-    mentry->macro_name[len] = '\0';
-    mentry->macro_len = size;
-    mentry->macro_defn = 0;
-    mentry->parm_count = 0;
-    mentry->src_loc.fno = 0;
-    mentry->src_loc.line = 0;
-    return( mentry );
-}
+static MACADDR_T        MacroSegment;       /* segment for macro definitions */
+static size_t           MacroSegmentLimit;  /* remaining free bytes in MacroSegment */
+static MACADDR_T        MacroOffset;        /* first free byte in MacroSegment */
+static macro_seg_list   *MacSegList;        /* pointer to list of macro segments */
 
-void *MacroAllocateInSeg( size_t size )
+static void *MacroAllocateInSeg( size_t size )
 {
     void *retn;
 
@@ -71,7 +60,6 @@ void *MacroAllocateInSeg( size_t size )
     MacroSegmentLimit -= size;
     return( retn );
 }
-
 
 static void AllocMacroSegment( size_t minimum )
 {
@@ -92,6 +80,10 @@ static void AllocMacroSegment( size_t minimum )
     MacSegList = msl;
 }
 
+void InitMacroSegments( void )
+{
+    MacSegList = NULL;
+}
 
 void FreeMacroSegments( void )
 {
@@ -105,13 +97,12 @@ void FreeMacroSegments( void )
 }
 
 
-void MacroCopy( const void *mptr, MACADDR_T offset, size_t amount )
+static void MacroCopy( const void *mptr, MACADDR_T offset, size_t amount )
 {
     memcpy( offset, mptr, amount );
 }
 
-
-void MacroReallocOverflow( size_t amount_needed, size_t amount_used )
+static void MacroReallocOverflow( size_t amount_needed, size_t amount_used )
 {
     MACADDR_T old_offset;
 
@@ -124,7 +115,6 @@ void MacroReallocOverflow( size_t amount_needed, size_t amount_used )
         }
     }
 }
-
 
 static MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
 {
@@ -204,12 +194,71 @@ int MacroCompare( MEPTR m1, MEPTR m2 )
     return( memcmp( m1->macro_name, m2->macro_name, m1->macro_len - offsetof(MEDEFN,macro_name) ) );
 }
 
-
 MEPTR MacroLookup( const char *buf )
 {
     MEPTR       mentry, *lnk;
 
     lnk = MacroLkUp( buf, &MacHash[MacHashValue] );
     mentry = *lnk;
+    return( mentry );
+}
+
+void MacroSegmentAddChar(           // MacroSegment: ADD A CHARACTER
+    size_t *mlen,                   // - data length
+    char chr )                      // - character to insert
+{
+    size_t  clen;
+
+    clen = *mlen;
+    MacroReallocOverflow( clen + 1, clen );
+    MacroOffset[clen] = chr;
+    *mlen = clen + 1;
+}
+
+void MacroSegmentAddToken(          // MacroSegment: ADD A TOKEN
+    size_t *mlen,                   // - data Length
+    TOKEN token )                   // - token to be added
+{
+    size_t  clen;
+
+    clen = *mlen;
+    MacroReallocOverflow( clen + sizeof( TOKEN ), clen );
+    *(TOKEN *)( MacroOffset + clen ) = token;
+    *mlen = clen + sizeof( TOKEN );
+}
+
+
+void MacroSegmentAddMem(            // MacroSegment: ADD A SEQUENCE OF BYTES
+    size_t *mlen,                   // - data Length
+    const char *buff,               // - bytes to be added
+    size_t len )                    // - number of bytes
+{
+    size_t  clen;
+
+    clen = *mlen;
+    MacroReallocOverflow( clen + len, clen );
+    memcpy( MacroOffset + clen, buff, len );
+    *mlen += len;
+}
+
+MEPTR CreateMEntry( const char *name, size_t len )
+{
+    MEPTR   mentry;
+    size_t  size;
+
+    if( len == 0 ) {
+        len = strlen( name );
+    }
+    size = offsetof( MEDEFN, macro_name ) + len + 1;
+    MacroReallocOverflow( size, 0 );
+    mentry = (MEPTR)MacroOffset;
+    memcpy( mentry->macro_name, name, len );
+    mentry->macro_name[len] = '\0';
+    mentry->macro_len = size;
+    mentry->macro_defn = 0;
+    mentry->parm_count = 0;
+    mentry->src_loc.fno = 0;
+    mentry->src_loc.line = 0;
+    mentry->src_loc.column = 0;
     return( mentry );
 }

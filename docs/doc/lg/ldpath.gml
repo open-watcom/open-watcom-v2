@@ -8,9 +8,11 @@ searched for object files appearing in subsequent "FILE" directives.
 When the "PATH" directive is specified, the current directory will no
 longer be searched unless it appears in the "PATH" directive.
 The format of the "PATH" directive (short form "P") is as follows.
+.cw !
 .mbigbox
     PATH path_name{&ps.path_name}
 .embigbox
+.cw ;
 .synote
 .mnote path_name
 is a path name.

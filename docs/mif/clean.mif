@@ -6,7 +6,7 @@ clean : .procedure
  @if exist *.bmp rm -f *.bmp
  @if exist *.hlp rm -f *.hlp
  @if exist *.cnt rm -f *.cnt
- @if exist *.h rm -f *.h
+ @if exist *.gh rm -f *.gh
  @if exist *.ipf rm -f *.ipf
  @if exist *.inf rm -f *.inf
  @if exist *.tmp rm -f *.tmp
@@ -16,22 +16,27 @@ clean : .procedure
  @if exist *.rtf rm -f *.rtf
  @if exist *.hpj rm -f *.hpj
  @if exist *.blt rm -f *.blt
- @if exist *.ph rm -f *.ph
+ @if exist *.gh rm -f *.gh
  @if exist *.hh rm -f *.hh
+ @if exist *.ph rm -f *.ph
  @if exist *.err rm -f *.err
- @if exist *.PTF rm -f *.PTF
- @if exist *.ptf rm -f *.ptf
+ @if exist *.PT? rm -f *.PT?
+ @if exist *.pt? rm -f *.pt?
  @if exist *.idx rm -f *.idx
  @if exist *.tbl rm -f *.tbl
  @if exist *.kw rm -f *.kw
  @if exist *.mix rm -f *.mix
  @if exist *.cn1 rm -f *.cn1
- @if exist *.GML rm -f *.GML
- @if exist *.gml rm -f *.gml
  @if exist *.LAY rm -f *.LAY
  @if exist *.lay rm -f *.lay
  @if exist *.tim rm -f *.tim
  @if exist *.dat rm -f *.dat
+
+ @if exist *.GML rm -f *.GML
+ @if exist *.gml rm -f *.gml
+ @if exist *.cop rm -f *.cop
+ @if exist *.COP rm -f *.COP
+
 
  @if exist *.ch? rm -f *.ch?
 
@@ -40,10 +45,10 @@ clean : .procedure
 !ifeq dotarget htmlhelp
  @for %f in ($(books)) do @if exist %f rm -rf %f
 !endif
- 
+
 # useful to delete all windows .gid files created during testing
  @if exist *.gid @attrib -h *.gid
  @if exist *.gid rm -f *.gid
- 
+
 # delete generated DOS Emulator batch files
  @if exist *.bat rm -f *.bat

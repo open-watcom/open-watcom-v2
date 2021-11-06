@@ -195,7 +195,7 @@ symbol * AddSym( void )
     symbol              *sym;
 
     sym = CarveAlloc( CarveSymbol );
-    BasicInitSym(sym);
+    BasicInitSym( sym );
     if( LastSym != NULL )
         LastSym->link = sym;
     LastSym = sym;

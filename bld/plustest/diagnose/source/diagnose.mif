@@ -75,7 +75,9 @@ opt_diag0292 = -zpw -zk0
 opt_diag0296 = -jw
 opt_diag0306 = -za0x
 
-diags_sys_defn = &
+diags_sys_i86_defn =
+
+diags_sys_386_defn = &
     diag0077$(err_sys) &
     diag0080$(err_sys) &
     diag0105$(err_sys) &
@@ -85,6 +87,8 @@ diags_sys_defn = &
     diag0173$(err_sys) &
     diag0261$(err_sys) &
     diag0274$(err_sys) &
+
+diags_sys_axp_defn =
 
 
 diags_0099_defn = &
@@ -164,10 +168,8 @@ diags_0099_defn = &
     diag0074$(err_sin) &
     diag0075$(err_sin) &
     diag0076$(err_sin) &
-    diag0077$(err_sin) &
     diag0078$(err_sin) &
     diag0079$(err_sin) &
-    diag0080$(err_sin) &
     diag0081$(err_sin) &
     diag0082$(err_sin) &
     diag0083$(err_sin) &
@@ -194,7 +196,6 @@ diags_0199_defn = &
     diag0102$(err_sin) &
     diag0103$(err_sin) &
     diag0104$(err_sin) &
-    diag0105$(err_sin) &
     diag0106$(err_sin) &
     diag0107$(err_sin) &
     diag0108$(err_sin) &
@@ -242,7 +243,6 @@ diags_0199_defn = &
     diag0150$(err_sin) &
     diag0151$(err_sin) &
     diag0152$(err_sin) &
-    diag0153$(err_sin) &
     diag0154$(err_sin) &
     diag0155$(err_sin) &
     diag0156$(err_sin) &
@@ -255,14 +255,11 @@ diags_0199_defn = &
     diag0163$(err_sin) &
     diag0164$(err_sin) &
     diag0165$(err_sin) &
-    diag0166$(err_sin) &
     diag0167$(err_sin) &
-    diag0168$(err_sin) &
     diag0169$(err_sin) &
     diag0170$(err_sin) &
     diag0171$(err_sin) &
     diag0172$(err_sin) &
-    diag0173$(err_sin) &
     diag0174$(err_sin) &
     diag0175$(err_sin) &
     diag0176$(err_sin) &
@@ -352,7 +349,6 @@ diags_0299_defn = &
     diag0258$(err_sin) &
     diag0259$(err_sin) &
     diag0260$(err_sin) &
-    diag0261$(err_sin) &
     diag0262$(err_sin) &
     diag0263$(err_sin) &
     diag0264$(err_sin) &
@@ -365,7 +361,6 @@ diags_0299_defn = &
     diag0271$(err_sin) &
     diag0272$(err_sin) &
     diag0273$(err_sin) &
-    diag0274$(err_sin) &
     diag0275$(err_sin) &
     diag0278$(err_sin) &
     diag0279$(err_sin) &
@@ -409,7 +404,10 @@ diags_0399_defn = &
 err_sin = .err
 err_sys = .ser
 
-diags_sys = $+ $(diags_sys_defn) $-
+diags_sys_i86 = $+ $(diags_sys_i86_defn) $-
+diags_sys_386 = $+ $(diags_sys_386_defn) $-
+diags_sys_axp = $+ $(diags_sys_axp_defn) $-
+
 diags_0099 = $+ $(diags_0099_defn) $-
 diags_0199 = $+ $(diags_0199_defn) $-
 diags_0299 = $+ $(diags_0299_defn) $-

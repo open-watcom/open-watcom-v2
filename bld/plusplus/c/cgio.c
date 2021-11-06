@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,11 @@
 #include "stats.h"
 #include "module.h"
 #include "dumpapi.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+    #include "dbg.h"
+    #include "pragdefn.h"
+#endif
 
 
 static CGFILE *cg_file_ring;    // ring of virtual files (live)
@@ -66,12 +72,9 @@ ExtraRptCtr( cgio_locates_thunk );
 
 #ifndef NDEBUG
 
-    #include "dbg.h"
-    #include "pragdefn.h"
-
     static void _dump( CGFILE* cgfile, const char* prefix )
     {
-        if( PragDbgToggle.callgraph ) {
+        if( TOGGLEDBG( callgraph ) ) {
             VBUF vbuf;
             printf( "Cgio: %p %s - %s\n"
                   , cgfile
@@ -582,7 +585,7 @@ static void getCGFileLocn( CGIOBUFF *h, void *cursor, CGFILE_INS *p )
 
 static unsigned padOutICBlock( unsigned ics )
 {
-    auto CGINTER pad_ic;
+    CGINTER pad_ic;
 
     if(( ics % CGINTER_BLOCKING ) != 0 ) {
         pad_ic.opcode = IC_PCH_PAD;
@@ -607,9 +610,9 @@ static void saveCGFILE( void *e, carve_walk_base *d )
     unsigned ics;
     void *zap_reloc;
     CGIRELOCFN *reloc;
-    auto CGINTER terminator;
-    auto CGINTER zap_ref;
-    auto CGFILE_INS zap_locn;
+    CGINTER terminator;
+    CGINTER zap_ref;
+    CGFILE_INS zap_locn;
 
     if( !file->u.s.write_to_pch || file->symbol == BRINF_SYMBOL ) {
         return;
@@ -715,7 +718,7 @@ static void markFreeCGFILE( void *p )
 pch_status PCHWriteCGFiles( void )
 {
     CGFILE *curr;
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     CarveWalkAllFree( carveCGFILE, markFreeCGFILE );
     RingIterBeg( cg_file_ring, curr ) {
@@ -730,7 +733,7 @@ pch_status PCHReadCGFiles( void )
 {
     CGFILE *curr;
     CGINTER last;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveCGFILE, &data );
     for( ; (curr = PCHReadCVIndexElement( &data )) != NULL; ) {

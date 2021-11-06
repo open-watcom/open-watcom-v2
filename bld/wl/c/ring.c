@@ -130,7 +130,7 @@ void* RINGNAME(Promote) (       // PROMOTE ELEMENT TO START OF RING
     last = *rhdr;
     if( prev == NULL || last == prev ) {
         /* already at front */
-        return element;
+        return( element );
     }
     if( last != element ) {
         /* delete */
@@ -143,7 +143,7 @@ void* RINGNAME(Promote) (       // PROMOTE ELEMENT TO START OF RING
         last = prev;
     }
     *(RING **)hdr = last;
-    return element;
+    return( element );
 }
 
 
@@ -215,7 +215,8 @@ void * RINGNAME(Pred)(          // FIND PREVIOUS ELEMENT IN A RING
     } else {
         for( pred = rhdr; ; ) {
             next = pred->next;
-            if( element == next ) break;
+            if( element == next )
+                break;
             pred = next;
             if( pred == rhdr ) {
                 pred = NULL;
@@ -288,19 +289,19 @@ void* RINGNAME(Push) (          // INSERT ELEMENT AT START OF RING
         relement->next = last->next;
         last->next = relement;
     }
-    return relement;
+    return( relement );
 }
 
 void * RINGNAME(Last) (         // RETURN LAST ELEMENT IN THE RING
     void *hdr )                 // - ring header
 {
-    return hdr;
+    return( hdr );
 }
 
 void * RINGNAME(First) (        // RETURN FIRST ELEMENT IN THE RING
     void *hdr )                 // - ring header
 {
-    return ((RING *)hdr)->next;
+    return( ((RING *)hdr)->next );
 }
 
 void * RINGNAME(Pop) (          // PRUNE FIRST ELEMENT IN THE RING
@@ -340,7 +341,8 @@ void * RINGNAME(Lookup) (       // LOOKUP IN A RING
         curr = rhdr;
         for( ; ; ) {
             curr = curr->next;
-            if( (*rtn)( curr, comparand ) ) break;
+            if( (*rtn)( curr, comparand ) )
+                break;
             if( curr == rhdr ) {
                 curr = NULL;
                 break;
@@ -361,7 +363,7 @@ unsigned RINGNAME(Count) (      // COUNT ELEMENTS IN A RING
     RingIterBeg( hdr, curr ) {
         ++count;
     } RingIterEnd( curr )
-    return count;
+    return( count );
 }
 
 void *RINGNAME(Alloc) (         // ALLOCATE AND APPEND NEW ELEMENT
@@ -393,7 +395,8 @@ void RINGNAME(Free) (           // FREE ALL ELEMENTS IN A RING
     for( ;; ) {
         /* modify ring in an atomic manner */
         elt = RINGNAME(Pop)( hdr );
-        if( elt == NULL ) break;
+        if( elt == NULL )
+            break;
         _LnkFree( elt );
     }
 }
@@ -415,7 +418,7 @@ void* RINGNAME(CarveAlloc) (    // CARVER ALLOC AND APPEND AN ENTRY
 
     elt = CarveAlloc( carver );
     RINGNAME(Append)( hdr, elt );
-    return elt;
+    return( elt );
 }
 
 

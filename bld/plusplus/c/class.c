@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -427,7 +428,7 @@ static bool handleAccessDeclaration( PTREE id_tree )
     symbol_flag perm;
     symbol_flag curr_perm;
     bool error_diagnosed;
-    auto TOKEN_LOCN name_locn;
+    TOKEN_LOCN name_locn;
 
     error_diagnosed = false;
     data = classDataStack;
@@ -631,7 +632,7 @@ void ClassChangingScope( SYMBOL typedef_sym, SCOPE new_scope )
     TYPE class_type;
     SCOPE class_scope;
 
-    class_type = StructType( typedef_sym->sym_type );
+    class_type = ClassType( typedef_sym->sym_type );
     class_scope = class_type->u.c.scope;
     ScopeAdjustUsing( GetCurrScope(), NULL );
     ScopeEstablishEnclosing( class_scope, new_scope );
@@ -817,7 +818,7 @@ TYPE ClassTagDefinition( TYPE type, NAME name )
     TYPE class_type;
     CLASSINFO *info;
 
-    class_type = StructType( type );
+    class_type = ClassType( type );
     if( class_type == NULL ) {
         return( NULL );
     }
@@ -868,7 +869,7 @@ TYPE ClassPreDefined( NAME name, TOKEN_LOCN *locn )
     SYMBOL_NAME sym_name;
     SYMBOL_NAME std_sym_name;
     SYMBOL std_sym;
-    auto CLASS_DATA data;
+    CLASS_DATA data;
 
     id = NULL;
     ClassPush( &data );
@@ -1532,7 +1533,7 @@ static void setAbstractStatus( CLASS_DATA *data, CLASSINFO *info )
 
     info->abstract_OK = true;
     RingIterBeg( data->bases, base ) {
-        base_type = StructType( base->type );
+        base_type = ClassType( base->type );
         base_info = base_type->u.c.info;
         if( base_info->abstract_OK ) {
             if( base_info->abstract ) {
@@ -2638,7 +2639,7 @@ BASE_CLASS *ClassBaseSpecifier( inherit_flag flags, DECL_SPEC *dspec )
     base_type = BindTemplateClass( dspec->partial, NULL, false );
     PTypeRelease( dspec );
     error_detected = false;
-    base_type = StructType( base_type );
+    base_type = ClassType( base_type );
     if( classDataStack->is_union ) {
         CErr1( ERR_UNION_CANNOT_HAVE_BASE );
         error_detected = true;
@@ -3207,7 +3208,7 @@ bool ClassAnonymousUnion( DECL_SPEC *dspec )
     stg_class_t stg_class;
     bool emit_init;
 
-    class_type = StructType( dspec->partial );
+    class_type = ClassType( dspec->partial );
     if( class_type == NULL ) {
         return( false );
     }
@@ -3290,7 +3291,7 @@ static bool verifyBaseClassInit( PTREE base, SCOPE scope )
     TYPE class_type;
     SCOPE class_scope;
 
-    class_type = StructType( base->type );
+    class_type = ClassType( base->type );
     class_scope = ScopeNearestNonTemplate( scope );
     if( class_type != NULL ) {
         if( ScopeDirectBase( class_scope, class_type ) ) {
@@ -3719,7 +3720,7 @@ bool ClassDefineRefdDefaults( void )
 bool ClassCorrupted(            // TEST IF CLASS (FOR TYPE) IS CORRUPTED
     TYPE type )                 // - should be a class type
 {
-    type = StructType( type );
+    type = ClassType( type );
     if( type == NULL || type->u.c.info->corrupted ) {
         return( true );
     }
@@ -3754,7 +3755,7 @@ static void saveBaseClass( void *e, carve_walk_base *d )
 
 pch_status PCHWriteBases( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     PCHWriteVar( classIndex );
     CarveWalkAllFree( carveBASE_CLASS, markFreeBaseClass );
@@ -3766,7 +3767,7 @@ pch_status PCHWriteBases( void )
 pch_status PCHReadBases( void )
 {
     BASE_CLASS *b;
-    auto cvinit_t data;
+    cvinit_t data;
 
     PCHReadVar( classIndex );
     CarveInitStart( carveBASE_CLASS, &data );

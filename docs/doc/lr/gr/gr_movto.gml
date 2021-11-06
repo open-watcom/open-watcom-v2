@@ -1,5 +1,5 @@
-.gfuncw moveto
-.gsynop begin 
+.gfuncw _moveto
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _moveto( short x, short y );
 
@@ -29,14 +29,14 @@ the point at the coordinates
 .coord x y .
 Nothing is drawn by the &routine..
 The
-.kw _lineto
+.reffunc _lineto
 &routine uses the current output position as the starting point
 when a line is drawn.
 .pp
 Note that the output position for graphics output differs from that
 for text output.
 The output position for text output can be set by use of the
-.kw _settextposition
+.reffunc _settextposition
 &routine..
 .desc end
 .return begin

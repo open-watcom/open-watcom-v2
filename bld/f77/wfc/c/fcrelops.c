@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,17 +36,14 @@
 //
 
 #include "ftnstd.h"
-#include "symbol.h"
+#include "global.h"
 #include "wf77defs.h"
-#include "wf77auxd.h"
-#include "cg.h"
-#include "rtconst.h"
+#include "wf77aux.h"
 #include "emitobj.h"
 #include "fctypes.h"
 #include "fcjmptab.h"
 #include "fcrelops.h"
 #include "fcstring.h"
-#include "fcrtns.h"
 #include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
@@ -136,7 +134,7 @@ cg_name GetChOp( cg_type ch_type ) {
         if( lit->u.lt.flags & (LT_SCB_REQUIRED | LT_SCB_TMP_REFERENCE) ) {
             CGTrash( XPop() );
         }
-        return( IntegerConstant( (ftn_type *)(&lit->u.lt.value), lit->u.lt.length));
+        return( IntegerConstant( (ftn_type *)(&lit->u.lt.value), lit->u.lt.length ) );
     } else {
         return( CGUnary( O_POINTS, SCBPointer( XPop() ), ch_type ) );
     }

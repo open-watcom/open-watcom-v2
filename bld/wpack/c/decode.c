@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -308,7 +308,7 @@ void NoShannonDecode( unsigned long textsize )
             getlen += 8;
             secondbuf = DecReadByte();
         }
-        if( (short int) getbuf < 0 ) {    // it is a copy command.
+        if( (short)getbuf < 0 ) {    // it is a copy command.
             j = (getbuf >> 9) & 0x3F;
             getlen -= 7;
             getbuf <<= 7;
@@ -429,8 +429,8 @@ static bool CompareCRC( unsigned long crcvalue )
 
 static int FileExists( const char *name, file_info *info )
 {
-    auto struct stat            statblk;
-    int                         rc;
+    struct stat     statblk;
+    int             rc;
 
     rc = stat( name, &statblk );
     if( rc == 0 ) {
@@ -461,8 +461,8 @@ static int FileExists( const char *name, file_info *info )
 bool DecodeFile( file_info *info, arccmd *cmd )
 /****************************************************/
 {
-    PGROUP2         pg1;
-    PGROUP2         pg2;
+    pgroup2         pg1;
+    pgroup2         pg2;
     char            *name;
     char            *thename;   // filename terminated with a nullchar.
     int             pathlen;
@@ -547,7 +547,7 @@ int Decode( arccmd *cmd )
             for( currfile = filedata; *currfile != NULL; currfile++ ) {
                 namelen = (*currfile)->namelen & NAMELEN_MASK;
                 if( strlen( currname->filename ) == namelen &&
-                    memicmp(currname->filename, (*currfile)->name, namelen) == 0 ) {
+                    strnicmp( currname->filename, (*currfile)->name, namelen ) == 0 ) {
                     if( BufSeek( (*currfile)->disk_addr ) != -1 ) {
                         if( !DecodeFile( *currfile, cmd ) ) {
                             return false;
@@ -557,7 +557,8 @@ int Decode( arccmd *cmd )
                 }
             }
             if( *currfile == NULL ) {
-                char msgx[ 50 ];
+                char msgx[50];
+
                 strcpy( msgx, LookupText( NULL, TXT_NOT_IN_ARC ) );
                 Log( LookupText( NULL, TXT_WARN_FILE ), "\"", currname->filename, "\"", msgx, NULL );
             }

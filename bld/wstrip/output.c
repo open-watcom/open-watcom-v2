@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "watcom.h"
 #include "wstrip.h"
 #include "banner.h"
+#include "usage.h"
 
 #include "clibext.h"
 
@@ -48,15 +49,11 @@
 #if defined( INCL_MSGTEXT )
 
 static char *StringTable[] = {
-    "",                             // message ID's start at 1
-    #include "incltext.gh"
+    #define pick(c,e,j) e,
+    #include "wstrip.msg"
+    #include "usage.gh"
+    #undef pick
 };
-
-static bool Msg_Get( int resourceid, char *buffer )
-{
-    strcpy( buffer, StringTable[resourceid] );
-    return( true );
-}
 
 #else
 
@@ -64,42 +61,53 @@ static bool Msg_Get( int resourceid, char *buffer )
 #include "wresset2.h"
 #include "wreslang.h"
 
-
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
+#endif
+
 static bool Msg_Get( int resourceid, char *buffer )
 {
+#if defined( INCL_MSGTEXT )
+    strcpy( buffer, StringTable[resourceid] );
+#else
     if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
+#endif
     return( true );
 }
 
 bool Msg_Init( void )
 {
+#if defined( INCL_MSGTEXT )
+    return( true );
+#else
     char        name[_MAX_PATH];
 
     hInstance.status = 0;
     if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
         MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( Msg_Get( MSG_USAGE_FIRST, name ) ) {
+        if( Msg_Get( MSG_USAGE_BASE, name ) ) {
             return( true );
         }
     }
     CloseResFile( &hInstance );
     printf( NO_RES_MESSAGE );
     return( false );
+#endif
 }
 
 
 bool Msg_Fini( void )
 {
+#if defined( INCL_MSGTEXT )
+    return( true );
+#else
     return( CloseResFile( &hInstance ) );
-}
-
 #endif
+}
 
 void Banner( void )
 {
@@ -115,13 +123,20 @@ void Usage( void )
     char        msg_buffer[RESOURCE_MAX_SIZE];
     int         i;
 
-    for( i = MSG_USAGE_FIRST; i <= MSG_USAGE_LAST; i++ ) {
+    printf( "\n" );
+    i = MSG_USAGE_BASE + 1;
+    Msg_Get( i++, msg_buffer );
+#ifdef BOOTSTRAP
+    printf( msg_buffer, "bwstrip" );
+#else
+    printf( msg_buffer, "wstrip" );
+#endif
+    printf( "\n" );
+    for( ; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         Msg_Get( i, msg_buffer );
         printf( "%s\n", msg_buffer );
     }
-#if !defined( INCL_MSGTEXT )
     Msg_Fini();
-#endif
     exit( -1 );
 }
 
@@ -134,8 +149,6 @@ void Fatal( int reason, const char *insert )
     printf( msg_buffer, insert );
     Msg_Get( MSG_WSTRIP_ABORT, msg_buffer );
     printf( "%s", msg_buffer );
-#if !defined( INCL_MSGTEXT )
     Msg_Fini();
-#endif
     exit( -1 );
 }

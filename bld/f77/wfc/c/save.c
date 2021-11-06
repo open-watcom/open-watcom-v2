@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +98,7 @@ void    CpSave( void ) {
                 ReqNOpn();
             } else if( ReqName( NAME_VAR_OR_ARR ) ) {
                 sym_ptr = LkSym();
-                if( ( sym_ptr->u.ns.flags & ~SV_ON_OR_OFF ) != SY_VARIABLE ) {
+                if( (sym_ptr->u.ns.flags & ~SV_ON_OR_OFF) != SY_VARIABLE ) {
                     IllName( sym_ptr );
                 } else {
                     Save( sym_ptr );

@@ -1,0 +1,17 @@
+/* UTF-8 encoding, ¥ */
+
+#include "wreslang.rh"
+#include "wfl.rh"
+
+STRINGTABLE
+BEGIN
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    #include "wflmsgs.gh"
+    #include "usage.gh"
+    #undef pick
+
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    #include "wflmsgs.gh"
+    #include "usage.gh"
+    #undef pick
+END

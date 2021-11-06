@@ -1,5 +1,5 @@
-.gfunc pg_hlabelchart
-.gsynop begin 
+.gfunc _pg_hlabelchart
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_hlabelchart( chartenv _FAR *env,
                             short x, short y,

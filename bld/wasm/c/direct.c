@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,7 @@
 #include "myassert.h"
 #include "asmdefs.h"
 #include "pathgrp2.h"
+#include "pcobj.h"
 
 #include "clibext.h"
 
@@ -223,42 +224,42 @@ static unsigned char SimCodeSkip[2][SIM_LAST] = {
 static const char * const SimCodeBegin[2][2][SIM_LAST] = {
     {
         {
-            SIM_NAME_CODE       " SEGMENT WORD PUBLIC '"         SIM_CLASS_CODE       "' IGNORE",
-            SIM_NAME_STACK      " SEGMENT PARA STACK '"          SIM_CLASS_STACK      "' IGNORE",
-            SIM_NAME_DATA       " SEGMENT WORD PUBLIC '"         SIM_CLASS_DATA       "' IGNORE",
-            SIM_NAME_DATA_UN    " SEGMENT WORD PUBLIC '"         SIM_CLASS_DATA_UN    "' IGNORE",
-            SIM_NAME_FARDATA    " SEGMENT PARA PRIVATE '"        SIM_CLASS_FARDATA    "' IGNORE",
-            SIM_NAME_FARDATA_UN " SEGMENT PARA PRIVATE '"        SIM_CLASS_FARDATA_UN "' IGNORE",
-            SIM_NAME_CONST      " SEGMENT WORD PUBLIC '"         SIM_CLASS_CONST      "' READONLY IGNORE"
+            SIM_NAME_CODE       " SEGMENT WORD PUBLIC '"         SIM_CLASS_CODE       "'",
+            SIM_NAME_STACK      " SEGMENT PARA STACK '"          SIM_CLASS_STACK      "'",
+            SIM_NAME_DATA       " SEGMENT WORD PUBLIC '"         SIM_CLASS_DATA       "'",
+            SIM_NAME_DATA_UN    " SEGMENT WORD PUBLIC '"         SIM_CLASS_DATA_UN    "'",
+            SIM_NAME_FARDATA    " SEGMENT PARA PRIVATE '"        SIM_CLASS_FARDATA    "'",
+            SIM_NAME_FARDATA_UN " SEGMENT PARA PRIVATE '"        SIM_CLASS_FARDATA_UN "'",
+            SIM_NAME_CONST      " SEGMENT WORD PUBLIC '"         SIM_CLASS_CONST      "' READONLY"
         },
         {
-            SIM_NAME_CODE       " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_CODE       "' IGNORE",
-            SIM_NAME_STACK      " SEGMENT DWORD USE32 STACK '"   SIM_CLASS_STACK      "' IGNORE",
-            SIM_NAME_DATA       " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_DATA       "' IGNORE",
-            SIM_NAME_DATA_UN    " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_DATA_UN    "' IGNORE",
-            SIM_NAME_FARDATA    " SEGMENT DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA    "' IGNORE",
-            SIM_NAME_FARDATA_UN " SEGMENT DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA_UN "' IGNORE",
-            SIM_NAME_CONST      " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_CONST      "' READONLY IGNORE"
+            SIM_NAME_CODE       " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_CODE       "'",
+            SIM_NAME_STACK      " SEGMENT DWORD USE32 STACK '"   SIM_CLASS_STACK      "'",
+            SIM_NAME_DATA       " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_DATA       "'",
+            SIM_NAME_DATA_UN    " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_DATA_UN    "'",
+            SIM_NAME_FARDATA    " SEGMENT DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA    "'",
+            SIM_NAME_FARDATA_UN " SEGMENT DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA_UN "'",
+            SIM_NAME_CONST      " SEGMENT DWORD USE32 PUBLIC '"  SIM_CLASS_CONST      "' READONLY"
         }
     },
     {
         {
-            "SEGMENT " SIM_NAME_CODE       " WORD PUBLIC '"         SIM_CLASS_CODE       "' IGNORE",
-            "SEGMENT " SIM_NAME_STACK      " PARA STACK '"          SIM_CLASS_STACK      "' IGNORE",
-            "SEGMENT " SIM_NAME_DATA       " WORD PUBLIC '"         SIM_CLASS_DATA       "' IGNORE",
-            "SEGMENT " SIM_NAME_DATA_UN    " WORD PUBLIC '"         SIM_CLASS_DATA_UN    "' IGNORE",
-            "SEGMENT " SIM_NAME_FARDATA    " PARA PRIVATE '"        SIM_CLASS_FARDATA    "' IGNORE",
-            "SEGMENT " SIM_NAME_FARDATA_UN " PARA PRIVATE '"        SIM_CLASS_FARDATA_UN "' IGNORE",
-            "SEGMENT " SIM_NAME_CONST      " WORD PUBLIC '"         SIM_CLASS_CONST      "' READONLY IGNORE"
+            "SEGMENT " SIM_NAME_CODE       " WORD PUBLIC '"         SIM_CLASS_CODE       "'",
+            "SEGMENT " SIM_NAME_STACK      " PARA STACK '"          SIM_CLASS_STACK      "'",
+            "SEGMENT " SIM_NAME_DATA       " WORD PUBLIC '"         SIM_CLASS_DATA       "'",
+            "SEGMENT " SIM_NAME_DATA_UN    " WORD PUBLIC '"         SIM_CLASS_DATA_UN    "'",
+            "SEGMENT " SIM_NAME_FARDATA    " PARA PRIVATE '"        SIM_CLASS_FARDATA    "'",
+            "SEGMENT " SIM_NAME_FARDATA_UN " PARA PRIVATE '"        SIM_CLASS_FARDATA_UN "'",
+            "SEGMENT " SIM_NAME_CONST      " WORD PUBLIC '"         SIM_CLASS_CONST      "' READONLY"
         },
         {
-            "SEGMENT " SIM_NAME_CODE       " DWORD USE32 PUBLIC '"  SIM_CLASS_CODE       "' IGNORE",
-            "SEGMENT " SIM_NAME_STACK      " DWORD USE32 STACK '"   SIM_CLASS_STACK      "' IGNORE",
-            "SEGMENT " SIM_NAME_DATA       " DWORD USE32 PUBLIC '"  SIM_CLASS_DATA       "' IGNORE",
-            "SEGMENT " SIM_NAME_DATA_UN    " DWORD USE32 PUBLIC '"  SIM_CLASS_DATA_UN    "' IGNORE",
-            "SEGMENT " SIM_NAME_FARDATA    " DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA    "' IGNORE",
-            "SEGMENT " SIM_NAME_FARDATA_UN " DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA_UN "' IGNORE",
-            "SEGMENT " SIM_NAME_CONST      " DWORD USE32 PUBLIC '"  SIM_CLASS_CONST      "' READONLY IGNORE"
+            "SEGMENT " SIM_NAME_CODE       " DWORD USE32 PUBLIC '"  SIM_CLASS_CODE       "'",
+            "SEGMENT " SIM_NAME_STACK      " DWORD USE32 STACK '"   SIM_CLASS_STACK      "'",
+            "SEGMENT " SIM_NAME_DATA       " DWORD USE32 PUBLIC '"  SIM_CLASS_DATA       "'",
+            "SEGMENT " SIM_NAME_DATA_UN    " DWORD USE32 PUBLIC '"  SIM_CLASS_DATA_UN    "'",
+            "SEGMENT " SIM_NAME_FARDATA    " DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA    "'",
+            "SEGMENT " SIM_NAME_FARDATA_UN " DWORD USE32 PRIVATE '" SIM_CLASS_FARDATA_UN "'",
+            "SEGMENT " SIM_NAME_CONST      " DWORD USE32 PUBLIC '"  SIM_CLASS_CONST      "' READONLY"
         }
     }
 };
@@ -385,14 +386,14 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
     } else {
         switch( size ) {
         case 1:
-            sprintf( buffer, regs[A_BYTE][parm] );
+            sprintf( buffer, "%s", regs[A_BYTE][parm] );
             break;
         case 2:
-            sprintf( buffer, regs[A_WORD][parm] );
+            sprintf( buffer, "%s", regs[A_WORD][parm] );
             break;
         case 4:
             if( Use32 ) {
-                sprintf( buffer, regs[A_DWORD][parm] );
+                sprintf( buffer, "%s", regs[A_DWORD][parm] );
             } else {
                 if( parm > 2 ) {
                     *on_stack = true;
@@ -440,7 +441,7 @@ void heap( char *func ) // for debugging only
     case _HEAPBADBEGIN:
     DebugMsg(("Function : %s - ", func ));
         DebugMsg(("ERROR - heap is damaged\n"));
-        exit(1);
+        exit( EXIT_ERROR );
         break;
     default:
         break;
@@ -1134,7 +1135,7 @@ bool ExtDef( token_idx i, bool glob_def )
         } else {
             mem_type = TypeInfo[type].value;
         }
-        for( ; i< Token_Count && AsmBuffer[i].class != TC_COMMA; i++ );
+        for( ; i < Token_Count && AsmBuffer[i].class != TC_COMMA; i++ );
 
         dir = (dir_node *)AsmGetSymbol( token );
         if( dir == NULL ) {
@@ -1263,14 +1264,21 @@ bool GrpDef( token_idx i )
     dir_node    *seg;
     token_idx   n;
 
-    if( Options.mode & MODE_IDEAL ) {
-        n = i + 1;
+    if( Options.mode & MODE_TASM ) {
+        if( i > 0 ) {
+            n = i++ - 1;
+        } else if( AsmBuffer[i + 1].class != TC_FINAL ) {
+            n = ++i;
+            i++;
+        } else {
+            n = INVALID_IDX;
+        }
     } else if( i > 0 ) {
-        n = --i;
+        n = i++ - 1;
     } else {
         n = INVALID_IDX;
     }
-    if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {    /* name present? */
+    if( n == INVALID_IDX ) {    /* name present? */
         AsmError( GRP_NAME_MISSING );
         return( RC_ERROR );
     }
@@ -1279,9 +1287,8 @@ bool GrpDef( token_idx i )
     if( grp == NULL )
         return( RC_ERROR );
 
-    for( i += 2;            // skip over the GROUP directive
-         i < Token_Count;   // stop at the end of the line
-         i += 2 ) {         // skip over commas
+    for( ; i < Token_Count;     // stop at the end of the line
+         i += 2 ) {             // skip over commas
         name = AsmBuffer[i].string_ptr;
         /* Add the segment name */
 
@@ -1331,11 +1338,11 @@ static bool SetUse32( void )
 /**************************/
 {
     if( CurrSeg == NULL ) {
-        Use32 = ModuleInfo.defUse32;
+        Use32 = ModuleInfo.def_use32;
     } else {
         Globals.code_seg = SEGISCODE( CurrSeg );
-        Use32 = CurrSeg->seg->e.seginfo->use_32;
-        if( Use32 && ( ( Code->info.cpu & P_CPU_MASK ) < P_386 ) ) {
+        Use32 = CurrSeg->seg->e.seginfo->use32;
+        if( Use32 && ( (Code->info.cpu & P_CPU_MASK) < P_386 ) ) {
             AsmError( WRONG_CPU_FOR_32BIT_SEGMENT );
             return( RC_ERROR );
         }
@@ -1343,13 +1350,16 @@ static bool SetUse32( void )
     return( RC_OK );
 }
 
-bool SetUse32Def( bool flag )
-/***************************/
+bool SetUse32Def( bool use32 )
+/****************************/
 {
-    if( ( CurrSeg == NULL )               // outside any segments
-        && ( ModuleInfo.model == MOD_NONE // model not defined
-            || ModuleInfo.cmdline ) ) {   // model defined on cmdline by -m?
-        ModuleInfo.defUse32 = flag;
+    if( CurrSeg == NULL ) {                     // outside any segments
+        if( ModuleInfo.model == MOD_NONE ) {    // model undefined
+            ModuleInfo.def_use32 = use32;
+            if( LineNumber == 0 ) {
+                ModuleInfo.def_use32_init = use32;
+            }
+        }
     }
     return( SetUse32() );
 }
@@ -1487,15 +1497,12 @@ bool SegDef( token_idx i )
     token_idx           n;
 
     if( Options.mode & MODE_IDEAL ) {
-        n = i + 1;
-        if( ( AsmBuffer[n].class == TC_DIRECTIVE ) &&
-            ( ( AsmBuffer[n].u.token == T_STACK ) ||
-              ( AsmBuffer[n].u.token == T_CONST ) ) )
-            AsmBuffer[n].class = TC_ID;
-        if( ( AsmBuffer[i].u.token == T_SEGMENT ) &&
-            ( AsmBuffer[n].class != TC_ID ) ) {
-            AsmError( SEG_NAME_MISSING );
-            return( RC_ERROR );
+        if( i > 0 ) {
+            n = INVALID_IDX;
+        } else if( AsmBuffer[i].u.token == T_ENDS || AsmBuffer[i + 1].class != TC_FINAL ) {
+            n = i + 1;
+        } else {
+            n = INVALID_IDX;
         }
     } else {
         if( i > 0 ) {
@@ -1503,14 +1510,14 @@ bool SegDef( token_idx i )
         } else {
             n = INVALID_IDX;
         }
-        if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {
-            AsmError( SEG_NAME_MISSING );
-            return( RC_ERROR );
-        }
     }
-    name = AsmBuffer[n].string_ptr;
+    if( n == INVALID_IDX ) {
+        AsmError( SEG_NAME_MISSING );
+        return( RC_ERROR );
+    }
     switch( AsmBuffer[i].u.token ) {
     case T_SEGMENT:
+        name = AsmBuffer[n].string_ptr;
         /* Check to see if the segment is already defined */
         seg = (dir_node *)AsmGetSymbol( name );
         if( seg == NULL ) {
@@ -1536,7 +1543,7 @@ bool SegDef( token_idx i )
         if( new == old ) {
             new->align = ALIGN_PARA;
             new->combine = COMB_INVALID;
-            new->use_32 = ModuleInfo.defUse32;
+            new->use32 = ModuleInfo.def_use32;
             new->class_name = InsertClassLname( "" );
             new->readonly = false;
             new->iscode = SEGTYPE_UNDEF;
@@ -1546,9 +1553,9 @@ bool SegDef( token_idx i )
             new->align = old->align;
             new->combine = old->combine;
             if( !old->ignore ) {
-                new->use_32 = old->use_32;
+                new->use32 = old->use32;
             } else {
-                new->use_32 = ModuleInfo.defUse32;
+                new->use32 = ModuleInfo.def_use32;
             }
             new->class_name = old->class_name;
         }
@@ -1617,7 +1624,7 @@ bool SegDef( token_idx i )
                 break;
             case TOK_USE16:
             case TOK_USE32:
-                new->use_32 = ( TypeInfo[type].value != 0 );
+                new->use32 = ( TypeInfo[type].value != 0 );
                 break;
             case TOK_IGNORE:
                 new->ignore = true;
@@ -1664,7 +1671,7 @@ bool SegDef( token_idx i )
             if( ( old->readonly != new->readonly )
                 || ( old->align != new->align )
                 || ( old->combine != new->combine )
-                || ( old->use_32 != new->use_32 )
+                || ( old->use32 != new->use32 )
                 || ( old->class_name != new->class_name ) ) {
                 AsmError( SEGDEF_CHANGED );
                 goto error;
@@ -1678,7 +1685,7 @@ bool SegDef( token_idx i )
             old->readonly = new->readonly;
             old->iscode = new->iscode;
             old->ignore = new->ignore;
-            old->use_32 = new->use_32;
+            old->use32 = new->use32;
             old->class_name = new->class_name;
         } else {    // new->ignore
             /* keep the old values */
@@ -1687,13 +1694,13 @@ bool SegDef( token_idx i )
             new->readonly = old->readonly;
             new->iscode = old->iscode;
             new->ignore = old->ignore;
-            new->use_32 = old->use_32;
+            new->use32 = old->use32;
             new->class_name = old->class_name;
         }
-        if( !ModuleInfo.mseg && ( seg->e.seginfo->use_32 != ModuleInfo.use32 ) ) {
+        if( !ModuleInfo.mseg && ( seg->e.seginfo->use32 != ModuleInfo.use32 ) ) {
             ModuleInfo.mseg = true;
         }
-        if( seg->e.seginfo->use_32 ) {
+        if( seg->e.seginfo->use32 ) {
             ModuleInfo.use32 = true;
         }
         if( new != old )
@@ -1707,7 +1714,8 @@ bool SegDef( token_idx i )
             AsmError( SEGMENT_NOT_OPENED );
             return( RC_ERROR );
         }
-        if( AsmBuffer[n].class == TC_ID ) {
+        if( AsmBuffer[n].class != TC_FINAL ) {
+            name = AsmBuffer[n].string_ptr;
             seg = (dir_node *)AsmGetSymbol( name );
             if( seg == NULL ) {
                 AsmErr( SEG_NOT_DEFINED, name );
@@ -1838,7 +1846,7 @@ bool Startup( token_idx i )
         AsmError( MODEL_IS_NOT_DECLARED );
         return( RC_ERROR );
     }
-    ModuleInfo.cmdline = false;
+    ModuleInfo.model_cmdline = false;
 
     switch( AsmBuffer[i].u.token ) {
     case T_DOT_STARTUP:
@@ -1890,15 +1898,15 @@ bool Startup( token_idx i )
     return( RC_OK );
 }
 
-static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg )
-/***********************************************************************/
+static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg, bool ignore )
+/************************************************************************************/
 {
     unsigned    skip;
     unsigned    bit;
     unsigned    ideal;
 
-    bit = ( ModuleInfo.defUse32 != 0 ) ? 1 : 0;
-    ideal = (Options.mode & MODE_IDEAL) != 0 ? 1 : 0;
+    bit = ( ModuleInfo.def_use32 ) ? 1 : 0;
+    ideal = ( Options.mode & MODE_IDEAL ) ? 1 : 0;
     skip = 0;
     *buffer = '\0';
     if( name != NULL ) {
@@ -1912,7 +1920,10 @@ static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg )
     if( seg == SIM_CODE && Options.code_class != NULL ) {
         name = strchr( buffer, '\'' ) + 1;
         strcpy( name , Options.code_class );
-        strcat( name, "' IGNORE");
+        strcat( name, "'" );
+    }
+    if( ignore ) {
+        strcat( buffer, " IGNORE" );
     }
     return( buffer );
 }
@@ -1922,7 +1933,7 @@ static char *get_sim_segment_end( char *buffer, char *name, sim_seg seg )
 {
     unsigned    ideal;
 
-    ideal = (Options.mode & MODE_IDEAL) != 0 ? 1 : 0;
+    ideal = ( Options.mode & MODE_IDEAL ) ? 1 : 0;
     if( name != NULL ) {
         if( ideal ) {
             strcpy( buffer, "ENDS ");
@@ -1969,7 +1980,7 @@ bool SimSeg( token_idx i )
         AsmError( MODEL_IS_NOT_DECLARED );
         return( RC_ERROR );
     }
-    ModuleInfo.cmdline = false;
+    ModuleInfo.model_cmdline = false;
     close_lastseg();
     type = AsmBuffer[i].u.token;
     i++; /* get past the directive token */
@@ -1984,7 +1995,7 @@ bool SimSeg( token_idx i )
         if( name == NULL )
             name = Options.text_seg;
         set_macro__at_code( name );
-        InputQueueLine( get_sim_segment_beg( buffer, name, seg ) );
+        InputQueueLine( get_sim_segment_beg( buffer, name, seg, false ) );
         InputQueueLine( get_sim_assume_code_reg( buffer, name, seg ) );
         get_sim_segment_end( lastseg.close, name, seg );
         lastseg.seg = seg;
@@ -1993,7 +2004,7 @@ bool SimSeg( token_idx i )
     case T_STACK:
         seg = SIM_STACK;
         name = NULL;
-        InputQueueLine( get_sim_segment_beg( buffer, name, seg ) );
+        InputQueueLine( get_sim_segment_beg( buffer, name, seg, false ) );
         InputQueueLine( get_sim_segment_end( buffer, name, seg ) );
         if( ModuleInfo.model != MOD_FLAT ) {
             InputQueueLine( input_dgroup( name, seg, buffer ) );
@@ -2030,11 +2041,11 @@ bool SimSeg( token_idx i )
             name = NULL;
         }
         if( ModuleInfo.model != MOD_FLAT ) {
-            InputQueueLine( get_sim_segment_beg( buffer, name, seg ) );
+            InputQueueLine( get_sim_segment_beg( buffer, name, seg, false ) );
             InputQueueLine( get_sim_segment_end( buffer, name, seg ) );
             InputQueueLine( input_dgroup( name, seg, buffer ) );
         }
-        InputQueueLine( get_sim_segment_beg( buffer, name, seg ) );
+        InputQueueLine( get_sim_segment_beg( buffer, name, seg, false ) );
         InputQueueLine( get_sim_assume_code_reg( buffer, name, seg ) );
         get_sim_segment_end( lastseg.close, name, seg );
         lastseg.seg = seg;
@@ -2048,7 +2059,7 @@ bool SimSeg( token_idx i )
         } else {
             seg = SIM_FARDATA_UN;
         }
-        InputQueueLine( get_sim_segment_beg( buffer, name, seg ) );
+        InputQueueLine( get_sim_segment_beg( buffer, name, seg, false ) );
         InputQueueLine( get_sim_assume_code_reg( buffer, name, seg ) );
         get_sim_segment_end( lastseg.close, name, seg );
         lastseg.seg = seg;
@@ -2072,11 +2083,11 @@ static void module_prologue( void )
     AddPredefinedConstant( "@code", &info_code );
 
     /* Generates codes for code segment */
-    InputQueueLine( get_sim_segment_beg( buffer, Options.text_seg, SIM_CODE ) );
+    InputQueueLine( get_sim_segment_beg( buffer, Options.text_seg, SIM_CODE, true ) );
     InputQueueLine( get_sim_segment_end( buffer, Options.text_seg, SIM_CODE ) );
 
     /* Generates codes for data segment */
-    InputQueueLine( get_sim_segment_beg( buffer, NULL, SIM_DATA ) );
+    InputQueueLine( get_sim_segment_beg( buffer, NULL, SIM_DATA, true ) );
     InputQueueLine( get_sim_segment_end( buffer, NULL, SIM_DATA ) );
 
     if( ModuleInfo.model != MOD_FLAT ) {
@@ -2140,11 +2151,13 @@ void ModuleInit( void )
 {
     ModuleInfo.model = MOD_NONE;
     ModuleInfo.distance = STACK_NONE;
-    ModuleInfo.langtype = LANG_NONE;
+    ModuleInfo.langtype = WASM_LANG_NONE;
     ModuleInfo.ostype = OPSYS_DOS;
+    ModuleInfo.cpu_init = P_86 | P_87;
     ModuleInfo.use32 = false;
-    ModuleInfo.defUse32 = false;
-    ModuleInfo.cmdline = false;
+    ModuleInfo.def_use32 = false;
+    ModuleInfo.def_use32_init = false;
+    ModuleInfo.model_cmdline = false;
     ModuleInfo.mseg = false;
     ModuleInfo.flat_grp = NULL;
     ModuleInfo.name = NULL;
@@ -2161,7 +2174,7 @@ void ModuleFini( void )
 static void get_module_name( void )
 /*********************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *p;
 
     /**/myassert( AsmFiles.fname[ASM] != NULL );
@@ -2169,7 +2182,7 @@ static void get_module_name( void )
     ModuleInfo.name = AsmStrDup( pg.fname );
     for( p = ModuleInfo.name; *p != '\0'; ++p ) {
         if( !( isalnum( *p ) || ( *p == '_' ) || ( *p == '$' )
-            || ( *p == '@' ) || ( *p == '?') ) ) {
+            || ( *p == '@' ) || ( *p == '?' ) ) ) {
             /* it's not a legal character for a symbol name */
             *p = '_';
         }
@@ -2180,17 +2193,17 @@ static void get_module_name( void )
     }
 }
 
-static void set_def_seg_name( void )
-/***********************************/
+static void set_def_seg_name( int type )
+/**************************************/
 {
     size_t  len;
 
     /* set Options.text_seg based on module name */
     if( Options.text_seg == NULL ) {
-        switch( ModuleInfo.model ) {
-        case MOD_MEDIUM:
-        case MOD_LARGE:
-        case MOD_HUGE:
+        switch( type ) {
+        case TOK_MEDIUM:
+        case TOK_LARGE:
+        case TOK_HUGE:
             len = strlen( ModuleInfo.name );
             Options.text_seg = AsmAlloc( len + sizeof( SIM_NAME_CODE ) );
             memcpy( Options.text_seg, ModuleInfo.name, len );
@@ -2200,7 +2213,6 @@ static void set_def_seg_name( void )
             break;
         }
     }
-    return;
 }
 
 void DefFlatGroup( void )
@@ -2223,11 +2235,11 @@ bool Model( token_idx i )
         return( RC_OK );
     }
 
-    if( ModuleInfo.model != MOD_NONE && !ModuleInfo.cmdline ) {
+    if( ModuleInfo.model != MOD_NONE && !ModuleInfo.model_cmdline ) {
         AsmError( MODEL_DECLARED_ALREADY );
         return( RC_ERROR );
     }
-    ModuleInfo.cmdline = false;
+    ModuleInfo.model_cmdline = false;
 
     get_module_name();
 
@@ -2274,7 +2286,10 @@ bool Model( token_idx i )
         switch( type ) {
         case TOK_FLAT:
             DefFlatGroup();
-            SetUse32Def( true );
+            if( (Code->info.cpu & P_CPU_MASK) < P_386 ) {
+                AsmError( CPU_OR_MODEL_MISMATCH );
+                cpu_directive( T_DOT_386P );
+            }
             // fall through
         case TOK_TINY:
         case TOK_SMALL:
@@ -2282,8 +2297,11 @@ bool Model( token_idx i )
         case TOK_MEDIUM:
         case TOK_LARGE:
         case TOK_HUGE:
+            set_def_seg_name( type );
+            if( ModuleInfo.model != MOD_NONE && ModuleInfo.model != (mod_type)TypeInfo[type].value ) {
+                AsmError( CPU_OR_MODEL_MISMATCH );
+            }
             ModuleInfo.model = TypeInfo[type].value;
-            set_def_seg_name();
             break;
         case TOK_NEARSTACK:
         case TOK_FARSTACK:
@@ -2321,7 +2339,7 @@ bool Model( token_idx i )
     module_prologue();
     lastseg.seg = SIM_NONE;
     lastseg.stack_size = 0;
-    ModuleInfo.cmdline = ( LineNumber == 0 );
+    ModuleInfo.model_cmdline = ( LineNumber == 0 );
     return( RC_OK );
 }
 
@@ -2457,8 +2475,8 @@ bool SetAssume( token_idx i )
     return( RC_OK );
 }
 
-extern struct asm_sym *GetGrp( struct asm_sym *sym )
-/**************************************************/
+struct asm_sym *GetGrp( struct asm_sym *sym )
+/*******************************************/
 /* get ptr to sym's group sym */
 {
     dir_node            *curr;
@@ -2486,7 +2504,7 @@ bool SymIs32( struct asm_sym *sym )
             }
         }
     } else {
-        return( curr->e.seginfo->use_32 );
+        return( curr->e.seginfo->use32 );
     }
     return( RC_OK );
 }
@@ -2559,12 +2577,12 @@ int Use32Assume( enum assume_reg prefix )
         return( EMPTY );
     if( sym_assume->state == SYM_SEG ) {
         dir = (dir_node *)sym_assume;
-        return( dir->e.seginfo->use_32 );
+        return( dir->e.seginfo->use32 );
     } else if( sym_assume->state == SYM_GRP ) {
         dir = (dir_node *)sym_assume;
         seg_l = dir->e.grpinfo->seglist;
         dir = seg_l->seg;
-        return( dir->e.seginfo->use_32 );
+        return( dir->e.seginfo->use32 );
     }
     return( EMPTY );
 }
@@ -2722,7 +2740,7 @@ static int find_size( int type )
         return( 16 );
     case TOK_EXT_PTR:
         /* first determine offset size */
-        if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
+        if( (Code->info.cpu & P_CPU_MASK) >= P_386 ) {
             ptr_size = 4;
         } else {
             ptr_size = 2;
@@ -2982,7 +3000,7 @@ bool ArgDef( token_idx i )
 
     info = CurrProc->e.procinfo;
 
-    if( ( CurrProc->sym.langtype == LANG_WATCOM_C ) &&
+    if( ( CurrProc->sym.langtype == WASM_LANG_WATCOM_C ) &&
         ( Options.watcom_parms_passed_by_regs || !Use32 ) ) {
         parameter_on_stack = false;
     }
@@ -3022,13 +3040,13 @@ bool ArgDef( token_idx i )
                 return( RC_ERROR );
             } else {
                 switch( CurrProc->sym.langtype ) {
-                case LANG_NONE:
-                case LANG_BASIC:
-                case LANG_FORTRAN:
-                case LANG_PASCAL:
+                case WASM_LANG_NONE:
+                case WASM_LANG_BASIC:
+                case WASM_LANG_FORTRAN:
+                case WASM_LANG_PASCAL:
                     AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
                     return( RC_ERROR );
-                case LANG_WATCOM_C:
+                case WASM_LANG_WATCOM_C:
                     info->parasize += unused_stack_space;
                     parameter_on_stack = true;
                     break;
@@ -3086,9 +3104,9 @@ bool ArgDef( token_idx i )
         info->is_vararg |= paranode->u.is_vararg;
 
         switch( CurrProc->sym.langtype ) {
-        case LANG_BASIC:
-        case LANG_FORTRAN:
-        case LANG_PASCAL:
+        case WASM_LANG_BASIC:
+        case WASM_LANG_FORTRAN:
+        case WASM_LANG_PASCAL:
             /* Parameters are stored in reverse order */
             paranode->next = info->paralist;
             info->paralist = paranode;
@@ -3145,7 +3163,7 @@ bool UsesDef( token_idx i )
 
     /**/myassert( CurrProc != NULL );
 
-    if( CurrProc->sym.langtype == LANG_NONE ) {
+    if( CurrProc->sym.langtype == WASM_LANG_NONE ) {
         AsmError( USES_MEANINGLESS_WITHOUT_LANGUAGE );
         return( RC_ERROR );
     }
@@ -3298,26 +3316,28 @@ static bool proc_exam( dir_node *proc, token_idx i )
 
     minimum = TOK_PROC_FAR;
 //    finish = false;
-    proc->sym.langtype = ModuleInfo.langtype;
+    if( proc->sym.langtype == WASM_LANG_NONE ) {
+        proc->sym.langtype = ModuleInfo.langtype;
+        SetMangler( &proc->sym, NULL, WASM_LANG_NONE );
+    }
 
     // fixme ... we need error checking here --- for nested procs
 
     /* Obtain all the default value */
 
-    info->mem_type = IS_PROC_FAR() ? MT_FAR : MT_NEAR;
+    info->mem_type = ( IS_PROC_FAR() ) ? MT_FAR : MT_NEAR;
     info->parasize = 0;
     info->localsize = 0;
     info->export = false;
     info->is_vararg = false;
     info->pe_type = ( ( Code->info.cpu & P_CPU_MASK ) == P_286 ) || ( ( Code->info.cpu & P_CPU_MASK ) == P_386 );
-    SetMangler( &proc->sym, NULL, LANG_NONE );
 
     /* Parse the definition line, except the parameters */
     for( i++; i < Token_Count && AsmBuffer[i].class != TC_COMMA; i++ ) {
         token = AsmBuffer[i].string_ptr;
         if( AsmBuffer[i].class == TC_STRING ) {
             /* name mangling */
-            SetMangler( &proc->sym, token, LANG_NONE );
+            SetMangler( &proc->sym, token, WASM_LANG_NONE );
             continue;
         }
 
@@ -3397,7 +3417,7 @@ parms:
 
     if( i >= Token_Count ) {
         return( RC_OK );
-    } else if( ( proc->sym.langtype == LANG_NONE ) && ( (Options.mode & MODE_IDEAL) == 0 ) ) {
+    } else if( ( proc->sym.langtype == WASM_LANG_NONE ) && ( (Options.mode & MODE_IDEAL) == 0 ) ) {
         AsmError( LANG_MUST_BE_SPECIFIED );
         return( RC_ERROR );
     } else if( AsmBuffer[i].class == TC_COMMA ) {
@@ -3432,13 +3452,13 @@ parms:
                 return( RC_ERROR );
             } else {
                 switch( proc->sym.langtype ) {
-                case LANG_NONE:
-                case LANG_BASIC:
-                case LANG_FORTRAN:
-                case LANG_PASCAL:
+                case WASM_LANG_NONE:
+                case WASM_LANG_BASIC:
+                case WASM_LANG_FORTRAN:
+                case WASM_LANG_PASCAL:
                     AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
                     return( RC_ERROR );
-                case LANG_WATCOM_C:
+                case WASM_LANG_WATCOM_C:
                     info->parasize += unused_stack_space;
                     parameter_on_stack = true;
                     break;
@@ -3491,9 +3511,9 @@ parms:
         info->is_vararg |= paranode->u.is_vararg;
 
         switch( proc->sym.langtype ) {
-        case LANG_BASIC:
-        case LANG_FORTRAN:
-        case LANG_PASCAL:
+        case WASM_LANG_BASIC:
+        case WASM_LANG_FORTRAN:
+        case WASM_LANG_PASCAL:
             /* Parameters are stored in reverse order */
             paranode->next = info->paralist;
             info->paralist = paranode;
@@ -3597,10 +3617,10 @@ static void ProcFini( void )
     CurrProc->sym.total_size = GetCurrAddr() - CurrProc->sym.offset;
 
     if( Parse_Pass == PASS_1 ) {
-        for( curr = info->paralist; curr; curr = curr->next ) {
+        for( curr = info->paralist; curr != NULL; curr = curr->next ) {
             AsmTakeOut( curr->label );
         }
-        for( curr = info->locallist; curr; curr = curr->next ) {
+        for( curr = info->locallist; curr != NULL; curr = curr->next ) {
             AsmTakeOut( curr->label );
         }
     }
@@ -3619,6 +3639,9 @@ bool ProcEnd( token_idx i )
                 AsmError( PROC_NAME_DOES_NOT_MATCH );
             }
         }
+        ProcFini();
+        return( RC_OK );
+    } else if( i == 0 && (Options.mode & MODE_TASM) ) {
         ProcFini();
         return( RC_OK );
     } else if( i == 0 ) {
@@ -3697,7 +3720,7 @@ bool WritePrologue( const char *curline )
     unsigned long       size;
     int                 register_count = 0;
     bool                parameter_on_stack = true;
-    int                 align = Use32 ? 4 : 2;
+    int                 align = ( Use32 ) ? 4 : 2;
     char                *p;
 
     /**/myassert( CurrProc != NULL );
@@ -3716,14 +3739,14 @@ bool WritePrologue( const char *curline )
             if( Options.mode & MODE_IDEAL ) {
                 if( curr->sym != NULL ) {
                     sprintf( buffer + strlen(buffer), "(%s %s%lu)", curr->sym->name,
-                             Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
+                             ( Use32 ) ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
                 } else {
                     sprintf( buffer + strlen(buffer), "%s%lu",
-                             Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
+                             ( Use32 ) ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
                 }
             } else {
                 sprintf( buffer + strlen(buffer), "%s%lu]",
-                         Use32 ? LOCAL_STRING_32 : LOCAL_STRING, offset );
+                         ( Use32 ) ? LOCAL_STRING_32 : LOCAL_STRING, offset );
             }
             curr->replace = AsmStrDup( buffer );
         }
@@ -3738,12 +3761,12 @@ bool WritePrologue( const char *curline )
         }
         if( Use32 )
             offset *= 2;
-        if( ( CurrProc->sym.langtype == LANG_WATCOM_C ) &&
+        if( ( CurrProc->sym.langtype == WASM_LANG_WATCOM_C ) &&
             ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
             !info->is_vararg ) {
             parameter_on_stack = false;
         }
-        for( curr = info->paralist; curr; curr = curr->next ) {
+        for( curr = info->paralist; curr != NULL; curr = curr->next ) {
             if( !parameter_on_stack ) {
                 if( get_watcom_argument_string( buffer, curr->size, &register_count, &parameter_on_stack ) ) {
                     return( RC_ERROR );
@@ -3793,7 +3816,7 @@ bool WritePrologue( const char *curline )
             }
         }
     }
-    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == LANG_NONE ) )
+    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == WASM_LANG_NONE ) )
         return( RC_OK );
     in_prologue = true;
     PushLineQueue();
@@ -3869,7 +3892,7 @@ static void write_epilogue( void )
 
     /**/myassert( CurrProc != NULL );
 
-    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == LANG_NONE ) )
+    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == WASM_LANG_NONE ) )
         return;
 
     info = CurrProc->e.procinfo;
@@ -4001,19 +4024,19 @@ bool Ret( token_idx i, token_idx count, bool flag_iret )
     if( !flag_iret ) {
         if( count == i + 1 ) {
             switch( CurrProc->sym.langtype ) {
-            case LANG_BASIC:
-            case LANG_FORTRAN:
-            case LANG_PASCAL:
+            case WASM_LANG_BASIC:
+            case WASM_LANG_FORTRAN:
+            case WASM_LANG_PASCAL:
                 if( info->parasize != 0 ) {
                     sprintf( p, "%lu", info->parasize );
                 }
                 break;
-            case LANG_STDCALL:
+            case WASM_LANG_STDCALL:
                 if( !info->is_vararg && info->parasize != 0 ) {
                     sprintf( p, "%lu", info->parasize );
                 }
                 break;
-            case LANG_WATCOM_C:
+            case WASM_LANG_WATCOM_C:
                 if( ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
                     !info->is_vararg &&
                     ( info->parasize != 0 ) ) {
@@ -4036,8 +4059,8 @@ bool Ret( token_idx i, token_idx count, bool flag_iret )
     return( RC_OK );
 }
 
-extern void GetSymInfo( struct asm_sym *sym )
-/*******************************************/
+void GetSymInfo( struct asm_sym *sym )
+/************************************/
 {
     sym->segment = &GetCurrSeg()->sym;
     sym->offset = GetCurrAddr();

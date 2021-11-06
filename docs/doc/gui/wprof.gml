@@ -54,7 +54,7 @@ time as it executes.
 .np
 First, you must run the
 .us Sampler
-.dot
+.period
 The sampler starts your application and, at a predetermined interval,
 records the location where your program is executing.
 This information is saved in a "sample file".
@@ -65,7 +65,7 @@ useful tool to enhance your program's performance.
 .np
 Second, you run the
 .us Profiler
-.dot
+.period
 It reads the sample file and displays the sample information
 graphically. You can use the profiler to examine the sample data
 and narrow in on the places where your program spends large
@@ -76,7 +76,7 @@ Once you have discovered heavily executed portions of your
 program, you might want to rewrite then using a faster algorithm
 or fine tune your implementation of the current algorithms.
 .begnote
-.mnote Note
+.note Note
 You must compile and link the program with debugging information.
 Use at least the
 .us; d1
@@ -103,17 +103,17 @@ The sampler's command line syntax is shown below.
 &smpcmdup. [options] program [arguments]
 .embigbox
 .begnote
-.mnote &smpcmdup.
+.note &smpcmdup.
 is one of several versions of the sampler.
 See the section entitled :HDREF refid='smpos'. for a description of
 how to run the sampler under various environments.
-.mnote options
+.note options
 is a list of valid sampler options, each preceded by a slash
 ("/") or a dash ("&minus.").
 Options may be specified in any order.
-.mnote program
+.note program
 is the name of the program to be sampled.
-.mnote arguments
+.note arguments
 is the set of arguments passed to the program.
 The program behaves just as if it were executed directly from the
 command line.  If you normally run your program using:
@@ -222,8 +222,8 @@ C>&smpcmd
 .pc
 Here are the &smpname executable names provided.
 .begpoint $break $setptnt 20
-:DTHD.Operating System:
-:DDHD.Command:
+.notehd1 Operating System:
+.notehd2 Command:
 .point DOS
 &smpdosup
 .point OS/2
@@ -908,8 +908,8 @@ a program will benefit most from improvement.
 A simple example will illustrate how this is accomplished.
 Suppose we have a program that has three distinct regions.
 .begpoint $break
-:DTHD.Region
-:DDHD.Percentage
+.notehd1 Region
+.notehd2 Percentage
 .point 1
 10%
 .point 2

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +98,7 @@ bool WRLoadResourceFromWinNTEXE( WRInfo *info )
     return( ok );
 }
 
-long int WRReadWinNTExeHeader( FILE *fp, exe_pe_header *header )
+long WRReadWinNTExeHeader( FILE *fp, exe_pe_header *header )
 {
     bool        old_pos;
     uint_16     offset;
@@ -259,7 +260,7 @@ bool WRLoadWResDirFromWinNTEXE( FILE *fp, WResDir *dir )
         ok = WRWinNTHeaderHasResourceTable( &nt_header );
         if( !ok ) {
             WRDisplayErrorMsg( WR_EXENORES );
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -340,7 +341,7 @@ bool WRHandleWinNTTypeEntry( FILE *fp, WResDir *dir, resource_dir_entry *rd_entr
     /* verify the id_name */
     if( ( (rd_entry->id_name & PE_RESOURCE_MASK_ON) != 0 ) ^ is_name ) {
         WRDisplayErrorMsg( WR_BADIDDISCARDTYPE );
-        return( FALSE );
+        return( false );
     }
 
     if( is_name ) {
@@ -411,7 +412,7 @@ bool WRHandleWinNTNameEntry( FILE *fp, WResDir *dir, WResID *type,
     /* verify the id_name */
     if( ( (rd_entry->id_name & PE_RESOURCE_MASK_ON) != 0 ) ^ is_name ) {
         WRDisplayErrorMsg( WR_BADIDDISCARDNAME );
-        return( FALSE );
+        return( false );
     }
 
     if( is_name ) {

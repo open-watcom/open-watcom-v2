@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +36,13 @@
 #include "plusplus.h"
 #include <stddef.h>
 #include "memmgr.h"
-#include "toggle.h"
 #include "ring.h"
 #include "initdefs.h"
 #include "pragdefn.h"
 #include "codegen.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+#endif
 
 #ifdef TRMEM
     #include "trmem.h"
@@ -130,7 +132,7 @@ void *CMemAlloc( size_t size )
         return( NULL );
     }
 #ifndef NDEBUG
-    if( !PragDbgToggle.no_mem_cleanup ) {
+    if( !TOGGLEDBG( no_mem_cleanup ) ) {
         CLEANPTR curr;
         static unsigned test_cleanup;
         static unsigned test_inc = 1;
@@ -306,7 +308,7 @@ static void cmemFini(           // COMPLETION
 #endif
 #ifdef TRMEM
  #ifndef NDEBUG
-    if( PragDbgToggle.dump_memory ) {
+    if( TOGGLEDBG( dump_memory ) ) {
         _trmem_prt_list( trackerHdl );
     }
     if( _trmem_close( trackerHdl ) != 0 && !CompFlags.compile_failed ) {

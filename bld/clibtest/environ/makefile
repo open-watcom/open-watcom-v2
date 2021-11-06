@@ -1,5 +1,5 @@
 clibtest_name = environ
 
-srcfile = $(clib_dir)/environ/c/envtest.c
+srcfile = c/envtest.c
 
 !include ../master.mif

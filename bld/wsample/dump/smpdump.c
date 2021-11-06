@@ -60,7 +60,7 @@ static const char * const Types[] = {
 };
 
 static char     path[_MAX_PATH];
-static PGROUP2  pg;
+static pgroup2  pg;
 
 int main( int argc, char **argv )
 {
@@ -71,9 +71,9 @@ int main( int argc, char **argv )
     int                 length = 0;
     const char *        record_type;
     samp_block *        data;
-    auto samp_header    head;
+    samp_header         head;
     cgraph_sample *     sptr;
-    auto struct stat    file_stat;
+    struct stat         file_stat;
     time_t              stamp;
     count_info          *count;
     bool                byte_swap = false;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,50 +47,53 @@
 
 
 _WCRTLINK int unlock( int handle, unsigned long offset, unsigned long nbytes )
-    {
-#if defined(__WARP__)
-        APIRET  rc;
-        FILELOCK unlock_block;
+{
+#if defined(__OS2__) && defined(_M_I86) /* 16-bit */
+    APIRET      rc;
+    /* The DDK prototype is different from the OS/2 1.x Toolkit! Argh! */
+  #ifdef INCL_16
+    FILELOCK    flock;
 
-        __handle_check( handle, -1 );
-        unlock_block.lOffset = offset;
-        unlock_block.lRange = nbytes;
-        /* last 2 arguments are not documented */
-        rc = DosSetFileLocks( handle, &unlock_block, NULL, 0, 0 );
-        if( rc != 0 ) {
-            return( __set_errno_dos( rc ) );
-        }
-        return( 0 );
-#elif defined(__OS2_286__)
-        APIRET  rc;
-/* The DDK prototype is different from the OS/2 1.x Toolkit! Argh! */
-#ifdef INCL_16
-        FILELOCK        flock;
+    __handle_check( handle, -1 );
+    flock.lOffset = offset;
+    flock.lRange  = nbytes;
+    rc = DosFileLocks( handle, &flock, NULL );
+  #else
+    LONG        unlock_block[2];
 
-        __handle_check( handle, -1 );
-        flock.lOffset = offset;
-        flock.lRange  = nbytes;
-        rc = DosFileLocks( handle, &flock, NULL );
-#else
-        LONG unlock_block[2];
-
-        __handle_check( handle, -1 );
-        unlock_block[0] = offset;
-        unlock_block[1] = nbytes;
-        rc = DosFileLocks( handle, unlock_block, NULL );
-#endif
-        if( rc != 0 ) {
-            return( __set_errno_dos( rc ) );
-        }
-        return( 0 );
-#else
-        tiny_ret_t rc;
-
-        __handle_check( handle, -1 );
-        rc = TinyUnlock( handle, offset, nbytes );
-        if( TINY_ERROR(rc) ) {
-            return( __set_errno_dos( TINY_INFO(rc) ) );
-        }
-        return( 0 );
-#endif
+    __handle_check( handle, -1 );
+    unlock_block[0] = offset;
+    unlock_block[1] = nbytes;
+    rc = DosFileLocks( handle, unlock_block, NULL );
+  #endif
+    if( rc != 0 ) {
+        return( __set_errno_dos( rc ) );
     }
+    return( 0 );
+
+#elif defined(__OS2__)                  /* 32-bit */
+    APIRET      rc;
+    FILELOCK    unlock_block;
+
+    __handle_check( handle, -1 );
+    unlock_block.lOffset = offset;
+    unlock_block.lRange = nbytes;
+    /* last 2 arguments are not documented */
+    rc = DosSetFileLocks( handle, &unlock_block, NULL, 0, 0 );
+    if( rc != 0 ) {
+        return( __set_errno_dos( rc ) );
+    }
+    return( 0 );
+
+#else
+    tiny_ret_t rc;
+
+    __handle_check( handle, -1 );
+    rc = TinyUnlock( handle, offset, nbytes );
+    if( TINY_ERROR( rc ) ) {
+        return( __set_errno_dos( TINY_INFO( rc ) ) );
+    }
+    return( 0 );
+
+#endif
+}

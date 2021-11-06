@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ typedef struct {
     bool                is32bit;
     bool                use_wres;
     WRFileType          file_type;
-    HELP_CALLBACK       help_callback;
+    HELPFUNC            help_callback;
 } WRSFT;
 
 /****************************************************************************/
@@ -85,7 +85,7 @@ static WRFileType WRFTARRAY[3][2][2] = {
 
 static WRFileType educatedGuess( const char *name, bool is32bit, bool use_wres )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     WRFileType  guess;
 
     if( name == NULL ) {
@@ -124,7 +124,7 @@ static WRFileType educatedGuess( const char *name, bool is32bit, bool use_wres )
 }
 
 WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
-                                       bool use_wres, HELP_CALLBACK help_callback )
+                                       bool use_wres, HELPFUNC help_callback )
 {
     DLGPROC     dlgproc;
     HINSTANCE   inst;
@@ -164,7 +164,7 @@ WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
 
 WRFileType WRAPI WRGuessFileType( const char *name )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     WRFileType  guess;
 
     if( name == NULL ) {
@@ -198,21 +198,21 @@ WRFileType WRAPI WRGuessFileType( const char *name )
 
 void WRSetWinInfo( HWND hDlg, WRSFT *sft )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     bool        no_exe;
 
     if( sft == NULL ) {
         return;
     }
 
-    no_exe = FALSE;
+    no_exe = false;
 
     if( sft->file_name != NULL ) {
         SendDlgItemMessage( hDlg, IDM_FILENAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)sft->file_name );
         _splitpath2( sft->file_name, pg.buffer, NULL, NULL, NULL, &pg.ext );
         if( CMPFEXT( pg.ext, "res" ) ) {
             CheckDlgButton( hDlg, IDM_FTRES, BST_CHECKED );
-            no_exe = TRUE;
+            no_exe = true;
         } else if( CMPFEXT( pg.ext, "exe" ) ) {
             CheckDlgButton( hDlg, IDM_FTEXE, BST_CHECKED );
         } else if( CMPFEXT( pg.ext, "dll" ) ) {
@@ -323,7 +323,7 @@ WINEXPORT INT_PTR CALLBACK WRSelectFileTypeDlgProc( HWND hDlg, UINT message, WPA
         switch( LOWORD( wParam ) ) {
         case IDM_SFTHELP:
             sft = (WRSFT *)GET_DLGDATA( hDlg );
-            if( sft != NULL && sft->help_callback != (HELP_CALLBACK)NULL ) {
+            if( sft != NULL && sft->help_callback != NULL ) {
                 sft->help_callback();
             }
             break;

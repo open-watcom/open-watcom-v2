@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
  * SetScrollRange
  */
 
-static void SetScrollRange( p_gadget gadget, gui_ord range )
+static void SetScrollRange( p_gadget gadget, gui_text_ord range )
 {
     if( gadget != NULL ) {
         if( gadget->total_size != range ) {
@@ -52,15 +53,11 @@ static void SetScrollRange( p_gadget gadget, gui_ord range )
  * GUISetHScrollRange
  */
 
-void GUISetHScrollRange( gui_window * wnd, gui_ord range )
+void GUIAPI GUISetHScrollRange( gui_window *wnd, gui_ord range )
 {
-    gui_coord coord;
-
     if( wnd != NULL ) {
-        coord.x  = range;
-        GUIScaleToScreenR( &coord );
-        SetScrollRange( wnd->hgadget, coord.x );
-        wnd->flags |= SETHRANGE;
+        SetScrollRange( wnd->hgadget, GUIScaleToScreenH( range ) );
+        wnd->flags |= HRANGE_SET;
     }
 }
 
@@ -68,15 +65,11 @@ void GUISetHScrollRange( gui_window * wnd, gui_ord range )
  * GUISetVScrollRange
  */
 
-void GUISetVScrollRange( gui_window * wnd, gui_ord range )
+void GUIAPI GUISetVScrollRange( gui_window *wnd, gui_ord range )
 {
-    gui_coord coord;
-
     if( wnd != NULL ) {
-        coord.y  = range;
-        GUIScaleToScreenR( &coord );
-        SetScrollRange( wnd->vgadget, coord.y );
-        wnd->flags |= SETVRANGE;
+        SetScrollRange( wnd->vgadget, GUIScaleToScreenV( range ) );
+        wnd->flags |= VRANGE_SET;
     }
 }
 
@@ -84,11 +77,11 @@ void GUISetVScrollRange( gui_window * wnd, gui_ord range )
  * GUISetHScrollRangeCols
  */
 
-void GUISetHScrollRangeCols( gui_window * wnd, gui_ord range )
+void GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord range )
 {
     if( wnd != NULL ) {
         SetScrollRange( wnd->hgadget, range );
-        wnd->flags |= SETHRANGE;
+        wnd->flags |= HRANGE_SET;
     }
 }
 
@@ -96,12 +89,12 @@ void GUISetHScrollRangeCols( gui_window * wnd, gui_ord range )
  * GUISetVScrollRangeRows
  */
 
-void GUISetVScrollRangeRows( gui_window * wnd, gui_ord range )
+void GUIAPI GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord range )
 {
 
     if( wnd != NULL ) {
         SetScrollRange( wnd->vgadget, range );
-        wnd->flags |= SETVRANGE;
+        wnd->flags |= VRANGE_SET;
     }
 }
 
@@ -109,23 +102,22 @@ void GUISetVScrollRangeRows( gui_window * wnd, gui_ord range )
  * GUIGetVScrollRangeRows
  */
 
-gui_ord GUIGetVScrollRangeRows( gui_window * wnd )
+gui_text_ord GUIAPI GUIGetVScrollRangeRows( gui_window *wnd )
 {
     if( wnd->vgadget != NULL ) {
         return( wnd->vgadget->total_size );
     } else {
-        return( GUI_NO_ROW );
+        return( GUI_TEXT_NO_ROW );
     }
 }
 
-gui_ord GUIGetVScrollRange( gui_window *wnd )
+gui_ord GUIAPI GUIGetVScrollRange( gui_window *wnd )
 {
-    gui_coord   coord;
+    gui_text_ord    text_ord;
 
-    coord.y = GUIGetVScrollRangeRows( wnd );
-    if( coord.y != GUI_NO_ROW ) {
-        GUIScreenToScaleR( &coord );
-        return( coord.y );
+    text_ord = GUIGetVScrollRangeRows( wnd );
+    if( text_ord != GUI_TEXT_NO_ROW ) {
+        return( GUIScreenToScaleV( text_ord ) );
     } else {
         return( GUI_NO_ROW );
     }
@@ -135,23 +127,22 @@ gui_ord GUIGetVScrollRange( gui_window *wnd )
  * GUIGetHScrollRangeCols
  */
 
-gui_ord GUIGetHScrollRangeCols( gui_window * wnd )
+gui_text_ord GUIAPI GUIGetHScrollRangeCols( gui_window *wnd )
 {
     if( wnd->hgadget != NULL ) {
         return( wnd->hgadget->total_size );
     } else {
-        return( GUI_NO_COLUMN );
+        return( GUI_TEXT_NO_COLUMN );
     }
 }
 
-gui_ord GUIGetHScrollRange( gui_window *wnd )
+gui_ord GUIAPI GUIGetHScrollRange( gui_window *wnd )
 {
-    gui_coord   coord;
+    gui_text_ord    text_ord;
 
-    coord.x = GUIGetHScrollRangeCols( wnd );
-    if( coord.x != GUI_NO_COLUMN ) {
-        GUIScreenToScaleR( &coord );
-        return( coord.x );
+    text_ord = GUIGetHScrollRangeCols( wnd );
+    if( text_ord != GUI_TEXT_NO_COLUMN ) {
+        return( GUIScreenToScaleH( text_ord ) );
     } else {
         return( GUI_NO_COLUMN );
     }

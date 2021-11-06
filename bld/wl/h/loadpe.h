@@ -30,6 +30,9 @@
 *
 ****************************************************************************/
 
+
+#ifdef _OS2
+
 #include "exepe.h"
 
 #define DEF_VALUE               CONSTU32( 0xFFFFFFFF )
@@ -66,3 +69,5 @@ typedef struct module_import {
 } module_import;
 
 extern unsigned_32 DefStackSizePE( void );
+
+#endif

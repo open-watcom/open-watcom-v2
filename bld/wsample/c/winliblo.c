@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,7 +177,7 @@ static void newModule( HANDLE hmod, const char *name, samp_block_kinds kind )
             if( ge.hBlock != NULL ) {
                 ptr = GlobalLock( ge.hBlock );
                 GlobalUnlock( ge.hBlock );
-                sel = FP_SEG( ptr );
+                sel = _FP_SEG( ptr );
                 if( sel == NULL ) {
                     sel = (WORD)ge.hBlock + 1;
                 }

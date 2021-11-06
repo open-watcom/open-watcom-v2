@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,12 +91,9 @@
 #endif
 
 #if defined( __DOS__ )
-extern int  __dospawn( int mode, char_type_stk_ptr pgmname, char_type_stk_ptr cmdline, ENV_ARG env );
-#pragma aux __dospawn "_*" __parm __caller [];
+extern int  __cdecl __dospawn( int mode, char_type_stk_ptr pgmname, char_type_stk_ptr cmdline, ENV_ARG env );
+#pragma aux __dospawn "_*"
 #endif
-
-/* P_OVERLAY macro expands to a variable, not a constant! */
-#define OLD_P_OVERLAY   2
 
 #define FALSE   0
 
@@ -150,7 +147,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     unsigned char           prot_mode286;
     unsigned char           use_cmd;
 #if defined( __DOS__ )
-    auto _87state           _87save;
+    _87state                _87save;
 #endif
     CHAR_TYPE               *drive;
     CHAR_TYPE               *dir;
@@ -200,7 +197,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         _POSIX_HANDLE_CLEANUP;
         return( rc );
     }
- #else
+ #else      /* __DOS_086__ */
     prot_mode286 = FALSE;
     if( mode == OLD_P_OVERLAY ) {
         execveaddr_type    execve;
@@ -302,9 +299,9 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         _RWD_errno = ENOENT;
         if( ext[0] != NULLCHAR ) {
 #if defined( __OS2__ )
-            if( stricmp( ext, STRING( ".cmd" ) ) == 0 || stricmp( ext, STRING( ".bat" ) ) == 0 ) {
+            if( _stricmp( ext, STRING( ".cmd" ) ) == 0 || _stricmp( ext, STRING( ".bat" ) ) == 0 ) {
 #else
-            if( __F_NAME(stricmp,wcscmp)( ext, STRING( ".bat" ) ) == 0 ) {
+            if( __F_NAME(_stricmp,_wcsicmp)( ext, STRING( ".bat" ) ) == 0 ) {
 #endif
                 retval = -1; /* assume file doesn't exist */
                 if( file_exists( p ) ) {

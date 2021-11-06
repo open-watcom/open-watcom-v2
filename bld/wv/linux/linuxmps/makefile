@@ -6,6 +6,4 @@
 host_os  = linux
 host_cpu = mps
 
-syshdir =
-
 !include ../../master.mif

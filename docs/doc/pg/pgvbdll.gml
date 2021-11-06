@@ -91,7 +91,8 @@ set finclude=c:&pathnam.\src\fortran\win
 .np
 &company's 32-bit DLL supervisor contains a general entry point for
 Windows applications to call into called
-.id Win386LibEntry.
+.id Win386LibEntry
+.period
 It also contains 128 specific entry points called
 .id DLL1
 to
@@ -159,8 +160,8 @@ Reference the different DLL routines using these aliases.
 Use the specific entry point, one of
 .id DLL1
 through
-.id DLL128,
-corresponding to the DLL routine that you want to call.
+.id DLL128
+.ct , corresponding to the DLL routine that you want to call.
 Each entry point can be described to take different arguments.  We can
 still use the "Alias" attribute to make the link between the name we
 use in the Visual Basic function and the name in the 32-bit extended
@@ -339,7 +340,8 @@ The "Indirect call" button will call the 16-bit DLL, which will
 then call the 32-bit DLL, for both
 .id Function1
 and
-.id Function2.
+.id Function2
+.period
 To run the Visual Basic program, select "Start" from the "Run" menu.
 .*
 .section Sample Visual Basic DLL Programs
@@ -650,7 +652,7 @@ It also causes the compiler to define the macro
 .kwm __WINDOWS__
 and, for the 32-bit C or C++ compiler only, the macro
 .kwm __WINDOWS_386__
-.ct .li .
+.period
 .note
 The "zu" option is used when compiling 16-bit code that is to be placed
 in a Dynamic Link Library (DLL) since the SS register points to the

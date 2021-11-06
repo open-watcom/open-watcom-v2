@@ -57,16 +57,16 @@ int __close( int hid )
     rc = 0;
     h = __getOSHandle( hid );
 
-    #ifdef DEFAULT_WINDOWING
-        if( _WindowsCloseWindow != NULL ) {
-            res = _WindowsIsWindowedHandle( hid );
-            if( res != NULL ) {
-                _WindowsRemoveWindowedHandle( hid );
-                _WindowsCloseWindow( res );
-                is_closed = 1;
-            }
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsCloseWindow != NULL ) {
+        res = _WindowsIsWindowedHandle( hid );
+        if( res != NULL ) {
+            _WindowsRemoveWindowedHandle( hid );
+            _WindowsCloseWindow( res );
+            is_closed = 1;
         }
-    #endif
+    }
+#endif
     if( !is_closed && !CloseHandle( h ) ) {
         rc = __set_errno_nt();
     }

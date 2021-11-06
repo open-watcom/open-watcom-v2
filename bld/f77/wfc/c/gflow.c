@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -182,8 +183,7 @@ void    FiniSelect( void ) {
     count = 0;
     ptr = CSHead->cs_info.cases;
     OutU16( ptr->label.g_label );               // label for default case
-    ptr = ptr->link;
-    while( ptr != NULL ) {                      // emit lab,hi,lo for ea. case
+    for( ptr = ptr->link; ptr != NULL; ptr = ptr->link ) { // emit lab,hi,lo for ea. case
         if( CSHead->typ == CS_COMPUTED_GOTO ) {
             GStmtAddr( ptr->label.st_label );
         } else {
@@ -192,7 +192,6 @@ void    FiniSelect( void ) {
         OutConst32( ptr->high );
         OutConst32( ptr->low );
         count++;
-        ptr = ptr->link;
     }
     curr_obj = ObjSeek( curr_obj );
     OutU16( count );

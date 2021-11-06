@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@
 #include "upscan.h"
 
 
-#define SF_MASK (SY_SUB_PARM|SY_IN_EC|SY_DATA_INIT|SY_SAVED)
+#define SF_MASK (SY_SUB_PARM | SY_IN_EC | SY_DATA_INIT | SY_SAVED)
 
 
 static  void    Arith(void) {
@@ -97,8 +98,7 @@ void    CpStmtFunc(void) {
     unsigned_16 flags;
 
     flags = CITNode->sym_ptr->u.ns.flags;
-    if( ( ( flags & SY_CLASS ) == SY_VARIABLE ) &&
-        ( ( flags & SF_MASK ) == 0 ) ) {
+    if( ( (flags & SY_CLASS) == SY_VARIABLE ) && ( (flags & SF_MASK) == 0 ) ) {
         ASType = AST_EOK | AST_ASF;
         SFPrologue();
         Arith();
@@ -115,8 +115,7 @@ static  void    ArithNewSubr(void) {
         CITNode->sym_ptr->u.ns.flags |= SY_USAGE | SY_SUBPROGRAM | SY_FUNCTION;
     } else {
         ASType |= AST_ALT;
-        CITNode->sym_ptr->u.ns.flags |= SY_USAGE | SY_SUBPROGRAM |
-                                      SY_SUBROUTINE;
+        CITNode->sym_ptr->u.ns.flags |= SY_USAGE | SY_SUBPROGRAM | SY_SUBROUTINE;
     }
     Arith();
 }
@@ -148,7 +147,7 @@ void    CpCall(void) {
     if( ReqName( NAME_SUBROUTINE ) ) {
         LkSym();
         if( ClassIs( SY_SUBPROGRAM ) ) {
-            sp_type = CITNode->flags & SY_SUBPROG_TYPE;
+            sp_type = (CITNode->flags & SY_SUBPROG_TYPE);
             if( sp_type == SY_SUBROUTINE ) {
                 ASType |= AST_ALT;
                 Arith();

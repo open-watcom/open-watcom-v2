@@ -178,7 +178,7 @@ area without holding down the left mouse button. This is similar to
 the Sticky Magnifier feature that is offered in the Configure dialog.
 .np
 .begnote
-.mnote Note:
+.note Note:
 The Begin Zoom item is not available in Zoom for Win32.
 .endnote
 .np

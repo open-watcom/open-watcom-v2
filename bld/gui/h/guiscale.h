@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +38,20 @@
 
 extern void GUISetScreen( gui_ord xmin, gui_ord ymin, gui_ord width, gui_ord height );
 
-extern bool GUIScaleToScreen( gui_coord *coord );
-extern bool GUIScaleToScreenR( gui_coord *coord );
+extern guix_ord GUIScaleToScreenH( gui_ord ord );
+extern guix_ord GUIScaleToScreenV( gui_ord ord );
+extern guix_ord GUIScaleToScreenX( gui_ord ord );
+extern guix_ord GUIScaleToScreenY( gui_ord ord );
 
-extern bool GUIScreenToScale( gui_coord *coord );
-extern bool GUIScreenToScaleR( gui_coord *coord );
+extern gui_ord GUIScreenToScaleH( guix_ord screen_ord );
+extern gui_ord GUIScreenToScaleV( guix_ord screen_ord );
+extern gui_ord GUIScreenToScaleX( guix_ord screen_ord );
+extern gui_ord GUIScreenToScaleY( guix_ord screen_ord );
 
-extern void GUIScaleToScreenRPt( gui_point *point );
-extern void GUIScreenToScaleRPt( gui_point *point );
+extern bool GUIScreenToScaleRect( const guix_rect *screen_rect, gui_rect *rect );
+extern bool GUIScreenToScaleRectR( const guix_rect *screen_rect, gui_rect *rect );
+
+extern bool GUIScaleToScreenRect( const gui_rect *rect, guix_rect *screen_rect );
+extern bool GUIScaleToScreenRectR( const gui_rect *rect, guix_rect *screen_rect );
 
 #endif // _GUISCALE_H_

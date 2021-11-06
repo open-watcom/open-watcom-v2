@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,9 +75,9 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
 size_t CmdScanId(               // SCAN AN IDENTIFIER
     char const **option )       // - addr( option pointer )
 ;
-void CmdScanInit(               // INITIALIZE FOR COMMAND SCANNING
-    char const *cmd_line )      // - command line
-;
+char const *CmdScanInit(        // INITIALIZE FOR COMMAND SCANNING
+    char const *cmd_line )      // - new command line
+;                               // RETURN OLD COMMAND-LINE SCAN ADDRESS
 int CmdScanLowerChar(           // SCAN THE NEXT CHARACTER, IN LOWER CASE
     void )
 ;

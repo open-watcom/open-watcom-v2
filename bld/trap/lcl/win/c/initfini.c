@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <dos.h>
+#define INCLUDE_TOOL_H
 #include "cpuglob.h"
 #include "wdebug.h"
 #include "stdwin.h"
@@ -44,12 +45,13 @@
 #include "trpsys.h"
 #include "initfini.h"
 #include "di386cli.h"
+#include "wclbtool.h"
 
 
 extern WORD FAR PASCAL AllocCSToDSAlias( WORD );
 
-static FARPROC  faultInstance;
-static FARPROC  notifyInstance;
+static LPFNINTHCALLBACK     fault_fn;
+static LPFNNOTIFYCALLBACK   notify_fn;
 
 void SetInputLock( bool lock_status )
 {
@@ -85,16 +87,16 @@ char *InitDebugging( void )
         WDebug386 = TRUE;
         UseHotKey( 1 );
     }
-    faultInstance = MakeProcInstance( (FARPROC)IntHandler, Instance );
-    if( !InterruptRegister( NULL, faultInstance ) ) {
+    fault_fn = MakeProcInstance_INTH( IntHandler, Instance );
+    if( !InterruptRegister( NULL, fault_fn ) ) {
         return( TRP_WIN_Failed_to_get_interrupt_hook );
     }
-    notifyInstance = MakeProcInstance( (FARPROC)NotifyHandler, Instance );
-    if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notifyInstance, NF_NORMAL | NF_RIP ) ) {
+    notify_fn = MakeProcInstance_NOTIFY( NotifyHandler, Instance );
+    if( !NotifyRegister( NULL, notify_fn, NF_NORMAL | NF_RIP ) ) {
         return( TRP_WIN_Failed_to_get_notify_hook );
     }
     Out(( OUT_INIT,"ds=%04x, faultInstance=%Fp, notifyInstance=%Fp,Instance=%04x",
-        FP_SEG( &faultInstance ), faultInstance, notifyInstance, Instance ));
+        _FP_SEG( &fault_fn ), fault_fn, notify_fn, Instance ));
     if( WDebug386 ) {
         if( Start386Debug() ) {
             DebuggerIsExecuting( 1 );
@@ -116,12 +118,12 @@ void FinishDebugging( void )
 {
 
     InterruptUnRegister( NULL );
-    if( faultInstance != NULL ) {
-        FreeProcInstance( faultInstance );
+    if( fault_fn != NULL ) {
+        FreeProcInstance_INTH( fault_fn );
     }
     NotifyUnRegister( NULL );
-    if( notifyInstance != NULL ) {
-        FreeProcInstance( notifyInstance );
+    if( notify_fn != NULL ) {
+        FreeProcInstance_NOTIFY( notify_fn );
     }
     if( WDebug386 ) {
         ResetDebugInterrupts32();

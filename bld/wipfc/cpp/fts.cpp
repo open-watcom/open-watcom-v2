@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -153,7 +153,7 @@ void FTSElement::build( OutFile* out )
 void FTSElement::encode( std::vector< byte >& rle )
 /*************************************************/
 //The number of pages can never exceed 65535 because the count is stored in
-//an word (unsigned short int)
+//an word (unsigned short)
 //only runs of 3 or more are considered to be "same"
 {
     std::vector< byte > dif;

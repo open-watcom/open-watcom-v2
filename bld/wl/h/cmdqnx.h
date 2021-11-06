@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,24 +31,16 @@
 ****************************************************************************/
 
 
-extern bool     ProcLongLived( void );
-extern bool     ProcQNXPrivilege( void );
-extern bool     ProcLinearRelocs( void );
-extern bool     ProcQNX( void );
-
-extern bool     ProcQNXExecuteonly( void );
-extern bool     ProcQNXExecuteread( void );
-extern bool     ProcQNXReadOnly( void );
-extern bool     ProcQNXReadWrite( void );
-
-extern bool     ProcQNXClass( void );
-
-extern bool     ProcQNXFlat( void );
-
-extern bool     ProcQNXSegment( void );
-extern bool     ProcQNXNoRelocs( void );
-extern bool     ProcQNXHeapSize( void );
+#ifdef _QNX
 
 extern void     SetQNXFmt( void );
 extern void     FreeQNXFmt( void );
 extern void     CmdQNXFini( void );
+
+extern bool     ProcQNXOptions( void );
+extern bool     ProcQNXNoRelocs( void );
+extern bool     ProcQNXSegment( void );
+extern bool     ProcQNXHeapSize( void );
+extern bool     ProcQNXFormat( void );
+
+#endif

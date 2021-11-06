@@ -1110,7 +1110,7 @@ typedef struct {
 
 /* IFileViewer show information */
 #if (NTDDI_VERSION < 0x05000000)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct {
     DWORD       cbSize;
     HWND        hwndOwner;
@@ -1121,7 +1121,7 @@ typedef struct {
     OLECHAR     strNewFile[MAX_PATH];
 } FVSHOWINFO;
 typedef FVSHOWINFO  *LPFVSHOWINFO;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* SHGetPathFromIDListEx() flags */
@@ -1160,7 +1160,7 @@ typedef enum {
 
 /* Folder custom settings */
 #if (NTDDI_VERSION >= 0x06000000)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct {
     DWORD       dwSize;
     DWORD       dwMask;
@@ -1179,14 +1179,14 @@ typedef struct {
     DWORD       cchLogo;
 } SHFOLDERCUSTOMSETTINGS;
 typedef SHFOLDERCUSTOMSETTINGS  *LPSHFOLDERCUSTOMSETTINGS;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* SHBrowseForFolder() callback */
 typedef int (CALLBACK *BFFCALLBACK)( HWND, UINT, LPARAM, LPARAM );
 
 /* SHBrowseForFolder() parameters */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _browseinfoA {
     HWND                hwndOwner;
     PCIDLIST_ABSOLUTE   pidlRoot;
@@ -1220,7 +1220,7 @@ typedef BROWSEINFOA     BROWSEINFO;
 typedef PBROWSEINFOA    PBROWSEINFO;
 typedef LPBROWSEINFOA   LPBROWSEINFO;
 #endif
-#include <poppack.h>
+:include poppack.sp
 
 /* Internet shortcut command identifier */
 #if (_WIN32_IE >= 0x0501)
@@ -1259,18 +1259,18 @@ typedef enum _tagAUTOCOMPLETELISTOPTIONS {
 
 /* IEnumShellImageStore data */
 #if (NTDDI_VERSION >= 0x05000000) && (NTDDI_VERSION < 0x06000000)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _EnumImageStoreDATAtag {
     WCHAR       szPath[MAX_PATH];
     FILETIME    ftTimeStamp;
 } ENUMSHELLIMAGESTOREDATA;
 typedef ENUMSHELLIMAGESTOREDATA *PENUMSHELLIMAGESTOREDATA;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* Shell folder band information */
 #if (_WIN32_IE >= 0x0400)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct {
     DWORD               dwMask;
     DWORD               dwStateMask;
@@ -1284,7 +1284,7 @@ typedef struct {
     PIDLIST_ABSOLUTE    pidl;
 } BANDINFOSFB;
 typedef BANDINFOSFB *PBANDINFOSFB;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* Command target identifiers */
@@ -1423,7 +1423,7 @@ enum _tagDTI_ADTIWUI {
 
 /* Shell column information */
 #if (_WIN32_IE >= 0x0500)
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct {
     SHCOLUMNID  scid;
     VARTYPE     vt;
@@ -1435,12 +1435,12 @@ typedef struct {
 } SHCOLUMNINFO;
 typedef SHCOLUMNINFO        *LPSHCOLUMNINFO;
 typedef const SHCOLUMNINFO  *LPCSHCOLUMNINFO;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* Shell column initialization information */
 #if (_WIN32_IE >= 0x0500)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct {
     ULONG   dwFlags;
     ULONG   dwReserved;
@@ -1448,12 +1448,12 @@ typedef struct {
 } SHCOLUMNINIT;
 typedef SHCOLUMNINIT        *LPSHCOLUMNINIT;
 typedef const SHCOLUMNINIT  *LPCSHCOLUMNINIT;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* Shell column data */
 #if (_WIN32_IE >= 0x0500)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct {
     ULONG   dwFlags;
     DWORD   dwFileAttributes;
@@ -1463,17 +1463,17 @@ typedef struct {
 } SHCOLUMNDATA;
 typedef SHCOLUMNDATA        *LPSHCOLUMNDATA;
 typedef const SHCOLUMNDATA  *LPCSHCOLUMNDATA;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* Network resource array */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _NRESARRAY {
     UINT        cItems;
     NETRESOURCE nr[1];
 } NRESARRAY;
 typedef NRESARRAY   *LPNRESARRAY;
-#include <poppack.h>
+:include poppack.sp
 
 /* Clipboard item identifier list */
 typedef struct _IDA {
@@ -1689,13 +1689,13 @@ typedef enum {
 } SCNRT_STATUS;
 
 /* Shell description identifier */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _SHDESCRIPTIONID {
     DWORD   dwDescriptionId;
     CLSID   clsid;
 } SHDESCRIPTIONID;
 typedef SHDESCRIPTIONID *LPSHDESCRIPTIONID;
-#include <poppack.h>
+:include poppack.sp
 
 /* Automatic scrolling data */
 typedef struct {
@@ -1959,14 +1959,14 @@ enum tagOPEN_AS_INFO_FLAGS {
 typedef int OPEN_AS_INFO_FLAGS;
 
 /* SHOpenWithDialog() parameters */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _openasinfo {
     LPCWSTR             pcszFile;
     LPCWSTR             pcszClass;
     OPEN_AS_INFO_FLAGS  oaifInFlags;
 } OPENASINFO;
 typedef OPENASINFO  *POPENASINFO;
-#include <poppack.h>
+:include poppack.sp
 
 /* PIF information */
 typedef struct PROPPRG {
@@ -1994,7 +1994,7 @@ enum {
 };
 
 /* The following structures get eight-byte packing. */
-#include <pshpack8.h>
+:include pshpack8.sp
 
 /* QCM information identifier map placement */
 typedef struct _QCMINFO_IDMAP_PLACEMENT {
@@ -2118,7 +2118,7 @@ typedef SFV_SETITEMPOS          *LPSFV_SETITEMPOS;
 typedef const SFV_SETITEMPOS    *LPCSFV_SETITEMPOS;
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 /* Shell state */
 typedef struct {
@@ -2221,17 +2221,17 @@ typedef struct {
 typedef SHELLFLAGSTATE  *LPSHELLFLAGSTATE;
 
 /* Shell menu file name */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct tagAASHELLMENUFILENAME {
     SHORT   cbTotal;
     BYTE    rgbReserved[12];
     WCHAR   szFileName[1];
 } AASHELLMENUFILENAME;
 typedef AASHELLMENUFILENAME *LPAASHELLMENUFILENAME;
-#include <poppack.h>
+:include poppack.sp
 
 /* Shell menu item */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct tagAASHELLMENUITEM {
     void                    *lpReserved1;
     int                     iReserved;
@@ -2240,7 +2240,7 @@ typedef struct tagAASHELLMENUITEM {
     LPWSTR                  psz;
 } AASHELLMENUITEM;
 typedef AASHELLMENUITEM *LPAASHELLMENUITEM;
-#include <poppack.h>
+:include poppack.sp
 
 /* Internet Explorer shortcut flags */
 #if (_WIN32_IE >= 0x0700)

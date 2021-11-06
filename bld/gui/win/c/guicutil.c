@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,20 +77,20 @@ WPI_MRESULT GUIToComboList( gui_window *wnd, gui_ctl_id id, WPI_MSG lb_msg, WPI_
     }
     my_ret = ret;
     switch( control_class ) {
-    case GUI_LISTBOX :
+    case GUI_LISTBOX:
         GUIToComboListControl( wnd, id, lb_msg, wparam, lparam, &my_ret );
         break;
-    case GUI_COMBOBOX :
-    case GUI_EDIT_COMBOBOX :
+    case GUI_COMBOBOX:
+    case GUI_EDIT_COMBOBOX:
         GUIToComboListControl( wnd, id, cb_msg, wparam, lparam, &my_ret );
         break;
-    default :
+    default:
         return( ret );
     }
     return( my_ret );
 }
 
-bool GUIGetControlClass( gui_window *wnd, gui_ctl_id id, gui_control_class *control_class )
+bool GUIAPI GUIGetControlClass( gui_window *wnd, gui_ctl_id id, gui_control_class *control_class )
 {
     control_item        *item;
 

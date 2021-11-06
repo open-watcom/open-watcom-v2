@@ -127,7 +127,7 @@
 
 typedef USHORT HELPSUBTABLE, *PHELPSUBTABLE;
 
-#pragma pack(2)
+:include pshpack2.sp
 
 typedef struct _HELPTABLE {
     USHORT        idAppWindow;
@@ -149,7 +149,7 @@ typedef struct _HELPINIT {
     PSZ        pszHelpLibraryName;
 } HELPINIT, *PHELPINIT;
 
-#pragma pack()
+:include poppack.sp
 
 typedef struct _ACVP {
     ULONG cb;

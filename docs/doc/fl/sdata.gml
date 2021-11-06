@@ -26,7 +26,7 @@ is a constant or the symbolic name of a constant
 .mnote r
 is an unsigned positive integer constant or the symbolic name of a
 constant.
-.endnote
+.esynote
 .np
 The items of
 .id nlist
@@ -126,7 +126,7 @@ is the name of an integer variable called the implied-DO-variable.
 are each integer constant expressions.
 The expressions may contain implied-DO-variables of other implied-DO
 lists that have this implied-DO list in their ranges.
-.endnote
+.esynote
 .np
 The range of the implied-DO list is the list
 .id dlist.

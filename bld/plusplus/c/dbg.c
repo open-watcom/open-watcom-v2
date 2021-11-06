@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,6 @@
 #include "vbuf.h"
 #include "fmttype.h"
 #include "fmtsym.h"
-#include "dbg.h"
 #include "ring.h"
 #include "ptree.h"
 #include "template.h"
@@ -45,10 +45,10 @@
 #include "iosupp.h"
 #include "codegen.h"
 #include "initdefs.h"
-#include "feprotos.h"
-#ifndef NDEBUG
 #include "pragdefn.h"
-#endif
+#include "togglesd.h"
+#include "dbg.h"
+#include "feprotos.h"
 
 
 #define F_ADDR      "%p"
@@ -114,7 +114,7 @@ static void printToken(         // PRINT CURRENT TOKEN
 void DumpToken(                 // DUMP A TOKEN
     void )
 {
-    if( PragDbgToggle.dump_tokens ) {
+    if( TOGGLEDBG( dump_tokens ) ) {
         printf( "Token(%3d) Line(%4d) Column(%3d) ", CurToken, TokenLine, TokenColumn );
         printToken();
     }
@@ -124,7 +124,7 @@ void DumpToken(                 // DUMP A TOKEN
 void DumpMacToken(              // DUMP A MACRO TOKEN
     void )
 {
-    if( PragDbgToggle.dump_mtokens ) {
+    if( TOGGLEDBG( dump_mtokens ) ) {
         printf( "MacroToken(%3d) Line(%4d) Column(%3d) ", CurToken, TokenLine, TokenColumn );
         printToken();
     }
@@ -138,7 +138,7 @@ void DumpMacPush(               // DUMP PUSH OF MACRO
     const MEPTR mentry = (const MEPTR)p_mac; // - macro being pushed
     const char**args = (const char **)p_args;  // - arguments
     unsigned count;
-    if( PragDbgToggle.dump_mtokens ) {
+    if( TOGGLEDBG( dump_mtokens ) ) {
         printf( "Macro Push: %s", mentry->macro_name );
         if( !MacroIsSpecial( mentry ) && ( args != NULL ) ) {
             count = mentry->parm_count;
@@ -752,7 +752,7 @@ static void DumpExpandedType(   // DUMP EXPANDED TYPE
 void DumpFullType(              // DUMP FULL TYPE INFORMATION
     TYPE tp )                   // - type
 {
-    if( PragDbgToggle.dump_noformat ) {
+    if( TOGGLEDBG( dump_noformat ) ) {
         DumpExpandedType( tp );
     } else {
         PrintFullType( tp );
@@ -1081,7 +1081,6 @@ static void dumpPtreeFlags      // DUMP FLAGS IN PTREE NODE
 static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
     PTREE node )                // - node in parse tree
 {
-    static char buffer[128];    // - debugging buffer
     char *node_name;            // - name of node
     VSTK_CTL ctl;               // - VSTK control information (nodes)
     VSTK_CTL dup;               // - VSTK control information (duplicates)
@@ -1138,13 +1137,12 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             dumpPtreeFlags( node );
           } break;
         case PT_STRING_CONSTANT :
-            stxvcpy( buffer, node->u.string->string, node->u.string->len );
             printf( "PT_STRING_CONSTANT" F_BADDR
                     " flags"        F_HEX_4
                     " string"       F_STRING
                   , node
                   , node->flags
-                  , buffer
+                  , node->u.string->string
                   );
             dumpNodeType( node );
             dumpLocation( &node->locn );

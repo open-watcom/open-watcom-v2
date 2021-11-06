@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,60 +46,44 @@
 #include "dbgsetfg.h"
 
 
+#define TYPE_DEFS \
+    pick( "Ontop",       TY_ONTOP       ) \
+    pick( "Hastop",      TY_HASTOP      ) \
+    pick( "Autoexpand",  TY_AUTOEXPAND  ) \
+    pick( "ISstruct",    TY_ISSTRUCT    ) \
+    pick( "HEx",         TY_HEX         ) \
+    pick( "Decimal",     TY_DECIMAL     ) \
+    pick( "Character",   TY_CHARACTER   ) \
+    pick( "STRIng",      TY_STRING      ) \
+    pick( "Pointer",     TY_POINTER     ) \
+    pick( "HIde",        TY_HIDE        ) \
+    pick( "Field",       TY_FIELD       ) \
+    pick( "STRUct",      TY_STRUCT      ) \
+    pick( "NOCODe",      TY_NOCODE      ) \
+    pick( "NOInherit",   TY_NOINHERIT   ) \
+    pick( "NOCOMpiler",  TY_NOCOMPILER  ) \
+    pick( "NOPRIvate",   TY_NOPRIVATE   ) \
+    pick( "NOPROtected", TY_NOPROTECTED ) \
+    pick( "NOSTAtic",    TY_NOSTATIC    ) \
+    pick( "CODe",        TY_CODE        ) \
+    pick( "INherit",     TY_INHERIT     ) \
+    pick( "COMpiler",    TY_COMPILER    ) \
+    pick( "PRIvate",     TY_PRIVATE     ) \
+    pick( "PROtected",   TY_PROTECTED   ) \
+    pick( "STAtic",      TY_STATIC      )
+
+enum {
+    #define pick(t,e)   e,
+    TYPE_DEFS
+    #undef pick
+};
+
 extern type_display     *TypeDisplay;
 
 static const char TypeSettings[] = {
-    "Ontop\0"
-    "Hastop\0"
-    "Autoexpand\0"
-    "ISstruct\0"
-    "HEx\0"
-    "Decimal\0"
-    "Character\0"
-    "STRIng\0"
-    "Pointer\0"
-    "HIde\0"
-    "Field\0"
-    "STRUct\0"
-    "NOCODe\0"
-    "NOInherit\0"
-    "NOCOMpiler\0"
-    "NOPRIvate\0"
-    "NOPROtected\0"
-    "NOSTAtic\0"
-    "CODe\0"
-    "INherit\0"
-    "COMpiler\0"
-    "PRIvate\0"
-    "PROtected\0"
-    "STAtic\0"
-};
-
-enum {
-    TY_ONTOP,
-    TY_HASTOP,
-    TY_AUTOEXPAND,
-    TY_ISSTRUCT,
-    TY_HEX,
-    TY_DECIMAL,
-    TY_CHARACTER,
-    TY_STRING,
-    TY_POINTER,
-    TY_HIDE,
-    TY_FIELD,
-    TY_STRUCT,
-    TY_NOCODE,
-    TY_NOINHERIT,
-    TY_NOCOMPILER,
-    TY_NOPRIVATE,
-    TY_NOPROTECTED,
-    TY_NOSTATIC,
-    TY_CODE,
-    TY_INHERIT,
-    TY_COMPILER,
-    TY_PRIVATE,
-    TY_PROTECTED,
-    TY_STATIC,
+    #define pick(t,e)   t "\0"
+    TYPE_DEFS
+    #undef pick
 };
 
 static char *Attributes( type_display *curr, char *p )

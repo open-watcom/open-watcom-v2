@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -408,7 +408,7 @@ static void doInitializeEditor( int argc, char *argv[] )
             }
         }
 #endif
-        rc1 = LocateTag( cTag, file, buff );
+        rc1 = LocateTag( cTag, file, buff, sizeof( buff ) );
         cFN = file;
         if( rc1 != ERR_NO_ERR ) {
             if( rc1 == ERR_TAG_NOT_FOUND ) {
@@ -591,9 +591,9 @@ static void doInitializeEditor( int argc, char *argv[] )
     AutoSaveInit();
     HalfPageLines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) / 2 - 1;
 #if defined( _M_X64 )
-    VarAddGlobalStr( "OSX64", "1" );
+    GlobVarAddStr( GLOBVAR_OSX64, "1" );
 #elif defined( _M_IX86 ) && !defined( _M_I86 )
-    VarAddGlobalStr( "OS386", "1" );
+    GlobVarAddStr( GLOBVAR_OS386, "1" );
 #endif
     if( EditVars.StatusString == NULL ) {
         EditVars.StatusString = DupString( "L:$6L$nC:$6C" );

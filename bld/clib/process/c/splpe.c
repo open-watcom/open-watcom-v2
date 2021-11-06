@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,56 +45,52 @@
 #endif
 #include "rterrno.h"
 #include "thread.h"
+#include "_process.h"
+#include "_environ.h"
 
 
 _WCRTLINK int __F_NAME(spawnlpe,_wspawnlpe)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
-    va_list             ap;
-    const CHAR_TYPE     **env;
+    va_list             args1;
+    ARGS_TYPE_ARR       args;
+    ENVP_TYPE_ARR       env;
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-    va_list             bp;
-    const CHAR_TYPE     **a;
-    const CHAR_TYPE     **tmp;
-    int                 num = 1;
+    ARGS_TYPE           *tmp;
+    int                 num;
 #endif
 
-    arg0 = arg0;
-    va_start( ap, path );
-#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-    memcpy( &bp, &ap, sizeof( ap ) );
-#endif
+    /* unused parameters */ (void)arg0;
 
     /*
      * Scan until NULL in parm list
      */
-    while( va_arg( ap, CHAR_TYPE * ) ) {
+    va_start( args1, path );
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-        ++num;
-#else
-        ;
-#endif
+    num = 1;
+    while( ARGS_NEXT_VA( args1 ) != NULL ) {
+        num++;
     }
+    va_end( args1 );
 
-    /*
-     * Point to environment parameter.
-     */
-    env = (const CHAR_TYPE **)va_arg( ap, const CHAR_TYPE ** );
-
-#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-    a = (const CHAR_TYPE **)alloca( num * sizeof( CHAR_TYPE * ) );
-    if( !a ) {
+    args = tmp = alloca( num * sizeof( ARGS_TYPE ) );
+    if( args == NULL ) {
         _RWD_errno = ENOMEM;
         return( -1 );
     }
 
-    for( tmp = a; num > 0; --num )
-        *tmp++ = (CHAR_TYPE *)va_arg( bp, CHAR_TYPE * );
-
-    return( __F_NAME(spawnvpe,_wspawnvpe)( mode, path, a, env ) );
+    va_start( args1, path );
+    while( num-- > 0 )
+        *tmp++ = ARGS_NEXT_VA( args1 );
 #else
-    va_end( ap );
-    va_start( ap, path );
-    return( __F_NAME(spawnvpe,_wspawnvpe)( mode, path,
-            (const CHAR_TYPE**)ap[0], env ) );
+    args = ARGS_ARRAY_VA( args1 );
+    while( ARGS_NEXT_VA( args1 ) != NULL ) {
+        ;
+    }
 #endif
+    /*
+     * Point to environment parameter.
+     */
+    env = ENVP_ARRAY_VA( args1 );
+    va_end( args1 );
+    return( __F_NAME(spawnvpe,_wspawnvpe)( mode, path, args, env ) );
 }

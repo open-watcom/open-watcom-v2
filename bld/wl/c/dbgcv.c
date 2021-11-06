@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,18 +176,20 @@ static unsigned_16 GetCVSegment( seg_leader *seg )
     if( ( seg == NULL ) || ( seg->group == NULL ) ) {
         return( 0 );
     }
-    if( FmtData.type & (MK_REAL_MODE | MK_FLAT | MK_ID_SPLIT) ) {
+    if( FmtData.type & (MK_REAL_MODE | MK_FLAT_OFFS | MK_ID_SPLIT) ) {
         for( index = 1, group = Groups; group != NULL; group = group->next_group, ++index ) {
             if( group == seg->group ) {
                 return( index );
             }
         }
-    } else if( FmtData.type & MK_QNX ) {
-        return( ToQNXIndex( seg->seg_addr.seg ) );
-    } else {
-        return( seg->seg_addr.seg );
+        return( 0 );
     }
-    return( 0 );
+#ifdef _QNX
+    if( FmtData.type & MK_QNX ) {
+        return( ToQNXIndex( seg->seg_addr.seg ) );
+    }
+#endif
+    return( seg->seg_addr.seg );
 }
 
 static void AddSubSection( bool ismodule )

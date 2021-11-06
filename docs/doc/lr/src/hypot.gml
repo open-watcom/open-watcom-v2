@@ -20,7 +20,7 @@ The calculation is equivalent to
 .blkcode end
 .blktext begin
 The computation may cause an overflow, in which case the
-.kw matherr
+.reffunc matherr
 function will be invoked.
 .blktext end
 .desc end

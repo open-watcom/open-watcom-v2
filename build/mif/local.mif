@@ -35,7 +35,7 @@ lflags_dos_386  = sys causeway
 
 !if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64"
 
-additional_cleanup_sys = *.pdb
+additional_clean_sys = *.pdb
 
 # common settings
 ############################
@@ -166,12 +166,13 @@ bld_ldflags1 = $(common_ldflags) -Fm
 bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
     -MAPINFO:EXPORTS -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
     -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
+    -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(bld_ldflags1)
 
-bld_libflags = -out:$^@
+bld_libflags = -out:$@
 
 !ifndef __WATCOM_TOOLS__
 
@@ -209,7 +210,8 @@ ldflags1 = $(common_ldflags) -Fm
 
 ldflags_gen_all  = -link -nologo &
     -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
-    -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib
+    -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
+    -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib
 
 ldflags_gen  = $(cl_extra_libs_gen) $(ldflags_gen_all) $(extra_ldflags) $(bld_ldflags_$(proj_type))
 ldflags_dll  = $(cl_extra_libs_dll) $(ldflags_gen_all) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
@@ -306,7 +308,7 @@ common_flags = $(common_flags_dbg)
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
 !ifdef __CLANG_TOOLS__
-common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-implicit-exception-spec-mismatch -ferror-limit=200
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wpragma-pack -Wno-implicit-exception-spec-mismatch -ferror-limit=200
 !else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 !endif
@@ -439,7 +441,7 @@ bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(pro
 # options for linking via cl
 bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(bld_ldflags1)
 
-bld_libflags = crs $^@
+bld_libflags = crs $@
 
 !ifndef __WATCOM_TOOLS__
 

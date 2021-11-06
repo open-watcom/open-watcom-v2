@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ extern unsigned         DoAccess();
 
 static const DWORD      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
-trap_retval ReqFile_get_config( void )
+trap_retval TRAP_FILE( get_config )( void )
 {
     file_get_config_ret *ret;
 
@@ -66,7 +66,7 @@ trap_retval ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRead_user_keyboard( void )
+trap_retval TRAP_CORE( Read_user_keyboard )( void )
 {
     read_user_keyboard_req      *acc;
     read_user_keyboard_ret      *ret;
@@ -81,7 +81,7 @@ trap_retval ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_open( void )
+trap_retval TRAP_FILE( open )( void )
 {
     HANDLE              h;
     file_open_req       *acc;
@@ -133,7 +133,7 @@ trap_retval ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_seek( void )
+trap_retval TRAP_FILE( seek )( void )
 {
     DWORD               rc;
     file_seek_req       *acc;
@@ -156,7 +156,7 @@ trap_retval ReqFile_seek( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_write( void )
+trap_retval TRAP_FILE( write )( void )
 {
     DWORD               bytes;
     BOOL                rc;
@@ -187,7 +187,7 @@ trap_retval ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_write_console( void )
+trap_retval TRAP_FILE( write_console )( void )
 {
     DWORD               bytes;
     BOOL                rc;
@@ -214,7 +214,7 @@ trap_retval ReqFile_write_console( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_read( void )
+trap_retval TRAP_FILE( read )( void )
 {
     DWORD               bytes;
     BOOL                rc;
@@ -241,7 +241,7 @@ trap_retval ReqFile_read( void )
     return( sizeof( *ret ) + bytes );
 }
 
-trap_retval ReqFile_close( void )
+trap_retval TRAP_FILE( close )( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -260,7 +260,7 @@ trap_retval ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_erase( void )
+trap_retval TRAP_FILE( erase )( void )
 {
     file_erase_ret      *ret;
     char                *buff;
@@ -277,7 +277,7 @@ trap_retval ReqFile_erase( void )
 
 }
 
-trap_retval ReqFile_run_cmd( void )
+trap_retval TRAP_FILE( run_cmd )( void )
 {
     file_run_cmd_ret    *ret;
 
@@ -286,7 +286,7 @@ trap_retval ReqFile_run_cmd( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_string_to_fullpath( void )
+trap_retval TRAP_FILE( string_to_fullpath )( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
@@ -308,7 +308,7 @@ trap_retval ReqFile_string_to_fullpath( void )
 }
 
 
-trap_retval ReqEnv_setvar( void )
+trap_retval TRAP_ENV( set_var )( void )
 {
     env_set_var_req     *req;
     env_set_var_ret     *ret;
@@ -328,7 +328,7 @@ trap_retval ReqEnv_setvar( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqEnv_getvar( void )
+trap_retval TRAP_ENV( get_var )( void )
 {
     env_get_var_req     *req;
     env_get_var_ret     *ret;
@@ -349,7 +349,7 @@ trap_retval ReqEnv_getvar( void )
 }
 
 
-trap_retval ReqFileInfo_getdate( void )
+trap_retval TRAP_FILE_INFO( get_date )( void )
 {
     file_info_get_date_req      *req;
     file_info_get_date_ret      *ret;
@@ -374,7 +374,7 @@ trap_retval ReqFileInfo_getdate( void )
 }
 
 
-trap_retval ReqFileInfo_setdate( void )
+trap_retval TRAP_FILE_INFO( set_date )( void )
 {
     file_info_set_date_req      *req;
     file_info_set_date_ret      *ret;

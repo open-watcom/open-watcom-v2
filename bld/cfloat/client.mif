@@ -16,9 +16,9 @@ cfloat_lib = $(cfloat_dir)/$(objs_subdir).rtd/cf.lib
 cfloat_lib = $(cfloat_dir)/$(objs_subdir).dll/cf.lib
 !else
 #
-# CFLOAT OSI library used
+# CFLOAT library used
 #
-cfloat_lib = $(cfloat_dir)/osi$(host_cpu)/cf.lib
+cfloat_lib = $(cfloat_dir)/$(objs_subdir)/cf.lib
 !endif
 
 cfloat_inc_dirs = -I"$(cfloat_dir)/h"

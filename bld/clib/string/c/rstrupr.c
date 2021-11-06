@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of strupr() for RISC architectures.
+* Description:  Implementation of _strupr() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -35,8 +36,8 @@
 #include "riscstr.h"
 
 
-CHAR_TYPE *__F_NAME(strupr,_wcsupr)( CHAR_TYPE *s )
-/*************************************************/
+CHAR_TYPE *__F_NAME(_strupr,_wcsupr)( CHAR_TYPE *s )
+/**************************************************/
 {
     RISC_DATA_LOCALREF;
     UINT                *dw = ROUND(s);

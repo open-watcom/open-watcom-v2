@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,8 +127,8 @@ bool ObjInit( char *fname ) {
 //***************************
 
     owl_client_funcs    funcs = { owl_write, owl_tell, owl_seek, MemAlloc, MemFree };
-    PGROUP2             pg1;
-    PGROUP2             pg2;
+    pgroup2             pg1;
+    pgroup2             pg2;
     owl_format          obj_format;
 
     SectionInit();

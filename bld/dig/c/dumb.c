@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +36,13 @@
 #include "trpld.h"
 
 
+#define TRAP_DUMB(a)        TRAP_SYM( Dumb, a )
+
 mx_entry_p  Out_Mx_Ptr;
 
 #define OUTPTR( type, name ) type *name = Out_Mx_Ptr->ptr;
 
-static trap_retval ReqConnect( void )
+static trap_retval TRAP_DUMB( Connect )( void )
 {
     OUTPTR( connect_ret, ret );
 
@@ -47,12 +50,12 @@ static trap_retval ReqConnect( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqSimpleStub( void )
+static trap_retval TRAP_DUMB( EmptyStub )( void )
 {
     return( 0 );
 }
 
-static trap_retval ReqGet_supplementary_service( void )
+static trap_retval TRAP_DUMB( Get_supplementary_service )( void )
 {
     OUTPTR( get_supplementary_service_ret, ret );
 
@@ -61,7 +64,7 @@ static trap_retval ReqGet_supplementary_service( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqMap_addr( void )
+static trap_retval TRAP_DUMB( Map_addr )( void )
 {
     OUTPTR( map_addr_ret, ret );
 
@@ -72,7 +75,7 @@ static trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqChecksum_mem( void )
+static trap_retval TRAP_DUMB( Checksum_mem )( void )
 {
     OUTPTR( checksum_mem_ret, ret );
 
@@ -80,7 +83,7 @@ static trap_retval ReqChecksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqProg_load( void )
+static trap_retval TRAP_DUMB( Prog_load )( void )
 {
     OUTPTR( prog_load_ret, ret );
 
@@ -88,7 +91,7 @@ static trap_retval ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqProg_kill( void )
+static trap_retval TRAP_DUMB( Prog_kill )( void )
 {
     OUTPTR( prog_kill_ret, ret );
 
@@ -96,7 +99,7 @@ static trap_retval ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqSet_watch( void )
+static trap_retval TRAP_DUMB( Set_watch )( void )
 {
     OUTPTR( set_watch_ret, ret );
 
@@ -105,7 +108,7 @@ static trap_retval ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqSet_break( void )
+static trap_retval TRAP_DUMB( Set_break )( void )
 {
     OUTPTR( set_break_ret, ret );
 
@@ -113,7 +116,7 @@ static trap_retval ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqGet_next_alias( void )
+static trap_retval TRAP_DUMB( Get_next_alias )( void )
 {
     OUTPTR( get_next_alias_ret, ret );
 
@@ -122,7 +125,7 @@ static trap_retval ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqRead_user_keyboard( void )
+static trap_retval TRAP_DUMB( Read_user_keyboard )( void )
 {
     OUTPTR( read_user_keyboard_ret, ret );
 
@@ -130,7 +133,7 @@ static trap_retval ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqGet_lib_name( void )
+static trap_retval TRAP_DUMB( Get_lib_name )( void )
 {
     OUTPTR( get_lib_name_ret, ret );
 
@@ -138,7 +141,7 @@ static trap_retval ReqGet_lib_name( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqRedirect_stdin( void  )
+static trap_retval TRAP_DUMB( Redirect_stdin )( void  )
 {
     OUTPTR( redirect_stdin_ret, ret );
 
@@ -146,7 +149,7 @@ static trap_retval ReqRedirect_stdin( void  )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqRedirect_stdout( void  )
+static trap_retval TRAP_DUMB( Redirect_stdout )( void  )
 {
     OUTPTR( redirect_stdout_ret, ret );
 
@@ -155,7 +158,7 @@ static trap_retval ReqRedirect_stdout( void  )
 }
 
 
-static trap_retval ReqSplit_cmd( void )
+static trap_retval TRAP_DUMB( Split_cmd )( void )
 {
     OUTPTR( split_cmd_ret, ret );
 
@@ -165,40 +168,9 @@ static trap_retval ReqSplit_cmd( void )
 }
 
 static trap_retval (* const _dumbRequests[])( void ) = {
-    ReqConnect,
-    ReqSimpleStub, // ReqDisconnect,
-    ReqSimpleStub, // ReqSuspend,
-    ReqSimpleStub, // ReqResume,
-    ReqGet_supplementary_service,
-    ReqSimpleStub, // ReqPerform_supplementary_service,
-    ReqSimpleStub, // ReqGet_sys_config,
-    ReqMap_addr,
-    ReqChecksum_mem,
-    ReqSimpleStub, // ReqRead_mem,
-    ReqSimpleStub, // ReqWrite_mem,
-    ReqSimpleStub, // ReqRead_io,
-    ReqSimpleStub, // ReqWrite_io,
-    ReqSimpleStub, // ReqProg_go,
-    ReqSimpleStub, // ReqProg_step,
-    ReqProg_load,
-    ReqProg_kill,
-    ReqSet_watch,
-    ReqSimpleStub, // ReqClear_watch,
-    ReqSet_break,
-    ReqSimpleStub, // ReqClear_break,
-    ReqGet_next_alias,
-    ReqSimpleStub, // ReqSet_user_screen,
-    ReqSimpleStub, // ReqSet_debug_screen,
-    ReqRead_user_keyboard,
-    ReqGet_lib_name,
-    ReqSimpleStub, // ReqGet_err_text,
-    ReqSimpleStub, // ReqGet_message_text,
-    ReqRedirect_stdin,
-    ReqRedirect_stdout,
-    ReqSplit_cmd,
-    ReqSimpleStub, // ReqRead_regs,
-    ReqSimpleStub, // ReqWrite_regs,
-    ReqSimpleStub, // ReqMachine_data,
+    #define pick(sym,dumbfunc,stdfunc)  TRAP_DUMB( dumbfunc ),
+    #include "_trpreq.h"
+    #undef pick
 };
 
 

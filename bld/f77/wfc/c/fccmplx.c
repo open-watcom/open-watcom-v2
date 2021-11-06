@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +36,12 @@
 //
 
 #include "ftnstd.h"
-#include "rtconst.h"
+#include "global.h"
 #include "wf77defs.h"
+#include "wf77aux.h"
 #include "wf77cg.h"
-#include "wf77auxd.h"
 #include "tmpdefs.h"
 #include "cpopt.h"
-#include "global.h"
 #include "emitobj.h"
 #include "fctypes.h"
 #include "cnvd2s.h"
@@ -49,7 +49,6 @@
 #include "fccmplx.h"
 #include "fcstruct.h"
 #include "fctemp.h"
-#include "fcrtns.h"
 #include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
@@ -84,6 +83,47 @@ cg_type         CmplxBaseType( cg_type typ ) {
 }
 
 
+static cg_type MapCmplxType( cg_type typ )
+//========================================
+{
+    if( typ == TY_DOUBLE )
+        return( TY_DCOMPLEX );
+    if( typ == TY_LONGDOUBLE )
+        return( TY_XCOMPLEX );
+    return( TY_COMPLEX );
+}
+
+
+static RTCODE MapCmplxRtCode( RTCODE rtc, cg_type typ )
+//=====================================================
+{
+    if( typ == TY_DOUBLE ) {
+        switch( rtc ) {
+        case RT_CMPLXMUL:
+            return( RT_C16MUL );
+        case RT_CMPLXDIV:
+            return( RT_C16DIV );
+        case RT_CMPLXPOW:
+            return( RT_C16POW );
+        case RT_CMPLXPOWI:
+            return( RT_C16POWI );
+        }
+    } else if( typ == TY_LONGDOUBLE ) {
+        switch( rtc ) {
+        case RT_CMPLXMUL:
+            return( RT_C32MUL );
+        case RT_CMPLXDIV:
+            return( RT_C32DIV );
+        case RT_CMPLXPOW:
+            return( RT_C32POW );
+        case RT_CMPLXPOWI:
+            return( RT_C32POWI );
+        }
+    }
+    return( rtc );
+}
+
+
 void    SplitCmplx( cg_name cmplx_addr, cg_type typ ) {
 //=====================================================
 
@@ -99,31 +139,20 @@ void    SplitCmplx( cg_name cmplx_addr, cg_type typ ) {
 }
 
 
-static void DoCmplxOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name c, cg_name d ) {
-//==================================================================================
-
+static void DoCmplxOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name c, cg_name d )
+//================================================================================
 // Do a complex operation.
-
+{
     call_handle call;
     cg_type     typ;
-    cg_type     r_typ;
 
     typ = ResCGType( CGType( a ), CGType( c ) );
-    if( typ == TY_DOUBLE ) {
-        rtn_id += RT_C_DOUBLE;
-        r_typ = TY_DCOMPLEX;
-    } else if( typ == TY_LONGDOUBLE ) {
-        rtn_id += RT_C_EXTENDED;
-        r_typ = TY_XCOMPLEX;
-    } else {
-        r_typ = TY_COMPLEX;
-    }
-    call = InitCall( rtn_id );
+    call = InitCall( MapCmplxRtCode( rtn_id, typ ) );
     CGAddParm( call, a, typ );
     CGAddParm( call, b, typ );
     CGAddParm( call, c, typ );
     CGAddParm( call, d, typ );
-    SplitCmplx( CGCall( call ), r_typ );
+    SplitCmplx( CGCall( call ), MapCmplxType( typ ) );
 }
 
 
@@ -430,7 +459,7 @@ void    FCDivMixXC( void ) {
 
 // Divide a scalar by a complex.
 
-    XCmplxMixOp( RT_C8DIV, false );
+    XCmplxMixOp( RT_CMPLXDIV, false );
 }
 
 
@@ -441,7 +470,7 @@ void    FCMulCmplx( void ) {
 #if _CPU == 8086 || _CPU == 386
     if( CPUOpts & CPUOPT_FPC ) {
         // generate call to runtime complex multiply
-        XCmplxOp( RT_C8MUL );
+        XCmplxOp( RT_CMPLXMUL );
     } else {
         // do multiplication inline
         InLineMulCC( GetU16() );
@@ -499,7 +528,7 @@ void    FCDivCmplx( void ) {
 
 // Binary division for complex numbers.
 
-    XCmplxOp( RT_C8DIV );
+    XCmplxOp( RT_CMPLXDIV );
 }
 
 
@@ -508,7 +537,7 @@ void    FCExpCmplx( void ) {
 
 // Binary exponentiation for complex numbers.
 
-    XCmplxOp( RT_C8POW );
+    XCmplxOp( RT_CMPLXPOW );
 }
 
 
@@ -517,7 +546,7 @@ void    FCExpMixCX( void ) {
 
 // Binary exponentiation for complex**non-complex.
 
-    XCmplxMixOp( RT_C8POW, true );
+    XCmplxMixOp( RT_CMPLXPOW, true );
 }
 
 
@@ -526,7 +555,7 @@ void    FCExpMixXC( void ) {
 
 // Binary exponentiation for non-complex**complex.
 
-    XCmplxMixOp( RT_C8POW, false );
+    XCmplxMixOp( RT_CMPLXPOW, false );
 }
 
 
@@ -540,30 +569,19 @@ static cg_type PromoteIntType( cg_type typ ) {
 }
 
 
-static void    DoCmplxScalarOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name s ) {
-//=========================================================================
-
+static void    DoCmplxScalarOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name s )
+//==============================================================================
 // Do a complex operation.
-
+{
     call_handle call;
     cg_type     typ;
-    cg_type     r_typ;
 
     typ = CGType( a );
-    if( typ == TY_DOUBLE ) {
-        rtn_id += RT_C_DOUBLE;
-        r_typ = TY_DCOMPLEX;
-    } else if( typ == TY_LONGDOUBLE ) {
-        rtn_id += RT_C_EXTENDED;
-        r_typ = TY_XCOMPLEX;
-    } else {
-        r_typ = TY_COMPLEX;
-    }
-    call = InitCall( rtn_id );
+    call = InitCall( MapCmplxRtCode( rtn_id, typ ) );
     CGAddParm( call, a, typ );
     CGAddParm( call, b, typ );
     CGAddParm( call, s, PromoteIntType( CGType( s ) ) );
-    SplitCmplx( CGCall( call ), r_typ );
+    SplitCmplx( CGCall( call ), MapCmplxType( typ ) );
 }
 
 
@@ -599,7 +617,7 @@ static void    XCmplxMixOp( RTCODE rtn_id, bool cmplx_scalar ) {
         // exponentiation
         s_typ = PromoteIntType( s_typ );
         if( s_typ == TY_INT_4 ) {
-            DoCmplxScalarOp( RT_C8POWI, x.realpart, x.imagpart, s );
+            DoCmplxScalarOp( RT_CMPLXPOWI, x.realpart, x.imagpart, s );
         } else {
             DoCmplxOp( rtn_id, x.realpart, x.imagpart, s, CGInteger( 0, x_typ ) );
         }

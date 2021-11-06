@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,20 +34,27 @@
 
 #include "trptypes.h"
 
-#include "pushpck1.h"
+#define RUN_THREAD_SUPP_NAME    RunThread
+#define TRAP_RUN_THREAD(s)      TRAP_SYM( RUN_THREAD_SUPP_NAME, s )
 
-#define RUN_THREAD_SUPP_NAME                "RunThread"
+//#define REQ_RUN_THREAD_DEF(sym,func)
+#define REQ_RUN_THREAD_DEFS() \
+    REQ_RUN_THREAD_DEF( INFO,        info ) \
+    REQ_RUN_THREAD_DEF( GET_NEXT,    get_next ) \
+    REQ_RUN_THREAD_DEF( GET_RUNTIME, get_runtime ) \
+    REQ_RUN_THREAD_DEF( POLL,        poll ) \
+    REQ_RUN_THREAD_DEF( SET,         set ) \
+    REQ_RUN_THREAD_DEF( GET_NAME,    get_name ) \
+    REQ_RUN_THREAD_DEF( STOP,        stop ) \
+    REQ_RUN_THREAD_DEF( SIGNAL_STOP, signal_stop )
 
 enum {
-    REQ_RUN_THREAD_INFO,            /* 00 */
-    REQ_RUN_THREAD_GET_NEXT,        /* 01 */
-    REQ_RUN_THREAD_GET_RUNTIME,     /* 02 */
-    REQ_RUN_THREAD_POLL,            /* 03 */
-    REQ_RUN_THREAD_SET,             /* 04 */
-    REQ_RUN_THREAD_GET_NAME,        /* 05 */
-    REQ_RUN_THREAD_STOP,            /* 06 */
-    REQ_RUN_THREAD_SIGNAL_STOP,     /* 07 */
+    #define REQ_RUN_THREAD_DEF(sym,func)   REQ_RUN_THREAD_ ## sym,
+    REQ_RUN_THREAD_DEFS()
+    #undef REQ_RUN_THREAD_DEF
 };
+
+#include "pushpck1.h"
 
 /*=================== REQ_RUN_THREAD_INFO ===================*/
 

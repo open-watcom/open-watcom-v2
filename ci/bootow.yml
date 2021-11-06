@@ -1,0 +1,28 @@
+parameters:
+  arch:     ''
+  title:    ''
+
+jobs:
+  - job: boot${{ parameters.arch }}ow
+    displayName: "${{ parameters.title }}"
+    variables:
+      ${{ if eq(parameters.arch, 'lnx') }}:
+        owscript:     $(owscript_lnx)
+        watcom:       $(owciroot_lnx)/ow
+        include:      $(watcom)/lh
+        watcom.path:  $(watcom)/binl
+      ${{ if eq(parameters.arch, 'nt') }}:
+        owscript:     $(owscript_nt)
+        watcom:       $(owciroot_nt)\ow
+        include:      $(watcom)\h;$(watcom)\h\nt
+        watcom.path:  $(watcom)\binnt
+      owtools:        WATCOM
+      owbuild.stage:  boot
+    pool:
+      ${{ if eq(parameters.arch, 'lnx') }}:
+        vmImage: $(owimage_lnx)
+      ${{ if eq(parameters.arch, 'nt') }}:
+        vmImage: $(owimage_nt)
+    steps:
+    - script: $(owscript)
+      displayName: "Bootstrap OW"

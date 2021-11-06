@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,20 +31,24 @@
 ****************************************************************************/
 
 
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
     #include <share.h>
-    #define sopen3          sopen
-    #define sopen4          sopen
+    #define _sopen3             sopen
+    #define _sopen4             sopen
+#elif defined( __WATCOMC__ ) || !defined( __UNIX__ )
+    #include <share.h>
+    #define _sopen3             _sopen
+    #define _sopen4             _sopen
 #else
-    #define sopen3(a,b,c)   open(a,b)
-    #define sopen4(a,b,c,d) open(a,b,d)
+    #define _sopen3(a,b,c)      open(a,b)
+    #define _sopen4(a,b,c,d)    open(a,b,d)
 #endif
 #ifndef SH_COMPAT
   #ifdef SH_DENYNO
-    #define SH_COMPAT       SH_DENYNO
+    #define SH_COMPAT           SH_DENYNO
   #elif defined( _SH_DENYNO )
-    #define SH_COMPAT       _SH_DENYNO
+    #define SH_COMPAT           _SH_DENYNO
   #else
-    #define SH_COMPAT       0
+    #define SH_COMPAT           0
   #endif
 #endif

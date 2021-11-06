@@ -1,4 +1,3 @@
-dllname_version  = $(bld_ver)
 dllname_register = r
 dllname_stack    = s
 !ifdef profile
@@ -19,7 +18,7 @@ dllname_plib_axp = plb
 dllname_wlib_386 = wrt
 dllname_wlib_387 = wr7
 dllname_wlib_axp = wrt
-dllname =$(dllname_$(component)_$(processor))$(dllname_$(convention))$(dllname_version)$(dllname_profile)
+dllname =$(dllname_$(component)_$(processor))$(dllname_$(convention))$(bld_ver)$(dllname_profile)
 libdllname_profile = dll
 !ifdef profile
 !ifeq component plib

@@ -378,7 +378,7 @@ macros that start with
 .mono FLT_&SYSRB.
 refer to type
 .kw float
-..ct ,
+.ct ,
 .mono DBL_&SYSRB.
 refer to type
 .kw double
@@ -386,7 +386,7 @@ and
 .mono LDBL_&SYSRB.
 refer to type
 .kw long double
-..ct ..li .
+.period
 .begbull
 .keep begin
 .bull
@@ -446,14 +446,12 @@ such that
 .mono FLT_RADIX
 raised to the power
 .us n
-..ct ,
-minus 1,
-is a normalized floating-point number, or,
+.ct , minus 1, is a normalized floating-point number, or,
 .begbull $compact
 .bull
 the minimum exponent value in terms of
 .mono FLT_RADIX
-..ct , or,
+.ct , or,
 .bull
 the base
 .mono FLT_RADIX
@@ -516,14 +514,12 @@ such that
 .mono FLT_RADIX
 raised to the power
 .us n
-..ct ,
-minus 1,
-is a representable finite floating-point number, or,
+.ct , minus 1, is a representable finite floating-point number, or,
 .begbull $compact
 .bull
 the maximum exponent value in terms of
 .mono FLT_RADIX
-..ct , or,
+.ct , or,
 .bull
 the base
 .mono FLT_RADIX

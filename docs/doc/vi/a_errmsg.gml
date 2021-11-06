@@ -2,6 +2,7 @@
 .*
 .*                            Open Watcom Project
 .*
+.* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 .*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 .*
 .*  ========================================================================
@@ -26,12 +27,16 @@
 .*
 .* Description:  Error Messages.
 .*
+.*****************************************************************************
+
+.*****************************************************************************
+.*
 .* Date         By              Reason
 .* ----         --              ------
 .* 18-aug-92    Craig Eisler    initial draft
 .* 03-oct-05    L. Haynes       reformatted for hlp, figures
 .*
-.****************************************************************************/
+.*****************************************************************************
 .chap The &edname Error Messages
 :cmt. .if &e'&dohelp eq 0 .do begin
 :cmt. .   .section 'Introduction'
@@ -48,16 +53,13 @@ is filled in when you see it.  These special characters are:
 :DL break.
 .*
 :DT.%s
-:DD.An appropriate string is filled in by &edvi
-:period.
+:DD.An appropriate string is filled in by &edvi..
 
 :DT.%c
-:DD.An appropriate character is filled in by &edvi
-:period.
+:DD.An appropriate character is filled in by &edvi..
 
 :DT.%d
-:DD.An appropriate number is filled in by &edvi
-:period.
+:DD.An appropriate number is filled in by &edvi..
 .*
 :eDL.
 .*
@@ -218,8 +220,8 @@ command mode command.
 statement correctly.
 
 :DT.Invalid data in file '%s' at line %d
-:DD.This error is issued if one of the .dat files (error.dat, errmsg.dat,
-keys.dat) contains invalid data.
+:DD.This error is issued if one of the .dat files (error.dat, keys.dat)
+contains invalid data.
 
 :DT.Invalid delete command
 :DD.You did not enter a valid operation after starting the delete ('d')
@@ -389,7 +391,7 @@ would be longer than the setting of "maxlinelen".
 :DD.You attempted a command mode command that tried to access more words than
 were on the current line.
 
-:DT.Not valid while in ex mode
+:DT.Not valid while in EX mode
 :DD.You attempted to use a command from EX mode that was not allowed:
 an "edit" command line command with no parameter, or a "read" command line
 command with no parameter.
@@ -398,7 +400,7 @@ command with no parameter.
 :DD.You used the command mode percent ('%') keystroke, but there was nothing
 on the current line that could be matched.
 
-:DT.Only valid in ex mode
+:DT.Only valid in EX mode
 :DD.You attempted to use an EX mode only command from the command line: "append",
 "change", "insert", or "list".
 

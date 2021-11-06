@@ -118,7 +118,7 @@ best optimizing compiler.
 New optimizations take advantage of functions which do not
 throw exceptions.  These techniques reduce
 or eliminate the need for compiler generated "bookkeeping" code that
-contributes to the bloat of current C++ generated code.  
+contributes to the bloat of current C++ generated code.
 
 :LI.
 The C++ language is complicated enough that we had to develop and refine
@@ -168,27 +168,27 @@ files of source code became an important task.
 :P
 The method we used to solve this problem is called a pre-compiled header file.
 The problems encountered in implementing this feature of the compiler include
-saving and restoring the complete internal state of the compiler.  This 
+saving and restoring the complete internal state of the compiler.  This
 involved research into the latest papers on persistent objects combined
 with some Watcom innovations.  The completed implementation satisfied our
 goal of increased throughput during compilation of C++ source code.
 
 :LI.
-A commercial compiler needs to perform efficiently, in terms of both time and 
+A commercial compiler needs to perform efficiently, in terms of both time and
 space, on any size of input. An algorithm that accomplishes this by
 dynamically adapting to the current requirements (called dynamic hashing)
-was adopted this year for the hash table, a key component of the compiler.  
+was adopted this year for the hash table, a key component of the compiler.
 :P.
-Dynamic hashing varies the number of bits of the hashed key that are 
-used when determining which bucket will hold the given key.  As the buckets 
-become more full (causing longer average linear searches when looking up keys 
-in the hash table), another bit of the hashed key is used.  This increases 
+Dynamic hashing varies the number of bits of the hashed key that are
+used when determining which bucket will hold the given key.  As the buckets
+become more full (causing longer average linear searches when looking up keys
+in the hash table), another bit of the hashed key is used.  This increases
 the number of buckets used, decreasing the average linear search time.  The
 particular dynamic hashing algorithm implemented ("Dynamic Hash Tables",
 Per-Ake Larson, CACM April 1988 Vol.31, Num.4) splits one bucket at a time as
 the desired average search length is exceeded, instead of doubling the size of
-the entire hash table when this limit is exceeded.  The result is fine-grain 
-control over performance, allowing performance to scale smoothly with 
+the entire hash table when this limit is exceeded.  The result is fine-grain
+control over performance, allowing performance to scale smoothly with
 problem size (number of unique keys to be store).
 
 :LI.
@@ -375,7 +375,7 @@ these opposing forces.
 :H6.The compiler support routines
 
 :P.
-The ISO C++ Draft standard was changed to specify that the life-time of 
+The ISO C++ Draft standard was changed to specify that the life-time of
 temporary objects is the duration of a statement. The WATCOM compiler
 was implemented with life-times being the duration of a scope.
 :P

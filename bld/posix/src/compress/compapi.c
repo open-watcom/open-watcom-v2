@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,8 +91,8 @@
 #include "compress.h" /* contains the rest of the include file declarations */
 
 static int offset;
-static long int in_count ;         /* length of input */
-static long int bytes_out;         /* length of compressed output */
+static long in_count ;         /* length of input */
+static long bytes_out;         /* length of compressed output */
 
 static CODE prefxcode, nextfree;
 static CODE highcode;
@@ -293,7 +294,7 @@ int alloc_tables(CODE maxcode, HASH hashsize)
 /* DjG, sets it up and returns true to compress and false to not compress */
 int cl_block( void )
 {
-    register long int rat;
+    long    rat;
 
     checkpoint = in_count + CHECK_GAP;
 #ifndef NDEBUG
@@ -337,8 +338,8 @@ int cl_block( void )
 void compress( void )
 {
     int c,adjbits;
-    register HASH hash;
-    register CODE code;
+    HASH hash;
+    CODE code;
     HASH hashf[256];
     CODE maxcode;
     HASH hashsize;
@@ -505,8 +506,8 @@ void putcode(CODE code, int bits)
 {
   static int oldbits = 0;
   static UCHAR outbuf[MAXBITS];
-  register UCHAR *buf;
-  register int shift;
+  UCHAR *buf;
+  int shift;
 
   if (bits != oldbits) {
     if (bits == 0) {
@@ -566,10 +567,10 @@ int nextcode(CODE *codeptr, int bits)
  */
 {
   static int prevbits = 0;
-  register CODE code;
+  CODE code;
   static int size = 0;
   static UCHAR inbuf[MAXBITS];
-  register int shift;
+  int shift;
   UCHAR *bp;
 
   /* If the next entry is a different bit-size than the preceeding one
@@ -607,8 +608,8 @@ int nextcode(CODE *codeptr, int bits)
 
 void decompress( void )
 {
-  register int i;
-  register CODE code;
+  int i;
+  CODE code;
   char sufxchar;
   CODE savecode;
   bool fulltable;

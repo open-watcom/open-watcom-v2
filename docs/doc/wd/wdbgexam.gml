@@ -50,7 +50,7 @@ to open this window.
 The Watches windows allows you to add and delete variables and expressions.
 In other windows you can choose
 .popup Watch
-.dot
+.period
 This will open the watches window add the text which is selected in
 another window to the watches window.
 You can use
@@ -67,7 +67,7 @@ to edit the expressions or typecast the variables.
 This is another instance of a Watches window.  A variable window is created
 when you select a variable or expression in a window and use
 .popup Inspect
-.dot
+.period
 .endnote
 .np
 Each line of a variable window has three elements.  On the left is
@@ -271,14 +271,14 @@ To see protected functions, you must also select
 .menuitem Class/Show Static
 Display static members of this object.
 .menuitem Type/All Hex
-This item is only available when the display item is an array or a fake 
+This item is only available when the display item is an array or a fake
 array (a pointer changed to display as if it were an array using
 .mi Type/Array
 ). Change the value of all sibling array entries to be displayed in hexadecimal.
 .menuitem Type/Hex
 Change the value to be displayed in hexadecimal.
 .menuitem Type/All Decimal
-This item is only available when the display item is an array or a fake 
+This item is only available when the display item is an array or a fake
 array (a pointer changed to display as if it were an array using
 .mi Type/Array
 ). Change the value of all sibling array entries to be displayed in decimal.
@@ -305,7 +305,7 @@ This will undo the effects of
 .mi Type/String
 or
 .mi Type/Array
-.dot
+.period
 It will also let you see the raw pointer value when the debugger has
 automatically displayed a pointer to char as a string.
 .menuitem Type/Array...
@@ -334,7 +334,7 @@ window to examine memory in raw form.
 .ix 'memory' 'display'
 To open a Memory window, choose
 .menuref 'Memory At' 'Data'
-.dot
+.period
 The
 .us Enter Memory Address
 dialog appears. Enter the memory address and press Return to see the

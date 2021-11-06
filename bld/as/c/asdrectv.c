@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -361,9 +362,9 @@ static char *getESCChar( char * const byte, char *ptr )
 // Interpret the escape sequence, store the value in *byte,
 // returns the pointer to the last character in the sequence.
 {
-    unsigned long int   num = 0;
-    uint_8              ctr = 0;
-    char                *buffer, *endptr;
+    unsigned long   num = 0;
+    uint_8          ctr = 0;
+    char            *buffer, *endptr;
 
     assert( *ptr == ESCAPE_CHAR );
     ptr++;

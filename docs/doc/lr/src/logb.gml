@@ -14,8 +14,8 @@ as a double.
 .return begin
 If successful, the return value is the exponent of
 .arg x
-.ct .li .  When the argument is zero, the function returns
-infinity.  
+.period  When the argument is zero, the function returns
+infinity.
 .return end
 .see begin
 .seelist ilogb

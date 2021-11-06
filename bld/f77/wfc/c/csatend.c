@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +77,7 @@ void    CpAtEnd(void) {
     } else {
         AdvanceITPtr();
         ReqComma();
-        if( ( StmtSw & SS_COMMA_THEN_EQ ) != 0 ) {
+        if( (StmtSw & SS_COMMA_THEN_EQ) != 0 ) {
             StmtSw &= ~SS_COMMA_THEN_EQ;  // consider AT END, DATA == 0
             StmtSw |= SS_EQUALS_FOUND;
         }

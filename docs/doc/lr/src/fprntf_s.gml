@@ -24,7 +24,7 @@ shall be a null pointer. The
 specifier (modified or not by flags, field width, or precision) shall not
 appear in the string pointed to by
 .arg format
-.ct .li .
+.period
 Any argument to
 .id &funcb.
 corresponding to a
@@ -43,9 +43,9 @@ produced output before discovering the runtime-constraint violation.
 The
 .id &funcb.
 function is equivalent to the
-.kw fprintf
+.reffunc fprintf
 function except for the explicit runtime-constraints listed above.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .desc end
 .*
 .return begin

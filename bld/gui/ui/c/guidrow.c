@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,12 +39,12 @@
  *                   window wnd are bad.
  */
 
-void GUIWndDirtyRow( gui_window * wnd, gui_ord row )
+void GUIAPI GUIWndDirtyRow( gui_window * wnd, gui_text_ord row )
 {
     SAREA area;
 
     area.row = row + wnd->use.row;
-    if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_VSCROLL( wnd ) ) {
         area.row -= wnd->vgadget->pos;
     }
     area.col = wnd->use.col;

@@ -124,7 +124,7 @@ int select_s (int nfds, fd_set *readfds, fd_set *writefds,
   /*
    * Loop until specified timeout expires or event(s) satisfied.
    */
-  do
+  for ( ;; )
   {
 
     for (s = 0; s < num_fd; s++)
@@ -135,10 +135,10 @@ int select_s (int nfds, fd_set *readfds, fd_set *writefds,
       int     read_cnt = 0, write_cnt = 0, exc_cnt = 0;
       Socket *socket = NULL;
 
-#if (SK_FIRST > 0)
+#if (S_FIRST > 0)
       /* We ignore stdin/stdout/stderr handles for now
        */
-      if (s < SK_FIRST)
+      if (s < S_FIRST)
          continue;
 #endif
 
@@ -268,7 +268,7 @@ int select_s (int nfds, fd_set *readfds, fd_set *writefds,
     {
       expiry = timeval_diff(&now, &starttime);
       SOCK_DEBUGF ((NULL, ", timeout!: %u.%06lus",
-                   expiry.tv_secs, expiry.tv_usecs ));
+                   expiry.tv_sec, expiry.tv_usec ));
 
       for (s = 0; s < num_fd; s++)
       {
@@ -280,7 +280,6 @@ int select_s (int nfds, fd_set *readfds, fd_set *writefds,
       goto select_ok;
     }
   }
-  while (1);
 
 
 select_fail:
@@ -302,18 +301,18 @@ static __inline int listen_queued (Socket *socket)
 
   for (i = 0; i < socket->backlog && i < DIM(socket->listen_queue); i++)
   {
-    tcp_Socket *tcb = socket->listen_queue[i];
+    sock_type *tcb_sk = socket->listen_queue[i];
 
-    if (!tcb)
+    if (tcb_sk == NULL)
        continue;
 
     /* Socket has reached Established state or receive data above
      * low water mark. This means, socket may have reached Closed,
      * but this still counts as a readable event.
      */
-    if (tcb->state == tcp_StateESTAB ||
-        sock_rbused((sock_type*)tcb) > socket->recv_lowat)
-       return (1);
+    if (tcb_sk->tcp.state == tcp_StateESTAB ||
+        sock_rbused(tcb_sk) > socket->rx_lowat)
+        return (1);
   }
   return (0);
 }
@@ -360,11 +359,11 @@ static __inline int sock_signalled (Socket *socket, int mask)
  */
 int _sock_read_select (Socket *socket)
 {
+  sock_type *sk;
   int len;
 
 #if defined(USE_LIBPCAP)
-  if (socket->so_type == SOCK_PACKET)
-  {
+  if (socket->so_type == SOCK_PACKET) {
     /* !!fix-me: need to push-back this packet, else it's lost
      *           when read_s()/recv() is called.
      */
@@ -373,29 +372,27 @@ int _sock_read_select (Socket *socket)
     return (0);
   }
 #endif
-
+  sk = socket->proto_sock;
   if (socket->so_type == SOCK_RAW)
-     return (socket->raw_sock && socket->raw_sock->used);
+     return (sk != NULL && sk->raw.used);
 
-  if (socket->so_type == SOCK_DGRAM)
-  {
-    if (socket->so_state & SS_PRIV)
-         len = sock_recv_used (socket->udp_sock);
-    else len = sock_rbused ((sock_type*)socket->udp_sock);
+  if (socket->so_type == SOCK_DGRAM) {
+    if (socket->so_state & SS_PRIV) {
+        len = sock_recv_used (sk);
+    } else {
+        len = sock_rbused (sk);
+    }
 
-    if (len > socket->recv_lowat ||
+    if (len > socket->rx_lowat ||
         sock_signalled(socket,READ_STATE_MASK))
        return (1);
     return (0);
   }
 
-  if (socket->so_type == SOCK_STREAM)
-  {
-    sock_type *sk = (sock_type*) socket->tcp_sock;
-
+  if (socket->so_type == SOCK_STREAM) {
     if (sock_signalled(socket,READ_STATE_MASK) || /* signalled for read_s() */
         sk->tcp.state >= tcp_StateLASTACK      || /* got FIN from peer */
-        sock_rbused(sk) > socket->recv_lowat)     /* Rx-data above low-limit */
+        sock_rbused(sk) > socket->rx_lowat)     /* Rx-data above low-limit */
        return (1);
 
     if ((socket->so_options & SO_ACCEPTCONN) &&   /* connection pending */
@@ -424,9 +421,7 @@ int _sock_write_select (Socket *socket)
 
   if (socket->so_type == SOCK_STREAM)
   {
-    sock_type *sk = (sock_type*) socket->tcp_sock;
-
-    if (sock_tbleft(sk) > socket->send_lowat ||  /* Tx room above low-limit */
+    if (sock_tbleft(socket->proto_sock) > socket->tx_lowat ||  /* Tx room above low-limit */
         sock_signalled(socket,WRITE_STATE_MASK)) /* signalled for write */
       return (1);
     return (0);

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,10 +45,9 @@
 
     void __wCMain( void )
     {
-        #if !defined(__OSI__)
-            /* allocate alternate stack for F77 */
-            __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
-        #endif
+        /* allocate alternate stack for F77 */
+        __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
+
         __CommonInit();
         exit( wmain( ___wArgc, ___wArgv ) );
         // never return
@@ -57,10 +57,9 @@
 
     void __CMain( void )
     {
-        #if !defined(__OSI__)
-            /* allocate alternate stack for F77 */
-            __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
-        #endif
+        /* allocate alternate stack for F77 */
+        __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
+
         __CommonInit();
         exit( main( ___Argc, ___Argv ) );
         // never return

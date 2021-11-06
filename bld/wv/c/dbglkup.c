@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +47,20 @@
 #include "dipinter.h"
 #include "dbglkup.h"
 #include "dbgsetfg.h"
+#include "dbgmisc.h"
 
 #include "clibext.h"
 
+
+#define CASE_OPTS \
+    pick( "Ignore",  CASE_IGNORE  ) \
+    pick( "Respect", CASE_RESPECT )
+
+enum {
+    #define pick(t,e)   e,
+    CASE_OPTS
+    #undef pick
+};
 
 typedef struct lookup_list {
     struct lookup_list  *next;
@@ -57,12 +68,13 @@ typedef struct lookup_list {
     char                data[1];
 } lookup;
 
-static const char CaseTab[] = { "Ignore\0Respect\0" };
-
-
 static  lookup      *DefLookup;
 
-static const char AddTab[] = { "Add\0" };
+static const char CaseTab[] = {
+    #define pick(t,e)   t "\0"
+    CASE_OPTS
+    #undef pick
+};
 
 static void FreeList( lookup *curr )
 {
@@ -143,15 +155,15 @@ void LookSet( void )
     just_respect = false;
     if( CurrToken == T_DIV ) {
         Scan();
-        if( ScanCmd( AddTab ) == 0 ) {
+        if( ScanCmdAdd() ) {
             add = true;
         } else {
             switch( ScanCmd( CaseTab ) ) {
-            case 0:
+            case CASE_IGNORE:
                 respect = false;
                 just_respect = true;
                 break;
-            case 1:
+            case CASE_RESPECT:
                 respect = true;
                 just_respect = true;
                 break;
@@ -166,12 +178,12 @@ void LookSet( void )
         if( CurrToken == T_DIV ) {
             Scan();
             switch( ScanCmd( CaseTab ) ) {
-            case 0:
+            case CASE_IGNORE:
                 respect = false;
                 need_item = true;
                 just_respect = false;
                 break;
-            case 1:
+            case CASE_RESPECT:
                 respect = true;
                 need_item = true;
                 just_respect = false;
@@ -310,7 +322,7 @@ static walk_result CheckModName( mod_handle mh, void *d )
     len = DIPModName( mh, name, sizeof( name ) );
     if( len != md->len )
         return( WR_CONTINUE );
-    if( memicmp( name, md->start, len ) != 0 )
+    if( strnicmp( name, md->start, len ) != 0 )
         return( WR_CONTINUE );
     md->mh = mh;
     return( WR_STOP );
@@ -354,7 +366,7 @@ static walk_result CheckImageName( mod_handle mh, void *d )
     len = ExtPointer( name, OP_REMOTE ) - name;
     if( len != md->len )
         return( WR_CONTINUE );
-    if( memicmp( name, md->start, len ) != 0 )
+    if( strnicmp( name, md->start, len ) != 0 )
         return( WR_CONTINUE );
     md->mh = mh;
     return( WR_STOP );
@@ -400,8 +412,8 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
 {
     lookup      *curr;
     bool        save_case;
-    const char  *start;
-    unsigned    len;
+    const char  *save_name;
+    unsigned    save_len;
     bool        check_codeaddr_mod;
     mod_handle  search_mod;
 
@@ -432,17 +444,17 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
         }
         return( SymListHead );
     }
-    start = li->name.start;
-    len = li->name.len;
+    save_name = li->name.start;
+    save_len = li->name.len;
     save_case = li->case_sensitive;
     li->name.start = TxtBuff;
     for( curr = DefLookup; curr != NULL; curr = curr->next ) {
         li->case_sensitive = curr->respect_case;
-        li->source.start = start;
-        li->source.len   = len;
+        li->source.start = save_name;
+        li->source.len   = save_len;
         li->name.len = strsubst( TxtBuff, curr->data, &li->source ) - TxtBuff;
         if( check_codeaddr_mod ) {
-            if(DIPLookupSym( SS_MODULE, &CodeAddrMod, li, &SymListHead )!=SR_NONE) {
+            if( DIPLookupSym( SS_MODULE, &CodeAddrMod, li, &SymListHead ) != SR_NONE ) {
                 break;
             }
         }
@@ -453,8 +465,8 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
         }
     }
     li->case_sensitive = save_case;
-    li->name.start = start;
-    li->name.len = len;
+    li->name.start = save_name;
+    li->name.len = save_len;
     return( SymListHead );
 }
 
@@ -484,7 +496,7 @@ void PurgeSymHandles( void )
     SymListHead = NULL;
 }
 
-static bool GetSymAddr( char *name, mod_handle mh, address *addr )
+static bool GetSymAddr( const char *name, mod_handle mh, address *addr )
 {
     lookup_item         li;
     location_list       ll;

@@ -18,14 +18,14 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/bwlink.exe     <OWBINDIR>/bwlink<CMDEXT>
-    <CCCMD> <OWOBJDIR>/bwlinkd<DYEXT> <OWBINDIR>/bwlinkd<DYEXT>
+    <CPCMD> <OWOBJDIR>/bwlink.exe     <OWBINDIR>/<OWOBJDIR>/bwlink<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bwlinkd<DYEXT> <OWBINDIR>/<OWOBJDIR>/bwlinkd<DYEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/bwlink<CMDEXT>
-    rm -f <OWBINDIR>/bwlink<CMDEXT>
-    rm -f <OWBINDIR>/bwlinkd<DYEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/bwlink<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/bwlink<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/bwlinkd<DYEXT>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

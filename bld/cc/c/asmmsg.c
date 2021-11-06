@@ -36,11 +36,13 @@
 
 #if _INTEL_CPU
 
-#define ASMFAR
-
-#define asmerr(code,msg)   msg
-#include "asmerr.h"
 #include "target.h"
+
+static char const * const AsmErrMsgs[] = {
+    #define pick(c,e,j)         e,
+    #include "wasmc.msg"
+    #undef pick
+};
 
 void AsmError( unsigned msg_number )
 {

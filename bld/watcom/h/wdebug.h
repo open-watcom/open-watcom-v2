@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,33 +59,13 @@ typedef unsigned short _word;
 typedef unsigned long _dword;
 
 typedef struct {
-_word ICCodeSeg;
-_word ICCodeOff;
-_word ICDataSeg;
-_word ICDataOff;
-_word ICStackSeg;
-_word ICStackOff;
+    _word ICCodeSeg;
+    _word ICCodeOff;
+    _word ICDataSeg;
+    _word ICDataOff;
+    _word ICStackSeg;
+    _word ICStackOff;
 } icb_data;
-
-typedef struct interrupt_struct {
-_dword  EAX;
-_dword  EBX;
-_dword  ECX;
-_dword  EDX;
-_dword  EDI;
-_dword  ESI;
-_dword  EFlags;
-_dword  EBP;
-_dword  EIP;
-_dword  ESP;
-_word   SS;
-_word   CS;
-_word   DS;
-_word   ES;
-_word   FS;
-_word   GS;
-_word   InterruptNumber;
-} interrupt_struct;
 
 extern _word DS( void );
 #pragma aux DS = \

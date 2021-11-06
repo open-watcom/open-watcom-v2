@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -164,24 +164,38 @@ _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_MAKECALL,     FU_NO
     RT_MAP( C_I4_S, RT_I4FS ) \
     RT_MAP( C_U4_D, RT_U4FD ) \
     RT_MAP( C_I4_D, RT_I4FD ) \
+    RT_MAP1( C_U4_L, RT_U4FL ) \
+    RT_MAP1( C_I4_L, RT_I4FL ) \
     RT_MAP( C_S_D,  RT_FSFD ) \
+    RT_MAP1( C_S_L,  RT_FSFL ) \
     RT_MAP( C_S_I4, RT_FSI4 ) \
     RT_MAP( C_S_U4, RT_FSU4 ) \
     RT_MAP( C_D_I4, RT_FDI4 ) \
     RT_MAP( C_D_U4, RT_FDU4 ) \
     RT_MAP( C_D_S,  RT_FDFS ) \
+    RT_MAP1( C_D_L,  RT_FDFL ) \
+    RT_MAP1( C_L_I4, RT_FLI4 ) \
+    RT_MAP1( C_L_U4, RT_FLU4 ) \
+    RT_MAP1( C_L_S,  RT_FLFS ) \
+    RT_MAP1( C_L_D,  RT_FLFD ) \
     RT_MAP( C_U8_S, RT_U8FS ) \
     RT_MAP( C_I8_S, RT_I8FS ) \
     RT_MAP( C_U8_D, RT_U8FD ) \
     RT_MAP( C_I8_D, RT_I8FD ) \
+    RT_MAP1( C_U8_L, RT_U8FL ) \
+    RT_MAP1( C_I8_L, RT_I8FL ) \
     RT_MAP( C_S_I8, RT_FSI8 ) \
     RT_MAP( C_S_U8, RT_FSU8 ) \
     RT_MAP( C_D_I8, RT_FDI8 ) \
     RT_MAP( C_D_U8, RT_FDU8 ) \
+    RT_MAP1( C_L_I8, RT_FLI8 ) \
+    RT_MAP1( C_L_U8, RT_FLU8 ) \
     RT_MAP( C7U8_S, RT_U8FS7 ) \
     RT_MAP( C7U8_D, RT_U8FD7 ) \
+    RT_MAP1( C7U8_L, RT_U8FL7 ) \
     RT_MAP( C7S_U8, RT_FSU87 ) \
-    RT_MAP( C7D_U8, RT_FDU87 )
+    RT_MAP( C7D_U8, RT_FDU87 ) \
+    RT_MAP1( C7L_U8, RT_FLU87 )
 
 typedef enum {
     #define pick(e,t) C##e,
@@ -194,7 +208,9 @@ typedef enum {
     FPOK,
     BAD,
     #define RT_MAP(a,b) a,
+    #define RT_MAP1(a,b) __FP80BIT(RT_MAP(a,b),)
     RTFUNC_MAPS
+    #undef RT_MAP1
     #undef RT_MAP
 } conv_method;
 
@@ -206,11 +222,30 @@ static const opcode_entry     *CvtAddr[] = {
 
 static  rt_class        RTRoutineTable[] = {
     #define RT_MAP(a,b) b,
+    #define RT_MAP1(a,b) __FP80BIT(RT_MAP(a,b),)
     RTFUNC_MAPS
+    #undef RT_MAP1
     #undef RT_MAP
 };
 
 #define __x__   BAD
+
+/* TODO! 80-bit FP
+ * must be implemented for long double
+ * now mapped to double type
+ */
+#define C_U4_L  C_U4_D
+#define C_I4_L  C_I4_D
+#define C_U8_L  C_U8_D
+#define C_I8_L  C_I8_D
+#define C_S_L   C_S_D
+#define C_D_L   OK
+#define C_L_U4  C_D_U4
+#define C_L_I4  C_D_I4
+#define C_L_U8  C_D_U8
+#define C_L_I8  C_D_I8
+#define C_L_S   C_D_S
+#define C_L_D   OK
 
 static  conv_method     CvtTable[] = {
 /*                               from                                                                    */
@@ -219,16 +254,23 @@ OK,    OK,    C2TO1,  C2TO1, C4TO1,  C4TO1,  C4TO1,  C4TO1,  CU4,   CU4,   CU4, 
 OK,    OK,    C2TO1,  C2TO1, C4TO1,  C4TO1,  C4TO1,  C4TO1,  CU4,   CU4,   CI4,    CI4,    CI4,    /* I1 */
 Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   CU4,    CU4,    CU4,    /* U2 */
 Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   CI4,    CI4,    CI4,    /* I2 */
-CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_U4, C_D_U4, C_D_U4, /* U4 */
-CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_I4, C_D_I4, C_D_I4, /* I4 */
-CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_U8, C_D_U8, C_D_U8, /* U8 */
-CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_I8, C_D_I8, C_D_I8, /* I8 */
+CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_U4, C_D_U4, C_L_U4, /* U4 */
+CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_I4, C_D_I4, C_L_I4, /* I4 */
+CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_U8, C_D_U8, C_L_U8, /* U8 */
+CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_I8, C_D_I8, C_L_I8, /* I8 */
 CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* CP */
 CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* PT */
-CU4,   CI4,   CU4,    CI4,   C_U4_S, C_I4_S, C_U8_S, C_I8_S, __x__, __x__, OK,     C_D_S,  C_D_S,  /* FS */
-CU4,   CI4,   CU4,    CI4,   C_U4_D, C_I4_D, C_U8_D, C_I8_D, __x__, __x__, C_S_D,  OK,     OK,     /* FD */
-CU4,   CI4,   CU4,    CI4,   C_U4_D, C_I4_D, C_U8_D, C_I8_D, __x__, __x__, C_S_D,  OK,     OK,     /* FL */
+CU4,   CI4,   CU4,    CI4,   C_U4_S, C_I4_S, C_U8_S, C_I8_S, __x__, __x__, OK,     C_D_S,  C_L_S,  /* FS */
+CU4,   CI4,   CU4,    CI4,   C_U4_D, C_I4_D, C_U8_D, C_I8_D, __x__, __x__, C_S_D,  OK,     C_L_D,  /* FD */
+CU4,   CI4,   CU4,    CI4,   C_U4_L, C_I4_L, C_U8_L, C_I8_L, __x__, __x__, C_S_L,  C_D_L,  OK,     /* FL */
 };
+
+/* TODO! 80-bit FP
+ * must be implemented for long double
+ * now mapped to double type
+ */
+#define C7U8_L  C7U8_D
+#define C7L_U8  C7D_U8
 
 static  conv_method     FPCvtTable[] = {
 /*                               from                                                                    */
@@ -239,13 +281,13 @@ Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   CI4, 
 Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   FPOK,   FPOK,   FPOK,   /* I2 */
 CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    FPOK,   FPOK,   FPOK,   /* U4 */
 CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    FPOK,   FPOK,   FPOK,   /* I4 */
-CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C7S_U8, C7D_U8, C7D_U8, /* U8 */
+CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C7S_U8, C7D_U8, C7L_U8, /* U8 */
 CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, FPOK,   FPOK,   FPOK,   /* I8 */
 CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* CP */
-CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  CPT,    /* PT */
+CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* PT */
 CI2,   CI2,   CI4,    FPOK,  FPOK,   FPOK,   C7U8_S, FPOK,   __x__, __x__, FPOK,   FPOK,   FPOK,   /* FS */
 CI2,   CI2,   CI4,    FPOK,  FPOK,   FPOK,   C7U8_D, FPOK,   __x__, __x__, FPOK,   FPOK,   FPOK,   /* FD */
-CI2,   CI2,   CI4,    FPOK,  FPOK,   FPOK,   C7U8_D, FPOK,   __x__, __x__, FPOK,   FPOK,   FPOK,   /* FL */
+CI2,   CI2,   CI4,    FPOK,  FPOK,   FPOK,   C7U8_L, FPOK,   __x__, __x__, FPOK,   FPOK,   FPOK,   /* FL */
 };
 
 static  conv_method     AskHow( type_class_def fr, type_class_def to )

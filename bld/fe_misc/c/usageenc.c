@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ static void doCopyFile( FILE *ifp, FILE *ofp)
 //put in usage header
 //remove '\n' and replace with nullchar
 //end with nullchar
-    auto LocaleUsage usage_header;
+    LocaleUsage usage_header;
     int c;
 
     memset( &usage_header, 0, sizeof( usage_header ) );

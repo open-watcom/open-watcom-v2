@@ -41,26 +41,26 @@ WOMP [options]* file [options|file]*
 .pc
 The square brackets [ ] denote items which are optional.
 .begpoint
-.mnote options
+.point options
 is a list of valid WOMP options, each preceded by a slash ("/") or a
 dash ("&minus.").
 Options may be specified in any order.
 Options are described below.
-.mnote file
+.point file
 is a file specification which can include wild cards in the file name
 and extension parts.
 A file specification takes the form:
 .begpoint
-.mnote d:
+.point d:
 is an optional drive specification such as "A:", "B:", etc.
 If not specified, the default drive is assumed.
-.mnote path
+.point path
 is an optional path specification such as "\PROGRAMS\EXE\".
 If not specified, the current directory is assumed.
-.mnote file
+.point file
 is the file name of the object or library file.
 The file name may contain an "*" wild card.
-.mnote ext
+.point ext
 is the file extension of the object or library file.
 The file extension may contain an "*" wild card.
 .endpoint
@@ -386,7 +386,7 @@ a function (e.g., "go main_")
 .np
 The default external naming convention for &company FORTRAN functions is
 .bd ALL UPPERCASE
-.ct .li .
+.period
 So, you can use "go FMAIN" to begin a FORTRAN program.
 .np
 &company parameter passing is described in the "User's Guide".

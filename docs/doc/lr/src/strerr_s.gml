@@ -1,4 +1,4 @@
-.func strerror_s wcserror_s
+.func strerror_s _wcserror_s
 .synop begin
 #define __STDC_WANT_LIB_EXT1__  1
 #include <string.h>
@@ -8,7 +8,7 @@ errno_t strerror_s( char * s,
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Errs' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-errno_t wcserror_s( wchar_t * s,
+errno_t _wcserror_s( wchar_t * s,
                     rsize_t maxsize,
                     errno_t errnum );
 .ixfunc2 '&String' &wfunc
@@ -23,7 +23,7 @@ shall not be a null pointer.
 .arg maxsize
 shall not be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 .arg maxsize
 shall not equal zero.
 .np
@@ -46,7 +46,7 @@ If the length of the desired string is less than
 .arg maxsize
 .ct , then the string is copied to the array pointed to by
 .arg s
-.ct .li .
+.period
 Otherwise, if
 .arg maxsize
 is greater than zero, then
@@ -62,7 +62,7 @@ is greater than 3, then
 .ct , and
 .arg s[maxsize-4]
 are set to the character period (.).
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

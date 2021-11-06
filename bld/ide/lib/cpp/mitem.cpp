@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,15 +149,21 @@ int MItem::compare( const WObject* obj ) const
     if( _parent ) {
         if( robj->_parent ) {
             comp = stricmp( *_parent, *robj->_parent );
-            if( comp == 0 ) comp = stricmp( *this, *robj );
+            if( comp == 0 ) {
+                comp = stricmp( *this, *robj );
+            }
         } else {
             comp = stricmp( *_parent, *robj );
-            if( comp == 0 ) comp = 1;
+            if( comp == 0 ) {
+                comp = 1;
+            }
         }
     } else {
         if( robj->_parent ) {
             comp = stricmp( *this, *robj->_parent );
-            if( comp == 0 ) comp = -1;
+            if( comp == 0 ) {
+                comp = -1;
+            }
         } else {
             comp = stricmp( *this, *robj );
         }
@@ -220,9 +227,7 @@ void MItem::updateAttribs()
 void MItem::addDecorators( WString& n )
 {
     if( _config->debug() ) {
-        n.concat( " '" );
-        n.concat( _ruleTag );
-        n.concat( "'" );
+        n.concatf( " '%s'", (const char *)_ruleTag );
     }
     if( _states.count() > 0 ) {
         n.concat( " [sw]" );
@@ -246,9 +251,7 @@ void MItem::name( WString& n )
     if( !isMask() ) {
         n.concat( *this );
     } else {
-        n.concat( "( " );
-        n.concat( this->ext() );
-        n.concat( " )" );
+        n.concatf( "( %s )", (const char *)this->ext() );
     }
     addDecorators( n );
 }

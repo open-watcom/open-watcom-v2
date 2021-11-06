@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,10 +41,10 @@
 #include "reserr.h"
 #include "wresdefn.h"
 #include "wresrtns.h"
-#include "wmemicmp.h"
+#include "wstrcmp.h"
 
 
-#define IS_STR_IGNORE_CASE(s,c) ( WresMemicmp( s, c, sizeof( c ) ) == 0 )
+#define IS_STR_IGNORE_CASE(s,c) ( WresStrnicmp( s, c, sizeof( c ) ) == 0 )
 
 static bool ResWriteDialogSizeInfo( DialogSizeInfo *sizeinfo, FILE *fp )
 /**********************************************************************/

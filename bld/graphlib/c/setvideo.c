@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,9 +76,8 @@ static void HScrollRestore( void )
 
 
 #if defined( _DEFAULT_WINDOWS )
-    #undef HANDLE               // already defined by WPI
-    #undef GLOBALHANDLE
     #include "win.h"
+    #include "winmenu.rh"
     #include <stdarg.h>
   #if defined( __OS2__ )
     #include "pmmenu.h"
@@ -85,17 +85,8 @@ static void HScrollRestore( void )
 
     WPI_PRES            _Mem_dc = NULL;
     HDC                 _Hdc;
-    HBITMAP             _Mem_bmp = NULL;
+    WPI_HBITMAP         _Mem_bmp = NULL;
     HWND                _CurrWin = NULL;
-    extern HWND         _MainWindow;
-  #if !defined( __OS2__ )
-    extern HMENU        _SubMenuWindows;
-  #else
-    extern HWND         _GetWinMenuHandle();
-  #endif
-    extern void         _GetWindowNameAndCoords( char*, char*, int*, int*, int*, int*   );
-    static LPWDATA      _NewGphWindow( HWND hwnd, ... );
-    static short        _registergphclass( WPI_INST );
 
 #else
 
@@ -114,7 +105,7 @@ static void HScrollRestore( void )
 
 typedef struct supported_video_mode {
     short           mode;
-    gr_device _FARD *dev;
+    gr_device _FARD *dev_ptr;
 } SUPP_MODE;
 
 
@@ -136,12 +127,12 @@ static SUPP_MODE        VideoModes[] = {
     _VRES16COLOR,       &_GrVGA_18,
     _MRES256COLOR,      &_GrVGA_19,
   #if defined( _SUPERVGA )
-    0x100,              &_GrSVGA_100,
-    0x101,              &_GrSVGA_100,
-    0x102,              &_GrSVGA_102,
-    0x103,              &_GrSVGA_103,
-    0x104,              &_GrSVGA_104,
-    0x105,              &_GrSVGA_105,
+    _URES256COLOR,      &_GrSVGA_100,
+    _VRES256COLOR,      &_GrSVGA_100,
+    _SVRES16COLOR,      &_GrSVGA_102,
+    _SVRES256COLOR,     &_GrSVGA_103,
+    _XRES16COLOR,       &_GrSVGA_104,
+    _XRES256COLOR,      &_GrSVGA_105,
   #endif
   #if defined( VERSION2 ) && defined( _SUPERVGA )
     -1,                 &_GrVESA
@@ -149,9 +140,6 @@ static SUPP_MODE        VideoModes[] = {
     -1,                 NULL
   #endif
 };
-
-
-static short            SelectMode( short );
 #endif
 
 
@@ -242,6 +230,188 @@ static void _InitVariables( void )
 }
 
 
+#if defined( _DEFAULT_WINDOWS )
+static void init_memdc_bk( long x, long y )
+//=========================================
+{
+    WPI_RECT    rect;
+    HBRUSH      brush;
+
+    _wpi_setrectvalues( &rect, 0, 0, x, y );
+    brush = _wpi_createsolidbrush( 0x00000000 );
+    _wpi_fillrect( _Mem_dc, &rect, 0, brush );
+    _wpi_deletebrush( brush );
+}
+
+static void init_all( void )
+/*==========================
+    This function initializes everything for windows.*/
+{
+    /* initialize the refresh coordinates */
+    _BitBlt_Coord.xcoord = 0;
+    _BitBlt_Coord.ycoord = 0;
+
+    /* initialize the drawing modes for our memory dc */
+    SetBkMode( _Mem_dc, TRANSPARENT );
+    _wpi_setrop2( _Mem_dc, R2_COPYPEN );
+
+    _GrMode = 1;                /* must be graphics for windows */
+    _GetState();
+    _CursState = _GCURSOROFF;     /* cursor off in graphics mode  */
+    _GrCursor = _CursState;
+    _InitVariables();                       /* initialize globals       */
+}
+
+
+static LPWDATA _NewGphWindow( HWND hwnd, ... )
+/*============================================
+
+    Create a new graphic window */
+{
+    LPWDATA     w;
+    va_list     al;
+
+    /*
+     * allocate window data area
+     */
+    va_start( al, hwnd );
+    w = _AnotherWindowData( hwnd, al );
+
+    /*
+     * set up data
+     */
+  #if defined( __OS2__ )
+    w->text_color = CLR_WHITE;
+    w->background_color = CLR_BLACK;
+  #else
+    w->text_color = BRIGHT_WHITE;
+    w->background_color = BLACK;
+    w->brush = CreateSolidBrush( _ColorMap[BLACK] );
+  #endif
+    w->LineHead = w->LineTail = NULL;
+    w->gphwin = TRUE;
+
+    return( w );
+
+} /* _NewWindow */
+
+static short _registergphclass( WPI_INST inst )
+/*=============================================
+
+    This function registers the graphics windows' class.*/
+{
+    WNDCLASS            wc;
+    short               rc;
+    static short        _Startup = 1;
+
+    if( _Startup ) {
+        _Startup = 0;
+
+        _wpi_setclassstyle( &wc, 0 );
+        _wpi_setclassproc( &wc, GraphWndProc );
+        _wpi_setclassextra( &wc, 0 );
+        _wpi_setclassinst( &wc, inst );
+        _wpi_setclassbackground( &wc, _wpi_createsolidbrush( 0x00000000 ) );
+        _wpi_setclassname( &wc, "GraphWndClass" );
+    #if defined( __WINDOWS__ )
+        wc.cbClsExtra = 0;
+        wc.lpszMenuName =  NULL;
+        wc.hIcon = LoadIcon( NULL, IDI_APPLICATION );
+        wc.hCursor = LoadCursor( NULL, IDC_ARROW );
+    #endif
+
+        rc = _wpi_registerclass( &wc );
+        if( !rc ) return( FALSE );
+    }
+    return( TRUE );
+}
+#else
+static short SelectMode( short req_mode )
+/*=======================================
+
+    Return the actual mode based on the value of req_mode. */
+
+{
+    short               mode;
+    short               monitor;
+
+    if( req_mode == _MAXRESMODE ) {
+        monitor = _SysMonType() & 0xff;     // only look at active monitor
+        switch( monitor ) {
+        case MT_CGA_COLOUR:
+            mode = _HRESBW;
+            break;
+        case MT_EGA_ENHANCED:
+            mode = _ERESCOLOR;
+            break;
+        case MT_EGA_COLOUR:
+            mode = _HRES16COLOR;
+            break;
+        case MT_EGA_MONO:
+            mode = _ERESNOCOLOR;
+            break;
+        case MT_VGA_MONO:
+        case MT_VGA_COLOUR:
+        case MT_SVGA_MONO:
+        case MT_SVGA_COLOUR:
+            mode = _VRES16COLOR;
+            break;
+        case MT_MCGA_DIGITAL:
+        case MT_MCGA_MONO:
+        case MT_MCGA_COLOUR:
+            mode = _VRES2COLOR;
+            break;
+        case MT_HERC:
+        case MT_HERCPLUS:
+        case MT_HERCINCL:
+            mode = _HERCMONO;
+            break;
+        default:
+            mode = _DEFAULTMODE;
+        }
+    } else if( req_mode == _MAXCOLORMODE ) {
+        monitor = _SysMonType() & 0xff;     // only look at active monitor
+        switch( monitor ) {
+        case MT_CGA_COLOUR:
+            mode = _MRES4COLOR;
+            break;
+        case MT_EGA_ENHANCED:
+            if( EGA_Memory() != 0 ) {       // more than 64K
+                mode = _ERESCOLOR;
+                break;
+            }   // else - fall through
+        case MT_EGA_COLOUR:
+            mode = _HRES16COLOR;
+            break;
+        case MT_EGA_MONO:
+            mode = _ERESNOCOLOR;
+            break;
+        case MT_VGA_MONO:
+        case MT_VGA_COLOUR:
+        case MT_MCGA_DIGITAL:
+        case MT_MCGA_MONO:
+        case MT_MCGA_COLOUR:
+        case MT_SVGA_MONO:
+        case MT_SVGA_COLOUR:
+            mode = _MRES256COLOR;
+            break;
+        case MT_HERC:
+        case MT_HERCPLUS:
+        case MT_HERCINCL:
+            mode = _HERCMONO;
+            break;
+        default:
+            mode = _DEFAULTMODE;
+        }
+    } else if( req_mode == _DEFAULTMODE ) {
+        mode = _DefMode;
+    } else {
+        mode = req_mode;
+    }
+    return( mode );
+}
+#endif
+
 _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
 /*================================================
 
@@ -289,7 +459,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     Inst.hab = WinQueryAnchorBlock( _MainWindow );
     Inst.mod_handle = NULL;
   #else
-    Inst = GetWindowWord( _MainWindow, GWW_HINSTANCE );
+    Inst = (HINSTANCE)GetWindowWord( _MainWindow, GWW_HINSTANCE );
   #endif
     _SetInst( &Inst );
     if( !_registergphclass( Inst ) ) {
@@ -304,7 +474,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     if( req_mode == 0 ) {
         _ErrorStatus = _GRMODENOTSUPPORTED;
         return( 0 );
-    } else if( _CurrWin ){
+    } else if( _CurrWin ) {
     // Make sure we don't create more than 1 window, and know when to close it
         if( req_mode == _DEFAULTMODE ) {
   #if defined( __OS2__ )
@@ -357,15 +527,15 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
 
     // Create the memory dc
     _Mem_dc = _wpi_createcompatiblepres( Win_DC, Inst, &_Hdc );
-    if( !_Mem_dc ){
+    if( !_Mem_dc ) {
         _ErrorStatus = _GRMODENOTSUPPORTED;
         _wpi_destroywindow( _CurrWin );
         return( 0 );
     }
 
     // Create the bitmap to draw on
-    _Mem_bmp = _wpi_createcompatiblebitmap( Win_DC, x,y );
-    if( !_Mem_bmp ){
+    _Mem_bmp = _wpi_createcompatiblebitmap( Win_DC, x, y );
+    if( _Mem_bmp == WPI_NULL ) {
         _ErrorStatus = _GRMODENOTSUPPORTED;
         _wpi_destroywindow( _CurrWin );
         return( 0 );
@@ -377,7 +547,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     _wpi_selectbitmap( _Mem_dc, _Mem_bmp );
     _wpi_releasepres( Win, Win_DC );
 
-    _CurrState->vc.mode = Win;
+//    _CurrState->vc.mode = Win;  ????
 
     w = _NewGphWindow( Win, 9999, -1 );
 
@@ -479,18 +649,14 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
         if( tab->mode == -1 ) {
 #if defined( VERSION2 )
             if( ( mode > 0x105 ) && ( mode < 0x120 ) ) {
-                dev_ptr=tab->dev;
+                dev_ptr = tab->dev_ptr;
                 break;
-            } else {
-                _ErrorStatus = _GRINVALIDPARAMETER;
-                return( 0 );
             }
-#else
+#endif
             _ErrorStatus = _GRINVALIDPARAMETER;
             return( 0 );
-#endif
         } else if( tab->mode == mode ) {
-            dev_ptr = tab->dev;
+            dev_ptr = tab->dev_ptr;
             break;
         }
     }
@@ -505,8 +671,8 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
         _FiniDevice();
     }
     _CurrState->deviceptr = dev_ptr;
-    if( !_InitDevice( mode ) ) {       // if invalid mode
-        _CurrState->deviceptr = prev_dev;      // restore previous
+    if( !_InitDevice( mode ) ) {            // if invalid mode
+        _CurrState->deviceptr = prev_dev;   // restore previous
         if( prev_dev != NULL ) {
             _InitDevice( prev_mode );
         }
@@ -517,7 +683,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
         if( IsTextMode ) {
             _CursState = _GCURSORON;
         } else {
-            _CursState = _GCURSOROFF;     /* cursor off in graphics mode  */
+            _CursState = _GCURSOROFF;       /* cursor off in graphics mode  */
         }
         _GrCursor = _CursState;
         if( req_mode == _DEFAULTMODE ) {
@@ -547,99 +713,9 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
 Entry1( _SETVIDEOMODE, _setvideomode ) // alternate entry-point
 
 
-#if !defined( _DEFAULT_WINDOWS )
-
-static short SelectMode( short req_mode )
-/*=======================================
-
-    Return the actual mode based on the value of req_mode. */
-
-{
-    short               mode;
-    short               monitor;
-
-    if( req_mode == _MAXRESMODE ) {
-        monitor = _SysMonType() & 0xff;     // only look at active monitor
-        switch( monitor ) {
-        case MT_CGA_COLOUR:
-            mode = _HRESBW;
-            break;
-        case MT_EGA_ENHANCED:
-            mode = _ERESCOLOR;
-            break;
-        case MT_EGA_COLOUR:
-            mode = _HRES16COLOR;
-            break;
-        case MT_EGA_MONO:
-            mode = _ERESNOCOLOR;
-            break;
-        case MT_VGA_MONO:
-        case MT_VGA_COLOUR:
-        case MT_SVGA_MONO:
-        case MT_SVGA_COLOUR:
-            mode = _VRES16COLOR;
-            break;
-        case MT_MCGA_DIGITAL:
-        case MT_MCGA_MONO:
-        case MT_MCGA_COLOUR:
-            mode = _VRES2COLOR;
-            break;
-        case MT_HERC:
-        case MT_HERCPLUS:
-        case MT_HERCINCL:
-            mode = _HERCMONO;
-            break;
-        default:
-            mode = _DEFAULTMODE;
-        }
-    } else if( req_mode == _MAXCOLORMODE ) {
-        monitor = _SysMonType() & 0xff;     // only look at active monitor
-        switch( monitor ) {
-        case MT_CGA_COLOUR:
-            mode = _MRES4COLOR;
-            break;
-        case MT_EGA_ENHANCED:
-            if( EGA_Memory() != 0 ) {       // more than 64K
-                mode = _ERESCOLOR;
-                break;
-            }   // else - fall through
-        case MT_EGA_COLOUR:
-            mode = _HRES16COLOR;
-            break;
-        case MT_EGA_MONO:
-            mode = _ERESNOCOLOR;
-            break;
-        case MT_VGA_MONO:
-        case MT_VGA_COLOUR:
-        case MT_MCGA_DIGITAL:
-        case MT_MCGA_MONO:
-        case MT_MCGA_COLOUR:
-        case MT_SVGA_MONO:
-        case MT_SVGA_COLOUR:
-            mode = _MRES256COLOR;
-            break;
-        case MT_HERC:
-        case MT_HERCPLUS:
-        case MT_HERCINCL:
-            mode = _HERCMONO;
-            break;
-        default:
-            mode = _DEFAULTMODE;
-        }
-    } else if( req_mode == _DEFAULTMODE ) {
-        mode = _DefMode;
-    } else {
-        mode = req_mode;
-    }
-    return( mode );
-}
-
-#endif
-
-
 #if defined( _DEFAULT_WINDOWS )
 
-WPI_COLOUR              Color[ 256 ] = {
+WPI_COLOUR              Color[256] = {
     0x00000000, 0x00800000, 0x00008000, 0x00808000, 0x00000080,
     0x00800080, 0x00008080, 0x00bfbfbf, 0x00808080, 0x00ff0000,
     0x0000ff00, 0x00ffff00, 0x000000ff, 0x00ff00ff, 0x0000ffff,
@@ -753,104 +829,6 @@ void _PaletteInit( void )
 }
 
 
-static void init_memdc_bk( long x, long y )
-//=========================================
-{
-    WPI_RECT    rect;
-    HBRUSH      brush;
-
-    _wpi_setrectvalues( &rect, 0, 0, x, y );
-    brush = _wpi_createsolidbrush( 0x00000000 );
-    _wpi_fillrect( _Mem_dc, &rect, 0, brush );
-    _wpi_deletebrush( brush );
-}
-
-
-static void init_all( void )
-/*==========================
-    This function initializes everything for windows.*/
-{
-    /* initialize the refresh coordinates */
-    _BitBlt_Coord.xcoord = 0;
-    _BitBlt_Coord.ycoord = 0;
-
-    /* initialize the drawing modes for our memory dc */
-    SetBkMode( _Mem_dc, TRANSPARENT );
-    _wpi_setrop2( _Mem_dc, R2_COPYPEN );
-
-    _GrMode = 1;                /* must be graphics for windows */
-    _GetState();
-    _CursState = _GCURSOROFF;     /* cursor off in graphics mode  */
-    _GrCursor = _CursState;
-    _InitVariables();                       /* initialize globals       */
-}
-
-
-static LPWDATA _NewGphWindow( HWND hwnd, ... )
-/*============================================
-
-    Create a new graphic window */
-{
-    LPWDATA     w;
-    va_list     al;
-
-    /*
-     * allocate window data area
-     */
-    va_start( al, hwnd );
-    w = _AnotherWindowData( hwnd, al );
-
-    /*
-     * set up data
-     */
-  #if defined( __OS2__ )
-    w->text_color = CLR_WHITE;
-    w->background_color = CLR_BLACK;
-  #else
-    w->text_color = BRIGHT_WHITE;
-    w->background_color = BLACK;
-    w->brush = CreateSolidBrush( _ColorMap[BLACK] );
-  #endif
-    w->LineHead = w->LineTail = NULL;
-    w->gphwin = TRUE;
-
-    return( w );
-
-} /* _NewWindow */
-
-
-static short _registergphclass( WPI_INST inst )
-/*=============================================
-
-    This function registers the graphics windows' class.*/
-{
-    WNDCLASS            wc;
-    short               rc;
-    static short        _Startup = 1;
-
-    if( _Startup ){
-        _Startup = 0;
-
-        _wpi_setclassstyle( &wc, NULL );
-        _wpi_setclassproc( &wc, GraphWndProc );
-        _wpi_setclassextra( &wc, 0 );
-        _wpi_setclassinst( &wc, inst );
-        _wpi_setclassbackground( &wc, _wpi_createsolidbrush( 0x00000000 ) );
-        _wpi_setclassname( &wc, "GraphWndClass" );
-    #if defined( __WINDOWS__ )
-        wc.cbClsExtra = 0;
-        wc.lpszMenuName =  NULL;
-        wc.hIcon = LoadIcon( NULL, IDI_APPLICATION );
-        wc.hCursor = LoadCursor( NULL, IDC_ARROW );
-    #endif
-
-        rc = _wpi_registerclass( &wc );
-        if( !rc ) return( FALSE );
-    }
-    return( TRUE );
-}
-
-
 #else
 
 void _PaletteInit( void )
@@ -883,7 +861,7 @@ void _PaletteInit( void )
 #endif
             _RemapNum( _VGA_Colours, 16 );
 //          for( i = 0; i < 16; ++i ) {
-//              _remappalette( i, _VGA_Colours[ i ] );
+//              _remappalette( i, _VGA_Colours[i] );
 //          }
         }
     }

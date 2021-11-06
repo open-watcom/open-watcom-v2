@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,7 +99,7 @@ typedef struct thread_data {
 #if defined( __OS2_286__ )
     struct wcpp_thread_ctl      _wint_thread_data;
 #endif
-    unsigned long int           __randnext;
+    unsigned long               __randnext;
     char                        *__nexttokP;
     struct tm                   __The_timeP;
     char                        __asctimeP[26];

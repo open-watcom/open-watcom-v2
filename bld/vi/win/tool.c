@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 #include "commonui.h"
 #include "vi.h"
-#include <shellapi.h>
 #include "toolbr.h"
 #include "color.h"
 #include "bitmap.h"
@@ -47,7 +46,7 @@
 typedef struct tool_item {
     ss                  tool_head;
     int                 id;
-    HBITMAP             bmp;
+    HBITMAP             hbitmap;
     const char          *name;
     const char          *help;
     const char          *tooltip;
@@ -110,8 +109,8 @@ static void nukeButtons( void )
     for( p = toolBarHead; p != NULL; ) {
         tool = (tool_item *)p;
         p = p->next;
-        if( tool->bmp ) {
-            DeleteObject( tool->bmp );
+        if( tool->hbitmap ) {
+            DeleteObject( tool->hbitmap );
         }
         MemFree( tool );
     }
@@ -261,7 +260,7 @@ static void addToolBarItem( tool_item *item )
         info.flags = ITEM_BLANK;
     } else {
         info.id = item->id;
-        info.u.bmp = item->bmp;
+        info.u.hbitmap = item->hbitmap;
         info.flags = 0;
     }
     if( item->tooltip == NULL ) {
@@ -297,23 +296,21 @@ vi_rc AddBitmapToToolBar( const char *data, bool tip )
     char                *p;
 
     help[0] = '\0';
-    data = SkipLeadingSpaces( data );
     dont_save = false;
     if( strnicmp( data, "temp", 4 ) == 0 ) {
         /* get to the command */
-        GetStringWithPossibleQuote( &data, help );
+        GetNextWordOrString( &data, help );
         dont_save = true;
     }
 
-    GetStringWithPossibleQuote( &data, file );
-    GetStringWithPossibleQuote( &data, help );
+    GetNextWordOrString( &data, file );
+    GetNextWordOrString( &data, help );
     if( tip ) {
-        GetStringWithPossibleQuote( &data, tooltip );
+        GetNextWordOrString( &data, tooltip );
     } else {
         tooltip[0] = '\0';
     }
 
-    data = SkipLeadingSpaces( data );
     cmd_len = strlen( data );
     name_len = strlen( file );
     help_len = strlen( help );
@@ -337,11 +334,11 @@ vi_rc AddBitmapToToolBar( const char *data, bool tip )
     item->tooltip = p;
     memcpy( p, tooltip, tooltip_len );
     p[tooltip_len] = '\0';
-    item->bmp = HNULL;
+    item->hbitmap = HNULL;
     if( file[0] != '\0' && item->cmd[0] != '\0' ) {
-        item->bmp = LoadBitmap( InstanceHandle, file );
-        if( item->bmp == HNULL ) {
-            item->bmp = ReadBitmapFile( ToolBarWindow( toolBar ), file, NULL );
+        item->hbitmap = LoadBitmap( InstanceHandle, file );
+        if( item->hbitmap == HNULL ) {
+            item->hbitmap = ReadBitmapFile( ToolBarWindow( toolBar ), file, NULL );
         }
         if( tooltip_len == 0 ) {
             tip_id = getTip( item->name );
@@ -381,8 +378,8 @@ vi_rc DeleteFromToolBar( const char *data )
             tool_item *item = (tool_item *)p;
             ToolBarDeleteItem( toolBar, item->id );
             DeleteLLItem( &toolBarHead, &toolBarTail, p );
-            if( item->bmp != NULL ) {
-                DeleteObject( item->bmp );
+            if( item->hbitmap != NULL ) {
+                DeleteObject( item->hbitmap );
             }
             return( ERR_NO_ERR );
         }

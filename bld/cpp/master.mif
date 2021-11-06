@@ -9,9 +9,15 @@ wcpp_autodepends = .AUTODEPEND
 !include deftarg.mif
 !include exerule.mif
 
+#
+# cflags
+#
 .c : ../c;$(posix_dir)/misc;$(watcom_dir)/c
 
 inc_dirs = -I"../h" -I"$(posix_dir)/h"
+
+# explicit rules
+#################
 
 common_objs = preproc.obj ppexpr.obj ppmacro.obj ppmem.obj ppenv.obj pathlist.obj
 
@@ -19,10 +25,22 @@ common_objs = preproc.obj ppexpr.obj ppmacro.obj ppmem.obj ppenv.obj pathlist.ob
 all: mkmk.exe testpp.exe dumpmac.exe wcpp.exe .SYMBOLIC
 !endif
 
-wcpp.exe : wcpp.obj $(common_objs)
+#
+# EXE's
+#
+exetarg_objs = wcpp.obj $(common_objs)
+exetarg_name = wcpp
+!include exetarg.mif
 
-mkmk.exe : mkmk.obj $(common_objs)
+exetarg_objs = mkmk.obj $(common_objs)
+exetarg_name = mkmk
+!include exetarg.mif
 
-testpp.exe : testpp.obj $(common_objs)
+exetarg_objs = testpp.obj $(common_objs)
+exetarg_name = testpp
+!include exetarg.mif
 
-dumpmac.exe : dumpmac.obj ppdmpmac.obj $(common_objs)
+exetarg_objs = dumpmac.obj ppdmpmac.obj $(common_objs)
+exetarg_name = dumpmac
+!include exetarg.mif
+

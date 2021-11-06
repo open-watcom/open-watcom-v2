@@ -1,4 +1,4 @@
-#if !defined( _JAPANESE_ )
+#if !defined( JAPANESE )
 
 About DIALOG 19, 17, 316, 122
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
@@ -25,13 +25,13 @@ FONT 9, "‚l‚r –¾’©"
 BEGIN
     PUSHBUTTON      "OK", IDOK, 174, 68, 40, 14
     ICON            "APPLICON", -1, 10, 10, 18, 20
-    LTEXT           "", 107, 42, 8, 177, 8
-    LTEXT           "", 106, 42, 18, 177, 8
+    LTEXT           "", ABOUT_NAME, 42, 8, 177, 8
+    LTEXT           "", ABOUT_VERSION, 42, 18, 177, 8
     LTEXT           "Copyright (C) 1989-2002 Sybase, Inc.", 109, 42, 28, 177, 8
     CONTROL         "", 102, "Static", SS_BLACKRECT, 4, 48, 214, 2
-    LTEXT           "", 103, 8, 58, 158, 8
-    LTEXT           "", 104, 8, 68, 159, 8
-    LTEXT           "", 105, 8, 78, 158, 8
+    LTEXT           "", ABOUT_INFO1, 8, 58, 158, 8
+    LTEXT           "", ABOUT_INFO2, 8, 68, 159, 8
+    LTEXT           "", ABOUT_INFO3, 8, 78, 158, 8
 END
 
 #endif

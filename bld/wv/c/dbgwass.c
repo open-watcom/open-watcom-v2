@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -860,7 +860,7 @@ static void AsmTrack( a_window wnd, address ip )
                 slack = 2;
             if( row >= WndRows( wnd ) - slack ) {
                 WndRowDirtyImmed( wnd, AsmAddrRow( wnd, old_active ) );
-                WndScroll( wnd, WndRows( wnd ) - 2 * slack );
+                WndVScroll( wnd, WndRows( wnd ) - 2 * slack );
             } else {
                 WndRowDirty( wnd, AsmAddrRow( wnd, old_active ) );
             }
@@ -1003,7 +1003,7 @@ static bool AsmWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     asw = WndAsm( wnd );
     switch( gui_ev ) {
     case GUI_NOW_ACTIVE:
-        ActiveWindowLevel = ASM;
+        ActiveWindowLevel = LEVEL_ASM;
         if( IS_NIL_ADDR( asw->dotaddr ) )
             return( true );
         SetCodeDot( asw->dotaddr );

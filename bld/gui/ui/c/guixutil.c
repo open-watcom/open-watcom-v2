@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,6 @@
 #include <string.h>
 #include "guiscale.h"
 #include "guixutil.h"
-#include "guix.h"
 #include "guixdraw.h"
 #include "guiutil.h"
 #include "guixdlg.h"
@@ -79,15 +78,15 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
         return( false );
     }
     GUISetUseWnd( wnd );
-    if( dlg_info->scroll & GUI_VSCROLL ) {
+    if( dlg_info->scroll_style & GUI_VSCROLL ) {
         if( !GUICreateGadget( wnd, VERTICAL, wnd->use.width, wnd->use.row,
-                           wnd->use.height, &wnd->vgadget, dlg_info->scroll ) ) {
+                           wnd->use.height, &wnd->vgadget, dlg_info->scroll_style ) ) {
             return( false );
         }
     }
-    if( dlg_info->scroll & GUI_HSCROLL ) {
+    if( dlg_info->scroll_style & GUI_HSCROLL ) {
         if( !GUICreateGadget( wnd, HORIZONTAL, wnd->use.height, wnd->use.col,
-                           wnd->use.width, &wnd->hgadget, dlg_info->scroll ) ) {
+                           wnd->use.width, &wnd->hgadget, dlg_info->scroll_style ) ) {
             return( false );
         }
     }
@@ -100,7 +99,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
 /*
  * GUISetRedraw -- set the redraw flag for a given window
  */
-bool GUISetRedraw( gui_window *wnd, bool redraw )
+bool GUIAPI GUISetRedraw( gui_window *wnd, bool redraw )
 {
     /* unused parameters */ (void)wnd; (void)redraw;
 
@@ -118,7 +117,7 @@ bool GUIIsOpen( gui_window *wnd )
 
 void GUISetUseArea( gui_window *wnd, SAREA *area, SAREA *use )
 {
-    COPYAREA( *area, *use );
+    COPYRECTX( *area, *use );
     use->row = 0;
     use->col = 0;
     if( (wnd->style & GUI_VISIBLE) && (wnd->style & GUI_NOFRAME) == 0 ) {
@@ -141,13 +140,13 @@ void GUISetUseWnd( gui_window *wnd )
     GUISetUseArea( wnd, &wnd->vs.area, &wnd->use );
 }
 
-bool GUIPtInRect( SAREA *area, ORD row, ORD col )
+bool GUIPtInRect( const SAREA *area, ORD row, ORD col )
 {
     return( ( col >= area->col ) && ( col < ( area->col + area->width ) ) &&
             ( row >= area->row ) && ( row < ( area->row + area->height ) ) );
 }
 
-static bool CheckOverlap( SAREA *one, SAREA *two )
+static bool CheckOverlap( const SAREA *one, const SAREA *two )
 {
     if( GUIPtInRect( two, one->row, one->col ) ) {
         return( true );
@@ -165,7 +164,7 @@ static bool CheckOverlap( SAREA *one, SAREA *two )
     return( false );
 }
 
-bool GUIOverlap( SAREA *one, SAREA *two )
+bool GUIOverlap( const SAREA *one, const SAREA *two )
 {
     if( CheckOverlap( one, two ) ) {
         return( true );
@@ -174,17 +173,16 @@ bool GUIOverlap( SAREA *one, SAREA *two )
     }
 }
 
-bool GUISetDialogArea( gui_window *wnd, SAREA *area, gui_rect *rect,
-                       SAREA *parent )
+bool GUISetDialogArea( gui_window *wnd, SAREA *area, const gui_rect *rect, const SAREA *parent_area )
 {
     GUIScaleToScreenRectR( rect, area );
     if( !GUI_IS_DIALOG( wnd ) ) {
         area->row++;
         area->col++;
     }
-    return( ( area->row <= ( parent->height - 2 ) ) &&
-            ( area->col <= ( parent->width - 2 ) ) &&
-            ( ( area->col + area->width ) <= ( parent->width - 2 ) ) );
+    return( ( area->row <= ( parent_area->height - 2 ) ) &&
+            ( area->col <= ( parent_area->width - 2 ) ) &&
+            ( ( area->col + area->width ) <= ( parent_area->width - 2 ) ) );
     /* can have pop down list boxes so don't force height to fit in dialog */
 }
 
@@ -202,7 +200,7 @@ void GUIGetSAREA( gui_window *wnd, SAREA *area )
     if( GUI_IS_DIALOG( wnd ) ) {
         GUIGetDlgRect( wnd, area );
     } else {
-        COPYAREA( wnd->vs.area, *area );
+        COPYRECTX( wnd->vs.area, *area );
     }
 }
 
@@ -222,7 +220,7 @@ void GUIGetClientSAREA( gui_window *wnd, SAREA *sarea )
  *                If dialog is true, the screen bounds not the parent.
  */
 
-bool GUISetArea( SAREA *area, gui_rect *rect, gui_window *parent,
+bool GUISetArea( SAREA *area, const gui_rect *rect, gui_window *parent_wnd,
                  bool check_min, bool dialog )
 {
     bool        valid;
@@ -232,11 +230,11 @@ bool GUISetArea( SAREA *area, gui_rect *rect, gui_window *parent,
     gui_rect    act_rect;
     SAREA       parent_area;
 
-    if( dialog || ( parent == NULL ) ) {
+    if( dialog || ( parent_wnd == NULL ) ) {
         GUIGetScreenArea( &bounding );
     } else {
-        COPYAREA( parent->use, bounding );
-        GUIGetSAREA( parent, &parent_area );
+        COPYRECTX( parent_wnd->use, bounding );
+        GUIGetSAREA( parent_wnd, &parent_area );
         bounding.row += parent_area.row;
         bounding.col += parent_area.col;
     }
@@ -244,8 +242,8 @@ bool GUISetArea( SAREA *area, gui_rect *rect, gui_window *parent,
     act_rect.y = rect->y;
     act_rect.width = rect->width;
     act_rect.height = rect->height;
-    if( parent != NULL ) {
-        GUIGetClientRect( parent, &parent_rect );
+    if( parent_wnd != NULL ) {
+        GUIGetClientRect( parent_wnd, &parent_rect );
         act_rect.x += parent_rect.x;
         act_rect.y += parent_rect.y;
     }
@@ -329,21 +327,25 @@ void GUIRedrawTitle( gui_window *wnd )
     GUIWndUpdate( wnd );
 }
 
-void GUIMakeRelative( gui_window *wnd, gui_coord *point, gui_point *pt )
+void GUIMakeRelative( gui_window *wnd, const guix_point *scr_point, gui_point *point )
 {
     SAREA       area;
     SAREA       use;
+    guix_ord    scr_x;
+    guix_ord    scr_y;
 
-    GUIScreenToScaleR( point );
     GUIGetSAREA( wnd, &area );
     GUISetUseArea( wnd, &area, &use );
-    pt->x = point->x;
-    pt->y = point->y;
-    point->x = use.col + area.col;
-    point->y = use.row + area.row;
-    GUIScreenToScaleR( point );
-    pt->x -= point->x;
-    pt->y -= point->y;
+    scr_x = scr_point->x - use.col - area.col;
+    scr_y = scr_point->y - use.row - area.row;
+    if( GUI_DO_HSCROLL( wnd ) ) {
+        scr_x += wnd->hgadget->pos;
+    }
+    if( GUI_DO_VSCROLL( wnd ) ) {
+        scr_y += wnd->vgadget->pos;
+    }
+    point->x = GUIScreenToScaleH( scr_x );
+    point->y = GUIScreenToScaleV( scr_y );
 }
 
 /*
@@ -391,7 +393,7 @@ gui_window *GUIGetTopWnd( gui_window *wnd )
     return( wnd );
 }
 
-gui_window *GUIGetFirstSibling( gui_window *wnd )
+gui_window * GUIAPI GUIGetFirstSibling( gui_window *wnd )
 {
     if( wnd == NULL || wnd->parent == NULL ) {
         return( NULL );
@@ -399,7 +401,7 @@ gui_window *GUIGetFirstSibling( gui_window *wnd )
     return( wnd->parent->child );
 }
 
-gui_window *GUIGetParentWindow( gui_window *wnd )
+gui_window * GUIAPI GUIGetParentWindow( gui_window *wnd )
 {
     if( wnd == NULL ) {
         return( NULL );
@@ -433,13 +435,13 @@ bool GUISetCursor( gui_window *wnd )
     return( false );
 }
 
-static void DeleteChild( gui_window *parent, gui_window *child )
+static void DeleteChild( gui_window *parent_wnd, gui_window *child )
 {
     gui_window  *curr;
     gui_window  *prev;
 
     prev = NULL;
-    for( curr = parent->child; curr != NULL; curr=curr->sibling ) {
+    for( curr = parent_wnd->child; curr != NULL; curr = curr->sibling ) {
         if( curr == child ) {
             break;
         }
@@ -449,12 +451,12 @@ static void DeleteChild( gui_window *parent, gui_window *child )
         if( prev != NULL ) {
             prev->sibling = curr->sibling;
         } else {
-            parent->child = curr->sibling;
+            parent_wnd->child = curr->sibling;
         }
     }
 }
 
-void GUIWantPartialRows( gui_window *wnd, bool want )
+void GUIAPI GUIWantPartialRows( gui_window *wnd, bool want )
 {
     /* unused parameters */ (void)wnd; (void)want;
 }
@@ -518,7 +520,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     GUIMemFree( wnd );
 }
 
-static void DoDestroy( gui_window * wnd, bool dialog )
+static void DoDestroy( gui_window *wnd, bool dialog )
 {
     if( wnd != NULL ) {
         GUIEVENT( wnd, GUI_DESTROY, NULL );
@@ -530,7 +532,7 @@ static void DoDestroy( gui_window * wnd, bool dialog )
     }
 }
 
-void GUIDestroyDialog( gui_window * wnd )
+void GUIDestroyDialog( gui_window *wnd )
 {
     DoDestroy( wnd, true );
 }
@@ -550,7 +552,7 @@ bool GUICloseWnd( gui_window *wnd )
  * GUIDestroyWnd
  */
 
-void GUIDestroyWnd( gui_window * wnd )
+void GUIAPI GUIDestroyWnd( gui_window *wnd )
 {
     DoDestroy( wnd, false );
 }

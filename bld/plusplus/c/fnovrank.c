@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -701,7 +702,7 @@ static FNOV_COARSE_RANK fnovUdcLocate( FNOV_UDC_CONTROL control,
 
     // see 8.5 [dcl.init]
     // get list of possible ctors for type tgt_basic
-    cl_type_tgt = StructType( tgt_basic );
+    cl_type_tgt = ClassType( tgt_basic );
     ctorRank = NULL;
     if( ( control & FNOV_UDC_CTOR ) && NULL != cl_type_tgt ) {
         ctorRank = CtorFindList( wsrc->original, cl_type_tgt );
@@ -709,7 +710,7 @@ static FNOV_COARSE_RANK fnovUdcLocate( FNOV_UDC_CONTROL control,
 
     // only copy initialization involving source which is not derived
     // from target get to use UD conversion functions
-    cl_type_src = StructType( src_basic );
+    cl_type_src = ClassType( src_basic );
     derived = TypeDerived( cl_type_src, cl_type_tgt );
     udcfRank = NULL;
     if( NULL != cl_type_src     // can't have UDCF unless src is a class
@@ -793,7 +794,7 @@ static FNOV_COARSE_RANK fnovUdcLocateRef( FNOV_UDC_CONTROL control,
                 bool found_non_ref = false;
                 TYPE tgt_type;
                 FNOV_TYPE conv_class;
-                tgt_type = StructType( wtgt->basic );
+                tgt_type = ClassType( wtgt->basic );
                 if( NULL == tgt_type ) {
                     tgt_type = wtgt->basic;
                 }

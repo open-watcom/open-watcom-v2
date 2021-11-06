@@ -9,10 +9,10 @@ The
 function causes normal program termination to occur.
 .pp
 First, all functions registered by the
-.kw atexit
+.reffunc atexit
 function are called in the reverse order of their registration.
 Next, all open files are flushed and closed, and all files created by the
-.kw tmpfile
+.reffunc tmpfile
 function are removed.
 Finally, the return
 .arg status
@@ -33,7 +33,7 @@ The
 function does not return to its caller.
 .return end
 .see begin
-.seelist exit abort atexit _Exit _exit onexit
+.seelist exit abort atexit _Exit _exit
 .see end
 .exmp begin
 #include <stdio.h>

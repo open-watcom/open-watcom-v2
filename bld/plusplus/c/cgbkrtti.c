@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@ static void dropTypeidRef( TYPE type )
 {
     SYMBOL sym;
 
-    DbgAssert( StructType( type ) != NULL );
+    DbgAssert( ClassType( type ) != NULL );
     sym = TypeidAccess( type );
     TypeidRef( sym );
     DgPtrSymData( sym );
@@ -129,62 +130,6 @@ static void doRttiGen( RTTI_CLASS *r )
     r->cg_gen = true;
 }
 
-static char rotateChar( char c, unsigned rotate )
-{
-    unsigned new_char;
-    if( 'a' <= c && c <= 'z' ) {
-        // 0-25
-        c -= 'a';
-    } else if( 'A' <= c && c <= 'Z' ) {
-        // 26-51
-        c -= 'A';
-        c += 26;
-    } else if( '0' <= c && c <= '9' ) {
-        // 52-61
-        c -= '0';
-        c += 52;
-    } else if( c == '_' ) {
-        c = 62;
-    } else {
-        // don't rotate the character
-        return( c );
-    }
-    new_char = ( c + rotate ) & 0x3f;
-    if( new_char == 63 ) {
-        // use the unused slot's transformation
-        new_char = ( 63 + rotate ) & 0x3f;
-        DbgAssert( new_char != 63 );
-    }
-    if( new_char <= 25 ) {
-        c = (char)( new_char + 'a');
-    } else if( new_char <= 51 ) {
-        c = (char)(( new_char - 26 ) + 'A');
-    } else if( new_char <= 61 ) {
-        c = (char)(( new_char - 52 ) + '0');
-    } else if( new_char == 62 ) {
-        c = '_';
-    } else {
-        c = '@';
-    }
-    return( c );
-}
-
-
-static void runThruSimpleCipher( char *name, unsigned len )
-{
-    unsigned rotate = 21;
-    while( len != 0 ) {
-        *name = rotateChar( *name, rotate );
-        // ( rotate + 67 ) mod 101
-        rotate += 67;
-        if( rotate >= 101 ) {
-            rotate -= 101;
-        }
-        ++name;
-        --len;
-    }
-}
-
 static void doTypeidGen( RTTI_TYPEID *r )
 {
     char *raw_name;
@@ -201,11 +146,7 @@ static void doTypeidGen( RTTI_TYPEID *r )
     CgBackGenLabel( sym );
     DgInitBytes( CgDataPtrSize(), 0 );
     raw_name = CppGetTypeidContents( r->type, &raw_len );
-    if( CompFlags.obfuscate_typesig_names ) {
-        runThruSimpleCipher( raw_name, raw_len );
-    }
-    DGString( raw_name, raw_len );
-    DgByte( 0 );
+    DgString( raw_name, raw_len + 1, STRLIT_NONE );
     BESetSeg( old_segid );
 }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ typedef enum {
     TK_INCLUDE = 8
 } TOKTYPE;
 
-typedef struct token {
+typedef struct lex_token {
     char        *start;
     char        *stop;
     int         line;
@@ -51,5 +52,5 @@ typedef struct token {
     TOKTYPE     flags;
     byte        log;
     byte        col;
-} token_t;
+} lex_token;
 

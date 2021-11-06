@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +36,11 @@ extern void    InitPredefinedMacros( void );
 extern void    InitMacros( void );
 extern void    FiniMacros( void );
 extern bool    CompileDebugStmts( void );
-extern void    MacroDEFINE( char *macro, uint macro_len );
-extern void    MacroUNDEFINE( char *macro, uint macro_len );
-extern void    MacroIFDEF( char *macro, uint macro_len );
-extern void    MacroIFNDEF( char *macro, uint macro_len );
-extern void    MacroELIFDEF( char *macro, uint macro_len );
-extern void    MacroELIFNDEF( char *macro, uint macro_len );
+extern void    MacroDEFINE( const char *macro, size_t macro_len );
+extern void    MacroUNDEFINE( const char *macro, size_t macro_len );
+extern void    MacroIFDEF( const char *macro, size_t macro_len );
+extern void    MacroIFNDEF( const char *macro, size_t macro_len );
+extern void    MacroELIFDEF( const char *macro, size_t macro_len );
+extern void    MacroELIFNDEF( const char *macro, size_t macro_len );
 extern void    MacroELSE( void );
 extern void    MacroENDIF( void );

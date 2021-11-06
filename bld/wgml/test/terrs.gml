@@ -2,8 +2,8 @@
 :BODY.
 
 :P.The output file contents should be ignored or used very carefully, since it
-is all (except this sentence) the result of our wgml not halting at the first 
-error found. 
+is all (except this sentence) the result of our wgml not halting at the first
+error found.
 
 .ty gscofoju.c
 .co of

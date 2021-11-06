@@ -39,11 +39,11 @@
 #if defined(__SMALL_DATA__)
 _WCRTLINK size_t _msize( void *cstg )
 {
-    return( GET_BLK_SIZE( (freelist *)CPTR2BLK( cstg ) ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist *)CSTG2BLK( cstg ) ) - TAG_SIZE );
 }
 #endif
 
 _WCRTLINK size_t _nmsize( void_nptr cstg )
 {
-    return( GET_BLK_SIZE( (freelist_nptr)CPTR2BLK( cstg ) ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist_nptr)CSTG2BLK( cstg ) ) - TAG_SIZE );
 }

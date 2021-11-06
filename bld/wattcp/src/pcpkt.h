@@ -94,60 +94,6 @@ extern int  pkt_dropped_arp (void);
   extern int _pkt_set_ip_rcv_mode    (int mode);
 #endif
 
-#if defined(DEFINE_IREGS)
-/*
- * IREGS structures for pkt_api_entry()
- */
-#if (DOSX & PHARLAP)
-  #define IREGS      SWI_REGS
-  #define r_flags    flags
-  #define r_ax       eax
-  #define r_bx       ebx
-  #define r_dx       edx
-  #define r_cx       ecx
-  #define r_si       esi
-  #define r_di       edi
-  #define r_ds       ds
-  #define r_es       es
-
-#elif (DOSX & DJGPP)
-  #define IREGS      __dpmi_regs
-  #define r_flags    x.flags
-  #define r_ax       d.eax
-  #define r_bx       d.ebx
-  #define r_dx       d.edx
-  #define r_cx       d.ecx
-  #define r_si       d.esi
-  #define r_di       d.edi
-  #define r_ds       x.ds
-  #define r_es       x.es
-
-#elif (DOSX & (DOS4GW|WDOSX))
-  #define IREGS      struct DPMI_regs  /* in wdpmi.h */
-
-#elif (DOSX & POWERPAK)     /* to-do !! */
-  typedef struct IREGS {    /* just for now */
-          WORD  r_ax, r_bx, r_cx, r_dx, r_bp;
-          WORD  r_si, r_di, r_ds, r_es, r_flags;
-        } IREGS;
-
-#else  /* r-mode targets */
-
-  /* IREGS must have same layout and size as Borland's 'struct REGPACK'
-   * and Watcom's 'union REGPACK'. This is checked in check_reg_struct()
-   * in pcpkt.c
-   */
-  #include <sys/packon.h>
-
-  typedef struct IREGS {
-          WORD  r_ax, r_bx, r_cx, r_dx, r_bp;
-          WORD  r_si, r_di, r_ds, r_es, r_flags;
-        } IREGS;
-
-  #include <sys/packoff.h>
-#endif
-#endif /* DEFINE_IREGS */
-
 /*
  * Define size and # of IP and ARP protocol buffers. We use
  * separate queues for IP and non-IP. Don' waste buffer space

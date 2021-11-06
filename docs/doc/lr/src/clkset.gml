@@ -3,11 +3,7 @@
 #include <time.h>
 int clock_settime(clockid_t clockid, const struct timespec *ts);
 
-struct timespec {
-    time_t tv_sec;
-    long tv_nsec;
-};
-    
+.im structms
 .synop end
 .desc begin
 The
@@ -18,7 +14,7 @@ to the time contained in the
 .arg ts
 pointer.  Depending on the value of
 .arg clockid
-, the function may fail if the user has insufficient
+.ct , the function may fail if the user has insufficient
 privileges.
 .np
 Values of
@@ -51,5 +47,5 @@ The user does not have sufficient privileges to modify the specified clock.
 .see begin
 .seelist clock_gettime clock_getres clock_nanosleep
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

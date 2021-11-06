@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,12 @@
 
 #include "clibext.h"
 
+
+#ifdef __UNIX__
+#define FNCMP strcmp
+#else
+#define FNCMP stricmp
+#endif
 
 int SymbolNameCmp( const char *s1, const char *s2)
 {
@@ -104,8 +110,8 @@ void Copy( libfile source, libfile dest, file_offset size )
 
 static char     path[_MAX_PATH];
 
-static PGROUP2  pg1;
-static PGROUP2  pg2;
+static pgroup2  pg1;
+static pgroup2  pg2;
 
 bool IsSameFile( const char *a, const char *b )
 {
@@ -131,7 +137,7 @@ char *MakeFName( const char *a )
 bool IsExt( const char *a, const char *b )
 {
     _splitpath2( a, pg1.buffer, NULL, NULL, NULL, &pg1.ext );
-    return( FNCMP( pg1.ext, b ) == 0 );
+    return( pg1.ext[0] == '.' && FNCMP( pg1.ext + 1, b ) == 0 );
 }
 
 void DefaultExtension( char *name, const char *def_ext )

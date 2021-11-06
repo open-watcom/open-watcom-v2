@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,16 +31,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <io.h>
-#include <direct.h>
-#include "bool.h"
-#include "watcom.h"
 #include "cp.h"
+#include <stdint.h>
 #include "getopt.h"
 #include "iopath.h"
 #include "filerx.h"
@@ -207,6 +200,7 @@ int main( int argc, char *argv[] )
         Quit( usageMsg, "Only one destination file allowed\n" );
     }
     CopyOneFile( argv[2], argv[1] );
+    DropALine();
     doneCP();
     return( 0 );
 } /* main */

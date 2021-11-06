@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,14 +37,13 @@
 
 #include "ftnstd.h"
 #include "global.h"
+#include "wf77aux.h"
 #include "fcodes.h"
 #include "opr.h"
 #include "opn.h"
 #include "fcgbls.h"
 #include "prmcodes.h"
 #include "cpopt.h"
-#include "wf77auxd.h"
-#include "wf77aux.h"
 #include "recog.h"
 #include "emitobj.h"
 #include "types.h"
@@ -54,7 +54,6 @@
 #include "cgmagic.h"
 #include "gstring.h"
 #include "gsubprog.h"
-#include "auxlook.h"
 #include "gflow.h"
 #include "gtypes.h"
 
@@ -78,20 +77,7 @@ void    GBegCall( itnode *itptr ) {
 
     sp = itptr->sym_ptr;
 #if _CPU == 386
-    {
-        aux_info    *aux;
-        aux = AuxLookupName( sp->u.ns.name, sp->u.ns.u2.name_len );
-        if( aux != NULL ) {
-            if( aux->cclass & FAR16_CALL ) {
-                if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
-                    ProgramInfo.cclass |= THUNK_PROLOG;
-                } else {
-                    aux = AuxLookupAdd( SubProgId->u.ns.name, SubProgId->u.ns.u2.name_len );
-                    aux->cclass |= THUNK_PROLOG;
-                }
-            }
-        }
-    }
+    CheckFar16Call( sp );
 #endif
     EmitOp( FC_CALL );
     OutPtr( itptr->sym_ptr );
@@ -137,7 +123,9 @@ void    GEndCall( itnode *itptr, int num_stmts ) {
                 num_stmts--;
             }
             arg = arg->link;
-            if( num_stmts == 0 ) break;
+            if( num_stmts == 0 ) {
+                break;
+            }
         }
     } else if( (itptr->sym_ptr->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         EmitOp( FC_EXPR_DONE );
@@ -195,7 +183,9 @@ int     GParms( itnode *sp ) {
             }
         }
         AdvanceITPtr();
-        if( RecCloseParen() || RecColon() ) break;
+        if( RecCloseParen() || RecColon() ) {
+            break;
+        }
     }
     return( num_stmts );
 }
@@ -211,7 +201,7 @@ static  int     DumpArgInfo( itnode *node ) {
     PTYPE       parm_type;
     PCODE       parm_code;
 #if _CPU == 386
-    aux_info    *aux;
+    aux_info    *info;
 #endif
 
     num_args = 0;
@@ -228,8 +218,8 @@ static  int     DumpArgInfo( itnode *node ) {
                 parm_code = ParmClass( node );
 #if _CPU == 386
                 if( (parm_code == PC_PROCEDURE) || (parm_code == PC_FN_OR_SUB) ) {
-                    aux = AuxLookup( node->sym_ptr );
-                    if( aux->cclass & FAR16_CALL ) {
+                    info = InfoLookup( node->sym_ptr );
+                    if( info->cclass & FAR16_CALL ) {
                         parm_code |= PC_PROC_FAR16;
                     }
                 }
@@ -305,12 +295,10 @@ static  void    SetArgAddrs( void ) {
 
     EmitOp( FC_DARG_INIT );
     OutPtr( ArgList->id );
-    d_arg = ArgList->parms;
-    while( d_arg != NULL ) {
+    for( d_arg = ArgList->parms; d_arg != NULL; d_arg = d_arg->link ) {
         if( (d_arg->flags & ARG_STMTNO) == 0 ) {
             OutPtr( d_arg->id );
         }
-        d_arg = d_arg->link;
     }
     OutPtr( NULL );
 }

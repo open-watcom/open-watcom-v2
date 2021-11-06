@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,15 +35,21 @@
 #include "trptypes.h"
 #include <time.h>
 
-#include "pushpck1.h"
+#define ENV_SUPP_NAME   Environment
+#define TRAP_ENV(s)     TRAP_SYM( ENV_SUPP_NAME, s )
 
-#define ENV_SUPP_NAME   "Environment"
+//#define REQ_ENV_DEF(sym,func)
+#define REQ_ENV_DEFS() \
+    REQ_ENV_DEF( GET_VAR,   get_var ) \
+    REQ_ENV_DEF( SET_VAR,   set_var )
 
 enum {
-    REQ_ENV_GET_VAR,            /* 00 */
-    REQ_ENV_SET_VAR,            /* 01 */
+    #define REQ_ENV_DEF(sym,func)   REQ_ENV_ ## sym,
+    REQ_ENV_DEFS()
+    #undef REQ_ENV_DEF
 };
 
+#include "pushpck1.h"
 
 /*======================= REQ_FILE_GET_ENV ================*/
 

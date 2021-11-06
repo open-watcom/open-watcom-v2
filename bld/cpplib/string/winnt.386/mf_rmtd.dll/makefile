@@ -9,6 +9,6 @@ convention = register
 linkage    = dynamic
 mthreaded  = 1
 fs_registration = yes
-cpplib_release = 0
+lib_debug = 1
 
 !include $(cpplib_dir)/string/string.mif

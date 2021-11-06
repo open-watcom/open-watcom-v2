@@ -3,23 +3,23 @@
 #include <mbstring.h>
 unsigned char *_mbgetcode( unsigned char *mbstr,
                            unsigned int *dbchp );
-.if &farfnc eq 1 .do begin
-unsigned char far *_fmbgetcode( unsigned char far *mbstr,
-                                unsigned int *dbchp );
+.if &farfnc ne 0 .do begin
+unsigned char __far *_fmbgetcode( unsigned char __far *mbstr,
+                                  unsigned int __far *dbchp );
 .do end
 .synop end
 .desc begin
 The
 .id &funcb.
-function places the next single- or double-byte character
+function places the next single-byte or double-byte character
 from the start of the Kanji string specified by
 .arg mbstr
 in the wide character pointed to by
 .arg dbchp
-.ct .li .
+.period
 If the second-half of a double-byte character is NULL, then the
 returned wide character is NULL.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The

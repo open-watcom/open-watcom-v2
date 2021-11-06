@@ -1,5 +1,5 @@
-.gfunc remapallpalette
-.gsynop begin 
+.gfunc _remapallpalette
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _remapallpalette( long _FAR *colors );
 .do end
@@ -15,7 +15,7 @@ The
 The color values in the palette are replaced by the array of
 color values given by the argument
 .arg colors
-.ct .li .
+.period
 This &routine is supported in all video modes, but only works
 with EGA, MCGA and VGA adapters.
 .np
@@ -27,7 +27,7 @@ wherever there is a pixel value of a changed color in the palette.
 .pp
 The representation of colors depends upon the hardware being used.
 The number of colors in the palette can be determined by using the
-.kw _getvideoconfig
+.reffunc _getvideoconfig
 &routine..
 .desc end
 .return begin

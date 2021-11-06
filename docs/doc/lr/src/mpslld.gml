@@ -9,7 +9,7 @@ The 32-bit double-words in
 are each independently shifted to the left by the scalar shift count
 in
 .arg count
-.ct .li .
+.period
 The low-order bits of each element are filled with zeros.
 The shift count is interpreted as unsigned.
 Shift counts greater than 31 yield all zeros.

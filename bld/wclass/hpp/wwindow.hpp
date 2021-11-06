@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +119,6 @@ typedef unsigned WScrollNotification;
 #define WScrollHorizontal       14
 
 #include "wstates.hpp"
-#include "wres.hpp"
 #include "wobject.hpp"
 #include "wobjmap.hpp"
 #include "wvlist.hpp"
@@ -279,7 +279,7 @@ public:
     static WObjectMap WEXPORT _popupIdMap;
     static WControlId WEXPORT _idMaster;
 
-    void WEXPORT setIcon( WResource, char *ch_mode=NULL );
+    void WEXPORT setIcon( WResourceId, char *ch_mode=NULL );
     virtual bool WEXPORT setFocus( void );
     gui_window * WEXPORT handle() { return( _handle ); }
     void setHandle( gui_window *handle ) { _handle = handle; }
@@ -288,13 +288,13 @@ public:
     virtual WWindow * switchChild( WWindow *currChild, bool forward );
     virtual bool WEXPORT processMsg( gui_event gui_ev, void *parm );
     virtual int WEXPORT getTextExtentX( const char *text, size_t len ) {
-        return( GUIGetExtentX( _handle, (char *)text, len ) );
+        return( GUIGetExtentX( _handle, text, len ) );
     }
     virtual int WEXPORT getTextExtentX( const char *text ) {
-        return( GUIGetExtentX( _handle, (char *)text, strlen( text ) ) );
+        return( GUIGetExtentX( _handle, text, strlen( text ) ) );
     }
     virtual int WEXPORT getTextExtentY( const char *text ) {
-        return( GUIGetExtentY( _handle, (char *)text ) );
+        return( GUIGetExtentY( _handle, text ) );
     }
     virtual void displayFloatingPopup( WPopupMenu * );
     virtual WOrdinal WEXPORT frameWidth( void ) {

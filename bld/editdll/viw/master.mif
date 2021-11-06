@@ -1,14 +1,16 @@
-proj_name = editdll
-name = wedit
+proj_name = weditviw
 
-editdll_autodepends = .AUTODEPEND
-editdll_distrib_lib = 1
-sys_dll = 1
+weditviw_autodepends = .AUTODEPEND
+
+weditviw_distrib_lib = 1
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c: ..
 
 inc_dirs = -I.. -I"../.."
@@ -17,39 +19,33 @@ extra_cpp_flags = -DWEDITDLL
 
 extra_c_flags_win = -zc -zw -zu
 
-extra_l_flags_dll = op elim, heapsize=8k
+#
+# lflags
+#
+extra_l_flags_dll = op elim, heapsize=8k &
+    option description 'Open Watcom Editor DLL for VIW'
 extra_l_flags_dll_win = initinstance memory op stack=20k, rwr export WEP RESIDENT lib ddeml
 extra_l_flags_dll_nt = initinstance terminstance
 
-# systems where version resources must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
-
-verrc_dll = weditviw
-!include verrc.mif
+# explicit rules
+#################
 
 all: weditviw.dll wedit.dll .SYMBOLIC
 
-wedit.dll : weditviw.obj $(cl_extra_objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags) $[@ $(cl_extra_objs) $(ldflags)
-!else
-    @%write $^&.lnk $(lflags)
-    @%append $^&.lnk option description 'Open Watcom Editor DLL for VIW'
-    @%make echo_link
-    $(linker) name $^@ op implib @$^&.lnk file $[@
-!endif
-    @%make bind_res_version_dll
+#
+# DLL's
+#
+dlltarg_objs    = weditviw.obj
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+!include dlltarg.mif
 
-weditviw.dll : weditviw.obj $(cl_extra_objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags) $[@ $(cl_extra_objs) $(ldflags)
-!else
-    @%write $^&.lnk $(lflags)
-    @%append $^&.lnk option description 'Open Watcom Editor DLL for VIW'
-    @%make echo_link
-    $(linker) name $^@ @$^&.lnk file $[@
-!endif
-    @%make bind_res_version_dll
+dlltarg_opts    = opt implib
+dlltarg_name    = wedit
+!include dlltarg.mif
+
+#
+# rc and others
+#
+verrc_dll = weditviw
+!include verrc.mif

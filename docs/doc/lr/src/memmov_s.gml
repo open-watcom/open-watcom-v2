@@ -28,11 +28,11 @@ nor
 .arg n
 shall be greater than
 .arg RSIZE_MAX
-.ct .li .
+.period
 .arg n
 shall not be greater than
 .arg s1max
-.ct .li .
+.period
 .np
 If there is a runtime-constraint violation, the
 .id &funcb.
@@ -47,7 +47,7 @@ is not a null pointer and
 is
 not greater than
 .arg RSIZE_MAX
-.ct .li .
+.period
 .rtconst end
 .*
 .desc begin
@@ -59,7 +59,7 @@ characters from the buffer pointed to by
 .arg s2
 into the buffer pointed to by
 .arg s1
-.ct .li .
+.period
 This copying takes place as if the
 .arg n
 characters from the buffer
@@ -71,16 +71,16 @@ characters that does not overlap the objects pointed to by
 .arg s1
 or
 .arg s2
-,and then the
+.ct , and then the
 .arg n
 characters from the temporary array are copied into the object pointed to by
 .arg s1
-.ct .li .
+.period
 .np
 See the
 .arg memcpy_s
 function if you wish to copy objects that do not overlap.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The arguments
 .arg s1max
@@ -95,7 +95,7 @@ are interpreted to mean the number of wide characters.
 .return end
 .*
 .see begin
-.seelist memchr memcmp memcpy memicmp memmove memset memcpy_s
+.seelist memchr memcmp memcpy _memicmp memmove memset memcpy_s
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__  1

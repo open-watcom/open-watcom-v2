@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,14 +57,6 @@ struct frame {
     short         ypos;
 };
 
-
-static char     CheckIfOut( short, short, short );
-static short    PaintLeft( short, short, grcolor, short );
-static short    PaintRight( short, short, grcolor, short );
-static short    AddEntry( short, short, short, short, unsigned, unsigned *, struct frame * );
-static char     NotValidFrame( unsigned, unsigned *, struct frame * );
-static char     StackCompare( struct frame *, unsigned * );
-
 #endif
 
 
@@ -74,7 +67,7 @@ static short _L0Paint( grcolor stop_color, short x, short y )
 {
     WORD                fill_style;
     WPI_PRES            dc;
-    HBITMAP             bm;
+    WPI_HBITMAP         bm;
     HBRUSH              brush;
     HBRUSH              old_brush;
     HRGN                temprgn;
@@ -123,7 +116,7 @@ static short _L0Paint( grcolor stop_color, short x, short y )
         brush = _wpi_createsolidbrush( color );
     } else {
         /* if a mask is defined, convert it to bitmap */
-        bm = _Mask2Bitmap( dc, &_FillMask );
+        bm = _Mask2Bitmap( dc, _FillMask );
         brush = _wpi_createpatternbrush( bm );
     }
 
@@ -160,6 +153,246 @@ static short _L0Paint( grcolor stop_color, short x, short y )
     _wpi_invalidaterect( _CurrWin, &temp_rect, 0 );
     return ( rc );
 }
+#endif
+
+
+#if !defined( _DEFAULT_WINDOWS )
+
+static char CheckIfOut( short left_edge, short right_edge, short y )
+/*==================================================================
+
+    Returns true if TRUE if point is out of viewport or
+    left_edge > right_edge. */
+
+{
+    if( left_edge > right_edge ) return( TRUE );
+    if( _CurrState->clip.xmin > left_edge ) return( TRUE );
+    if( left_edge > _CurrState->clip.xmax ) return( TRUE );
+    if( _CurrState->clip.ymin > y ) return( TRUE );
+    if( y > _CurrState->clip.ymax ) return( TRUE );
+    return( FALSE );
+}
+
+
+static short PaintLeft( short x, short y, grcolor stop_color, short border_flag )
+/*=============================================================================
+
+    Paint left of starting pixel (x,y) using current color and fill
+    style. Return the new left pixel.   */
+
+{
+    short               xleft;
+    scan_fn             *scan;  /* pointer to scan function */
+    gr_device _FARD     *dev_ptr;
+    short               len;
+
+#if defined( __MEDIUM__ ) || defined( __LARGE__ )
+    if( _flood_is_visited( x, y ) ) {
+        return( x );
+    }
+#endif
+    dev_ptr = _CurrState->deviceptr;
+    ( *dev_ptr->setup )( x, y, stop_color );
+    scan = dev_ptr->scanleft;
+
+    if( x >= _CurrState->clip.xmin ) {
+        xleft = ( *scan )( _Screen.mem, _Screen.colour, x, _Screen.mask,
+                       border_flag, _CurrState->clip.xmin );
+    } else {
+        xleft = x + 1;
+    }
+    len = x - xleft + 1;
+    _L1Fill( xleft, y, len );
+    _flood_visit( xleft, y, len );
+    return( xleft );
+}
+
+
+static short PaintRight( short x, short y, grcolor stop_color, short border_flag )
+/*==============================================================================
+
+    Paint right of starting pixel (x,y) using current color and fill
+    style. Since we don't want to plot the initial pixel twice, move x
+    by one to the right before plotting. Return the new left pixel. */
+
+{
+    short               xright;
+    scan_fn             *scan;  /* pointer to scan function */
+    gr_device _FARD     *dev_ptr;
+    short               len;
+
+    x += 1;                                 /* don't plot first pixel twice */
+#if defined( __MEDIUM__ ) || defined( __LARGE__ )
+    if( _flood_is_visited( x, y ) ) {
+        return( x - 1 );
+    }
+#endif
+    dev_ptr = _CurrState->deviceptr;
+    ( *dev_ptr->setup )( x, y, stop_color );
+    scan = dev_ptr->scanright;
+
+    if( x <= _CurrState->clip.xmax ) {
+        xright = ( *scan )( _Screen.mem, _Screen.colour, x, _Screen.mask,
+                       border_flag, _CurrState->clip.xmax );
+    } else {
+        xright = x - 1;
+    }
+    len = xright - x + 1;
+    _L1Fill( x, y, len );
+    _flood_visit( x, y, len );
+    return( xright );
+}
+
+
+static void swap( unsigned k, struct frame *stack )
+/*=================================================
+
+    Swap frame k with frame 0. Frame k is now the active frame. */
+
+{
+    short           length;
+    struct frame    temp;
+
+    length = sizeof( struct frame );
+    memcpy( &temp, &stack[0], length );
+    memcpy( &stack[0], &stack[k], length );
+    memcpy( &stack[k], &temp, length );
+}
+
+
+static short AddEntry( short ypos, short right, short left, short direction,
+/*==================*/ unsigned max_frames, unsigned *stack_count,
+                       struct frame *stack )
+
+/*  Add an entry to the stack. Quit if out of stack space.  */
+
+{
+    if( *stack_count == max_frames ) {          /* stack is full    */
+        _ErrorStatus = _GRINSUFFICIENTMEMORY;
+        return( TRUE );
+    }
+    *stack_count += 1;                          /* append to stack  */
+    stack[*stack_count].left = left;
+    stack[*stack_count].right = right;
+    stack[*stack_count].ypos = ypos;
+    stack[*stack_count].direction = direction;
+    return( FALSE );
+}
+
+
+static char NotValidFrame( unsigned curr, unsigned *stack_count,
+/*======================*/ struct frame *stack )
+
+/*  If the current frame is no longer valid then replace it by the last one.*/
+
+{
+    if( stack[curr].left > stack[curr].right ) {
+        memcpy( &stack[curr], &stack[*stack_count], sizeof( struct frame ) );
+        *stack_count -= 1;
+    }
+    return( FALSE );                /* signal no direction  */
+}
+
+
+static char StackCompare( struct frame * stack, unsigned *stack_count )
+/*=====================================================================
+
+    Perform intersections, unions with entries already on the stack.
+    Return with FALSE if entry completely cancelled or TRUE otherwise.  */
+
+{
+    short           startover;
+    unsigned        count;
+    unsigned        smallest;
+    unsigned        curr;
+    short           temp;
+
+    if( *stack_count == 0 ) {                   /* nothing on the stack */
+        stack[0].ypos += stack[0].direction;    /* go to next line in same  */
+        return( TRUE );                         /* direction    */
+    }
+    do {
+        /* Find shortest of the first TUNING non-active frames on the
+           stack and the active frame.  */
+        startover = FALSE;
+        count = *stack_count;
+        if( count > TUNING ) {
+            count = TUNING;
+        }
+        smallest = 0;           /* assume smallest frame is the active one  */
+        for( curr = 1; curr <= count; curr++ ) {
+            if( stack[curr].right - stack[curr].left <
+                stack[smallest].right - stack[smallest].left ) {
+                smallest = curr;
+            }
+        }
+        /* Interchange the smallest frame and the active frame. */
+        if( smallest != 0 ) {
+            swap( smallest, stack );
+        }
+
+        /* Check entries with opposite direction and same y */
+
+        stack[0].ypos += stack[0].direction;        /* go to new line   */
+        count = *stack_count;
+        for( curr = 1; curr <= count; curr++ ) {
+            if( stack[0].ypos == stack[curr].ypos &&
+                stack[0].direction != stack[curr].direction ) {
+                if( stack[0].left - 1 <= stack[curr].right    /* overlap? */
+                    && stack[0].right + 1 >= stack[curr].left ) {
+                    if( stack[0].right + 1 >= stack[curr].right ) {
+                        temp = stack[0].left;
+                        stack[0].left = stack[curr].right + 2;
+                        if( temp + 1 < stack[curr].left ) {
+                            stack[curr].right = stack[curr].left - 2;
+                            stack[curr].left = temp - 1;
+                            stack[curr].direction = stack[0].direction;
+                            stack[curr].ypos -= stack[0].direction;
+                        } else {
+                            stack[curr].right = temp - 2;
+                        }
+                    } else {
+                        temp = stack[curr].left;
+                        stack[curr].left = stack[0].right + 2;
+                        if( temp + 1 < stack[0].left ) {
+                            stack[0].right = stack[0].left - 2;
+                            stack[0].left = temp;
+                            stack[0].direction = stack[curr].direction;
+                            startover = TRUE;
+                            break;
+                        }
+                        stack[0].right = temp - 2;
+                    }
+                    if( stack[0].left > stack[0].right ) {
+                        return( NotValidFrame( curr, stack_count, stack ) );
+                    }
+                }
+            }
+        }
+    } while ( startover );
+
+    /* Check entries with same direction and same y */
+    count = *stack_count;
+    for( curr = 1; curr <= count; curr++ ) {
+        if( stack[0].ypos == stack[curr].ypos &&
+            stack[0].direction == stack[curr].direction ) {
+            if( stack[0].left - 1 <= stack[curr].right &&     /* overlap? */
+                stack[0].right + 1 >= stack[curr].left ) {
+                if( stack[0].right - 1 <= stack[curr].right ) {
+                    stack[0].right = stack[curr].left - 2;
+                }
+                if( stack[0].left + 1 >= stack[curr].left ) {
+                    stack[0].left = stack[curr].right + 2;
+                }
+                if( stack[0].left > stack[0].right ) {
+                    return( NotValidFrame( curr, stack_count, stack ) );
+                }
+            }
+        }
+    }
+    return( TRUE );
+}
+
 #endif
 
 
@@ -309,249 +542,9 @@ short _L1Paint( grcolor stop_color, short x, short y )
                 return( !success );             /* flip flag - 0 was true   */
             }
             /* Make the last frame the active frame.    */
-            memcpy( &stack[0], &stack[ stack_count ], sizeof( struct frame ) );
+            memcpy( &stack[0], &stack[stack_count], sizeof( struct frame ) );
             stack_count -= 1;
         } while( !StackCompare( stack, &stack_count ) );
     }
 #endif
 }
-
-
-#if !defined( _DEFAULT_WINDOWS )
-
-static char CheckIfOut( short left_edge, short right_edge, short y )
-/*==================================================================
-
-    Returns true if TRUE if point is out of viewport or
-    left_edge > right_edge. */
-
-{
-    if( left_edge > right_edge ) return( TRUE );
-    if( _CurrState->clip.xmin > left_edge ) return( TRUE );
-    if( left_edge > _CurrState->clip.xmax ) return( TRUE );
-    if( _CurrState->clip.ymin > y ) return( TRUE );
-    if( y > _CurrState->clip.ymax ) return( TRUE );
-    return( FALSE );
-}
-
-
-static short PaintLeft( short x, short y, grcolor stop_color, short border_flag )
-/*=============================================================================
-
-    Paint left of starting pixel (x,y) using current color and fill
-    style. Return the new left pixel.   */
-
-{
-    short               xleft;
-    scan_fn             *scan;  /* pointer to scan function */
-    gr_device _FARD     *dev_ptr;
-    short               len;
-
-#if defined( __MEDIUM__ ) || defined( __LARGE__ )
-    if( _flood_is_visited( x, y ) ) {
-        return( x );
-    }
-#endif
-    dev_ptr = _CurrState->deviceptr;
-    ( *dev_ptr->setup )( x, y, stop_color );
-    scan = dev_ptr->scanleft;
-
-    if( x >= _CurrState->clip.xmin ) {
-        xleft = ( *scan )( _Screen.mem, _Screen.colour, x, _Screen.mask,
-                       border_flag, _CurrState->clip.xmin );
-    } else {
-        xleft = x + 1;
-    }
-    len = x - xleft + 1;
-    _L1Fill( xleft, y, len );
-    _flood_visit( xleft, y, len );
-    return( xleft );
-}
-
-
-static short PaintRight( short x, short y, grcolor stop_color, short border_flag )
-/*==============================================================================
-
-    Paint right of starting pixel (x,y) using current color and fill
-    style. Since we don't want to plot the initial pixel twice, move x
-    by one to the right before plotting. Return the new left pixel. */
-
-{
-    short               xright;
-    scan_fn             *scan;  /* pointer to scan function */
-    gr_device _FARD     *dev_ptr;
-    short               len;
-
-    x += 1;                                 /* don't plot first pixel twice */
-#if defined( __MEDIUM__ ) || defined( __LARGE__ )
-    if( _flood_is_visited( x, y ) ) {
-        return( x - 1 );
-    }
-#endif
-    dev_ptr = _CurrState->deviceptr;
-    ( *dev_ptr->setup )( x, y, stop_color );
-    scan = dev_ptr->scanright;
-
-    if( x <= _CurrState->clip.xmax ){
-        xright = ( *scan )( _Screen.mem, _Screen.colour, x, _Screen.mask,
-                       border_flag, _CurrState->clip.xmax );
-    } else {
-        xright = x - 1;
-    }
-    len = xright - x + 1;
-    _L1Fill( x, y, len );
-    _flood_visit( x, y, len );
-    return( xright );
-}
-
-
-static void swap( unsigned k, struct frame *stack )
-/*=================================================
-
-    Swap frame k with frame 0. Frame k is now the active frame. */
-
-{
-    short           length;
-    struct frame    temp;
-
-    length = sizeof( struct frame );
-    memcpy( &temp, &stack[0], length );
-    memcpy( &stack[0], &stack[k], length );
-    memcpy( &stack[k], &temp, length );
-}
-
-
-static short AddEntry( short ypos, short right, short left, short direction,
-/*==================*/ unsigned max_frames, unsigned *stack_count,
-                       struct frame *stack )
-
-/*  Add an entry to the stack. Quit if out of stack space.  */
-
-{
-    if( *stack_count == max_frames ) {          /* stack is full    */
-        _ErrorStatus = _GRINSUFFICIENTMEMORY;
-        return( TRUE );
-    }
-    *stack_count += 1;                          /* append to stack  */
-    stack[ *stack_count ].left = left;
-    stack[ *stack_count ].right = right;
-    stack[ *stack_count ].ypos = ypos;
-    stack[ *stack_count ].direction = direction;
-    return( FALSE );
-}
-
-
-static char StackCompare( struct frame * stack, unsigned *stack_count )
-/*=====================================================================
-
-    Perform intersections, unions with entries already on the stack.
-    Return with FALSE if entry completely cancelled or TRUE otherwise.  */
-
-{
-    short           startover;
-    unsigned        count;
-    unsigned        smallest;
-    unsigned        curr;
-    short           temp;
-
-    if( *stack_count == 0 ) {                   /* nothing on the stack */
-        stack[0].ypos += stack[0].direction;    /* go to next line in same  */
-        return( TRUE );                         /* direction    */
-    }
-    do {
-        /* Find shortest of the first TUNING non-active frames on the
-           stack and the active frame.  */
-        startover = FALSE;
-        count = *stack_count;
-        if( count > TUNING ) {
-            count = TUNING;
-        }
-        smallest = 0;           /* assume smallest frame is the active one  */
-        for( curr = 1; curr <= count; curr++ ) {
-            if( stack[ curr ].right - stack[ curr ].left <
-                stack[ smallest ].right - stack[ smallest ].left ) {
-                smallest = curr;
-            }
-        }
-        /* Interchange the smallest frame and the active frame. */
-        if( smallest != 0 ) {
-            swap( smallest, stack );
-        }
-
-        /* Check entries with opposite direction and same y */
-
-        stack[0].ypos += stack[0].direction;        /* go to new line   */
-        count = *stack_count;
-        for( curr = 1; curr <= count; curr++ ) {
-            if( stack[0].ypos == stack[ curr ].ypos &&
-                stack[0].direction != stack[ curr ].direction ) {
-                if( stack[0].left - 1 <= stack[ curr ].right    /* overlap? */
-                    && stack[0].right + 1 >= stack[ curr ].left ) {
-                    if( stack[0].right + 1 >= stack[ curr ].right ) {
-                        temp = stack[0].left;
-                        stack[0].left = stack[ curr ].right + 2;
-                        if( temp + 1 < stack[ curr ].left ) {
-                            stack[ curr ].right = stack[ curr ].left - 2;
-                            stack[ curr ].left = temp - 1;
-                            stack[ curr ].direction = stack[0].direction;
-                            stack[ curr ].ypos -= stack[0].direction;
-                        } else {
-                            stack[ curr ].right = temp - 2;
-                        }
-                    } else {
-                        temp = stack[ curr ].left;
-                        stack[ curr ].left = stack[0].right + 2;
-                        if( temp + 1 < stack[0].left ) {
-                            stack[0].right = stack[0].left - 2;
-                            stack[0].left = temp;
-                            stack[0].direction = stack[ curr ].direction;
-                            startover = TRUE;
-                            break;
-                        }
-                        stack[0].right = temp - 2;
-                    }
-                    if( stack[0].left > stack[0].right ) {
-                        return( NotValidFrame( curr, stack_count, stack ) );
-                    }
-                }
-            }
-        }
-    } while ( startover );
-
-    /* Check entries with same direction and same y */
-    count = *stack_count;
-    for( curr = 1; curr <= count; curr++ ) {
-        if( stack[0].ypos == stack[ curr ].ypos &&
-            stack[0].direction == stack[ curr ].direction ) {
-            if( stack[0].left - 1 <= stack[ curr ].right &&     /* overlap? */
-                stack[0].right + 1 >= stack[ curr ].left ) {
-                if( stack[0].right - 1 <= stack[ curr ].right ) {
-                    stack[0].right = stack[ curr ].left - 2;
-                }
-                if( stack[0].left + 1 >= stack[ curr ].left ) {
-                    stack[0].left = stack[ curr ].right + 2;
-                }
-                if( stack[0].left > stack[0].right ) {
-                    return( NotValidFrame( curr, stack_count, stack ) );
-                }
-            }
-        }
-    }
-    return( TRUE );
-}
-
-
-static char NotValidFrame( unsigned curr, unsigned *stack_count,
-/*======================*/ struct frame *stack )
-
-/*  If the current frame is no longer valid then replace it by the last one.*/
-
-{
-    if( stack[ curr ].left > stack[ curr ].right ) {
-        memcpy( &stack[ curr ], &stack[ *stack_count ], sizeof( struct frame ) );
-        *stack_count -= 1;
-    }
-    return( FALSE );                /* signal no direction  */
-}
-
-#endif

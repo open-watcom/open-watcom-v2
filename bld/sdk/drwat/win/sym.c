@@ -59,7 +59,7 @@ static BOOL             dipIsLoaded;
 #if 0
 FILE *PathOpen( char *name, unsigned len, const char *ext )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[ _MAX_PATH ];
     char        *realname;
     char        *filename;

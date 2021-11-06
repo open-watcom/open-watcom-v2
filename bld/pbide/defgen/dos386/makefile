@@ -5,25 +5,32 @@ proj_name = defgen
 host_os  = dos
 host_cpu = 386
 
-xname = defgen.exe
-
-additional_cleanup = ytab.*
-
-lnk = $(name).lnk
+additional_clean = ytab.*
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = -I. -I..
-
-objs = ytab.obj main.obj scan.obj error.obj semantic.obj output.obj
-
-$(xname) : ytab.h ytab.c $(objs) $(__MAKEFILES__)
-    $(cl) $(clflags) $(objs) $(ldflags)
-
+#
+# cflags
+#
 .c: ..
 
+inc_dirs = -I. -I..
+
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_prebuild_objs = ytab.h ytab.c
+exetarg_objs          = ytab.obj main.obj scan.obj error.obj semantic.obj output.obj
+!include exetarg.mif
+
+#
+# rc and others
+#
 ytab.c ytab.h: ../yydriver.c ../defgen.y
     @%make echo_yacc
     $(yacc) -d -dd $]@ $[@

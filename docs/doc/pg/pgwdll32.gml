@@ -52,7 +52,8 @@ identify the arguments.
 .np
 The DLL supervisor contains a general entry point for Windows
 applications to call into called
-.id Win386LibEntry.
+.id Win386LibEntry
+.period
 It also contains 128 specific entry points called
 .id DLL1
 to
@@ -218,7 +219,8 @@ has three INTEGER*4 arguments and
 .id Add2
 has two INTEGER*4 arguments.
 The argument lists are described by calling
-.id DefineDLLEntry.
+.id DefineDLLEntry
+.period
 All arguments are passed by value.
 As previously mentioned, all pointers passed to 32-bit DLLs are 16-bit
 far pointers.
@@ -494,13 +496,15 @@ and
 in the 32-bit DLL are obtained and stored in the variables
 .id dll_1
 and
-.id dll_2.
+.id dll_2
+.period
 Since the FORTRAN 77 language does not support indirect function
 calls, we need a mechanism to call these functions indirectly.
 We do this using the two indirect functions called
 .id indirect_1
 and
-.id indirect_2.
+.id indirect_2
+.period
 These two functions are given the
 .id dll32_call
 attribute using an auxiliary pragma which is defined in the file
@@ -529,7 +533,8 @@ This is a result of using the
 auxiliary pragma attribute to describe both
 .id indirect_1
 and
-.id indirect_2.
+.id indirect_2
+.period
 You can verify this by disassembling the object file that is generated
 when this code is compiled.
 .*
@@ -915,10 +920,12 @@ Each library entry would call the 32-bit DLL using the appropriate
 index number.
 .np
 For example, assume we have 3 functions in our DLL,
-.id Initialize,
-.id DoStuff,
-and
-.id Finish.
+.id Initialize
+.ct ,
+.id DoStuff
+.ct , and
+.id Finish
+.period
 Assume
 .id Initialize
 takes an integer,

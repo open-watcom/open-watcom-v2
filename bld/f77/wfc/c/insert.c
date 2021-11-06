@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@
 
 
 typedef struct class_entry {
-    char        *class;
+    const char  *class;
     uint        id;
 } class_entry;
 
@@ -60,53 +60,64 @@ static  class_entry     ClassMsg[] = {
 #define MAX_MSGLEN      64      // maximum length of MS_xxx in error.msg
 
 
-char    *PrmCodTab[] = {
+const char  *PrmCodTab[] = {
     #define pick(en,text)  text,
     #include "_prmcode.h"
     #undef pick
 };
 
-static  uint    SymClass( sym_id sym ) {
-//======================================
-
+static  uint    SymClass( sym_id sym )
+//====================================
+{
     unsigned_16 class;
     unsigned_16 flags;
 
     flags = sym->u.ns.flags;
-    class = flags & SY_CLASS;
-    if( class == SY_PARAMETER ) return( NAME_PARAMETER );
-    if( class == SY_COMMON ) return( NAME_COMMON );
+    class = (flags & SY_CLASS);
+    if( class == SY_PARAMETER )
+        return( NAME_PARAMETER );
+    if( class == SY_COMMON )
+        return( NAME_COMMON );
     if( class == SY_SUBPROGRAM ) {
-        if( flags & SY_INTRINSIC ) return( NAME_INTRINSIC );
+        if( flags & SY_INTRINSIC )
+            return( NAME_INTRINSIC );
         flags &= SY_SUBPROG_TYPE;
-        if( flags == SY_FN_OR_SUB ) return( NAME_EXT_PROC );
+        if( flags == SY_FN_OR_SUB )
+            return( NAME_EXT_PROC );
         return( flags >> SY_SUBPROG_IDX );
     }
-    if( flags & SY_SUB_PARM ) return( NAME_ARGUMENT );
-    if( (flags & SY_SPECIAL_PARM) && (StmtSw & SS_DATA_INIT) == 0 ) return( NAME_SF_DUMMY );
-    if( flags & SY_IN_COMMON ) return( NAME_COMMON_VAR );
+    if( flags & SY_SUB_PARM )
+        return( NAME_ARGUMENT );
+    if( (flags & SY_SPECIAL_PARM) && (StmtSw & SS_DATA_INIT) == 0 )
+        return( NAME_SF_DUMMY );
+    if( flags & SY_IN_COMMON )
+        return( NAME_COMMON_VAR );
     if( flags & SY_SUBSCRIPTED ) {
-        if( _Allocatable( sym ) ) return( NAME_ALLOCATED_ARRAY );
+        if( _Allocatable( sym ) )
+            return( NAME_ALLOCATED_ARRAY );
         return( NAME_ARRAY );
     }
-    if( flags & SY_PS_ENTRY ) return( NAME_FUNCTION );
-    if( flags & SY_IN_EQUIV ) return( NAME_EQUIV_VAR );
+    if( flags & SY_PS_ENTRY )
+        return( NAME_FUNCTION );
+    if( flags & SY_IN_EQUIV )
+        return( NAME_EQUIV_VAR );
     return( NAME_VARIABLE );
 }
 
 
-static  char    *GetClass( uint idx, char *buff ) {
-//=================================================
-
-    if( ClassMsg[idx].class != NULL ) return( ClassMsg[idx].class );
+static const char   *GetClass( uint idx, char *buff )
+//===================================================
+{
+    if( ClassMsg[idx].class != NULL )
+        return( ClassMsg[idx].class );
     MsgBuffer( ClassMsg[idx].id, buff );
     return( &buff[1] ); // skip the leading blank
 }
 
 
-static  char    *StmtName( char *buff ) {
-//=======================================
-
+static char *StmtName( char *buff )
+//=================================
+{
     STMT    stmt;
 
     stmt = StmtProc;
@@ -124,99 +135,99 @@ static  char    *StmtName( char *buff ) {
         MsgBuffer( MS_STMT_FUNC_DEFN, buff );
         return( &buff[1] );     // skip leading blank
     default:
-        return( StmtKeywords[ stmt ] );
+        return( strcpy( buff, StmtKeywords[ stmt ] ) );
     }
 }
 
 
-void    StmtExtension( int errcode ) {
-//====================================
-
-    char        stmt[MAX_MSGLEN+1];
+void    StmtExtension( int errcode )
+//==================================
+{
+    char        stmt[MAX_MSGLEN + 1];
 
     Extension( errcode, StmtName( stmt ) );
 }
 
 
-void    StmtErr( int errcode ) {
-//==============================
-
-    char        stmt[MAX_MSGLEN+1];
+void    StmtErr( int errcode )
+//============================
+{
+    char        stmt[MAX_MSGLEN + 1];
 
     Error( errcode, StmtName( stmt ) );
 }
 
 
-void    StmtIntErr( int errcode, int num ) {
-//==========================================
-
-    char        stmt[MAX_MSGLEN+1];
+void    StmtIntErr( int errcode, int num )
+//========================================
+{
+    char        stmt[MAX_MSGLEN + 1];
 
     Error( errcode, StmtName( stmt ), num );
 }
 
 
-void    StmtPtrErr( int errcode, void *ptr ) {
-//============================================
-
-    char        stmt[MAX_MSGLEN+1];
+void StmtPtrErr( int errcode, const char *ptr )
+//=============================================
+{
+    char        stmt[MAX_MSGLEN + 1];
 
     Error( errcode, StmtName( stmt ), ptr );
 }
 
 
-void    NameWarn( int errcod, sym_id sym ) {
-//=========================================
-
-    char        buff[MAX_SYMLEN+1];
+void    NameWarn( int errcod, sym_id sym )
+//========================================
+{
+    char        buff[MAX_SYMLEN + 1];
 
     STGetName( sym, buff );
     Warning( errcod, buff );
 }
 
 
-void    NameErr( int errcod, sym_id sym ) {
-//=========================================
-
-    char        buff[MAX_SYMLEN+1];
+void    NameErr( int errcod, sym_id sym )
+//=======================================
+{
+    char        buff[MAX_SYMLEN + 1];
 
     STGetName( sym, buff );
     Error( errcod, buff );
 }
 
 
-void    NameStmtErr( int errcod, sym_id sym, STMT stmt ) {
-//============================================================
-
-    char        buff[MAX_SYMLEN+1];
+void    NameStmtErr( int errcod, sym_id sym, STMT stmt )
+//======================================================
+{
+    char        buff[MAX_SYMLEN + 1];
 
     STGetName( sym, buff );
     Error( errcod, buff, StmtKeywords[ stmt ] );
 }
 
 
-void    PrmCodeErr( int errcode, int code ) {
-//===========================================
-
+void    PrmCodeErr( int errcode, int code )
+//=========================================
+{
     Error( errcode, PrmCodTab[code & ~PC_PROC_FAR16] );
 }
 
 
-void    NameExt( int errcod, sym_id sym ) {
-//=========================================
-
-    char        buff[MAX_SYMLEN+1];
+void    NameExt( int errcod, sym_id sym )
+//=======================================
+{
+    char        buff[MAX_SYMLEN + 1];
 
     STGetName( sym, buff );
     Extension( errcod, buff );
 }
 
 
-void    NamNamErr( int errcod, sym_id var1, sym_id var2 ) {
-//=========================================================
-
-    char        buff1[MAX_SYMLEN+1];
-    char        buff2[MAX_SYMLEN+1];
+void    NamNamErr( int errcod, sym_id var1, sym_id var2 )
+//=======================================================
+{
+    char        buff1[MAX_SYMLEN + 1];
+    char        buff2[MAX_SYMLEN + 1];
 
     STGetName( var1, buff1 );
     STGetName( var2, buff2 );
@@ -224,83 +235,83 @@ void    NamNamErr( int errcod, sym_id var1, sym_id var2 ) {
 }
 
 
-void    ClassNameErr( int errcod, sym_id sym ) {
-//==============================================
-
-    char        buff[MAX_SYMLEN+1];
-    char        class[MAX_MSGLEN+1];
+void    ClassNameErr( int errcod, sym_id sym )
+//============================================
+{
+    char        buff[MAX_SYMLEN + 1];
+    char        class[MAX_MSGLEN + 1];
 
     STGetName( sym, buff );
     Error( errcod, GetClass( SymClass( sym ), class ), buff );
 }
 
 
-void    PrevDef( sym_id sym ) {
-//=============================
-
-    char        buff[MAX_SYMLEN+1];
-    char        class[MAX_MSGLEN+1];
+void    PrevDef( sym_id sym )
+//===========================
+{
+    char        buff[MAX_SYMLEN + 1];
+    char        class[MAX_MSGLEN + 1];
 
     STGetName( sym, buff );
     Error( VA_PREV_DEF_NAM, buff, GetClass( SymClass( sym ), class ) );
 }
 
 
-void    NameTypeErr( int errcod, sym_id sym ) {
-//=============================================
-
-    char        buff[MAX_SYMLEN+1];
+void    NameTypeErr( int errcod, sym_id sym )
+//===========================================
+{
+    char        buff[MAX_SYMLEN + 1];
 
     STGetName( sym, buff );
     Error( errcod, buff, TypeKW( sym->u.ns.u1.s.typ ) );
 }
 
 
-void    TypeTypeErr( int errcod, TYPE typ1, TYPE typ2 ) {
-//=======================================================
-
+void    TypeTypeErr( int errcod, TYPE typ1, TYPE typ2 )
+//=====================================================
+{
     Error( errcod, TypeKW( typ1 ), TypeKW( typ2 ) );
 }
 
 
-void    TypeNameTypeErr( int errcod, TYPE typ1, sym_id sym, TYPE typ2 ) {
-//=======================================================================
-
-    char        buff[MAX_SYMLEN+1];
+void    TypeNameTypeErr( int errcod, TYPE typ1, sym_id sym, TYPE typ2 )
+//=====================================================================
+{
+    char        buff[MAX_SYMLEN + 1];
 
     STGetName( sym, buff );
     Error( errcod, TypeKW( typ1 ), buff, TypeKW( typ2 ) );
 }
 
 
-void    TypeErr( int errcod, TYPE typ ) {
-//=======================================
-
+void    TypeErr( int errcod, TYPE typ )
+//=====================================
+{
     Error( errcod, TypeKW( typ ) );
 }
 
 
-void    KnownClassErr( int errcod, uint idx ) {
-//=============================================
-
-    char        class[MAX_MSGLEN+1];
+void    KnownClassErr( int errcod, uint idx )
+//===========================================
+{
+    char        class[MAX_MSGLEN + 1];
 
     Error( errcod, GetClass( idx, class ) );
 }
 
 
-void    ClassErr( int errcod, sym_id sym ) {
-//==========================================
-
-    char        class[MAX_MSGLEN+1];
+void    ClassErr( int errcod, sym_id sym )
+//========================================
+{
+    char        class[MAX_MSGLEN + 1];
 
     Error( errcod, GetClass( SymClass( sym ), class ) );
 }
 
 
-void    OpndErr( int errcod ) {
-//=============================
-
+void    OpndErr( int errcod )
+//===========================
+{
     char        *str;
 
     str = MkNodeStr( CITNode );
@@ -309,12 +320,12 @@ void    OpndErr( int errcod ) {
 }
 
 
-void    IllName( sym_id sym ) {
-//=============================
-
-    char        buff[MAX_SYMLEN+1];
-    char        class[MAX_MSGLEN+1];
-    char        stmt[MAX_MSGLEN+1];
+void    IllName( sym_id sym )
+//===========================
+{
+    char        buff[MAX_SYMLEN + 1];
+    char        class[MAX_MSGLEN + 1];
+    char        stmt[MAX_MSGLEN + 1];
 
     STGetName( sym, buff );
     Error( VA_ILL_USE, GetClass( SymClass( sym ), class ), buff,
@@ -322,31 +333,31 @@ void    IllName( sym_id sym ) {
 }
 
 
-void    IllType( sym_id sym ) {
-//=============================
-
-    char        buff[MAX_SYMLEN+1];
-    char        stmt[MAX_MSGLEN+1];
+void    IllType( sym_id sym )
+//===========================
+{
+    char        buff[MAX_SYMLEN + 1];
+    char        stmt[MAX_MSGLEN + 1];
 
     STGetName( sym, buff );
     Error( TY_ILL_USE, buff, TypeKW( sym->u.ns.u1.s.typ ), StmtName( stmt ) );
 }
 
 
-void    StructErr( int errcode, sym_id sym ) {
-//============================================
-
-    char        struct_name[MAX_SYMLEN+1];
+void    StructErr( int errcode, sym_id sym )
+//==========================================
+{
+    char        struct_name[MAX_SYMLEN + 1];
 
     STStructName( sym, struct_name );
     Error( errcode, struct_name );
 }
 
 
-void    FieldErr( int errcode, sym_id sym ) {
-//===========================================
-
-    char        field_name[MAX_SYMLEN+1];
+void    FieldErr( int errcode, sym_id sym )
+//=========================================
+{
+    char        field_name[MAX_SYMLEN + 1];
 
     STFieldName( sym, field_name );
     Error( errcode, field_name );

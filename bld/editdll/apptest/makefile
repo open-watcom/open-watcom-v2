@@ -5,7 +5,7 @@ BUILD_TARGET    =windows
 system          =windows dll
 
 apptest.exe : apptest.obj
-    %write apptest.lnk system windows 
+    %write apptest.lnk system windows
     @%append apptest.lnk debug all
     @%append apptest.lnk option   map, elim, verbose, static
     @%append apptest.lnk library  ..\viw\wini86\wedit.lib

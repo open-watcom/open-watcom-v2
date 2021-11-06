@@ -109,9 +109,6 @@ posix_dir       = $(src_dir)/posix
 !ifndef rcsdll_dir
 rcsdll_dir      = $(src_dir)/rcsdll
 !endif
-!ifndef curses_dir
-curses_dir      = $(src_dir)/curses
-!endif
 !ifndef ncurses_dir
 ncurses_dir     = $(src_dir)/ncurses
 !endif

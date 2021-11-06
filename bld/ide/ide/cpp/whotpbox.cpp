@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +103,8 @@ void WEXPORT WHotPickBox::fillBox()
             _tags[j] = (*_model)[i];
             WString s; name( j, s );
             int wid = getTextExtentX( s );
-            if( wid > maxWid ) maxWid = wid;
+            if( wid > maxWid )
+                maxWid = wid;
             j += 1;
         }
     }

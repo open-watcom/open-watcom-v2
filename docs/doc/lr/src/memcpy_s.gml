@@ -7,13 +7,6 @@ errno_t memcpy_s( void * restrict s1,
                   const void * restrict s2,
                   rsize_t n );
 .ixfunc2 '&Copy' &funcb
-.if &'length(&ffunc.) ne 0 .do begin
-errno_t _fmemcpy_s( void __far * restrict s1,
-                    rsize_t s1max,
-                    const void __far * restrict s2,
-                    size_t n );
-.ixfunc2 '&Copy' &ffunc
-.do end
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 errno_t wmemcpy_s( wchar_t * restrict s1,
@@ -35,11 +28,11 @@ nor
 .arg n
 shall be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 .arg n
 shall not be greater than
 .arg s1max
-.ct .li .
+.period
 . Copying shall not take place between
 objects that overlap.
 .np
@@ -56,7 +49,7 @@ is not a null pointer and
 is
 not greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 .rtconst end
 .*
 .desc begin
@@ -68,15 +61,15 @@ characters from the buffer pointed to by
 .arg s2
 into the buffer pointed to by
 .arg s1
-.ct .li .
+.period
 Copying between overlapping objects is not allowed.
 See the
-.kw memmove_s
+.reffunc memmove_s
 function if you wish to copy objects that overlap.
 .if &'length(&_func.) ne 0 .do begin
-.im farfunc
+.farfuncp &ffunc. &funcb.
 .do end
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The arguments
 .arg s1max
@@ -91,7 +84,7 @@ are interpreted to mean the number of wide characters.
 .return end
 .*
 .see begin
-.seelist memcpy memchr memcmp memcpy memicmp memmove memset memmove_s
+.seelist memcpy memchr memcmp memcpy _memicmp memmove memset memmove_s
 .see end
 .*
 .exmp begin

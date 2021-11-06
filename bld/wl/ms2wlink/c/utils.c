@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,21 +51,32 @@ static const char *DefExt[] = {
     #undef SLOTDEF
 };
 
+static unsigned char DefExtLen[] = {
+    #define SLOTDEF( e, pt, et )  sizeof( et ) - 1,
+    SLOT_DEFS
+    #undef SLOTDEF
+};
+
 static bool     WritePrompt;
 
 
+
 void UtilsInit( void )
-/***************************/
+/********************/
 // check to see if STDIN is the console. if not, don't write prompt.
 {
-    QSetBinary( stdin );
+#if !defined( __UNIX__ )
+    _setmode( fileno( stdin ), O_BINARY );
+#endif
     WritePrompt = QIsConIn( stdin );
 }
 
 void ImplyFormat( format_type typ )
 /*********************************/
 {
-    if( FmtType == FMT_DEFAULT ) FmtType = typ;
+    if( FmtType == FMT_DEFAULT ) {
+        FmtType = typ;
+    }
 }
 
 char *FileName( const char *buff, prompt_slot slot, bool force )
@@ -96,8 +108,9 @@ char *FileName( const char *buff, prompt_slot slot, bool force )
         if( cnt != 0 ) {
             len = cnt;
         }
-        ptr = MemAlloc( len + strlen( DefExt[slot] ) + 1 );
+        ptr = MemAlloc( len + 1 + DefExtLen[slot] + 1 );
         memcpy( ptr, buff, len );
+        ptr[len++] = '.';
         strcpy( ptr + len, DefExt[slot] );
     } else {
         ptr = MemAlloc( len + 1 );

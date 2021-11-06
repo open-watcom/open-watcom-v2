@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,8 +58,8 @@ bool WRLoadBitmapFile( WRInfo *info )
 {
     bool                ok;
     FILE                *fp;
-    long int            file_length;
-    PGROUP2             pg;
+    long                file_length;
+    pgroup2             pg;
     WResID              *type;
     WResID              *name;
     WResLangType        def_lang;
@@ -131,7 +131,7 @@ bool WRLoadIconFile( WRInfo *info )
     bool                dup;
     int                 i;
     bool                ok;
-    PGROUP2             pg;
+    pgroup2             pg;
 
     data = NULL;
     rih = NULL;
@@ -220,7 +220,7 @@ bool WRLoadCursorFile( WRInfo *info )
     bool                dup;
     int                 i;
     bool                ok;
-    PGROUP2             pg;
+    pgroup2             pg;
 
     data = NULL;
     rch = NULL;

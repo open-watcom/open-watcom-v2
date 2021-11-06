@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,6 @@
 #include "guistyle.h"
 #include "guixdlg.h"
 #include "guitextm.h"
-#include "guixscal.h"
 #include "guiscale.h"
 #include "guistr.h"
 #include "guixwind.h"
@@ -56,8 +56,6 @@
 #endif
 
 
-#define SENDPOINTGUIEVENT(w, gm, wp, lp)    !SendPointEvent( wp, lp, w, gm, false )
-
 extern  controls_struct GUIControls[];
 extern  bool            EditControlHasFocus;
 
@@ -70,7 +68,7 @@ static  gui_coord       SizeScreen      = { 0, 0 };     /* of test dialog       
 /* Local Window callback functions prototypes */
 WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
-void GUISetJapanese( void )
+void GUIAPI GUISetJapanese( void )
 {
 #ifndef __OS2_PM__
     char *  newfont;
@@ -111,13 +109,13 @@ void GUIInitControl( control_item *item, gui_window *wnd, gui_ctl_id *focus_id )
     item->win_call_back = GUIDoSubClass( ctrl, item->control_class );
     (void)CvrCtl3dSubclassCtl( ctrl );
     switch( item->control_class ) {
-    case GUI_CHECK_BOX :
-    case GUI_RADIO_BUTTON :
+    case GUI_CHECK_BOX:
+    case GUI_RADIO_BUTTON:
         if( item->checked ) {
             GUISendMessage( ctrl, BM_SETCHECK, (WPI_PARAM1)true, (WPI_PARAM2)0 );
         }
         break;
-    case GUI_EDIT_COMBOBOX :
+    case GUI_EDIT_COMBOBOX:
         GUISetText( wnd, item->id, item->text );
         break;
     }
@@ -165,20 +163,20 @@ bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd 
 
     if( item != NULL ) {
         switch( item->control_class ) {
-        case GUI_EDIT :
-        case GUI_EDIT_MLE :
+        case GUI_EDIT:
+        case GUI_EDIT_MLE:
             switch( wNotify ) {
-            case EN_SETFOCUS :
+            case EN_SETFOCUS:
                 EditControlHasFocus = true;
                 break;
-            case EN_KILLFOCUS :
+            case EN_KILLFOCUS:
                 EditControlHasFocus = false;
                 GUIEVENT( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
                 break;
             }
             break;
-        case GUI_RADIO_BUTTON :
-        case GUI_CHECK_BOX :
+        case GUI_RADIO_BUTTON:
+        case GUI_CHECK_BOX:
             // if this dialog was created from a resource then we
             // assume that the creator of said resource set up the
             // tab and cursor groups with a dialog editor
@@ -197,42 +195,42 @@ bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd 
                 }
             }
             /* fall through */
-        case GUI_PUSH_BUTTON :
-        case GUI_DEFPUSH_BUTTON :
+        case GUI_PUSH_BUTTON:
+        case GUI_DEFPUSH_BUTTON:
             switch( wNotify ) {
-            case BN_CLICKED :
+            case BN_CLICKED:
                 GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
                 return( true );
-            case BN_DOUBLECLICKED :
+            case BN_DOUBLECLICKED:
                 GUIEVENT( wnd, GUI_CONTROL_DCLICKED, &id );
                 return( true );
             }
             break;
-        case GUI_LISTBOX :
+        case GUI_LISTBOX:
             switch( wNotify ) {
-            case LBN_SELCHANGE :
+            case LBN_SELCHANGE:
                 GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
                 return( true );
-            case LBN_DBLCLK :
+            case LBN_DBLCLK:
                 GUIEVENT( wnd, GUI_CONTROL_DCLICKED, &id );
                 return( true );
-            case LBN_KILLFOCUS :
+            case LBN_KILLFOCUS:
                 GUIEVENT( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
                 return( true );
             }
             break;
-        case GUI_COMBOBOX :
-        case GUI_EDIT_COMBOBOX :
+        case GUI_COMBOBOX:
+        case GUI_EDIT_COMBOBOX:
             switch( wNotify ) {
-            case CBN_SELCHANGE :
+            case CBN_SELCHANGE:
                 GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
                 return( true );
 #ifndef __OS2_PM__
-            case CBN_DBLCLK :
+            case CBN_DBLCLK:
                 GUIEVENT( wnd, GUI_CONTROL_DCLICKED, &id );
                 return( true );
 #endif
-            case CBN_KILLFOCUS :
+            case CBN_KILLFOCUS:
                 GUIEVENT( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
                 return( true );
             }
@@ -262,12 +260,12 @@ bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd
     id = LOWORD( wparam );
     notify_code = GET_WM_COMMAND_CMD( wparam, lparam );
     switch( notify_code ) {
-    case EN_KILLFOCUS :
-    case CBN_KILLFOCUS :
-    case BN_CLICKED :
-    case BN_DOUBLECLICKED :  /* same as LBN_KILLFOCUS */
-    case LBN_SELCHANGE :     /* same as CBN_SELCHANGE */
-    case LBN_DBLCLK :        /* same as CBN_DCLICK */
+    case EN_KILLFOCUS:
+    case CBN_KILLFOCUS:
+    case BN_CLICKED:
+    case BN_DOUBLECLICKED:   /* same as LBN_KILLFOCUS */
+    case LBN_SELCHANGE:      /* same as CBN_SELCHANGE */
+    case LBN_DBLCLK:         /* same as CBN_DCLICK */
         rc = GUIProcessControlNotification( id, notify_code, wnd );
         if( pret != NULL ) {
             *pret = rc;
@@ -301,8 +299,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
     gui_window          *wnd;
     bool                msg_processed;
     bool                ret;
-    gui_coord           size;
-    WPI_POINT           pnt;
+    WPI_POINT           wpi_point;
     HWND                child;
     HWND                hfocus;
     control_item        *item;
@@ -330,23 +327,27 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
     }
 
     switch( message ) {
-    case WM_SIZE :
+    case WM_SIZE:
         if( wnd != NULL ) {
+            guix_coord  scr_size;
+            gui_coord   size;
+
             _wpi_getclientrect( hwnd, &wnd->hwnd_client_rect );
             wnd->root_client_rect = wnd->hwnd_client_rect;
-            size.x = _wpi_getwmsizex( wparam, lparam );
-            size.y = _wpi_getwmsizey( wparam, lparam );
-            GUIScreenToScaleR( &size );
-            GUISetRowCol( wnd, &size );
+            scr_size.x = _wpi_getwmsizex( wparam, lparam );
+            scr_size.y = _wpi_getwmsizey( wparam, lparam );
+            GUISetRowCol( wnd, &scr_size );
+            size.x = GUIScreenToScaleH( scr_size.x );
+            size.y = GUIScreenToScaleV( scr_size.y );
             GUIEVENT( wnd, GUI_RESIZE, &size );
         }
         break;
 #if defined(__NT__)
-    case WM_CTLCOLORBTN :
-    case WM_CTLCOLORDLG :
-    //case WM_CTLCOLORLISTBOX :
-    case WM_CTLCOLORSTATIC :
-    //case WM_CTLCOLOREDIT :
+    case WM_CTLCOLORBTN:
+    case WM_CTLCOLORDLG:
+    //case WM_CTLCOLORLISTBOX:
+    case WM_CTLCOLORSTATIC:
+    //case WM_CTLCOLOREDIT:
         // May come along before WM_INITDIALOG
         if( wnd != NULL ) {
             SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam, GUIGetBack( wnd, GUI_BACKGROUND ) ) );
@@ -379,12 +380,12 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
 #endif
         break;
 #ifdef __OS2_PM__
-    case WM_CONTROL :
+    case WM_CONTROL:
         GUIProcessControlNotification( SHORT1FROMMP( wparam ), SHORT2FROMMP( wparam ), wnd );
         break;
-    case WM_RBUTTONDOWN :
-        WPI_MAKEPOINT( wparam, lparam, pnt );
-        child = PM1632WinWindowFromPoint( hwnd, &pnt, false );
+    case WM_RBUTTONDOWN:
+        WPI_MAKEPOINT( wparam, lparam, wpi_point );
+        child = PM1632WinWindowFromPoint( hwnd, &wpi_point, false );
         item = NULL;
         if( child ) {
             item = GUIGetControlByHwnd( wnd, child );
@@ -393,15 +394,15 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
             }
         }
         if( item == NULL || item->id == 0 ) {
-            msg_processed |= SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDOWN, wparam, lparam );
+            msg_processed |= !SendPointEvent( wnd, GUI_RBUTTONDOWN, wparam, lparam, false );
         }
         break;
 #else
-    case WM_PARENTNOTIFY :
+    case WM_PARENTNOTIFY:
         if( LOWORD(wparam) == WM_RBUTTONDOWN ) {
-            WPI_MAKEPOINT( wparam, lparam, pnt );
-            _wpi_mapwindowpoints( hwnd, HWND_DESKTOP, &pnt, 1 );
-            child = _wpi_windowfrompoint( pnt );
+            WPI_MAKEPOINT( wparam, lparam, wpi_point );
+            _wpi_mapwindowpoints( hwnd, HWND_DESKTOP, &wpi_point, 1 );
+            child = _wpi_windowfrompoint( wpi_point );
             item = GUIGetControlByHwnd( wnd, child );
             if( item != NULL && item->id != 0 && ( _wpi_getparent( child ) == hwnd ) ) {
                 msg_processed = GUIEVENT( wnd, GUI_CONTROL_RCLICKED, &item->id );
@@ -409,25 +410,25 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         }
         break;
     case WM_RBUTTONDOWN:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDOWN, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_RBUTTONDOWN, wparam, lparam, false );
         break;
 #endif
     case WM_RBUTTONUP:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_RBUTTONUP, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_RBUTTONUP, wparam, lparam, false );
         break;
     case WM_RBUTTONDBLCLK:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDBLCLK, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_RBUTTONDBLCLK, wparam, lparam, false );
         break;
     case WM_LBUTTONDOWN:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_LBUTTONDOWN, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_LBUTTONDOWN, wparam, lparam, false );
         break;
     case WM_LBUTTONUP:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_LBUTTONUP, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_LBUTTONUP, wparam, lparam, false );
         break;
     case WM_LBUTTONDBLCLK:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_LBUTTONDBLCLK, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_LBUTTONDBLCLK, wparam, lparam, false );
         break;
-    case WM_COMMAND :
+    case WM_COMMAND:
         escape_pressed = false;
         id = _wpi_getid( wparam );
         if( _wpi_ismenucommand( wparam, lparam ) ) {  /* from menu */
@@ -455,33 +456,33 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         }
         msg_processed = true;
         break;
-    case WM_CLOSE :
+    case WM_CLOSE:
         _wpi_enddialog( hwnd, TRUE );
         msg_processed = true;
         break;
-    case WM_MOVE :
+    case WM_MOVE:
         GUIInvalidatePaintHandles( wnd );
         break;
-    case WM_DESTROY :
+    case WM_DESTROY:
         if( wnd != NULL ) {
             GUIEVENT( wnd, GUI_DESTROY, NULL );
         }
 #ifndef __OS2_PM__
         break;
-    case WM_NCDESTROY :
+    case WM_NCDESTROY:
 #endif
         if( wnd != NULL ) {
             GUIFreeWindowMemory( wnd, false, true );
         }
         break;
-    case WM_PAINT :
+    case WM_PAINT:
         if( !_wpi_isiconic( hwnd ) ) {
             GUIPaint( wnd, hwnd, true );
             msg_processed = true;
         }
         break;
 #ifndef __OS2_PM__
-    case WM_VKEYTOITEM :
+    case WM_VKEYTOITEM:
         msg_processed = true;
         GUIGetKeyState( &key_state.state );
         if( !GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
@@ -494,10 +495,10 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
     // this code must eventually be rationalized with the code in
     // guixwind.c
 #ifndef __OS2_PM__
-    case WM_SYSKEYDOWN :
-    case WM_SYSKEYUP :
-    case WM_KEYDOWN :
-    case WM_KEYUP :
+    case WM_SYSKEYDOWN:
+    case WM_SYSKEYUP:
+    case WM_KEYDOWN:
+    case WM_KEYUP:
         GUIGetKeyState( &key_state.state );
         if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
             gui_ev = ( ( message == WM_KEYDOWN  ) || ( message == WM_SYSKEYDOWN  ) ) ? GUI_KEYDOWN : GUI_KEYUP;
@@ -507,7 +508,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         }
         break;
 #else
-    case WM_CHAR :
+    case WM_CHAR:
         GUIGetKeyState( &key_state.state );
         if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
             gui_ev = IS_KEY_UP( wparam ) ? GUI_KEYUP : GUI_KEYDOWN;
@@ -531,11 +532,11 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
  * ToDialogUnits -- convert the given coordinate to dialog units
  */
 
-static void ToDialogUnits( gui_coord *coord )
+static void ToDialogUnits( guix_coord *scr_coord )
 {
-    if( coord != NULL ) {
-        coord->x = GUIMulDiv( coord->x, SizeDialog.x, SizeScreen.x );
-        coord->y = GUIMulDiv( coord->y, SizeDialog.y, SizeScreen.y );
+    if( scr_coord != NULL ) {
+        scr_coord->x = GUIMulDiv( int, scr_coord->x, SizeDialog.x, SizeScreen.x );
+        scr_coord->y = GUIMulDiv( int, scr_coord->y, SizeDialog.y, SizeScreen.y );
     }
 }
 
@@ -544,12 +545,12 @@ static void ToDialogUnits( gui_coord *coord )
  *                        adjust
  */
 
-static void AdjustToDialogUnits( gui_coord *coord )
+static void AdjustToDialogUnits( guix_coord *scr_coord )
 {
-    ToDialogUnits( coord );
+    ToDialogUnits( scr_coord );
 }
 
-static void AdjustForFrame( gui_coord *pos, gui_coord *size )
+static void AdjustForFrame( guix_coord *scr_pos, guix_coord *scr_size )
 {
 #ifndef __OS2_PM__
     int xframe, yframe, ycaption;
@@ -557,35 +558,33 @@ static void AdjustForFrame( gui_coord *pos, gui_coord *size )
     xframe = 0;
     yframe = 0;
     ycaption = 0;
-    if( ( pos != NULL )  || ( size != NULL ) ) {
+    if( ( scr_pos != NULL )  || ( scr_size != NULL ) ) {
         xframe   = _wpi_getsystemmetrics( SM_CXDLGFRAME );
         yframe   = _wpi_getsystemmetrics( SM_CYDLGFRAME );
         ycaption = _wpi_getsystemmetrics( SM_CYCAPTION );
     }
 
-    if( pos != NULL ) {
-        pos->x += xframe;
-        pos->y += ( yframe + ycaption );
+    if( scr_pos != NULL ) {
+        scr_pos->x += xframe;
+        scr_pos->y += ( yframe + ycaption );
     }
 
-    if( size != NULL ) {
-        size->x -= ( 2 * xframe );
-        size->y -= ( 2 * yframe + ycaption );
+    if( scr_size != NULL ) {
+        scr_size->x -= ( 2 * xframe );
+        scr_size->y -= ( 2 * yframe + ycaption );
     }
 #else
-    pos = pos;
-    size = size;
+    scr_pos = scr_pos;
+    scr_size = scr_size;
 #endif
 }
 
-static void GUIDlgCalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size )
+static void GUIDlgCalcLocation( const gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size )
 {
-    pos->x = rect->x;
-    pos->y = rect->y;
-    size->x = rect->width;
-    size->y = rect->height;
-    GUIScaleToScreenR( pos );
-    GUIScaleToScreenR( size );
+    scr_pos->x = GUIScaleToScreenH( rect->x );
+    scr_pos->y = GUIScaleToScreenV( rect->y );
+    scr_size->x = GUIScaleToScreenH( rect->width );
+    scr_size->y = GUIScaleToScreenV( rect->height );
 }
 
 /*
@@ -596,8 +595,9 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
                        int num_controls, gui_control_info *controls_info,
                        bool sys, res_name_or_id dlg_id )
 {
-    gui_coord           pos, size;
-    gui_coord           parent_pos;
+    guix_coord          scr_pos;
+    guix_coord          scr_size;
+    guix_coord          parent_scr_pos;
     TEMPLATE_HANDLE     old_dlgtemplate;
     TEMPLATE_HANDLE     new_dlgtemplate;
     int                 i;
@@ -625,7 +625,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         parent_hwnd = dlg_info->parent->hwnd;
     }
 
-    if( !GUISetupStruct( wnd, dlg_info, &parent_pos, &size, parent_hwnd, NULL ) ) {
+    if( !GUISetupStruct( wnd, dlg_info, &parent_scr_pos, &scr_size, parent_hwnd, NULL ) ) {
         return( false );
     }
 
@@ -635,9 +635,9 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         return( GUICreateDialogFromRes( dlg_id, dlg_info->parent, NULL, (void *)wnd ) );
     }
 
-    AdjustForFrame( &parent_pos, &size );
-    AdjustToDialogUnits( &parent_pos );
-    AdjustToDialogUnits( &size );
+    AdjustForFrame( &parent_scr_pos, &scr_size );
+    AdjustToDialogUnits( &parent_scr_pos );
+    AdjustToDialogUnits( &scr_size );
 
     if( sys ) {
         dlg_style = SYSTEM_MODAL_STYLE;
@@ -646,7 +646,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     }
 
     old_dlgtemplate = DialogTemplate( dlg_style | DS_SETFONT,
-                           parent_pos.x, parent_pos.y, size.x, size.y,
+                           parent_scr_pos.x, parent_scr_pos.y, scr_size.x, scr_size.y,
                            LIT( Empty ), LIT( Empty ), dlg_info->title,
                            FontPointSize, Font, &templatelen );
     if( old_dlgtemplate == NULL ) {
@@ -669,9 +669,9 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
             pctldatalen = sizeof( edata );
         }
 #endif
-        GUIDlgCalcLocation( &ctl_info->rect, &pos, &size );
-        AdjustToDialogUnits( &pos );
-        AdjustToDialogUnits( &size );
+        GUIDlgCalcLocation( &ctl_info->rect, &scr_pos, &scr_size );
+        AdjustToDialogUnits( &scr_pos );
+        AdjustToDialogUnits( &scr_size );
         if( ctl_info->text == NULL ) {
             captiontext = LIT( Empty );
         } else {
@@ -685,11 +685,11 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
             in_group = !in_group;
         }
 #ifdef __OS2_PM__
-        new_dlgtemplate = AddControl( old_dlgtemplate, pos.x, pos.y, size.x, size.y, ctl_info->id,
+        new_dlgtemplate = AddControl( old_dlgtemplate, scr_pos.x, scr_pos.y, scr_size.x, scr_size.y, ctl_info->id,
                           style, GUIControls[ctl_info->control_class].classname, captiontext,
                           pctldata, (BYTE)pctldatalen, &templatelen );
 #else
-        new_dlgtemplate = AddControl( old_dlgtemplate, pos.x, pos.y, size.x, size.y, ctl_info->id,
+        new_dlgtemplate = AddControl( old_dlgtemplate, scr_pos.x, scr_pos.y, scr_size.x, scr_size.y, ctl_info->id,
                           style, GUIControls[ctl_info->control_class].classname, captiontext,
                           NULL, 0, &templatelen );
 #endif
@@ -712,7 +712,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
  * GUICloseDialog -- close the given dialog, freeing all associated memory
  */
 
-void GUICloseDialog( gui_window * wnd )
+void GUIAPI GUICloseDialog( gui_window * wnd )
 {
     GUISendMessage( wnd->hwnd, WM_CLOSE, (WPI_PARAM1)0, (WPI_PARAM2)0 );
 }
@@ -732,7 +732,7 @@ static WPI_FONT         DlgFont;
 WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WPI_PRES            hdc;
-    WPI_RECT            rect;
+    WPI_RECT            wpi_rect;
     bool                ret;
 
     lparam = lparam;
@@ -740,7 +740,7 @@ WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI
 
     switch( message ) {
 #ifndef __OS2_PM__
-    case WM_SETFONT :
+    case WM_SETFONT:
         DlgFont = (WPI_FONT)wparam;
         break;
 #endif
@@ -754,9 +754,9 @@ WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI
         _wpi_gettextmetrics( hdc, &GUIDialogtm );
         _wpi_releasepres( hwnd, hdc );
 
-        _wpi_getclientrect( hwnd, &rect );
-        SizeScreen.x = _wpi_getwidthrect( rect );
-        SizeScreen.y = _wpi_getheightrect( rect );
+        _wpi_getclientrect( hwnd, &wpi_rect );
+        SizeScreen.x = _wpi_getwidthrect( wpi_rect );
+        SizeScreen.y = _wpi_getheightrect( wpi_rect );
         _wpi_enddialog( hwnd, TRUE );
         break;
 #ifdef __OS2_PM__
@@ -830,8 +830,8 @@ void GUIInitDialog( void )
 static void ScaleGrow( gui_coord * coord )
 {
     if( coord != NULL ) {
-        coord->x = GUIMulDiv( coord->x, ActualSize.x, ExpectedSize.x );
-        coord->y = GUIMulDiv( coord->y, ActualSize.y, ExpectedSize.y );
+        coord->x = GUIMulDiv( int, coord->x, ActualSize.x, ExpectedSize.x );
+        coord->y = GUIMulDiv( int, coord->y, ActualSize.y, ExpectedSize.y );
     }
 }
 #endif
@@ -840,7 +840,7 @@ static void ScaleGrow( gui_coord * coord )
  * GUIGetDlgTextMetrics -- get the metrics of the text used in dialog boxes
  */
 
-void GUIGetDlgTextMetrics( gui_text_metrics * metrics )
+void GUIAPI GUIGetDlgTextMetrics( gui_text_metrics * metrics )
 {
     if( metrics != NULL ) {
         GUISetMetrics( metrics, &GUIDialogtm );

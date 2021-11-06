@@ -239,7 +239,7 @@ typedef struct _RXMSQPLL_PARM {
     RXSTRING     rxmsq_retc;
 } RXMSQPLL_PARM;
 
-#pragma pack( __push, 1)
+:include pshpack1.sp
 
 typedef struct _RXFNC_FLAGS {
     unsigned rxfferr :1;
@@ -282,7 +282,7 @@ typedef struct _RXMSQPSH_PARM {
     RXSTRING    rxmsq_value;
 } RXMSQPSH_PARM;
 
-#pragma pack( __pop )
+:include poppack.sp
 
 typedef LONG APIENTRY  RexxExitHandler(LONG,LONG,PEXIT);
 typedef ULONG APIENTRY RexxSubcomHandler(PRXSTRING,PUSHORT,PRXSTRING);

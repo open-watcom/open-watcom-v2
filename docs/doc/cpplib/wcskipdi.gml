@@ -13,7 +13,7 @@ pairs.
 
 :P.
 In the description of each member function, the text
-.MONO Key
+:MONO.Key
 is used to indicate the template parameter defining
 .if &lpref. eq Val .do begin
 the type of the indices used to store data in the dictionary.
@@ -22,7 +22,7 @@ the type of the indices used to store data in the dictionary.
 the type of the indices pointed to by the pointers stored in the dictionary.
 .do end
 The text
-.MONO Value
+:MONO.Value
 is used to indicate the template parameter defining
 .if &lpref. eq Val .do begin
 the type of the data stored in the dictionary.
@@ -62,51 +62,51 @@ See the chapter on hash iterators for more information.
 .do end
 
 The &cls requires
-.MONO Key
+:MONO.Key
 to have:
 .if &lpref. eq Val .do begin
 :P.
 A default constructor (
-.MONO Key::Key()
+:MONO.Key::Key()
 ).
 :P.
 A well defined copy constructor (
-.MONO Key::Key( const Key & )
+:MONO.Key::Key( const Key & )
 ).
 :P.
 A well defined assignment operator (
-.MONO Key & operator =( const Key & )
+:MONO.Key & operator =( const Key & )
 ).
 .do end
 :P.
 A well defined equivalence operator with constant parameters
 .br
 (
-.MONO int operator ==( const Key & ) const
+:MONO.int operator ==( const Key & ) const
 ).
 :P.
 A well defined operator less than with constant parameters
 .br
 (
-.MONO int operator <( const Key & ) const
+:MONO.int operator <( const Key & ) const
 ).
 
 .if &lpref. eq Val .do begin
 :P.
 The &cls requires
-.MONO Value
+:MONO.Value
 to have:
 :P.
 A default constructor (
-.MONO Value::Value()
+:MONO.Value::Value()
 ).
 :P.
 A well defined copy constructor (
-.MONO Value::Value( const Value & )
+:MONO.Value::Value( const Value & )
 ).
 :P.
 A well defined assignment operator (
-.MONO Value & operator =( const Value & )
+:MONO.Value & operator =( const Value & )
 ).
 .do end
 
@@ -172,24 +172,25 @@ The following member operators are declared in the public interface:
 :SMTICS.
 The &fn. creates an &obj. with no entries.
 The first optional parameter, which defaults to the constant
-.MONO WCSKIPLIST_PROB_QUARTER,
-determines the probability of having a certain number of pointers in each
+:MONO.WCSKIPLIST_PROB_QUARTER
+:CONT., determines the probability of having a certain number of pointers in each
 skip list node.
 The second optional parameter, which defaults to the constant
-.MONO WCDEFAULT_SKIPLIST_MAX_PTRS,
-determines the maximum number of pointers that are allowed in any
+:MONO.WCDEFAULT_SKIPLIST_MAX_PTRS
+:CONT., determines the maximum number of pointers that are allowed in any
 skip list node.
-.MONO WCDEFAULT_SKIPLIST_MAX_PTRS
+:MONO.WCDEFAULT_SKIPLIST_MAX_PTRS
 is the maximum effective value of the second parameter.
 If an allocation failure occurs while creating the skip list, the
-.MONO out_of_memory
+:MONO.out_of_memory
 exception is thrown if the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is enabled.
 
 :RSLTS.
-The &fn. creates an initialized &obj.:PERIOD.
+The &fn. creates an initialized &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='omtyp' ocls='WCExcept'.out_of_memory
@@ -222,9 +223,10 @@ To determine the size of
 the objects that the memory management functions will be
 required to allocate and free, the following macro may be used:
 .br
-.MONO WC&lpref.SkipListDictItemSize( Key, Value, num_of_pointers )
+:MONO.WC&lpref.SkipListDictItemSize( Key, Value, num_of_pointers )
 :RSLTS.
-The &fn. creates an initialized &obj.:PERIOD.
+The &fn. creates an initialized &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='omtyp' ocls='WCExcept'.out_of_memory
@@ -238,14 +240,15 @@ The &fn. creates an initialized &obj.:PERIOD.
 :SNPCD cd_idx='c'.WC&lpref.SkipListDict( const WC&lpref.SkipListDict & );
 :eSNPL.
 :SMTICS.
-The &fn. is the copy constructor for the &cls.:PERIOD.
+The &fn. is the copy constructor for the &cls.
+:PERIOD.
 The new skip list is created with the same probability and maximum pointers,
 all values or pointers stored in the list, and the exception trap states.
 If there is not enough memory to copy all of
 the values, then only some will be copied,
 and the number of entries will correctly reflect the number copied.
 If all of the elements cannot be copied, then the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 :RSLTS.
@@ -263,22 +266,24 @@ The &fn. creates an &obj. which is a copy of the passed dictionary.
 :SNPCD cd_idx='d'.virtual ~~WC&lpref.SkipListDict();
 :eSNPL.
 :SMTICS.
-The &fn. is the destructor for the &cls.:PERIOD.
+The &fn. is the destructor for the &cls.
+:PERIOD.
 If the number of dictionary elements is not zero and the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled, the exception is thrown.
 Otherwise, the dictionary elements are cleared using the
-.MONO clear
+:MONO.clear
 member function.
 .if &lpref. eq Ptr .do begin
 The objects which the dictionary elements point to are not deleted unless the
-.MONO clearAndDestroy
+:MONO.clearAndDestroy
 member function is explicitly called before the destructor is called.
 .do end
 :INCLUDE file='_DTOR'.
 :RSLTS.
-The &fn. destroys an &obj.:PERIOD.
+The &fn. destroys an &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='fun'.clear
 .if &lpref. eq Ptr .do begin
@@ -299,9 +304,10 @@ The &fn. is used to clear the dictionary so that it has no entries.
 .if &lpref. eq Val .do begin
 Elements stored in the dictionary are destroyed using
 the destructors of
-.MONO Key
+:MONO.Key
 and of
-.MONO Value.
+:MONO.Value
+:PERIOD.
 .do end
 .el .do begin
 Objects pointed to by the dictionary elements are not deleted.
@@ -360,7 +366,7 @@ the dictionary, or zero if there is no equivalent element.
 :INCLUDE file='_keyequ.gml'
 :RSLTS.
 The &fn. returns a non-zero value if the
-.MONO Key
+:MONO.Key
 is found in the dictionary.
 :SALSO.
 :SAL typ='fun'.find
@@ -403,14 +409,15 @@ a non-zero value
 .do end
 .el .do begin
 a pointer to the element
-.MONO Value
+:MONO.Value
 .do end
 is returned.
 .if &lpref. eq Val .do begin
 The reference to a
-.MONO Value
+:MONO.Value
 passed as the second argument is assigned the found element's
-.MONO Value.
+:MONO.Value
+:PERIOD.
 .do end
 Zero is returned if the element is not found.
 :INCLUDE file='_keyequ.gml'
@@ -442,17 +449,18 @@ a non-zero value
 .do end
 .el .do begin
 a pointer to the element
-.MONO Value
+:MONO.Value
 .do end
 is returned.
 The reference to a
-.MONO Key
+:MONO.Key
 passed as the second parameter is assigned the found element's key.
 .if &lpref. eq Val .do begin
 The reference to a
-.MONO Value
+:MONO.Value
 passed as the third argument is assigned the found element's
-.MONO Value.
+:MONO.Value
+:PERIOD.
 .do end
 Zero is returned if the element is not found.
 :INCLUDE file='_keyequ.gml'
@@ -491,12 +499,12 @@ void user_func( Key * key, Value * value, void * data );
 .do end
 :eXMPL.
 As the elements are visited, the user function is invoked with the
-.MONO Key
+:MONO.Key
 and
-.MONO Value
+:MONO.Value
 components of the element passed as the first two parameters.
 The second parameter of the
-.MONO forAll
+:MONO.forAll
 function is passed as the third parameter to the user function.
 This value can be used to pass any appropriate data from the main code to the
 user function.
@@ -525,7 +533,7 @@ The &fn. inserts
 a key and value into the dictionary.
 If allocation of the
 node to store the key-value pair fails, then the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 If the exception is not enabled, the insert will not be completed.
@@ -567,20 +575,20 @@ non-zero if the dictionary is empty.
 .do end
 :eSNPL.
 :SMTICS.
-.MONO operator []
+:MONO.operator []
 is the dictionary index operator.  A reference to the object stored
 in the dictionary with the given
-.MONO Key
+:MONO.Key
 is returned.
 If no equivalent element is found, then a new
 key-value pair is created with the specified
-.MONO Key
+:MONO.Key
 value, and initialized with the default constructor.
 The returned reference can then be assigned to,
 so that insertions can be made with the operator.
 If an allocation error occurs while inserting a new key-value pair,
 then the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 If the exception is not enabled, then a reference to address
@@ -608,13 +616,13 @@ The result of the operator may be assigned to.
 .do end
 :eSNPL.
 :SMTICS.
-.MONO operator []
+:MONO.operator []
 is the dictionary index operator.  A constant reference to the object stored
 in the dictionary with the given
-.MONO Key
+:MONO.Key
 is returned.
 If no equivalent element is found, then the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception is thrown if it is enabled.
 If the exception is not enabled, then a reference to address
@@ -637,15 +645,16 @@ The result of the operator may not be assigned to.
 :SNPF index='operator ='   .WC&lpref.SkipListDict & operator =( const WC&lpref.SkipListDict & );
 :eSNPL.
 :SMTICS.
-The &fn. is the assignment operator for the &cls.:PERIOD.
+The &fn. is the assignment operator for the &cls.
+:PERIOD.
 The left hand side dictionary is first cleared using the
-.MONO clear
+:MONO.clear
 member function, and then the right hand side dictionary is copied.
 The new skip list is created with the same probability and maximum pointers,
 all values or pointers stored in the list, and the exception trap states.
 If there is not enough memory to copy all of
 the values or pointers in the dictionary, then only some will be copied, and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 The number of entries will correctly reflect the number copied.
@@ -665,7 +674,8 @@ right hand side.
 :SNPF index='operator =='.int operator ==( const WC&lpref.SkipListDict & ) const;
 :eSNPL.
 :SMTICS.
-The &fn. is the equivalence operator for the &cls.:PERIOD.
+The &fn. is the equivalence operator for the &cls.
+:PERIOD.
 Two dictionary objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.

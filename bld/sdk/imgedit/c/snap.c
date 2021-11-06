@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -236,7 +236,7 @@ void TransferImage( HWND hwnd )
     POINT       topleft_desk;
     HDC         hdc;
     HDC         memdc;
-    HBITMAP     oldbitmap;
+    HBITMAP     old_hbitmap;
     img_node    *node;
 
 #ifdef __NT__
@@ -249,14 +249,14 @@ void TransferImage( HWND hwnd )
     hdc = GetDC( NULL );
     memdc = CreateCompatibleDC( hdc );
 
-    oldbitmap = SelectObject( memdc, node->handbitmap );
+    old_hbitmap = SelectObject( memdc, node->and_hbitmap );
     PatBlt( memdc, topLeft.x, topLeft.y, snapWidth, snapHeight, BLACKNESS );
 
-    SelectObject( memdc, node->hxorbitmap );
+    SelectObject( memdc, node->xor_hbitmap );
     BitBlt( memdc, topLeft.x, topLeft.y, snapWidth, snapHeight, hdc,
             topleft_desk.x, topleft_desk.y, SRCCOPY );
     ReleaseDC( NULL, hdc );
-    SelectObject( memdc, oldbitmap );
+    SelectObject( memdc, old_hbitmap );
     DeleteDC( memdc );
     ReleaseCapture();
     ShowWindow( HMainWindow, previousState );

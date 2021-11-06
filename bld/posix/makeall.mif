@@ -4,66 +4,92 @@
 
 !ifndef __UNIX__
 
+proj_name = posix_all
+
+posix_all_autodepends = .AUTODEPEND
+
+!include $(posix_dir)/model.mif
+
+model_switch_i86=
+model_switch_386=
+
+!include cproj.mif
+!include defrule.mif
+
 !include $(posix_dir)/commands.mif
 !include $(posix_dir)/common.mif
 
-alt_subdir_dosi86_s = mc
-alt_subdir_os2i86_s = mc
-alt_subdir_dosi86_c = ms
-alt_subdir_os2i86_c = ms
+inc_dirs += -I"$(posix_dir)/h"
+.c: $(posix_dir)/misc
 
-!ifdef bootstrap
-altlibdir=$(alt_subdir_$(host_os)$(host_cpu)_$(model))
-!else
-altlibdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)$(host_cpu)_$(model))
+subdir_stdlib = $(stdlibdir)
+subdir_altlib = $(altlibdir)
+
+libs = $(stdlibdir)/posix.lib
+!ifdef alt_posixlib
+libs += $(altlibdir)/posix.lib
 !endif
 
-!ifdef bootstrap
-mkfile = -f ../../misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))/makefile
-altmkfile = -f ../../misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)$(host_cpu)_$(model))/makefile
+libdirs = $(stdlibdir)
+!ifdef alt_posixlib
+libdirs += $(altlibdir)
 !endif
 
-curr_dir_all=$+$(%__CWD__)$-
-
-.before
-!include $(posix_dir)/setvars.mif
-
-all : lib $(commands) .symbolic
+all : $(libdirs) $(libs) $(commands) .symbolic
     @%null
 
-lib : .symbolic $(__MAKEFILES__)
-    @if not exist $(libdir) @mkdir $(libdir)
-    $(noecho)cd $(libdir)
-    !@wmake -h $(mkfile)
-!ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
-    $(noecho)cd $(curr_dir_all)
-    @if not exist $(altlibdir) @mkdir $(altlibdir)
-    $(noecho)cd $(altlibdir)
-    !@wmake -h $(altmkfile)
+!ifdef alt_posixlib
+extra_cpp_altlib_i86s_flags = -mc
+extra_cpp_altlib_i86c_flags = -ms
+extra_cpp_altlib_flags = $(extra_cpp_altlib_$(host_cpu)$(model)_flags)
+
+defrule_key = altlib
+!include defrule.mif
+
+_subdir_ = $(altlibdir)/
+libtarg_objs = $(posixlib_objs)
+libtarg_name = $(_subdir_)posix
+!include libtarg.mif
 !endif
-    $(noecho)cd $(curr_dir_all)
+
+extra_cpp_stdlib_i86_flags = -m$(model)
+extra_cpp_stdlib_386_flags = -m$(model)
+extra_cpp_stdlib_flags = $(extra_cpp_stdlib_$(host_cpu)_flags)
+
+defrule_key = stdlib
+!include defrule.mif
+
+_subdir_ = $(stdlibdir)/
+libtarg_objs = $(posixlib_objs)
+libtarg_name = $(_subdir_)posix
+!include libtarg.mif
+
+wmake_opts = host_os=$(host_os) host_cpu=$(host_cpu)
+!ifdef bootstrap
+wmake_opts += bootstrap=$(bootstrap)
+!endif
+!ifdef release
+wmake_opts += release=$(release)
+!endif
 
 $(commands) : .symbolic $(__MAKEFILES__)
-    !@wmake -h -f $(posix_dir)/src/$^@/makefile
+    $(noecho)!$(nested_wmake) -h $(wmake_opts) -f $(posix_dir)/src/$@/makefile
+
+curr_dir=$+$(%__CWD__)$-
 
 clean : .symbolic
-    @echo clean $(libdir)
-    $(noecho)cd $(libdir)
-    @%make clean_all_objs
-!ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
-    $(noecho)cd $(curr_dir_all)
-    @echo clean $(altlibdir)
-    $(noecho)cd $(altlibdir)
-    @%make clean_all_objs
+    cd $(subdir_stdlib)
+    @%make killobjs
+!ifdef alt_posixlib
+    cd $(subdir_altlib)
+    @%make killobjs
 !endif
-    $(noecho)cd $(curr_dir_all)
-    @echo clean $(curr_dir_all)
-    @%make clean_all_objs
+    cd $(curr_dir)
+    @%make killobjs
 
-clean_all_objs: .procedure .explicit
-    rm -f *.obj *.o
-    rm -f *.lnk *.exe *.elf *.exp *.nlm *.dll *.lib *.lbc *.gh *.grc
-    rm -f *.res *.lst *.err *.pch *.map *.sym *.tmp *.ilk *.trk $(additional_cleanup_sys)
+killobjs : .PROCEDURE .EXPLICIT
+    rm -f *.obj *.lnk *.exe *.exp *.lib *.lbc *.lst *.err *.pch *.map *.sym
+    rm -f *.tmp *.trk $(additional_clean_sys)
 
 !else
 

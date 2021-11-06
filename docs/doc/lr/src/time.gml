@@ -10,7 +10,7 @@ The
 function determines the current calendar time and encodes it
 into the type
 .kw time_t
-.ct .li .
+.period
 .np
 The time represents the time since January 1, 1970 Coordinated
 Universal Time (UTC) (formerly known as Greenwich Mean Time (GMT)).
@@ -26,7 +26,7 @@ is not
 .mono NULL,
 the current calendar time is also stored in the object pointed to by
 .arg tloc
-.ct .li .
+.period
 .return end
 .see begin
 .im seetime

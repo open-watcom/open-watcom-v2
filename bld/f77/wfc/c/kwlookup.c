@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,18 +40,17 @@
 // sequential search of a subset of the keywords.
 
 #include "ftnstd.h"
-#include <string.h>
 #include "kwlookup.h"
 
 
-int     KwLookUp( char **table, int high, char *id, uint id_len, bool exact ) {
-//============================================================================
-
-    char        *key;
-    char        *ident;
+int KwLookUp( const char **table, int high, const char *id, size_t id_len, bool exact )
+//=====================================================================================
+{
+    const char  *key;
+    const char  *ident;
     int         mid;
     int         low;
-    uint        kw_len;
+    size_t      kw_len;
 
     // index 0 is reserved
     // each keyword table has blank first item
@@ -83,8 +83,7 @@ int     KwLookUp( char **table, int high, char *id, uint id_len, bool exact ) {
     if( exact )
         return( 0 );
     // Look sequentially through table (going backwards).
-    mid = high;
-    while( mid >= 0 ) {
+    for( mid = high; mid >= 0; mid-- ) {
         key = table[ mid ];
         if( *id > *key )
             break;
@@ -94,7 +93,6 @@ int     KwLookUp( char **table, int high, char *id, uint id_len, bool exact ) {
                 return( mid );
             }
         }
-        mid--;
     }
     return( 0 );
 }

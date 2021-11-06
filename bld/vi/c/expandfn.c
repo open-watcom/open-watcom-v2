@@ -45,7 +45,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
 {
     list_linenum    argc;
     list_linenum    i;
-    PGROUP2         pg;
+    pgroup2         pg;
     char            pathin[FILENAME_MAX];
     const char      *p;
     char            *new;

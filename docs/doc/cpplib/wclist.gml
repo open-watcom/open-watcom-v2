@@ -16,12 +16,12 @@ The created list is intrusive,
 which means that list elements which
 are inserted must be created with a library supplied base class.
 The class
-.MONO WCSLink
+:MONO.WCSLink
 provides the base class definition for single linked lists, and
 should be inherited by the definition of any list item for single linked lists.
 It provides the linkage that is used to traverse the list elements.
 Similarly, the class
-.MONO WCDLink
+:MONO.WCDLink
 provides the base class definition for double lists, and
 should be inherited by the definition of any list item for double lists.
 
@@ -38,23 +38,25 @@ destructor for a derived class must be called.
 .*
 :P.
 In the description of each member function, the text
-.MONO Type
+:MONO.Type
 is used to indicate the type value specified as the template parameter.
 .*
 .if &lpref. eq Isv .do begin
-.MONO Type
+:MONO.Type
 is the type of the list elements, derived from
-.MONO WCSLink
+:MONO.WCSLink
 or
-.MONO WCDLink.
+:MONO.WCDLink
+:PERIOD.
 .do end
 .el .if &lpref. eq Val .do begin
-.MONO Type
+:MONO.Type
 is the type of the values stored in the list.
 .do end
 .el .do begin
 The pointers stored in the list point to values of type
-.MONO Type.
+:MONO.Type
+:PERIOD.
 .do end
 .*
 :P.
@@ -64,41 +66,43 @@ The pointers stored in the list point to values of type
 .*
 .if &lpref. eq Isv .do begin
 The
-.MONO WCIsvSList<Type>
+:MONO.WCIsvSList<Type>
 class requires only that
-.MONO Type
+:MONO.Type
 is derived from
-.MONO WCSLink.
+:MONO.WCSLink
+:PERIOD.
 The
-.MONO WCIsvDList<Type>
+:MONO.WCIsvDList<Type>
 class requires only that
-.MONO Type
+:MONO.Type
 is derived from
-.MONO WCDLink.
+:MONO.WCDLink
+:PERIOD.
 .do end
 .el .do begin
 The &cls requires
-.MONO Type
+:MONO.Type
 to have:
 :P.
 .if &lpref. eq Val .do begin
 (1) a default constructor (
-.MONO Type::Type()
+:MONO.Type::Type()
 ).
 :P.
 (2) a well defined copy constructor (
-.MONO Type::Type( const Type & )
+:MONO.Type::Type( const Type & )
 ).
 :P.
 (3) an equivalence operator with constant parameters
 .in +10
-.MONO Type::operator ==( const Type & ) const
+:MONO.Type::operator ==( const Type & ) const
 .in -10
 .do end
 .el .do begin
 (1) an equivalence operator with constant parameters
 .in +10
-.MONO Type::operator ==( const Type & ) const
+:MONO.Type::operator ==( const Type & ) const
 .in -10
 .do end
 .do end
@@ -205,11 +209,11 @@ The following member operators are declared in the public interface:
 :eSNPL.
 :SMTICS.
 The &fn. creates an empty
-.MONO WC&lpref.SList
+:MONO.WC&lpref.SList
 object.
 :RSLTS.
 The &fn. produces an initialized
-.MONO WC&lpref.SList
+:MONO.WC&lpref.SList
 object.
 :SALSO.
 .if &lpref. ne Isv .do begin
@@ -229,7 +233,7 @@ object.
 :eSNPL.
 :SMTICS.
 The &fn. creates an empty
-.MONO &lobjtype.
+:MONO.&lobjtype.
 object.
 The :HP1.allocator:eHP1.
 function is registered to perform all memory allocations of the list
@@ -242,13 +246,13 @@ that for a list object instance, the
 :HP1.allocator:eHP1. is always called with the same first argument
 (the size of the memory to be allocated).
 The
-.MONO WCValSListItemSize(Type)
+:MONO.WCValSListItemSize(Type)
 .ix 'WCValSListItemSize' 'macro'
 macro returns the size of the elements which are allocated by the
 :HP1.allocator:eHP1. function.
 :RSLTS.
 The &fn. creates an initialized
-.MONO &lobjtype.
+:MONO.&lobjtype.
 object and registers the :HP1.allocator:eHP1.
 and :HP1.deallocator:eHP1. functions.
 :SALSO.
@@ -279,7 +283,7 @@ trap states, and any registered :HP1.allocator:eHP1. and :HP1.deallocator:eHP1.
 functions.
 
 .if &lpref. eq Val .do begin
-.MONO Type's
+:MONO.Type's
 copy constructor is invoked to copy the values contained by the list
 elements.
 .do end
@@ -287,7 +291,7 @@ elements.
 
 :P.
 If all of the elements cannot be copied and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 is enabled in the list being copied, the exception is thrown.
 The new list is created in a valid state, even if all of the list elements
@@ -313,23 +317,23 @@ The &fn. produces a copy of the list.
 :eSNPL.
 :SMTICS.
 The &fn. destroys the
-.MONO WC&lpref.SList
+:MONO.WC&lpref.SList
 object.
 If the list is not empty and the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled, the exception is thrown.
 If the
-.MONO not_empty
+:MONO.not_empty
 exception is not enabled and the list is not empty,
 the list is cleared using the
-.MONO clear
+:MONO.clear
 member function.
 .se lobjtype=WC&lpref.SList
 :INCLUDE file='_DTOR2'.
 :RSLTS.
 The
-.MONO WC&lpref.SList
+:MONO.WC&lpref.SList
 object is destroyed.
 :SALSO.
 :SAL typ='fun'.WC&lpref.SList
@@ -349,11 +353,11 @@ object is destroyed.
 :eSNPL.
 :SMTICS.
 The &fn. creates an empty
-.MONO WC&lpref.DList
+:MONO.WC&lpref.DList
 object.
 :RSLTS.
 The &fn. produces an initialized
-.MONO WC&lpref.DList
+:MONO.WC&lpref.DList
 object.
 :SALSO.
 .if &lpref. ne Isv .do begin
@@ -373,7 +377,7 @@ object.
 :eSNPL.
 :SMTICS.
 The &fn. creates an empty
-.MONO &lobjtype.
+:MONO.&lobjtype.
 object.
 The :HP1.allocator:eHP1.
 function is registered to perform all memory allocations of the list
@@ -386,13 +390,13 @@ for a list object instance, the
 :HP1.allocator:eHP1. is always called with the same first argument
 (the size of the memory to be allocated).
 The
-.MONO WCValDListItemSize(Type)
+:MONO.WCValDListItemSize(Type)
 .ix 'WCValDListItemSize' 'macro'
 macro returns the size of the elements which are allocated by the
 :HP1.allocator:eHP1. function.
 :RSLTS.
 The &fn. creates an initialized
-.MONO &lobjtype.
+:MONO.&lobjtype.
 object and registers the :HP1.allocator:eHP1.
 and :HP1.deallocator:eHP1. functions.
 :SALSO.
@@ -423,7 +427,7 @@ trap states, and any registered :HP1.allocator:eHP1. and :HP1.deallocator:eHP1.
 functions.
 
 .if &lpref. eq Val .do begin
-.MONO Type's
+:MONO.Type's
 copy constructor is invoked to copy the values contained by the list
 elements.
 .do end
@@ -431,7 +435,7 @@ elements.
 
 :P.
 If all of the elements cannot be copied and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 is enabled in the list being copied, the exception is thrown.
 The new list is created in a valid state, even if all of the list elements
@@ -457,23 +461,23 @@ The &fn. produces a copy of the list.
 :eSNPL.
 :SMTICS.
 The &fn. destroys the
-.MONO WC&lpref.DList
+:MONO.WC&lpref.DList
 object.
 If the list is not empty and the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled, the exception is thrown.
 If the
-.MONO not_empty
+:MONO.not_empty
 exception is not enabled and the list is not empty,
 the list is cleared using the
-.MONO clear
+:MONO.clear
 member function.
 .se lobjtype=WC&lpref.DList
 :INCLUDE file='_DTOR2'.
 :RSLTS.
 The
-.MONO WC&lpref.DList
+:MONO.WC&lpref.DList
 object is destroyed.
 :SALSO.
 :SAL typ='fun'.WC&lpref.DList
@@ -506,7 +510,7 @@ The data stored in the list is a copy of the data passed as a parameter.
 
 :P.
 If the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is enabled and the append fails, the exception is thrown.
 :RSLTS.
@@ -527,10 +531,10 @@ more than once.
 :P.
 The passed list element should be constructed using
 the appropriate link class as a base.
-.MONO WCSLink
+:MONO.WCSLink
 must be used as a list element base class for single linked lists,
 and
-.MONO WCDLink
+:MONO.WCDLink
 must be used as a list element base class for double linked lists.
 :RSLTS.
 The list element is appended to the end of the list and a TRUE value
@@ -561,7 +565,7 @@ the object destructor is not invoked.
 
 :P.
 The &fn. has the same sematics as the
-.MONO clearAndDestroy
+:MONO.clearAndDestroy
 member function.
 
 .do end
@@ -572,12 +576,12 @@ Any list items still in the list are lost unless pointed to by some
 pointer object in the program code.
 :P.
 If any of the list elements are not allocated with
-.MONO new
+:MONO.new
 (local variable or global list elements), then the &fn. must be used.
 When all list elements are allocated with
-.MONO new,
-the
-.MONO clearAndDestory
+:MONO.new
+:CONT., the
+:MONO.clearAndDestory
 member function should be used.
 .do end
 
@@ -630,14 +634,14 @@ the values pointed to by the list elements are deleted.
 The link elements are deleted before the list is re-initialized.
 :P.
 If any elements in the list were not allocated by the
-.MONO new
+:MONO.new
 operator, the &fn must not be called.
 The &fn destroys each list element with the destructor for
-.MONO Type
+:MONO.Type
 even if the list element was created as an object derived from
-.MONO Type,
-unless
-.MONO Type
+:MONO.Type
+:CONT., unless
+:MONO.Type
 has a pure virtual destructor.
 
 .* end if Isv
@@ -677,7 +681,7 @@ contained values.
 .el .do begin
 
 Each list element is compared to the passed element using
-.MONO Type's operator ==
+:MONO.Type's operator ==
 to determine if the passed element is contained in the list.
 
 .if &lpref eq Ptr .do begin
@@ -734,11 +738,11 @@ Since the first element of the list is the zero'th element, the last
 element will be the number of list entries minus one.
 :P.
 If the list is empty and the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, the exception is thrown.
 If the
-.MONO index_range
+:MONO.index_range
 exception is enabled,
 the exception is thrown if the index value is negative or
 is greater than the number of list entries minus one.
@@ -796,14 +800,14 @@ The &fn. returns the value of the last list element in the list object.
 :P.
 If the list is empty, one of two exceptions can be thrown.
 If the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, it is thrown.
 The
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception is thrown if it is enabled and the
-.MONO empty_container
+:MONO.empty_container
 exception is not enabled.
 :RSLTS.
 .if &lpref. eq Isv .th .do begin
@@ -859,11 +863,11 @@ the value of
 the list element currently active.
 The second argument passed to :HP1.fn:eHP1. is the second argument of
 the
-.MONO forAll
+:MONO.forAll
 function.
 This allows a callback function to be defined which can accept
 data appropriate for the point at which the
-.MONO forAll
+:MONO.forAll
 function is invoked.
 :SALSO.
 :SAL typ='cls'.WC&lpref.ConstSListIter
@@ -895,11 +899,11 @@ Since the first element of the list is the zero'th element, the last
 element will be the number of list entries minus one.
 :P.
 If the list is empty and the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, the exception is thrown.
 If the
-.MONO index_range
+:MONO.index_range
 exception trap is enabled,
 the exception is thrown if the index value is negative or
 is greater than the number of list entries minus one.
@@ -963,7 +967,7 @@ contained values.
 .el .do begin
 
 Each list element is compared to the passed element using
-.MONO Type's operator ==
+:MONO.Type's operator ==
 until the passed element is found, or all list elements have been checked.
 
 .if &lpref eq Ptr .do begin
@@ -1002,10 +1006,10 @@ int (*test_fn)( const Type *, void * );
 Each list element is passed in turn to the :HP1.test_fn:eHP1. function
 as the first argument.  The second parameter passed is the second argument
 of the
-.MONO index
+:MONO.index
 function.  This allows the :HP1.test_fn:eHP1. callback function to
 accept data appropriate for the point at which the
-.MONO index
+:MONO.index
 function is invoked.
 The supplied :HP1.test_fn:eHP1. shall return a TRUE (non-zero) value when the
 index of the passed element is desired.
@@ -1047,7 +1051,7 @@ The data stored in the list is a copy of the data passed as a parameter.
 
 :P.
 If the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is enabled and the insert fails, the exception is thrown.
 :RSLTS.
@@ -1068,10 +1072,10 @@ more than once.
 :P.
 The passed list element should be constructed using
 the appropriate link class as a base.
-.MONO WCSLink
+:MONO.WCSLink
 must be used as a list element base class for single linked lists,
 and
-.MONO WCDLink
+:MONO.WCDLink
 must be used as a list element base class for double linked lists.
 :RSLTS.
 The list element is inserted as the first element of the list and a TRUE value
@@ -1122,14 +1126,14 @@ it is made inaccessible by making it a private operator.
 .el .do begin
 
 The left hand side of the assignment is first cleared with the
-.MONO clear
+:MONO.clear
 member function.  All elements in the right hand side list are then
 copied, as well as the exception
 trap states, and any registered :HP1.allocator:eHP1. and :HP1.deallocator:eHP1.
 functions.
 
 .if &lpref. eq Val .do begin
-.MONO Type's
+:MONO.Type's
 copy constructor is invoked to copy the values contained by the list
 elements.
 .do end
@@ -1137,7 +1141,7 @@ elements.
 
 :P.
 If all of the elements cannot be copied and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 is enabled in the right hand side list, the exception is thrown.
 The new list is created in a valid state, even if all of the list elements
@@ -1164,7 +1168,8 @@ a reference to the left hand side.
 :SNPF index='operator =='.int WC&lpref.DList::operator ==( const WC&lpref.DList & ) const;
 :eSNPL.
 :SMTICS.
-The &fn. is the equivalence operator for the &cls.:PERIOD.
+The &fn. is the equivalence operator for the &cls.
+:PERIOD.
 Two list objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.

@@ -214,7 +214,7 @@ typedef struct movable_record {
 
 #define ENTRY_EXPORTED  0x01
 #define ENTRY_SHARED    0x02
-#define IOPL_WORD_SHIFT 2
+#define IOPL_WORD_SHIFT 3
 
 typedef struct fixed_record {
     unsigned_8          info;           /* flags: 1 = exported entry        */

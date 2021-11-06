@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-extern sym_id  FindNameList( const char *name, uint len );
-extern sym_id  STNameList( const char *name, uint length );
+extern sym_id  FindNameList( const char *name, size_t len );
+extern sym_id  STNameList( const char *name, size_t length );
 extern char    *STNmListName( sym_id sym, char *buff );

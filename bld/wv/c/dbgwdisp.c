@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,27 +49,27 @@
 
 
 #define DISP_OPTS() \
-    pick( OPEN,         "Open" ) \
-    pick( CLOSE,        "Close" ) \
-    pick( NEW,          "New" ) \
-    pick( MINIMIZE,     "MInimize" ) \
-    pick( MAXIMIZE,     "MAximize" ) \
-    pick( RESTORE,      "Restore" ) \
-    pick( FLOATING,     "FLoating" ) \
-    pick( FIXED,        "Fixed" )
+    pick( "Open",     DISP_OPEN     ) \
+    pick( "Close",    DISP_CLOSE    ) \
+    pick( "New",      DISP_NEW      ) \
+    pick( "MInimize", DISP_MINIMIZE ) \
+    pick( "MAximize", DISP_MAXIMIZE ) \
+    pick( "Restore",  DISP_RESTORE  ) \
+    pick( "FLoating", DISP_FLOATING ) \
+    pick( "Fixed",    DISP_FIXED    )
 
 #define MISC_OPTS() \
-    pick( MISC_TOOL,    "TOolbar" ) \
-    pick( MISC_STATUS,  "Status" )
+    pick( "TOolbar",  MISC_TOOL     ) \
+    pick( "Status",   MISC_STATUS   )
 
 typedef enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
         DISP_OPTS()
     #undef pick
 } disp_optn;
 
 typedef enum {
-    #define pick(e,t)   e,
+    #define pick(t,e)   e,
         MISC_OPTS()
     #undef pick
 } misc_optn;
@@ -80,13 +80,13 @@ gui_rect            WndMainRect;
 static char         *WndFontInfo[NUM_WNDCLS_ALL];
 
 static const char   DispOptions[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
         DISP_OPTS()
     #undef pick
 };
 
 static const char   MiscTab[] = {
-    #define pick(e,t)   t "\0"
+    #define pick(t,e)   t "\0"
         MISC_OPTS()
     #undef pick
 };
@@ -110,7 +110,7 @@ static int      range( int x, int min_x, int max_x, int default_x )
 static disp_optn GetOption( void )
 {
     int         cmd;
-    disp_optn   optn = OPEN;
+    disp_optn   optn = DISP_OPEN;
 
     if( CurrToken == T_DIV ) {
         Scan();
@@ -297,7 +297,7 @@ static void ProcSize( wnd_class_wv wndclass )
     gui_rect    def_rect;
 
     optn = GetOption();
-    if( optn == FLOATING || optn == FIXED ) {
+    if( optn == DISP_FLOATING || optn == DISP_FIXED ) {
         Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_DISPLAY ) );
     }
     size.x = OptExpr( -1 );
@@ -342,9 +342,9 @@ static void ProcSize( wnd_class_wv wndclass )
         wnd = WndFindClass( NULL, wndclass );
     }
     switch( optn ) {
-    case OPEN:
-    case NEW:
-        if( optn == NEW || wnd == NULL ) {
+    case DISP_OPEN:
+    case DISP_NEW:
+        if( optn == DISP_NEW || wnd == NULL ) {
             WndOpenTab[wndclass]();
         } else {
             WndRestoreToFront( wnd );
@@ -352,7 +352,7 @@ static void ProcSize( wnd_class_wv wndclass )
             WndResizeWindow( wnd, &size );
         }
         break;
-    case CLOSE:
+    case DISP_CLOSE:
         if( wndclass == WND_ALL ) {
             for( wnd = WndNext( NULL ); wnd != NULL; wnd = next ) {
                 next = WndNext( wnd );
@@ -366,17 +366,17 @@ static void ProcSize( wnd_class_wv wndclass )
             }
         }
         break;
-    case MINIMIZE:
+    case DISP_MINIMIZE:
         if( wnd == NULL )
             wnd = WndOpenTab[wndclass]();
         WndMinimizeWindow( wnd );
         break;
-    case MAXIMIZE:
+    case DISP_MAXIMIZE:
         if( wnd == NULL )
             wnd = WndOpenTab[wndclass]();
         WndMaximizeWindow( wnd );
         break;
-    case RESTORE:
+    case DISP_RESTORE:
         if( wnd == NULL )
             wnd = WndOpenTab[wndclass]();
         WndRestoreWindow( wnd );
@@ -390,21 +390,21 @@ static void ProcTool( void )
     int         height;
     disp_optn   optn, type, tmp;
 
-    type = FIXED;
-    optn = OPEN;
+    type = DISP_FIXED;
+    optn = DISP_OPEN;
     while( CurrToken == T_DIV ) {
         tmp = GetOption();
-        if( tmp == FLOATING || tmp == FIXED ) {
+        if( tmp == DISP_FLOATING || tmp == DISP_FIXED ) {
             type = tmp;
         } else {
             optn = tmp;
         }
     }
     height = OptExpr( 0 );
-    if( optn == CLOSE ) {
+    if( optn == DISP_CLOSE ) {
         WndToolClose();
     } else {
-        WndToolOpen( height, type == FIXED );
+        WndToolOpen( height, type == DISP_FIXED );
     }
 }
 
@@ -414,9 +414,9 @@ static void ProcStatus( void )
     disp_optn   optn;
 
     optn = GetOption();
-    if( optn == OPEN ) {
+    if( optn == DISP_OPEN ) {
         WndCreateStatusWindow( &WndStatusColour );
-    } else if( optn == CLOSE ) {
+    } else if( optn == DISP_CLOSE ) {
         WndCloseStatusWindow();
     } else {
         Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_DISPLAY ) );
@@ -505,7 +505,7 @@ void ConfigDisp( void )
 
     ReqEOC();
     GetCmdEntry( WndNameTab, WND_ALL, buff );
-    GetCmdEntry( DispOptions, CLOSE, buff2 );
+    GetCmdEntry( DispOptions, DISP_CLOSE, buff2 );
     Format( TxtBuff, "%s %s /%s", GetCmdName( CMD_DISPLAY ), buff, buff2 );
     WndDlgTxt( TxtBuff );
     if( WndHaveStatusWindow() ) {
@@ -516,7 +516,7 @@ void ConfigDisp( void )
     if( WndHaveToolBar() ) {
         h = WndToolHeight();
         GetCmdEntry( MiscTab, MISC_TOOL, buff );
-        GetCmdEntry( DispOptions, WndToolFixed() ? FIXED : FLOATING, buff2 );
+        GetCmdEntry( DispOptions, WndToolFixed() ? DISP_FIXED : DISP_FLOATING, buff2 );
         Format( TxtBuff, "%s %s /%s %d", GetCmdName( CMD_DISPLAY ),
                 buff, buff2, h );
         WndDlgTxt( TxtBuff );
@@ -531,7 +531,7 @@ void ConfigDisp( void )
             continue;
         if( rect.height == 0 )
             continue;
-        PrintPosition( CLOSE, wndclass, &rect, buff, buff2 );
+        PrintPosition( DISP_CLOSE, wndclass, &rect, buff, buff2 );
     }
     head = WndNext( NULL );
     if( head == NULL )
@@ -550,7 +550,7 @@ void ConfigDisp( void )
             case WND_MEMORY:
                 WndResizeHook( wnd );
                 WndPosToRect( &WndPosition[wndclass], &rect, &WndScreen );
-                PrintPosition( CLOSE, wndclass, &rect, buff, buff2 );
+                PrintPosition( DISP_CLOSE, wndclass, &rect, buff, buff2 );
                 break;
             case WND_VARIABLE:
             case WND_TMPFILE:
@@ -558,7 +558,7 @@ void ConfigDisp( void )
             default:
                 WndResizeHook( wnd );
                 WndPosToRect( &WndPosition[wndclass], &rect, &WndScreen );
-                PrintPosition( OPEN, wndclass, &rect, buff, buff2 );
+                PrintPosition( DISP_OPEN, wndclass, &rect, buff, buff2 );
                 break;
             }
         }

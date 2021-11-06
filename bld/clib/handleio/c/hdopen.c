@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,16 @@ static int check_mode( int handle, int mode )
         return( -1 );
     }
     return( 0 );
-  #elif defined(__WARP__)
+  #elif defined(__OS2__)
+    #if defined(_M_I86)
+
+    // there is support under OS/2 1.x, but Pharlap's run286 doesn't
+    // support the DosQFHandState() function
+    handle=handle;mode=mode;
+    return( 0 );
+
+    #else
+
     int     __errno;
     ULONG   state;
     int     rc;
@@ -106,11 +115,8 @@ static int check_mode( int handle, int mode )
         return( -1 );
     }
     return( 0 );
-  #elif defined(__OS2_286__)
-    // there is support under OS/2 1.x, but Pharlap's run286 doesn't
-    // support the DosQFHandState() function
-    handle=handle;mode=mode;
-    return( 0 );
+
+    #endif
   #elif defined(__NT__)
     // there doesn't appear to be any support under NT for interrogating
     // how a file handle was opened

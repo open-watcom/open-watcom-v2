@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,11 +117,11 @@ void WShutdownRibbons( void )
     if( WRibbonInfo != NULL ) {
         for( i = 0; i < NUM_TOOLS; i++ ) {
             if( WRibbonInfo->items[i].flags != ITEM_BLANK ) {
-                if( WRibbonInfo->items[i].u.bmp == WRibbonInfo->items[i].depressed ) {
+                if( WRibbonInfo->items[i].u.hbitmap == WRibbonInfo->items[i].depressed ) {
                     WRibbonInfo->items[i].depressed = (HBITMAP)NULL;
                 }
-                if( WRibbonInfo->items[i].u.bmp != NULL ) {
-                    DeleteObject( WRibbonInfo->items[i].u.bmp );
+                if( WRibbonInfo->items[i].u.hbitmap != NULL ) {
+                    DeleteObject( WRibbonInfo->items[i].u.hbitmap );
                 }
                 if( WRibbonInfo->items[i].depressed != NULL ) {
                     DeleteObject( WRibbonInfo->items[i].depressed );
@@ -135,11 +135,11 @@ void WShutdownRibbons( void )
     if( WSORibbonInfo != NULL ) {
         for( i = 0; i < NUM_SOTOOLS; i++ ) {
             if( WSORibbonInfo->items[i].flags != ITEM_BLANK ) {
-                if( WSORibbonInfo->items[i].u.bmp == WSORibbonInfo->items[i].depressed ) {
+                if( WSORibbonInfo->items[i].u.hbitmap == WSORibbonInfo->items[i].depressed ) {
                     WSORibbonInfo->items[i].depressed = (HBITMAP)NULL;
                 }
-                if( WSORibbonInfo->items[i].u.bmp != NULL ) {
-                    DeleteObject( WSORibbonInfo->items[i].u.bmp );
+                if( WSORibbonInfo->items[i].u.hbitmap != NULL ) {
+                    DeleteObject( WSORibbonInfo->items[i].u.hbitmap );
                 }
                 if( WSORibbonInfo->items[i].depressed != NULL ) {
                     DeleteObject( WSORibbonInfo->items[i].depressed );
@@ -283,13 +283,13 @@ bool WInitRibbons( HINSTANCE inst )
 
     for( i = 0; i < NUM_TOOLS; i++ ) {
         if( WRibbonNames[i].up != NULL ) {
-            WRibbonInfo->items[i].u.bmp = LoadBitmap( inst, WRibbonNames[i].up );
+            WRibbonInfo->items[i].u.hbitmap = LoadBitmap( inst, WRibbonNames[i].up );
             WRibbonInfo->items[i].id = WRibbonNames[i].menu_id;
             WRibbonInfo->items[i].flags = ITEM_DOWNBMP;
             if( WRibbonNames[i].down != NULL ) {
                 WRibbonInfo->items[i].depressed = LoadBitmap( inst, WRibbonNames[i].down );
             } else {
-                WRibbonInfo->items[i].depressed = WRibbonInfo->items[i].u.bmp;
+                WRibbonInfo->items[i].depressed = WRibbonInfo->items[i].u.hbitmap;
             }
             if( !( WRibbonNames[i].tip_id > 0 && LoadString( inst, WRibbonNames[i].tip_id, WRibbonInfo->items[i].tip, MAX_TIP ) > 0 ) ) {
                 WRibbonInfo->items[i].tip[0] = '\0';
@@ -302,14 +302,14 @@ bool WInitRibbons( HINSTANCE inst )
 
     for( i = 0; i < NUM_SOTOOLS; i++ ) {
         if( WSORibbonNames[i].up != NULL ) {
-            WSORibbonInfo->items[i].u.bmp = LoadBitmap( inst, WSORibbonNames[i].up );
+            WSORibbonInfo->items[i].u.hbitmap = LoadBitmap( inst, WSORibbonNames[i].up );
             WSORibbonInfo->items[i].id = WSORibbonNames[i].menu_id;
             WSORibbonInfo->items[i].flags = ITEM_DOWNBMP;
             if( WSORibbonNames[i].down != NULL ) {
                 WSORibbonInfo->items[i].depressed =
                     LoadBitmap( inst, WSORibbonNames[i].down );
             } else {
-                WSORibbonInfo->items[i].depressed = WSORibbonInfo->items[i].u.bmp;
+                WSORibbonInfo->items[i].depressed = WSORibbonInfo->items[i].u.hbitmap;
             }
             if( !( WSORibbonNames[i].tip_id > 0 && LoadString( inst, WSORibbonNames[i].tip_id, WSORibbonInfo->items[i].tip, MAX_TIP ) > 0 ) ) {
                 WSORibbonInfo->items[i].tip[0] = '\0';

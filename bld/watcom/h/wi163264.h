@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,6 +107,13 @@
 #define GET_WM_PARENTNOTIFY_ID(wp,lp)           HIWORD(lp)
 #define GET_WM_PARENTNOTIFY_HANDLE(wp,lp)       LOWORD(lp)
 #define GET_WM_PARENTNOTIFY_POINT(wp,lp)        (lp)
+
+#define WC_BUTTON                               "Button"
+#define WC_COMBOBOX                             "ComboBox"
+#define WC_EDIT                                 "Edit"
+#define WC_LISTBOX                              "ListBox"
+#define WC_SCROLLBAR                            "ScrollBar"
+#define WC_STATIC                               "Static"
 
 #else /* __NT__ */
 

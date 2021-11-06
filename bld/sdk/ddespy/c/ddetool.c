@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@ typedef struct ddetoolinfo {
     TOOLDISPLAYINFO     info;
     BOOL                fixed;
     RECT                floatrect;
-    HBITMAP             *bitmaps;
+    HBITMAP             *hbitmaps;
 } DDEToolBarInfo;
 
 typedef struct {
@@ -232,18 +232,18 @@ void MakeDDEToolBar( HWND hwnd )
     ToolBarDisplay( ToolBar.hdl, &ToolBar.info );
     resizeForTB( &ToolBar.info.area, hwnd );
 
-    ToolBar.bitmaps = MemAlloc( BUTTON_CNT * sizeof( HBITMAP ) );
+    ToolBar.hbitmaps = MemAlloc( BUTTON_CNT * sizeof( HBITMAP ) );
     for( i=0; i < BUTTON_CNT; i++ ) {
         if( ButInfo[i].flags & ITEM_BLANK ) {
-            ToolBar.bitmaps[i] = NULL;
+            ToolBar.hbitmaps[i] = NULL;
             item.u.blank_space = TOOL_SPACE;
             item.id = 0;
             item.depressed = NULL;
         } else {
-            ToolBar.bitmaps[i] = LoadBitmap( Instance, ButInfo[i].name );
-            item.u.bmp = ToolBar.bitmaps[i];
+            ToolBar.hbitmaps[i] = LoadBitmap( Instance, ButInfo[i].name );
+            item.u.hbitmap = ToolBar.hbitmaps[i];
             item.id = ButInfo[i].id;
-            item.depressed = ToolBar.bitmaps[i];
+            item.depressed = ToolBar.hbitmaps[i];
         }
         if( !( ButInfo[i].tip_id > 0 && LoadString( Instance, ButInfo[i].tip_id, item.tip, MAX_TIP ) > 0 ) ) {
             item.tip[0] = '\0';
@@ -272,11 +272,11 @@ void DDEToolBarFini()
 
     ToolBarFini( ToolBar.hdl );
     for( i = 0; i < BUTTON_CNT; i++ ) {
-        if( ToolBar.bitmaps[i] != NULL ) {
-            DeleteObject( ToolBar.bitmaps[i] );
+        if( ToolBar.hbitmaps[i] != NULL ) {
+            DeleteObject( ToolBar.hbitmaps[i] );
         }
     }
-    MemFree( ToolBar.bitmaps );
+    MemFree( ToolBar.hbitmaps );
 
 } /* DDEToolBarFini */
 

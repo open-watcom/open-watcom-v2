@@ -51,7 +51,7 @@ is a constant or the symbolic name of a constant
 .mnote r
 is an unsigned positive integer constant or the symbolic name of a
 constant.
-.endnote
+.esynote
 .np
 This form of the
 .kw &typstmt

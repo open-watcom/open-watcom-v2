@@ -18,12 +18,12 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/edbind.exe   <OWBINDIR>/bedbind<CMDEXT>
+    <CPCMD> <OWOBJDIR>/edbind.exe   <OWBINDIR>/<OWOBJDIR>/bedbind<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/bedbind<CMDEXT>
-    rm -f <OWBINDIR>/bedbind<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/bedbind<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/bedbind<CMDEXT>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

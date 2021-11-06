@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,16 +103,28 @@ static void DoSavedImport( symbol *sym )
 static void DoSavedExport( symbol *sym )
 /**************************************/
 {
-    entry_export        *exp;
+    /* unused parameters */ (void)sym;
 
+#ifdef _OS2
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
+        entry_export    *exp;
+
         exp = sym->e.export;
         exp->sym = sym;
         exp->impname = NULL;
         AddToExportList( exp );
-    } else {
+    }
+#endif
+#ifdef _NOVELL
+    if( FmtData.type & MK_NOVELL ) {
         AddNameTable( sym->name.u.ptr, strlen( sym->name.u.ptr ), true, &FmtData.u.nov.exp.export );
     }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        AddNameTable( sym->name.u.ptr, strlen( sym->name.u.ptr ), true, &FmtData.u.elf.exp.export );
+    }
+#endif
 }
 
 static bool StoreCDatData( void *_piece, void *_loc )
@@ -237,14 +249,14 @@ static void DoIncSymbol( void *_sym )
     symbol      *sym = _sym;
     symbol      *mainsym;
     void        *data;
-    sym_flags   flags;
+    sym_flags   symop;
 
     if( sym->info & SYM_IS_ALTDEF ) {
-        flags = ST_CREATE | ST_REFERENCE;
+        symop = ST_CREATE_REFERENCE;
         if( sym->info & SYM_STATIC ) {
-            flags |= ST_STATIC;
+            symop |= ST_STATIC;
         }
-        mainsym = SymOp( flags, sym->name.u.ptr, strlen( sym->name.u.ptr ) );
+        mainsym = SymOp( symop, sym->name.u.ptr, strlen( sym->name.u.ptr ) );
         if( IS_SYM_NICOMDEF( sym ) ) {
             MakeCommunalSym( mainsym, sym->p.cdefsize, (sym->info & SYM_FAR_COMMUNAL) != 0, IS_SYM_COMM32( sym ) );
         } else if( IS_SYM_COMDAT( sym ) ) {
@@ -276,8 +288,8 @@ static void DoIncSymbol( void *_sym )
     }
 }
 
-static class_entry *FindNamedClass( char *name )
-/**********************************************/
+static class_entry *FindNamedClass( const char *name )
+/****************************************************/
 // NYI:  this doesn't take into account 16 & 32 bit classes with the same name.
 {
     class_entry   *class;
@@ -303,7 +315,7 @@ static bool DefIncGroup( void *_def, void *_grouptab )
     group_entry     ***grouptab = _grouptab;
     group_entry     *group;
     unsigned        index;
-    char            **currname;
+    const char      **currname;
     class_entry     *class;
     seg_leader      *leader;
 
@@ -313,7 +325,7 @@ static bool DefIncGroup( void *_def, void *_grouptab )
         class = FindNamedClass( *currname );
         currname++;
         if( class != NULL ) {
-            leader = RingLookup( class->segs, CmpSegName, *currname );
+            leader = RingLookup( class->segs, CmpSegName, (void *)*currname );
             if( leader != NULL ) {
                 AddToGroup( group, leader );
             }
@@ -343,7 +355,7 @@ void Set64BitMode( void )
 /***********************/
 // make sure that the executable format is a 64-bit format.
 {
-    LinkState |= LS_FMT_SEEN_64_BIT;
+    LinkState |= LS_FMT_SEEN_64BIT;
     if( !HintFormat( MK_ALLOW_64 ) ) {
         if( (ObjFormat & FMT_TOLD_BITNESS) == 0 ) {
             ObjFormat |= FMT_TOLD_BITNESS;
@@ -357,7 +369,7 @@ void Set32BitMode( void )
 /***********************/
 // make sure that the executable format is a 32-bit format.
 {
-    LinkState |= LS_FMT_SEEN_32_BIT;
+    LinkState |= LS_FMT_SEEN_32BIT;
     if( !HintFormat( MK_ALLOW_32 ) ) {
         if( (ObjFormat & FMT_TOLD_BITNESS) == 0 ) {
             ObjFormat |= FMT_TOLD_BITNESS;
@@ -459,15 +471,16 @@ unsigned long IncPass1( void )
     return( 0 );
 }
 
+#ifdef _QNX
 static void CheckQNXSegMismatch( stateflag mask )
 /***********************************************/
 {
-    if( (FmtData.type & MK_QNX) && (LinkState & mask)
-                                && !FmtData.u.qnx.seen_mismatch ) {
+    if( (FmtData.type & MK_QNX) && (LinkState & mask) && !FmtData.u.qnx.seen_mismatch ) {
         LnkMsg( WRN+LOC+MSG_CANNOT_HAVE_16_AND_32, NULL );
         FmtData.u.qnx.seen_mismatch = true;
     }
 }
+#endif
 
 class_entry *DuplicateClass( class_entry *class )
 /***********************************************/
@@ -657,7 +670,7 @@ void AddSegment( segdata *sd, class_entry *class )
 
         leader = FindALeader( sd, class, info );
         if( ( (leader->info & USE_32) != (info & USE_32) ) &&
-            !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2.mixed1632 ) &&
+            !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2fam.mixed1632 ) &&
             (FmtData.type & MK_RAW) == 0 ) {
             const char  *segname_16;
             const char  *segname_32;
@@ -676,10 +689,14 @@ void AddSegment( segdata *sd, class_entry *class )
     if( !IS_DBG_INFO( leader ) ) {
         if( sd->is32bit ) {
             Set32BitMode();
+#ifdef _QNX
             CheckQNXSegMismatch( LS_HAVE_16BIT_CODE );
+#endif
         } else {
             Set16BitMode();
-            CheckQNXSegMismatch( LS_FMT_SEEN_32_BIT );
+#ifdef _QNX
+            CheckQNXSegMismatch( LS_FMT_SEEN_32BIT );
+#endif
         }
     }
     if( DBISkip( leader ) ) {
@@ -718,7 +735,7 @@ void AddToGroup( group_entry *group, seg_leader *seg )
     }
     if( ( group->leaders != NULL ) &&
         ( (group->leaders->info & USE_32) != (seg->info & USE_32) ) &&
-        !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2.mixed1632 ) &&
+        !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2fam.mixed1632 ) &&
         (FmtData.type & MK_RAW) == 0 ) {
 
         const char  *segname_16;
@@ -737,8 +754,8 @@ void AddToGroup( group_entry *group, seg_leader *seg )
     Ring2Append( &group->leaders, seg );
 }
 
-void SetAddPubSym(symbol *sym, sym_info type, mod_entry *mod, offset off, unsigned_16 frame )
-/*******************************************************************************************/
+void SetAddPubSym( symbol *sym, sym_info type, mod_entry *mod, offset off, unsigned_16 frame )
+/********************************************************************************************/
 {
     sym->mod = mod;
     SET_SYM_TYPE( sym, type );
@@ -778,12 +795,16 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
         sym_type = SYM_REGULAR;
         if( IS_SYM_IMPORTED( sym ) ) {
             sym = HashReplace( sym );
-            if( (FmtData.type & MK_PE) && sym->p.import != NULL ) {
-                dll_sym_info  *dll_info = sym->p.import;
-                AddPEImportLocalSym( sym, dll_info->iatsym );
-                sym_type |= SYM_REFERENCED;
-                LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name.u.ptr );
+#ifdef _OS2
+            if( FmtData.type & MK_PE ) {
+                if( sym->p.import != NULL ) {
+                    dll_sym_info  *dll_info = sym->p.import;
+                    AddPEImportLocalSym( sym, dll_info->iatsym );
+                    sym_type |= SYM_REFERENCED;
+                    LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name.u.ptr );
+                }
             }
+#endif
         } else if( IS_SYM_COMMUNAL( sym ) ) {
             sym = HashReplace( sym );
             sym->p.seg = NULL;
@@ -1013,8 +1034,8 @@ void DefineComdat( segdata *sdata, symbol *sym, offset value,
     }
 }
 
-void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
-/************************************************************/
+void DefineLazyExtdef( symbol *sym, symbol *defsym, bool isweak )
+/***************************************************************/
 /* handle the lazy and weak extdef comments */
 {
     symbol      *defaultsym;
@@ -1027,7 +1048,7 @@ void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
             } else {
                 defaultsym = sym->e.def;
             }
-            if( def != defaultsym ) {
+            if( defsym != defaultsym ) {
                 LnkMsg( LOC_REC+WRN+MSG_LAZY_EXTDEF_MISMATCH, "S",sym );
             }
         } else if( (sym->info & SYM_OLDHAT) == 0 || IS_SYM_LINK_WEAK( sym ) ) {
@@ -1036,7 +1057,7 @@ void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
             } else {
                 SET_SYM_TYPE( sym, SYM_LAZY_REF );
             }
-            sym->e.def = def;
+            sym->e.def = defsym;
             if( LinkFlags & LF_STRIP_CODE ) {
                 DataRef( sym->e.def );  // default must not be removed
             }
@@ -1118,7 +1139,7 @@ static void DefineVirtualFunction( symbol *sym, symbol *defsym, bool ispure,
     }
 }
 
-void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
+void DefineVFTableRecord( symbol *sym, symbol *defsym, bool ispure,
                                  vflistrtns *rtns )
 /**************************************************************/
 // process the watcom virtual function table information extension
@@ -1132,17 +1153,17 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
          * for dead code elimination */
         if( (LinkFlags & LF_STRIP_CODE)
                         && (sym->info & (SYM_VF_REFS_DONE | SYM_EXPORTED)) == 0 ) {
-            GetVFList( def, sym, false, rtns );
-            sym->e.def = def;
+            GetVFList( defsym, sym, false, rtns );
+            sym->e.def = defsym;
             sym->info |= SYM_VF_REFS_DONE;
-            DataRef( def );
+            DataRef( defsym );
         }
     } else if( !IS_SYM_IMPORTED( sym ) && !IS_SYM_COMMUNAL( sym ) ) {
         if( IS_SYM_VF_REF( sym ) ) {
             if( IS_SYM_PURE_REF( sym ) ^ ispure ) {
                 LnkMsg( LOC_REC+WRN+MSG_VF_PURE_MISMATCH, "S", sym );
             }
-            symlist = GetVFList( def, NULL, true, rtns );
+            symlist = GetVFList( defsym, NULL, true, rtns );
             if( symlist == NULL ) {
                 if( !CheckVFList( sym ) ) {
                     LnkMsg( LOC_REC+WRN+MSG_VF_TABLE_MISMATCH, "S", sym );
@@ -1163,7 +1184,7 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
                 _LnkFree( startlist );
             }
         } else if( IS_SYM_A_REF( sym ) || (sym->info & SYM_OLDHAT) == 0 ) {
-            DefineVirtualFunction( sym, def, ispure, rtns );
+            DefineVirtualFunction( sym, defsym, ispure, rtns );
         }
     }
 }
@@ -1260,23 +1281,36 @@ void HandleImport( const length_name *intname, const length_name *modname,
 {
     symbol      *sym;
 
+#ifndef _OS2
+    /* unused parameters */ (void)modname; (void)extname; (void)ordinal;
+#endif
+
     sym = SymOp( ST_CREATE, intname->name, intname->len );
     if( (sym->info & SYM_DEFINED) == 0 ) {
         if( CurrMod != NULL ) {
             Ring2Append( &CurrMod->publist, sym );
             sym->mod = CurrMod;
         }
+#ifdef _OS2
         if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
             MSImportKeyword( sym, modname, extname, ordinal );
         } else {
+#endif
             SET_SYM_TYPE( sym, SYM_IMPORTED );
             sym->info |= SYM_DEFINED | SYM_DCE_REF;
+#ifdef _NOVELL
             if( FmtData.type & MK_NOVELL ) {
                 SetNovImportSymbol( sym );
-            } else {
+            }
+#endif
+#ifdef _ELF
+            if( FmtData.type & MK_ELF ) {
                 SetELFImportSymbol( sym );
             }
+#endif
+#ifdef _OS2
         }
+#endif
     }
 }
 
@@ -1285,20 +1319,37 @@ static void ExportSymbol( const length_name *expname )
 {
     symbol      *sym;
 
-    sym = SymOp( ST_CREATE | ST_REFERENCE, expname->name, expname->len );
+    sym = SymOp( ST_CREATE_REFERENCE, expname->name, expname->len );
     sym->info |= SYM_EXPORTED;
-    AddNameTable( expname->name, expname->len, true, &FmtData.u.nov.exp.export );
+#ifdef _NOVELL
+    if( FmtData.type & MK_NOVELL ) {
+        AddNameTable( expname->name, expname->len, true, &FmtData.u.nov.exp.export );
+    }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        AddNameTable( expname->name, expname->len, true, &FmtData.u.elf.exp.export );
+    }
+#endif
 }
 
 void HandleExport( const length_name *expname, const length_name *intname,
                                         unsigned flags, ordinal_t ordinal )
 /*************************************************************************/
 {
+#ifndef _OS2
+    /* unused parameters */ (void)intname; (void)flags; (void)ordinal;
+#endif
+
+#ifdef _OS2
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
         MSExportKeyword( expname, intname, flags, ordinal );
     } else {
+#endif
         ExportSymbol( expname );
+#ifdef _OS2
     }
+#endif
 }
 
 bool CheckVFList( symbol *sym )

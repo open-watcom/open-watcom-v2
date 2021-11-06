@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -862,7 +863,7 @@ typedef struct {
 
 typedef struct {
     type_wlk_com     com;
-    int              (*comp)(const void *, const void *, size_t);
+    strcompn_fn      *scompn;
     lookup_item      *li;
     search_result     sr;
 }type_wlk_lookup;
@@ -1046,7 +1047,7 @@ static bool AMemLookup( drmem_hdl var, int index, void *_d )
         return( false );
     }
     len = strlen( name );
-    if( len == d->li->name.len && d->comp( name, d->li->name.start, len ) == 0 ) {
+    if( len == d->li->name.len && d->scompn( name, d->li->name.start, len ) == 0 ) {
         ish = DCSymCreate( d->com.iih, d->com.d );
         SetSymHandle( (type_wlk *)d, ish );
         ish->sym = var;
@@ -1136,7 +1137,7 @@ static bool AEnumMemLookup( drmem_hdl var, int index, void *_d )
         return( false );
     }
     len = strlen( name );
-    if( len == d->li->name.len && d->comp( name, d->li->name.start, len ) == 0 ) {
+    if( len == d->li->name.len && d->scompn( name, d->li->name.start, len ) == 0 ) {
         ish = DCSymCreate( d->com.iih, d->com.d );
         SetSymHandle( (type_wlk *)d, ish );
         ish->sym = var;
@@ -1225,11 +1226,7 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith, lookup_ite
     cleanup.prev = Cleaners;
     Cleaners = &cleanup;
     btype = DRSkipTypeChain( ith->type );
-    if( li->case_sensitive ) {
-        df.comp = memcmp;
-    } else {
-        df.comp = memicmp;
-    }
+    df.scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
     df.li = li;
     df.sr = SR_NONE;
     switch( ith->typeinfo.kind ) {

@@ -298,7 +298,7 @@ static void print_token( int token )
 void genobj( FILE *fp )
 {
     short *token, *actions, *base, *other, *parent, *size;
-    register short *p, *q, *r, *s;
+    short *p, *q, *r, *s;
     short error, tokval, redun, *test, *best;
 #if 1
     short *same, *diff;

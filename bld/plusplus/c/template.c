@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,11 +48,13 @@
 #include "initdefs.h"
 #include "conpool.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
-#include "dbg.h"
-#include "fmttype.h"
-#include "fmtsym.h"
+    #include "pragdefn.h"
+    #include "dbg.h"
+    #include "fmttype.h"
+    #include "fmtsym.h"
+    #include "togglesd.h"
 #endif
+
 
 #define BLOCK_TEMPLATE_INFO     16
 #define BLOCK_CLASS_INST        32
@@ -844,7 +846,7 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
                 bound = BindGenericTypes( parm_scope, tspec->spec_args,
                                           curr_spec->spec_args, false, 0 );
 #ifndef NDEBUG
-                if( PragDbgToggle.templ_spec && bound ) {
+                if( TOGGLEDBG( templ_spec ) && bound ) {
                     VBUF    vbuf1;
                     VBUF    vbuf2;
 
@@ -873,7 +875,7 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
                 bound = BindGenericTypes( parm_scope, curr_spec->spec_args,
                                           tspec->spec_args, false, 0 );
 #ifndef NDEBUG
-                if( PragDbgToggle.templ_spec && bound ) {
+                if( TOGGLEDBG( templ_spec ) && bound ) {
                     VBUF    vbuf1;
                     VBUF    vbuf2;
 
@@ -1061,7 +1063,7 @@ static TYPE doParseClassTemplate( TEMPLATE_SPECIALIZATION *tspec,
 {
     TYPE new_type;
     DECL_SPEC *dspec;
-    auto TEMPLATE_CONTEXT context;
+    TEMPLATE_CONTEXT context;
 
     new_type = TypeError;
     if( ! tspec->corrupted ) {
@@ -1135,7 +1137,7 @@ static void defineAllClassDecls( TEMPLATE_SPECIALIZATION *tspec )
     SCOPE inst_scope;
     SCOPE parm_scope;
     SCOPE old_parm_scope;
-    auto TOKEN_LOCN location;
+    TOKEN_LOCN location;
 
     SrcFileGetTokenLocn( &location );
     save_scope = GetCurrScope();
@@ -1406,7 +1408,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
     ScopeSetEnclosing( parm_scope, decl_scope );
 
 #ifndef NDEBUG
-    if( PragDbgToggle.templ_function ) {
+    if( TOGGLEDBG( templ_function ) ) {
         VBUF vbuf1, vbuf2;
 
         FormatPTreeList( templ_args, &vbuf1 );
@@ -1503,7 +1505,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
             SetCurrScope( save_scope );
         } else if( fn_type != NULL ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.templ_function ) {
+            if( TOGGLEDBG( templ_function ) ) {
                 printf( "attemptGen: BindGenericTypes failed\n" );
             }
 #endif
@@ -1512,7 +1514,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
         popInstContext();
     } else {
 #ifndef NDEBUG
-        if( PragDbgToggle.templ_function ) {
+        if( TOGGLEDBG( templ_function ) ) {
             printf( "attemptGen: BindExplicitTemplateArguments failed\n" );
         }
 #endif
@@ -1667,7 +1669,7 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
     } RingIterEnd( fn_inst )
 
 #ifndef NDEBUG
-    if( PragDbgToggle.templ_function && ( generated_fn == NULL ) ) {
+    if( TOGGLEDBG( templ_function ) && ( generated_fn == NULL ) ) {
         VBUF vbuf1, vbuf2, vbuf3;
         FormatType( fn_type, &vbuf1, &vbuf2 );
         FormatTemplateParmScope( &vbuf3, parm_scope );
@@ -1872,7 +1874,7 @@ static bool suitableForAddressParm( PTREE parm )
 
 static PTREE processIndividualParm( TYPE arg_type, PTREE parm )
 {
-    auto error_state_t check;
+    error_state_t check;
 
     CErrSuppress( &check );
     parm = AnalyseRawExpr( parm );
@@ -2393,7 +2395,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
     ambiguous = false;
 
 #ifndef NDEBUG
-    if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 )) {
+    if( TOGGLEDBG( templ_spec ) && ( tinfo->nr_specs > 1 )) {
         VBUF vbuf;
 
         FormatPTreeList( parms, &vbuf );
@@ -2418,7 +2420,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
             bound = BindGenericTypes( parm_scope1, spec_list, parms, false, 0 );
             if( bound ) {
 #ifndef NDEBUG
-                if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 ) ) {
+                if( TOGGLEDBG( templ_spec ) && ( tinfo->nr_specs > 1 ) ) {
                     VBUF vbuf;
 
                     FormatPTreeList( spec_list, &vbuf );
@@ -2473,7 +2475,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
         tspec = RingFirst( tinfo->specializations );
 
 #ifndef NDEBUG
-        if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 )) {
+        if( TOGGLEDBG( templ_spec ) && ( tinfo->nr_specs > 1 )) {
             printf( "chose primary template %s ", NameStr( tinfo->sym->name->name ) );
             DbgDumpTokenLocn( tinfo->sym->locn );
             printf( "\n" );
@@ -2489,7 +2491,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
         RingFree( &candidate_list );
 
 #ifndef NDEBUG
-        if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 )) {
+        if( TOGGLEDBG( templ_spec ) && ( tinfo->nr_specs > 1 )) {
             VBUF vbuf;
 
             FormatPTreeList( tspec->spec_args, &vbuf );
@@ -2552,7 +2554,7 @@ TYPE TemplateClassReference( PTREE tid, PTREE parms )
         unsigned int hash;
 
 #ifndef NDEBUG
-        if( PragDbgToggle.templ_inst ) {
+        if( TOGGLEDBG( templ_inst ) ) {
             VBUF vbuf;
 
             FormatPTreeList( parms, &vbuf );
@@ -2681,7 +2683,7 @@ static TYPE makeBoundClass( TYPE unbound_class, SCOPE parm_scope,
     parms = fakeUpTemplateParms( parm_scope, type_args );
 
 #ifndef NDEBUG
-    if( PragDbgToggle.templ_inst ) {
+    if( TOGGLEDBG( templ_inst ) ) {
         VBUF vbuf;
 
         FormatPTreeList( parms, &vbuf );
@@ -2867,7 +2869,7 @@ static void instantiateMember( TEMPLATE_INFO *tinfo,
     SCOPE parm_scope;
     NAME *member_arg_names;
     TOKEN_LOCN *locn;
-    auto TEMPLATE_CONTEXT context;
+    TEMPLATE_CONTEXT context;
 
     save_scope = GetCurrScope();
     ScopeAdjustUsing( save_scope, NULL );
@@ -3006,7 +3008,7 @@ static void templateFunctionInstantiate( FN_TEMPLATE *fn_templ,
     SYMBOL bound_sym;
     SCOPE save_scope;
     SCOPE parm_scope;
-    auto TEMPLATE_CONTEXT context;
+    TEMPLATE_CONTEXT context;
 
     fn_sym = fn_templ->sym;
     bound_sym = SymDefaultBase( fn_inst->bound_sym );
@@ -3019,7 +3021,7 @@ static void templateFunctionInstantiate( FN_TEMPLATE *fn_templ,
     ScopeSetParmFn( parm_scope, fn_sym->u.defn );
 
 #ifndef NDEBUG
-    if( PragDbgToggle.templ_function ) {
+    if( TOGGLEDBG( templ_function ) ) {
         VBUF vbuf1, vbuf2, vbuf3;
         FormatType( bound_sym->sym_type, &vbuf1, &vbuf2 );
         FormatTemplateParmScope( &vbuf3, parm_scope );
@@ -3150,7 +3152,7 @@ static void processInstantiationMembers( CLASS_INST *instance )
          || ( sym->sym_type->flag & TF1_VIRTUAL ) ) {
 
 #ifndef NDEBUG
-            if( PragDbgToggle.member_inst ) {
+            if( TOGGLEDBG( member_inst ) ) {
                 VBUF vbuf;
                 printf( "instantiating %stemplate member: %s\n",
                         curr_member->is_inline ? "inline " : "",
@@ -3207,7 +3209,7 @@ bool TemplateProcessInstantiations( void )
     TEMPLATE_MEMBER *curr_member;
     TEMPLATE_SPECIALIZATION *tspec;
     TOKEN_LOCN *locn;
-    auto TEMPLATE_CONTEXT context;
+    TEMPLATE_CONTEXT context;
 
     templateData.keep_going = false;
     verifyOKToProceed( NULL );
@@ -3721,7 +3723,7 @@ static void saveFnTemplateDefn( void *p, carve_walk_base *d )
 
 pch_status PCHWriteTemplates( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     PCHWriteVar( templateData.max_depth );
     TemplateClassInfoPCHWrite( allClassTemplates );
@@ -3758,7 +3760,7 @@ pch_status PCHReadTemplates( void )
     REWRITE *memb_defn;
     NAME *memb_arg_names;
     bool cont;
-    auto cvinit_t data;
+    cvinit_t data;
 
     PCHReadVar( templateData.max_depth );
     allClassTemplates = TemplateClassInfoPCHRead();

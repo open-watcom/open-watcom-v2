@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +109,7 @@ void FreeExportList( void )
     entry_export    *exp;
 
     if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
-        for( exp = FmtData.u.os2.exports; exp != NULL; ) {
+        for( exp = FmtData.u.os2fam.exports; exp != NULL; ) {
             exp = FreeAnExport( exp );
         }
     }
@@ -126,7 +126,7 @@ void AddToExportList( entry_export *exp )
 
     place = NULL;
     len = strlen( exp->name.u.ptr );
-    for( owner = &FmtData.u.os2.exports; (curr = *owner) != NULL; owner = &curr->next ) {
+    for( owner = &FmtData.u.os2fam.exports; (curr = *owner) != NULL; owner = &curr->next ) {
         currlen = strlen( curr->name.u.ptr );
         if( currlen == len && CmpRtn( curr->name.u.ptr, exp->name.u.ptr, len ) == 0 ) {
             if( !IS_FMT_INCREMENTAL( ObjFormat ) ) {
@@ -145,7 +145,7 @@ void AddToExportList( entry_export *exp )
             } else if( curr->ordinal == exp->ordinal ) {
                 LnkMsg( WRN+MSG_DUP_EXP_ORDINAL, NULL );
                 exp->ordinal = 0;    // if duplicate, assign a new one later
-                place = &FmtData.u.os2.exports;
+                place = &FmtData.u.os2fam.exports;
             } else if( curr->ordinal > exp->ordinal ) {
                 place = owner;
             }
@@ -197,11 +197,13 @@ entry_export *AllocExport( const char *name, size_t len )
     size_t          chop;
 
     exp = CarveAlloc( CarveExportInfo );
-    exp->isexported = true;
-    exp->isprivate = false;
-    exp->ismovable = false;
     exp->isresident = false;
+    exp->isexported = true;
+    exp->ismovable = false;
+    exp->isanonymous = false;
     exp->isfree = false;
+    exp->isprivate = false;
+    exp->isiopl = false;
     if( name == NULL ) {
         exp->name.u.ptr = NULL;
     } else {
@@ -231,13 +233,13 @@ void MSExportKeyword( const length_name *expname, const length_name *intname, un
     entry_export    *exp;
 
     exp = AllocExport( expname->name, expname->len );
-    exp->isanonymous = false;
     exp->iopl_words = flags & EXPDEF_IOPLMASK;
-    exp->isresident = ( (flags & EXPDEF_RESIDENT) != 0 );
+    if( flags & EXPDEF_RESIDENT )
+        exp->isresident = true;
     if( intname->len != 0 ) {
-        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, intname->name, intname->len );
+        exp->sym = SymOp( ST_CREATE_REFERENCE, intname->name, intname->len );
     } else {
-        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, expname->name, expname->len );
+        exp->sym = SymOp( ST_CREATE_REFERENCE, expname->name, expname->len );
     }
     if( LinkFlags & LF_STRIP_CODE ) {
         DataRef( exp->sym );    // make sure it isn't removed.
@@ -298,7 +300,7 @@ void MSImportKeyword( symbol *sym, const length_name *modname, const length_name
     if( (sym->info & SYM_DEFINED) == 0 ) {
         sym->info |= SYM_DEFINED | SYM_DCE_REF;
         if( LinkFlags & LF_STRIP_CODE ) {
-            DefStripImpSym(sym);
+            DefStripImpSym( sym );
         }
         SET_SYM_TYPE( sym, SYM_IMPORTED );
         dll = AllocDLLInfo();
@@ -309,10 +311,10 @@ void MSImportKeyword( symbol *sym, const length_name *modname, const length_name
             SET_SYM_TYPE( dll->iatsym, SYM_IMPORTED );
             dll->iatsym->p.import = NULL;
         }
-        dll->m.modnum = AddNameTable( modname->name, modname->len, true, &FmtData.u.os2.mod_ref_list );
+        dll->m.modnum = AddNameTable( modname->name, modname->len, true, &FmtData.u.os2fam.mod_ref_list );
         if( ordinal == NOT_IMP_BY_ORDINAL ) {
             dll->isordinal = false;
-            dll->u.entry = AddNameTable( extname->name, extname->len, false, &FmtData.u.os2.imp_tab_list );
+            dll->u.entry = AddNameTable( extname->name, extname->len, false, &FmtData.u.os2fam.imp_tab_list );
         } else {
             dll->isordinal = true;
             dll->u.ordinal = ordinal;
@@ -329,170 +331,26 @@ void KillDependantSyms( symbol *sym )
     }
 }
 
-static void ReadNameTable( f_handle the_file )
-/********************************************/
-// Read a name table & set export ordinal value accordingly.
-{
-    unsigned_8          len_u8;
-    unsigned_16         ordinal;
-    exportcompare_fn    *rtn;
-    const char          *fname;
-
-    fname = FmtData.u.os2.old_lib_name;
-    if( LinkFlags & LF_CASE_FLAG ) {
-        rtn = strcmp;
-    } else {
-        rtn = stricmp;
-    }                             // skip the module name & ordinal.
-    for( ;; ) {
-        QRead( the_file, &len_u8, sizeof( len_u8 ), fname );
-        if( len_u8 == 0 )
-            break;
-        QRead( the_file, TokBuff, len_u8, fname );
-        QRead( the_file, &ordinal, sizeof( ordinal ), fname );
-        if( ordinal == 0 )
-            continue;
-        TokBuff[len_u8] = '\0';
-        CheckExport( TokBuff, ordinal, rtn );
-    }
-}
-
-static void ReadOldLib( void )
-/****************************/
-// Read an old DLL & match ordinals of exports in it with exports in this.
-{
-    f_handle    the_file;
-    long        filepos;
-    union {
-        dos_exe_header  dos;
-        os2_exe_header  os2;
-        os2_flat_header os2f;
-        exe_pe_header   pe;
-    }           head;
-    char        *fname;
-    pe_object   *objects;
-    pe_object   *currobj;
-    unsigned_32 val32;
-
-    fname = FmtData.u.os2.old_lib_name;
-    the_file = QOpenR( fname );
-    QRead( the_file, &head, sizeof( dos_exe_header ), fname );
-    if( head.dos.signature != DOS_SIGNATURE || head.dos.reloc_offset != 0x40 ) {
-        LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
-    } else {
-        QSeek( the_file, NH_OFFSET, fname );
-        QRead( the_file, &val32, sizeof( val32 ), fname );
-        filepos = val32;
-        QSeek( the_file, filepos, fname );
-        QRead( the_file, &head, sizeof( head ), fname );
-        if( head.os2.signature == OS2_SIGNATURE_WORD ) {
-            QSeek( the_file, filepos + head.os2.resident_off, fname );
-            ReadNameTable( the_file );
-            QSeek( the_file, head.os2.nonres_off, fname );
-            ReadNameTable( the_file );
-        } else if( head.os2f.signature == OSF_FLAT_SIGNATURE || head.os2f.signature == OSF_FLAT_LX_SIGNATURE ) {
-            if( head.os2f.resname_off != 0 ) {
-                QSeek( the_file, filepos + head.os2f.resname_off, fname );
-                ReadNameTable( the_file );
-            }
-            if( head.os2f.nonres_off != 0 ) {
-                QSeek( the_file, head.os2f.nonres_off, fname );
-                ReadNameTable( the_file );
-            }
-        } else if( head.pe.pe32.signature == PE_SIGNATURE ) {
-            unsigned            num_objects;
-            pe_hdr_table_entry  *table;
-
-            if( IS_PE64( head.pe ) ) {
-                num_objects = PE64( head.pe ).num_objects;
-                table = PE64( head.pe ).table;
-            } else {
-                num_objects = PE32( head.pe ).num_objects;
-                table = PE32( head.pe ).table;
-            }
-            _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
-            QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
-            currobj = objects;
-            for( ; num_objects > 0; --num_objects ) {
-                if( currobj->rva == table[PE_TBL_EXPORT].rva ) {
-                    QSeek( the_file, currobj->physical_offset, fname );
-                    table[PE_TBL_EXPORT].rva -= currobj->physical_offset;
-                    ReadPEExportTable( the_file, &table[PE_TBL_EXPORT]);
-                    break;
-                }
-                currobj++;
-            }
-            _LnkFree( objects );
-            if( num_objects == 0 ) {
-                LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
-            }
-        } else {
-            LnkMsg( WRN+MSG_INV_OLD_DLL, NULL );
-        }
-    }
-    QClose( the_file, fname );
-    _LnkFree( fname );
-    FmtData.u.os2.old_lib_name = NULL;
-}
-
-void AssignOrdinals( void )
-/********************************/
-/* assign ordinal values to entries in the export list */
-{
-    entry_export        *exp;
-    entry_export        *place;
-    entry_export        *prev;
-    bool                isspace;
-
-    if( FmtData.u.os2.exports != NULL ) {
-        if( FmtData.u.os2.old_lib_name != NULL ) {
-            ReadOldLib();
-        }
-        prev = FmtData.u.os2.exports;
-        place = prev->next;
-        isspace = false;
-        for( exp = FmtData.u.os2.exports; exp->ordinal == 0; exp = FmtData.u.os2.exports ) {
-            // while still unassigned values
-            for( ;; ) {             // search for an unassigned value
-                if( place != NULL ) {
-                    isspace = ( ( place->ordinal - prev->ordinal ) > 1 );
-                }
-                if( place == NULL || isspace ) {
-                    if( FmtData.u.os2.exports != prev ) {
-                        FmtData.u.os2.exports = exp->next;
-                        prev->next = exp;
-                        exp->next = place;
-                    }
-                    exp->ordinal = prev->ordinal + 1;
-                    prev = exp;      // now exp is 'previous' to place
-                    break;
-                } else {
-                    prev = place;
-                    place = place->next;
-                }
-            }
-        }
-    }
-}
-
-void CheckExport( char *name, ordinal_t ordinal, exportcompare_fn *rtn )
-/**********************************************************************/
+void CheckExport( const char *name, ordinal_t ordinal, bool cmpcase )
+/*******************************************************************/
 /* check if the name is exported and hasn't been assigned a value, and if so,
  * give it the specified value */
 {
     entry_export    *place;
     entry_export    *prev;
+    int             (*rtn)(const char *,const char *);
 
     DEBUG(( DBG_OLD, "Oldlib export %s ordinal %l", name, ordinal ));
+    rtn = ( cmpcase ) ? strcmp : stricmp;
     prev = NULL;
-    for( place = FmtData.u.os2.exports; place != NULL; place = place->next ) {
+    for( place = FmtData.u.os2fam.exports; place != NULL; place = place->next ) {
         if( rtn( place->name.u.ptr, name ) == 0 ) {
             if( place->ordinal == 0 ) {
                 place->ordinal = ordinal;
                 place = FindPlace( place );
                 if( place != NULL ) {
                     if( prev == NULL ) {
-                        FmtData.u.os2.exports = place;
+                        FmtData.u.os2fam.exports = place;
                     } else {
                         prev->next = place;
                     }
@@ -512,7 +370,7 @@ ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *grp )
     entry_export    *exp;
 
     max_ord = 0;
-    for( owner = &FmtData.u.os2.exports; (exp = *owner) != NULL; owner = &exp->next ) {
+    for( owner = &FmtData.u.os2fam.exports; (exp = *owner) != NULL; owner = &exp->next ) {
         if( addr.seg == exp->addr.seg && addr.off == exp->addr.off ) {
             return( exp->ordinal );
         }
@@ -523,9 +381,9 @@ ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *grp )
     exp = AllocExport( NULL, 0 );
     exp->sym = NULL;
     exp->isexported = false;
-    exp->isanonymous = false;
     exp->ordinal = max_ord + 1;
-    exp->ismovable = ( (grp->segflags & SEG_MOVABLE) != 0 );
+    if( grp->segflags & SEG_MOVABLE )
+        exp->ismovable = true;
     exp->next = NULL;
     exp->addr = addr;
     *owner = exp;
@@ -538,20 +396,20 @@ char *ImpModuleName( dll_sym_info *dll )
     return( dll->m.modnum->name.u.ptr );
 }
 
-bool IsSymElfImported( symbol *s )
-/********************************/
+bool IsSymElfImported( symbol *sym )
+/**********************************/
 {
-    return( IS_SYM_IMPORTED(s) );
+    return( IS_SYM_IMPORTED( sym ) );
 }
 
-bool IsSymElfExported( symbol *s )
-/********************************/
+bool IsSymElfExported( symbol *sym )
+/**********************************/
 {
-    return( FmtData.u.elf.exportallsyms || (s->info & SYM_EXPORTED) );
+    return( FmtData.u.elf.exportallsyms || (sym->info & SYM_EXPORTED) );
 }
 
-bool IsSymElfImpExp( symbol *s )
-/******************************/
+bool IsSymElfImpExp( symbol *sym )
+/********************************/
 {
-    return( IsSymElfImported(s) || IsSymElfExported(s) );
+    return( IsSymElfImported( sym ) || IsSymElfExported( sym ) );
 }

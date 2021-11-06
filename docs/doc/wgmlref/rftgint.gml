@@ -49,10 +49,10 @@ the behavior of the tag.
 Tag attributes will be presented in the following way&gml.
 :XMP.
 &gml.tag  attribute-one
-      \(attribute-two\)
+      [attribute-two]
 :eXMP.
 :PC.
-Attributes not enclosed in brackets(\(), such as attribute-one,
+Attributes not enclosed in brackets([), such as attribute-one,
 are required and must be present with the tag.
 Most attributes are optional, and will have brackets
 as illustrated by attribute-two.

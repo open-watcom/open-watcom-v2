@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include "fmedit.def"
 #include "state.def"
 #include "object.def"
+
 
 #define PG_SC_PERCENT           80
 #define LN_SC_AMOUNT            10
@@ -123,26 +125,26 @@ extern void HorizontalScroll( WPARAM wparam, LPARAM lparam, HWND wnd )
     xdel = 0;
     GetOffset( &offset );
     switch( LOWORD( wparam ) ) {
-    case SB_BOTTOM:
+    case SB_RIGHT:
         xdel = scrollrect.right - offset.x - clrect.right;
         break;
-    case SB_LINEDOWN:
+    case SB_LINERIGHT:
         xdel = LN_SC_AMOUNT;
         break;
-    case SB_LINEUP:
+    case SB_LINELEFT:
         xdel = -LN_SC_AMOUNT;
         break;
-    case SB_PAGEDOWN:
+    case SB_PAGERIGHT:
         xdel = (long)clrect.right * PG_SC_PERCENT / 100;
         break;
-    case SB_PAGEUP:
+    case SB_PAGELEFT:
         xdel = -(long)clrect.right * PG_SC_PERCENT / 100;
         break;
     case SB_THUMBPOSITION:
-        //xdel = GET_WM_VSCROLL_POS( wparam, lparam ) - offset.x - clrect.right;
-        xdel = GET_WM_VSCROLL_POS( wparam, lparam ) - offset.x;
+        //xdel = GET_WM_HSCROLL_POS( wparam, lparam ) - offset.x - clrect.right;
+        xdel = GET_WM_HSCROLL_POS( wparam, lparam ) - offset.x;
         break;
-    case SB_TOP:
+    case SB_LEFT:
         xdel = -offset.x;
         break;
     default:

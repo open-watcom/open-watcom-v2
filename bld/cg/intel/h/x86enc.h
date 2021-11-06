@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 extern void             ReFormat( oc_class class );
 extern void             AddByte( byte b );
 extern void             AddToTemp( byte b );
-extern void             InsertByte( byte b );
 extern void             EmitByte( byte b );
 extern void             EmitPtr( pointer p );
 extern void             EmitSegId( segment_id segid );
@@ -91,6 +90,8 @@ extern void             LayLeaRegOp( instruction *ins );
 extern void             DoMAddr( name *op );
 extern byte             DoMDisp( name *op, bool alt_encoding );
 extern void             LayModRM( name *op );
+extern byte             Displacement( signed_32 val, hw_reg_set regs );
+extern byte             DoIndex( hw_reg_set regs );
 extern void             DoRelocConst( name *op, type_class_def type_class );
 extern void             Do4Shift( instruction *ins );
 extern void             Do4RShift( instruction *ins );
@@ -98,12 +99,10 @@ extern void             Gen4RNeg( instruction *ins );
 extern void             Gen4Neg( instruction *ins );
 extern void             By2Div( instruction *ins );
 extern void             Pow2Div( instruction *ins );
-extern void             GenUnkLea( pointer value );
-extern void             GenLeaSP( int offset );
 extern void             GFstp10( type_length where );
 extern void             GFld10( type_length where );
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 extern void             Pow2Div286(instruction*);
 #else
 extern type_length      TmpLoc( name *base, name *op );

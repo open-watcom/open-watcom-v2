@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -224,9 +225,9 @@ static void dmp_resrc_type_name( unsigned_16 res_type )
 static void dmp_resrc_tab_win( void )
 /***********************************/
 {
-    unsigned_16                             res_type;
-    auto struct resource_type_record        res_group;
-    unsigned_32                             offset;
+    unsigned_16                     res_type;
+    struct resource_type_record     res_group;
+    unsigned_32                     offset;
 
     Resrc_end = 0ul;
     Wread( &Resrc_shift_cnt, sizeof( unsigned_16 ) );

@@ -1,2 +1,9 @@
+proj_name = libaxp
+
 target_cpu = axp
+
+!ifndef libaxp_autodepends
+libaxp_autodepends = .AUTODEPEND
+!endif
+
 !include ../../lib.mif

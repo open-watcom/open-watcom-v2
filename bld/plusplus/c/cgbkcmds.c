@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,12 +42,12 @@
 #include "carve.h"
 #include "ring.h"
 #include "initdefs.h"
-
 #ifndef NDEBUG
     #include "dbg.h"
-    #include "toggle.h"
+    #include "togglesd.h"
     #include "pragdefn.h"
 #endif
+
 
 enum                                    // INDICES FOR STATE-TABLE COMMANDS
 {   DTOR_CMD_INDEX_VBASE                // - virtual base
@@ -372,7 +372,7 @@ static bool cgGenerateCmdBase(      // EMIT BASE FOR COMMAND
         genning = false;
     } else {
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_stab ) {
+        if( TOGGLEDBG( dump_stab ) ) {
             printf( "CMD[%p]: ", base->sym );
         }
 #endif
@@ -402,7 +402,7 @@ static void cgGenerateCmdsSetSv(// EMIT SET_SV COMMANDS
     RingIterBegSafe( ringCmdsSetSv, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_SET_SV ) ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_SET_SV state=%d\n", curr->state_var );
             }
 #endif
@@ -421,7 +421,7 @@ static void cgGenerateCmdsTestFlag(// EMIT TEST_FLAG COMMANDS
     RingIterBegSafe( ringCmdsTestFlag, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_TEST_FLAG ) ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_TEST_FLAG index=%d true=%d false=%d\n"
                       , curr->index
                       , curr->state_var_true
@@ -445,7 +445,7 @@ static void cgGenerateCmdsTry(  // EMIT TRY COMMANDS
     RingIterBegSafe( ringCmdsTry, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_TRY ) ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_CATCH %x state=%x buf=%x var=%x count="
                       , DTC_TRY
                       , curr->state
@@ -472,7 +472,7 @@ static void cgGenerateCmdsFnExc(// EMIT FN_EXC CMDS
     RingIterBegSafe( ringCmdsFnExc, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_FN_EXC ) ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_FN_EXC count=" );
             }
 #endif
@@ -491,7 +491,7 @@ static void cgGenerateCmdsComponent(// EMIT COMPONENT CMDS
     RingIterBegSafe( ringCmdsComponent, curr ) {
         if( cgGenerateCmdBase( &curr->base, curr->cmd_type ) ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 const char* code;
                 VBUF vbuf;
                 switch( curr->cmd_type ) {
@@ -527,7 +527,7 @@ static void cgGenerateCmdsArrayInit( // EMIT ARRAY-INIT CMDS
     RingIterBegSafe( ringCmdsArrayInit, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_ARRAY_INIT ) ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_ARRAY_INIT offset=%x\n", curr->reg->offset );
             }
 #endif
@@ -546,7 +546,7 @@ static void cgGenerateCmdsDlt1( // EMIT DELETE-1 CMDS
     RingIterBegSafe( ringCmdsDlt1, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_1 ) ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 VBUF vbuf;
                 printf( "DTC_DLT_1 offset=%x %s\n"
                       , curr->offset
@@ -570,7 +570,7 @@ static void cgGenerateCmdsDlt1Array( // EMIT DELETE-1-ARRAY CMDS
     RingIterBegSafe( ringCmdsDlt1Array, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_1_ARRAY ) ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 VBUF vbuf;
                 printf( "DTC_DLT_1_ARRAY offset=%x %s\n"
                       , curr->offset
@@ -594,7 +594,7 @@ static void cgGenerateCmdsDlt2( // EMIT DELETE-2 CMDS
     RingIterBegSafe( ringCmdsDlt2, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_2 ) ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 VBUF vbuf;
                 printf( "DTC_DLT_2 offset=%x size=%x %s\n"
                       , curr->offset
@@ -620,7 +620,7 @@ static void cgGenerateCmdsDlt2Array( // EMIT DELETE-2-ARRAY CMDS
     RingIterBegSafe( ringCmdsDlt2Array, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_2_ARRAY ) ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 VBUF vbuf;
                 printf( "DTC_DLT_2_ARRAY offset=%x size=%x %s\n"
                       , curr->offset
@@ -646,7 +646,7 @@ static void cgGenerateCmdsCtorTest( // EMIT CTOR_TEST CMDS
     RingIterBegSafe( ringCmdsCtorTest, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_CTOR_TEST ) ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 printf( "DTC_CTOR_TEST %d\n", curr->flag_no );
             }
 #endif

@@ -10,9 +10,10 @@
 .chap *refid=mdl86 16-bit Memory Models
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'memory models' '16-bit'
 This chapter describes the various 16-bit memory models supported by
@@ -354,7 +355,7 @@ It must be the first object file specified when linking the program.
 :cmt.exe2. .pc
 :cmt.exe2. The square brackets [ ] denote items which are optional.
 :cmt.exe2. .begpoint
-:cmt.exe2. .mnote option
+:cmt.exe2. .point option
 :cmt.exe2. is an option of the form "/<number>" which is used to define the
 :cmt.exe2. starting offset of the COM file.
 :cmt.exe2. By default, it is 0x0100.
@@ -364,13 +365,13 @@ It must be the first object file specified when linking the program.
 :cmt.exe2. The syntax for
 :cmt.exe2. .sy <number>
 :cmt.exe2. follows the C syntax for integer constants.
-:cmt.exe2. .mnote exe_file
+:cmt.exe2. .point exe_file
 :cmt.exe2. is the DOS file specification of the executable file that will be
 :cmt.exe2. converted to a COM file.
 :cmt.exe2. If omitted, a file extension of "EXE" is assumed.
 :cmt.exe2. If the period "." is specified but not the extension, the file is
 :cmt.exe2. assumed to have no file extension.
-:cmt.exe2. .mnote output_file
+:cmt.exe2. .point output_file
 :cmt.exe2. is the optional DOS file specification of the COM file to
 :cmt.exe2. be created.
 :cmt.exe2. If omitted, a file extension of "COM" is assumed.
@@ -413,36 +414,36 @@ This message may be ignored.
 :cmt.exe2. .np
 :cmt.exe2. The following error messages may be issued by EXE2COM.
 :cmt.exe2. .begnote $break
-:cmt.exe2. .mnote Usage: EXE2COM [/start_offset] file [outfile]
+:cmt.exe2. .note Usage: EXE2COM [/start_offset] file [outfile]
 :cmt.exe2. The command line was entered incorrectly.
-:cmt.exe2. .mnote Expecting filename
+:cmt.exe2. .note Expecting filename
 :cmt.exe2. A file name was not specified on the command line.
-:cmt.exe2. .mnote Unable to open %s
+:cmt.exe2. .note Unable to open %s
 :cmt.exe2. The specified file %s could not be opened.
 :cmt.exe2. Check that the file exists.
-:cmt.exe2. .mnote EXE file too large
+:cmt.exe2. .note EXE file too large
 :cmt.exe2. The executable (EXE) file contains more than 64K of code and data.
-:cmt.exe2. .mnote STACK segment ignored
+:cmt.exe2. .note STACK segment ignored
 :cmt.exe2. The "STACK" segment in an EXE file is not included in the COM file.
-:cmt.exe2. .mnote Invalid start address
+:cmt.exe2. .note Invalid start address
 :cmt.exe2. The entry point offset of the EXE file does not correspond to the
 :cmt.exe2. starting offset of the COM file.
 :cmt.exe2. The default starting offset for a COM file is 0x0100 unless
 :cmt.exe2. otherwise specified on the command line.
-:cmt.exe2. .mnote EXE file contains relocation entries
+:cmt.exe2. .note EXE file contains relocation entries
 :cmt.exe2. To convert an EXE file to a COM file, the executable file must not
 :cmt.exe2. contain relocation entries.
-:cmt.exe2. .mnote Not a valid EXE file
+:cmt.exe2. .note Not a valid EXE file
 :cmt.exe2. The specified file does not have the proper format of an EXE file.
-:cmt.exe2. .mnote Not enough memory
+:cmt.exe2. .note Not enough memory
 :cmt.exe2. Not enough memory is available to run the program.
 :cmt.exe2. .endnote
 .do end
 .do end
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .helppref 16-bit
 .do end
 .im wmemlay
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .helppref
 .do end

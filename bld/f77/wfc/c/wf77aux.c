@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,225 +25,226 @@
 *
 *  ========================================================================
 *
-* Description:  Auxiliary information processing.
+* Description:  Auxiliary pragma information processing.
 *
 ****************************************************************************/
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "global.h"
-#include "fcgbls.h"
-#include "wf77auxd.h"
+#include "cgdefs.h"
 #include "wf77aux.h"
-#include "errcod.h"
+#include "wf77prag.h"
 #include "cpopt.h"
-#include "progsw.h"
-#include "fmemmgr.h"
-#include "ferror.h"
-#include "inout.h"
-#include "cspawn.h"
 #include "asmstmt.h"
+#include "fmemmgr.h"
 #include "chain.h"
+#include "ferror.h"
+#include "errcod.h"
+#include "cspawn.h"
 #include "data.h"
+#include "cioconst.h"
 #include "kwlookup.h"
-#include "symtab.h"
-#include "auxlook.h"
-#include "fio.h"
-#include "boot77.h"
+#include "iflookup.h"
+#include "rstutils.h"
+#include "types.h"
+#include "wf77defs.h"
+#include "wf77info.h"
+#include "fctypes.h"
+#include "cgflags.h"
+#include "fcgmain.h"
+#include "cgswitch.h"
+#include "cgprotos.h"
 
 #include "clibext.h"
 
 
-static  aux_info        *CurrAux;
-static  char            *TokStart;
-static  char            *TokEnd;
-static  aux_info        *AliasInfo;
-static  char            SymName[MAX_SYMLEN];
-static  uint            SymLen;
-
-#if _INTEL_CPU
-static  arr_info        *ArrayInfo;
-#endif
-
-extern  char            *RegNames[];
-extern  hw_reg_set      RegValue[];
-extern  byte            MaxReg;
-#if _INTEL_CPU
-#if _CPU == 8086
-extern  hw_reg_set      WinParms[];
-#else
-extern  hw_reg_set      StackParms[];
-#endif
-#endif
-
-extern  char            MsHexConst[];
-extern  char            MsPragCallBytes[];
-extern  char            MsArray[];
-
-#if _CPU == 8086
-
-#define _FLIBM          5
-#define _FLIB7M         6
-#define _FLIBL          5
-#define _FLIB7L         6
-#define _CLIBM          5
-#define _CLIBL          5
-#define _MATHM          5
-#define _MATH7M         7
-#define _MATHL          5
-#define _MATH7L         7
-#define _EMU87          5
-#define _NOEMU87        7
-#define _WRESL          5
-#define _WRESM          5
-
-static  char            _flibm[] = { "flibm" };
-static  char            _flib7m[] = { "flib7m" };
-static  char            _flibl[] = { "flibl" };
-static  char            _flib7l[] = { "flib7l" };
-static  char            _clibm[] = { "clibm" };
-static  char            _clibl[] = { "clibl" };
-static  char            _mathm[] = { "mathm" };
-static  char            _math7m[] = { "math87m" };
-static  char            _mathl[] = { "mathl" };
-static  char            _math7l[] = { "math87l" };
-static  char            _emu87[] = { "emu87" };
-static  char            _noemu87[] = { "noemu87" };
-static  char            _wresl[] = { "wresl" };
-static  char            _wresm[] = { "wresm" };
-
-#elif _CPU == 386
-
-#define _FLIB           4
-#define _FLIB7          5
-#define _FLIBS          5
-#define _FLIB7S         6
-#define _CLIB           6
-#define _CLIBS          6
-#define _MATH           6
-#define _MATHS          6
-#define _MATH7          8
-#define _MATH7S         8
-#define _EMU387         6
-#define _NOEMU387       8
-#define _WRESF          5
-#define _WRESFS         6
-
-static  char            _flib[] = { "flib" };
-static  char            _flibs[] = { "flibs" };
-static  char            _flib7[] = { "flib7" };
-static  char            _flib7s[] = { "flib7s" };
-static  char            _clib[] = { "clib3r" };
-static  char            _clibs[] = { "clib3s" };
-static  char            _math[] = { "math3r" };
-static  char            _maths[] = { "math3s" };
-static  char            _math7[] = { "math387r" };
-static  char            _math7s[] = { "math387s" };
-static  char            _emu387[] = { "emu387" };
-static  char            _noemu387[] = { "noemu387" };
-static  char            _wresf[] = { "wresf" };
-static  char            _wresfs[] = { "wresfs" };
-
-#elif _CPU == _AXP
-
-#define _FLIB           4
-#define _CLIB           4
-#define _MATH           4
-#define _WRESAXP        7
-
-static  char            _flib[] = { "flib" };
-static  char            _clib[] = { "clib" };
-static  char            _math[] = { "math" };
-static  char            _wresaxp[] = { "wresaxp" };
-
-#elif _CPU == _PPC
-
-#define _FLIB           4
-#define _CLIB           4
-#define _MATH           4
-#define _WRESPPC        7
-
-static  char            _flib[] = { "flib" };
-static  char            _clib[] = { "clib" };
-static  char            _math[] = { "math" };
-static  char            _wresppc[] = { "wresppc" };
-
-#endif
-
 #define MAX_REG_SETS    16
 #define MAXIMUM_BYTESEQ 127
 
+#define RT_INDEX_SIZE   (sizeof( RtnTab ) / sizeof( RtnTab[0] ))
+
 #if _INTEL_CPU
+    #define REGNAME_MAX_LEN     4
 #elif _CPU == _AXP || _CPU == _PPC
-  #define AsmSymFini    AsmFini
+    #define AsmSymFini          AsmFini
 #endif
 
+
+typedef enum {
+    #define pick(a,b,c,d)   a,
+    #include "auxinfo.h"
+    #undef pick
+    M_SIZE
+} magic_words;
+
+typedef struct aux_info_flg {
+    boolbit     f_near          : 1;
+    boolbit     f_routine_pops  : 1;
+    boolbit     f_caller_return : 1;
+    boolbit     f_8087_returns  : 1;
+} aux_info_flg;
+
+typedef struct rt_rtn {
+    const char  *name;
+    sym_id      sym_ptr;
+    aux_info    *info;
+    byte        typ;
+} rt_rtn;
+
+aux_info                ProgramInfo;
+
+static aux_info         FortranInfo;
+static aux_info         WatcallInfo;
+static aux_info         CdeclInfo;
+static aux_info         PascalInfo;
+static aux_info         SyscallInfo;
+static aux_info         StdcallInfo;
+static aux_info         FastcallInfo;
+static aux_info         OptlinkInfo;
+
+static aux_info         *AuxList;
+static aux_info         *CurrAux;
+static aux_info         *AliasInfo;
+
+static char             SymName[MAX_SYMLEN+1];
+static size_t           SymLen;
 
 #if _CPU == 386
-    static      char    __Syscall[] = { "aux __syscall \"*\""
-                                    "parm caller []"
-                                    "value struct struct caller []"
-                                    "modify [eax ecx edx]" };
-    static      char    __Cdecl[] =   { "aux __cdecl \"_*\""
-                                    "parm caller loadds []"
-                                    "value struct float struct routine [eax]"
-                                    "modify [eax ebx ecx edx]" };
-    static      char    __Pascal[] =  { "aux __pascal \"^\""
-                                    "parm reverse routine []"
-                                    "value struct float struct caller []"
-                                    "modify [eax ebx ecx edx]" };
-    static      char    __Stdcall[] = { "aux __stdcall \"_*#\""
-                                    "parm routine []"
-                                    "value struct []"
-                                    "modify [eax ecx edx]" };
+static char    __Syscall[] = { "aux __syscall \"*\""
+                                "parm caller []"
+                                "value struct struct caller []"
+                                "modify [eax ecx edx]" };
+static char    __Cdecl[] =   { "aux __cdecl \"_*\""
+                                "parm caller loadds []"
+                                "value struct float struct routine [eax]"
+                                "modify [eax ebx ecx edx]" };
+static char    __Pascal[] =  { "aux __pascal \"^\""
+                                "parm reverse routine []"
+                                "value struct float struct caller []"
+                                "modify [eax ebx ecx edx]" };
+static char    __Stdcall[] = { "aux __stdcall \"_*#\""
+                                "parm routine []"
+                                "value struct []"
+                                "modify [eax ecx edx]" };
 #elif _CPU == 8086
-    static      char    __Pascal[] =  { "aux __pascal \"^\""
-                                    "parm routine reverse []"
-                                    "value struct float struct caller []"
-                                    "modify [ax bx cx dx]" };
-    static      char    __Cdecl[] =   { "aux __cdecl \"_*\""
-                                    "parm caller []"
-                                    "value struct float struct routine [ax]"
-                                    "modify [ax bx cx dx]" };
+static char    __Pascal[] =  { "aux __pascal \"^\""
+                                "parm routine reverse []"
+                                "value struct float struct caller []"
+                                "modify [ax bx cx dx]" };
+static char    __Cdecl[] =   { "aux __cdecl \"_*\""
+                                "parm caller []"
+                                "value struct float struct routine [ax]"
+                                "modify [ax bx cx dx]" };
 #endif
 
-default_lib             *DefaultLibs;
-aux_info                *AuxInfo;
-aux_info                FortranInfo;
-aux_info                ProgramInfo;
-dep_info                *DependencyInfo;
+static hw_reg_set       StackParms[] = { HW_D( HW_EMPTY ) };
 
-/* Forward declarations */
-static  void    FreeAuxEntry( aux_info *aux );
-static  void    FreeAuxElements( aux_info *aux );
-static  void    FreeArgList( aux_info *aux );
-static  void    ScanToken( void );
-static  void    ScanFnToken( void );
-static  void    SymbolId( void );
-static  void    TokUpper( void );
-static  void    ReqToken( char *tok );
-static  void    AliasName( void );
-static  void    SymbolName( void );
-static  void    ProcessAlias( void );
-static  void    DupCallBytes( aux_info *dst, aux_info *src );
-static  void    ObjectName( void );
-static  void    GetParmInfo( void );
-static  void    GetByteSeq( void );
-static  void    GetRetInfo( void );
-static  void    GetSaveInfo( void );
-static  void    GetArgList( void );
-static  void    GetSTRetInfo( void );
-static  void    DupParmInfo( aux_info *dst, aux_info *src );
-static  void    DupObjectName( aux_info *dst, aux_info *src );
-static  void    DupArgInfo( aux_info *dst, aux_info *src );
+#if _CPU == 8086
+static  hw_reg_set      FortranParms[] =
+    { HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ), HW_D( HW_EMPTY ) };
 
-void            InitAuxInfo( void ) {
-//=============================
+static aux_info         DefaultInfo = {
+    FAR_CALL,
+    NULL,
+    FortranParms,
+    HW_D( HW_EMPTY ),
+    HW_D( HW_SI ),
+    HW_D( HW_FULL ),
+    "^",
+    0,
+    0,
+    NULL
+};
+#elif   _CPU == 386
+static  hw_reg_set      FortranParms[] =
+    { HW_D_4( HW_EAX, HW_EBX, HW_ECX, HW_EDX ), HW_D( HW_EMPTY ) };
 
+static aux_info         DefaultInfo = {
+    0,
+    NULL,
+    FortranParms,
+    HW_D( HW_EMPTY ),
+    HW_D( HW_ESI ),
+    HW_D( HW_FULL ),
+    "^",
+    0,
+    0,
+    NULL
+};
+#else
+static  hw_reg_set      FortranParms[] =
+    { HW_D( HW_EMPTY ) };
+
+static aux_info         DefaultInfo = {
+    0,
+    NULL,
+    FortranParms,
+    HW_D( HW_EMPTY ),
+    HW_D( HW_EMPTY ),
+    HW_D( HW_FULL ),
+    "^",
+    0,
+    0,
+    NULL
+};
+#endif
+
+
+#include "regs.c"
+
+
+static struct magic_words_info {
+    const char      *name;
+    aux_info        *info;
+} MagicWords[] = {
+    #define pick(a,b,c,d) { c, d },
+    #include "auxinfo.h"
+    #undef pick
+};
+
+static rt_rtn   RtnTab[] = {
+    #define pick(id,name,sym,aux,typ) {name,sym,aux,typ},
+    #include "rtdefn.h"
+    #undef pick
+};
+
+
+static aux_info *LookupMagicKeyword( void )
+/*****************************************/
+{
+    magic_words     mword;
+
+    for( mword = 0; mword < M_SIZE; mword++ ) {
+        if( RecToken( MagicWords[mword].name ) ) {
+            return( MagicWords[mword].info );
+        }
+    }
+    return( NULL );
+}
+
+static aux_info *AuxLookup( const char *name, size_t name_len )
+//=============================================================
+{
+    aux_info    *aux;
+
+    for( aux = AuxList; aux != NULL; aux = aux->link ) {
+        if( aux->sym_len == name_len ) {
+            if( strnicmp( name, aux->sym_name, name_len ) == 0 ) {
+                break;
+            }
+        }
+    }
+    return( aux );
+}
+
+
+void InitPragmaAux( void )
+//========================
+{
 #if _INTEL_CPU
     int         cpu;
     int         fpu;
@@ -253,13 +254,19 @@ void            InitAuxInfo( void ) {
 
     cpu = 0;
   #if _CPU == 8086
-    if( CPUOpts & CPUOPT_80186 ) cpu = 1;
-    if( CPUOpts & CPUOPT_80286 ) cpu = 2;
+    if( CPUOpts & CPUOPT_80186 )
+        cpu = 1;
+    if( CPUOpts & CPUOPT_80286 )
+        cpu = 2;
   #endif
-    if( CPUOpts & CPUOPT_80386 ) cpu = 3;
-    if( CPUOpts & CPUOPT_80486 ) cpu = 4;
-    if( CPUOpts & CPUOPT_80586 ) cpu = 5;
-    if( CPUOpts & CPUOPT_80686 ) cpu = 6;
+    if( CPUOpts & CPUOPT_80386 )
+        cpu = 3;
+    if( CPUOpts & CPUOPT_80486 )
+        cpu = 4;
+    if( CPUOpts & CPUOPT_80586 )
+        cpu = 5;
+    if( CPUOpts & CPUOPT_80686 )
+        cpu = 6;
 
     if( CPUOpts & CPUOPT_FP287 ) {
         fpu = 2;
@@ -295,9 +302,7 @@ void            InitAuxInfo( void ) {
     AsmInit();
 #endif
 
-    DefaultLibs = NULL;
-    AuxInfo = NULL;
-    DependencyInfo = NULL;
+    AuxList = NULL;
 #if _INTEL_CPU
   #if _CPU == 8086
     // Change auxiliary information for calls to run-time routines to match
@@ -392,692 +397,75 @@ void            InitAuxInfo( void ) {
 }
 
 
-void            FiniAuxInfo( void ) {
-//=============================
-
-    void        *next;
-
-    while( AuxInfo != NULL ) {
-        next = AuxInfo->link;
-        FreeAuxEntry( AuxInfo );
-        AuxInfo = next;
+static void FreeAuxElements( aux_info *info )
+//===========================================
+{
+    if( info->arg_info != DefaultInfo.arg_info ) {
+        FreeChain( &info->arg_info );
+        info->arg_info = DefaultInfo.arg_info;
     }
-    FreeAuxElements( &FortranInfo );
-    FreeChain( &DefaultLibs );
-    // in case of fatal error, FiniAuxInfo() is called
-    // from TDPurge()
-#if _INTEL_CPU
-    FreeChain( &ArrayInfo );
-#endif
-    FreeChain( &DependencyInfo );
-    AsmSymFini();
-}
-
-
-void    SubAuxInit( void ) {
-//====================
-
-#if _INTEL_CPU
-// Initialize aux information for a subprogram.
-
-    ArrayInfo = NULL;
-#endif
-}
-
-
-void    SubAuxFini( void ) {
-//====================
-
-#if _INTEL_CPU
-// Finalize aux information for a subprogram.
-
-    arr_info    *next;
-    sym_id      arr;
-
-    while( ArrayInfo != NULL ) {
-        next = ArrayInfo->link;
-        arr = SymFind( ArrayInfo->arr, strlen( ArrayInfo->arr ) );
-        if( ( arr != NULL ) && ( arr->u.ns.flags & SY_SUBSCRIPTED ) &&
-            ( arr->u.ns.u1.s.typ != FT_CHAR ) &&
-            ( ( arr->u.ns.flags & SY_SUB_PARM ) || _Allocatable( arr ) ) ) {
-            arr->u.ns.si.va.u.dim_ext->dim_flags |= DIM_EXTENDED;
-        }
-        FMemFree( ArrayInfo );
-        ArrayInfo = next;
+    if( info->parms != DefaultInfo.parms ) {
+        FMemFree( info->parms );
+        info->parms = DefaultInfo.parms;
     }
-#endif
-}
-
-#if _INTEL_CPU
-static  void    AddArrayInfo( char *arr_name, uint arr_len ) {
-//============================================================
-
-// Process aux information for an array.
-
-    arr_info    **arr;
-    arr_info    *new_arr;
-
-    for( arr = &ArrayInfo; *arr != NULL; arr = &(*arr)->link ) {
-        if( strlen( (*arr)->arr ) != arr_len )
-            continue;
-        if( memcmp( (*arr)->arr, arr_name, arr_len ) == 0 ) {
-            return;
-        }
+    if( info->code != DefaultInfo.code ) {
+        FMemFree( info->code );
+        info->code = DefaultInfo.code;
     }
-    new_arr = FMemAlloc( sizeof( arr_info ) + arr_len );
-    new_arr->link = NULL;
-    memcpy( new_arr->arr, arr_name, arr_len );
-    new_arr->arr[arr_len] = NULLCHAR;
-    *arr = new_arr;
+    if( info->objname != DefaultInfo.objname ) {
+        FMemFree( info->objname );
+        info->objname = DefaultInfo.objname;
+    }
 }
-#endif
 
-void    AddDependencyInfo( source_t *fi ) {
+
+static void FreeAuxEntry( aux_info *aux )
 //=======================================
-
-// Add dependency information for an included file.
-
-    char        *p;
-    dep_info    **dep;
-    dep_info    *new_dep;
-    struct stat stat_info;
-    char        buff[_MAX_PATH];
-
-    p = _fullpath( buff, fi->name, _MAX_PATH );
-    if( p != NULL ) {
-        for( dep = &DependencyInfo; *dep != NULL; dep = &(*dep)->link ) {
-            if( strcmp( (*dep)->fn, p ) == 0 ) {
-                return;
-            }
-        }
-        if( fstat( fi->fileptr->handle, &stat_info ) != -1 ) {
-            new_dep = FMemAlloc( sizeof( dep_info ) + strlen( p ) );
-            new_dep->link = NULL;
-            strcpy( new_dep->fn, p );
-            new_dep->time_stamp = stat_info.st_mtime;
-            *dep = new_dep;
-        }
-    }
-}
-
-
-static  void    AddDefaultLib( char *lib_ptr, int lib_len, char priority ) {
-//==========================================================================
-
-    default_lib         **lib;
-    default_lib         *new_lib;
-
-    if( (Options & OPT_DFLT_LIB) == 0 )
-        return;
-    if( ( *lib_ptr == '"' ) && ( lib_ptr[lib_len - 1] == '"' ) ) {
-        lib_len -= 2;
-        ++lib_ptr;
-    }
-    for( lib = &DefaultLibs; *lib != NULL; lib = &(*lib)->link ) {
-        if( strlen( &(*lib)->lib[1] ) != lib_len )
-            continue;
-        if( memcmp( &(*lib)->lib[1], lib_ptr, lib_len ) == 0 ) {
-            return;
-        }
-    }
-    new_lib = FMemAlloc( sizeof( default_lib ) + lib_len );
-    new_lib->link = NULL;
-    new_lib->lib[0] = priority;
-    memcpy( &new_lib->lib[1], lib_ptr, lib_len );
-    new_lib->lib[1+lib_len] = NULLCHAR;
-    *lib = new_lib;
-}
-
-
-void    DefaultLibInfo( void ) {
-//========================
-
-#if _CPU == 386
-    if( CGOpts & CGOPT_STK_ARGS ) {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLib( _flibs, _FLIBS, '1' );
-            AddDefaultLib( _maths, _MATHS, '1' );
-        } else {
-            AddDefaultLib( _flib7s, _FLIB7S, '1' );
-            AddDefaultLib( _math7s, _MATH7S, '1' );
-        }
-        AddDefaultLib( _clibs, _CLIBS, '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLib( _wresfs, _WRESFS, '1' );
-        }
-    } else {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLib( _flib, _FLIB, '1' );
-            AddDefaultLib( _math, _MATH, '1' );
-        } else {
-            AddDefaultLib( _flib7, _FLIB7, '1' );
-            AddDefaultLib( _math7, _MATH7, '1' );
-        }
-        AddDefaultLib( _clib, _CLIB, '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLib( _wresf, _WRESF, '1' );
-        }
-    }
-    if( CPUOpts & CPUOPT_FPI ) {
-        AddDefaultLib( _emu387, _EMU387, '1' );
-    } else if( CPUOpts & CPUOPT_FPI87 ) {
-        AddDefaultLib( _noemu387, _NOEMU387, '1' );
-    }
-#elif _CPU == 8086
-    if( CGOpts & CGOPT_M_MEDIUM ) {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLib( _flibm, _FLIBM, '1' );
-            AddDefaultLib( _mathm, _MATHM, '1' );
-        } else {
-            AddDefaultLib( _flib7m, _FLIB7M, '1' );
-            AddDefaultLib( _math7m, _MATH7M, '1' );
-        }
-        AddDefaultLib( _clibm, _CLIBM, '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLib( _wresm, _WRESM, '1' );
-        }
-    } else {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLib( _flibl, _FLIBL, '1' );
-            AddDefaultLib( _mathl, _MATHL, '1' );
-        } else {
-            AddDefaultLib( _flib7l, _FLIB7L, '1' );
-            AddDefaultLib( _math7l, _MATH7L, '1' );
-        }
-        AddDefaultLib( _clibl, _CLIBL, '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLib( _wresl, _WRESL, '1' );
-        }
-    }
-    if( CPUOpts & CPUOPT_FPI ) {
-        AddDefaultLib( _emu87, _EMU87, '1' );
-    } else if( CPUOpts & CPUOPT_FPI87 ) {
-        AddDefaultLib( _noemu87, _NOEMU87, '1' );
-    }
-#elif _CPU == _AXP
-    AddDefaultLib( _flib, _FLIB, '1' );
-    AddDefaultLib( _math, _MATH, '1' );
-    AddDefaultLib( _clib, _CLIB, '1' );
-    if( Options & OPT_RESOURCES ) {
-        AddDefaultLib( _wresaxp, _WRESAXP, '1' );
-    }
-#elif _CPU == _PPC
-    AddDefaultLib( _flib, _FLIB, '1' );
-    AddDefaultLib( _math, _MATH, '1' );
-    AddDefaultLib( _clib, _CLIB, '1' );
-    if( Options & OPT_RESOURCES ) {
-        AddDefaultLib( _wresppc, _WRESPPC, '1' );
-    }
-#endif
-}
-
-
-static  void    FreeAuxEntry( aux_info *aux ) {
-//=============================================
-
+{
     FreeAuxElements( aux );
     FMemFree( aux );
 }
 
 
-static  void    FreeAuxElements( aux_info *aux ) {
-//================================================
-
-    FreeArgList( aux );
-    if( aux->parms != DefaultInfo.parms ) {
-        FMemFree( aux->parms );
-        aux->parms = DefaultInfo.parms;
-    }
-    if( aux->code != DefaultInfo.code ) {
-        FMemFree( aux->code );
-        aux->code = DefaultInfo.code;
-    }
-    if( aux->objname != DefaultInfo.objname ) {
-        FMemFree( aux->objname );
-        aux->objname = DefaultInfo.objname;
-    }
-}
-
-
-static  void    FreeArgList( aux_info *aux ) {
-//============================================
-
-    FreeChain( &aux->arg_info );
-}
-
-
-aux_info        *NewAuxEntry( char *name, uint name_len )
-//=======================================================
-{
-    aux_info    *aux;
-
-    aux = FMemAlloc( sizeof( aux_info ) + name_len );
-    aux->sym_len = name_len;
-    memcpy( aux->sym_name, name, name_len );
-    aux->sym_name[name_len] = NULLCHAR;
-    aux->link = AuxInfo;
-    aux->parms = DefaultInfo.parms;
-    aux->code = DefaultInfo.code;
-    aux->objname = DefaultInfo.objname;
-    aux->arg_info = NULL;
-    AuxInfo = aux;
-    return( aux );
-}
-
-
-static  bool    CurrToken( char *tok ) {
-//======================================
-
-    char    *ptr;
-
-    ptr = TokStart;
-    for(;;) {
-        if( ptr == TokEnd )
-            break;
-        if( toupper( *ptr ) != *tok )
-            break;
-        ptr++;
-        tok++;
-    }
-    if( ( ptr == TokEnd ) && ( *tok == '\0' ) )
-        return( true );
-    return( false );
-}
-
-
-static  bool    RecToken( char *tok ) {
-//=====================================
-
-    if( CurrToken( tok ) ) {
-        ScanToken();
-        return( true );
-    }
-    return( false );
-}
-
-static  bool    RecFnToken( char *tok ) {
-//=======================================
-
-    if( CurrToken( tok ) ) {
-        ScanFnToken();
-        return( true );
-    }
-    return( false );
-}
-
-
-
-static void     Pragma( void ) {
+void FiniPragmaAux( void )
 //========================
+{
+    void        *next;
 
-// Process a pragma.
-
-#if _INTEL_CPU
-    char        *arr;
-    uint        arr_len;
-#endif
-
-    struct {
-        boolbit f_far    : 1;
-        boolbit f_far16  : 1;
-        boolbit f_loadds : 1;
-        boolbit f_export : 1;
-        boolbit f_parm   : 1;
-        boolbit f_value  : 1;
-        boolbit f_modify : 1;
-    } have;
-
-    if( RecFnToken( "LIBRARY" ) ) {
-        if( RecFnToken( "\0" ) ) {
-            DefaultLibInfo();
-        } else {
-            while( !RecFnToken( "\0" ) ) {
-                AddDefaultLib( TokStart, TokEnd - TokStart, '9' );
-                ScanFnToken();
-            }
-        }
-#if _INTEL_CPU
-    } else if( RecToken( "ARRAY" ) ) {
-        SymbolId();
-        TokUpper();
-        arr = TokStart;
-        arr_len = TokEnd - TokStart;
-        ScanToken();
-        if( RecToken( "FAR" ) ) {
-            if( _SmallDataModel( CGOpts ) ) {
-                AddArrayInfo( arr, arr_len );
-            }
-  #if _CPU == 8086
-        } else if( RecToken( "HUGE" ) ) {
-            if( CGOpts & CGOPT_M_LARGE ) {
-                AddArrayInfo( arr, arr_len );
-            }
-  #endif
-        }
-#endif
-    } else {
-        AliasInfo = &FortranInfo;
-        if( RecToken( "LINKAGE" ) ) {
-            ReqToken( "(" );
-            SymbolName();
-            ReqToken( "," );
-            AliasName();
-            ProcessAlias();
-            ReqToken( ")" );
-        } else {
-            ReqToken( "AUX" );
-            if( RecToken( "(" ) ) {
-                AliasName();
-                ReqToken( ")" );
-            }
-            SymbolName();
-            ProcessAlias();
-            ObjectName();
-
-            have.f_far    = false;
-            have.f_loadds = false;
-            have.f_export = false;
-            have.f_value  = false;
-            have.f_modify = false;
-            have.f_parm   = false;
-            for( ;; ) {
-                if( !have.f_parm && RecToken( "PARM" ) ) {
-                    GetParmInfo();
-                    have.f_parm = true;
-                } else if( !have.f_far && RecToken( "=" ) ) {
-                    GetByteSeq();
-#if _INTEL_CPU
-                    have.f_far = true;
-                } else if( !have.f_far && RecToken( "FAR" ) ) {
-                    CurrAux->cclass |= FAR_CALL;
-                    have.f_far = true;
-#if _CPU == 386
-                } else if( !have.f_far16 && RecToken( "FAR16" ) ) {
-                    CurrAux->cclass |= FAR16_CALL;
-                    have.f_far16 = true;
-#endif
-                } else if( !have.f_far && RecToken( "NEAR" ) ) {
-                    CurrAux->cclass &= ~FAR_CALL;
-                    have.f_far = true;
-                } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
-                    CurrAux->cclass |= LOAD_DS_ON_ENTRY;
-                    have.f_loadds = true;
-#endif
-                } else if( !have.f_export && RecToken( "EXPORT" ) ) {
-                    CurrAux->cclass |= DLL_EXPORT;
-                    have.f_export = true;
-#if _INTEL_CPU
-                } else if( !have.f_value && RecToken( "VALUE" ) ) {
-                    GetRetInfo();
-                    have.f_value = true;
-#endif
-                } else if( !have.f_value && RecToken( "ABORTS" ) ) {
-                    CurrAux->cclass |= SUICIDAL;
-                    have.f_value = true;
-#if _INTEL_CPU
-                } else if( !have.f_modify && RecToken( "MODIFY" ) ) {
-                    GetSaveInfo();
-                    have.f_modify = true;
-#endif
-                } else {
-                    break;
-                }
-            }
-        }
+    while( AuxList != NULL ) {
+        next = AuxList->link;
+        FreeAuxEntry( AuxList );
+        AuxList = next;
     }
+    FreeAuxElements( &FortranInfo );
+    AsmSymFini();
 }
 
 
-void    DoPragma( char *ptr ) {
-//=============================
+static void DupParmInfo( aux_info *dst, aux_info *src )
+//=====================================================
+{
+    hw_reg_set  *new_reg_set;
+    hw_reg_set  *reg_set;
+    unsigned    size;
 
-    int         status;
-
-    TokStart = ptr;
-    TokEnd = ptr;
-    ScanToken();
-    for(;;) {
-        status = CSpawn( &Pragma );
-        if( status != 0 ) {
-            if( ProgSw & PS_FATAL_ERROR ) {
-                CSuicide();
-            }
-            AsmSymFini();
-            break;
-        }
-        if( RecToken( "\0" ) ) {
-            break;
-        }
+    reg_set = src->parms;
+    size = 0;
+    while( !HW_CEqual( reg_set[size], HW_EMPTY ) ) {
+        ++size;
     }
+    ++size;
+    new_reg_set = FMemAlloc( size * sizeof( hw_reg_set ) );
+    memcpy( new_reg_set, reg_set, size * sizeof( hw_reg_set ) );
+    dst->parms = new_reg_set;
 }
 
 
-void    ProcPragma( char *ptr ) {
-//===============================
-
-    // don't process auxiliary pragma's until pass 2
-    if( ProgSw & PS_DONT_GENERATE )
-        return;
-    DoPragma( ptr );
-}
-
-
-static  void    ScanToken( void ) {
-//===========================
-
-    char    *ptr;
-    bool    found_token;
-    bool    first;
-
-    ptr = TokEnd;
-    ptr = SkipBlanks( ptr );
-    TokStart = ptr;
-    first = true;
-    found_token = false;
-    for(;;) {
-        switch( *ptr ) {
-        case ' ' :
-        case '\t' :
-        case '\0' :
-            found_token = true;
-            break;
-        case '"' :
-            if( first ) {
-                for(;;) {
-                    ++ptr;
-                    if( *ptr == '\0' )
-                        break;
-                    if( *ptr == '"' ) {
-                        ++ptr;
-                        break;
-                    }
-                }
-            }
-            found_token = true;
-            break;
-        case '[' :
-        case ']' :
-        case '(' :
-        case ')' :
-        case ',' :
-        case '=' :
-        case '*' :
-            if( first ) {
-                ++ptr;
-            }
-            found_token = true;
-            break;
-        case '\\' :
-            if( first ) {
-                ReadSrc();
-                ptr = SrcBuff;
-                if( ( *ptr == '*' ) || ( *ptr == 'C' ) || ( *ptr == 'c' ) ) {
-                    ++ptr;
-                } else {
-                    Error( PR_BAD_CONTINUATION );
-                    CSuicide();
-                }
-                ptr = SkipBlanks( ptr );
-                TokStart = ptr;
-            } else {
-                found_token = true;
-            }
-            break;
-        default :
-            first = false;
-            ptr++;
-        }
-        if( found_token ) {
-            break;
-        }
-    }
-    TokEnd = ptr;
-}
-
-static  void    ScanFnToken( void ) {
-//===========================
-
-    char    *ptr;
-    bool    found_token;
-    bool    first;
-
-    ptr = TokEnd;
-    ptr = SkipBlanks( ptr );
-    TokStart = ptr;
-    first = true;
-    for( found_token = false; !found_token; ) {
-        switch( *ptr ) {
-        case ' ' :
-        case '\t' :
-        case '\0' :
-            found_token = true;
-            break;
-        case '"' :
-            if( first ) {
-                for(;;) {
-                    ++ptr;
-                    if( *ptr == '\0' )
-                        break;
-                    if( *ptr == '"' ) {
-                        ++ptr;
-                        break;
-                    }
-                }
-            }
-            found_token = true;
-            break;
-        default :
-            first = false;
-            ptr++;
-        }
-    }
-    TokEnd = ptr;
-}
-
-#if _INTEL_CPU
-static  void    TokUpper( void ) {
-//==========================
-
-    char        *ptr;
-
-    ptr = TokStart;
-    while( ptr != TokEnd ) {
-        *ptr = toupper( *ptr );
-        ++ptr;
-    }
-}
-
-#endif
-
-
-static  void    ReqToken( char *tok ) {
-//=====================================
-
-    if( !RecToken( tok ) ) {
-        *TokEnd = NULLCHAR;
-        Error( PR_BAD_SYNTAX, tok, TokStart );
-        CSuicide();
-    }
-}
-
-
-static  void            AliasName( void ) {
-//===================================
-
-    aux_info    *alias;
-
-    SymbolId();
-    alias = AuxLookupName( TokStart, TokEnd - TokStart );
-    if( alias != NULL ) {
-        AliasInfo = alias;
-    }
-    ScanToken();
-}
-
-
-static  void            SymbolName( void ) {
-//====================================
-
-    if( RecToken( "DEFAULT" ) ) {
-        SymLen = 0;
-    } else {
-        SymbolId();
-        SymLen = TokEnd - TokStart;
-        if( SymLen > MAX_SYMLEN ) {
-            SymLen = MAX_SYMLEN;
-        }
-        memcpy( SymName, TokStart, SymLen );
-        ScanToken();
-    }
-}
-
-
-static  void            ProcessAlias( void ) {
-//======================================
-
-    if( SymLen == 0 ) { // "DEFAULT"
-        CurrAux = AliasInfo;
-    } else {
-        CurrAux = AuxLookupName( SymName, SymLen );
-        if( CurrAux != AliasInfo ) { // Consider: c$pragma aux (sp) sp
-            if( CurrAux == NULL ) {
-                CurrAux = NewAuxEntry( SymName, SymLen );
-            } else {
-                FreeAuxElements( CurrAux );
-            }
-        }
-        CopyAuxInfo( CurrAux, AliasInfo );
-    }
-}
-
-
-void            CopyAuxInfo( aux_info *dst, aux_info *src ) {
-//===========================================================
-
-    if( dst != src ) {
-        dst->cclass = src->cclass;
-        dst->save = src->save;
-        dst->returns = src->returns;
-        dst->streturn = src->streturn;
-        if( src->parms != DefaultInfo.parms ) {
-            DupParmInfo( dst, src );
-        }
-        if( src->code != DefaultInfo.code ) {
-            DupCallBytes( dst, src );
-        }
-        if( src->objname != DefaultInfo.objname ) {
-            DupObjectName( dst, src );
-        }
-        DupArgInfo( dst, src );
-    }
-}
-
-
-static  void    DupCallBytes( aux_info *dst, aux_info *src ) {
-//============================================================
-
+static void DupCallBytes( aux_info *dst, aux_info *src )
+//======================================================
+{
     byte_seq        *new_seq;
-    byte_seq_len    seq_len;
+    size_t          seq_len;
 
     seq_len = src->code->length;
     new_seq = FMemAlloc( offsetof( byte_seq, data ) + seq_len );
@@ -1113,28 +501,9 @@ static  void    DupCallBytes( aux_info *dst, aux_info *src ) {
 }
 
 
-static  void    DupParmInfo( aux_info *dst, aux_info *src ) {
-//===========================================================
-
-    hw_reg_set  *new_reg_set;
-    hw_reg_set  *reg_set;
-    int         size;
-
-    reg_set = src->parms;
-    size = 0;
-    while( !HW_CEqual( reg_set[size], HW_EMPTY ) ) {
-        ++size;
-    }
-    ++size;
-    new_reg_set = FMemAlloc( size * sizeof( hw_reg_set ) );
-    memcpy( new_reg_set, reg_set, size * sizeof( hw_reg_set ) );
-    dst->parms = new_reg_set;
-}
-
-
-static  void    DupObjectName( aux_info *dst, aux_info *src ) {
-//=============================================================
-
+static void DupObjectName( aux_info *dst, aux_info *src )
+//=======================================================
+{
     char        *new_name;
 
     new_name = FMemAlloc( strlen( src->objname ) + 1 );
@@ -1143,52 +512,102 @@ static  void    DupObjectName( aux_info *dst, aux_info *src ) {
 }
 
 
-static  void    DupArgInfo( aux_info *dst, aux_info *src ) {
-//==========================================================
+static void DupArgInfo( pass_by **dst, pass_by *src )
+//===================================================
+{
+    pass_by     *arg;
 
-    pass_by     *new_arg;
-    pass_by     *args;
-    pass_by     **curr_arg;
-
-    args = src->arg_info;
-    curr_arg = &dst->arg_info;
-    while( args != NULL ) {
-        new_arg = FMemAlloc( sizeof( pass_by ) );
-        new_arg->info = args->info;
-        new_arg->link = NULL;
-        *curr_arg = new_arg;
-        curr_arg = &new_arg->link;
-        args = args->link;
+    for( ; src != NULL; src = src->link ) {
+        arg = FMemAlloc( sizeof( pass_by ) );
+        arg->info = src->info;
+        *dst = arg;
+        dst = &arg->link;
     }
+    *dst = NULL;
 }
 
 
-static  void            SymbolId( void ) {
-//==================================
-
-    char        *ptr;
-
-    ptr = TokStart;
-    if( ( isalpha( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
-        Error( PR_SYMBOL_NAME );
-        CSuicide();
-    }
-    for(;;) {
-        ptr++;
-        if( ptr == TokEnd )
-            break;
-        if( ( isalnum( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
-            Error( PR_SYMBOL_NAME );
-            CSuicide();
+static void CopyAuxInfo( aux_info *dst, aux_info *src )
+//=====================================================
+{
+    if( dst != src ) {
+        dst->cclass = src->cclass;
+        dst->save = src->save;
+        dst->returns = src->returns;
+        dst->streturn = src->streturn;
+        if( src->parms != DefaultInfo.parms ) {
+            DupParmInfo( dst, src );
+        }
+        if( src->code != DefaultInfo.code ) {
+            DupCallBytes( dst, src );
+        }
+        if( src->objname != DefaultInfo.objname ) {
+            DupObjectName( dst, src );
+        }
+        if( src->arg_info != DefaultInfo.arg_info ) {
+            DupArgInfo( &dst->arg_info, src->arg_info );
         }
     }
 }
 
 
-static  void            ObjectName( void ) {
-//====================================
+static aux_info *NewAuxEntry( const char *name, size_t name_len )
+//===============================================================
+{
+    aux_info    *aux;
 
-    int         obj_len;
+    aux = FMemAlloc( sizeof( aux_info ) + name_len );
+    aux->sym_len = name_len;
+    memcpy( aux->sym_name, name, name_len );
+    aux->sym_name[name_len] = NULLCHAR;
+    aux->link = AuxList;
+    aux->parms = DefaultInfo.parms;
+    aux->code = DefaultInfo.code;
+    aux->objname = DefaultInfo.objname;
+    aux->arg_info = DefaultInfo.arg_info;
+    AuxList = aux;
+    return( aux );
+}
+
+
+static void AliasName( void )
+//===========================
+{
+    aux_info    *alias;
+
+    alias = LookupMagicKeyword();   // magic keywords "DEFAULT", "__CDECL" ...
+    if( alias == NULL ) {
+        SymbolId();
+        alias = AuxLookup( TokStart, TokEnd - TokStart );
+        ScanToken();
+    }
+    if( alias != NULL ) {
+        AliasInfo = alias;
+    }
+}
+
+
+static void SymbolName( void )
+//============================
+{
+    CurrAux = LookupMagicKeyword(); // magic keywords "DEFAULT", "__CDECL" ...
+    if( CurrAux == NULL ) {
+        SymbolId();
+        SymLen = TokEnd - TokStart;
+        if( SymLen > MAX_SYMLEN ) {
+            SymLen = MAX_SYMLEN;
+        }
+        memcpy( SymName, TokStart, SymLen );
+        SymName[SymLen] = NULLCHAR;
+        ScanToken();
+    }
+}
+
+
+static void ObjectName( void )
+//============================
+{
+    size_t      obj_len;
     char        *name;
 
     if( *TokStart != '"' )
@@ -1209,16 +628,38 @@ static  void            ObjectName( void ) {
 }
 
 
-void    *AsmQuerySymbol( const char *name )
-//===========================================
+static void ProcessAlias( void )
+//==============================
+{
+    if( CurrAux != NULL ) {             // magic keywords "DEFAULT", "__CDECL" ...
+        if( CurrAux != AliasInfo ) {    // Consider: c$pragma aux (sp) sp
+            FreeAuxElements( CurrAux );
+            CopyAuxInfo( CurrAux, AliasInfo );
+        }
+    } else {
+        CurrAux = AuxLookup( SymName, SymLen );
+        if( CurrAux != AliasInfo ) {    // Consider: c$pragma aux (sp) sp
+            if( CurrAux == NULL ) {
+                CurrAux = NewAuxEntry( SymName, SymLen );
+            } else {
+                FreeAuxElements( CurrAux );
+            }
+        }
+        CopyAuxInfo( CurrAux, AliasInfo );
+    }
+}
+
+
+void *AsmQuerySymbol( const char *name )
+//======================================
 {
     return( (void *)name );
 }
 
 
-enum    sym_state       AsmQueryState( void *handle ) {
-//=====================================================
-
+enum sym_state AsmQueryState( void *handle )
+//==========================================
+{
     /* unused parameters */ (void)handle;
 
     return( SYM_UNDEFINED );
@@ -1226,17 +667,18 @@ enum    sym_state       AsmQueryState( void *handle ) {
 
 
 #if _INTEL_CPU
-enum    sym_type        AsmQueryType( void *handle ) {
-//====================================================
-
+enum sym_type AsmQueryType( void *handle )
+//========================================
+{
     /* unused parameters */ (void)handle;
 
     return( SYM_INT1 );
 }
 
 
-static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
-//===================================================================
+static void InsertFixups( unsigned char *buff, size_t len )
+//=========================================================
+{
                         // additional slop in buffer to simplify the code
     unsigned char       temp[MAXIMUM_BYTESEQ + 2];
     struct asmfixup     *fix;
@@ -1272,7 +714,7 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
         }
         dst = temp;
         src = buff;
-        end = src + i;
+        end = src + len;
         fix = FixupHead;
         owner = &FixupHead;
         // insert fixup escape sequences
@@ -1340,13 +782,13 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
             }
         }
         buff = temp;
-        i = dst - temp;
+        len = dst - temp;
         perform_fixups = true;
     }
-    seq = FMemAlloc( offsetof( byte_seq, data ) + i );
+    seq = FMemAlloc( offsetof( byte_seq, data ) + len );
     seq->relocs = perform_fixups;
-    seq->length = i;
-    memcpy( &seq->data, buff, i );
+    seq->length = len;
+    memcpy( &seq->data, buff, len );
     if( CurrAux->code != DefaultInfo.code ) {
         FMemFree( CurrAux->code );
     }
@@ -1355,17 +797,17 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
 
 #elif _CPU == _AXP || _CPU == _PPC
 
-uint_32 AsmQuerySPOffsetOf( void *handle ) {
-//==========================================
-
+uint_32 AsmQuerySPOffsetOf( void *handle )
+//========================================
+{
     handle = handle;
     return( 0 );
 }
 
 
-static  void    InsertFixups( unsigned char *buff, byte_seq_len len ) {
-//=====================================================================
-
+static void InsertFixups( unsigned char *buff, size_t len )
+//=========================================================
+{
     byte_seq            *seq;
     asmreloc            *reloc;
     byte_seq_reloc      *head;
@@ -1397,8 +839,8 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len len ) {
 
 #if _CPU == 8086
 
-static  void    AddAFix( unsigned i, char *name, unsigned type, unsigned off )
-//============================================================================
+static void AddAFix( size_t i, char *name, unsigned type, unsigned off )
+//========================================================================
 {
     struct asmfixup     *fix;
 
@@ -1415,12 +857,12 @@ static  void    AddAFix( unsigned i, char *name, unsigned type, unsigned off )
 #endif
 
 
-static  void    GetByteSeq( void ) {
-//==================================
-
-    byte_seq_len    seq_len;
-    byte_seq_len    len;
-    char            *ptr;
+static void GetByteSeq( void )
+//============================
+{
+    size_t          seq_len;
+    size_t          len;
+    const char      *ptr;
     byte            buff[MAXIMUM_BYTESEQ + 32]; // extra for assembler
 #if _CPU == 8086
     bool            use_fpu_emu = false;
@@ -1437,7 +879,7 @@ static  void    GetByteSeq( void ) {
             if( *(TokEnd - 1) != '"' )
                 CSuicide();
             *(char *)(TokEnd - 1) = NULLCHAR;
-            AsmCodeAddress = seq_len;
+            AsmCodeAddress = (byte_seq_len)seq_len;
             AsmCodeLimit = MAXIMUM_BYTESEQ;
             AsmCodeBuffer = buff;
 #if _INTEL_CPU
@@ -1474,18 +916,17 @@ static  void    GetByteSeq( void ) {
             if( ( *ptr != 'Z' ) && ( *ptr != 'z' ) )
                 break;
             ++ptr;
-            len = MkHexConst( ptr, ptr, TokEnd - TokStart - 1 );
+            len = MkHexConst( ptr, NULL, TokEnd - TokStart - 1 );
             if( len == 0 ) {
                 Error( PR_BAD_BYTE_SEQ );
                 CSuicide();
             }
-            if( seq_len + len <= MAXIMUM_BYTESEQ ) {
-                memcpy( buff + seq_len, ptr, len );
-                seq_len += len;
-            } else {
+            if( seq_len + len > MAXIMUM_BYTESEQ ) {
                 Error( PR_BYTE_SEQ_LIMIT );
                 CSuicide();
             }
+            MkHexConst( ptr, (char *)( buff + seq_len ), TokEnd - TokStart - 1 );
+            seq_len += len;
             ScanToken();
         }
     }
@@ -1498,16 +939,39 @@ static  void    GetByteSeq( void ) {
 
 
 #if _INTEL_CPU
-static  hw_reg_set      RegSet( void ) {
-//================================
 
+static void ReqToken( const char *tok )
+//=====================================
+{
+    size_t      len;
+    char        buffer[ERR_BUFF_SIZE + 1];
+
+    if( !RecToken( tok ) ) {
+        len = TokEnd - TokStart;
+        memcpy( buffer, TokStart, len );
+        buffer[len] = NULLCHAR;
+        Error( PR_BAD_SYNTAX, tok, buffer );
+        CSuicide();
+    }
+}
+
+
+static hw_reg_set RegSet( void )
+//==============================
+{
     hw_reg_set  reg_set;
     int         reg;
+    char        regname_buf[REGNAME_MAX_LEN];
+    int         i;
 
     HW_CAsgn( reg_set, HW_EMPTY );
     for(;;) {
-        TokUpper();
-        reg = KwLookUp( RegNames, MaxReg, TokStart, TokEnd - TokStart, true );
+        if( TokEnd - TokStart > REGNAME_MAX_LEN )
+            break;
+        for( i = 0; i < TokEnd - TokStart; i++ ) {
+            regname_buf[i] = toupper( TokStart[i] );
+        }
+        reg = KwLookUp( RegNames, sizeof( RegNames ) / sizeof( RegNames[0] ) - 1, regname_buf, TokEnd - TokStart, true );
         if( reg == 0 )
             break;
         HW_TurnOn( reg_set, RegValue[reg] );
@@ -1518,12 +982,12 @@ static  hw_reg_set      RegSet( void ) {
 }
 
 
-static  hw_reg_set      *RegSets( void ) {
-//==================================
-
+static hw_reg_set *RegSets( void )
+//================================
+{
     hw_reg_set  reg_sets[MAX_REG_SETS];
     hw_reg_set  *regs;
-    int         num_sets;
+    unsigned    num_sets;
 
     num_sets = 0;
     while( RecToken( "[" ) ) {
@@ -1541,76 +1005,15 @@ static  hw_reg_set      *RegSets( void ) {
 #endif
 
 
-static  void            GetParmInfo( void ) {
-//=====================================
-
-// Collect argument information.
-
-    struct {
-#if _INTEL_CPU
-        boolbit f_pop           : 1;
-        boolbit f_reverse       : 1;
-        boolbit f_loadds        : 1;
-        boolbit f_nomemory      : 1;
-        boolbit f_list          : 1;
-#endif
-        boolbit f_args          : 1;
-    } have;
-
-#if _INTEL_CPU
-    have.f_pop           = false;
-    have.f_reverse       = false;
-    have.f_loadds        = false;
-    have.f_nomemory      = false;
-    have.f_list          = false;
-#endif
-    have.f_args          = false;
-    for(;;) {
-        if( !have.f_args && RecToken( "(" ) ) {
-            GetArgList();
-            have.f_args = true;
-#if _INTEL_CPU
-        } else if( !have.f_pop && RecToken( "CALLER" ) ) {
-            CurrAux->cclass |= CALLER_POPS;
-            have.f_pop = true;
-        } else if( !have.f_pop && RecToken( "ROUTINE" ) ) {
-            CurrAux->cclass &= ~CALLER_POPS;
-            have.f_pop = true;
-        } else if( !have.f_reverse && RecToken( "REVERSE" ) ) {
-            // arguments are processed in reverse order by default
-            CurrAux->cclass |= REVERSE_PARMS;
-            have.f_reverse = true;
-        } else if( !have.f_nomemory && RecToken( "NOMEMORY" ) ) {
-            CurrAux->cclass |= NO_MEMORY_READ;
-            have.f_nomemory = true;
-        } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
-            CurrAux->cclass |= LOAD_DS_ON_CALL;
-            have.f_loadds = true;
-        } else if( !have.f_list && CurrToken( "[" ) ) {
-            if( CurrAux->parms != DefaultInfo.parms ) {
-                FMemFree( CurrAux->parms );
-            }
-            CurrAux->parms = RegSets();
-            have.f_list = true;
-#endif
-        } else {
-            break;
-        }
-    }
-}
-
-
-static  void    GetArgList( void ) {
-//============================
-
+static void GetArgList( pass_by **curr_arg )
+//==========================================
+{
     pass_by     *arg;
-    pass_by     **curr_arg;
     pass_info   arg_pass_info;
 
-    FreeArgList( CurrAux );
+    FreeChain( curr_arg );
     if( RecToken( ")" ) )
         return;
-    curr_arg = &CurrAux->arg_info;
     for(;;) {
         arg_pass_info = 0;
         if( RecToken( "VALUE" ) ) {
@@ -1692,43 +1095,9 @@ static  void    GetArgList( void ) {
 
 
 #if _INTEL_CPU
-static  void            GetRetInfo( void ) {
-//====================================
-
-    struct {
-        boolbit f_no8087        : 1;
-        boolbit f_list          : 1;
-        boolbit f_struct        : 1;
-    } have;
-
-    have.f_no8087  = false;
-    have.f_list    = false;
-    have.f_struct  = false;
-    // "3s" default is NO_8087_RETURNS - turn off NO_8087_RETURNS
-    // flag so that "3s" model programs can use 387 pragmas
-    CurrAux->cclass &= ~NO_8087_RETURNS;
-    for(;;) {
-        if( !have.f_no8087 && RecToken( "NO8087" ) ) {
-            CurrAux->cclass |= NO_8087_RETURNS;
-            HW_CTurnOff( CurrAux->returns, HW_FLTS );
-            have.f_no8087 = true;
-        } else if( !have.f_list && RecToken( "[" ) ) {
-            CurrAux->cclass |= SPECIAL_RETURN;
-            CurrAux->returns = RegSet();
-            have.f_list = true;
-        } else if( !have.f_struct && RecToken( "STRUCT" ) ) {
-            GetSTRetInfo();
-            have.f_struct = true;
-        } else {
-            break;
-        }
-    }
-}
-
-
-static  void    GetSTRetInfo( void ) {
+static void GetSTRetInfo( void )
 //==============================
-
+{
     struct {
         boolbit f_float        : 1;
         boolbit f_struct       : 1;
@@ -1764,9 +1133,43 @@ static  void    GetSTRetInfo( void ) {
 }
 
 
-static  void            GetSaveInfo( void ) {
-//=====================================
+static void GetRetInfo( void )
+//============================
+{
+    struct {
+        boolbit f_no8087        : 1;
+        boolbit f_list          : 1;
+        boolbit f_struct        : 1;
+    } have;
 
+    have.f_no8087  = false;
+    have.f_list    = false;
+    have.f_struct  = false;
+    // "3s" default is NO_8087_RETURNS - turn off NO_8087_RETURNS
+    // flag so that "3s" model programs can use 387 pragmas
+    CurrAux->cclass &= ~NO_8087_RETURNS;
+    for(;;) {
+        if( !have.f_no8087 && RecToken( "NO8087" ) ) {
+            CurrAux->cclass |= NO_8087_RETURNS;
+            HW_CTurnOff( CurrAux->returns, HW_FLTS );
+            have.f_no8087 = true;
+        } else if( !have.f_list && RecToken( "[" ) ) {
+            CurrAux->cclass |= SPECIAL_RETURN;
+            CurrAux->returns = RegSet();
+            have.f_list = true;
+        } else if( !have.f_struct && RecToken( "STRUCT" ) ) {
+            GetSTRetInfo();
+            have.f_struct = true;
+        } else {
+            break;
+        }
+    }
+}
+
+
+static void GetSaveInfo( void )
+//=============================
+{
     hw_reg_set  modlist;
     hw_reg_set  default_flt_n_seg;
     hw_reg_set  flt_n_seg;
@@ -1808,3 +1211,299 @@ static  void            GetSaveInfo( void ) {
     }
 }
 #endif
+
+
+static void GetParmInfo( void )
+//=============================
+// Collect argument information.
+{
+    struct {
+#if _INTEL_CPU
+        boolbit f_pop           : 1;
+        boolbit f_reverse       : 1;
+        boolbit f_loadds        : 1;
+        boolbit f_nomemory      : 1;
+        boolbit f_list          : 1;
+#endif
+        boolbit f_args          : 1;
+    } have;
+
+#if _INTEL_CPU
+    have.f_pop           = false;
+    have.f_reverse       = false;
+    have.f_loadds        = false;
+    have.f_nomemory      = false;
+    have.f_list          = false;
+#endif
+    have.f_args          = false;
+    for(;;) {
+        if( !have.f_args && RecToken( "(" ) ) {
+            GetArgList( &CurrAux->arg_info );
+            have.f_args = true;
+#if _INTEL_CPU
+        } else if( !have.f_pop && RecToken( "CALLER" ) ) {
+            CurrAux->cclass |= CALLER_POPS;
+            have.f_pop = true;
+        } else if( !have.f_pop && RecToken( "ROUTINE" ) ) {
+            CurrAux->cclass &= ~CALLER_POPS;
+            have.f_pop = true;
+        } else if( !have.f_reverse && RecToken( "REVERSE" ) ) {
+            // arguments are processed in reverse order by default
+            CurrAux->cclass |= REVERSE_PARMS;
+            have.f_reverse = true;
+        } else if( !have.f_nomemory && RecToken( "NOMEMORY" ) ) {
+            CurrAux->cclass |= NO_MEMORY_READ;
+            have.f_nomemory = true;
+        } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
+            CurrAux->cclass |= LOAD_DS_ON_CALL;
+            have.f_loadds = true;
+        } else if( !have.f_list && CurrToken( "[" ) ) {
+            if( CurrAux->parms != DefaultInfo.parms ) {
+                FMemFree( CurrAux->parms );
+            }
+            CurrAux->parms = RegSets();
+            have.f_list = true;
+#endif
+        } else {
+            break;
+        }
+    }
+}
+
+void     PragmaLinkage( void )
+//============================
+// Process a pragma linkage.
+{
+    AliasInfo = &FortranInfo;
+    ReqToken( "(" );
+    SymbolName();
+    ReqToken( "," );
+    AliasName();
+    ProcessAlias();
+    ReqToken( ")" );
+}
+
+static void PragmaAuxEnd( void )
+//==============================
+{
+}
+
+void     PragmaAux( void )
+//========================
+// Process a pragma aux.
+{
+    struct {
+        boolbit f_far    : 1;
+        boolbit f_far16  : 1;
+        boolbit f_loadds : 1;
+        boolbit f_export : 1;
+        boolbit f_parm   : 1;
+        boolbit f_value  : 1;
+        boolbit f_modify : 1;
+    } have;
+
+    AliasInfo = &FortranInfo;
+    if( RecToken( "(" ) ) {
+        AliasName();
+        ReqToken( ")" );
+    }
+    SymbolName();
+    ProcessAlias();
+    ObjectName();
+
+    have.f_far    = false;
+    have.f_loadds = false;
+    have.f_export = false;
+    have.f_value  = false;
+    have.f_modify = false;
+    have.f_parm   = false;
+    for( ;; ) {
+        if( !have.f_parm && RecToken( "PARM" ) ) {
+            GetParmInfo();
+            have.f_parm = true;
+        } else if( !have.f_far && RecToken( "=" ) ) {
+            GetByteSeq();
+#if _INTEL_CPU
+            have.f_far = true;
+        } else if( !have.f_far && RecToken( "FAR" ) ) {
+            CurrAux->cclass |= FAR_CALL;
+            have.f_far = true;
+#if _CPU == 386
+        } else if( !have.f_far16 && RecToken( "FAR16" ) ) {
+            CurrAux->cclass |= FAR16_CALL;
+            have.f_far16 = true;
+#endif
+        } else if( !have.f_far && RecToken( "NEAR" ) ) {
+            CurrAux->cclass &= ~FAR_CALL;
+            have.f_far = true;
+        } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
+            CurrAux->cclass |= LOAD_DS_ON_ENTRY;
+            have.f_loadds = true;
+#endif
+        } else if( !have.f_export && RecToken( "EXPORT" ) ) {
+            CurrAux->cclass |= DLL_EXPORT;
+            have.f_export = true;
+#if _INTEL_CPU
+        } else if( !have.f_value && RecToken( "VALUE" ) ) {
+            GetRetInfo();
+            have.f_value = true;
+#endif
+        } else if( !have.f_value && RecToken( "ABORTS" ) ) {
+            CurrAux->cclass |= SUICIDAL;
+            have.f_value = true;
+#if _INTEL_CPU
+        } else if( !have.f_modify && RecToken( "MODIFY" ) ) {
+            GetSaveInfo();
+            have.f_modify = true;
+#endif
+        } else {
+            break;
+        }
+    }
+    PragmaAuxEnd();
+}
+
+
+#if _CPU == 386
+void CheckFar16Call( sym_id sp )
+//==============================
+{
+    aux_info    *info;
+
+    info = AuxLookup( sp->u.ns.name, sp->u.ns.u2.name_len );
+    if( info != NULL ) {
+        if( info->cclass & FAR16_CALL ) {
+            if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
+                ProgramInfo.cclass |= THUNK_PROLOG;
+            } else {
+                info = AuxLookup( SubProgId->u.ns.name, SubProgId->u.ns.u2.name_len );
+                if( info == NULL ) {
+                    info = NewAuxEntry( SubProgId->u.ns.name, SubProgId->u.ns.u2.name_len );
+                    CopyAuxInfo( info, &FortranInfo );
+                }
+                info->cclass |= THUNK_PROLOG;
+            }
+        }
+    }
+}
+#endif
+
+
+static aux_info    *RTAuxInfo( sym_id rtn )
+//=========================================
+// Return aux information for run-time routine.
+{
+    RTCODE      i;
+
+    for( i = 0; i < RT_INDEX_SIZE; i++ ) {
+        if( RtnTab[i].sym_ptr == rtn ) {
+            return( RtnTab[i].info );
+        }
+    }
+    return( NULL );
+}
+
+aux_info    *InfoLookup( sym_id sym )
+//===================================
+{
+    aux_info    *info;
+
+    if( sym == NULL )
+        return( &FortranInfo );
+    if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
+        if( sym->u.ns.flags & SY_INTRINSIC ) {
+            if( IFVarArgs( sym->u.ns.si.fi.index ) ) {
+                return( &IFVarInfo );
+            // check for character arguments must come first so that
+            // IF@xxx gets generated for intrinsic functions with character
+            // arguments (instead of XF@xxxx)
+            } else if( IFArgType( sym->u.ns.si.fi.index ) == FT_CHAR ) {
+                if( sym->u.ns.flags & SY_IF_ARGUMENT ) {
+                    if( (Options & OPT_DESCRIPTOR) == 0 ) {
+                        return( &IFChar2Info );
+                    }
+                }
+                return( &IFCharInfo );
+            } else if( sym->u.ns.flags & SY_IF_ARGUMENT ) {
+                return( &IFXInfo );
+            }
+            return( &IFInfo );
+        } else if( sym->u.ns.flags & SY_RT_ROUTINE ) {
+            return( RTAuxInfo( sym ) );
+        } else if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
+            return( &ProgramInfo );
+        } else {
+            info = AuxLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
+            if( info == NULL )
+                return( &FortranInfo );
+            return( info );
+        }
+    } else {
+        info = AuxLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
+        if( info == NULL )
+            return( &FortranInfo );
+        return( info );
+    }
+}
+
+
+call_handle     InitCall( RTCODE rtn_id )
+//=======================================
+// Initialize a call to a runtime routine.
+{
+    sym_id      sym;
+    rt_rtn      *rt_entry;
+    byte        typ;
+
+    rt_entry = &RtnTab[rtn_id];
+    sym = rt_entry->sym_ptr;
+    if( sym == NULL ) {
+        sym = STAdd( rt_entry->name, strlen( rt_entry->name ) );
+        sym->u.ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION | SY_RT_ROUTINE;
+        if( rt_entry->typ == FT_NO_TYPE ) {
+            sym->u.ns.u1.s.typ = FT_INTEGER_TARG;
+        } else {
+            sym->u.ns.u1.s.typ = rt_entry->typ;
+        }
+        sym->u.ns.xt.size = TypeSize( sym->u.ns.u1.s.typ );
+        sym->u.ns.u3.address = NULL;
+        sym->u.ns.si.sp.u.segid = AllocImpSegId();
+        rt_entry->sym_ptr = sym;
+    }
+    typ = F77ToCGType( sym );
+    return( CGInitCall( CGFEName( sym, typ ), typ, rt_entry->sym_ptr ) );
+}
+
+
+void    InitRtRtns( void )
+//========================
+// Initialize symbol table entries for run-time routines.
+{
+    RTCODE  i;
+
+    for( i = 0; i < RT_INDEX_SIZE; i++ ) {
+        RtnTab[i].sym_ptr = NULL;
+    }
+}
+
+
+void    FreeRtRtns( void )
+//========================
+// Free symbol table entries for run-time routines.
+{
+    RTCODE      i;
+    sym_id      sym;
+
+    for( i = 0; i < RT_INDEX_SIZE; i++ ) {
+        sym = RtnTab[i].sym_ptr;
+        if( sym != NULL ) {
+            if( (CGFlags & CG_FATAL) == 0 ) {
+                if( sym->u.ns.u3.address != NULL ) {
+                    BEFreeBack( sym->u.ns.u3.address );
+                }
+            }
+            STFree( sym );
+            RtnTab[i].sym_ptr = NULL;
+        }
+    }
+}

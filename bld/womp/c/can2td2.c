@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +61,7 @@ STATIC void symbChangeSeg( symb_handle symb ) {
     seg = CanAFind( symb->d.cseg.seg );
     fix = seg->fixup;
 /**/myassert( fix->self_relative == 0 );  /* no self-relative */
-    if( fix->lr.target != TARGET_SEGWD ) {
+    if( fix->lr.target != TARGET_SEG ) {
         Fatal( MSG_INVALID_FIXUP );
     }
     switch( fix->loc_method ) {
@@ -202,7 +203,7 @@ STATIC void symbMemLoc( symb_handle symb ) {
         grp_idx = 0;
         break;
     }
-    if( fix->lr.target != TARGET_SEGWD ) {
+    if( fix->lr.target != TARGET_SEG ) {
         Fatal( MSG_INVALID_FIXUP );
     }
     type = CanTFind( symb->d.nat.type_hdl );

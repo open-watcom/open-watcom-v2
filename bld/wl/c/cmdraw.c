@@ -38,7 +38,7 @@
 #include <string.h>
 #include "linkstd.h"
 #include "alloc.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "dbgall.h"
@@ -49,27 +49,42 @@
 #include "cmdraw.h"
 
 
-bool ProcRaw( void )
-/******************/
-{
-    FmtData.base = 0;                               // Default offset
-    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // Make relocations;
-    ProcOne( RawOptions, SEP_NO, true );
-    return( true );
-}
+#ifdef _RAW
 
-bool ProcRawBIN( void )
-/*********************/
+
+/****************************************************************
+ * "Format" Directive
+ ****************************************************************/
+
+static bool ProcRawBIN( void )
+/****************************/
 {
     Extension = E_BIN;
     FmtData.raw_hex_output = false;
     return( true );
 }
 
-bool ProcRawHEX( void )
-/*********************/
+static bool ProcRawHEX( void )
+/****************************/
 {
     Extension = E_HEX;
     FmtData.raw_hex_output = true;
     return( true );
 }
+
+static parse_entry  RawFormats[] = {
+    "BIN",          ProcRawBIN,         MK_RAW, 0,
+    "HEX",          ProcRawHEX,         MK_RAW, 0,
+    NULL
+};
+
+bool ProcRawFormat( void )
+/************************/
+{
+    LinkState |= LS_MAKE_RELOCS | LS_FMT_DECIDED;   // Make relocations;
+    FmtData.base = 0;                               // Default offset
+    ProcOneSuicide( RawFormats, SEP_NO );
+    return( true );
+}
+
+#endif

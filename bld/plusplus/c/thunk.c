@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -350,7 +351,7 @@ static PTREE applyReturnThunk(  // GENERATE A RETURN THUNK
             }
         }
     }
-    DbgAssert( StructType( ret_type ) == NULL );
+    DbgAssert( ClassType( ret_type ) == NULL );
     if( thunk->output_virtual ) {
         vb_offset = thunk->out.vb_offset;
         vb_index = thunk->out.vb_index;
@@ -388,7 +389,7 @@ void EmitVfunThunk(             // EMIT THUNK FOR VIRTUAL FUNCTION
     TYPE return_type;
     SCOPE save_scope;
     SCOPE fn_scope;
-    auto FUNCTION_DATA func_data;
+    FUNCTION_DATA func_data;
 
     override_sym = thunk->override;
     if( override_sym == NULL ) {

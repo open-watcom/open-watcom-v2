@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,11 +105,11 @@ bool WCreateMenuEditWindow( WMenuEditInfo *einfo, HINSTANCE inst )
     einfo->edit_dlg = JCreateDialogParam( inst, "WMenuEditDLG", einfo->win, WMenuEditWinProc, (LPARAM)einfo );
 
     if( einfo->edit_dlg == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !WCreatePrevWindow( inst, einfo ) ) {
-        return( FALSE );
+        return( false );
     }
 
     SetWindowPos( einfo->edit_dlg, (HWND)NULL, 0, WGetRibbonHeight(), 0, 0, SWP_NOSIZE | SWP_NOZORDER );
@@ -123,7 +124,7 @@ bool WResizeMenuEditWindow( WMenuEditInfo *einfo, RECT *prect )
     RECT    crect;
 
     if( einfo == NULL || einfo->edit_dlg == NULL || prect == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( einfo->show_ribbon ) {
@@ -153,7 +154,7 @@ bool WResizeMenuEditWindow( WMenuEditInfo *einfo, RECT *prect )
     // change the size of the preview window
     WExpandEditWindowItem( einfo->edit_dlg, einfo->preview_window, prect );
 
-    return( TRUE );
+    return( true );
 }
 
 static void WExpandEditWindowItem( HWND hDlg, HWND win, RECT *prect )

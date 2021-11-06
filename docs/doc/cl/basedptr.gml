@@ -1,4 +1,7 @@
 .beglevel
+.sr firstc=&SYSIN.+3
+.tb set $
+.tb &firstc.
 .*
 .pp
 Near pointers are generally the most efficient type of pointer because
@@ -35,23 +38,16 @@ be combined explicitly with a segment value to produce a valid pointer.
 .endbull
 .pp
 To support based pointers, the following keywords are provided:
-..sk 1 c
+.sk 1
 .ix 'keyword'
-..sr firsttab=&SYSIN.+3
-..tb set $
-..tb &firsttab. +9 +9 +9 +9
-.kwon
-$&kwbased.
-.kwix &kwbased_sp.
-$&kwsegment.
-.kwix &kwsegm_sp.
-$&kwsegname.
-.kwix &kwsegnm_sp.
-$&kwself.
-.kwix &kwself_sp.
-.kwoff
-..tb set
-..tb
+$
+.kw &kwbased.
+$
+.kw &kwsegment.
+$
+.kw &kwsegname.
+$
+.kw &kwself.
 .keep begin
 .pp
 The following operator is also provided:
@@ -63,22 +59,18 @@ These keywords and operator are described in the following sections.
 Two macros, defined in
 .hdr <malloc.h>
 are also provided:
-.mkwix &mkwNSEG_sp.
-.mkwix &mkwNOFF_sp.
-.millust begin
-&mkwNULLSEG.
-&mkwNULLOFF.
-.millust end
+.sk 1
+$
+.kw &mkwNULLSEG.
+$
+.kw &mkwNULLOFF.
 .pc
 They are used in a similar manner to
 .mkw NULL
-..ct ,
-but are used with objects declared as
-.kwix &kwsegm_sp.
-.kwfont &kwsegment.
+.ct , but are used with objects declared as
+.kw &kwsegment.
 and
-.kwix &kwbased_sp.
-.kwfont &kwbased.
+.kw &kwbased.
 respectively.
 .*
 .section Segment Constant Based Pointers and Objects
@@ -87,14 +79,16 @@ respectively.
 A segment constant based pointer or object
 has its segment value based on a specific, named segment.
 A segment constant based object is specified as:
-.cillust begin
+.sk 1
+$
 type :MONO. &kwbased.( &kwsegname.( ":eMONO.segment:MONO." ) ) :eMONO.object-name:MSEMI.
-.cillust end
 .pc
 and a segment constant based pointer is specified as:
-.cillust begin
+.sk 1
+$
 type :MONO. &kwbased.( &kwsegname.( ":eMONO.segment:MONO." ) ) * :eMONO.object-name:MSEMI.
-.cillust end
+.tb set
+.tb
 .pc
 where
 .ul segment
@@ -140,7 +134,7 @@ which resides in the default code segment.
 .mono iptr
 is suitable for pointing at
 .mono ival
-..ct ..li .
+.period
 .millust begin
 char &kwbased.( &kwsegname.( "GOODTHINGS" ) ) thing;
 .millust end
@@ -148,8 +142,7 @@ char &kwbased.( &kwsegname.( "GOODTHINGS" ) ) thing;
 .mono thing
 is an object which resides in the segment
 .mono GOODTHINGS
-..ct ,
-which will be created if it does not already exist.
+.ct , which will be created if it does not already exist.
 (The creation of segments is done by the linker, and is a method
 of grouping objects and functions.
 Nothing is implicitly created during the
@@ -174,13 +167,11 @@ where
 is an object defined
 .* or cast
 as type
-.kwix &kwsegm_sp.
-.kwfont &kwsegment.
-..ct ..li .
+.kw &kwsegment.
+.period
 .pp
 An object of type
-.kwix &kwsegm_sp.
-.kwfont &kwsegment.
+.kw &kwsegment.
 may contain a segment value.
 Such an object is particularly designed for use with segment object
 based pointers.
@@ -224,7 +215,7 @@ made up of the segment value found in
 .mono seg
 and the offset value found in
 .mono cptr
-..ct ..li .
+.period
 The object
 .mono seg
 might be assigned values such as the following:
@@ -234,13 +225,12 @@ a constant value (eg. the segment containing screen memory),
 .bull
 the result of the library function
 .libfn _bheapseg
-..ct ,
+.ct ,
 .bull
 the segment portion of another pointer value, by casting it to the
 type
-.kwix &kwsegm_sp.
-.kwfont &kwsegment.
-..ct ..li .
+.kw &kwsegment.
+.period
 .endbull
 .*
 .section Void Based Pointers
@@ -287,14 +277,12 @@ operator is:
 where
 .ul segment
 is an expression of type
-.kwix &kwsegm_sp.
-.kwfont &kwsegment.
-..ct ,
-and
+.kw &kwsegment.
+.ct , and
 .ul offset
 is an expression of type
 .mono &kwbased.(&SYSRB.void&SYSRB.)&SYSRB.*
-..ct ..li .
+.period
 .*
 .section Self Based Pointers
 .*
@@ -360,8 +348,7 @@ the offset stored in
 and
 the segment implied by
 .mono aptr
-..ct ,
-which is the value stored in
+.ct , which is the value stored in
 .mono seg.
 So far, the behavior is no different than if
 .mono next
@@ -374,26 +361,22 @@ The expression
 .mono aptr->next->next
 illustrates the difference of using a self based pointer.
 The first part of the expression (
-..ct .mono aptr->next
-..ct )
-occurs as described above.
+.ct .mono aptr->next
+.ct ) occurs as described above.
 However, using the result to point to the next member occurs by
 using the offset value found in the
 .mono next
 member and combining it with the segment value of the
 .ul pointer used to get to that member
-..ct ,
-which is still the segment implied by
+.ct , which is still the segment implied by
 .mono aptr
-..ct ,
-which is the value stored in
+.ct , which is the value stored in
 .mono seg.
 If
 .mono next
 had not been declared using
 .mono &kwbased.(&SYSRB.&kwself.&SYSRB.)
-..ct ,
-then the second pointing operation would refer to the offset value
+.ct , then the second pointing operation would refer to the offset value
 found in the
 .mono next
 member, but with the default data segment (DGROUP), which may or may

@@ -4,9 +4,9 @@
 .ju off
 .dc tb >
 .co off
-     This tests spaces before,    within, and after a line.    
+     This tests spaces before,    within, and after a line.
 .co on
-.br;     This tests spaces before,    within, and after a line.    
+.br;     This tests spaces before,    within, and after a line.
 
 .sk;Parts of this document were copied and modified from the Wiki. The reason
 for this was to make it less self-referential. Ironically, we start with some
@@ -17,7 +17,7 @@ font 3; most of the text is in available font 0; here is a phrase in
 rarer cases have the highlighted phrase include:HP1. the space before:eHP1.
 or :HP2.the space behind :eHP2.(which can affect layout if the space widths
 vary by font) and, very rarely, perhaps, to start in the mid:HP3.dle:eHP3. of
-a word. 
+a word.
 
 .sk;These are tests of extremely long words. First, a solid multiline word: aaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccdddddddddddddddddddddddddddeeeeeeeeeeeeeeeeaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccdddddddddddddddddddddddddddeeeeeeeeeeeeeeee
 And now an early multi-part multiline word: aaaaaaaaaa:HP1.aaaaaaaaaa:eHP1.bbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccdddddddddddddddddddddddddddeeeeeeeeeeeeeeeeaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccdddddddddddddddddddddddddddeeeeeeeeeeeeeeee

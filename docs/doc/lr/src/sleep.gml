@@ -27,7 +27,7 @@ The
 .id &funcb.
 function suspends execution by the specified number of
 .arg seconds
-.ct .li .
+.period
 .do end
 .desc end
 .return begin

@@ -1,5 +1,5 @@
-.gfunc unregisterfonts
-.gsynop begin 
+.gfunc _unregisterfonts
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _unregisterfonts( void );
 .do end
@@ -11,12 +11,12 @@ subroutine _unregisterfonts()
 The
 .id &funcb.
 &routine frees the memory previously allocated by the
-.kw _registerfonts
+.reffunc _registerfonts
 &routine..
 The currently selected font is also unloaded.
 .pp
 Attempting to use the
-.kw _setfont
+.reffunc _setfont
 &routine after calling
 .id &funcb.
 will result in an error.

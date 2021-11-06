@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,14 +131,14 @@ static entry_pt *AddEntryPt( sym_id sym_ptr )
 }
 
 
-static  entry_pt *SubProgName( TYPE typ, unsigned_16 flags, uint def_size, bool len_spec )
+static  entry_pt *SubProgName( TYPE typ, unsigned_16 flags, size_t def_size, bool len_spec )
 // Process the symbolic name of a SUBROUTINE or FUNCTION.
 {
     entry_pt    *entry;
     itnode      *name_node;
     itnode      *next_node;
     sym_id      sym_ptr;
-    uint        size;
+    size_t      size;
 
     sym_ptr = LkSym();
     SubProgId = sym_ptr;
@@ -195,7 +195,7 @@ void CpSubroutine( void )
 }
 
 
-void    Function( TYPE typ, uint size, bool len_spec )
+void    Function( TYPE typ, size_t size, bool len_spec )
 //
 // Compile [type] [*len] FUNCTION NAME[*len] ([d,d,...])
 //            \                /
@@ -348,7 +348,7 @@ static parameter *NameParm( entry_pt *entry )
 
     sym = LkSym();
     flags = sym->u.ns.flags;
-    class = flags & SY_CLASS;
+    class = (flags & SY_CLASS);
     if( class == SY_VARIABLE ) {
         if( InArgList( entry, sym ) ) {
             NameErr( AR_DUPLICATE_PARM, sym );
@@ -374,7 +374,7 @@ static parameter *NameParm( entry_pt *entry )
         IllName( sym );
         return( NULL );
     } else { // subroutine name
-        class = flags & SY_SUBPROG_TYPE;
+        class = (flags & SY_SUBPROG_TYPE);
         if( ( class != SY_FUNCTION ) && ( class != SY_SUBROUTINE ) &&
             ( class != SY_FN_OR_SUB ) ) {
             IllName( sym );

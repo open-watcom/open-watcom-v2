@@ -3,7 +3,7 @@
 
 extern void (*wattcpd) (void);
 
-extern int addwattcpd (void (*p)());
-extern int delwattcpd (void (*p)());
+extern int addwattcpd (void (*p)(void));
+extern int delwattcpd (void (*p)(void));
 
 #endif

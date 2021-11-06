@@ -11,14 +11,14 @@ The
 function tests the error indicator for the stream
 pointed to by
 .arg fp
-.ct .li .
+.period
 .desc end
 .return begin
 The
 .id &funcb.
 function returns non-zero if the error indicator is set for
 .arg fp
-.ct .li .
+.period
 .return end
 .see begin
 .seelist clearerr feof ferror perror strerror

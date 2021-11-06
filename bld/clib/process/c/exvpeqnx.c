@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +35,7 @@
 #include "variety.h"
 #include <process.h>
 
-_WCRTLINK int (execvpe)(
-    const char *path,           /* path name of path to be executed */
-    const char *const argv[],   /* array of pointers to arguments   */
-    const char *const envp[] )  /* array of pointers to environment strings */
+_WCRTLINK int (execvpe)( const char *path, const char *const argv[], const char *const envp[] )
 {
     return( spawnvpe( P_OVERLAY, path, argv, envp ) );
 }

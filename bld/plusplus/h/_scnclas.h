@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,20 +33,11 @@
 pick( SCAN_NAME,          scanName            ) // identifier
 pick( SCAN_WIDE,          scanWide            ) // L"abc" or L'a' or Lname
 pick( SCAN_NUM,           scanNum             ) // number that starts with a digit
-pick( SCAN_DELIM1,        scanDelim1          ) // single character delimiter
-pick( SCAN_DELIM12,       scanDelim12         ) // @ or @@ token
-pick( SCAN_DELIM12EQ,     scanDelim12EQ       ) // @, @@, or @= token
-pick( SCAN_DELIM12EQ2EQ,  scanDelim12EQ2EQ    ) // @, @@, @=, or @@= token
-pick( SCAN_DELIM1EQ,      scanDelim1EQ        ) // @ or @= token
+pick( SCAN_DELIM1,        scanDelim1          ) // single character delimiter only
+pick( SCAN_DELIM2,        scanDelim2          ) // 1-4 characters delimiter
 pick( SCAN_SLASH,         scanSlash           ) // /, /=, // comment, or /* comment */
-pick( SCAN_LT,            scanLT              ) // <, <=, <<, <<=, <%, <:
-pick( SCAN_PERCENT,       scanPercent         ) // %, %=, %>, %:, %:%:
-pick( SCAN_COLON,         scanColon           ) // :, ::, or :>
-pick( SCAN_MINUS,         scanMinus           ) // -, -=, --, ->, or ->*
-pick( SCAN_FLOAT,         scanFloat           ) // .
+pick( SCAN_DOT,           scanDot             ) // .
 pick( SCAN_STRING,        scanString          ) // "string"
-pick( SCAN_STRING2,       scanStringContinue  ) // "string" continued
-pick( SCAN_LSTRING2,      scanLStringContinue ) // L"string" continued
 pick( SCAN_CHARCONST,     scanCharConst       ) // 'a'
 pick( SCAN_CR,            scanCarriageReturn  ) // '\r'
 pick( SCAN_NEWLINE,       scanNewline         ) // '\n'

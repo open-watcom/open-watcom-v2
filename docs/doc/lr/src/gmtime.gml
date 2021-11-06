@@ -23,7 +23,7 @@ into a broken-down time, expressed as Coordinated Universal Time (UTC)
 (formerly known as Greenwich Mean Time, or GMT).
 .np
 The function
-.kw _gmtime
+.reffunc _gmtime
 places the converted time in the
 .kw tm
 structure pointed to by

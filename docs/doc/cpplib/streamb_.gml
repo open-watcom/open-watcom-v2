@@ -32,19 +32,22 @@ so that the proper action can take place.
 :I1.get area
 :I1.put area
 A &obj. can be unbuffered, but most often has one buffer which can be used
-for both input and output operations. The buffer (called the &rsvarea.)
-is divided into two areas, called the &getarea. and the &putarea.:PERIOD.
+for both input and output operations. The buffer (called the &resvarea.)
+is divided into two areas, called the &getarea. and the &putarea.
+:PERIOD.
 For a &obj. being used exclusively to write, the &getarea. is empty or not
 present. Likewise, a &obj. being used exclusively for reading has an empty or
-non-existent &putarea.:PERIOD.
+non-existent &putarea.
+:PERIOD.
 :P.
 The use of the &getarea. and &putarea. differs among the various classes
-derived from the &cls.:PERIOD.
+derived from the &cls.
+:PERIOD.
 :INCLUDE file='flb_desc'.
 :INCLUDE file='std_desc'.
 :INCLUDE file='ssb_desc'.
 :P.
-The &rsvarea. is marked by two pointer values. The
+The &resvarea. is marked by two pointer values. The
 :MONO.base
 member function returns the pointer to the start of the buffer. The
 :MONO.ebuf
@@ -53,36 +56,42 @@ member function returns the pointer to the end of the buffer
 :MONO.setb
 protected member function is used to set both pointers.
 :P.
-Within the &rsvarea., the &getarea. is marked by three pointer values. The
+Within the &resvarea., the &getarea. is marked by three pointer values. The
 :MONO.eback
-member function returns a pointer to the start of the &getarea.:PERIOD.
+member function returns a pointer to the start of the &getarea.
+:PERIOD.
 The
 :MONO.egptr
 member function returns a pointer to the end of the &getarea.
 (last character + 1). The
 :MONO.gptr
-member function returns the &getptr.:PERIOD.
+member function returns the &getptr.
+:PERIOD.
 The &getptr. is a pointer to the next character to be extracted from the
-&getarea.:PERIOD.
+&getarea.
+:PERIOD.
 Characters before the &getptr.
 have already been consumed by the program, while characters at and after the
 &getptr. have been read from their source and are buffered and waiting to be
 read by the program. The
 :MONO.setg
 member function is used to set all three pointer values. If any of these
-pointers are &null., there is no &getarea.:PERIOD.
+pointers are &null., there is no &getarea.
+:PERIOD.
 :P.
-Also within the &rsvarea., the &putarea. is marked by three pointer values.
+Also within the &resvarea., the &putarea. is marked by three pointer values.
 The
 :MONO.pbase
-member function returns a pointer to the start of the &putarea.:PERIOD.
+member function returns a pointer to the start of the &putarea.
+:PERIOD.
 The
 :MONO.epptr
 member function returns a pointer to the end of the &putarea. (last
 character + 1 ).
 The
 :MONO.pptr
-member function returns the &putptr.:PERIOD.
+member function returns the &putptr.
+:PERIOD.
 The &putptr. is a pointer to the next available position into which a
 character may be stored.
 Characters before the &putptr. are buffered and waiting to be written to their
@@ -90,16 +99,19 @@ final destination, while character positions at and after the &putptr. have
 yet to be written by the program. The
 :MONO.setp
 member function is used to set all three pointer values. If any of these
-pointers are &null., there is no &putarea.:PERIOD.
+pointers are &null., there is no &putarea.
+:PERIOD.
 :P.
 Unbuffered I/O is also possible. If unbuffered, the
 :MONO.overflow
 virtual member function is used to write single characters directly to their
-final destination without using the &putarea.:PERIOD.
+final destination without using the &putarea.
+:PERIOD.
 Similarly, the
 :MONO.underflow
 virtual member function is used to read single characters directly from their
-source without using the &getarea.:PERIOD.
+source without using the &getarea.
+:PERIOD.
 :HDG.Protected Member Functions
 The following member functions are declared in the protected interface:
 :MFNL.
@@ -173,12 +185,14 @@ The following member functions are declared in the public interface:
 The &fn. works in tandem with the
 :MONO.doallocate
 protected virtual member function to manage allocation of the &obj.
-&rsvarea.:PERIOD.
+&resvarea.
+:PERIOD.
 Classes derived from the &cls. should call the &fn., rather than the
 :MONO.doallocate
 protected virtual member function. The &fn. determines whether or not the &obj.
-is allowed to allocate a buffer for use as the &rsvarea.:PERIOD.
-If a &rsvarea.
+is allowed to allocate a buffer for use as the &resvarea.
+:PERIOD.
+If a &resvarea.
 already exists or if the &obj. unbuffering state is non-zero, the &fn.
 fails. Otherwise, it calls the
 :MONO.doallocate
@@ -199,12 +213,12 @@ The &fn. returns &noteof. on success, otherwise &eof. is returned.
 :SNPF index='base'.char *streambuf::base() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the start of the &rsvarea. that the &obj.
+The &fn. returns a pointer to the start of the &resvarea. that the &obj.
 is using.
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns a pointer to the start of the &rsvarea. that the &obj.
-is using. If the &obj. currently does not have a &rsvarea., &null. is
+The &fn. returns a pointer to the start of the &resvarea. that the &obj.
+is using. If the &obj. currently does not have a &resvarea., &null. is
 returned.
 :SALSO.
 :SAL typ='mfun'.blen
@@ -220,11 +234,11 @@ returned.
 :SNPF index='blen'.int streambuf::blen() const;
 :eSNPL.
 :SMTICS.
-The &fn. reports the length of the &rsvarea. that the &obj. is using.
+The &fn. reports the length of the &resvarea. that the &obj. is using.
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns the length of the &rsvarea. that the &obj. is using.
-If the &obj. currently does not have a &rsvarea., zero is returned.
+The &fn. returns the length of the &resvarea. that the &obj. is using.
+If the &obj. currently does not have a &resvarea., zero is returned.
 :SALSO.
 :SAL typ='mfun'.base
 :SAL typ='mfun'.ebuf
@@ -242,7 +256,8 @@ If the &obj. currently does not have a &rsvarea., zero is returned.
 The &fn. dumps information about the &obj. directly to
 :MONO.stdout
 :CONT., and is used for
-debugging classes derived from the &cls.:PERIOD.
+debugging classes derived from the &cls.
+:PERIOD.
 :P.
 The following is an example of what the &fn. dumps:
 :eLIBF.
@@ -271,7 +286,8 @@ characters from the &getarea. into
 :P.
 Classes derived from the &cls. should call the
 :MONO.sgetn
-member function, rather than the &fn.:PERIOD.
+member function, rather than the &fn.
+:PERIOD.
 :PRTCL.
 Classes derived from the &cls. that implement the &fn. should support copying
 up to
@@ -306,11 +322,13 @@ member function to transfer
 :ARG.len
 characters from
 :ARG.buf
-to the end of the &putarea. and advances the &putptr.:PERIOD.
+to the end of the &putarea. and advances the &putptr.
+:PERIOD.
 :P.
 Classes derived from the &cls. should call the
 :MONO.sputn
-member function, rather than the &fn.:PERIOD.
+member function, rather than the &fn.
+:PERIOD.
 :PRTCL.
 Classes derived from the &cls. that implement the &fn. should support copying
 up to
@@ -324,7 +342,8 @@ The default &fn. provided with the &cls. calls the
 virtual member function to flush the &putarea. and then copies the rest of
 the characters from
 :ARG.buf
-into the &putarea.:PERIOD.
+into the &putarea.
+:PERIOD.
 :RSLTS.
 The &fn. returns the number of characters successfully written.
 If an error occurs, this number may be less than
@@ -342,16 +361,18 @@ If an error occurs, this number may be less than
 :SNPF index='doallocate'.virtual int streambuf::doallocate();
 :eSNPL.
 :SMTICS.
-The &fn. manages allocation of the &obj.'s &rsvarea. in tandem with the
+The &fn. manages allocation of the &obj.'s &resvarea. in tandem with the
 :MONO.allocate
 protected member function.
 :P.
 Classes derived from the &cls. should call the
 :MONO.allocate
-protected member function rather than the &fn.:PERIOD.
+protected member function rather than the &fn.
+:PERIOD.
 :P.
 The &fn. does the actual memory allocation, and can be defined for each
-class derived from the &cls.:PERIOD.
+class derived from the &cls.
+:PERIOD.
 :PRTCL.
 Classes derived from the &cls. should implement the &fn. such that it does
 the following:
@@ -359,7 +380,7 @@ the following:
 :LI.attempts to allocate an area of memory,
 :LI.calls the
 :MONO.setb
-protected member function to initialize the &rsvarea. pointers,
+protected member function to initialize the &resvarea. pointers,
 :LI.performs any class specific operations required.
 :eOL.
 :DEFIMPL.
@@ -368,7 +389,8 @@ with the
 :MONO.operator~bnew
 intrinsic function. It then calls the
 :MONO.setb
-protected member function to set up the pointers to the &rsvarea.:PERIOD.
+protected member function to set up the pointers to the &resvarea.
+:PERIOD.
 :RSLTS.
 The &fn. returns &noteof. on success, otherwise &eof. is returned.
 :SALSO.
@@ -383,11 +405,13 @@ The &fn. returns &noteof. on success, otherwise &eof. is returned.
 :SNPF index='eback'.char *streambuf::eback() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the start of the &getarea. within the &rsvarea.
-used by the &obj.:PERIOD.
+The &fn. returns a pointer to the start of the &getarea. within the &resvarea.
+used by the &obj.
+:PERIOD.
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns a pointer to the start of the &getarea.:PERIOD.
+The &fn. returns a pointer to the start of the &getarea.
+:PERIOD.
 If the &obj.
 currently does not have a &getarea., &null. is returned.
 :SALSO.
@@ -404,13 +428,15 @@ currently does not have a &getarea., &null. is returned.
 :SNPF index='ebuf'.char *streambuf::ebuf() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the end of the &rsvarea. that the &obj.
+The &fn. returns a pointer to the end of the &resvarea. that the &obj.
 is using.  The character pointed at is actually the first character past
-the end of the &rsvarea.:PERIOD.
+the end of the &resvarea.
+:PERIOD.
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns a pointer to the end of the &rsvarea.:PERIOD.
-If the &obj. currently does not have a &rsvarea., &null. is returned.
+The &fn. returns a pointer to the end of the &resvarea.
+:PERIOD.
+If the &obj. currently does not have a &resvarea., &null. is returned.
 :SALSO.
 :SAL typ='mfun'.base
 :SAL typ='mfun'.blen
@@ -425,13 +451,16 @@ If the &obj. currently does not have a &rsvarea., &null. is returned.
 :SNPF index='egptr'.char *streambuf::egptr() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the end of the &getarea. within the &rsvarea.
-used by the &obj.:PERIOD.
+The &fn. returns a pointer to the end of the &getarea. within the &resvarea.
+used by the &obj.
+:PERIOD.
 The character pointed at is actually the first character
-past the end of the &getarea.:PERIOD.
+past the end of the &getarea.
+:PERIOD.
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns a pointer to the end of the &getarea.:PERIOD.
+The &fn. returns a pointer to the end of the &getarea.
+:PERIOD.
 If the &obj.
 currently does not have a &getarea., &null. is returned.
 :SALSO.
@@ -448,13 +477,16 @@ currently does not have a &getarea., &null. is returned.
 :SNPF index='epptr'.char *streambuf::epptr() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the end of the &putarea. within the &rsvarea.
-used by the &obj.:PERIOD.
+The &fn. returns a pointer to the end of the &putarea. within the &resvarea.
+used by the &obj.
+:PERIOD.
 The character pointed at is actually the first character
-past the end of the &putarea.:PERIOD.
+past the end of the &putarea.
+:PERIOD.
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns a pointer to the end of the &putarea.:PERIOD.
+The &fn. returns a pointer to the end of the &putarea.
+:PERIOD.
 If the &obj.
 currently does not have a &putarea., &null. is returned.
 :SALSO.
@@ -473,7 +505,8 @@ currently does not have a &putarea., &null. is returned.
 :SMTICS.
 The &fn. increments the &getptr. by the specified
 :ARG.offset
-:CONT., without regard for the boundaries of the &getarea.:PERIOD.
+:CONT., without regard for the boundaries of the &getarea.
+:PERIOD.
 The
 :ARG.offset
 parameter may be positive or negative.
@@ -495,8 +528,10 @@ The &fn. returns nothing.
 :eSNPL.
 :SMTICS.
 The &fn. returns a pointer to the next available character in the &getarea.
-within the &rsvarea. used by the &obj.:PERIOD.
-This pointer is called the &getptr.:PERIOD.
+within the &resvarea. used by the &obj.
+:PERIOD.
+This pointer is called the &getptr.
+:PERIOD.
 :I1.get pointer
 :P.
 If the &getptr. points beyond the end of the &getarea., all characters in
@@ -506,7 +541,8 @@ virtual member function to be called to fetch more characters from the source
 to which the &obj. is attached.
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns a pointer to the next available character in the &getarea.:PERIOD.
+The &fn. returns a pointer to the next available character in the &getarea.
+:PERIOD.
 If the &obj. currently does not have a &getarea., &null. is returned.
 :SALSO.
 :SAL typ='mfun'.eback
@@ -562,20 +598,23 @@ The &fn. is used to flush the &putarea. when it is full.
 Classes derived from the &cls. should implement the &fn. so that it performs
 the following:
 :OL.
-:LI.if no &rsvarea. is present and the &obj. is not unbuffered, allocate a
-&rsvarea. using the
+:LI.if no &resvarea. is present and the &obj. is not unbuffered, allocate a
+&resvarea. using the
 :MONO.allocate
-member function and set up the &rsvarea. pointers using the
+member function and set up the &resvarea. pointers using the
 :MONO.setb
 protected member function,
-:LI.flush any other uses of the &rsvarea.,
+:LI.flush any other uses of the &resvarea.,
 :LI.write any characters in the &putarea. to the &obj.'s destination,
 :LI.set up the &putarea. pointers to reflect the characters that were written,
-:LI.return &noteof. on success, otherwise return &eof.:PERIOD.
+:LI.return &noteof. on success, otherwise return &eof.
+:PERIOD.
 :eOL.
 :DEFIMPL.
-There is no default &cls. implementation of the &fn.:PERIOD.
-The &fn. must be defined for all classes derived from the &cls.:PERIOD.
+There is no default &cls. implementation of the &fn.
+:PERIOD.
+The &fn. must be defined for all classes derived from the &cls.
+:PERIOD.
 :RSLTS.
 The &fn. returns &noteof. on success, otherwise &eof. is returned.
 :SALSO.
@@ -604,7 +643,8 @@ to put
 :ARG.ch
 back into the source of the stream.
 :DEFIMPL.
-The default &cls. implementation of the &fn. is to return &eof.:PERIOD.
+The default &cls. implementation of the &fn. is to return &eof.
+:PERIOD.
 :RSLTS.
 If the &fn. succeeds, it returns
 :ARG.ch
@@ -619,11 +659,13 @@ Otherwise, &eof. is returned.
 :SNPF index='pbase'.char *streambuf::pbase() const;
 :eSNPL.
 :SMTICS.
-The &fn. returns a pointer to the start of the &putarea. within the &rsvarea.
-used by the &obj.:PERIOD.
+The &fn. returns a pointer to the start of the &putarea. within the &resvarea.
+used by the &obj.
+:PERIOD.
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns a pointer to the start of the &putarea.:PERIOD.
+The &fn. returns a pointer to the start of the &putarea.
+:PERIOD.
 If the &obj.
 currently does not have a &putarea., &null. is returned.
 :SALSO.
@@ -642,7 +684,8 @@ currently does not have a &putarea., &null. is returned.
 :SMTICS.
 The &fn. increments the &putptr. by the specified
 :ARG.offset
-:CONT., without regard for the boundaries of the &putarea.:PERIOD.
+:CONT., without regard for the boundaries of the &putarea.
+:PERIOD.
 The
 :ARG.offset
 parameter may be positive or negative.
@@ -663,8 +706,10 @@ The &fn. returns nothing.
 :eSNPL.
 :SMTICS.
 The &fn. returns a pointer to the next available space in the &putarea.
-within the &rsvarea. used by the &obj.:PERIOD.
-This pointer is called the &putptr.:PERIOD.
+within the &resvarea. used by the &obj.
+:PERIOD.
+This pointer is called the &putptr.
+:PERIOD.
 :I1.put pointer
 :P.
 If the &putptr. points beyond the end of the &putarea., the &putarea.
@@ -674,7 +719,8 @@ virtual member function to be called to empty the &putarea. to the device
 to which the &obj. is attached.
 :INCLUDE file='sb_rgp'.
 :RSLTS.
-The &fn. returns a pointer to the next available space in the &putarea.:PERIOD.
+The &fn. returns a pointer to the next available space in the &putarea.
+:PERIOD.
 If the &obj. currently does not have a &putarea., &null. is returned.
 :SALSO.
 :SAL typ='mfun'.epptr
@@ -711,7 +757,8 @@ If the &obj. currently does not have a &putarea., &null. is returned.
 :eSNPL.
 :SMTICS.
 The &fn. is used for positioning to a relative location within the &obj.,
-and hence within the device that is connected to the &obj.:PERIOD.
+and hence within the device that is connected to the &obj.
+:PERIOD.
 The
 :ARG.offset
 and
@@ -727,7 +774,8 @@ virtual member function so that it uses its parameters in the following way.
 :INCLUDE file='seekdir'.
 :DEFIMPL.
 The default implementation of the &fn. provided by the &cls. returns
-&eof.:PERIOD.
+&eof.
+:PERIOD.
 :RSLTS.
 The &fn. returns the new position in the stream on success, otherwise &eof.
 is returned.
@@ -745,7 +793,8 @@ is returned.
 :eSNPL.
 :SMTICS.
 The &fn. is used for positioning to an absolute location within the &obj.,
-and hence within the device that is connected to the &obj.:PERIOD.
+and hence within the device that is connected to the &obj.
+:PERIOD.
 The
 :ARG.pos
 parameter specifies the absolute position.  The
@@ -792,30 +841,31 @@ is returned.
 :SNPF index='setb'.void streambuf::setb( char *base, char *ebuf, int autodel );
 :eSNPL.
 :SMTICS.
-The &fn. is used to set the pointers to the &rsvarea. that the &obj. is using.
+The &fn. is used to set the pointers to the &resvarea. that the &obj. is using.
 :P.
 The
 :ARG.base
-parameter is a pointer to the start of the &rsvarea. and
+parameter is a pointer to the start of the &resvarea. and
 corresponds to the value that the
 :MONO.base
 member function returns.
 :P.
 The
 :ARG.ebuf
-parameter is a pointer to the end of the &rsvarea. and corresponds to the
+parameter is a pointer to the end of the &resvarea. and corresponds to the
 value that the
 :MONO.ebuf
 member function returns.
 :P.
 The
 :ARG.autodel
-parameter indicates whether or not the &obj. can free the &rsvarea. when the
-&obj. is destroyed or when a new &rsvarea. is set up in a subsequent call to
-the &fn.:PERIOD.
+parameter indicates whether or not the &obj. can free the &resvarea. when the
+&obj. is destroyed or when a new &resvarea. is set up in a subsequent call to
+the &fn.
+:PERIOD.
 If the
 :ARG.autodel
-parameter is non-zero, the &obj. can delete the &rsvarea., using the
+parameter is non-zero, the &obj. can delete the &resvarea., using the
 :MONO.operator~bdelete
 intrinsic function. Otherwise, a zero value indicates that the buffer will be
 deleted elsewhere.
@@ -831,9 +881,10 @@ parameters are &null. or if
 :CONT., the &obj. does not have a buffer and input/output operations
 are unbuffered, unless another buffer is set up.
 :P.
-Note that the &fn. is used to set the &rsvarea. pointers, while the
+Note that the &fn. is used to set the &resvarea. pointers, while the
 :MONO.setbuf
-protected member function is used to offer a buffer to the &obj.:PERIOD.
+protected member function is used to offer a buffer to the &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.base
 :SAL typ='mfun'.blen
@@ -853,10 +904,11 @@ The &fn. is used to offer a buffer specified by the
 :ARG.buf
 and
 :ARG.len
-parameters to the &obj. for use as its &rsvarea.:PERIOD.
+parameters to the &obj. for use as its &resvarea.
+:PERIOD.
 Note that the &fn. is used to offer a buffer, while the
 :MONO.setb
-protected member function is used to set the &rsvarea. pointers once a
+protected member function is used to set the &resvarea. pointers once a
 buffer has been accepted.
 :PRTCL.
 Classes derived from the &cls. may implement the &fn. if the default behavior
@@ -924,7 +976,8 @@ and corresponds to the value that the
 :MONO.egptr
 member function returns.
 :P.
-If any of the three parameters are &null., there is no &getarea.:PERIOD.
+If any of the three parameters are &null., there is no &getarea.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.eback
 :SAL typ='mfun'.egptr
@@ -961,7 +1014,8 @@ parameter value and corresponds to the value that the
 :MONO.pptr
 member function returns.
 :P.
-If either parameter is &null., there is no &putarea.:PERIOD.
+If either parameter is &null., there is no &putarea.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.epptr
 :SAL typ='mfun'.pbase
@@ -1045,16 +1099,19 @@ The &fn. returns the number of characters transferred from the &getarea. into
 :eSNPL.
 :SMTICS.
 The &fn. advances the &getptr. and then returns the character following the
-&getptr.:PERIOD.
+&getptr.
+:PERIOD.
 The &getptr. is left pointing at the returned character.
 :P.
 If the &getptr. cannot be advanced, the
 :MONO.underflow
 virtual member function is called to fetch more characters from the source
-into the &getarea.:PERIOD.
+into the &getarea.
+:PERIOD.
 :RSLTS.
 The &fn. advances the &getptr. and returns the next available character in the
-&getarea.:PERIOD.
+&getarea.
+:PERIOD.
 If there is no next available character, &eof. is returned.
 :SALSO.
 :SAL typ='mfun'.sbumpc
@@ -1089,7 +1146,8 @@ If there is no next available character, &eof. is returned.
 :SNPF index='sputbackc'.int streambuf::sputbackc( char ch );
 :eSNPL.
 :SMTICS.
-The &fn. is used to put a character back into the &getarea.:PERIOD.
+The &fn. is used to put a character back into the &getarea.
+:PERIOD.
 The
 :ARG.ch
 character specified must be the same as the character before the &getptr.,
@@ -1116,7 +1174,8 @@ on success, otherwise &eof. is returned.
 :SMTICS.
 The &fn. adds the character
 :ARG.ch
-to the end of the &putarea. and advances the &putptr.:PERIOD.
+to the end of the &putarea. and advances the &putptr.
+:PERIOD.
 If the &putarea. is full before the character is added, the
 :MONO.overflow
 virtual member function is called to empty the &putarea. and write the
@@ -1142,7 +1201,8 @@ The &fn. transfers up to
 :ARG.len
 characters from
 :ARG.buf
-to the end of the &putarea. and advance the &putptr.:PERIOD.
+to the end of the &putarea. and advance the &putptr.
+:PERIOD.
 If the &putarea. is full or becomes full and more characters are to be
 written, the
 :MONO.do_sputn
@@ -1191,7 +1251,7 @@ virtual member function is called to fetch more characters and then the
 :eSNPL.
 :SMTICS.
 This form of the &fn. creates an empty &obj. with all fields initialized to
-zero. No &rsvarea. is yet allocated, but the &obj. is buffered unless a
+zero. No &resvarea. is yet allocated, but the &obj. is buffered unless a
 subsequent call to the
 :MONO.setbuf
 or
@@ -1199,7 +1259,8 @@ or
 member functions dictate otherwise.
 :RSLTS.
 This form of the &fn. creates an initialized &obj. with no
-associated &rsvarea.:PERIOD.
+associated &resvarea.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -1226,7 +1287,8 @@ parameter is &null. or the
 :ARG.len
 parameter is not positive).
 :RSLTS.
-This form of the &fn. creates an initialized &obj. with an associated &rsvarea.:PERIOD.
+This form of the &fn. creates an initialized &obj. with an associated &resvarea.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.setbuf
@@ -1242,7 +1304,8 @@ This form of the &fn. creates an initialized &obj. with an associated &rsvarea.:
 :SMTICS.
 The &obj. is destroyed.
 If the buffer was allocated by the &obj., it is freed.
-Otherwise, the buffer is not freed and must be freed by the user of the &obj.:PERIOD.
+Otherwise, the buffer is not freed and must be freed by the user of the &obj.
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -1284,7 +1347,8 @@ The &fn. returns &noteof. on success, otherwise &eof. is returned.
 :SNPF index='unbuffered'.int ios::unbuffered( int unbuf );
 :eSNPL.
 :SMTICS.
-The &fn. is used to query and/or set the unbuffering state of the &obj.:PERIOD.
+The &fn. is used to query and/or set the unbuffering state of the &obj.
+:PERIOD.
 A non-zero unbuffered state indicates that the &obj. is unbuffered.  An
 unbuffered state of zero indicates that the &obj. is buffered.
 :P.
@@ -1327,21 +1391,23 @@ The &fn. is used to fill the &getarea. when it is empty.
 Classes derived from the &cls. should implement the &fn. so that it performs
 the following:
 :OL.
-:LI.if no &rsvarea. is present and the &obj. is buffered, allocate the
-&rsvarea. using the
+:LI.if no &resvarea. is present and the &obj. is buffered, allocate the
+&resvarea. using the
 :MONO.allocate
-member function and set up the &rsvarea. pointers using the
+member function and set up the &resvarea. pointers using the
 :MONO.setb
 protected member function,
-:LI.flush any other uses of the &rsvarea.,
+:LI.flush any other uses of the &resvarea.,
 :LI.read some characters from the &obj.'s source into the &getarea.,
 :LI.set up the &getarea. pointers to reflect the characters that were read,
 :LI.return the first character of the &getarea., or &eof. if no characters
 could be read.
 :eOL.
 :DEFIMPL.
-There is no default &cls. implementation of the &fn.:PERIOD.
-The &fn. must be defined for all classes derived from the &cls.:PERIOD.
+There is no default &cls. implementation of the &fn.
+:PERIOD.
+The &fn. must be defined for all classes derived from the &cls.
+:PERIOD.
 :RSLTS.
 The &fn. returns the first character read into the &getarea., or &eof.
 if no characters could be read.

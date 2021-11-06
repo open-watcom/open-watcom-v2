@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "opr.h"
 #include "opn.h"
 #include "errcod.h"
@@ -126,7 +126,7 @@ static  bool    CnvFloat( itnode *cit, int prec ) {
 
     bool        ext;
 
-    ext = ( Options & OPT_EXTEND_REAL ) != 0;
+    ext = ( (Options & OPT_EXTEND_REAL) != 0 );
     if( FmtS2F( cit->opnd, cit->opnd_size, 0, false, 0, prec, &cit->value.extended, false, NULL, ext ) != FLT_OK ) {
         OpndErr( CN_FLOAT );
         return( false );
@@ -218,9 +218,12 @@ static  bool    Number( void ) {
 
     if( CITNode->opn.ds == DSOPN_PHI ) {
         AdvanceITPtr();
-        if( !RecPlus() && !RecMin() ) return( false );
+        if( !RecPlus() && !RecMin() ) {
+            return( false );
+        }
     }
-    if( CITNode->opn.ds < DSOPN_INT ) return( false );
+    if( CITNode->opn.ds < DSOPN_INT )
+        return( false );
     AdvanceITPtr();
     return( true );
 }
@@ -391,16 +394,16 @@ static  void    AltReturn( void ) {
 static  void    OprEqu( void ) {
 //========================
 
-    if( ( ASType & AST_EOK ) == 0 ) {
+    if( (ASType & AST_EOK) == 0 ) {
         Error( EQ_ILL_EQ_SIGN );
         return;
     }
     if( ASType & AST_MEQ ) {
-        if( ( ASType & AST_ASF ) || ( StmtProc != PR_ASNMNT ) ) {
+        if( (ASType & AST_ASF) || ( StmtProc != PR_ASNMNT ) ) {
             Error( EQ_ILL_EQ_SIGN );
             return;
         }
-        if( ( ASType & AST_MSG ) == 0 ) {
+        if( (ASType & AST_MSG) == 0 ) {
             Extension( EQ_MULT_ASSGN );
             ASType |= AST_MSG;
         }
@@ -409,7 +412,7 @@ static  void    OprEqu( void ) {
     }
 }
 
-static void (* const __FAR DSTable[])( void ) = {
+static void (* const DSTable[])( void ) = {
     #define pick(tok_id,dsopn_id,opn_proc) opn_proc,
     #include "tokdsopn.h"
     #undef pick

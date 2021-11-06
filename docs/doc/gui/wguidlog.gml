@@ -91,7 +91,7 @@ An Open Dialog Resource dialog appears listing all resource files.
 .orstep Click on the resource file you want to open
 to select it, then
 .bd click on OK
-.ct .li .
+.period
 .result
 A Select Dialog(s) dialog appears listing all of the dialog resources
 in the selected resource file. You can select one, several, or all of the
@@ -101,7 +101,7 @@ select will open on the editor window of the Dialog Editor window.
 .orstep Click on the dialogs you want to open
 to select them, then
 .bd click on OK
-.ct .li .
+.period
 .result
 The selected dialog(s) appears in the &company Dialog Editor window in
 the editor window.
@@ -534,7 +534,7 @@ If there are any dialog resources in the file, the Select Dialog
 appears listing the names of all the dialog resources that exist in
 that resource file.
 .begnote
-.mnote Note:
+.note Note:
 If the file does not contain any dialog resources, the main screen
 appears with an empty edit window and dialog for you to add controls
 and modify.
@@ -756,7 +756,8 @@ ordering up to that point and proceed.
 :cmt.application, you must create the appropriate controls for your dialog. The
 :cmt.following list helps you decide when to use one control and when to use
 :cmt.another:
-:cmt..begpoint $break Choosing Options
+:cmt..begpoint $break
+:cmt..pointhdr Choosing Options
 :cmt..point If only one option
 :cmt.Use a push button
 :cmt..point If between two exclusive options
@@ -877,7 +878,7 @@ ordering up to that point and proceed.
 :cmt.resource from an executable in a library or in.... (This is wrong. When would
 :cmt.you want to save from Dialog menu?)...choose save from the Dialog menu.
 :cmt..begnote
-:cmt..mnote Warning:
+:cmt..note Warning:
 :cmt.If you choose to save from the dialog menu you will only be saving the
 :cmt.current dialog and not any of the other resources in the .RES, .EXE, or .DLL
 :cmt.file. If you save the dialog under the same name as the .RES, .EXE, or .DLL
@@ -894,7 +895,7 @@ ordering up to that point and proceed.
 :cmt.To avoid name conflicts, (you can't have two dialog resources with the same
 :cmt.name, in the same file) you will want to change the name of your dialog (the
 :cmt.editor gives you one as a default) Type in the edit field a name you want to
-:cmt.give your dialog, or , if you have loaded symbols, you can select a symbol
+:cmt.give your dialog, or, if you have loaded symbols, you can select a symbol
 :cmt.from the combo box. You can drop down the combo list box and select a
 :cmt.symbol from there. For more information about loading and selecting symbols,
 :cmt.see the sections titled Loading Symbols and Selecting Symbols

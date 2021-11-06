@@ -4,11 +4,7 @@
 #include <time.h>
 int sched_rr_get_interval(pid_t pid, struct timespec *ts);
 
-struct timespec {
-    time_t tv_sec;
-    long tv_nsec;
-};
-
+.im structms
 .synop end
 .desc begin
 The
@@ -29,7 +25,7 @@ argument.
 .desc end
 .return begin
 If successful, the function will return zero. If the call fails, the
-return value is -1 and 
+return value is -1 and
 .kw errno
 is appropriately set.
 .return end
@@ -49,5 +45,5 @@ The memory at
 could not be written successfully
 .endterm
 .error end
-.class POSIX
+.class POSIX 1003.1
 .system

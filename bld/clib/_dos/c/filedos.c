@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,8 @@
 #include <dos.h>
 #include "rtdata.h"
 #include "tinyio.h"
+#include "doserror.h"
+
 
 #ifdef _M_I86
     #define AUX_INFO \
@@ -45,9 +48,6 @@
         __value             [__eax] \
         __modify __exact    [__eax]
 #endif
-
-extern unsigned __doserror_( unsigned );
-#pragma aux __doserror_ "*"
 
 extern unsigned __dos_close( unsigned handle );
 #pragma aux __dos_close =   \

@@ -10,7 +10,7 @@ The
 function (ceiling function)
 computes the smallest integer not less than
 .arg x
-.ct .li .
+.period
 .desc end
 .return begin
 The
@@ -18,7 +18,8 @@ The
 function returns the smallest integer not less than
 .arg x
 .ct , expressed as a
-.id double.
+.id double
+.period
 .return end
 .see begin
 .seelist floor

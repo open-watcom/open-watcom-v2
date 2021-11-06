@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,7 +153,7 @@ void WPopupMenu::attachItem( WWindow *win, int position )
     gui_menu_struct     menu_item;
     gui_menu_styles     menu_style;
 
-    menu_item.label = (char *)text();
+    menu_item.label = text();
     menu_item.id = menuId();
     menu_style = GUI_STYLE_MENU_ENABLED;
     if( checked() ) {

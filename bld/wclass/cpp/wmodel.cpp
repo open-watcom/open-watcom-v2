@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,6 +76,7 @@ SayReturn WEXPORT WModel::sayf( SayStyle style, SayCode code, const char* text..
     if( _views.count() > 0 ) {
         char* txt = new char [MAX_MESSAGE + 1];
         va_list args;
+
         va_start( args, text );
         vsprintf( txt, text, args );
         va_end( args );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,47 +104,25 @@ void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, const char *types,
     va_list     args;
 
     va_start( args, types );
-    Msg_Put_Args( rc_buff, arg_info, types, &args );
+    Msg_Put_Args( rc_buff, arg_info, types, args );
     va_end( args );
-}
-
-static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args )
-{
-    switch( typech ) {
-    case 's':
-        arginfo->string = va_arg( *args, char * );
-        break;
-    case 'x':
-    case 'd':
-        arginfo->int_16 = (signed_16)va_arg( *args, unsigned int );
-        break;
-    case 'l':
-        arginfo->int_32 = (signed_32)va_arg( *args, unsigned long );
-        break;
-    case 'A':
-    case 'a':
-        arginfo->address = va_arg( *args, targ_addr * );
-        break;
-    case 'S':
-        arginfo->symb = va_arg( *args, symbol * );
-        break;
-    }
 }
 
 // Write arguments to put into a message and make it printf-like
 void Msg_Put_Args(
-    char                message[],      // Contains %s, etc. or %digit specifiers
-    MSG_ARG_LIST        *arg_info,      // Arguments found
-    const char          *types,         // message conversion specifier types
-                                        // NULL or strlen <= 3 ( arg_info->arg elements)
-    va_list             *args )         // Initialized va_list
+    char            message[],      // Contains %s, etc. or %digit specifiers
+    MSG_ARG_LIST    *arg_info,      // Arguments found
+    const char      *types,         // message conversion specifier types
+                                    // NULL or strlen <= 3 (arg_info->arg elements)
+    va_list         args )          // Initialized va_list
 {
-    int         argnum = 0;             // Index of argument found
-    int         j;                      // General purpose loop index
-    int         order[3];               // Mapping of args to arg_info->arg
-    char        *percent;               // Position of '%' in message
-    char        types_buff[1 + 3];      // readwrite copy of types
-    char        specifier;              // Character following '%'
+    int         argnum = 0;         // Index of argument found
+    int         j;                  // General purpose loop index
+    int         order[3];           // Mapping of args to arg_info->arg
+    char        *percent;           // Position of '%' in message
+    char        types_buff[1 + 3];  // readwrite copy of types
+    char        specifier;          // Character following '%'
+    MSG_ARG     *arginfo;
 
     if( types != NULL ) {
         strcpy( types_buff, types );
@@ -162,9 +140,28 @@ void Msg_Put_Args(
                 }
             }
         }
-                                        // Re-order sequential arguments
+        // Re-order sequential arguments
         for( j = 0; j < argnum; j++ ) {
-            Msg_Add_Arg( arg_info->arg + order[j], types_buff[j], args );
+            arginfo = arg_info->arg + order[j];
+            switch( types_buff[j] ) {
+            case 's':
+                arginfo->string = va_arg( args, char * );
+                break;
+            case 'x':
+            case 'd':
+                arginfo->int_16 = (signed_16)va_arg( args, unsigned int );
+                break;
+            case 'l':
+                arginfo->int_32 = (signed_32)va_arg( args, unsigned long );
+                break;
+            case 'A':
+            case 'a':
+                arginfo->address = va_arg( args, targ_addr * );
+                break;
+            case 'S':
+                arginfo->symb = va_arg( args, symbol * );
+                break;
+            }
         }
     }
     arg_info->index = 0;
@@ -173,12 +170,12 @@ void Msg_Put_Args(
 void Msg_Write_Map( int resourceid, ... )
 {
     char        msg_buff[RESOURCE_MAX_SIZE];
-    va_list     arglist;
+    va_list     args;
 
     Msg_Get( resourceid, msg_buff );
-    va_start( arglist, resourceid );
-    DoWriteMap( msg_buff, &arglist );
-    va_end( arglist );
+    va_start( args, resourceid );
+    DoWriteMap( msg_buff, args );
+    va_end( args );
 }
 
 bool FiniMsg( void )
@@ -236,11 +233,13 @@ static ssize_t  posix_read( int fildes, void *buffer, size_t nbyte )
 #endif
 
 size_t res_read( FILE *fp, void *buf, size_t len )
+/************************************************/
 {
     return( posix_read( FP2POSIX( fp ), buf, len ) );
 }
 
 size_t res_write( FILE *fp, const void *buf, size_t len )
+/*******************************************************/
 {
     /* unused parameters */ (void)fp;
 
@@ -249,12 +248,13 @@ size_t res_write( FILE *fp, const void *buf, size_t len )
 }
 
 bool res_seek( FILE *fp, long amount, int where )
+/***********************************************/
 {
     if( fp == hInstance.fp ) {
         if( where == SEEK_SET ) {
-            return( lseek( FP2POSIX( fp ), amount + WResFileShift, where ) == -1 );
+            return( lseek( FP2POSIX( fp ), amount + WResFileShift, where ) == -1L );
         } else {
-            return( lseek( FP2POSIX( fp ), amount, where ) == -1 );
+            return( lseek( FP2POSIX( fp ), amount, where ) == -1L );
         }
     }
 
@@ -278,14 +278,15 @@ bool res_seek( FILE *fp, long amount, int where )
         }
         return( false );
     } else {
-        return( QLSeek( FP2POSIX( fp ), amount, where, "resource file" ) == -1 );
+        return( QLSeek( FP2POSIX( fp ), amount, where, "resource file" ) == -1L );
     }
 }
 
 long res_tell( FILE *fp )
+/***********************/
 {
     if( fp == hInstance.fp ) {
-        return( tell( FP2POSIX( fp ) ) );
+        return( lseek( FP2POSIX( fp ), 0, SEEK_CUR ) );
     } else if( FP2POSIX( fp ) == Root->outfile->handle ) {
         return( PosLoad() );
     } else {

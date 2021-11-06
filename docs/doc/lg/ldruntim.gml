@@ -25,6 +25,7 @@ The format of the "RUNTIME" directive (short form "RU") is as follows.
      RUNTIME  env[=major[.minor]]
 
      env ::= NATIVE | WINDOWS | CONSOLE | POSIX | OS2 | DOSSTYLE
+           | RDOS | EFIBOOT
 .embigbox
 .synote
 .*
@@ -75,6 +76,16 @@ indicates that the application is a 16-bit OS/2 1.x application.
 (short form "DOS") indicates that the application is a Phar Lap TNT
 DOS extender application that uses INT 21 to communicate to the DOS
 extender rather than calls to a DLL.
+.*
+.mnote RDOS
+.ix 'RUNTIME options' 'RDOS'
+.ix 'RDOS runtime option'
+indicates that the application is a 32-bit RDOS application.
+.*
+.mnote EFIBOOT
+.ix 'RUNTIME options' 'EFIBOOT'
+.ix 'EFIBOOT runtime option'
+indicates that the application is a EFI boot application.
 .*
 .esynote
 .*
@@ -280,7 +291,7 @@ runtime abiver=3.0
 indicates that the application is a generic ELF application conforming to
 the System V Release 4 ABI. This is the default.
 .*
-.mnote LINUX 
+.mnote LINUX
 .ix 'RUNTIME options' 'LINUX'
 .ix 'LINUX runtime option'
 (short form "LIN") indicates that the application is a Linux application.

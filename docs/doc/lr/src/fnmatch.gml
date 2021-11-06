@@ -2,14 +2,14 @@
 .synop begin
 #include <fnmatch.h>
 int fnmatch( const char *pattern,
-             const char *string, int flags );
+             const char *s, int flags );
 .synop end
 .*
 .desc begin
 The
 .id &funcb.
 function checks the string specified by the
-.arg string
+.arg s
 argument to see if it matches the pattern specified by the
 .arg pattern
 argument.
@@ -20,35 +20,35 @@ argument is a bitwise inclusive OR of the bits described below. It
 modifies the interpretation of
 .arg pattern
 and
-.arg string
-.ct .li .
+.arg s
+.period
 .begterm 6
 .termhd1 Flag
 .termhd2 Meaning
 .term FNM_PATHNAME
 If set, a path separator in
-.arg string
+.arg s
 is explicitly matched by a slash in
 .arg pattern
-.ct .li .
+.period
 It isn't matched by either the asterisk or question mark special characters,
 or by a bracket expression.
 .term FNM_PERIOD
 If set, a leading period in
-.arg string
+.arg s
 matches a period in
 .arg pattern
 .ct , where the definition of "leading" depends on FNM_PATHNAME:
 .begbull $compact
 .bull
 If FNM_PATHNAME is set, a period is leading if it's the first character in
-.arg string
+.arg s
 .ct , or if it immediately follows a path separator.
 .bull
 If FNM_PATHNAME isn't set, a period is leading only if it's
 the first character in
-.arg string
-.ct .li .
+.arg s
+.period
 .endbull
 .term FNM_NOESCAPE
 If set, disables backslash escaping:
@@ -59,11 +59,11 @@ If FNM_NOESCAPE isn't set in
 .ct , a backslash character (\) in
 .arg pattern
 followed by any other character matches that second character in
-.arg string
-.ct .li .
+.arg s
+.period
 In particular, \\ matches a backslash in
-.arg string
-.ct .li .
+.arg s
+.period
 .bull
 If FNM_NOESCAPE is set, a backslash character is treated as an
 ordinary character.
@@ -74,7 +74,7 @@ If set, the matching is case-insensitive.
 A synonym for FNM_IGNORECASE.
 .term FNM_LEADING_DIR
 If set, the final path separator and any following characters in
-.arg string
+.arg s
 are ignored during matching.
 .endterm
 .np
@@ -157,10 +157,10 @@ and
 The
 .id &funcb.
 function returns zero when
-.arg string
-matches the pattern specified by 
+.arg s
+matches the pattern specified by
 .arg pattern
-.ct .li .
+.period
 If there is no match, FNM_NOMATCH is returned. If an error occurs, &funcb
 returns another non-zero value.
 .return end

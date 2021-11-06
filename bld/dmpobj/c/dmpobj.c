@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +36,23 @@
 #include "banner.h"
 #include "dmpobj.h"
 #include "wnoret.h"
+#if defined( __UNIX__ ) && defined( __WATCOMC__ )
+  #if ( __WATCOMC__ < 1300 )
+    // fix for OW 1.9
+    #include <limits.h>
+  #endif
+#endif
 #include "pathgrp2.h"
 
 #include "clibext.h"
 
+
+#if defined( __UNIX__ )
+    #define OBJSUFFIX   "o"
+#else
+    #define OBJSUFFIX   "obj"
+#endif
+#define LSTSUFFIX       "lst"
 
 bool Descriptions;
 bool InterpretComent;
@@ -69,7 +82,7 @@ static void usage( void )
 {
     ShowProductInfo();
 
-    Output( "Usage: dmpobj [options] objfile[" OBJSUFFIX "]..." CRLF );
+    Output( "Usage: dmpobj [options] objfile[." OBJSUFFIX "]..." CRLF );
     Output( "Options:" CRLF );
     Output( "-l\t\tProduce listing file" CRLF );
     Output( "-d\t\tPrint descriptive titles for some output" CRLF );
@@ -86,7 +99,7 @@ int main( int argc, char **argv )
 /*******************************/
 {
     FILE        *fp;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        file[_MAX_PATH];
     char        *fn;
     int         i;

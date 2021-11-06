@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@ static message *appMsg;
 /*
  * GetMessageDataFromID - use message id to look up message structure
  */
-message *GetMessageDataFromID( UINT msgid, char *class_name )
+message *GetMessageDataFromID( UINT msgid, const char *class_name )
 {
     WORD    i;
     WORD    j;
@@ -61,7 +61,7 @@ message *GetMessageDataFromID( UINT msgid, char *class_name )
 /*
  * ProcessIncomingMessage - get a string associated with a message id
  */
-void ProcessIncomingMessage( UINT msgid, char *class_name, char *res )
+void ProcessIncomingMessage( UINT msgid, const char *class_name, char *res )
 {
     message     *msg;
     const char  *fmtstr;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,18 +39,18 @@
  * GUIWndDirty -- tell the user interface that the screen contents are bad
  */
 
-void GUIWndDirty( gui_window *wnd )
+void GUIAPI GUIWndDirty( gui_window *wnd )
 {
     SAREA screen;
 
     if( wnd != NULL ) {
         wnd->flags |= CONTENTS_INVALID;
-        COPYAREA( wnd->use, wnd->dirty );
+        COPYRECTX( wnd->use, wnd->dirty );
         wnd->flags &= ~NEEDS_RESIZE_REDRAW;
         GUIWndUpdate( wnd );
     } else {
         for( wnd = GUIGetFront(); wnd != NULL; wnd = GUIGetNextWindow( wnd ) ) {
-            GUIWholeWndDirty( wnd );
+            GUIDirtyWhole( wnd );
         }
         screen.row = 0; /* leave this 0! */
         screen.col = 0;

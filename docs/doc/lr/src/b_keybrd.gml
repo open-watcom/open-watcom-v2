@@ -55,13 +55,13 @@ it returns the same value returned by
 .kw _KEYBRD_READ
 and
 .kw _NKEYBRD_READ
-.ct .li .
+.period
 .np
 The shift status is returned in the low-order byte with one bit
 for each special key defined as follows:
 .begnote $compact
-.termhd1 Bit
-.termhd2 Meaning
+.notehd1 Bit
+.notehd2 Meaning
 .setptnt 0 12
 .sr ptntelmt = 0
 .note bit 0 (0x01)

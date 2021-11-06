@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,8 +55,7 @@
 #include "fmacros.h"
 #include "option.h"
 #include "rstmgr.h"
-#include "wf77auxd.h"
-#include "wf77aux.h"
+#include "wf77prag.h"
 
 
 unsigned_32     CompTime;
@@ -70,11 +70,24 @@ static  void StartCompile( void )
     PrtOptions();
 }
 
+static void InvokeCompile( void )
+{
+    InitMacros();
+    ComRead(); // pre-read must occur here in case of null program
+    if( ProgSw & PS_SOURCE_EOF ) {
+        Conclude();
+    } else {
+        DoCompile();
+    }
+    FiniMacros();
+}
+
+
 static void Compile( void )
 {
     InitGlobalSegs();
     ProgSw |= PS_DONT_GENERATE;
-    InitAuxInfo();      // must be done before ComRead()
+    InitPragma();      // must be done before ComRead()
     InvokeCompile();
     if( ( (Options & OPT_SYNTAX) == 0 ) &&  // syntax check only
         ( ( CurrFile != NULL ) ) &&         // not an "null" file
@@ -86,20 +99,8 @@ static void Compile( void )
         SDRewind( CurrFile->fileptr );
         InvokeCompile();
     }
-    FiniAuxInfo();
+    FiniPragma();
     FreeGlobalSegs();
-}
-
-void InvokeCompile( void )
-{
-    InitMacros();
-    ComRead(); // pre-read must occur here in case of null program
-    if( ProgSw & PS_SOURCE_EOF ) {
-        Conclude();
-    } else {
-        DoCompile();
-    }
-    FiniMacros();
 }
 
 

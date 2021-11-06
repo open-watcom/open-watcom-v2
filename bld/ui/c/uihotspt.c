@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ static ORD hs_adjust( int pos, unsigned width )
 
 #define HOT_BUFFER      80
 
-char uidrawhottext( VSCREEN *vs, char *str, SAREA *parea,
+char uidrawhottext( VSCREEN *vs, const char *str, SAREA *parea,
                     ATTR attr, ATTR hotattr,
                     bool hidden, bool no_hotkey, bool push_button )
 {
@@ -122,7 +122,7 @@ char uidrawhottext( VSCREEN *vs, char *str, SAREA *parea,
     return( hotkey );
 }
 
-char uihotspot( VSCREEN *vs, char *str, SAREA *parea, a_hot_spot_flags flags )
+char uihotspot( VSCREEN *vs, const char *str, SAREA *parea, a_hot_spot_flags flags )
 {
     ATTR        attr, hotattr;
     char        buf[HOT_BUFFER];

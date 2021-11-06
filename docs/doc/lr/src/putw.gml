@@ -11,7 +11,7 @@ function writes a binary value of type
 .us int
 to the current position of the stream
 .arg fp
-.ct .li .
+.period
 .id &funcb.
 does not affect the alignment of items in the stream, nor does
 it assume any special alignment.
@@ -34,13 +34,13 @@ occurs, the error indicator is set and
 .id &funcb.
 returns
 .kw EOF
-.ct .li .
+.period
 Since
 .kw EOF
 is a legitimate value to write to
 .arg fp
 .ct , use
-.kw ferror
+.reffunc ferror
 to verify that an error has occurred.
 .return end
 .see begin

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +55,7 @@ _WCRTLINK long ftell( FILE *fp )
     pos = _telli64( fileno( fp ) );
     if( pos != -1LL ) {
 #else
-    pos = tell( fileno( fp ) );
+    pos = _tell( fileno( fp ) );
     if( pos != -1L ) {
 #endif
         _AccessFile( fp );

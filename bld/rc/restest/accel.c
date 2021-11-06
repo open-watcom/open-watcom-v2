@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +34,12 @@
 #include <windows.h>
 #include "restest.h"
 #include "resname.h"
+#include "wclbproc.h"
+
 
 static char accelName[256];
 
-BOOL CALLBACK GetAccelNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+INT_PTR CALLBACK GetAccelNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {
@@ -55,12 +58,12 @@ BOOL CALLBACK GetAccelNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lpara
 
 void DisplayAccel( void )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     char        buf[256];
 
-    fp = MakeProcInstance( (FARPROC)GetAccelNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( GetAccelNameDlgProc, Instance );
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     Accel = LoadAccelerators( Instance, accelName );
     if( Accel == NULL ) {
         sprintf( buf, "Can't Load Accelerator %s", accelName );

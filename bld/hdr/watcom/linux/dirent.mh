@@ -47,10 +47,7 @@ typedef struct __dirstream DIR;
 /*
  *  POSIX 1003.1 Prototypes.
  */
-_WCRTLINK extern DIR              *opendir( const char *__dirname );
-_WCRTLINK extern struct dirent    *readdir( DIR *__dirp );
-_WCRTLINK extern void             rewinddir( DIR *__dirp );
-_WCRTLINK extern int              closedir( DIR *__dirp );
+:include dirfind.sp
 
 :include cplusepi.sp
 

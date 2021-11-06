@@ -57,7 +57,7 @@
 
 #define TARGET_INT_MAX  32767
 #define TARGET_INT_MIN  (-32767-1)
-#define TARGET_UINT_MAX 0xFFFF
+#define TARGET_UINT_MAX 65535
 #define TARGET_FLT_MAX  3.402823466e+38f
 
 typedef short           target_short;

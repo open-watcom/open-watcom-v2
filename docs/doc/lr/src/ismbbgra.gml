@@ -9,9 +9,9 @@ The
 function tests if the argument
 .arg ch
 satisfies the condition that one of
-.kw isgraph
+.reffunc isgraph
 or
-.kw _ismbbkprint
+.reffunc _ismbbkprint
 is true.
 .np
 For example, in code page 932,

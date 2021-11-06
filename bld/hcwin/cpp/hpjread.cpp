@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,28 +85,25 @@ static char const   SendComment[]   = "*/";
 
 
 
+// Check line size.
+
+void HPJScanner::chkLineSize( size_t size )
+{
+    if( size == _curLine.len() ) {
+        _curLine.resize( size + LINE_BLOCK );
+    }
+}
+
 //  C-tor and D-tor for class HPJScanner
 
 HPJScanner::HPJScanner( InFile *src )
-    : _input( src )
+    : _input( src ), _curLine( 0 ), _lineSize( 0 )
 {
     _lineNum = 0;
     if( !_input->bad() ) {
-        _curLine = new char[LINE_BLOCK];
-        _lineSize = LINE_BLOCK;
-    } else {
-        _curLine = NULL;
+        chkLineSize( _lineSize );
     }
 }
-
-HPJScanner::~HPJScanner()
-{
-    if( _curLine != NULL ) {
-        delete[] _curLine;
-    }
-}
-
-
 
 //  HPJScanner::open    --Initialize the parser on a given filename.
 
@@ -114,8 +111,8 @@ bool HPJScanner::open( char const filename[] )
 {
     bool result = _input->open( filename );
     if( !result ) {
-        if( _curLine == NULL ) {
-            _curLine = new char[120];   // Overflow possibility
+        if( _lineSize == 0 ) {
+            chkLineSize( _lineSize );
         }
     }
     return result;
@@ -125,11 +122,11 @@ bool HPJScanner::open( char const filename[] )
 //  HPJScanner::getLine --Read a single line of text into _curLine.
 //                         Returns the line length (0 in case of failure).
 
-int HPJScanner::getLine()
+size_t HPJScanner::getLine()
 {
     int     current;
     bool    has_text;
-    int     cur_len=0;
+    size_t  cur_len=0;
 
     // Loop until we've identified a single line.
     while( cur_len == 0 ) {
@@ -146,12 +143,7 @@ int HPJScanner::getLine()
             if( !isspace( current ) ) {
                 has_text = true;
             }
-
-            if( cur_len == _lineSize ) {
-                _lineSize += LINE_BLOCK;
-                _curLine = (char *)renew( _curLine, _lineSize );
-            }
-
+            chkLineSize( cur_len );
             _curLine[cur_len++] = (char)current;
         }
         if( current == ';' && cur_len == 0 ) {
@@ -163,10 +155,7 @@ int HPJScanner::getLine()
             }
         }
         if( current != EOF || cur_len > 0 ) {
-            if( cur_len == _lineSize ) {
-                _lineSize += LINE_BLOCK;
-                _curLine = (char *)renew( _curLine, _lineSize );
-            }
+            chkLineSize( cur_len );
             _curLine[cur_len++] = '\0';
         } else {
             break;
@@ -184,19 +173,16 @@ int HPJScanner::getLine()
     return cur_len;
 }
 
-
 //  HPJScanner::getArg  --Read a "= <string>" argument from the .HPJ file.
 
-char *HPJScanner::getArg( int start_pos )
+char *HPJScanner::getArg( size_t start_pos )
 {
     char    *arg;
 
+    arg = _curLine + start_pos;
     // Eat whitespace.
-    for( arg = _curLine + start_pos; *arg != '\0'; arg++ ) {
-        if( !isspace( *arg ) ) {
-            break;
-        }
-    }
+    while( isspace( *arg ) )
+        arg++;
 
     // The next character had better be an '='.
     if( *arg++ != '=' ) {
@@ -204,10 +190,9 @@ char *HPJScanner::getArg( int start_pos )
         return NULL;
     }
 
-    // Eat whitespace again.
-    while( isspace( *arg ) && *arg != '\0' ) {
+    // Eat whitespace.
+    while( isspace( *arg ) )
         arg++;
-    }
 
     return arg;
 }
@@ -217,19 +202,23 @@ char *HPJScanner::getArg( int start_pos )
 
 char *HPJScanner::tokLine()
 {
-    int i,j;
+    size_t i,j;
     _curLine[_bufPos] = _bufChar;
 
-    // Find the beginning of the token.
-    for( i=_bufPos; _curLine[i] != '\0' && isspace( _curLine[i] ); ++i) {
-    }   // empty
+    i = _bufPos;
+    // Eat whitespace.
+    while( isspace( _curLine[i] ) )
+        i++;
 
     if( _curLine[i] == '\0' )
         return NULL;
 
     // Find the end of the token.
-    for( j=i; _curLine[j] != '\0' && !isspace( _curLine[j] ); ++j) {
-    }   // empty
+    for( j = i; _curLine[j] != '\0'; ++j ) {
+        if( isspace( _curLine[j] ) ) {
+            break;
+        }
+    }
 
     _bufPos = j;
     _bufChar = _curLine[j];
@@ -266,8 +255,9 @@ HPJReader::HPJReader( HFSDirectory * d_file, Pointers *other_files,
     _rtfFiles = NULL;
     _root = NULL;
     _homeDir = new char[_MAX_PATH];
-    getcwd( _homeDir, _MAX_PATH );
-    if( input->bad() ) {
+    if( getcwd( _homeDir, _MAX_PATH ) == NULL ) {
+        _bagFiles = NULL;
+    } else if( input->bad() ) {
         _bagFiles = NULL;
     } else {
         _bagFiles = new Baggage*[NB_FILES];
@@ -328,9 +318,11 @@ bool HPJReader::nextFile( InFile *input )
             }
         } else {
             for( curdir = _firstDir; curdir != NULL; curdir = curdir->_next ) {
-                chdir( curdir->_name );
+                if( chdir( curdir->_name ) )
+                    continue;
                 input->open( filename );
-                chdir( _startDir );
+                if( chdir( _startDir ) )
+                    HCWarning( HPJ_BADDIR, _startDir );
                 if( !input->bad() ) {
                     return true;
                 }
@@ -348,9 +340,11 @@ void HPJReader::parseFile()
 {
     HCStartFile( _scanner.name() );
 
-    int     length = _scanner.getLine();    // Get the first line.
+    size_t  length;
     char    section[15];
-    int     i;
+    size_t  i;
+
+    length = _scanner.getLine();    // Get the first line.
     while( length != 0 ) {
         // The first line had better be the beginning of a section.
         if( _scanner[0] != '[' ) {
@@ -408,7 +402,7 @@ void HPJReader::parseFile()
         _theFiles->_phrFile = new HFPhrases( _dir, &firstFile, &nextFile );
 
         char        full_path[_MAX_PATH];
-        PGROUP2     pg;
+        pgroup2     pg;
 
         _fullpath( full_path, _scanner.name(), _MAX_PATH );
         _splitpath2( full_path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
@@ -430,9 +424,11 @@ void HPJReader::parseFile()
             source.open( curfile->_name );
         } else {
             for( StrNode *curdir = _root; curdir != NULL; curdir = curdir->_next ) {
-                chdir( curdir->_name );
+                if(chdir( curdir->_name ) )
+                    continue;
                 source.open( curfile->_name );
-                chdir( _homeDir );
+                if( chdir( _homeDir ) )
+                    HCWarning( HPJ_BADDIR, _homeDir );
                 if( !source.bad() ) {
                     break;
                 }
@@ -451,9 +447,9 @@ void HPJReader::parseFile()
 
 //  HPJReader::skipSection --Jump to the next section header.
 
-int HPJReader::skipSection()
+size_t HPJReader::skipSection()
 {
-    int result;
+    size_t result;
     do {
         result = _scanner.getLine();
     } while( result != 0 && _scanner[0] != '[' );
@@ -463,13 +459,13 @@ int HPJReader::skipSection()
 
 //  HPJReader::handleBaggage --Create baggage files.
 
-int HPJReader::handleBaggage()
+size_t HPJReader::handleBaggage()
 {
-    int result = 0;
+    size_t result = 0;
 
     while( _numBagFiles < NB_FILES ) {
         result = _scanner.getLine();
-        if( !result )
+        if( result == 0 )
             break;
         if( _scanner[0] == '[' )
             break;
@@ -483,19 +479,19 @@ int HPJReader::handleBaggage()
 
 #define MAX_OPTION_LEN  12
 
-int HPJReader::handleOptions()
+size_t HPJReader::handleOptions()
 {
-    int result;
+    size_t  result;
     char    option[MAX_OPTION_LEN + 1];
     char    *arg;
     int     i;
     for( ;; ) {
         result = _scanner.getLine();
-        if( !result || _scanner[0] == '[' )
+        if( result == 0 || _scanner[0] == '[' )
             break;
 
         // Read in the name of the option.
-        for( i=0; i<MAX_OPTION_LEN; i++ ) {
+        for( i = 0; i < MAX_OPTION_LEN; i++ ) {
             if( isspace( _scanner[i] ) || _scanner[i] == '=' )
                 break;
             option[i] = (char)toupper( _scanner[i] );
@@ -568,8 +564,15 @@ int HPJReader::handleOptions()
                     memcpy( temp->_name, arg, j );
                     temp->_name[j] = '\0';
                     temp->_next = NULL;
-                    if( chdir( temp->_name ) == 0 ) {
-                        chdir( _homeDir );
+                    if( chdir( temp->_name ) ) {
+                        HCWarning( HPJ_BADDIR, temp->_name );
+                        delete[] temp->_name;
+                        delete temp;
+                    } else if( chdir( _homeDir ) ) {
+                        HCWarning( HPJ_BADDIR, _homeDir );
+                        delete[] temp->_name;
+                        delete temp;
+                    } else {
                         if( current == NULL ) {
                             _root = temp;
                             current = _root;
@@ -577,10 +580,6 @@ int HPJReader::handleOptions()
                             current->_next = temp;
                             current = current->_next;
                         }
-                    } else {
-                        HCWarning( HPJ_BADDIR, temp->_name );
-                        delete[] temp->_name;
-                        delete temp;
                     }
                     arg += j;
                     if( arg[0] != '\0' ) {
@@ -597,12 +596,12 @@ int HPJReader::handleOptions()
 //  HPJReader::handleConfig --Parse the [CONFIG] section (where macros
 //                             are kept).
 
-int HPJReader::handleConfig()
+size_t HPJReader::handleConfig()
 {
-    int result;
+    size_t result;
     for( ;; ) {
         result = _scanner.getLine();
-        if( !result || _scanner[0] == '[' )
+        if( result == 0 || _scanner[0] == '[' )
             break;
         _sysFile->addRecord( new SystemText( HFSystem::SYS_MACRO, _scanner ) );
     }
@@ -612,10 +611,10 @@ int HPJReader::handleConfig()
 
 //  HPJReader::handleFiles --Parse the [FILES] section.
 
-int HPJReader::handleFiles()
+size_t HPJReader::handleFiles()
 {
-    int result;
-    int i;
+    size_t result;
+    size_t i;
     StrNode *current = _rtfFiles;
     StrNode *temp;
     if( current != NULL ) {
@@ -625,7 +624,7 @@ int HPJReader::handleFiles()
     }
     for( ;; ) {
         result = _scanner.getLine();
-        if( !result || _scanner[0] == '[' )
+        if( result == 0 || _scanner[0] == '[' )
             break;
         for( i = 0; _scanner[i] != '\0'; ++i ) {
             if( isspace( _scanner[i] ) ) {
@@ -649,19 +648,18 @@ int HPJReader::handleFiles()
 
 //  HPJReader::handleBitmaps    --Parse the [BITMAPS] section.
 
-int HPJReader::handleBitmaps()
+size_t HPJReader::handleBitmaps()
 {
-    int result;
-    int i;
+    size_t result;
+    size_t i;
     for( ;; ) {
         result = _scanner.getLine();
-        if( !result || _scanner[0] == '[' )
+        if( result == 0 || _scanner[0] == '[' )
             break;
-        for( i=0; _scanner[i] != '\0'; i++ ) {
-            if( !isspace( _scanner[i] ) ) {
-                break;
-            }
-        }
+        i = 0;
+        // Eat whitespace.
+        while( isspace( _scanner[i] ) )
+            i++;
         if( _scanner[i] == '\0' )
             continue;
         try{
@@ -689,16 +687,16 @@ int HPJReader::handleBitmaps()
 
 #define PARAM_MAX       1023
 
-int HPJReader::handleWindows()
+size_t HPJReader::handleWindows()
 {
-    int     result;
-    int     i, limit;
+    size_t  result;
+    size_t  i, limit;
     char    *arg;
     bool    bad_param;
     int     red, green, blue;
     uint_16 wflags;
-    char    name[HLP_SYS_NAME];
-    char    caption[HLP_SYS_CAP];
+    char    name[HLP_SYS_NAME + 1];
+    char    caption[HLP_SYS_CAP + 1];
     uint_16 x = 0;
     uint_16 y = 0;
     uint_16 width = 0;
@@ -710,11 +708,13 @@ int HPJReader::handleWindows()
         if( _scanner[0] == '[' )
             break;
 
-        limit = HLP_SYS_NAME-1;
-        if( limit > result-1 ) {
-            limit = result-1;
+        limit = HLP_SYS_NAME;
+        if( limit > result - 1 ) {
+            limit = result - 1;
         }
-        for( i=0; i<limit && !isspace(_scanner[i]) && _scanner[i] != '=' ; i++ ) {
+        for( i = 0; i < limit; i++ ) {
+            if( isspace( _scanner[i] ) || _scanner[i] == '=' )
+                break;
             name[i] = _scanner[i];
         }
         if( i == result - 1 ) {
@@ -724,7 +724,7 @@ int HPJReader::handleWindows()
             HCWarning( HPJ_LONGWINNAME, _scanner.lineNum(), _scanner.name() );
         }
         name[i] = '\0';
-        while( i<result-1 && !isspace(_scanner[i]) ) {
+        while( i < result - 1 && !isspace( _scanner[i] ) ) {
             i++;
         }
 
@@ -743,7 +743,7 @@ int HPJReader::handleWindows()
             if( *arg == '"' ) {
                 arg++;
             }
-            while( i<HLP_SYS_CAP-1 && *arg != '\0' && *arg != '"' ) {
+            while( i < HLP_SYS_CAP && *arg != '\0' && *arg != '"' ) {
                 caption[i++] = *arg++;
             }
             caption[i] = '\0';
@@ -753,7 +753,7 @@ int HPJReader::handleWindows()
         bad_param = false;
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            x = (uint_16) strtol( arg, NULL, 0 );
+            x = (uint_16)strtol( arg, NULL, 0 );
             if( x > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -762,7 +762,7 @@ int HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            y = (uint_16) strtol( arg, NULL, 0 );
+            y = (uint_16)strtol( arg, NULL, 0 );
             if( y > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -771,7 +771,7 @@ int HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            width = (uint_16) strtol( arg, NULL, 0 );
+            width = (uint_16)strtol( arg, NULL, 0 );
             if( width > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -780,7 +780,7 @@ int HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            height = (uint_16) strtol( arg, NULL, 0 );
+            height = (uint_16)strtol( arg, NULL, 0 );
             if( height > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -794,7 +794,7 @@ int HPJReader::handleWindows()
 
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            use_max_flag = (uint_16) strtol( arg, NULL, 0 );
+            use_max_flag = (uint_16)strtol( arg, NULL, 0 );
             wflags |= VALID_MAX;
         }
 
@@ -830,7 +830,7 @@ int HPJReader::handleWindows()
             HCWarning( HPJ_WINBADCOLOR, _scanner.lineNum(), _scanner.name() );
             continue;
         } else {
-            rgb_main = (uint_32) (red + (green<<8) + (blue<<16));
+            rgb_main = (uint_32)(red + ( green << 8 ) + ( blue << 16 ));
         }
 
         red = green = blue = 0;
@@ -865,7 +865,7 @@ int HPJReader::handleWindows()
             HCWarning( HPJ_WINBADCOLOR, _scanner.lineNum(), _scanner.name() );
             continue;
         } else {
-            rgb_nonscroll = (uint_32) (red + (green<<8) + (blue<<16));
+            rgb_nonscroll = (uint_32)(red + ( green << 8 ) + ( blue << 16 ));
         }
 
         arg = nextWinParam();
@@ -895,9 +895,9 @@ char *HPJReader::nextWinParam()
     char * newbuf;
 
     if( *result != '\0' ) {
-        while( isspace( *result ) ) {
+        // Eat whitespace.
+        while( isspace( *result ) )
             result++;
-        }
         newbuf = result;
         if( *newbuf == '"' ) {
             while( *newbuf != ',' && *newbuf != '\0' ) {
@@ -910,6 +910,7 @@ char *HPJReader::nextWinParam()
                 }
                 newbuf++;
             }
+            // Eat whitespace.
             while( isspace( *result ) ) {
                 result++;
             }
@@ -926,17 +927,17 @@ char *HPJReader::nextWinParam()
 
 //  HPJReader::handleMap --Parse the [MAP] section.
 
-int HPJReader::handleMap()
+size_t HPJReader::handleMap()
 {
-    int     result;
+    size_t  result;
     char    *token;
     uint_32 hash_value;
     int     con_num;
     bool    is_good_string;
-    int     i;
+    size_t  i;
     for( ;; ) {
         result = _scanner.getLine();
-        if( !result || _scanner[0] == '[' )
+        if( result == 0 || _scanner[0] == '[' )
             break;
         token = _scanner.tokLine();
         if( token == NULL )
@@ -987,10 +988,10 @@ void HPJReader::includeMapFile( char *str )
     char seek_char;
     char *name;
 
+    // Eat whitespace.
+    while( isspace( *str ) )
+        str++;
     // Get the filename.
-    while( *str != '\0' && isspace( *str ) ) {
-        ++str;
-    }
     switch( *str++ ) {
     case '"':
         seek_char = '"';
@@ -1003,9 +1004,10 @@ void HPJReader::includeMapFile( char *str )
         return;
     }
 
-    name = str;
-    while( *str != '\0' && *str != seek_char ) {
-        ++str;
+    for( name = str; *str != '\0'; str++ ) {
+        if( *str == seek_char ) {
+            break;
+        }
     }
     if( str == name ) {
         HCWarning( HPJ_BADINCLUDE, _scanner.lineNum(), _scanner.name() );
@@ -1020,9 +1022,11 @@ void HPJReader::includeMapFile( char *str )
         source.open( name );
     } else {
         for( current = _root; current != NULL; current = current->_next ) {
-            chdir( current->_name );
+            if( chdir( current->_name ) )
+                continue;
             source.open( name );
-            chdir( _homeDir );
+            if( chdir( _homeDir ) )
+                HCWarning( HPJ_BADDIR, _homeDir );
             if( !source.bad() ) {
                 break;
             }
@@ -1070,11 +1074,10 @@ void HPJReader::includeMapFile( char *str )
             if( !is_good_str ) {
                 HCWarning( CON_BAD, token, input.lineNum(), input.name() );
             } else {
-                hash_value = Hash(token);
+                hash_value = Hash( token );
                 token = input.tokLine();
                 if( token == NULL ) {
-                    HCWarning( CON_NONUM, token, input.lineNum(),
-                               input.name() );
+                    HCWarning( CON_NONUM, token, input.lineNum(), input.name() );
                 } else {
                     con_num = atol( token );
                     _theFiles->_mapFile->addMapRec( con_num, hash_value );

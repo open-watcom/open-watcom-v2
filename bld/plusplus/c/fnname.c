@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,6 @@
 #include "ppops.h"
 #include "vbuf.h"
 #include "name.h"
-#include "toggle.h"
 #include "cgfront.h"
 #include "fmttype.h"
 #include "initdefs.h"
@@ -357,6 +357,7 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
     void *base )                // - base modifier
 {
     STRING_CONSTANT str;
+    unsigned len;
 
     appendChar( IN_BASED );
     flags &= TF1_BASED;
@@ -375,18 +376,19 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
 #endif
         appendChar( IN_BASED_STRING );
         str = base;
-        if( str->len < ZZ_LEN_LIMIT ) {
+        len = StringLength( str );
+        if( len < ZZ_LEN_LIMIT ) {
             char    sbuf[10];
 
-            utoa_zz( str->len, sbuf );
+            utoa_zz( len, sbuf );
             appendStr( sbuf );
         } else {
             char    sbuf[60];
 
-            sprintf( sbuf, "internal name length=%d is > %d (1)", (int)str->len, ZZ_LEN_LIMIT );
+            sprintf( sbuf, "internal name length=%u is > %d (1)", len, ZZ_LEN_LIMIT );
             CFatal( sbuf );
         }
-        appendStrWithLen( str->string, str->len );
+        appendStrWithLen( str->string, len );
         break;
     case TF1_BASED_FETCH:
 #ifndef NDEBUG
@@ -926,14 +928,77 @@ NAME CppTypeidName(             // CREATE NAME FOR TYPEID
     return( retMangling( save ) );
 }
 
+static char rotateChar( char c, unsigned rotate )
+{
+    unsigned new_char;
+    if( 'a' <= c && c <= 'z' ) {
+        // 0-25
+        c -= 'a';
+    } else if( 'A' <= c && c <= 'Z' ) {
+        // 26-51
+        c -= 'A';
+        c += 26;
+    } else if( '0' <= c && c <= '9' ) {
+        // 52-61
+        c -= '0';
+        c += 52;
+    } else if( c == '_' ) {
+        c = 62;
+    } else {
+        // don't rotate the character
+        return( c );
+    }
+    new_char = ( c + rotate ) & 0x3f;
+    if( new_char == 63 ) {
+        // use the unused slot's transformation
+        new_char = ( 63 + rotate ) & 0x3f;
+        DbgAssert( new_char != 63 );
+    }
+    if( new_char <= 25 ) {
+        c = (char)( new_char + 'a');
+    } else if( new_char <= 51 ) {
+        c = (char)(( new_char - 26 ) + 'A');
+    } else if( new_char <= 61 ) {
+        c = (char)(( new_char - 52 ) + '0');
+    } else if( new_char == 62 ) {
+        c = '_';
+    } else {
+        c = '@';
+    }
+    return( c );
+}
+
+static void runThruSimpleCipher( char *name, unsigned len )
+{
+    unsigned rotate = 21;
+    while( len != 0 ) {
+        *name = rotateChar( *name, rotate );
+        // ( rotate + 67 ) mod 101
+        rotate += 67;
+        if( rotate >= 101 ) {
+            rotate -= 101;
+        }
+        ++name;
+        --len;
+    }
+}
+
 char *CppGetTypeidContents(     // CREATE CONTENTS FOR TYPEID STRUCTURE
     TYPE type,                  // - typeid type
-    unsigned *len )             // - addr( strlen of contents )
+    unsigned *plen )            // - addr( strlen of contents )
 {
+    char *name;
+    unsigned len;
+
     VbufRewind( &mangled_name );
     appendType( type, NULL, TM_NO_INITIAL_MOD );
-    *len = VbufLen( &mangled_name );
-    return( VbufString( &mangled_name ) );
+    len = VbufLen( &mangled_name );
+    name = VbufString( &mangled_name );
+    if( CompFlags.obfuscate_typesig_names ) {
+        runThruSimpleCipher( name, len );
+    }
+    *plen = len;
+    return( name );
 }
 
 NAME CppVATableName(            // CREATE NAME OF VIRTUAL FN ADJUSTOR TABLE
@@ -1123,10 +1188,10 @@ static const char *cppNameCgop(     // PRODUCE PRINTABLE OPERATOR NAME
         #include "ppopslnm.h"
     };
 
-    if( oper >= ( sizeof( opNames ) / sizeof( opNames[0] ) ) ) {
-        name = "***INVALID CGOP***";
-    } else {
+    if( oper < ARRAY_SIZE( opNames ) ) {
         name = opNames[oper];
+    } else {
+        name = "***INVALID CGOP***";
     }
     return( name );
 }

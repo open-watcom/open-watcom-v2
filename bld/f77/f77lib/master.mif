@@ -4,11 +4,11 @@ proj_name = flib
 flib_autodepends = .AUTODEPEND
 !endif
 
-additional_cleanup = *.gc
+additional_clean = *.gc
 
 # remap fpu to processor
 flib_086 = 086
-flib_087 = 086 
+flib_087 = 086
 flib_286 = 286
 flib_287 = 286
 flib_386 = 386
@@ -49,7 +49,7 @@ asm_src_ppc = ../../asmppc;../../../asmppc
 
 .asm: $(asm_src_$(host_cpu))
 
-.c: ../../c;../../../c;../../c/math;../../c/ifns;../../c/ufns
+.c: ../../c;../../c/math;../../c/ifns;../../c/ufns
 
 #-------------------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ $(libname).lib : errcod.gh $(files) $(__MAKEFILES__)
     $(noecho)%create $(libname).lbc
     @for %%f in ($(files)) do @%append $(libname).lbc +%%f
     @%make echo_lib
-    $(librarian) $(flib_lib_flags) $^@ @$(libname).lbc
+    $(librarian) $(flib_lib_flags) $@ @$(libname).lbc
 
 errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
     errsrc $[@ eo r
@@ -65,6 +65,8 @@ errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
 jerrmsg.grc:  ../../../h/error.msg
     errsrc $[@ jo r
 
-errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
+rcui_inc_dirs = -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+
+errmsg.res : ../../h/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
     @%make echo_rc
-    $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@
+    $(rcui8)

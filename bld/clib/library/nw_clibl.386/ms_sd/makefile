@@ -5,6 +5,6 @@ system=nw_clibl
 linkage=static
 convention=stack
 
-clib_release = 0
+lib_debug = 1
 
 !include $(clib_dir)/mrglib.mif

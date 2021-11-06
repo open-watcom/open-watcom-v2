@@ -18,7 +18,7 @@ test_flags += -I.. -I"../source" -w0 -fi=../__ialias.h
 
 test_flags_i86 = -ml -zm
 
-!include testenv1.mif
+!include testenv.mif
 !include ../lib.mif
 
 exes = &
@@ -53,11 +53,8 @@ opt_link = LIBRARY ../cool.lib
 
 .cpp : .;../source
 
-test : .symbolic start clean start_test ../cool.lib test.lnk $(exes) common_set_result
-    @%make clean
-
-start_test : .symbolic
-    @%make common_start_test
+test : .symbolic start ../cool.lib test.lnk $(exes)
+    $(noecho)%make common_set_result
 
 clean : .procedure
     @%make echo_clean

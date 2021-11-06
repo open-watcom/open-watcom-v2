@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include "bool.h"
 #include "cmdscan.h"
 
+
 typedef struct cmd_scan_ctl {
     char const  *curr_ptr;      // current scan position
     char const  *switch_ptr;    // start of current switch
@@ -42,12 +44,16 @@ typedef struct cmd_scan_ctl {
 
 static cmd_scan_ctl cmd;
 
-void CmdScanInit(               // INITIALIZE FOR COMMAND SCANNING
-    char const *cmd_line )      // - command line
-{
+char const *CmdScanInit(        // INITIALIZE FOR COMMAND SCANNING
+    char const *cmd_line )      // - new command line
+{                               // RETURN OLD COMMAND-LINE SCAN ADDRESS
+    char const *old;
+
+    old = cmd.curr_ptr;
     cmd.curr_ptr = cmd_line;
     cmd.switch_ptr = NULL;
     cmd.unix_mode = false;
+    return( old );
 }
 
 
@@ -253,7 +259,7 @@ size_t CmdScanNumber(           // SCAN A NUMBER
     char const *str_beg;        // - start of string
     unsigned value;             // - base 10 value
 
-    str_beg = CmdScanAddr();
+    str_beg = cmd.curr_ptr;
     value = 0;
     for( p = str_beg; isdigit(*p); ++p ) {
         value *= 10;

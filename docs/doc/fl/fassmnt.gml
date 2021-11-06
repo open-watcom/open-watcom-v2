@@ -1,9 +1,10 @@
 .chap *refid=fassmnt Assignment Statements
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 Assignment statements are used to define entities.
 There are four different types of assignment.
@@ -36,7 +37,7 @@ PRECISION, COMPLEX
 .xt or double precision complex (COMPLEX*16).
 .mnote e
 is an arithmetic expression.
-.endnote
+.esynote
 .np
 The following are examples of arithmetic assignment statements.
 .millust begin
@@ -46,12 +47,12 @@ The following are examples of arithmetic assignment statements.
 .pc
 Executing an arithmetic assignment statement causes the evaluation of the
 arithmetic expression
-.id e,
-converting the type of the expression
+.id e
+.ct , converting the type of the expression
 .id e
 to the type of
-.id v,
-and defining
+.id v
+.ct , and defining
 .id v
 with the result.
 .np
@@ -74,7 +75,8 @@ is such that &minus.32768 <=
 <= 32767,
 .id v
 will be assigned the value of
-.id e.
+.id e
+.period
 Otherwise,
 .id v
 will be undefined.
@@ -88,7 +90,8 @@ is such that &minus.128 <=
 <= 127,
 .id v
 will be assigned the value of
-.id e.
+.id e
+.period
 Otherwise,
 .id v
 will be undefined.
@@ -110,7 +113,7 @@ is
 is a variable name or array element name of type LOGICAL.
 .mnote e
 is a logical expression.
-.endnote
+.esynote
 .np
 The following are examples of logical assignment statements.
 .millust begin
@@ -121,8 +124,8 @@ The following are examples of logical assignment statements.
 .pc
 Executing a logical assignment statement causes the evaluation of the
 logical expression
-.id e,
-and defining
+.id e
+.ct , and defining
 .id v
 with the result.
 Note that the type of
@@ -147,7 +150,7 @@ is
 is a statement label.
 .mnote i
 is the name of an integer variable.
-.endnote
+.esynote
 .np
 The following is an example of a statement label assignment statement.
 .millust ASSIGN 10 TO I
@@ -156,7 +159,8 @@ The result of executing an
 statement causes the integer variable
 .id i
 to be defined with the value of the statement label
-.id s.
+.id s
+.period
 .id s
 must be the statement label of an executable statement or a format
 statement in the same program unit in which the
@@ -218,7 +222,7 @@ is a character variable name, character array element, or character
 substring.
 .mnote e
 is a character expression.
-.endnote
+.esynote
 .np
 The following are examples of character assignment statements.
 .millust begin
@@ -238,7 +242,8 @@ with the result.
 None of the character positions defined in
 .id v
 may be referenced in
-.id e.
+.id e
+.period
 The following example is illegal since the 4th and 5th character
 positions of
 .id A
@@ -262,17 +267,19 @@ then
 the assignment has the effect of truncating
 .id e
 from the right to the length of
-.id v.
+.id v
+.period
 If the length of
 .id v
 is greater than the length of
-.id e,
-the value assigned to
+.id e
+.ct , the value assigned to
 .id v
 is the value of
 .id e
 padded on the right with blanks to the length of
-.id v.
+.id v
+.period
 .*
 .section Extended Assignment Statement
 .*
@@ -280,7 +287,7 @@ padded on the right with blanks to the length of
 .ix 'extended assignment statement'
 .ix 'assignment statement' 'extended'
 &product supports an extension to the FORTRAN 77 assignment
-statement, namely the 
+statement, namely the
 .us extended assignment statement
 shown here:
 .mext begin
@@ -312,7 +319,7 @@ A logical expression.
 .note
 A character expression.
 .endnote
-.endnote
+.esynote
 .np
 The extended assignment statement is equivalent to the following
 individual statements.

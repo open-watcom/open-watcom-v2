@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +48,7 @@ extern void WPMemFree( void * );
 
 #endif
 
-#ifdef __WATCOMC__
-#pragma pack( 1 );
-#endif
+#include "pushpck1.h"
 
 enum {
     OK = 0,
@@ -154,6 +153,4 @@ extern int              Decode( arccmd * );
 extern int              Encode( arccmd * );
 extern void             PackExit( void );
 
-#ifdef __WATCOMC__
-#pragma pack();
-#endif
+#include "poppck.h"

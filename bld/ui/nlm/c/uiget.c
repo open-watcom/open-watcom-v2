@@ -37,6 +37,8 @@
 #include "nw_lib.h"
 
 
+#define MILLISEC_PER_TICK   10L
+
 // be very careful about setting this true
 static bool EnterForever = false;
 
@@ -57,7 +59,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
  */
 {
     /* NetWare uses a clock tick of .01 seconds. */
-    return( milli / 10 );
+    return( ( milli + MILLISEC_PER_TICK / 2 ) / MILLISEC_PER_TICK );
 }
 
 void UIAPI uiflush( void )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,11 +43,11 @@ typedef enum {
 } HelpSeekType;
 
 extern HELPIO size_t    HelpRead( FILE *fp, void *buf, size_t len );
-extern HELPIO long int  HelpSeek( FILE *fp, long int offset, HelpSeekType where );
-extern HELPIO long int  HelpTell( FILE *fp );
+extern HELPIO long      HelpSeek( FILE *fp, long offset, HelpSeekType where );
+extern HELPIO long      HelpTell( FILE *fp );
 extern HELPIO FILE      *HelpOpen( const char *path );
 extern HELPIO int       HelpClose( FILE *fp );
-extern HELPIO long int  HelpFileLen( FILE *fp );
+extern HELPIO long      HelpFileLen( FILE *fp );
 #ifndef __NLM__
 extern HELPIO void      HelpSearchEnv( const char *name, const char *env_var, char *buf );
 #endif

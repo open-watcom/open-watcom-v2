@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,26 +34,31 @@
 
 #include "trptypes.h"
 
-#include "pushpck1.h"
+#define OVERLAY_SUPP_NAME       Overlays
+#define TRAP_OVERLAY(s)         TRAP_SYM( OVERLAY_SUPP_NAME, s )
 
-#define OVERLAY_SUPP_NAME               "Overlays"
+//#define REQ_OVL_DEF(sym,func)
+#define REQ_OVL_DEFS() \
+    REQ_OVL_DEF( STATE_SIZE,      state_size ) \
+    REQ_OVL_DEF( GET_DATA,        get_data ) \
+    REQ_OVL_DEF( READ_STATE,      read_state ) \
+    REQ_OVL_DEF( WRITE_STATE,     write_state ) \
+    REQ_OVL_DEF( TRANS_VECT_ADDR, trans_vect_addr ) \
+    REQ_OVL_DEF( TRANS_RET_ADDR,  trans_ret_addr ) \
+    REQ_OVL_DEF( GET_REMAP_ENTRY, get_remap_entry )
+
+enum {
+    #define REQ_OVL_DEF(sym,func)   REQ_OVL_ ## sym,
+    REQ_OVL_DEFS()
+    #undef REQ_OVL_DEF
+};
+
+#include "pushpck1.h"
 
 typedef struct {
     addr32_ptr  mach;
     unsigned_16 sect_id;
 } ovl_address;
-
-
-enum {
-    REQ_OVL_STATE_SIZE,         /* 00 */
-    REQ_OVL_GET_DATA,           /* 01 */
-    REQ_OVL_READ_STATE,         /* 02 */
-    REQ_OVL_WRITE_STATE,        /* 03 */
-    REQ_OVL_TRANS_VECT_ADDR,    /* 04 */
-    REQ_OVL_TRANS_RET_ADDR,     /* 05 */
-    REQ_OVL_GET_REMAP_ENTRY     /* 06 */
-};
-
 
 typedef struct {
     supp_prefix         supp;

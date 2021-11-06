@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
@@ -40,7 +39,6 @@
 #include "global.h"
 #include "fcgbls.h"
 #include "errcod.h"
-#include "omodes.h"
 #include "cioconst.h"
 #include "fcodes.h"
 #include "fmemmgr.h"
@@ -48,30 +46,24 @@
 #include "ferror.h"
 #include "iopath.h"
 #include "pathlist.h"
-#include "posio.h"
-#include "poserr.h"
-#include "posseek.h"
+#include "fileerr.h"
+#include "fileseek.h"
 #include "sdcio.h"
 
 #include "clibext.h"
 
 
-#if defined( __386__ )
-  #define WFC_PAGE_SIZE     ((obj_ptr)(16 * 1024))
-#else
-  #define WFC_PAGE_SIZE     ((obj_ptr)(1 * 1024))
-#endif
+#define WFC_PAGE_SIZE        ((obj_ptr)(16 * 1024))
 #define _PageNumber( v_ptr ) ((v_ptr) / WFC_PAGE_SIZE)
 #define _PageOffset( v_ptr ) (ObjCode + ((v_ptr) - ((v_ptr) / WFC_PAGE_SIZE) * WFC_PAGE_SIZE))
 #define _MakeVirtual( page, o_ptr ) ((page) * WFC_PAGE_SIZE + ( (o_ptr) - ObjCode ))
 
-static  f_attrs         PageFileAttrs = { REC_FIXED | SEEK };
 static  char            *PageFileName = { "__wfc__.vm" };
 static  char            PageFileBuff[_MAX_PATH];
 static  unsigned_32     CurrPage;
 static  unsigned_32     MaxPage;
 static  unsigned_8      PageFlags;
-static  file_handle     PageFile;
+static  FILE            *PageFile;
 static  char            *ObjPtr;
 static  char            *ObjCode;
 static  char            *ObjEnd;
@@ -79,16 +71,11 @@ static  char            *ObjEnd;
 #define PF_INIT         0x00    // initial page flags
 #define PF_DIRTY        0x01    // page has been updated
 
-static  void    chkIOErr( file_handle fp, int error ) {
-//=====================================================
-
-// Check for i/o errors to page file.
-
-    char        err_msg[ERR_BUFF_SIZE+1];
-
-    if( SDError( fp, err_msg ) ) {
-        Error( error, PageFileName, err_msg );
-    }
+static void PageFileIOErr( int error )
+//====================================
+// Output i/o errors for page file.
+{
+    Error( error, PageFileName, strerror( errno ) );
 }
 
 void    InitObj( void ) {
@@ -106,7 +93,7 @@ void    InitObj( void ) {
     ObjPtr = ObjCode;
     *(unsigned_16 *)ObjPtr = FC_END_OF_SEQUENCE; // in case no source code in file
     PageFile = NULL;
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) {
+    if( (ProgSw & PS_DONT_GENERATE) == 0 ) {
         fn = PageFileBuff;
         tmp = getenv( "TMP" );
         if( tmp != NULL && *tmp != NULLCHAR ) {
@@ -118,23 +105,21 @@ void    InitObj( void ) {
                 }
             }
         }
-        SDSetAttr( PageFileAttrs );
         strcpy( fn, PageFileName );
         fn += strlen( fn );
         fn[1] = NULLCHAR;
         for( idx = 0; idx < 26; idx++ ) {
             fn[0] = 'a' + idx;
             if( access( PageFileBuff, 0 ) == -1 ) {
-                PageFile = SDOpen( PageFileBuff, UPDATE_FILE );
-                if( Errorf( PageFile ) == IO_OK ) {
+                PageFile = fopen( PageFileBuff, "w+b" );
+                if( PageFile != NULL ) {
                     break;
                 }
+                InfoError( SM_OPENING_FILE, PageFileName, strerror( errno ) );
             }
         }
         if( idx == 26 ) {
             Error( SM_OUT_OF_VM_FILES, PageFileName );
-        } else {
-            chkIOErr( PageFile, SM_OPENING_FILE );
         }
     }
     PageFlags = PF_INIT;
@@ -152,7 +137,7 @@ void    FiniObj( void ) {
         ObjCode = NULL;
     }
     if( PageFile != NULL ) {
-        SDClose( PageFile );
+        fclose( PageFile );
         PageFile = NULL;
         SDScratch( PageFileBuff );
     }
@@ -167,10 +152,10 @@ static  void    DumpCurrPage( void ) {
         if( CurrPage > MaxPage ) {
             MaxPage = CurrPage;
         }
-        SDSeek( PageFile, CurrPage, WFC_PAGE_SIZE );
-        chkIOErr( PageFile, SM_IO_WRITE_ERR );
-        SDWrite( PageFile, ObjCode, WFC_PAGE_SIZE );
-        chkIOErr( PageFile, SM_IO_WRITE_ERR );
+        if( fseek( PageFile, CurrPage * WFC_PAGE_SIZE, SEEK_SET ) )
+            PageFileIOErr( SM_IO_WRITE_ERR );
+        if( fwrite( ObjCode, WFC_PAGE_SIZE, 1, PageFile ) != 1 )
+            PageFileIOErr( SM_IO_WRITE_ERR );
         PageFlags &= ~PF_DIRTY;
     }
 }
@@ -181,14 +166,15 @@ static  void    LoadPage( unsigned_32 page )
 {
     if( page != CurrPage ) {
         DumpCurrPage();
-        SDSeek( PageFile, page, WFC_PAGE_SIZE );
-        chkIOErr( PageFile, SM_IO_READ_ERR );
-        SDRead( PageFile, ObjCode, WFC_PAGE_SIZE );
-        // If we seek to the end of the last page in the disk
-        // file (which is the start of a non-existent page file),
-        // we will get end-of-file when we do the read.
-        if( !SDEof( PageFile ) ) {
-            chkIOErr( PageFile, SM_IO_READ_ERR );
+        if( fseek( PageFile, page * WFC_PAGE_SIZE, SEEK_SET ) )
+            PageFileIOErr( SM_IO_READ_ERR );
+        if( fread( ObjCode, 1, WFC_PAGE_SIZE, PageFile ) != WFC_PAGE_SIZE ) {
+            // If we seek to the end of the last page in the disk
+            // file (which is the start of a non-existent page file),
+            // we will get end-of-file when we do the read.
+            if( ferror( PageFile ) ) {
+                PageFileIOErr( SM_IO_READ_ERR );
+            }
         }
         CurrPage = page;
         PageFlags = PF_INIT;
@@ -269,7 +255,7 @@ void    OutPtr( pointer val ) {
 
 // Output a pointer to object memory.
 
-    if( ( ProgSw & ( PS_ERROR | PS_DONT_GENERATE ) ) == 0 ) {
+    if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( pointer ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
                 SplitValue( &val, sizeof( pointer ), ObjEnd - ObjPtr );
@@ -289,7 +275,7 @@ void    OutU16( unsigned_16 val ) {
 
 // Output 16-bit value to object memory.
 
-    if( ( ProgSw & ( PS_ERROR | PS_DONT_GENERATE ) ) == 0 ) {
+    if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( unsigned_16 ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
                 SplitValue( &val, sizeof( unsigned_16 ), ObjEnd - ObjPtr );
@@ -322,7 +308,7 @@ void    OutConst32( signed_32 val ) {
 
 // Output 32-bit constant to object memory.
 
-    if( ( ProgSw & ( PS_ERROR | PS_DONT_GENERATE ) ) == 0 ) {
+    if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( signed_32 ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
                 SplitValue( &val, sizeof( signed_32 ), ObjEnd - ObjPtr );
@@ -342,7 +328,7 @@ void    OutObjPtr( obj_ptr val ) {
 
 // Output object code pointer to object memory.
 
-    if( ( ProgSw & ( PS_ERROR | PS_DONT_GENERATE ) ) == 0 ) {
+    if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( obj_ptr ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
                 SplitValue( &val, sizeof( obj_ptr ), ObjEnd - ObjPtr );
@@ -362,7 +348,7 @@ void    OutByte( byte val ) {
 
 // Output a byte to object memory.
 
-    if( ( ProgSw & ( PS_ERROR | PS_DONT_GENERATE ) ) == 0 ) {
+    if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( byte ) ) {
             NewPage();
         }

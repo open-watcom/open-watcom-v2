@@ -15,7 +15,7 @@
  *     But gethost2.c isn't finished yet.
  */
 
-/* 
+/*
  *  Non-recursive tree insertion.
  *  If duplicate key then new data is substituted.
  *
@@ -32,30 +32,23 @@ int tree_insert (TreeNode **root, void *info, size_t info_size, CmpFunc cmp)
   {
     int diff = (*cmp)(info, node->info);
 
-    if (diff == 0)
-    {
+    if (diff == 0) {
       free (node->info);
       goto tree_load;
-    }
-    else if (diff < 0)
-    {
-      if (node->left)
+    } else if (diff < 0) {
+      if (node->left) {
           node = node->left;
-      else
-      {
+      } else {
         node->left = calloc (1, sizeof(*node));
         if (node->left)
             node->left->parent = node;
         node = node->left;
         goto tree_load;
       }
-    }
-    else
-    {
-      if (node->right)
+    } else {
+      if (node->right) {
           node = node->right;
-      else
-      {
+      } else {
         node->right = calloc (1, sizeof(*node));
         if (node->right)
             node->right->parent = node;
@@ -75,8 +68,7 @@ tree_load:
      return (0);
 
   node->info = calloc (1, info_size);
-  if (!node->info)
-  {
+  if (!node->info) {
     free (node);
     return (0);
   }
@@ -87,7 +79,7 @@ tree_load:
 }
 
 
-/* 
+/*
  *  Non-recursive find, returns first matching entry or NULL
  */
 TreeNode *tree_find (TreeNode *root, void *info, CmpFunc cmp)
@@ -101,9 +93,11 @@ TreeNode *tree_find (TreeNode *root, void *info, CmpFunc cmp)
     if (cmp_val == 0)
        break;
 
-    if (cmp_val < 0)
-         node = node->left;
-    else node = node->right;
+    if (cmp_val < 0) {
+        node = node->left;
+    } else {
+        node = node->right;
+    }
   }
   return (node);
 }
@@ -172,7 +166,7 @@ TreeNode *tree_delete (TreeNode *root, TreeNode *node)
          /* drop through to return */
   }
   return (root);
-}     
+}
 
 /*
  *  Recursive post-order traversal to deallocate tree memory
@@ -193,7 +187,7 @@ void tree_free (TreeNode *root)
 
 #include <conio.h>
 
-/* 
+/*
  *  Interactive tree test driver
  */
 

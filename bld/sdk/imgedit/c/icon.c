@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -313,7 +313,7 @@ an_img *ImgResourceToImg( FILE *fp, an_img_file *img_file, unsigned i )
     BITMAPINFOHEADER    *h;
     an_img              *img;
     LONG                height;
-    WORD                original_and_size, original_xor_size;
+    WORD                originaland_size, originalxor_size;
 
     if( i >= img_file->count ) {
         return( NULL );
@@ -336,8 +336,8 @@ an_img *ImgResourceToImg( FILE *fp, an_img_file *img_file, unsigned i )
         h->biSizeImage = BITS_INTO_BYTES( h->biWidth * h->biBitCount, h->biHeight );
         img->xor_size = h->biSizeImage;
         img->and_size = BITS_INTO_BYTES( h->biWidth, h->biHeight );
-        original_and_size = img->and_size;   /* save the sizes for later */
-        original_xor_size = img->xor_size;
+        originaland_size = img->and_size;   /* save the sizes for later */
+        originalxor_size = img->xor_size;
 
         /*
          * JPK - for 16x16, 24x24 & 48x48 icons, need to adjust sizes so
@@ -365,7 +365,7 @@ an_img *ImgResourceToImg( FILE *fp, an_img_file *img_file, unsigned i )
         fseek( fp, res->DIB_offset + BITMAP_SIZE( h ), SEEK_SET );
         fread( img->xor_mask, img->xor_size + img->and_size, 1, fp );
         if( img_file->type == ICON_FILE_TYPE )
-            dropBitmapPadding( img, h, original_and_size, original_xor_size );
+            dropBitmapPadding( img, h, originaland_size, originalxor_size );
         reverseAndBits( h->biWidth, h->biHeight, img->and_mask );
         return( img );
     }
@@ -379,7 +379,7 @@ an_img *ImgResourceToImgData( BYTE *data, unsigned *pos, an_img_file *img_file, 
     BITMAPINFO          *bm;
     BITMAPINFOHEADER    *h;
     an_img              *img;
-    WORD                original_and_size, original_xor_size;
+    WORD                originaland_size, originalxor_size;
 
     if( data == NULL || pos == NULL ) {
         return( NULL );
@@ -401,8 +401,8 @@ an_img *ImgResourceToImgData( BYTE *data, unsigned *pos, an_img_file *img_file, 
         h->biSizeImage = BITS_INTO_BYTES( h->biWidth * h->biBitCount, h->biHeight );
         img->xor_size = h->biSizeImage;
         img->and_size = BITS_INTO_BYTES( h->biWidth, h->biHeight );
-        original_and_size = img->and_size;   /* save the sizes for later */
-        original_xor_size = img->xor_size;
+        originaland_size = img->and_size;   /* save the sizes for later */
+        originalxor_size = img->xor_size;
 
         /*
          * See the same code in preceding function.
@@ -429,7 +429,7 @@ an_img *ImgResourceToImgData( BYTE *data, unsigned *pos, an_img_file *img_file, 
         *pos = res->DIB_offset + BITMAP_SIZE( h );
         memcpy( img->xor_mask, data + *pos, img->xor_size + img->and_size );
         if( img_file->type == ICON_FILE_TYPE )
-            dropBitmapPadding( img, h, original_and_size, original_xor_size );
+            dropBitmapPadding( img, h, originaland_size, originalxor_size );
         reverseAndBits( h->biWidth, h->biHeight, img->and_mask );
         return( img );
     }
@@ -454,7 +454,7 @@ void ImageFini( an_img *img )
  */
 HBITMAP ImgToXorBitmap( HDC hdc, an_img *img )
 {
-    HBITMAP             bitmap_handle = NULL;
+    HBITMAP             hbitmap = NULL;
     HPALETTE            new_palette, old_palette;
     BITMAPINFOHEADER    *h;
 
@@ -463,13 +463,13 @@ HBITMAP ImgToXorBitmap( HDC hdc, an_img *img )
     if( h->biBitCount == 1 ) {
         // this is really just a patch until this is figured out
         reverseAndBits( h->biWidth, h->biHeight, img->xor_mask );
-        bitmap_handle = CreateBitmap( h->biWidth, h->biHeight, 1, 1, img->xor_mask );
+        hbitmap = CreateBitmap( h->biWidth, h->biHeight, 1, 1, img->xor_mask );
     } else {
         new_palette = CreateDIBPalette( img->bm );
         if( new_palette != NULL ) {
             old_palette = SelectPalette( hdc, new_palette, FALSE );
             RealizePalette( hdc );
-            bitmap_handle = CreateDIBitmap( hdc, &img->bm->bmiHeader, CBM_INIT,
+            hbitmap = CreateDIBitmap( hdc, &img->bm->bmiHeader, CBM_INIT,
                                             img->xor_mask, img->bm, DIB_RGB_COLORS );
             SelectPalette( hdc, old_palette, FALSE );
             DeleteObject( new_palette );
@@ -480,13 +480,13 @@ HBITMAP ImgToXorBitmap( HDC hdc, an_img *img )
     if( new_palette != NULL ) {
         old_palette = SelectPalette( hdc, new_palette, FALSE );
         RealizePalette( hdc );
-        bitmap_handle = CreateDIBitmap( hdc, &img->bm->bmiHeader, CBM_INIT,
+        hbitmap = CreateDIBitmap( hdc, &img->bm->bmiHeader, CBM_INIT,
                                         img->xor_mask, img->bm, DIB_RGB_COLORS );
         SelectPalette( hdc, old_palette, FALSE );
         DeleteObject( new_palette );
     }
 #endif
-    return( bitmap_handle );
+    return( hbitmap );
 
 } /* ImgToXorBitmap */
 
@@ -496,13 +496,13 @@ HBITMAP ImgToXorBitmap( HDC hdc, an_img *img )
  */
 HBITMAP ImgToAndBitmap( HDC hdc, an_img *img )
 {
-    HBITMAP             bitmap_handle;
+    HBITMAP             hbitmap;
     BITMAPINFOHEADER    *h;
 
     hdc = hdc;
     h = &img->bm->bmiHeader;
-    bitmap_handle = CreateBitmap( h->biWidth, h->biHeight, 1, 1, img->and_mask );
-    return( bitmap_handle );
+    hbitmap = CreateBitmap( h->biWidth, h->biHeight, 1, 1, img->and_mask );
+    return( hbitmap );
 
 } /* ImgToAndBitmap */
 

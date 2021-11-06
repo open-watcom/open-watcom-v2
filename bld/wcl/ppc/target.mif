@@ -1,6 +1,14 @@
-name = wclppc
+!ifdef bootstrap
+proj_name = bwclppc
+bwclppc_autodepends = .AUTODEPEND
+!else
+proj_name = wclppc
+wclppc_autodepends = .AUTODEPEND
+!endif
 
 target_cpu = ppc
+
+wclppc_trmem = 1
 
 extra_cpp_flags = -DWCLPPC
 

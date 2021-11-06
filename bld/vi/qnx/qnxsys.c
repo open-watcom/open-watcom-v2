@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +85,7 @@ void NewCursor( window_id wid, cursor_type ct )
         base = 16;
     }
     nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
-    BIOSNewCursor( nbase, base - 1 );
+    BIOSSetCursorTyp( nbase, base - 1 );
 
 } /* NewCursor */
 
@@ -113,13 +113,13 @@ void ScreenInit( void )
 
     QNXCon = console_open( QNXConHandle, O_WRONLY );
     if( QNXCon == NULL ) {
-        // FatalError( ERR_WIND_NO_MORE_WINDOWS );
+        // FatalError( ERR_BAD_TERMINAL );
         ChangeDirectory( HomeDirectory );
         exit( 0 );
     }
     if( console_size( QNXCon, QNXConsole, 0, 0, &rows, &cols ) != 0 ) {
         console_close( QNXCon );
-        FatalError( ERR_WIND_NO_MORE_WINDOWS );
+        FatalError( ERR_BAD_TERMINAL );
     }
     rc = BIOSKeyboardInit();
     if( rc != ERR_NO_ERR ) {
@@ -149,7 +149,7 @@ void ScreenInit( void )
     }
     size = cols * rows * sizeof( char_info );
     seg = qnx_segment_alloc( size );
-    Scrn = MK_FP( seg, 0 );
+    Scrn = _MK_FP( seg, 0 );
     ScreenPage( 0 );
 
 } /* ScreenInit */
@@ -171,7 +171,7 @@ void ScreenFini( void )
  */
 void ChkExtendedKbd( void )
 {
-    EditVars.ExtendedKeyboard = 0x10;
+    EditFlags.ExtendedKeyboard = true;
 
 } /* ChkExtendedKbd */
 

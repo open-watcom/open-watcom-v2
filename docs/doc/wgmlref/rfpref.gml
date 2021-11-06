@@ -19,7 +19,7 @@ copy of the document.
 :CMT. A number of people from the University of Waterloo and WATCOM
 :CMT. have been involved either directly or indirectly in the implementation
 :CMT. of WATCOM Script/GML.
-:CMT. The original implementation 
+:CMT. The original implementation
 :CMT. was designed and programmed by
 :CMT. the following people:
 :CMT. :XMP.

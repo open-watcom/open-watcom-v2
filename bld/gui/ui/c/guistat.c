@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,31 +38,29 @@
 #include "guiscale.h"
 #include <string.h>
 
-static bool SetStatusArea( gui_window *wnd, gui_ord x, gui_ord height,
-                           SAREA *area )
+static bool SetStatusArea( gui_window *wnd, gui_ord x, gui_ord height, SAREA *area )
 {
-    SAREA               sarea;
-    gui_coord           dim;
+    SAREA           sarea;
+    guix_ord        dim_x;
+    guix_ord        dim_y;
 
     GUIGetClientSAREA( wnd, &sarea );
 
-    dim.x = x;
-    dim.y = height;
-    GUIScaleToScreenR( &dim );
-    if( dim.y == 0 ) {
-        dim.y = 1;
+    dim_x = GUIScaleToScreenH( x );
+    dim_y = GUIScaleToScreenV( height );
+    if( dim_y == 0 ) {
+        dim_y = 1;
     }
 
-    area->row = sarea.height - dim.y;
-    area->col = dim.x;
-    area->height = dim.y;
-    area->width = sarea.width - dim.x;
+    area->row = sarea.height - dim_y;
+    area->col = dim_x;
+    area->height = dim_y;
+    area->width = sarea.width - dim_x;
 
     return( true );
 }
 
-bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
-                            gui_colour_set *colour )
+bool GUIAPI GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height, gui_colour_set *colour )
 {
     statusinfo  *stat_info;
 
@@ -85,7 +83,7 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
     return( true );
 }
 
-bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
+bool GUIAPI GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
 {
     SAREA       area;
 
@@ -96,7 +94,7 @@ bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
         return( false );
     } else {
         area.row += wnd->status->area.height;
-        COPYAREA( area, wnd->status->area );
+        COPYRECTX( area, wnd->status->area );
     }
     GUISetUseWnd( wnd );
     GUIDrawStatus( wnd );
@@ -105,7 +103,7 @@ bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
 
 void GUIDrawStatus( gui_window *wnd )
 {
-    int length;
+    size_t  length;
 
     if( GUIHasStatus( wnd ) && !GUI_WND_MINIMIZED( wnd ) ) {
         uivfill( &wnd->vs, wnd->status->area, wnd->status->attr, ' ' );
@@ -121,7 +119,7 @@ void GUIDrawStatus( gui_window *wnd )
     }
 }
 
-bool GUIDrawStatusText( gui_window *wnd, const char *text )
+bool GUIAPI GUIDrawStatusText( gui_window *wnd, const char *text )
 {
     bool        ok;
 
@@ -139,7 +137,7 @@ bool GUIDrawStatusText( gui_window *wnd, const char *text )
     return( ok );
 }
 
-bool GUIHasStatus( gui_window *wnd )
+bool GUIAPI GUIHasStatus( gui_window *wnd )
 {
     return( wnd->status != NULL );
 }
@@ -163,12 +161,12 @@ void GUIResizeStatus( gui_window *wnd )
     }
 }
 
-bool GUICloseStatusWindow( gui_window *wnd )
+bool GUIAPI GUICloseStatusWindow( gui_window *wnd )
 {
     SAREA       area;
 
     if( GUIHasStatus( wnd ) ) {
-        COPYAREA( wnd->status->area, area );
+        COPYRECTX( wnd->status->area, area );
         GUIFreeStatus( wnd );
         GUISetUseWnd( wnd );
         GUIDirtyArea( wnd, &area );

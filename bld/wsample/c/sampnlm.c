@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +77,7 @@ extern short GetCS( void );
 void CodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds kind );
 #endif
 
-extern void             SetRestoreRate( char **);
+extern void             SetRestoreRate( const char ** );
 extern void             ResolveRateDifferences( void );
 
 extern unsigned long    count_pit0( void );
@@ -189,18 +189,17 @@ static void WakeMeUp( LONG dummy )
 }
 
 
-void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
     LONG        events;
+
+    /* unused parameters */ (void)prog; (void)full_args; (void)dos_args;
 
     AESTag = AllocateResourceTag(
         (void *)GetNLMHandle(),
         (BYTE *)"Open Watcom Execution Sampler Flush Process",
         AESProcessSignature );
 
-    prog = prog;
-    full_args = full_args;
-    dos_args = dos_args;
     SampleIndex = 0;
     Suspended = false;
     Resumed = false;
@@ -261,8 +260,8 @@ static void SaveOutSamples( void *dummy )
 }
 
 
-void RecordSample( union INTPACK __far *r ) {
-
+void RecordSample( union INTPACK __far *r )
+{
     Samples->d.sample.sample[SampleIndex].offset = r->x.eip;
     Samples->d.sample.sample[SampleIndex].segment = r->x.cs;
     ++SampleIndex;
@@ -304,16 +303,14 @@ int InDOS( void )
     return( true );
 }
 
-void GetProg( char *cmd, char *eoc )
+void GetProg( const char *cmd, size_t len )
 {
-    char        save;
-    PGROUP2     pg1;
-    PGROUP2     pg2;
+    pgroup2     pg1;
+    pgroup2     pg2;
 
-    save = *eoc;
-    *eoc = '\0';
-    _splitpath2( cmd, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
-    *eoc = save;
+    memcpy( pg2.buffer, cmd, len );
+    pg2.buffer[len] = '\0';
+    _splitpath2( pg2.buffer, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     _splitpath2( SampName, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
     if( pg2.fname[0] == '\0' )
         pg2.fname = pg1.fname;
@@ -422,7 +419,7 @@ static void EstimateRate( void )
     UnRegisterEventNotification( modeSwitch );
 }
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     switch( c ) {
     case 'r':

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,14 +40,8 @@
     #include <wos2.h>
     #include "winexprt.h"
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
-    #ifdef __WINDOWS__
-        #define INCLUDE_TOOLHELP_H
-        #define INCLUDE_COMMDLG_H
-    #endif
+    #define INCLUDE_TOOLHELP_H
+    #define INCLUDE_COMMDLG_H
     #define OEMRESOURCE
     #include <wwindows.h>
-    #ifdef __NT__
-        #include <commctrl.h>
-        #include <commdlg.h>
-    #endif
 #endif

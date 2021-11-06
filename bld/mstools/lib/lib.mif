@@ -1,35 +1,15 @@
-name = lib
+.c :  $(lib_misc_dir)/c
 
-!include ../../../master.mif
+extra_inc_dirs = -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
+
+!ifdef target_cpu
+exetarg_prebuild_objs = cmdlnprs.gc
+exetarg_objs = deffile.obj lib.obj message.obj translat.obj demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(mstools_objs)
+exetarg_libs = $(orl_lib)
+!else
+exetarg_objs = libstub.obj $(mstools_stub_obj) $(mstools_objs)
+!endif
 
 !include $(orl_dir)/client.mif
 
-!ifdef target_cpu
-exename = lib$(target_cpu)
-prebuild = cmdlnprs.gc
-objs = deffile.obj lib.obj message.obj translat.obj demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(mstools_objs)
-libs = $(orl_lib)
-!else
-exename = libx
-objs = libstub.obj $(mstools_stub_obj) $(mstools_objs)
-!endif
-
-.c :  $(lib_misc_dir)/c
-
-inc_dirs += -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
-
-#
-# Instructions for building the executable.
-#
-$(exename).exe : $(prebuild) $(objs) $(libs) $(version$(target_cpu)_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-!ifdef libs
-    $(linker) name $^@ $(lflags) file {$(objs)} library {$(libs)}
-!else
-    $(linker) name $^@ $(lflags) file {$(objs)}
-!endif
-!endif
-    @%make bind_res_version$(target_cpu)_exe
+!include ../../../master.mif

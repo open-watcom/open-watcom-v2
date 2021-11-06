@@ -32,7 +32,7 @@
 
 
 #include "imgedit.h"
-#include <ddeml.h>
+#include "wclbdde.h"
 #include "iebmpdat.h"
 #include "iedde.h"
 
@@ -171,7 +171,7 @@ bool IEDDEStart( HINSTANCE inst )
         }
 
         if( ok ) {
-            DdeProcInst = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
+            DdeProcInst = MakeProcInstance_DDE( DdeCallBack, inst );
             ok = ( DdeProcInst != NULL );
         }
         if( ok ) {
@@ -246,7 +246,7 @@ void IEDDEEnd( void )
         IdInst = 0;
     }
     if( DdeProcInst != NULL ) {
-        FreeProcInstance( (FARPROC)DdeProcInst );
+        FreeProcInstance_DDE( DdeProcInst );
     }
 
 } /* IEDDEEnd */

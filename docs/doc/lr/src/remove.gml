@@ -15,8 +15,8 @@ The
 function deletes the file whose name is the string pointed
 to by
 .arg filename
-.ct .li .
-.im widefun1
+.period
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

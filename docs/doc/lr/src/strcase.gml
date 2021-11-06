@@ -6,14 +6,12 @@ int strcasecmp( const char *s1, const char *s2 );
 .ixfunc2 '&Compare' &funcb
 .synop end
 .desc begin
-The
-.id &funcb.
-function compares, with case insensitivity, the string
-pointed to by
+The function compares, without case sensitivity,
+the string pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
-.ct .li .
+.period
 All uppercase characters from
 .arg s1
 and
@@ -23,22 +21,20 @@ are mapped to lowercase for the purposes of doing the comparison.
 The
 .id &funcb.
 function is identical to the
-.kw stricmp
+.reffunc _stricmp
 function.
 .desc end
 .return begin
-The
-.id &funcb.
-function returns an integer less than, equal to, or greater
+The function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1
 is, ignoring case, less than, equal to, or greater than the string pointed
 to by
 .arg s2
-.ct .li .
+.period
 .return end
 .see begin
-.seelist strcmp strcmpi stricmp strncmp strnicmp strncasecmp
+.seelist strcmp _stricmp strncmp _strnicmp strcasecmp strncasecmp
 .see end
 .exmp begin
 #include <stdio.h>
@@ -60,5 +56,5 @@ int main( void )
 -12
 12
 .exmp end
-.class POSIX
+.class POSIX 1003.1
 .system

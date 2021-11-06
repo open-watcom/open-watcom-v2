@@ -32,7 +32,7 @@ The
 .id &funcb.
 function creates a new subdirectory with name
 .arg path
-.ct .li .
+.period
 The
 .arg path
 can be either relative to the current working directory or it can be
@@ -41,12 +41,12 @@ an absolute path name.
 .np
 The file permission bits of the new directory are initialized from
 .arg mode
-.ct .li .
+.period
 The file permission bits of the
 .arg mode
-argument are modified by the process's file creation mask (see
-.kw umask
-.ct ).
+argument are modified by the process's file creation mask
+.seeref umask
+.period
 .im openperv
 .np
 The directory's owner ID is set to the process's effective user ID.
@@ -72,7 +72,7 @@ fields of the directory that contains the new entry are marked for
 update.
 .do end
 .im ansiconf
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

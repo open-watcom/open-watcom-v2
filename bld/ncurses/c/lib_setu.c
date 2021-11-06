@@ -342,8 +342,10 @@ setupterm( NCURSES_CONST char *tname, int Filedes, int *errret )
     }
 
     if( status == -1 ) {
+        FreeIfNeeded( term_ptr );
         ret_error0( -1, "terminals database is inaccessible\n" );
     } else if( status == 0 ) {
+        FreeIfNeeded( term_ptr );
         ret_error( 0, "'%s': unknown terminal type.\n", tname );
     }
 

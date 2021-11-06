@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 
 #include "clibext.h"
 
+
 #define NULLCHAR        '\0'
 
 typedef struct word_list {
@@ -56,7 +57,7 @@ typedef struct msg_word {
 
 typedef struct msg_list {
     struct msg_word     *msg;
-    int                 caret;
+    unsigned            caret;
     int                 count;
     struct msg_list     *link;
 } msg_list;
@@ -78,6 +79,7 @@ static  group_list      *HeadGroup;
 static  FILE            *MsgFile;
 static  FILE            *ErrMsg;
 static  FILE            *ErrGrp;
+static  FILE            *ErrCaret;
 static  FILE            *ErrCod;
 static  FILE            *ErrFile;
 static  FILE            *RCFile;
@@ -86,17 +88,13 @@ static  word_list       *SortPtr;
 static  word_list       *SortHead;
 static  int             RecNum;
 
-#define BUFF_LEN        133
+#define BUFF_LEN        256
 
 // Error messages contain a 5-character field with the following information:
 //      1. language of the message
 //              english                         'e' or ' '
 //              japanese                        'j'
-//      2. message used by WATFOR-77            'w'
-//         message used by WFC                  'o'
-//         message used by WFL                  'l'
-//         message used by WFL, WFC             'c'
-//         message used by WATFOR-77, WFL, WFC  '.'
+//      2. message used by WFC                  'o'
 //         message used by WATFOR-77, WFC       ' '
 //      3. message is 80386-specific            '3'
 //         message is 8086-specific             'i'
@@ -192,12 +190,21 @@ static  int     Initialize( void )
         fclose( ErrMsg );
         return( 1 );
     }
+    sprintf( output_file, "%serrcar.gh", file_prefix );
+    ErrCaret = fopen( output_file, "wt" );
+    if( ErrCaret == NULL ) {
+        fclose( MsgFile );
+        fclose( ErrMsg );
+        fclose( ErrGrp );
+        return( 1 );
+    }
     sprintf( output_file, "%serrcod.gh", file_prefix );
     ErrCod = fopen( output_file, "wt" );
     if( ErrCod == NULL ) {
         fclose( MsgFile );
         fclose( ErrMsg );
         fclose( ErrGrp );
+        fclose( ErrCaret );
         return( 1 );
     }
     sprintf( output_file, "%serrmsg.gh", file_prefix );
@@ -206,6 +213,7 @@ static  int     Initialize( void )
         fclose( MsgFile );
         fclose( ErrMsg );
         fclose( ErrGrp );
+        fclose( ErrCaret );
         fclose( ErrCod );
         return( 1 );
     }
@@ -215,6 +223,7 @@ static  int     Initialize( void )
         fclose( MsgFile );
         fclose( ErrMsg );
         fclose( ErrGrp );
+        fclose( ErrCaret );
         fclose( ErrCod );
         fclose( ErrFile );
         return( 1 );
@@ -234,6 +243,7 @@ static  void    Finalize( void )
     fclose( MsgFile );
     fclose( ErrMsg );
     fclose( ErrGrp );
+    fclose( ErrCaret );
     fclose( ErrCod );
     fclose( ErrFile );
     fclose( RCFile );
@@ -254,28 +264,12 @@ static  char    UseMessage( char cmp, char target, char used_at ) {
 //=================================================================
 
     if( sw_compiler == 'o' ) {
-        if( (cmp != 'o') && (cmp != ' ') && (cmp != '.') && (cmp != 'c') ) {
-            return( 0 );
-        }
-    } else if( sw_compiler == 'w' ) {
-        if( (cmp != 'w') && (cmp != ' ') && (cmp != '.') ) {
-            return( 0 );
-        }
-    } else if( sw_compiler == 'l' ) {
-        if( (cmp != 'l') && (cmp != 'c') && (cmp != '.') ) {
+        if( (cmp != 'o') && (cmp != ' ') ) {
             return( 0 );
         }
     }
     if( IsTarget( target ) ) {
-        if( sw_compiler == 'w' ) {
-            if( sw_used_at == ' ' ) {
-                // load'n go compiler doesn't care whether message is
-                // used at compile-time or run-time
-                return( 1 );
-            } else if( (sw_used_at == used_at) || (used_at == ' ') ) {
-                return( 1 );
-            }
-        } else if( (sw_used_at == used_at) || (used_at == ' ') ) {
+        if( (sw_used_at == used_at) || (used_at == ' ') ) {
             return( 1 );
         }
     }
@@ -291,9 +285,9 @@ static  int     ReadInFile( char *buff, int max_len )
         if( fgets( buff, max_len, MsgFile ) == NULL ) {
             return( 1 );
         }
-        len = strlen( buff );
-        if( buff[len - 1] == '\n' )
-            buff[len - 1] = NULLCHAR;
+        for( len = strlen( buff ); len > 0 && ( buff[len - 1] == '\r' || buff[len - 1] == '\n' ); len-- )
+            ;
+        buff[len] = NULLCHAR;
         if( *buff != ' ' ) {
             break;
         }
@@ -507,15 +501,8 @@ static  void    DumpMsg( void )
     char        delim;
     size_t      msg_len;
 
-    if( sw_compiler == 'w' ) {
-        fprintf( ErrGrp, "#if !defined( __RT__ )\n\n" );
-    }
-    if( (sw_compiler == 'w') ||
-        ( (sw_compiler == 'o') && (sw_used_at == 'c') ) ) {
-        fprintf( ErrGrp, "#define    NO__CARET  0\n" );
-        fprintf( ErrGrp, "#define    OPR_CARET  1\n" );
-        fprintf( ErrGrp, "#define    OPN_CARET  2\n\n" );
-        fprintf( ErrGrp, "const unsigned char __FAR CaretTable[] = {\n" );
+    if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
+        fprintf( ErrCaret, "const caret_type __FAR CaretTable[] = {\n" );
     }
     msg = HeadMsg;
     for( group = HeadGroup; group != NULL; group = group->link ) {
@@ -545,15 +532,8 @@ static  void    DumpMsg( void )
             }
             fputc( '\n', ErrFile );
             fprintf( ErrMsg, "%c", delim );
-            if( (sw_compiler == 'w') ||
-                ( (sw_compiler == 'o') && (sw_used_at == 'c') ) ) {
-                if( msg->caret == 0 ) {
-                    fprintf( ErrGrp, "NO__CARET,\n" );
-                } else if( msg->caret == 1 ) {
-                    fprintf( ErrGrp, "OPR_CARET,\n" );
-                } else {
-                    fprintf( ErrGrp, "OPN_CARET,\n" );
-                }
+            if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
+                fprintf( ErrCaret, "%d,\n", msg->caret );
             }
             fprintf( ErrMsg, "%d", word_index );
             for( word = msg->msg; word != NULL; word = word->link ) {
@@ -570,16 +550,11 @@ static  void    DumpMsg( void )
         fprintf( ErrMsg, "};\n" );
     }
     fprintf( ErrMsg, "\n\n" );
-    if( (sw_compiler == 'w') ||
-        ( (sw_compiler == 'o') && (sw_used_at == 'c') ) ) {
-        fprintf( ErrGrp, "};\n" );
+    if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
+        fprintf( ErrCaret, "};\n" );
     }
-    if( sw_compiler == 'w' ) {
-        fprintf( ErrGrp, "\n#endif\n" );
-    }
-    if( (sw_compiler == 'w') ||
-        ( (sw_compiler == 'o') && (sw_used_at == 'c') ) ) {
-        fprintf( ErrGrp, "\n" );
+    if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
+        fprintf( ErrCaret, "\n" );
     }
 }
 
@@ -804,17 +779,13 @@ static  void    BuildLists( void )
     msg_list    *last_non_null_msg;
     msg_list    **p_null_msg;
     msg_word    *word;
-    int         caret;
+    unsigned    caret;
     char        rec[BUFF_LEN+1];
     char        msg_used_at;
     char        msg_compiler;
     char        msg_target;
     char        delim;
 
-    fprintf( ErrCod, "#define    NO_CARROT  0\n" );
-    fprintf( ErrCod, "#define    OPR_CARROT 1\n" );
-    fprintf( ErrCod, "#define    OPN_CARROT 2\n" );
-    fprintf( RCFile, "#include \"errcod.h\"\n\n" );
     fprintf( RCFile, "STRINGTABLE\nBEGIN\n\n" );
     group = 0;
     curr_group = NULL;

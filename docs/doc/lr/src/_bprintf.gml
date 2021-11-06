@@ -16,7 +16,7 @@ int _bwprintf( wchar_t *buf, size_t bufsize,
 The
 .id &funcb.
 function is equivalent to the
-.kw sprintf
+.reffunc sprintf
 function, except that the argument
 .arg bufsize
 specifies the size of the character array
@@ -27,9 +27,9 @@ string.
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .if &'length(&wfunc.) ne 0 .do begin
 The argument
 .arg buf

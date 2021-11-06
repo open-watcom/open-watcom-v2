@@ -1,3 +1,3 @@
-bogus_targ : ../h/wmpmsg.gh  .symbolic
+bogus_targ : ../h/wompmsg.gh  .symbolic
 
 !include ../mif/master.mif

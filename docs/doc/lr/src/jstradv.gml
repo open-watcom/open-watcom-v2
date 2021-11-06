@@ -4,9 +4,8 @@
 JSTRING jstradv( const JCHAR *src, size_t n );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jconcat' &funcb
-.if &farfnc eq 1 .do begin
-FJSTRING __far _fjstradv( const JCHAR __far *src,
-                          size_t n );
+.if &farfnc ne 0 .do begin
+FJSTRING _fjstradv( const JCHAR __far *src, size_t n );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jconcat' &ffunc
 .do end
@@ -26,11 +25,11 @@ functions skip
 .do end
 over
 .arg n
-single- or double-byte characters in the Kanji string
+single-byte or double-byte characters in the Kanji string
 .arg src
-.ct .li .
+.period
 A pointer to the next character is returned.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 A pointer to the next character is returned unless the number of

@@ -13,7 +13,8 @@ It is called an
 :PERIOD.
 :I1.inserter
 Values are formatted and written according to the type of object
-being inserted and &fmtflags.:PERIOD.
+being inserted and &fmtflags.
+:PERIOD.
 :P.
 All
 :MONO.operator~b<<
@@ -25,7 +26,8 @@ is called.  If it fails and returns zero, the
 :MONO.operator~b<<
 function also fails and returns immediately.
 If the output prefix function succeeds, the object is formatted according
-to its type and &fmtflags.:PERIOD.
+to its type and &fmtflags.
+:PERIOD.
 The formatted sequence of characters is
 then written to the specified stream.  Finally, the output suffix function
 :MONO.osfx
@@ -39,7 +41,8 @@ insertions can be done in one statement.
 For details on the interpretation of &fmtflags., see the &fmtflags.
 section of the Library Functions and Types Chapter.
 :P.
-Errors are indicated via &iostate.:PERIOD.
+Errors are indicated via &iostate.
+:PERIOD.
 &failbit. is set if the
 :MONO.operator~b<<
 function fails while writing the characters to the stream.
@@ -58,6 +61,7 @@ the output suffix function
 :MONO.osfx
 is called.
 :P.
-Errors are indicated via &iostate.:PERIOD.
+Errors are indicated via &iostate.
+:PERIOD.
 &failbit. is set if the function fails while writing the characters to
 the stream.

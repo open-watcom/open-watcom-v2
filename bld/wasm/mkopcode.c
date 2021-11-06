@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +97,7 @@ static void make_inst_hash_tables( unsigned int count, sword *Words )
         }
         if( pos >= size || AsmOpTable[pos] != i ) {
             printf( "Wrong data in asminsd.h. position=%d, index=%d\n", pos, i );
-            exit( 1 );
+            exit( EXIT_FAILURE );
         }
         pos_table[i] = pos;
     }
@@ -130,7 +130,7 @@ int main( int argc, char *argv[] )
         in = fopen( argv[i1], "r" );
         if( in == NULL ) {
             printf( "Unable to open '%s'\n", argv[i1] );
-            exit( 1 );
+            exit( EXIT_FAILURE );
         }
         for( ; fgets( buf, sizeof( buf ), in ) != NULL; ) {
             words_count++;
@@ -140,7 +140,7 @@ int main( int argc, char *argv[] )
     Words = malloc( ( words_count + 1 ) * sizeof( sword ) );
     if( Words == NULL ) {
         printf( "Unable to allocate Words array\n" );
-        exit( 1 );
+        exit( EXIT_FAILURE );
     }
     Words[words_count].word = NULL;
     words_count = 0;
@@ -148,7 +148,7 @@ int main( int argc, char *argv[] )
         in = fopen( argv[i1], "r" );
         if( in == NULL ) {
             printf( "Unable to open '%s'\n", argv[i1] );
-            exit( 1 );
+            exit( EXIT_FAILURE );
         }
         for( ; fgets( buf, sizeof( buf ), in ) != NULL; ) {
             for( i2 = 0; buf[i2] != '\0' && !isspace( buf[i2] ); i2++ )
@@ -157,7 +157,7 @@ int main( int argc, char *argv[] )
             Words[words_count].word = strdup( buf );
             if( Words[words_count].word == NULL ) {
                 printf( "Out of memory\n" );
-                exit( 1 );
+                exit( EXIT_FAILURE );
             }
             ++words_count;
         }
@@ -193,7 +193,7 @@ int main( int argc, char *argv[] )
     out = fopen( out_name, "w" );
     if( out == NULL ) {
         printf( "Unable to open '%s'\n", out_name );
-        exit( 1 );
+        exit( EXIT_FAILURE );
     }
     fprintf( out, "const char AsmChars[] = {\n" );
     for( idxs = 0; idxs < chars_count; idxs++ ) {
@@ -219,5 +219,5 @@ int main( int argc, char *argv[] )
     fprintf( out, "\t{\t0,\t0,\t0,\t0\t}\t/* T_NULL */\n" );
     fprintf( out, "};\n\n" );
     fclose( out );
-    return( 0 );
+    return( EXIT_SUCCESS );
 }

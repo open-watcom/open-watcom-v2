@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,6 @@
 
 const char *DOSEnvFind( const char *name )
 {
-#ifdef __OSI__
-    return( getenv( name ) );
-#else
     const char  *env;
     const char  *p;
 
@@ -61,7 +59,6 @@ const char *DOSEnvFind( const char *name )
             ;
     } while( *env != NULLCHAR );
     return( NULL );
-#endif
 }
 
 size_t EnvLkup( const char *name, char *buff, size_t buff_len )

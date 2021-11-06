@@ -690,12 +690,12 @@ extern int      cnstate, cnvar, cntoken, cnrule;
 int cparse( void )
 {
 
-        register short          ci, *cp;        /* for table lookup */
-        register short          *cps;           /* top of state stack */
-        register short          cstate; /* current state */
-        register CSTYPE *cpv;           /* top of value stack */
-        register short          *cq;
-        register int            cj;
+        short          ci, *cp;        /* for table lookup */
+        short          *cps;           /* top of state stack */
+        short          cstate;         /* current state */
+        CSTYPE         *cpv;           /* top of value stack */
+        short          *cq;
+        int            cj;
 
 #ifdef CSTATIC
         static short    cs[CSSIZE + 1];

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,9 +48,6 @@
 #define LIB_ALLOC   lib_nmalloc
 #define LIB_FREE    lib_nfree
 
-/* P_OVERLAY macro expands to a variable, not a constant! */
-#define OLD_P_OVERLAY   2
-
 #define FALSE   0
 
 static int file_exists( const CHAR_TYPE *filename )                     /* 05-apr-91 */
@@ -83,7 +81,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     CHAR_TYPE               *fname;
     CHAR_TYPE               *ext;
 
-    if( mode == OLD_P_OVERLAY ) {
+    if( mode == P_OVERLAY ) {
         rc = __F_NAME(execve,_wexecve)( path, argv, envp );
         return( rc );
     }
@@ -121,7 +119,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
         __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
         _RWD_errno = ENOENT;
         if( ext[0] != NULLCHAR ) {
-            if( __F_NAME(stricmp,wcscmp)( ext, STRING( ".bat" ) ) == 0 )
+            if( __F_NAME(_stricmp,_wcsicmp)( ext, STRING( ".bat" ) ) == 0 )
             {
                 retval = -1; /* assume file doesn't exist */
                 if( file_exists( p ) ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,18 +42,19 @@
 void __create_wide_environment( void )
 /************************************/
 {
-    char                **envp = _RWD_environ;
+    char                **envp;
     char                *p;
     size_t              len;
     wchar_t             *wcs;
 
+    envp = _RWD_environ;
     if( envp == NULL )
         return;
     while( (p = *envp++) != NULL ) {
         len = _mbslen( (unsigned char *)p ) + 1;
         wcs = lib_malloc( len * sizeof( wchar_t ) );
         if( wcs != NULL ) {
-            if( mbstowcs( wcs, p, len ) != -1 ) {
+            if( mbstowcs( wcs, p, len ) != (size_t)-1 ) {
                 __wputenv( wcs );
             } else {
                 lib_free( wcs );

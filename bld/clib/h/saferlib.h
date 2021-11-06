@@ -78,10 +78,18 @@ extern  void    __rtct_fail( const char *fn, const char *reason, void *reserved 
 #define __check_constraint_toosmall_msg( msg, name, left )   \
     ((left == 0) ? ( msg = #name " is too small to hold data" ), 0 : 1)
 
+// Double macro expansion to avoid "__F_NAME(strnlen_s,wcsnlen_s)"
+// showing up in constraint violation messages.
 #define __check_constraint_a_gt_b_msg( msg, a, b )   \
+    (__check_constraint_a_gt_b_msg_int( msg, a, b ))
+
+#define __check_constraint_a_gt_b_msg_int( msg, a, b )   \
     ((a > b) ? ( msg = #a " > " #b ), 0 : 1)
 
 #define __check_constraint_overlap_msg( msg, p1, len1, p2, len2 )       \
+    (__check_constraint_overlap_msg_int( msg, p1, len1, p2, len2 ))
+
+#define __check_constraint_overlap_msg_int( msg, p1, len1, p2, len2 )   \
     (((p1 == p2) || ( (p1 > p2) && ( p1 < (CHAR_TYPE *)p2 + len2 * sizeof( CHAR_TYPE )))    \
         || ( (p2 > p1) && ( p2 < (CHAR_TYPE *)p1 + len1 * sizeof( CHAR_TYPE ))))            \
      ? ( msg = #p1 " overlap " #p2 ), 0 : 1)

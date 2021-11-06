@@ -36,12 +36,12 @@
 #include "dip.h"
 #include "msg.h"
 #include "guimem.h"
-#ifdef __OS2_PM__
-    #include "os2mem.h"
-#endif
 #if defined( GUI_IS_GUI )
     #include "cguimem.h"
     #include "wpimem.h"
+    #ifdef __OS2_PM__
+        #include "os2mem.h"
+    #endif
 #else
     #include "stdui.h"
     #include "helpmem.h"

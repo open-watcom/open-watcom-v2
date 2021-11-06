@@ -11,7 +11,7 @@ descriptor for the read end of the pipe in
 .arg phandles[0]
 and a file descriptor for the write end of the pipe in
 .arg phandles[1]
-.ct .li .
+.period
 Their integer values are the two lowest available at the time of the
 .id &funcb.
 function call.
@@ -19,7 +19,7 @@ The
 .kw O_NONBLOCK
 flag is cleared for both file descriptors.
 (The
-.kw fcntl
+.reffunc fcntl
 call can be used to set the
 .kw O_NONBLOCK
 flag.)
@@ -28,7 +28,7 @@ Data can be written to file descriptor
 .arg phandles[1]
 and read from file descriptor
 .arg phandles[0]
-.ct .li .
+.period
 A read on file descriptor
 .arg phandles[0]
 returns the data written to
@@ -41,7 +41,7 @@ producing process as its
 .kw STDOUT_FILENO
 and the read end of the pipe to the data consuming process as its
 .kw STDIN_FILENO
-.ct .li .
+.period
 (either via the traditional fork/dup2/exec or the more efficient spawn
 calls).
 .np

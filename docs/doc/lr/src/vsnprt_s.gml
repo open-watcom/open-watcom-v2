@@ -30,13 +30,13 @@ result to be written to the array pointed to by
 .arg s
 shall not be greater than
 .arg n
-.ct .li .
+.period
 The
 .mono %n
 specifier (modified or not by flags, field width, or precision) shall not
 appear in the string pointed to by
 .arg format
-.ct .li .
+.period
 Any argument to
 .id &funcb.
 corresponding to a
@@ -60,17 +60,17 @@ to the null character.
 The
 .id &funcb.
 function is equivalent to the
-.kw vsnprintf
+.reffunc vsnprintf
 function except for the explicit runtime-constraints listed above.
 .np
 The
 .id &funcb.
 function, unlike
-.kw vsprintf_s
+.reffunc vsprintf_s
 .ct , will truncate the result to fit within the array pointed to by
 .arg s
-.ct .li .
-.im widefun4
+.period
+.widefunc &wfunc. &funcb. <form>
 .desc end
 .*
 .return begin
@@ -78,26 +78,26 @@ The
 .id &funcb.
 function returns the number of characters that would have been
 written had
-.arg n 
+.arg n
 been sufficiently large, not counting the terminating null character, or a
 negative value if a runtime-constraint violation occurred. Thus, the
 null-terminated output has been completely written if and only if the
 returned value is nonnegative and less than
 .arg n
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
 .id &funcb.
 function returns the number of wide characters that would have been
 written had
-.arg n 
+.arg n
 been sufficiently large, not counting the terminating wide null character, or
 a negative value if a runtime-constraint violation occurred. Thus, the
 null-terminated output has been completely written if and only if the
 returned value is nonnegative and less than
 .arg n
-.ct .li .
+.period
 .return end
 .*
 .see begin

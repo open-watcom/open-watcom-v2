@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,18 +66,18 @@ bool CheckOvl( addr32_ptr start )
 {
     struct ovl_header   __far *hdr;
 
-    hdr = MK_FP( start.segment, start.offset );
+    hdr = _MK_FP( start.segment, start.offset );
     if( hdr->signature == OVL_SIGNATURE ) {
         hdr->hook = &OvlTrap;
-        OvlRequest = MK_FP( start.segment, hdr->handler_offset );
+        OvlRequest = _MK_FP( start.segment, hdr->handler_offset );
         RunProg( &TaskRegs, &TaskRegs ); /* init overlay manager */
         return( true );
     }
     return( false );
 }
 
-trap_retval ReqOvl_state_size( void )
-/********************************/
+trap_retval TRAP_OVERLAY( state_size )( void )
+/********************************************/
 {
     ovl_state_size_ret  *ret;
 
@@ -86,15 +87,15 @@ trap_retval ReqOvl_state_size( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqOvl_read_state( void )
-/********************************/
+trap_retval TRAP_OVERLAY( read_state )( void )
+/********************************************/
 {
     OvlRequest( OVLDBG_GET_OVERLAY_STATE, GetOutPtr( 0 ) );
     return( OvlStateSize );
 }
 
-trap_retval ReqOvl_write_state( void )
-/*********************************/
+trap_retval TRAP_OVERLAY( write_state )( void )
+/*********************************************/
 {
     SetUsrTask(); /* overlay manager needs access to its file table */
     OvlRequest( OVLDBG_SET_OVERLAY_STATE, GetInPtr( sizeof( ovl_write_state_req ) ) );
@@ -102,8 +103,8 @@ trap_retval ReqOvl_write_state( void )
     return( 0 );
 }
 
-trap_retval ReqOvl_trans_vect_addr( void )
-/****************************************/
+trap_retval TRAP_OVERLAY( trans_vect_addr )( void )
+/*************************************************/
 {
     ovl_trans_vect_addr_req     *acc;
     ovl_trans_vect_addr_ret     *ret;
@@ -118,8 +119,8 @@ trap_retval ReqOvl_trans_vect_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqOvl_trans_ret_addr( void )
-/************************************/
+trap_retval TRAP_OVERLAY( trans_ret_addr )( void )
+/************************************************/
 {
     ovl_trans_ret_addr_req      *acc;
     ovl_trans_ret_addr_ret      *ret;
@@ -134,8 +135,8 @@ trap_retval ReqOvl_trans_ret_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqOvl_get_remap_entry( void )
-/*************************************/
+trap_retval TRAP_OVERLAY( get_remap_entry )( void )
+/*************************************************/
 {
     ovl_get_remap_entry_req     *acc;
     ovl_get_remap_entry_ret     *ret;
@@ -147,8 +148,8 @@ trap_retval ReqOvl_get_remap_entry( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqOvl_get_data( void )
-/******************************/
+trap_retval TRAP_OVERLAY( get_data )( void )
+/******************************************/
 {
     ovl_get_data_req    *acc;
     ovl_get_data_ret    *ret;

@@ -573,6 +573,7 @@ to exit this screen.
 .if '&lang' eq 'FORTRAN 77' .do begin
 .figure *depth='2.30' *scale=37 *file='ide8f' Setting compiler switches
 .do end
+.np
 .note
 To invoke the debugger, pull down the
 .us Targets
@@ -745,6 +746,7 @@ definitions, member functions, and inheritance trees
 associated with your C++ code.
 First, you need to instruct the compiler to emit &brname information.
 .figure *depth='3.58' *scale=45 *file='ide10c' The &brname
+.np
 .autonote
 .note
 Right click on
@@ -1031,7 +1033,7 @@ menu and select the
 .us New Source...
 item.
 .begnote
-.mnote Note:
+.note Note:
 You can do this either by choosing from the menu bar or by positioning
 the mouse over the file list area and clicking the right mouse button.
 The &vip displays a pop-up menu from which you can choose the desired
@@ -1074,6 +1076,7 @@ Double-click on
 The Resource Editor is invoked, displaying all the available resources
 (in this case, icons, bitmaps, and menus).
 .figure *depth='3.45' *scale=60 *file='ide12c' The &company Resource Editor
+.np
 .note
 Click on "Menu Resources".
 .note
@@ -1084,6 +1087,7 @@ The Menu Editor displays the menus defined for the resource
 You can specify pop-up menus, menu items and sub-items, text,
 separators, attributes, break styles, and memory flags.
 .figure *depth='5.11' *scale=60 *file='ide13c' The &company Menu Editor
+.np
 .note
 Click on
 .id MENUITEM "&Dimmer"

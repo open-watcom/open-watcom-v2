@@ -30,7 +30,7 @@ You can open the
 .wnddef CPU Register
 window by choosing
 .menuref 'Register' 'Data'
-.dot
+.period
 The register names and values are
 displayed in this window.  As you execute your program,
 registers that have changed since the last trace or breakpoint
@@ -66,7 +66,7 @@ You can open the
 .wnddef Assembly
 window by choosing
 .menuref 'Assembly' 'Code'
-.dot
+.period
 You can Inspect an item in by
 double-clicking on it, or by cursoring to it and pressing ENTER.
 Press the right mouse button to access the following pop-up menu items:
@@ -112,7 +112,7 @@ start with the text you typed.
 Reposition the window to the currently executing location. The cursor will move to
 the next line of the program to be executed.
 .menuitem No source
-Toggle the Assembly window display between only assembly code and assembly 
+Toggle the Assembly window display between only assembly code and assembly
 code intermixed with source lines.
 :INCLUDE file='wdbgopt.gml'
 .menuitem Hex

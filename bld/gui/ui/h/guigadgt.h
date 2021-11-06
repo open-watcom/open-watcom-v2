@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@ extern bool GUIDrawGadgetLine( p_gadget gadget );
 extern void GUIInitGadget( p_gadget gadget, ORD start, ORD length, ORD anchor );
 extern bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
                       ORD anchor, ORD start, ORD length,
-                      p_gadget *gadget_ptr, gui_scroll_styles style );
+                      p_gadget *gadget_ptr, gui_scroll_styles scroll_style );
 extern int GUIGetScrollOffset( void );
 
 #endif

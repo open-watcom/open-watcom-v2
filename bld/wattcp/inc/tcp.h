@@ -67,20 +67,20 @@ typedef struct {
         BYTE   undoc [2136];
       } udp_Socket;
 
-typedef int (*ProtoHandler) (void *sock, BYTE *data, int len,
+typedef int (*ProtoHandler) (void *sk, BYTE *data, int len,
                              void *tcp_phdr, void *udp_hdr);
 
-typedef int (*UserHandler)  (void *sock);
+typedef int (*UserHandler)  (void *sk);
 
 
 #define MAX_COOKIES     10
 #define MAX_NAMESERVERS 10
 
-#define TCP_MODE_BINARY  0
+#define TCP_MODE_BINARY  0       /* default to binary mode */
 #define TCP_MODE_ASCII   1
-#define UDP_MODE_CHK     0       /* default to checksum */
+#define UDP_MODE_CHK     0       /* default to having checksums */
 #define UDP_MODE_NOCHK   2
-#define TCP_MODE_NAGLE   0       /* Nagle algorithm */
+#define TCP_MODE_NAGLE   0       /* default to Nagle algorithm */
 #define TCP_MODE_NONAGLE 4
 
 #define SOCKESTABLISHED  1       /* socket states for sock_sselect */
@@ -132,44 +132,44 @@ extern void init_misc (void);  /* might be called before sock_init() */
 /*
  *  `s' is the pointer to a udp or tcp socket
  */
-extern int  sock_read       (void *s, char *dp, int len);
-extern int  sock_preread    (void *s, char *dp, int len);
-extern int  sock_fastread   (void *s, char *dp, int len);
-extern int  sock_write      (void *s, const char *dp, int len);
-extern void sock_enqueue    (void *s, const char *dp, int len);
-extern int  sock_fastwrite  (void *s, const char *dp, int len);
-extern int  sock_setbuf     (void *s, char *buf, unsigned len);
-extern int  sock_flush      (void *s);
-extern int  sock_flushnext  (void *s);
-extern int  sock_puts       (void *s, const char *dp);
-extern WORD sock_gets       (void *s, char *dp, int n);
-extern BYTE sock_putc       (void *s, char c);
-extern BYTE sock_getc       (void *s);
-extern WORD sock_dataready  (void *s);
-extern int  sock_established(void *s);
-extern int  sock_close      (void *s);
-extern int  sock_abort      (void *s);
-extern int  sock_keepalive  (void *s);
-extern int  sock_printf     (void *s, const char *format, ...);
-extern int  sock_scanf      (void *s, const char *format, ...);
-extern int  sock_yield      (void *s, void (*fn)(void));
-extern int  sock_mode       (void *s, WORD mode);        /* see TCP_MODE_... */
-extern int  sock_sselect    (void *s, int waitstate);
-extern int  sock_timeout    (void *s, int seconds);
-extern int  sock_recv       (void *s, char *buf, int len);
-extern int  sock_recv_init  (void *s, char *buf, int len);
-extern int  sock_recv_from  (void *s, DWORD *ip, WORD *port, char *buf, int len, int peek);
-extern int  sock_recv_used  (void *s);
+extern int  sock_read       (void *sk, char *dp, int len);
+extern int  sock_preread    (void *sk, char *dp, int len);
+extern int  sock_fastread   (void *sk, char *dp, int len);
+extern int  sock_write      (void *sk, const char *dp, int len);
+extern void sock_enqueue    (void *sk, const char *dp, int len);
+extern int  sock_fastwrite  (void *sk, const char *dp, int len);
+extern int  sock_setbuf     (void *sk, char *buf, unsigned len);
+extern int  sock_flush      (void *sk);
+extern int  sock_flushnext  (void *sk);
+extern int  sock_puts       (void *sk, const char *dp);
+extern WORD sock_gets       (void *sk, char *dp, int n);
+extern BYTE sock_putc       (void *sk, char c);
+extern BYTE sock_getc       (void *sk);
+extern WORD sock_dataready  (void *sk);
+extern int  sock_established(void *sk);
+extern int  sock_close      (void *sk);
+extern int  sock_abort      (void *sk);
+extern int  sock_keepalive  (void *sk);
+extern int  sock_printf     (void *sk, const char *format, ...);
+extern int  sock_scanf      (void *sk, const char *format, ...);
+extern int  sock_yield      (void *sk, void (*fn)(void));
+extern int  sock_mode       (void *sk, WORD mode);        /* see TCP_MODE_... */
+extern int  sock_sselect    (void *sk, int waitstate);
+extern int  sock_timeout    (void *sk, int seconds);
+extern int  sock_recv       (void *sk, char *buf, int len);
+extern int  sock_recv_init  (void *sk, char *buf, int len);
+extern int  sock_recv_from  (void *sk, DWORD *ip, WORD *port, char *buf, int len, int peek);
+extern int  sock_recv_used  (void *sk);
 
 /*
  * TCP or UDP specific stuff, must be used for open's and listens, but
  * sock stuff above is used for everything else
  */
-extern int   udp_open   (void *s, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
-extern int   tcp_open   (void *s, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
-extern int   udp_listen (void *s, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
-extern int   tcp_listen (void *s, WORD lport, DWORD ina, WORD port, ProtoHandler handler, WORD timeout);
-extern int   tcp_established (void *s);
+extern int   udp_open   (void *udp_sk, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
+extern int   tcp_open   (void *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
+extern int   udp_listen (void *udp_sk, WORD lport, DWORD ina, WORD port, ProtoHandler handler);
+extern int   tcp_listen (void *tcp_sk, WORD lport, DWORD ina, WORD port, ProtoHandler handler, WORD timeout);
+extern int   tcp_established (void *tcp_sk);
 
 extern char *rip        (char *s);
 extern DWORD resolve    (const char *name);
@@ -196,8 +196,8 @@ extern DWORD  get_timediff (DWORD now, DWORD t);
 extern void   hires_timer  (int on);
 extern struct timeval timeval_diff (const struct timeval *a, const struct timeval *b);
 
-extern void   ip_timer_init   (void *s , WORD delayseconds);
-extern WORD   ip_timer_expired(void *s);
+extern void   ip_timer_init   (void *sk, WORD delayseconds);
+extern WORD   ip_timer_expired(void *sk);
 
 /*
  * TCP/IP system variables - do not change these since they
@@ -232,7 +232,7 @@ extern void (*loopback_handler)(void *ip);
  *      - dump some socket control block parameters
  * used for testing the kernal, not recommended
  */
-extern void sock_debugdump (const void *s);
+extern void sock_debugdump (const void *sk);
 
 /*
  * tcp_config - read a configuration file
@@ -246,7 +246,7 @@ extern int tcp_config (const char *path);
  * tcp_tick - must be called periodically by user application.
  *          - returns 1 when our socket closes
  */
-extern WORD tcp_tick (void *s);
+extern WORD tcp_tick (void *sk);
 
 /*
  * tcp_set_debug_state - set to 1,2 or reset 0
@@ -322,35 +322,36 @@ extern int   ctrace_on;
  *      -1 on timeout
  *
  */
-extern int _ip_delay0 (void *s, int seconds, UserHandler fn, void *statusptr);
-extern int _ip_delay1 (void *s, int seconds, UserHandler fn, void *statusptr);
-extern int _ip_delay2 (void *s, int seconds, UserHandler fn, void *statusptr);
+extern int _ip_delay0 (void *sk, int seconds, UserHandler fn, void *statusptr);
+extern int _ip_delay1 (void *sk, int seconds, UserHandler fn, void *statusptr);
+extern int _ip_delay2 (void *sk, int seconds, UserHandler fn, void *statusptr);
 
 
-#define sock_wait_established(s,seconds,fn,statusptr) \
-        do {                                          \
-           if (_ip_delay0 (s,seconds,fn,statusptr))   \
-              goto sock_err;                          \
+#define sock_wait_established(sk,seconds,fn,statusptr) \
+        do {                                           \
+           if (_ip_delay0 (sk,seconds,fn,statusptr))   \
+              goto sock_err;                           \
         } while (0)
 
-#define sock_wait_input(s,seconds,fn,statusptr)       \
-        do {                                          \
-           if (_ip_delay1 (s,seconds,fn,statusptr))   \
-              goto sock_err;                          \
+#define sock_wait_input(sk,seconds,fn,statusptr)       \
+        do {                                           \
+           if (_ip_delay1 (sk,seconds,fn,statusptr))   \
+              goto sock_err;                           \
         } while (0)
 
-#define sock_tick(s, statusptr)                       \
-        do {                                          \
-           if (!tcp_tick(s)) {                        \
-              if (statusptr) *statusptr = 1;          \
-              goto sock_err;                          \
-           }                                          \
+#define sock_tick(sk, statusptr)                       \
+        do {                                           \
+           if (!tcp_tick(sk)) {                        \
+              if (statusptr)                           \
+                 *statusptr = 1;                       \
+              goto sock_err;                           \
+           }                                           \
         } while (0)
 
-#define sock_wait_closed(s,seconds,fn,statusptr)      \
-        do {                                          \
-           if (_ip_delay2(s,seconds,fn,statusptr))    \
-              goto sock_err;                          \
+#define sock_wait_closed(sk,seconds,fn,statusptr)      \
+        do {                                           \
+           if (_ip_delay2(sk,seconds,fn,statusptr))    \
+              goto sock_err;                           \
         } while (0)
 
 /*
@@ -382,7 +383,7 @@ extern int parse_config_table (struct config_table *tab,
 /*
  * Run with no config file (embedded/diskless)
  */
-extern int _watt_no_config; 
+extern int _watt_no_config;
 
 
 /*
@@ -423,7 +424,7 @@ extern WORD  inchksum          (const void *ptr, int len);
  * Turn off "C" scope because <stdio.h> may include
  * features specific to "C++". Nested scopes are bad.
  */
-#ifdef __cplusplus 
+#ifdef __cplusplus
 };
 #endif
 
@@ -442,38 +443,38 @@ struct watt_sockaddr {     /* for _getpeername, _getsockname */
        BYTE   s_spares[6]; /* unused */
      };
 
-extern int sock_rbsize (const void *s);
-extern int sock_rbused (const void *s);
-extern int sock_rbleft (const void *s);
-extern int sock_tbsize (const void *s);
-extern int sock_tbused (const void *s);
-extern int sock_tbleft (const void *s);
+extern int sock_rbsize (const void *sk);
+extern int sock_rbused (const void *sk);
+extern int sock_rbleft (const void *sk);
+extern int sock_tbsize (const void *sk);
+extern int sock_tbused (const void *sk);
+extern int sock_tbleft (const void *sk);
 
 extern char *_inet_ntoa  (char *s, DWORD x);
 extern DWORD _inet_addr  (const char *name);
 
-extern int   _getsockname(const tcp_Socket *s, void *dest, int *len);
-extern int   _getpeername(const tcp_Socket *s, void *dest, int *len);
+extern int   _getsockname(const void *sk, void *dest, socklen_t *len);
+extern int   _getpeername(const void *sk, void *dest, socklen_t *len);
 extern DWORD _gethostid  (void);
 extern DWORD _sethostid  (DWORD ip);
-extern int  _chk_socket  (const tcp_Socket *s);
-extern void  psocket     (tcp_Socket *s);
+extern int   _chk_socket (const void *sk);
+extern void  psocket     (const void *sk);
 
-extern int   getdomainname (char *name, int len);
-extern int   setdomainname (char *name, int len);
-extern int   gethostname   (char *name, int len);
-extern int   sethostname   (char *name, int len);
+extern int   getdomainname (char *name, size_t len);
+extern int   setdomainname (char *name, size_t len);
+extern int   gethostname   (char *name, size_t len);
+extern int   sethostname   (char *name, size_t len);
 extern void _arp_register  (DWORD use, DWORD instead_of, int nowait);
 extern int  _arp_resolve   (DWORD ina, void *eth, int nowait);
 
-extern int  addwattcpd (void (*p)());
-extern int  delwattcpd (void (*p)());
+extern int  addwattcpd (void (*p)(void));
+extern int  delwattcpd (void (*p)(void));
 
 extern void _sock_debug_on  (void);
 extern void _sock_debug_off (void);
 
-extern const char *sockerr  (tcp_Socket *s);
-extern const char *sockstate(tcp_Socket *s);
+extern const char *sockerr  (const void *sk);
+extern const char *sockstate(const void *sk);
 
 #ifndef iovec_defined
 #define iovec_defined
@@ -503,7 +504,7 @@ extern int join_mcast_group  (DWORD);
 extern int leave_mcast_group (DWORD);
 extern int is_multicast      (DWORD);
 extern int multi_to_eth      (DWORD, void *);
-extern int udp_SetTTL        (udp_Socket *s, BYTE ttl);
+extern int udp_SetTTL        (void *sk, BYTE ttl);
 
 
 /*
@@ -538,7 +539,7 @@ extern void print_tcp_stats (void);
 extern void print_all_stats (void);
 extern void reset_stats     (void);
 
-extern int  sock_stats (tcp_Socket *s, WORD *days, WORD *inactive,
+extern int  sock_stats (const void *sk, WORD *days, WORD *inactive,
                         WORD *cwindow, WORD *avg, WORD *sd);
 
 

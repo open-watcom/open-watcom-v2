@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,50 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  Fault context structure for Windows 3.x.
+* Description:  Save/restore Windows 3.x interrupt data.
 *
 ****************************************************************************/
 
 
 #ifndef _INTDATA_H_INCLUDED
 #define _INTDATA_H_INCLUDED
-
-#pragma pack( __push, 1 )
-
-typedef struct {
-    unsigned short      SS;
-    unsigned short      GS;
-    unsigned short      FS;
-    unsigned short      ES;
-    unsigned short      DS;
-    unsigned long       EDI;
-    unsigned long       ESI;
-    unsigned long       EBP;
-    unsigned long       ESP;
-    unsigned long       EBX;
-    unsigned long       EDX;
-    unsigned long       ECX;
-    unsigned long       oldEAX;
-    unsigned long       oldEBP;
-    unsigned short      retIP;
-    unsigned short      retCS;
-    unsigned short      AX;
-    unsigned short      intnumber;
-    unsigned short      handle;
-    unsigned short      IP;
-    unsigned short      CS;
-    unsigned short      FLAGS;
-} fault_frame;
-
-#pragma pack( __pop )
-
-enum {
-    KILL_APP = 0,
-    RESTART_APP,
-    CHAIN
-};
-
-#define EXCESS_CRAP_ON_STACK    0x14
 
 void    RestoreState( interrupt_struct *idata, fault_frame *ff );
 void    SaveState( interrupt_struct *idata, fault_frame *ff );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,30 +30,17 @@
 ****************************************************************************/
 
 
-extern bool     ProcMemory16M( void );
-extern bool     ProcTryExtended( void );
-extern bool     ProcTryLow( void );
-extern bool     ProcForceExtended( void );
-extern bool     ProcForceLow( void );
-extern bool     ProcTransparent( void );
-extern bool     ProcTStack( void );
-extern bool     ProcTData( void );
-extern bool     ProcKeyboard( void );
-extern bool     ProcOverload( void );
-extern bool     ProcInt10( void );
-extern bool     ProcInit00( void );
-extern bool     ProcInitFF( void );
-extern bool     ProcRotate( void );
-extern bool     ProcSelectors( void );
-extern bool     ProcAuto( void );
-extern bool     ProcBuffer( void );
-extern bool     ProcGDTSize( void );
-extern bool     ProcRelocs( void );
-extern bool     Proc16MNoRelocs( void );
-extern bool     ProcSelStart( void );
-extern bool     ProcExtended( void );
-extern bool     ProcExpName( void );
-extern bool     ProcDataSize( void );
+#ifdef _DOS16M
+
 extern void     SetD16MFmt( void );
 extern void     FreeD16MFmt( void );
-extern bool     Proc16M( void );
+extern void     CmdD16MFini( void );
+
+extern bool     Proc16MOptions( void );
+extern bool     Proc16MNoRelocs( void );
+extern bool     Proc16MRuntime( void );
+extern bool     Proc16MMemory( void );
+extern bool     Proc16MTransparent( void );
+extern bool     Proc16MFormat( void );
+
+#endif

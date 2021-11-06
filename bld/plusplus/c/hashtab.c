@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -524,7 +525,7 @@ static void saveHashTable( void *e, carve_walk_base *d )
 pch_status PCHWriteHashTables( void )
 /***********************************/
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     SymbolNamePCHWrite( listSentinel );
     CarveWalkAllFree( carveHASHTAB, markFreeHashTable );
@@ -542,7 +543,7 @@ pch_status PCHReadHashTables( void )
     unsigned half;
     unsigned size;
     unsigned buckets;
-    auto cvinit_t data;
+    cvinit_t data;
 
     listSentinel = SymbolNamePCHRead();
     CarveInitStart( carveHASHTAB, &data );

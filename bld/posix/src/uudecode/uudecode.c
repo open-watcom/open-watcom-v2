@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,22 +98,6 @@
 void outdec( char *p, FILE *f, int n );
 void decode( FILE *in, FILE *out );
 
-/*
- * Return the ptr in sp at which the character c appears;
- * NULL if not found
- */
-
-#if defined( __UNIX__ )
-static char *index( char *sp, int c )
-{
-    do {
-        if (*sp == c)
-            return(sp);
-    } while( *sp++ );
-    return( NULL );
-}
-#endif
-
 int main(int argc, char **argv)
 {
     FILE *in, *out;
@@ -180,9 +164,9 @@ int main(int argc, char **argv)
             char *sl;
             struct passwd *getpwnam();
             struct passwd *user;
-            char dnbuf[100], *index(), *strcat(), *strcpy();
+            char dnbuf[100], *strcat(), *strcpy();
 
-            sl = index(dest, '/');
+            sl = strchr(dest, '/');
             if (sl == NULL) {
                 fprintf(stderr, "Illegal ~user\n");
                 exit(3);

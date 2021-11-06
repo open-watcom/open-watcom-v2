@@ -34,23 +34,22 @@
 .****************************************************************************/
 .begkey g g
 Enters
-.keyword text insertion mode
+.keyword &tinsmode
 at the current cursor position.  This sets you up in
 .param overstrike
 or
 .param insert
 mode, depending on the mode you were in last time you were in
-.keyword text insertion mode
-:period.
+.keyword &tinsmode
+.period
 .sp
 This key is useful to
 .keyref keyadd
 in a
 .keyword script
-:cont.,
-to return to the exact same type of
-.keyword text insertion mode
+.ct , to return to the exact same type of
+.keyword &tinsmode
 the user was in before leaving
-.keyword text insertion mode
-:period.
+.keyword &tinsmode
+.period
 .endkey

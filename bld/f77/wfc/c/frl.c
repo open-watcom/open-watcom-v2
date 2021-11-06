@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +35,10 @@
 #include "frl.h"
 
 
-void    *FrlAlloc( void ***head, unsigned size ) {
-//================================================
-
+void    *FrlAlloc( void ***head, size_t size )
+//============================================
 // Bag an item from the free list pointer head if possible.
-
+{
     void        *next;
 
     if( *head ) {

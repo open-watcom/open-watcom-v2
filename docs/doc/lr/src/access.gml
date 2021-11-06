@@ -20,7 +20,7 @@ function determines if the file or directory specified by
 .arg path
 exists and if it can be accessed with the file permission given by
 .arg mode
-.ct .li .
+.period
 .np
 When the value of
 .arg mode
@@ -51,7 +51,7 @@ for read permission anyway, since a later version of DOS may support
 write-only files.
 .do end
 .im ansiconf
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The
@@ -74,7 +74,7 @@ Path or file not found.
 .endterm
 .error end
 .see begin
-.seelist chmod fstat open sopen stat
+.seelist chmod fstat open _sopen stat
 .see end
 .exmp begin
 #include <stdio.h>

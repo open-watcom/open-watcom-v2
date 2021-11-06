@@ -101,14 +101,14 @@ typedef _BSD_SSIZE_T_   ssize_t;
 #define FD_ISSET(fd, set) __TCPFDIsSet((int)fd, (fd_set *)set)
 #define FD_COPY(f, t)     memcpy(t, f, sizeof(*(f)))
 
-#pragma pack(4)
+:include pshpack4.sp
 
 typedef struct fd_set {
     u_short fd_count;
     int     fd_array[FD_SETSIZE];
 } fd_set;
 
-#pragma pack()
+:include poppack.sp
 
 __BEGIN_DECLS
 extern int _System __TCPFDIsSet __TCPPROTO((int, fd_set *));

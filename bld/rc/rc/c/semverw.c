@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,35 +48,30 @@ static uint_16 CalcNestSize( FullVerBlockNest *nest );
 static bool SemWriteVerBlockNest( FullVerBlockNest *nest, FILE *fp, int *err_code );
 static void FreeVerBlockNest( FullVerBlockNest *nest );
 
-FullVerValueList *SemWINNewVerValueList( VerValueItem item )
-/**********************************************************/
-{
-    FullVerValueList    *list;
-
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        item.strlen = VER_CALC_SIZE;    // terminate at the first NULLCHAR
-    }                                   // instead of using the full string.
-                                        // This is what Microsoft does.
-    list = RESALLOC( sizeof( FullVerValueList ) );
-    list->NumItems = 1;
-    list->Item = RESALLOC( sizeof( VerValueItem ) );
-    list->Item[0] = item;
-
-    return( list );
-}
-
 FullVerValueList *SemWINAddVerValueList( FullVerValueList *list, VerValueItem item )
 /**********************************************************************************/
 {
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
         item.strlen = VER_CALC_SIZE;    // terminate at the first NULLCHAR
     }                                   // instead of using the full string.
-                                        // This is what MS does.
+                                        // This is what Microsoft does.
     list->NumItems++;
     list->Item = RCREALLOC( list->Item, list->NumItems * sizeof( VerValueItem ) );
     list->Item[list->NumItems - 1] = item;
 
     return( list );
+}
+
+FullVerValueList *SemWINNewVerValueList( VerValueItem item )
+/**********************************************************/
+{
+    FullVerValueList    *list;
+
+    list = RESALLOC( sizeof( FullVerValueList ) );
+    list->NumItems = 0;
+    list->Item = NULL;
+
+    return( SemWINAddVerValueList( list, item ) );
 }
 
 static void FreeValItem( VerValueItem *item )
@@ -122,11 +118,7 @@ FullVerBlock *SemWINNewBlockVal( char *name, FullVerValueList *list )
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        block->UseUnicode = true;
-    } else {
-        block->UseUnicode = false;
-    }
+    block->UseUnicode = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
     block->Value = list;
     block->Nest = NULL;
 
@@ -142,11 +134,7 @@ FullVerBlock *SemWINNameVerBlock( char *name, FullVerBlockNest *nest )
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        block->UseUnicode = true;
-    } else {
-        block->UseUnicode = false;
-    }
+    block->UseUnicode = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
     block->Value = NULL;
     block->Nest = nest;
 
@@ -177,7 +165,7 @@ static uint_16 CalcBlockSize( FullVerBlock *block )
         for( i = 0; i < block->Value->NumItems; i++ ) {
             val_size += ResSizeVerValueItem( block->Value->Item + i, block->UseUnicode );
         }
-        padding = RES_PADDING( val_size, sizeof( uint_32 ) );
+        padding = RES_PADDING_DWORD( val_size );
     }
     if( block->Nest == NULL ) {
         nest_size = 0;
@@ -384,7 +372,7 @@ void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, Fu
     root.Key = "VS_VERSION_INFO";
     root.ValSize = sizeof( VerFixedInfo );
     root.Type = 0;
-    padding = RES_PADDING( root.ValSize, sizeof( uint_32 ) );
+    padding = RES_PADDING_DWORD( root.ValSize );
     root.Size = ResSizeVerBlockHeader( &root, use_unicode, res_os )
                     + root.ValSize + padding + CalcNestSize( nest );
     /* pad the start of the resource so that padding within the resource */

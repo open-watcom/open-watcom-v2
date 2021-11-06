@@ -11,7 +11,7 @@
 .* ----		--		------
 .* 11-may-93	Paul Fast	initial draft
 .*
-:CHAPTER.Bitmaps, Icons and Cursors 
+:CHAPTER.Bitmaps, Icons and Cursors
 .if &ishelp eq 1 .do begin
 :SECTION.Overview
 .do end
@@ -31,7 +31,7 @@ to 512x512 pixels.
 All pixels in a bitmap must have a color given to them.  When
 displaying a bitmap on a screen, it is possible to make a portion of
 the bitmap the same as the screen background, giving the appearance
-of 
+of
 :ITALICS.transparency
 :PERIOD.
 However, there is no way to store this transparency.  Thus when
@@ -44,7 +44,7 @@ only two color and 16 color bitmaps.
 :P.
 The default file extension for bitmap files in Windows is .BMP.
 A bitmap file, as it is stored on disk, begins with a structure
-containing information about the bitmap size and dimensions. 
+containing information about the bitmap size and dimensions.
 Following this structure is a block of information about the color
 scheme of the bitmap, dictating how the pixel values need to be
 interpreted.  At the end of the file are the values for all the
@@ -97,22 +97,22 @@ other colors they may contain are black and white.
 :P.
 Like icons, cursors can take on shapes other than rectangular by
 specifying a transparent color for the outer edges of the image.
-It is also quite useful 
+It is also quite useful
 that pixels can be the inverted screen color since this can be used
 to guarantee
-that the cursor will always be visible regardless of the screen color. 
+that the cursor will always be visible regardless of the screen color.
 Moreover, a cursor has a
 :HILITE.hot spot
 :PERIOD.
 Because of the size of cursors, it is often unclear which point the
 user is attempting to select when the mouse button is clicked.  A hot
-spot is a set of 
+spot is a set of
 :ITALICS.x, y
 coordinates relative to the cursor dimensions that indicates to
 Windows the point it should use when the mouse button is clicked.
 &imgname allows a user to specify the hot spot for a cursor by
 selecting the hot spot tool and clicking over the desired pixel.
 :P.
-Cursor files have extension .CUR 
+Cursor files have extension .CUR
 and are started in a format very similar to that of icons.  However,
 cursor files also store the coordinates of the hot spot.

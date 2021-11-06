@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +48,5 @@ const char _NEAR StrTokens[] = {
     "STRCHR\0"
 };
 
-char        *ErrorTokens;
-int         *ErrorValues;
-vars        *VarHead, *VarTail;
 long        CurrentSrcLabel;
 srcline     CurrentSrcLine;

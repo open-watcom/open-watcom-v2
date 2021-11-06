@@ -224,8 +224,6 @@ objs_cpplib = &
 ../doc/cpplib/listcont.gml &
 ../doc/cpplib/listiter.gml &
 ../doc/cpplib/manip_.gml &
-../doc/cpplib/mkdos.cmd &
-../doc/cpplib/mkqnx.cmd &
 ../doc/cpplib/ofstrm_.gml &
 ../doc/cpplib/osstrm_.gml &
 ../doc/cpplib/ostr_out.gml &
@@ -310,9 +308,7 @@ objs_fg = &
 ../doc/fg/fcond.gml &
 ../doc/fg/fdata.gml &
 ../doc/fg/fdosfile.gml &
-../doc/fg/ferrmac.gml &
 ../doc/fg/ferrmsg.gml &
-../doc/fg/ferror.gml &
 ../doc/fg/fgkslib.old &
 ../doc/fg/fguide.bmp &
 ../doc/fg/flib.gml &
@@ -485,20 +481,29 @@ objs_fl = &
 # gs sub-directory
 bmroot_gs = ../doc/gs
 incs_gs = ../doc/gs
-objs_gs = &
+objs_gs_readme = &
 ../doc/gs/bench.gml &
 ../doc/gs/c_readme.gml &
-../doc/gs/cbooks.bmp &
-../doc/gs/cbooks.cnt &
-../doc/gs/cbooks.gml &
 ../doc/gs/diffs.gml &
 ../doc/gs/docson.gml &
+../doc/gs/f_readme.gml &
+../doc/gs/install.gml &
+../doc/gs/intro.gml &
+../doc/gs/lic.gml &
+../doc/gs/light2.bmp &
+../doc/gs/redist.gml &
+../doc/gs/tshoot.gml &
+../doc/gs/tutorial.gml
+objs_gs_books = &
+../doc/gs/cbooks.cnt &
+../doc/gs/cbooks.gml &
+../doc/gs/cbooks.bmp &
 ../doc/gs/ebooks.cnt &
 ../doc/gs/ebooks.gml &
-../doc/gs/f_readme.gml &
-../doc/gs/fbooks.bmp &
 ../doc/gs/fbooks.cnt &
 ../doc/gs/fbooks.gml &
+../doc/gs/fbooks.bmp
+objs_gs_readme_bmp = &
 ../doc/gs/ide10c.bmp &
 ../doc/gs/ide11c.bmp &
 ../doc/gs/ide12c.bmp &
@@ -519,15 +524,8 @@ objs_gs = &
 ../doc/gs/ide8c.bmp &
 ../doc/gs/ide8f.bmp &
 ../doc/gs/ide9c.bmp &
-../doc/gs/ide9f.bmp &
-../doc/gs/install.gml &
-../doc/gs/intro.gml &
-../doc/gs/lic.gml &
-../doc/gs/light2.bmp &
-../doc/gs/redist.gml &
-../doc/gs/tshoot.gml &
-../doc/gs/tutorial.gml
-objs_gs_ps = &
+../doc/gs/ide9f.bmp
+objs_gs_readme_ps = &
 ide10c.ps &
 ide11c.ps &
 ide12c.ps &
@@ -579,7 +577,8 @@ objs_gui = &
 ../doc/gui/wrc.gml &
 ../doc/gui/wrcerrs.gml &
 ../doc/gui/wrcmacs.gml &
-../doc/gui/wre.gml &
+../doc/gui/wre.gml
+objs_gui_bmp = &
 ../doc/gui/snaps/acc1.bmp &
 ../doc/gui/snaps/acc10.bmp &
 ../doc/gui/snaps/acc11.bmp &
@@ -1216,6 +1215,12 @@ objs_lr2 = &
 ../doc/lr/src/_lrotl.gml &
 ../doc/lr/src/_lrotr.gml &
 ../doc/lr/src/_makepat.gml &
+../doc/lr/src/_mbsret1.gml &
+../doc/lr/src/_mbsret2.gml &
+../doc/lr/src/_mbsret3.gml &
+../doc/lr/src/_mbsret4.gml &
+../doc/lr/src/_mbsret5.gml &
+../doc/lr/src/_mbsret6.gml &
 ../doc/lr/src/_memavl.gml &
 ../doc/lr/src/_memmax.gml &
 ../doc/lr/src/_msize.gml &
@@ -1355,8 +1360,6 @@ objs_lr2 = &
 ../doc/lr/src/exp2.gml &
 ../doc/lr/src/expm1.gml &
 ../doc/lr/src/fabs.gml &
-../doc/lr/src/farfunc.gml &
-../doc/lr/src/farparm.gml &
 ../doc/lr/src/fclose.gml &
 ../doc/lr/src/fcloseal.gml &
 ../doc/lr/src/fcvt.gml &
@@ -1377,8 +1380,6 @@ objs_lr2 = &
 ../doc/lr/src/fesetrnd.gml &
 ../doc/lr/src/fetestex.gml &
 ../doc/lr/src/feupdenv.gml &
-../doc/lr/src/ffarfunc.gml &
-../doc/lr/src/ffarparm.gml &
 ../doc/lr/src/fflush.gml &
 ../doc/lr/src/ffs.gml &
 ../doc/lr/src/fgetc.gml &
@@ -1457,7 +1458,6 @@ objs_lr2 = &
 ../doc/lr/src/gmtime_s.gml &
 ../doc/lr/src/halloc.gml &
 ../doc/lr/src/hantozen.gml &
-../doc/lr/src/hcfunmac.gml &
 ../doc/lr/src/header.gml &
 ../doc/lr/src/hfree.gml &
 ../doc/lr/src/hypot.gml &
@@ -1648,8 +1648,9 @@ objs_lr2 = &
 ../doc/lr/src/mbrlen.gml &
 ../doc/lr/src/mbrtowc.gml &
 ../doc/lr/src/mbsbtype.gml &
-../doc/lr/src/mbsffunc.gml &
-../doc/lr/src/mbsfunc.gml &
+../doc/lr/src/mbsdec.gml &
+../doc/lr/src/mbsinc.gml &
+../doc/lr/src/mbsinit.gml &
 ../doc/lr/src/mbsnbcat.gml &
 ../doc/lr/src/mbsnbcmp.gml &
 ../doc/lr/src/mbsnbcnt.gml &
@@ -1658,9 +1659,11 @@ objs_lr2 = &
 ../doc/lr/src/mbsnbset.gml &
 ../doc/lr/src/mbsnccnt.gml &
 ../doc/lr/src/mbsnextc.gml &
+../doc/lr/src/mbsninc.gml &
 ../doc/lr/src/mbsrstrt.gml &
 ../doc/lr/src/mbsrto_s.gml &
 ../doc/lr/src/mbsrtowc.gml &
+../doc/lr/src/mbsspnp.gml &
 ../doc/lr/src/mbstow_s.gml &
 ../doc/lr/src/mbstowcs.gml &
 ../doc/lr/src/mbterm.gml &
@@ -1779,6 +1782,7 @@ objs_lr2 = &
 ../doc/lr/src/rand.gml &
 ../doc/lr/src/read.gml &
 ../doc/lr/src/readdir.gml &
+../doc/lr/src/readlink.gml &
 ../doc/lr/src/realloc.gml &
 ../doc/lr/src/remove.gml &
 ../doc/lr/src/rename.gml &
@@ -1788,9 +1792,6 @@ objs_lr2 = &
 ../doc/lr/src/rmdir.gml &
 ../doc/lr/src/rmnder.gml &
 ../doc/lr/src/round.gml &
-../doc/lr/src/safefar.gml &
-../doc/lr/src/safefarm.gml &
-../doc/lr/src/safefarw.gml &
 ../doc/lr/src/sbrk.gml &
 ../doc/lr/src/scalbn.gml &
 ../doc/lr/src/scanf.gml &
@@ -1849,7 +1850,6 @@ objs_lr2 = &
 ../doc/lr/src/signal.gml &
 ../doc/lr/src/sin.gml &
 ../doc/lr/src/sinh.gml &
-../doc/lr/src/sisinit.gml &
 ../doc/lr/src/sleep.gml &
 ../doc/lr/src/snprintf.gml &
 ../doc/lr/src/snprtf_s.gml &
@@ -1878,7 +1878,6 @@ objs_lr2 = &
 ../doc/lr/src/strcpy_s.gml &
 ../doc/lr/src/strcspn.gml &
 ../doc/lr/src/strdate.gml &
-../doc/lr/src/strdec.gml &
 ../doc/lr/src/strdup.gml &
 ../doc/lr/src/streln_s.gml &
 ../doc/lr/src/strerr_s.gml &
@@ -1888,7 +1887,6 @@ objs_lr2 = &
 ../doc/lr/src/strftime.gml &
 ../doc/lr/src/stricmp.gml &
 ../doc/lr/src/stricoll.gml &
-../doc/lr/src/strinc.gml &
 ../doc/lr/src/strlcat.gml &
 ../doc/lr/src/strlcpy.gml &
 ../doc/lr/src/strlen.gml &
@@ -1896,12 +1894,10 @@ objs_lr2 = &
 ../doc/lr/src/strncase.gml &
 ../doc/lr/src/strncat.gml &
 ../doc/lr/src/strncmp.gml &
-../doc/lr/src/strncnt.gml &
 ../doc/lr/src/strncoll.gml &
 ../doc/lr/src/strncpy.gml &
 ../doc/lr/src/strnicmp.gml &
 ../doc/lr/src/strnicol.gml &
-../doc/lr/src/strninc.gml &
 ../doc/lr/src/strnln_s.gml &
 ../doc/lr/src/strnset.gml &
 ../doc/lr/src/strpbrk.gml &
@@ -1921,6 +1917,11 @@ objs_lr2 = &
 ../doc/lr/src/strtoul.gml &
 ../doc/lr/src/strtoull.gml &
 ../doc/lr/src/strtoumx.gml &
+../doc/lr/src/struchst.gml &
+../doc/lr/src/strucnet.gml &
+../doc/lr/src/strucpro.gml &
+../doc/lr/src/strucsrv.gml &
+../doc/lr/src/structms.gml &
 ../doc/lr/src/structtm.gml &
 ../doc/lr/src/strupr.gml &
 ../doc/lr/src/strxfrm.gml &
@@ -1985,10 +1986,6 @@ objs_lr2 = &
 ../doc/lr/src/wctomb_s.gml &
 ../doc/lr/src/wctrans.gml &
 ../doc/lr/src/wctype.gml &
-../doc/lr/src/widefun1.gml &
-../doc/lr/src/widefun2.gml &
-../doc/lr/src/widefun3.gml &
-../doc/lr/src/widefun4.gml &
 ../doc/lr/src/write.gml &
 ../doc/lr/src/zentohan.gml
 
@@ -2480,60 +2477,6 @@ dlgopt.ps &
 dlgsrch.ps &
 dlgwopt.ps &
 
-# trap sub-directory
-incs_trap = ../doc/trap
-objs_trap = &
-../doc/trap/wtrap.gml &
-../doc/trap/trap.gml &
-#../doc/trap/ovl.gml &
-#../doc/trap/extra.gml &
-#../doc/trap/dbg.gml &
-
-# wfg sub-directory
-incs_wfg = ../doc/wfg
-objs_wfg = &
-../doc/wfg/ed1.ps &
-../doc/wfg/fcpopts.gml &
-../doc/wfg/fdosedit.gml &
-../doc/wfg/fdosexe.gml &
-../doc/wfg/fdosguid.gml &
-../doc/wfg/fdosintr.gml &
-../doc/wfg/fdoslink.gml &
-../doc/wfg/ferror.gml &
-../doc/wfg/fpstyle.gml &
-../doc/wfg/fw4pref.gml &
-../doc/wfg/fw4story.gml &
-../doc/wfg/fw5diff.gml &
-../doc/wfg/pcguide.scr &
-../doc/wfg/root.for &
-../doc/wfg/syntax.for &
-../doc/wfg/ugprg0.ps &
-../doc/wfg/ugprg1.gml &
-../doc/wfg/ugprg1.ps &
-../doc/wfg/ugprg10.ps &
-../doc/wfg/ugprg11.ps &
-../doc/wfg/ugprg12.ps &
-../doc/wfg/ugprg13.ps &
-../doc/wfg/ugprg14.ps &
-../doc/wfg/ugprg15.ps &
-../doc/wfg/ugprg2.gml &
-../doc/wfg/ugprg2.ps &
-../doc/wfg/ugprg3.gml &
-../doc/wfg/ugprg3.ps &
-../doc/wfg/ugprg4.ps &
-../doc/wfg/ugprg5.gml &
-../doc/wfg/ugprg5.ps &
-../doc/wfg/ugprg6.gml &
-../doc/wfg/ugprg6.ps &
-../doc/wfg/ugprg7.gml &
-../doc/wfg/ugprg7.ps &
-../doc/wfg/ugprg8.gml &
-../doc/wfg/ugprg8.ps &
-../doc/wfg/ugprg9.ps &
-../doc/wfg/wfdebug.gml &
-../doc/wfg/wfmacs.gml &
-../doc/wfg/wfmacs32.gml
-
 # win386 sub-directory
 incs_win386 = ../doc/win386
 objs_win386 = &
@@ -2586,12 +2529,6 @@ gml_objs = &
 ../doc/gml/fmtmacro.gml  &
 ../doc/gml/gmlack.gml    &
 ../doc/gml/gmlmacs.gml   &
-../doc/gml/help.gml      &
-../doc/gml/help.opt      &
-../doc/gml/helplay.gml   &
-../doc/gml/html.opt      &
-../doc/gml/htmllay.gml   &
-../doc/gml/htmlmacs.gml  &
 ../doc/gml/light2.eps    &
 ../doc/gml/ltning.eps    &
 ../doc/gml/lytchg.gml    &
@@ -2604,7 +2541,6 @@ gml_objs = &
 ../doc/gml/nb7x9psn.opt  &
 ../doc/gml/nbhlp.opt     &
 ../doc/gml/nbhlplay.gml  &
-../doc/gml/nbhlpos2.opt  &
 ../doc/gml/nblay.gml     &
 ../doc/gml/nbps.opt      &
 ../doc/gml/nbpsshad.opt  &
@@ -2638,12 +2574,26 @@ gml_objs = &
 
 # whelp sub-directory
 whelp_incs = ../doc/whelp
-whelp_objs =                      &
+whelp_objs =               &
 ../doc/whelp/whelp.gml     &
-../doc/whelp/whelp.cop     &
-../doc/whelp/whelpdrv.cop  &
 ../doc/whelp/whelplay.gml  &
-../doc/whelp/wnohelp.gml
+../doc/whelp/wnohelp.gml   &
+../doc/whelp/whelp.opt
+
+# gml/syslib sub-directory
+gml_syslib_incs = ../gml/syslib
+gml_syslib_objs =           &
+../gml/syslib/mono01.fon   &
+../gml/syslib/whelp.pcd     &
+../gml/syslib/whelpdrv.pcd
+
+# ps sub-directory
+ps_incs = ../doc/ps
+ps_objs =                     &
+../doc/hlp/banner.gml   &
+../doc/hlp/bantop.gml   &
+../doc/hlp/fmtmacro.gml &
+../doc/hlp/gmlmacs.gml
 
 # hlp sub-directory
 hlp_incs = ../doc/hlp
@@ -2667,7 +2617,9 @@ objs_cgdoc = &
 # dwdoc sub-directory
 incs_dwdoc = ../../bld/dwarf/dw/doc
 objs_dwdoc = &
-../../bld/dwarf/dw/doc/dwdoc.gml
+../../bld/dwarf/dw/doc/dwdoc.gml &
+../../bld/dwarf/dw/doc/dwarfw.gml &
+../../bld/dwarf/dw/doc/extra.gml
 
 # wddoc sub-directory
 incs_wddoc = ../../bld/wv/doc
@@ -2675,7 +2627,9 @@ objs_wddoc = &
 ../../bld/wv/doc/dbg.gml &
 ../../bld/wv/doc/ovl.gml &
 ../../bld/wv/doc/trap.gml &
-../../bld/wv/doc/wddoc.gml
+../../bld/wv/doc/wtrap.gml &
+../../bld/wv/doc/wddoc.gml &
+../../bld/wv/doc/extra.gml
 
 # vi sub-directory
 bmroot_vi = ../doc/vi/snaps
@@ -2717,7 +2671,8 @@ objs_vi = &
 ../doc/vi/a_ctags.gml &
 ../doc/vi/a_symkey.gml &
 ../doc/vi/symkey.gml &
-../doc/vi/a_errcod.gml &
+../doc/vi/a_errcod.gml
+objs_vi_bmp=&
 $(bmroot_vi)/vi001.bmp &
 $(bmroot_vi)/vi003.bmp &
 $(bmroot_vi)/vi004.bmp &
@@ -2777,10 +2732,17 @@ vi029.ps &
 vi030.ps &
 vi031.ps
 
+# wfc sub-directory
+incs_wfc = ../../bld/f77/wfc/gml
+objs_wfc = &
+../../bld/f77/wfc/gml/wfcmsgs.gml &
+../../bld/f77/wfc/gml/msgmacs.gml &
+
 # wgmlref sub-directory
+bmroot_wgmlref = ../doc/wgmlref/screens
 incs_wgmlref = ../doc/wgmlref;../doc/wgmlref/screens
 objs_wgmlref = &
-../doc/wgmlref/rfman.gml &
+../doc/wgmlref/extra.gml &
 ../doc/wgmlref/mspslay.gml &
 ../doc/wgmlref/rfabst.gml &
 ../doc/wgmlref/rfdaddr.gml &
@@ -3139,8 +3101,47 @@ objs_wgmlref = &
 ../doc/wgmlref/rftustrt.gml &
 ../doc/wgmlref/rftustru.gml &
 ../doc/wgmlref/rftut.gml &
-../doc/wgmlref/rftuxmp.gml &
-../doc/wgmlref/wbsymbol.gml
+../doc/wgmlref/rftuxmp.gml
+objs_wgmlref_bmp = &
+$(bmroot_wgmlref)/frconf.bmp &
+$(bmroot_wgmlref)/frdev.bmp &
+$(bmroot_wgmlref)/frdeval.bmp &
+$(bmroot_wgmlref)/frdevav.bmp &
+$(bmroot_wgmlref)/frdevfa.bmp &
+$(bmroot_wgmlref)/frdevfn.bmp &
+$(bmroot_wgmlref)/frdevld.bmp &
+$(bmroot_wgmlref)/frdoc.bmp &
+$(bmroot_wgmlref)/frdocct.bmp &
+$(bmroot_wgmlref)/frdocpr.bmp &
+$(bmroot_wgmlref)/frdocse.bmp &
+$(bmroot_wgmlref)/frhelp.bmp &
+$(bmroot_wgmlref)/froptsv.bmp &
+$(bmroot_wgmlref)/frsymed.bmp &
+$(bmroot_wgmlref)/frsymva.bmp &
+$(bmroot_wgmlref)/rfopsel.bmp &
+$(bmroot_wgmlref)/rfopt.bmp &
+$(bmroot_wgmlref)/wgmlerr.bmp &
+$(bmroot_wgmlref)/wgmlmain.bmp
+objs_wgmlref_ps = &
+frconf.ps &
+frdev.ps &
+frdeval.ps &
+frdevav.ps &
+frdevfa.ps &
+frdevfn.ps &
+frdevld.ps &
+frdoc.ps &
+frdocct.ps &
+frdocpr.ps &
+frdocse.ps &
+frhelp.ps &
+froptsv.ps &
+frsymed.ps &
+frsymva.ps &
+rfopsel.ps &
+rfopt.ps &
+wgmlerr.ps &
+wgmlmain.ps
 
 # wipfc sub-directory
 bmroot_wipfc = ../doc/wipfc

@@ -15,7 +15,7 @@
 
 :include cpluspro.sp
 
-#pragma pack( __push, 1 )
+:include pshpack1.sp
 
 /* Drop handle data type */
 DECLARE_HANDLE(HDROP);
@@ -71,7 +71,7 @@ HINSTANCE WINAPI    ShellExecute( HWND, LPCSTR, LPCSTR, LPCSTR, LPCSTR, int );
 
 #endif /* RC_INVOKED */
 
-#pragma pack( __pop )
+:include poppack.sp
 
 :include cplusepi.sp
 

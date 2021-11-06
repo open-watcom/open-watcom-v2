@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,13 +122,13 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
     if( cmdOpts->Fd   )  append_unsupported( opts, "Fd"   );
     if( cmdOpts->Fr   )  append_unsupported( opts, "Fr"   );
     switch( cmdOpts->calling_convention ) {
-      case OPT_calling_convention_Gd:
+      case OPT_ENUM_calling_convention_Gd:
         append_unsupported( opts, "Gd" );
         break;
-      case OPT_calling_convention_Gr:
+      case OPT_ENUM_calling_convention_Gr:
         append_unsupported( opts, "Gr" );
         break;
-      case OPT_calling_convention_Gz:
+      case OPT_ENUM_calling_convention_Gz:
         append_unsupported( opts, "Gz" );
         break;
     }
@@ -144,7 +144,7 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
     if( cmdOpts->vms  )  append_unsupported( opts, "vms"  );
     if( cmdOpts->vmv  )  append_unsupported( opts, "vmv"  );
     if( cmdOpts->X    )  append_unsupported( opts, "X"    );
-    if( cmdOpts->debug_info == OPT_debug_info_Zi ) {
+    if( cmdOpts->debug_info == OPT_ENUM_debug_info_Zi ) {
         append_unsupported( opts, "Zi"  );
     }
     if( cmdOpts->Zn   )  append_unsupported( opts, "Zn"   );
@@ -275,14 +275,14 @@ static void precomp_header_opts( struct XlatStatus *status,
         AppendFmtCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-fhq=%s", newpath );
     } else {
         switch( cmdOpts->precomp_headers ) {
-          case OPT_precomp_headers_Yc:
+          case OPT_ENUM_precomp_headers_Yc:
             /* fall through */
-          case OPT_precomp_headers_Yu:
+          case OPT_ENUM_precomp_headers_Yu:
             /* fall through */
-          case OPT_precomp_headers_YX:
+          case OPT_ENUM_precomp_headers_YX:
             AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-fhq" );
             break;
-          case OPT_precomp_headers_default:
+          case OPT_ENUM_precomp_headers_default:
             break;
           default:
             Zoinks();
@@ -307,13 +307,13 @@ static void misc_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
     }
 
     switch( cmdOpts->warn_level ) {
-      case OPT_warn_level_w:
+      case OPT_ENUM_warn_level_w:
         status->warnLevel = 0;
         break;
-      case OPT_warn_level_W:
+      case OPT_ENUM_warn_level_W:
         status->warnLevel = cmdOpts->W_value;
         break;
-      case OPT_warn_level_default:
+      case OPT_ENUM_warn_level_default:
         /* use default value */
         break;
       default:
@@ -321,16 +321,16 @@ static void misc_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
     }
 
     switch( cmdOpts->iso ) {
-      case OPT_iso_Za:
+      case OPT_ENUM_iso_Za:
         AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-za" );
         if( cmdOpts->iso_timestamp > cmdOpts->Op_timestamp ) {
             status->opt_op = true;
         }
         break;
-      case OPT_iso_Ze:
+      case OPT_ENUM_iso_Ze:
         AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-ze" );
         break;
-      case OPT_iso_default:
+      case OPT_ENUM_iso_default:
         /* use default value */
         break;
       default:
@@ -353,15 +353,15 @@ static void misc_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
 
         #ifdef __TARGET_386__
             switch( cmdOpts->arch_i86 ) {   /* what is the CPU */
-              case OPT_arch_i86_G3:
+              case OPT_ENUM_arch_i86_G3:
                 if( status->parmsInRegs ) {
                     AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-3r" );
                 } else {
                     AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-3s" );
                 }
                 break;
-              case OPT_arch_i86_G4:
-              case OPT_arch_i86_GB:
+              case OPT_ENUM_arch_i86_G4:
+              case OPT_ENUM_arch_i86_GB:
               default:
                 if( status->parmsInRegs ) {
                     AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-4r" );
@@ -369,7 +369,7 @@ static void misc_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
                     AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-4s" );
                 }
                 break;
-              case OPT_arch_i86_G5:
+              case OPT_ENUM_arch_i86_G5:
                 if( status->parmsInRegs ) {
                     AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-5r" );
                 } else {
@@ -380,17 +380,17 @@ static void misc_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
         #endif
 
         switch( cmdOpts->stack_probes ) {
-          case OPT_stack_probes_Ge:
+          case OPT_ENUM_stack_probes_Ge:
             AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-st" );
             break;
-          case OPT_stack_probes_Gs:
+          case OPT_ENUM_stack_probes_Gs:
         #ifndef __TARGET_AXP__
             AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-sg" );
         #else
             AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-s" );
         #endif
             break;
-          case OPT_stack_probes_default:
+          case OPT_ENUM_stack_probes_default:
             break;
           default:
             Zoinks();
@@ -437,27 +437,27 @@ static void object_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
 
     if( cmdOpts->LD ) {
         AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-bd" );
-        if( cmdOpts->threads_linking == OPT_threads_linking_default ) {
-            cmdOpts->threads_linking = OPT_threads_linking_MT;
+        if( cmdOpts->threads_linking == OPT_ENUM_threads_linking_default ) {
+            cmdOpts->threads_linking = OPT_ENUM_threads_linking_MT;
         }
     }
 
     switch( cmdOpts->threads_linking ) {
-      case OPT_threads_linking_MD:
-      case OPT_threads_linking_MDd:
+      case OPT_ENUM_threads_linking_MD:
+      case OPT_ENUM_threads_linking_MDd:
         AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-bm" );
         if( !cmdOpts->_10x ) {
             AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-br" );
         }
         break;
-      case OPT_threads_linking_ML:
-      case OPT_threads_linking_MLd:
+      case OPT_ENUM_threads_linking_ML:
+      case OPT_ENUM_threads_linking_MLd:
         break;
-      case OPT_threads_linking_MT:
-      case OPT_threads_linking_MTd:
+      case OPT_ENUM_threads_linking_MT:
+      case OPT_ENUM_threads_linking_MTd:
         AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-bm" );
         break;
-      case OPT_threads_linking_default:
+      case OPT_ENUM_threads_linking_default:
         /* let the compiler use its default */
         break;
       default:
@@ -465,17 +465,17 @@ static void object_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
     }
 
     switch( cmdOpts->debug_info ) {
-      case OPT_debug_info_Z7:
+      case OPT_ENUM_debug_info_Z7:
         AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-hd" );
         status->debugLevel = 2;
         break;
-      case OPT_debug_info_Zd:
+      case OPT_ENUM_debug_info_Zd:
         AppendCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-hd" );
         status->debugLevel = 1;
         break;
-      case OPT_debug_info_Zi:
+      case OPT_ENUM_debug_info_Zi:
         /* unsupported */
-      case OPT_debug_info_default:
+      case OPT_ENUM_debug_info_default:
         /* do nothing */
         break;
       default:
@@ -500,43 +500,43 @@ static void optimization_opts( struct XlatStatus *status,
                                OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
 /*************************************************************************/
 {
-    if( cmdOpts->opt_level != OPT_opt_level_Od ) {
+    if( cmdOpts->opt_level != OPT_ENUM_opt_level_Od ) {
         status->opt_od = false;
 
         switch( cmdOpts->opt_level ) {
-          case OPT_opt_level_O1:                /* minimize size */
+          case OPT_ENUM_opt_level_O1:                /* minimize size */
             cmdOpts->Og = true;
-            cmdOpts->opt_size_time = OPT_opt_size_time_Os;
+            cmdOpts->opt_size_time = OPT_ENUM_opt_size_time_Os;
             cmdOpts->Oy = true;
             cmdOpts->Ob_value = 1;
-            cmdOpts->stack_probes = OPT_stack_probes_Gs;
+            cmdOpts->stack_probes = OPT_ENUM_stack_probes_Gs;
             cmdOpts->Gf = true;
             cmdOpts->GF = true;
             cmdOpts->Gy = true;
             break;
-          case OPT_opt_level_O2:                /* maximize speed */
+          case OPT_ENUM_opt_level_O2:                /* maximize speed */
             cmdOpts->Og = true;
             cmdOpts->Oi = true;
-            cmdOpts->opt_size_time = OPT_opt_size_time_Ot;
+            cmdOpts->opt_size_time = OPT_ENUM_opt_size_time_Ot;
             cmdOpts->Oy = true;
             cmdOpts->Ob_value = 1;
-            cmdOpts->stack_probes = OPT_stack_probes_Gs;
+            cmdOpts->stack_probes = OPT_ENUM_stack_probes_Gs;
             cmdOpts->Gf = true;
             cmdOpts->GF = true;
             cmdOpts->Gy = true;
             break;
-          case OPT_opt_level_Ox:
+          case OPT_ENUM_opt_level_Ox:
             cmdOpts->Ob_value = 1;
             cmdOpts->Og = true;
             cmdOpts->Oi = true;
-            cmdOpts->opt_size_time = OPT_opt_size_time_Ot;
+            cmdOpts->opt_size_time = OPT_ENUM_opt_size_time_Ot;
             cmdOpts->Oy = true;
-            cmdOpts->stack_probes = OPT_stack_probes_Gs;
+            cmdOpts->stack_probes = OPT_ENUM_stack_probes_Gs;
             status->opt_ol_plus = true;
             status->opt_om = true;
             status->opt_on = true;
             status->opt_ox = true;
-          case OPT_opt_level_default:
+          case OPT_ENUM_opt_level_default:
             /* let the compiler use its default */
             break;
           default:
@@ -573,13 +573,13 @@ static void optimization_opts( struct XlatStatus *status,
     }
 
     switch( cmdOpts->opt_size_time ) {
-      case OPT_opt_size_time_Os:
+      case OPT_ENUM_opt_size_time_Os:
         status->opt_os = true;
         break;
-      case OPT_opt_size_time_Ot:
+      case OPT_ENUM_opt_size_time_Ot:
         status->opt_ot = true;
         break;
-      case OPT_opt_size_time_default:
+      case OPT_ENUM_opt_size_time_default:
         break;
       default:
         Zoinks();
@@ -659,17 +659,17 @@ static void linker_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
     }
 
     switch( cmdOpts->debug_info ) {
-      case OPT_debug_info_Zd:
+      case OPT_ENUM_debug_info_Zd:
         AppendCmdLine( linkCmdLine, CL_L_OPTS_SECTION, "/DEBUG" );
         status->debugLevel = 1;
         break;
-      case OPT_debug_info_Z7:
+      case OPT_ENUM_debug_info_Z7:
         /* fall through */
-      case OPT_debug_info_Zi:
+      case OPT_ENUM_debug_info_Zi:
         AppendCmdLine( linkCmdLine, CL_L_OPTS_SECTION, "/DEBUG" );
         status->debugLevel = 2;
         break;
-      case OPT_debug_info_default:
+      case OPT_ENUM_debug_info_default:
         /* do nothing */
         break;
       default:
@@ -804,7 +804,7 @@ static void merge_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
 void HandleFileTranslate( const char *filename, CmdLine *compCmdLine, CmdLine *linkCmdLine )
 /******************************************************************************************/
 {
-    PGROUP2             pg;
+    pgroup2             pg;
     char                fullPath[_MAX_PATH];
     char *              newpath;
 

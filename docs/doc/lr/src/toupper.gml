@@ -33,7 +33,7 @@ function is a version of
 to be used only when
 .arg c
 is known to be lowercase.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The
@@ -44,8 +44,8 @@ returned.
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .id &wfunc.
-function returns the corresponding wide-character uppercase
-letter when the argument is a wide-character lowercase letter;
+function returns the corresponding wide character uppercase
+letter when the argument is a wide character lowercase letter;
 otherwise, the original wide character is returned.
 .do end
 .np
@@ -57,7 +57,7 @@ is not a lowercase letter.
 .return end
 .see begin
 .im seeis
-.seelist strlwr strupr tolower toupper
+.seelist _strlwr _strupr tolower toupper
 .see end
 .exmp begin
 #include <stdio.h>

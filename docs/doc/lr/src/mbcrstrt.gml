@@ -2,11 +2,11 @@
 The restartable multibyte/wide character conversion functions differ
 from the corresponding internal-state multibyte character functions (
 .ct
-.kw mblen
+.reffunc mblen
 .ct ,
-.kw mbtowc
+.reffunc mbtowc
 .ct , and
-.kw wctomb
+.reffunc wctomb
 .ct )
 in that they have an extra argument,
 .arg ps

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,19 +60,113 @@
 #include "dbgupdt.h"
 
 
-extern void             FlipScreen( void );
+#define SWITCH_DEFS \
+    pick( "ON",     SWITCH_ON     ) \
+    pick( "OFf",    SWITCH_OFF    )
 
-static const char ElseifTab[]         = { "ELSEIF\0" };
-static const char ElseTab[]           = { "ELSE\0" };
-static const char GoOptionTab[]       = { "Keep\0Noflip\0Until\0" };
-static const char ThreadOps[]         = { "Show\0Freeze\0Thaw\0Change\0" };
+#define GO_DEFS \
+    pick( "Keep",   GO_KEEP       ) \
+    pick( "Noflip", GO_NOFLIP     ) \
+    pick( "Until",  GO_UNTIL      )
+
+#define THREAD_DEFS \
+    pick( "Show",   THREAD_SHOW   ) \
+    pick( "Freeze", THREAD_FREEZE ) \
+    pick( "Thaw",   THREAD_THAW   ) \
+    pick( "Change", THREAD_CHANGE )
+
 
 enum {
-    KEEP,
-    NOFLIP,
-    UNTIL
+    #define pick(t,e)   e,
+    SWITCH_DEFS
+    #undef pick
 };
 
+enum {
+    #define pick(t,e)   e,
+    GO_DEFS
+    #undef pick
+};
+
+typedef enum thread_cmd {
+    THREAD_BAD = -1,
+    #define pick(t,e)   e,
+    THREAD_DEFS
+    #undef pick
+} thread_cmd;
+
+extern void             FlipScreen( void );
+
+static const char SwitchNameTab[] = {
+    #define pick(t,e)   t "\0"
+    SWITCH_DEFS
+    #undef pick
+};
+
+static const char GoOptionTab[] = {
+    #define pick(t,e)   t "\0"
+    GO_DEFS
+    #undef pick
+};
+
+static const char ThreadOps[] = {
+    #define pick(t,e)   t "\0"
+    THREAD_DEFS
+    #undef pick
+};
+
+static const char AddTab[] = "Add\0";
+
+static const char MainTab[] = "MAin\0";
+
+static const char NogoTab[] = "NOgo\0";
+
+bool ScanCmdAdd( void )
+{
+    return( ScanCmd( AddTab ) == 0 );
+}
+
+char *GetCmdAdd( char *buffer )
+{
+    return( GetCmdEntry( AddTab, 0, buffer ) );
+}
+
+bool ScanCmdMain( void )
+{
+    return( ScanCmd( MainTab ) == 0 );
+}
+
+char *GetCmdMain( char *buffer )
+{
+    return( GetCmdEntry( MainTab, 0, buffer ) );
+}
+
+bool ScanCmdNogo( void )
+{
+    return( ScanCmd( NogoTab ) == 0 );
+}
+
+char *GetCmdNogo( char *buffer )
+{
+    return( GetCmdEntry( NogoTab, 0, buffer ) );
+}
+
+int SwitchOnOffOnly( void )
+{
+    switch( ScanCmd( SwitchNameTab ) ) {
+    case SWITCH_OFF:
+        return( false );
+    case SWITCH_ON:
+        return( true );
+    default:
+        return( -1 );
+    }
+}
+
+void GetSwitchOnly( bool on, char *buffer )
+{
+    GetCmdEntry( SwitchNameTab, on ? SWITCH_ON : SWITCH_OFF, buffer );
+}
 
 void Flip( uint_16 wait )
 {
@@ -94,12 +189,12 @@ void ProcFlip( void )
     wait = 0;
     if( !ScanEOC() ) {
         old = ScanPos();
-        switch( ScanCmd( "ON\0OFf\0" ) ) {
-        case 0:
+        switch( SwitchOnOffOnly() ) {
+        case false:
             ReqEOC();
             _SwitchOn( SW_FLIP );
             return;
-        case 1:
+        case true:
             ReqEOC();
             _SwitchOff( SW_FLIP );
             return;
@@ -121,7 +216,7 @@ void ConfigFlip( void )
     ReqEOC();
     p = StrCopy( GetCmdName( CMD_FLIP ), TxtBuff );
     *p++ = ' ';
-    GetCmdEntry( "ON\0OFf\0", _IsOff( SW_FLIP ), p );
+    GetSwitchOnly( _IsOff( SW_FLIP ), p );
     DUIDlgTxt( TxtBuff );
 }
 
@@ -253,13 +348,13 @@ void ProcGo( void )
     while( CurrToken == T_DIV ) {
         Scan();
         switch( ScanCmd( GoOptionTab ) ) {
-        case KEEP:
+        case GO_KEEP:
             have_keep = true;
             break;
-        case NOFLIP:
+        case GO_NOFLIP:
             doflip = false;
             break;
-        case UNTIL:
+        case GO_UNTIL:
             until = true;
             break;
         default:
@@ -371,11 +466,11 @@ void ProcIf( void )
             true_len   = len;
             have_true  = true;
         }
-        if( ScanCmd( ElseifTab ) < 0 ) {
+        if( ScanCmd( "ELSEIF\0" ) != 0 ) {
             break;
         }
     }
-    ScanCmd( ElseTab ); /* optional else */
+    ScanCmd( "ELSE\0" ); /* optional else */
     if( ScanQuote( &start, &len ) && !have_true ) {
         true_start = start;
         true_len   = len;
@@ -447,7 +542,6 @@ void ProcQuit( void )
 /*
  * ProcThread -- process thread command
  */
-enum thread_cmds { T_BAD, T_SHOW, T_FREEZE, T_THAW, T_CHANGE };
 
 static void FormThdState( thread_state *thd, char *buff, unsigned buff_len )
 {
@@ -516,26 +610,26 @@ dtid_t RemoteSetThread( dtid_t tid )
 }
 
 
-static void ThdCmd( thread_state *thd, enum thread_cmds cmd )
+static void ThdCmd( thread_state *thd, thread_cmd tcmd )
 {
     unsigned    up;
 
     up = UP_THREAD_STATE;
-    switch( cmd ) {
-    case T_SHOW:
+    switch( tcmd ) {
+    case THREAD_SHOW:
         FormThdState( thd, TxtBuff, TXT_LEN );
         DUIDlgTxt( TxtBuff );
         up = UP_NO_CHANGE;
         break;
-    case T_FREEZE:
+    case THREAD_FREEZE:
         if( thd->state == THD_THAW )
             thd->state = THD_FREEZE;
         break;
-    case T_THAW:
+    case THREAD_THAW:
         if( thd->state == THD_FREEZE )
             thd->state = THD_THAW;
         break;
-    case T_CHANGE:
+    case THREAD_CHANGE:
         MakeThdCurr( thd );
         break;
     }
@@ -708,42 +802,41 @@ thread_state   *FindThread( dtid_t tid )
 
 void ProcThread( void )
 {
-    enum thread_cmds    tcmd;
+    thread_cmd          tcmd;
     int                 cmd;
     dtid_t              tid;
     bool                all;
     thread_state        *thd;
     mad_radix           old_radix;
 
-    cmd = -1;
-    tcmd = T_BAD;
+    tcmd = THREAD_BAD;
     if( CurrToken == T_DIV ) {
         Scan();
         cmd = ScanCmd( ThreadOps );
         if( cmd < 0 ) {
             Error( ERR_NONE, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_THREAD ) );
         } else {
-            tcmd = (enum thread_cmds)cmd;
+            tcmd = (thread_cmd)cmd;
         }
     }
     CheckForNewThreads( false );
     if( CurrToken == T_MUL ) {
-        if( cmd < 0 )
-            tcmd = T_SHOW;
+        if( tcmd == THREAD_BAD )
+            tcmd = THREAD_SHOW;
         Scan();
         all = true;
     } else if( ScanEOC() ) {
-        if( cmd < 0 )
-            tcmd = T_SHOW;
-        if( tcmd == T_SHOW ) {
+        if( tcmd == THREAD_BAD )
+            tcmd = THREAD_SHOW;
+        if( tcmd == THREAD_SHOW ) {
             all = true;
         } else {
             tid = DbgRegs->tid;
             all = false;
         }
     } else {
-        if( cmd < 0 )
-            tcmd = T_CHANGE;
+        if( tcmd == THREAD_BAD )
+            tcmd = THREAD_CHANGE;
         old_radix = SetCurrRadix( 16 );
         tid = ReqExpr();
         all = false;
@@ -751,7 +844,7 @@ void ProcThread( void )
     }
     ReqEOC();
     if( all ) {
-        if( tcmd == T_CHANGE )
+        if( tcmd == THREAD_CHANGE )
             Error( ERR_NONE, LIT_ENG( ERR_CANT_SET_ALL_THREADS ) );
         for( thd = HeadThd; thd != NULL; thd = thd->link ) {
             ThdCmd( thd, tcmd );

@@ -1,6 +1,6 @@
 wasmtest_name = result
 
-!include testenv1.mif
+!include testenv.mif
 
 test : .symbolic ./chktest.exe
     set WASMTEST_LOG_FILE=$(log_file)

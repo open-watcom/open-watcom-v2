@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ static trap_shandle     SuppFileInfoId = 0;
 
 bool InitFileInfoSupp( void )
 {
-    SuppFileInfoId = GetSuppId( FILE_INFO_SUPP_NAME );
+    SuppFileInfoId = GETSUPPID( FILE_INFO_SUPP_NAME );
     if( SuppFileInfoId != 0 )
         return( true );
     return( false );

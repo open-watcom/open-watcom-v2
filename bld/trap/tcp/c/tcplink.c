@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,13 +114,6 @@
     #include "options.h"
 #endif
 
-#if defined( __WATCOMC__ )
-#if defined( __NT__ )
-#pragma library("wsock32.lib")
-#elif defined( __WINDOWS__ )
-#pragma library("winsock.lib")
-#endif
-#endif
 
 #if !defined ( __NETWARE__ )
     #define _DBG_THREAD( x )
@@ -158,7 +152,7 @@
     #define IS_RET_OK(x)            (x!=-1)
     #define trp_socket              int
     #define trp_socklen             int
-#else
+#else   /* POSIX */
     #define INVALID_SOCKET          -1
     #define IS_VALID_SOCKET(x)      (x>=0)
     #define IS_RET_OK(x)            (x!=-1)
@@ -331,16 +325,20 @@ trap_retval RemotePut( void *data, trap_elen len )
 
 #ifndef __RDOS__
 
-static void nodelay( void )
+static int get_proto( const char *p )
 {
     struct protoent     *proto;
+
+    proto = getprotobyname( p );
+    return( ( proto != NULL ) ? proto->p_proto : IPPROTO_TCP );
+}
+
+static void nodelay( void )
+{
     int                 delayoff;
-    int                 p;
 
     delayoff = 1;
-    proto = getprotobyname( "tcp" );
-    p = proto ? proto->p_proto : IPPROTO_TCP;
-    setsockopt( data_socket, p, TCP_NODELAY, (void *)&delayoff, sizeof( delayoff ) );
+    setsockopt( data_socket, get_proto( "tcp" ), TCP_NODELAY, (void *)&delayoff, sizeof( delayoff ) );
 }
 
 #endif
@@ -409,13 +407,50 @@ void RemoteDisco( void )
     }
 }
 
+static unsigned short get_port( const char *p )
+{
+    unsigned short port;
+#ifndef __RDOS__
+    struct servent      *sp;
+
+    sp = getservbyname( ( *p == '\0' ) ? "tcplink" : p, "tcp" );
+    if( sp != NULL )
+        return( ntohs( sp->s_port ) );
+#endif
+    port = 0;
+    while( isdigit( *p ) ) {
+        port = port * 10 + ( *p - '0' );
+        ++p;
+    }
+    if( port == 0 )
+        port = DEFAULT_PORT;
+    return( port );
+}
+
+#if !defined( SERVER ) && !defined( __RDOS__ )
+static unsigned_32 get_addr( const char *p )
+{
+    unsigned_32 addr;
+
+    addr = inet_addr( p );
+    if( addr == INADDR_NONE ) {
+        struct hostent  *hp;
+
+        hp = gethostbyname( p );
+        if( hp != NULL ) {
+            addr = 0;
+            memcpy( &addr, hp->h_addr, hp->h_length );
+        } else {
+            addr = INADDR_NONE;
+        }
+    }
+    return( addr );
+}
+#endif
 
 const char *RemoteLink( const char *parms, bool server )
 {
     unsigned short      port;
-#ifndef __RDOS__
-    struct servent      *sp;
-#endif
 
 #ifdef SERVER
   #if !defined( __RDOS__ )
@@ -435,48 +470,26 @@ const char *RemoteLink( const char *parms, bool server )
     }
   #endif
 
-    port = 0;
+    port = get_port( parms );
   #ifdef __RDOS__
-    while( isdigit( *parms ) ) {
-        port = port * 10 + (*parms - '0');
-        ++parms;
-    }
-    if( port == 0 )
-        port = DEFAULT_PORT;
-
     wait_handle = RdosCreateWait( );
     listen_handle = RdosCreateTcpListen( port, 1, SOCKET_BUFFER );
     RdosAddWaitForTcpListen( wait_handle, listen_handle, (int)(&listen_handle) );
   #else
-    if( *parms == '\0' )
-        parms = "tcplink";
-    sp = getservbyname( parms, "tcp" );
-    if( sp != NULL ) {
-        port = sp->s_port;
-    } else {
-        while( isdigit( *parms ) ) {
-            port = port * 10 + (*parms - '0');
-            ++parms;
-        }
-        if( port == 0 )
-            port = DEFAULT_PORT;
-        port = htons( port );
-    }
-
     control_socket = socket(AF_INET, SOCK_STREAM, 0);
     if( !IS_VALID_SOCKET( control_socket ) ) {
         return( TRP_ERR_unable_to_open_stream_socket );
     }
    #ifdef GUISERVER
     if( *ServParms == '\0' ) {
-        sprintf( ServParms, "%u", ntohs( port ) );
+        sprintf( ServParms, "%u", port );
     }
    #endif
 
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
-    socket_address.sin_port = port;
+    socket_address.sin_port = htons( port );
     if( bind( control_socket, (LPSOCKADDR)&socket_address, sizeof( socket_address ) ) ) {
         return( TRP_ERR_unable_to_bind_stream_socket );
     }
@@ -485,7 +498,7 @@ const char *RemoteLink( const char *parms, bool server )
     if( getsockname( control_socket, (LPSOCKADDR)&socket_address, &length ) ) {
         return( TRP_ERR_unable_to_get_socket_name );
     }
-    sprintf( buff, "%s%d", TRP_TCP_socket_number, ntohs( socket_address.sin_port ) );
+    sprintf( buff, "%s%u", TRP_TCP_socket_number, (unsigned)port );
     ServMessage( buff );
     _DBG_NET(("TCP: "));
     _DBG_NET((buff));
@@ -523,7 +536,6 @@ const char *RemoteLink( const char *parms, bool server )
   #ifdef __RDOS__
     // Todo: handle connect
   #else
-    const char  *sock;
     char        buff[128];
     char        *p;
 
@@ -539,53 +551,29 @@ const char *RemoteLink( const char *parms, bool server )
 
     /* get port number out of name */
     p = buff;
-    for( sock = parms; *sock != '\0'; ++sock ) {
-        if( *sock == ':' ) {
-            ++sock;
+    while( *parms != '\0' ) {
+        if( *parms == ':' ) {
+            parms++;
             break;
         }
-        *p++ = *sock;
+        *p++ = *parms++;
     }
     *p = '\0';
-    if( sock[0] == '\0' ) {
-        sp = getservbyname( "tcplink", "tcp" );
-    } else {
-        sp = getservbyname( sock, "tcp" );
+    port = get_port( parms );
+    if( port == 0 ) {
+        return( TRP_ERR_unable_to_parse_port_number );
     }
-    if( sp != NULL ) {
-        port = sp->s_port;
-    } else {
-        port = 0;
-        while( isdigit( *sock ) ) {
-            port = port * 10 + (*sock - '0');
-            ++sock;
-        }
-        if( *sock != '\0' ) {
-            return( TRP_ERR_unable_to_parse_port_number );
-        }
-        if( port == 0 )
-            port = DEFAULT_PORT;
-        port = htons( port );
-    }
-    parms = buff;
     /* Setup for socket connect using parms specified by command line. */
     socket_address.sin_family = AF_INET;
     /* OS/2's TCP/IP gethostbyname doesn't handle numeric addresses */
-    socket_address.sin_addr.s_addr = inet_addr( parms );
-    if( socket_address.sin_addr.s_addr == (unsigned long)-1L ) {
-        struct hostent  *hp;
-
-        hp = gethostbyname( parms );
-        if( hp != 0 ) {
-            memcpy( &socket_address.sin_addr, hp->h_addr, hp->h_length );
-        } else {
-            return( TRP_ERR_unknown_host );
-        }
+    socket_address.sin_addr.s_addr = get_addr( buff );
+    if( socket_address.sin_addr.s_addr == INADDR_NONE ) {
+        return( TRP_ERR_unknown_host );
     }
-    socket_address.sin_port = port;
+    socket_address.sin_port = htons( port );
   #endif
 #endif
-    server = server;
+    /* unused parameters */ (void)server;
     return( NULL );
 }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,8 +51,8 @@ static void InitDBType( void )
     ScopeStruct = DBScope( "struct" );
     ScopeUnion = DBScope( "union" );
     ScopeEnum = DBScope( "enum" );
-    typ = GetType( TYPE_PLAIN_CHAR );
-    if( typ->decl_type == TYPE_UCHAR ) {
+    typ = GetType( TYP_PLAIN_CHAR );
+    if( typ->decl_type == TYP_UCHAR ) {
         typ->u1.debug_type = DBScalar( "char", TY_UINT_1 );
     } else {
         typ->u1.debug_type = DBScalar( "char", TY_INT_1 );
@@ -95,13 +96,13 @@ static void RevTypeList( void )
 static void EmitADBType( TYPEPTR typ )
 {
     switch( typ->decl_type ) {
-    case TYPE_STRUCT:
-    case TYPE_UNION:
-    case TYPE_ENUM:
+    case TYP_STRUCT:
+    case TYP_UNION:
+    case TYP_ENUM:
         if( !CompFlags.dump_types_with_names ) break;
         if( typ->u.tag->name[0] == '\0' ) break;
         goto dump_type;
-    case TYPE_TYPEDEF:
+    case TYP_TYPEDEF:
         if( !CompFlags.dump_types_with_names ) break;
         if( CompFlags.no_debug_type_names ) break;
     dump_type:
@@ -130,38 +131,38 @@ static dbug_type DBIntegralType( DATA_TYPE decl_type )
     dbug_type   ret_val;
 
     switch( decl_type ) {
-    case TYPE_CHAR:
+    case TYP_CHAR:
         ret_val = B_Int_1;
         break;
-    case TYPE_UCHAR:
+    case TYP_UCHAR:
         ret_val = B_UInt_1;
         break;
-    case TYPE_SHORT:
+    case TYP_SHORT:
         ret_val = B_Short;
         break;
-    case TYPE_USHORT:
+    case TYP_USHORT:
         ret_val = B_UShort;
         break;
-    case TYPE_INT:
+    case TYP_INT:
     default:
         ret_val = B_Int;
         break;
-    case TYPE_UINT:
+    case TYP_UINT:
         ret_val = B_UInt;
         break;
-    case TYPE_LONG:
+    case TYP_LONG:
         ret_val = B_Int32;
         break;
-    case TYPE_ULONG:
+    case TYP_ULONG:
         ret_val = B_UInt32;
         break;
-    case TYPE_LONG64:
+    case TYP_LONG64:
         ret_val = B_Int64;
         break;
-    case TYPE_ULONG64:
+    case TYP_ULONG64:
         ret_val = B_UInt64;
         break;
-    case TYPE_BOOL:
+    case TYP_BOOL:
         ret_val = B_Bool;
         break;
     }
@@ -173,7 +174,7 @@ static dbug_type DoBasedPtr( TYPEPTR typ, cg_type cgtype )
     dbug_type       ret_val;
     dbg_loc         dl;
     SYM_HANDLE      sym_handle;
-    auto SYM_ENTRY  sym;
+    SYM_ENTRY       sym;
     bool            have_retval;
 
     have_retval = false;
@@ -217,8 +218,8 @@ dbug_type DBType( TYPEPTR typ )
     TYPEPTR         *parm_types;
     TYPEPTR         parm_type;
     target_size     size;
-    auto SYM_ENTRY  sym;
-    auto struct debug_fwd_types fwd_info, *fip;
+    SYM_ENTRY       sym;
+    struct debug_fwd_types fwd_info, *fip;
     cg_type         cgtype;
 
     if( typ->u1.debug_type == DBG_FWD_TYPE ) {
@@ -238,26 +239,26 @@ dbug_type DBType( TYPEPTR typ )
     /* default is INT */
     ret_val = B_Int;
     switch( typ->decl_type ) {
-    case TYPE_VOID:
+    case TYP_VOID:
         ret_val = DBScalar( "void", TY_DEFAULT );
         break;
-    case TYPE_FLOAT:
+    case TYP_FLOAT:
         ret_val = DBScalar( "float", TY_SINGLE );
         break;
-    case TYPE_DOUBLE:
+    case TYP_DOUBLE:
         ret_val = DBScalar( "double", TY_DOUBLE );
         break;
-    case TYPE_LONG_DOUBLE:
-        ret_val = DBScalar( "long double", TY_DOUBLE );
+    case TYP_LONG_DOUBLE:
+        ret_val = DBScalar( "long double", TY_LONG_DOUBLE );
         break;
-    case TYPE_ARRAY:
+    case TYP_ARRAY:
         size = TypeSize( typ );
         if( size != 0 ) {
             --size;
         }
         ret_val = DBIntArrayCG( CGenType(typ), size, DBType( typ->object ) );
         break;
-    case TYPE_POINTER:
+    case TYP_POINTER:
         cgtype = PtrType( typ->object, typ->u.p.decl_flags );
         if( typ->u.p.decl_flags & FLAG_BASED ) {
             ret_val = DoBasedPtr( typ, cgtype );
@@ -265,9 +266,9 @@ dbug_type DBType( TYPEPTR typ )
             ret_val = DBPtr( cgtype, DBType( typ->object ) );
         }
         break;
-    case TYPE_STRUCT:
-    case TYPE_UNION:
-        fwd_info.scope = (typ->decl_type == TYPE_STRUCT)
+    case TYP_STRUCT:
+    case TYP_UNION:
+        fwd_info.scope = (typ->decl_type == TYP_STRUCT)
                                     ? ScopeStruct : ScopeUnion;
         if( typ->u.tag->name[0] != '\0' ) {
             fwd_info.debug_name = DBBegName( typ->u.tag->name,
@@ -281,12 +282,12 @@ dbug_type DBType( TYPEPTR typ )
         }
         DebugNameList = fwd_info.next;
         break;
-    case TYPE_FUNCTION:
+    case TYP_FUNCTION:
         cgtype = TY_CODE_PTR;
         pr = DBBegProc( cgtype, DBType( typ->object ) );
         if( typ->u.fn.parms != NULL ) {
             for( parm_types = typ->u.fn.parms; (parm_type = *parm_types) != NULL; ++parm_types ) {
-                if( parm_type->decl_type == TYPE_DOT_DOT_DOT ) {
+                if( parm_type->decl_type == TYP_DOT_DOT_DOT ) {
                     break;
                 }
                 DBAddParm( pr, DBType( parm_type ) );
@@ -294,7 +295,7 @@ dbug_type DBType( TYPEPTR typ )
         }
         ret_val = DBEndProc( pr );
         break;
-    case TYPE_TYPEDEF:
+    case TYP_TYPEDEF:
         if( typ->type_flags & TF2_DUMMY_TYPEDEF ) {
             ret_val = DBType( typ->object );
         } else {
@@ -314,7 +315,7 @@ dbug_type DBType( TYPEPTR typ )
             DebugNameList = fwd_info.next;
         }
         break;
-    case TYPE_ENUM:
+    case TYP_ENUM:
         ret_val = DBTypeEnum( typ );
         break;
     default:
@@ -335,20 +336,20 @@ static void DumpFieldList( dbg_struct st, target_size bias,
         field_typ = pfield->field_type;
         if( pfield->name[0] == '\0' ) {
             /* anonymous struct/union -- suck up to this level */
-            while( field_typ->decl_type == TYPE_TYPEDEF ) {
+            while( field_typ->decl_type == TYP_TYPEDEF ) {
                 field_typ = field_typ->object;
             }
             DumpFieldList( st, bias + pfield->offset,
                         field_typ->u.tag->u.field_list, NULL );
-        } else if(( field_typ->decl_type == TYPE_FIELD ) ||
-            ( field_typ->decl_type == TYPE_UFIELD ) ) {
+        } else if(( field_typ->decl_type == TYP_FIELD ) ||
+            ( field_typ->decl_type == TYP_UFIELD ) ) {
             field_typ->u1.debug_type = DBIntegralType(field_typ->u.f.field_type);
             DBAddBitField( st, bias + pfield->offset,
                 field_typ->u.f.field_start,
                 field_typ->u.f.field_width, pfield->name,
                 field_typ->u1.debug_type );
         } else if( field_obj != NULL
-                && field_typ->decl_type == TYPE_ARRAY
+                && field_typ->decl_type == TYP_ARRAY
                 && field_typ->u.array->dimension == 0 ) {
             DBAddField( st, bias + pfield->offset,
                 pfield->name, DBType( field_obj ));
@@ -372,7 +373,7 @@ static dbug_type DBTypeStruct( TYPEPTR typ )
         obj = NULL;
     }
     st = DBBegNameStruct( typ->u.tag->name, CGenType( typ ),
-                                ( typ->decl_type == TYPE_STRUCT ) );
+                                ( typ->decl_type == TYP_STRUCT ) );
     ret_val = DBStructForward( st );
     if( ret_val != DBG_NIL_TYPE ) {
          typ->u1.debug_type = ret_val;
@@ -413,7 +414,7 @@ dbug_type FEDbgRetType( CGSYM_HANDLE cgsym_handle )
     TYPEPTR        typ;
 
     typ = SymGetPtr( sym_handle )->sym_type;
-    if( typ->decl_type == TYPE_FUNCTION ) {
+    if( typ->decl_type == TYP_FUNCTION ) {
         return( DBType( typ->object ) );
     } else {
         return( DBG_NIL_TYPE );

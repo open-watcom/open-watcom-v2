@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,45 +37,48 @@
 #include "guiscale.h"
 #include "guigetx.h"
 
-static bool GetExtent( gui_window *wnd, const char *text, size_t length, gui_coord *coord )
+static bool GetExtent( gui_window *wnd, const char *text, size_t in_length, gui_coord *extent )
 {
-    size_t    my_length;
-    bool      got_new;
+    size_t      length;
+    bool        got_new;
+    WPI_RECTDIM extentx;
+    WPI_RECTDIM extenty;
 
     if( wnd != NULL && text != NULL ) {
         got_new = GUIGetTheDC( wnd );
-        my_length = strlen( text );
-        if( length != (size_t)-1 ) {
-            if( my_length > length ) {
-                my_length = length;
+        length = strlen( text );
+        if( in_length != (size_t)-1 ) {
+            if( length > in_length ) {
+                length = in_length;
             }
         }
-        GUIGetTextExtent( wnd, text, my_length, &coord->x, &coord->y );
+        GUIGetTextExtent( wnd, text, length, &extentx, &extenty );
         if( got_new ) {
             GUIReleaseTheDC( wnd );
         }
-        GUIScreenToScaleR( coord );
+        extent->x = GUIScreenToScaleH( extentx );
+        extent->y = GUIScreenToScaleV( extenty );
         return( true );
     }
     return( false );
 }
 
-gui_ord GUIGetExtentX( gui_window *wnd, const char *text, size_t length )
+gui_ord GUIAPI GUIGetExtentX( gui_window *wnd, const char *text, size_t length )
 {
-    gui_coord coord;
+    gui_coord extent;
 
-    if( GetExtent( wnd, text, length, &coord ) ) {
-        return( coord.x );
+    if( GetExtent( wnd, text, length, &extent ) ) {
+        return( extent.x );
     }
     return( 0 );
 }
 
-gui_ord GUIGetExtentY( gui_window *wnd, const char *text )
+gui_ord GUIAPI GUIGetExtentY( gui_window *wnd, const char *text )
 {
-    gui_coord coord;
+    gui_coord extent;
 
-    if( GetExtent( wnd, text, (size_t)-1, &coord ) ) {
-        return( coord.y );
+    if( GetExtent( wnd, text, (size_t)-1, &extent ) ) {
+        return( extent.y );
     }
     return( 0 );
 }
@@ -91,19 +95,21 @@ static bool GetControlInfo( gui_window *wnd, gui_ctl_id id, HWND *hwnd, WPI_PRES
     return( false );
 }
 
-static bool GetControlExtent( gui_window *wnd, gui_ctl_id id, const char *text, size_t length, gui_coord *coord )
+static bool GetControlExtent( gui_window *wnd, gui_ctl_id id, const char *text, size_t in_length, gui_coord *extent )
 {
-    int         my_length;
+    size_t      length;
     WPI_PRES    dc;
     WPI_FONT    old;
     WPI_FONT    first;
     HWND        hwnd;
+    WPI_RECTDIM extentx;
+    WPI_RECTDIM extenty;
 
     if( text != NULL && GetControlInfo( wnd, id, &hwnd, &dc ) ) {
-        my_length = strlen( text );
-        if( length != (size_t)-1 ) {
-            if( my_length > length ) {
-                my_length = length;
+        length = strlen( text );
+        if( in_length != (size_t)-1 ) {
+            if( length > in_length ) {
+                length = in_length;
             }
         }
         if( wnd->font != NULL ) {
@@ -111,33 +117,34 @@ static bool GetControlExtent( gui_window *wnd, gui_ctl_id id, const char *text, 
         } else {
             old = NULLHANDLE;
         }
-        _wpi_gettextextent( dc, text, my_length, &coord->x, &coord->y );
+        _wpi_gettextextent( dc, text, length, &extentx, &extenty );
         if( old != NULL ) {
             first = _wpi_selectfont( dc, old );
         }
         _wpi_releasepres( hwnd, dc );
-        GUIScreenToScaleR( coord );
+        extent->x = GUIScreenToScaleH( extentx );
+        extent->y = GUIScreenToScaleV( extenty );
         return( true );
     }
     return( false );
 }
 
-gui_ord GUIGetControlExtentX( gui_window *wnd, gui_ctl_id id, const char *text, size_t length )
+gui_ord GUIAPI GUIGetControlExtentX( gui_window *wnd, gui_ctl_id id, const char *text, size_t length )
 {
-    gui_coord   coord;
+    gui_coord   extent;
 
-    if( GetControlExtent( wnd, id, text, length, &coord ) ) {
-        return( coord.x );
+    if( GetControlExtent( wnd, id, text, length, &extent ) ) {
+        return( extent.x );
     }
     return( 0 );
 }
 
-gui_ord GUIGetControlExtentY( gui_window *wnd, gui_ctl_id id, const char *text )
+gui_ord GUIAPI GUIGetControlExtentY( gui_window *wnd, gui_ctl_id id, const char *text )
 {
-    gui_coord coord;
+    gui_coord extent;
 
-    if( GetControlExtent( wnd, id, text, (size_t)-1, &coord ) ) {
-        return( coord.y );
+    if( GetControlExtent( wnd, id, text, (size_t)-1, &extent ) ) {
+        return( extent.y );
     }
     return( 0 );
 }

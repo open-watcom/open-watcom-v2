@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,13 @@
 #include "variety.h"
 #include <string.h>
 #include <fcntl.h>
+#include <dos.h>
 #include "seterrno.h"
+#include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
+
 
 #ifdef _M_I86
     #define INIT_VALUE
@@ -66,8 +72,9 @@ extern unsigned __dos_create_sfn( const char *name, unsigned attrib, int *handle
         _MOV_AH DOS_CREAT   \
         _INT_21             \
         _RST_DS             \
-        RETURN_VALUE        \
-        "call __doserror_"  \
+        "jc short L1"       \
+        SAVE_VALUE          \
+    "L1: call __doserror_"  \
     AUX_INFO
 
 extern unsigned __dos_create_new_sfn( const char *name, unsigned attrib, int *handle );
@@ -77,51 +84,26 @@ extern unsigned __dos_create_new_sfn( const char *name, unsigned attrib, int *ha
         _MOV_AH DOS_CREATE_NEW \
         _INT_21             \
         _RST_DS             \
-        RETURN_VALUE        \
-        "call __doserror_"  \
+        "jc short L1"       \
+        SAVE_VALUE          \
+    "L1: call __doserror_"  \
     AUX_INFO
-
-#ifdef __WATCOM_LFN__
-static tiny_ret_t _dos_create_ex_lfn( const char *path, unsigned attrib, unsigned style )
-/***************************************************************************************/
-{
-  #ifdef _M_I86
-    return( __dos_create_ex_lfn( path, O_WRONLY, attrib, style ) );
-  #else
-    call_struct     dpmi_rm;
-
-    strcpy( RM_TB_PARM1_LINEAR, path );
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.esi = RM_TB_PARM1_OFFS;
-    dpmi_rm.edx = style;
-    dpmi_rm.ecx = attrib;
-    dpmi_rm.ebx = O_WRONLY;
-    dpmi_rm.eax = 0x716C;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( dpmi_rm.ax );
-  #endif
-}
-#endif
 
 _WCRTLINK unsigned _dos_creat( const char *path, unsigned attrib, int *handle )
 /*****************************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    if( _RWD_uselfn ) {
+        lfn_ret_t  rc;
 
-    if( _RWD_uselfn && TINY_OK( rc = _dos_create_ex_lfn( path, attrib, EX_LFN_CREATE ) ) ) {
-        *handle = TINY_INFO( rc );
-        return( 0 );
-    }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+        rc = _dos_create_open_ex_lfn( path, O_WRONLY, attrib, EX_LFN_CREATE );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            *handle = LFN_INFO( rc );
+            return( 0 );
+        }
     }
 #endif
     return( __dos_create_sfn( path, attrib, handle ) );
@@ -131,14 +113,17 @@ _WCRTLINK unsigned _dos_creatnew( const char *path, unsigned attrib, int *handle
 /********************************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    if( _RWD_uselfn ) {
+        lfn_ret_t  rc;
 
-    if( _RWD_uselfn && TINY_OK( rc = _dos_create_ex_lfn( path, attrib, EX_LFN_CREATE_NEW ) ) ) {
-        *handle = TINY_INFO( rc );
-        return( 0 );
-    }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+        rc = _dos_create_open_ex_lfn( path, O_WRONLY, attrib, EX_LFN_CREATE_NEW );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            *handle = LFN_INFO( rc );
+            return( 0 );
+        }
     }
 #endif
     return( __dos_create_new_sfn( path, attrib, handle ) );

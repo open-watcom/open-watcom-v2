@@ -14,17 +14,16 @@ test_flags_386 = -zp4-ms
 test_flags_i86 = -zp2-ml
 test_flags_axp = -zp8
 
-!include testenv1.mif
+!include testenv.mif
 
 stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-test : .symbolic start clean start_test test.lnk psfistt.$(exe) common_set_result
-    @%make clean
+exes = psfistt.$(exe)
 
-start_test : .symbolic
-    @%make common_start_test
+test : .symbolic start test.lnk $(exes)
+    $(noecho)%make common_set_result
 
 clean : .procedure
     @%make echo_clean

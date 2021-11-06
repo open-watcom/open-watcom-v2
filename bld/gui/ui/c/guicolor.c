@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include "guicolor.h"
 #include "guiwnclr.h"
 #include "guixdlg.h"
+#include "guidraw.h"
 #include <string.h>
 
 static gui_colour_set IBMDialColours[] = {
@@ -58,22 +60,22 @@ static gui_colour_set Normal = { NORMAL_FORE, NORMAL_BACK };
                                           DialColours[attr].back )
 
 static ATTR Colours[GUI_NUM_COLOURS] = {
-    C_BLACK,            /* GUI_BLACK          */
-    C_BLUE,             /* GUI_BLUE           */
-    C_GREEN,            /* GUI_GREEN          */
-    C_CYAN,             /* GUI_CYAN           */
-    C_RED,              /* GUI_RED            */
-    C_MAGENTA,          /* GUI_MAGENTA        */
-    C_BROWN,            /* GUI_BROWN          */
-    C_WHITE,            /* GUI_WHITE          */
-    C_BLACK   | BRIGHT, /* GUI_GREY           */
-    C_BLUE    | BRIGHT, /* GUI_BRIGHT_BLUE    */
-    C_GREEN   | BRIGHT, /* GUI_BRIGHT_GREEN   */
-    C_CYAN    | BRIGHT, /* GUI_BRIGHT_CYAN    */
-    C_RED     | BRIGHT, /* GUI_BRIGHT_RED     */
-    C_MAGENTA | BRIGHT, /* GUI_BRIGHT_MAGENTA */
-    C_BROWN   | BRIGHT, /* GUI_BRIGHT_YELLOW  */
-    C_WHITE   | BRIGHT  /* GUI_BRIGHT_WHITE   */
+    C_BLACK,            /* GUI_BLACK      */
+    C_BLUE,             /* GUI_BLUE       */
+    C_GREEN,            /* GUI_GREEN      */
+    C_CYAN,             /* GUI_CYAN       */
+    C_RED,              /* GUI_RED        */
+    C_MAGENTA,          /* GUI_MAGENTA    */
+    C_BROWN,            /* GUI_BROWN      */
+    C_WHITE,            /* GUI_WHITE      */
+    C_BLACK   | BRIGHT, /* GUI_GREY       */
+    C_BLUE    | BRIGHT, /* GUI_BR_BLUE    */
+    C_GREEN   | BRIGHT, /* GUI_BR_GREEN   */
+    C_CYAN    | BRIGHT, /* GUI_BR_CYAN    */
+    C_RED     | BRIGHT, /* GUI_BR_RED     */
+    C_MAGENTA | BRIGHT, /* GUI_BR_MAGENTA */
+    C_BROWN   | BRIGHT, /* GUI_BR_YELLOW  */
+    C_WHITE   | BRIGHT  /* GUI_BR_WHITE   */
 };
 
 static ATTR MakeAttr( gui_colour fore, gui_colour back )
@@ -84,6 +86,17 @@ static ATTR MakeAttr( gui_colour fore, gui_colour back )
     attr &= 0x7f;
     return( attr );
 }
+
+#if !defined( ISQL_COLOURS )
+static ATTR mnu_attr_menu = 0;
+static ATTR mnu_attr_active = 0;
+static ATTR mnu_attr_inactive = 0;
+static ATTR mnu_attr_curr_inactive = 0;
+static ATTR mnu_attr_hot = 0;
+static ATTR mnu_attr_hot_quiet = 0;
+static ATTR mnu_attr_curr_active = 0;
+static ATTR mnu_attr_hot_curr = 0;
+#endif
 
 /*
  * GUIXSetColours -- record the colours wanted
@@ -105,14 +118,14 @@ bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
         }
         if( wnd->vbarmenu != NULL ) {
 #if !defined( ISQL_COLOURS )
-            UIData->attrs[ATTR_MENU]            = WNDATTR( wnd, GUI_MENU_FRAME );
-            UIData->attrs[ATTR_ACTIVE]          = WNDATTR( wnd, GUI_MENU_PLAIN );
-            UIData->attrs[ATTR_INACTIVE]        = WNDATTR( wnd, GUI_MENU_GRAYED );
-            UIData->attrs[ATTR_CURR_INACTIVE]   = WNDATTR( wnd, GUI_MENU_GRAYED_ACTIVE );
-            UIData->attrs[ATTR_HOT]             = WNDATTR( wnd, GUI_MENU_STANDOUT );
-            UIData->attrs[ATTR_HOT_QUIET]       = WNDATTR( wnd, GUI_MENU_STANDOUT );
-            UIData->attrs[ATTR_CURR_ACTIVE]     = WNDATTR( wnd, GUI_MENU_ACTIVE );
-            UIData->attrs[ATTR_HOT_CURR]        = WNDATTR( wnd, GUI_MENU_ACTIVE_STANDOUT );
+            mnu_attr_menu           = uisetattr( ATTR_MENU,          WNDATTR( wnd, GUI_MENU_FRAME ) );
+            mnu_attr_active         = uisetattr( ATTR_ACTIVE,        WNDATTR( wnd, GUI_MENU_PLAIN ) );
+            mnu_attr_inactive       = uisetattr( ATTR_INACTIVE,      WNDATTR( wnd, GUI_MENU_GRAYED ) );
+            mnu_attr_curr_inactive  = uisetattr( ATTR_CURR_INACTIVE, WNDATTR( wnd, GUI_MENU_GRAYED_ACTIVE ) );
+            mnu_attr_hot            = uisetattr( ATTR_HOT,           WNDATTR( wnd, GUI_MENU_STANDOUT ) );
+            mnu_attr_hot_quiet      = uisetattr( ATTR_HOT_QUIET,     WNDATTR( wnd, GUI_MENU_STANDOUT ) );
+            mnu_attr_curr_active    = uisetattr( ATTR_CURR_ACTIVE,   WNDATTR( wnd, GUI_MENU_ACTIVE ) );
+            mnu_attr_hot_curr       = uisetattr( ATTR_HOT_CURR,      WNDATTR( wnd, GUI_MENU_ACTIVE_STANDOUT ) );
 #endif
             uimenutitlebar();
         }
@@ -136,7 +149,7 @@ ATTR GUIMakeColour( gui_colour fore, gui_colour back )
     return( MakeAttr( fore, back )  );
 }
 
-void GUISetWindowColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
+void GUIAPI GUISetWindowColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
 {
     gui_control *control;
 
@@ -145,10 +158,22 @@ void GUISetWindowColours( gui_window *wnd, int num_attrs, gui_colour_set *colour
     for( control = wnd->controls; control != NULL; control = control->sibling ) {
         GUIRefreshControl( control->parent, control->id );
     }
-    GUIWholeWndDirty( wnd );
+    GUIDirtyWhole( wnd );
 }
 
 static bool ColoursSet = false;
+
+static ATTR dlg_attr_normal = 0;
+#if !defined( ISQL_COLOURS )
+static ATTR dlg_attr_dial_frame = 0;
+static ATTR dlg_attr_shadow = 0;
+static ATTR dlg_attr_scroll_icon = 0;
+static ATTR dlg_attr_scroll_bar = 0;
+static ATTR dlg_attr_hotspot = 0;
+static ATTR dlg_attr_default_hotspot = 0;
+static ATTR dlg_attr_curr_hotspot = 0;
+static ATTR dlg_attr_curr_hotspot_key = 0;
+#endif
 
 bool GUISetDialColours( void )
 {
@@ -156,41 +181,52 @@ bool GUISetDialColours( void )
         return( false );
     }
     ColoursSet = true;
-    UIData->attrs[ATTR_NORMAL]           = MAKEDLGATTR( GUI_DLG_NORMAL );
+    dlg_attr_normal             = uisetattr( ATTR_NORMAL,           MAKEDLGATTR( GUI_DLG_NORMAL ) );
 #if !defined( ISQL_COLOURS )
-    UIData->attrs[ATTR_DIAL_FRAME]       = MAKEDLGATTR( GUI_DLG_FRAME );
-    UIData->attrs[ATTR_SHADOW]           = MAKEDLGATTR( GUI_DLG_SHADOW );
-    UIData->attrs[ATTR_SCROLL_ICON]      = MAKEDLGATTR( GUI_DLG_SCROLL_ICON );
-    UIData->attrs[ATTR_SCROLL_BAR]       = MAKEDLGATTR( GUI_DLG_SCROLL_BAR );
-    UIData->attrs[ATTR_HOTSPOT]          = MAKEDLGATTR( GUI_DLG_BUTTON_PLAIN );
-    UIData->attrs[ATTR_DEFAULT_HOTSPOT]  = MAKEDLGATTR( GUI_DLG_BUTTON_STANDOUT );
-    UIData->attrs[ATTR_CURR_HOTSPOT]     = MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE );
-    UIData->attrs[ATTR_CURR_HOTSPOT_KEY] = MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE_STANDOUT );
+    dlg_attr_dial_frame         = uisetattr( ATTR_DIAL_FRAME,       MAKEDLGATTR( GUI_DLG_FRAME ) );
+    dlg_attr_shadow             = uisetattr( ATTR_SHADOW,           MAKEDLGATTR( GUI_DLG_SHADOW ) );
+    dlg_attr_scroll_icon        = uisetattr( ATTR_SCROLL_ICON,      MAKEDLGATTR( GUI_DLG_SCROLL_ICON ) );
+    dlg_attr_scroll_bar         = uisetattr( ATTR_SCROLL_BAR,       MAKEDLGATTR( GUI_DLG_SCROLL_BAR ) );
+    dlg_attr_hotspot            = uisetattr( ATTR_HOTSPOT,          MAKEDLGATTR( GUI_DLG_BUTTON_PLAIN ) );
+    dlg_attr_default_hotspot    = uisetattr( ATTR_DEFAULT_HOTSPOT,  MAKEDLGATTR( GUI_DLG_BUTTON_STANDOUT ) );
+    dlg_attr_curr_hotspot       = uisetattr( ATTR_CURR_HOTSPOT,     MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE ) );
+    dlg_attr_curr_hotspot_key   = uisetattr( ATTR_CURR_HOTSPOT_KEY, MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE_STANDOUT ) );
 #endif
-    SliderChar[0] = GUIGetCharacter( GUI_DIAL_SCROLL_SLIDER );
-    UpPoint[0] = GUIGetCharacter( GUI_DIAL_UP_SCROLL_ARROW );
-    DownPoint[0] =  GUIGetCharacter( GUI_DIAL_DOWN_SCROLL_ARROW );
+    SliderChar[0] = DRAWC1( DIAL_SCROLL_SLIDER );
+    UpPoint[0]    = DRAWC1( DIAL_UP_SCROLL_ARROW );
+    DownPoint[0]  = DRAWC1( DIAL_DOWN_SCROLL_ARROW );
     return( true );
 }
 
 void GUIResetDialColours( void )
 {
-    UIData->attrs[ATTR_NORMAL] = MakeAttr( Normal.fore, Normal.back );
+//    UIData->attrs[ATTR_NORMAL] = MakeAttr( Normal.fore, Normal.back );
+    uisetattr( ATTR_NORMAL,             dlg_attr_normal );
+#if !defined( ISQL_COLOURS )
+    uisetattr( ATTR_DIAL_FRAME,         dlg_attr_dial_frame );
+    uisetattr( ATTR_SHADOW,             dlg_attr_shadow );
+    uisetattr( ATTR_SCROLL_ICON,        dlg_attr_scroll_icon );
+    uisetattr( ATTR_SCROLL_BAR,         dlg_attr_scroll_bar );
+    uisetattr( ATTR_HOTSPOT,            dlg_attr_hotspot );
+    uisetattr( ATTR_DEFAULT_HOTSPOT,    dlg_attr_default_hotspot );
+    uisetattr( ATTR_CURR_HOTSPOT,       dlg_attr_curr_hotspot );
+    uisetattr( ATTR_CURR_HOTSPOT_KEY,   dlg_attr_curr_hotspot_key );
+#endif
     ColoursSet = false;
 }
 
-void GUISetBackgroundColour( gui_colour_set *colour )
+void GUIAPI GUISetBackgroundColour( gui_colour_set *colour )
 {
     Normal.back = colour->back;
     Normal.fore = colour->fore;
 }
 
-void GUIGetDialogColours( gui_colour_set *colours )
+void GUIAPI GUIGetDialogColours( gui_colour_set *colours )
 {
     memcpy( colours, DialColours, GUI_DLG_NUM_ATTRS * sizeof( gui_colour_set ) );
 }
 
-void GUISetDialogColours( gui_colour_set *colours )
+void GUIAPI GUISetDialogColours( gui_colour_set *colours )
 {
     memcpy( DialColours, colours, GUI_DLG_NUM_ATTRS * sizeof( gui_colour_set ) );
     GUIResetDialColours();
@@ -218,21 +254,21 @@ void GUIXGetWindowColours( gui_window *wnd, gui_colour_set *colours )
     }
 }
 
-bool GUISetRGB( gui_colour colour, gui_rgb rgb )
+bool GUIAPI GUISetRGB( gui_colour colour, gui_rgb rgb )
 {
     /* unused parameters */ (void)colour; (void)rgb;
 
     return( false );
 }
 
-bool GUIGetRGB( gui_colour colour, gui_rgb *rgb )
+bool GUIAPI GUIGetRGB( gui_colour colour, gui_rgb *rgb )
 {
     /* unused parameters */ (void)colour; (void)rgb;
 
     return( false );
 }
 
-bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
+bool GUIAPI GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
         return( false );
@@ -245,7 +281,7 @@ bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
     return( false );
 }
 
-bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
+bool GUIAPI GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
         return( false );
@@ -257,7 +293,7 @@ bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
     return( false );
 }
 
-bool GUIGetRGBFromUser( gui_rgb rgb, gui_rgb *new_rgb )
+bool GUIAPI GUIGetRGBFromUser( gui_rgb rgb, gui_rgb *new_rgb )
 {
     /* unused parameters */ (void)rgb; (void)new_rgb;
 

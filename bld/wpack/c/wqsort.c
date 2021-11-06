@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -262,7 +263,7 @@ void wpack_qsort( const void *_base, size_t n, size_t size, int (*compar)(const 
     size_t r, s;
     unsigned int sp;
     const char *base_stack[MAXDEPTH];
-    auto unsigned int n_stack[MAXDEPTH];
+    unsigned int n_stack[MAXDEPTH];
     qcomp *cmp = (qcomp *)compar;
     const char *base = _base;
 

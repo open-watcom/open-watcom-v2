@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,34 +45,32 @@
 
 #define WIKI_TRANS_LEN          50
 
-#define MAX_TABS                100     // up to 100 tab stops
-
 static int          Curr_head_level = 0;
 static int          Curr_head_skip = 0;
 
 static char         *Font_match[] = {
-    "",                     // 0: PLAIN
-    "<b>",                  // 1: BOLD
-    "<i>",                  // 2: ITALIC
-    "<b><i>",               // 3: BOLD + ITALIC
-    "<u>",                  // 4: UNDERLINE
-    "<b><u>",               // 5: BOLD + UNDERLINE
-    "<i><u>",               // 6: ITALIC + UNDERLINE
-    "<i><u><b>",            // 7: ITALIC + BOLD + UNDERLINE
+    "",             // 0: PLAIN
+    "<b>",          // 1: BOLD
+    "<i>",          // 2: ITALIC
+    "<b><i>",       // 3: BOLD + ITALIC
+    "<u>",          // 4: UNDERLINE
+    "<b><u>",       // 5: BOLD + UNDERLINE
+    "<i><u>",       // 6: ITALIC + UNDERLINE
+    "<i><u><b>",    // 7: ITALIC + BOLD + UNDERLINE
 };
 
 static char         *Font_end[] = {
-    "",                     // 0: PLAIN
-    "</b>",                 // 1: BOLD
-    "</i>",                 // 2: ITALIC
-    "</i></b>",             // 3: BOLD + ITALIC
-    "</u>",                 // 4: UNDERLINE
-    "</u></b>",             // 5: BOLD + UNDERLINE
-    "</u></i>",             // 6: ITALIC + UNDERLINE
-    "</b></u></i>",         // 7: ITALIC + BOLD + UNDERLINE
+    "",             // 0: PLAIN
+    "</b>",         // 1: BOLD
+    "</i>",         // 2: ITALIC
+    "</i></b>",     // 3: BOLD + ITALIC
+    "</u>",         // 4: UNDERLINE
+    "</u></b>",     // 5: BOLD + UNDERLINE
+    "</u></i>",     // 6: ITALIC + UNDERLINE
+    "</b></u></i>", // 7: ITALIC + BOLD + UNDERLINE
 };
 
-static int          Font_list[100];      // up to 100 nested fonts
+static int          Font_list[100];         // up to 100 nested fonts
 static int          Font_list_curr = 0;
 
 static bool         Blank_line_pfx = false;
@@ -80,13 +79,10 @@ static bool         Blank_line_sfx = true;
 static char         *Trans_str = NULL;
 static size_t       Trans_len = 0;
 
-static unsigned     Tab_list[MAX_TABS];
-static int          tabs_num = 0;
-
 static void draw_line( section_def *section )
 /*******************************************/
 {
-    trans_add_str( "----\n", section );
+    trans_add_str_nl( "----", section );
 }
 
 static size_t translate_char_wiki( char ch, char next_ch, char *buf )
@@ -130,7 +126,7 @@ static char *translate_str_wiki( const char *str )
     char            *ptr;
 
     len = 1;
-    for( t_str = str; *t_str != '\0'; ++t_str ) {
+    for( t_str = str; *t_str != '\0'; t_str++ ) {
         len += translate_char_wiki( t_str[0], t_str[1], buf );
     }
     if( len > Trans_len ) {
@@ -141,7 +137,7 @@ static char *translate_str_wiki( const char *str )
         Trans_len = len;
     }
     ptr = Trans_str;
-    for( t_str = str; *t_str != '\0'; ++t_str ) {
+    for( t_str = str; *t_str != '\0'; t_str++ ) {
         len = translate_char_wiki( t_str[0], t_str[1], buf );
         strcpy( ptr, buf );
         ptr += len;
@@ -163,67 +159,24 @@ static size_t trans_add_char_wiki( char ch, char next_ch, section_def *section )
 static size_t trans_add_str_wiki( const char *str, section_def *section )
 /***********************************************************************/
 {
-    size_t          len;
-    const char      *ptr;
+    size_t      len;
 
     len = 0;
-    for( ptr = str; *ptr != '\0'; ++ptr ) {
-        len += trans_add_char_wiki( ptr[0], ptr[1], section );
+    for( ; *str != '\0'; str++ ) {
+        len += trans_add_char_wiki( str[0], str[1], section );
     }
     return( len );
 }
 
-static size_t trans_add_list( char *list, section_def *section, char *ptr )
-/*************************************************************************/
+static tab_size tab_align( tab_size ch_len, section_def *section )
+/****************************************************************/
 {
-    size_t          len;
-
-    len = trans_add_str( list, section );
-    ++ptr;
-#if 0
-    if( *ptr == 'c' ) {
-        len += trans_add_str( " compact", section );
-    }
-    len += trans_add_str( ">\n", section );
-#endif
-    return( len );
-}
-
-static void read_tabs( char *tab_line )
-/*************************************/
-{
-    char        *ptr;
-    unsigned    tabcol;
-
-    Tab_xmp_char = *tab_line;
-    tabs_num = 0;
-    tabcol = 0;
-    for( ptr = strtok( tab_line + 1, " " ); ptr != NULL; ptr = strtok( NULL, " " ) ) {
-        if( *ptr == '+' ) {
-            tabcol += atoi( ptr + 1 );
-        } else {
-            tabcol = atoi( ptr );
-        }
-        Tab_list[tabs_num++] = tabcol;
-    }
-}
-
-static size_t tab_align( size_t ch_len, section_def *section )
-/************************************************************/
-{
-    int         i;
-    size_t      len;
-    size_t      j;
+    tab_size    i;
+    tab_size    len;
 
     // find the tab we should use
-    len = 1;
-    for( i = 0; i < tabs_num; i++ ) {
-        if( Tab_list[i] > ch_len ) {
-            len = Tab_list[i] - ch_len;
-            break;
-        }
-    }
-    for( j = len; j > 0; j-- ) {
+    len = Tabs_align( ch_len );
+    for( i = len; i > 0; i-- ) {
         trans_add_str_wiki( WIKI_SPACE, section );
     }
     return( len );
@@ -258,13 +211,15 @@ void wiki_trans_line( char *line_buf, section_def *section )
 
     switch( ch ) {
     case WHP_TABXMP:
-        if( *skip_blanks( ptr + 1 ) == '\0' ) {
+        ptr = skip_blanks( ptr + 1 );
+        if( *ptr == '\0' ) {
             Tab_xmp = false;
-            trans_add_str( "</pre>\n", section );
+            trans_add_str_nl( "</pre>", section );
             Blank_line_sfx = false;     // remove following blanks
         } else {
-            read_tabs( ptr + 1 );
-            trans_add_str( "<pre>\n", section );
+            Tab_xmp_char = *ptr++;
+            Tabs_read( ptr );
+            trans_add_str_nl( "<pre>", section );
             Tab_xmp = true;
             Blank_line_pfx = false;     // remove preceding blanks
         }
@@ -282,36 +237,51 @@ void wiki_trans_line( char *line_buf, section_def *section )
         Blank_line_sfx = false;
         return;
     case WHP_OLIST_START:
-        trans_add_list( "# ", section, ptr );
-        Blank_line_pfx = false;
-        return;
     case WHP_LIST_START:
-        trans_add_list( "* ", section, ptr );
-        Blank_line_pfx = false;
-        return;
     case WHP_DLIST_START:
-        trans_add_str( "; ", section );
-        Blank_line_pfx = false;
-        return;
     case WHP_SLIST_START:
-        trans_add_list( "* ", section, ptr );
+        NewList( ptr, 0, false );
+        switch( ch ) {
+        case WHP_OLIST_START:
+            trans_add_str( "# ", section );
+            break;
+        case WHP_LIST_START:
+            trans_add_str( "* ", section );
+            break;
+        case WHP_DLIST_START:
+            trans_add_str( "; ", section );
+            break;
+        case WHP_SLIST_START:
+            trans_add_str( "* ", section );
+            break;
+        }
         Blank_line_pfx = false;
-        return;
-    case WHP_SLIST_END:
-        trans_add_str( "\n", section );
-        Blank_line_sfx = false;
+        if( ch == WHP_DLIST_START ) {
+            if( ptr[1] == WHP_LIST_COMPACT )
+                ptr++;
+            ptr = skip_blanks( ptr + 1 );
+            if( *ptr != '\0' ) {
+                /* due to a weakness in GML, the definition term must be
+                   allowed on the same line as the definition tag. So
+                   if its there, continue */
+                break;
+            }
+        }
         return;
     case WHP_OLIST_END:
-        trans_add_str( "\n", section );
-        Blank_line_sfx = false;
-        return;
     case WHP_LIST_END:
-        trans_add_str( "\n", section );
-        Blank_line_sfx = false;
-        return;
     case WHP_DLIST_END:
-        trans_add_str( "\n", section );
+    case WHP_SLIST_END:
+        switch( ch ) {
+        case WHP_OLIST_END:
+        case WHP_LIST_END:
+        case WHP_SLIST_END:
+        case WHP_DLIST_END:
+            trans_add_str_nl( "", section );
+            break;
+        }
         Blank_line_sfx = false;
+        PopList();
         return;
     case WHP_LIST_ITEM:
     case WHP_DLIST_TERM:
@@ -346,7 +316,7 @@ void wiki_trans_line( char *line_buf, section_def *section )
        put out the blank line */
 
     if( Blank_line_pfx || Blank_line_sfx ) {
-        line_len += trans_add_str( "\n", section );
+        line_len += trans_add_str_nl( "", section );
         Blank_line_pfx = false;
     }
     Blank_line_sfx = true;
@@ -359,10 +329,19 @@ void wiki_trans_line( char *line_buf, section_def *section )
        But, this rule only applies if a blank line immediately
        follows the tag, so its reset here regardless */
 #if 0
-   if( *ptr != WHP_LIST_ITEM && *ptr != WHP_DLIST_TERM && *ptr != WHP_DLIST_DESC && !Tab_xmp ) {
-        /* a .br in front of li and dt would generate extra spaces */
-        if( !done_blank ) {
-           line_len += trans_add_str( "<P>", section );
+    if( !Tab_xmp ) {
+        ch = *ptr;
+        switch( ch ) {
+        case WHP_LIST_ITEM:
+        case WHP_DLIST_TERM:
+        case WHP_DLIST_DESC:
+            break;
+        default:
+            /* a .br in front of li and dt would generate extra spaces */
+            if( !done_blank ) {
+                line_len += trans_add_str( "<P>", section );
+            }
+            break;
         }
     }
 #endif
@@ -377,115 +356,113 @@ void wiki_trans_line( char *line_buf, section_def *section )
             }
             trans_add_char( '\n', section );
             break;
-        } else if( ch == WHP_HLINK || ch == WHP_DFN ) {
+        }
+        switch( ch ) {
+        case WHP_FLINK:
+            ptr++;
+            file_name = ptr;
+            ptr = strchr( file_name, WHP_FLINK );
+            if( ptr == NULL ) {
+                error( ERR_BAD_LINK_DFN );
+            }
+            *ptr = '\0';
+            /* fall through */
+        case WHP_HLINK:
+        case WHP_DFN:
             Curr_ctx->empty = false;
             /* there are no popups in IPF, so treat them as links */
-            ctx_name = ptr + 1;
-            ptr = strchr( ptr + 1, ch );
+            ptr++;
+            ctx_name = ptr;
+            ptr = strchr( ctx_name, ch );
             if( ptr == NULL ) {
                 error( ERR_BAD_LINK_DFN );
             }
-            *ptr = '\0';
-            ctx_text = ptr + 1;
-            ptr = strchr( ctx_text + 1, ch );
+            *ptr++ = '\0';
+            ctx_text = ptr;
+            ptr = strchr( ctx_text, ch );
             if( ptr == NULL ) {
                 error( ERR_BAD_LINK_DFN );
             }
-            *ptr = '\0';
-            add_link( ctx_name );
+            *ptr++ = '\0';
+            if( ch != WHP_FLINK ) {
+                add_link( ctx_name );
+            }
             sprintf( buf, "<A HREF=\"#%s\">", ctx_name );
             line_len += trans_add_str( buf, section );
             line_len += trans_add_str_wiki( ctx_text, section );
             ch_len += strlen( ctx_text );
             line_len += trans_add_str( "</A>", section );
-            ++ptr;
-        } else if( ch == WHP_FLINK ) {
-            Curr_ctx->empty = false;
-            file_name = strchr( ptr + 1, ch );
-            if( file_name == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            ctx_name = strchr( file_name + 1, ch );
-            if( ctx_name == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            ctx_text = strchr( ctx_name + 1, ch );
-            if( ctx_text == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            *ctx_text = '\0';
-            ctx_text = ctx_name + 1;
-            *ctx_name = '\0';
-            ctx_name = file_name + 1;
-            *file_name = '\0';
-            file_name = ptr + 1;
-            sprintf( buf, "<A HREF=\"#%s\">", ctx_name );
-            line_len += trans_add_str( buf, section );
-            line_len += trans_add_str_wiki( ctx_text, section );
-            ch_len += strlen( ctx_text );
-            line_len += trans_add_str( "</A>", section );
-            ptr = ctx_text + strlen( ctx_text ) + 1;
-        } else if( ch == WHP_LIST_ITEM ) {
+            break;
+        case WHP_LIST_ITEM:
             /* list item */
+            Curr_list->number++;
             line_len += trans_add_str( "*", section );
             ptr = skip_blanks( ptr + 1 );
-        } else if( ch == WHP_DLIST_DESC ) {
+            break;
+        case WHP_DLIST_DESC:
+            Curr_list->number++;
             trans_add_str( ":", section );
             ptr = skip_blanks( ptr + 1 );
-        } else if( ch == WHP_DLIST_TERM ) {
+            break;
+        case WHP_DLIST_TERM:
             /* definition list term */
             line_len += trans_add_str( ";", section );
             term_fix = true;
             ptr = skip_blanks( ptr + 1 );
             Blank_line_sfx = false;
-        } else if( ch == WHP_CTX_KW ) {
-            end = strchr( ptr + 1, WHP_CTX_KW );
-            memcpy( buf, ptr + 1, end - ptr - 1 );
-            buf[end - ptr - 1] = '\0';
+            break;
+        case WHP_CTX_KW:
+            ptr++;
+            end = strchr( ptr, WHP_CTX_KW );
+            len = end - ptr;
+            memcpy( buf, ptr, len );
+            buf[len] = '\0';
             add_ctx_keyword( Curr_ctx, buf );
             ptr = end + 1;
             if( *ptr == ' ' ) {
                 /* kludge fix cuz of GML: GML thinks that keywords
                    are real words, so it puts a space after them.
                    This should fix that */
-                ++ptr;
+                ptr++;
             }
-        } else if( ch == WHP_PAR_RESET ) {
+            break;
+        case WHP_PAR_RESET:
             /* this can be ignored for IPF */
-            ++ptr;
-        } else if( ch == WHP_BMP ) {
+            ptr++;
+            break;
+        case WHP_BMP:
             Curr_ctx->empty = false;
-            ++ptr;
+            ptr++;
             ch = *ptr;
-            ptr += 2;
-            end = strchr( ptr, WHP_BMP );
-            *end = '\0';
+            file_name = ptr + 2;
+            ptr = strchr( file_name, WHP_BMP );
+            *ptr++ = '\0';
             // convert filenames to lower case
-            strlwr( ptr );
+            strlwr( file_name );
             switch( ch ) {
             case 'i':
-                sprintf( buf, "<IMG SRC=\"%s\">", ptr );
+                sprintf( buf, "<IMG SRC=\"%s\">", file_name );
                 break;
             case 'l':
-                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=TOP>", ptr );
+                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=TOP>", file_name );
                 break;
             case 'r':
-                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=BOTTOM>", ptr );
+                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=BOTTOM>", file_name );
                 break;
             case 'c':
-                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=MIDDLE>", ptr );
+                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=MIDDLE>", file_name );
                 break;
             default:
                 *buf = '\0';
                 break;
             }
             line_len += trans_add_str( buf, section );
-            ptr = end + 1;
-        } else if( ch == WHP_FONTSTYLE_START ) {
-            ++ptr;
+            break;
+        case WHP_FONTSTYLE_START:
+            ptr++;
             end = strchr( ptr, WHP_FONTSTYLE_START );
             font_idx = 0;
-            for( ; ptr != end; ++ptr ) {
+            for( ; ptr != end; ptr++ ) {
                 switch( *ptr ) {
                 case 'b':
                     font_idx |= FONT_STYLE_BOLD;
@@ -501,29 +478,29 @@ void wiki_trans_line( char *line_buf, section_def *section )
             }
             line_len += trans_add_str( Font_match[font_idx], section );
             Font_list[Font_list_curr] = font_idx;
-            ++Font_list_curr;
-            ++ptr;
-        } else if( ch == WHP_FONTSTYLE_END ) {
-            --Font_list_curr;
+            Font_list_curr++;
+            ptr++;
+            break;
+        case WHP_FONTSTYLE_END:
+            Font_list_curr--;
             line_len += trans_add_str( Font_end[Font_list[Font_list_curr]], section );
-            ++ptr;
-        } else if( ch == WHP_FONTTYPE ) {
-            ++ptr;
+            ptr++;
+            break;
+        case WHP_FONTTYPE:
+            ptr++;
             end = strchr( ptr, WHP_FONTTYPE );
-            *end = '\0';
-
+            *end++ = '\0';
             if( stricmp( ptr, Fonttype_courier ) == 0 ) {
-               strcpy( buf, "<tt>" );
+                strcpy( buf, "<tt>" );
             } else {
-               /* default system font */
-               strcpy( buf, "</tt>" );
+                /* default system font */
+                strcpy( buf, "</tt>" );
             }
-            ptr = end + 1;
-            end = strchr( ptr, WHP_FONTTYPE );
+            ptr = strchr( end, WHP_FONTTYPE ) + 1;
             line_len += trans_add_str( buf, section );
-            ptr = end + 1;
-        } else {
-            ++ptr;
+            break;
+        default:
+            ptr++;
             Curr_ctx->empty = false;
             if( Tab_xmp && ch == Tab_xmp_char ) {
                 len = tab_align( ch_len, section );
@@ -537,13 +514,14 @@ void wiki_trans_line( char *line_buf, section_def *section )
                 trans_add_char( '\n', section );
                 if( *ptr == ' ' ) {
                     line_len += trans_add_str( WIKI_SPACE, section );
-                    ++ch_len;
+                    ch_len++;
                     ptr++;
                 }
             } else {
                 line_len += trans_add_char_wiki( ch, *ptr, section );
-                ++ch_len;
+                ch_len++;
             }
+            break;
         }
     }
 }
@@ -583,12 +561,12 @@ static void output_ctx_hdr( ctx_def *ctx )
 
     whp_fprintf( Out_file, "\n" );
 
-    for( i = 0; i < head_level; ++i )
+    for( i = 0; i < head_level; i++ )
         whp_fprintf( Out_file, "=" );
 
     whp_fprintf( Out_file, "%s", translate_str_wiki( ctx->title ) );
 
-    for( i = 0; i < head_level; ++i )
+    for( i = 0; i < head_level; i++ )
         whp_fprintf( Out_file, "=" );
 
     whp_fprintf( Out_file, "\n" );
@@ -604,7 +582,7 @@ static void output_ctx_sections( ctx_def *ctx )
 
     for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
-            whp_fwrite( section->section_text, 1, section->section_size, Out_file );
+            whp_fwrite( Out_file, section->section_text, 1, section->section_size );
         }
     }
 }

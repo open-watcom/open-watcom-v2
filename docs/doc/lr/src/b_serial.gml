@@ -12,7 +12,7 @@ The
 function uses INT 0x14 to provide serial communications
 services to the serial port specified by
 .arg serial_port
-.ct .li .
+.period
 0 represents COM1, 1 represents COM2, etc.
 The values for service are:
 .begterm 12
@@ -21,7 +21,7 @@ The values for service are:
 .term _COM_INIT
 Initializes the serial port to the parameters specified in
 .arg data
-.ct .li .
+.period
 .term _COM_SEND
 Transmits the low-order byte of
 .arg data
@@ -39,8 +39,8 @@ for the
 service can be built using the appropriate combination of the
 following values:
 .begnote $compact $setptnt 21
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note _COM_110
 110 baud
 .note _COM_150
@@ -82,8 +82,8 @@ The
 function returns a 16-bit value with the high-order byte
 containing status information defined as follows:
 .begnote $compact $setptnt 12
-.termhd1 Bit
-.termhd2 Meaning
+.notehd1 Bit
+.notehd2 Meaning
 .note bit 15 (0x8000)
 Timed out
 .note bit 14 (0x4000)
@@ -124,8 +124,8 @@ When
 .arg service
 is _COM_INIT or _COM_STATUS the low-order bits are defined as follows:
 .begnote $compact $setptnt 12
-.termhd1 Bit
-.termhd2 Meaning
+.notehd1 Bit
+.notehd2 Meaning
 .note bit 0 (0x01)
 Clear to send (CTS) changed
 .note bit 1 (0x02)

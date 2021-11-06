@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,7 +124,7 @@ static void logError(char *s)
 
 void reportError(WicErrors err, ...)
 {
-    va_list arglist;
+    va_list args;
     static char errStr[MAX_TOKEN_SIZE];
     static char resStr[MAX_RESOURCE_SIZE];
     int errStrLen;
@@ -182,17 +182,16 @@ void reportError(WicErrors err, ...)
         printf("Internal error inside ReportError, can't get resource, exiting...\n");
         exit(1);
     }
-    va_start( arglist, err );
-    errStrLen += vsprintf(errStr+errStrLen, resStr, arglist);
-    va_end(arglist);
-    if (g_currPos == NULL || displayThisError)
-    {
-        wicPrintMessage(errStr);
+    va_start( args, err );
+    errStrLen += vsprintf( errStr + errStrLen, resStr, args );
+    va_end( args );
+    if( g_currPos == NULL || displayThisError ) {
+        wicPrintMessage( errStr );
     } else {
         g_numErrNotDisp++;
     }
 
-    if (errType == FATAL) {
+    if( errType == FATAL ) {
         wicExit(1);
     }
 
@@ -463,19 +462,19 @@ void zapDebug()
 void debugOut(char *format, ...)
 {
 #ifndef NDEBUG
-    va_list arglist;
+    va_list args;
 
-    va_start(arglist, format);
-    if (_debugFile == NULL) {
+    va_start( args, format );
+    if( _debugFile == NULL ) {
         _debugFile = stderr;
     }
-    if (vfprintf(_debugFile, format, arglist) < 0) {
-        perror("Unable to write to debug file");
+    if( vfprintf( _debugFile, format, args ) < 0 ) {
+        perror( "Unable to write to debug file" );
     }
-    va_end(arglist);
-    fflush(_debugFile);
+    va_end( args );
+    fflush( _debugFile );
 #else
-    format = format;
+    (void)format;
 #endif
 }
 

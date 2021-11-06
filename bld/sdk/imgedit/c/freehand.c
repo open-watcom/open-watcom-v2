@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +33,13 @@
 
 #include "imgedit.h"
 
-static WPI_PRES presWindow = NULL;
-static WPI_PRES xorMempres = NULL;
-static HDC      xorMemdc;
-static WPI_PRES andMempres = NULL;
-static HDC      andMemdc;
-static HBITMAP  oldXor;
-static HBITMAP  oldAnd;
+static WPI_PRES     presWindow = NULL;
+static WPI_PRES     xorMempres = NULL;
+static HDC          xorMemdc;
+static WPI_PRES     andMempres = NULL;
+static HDC          andMemdc;
+static WPI_HBITMAP  oldxor_hbitmap;
+static WPI_HBITMAP  oldand_hbitmap;
 
 /*
  * BeginFreeHand - creates the device contexts for drawing
@@ -63,8 +63,8 @@ void BeginFreeHand( HWND hwnd )
     _wpi_torgbmode( xorMempres );
     _wpi_torgbmode( andMempres );
     _wpi_torgbmode( presWindow );
-    oldXor = _wpi_selectbitmap( xorMempres, node->hxorbitmap );
-    oldAnd = _wpi_selectbitmap( andMempres, node->handbitmap );
+    oldxor_hbitmap = _wpi_selectbitmap( xorMempres, node->xor_hbitmap );
+    oldand_hbitmap = _wpi_selectbitmap( andMempres, node->and_hbitmap );
 
 } /* BeginFreeHand */
 
@@ -120,8 +120,8 @@ void EndFreeHand( HWND hwnd )
     node = SelectImage( hwnd );
 
     _wpi_releasepres( node->viewhwnd, presWindow );
-    _wpi_getoldbitmap( xorMempres, oldXor );
-    _wpi_getoldbitmap( andMempres, oldAnd );
+    _wpi_getoldbitmap( xorMempres, oldxor_hbitmap );
+    _wpi_getoldbitmap( andMempres, oldand_hbitmap );
     _wpi_deletecompatiblepres( xorMempres, xorMemdc );
     _wpi_deletecompatiblepres( andMempres, andMemdc );
     presWindow = (WPI_PRES)NULL;

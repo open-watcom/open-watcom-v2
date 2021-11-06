@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,7 +100,7 @@ void AsmStmt( void )
     TOKEN           skip_token;
     ppctl_t         old_ppctl;
 
-    old_ppctl = Pre_processing;
+    old_ppctl = PPControl;
     // indicate that we are inside an __asm statement so scanner will
     // allow tokens unique to the assembler. e.g. 21h
     PPCTL_ENABLE_ASM();
@@ -130,7 +131,7 @@ void AsmStmt( void )
         GetAsmLine();           // grab single assembler instruction
         skip_token = T_NULL;
     }
-    Pre_processing = old_ppctl;
+    PPControl = old_ppctl;
     AsmSysMakeInlineAsmFunc( too_many_bytes );
     AsmSysFini();
     if( CurToken == skip_token ) {

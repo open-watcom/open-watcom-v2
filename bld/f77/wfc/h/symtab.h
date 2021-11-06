@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,11 @@
 
 
 extern void    STInit( void );
-extern sym_id  SymLookup( char *name, uint length );
+extern sym_id  SymLookup( const char *name, size_t length );
 extern sym_id  LkSym( void );
 extern sym_id  LkProgram( void );
 extern sym_id  LkBlkData( void );
-extern sym_id  SymFind( char *name, uint length );
+extern sym_id  SymFind( const char *name, size_t length );
 extern sym_id  LkBCommon( void );
 extern sym_id  LkCommon( void );
 extern sym_id  LkField( sym_id sd );

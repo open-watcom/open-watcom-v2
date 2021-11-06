@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,7 +135,7 @@ const char *procPath( const char *fullpath )
  * returns: pointer to a static buffer
  */
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *p;
 
     if( fullpath == NULL ) {
@@ -573,11 +573,7 @@ void UnDefMacro( const char *name )
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
 
     if( *macro == ENVVAR_C ) {
-        ENV_TRACKER     *env;
-
-        env = MallocSafe( sizeof( ENV_TRACKER ) + strlen( macro ) + 1 );
-        FmtStr( env->value, "%s=", macro + 1 );
-        PutEnvSafe( env );
+        SetEnvSafe( macro + 1, NULL );
         return;
     }
 
@@ -723,7 +719,7 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
         }
 
         if( IsMacroName( p ) ) {
-            p2 =  WrnGetMacroValue( p );
+            p2 = WrnGetMacroValue( p );
             FreeSafe( p );
             return( p2 );
         }
@@ -738,7 +734,7 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
         if( !Glob.compat_nmake && !Glob.compat_posix ) {
             p = deMacroText( depth + 1, end1, MAC_CLOSE );
             if( IsMacroName( p ) ) {
-                p2 =  WrnGetMacroValue( p );
+                p2 = WrnGetMacroValue( p );
                 FreeSafe( p );
                 return( p2 );
             }
@@ -1265,7 +1261,6 @@ void DefMacro( const char *name )
     char        *temp;
     char        *EnvVarValue;   /* used for env. variables (full demacro) */
     char        *EnvOldValue;
-    ENV_TRACKER *env;
 #ifdef CLEAN_ENVIRONMENT_VAR
     ELIST       *tempEList;
 #endif
@@ -1280,7 +1275,7 @@ void DefMacro( const char *name )
     EnvVarValue = NULL;
     EnvOldValue = NULL;
     if( *name != ENVVAR_C ) {
-        unused_value = addMacro( name, value);
+        unused_value = addMacro( name, value );
         if( Glob.compat_nmake ) {
             EnvOldValue = GetEnvExt( name );
         }
@@ -1291,12 +1286,7 @@ void DefMacro( const char *name )
         EnvVarValue = DeMacro( TOK_EOL );
         PreGetCHR();  // eat EOL token (used to avoid assertion failure)
         if( *name == ENVVAR_C ) {
-            /* remember strlen( name ) is one byte larger than we want
-             * because *name == ENVVAR_C, and we'll ignore that byte
-             */
-            env = MallocSafe( sizeof( ENV_TRACKER ) + strlen( name ) + strlen( EnvVarValue ) + 1 );
-            FmtStr( env->value, "%s=%s", name + 1, EnvVarValue );
-            PutEnvSafe( env );
+            SetEnvSafe( name + 1, EnvVarValue );
         } else {
             if( !DoingBuiltIn ) {
 #ifdef CLEAN_ENVIRONMENT_VAR
@@ -1306,9 +1296,7 @@ void DefMacro( const char *name )
                 tempEList->envOldVal  = StrDupSafe( EnvOldValue );
                 OldEnvValues = tempEList;
 #endif
-                env = MallocSafe( sizeof( ENV_TRACKER ) + strlen( name ) + 1 + strlen( EnvVarValue ) + 1 );
-                FmtStr( env->value, "%s=%s", name, EnvVarValue );
-                PutEnvSafe( env );
+                SetEnvSafe( name, EnvVarValue );
             }
         }
     }
@@ -1351,16 +1339,21 @@ void PrintMacros( void )
 STATIC void restoreEnvironment( void )
 /************************************/
 {
-    ELIST   *p;
-    VECSTR  EnvString;
+    ELIST       *p;
+    ENV_TRACKER *env;
+    size_t      len;
 
     while( (p = OldEnvValues) != NULL ) {
         OldEnvValues = p->next;
-        EnvString = StartVec();
-        WriteVec( EnvString, p->envVarName );
-        WriteVec( EnvString, "=" );
-        WriteVec( EnvString, p->envOldVal );
-        PutEnvExt( FinishVec( EnvString ) );
+        len = strlen( p->envVarName );
+        env = MallocSafe( sizeof( ENV_TRACKER ) + len + strlen( p->envOldVal ) + 1 );
+        strcpy( env->name, p->envVarName );
+#if defined( _MSC_VER )
+        env->name[len] = '=';
+#endif
+        env->value = env->name + len + 1;
+        strcpy( env->value, p->envOldVal );
+        SetEnvExt( env );
         FreeSafe( p->envVarName );
         FreeSafe( p->envOldVal );
         FreeSafe( p );

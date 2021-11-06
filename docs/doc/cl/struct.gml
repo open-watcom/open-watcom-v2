@@ -156,7 +156,7 @@ struct tokendef * tokenptr;
 .keep break
 .pc
 (
-..ct .mono tokenptr
+.ct .mono tokenptr
 is a pointer to a
 .mono tokendef
 structure), then,
@@ -177,8 +177,8 @@ the
 .ix 'operator' '->'
 .us arrow
 operator (
-..ct .mono ->
-..ct ) is used:
+.ct .mono ->
+.ct ) is used:
 .keep break
 .millust tokenptr->length
 is equivalent to,
@@ -202,7 +202,7 @@ The members of
 .mono X
 are referenced as
 .mono X.a
-..ct ,
+.ct ,
 .mono X.b
 and
 .mono X.c
@@ -225,15 +225,13 @@ and an unnamed area at the end of the structure.
 .*
 ..if '&target' eq 'PC' or '&target' eq 'PC 370' ..th ..do begin
 .shade begin
-The &wcboth. compilers provide a command-line switch
-and a
+The &wcboth. compilers provide a command-line switch and a
 .kwpp #pragma
 to control the alignment of members of structures.
 See the &userguide. for details.
 .pp
 In addition, the
-.kwix &kwipckd_sp.
-.kwfont &kwipacked.
+.kw &kwipacked.
 keyword is provided, and if specified before the
 .kw struct
 keyword, will force the structure to be packed (no alignment, no gaps)
@@ -297,14 +295,13 @@ can be confusing and should be avoided.
 .pp
 A member of a structure can be declared as a
 .us bit-field
-..ct ,
-provided the type of the member is
+.ct , provided the type of the member is
 .kw int
-..ct ,
+.ct ,
 .kw unsigned int
 or
 .kw signed int
-..ct ..li .
+.period
 .*
 .************************************************************************
 .*
@@ -312,9 +309,9 @@ or
 .shade begin
 In addition, the &wcboth. compilers allow the types
 .kw char
-..ct ,
+.ct ,
 .kw unsigned char
-..ct ,
+.ct ,
 .kw short int
 and
 .kw unsigned short int
@@ -325,9 +322,9 @@ to be bit-fields.
 .* .shade begin
 .* In addition, the &wcall. compilers allow the types
 .* .kw char
-.* ..ct ,
+.* .ct ,
 .* .kw unsigned char
-.* ..ct ,
+.* .ct ,
 .* .kw short int
 .* and
 .* .kw unsigned short int
@@ -494,8 +491,7 @@ integer with
 .mono length.
 Since the type is
 .kw signed int
-..ct ,
-the range of values for this bit-field is &MINUS.8 through 7,
+.ct , the range of values for this bit-field is &MINUS.8 through 7,
 .note
 .mono flag
 is a 1-bit field,
@@ -506,7 +502,7 @@ is a 1-bit field,
 .shade begin
 Since the type is
 .kw int
-..ct , the &wcboth. compilers will treat the bit
+.ct , the &wcboth. compilers will treat the bit
 as a sign bit, and the set of values for the
 bit-field is &MINUS.1 and 0.
 .shade end
@@ -515,7 +511,7 @@ bit-field is &MINUS.1 and 0.
 .shade begin
 Although the type is
 .kw int
-..ct , the &wlooc. compiler will not treat the bit
+.ct , the &wlooc. compiler will not treat the bit
 as a sign bit, and the set of values for the
 bit-field is 0 and 1.
 .shade end

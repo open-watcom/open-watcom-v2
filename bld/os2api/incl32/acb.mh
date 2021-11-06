@@ -27,7 +27,7 @@
 #define TRACK_ACTIVATE 0
 #define TRACK_DEACTIVATE 1
 
-#pragma pack(1)
+:include pshpack1.sp
 
 typedef struct _ACB_CDDA {
     ULONG ulACBLen;
@@ -35,9 +35,10 @@ typedef struct _ACB_CDDA {
     CHAR  bCDDrive;
 } ACB_CDDA, FAR *PACB_CDDA;
 
-#pragma pack()
+:include poppack.sp
 
-#pragma pack(4)
+
+:include pshpack4.sp
 
 typedef struct _ACB {
     ULONG ulACBLen;
@@ -106,6 +107,6 @@ typedef struct _ACB_CODECSH {
     ULONG   ulControlLength;
 } ACB_CODECSH, FAR *PACB_CODECSH;
 
-#pragma pack()
+:include poppack.sp
 
 :include cplusepi.sp

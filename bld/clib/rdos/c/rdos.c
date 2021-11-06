@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +38,11 @@
 
 #define FALSE 0
 
-struct TRdosPrintfCallback
+typedef struct TRdosPrintfCallback
 {
     TRdosCallback *outproc;
     void          *param;
-};
+} TRdosPrintfCallback;
 
 typedef struct RdosPtr48
 {
@@ -206,16 +206,16 @@ int RdosReadDir( int Handle, int EntryNr, int MaxNameSize, char *PathName, long 
 
 int RdosReadResource( int handle, int ID, char *Buf, int Size )
 {
-    unsigned short int *RcPtr = 0;
+    unsigned short *RcPtr = 0;
     int RcSize;
     int ok;
     int i;
     int len = 0;
-    unsigned short int *src;
+    unsigned short *src;
     char *dst;
     unsigned int unicode;
-    unsigned short int low;
-    unsigned short int high;
+    unsigned short low;
+    unsigned short high;
 
     if( handle == 0 ) {
         __asm {
@@ -562,19 +562,19 @@ int RdosAttachDebugger( int pid )
 static slib_callback_t mem_putc;
 static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    struct TRdosPrintfCallback  *callback = SLIB2CLIB( struct TRdosPrintfCallback, specs->_dest );
+    TRdosPrintfCallback  *callback = GET_SPEC_DEST( TRdosPrintfCallback, specs );
 
     specs->_output_count++;
     callback->outproc( callback->param, op_char );
 };
 
-_WCRTLINK int RdosPrintf( TRdosCallback *outproc, void *param, const char *format, va_list arg )
+_WCRTLINK int RdosPrintf( TRdosCallback *outproc, void *param, const char *format, va_list args )
 {
-    struct TRdosPrintfCallback callback;
+    TRdosPrintfCallback callback;
 
     callback.outproc = outproc;
     callback.param = param;
 
 
-    return( __prtf( (void *)&callback, format, arg, mem_putc ) );
+    return( __prtf( &callback, format, args, mem_putc ) );
 }

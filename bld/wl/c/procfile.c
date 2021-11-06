@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -609,6 +609,7 @@ char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
     if( !IsORL( list, *loc ) ) {
         if( IsOMF( list, *loc ) ) {
             ObjFormat |= FMT_OMF;
+            _LnkFree( name );
             name = GetOMFName( list, loc );
             if( list->flags & STAT_AR_LIB ) {
                 *loc = ar_loc;          /* Restore the location. */
@@ -658,7 +659,7 @@ static bool ResolveVFExtdefs( void )
 
     resolved = false;
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        if( IS_SYM_VF_REF(sym) ) {
+        if( IS_SYM_VF_REF( sym ) ) {
             resolved |= CheckVFList( sym );
         }
     }
@@ -673,10 +674,12 @@ void ResolveUndefined( void )
     bool        keepgoing;
 
     LnkMsg( INF+MSG_SEARCHING_LIBS, NULL );
+#ifdef _EXE
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         LinkState |= LS_CAN_REMOVE_SEGMENTS;
         DistribInitMods();
     }
+#endif
     CurrSect = Root;
     ResolveVFExtdefs();
     do {
@@ -690,9 +693,9 @@ void ResolveUndefined( void )
         }
         for( sym = HeadSym; sym != NULL; sym = sym->link ) {
             if( ( (sym->info & SYM_DEFINED) == 0 && !IS_SYM_WEAK_REF( sym )
-                 || (FmtData.type & MK_NOVELL) && IS_SYM_IMPORTED( sym )
-                    && (sym->info & (SYM_REFERENCED | SYM_LOCAL_REF)) )
-                && (sym->info & SYM_IS_ALTDEF) == 0 ) {
+                || (FmtData.type & MK_NOVELL) && IS_SYM_IMPORTED( sym )
+                  && (sym->info & (SYM_REFERENCED | SYM_LOCAL_REF)) )
+              && (sym->info & SYM_IS_ALTDEF) == 0 ) {
                 LibFind( sym->name.u.ptr, (sym->info & SYM_CHECKED) != 0 );
             }
             sym->info |= SYM_CHECKED;
@@ -712,7 +715,7 @@ void ProcLocalImports( void )
 
     if( FmtData.type & MK_PE ) {
         for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-            if( (sym->info & SYM_DEFINED) == 0 && !IS_SYM_WEAK_REF(sym) && (sym->info & SYM_IS_ALTDEF) == 0 ) {
+            if( (sym->info & SYM_DEFINED) == 0 && !IS_SYM_WEAK_REF( sym ) && (sym->info & SYM_IS_ALTDEF) == 0 ) {
                 ImportPELocalSym( sym );
             }
         }

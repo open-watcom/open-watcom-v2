@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +37,13 @@
 #include "scan.h"
 #include "escchars.h"
 #include "memmgr.h"
-#include "dbg.h"
 #include "name.h"
 #include "context.h"
 #include "unicode.h"
+#include "cscanbuf.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
 
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
@@ -50,20 +54,10 @@
     #error SYS_EOF_CHAR is not set for this system
 #endif
 
-#ifndef NDEBUG
-#define _BufferOverrun (*((uint_32*)(&Buffer[sizeof(Buffer)-sizeof(uint_32)])))
-#define BUFFER_OVERRUN_CHECK    (0x35791113)
-#endif
+#define prt_char( x )           if( CompFlags.cpp_output ) { PrtChar( x ); }
 
-static void             nextMacroToken( void );
-static token_source_fn  *tokenSource;
-
-static const char       *ReScanPtr;
-
-ExtraRptCtr( nextTokenCalls );
-ExtraRptCtr( nextTokenSavedId );
-ExtraRptCtr( nextTokenNormal );
-ExtraRptCtr( lookPastRewrite );
+#define diagnose_lex_error( e ) \
+        (!(e) && ( SkipLevel == NestLevel ) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0 )
 
 typedef enum {
     #define pick(e,p) e,
@@ -71,6 +65,15 @@ typedef enum {
     #undef pick
     SCAN_MAX
 } scan_class;
+
+ExtraRptCtr( nextTokenCalls );
+ExtraRptCtr( nextTokenSavedId );
+ExtraRptCtr( nextTokenNormal );
+ExtraRptCtr( lookPastRewrite );
+
+static token_source_fn  *tokenSource;
+
+static const char       *ReScanPtr;
 
 static uint_8 ClassTable[LCHR_MAX];
 
@@ -93,28 +96,25 @@ static uint_8 InitClassTable[] = {
     '{',        SCAN_DELIM1,
     '}',        SCAN_DELIM1,
     '~',        SCAN_DELIM1,
-    '.',        SCAN_FLOAT,
-    '#',        SCAN_DELIM12,           // #    ##
-    '=',        SCAN_DELIM1EQ,          // = ==
-    '^',        SCAN_DELIM1EQ,          // ^ ^=
-    '!',        SCAN_DELIM1EQ,          // ! !=
-    '%',        SCAN_PERCENT,           // % %= %> %: %:%:
-    '*',        SCAN_DELIM1EQ,          // * *=
-    '&',        SCAN_DELIM12EQ,         // & &= &&
-    '|',        SCAN_DELIM12EQ,         // | |= ||
-    '+',        SCAN_DELIM12EQ,         // + += ++
-    '<',        SCAN_LT,                // < <= << <<= <% <:
-    '>',        SCAN_DELIM12EQ2EQ,      // > >= >> >>=
-    '-',        SCAN_MINUS,             // - -= -- -> ->*
+    '.',        SCAN_DOT,
+    '#',        SCAN_DELIM2,            // #    ##
+    '=',        SCAN_DELIM2,            // = ==
+    '^',        SCAN_DELIM2,            // ^ ^=
+    '!',        SCAN_DELIM2,            // ! !=
+    '%',        SCAN_DELIM2,            // % %= %> %: %:%:
+    '*',        SCAN_DELIM2,            // * *=
+    '&',        SCAN_DELIM2,            // & &= &&
+    '|',        SCAN_DELIM2,            // | |= ||
+    '+',        SCAN_DELIM2,            // + += ++
+    '<',        SCAN_DELIM2,            // < <= << <<= <% <:
+    '>',        SCAN_DELIM2,            // > >= >> >>=
+    '-',        SCAN_DELIM2,            // - -= -- -> ->*
     '/',        SCAN_SLASH,             // / /=    // /**/
-    ':',        SCAN_COLON,             // :    :: :>
+    ':',        SCAN_DELIM2,            // :    :: :>
     '_',        SCAN_NAME,
     'L',        SCAN_WIDE,
     '\0',       0
 };
-
-// #undef static
-// #define static
 
 #if TARGET_INT == 2
 static unsigned_64 intMax   = I64Val( 0x00000000, 0x00007fff );
@@ -123,11 +123,6 @@ static unsigned_64 uintMax  = I64Val( 0x00000000, 0x0000ffff );
 static unsigned_64 intMax   = I64Val( 0x00000000, 0x7fffffff );
 static unsigned_64 uintMax  = I64Val( 0x00000000, 0xffffffff );
 #endif
-
-#define prt_char( x )           if( CompFlags.cpp_output ) { PrtChar( x ); }
-
-#define diagnose_lex_error( e ) \
-        (!(e) && ( SkipLevel == NestLevel ) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0 )
 
 void ReScanInit( const char *ptr )
 /********************************/
@@ -144,13 +139,14 @@ static int rescanBuffer( void )
     return( CurrChar );
 }
 
-bool ReScanToken( void )
-/**********************/
+TOKEN ReScanToken( void )
+/***********************/
 {
     int saved_currchar;
     int (*saved_nextchar)(void);
     LINE_NO saved_line;
     COLUMN_NO saved_column;
+    TOKEN token;
 
     saved_line = TokenLine;
     saved_column = TokenColumn;
@@ -159,13 +155,13 @@ bool ReScanToken( void )
     CompFlags.rescan_buffer_done = false;
     NextChar = rescanBuffer;
     NextChar();
-    CurToken = ScanToken( true );
+    token = ScanToken( true );
     --ReScanPtr;
     CurrChar = saved_currchar;
     NextChar = saved_nextchar;
     TokenLine = saved_line;
     TokenColumn = saved_column;
-    return( CompFlags.rescan_buffer_done );
+    return( token );
 }
 
 token_source_fn *SetTokenSource( token_source_fn *source )
@@ -184,45 +180,7 @@ void ResetTokenSource( token_source_fn *source )
     tokenSource = source;
 }
 
-TOKEN NextToken( void )
-/*********************/
-{
-#ifdef XTRA_RPT
-    ExtraRptIncrementCtr( nextTokenCalls );
-    if( tokenSource == nextMacroToken ) {
-        ExtraRptIncrementCtr( nextTokenNormal );
-    }
-#endif
-    if( CurToken == T_SAVED_ID ) {
-        ExtraRptIncrementCtr( nextTokenSavedId );
-        CurToken = LAToken;
-        return( CurToken );
-    }
-    (*tokenSource)();
-#ifndef NDEBUG
-    CtxScanToken();
-    DumpToken();
-#endif
-    return( CurToken );
-}
-
-static int saveNextChar( void )
-{
-    int c;
-
-    c = NextChar();
-    if( TokenLen < BUF_SIZE - 2 ) {
-        Buffer[TokenLen++] = c;
-    } else if( TokenLen == BUF_SIZE - 2 ) {
-        if( NestLevel == SkipLevel ) {
-            CErr1( ERR_TOKEN_TRUNCATED );
-        }
-        ++TokenLen;
-    }
-    return( c );
-}
-
-static bool scanHex( bool expanding )
+static bool doScanHex( bool expanding )
 {
     int c;
     struct {
@@ -232,20 +190,16 @@ static bool scanHex( bool expanding )
 
     flag.too_big = false;
     flag.at_least_one = false;
-    for(;;) {
-        c = saveNextChar();
-        if(( CharSet[c] & (C_HX|C_DI) ) == 0 )
-            break;
-        if( CharSet[c] & C_HX ) {
-            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
-        }
-        if( U64Cnv16( &Constant64, c - '0' ) ) {
+    c = NextChar();
+    while( CharSet[c] & (C_HX | C_DI) ) {
+        if( U64Cnv16( &Constant64, hex_dig( c ) ) ) {
             flag.too_big = true;
         }
         flag.at_least_one = true;
+        c = WriteBufferCharNextChar( c );
     }
-    if( ! flag.at_least_one ) {
-        return( false );            /* indicate no characters matched after "0x" */
+    if( !flag.at_least_one ) {
+        return( false );            /* indicate no characters matched */
     }
     if( flag.too_big ) {
         if( diagnose_lex_error( expanding ) ) {
@@ -265,13 +219,13 @@ static void prt_comment_char( int c )
     case LCHR_EOF:
         break;
     default:
-        if( CompFlags.keep_comments ) {
+        if( CompFlags.cpp_keep_comments ) {
             prt_char( c );
         }
     }
 }
 
-static void scanCComment( void )
+static void doScanCComment( void )
 {
     int c;
     int prev_char;
@@ -283,78 +237,53 @@ static void scanCComment( void )
     if( CompFlags.cpp_output ) {
         prt_comment_char( '/' );
         prt_comment_char( '*' );
-        c = '\0';
+    }
+    c = '\0';
+    for(;;) {
         for(;;) {
-            for(;;) {
-                prev_char = c;
-                c = NextChar();
-                prt_comment_char( c );
-                if( c == '/' )
-                    break;
-                if( c == LCHR_EOF ) {
-                    /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
-                }
-            }
-            if( prev_char == '*' )
-                break;
-            // get next character and see if it is '*' for nested comment
+            prev_char = c;
             c = NextChar();
-            prt_comment_char( c );
-            if( c == '*' ) {
-                /* '*' may be just about to close this comment */
-                c = NextChar();
+            if( c == LCHR_EOF )
+                break;
+            if( CompFlags.cpp_output ) {
                 prt_comment_char( c );
-                if( c == '/' )
-                    break;
-                if( c == LCHR_EOF ) {
-                    /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
-                }
-                SrcFileSetErrLoc();
-                CErr2( WARN_NESTED_COMMENT, start_line );
+            }
+            if( c == '/' ) {
+                break;
             }
         }
-    } else {
-        c = '\0';
-        for(;;) {
-            for(;;) {
-                prev_char = c;
-                c = NextChar();
-                if( c == '/' )
-                    break;
-                if( c == LCHR_EOF ) {
-                    /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
-                }
-            }
-            if( prev_char == '*' )
-                break;
-            // get next character and see if it is '*' for nested comment
+        if( c == LCHR_EOF )
+            break;
+        if( prev_char == '*' )
+            break;
+        // get next character and see if it is '*' for nested comment
+        c = NextChar();
+        if( c == LCHR_EOF )
+            break;
+        if( CompFlags.cpp_output ) {
+            prt_comment_char( c );
+        }
+        if( c == '*' ) {
+            /* '*' may be just about to close this comment */
             c = NextChar();
-            if( c == '*' ) {
-                /* '*' may be just about to close this comment */
-                c = NextChar();
-                if( c == '/' )
-                    break;
-                if( c == LCHR_EOF ) {
-                    /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
-                }
-                SrcFileSetErrLoc();
-                CErr2( WARN_NESTED_COMMENT, start_line );
+            if( c == LCHR_EOF )
+                break;
+            if( CompFlags.cpp_output ) {
+                prt_comment_char( c );
             }
+            if( c == '/' )
+                break;
+            SrcFileSetErrLoc();
+            CErr2( WARN_NESTED_COMMENT, start_line );
         }
     }
     CompFlags.scanning_c_comment = false;
-    NextChar();
+    if( c != LCHR_EOF ) {
+        NextChar();
+    }
 }
 
-static void scanCppComment( void )
+static void doScanCppComment( void )
 {
     int c;
 
@@ -362,16 +291,16 @@ static void scanCppComment( void )
     if( CompFlags.cpp_output ) {
         prt_comment_char( '/' );
         prt_comment_char( '/' );
-        for(;;) {
-            c = NextChar();
-            if( c == LCHR_EOF )
-                break;
-            if( c == '\n' )
-                break;
+    }
+    for(;;) {
+        c = NextChar();
+        if( c == LCHR_EOF )
+            break;
+        if( c == '\n' )
+            break;
+        if( CompFlags.cpp_output ) {
             prt_comment_char( c );
         }
-    } else {
-        SrcFileScanCppComment();
     }
     CompFlags.scanning_cpp_comment = false;
 }
@@ -381,16 +310,17 @@ static int doESCChar( int c, bool expanding, type_id char_type )
     unsigned    n;
     unsigned    i;
     int         classification;
+    int         c1;
 
     classification = classify_escape_char( c );
     if( classification == ESCAPE_OCTAL ) {
         n = 0;
         for( i = 3; i > 0; --i ) {
-            c = octal_dig( c );
-            if( c == 8 )
+            c1 = octal_dig( c );
+            if( c1 == 8 )
                 break;
-            n = n * 8 + c;
-            c = saveNextChar();
+            n = n * 8 + c1;
+            c = WriteBufferCharNextChar( c );
         }
         if( n > 0377 && char_type != TYP_WCHAR ) {
             if( diagnose_lex_error( expanding ) ) {
@@ -400,8 +330,9 @@ static int doESCChar( int c, bool expanding, type_id char_type )
             n &= 0377;
         }
     } else if( classification == ESCAPE_HEX ) {
+        WriteBufferChar( c );
         U64Clear( Constant64 );
-        if( scanHex( expanding ) ) {
+        if( doScanHex( expanding ) ) {
             n = U32FetchTrunc( Constant64 );
             if( n > 0x0ff && char_type != TYP_WCHAR ) {
                 if( diagnose_lex_error( expanding ) ) {
@@ -415,15 +346,15 @@ static int doESCChar( int c, bool expanding, type_id char_type )
         }
     } else if( classification == ESCAPE_NONE ) {
         n = c;
-        saveNextChar();
+        WriteBufferCharNextChar( c );
     } else {
         n = classification;
-        saveNextChar();
+        WriteBufferCharNextChar( c );
     }
     return( n );
 }
 
-static TOKEN charConst( type_id char_type, bool expanding )
+static TOKEN doScanCharConst( type_id char_type, bool expanding )
 {
     int c;
     int i;
@@ -432,77 +363,83 @@ static TOKEN charConst( type_id char_type, bool expanding )
     struct {
         unsigned double_byte_char   : 1;
     } flag;
+    bool ok;
 
+    ok = false;
     flag.double_byte_char = false;
-    token = T_CONSTANT;
-    BadTokenInfo = ERR_INV_CHAR_CONSTANT;   /* in case of error */
-    i = 0;
-    c = saveNextChar();
-    if( c == '\'' ) {
-        NextChar();
-        Buffer[TokenLen] = '\0';
-        return( T_BAD_TOKEN );
-    }
     value = 0;
-    for( ;; ) {
-        if( c == '\r' || c == '\n' ) {
-            DbgAssert( Buffer[TokenLen - 1] == c );
-            --TokenLen;
-            token = T_BAD_TOKEN;
-            break;
-        }
-        if( c == '\\' ) {
-            c = doESCChar( saveNextChar(), expanding, char_type );
-            if( char_type == TYP_WCHAR ) {
-                ++i;
-                value = (value << 8) + ((c & 0xFF00) >> 8);
-                c &= 0x00FF;
+    i = 0;
+    c = NextChar();
+    if( c == '\'' ) {
+        Buffer[TokenLen++] = c;
+        NextChar();
+    } else {
+        for( ;; ) {
+            if( c == '\r' || c == '\n' || c == LCHR_EOF ) {
+                break;
             }
-        } else {
-            if( CharSet[c] & C_DB ) {   /* if double-byte char */
-                c = (c << 8) + (saveNextChar() & 0x00FF);
+            Buffer[TokenLen++] = c;
+            if( c == '\\' ) {
+                NextChar();
+                c = doESCChar( CurrChar, expanding, char_type );
                 if( char_type == TYP_WCHAR ) {
-                    if( CompFlags.jis_to_unicode ) {
+                    ++i;
+                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    c &= 0x00FF;
+                }
+            } else {
+                if( CharSet[c] & C_DB ) {   /* if double-byte char */
+                    NextChar();
+                    Buffer[TokenLen++] = CurrChar;
+                    c = (c << 8) + (CurrChar & 0x00FF);
+                    if( char_type == TYP_WCHAR ) {
+                        if( CompFlags.jis_to_unicode ) {
+                            c = JIS2Unicode( c );
+                        }
+                    }
+                    ++i;
+                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    c &= 0x00FF;
+                    flag.double_byte_char = true;
+                } else if( char_type == TYP_WCHAR ) {
+                    if( CompFlags.use_unicode ) {
+                        c = UniCode[c];
+                    } else if( CompFlags.jis_to_unicode ) {
                         c = JIS2Unicode( c );
                     }
+                    ++i;
+                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    c &= 0x00FF;
                 }
-                ++i;
-                value = (value << 8) + ((c & 0xFF00) >> 8);
-                c &= 0x00FF;
-                flag.double_byte_char = true;
-            } else if( char_type == TYP_WCHAR ) {
-                if( CompFlags.use_unicode ) {
-                    c = UniCode[c];
-                } else if( CompFlags.jis_to_unicode ) {
-                    c = JIS2Unicode( c );
-                }
-                ++i;
-                value = (value << 8) + ((c & 0xFF00) >> 8);
-                c &= 0x00FF;
+                NextChar();
             }
-            saveNextChar();
-        }
-        ++i;
-        value = (value << 8) + c;
-        /* handle case where user wants a \ but doesn't escape it */
-        if( c == '\'' && CurrChar != '\'' ) {
-            if( !CompFlags.cpp_output ) {
-                token = T_BAD_TOKEN;
+            ++i;
+            value = (value << 8) + c;
+            /* handle case where user wants a \ but doesn't escape it */
+            if( c == '\'' && CurrChar != '\'' ) {
+                if( !CompFlags.cpp_output ) {
+                    break;
+                }
+            }
+            c = CurrChar;
+            if( c == '\'' ) {
+                ok = true;
                 break;
             }
-        }
-        c = CurrChar;
-        if( c == '\'' )
-            break;
-        if( i >= 4 ) {
-            if( !CompFlags.cpp_output ) {
-                token = T_BAD_TOKEN;
-                break;
+            if( i >= 4 ) {
+                if( !CompFlags.cpp_output ) {
+                    break;
+                }
             }
         }
     }
-    if( token != T_BAD_TOKEN ) {
+    if( ok ) {
+        Buffer[TokenLen++] = c;
         NextChar();
+        token = T_CONSTANT;
+    } else {
+        BadTokenInfo = ERR_INV_CHAR_CONSTANT;   /* in case of error */
+        token = T_BAD_TOKEN;
     }
     Buffer[TokenLen] = '\0';
     ConstType = char_type;
@@ -566,8 +503,8 @@ static void unGetChar( int c )
     }
 }
 
-bool ScanOptionalComment( void )
-/******************************/
+bool DoScanOptionalComment( void )
+/********************************/
 {
     bool ok;
     int c;
@@ -579,10 +516,10 @@ bool ScanOptionalComment( void )
             break;
         c = NextChar();
         if( c == '*' ) {
-            scanCComment();
+            doScanCComment();
             ok = true;
         } else if( c == '/' ) {
-            scanCppComment();
+            doScanCppComment();
             ok = true;
         } else {
             unGetChar( c );
@@ -613,164 +550,129 @@ void SkipAhead( void )
         }
         if( c != '/' )
             break;
-        if( ! ScanOptionalComment() ) {
+        if( !DoScanOptionalComment() ) {
             break;
         }
     }
 }
 
-static TOKEN scanDotSomething( int c )
+static TOKEN doScanDotSomething( int c )
 {
-    if( c == '*' ) {
-        NextChar();
-        return( T_DOT_STAR );
-    }
+    TOKEN   token;
+
     if( c == '.' ) {
-        c = saveNextChar();
+        c = NextChar();
         if( c == '.' ) {
-            NextChar();
-            return( T_DOT_DOT_DOT );
+            Buffer[TokenLen++] = c;
+            Buffer[TokenLen++] = c;
+            token = T_DOT_DOT_DOT;
+        } else {
+            unGetChar( c );
+            CurrChar = '.';
+            token = T_DOT;
         }
-        unGetChar( c );
-        CurrChar = '.';
+    } else if( c == '*' ) {
+        Buffer[TokenLen++] = c;
+        token = T_DOT_STAR;
+    } else {
+        token = T_DOT;
     }
-    Buffer[1] = '\0';
-    TokenLen = 1;
-    return( T_DOT );
+    if( token != T_DOT )
+        NextChar();
+    Buffer[TokenLen] = '\0';
+    return( token );
 }
 
 static TOKEN doScanFloat( void )
 {
     int c;
-    int one_case;
+    TOKEN token;
 
     c = CurrChar;
     if( c == '.' ) {
-        for(;;) {
-            c = saveNextChar();
-            if(( CharSet[c] & C_DI ) == 0 ) {
-                break;
-            }
+        c = WriteBufferCharNextChar( c );
+        while( CharSet[c] & C_DI ) {
+            c = WriteBufferCharNextChar( c );
         }
-        if( TokenLen == 2 ) {       /* .? */
-            return( scanDotSomething( c ) );
+        if( TokenLen == 1 ) {       /* .? */
+            return( doScanDotSomething( c ) );
         }
     }
-    CurToken = T_CONSTANT;
-    if( ONE_CASE( c ) == ONE_CASE( 'E' ) ) {
-        c = saveNextChar();
+    token = T_CONSTANT;
+    if( ONE_CASE_EQUAL( c, 'E' ) ) {
+        c = WriteBufferCharNextChar( c );
         if( c == '+' || c == '-' ) {
-            c = saveNextChar();
+            c = WriteBufferCharNextChar( c );
         }
-        if(( CharSet[c] & C_DI ) == 0 ) {
-            CurToken = T_BAD_TOKEN;
+        if( (CharSet[c] & C_DI) == 0 ) {
+            token = T_BAD_TOKEN;
             BadTokenInfo = ERR_INVALID_FLOATING_POINT_CONSTANT;
         }
-        for(;;) {
-            if(( CharSet[c] & C_DI ) == 0 )
-                break;
-            c = saveNextChar();
+        while( CharSet[c] & C_DI ) {
+            c = WriteBufferCharNextChar( c );
         }
     }
-    one_case = ONE_CASE( c );
-    if( one_case == ONE_CASE( 'F' ) ) {
-        c = saveNextChar();
+    if( ONE_CASE_EQUAL( c, 'F' ) ) {
+        c = WriteBufferCharNextChar( c );
         ConstType = TYP_FLOAT;
-    } else if( one_case == ONE_CASE( 'L' ) ) {
-        c = saveNextChar();
+    } else if( ONE_CASE_EQUAL( c, 'L' ) ) {
+        c = WriteBufferCharNextChar( c );
         ConstType = TYP_LONG_DOUBLE;
     } else {
         ConstType = TYP_DOUBLE;
     }
     if( (PPControl & PPCTL_ASM) && (CharSet[c] & (C_AL | C_DI)) ) {
-        for(;;) {
-            c = saveNextChar();
-            if( (CharSet[c] & (C_AL | C_DI)) == 0 ) {
-                break;
-            }
+        while( CharSet[c] & (C_AL | C_DI) ) {
+            c = WriteBufferCharNextChar( c );
         }
-        Buffer[--TokenLen] = '\0';
-        return( T_BAD_TOKEN );
-    } else {
-        Buffer[--TokenLen] = '\0';
-        return( CurToken );
+        BadTokenInfo = ERR_INVALID_FLOATING_POINT_CONSTANT;
+        token = T_BAD_TOKEN;
     }
-}
-
-static void willContinueStringLater( type_id string_type )
-{
-    if( string_type == TYP_WCHAR ) {
-        CurrChar = LCHR_CONTINUE_LSTRING;
-    } else {
-        CurrChar = LCHR_CONTINUE_STRING;
-    }
-    ++TokenLen;
+    WriteBufferNullChar();
+    return( token );
 }
 
 static TOKEN doScanString( type_id string_type, bool expanding )
 {
     int c;
-    int ok;
+    bool ok;
 
     SrcFileSetSwEnd( true );
-    ok = 0;
+    ok = false;
+    TokenLen = 0;
     c = NextChar();
-    Buffer[0] = c;
-    TokenLen = 1;
     for(;;) {
         if( c == '\n' )
             break;
         if( c == LCHR_EOF )
             break;
         if( c == '"' ) {
-            ok = 2;
+            ok = true;
             break;
         }
         if( c == '\\' ) {
-            if( TokenLen > BUF_SIZE - 32 ) {
-                unGetChar( c );
-                // break long strings apart (parser will join them)
-                willContinueStringLater( string_type );
-                ok = 1;
-                break;
-            }
-            c = NextChar();
-            Buffer[TokenLen++] = c;
+            c = WriteBufferCharNextChar( c );
             if(( CharSet[c] & C_WS ) == 0 ) {
                 doESCChar( c, expanding, string_type );
+                c = CurrChar;
             }
-            c = CurrChar;
         } else {
             if( CharSet[c] & C_DB ) {
                 // if first char of a double-byte char, grab next one
-                c = NextChar();
-                Buffer[TokenLen++] = c;
+                c = WriteBufferCharNextChar( c );
             }
-            if( TokenLen > BUF_SIZE - 32 ) {
-                // break long strings apart (parser will join them)
-                willContinueStringLater( string_type );
-                ok = 1;
-                break;
-            }
-            c = NextChar();
-            Buffer[TokenLen++] = c;
+            c = WriteBufferCharNextChar( c );
         }
     }
     SrcFileSetSwEnd( false );
-    Buffer[TokenLen - 1] = '\0';
+    WriteBufferNullChar();
     if( ok ) {
-        if( ok == 2 ) {
-            NextChar();
-        }
+        NextChar();
         if( string_type == TYP_WCHAR ) {
             return( T_LSTRING );
         }
         return( T_STRING );
     }
-    // '\n' or LCHR_EOF don't print nicely
-    --TokenLen;
-    if( TokenLen > 0 )
-        Buffer[TokenLen - 1] = '\0';
     BadTokenInfo = ERR_MISSING_QUOTE;
     return( T_BAD_TOKEN );
 }
@@ -778,50 +680,48 @@ static TOKEN doScanString( type_id string_type, bool expanding )
 static TOKEN doScanName( int c, bool expanding )
 {
     MEPTR   mentry;
+    TOKEN   token;
 
     SrcFileScanName( c );
-    if( expanding || (PPControl & PPCTL_NO_EXPAND) ) {
+    if( expanding || (PPControl & PPCTL_NO_EXPAND) )
         return( T_ID );
-    }
 
     mentry = MacroLookup( Buffer, TokenLen );
     if( mentry == NULL ) {
-        CurToken = KwLookup( TokenLen );
-        if( CurToken == T__PRAGMA ) {
-            CurToken = Process_Pragma( false );
+        if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
+            token = Process_Pragma( false );
+        } else {
+            token = KwLookup( TokenLen );
         }
-    } else {
-        prt_char( ' ' );
-        if( MacroIsSpecial( mentry ) ) {
-            return( SpecialMacro( mentry ) );
-        }
-        mentry->macro_flags |= MFLAG_REFERENCED;
-        /* if macro requires parameters and next char is not a '('
-        then this is not a macro */
-        if( MacroWithParenthesis( mentry ) ) {
-            SkipAhead();
-            if( CurrChar != '(' ) {
-                if( CompFlags.cpp_output ) {
-                    Buffer[TokenLen++] = ' ';
-                    Buffer[TokenLen] = '\0';
-                    CurToken = T_ID;
-                } else {
-                    CurToken = KwLookup( TokenLen );
-                    if( CurToken == T__PRAGMA ) {
-                        CurToken = Process_Pragma( false );
-                    }
-                }
-                return( CurToken );
+        return( token );
+    }
+    prt_char( ' ' );
+    if( MacroIsSpecial( mentry ) )
+        return( SpecialMacro( mentry ) );
+    mentry->macro_flags |= MFLAG_REFERENCED;
+    /* if macro requires parameters and next char is not a '('
+    then this is not a macro */
+    if( MacroWithParenthesis( mentry ) ) {
+        SkipAhead();
+        if( CurrChar != '(' ) {
+            if( CompFlags.cpp_output ) {
+                InsertToken( T_WHITE_SPACE, " ", false );
+                return( T_ID );
             }
-        }
-        DoMacroExpansion( mentry );
-        DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
-        GetMacroToken( false );
-        if( CurToken == T_NULL ) {
-            CurToken = T_WHITE_SPACE;
+            if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
+                token = Process_Pragma( false );
+            } else {
+                token = KwLookup( TokenLen );
+            }
+            return( token );
         }
     }
-    return( CurToken );
+    DoMacroExpansion( mentry );
+    token = GetMacroToken( false );
+    if( token == T_NULL ) {
+        token = T_WHITE_SPACE;
+    }
+    return( token );
 }
 
 static TOKEN scanName( bool expanding )
@@ -830,24 +730,19 @@ static TOKEN scanName( bool expanding )
 
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
+    TokenLen = 1;
     c = NextChar();
-    Buffer[1] = c;
-    TokenLen = 2;
     return( doScanName( c, expanding ) );
 }
 
 static TOKEN doScanAsmToken( void )
 {
-    TokenLen = 0;
-    do {
-        Buffer[TokenLen++] = CurrChar;
-        if( CurrChar == '.' ) {
-            CurrChar = saveNextChar();
-        }
-        SrcFileScanName( CurrChar );
-    } while( CurrChar == '.' );
-    CurToken = T_ID;
-    return( CurToken );
+    NextChar();
+    while( SrcFileScanName( CurrChar ) == '.' ) {
+        WriteBufferCharNextChar( '.' );
+    }
+    WriteBufferNullChar();
+    return( T_ID );
 }
 
 static TOKEN scanWide( bool expanding )  // scan something that starts with L
@@ -856,16 +751,19 @@ static TOKEN scanWide( bool expanding )  // scan something that starts with L
     TOKEN token;
 
     SrcFileCurrentLocation();
-    Buffer[0] = CurrChar;
     c = NextChar();
-    Buffer[1] = c;
-    TokenLen = 2;
     if( c == '"' ) {                    // L"abc"
         token = doScanString( TYP_WCHAR, expanding );
-    } else if( c == '\'' ) {            // L'a'
-        token = charConst( TYP_WCHAR, expanding );
-    } else {                            // regular identifier
-        token = doScanName( c, expanding );
+    } else {
+        Buffer[0] = 'L';
+        if( c == '\'' ) {               // L'a'
+            Buffer[1] = '\'';
+            TokenLen = 2;
+            token = doScanCharConst( TYP_WCHAR, expanding );
+        } else {                        // regular identifier
+            TokenLen = 1;
+            token = doScanName( c, expanding );
+        }
     }
     return( token );
 }
@@ -906,34 +804,28 @@ static void msIntSuffix( uint_32 signed_max, type_id sid, type_id uid, unsigned_
     }
 }
 
-static TOKEN scanNum( bool expanding )
+static TOKEN doScanNum( bool expanding )
 {
     int c;
     unsigned_64 *max_value;
     char too_big;
     char max_digit;
 
-    SrcFileCurrentLocation();
-    if( PPControl & PPCTL_ASM )
-        return( doScanAsmToken() );
-
     U64Clear( Constant64 );
     too_big = 0;
-    TokenLen = 1;
-    c = CurrChar;
-    Buffer[0] = c;
-    if( c == '0' ) {
-        c = saveNextChar();
-        if( ONE_CASE( c ) == ONE_CASE( 'X' ) ) {
-            if( scanHex( expanding ) ) {
+    if( CurrChar == '0' ) {
+        c = NextChar();
+        if( ONE_CASE_EQUAL( c, 'X' ) ) {
+            WriteBufferChar( c );
+            if( doScanHex( expanding ) ) {
                 c = CurrChar;       /* get next character */
             } else {
                 if( diagnose_lex_error( expanding ) ) {
                     CErr1( ERR_INVALID_HEX_CONSTANT );
                 } else {
-                    unGetChar( CurrChar );
-                    --TokenLen;
-                    CurrChar = c;       /* put last character back */
+                    unGetChar( CurrChar );      /* put character after 'x' back */
+                    CurrChar = c;               /* set current character to 'x' */
+                    --TokenLen;                 /* remove character 'x' from Buffer */
                 }
             }
         } else {                    /* scan octal number */
@@ -947,16 +839,13 @@ static TOKEN scanNum( bool expanding )
                 if( U64Cnv8( &Constant64, c - '0' ) ) {
                     too_big = 1;
                 }
-                c = saveNextChar();
+                c = WriteBufferCharNextChar( c );
             }
-            c = CurrChar;
             switch( c ) {       /* could be front of a float constant */
             case '8':           /* 0128.3 */
             case '9':           /* 0129.3 */
-                for(;;) {
-                    if(( CharSet[c] & C_DI ) == 0 )
-                        break;
-                    c = saveNextChar();
+                while( CharSet[c] & C_DI ) {
+                    c = WriteBufferCharNextChar( c );
                 }
                 if( c != '.' && c != 'e' && c != 'E' ) {
                     if( diagnose_lex_error( expanding ) ) {
@@ -972,18 +861,16 @@ static TOKEN scanNum( bool expanding )
         }
         max_value = &uintMax;
     } else {                /* scan decimal number */
-        // we know 'c' is a digit
-        U32ToU64( c - '0', &Constant64 );
-        c = saveNextChar();
-        for(;;) {
-            if(( CharSet[c] & C_DI ) == 0 )
-                break;
+        // we know 'CurrChar' is a digit
+        U32ToU64( CurrChar - '0', &Constant64 );
+        c = NextChar();
+        while( CharSet[c] & C_DI ) {
             if( U64Cnv10( &Constant64, c - '0' ) ) {
                 too_big = 1;
             }
-            c = saveNextChar();
+            c = WriteBufferCharNextChar( c );
         }
-        if( c == '.' || ONE_CASE( c ) == ONE_CASE( 'E' ) ) {
+        if( c == '.' || ONE_CASE_EQUAL( c, 'E' ) ) {
             return( doScanFloat() );
         }
         max_value = &intMax;
@@ -991,12 +878,12 @@ static TOKEN scanNum( bool expanding )
     switch( ONE_CASE( c ) ) {
     case ONE_CASE( 'i' ):
         ConstType = TYP_SINT;
-        c = saveNextChar();
+        c = WriteBufferCharNextChar( c );
         switch( c ) {
         case '6':
-            c = saveNextChar();
+            c = WriteBufferCharNextChar( c );
             if( c == '4' ) {
-                c = saveNextChar();
+                c = WriteBufferCharNextChar( c );
                 if( U64IsI64( Constant64 ) ) {
                     ConstType = TYP_SLONG64;
                 } else {
@@ -1010,9 +897,9 @@ static TOKEN scanNum( bool expanding )
             }
             break;
         case '1':
-            c = saveNextChar();
+            c = WriteBufferCharNextChar( c );
             if( c == '6' ) {
-                c = saveNextChar();
+                c = WriteBufferCharNextChar( c );
                 msIntSuffix( 0x00007fff, TYP_SSHORT, TYP_USHORT, max_value );
             } else {
                 if( diagnose_lex_error( expanding ) ) {
@@ -1021,9 +908,9 @@ static TOKEN scanNum( bool expanding )
             }
             break;
         case '3':
-            c = saveNextChar();
+            c = WriteBufferCharNextChar( c );
             if( c == '2' ) {
-                c = saveNextChar();
+                c = WriteBufferCharNextChar( c );
                 msIntSuffix( 0x7fffffff, TYP_SLONG, TYP_ULONG, max_value );
             } else {
                 if( diagnose_lex_error( expanding ) ) {
@@ -1032,7 +919,7 @@ static TOKEN scanNum( bool expanding )
             }
             break;
         case '8':
-            c = saveNextChar();
+            c = WriteBufferCharNextChar( c );
             msIntSuffix( 0x0000007f, TYP_SCHAR, TYP_UCHAR, max_value );
             break;
         default:
@@ -1044,22 +931,22 @@ static TOKEN scanNum( bool expanding )
         break;
     case ONE_CASE( 'L' ):
         ConstType = TYP_SLONG;
-        c = ONE_CASE( saveNextChar() );
-        if( c == ONE_CASE( 'u' ) ) {
-            c = saveNextChar();
+        c = WriteBufferCharNextChar( c );
+        if( ONE_CASE_EQUAL( c, 'u' ) ) {
             ConstType = TYP_ULONG;
-        } else if( c == ONE_CASE( 'L' ) ) {
-            c = ONE_CASE( saveNextChar() );
-            if( c == ONE_CASE( 'u' ) ) {
-                c = saveNextChar();
+            c = WriteBufferCharNextChar( c );
+        } else if( ONE_CASE_EQUAL( c, 'L' ) ) {
+            c = WriteBufferCharNextChar( c );
+            if( ONE_CASE_EQUAL( c, 'u' ) ) {
                 ConstType = TYP_ULONG64;
+                c = WriteBufferCharNextChar( c );
             } else {
                 ConstType = TYP_SLONG64;
             }
-        } else if( ! U64IsI32( Constant64 ) ) { // Constant > 0x7FFFFFFFul
+        } else if( !U64IsI32( Constant64 ) ) { // Constant > 0x7FFFFFFFul
             ConstType = TYP_ULONG;
         }
-        if( ! U64IsU32( Constant64 ) ) {
+        if( !U64IsU32( Constant64 ) ) {
             if( U64IsI64( Constant64 ) ) {
                 ConstType = TYP_SLONG64;
             } else {
@@ -1068,16 +955,16 @@ static TOKEN scanNum( bool expanding )
         }
         break;
     case ONE_CASE( 'u' ):
-        c = saveNextChar();
+        c = WriteBufferCharNextChar( c );
         switch( ONE_CASE( c ) ) {
         case ONE_CASE( 'i' ):
             ConstType = TYP_ULONG64;
-            c = saveNextChar();
+            c = WriteBufferCharNextChar( c );
             switch( c ) {
             case '6':
-                c = saveNextChar();
+                c = WriteBufferCharNextChar( c );
                 if( c == '4' ) {
-                    c = saveNextChar();
+                    c = WriteBufferCharNextChar( c );
                 } else {
                     if( diagnose_lex_error( expanding ) ) {
                         CErr1( ERR_INVALID_CONSTANT_SUFFIX );
@@ -1086,9 +973,9 @@ static TOKEN scanNum( bool expanding )
                 }
                 break;
             case '1':
-                c = saveNextChar();
+                c = WriteBufferCharNextChar( c );
                 if( c == '6' ) {
-                    c = saveNextChar();
+                    c = WriteBufferCharNextChar( c );
                     msIntSuffix( 0x00007fff, TYP_USHORT, TYP_USHORT, &uintMax );
                 } else {
                     if( diagnose_lex_error( expanding ) ) {
@@ -1098,9 +985,9 @@ static TOKEN scanNum( bool expanding )
                 }
                 break;
             case '3':
-                c = saveNextChar();
+                c = WriteBufferCharNextChar( c );
                 if( c == '2' ) {
-                    c = saveNextChar();
+                    c = WriteBufferCharNextChar( c );
                     msIntSuffix( 0x7fffffff, TYP_ULONG, TYP_ULONG, &uintMax );
                 } else {
                     if( diagnose_lex_error( expanding ) ) {
@@ -1110,7 +997,7 @@ static TOKEN scanNum( bool expanding )
                 }
                 break;
             case '8':
-                c = saveNextChar();
+                c = WriteBufferCharNextChar( c );
                 msIntSuffix( 0x0000007f, TYP_UCHAR, TYP_UCHAR, &uintMax );
                 break;
             default:
@@ -1121,9 +1008,9 @@ static TOKEN scanNum( bool expanding )
             }
             break;
         case ONE_CASE( 'L' ):
-            c = ONE_CASE( saveNextChar() );
-            if( c == ONE_CASE( 'L' ) ) {
-                c = saveNextChar();
+            c = WriteBufferCharNextChar( c );
+            if( ONE_CASE_EQUAL( c, 'L' ) ) {
+                c = WriteBufferCharNextChar( c );
                 ConstType = TYP_ULONG64;
             } else {
                 ConstType = TYP_ULONG;
@@ -1168,17 +1055,25 @@ static TOKEN scanNum( bool expanding )
         }
     }
     if( (PPControl & PPCTL_ASM) && (CharSet[c] & (C_AL | C_DI)) ) {
-        for(;;) {
-            c = saveNextChar();
-            if( (CharSet[c] & (C_AL | C_DI)) == 0 ) {
-                break;
-            }
+        while( CharSet[c] & (C_AL | C_DI) ) {
+            c = WriteBufferCharNextChar( c );
         }
-        Buffer[--TokenLen] = '\0';
+        WriteBufferNullChar();
         return( T_BAD_TOKEN );
+    }
+    WriteBufferNullChar();
+    return( T_CONSTANT );
+}
+
+static TOKEN scanNum( bool expanding )
+{
+    SrcFileCurrentLocation();
+    Buffer[0] = CurrChar;
+    TokenLen = 1;
+    if( PPControl & PPCTL_ASM ) {
+        return( doScanAsmToken() );
     } else {
-        Buffer[--TokenLen] = '\0';
-        return( T_CONSTANT );
+        return( doScanNum( expanding ) );
     }
 }
 
@@ -1197,326 +1092,263 @@ static TOKEN scanDelim1( bool expanding )
     return( token );
 }
 
-static TOKEN scanDelim12( bool expanding )       // @ or @@ token
+static bool checkDelim2( TOKEN *token, TOKEN last )
+/*************************************************/
 {
-    int c;
-    int chr2;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    c = CurrChar;
-    Buffer[0] = c;
-    tok = TokValue[c];
-    token_len = 1;
-    chr2 = NextChar();
-    Buffer[1] = chr2;
-    if( chr2 == c ) {
-        tok += 2;
-        ++token_len;
-        NextChar();
+    switch( *token ) {
+    case T_AND:
+        if( last == T_AND ) {           /* && */
+            *token = T_AND_AND;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* &= */
+            *token = T_AND_EQUAL;
+            break;
+        }
+        return( false );
+    case T_PLUS:
+        if( last == T_PLUS ) {          /* ++ */
+            *token = T_PLUS_PLUS;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* += */
+            *token = T_PLUS_EQUAL;
+            break;
+        }
+        return( false );
+    case T_MINUS:
+        if( last == T_MINUS ) {         /* -- */
+            *token = T_MINUS_MINUS;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* -= */
+            *token = T_MINUS_EQUAL;
+            break;
+        }
+        if( last == T_GT ) {            /* -> */
+            *token = T_ARROW;
+            break;
+        }
+        return( false );
+    case T_OR:
+        if( last == T_OR ) {            /* || */
+            *token = T_OR_OR;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* |= */
+            *token = T_OR_EQUAL;
+            break;
+        }
+        return( false );
+    case T_LT:
+        if( last == T_LT ) {            /* << */
+            *token = T_LSHIFT;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* <= */
+            *token = T_LE;
+            break;
+        }
+        if( last == T_PERCENT ) {       /* <% */
+            *token = T_ALT_LEFT_BRACE;
+            break;
+        }
+        if( last == T_COLON ) {         /* <: */
+            *token = T_ALT_LEFT_BRACKET;
+            break;
+        }
+        return( false );
+    case T_GT:
+        if( last == T_GT ) {            /* >> */
+            *token = T_RSHIFT;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* >= */
+            *token = T_GE;
+            break;
+        }
+        return( false );
+    case T_SHARP:
+        if( last == T_SHARP ) {         /* ## */
+            *token = T_SHARP_SHARP;
+            break;
+        }
+        return( false );
+    case T_EQUAL:
+        if( last == T_EQUAL ) {         /* == */
+            *token = T_EQ;
+            break;
+        }
+        return( false );
+    case T_EXCLAMATION:
+        if( last == T_EQUAL ) {         /* != */
+            *token = T_NE;
+            break;
+        }
+        return( false );
+    case T_PERCENT:
+        if( last == T_EQUAL ) {         /* %= */
+            *token = T_PERCENT_EQUAL;
+            break;
+        }
+        if( last == T_GT ) {            /* %> */
+            *token = T_ALT_RIGHT_BRACE;
+            break;
+        }
+        if( last == T_COLON ) {         /* %: */
+            *token = T_ALT_SHARP;
+            break;
+        }
+        return( false );
+    case T_TIMES:
+        if( last == T_EQUAL ) {         /* *= */
+            *token = T_TIMES_EQUAL;
+            break;
+        }
+        return( false );
+    case T_DIV:
+        if( last == T_EQUAL ) {         /* /= */
+            *token = T_DIV_EQUAL;
+            break;
+        }
+        return( false );
+    case T_XOR:
+        if( last == T_EQUAL ) {         /* ^= */
+            *token = T_XOR_EQUAL;
+            break;
+        }
+        return( false );
+    case T_COLON:
+        if( last == T_COLON ) {         /* :: */
+            *token = T_COLON_COLON;
+            break;
+        }
+        if( last == T_GT ) {            /* :> */
+            // TODO: according to the standard, ":>" should be an
+            // alternative token (digraph) for "]"
+            // *token = T_RIGHT_BRACKET;   /* -> ] */
+            *token = T_SEG_OP;
+            break;
+        }
+        return( false );
+    case T_ARROW:
+        if( last == T_TIMES ) {         /* ->* */
+            *token = T_ARROW_STAR;
+            break;
+        }
+        return( false );
+    case T_LSHIFT:
+        if( last == T_EQUAL ) {         /* <<= */
+            *token = T_LSHIFT_EQUAL;
+            break;
+        }
+        return( false );
+    case T_RSHIFT:
+        if( last == T_EQUAL ) {         /* >>= */
+            *token = T_RSHIFT_EQUAL;
+            break;
+        }
+        return( false );
+    case T_ALT_SHARP:
+        if( last == T_PERCENT ) {       /* %:% */
+            break;
+        }
+        return( false );
+    default:
+        return( false );
     }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
+    return( true );
 }
 
-static TOKEN scanDelim12EQ( bool expanding )     // @, @@, or @= token
+static TOKEN scanDelim2( bool expanding )
+/****************************************
+ * TokenLen is alway lower then BUF_SIZE that
+ * direct access to Buffer array is used
+ */
 {
-    int c;
-    int chr2;
-    TOKEN tok;
-    size_t token_len;
+    TOKEN           token;
+    int             chr3;
 
     /* unused parameters */ (void)expanding;
 
     SrcFileCurrentLocation();
-    c = CurrChar;
-    Buffer[0] = c;
-    tok = TokValue[c];
-    token_len = 1;
-    chr2 = NextChar();
-    Buffer[1] = chr2;
-    if( chr2 == '=' ) {
-        ++tok;
-        ++token_len;
-        NextChar();
-    } else if( chr2 == c ) {
-        tok += 2;
-        ++token_len;
-        NextChar();
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanDelim12EQ2EQ( bool expanding )  // @, @@, @=, or @@= token
-{
-    int c;
-    int chr2;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    c = CurrChar;
-    Buffer[0] = c;
-    tok = TokValue[c];
-    token_len = 1;
-    chr2 = NextChar();
-    Buffer[1] = chr2;
-    if( chr2 == '=' ) {
-        ++tok;
-        ++token_len;
-        NextChar();
-    } else if( chr2 == c ) {
-        tok += 2;
-        ++token_len;
-        if( NextChar() == '=' ) {
-            ++tok;
-            ++token_len;
-            Buffer[2] = '=';
-            NextChar();
+    token = TokValue[CurrChar];
+    Buffer[0] = CurrChar;
+    TokenLen = 1;
+    if( (CharSet[NextChar()] & C_DE) && checkDelim2( &token, TokValue[CurrChar] ) ) {
+        Buffer[TokenLen++] = CurrChar;
+        if( (CharSet[NextChar()] & C_DE) && checkDelim2( &token, TokValue[CurrChar] ) ) {
+            if( token == T_ALT_SHARP ) {
+                /* only '%:%:' is possible for 4 characters delimiter
+                 * if it matches only '%:%' (3 characters)
+                 * then push back character 3 and 4
+                 */
+                chr3 = CurrChar;
+                if( (CharSet[NextChar()] & C_DE) && TokValue[CurrChar] == T_COLON ) {
+                    Buffer[TokenLen++] = chr3;
+                    Buffer[TokenLen++] = CurrChar;
+                    NextChar();
+                } else {
+                    unGetChar( CurrChar );
+                    CurrChar = chr3;
+                }
+            } else {
+                Buffer[TokenLen++] = CurrChar;
+                NextChar();
+            }
         }
     }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanDelim1EQ( bool expanding )      // @ or @= token
-{
-    int c;
-    int chr2;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    c = CurrChar;
-    Buffer[0] = c;
-    tok = TokValue[c];
-    token_len = 1;
-    chr2 = NextChar();
-    Buffer[1] = chr2;
-    if( chr2 == '=' ) {
-        ++tok;
-        ++token_len;
-        NextChar();
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
+    Buffer[TokenLen] = '\0';
+    return( token );
 }
 
 static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
 {
-    int nc;
-    int tok;
-    size_t token_len;
+    int c;
+    TOKEN token;
 
     SrcFileCurrentLocation();
+    token = T_DIV;
     Buffer[0] = '/';
-    nc = NextChar();
-    Buffer[1] = nc;
-    tok = T_DIV;
-    token_len = 1;
-    if( nc == '=' ) {
-        ++tok;
-        ++token_len;
-        NextChar();
-    } else if( ! expanding ) {
-        if( nc == '/' ) {
-            // C++ comment
-            scanCppComment();
-            Buffer[0] = ' ';
-            tok = T_WHITE_SPACE;
-        } else if( nc == '*' ) {
-            // C comment
-            scanCComment();
-            Buffer[0] = ' ';
-            tok = T_WHITE_SPACE;
-        }
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanLT( bool expanding )    // <, <=, <<, <<=, <%, <:
-{
-    int nc;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    Buffer[0] = '<';
-    tok = T_LT;
-    token_len = 1;
-    nc = NextChar();
-    Buffer[1] = nc;
-    if( nc == '=' ) {
-        ++tok;
-        ++token_len;
-        NextChar();
-    } else if( nc == '<' ) {
-        tok += 2;
-        ++token_len;
-        if( NextChar() == '=' ) {
-            ++tok;
-            ++token_len;
-            Buffer[2] = '=';
-            NextChar();
-        }
-    } else if( nc == '%' ) {
-        tok = T_ALT_LEFT_BRACE;
-        ++token_len;
-        NextChar();
-    } else if( nc == ':' ) {
-        tok = T_ALT_LEFT_BRACKET;
-        ++token_len;
-        NextChar();
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanPercent( bool expanding )   // %, %=, %>, %:, %:%:
-{
-    int nc;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    Buffer[0] = '%';
-    tok = T_PERCENT;
-    token_len = 1;
-    nc = NextChar();
-    Buffer[1] = nc;
-    if( nc == '=' ) {
-        ++tok;
-        ++token_len;
-        NextChar();
-    } else if( nc == '>' ) {
-        tok = T_ALT_RIGHT_BRACE;
-        ++token_len;
-        NextChar();
-    } else if( nc == ':' ) {
-        ++token_len;
-        tok = T_ALT_SHARP;
-        if( NextChar() == '%' ) {
-            Buffer[2] = '%';
-            ++token_len;
-            if( NextChar() == ':' ) {
-                ++token_len;
-                tok = T_ALT_SHARP_SHARP;
-                Buffer[3] = ':';
-                NextChar();
-            } else {
-                unGetChar( CurrChar );
-                CurrChar = '%';
-            }
-        }
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanColon( bool expanding ) // :, ::, or :>
-{
-    int nc;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    Buffer[0] = ':';
-    nc = NextChar();
-    Buffer[1] = nc;
-    tok = T_COLON;
-    token_len = 1;
-    if( nc == ':' ) {
-        tok += 2;
-        NextChar();
-        ++token_len;
-    } else if( nc == '>' ) {
-        // TODO: according to the standard, ":>" should be an
-        // alternative token (digraph) for "]" (T_RIGHT_BRACKET)...
-        tok = T_SEG_OP;
-        NextChar();
-        ++token_len;
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanMinus( bool expanding ) // -, -=, --, ->, or ->*
-{
-    int nc;
-    int nnc;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    Buffer[0] = '-';
-    nc = NextChar();
-    Buffer[1] = nc;
-    tok = T_MINUS;
-    token_len = 1;
-    if( nc == '=' ) {
-        ++tok;
-        NextChar();
-        ++token_len;
-    } else if( nc == '-' ) {
-        tok += 2;
-        NextChar();
-        ++token_len;
-    } else if( nc == '>' ) {
-        ++token_len;
-        nnc = NextChar();
-        if( nnc == '*' ) {
-            Buffer[2] = nnc;
-            tok = T_ARROW_STAR;
-            NextChar();
-            ++token_len;
-        } else {
-            tok = T_ARROW;
-        }
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanFloat( bool expanding )
-{
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    if( PPControl & PPCTL_ASM )
-        return( doScanAsmToken() );
-
-    Buffer[0] = CurrChar;
     TokenLen = 1;
-    return( doScanFloat() );
+    c = NextChar();
+    if( c == '=' ) {
+        Buffer[TokenLen++] = '=';
+        NextChar();
+        token = T_DIV_EQUAL;
+    } else if( !expanding ) {
+        if( c == '/' ) {
+            // C++ comment
+            doScanCppComment();
+            Buffer[0] = ' ';
+            token = T_WHITE_SPACE;
+        } else if( c == '*' ) {
+            // C comment
+            doScanCComment();
+            Buffer[0] = ' ';
+            token = T_WHITE_SPACE;
+        }
+    }
+    Buffer[TokenLen] = '\0';
+    return( token );
 }
 
-static TOKEN scanPPNumber( void )
+static TOKEN scanDot( bool expanding )
+{
+    /* unused parameters */ (void)expanding;
+
+    SrcFileCurrentLocation();
+    if( PPControl & PPCTL_ASM ) {
+        Buffer[0] = '.';
+        TokenLen = 1;
+        return( doScanAsmToken() );
+    } else {
+        TokenLen = 0;
+        return( doScanFloat() );
+    }
+}
+
+static TOKEN doScanPPNumber( void )
 {
     int c;
     int prevc;
@@ -1532,39 +1364,35 @@ static TOKEN scanPPNumber( void )
     //          pp-number .
     //
     c = 0;
-    for(;;) {
+    for( ;; ) {
         prevc = c;
-        c = saveNextChar();
-        if( CharSet[c] & (C_AL|C_DI) ) {
-            continue;
-        }
-        if( c == '.' ) {
-            continue;
-        }
-        if( ONE_CASE( prevc ) == ONE_CASE( 'e' ) ) {
-            if( c == '+' || c == '-' ) {
-                if( CompFlags.extensions_enabled ) {
-                    /* concession to existing practice...
-                        #define A2 0x02
-                        #define A3 0xaa0e+A2
-                        // users want: 0xaa0e + 0x02
-                        // not: 0xaa0e + A2 (but, this is what ISO C requires!)
+        c = NextChar();
+        if( c == '.' || (CharSet[c] & (C_AL | C_DI)) ) {
+            WriteBufferChar( c );
+        } else if( ONE_CASE_EQUAL( prevc, 'e' ) && ( c == '+' || c == '-' ) ) {
+            WriteBufferChar( c );
+            if( CompFlags.extensions_enabled ) {
+                /* concession to existing practice...
+                    #define A2 0x02
+                    #define A3 0xaa0e+A2
+                    // users want: 0xaa0e + 0x02
+                    // not: 0xaa0e + A2 (but, this is what ISO C requires!)
 
-                        after the 'sign', we bail out if we don't find a digit
-                    */
-                    prevc = c;
-                    c = saveNextChar();
-                    if(( CharSet[c] & C_DI ) == 0 ) {
-                        // this check will kick out on a '+' and '-' also
-                        break;
-                    }
+                    after the 'sign', we bail out if we don't find a digit
+                 */
+                prevc = c;
+                c = NextChar();
+                if(( CharSet[c] & C_DI ) == 0 ) {
+                    // this check will kick out on a '+' and '-' also
+                    break;
                 }
-                continue;
+                WriteBufferChar( c );
             }
+        } else {
+            break;
         }
-        break;
     }
-    Buffer[--TokenLen] = '\0';
+    WriteBufferNullChar();
     return( T_PPNUMBER );
 }
 
@@ -1575,7 +1403,7 @@ static TOKEN scanPPDigit( bool expanding )
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
     TokenLen = 1;
-    return( scanPPNumber() );
+    return( doScanPPNumber() );
 }
 
 static TOKEN scanPPDot( bool expanding )
@@ -1587,11 +1415,12 @@ static TOKEN scanPPDot( bool expanding )
     SrcFileCurrentLocation();
     Buffer[0] = '.';
     TokenLen = 1;
-    c = saveNextChar();
+    c = NextChar();
     if( c >= '0' && c <= '9' ) {
-        return( scanPPNumber() );
+        WriteBufferChar( c );
+        return( doScanPPNumber() );
     } else {
-        return( scanDotSomething( c ) );
+        return( doScanDotSomething( c ) );
     }
 }
 
@@ -1601,29 +1430,16 @@ static TOKEN scanString( bool expanding )
     return( doScanString( TYP_CHAR, expanding ) );
 }
 
-static TOKEN scanStringContinue( bool expanding )
-{
-    SrcFileCurrentLocation();
-    return( doScanString( TYP_CHAR, expanding ) );
-}
-
-static TOKEN scanLStringContinue( bool expanding )
-{
-    SrcFileCurrentLocation();
-    return( doScanString( TYP_WCHAR, expanding ) );
-}
-
 static TOKEN scanCharConst( bool expanding )
 {
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
     TokenLen = 1;
-    return( charConst( TYP_CHAR, expanding ) );
+    return( doScanCharConst( TYP_CHAR, expanding ) );
 }
 
 static TOKEN scanNewline( bool expanding )
 {
-    DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
     if( PPControl & PPCTL_EOL ) {
         return( T_NULL );
     }
@@ -1634,7 +1450,6 @@ static TOKEN scanCarriageReturn( bool expanding )
 {
     int         c;
 
-    DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
     // under DOS-like systems, '\r' is often followed by '\n'
     // so we perform a quick check and perform the '\n' code right away
     c = NextChar();
@@ -1667,8 +1482,6 @@ static TOKEN scanInvalid( bool expanding )
 
 static TOKEN scanEof( bool expanding )
 {
-    DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
-
     /* unused parameters */ (void)expanding;
 
     return( T_EOF );
@@ -1691,9 +1504,8 @@ TOKEN ScanToken( bool expanding )
 static void nextMacroToken( void )
 {
     do {
-        CurToken = T_NULL;
         if( CompFlags.use_macro_tokens ) {
-            GetMacroToken( false );
+            CurToken = GetMacroToken( false );
             if( CurToken == T_NULL ) {
                 CurToken = dispatchFunc( false );
             }
@@ -1703,15 +1515,33 @@ static void nextMacroToken( void )
     } while( CurToken == T_WHITE_SPACE );
 }
 
+TOKEN NextToken( void )
+/*********************/
+{
+#ifdef XTRA_RPT
+    ExtraRptIncrementCtr( nextTokenCalls );
+    if( tokenSource == nextMacroToken ) {
+        ExtraRptIncrementCtr( nextTokenNormal );
+    }
+#endif
+    if( CurToken == T_SAVED_ID ) {
+        ExtraRptIncrementCtr( nextTokenSavedId );
+        CurToken = LAToken;
+        return( CurToken );
+    }
+    (*tokenSource)();
+#ifndef NDEBUG
+    CtxScanToken();
+    DumpToken();
+#endif
+    return( CurToken );
+}
 
 void ScanInit( void )
 /*******************/
 {
     uint_8  *p;
 
-#ifndef NDEBUG
-    _BufferOverrun = BUFFER_OVERRUN_CHECK;
-#endif
     tokenSource = nextMacroToken;
     ReScanPtr = NULL;
     PPControl = PPCTL_NORMAL;
@@ -1721,8 +1551,6 @@ void ScanInit( void )
     memset( &ClassTable['a'], SCAN_NAME, 26 );
     memset( &ClassTable['0'], SCAN_NUM, 10 );
     ClassTable[LCHR_EOF] = SCAN_EOF;
-    ClassTable[LCHR_CONTINUE_STRING] = SCAN_STRING2;
-    ClassTable[LCHR_CONTINUE_LSTRING] = SCAN_LSTRING2;
     for( p = InitClassTable; *p != '\0'; p += 2 ) {
         ClassTable[p[0]] = p[1];
     }
@@ -1744,7 +1572,7 @@ bool InitPPScan( void )
 {
     if( scanFunc[SCAN_NUM] == scanNum ) {
         scanFunc[SCAN_NUM] = scanPPDigit;
-        scanFunc[SCAN_FLOAT] = scanPPDot;
+        scanFunc[SCAN_DOT] = scanPPDot;
         return( true );         // indicate changed to PP mode
     }
     return( false );            // indicate already in PP mode
@@ -1756,7 +1584,7 @@ void FiniPPScan( bool ppscan_mode )
 {
     if( ppscan_mode ) {                 // if InitPPScan() changed into PP mode
         scanFunc[SCAN_NUM] = scanNum; // reset back to normal mode
-        scanFunc[SCAN_FLOAT] = scanFloat;
+        scanFunc[SCAN_DOT] = scanDot;
     }
 }
 
@@ -1787,8 +1615,7 @@ void GetNextToken( void )       // used ONLY if generating pre-processed output
 /***********************/
 {
     if( CompFlags.use_macro_tokens ) {
-        CurToken = T_NULL;
-        GetMacroToken( false );
+        CurToken = GetMacroToken( false );
         if( CurToken == T_NULL ) {
             // prevents macro expansion from merging with trailing text
             // to form new tokens in pre-processed output

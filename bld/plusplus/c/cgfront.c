@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 #include "cgfront.h"
 #include "memmgr.h"
 #include "codegen.h"
-#include "toggle.h"
 #include "label.h"
 #include "cgsegid.h"
 #include "initdefs.h"
@@ -50,8 +49,10 @@
 #include "tgtenv.h"
 #include "compinfo.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
+    #include "pragdefn.h"
+    #include "togglesd.h"
 #endif
+
 
 #define CS_LABEL_BLOCK  4       // number of CS labels to allocate at a time
 
@@ -80,12 +81,12 @@ static struct {                  // FLAGS FOR CGFRONT
 static void cgfront_debug(      // DEBUGGING ROUTINE
     char *str )                 // - prefix
 {
-    if( PragDbgToggle.dump_emit_ic ) {
+    if( TOGGLEDBG( dump_emit_ic ) ) {
         printf( "%s\n", str );
     }
 }
 
-#define dump_label( inst ) if( PragDbgToggle.dump_labels ) inst
+#define dump_label( inst ) if( TOGGLEDBG( dump_labels ) ) inst
 #else
 #define cgfront_debug( str )
 #define dump_label( inst )
@@ -311,7 +312,7 @@ void CgFrontDbgLine(            // SET LINE FOR DEBUGGING
     gen = getGenData();
     emitSourcePosn( gen, posn );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_tokens || PragDbgToggle.dump_emit_ic ) {
+    if( TOGGLEDBG( dump_tokens ) || TOGGLEDBG( dump_emit_ic ) ) {
         printf( "CgFrontDbgLine: %d\n", posn->line );
     }
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@
 #include "redefby.h"
 #include "intrface.h"
 #include "makeblk.h"
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
 #include "x86objd.h"
 #include "x86obj.h"
 #endif
@@ -110,7 +110,7 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
     cn                  call;
     type_class_def      type_class;
     name                *mem;
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
     void                *cookie;
 #endif
 
@@ -133,7 +133,7 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
     } else {
         call->ins->head.opcode = OP_CALL_INDIRECT;
         type_class = CallState( aux, tipe, call->state );
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
         cookie = FEAuxInfo( aux, VIRT_FUNC_REFERENCE );
         if( cookie != NULL )
             TellObjVirtFuncRef( cookie );
@@ -297,7 +297,7 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
     temp->v.usage |= USE_IN_ANOTHER_BLOCK;
 
     no_temp = ( type_class == XX );
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
     // The arguments of an interrupt routine coming in on the stack are used
     // for input and output; routine epilog pops them into registers. Handle
     // them specially to stop the optimizer from eliminating the writes (don't
@@ -420,7 +420,7 @@ void    AddCallIns( instruction *ins, cn call ) {
         }
         // don't do this for far16 functions since they are handled
         // in a weird manner by Far16Parms and will not call data labels
-#if _TARGET & (_TARG_80386 | _TARG_IAPX86)
+#if _TARGET & (_TARG_80386 | _TARG_8086)
         if( (attr & FE_PROC) == 0 && (ins->flags.call_flags & CALL_FAR16) == 0 ) {
 #else
         if( (attr & FE_PROC) == 0 ) {
@@ -428,7 +428,7 @@ void    AddCallIns( instruction *ins, cn call ) {
             // indirect since calling data labels directly
             // screws up the back end
             addr_type_class = WD;
-#if _TARGET & (_TARG_80386|_TARG_IAPX86)
+#if _TARGET & (_TARG_80386|_TARG_8086)
             if( *(call_class *)FindAuxInfo( call_name, CALL_CLASS ) & FAR_CALL ) {
                 addr_type_class = CP;
             }
@@ -521,7 +521,7 @@ void    ReserveStack( call_state *state, instruction *prev, type_length len ) {
     instruction *ins;
 
     CurrProc->targ.never_sp_frame = true;
-    reg = AllocRegName( HW_EAX );
+    reg = AllocRegName( HW_xAX );
     switch( len ) {
     case 8:
         ins = MakeUnary( OP_PUSH, reg, NULL, WD );
@@ -576,7 +576,7 @@ void    ParmIns( pn parm, call_state *state ) {
             } else if( !CvtOk( TypeClass( addr->tipe ), reg->n.type_class ) ) {
                 ins = NULL;
                 FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_uint)parm->num );
-  #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+  #if _TARGET & ( _TARG_8086 | _TARG_80386 )
             } else if( HW_CEqual( reg->r.reg, HW_ABCD ) ) {
                 ins = NULL;
                 FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_uint)parm->num );
@@ -644,7 +644,7 @@ void    BGReturn( an retval, type_def *tipe ) {
     last_ins = NULL;
     if( retval != NULL ) {
         tipe_type_class = TypeClass( tipe );
-        type_class = ReturnClass( tipe, CurrProc->state.attr );
+        type_class = ReturnTypeClass( tipe, CurrProc->state.attr );
         UpdateReturn( &CurrProc->state, tipe, type_class, FEAuxInfo( AskForLblSym(CurrProc->label), AUX_LOOKUP ) );
         if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
             DbgRetLoc();
@@ -719,7 +719,7 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_typ
         ins = MakeMove( STempOffset( temp, offset, using_type_class, size ), NULL, using_type_class );
         AddIns( ins );
         curr->next = last;
-        curr->name = InsName( ins, ClassType( using_type_class ) );
+        curr->name = InsName( ins, TypeOfTypeClass( using_type_class ) );
         curr->name->flags = parm->name->flags;
         curr->alignment = 4;
         last = curr;

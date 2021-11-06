@@ -9,9 +9,9 @@ The
 function writes changes the protections for the pages
 encompassing the memory mapping at
 .arg address
-and measuring 
+and measuring
 .arg len
-bytes based on the 
+bytes based on the
 .arg flags
 argument as specified.
 .np
@@ -50,7 +50,7 @@ violates a the permissions that a process has to the
 mapped data.
 .term EAGAIN
 Write access was requested when the memory was originally
-mapped with the 
+mapped with the
 .kw MAP_PRIVATE
 flag and the system lacks the resources to create a private
 page.
@@ -72,5 +72,5 @@ is not supported on the underlying system
 .see begin
 .seelist mmap
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

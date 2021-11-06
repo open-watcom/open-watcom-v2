@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 #include "rterrno.h"
 #include "liballoc.h"
 #include "_direct.h"
-#include "_doslfn.h"
+#include "tinyio.h"
 #include "pathmac.h"
 
 
@@ -80,7 +81,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 
     /*** Copy the pathname into a buffer and quit ***/
 #ifdef __WIDECHAR__
-    if( mbstowcs( buf, cwd, size ) == -1 ) {
+    if( mbstowcs( buf, cwd, size ) == (size_t)-1 ) {
         return( NULL );
     }
     return( buf );

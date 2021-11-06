@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,17 +30,6 @@
 ****************************************************************************/
 
 
-extern bool             ProcImport( void );
-extern bool             ProcExport( void );
-extern bool             ProcSegment( void );
-extern bool             ProcAlignment( void );
-extern bool             ProcHeapSize( void );
-extern bool             ProcOffset( void );
-extern bool             ProcNoRelocs( void );
-
-extern bool             ProcXDbg( void );
-extern bool             ProcIntDbg( void );
-
 extern void             InitCmdFile( void );
 extern void             SetSegMask(void);
 extern char             *GetNextLink( void );
@@ -60,5 +50,6 @@ extern void             BurnSystemList( void );
 extern void             AddLibPaths( const char *, size_t, bool );
 extern void             AddLibPathsToEnd( const char * );
 extern void             AddLibPathsToEndList( const char *list );
-extern file_list        *AddObjLib( const char *, lib_priority );
+extern void             PressKey( void );
 extern int              DoBuffCmdParse( const char *cmd );
+extern char             *CmdFileName( void );

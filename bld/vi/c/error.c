@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,21 +34,24 @@
 #include "win.h"
 #include "myprtf.h"
 
-static void readErrorMsgData( void );
+#define ERROR_COUNT (sizeof( errorList ) / sizeof( errorList[0] ))
+
+static char     *errorTokens = NULL;
+static int      *errorValues = NULL;
+static bool     errorTokensLoaded = false;
+static char     strBuff[25];
+static const char   *errorList[] = {
+    #define pick(n,t,i) t,
+    #include "_errs.h"
+    #undef pick
+};
 
 /*
  * StartupError - process fatal startup error
  */
 void StartupError( vi_rc err )
 {
-    char    *str;
-
-    if( err == ERR_NO_MEMORY ) {
-        str = "Out of memory";
-    } else {
-        str = GetErrorMsg( err );
-    }
-    MyPrintf( "%s (fatal)\n", str );
+    MyPrintf( "%s (fatal)\n", GetErrorMsg( err ) );
 
     FiniMem();
 
@@ -62,15 +65,8 @@ void StartupError( vi_rc err )
  */
 void FatalError( vi_rc err )
 {
-    char *str;
-
     SetPosToMessageLine();
-    if( err == ERR_NO_MEMORY ) {
-        str = "Out of memory";
-    } else {
-        str = GetErrorMsg( err );
-    }
-    MyPrintf( "%s (fatal)\n", str );
+    MyPrintf( "%s (fatal)\n", GetErrorMsg( err ) );
     ExitEditor( -1 );
 
 } /* FatalError */
@@ -80,58 +76,43 @@ void FatalError( vi_rc err )
  */
 void Die( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 
     SetPosToMessageLine();
     MyPrintf( "Failure: " );
-    va_start( al, str );
-    MyVPrintf( str, al );
-    va_end( al );
+    va_start( args, str );
+    MyVPrintf( str, args );
+    va_end( args );
     MyPrintf( "\n" );
     ExitEditor( -1 );
 
 } /* Die */
 
-static char strBuff[25];
-static bool readMsgData = false;
-static int  errCnt;
-static char *errorList;
-
 /*
  * GetErrorMsg - return pointer to message
  */
-char *GetErrorMsg( vi_rc err )
+const char *GetErrorMsg( vi_rc err )
 {
-    char        *msg;
-
-    if( !readMsgData ) {
-        readErrorMsgData();
-    }
     LastError = err;
     if( EditFlags.InputKeyMapMode ) {
         DoneInputKeyMap();
         EditFlags.NoInputWindow = false;
         EditFlags.Dotable = false;
     }
-    if( err < 0 || err > errCnt ) {
+    if( err < 0 || err >= ERROR_COUNT ) {
         MySprintf( strBuff, "Err no. %d (no msg)", err );
         return( strBuff );
     }
-    msg = GetTokenString( errorList, (int)err );
-    if( msg == NULL ) {
-        MySprintf( strBuff, "Err no. %d (no msg)", err );
-        return( strBuff );
-    }
-    return( msg );
+    return( errorList[err] );
 
 } /* GetErrorMsg */
 
 /*
  * Error - print an error message in the message window
  */
-void Error( char *str, ... )
+void Error( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        tmp[MAX_STR];
 
     if( !BAD_ID( message_window_id ) ) {
@@ -139,9 +120,9 @@ void Error( char *str, ... )
                             messagew_info.hilight_style.foreground );
         WindowAuxUpdate( message_window_id, WIND_INFO_BACKGROUND_COLOR,
                             messagew_info.hilight_style.background );
-        va_start( al, str );
-        MyVSprintf( tmp, str, al );
-        va_end( al );
+        va_start( args, str );
+        MyVSprintf( tmp, str, args );
+        va_end( args );
 
         SourceError( tmp );
         Message1( "%s", tmp );
@@ -152,12 +133,12 @@ void Error( char *str, ... )
                             messagew_info.text_style.background );
         MyBeep();
     } else {
-        va_start( al, str );
+        va_start( args, str );
 #ifndef __WIN__
-        MyVPrintf( str, al );
+        MyVPrintf( str, args );
         MyPrintf( "\n" );
 #endif
-        va_end( al );
+        va_end( args );
     }
 
 } /* Error */
@@ -165,9 +146,9 @@ void Error( char *str, ... )
 /*
  * ErrorBox - show an error message in a dialog box
  */
-void ErrorBox( char *str, ... )
+void ErrorBox( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        tmp[MAX_STR];
 
     if( !BAD_ID( message_window_id ) ) {
@@ -175,9 +156,9 @@ void ErrorBox( char *str, ... )
                             messagew_info.hilight_style.foreground );
         WindowAuxUpdate( message_window_id, WIND_INFO_BACKGROUND_COLOR,
                             messagew_info.hilight_style.background );
-        va_start( al, str );
-        MyVSprintf( tmp, str, al );
-        va_end( al );
+        va_start( args, str );
+        MyVSprintf( tmp, str, args );
+        va_end( args );
 
         SourceError( tmp );
         Message1Box( "%s", tmp );
@@ -188,49 +169,75 @@ void ErrorBox( char *str, ... )
                             messagew_info.text_style.background );
         MyBeep();
     } else {
-        va_start( al, str );
+        va_start( args, str );
 #ifndef __WIN__
-        MyVPrintf( str, al );
+        MyVPrintf( str, args );
         MyPrintf( "\n" );
 #endif
-        va_end( al );
+        va_end( args );
     }
 
 } /* Error */
 
-static bool errmsg_alloc( int cnt )
-{
-    errCnt = cnt;
-    return( false );
-}
 
-static bool errmsg_save( int i, const char *buff )
+static bool err_alloc( int cnt )
 {
-    /* unused parameters */ (void)i; (void)buff;
-
+    errorValues = _MemAllocArray( int, cnt );
     return( true );
 }
 
+static bool err_save( int i, const char *buff )
+{
+    errorValues[i] = atoi( buff );
+    return( true );
+}
 
 /*
- * readErrorMsgData - do just that
+ * ReadErrorTokens - do just that
  */
-static void readErrorMsgData( void )
+vi_rc ReadErrorTokens( void )
 {
     vi_rc       rc;
 
-    rc = ReadDataFile( "errmsg.dat", &errorList, errmsg_alloc, errmsg_save, true );
-    if( rc != ERR_NO_ERR ) {
-        return;
+    if( errorTokensLoaded ) {
+        return( ERR_NO_ERR );
     }
-    readMsgData = true;
 
-} /* readErrorMsgData */
+    rc = ReadDataFile( "error.dat", &errorTokens, err_alloc, err_save, true );
+    if( rc == ERR_NO_ERR ) {
+        errorTokensLoaded = true;
+    } else if( rc == ERR_FILE_NOT_FOUND ) {
+        rc = ERR_SRC_NO_ERROR_DATA;
+    }
+    return( rc );
+
+} /* ReadErrorTokens */
+
+/*
+ * GetErrorTokenValue
+ */
+vi_rc GetErrorTokenValue( int *value, const char *str )
+{
+    int     i;
+    vi_rc   rc;
+
+    rc = ReadErrorTokens();
+    if( rc == ERR_NO_ERR ) {
+        i = Tokenize( errorTokens, str, true );
+        if( i != TOK_INVALID ) {
+            *value = errorValues[i];
+        } else {
+            rc = NO_NUMBER;
+        }
+    }
+    return( rc );
+
+} /* GetErrorTokenValue */
 
 void ErrorFini( void )
 {
-    MemFree( errorList );
-    MemFree( ErrorTokens );
-    MemFree( ErrorValues );
+    MemFree( errorTokens );
+    MemFree( errorValues );
+    errorTokensLoaded = false;
 
 } /* ErrorFini */

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +43,8 @@
 #include "gsubprog.h"
 
 
-static  void    GetImplType( sym_id sym ) {
-//=========================================
-
+static  void    GetImplType( sym_id sym )
+//=======================================
 // Get the implicit type of a symbol.
 // The following is to dump the proper function type if:
 //    FUNCTION F()        - Type is REAL
@@ -56,21 +56,22 @@ static  void    GetImplType( sym_id sym ) {
 //    IMPLICIT REAL*8 (I) - Type is now DOUBLE PRECISION
 //    RETURN              - When we dump ARGLIST here, we better
 //    END                   update the type
-
-    if( ( sym->u.ns.flags & SY_TYPE ) == 0 ) {
+{
+    if( (sym->u.ns.flags & SY_TYPE) == 0 ) {
         sym->u.ns.flags |= SY_TYPE;
-        sym->u.ns.u1.s.typ = ImplType( sym->u.ns.name[ 0 ] );
-        sym->u.ns.xt.size = ImplSize( sym->u.ns.name[ 0 ] );
+        sym->u.ns.u1.s.typ = ImplType( sym->u.ns.name[0] );
+        sym->u.ns.xt.size = ImplSize( sym->u.ns.name[0] );
     }
 }
 
 
-static  void    ChkEntryType( sym_id sym, sym_id entry ) {
-//========================================================
-
-    // when we compile ENTRY statement, we make sure that its class
-    // matches the class of the main entry
-    if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) return;
+static  void    ChkEntryType( sym_id sym, sym_id entry )
+//======================================================
+// when we compile ENTRY statement, we make sure that its class
+// matches the class of the main entry
+{
+    if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE )
+        return;
     if( (entry->u.ns.u1.s.typ == FT_CHAR) || (entry->u.ns.u1.s.typ == FT_STRUCTURE) ) {
         if( sym->u.ns.u1.s.typ != entry->u.ns.u1.s.typ ) {
             NamNamErr( EY_TYPE_MISMATCH, entry, sym );
@@ -91,11 +92,10 @@ static  void    ChkEntryType( sym_id sym, sym_id entry ) {
 }
 
 
-void    DumpEntries(void) {
-//=====================
-
+void    DumpEntries( void )
+//=========================
 // Dump argument lists.
-
+{
     parameter   *curr_parm;
     entry_pt    *dum_lst;
 
@@ -106,19 +106,16 @@ void    DumpEntries(void) {
     sym_id      sym;
     sym_id      fn_shadow;
 
-    dum_lst = Entries;
-    while( dum_lst != NULL ) {
+    for( dum_lst = Entries; dum_lst != NULL; dum_lst = dum_lst->link ) {
         args_cnt = 0;
-        curr_parm = dum_lst->parms;
-        while( curr_parm != NULL ) {
+        for( curr_parm = dum_lst->parms; curr_parm != NULL; curr_parm = curr_parm->link ) {
             ++args_cnt;
-            curr_parm = curr_parm->link;
         }
         sym = dum_lst->id;
         GetImplType( sym );
         ChkEntryType( sym, SubProgId );
         typ = PT_NOTYPE;
-        if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
+        if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
             fn_shadow = FindShadow( sym );
             fn_shadow->u.ns.xt.size = sym->u.ns.xt.size;
             fn_shadow->u.ns.u1.s.typ = sym->u.ns.u1.s.typ;
@@ -127,11 +124,10 @@ void    DumpEntries(void) {
                 typ |= VAR_LEN_CHAR;
             }
         }
-        if( ( ProgSw & PS_ERROR ) == 0 ) {
+        if( (ProgSw & PS_ERROR) == 0 ) {
             GArgList( dum_lst, args_cnt, typ );
         }
-        curr_parm = dum_lst->parms;
-        while( curr_parm != NULL ) {
+        for( curr_parm = dum_lst->parms; curr_parm != NULL; curr_parm = curr_parm->link ) {
             if( curr_parm->flags & ARG_STMTNO ) {
                 typ = PT_NOTYPE;
                 code = PC_STATEMENT;
@@ -140,17 +136,17 @@ void    DumpEntries(void) {
                 GetImplType( sym );
                 typ = ParmType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size );
                 flags = sym->u.ns.flags;
-                if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+                if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
                     code = PC_FN_OR_SUB;
-                    if( ( flags & SY_SUBPROG_TYPE ) != SY_FN_OR_SUB ) {
+                    if( (flags & SY_SUBPROG_TYPE) != SY_FN_OR_SUB ) {
                         code = PC_PROCEDURE;
-                        if( ( flags & SY_SUBPROG_TYPE ) != SY_FUNCTION ) {
+                        if( (flags & SY_SUBPROG_TYPE) != SY_FUNCTION ) {
                             typ = PT_NOTYPE;
                         }
                     }
                 } else {
                     code = PC_VARIABLE;
-                    if( ( flags & SY_SUBSCRIPTED ) != 0 ) {
+                    if( (flags & SY_SUBSCRIPTED) != 0 ) {
                         code = PC_ARRAY_NAME;
                     }
                     if( ( typ == PT_CHAR ) && ( sym->u.ns.xt.size == 0 ) ) {
@@ -158,36 +154,28 @@ void    DumpEntries(void) {
                     }
                 }
             }
-            if( ( ProgSw & PS_ERROR ) == 0 ) {
+            if( (ProgSw & PS_ERROR) == 0 ) {
                 GArgInfo( sym, code, typ );
             }
-            curr_parm = curr_parm->link;
         }
-        dum_lst = dum_lst->link;
     }
 }
 
 
-void    EnPurge(void) {
-//=================
-
+void    EnPurge( void )
+//=====================
 // Free up all the entry list information.
-
+{
     parameter   *curr_parm;
-    entry_pt    *dum_lst;
     pointer     next;
 
-    dum_lst = Entries;
-    while( dum_lst != NULL ) {
-        curr_parm = dum_lst->parms;
-        while( curr_parm != NULL ) {
+    while( Entries != NULL ) {
+        for( curr_parm = Entries->parms; curr_parm != NULL; curr_parm = next ) {
             next = curr_parm->link;
             FMemFree( curr_parm );
-            curr_parm = next;
         }
-        next = dum_lst->link;
-        FMemFree( dum_lst );
-        dum_lst = next;
+        next = Entries->link;
+        FMemFree( Entries );
+        Entries = next;
     }
-    Entries = NULL;
 }

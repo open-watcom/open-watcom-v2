@@ -46,11 +46,11 @@ In most cases, the index heading is the letter which starts the
 index terms following it.
 :INCLUDE file='rfltixh'.
 :DL.
-:SET symbol=local value='index heading.'.
+:SET symbol=local value='index heading'.
 :INCLUDE file='rflapes'.
 :INCLUDE file='rflapos'.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 indent, pre_skip and post_skip attributes
 (see :HDREF refid='fnlink'.).
@@ -107,13 +107,13 @@ index entry levels one and two.
 :I2 refid='lti2'.lti2
 :I2 refid='lti3'.lti3
 :DL.
-:SET symbol=local value='index entry.'.
+:SET symbol=local value='index entry'.
 :INCLUDE file='rflapes'.
 :INCLUDE file='rflapos'.
 :INCLUDE file='rflaskp'.
 each entry in an index level.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 wrap_indent, skip, pre_skip and post_skip attributes
 (see :HDREF refid='fnlink'.).
@@ -187,7 +187,7 @@ list part.
 list part.
 :INCLUDE file='rflalii'.
     list part.
-:SET symbol=local value='list part.'.
+:SET symbol=local value='list part'.
 :INCLUDE file='rflapes'.
 :INCLUDE file='rflapos'.
 :INCLUDE file='rflaspc'.
@@ -202,7 +202,7 @@ Define the characteristics of the long quote entity.
 long quote.
 :INCLUDE file='rflarin'.
 long quote.
-:SET symbol=local value='long quote.'.
+:SET symbol=local value='long quote'.
 :INCLUDE file='rflapes'.
 :INCLUDE file='rflapos'.
 :INCLUDE file='rflaspc'.
@@ -222,7 +222,7 @@ Define the characteristics of the note entity.
 note.
 :INCLUDE file='rflarin'.
 note.
-:SET symbol=local value='note.'.
+:SET symbol=local value='note'.
 :INCLUDE file='rflapes'.
 :INCLUDE file='rflapos'.
 :INCLUDE file='rflafon'.
@@ -243,7 +243,7 @@ The length of this string determines indentation of the note text.
 Define the characteristics of the ordered list entity.
 :INCLUDE file='rfltol'.
 :DL.
-:SET symbol=local value='ordered list.'.
+:SET symbol=local value='ordered list'.
 :SET symbol=loc2 value='ol'.
 :INCLUDE file='rflalev'.
 :INCLUDE file='rflalin'.
@@ -278,7 +278,7 @@ align attibute
 Define the characteristics of the open entity in the letter tag format.
 :INCLUDE file='rfltopen'.
 :DL.
-:SET symbol=local value='opening salutation.'.
+:SET symbol=local value='opening salutation'.
 :INCLUDE file='rflapts'.
 :INCLUDE file='rflafon'.
     opening salutation.
@@ -296,7 +296,7 @@ pre_top_skip attribute
 Define the characteristics of the paragraph entity.
 :INCLUDE file='rfltp'.
 :DL.
-:SET symbol=local value='paragraph.'.
+:SET symbol=local value='paragraph'.
 :INCLUDE file='rflalii'.
     paragraph.
 :INCLUDE file='rflapes'.
@@ -338,7 +338,7 @@ Define the boundaries of the document on the output page.
 Define the characteristics of the paragraph continuation entity.
 :INCLUDE file='rfltpc'.
 :DL.
-:SET symbol=local value='paragraph continuation.'.
+:SET symbol=local value='paragraph continuation'.
 :INCLUDE file='rflalii'.
     paragraph continuation.
 :INCLUDE file='rflapes'.
@@ -350,13 +350,13 @@ Define the characteristics of the preface section and preface
 heading.
 :INCLUDE file='rfltpref'
 :DL
-:SET symbol=local value='preface heading.'.
+:SET symbol=local value='preface heading'.
 :INCLUDE file='rflapos'.
 If the preface heading is not displayed (the header attribute has
 a value of NO), the post-skip value has no effect.
 :INCLUDE file='rflapts'.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 pre_top_skip and post_skip attributes
 (see :HDREF refid='fnlink'.).
@@ -387,7 +387,7 @@ This tag is equivalent to the :hp2.&gml.convert:eHP2. tag.
 Define the characteristics of the simple list entity.
 :INCLUDE file='rfltsl'.
 :DL.
-:SET symbol=local value='simple list.'.
+:SET symbol=local value='simple list'.
 :SET symbol=loc2 value='sl'.
 :INCLUDE file='rflalev'.
 :INCLUDE file='rflalin'.
@@ -412,7 +412,7 @@ Define the characteristics of the
 subject entity in the letter tag format.
 :INCLUDE file='rfltsubj'
 :DL.
-:SET symbol=local value='subject line.'.
+:SET symbol=local value='subject line'.
 :INCLUDE file='rflalad'.
 :INCLUDE file='rflapgp'.
     subject line
@@ -439,7 +439,7 @@ title line.
 The font value is linked to the
 left_adjust, right_adjust, pre_top_skip and skip attributes
 (see :HDREF refid='fnlink'.).
-:SET symbol=local value='title lines.'.
+:SET symbol=local value='title lines'.
 :INCLUDE file='rflapts'.
 :INCLUDE file='rflaskp'.
     title lines.
@@ -459,7 +459,7 @@ title part.
 Define the characteristics of the TO entity in the letter tag format.
 :INCLUDE file='rfltto'.
 :DL.
-:SET symbol=local value='TO text.'.
+:SET symbol=local value='TO text'.
 :INCLUDE file='rflalad'.
 :INCLUDE file='rflapgp'.
 TO text
@@ -503,8 +503,7 @@ where :HP1.n:eHP1. is between zero and six inclusive.
 :I2 refid='lttoch5'.lttoch5
 :I2 refid='lttoch6'.lttoch6
 :DL.
-:SET symbol=local
- value='group of level &amp.hp2.n&amp.ehp2. table of contents heading entries.'.
+:SET symbol=local value='group of level &amp.hp2.n&amp.ehp2. table of contents heading entries'.
 :SET symbol=loca1 value='table of contents'.
 :INCLUDE file='rflgroup'.
 :DT.indent
@@ -552,7 +551,7 @@ size attribute
 Define the characteristics of the unordered list entity.
 :INCLUDE file='rfltul'.
 :DL.
-:SET symbol=local value='unordered list.'.
+:SET symbol=local value='unordered list'.
 :SET symbol=loc2 value='ul'.
 :INCLUDE file='rflalev'.
 :INCLUDE file='rflalin'.
@@ -612,7 +611,7 @@ if the threshold requirement is not met.
 Define the characteristics of the example entity.
 :INCLUDE file='rfltxmp'.
 :DL.
-:SET symbol=local value='example.'.
+:SET symbol=local value='example'.
 :INCLUDE file='rflalin'.
 example.
 :INCLUDE file='rflarin'.
@@ -622,7 +621,7 @@ example.
 :INCLUDE file='rflaspc'.
 example.
 :INCLUDE file='rflafon'.
-&local.
+&local..
 The font value is linked to the
 left_indent, right_indent, pre_skip and post_skip attributes
 (see :HDREF refid='fnlink'.).

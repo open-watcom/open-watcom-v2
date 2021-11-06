@@ -1,9 +1,10 @@
 .chap *refid=fio Input/Output
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 FORTRAN 77 provides a means of communicating information or
 .us data
@@ -231,7 +232,8 @@ In addition, the
 .kw ENDFILE
 statements may refer to files that do not exist (and in so doing, may
 very well cause the file to be created).
-.begnote Properties of External Files
+.begnote
+.notehdr Properties of External Files
 .ix 'external file' 'properties'
 .note Name
 .ix 'external file' 'name'
@@ -347,7 +349,8 @@ a character variable, character array element or character substring
 can contain only one record but an internal file that is a character
 array can contain several records (as many as there are elements in the
 array).
-.begnote Properties of Internal Files
+.begnote
+.notehdr Properties of Internal Files
 .ix 'internal file' 'properties'
 .note Records
 .ix 'internal file' 'records'
@@ -371,7 +374,7 @@ A record may be read only if the variable, array element, or substring
 is defined (i.e., it has been assigned some value).
 Definition may not only result from an output statement such as
 .kw WRITE
-.ct .li .
+.period
 It may also be defined through other means; for example, a character
 assignment statement.
 .note Position
@@ -435,8 +438,8 @@ After checking for an
 or
 .mono "R"
 as the first character of the character variable
-.id INPUT,
-the appropriate internal
+.id INPUT
+.ct , the appropriate internal
 .kw READ
 statement is executed.
 .endlevel
@@ -573,22 +576,22 @@ under consideration to discover which specifiers are allowed and
 what they mean.
 .begnote $setptnt 16
 .ix 'UNIT='
-.mnote [UNIT =] u
+.note [UNIT =] u
 the unit specifier
 .ix 'FMT='
-.mnote [FMT =] f
+.note [FMT =] f
 the format specifier
 .ix 'REC='
-.mnote REC = rn
+.note REC = rn
 the record specifier
 .ix 'IOSTAT='
-.mnote IOSTAT = ios
+.note IOSTAT = ios
 the input/output status specifier
 .ix 'ERR='
-.mnote ERR = s
+.note ERR = s
 the error specifier
 .ix 'END='
-.mnote END = s
+.note END = s
 the end-of-file specifier
 .endnote
 .np
@@ -605,7 +608,7 @@ We shall look at these specifiers in more detail.
 The form of a unit specifier in an input/output statement is:
 .begnote
 .ix 'UNIT='
-.mnote [UNIT =] u
+.note [UNIT =] u
 .id u
 is an
 .us external unit identifier
@@ -645,7 +648,7 @@ item in the list of specifiers.
 The form of a format specifier in an input/output statement is:
 .begnote
 .ix 'FMT='
-.mnote [FMT =] f
+.note [FMT =] f
 .id f
 is a
 .us format identifier.
@@ -714,7 +717,7 @@ must not be specified for the first item in the list.
 The form of a record specifier in an input/output statement is:
 .begnote
 .ix 'REC='
-.mnote REC = rn
+.note REC = rn
 .id rn
 is an integer expression whose value must be positive.
 It is the number of the record to be read when a file is
@@ -734,7 +737,7 @@ The form of an input/output status specifier in an input/output
 statement is:
 .begnote
 .ix 'IOSTAT='
-.mnote IOSTAT = ios
+.note IOSTAT = ios
 .id ios
 is an integer variable or integer array element.
 It is defined with zero if no error occurs, a positive integer value
@@ -771,12 +774,13 @@ IO-03  ENDFILE statement requires sequential access mode
 The form of an error specifier in an input/output statement is:
 .begnote
 .ix 'ERR='
-.mnote ERR = s
+.note ERR = s
 .id s
 is a statement label.
 When an error occurs, execution is transferred to the statement
 labelled by
-.id s.
+.id s
+.period
 .endnote
 .np
 If an input/output error occurs during the execution of an input/output
@@ -793,12 +797,13 @@ terminated.
 The form of an end-of-file specifier in an input/output statement is:
 .begnote
 .ix 'END='
-.mnote END = s
+.note END = s
 .id s
 is a statement label.
 When an end-of-file condition occurs, execution is transferred to
 the statement labelled by
-.id s.
+.id s
+.period
 .endnote
 .np
 If an end-of-file condition occurs during the execution of an

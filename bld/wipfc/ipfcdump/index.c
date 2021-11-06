@@ -63,7 +63,7 @@ static void processIndex( FILE *in, FILE *out, size_t items )
             uint32_t     position;
             uint16_t   synonymSize;
             uint16_t   total = 0;
-            fread( &offset, sizeof(unsigned long int), 1, in );
+            fread( &offset, sizeof( unsigned long ), 1, in );
             fprintf( out, "    IndexItem.synonyms[%u]: %8.8x (%lu)\n", count2, offset, offset );
             position = ftell( in );
             fseek( in, offset, SEEK_SET );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,7 @@
 #include "dosextx.h"
 #include "dosfile.h"
 #include "pathgrp2.h"
+#include "dbgrmsg.h"
 
 
 #define SIG_OFF         0
@@ -96,10 +97,10 @@ typedef struct
  *      - Trace one instruction. This leaves you at the first instruction
  *        of the 32-bit code
  */
-trap_retval ReqProg_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     char                exe_name[_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
     char                buff[256];
     lm_parms            loadp;
     word_struct         cmdshow;
@@ -155,8 +156,8 @@ trap_retval ReqProg_load( void )
             tid = 0;
         } else {
             DebugeeTask = tid;
-            StopNewTask.loc.segment = FP_SEG( (LPVOID) csip );
-            StopNewTask.loc.offset = FP_OFF( (LPVOID) csip );
+            StopNewTask.loc.segment = _FP_SEG( (LPVOID) csip );
+            StopNewTask.loc.offset = _FP_OFF( (LPVOID) csip );
             ReadMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
                     &StopNewTask.value, 1 );
             ch = '\xcc';
@@ -263,13 +264,11 @@ trap_retval ReqProg_load( void )
             ret->flags |= LD_FLAG_IS_BIG;
             if( tid == 0 ) {
                 WriteMem( IntResult.CS, SIG_OFF, win386sig2, sizeof( DWORD ) );
-                pmsg = DebuggerWaitForMessage( GOING_TO_32BIT_START,
-                                DebugeeTask, RESTART_APP );
+                pmsg = DebuggerWaitForMessage( GOING_TO_32BIT_START, DebugeeTask, RESTART_APP );
                 if( pmsg == FAULT_HIT && IntResult.InterruptNumber == INT_3 ) {
                     IntResult.EIP++;
                     SingleStepMode();
-                    pmsg = DebuggerWaitForMessage( GOING_TO_32BIT_START,
-                                DebugeeTask, RESTART_APP );
+                    pmsg = DebuggerWaitForMessage( GOING_TO_32BIT_START, DebugeeTask, RESTART_APP );
                     if( pmsg != FAULT_HIT || IntResult.InterruptNumber != INT_1 ) {
                         Out((OUT_ERR,"Expected INT_1 not found"));
                         ret->err = WINERR_NOINT1;
@@ -300,7 +299,7 @@ trap_retval ReqProg_load( void )
 }
 
 /*
- * ReqProg_kill
+ * TRAP_CORE( Prog_kill )
  *
  * If it was a task that we attached to (WasStarted), all we do is
  * forgive the last interrupt, and then exit
@@ -316,7 +315,7 @@ trap_retval ReqProg_load( void )
  * second pause - to allow Windows to get on with the unloading of the module,
  * if it is going to.  Ack.
  */
-trap_retval ReqProg_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
@@ -331,7 +330,7 @@ trap_retval ReqProg_kill( void )
             DebuggerWaitForMessage( RELEASE_DEBUGEE, DebugeeTask, RESTART_APP );
         } else {
             TerminateApp( DebugeeTask, NO_UAE_BOX );
-            DebuggerWaitForMessage( KILLING_DEBUGEE, NULL, -1 );
+            DebuggerWaitForMessage( KILLING_DEBUGEE, NULL, NOACTION );
             Out((OUT_LOAD,"Task Terminated(not current)"));
             {
                 DWORD   a;

@@ -12,11 +12,11 @@ To stop document processing before WGML has completed formatting:
 :I1.break
 .choose
 .mouse
-Move the &ptr. pointer to the &g_escape. area at the bottom left
-corner of the screen and &op.\.
+Move the mouse pointer to the &g_escape. area at the bottom left
+corner of the screen and click.
 An error screen indicating that processing has been stopped will be displayed.
 Point to the &g_enter. area at the bottom right corner of the screen
-and &op.\.
+and click.
 .keyboard
 Press the &g_escape. key.
 Alternatively, pressing the &key.Ctrl&ekey. and &key.Break&ekey. keys
@@ -24,10 +24,10 @@ at the same time will stop document processing.
 After pressing the key(s), an error screen will be displayed.
 Press the &g_enter. key to continue.
 .echoose
-:NOTE.&WGML. can be used with or without a &ptr. pointer device.
+:NOTE.&WGML. can be used with or without a mouse pointer device.
 Throughout this chapter both methods are illustrated
 using the style shown above.
-If you are using a &ptr., read the paragraph marked "Mouse:",
+If you are using a mouse, read the paragraph marked "Mouse:",
 otherwise, read the paragraph marked "Keyboard:".
 :H3.Display Areas
 :P.
@@ -62,8 +62,8 @@ was specified.
 After reading the message:
 .choose
 .mouse
-Move the &ptr. pointer to the &g_enter. area at the bottom right
-corner of the screen and &op.\.
+Move the mouse pointer to the &g_enter. area at the bottom right
+corner of the screen and click.
 .keyboard
 Press the &g_enter. key.
 .echoose

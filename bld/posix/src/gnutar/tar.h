@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@
 
 /* from TAR.C */
 extern void    names_notfound( void );
-extern int     name_match( register char *p );
+extern int     name_match( char *p );
 extern void    name_gather( void );
 extern char    *name_next( void );
 extern void    name_close( void );

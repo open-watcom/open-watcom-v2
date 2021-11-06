@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +36,8 @@
 #include <io.h>
 #include <fcntl.h>
 #include "pltypes.h"
-#include "dilintf.h"
 #include "hw386.h"
+#include "dilintf.h"
 #include "pharlap.h"
 #include "dilproto.h"
 #include "trpimp.h"
@@ -175,7 +175,7 @@ void SetDbgTask( void )
     SetPSP( _dil_global._psp );
 }
 
-trap_retval ReqGet_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
@@ -200,7 +200,7 @@ trap_retval ReqGet_sys_config( void )
 }
 
 
-trap_retval ReqMap_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -241,7 +241,7 @@ static bool IsProtSeg( USHORT seg )
     return( FALSE );
 }
 
-trap_retval ReqMachine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -350,7 +350,7 @@ static unsigned short WriteMemory( PTR386 *addr, char *buff, unsigned short requ
 }
 
 
-trap_retval ReqChecksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     unsigned short      len;
     unsigned short      read;
@@ -387,7 +387,7 @@ trap_retval ReqChecksum_mem( void )
 }
 
 
-trap_retval ReqRead_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     PTR386            addr;
     read_mem_req        *acc;
@@ -403,7 +403,7 @@ trap_retval ReqRead_mem( void )
     return( len );
 }
 
-trap_retval ReqWrite_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     PTR386              addr;
     write_mem_req       *acc;
@@ -418,7 +418,7 @@ trap_retval ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRead_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     int                 err;
     read_io_req         *acc;
@@ -450,13 +450,13 @@ trap_retval ReqRead_io( void )
 }
 
 
-trap_retval ReqWrite_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
-    int              err;
-    int              len;
-    write_io_req        *acc;
-    write_io_ret        *ret;
-    void                *data;
+    int             err;
+    int             len;
+    write_io_req    *acc;
+    write_io_ret    *ret;
+    void            *data;
 
     _DBG(("WritePort\r\n"));
     acc = GetInPtr(0);
@@ -465,13 +465,13 @@ trap_retval ReqWrite_io( void )
     ret = GetOutPtr(0);
     switch( len ) {
     case 1:
-        err = dbg_oport( acc->IO_offset, data, 1 );
+        err = dbg_oport( acc->IO_offset, *(byte *)data, 1 );
         break;
     case 2:
-        err = dbg_oport( acc->IO_offset, data, 2 );
+        err = dbg_oport( acc->IO_offset, *(word *)data, 2 );
         break;
     case 4:
-        err = dbg_oport( acc->IO_offset, data, 3 );
+        err = dbg_oport( acc->IO_offset, *(dword *)data, 3 );
         break;
     default:
         err = DBE_INVWID;
@@ -548,7 +548,7 @@ static void WriteCPU( struct x86_cpu *r )
     Mach.msb_eflags = r->efl;
 }
 
-trap_retval ReqRead_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
@@ -558,7 +558,7 @@ trap_retval ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     mad_registers       *mr;
 
@@ -611,7 +611,7 @@ static void CheckForPE( char *name )
 }
 
 
-trap_retval ReqProg_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     char            ch;
     char            *src;
@@ -643,7 +643,7 @@ trap_retval ReqProg_load( void )
     }
     *dst = '\r';
     UtilBuff[0] = dst - (UtilBuff + 1);
-    ret->err = map_dbe( dbg_load( name, NULL, UtilBuff ) );
+    ret->err = map_dbe( dbg_load( (unsigned char *)name, NULL, (unsigned char *)UtilBuff ) );
     if( ret->err == 0 ) {
         HavePSP = TRUE;
     }
@@ -678,7 +678,7 @@ extern void finit( void );
     __value     \
     __modify    []
 
-trap_retval ReqProg_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
@@ -769,7 +769,7 @@ static trap_conditions Execute( void )
 }
 
 
-trap_retval ReqSet_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     dword           l;
     watch_point     *curr;
@@ -810,13 +810,13 @@ trap_retval ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     WatchCount = 0;
     return( 0 );
 }
 
-trap_retval ReqSet_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     opcode_type         brk_opcode;
     set_break_req       *acc;
@@ -836,7 +836,7 @@ trap_retval ReqSet_break( void )
 }
 
 
-trap_retval ReqClear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     opcode_type         brk_opcode;
     clear_break_req     *acc;
@@ -943,19 +943,19 @@ leave:
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     _DBG(("AccProgGo\r\n"));
     return( ProgRun( FALSE ) );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
     _DBG(("AccProgStep\r\n"));
     return( ProgRun( TRUE ) );
 }
 
-trap_retval ReqGet_next_alias( void )
+trap_retval TRAP_CORE( Get_next_alias )( void )
 {
     get_next_alias_ret  *ret;
 
@@ -974,7 +974,7 @@ trap_retval ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_err_text( void )
+trap_retval TRAP_CORE( Get_err_text )( void )
 {
     static char *DosErrMsgs[] = {
         #define pick(a,b)   b,
@@ -1004,7 +1004,7 @@ trap_retval ReqGet_err_text( void )
 }
 
 
-trap_retval ReqGet_message_text( void )
+trap_retval TRAP_CORE( Get_message_text )( void )
 {
     static const char * const ExceptionMsgs[] = {
         #define pick(a,b) b,
@@ -1030,7 +1030,7 @@ trap_retval ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_retval ReqGet_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     get_lib_name_ret    *ret;
 

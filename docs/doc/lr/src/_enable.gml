@@ -12,7 +12,7 @@ function causes interrupts to become enabled.
 The
 .id &funcb.
 function would be used in conjunction with the
-.kw _disable
+.reffunc _disable
 function to make sure that a sequence of instructions are executed
 without any intervening interrupts occurring.
 .im privity
@@ -32,7 +32,7 @@ function returns no value.
 .exmp break
 struct list_entry {
     struct list_entry *next;
-    int    data;
+    int               data;
 };
 struct list_entry *ListHead = NULL;
 struct list_entry *ListTail = NULL;

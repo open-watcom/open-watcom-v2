@@ -1,5 +1,5 @@
-.gfunc remappalette
-.gsynop begin 
+.gfunc _remappalette
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 long _FAR _remappalette( short pixval, long color );
 .do end
@@ -16,7 +16,7 @@ The
 .arg pixval
 to be the color
 .arg color
-.ct .li .
+.period
 This &routine is supported in all video modes, but only works
 with EGA, MCGA and VGA adapters.
 .pp
@@ -28,13 +28,14 @@ The argument
 specifies the actual color displayed on the screen by pixels with
 pixel value
 .arg pixval
-.ct .li .
+.period
 Color values are selected by specifying the red, green and
 blue intensities that make up the color.
 Each intensity can be in the range from 0 to 63, resulting in 262144
 possible different colors.
 A given color value can be conveniently specified as a value of type
-.mono &long..
+.mono &long.
+.period
 The color value is of the form
 .hex 00bbggrr ,
 where
@@ -57,7 +58,7 @@ All pixels on the complete screen which have a pixel value equal to the value of
 .arg pixval
 will now have the color indicated by the argument
 .arg color
-.ct .li .
+.period
 .desc end
 .return begin
 The

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,36 +92,31 @@ static brkp         *SetBreak( memory_expr );
 static brkp         *SetWatch( memory_expr );
 static brkp         *SetPoint( memory_expr def_seg, mad_type_handle );
 
+#define POINT_DEFS \
+    pick( "Activate",   B_ACTIVATE,   ActivatePoint,   EXPR_CODE ) \
+    pick( "Clear",      B_CLEAR,      ClearPoint,      EXPR_CODE ) \
+    pick( "Deactivate", B_DEACTIVATE, DeactivatePoint, EXPR_CODE ) \
+    pick( "Set",        B_SET,        SetBreak,        EXPR_CODE ) \
+    pick( "Modify",     B_MODIFY,     SetWatch,        EXPR_DATA ) \
+    pick( "Toggle",     B_TOGGLE,     TogglePoint,     EXPR_CODE ) \
+    pick( "Resume",     B_RESUME,     ResumePoint,     EXPR_CODE ) \
+    pick( "UNResume",   B_UNRESUME,   UnResumePoint,   EXPR_CODE ) \
+    pick( "INdex",      B_INDEX,      BadPoint,        EXPR_DATA ) \
+    pick( "IMage",      B_IMAGE,      ImageBreak,      EXPR_DATA ) \
+    pick( "Unmapped",   B_UNMAPPED,   BadPoint,        EXPR_DATA ) \
+    pick( "MAPaddress", B_MAPADDRESS, BadPoint,        EXPR_DATA ) \
+    pick( "SYMaddress", B_SYMADDRESS, BadPoint,        EXPR_DATA )
+
 static const char PointNameTab[] = {
-    "Activate\0"
-    "Clear\0"
-    "Deactivate\0"
-    "Set\0"
-    "Modify\0"
-    "Toggle\0"
-    "Resume\0"
-    "UNResume\0"
-    "INdex\0"
-    "IMage\0"
-    "Unmapped\0"
-    "MAPaddress\0"
-    "SYMaddress\0"
+    #define pick(t,e,p,x)   t "\0"
+    POINT_DEFS
+    #undef pick
 };
 
 typedef enum {
-    B_ACTIVATE,
-    B_CLEAR,
-    B_DEACTIVATE,
-    B_SET,
-    B_MODIFY,
-    B_TOGGLE,
-    B_RESUME,
-    B_UNRESUME,
-    B_INDEX,
-    B_IMAGE,
-    B_UNMAPPED,
-    B_MAPADDRESS,
-    B_SYMADDRESS,
+    #define pick(t,e,p,x)   e,
+    POINT_DEFS
+    #undef pick
 } brk_event;
 
 typedef struct {
@@ -130,25 +125,15 @@ typedef struct {
 } bpjmptab_type;
 
 static bpjmptab_type BPJmpTab[] = {
-    { &ActivatePoint,   EXPR_CODE },
-    { &ClearPoint,      EXPR_CODE },
-    { &DeactivatePoint, EXPR_CODE },
-    { &SetBreak,        EXPR_CODE },
-    { &SetWatch,        EXPR_DATA },
-    { &TogglePoint,     EXPR_CODE },
-    { &ResumePoint,     EXPR_CODE },
-    { &UnResumePoint,   EXPR_CODE },
-    { &BadPoint,        EXPR_DATA },
-    { &ImageBreak,      EXPR_DATA },
-    { &BadPoint,        EXPR_DATA },
-    { &BadPoint,        EXPR_DATA },
-    { &BadPoint,        EXPR_DATA },
+    #define pick(t,e,p,x)   { p, x },
+    POINT_DEFS
+    #undef pick
 };
 
 
 static const char *BrkFmt( void )
 {
-    return( ( DbgLevel != ASM ) ? "%l" : "%a" );
+    return( ( DbgLevel != LEVEL_ASM ) ? "%l" : "%a" );
 }
 
 
@@ -1453,6 +1438,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
         case B_MAPADDRESS:
             mapaddress = true;
             ScanItem( true, &start, &len );
+            DbgFree( image_name );
             image_name = DupStrLen( start, len );
             loc = NilAddr;
             loc.mach.segment = ReqLongExpr();
@@ -1462,10 +1448,13 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
         case B_SYMADDRESS:
             symaddress = true;
             ScanItem( true, &start, &len );
+            DbgFree( image_name );
             image_name = DupStrLen( start, len );
             ScanItem( true, &start, &len );
+            DbgFree( mod_name );
             mod_name = DupStrLen( start, len );
             ScanItem( true, &start, &len );
+            DbgFree( sym_name );
             sym_name = DupStrLen( start, len );
             cue_diff = ReqLongExpr();
             addr_diff = ReqLongExpr();
@@ -1524,9 +1513,9 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
     }
     bp = AddPoint( loc, mth, unmapped );
     if( bp == NULL ) {
-        _Free( image_name );
-        _Free( mod_name );
-        _Free( sym_name );
+        DbgFree( image_name );
+        DbgFree( mod_name );
+        DbgFree( sym_name );
         return( NULL );
     }
     bp->status.b.unmapped = unmapped;

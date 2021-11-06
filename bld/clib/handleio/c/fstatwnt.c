@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 #include <direct.h>
 #include <windows.h>
 #include "rterrno.h"
-#include "int64.h"
 #include "defwin.h"
 #include "iomode.h"
 #include "fileacc.h"
@@ -47,7 +46,10 @@
 #include "rtcheck.h"
 #include "seterrno.h"
 #include "thread.h"
+#include "i64.h"
 
+
+#define MAKE_SIZE64(__x,__hi,__lo)    ((unsigned_64 *)&__x)->u._32[I64LO32] = __lo; ((unsigned_64 *)&__x)->u._32[I64HI32] = __hi
 
 /*
     DWORD GetFileSize(
@@ -65,9 +67,8 @@
     DWORD                       size;
 #ifdef __INT64__
     DWORD                       highorder;
-    INT_TYPE                    tmp;
-    int                         error;
 #endif
+    int                         error;
     DWORD                       ftype;
     FILETIME                    ctime, atime, mtime;
     HANDLE                      h;
@@ -105,12 +106,7 @@
             don't want to call GetFileSize()
          */
         (ftype == FILE_TYPE_UNKNOWN) ) {
-#ifdef __INT64__
-        _clib_U32ToU64( 0L, tmp );
-        buf->st_size = GET_REALINT64(tmp);
-#else
         buf->st_size = 0;
-#endif
         buf->st_atime = buf->st_ctime = buf->st_mtime = 0;
         buf->st_attr = 0;
         buf->st_mode |= S_IRUSR | S_IRGRP | S_IROTH;
@@ -136,28 +132,26 @@
 
         /*** Get the file size ***/
         if( buf->st_mode & S_IFDIR ) {
-#ifdef __INT64__
-            _clib_U32ToU64( 0L, tmp );
-            buf->st_size = GET_REALINT64(tmp);
-#else
             buf->st_size = 0;
-#endif
         } else {
-            size = GetFileSize( h, __I64NAME(NULL,&highorder) );
 #ifdef __INT64__
-            if( size == -1 ) {
-                error = GetLastError();     // check for sure JBS 05-nov-99
+            size = GetFileSize( h, &highorder );
+            if( size == INVALID_FILE_SIZE ) {
+                error = GetLastError();
                 if( error != NO_ERROR ) {
                     _ReleaseFileH( hid );
                     return( __set_errno_dos( error ) );
                 }
             }
-            MAKE_INT64(tmp,highorder,size);
-            buf->st_size = GET_REALINT64(tmp);
+            MAKE_SIZE64( buf->st_size, highorder, size );
 #else
-            if( size == -1 ) {
-                _ReleaseFileH( hid );
-                return( __set_errno_nt() );
+            size = GetFileSize( h, NULL );
+            if( size == INVALID_FILE_SIZE ) {
+                error = GetLastError();
+                if( error != NO_ERROR ) {
+                    _ReleaseFileH( hid );
+                    return( __set_errno_dos( error ) );
+                }
             }
             buf->st_size = size;
 #endif

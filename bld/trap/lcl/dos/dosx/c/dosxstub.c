@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,22 +37,22 @@
         These routines are never passed up to the protect mode helpers
 */
 
-trap_retval ReqSet_user_screen( void )
+trap_retval TRAP_CORE( Set_user_screen )( void )
 {
     return( 0 );
 }
 
-trap_retval ReqSet_debug_screen( void )
+trap_retval TRAP_CORE( Set_debug_screen )( void )
 {
     return( 0 );
 }
 
-trap_retval ReqRead_user_keyboard( void )
+trap_retval TRAP_CORE( Read_user_keyboard )( void )
 {
     return( 0 );
 }
 
-trap_retval ReqSplit_cmd( void )
+trap_retval TRAP_CORE( Split_cmd )( void )
 {
     return( 0 );
 }

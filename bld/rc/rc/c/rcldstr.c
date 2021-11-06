@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #endif
 #include "global.h"
 #include "rcerrors.h"
+#include "usage.rh"
 #include "rcldstr.h"
 #include "wresset2.h"
 #include "clibint.h"
@@ -44,8 +46,10 @@
 #if defined( INCL_MSGTEXT )
 
 static const char * const StringTable[] = {
-    "",                             // message ID's start at 1
-    #include "incltext.gh"
+    #define pick(c,e,j) e,
+    #include "rc.msg"
+    #include "usage.gh"
+    #undef pick
 };
 
 bool InitRcMsgs( void )
@@ -106,7 +110,7 @@ bool InitRcMsgs( void )
     RcIoNoBuffer = false;
     if( ok ) {
         MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( GetRcMsg( USAGE_MSG_FIRST, testbuf, sizeof( testbuf ) ) ) {
+        if( GetRcMsg( MSG_USAGE_BASE, testbuf, sizeof( testbuf ) ) ) {
             return( true );
         }
     }

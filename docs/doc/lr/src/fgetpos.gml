@@ -11,9 +11,9 @@ function stores the current position of the file
 .arg fp
 in the object pointed to by
 .arg pos
-.ct .li .
+.period
 The value stored is usable by the
-.kw fsetpos
+.reffunc fsetpos
 function for repositioning the file to its position at the time of the
 call to the
 .id &funcb.

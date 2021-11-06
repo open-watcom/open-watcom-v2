@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +108,7 @@ STATIC uint_16 frameDatum( obj_rec *objr, uint_8 method ) {
 STATIC uint_16 targetDatum( obj_rec *objr, uint_8 method ) {
 
 /**/myassert( objr != NULL );
-    if( ( method & 0x03 ) == TARGET_ABSWD ) {
+    if( ( method & 0x03 ) == TARGET_ABS ) {
         return( ObjGet16( objr ) );
     }
     return( ObjGetIndex( objr ) );
@@ -160,10 +161,10 @@ void FixGetLRef( fixinfo *info, obj_rec *objr, logref *log ) {
 
 fixup *FixGetFix( fixinfo *info, obj_rec *objr ) {
 /**********************************************/
-    uint_8  byte;
-    uint_8  method;
-    uint_8  trd_num;
-    fixup   *fix;
+    uint_8          byte;
+    uint_8          method;
+    uint_8          trd_num;
+    fixup           *fix;
 
 /**/myassert( info != NULL );
 /**/myassert( objr != NULL );
@@ -174,16 +175,23 @@ fixup *FixGetFix( fixinfo *info, obj_rec *objr ) {
         fix->next = NULL;
         fix->loader_resolved = 0;
         fix->self_relative = ( byte & 0x40 ) == 0;
-        method = ( byte >> 2 ) & 0x0f;
-        switch( method ) {
+        switch( (omf_fix_loc)(( byte >> 2 ) & 0x0f) ) {
         case LOC_OFFSET_LO:     /* note fall through */
-        case LOC_OFFSET:
-        case LOC_BASE:
-        case LOC_BASE_OFFSET:
-        case LOC_OFFSET_HI:
-            fix->loc_method = method;
+            fix->loc_method = FIX_LO_BYTE;
             break;
-        case LOC_MS_LINK_OFFSET:
+        case LOC_OFFSET:
+            fix->loc_method = FIX_OFFSET;
+            break;
+        case LOC_BASE:
+            fix->loc_method = FIX_BASE;
+            break;
+        case LOC_BASE_OFFSET:
+            fix->loc_method = FIX_POINTER;
+            break;
+        case LOC_OFFSET_HI:
+            fix->loc_method = FIX_HI_BYTE;
+            break;
+        case LOC_OFFSET_LOADER:
             if( objr->is_phar ) {
                 fix->loc_method = FIX_OFFSET386;
             } else {
@@ -191,21 +199,21 @@ fixup *FixGetFix( fixinfo *info, obj_rec *objr ) {
                 fix->loader_resolved = 1;
             }
             break;
-        case LOC_BASE_OFFSET_32:
+        case LOC_PHARLAP_BASE_OFFSET_32:
             if( objr->is_phar == 0 ) {
                 Fatal( MSG_INVALID_FIXUP );
             }
             fix->loc_method = FIX_POINTER386;
             break;
-        case LOC_MS_OFFSET_32:
+        case LOC_OFFSET_32:
             /* FIXME we assume that the file is a Microsoft object file */
             fix->loc_method = FIX_OFFSET386;
             break;
-        case LOC_MS_BASE_OFFSET_32:
+        case LOC_BASE_OFFSET_32:
             /* FIXME we assume that the file is a Microsoft object file */
             fix->loc_method = FIX_POINTER386;
             break;
-        case LOC_MS_LINK_OFFSET_32:
+        case LOC_OFFSET_32_LOADER:
             /* FIXME we assume that the file is a Microsoft object file */
             fix->loc_method = FIX_OFFSET386;
             fix->loader_resolved = 1;
@@ -297,7 +305,7 @@ STATIC uint_8 *putFrameDatum( uint_8 *p, uint_8 method, uint_16 datum ) {
 STATIC uint_8 *putTargetDatum( uint_8 *p, uint_8 method, uint_16 datum ) {
 
 /**/myassert( p != NULL );
-    if( ( method & 0x03 ) == TARGET_ABSWD ) {
+    if( ( method & 0x03 ) == TARGET_ABS ) {
         return( put16( p, datum ) );
     }
     return( putIndex( p, datum ) );
@@ -378,7 +386,9 @@ uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type )
     p = buf;
     byte = fix->self_relative ? 0x80 : 0xc0;    /* explicit fixup */
     switch( fix->loc_method ) {
-    case FIX_LO_BYTE:   byte |= ( LOC_OFFSET_LO << 2 );     break;
+    case FIX_LO_BYTE:
+        byte |= ( LOC_OFFSET_LO << 2 );
+        break;
     case FIX_OFFSET:
         if( fix->loader_resolved ) {
             if( type == FIX_GEN_PHARLAP ) {
@@ -388,15 +398,21 @@ uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type )
                 byte |= ( LOC_OFFSET << 2 );
             } else {
 /**/            myassert( type == FIX_GEN_INTEL || type == FIX_GEN_MS386 );
-                byte |= ( LOC_MS_LINK_OFFSET << 2 );
+                byte |= ( LOC_OFFSET_LOADER << 2 );
             }
         } else {
             byte |= ( LOC_OFFSET << 2 );
         }
         break;
-    case FIX_BASE:      byte |= ( LOC_BASE << 2 );          break;
-    case FIX_POINTER:   byte |= ( LOC_BASE_OFFSET << 2 );   break;
-    case FIX_HI_BYTE:   byte |= ( LOC_OFFSET_HI << 2 );     break;
+    case FIX_BASE:
+        byte |= ( LOC_BASE << 2 );
+        break;
+    case FIX_POINTER:
+        byte |= ( LOC_BASE_OFFSET << 2 );
+        break;
+    case FIX_HI_BYTE:
+        byte |= ( LOC_OFFSET_HI << 2 );
+        break;
     case FIX_OFFSET386:
         if( type == FIX_GEN_PHARLAP ) {
 #if _WOMP_OPT & _WOMP_EXTRAS
@@ -404,20 +420,20 @@ uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type )
                 PrtMsg( WRN|MSG_NO_LRO_PHARLAP );
             }
 #endif
-            byte |= ( LOC_OFFSET_32 ) << 2;
+            byte |= ( LOC_PHARLAP_OFFSET_32 ) << 2;
         } else {
             if( fix->loader_resolved ) {
-                byte |= ( LOC_MS_LINK_OFFSET_32 << 2 );
+                byte |= ( LOC_OFFSET_32_LOADER << 2 );
             } else {
-                byte |= ( LOC_MS_OFFSET_32 << 2 );
+                byte |= ( LOC_OFFSET_32 << 2 );
             }
         }
         break;
     case FIX_POINTER386:
         if( type == FIX_GEN_PHARLAP ) {
-            byte |= ( LOC_BASE_OFFSET_32 << 2 );
+            byte |= ( LOC_PHARLAP_BASE_OFFSET_32 << 2 );
         } else {
-            byte |= ( LOC_MS_BASE_OFFSET_32 << 2 );
+            byte |= ( LOC_BASE_OFFSET_32 << 2 );
         }
         break;
     default:

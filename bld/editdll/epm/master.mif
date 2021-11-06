@@ -3,44 +3,64 @@
 host_os  = os2
 host_cpu = 386
 
-proj_name = editdll
+proj_name = epmlink
 
-editdll_autodepends = .AUTODEPEND
-editdll_distrib_lib = 1
-sys_dll = 1
+epmlink_autodepends = .AUTODEPEND
+
+epmlink_distrib_lib = 1
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
+.c : ..
+
 inc_dirs = -I.. -I"../.."
 
 extra_cpp_flags = -DWEDITDLL
 
-extra_l_flags_dll = op elim
+#
+# lflags
+#
+extra_l_flags_dll = op elim op description 'Open Watcom Editor DLL for EPM'
 
-extra_l_flags_dll_os2 = initinstance terminstance pm op manyautodata
+extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 
-.c : ..
+# explicit rules
+#################
 
 all: epmlink.dll wedit.dll .SYMBOLIC
 
-epmlink.dll: epmlink.obj $(__MAKEFILES__)
-    @%write  $^&.lnk $(lflags)
-    @%append $^&.lnk option description 'Open Watcom Editor DLL for EPM'
-    @%make echo_link
-    $(linker) name $@ @$^&.lnk file {$[@}
+#
+# DLL epmlink.dll
+#
+dlltarg_objs = epmlink.obj
+!include dlltarg.mif
 
-wedit.dll: epmlink.obj $(__MAKEFILES__)
-    @%write  $^&.lnk $(lflags)
-    @%append $^&.lnk option description 'Open Watcom Editor DLL for EPM'
-    @%make echo_link
-    $(linker) name $@ op implib @$^&.lnk file {$[@}
-    
-epmtest.exe : epmtest.obj wedit.lib $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ sys os2v2_pm debug all op st=32k file {epmtest.obj} lib {wedit.lib}
+#
+# DLL wedit.dll
+#
+dlltarg_opts     = opt implib
+dlltarg_name     = wedit
+!include dlltarg.mif
 
-epmspy.exe : epmspy.obj $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ sys os2v2_pm file {epmspy.obj}
+#
+# EXE epmtest.exe
+#
+exetarg_objs     = epmtest.obj
+exetarg_libs     = wedit.lib
+exetarg_opts     = debug all op st=32k
+exetarg_name     = epmtest
+!include exetarg.mif
+#undef exetarg_libs
+#undef exetarg_opts
+
+#
+# EXE epmspy.exe
+#
+exetarg_objs     = epmspy.obj
+exetarg_name     = epmspy
+!include exetarg.mif

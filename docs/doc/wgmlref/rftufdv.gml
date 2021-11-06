@@ -33,7 +33,7 @@ device.
 If one or all of these fonts are not specified, the device defaults
 are implied.
 :P.
-Press the &key.Tab&ekey. key and enter &mono.doc.ps&emono.\.
+Press the &key.Tab&ekey. key and enter &mono.doc.ps&emono.~.
 The output file name will now be 'doc.ps' for all document files processed.
 Select &menu.Load device defaults&emenu. from the &menu.Device-Options&emenu.
 menu.
@@ -53,7 +53,7 @@ a list of available devices.
 .screen 'frdevav' 'Device browser'
 .choose
 .mouse
-Move the &ptr. pointer to the line with 'hplaserplus' and &op.\.
+Move the mouse pointer to the line with 'hplaserplus' and click.
 .keyboard
 Press the &crsdn. key eight times and press the &g_enter. key.
 .echoose
@@ -70,7 +70,7 @@ Press &g_enter. when asked about loading the defaults.
 The default fonts for the device will be loaded into the font display area.
 .choose
 .mouse
-Move the &ptr. pointer to the number area with a value of '1' and &op.\.
+Move the mouse pointer to the number area with a value of '1' and click.
 Select the :HP1.Font List:eHP1. hotspot.
 .keyboard
 Press the &key.Tab&ekey. three times followed by the &crsdn. key.
@@ -82,9 +82,9 @@ Select the :HP1.Font List:eHP1. hotspot.
 The fonts available for the current device are displayed in a font browser.
 .choose
 .mouse
-Move the &ptr. pointer to the line with 'helvetica' and &op.\.
+Move the mouse pointer to the line with 'helvetica' and click.
 .keyboard
-Press the &crsdn. key twelve times and press &g_enter.\.
+Press the &crsdn. key twelve times and press &g_enter..
 .echoose
 :P.
 The 'helvetica' font will be placed in the font name area, overwriting
@@ -94,7 +94,7 @@ Move to the last font line and select the :HP1.Insert:eHP1. hotspot.
 A new font line area will be created on the screen.
 Enter the number four (4) and press the &key.Tab&ekey. key.
 Use the font list function to select a font name for the new area.
-Press the &key.Tab&ekey. and enter :HP1.uline:eHP1.\.
+Press the &key.Tab&ekey. and enter :HP1.uline:eHP1..
 This will select the underlining attribute for the font.
 The value :HP1.plain:eHP1. is usually used when a device has enough
 variations in the available font style (for example, selecting an

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,17 +36,14 @@
 #include "fmtdef.h"
 #include "fmtdat.h"
 #include "rtenv.h"
-#include "fmttab.h"
 #include "rfmtemit.h"
 #include "fmtscan.h"
 #include "setiocb.h"
-#include "rfmttab.h"
 
 
 static  void    FInit( string *fmt ) {
 //====================================
 
-    FmtEmStruct = &RFmtStruct;
     SetFmt( &FmtBuff[ 0 ] );
     IOCB->fmtlen = SCAN_STORAGE_SIZE;
     Fmt_charptr = fmt->strptr;
@@ -79,7 +76,7 @@ void    FmtScan( string *fmt, uint extend_format ) {
 }
 
 
-void    FmtAScan( char PGM *array, long int num_elts, int elt_size,
+void    FmtAScan( char PGM *array, long num_elts, int elt_size,
                   uint extend_format ) {
 //=================================================================
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -215,11 +216,10 @@ static void CaseHandler( void )
             if( high < low ) {
                 Error( SP_NEVER_CASE );
             } else {
-                kase = CSHead->cs_info.cases;
-                while( kase->link != NULL ) {
-                    if( kase->link->low > high )
+                for( kase = CSHead->cs_info.cases; kase->link != NULL; kase = kase->link ) {
+                    if( kase->link->low > high ) {
                         break;
-                    kase = kase->link;
+                    }
                 }
                 if( ( kase != CSHead->cs_info.cases ) && ( kase->high >= low ) ) {
                     Error( SP_CASE_OVERLAP );

@@ -14,7 +14,7 @@
 #include "wattcp.h"
 #include "wdpmi.h"
 
-#if (defined(__WATCOM386__) || defined(__BORLAND386__)) && (DOSX & PHARLAP)
+#if (defined(WATCOM386) || defined(BORLAND386)) && (DOSX & PHARLAP)
 #define __EXC_INTERNAL
 #include <mw/exc.h>
 
@@ -38,15 +38,15 @@ struct TaskRecord {
 
 static char numWrappers = 0;
 
-static REALPTR _dx_alloc_rmode_wrapper (pmodeHook pmHook, 
-                                        rmodeHook rmHook, 
+static REALPTR _dx_alloc_rmode_wrapper (pmodeHook pmHook,
+                                        rmodeHook rmHook,
                                         int  len, int stack_size,
                                         ReturnType returnType)
 {
   #define DOFS  0x2C         /* offset of data section (tiny model)   */
   #define DSIZE 16           /* sizeof data section at wrapper end    */
   #define WOFS  (DOFS+DSIZE) /* offset of userWrapper code (optional) */
-                             
+
   static unsigned char wrapper[] =
   {
     0x16,                     // 00       push ss
@@ -191,4 +191,4 @@ REALPTR _dx_alloc_rmode_wrapper_iret (pmodeHook pmHook, int stack_size)
   return _dx_alloc_rmode_wrapper (pmHook, NULL, 0, stack_size, IRET);
 }
 
-#endif /* (__WATCOM386__ || __BORLAND386__) && (DOSX & PHARLAP) */
+#endif /* (WATCOM386 || BORLAND386) && (DOSX & PHARLAP) */

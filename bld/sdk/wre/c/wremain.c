@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,14 +121,14 @@ typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
 static HINSTANCE WREInst;
 static HACCEL    WREAccel;
 static HMENU     WREMenu;
-static bool      WREIsMinimized      = FALSE;
+static bool      WREIsMinimized      = false;
 static HWND      WREMainWin          = NULL;
 static HWND      WREMDIWin           = NULL;
-static bool      WRECleanupStarted   = FALSE;
-static bool      WREFatalExit        = FALSE;
+static bool      WRECleanupStarted   = false;
+static bool      WREFatalExit        = false;
 static char      WREMainClass[]      = "WREMainClass";
 
-bool WRECreateNewFiles  = FALSE;
+bool WRECreateNewFiles  = false;
 bool WRENoInterface     = false;
 
 bool WRERemoveResource( WREResInfo * );
@@ -151,7 +152,6 @@ static void startEditors( void )
     WRFileType  ftype;
     WREResInfo  *res_info;
     bool        editor_started;
-    bool        ret;
     int         num_types;
     uint_16     type;
 
@@ -163,7 +163,7 @@ static void startEditors( void )
         return;
     }
 
-    editor_started = FALSE;
+    editor_started = false;
     num_types = 0;
     res_info = WREGetCurrentRes();
     ftype = res_info->info->file_type;
@@ -184,7 +184,6 @@ static void startEditors( void )
     }
 
     if( num_types == 1 || num_types == 2 ) {
-        ret = FALSE;
         type = 0;
         if( ftype == WR_WIN_RC_STR ) {
             type = RESOURCE2INT( RT_STRING );
@@ -194,8 +193,7 @@ static void startEditors( void )
             type = RESOURCE2INT( RT_ACCELERATOR );
         }
         if( type != 0 && WREFindTypeNode( res_info->info->dir, type, NULL ) ) {
-            ret = WRESetResNamesFromType( res_info, type, FALSE, NULL, 0 );
-            if( ret ) {
+            if( WRESetResNamesFromType( res_info, type, false, NULL, 0 ) ) {
                 editor_started = WREHandleResEdit();
             }
         }
@@ -223,7 +221,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
                     LPSTR lpszCmdLine, int nCmdShow )
 {
     MSG         msg;
-    bool        ret;
+    bool        ok;
 
 #if defined( __NT__ ) && !defined( __WATCOMC__ )
     _argc = __argc;
@@ -269,12 +267,12 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         return( FALSE );
     }
 
-    ret = WREProcessArgs( _argv, _argc );
+    ok = WREProcessArgs( _argv, _argc );
 
     startEditors();
 
     // create a new empty res if none have been created at this point
-    if( ret && WREGetNumRes() == 0 ) {
+    if( ok && WREGetNumRes() == 0 ) {
         WRECreateNewResource( NULL );
     }
 
@@ -436,13 +434,13 @@ bool WREInitInst( HINSTANCE app_inst )
 
 bool WREIsEditWindowDialogMessage( MSG *msg )
 {
-    int ret;
+    bool    ok;
 
-    ret = WAccelIsDlgMsg( msg );
-    ret |= WMenuIsDlgMsg( msg );
-    ret |= WStringIsDlgMsg( msg );
+    ok = WAccelIsDlgMsg( msg );
+    ok |= WMenuIsDlgMsg( msg );
+    ok |= WStringIsDlgMsg( msg );
 
-    return( ret != 0 );
+    return( ok );
 }
 
 bool WREWasAcceleratorHandled( MSG *msg )

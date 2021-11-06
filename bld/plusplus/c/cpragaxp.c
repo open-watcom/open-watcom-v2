@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,8 +51,8 @@ static void pragmasInit(        // INIT PRAGMAS
 {
     /* unused parameters */ (void)defn;
 
-    PragInit();
-    SetAuxDefaultInfo();
+    PragmaAuxInit();
+    SetDefaultAuxInfo();
 }
 
 static void pragmasFini(        // FINISH PRAGMAS
@@ -173,10 +174,10 @@ static void AuxCopy(           // COPY AUX STRUCTURE
     to->code = AuxCodeDup( from->code );
 }
 
-void GetPragAuxAlias( void )
-/*************************/
+void GetPragmaAuxAlias( void )
+/****************************/
 {
-    PragCurrAlias();
+    CurrAlias = PragmaAuxAlias( Buffer );
     NextToken();
     if( CurToken == T_RIGHT_PAREN ) {
         AuxCopy( CurrInfo, CurrAlias );
@@ -263,7 +264,7 @@ char const *AsmSysDefineByte( void )
 void AsmSysDone( void )
 /*********************/
 {
-    PragEnding( false );
+    PragmaAuxEnding( false );
 }
 
 void *AsmQuerySymbol( const char *name )

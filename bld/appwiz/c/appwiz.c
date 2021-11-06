@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,12 +39,15 @@
 #include "projtype.h"
 #include "errmsg.h"
 #include "rcstr.gh"
+#include "wresdefn.h"
 
 #define NEWPROJ_INF_FILE    "newproj.inf"
 
 int     projectTypeIndex;
 char    projectDir[256];
 char    projectName[256];
+
+#define MKDIR(d)    (mkdir(d) && errno != EEXIST && errno != EACCES)
 
 static bool createProjectDir( char *dir )
 /***************************************/
@@ -58,22 +62,22 @@ static bool createProjectDir( char *dir )
         if( *ptr == '/' || (*ptr == '\\' && ptr != dircopy && *(ptr - 1) != ':') ) {
             ch = *ptr;
             *ptr = '\0';
-            if( mkdir( dircopy ) != 0 && errno != EEXIST ) {
+            if( MKDIR( dircopy ) ) {
                 free( dircopy );
                 ShowError( APPWIZ_MKDIR_FAILED );
-                return( FALSE );
+                return( false );
             }
             *ptr = ch;
         }
         ptr++;
     }
-    if( mkdir( dircopy ) != 0 && errno != EEXIST ) {
+    if( MKDIR( dircopy ) ) {
         free( dircopy );
         ShowError( APPWIZ_MKDIR_FAILED );
-        return( FALSE );
+        return( false );
     }
     free( dircopy );
-    return( TRUE );
+    return( true );
 }
 
 bool NewProjGUIEventProc( gui_window *wnd, gui_event gui_ev, void *extra )
@@ -109,7 +113,7 @@ bool NewProjGUIEventProc( gui_window *wnd, gui_event gui_ev, void *extra )
                 return( true );
             }
             strcpy( projectName, ctltext );
-            projectTypeIndex = GUIGetCurrSelect( wnd, CTL_NEWPROJ_PROJTYPE );
+            GUIGetCurrSelect( wnd, CTL_NEWPROJ_PROJTYPE, &projectTypeIndex );
             if( !createProjectDir( projectDir ) ) {
                 return( true );
             }
@@ -160,7 +164,7 @@ extern void GUImain( void )
         FreeProjectTypes();
         return;
     }
-    GUICreateResDialog( &newProjInfo, DIALOG_NEWPROJ );
+    GUICreateResDialog( &newProjInfo, MAKEINTRESOURCE( DIALOG_NEWPROJ ) );
     if( projectTypeIndex >= 0 ) {
         iter = GetFirstProjectType();
         while( projectTypeIndex >= 0 ) {

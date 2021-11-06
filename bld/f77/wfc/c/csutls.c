@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "global.h"
 #include "errcod.h"
 #include "opr.h"
@@ -48,7 +47,7 @@
 #include "kwlist.h"
 
 
-static  const STMT __FAR    CSWords[] = {
+static  const STMT  CSWords[] = {
         0,
         PR_IF,
         PR_ELSEIF,
@@ -68,7 +67,7 @@ static  const STMT __FAR    CSWords[] = {
 };
 
 
-csnode  *NewCSNode( uint label_len )
+csnode  *NewCSNode( size_t label_len )
 {
 // Allocate a new "csnode".
 
@@ -123,7 +122,7 @@ void    AddCSNode( byte typ )
     csnode      *new_cs_node;
     itnode      *label;
     char        *label_ptr;
-    uint        label_len;
+    size_t      label_len;
 
     if( typ == CS_REMOTEBLOCK ) {
         label = CITNode;
@@ -138,23 +137,22 @@ void    AddCSNode( byte typ )
     CSHead->block = ++BlockNum;
     label_ptr = &CSHead->label;
     memcpy( label_ptr, label->opnd, label_len );
-    label_ptr[ label_len ] = NULLCHAR;
+    label_ptr[label_len] = NULLCHAR;
 }
 
 void DelCSNode(void)
 {
     csnode      *old;
     case_entry  *currcase;
-    case_entry  *newcase;
+    case_entry  *next;
 
     if( CSHead->typ != CS_EMPTY_LIST ) {
         old = CSHead;
         CSHead = CSHead->link;
         if( ( old->typ == CS_SELECT ) || ( old->typ == CS_CASE ) ||
             ( old->typ == CS_OTHERWISE ) || ( old->typ == CS_COMPUTED_GOTO ) ) {
-            currcase = old->cs_info.cases;
-            while( currcase != NULL ) {
-                newcase = currcase->link;
+            for( currcase = old->cs_info.cases; currcase != NULL; currcase = next ) {
+                next = currcase->link;
                 if( old->typ != CS_COMPUTED_GOTO ) {
                     // Consider:    CASE( 1, 2 )
                     // don't free the label more than once
@@ -163,7 +161,6 @@ void DelCSNode(void)
                     }
                 }
                 FMemFree( currcase );
-                currcase = newcase;
             }
         } else if( old->typ == CS_DO ) {
             FMemFree( old->cs_info.do_parms );
@@ -221,8 +218,10 @@ bool CheckCSList( byte typ )
 
     for(;;) {
         head_typ = CSHead->typ;
-        if( head_typ == typ ) break;
-        if( head_typ == CS_EMPTY_LIST ) break;
+        if( head_typ == typ )
+            break;
+        if( head_typ == CS_EMPTY_LIST )
+            break;
         Error( SP_UNFINISHED, StmtKeywords[ CSWords[ head_typ ] ] );
         DelCSNode();
     }

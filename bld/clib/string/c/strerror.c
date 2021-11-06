@@ -230,7 +230,7 @@ _WCRTDATA int _WCDATA _sys_nerr = ( sizeof( _sys_errlist ) / sizeof( *_sys_errli
 
 #endif
 
-_WCRTLINK CHAR_TYPE *__F_NAME(strerror,wcserror)( int errnum )
+_WCRTLINK CHAR_TYPE *__F_NAME(strerror,_wcserror)( int errnum )
 {
 #ifdef __WIDECHAR__
     static wchar_t  wide_msg[40];
@@ -289,7 +289,7 @@ static  CHAR_TYPE ERROR_MSG[FORMAT_MESSAGE_MAX_WIDTH_MASK+1];
 
  */
 
-_WCRTLINK CHAR_TYPE *__F_NAME(_strerror,_wcserror)( const CHAR_TYPE *strErrMsg )
+_WCRTLINK CHAR_TYPE *__F_NAME(_strerror,__wcserror)( const CHAR_TYPE *strErrMsg )
 {
     int errnum;
 
@@ -300,7 +300,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_strerror,_wcserror)( const CHAR_TYPE *strErrMsg )
         ERROR_MSG[94] = NULLCHAR;    // just in case more than 94
         __F_NAME(strcat,wcscat)( ERROR_MSG, STRING(": ") );
     }
-    __F_NAME(strcat,wcscat)( ERROR_MSG, __F_NAME(strerror,wcserror)( errnum ) );
+    __F_NAME(strcat,wcscat)( ERROR_MSG, __F_NAME(strerror,_wcserror)( errnum ) );
     __F_NAME(strcat,wcscat)( ERROR_MSG, STRING("\n") );
     return( ERROR_MSG );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,8 @@
 #include <string.h>
 #include <ctype.h>
 
+
+#define ROUND_UP(x,b)   (((x)/(b) + 1)*(b))
 
 //  Generate the list of supported RTF commands.
 enum com_nums {
@@ -84,7 +86,7 @@ static int FindCommand( char const string[] )
 //                where other important objects are.
 
 RTFparser::RTFparser( Pointers *p, InFile *src )
-    : _storage( BLOCK_SIZE )
+    : _storage( BLOCK_SIZE ), _storSize( 0 )
 {
     _topFile = p->_topFile;
     _fontFile = p->_fontFile;
@@ -99,9 +101,6 @@ RTFparser::RTFparser( Pointers *p, InFile *src )
     strcpy( _fname, src->name() );
 
     _nestLevel = 0;
-
-    _storSize = 0;
-    _maxStor = BLOCK_SIZE;
 
     _tabType = TAB_LEFT;
 }
@@ -562,8 +561,6 @@ void RTFparser::handleCommand()
 
 //  RTFparser::Go   --The parser "main loop".
 
-#define NOT_A_BITMAP ((FontFlags) 0)
-
 #define HARD_SPACE  '\xA0'
 
 void RTFparser::Go()
@@ -830,17 +827,14 @@ void RTFparser::handleFootnote( char Fchar )
             break;
 
         if( _current->_type == TOK_TEXT ) {
-            if( _storSize + _current->_value + 1 >= _maxStor ) {
-                _maxStor = (_storSize+_current->_value+1) / BLOCK_SIZE + 1;
-                _maxStor *= BLOCK_SIZE;
-                _storage.resize( _maxStor );
+            if( _storSize + _current->_value + 1 >= _storage.len() ) {
+                _storage.resize( ROUND_UP( _storSize + _current->_value + 1, BLOCK_SIZE ) );
             }
-            memcpy( _storage+_storSize, _current->_text, _current->_value );
+            memcpy( _storage + _storSize, _current->_text, _current->_value );
             _storSize += _current->_value;
         } else if( _current->_type == TOK_SPEC_CHAR ) {
-            if( _storSize + 2 >= _maxStor ) {
-                _maxStor += BLOCK_SIZE;
-                _storage.resize( _maxStor );
+            if( _storSize + 2 >= _storage.len() ) {
+                _storage.resize( ROUND_UP( _storSize + 2, BLOCK_SIZE ) );
             }
             _storage[_storSize++] = (char)_current->_value;
         }
@@ -886,7 +880,7 @@ void RTFparser::handleFootnote( char Fchar )
     case '$':   // Title string.
         start = skipSpaces( start );
         if( *start != '\0' ) {
-            end = _storage+_storSize;
+            end = _storage + _storSize;
             --end;
             while( end > start && isspace( *end ) ) {
                 --end;
@@ -929,7 +923,7 @@ void RTFparser::handleFootnote( char Fchar )
     case '+':   // Browse sequence identifiers.
         start = skipSpaces( start );
         if( *start != '\0' ) {
-            end = _storage+_storSize;
+            end = _storage + _storSize;
             --end;
             while( end > start && isspace( *end ) ) {
             --end;
@@ -949,7 +943,7 @@ void RTFparser::handleFootnote( char Fchar )
         start = skipSpaces( start );
         if( *start != '\0' ) {
             char    terminator = '\0';
-            end = _storage+_storSize;
+            end = _storage + _storSize;
             --end;
             while( end > start && isspace( *end ) ) {
                 --end;
@@ -1012,19 +1006,16 @@ void RTFparser::handleHidden( bool IsHotLink )
             break;
 
         case TOK_TEXT:
-            if( _storSize+_current->_value+1 >= _maxStor ) {
-                _maxStor = (_storSize+_current->_value+1) / BLOCK_SIZE + 1;
-                _maxStor *= BLOCK_SIZE;
-                _storage.resize( _maxStor );
+            if( _storSize + _current->_value + 1 >= _storage.len() ) {
+                _storage.resize( ROUND_UP( _storSize + _current->_value + 1, BLOCK_SIZE ) );
             }
-            memcpy( _storage+_storSize, _current->_text, _current->_value );
+            memcpy( _storage + _storSize, _current->_text, _current->_value );
             _storSize += _current->_value;
             break;
 
         case TOK_SPEC_CHAR:
-            if( _storSize+2 >= _maxStor ) {
-                _maxStor += BLOCK_SIZE;
-                _storage.resize( _maxStor );
+            if( _storSize + 2 >= _storage.len() ) {
+                _storage.resize( ROUND_UP( _storSize + 2, BLOCK_SIZE ) );
             }
             _storage[_storSize++] = (char)_current->_value;
             break;
@@ -1075,9 +1066,9 @@ void RTFparser::handleHidden( bool IsHotLink )
 
             hash_value = Hash( pstorage );
 
-            length = (uint_16) (strlen( pfile )+2);
+            length = (uint_16)( strlen( pfile ) + 2 );
             if( pwindow != NULL ) {
-                length = (uint_16) (length + strlen( pwindow ) + 1 );
+                length = (uint_16)( length + strlen( pwindow ) + 1 );
             }
 
             if( pwindow != NULL && *pwindow != '\0' ) {
@@ -1102,7 +1093,7 @@ void RTFparser::handleHidden( bool IsHotLink )
             }
         } else {
             hash_value = 0;
-            length = (uint_16) (strlen( pstorage )+1);
+            length = (uint_16)( strlen( pstorage ) + 1 );
         }
 
         FontFlags   link_t;
@@ -1166,7 +1157,7 @@ void RTFparser::handleHidden( bool IsHotLink )
         }
         _topFile->addAttr( TOP_END_LINK );
 
-        if( _linkType != MACRO && ( link_t<TOP_POPUP_FILE || *pfile==TO_WINDOW ) ) {
+        if( _linkType != MACRO && ( link_t < TOP_POPUP_FILE || *pfile == TO_WINDOW ) ) {
             *pfile = '\0';
             _hashFile->recordContext( pstorage );
         }
@@ -1176,7 +1167,7 @@ void RTFparser::handleHidden( bool IsHotLink )
             _curFont = result;
             int attr = _topFile->addAttr( TOP_FONT_CHANGE, _curFont );
             attribs = _fontFile->getAttribs( _curFont );
-            if( attribs & (FNT_UNDERLINE | FNT_STRIKEOUT | FNT_DBL_UNDER ) ) {
+            if( attribs & (FNT_UNDERLINE | FNT_STRIKEOUT | FNT_DBL_UNDER) ) {
                 _hotlinkStart = attr;
             }
         }

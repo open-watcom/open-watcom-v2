@@ -32,12 +32,12 @@ characters of the string pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
-.ct .li .
+.period
 The comparison uses the current code page which can be selected by the
-.kw _setmbcp
+.reffunc _setmbcp
 function.
-.im widefun1
-.im mbsfunc
+.widefunc &wfunc. &funcb.
+.mbcsfunc &mfunc. &funcb.
 .desc end
 .return begin
 These functions return an integer less than, equal to, or greater than
@@ -48,9 +48,9 @@ is less than, equal to, or greater than the string pointed to by
 .ct , according to the collating sequence selected.
 :CMT. If an error occurs, these functions return
 :CMT. .kw _NLSCMPERR
-:CMT. .ct .li .
+:CMT. .period
 :CMT. The
-:CMT. .kw _wcsncoll
+:CMT. .reffunc _wcsncoll
 :CMT. function may set
 :CMT. .kw errno
 :CMT. to
@@ -59,7 +59,7 @@ is less than, equal to, or greater than the string pointed to by
 :CMT. collating sequence of the current code page.
 .return end
 .see begin
-.seelist _setmbcp strcoll stricmp _stricoll strncmp _strncoll strnicmp _strnicoll
+.seelist _setmbcp strcoll _stricmp _stricoll strncmp _strncoll _strnicmp _strnicoll
 .see end
 .exmp begin
 #include <stdio.h>

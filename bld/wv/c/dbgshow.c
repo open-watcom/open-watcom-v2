@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,28 +140,28 @@ void ConfigLine( char *conf )
 }
 
 
-void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), void(**not_all)( void ) )
+void DoConfig( const char *cmd, const char *name_tab, void(**jmp_tab)( void ), bool *do_all )
 {
-    int         num;
+    char        *p;
     const char  *start;
     char        *ptr;
-    unsigned    i;
     int         cmdx;
 
     ptr = StrCopy( cmd, NameBuff );
     *ptr++ = ' ';
     if( ScanEOC() ) {
         /* show configuration on everything */
-        for( num = 0; jmp_tab[num] != NULL; ++num ) {
-            GetCmdEntry( name_tab, num, ptr );
-            for( i = 0; not_all[i] != NULL; ++i ) {
-                if( jmp_tab[num] == not_all[i] ) {
+        while( name_tab[0] != '\0' ) {
+            p = ptr;
+            for( ;; ) {
+                *p = tolower( *name_tab++ );
+                if( *p == NULLCHAR )
                     break;
-                }
+                ++p;
             }
-            if( not_all[i] == NULL ) {
-                (*jmp_tab[num])();
-            }
+            if( *do_all++ )
+                (**jmp_tab)();
+            jmp_tab++;
         }
     } else {
         start = ScanPos();
@@ -187,17 +187,22 @@ static void BadShow( void )
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SHOW ) );
 }
 
+#define SHOW_DEFS \
+    pick( "Paint",   ConfigPaint, true  ) \
+    pick( "Display", ConfigDisp,  true  ) \
+    pick( "Font",    ConfigFont,  true  ) \
+    pick( "Set",     ConfigSet,   true  ) \
+    pick( "Flip",    ConfigFlip,  true  ) \
+    pick( "Hook",    ConfigHook,  true  ) \
+    pick( "Event",   ConfigEvent, false ) \
+    pick( "Calls",   ConfigCalls, false ) \
+    pick( "Types",   ConfigTypes, false )
+
 
 static const char ShowNameTab[] = {
-    "Paint\0"
-    "Display\0"
-    "Font\0"
-    "Set\0"
-    "Flip\0"
-    "Hook\0"
-    "Event\0"
-    "Calls\0"
-    "Types\0"
+    #define pick(t,p,f)     t "\0"
+    SHOW_DEFS
+    #undef pick
 };
 
 typedef struct {
@@ -210,15 +215,9 @@ static void ConfigTypes( void )
 }
 
 static  show_rtn ShowJmpTab[] = {
-    &ConfigPaint,   true,
-    &ConfigDisp,    true,
-    &ConfigFont,    true,
-    &ConfigSet,     true,
-    &ConfigFlip,    true,
-    &ConfigHook,    true,
-    &ConfigEvent,   false,
-    &ConfigCalls,   false,
-    &ConfigTypes,   false,
+    #define pick(t,p,f)     { p, f },
+    SHOW_DEFS
+    #undef pick
 };
 
 void ProcShow( void )

@@ -1,0 +1,36 @@
+#include "wresdefn.h"
+#include "samprc.rh"
+#include "gui.rc"
+
+STRINGTABLE
+BEGIN
+    STRMSG2, "this is msg 2"
+END
+
+#include "sample.dlg"
+
+#include "sample.men"
+
+#ifdef WINRC
+
+CLOSEBMP        BITMAP "closebmp.bmp"
+
+MINIMIZE        BITMAP "min.bmp"
+MAXIMIZE        BITMAP "max.bmp"
+RESTORE         BITMAP "restore.bmp"
+RESIZE          BITMAP "resize.bmp"
+CHANGEMENU      BITMAP "change.bmp"
+HOT5            BITMAP "one.bmp"
+HOT4            BITMAP "one.bmp"
+HOT3            BITMAP "one.bmp"
+HOT2            BITMAP "one.bmp"
+HOT1            BITMAP "one.bmp"
+
+ApplIcon        ICON "main.ico"
+WIN1            ICON "win1.ico"
+WIN2            ICON "win2.ico"
+WIN3            ICON "win3.ico"
+MAIN            ICON "main.ico"
+DLG             ICON "dlg.ico"
+
+#endif

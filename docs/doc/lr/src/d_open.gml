@@ -83,7 +83,7 @@ Path or file not found
 .seelist _dos_close _dos_creat _dos_creatnew _dos_open
 .seelist _dos_read _dos_write fdopen fopen
 .seelist freopen _fsopen _grow_handles _hdopen open
-.seelist _open_osfhandle _popen sopen
+.seelist _open_osfhandle _popen _sopen
 .see end
 .exmp begin
 #include <stdio.h>

@@ -18,10 +18,10 @@ The
 function tests for any printable character except space
 ('&sysrb').
 The
-.kw isprint
+.reffunc isprint
 function is similar, except that the space character is also included
 in the character set being tested.
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The
@@ -32,7 +32,7 @@ character (except a space).
 The
 .id &wfunc.
 function returns a non-zero value when the argument is a
-printable wide character (except a wide-character space).
+printable wide character (except a wide character space).
 .do end
 Otherwise, zero is returned.
 .return end

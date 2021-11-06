@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +35,10 @@
 #include "posix.h"
 #include "bnddata.h"
 #include "specio.h"
+#include "myio.h"
 
 #include "clibext.h"
 
-
-#define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
 static bind_size    *dataOffsets = NULL;
 static bind_size    *entryCounts = NULL;
@@ -60,7 +59,7 @@ void BoundDataInit( void )
     /*
      * get trailer
      */
-    h = sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
+    h = _sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
     if( h == -1 ) {
         return;
     }
@@ -153,7 +152,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
             EditFlags.BndMemoryLocked = true;
 
             if( BndMemory == NULL ) {
-                h = sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
+                h = _sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
                 if( h == -1 ) {
                     return( false );
                 }
@@ -217,23 +216,20 @@ void SpecialFclose( GENERIC_FILE *gf )
 /*
  * SpecialFgets - get from either file or exe
  */
-bool SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
+char *SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
 {
     size_t      len;
     vi_rc       rc;
 
     switch( gf->type ) {
     case GF_FILE:
-        if( fgets( buff, max_len, gf->data.fp ) == NULL ) {
-            return( true );
-        }
-        for( len = strlen( buff ); len > 0 && isWSorCtrlZ( buff[len - 1] ); --len ) {
-            buff[len - 1] = '\0';
+        if( myfgets( buff, max_len, gf->data.fp ) == NULL ) {
+            return( NULL );
         }
         break;
     case GF_BOUND:
         if( gf->gf.a.currline >= gf->gf.a.maxlines ) {
-            return( true );
+            return( NULL );
         }
         gf->gf.a.currline++;
         if( BndMemory == NULL ) {
@@ -248,7 +244,7 @@ bool SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
         break;
     default:
         if( gf->data.cfile == NULL ) {
-            return( true );
+            return( NULL );
         }
         memcpy( buff, gf->gf.b.cline->data, gf->gf.b.cline->len + 1 );
         rc = GimmeNextLinePtr( gf->data.cfile, &(gf->gf.b.cfcb), &(gf->gf.b.cline) );
@@ -257,6 +253,6 @@ bool SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
         }
         break;
     }
-    return( false );
+    return( buff );
 
 } /* SpecialFgets */

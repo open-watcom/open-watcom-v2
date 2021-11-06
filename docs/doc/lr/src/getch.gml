@@ -9,13 +9,13 @@ The
 .id &funcb.
 function obtains the next available keystroke from the console.
 Nothing is echoed on the screen (the function
-.kw getche
+.reffunc getche
 will echo the keystroke, if possible).
 When no keystroke is available, the function waits until a key is
 depressed.
 .pp
 The
-.kw kbhit
+.reffunc kbhit
 function can be used to determine if a keystroke is available.
 .desc end
 .return begin

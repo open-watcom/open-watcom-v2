@@ -37,23 +37,25 @@
 :cmt. .   .section 'Introduction'
 :cmt. .do end
 .np
-This chapter describes the &cmdline
-commands devoted to configuring the
-&edname.'s windows and menus.  All windows are fully configurable:
-dimension, colors, existence of borders.  The menus are fully configurable:
-all menu topics and menu items are user settable.
+This chapter describes the
+.keyword &cmdline
+commands devoted to configuring the &edname.'s windows and menus.
+All windows are fully configurable: dimension, colors, existence of borders.
+The menus are fully configurable: all menu topics and menu items are user
+settable.
 .np
-A window is configured first by specifying a window.  Once the
-a window is specified, a number of properties may be set.  These properties
-are described in the following section.
+A window is configured first by specifying a window.
+Once the a window is specified, a number of properties may be set.
+These properties are described in the following section.
 .* ******************************************************************
 .section 'Window Properties'
 .* ******************************************************************
 .np
-Some of the following &cmdline
+Some of the following
+.keyword &cmdline
 commands accept colors as parameters.
-These colors may be numbers in the range 0 through 15.  As well,
-&edvi has symbolic names for these colors, they are:
+These colors may be numbers in the range 0 through 15.
+As well, &edvi has symbolic names for these colors, they are:
 :UL compact.
 :LI.black
 :LI.blue
@@ -102,19 +104,20 @@ The currently selected window has a yellow border with a black background.
 .begfunc DIMENSION
 .syntx * DIMENSION &lt.x1&gt. &lt.y1&gt. &lt.x2&gt. &lt.y2&gt.
 .begdescr
-(&parm1, &parm2) specifies the coordinates of the upper left-hand corner
-of the window, and (&parm3, &parm4) specifies the coordinates of the
+(&parm1,&parm2) specifies the coordinates of the upper left-hand corner
+of the window, and (&parm3,&parm4) specifies the coordinates of the
 lower right-hand corner of the window.
 .np
-&edname editor automatically senses the number of lines and columns 
-available.  The global variables %(SW) (screen width) and %(SH)
-(screen height) are always set.  These are useful for coding
-dimensions that are relative to the size of the screen.
+&edname editor automatically senses the number of lines and columns available.
+The global variables %(SW) (screen width) and %(SH) (screen height) are always
+set.
+These are useful for coding dimensions that are relative to the size of
+the screen.
 All parameters may be coded as expressions.
 .np
-All coordinates are 0-based.  The top left corner of the
-screen is (0,0).  The bottom right corner of the screen is
-(%(SW)-1,%(SH)-1).
+All coordinates are 0-based.
+The top left corner of the screen is (0,0).
+The bottom right corner of the screen is (%(SW)-1,%(SH)-1).
 .enddescr
 .xmplsect begin
 .begxmpl dimension 0 1 %(SW)-1 %(SH)-3
@@ -125,8 +128,8 @@ to the third last line of the screen.
 .begxmpl dimension %(SW)-10 5 %(SW)-1 10
 Makes the currently selected window's x dimension start at the tenth
 column from the right of the screen and end at the rightmost column of the
-screen. Its y dimensions range from the fifth line to the tenth line of
-the screen.
+screen.
+Its y dimensions range from the fifth line to the tenth line of the screen.
 .endxmpl
 .xmplsect end
 .endfunc
@@ -134,8 +137,8 @@ the screen.
 .begfunc ENDWINDOW
 .syntx * ENDWindow
 .begdescr
-Ends entry of properties for the currently selected window.  The currently
-selected window is then redrawn with the new properties, if it
+Ends entry of properties for the currently selected window.
+The currently selected window is then redrawn with the new properties, if it
 was previously visible.
 .enddescr
 .endfunc
@@ -173,8 +176,10 @@ text with a black background.
 .section 'Window Types'
 .* ******************************************************************
 .np
-This section describes all possible windows that may be selected.  These
-&cmdline commands select the window to start setting properties.
+This section describes all possible windows that may be selected.
+These
+.keyword &cmdline
+commands select the window to start setting properties.
 See the previous section for properties that may be set.
 .*
 .fnlist begin 'Window Types'
@@ -182,17 +187,17 @@ See the previous section for properties that may be set.
 .begfunc COMMANDWINDOW
 .syntx * COMMANDWindow
 .begdescr
-This is the window that is displayed whenever &edname is prompting
-for a &cmdline,
-a search string, a filter command or any other command or data.
+This is the window that is displayed whenever &edname is prompting for a
+.keyword &cmdline
+.ct , a search string, a filter command or any other command or data.
 .enddescr
 .endfunc
 
 .begfunc COUNTWINDOW
 .syntx * COUNTWindow
 .begdescr
-Window that opens when repeat counts are entered.  This window is
-disabled if
+Window that opens when repeat counts are entered.
+This window is disabled if
 .keyref repeatinfo
 is not set.
 .enddescr
@@ -214,12 +219,13 @@ default can be specified after.
 .syntx * DIRWindow
 .begdescr
 This is the window that you select a file from whenever no file
-is specified from the &cmdline
+is specified from the
+.keyword &cmdline
 commands
 .keyref edit
 or
 .keyref read
-:period.
+.period
 .enddescr
 .endfunc
 
@@ -235,14 +241,15 @@ This is the window that files are edited from.
 .begdescr
 This window contains extra information about possible things that
 may be done.
-It is displayed when selecting results from the &cmdline commands
+It is displayed when selecting results from the
+.keyword &cmdline
+commands
 .keyref fgrep
-:cont.,
+.ct ,
 .keyref egrep
-:cont.,
-and
+.ct , and
 .keyref files
-:period.
+.period
 .enddescr
 .endfunc
 
@@ -250,7 +257,9 @@ and
 .syntx * FILEWindow
 .begdescr
 The window in which list of files currently being edited is displayed.
-This is displayed when the &cmdline command
+This is displayed when the
+.keyword &cmdline
+command
 .keyref files
 is executed.
 .enddescr
@@ -260,8 +269,8 @@ is executed.
 .syntx * FILECWindow
 .begdescr
 This window contains list of possible file choices when
-file completion cannot match one specific file.  It is displayed
-whenever the
+file completion cannot match one specific file.
+It is displayed whenever the
 .keyword TAB
 key is pressed in a command window.
 .enddescr
@@ -272,7 +281,7 @@ key is pressed in a command window.
 .begdescr
 This is the window that line numbers are displayed in.
 The dimension of this window is ignored, the absolute position of the window
-is decided by the position of the edit window that it is associated with. 
+is decided by the position of the edit window that it is associated with.
 :cmt. However, the width of this window may be set using the
 :cmt. .keyref linenumwidth
 :cmt. setting.
@@ -286,11 +295,10 @@ is not set.
 .begfunc MENUWINDOW
 .syntx * MENUWindow
 .begdescr
-This sets the properties of the windows that open whenever
-a menu is activated.  Any
+This sets the properties of the windows that open whenever a menu is activated.
+Any
 .keyref dimension
-given with this window is ignored; the position of each
-menu is variable.
+given with this window is ignored; the position of each menu is variable.
 .enddescr
 .endfunc
 
@@ -298,7 +306,8 @@ menu is variable.
 .syntx * MENUBARWindow
 .begdescr
 This window is the menu bar.
-This is where all menus set up with the &cmdline
+This is where all menus set up with the
+.keyword &cmdline
 .keyref menu
 are displayed.
 .enddescr
@@ -307,7 +316,7 @@ are displayed.
 .begfunc MESSAGEWINDOW
 .syntx * MESSAGEWindow
 .begdescr
-The window in which all all editor feedback is reported. 
+The window in which all all editor feedback is reported.
 The
 .keyref hilight
 color is the color that errors are reported in.
@@ -322,7 +331,8 @@ so you can get by with a message window that is only one line high.
 .syntx * SETWindow
 .begdescr
 The window in which &edname settings are displayed.
-This window is displayed when the &cmdline
+This window is displayed when the
+.keyword &cmdline
 .keyref set
 command is entered without parameters or with
 .param 2
@@ -335,7 +345,8 @@ as its only parameter.
 .begdescr
 The window in which the new value of an editor setting is entered.
 This window is displayed if a value change is requested
-after entering the &cmdline
+after entering the
+.keyword &cmdline
 .keyref set
 with
 .param 2
@@ -360,16 +371,17 @@ is not set.
 .section 'Sample Window Settings'
 .* ******************************************************************
 .np
-The following examples are sample settings of the different types of
-windows. These commands may be issued from the &cmdline
+The following examples are sample settings of the different types of windows.
+These commands may be issued from the
+.keyword &cmdline
 one at at time, or may be executed from a &edname script.
 Typically, these commands will be found in the &edname
 .keyword configuration script
-:period.
+.period
 
 .np
 .keyword Commandwindow
-:cont.:
+.ct :
 .millust begin
 commandwindow
     dimension 2 %(SH)-7 %(SW)-3 %(SH)-5
@@ -378,10 +390,10 @@ commandwindow
     hilight %(highwhite) %(cyan) 1
 endwindow
 .millust end
-    
+
 .np
 .keyword Countwindow
-:cont.:
+.ct :
 .millust begin
 countwindow
     dimension 28 %(SH)-5 43 %(SH)-3
@@ -390,10 +402,10 @@ countwindow
     hilight %(highwhite) %(cyan) 1
 endwindow
 .millust end
-    
+
 .np
 .keyword Dirwindow
-:cont.:
+.ct :
 .millust begin
 dirwindow
     dimension 15 2 %(SW)-12 %(SH)-7
@@ -405,7 +417,7 @@ endwindow
 
 .np
 .keyword Editwindow
-:cont.:
+.ct :
 .millust begin
 editwindow
     dimension 0 1 %(SW)-1 %(SH)-2
@@ -433,7 +445,7 @@ endwindow
 
 .np
 .keyword Extrainfowindow
-:cont.:
+.ct :
 .millust begin
 extrainfowindow
     dimension 0 1 %(SW)-1 %(SH)-3
@@ -442,9 +454,9 @@ extrainfowindow
     hilight %(purple) %(cyan) 1
 endwindow
 .millust end
-    
+
 .keyword Filecwindow
-:cont.:
+.ct :
 .millust begin
 filecwindow
     dimension 4 7 %(SW)-5 %(SH)-9
@@ -456,7 +468,7 @@ endwindow
 
 .np
 .keyword Filewindow
-:cont.:
+.ct :
 .millust begin
 filewindow
     dimension 26 2 %(SW)-2 %(SH)-7
@@ -468,7 +480,7 @@ endwindow
 
 .np
 .keyword Messagewindow
-:cont.:
+.ct :
 .millust begin
 messagewindow
     dimension 18 %(SH)-1 %(SW)-1 %(SH)-1
@@ -480,7 +492,7 @@ endwindow
 
 .np
 .keyword Menuwindow
-:cont.:
+.ct :
 .millust begin
 menuwindow
     dimension 0 1 %(SW)-1 %(SH)-3
@@ -489,10 +501,10 @@ menuwindow
     hilight %(yellow) %(blue) 1
 endwindow
 .millust end
-    
+
 .np
 .keyword Menubarwindow
-:cont.:
+.ct :
 .millust begin
 menubarwindow
     dimension 0 0 %(SW)-1 0
@@ -503,7 +515,7 @@ endwindow
 .millust end
 
 .keyword Setvalwindow
-:cont.:
+.ct :
 .millust begin
 setvalwindow
     dimension 46 6 %(SW)-7 9
@@ -512,10 +524,10 @@ setvalwindow
     hilight %(highwhite) %(cyan) 1
 endwindow
 .millust end
-    
+
 .np
 .keyword Setwindow
-:cont.:
+.ct :
 .millust begin
 setwindow
     dimension 12 2 43 %(SH)-4
@@ -524,10 +536,10 @@ setwindow
     hilight %(highwhite) %(cyan) 1
 endwindow
 .millust end
-    
+
 .np
 .keyword Statuswindow
-:cont.:
+.ct :
 .millust begin
 statuswindow
     dimension 0 %(SH)-1 17 %(SH)-1
@@ -540,23 +552,24 @@ endwindow
 .section *refid=menucmd 'Menu Commands'
 .* ******************************************************************
 .np
-&edvi menus are set dynamically.  Any menu will
-automatically be added to the menu bar when created, and removed when
-destroyed.  There are some reserved menus:
+&edvi menus are set dynamically.
+Any menu will automatically be added to the menu bar when created, and removed
+when destroyed.
+There are some reserved menus:
 :DL.
 :DT.windowgadget
 :DD.This menu is the one that appears when the upper left hand
 corner of an edit window is clicked.
 :DT.float&lt.0-3&gt.
-:DD.These are floating (popup) menus.  They are made to appear when
-the script command
+:DD.These are floating (popup) menus.
+They are made to appear when the script command
 .keyref floatmenu
 is used.
 There are 4 floating menus,
 .param float0
 through
 .param float3
-:period.
+.period
 :eDL.
 .np
 Menus will attempt to open up where they are told to; however, if the menu
@@ -564,7 +577,8 @@ cannot fit, then it will try to open above the position that it was told
 to, to the left of the position that it was told to, and above and to the
 left of the position that it was told to.
 .np
-The following sections describe each of the &cmdline
+The following sections describe each of the
+.keyword &cmdline
 commands for controlling menus.
 .*
 .fnlist begin 'Menu Commands'
@@ -572,25 +586,26 @@ commands for controlling menus.
 .begfunc ADDMENUITEM
 .syntx * ADDMENUItem &lt.menuname&gt. &lt.itemname&gt. &lt.cmd&gt.
 .begdescr
-Adds a new item to a previously created menu &parm1.
-:period.
+Adds a new item to a previously created menu &parm1
+.period
 The item &parm2 is added to the menu.
 .np
-This command is similar to the &cmdline command
+This command is similar to the
+.keyword &cmdline
+command
 .keyref menuitem
-:cont., only the
+.ct , only the
 .keyref menuitem
 command is used when first defining a menu.
 .np
-&parm1 may be a quoted string, if the parameter
-contains spaces. If &parm1 is specified as "", then
-a solid bar is displayed in the menu.
+&parm1 may be a quoted string, if the parameter contains spaces.
+If &parm1 is specified as "", then a solid bar is displayed in the menu.
 .np
 A character in &parm2 preceded with an '&' will be the hot key
-for activating the menu, e.g. &Control would have 'C' as
-the hot key.
+for activating the menu, e.g. &Control would have 'C' as the hot key.
 .np
-The command &parm3 may be any &edname &cmdline
+The command &parm3 may be any &edname
+.keyword &cmdline
 command, and is run whenever the item is selected.
 .enddescr
 .alsosee begin
@@ -601,21 +616,19 @@ command, and is run whenever the item is selected.
 .begfunc DELETEMENU
 .syntx * DELETEMENU &lt.menuname&gt.
 .begdescr
-Destroys menu with name &parm1.
-:period.
+Destroys menu with name &parm1
+.period
 .enddescr
 .endfunc
 
 .begfunc DELETEMENUITEM
 .syntx * DELETEMENUItem &lt.menuname&gt. &lt.index&gt.
 .begdescr
-Deletes item number &parm2 from menu &parm1.
-:period.
-The item number &parm2
-is 0 based.
+Deletes item number &parm2 from menu &parm1
+.period
+The item number &parm2 is 0 based.
 .np
-If &parm2 is specified as -1, then the last item
-is removed from the menu.
+If &parm2 is specified as -1, then the last item is removed from the menu.
 .enddescr
 .endfunc
 
@@ -632,15 +645,13 @@ Finishes the creation of a new menu.
 .begfunc MENU
 .syntx * MENU &lt.menuname&gt.
 .begdescr
-Starts the creation of a new menu &parm1.
-:period.
+Starts the creation of a new menu &parm1
+.period
 If a menu exists with the name already, it is destroyed and re-created.
 A character preceded with an ampersand ('&') will be the hot key
-for activating the menu, e.g. &Control would have 'C' as
-the hot key.
+for activating the menu, e.g. &Control would have 'C' as the hot key.
 .np
-&parm1 may be a reserved name: windowgadget, float0,
-float1, float2, or float3
+&parm1 may be a reserved name: windowgadget, float0, float1, float2, or float3
 .enddescr
 .alsosee begin
 .seethis endmenu
@@ -653,19 +664,21 @@ float1, float2, or float3
 .begdescr
 Adds the item &parm1 to the last menu started with the
 .keyref menu
-command.   Menu items may be added until the &cmdline command
+command.
+Menu items may be added until the
+.keyword &cmdline
+command
 .keyref endmenu
 has been issued.
 .np
-&parm1 may be a quoted string, if the parameter
-contains spaces. If &parm1 is specified as "", then
-a solid bar is displayed in the menu.
+&parm1 may be a quoted string, if the parameter contains spaces.
+If &parm1 is specified as "", then a solid bar is displayed in the menu.
 .np
-A character in &parm1 preceded
-with an ampersand ('&') will be the hot key for activating the menu
-item, e.g. &Exit would have 'E' as the hot key.
+A character in &parm1 preceded with an ampersand ('&') will be the hot key
+for activating the menu item, e.g. &Exit would have 'E' as the hot key.
 .np
-The command &parm2 may be any &edname &cmdline
+The command &parm2 may be any &edname
+.keyword &cmdline
 command, and is run whenever the item is selected.
 .enddescr
 .alsosee begin
@@ -681,13 +694,14 @@ command, and is run whenever the item is selected.
 .* ******************************************************************
 .np
 The following examples are sample menu setups.
-These commands may be issued from the &cmdline
+These commands may be issued from the
+.keyword &cmdline
 one at at time, or may be contained in a
 .keyword script
 and executed in the script.
 Typically, these commands will be found in the &edname
 .keyword configuration script
-:period.
+.period
 .np
 This configures the menu that is popped up whenever the top left-hand
 corner of an edit window is clicked with the mouse.
@@ -705,8 +719,8 @@ menu windowgadget
 endmenu
 .millust end
 .np
-This configures one of the floating (popup) menus.  This menu could
-be displayed whenever a word is selected with the mouse.
+This configures one of the floating (popup) menus.
+This menu could be displayed whenever a word is selected with the mouse.
 .millust begin
 menu float0
     menuitem "&$AMP.Open" edit %1

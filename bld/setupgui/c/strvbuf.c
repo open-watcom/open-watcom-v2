@@ -420,14 +420,12 @@ void VbufSetInteger(            // SET A INTEGER TO VBUF
 void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM VBUF
     VBUF *vbuf )                // - VBUF structure
 {
-    char    *ptr;
+    size_t  len;
 
-    if( vbuf->used > 0 ) {
-        ptr = vbuf->buf + vbuf->used - 1;
-        while( isspace( *ptr ) ) {
-            *ptr-- = '\0';
-            vbuf->used--;
-        }
+    len = vbuf->used;
+    while( len-- > 0 && isspace( vbuf->buf[len] ) ) {
+        vbuf->buf[len] = '\0';
+        vbuf->used--;
     }
 }
 

@@ -41,5 +41,5 @@ The calling process lacks the approriate permissions
 .see begin
 .seelist mlock munlock munlockall
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

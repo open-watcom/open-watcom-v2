@@ -6,7 +6,7 @@ char *strncpy( char *dst,
                size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Copy' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrncpy( char __far *dst,
                        const char __far *src,
                        size_t n );
@@ -52,10 +52,10 @@ characters from the string pointed to by
 .arg src
 into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects is not guaranteed to work properly.
 See the
-.kw memmove
+.reffunc memmove
 function if you wish to copy objects that overlap.
 .np
 If the string pointed to by
@@ -73,16 +73,17 @@ If the string pointed to by
 is longer than
 .arg n
 characters, then the result will not be terminated by a null character.
-.im farfunc
-.im widefun1
-.im mbsffunc
+.farfunc &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
+.mbcsfunc &mfunc. &funcb.
+.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
 The
 .id &funcb.
 function returns the value of
 .arg dst
-.ct .li .
+.period
 .return end
 .see begin
 .seelist strncpy strlcpy strcpy strdup strncpy_s strcpy_s

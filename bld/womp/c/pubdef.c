@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,7 +95,7 @@ STATIC void doAnAddr( addr_info *addr, symb_handle symb ) {
         return;     /* can't handle any other form */
     }
     switch( addr_fixup->lr.target ) {
-    case TARGET_SEGWD:
+    case TARGET_SEG:
         seg_idx = addr_fixup->lr.target_datum;
         break;
     default:

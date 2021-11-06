@@ -1,5 +1,5 @@
-.gfunc settextrows
-.gsynop begin 
+.gfunc _settextrows
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _settextrows( short rows );
 .do end
@@ -14,7 +14,7 @@ The
 &routine selects the number of rows of text displayed on the screen.
 The number of rows is specified by the argument
 .arg rows
-.ct .li .
+.period
 Computers equipped with EGA, MCGA and VGA adapters can support
 different numbers of text rows.
 The number of rows that can be selected depends on the current

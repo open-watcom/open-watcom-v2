@@ -37,10 +37,13 @@
 :cmt. .   .section 'Introduction'
 :cmt. .do end
 .np
-The &edname is a modal editor.  When you are in &cmdmode
+The &edname is a modal editor.
+When you are in
+.keyword &cmdmode
 (the default mode), there are a number of valid keys that may be pressed.
-To ensure that you are in &cmdmode,
-press the
+To ensure that you are in
+.keyword &cmdmode
+.ct , press the
 .param ESC
 key until the mode indicator
 on the menu bar displays:
@@ -48,27 +51,31 @@ on the menu bar displays:
 Mode: command
 .millust end
 .np
-When in &tinsmode, text may be entered.  There are two aspects to
-&tinsmode.:
+When in
+.keyword &tinsmode
+.ct , text may be entered.
+There are two aspects to
+.keyword &tinsmode
+.ct :
 .keyword insert
 and
 .keyword overstrike
-:period.
-.keyword Text insertion mode
-is entered via a number of different commands from &cmdmode,
-and is indicated by a
-larger cursor, along with a mode line indication.  The
-types of cursor are controlled with the
+.period
+.keyword &tinsmode
+is entered via a number of different commands from
+.keyword &cmdmode
+.ct , and is indicated by a larger cursor, along with a mode line indication.
+The types of cursor are controlled with the
 .keyref commandcursortype
-:cont.,
+.ct ,
 .keyref insertcursortype
-:cont.,
-and
+.ct , and
 .keyref overstrikecursortype
 settings.
 .np
-When &edvi is in a &tinsmode.,
-the mode indicator on the menu bar displays one of:
+When &edvi is in a
+.keyword &tinsmode
+.ct , the mode indicator on the menu bar displays one of:
 .millust begin
 Mode: insert
 .millust end
@@ -80,21 +87,29 @@ Mode: overstrike
 .section *refid=timode 'Text Insertion Mode'
 .* ******************************************************************
 .np
-When in &tinsmode (either inserting or overstriking), you
-may enter text and freely cursor about through the file.  When you
-are finished adding text, the
+When in
+.keyword &tinsmode
+(either inserting or overstriking), you may enter text and freely cursor
+about through the file.
+When you are finished adding text, the
 .param ESC
-key returns you to &cmdmode
-:period.
+key returns you to
+.keyword &cmdmode
+.period
 .np
 It should be remembered that an undo applies to
-changes caused by commands; so all changes made while in &tinsmode
-are part of a single undo record. For more information on
-undos, see the section
+changes caused by commands; so all changes made while in
+.keyword &tinsmode
+are part of a single undo record.
+For more information on undos, see the section
 :HDREF refid='cmundo'.
 later on in this chapter.
 .np
-The following keys, when pressed in &cmdmode, place you into &tinsmode:
+The following keys, when pressed in
+.keyword &cmdmode
+.ct , place you into
+.keyword &tinsmode
+.ct :
 .*
 :DL break.
 .*
@@ -108,19 +123,24 @@ current line in the edit buffer.
 
 :DT.C
 :DD.Changes text from the current position to the end of the current line.
-Deletes the text, and enters &tinsmode
-:period.
+Deletes the text, and enters
+.keyword &tinsmode
+.period
 
 :DT.&lt.n&gt.c&lt.oper&gt.
-:DD.Change command.  Deletes the text in the range specified by
-.param &lt.oper&gt.
-:cont., and enters &tinsmode
-:period.
+:DD.Change command.
+Deletes the text in the range specified by
+.paramt oper
+.ct , and enters
+.keyword &tinsmode
+.period
 
 :DT.g
 :DD.Starts inserting or overstriking text at the current cursor position,
-depending on how you were adding text the last time you were in &tinsmode
-:period.
+depending on how you were adding text the last time you were in
+.keyword &tinsmode
+.period
+
 
 :DT.i
 :DD.Starts inserting text at the current cursor position.
@@ -130,28 +150,34 @@ depending on how you were adding text the last time you were in &tinsmode
 the current line.
 
 :DT.o
-:DD.Opens a line after the current line, and enters &tinsmode
-:period.
+:DD.Opens a line after the current line, and enters
+.keyword &tinsmode
+.period
 
 :DT.O
-:DD.Opens a line before the current line, and enters &tinsmode
-:period.
+:DD.Opens a line before the current line, and enters
+.keyword &tinsmode
+.period
 
 :DT.R
 :DD.Starts overstriking text at the current character in the edit buffer.
 
 :DT.&lt.n&gt.s
 :DD.Substitute
-.param &lt.n&gt.
-characters.  The first
-.param &lt.n&gt.
-characters from the current cursor position are deleted, and &tinsmode
+.paramt n
+characters.
+The first
+.paramt n
+characters from the current cursor position are deleted, and
+.keyword &tinsmode
 is entered.
 
 :DT.&lt.n&gt.S
 :DD.Substitute lines of text.
-.param &lt.n&gt.
-lines from the current line forward are deleted, and &tinsmode is entered.
+.paramt n
+lines from the current line forward are deleted, and
+.keyword &tinsmode
+is entered.
 
 :DT.INS
 :DD.Start inserting text at the current cursor position.
@@ -163,13 +189,16 @@ lines from the current line forward are deleted, and &tinsmode is entered.
 .section 'Special Keys'
 .* ******************************************************************
 .np
-While in &tinsmode, certain keys do special things.  These keys are:
+While in
+.keyword &tinsmode
+.ct , certain keys do special things.
+These keys are:
 .*
 :DL break.
 .*
 :DT.Arrow Keys
 :DD.:DL break.
-:DT.Up
+:DT.UP
 :DD.Cursor up through the text.
 :DT.DOWN
 :DD.Cursor down through the text.
@@ -191,11 +220,13 @@ of the current edit buffer.
 of the current edit buffer.
 
 :DT.SHIFT_DEL
-:DD.Deletes the currently selected region into the active &copybuffer
-:period.
+:DD.Deletes the currently selected region into the active
+.keyword &copybuffer
+.period
 
 :DT.SHIFT_INS
-:DD.Pastes the active &copybuffer
+:DD.Pastes the active
+.keyword &copybuffer
 into the text after the current position.
 
 :DT.SHIFT_TAB
@@ -203,23 +234,28 @@ into the text after the current position.
 cursor.
 
 :DT.CTRL_DEL (ctrl-delete)
-:DD.Delete the current line into the active &copybuffer
-:period.
+:DD.Delete the current line into the active
+.keyword &copybuffer
+.period
 
 :DT.CTRL_INS (ctrl-insert)
-:DD.Pastes the active &copybuffer into the text before the current position.
+:DD.Pastes the active
+.keyword &copybuffer
+into the text before the current position.
 
 :DT.CTRL_D
 :DD.Move backwards
 .keyref shiftwidth
-spaces, deleting the characters before the cursor. A
+spaces, deleting the characters before the cursor.
+A
 .keyref shiftwidth
 is a number that you may set, its default value is 4.
 
 :DT.CTRL_T
 :DD.Insert
 .keyref shiftwidth
-spaces.  If
+spaces.
+If
 .keyref realtabs 1
 is set, then once
 .keyref tabamount
@@ -236,11 +272,12 @@ spaces are inserted, the spaces are replaced with a tab character.
 cursor.
 
 :DT.DEL
-:DD.Delete the character under the cursor.  If you are at the end of the line,
+:DD.Delete the character under the cursor.
+If you are at the end of the line,
 .keyword DEL
 has the same effect as pressing
 .keyword BS
-:period.
+.period
 
 :DT.ENTER
 :DD.Start a new line.
@@ -261,10 +298,11 @@ has the same effect as pressing
 :DD.Move up down one page in the text.
 
 :DT.TAB
-:DD.Move forward to the next tab stop.  If
+:DD.Move forward to the next tab stop.
+If
 .keyref realtabs 1
-is set, a tab character is inserted into the file. Otherwise, spaces
-are inserted.
+is set, a tab character is inserted into the file.
+Otherwise, spaces are inserted.
 .*
 :eDL.
 .*
@@ -273,33 +311,39 @@ are inserted.
 .section 'Command Mode'
 .* ******************************************************************
 .np
-The following &cmdmode command descriptions show items within
-angle brackets (&lt.&gt.).
+The following
+.keyword &cmdmode
+command descriptions show items within angle brackets (&lt.&gt.).
 The angle brackets are there to indicate items that you may supply.
-You are not required to type the brackets.  For example, &lt.n&gt. simply
-means that in the corresponding place in the command you can enter
-a number.
+You are not required to type the brackets.
+For example, &lt.n&gt. simply means that in the corresponding place
+in the command you can enter a number.
 .np
 Many commands may be preceded with a repeat count, which is
 indicated by a
-.param &lt.n&gt.
+.paramt n
 before a command.
 The number is not required; if it is not supplied, it is usually assumed
-that a 1 was entered for the repeat count. As long as the setting
+that a 1 was entered for the repeat count.
+As long as the setting
 .keyref repeatinfo
 is enabled, the number that is typed appears in a special window called the
 .keyref countwindow
-:period.
+.period
 .np
-Other commands may be preceded with a &copybuffer
+Other commands may be preceded with a
+.keyword &copybuffer
 name, which is indicated with a
-.param &lt."?&gt.
-:period.
+.paramt "?
+.period
 If you do not want the result of the operation to be copied into the
-active buffer, then an alternate buffer may be specified.
+active
+.keyword &copybuffer
+.ct , then an alternate buffer may be specified.
 The double quotes (")
 are required (this indicates that an alternate buffer is being specified),
-and then a buffer '1'-'9' or 'a'-'z' is specified. See the section
+and then a buffer '1'-'9' or 'a'-'z' is specified.
+See the section
 :HDREF refid='cpybuff'.
 for more information.
 .*
@@ -308,15 +352,16 @@ for more information.
 .section *refid=mvement 'Movement'
 .* ******************************************************************
 .np
-The following are &cmdmode commands that cause movement in the
-current edit buffer.
+The following are
+.keyword &cmdmode
+commands that cause movement in the current edit buffer.
 .*
 .keylist begin Movement
 .*
 .begkey "|" "&lt.n&gt.|" '(or bar)'
 Move to the column number specified by
-.param &lt.n&gt.
-:period.
+.paramt n
+.period
 .np
 .xmplsect begin
 .begxmpl |
@@ -330,7 +375,7 @@ Move to column 15 of the current line.
 
 .begkey ` `&lt.?&gt. (back quote)
 Moves to the mark position (line and column) specified by
-.param &lt.?&gt.
+.paramt ?
 See the section
 :HDREF refid='marks'.
 for more information.
@@ -340,15 +385,15 @@ for more information.
 .begxmpl `a
 Move to the line and column with mark
 .param a
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
 
 .begkey "'" "'&lt.?&gt." (front quote)
 Move to the start of line with the mark
-.param &lt.?&gt.
-:period.
+.paramt ?
+.period
 See the section
 :HDREF refid='marks'.
 for more information.
@@ -358,15 +403,15 @@ for more information.
 .begxmpl 'z
 Move to the start of the line with mark
 .param z
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
 
 .begkey '%' '%' (percent)
 Moves to matching brace or other defined match string.
-Defaults are "{","}"
-and "(",")". For example, by pressing
+Defaults are "{","}" and "(",")".
+For example, by pressing
 .param %
 while on the first opening brace ('(') on the line:
 .millust begin
@@ -374,9 +419,10 @@ if( ( i=foo( x ) ) ) return;
 .millust end
 moves the cursor to the last closing brace (')') on the line.
 It is possible to set arbitrary pairs of match strings using the
-&cmdline command
+.keyword &cmdline
+command
 .keyref match
-:period.
+.period
 .endkey
 
 .begkey '$' '$' (dollar)
@@ -392,9 +438,9 @@ Moves the cursor to the first non-whitespace character on the current line.
 .dc cw ;
 Repeats the last
 .keyword f
-:cont.,
+.ct ,
 .keyword F
-:cont.,
+.ct ,
 .keyword t
 or
 .keyword T
@@ -404,9 +450,9 @@ movement commands.
 .begkey ',' ',' (comma)
 Repeats the last
 .keyword f
-:cont.,
+.ct ,
 .keyword F
-:cont.,
+.ct ,
 .keyword t
 or
 .keyword T
@@ -437,18 +483,20 @@ movement command is executed.
 .endkey
 
 .begkey - &lt.n&gt.- (dash)
-Moves the cursor to the start of the previous line.  If a repeat count
-.param &lt.n&gt.
+Moves the cursor to the start of the previous line.
+If a repeat count
+.paramt n
 is specified, then you are moved up
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
 .begkey + &lt.n&gt.+ (plus)
-Moves the cursor to the start of the next line.  If a repeat count
-.param &lt.n&gt.
+Moves the cursor to the start of the next line.
+If a repeat count
+.paramt n
 is specified, then you are moved down
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
@@ -468,9 +516,9 @@ of the current edit buffer.
 
 .begkey DOWN &lt.n&gt.DOWN
 Move the cursor down one line.
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves down
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
@@ -479,10 +527,11 @@ Moves the cursor to the last character on the current line.
 .endkey
 
 .begkey ENTER &lt.n&gt.ENTER
-Moves the cursor to the start of the next line.  If a repeat count
-.param &lt.n&gt.
+Moves the cursor to the start of the next line.
+If a repeat count
+.paramt n
 is specified, then the cursor is moved down
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
@@ -491,18 +540,20 @@ Moves the cursor the first character of the current line.
 .endkey
 
 .begkey LEFT &lt.n&gt.LEFT
-Move the cursor left one character.  If
-.param &lt.n&gt.
+Move the cursor left one character.
+If
+.paramt n
 is specified, the cursor moves left
-.param &lt.n&gt.
+.paramt n
 characters.
 .endkey
 
 .begkey PAGEDOWN &lt.n&gt.PAGEDOWN
-Moves forwards one page.  If a repeat count
-.param &lt.n&gt.
+Moves forwards one page.
+If a repeat count
+.paramt n
 is specified, then you are moved ahead
-.param &lt.n&gt.
+.paramt n
 pages.
 The number of lines of context maintained
 is controlled by the
@@ -511,10 +562,11 @@ setting.
 .endkey
 
 .begkey PAGEUP &lt.n&gt.PAGEUP
-Moves backwards one page.  If a repeat count
-.param &lt.n&gt.
+Moves backwards one page.
+If a repeat count
+.paramt n
 is specified, then you are moved back
-.param &lt.n&gt.
+.paramt n
 pages.
 The number of lines of context maintained
 is controlled by the
@@ -523,53 +575,57 @@ setting.
 .endkey
 
 .begkey RIGHT &lt.n&gt.RIGHT
-Move the cursor right one character.  If
-.param &lt.n&gt.
+Move the cursor right one character.
+If
+.paramt n
 is specified, the cursor moves right
-.param &lt.n&gt.
+.paramt n
 characters.
 .endkey
 
 .begkey SHIFT_TAB &lt.n&gt.SHIFT_TAB
 Moves the cursor left by
 .keyref tabamount
-characters. A repeat count
-.param &lt.n&gt.
+characters.
+A repeat count
+.paramt n
 multiplies this.
 .endkey
 
 .begkey TAB &lt.n&gt.TAB
 Moves the cursor right by
 .keyref tabamount
-characters. A repeat count
-.param &lt.n&gt.
+characters.
+A repeat count
+.paramt n
 multiplies this.
 .endkey
 
 .begkey UP &lt.n&gt.UP
 Move the cursor up one line.
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves up
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
 .begkey CTRL_B &lt.n&gt.CTRL_B
-Moves backwards one page.  If a repeat count
-.param &lt.n&gt.
+Moves backwards one page.
+If a repeat count
+.paramt n
 is specified, then you are moved back
-.param &lt.n&gt.
+.paramt n
 pages.
-The number of lines of context maintained
-is controlled by the
+The number of lines of context maintained is controlled by the
 .keyref pagelinesexposed
 setting.
 .endkey
 
 .begkey CTRL_D &lt.n&gt.CTRL_D
-Move down a certain number of lines.  The default is to move down
-half a page.  If the repeat count
-.param &lt.n&gt.
+Move down a certain number of lines.
+The default is to move down half a page.
+If the repeat count
+.paramt n
 is specified, then that becomes the number of lines moved from then on.
 Also see the
 .param CTRL_U
@@ -578,17 +634,18 @@ key.
 
 .begkey CTRL_E &lt.n&gt.CTRL_E
 Expose the line below the last line in the current edit window,
-leaving the cursor on the same line if possible.  If a repeat
-count
-.param &lt.n&gt.
+leaving the cursor on the same line if possible.
+If a repeat count
+.paramt n
 is specified, then that many lines are exposed.
 .endkey
 
 .begkey CTRL_F &lt.n&gt.CTRL_F
-Moves forwards one page.  If a repeat count
-.param &lt.n&gt.
+Moves forwards one page.
+If a repeat count
+.paramt n
 is specified, then you are moved ahead
-.param &lt.n&gt.
+.paramt n
 pages.
 The number of lines of context maintained
 is controlled by the
@@ -597,25 +654,28 @@ setting.
 .endkey
 
 .begkey CTRL_N &lt.n&gt.CTRL_N
-Move the cursor to the next line.  If a repeat count
-.param &lt.n&gt.
+Move the cursor to the next line.
+If a repeat count
+.paramt n
 is specified, then you are moved down
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
 .begkey CTRL_P &lt.n&gt.CTRL_P
-Move the cursor to the previous line.  If a repeat count
-.param &lt.n&gt.
+Move the cursor to the previous line.
+If a repeat count
+.paramt n
 is specified, then you are moved up
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
 .begkey CTRL_U &lt.n&gt.CTRL_U
-Move up a certain number of lines.  The default is to move up
-half a page.  If the repeat count
-.param &lt.n&gt.
+Move up a certain number of lines.
+The default is to move up half a page.
+If the repeat count
+.paramt n
 is specified, then that becomes the number of lines moved from then on.
 Also see the
 .keyword CTRL_D
@@ -624,9 +684,9 @@ key.
 
 .begkey CTRL_Y &lt.n&gt.CTRL_Y
 Expose the line above the first line in the current edit window,
-leaving the cursor on the same line if possible.  If a repeat
-count
-.param &lt.n&gt.
+leaving the cursor on the same line if possible.
+If a repeat count
+.paramt n
 is specified, then that many lines are exposed.
 .endkey
 
@@ -644,7 +704,7 @@ then the cursor moves to the
 .param f
 in
 .param foo
-:period.
+.period
 .endxmpl
 .begxmpl 2B
 If the cursor was on the right parenthesis (')') of
@@ -673,16 +733,16 @@ then the cursor moves to the letter
 .param a
 in
 .param abc
-:period.
+.period
 .endxmpl
 .begxmpl 2b
 If the cursor was on the right parenthesis (')') of
 .millust begin
 x = foo(abc) + 3;
 .millust end
-then the cursor moves to left parenthesis 
+then the cursor moves to left parenthesis
 .param (
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -701,7 +761,7 @@ x = foo(abc) + 3;
 .millust end
 then the cursor moves to the right parenthesis
 .param )
-:period.
+.period
 .endxmpl
 .begxmpl 2E
 If the cursor was on the letter
@@ -710,7 +770,7 @@ in
 .millust begin
 x = foo(abc) + 3;
 .millust end
-then the cursor moves to the 
+then the cursor moves to the
 .param +
 sign.
 .endxmpl
@@ -733,7 +793,7 @@ then the cursor moves to the second letter
 .param o
 in
 .param foo
-:period.
+.period
 .endxmpl
 .begxmpl 2e
 If the cursor was on the letter
@@ -744,18 +804,19 @@ x = foo(abc) + 3;
 .millust end
 then the cursor moves to the left parenthesis
 .param (
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
 
 .begkey F &lt.n&gt.F&lt.?&gt.
 Moves the cursor backwards from its current position to the character
-.param &lt.?&gt.
-on the current line.  If a repeat count
-.param &lt.n&gt.
+.paramt ?
+on the current line.
+If a repeat count
+.paramt n
 is specified, then the nth occurrence of the character
-.param &lt.?&gt.
+.paramt ?
 is moved to.
 .np
 .xmplsect begin
@@ -777,20 +838,21 @@ The the cursor is moved to the first
 .param o
 in
 .param foo
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
 
 .begkey f &lt.n&gt.f&lt.?&gt.
 Moves the cursor forwards from its current position to the character
-.param &lt.?&gt.
-on the current line.  If a repeat count
-.param &lt.n&gt.
+.paramt ?
+on the current line.
+If a repeat count
+.paramt n
 is specified, then the
 .param nth
 occurrence of the character
-.param &lt.?&gt.
+.paramt ?
 is moved to.
 .np
 .xmplsect begin
@@ -816,15 +878,15 @@ The the cursor is moved to the second
 .param o
 in
 .param foo
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
 
 .begkey G &lt.n&gt.G
 Goes to the line specified by the repeat count
-.param &lt.n&gt.
-:period.
+.paramt n
+.period
 If no repeat count is specified, you move the the last line in the
 current edit buffer.
 .np
@@ -839,16 +901,17 @@ Moves to the last line in the current edit buffer.
 .endkey
 
 .begkey h &lt.n&gt.h
-Move the cursor left one character.  If
-.param &lt.n&gt.
+Move the cursor left one character.
+If
+.paramt n
 is specified, the cursor moves left
-.param &lt.n&gt.
+.paramt n
 characters.
 .endkey
 
 .begkey H &lt.n&gt.H
-Moves to the line at the top of the current file window.  If
-a repeat count is specified, then you are moved to that line relative
+Moves to the line at the top of the current file window.
+If a repeat count is specified, then you are moved to that line relative
 to the top of the current file window.
 .np
 .xmplsect begin
@@ -863,23 +926,23 @@ Moves to the line at the top of the current file window.
 
 .begkey j &lt.n&gt.j
 Move the cursor down one line.
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves down
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
 .begkey k &lt.n&gt.k
 Move the cursor up one line.
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves up
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
 .begkey L &lt.n&gt.L
-Moves to the line at the bottom of the current file window.  If
-a repeat count is specified, then you are moved to that line relative
+Moves to the line at the bottom of the current file window.
+If a repeat count is specified, then you are moved to that line relative
 from the bottom of the current file window.
 .np
 .xmplsect begin
@@ -893,10 +956,11 @@ Moves to the line at the bottom of the current file window.
 .endkey
 
 .begkey l &lt.n&gt.l
-Move the cursor right one character.  If
-.param &lt.n&gt.
+Move the cursor right one character.
+If
+.paramt n
 is specified, the cursor moves right
-.param &lt.n&gt.
+.paramt n
 characters.
 .endkey
 
@@ -907,12 +971,13 @@ Moves the cursor to the line in the middle of the current file window.
 .begkey T &lt.n&gt.T&lt.?&gt.
 Moves the cursor backwards from its current position to the character
 after the character
-.param &lt.?&gt.
-on the current line.  If a repeat count
-.param &lt.n&gt.
+.paramt ?
+on the current line.
+If a repeat count
+.paramt n
 is specified, then the the character after the nth
 occurrence of the character
-.param &lt.?&gt.
+.paramt ?
 is moved to.
 .np
 .xmplsect begin
@@ -934,7 +999,7 @@ The the cursor is moved to the second
 .param o
 in
 .param foo
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -942,12 +1007,13 @@ in
 .begkey t &lt.n&gt.t&lt.?&gt.
 Moves the cursor forwards from its current position to the character before
 the character
-.param &lt.?&gt.
-on the current line.  If a repeat count
-.param &lt.n&gt.
+.paramt ?
+on the current line.
+If a repeat count
+.paramt n
 is specified, then the the character before the nth
 occurrence of the character
-.param &lt.?&gt.
+.paramt ?
 is moved to.
 .np
 .xmplsect begin
@@ -973,7 +1039,7 @@ The the cursor is moved to the first
 .param o
 in
 .param foo
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -990,7 +1056,7 @@ in
 .millust begin
 x = foo(abc) + 3;
 .millust end
-then the cursor moves to the 
+then the cursor moves to the
 .param +
 sign.
 .endxmpl
@@ -1003,7 +1069,7 @@ x = foo(abc) + 3;
 .millust end
 then the cursor moves to the number
 .param 3
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1023,7 +1089,7 @@ x = foo(abc) + 3;
 .millust end
 then the cursor moves to the left parenthesis
 .param (
-:period.
+.period
 .endxmpl
 .begxmpl 2w
 If the cursor was on the letter
@@ -1036,7 +1102,7 @@ then the cursor moves to the letter
 .param a
 in
 .param abc
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1048,32 +1114,34 @@ in
 .np
 &edvi keeps an undo history of all changes made to an edit buffer.
 There is no limit on the number of undos, as long as there is enough
-memory to save the undo information.  If there is not enough memory
-to save undo information for the current action, then the oldest undo
-information is removed until enough memory has been released.
+memory to save the undo information.
+If there is not enough memory to save undo information for the current
+action, then the oldest undo information is removed until enough memory
+has been released.
 .np
 There is also an undo-undo (redo) history:  as you issue undo commands,
-the information to redo the undo is kept.  However, once you modify the
-file other than by doing an undo, the redo history is lost.
+the information to redo the undo is kept.
+However, once you modify the file other than by doing an undo, the redo
+history is lost.
 .np
-As you issue undo commands, a message indicating how many undos are
-remaining.  The message could look like:
+As you issue undo commands, a message indicating how many undos are remaining.
+The message could look like:
 
 .millust begin
 16 items left on undo stack
 .millust end
 
 This lets you know how many undos it would take to restore the
-edit buffer to its original condition.  Once there are no more undos,
-you will see the message:
+edit buffer to its original condition.
+Once there are no more undos, you will see the message:
 
 .millust begin
 undo stack is empty
 .millust end
 
 Once you undo all changes,
-then the file changes state from modified to unmodified.  However,
-if some undo changes have had to be discarded because of low memory,
+then the file changes state from modified to unmodified.
+However, if some undo changes have had to be discarded because of low memory,
 the file will still be in a modified state.
 .np
 The keystrokes for doing undo and redo are:
@@ -1104,35 +1172,38 @@ Mark commands are:
 .*
 .begkey m m&lt.?&gt.
 Allows the setting of mark
-.param &lt.?&gt.
-:period.
+.paramt ?
+.period
 .np
 If
-.param &lt.?&gt.
+.paramt ?
 is an exclamation mark ('!')
 instead of a letter, it clears all marks on the current line.
 .np
 If
-.param &lt.?&gt.
+.paramt ?
 is a dot ('.')
 instead of a letter, it puts &edvi in
 .keyword memorize mode
-:period.
-All characters typed are memorized until another dot ('.')
-is pressed.  The memorized keystrokes may be repeated by pressing
-a dot ('.').
-See the dot ('.') &cmdmode command later in this chapter.
+.period
+All characters typed are memorized until another dot ('.') is pressed.
+The memorized keystrokes may be repeated by pressing a dot ('.').
+See the dot ('.')
+.keyword &cmdmode
+command later in this chapter.
 .np
 If
-.param &lt.?&gt.
+.paramt ?
 is an equals sign ('=')
-instead of a letter, it puts &edvi in alternate
-.keyword memorize mode
-:period.
+instead of a letter, it puts &edvi in
+.keyword alternate memorize mode
+.period
 All characters typed are memorized until another equals sign ('=')
-is pressed.  The memorized keystrokes may be repeated by pressing
-an equals sign ('=').
-See the equals sign ('=') &cmdmode command later in this chapter.
+is pressed.
+The memorized keystrokes may be repeated by pressing an equals sign ('=').
+See the equals sign ('=')
+.keyword &cmdmode
+command later in this chapter.
 .seecmd mark
 .np
 .xmplsect begin
@@ -1140,7 +1211,8 @@ See the equals sign ('=') &cmdmode command later in this chapter.
 Sets the mark a at the current cursor position
 .endxmpl
 .begxmpl m.
-Enter memorize mode
+Enter
+.keyword memorize mode
 .endxmpl
 .begxmpl m!
 Clear any marks set on the current line.
@@ -1150,14 +1222,14 @@ Clear any marks set on the current line.
 
 .begkey "'" "'&lt.?&gt." (front quote)
 Move to the start of the line with the mark
-.param &lt.?&gt.
-:period.
+.paramt ?
+.period
 .np
 .xmplsect begin
 .begxmpl 'a
 Moves to the first column of the line with mark
 .param a
-:period.
+.period
 .endxmpl
 .begxmpl ''
 Moves to the first column of line of the last position before the last
@@ -1168,14 +1240,14 @@ non-linear movement command was issued.
 
 .begkey '`' '`&lt.?&gt.' (back quote)
 Move to the position in the edit buffer with the mark
-.param &lt.?&gt.
-:period.
+.paramt ?
+.period
 .np
 .xmplsect begin
 .begxmpl `a
 Moves to the column and line with mark
 .param a
-:period.
+.period
 .endxmpl
 .begxmpl ``
 Moves to the last position before the last
@@ -1195,54 +1267,67 @@ take you to the last position you were at before you used a
 non-linear movement command (', `, ?, /, G, n, and N commands).
 So, if you are at line 5 column 10 and type
 .param /foo
-:cont.,
-pressing
+.ct , pressing
 .param ``
-will first move
-you back to line 5 column 10. Pressing
+will first move you back to line 5 column 10.
+Pressing
 .param ``
-again will move you to the occurrence of
-foo, since the previous `` command was a non-linear movement command.
+again will move you to the occurrence of foo, since the previous `` command
+was a non-linear movement command.
 .* ******************************************************************
 .section *refid=cpybuff 'Copy Buffers'
 .* ******************************************************************
 .np
-A &copybuffer is a buffer where copied or deleted data is kept.
-There are a number of these buffers available.  There are 9 default
-buffers that text is placed into when it is deleted/yanked (see
-the &cmdline commands
+A
+.keyword &copybuffer
+is a buffer where copied or deleted data is kept.
+There are a number of these buffers available.
+There are 9 default buffers that text is placed into when it is deleted/yanked
+(see the
+.keyword &cmdline
+commands
 .keyref delete
 and
 .keyref yank
-:cont.,
-along with the sections
-:HDREF refid='deltext'
+.ct , along with the sections
+:HDREF refid='deltext'.
 and
-:HDREF refid='cpytext'
+:HDREF refid='cpytext'.
 later in this chapter).
-These buffers are numbered 1 through 9, and any of these buffers may
-be the active &copybuffer
-:period.
+These buffers are numbered 1 through 9, and any of these buffers may be
+the active
+.keyword &copybuffer
+.period
 .np
-The active &copybuffer may be selected using function keys. 
+The active
+.keyword &copybuffer
+may be selected using function keys.
 CTRL_F1 through CTRL_F9 select buffers 1 through 9 respectively.
-When a buffer is selected,
-information about its contents is displayed in the message window.
-This buffer becomes the active &copybuffer
-:period.
+When a buffer is selected, information about its contents is displayed in
+the message window.
+This buffer becomes the active
+.keyword &copybuffer
+.period
 All yanked/deleted text is copied into this buffer.
 .np
-When text is yanked/deleted into the active &copybuffer,
-the contents of the the buffers are cascaded forward from the active
-buffer into the next one, with the last numbered &copybuffer
-losing its contents. Any buffers that are before the active
-&copybuffer have their contents preserved.  For example, if buffer 3
-is the active buffer, then a deletion will cascade buffer 3 to buffer 4,
-buffer 4 to buffer 5, and so on, with the contents of buffer 9 being lost.
+When text is yanked/deleted into the active
+.keyword &copybuffer
+.ct , the contents of the the buffers are cascaded forward from the active
+buffer into the next one, with the last numbered
+.keyword &copybuffer
+losing its contents.
+Any buffers that are before the active
+.keyword &copybuffer
+have their contents preserved.
+For example, if buffer 3 is the active
+.keyword &copybuffer
+.ct , then a deletion will cascade buffer 3 to buffer 4, buffer 4 to buffer 5,
+and so on, with the contents of buffer 9 being lost.
 Buffers 1 and 2 remain untouched, and buffer 3 gets a copy of the deleted text.
 .np
-There are several &cmdmode commands that add text to buffers; they
-are
+There are several
+.keyword &cmdmode
+commands that add text to buffers; they are
 .*
 :DL break.
 .*
@@ -1269,13 +1354,15 @@ are
 .*
 :eDL.
 .*
-There is more information on these &cmdmode
+There is more information on these
+.keyword &cmdmode
 commands later in this chapter.
 .np
-Text may be yanked/deleted into a specific &copybuffer
-by typing "[1-9] before
-the appropriate command. As well, there are 26 named buffers that may
-be used, 'a'-'z'.  When text is yanked or deleted into a named buffer,
+Text may be yanked/deleted into a specific
+.keyword &copybuffer
+by typing "[1-9] before the appropriate command.
+As well, there are 26 named buffers that may be used, 'a'-'z'.
+When text is yanked or deleted into a named buffer,
 it remains there for the life of the editing session (or until replaced).
 .np
 To retrieve the contents of a buffer, use:
@@ -1283,8 +1370,9 @@ To retrieve the contents of a buffer, use:
 .keylist begin 'Copy Buffers'
 .*
 .begkey SHIFT_INS &lt."?&gt.SHIFT_INS
-Puts (pastes) the contents of the active &copybuffer
-after the cursor position in the current edit buffer. 
+Puts (pastes) the contents of the active
+.keyword &copybuffer
+after the cursor position in the current edit buffer.
 .seecmd put
 .np
 .xmplsect begin
@@ -1294,20 +1382,24 @@ Copy the data in the named buffer
 after the current position in the file.
 .endxmpl
 .begxmpl SHIFT_INS
-Copy the data in the active buffer
+Copy the data in the active
+.keyword &copybuffer
 after the current position in the file.
 .endxmpl
 .xmplsect end
 .endkey
 
 .begkey p &lt."?&gt.p
-Puts (pastes) the contents of the active &copybuffer
+Puts (pastes) the contents of the active
+.keyword &copybuffer
 after the cursor position in the current edit buffer.
 .seecmd put
 .np
 .xmplsect begin
 .begxmpl p
-Copies the data in the active buffer after the current position in the file.
+Copies the data in the active
+.keyword &copybuffer
+after the current position in the file.
 .endxmpl
 .begxmpl "5p
 Copies the data in the numbered buffer
@@ -1318,7 +1410,8 @@ after the current position in the file.
 .endkey
 
 .begkey P &lt."?&gt.P
-Puts (pastes) the contents of the active &copybuffer
+Puts (pastes) the contents of the active
+.keyword &copybuffer
 before the cursor position in the current edit buffer.
 .seecmd put
 .np
@@ -1329,7 +1422,8 @@ Copy the data in the named buffer
 before the current position in the file.
 .endxmpl
 .begxmpl P
-Copy the data in the active buffer
+Copy the data in the active
+.keyword &copybuffer
 before the current position in the file.
 .endxmpl
 .xmplsect end
@@ -1340,18 +1434,24 @@ before the current position in the file.
 .np
 Without a
 .param "?
-prefix, these commands retrieve the contents of the active buffer.
+prefix, these commands retrieve the contents of the active
+.keyword &copybuffer
+.period
 .np
-The contents of a &copybuffer
-may be executed, as if the contents were typed from the
-keyboard. See the
+The contents of a
+.keyword &copybuffer
+may be executed, as if the contents were typed from the keyboard.
+See the
 .keyword @
-&cmdmode command later in this chapter.
+.keyword &cmdmode
+command later in this chapter.
 .* ******************************************************************
 .section *refid=srching 'Searching'
 .* ******************************************************************
 .np
-The following &cmdmode commands are used for searching for text:
+The following
+.keyword &cmdmode
+commands are used for searching for text:
 .*
 .keylist begin Searching
 .*
@@ -1376,7 +1476,7 @@ Repeat last search command, in the opposite direction of the last search.
 .np
 For more information on regular expressions, see
 :HDREF refid='rxchap'.
-:period.
+.period
 .np
 Once you press the
 .keyword /
@@ -1395,14 +1495,15 @@ scrolls.
 The search string window has a history associated with it; the size
 of this search string history is controlled using the
 .keyref maxfindhistory
-setting.  As well, the search string history is preserved across sessions of
-&edvi if the
+setting.
+As well, the search string history is preserved across sessions of &edvi
+if the
 .keyref historyfile
 parameter is set.
 .np
 If the first letter of a search string is a CTRL_A (entered by typing
-a CTRL_V followed by a CTRL_A)
-then that search string will not be added to the search string history.
+a CTRL_V followed by a CTRL_A) then that search string will not be added
+to the search string history.
 .*
 .beglevel
 .* ******************************************************************
@@ -1418,8 +1519,11 @@ Once in the search string window, a number of keys have special meaning:
 .section 'Inserting Text'
 .* ******************************************************************
 .np
-The following commands cause &edvi to go from &cmdmode
-directly into &tinsmode:
+The following commands cause &edvi to go from
+.keyword &cmdmode
+directly into
+.keyword &tinsmode
+.ct :
 .*
 .keylist begin 'Inserting Text'
 .*
@@ -1449,27 +1553,35 @@ edit buffer.
 .endkey
 
 .begkey o o
-Opens a line after the current line, and enters &tinsmode
-:period.
+Opens a line after the current line, and enters
+.keyword &tinsmode
+.period
 .endkey
 
 .begkey O O
-Opens a line before the current line, and enters &tinsmode
-:period.
+Opens a line before the current line, and enters
+.keyword &tinsmode
+.period
 .endkey
 .*
 .keylist end
 .*
-Once you are in &tinsmode, you can toggle back and forth between
+Once you are in
+.keyword &tinsmode
+.ct , you can toggle back and forth between
 insert and overstrike using the
 .keyword INS
-key.  You exit &tinsmode by pressing the
+key.
+You exit
+.keyword &tinsmode
+by pressing the
 .keyword ESC
-key. See the previous section,
+key.
+See the previous section,
 :HDREF refid='timode'.
-:cont.,
-for more information on manipulating text in &tinsmode
-:period.
+.ct , for more information on manipulating text in
+.keyword &tinsmode
+.period
 .* ******************************************************************
 .section 'Replacing Text'
 .* ******************************************************************
@@ -1485,35 +1597,39 @@ Starts overstriking text at the current character in the edit buffer.
 Once you are overstriking text, you can toggle back and forth between
 overstrike and insert using the
 .keyword INS
-key.   You exit &tinsmode by pressing the
+key.
+You exit
+.keyword &tinsmode
+by pressing the
 .keyword ESC
-key. See the previous section,
+key.
+See the previous section,
 :HDREF refid='timode'.
-:cont.,
-for more information on manipulating text in &tinsmode
-:period.
+.ct , for more information on manipulating text in
+.keyword &tinsmode
+.period
 .endkey
 
 .begkey r &lt.n&gt.r&lt.?&gt.
 Replaces the current character with the next character typed,
-.param &lt.?&gt.
-:period.
+.paramt ?
+.period
 If a repeat count is specified, then the next
-.param &lt.n&gt.
+.paramt n
 characters are replaced with the character
-.param &lt.?&gt.
-:period.
+.paramt ?
+.period
 .np
 .xmplsect begin
 .begxmpl ra
 Replaces the current character with the letter
 .param a
-:period.
+.period
 .endxmpl
 .begxmpl 10rZ
 Replaces the next 10 characters with the letter
 .param Z
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1523,11 +1639,12 @@ Replaces the next 10 characters with the letter
 .section *refid=deltext 'Deleting Text'
 .* ******************************************************************
 .np
-The commands in this section are for deleting text in
-an edit buffer.  All deleted text is copied into a &copybuffer
+The commands in this section are for deleting text in an edit buffer.
+All deleted text is copied into a
+.keyword &copybuffer
 for later use, see the section
 :HDREF refid='cpybuff'.
-:period.
+.period
 .*
 .keylist begin 'Deleting Text'
 .*
@@ -1539,7 +1656,7 @@ Deletes the characters from the current position to the end of line.
 Deletes characters from current position to the end of line into the named
 buffer
 .param a
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1557,7 +1674,7 @@ Delete the 10 previous characters.
 .begxmpl "z5X
 Delete the 5 previous characters into the named buffer
 .param z
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1575,16 +1692,18 @@ Delete the next 3 characters.
 .begxmpl "217x
 Delete the next 17 characters into the numbered buffer
 .param 2
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
 
 .begkey DEL &lt.n&gt.&lt."?&gt.DEL
-Delete the character at the current cursor position. This behaves
-the same as the &cmdmode command
+Delete the character at the current cursor position.
+This behaves the same as the
+.keyword &cmdmode
+command
 .keyword x
-:period.
+.period
 .np
 .xmplsect begin
 .begxmpl DEL
@@ -1596,7 +1715,7 @@ Delete the next 12 characters.
 .begxmpl "a5DEL
 Delete the next 5 characters into the named buffer
 .param a
-:period.
+.period
 .endxmpl
 .xmplsect end
 .endkey
@@ -1612,58 +1731,63 @@ Delete the next 5 characters into the named buffer
 .begkey d &lt.n&gt.&lt."?&gt.d&lt.oper&gt.
 Delete text from the current position in the file to the
 position specified by
-.param &lt.oper&gt.
-:period.
-A copy of the text is placed into the specified &copybuffer
-.param &lt."?&gt.
-:period.
+.paramt oper
+.period
+A copy of the text is placed into the specified
+.keyword &copybuffer
+.paramt "?
+.period
 If no buffer is specified, then the text is placed into the active
 buffer.
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be deleted.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param d
-:cont.,
-which causes a single line to be deleted.
+.ct , which causes a single line to be deleted.
 .seecmd delete
 .np
 .xmplsect begin
 .begxmpl dr
 Deletes the current selected (highlighted) region in the edit buffer.
-A copy is placed into the active &copybuffer
-:period.
+A copy is placed into the active
+.keyword &copybuffer
+.period
 .endxmpl
 .begxmpl "zdd
-Deletes the current line. A copy is placed into the named &copybuffer
+Deletes the current line.
+A copy is placed into the named
+.keyword &copybuffer
 .param z
-:period.
+.period
 .endxmpl
 .begxmpl 95dd
-Deletes 95 lines, starting at the current. A copy of the lines
-is placed into the active buffer.
+Deletes 95 lines, starting at the current.
+A copy of the lines is placed into the active
+.keyword &copybuffer
+.period
 .endxmpl
 .begxmpl "cdfa
 Deletes the characters from the current column up to and including
 the first
 .param a
-on the current line.  A copy of the text is placed
-in the named buffer
+on the current line.
+A copy of the text is placed in the named buffer
 .param c
-:period.
+.period
 .endxmpl
 .begxmpl "5d'a
 Deletes the lines from the current line to the line with mark
 .param m
 into the numbered buffer
 .param 5
-:period.
+.period
 .endxmpl
 .begxmpl dG
 Deletes all lines from the current line to the end of the current edit
@@ -1678,22 +1802,25 @@ buffer.
 .* ******************************************************************
 .np
 This section describes commands that are for yanking (copying) text.
-This text is placed into a &copybuffer, see the section
+This text is placed into a
+.keyword &copybuffer
+.ct , see the section
 :HDREF refid='cpybuff'.
 for more information.
 .*
 .keylist begin 'Copying Text'
 .*
 .begkey Y &lt.n&gt.Y
-Yank (copy) the current line.  If a repeat count
-.param &lt.n&gt.
+Yank (copy) the current line.
+If a repeat count
+.paramt n
 is specified, then
-.param &lt.n&gt.
+.paramt n
 lines are copied.
 .np
 This command is the same as typing
 .param yy
-:period.
+.period
 .endkey
 .*
 .keylist end
@@ -1707,47 +1834,52 @@ This command is the same as typing
 .begkey y '&lt.n&gt.&lt."?&gt.y&lt.oper&gt.'
 Yanks (copies) text from the current position in the file to the
 position specified by
-.param &lt.oper&gt.
-:period.
-Text is placed into the specified &copybuffer
-.param &lt."?&gt.
-:period.
+.paramt oper
+.period
+Text is placed into the specified
+.keyword &copybuffer
+.paramt "?
+.period
 If no buffer is specified, then the text is placed into the active
 buffer.
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be copied.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param y
-:cont.,
-which causes a single line to be yanked.
+.ct , which causes a single line to be yanked.
 .seecmd delete
 .np
 .xmplsect begin
 .begxmpl yy
-Yanks (copies) the current line into the active &copybuffer
-:period.
+Yanks (copies) the current line into the active
+.keyword &copybuffer
+.period
 .endxmpl
 .begxmpl 10yy
-Copies 10 lines, starting at the current, into the active buffer.
+Copies 10 lines, starting at the current, into the active
+.keyword &copybuffer
+.period
 .endxmpl
 .begxmpl y$
 Copies the characters from the current column to the end of the
 current line into
-the active buffer.
+the active
+.keyword &copybuffer
+.period
 .endxmpl
 .begxmpl "ay'm
 Yanks the lines from the current line to the line with mark
 .param m
 into the named buffer
 .param a
-:period.
+.period
 .endxmpl
 .begxmpl y/foo
 Copies:
@@ -1757,7 +1889,7 @@ end of the line
 :LI.all lines between the current line and the first line
 containing the string
 .param foo
-:LI the part of the line containing
+:LI.the part of the line containing
 .param foo
 from the start of the line to the first letter in the string
 .param foo
@@ -1773,8 +1905,9 @@ from the start of the line to the first letter in the string
 .np
 The following commands are for changing text.
 If a range of lines is being changed, the lines are deleted and &edvi
-enters &tinsmode
-:period.
+enters
+.keyword &tinsmode
+.period
 .np
 If the change is taking place on the single line, the range of
 characters being changed is highlighted, and the last character in the
@@ -1783,55 +1916,62 @@ If the
 .keyword ESC
 key is pressed, and
 .keyref changelikevi 1
-is not set, then the change command is cancelled. If
+is not set, then the change command is cancelled.
+If
 .keyref changelikevi 1
-is set, then the highlighted area is deleted.  If anything other than the
+is set, then the highlighted area is deleted.
+If anything other than the
 .keyword ESC
-key is pressed, the highlighted area is deleted and &edvi enters &tinsmode
-:period.
+key is pressed, the highlighted area is deleted and &edvi enters
+.keyword &tinsmode
+.period
 .*
 .keylist begin 'Changing Text'
 .*
 .begkey C C
 This command changes the characters on the current line from the current
-character to the end of the line.  The character range is highlighted, and
-once a character is typed, the highlighted text is
-deleted, and &tinsmode
+character to the end of the line.
+The character range is highlighted, and once a character is typed,
+the highlighted text is deleted, and
+.keyword &tinsmode
 is entered.
 .np
 This command is the same as typing
 .param c$
-:period.
+.period
 .endkey
 
 .begkey S &lt.n&gt.S
-This command substitutes the current line with text.  The text on the current
-line is deleted, and &tinsmode is entered.  If a repeat count
-.param &lt.n&gt.
+This command substitutes the current line with text.
+The text on the current line is deleted, and
+.keyword &tinsmode
+is entered.
+If a repeat count
+.paramt n
 is specified, then
-.param &lt.n&gt.
+.paramt n
 lines are deleted.
 .np
 This command is the same as typing
 .keyword cc
-:period.
+.period
 .endkey
 
 .begkey s &lt.n&gt.s
-This command substitutes the current character with text.  If
-.param &lt.n&gt.
+This command substitutes the current character with text.
+If
+.paramt n
 is specified, then
-.param &lt.n&gt.
+.paramt n
 characters are substituted.
 .np
 This command is the same as typing
 .param cl
-:cont.,
+.ct ,
 .param cRIGHT
-:cont.,
-or
+.ct , or
 .param cSPACE
-:period.
+.period
 .endkey
 .*
 .keylist end
@@ -1845,52 +1985,61 @@ or
 .begkey c &lt.n&gt.c&lt.oper&gt.
 Change text from the current position in the file to the
 position specified by
-.param &lt.oper&gt.
-:period.
+.paramt oper
+.period
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be changed.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .keyword c
-:cont.,
-which causes a single line to be changed.
+.ct , which causes a single line to be changed.
 .np
 .xmplsect begin
 .begxmpl cr
 Changes the current selected (highlighted) region in the edit buffer.
 .endxmpl
 .begxmpl cc
-Change the current line. The current line is deleted, and &tinsmode
+Change the current line.
+The current line is deleted, and
+.keyword &tinsmode
 is entered.
 .endxmpl
 .begxmpl 95cc
-Changes 95 lines, starting at the current. The lines are deleted,
-and &tinsmode is entered.
+Changes 95 lines, starting at the current.
+The lines are deleted, and
+.keyword &tinsmode
+is entered.
 .endxmpl
 .begxmpl cw
-Change the current word.  The current word is highlighted, and once
-a character other than
+Change the current word.
+The current word is highlighted, and once a character other than
 .param ESC
-is typed, the word is deleted and &tinsmode is entered.
+is typed, the word is deleted and
+.keyword &tinsmode
+is entered.
 .endxmpl
 .begxmpl c$
 Changes from the current column to the end of the
-current line. 
+current line.
 The column range is highlighted, and once a character other than
 .param ESC
-is typed, the column range is deleted and &tinsmode is entered.
+is typed, the column range is deleted and
+.keyword &tinsmode
+is entered.
 .endxmpl
 .begxmpl 2cfa
 Changes from the current column to the second letter a on the current line.
 The column range is highlighted, and once a character other than
 .param ESC
-is typed, the column range is deleted and &tinsmode is entered.
+is typed, the column range is deleted and
+.keyword &tinsmode
+is entered.
 .endxmpl
 .xmplsect end
 .endkey
@@ -1901,32 +2050,32 @@ is typed, the column range is deleted and &tinsmode is entered.
 .* ******************************************************************
 .np
 The following commands are used to shift lines to the right or left,
-inserting or deleting leading whitespace. 
+inserting or deleting leading whitespace.
 .se plural = 1
 :INCLUDE file='oper'.
 .*
 .keylist begin 'Shifting Text'
 .*
 .begkey &gt. &lt.n&gt.&gt.&lt.oper&gt. (right angle bracket)
-This is the shift right command. It shifts the specified lines to the right
+This is the shift right command.
+It shifts the specified lines to the right
 .keyref shiftwidth
 spaces, inserting necessary leading tabs if
 .keyref realtabs 1
 is specified.
 .np
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be shifted to the right.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param &gt.
-:cont.,
-which causes a single line to be shifted to the right.
+.ct , which causes a single line to be shifted to the right.
 .seecmd &gt.
 .np
 .xmplsect begin
@@ -1951,25 +2100,25 @@ spaces.
 .endkey
 
 .begkey &lt. &lt.n&gt.&lt.&lt.oper&gt. (left angle bracket)
-This is the shift left command. It shifts the specified lines to the left
+This is the shift left command.
+It shifts the specified lines to the left
 .keyref shiftwidth
 spaces.
 .np
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be shifted to the left
 .keyref shiftwidth
 spaces.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param &lt.
-:cont.,
-which causes a single line to be shifted to the left
+.ct , which causes a single line to be shifted to the left
 .keyref shiftwidth
 spaces.
 .seecmd &lt.
@@ -1999,7 +2148,9 @@ spaces.
 .section 'Case Toggling'
 .* ******************************************************************
 .np
-The case toggle &cmdmode command switches upper case letters to
+The case toggle
+.keyword &cmdmode
+command switches upper case letters to
 lower case, and lower case letters to upper case.
  An example of its behaviour is changing the
 line
@@ -2020,7 +2171,8 @@ tHIS iS a lINE oF tEXT.
 This is the case toggle command.
 This command only works if the
 .keyword togglecaselikevi
-setting is not turned on.  If
+setting is not turned on.
+If
 .keyword togglecaselikevi
 is set, then pressing
 .param &tilde.
@@ -2031,21 +2183,20 @@ However, if
 .keyword togglecaselikevi
 is not set, then this command toggles the case of the characters
 over the range specified by
-.param &lt.oper&gt.
+.paramt oper
 .np
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be case toggled.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param &tilde.
-:cont.,
-which causes a single line to be have its case toggled.
+.ct , which causes a single line to be have its case toggled.
 .np
 .xmplsect begin
 .begxmpl &tilde.r
@@ -2069,40 +2220,42 @@ Toggles the case of the current line and the 9 lines following.
 .section 'Filters'
 .* ******************************************************************
 .np
-The &cmdmode filter command has the same functionality as the
-&cmdline command
-.keyword filter
-:period.
+The
+.keyword &cmdmode
+filter command has the same functionality as the
+.keyword &cmdline
+command filter
+.period
 .se plural = 0
 :INCLUDE file='oper'.
 .*
 .keylist begin Filters
 .*
 .begkey ! &lt.n&gt.!&lt.oper&gt. (exclamation mark)
-Filter text. The line range specified by
-.param &lt.oper&gt.
+Filter text.
+The line range specified by
+.paramt oper
 are run through a specified filter.
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be run through the filter.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param !
-:cont.,
-which causes a single line to be run through the filter.
+.ct , which causes a single line to be run through the filter.
 .np
-The lines specified are run through a specified
-system command (filter).  Once the filter range has been specified, a window
-is displayed, prompting for a system command:
+The lines specified are run through a specified system command (filter).
+Once the filter range has been specified, a window is displayed, prompting
+for a system command:
 .figure *depth='2.47' *scale='59' *file='vi025' Filter System Command Prompt
 The system command must take input from standard in and put
-its output to standard out. The lines specified are replaced with the output
-of the the command.
+its output to standard out.
+The lines specified are replaced with the output of the the command.
 .np
 There is a filter command history in the filter command prompt, the
 size of which is controlled with the
@@ -2130,40 +2283,42 @@ through a specified filter.
 .section 'Text Selection'
 .* ******************************************************************
 .np
-Text may be selected with the mouse. However, if you do not wish
-to use the mouse, there is a keyboard interface to allow you to
-accomplish the same thing.
+Text may be selected with the mouse.
+However, if you do not wish to use the mouse, there is a keyboard interface
+to allow you to accomplish the same thing.
 .np
 Once text selection has been started, any movement command adds to
-the selected region.   The selected region may be cleared, and
-text selection ended, by
-pressing the
+the selected region.
+The selected region may be cleared, and text selection ended, by pressing the
 .param ESC
 key.
 .np
 A selected region is highlighted by exchanging the foreground and
-background the colors of the line.  A selected region could look
-as follows:
+background the colors of the line.
+A selected region could look as follows:
 .figure *depth='2.47' *scale='59' *file='vi026' Selected Text Region
 .np
-The following are the &cmdmode commands for selecting text and
+The following are the
+.keyword &cmdmode
+commands for selecting text and
 manipulating selected text.
 .*
 .keylist begin 'Text Selection'
 .*
 .begkey CTRL_R CTRL_R
-Starts text selection, if no text is selected.  The current character is highlighted.
+Starts text selection, if no text is selected.
+The current character is highlighted.
 .np
 If region is already selected, then cancel the selected region.
 .endkey
 
 .begkey SHIFT_UP &lt.n&gt.SHIFT_UP
-Starts selection (if not already started) and moves up to the previous
-line.  The previous line and the current line are selected.
+Starts selection (if not already started) and moves up to the previous line.
+The previous line and the current line are selected.
 If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the cursor moves up
-.param &lt.n&gt.
+.paramt n
 lines, and all the lines between the starting and ending
 position are selected.
 .endkey
@@ -2172,48 +2327,56 @@ position are selected.
 Starts selection (if not already started) and moves down to the next line.
 The next line and the current line are selected.
 If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the cursor moves down
-.param &lt.n&gt.
+.paramt n
 lines, and all the lines between the starting and ending
 position are selected.
 .endkey
 
 .begkey SHIFT_LEFT &lt.n&gt.SHIFT_LEFT
 Starts selection (if not already started) and move left to the previous
-character.  The current character and the previous character are selected.
+character.
+The current character and the previous character are selected.
 If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the cursor moves left
-.param &lt.n&gt.
+.paramt n
 characters, and all the characters between the starting and ending
 position are selected.
 .endkey
 
 .begkey SHIFT_RIGHT &lt.n&gt.SHIFT_RIGHT
 Starts selection (if not already started) and move right to the next
-character.  The current character and the next character are selected.
+character.
+The current character and the next character are selected.
 If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the cursor moves right
-.param &lt.n&gt.
+.paramt n
 characters, and all the characters between the starting and ending
 position are selected.
 .endkey
 
 .begkey SHIFT_DEL &lt."?&gt.SHIFT_DEL
-Deletes the currently selected region.  If the &copybuffer
-.param &lt."?&gt.
+Deletes the currently selected region.
+If the
+.keyword &copybuffer
+.paramt "?
 is specified, the region is copied into that buffer,
-otherwise the data is copied into the active buffer.
+otherwise the data is copied into the active
+.keyword &copybuffer
+.period
 .endkey
 
 .begkey _ _ (underscore)
 Simulates the right mouse being clicked at the current cursor position.
 If a region is not selected, then the current word will be selected.
-The word is defined using the &cmdline command
+The word is defined using the
+.keyword &cmdline
+command
 .keyref word
-:period.
+.period
 .endkey
 .*
 .keylist end
@@ -2223,16 +2386,16 @@ The word is defined using the &cmdline command
 .keylist begin 'Miscellaneous Keys'
 .*
 .begkey CTRL_C CTRL_C
-Exits the editor if no files have been modified.  If files have been modified,
-a prompt is displayed asking you to verify that you really want to discard
-the modified file(s).  
+Exits the editor if no files have been modified.
+If files have been modified, a prompt is displayed asking you to verify that
+you really want to discard the modified file(s).
 If you do not respond with a 'y', then the command is cancelled.
 .seecmd quitall
 .endkey
 
 .begkey CTRL_G CTRL_G
-Display information about the current file in the edit window.  The
-information includes:
+Display information about the current file in the edit window.
+The information includes:
 :UL compact.
 :LI.the file name.
 :LI.a special indicator if the file is read-only.
@@ -2261,18 +2424,20 @@ Displays the current version of &edvi in the message window.
 .endkey
 
 .begkey CTRL_X CTRL_X
-Displays the hex value (and the decimal value) of the current
-character.  A sample of the output in the message window is:
+Displays the hex value (and the decimal value) of the current character.
+A sample of the output in the message window is:
 .millust begin
 Char 'e': 0x65 (101)
 .millust end
 .endkey
 
 .begkey CTRL_] CTRL_]  (control right square bracket)
-Go to the tag given by the current word.  The word is defined using the
-&cmdline command
+Go to the tag given by the current word.
+The word is defined using the
+.keyword &cmdline
+command
 .keyref word
-:period.
+.period
 .seecmd tag
 .np
 See the appendix
@@ -2281,46 +2446,52 @@ for more information.
 .endkey
 
 .begkey ALT_W ALT_W
-Activates the current edit window's menu.  This menu is defined
-using the
-.keyword windowgadgetmenu
+Activates the current edit window's menu.
+This menu is defined using the
+.keyword windowgadget
 .keyref menu
-:period.
+.period
 See the chapter
 :HDREF refid='winmenu'.
 for more information on setting this menu.
 .endkey
 
 .begkey ALT_X ALT_X
-Insert a character, at the current cursor position.  When
+Insert a character, at the current cursor position.
+When
 .param ALT_X
 is pressed, a prompt is displayed:
 .figure *depth='2.47' *scale='59' *file='vi027' Character Insertion Prompt
-Enter either a decimal or a hex number.  That character will
-be inserted directly into the edit buffer.
+Enter either a decimal or a hex number.
+That character will be inserted directly into the edit buffer.
 .endkey
 
 .begkey : : (colon)
-Allows entry of a &cmdline
-:period.
+Allows entry of a
+.keyword &cmdline
+.period
 See the chapter
-:HDREF refid='cmds'
-for full details on &cmdline commands.
+:HDREF refid='cmds'.
+for full details on
+.keyword &cmdline
+commands.
 .endkey
 
 .begkey @ @&lt.?&gt. (at sign)
-This command executes the &copybuffer
-.param &lt.?&gt.
-:period.
+This command executes the
+.keyword &copybuffer
+.paramt ?
+.period
 &edvi behaves as if the contents
 of the buffer were being typed at the keyboard.
 .endkey
 
 .begkey J &lt.n&gt.J
-Joins the next line to the current line.  If a repeat count
-.param &lt.n&gt.
+Joins the next line to the current line.
+If a repeat count
+.paramt n
 is specified, the next
-.param &lt.n&gt.
+.paramt n
 lines are joined to the current line.
 (lines are concatenated one after another).
 .seecmd join
@@ -2338,15 +2509,12 @@ Joins the next 3 lines to the current line.
 .begkey Q Q
 Enters
 .keyword EX mode
-:period.
+.period
 .keyword EX mode
-is a line-oriented mode of
-&edvi.
-:period.
+is a line-oriented mode of &edvi..
 To exit
 .keyword EX mode
-:cont.,
-use the
+.ct , use the
 .keyref visual
 command.
 .endkey
@@ -2363,10 +2531,10 @@ Finished with current edit buffer.
 .endkey
 
 .begkey z &lt.n&gt.z&lt.?&gt.
-Reorients the current screen position.  The current line moves
-as follows, depending on the value of
-.param &lt.?&gt.
-:cont.:
+Reorients the current screen position.
+The current line moves as follows, depending on the value of
+.paramt ?
+.ct :
 :DL break.
 :DT.ENTER
 :DD.Moves the current line to the top of the screen.
@@ -2376,9 +2544,9 @@ as follows, depending on the value of
 :DD.Moves the current line to the bottom of the screen.
 :eDL.
 If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then
-.param &lt.n&gt.
+.paramt n
 is made the current line.
 .np
 .xmplsect begin
@@ -2407,13 +2575,13 @@ Move backwards through the file list to the previous file.
 .endkey
 
 .begkey F11 F11
-Push the current file and position.  If you press
+Push the current file and position.
+If you press
 .param F12
-:cont.,
-you will be restored to this position.  These positions are stacked
-up, up to a maximum of
+.ct , you will be restored to this position.
+These positions are stacked up, up to a maximum of
 .keyref maxpush
-:period.
+.period
 .seecmd push
 .endkey
 
@@ -2423,55 +2591,55 @@ Restore the last pushed file and position.
 .endkey
 
 .begkey . . (dot)
-Repeat the last &cmdmode command that changed text in
-the edit buffer. It is also possible to memorize more than
-just one command for '.' by using
+Repeat the last
+.keyword &cmdmode
+command that changed text in the edit buffer.
+It is also possible to memorize more than just one command for '.' by using
 .keyword memorize mode
-:cont.:
+.ct :
 :OL.
-:LI.Type "
-.param m.
-:cont.".
-(&edvi enters memorize mode).
+:LI.Type
+.paramq m.
+(&edvi enters
+.keyword memorize mode
+.ct ).
 :LI.Enter keystrokes.
-:LI.Type "
-.param .
-:cont."
+:LI.Type
+.paramq .
 :eOL.
 Now, whenever you press dot ('.'),
 all the entered keystrokes will be executed.
 .endkey
 
 .begkey = = (equals sign)
-Performs the last alternate memorized command sequence.  The
+Performs the last alternate memorized command sequence.
+The
 .keyword alternate memorize mode
 is used as follows:
 :OL.
-:LI.Type "
-.param m=
-:cont.".
+:LI.Type
+.paramq m=
 (&edvi enters
 .keyword alternate memorize mode
-:cont.).
+.ct ).
 :LI.Enter keystrokes.
-:LI.Type "
-.param =
-:cont."
+:LI.Type
+.paramq =
 :eOL.
 Now, whenever you press the equals sign ('='),
 all the entered keystrokes will be executed as if you typed them
 again from the keyboard.
 .np
 This memorized keystroke sequence will last until you memorize
-another, unlike using "
-.param m.
-:cont.".
+another, unlike using
+.paramq m.
+.period
 .endkey
 
 .begkey ALT_M ALT_M
-Display current memory state.  Shows the total amount of memory, the
-amount of memory for use by &edvi, and how much extended memory and/or
-disk space is available.
+Display current memory state.
+Shows the total amount of memory, the amount of memory for use by &edvi,
+and how much extended memory and/or disk space is available.
 .endkey
 .*
 .keylist end

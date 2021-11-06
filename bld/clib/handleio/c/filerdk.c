@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -346,7 +347,7 @@ _WCRTLINK int open( const CHAR_TYPE *name, int mode, ... )
 }
 
 
-_WCRTLINK int sopen( const CHAR_TYPE *name, int mode, int shflag, ... )
+_WCRTLINK int _sopen( const CHAR_TYPE *name, int mode, int shflag, ... )
 {
     va_list             args;
 
@@ -427,7 +428,7 @@ _WCRTLINK int dup2( int handle1, int handle2 )
     return( -1 );
 }
 
-_WCRTLINK int eof( int handle )
+_WCRTLINK int _eof( int handle )
 {
     int         rdos_handle;
     long        pos;
@@ -445,7 +446,7 @@ _WCRTLINK int eof( int handle )
     }
 }
 
-_WCRTLINK long filelength( int handle )
+_WCRTLINK long _filelength( int handle )
 {
     int         rdos_handle;
 
@@ -457,7 +458,7 @@ _WCRTLINK long filelength( int handle )
     }
 }
 
-_WCRTLINK int chsize( int handle, long size )
+_WCRTLINK int _chsize( int handle, long size )
 {
     int         rdos_handle;
 
@@ -518,7 +519,7 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
 
         buf->st_mtime = mktime( &tm );
         buf->st_atime = buf->st_ctime = buf->st_mtime;
-        buf->st_size = filelength( handle );
+        buf->st_size = _filelength( handle );
         buf->st_mode |= S_IFREG;
         buf->st_btime = buf->st_mtime;
         return( 0 );
@@ -526,7 +527,7 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         return( -1 );
 }
 
-_WCRTLINK int setmode( int handle, int mode )
+_WCRTLINK int _setmode( int handle, int mode )
 {
     return( mode );
 }
@@ -581,7 +582,7 @@ _WCRTLINK off_t lseek( int handle, off_t offset, int origin )
         return( -1 );
 }
 
-_WCRTLINK off_t tell( int handle )
+_WCRTLINK off_t _tell( int handle )
 {
     return( GetHandlePos( handle ) );
 }

@@ -100,24 +100,32 @@
 :dd &*
 .dm zdd end
 .gt zdd add zdd cont
+.gt zdd2 add zdd cont
+.gt zdd3 add zdd cont
 
 :cmt. **** :DT ****
 .dm zdt begin
 :dt &*
 .dm zdt end
 .gt zdt add zdt cont
+.gt zdt2 add zdt cont
+.gt zdt3 add zdt cont
 
 :cmt. **** :DTHD ****
 .dm zdthd begin
 :dthd &*
 .dm zdthd end
 .gt zdthd add zdthd cont
+.gt zdthd2 add zdthd cont
+.gt zdthd3 add zdthd cont
 
 :cmt. **** :DDHD ****
 .dm zddhd begin
 :ddhd &*
 .dm zddhd end
 .gt zddhd add zddhd cont
+.gt zddhd2 add zddhd cont
+.gt zddhd3 add zddhd cont
 
 :cmt. **** :HDREF ****
 .dm zhdref begin
@@ -278,6 +286,7 @@
 &*str.&*.
 .dm qref end
 .gt qref add qref cont att
+.ga * top REQ ANY
 .ga * str REQ ANY
 .ga * pfx ANY
 .ga * * value '' default

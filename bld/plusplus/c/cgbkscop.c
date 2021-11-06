@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,11 @@
 #include "reposit.h"
 #include "scoperes.h"
 #include "dumpapi.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+    #include "dbg.h"
+    #include "pragdefn.h"
+#endif
 
 
 //typedef struct unr_usage        UNR_USAGE;          // unresolved usage
@@ -131,9 +137,6 @@ static SCOPE_RES* scopes;       // unresolved scopes
 
 #ifndef NDEBUG
 
-#include "dbg.h"
-#include "pragdefn.h"
-
 static char const * usage_names[] = {
     #define USAGE_DEF(a) # a
     USAGE_DEFS
@@ -150,7 +153,7 @@ static char const * res_names[] = {
 
 static void _print( char const * msg )
 {
-    if( PragDbgToggle.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         printf( msg );
     }
 }
@@ -167,7 +170,7 @@ static char const* _unr_use( UNR_USE type )
 
 static void _printAction( RES_ACT const * ra, char const * msg )
 {
-    if( PragDbgToggle.callgraph_scan && ra != NULL ) {
+    if( TOGGLEDBG( callgraph_scan ) && ra != NULL ) {
         printf( "RES_ACT[%p] %s %p %s\n"
               , ra
               , _res_type( ra->type )
@@ -178,7 +181,7 @@ static void _printAction( RES_ACT const * ra, char const * msg )
 
 static void _printScopeRes( SCOPE_RES const *sr, char const * msg )
 {
-    if( PragDbgToggle.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         printf( "SCOPE_RES[%p] %s\n"
                 "  next[%p] enclosing[%p] scope[%p] unresolved[%p]\n"
                 "  toresolve[%d] func[%p] dtm[%x]\n"
@@ -205,7 +208,7 @@ static void _printScopeRes( SCOPE_RES const *sr, char const * msg )
 
 static void _printUnrUsage( UNR_USAGE const *fu, char const * msg )
 {
-    if( PragDbgToggle.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         printf( "UNR_USAGE[%p] %s %p %s\n"
               , fu
               , _unr_use( fu->type )
@@ -218,7 +221,7 @@ static void _printUnrUsage( UNR_USAGE const *fu, char const * msg )
 static void _printScopeResAll( SCOPE_RES const *sr, char const * msg )
 {
     UNR_USAGE* su;
-    if( PragDbgToggle.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         _printScopeRes( sr, msg );
         RingIterBeg( sr->unresolved, su ) {
             _printUnrUsage( su, msg );
@@ -228,7 +231,7 @@ static void _printScopeResAll( SCOPE_RES const *sr, char const * msg )
 
 static void _printFunction( SYMBOL fun, char const * msg )
 {
-    if( PragDbgToggle.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         VBUF vbuf;
         printf( "%s [%p] %s\n"
               , msg
@@ -244,7 +247,7 @@ static bool _printCallNode
 {
     UNR_USAGE *fu;
     ctl = ctl;
-    if( PragDbgToggle.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         VBUF vbuf;
         printf( "CALLNODE[%p] unresolved[%p] %s\n"
               , node

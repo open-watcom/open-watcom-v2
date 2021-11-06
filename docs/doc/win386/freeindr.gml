@@ -23,7 +23,7 @@ void FreeIndirectFunctionHandle( HINDIR handle );
 .desc begin
 &funcb frees a handle that was obtained using
 .kw GetIndirectFunctionHandle
-.ct .li .
+.period
 This is important to do when there is no further use for the pointer
 since there are a limited number of 16-bit aliases available (due to
 limited space in the local descriptor table).

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,6 +143,9 @@ void WPSourceClose( wp_srcfile * wpsrc_file )
         if( wpsrc_file->src_buff != NULL ) {
             ProfFree( wpsrc_file->src_buff );
         }
+        if( wpsrc_file->src_lines != NULL ) {
+            ProfFree( wpsrc_file->src_lines );
+        }
         ProfFree( wpsrc_file );
     }
 }
@@ -220,7 +223,5 @@ STATIC void setSrcLineData( wp_srcfile *wpsrc_file, sio_data *curr_sio,
         line_count = line_index + 1;
     }
     wpsrc_file->wp_line_count = line_count;
-    if( line_count > 0 ) {
-        wpsrc_file->src_lines = ProfRealloc( lines, sizeof( wp_srcline ) * line_count );
-    }
+    wpsrc_file->src_lines = ProfRealloc( lines, sizeof( wp_srcline ) * line_count );
 }

@@ -55,7 +55,7 @@
 #include "loadpe.h"
 #include "loados2.h"
 #include "loaddos.h"
-#include "pharlap.h"
+#include "loadphar.h"
 #include "loadnov.h"
 #include "load16m.h"
 #include "loadqnx.h"
@@ -75,7 +75,7 @@
 #include "clibext.h"
 
 
-#define IMPLIB_BUFSIZE 4096
+#define IMPLIB_BUFSIZE  _4KB
 
 typedef struct {
     f_handle    handle;
@@ -205,6 +205,94 @@ void InitLoadFile( void )
     LnkMsg( INF+MSG_CREATE_EXE, "f" );
 }
 
+static void finiLoad( void )
+/**************************/
+{
+    /*******************************************************************
+     * This must be first of all
+     */
+#ifdef _RAW
+    if( FmtData.output_raw ) {
+        BinOutput();    // apply to all formats and override native output
+        return;
+    } else if( FmtData.output_hex ) {
+        HexOutput();    // apply to all formats and override native output
+        return;
+    } else if( FmtData.type & MK_RAW ) {
+        FiniRawLoadFile();
+        return;
+    }
+#endif
+    /*******************************************************************/
+#ifdef _EXE
+    if( FmtData.type & MK_DOS ) {
+        FiniDOSLoadFile();
+        return;
+    }
+#endif
+#ifdef _OS2
+  #if 0
+    if( (FmtData.type & MK_OS2) && (LinkState & LS_HAVE_PPC_CODE) ) {
+        // development temporarly on hold:
+        FiniELFLoadFile();
+        return;
+    }
+  #endif
+    if( FmtData.type & MK_OS2_FLAT ) {
+        FiniOS2FlatLoadFile();
+        return;
+    } else if( FmtData.type & MK_PE ) {
+        FiniPELoadFile();
+        return;
+    } else if( FmtData.type & MK_OS2_16BIT ) {
+        FiniOS2LoadFile();
+        return;
+    }
+#endif
+#ifdef _PHARLAP
+    if( FmtData.type & MK_PHAR_LAP ) {
+        FiniPharLapLoadFile();
+        return;
+    }
+#endif
+#ifdef _NOVELL
+    if( FmtData.type & MK_NOVELL ) {
+        FiniNovellLoadFile();
+        return;
+    }
+#endif
+#ifdef _DOS16M
+    if( FmtData.type & MK_DOS16M ) {
+        Fini16MLoadFile();
+        return;
+    }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX ) {
+        FiniQNXLoadFile();
+        return;
+    }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        FiniELFLoadFile();
+        return;
+    }
+#endif
+#ifdef _ZDOS
+    if( FmtData.type & MK_ZDOS ) {
+        FiniZdosLoadFile();
+        return;
+    }
+#endif
+#ifdef _RDOS
+    if( FmtData.type & MK_RDOS ) {
+        FiniRdosLoadFile();
+        return;
+    }
+#endif
+}
+
 void FiniLoadFile( void )
 /***********************/
 /* terminate writing of load file */
@@ -213,60 +301,7 @@ void FiniLoadFile( void )
     FreeSavedRelocs();
     OpenOutFiles();
     SetupImpLib();
-    if( FmtData.output_raw ) {          // These must come first because
-        BinOutput();                    //    they apply to all formats
-    } else if( FmtData.output_hex ) {   //    and override native output
-        HexOutput();
-#ifdef _EXE
-    } else if( FmtData.type & MK_DOS ) {
-        FiniDOSLoadFile();
-#endif
-#ifdef _OS2
-  #if 0
-    } else if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
-        // development temporarly on hold:
-        // FiniELFLoadFile();
-  #endif
-    } else if( FmtData.type & MK_OS2_FLAT ) {
-        FiniOS2FlatLoadFile();
-    } else if( FmtData.type & MK_PE ) {
-        FiniPELoadFile();
-    } else if( FmtData.type & MK_OS2_16BIT ) {
-        FiniOS2LoadFile();
-#endif
-#ifdef _PHARLAP
-    } else if( FmtData.type & MK_PHAR_LAP ) {
-        FiniPharLapLoadFile();
-#endif
-#ifdef _NOVELL
-    } else if( FmtData.type & MK_NOVELL ) {
-        FiniNovellLoadFile();
-#endif
-#ifdef _DOS16M
-    } else if( FmtData.type & MK_DOS16M ) {
-        Fini16MLoadFile();
-#endif
-#ifdef _QNX
-    } else if( FmtData.type & MK_QNX ) {
-        FiniQNXLoadFile();
-#endif
-#ifdef _ELF
-    } else if( FmtData.type & MK_ELF ) {
-        FiniELFLoadFile();
-#endif
-#ifdef _ZDOS
-    } else if( FmtData.type & MK_ZDOS ) {
-        FiniZdosLoadFile();
-#endif
-#ifdef _RDOS
-    } else if( FmtData.type & MK_RDOS ) {
-        FiniRdosLoadFile();
-#endif
-#ifdef _RAW
-    } else if( FmtData.type & MK_RAW ) {
-        FiniRawLoadFile();
-#endif
-    }
+    finiLoad();
     MapSizes();
     CloseOutFiles();
     DoCVPack();
@@ -387,12 +422,13 @@ static bool CompSymPtr( void *sym, void *chk )
 }
 
 static void CheckBSSInStart( symbol *sym, const char *name )
-/**********************************************************/
-/* It's OK to define _edata if:
-        1) the DOSSEG flag is not set
-                or
-        2) the definition occurs in the module containing the
-            start addresses */
+/***********************************************************
+ * It's OK to define _edata if:
+ *      1) the DOSSEG flag is not set
+ *              or
+ *      2) the definition occurs in the module containing the
+ *          start addresses
+ */
 {
     symbol      *chk;
 
@@ -461,7 +497,9 @@ void GetBSSSize( void )
     }
 }
 
-/* Stack size calculation:
+void SetStkSize( void )
+/**********************
+ * Stack size calculation:
  * - DLLs have no stack
  * - for executables, warn if stack size is tiny
  * - if stack size was given, use it directly unless target is Novell
@@ -470,8 +508,6 @@ void GetBSSSize( void )
  * The default stack size is 4096 bytes, but for DOS programs the
  * stack segment size in the clib is smaller, hence the complex logic.
  */
-void SetStkSize( void )
-/*********************/
 {
     StackSegPtr = StackSegment();
     if( FmtData.dll ) {
@@ -542,8 +578,11 @@ void GetStartAddr( void )
     bool        addoff;
     int         deltaseg;
 
-    if( FmtData.type & MK_NOVELL )
+#ifdef _NOVELL
+    if( FmtData.type & MK_NOVELL ) {
         return;
+    }
+#endif
     addoff = true;
     switch( StartInfo.type ) {
     case START_UNDEFED:         // NOTE: the possible fall through
@@ -709,15 +748,14 @@ unsigned_32 MemorySize( void )
 /****************************/
 /* Compute size of image when loaded into memory. */
 {
+#ifdef _EXE
     unsigned_32         start;
     unsigned_32         end;
     unsigned_32         curr;
     section             *sect;
     ovl_area            *ovl;
 
-    if( (FmtData.type & MK_REAL_MODE) == 0 ) {
-        return( Root->size );
-    } else {
+    if( FmtData.type & MK_REAL_MODE ) {
         start = MK_REAL_ADDR( Root->sect_addr.seg, Root->sect_addr.off );
         end = start + Root->size;
         for( ovl = Root->areas; ovl != NULL; ovl = ovl->next_area ) {
@@ -730,6 +768,8 @@ unsigned_32 MemorySize( void )
         }
         return( end - start );
     }
+#endif
+    return( Root->size );
 }
 
 unsigned_32 AppendToLoadFile( const char *name )
@@ -771,10 +811,10 @@ static void ExecWlib( void )
 
     namelen = strlen( ImpLib.fname );
     impnamelen = strlen( FmtData.implibname );
-/*
- * in the following: +19 for options, +2 for spaces, +1 for @, +4 for quotes
- *                  and +1 for nullchar
- */
+    /*
+     * in the following: +19 for options, +2 for spaces, +1 for @, +4 for quotes
+     *                  and +1 for nullchar
+     */
     _ChkAlloc( cmdline, namelen + impnamelen +19 +2 +1 +4 +1 );
     memcpy( cmdline, "-c -b -n -q -pa -ii \"", 19 + 2 );
     temp = cmdline + 19 - 1;

@@ -14,8 +14,8 @@ specified by the
 argument.
 .np
 For valid exception values see
-.seekw &function. fegetexceptflag
-.ct .li .
+.reffunc fegetexceptflag
+.period
 .desc end
 .*
 .return begin
@@ -37,7 +37,7 @@ a nonzero value.
 .exmp break
 void main( void )
 {
-	feclearexcept( FE_OVERFLOW|FE_UNDERFLOW );
+    feclearexcept( FE_OVERFLOW|FE_UNDERFLOW );
 }
 .exmp end
 .class ISO C99

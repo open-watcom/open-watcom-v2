@@ -302,6 +302,7 @@ void CreateUnnamedLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_
         return_struct->error = RC_OKAY;
     } else {
         // error!!!! the label list should have been created
+        MemFree( entry );
         return_struct->error = RC_ERROR;
     }
 }
@@ -331,6 +332,7 @@ void CreateAbsoluteLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label
         return_struct->error = RC_OKAY;
     } else {
         // error!!!! the label list should have been created
+        MemFree( entry );
         return_struct->error = RC_ERROR;
     }
 }

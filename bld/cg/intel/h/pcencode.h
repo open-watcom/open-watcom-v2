@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,6 +84,7 @@ extern void     Format(oc_class);
 #define M_SECONDARY     0x0f
 #define M_386MUL        0xaf
 #define M_SETCC         0x90
+#define M_LDSES         0xb2
 
 /* structures and shift positions for instructions*/
 
@@ -99,11 +100,16 @@ extern void     Format(oc_class);
 #define B_KEY_W         1           /* bit mask*/
 #define B_KEY_AW        8
 #define B_KEY_S         2
-#define B_KEY_DS        1
-#define B_KEY_FS        0x10
 #define B_KEY_POPSEG    1
 #define B_RMR_FMT_I8    0x28
 #define B_RMR_FMT_FL    0x28
+
+#define B_KEY_FSGS      (0xb4 - M_LDSES)
+#define B_KEY_DSES      (0xc4 - M_LDSES)
+
+#define DISP0           (0 << S_RMR_MOD)
+#define DISP8           (1 << S_RMR_MOD)
+#define DISPW           (2 << S_RMR_MOD)
 
 #define MF_FS           0x00
 #define MF_FD           0x04

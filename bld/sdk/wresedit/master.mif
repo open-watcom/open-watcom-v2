@@ -1,15 +1,7 @@
-proj_name = wresedit
-
-!ifndef wresedit_autodepends
-wresedit_autodepends = .AUTODEPEND
-!endif
-
 sys_windowed = 1
 sys_dll = 1
 
 #suppress_bd = 1
-
-.EXTENSIONS: .res .rc
 
 memory_model_i86 = l
 
@@ -24,13 +16,13 @@ memory_model_i86 = l
 !include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
 
-objs = &
-    $(sys_object) &
-    wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
-    winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj &
-    wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj &
-    widn2str.obj wclip.obj wisedit.obj weditsym.obj &
-    preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
+#
+# cflags
+#
+.c: ../c;../../c;$(cpp_c_dirs);$(watcom_dir)/c
+
+inc_dirs = -I. -I"../h" -I"../../h" $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs) &
+    $(wpi_inc_dirs) $(commonui_inc_dirs)
 
 extra_cpp_flags     = -DWRESEDLL
 
@@ -46,47 +38,47 @@ extra_c_flags_ppmacro = -zm
 extra_c_flags_ppenv   = -zm
 !endif
 
-.c: ../c;../../c;$(cpp_c_dirs);$(watcom_dir)/c
+#
+# lflags
+#
+extra_l_flags_dll     = op implib
+extra_l_flags_dll_nt  = op heap=16k commit heap=8k
+extra_l_flags_dll_win = library commdlg op stack=8k,rwr export WEP RESIDENT
 
-inc_dirs = -I. -I"../h" -I"../../h" $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs)
-inc_dirs += $(wpi_inc_dirs) $(commonui_inc_dirs)
+# explicit rules
+#################
+
+#
+# DLL
+#
+dlltarg_prebuild_objs = rcstr.gh
+dlltarg_objs          = $(sys_object) &
+    wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
+    winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj &
+    wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj &
+    widn2str.obj wclip.obj wisedit.obj weditsym.obj &
+    preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
+dlltarg_libs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+dlltarg_res           = $(proj_name).res
+!include dlltarg.mif
+
+#
+# rc and others
+#
+!include verrc.mif
 
 rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)
 
-extra_l_flags_dll = op implib
-extra_l_flags_dll_nt = op heap=16k commit heap=8k
-extra_l_flags_dll_win = library commdlg op stack=8k,rwr export WEP RESIDENT
-
-# systems where version resources must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
-
-!include verrc.mif
-
-libs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
-
-$(name).dll: rcstr.gh $(objs) $(libs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-    $(noecho)%create $^&.lnk
-    @%append $^&.lnk $(lflags)
-    @for %i in ($(objs)) do @%append $^&.lnk file %i
-    @for %i in ($(libs)) do @%append $^&.lnk lib %i
-    @%make echo_link
-    $(linker) name $^@ @$^&.lnk
-!endif
-    @%make bind_res_add_version_dll
-
-$(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res: ../res/$(proj_name).rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@
 
 rcstr.gh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
-rcstrmsg.gh: ../res/$(name).msg $(__MAKEFILES__)
+rcstrmsg.gh: ../res/$(proj_name).msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I"../../res" -o$^@ $[@
+    $(cpp) $(rc_ui_flags) -I"../../res" -o$@ $[@

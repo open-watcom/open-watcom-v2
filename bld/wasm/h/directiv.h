@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +33,13 @@
 #ifndef _DIRECTIV_H_
 #define _DIRECTIV_H_
 
-#include "objrec.h"
+#include "omfobjre.h"
 
 #define MAX_LNAME       255
 #define LNAME_NULL      0
 
 typedef uint_16 direct_idx; // directive index, such as segment index,
-                            //group index or lname index, etc. follow womp (OMF)
+                            //group index or lname index, etc. follow OMF output
 
 /* Paul Edwards
    Note that there is code that is dependent on the ordering
@@ -139,7 +139,7 @@ typedef struct {
     uint_8              combine     :4; // combine field (values in pcobj.h)
     boolbit             readonly    :1; // if the segment is readonly
     boolbit             ignore      :1; // ignore this if the seg is redefined
-    boolbit             use_32      :1; // 32-bit segment
+    boolbit             use32       :1; // 32-bit segment
     seg_type            iscode;         // segment is belonging to "CODE" or 'DATA' class
     uint_32             current_loc;    // current offset in current ledata or lidata
     uint_32             length;         // segment length
@@ -301,20 +301,22 @@ enum assume_reg {
 #define ASSUME_LAST     ASSUME_ERROR
 
 typedef struct {
-    dist_type           distance;        // stack distance;
-    mod_type            model;           // memory model;
+    dist_type           distance;       // stack distance;
+    mod_type            model;          // memory model;
 #if defined( _STANDALONE_ )
-    lang_type           langtype;        // language;
+    lang_type           langtype;       // language;
+    bool                model_cmdline;
+    bool                def_use32;      // default segment size 32-bit
+    bool                def_use32_init; // default segment size from cmdline
+    asm_cpu             cpu_init;
 #endif
-    os_type             ostype;          // operating system;
-    bool                use32;           // If 32-bit segment is used
-    bool                cmdline;
-    bool                defUse32;        // default segment size 32-bit
-    bool                mseg;            // mixed segments (16/32-bit)
-    struct asm_sym      *flat_grp;       // FLAT group symbol
-    char                *name;           // name of module
+    os_type             ostype;         // operating system;
+    bool                use32;          // If 32-bit segment is used
+    bool                mseg;           // mixed segments (16/32-bit)
+    struct asm_sym      *flat_grp;      // FLAT group symbol
+    char                *name;          // name of module
     const FNAME         *srcfile;
-} module_info;                           // Information about the module
+} module_info;                          // Information about the module
 
 extern module_info      ModuleInfo;
 

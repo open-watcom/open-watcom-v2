@@ -18,7 +18,7 @@ The
 argument is the prefix to the filename.
 .id &funcb.
 uses
-.kw malloc
+.reffunc malloc
 to allocate space for the filename; the program is responsible for
 freeing this space when it is no longer needed.
 .id &funcb.
@@ -60,15 +60,15 @@ does not exist.
 .endnote
 .np
 .id &funcb.
-automatically handles multibyte-character string arguments as
-appropriate, recognizing multibyte-character sequences according to
+automatically handles multi-byte character string arguments as
+appropriate, recognizing multi-byte character sequences according to
 the OEM code page obtained from the operating system.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .id &wfunc.
 function does not handle
-multibyte-character strings.
+multi-byte character strings.
 .do end
 .np
 The function generates unique filenames for up to

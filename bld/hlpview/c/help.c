@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +34,10 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
-#include "watcom.h"
-#include "stdui.h"
+#include <limits.h>
+#include "help.h"
 #include "helpmem.h"
 #include "uibox.h"
-#include "help.h"
 #include "hlpuicvr.h"
 #include "hlputkys.h"
 #include "uidialog.h"
@@ -47,10 +46,18 @@
 #include "helpscan.h"
 #include "msgbox.h"
 #include "uigchar.h"
+#include "wibhelp.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
 
+
+#define EV_HELP         EV_F1
+
+enum {
+    E_UP = EV_FIRST_UNUSED,
+    E_DOWN
+};
 
 // In normal QNX text files, the record separator is just a LF.
 // However, with the new help file format containing both binary and
@@ -154,7 +161,7 @@ static ui_event keyShift[] = {
     EV_INSERT,
     EV_DELETE,
     EV_MOUSE_DCLICK,
-    __rend__
+    __end__
 };
 
 static ui_event helpEventList[] = {
@@ -207,7 +214,7 @@ static int              maxPos;
 static int              maxLine;
 static int              currLine;
 static int              lastHelpLine;
-static int              currentAttr;
+static ATTR             currentAttr;
 static int              currentColour;
 static bool             ignoreMouseRelease;
 
@@ -218,7 +225,7 @@ static VTAB             tabFilter;
 static ui_event         curEvent;
 static ui_event         (*eventMapFn)( ui_event );
 
-static int              CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long int start );
+static int              CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long start );
 static void             replacetopic( const char *word );
 static ScanCBfunc       scanCallBack;
 
@@ -239,9 +246,9 @@ static void addSearchButton( bool add )
  */
 static char *helpGetString( char *buf, size_t size, FILE *fp )
 {
-    long int            pos;
-    size_t              bytesread;
-    size_t              cnt;
+    long            pos;
+    size_t          bytesread;
+    size_t          cnt;
 
     pos = HelpTell( fp );
     bytesread = HelpRead( fp, buf, size - 1 );
@@ -263,8 +270,8 @@ static char *helpGetString( char *buf, size_t size, FILE *fp )
  */
 static int OpenTopicInFile( help_file_info *fileinfo, const char *topic, char *buffer )
 {
-    long int            start_offset;     /* - starting offset in HELP file        */
-    long int            size_left;        /* - size left to search                 */
+    long                start_offset;     /* - starting offset in HELP file        */
+    long                size_left;        /* - size left to search                 */
     int                 next_posn;        /* - contains indicator for next pos'n   */
     unsigned long       topic_pos;
 
@@ -309,12 +316,12 @@ static char *scanTopic( char *buf, char **theend )
     char        *topic;
     char        *end;
 
-    if( memcmp( buf, "::::", 4 ) != 0 )
+    if( !IS_IB_TOPIC_NAME( buf ) )
         return( NULL );
     if( buf[4] == '"' ) {
         topic = buf + 5;
         for( end = topic; *end != '"' && *end != '\0'; ++end ) {
-            if( *end == HELP_ESCAPE ) {
+            if( *end == IB_ESCAPE ) {
                 end++;
             }
         }
@@ -335,7 +342,7 @@ static char *scanTopic( char *buf, char **theend )
 /*
  * CheckHelpBlock - see if a topic is in the 2nd half of a block
  */
-static int CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long int start )
+static int CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long start )
 {
     int         retn;
     char        *ftopic;
@@ -349,7 +356,7 @@ static int CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long int s
             retn = -1;
             break;
         }
-    } while( memcmp( buffer, "::::", 4 ) != 0 );
+    } while( !IS_IB_TOPIC_NAME( buffer ) );
     if( retn == 0 ) {
         ftopic = scanTopic( buffer, &end );
         len = end - ftopic;
@@ -744,22 +751,20 @@ static void clearline( void )
 static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
 {
     TextInfoBlock       *block;
-    bool                goofy;
-    unsigned            cnt;
+    unsigned            i;
     a_field             *ht;
     ScanInfo            *myinfo = _myinfo;
 
-    goofy = true;
     switch( type ) {
     case TK_TEXT:
         switch( info->u.text.type ) {
         case TT_LEFT_ARROW:
-            myinfo->buf[0] = REAL_LEFT_ARROW;
+            myinfo->buf[0] = PC_arrowleft;
             myinfo->buf++;
             myinfo->pos++;
             break;
         case TT_RIGHT_ARROW:
-            myinfo->buf[0] = REAL_RIGHT_ARROW;
+            myinfo->buf[0] = PC_arrowright;
             myinfo->buf++;
             myinfo->pos++;
             break;
@@ -786,38 +791,33 @@ static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
         break;
     case TK_PLAIN_LINK:
         myinfo->buf[0] = '<';
-        myinfo->buf ++;
-        myinfo->pos ++;
-        goofy = false;
+        myinfo->buf++;
+        myinfo->pos++;
         /* fall through */
     case TK_GOOFY_LINK:
-        block = &( info->u.link.block1 );
-        cnt = 0;
-        ht = HelpMemAlloc( sizeof( a_field ) + info->u.link.topic_len
-                           + info->u.link.hfname_len );
+        ht = HelpMemAlloc( sizeof( a_field ) + info->u.link.topic_len + info->u.link.hfname_len );
         ht->area.width = 0;
         ht->area.row = myinfo->line;
         ht->area.height = 1;
         ht->area.col = myinfo->pos;
         memcpy( ht->keyword, info->u.link.topic, info->u.link.topic_len );
         if( info->u.link.hfname_len != 0 ) {
-            memcpy( ht->keyword + info->u.link.topic_len, info->u.link.hfname,
-                    info->u.link.hfname_len );
+            memcpy( ht->keyword + info->u.link.topic_len, info->u.link.hfname, info->u.link.hfname_len );
             ht->keyword[info->u.link.topic_len + info->u.link.hfname_len] = '\0';
         } else {
             ht->keyword[info->u.link.topic_len] = '\0';
         }
         ht->key1_len = info->u.link.topic_len;
         ht->key2_len = info->u.link.hfname_len;
-        while( block != NULL ) {
-            while( cnt < block->cnt ) {
-                info = (Info *)&( block->info[cnt] );
+        for( block = &( info->u.link.block1 ); block != NULL; block = block->next ) {
+            for( i = 0; i < block->cnt; i++ ) {
+                info = (Info *)&( block->info[i] );
                 switch( info->u.text.type ) {
                 case TT_ESC_SEQ:
                     memcpy( myinfo->buf, info->u.text.str, info->u.text.len );
                     myinfo->buf += info->u.text.len;
-                    myinfo->pos ++;
-                    ht->area.width ++;
+                    myinfo->pos++;
+                    ht->area.width++;
                     break;
                 case TT_PLAIN:
                     memcpy( myinfo->buf, info->u.text.str, info->u.text.len );
@@ -826,19 +826,16 @@ static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
                     ht->area.width += info->u.text.len;
                     break;
                 }
-                cnt++;
             }
-            block = block->next;
-            cnt = 0;
         }
         if( ht->area.col + ht->area.width > helpScreen.area.width ) {
             ht->area.width = helpScreen.area.width - ht->area.col;
         }
         add_field( ht, myinfo->changecurr );
-        if( !goofy ) {
+        if( type == TK_PLAIN_LINK ) {
             myinfo->buf[0] = '>';
-            myinfo->buf ++;
-            myinfo->pos ++;
+            myinfo->buf++;
+            myinfo->pos++;
         }
         break;
     }
@@ -876,14 +873,14 @@ static void helpSet( char *str, char *helpname, unsigned buflen )
         srcptr = str;
         dstptr = helpname;
         while( *srcptr != '\0' ) {
-            if( *srcptr == HELP_ESCAPE )
+            if( *srcptr == IB_ESCAPE )
                 srcptr++;
             *dstptr = *srcptr;
             srcptr++;
             dstptr++;
             buflen--;
             if( buflen == 0 ) {
-                dstptr --;
+                dstptr--;
                 *dstptr = '\0';
                 break;
             }
@@ -934,31 +931,31 @@ static void putline( char *buffer, int line )
     i = 0;
     while( buffer[i] && helpScreen.cursor_col < helpScreen.area.width ) {
         start = i;
-        while( buffer[i] && buffer[i] != HELP_ESCAPE &&
+        while( buffer[i] && buffer[i] != IB_ESCAPE &&
                helpScreen.cursor_col + i - start <= helpScreen.area.width ) {
-            if( (unsigned char)buffer[i] == 0xFF )
-                buffer[i] = 0x20;
+            if( buffer[i] == IB_SPACE_NOBREAK )
+                buffer[i] = ' ';
             ++i;
         }
         if( i - start > 0 ) {
             uivtextput( &helpScreen, line, helpScreen.cursor_col, currentAttr, &buffer[start], i - start );
         }
         helpScreen.cursor_col += i - start;
-        if( buffer[i] == HELP_ESCAPE ) {
+        if( buffer[i] == IB_ESCAPE ) {
             switch( buffer[i+1] ) {
-            case H_UNDERLINE:
+            case IB_UNDERLINE_ON:
                 currentColour |= C_ULINE;
                 ++i;
                 break;
-            case H_UNDERLINE_END:
+            case IB_UNDERLINE_OFF:
                 currentColour &= ~C_ULINE;
                 ++i;
                 break;
-            case H_BOLD:
+            case IB_BOLD_ON:
                 currentColour |= C_BOLD;
                 ++i;
                 break;
-            case H_BOLD_END:
+            case IB_BOLD_OFF:
                 currentColour &= ~C_BOLD;
                 ++i;
                 break;
@@ -1009,7 +1006,7 @@ static void seek_line( int line )
             save_line( i, HelpTell( helpfile_fp ) );
             if( i == line )
                 break;
-            if( !mygetline() || strnicmp( helpInBuf, "::::", 4 ) == 0 ) {
+            if( !mygetline() || IS_IB_TOPIC_NAME( helpInBuf ) ) {
                 maxLine = i;
                 break;
             }
@@ -1033,12 +1030,12 @@ static void handleFooter( int *startline, SAREA *use, SAREA *line )
     int         start;
 
     start = *startline;
-    if( strnicmp( helpInBuf, ":t", 2 ) == 0 ) {
+    if( IS_IB_TRAILER_BEG( helpInBuf ) ) {
         ++start;        /* leave room for line */
         for( ;; ) {
             if( !mygetline() )
                 break;
-            if( strnicmp( helpInBuf, ":et", 3 ) == 0 )
+            if( IS_IB_TRAILER_END( helpInBuf ) )
                 break;
             processLine( helpInBuf, helpOutBuf, start, false );
             putline( helpOutBuf, start );
@@ -1061,14 +1058,14 @@ static void handleHeader( int *start, SAREA *line )
 {
     int         cur;
 
-    if( strnicmp( helpInBuf, ":h", 2 ) == 0 ) {
+    if( IS_IB_HEADER_BEG( helpInBuf ) ) {
         cur = 0;
         for( ;; ) {
             if( !mygetline() )
                 break;
-            if( strnicmp( helpInBuf, ":t", 2 ) == 0 )
+            if( IS_IB_TRAILER_BEG( helpInBuf ) )
                 break;
-            if( strnicmp( helpInBuf, ":eh", 3 ) == 0 )
+            if( IS_IB_HEADER_END( helpInBuf ) )
                 break;
             processLine( helpInBuf, helpOutBuf, cur, false );
             putline( helpOutBuf, cur );
@@ -1078,7 +1075,7 @@ static void handleHeader( int *start, SAREA *line )
         uivfill( &helpScreen, *line, AT( ATTR_NORMAL ), UiGChar[UI_SBOX_HORIZ_LINE] );
         cur++;
         topPos = HelpTell( helpfile_fp );
-        if( strnicmp( helpInBuf, ":eh", 3 ) == 0 ) {
+        if( IS_IB_HEADER_END( helpInBuf ) ) {
             mygetline();
         }
         *start = cur;
@@ -1128,7 +1125,7 @@ static int scrollHelp( SAREA *use, int lastline, bool changecurr )
     seek_line( start );
     for( ;; ++start ) {
         save_line( start, HelpTell( helpfile_fp ) );
-        if( !mygetline() || strncmp( helpInBuf, "::::", 4 ) == 0  ) {
+        if( !mygetline() || IS_IB_TOPIC_NAME( helpInBuf )  ) {
             maxLine = start;
             break;
         }
@@ -1285,35 +1282,27 @@ static int findhelp( VTAB *tab )
  * fixHelpTopic - escape any special characters in topics that comes from
  *                      the outside world
  */
-static char *fixHelpTopic( char *topic )
+static char *fixHelpTopic( const char *topic )
 {
-    char        *ptr;
+    const char  *ptr;
     char        *retptr;
     unsigned    cnt;
     char        *ret;
+    char        c;
 
-    ptr = topic;
     cnt = 0;
-    while( *ptr != '\0' ) {
-        if( *ptr == '<' || *ptr == '>' || *ptr == '"' || *ptr == '{' || *ptr == '}' ) {
+    for( ptr = topic; (c = *ptr) != '\0'; ptr++ ) {
+        if( c == '<' || c == '>' || c == '"' || c == '{' || c == '}' ) {
             cnt++;
         }
-        cnt ++;
-        ptr ++;
+        cnt++;
     }
-    ret = HelpMemAlloc( cnt + 1 );
-    retptr = ret;
-    ptr = topic;
-    while( *ptr != '\0' ) {
-        if( *ptr == '<' || *ptr == '>' || *ptr == '"' || *ptr == '{' || *ptr == '}' ) {
-            *retptr = HELP_ESCAPE;
-            retptr ++;
-            *retptr = *ptr;
-        } else {
-            *retptr = *ptr;
+    retptr = ret = HelpMemAlloc( cnt + 1 );
+    for( ptr = topic; (c = *ptr) != '\0'; ptr++ ) {
+        if( c == '<' || c == '>' || c == '"' || c == '{' || c == '}' ) {
+            *retptr++ = IB_ESCAPE;
         }
-        retptr++;
-        ptr++;
+        *retptr++ = c;
     }
     *retptr = '\0';
     return( ret );
@@ -1398,7 +1387,7 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
     int             err;
     char            filename[_MAX_PATH];
     const char      *hfiles[] = { NULL, NULL };
-    PGROUP2         pg;
+    pgroup2         pg;
     char            *buffer;
     char            *helptopic;
     help_file_info  *fileinfo;

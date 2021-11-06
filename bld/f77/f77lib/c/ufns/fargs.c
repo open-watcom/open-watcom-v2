@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,10 +38,8 @@
 #include "ftnstd.h"
 #include <string.h>
 #include "ftnapi.h"
-
-
-extern  int             ___Argc;        // argument count
-extern  char            **___Argv;      // argument vector
+#include "widechar.h"   /* C run-time library internal variable */
+#include "initarg.h"    /* C run-time library internal variable */
 
 
 intstar4        __fortran IARGC( void ) {

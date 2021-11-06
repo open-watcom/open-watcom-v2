@@ -1,5 +1,5 @@
-.gfunc getwindowcoord
-.gsynop begin 
+.gfunc _getwindowcoord
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 struct _wxycoord _FAR _getwindowcoord( short x, short y );
 .do end
@@ -15,7 +15,7 @@ The
 of the position with view coordinates
 .coord x y .
 Window coordinates are defined by the
-.kw _setwindow
+.reffunc _setwindow
 &routine..
 .desc end
 .return begin

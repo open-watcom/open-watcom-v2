@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,9 @@
 #include "datadtor.h"
 #include "fnbody.h"
 #include "cdopt.h"
-
 #ifndef NDEBUG
     #include "dbg.h"
-    #include "toggle.h"
+    #include "togglesd.h"
     #include "pragdefn.h"
 #endif
 
@@ -86,7 +86,7 @@ PTREE DataDtorObjPush(          // START OF DTORABLE OBJECT
     TYPE dtor_type;             // - type for dtor
 
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_data_dtor ) {
+    if( TOGGLEDBG( dump_data_dtor ) ) {
         VBUF vbuf;
         printf( "DataDtorObjPush -- symbol %s\n"
                 "                -- offset %x\n"
@@ -111,7 +111,7 @@ PTREE DataDtorObjPop(           // COMPLETE DTORABLE OBJECT
     PTREE expr )                // - expression to be decorated
 {
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_data_dtor ) {
+    if( TOGGLEDBG( dump_data_dtor ) ) {
         printf( "DataDtorObjPop\n" );
     }
 #endif
@@ -125,7 +125,7 @@ PTREE DataDtorCompClass(        // MARK CLASS OBJECT AS DTORABLE COMPONENT
     DTC_KIND kind )             // - kind of component
 {
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_data_dtor ) {
+    if( TOGGLEDBG( dump_data_dtor ) ) {
         printf( "DataDtorCompClass -- offset %x\n", offset );
     }
 #endif
@@ -139,7 +139,7 @@ PTREE DataDtorCompArrEl(        // MARK ARRAY ELEMENT AS DTORABLE COMPONENT
     target_offset_t index )     // - array index
 {
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_data_dtor ) {
+    if( TOGGLEDBG( dump_data_dtor ) ) {
         printf( "DataDtorCompArrEl -- index(%x)\n", index );
     }
 #endif

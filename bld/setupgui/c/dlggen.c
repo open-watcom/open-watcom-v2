@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,21 +101,19 @@ static gui_control_class ControlClass( gui_ctl_id id, a_dialog_header *dlg )
 
 
 static void SetDynamic( gui_window *gui, vhandle var_handle, bool *drive_checked )
-/*******************************************************************************/
+/********************************************************************************/
 {
     VBUF        buff;
     const char  *p;
 
-    p = VarGetStrVal( var_handle );
     if( !*drive_checked ) {
-        while( *p ) {
+        for( p = VarGetStrVal( var_handle ); *p != '\0'; p++ ) {
             if( *p == '%' ) {
-                if( strnicmp( p, "%DriveFree", 10 ) == 0 ) {
+                if( strnicmp( p + 1, "DriveFree", 9 ) == 0 ) {
                     CheckDrive( false );
                     *drive_checked = true;
                 }
             }
-            ++p;
         }
     }
     VbufInit( &buff );
@@ -303,19 +301,6 @@ static void CheckChildChecks( a_dialog_header *dlg )
     }
 }
 
-
-static void DoBeep( void )
-/************************/
-{
-#if defined( __WINDOWS__ ) || defined( __NT__ )
-    MessageBeep( 0 );
-#elif defined( __OS2__ )
-    DosBeep( 750, 250 );
-#else
-    putchar( 7 );
-    fflush( stdout );
-#endif
-}
 
 dlg_state IdToDlgState( gui_ctl_id id )
 /*************************************/
@@ -568,9 +553,6 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
         SetDefaultVals( gui, dlg );
         SetFocusCtrl( gui, dlg );
         GUIGetTextMetrics( gui, &metrics );
-        if( stricmp( dlg->name, "InsertDisk" ) == 0 ) {
-            DoBeep();
-        }
 #if defined( __OS2__ )
         {
             int         i;
@@ -712,19 +694,19 @@ static void AdjustDialogControls( a_dialog_header *dlg )
 #if defined( GUI_IS_GUI )
             /* Align left edge of control with left of leftmost Button */
             but_pos = WIN_BUTTON_POS( 1, MAX_CTRL_PER_LINE, width, WIN_BW );
-            control->rect.x = DLG_COL( but_pos );
+            control->rect.x = but_pos;
 #endif
-            control->rect.width = DLG_COL( width - C0 - 1 );
+            control->rect.width = width - C0 - 1;
             break;
 
         case GUI_CHECK_BOX:
 #if defined( GUI_IS_GUI )
             /* Align left edge of control with left of leftmost Button */
             but_pos = WIN_BUTTON_POS( 1, MAX_CTRL_PER_LINE, width, WIN_BW );
-            control->rect.x = DLG_COL( but_pos );
+            control->rect.x = but_pos;
 #endif
             // look for another control on this row
-            control->rect.width = DLG_COL( width - C0 - 1 );
+            control->rect.width = width - C0 - 1;
             if( i + 1 >= dlg->num_controls )
                 break;
 
@@ -732,7 +714,7 @@ static void AdjustDialogControls( a_dialog_header *dlg )
             if( next->rect.y != control->rect.y )
                 break;
 
-            control->rect.width = DLG_COL( (width / 2) - C0 - 1 );
+            control->rect.width = ( width / 2 ) - C0 - 1;
             if( next->control_class != GUI_CHECK_BOX )
                 break;
 
@@ -745,13 +727,13 @@ static void AdjustDialogControls( a_dialog_header *dlg )
             }
             curr_button = 0;
             while( i < j ) {
-                control->rect.width = DLG_COL( (width / num_push_buttons) - C0 - 1 );
+                control->rect.width = ( width / num_push_buttons ) - C0 - 1;
 #if defined( __NT__ ) && defined( GUI_IS_GUI )
                 but_pos = WIN_BUTTON_POS( curr_button + 1, NORMAL_CHECKMARKS, width, WIN_BW );
-                control->rect.x = DLG_COL( but_pos );
 #else
-                control->rect.x = DLG_COL( C0 + (width / num_push_buttons) * curr_button );
+                but_pos = C0 + ( width / num_push_buttons ) * curr_button;
 #endif
+                control->rect.x = but_pos;
                 ++curr_button;
                 ++i;
                 ++control;
@@ -780,16 +762,14 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                         max_width = WIN_BW;
                     }
                     but_pos = WIN_BUTTON_POS( curr_button, num_push_buttons, width, WIN_BW );
-                    control->rect.x = DLG_COL( but_pos );
-                    control->rect.width = DLG_COL( max_width );
 #else
                     if( max_width < BW ) {
                         max_width = BW;
                     }
                     but_pos = BUTTON_POS( curr_button, num_push_buttons, width, BW );
-                    control->rect.x = DLG_COL( but_pos );
-                    control->rect.width = DLG_COL( max_width );
 #endif
+                    control->rect.x = but_pos;
+                    control->rect.width = max_width;
                     ++control;
                 }
             } else {
@@ -799,18 +779,16 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                     max_width = WIN_BW;
                 }
                 but_pos = WIN_BUTTON_POS( NORMAL_BUTTONS, NORMAL_BUTTONS, width, WIN_BW );
-                control->rect.x = DLG_COL( but_pos );
                 /* The dynamic system does not handle buttons too wide for dialog. */
-                control->rect.width = DLG_COL( max_width );
-                /* control->rect.width = DLG_COL( WIN_BW ); */
+                /* control->rect.width = WIN_BW; */
 #else
                 if( max_width < BW ) {
                     max_width = BW;
                 }
                 but_pos = BUTTON_POS( NORMAL_BUTTONS, MAX_CTRL_PER_LINE, width, BW );
-                control->rect.x = DLG_COL( but_pos );
-                control->rect.width = DLG_COL( max_width );
 #endif
+                control->rect.x = but_pos;
+                control->rect.width = max_width;
             }
             break;
 
@@ -819,14 +797,14 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                 prev = control - 1;
                 if( prev->control_class == GUI_PUSH_BUTTON && prev->rect.y == control->rect.y ) {
                     // dialog_edit_button  (edit control and push button together)
-                    control->rect.width = DLG_COL( prev->rect.x - control->rect.x - BUTTON_EXTRA );
+                    control->rect.width = prev->rect.x - control->rect.x - BUTTON_EXTRA;
                     break;
                 }
             }
             if( control->text != NULL ) {
-                control->rect.width = DLG_COL( width - strlen( control->text ) - BUTTON_EXTRA );
+                control->rect.width = width - strlen( control->text ) - BUTTON_EXTRA;
             } else {
-                control->rect.width = DLG_COL( width - C0 - 5 );
+                control->rect.width = width - C0 - 5;
             }
             break;
 
@@ -835,24 +813,24 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                 prev = control - 1;
                 if( prev->control_class == GUI_PUSH_BUTTON || prev->control_class == GUI_EDIT ) {
                     if( prev->rect.y == control->rect.y ) {
-                        if( control->rect.width > DLG_COL( width ) ) {
-                            control->rect.width = DLG_COL( width );
+                        if( control->rect.width > width ) {
+                            control->rect.width = width;
                         }
                         break;
                     }
                 }
             }
-            if( control->id == -1 || dlg->controls_ext[i].pVisibilityConds != NULL ) {
-                if( control->rect.width > DLG_COL( width ) ) {
-                    control->rect.width = DLG_COL( width );
+            if( control->id == GUI_NO_ID || dlg->controls_ext[i].pVisibilityConds != NULL ) {
+                if( control->rect.width > width ) {
+                    control->rect.width = width;
                 }
             } else {
 #if defined( GUI_IS_GUI )
                 /* Align left edge of control with left of leftmost Button */
                 but_pos = WIN_BUTTON_POS( 1, MAX_CTRL_PER_LINE, width, WIN_BW );
-                control->rect.x = DLG_COL( but_pos );
+                control->rect.x = but_pos;
 #endif
-                control->rect.width = DLG_COL( width - 1 );
+                control->rect.width = width - 1;
             }
             break;
 

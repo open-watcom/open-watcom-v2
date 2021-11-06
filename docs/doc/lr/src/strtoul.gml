@@ -54,7 +54,7 @@ is 16, the characters "0x" or "0X" may optionally precede the sequence
 of letters and digits.
 .np
 If there is a leading minus sign in the string, the value is negated.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The
@@ -66,14 +66,14 @@ is returned and
 .kw errno
 is set to
 .kw ERANGE
-.ct .li .
+.period
 If
 .arg base
 is out of range, zero is returned and
 .kw errno
 is set to
 .kw EDOM
-.ct .li .
+.period
 .return end
 .see begin
 .im seestoi

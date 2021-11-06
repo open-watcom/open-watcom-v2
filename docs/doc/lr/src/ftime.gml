@@ -4,10 +4,10 @@
 int ftime( struct timeb *timeptr );
 
 struct timeb {
- time_t time;  /* time in seconds since Jan 1, 1970 UTC */
- unsigned short millitm; /* milliseconds */
- short timezone; /* difference in minutes from UTC */
- short dstflag;  /* nonzero if in daylight savings time */
+    time_t         time;     /* time in seconds since Jan 1, 1970 UTC */
+    unsigned short millitm;  /* milliseconds                          */
+    short          timezone; /* difference in minutes from UTC        */
+    short          dstflag;  /* nonzero if in daylight savings time   */
 };
 .ixfunc2 '&TimeFunc' &funcb
 .synop end
@@ -17,14 +17,14 @@ The
 function gets the current time and stores it in the
 structure pointed to by
 .arg timeptr
-.ct .li .
+.period
 .desc end
 .return begin
 The
 .id &funcb.
 function fills in the fields of the structure pointed to by
 .arg timeptr
-.ct .li .
+.period
 The
 .id &funcb.
 function returns &minus.1 if not successful, and no useful

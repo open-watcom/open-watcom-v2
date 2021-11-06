@@ -9,11 +9,11 @@ wrc_trmem = 1
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifdef bootstrap
-exename     = bwrc
-dllname     = bwrcd
+exetarg_name = bwrc
+dlltarg_name = bwrcd
 !else
-exename     = wrc
-dllname     = wrcd
+exetarg_name = wrc
+dlltarg_name = wrcd
 !endif
 
 win_yacc_prefix = winy
@@ -22,19 +22,57 @@ os2_yacc_prefix = os2y
 win_yacc_file = $(win_yacc_prefix)tab
 os2_yacc_file = $(os2_yacc_prefix)tab
 
-additional_cleanup = $(os2_yacc_file).* $(win_yacc_file).* *.uni
+additional_clean = $(os2_yacc_file).* $(win_yacc_file).* *.uni
 
 !include cproj.mif
 !include defrule.mif
 !include dllrule.mif
+!include dllbase.mif
 !include deftarg.mif
-!include osi.mif
 !include trmem.mif
 !include wres.mif
 
 !include $(cpp_dir)/client.mif
 
-.EXTENSIONS : .y .key .gh .res .rc
+#
+# cflags
+#
+.c : .;../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
+
+inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
+
+parser_defines = -DYYDEBUG -DSCANDEBUG
+
+extra_cpp_flags   = -D_STANDALONE_ $(parser_defines)
+!ifdef bootstrap
+extra_cpp_flags   += -DINCL_MSGTEXT
+!endif
+!ifndef wrc_dll
+extra_cpp_flags   += -DIDE_PGM
+!endif
+
+extra_cpp_flags_rcmem    = $(trmem_cpp_flags)
+!ifdef trmem_objs
+extra_cpp_flags_rcmem    = -DRC_USE_TRMEM
+!else ifeq release 0
+extra_cpp_flags_rcalloc0 = -DRCMEM_DEBUG
+extra_cpp_flags_rcalloc1 = -DRCMEM_DEBUG
+!endif
+extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
+extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
+
+extra_c_flags_rcmem    = $(trmem_cover_cflags)
+
+#
+# lflags
+#
+extra_l_flags_dll     = option implib $(wrc_dllbase_$(host_os)_$(host_cpu))
+
+extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dlltarg_name).dll'
+extra_l_flags_dll_os2 = initinstance terminstance op manyautodata op modname='$(dlltarg_name)'
+
+# explicit rules
+#################
 
 common_objs = &
     $(_subdir_)$(win_yacc_file).obj &
@@ -81,6 +119,7 @@ common_objs = &
     $(_subdir_)semsnglw.obj &
     $(_subdir_)semstrw.obj &
     $(_subdir_)dbtable.obj &
+    $(_subdir_)unitable.obj &
     $(_subdir_)preproc.obj &
     $(_subdir_)ppexpr.obj &
     $(_subdir_)ppmacro.obj &
@@ -117,132 +156,60 @@ objs_dll = $+$(rc_template)$-
 _subdir_ =
 objs_exe = $+$(rc_template)$- $(objs_drv)
 
-parser_defines = -DYYDEBUG -DSCANDEBUG
+#
+# EXE
+#
+!ifdef bootstrap
+prebuild_objs = usage.gh rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c &
+    keyword2.gh keywordw.gh to932.uni
+!else
+prebuild_objs = usage.gh rcmsg.gh $(os2_yacc_file).c &
+    $(win_yacc_file).c keyword2.gh keywordw.gh to932.uni
+!endif
+!ifdef wrc_dll
+exetarg_prebuild_objs = $(misc_objs) $(dlltarg_name).dll
+exetarg_objs          = $(objs_drv)
+exetarg_libs          = $(dlltarg_name).lib
+!else
+exetarg_prebuild_objs = $(misc_objs) $(prebuild_objs)
+exetarg_objs          = $(objs_exe)
+exetarg_libs          = $(wres_lib)
+!ifndef bootstrap
+exetarg_qnx_res       = usage.u
+exetarg_res_wresui    = wresui.res
+!endif
+!endif
+!ifndef bootstrap
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
+!endif
+!include exetarg.mif
 
-# global defines
-################
+#
+# DLL
+#
+dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
+dlltarg_objs          = $(objs_dll)
+dlltarg_libs          = $(wres_lib)
+!ifndef bootstrap
+dlltarg_res_wresui    = wresui.res
+!endif
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+!include dlltarg.mif
+
+#
+# rc and others
+#
+verrc_exe = $(exetarg_name)
+verrc_dll = $(dlltarg_name)
+!include verrc.mif
 
 rc_defines    = -D_STANDALONE_ $(parser_defines)
 
-# cflags stuff
-###############
-extra_cpp_flags   = -D_STANDALONE_ $(parser_defines)
-!ifdef bootstrap
-extra_cpp_flags   += -DINCL_MSGTEXT
-!endif
-!ifndef wrc_dll
-extra_cpp_flags   += -DIDE_PGM
-!endif
-
-extra_cpp_flags_rcmem    = $(trmem_cpp_flags)
-!ifdef trmem_objs
-extra_cpp_flags_rcmem    = -DRC_USE_TRMEM
-!else ifeq release 0
-extra_cpp_flags_rcalloc0 = -DRCMEM_DEBUG
-extra_cpp_flags_rcalloc1 = -DRCMEM_DEBUG
-!endif
-extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
-extra_cpp_flags_maindrv  = -DDLL_NAME=$(dllname)
-
-extra_c_flags_rcmem    = $(trmem_cover_cflags)
-
-# lflags stuff
-###############
-
-# DLL lflags stuff
-##################
-extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
-
-extra_l_flags_dll_nt  += option modname='$(dllname).dll'
-extra_l_flags_dll_os2 += option modname='$(dllname)'
-
-# systems where version resources must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
-
-# systems where version resources must be added to .EXE
-!ifndef bootstrap
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-!endif
-
-verrc_exe = $(exename)
-verrc_dll = $(dllname)
-!include verrc.mif
-
-.c : .;../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
-
-inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
-
-xlibs = $(wres_lib)
-
-depends_drv =
-!ifdef bootstrap
-depends_dll = rcmsg.gh incltext.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
-depends_exe = rcmsg.gh incltext.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
-!else
-depends_dll = rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
-depends_exe = rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
-resfile = wresui.res
-!endif
-
-# explicit rules
-
-!ifdef wrc_dll
-
-$(exename).exe : $(misc_objs) $(depends_drv) $(dllname).dll $(objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags_gen) $(objs_drv) $(dllname).lib $(ldflags_gen)
-!else
-    @%write drv.lnk $(lflags)
-    @for %i in ($(objs_drv)) do @%append drv.lnk file %i
-    @%append drv.lnk lib $(dllname).lib
-    @%make echo_link
-    $(linker) name $@ @drv.lnk
-!endif
-    @%make bind_res_version_exe
-
-!else
-
-$(exename).exe : $(misc_objs) $(depends_exe) $(objs_exe) $(xlibs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu)) $(osildr) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $(objs_exe) $(xlibs) $(bld_ldflags)
-! else
-    $(cl) $(clflags) $(objs_exe) $(xlibs) $(ldflags)
-! endif
-!else
-    @%write exe.lnk $(lflags)
-    @for %i in ($(objs_exe)) do @%append exe.lnk file %i
-    @for %i in ($(xlibs)) do @%append exe.lnk lib %i
-    @%make echo_link
-    $(linker) name $(lname) @exe.lnk
-    @%make bind_osildr
-!endif
-    @%make bind_res_version_exe
-!ifndef bootstrap
-    @%make bind_res_wresui
-!endif
-
-!endif
-
-$(dllname).dll : $(depends_dll) $(objs_dll) $(xlibs) $(resfile) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    @%make echo_link
-    $(cl) $(clflags_dll) $(objs_dll) $(xlibs) $(ldflags_dll)
-!else
-    @%write dll.lnk $(lflags_dll)
-    @for %i in ($(objs_dll)) do @%append dll.lnk file %i
-    @for %i in ($(xlibs)) do @%append dll.lnk lib %i
-    @%make echo_link
-    $(linker) name $@ @dll.lnk
-!endif
-    @%make bind_res_version_dll
-!ifndef bootstrap
-    @%make bind_res_wresui
-!endif
+wresui.res : ../rc.rc rcmsg.gh .AUTODEPEND
+    @%make echo_rc
+    $(rcui8) -ad $(rc_defines)
 
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
@@ -263,26 +230,37 @@ keyword2.gh : ../hash/rcos2.key
     @%make echo_findhash
     $(noecho)findhash -q -s 2 -m $<
 
-incltext.gh : ../h/incltext.h ../h/rc.msg
-    @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I.. $(rc_defines) -o$^@ $[@
-
-msg.gh : ../h/rc.msg
-    @%make echo_cpp
-    $(cpp) $(rc_aui_flags) $(rc_defines) -o$@ $[@
-
-rcmsg.gh : msg.gh
+rcmsg.gh : ../h/rc.msg
     @%make echo_awk
-    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
-
-wresui.res : ../rc.rc rcmsg.gh .AUTODEPEND
-    @%make echo_rc
-    $(rc_aui) -ad $(rc_defines) $[@ -fo=$^@
+    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 $(misc_objs):
     cat ../$@ >$@
 
+!ifdef exetarg_qnx_res
+optencod_opt_qnx    = -u $(exetarg_qnx_res)
+!endif
+!ifeq release 0
+optencod_targ_dbg   = dbg
+!endif
+
+usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(noecho)optencod -q -rc MSG_USAGE_BASE $(optencod_opt_$(host_os)) $[@ . . $@ $(host_os) $(optencod_targ_dbg)
+
+./cvttable.exe: ../c/cvttable.c $(watcom_dir)/h/cp932uni.h $(__MAKEFILES__)
+    @%make echo_bldcl
+    $(bld_cl) $[@ -D_STANDALONE_ -I"../h" $(bld_clflags) $(bld_ldflags)
+
+to932.uni : ./cvttable.exe $(__MAKEFILES__)
+    $[@ $@
+
 echo_findhash: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo findhash $@
+!endif
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
 !endif

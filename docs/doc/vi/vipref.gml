@@ -41,57 +41,59 @@ of &edvi, or by experienced &edvi users.
 People familiar with &edvi will find &edname is very similar
 in its basic behaviour, but with many additional features.
 .*
-:DL.
-
-:DT.Chapter 1
-:DD.:CIT.Introduction:eCit.
+.begnote
+.*
+.note Chapter 1
+.book Introduction
 provides an overview of &edvi..
-
-:DT.Chapter 2
-:DD.:CIT.Basic Usage:eCit.
+.*
+.note Chapter 2
+.book Basic Usage
 is for the novice &edvi user. This section provides an overview of the basic
 features of &edvi through some simple exercises.
-
-:DT.Chapter 3
-:DD.:CIT.Intermediate Usage:eCIT.
+.*
+.note Chapter 3
+.book Intermediate Usage
 provides some more exercises which introduce additional useful features
 of &edvi..
-
-:DT.Chapter 4
-:DD.:CIT.Advanced Usage:eCIT.
+.*
+.note Chapter 4
+.book Advanced Usage
 This chapter discusses the advanced features of &edvi..
-
-:DT.Chapter 5
-:DD.:CIT.Command Mode Keys:eCIT.
+.*
+.note Chapter 5
+.book Command Mode Keys
 This chapter describes the keystrokes that initiate the many different
-features of command mode.
-
-:DT.Chapter 6
-:DD.:CIT.Editor Command Line:eCIT.
+features of
+.keyword &cmdmode
+.period
+.*
+.note Chapter 6
+.book Editor Command Line
 This chapter describes all the different commands that may be
 issued in &edvi..
-
-:DT.Chapter 7
-:DD.:CIT.Editor Settings:eCIT.
+.*
+.note Chapter 7
+.book Editor Settings
 This chapter shows all the different settings that are used for
 configuring &edvi..
-
-:DT.Chapter 8
-:DD.:CIT.Windowing, Menus and the Mouse:eCIT.
-This chapter provides a guide for using and configuring the 
+.*
+.note Chapter 8
+.book Windowing, Menus and the Mouse
+This chapter provides a guide for using and configuring the
 user interface of &edvi to suit your needs.
-
-:DT.Chapter 9
-:DD.:CIT.Editor Script Reference:eCIT.
+.*
+.note Chapter 9
+.book Editor Script Reference
 This chapter describes &edvi's script language.
-
-:DT.Chapter 10
-:DD.:CIT.Regular Expressions:eCIT.
+.*
+.note Chapter 10
+.book Regular Expressions
 This chapter describes how to use regular expressions in &edvi
 when executing search, search and replace, and global
 commands.
-
-:eDL.
+.*
+.endnote
 .*
 .sect Trademarks Used in this Manual
 .*

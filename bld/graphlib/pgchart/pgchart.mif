@@ -3,15 +3,14 @@
 #
 proj_name = pgchart
 
-v2subdir = v2objs
+subdir_v2 = v2objs
 
-additional_cleanup_subdir = $(v2subdir)
+crwatpro_gsp = crwatpro.gsp
 
-crwatpro_sp = crwatpro.sp
-
-additional_cleanup = $(crwatpro_sp)
+additional_clean = $(crwatpro_gsp)
 
 pgchart_autodepends = .AUTODEPEND
+pgchart_nofpu = 1
 pgchart_distrib_lib = 1
 
 suppress_zc = 1
@@ -27,13 +26,38 @@ memory_model_386 = f
 memory_model_i86 = l
 !endif
 
-fpu_flags_dos_i86 = -fpc
-fpu_flags_dos_386 = -fpc
-fpu_flags_os2_i86 = -fpc
-fpu_flags_os2_386 = -fpc
-fpu_flags_qnx_i86 = -fpc
-fpu_flags_qnx_386 = -fpc
-fpu_flags_win_i86 = -fpc
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+#
+# cflags
+#
+.c: ../c
+
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" $(inc_dirs_lang_dos)
+
+extra_cpp_flags = -D_ENABLE_AUTODEPEND -D_FARD=
+
+extra_cpp_flags_i86 = -D_CGRAPH=__loadds
+extra_cpp_flags_386 = -D_CGRAPH=
+!ifeq convention stack
+extra_cpp_flags_386 += -D__STACK
+!endif
+
+extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) -fo=$@
+
+extra_c_flags_386_register = -3r
+extra_c_flags_386_stack = -3s
+extra_c_flags_386 = $(extra_c_flags_386_$(convention))
+extra_c_flags_i86 = -nt=GRAPH_TEXT
+
+extra_c_flags_win = -zW
+
+# explicit rules
+#################
+
+all : chart.lib chart2.lib .symbolic
 
 template = &
     $(_subdir_)pgancom.obj &
@@ -57,54 +81,27 @@ template = &
     $(_subdir_)pgvars.obj &
     $(_subdir_)pgvlabel.obj
 
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
-
-_subdir_ = $(v2subdir)/
-v2_objs = $+$(template)$-
+#
+# LIB
+#
 _subdir_ =
-objs = $+$(template)$-
+libtarg_prebuild_objs = pgchart.gh graph.gh
+libtarg_objs          = $(template)
+libtarg_name          = chart
+!include libtarg.mif
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"$(hdr_dir)/dos"
+#
+# LIB version 2
+#
+_subdir_ = $(subdir_v2)/
+libtarg_prebuild_objs = $(subdir_v2) pgchart.gh graph2.gh
+libtarg_objs          = $(template)
+libtarg_name          = chart2
+!include libtarg.mif
 
-.c: ../c
-
-extra_cpp_flags = -D_ENABLE_AUTODEPEND -D_FARD=
-
-extra_cpp_flags_i86 = -D_CGRAPH=__loadds
-extra_cpp_flags_386 = -D_CGRAPH=
-!ifeq convention stack
-extra_cpp_flags_386 += -D__STACK
-!endif
-
-extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) -fo=$@
-
-extra_c_flags_386_register = -3r
-extra_c_flags_386_stack = -3s
-extra_c_flags_386 = $(extra_c_flags_386_$(convention))
-extra_c_flags_i86 = -nt=GRAPH_TEXT
-
-extra_c_flags_win = -zW
-
-all : pgchart.gh chart.lib chart2.lib .symbolic
-
-chart.lib : graph.gh pgchart.lbc $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @pgchart.lbc
-
-chart2.lib : graph2.gh pgchart2.lbc $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @pgchart2.lbc
-
-pgchart.lbc : $(objs) $(__MAKEFILES__)
-    $(noecho)%create $@
-    @for %i in ($(objs)) do @%append $@ +%i
-
-pgchart2.lbc : $(v2_objs) $(__MAKEFILES__)
-    $(noecho)%create $@
-    @for %i in ($(v2_objs)) do @%append $@ +%i
-
+#
+# rc and others
+#
 wsplice_opts_dos = -kDOS
 wsplice_opts_os2 = -kDOS
 wsplice_opts_qnx = -kQNX -u
@@ -112,7 +109,8 @@ wsplice_opts_win = -kDOS
 
 !include $(graphlib_dir)/headers.mif
 
-.c{$(v2subdir)}.obj: $($(proj_name)_autodepends)
-    @if not exist $(v2subdir) mkdir $(v2subdir)
-    @%make echo_cc
-    $(cc) $(cflags) $(c_flags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@
+extra_cpp_v2_flags = -DVERSION2
+extra_a_v2_flags = -DVERSION2
+
+defrule_key = v2
+!include defrule.mif

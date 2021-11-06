@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,7 +105,7 @@ static BOOL AddDEData( dir_ent *de, GLOBALENTRY *ge, DWORD fpos, WORD seg  )
     de->seg_num = seg;
     if( ge->dwSize != 1 ) {
         ptr = GlobalLock( ge->hBlock );
-        de->sel = FP_SEG( ptr );
+        de->sel = _FP_SEG( ptr );
     }  else {
         de->sel = ge->hBlock;
     }
@@ -114,7 +114,7 @@ static BOOL AddDEData( dir_ent *de, GLOBALENTRY *ge, DWORD fpos, WORD seg  )
     if( ge->dwSize != 1 ) {
         GlobalUnlock( ge->hBlock );
     }
-    if( de->sel == FP_SEG( AddDEData ) || de->sel == FP_SEG( dirList ) )
+    if( de->sel == _FP_SEG( AddDEData ) || de->sel == _FP_SEG( dirList ) )
         return( TRUE );
     for( i=0;i<dirCnt;i++ ) {
         if( dirList[i].sel == de->sel ) {
@@ -328,7 +328,7 @@ void DoDump( HWND hwnd )
  */
 INT_PTR CALLBACK DumpDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     bool        ret;
 
     ret = false;

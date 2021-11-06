@@ -12,7 +12,7 @@ dynamic memory allocation in the near heap (the default data segment).
 In the tiny, small and medium memory models, the default data segment
 is only extended as needed to satisfy requests for memory allocation.
 Therefore, you will need to call
-.kw _nheapgrow
+.reffunc _nheapgrow
 in these memory models before calling
 .id &funcb.
 in order to get a
@@ -23,7 +23,7 @@ The number returned by
 may not represent a single contiguous
 block of memory.
 Use the
-.kw _memmax
+.reffunc _memmax
 function to find the largest contiguous block of memory that can be
 allocated.
 .desc end

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -587,13 +588,13 @@ static bool mem2code( unsigned char ss, asm_token index, asm_token base, asm_sym
     return( RC_OK );
 }
 
-static asm_cpu comp_opt( asm_token direct )
-/*****************************************/
+static asm_cpu get_cpu_flags( asm_token token )
+/*********************************************/
 /*
-  Compare function for CPU directive
+  Convert token to CPU/FPU flags
 */
 {
-    switch( direct ) {
+    switch( token ) {
     case T_DOT_NO87:
         return( P_NO87 );
     case T_DOT_8086:
@@ -696,19 +697,18 @@ static asm_cpu comp_opt( asm_token direct )
     case T_PXMM3:
 #endif
         return( P_SSE3 | P_SSE2 | P_SSE | P_MMX );
-    default:
-        // not found
-        return( P_EMPTY );
     }
+    // not found
+    return( P_EMPTY );
 }
 
-static asm_cpu def_fpu( asm_token direct )
-/****************************************/
+static asm_cpu get_fpu_flags( asm_token token )
+/*********************************************/
 /*
-  get FPU from CPU directive
+  derive FPU flags from CPU token
 */
 {
-    switch( direct ) {
+    switch( token ) {
     case T_DOT_8086:
     case T_DOT_186:
 #if defined( _STANDALONE_ )
@@ -793,31 +793,41 @@ static void MakeCPUConstant( asm_token tok )
 }
 #endif
 
+static asm_cpu add_cpu_flags( asm_token token, asm_cpu cpu, asm_cpu new_cpu )
+/***************************************************************************/
+{
+    if( token == T_DOT_NO87 ) {
+        cpu &= ~P_FPU_MASK;                         // turn off FPU bits
+    } else if( new_cpu & P_EXT_MASK ) {
+        cpu |= new_cpu & P_EXT_MASK;                // turn on desired bit(s)
+    } else if( new_cpu & P_FPU_MASK ) {
+        cpu &= ~P_FPU_MASK;
+        cpu |= new_cpu & P_FPU_MASK;                // setup FPU bits
+    } else {
+        cpu &= ~( P_CPU_MASK | P_PM );
+        cpu |= new_cpu & ( P_CPU_MASK | P_PM );     // setup CPU bits
+        cpu &= ~P_FPU_MASK;
+        cpu |= get_fpu_flags( token ) & P_FPU_MASK; // setup FPU bits
+    }
+    return( cpu );
+}
+
 bool cpu_directive( asm_token token )
 /***********************************/
 {
-    asm_cpu     temp;
+    asm_cpu     new_cpu;
 
-    if( (temp = comp_opt( token )) != P_EMPTY ) {
-        if( token == T_DOT_NO87 ) {
-            Code->info.cpu &= ~P_FPU_MASK;                 // turn off FPU bits
-        } else if( temp & P_EXT_MASK ) {
-            Code->info.cpu |= temp & P_EXT_MASK;           // turn on desired bit(s)
-        } else if( temp & P_FPU_MASK ) {
-            Code->info.cpu &= ~P_FPU_MASK;
-            Code->info.cpu |= temp & P_FPU_MASK;           // setup FPU bits
-        } else {
-            Code->info.cpu &= ~( P_CPU_MASK | P_PM );
-            Code->info.cpu |= temp & ( P_CPU_MASK | P_PM );// setup CPU bits
-            Code->info.cpu &= ~P_FPU_MASK;
-            Code->info.cpu |= def_fpu( token ) & P_FPU_MASK;   // setup FPU bits
-        }
-    } else {
+    if( (new_cpu = get_cpu_flags( token )) == P_EMPTY ) {
         AsmError( UNKNOWN_DIRECTIVE );
         return( RC_ERROR );
     }
+    Code->info.cpu = add_cpu_flags( token, Code->info.cpu, new_cpu );
 
 #if defined( _STANDALONE_ )
+    if( LineNumber == 0 ) {
+        ModuleInfo.cpu_init = Code->info.cpu;
+    }
+
     MakeCPUConstant( token );
     switch( token ) {
     case T_DOT_686P:
@@ -946,7 +956,7 @@ static bool proc_check( const char *curline, bool *prolog )
 
     if( Token_Count > 1 ) {
         if( ( AsmBuffer[1].class == TC_DIRECTIVE )
-            || ( AsmBuffer[1].class == TC_DIRECT_EXPR ) ) {
+          || ( AsmBuffer[1].class == TC_DIRECT_EXPR ) ) {
             return( RC_OK );
         }
     }
@@ -1280,26 +1290,26 @@ static bool expand_call( token_idx index, int lang_type )
     argcount = cleanup = reversed = register_count = register_arguments = 0;
     parameter_on_stack = true;
     switch( lang_type ) {
-    case LANG_C:
-    case LANG_SYSCALL:
+    case WASM_LANG_C:
+    case WASM_LANG_SYSCALL:
         cleanup++;
         reversed++;
         break;
-    case LANG_WATCOM_C:
+    case WASM_LANG_WATCOM_C:
         if( Options.watcom_parms_passed_by_regs || !Use32 ) {
             parameter_on_stack = false;
         } else {
             cleanup++;
         }
         /* fall through */
-    case LANG_STDCALL:
+    case WASM_LANG_STDCALL:
         reversed++;
         break;
-    case LANG_PASCAL:
-    case LANG_FORTRAN:
-    case LANG_BASIC:
+    case WASM_LANG_PASCAL:
+    case WASM_LANG_FORTRAN:
+    case WASM_LANG_BASIC:
         break;
-    case LANG_NONE:
+    case WASM_LANG_NONE:
         if( AsmBuffer[index].class == TC_FINAL )
             break;
         AsmError( SYNTAX_ERROR );
@@ -2842,7 +2852,7 @@ static bool check_size( void )
             InsFixups[OPND2] = NULL;
         } else {
             // absolute ptr nnnn,nnnn
-            Code->info.opnd_type[OPND1] = Code->use32 ? OP_I32 : OP_I16;
+            Code->info.opnd_type[OPND1] = ( Code->use32 ) ? OP_I32 : OP_I16;
         }
         temp = Code->data[OPND1];
         Code->data[OPND1] = Code->data[OPND2];

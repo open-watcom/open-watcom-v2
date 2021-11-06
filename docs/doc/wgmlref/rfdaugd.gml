@@ -10,7 +10,7 @@ The augmented device definitions are recognized by
 the starting characters of the driver name.
 For example, :HP2.HPLDRV:EHP2. is recognized
 as the name of a driver definition for the HP LaserJet printer.
-:DL compact tsize=13.
+:DL compact tsize='13'.
 :DTHD.Name Prefix
 :DDHD.Augmented Device
 :DT.HPL

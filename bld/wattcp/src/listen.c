@@ -11,6 +11,8 @@
 
 #if defined(USE_BSD_FUNC)
 
+#include "pchooks.h"
+
 int listen (int s, int backlog)
 {
   struct  in_addr addr;

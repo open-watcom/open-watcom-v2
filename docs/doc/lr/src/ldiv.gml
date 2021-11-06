@@ -4,7 +4,7 @@
 ldiv_t ldiv( long int numer, long int denom );
 
 typedef struct {
-    long int quot;     /* quotient */
+    long int quot;     /* quotient  */
     long int rem;      /* remainder */
 } ldiv_t;
 .synop end
@@ -16,7 +16,7 @@ numerator
 .arg numer
 by the denominator
 .arg denom
-.ct .li .
+.period
 .desc end
 .*
 .return begin
@@ -28,8 +28,7 @@ that contains the fields
 .kw quot
 and
 .kw rem
-.ct,
-which are both of type
+.ct , which are both of type
 .id long int.
 .return end
 .*

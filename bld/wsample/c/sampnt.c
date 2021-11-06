@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,7 +126,7 @@ void InitTimerRate( void )
     sleepTime = 55;
 }
 
-void SetTimerRate( char **cmd )
+void SetTimerRate( const char **cmd )
 {
     sleepTime = GetNumber( 1, 1000, cmd, 10 );
 }
@@ -342,9 +343,9 @@ static void codeLoad( HANDLE handle, DWORD base, const char *name, samp_block_ki
     for( i = 0; i < peh.num_objects; i++ ) {
         ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
         if( obj.flags & (PE_OBJ_CODE | PE_OBJ_EXECUTABLE) ) {
-            seg = FP_SEG( codeLoad );
+            seg = _FP_SEG( codeLoad );
         } else {
-            seg = FP_SEG( &seg );
+            seg = _FP_SEG( &seg );
         }
         offset = (DWORD)base + obj.rva;
         WriteAddrMap( i + 1, seg, offset );
@@ -547,7 +548,7 @@ static int GetDllName( LOAD_DLL_DEBUG_INFO *ld, char *buff, unsigned max )
 /*
  * StartProg - start sampling a program
  */
-void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
     DWORD       code;
     DWORD       tid;
@@ -675,7 +676,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
 
 void SysDefaultOptions( void ) { }
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     switch( c ) {
     case 'r':

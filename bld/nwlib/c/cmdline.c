@@ -42,8 +42,7 @@
 #endif
 
 
-#define AR_MODE_ENV  "WLIB$AR"
-#define AR_MODE_ENV2 "WLIB_AR"
+#define AR_MODE_ENV "WLIB_AR"
 
 #define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
 #define notwhite( c ) ( (c) != '\0' && !isspace( (unsigned char)(c) ) )
@@ -102,7 +101,7 @@ static const char *GetEqual( const char *c, char *buff, const char *ext, char **
         *ret = NULL;
     } else {
         c = GetString( c, buff, false, false );
-        if( ext != NULL ) {
+        if( ext != NULL && *ext != '\0' ) {
             DefaultExtension( buff, ext );
         }
         *ret = DupStr( buff );
@@ -273,10 +272,10 @@ static const char *ParseOption( const char *c, char *buff )
         }
         c = GetEqual( c, buff, NULL, &Options.explode_ext );
         if( Options.explode_ext == NULL )
-            Options.explode_ext = EXT_OBJ;
+            Options.explode_ext = "." EXT_OBJ;
         if( Options.explode_count ) {
-            char  cn[20] = "00000000";
-            strcat( cn, Options.explode_ext );
+            char    cn[20] = FILE_TEMPLATE_MASK;
+            strcpy( cn + sizeof( FILE_TEMPLATE_MASK ) - 1, Options.explode_ext );
             Options.explode_ext = DupStr( cn );
         }
 #else
@@ -685,25 +684,34 @@ static void ParseOneArLine( const char *c, operation *ar_mode )
     }
 }
 
+static const char *getWlibModeInfo( void )
+{
+    const char  *env;
+    char        *s;
+
+    env = WlibGetEnv( AR_MODE_ENV );
+    if( env != NULL ) {
+        Options.ar = true;
+        Options.ar_name = DupStr( env );
+        for( s = Options.ar_name; *s != '\0'; s++ ) {
+            *s = tolower( *(unsigned char *)s );
+        }
+        env = WlibGetEnv( env );
+    } else {
+        env = WlibGetEnv( "WLIB" );
+    }
+    return( env );
+}
+
 void ProcessCmdLine( char *argv[] )
 {
     char        *parse;
     const char  *env;
     lib_cmd     *cmd;
-    char        *fname;
-    char        buffer[PATH_MAX];
     operation   ar_mode;
 
-    fname = MakeFName( _cmdname( buffer ) );
-    if( FNCMP( fname, "ar" ) == 0 || WlibGetEnv( AR_MODE_ENV ) != NULL ||
-        WlibGetEnv( AR_MODE_ENV2 ) != NULL ) {
-        Options.ar = true;
-    }
-    if( Options.ar ) {
-        env = WlibGetEnv( "AR" );
-    } else {
-        env = WlibGetEnv( "WLIB" );
-    }
+    env = getWlibModeInfo();
+
     if( ( env == NULL || *env == '\0' ) && ( argv[1] == NULL || *argv[1] == '\0' ) ) {
         Usage();
     }
@@ -795,6 +803,10 @@ void FiniCmdLine( void )
     if( Options.input_name != NULL ) {
         MemFree( Options.input_name );
         Options.input_name = NULL;
+    }
+    if( Options.ar_name != NULL ) {
+        MemFree( Options.ar_name );
+        Options.ar_name = NULL;
     }
     FreeCommands();
 }

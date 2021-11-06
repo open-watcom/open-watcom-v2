@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,6 +64,7 @@
 #include "thread.h"
 #include "fptraps.h"
 #include "rttraps.h"
+#include "rtexcpfl.h"
 
 
 #if defined( __OS2_286__ )
@@ -99,7 +100,6 @@ typedef void            (*fsig_func)( intstar4 );
 #endif
 
 #if defined( __OS2_386__ ) || defined( __NT__ )
-  extern byte           __ExceptionHandled;
   static void           IOvFlSignal(int);
 #endif
 
@@ -294,7 +294,7 @@ void    R_TrapInit( void ) {
     ZSave = _dos_getvect( IntDivBy0 );
     _dos_setvect( IntDivBy0, IDivZHandler );
 #elif defined( __WINDOWS__ )
- #if !defined( __386__ )
+ #if defined( _M_I86 )
     ISave = _dos_getvect( IntOverFlow );
     _dos_setvect( IntOverFlow, IOvFlHandler );
     ZSave = _dos_getvect( IntDivBy0 );
@@ -327,7 +327,7 @@ void    R_TrapFini( void ) {
     _dos_setvect( IntOverFlow, ISave );
     _dos_setvect( IntDivBy0, ZSave );
 #elif defined( __WINDOWS__ )
- #if !defined( __386__ )
+ #if defined( _M_I86 )
     _dos_setvect( IntOverFlow, ISave );
     _dos_setvect( IntDivBy0, ZSave );
  #endif

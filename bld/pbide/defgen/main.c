@@ -54,7 +54,7 @@ static char     nuoName[_MAX_FNAME + _MAX_EXT];
 
 static void SetExtension( char *buf, const char *file, const char *ext )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( file, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
     _makepath( buf, pg.dir, pg.drive, pg.fname, ext );
@@ -62,7 +62,7 @@ static void SetExtension( char *buf, const char *file, const char *ext )
 
 static bool FillParms( void )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( Config.def_file == NULL ) {
         ReportError( "No .def file specified" );

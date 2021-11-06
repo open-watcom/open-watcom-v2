@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +88,8 @@ long GetClusterSize( int drive )
   #else
     {
         struct diskfree_t       df;
-        _dos_getdiskfree( drive, &df );
+
+        _getdiskfree( drive, &df );
         return( (long)df.bytes_per_sector * (long)df.sectors_per_cluster );
     }
   #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,8 @@
 #define INCLUDE_COMMDLG_H
 #include <wwindows.h>
 #include "win.h"
+#include "winmenu.rh"
+
 
 /*
  * _NewWindow - create a new window
@@ -49,7 +51,7 @@ unsigned _NewWindow( const char *name, ... )
     TEXTMETRIC  tm;
     char        str[80];
     int         x1,x2,y1,y2;
-    va_list     al;
+    va_list     args;
 
     _GetWindowNameAndCoords( name, str, &x1, &x2, &y1, &y2 );
 
@@ -74,8 +76,9 @@ unsigned _NewWindow( const char *name, ... )
     /*
      * allocate window data area
      */
-    va_start( al, name );
-    w = _AnotherWindowData( hwnd, al );
+    va_start( args, name );
+    w = _AnotherWindowData( hwnd, args );
+    va_end( args );
 
     /*
      * set up data

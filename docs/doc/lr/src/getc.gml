@@ -16,16 +16,15 @@ The
 .id &funcb.
 function gets the next character from the file designated by
 .arg fp
-.ct .li .
+.period
 The character is returned as an
 .id int
 value.
 The
 .id &funcb.
 function is equivalent to
-.kw fgetc
-.ct,
-except that it may be implemented as a macro.
+.reffunc fgetc
+.ct , except that it may be implemented as a macro.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -44,17 +43,17 @@ The
 function returns the next character from the input stream
 pointed to by
 .arg fp
-.ct .li .
+.period
 If the stream is at end-of-file, the end-of-file indicator is set and
 .id &funcb.
 returns
 .kw EOF
-.ct .li .
+.period
 If a read error occurs, the error indicator is set and
 .id &funcb.
 returns
 .kw EOF
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -62,17 +61,17 @@ The
 function returns the next wide character from the input
 stream pointed to by
 .arg fp
-.ct .li .
+.period
 If the stream is at end-of-file, the end-of-file indicator is set and
 .id &wfunc.
 returns
 .kw WEOF
-.ct .li .
+.period
 If a read error occurs, the error indicator is set and
 .id &wfunc.
 returns
 .kw WEOF
-.ct .li .
+.period
 If an encoding error occurs,
 .kw errno
 is set to
@@ -81,7 +80,7 @@ and
 .id &wfunc.
 returns
 .kw WEOF
-.ct .li .
+.period
 .do end
 .np
 .im errnoref

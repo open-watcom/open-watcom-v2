@@ -162,10 +162,6 @@ STATIC DWORD                 st_LastVerifiedLine = 0;
 STATIC BYTE                  st_Scope            = 0;
 STATIC BYTE                  st_Disabled         = 0;
 
-#if defined(__HIGHC__) && 0 // !! not yet
-STATIC char st_LockDataStart = 0;
-#endif
-
 #ifdef __cplusplus
   int    gbl_FortifyMagic = 0;
   STATIC const char *st_DeleteFile[FORTIFY_DELETE_STACK_SIZE];
@@ -189,7 +185,7 @@ STATIC DWORD  st_AllocationLimit  = 0xffffffff;
   STATIC DWORD          st_TotalDeallocated = 0;
 #endif
 
- 
+
 /* allocators */
 STATIC const char *st_AllocatorName[] = {
                   "malloc()",
@@ -226,37 +222,6 @@ STATIC const BYTE st_ValidDeallocator[] = {
 STATIC char st_LockDataFill[4096] = { 0 };
 STATIC char st_LockDataEnd        = 0;
 
-
-#if defined(__HIGHC__) && 0 // !! not yet
-
-#include <pharlap.h>
-#include <hw386.h>
-
-/*
- *  Change page-attributes for local data.
- *  Set to present or non-present pages.
- */
-STATIC Fortify_LockLocalData (int lock)
-{
-  UINT  lockSize  = (ULONG)&st_LockDataEnd - (ULONG)&st_LockDataStart;
-  ULONG num_pages = (lockSize + 4095) / 4096;
-  ULONG page      = ((ULONG)&st_LockDataStart + 4095) / 4096;
-
-  for ( ; page < page + num_pages; page++)
-  {
-    ULONG pte, ptInfo;
-    if (_dx_rd_ptinfl (page << 12, &pte, &ptInfo))
-       break;
-    if (lock)
-         pte &= ~PE_PRESENT;
-    else pte |=  PE_PRESENT;
-    if (_dx_wr_ptinfl (page << 12, pte, ptInfo))
-       break;
-  }
-}
-#endif
-
-
 /*
  * Fortify_Allocate() - allocate a block of fortified memory
  */
@@ -290,7 +255,7 @@ Fortify_Allocate (size_t size, BYTE allocator, const char *file, DWORD line)
 
 #ifdef FORTIFY_CHECK_ALL_MEMORY_ON_ALLOCATE
   Fortify_CheckAllMemory (file, line);
-#endif  
+#endif
 
   if (st_AllocateFailRate > 0)
   {
@@ -344,7 +309,7 @@ Fortify_Allocate (size_t size, BYTE allocator, const char *file, DWORD line)
 #endif /* FORTIFY_WARN_ON_ALLOCATE_FAIL */
     return (0);
   }
-#endif /* FORTIFY_FAIL_ON_ZERO_MALLOC */    
+#endif /* FORTIFY_FAIL_ON_ZERO_MALLOC */
 
 #ifdef FORTIFY_WARN_ON_SIZE_T_OVERFLOW
     /*
@@ -358,16 +323,16 @@ Fortify_Allocate (size_t size, BYTE allocator, const char *file, DWORD line)
 
         if (private_size < size)
         {
-            sprintf(st_Buffer, 
+            sprintf(st_Buffer,
                     "\nFortify: A \"%s\" of %lu bytes has overflowed size_t at %s.%lu\n",
                     st_AllocatorName[allocator], (DWORD)size, file, line);
             st_Output(st_Buffer);
             return (0);
         }
-#if (DOSX) && defined(__WATCOMC__) && 0
+#if (DOSX) && 0
         if (private_size >= 65536UL)
         {
-            sprintf(st_Buffer, 
+            sprintf(st_Buffer,
                     "\nFortify: A \"%s\" of %lu bytes has exceeded 64kB limit by %d bytes, at %s.%lu\n",
                     st_AllocatorName[allocator], (DWORD)size,
                     private_size - size, file, line);
@@ -376,15 +341,15 @@ Fortify_Allocate (size_t size, BYTE allocator, const char *file, DWORD line)
         }
 #endif
     }
-#endif                              
+#endif
 
     another_try = 1;
     do
     {
         /*
-         * malloc the memory, including the space 
+         * malloc the memory, including the space
          * for the header and fortification buffers
-         */  
+         */
         ptr = (BYTE *)malloc ( FORTIFY_HEADER_SIZE
                                    + FORTIFY_ALIGNED_BEFORE_SIZE
                                    + size
@@ -420,7 +385,7 @@ Fortify_Allocate (size_t size, BYTE allocator, const char *file, DWORD line)
     FORTIFY_LOCK();
 
 
-    /* 
+    /*
      * Make the head's prev pointer point to us
      * ('cos we're about to become the head)
      */
@@ -430,7 +395,7 @@ Fortify_Allocate (size_t size, BYTE allocator, const char *file, DWORD line)
         /* what should we do if this fails? (apart from panic) */
 
         st_AllocatedHead->Prev = (struct Header *)ptr;
-        st_MakeHeaderValid(st_AllocatedHead);  
+        st_MakeHeaderValid(st_AllocatedHead);
     }
 
     /*
@@ -439,7 +404,7 @@ Fortify_Allocate (size_t size, BYTE allocator, const char *file, DWORD line)
     h = (struct Header *)ptr;
     h->Size      = size;
     h->File      = file;
-    h->Line      = line;  
+    h->Line      = line;
     h->Next      = st_AllocatedHead;
     h->Prev      = 0;
     h->Scope     = st_Scope;
@@ -452,10 +417,10 @@ Fortify_Allocate (size_t size, BYTE allocator, const char *file, DWORD line)
 #endif /* FORTIFY_TRACK_DEALLOCATED_MEMORY */
     st_MakeHeaderValid(h);
     st_AllocatedHead = h;
-  
+
     /*
      * Initialize the fortifications
-     */    
+     */
     st_SetFortification(ptr + FORTIFY_HEADER_SIZE,
                      FORTIFY_BEFORE_VALUE, FORTIFY_ALIGNED_BEFORE_SIZE);
     st_SetFortification(ptr + FORTIFY_HEADER_SIZE + FORTIFY_ALIGNED_BEFORE_SIZE + size,
@@ -524,19 +489,19 @@ Fortify_Deallocate(void *uptr, BYTE deallocator, const char *file, DWORD line)
          */
         if (!st_IsOnAllocatedList(h))
         {
-            free(uptr);    
+            free(uptr);
             return;
-        }    
+        }
         else
         {
-            /* the block was allocated by Fortify, so we 
+            /* the block was allocated by Fortify, so we
              * gotta free it differently.
              */
             /*
              * Begin critical region
              */
             FORTIFY_LOCK();
-        
+
             /*
              * Remove the block from the list
              */
@@ -544,10 +509,10 @@ Fortify_Deallocate(void *uptr, BYTE deallocator, const char *file, DWORD line)
                 h->Prev->Next = h->Next;
             else
                 st_AllocatedHead = h->Next;
-        
+
             if (h->Next)
                 h->Next->Prev = h->Prev;
-        
+
             /*
              * End Critical Region
              */
@@ -759,7 +724,7 @@ Fortify_Deallocate(void *uptr, BYTE deallocator, const char *file, DWORD line)
         if (h->Label)
         {
             free(h->Label);
-        }             
+        }
 
 #ifdef FORTIFY_FILL_ON_DEALLOCATE
         /*
@@ -796,20 +761,20 @@ Fortify_LabelPointer(void *uptr, const char *label, const char *file, DWORD line
 
         /* make sure the pointer is okay */
         Fortify_CheckPointer(uptr, file, line);
-    
+
         /* free the previous label */
         if (h->Label)
         {
             free(h->Label);
-        }    
-    
+        }
+
         /* make sure the label is sensible */
         assert(label);
 
         /* copy it in */
         h->Label = (char*)malloc(strlen(label)+1);
         strcpy(h->Label, label);
-        
+
         /* update the checksum */
         st_MakeHeaderValid(h);
     }
@@ -868,9 +833,9 @@ Fortify_CheckPointer(void *uptr, const char *file, DWORD line)
 /*
  * Fortify_SetOutputFunc(Fortify_OutputFuncPtr Output) -
  * Sets the function used to output all error and
- * diagnostic messages. The output function  takes 
+ * diagnostic messages. The output function  takes
  * a single const BYTE * argument, and must be
- * able to handle newlines. This function returns the 
+ * able to handle newlines. This function returns the
  * old output function.
  */
 Fortify_OutputFuncPtr FORTIFY_STORAGE
@@ -879,15 +844,15 @@ Fortify_SetOutputFunc(Fortify_OutputFuncPtr Output)
     Fortify_OutputFuncPtr Old = st_Output;
 
     st_Output = Output;
-  
+
     return (Old);
 }
 
 /*
- * Fortify_SetAllocateFailRate(int Percent) - 
- * Fortify_Allocate() will "fail" this Percent of 
- * the time, even if the memory is available. 
- * Useful to "stress-test" an application. 
+ * Fortify_SetAllocateFailRate(int Percent) -
+ * Fortify_Allocate() will "fail" this Percent of
+ * the time, even if the memory is available.
+ * Useful to "stress-test" an application.
  * Returns the old value.
  * The fail rate defaults to 0 (a good default I think).
  */
@@ -895,19 +860,19 @@ int FORTIFY_STORAGE
 Fortify_SetAllocateFailRate(int Percent)
 {
     int Old = st_AllocateFailRate;
-  
+
     st_AllocateFailRate = Percent;
-  
+
     return (Old);
 }
 
- 
+
 /*
  * Fortify_CheckAllMemory() - Checks the fortifications
- * of all memory on the allocated list. And, if 
+ * of all memory on the allocated list. And, if
  * FORTIFY_DEALLOCATED_MEMORY is enabled, all the
  * known deallocated memory as well.
- * Returns the number of blocks that failed. 
+ * Returns the number of blocks that failed.
  * Always returns 0 if Fortify is disabled.
  */
 DWORD FORTIFY_STORAGE
@@ -923,7 +888,7 @@ Fortify_CheckAllMemory(const char *file, DWORD line)
 
     /*
      * Check the allocated memory
-     */ 
+     */
     while (curr)
     {
         if (!st_CheckBlock(curr, file, line))
@@ -931,7 +896,7 @@ Fortify_CheckAllMemory(const char *file, DWORD line)
           count++;
           break;    // !! added, GV 13/7-98
         }
-        curr = curr->Next;      
+        curr = curr->Next;
     }
 
     /*
@@ -944,11 +909,11 @@ Fortify_CheckAllMemory(const char *file, DWORD line)
         if (!st_CheckDeallocatedBlock(curr, file, line))
             count++;
 
-        curr = curr->Next;      
+        curr = curr->Next;
     }
-#endif    
+#endif
 
-    /*  
+    /*
      * If we know where we are, and everything is cool,
      * remember that. It might be important.
      */
@@ -964,7 +929,7 @@ Fortify_CheckAllMemory(const char *file, DWORD line)
 
 
 /*
- * Fortify_EnterScope() - enters a new Fortify scope 
+ * Fortify_EnterScope() - enters a new Fortify scope
  * level. Returns the new scope level.
  */
 BYTE FORTIFY_STORAGE
@@ -976,7 +941,7 @@ Fortify_EnterScope(const char *file, DWORD line)
 }
 
 /* Fortify_LeaveScope - leaves a Fortify scope level,
- * also prints a memory dump of all non-freed memory 
+ * also prints a memory dump of all non-freed memory
  * that was allocated during the scope being exited.
  * Does nothing and returns 0 if Fortify is disabled.
  */
@@ -1003,13 +968,13 @@ Fortify_LeaveScope(const char *file, DWORD line)
                 sprintf(st_Buffer, "%10s %8s %s\n", "Address", "Size", "Allocator");
                 st_Output(st_Buffer);
             }
-            
+
             st_OutputHeader(curr);
             count++;
             size += curr->Size;
         }
 
-        curr = curr->Next;      
+        curr = curr->Next;
     }
 
     if (count)
@@ -1020,9 +985,9 @@ Fortify_LeaveScope(const char *file, DWORD line)
     }
 
 #ifdef FORTIFY_TRACK_DEALLOCATED_MEMORY
-    /* 
-     * Quietly free all the deallocated memory 
-     * that was allocated in this scope that 
+    /*
+     * Quietly free all the deallocated memory
+     * that was allocated in this scope that
      * we are still tracking
      */
     st_PurgeDeallocatedScope (st_Scope, file, line);
@@ -1033,16 +998,16 @@ Fortify_LeaveScope(const char *file, DWORD line)
 }
 
 /*
- * Fortify_ListAllMemory() - Outputs the entire 
- * list of currently allocated memory. For each block 
- * is output it's Address, Size, and the SourceFile and 
+ * Fortify_ListAllMemory() - Outputs the entire
+ * list of currently allocated memory. For each block
+ * is output it's Address, Size, and the SourceFile and
  * Line that allocated it.
  *
- * If there is no memory on the list, this function 
+ * If there is no memory on the list, this function
  * outputs nothing.
  *
- * It returns the number of blocks on the list, unless 
- * Fortify has been disabled, in which case it always 
+ * It returns the number of blocks on the list, unless
+ * Fortify has been disabled, in which case it always
  * returns 0.
  */
 DWORD FORTIFY_STORAGE
@@ -1064,29 +1029,29 @@ Fortify_ListAllMemory(const char *file, DWORD line)
         st_Output(st_Buffer);
         sprintf(st_Buffer, "%10s %8s %s\n", "Address", "Size", "Allocator");
         st_Output(st_Buffer);
-                                
+
         while (curr)
         {
             st_OutputHeader(curr);
             count++;
             size += curr->Size;
-            curr = curr->Next;      
+            curr = curr->Next;
         }
-                     
+
         sprintf(st_Buffer, "%8s %8lu bytes in %lu blocks and %lu bytes overhead\n",
                            "total", size, count, count * FORTIFY_OVERHEAD);
         st_Output(st_Buffer);
     }
-  
+
     FORTIFY_UNLOCK();
     return (count);
 }
 
 /*
- * Fortify_DumpAllMemory() - Outputs the entire list of 
- * currently allocated memory. For each allocated block 
+ * Fortify_DumpAllMemory() - Outputs the entire list of
+ * currently allocated memory. For each allocated block
  * is output it's Address, Size, the SourceFile and Line
- * that allocated it, a hex dump of the contents of the 
+ * that allocated it, a hex dump of the contents of the
  * memory and an ascii dump of printable characters.
  *
  * If there is no memory on the list, this function outputs nothing.
@@ -1120,8 +1085,8 @@ Fortify_DumpAllMemory(const char *file, DWORD line)
     return (count);
 }
 
-/* Fortify_OutputStatistics() - displays statistics 
- * about the maximum amount of memory that was 
+/* Fortify_OutputStatistics() - displays statistics
+ * about the maximum amount of memory that was
  * allocated at any one time.
  */
 void FORTIFY_STORAGE
@@ -1136,7 +1101,7 @@ Fortify_OutputStatistics(const char *file, DWORD line)
     sprintf(st_Buffer, "         Memory currently allocated: %lu bytes in %lu blocks\n",
                                  st_CurAllocation, st_CurBlocks);
     st_Output(st_Buffer);
-    sprintf(st_Buffer, "         Maximum memory allocated at one time: %lu bytes in %lu blocks\n", 
+    sprintf(st_Buffer, "         Maximum memory allocated at one time: %lu bytes in %lu blocks\n",
                                  st_MaxAllocation, st_MaxBlocks);
     st_Output(st_Buffer);
     sprintf(st_Buffer, "         There have been %lu allocations and %lu deallocations\n",
@@ -1145,13 +1110,13 @@ Fortify_OutputStatistics(const char *file, DWORD line)
     sprintf(st_Buffer, "         There was a total of %lu bytes allocated\n",
                                  st_TotalAllocation);
     st_Output(st_Buffer);
-    
+
     if (st_Allocations > 0)
     {
         sprintf(st_Buffer, "         The average allocation was %lu bytes\n",
                                      st_TotalAllocation / st_Allocations);
-        st_Output(st_Buffer);                   
-    }    
+        st_Output(st_Buffer);
+    }
 }
 
 /* Fortify_GetCurrentAllocation() - returns the number of
@@ -1187,7 +1152,7 @@ Fortify_SetAllocationLimit(DWORD NewLimit, const char *file, DWORD line)
  * everything. Not as effective as compiling out, of course.
  * The less memory allocated by Fortify when it is disabled
  * the better.
- * (Previous versions of Fortify did not allow it to be 
+ * (Previous versions of Fortify did not allow it to be
  * disabled if there was any memory allocated at the time,
  * but since in C++ memory is often allocated before main
  * is even entered, this was useless so Fortify is now
@@ -1221,7 +1186,7 @@ st_CheckBlock(struct Header *h, const char *file, DWORD line)
       sprintf (st_Buffer,
                "\nFortify: Invalid pointer (%08lX) or corrupted header detected at %s.%lu\n",
                (DWORD)(ptr + FORTIFY_HEADER_SIZE + FORTIFY_ALIGNED_BEFORE_SIZE), file, line);
-                
+
       st_Output (st_Buffer);
       st_OutputLastVerifiedPoint();
       return (0);
@@ -1237,13 +1202,13 @@ st_CheckBlock(struct Header *h, const char *file, DWORD line)
         st_OutputLastVerifiedPoint();
         st_OutputFortification(ptr + FORTIFY_HEADER_SIZE,
                             FORTIFY_BEFORE_VALUE, FORTIFY_ALIGNED_BEFORE_SIZE);
-        result = 0;                        
+        result = 0;
 
 #ifdef FORTIFY_FILL_ON_CORRUPTION
         st_SetFortification(ptr + FORTIFY_HEADER_SIZE, FORTIFY_BEFORE_VALUE, FORTIFY_ALIGNED_BEFORE_SIZE);
 #endif
     }
-                           
+
     if (!st_CheckFortification(ptr + FORTIFY_HEADER_SIZE + FORTIFY_ALIGNED_BEFORE_SIZE + h->Size,
                            FORTIFY_AFTER_VALUE, FORTIFY_AFTER_SIZE))
     {
@@ -1261,13 +1226,13 @@ st_CheckBlock(struct Header *h, const char *file, DWORD line)
                          FORTIFY_AFTER_VALUE, FORTIFY_AFTER_SIZE);
 #endif
     }
- 
+
     return (result);
 }
 
 #ifdef FORTIFY_TRACK_DEALLOCATED_MEMORY
 
-/* 
+/*
  * st_CheckDeallocatedBlock - Check a deallocated block's header and fortifications.
  * Returns true if the block is happy.
  */
@@ -1282,7 +1247,7 @@ st_CheckDeallocatedBlock(struct Header *h, const char *file, DWORD line)
       sprintf (st_Buffer,
                "\nFortify: Invalid deallocated pointer (%08lX) or corrupted header detected at %s.%lu\n",
                (DWORD)(ptr + FORTIFY_HEADER_SIZE + FORTIFY_ALIGNED_BEFORE_SIZE), file, line);
-                
+
       st_Output(st_Buffer);
       st_OutputLastVerifiedPoint();
       return (0);
@@ -1307,7 +1272,7 @@ st_CheckDeallocatedBlock(struct Header *h, const char *file, DWORD line)
 #endif
         result = 0;
     }
-                           
+
     if (!st_CheckFortification(ptr + FORTIFY_HEADER_SIZE + FORTIFY_ALIGNED_BEFORE_SIZE + h->Size,
                            FORTIFY_AFTER_VALUE, FORTIFY_AFTER_SIZE))
     {
@@ -1341,7 +1306,7 @@ st_CheckDeallocatedBlock(struct Header *h, const char *file, DWORD line)
                            st_DeallocatorName[h->Deallocator], h->FreedFile, h->FreedLine);
         st_Output(st_Buffer);
         st_OutputLastVerifiedPoint();
-    
+
         st_OutputFortification(ptr + FORTIFY_HEADER_SIZE + FORTIFY_ALIGNED_BEFORE_SIZE,
                             FORTIFY_FILL_ON_DEALLOCATE_VALUE, h->Size);
 
@@ -1359,7 +1324,7 @@ st_CheckDeallocatedBlock(struct Header *h, const char *file, DWORD line)
 
 
 /*
- * st_CheckFortification - Checks if the _size_ 
+ * st_CheckFortification - Checks if the _size_
  * bytes from _ptr_ are all set to _value_
  * Returns true if all is happy.
  */
@@ -1369,7 +1334,7 @@ st_CheckFortification(BYTE *ptr, BYTE value, size_t size)
     while (size--)
         if (*ptr++ != value)
             return (0);
-      
+
     return (1);
 }
 
@@ -1383,7 +1348,7 @@ st_SetFortification(BYTE *ptr, BYTE value, size_t size)
 }
 
 /*
- * st_OutputFortification - Output the corrupted section of the fortification 
+ * st_OutputFortification - Output the corrupted section of the fortification
  */
 STATIC void
 st_OutputFortification(BYTE *ptr, BYTE value, size_t size)
@@ -1396,7 +1361,7 @@ st_OutputFortification(BYTE *ptr, BYTE value, size_t size)
 
     while (offset < size)
     {
-        /* 
+        /*
          * Skip 3 or more 'correct' lines
          */
         if ((size - offset) < 3 * 16)
@@ -1407,12 +1372,12 @@ st_OutputFortification(BYTE *ptr, BYTE value, size_t size)
         {
             offset += advance;
             skipped = advance;
-                 
+
             if (size - offset < 16)
                 advance = size - offset;
             else
                 advance = 16;
-             
+
             while (advance > 0 && st_CheckFortification(ptr+offset, value, advance))
             {
                 offset  += advance;
@@ -1421,7 +1386,7 @@ st_OutputFortification(BYTE *ptr, BYTE value, size_t size)
                     advance = size - offset;
                 else
                     advance = 16;
-            }    
+            }
             sprintf(st_Buffer, "\n                        ...%lu bytes skipped...", (DWORD)skipped);
             st_Output(st_Buffer);
             continue;
@@ -1432,7 +1397,7 @@ st_OutputFortification(BYTE *ptr, BYTE value, size_t size)
                 st_HexDump(ptr, offset, size-offset, 0);
             else
                 st_HexDump(ptr, offset, 16, 0);
-                
+
             offset += 16;
         }
     }
@@ -1503,18 +1468,18 @@ st_HexDump(BYTE *ptr, size_t offset, size_t size, int title)
 }
 
 /*
- * st_IsHeaderValid - Returns true if the 
- * supplied pointer does indeed point to a 
+ * st_IsHeaderValid - Returns true if the
+ * supplied pointer does indeed point to a
  * real Header
  */
 STATIC int
-st_IsHeaderValid(struct Header *h)                                
+st_IsHeaderValid(struct Header *h)
 {
     return (st_ChecksumHeader(h) == FORTIFY_CHECKSUM_VALUE);
 }
 
 /*
- * st_MakeHeaderValid - Updates the checksum 
+ * st_MakeHeaderValid - Updates the checksum
  * to make the header valid
  */
 STATIC void
@@ -1525,9 +1490,9 @@ st_MakeHeaderValid(struct Header *h)
 }
 
 /*
- * st_ChecksumHeader - Calculate (and return) 
- * the checksum of the header. (Including the 
- * Checksum field itself. If all is well, the 
+ * st_ChecksumHeader - Calculate (and return)
+ * the checksum of the header. (Including the
+ * Checksum field itself. If all is well, the
  * checksum returned by this function should
  * be FORTIFY_CHECKSUM_VALUE
  */
@@ -1538,63 +1503,63 @@ st_ChecksumHeader(struct Header *h)
     return inchksum_fast (h, FORTIFY_HEADER_SIZE/sizeof(WORD));
 #else
     WORD c, checksum, *p;
-  
+
     for(c = 0, checksum = 0, p = (WORD *)h;
         c < FORTIFY_HEADER_SIZE/sizeof(WORD); c++)
-    {    
-        checksum += *p++;  
-    }    
-    
+    {
+        checksum += *p++;
+    }
+
     return (checksum);
 #endif
-}                  
+}
 
-/* 
- * st_IsOnAllocatedList - Examines the allocated 
+/*
+ * st_IsOnAllocatedList - Examines the allocated
  * list to see if the given header is on it.
- */  
+ */
 STATIC int
 st_IsOnAllocatedList(struct Header *h)
 {
     struct Header *curr;
-  
+
     curr = st_AllocatedHead;
     while (curr)
     {
         if (curr == h)
             return (1);
-      
+
         curr = curr->Next;
     }
-  
+
     return (0);
 }
 
 #ifdef FORTIFY_TRACK_DEALLOCATED_MEMORY
-/* 
- * st_IsOnDeallocatedList - Examines the deallocated 
+/*
+ * st_IsOnDeallocatedList - Examines the deallocated
  * list to see if the given header is on it.
- */  
+ */
 STATIC int
 st_IsOnDeallocatedList(struct Header *h)
 {
     struct Header *curr;
-  
+
     curr = st_DeallocatedHead;
     while (curr)
     {
         if (curr == h)
             return (1);
-      
+
         curr = curr->Next;
     }
-  
+
     return (0);
 }
 
 /*
  * st_PurgeDeallocatedBlocks - free at least "Bytes"
- * worth of deallocated memory, starting at the 
+ * worth of deallocated memory, starting at the
  * oldest deallocated block.
  * Returns true if any blocks were freed.
  */
@@ -1605,7 +1570,7 @@ st_PurgeDeallocatedBlocks(DWORD Bytes, const char *file, DWORD line)
     DWORD FreedBlocks = 0;
 
 #ifdef FORTIFY_WARN_WHEN_DISCARDING_DEALLOCATED_MEMORY
-    sprintf(st_Buffer, "\nFortify: Warning - Discarding deallocated memory at %s.%lu\n", 
+    sprintf(st_Buffer, "\nFortify: Warning - Discarding deallocated memory at %s.%lu\n",
                        file, line);
     st_Output(st_Buffer);
 #endif /* FORTIFY_WARN_WHEN_DISCARDING_DEALLOCATED_MEMORY */
@@ -1650,13 +1615,13 @@ st_PurgeDeallocatedScope(BYTE Scope, const char *file, DWORD line)
 
         curr = next;
     }
-    
+
     return FreedBlocks != 0;
 }
 
 /*
  * st_FreeDeallocatedBlock - actually remove
- * a deallocated block from the deallocated 
+ * a deallocated block from the deallocated
  * list, and actually free it's memory.
  */
 STATIC void
@@ -1664,35 +1629,35 @@ st_FreeDeallocatedBlock(struct Header *h, const char *file, DWORD line)
 {
     st_CheckDeallocatedBlock (h, file, line);
 
-   /* 
-    * Begin Critical region 
+   /*
+    * Begin Critical region
     */
     FORTIFY_LOCK();
 
     st_TotalDeallocated -= h->Size;
-    
+
     if (st_DeallocatedHead == h)
     {
         st_DeallocatedHead = h->Next;
     }
-    
+
     if (st_DeallocatedTail == h)
     {
         st_DeallocatedTail = h->Prev;
     }
-    
+
     if (h->Prev)
     {
         st_CheckDeallocatedBlock(h->Prev, file, line);
         h->Prev->Next = h->Next;
-        st_MakeHeaderValid(h->Prev);    
+        st_MakeHeaderValid(h->Prev);
     }
-    
+
     if (h->Next)
     {
         st_CheckDeallocatedBlock(h->Next, file, line);
         h->Next->Prev = h->Prev;
-        st_MakeHeaderValid(h->Next);    
+        st_MakeHeaderValid(h->Next);
     }
 
     /*
@@ -1713,17 +1678,17 @@ st_FreeDeallocatedBlock(struct Header *h, const char *file, DWORD line)
      * And do the actual free
      */
     free(h);
-    
+
     /*
      * End critical region
      */
-    FORTIFY_UNLOCK();    
+    FORTIFY_UNLOCK();
 }
 
 #endif /* FORTIFY_TRACK_DEALLOCATED_MEMORY */
 
 /*
- * st_OutputMemory - Hex and ascii dump the 
+ * st_OutputMemory - Hex and ascii dump the
  * user memory of a block.
  */
 STATIC void
@@ -1757,27 +1722,27 @@ STATIC void st_OutputHeader (struct Header *h)
 STATIC void
 st_OutputLastVerifiedPoint()
 {
-    sprintf(st_Buffer, "         Memory integrity was last verified at %s.%lu\n", 
+    sprintf(st_Buffer, "         Memory integrity was last verified at %s.%lu\n",
                        st_LastVerifiedFile,
                        st_LastVerifiedLine);
     st_Output(st_Buffer);
 }
 
 /*
- * st_MemoryBlockString - constructs a string that 
+ * st_MemoryBlockString - constructs a string that
  * desribes a memory block. (pointer,size,allocator,label)
  */
 STATIC const char *
 st_MemoryBlockString(struct Header *h)
 {
     static char st_BlockString[512];
-    
+
     if (h->Label == 0)
     {
         sprintf (st_BlockString,"(%08lX,%lu,%s.%lu)",
                 (DWORD)h + FORTIFY_HEADER_SIZE + FORTIFY_ALIGNED_BEFORE_SIZE,
                 (DWORD)h->Size, h->File, h->Line);
-    }            
+    }
     else
     {
         sprintf(st_BlockString,"(%08lX,%lu,%s.%lu,%s)",
@@ -1807,7 +1772,7 @@ st_DeallocatedMemoryBlockString(struct Header *h)
         sprintf(st_BlockString,"(%08lX,%lu,%s.%lu,%s.%lu)",
                 (DWORD)h + FORTIFY_HEADER_SIZE + FORTIFY_ALIGNED_BEFORE_SIZE,
                 (DWORD)h->Size, h->File, h->Line, h->FreedFile, h->FreedLine);
-    }            
+    }
     else
     {
         sprintf(st_BlockString,"(%08lX,%lu,%s.%lu,%s.%lu,%s)",
@@ -1852,14 +1817,14 @@ Fortify_realloc(void *uptr, size_t new_size, const char *file, DWORD line)
     void *new_ptr;
 
     /*
-     * If Fortify is disabled, we gotta do this a little 
+     * If Fortify is disabled, we gotta do this a little
      * differently.
      */
     if (!st_Disabled)
     {
         if (!uptr)
             return (Fortify_Allocate(new_size, Fortify_Allocator_realloc, file, line));
-        
+
         if (!st_IsOnAllocatedList(h))
         {
 #ifdef FORTIFY_TRACK_DEALLOCATED_MEMORY
@@ -1886,18 +1851,18 @@ Fortify_realloc(void *uptr, size_t new_size, const char *file, DWORD line)
 
         if (!st_CheckBlock(h, file, line))
             return 0;
-      
+
         new_ptr = Fortify_Allocate(new_size, Fortify_Allocator_realloc, file, line);
         if (!new_ptr)
         {
             return (0);
         }
-      
+
         if (h->Size < new_size)
             memcpy(new_ptr, uptr, h->Size);
         else
             memcpy(new_ptr, uptr, new_size);
-    
+
         Fortify_Deallocate(uptr, Fortify_Deallocator_realloc, file, line);
         return (new_ptr);
     }
@@ -1911,12 +1876,12 @@ Fortify_realloc(void *uptr, size_t new_size, const char *file, DWORD line)
             new_ptr = Fortify_Allocate(new_size, Fortify_Allocator_realloc, file, line);
             if (!new_ptr)
                 return (0);
-          
+
             if (h->Size < new_size)
                 memcpy(new_ptr, uptr, h->Size);
             else
                 memcpy(new_ptr, uptr, new_size);
-        
+
             Fortify_Deallocate(uptr, Fortify_Deallocator_realloc, file, line);
             return (new_ptr);
         }
@@ -1941,7 +1906,7 @@ Fortify_calloc(size_t num, size_t size, const char *file, DWORD line)
             memset(ptr, 0, size*num);
         }
         return ptr;
-    }    
+    }
     else
     {
         return calloc(num, size);
@@ -1951,7 +1916,7 @@ Fortify_calloc(size_t num, size_t size, const char *file, DWORD line)
 /*
  * Fortify_free - Fortify's replacement free
  */
-void  
+void
 Fortify_free(void *uptr, const char *file, DWORD line)
 {
     /* it is defined to be safe to free(0) */
@@ -1976,9 +1941,9 @@ Fortify_strdup(const char *oldStr, const char *file, DWORD line)
         {
             strcpy(newStr, oldStr);
         }
-    
+
         return newStr;
-    }    
+    }
     else
     {
         return strdup(oldStr);
@@ -2019,26 +1984,26 @@ st_NewHandler()
     /* get the current handler */
     Fortify_NewHandlerFunc handler = set_new_handler(0);
 
-    /* and set it back (since we cant 
+    /* and set it back (since we cant
      * get it without changing it)
      */
     set_new_handler(handler);
-    
+
     return handler;
 }
 
 /*
- * operator new - Fortify's replacement new, 
+ * operator new - Fortify's replacement new,
  * without source-code information.
  */
 void *FORTIFY_STORAGE
 operator new(size_t size)
 {
     void *p;
-    
+
     while ((p = Fortify_Allocate(size, Fortify_Allocator_new,
                                 st_AllocatorName[Fortify_Allocator_new], 0)) == 0)
-    {                            
+    {
         if (st_NewHandler())
             (*st_NewHandler())();
         else
@@ -2064,7 +2029,7 @@ operator new(size_t size, const char *file, DWORD line)
         else
             return 0;
     }
-    
+
     return p;
 }
 
@@ -2074,19 +2039,19 @@ operator new(size_t size, const char *file, DWORD line)
  * operator new[], without source-code info
  */
 void *FORTIFY_STORAGE
-operator new[](size_t size) 
+operator new[](size_t size)
 {
     void *p;
 
     while ((p = Fortify_Allocate(size, Fortify_Allocator_array_new,
                                 st_AllocatorName[Fortify_Allocator_array_new], 0)) == 0)
-    {                                
+    {
         if (st_NewHandler())
-            (*st_NewHandler())();    
-        else    
+            (*st_NewHandler())();
+        else
             return 0;
     }
-    
+
     return p;
 }
 
@@ -2101,7 +2066,7 @@ operator new[](size_t size, const char *file, DWORD line)
     while ((p = Fortify_Allocate(size, Fortify_Allocator_array_new, file, line)) == 0)
     {
         if (st_NewHandler())
-            (*st_NewHandler())(); 
+            (*st_NewHandler())();
         else
             return 0;
     }
@@ -2267,16 +2232,16 @@ public:
                 time(&t);
                 fprintf(fp, "Fortify log started at %s\n", ctime(&t));
                 written_something = 1;
-            }    
+            }
         }
 
         if (fp)
         {
             fputs(s, fp);
             fflush(fp);
-        }    
+        }
     }
-    
+
     ~Fortify_AutoLogFile()
     {
         Fortify_LeaveScope(term_string, 0);
@@ -2288,7 +2253,7 @@ public:
             fprintf(fp, "\nFortify log closed at %s\n", ctime(&t));
             fclose(fp);
             fp = 0;
-        }    
+        }
     }
 };
 

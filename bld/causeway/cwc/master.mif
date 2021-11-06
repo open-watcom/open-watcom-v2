@@ -6,46 +6,44 @@ cwc_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-.c : ../../c
+#
+# cflags
+#
+.c : ../../c;$(watcom_dir)/c
 .asm : ../../asm
 
 inc_dirs = -I.
 
-objs = cwc.obj
+# explicit rules
+#################
 
-!ifndef bootstrap
-all : $(proj_name).exe .symbolic
-!endif
+#
+# EXE
+#
+exetarg_prebuild_objs = copystub.gh decstub.gh
+exetarg_objs          = cwc.obj
+!include exetarg.mif
 
-$(proj_name).exe : copystub.gh decstub.gh $(objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $(objs) $(bld_ldflags)
-! else
-    $(cl) $(clflags) $(objs) $(ldflags)
-! endif
-!else
-    $(linker) name $@ $(lflags) file {$(objs)}
-!endif
-
+#
+# rc and others
+#
 copystub.tmp : copystub.asm
     @%make echo_aslink
     $(noecho)*bwasm -zq -fo=$^&.obj $[@
-    $(noecho)*bwlink format dos com op quiet, nodefault file $^&.obj name $@ disable 1023,1080
+    $(noecho)*bwlink system bin op quiet file $^&.obj name $@
 
 copystub.gh : ./mkcode.exe copystub.tmp
     @%make echo_execute
-    $(noecho)$[@ $]@ $@
+    $(noecho)$[@ -b $]@ $@
 
 decstub.tmp : decstub.asm
     @%make echo_aslink
     $(noecho)*bwasm -zq -fo=$^&.obj $[@
-    $(noecho)*bwlink format dos com op quiet, nodefault file $^&.obj name $@ disable 1023,1080
+    $(noecho)*bwlink system bin op quiet file $^&.obj name $@
 
 decstub.gh : ./mkcode.exe decstub.tmp
     @%make echo_execute
-    $(noecho)$[@ $]@ $@
+    $(noecho)$[@ -b $]@ $@
 
 ./mkcode.exe: mkcode.c
     @%make echo_bldcl

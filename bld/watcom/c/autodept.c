@@ -30,13 +30,11 @@
 
 
 #include <stdlib.h>
-//#include "watcom.h"
 #include "autodept.h"
 
 #include "clibext.h"
 
 
-#if !defined( WMAKE ) || !defined( BOOTSTRAP )
 char *_getFilenameFullPath( char *buff, char const *name, size_t max )
 /*********************************************************************/
 {
@@ -59,4 +57,3 @@ char *_getFilenameFullPath( char *buff, char const *name, size_t max )
 #endif
     return( p );
 }
-#endif

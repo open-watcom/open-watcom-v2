@@ -1,5 +1,5 @@
-.gfunc getvisualpage
-.gsynop begin 
+.gfunc _getvisualpage
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _getvisualpage( void );
 .do end

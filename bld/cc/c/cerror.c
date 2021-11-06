@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,6 +72,7 @@ msg_level_info      msg_level[MESSAGE_COUNT] = {
 
 static ErrPostList  *PostList;
 static unsigned     error_line = 0;
+static unsigned     error_column = 0;
 static char         *error_fname = NULL;
 
 void OpenErrFile( void )
@@ -121,6 +122,8 @@ static bool okToPrintMsg( msg_codes msgnum, int *plevel )
         break;
     }
     *plevel = level;
+    if( level == WLEVEL_DISABLED )
+        return( false );
     return( ok );
 }
 
@@ -129,27 +132,30 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
 {
     char        *fname;
     unsigned    line;
+    unsigned    column;
     char const  *msgstr;
     int         prefix_len;
 
     info->msgnum = msgnum;
 //  CMsgSetClass( info, msgnum );
-    info->col = 0;
     switch( msgnum ) {
     case ERR_INVALID_MEMORY_MODEL:
     case ERR_INVALID_OPTION:
     case ERR_INVALID_OPTIMIZATION:
         /* no location for error message */
         line = 0;
+        column = 0;
         fname = NULL;
         break;
     default:
         if( error_fname != NULL ) {
             fname = error_fname;
             line = error_line;
+            column = error_column;
         } else {
             fname = FileIndexToCorrectName( TokenLoc.fno );
             line = TokenLoc.line;
+            column = TokenLoc.column;
         }
     }
     prefix_len = 0;
@@ -159,9 +165,10 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
         info->msgtxt[prefix_len++] = ' ';
     }
     msgstr = CGetMsgStr( msgnum );
-    _vsnprintf( info->msgtxt + prefix_len, MAX_MSG_LEN - prefix_len, msgstr, args );
+    vsnprintf( info->msgtxt + prefix_len, MAX_MSG_LEN - prefix_len, msgstr, args );
     info->msgtxt[MAX_MSG_LEN - 1] = '\0';
     info->line = line;
+    info->column = column;
     info->fname = fname;
 }
 
@@ -188,21 +195,20 @@ static char const *MsgClassPhrase( cmsg_class class )
 // format message with line & file int buff
 void FmtCMsg( char *buff, cmsg_info *info )
 {
-    int         len;
+    size_t      len;
     char const  *phrase;
     char const  *code_prefix;
 
-    len = 0;
+    buff[0] = '\0';
     if( info->line != 0 ) {
         if( info->fname != NULL ) {
-            len += _snprintf( &buff[len], MAX_MSG_LEN - len, "%s(%u): ", info->fname, info->line );
+            snprintf( buff, MAX_MSG_LEN, "%s(%u): ", info->fname, info->line );
         }
-    } else {
-        buff[0] = '\0';
     }
     code_prefix = CGetMsgPrefix( info->msgnum );
     phrase = MsgClassPhrase( info->class );
-    len += _snprintf( &buff[len], MAX_MSG_LEN - len, "%s %s%03d: ", phrase, code_prefix, info->msgnum );
+    len = strlen( buff );
+    snprintf( buff + len, MAX_MSG_LEN - len, "%s %s%03d: ", phrase, code_prefix, info->msgnum );
 }
 
 // print message to streams
@@ -263,17 +269,18 @@ static void CErr( int parmno, msg_codes msgnum, ... )
     cmsg_info   info;
 
     info.class = CMSG_ERRO;
-    va_start( args1, msgnum );
     if( ErrLimit == ERRLIMIT_NOMAX || ErrCount < ErrLimit ) {
+        va_start( args1, msgnum );
         CMsgInfo( &info, parmno, msgnum, args1 );
+        va_end( args1 );
         OutMsg( &info );
         ++ErrCount;
         PrintPostNotes();
-        va_end( args1 );
     } else {
+        va_start( args1, msgnum );
         CMsgInfo( &info, 0, ERR_TOO_MANY_ERRORS, args1 );
-        OutMsg( &info );
         va_end( args1 );
+        OutMsg( &info );
         CSuicide();
     }
 }
@@ -380,7 +387,7 @@ void PCHNote( msg_codes msgnum, ... )
     if( !CompFlags.no_pch_warnings ) {
         msgstr = CGetMsgStr( msgnum );
         va_start( args1, msgnum );
-        _vsnprintf( msgbuf, MAX_MSG_LEN, msgstr, args1 );
+        vsnprintf( msgbuf, MAX_MSG_LEN, msgstr, args1 );
         va_end( args1 );
         NoteMsg( msgbuf );
     }
@@ -391,6 +398,7 @@ void SetErrLoc( source_loc *src_loc )
 {
     error_fname = FileIndexToCorrectName( src_loc->fno );
     error_line = src_loc->line;
+    error_column = src_loc->column;
 }
 
 
@@ -442,14 +450,16 @@ static void DoMsgInfo( msg_codes msgnum )
     cmsg_info   *info;
     char        pre[MAX_MSG_LEN]; //actual message text
     unsigned    line;
+    unsigned    column;
 
     info = &sinfo;
     info->msgnum = msgnum;
     CMsgSetClass( info, msgnum );
-    info->col = 0;
     line = 0;
+    column = 0;
     CGetMsg( info->msgtxt, msgnum );
     info->line = line;
+    info->column = column;
     info->fname = NULL;
     FmtCMsg( pre, info );
     printf( "%s%s\n", pre,info->msgtxt );

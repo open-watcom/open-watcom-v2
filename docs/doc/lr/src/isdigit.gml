@@ -17,7 +17,7 @@ The
 .id &funcb.
 function tests for any decimal-digit character '0' through
 '9'.
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

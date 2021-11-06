@@ -24,7 +24,9 @@ The &fn. produces an &obj. that is attached to
 :PERIOD.
 If the connection to
 :ARG.hdl
-fails, &failbit. and &badbit. are set in the &errstate.:PERIOD.
+fails, &failbit. and &badbit. are set in the &errstate.
+:PERIOD.
 If the
 :MONO.setbuf
-fails, &failbit. is set in the &errstate.:PERIOD.
+fails, &failbit. is set in the &errstate.
+:PERIOD.

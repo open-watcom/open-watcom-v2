@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -215,10 +215,9 @@ static wpackfile *ProcFileName( char **argv )
     for( ; *argv != NULL ; ++argv ) {
         if( **argv == '@' ) {
             io = fopen( ++(*argv), "r" );
-            fgets( buff, sizeof( buff ), io );
-            while( !feof( io ) ) {
+            while( fgets( buff, sizeof( buff ), io ) != NULL ) {
                 curr = strrchr( buff, '\n' );
-                if( curr ) {
+                if( curr != NULL ) {
                     *curr = '\0';
                     if( strlen( buff ) > 0 ) {
                         newlist = AddFileName( newlist, buff, &newlistlen );
@@ -226,7 +225,6 @@ static wpackfile *ProcFileName( char **argv )
                 } else {
                     Error( -1, "invalid line in directive file\n" );
                 }
-                fgets( buff, sizeof( buff ), io );
             }
             fclose( io );
         } else {
@@ -411,8 +409,8 @@ static int DeleteEntry( arccmd *cmd )
 /***********************************/
 {
     char            tempname[ L_tmpnam ];
-    PGROUP2         pg1;
-    PGROUP2         pg2;
+    pgroup2         pg1;
+    pgroup2         pg2;
     char            *tmpfname;
     arc_header      header;         // archive main header.
     file_info       **filedata;     // block of file infos from old archive.
@@ -455,9 +453,9 @@ static int DeleteEntry( arccmd *cmd )
         for( currfile = cmd->files; currfile->filename != NULL; currfile++ ) {
             namelen = (*currdata)->namelen & NAMELEN_MASK;
             if( strlen( currfile->filename ) == namelen &&
-                memicmp( currfile->filename, (*currdata)->name, namelen ) == 0 ) {
-               deletethis = true;
-               break;
+                strnicmp( currfile->filename, (*currdata)->name, namelen ) == 0 ) {
+                deletethis = true;
+                break;
             }
         }
         nextdata = *(currdata + 1);

@@ -88,7 +88,7 @@ error or warning. \n", &buffer[9] );
                              buffer,
                              MAX_CODE_FRAG_SIZE-strlen(_nextFrag));
                     fgets(buffer, sizeof( buffer ), _inFile);
-                };
+                }
                 break; // out of endless while loop
             }
         }
@@ -175,7 +175,7 @@ void JavaGMLFile::_loadNext()
                              buffer,
                              MAX_CODE_FRAG_SIZE-strlen(_nextFrag));
                     fgets(buffer, sizeof( buffer ), _inFile);
-                };
+                }
                 break; // out of endless while loop
             }
         }

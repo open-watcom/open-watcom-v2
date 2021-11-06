@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +31,7 @@
 ****************************************************************************/
 
 
+extern volatile appl_action     AppMessage;
+
 extern BOOL        ToDebugger( private_msg pmsg );
-extern private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task, WORD dbgeemsg );
+extern private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task, appl_action appl_act );

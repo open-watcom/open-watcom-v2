@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +41,9 @@
 #include "cgbackut.h"
 #include "objmodel.h"
 #include "cgio.h"
-
 #ifndef NDEBUG
     #include "pragdefn.h"
+    #include "togglesd.h"
 #endif
 
 
@@ -224,76 +224,74 @@ segment_id DgSetSegSym( SYMBOL sym )
     return( BESetSeg( FESegID( sym ) ) );
 }
 
+void DgString( const char *str, target_size_t len, string_literal_flags flags )
+/******************************************************************************
+ * store string constant
+ *
+ * potential cross-compilation character conversion
+ * must be done by front-end
+ * it requires different procesing for singe/wide characters
+ * back-end doesn't know anything about it
+ * now no character conversion is implemented
+ */
+{
+    (void)flags;
+
+    DGBytes( len, str );
+//    DgByte( 0 );
+}
+
 back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
     STRING_CONSTANT str,            // - string to store
     uint_16         *psegid,        // - addr(string segid)
     unsigned        control )       // - control mask (DSC_*)
 {
-    back_handle     handle;         // - back handle for literal
     target_offset_t str_align;      // - string's alignment
-    target_size_t   str_len;        // - string's length (in bytes)
-    segment_id      str_segid;      // - string's segment
     segment_id      old_segid;      // - old segment
 
-    str_segid = str->segid;
-    handle = str->cg_handle;
     if( control & DSC_CONST ) {
-        if( handle == 0 ) {
-            handle = BENewBack( 0 );
-            str->cg_handle = handle;
-            str_len = str->len + TARGET_CHAR;
-            if( str->wide_string ) {
-                str_align = TARGET_WIDE_CHAR;
-            } else {
-                str_align = TARGET_CHAR;
-            }
+        if( str->cg_handle == NULL ) {
+            str->cg_handle = BENewBack( 0 );
+            str_align = StringAlign( str );
 #if _CPU == _AXP
-            str_segid = SEG_CONST;
+            str->segid = SEG_CONST;
 #else
             if( CompFlags.strings_in_code_segment && ( control & DSC_CODE_OK ) != 0 ) {
                 if( IsBigData() ) {
-                    str_segid = SegmentAddStringCodeFar( str_len, str_align );
+                    str->segid = SegmentAddStringCodeFar( str->len, str_align );
                 } else {
                     if( IsFlat() ) {
-                        str_segid = SegmentAddStringCodeFar( str_len, str_align );
+                        str->segid = SegmentAddStringCodeFar( str->len, str_align );
                     } else {
-                        str_segid = SEG_CONST;
+                        str->segid = SEG_CONST;
                     }
                 }
             } else {
                 if( IsBigData() ) {
-                    str_segid = SegmentAddStringConstFar( str_len, str_align );
+                    str->segid = SegmentAddStringConstFar( str->len, str_align );
                 } else {
-                    str_segid = SEG_CONST;
+                    str->segid = SEG_CONST;
                 }
             }
 #endif
-            str->segid = str_segid;
-            old_segid = BESetSeg( str_segid );
+            old_segid = BESetSeg( str->segid );
+            DGAlign( str_align );
+            DGLabel( str->cg_handle );
+            DgString( str->string, str->len, str->flags );
 #if _CPU == _AXP
-            DGAlign( TARGET_INT );
-#else
-            DGAlign( str_align );   // NT requires word aligned wide strings
-#endif
-            DGLabel( handle );
-            DGString( str->string, str->len );
-            DgByte( 0 );
-#if _CPU == _AXP
-            DGAlign( TARGET_INT );
+            DGAlign( str_align );
 #endif
             BESetSeg( old_segid );
         }
     } else {
         // char a[] = "asdf"; initialization (use current segment)
-        str_segid = BEGetSeg();
-        str->segid = str_segid;
-        DGString( str->string, str->len );
-        DgByte( 0 );
+        str->segid = BEGetSeg();
+        DgString( str->string, str->len, str->flags );
     }
     if( psegid != NULL ) {
-        *psegid = str_segid;
+        *psegid = str->segid;
     }
-    return( handle );
+    return( str->cg_handle );
 }
 
 
@@ -913,7 +911,7 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
     StabCtlInit( &sctl, &dctl );
     StabDefnInit( &dctl, DTRG_STATIC_INITLS );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         printf( "State Table for static object: %p\n", &dctl.state_table );
     }
 #endif

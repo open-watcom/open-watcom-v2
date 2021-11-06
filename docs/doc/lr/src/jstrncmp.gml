@@ -1,15 +1,11 @@
 .func jstrncmp _fjstrncmp
 .synop begin
 #include <jstring.h>
-int jstrncmp( const JCHAR *s1,
-              const JCHAR *s2,
-              size_t n );
+int jstrncmp( const JCHAR *s1, const JCHAR *s2, size_t n );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jcompare' &funcb
-.if &farfnc eq 1 .do begin
-int __far _fjstrncmp( const JCHAR __far *s1,
-                      const JCHAR __far *s2,
-                      size_t n );
+.if &farfnc ne 0 .do begin
+int _fjstrncmp( const JCHAR __far *s1, const JCHAR __far *s2, size_t n );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jcompare' &ffunc
 .do end
@@ -29,16 +25,16 @@ functions compare
 .do end
 not more than
 .arg n
-single- or double-byte characters from the Kanji string pointed to by
+single-byte or double-byte characters from the Kanji string pointed to by
 .arg s1
 to the Kanji string pointed to by
 .arg s2
-.ct .li .
+.period
 The rule of comparison is:
 .illust begin
 ASCII and numeric characters < Katakana characters < Kanji characters
 .illust end
-.im ffarparm
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
@@ -58,10 +54,10 @@ the Kanji string pointed to by
 .arg s1
 is less than, equal to, or greater than the Kanji string pointed to by
 .arg s2
-.ct .li .
+.period
 .return end
 .see begin
-.seelist jstrncmp jstrcmp jstricmp jstrnicmp strcmp stricmp strncmp strnicmp
+.seelist jstrncmp jstrcmp jstricmp jstrnicmp strcmp _stricmp strncmp _strnicmp
 .see end
 .exmp begin
 #include <stdio.h>

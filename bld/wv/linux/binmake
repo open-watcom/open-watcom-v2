@@ -3,6 +3,6 @@
 host_os  = $(bld_os)
 host_cpu = $(bld_cpu)
 
-syshdir = .
+extra_ldflags = -ldl
 
 !include ../../master.mif

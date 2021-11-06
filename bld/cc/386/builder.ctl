@@ -18,53 +18,53 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/bwcc386.exe     <OWBINDIR>/bwcc386<CMDEXT>
-    <CCCMD> <OWOBJDIR>/bwccd386<DYEXT> <OWBINDIR>/bwccd386<DYEXT>
+    <CPCMD> <OWOBJDIR>/bwcc386.exe     <OWBINDIR>/<OWOBJDIR>/bwcc386<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bwccd386<DYEXT> <OWBINDIR>/<OWOBJDIR>/bwccd386<DYEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/bwcc386<CMDEXT>
-    rm -f <OWBINDIR>/bwcc386<CMDEXT>
-    rm -f <OWBINDIR>/bwccd386<DYEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/bwcc386<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/bwcc386<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/bwccd386<DYEXT>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
     <CCCMD> dos386/<OWOBJDIR>/wcc386.exe        <OWRELROOT>/binw/
     <CCCMD> dos386/<OWOBJDIR>/wcc386.sym        <OWRELROOT>/binw/
-    <CCCMD> dos386/wcc38601.int                 <OWRELROOT>/binw/
+    <CCCMD> dos386/<OWOBJDIR>/wcc38601.int      <OWRELROOT>/binw/
     <CCCMD> os2386.dll/<OWOBJDIR>/wcc386.exe    <OWRELROOT>/binp/
     <CCCMD> os2386.dll/<OWOBJDIR>/wcc386.sym    <OWRELROOT>/binp/
     <CCCMD> os2386.dll/<OWOBJDIR>/wccd386.dll   <OWRELROOT>/binp/dll/
     <CCCMD> os2386.dll/<OWOBJDIR>/wccd386.sym   <OWRELROOT>/binp/dll/
-    <CCCMD> os2386.dll/wcc38601.int             <OWRELROOT>/binp/dll/
+    <CCCMD> os2386.dll/<OWOBJDIR>/wcc38601.int  <OWRELROOT>/binp/dll/
     <CCCMD> nt386.dll/<OWOBJDIR>/wcc386.exe     <OWRELROOT>/binnt/
     <CCCMD> nt386.dll/<OWOBJDIR>/wcc386.sym     <OWRELROOT>/binnt/
     <CCCMD> nt386.dll/<OWOBJDIR>/wccd386.dll    <OWRELROOT>/binnt/
     <CCCMD> nt386.dll/<OWOBJDIR>/wccd386.sym    <OWRELROOT>/binnt/
-    <CCCMD> nt386.dll/wcc38601.int              <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/<OWOBJDIR>/wcc38601.int   <OWRELROOT>/binnt/
     <CCCMD> ntaxp.dll/<OWOBJDIR>/wcc386.exe     <OWRELROOT>/axpnt/
     <CCCMD> ntaxp.dll/<OWOBJDIR>/wcc386.sym     <OWRELROOT>/axpnt/
     <CCCMD> ntaxp.dll/<OWOBJDIR>/wccd386.dll    <OWRELROOT>/axpnt/
     <CCCMD> ntaxp.dll/<OWOBJDIR>/wccd386.sym    <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp.dll/wcc38601.int              <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/<OWOBJDIR>/wcc38601.int   <OWRELROOT>/axpnt/
     <CCCMD> qnx386/<OWOBJDIR>/wcc386.exe        <OWRELROOT>/qnx/binq/wcc386
     <CCCMD> qnx386/<OWOBJDIR>/wcc386.sym        <OWRELROOT>/qnx/sym/
-    <CCCMD> qnx386/wcc38601.int                 <OWRELROOT>/qnx/binq/
+    <CCCMD> qnx386/<OWOBJDIR>/wcc38601.int      <OWRELROOT>/qnx/binq/
     <CCCMD> linux386/<OWOBJDIR>/wcc386.exe      <OWRELROOT>/binl/wcc386
     <CCCMD> linux386/<OWOBJDIR>/wcc386.sym      <OWRELROOT>/binl/
-    <CCCMD> linux386/wcc38601.int               <OWRELROOT>/binl/
+    <CCCMD> linux386/<OWOBJDIR>/wcc38601.int    <OWRELROOT>/binl/
     <CCCMD> rdos386/<OWOBJDIR>/wcc386.exe       <OWRELROOT>/rdos/
     <CCCMD> rdos386/<OWOBJDIR>/wcc386.sym       <OWRELROOT>/rdos/
 
     <CCCMD> ntx64.dll/<OWOBJDIR>/wcc386.exe     <OWRELROOT>/binnt64/
     <CCCMD> ntx64.dll/<OWOBJDIR>/wccd386.dll    <OWRELROOT>/binnt64/
-    <CCCMD> ntx64.dll/wcc38601.int              <OWRELROOT>/binnt64/
+    <CCCMD> ntx64.dll/<OWOBJDIR>/wcc38601.int   <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/<OWOBJDIR>/wcc386.exe      <OWRELROOT>/binl64/wcc386
-    <CCCMD> linuxx64/wcc38601.int               <OWRELROOT>/binl64/
+    <CCCMD> linuxx64/<OWOBJDIR>/wcc38601.int    <OWRELROOT>/binl64/
     <CCCMD> linuxarm/<OWOBJDIR>/wcc386.exe      <OWRELROOT>/arml/wcc386
-    <CCCMD> linuxarm/wcc38601.int               <OWRELROOT>/arml/
+    <CCCMD> linuxarm/<OWOBJDIR>/wcc38601.int    <OWRELROOT>/arml/
     <CCCMD> osxx64/<OWOBJDIR>/wcc386.exe        <OWRELROOT>/osx64/wcc386
-    <CCCMD> osxx64/wcc38601.int                 <OWRELROOT>/osx64/
+    <CCCMD> osxx64/<OWOBJDIR>/wcc38601.int      <OWRELROOT>/osx64/
 
 [ BLOCK . . ]
 

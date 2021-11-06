@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,7 +120,7 @@ static bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
 }
 #endif
 
-bool GUIChangeFont( gui_window *wnd )
+bool GUIAPI GUIChangeFont( gui_window *wnd )
 {
 #ifndef __OS2_PM__
     LOGFONT     lf;
@@ -152,7 +153,7 @@ static char *GetFontInfo( LOGFONT *lf )
 }
 #endif
 
-char *GUIGetFontInfo( gui_window *wnd )
+char * GUIAPI GUIGetFontInfo( gui_window *wnd )
 {
 #ifndef __OS2_PM__
     LOGFONT             lf;
@@ -172,7 +173,7 @@ char *GUIGetFontInfo( gui_window *wnd )
  *                       initializing with font info given
  */
 
-char *GUIGetFontFromUser( char *fontinfo )
+char * GUIAPI GUIGetFontFromUser( char *fontinfo )
 {
 #ifndef __OS2_PM__
     LOGFONT     lf;
@@ -197,7 +198,7 @@ char *GUIGetFontFromUser( char *fontinfo )
 #endif
 }
 
-bool GUISetFontInfo( gui_window *wnd, char *fontinfo )
+bool GUIAPI GUISetFontInfo( gui_window *wnd, char *fontinfo )
 {
 #ifndef __OS2_PM__
     HFONT       font;
@@ -223,7 +224,7 @@ bool GUISetFontInfo( gui_window *wnd, char *fontinfo )
 #endif
 }
 
-bool GUIFontsSupported( void )
+bool GUIAPI GUIFontsSupported( void )
 {
 #ifndef __OS2_PM__
     return( true );
@@ -232,7 +233,7 @@ bool GUIFontsSupported( void )
 #endif
 }
 
-bool GUISetSystemFont( gui_window *wnd, bool fixed )
+bool GUIAPI GUISetSystemFont( gui_window *wnd, bool fixed )
 {
 #ifndef __OS2_PM__
     HFONT               font;

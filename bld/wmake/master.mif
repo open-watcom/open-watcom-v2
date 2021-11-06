@@ -18,7 +18,7 @@ wmake_trmem = 1
 #!endif
 #!endif
 
-wmake_dos_extender = causeway
+#wmake_dos_extender = causeway
 
 !include idedlls.mif
 !include cproj.mif
@@ -31,17 +31,10 @@ wmake_dos_extender = causeway
 
 !include ../wmkobjs.mif                     #   get our objs macro
 
-.h      : ../h
-.h      : $(watcom_dir)/h
-.c      : ../c
-.c      : $(watcom_dir)/c
-.c      : $(trmem_dir)
-.inc    : .
-.inc    : ../h
-
-echo    = echo
-
-# Compiler Flags
+#
+# cflags
+#
+.c : ../c;$(watcom_dir)/c;$(trmem_dir)
 
 inc_dirs = -I. -I"$(wmake_dir)/h" -I"$(orl_dir)/h"
 
@@ -61,13 +54,11 @@ extra_cpp_flags_memory = $(trmem_cpp_flags)
 
 extra_c_flags_i86 = -zt32
 
-extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_memory = $(trmem_cover_cflags)
 
-##############################################################################
-
-# LINKER FLAGS
-
+#
+# lflags
+#
 extra_l_flags = opt statics sort
 
 # large stacks are necessary for !loaddll support
@@ -84,46 +75,45 @@ extra_l_flags_dos_i86 = opt stack=8k
 !ifdef wmake_causeway
 extra_l_flags_dos_386 = opt stack=96k lib cwdll.lib
 !else
-extra_l_flags_dos_386 = opt stack=4k
+extra_l_flags_dos_386 = opt stack=8k
 !endif
 extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))
 
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_prebuild_objs = isarray.gh usage.gh usagej.gh
+exetarg_objs          = $(objs)
 !ifeq host_cpu i86
-libs = $(wres_lib)
+exetarg_libs          = $(wres_lib)
 !else
-libs = $(wres_lib) $(orl_lib)
+exetarg_libs          = $(wres_lib) $(orl_lib)
 !endif
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
+exetarg_res_wresui    = wresui.res
+exetarg_name          = wmk
+!include exetarg.mif
 
-# systems where version resources must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-
+#
+# rc and others
+#
 !include verrc.mif
 
-wmk.exe :: usage.gh usagej.gh $(objs) $(libs) wresui.res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
-!endif
-    @%make bind_res_version_exe
-    @%make bind_res_wresui
-
-wresui.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
+wresui.res : ../h/wmake.rc ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rc_aui) $[@ -fo=$@
+    $(rcui8)
 
 usage.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -kIS_RC -kENGLISH -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
+    $(wsplice) -kENGLISH -f "pick((MSG_USAGE_BASE + %$#%+), \"%s\", \"\")" $[@ $@
 
 usagej.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(wsplice) -kIS_RC -kJAPANESE -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
-
-##############################################################################
-# special case targets
+    $(wsplice) -kJAPANESE -f "pick((MSG_USAGE_BASE + %$#%+), \"\", \"%s\")" $[@ $@
 
 isarray.gh : ./cretype.exe $(__MAKEFILES__)
     @%make echo_execute
@@ -133,12 +123,8 @@ isarray.gh : ./cretype.exe $(__MAKEFILES__)
     @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
-# dependencies on .h files
-mglob.obj : isarray.gh $(__MAKEFILES__) .AUTODEPEND
-
-
-##############################################################################
-# symbolic targets
+# special targets
+##################
 
 # print a list of unreferenced messages
 chkmsg :
@@ -150,7 +136,7 @@ chkmsg :
 
 strip : .symbolic
     @%make echo_bindres
-    $(wstrip) /q wmk.exe wmks.exe >nul
+    $(wstrip) /q $(exetarg_name).exe $(exetarg_name)s.exe >nul
     ls -l *.exe
 
 deps : .symbolic
@@ -160,12 +146,12 @@ deps : .symbolic
 do : .symbolic
     wmake -h -n | sed -f ../mkdo.sed >do.bat
 
-test : wmk.exe .always .symbolic
+test : $(exetarg_name).exe .always .symbolic
 curr_dir=$+$(%__CWD__)$-
     cd ../regress
 !ifdef __UNIX__
-    -./test.sh $(curr_dir)/wmk.exe
+    -./test.sh $(curr_dir)/$(exetarg_name).exe
 !else
-    -test $(curr_dir)\wmk.exe
+    -test $(curr_dir)\$(exetarg_name).exe
 !endif
     cd $(curr_dir)

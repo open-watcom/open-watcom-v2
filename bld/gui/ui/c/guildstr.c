@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,12 +51,12 @@
 
 static  HANDLE_INFO     hInstance = { 0 };
 
-bool GUIIsLoadStrInitialized( void )
+bool GUIAPI GUIIsLoadStrInitialized( void )
 {
     return( hInstance.status != 0 );
 }
 
-bool GUILoadStrInit( const char *fname )
+bool GUIAPI GUILoadStrInit( const char *fname )
 {
     hInstance.status = 0;
     if( OpenResFileX( &hInstance, fname, GUIGetResFileName() != NULL ) ) {
@@ -64,18 +64,16 @@ bool GUILoadStrInit( const char *fname )
         return( true );
     }
     CloseResFile( &hInstance );
-    printf( NO_RES_MESSAGE_PREFIX );
-    printf( fname );
-    printf( NO_RES_MESSAGE_SUFFIX );
+    printf( NO_RES_MESSAGE_PREFIX "%s" NO_RES_MESSAGE_SUFFIX, fname );
     return( false );
 }
 
-bool GUILoadStrFini( void )
+bool GUIAPI GUILoadStrFini( void )
 {
     return( CloseResFile( &hInstance ) );
 }
 
-bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
+bool GUIAPI GUILoadString( gui_res_id id, char *buffer, int buffer_length )
 {
     if( buffer != NULL && buffer_length > 0 ) {
         if( hInstance.status && WResLoadString( &hInstance, id, (lpstr)buffer, buffer_length ) > 0 ) {

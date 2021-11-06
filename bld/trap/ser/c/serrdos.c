@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,14 +45,14 @@ static int hWait = 0;
 static int comPortNumber = 1;
 static unsigned long lastLsb;
 
-void ZeroWaitCount( void )
+void ResetTimerTicks( void )
 {
     unsigned long msb;
 
     RdosGetSysTime( &msb, &lastLsb );
 }
 
-unsigned WaitCount( void )
+unsigned GetTimerTicks( void )
 {
     unsigned long msb;
     unsigned long lsb;
@@ -64,7 +64,7 @@ unsigned WaitCount( void )
 
 void Wait( unsigned timer_ticks )
 {
-    RdosWaitMilli( 55 * timer_ticks );
+    RdosWaitMilli( MILLISEC_PER_TICK * timer_ticks );
 }
 
 char *InitSys( void )
@@ -115,7 +115,7 @@ int WaitByte( unsigned ticks )
         RdosAddWaitForCom( hWait, hSerial, (int)(&hSerial));
     }
 
-    if ( RdosWaitTimeout( hWait, 500 + 55 * ticks ) != 0 )
+    if ( RdosWaitTimeout( hWait, 500 + MILLISEC_PER_TICK * ticks ) != 0 )
         return (int)RdosReadCom( hSerial );
     return SDATA_NO_DATA;
 }
@@ -149,7 +149,7 @@ bool TestForBreak( void )
 }
 #endif
 
-int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
+static int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
 
 bool Baud( int index )
 {

@@ -44,12 +44,12 @@
 
 #include "pushpck1.h"
 typedef struct __doslfn_dta {
-    unsigned short  cr_time;
-    unsigned short  cr_date;
-    unsigned short  ac_time;
-    unsigned short  ac_date;
-    unsigned long   sign;
-    unsigned short  handle;
+    unsigned short  cr_time;    /* creation time */
+    unsigned short  cr_date;    /* creation date */
+    unsigned short  ac_time;    /* last access time */
+    unsigned short  ac_date;    /* last access date */
+    unsigned long   sign;       /* LFN signature */
+    unsigned short  handle;     /* LFN search handle */
 } __doslfn_dta;
 #include "poppck.h"
 

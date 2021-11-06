@@ -1,8 +1,9 @@
 .func bzero
 .synop begin
-#include <string.h>
+.deprec
+#include <strings.h>
 void bzero( void *dst, size_t n );
-.ixfunc2 '&String' &funcb
+.ixfunc2 '&String' bzero
 .synop end
 .desc begin
 The
@@ -14,7 +15,7 @@ bytes of the object pointed to by
 with zero (null) bytes.
 .np
 Note that this function is similar to the ISO C
-.kw memset
+.reffunc memset
 function (new code should use the ISO C function).
 .desc end
 .return begin
@@ -23,10 +24,10 @@ The
 function has no return value.
 .return end
 .see begin
-.seelist bcmp bcopy bzero memset strset
+.seelist memcmp memcpy memset _strset
 .see end
 .exmp begin
-#include <string.h>
+#include <strings.h>
 
 void main()
   {

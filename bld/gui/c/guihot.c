@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +34,11 @@
 #include "guiwind.h"
 #include "guiscale.h"
 #include "guihot.h"
-#include "guixhot.h"
 #include "guihook.h"
 
-        int             GUINumHotSpots;
-extern  hotspot_info    *GUIHotSpots;
 
+int             GUINumHotSpots = 0;
+hotspot_info    *GUIHotSpots = NULL;
 
 static void Cleanup( void )
 {
@@ -48,7 +48,7 @@ static void Cleanup( void )
     GUINumHotSpots = 0;
 }
 
-bool GUIInitHotSpots( int num_hot_spots, gui_resource *hot )
+bool GUIAPI GUIInitHotSpots( int num_hot_spots, gui_resource *hot )
 {
     GUINumHotSpots = num_hot_spots;
     if( num_hot_spots == 0 ) {
@@ -70,19 +70,19 @@ bool GUIInitHotSpots( int num_hot_spots, gui_resource *hot )
     }
 }
 
-int GUIGetNumHotSpots( void )
+int GUIAPI GUIGetNumHotSpots( void )
 {
     return( GUINumHotSpots );
 }
 
-bool GUIGetHotSpotSize( int hot_spot, gui_coord *size )
+bool GUIAPI GUIGetHotSpotSize( int hotspot_no, gui_coord *size )
 {
-    if( ( size == NULL ) || ( hot_spot > GUINumHotSpots ) ||
-        ( hot_spot < 1 ) ) {
-        return( false );
+    if( size != NULL ) {
+        if( hotspot_no > 0 && hotspot_no <= GUINumHotSpots ) {
+            size->x = GUIScreenToScaleH( GUIHotSpots[hotspot_no - 1].size.x );
+            size->y = GUIScreenToScaleV( GUIHotSpots[hotspot_no - 1].size.y );
+            return( true );
+        }
     }
-    size->x = GUIHotSpots[hot_spot-1].size.x;
-    size->y = GUIHotSpots[hot_spot-1].size.y;
-    GUIScreenToScaleR( size );
-    return( true );
+    return( false );
 }

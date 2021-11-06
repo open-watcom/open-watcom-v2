@@ -14,10 +14,10 @@ function uses system call 0x3C to create a new file named
 .arg path
 .ct , with the access attributes specified by
 .arg attribute
-.ct .li .
+.period
 The &handle for the new file is returned in the word pointed to by
 .arg &fd
-.ct .li .
+.period
 If the file already exists, the contents will be erased, and the
 attributes of the file will remain unchanged.
 .im creatatt
@@ -31,9 +31,9 @@ Otherwise, it returns an OS error code and sets
 accordingly.
 .return end
 .see begin
-.seelist creat _dos_creat _dos_creatnew _dos_open _dos_open
+.seelist creat _dos_creat _dos_creatnew _dos_open _dos_close
 .seelist open fdopen fopen freopen _fsopen _grow_handles
-.seelist _hdopen open _open_osfhandle _popen sopen
+.seelist _hdopen open _open_osfhandle _popen _sopen
 .see end
 .exmp begin
 #include <stdio.h>

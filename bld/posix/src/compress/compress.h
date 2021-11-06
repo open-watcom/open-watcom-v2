@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,8 +151,6 @@ char *malloc();
                         /* memory model restrictions.  There is no */
                         /* such thing as a FAR pointer in MINIX-PC */
 #ifdef MINIX            /* Unix V7 clone for Atari ST */
-#define strchr  index
-#define strrchr rindex
 #define DFLTBITS 13     /* compatible with original MINIX compress, max=16 */
 #ifndef KEEPFLAG
 #define KEEPFLAG true   /* compatible with original MINIX compress */
@@ -313,7 +312,7 @@ char *malloc();
 
 #ifdef MINIX
 #define assert(x)
-extern char *index(), *rindex(), *strcat(), *strcpy(), *strncat(), *strncpy();
+extern char *strcat(), *strcpy(), *strncat(), *strncpy();
 #else
 #include <assert.h>
 #include <string.h>
@@ -630,7 +629,6 @@ typedef unsigned int HASH;
 #ifdef vms
 #define ERROR       0x10000004  /* General unspecified error            */
 #define NORMAL      1           /* No error                             */
-#define unlink(x)   remove(x)
 #else
 #    define NORMAL      0
 #    ifdef ERROR
@@ -743,7 +741,7 @@ bool quiet = !VERBOSE;  /* don't tell me about compression */
  */
 int block_compress = BLOCK_MASK;
 #ifdef COMP40
-long int ratio = 0L;
+long ratio = 0L;
 long checkpoint = CHECK_GAP;
 #endif
 
@@ -790,7 +788,7 @@ extern bool zcat_flg;
 extern bool quiet;
 extern int block_compress;
 #ifdef COMP40
-extern long int ratio;
+extern long ratio;
 extern long checkpoint;
 #endif
 extern bool force;

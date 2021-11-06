@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ _WCRTLINK int __F_NAME(access,_waccess)( const CHAR_TYPE *pathname, int pmode )
 #ifdef __WIDECHAR__
     char        mbPath[MB_CUR_MAX * _MAX_PATH];
 
-    if( wcstombs( mbPath, pathname, sizeof( mbPath ) ) == -1 ) {
+    if( wcstombs( mbPath, pathname, sizeof( mbPath ) ) == (size_t)-1 ) {
         mbPath[0] = '\0';
     }
     return( access( mbPath, pmode ) );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,16 +35,20 @@
 /*  Windows graphics' functions */
 /********************************/
 
+#include <malloc.h>
+
 // Macros
 
-#if defined( __OS2__ )
-#define _MyAlloc( size )        malloc( size )
-#define _MyFree( ptr )          free( ptr )
-
-#define _GPIEBORDER             15
+#if defined( _M_I86 )
+#define _MyAlloc(size)  _fmalloc( size )
+#define _MyFree(ptr)    _ffree( ptr )
 #else
-#define _MyAlloc( size )        _fmalloc( size )
-#define _MyFree( ptr )          _ffree( ptr )
+#define _MyAlloc(size)  malloc( size )
+#define _MyFree(ptr)    free( ptr )
+#endif
+
+#if defined( __OS2__ )
+#define _GPIEBORDER     15
 #endif
 
 // Global Variables
@@ -55,7 +60,7 @@ extern DWORD            _ColorMap[ 16 ];
 //extern int            image_width;
 extern WPI_PRES         _Mem_dc;
 extern HDC              _Hdc;
-extern HBITMAP          _Mem_bmp;
+extern WPI_HBITMAP      _Mem_bmp;
 extern HFONT            _CurFnt;
 extern HRGN             _ClipRgn;
 extern struct xycoord   _BitBlt_Coord;
@@ -65,31 +70,28 @@ extern PFNWP            _OldFrameProc;
 
 // Function headers
 /* Mapping utitlity functions */
-int             _MapPlotAct();
-HBITMAP         _Mask2Bitmap( HDC, char* );
-int             _MapLineStyle( unsigned short );
-WPI_COLOUR      _Col2RGB( short );
-short           _RGB2Col( WPI_COLOUR );
+extern int              _MapPlotAct( void );
+extern WPI_HBITMAP      _Mask2Bitmap( HDC, unsigned char * );
+extern int              _MapLineStyle( unsigned short );
+extern WPI_COLOUR       _Col2RGB( short );
+extern short            _RGB2Col( WPI_COLOUR );
 
 /* Other Utilities */
-WPI_MRESULT CALLBACK            GraphWndProc( HWND, WPI_MSG,
-                                              WPI_PARAM1, WPI_PARAM2 );
-WPI_MRESULT CALLBACK            GraphFrameProc( HWND, WPI_MSG,
-                                                WPI_PARAM1, WPI_PARAM2 );
-void                            _MyInvalidate( WPI_RECTDIM x1, WPI_RECTDIM y1,
-                                               WPI_RECTDIM x2, WPI_RECTDIM y2 );
-HPEN                            _MyCreatePen( WPI_COLOUR );
-short                           _CreateSysMonoFnt( WPI_PRES );
-HFONT                           _GetSysMonoFnt();
-short                           _IsStockFont();
-long                            _GetPresHeight();
-void                            _SetPresHeight( long );
-void                            _SetInst( WPI_INST* );
-WPI_INST                        _GetInst();
-HFONT                           _MySelectFont( WPI_PRES, HFONT );
-void                            _MyGetOldFont( WPI_PRES, HFONT );
-void                            _Set_RGB_COLOR( short, WPI_COLOUR );
-WPI_COLOUR                      _Get_RGB_COLOR( short );
+extern WPI_MRESULT CALLBACK GraphWndProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+extern WPI_MRESULT CALLBACK GraphFrameProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+extern void             _MyInvalidate( WPI_RECTDIM x1, WPI_RECTDIM y1, WPI_RECTDIM x2, WPI_RECTDIM y2 );
+extern HPEN             _MyCreatePen( WPI_COLOUR );
+extern short            _CreateSysMonoFnt( WPI_PRES );
+extern HFONT            _GetSysMonoFnt( void );
+extern short            _IsStockFont( void );
+extern long             _GetPresHeight( void );
+extern void             _SetPresHeight( long );
+extern void             _SetInst( WPI_INST* );
+extern WPI_INST         _GetInst( void );
+extern HFONT            _MySelectFont( WPI_PRES, HFONT );
+extern void             _MyGetOldFont( WPI_PRES, HFONT );
+extern void             _Set_RGB_COLOR( short, WPI_COLOUR );
+extern WPI_COLOUR       _Get_RGB_COLOR( short );
 
 /* external functions */
-extern int      _MessageLoop( BOOL );
+extern int              _MessageLoop( BOOL );

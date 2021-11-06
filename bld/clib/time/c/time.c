@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,16 +29,18 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <stdio.h>
 #include <time.h>
-#include "timedata.h"
+#include "getctime.h"
+
 
 _WCRTLINK time_t time( time_t *timer )
 {
-    auto struct tm      t;
-    time_t              seconds;
-    int                 milliseconds;
+    struct tm       t;
+    time_t          seconds;
+    int             milliseconds;
 
     milliseconds = __getctime( &t );        /* get raw time and date */
     if( milliseconds >= 500 )

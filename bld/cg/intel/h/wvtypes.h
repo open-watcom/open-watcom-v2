@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
 extern dbg_type         WVFtnType( const char *name, dbg_ftn_type tipe );
 extern dbg_type         WVScalar( const char *name, cg_type tipe );
 extern dbg_type         WVScope( const char *name );

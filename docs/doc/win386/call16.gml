@@ -14,7 +14,7 @@ DWORD _Call16( FARPROC lpFunc, char *fmt, ... );
 .desc begin
 The &funcb function performs the same function as
 .kw GetIndirectFunctionHandle
-.ct,
+.ct ,
 .kw InvokeIndirectFunctionHandle
 and
 .kw FreeIndirectFunctionHandle
@@ -30,8 +30,8 @@ The second argument
 is a string identifying the types of the parameters to be passed to
 the 16-bit function.
 .begnote $compact
-:DTHD.Character
-:DDHD.Parameter Type
+.notehd1 Character
+.notehd2 Parameter Type
 .note c
 call a 'cdecl' function as opposed to a 'pascal' function
 (if specified, it must be listed first)

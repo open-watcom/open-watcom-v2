@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@
 #include "overlap.h"
 #include "x86segs.h"
 #include "liveinfo.h"
-#include "_x86splt2.h"
+#include "x86splt2.h"
 
 
 name    *LowPart( name *tosplit, type_class_def type_class )

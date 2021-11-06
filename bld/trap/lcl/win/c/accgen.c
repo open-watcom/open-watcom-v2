@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +66,7 @@ static void __far __loadds DebuggerHookRtn( unsigned event, unsigned info )
     set_carry();
 }
 
-trap_retval ReqRead_user_keyboard( void )
+trap_retval TRAP_CORE( Read_user_keyboard )( void )
 {
     DWORD               end_time;
     read_user_keyboard_req      *acc;
@@ -100,7 +101,7 @@ void EnableHookEvents( void )
     }
 }
 
-trap_retval ReqGet_err_text( void )
+trap_retval TRAP_CORE( Get_err_text )( void )
 {
     static const char * const doswinErrMsgs[] = {
         #define pick(a,b)   b,

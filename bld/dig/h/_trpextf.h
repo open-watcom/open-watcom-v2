@@ -36,7 +36,7 @@
 /*        name              ret     parms                       loc ret loc parms   */
 #if defined( __OS2__ )
   #if defined( _M_I86 )
-    pick( TellHandles,      void, (void __far *,void __far *),  void,   (void __far *, void __far *) )
+    pick( TellHandles,      void, (void __far *,void __far *),  bool,   (void __far *, void __far *) )
   #else
     pick( TellHandles,      void, (HAB, HWND),                  bool,   (HAB, HWND) )
   #endif

@@ -197,7 +197,7 @@ typedef AsnUnsigned32   AsnTimeticks;
 #define SNMP_AUTHAPI_TRIV_AUTH_FAILED   32
 
 /* The following structures get 4-byte packing. */
-#include <pshpack4.h>
+:include pshpack4.sp
 
 /* ASN octet string */
 typedef struct {
@@ -259,7 +259,7 @@ typedef struct {
 #endif
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 /* SNMP extension callbacks */
 typedef VOID (SNMP_FUNC_TYPE *PFNSNMPEXTENSIONCLOSE)();

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,8 +49,8 @@
 
 extern TEMPLATE_HANDLE  _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
 extern TEMPLATE_HANDLE  _AddControl( TEMPLATE_HANDLE dlgtemplate, ULONG style,
-                            int x, int y, int cx, int cy, USHORT id, USHORT children, ULONG nclass,
-                            const char *classname, const char *captiontext, const char *presparms,
+                            int x, int y, int cx, int cy, USHORT id, USHORT children,
+                            const char FAR *classname, const char *captiontext, const char *presparms,
                             const void *ctldata, ULONG ctldatalen );
 extern TEMPLATE_HANDLE  _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
 extern int              _DynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate );

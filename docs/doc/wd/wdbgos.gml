@@ -97,7 +97,6 @@ C>set &dbgcmd=/trap#cw
 C>&dbgcmd hello
 .exam end
 .*
-.*
 .section *refid=vidrsi Debugging DOS/4G(W) 32-bit DOS Extender Applications
 .*
 .np
@@ -136,7 +135,6 @@ C>&dbgcmd /trap=rsi hello
 C>set &dbgcmd=/trap#rsi
 C>&dbgcmd hello
 .exam end
-.*
 .*
 .section *refid=vidpls Debugging Phar Lap 32-bit DOS Extender Applications
 .*
@@ -664,7 +662,7 @@ If a path is omitted, the &dbgname will first attempt to locate the
 file in the current directory and, if not successful, attempt to
 locate the file in the default dumper directory:
 .bd /usr/dumps
-.ct .li .
+.period
 .endnote
 .np
 Basically, the &dbgname is fully functional when a postmortem dump is
@@ -675,7 +673,7 @@ Among these are:
 .note
 Task execution cannot be restarted using
 .menuref 'Go' 'Run'
-.dot
+.period
 .note
 A register can be modified for the purposes of expression evaluation.
 You can choose

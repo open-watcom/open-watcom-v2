@@ -24,8 +24,8 @@ Let
 denote the value
 .arg s1max - strnlen_s(s1, s1max)
 upon entry to
-.kw strcat_s
-.ct .li .
+.reffunc strcat_s
+.period
 Neither
 .arg s1
 nor
@@ -34,7 +34,7 @@ shall be a null pointer.
 .arg s1max
 shall not be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 .arg s1max
 shall not equal zero.
 .arg m
@@ -42,7 +42,7 @@ shall not equal zero.
 .arg m
 shall be greater than
 .arg strnlen_s(s2, m)
-.ct .li .
+.period
 Copying shall not take place between objects that overlap.
 .np
 If there is a runtime-constraint violation, then if
@@ -52,7 +52,7 @@ is not a null pointer and
 is greater than zero and not greater than
 .kw RSIZE_MAX
 .ct , then
-.kw strcat_s
+.reffunc strcat_s
 sets
 .arg s1[0]
 to the null character.
@@ -65,12 +65,12 @@ function appends a copy of the string pointed to by
 .arg s2
 (including the terminating null character) to the end of the string pointed to by
 .arg s1
-.ct .li .
+.period
 The initial character from
 .arg s2
 overwrites the null character at the end of
 .arg s1
-.ct .li .
+.period
 All elements following the terminating null character (if any) written by
 .id &funcb.
 in the array of
@@ -80,7 +80,7 @@ characters pointed to by
 take unspecified values when
 .id &funcb.
 returns.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

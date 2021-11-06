@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +63,7 @@
 #define VGA_MODES       MT_17 + MT_18 + MT_19
 
 
-static long ModeTable[ 18 ] = {
+static long ModeTable[18] = {
     0,                                              // no display in system
     MT_7,                                           // IBM MDPA
     CGA_MODES,                                      // IBM CGA
@@ -102,8 +103,8 @@ static short _ValidMode( short mode )
     alternate = monitor >> 8;       // separate active/alternate adapters
     monitor &= 0xff;
     mode_test = 1L << mode;
-    if( ModeTable[ monitor ] & mode_test ||       // check active
-        ModeTable[ alternate ] & mode_test ) {    // check alternate
+    if( ModeTable[monitor] & mode_test ||       // check active
+        ModeTable[alternate] & mode_test ) {    // check alternate
         return( TRUE );
     } else {
         return( FALSE );

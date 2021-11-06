@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +39,10 @@
 #endif
 
 
-_WCRTLINK unsigned short int ntohs( unsigned short int netshort )
+_WCRTLINK unsigned short ntohs( unsigned short netshort )
 {
 #if defined( __RDOS__ )
-    return( (unsigned short int)RdosSwapShort( netshort ) );
+    return( (unsigned short)RdosSwapShort( netshort ) );
 #elif defined( __BIG_ENDIAN__ )
     return( netshort );
 #else

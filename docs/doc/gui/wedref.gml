@@ -813,6 +813,7 @@ the open files when you close the current file.
 The File Specific Options dialog contains settings that control your file
 including tabs, tags, line numbers, and default file extensions.
 .figure *depth='3.20' *scale=63 *file='vi11' The File Specific Options Dialog
+.np
 The settings are divided into five categories:
 .begbull $compact
 .bull
@@ -926,7 +927,7 @@ Turn this option on, if you want to be prompted when you tag a function
 that has multiple entries in the tags file.
 .endpoint
 .np
-Tag files are created by the CTAGS utility, which is described in the 
+Tag files are created by the CTAGS utility, which is described in the
 &company VI editor documentation.
 .*
 .section File Specific Options : Miscellaneous

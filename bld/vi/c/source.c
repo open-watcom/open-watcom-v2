@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +42,9 @@
 #include "clibext.h"
 
 
-static void     finiSource( labels *, vlist *, sfile *, undo_stack * );
-static vi_rc    initSource( vlist *, const char * );
-static vi_rc    barfScript( const char *, sfile *, vlist *, srcline *, const char *);
+static void     finiSource( labels *, vars_list *, sfile *, undo_stack * );
+static vi_rc    initSource( vars_list *, const char * );
+static vi_rc    barfScript( const char *, sfile *, vars_list *, srcline *, const char *);
 static void     addResidentScript( const char *, sfile *, labels * );
 static resident *residentScript( const char * );
 static void     finiSourceErrFile( const char * );
@@ -69,7 +69,7 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
 {
     undo_stack  *atomic = NULL;
     labels      *lab, lb;
-    vlist       vl;
+    vars_list   vl;
     files       fi;
     sfile       *sf, *curr;
     char        buff[MAX_SRC_LINE];
@@ -106,6 +106,10 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
      * initialize variables
      */
     memset( &fi, 0, sizeof( fi ) );
+
+    /*
+     * initialize command parms variables (local)
+     */
     rc = initSource( &vl, data );
     if( rc != ERR_NO_ERR ) {
         return( rc );
@@ -176,7 +180,7 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
         }
 
         if( EditFlags.Appending ) {
-            if( curr->hasvar) {
+            if( curr->hasvar ) {
                 tmp = Expand( buff, tmp, &vl );
             }
             rc = AppendAnother( tmp );
@@ -187,14 +191,21 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
         } else if( curr->token == SRC_T_RETURN ) {
             if( curr->data != NULL ) {
                 int     ret;
-                GetErrorTokenValue( &ret, curr->data );
-                rc = (vi_rc)ret;
+
+                rc = GetErrorTokenValue( &ret, curr->data );
+                if( rc == ERR_NO_ERR ) {
+                    rc = (vi_rc)ret;
+                } else if( rc == NO_NUMBER ) {
+                    rc = (vi_rc)atoi( curr->data );
+                } else {
+                    rc = ERR_NO_ERR;
+                }
             } else {
                 rc = ERR_NO_ERR;
             }
             break;
         } else if( curr->token > SRC_T_NULL ) {
-            if( curr->hasvar) {
+            if( curr->hasvar ) {
                 tmp = Expand( buff, tmp, &vl );
             }
             rc = TryCompileableToken( cTokenID, tmp, false );
@@ -240,7 +251,7 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
                 rc = SrcExpr( curr, &vl );
                 break;
             case SRC_T_OPEN:
-                LastRC = SrcOpen( curr, &vl, &fi, tmp );
+                LastRC = SrcOpen( curr, &fi, tmp, &vl );
                 if( LastRC != ERR_FILE_NOT_FOUND && LastRC != ERR_NO_ERR ) {
                     rc = LastRC;
                 }
@@ -255,7 +266,7 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
                 rc = SrcWrite( curr, &fi, tmp, &vl );
                 break;
             case SRC_T_CLOSE:
-                rc = SrcClose( curr, &vl, &fi, tmp );
+                rc = SrcClose( curr, &fi, tmp, &vl );
                 break;
             default:
     #ifdef __WIN__
@@ -300,9 +311,9 @@ vi_rc Source( const char *fn, const char *data, srcline *sline )
 } /* Source */
 
 /*
- * initSource - initialize language variables
+ * initSource - initialize command parms variables
  */
-static vi_rc initSource( vlist *vl, const char *data )
+static vi_rc initSource( vars_list *vl, const char *data )
 {
     int         j;
     char        tmp[MAX_SRC_LINE];
@@ -313,10 +324,14 @@ static vi_rc initSource( vlist *vl, const char *data )
      * break up command line parms
      */
     all[0] = '\0';
-    for( j = 1; GetStringWithPossibleQuote( &data, tmp ) == ERR_NO_ERR; ++j ) {
+    for( j = 1; GetNextWordOrString( &data, tmp ) == ERR_NO_ERR; ++j ) {
         sprintf( name, "%d", j );
         VarAddStr( name, tmp, vl );
-        StrMerge( 2, all, tmp, SingleBlank );
+        if( j == 1 ) {
+            strcpy( all, tmp );
+        } else {
+            StrMerge( 2, all, SingleBlank, tmp );
+        }
     }
     VarAddStr( "*", all, vl );
 
@@ -327,7 +342,7 @@ static vi_rc initSource( vlist *vl, const char *data )
 /*
  * finiSource - release language variables
  */
-static void finiSource( labels *lab, vlist *vl, sfile *sf, undo_stack *atomic )
+static void finiSource( labels *lab, vars_list *vl, sfile *sf, undo_stack *atomic )
 {
     info        *cinfo;
 
@@ -362,24 +377,24 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf, undo_stack *atomic )
 void FileSPVAR( void )
 {
     char        path[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
     int         i;
 
     /*
      * build path
      */
     if( CurrentFile == NULL ) {
-        VarAddGlobalStr( "F", "" );
-        VarAddGlobalStr( "H", "" );
+        GlobVarAddStr( GLOBVAR_FILEFULLNAME, "" );
+        GlobVarAddStr( GLOBVAR_FILEHOME, "" );
         pg.drive = pg.dir = pg.fname = pg.ext = "";
     } else {
-        VarAddGlobalStr( "F", CurrentFile->name );
-        VarAddGlobalStr( "H", CurrentFile->home );
+        GlobVarAddStr( GLOBVAR_FILEFULLNAME, CurrentFile->name );
+        GlobVarAddStr( GLOBVAR_FILEHOME, CurrentFile->home );
         ConditionalChangeDirectory( CurrentFile->home );
         _splitpath2( CurrentFile->name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     }
-    VarAddGlobalStr( "P1", pg.dir );
-    VarAddGlobalStr( "D1", pg.drive );
+    GlobVarAddStr( GLOBVAR_USER_FILEPATH, pg.dir );
+    GlobVarAddStr( GLOBVAR_USER_FILEDRIVE, pg.drive );
     _makepath( path, pg.drive, pg.dir, NULL, NULL );
     i = strlen( path );
     if( i-- > 1 ) {
@@ -404,10 +419,10 @@ void FileSPVAR( void )
         StrMerge( 3, path, FILE_SEP_STR, pg.fname, pg.ext );
     }
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    VarAddGlobalStr( "D", pg.drive );
-    VarAddGlobalStr( "P", pg.dir );
-    VarAddGlobalStr( "N", pg.fname );
-    VarAddGlobalStr( "E", pg.ext );
+    GlobVarAddStr( GLOBVAR_FILEDRIVE, pg.drive );
+    GlobVarAddStr( GLOBVAR_FILEPATH, pg.dir );
+    GlobVarAddStr( GLOBVAR_FILENAME, pg.fname );
+    GlobVarAddStr( GLOBVAR_FILEEXT, pg.ext );
 
 } /* FileSPVAR */
 
@@ -438,7 +453,7 @@ void SourceError( char *msg )
  */
 static void finiSourceErrFile( const char *fn )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[FILENAME_MAX];
     char        tmp[MAX_SRC_LINE];
 
@@ -462,11 +477,11 @@ static void finiSourceErrFile( const char *fn )
 /*
  * barfScript - write a compiled script
  */
-static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, const char *vn )
+static vi_rc barfScript( const char *fn, sfile *sf, vars_list *vl, srcline *sline, const char *vn )
 {
     sfile       *curr;
     FILE        *foo;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[FILENAME_MAX];
     char        buff[MAX_SRC_LINE];
     const char  *tmp;

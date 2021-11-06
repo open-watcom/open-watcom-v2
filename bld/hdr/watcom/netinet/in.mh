@@ -20,20 +20,20 @@
 :include lnxkpack.sp
 :endsegment
 
+typedef uint32_t in_addr_t;
+typedef uint16_t in_port_t;
+
 /* Internet address. */
 struct in_addr {
-    uint32_t       s_addr;     /* address in network byte order */
+    in_addr_t      s_addr;     /* address in network byte order */
 };
 
 struct sockaddr_in {
     sa_family_t    sin_family; /* address family: AF_INET */
-    uint16_t       sin_port;   /* port in network byte order */
+    in_port_t      sin_port;   /* port in network byte order */
     struct in_addr sin_addr;   /* internet address */
     char           __pad[ 16 - sizeof( sa_family_t ) - sizeof( uint16_t ) - sizeof( struct in_addr ) ];
 };
-
-typedef uint32_t in_addr_t;
-typedef uint16_t in_port_t;
 
 #define IPPROTO_IP              0
 #define IPPROTO_ICMP            1
@@ -94,10 +94,10 @@ typedef uint16_t in_port_t;
 
 #define IP_LOOPBACKNET          127
 
-_WCRTLINK extern unsigned long int htonl(unsigned long int __hostlong);
-_WCRTLINK extern unsigned short int htons(unsigned short int __hostshort);
-_WCRTLINK extern unsigned long int ntohl(unsigned long int __netlong);
-_WCRTLINK extern unsigned short int ntohs(unsigned short int __netshort);
+_WCRTLINK extern unsigned long htonl(unsigned long __hostlong);
+_WCRTLINK extern unsigned short htons(unsigned short __hostshort);
+_WCRTLINK extern unsigned long ntohl(unsigned long __netlong);
+_WCRTLINK extern unsigned short ntohs(unsigned short __netshort);
 
 :segment LINUX
 :include poppack.sp

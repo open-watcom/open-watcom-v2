@@ -11,7 +11,7 @@ The
 .id &funcb.
 function computes the inverse hyperbolic sine of
 .arg x
-.ct .li .
+.period
 .desc end
 .return begin
 The

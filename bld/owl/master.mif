@@ -5,11 +5,20 @@ owl_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs    = -I"../h"
-
+#
+# cflags
+#
 .c: $(owl_dir)/c
 
-objs = owl.obj &
+inc_dirs = -I"../h"
+
+# explicit rules
+#################
+
+#
+# LIB
+#
+libtarg_objs = owl.obj &
     owbuffer.obj &
     owcoff.obj &
     owdebug.obj &
@@ -22,21 +31,20 @@ objs = owl.obj &
     owsymbol.obj &
     owsymdmp.obj &
     log.obj
+!include libtarg.mif
 
-owl.lib : $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
-!endif
+#
+# EXE's
+#
+exetarg_objs = bufftest.obj $(libtarg_objs)
+exetarg_name = bufftest
+!include exetarg.mif
 
+exetarg_objs = strtest.obj $(libtarg_objs)
+exetarg_name = strtest
+!include exetarg.mif
 
-bufftest.exe : bufftest.obj $(objs)
-    $(link) $(lflags) file bufftest option quiet name bufftest.exe file { $(objs) }
+exetarg_objs = patchtst.obj $(libtarg_objs)
+exetarg_name = patchtst
+!include exetarg.mif
 
-strtest.exe : strtest.obj $(objs)
-    $(link) $(lflags) file strtest option quiet name strtest.exe file { $(objs) }
-
-patchtst.exe : patchtst.obj $(objs)
-    $(link) $(lflags) file patchtst option quiet name patchtst.exe file { $(objs) }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@
 *               char *s;                ASCII 文字列
 *               time_t *timer;          秒単位の時間(long 型)
 *
-*  Description: timer が指す long int 型の値を jasctime() が返す形式の ASCII
+*  Description: timer が指す long 型の値を jasctime() が返す形式の ASCII
 *               文字列に変換する。
 *
 *               入力時刻は、 GMT で表示されていなければならない。この関数の

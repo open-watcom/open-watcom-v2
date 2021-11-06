@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,6 @@ enum {
     TS_REACTIVATED
 };
 
-#include "pushpck8.h"   /* make sure everything's aligned for speed */
 typedef struct {
      address            brkpt;          /* address of DbgTmpBrk */
      address            watch_stack;    /* stack pointer at call */
@@ -80,14 +79,14 @@ typedef struct {
      address            savecode;       /* old Code{Loc/Dot} */
      address            saveaddr;       /* original CS:IP */
      unsigned           state        : 3;   /* is there a trace active */
-     unsigned           stop_on_call : 1;   /* we've returned -- stop on call */
-     unsigned           stop_now     : 1;   /* did we execute a call since ^ set ?*/
-     unsigned           trace_out    : 1;   /* want to trace out of a call */
-     unsigned           doing_call   : 1;   /* are we doing a call instruction? */
-     unsigned           in_thunk     : 1;   /* inside a THUNK routine */
-     unsigned           in_dll_thunk : 1;   /* inside a DLL THUNK routine */
-     unsigned           give_it_up   : 1;   /* inside a DLL THUNK routine */
-     unsigned           unwinding    : 1;   /* unwinding from a recursive breakpoint ? */
+     boolbit            stop_on_call : 1;   /* we've returned -- stop on call */
+     boolbit            stop_now     : 1;   /* did we execute a call since ^ set ?*/
+     boolbit            trace_out    : 1;   /* want to trace out of a call */
+     boolbit            doing_call   : 1;   /* are we doing a call instruction? */
+     boolbit            in_thunk     : 1;   /* inside a THUNK routine */
+     boolbit            in_dll_thunk : 1;   /* inside a DLL THUNK routine */
+     boolbit            give_it_up   : 1;   /* inside a DLL THUNK routine */
+     boolbit            unwinding    : 1;   /* unwinding from a recursive breakpoint ? */
      dtid_t             etid;           /* thread id that we're tracing */
      address            curraddr;       /* current address being traced */
      mad_disasm_control prev_control;   /* control information for prev ins */
@@ -98,7 +97,6 @@ typedef struct {
      mad_disasm_data    *dd;            /* disasm info for curr instr */
      mad_trace_data     *td;            /* trace info for curr instr */
 } trace_state;
-#include "poppck.h"
 
 #define         KEEPGOING       0
 #define         STOP            1
@@ -117,13 +115,13 @@ extern bool             SimIntr( char, unsigned int );
 extern void             WndPmtNormal( void );
 
 static const char LevelTab[] = {
-    #define pick( a,b ) b
+    #define pick(t,e)   t "\0"
     #include "dbglevel.h"
     #undef pick
 };
 
-static const char TraceTab2[] = {
-    #define pick( a,b ) b
+static const char TraceTab[] = {
+    #define pick(t,e)   t "\0"
     #include "_dbgtrac.h"
     #undef pick
 };
@@ -282,7 +280,7 @@ static void TracePostponed( void )
 
 bool SourceStep( void )
 {
-    return( TraceState.cur_level == SOURCE );
+    return( TraceState.cur_level == LEVEL_SOURCE );
 }
 
 /*
@@ -352,7 +350,7 @@ static bool CheckTraceSourceStop( bool *have_source )
         }
         return( false );
     }
-    if( TraceState.req_level == MIX ) {
+    if( TraceState.req_level == LEVEL_MIX ) {
         if( sr == SR_NONE )
             return( true );
         if( !IsSupportRoutine( sym ) ) {
@@ -437,7 +435,7 @@ unsigned TraceCheck( unsigned conditions )
         DbgTmpBrk.status.b.active = true;
         return( conditions & ~COND_STOPPERS );
     }
-    if( TraceState.cur_level == ASM )
+    if( TraceState.cur_level == LEVEL_ASM )
         return( conditions | COND_TRACE );
     if( CheckTraceSourceStop( &have_source ) ) {
         if( CheckForDLLThunk() )
@@ -489,7 +487,7 @@ static char DoTrace( debug_level curr_level )
     unsigned    conditions;
     DIPHDL( cue, cueh_line );
 
-    if( curr_level == SOURCE ) {
+    if( curr_level == LEVEL_SOURCE ) {
         if( TraceState.type == TRACE_NEXT ) {
             if( DeAliasAddrCue( NO_MOD, GetCodeDot(), cueh_line ) == SR_NONE
               || DIPCueAdjust( cueh_line, 1, cueh_line ) != DS_OK ) {
@@ -535,7 +533,7 @@ void PerformTrace( void )
     switch( TraceState.state ) {
     case TS_ACTIVE:
         GetCmdEntry( LevelTab, TraceState.cur_level, level );
-        GetCmdEntry( TraceTab2, TraceState.type, over );
+        GetCmdEntry( TraceTab, TraceState.type, over );
         Format( TxtBuff, "%s/%s/%s", GetCmdName( CMD_TRACE ), level, over );
         RecordEvent( TxtBuff );
         ret = DoTrace( TraceState.cur_level );
@@ -626,14 +624,14 @@ void ExecTrace( trace_cmd_type type, debug_level level )
     SetCodeLoc( TraceState.saveaddr );
     TraceState.req_level = level;
     switch( level ) {
-    case MIX:
-        if( ActiveWindowLevel == ASM || !HasLineInfo( TraceState.saveaddr ) ) {
-            TraceState.cur_level = ASM;
+    case LEVEL_MIX:
+        if( ActiveWindowLevel == LEVEL_ASM || !HasLineInfo( TraceState.saveaddr ) ) {
+            TraceState.cur_level = LEVEL_ASM;
         } else {
-            TraceState.cur_level = SOURCE;
+            TraceState.cur_level = LEVEL_SOURCE;
         }
         break;
-    case SOURCE:
+    case LEVEL_SOURCE:
         if( !HasLineInfo( TraceState.saveaddr ) ) {
             Error( ERR_NONE, LIT_ENG( ERR_NO_SOURCE_INFO ) );
         }
@@ -662,14 +660,14 @@ void ProcTrace( void )
         Scan();                         /* try first set of commands */
         level_index = ScanCmd( LevelTab );
         if( level_index < 0 ) {
-            type_index = ScanCmd( TraceTab2 );
+            type_index = ScanCmd( TraceTab );
             if( type_index < 0 ) {
                 Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_TRACE ) );
             }
         } else {
             if( CurrToken == T_DIV ) {  /* do second set of commands */
                 Scan();
-                type_index = ScanCmd( TraceTab2 );
+                type_index = ScanCmd( TraceTab );
                 if( type_index < 0 ) {
                     Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_TRACE ) );
                 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,8 +61,9 @@ enum {
     MSG_MAX
 };
 
-extern size_t   FmtStr( char *buf, const char *fmt, ... );
+extern size_t   FmtStr( char *buf, const char FAR *fmt, ... );
 extern void     PrtMsg( enum MsgClass num, ... );
+extern void     PrintBanner( void );
 #if !defined( NDEBUG )
 NO_RETURN( extern void     massert( const char *expr, const char *file, int line ) );
 #endif

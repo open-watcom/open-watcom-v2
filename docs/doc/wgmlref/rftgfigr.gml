@@ -1,8 +1,8 @@
 :H2.FIGREF
 :XMP.
 Format&gml. &gml.FIGREF refid='id-name'
-                \(page=yes
-                      no\).
+                [page=yes
+                      no].
 :eXMP.
 :I1.figure reference
 :I2 refid='gtfigre' pg=major.gtfigre

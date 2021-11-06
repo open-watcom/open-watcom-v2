@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +37,12 @@
 #include <stddef.h>
 
 
-#ifdef __OS2V2__
-    #define SEG16   _Seg16
-    #define STUPID_UINT     unsigned long
-#else
+#if defined(_M_I86)
     #define SEG16
     #define STUPID_UINT     unsigned short
+#else
+    #define SEG16   _Seg16
+    #define STUPID_UINT     unsigned long
 #endif
 
 extern int      PageCnt;
@@ -65,7 +66,7 @@ void NewCursor( window_id wid, cursor_type ct )
     VioGetCurType( &vioCursor, 0 );
     base = vioCursor.cEnd;
     nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
-    BIOSNewCursor( nbase, base - 1 );
+    BIOSSetCursorTyp( nbase, base - 1 );
 
 } /* NewCursor */
 
@@ -131,7 +132,7 @@ void ScreenFini( void )
  */
 void ChkExtendedKbd( void )
 {
-    EditVars.ExtendedKeyboard = 0x10;
+    EditFlags.ExtendedKeyboard = true;
 
 } /* ChkExtendedKbd */
 

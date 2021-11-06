@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,14 +30,13 @@
 *
 ****************************************************************************/
 
+
+#ifdef _RDOS
+
 extern void SetRdosFmt( void );
 extern void FreeRdosFmt( void );
 
-extern bool ProcRdos( void );
-extern bool ProcRdosDev16( void );
-extern bool ProcRdosDev32( void );
-extern bool ProcRdosBin16( void );
-extern bool ProcRdosBin32( void );
-extern bool ProcRdosMboot( void );
-extern bool ProcRdosCodeSel( void );
-extern bool ProcRdosDataSel( void );
+extern bool ProcRdosOptions( void );
+extern bool ProcRdosFormat( void );
+
+#endif

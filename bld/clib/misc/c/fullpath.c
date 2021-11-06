@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #else
     #include <ctype.h>
 #endif
-#if defined(__WIDECHAR__) || defined(__WARP__)
+#if defined(__WIDECHAR__) || defined(__OS2__) && !defined(_M_I86)
     #include <mbstring.h>
 #endif
 #if defined(__UNIX__)
@@ -71,7 +71,7 @@
     #include "libwin32.h"
 #elif !defined(__NETWARE__)
     #include "_direct.h"
-    #include "_doslfn.h"
+    #include "tinyio.h"
 #endif
 #include "liballoc.h"
 #include "thread.h"
@@ -94,10 +94,10 @@ static char *__qnx_fullpath( char *fullpath, const char *path )
 /*************************************************************/
 {
     struct {
-            struct _io_open _io_open;
-            char            m[_QNX_PATH_MAX];
-    } msg;
-    int             fd;
+        struct _io_open _io_open;
+        char            m[_QNX_PATH_MAX];
+    }           msg;
+    int         fd;
 
     msg._io_open.oflag = _IO_HNDL_INFO;
     fd = __resolve_net( _IO_HANDLE, 1, &msg._io_open, path, 0, fullpath );
@@ -122,7 +122,7 @@ static CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
     CHAR_TYPE       *filepart;
     DWORD           rc;
 
-    if( __F_NAME(stricmp,_wcsicmp)( path, STRING( "con" ) ) == 0 ) {
+    if( __F_NAME(_stricmp,_wcsicmp)( path, STRING( "con" ) ) == 0 ) {
         _WILL_FIT( 3 );
         return( __F_NAME(strcpy,wcscpy)( buff, STRING( "con" ) ) );
     }
@@ -139,7 +139,7 @@ static CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
     }
 
     return( buff );
-#elif defined(__WARP__)
+#elif defined(__OS2__) && !defined(_M_I86)
     APIRET      rc;
     char        root[4];      /* SBCS: room for drive, ':', '\\', and null */
   #ifdef __WIDECHAR__

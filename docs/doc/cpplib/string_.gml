@@ -10,7 +10,8 @@ The class documented here is the Open Watcom legacy string class. It
 is not related to the
 :MONO.std::basic_string
 class template nor to its corresponding specialization
-:MONO.std::string.
+:MONO.std::string
+:PERIOD.
 .*
 :CLFNM.String
 :CMT.========================================================================
@@ -21,7 +22,8 @@ The &cls. is used to store arbitrarily long sequences of characters in memory.
 Objects of this type may be concatenated, substringed, compared and
 searched without the need for memory management by the user.
 Unlike a C string, a &obj. has no delimiting character, so any character
-in the collating sequence, or character set, may be stored in a &obj.:PERIOD.
+in the collating sequence, or character set, may be stored in a &obj.
+:PERIOD.
 :HDG.Public Functions
 The following constructors and destructors are declared:
 :MFNL.
@@ -144,7 +146,7 @@ The &fn. returns the previous allocation multiple size.
 :SNPF index='get_at'.char const &amp.String::get_at( size_t pos );
 :eSNPL.
 :SMTICS.
-.'se str_sub_pm='constant'
+.se str_sub_pm='constant'
 :INCLUDE file='str_subs'.
 :SALSO.
 :SAL typ='mfun'.put_at
@@ -166,7 +168,8 @@ is found.
 :P.
 The first form searches the &obj. for the contents of the
 :ARG.str
-&obj.:PERIOD.
+&obj.
+:PERIOD.
 :P.
 The second form searches the &obj. for the sequence of characters pointed
 at by
@@ -176,7 +179,8 @@ at by
 If
 :ARG.pos
 is specified, the search begins at that offset from the start of the
-&obj.:PERIOD.
+&obj.
+:PERIOD.
 Otherwise, the search begins at offset zero (the first character).
 :P.
 The &fn. treats upper and lower case letters as not equal.
@@ -199,9 +203,11 @@ If the substring is not found, -1 is returned.
 :SNPF index='length'.size_t String::length() const;
 :eSNPL.
 :SMTICS.
-The &fn. computes the number of characters contained in the &obj.:PERIOD.
+The &fn. computes the number of characters contained in the &obj.
+:PERIOD.
 :RSLTS.
-The &fn. returns the number of characters contained in the &obj.:PERIOD.
+The &fn. returns the number of characters contained in the &obj.
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='mfun' prot='public'.lower
@@ -215,7 +221,8 @@ The &fn. creates a &obj. whose value is the same as the original
 object's value, except that all upper-case letters have been converted
 to lower-case.
 :RSLTS.
-The &fn. returns a lower-case &obj.:PERIOD.
+The &fn. returns a lower-case &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.upper
 :eSALSO.
@@ -234,7 +241,8 @@ where they differ.
 :P.
 The first form compares the &obj. to the
 :ARG.str
-&obj.:PERIOD.
+&obj.
+:PERIOD.
 :P.
 The second form compares the &obj. to the
 :ARG.pch
@@ -261,7 +269,8 @@ If the character sequences are equal, -1 is returned.
 :SNPF index='operator !'.int String::operator !() const;
 :eSNPL.
 :SMTICS.
-The &fn. tests the validity of the &obj.:PERIOD.
+The &fn. tests the validity of the &obj.
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if the &obj. is invalid,
 otherwise zero is returned.
@@ -318,7 +327,7 @@ parameter are different, otherwise zero is returned.
 :SNPF index='operator ()'.char &amp.String::operator ()( size_t pos );
 :eSNPL.
 :SMTICS.
-.'se str_sub_pm='dynamic'
+.se str_sub_pm='dynamic'
 :INCLUDE file='str_subs'.
 :SALSO.
 :SAL typ='mfun'.operator~b[]
@@ -334,7 +343,8 @@ parameter are different, otherwise zero is returned.
 :SNPF index='operator ()'.String String::operator ()( size_t pos, size_t len ) const;
 :eSNPL.
 :SMTICS.
-This form of the &fn. extracts a sub-sequence of characters from the &obj.:PERIOD.
+This form of the &fn. extracts a sub-sequence of characters from the &obj.
+:PERIOD.
 A new &obj. is created that contains the sub-sequence of characters.
 The sub-sequence begins at offset
 :ARG.pos
@@ -357,9 +367,11 @@ is such that
 exceeds the length of the object, the result is
 the sub-sequence of characters from the &obj. starting at offset
 :ARG.pos
-and running to the end of the &obj.:PERIOD.
+and running to the end of the &obj.
+:PERIOD.
 :RSLTS.
-The &fn. returns a &obj.:PERIOD.
+The &fn. returns a &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.operator~b[]
 :SAL typ='mfun'.operator~bchar
@@ -378,7 +390,8 @@ The &fn. returns a &obj.:PERIOD.
 :SNPR index='operator +'.friend String operator +( char          lft, String const &amp.rht );
 :eSNPL.
 :SMTICS.
-The &fn. concatenates two sequences of characters into a new &obj.:PERIOD.
+The &fn. concatenates two sequences of characters into a new &obj.
+:PERIOD.
 The new &obj. contains the sequence of characters from the
 :ARG.lft
 parameter followed by the sequence of characters from the
@@ -405,15 +418,18 @@ parameter.
 :SNPF index='operator +='.String &amp.String::operator +=( char const   *pch );
 :eSNPL.
 :SMTICS.
-The &fn. appends the contents of the parameter to the end of the &obj.:PERIOD.
+The &fn. appends the contents of the parameter to the end of the &obj.
+:PERIOD.
 :P.
 The first form of the &fn. appends the contents of the
 :ARG.str
-&obj. to the &obj.:PERIOD.
+&obj. to the &obj.
+:PERIOD.
 :P.
 The second form appends the null-terminated sequence of characters stored at
 :ARG.pch
-to the &obj.:PERIOD.
+to the &obj.
+:PERIOD.
 If the
 :ARG.pch
 parameter is &null., nothing is appended.
@@ -485,12 +501,12 @@ object. Like C strings, the value of the
 without the addition of any characters. No special processing occurs for any
 characters in the &obj. that have special meaning for the
 :ARG.strm
-object, such as carriage-returns. 
+object, such as carriage-returns.
 :P.
-The underlying implementation of the &fn. uses the ostream write method, which 
-writes unformatted characters to the output stream. If formatted output is required, 
-then the programmer should make use of the classes accessor methods, such as 
-c_str(), and pass the resulting data item to the stream using the appropriate 
+The underlying implementation of the &fn. uses the ostream write method, which
+writes unformatted characters to the output stream. If formatted output is required,
+then the programmer should make use of the classes accessor methods, such as
+c_str(), and pass the resulting data item to the stream using the appropriate
 insert operator.
 :RSLTS.
 The &fn. returns a reference to the
@@ -554,7 +570,8 @@ parameter.
 The first form of the &fn. sets the value of the
 &obj. to be the same as the value of the
 :ARG.str
-&obj.:PERIOD.
+&obj.
+:PERIOD.
 :P.
 The second form sets the value of the &obj. to the null-terminated
 sequence of characters stored at
@@ -702,7 +719,8 @@ The &fn. is used to read a sequence of characters from the
 :MONO.istream
 object into the
 :ARG.str
-&obj.:PERIOD.
+&obj.
+:PERIOD.
 Like C strings, the gathering of characters for a
 :ARG.str
 &obj. ends at the first whitespace encountered, so that the last
@@ -729,7 +747,8 @@ parameter.
 The &fn. creates either a const or a non-const reference to the character
 at offset
 :ARG.pos
-within the &obj.:PERIOD.
+within the &obj.
+:PERIOD.
 The non-const reference may be used to modify that character.
 The first character of a &obj. is at position zero.
 :P.
@@ -764,7 +783,8 @@ The &fn. returns either a const or a non-const reference to a character.
 The &fn. converts a &obj. into the first character it contains.
 If the &obj. is empty, the result is the null character.
 :RSLTS.
-The &fn. returns the first character contained in the &obj.:PERIOD.
+The &fn. returns the first character contained in the &obj.
+:PERIOD.
 If the
 &obj. is empty, the null character is returned.
 :SALSO.
@@ -797,7 +817,8 @@ The returned pointer is a pointer to a constant C string. If the pointer is
 used in some way to modify the C string, the behavior is undefined.
 :RSLTS.
 The &fn. returns a pointer to a null-terminated constant C string
-that contains the same characters as the &obj.:PERIOD.
+that contains the same characters as the &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.operator~b()
 :SAL typ='mfun'.operator~b[]
@@ -814,7 +835,8 @@ that contains the same characters as the &obj.:PERIOD.
 :SMTICS.
 The &fn. modifies the character at offset
 :ARG.pos
-within the &obj.:PERIOD.
+within the &obj.
+:PERIOD.
 The character at the specified offset is set to the value of
 :ARG.chr
 :PERIOD.
@@ -822,7 +844,8 @@ If
 :ARG.pos
 is greater than the number of characters within the &obj.,
 :ARG.chr
-is appended to the &obj.:PERIOD.
+is appended to the &obj.
+:PERIOD.
 :P.
 :RSLTS.
 The &fn. has no return value.
@@ -845,7 +868,8 @@ The &fn. has no return value.
 This form of the &fn. creates a default &obj. containing no characters.
 The created &obj. has length zero.
 :RSLTS.
-This form of the &fn. produces a &obj.:PERIOD.
+This form of the &fn. produces a &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.operator~b=
 :SAL typ='mfun'.operator~b+=
@@ -983,7 +1007,8 @@ parameter.
 :SNPCD cd_idx='d'.String::~~String();
 :eSNPL.
 :SMTICS.
-The &fn. destroys the &obj.:PERIOD.
+The &fn. destroys the &obj.
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -1003,7 +1028,8 @@ The &obj. is destroyed.
 The &fn. creates a new &obj. whose value is the same as the original &obj.,
 except that all lower-case letters have been converted to upper-case.
 :RSLTS.
-The &fn. returns a new upper-case &obj.:PERIOD.
+The &fn. returns a new upper-case &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.lower
 :eSALSO.
@@ -1018,7 +1044,8 @@ The &fn. returns a new upper-case &obj.:PERIOD.
 :SMTICS.
 The &fn. tests the validity of the
 :ARG.str
-&obj.:PERIOD.
+&obj.
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if the
 :ARG.str
@@ -1036,7 +1063,8 @@ The &fn. returns a non-zero value if the
 :SNPF index='valid'.int String::valid() const;
 :eSNPL.
 :SMTICS.
-The &fn. tests the validity of the &obj.:PERIOD.
+The &fn. tests the validity of the &obj.
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if the &obj. is valid,
 otherwise zero is returned.

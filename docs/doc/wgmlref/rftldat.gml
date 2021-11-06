@@ -1,8 +1,8 @@
 :H2.DATE
 :XMP.
-Format&gml. &gml.DATE \(align=left
-                     right\)
-              \(depth='vert-space-unit'\).<text line>
+Format&gml. &gml.DATE [align=left
+                     right]
+              [depth='vert-space-unit'].<text line>
 :eXMP.
 :I2 refid='gtdate'.gtdate
 :P.

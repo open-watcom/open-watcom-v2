@@ -30,7 +30,5 @@
 ****************************************************************************/
 
 
-int MyGetProfileString( const char *dir, const char *filename, const char *section,
-                        const char *key, const char *def, char *buffer, int len );
-int MyWriteProfileString( const char *dir, const char *filename, const char *section,
-                          const char *key, const char *string );
+int MyGetProfileString( const char *dir, char *buffer, int len );
+int MyWriteProfileString( const char *dir, const char *string );

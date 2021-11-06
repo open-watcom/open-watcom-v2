@@ -10,11 +10,11 @@ The
 functions cause the computer's central processor (CPU) to
 be interrupted with an interrupt whose number is given by
 .arg inter_no
-.ct .li .
+.period
 Before the interrupt, the CPU registers are loaded from the structure
 located by
 .arg regs
-.ct .li .
+.period
 Low 8-bit of the CPU flags are set to 0.
 .np
 All of the segment registers must contain valid values.
@@ -28,7 +28,7 @@ is filled with the contents of the CPU registers.
 .np
 .id &funcb.
 function is similar to the
-.kw int86x
+.reffunc int86x
 function, except that only one structure is used for the register
 values and that the BP (EBP in 386 library) register is included in
 the set of registers that are passed and saved.

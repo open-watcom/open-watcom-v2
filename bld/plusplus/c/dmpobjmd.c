@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -219,7 +220,7 @@ static void dumpStruct(         // DUMP A STRUCTURE
 
     /* unused parameters */ (void)control;
 
-    type = StructType( type );
+    type = ClassType( type );
     info = type->u.c.info;
     parent = VstkPush( &di->stack );
     *parent = info->name;

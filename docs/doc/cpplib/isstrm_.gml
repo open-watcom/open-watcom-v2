@@ -54,9 +54,11 @@ C string specified by the
 parameter.
 The inherited
 :MONO.istream
-member functions can be used to read from the &obj.:PERIOD.
+member functions can be used to read from the &obj.
+:PERIOD.
 :RSLTS.
-This form of the &fn. creates an initialized &obj.:PERIOD.
+This form of the &fn. creates an initialized &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -80,9 +82,11 @@ and ending at
 - 1.
 The inherited
 :MONO.istream
-member functions can be used to read from the &obj.:PERIOD.
+member functions can be used to read from the &obj.
+:PERIOD.
 :RSLTS.
-This form of the &fn. creates an initialized &obj.:PERIOD.
+This form of the &fn. creates an initialized &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -283,7 +283,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 STATIC DHEADPTR findDir( const char *path )
 /******************************************
  * Walk the directory linked list, and find the directory with the name
- * path.  (Path must end in \ - ie: as returned by _splitpath() )
+ * path.  (Path must end in \ - ie: as returned by _splitpath2() )
  * Returns NULL if not found, or if cacheHead == NULL.
  * Move the directory to the beginning of the list (adaptive search)
  */
@@ -340,7 +340,7 @@ STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
     DHEADPTR        dcur;
     CENTRYPTR       centry;
     enum cacheRet   ret;
-    PGROUP2         pg;
+    pgroup2         pg;
     char const      *ext;
 
     assert( fullpath != NULL );

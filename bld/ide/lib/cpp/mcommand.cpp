@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -166,7 +167,9 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                 target->noExt( f );
                 if( com[i] == '.' ) {
                     for( int j=1; j<=4; j++ ) {
-                        if( com[i] != ' ' ) f.concat( com[i++] );
+                        if( com[i] != ' ' ) {
+                            f.concat( com[i++] );
+                        }
                     }
                 }
                 if( f.needQuotes() ) {
@@ -179,7 +182,9 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                 target->noExt( f );
                 if( com[i] == '.' ) {
                     for( int j=1; j<=4; j++ ) {
-                        if( com[i] != ' ' ) f.concat( com[i++] );
+                        if( com[i] != ' ' ) {
+                            f.concat( com[i++] );
+                        }
                     }
                 }
                 if( f.needQuotes( '\'' ) ) {
@@ -192,7 +197,9 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                 target->noPathNoExt( f );
                 if( com[i] == '.' ) {
                     for( int j=1; j<=4; j++ ) {
-                        if( com[i] != ' ' ) f.concat( com[i++] );
+                        if( com[i] != ' ' ) {
+                            f.concat( com[i++] );
+                        }
                     }
                 }
                 if( f.needQuotes() ) {

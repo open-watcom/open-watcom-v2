@@ -44,6 +44,7 @@ extra_objs = &
 
 #       export ENUMTASKWINDOWSFUNC.10 &
 extra_linker = &
+        lib toolhelp.lib &
         import SETEVENTHOOK USER.321 &
         import ToolHelpHook KERNEL &
         export NOTIFYHANDLER.9 &

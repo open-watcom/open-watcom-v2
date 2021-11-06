@@ -6,6 +6,8 @@
 char *s1 = " ;
 #endif
 
+char *s2 = " ;
+
 int main( void )
 {
     return ( 0 );

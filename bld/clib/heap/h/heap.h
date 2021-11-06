@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,14 +40,14 @@
 #endif
 
 
-#if !defined(__DOS_EXT__) && defined(__DOS_386__) && !defined(__OSI__) && !defined(__CALL21__)
+#if !defined(__DOS_EXT__) && defined(__DOS_386__) && !defined(__CALL21__)
 #define __DOS_EXT__
 #endif
 
 #define FAR2NEAR(t,f)   ((t __near *)(long)(f))
 
-#define BLK2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
-#define CPTR2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
+#define BLK2CSTG(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
+#define CSTG2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
 
 #if defined( __DOS_EXT__ )
 #define DPMI2BLK(h)     ((heapblk_nptr)(h + 1))
@@ -145,7 +145,7 @@ struct heapblk {
     unsigned int        numalloc;           /* number of allocated blocks in heap */
     unsigned int        numfree;            /* number of free blocks in the heap */
     freelist            freehead;           /* listhead of free blocks in heap */
-#if defined( __WARP__ )
+#if defined(__OS2__) && !defined(_M_I86)
     unsigned int        used_obj_any :1;    /* allocated with OBJ_ANY - block may be in high memory */
 #endif
 };
@@ -194,7 +194,7 @@ extern heapblk_nptr     __MiniHeapRover;
 extern unsigned int     __LargestSizeB4MiniHeapRover;
 extern heapblk_nptr     __MiniHeapFreeRover;
 
-#if defined( __WARP__ )
+#if defined(__OS2__) && !defined(_M_I86)
 extern unsigned char    _os2_use_obj_any;           // Prefer high memory heap block
 extern unsigned char    _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
 #endif
@@ -236,7 +236,7 @@ extern void             *__ReAllocDPMIBlock( freelist_nptr p1, unsigned req_size
 extern void             *__ExpandDPMIBlock( freelist_nptr, unsigned );
 #endif
 
-#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
     defined(__CALL21__) || defined(__RDOS__) || defined(__DOS_EXT__)
 extern int              __nheapshrink( void );
 #endif

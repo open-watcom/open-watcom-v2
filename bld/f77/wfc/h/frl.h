@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-extern  void    *FrlAlloc( void ***head, unsigned size );
+extern  void    *FrlAlloc( void ***head, size_t size );
 extern  void    FrlFree( void *arg_head, void *arg_item );
 extern  void    FrlInit( void ***head );
 extern  void    FrlFini( void ***head );

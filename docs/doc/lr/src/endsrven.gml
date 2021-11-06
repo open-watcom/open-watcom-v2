@@ -6,14 +6,14 @@ void endservent( void );
 .desc begin
 The
 .id &funcb.
-function closes the service database. 
+function closes the service database.
 .np
 This function is not thread-safe.  Other calls to this function
-or to other functions accessing the hostname database may affect 
+or to other functions accessing the hostname database may affect
 the return value from this function.
 .desc end
 .see begin
 .seelist getservent setservent getservbyname getservbyport
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

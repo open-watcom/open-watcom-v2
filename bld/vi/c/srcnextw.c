@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +37,9 @@
  * SrcNextWord - get next word in a variable, putting result into another
  *               variable
  */
-vi_rc SrcNextWord( const char *data, vlist *vl )
+vi_rc SrcNextWord( const char *data, vars_list *vl )
 {
-    char        v1[MAX_SRC_LINE], v2[MAX_SRC_LINE], str[MAX_STR];
+    char        name1[MAX_SRC_LINE], name2[MAX_SRC_LINE], str[MAX_STR];
     vars        *v;
     char        *ptr;
 
@@ -46,26 +47,19 @@ vi_rc SrcNextWord( const char *data, vlist *vl )
      * get syntax :
      * NEXTWORD src res
      */
-    data = GetNextWord1( data, str );
-    if( *str == '\0' ) {
+    if( !ReadVarName( &data, name1, vl ) ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
-    if( !VarName( v1, str, vl ) ) {
+    if( !ReadVarName( &data, name2, vl ) ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
-    data = GetNextWord1( data, str );
-    if( *str == '\0' ) {
-        return( ERR_SRC_INVALID_NEXTWORD );
-    }
-    if( !VarName( v2, str, vl ) ) {
-        return( ERR_SRC_INVALID_NEXTWORD );
-    }
-    v = VarFind( v1, vl );
-    data = SkipLeadingSpaces( v->value );
+    v = VarFind( name1, vl );
+    data = v->value;
+    SKIP_SPACES( data );
     if( *data == '"' ) {
-        data = GetNextWord( data, str, SingleQuote );
+        data = GetNextWord( data, str, SingleDQuote );
         if( *data == '"' ) {
-            ++data;
+            SKIP_CHAR_SPACES( data );
         }
     } else {
         data = GetNextWord1( data, str );
@@ -74,7 +68,7 @@ vi_rc SrcNextWord( const char *data, vlist *vl )
     for( ptr = v->value; (*ptr = *data) != '\0'; ++ptr ) {
         ++data;
     }
-    VarAddStr( v2, str, vl );
+    VarAddStr( name2, str, vl );
     return( ERR_NO_ERR );
 
 } /* SrcNextWord */

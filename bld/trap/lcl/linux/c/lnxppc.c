@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +82,7 @@ static void ReadCPU( struct ppc_mad_registers *r )
     last_eip = r->iar.u._32[I64LO32];
 }
 
-trap_retval ReqRead_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers   *mr;
 
@@ -113,7 +114,7 @@ static void WriteCPU( struct ppc_mad_registers *r )
     ptrace( PTRACE_POKEUSER, pid, PT_FPSCR * REGSIZE, (void *)(r->fpscr) );
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     mad_registers   *mr;
 
@@ -122,7 +123,7 @@ trap_retval ReqWrite_regs( void )
     return( 0 );
 }
 
-trap_retval ReqSet_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -134,7 +135,7 @@ trap_retval ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     clear_watch_req *acc;
 
@@ -146,7 +147,7 @@ trap_retval ReqClear_watch( void )
  * wanted to, we could access memory mapped ISA/PCI I/O ports on systems
  * where those are provided. Would require root privileges.
  */
-trap_retval ReqRead_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     read_io_req *acc;
     void        *ret;
@@ -156,7 +157,7 @@ trap_retval ReqRead_io( void )
     return( 0 );
 }
 
-trap_retval ReqWrite_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_req    *acc;
     write_io_ret    *ret;
@@ -169,7 +170,7 @@ trap_retval ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
@@ -188,7 +189,7 @@ trap_retval ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqMachine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;

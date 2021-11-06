@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +36,8 @@
 
 extern void GUIScroll( gui_window *wnd, int bar, int change );
 extern void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-extern int GUIGetScrollScreenSize( gui_window *wnd, int bar );
-extern int GUIGetScrollInc( gui_window *wnd, int bar );
+extern guix_ord GUIGetScrollScreenSize( gui_window *wnd, int bar );
+extern guix_ord GUIGetScrollInc( gui_window *wnd, int bar );
 extern void GUISetScroll( gui_window * wnd );
 
 #endif // _GUISCROL_H_

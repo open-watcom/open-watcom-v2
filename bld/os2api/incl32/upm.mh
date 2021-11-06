@@ -85,7 +85,7 @@
 #define u32esetp U32ESETP
 #define u32egetp U32EGETP
 
-#pragma pack(1)
+:include pshpack1.sp
 
 struct UPM_G_USER_LOGON {
     USHORT useridlen;
@@ -110,7 +110,7 @@ struct UPM_USER_LOGON_PROF_0 {
     USHORT remotetype;
 };
 
-#pragma pack()
+:include poppack.sp
 
 LSINT APIENTRY U32ELGN(PUCHAR,PUCHAR,PUCHAR,ULONG,ULONG);
 LSINT APIENTRY U32ELGFF(PUCHAR,PUCHAR,ULONG);

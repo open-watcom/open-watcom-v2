@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,10 +51,10 @@ typedef struct itnode {
         USOPN           us;
     }                   opn;            // operand code value
     unsigned_16         flags;          // flags
-    uint                size;           // size of operand
+    size_t              size;           // size of operand
     sym_id              sym_ptr;        // addr of data area (common block)
     ftn_type            value;          // value of constants, parameters
-    uint                opnd_size;      // size of operand field
+    size_t              opnd_size;      // size of operand field
     char                *opnd;          // operand field
     TYPE                typ;            // type of symbol
 //    unsigned char       chsize : 4;     // size of character operand (OPN_SS1)

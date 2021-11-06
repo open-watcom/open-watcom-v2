@@ -1,4 +1,4 @@
-.func dirname 
+.func dirname
 .synop begin
 #include <libgen.h>
 char *dirname( char *path );
@@ -32,7 +32,7 @@ The
 function returns a pointer to a string that is the parent
 directory of
 .arg path
-.ct .li .
+.period
 If
 .arg path
 is a null pointer or points to an empty string, a pointer to the string "."
@@ -66,5 +66,5 @@ int main( void )
 .blkcode end
 .exmp end
 .*
-.class POSIX
+.class POSIX 1003.1
 .system

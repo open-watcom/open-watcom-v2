@@ -117,7 +117,7 @@ static void VerifyAddFile( const char *filename )
     char *              tempfilename;
     char *              newfilename;
     char                fullname[_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
 
     newfilename = DupStrMem( filename );
     if( ( strchr( newfilename, '?' ) != NULL ) || ( strchr( newfilename, '*' ) != NULL ) ) {

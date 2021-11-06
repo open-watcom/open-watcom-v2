@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,14 +36,7 @@
 #include "watcom.h"
 
 
-#define _INT            0xcd
-
-#if defined( __OSI__ ) && defined( __CALL31__ )
- extern  void   __Int31();
- #define _INT_31        "call __Int31"
-#else
- #define _INT_31        _INT 0x31
-#endif
+#define VECTOR_DPMI     0x31
 
 /*
  * access right definitions
@@ -288,7 +282,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "mov  ax,0b00h" \
         "mov  cx,bx"    \
         "shr  ebx,16"   \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
         "mov  ax,bx"    \
     __parm [__ebx] [__dl] [__dh] \
@@ -298,7 +292,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #pragma aux _DPMISetWatch = \
         "mov  ax,0b00h" \
         "xchg bx,cx"    \
-        _INT_31         \
+        "int 31h"       \
         "sbb  cx,cx"    \
     __parm [__bx __cx] [__dl] [__dh] \
     __value [__cx __bx] \
@@ -308,7 +302,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #if defined(__386__)
 #pragma aux _DPMIClearWatch = \
         "mov  ax,0b01h" \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__bx] \
     __value [__eax] \
@@ -316,7 +310,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMIClearWatch = \
         "mov  ax,0b01h" \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__bx] \
     __value [__ax] \
@@ -326,7 +320,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #if defined(__386__)
 #pragma aux _DPMITestWatch = \
         "mov  ax,0b02h" \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ebx,ebx"  \
         "and  eax,1"    \
         "or   ebx,eax"  \
@@ -336,7 +330,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMITestWatch = \
         "mov  ax,0b02h" \
-        _INT_31         \
+        "int 31h"       \
         "sbb  bx,bx"    \
         "and  ax,1"     \
         "or   bx,ax"    \
@@ -348,7 +342,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #if defined(__386__)
 #pragma aux _DPMIResetWatch = \
         "mov  ax,0b03h" \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__bx] \
     __value [__eax] \
@@ -356,7 +350,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMIResetWatch = \
         "mov  ax,0b03h" \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__bx] \
     __value [__ax] \
@@ -368,7 +362,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "push ds"       \
         "mov  ds,edx"   \
         "mov  ax,400h"  \
-        _INT_31         \
+        "int 31h"       \
         "mov  byte ptr [esi],ah"    \
         "mov  byte ptr [esi+1],al"  \
         "mov  word ptr [esi+2],bx"  \
@@ -382,7 +376,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _nDPMIGetVersion = \
         "mov  ax,400h"  \
-        _INT_31         \
+        "int 31h"       \
         "mov  byte ptr [si],ah"     \
         "mov  byte ptr [si+1],al"   \
         "mov  word ptr [si+2],bx"   \
@@ -395,7 +389,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _fDPMIGetVersion = \
         "mov  ax,400h"  \
-        _INT_31         \
+        "int 31h"       \
         "mov  byte ptr es:[si],ah"      \
         "mov  byte ptr es:[si+1],al"    \
         "mov  word ptr es:[si+2],bx"    \
@@ -410,7 +404,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #if defined(__386__)
 #pragma aux _DPMIAllocateLDTDescriptors = \
         "xor  eax,eax"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ecx,ecx"  \
         "mov  cx,ax"    \
     __parm [__cx] \
@@ -419,7 +413,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMIAllocateLDTDescriptors = \
         "xor  ax,ax"    \
-        _INT_31         \
+        "int 31h"       \
         "sbb  cx,cx"    \
     __parm [__cx] \
     __value [__cx __ax] \
@@ -429,7 +423,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #if defined(__386__)
 #pragma aux _DPMIFreeLDTDescriptor = \
         "mov  ax,1"     \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__bx] \
     __value [__eax] \
@@ -437,7 +431,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMIFreeLDTDescriptor = \
         "mov  ax,1"     \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__bx] \
     __value [__ax] \
@@ -447,7 +441,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #if defined(__386__)
 #pragma aux _DPMISegmentToDescriptor = \
         "mov  ax,2"     \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ebx,ebx"  \
         "mov  bx,ax"    \
     __parm [__bx] \
@@ -456,7 +450,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMISegmentToDescriptor = \
         "mov  ax,2"     \
-        _INT_31         \
+        "int 31h"       \
         "sbb  bx,bx"    \
     __parm [__bx] \
     __value [__bx __ax] \
@@ -465,7 +459,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIGetNextSelectorIncrementValue = \
         "mov  ax,3"     \
-        _INT_31         \
+        "int 31h"       \
     __parm [__bx] \
     __value [__ax] \
     __modify __exact [__ax]
@@ -473,7 +467,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #if defined(__386__)
 #pragma aux _DPMIGetSegmentBaseAddress = \
         "mov  ax,6"     \
-        _INT_31         \
+        "int 31h"       \
         "shl  ecx,16"   \
         "mov  cx,dx"    \
     __parm __caller [__bx] \
@@ -482,7 +476,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMIGetSegmentBaseAddress = \
         "mov  ax,6"     \
-        _INT_31         \
+        "int 31h"       \
     __parm [__bx] \
     __value[__cx __dx] \
     __modify __exact [__ax __cx __dx]
@@ -493,7 +487,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "mov  ax,7"     \
         "mov  dx,cx"    \
         "shr  ecx,16"   \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__bx] [__ecx] \
     __value [__eax] \
@@ -501,7 +495,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMISetSegmentBaseAddress = \
         "mov  ax,7"     \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__bx] [__cx __dx] \
     __value [__ax] \
@@ -513,7 +507,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "mov  dx,cx"    \
         "shr  ecx,16"   \
         "mov  ax,8"     \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__bx] [__ecx] \
     __value [__eax] \
@@ -521,7 +515,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMISetSegmentLimit = \
         "mov  ax,8"     \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__bx] [__cx __dx] \
     __value [__ax] \
@@ -531,7 +525,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #if defined(__386__)
 #pragma aux _DPMISetDescriptorAccessRights = \
         "mov  ax,9"     \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__bx] [__cx] \
     __value [__eax] \
@@ -539,7 +533,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMISetDescriptorAccessRights = \
         "mov  ax,9"     \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__bx] [__cx] \
     __value [__ax] \
@@ -551,7 +545,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "mov  di,si"    \
         "shr  esi,16"   \
         "mov  ax,502h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__esi] \
     __value [__eax] \
@@ -560,7 +554,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #pragma aux _DPMIFreeMemoryBlock =  \
         "xchg si,di"    \
         "mov  ax,502h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__di __si] \
     __value [__ax] \
@@ -574,7 +568,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "mov  cx,bx"    \
         "shr  ebx,16"   \
         "mov  ax,600h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__ebx] [__esi] \
     __value [__eax] \
@@ -586,7 +580,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "mov  cx,bx"    \
         "shr  ebx,16"   \
         "mov  ax,601h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__ebx] [__esi] \
     __value [__eax] \
@@ -594,7 +588,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMILockLinearRegion = \
         "mov  ax,600h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__cx __bx] [__si __di] \
     __value[__ax] \
@@ -602,7 +596,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIUnlockLinearRegion = \
         "mov  ax,601h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__cx __bx] [__si __di] \
     __value [__ax] \
@@ -613,7 +607,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIAllocateDOSMemoryBlock = \
         "mov  ax,100h"  \
-        _INT_31         \
+        "int 31h"       \
         "jnc short L1"  \
         "xor  ax,ax"    \
         "xor  dx,dx"    \
@@ -625,7 +619,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIFreeDOSMemoryBlock = \
         "mov  ax,101h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__dx] \
     __value [__eax] \
@@ -635,7 +629,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "push es"       \
         "mov  es,edx"   \
         "mov  ax,300h"  \
-        _INT_31         \
+        "int 31h"       \
         "pop  es"       \
         "sbb  eax,eax"  \
     __parm [__bl] [__bh] [__cx] [__dx __edi] \
@@ -644,7 +638,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
         "mov  ax,0ah"   \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ebx,ebx"  \
         "mov  bx,ax"    \
     __parm [__bx] \
@@ -655,7 +649,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "push es"       \
         "mov  es,edx"   \
         "mov  ax,0bh"   \
-        _INT_31         \
+        "int 31h"       \
         "pop  es"       \
         "sbb  eax,eax"  \
     __parm [__bx] [__dx __edi] \
@@ -666,7 +660,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "push es"       \
         "mov  es,edx"   \
         "mov  ax,0ch"   \
-        _INT_31         \
+        "int 31h"       \
         "pop  es"       \
         "sbb  eax,eax"  \
     __parm [__bx] [__dx __edi] \
@@ -676,7 +670,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIAllocateDOSMemoryBlock = \
         "mov  ax,100h"  \
-        _INT_31         \
+        "int 31h"       \
         "jnc short L1"  \
         "xor  ax,ax"    \
         "xor  dx,dx"    \
@@ -687,7 +681,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIFreeDOSMemoryBlock = \
         "mov ax,101h"   \
-        _INT_31         \
+        "int 31h"       \
         "sbb ax,ax"     \
     __parm [__dx] \
     __value [__ax] \
@@ -695,7 +689,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMISimulateRealModeInterrupt = \
         "mov ax,300h"   \
-        _INT_31         \
+        "int 31h"       \
         "sbb ax,ax"     \
     __parm [__bl] [__bh] [__cx] [__es __di] \
     __value [__ax] \
@@ -703,7 +697,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMICreateCodeSegmentAliasDescriptor = \
         "mov ax,0ah"    \
-        _INT_31         \
+        "int 31h"       \
         "sbb bx,bx"     \
     __parm [__bx] \
     __value [__bx __ax] \
@@ -711,7 +705,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIGetDescriptor = \
         "mov  ax,0bh"   \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__bx] [__es __di] \
     __value [__ax] \
@@ -719,7 +713,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMISetDescriptor = \
         "mov  ax,0ch"   \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__bx] [__es __di] \
     __value [__ax] \
@@ -733,7 +727,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "push dx"       \
         "xchg bx,cx"    \
         "mov  ax,501H"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
         "mov  dx,bx"    \
         "pop  es"       \
@@ -751,7 +745,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "push ax"       \
         "xchg bx,cx"    \
         "mov  ax,501H"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
         "mov  dx,bx"    \
         "pop  bx"       \
@@ -770,7 +764,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "xchg si,di"    \
         "xchg bx,cx"    \
         "mov  ax,503h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
         "mov  dx,bx"    \
         "pop  es"       \
@@ -789,7 +783,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "xchg si,di"    \
         "xchg bx,cx"    \
         "mov  ax,503h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
         "mov  dx,bx"    \
         "pop  bx"       \
@@ -807,7 +801,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "push ds"       \
         "pop  es"       \
         "mov  ax,500h"  \
-        _INT_31         \
+        "int 31h"       \
         "pop  es"       \
         "sbb  eax,eax"  \
     __parm [__edi] \
@@ -816,7 +810,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _fDPMIGetFreeMemoryInformation = \
         "mov  ax,500h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__es __di] \
     __value [__ax] \
@@ -827,7 +821,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "push ds"       \
         "pop  es"       \
         "mov  ax,500h"  \
-        _INT_31         \
+        "int 31h"       \
         "pop  es"       \
         "sbb  ax,ax"    \
     __parm [__di] \
@@ -838,14 +832,14 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #if defined(__386__)
 #pragma aux _DPMIGetRealModeInterruptVector = \
         "mov  ax,200h"  \
-        _INT_31         \
+        "int 31h"       \
     __parm [__bl] \
     __value [__cx __edx] \
     __modify [__ax]
 
 #pragma aux _DPMISetRealModeInterruptVector = \
         "mov  ax,201h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__bl] [__cx __edx] \
     __value [__eax] \
@@ -853,14 +847,14 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMIGetRealModeInterruptVector = \
         "mov  ax,200h"  \
-        _INT_31         \
+        "int 31h"       \
     __parm [__bl] \
     __value [__cx __dx] \
     __modify [__ax]
 
 #pragma aux _DPMISetRealModeInterruptVector = \
         "mov  ax,201h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__bl] [__cx __dx] \
     __value [__ax] \
@@ -870,28 +864,28 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #if defined(__386__)
 #pragma aux _DPMIGetPMExceptionVector = \
         "mov  ax,202h"  \
-        _INT_31         \
+        "int 31h"       \
     __parm [__bl] \
     __value [__cx __edx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMExceptionVector = \
         "mov  ax,203h"  \
-        _INT_31         \
+        "int 31h"       \
     __parm [__bl] [__cx __edx] \
     __value \
     __modify [__ax]
 
 #pragma aux _DPMIGetPMInterruptVector = \
         "mov  ax,204h"  \
-        _INT_31         \
+        "int 31h"       \
     __parm [__bl] \
     __value [__cx __edx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMInterruptVector = \
         "mov  ax,205h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  eax,eax"  \
     __parm [__bl] [__cx __edx] \
     __value [__eax] \
@@ -899,28 +893,28 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #else
 #pragma aux _DPMIGetPMExceptionVector = \
         "mov  ax,202h"  \
-        _INT_31         \
+        "int 31h"       \
     __parm [__bl] \
     __value [__cx __dx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMExceptionVector = \
         "mov  ax,203h"  \
-        _INT_31         \
+        "int 31h"       \
     __parm [__bl] [__cx __dx] \
     __value \
     __modify [__ax]
 
 #pragma aux _DPMIGetPMInterruptVector = \
         "mov  ax,204h"  \
-        _INT_31         \
+        "int 31h"       \
     __parm [__bl] \
     __value [__cx __dx] \
     __modify [__ax]
 
 #pragma aux _DPMISetPMInterruptVector = \
         "mov  ax,205h"  \
-        _INT_31         \
+        "int 31h"       \
         "sbb  ax,ax"    \
     __parm [__bl] [__cx __dx] \
     __value [__ax] \
@@ -936,7 +930,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "mov  es,ecx"   \
         "mov  edi,ebx"  \
         "mov  ax,303h"  \
-        _INT_31         \
+        "int 31h"       \
         "pop  ds"       \
         "pop  es"       \
     __parm [__dx __eax] [__cx __ebx] \
@@ -945,7 +939,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIFreeRealModeCallBackAddress = \
         "mov  ax,304h"  \
-        _INT_31         \
+        "int 31h"       \
     __parm [__cx __edx] \
     __value \
     __modify []
@@ -955,7 +949,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "mov  ds,dx"    \
         "mov  si,ax"    \
         "mov  ax,303h"  \
-        _INT_31         \
+        "int 31h"       \
         "pop  ds"       \
     __parm [__dx __ax] [__es __di] \
     __value [__cx __dx] \
@@ -963,7 +957,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIFreeRealModeCallBackAddress = \
         "mov  ax,304h"  \
-        _INT_31         \
+        "int 31h"       \
     __parm [__cx __dx] \
     __value \
     __modify []
@@ -974,7 +968,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "mov  ax,306h"  \
         "xor  edi,edi"  \
         "stc"           \
-        _INT_31         \
+        "int 31h"       \
         "mov  cx,si"    \
         "jnc short L1"  \
         "xor  cx,cx"    \
@@ -987,7 +981,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #pragma aux _DPMIRawRMtoPMAddr = \
         "mov  ax,306h"  \
         "stc"           \
-        _INT_31         \
+        "int 31h"       \
         "jnc short L1"  \
         "xor  ebx,ebx"  \
         "jmp short L2"  \
@@ -1001,7 +995,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 #pragma aux _DPMISaveRMStateAddr = \
         "mov  ax,305h"  \
         "stc"           \
-        _INT_31         \
+        "int 31h"       \
         "mov  cx,si"    \
         "jnc short L1"  \
         "xor  cx,cx"    \
@@ -1013,7 +1007,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMISavePMStateAddr = \
         "mov  ax,305h"  \
-        _INT_31         \
+        "int 31h"       \
         "jnc short L1"  \
         "xor  cx,cx"    \
         "xor  ebx,ebx"  \
@@ -1027,7 +1021,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMISaveStateSize = \
         "mov  ax,305h"  \
-        _INT_31         \
+        "int 31h"       \
         "jnc short L1"  \
         "xor  eax,eax"  \
     "L1:"               \
@@ -1044,7 +1038,7 @@ extern int      _DPMIResetWatch( uint_16 handle );
         "mov  ds,ecx"   \
         "xor  eax,eax"  \
         "mov  ah,0ah"   \
-        _INT_31         \
+        "int 31h"       \
         "mov  ecx,es"   \
         "jnc short L1"  \
         "xor  ecx,ecx"  \

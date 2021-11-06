@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@ bool    WndAtTop( a_window wnd )
 {
     if( !WndHasCurrent( wnd ) )
         return( false );
-    if( wnd->current.row > wnd->title_size )
+    if( wnd->current.row > wnd->title_rows )
         return( false );
     return( true );
 }
@@ -62,7 +63,7 @@ static  void    WndMoveUp( a_window wnd )
 {
     if( WndAtTop( wnd ) ) {
         WndDirtyCurr( wnd );
-        WndScroll( wnd, -1 );
+        WndVScroll( wnd, -1 );
         if( !WndFindCloseTab( wnd, wnd->current.row ) ) {
             wnd->current.row++;
         }
@@ -97,7 +98,7 @@ static void     WndMoveDown( a_window wnd )
 {
     if( WndAtBottom( wnd ) ) {
         WndDirtyCurr( wnd );
-        WndScroll( wnd, 1 );
+        WndVScroll( wnd, 1 );
         if( !WndFindCloseTab( wnd, wnd->current.row ) ) {
             wnd->current.row--;
         }
@@ -120,13 +121,13 @@ static void     WndMoveDown( a_window wnd )
 static  void    WndUpOne( a_window wnd )
 {
     if( !WndAtBottom( wnd ) ) {
-        if( WndScroll( wnd, -1 ) != 0 ) {
+        if( WndVScroll( wnd, -1 ) != 0 ) {
             if( WndHasCurrent( wnd ) ) {
                 WndMoveDown( wnd );
             }
         }
     } else {
-        WndScroll( wnd, -1 );
+        WndVScroll( wnd, -1 );
     }
 }
 
@@ -134,13 +135,13 @@ static  void    WndUpOne( a_window wnd )
 static  void    WndDownOne( a_window wnd )
 {
     if( !WndAtTop( wnd ) ) {
-        if( WndScroll( wnd, 1 ) != 0 ) {
+        if( WndVScroll( wnd, 1 ) != 0 ) {
             if( WndHasCurrent( wnd ) ) {
                 WndMoveUp( wnd );
             }
         }
     } else {
-        WndScroll( wnd, 1 );
+        WndVScroll( wnd, 1 );
     }
 }
 
@@ -180,12 +181,12 @@ static int WndPageSize( a_window wnd )
 
 void WndPageUp( a_window wnd )
 {
-    WndScroll( wnd, -WndPageSize( wnd ) );
+    WndVScroll( wnd, -WndPageSize( wnd ) );
 }
 
 void WndPageDown( a_window wnd )
 {
-    WndScroll( wnd, WndPageSize( wnd ) );
+    WndVScroll( wnd, WndPageSize( wnd ) );
 }
 
 bool WndTabLeft( a_window wnd, bool wrap )
@@ -278,14 +279,14 @@ void WndCursorRight( a_window wnd )
 void WndScrollTop( a_window wnd )
 {
     WndDirtyCurr( wnd );
-    WndScrollAbs( wnd, -wnd->title_size );
+    WndVScrollAbs( wnd, -wnd->title_rows );
     WndFirstCurrent( wnd );
 }
 
 void WndScrollBottom( a_window wnd )
 {
     WndDirtyCurr( wnd );
-    WndScrollAbs( wnd, WND_MAX_ROW );
+    WndVScrollAbs( wnd, WND_MAX_ROW );
     WndLastCurrent( wnd );
 }
 

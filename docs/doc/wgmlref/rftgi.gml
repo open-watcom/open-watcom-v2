@@ -1,11 +1,11 @@
 :H2.I1, I2, I3
 :XMP.
-Format&gml. &gml.I:HP1.n:eHP1. \(id='id-name'\)
-            \(pg=start
+Format&gml. &gml.I:HP1.n:eHP1. [id='id-name']
+            [pg=start
                 end
                 major
-                'character string'\)
-            \(refid='id-name'\).<text line>
+                'character string']
+            [refid='id-name'].<text line>
         (:HP1.n:eHP1.=1,2,3)
 :eXMP.
 :I1.indexing

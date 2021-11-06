@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "progsw.h"
 #include "errcod.h"
 #include "global.h"
@@ -60,7 +60,8 @@ void    OpenSymTab( void ) {
 
 // Initialize the symbol table.
 
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 )
+        return;
     GList = NULL;
     InitHashTable( GHashTable, HASH_PRIME + 1 );
 }
@@ -100,7 +101,8 @@ sym_id  FindShadow( sym_id sym ) {
 
     shadow = MList;
     for(;;) {
-        if( shadow->u.ns.si.ms.sym == sym ) return( shadow );
+        if( shadow->u.ns.si.ms.sym == sym )
+            return( shadow );
         shadow = shadow->u.ns.link;
     }
 }
@@ -267,11 +269,10 @@ void    HashInsert( hash_entry *hash_table, unsigned hash_value,
 }
 
 
-sym_id  STName( char *name, uint length ) {
-//========================================
-
+sym_id STName( const char *name, size_t length )
+//==============================================
 // Lookup the specified name in the symbol table.
-
+{
     sym_id    sym;
 
     if( length > MAX_SYMLEN ) {
@@ -283,19 +284,18 @@ sym_id  STName( char *name, uint length ) {
         sym->u.ns.si.va.vi.ec_ext = NULL;
         sym->u.ns.u3.address = NULL;
         HashInsert( HashTable, HashValue, &NList, sym );
-    } else if( ( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
-               ( sym->u.ns.flags & SY_SPECIAL_PARM ) ) {
+    } else if( ( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) &&
+               (sym->u.ns.flags & SY_SPECIAL_PARM) ) {
         sym = FindShadow( sym ); // Shadowed variable
     }
     return( sym );
 }
 
 
-sym_id  STCommon( char *name, uint length ) {
-//==========================================
-
+sym_id STCommon( const char *name, size_t length )
+//================================================
 // Lookup the specified name in the common list.
-
+{
     sym_id      sym_ptr;
 
     if( length > MAX_SYMLEN ) {

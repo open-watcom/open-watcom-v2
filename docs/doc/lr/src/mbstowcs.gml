@@ -3,7 +3,7 @@
 #include <stdlib.h>
 size_t mbstowcs( wchar_t *pwcs, const char *s, size_t n );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 #include <mbstring.h>
 size_t _fmbstowcs( const wchar_t __far *pwcs,
                    char __far *s,
@@ -24,7 +24,7 @@ into their corresponding wide character codes and stores not more than
 .arg n
 codes into the array pointed to by
 .arg pwcs
-.ct .li .
+.period
 The
 .id &funcb.
 function does not convert any multibyte characters beyond
@@ -34,14 +34,10 @@ At most
 elements of the array pointed to by
 .arg pwcs
 will be modified.
-.im farparm
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
-If an invalid multibyte character is encountered, the
-.id &funcb.
-function
-returns
-.mono (size_t)&minus.1.
+.im _mbsret3
 Otherwise, the
 .id &funcb.
 function returns the number of array elements

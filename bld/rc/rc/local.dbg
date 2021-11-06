@@ -1,5 +1,5 @@
 *
 * This is the WVideo initialization specific to this project.
 *
-set pf 5 vc RcPrintUsage()
-set pf 6 vc RcPrintList()
+set pf 5 vc RcPrintMemUsage()
+set pf 6 vc RcPrintMemList()

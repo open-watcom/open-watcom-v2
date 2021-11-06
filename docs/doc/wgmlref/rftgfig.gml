@@ -1,17 +1,17 @@
 :H2 id='gtfig'.FIG
 :XMP.
-Format&gml. &gml.FIG \(depth='vert-space-unit'\)
-             \(frame=box
+Format&gml. &gml.FIG [depth='vert-space-unit']
+             [frame=box
                     rule
                     none
-                    'character string'\)
-             \(id='id-name'\)
-             \(place=top
+                    'character string']
+             [id='id-name']
+             [place=top
                     bottom
-                    inline\)
-             \(width=page
+                    inline]
+             [width=page
                     column
-                    'hor-space-unit'\).
+                    'hor-space-unit'].
              <paragraph elements>
              <basic document elements>
 :eXMP.

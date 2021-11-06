@@ -14,7 +14,8 @@ as an int.
 .return begin
 If successful, the return value is the exponent of
 .arg x
-.ct .li .  When the argument is zero, the function returns
+.period
+When the argument is zero, the function returns
 FP_ILOGB0.  When the argument is not-a-number, or NAN, the
 function returns FP_ILOGBNAN.  For positive or negative
 infinity, the function returns INT_MAX.

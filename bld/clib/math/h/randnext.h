@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,9 @@
 
 #define _INITRANDNEXT(p)
 #ifdef __SW_BM
-    #define _RANDNEXT           (__THREADDATAPTR->__randnext)
+    #define _RANDNEXT       (__THREADDATAPTR->__randnext)
 #else
-    static unsigned long int    next = 1;
+    static unsigned long    next = 1;
 
-    #define _RANDNEXT           next
+    #define _RANDNEXT       next
 #endif

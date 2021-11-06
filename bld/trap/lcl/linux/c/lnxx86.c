@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,7 +95,7 @@ static void ReadFPUXMM( struct x86_fpu *r, struct x86_xmm *x )
     }
 }
 
-trap_retval ReqRead_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers   *mr;
 
@@ -167,7 +167,7 @@ static void WriteFPUXMM( struct x86_fpu *r, struct x86_xmm *x )
     }
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     mad_registers   *mr;
 
@@ -252,7 +252,7 @@ int CheckWatchPoints( void )
     return( false );
 }
 
-trap_retval ReqSet_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -288,7 +288,7 @@ trap_retval ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     clear_watch_req *acc;
     watch_point     *dst;
@@ -311,7 +311,7 @@ trap_retval ReqClear_watch( void )
     return( 0 );
 }
 
-trap_retval ReqRead_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     read_io_req *acc;
     void        *ret;
@@ -348,7 +348,7 @@ trap_retval ReqRead_io( void )
     return( len );
 }
 
-trap_retval ReqWrite_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_req    *acc;
     write_io_ret    *ret;
@@ -388,7 +388,7 @@ trap_retval ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
@@ -410,7 +410,7 @@ trap_retval ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqMachine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;

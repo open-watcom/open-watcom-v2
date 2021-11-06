@@ -4,7 +4,7 @@
 char *strcpy( char *dst, const char *src );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Copy' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrcpy( char __far *dst,
                       const char __far *src );
 .ixfunc2 '&String' &ffunc
@@ -43,14 +43,15 @@ function copies the string pointed to by
 .arg src
 (including the terminating null character) into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects is not guaranteed to work properly.
 See the description for the
-.kw memmove
+.reffunc memmove
 function to copy objects that overlap.
-.im farfunc
-.im widefun1
-.im mbsfunc
+.farfunc &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
+.mbcsfunc &mfunc. &funcb.
+.farfuncp &fmfunc. &mfunc.
 .desc end
 .return begin
 The value of

@@ -4,10 +4,10 @@
 int dosexterr( struct DOSERROR *err_info );
 
 struct _DOSERROR {
-        int exterror;   /* contents of AX register */
-        char errclass;  /* contents of BH register */
-        char action;    /* contents of BL register */
-        char locus;     /* contents of CH register */
+    int     exterror; /* contents of AX register */
+    char    errclass; /* contents of BH register */
+    char    action;   /* contents of BL register */
+    char    locus;    /* contents of CH register */
 };
 .ixfunc2 '&Errs' &funcb
 .synop end
@@ -18,7 +18,7 @@ function extracts extended error information following
 a failed DOS function.
 This information is placed in the structure located by
 .arg err_info
-.ct .li .
+.period
 This function is only useful with DOS version 3.0 or later.
 .np
 You should consult the technical documentation for the DOS system on

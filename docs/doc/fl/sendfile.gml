@@ -14,7 +14,7 @@ is a list of endfile specifiers separated by commas:
 IOSTAT = ios
 ERR = s
 .millust end
-.endnote
+.esynote
 .np
 Execution of an
 .kw ENDFILE
@@ -27,9 +27,10 @@ only those records before the endfile record are considered to
 have been written.
 Thus, only those records before the endfile record may be read during
 subsequent direct access connections to the file.
-.begnote Endfile Specifiers
+.begnote
+.notehdr Endfile Specifiers
 .setptnt 0 8
-.mnote [UNIT =] u
+.note [UNIT =] u
 .br
 .id u
 is an
@@ -40,7 +41,7 @@ If the optional
 .kw UNIT=
 specifier is omitted then the
 specifier must be the first item in the list of specifiers.
-.mnote IOSTAT = ios
+.note IOSTAT = ios
 .br
 is an
 .us input/output status specifier.
@@ -48,7 +49,7 @@ The integer variable or integer array element
 .id ios
 is defined with zero if no error condition exists or a positive
 integer value if an error condition exists.
-.mnote ERR = s
+.note ERR = s
 .br
 is an
 .us error specifier

@@ -37,7 +37,7 @@ All entries in the environment list can be displayed by using the
 with no arguments.
 A program can obtain the value for an environment variable by using
 the
-.kw getenv
+.reffunc getenv
 function.
 .np
 When the value of
@@ -77,13 +77,13 @@ space remaining to store an additional value.
 .np
 The
 .id &wfunc.
-function is a wide-character version of
+function is a wide character version of
 .id &funcb.
 the
 .arg env_name
 argument to
 .id &wfunc.
-is a wide-character string.
+is a wide character string.
 .np
 .id &funcb.
 and
@@ -112,9 +112,9 @@ to change it. To modify the return value of
 or
 .id &wfunc.
 without affecting the environment table, use
-.kw _strdup
+.reffunc strdup
 or
-.kw strcpy
+.reffunc strcpy
 to make a copy of the string.
 .bull
 If the argument
@@ -122,7 +122,7 @@ If the argument
 is not a literal string, you should duplicate the string, since &funcb
 does not copy the value; for example,
 .millust begin
-    putenv( _strdup( buffer ) );
+    putenv( strdup( buffer ) );
 .millust end
 .bull
 Never free a pointer to an environment entry, because the environment
@@ -203,7 +203,7 @@ Not enough memory to allocate a new environment string.
 .endterm
 .error end
 .see begin
-.seelist putenv clearenv getenv setenv
+.im seeenv
 .see end
 .exmp begin
 .blktext begin

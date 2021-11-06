@@ -16,14 +16,14 @@ The values for service are:
 .term _TIME_GETCLOCK
 Places the current system clock value in the location pointed to by
 .arg timeval
-.ct .li .
+.period
 The function returns zero
 if midnight has not passed since the last time the system clock was
 read or set; otherwise, it returns 1.
 .term _TIME_SETCLOCK
 Sets the system clock to the value in the location pointed to by
 .arg timeval
-.ct .li .
+.period
 .endterm
 .desc end
 .return begin

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +85,7 @@ static char *ReadInTrap( FILE *fp )
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
     start_seg = TINY_INFO( ret );
-    TrapCode = MK_FP( start_seg, 0 );
+    TrapCode = _MK_FP( start_seg, 0 );
     DIGLoader( Seek )( fp, hdr_size, DIG_ORG );
     DIGLoader( Read )( fp, TrapCode, size );
     DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_ORG );
@@ -96,7 +97,7 @@ static char *ReadInTrap( FILE *fp )
             }
             p = buff;
         }
-        fixup = MK_FP( p->seg + start_seg, p->off );
+        fixup = _MK_FP( p->seg + start_seg, p->off );
         *fixup += start_seg;
         ++p;
     }
@@ -111,7 +112,7 @@ void KillTrap( void )
         FiniFunc = NULL;
     }
     if( TrapCode != NULL ) {
-        TinyFreeBlock( FP_SEG( TrapCode ) );
+        TinyFreeBlock( _FP_SEG( TrapCode ) );
         TrapCode = NULL;
     }
 }
@@ -151,9 +152,9 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     } else {
         strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
         if( TrapCode->signature == TRAP_SIGNATURE ) {
-            init_func = MK_FP( FP_SEG( TrapCode ), TrapCode->init_off );
-            FiniFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->fini_off );
-            ReqFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->req_off );
+            init_func = _MK_FP( _FP_SEG( TrapCode ), TrapCode->init_off );
+            FiniFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->fini_off );
+            ReqFunc = _MK_FP( _FP_SEG( TrapCode ), TrapCode->req_off );
             *trap_ver = init_func( parms, buff, trap_ver->remote );
             if( buff[0] == '\0' ) {
                 if( TrapVersionOK( *trap_ver ) ) {

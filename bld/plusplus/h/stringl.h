@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,25 +37,32 @@
 typedef struct string_literal_t STRING_LITERAL;
 typedef STRING_LITERAL *STRING_CONSTANT;
 
+typedef enum string_literal_flags { // string literal flags
+    STRLIT_NONE    = 0,
+    STRLIT_CONCAT  = 0x01,  // - is result of concatenation
+    STRLIT_MLINE   = 0x02,  // - concat parts were on different lines
+    STRLIT_WIDE    = 0x04,  // - this is L"string"
+} string_literal_flags;
+
 struct string_literal_t {
-    STRING_CONSTANT     next;               // - next entry
-    back_handle         cg_handle;          // - handle during code generation
-    size_t              len;                // - length in bytes not including '\0'
-    fe_seg_id           segid;              // - segment containing string bytes
-    unsigned            concat      : 1;    // - is result of concatenation
-    unsigned            multi_line  : 1;    // - concat parts were on different lines
-    unsigned            wide_string : 1;    // - this is L"string"
-    char                string[1];          // - data
+    STRING_CONSTANT         next;       // - next entry
+    back_handle             cg_handle;  // - handle during code generation
+    target_size_t           alloc_len;  // - allocated length in bytes
+    target_size_t           len;        // - current used length in bytes including null terminate character
+    fe_seg_id               segid;      // - segment containing string bytes
+    string_literal_flags    flags;      // - attributes
+    char                    string[1];  // - data
 };
 
 extern void             StringTrash( STRING_CONSTANT );
-extern STRING_CONSTANT  StringCreate( char *, size_t );
+extern STRING_CONSTANT  StringCreate( const char *, size_t, bool );
 extern STRING_CONSTANT  StringConcat( STRING_CONSTANT, STRING_CONSTANT );
 extern void             StringConcatDifferentLines( STRING_CONSTANT );
 extern bool             StringSame( STRING_CONSTANT, STRING_CONSTANT );
-extern size_t           StringByteLength( STRING_CONSTANT );
-extern size_t           StringAWStrLen( STRING_CONSTANT );
-extern char             *StringBytes( STRING_CONSTANT );
+extern target_size_t    StringLength( STRING_CONSTANT );
+extern target_size_t    StringAWStrLen( STRING_CONSTANT );
+extern target_size_t    StringAlign( STRING_CONSTANT );
+extern target_size_t    StringCharSize( STRING_CONSTANT );
 
 extern void StringWalk(         // WALK DEFINED STRING LITERALS
     void (*walker)              // - walking routine

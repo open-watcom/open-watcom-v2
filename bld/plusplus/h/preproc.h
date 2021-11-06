@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +50,19 @@
 #define BUF_SIZE                (1<<BUF_SIZE_SHIFT)
 
 #define IS_ID_OR_KEYWORD(t)     (t == T_ID || t >= FIRST_KEYWORD && t <= LAST_KEYWORD)
+
+#define PPOPERATOR_DEFINED          "defined"
+#define PPOPERATOR_PRAGMA           "_Pragma"
+
+#define IS_PPOPERATOR_DEFINED(s)    (strcmp(s, PPOPERATOR_DEFINED) == 0)
+#define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CompFlags.enable_std0x) \
+                                    && l == (sizeof(PPOPERATOR_PRAGMA) - 1) \
+                                    && memcmp(s, PPOPERATOR_PRAGMA, sizeof(PPOPERATOR_PRAGMA)) == 0)
+
+enum {
+    EL_NEW_LINE = 0x01,
+    EL_NULL     = 0
+};
 
 typedef void token_source_fn( void );
 
@@ -99,10 +113,8 @@ global  char        *WholeFName;        /* whole file name with suffix */
 global  char        PreProcChar;        /* preprocessor directive indicator */
 global  int         SwitchChar;         // DOS switch character
 
-// token buffer
-// extra 16 is for unrolled scanning loops
-// extra uint_32 is for buffer overrun checking in debugging compiler
-global  char        Buffer[BUF_SIZE + 16 + sizeof( uint_32 )];
+// token buffer, dynamicaly allocated
+global  char        *Buffer;
 
 extern  int         (*NextChar)( void );    // next-character routine (initialized in SRCFILE)
 
@@ -179,6 +191,11 @@ unsigned PpVerifyWidth(         // VERIFY WIDTH FOR PREPROCESSING
 void PpSetWidth(                // SET WIDTH FOR PREPROCESSING
     unsigned width )            // - new width
 ;
+void CppEmitPoundLine(          // EMIT #LINE DIRECTIVE, IF REQ'D
+    LINE_NO line_num,           // - line number
+    const char *filename,       // - file name
+    unsigned control )          // - emit control
+;
 void PpStartFile(               // INDICATE START OF A FILE
     void )
 ;
@@ -198,8 +215,10 @@ void DefineAlternativeTokens(   // DEFINE ALTERNATIVE TOKENS
     void )
 ;
 AUX_INFO *PragmaLookup(         // FIND A PRAGMA
-    const char *name,           // - name of the pragma
-    magic_word_idx index )      // - index (M_UNKNOWN if not known)
+    const char *name )          // - name of the pragma
+;
+AUX_INFO *PragmaLookupMagic(    // FIND A PRAGMA
+    magic_words mword )         // - magic index
 ;
 AUX_INFO *PragmaGetIndex( AUX_INFO * );
 
@@ -225,14 +244,6 @@ void DirectiveInit(             // INITIALIZE FOR DIRECTIVE PROCESSING
 void DoMacroExpansion(          // EXPAND A MACRO
     MEPTR mentry )              // - macro to expand
 ;
-void EmitLine(                  // EMIT #LINE DIRECTIVE, IF REQ'D
-    LINE_NO line_num,           // - line number
-    const char *filename )      // - file name
-;
-void EmitLineNL(                // EMIT #LINE DIRECTIVE ON ITS OWN LINE, IF REQ'D
-    LINE_NO line_num,           // - line number
-    const char *filename )      // - file name
-;
 void Expecting(                 // ISSUE EXPECTING ERROR FOR A TOKEN
     const char *a_token )       // - required token
 ;
@@ -242,7 +253,7 @@ const char *TokenString(        // RETURN A PRINTABLE STRING FOR CURRENT TOK
 bool ExpectingToken(            // ISSUE EXPECTING ERROR FOR A TOKEN
     TOKEN token )               // - required token
 ;
-void GetMacroToken(             // GET NEXT TOKEN
+TOKEN GetMacroToken(            // GET NEXT TOKEN
     bool doing_macro_expansion )// - true ==> doing an expansion
 ;
 int GetNextChar(                // GET NEXT CHARACTER FROM A SOURCE FILE
@@ -315,10 +326,10 @@ void PrtToken(                  // PRINT PREPROC TOKEN IF REQ'D
 void ReScanInit(                // RE-SCAN TOKEN INITIALIZATION
     const char *buf )
 ;
-bool ReScanToken(               // RE-SCAN TOKEN FROM BUFFER
+TOKEN ReScanToken(              // RE-SCAN TOKEN FROM BUFFER
     void )
 ;
-bool ScanOptionalComment(       // SCAN AN OPTIONAL COMMENT
+bool DoScanOptionalComment(     // SCAN AN OPTIONAL COMMENT
     void )
 ;
 TOKEN ScanToken(                // SCAN NEXT TOKEN

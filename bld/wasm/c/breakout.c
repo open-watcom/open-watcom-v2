@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,12 +53,14 @@ bool directive( token_idx i, asm_token direct )
     /* no expansion on the following */
     switch( direct ) {
     case T_MASM:
+        // switch to TASM MASM mode
+        Options.mode |= MODE_TASM | MODE_MASM5;
         Options.mode &= ~MODE_IDEAL;
-        Options.locals_len = 0;
         return( RC_OK );
     case T_IDEAL:
-        Options.mode |= MODE_IDEAL;
-        Options.locals_len = 2;
+        // switch to TASM IDEAL mode
+        Options.mode |= MODE_TASM | MODE_IDEAL;
+        Options.mode &= ~MODE_MASM5;
         return( RC_OK );
     case T_DOT_286C:
         direct = T_DOT_286;
@@ -221,7 +224,11 @@ bool directive( token_idx i, asm_token direct )
         return( SimSeg(i) );
     case T_WARN:
     case T_NOWARN:
+        AsmWarn( 4, IGNORING_DIRECTIVE );
         return( RC_OK ); /* Not implemented yet */
+    case T_SMART:
+        AsmWarn( 4, IGNORING_DIRECTIVE );
+        return( RC_OK );
     case T_DOT_ALPHA:
     case T_DOT_SEQ:
     case T_DOT_LIST:

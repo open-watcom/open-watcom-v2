@@ -49,9 +49,9 @@
 :elsesegment
  #ifdef __SW_ZU
 :endsegment
-  #define va_start(__ap)    ((__ap)[0]=(char _WCFAR*)&__alist,(void)0)
+  #define va_start(__ap)    ((__ap)=(char _WCFAR*)&__alist,(void)0)
  #else
-  #define va_start(__ap)    ((__ap)[0]=(char *)&__alist,(void)0)
+  #define va_start(__ap)    ((__ap)=(char *)&__alist,(void)0)
  #endif
 :segment !INTEL_ONLY
 #endif

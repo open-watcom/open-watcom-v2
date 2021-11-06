@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ bool SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
 {
     HDC         hdc;
     HDC         memdc;
-    HBITMAP     oldbitmap;
+    HBITMAP     old_hbitmap;
     HWND        bitmappickwindow;
     MSG         msg;
     RECT        screen_coords;
@@ -173,14 +173,14 @@ bool SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
     hdc = GetDC( NULL );
     memdc = CreateCompatibleDC( hdc );
 
-    oldbitmap = SelectObject( memdc, node->handbitmap );
+    old_hbitmap = SelectObject( memdc, node->and_hbitmap );
     PatBlt( memdc, 0, 0, node->width, node->height, BLACKNESS );
 
-    SelectObject( memdc, node->hxorbitmap );
+    SelectObject( memdc, node->xor_hbitmap );
     BitBlt( memdc, 0, 0, node->width, node->height, hdc, screen_coords.left,
             screen_coords.top, SRCCOPY );
     ReleaseDC( NULL, hdc );
-    SelectObject( memdc, oldbitmap );
+    SelectObject( memdc, old_hbitmap );
     DeleteDC( memdc );
 
     ShowWindow( HMainWindow, prevState );

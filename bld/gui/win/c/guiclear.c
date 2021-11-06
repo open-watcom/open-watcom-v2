@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "guiwind.h"
 #include "guicontr.h"
 
-bool GUIClearText( gui_window *wnd, gui_ctl_id id )
+bool GUIAPI GUIClearText( gui_window *wnd, gui_ctl_id id )
 {
     HWND                control;
 
@@ -44,7 +45,7 @@ bool GUIClearText( gui_window *wnd, gui_ctl_id id )
     return( true );
 }
 
-bool GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable )
+bool GUIAPI GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable )
 {
     HWND                control;
 
@@ -56,7 +57,7 @@ bool GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable )
     return( false );
 }
 
-bool GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id )
+bool GUIAPI GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id )
 {
     HWND                control;
 

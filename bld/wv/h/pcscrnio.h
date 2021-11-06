@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,58 +31,19 @@
 ****************************************************************************/
 
 
-#define STR(...)    #__VA_ARGS__
-#define INSTR(...)  STR(__VA_ARGS__)
+#define _1k                         1024UL
+#define _64k                        (64 * _1k)
+#define RoundTo1K(s)                (((s) + ( _1k - 1 )) & ~( _1k - 1 ))
 
-#if defined(__OSI__)
- extern  void   __Int10();
- #define _INT_10        "call __Int10"
-#else
- #define _INT_10        "int 10h"
-#endif
+#define FONT_TABLE_SIZE             (8 * _1k)
 
-#ifdef _M_I86
-#define CALL_INT10(n)   "push bp" INSTR( mov ah, n ) "int 10h" "pop bp"
-#else
-#define CALL_INT10(n)   "push ebp" INSTR( mov ah, n ) _INT_10 "pop ebp"
-#endif
+#define ISTEXTMODE( mode )          ((mode) < 4 || (mode) == 7)
+#define ISMONOMODE( mode )          ((mode) == 7 || (mode) == 15)
 
-#ifdef _M_I86
-#define RealModeSegmPtr( segm )         MK_FP( segm, 0 )
-#define RealModeData( segm, off, type ) *(type __far *)MK_FP( segm, off )
-#else
-#define RealModeSegmPtr( segm )         EXTENDER_RM2PM( segm, 0 )
-#define RealModeData( segm, off, type ) *(type __far *)EXTENDER_RM2PM( segm, off )
-#endif
-#define BIOSData( off, type )           RealModeData( 0x0040, off, type )
-
-#define _1k                 1024UL
-#define _64k                (64 * _1k)
-#define RoundTo1K(s)        (((s) + ( _1k - 1 )) & ~( _1k - 1 ))
-
-#define FONT_TABLE_SIZE     (8 * _1k)
-
-#define VIDMONOINDXREG      0x03B4
-#define VIDCOLRINDXREG      0x03D4
-
-#define ISTEXTMODE( mode )  ((mode) < 4 || (mode) == 7)
-#define ISMONOMODE( mode )  ((mode) == 7 || (mode) == 15)
-
-#define DOUBLE_DOT_CHR_SET  0x12
-#define COMPRESSED_CHR_SET  0x11
-#define USER_CHR_SET        0
-
-#define EGA_CURSOR_OFF      0x1e00
-#define NORM_CURSOR_OFF     0x2000
-#define CGA_CURSOR_ON       0x0607
-#define MON_CURSOR_ON       0x0b0c
-
-#define CURS_LOCATION_LOW   0x0f
-#define CURS_LOCATION_HI    0x0e
-#define CURS_START_SCANLINE 0x0a
-#define CURS_END_SCANLINE   0x0b
-
-#define CURSOR_REG2INS(r)   ((((r) + 0x100U) / 2U + 0x100U) & 0xff00U) + ((r) & 0x00ffU)
+#define CURS_LOCATION_LOW           0x0f
+#define CURS_LOCATION_HI            0x0e
+#define CURS_START_SCANLINE         0x0a
+#define CURS_END_SCANLINE           0x0b
 
 #define _seq_write( reg, val )      _ega_write( SEQ_PORT, reg, val )
 #define _graph_write( reg, val )    _ega_write( GRA_PORT, reg, val )
@@ -93,11 +54,6 @@
 #define VIDSetRow( vidport, row )   _WriteCRTCReg( vidport, CURS_LOCATION_LOW, row )
 #define VIDGetCol( vidport )        _ReadCRTCReg( vidport, CURS_LOCATION_HI )
 #define VIDSetCol( vidport, col )   _WriteCRTCReg( vidport, CURS_LOCATION_HI, col )
-
-#define VIDEO_VECTOR        0x10
-#define MSMOUSE_VECTOR      0x33
-
-#define IRET                0xCF
 
 enum ega_seqencer {
     SEQ_PORT        = 0x3c4,
@@ -219,16 +175,6 @@ typedef enum {
     VID_STATE_SWAP          = VID_STATE_ALL
 } vid_state_info;
 
-enum {
-    BD_EQUIP_LIST   = 0x10,
-    BD_CURR_MODE    = 0x49,
-    BD_REGEN_LEN    = 0x4c,
-    BD_CURPOS       = 0x50,
-    BD_ACT_VPAGE    = 0x62,
-    BD_MODE_CTRL    = 0x65,
-    BD_VID_CTRL1    = 0x87,
-};
-
 typedef enum {
     ADAPTER_MONO = -1,  // -1
     ADAPTER_NONE,       // 0
@@ -236,24 +182,24 @@ typedef enum {
 } adapter_type;
 
 #define DISP_TYPES() \
-    pick_disp( DISP_NONE,           ADAPTER_NONE ) \
-    pick_disp( DISP_MONOCHROME,     ADAPTER_MONO ) \
-    pick_disp( DISP_CGA,            ADAPTER_COLOUR ) \
-    pick_disp( DISP_RESERVED1,      ADAPTER_NONE ) \
-    pick_disp( DISP_EGA_COLOUR,     ADAPTER_COLOUR ) \
-    pick_disp( DISP_EGA_MONO,       ADAPTER_MONO ) \
-    pick_disp( DISP_PGA,            ADAPTER_COLOUR ) \
-    pick_disp( DISP_VGA_MONO,       ADAPTER_COLOUR ) \
-    pick_disp( DISP_VGA_COLOUR,     ADAPTER_COLOUR ) \
-    pick_disp( DISP_RESERVED2,      ADAPTER_NONE ) \
-    pick_disp( DISP_RESERVED3,      ADAPTER_NONE ) \
-    pick_disp( DISP_MODEL30_MONO,   ADAPTER_COLOUR ) \
-    pick_disp( DISP_MODEL30_COLOUR, ADAPTER_COLOUR )
+    pick( DISP_NONE,            ADAPTER_NONE ) \
+    pick( DISP_MONOCHROME,      ADAPTER_MONO ) \
+    pick( DISP_CGA,             ADAPTER_COLOUR ) \
+    pick( DISP_RESERVED1,       ADAPTER_NONE ) \
+    pick( DISP_EGA_COLOUR,      ADAPTER_COLOUR ) \
+    pick( DISP_EGA_MONO,        ADAPTER_MONO ) \
+    pick( DISP_PGA,             ADAPTER_COLOUR ) \
+    pick( DISP_VGA_MONO,        ADAPTER_COLOUR ) \
+    pick( DISP_VGA_COLOUR,      ADAPTER_COLOUR ) \
+    pick( DISP_RESERVED2,       ADAPTER_NONE ) \
+    pick( DISP_RESERVED3,       ADAPTER_NONE ) \
+    pick( DISP_MODEL30_MONO,    ADAPTER_COLOUR ) \
+    pick( DISP_MODEL30_COLOUR,  ADAPTER_COLOUR )
 
 typedef enum {
-    #define pick_disp(e,t) e,
+    #define pick(dt,at)     dt,
         DISP_TYPES()
-    #undef pick_disp
+    #undef pick
 } hw_display_type;
 
 typedef struct {
@@ -263,101 +209,34 @@ typedef struct {
 
 #ifdef __WINDOWS__
 #define SCREEN_OPTS() \
-    pick_opt( OPT_MONO,         "Monochrome" ) \
-    pick_opt( OPT_COLOR,        "Color" ) \
-    pick_opt( OPT_COLOUR,       "Colour" ) \
-    pick_opt( OPT_EGA43,        "Ega43" ) \
-    pick_opt( OPT_FASTSWAP,     "FAstswap" ) \
-    pick_opt( OPT_VGA50,        "Vga50" ) \
-    pick_opt( OPT_OVERWRITE,    "Overwrite" ) \
-    pick_opt( OPT_PAGE,         "Page" ) \
-    pick_opt( OPT_SWAP,         "Swap" ) \
-    pick_opt( OPT_TWO,          "Two" )
+    pick( "Monochrome", OPT_MONO        ) \
+    pick( "Color",      OPT_COLOR       ) \
+    pick( "Colour",     OPT_COLOUR      ) \
+    pick( "Ega43",      OPT_EGA43       ) \
+    pick( "FAstswap",   OPT_FASTSWAP    ) \
+    pick( "Vga50",      OPT_VGA50       ) \
+    pick( "Overwrite",  OPT_OVERWRITE   ) \
+    pick( "Page",       OPT_PAGE        ) \
+    pick( "Swap",       OPT_SWAP        ) \
+    pick( "Two",        OPT_TWO         )
 #else
 #define SCREEN_OPTS() \
-    pick_opt( OPT_MONO,         "Monochrome" ) \
-    pick_opt( OPT_COLOR,        "Color" ) \
-    pick_opt( OPT_COLOUR,       "Colour" ) \
-    pick_opt( OPT_EGA43,        "Ega43" ) \
-    pick_opt( OPT_VGA50,        "Vga50" ) \
-    pick_opt( OPT_OVERWRITE,    "Overwrite" ) \
-    pick_opt( OPT_PAGE,         "Page" ) \
-    pick_opt( OPT_SWAP,         "Swap" ) \
-    pick_opt( OPT_TWO,          "Two" )
+    pick( "Monochrome", OPT_MONO        ) \
+    pick( "Color",      OPT_COLOR       ) \
+    pick( "Colour",     OPT_COLOUR      ) \
+    pick( "Ega43",      OPT_EGA43       ) \
+    pick( "Vga50",      OPT_VGA50       ) \
+    pick( "Overwrite",  OPT_OVERWRITE   ) \
+    pick( "Page",       OPT_PAGE        ) \
+    pick( "Swap",       OPT_SWAP        ) \
+    pick( "Two",        OPT_TWO         )
 #endif
 
 typedef enum {
-    #define pick_opt(e,t) e,
+    #define pick(t,e)   e,
         SCREEN_OPTS()
-    #undef pick_opt
+    #undef pick
 } screen_opt;
-
-typedef struct {
-    unsigned char           points;
-    unsigned char           mode;
-    unsigned char           swtchs;
-    unsigned short          curtyp;
-    union {
-        struct {
-            unsigned char   rows;
-            unsigned char   attr;
-        } strt;
-        struct {
-            unsigned char   page;
-            unsigned short  curpos;
-        } save;
-    };
-} screen_info;
-
-#ifdef _M_I86
-extern unsigned BIOSDevCombCode( void );
-#pragma aux BIOSDevCombCode = \
-        "xor  al,al"        \
-        CALL_INT10( 0x1a )  \
-        "cmp  al,1ah"       \
-        "jz short L1"       \
-        "sub  bx,bx"        \
-    "L1:"                   \
-    __parm              [] \
-    __value             [__bx] \
-    __modify __exact    [__ax __bx]
-#endif
-
-extern unsigned char BIOSGetMode( void );
-#pragma aux BIOSGetMode = \
-        CALL_INT10( 0x0f )  \
-    __parm              [] \
-    __value             [__al] \
-    __modify __exact    [__ax __bh]
-
-extern unsigned long BIOSEGAInfo( void );
-#ifdef _M_I86
-#pragma aux BIOSEGAInfo = \
-        "mov    bx,0ff10h"  \
-        CALL_INT10( 0x12 )  \
-    __parm              [] \
-    __value             [__cx __bx] \
-    __modify __exact    [__ah __bx __cx]
-#else
-#pragma aux BIOSEGAInfo = \
-        "mov  bx,0ff10h"    \
-        CALL_INT10( 0x12 )  \
-        "shl  ecx,10h"      \
-        "mov  cx,bx"        \
-    __parm              [] \
-    __value             [__ecx] \
-    __modify __exact    [__ah __bx __ecx]
-#endif
-
-#ifdef _M_I86
-extern void _DoRingBell( unsigned char );
-#pragma aux _DoRingBell = \
-        "mov    al,7"       \
-        CALL_INT10( 0x0e )  \
-    __parm              [__bh] \
-    __value             \
-    __modify __exact    [__ax]
-#endif
 
 #ifdef _M_I86
 extern void Fillb( unsigned, unsigned, unsigned char, unsigned );
@@ -442,126 +321,3 @@ extern void _enablev( unsigned short );
     __parm              [__dx] \
     __value             \
     __modify __exact    [__al __dx]
-
-
-extern void BIOSSetPage( unsigned char pagenb );
-#pragma aux BIOSSetPage = \
-        CALL_INT10( 5 )     \
-    __parm              [__al] \
-    __value             \
-    __modify __exact    [__ah]
-
-extern unsigned char BIOSGetPage( void );
-#pragma aux BIOSGetPage = \
-        CALL_INT10( 0x0f )  \
-    __parm              [] \
-    __value             [__bh] \
-    __modify __exact    [__ax __bh]
-
-extern void BIOSSetMode( unsigned char mode );
-#pragma aux BIOSSetMode = \
-        CALL_INT10( 0 )     \
-    __parm              [__al] \
-    __value             \
-    __modify __exact    [__ax]
-
-extern unsigned short BIOSGetCurPos( unsigned char pagenb );
-#pragma aux BIOSGetCurPos = \
-        CALL_INT10( 3 )     \
-    __parm              [__bh] \
-    __value             [__dx] \
-    __modify __exact    [__ax __cx __dx]
-
-extern void BIOSSetCurPos( unsigned short rowcol, unsigned char pagenb );
-#pragma aux BIOSSetCurPos = \
-        CALL_INT10( 2 )     \
-    __parm              [__dx] [__bh] \
-    __value             \
-    __modify __exact    [__ah]
-
-extern unsigned short BIOSGetCurTyp( unsigned char pagenb );
-#pragma aux BIOSGetCurTyp = \
-        CALL_INT10( 3 )     \
-    __parm              [__bh] \
-    __value             [__cx] \
-    __modify __exact    [__ax __cx __dx]
-
-extern void BIOSSetCurTyp( unsigned short startend );
-#pragma aux BIOSSetCurTyp = \
-        CALL_INT10( 1 )     \
-    __parm              [__cx] \
-    __value             \
-    __modify __exact    [__ah]
-
-extern unsigned char BIOSGetAttr( unsigned char pagenb );
-#pragma aux BIOSGetAttr = \
-        CALL_INT10( 8 )     \
-    __parm              [__bh] \
-    __value             [__ah] \
-    __modify __exact    [__ax]
-
-extern void BIOSSetAttr( unsigned char attr );
-#pragma aux BIOSSetAttr = \
-        "xor  cx,cx"        \
-        "mov  dx,3250h"     \
-        "xor  al,al"        \
-        CALL_INT10( 6 )     \
-    __parm              [__bh] \
-    __value             \
-    __modify __exact    [__ax __cx __dx]
-
-extern unsigned char BIOSGetRows( void );
-#ifdef _M_I86
-#pragma aux BIOSGetRows = \
-        "push   es"         \
-        "mov    al,30h"     \
-        "xor    bh,bh"      \
-        CALL_INT10( 0x11 )  \
-        "inc    dl"         \
-        "pop    es"         \
-    __parm              [] \
-    __value             [__dl] \
-    __modify __exact    [__ax __bh __cx __dl]
-#else
-#pragma aux BIOSGetRows = \
-        "push es"           \
-        "mov  al,30h"       \
-        "xor  bh,bh"        \
-        CALL_INT10( 0x11 )  \
-        "inc  dl"           \
-        "pop  es"           \
-    __parm              [] \
-    __value             [__dl] \
-    __modify __exact    [__ax __ebx __ecx __edx __edi] /* workaround bug in DOS4G */
-#endif
-
-extern unsigned short BIOSGetPoints( void );
-#ifdef _M_I86
-#pragma aux BIOSGetPoints = \
-        "push   es"         \
-        "mov    al,30h"     \
-        "xor    bh,bh"      \
-        CALL_INT10( 0x11 )  \
-        "pop    es"         \
-    __parm              [] \
-    __value             [__cx] \
-    __modify __exact    [__ax __bh __cx __dl]
-#else
-#pragma aux BIOSGetPoints = \
-        "push es"           \
-        "mov  al,30h"       \
-        "xor  bh,bh"        \
-        CALL_INT10( 0x11 )  \
-        "pop  es"           \
-    __parm              [] \
-    __value             [__cx] \
-    __modify __exact    [__ax __ebx __ecx __edx __edi] /* workaround bug in DOS4G */
-#endif
-
-extern void BIOSEGAChrSet( unsigned char vidroutine );
-#pragma aux BIOSEGAChrSet = \
-        "xor  bl,bl"        \
-        CALL_INT10( 0x11 )  \
-    __parm              [__al] \
-    __value             \
-    __modify __exact    [__ah __bl]

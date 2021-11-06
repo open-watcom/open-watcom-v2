@@ -134,6 +134,9 @@ inline wchar_t *_tcstok( wchar_t *__p1, const wchar_t *__p2 ) {
 #define _tcstok(__p1,__p2)      wcstok((__p1),(__p2),NULL)
 #endif
 
+#define _tcserror       _wcserror
+#define __tcserror      __wcserror
+
 #define _tcsdup         _wcsdup
 #define _tcsnset        _wcsnset
 #define _tcsrev         _wcsrev
@@ -217,6 +220,7 @@ inline wchar_t *_tcstok( wchar_t *__p1, const wchar_t *__p2 ) {
 #define _tfreopen       _wfreopen
 #define _tperror        _wperror
 #define _ttmpnam        _wtmpnam
+#define _ttempnam       _wtempnam
 
 /* Io functions */
 
@@ -240,8 +244,8 @@ inline wchar_t *_tcstok( wchar_t *__p1, const wchar_t *__p2 ) {
 
 #define _tstat          _wstat
 #define _tstati64       _wstati64
-#define _tfstat         _wfstat
-#define _tfstati64      _wfstati64
+#define _tfstat         fstat
+#define _tfstati64      _fstati64
 
 /* Setlocale functions */
 
@@ -335,30 +339,6 @@ inline wchar_t *_wcsspnp( const wchar_t *__p1, const wchar_t *__p2 ) {
                                   ((__p1)+wcsspn(__p1,__p2)) : NULL)
 #endif
 
-#ifdef __cplusplus
-namespace std {
-#endif
-
-_WMRTLINK extern double wcstod( const wchar_t *__nptr, wchar_t **__endptr );
-_WCRTLINK extern long int wcstol( const wchar_t *, wchar_t **, int );
-_WCRTLINK extern unsigned long int wcstoul( const wchar_t *, wchar_t **, int );
-
-#ifdef __cplusplus
-} // namespace std
-using std::wcstod;
-using std::wcstol;
-using std::wcstoul;
-#endif
-
-_WCRTLINK extern int _wcsicmp( const wchar_t *, const wchar_t * );
-_WCRTLINK extern int _wcsnicmp( const wchar_t *, const wchar_t *, size_t );
-_WCRTLINK extern wchar_t *_wcsdup( const wchar_t * );
-_WCRTLINK extern wchar_t *_wcslwr( wchar_t * );
-_WCRTLINK extern wchar_t *_wcsupr( wchar_t * );
-_WCRTLINK extern wchar_t *_wcsset( wchar_t *, wchar_t );
-_WCRTLINK extern wchar_t *_wcsnset( wchar_t *, int, size_t );
-_WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
-
 #else
 // **************************** SBCS and MBCS ********************************
 
@@ -426,6 +406,9 @@ _WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
 #define _tcsxfrm        strxfrm
 #define _tcsdup         _strdup
 
+#define _tcserror       strerror
+#define __tcserror      _strerror
+
 /* Execute functions */
 
 #define _texecl         execl
@@ -459,14 +442,23 @@ _WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
 
 /* Directory functions */
 
+:: POSIX
 #define _tchdir         chdir
+:: POSIX
 #define _tclosedir      closedir
+:: POSIX
 #define _tgetcwd        getcwd
-#define _tgetdcwd       getdcwd
+:: MS
+#define _tgetdcwd       _getdcwd
+:: POSIX
 #define _tmkdir         mkdir
+:: POSIX
 #define _topendir       opendir
+:: POSIX
 #define _treaddir       readdir
+:: POSIX
 #define _trewinddir     rewinddir
+:: POSIX
 #define _trmdir         rmdir
 
 /* Directory struct */
@@ -488,22 +480,38 @@ _WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
 #define _tfsopen        _fsopen
 #define _tfopen         fopen
 #define _tfreopen       freopen
+:: ISO
 #define _tperror        perror
+:: ISO
 #define _ttmpnam        tmpnam
+:: POSIX
+#define _ttempnam       tempnam
 
 /* Io functions */
 
+:: ISO
 #define _taccess        access
+:: POSIX
 #define _tchmod         chmod
+:: POSIX
 #define _tcreat         creat
+:: MS
 #define _tfindfirst     _findfirst
+:: MS
 #define _tfindfirsti64  _findfirsti64
+:: MS
 #define _tfindnext      _findnext
+:: MS
 #define _tfindnexti64   _findnexti64
+:: POSIX
 #define _topen          open
+:: ISO
 #define _tremove        remove
+:: ISO
 #define _trename        rename
-#define _tsopen         sopen
+:: MS
+#define _tsopen         _sopen
+:: POSIX
 #define _tunlink        unlink
 
 #define _tfinddata_t    _finddata_t
@@ -886,16 +894,16 @@ typedef char            TCHAR;
 #define _tcsstr         strstr
 #define _tcstok         strtok
 
-#define _tcsnset        strnset
-#define _tcsrev         strrev
-#define _tcsset         strset
+#define _tcsnset        _strnset
+#define _tcsrev         _strrev
+#define _tcsset         _strset
 
 #define _tcscmp         strcmp
-#define _tcsicmp        stricmp
+#define _tcsicmp        _stricmp
 #define _tcsnccmp       strncmp
 #define _tcsncmp        strncmp
-#define _tcsncicmp      strnicmp
-#define _tcsnicmp       strnicmp
+#define _tcsncicmp      _strnicmp
+#define _tcsnicmp       _strnicmp
 
 #define _tcscoll        strcoll
 #define _tcsicoll       _stricoll
@@ -909,7 +917,7 @@ typedef char            TCHAR;
 #define _tcsclen        strlen
 #define _tcsnccat       strncat
 #define _tcsnccpy       strncpy
-#define _tcsncset       strnset
+#define _tcsncset       _strnset
 
 #define _tcsdec         _strdec
 #define _tcsinc         _strinc
@@ -919,8 +927,8 @@ typedef char            TCHAR;
 #define _tcsninc        _strninc
 #define _tcsspnp        _strspnp
 
-#define _tcslwr         strlwr
-#define _tcsupr         strupr
+#define _tcslwr         _strlwr
+#define _tcsupr         _strupr
 #define _tcsxfrm        strxfrm
 
 #if defined(__cplusplus) && defined(__INLINE_FUNCTIONS__)

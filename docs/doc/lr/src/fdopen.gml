@@ -20,25 +20,25 @@ function associates a stream with the file &handle
 .arg &fd
 which represents an opened file or device.
 The &handle was returned by one of
-.kw creat
+.reffunc creat
 .ct ,
-.kw dup
+.reffunc dup
 .ct ,
-.kw dup2
+.reffunc dup2
 .ct ,
 .if '&machsys' eq 'QNX' .do begin
-.kw fcntl
+.reffunc fcntl
 .ct ,
 .do end
-.kw open
+.reffunc open
 .ct ,
 .if '&machsys' eq 'QNX' .do begin
-.kw pipe
+.reffunc pipe
 .ct ,
 .do end
 or
-.kw sopen
-.ct .li .
+.reffunc _sopen
+.period
 The open mode
 .arg mode
 must match the mode with which the file or device was originally
@@ -47,7 +47,7 @@ opened.
 The argument
 .arg mode
 is described in the description of the
-.kw fopen
+.reffunc fopen
 function.
 .im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin
@@ -75,7 +75,7 @@ returns a NULL pointer.
 .see begin
 .seelist creat _dos_open dup dup2 fcntl fdopen fopen
 .seelist freopen _fsopen _grow_handles _hdopen open
-.seelist _open_osfhandle pipe _popen sopen
+.seelist _open_osfhandle pipe _popen _sopen
 .see end
 .exmp begin
 #include <stdio.h>

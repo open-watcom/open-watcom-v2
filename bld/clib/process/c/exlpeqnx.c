@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,24 +37,24 @@
 #include <process.h>
 #include <stddef.h>
 #include <stdarg.h>
+#include "_process.h"
+#include "_environ.h"
 
 
 #ifdef __STDC__
-_WCRTLINK int (execlpe)( file, arg, ... )
+_WCRTLINK int (execlpe)( const char *file, const char *arg, ... )
 #else
-_WCRTLINK int (execlpe)( file, arg )
+_WCRTLINK int (execlpe)( const char *file, const char *arg )
 #endif
-    const char  *file;      /* path name of file to be executed */
-    const char  *arg;
 {
-    va_list ap;
-    const char ** _WCNEAR env;
-    char *p;
+    va_list         args;
+    ENVP_TYPE_ARR   env;
 
-    for( va_start( ap, file ); (p = va_arg( ap, char * )) != NULL;  )
+    va_start( args, file );
+    while( ARGS_NEXT_VA( args ) != NULL )
         ;
-    env = (const char **) va_arg( ap, char * );
-    va_end( ap );
+    env = ENVP_ARRAY_VA( args );
+    va_end( args );
 
     return( spawnvpe( P_OVERLAY, file, &arg, env ) );
 }

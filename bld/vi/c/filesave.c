@@ -43,6 +43,8 @@
 #include "clibext.h"
 
 
+#define IS_WS( x )  ((x) == ' ' || (x) == '\t')
+
 static int fileHandle;
 
 /*
@@ -58,7 +60,7 @@ static int trimLine( char *buffer, line *cline )
     len = strlen( data );
     if( EditFlags.CMode || EditFlags.RemoveSpaceTrailing ) {
         for( i = len; i-- > 0; ) {
-            if( data[i] != ' ' && data[i] != '\t' ) {
+            if( !IS_WS( data[i] ) ) {
                 break;
             }
             len = i;
@@ -273,8 +275,8 @@ vi_rc SaveFile( const char *name, linenum start, linenum end, bool dammit )
         }
     } else {
         fileHandle = 0;
-#ifdef __WATCOMC__
-        setmode( fileno( stdout ), O_BINARY );
+#if !defined( __UNIX__ )
+        _setmode( fileno( stdout ), O_BINARY );
 #endif
     }
 
@@ -522,7 +524,7 @@ vi_rc DoKeyboardSave( void )
 {
 #ifdef __WIN__
     vi_rc       rc;
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( CurrentFile != NULL ) {
         _splitpath2( CurrentFile->name, pg.buffer, NULL, NULL, &pg.fname, NULL );

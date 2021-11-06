@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,6 +61,13 @@
 
 #include "clibext.h"
 
+
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(num,eng,jap)   + 1
+        #include "usage.gh"
+    #undef pick
+};
 
 extern touchflags   TouchFlags;
 extern timestruct   TimeAdjust;
@@ -144,10 +151,8 @@ static void usage( void )
     for( text = useText; *text != NULL; text++ ) {
         printf( "%s\n", *text );
     }
-    for( i = MSG_USAGE_BASE;; i++ ) {
+    for( i = MSG_USAGE_BASE; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         MsgGet( i, msgbuff );
-        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) )
-            break;
         printf( "%s\n", msgbuff );
     }
     showDateTimeFormat();
@@ -402,7 +407,7 @@ static void doTouch( void )
     struct file_list *curr;
     struct utimbuf stamp;
     struct stat sb;
-    PGROUP2 pg;
+    pgroup2 pg;
     char full_name[_MAX_PATH];
     char dir_name[_MAX_PATH];
     int len;

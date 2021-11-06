@@ -1,11 +1,12 @@
 .func btom _fbtom
 .synop begin
+.deprec
 #include <jstring.h>
-size_t btom( const unsigned char *str, size_t nb );
-.ixfunc2 '&Jstring' &funcb
-.if &farfnc eq 1 .do begin
-size_t far _fbtom( const unsigned char far *str, size_t nb );
-.ixfunc2 '&Jstring' &ffunc
+size_t btom( const unsigned char *s, size_t nb );
+.ixfunc2 '&Jstring' btom
+.if &farfnc ne 0 .do begin
+size_t _fbtom( const unsigned char far *s, size_t nb );
+.ixfunc2 '&Jstring' _fbtom
 .do end
 .synop end
 .desc begin
@@ -23,17 +24,17 @@ functions return
 .do end
 the number of characters between the start of the Japanese double-byte
 character set (DBCS) string specified by
-.arg str
+.arg s
 and
 .arg nb
 bytes from
-.arg str
-.ct .li .
+.arg s
+.period
 A double-byte character is treated as one character.
 Counting stops when either
 .arg nb
 bytes have been processed or a null character is encountered.
-.im ffarparm
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
@@ -48,7 +49,7 @@ and
 .id &ffunc.
 functions return
 .do end
-the number of single- and double-byte characters in the string.
+the number of single-byte and double-byte characters in the string.
 .return end
 .see begin
 .seelist jgetmoji mtob

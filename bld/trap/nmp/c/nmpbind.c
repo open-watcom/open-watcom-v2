@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -161,7 +162,7 @@ static void FAR JoinPipeThread( void FAR * _thread )
     link = thread->link;
     rc = DosGetInfoSeg( &sel_global, &sel_local );
     rc = DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL,
-                     0, ((LINFOSEG FAR *)MK_FP( sel_local, 0 ))->tidCurrent );
+                     0, ((LINFOSEG FAR *)_MK_FP( sel_local, 0 ))->tidCurrent );
     while( me->connected && him->connected ) {
         rc = DosRead( me->write_hdl, buff, BUFF_LEN, &bytes_read );
         if( rc != 0 || bytes_read == 0 ) break;

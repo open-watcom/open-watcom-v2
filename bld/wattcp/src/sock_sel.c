@@ -11,24 +11,24 @@
  *                SOCKCLOSED      - socket has been closed
  */
 
-int sock_sselect (const sock_type *s, int waitstate)
+int sock_sselect (const sock_type *sk, int waitstate)
 {
-  /* are we connected ?
-   */
-  if (waitstate == SOCKDATAREADY && s->tcp.rdatalen)
-     return (SOCKDATAREADY);
+    /* are we connected ?
+     */
+    if (waitstate == SOCKDATAREADY && sk->tcp.rx_datalen)
+        return (SOCKDATAREADY);
 
-  if (s->tcp.ip_type == 0)
-     return (SOCKCLOSED);
+    if (sk->u.ip_type == 0)
+        return (SOCKCLOSED);
 
-  if (waitstate == SOCKESTABLISHED)
-  {
-    if (s->tcp.ip_type == UDP_PROTO      ||
-        s->tcp.state   == tcp_StateESTAB ||
-        s->tcp.state   == tcp_StateESTCL ||
-        s->tcp.state   == tcp_StateCLOSWT)
-       return (SOCKESTABLISHED);
-  }
-  return (0);
+    if (waitstate == SOCKESTABLISHED) {
+        if (sk->u.ip_type == UDP_PROTO      ||
+            sk->tcp.state == tcp_StateESTAB ||
+            sk->tcp.state == tcp_StateESTCL ||
+            sk->tcp.state == tcp_StateCLOSWT) {
+            return (SOCKESTABLISHED);
+        }
+    }
+    return (0);
 }
 

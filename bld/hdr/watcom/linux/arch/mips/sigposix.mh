@@ -14,8 +14,10 @@ typedef struct {
 
 typedef unsigned long old_sigset_t;     /* at least 32 bits */
 
+typedef void (*__sighandler_t)(int);
+
 struct sigaction {
     unsigned int    sa_flags;
-    void            (*sa_handler)(int);
+    __sighandler_t  sa_handler;
     sigset_t        sa_mask;
 };

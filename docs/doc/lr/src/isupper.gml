@@ -16,7 +16,7 @@ int iswupper( wint_t c );
 The
 .id &funcb.
 function tests for any uppercase letter 'A' through 'Z'.
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The
@@ -29,13 +29,13 @@ The
 function returns a non-zero value when the argument is a
 wide character that corresponds to an uppercase letter, or if it is one
 of an implementation-defined set of wide characters for which none of
-.kw iswcntrl
+.reffunc iswcntrl
 .ct ,
-.kw iswdigit
+.reffunc iswdigit
 .ct ,
-.kw iswpunct
+.reffunc iswpunct
 .ct , or
-.kw iswspace
+.reffunc iswspace
 is true.
 .do end
 Otherwise, zero is returned.

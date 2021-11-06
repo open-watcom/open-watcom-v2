@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -207,11 +207,11 @@ typedef enum BASED_KIND {
 /* matches CTypeSizes[] table in ctype.c */
 
 typedef enum DATA_TYPE {
-    TYPE_UNDEFINED = -1,
-    #define pick1(enum,cgtype,asmtype,name,size) TYPE_##enum,
+    TYP_UNDEFINED = -1,
+    #define pick1(enum,cgtype,asmtype,name,size)    TYP_##enum,
     #include "cdatatyp.h"
     #undef pick1
-    TYPE_LAST_ENTRY,        /* make sure this is always last */
+    TYP_LAST_ENTRY,         /* make sure this is always last */
 } DATA_TYPE;
 
 // values for type->type_flags
@@ -225,11 +225,11 @@ enum type_state {
 //          struct foo { int a,b };
 //          const struct foo *p;
 //          type of p will be:
-//          TYPE_POINTER -> dummy TYPE_TYPEDEF const -> TYPE_STRUCT
+//          TYP_POINTER -> dummy TYP_TYPEDEF const -> TYP_STRUCT
 //
-    TF2_DUMMY_TYPEDEF     = 0x04,   // gone now dummy typedef to record modifiers
-    TF2_TYPE_PLAIN_CHAR   = 0x10,   // indicates plain char
-    TF2_TYPE_SEGMENT      = 0x20,   // indicates __segment type
+    TF2_DUMMY_TYPEDEF   = 0x04,     // gone now dummy typedef to record modifiers
+    TF2_TYP_PLAIN_CHAR  = 0x10,     // indicates plain char
+    TF2_TYP_SEGMENT     = 0x20,     // indicates __segment type
 };
 
 typedef struct type_definition {
@@ -244,23 +244,23 @@ typedef struct type_definition {
     } u1;
     union {
         struct {
-            segment_id      segid;          /* TYPE_POINTER */
+            segment_id      segid;          /* TYP_POINTER */
             SYM_HANDLE      based_sym;      /* var with seg of based ptr*/
             BASED_KIND      based_kind;     /* kind of base variable    */
             type_modifiers  decl_flags;     /* only symbols, fn and ptr have attribs */
         } p;
         struct tag_entry    *tag;           /* STRUCT, UNION, ENUM, also used by pre-compiled header */
-        SYM_HANDLE          typedefn;       /* TYPE_TYPEDEF */
-        struct {                            /* TYPE_FUNCTION */
+        SYM_HANDLE          typedefn;       /* TYP_TYPEDEF */
+        struct {                            /* TYP_FUNCTION */
             struct type_definition **parms; /* also used by pre-compiled header */
             type_modifiers  decl_flags;     /* only symbols, fn and ptr have attribs */
         } fn;
-        struct {                            /* TYPE_FIELD or TYPE_UFIELD */
+        struct {                            /* TYP_FIELD or TYP_UFIELD */
             bitfield_width  field_width;    /* # of bits */
             bitfield_width  field_start;    /* # of bits to << by */
-            DATA_TYPE       field_type;     /* TYPE_xxxx of field */
+            DATA_TYPE       field_type;     /* TYP_xxxx of field */
         } f;
-        array_info          *array;         /* TYPE_ARRAY, also used by pre-compiled header */
+        array_info          *array;         /* TYP_ARRAY, also used by pre-compiled header */
     } u;
 } TYPEDEFN, *TYPEPTR;
 
@@ -277,7 +277,7 @@ typedef struct textsegment {        /* used for #pragma alloc_text(seg,func1,fun
     char               segname[1];
 } textsegment;
 
-typedef enum {
+typedef enum src_file_type {
     FT_SRC,
     FT_HEADER,
     FT_HEADER_FORCED,
@@ -318,6 +318,7 @@ typedef struct incfile {
 typedef struct source_loc {
     unsigned            fno;
     unsigned            line;
+    unsigned            column;
 } source_loc;
 
 typedef struct xref_entry {
@@ -506,24 +507,24 @@ struct debug_fwd_types {
     unsigned            scope;
 };
 
-typedef struct seg_info {
-    SEGADDR_T           index;          /* segment #, EMS page #, disk seek # */
-    boolbit             allocated : 1;  /* 1 => has been allocated */
-} seg_info;
-
-typedef enum {
-    PPCTL_NORMAL        = 0x00,         // expand macros, treat <eol> as white space
-    PPCTL_EOL           = 0x01,         // return <end-of-line> as a token
-    PPCTL_NO_EXPAND     = 0x02,         // don't expand macros
-    PPCTL_ASM           = 0x04,         // pre-processor is in _asm statement
+typedef enum ppctl_t {
+    PPCTL_NO_EXPAND         = 0x01, // don't expand macros
+    PPCTL_EOL               = 0x02, // return <end-of-line> as a token
+    PPCTL_NO_LEX_ERRORS     = 0x04, // don't diagnose lexical problems
+    PPCTL_ASM               = 0x08, // pre-processor is in _asm statement
+    PPCTL_NORMAL            = 0x00  // expand macros, treat <eol> as white space, diagnose lexical problems
 } ppctl_t;
 
-#define PPCTL_ENABLE_ASM()      Pre_processing |= PPCTL_ASM
-#define PPCTL_DISABLE_ASM()     Pre_processing &= ~PPCTL_ASM
-#define PPCTL_ENABLE_EOL()      Pre_processing |= PPCTL_EOL
-#define PPCTL_DISABLE_EOL()     Pre_processing &= ~PPCTL_EOL
-#define PPCTL_ENABLE_MACROS()   Pre_processing &= ~PPCTL_NO_EXPAND
-#define PPCTL_DISABLE_MACROS()  Pre_processing |= PPCTL_NO_EXPAND
+#define PPCTL_ENABLE_ASM()          PPControl |= PPCTL_ASM
+#define PPCTL_DISABLE_ASM()         PPControl &= ~PPCTL_ASM
+#define PPCTL_ENABLE_EOL()          PPControl |= PPCTL_EOL
+#define PPCTL_DISABLE_EOL()         PPControl &= ~PPCTL_EOL
+#define PPCTL_ENABLE_MACROS()       PPControl &= ~PPCTL_NO_EXPAND
+#define PPCTL_DISABLE_MACROS()      PPControl |= PPCTL_NO_EXPAND
+#define PPCTL_ENABLE_LEX_ERRORS()   PPControl &= ~PPCTL_NO_LEX_ERRORS
+#define PPCTL_DISABLE_LEX_ERRORS()  PPControl |= PPCTL_NO_LEX_ERRORS
+
+#define IS_PPCTL_NORMAL()           ((PPControl & (PPCTL_EOL | PPCTL_NO_EXPAND)) == 0)
 
 typedef struct comp_flags {
     boolbit label_dropped                       : 1;
@@ -564,7 +565,7 @@ typedef struct comp_flags {
     boolbit non_zero_data                       : 1;
     boolbit quiet_mode                          : 1;
     boolbit useful_side_effect                  : 1;
-    boolbit keep_comments                       : 1;    /* wcpp - output comments */
+    boolbit cpp_keep_comments                   : 1;    /* wcpp - output comments */
     boolbit cpp_line_wanted                     : 1;    /* wcpp - emit #line    */
     boolbit cpp_ignore_line                     : 1;    /* wcpp - ignore #line */
 
@@ -586,14 +587,13 @@ typedef struct comp_flags {
     boolbit exception_filter_expr               : 1;    /* on => parsing _except(expr)*/
     boolbit exception_handler                   : 1;    /* on => inside _except block*/
 
-    boolbit comments_wanted                     : 1;    /* on => comments wanted     */
     boolbit wide_char_string                    : 1;    /* on => T_STRING is L"xxx"  */
     boolbit banner_printed                      : 1;    /* on => banner printed      */
     boolbit undefine_all_macros                 : 1;    /* on => -u all macros       */
-    boolbit emit_browser_info                   : 1;    /* -db emit broswer info */
+    boolbit emit_browser_info                   : 1;    /* -db emit broswer info     */
     boolbit rescan_buffer_done                  : 1;    /* ## re-scan buffer used up */
-    boolbit cpp_output                          : 1;    /* compiler doing CPP output        */
-    boolbit cpp_output_to_file                  : 1;    /* compiler doing CPP output to?.i  */
+    boolbit cpp_output                          : 1;    /* compiler doing CPP output */
+    boolbit cpp_output_to_file                  : 1;    /* compiler doing CPP output to file (default extension .i) */
 
 /*  /d1+
     generate info on BP-chains if possible
@@ -606,7 +606,7 @@ typedef struct comp_flags {
     boolbit debug_info_some                     : 1;    /* d1 + some typing info     */
     boolbit register_conv_set                   : 1;    /* has call conv been set    */
     boolbit emit_names                          : 1;    /* /en switch used           */
-    boolbit cpp_output_requested                : 1;    /* CPP output requested      */
+    boolbit cpp_mode                            : 1;    /* compiler CPP mode         */
     boolbit warnings_cause_bad_exit             : 1;    /* warnings=>non-zero exit   */
     boolbit save_restore_segregs                : 1;    /* save/restore segregs      */
     boolbit has_winmain                         : 1;    /* WinMain defined           */
@@ -689,10 +689,6 @@ enum {
     TS_LINUX,
     TS_RDOS
 };
-
-/* values for ESCChar routine */
-#define RTN_SAVE_NEXT_CHAR      0
-#define RTN_NEXT_BUF_CHAR       1
 
 typedef struct call_list {
     struct call_list    *next;

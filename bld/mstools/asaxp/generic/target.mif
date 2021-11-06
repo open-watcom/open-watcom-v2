@@ -1,2 +1,9 @@
+proj_name = asaxp
+
 target_cpu = axp
+
+!ifndef asaxp_autodepends
+asaxp_autodepends = .AUTODEPEND
+!endif
+
 !include ../../asaxp.mif

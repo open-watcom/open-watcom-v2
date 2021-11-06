@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,17 +139,17 @@ void ChangeImageSize( void )
     WPI_PRES        pres;
     HDC             srcdc;
     WPI_PRES        srcpres;
-    HDC             destdc;
-    WPI_PRES        destpres;
-    HBITMAP         oldsrc;
-    HBITMAP         olddest;
+    HDC             dstdc;
+    WPI_PRES        dstpres;
+    WPI_HBITMAP     oldsrc_hbitmap;
+    WPI_HBITMAP     olddst_hbitmap;
     int             retcode;
     WPI_PARAM2      lparam;
     WPI_RECT        rc;
     short           new_width;
     short           new_height;
     int             y_src;
-    int             y_dest;
+    int             y_dst;
     char            *title;
     char            *text;
 
@@ -199,52 +199,52 @@ void ChangeImageSize( void )
 
     pres = _wpi_getpres( HWND_DESKTOP );
     srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );
-    destpres = _wpi_createcompatiblepres( pres, Instance, &destdc );
+    dstpres = _wpi_createcompatiblepres( pres, Instance, &dstdc );
     _wpi_releasepres( HWND_DESKTOP, pres );
 
-    oldsrc = _wpi_selectbitmap( srcpres, node->hxorbitmap );
-    olddest = _wpi_selectbitmap( destpres, new_node.hxorbitmap );
+    oldsrc_hbitmap = _wpi_selectbitmap( srcpres, node->xor_hbitmap );
+    olddst_hbitmap = _wpi_selectbitmap( dstpres, new_node.xor_hbitmap );
 
     if( stretchImage ) {
-        _wpi_stretchblt( destpres, 0, 0, imgWidth, imgHeight,
+        _wpi_stretchblt( dstpres, 0, 0, imgWidth, imgHeight,
                          srcpres, 0, 0, node->width, node->height, SRCCOPY );
     } else {
 #ifdef __OS2_PM__
         y_src = node->height - imgHeight;
         if( y_src < 0 ) {
             y_src = 0;
-            y_dest = imgHeight - node->height;
+            y_dst = imgHeight - node->height;
         } else {
-            y_dest = 0;
+            y_dst = 0;
         }
 #else
         y_src = 0;
-        y_dest = 0;
+        y_dst = 0;
 #endif
-        _wpi_bitblt( destpres, 0, y_dest, node->width, node->height,
+        _wpi_bitblt( dstpres, 0, y_dst, node->width, node->height,
                      srcpres, 0, y_src, SRCCOPY );
     }
-    _wpi_getoldbitmap( srcpres, oldsrc );
-    oldsrc = _wpi_selectbitmap( srcpres, node->handbitmap );
-    _wpi_getoldbitmap( destpres, olddest );
-    olddest = _wpi_selectbitmap( destpres, new_node.handbitmap );
+    _wpi_getoldbitmap( srcpres, oldsrc_hbitmap );
+    oldsrc_hbitmap = _wpi_selectbitmap( srcpres, node->and_hbitmap );
+    _wpi_getoldbitmap( dstpres, olddst_hbitmap );
+    olddst_hbitmap = _wpi_selectbitmap( dstpres, new_node.and_hbitmap );
 
     if( stretchImage ) {
-        _wpi_stretchblt( destpres, 0, 0, imgWidth, imgHeight,
+        _wpi_stretchblt( dstpres, 0, 0, imgWidth, imgHeight,
                          srcpres, 0, 0, node->width, node->height, SRCCOPY );
     } else {
-        _wpi_bitblt( destpres, 0, 0, node->width, node->height, srcpres, 0, 0, SRCCOPY );
+        _wpi_bitblt( dstpres, 0, 0, node->width, node->height, srcpres, 0, 0, SRCCOPY );
     }
 
-    _wpi_getoldbitmap( srcpres, oldsrc );
-    _wpi_getoldbitmap( destpres, olddest );
-    _wpi_deletebitmap( node->hxorbitmap );
-    _wpi_deletebitmap( node->handbitmap );
+    _wpi_getoldbitmap( srcpres, oldsrc_hbitmap );
+    _wpi_getoldbitmap( dstpres, olddst_hbitmap );
+    _wpi_deletebitmap( node->xor_hbitmap );
+    _wpi_deletebitmap( node->and_hbitmap );
     _wpi_deletecompatiblepres( srcpres, srcdc );
-    _wpi_deletecompatiblepres( destpres, destdc );
+    _wpi_deletecompatiblepres( dstpres, dstdc );
 
-    node->hxorbitmap = new_node.hxorbitmap;
-    node->handbitmap = new_node.handbitmap;
+    node->xor_hbitmap = new_node.xor_hbitmap;
+    node->and_hbitmap = new_node.and_hbitmap;
     node->width = (short)imgWidth;
     node->height = (short)imgHeight;
 

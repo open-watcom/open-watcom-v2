@@ -31,13 +31,13 @@
 
 #ifdef _M_IX86
 
-extern void ReleaseVMTimeSlice( void );
+extern unsigned char ReleaseVMTimeSlice( void );
 #pragma aux ReleaseVMTimeSlice = \
         "mov  ax,1680h" \
         "int 2fh"       \
     __parm      [] \
-    __value     \
-    __modify    [__ax]
+    __value     [__al] \
+    __modify    [__ah]
 
 #ifdef __DOS__
 extern void DOSIdle( void );

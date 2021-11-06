@@ -41,20 +41,36 @@
 Regular expressions are a powerful method of matching strings in your text.
 Commands that use regular expressions are:
 :UL.
-:LI.forward slash ('/') command mode key (search forwards)
-:LI.question mark ('?') command mode key (search backwards)
-:LI.forward slash ('/') command line address (search forwards)
-:LI.question mark ('?') command line address (search backwards)
-:LI.substitute command line command
-:LI.global command line command
-:LI.egrep command line command
-:LI.match command line command
+:LI.forward slash ('/')
+.keyword &cmdmode
+key (search forwards)
+:LI.question mark ('?')
+.keyword &cmdmode
+key (search backwards)
+:LI.forward slash ('/')
+.keyword &cmdline
+address (search forwards)
+:LI.question mark ('?')
+.keyword &cmdline
+address (search backwards)
+:LI.substitute
+.keyword &cmdline
+command
+:LI.global
+.keyword &cmdline
+command
+:LI.egrep
+.keyword &cmdline
+command
+:LI.match
+.keyword &cmdline
+command
 :eUL.
 .np
 Different characters in a regular expression match different things.
 A list of all special (or "magical") characters is:
 :UL
-:LI. A backslash ('\') followed by a single character other than new line
+:LI.A backslash ('\') followed by a single character other than new line
 matches that character.
 :LI.The caret ('&caret.') matches the beginning of a line.
 :LI.The dollar sign ('$') matches the end of a line.
@@ -62,11 +78,12 @@ matches that character.
 :LI.A single character that does not have any other special meaning matches
 that character.
 :LI.A string enclosed in brackets [] matches any single character from
-the string.  Ranges of ASCII character codes may be abbreviated as
-in "a-z0-9".  A ']' may occur only as the first character of the
-string.  A literal '-' must be placed where it cannot be mistaken as a
-range indicator. If a caret ('&caret.') occurs as the first character inside
-the brackets, then any characters NOT in the string are matched.
+the string.
+Ranges of ASCII character codes may be abbreviated as in "a-z0-9".
+A ']' may occur only as the first character of the string.
+A literal '-' must be placed where it cannot be mistaken as a range indicator.
+If a caret ('&caret.') occurs as the first character inside the brackets,
+then any characters NOT in the string are matched.
 :LI.A regular expression followed by an asterisk ('*')
 matches a sequence of 0 or more matches of the regular expression.
 :LI.A regular expression followed by a plus sign ('+') matches one or
@@ -75,29 +92,28 @@ more matches of the regular expression.
 or one matches of the regular expression.
 :LI.Two regular expressions concatenated match a match of the first
 followed by a match of the second.
-:LI. Two regular expressions separated by an or bar ('|')
+:LI.Two regular expressions separated by an or bar ('|')
 match either a match for the first or a match for the second.
 :LI.A regular expression enclosed in parentheses matches a match for
 the regular expression.
-:LI. The order of precedence of operators at the same parenthesis level is
+:LI.The order of precedence of operators at the same parenthesis level is
 the following:
 .bd []
-:cont.,
-then
+.ct , then
 .bd *+?
-:cont., then concatenation, then
+.ct , then concatenation, then
 .bd |
-:period.
+.period
 :LI.
 All regular expressions following an at sign ('@') are to be treated
 as case sensitive, regardless of the setting of
 .keyref caseignore 1
-:period.
+.period
 :LI.
 All regular expressions following a tilde ('&tilde.') are to be treated
 as case insensitive, regardless of the setting of
 .keyref caseignore 1
-:period.
+.period
 :LI.
 If an exclamation point ('!') occurs as the first character in a
 regular expression, it causes the ignoring of the
@@ -188,8 +204,7 @@ it causes the ignoring of the
 setting; that is,
 all magic characters are treated as magical.
 .param !
-is treated
-as a regular character if it occurs anywhere but at
+is treated as a regular character if it occurs anywhere but at
 the very start of the regular expression.
 
 :DT.char
@@ -209,8 +224,9 @@ is set.
 .* ******************************************************************
 .np
 When specifying a file name in &edvi, it is possible to use a
-file matching regular expression.  This expression is similar to
-a regular expression, but has a couple of differences:
+file matching regular expression.
+This expression is similar to a regular expression,
+but has a couple of differences:
 :OL.
 :LI.A dot ('.') specifies an actual dot in the file name.
 :LI.An asterisk ('*') is equivalent to '.*' (matches 0 or more characters).
@@ -258,7 +274,7 @@ are some special character sequences in the replacement string.
 :DL.
 .*
 :DT.&
-:DD.Each instance of `&' in the replacement string is replaced by the 
+:DD.Each instance of `&' in the replacement string is replaced by the
 entire string of matched characters.
 
 :DT.\\
@@ -274,10 +290,9 @@ is set).
 
 :DT.\&lt.n&gt.
 :DD.Each instance of
-.param &lt.n&gt.
-:cont.,
-where
-.param &lt.n&gt.
+.paramt n
+.ct , where
+.paramt n
 is a digit from 0 to 9, is replaced by the
 n'th sub-expression in the regular expression.
 
@@ -308,22 +323,23 @@ is encountered
 
 :DT.\e
 :DD.Terminate a
-.param \U or
+.param \U
+or
 .param \L
 
 :DT.\E
 :DD.Terminate a
-.param \U or
+.param \U
+or
 .param \L
-:period.
+.period
 
 :DT.\|&lt.n&gt.
 :DD.Substitutes spaces up to column
-.param &lt.n&gt.
-:cont.,
-so that the item that follows occurs at column
-.param &lt.n&gt.
-:period.
+.paramt n
+.ct , so that the item that follows occurs at column
+.paramt n
+.period
 
 :DT.\#
 :DD.Substitutes current line number that the match occurred on.
@@ -333,13 +349,12 @@ so that the item that follows occurs at column
 .* ******************************************************************
 .np
 By default, all special characters in a regular expression are "magical";
-that is, if a special character is used it has a special meaning.  To
-use a special character, like
+that is, if a special character is used it has a special meaning.
+To use a special character, like
 .keyword (
-:cont.,
-it must be escaped:
+.ct , it must be escaped:
 .keyword \(
-:period.
+.period
 .np
 However, it is possible to change this using the
 .keyref magic 1
@@ -354,7 +369,9 @@ If
 is NOT set, then any special characters listed in
 .keyref magicstring
 lose their special meaning, and are treated as regular characters.
-For example, the following &cmdline commands
+For example, the following
+.keyword &cmdline
+commands
 .millust begin
 set nomagic
 set magicstring=()
@@ -365,7 +382,7 @@ lose their special meaning.
 To use the characters in their "magical" way, they must be escaped
 with a
 .keyword \
-:period.
+.period
 .np
 Replacement strings special character sequences can be disabled
 by turning off the
@@ -496,12 +513,13 @@ In the result, the part of the string that is matched is underlined.
 .section 'Replacement Examples'
 .* ******************************************************************
 .np
-Regular expressions and replacement expressions.  Each example
-shows the regular expression and the replacement expression,
+Regular expressions and replacement expressions.
+Each example shows the regular expression and the replacement expression,
 the initial string, the match, and the resulting string after the replacement.
 .np
-The regular expression and the replacement are separated by forward
-slashes ('/'). For example, in the string
+The regular expression and the replacement are separated by forward slashes
+('/').
+For example, in the string
 .millust begin
 /([a-z]+)((a|b))/Test:\1\2/
 .millust end

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,7 +144,7 @@ void GetProfileInfo( void )
 } /* GetProfileInfo */
 
 /*
- * writeProfileLong - write a long int to the profile
+ * writeProfileLong - write a long to the profile
  */
 static void writeProfileLong( char *name, long val  )
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@ typedef struct {
 } LBoxHdl;
 
 extern int      LBPrintf( LBoxHdl *lb, msg_id msgid, ... );
-extern int      LBStrPrintf( LBoxHdl *lb, char *str, ... );
+extern int      LBStrPrintf( LBoxHdl *lb, const char *str, ... );
 extern void     SetListBoxFont( LBoxHdl *lb );
 extern void     ClearListBox( LBoxHdl *lb );
 extern void     MoveListBox( LBoxHdl *lb, int x, int y, int width, int hieght );

@@ -1,0 +1,145 @@
+proj_name = os2api
+
+os2api_autodepends = .AUTODEPEND
+
+os2api_distrib_lib = 1
+
+!ifeq host_cpu i86
+targ_cpu = 286
+!else
+targ_cpu = $(host_cpu)
+!endif
+
+.EXTENSIONS : .lbc .def .gsp .sp .mh
+
+!include cproj.mif
+!include defrule.mif
+
+crwatpro_gsp = crwatpro.gsp
+
+incl_dir_286 = ../incl16
+incl_dir_386 = ../incl32
+lib_dir_286 = ../lib286
+lib_dir_386 = ../lib386
+
+mh_dir = $(incl_dir_$(targ_cpu))
+
+!ifeq release 1
+wsplice_extra_opts =
+!else
+wsplice_extra_opts = -d"depends.dep"
+!endif
+wsplice_opts = $(wsplice_extra_opts) -kIBMTOOLKIT -i"$(hdr_dir)" $[@ $@
+
+#                       dirs286     dirs386
+#-------------------------------------------
+!inject h/arpa                      dirs386
+!inject h/GL                        dirs386
+!inject h/machine                   dirs386
+!inject h/net                       dirs386
+!inject h/netinet                   dirs386
+!inject h/protocol                  dirs386
+!inject h/sys                       dirs386
+
+dirs = h lib $(dirs$(targ_cpu))
+
+!include ../incl.mif
+!include ../libs.mif
+
+all : $(dirs) $(hdrs$(targ_cpu)) $(libs$(targ_cpu)) .SYMBOLIC
+
+.mh: $(mh_dir)
+.def: $(lib_dir_$(targ_cpu))
+.asm: $(lib_dir_$(targ_cpu))
+.sp: $(hdr_dir)
+
+.mh{h}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
+{arpa}.mh{h/arpa}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
+{GL}.mh{h/GL}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
+{machine}.mh{h/machine}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
+{net}.mh{h/net}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
+{netinet}.mh{h/netinet}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
+{protocol}.mh{h/protocol}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
+{sys}.mh{h/sys}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
+.sp.gsp:
+    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
+
+.def.lbc: $(__MAKEFILES__)
+    $(sed) -f ../def2lbc.sed $(lib_dir_$(targ_cpu))/$[. > $@
+
+.lbc.lib: $(__MAKEFILES__)
+    @%make echo_lib
+    $(librarian) $(libflags) @$[@
+
+.obj.lib: $(__MAKEFILES__)
+    @%make echo_lib
+    $(librarian) $(libflags) $[@
+
+lib/os2.lib: lib286.lbc msgseg.obj $(__MAKEFILES__)
+    @%make echo_lib
+    $(librarian) $(libflags) @$[@ +msgseg.obj
+
+lib286.lbc: $(comp286) $(__MAKEFILES__)
+    @for %l in ($(comp286)) do @%append $@ @%l
+
+lib/os2386.lib: lib386.lbc msgseg32.obj $(__MAKEFILES__)
+    @%make echo_lib
+    $(librarian) $(libflags) @$[@ +msgseg32.obj
+
+lib386.lbc: $(comp386) $(__MAKEFILES__)
+    @for %l in ($(comp386)) do @%append $@ @%l
+
+lib/rexx.lib: rexxall.lbc $(__MAKEFILES__)
+    @%make echo_lib
+    $(librarian) $(libflags) @$[@
+
+rexxall.lbc: $(comprexx) $(__MAKEFILES__)
+    @for %l in ($(comprexx)) do @%append $@ @%l
+
+lib/mmpm2.lib: mmpm2all.lbc $(__MAKEFILES__)
+    @%make echo_lib
+    $(librarian) $(libflags) @$[@
+
+mmpm2all.lbc: $(compmmpm2) $(__MAKEFILES__)
+    @for %l in ($(compmmpm2)) do @%append $@ @%l
+
+lib/libuls.lib: libuni.lbc $(__MAKEFILES__)
+    @%make echo_lib
+    $(librarian) $(libflags) @$[@
+
+lib/libconv.lib: uconv.lbc $(__MAKEFILES__)
+    @%make echo_lib
+    $(librarian) $(libflags) @$[@
+
+$(dirs):
+    mkdir $@
+
+!include $(mh_dir)/deps.mif
+
+clean : .SYMBOLIC
+    rm -f *.lbc *.obj $(crwatpro_gsp) depends.dep
+    rm -rf $(dirs)

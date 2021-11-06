@@ -34,7 +34,7 @@
 #include <string.h>
 #include <ctype.h>
 
-_WCRTLINK int memicmp( const void *in_s1, const void *in_s2, size_t len )
+_WCRTLINK int _memicmp( const void *in_s1, const void *in_s2, size_t len )
     {
         const unsigned char *   s1 = (const unsigned char *)in_s1;
         const unsigned char *   s2 = (const unsigned char *)in_s2;

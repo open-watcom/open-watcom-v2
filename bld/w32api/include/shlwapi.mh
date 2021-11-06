@@ -888,8 +888,8 @@ LWSTDAPI                UrlUnescapeA( LPSTR, LPSTR, LPDWORD, DWORD );
 LWSTDAPI                UrlUnescapeW( LPWSTR, LPWSTR, LPDWORD, DWORD );
 LWSTDAPIV_( int )       wnsprintfA( LPSTR, int, LPCSTR, ... );
 LWSTDAPIV_( int )       wnsprintfW( LPWSTR, int, LPCWSTR, ... );
-LWSTDAPI_( int )        wvnsprintfA( LPSTR, int, LPCSTR, void * );
-LWSTDAPI_( int )        wvnsprintfW( LPWSTR, int, LPCWSTR, void * );
+LWSTDAPI_( int )        wvnsprintfA( LPSTR, int, LPCSTR, __va_list );
+LWSTDAPI_( int )        wvnsprintfW( LPWSTR, int, LPCWSTR, __va_list );
 #if (_WIN32_IE >= 0x0500)
 LWSTDAPI_( COLORREF )   ColorAdjustLuma( COLORREF, int, BOOL );
 LWSTDAPI_( COLORREF )   ColorHLSToRGB( WORD, WORD, WORD );
@@ -1004,12 +1004,6 @@ LWSTDAPI                PathMatchSpecExW( LPCWSTR, LPCWSTR, DWORD );
     UrlCanonicalize( p1, p2, p3, URL_ESCAPE_SPACES_ONLY | URL_DONT_ESCAPE_EXTRA_INFO )
 #define UrlIsFileUrlA( x )          UrlIsA( x, URLIS_FILEURL )
 #define UrlIsFileUrlW( x )          UrlIsW( x, URLIS_FILEURL )
-
-/* Microsoft defines va_list differently from Open Watcom, so it must be indexed
- * before being passed to any Win32 API functions.
- */
-#define wvnsprintfA( p1, p2, p3, p4 )   wvnsprintfA( p1, p2, p3, (p4)[0] )
-#define wvnsprintfW( p1, p2, p3, p4 )   wvnsprintfW( p1, p2, p3, (p4)[0] )
 
 /* Aliases */
 #define StrCatA                     lstrcatA

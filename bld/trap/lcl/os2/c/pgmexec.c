@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,11 +88,11 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
     loadstack->fail_name = NULL;
     loadstack->fail_len = 0;
     ptr = MakeItSegmentedNumberOne( Buff.SS, Buff.ESP + offsetof( loadstack_t, load_name ) );
-    loadstack->mod_name[0] = FP_OFF( ptr );
-    loadstack->mod_name[1] = FP_SEG( ptr );
+    loadstack->mod_name[0] = _FP_OFF( ptr );
+    loadstack->mod_name[1] = _FP_SEG( ptr );
     ptr = MakeItSegmentedNumberOne( Buff.SS, Buff.ESP + offsetof( loadstack_t, hmod ) );
-    loadstack->phmod[0] = FP_OFF( ptr );
-    loadstack->phmod[1] = FP_SEG( ptr );
+    loadstack->phmod[0] = _FP_OFF( ptr );
+    loadstack->phmod[1] = _FP_SEG( ptr );
     len = WriteBuffer( (byte __far *)loadstack, Buff.SS, Buff.ESP, size );
     if( len != size ) return( FALSE );
 
@@ -99,11 +100,11 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
      * set up 16:16 CS:IP, SS:SP for execution
      */
     ptr = MakeSegmentedPointer( startLinear );
-    Buff.CS = FP_SEG( ptr );
-    Buff.EIP = FP_OFF( ptr );
+    Buff.CS = _FP_SEG( ptr );
+    Buff.EIP = _FP_OFF( ptr );
     ptr = MakeItSegmentedNumberOne( Buff.SS, Buff.ESP );
-    Buff.SS = FP_SEG( ptr );
-    Buff.ESP = FP_OFF( ptr );
+    Buff.SS = _FP_SEG( ptr );
+    Buff.ESP = _FP_OFF( ptr );
 
     /*
      * execute LoadThisDLL on behalf of the program
@@ -153,10 +154,10 @@ long TaskExecute( excfn rtn )
     long        retval;
 
     if( CanExecTask ) {
-        Buff.CS = FP_SEG( rtn );
-        Buff.EIP = FP_OFF( rtn );
-        Buff.SS = FP_SEG( stack );
-        Buff.ESP = FP_OFF( stack ) + sizeof( stack );
+        Buff.CS = _FP_SEG( rtn );
+        Buff.EIP = _FP_OFF( rtn );
+        Buff.SS = _FP_SEG( stack );
+        Buff.ESP = _FP_OFF( stack ) + sizeof( stack );
         WriteRegs( &Buff );
         /*
          * writing registers with invalid selectors will fail
@@ -187,9 +188,9 @@ long TaskOpenFile( char __far *name, int mode, int flags )
     long        rc;
 
     saveRegs( &save );
-    WriteBuffer( (byte __far *)name, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), strlen( name ) + 1 );
-    Buff.EDX = FP_SEG( UtilBuff );
-    Buff.EAX = FP_OFF( UtilBuff );
+    WriteBuffer( (byte __far *)name, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), strlen( name ) + 1 );
+    Buff.EDX = _FP_SEG( UtilBuff );
+    Buff.EAX = _FP_OFF( UtilBuff );
     Buff.EBX = mode;
     Buff.ECX = flags;
     rc = TaskExecute( (excfn)DoOpen );
@@ -277,17 +278,17 @@ void TaskPrint( byte __far *ptr, unsigned len )
 
     saveRegs( &save );
     while( len > sizeof( UtilBuff ) ) {
-        WriteBuffer( ptr, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), sizeof( UtilBuff ) );
-        Buff.EAX = FP_OFF( UtilBuff );
-        Buff.EDX = FP_SEG( UtilBuff );
+        WriteBuffer( ptr, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), sizeof( UtilBuff ) );
+        Buff.EAX = _FP_OFF( UtilBuff );
+        Buff.EDX = _FP_SEG( UtilBuff );
         Buff.EBX = sizeof( UtilBuff );
         TaskExecute( (excfn)DoWritePgmScrn );
         ptr += sizeof( UtilBuff );
         len -= sizeof( UtilBuff );
     }
-    WriteBuffer( ptr, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), len );
-    Buff.EAX = FP_OFF( UtilBuff );
-    Buff.EDX = FP_SEG( UtilBuff );
+    WriteBuffer( ptr, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), len );
+    Buff.EAX = _FP_OFF( UtilBuff );
+    Buff.EDX = _FP_SEG( UtilBuff );
     Buff.EBX = len;
     TaskExecute( (excfn)DoWritePgmScrn );
     WriteRegs( &save );

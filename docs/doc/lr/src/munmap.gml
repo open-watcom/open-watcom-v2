@@ -8,7 +8,7 @@ The
 .id &funcb.
 function removes any mapping at the address
 .arg address
-measuring 
+measuring
 .arg len
 bytes from the process address space.
 .desc end
@@ -27,5 +27,5 @@ Either one or both of the arguments was invalid.
 .see begin
 .seelist mmap
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

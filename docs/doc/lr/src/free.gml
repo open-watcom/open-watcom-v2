@@ -18,12 +18,12 @@ function
 deallocates the memory block located by the argument
 .arg ptr
 which points to a memory block previously allocated through a call to
-.kw calloc
-.ct,
-.kw malloc
+.reffunc calloc
+.ct ,
+.reffunc malloc
 or
-.kw realloc
-.ct .li .
+.reffunc realloc
+.period
 After the call, the freed block is available for allocation.
 .desc end
 .return begin
@@ -89,12 +89,12 @@ deallocates the memory block located by the argument
 .arg ptr
 which points to a memory block previously allocated through a call to
 the appropriate version of
-.kw calloc
-.ct,
-.kw malloc
+.reffunc calloc
+.ct ,
+.reffunc malloc
 or
-.kw realloc
-.ct .li .
+.reffunc realloc
+.period
 After the call, the freed block is available for allocation.
 .np
 Each function deallocates memory from a particular heap, as listed below:
@@ -116,12 +116,12 @@ Near heap (inside the default data segment)
 In a large data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _ffree
+.reffunc _ffree
 function; in a small data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _nfree
+.reffunc _nfree
 function.
 .desc end
 .return begin

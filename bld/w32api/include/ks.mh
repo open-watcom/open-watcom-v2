@@ -1551,13 +1551,13 @@ typedef BUS_INTERFACE_MEDIUMS   *PBUS_INTERFACE_MEDIUMS;
 #endif
 
 /* Kernel streaming property serial header */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct {
     GUID    PropertySet;
     ULONG   Count;
 } KSPROPERTY_SERIALHDR;
 typedef KSPROPERTY_SERIALHDR    *PKSPROPERTY_SERIALHDR;
-#include <poppack.h>
+:include poppack.sp
 
 /* Kernel streaming property serial */
 typedef struct {

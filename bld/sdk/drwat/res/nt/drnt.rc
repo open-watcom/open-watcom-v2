@@ -27,10 +27,6 @@
 
 #define FIRST_COPYRIGHT_YEAR 1993
 
-#ifdef __NT__
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
-#endif
-
 "APPLICON" ICON "drwatcom.ico"
 "ERRICON" ICON "err.ico"
 

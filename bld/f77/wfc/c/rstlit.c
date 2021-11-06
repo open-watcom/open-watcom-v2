@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,23 +31,20 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "global.h"
 #include "stmtsw.h"
 #include "fmemmgr.h"
 #include "rstlit.h"
 
 
-sym_id  STLit( byte *string, uint len ) {
-//======================================
-
+sym_id  STLit( byte *string, size_t len )
+//=======================================
 // Search the symbol a literal. If the literal is not in the
 // symbol table, add it to the symbol table.
-
+{
     sym_id      sym;
 
-    sym = LList;
-    while( sym != NULL ) {
+    for( sym = LList; sym != NULL; sym = sym->u.lt.link ) {
         if( sym->u.lt.length == len ) {
             if( memcmp( string, &sym->u.lt.value, len ) == 0 ) {
                 if( StmtSw & SS_DATA_INIT ) {
@@ -57,7 +55,6 @@ sym_id  STLit( byte *string, uint len ) {
                 return( sym );
             }
         }
-        sym = sym->u.lt.link;
     }
     sym = FMemAlloc( sizeof( literal ) - 1 + len );
     memcpy( &sym->u.lt.value, string, len );

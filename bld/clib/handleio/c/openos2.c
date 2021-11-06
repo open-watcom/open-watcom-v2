@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  OS/2 implementation of open() and sopen().
+* Description:  OS/2 implementation of open() and _sopen().
 *
 ****************************************************************************/
 
@@ -73,53 +73,52 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
         ++name;
 #ifdef __WIDECHAR__
     /*** If necessary, convert the wide filename to multibyte form ***/
-    if( wcstombs( mbName, name, sizeof( mbName ) ) == -1 ) {
+    if( wcstombs( mbName, name, sizeof( mbName ) ) == (size_t)-1 ) {
         mbName[0] = '\0';
     }
 #endif
     if( mode & O_CREAT ) {
         perm = va_arg( args, int );
-        va_end( args );
         if( mode & O_EXCL ) {
-            openflag = OPENFLAG_FAIL_IF_EXISTS | OPENFLAG_CREATE_IF_NOT_EXISTS;
+            openflag = OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_FAIL_IF_EXISTS ;
         } else if( mode & O_TRUNC ) {
-            openflag = OPENFLAG_REPLACE_IF_EXISTS | OPENFLAG_CREATE_IF_NOT_EXISTS;
+            openflag = OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_REPLACE_IF_EXISTS;
         } else {
-            openflag = OPENFLAG_OPEN_IF_EXISTS | OPENFLAG_CREATE_IF_NOT_EXISTS;
+            openflag = OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS;
         }
     } else if( mode & O_TRUNC ) {
-        openflag = OPENFLAG_REPLACE_IF_EXISTS;
+        openflag = OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_REPLACE_IF_EXISTS ;
     } else {
-        openflag = OPENFLAG_OPEN_IF_EXISTS;
+        openflag = OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS;
     }
     rwmode = mode & OPENMODE_ACCESS_MASK;
 #ifdef _M_I86
-    if( rwmode == OPENMODE_ACCESS_WRONLY && _osmode_REALMODE() ) {
+    if( rwmode == OPEN_ACCESS_WRITEONLY && _osmode_REALMODE() ) {
         /* Can't open WRONLY file in bound application under DOS */
-        rwmode = OPENMODE_ACCESS_RDWR;
+        rwmode = OPEN_ACCESS_READWRITE;
     }
 #endif
     if( share == OPENMODE_DENY_COMPAT ) {
-        share = OPENMODE_DENY_NONE;
+        share = OPEN_SHARE_DENYNONE;
     }
-    openmode = share+rwmode;
+    openmode = share | rwmode;
 
-    perm &= ~_RWD_umaskval;                 /* 05-jan-95 */
+    perm &= ~_RWD_umaskval;
 /*      if( ( perm & S_IREAD ) && !( perm & S_IWRITE ) )  */
-    if( !(perm & S_IWRITE) ) {              /* 10-jan-95 */
-        fileattr = _A_RDONLY;
+    if( (perm & S_IWRITE) == 0 ) {
+        fileattr = FILE_READONLY;
     } else {
-        fileattr = _A_NORMAL;
+        fileattr = FILE_NORMAL;
     }
 
 #ifndef _M_I86
     if( __os2_DosOpenL != NULL ) {
         error = __os2_DosOpenL( (PSZ)__F_NAME(name,mbName), &handle,
-                    &actiontaken, 0ULL, fileattr, openflag, openmode, 0ul );
+                    &actiontaken, 0, fileattr, openflag, openmode, 0 );
     } else {
 #endif
         error = DosOpen( (PSZ)__F_NAME(name,mbName), &handle,
-                    &actiontaken, 0ul, fileattr, openflag, openmode, 0ul );
+                    &actiontaken, 0, fileattr, openflag, openmode, 0 );
 #ifndef _M_I86
     }
 #endif
@@ -147,8 +146,8 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     __SetIOMode( handle, iomode_flags );
 #ifdef DEFAULT_WINDOWING
     if( _WindowsNewWindow != NULL ) {
-        if( ( __F_NAME(stricmp,_wcsicmp)( name, STRING( "con" ) ) == 0 ) ||
-            ( __F_NAME(stricmp,_wcsicmp)( name, STRING( "\\dev\\con" ) ) == 0 ) ) {
+        if( ( __F_NAME(_stricmp,_wcsicmp)( name, STRING( "con" ) ) == 0 ) ||
+            ( __F_NAME(_stricmp,_wcsicmp)( name, STRING( "\\dev\\con" ) ) == 0 ) ) {
             _WindowsNewWindow( NULL, handle, -1 );
         }
     }
@@ -165,14 +164,17 @@ _WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int mode, ... )
     va_start( args, mode );
     permission = va_arg( args, int );
     va_end( args );
-    return( __F_NAME(sopen,_wsopen)( name, mode, SH_COMPAT, permission ) );
+    return( __F_NAME(_sopen,_wsopen)( name, mode, SH_COMPAT, permission ) );
 }
 
 
-_WCRTLINK int __F_NAME(sopen,_wsopen)( const CHAR_TYPE *name, int mode, int shflag, ... )
+_WCRTLINK int __F_NAME(_sopen,_wsopen)( const CHAR_TYPE *name, int mode, int shflag, ... )
 {
     va_list     args;
+    int         ret;
 
     va_start( args, shflag );
-    return( __F_NAME(__sopen,__wsopen)( name, mode, shflag, args ) );
+    ret = __F_NAME(__sopen,__wsopen)( name, mode, shflag, args );
+    va_end( args );
+    return( ret );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "liballoc.h"
 #include "libwin32.h"
 #include "osver.h"
+#include "cvtwc2mb.h"
+
 
 BOOL __lib_SetEnvironmentVariableW( LPCWSTR lpName, LPCWSTR lpValue )
 /*******************************************************************/
@@ -47,37 +50,19 @@ BOOL __lib_SetEnvironmentVariableW( LPCWSTR lpName, LPCWSTR lpValue )
         char *          mbName;
         char *          mbValue;
         BOOL            osrc;
-        size_t          cvt;
-        size_t          len;
 
-        /*** Allocate some memory ***/
-        len = wcslen( lpName ) * MB_CUR_MAX + 1;
-        mbName = lib_malloc( len );
+        /*** Prepare to call the OS ***/
+        mbName = __lib_cvt_wcstombs( lpName );
         if( mbName == NULL ) {
             return( FALSE );
         }
+
         if( lpValue == NULL ) {
             mbValue = NULL;
         } else {
-            len = wcslen( lpValue ) * MB_CUR_MAX + 1;
-            mbValue = lib_malloc( len );
+            mbValue = __lib_cvt_wcstombs( lpValue );
             if( mbValue == NULL ) {
                 lib_free( mbName );
-                return( FALSE );
-            }
-        }
-
-        /*** Prepare to call the OS ***/
-        cvt = wcstombs( mbName, lpName, len );
-        if( cvt == (size_t)-1 ) {
-            lib_free( mbName );
-            if( mbValue != NULL )  lib_free( mbValue );
-            return( FALSE );
-        }
-        if( mbValue != NULL ) {
-            cvt = wcstombs( mbValue, lpValue, len );
-            if( cvt == (size_t)-1 ) {
-                lib_free( mbValue );
                 return( FALSE );
             }
         }
@@ -85,7 +70,8 @@ BOOL __lib_SetEnvironmentVariableW( LPCWSTR lpName, LPCWSTR lpValue )
         /*** Call the OS ***/
         osrc = SetEnvironmentVariableA( mbName, mbValue );
         lib_free( mbName );
-        if( mbValue != NULL )  lib_free( mbValue );
+        if( mbValue != NULL )
+            lib_free( mbValue );
         return( osrc );
     }
 }

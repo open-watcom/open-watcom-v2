@@ -4,30 +4,31 @@
 #
 
 proj_name = whpcvt
+
 whpcvt_autodepends = .autodepend
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = -I"../h"
-
+#
+# cflags
+#
 .c: ../c
 
-objs =  whpcvt.obj  &
-        rtf.obj     &
-        ipf.obj     &
-        ib.obj      &
-        wiki.obj    &
-        html.obj
+inc_dirs = -I"../h"
 
-$(proj_name).exe : $(objs) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-! ifdef bootstrap
-        $(bld_cl) $(bld_clflags) $(objs) $(bld_ldflags)
-! else
-        $(cl) $(clflags) $(objs) $(ldflags)
-! endif
-!else
-        $(linker) name $@ $(lflags) file {$(objs)}
-!endif
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = &
+    whpcvt.obj  &
+    rtf.obj     &
+    ipf.obj     &
+    ib.obj      &
+    wiki.obj    &
+    html.obj
+!include exetarg.mif

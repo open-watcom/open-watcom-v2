@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 /*
  * GUIControlSetRedraw -- set the redraw flag for a given window control
  */
-bool GUIControlSetRedraw( gui_window *wnd, gui_ctl_id id, bool redraw )
+bool GUIAPI GUIControlSetRedraw( gui_window *wnd, gui_ctl_id id, bool redraw )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)redraw;
     return( true );
@@ -54,10 +55,10 @@ static bool RefreshListCombobox( VFIELD *field, gui_window *wnd, gui_ctl_id id )
     a_dialog    *ui_dlg_info;
 
     switch( field->typ ) {
-    case FLD_COMBOBOX :
+    case FLD_COMBOBOX:
         uiupdatecombobox( field->u.combo );
         /* meant to fall through */
-    case FLD_PULLDOWN :
+    case FLD_PULLDOWN:
         ui_dlg_info = GUIGetDialog( wnd );
         if( ui_dlg_info == NULL ) {
             return( false );
@@ -82,7 +83,7 @@ static bool GetList( gui_window *wnd, gui_ctl_id id, VFIELD **field, a_list **li
     return( true );
 }
 
-bool GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text )
+bool GUIAPI GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text )
 {
     VFIELD      *field;
     a_list      *list;
@@ -93,7 +94,7 @@ bool GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text )
     return( false );
 }
 
-bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items,
+bool GUIAPI GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items,
                     const void *data_handle, GUIPICKGETTEXT *getstring )
 {
     VFIELD      *field;
@@ -105,7 +106,7 @@ bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items,
     return( false );
 }
 
-bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, int choice )
+bool GUIAPI GUIDeleteItem( gui_window *wnd, gui_ctl_id id, int choice )
 {
     VFIELD      *field;
     a_list      *list;
@@ -116,7 +117,7 @@ bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, int choice )
     return( false );
 }
 
-bool GUIClearList( gui_window *wnd, gui_ctl_id id )
+bool GUIAPI GUIClearList( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_list      *list;
@@ -133,7 +134,7 @@ bool GUIClearList( gui_window *wnd, gui_ctl_id id )
     return( false );
 }
 
-bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, int *choice )
+bool GUIAPI GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, int *choice )
 {
     VFIELD      *field;
     a_list      *list;
@@ -144,7 +145,7 @@ bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, int *choice )
     return( false );
 }
 
-bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, int choice )
+bool GUIAPI GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, int choice )
 {
     VFIELD      *field;
     a_list      *list;
@@ -158,7 +159,7 @@ bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, int choice )
     return( false );
 }
 
-int GUIGetListSize( gui_window *wnd, gui_ctl_id id )
+int GUIAPI GUIGetListSize( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_list      *list;
@@ -169,7 +170,7 @@ int GUIGetListSize( gui_window *wnd, gui_ctl_id id )
     return( 0 );
 }
 
-bool GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text )
+bool GUIAPI GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text )
 {
     VFIELD      *field;
     a_list      *list;
@@ -180,7 +181,7 @@ bool GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text
     return( false );
 }
 
-bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice )
+bool GUIAPI GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice )
 {
     VFIELD      *field;
     a_list      *list;
@@ -192,7 +193,7 @@ bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice )
     return( false );
 }
 
-int GUIGetTopIndex( gui_window *wnd, gui_ctl_id id )
+int GUIAPI GUIGetTopIndex( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_list      *list;

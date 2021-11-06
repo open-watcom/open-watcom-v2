@@ -1,123 +1,73 @@
 AR Subprogram Arguments
 AR_BAD_COUNT [   c2] invalid number of arguments to intrinsic function %s1
-AR_BAD_COUNT [j  c2] ‘g‚İŠÖ”%s1‚Å’è‹`‚³‚ê‚½ˆø”‚Ì”‚Æ‚»‚ê‚ğŒÄo‚·‚½‚ß‚Éw’è‚µ‚½ˆø”‚Ì”‚ªˆê’v‚µ‚Ä‚¢‚Ü‚¹‚ñB
+AR_BAD_COUNT [j  c2] çµ„è¾¼ã¿é–¢æ•°%s1ã§å®šç¾©ã•ã‚ŒãŸå¼•æ•°ã®æ•°ã¨ãã‚Œã‚’å‘¼å‡ºã™ãŸã‚ã«æŒ‡å®šã—ãŸå¼•æ•°ã®æ•°ãŒä¸€è‡´ã—ã¦ã„ã¾ã›ã‚“ã€‚
  The number of actual arguments specified in the argument list for the
  intrinsic function %s1 does not agree with the dummy argument list.
  Consult the Language Reference for information on intrinsic functions and
  their arguments.
 AR_DUPLICATE_PARM [   c0] dummy argument %s1 appears more than once
-AR_DUPLICATE_PARM [j  c0] “¯‚¶‰¼ˆø”%s1‚ª2“xˆÈãg‚í‚ê‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+AR_DUPLICATE_PARM [j  c0] åŒã˜ä»®å¼•æ•°%s1ãŒ2åº¦ä»¥ä¸Šä½¿ã‚ã‚Œã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The same dummy argument %s1 is named more than once in the dummy
  argument list.
-AR_ARG_CHAR_MISMATCH [ w r0] argument number %d1 (%s2) in call to %s3 must be CHARACTER*%u4 or bigger but size passed was %d5
-AR_ARG_CHAR_MISMATCH [jw r0] %s3‚ğCALL‚·‚é%d1”Ô–Ú‚Ìˆø”(%s2)‚ÍCHARACTER*%u4‚©‚»‚êˆÈã•K—v‚Å‚·B‚µ‚©‚µ%d5‚Æ‚È‚Á‚Ä‚¢‚Ü‚·B
- Argument number %d1 in the call to subprogram %s3 was declared in the calling
- subprogram to be CHARACTER*%d4.
- In subprogram %s3, the argument was declared to be CHARACTER*%d3.
- The size of the argument, in the calling program, must be greater
- than or equal to the size in the subroutine/function.
-AR_COD_MISMATCH [ w r0] argument number %d1 (%s2) in call to %s3 - actual argument was %s4 but dummy argument was %s5
-AR_COD_MISMATCH [jw r0] %s3‚ğCALL‚·‚é%d1”Ô–Ú‚Ìˆø”(%s2)‚ÍÀˆø”‚ª%s4‚Å‚µ‚½B‚µ‚©‚µ‰¼ˆø”‚Í%s5‚Å‚µ‚½B
- Argument number %d1 in the call to subprogram %s3 was a %s4 in the calling
- subprogram but a %s5 in the called subprogram.
- This message is issued when, for example, an function name is passed to
- an array name.
-AR_CODI_MISMATCH [ w r0] argument number %d1 - %s2 was passed to an intrinsic function
-AR_CODI_MISMATCH [jw r0] %d1”Ô–Ú‚Ìˆø” - %s2‚ª‘g‚İŠÖ”‚É“n‚³‚ê‚Ü‚µ‚½B
- Argument number %d1 to an intrinsic function was declared as a %s2 and cannot
- be specified as an argument to an intrinsic function.
- For example, it is illegal to pass an array to the SIN intrinsic function.
- Constants, simple variables, array elements, and substrung array
- elements may be used as arguments.
-AR_FUN_EXPECT [ w r0] argument number %d1 (%s2) in call to %s3 - a subroutine was passed but a function was expected
-AR_FUN_EXPECT [jw r0] %s3‚Ö‚ÌCALL‚Ì%d1”Ô–Ú‚Ìˆø”(%s2) - »ÌŞÙ°Áİ‚ª“n‚³‚ê‚Ü‚µ‚½‚ª,ŠÖ”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
- Argument number %d1 in the call to subprogram %s3 is a subroutine but
- was used as a function in subprogram %s3.
-AR_PARM_COUNT [ w r0] number of arguments expected in call to %s1 was %d2, but found %d3
-AR_PARM_COUNT [jw r0] %s1‚ğŒÄ‚Ño‚·‚Ìˆø”‚Í%d2ŒÂ‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB%d3ŒÂ‚ ‚è‚Ü‚µ‚½B
- The number of arguments in the call to subprogram %s1 was %d3 and does not
- match the definition of subprogram %s1 which was defined with %d2 arguments.
-AR_SUB_EXPECT [ w r0] argument number %d1 (%s2) in call to %s3 - a function was passed but a subroutine was expected
-AR_SUB_EXPECT [jw r0] %s3‚ğCALL‚·‚é%d1”Ô–Ú‚Ìˆø”(%s2) - ŠÖ”‚ª“n‚³‚ê‚Ü‚µ‚½‚ª,»ÌŞÙ°Áİ‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
- Argument number %d1 in the call to subprogram %s3 is a function but
- was used as a subroutine in subprogram %s3.
-AR_TYP_MISMATCH [ w r0] argument number %d1 (%s2) in call to %s3 - %s4 argument was passed but %s5 argument was expected
-AR_TYP_MISMATCH [jw r0] %3‚ğCALL‚·‚é%d1”Ô–Ú‚Ìˆø”(%s2) - %s4ˆø”‚ª“n‚³‚ê‚Ü‚µ‚½‚ª,%s5ˆø”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
- The type of argument number %d1 in the call to subprogram %s3 was %s4.
- The type of argument number %d1 was declared as %s5 in subprogram %s3.
- The number and types of actual and dummy arguments must match.
-AR_STRUCT_MISMATCH [ w r0] argument number %d1 (%s2) in call to %s3 - type of structure passed does not match type of structure expected
-AR_STRUCT_MISMATCH [jw r0] %s3‚ğCALL‚·‚é%d1”Ô–Ú‚Ìˆø”(%s2) - “n‚³‚ê‚½\‘¢‘Ì‚ÌŒ^‚ÍAŠú‘Ò‚³‚ê‚é\‘¢‘Ì‚ÌŒ^‚Æ‡‚Á‚Ä‚¢‚Ü‚¹‚ñB
- The structure type of argument number %d1 in the call to subprogram
- %s3 does not match the expected structure type.
- Two structures are equivalent if the type of the corresponding field names
- are the same.
- Unions are considered equivalent if their sizes are the same.
- Field names, and the structure name itself, do not have to be the same.
-AR_PASS_BY_MISMATCH [ w r0] argument number %d1 (%s2) in call to %s3 - argument passed by value but expected by reference
-AR_PASS_BY_MISMATCH [jw r0] %s3‚ğCALL‚·‚é%d1”Ô–Ú‚Ìˆø”(%s2) - ’l“n‚µ‚Ìˆø”‚Å‚·‚ª,±ÄŞÚ½“n‚µ‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
- Argument number %d1 in the call to subprogram %s3 was passed by value.
- The called subprogram expected the address of the argument instead of its
- value.
 AR_ENTRY_TOO_LATE [   c2] dummy argument %s1 must not appear before definition of ENTRY %s2
-AR_ENTRY_TOO_LATE [j  c2] ‰¼ˆø”%s1‚Í,ENTRY %s2‚Ì’è‹`‚Ì‘O‚É‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+AR_ENTRY_TOO_LATE [j  c2] ä»®å¼•æ•°%s1ã¯,ENTRY %s2ã®å®šç¾©ã®å‰ã«ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The dummy argument %s1 has appeared in an executable statement before
  its appearance in the definition of %s2 in an ENTRY statement.
  This is illegal.
 BD Block Data Subprograms
 BD_BLKDAT_NOT_COMMON [   c0] %s1 was initialized in a block data subprogram but is not in COMMON
-BD_BLKDAT_NOT_COMMON [j  c0] %s1‚ÍBLOCK DATA•›ÌßÛ¸Ş×Ñ‚Å‰Šú’l‚³‚ê‚Ü‚µ‚½‚ª, COMMONÌŞÛ¯¸‚É‚ ‚è‚Ü‚¹‚ñB
+BD_BLKDAT_NOT_COMMON [j  c0] %s1ã¯BLOCK DATAå‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã§åˆæœŸå€¤ã•ã‚Œã¾ã—ãŸãŒ, COMMONï¾Œï¾ï¾›ï½¯ï½¸ã«ã‚ã‚Šã¾ã›ã‚“ã€‚
  The variable or array element, %s1, was initialized in a BLOCK DATA
  subprogram but was not specified in a named COMMON block.
 BD_IN_BLOCK_DATA [   c0] %s1 statement is not permitted in a BLOCK DATA subprogram
-BD_IN_BLOCK_DATA [j  c0] %s1•¶‚ÍBLOCK DATA•›ÌßÛ¸Ş×Ñ‚Ì’†‚É‚Í‘‚¯‚Ü‚¹‚ñB
+BD_IN_BLOCK_DATA [j  c0] %s1æ–‡ã¯BLOCK DATAå‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®ä¸­ã«ã¯æ›¸ã‘ã¾ã›ã‚“ã€‚
  The statement, %s1, is not allowed in a BLOCK DATA subprogram.
  The only statements which are allowed to appear are:
  IMPLICIT, PARAMETER, DIMENSION, COMMON, SAVE, EQUIVALENCE, DATA, END,
  and type statements.
 CC Source Format and Contents
 CC_BAD_CHAR [   c1] invalid character encountered in source input
-CC_BAD_CHAR [j  c1] ÌßÛ¸Ş×Ñ‚Ì’†‚Ég‚Á‚Ä‚Í‚¢‚¯‚È‚¢•¶š‚ª‚ ‚è‚Ü‚·B
+CC_BAD_CHAR [j  c1] ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®ä¸­ã«ä½¿ã£ã¦ã¯ã„ã‘ãªã„æ–‡å­—ãŒã‚ã‚Šã¾ã™ã€‚
  The indicated statement contains an invalid character.
  Valid characters are: letters, digits, $, *, ., +, &minus., /, :, =, (, ),
  !, %,  ', and ,(comma).
  Any character may be used inside a character or hollerith string.
 CC_NOT_DIGITS [   c0] invalid character in statement number columns
-CC_NOT_DIGITS [j  c0] •¶”Ô†Œ…‚É•s“KØ‚È•¶š‚ª‚ ‚è‚Ü‚·B
+CC_NOT_DIGITS [j  c0] æ–‡ç•ªå·æ¡ã«ä¸é©åˆ‡ãªæ–‡å­—ãŒã‚ã‚Šã¾ã™ã€‚
  A column in columns 1 to 5 of the indicated statement contains a
  non-digit character.
  Columns 1 to 5 contain the statement number label.
  It is made up of digits from 0 to 9 and is greater than 0 and less
  than or equal to 99999.
 CC_NOT_INITIAL [   c1] character in continuation column, but no statement to continue
-CC_NOT_INITIAL [j  c1] Œp‘±Œ…‚É•¶š‚ª‚ ‚è‚Ü‚·‚ª,Œp‘±‚·‚és‚ª‚ ‚è‚Ü‚¹‚ñB
+CC_NOT_INITIAL [j  c1] ç¶™ç¶šæ¡ã«æ–‡å­—ãŒã‚ã‚Šã¾ã™ãŒ,ç¶™ç¶šã™ã‚‹è¡ŒãŒã‚ã‚Šã¾ã›ã‚“ã€‚
  The character in column 6 indicates that this line is a continuation
  of the previous statement but there is no previous statement to
  continue.
 CC_SET_EXTEND [   c0] character encountered is not FORTRAN 77 standard
-CC_SET_EXTEND [j  c0] FORTRAN 77‚Ì•W€¾¯Ä‚É‚Í‚È‚¢•¶š‚ª‚ ‚è‚Ü‚·B
+CC_SET_EXTEND [j  c0] FORTRAN 77ã®æ¨™æº–ï½¾ï½¯ï¾„ã«ã¯ãªã„æ–‡å­—ãŒã‚ã‚Šã¾ã™ã€‚
  A non-standard character was encountered in the source input stream.
  This is most likely caused by the use of lower case letters.
 CC_STMTNO_ON_CONT [   c0] columns 1-5 in a continuation line must be blank
-CC_STMTNO_ON_CONT [j  c0] Œp‘±s‚Ì¶×Ñ1‚©‚ç5‚ÍÌŞ×İ¸‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+CC_STMTNO_ON_CONT [j  c0] ç¶™ç¶šè¡Œã®ï½¶ï¾—ï¾‘1ã‹ã‚‰5ã¯ï¾Œï¾ï¾—ï¾ï½¸ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  When column 6 is marked as a continuation statement to the previous
  line, columns 1 to 5 must be left blank.
 CC_TOO_MANY_CONT [   c0] more than 19 continuation lines is not FORTRAN 77 standard
-CC_TOO_MANY_CONT [j  c0] 19s‚ğ’´‚¦‚éŒp‘±s‚ÍFORTRAN 77•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+CC_TOO_MANY_CONT [j  c0] 19è¡Œã‚’è¶…ãˆã‚‹ç¶™ç¶šè¡Œã¯FORTRAN 77æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  More than 19 continuation lines is an extension to the FORTRAN 77 language.
 CC_EOL_COMMENT [   c0] end-of-line comment is not FORTRAN 77 standard
-CC_EOL_COMMENT [j  c0] I’[s’–ó‚ÍFORTRAN 77•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+CC_EOL_COMMENT [j  c0] çµ‚ç«¯è¡Œæ³¨è¨³ã¯FORTRAN 77æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  End-of-line comments are an extension to the FORTRAN 77 language.
  End-of-line comments start with the exclamation mark (!) character.
 CC_D_IN_COLUMN_1 [   c0] D in column 1 is not FORTRAN 77 standard
-CC_D_IN_COLUMN_1 [j  c0] 1¶×Ñ–Ú‚ÌD‚ÍFORTRAN 77•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+CC_D_IN_COLUMN_1 [j  c0] 1ï½¶ï¾—ï¾‘ç›®ã®Dã¯FORTRAN 77æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  A "D" in column 1 signifies a debug statement that is compiled
  when the "__debug__" macro symbol is defined.
  If the "__debug__" macro symbol is not defined, the statement is ignored.
  The "c$define" compiler directive or the "define" compiler option can be
  used to define the "__debug__" macro symbol.
 CC_CONT_OVERFLOW [   c0] too many continuation lines
-CC_CONT_OVERFLOW [j  c0] Œp‘±s‚ª‘½‚·‚¬‚Ü‚·B
+CC_CONT_OVERFLOW [j  c0] ç¶™ç¶šè¡ŒãŒå¤šã™ãã¾ã™ã€‚
  The limit on the number of continuation lines has been reached.
  This limit depends on the size of each continuation line.
  A minimum of 61 continuation lines is permitted.
@@ -125,118 +75,105 @@ CC_CONT_OVERFLOW [j  c0] Œp‘±s‚ª‘½‚·‚¬‚Ü‚·B
  permitted.
 CM COMMON Blocks
 CM_ALREADY_IN_COM [   c2] %s1 already in COMMON
-CM_ALREADY_IN_COM [j  c2] %s1‚Í‘¼‚ÌCOMMONÌŞÛ¯¸‚É‚à‚ ‚è‚Ü‚·B
+CM_ALREADY_IN_COM [j  c2] %s1ã¯ä»–ã®COMMONï¾Œï¾ï¾›ï½¯ï½¸ã«ã‚‚ã‚ã‚Šã¾ã™ã€‚
  The variable or array name, %s1, has already been specified in this or
  another COMMON block.
 CM_COMMON [   c0] initializing %s1 in COMMON outside of block data subprogram is not FORTRAN 77 standard
-CM_COMMON [j  c0] BLOCKDATA•›ÌßÛ¸Ş×Ñ‚ÌŠO‘¤‚ÌCOMMONÌŞÛ¯¸‚Å%s1‚ğ‰Šú‰»‚·‚é‚±‚Æ‚Í,FORTRAN 77•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+CM_COMMON [j  c0] BLOCKDATAå‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®å¤–å´ã®COMMONï¾Œï¾ï¾›ï½¯ï½¸ã§%s1ã‚’åˆæœŸåŒ–ã™ã‚‹ã“ã¨ã¯,FORTRAN 77æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The symbol %s1, in a named COMMON block, has been initialized outside of a
  block data subprogram.
  This is an extension to the FORTRAN 77 language.
 CM_MIXED_COMMON [   c0] character and non-character data in COMMON is not FORTRAN 77 standard
-CM_MIXED_COMMON [j  c0] FORTRAN 77•W€¾¯Ä‚Å‚ÍCOMMONÌŞÛ¯¸‚Ì’†‚É•¶š‚â”’l‚ğ“¯‚ÉŠÜ‚ß‚é‚±‚Æ‚Í‚Å‚«‚¹‚ñB
+CM_MIXED_COMMON [j  c0] FORTRAN 77æ¨™æº–ï½¾ï½¯ï¾„ã§ã¯COMMONï¾Œï¾ï¾›ï½¯ï½¸ã®ä¸­ã«æ–‡å­—ã‚„æ•°å€¤ã‚’åŒæ™‚ã«å«ã‚ã‚‹ã“ã¨ã¯ã§ãã›ã‚“ã€‚
  The FORTRAN 77 standard specifies that a COMMON block cannot contain
  both numeric and character data.
  Allowing COMMON blocks to contain both numeric and character data is an
  extension to the FORTRAN 77 standard.
 CM_NAMED_DIFF_SIZE [   c0] COMMON block %s1 has been defined with a different size
-CM_NAMED_DIFF_SIZE [j  c0] COMMONÌŞÛ¯¸%s1‚ÍˆÙ‚È‚é‘å‚«‚³‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚µ‚½B
+CM_NAMED_DIFF_SIZE [j  c0] COMMONï¾Œï¾ï¾›ï½¯ï½¸%s1ã¯ç•°ãªã‚‹å¤§ãã•ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã—ãŸã€‚
  The COMMON block %s1 has been defined with a different size in another
  subprogram.
  A named COMMON block must define the same amount of storage units
  where ever named.
 CM_BLKDATA_ALREADY [   c0] named COMMON block %s1 appears in more than one BLOCK DATA subprogram
-CM_BLKDATA_ALREADY [j  c0] –¼‘O‚Ì•t‚¢‚½COMMONÌŞÛ¯¸%s1‚ª,2ŒÂˆÈã‚ÌBLOCK DATA•›ÌßÛ¸Ş×Ñ ‚É‚ ‚è‚Ü‚·B
+CM_BLKDATA_ALREADY [j  c0] åå‰ã®ä»˜ã„ãŸCOMMONï¾Œï¾ï¾›ï½¯ï½¸%s1ãŒ,2å€‹ä»¥ä¸Šã®BLOCK DATAå‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ ã«ã‚ã‚Šã¾ã™ã€‚
  The named COMMON block, %s1, may not appear in more than one BLOCK
  DATA subprogram.
 CM_BLANK_DIFF_SIZE [   c0] blank COMMON block has been defined with a different size
-CM_BLANK_DIFF_SIZE [j  c0] –¼‘O‚Ì‚È‚¢COMMONÌŞÛ¯¸‚ªˆÙ‚È‚é‘å‚«‚³‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚µ‚½B
+CM_BLANK_DIFF_SIZE [j  c0] åå‰ã®ãªã„COMMONï¾Œï¾ï¾›ï½¯ï½¸ãŒç•°ãªã‚‹å¤§ãã•ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã—ãŸã€‚
  The blank COMMON block has been defined with a different size in
  another subprogram.
  This is legal but a warning message is issued.
 CN Constants
 CN_DOUBLE_COMPLEX [   c1] DOUBLE PRECISION COMPLEX constants are not FORTRAN 77 standard
-CN_DOUBLE_COMPLEX [j  c1] FORTRAN 77•W€¾¯Ä‚Å‚Í”{¸“x‚Ì•¡‘f”Œ^‚Ì’è”‚Íg‚¦‚Ü‚¹‚ñB
+CN_DOUBLE_COMPLEX [j  c1] FORTRAN 77æ¨™æº–ï½¾ï½¯ï¾„ã§ã¯å€ç²¾åº¦ã®è¤‡ç´ æ•°å‹ã®å®šæ•°ã¯ä½¿ãˆã¾ã›ã‚“ã€‚
  Double precision complex numbers are an extension to the FORTRAN 77
  language.
  The indicated number is a complex number and at least one of the
  parts, real or imaginary, is a double precision constant.
  Both real and imaginary parts will be double precision.
 CN_FLOAT [   c2] invalid floating-point constant %s1
-CN_FLOAT [j  c2] %s1‚Í³‚µ‚¢•‚“®¬”“_’è”‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+CN_FLOAT [j  c2] %s1ã¯æ­£ã—ã„æµ®å‹•å°æ•°ç‚¹å®šæ•°ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The floating-point constant %s1 is invalid.
  Refer to the chapter entitled "Names, Data Types and Constants"
  in the Language Reference.
 CN_ZERO_LEN [   c0] zero length character constants are not allowed
-CN_ZERO_LEN [j  c0] ’·‚³‚ª¾ŞÛ‚Ì•¶š’è”‚Íg‚¦‚Ü‚¹‚ñB
+CN_ZERO_LEN [j  c0] é•·ã•ãŒï½¾ï¾ï¾›ã®æ–‡å­—å®šæ•°ã¯ä½¿ãˆã¾ã›ã‚“ã€‚
  FORTRAN 77 does not allow character constants of length 0 (i.e., an
  empty string).
 CN_BAD_HEX_OCT [   c2] invalid hexadecimal/octal constant
-CN_BAD_HEX_OCT [j  c2] 16i”^8i”‚Ì’è”‚ª–³Œø‚Å‚·B
+CN_BAD_HEX_OCT [j  c2] 16é€²æ•°ï¼8é€²æ•°ã®å®šæ•°ãŒç„¡åŠ¹ã§ã™ã€‚
  An invalid hexadecimal or octal constant was specified.
  Hexadecimal constants can only contain digits or the letters 'a' through
  'f' and 'A' through 'F'.
  Octal constants can only contain the digits '0' through '7'.
 CN_HEX_OCT [   c2] hexadecimal/octal constant is not FORTRAN 77 standard
-CN_HEX_OCT [j  c2] 16i”^8i”‚Ì’è”‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+CN_HEX_OCT [j  c2] 16é€²æ•°ï¼8é€²æ•°ã®å®šæ•°ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  Hexadecimal and octal constants are extensions to the FORTRAN 77 standard.
 CO Compiler Options
 CO_ALREADY_OPEN [   c0] %s1 is already being included
-CO_ALREADY_OPEN [j  c0] %s1‚ÍŠù‚É“Ç‚İ‚Ü‚ê‚Ä‚¢‚Ü‚·B
+CO_ALREADY_OPEN [j  c0] %s1ã¯æ—¢ã«èª­ã¿è¾¼ã¾ã‚Œã¦ã„ã¾ã™ã€‚
  An attempt has been made to include a file that is currently being
  included in the program.
 CO_BAD_NO [   c0] '%s1' option cannot take a NO prefix
-CO_BAD_NO [j  c0] '%s1'µÌß¼®İ‚Ì‘O‚ÉNO‚Í•t‚¯‚ç‚ê‚Ü‚¹‚ñB
+CO_BAD_NO [j  c0] '%s1'ï½µï¾Œï¾Ÿï½¼ï½®ï¾ã®å‰ã«NOã¯ä»˜ã‘ã‚‰ã‚Œã¾ã›ã‚“ã€‚
  The compiler option %s1, cannot have the NO prefix specified.
  The NO prefix is used to negate an option.
  Certain options, including all options that require a value cannot have a
  NO prefix.
 CO_NEED_EQUALS [   c0] expecting an equals sign following the %s1 option
-CO_NEED_EQUALS [j  c0] %s1µÌß¼®İ‚ÌŒã‚É‚ª•K—v‚Å‚·B
+CO_NEED_EQUALS [j  c0] %s1ï½µï¾Œï¾Ÿï½¼ï½®ï¾ã®å¾Œã«ï¼ãŒå¿…è¦ã§ã™ã€‚
  The compiler option %s1, requires an equal sign to be between the
  option keyword and its associated value.
 CO_WANT_NUMBER [   c0] the '%s1' option requires a number
-CO_WANT_NUMBER [j  c0] '%s1'µÌß¼®İ‚É‚Í”š‚Ì’l‚ª•K—v‚Å‚·B
+CO_WANT_NUMBER [j  c0] '%s1'ï½µï¾Œï¾Ÿï½¼ï½®ï¾ã«ã¯æ•°å­—ã®å€¤ãŒå¿…è¦ã§ã™ã€‚
  The compiler option %s1 and an equal sign has been detected but the
  required associated value is missing.
 CO_NOT_RECOG [   c0] option '%s1' not recognized - ignored
-CO_NOT_RECOG [j  c0] '%s1'µÌß¼®İ‚Íg‚¦‚Ü‚¹‚ñB–³‹‚µ‚Ü‚µ‚½B
+CO_NOT_RECOG [j  c0] '%s1'ï½µï¾Œï¾Ÿï½¼ï½®ï¾ã¯ä½¿ãˆã¾ã›ã‚“ã€‚ç„¡è¦–ã—ã¾ã—ãŸã€‚
  The option %s1 is not a recognized compiler option and has been ignored.
  Consult the User's Guide for a complete list of compiler options.
 CO_NOT_IN_SOURCE [   c0] '%s1' option not allowed in source input stream
-CO_NOT_IN_SOURCE [j  c0] '%s1'µÌß¼®İ‚ÍÌßÛ¸Ş×Ñ‚Ì’†‚É‘‚¯‚Ü‚¹‚ñBºÏİÄŞs‚Åw¦‚µ‚Ä‚­‚¾‚³‚¢B
+CO_NOT_IN_SOURCE [j  c0] '%s1'ï½µï¾Œï¾Ÿï½¼ï½®ï¾ã¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®ä¸­ã«æ›¸ã‘ã¾ã›ã‚“ã€‚ï½ºï¾ï¾ï¾„ï¾è¡Œã§æŒ‡ç¤ºã—ã¦ãã ã•ã„ã€‚
  The option %s1 can only be specified on the command line.
  Consult the User's Guide for a description of which options are allowed
  in the source input stream.
 CO_MACRO_NESTING_EXCEEDED [   c0] nesting level exceeded for compiler directives
-CO_MACRO_NESTING_EXCEEDED [j  c0] ºİÊß²×°‹^—–½—ß‚ÌÈ½ÄÚÍŞÙ‚ª[‚·‚¬‚Ü‚·B
+CO_MACRO_NESTING_EXCEEDED [j  c0] ï½ºï¾ï¾Šï¾Ÿï½²ï¾—ï½°ç–‘ä¼¼å‘½ä»¤ã®ï¾ˆï½½ï¾„ï¾šï¾ï¾ï¾™ãŒæ·±ã™ãã¾ã™ã€‚
  Use of the C$IFDEF or C$IFNDEF compiler directives has caused the maximum
  nesting level to be exceeded.
  The maximum nesting level is 16.
 CO_MACRO_STRUCTURE_MISMATCH [   c0] mismatching compiler directives
-CO_MACRO_STRUCTURE_MISMATCH [j  c0] ºİÊß²×°‹^—–½—ß‚ª‘Î‰‚µ‚Ä‚¢‚Ü‚¹‚ñB
+CO_MACRO_STRUCTURE_MISMATCH [j  c0] ï½ºï¾ï¾Šï¾Ÿï½²ï¾—ï½°ç–‘ä¼¼å‘½ä»¤ãŒå¯¾å¿œã—ã¦ã„ã¾ã›ã‚“ã€‚
  This error message is issued if, for example, a C$ENDIF directive is used and
  no matching C$IFDEF or C$IFNDEF precedes it.
  Incorrect nesting of C$IFDEF, C$IFNDEF, C$ELSE and C$ENDIF directives will
  also cause this message to be issued.
-CO_DATA_IN_BAD_FILE [ w c0] DATA option not allowed
-CO_DATA_IN_BAD_FILE [jw c0] “Ç‚İ‚ŞÌßÛ¸Ş×Ñ‚Ì’†‚ÉDATAºİÊß²×°µÌß¼®İ‚ğŠÜ‚ß‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
- A source file has been included into the current program through the
- use of the INCLUDE compiler option.
- This included source file cannot contain the DATA compiler option.
-CO_LIMIT_TOO_BIG [ w c0] maximum limit exceeded in the '%s1' option - option ignored
-CO_LIMIT_TOO_BIG [jw c0] '%s1'‚ÌÅ‘åŒÀŠE’l‚ğµ°ÊŞ-‚µ‚Ü‚µ‚½BµÌß¼®İ‚Í–³‹‚³‚ê‚Ü‚µ‚½B
- The user has specified a value on an option which exceeds the maximum allowed
- value.
-CO_DATA_WITH_OBJ [ w c0] DATA option not allowed with OBJECT option
-CO_DATA_WITH_OBJ [jw c0] DATAµÌß¼®İ‚ÆOBJECTµÌß¼®İ‚Í“¯‚Éw’è‚Å‚«‚Ü‚¹‚ñB
- The DATA compiler option can not appear a file that is compiled with the
- OBJECT option.
 CP Compiler Errors
 CP_TERMINATE [   r0] program abnormally terminated
-CP_TERMINATE [j  r0] ÌßÛ¸Ş×Ñ‚ªˆÙíI—¹‚µ‚Ü‚µ‚½B
+CP_TERMINATE [j  r0] ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ãŒç•°å¸¸çµ‚äº†ã—ã¾ã—ãŸã€‚
  This message is issued during the execution of the program.
- If you are running WATFOR-77, this message indicates that an internal error
+ If you are running FORTRAN 77, this message indicates that an internal error
  has occurred in the compiler.
  Please report this error and any other helpful information about the program
  being compiled to Watcom so that the problem can be fixed.
@@ -249,27 +186,27 @@ CP_TERMINATE [j  r0] ÌßÛ¸Ş×Ñ‚ªˆÙíI—¹‚µ‚Ü‚µ‚½B
  example, array subscripts and will help ensure that your program is not
  in error.
 CP_BAD_PARM_REGISTER [ o c0] argument %d1 incompatible with register
-CP_BAD_PARM_REGISTER [jo c0] ˆø”%d1‚ªÚ¼Ş½À‚Æˆê’v‚µ‚Ü‚¹‚ñB
+CP_BAD_PARM_REGISTER [jo c0] å¼•æ•°%d1ãŒï¾šï½¼ï¾ï½½ï¾€ã¨ä¸€è‡´ã—ã¾ã›ã‚“ã€‚
  The register specified in an auxiliary pragma for argument number %d1
  is invalid.
 CP_BAD_RETURN_REGISTER [ o c0] subprogram %s1 has invalid return register
-CP_BAD_RETURN_REGISTER [jo c0] •›ÌßÛ¸Ş×Ñ%s1‚ÉŠÔˆá‚Á‚½ØÀ°İÚ¼Ş½À‚ª‚ ‚è‚Ü‚·B
+CP_BAD_RETURN_REGISTER [jo c0] å‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘%s1ã«é–“é•ã£ãŸï¾˜ï¾€ï½°ï¾ï¾šï½¼ï¾ï½½ï¾€ãŒã‚ã‚Šã¾ã™ã€‚
  The register specified in an auxiliary pragma for the return value of
  function %s1 is invalid.
  This error is issued when, for example, an auxiliary pragma is used to
  specify EAX as the return register for a double precision function.
 CP_LOW_ON_MEMORY [ o c0] low on memory - unable to fully optimize %s1
-CP_LOW_ON_MEMORY [jo c0] ÒÓØ°•s‘«‚Å‚·B- %s1‚ğÅ“K‰»‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B
+CP_LOW_ON_MEMORY [jo c0] ï¾’ï¾“ï¾˜ï½°ä¸è¶³ã§ã™ã€‚- %s1ã‚’æœ€é©åŒ–ã§ãã¾ã›ã‚“ã§ã—ãŸã€‚
  There is not enough memory for the code generator to fully optimize
  subprogram %s1.
 CP_BACK_END_ERROR [ o c0] internal compiler error %d1
-CP_BACK_END_ERROR [jo c0] ºİÊß²×“à•”´×°‚Å‚·B %d1
+CP_BACK_END_ERROR [jo c0] ï½ºï¾ï¾Šï¾Ÿï½²ï¾—å†…éƒ¨ï½´ï¾—ï½°ã§ã™ã€‚ %d1
  This error is an internal code generation error.
  Please report the specified internal compiler error number and any other
  helpful information about the program being compiled to Watcom so that
  the problem can be fixed.
 CP_BAD_SAVE [ o c0] illegal register modified by %s1
-CP_BAD_SAVE [jo c0] %s1‚Å•ÏX‚µ‚½ƒŒƒWƒXƒ^‚Í³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+CP_BAD_SAVE [jo c0] %s1ã§å¤‰æ›´ã—ãŸãƒ¬ã‚¸ã‚¹ã‚¿ã¯æ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  An illegal register was said to be modified by %s1 in the auxiliary pragma
  for %s1.
  In a 32-bit flat memory model, the base pointer register EBP and segment
@@ -285,134 +222,109 @@ CP_ERROR [jo c0] %s1
  The most probable cause is an invalid instruction in the in-line assembly
  code specified in an auxiliary pragma.
 CP_FATAL_ERROR [ o c0] fatal: %s1
-CP_FATAL_ERROR [jo c0] ’v–½“IƒGƒ‰[: %s1
+CP_FATAL_ERROR [jo c0] è‡´å‘½çš„ã‚¨ãƒ©ãƒ¼: %s1
  The specified error indicates that the code generator has been abnormally
  terminated.
  This message will be issued if any internal limit is reached or a keyboard
  interrupt sequence is pressed during the code generation phase.
 CP_MEMORY_NOT_FREED [   c0] dynamic memory not freed
-CP_MEMORY_NOT_FREED [j  c0] “®“IÒÓØ°‚ª‰ğ•ú‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½B
+CP_MEMORY_NOT_FREED [j  c0] å‹•çš„ï¾’ï¾“ï¾˜ï½°ãŒè§£æ”¾ã•ã‚Œã¾ã›ã‚“ã§ã—ãŸã€‚
  This message indicates an internal compiler error.
  Please report this error and any other helpful information about the program
  being compiled to Watcom so that the problem can be fixed.
 CP_FREEING_UNOWNED_MEMORY [   c0] freeing unowned dynamic memory
-CP_FREEING_UNOWNED_MEMORY [j  c0] Šm•Û‚µ‚Ä‚¢‚È‚¢“®“IÒÓØ°‚ª‰ğ•ú‚³‚ê‚Ü‚µ‚½B
+CP_FREEING_UNOWNED_MEMORY [j  c0] ç¢ºä¿ã—ã¦ã„ãªã„å‹•çš„ï¾’ï¾“ï¾˜ï½°ãŒè§£æ”¾ã•ã‚Œã¾ã—ãŸã€‚
  This message indicates an internal compiler error.
  Please report this error and any other helpful information about the program
  being compiled to Watcom so that the problem can be fixed.
 CP_AUTO_EQUIV_TOO_LARGE [ o c0] The automatic equivalence containing %s1 exceeds 32K limit
-CP_AUTO_EQUIV_TOO_LARGE [jo c0] %s1‚ğŠÜ‚Ş©“®“™‰¿•Ï”‚ª32K‚ÌŒÀŠE‚ğ’´‚¦‚Ü‚µ‚½B
+CP_AUTO_EQUIV_TOO_LARGE [jo c0] %s1ã‚’å«ã‚€è‡ªå‹•ç­‰ä¾¡å¤‰æ•°ãŒ32Kã®é™ç•Œã‚’è¶…ãˆã¾ã—ãŸã€‚
  In 16-bit environments, the size of an equivalence on the stack must not 
  exceed 32767 bytes.
 CP_AUTO_RET_TOO_LARGE [ o c0] The return value of %s1 exceeds 32K limit
-CP_AUTO_RET_TOO_LARGE [jo c0] %s1‚Ì–ß‚è’l‚ª32K‚ÌŒÀŠE‚ğ’´‚¦‚Ü‚µ‚½B
+CP_AUTO_RET_TOO_LARGE [jo c0] %s1ã®æˆ»ã‚Šå€¤ãŒ32Kã®é™ç•Œã‚’è¶…ãˆã¾ã—ãŸã€‚
  In 16-bit environments, the size of the return value of a function must not
  exceed 32767 bytes.
 CP_AUTO_VAR_TOO_LARGE [ o c0] The automatic variable %s1 exceeds 32K limit
-CP_AUTO_VAR_TOO_LARGE [jo c0] ©“®•Ï”%s1‚ª32K‚ÌŒÀŠE‚ğ’´‚¦‚Ü‚µ‚½B
+CP_AUTO_VAR_TOO_LARGE [jo c0] è‡ªå‹•å¤‰æ•°%s1ãŒ32Kã®é™ç•Œã‚’è¶…ãˆã¾ã—ãŸã€‚
  In 16-bit environments, the size of any variable on the stack must not
  exceed 32767 bytes.
 CV Character Variables
 CV_BAD_LEN [   c0] CHARACTER variable %s1 with length (*) not allowed in this expression
-CV_BAD_LEN [j  c0] ‚±‚Ì®‚Ì’†‚É’·‚³(*)‚ğw’è‚µ‚½•¶š•Ï”-%s1‚Íg‚¦‚Ü‚¹‚ñB
+CV_BAD_LEN [j  c0] ã“ã®å¼ã®ä¸­ã«é•·ã•(*)ã‚’æŒ‡å®šã—ãŸæ–‡å­—å¤‰æ•°-%s1ã¯ä½¿ãˆã¾ã›ã‚“ã€‚
  The length of the result of evaluating the expression is
  indeterminate.
  One of the operands has an indeterminate length and the result is
  being assigned to a temporary.
 CV_CHARSTAR_ILLEGAL [   c0] character variable %s1 with length (*) must be a subprogram argument
-CV_CHARSTAR_ILLEGAL [j  c0] ’·‚³‚É(*)‚ğw’è‚µ‚½•¶š•Ï”%s1‚Í•›ÌßÛ¸Ş×Ñ‚Ì‰¼ˆø”ˆÈŠO‚Ég‚¦‚Ü‚¹‚ñB
+CV_CHARSTAR_ILLEGAL [j  c0] é•·ã•ã«(*)ã‚’æŒ‡å®šã—ãŸæ–‡å­—å¤‰æ•°%s1ã¯å‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®ä»®å¼•æ•°ä»¥å¤–ã«ä½¿ãˆã¾ã›ã‚“ã€‚
  The character variable %s1 with a length specification (*) can only be
  used to declare dummy arguments in the subprogram.
  The length of a dummy argument assumes the length of the
  corresponding actual argument.
-CV_OVERLAPING_ASSGT [ w r0] left and right hand sides overlap in a character assignment statement
-CV_OVERLAPING_ASSGT [jw r0] •¶š‚Ì‘ã“ü•¶‚É‚¨‚¢‚Ä¶‰E‚Ì•¶š•”•ª—ñ‚ªd‚È‚è‡‚Á‚ÄAŒİ‚¢‚É“à—e‚ğ‚±‚í‚µ‚Ä‚µ‚Ü‚¢‚Ü‚·B
- The expression on the right hand side defines a substring of a
- character variable and tries to assign it to an overlapping part of
- the same character variable.
 DA Data Initialization
 DA_BAD_DO_VAR [   c2] implied DO variable %s1 must be an integer variable
-DA_BAD_DO_VAR [j  c2] DOŒ`•À‚Ñ‚Ì•Ï”%s1‚ÍINTEGER•Ï”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+DA_BAD_DO_VAR [j  c2] DOå½¢ä¸¦ã³ã®å¤‰æ•°%s1ã¯INTEGERå¤‰æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The implied DO variable %s1 must be declared as a variable of type
  INTEGER or must have an implicit INTEGER type.
 DA_BAD_RPT_SPEC [   c2] repeat specification must be a positive integer
-DA_BAD_RPT_SPEC [j  c2] ŒJ•Ô‚µ‚Ìw’è‚ÍÌß×½‚Ì®”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+DA_BAD_RPT_SPEC [j  c2] ç¹°è¿”ã—ã®æŒ‡å®šã¯ï¾Œï¾Ÿï¾—ï½½ã®æ•´æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The repeat specification in the constant list of the DATA statement
  must be an unsigned positive integer.
 DA_BAD_VAR_IN_EXPR [   c2] %s1 appears in an expression but is not an implied DO variable
-DA_BAD_VAR_IN_EXPR [j  c2] DATA‚Ì®‚Ì’†‚Ég‚í‚ê‚Ä‚¢‚é%s1‚ÍDOŒ`•À‚Ñ‚Ì•Ï”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+DA_BAD_VAR_IN_EXPR [j  c2] DATAã®å¼ã®ä¸­ã«ä½¿ã‚ã‚Œã¦ã„ã‚‹%s1ã¯DOå½¢ä¸¦ã³ã®å¤‰æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The variable %s1 is used to express the array elements in the DATA
  statement but the variable is not used as an implied DO variable.
 DA_BLANK_INIT [   c0] %s1 in blank COMMON block cannot be initialized
-DA_BLANK_INIT [j  c0] –¼‘O‚Ì–³‚¢COMMONÌŞÛ¯¸‚É‚ ‚é%s1‚É‚ÍDATA‚Å‰Šú’l‚ğ—^‚¦‚ç‚ê‚Ü‚¹‚ñB
+DA_BLANK_INIT [j  c0] åå‰ã®ç„¡ã„COMMONï¾Œï¾ï¾›ï½¯ï½¸ã«ã‚ã‚‹%s1ã«ã¯DATAã§åˆæœŸå€¤ã‚’ä¸ãˆã‚‰ã‚Œã¾ã›ã‚“ã€‚
  A blank or unnamed COMMON block is a COMMON statement with the block
  name omitted.
  The entries in blank COMMON blocks cannot be initialized using DATA
  statements.
 DA_HEX_CONST [   c2] data initialization with hexadecimal constant is not FORTRAN 77 standard
-DA_HEX_CONST [j  c2] FORTRAN 77•W€‚Å‚Í16i”‚Å‰Šú’l‚Í—^‚¦‚ç‚ê‚Ü‚¹‚ñB
+DA_HEX_CONST [j  c2] FORTRAN 77æ¨™æº–ã§ã¯16é€²æ•°ã§åˆæœŸå€¤ã¯ä¸ãˆã‚‰ã‚Œã¾ã›ã‚“ã€‚
  Data initialization with hexadecimal constants is an extension to the
  FORTRAN 77 language.
 DA_ILL_NAME [   c0] cannot initialize %s1 %s2
-DA_ILL_NAME [j  c0] DATA‚Å%s1 %s2‚É‚Í‰Šú’l‚ğ—^‚¦‚ç‚ê‚Ü‚¹‚ñB
+DA_ILL_NAME [j  c0] DATAã§%s1 %s2ã«ã¯åˆæœŸå€¤ã‚’ä¸ãˆã‚‰ã‚Œã¾ã›ã‚“ã€‚
  Symbol %s2 was used as a %s1.
  It is illegal for such a symbol to be initialized in a DATA statement.
  The DATA statement can only be used to initialize variables, arrays,
  array elements, and substrings.
 DA_IN_TYPE_STMT [   c2] data initialization in %s1 statement is not FORTRAN 77 standard
-DA_IN_TYPE_STMT [j  c2] FORTRAN 77•W€‚Å‚Í%s1½Ã°ÄÒİÄ‚Å‰Šú’l‚ğ—^‚¦‚ç‚ê‚Ü‚¹‚ñB
+DA_IN_TYPE_STMT [j  c2] FORTRAN 77æ¨™æº–ã§ã¯%s1ï½½ï¾ƒï½°ï¾„ï¾’ï¾ï¾„ã§åˆæœŸå€¤ã‚’ä¸ãˆã‚‰ã‚Œã¾ã›ã‚“ã€‚
  Data initialization in type specification statements is an extension
  to the FORTRAN 77 language.
  These include: CHARACTER, COMPLEX, DOUBLE PRECISION, INTEGER,
  LOGICAL, and REAL.
 DA_NOT_ENOUGH [ o c0] not enough constants for list of variables
-DA_NOT_ENOUGH [jo c0] DATA‚Ì’†‚Ì•Ï”‚É‘Î‰‚·‚é’è”‚Ì”‚ª‘«‚è‚Ü‚¹‚ñB
- There are not enough constants specified to initialize all of the
- names listed in the DATA statement.
-DA_NOT_ENOUGH [ w r0] not enough constants for list of variables
-DA_NOT_ENOUGH [jw r0] DATA‚Ì’†‚Ì•Ï”‚É‘Î‰‚·‚é’è”‚Ì”‚ª‘«‚è‚Ü‚¹‚ñB
+DA_NOT_ENOUGH [jo c0] DATAã®ä¸­ã®å¤‰æ•°ã«å¯¾å¿œã™ã‚‹å®šæ•°ã®æ•°ãŒè¶³ã‚Šã¾ã›ã‚“ã€‚
  There are not enough constants specified to initialize all of the
  names listed in the DATA statement.
 DA_TOO_MUCH [ o c0] too many constants for list of variables
-DA_TOO_MUCH [jo c0] •Ï”‚É‘Î‚µ‚Ä’è”‚Ì”‚ª‘½‰ß‚¬‚Ü‚·B
- There are too many constants specified to initialize the names listed
- in the DATA statement.
-DA_TOO_MUCH [ w r0] too many constants for list of variables
-DA_TOO_MUCH [jw r0] •Ï”‚É‘Î‚µ‚Ä’è”‚Ì”‚ª‘½‰ß‚¬‚Ü‚·B
+DA_TOO_MUCH [jo c0] å¤‰æ•°ã«å¯¾ã—ã¦å®šæ•°ã®æ•°ãŒå¤šéãã¾ã™ã€‚
  There are too many constants specified to initialize the names listed
  in the DATA statement.
 DA_TYPE_MISMATCH [ o c0] cannot initialize %s1 variable %s2 with %s3 constant
-DA_TYPE_MISMATCH [jo c0] %s1•Ï”‚É%s2’è”‚ğ‰Šú’l‚Æ‚µ‚Ä“ü‚ê‚ç‚ê‚Ü‚¹‚ñB
+DA_TYPE_MISMATCH [jo c0] %s1å¤‰æ•°ã«%s2å®šæ•°ã‚’åˆæœŸå€¤ã¨ã—ã¦å…¥ã‚Œã‚‰ã‚Œã¾ã›ã‚“ã€‚
  The constant of type %s3 cannot be used to initialize the variable %s2 of
  type %s1.
-DA_TYPE_MISMATCH [ w r0] cannot initialize %s1 variable with %s2 constant
-DA_TYPE_MISMATCH [jw r0] %s1•Ï”‚É%s2’è”‚ğ‰Šú’l‚Æ‚µ‚Ä“ü‚ê‚ç‚ê‚Ü‚¹‚ñB
- The constant of type %s2 cannot be used to initialize a variable of
- type %s1.
-DA_DATA_TWICE [ w r0] entity can only be initialized once during data initialization
-DA_DATA_TWICE [jw r0] DATA‚Ì’†‚Å1ŒÂ‚Ì•Ï”‚É1“xˆÈãA‰Šú’l‚ğ—^‚¦‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
- An attempt has been made to initialize an entity more than once in
- DATA statements.
 DM Dimensioned Variables
 DM_SYM_PARM [   c2] using %s1 incorrectly in dimension expression
-DM_SYM_PARM [j  c2] ŸŒ³‚Ì’è‹`®‚É‚Í%s1Œ^‚Íg‚¦‚Ü‚¹‚ñB®”®‚Ì‚İ‚Å‚·B
+DM_SYM_PARM [j  c2] æ¬¡å…ƒã®å®šç¾©å¼ã«ã¯%s1å‹ã¯ä½¿ãˆã¾ã›ã‚“ã€‚æ•´æ•°å¼ã®ã¿ã§ã™ã€‚
  The name used as a dimension declarator has been previously declared
  as type %s1 and cannot be used as a dimension declarator. A dimension
  declarator must be an integer expression.
-DM_RANGE_ERR_ON_DIMN [ w r0] array or array element (possibly substrung) associated with %s1 too small
-DM_RANGE_ERR_ON_DIMN [jw r0] ”z—ñ‚Ü‚½‚Í”z—ñ—v‘f(•¶š—ñ‚Ìˆê•”‚È‚Ç)‚Æv‚í‚ê‚é%s1‚Ì»²½Ş‚ª¬‚³‚·‚¬‚Ü‚·B
- The dummy argument, array %s1, is defined to be larger than the size
- of the actual argument.
 DO DO-loops
 DO_BACKWARDS_DO [   c2] statement number %i1 already defined in line %d2 - DO loop is backwards
-DO_BACKWARDS_DO [j  c2] DO‚ÌI‚è‚ğ¦‚·•¶”Ô†%i1‚ÍŠù‚É%d2s–Ú‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·BI‚í‚è•¶”Ô†‚ÍADO•¶‚æ‚èŒã‚ë‚Å‚·B
+DO_BACKWARDS_DO [j  c2] DOã®çµ‚ã‚Šã‚’ç¤ºã™æ–‡ç•ªå·%i1ã¯æ—¢ã«%d2è¡Œç›®ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ã€‚çµ‚ã‚ã‚Šæ–‡ç•ªå·ã¯ã€DOæ–‡ã‚ˆã‚Šå¾Œã‚ã§ã™ã€‚
  The statement number to indicate the end of the DO control structure
  has been used previously in the program unit and cannot be used to
  terminate the DO loop.
  The terminal statement named in the DO statement must follow the DO
  statement.
 DO_ENDING_BAD [   c0] %s1 statement not allowed at termination of DO range
-DO_ENDING_BAD [j  c0] %s1•¶‚ÍDO”ÍˆÍ‚ÌI‚è‚Æ‚µ‚Äg‚¦‚Ü‚¹‚ñB
+DO_ENDING_BAD [j  c0] %s1æ–‡ã¯DOç¯„å›²ã®çµ‚ã‚Šã¨ã—ã¦ä½¿ãˆã¾ã›ã‚“ã€‚
  A non-executable statement cannot be used as the terminal statement
  of a DO loop.
  These statements include: all declarative statements,
@@ -422,15 +334,15 @@ DO_ENDING_BAD [j  c0] %s1•¶‚ÍDO”ÍˆÍ‚ÌI‚è‚Æ‚µ‚Äg‚¦‚Ü‚¹‚ñB
  arithmetic and block IF, LOOP, OTHERWISE, PROGRAM, RETURN, SAVE,
  SELECT, STOP, SUBROUTINE, UNTIL, and WHILE.
 DO_NESTING_BAD [   c0] improper nesting of DO loop
-DO_NESTING_BAD [j  c0] ŠO‘¤‚ÌDOÙ°Ìß‚ªI‚í‚é‘O‚É“à‘¤‚ÌDOÙ°Ìß‚Í³‚µ‚­I‚í‚ç‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+DO_NESTING_BAD [j  c0] å¤–å´ã®DOï¾™ï½°ï¾Œï¾ŸãŒçµ‚ã‚ã‚‹å‰ã«å†…å´ã®DOï¾™ï½°ï¾Œï¾Ÿã¯æ­£ã—ãçµ‚ã‚ã‚‰ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  A nested DO loop has not been properly terminated before the
  termination of the outer DO loop.
 DO_BAD_ENDDO [   c0] ENDDO cannot terminate DO loop with statement label
-DO_BAD_ENDDO [j  c0] ENDDO‚Å‚Í×ÍŞÙ•t‚«‚ÌDOÙ°Ìß‚ğI‚¦‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+DO_BAD_ENDDO [j  c0] ENDDOã§ã¯ï¾—ï¾ï¾ï¾™ä»˜ãã®DOï¾™ï½°ï¾Œï¾Ÿã‚’çµ‚ãˆã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
  The ENDDO statement can only terminate a DO loop in which no
  statement label was specified in the defining DO statement.
 DO_DO_EXT [   c0] this DO loop form is not FORTRAN 77 standard
-DO_DO_EXT [j  c0] ‚±‚ÌDOÙ°Ìß‚ÌŒ`®‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+DO_DO_EXT [j  c0] ã“ã®DOï¾™ï½°ï¾Œï¾Ÿã®å½¢å¼ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  As an extension to FORTRAN 77, the following forms of the DO loop are
  also supported.
  .autonote
@@ -441,7 +353,7 @@ DO_DO_EXT [j  c0] ‚±‚ÌDOÙ°Ìß‚ÌŒ`®‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
  The DO WHILE form of the DO statement.
  .endnote
 DO_NO_COMMA_OR_VAR [   c1] expecting comma or DO variable
-DO_NO_COMMA_OR_VAR [j  c1] DO‚ÆI—¹‚ğ¦‚·”Ô†s‚ÌŸ‚ÍºİÏ‚©DO•Ï”‚ª‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+DO_NO_COMMA_OR_VAR [j  c1] DOã¨çµ‚äº†ã‚’ç¤ºã™ç•ªå·è¡Œã®æ¬¡ã¯ï½ºï¾ï¾ã‹DOå¤‰æ•°ãŒãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The item following the DO keyword and the terminal statement-label
  (if present) must be either a comma or a DO variable.
  A DO variable is an integer, real or double precision variable name.
@@ -450,43 +362,37 @@ DO_NO_COMMA_OR_VAR [j  c1] DO‚ÆI—¹‚ğ¦‚·”Ô†s‚ÌŸ‚ÍºİÏ‚©DO•Ï”‚ª‚È‚¯‚ê‚Î‚È‚è‚Ü
  DO <tsl> <,> DO-var = ex, ex <, ex>
  .millust end
 DO_PARM_REDEFINED [   c2] DO variable cannot be redefined while DO loop is active
-DO_PARM_REDEFINED [j  c2] DOÙ°Ìß‚Ì’†‚ÅDO•Ï”‚Ì’l‚ğÀs’†‚É•Ï‚¦‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+DO_PARM_REDEFINED [j  c2] DOï¾™ï½°ï¾Œï¾Ÿã®ä¸­ã§DOå¤‰æ•°ã®å€¤ã‚’å®Ÿè¡Œä¸­ã«å¤‰ãˆã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The DO variable named in the DO statement cannot have its value
  altered by a statement in the DO loop structure.
-DO_0INC [ w r0] incrementation parameter for DO-loop cannot be zero
-DO_0INC [jw r0] DOÙ°Ìß‚Ì‘•ª‚É¾ŞÛ‚ğw’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
- The third expression in the DO statement cannot be zero.
- This expression indicates the increment to the DO variable each
- iteration of the DO loop.
- If the increment expression is not specified a value of 1 is assumed.
 EC Equivalence and/or Common
 EC_PAST_BEG [   c0] equivalencing %s1 has caused extension of COMMON block %s2 to the left
-EC_PAST_BEG [j  c0] EQUIVALENCE‚³‚ê‚½%s1‚ÍCOMMONÌŞÛ¯¸%s2‚ğ¶‘¤‚ÖŠg’£‚µ‚Ü‚µ‚½BFORTRAN 77•W€‚Å‚ÍA‹Ö~‚³‚ê‚Ä‚¢‚é•û–@‚Å‚·B
+EC_PAST_BEG [j  c0] EQUIVALENCEã•ã‚ŒãŸ%s1ã¯COMMONï¾Œï¾ï¾›ï½¯ï½¸%s2ã‚’å·¦å´ã¸æ‹¡å¼µã—ã¾ã—ãŸã€‚FORTRAN 77æ¨™æº–ã§ã¯ã€ç¦æ­¢ã•ã‚Œã¦ã„ã‚‹æ–¹æ³•ã§ã™ã€‚
  The name %s1 has been equivalenced to a name in the COMMON block %s2.
  This relationship has caused the storage of the COMMON block to be
  extended to the left.
  FORTRAN 77 does not allow a COMMON block to be extended in this way.
 EC_2NAM_EC [   c0] %s1 and %s2 in COMMON are equivalenced to each other
-EC_2NAM_EC [j  c0] “¯‚¶COMMONÌŞÛ¯¸‚Ì“à‚É‚ ‚é%s1‚Æ%s2‚ÍŒİ‚¢‚ÉEQUIVALENCE‚Å‚«‚Ü‚¹‚ñB
+EC_2NAM_EC [j  c0] åŒã˜COMMONï¾Œï¾ï¾›ï½¯ï½¸ã®å†…ã«ã‚ã‚‹%s1ã¨%s2ã¯äº’ã„ã«EQUIVALENCEã§ãã¾ã›ã‚“ã€‚
  The names %s1 and %s2 appear in different COMMON blocks and each
  occupies its own piece of storage and therefore cannot be
  equivalenced.
 EN END Statement
 EN_NO_END [   c0] missing END statement
-EN_NO_END [j  c0] END•¶‚ª‚ ‚è‚Ü‚¹‚ñB
+EN_NO_END [j  c0] ENDæ–‡ãŒã‚ã‚Šã¾ã›ã‚“ã€‚
  The END statement for a PROGRAM, SUBROUTINE, FUNCTION or BLOCK DATA subprogram
  was not found before the next subprogram or the end of the source input
  stream.
 EQ Equal Sign
 EQ_BAD_TARGET [   c1] target of assignment is illegal
-EQ_BAD_TARGET [j  c1] ‘ã“ü‚ÌÀ°¹Ş¯Ä‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
+EQ_BAD_TARGET [j  c1] ä»£å…¥ã®ï¾€ï½°ï½¹ï¾ï½¯ï¾„ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚
  The target of an assignment statement, an input/output status specifier
  in an input/output statement, or an inquiry specifier in an INQUIRE
  statement, is illegal.
  The target in any of the above cases must be a variable name, array element,
  or a substring name.
 EQ_CANNOT_ASSIGN [   c2] cannot assign value to %s1
-EQ_CANNOT_ASSIGN [j  c2] ‘ã“ü•¶‚Ì¶‘¤‚Ì%s1À²Ìß‚É’l‚ğŠ„‚è“–‚Ä‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+EQ_CANNOT_ASSIGN [j  c2] ä»£å…¥æ–‡ã®å·¦å´ã®%s1ï¾€ï½²ï¾Œï¾Ÿã«å€¤ã‚’å‰²ã‚Šå½“ã¦ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
  An attempt has been made to assign a value to a symbol with class %s1.
  For example, an array name cannot be the target of an assignment
  statement.
@@ -494,14 +400,14 @@ EQ_CANNOT_ASSIGN [j  c2] ‘ã“ü•¶‚Ì¶‘¤‚Ì%s1À²Ìß‚É’l‚ğŠ„‚è“–‚Ä‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
  input/output status specifier in an input/output statement or an inquiry
  specifier in an INQUIRE statement.
 EQ_ILL_EQ_SIGN [   c1] illegal use of equal sign
-EQ_ILL_EQ_SIGN [j  c1] =‚Ìg‚¢•û‚ª‚Ü‚¿‚ª‚Á‚Ä‚¢‚Ü‚·(‘ã“ü•¶‚Å‚Í‚ ‚è‚Ü‚¹‚ñ)B
+EQ_ILL_EQ_SIGN [j  c1] =ã®ä½¿ã„æ–¹ãŒã¾ã¡ãŒã£ã¦ã„ã¾ã™(ä»£å…¥æ–‡ã§ã¯ã‚ã‚Šã¾ã›ã‚“)ã€‚
  An equal sign has been found in the statement but the statement is
  not an assignment statement.
 EQ_MULT_ASSGN [   c0] multiple assignment is not FORTRAN 77 standard
-EQ_MULT_ASSGN [j  c0] •¡”‚Ì‘ã“ü—p = ‚Ìg—p‚ÍFORTRAN 77•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+EQ_MULT_ASSGN [j  c0] è¤‡æ•°ã®ä»£å…¥ç”¨ = ã®ä½¿ç”¨ã¯FORTRAN 77æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  More than one equal sign has been found in the assignment statement.
 EQ_NO_EQUALS [   c1] expecting equals sign
-EQ_NO_EQUALS [j  c1] “™†(=)‚ª•K—v‚Å‚·B
+EQ_NO_EQUALS [j  c1] ç­‰å·(=)ãŒå¿…è¦ã§ã™ã€‚
  The equal sign is missing or misplaced.
  The PARAMETER statement uses an equal sign to equate a symbolic name
  to the value of a constant expression.
@@ -511,55 +417,55 @@ EQ_NO_EQUALS [j  c1] “™†(=)‚ª•K—v‚Å‚·B
  the DO variable.
 EV Equivalenced Variables
 EV_DIFF_REL_POS [   c0] %s1 has been equivalenced to 2 different relative positions
-EV_DIFF_REL_POS [j  c0] %s1‚ğ2‚Â‚ÌˆÙ‚È‚éêŠ‚ÉEQUIVALENCE‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+EV_DIFF_REL_POS [j  c0] %s1ã‚’2ã¤ã®ç•°ãªã‚‹å ´æ‰€ã«EQUIVALENCEã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The storage unit referenced by %s1 has been equivalenced to two
  different storage units starting in two different places.
  One name cannot be associated to two different values at the same
  time.
 EV_EQUIV_LIST [   c0] EQUIVALENCE list must contain at least 2 names
-EV_EQUIV_LIST [j  c0] EQUIVALENCE‚É‚Í­‚È‚­‚Æ‚à2‚Â‚Ì¼İÎŞÙ–¼‚ª‘Î‚Å•K—v‚Å‚·B
+EV_EQUIV_LIST [j  c0] EQUIVALENCEã«ã¯å°‘ãªãã¨ã‚‚2ã¤ã®ï½¼ï¾ï¾ï¾ï¾™åãŒå¯¾ã§å¿…è¦ã§ã™ã€‚
  The list of names to make a storage unit equivalent to several names
  must contain at least two names.
 EV_SSCR_INVALID [   c0] %s1 incorrectly subscripted in %s2 statement
-EV_SSCR_INVALID [j  c0] %s1‚ª%s2•¶‚Ì’†‚ÅŠÔˆá‚Á‚Ä“Yš‚ğ•t‚¯‚ç‚ê‚Ä‚¢‚Ü‚·B
+EV_SSCR_INVALID [j  c0] %s1ãŒ%s2æ–‡ã®ä¸­ã§é–“é•ã£ã¦æ·»å­—ã‚’ä»˜ã‘ã‚‰ã‚Œã¦ã„ã¾ã™ã€‚
  The name %s1 has been incorrectly subscripted in a %s2 statement.
 EV_SSTR_INVALID [   c0] incorrect substring of %s1 in %s2 statement
-EV_SSTR_INVALID [j  c0] %s1‚Í%s2•¶‚Ì’†‚ÅŠÔˆá‚Á‚½•”•ª—ñ‚Æ‚È‚Á‚Ä‚¢‚Ü‚·B
+EV_SSTR_INVALID [j  c0] %s1ã¯%s2æ–‡ã®ä¸­ã§é–“é•ã£ãŸéƒ¨åˆ†åˆ—ã¨ãªã£ã¦ã„ã¾ã™ã€‚
  An attempt has been made to incorrectly substring %s1 in a %s2
  statement.
  For example, if a CHARACTER variable was declared to be of length 4
  then (2:5) would be an invalid substring expression.
 EV_MIXED_EQUIV [   c0] equivalencing CHARACTER and non-CHARACTER data is not FORTRAN 77 standard
-EV_MIXED_EQUIV [j  c0] FORTRAN 77‚Ì•W€‚Å‚Í•¶š‚Æ‘¼‚ÌÀ²Ìß‚ÌÃŞ°À‚ğEQUIVALENCE‚Å‚«‚Ü‚¹‚ñB
+EV_MIXED_EQUIV [j  c0] FORTRAN 77ã®æ¨™æº–ã§ã¯æ–‡å­—ã¨ä»–ã®ï¾€ï½²ï¾Œï¾Ÿã®ï¾ƒï¾ï½°ï¾€ã‚’EQUIVALENCEã§ãã¾ã›ã‚“ã€‚
  Equivalencing numeric and character data is an extension to the
  FORTRAN 77 language.
 EV_ONLY_IF_CHAR [   c0] attempt to substring %s1 in EQUIVALENCE statement but type is %s2
-EV_ONLY_IF_CHAR [j  c0] EQUIVALENCE‚Å•”•ª—ñ‚ğ¦‚·%s1‚Í%s2‚Å‚·‚ª•¶šŒ^‚Ì•K—v‚ª‚ ‚è‚Ü‚·B
+EV_ONLY_IF_CHAR [j  c0] EQUIVALENCEã§éƒ¨åˆ†åˆ—ã‚’ç¤ºã™%s1ã¯%s2ã§ã™ãŒæ–‡å­—å‹ã®å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
  An attempt has been made to substring the symbolic name %s1 in an
  EQUIVALENCE statement but the type of the name is %s2 and should be
  of type CHARACTER.
 EX Exponentiation
 EX_Z_2_NOT_POS [    2] zero**J where J <= 0 is not allowed
-EX_Z_2_NOT_POS [j   2] J <= O ‚Ì ZERO**J ‚ÌŒvZ‚Í‚Å‚«‚Ü‚¹‚ñB
+EX_Z_2_NOT_POS [j   2] J <= O ã®æ™‚ ZERO**J ã®è¨ˆç®—ã¯ã§ãã¾ã›ã‚“ã€‚
  Zero cannot be raised to a power less than or equal to zero.
 EX_NOT_INT_ARG [   r0] X**Y where X < 0.0, Y is not of type INTEGER, is not allowed
-EX_NOT_INT_ARG [j  r0] X < 0.0 ‚Ì,Y‚ª®”‚Å‚È‚¯‚ê‚Î X**Y ‚ÌŒvZ‚Í‚Å‚«‚Ü‚¹‚ñB
+EX_NOT_INT_ARG [j  r0] X < 0.0 ã®æ™‚,YãŒæ•´æ•°ã§ãªã‘ã‚Œã° X**Y ã®è¨ˆç®—ã¯ã§ãã¾ã›ã‚“ã€‚
  When X is less than zero, Y may only be of type INTEGER.
 EX_CZ_2_NOT_REAL [   r0] (0,0)**Y where Y is not real is not allowed
-EX_CZ_2_NOT_REAL [j  r0] Y‚ªÀ”‚Å‚È‚¯‚ê‚Î (0,0)**Y ‚ÌŒvZ‚Í‚Å‚«‚Ü‚¹‚ñB
+EX_CZ_2_NOT_REAL [j  r0] YãŒå®Ÿæ•°ã§ãªã‘ã‚Œã° (0,0)**Y ã®è¨ˆç®—ã¯ã§ãã¾ã›ã‚“ã€‚
  In complex exponentiation, when the base is zero, the exponent may only be a
  real number or a complex number whose imaginary part is zero.
 EY ENTRY Statement
 EY_TYPE_MISMATCH [   c0] type of entry %s1 does not match type of function %s2
-EY_TYPE_MISMATCH [j  c0] ENTRY %s1‚ÌŒ^‚ª,ŠÖ”%s2‚ÌŒ^‚Æˆê’v‚µ‚Ü‚¹‚ñB
+EY_TYPE_MISMATCH [j  c0] ENTRY %s1ã®å‹ãŒ,é–¢æ•°%s2ã®å‹ã¨ä¸€è‡´ã—ã¾ã›ã‚“ã€‚
  If the type of a function is CHARACTER or a user-defined STRUCTURE, then the
  type of all entry names must match the type of the function name.
 EY_NOT_IN_CS [   c0] ENTRY statement not allowed within structured control blocks
-EY_NOT_IN_CS [j  c0] SELECT CASE‚âREMOTE BLOCK‚Ì‚æ‚¤‚È\‘¢‰»ÌŞÛ¯¸¥½Ã°ÄÒİÄ‚Ì’†‚ÉENTRY‚Íg‚¦‚Ü‚¹‚ñB
+EY_NOT_IN_CS [j  c0] SELECT CASEã‚„REMOTE BLOCKã®ã‚ˆã†ãªæ§‹é€ åŒ–ï¾Œï¾ï¾›ï½¯ï½¸ï½¥ï½½ï¾ƒï½°ï¾„ï¾’ï¾ï¾„ã®ä¸­ã«ENTRYã¯ä½¿ãˆã¾ã›ã‚“ã€‚
  FORTRAN 77 does not allow an ENTRY statement to appear between the
  start and end of a control structure.
 EY_SIZE_MISMATCH [   c0] size of entry %s1 does not match size of function %s2
-EY_SIZE_MISMATCH [j  c0] ENTRY %s1‚ÆŠÖ”–¼%s2‚Í“¯‚¶’·‚³‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+EY_SIZE_MISMATCH [j  c0] ENTRY %s1ã¨é–¢æ•°å%s2ã¯åŒã˜é•·ã•ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The name %s1 found in an ENTRY statement must be declared to be the
  same size as that of the function name.
  If the name of the function or the name of any entry point has a
@@ -568,90 +474,90 @@ EY_SIZE_MISMATCH [j  c0] ENTRY %s1‚ÆŠÖ”–¼%s2‚Í“¯‚¶’·‚³‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
  specification of the same integer value.
 FM Format
 FM_ASSUME_COMMA [    2] missing delimiter in format string, comma assumed
-FM_ASSUME_COMMA [j   2] FORMAT‚Ì•ÒW‹Lqq‚ğ‹æ•ª‚·‚é‚à‚Ì‚ª‚ ‚è‚Ü‚¹‚ñBºİÏ‚ğ‹æ•ª‚·‚é‚½‚ß‚É‘}“ü‚µ‚Ü‚µ‚½B
+FM_ASSUME_COMMA [j   2] FORMATã®ç·¨é›†è¨˜è¿°å­ã‚’åŒºåˆ†ã™ã‚‹ã‚‚ã®ãŒã‚ã‚Šã¾ã›ã‚“ã€‚ï½ºï¾ï¾ã‚’åŒºåˆ†ã™ã‚‹ãŸã‚ã«æŒ¿å…¥ã—ã¾ã—ãŸã€‚
  The omission of a comma between the descriptors listed in a format
  string is an extension to the FORTRAN 77 language.
  Care should be taken when omitting the comma since the assumed
  separation may not occur in the intended place.
 FM_CONST [    2] missing or invalid constant
-FM_CONST [j   2] •ÒW‹Lqq‚Ì1•”‚Å‚ ‚é’è”‚ª–³‚¢‚©AŒ`®‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+FM_CONST [j   2] ç·¨é›†è¨˜è¿°å­ã®1éƒ¨ã§ã‚ã‚‹å®šæ•°ãŒç„¡ã„ã‹ã€å½¢å¼ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  An unsigned integer constant was expected with the indicated edit
  descriptor but was not correctly placed or was missing.
 FM_D_EXT [    0] Ew.dDe format code is not FORTRAN 77 standard
-FM_D_EXT [j   0] Ew.dDeŒ`®‚Ì•ÒW‹Lqq‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+FM_D_EXT [j   0] Ew.dDeå½¢å¼ã®ç·¨é›†è¨˜è¿°å­ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The edit descriptor Ew.dDe is an extension to the FORTRAN 77
  language.
 FM_DECIMAL [    2] missing decimal point
-FM_DECIMAL [j   2] ¬”“_‚ª•K—v‚Å‚·B
+FM_DECIMAL [j   2] å°æ•°ç‚¹ãŒå¿…è¦ã§ã™ã€‚
  The indicated edit descriptor must have a decimal point and an
  integer to indicate the number of decimal positions.
  These edit descriptors include: F, E, D and G.
 FM_DELIM [    2] missing or invalid edit descriptor in format string
-FM_DELIM [j   2] FORMAT‚Ì•ÒW‹Lqq‚ª–³‚¢‚©A‘‚«•û‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+FM_DELIM [j   2] FORMATã®ç·¨é›†è¨˜è¿°å­ãŒç„¡ã„ã‹ã€æ›¸ãæ–¹ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  In the format string, two delimiters were found in succession with no
  valid descriptor in between.
 FM_FMTCHAR [    2] unrecognizable edit descriptor in format string
-FM_FMTCHAR [j   2] FORMAT‚Ì’†‚ÉŠÔˆá‚Á‚½•ÒW‹Lqq‚ª‚ ‚è‚Ü‚·B
+FM_FMTCHAR [j   2] FORMATã®ä¸­ã«é–“é•ã£ãŸç·¨é›†è¨˜è¿°å­ãŒã‚ã‚Šã¾ã™ã€‚
  An edit descriptor has been found in the format string that is not a
  valid code.
  Valid codes are: apostrophe ('), I, F, E, D, G, L, A, Z, H, T, TL,
  TR, X, /, :, S, SP, SS, P, BN, B, $, and \.
 FM_INV_REP [    2] invalid repeat specification
-FM_INV_REP [j   2] ŒJ‚è•Ô‚µw’è‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+FM_INV_REP [j   2] ç¹°ã‚Šè¿”ã—æŒ‡å®šãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  The indicated repeatable edit descriptor is invalid.
  The forms of repeatable edit descriptors are:
  Iw, Iw.m, Fw.d, Ew.d, Ew.dEe, Dw.d, Gw.d, Gw.dEe, Lw, A, Aw, Ew.dDe,
  and Zw where w and e are positive unsigned integer constants, and d
  and m are unsigned integer constants.
 FM_M_EXT [    0] $ or \ format code is not FORTRAN 77 standard
-FM_M_EXT [j   0] $‚â\‚ÌÌ«°Ï¯Äº°ÄŞ‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+FM_M_EXT [j   0] $ã‚„\ã®ï¾Œï½«ï½°ï¾ï½¯ï¾„ï½ºï½°ï¾„ï¾ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The non-repeatable edit descriptors $ and \ are extensions to the
  FORTRAN 77 language.
 FM_MODIFIER [    2] invalid field modifier
-FM_MODIFIER [j   2] •Ï”‚È‚Ç‚É‘Î‚·‚é•ÒW‹Lqq‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+FM_MODIFIER [j   2] å¤‰æ•°ãªã©ã«å¯¾ã™ã‚‹ç·¨é›†è¨˜è¿°å­ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  The indicated edit descriptor for a field is incorrect.
  Consult the Language Reference for the correct form of the edit descriptor.
 FM_NO_EOS [   c2] expecting end of FORMAT statement but found more text
-FM_NO_EOS [j  c2] FORMAT‚Ì’†‚ÉI‚è‚ğ¦‚·)‚ª‚ ‚è‚Ü‚·‚ª‚³‚ç‚É‰E‚É‹Lq‚ª‘±‚¢‚Ä‚¢‚Ü‚·B
+FM_NO_EOS [j  c2] FORMATã®ä¸­ã«çµ‚ã‚Šã‚’ç¤ºã™)ãŒã‚ã‚Šã¾ã™ãŒã•ã‚‰ã«å³ã«è¨˜è¿°ãŒç¶šã„ã¦ã„ã¾ã™ã€‚
  The right parenthesis was encountered in the FORMAT statement to
  terminate the statement and more text was found on the line.
 FM_NO_REP [    2] repeat specification not allowed for this format code
-FM_NO_REP [j   2] ‚±‚Ì•ÒW‹Lqq‚É‚ÍŒJ•Ô‚µw’è‚Í•t‚¯‚ç‚ê‚Ü‚¹‚ñB
+FM_NO_REP [j   2] ã“ã®ç·¨é›†è¨˜è¿°å­ã«ã¯ç¹°è¿”ã—æŒ‡å®šã¯ä»˜ã‘ã‚‰ã‚Œã¾ã›ã‚“ã€‚
  A repeat specification was found in front of a format code that is a
  nonrepeatable edit descriptor.
  These include: apostrophe, H, T, TL, TR, X, /, :, S, SP, SS, P, BN,
  BZ, $,and \.
 FM_NO_STMTNO [   c0] no statement number on FORMAT statement
-FM_NO_STMTNO [j  c0] FORMAT•¶‚É•¶×ÍŞÙ‚ª•K—v‚Å‚·B
+FM_NO_STMTNO [j  c0] FORMATæ–‡ã«æ–‡ï¾—ï¾ï¾ï¾™ãŒå¿…è¦ã§ã™ã€‚
  The FORMAT statement must have a statement label.
  This statement number is used by I/O statements to reference the
  FORMAT statement.
 FM_QUOTE [    2] no closing quote on apostrophe edit descriptor
-FM_QUOTE [j   2] ˆø—p•„('')•ÒW‹Lqq‚ğ•Â‚¶‚é‚½‚ß‚Ì‚à‚¤1ŒÂ‚Ìˆø—p•„‚ª‚ ‚è‚Ü‚¹‚ñB
+FM_QUOTE [j   2] å¼•ç”¨ç¬¦('')ç·¨é›†è¨˜è¿°å­ã‚’é–‰ã˜ã‚‹ãŸã‚ã®ã‚‚ã†1å€‹ã®å¼•ç”¨ç¬¦ãŒã‚ã‚Šã¾ã›ã‚“ã€‚
  The closing quote of an apostrophe edit descriptor was not found.
 FM_SPEC_256 [    2] field count greater than 256 is invalid
-FM_SPEC_256 [j   2] •ÒW‹Lqq‚ÅÌ¨°ÙÄŞ‚Ì’·‚³‚Í256‚ğ‰z‚¦‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+FM_SPEC_256 [j   2] ç·¨é›†è¨˜è¿°å­ã§ï¾Œï½¨ï½°ï¾™ï¾„ï¾ã®é•·ã•ã¯256ã‚’è¶Šãˆã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The repeat specification of the indicated edit descriptor is greater
  than the maximum allowed of 256.
 FM_WIDTH [    2] invalid field width specification
-FM_WIDTH [j   2] •(’·‚³)‚Ìw’è‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+FM_WIDTH [j   2] å¹…(é•·ã•)ã®æŒ‡å®šãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  The width specifier on the indicated edit descriptor is invalid.
 FM_Z_EXT [    0] Z format code is not FORTRAN 77 standard
-FM_Z_EXT [j   0] Z•Ï”‹Lqq‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+FM_Z_EXT [j   0] Zå¤‰æ•°è¨˜è¿°å­ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The Z (hexadecimal format) repeatable edit descriptor is an extension
  to the FORTRAN 77 language.
 FM_TOO_LARGE [   r0] FORMAT statement exceeds allotted storage size
-FM_TOO_LARGE [j  r0] 1ŒÂ‚ÌFORMAT•¶‚ª‘å‚«‚·‚¬‚Ü‚·B•ªŠ„‚µ‚Ä‚­‚¾‚³‚¢B
+FM_TOO_LARGE [j  r0] 1å€‹ã®FORMATæ–‡ãŒå¤§ãã™ãã¾ã™ã€‚åˆ†å‰²ã—ã¦ãã ã•ã„ã€‚
  The maximum allowable size of a FORMAT statement has exceeded.
  The statement must be split into two or more FORMAT statements.
 FM_NOT_INP [   r0] format specification not allowed on input
-FM_NOT_INP [j  r0] “ü—Í—p‚Æ‚µ‚ÄFORMAT‚Ì’†‚Ì•ÒW‹Lqq‚Íg‚¦‚Ü‚¹‚ñB
+FM_NOT_INP [j  r0] å…¥åŠ›ç”¨ã¨ã—ã¦FORMATã®ä¸­ã®ç·¨é›†è¨˜è¿°å­ã¯ä½¿ãˆã¾ã›ã‚“ã€‚
  A format specification, in the FORMAT statement, is not allowed to be
  used as an input specification.
  Valid specifications include: T, TL,TR, X, /, :, P, BN, BZ, I, F, E,
  D, G, L, A, and Z.
 FM_REP [   r0] FORMAT missing repeatable edit descriptor
-FM_REP [j  r0] I/O—p‚Æ‚µ‚ÄFORMAT‚Ì’†‚Ì‘®d—l‚ÉŒJ‚è•Ô‚µw’è‚ª•K—v‚Å‚·B
+FM_REP [j  r0] I/Oç”¨ã¨ã—ã¦FORMATã®ä¸­ã®æ›¸å¼ä»•æ§˜ã«ç¹°ã‚Šè¿”ã—æŒ‡å®šãŒå¿…è¦ã§ã™ã€‚
  An attempt has been made to read or write a piece of data without a
  valid repeatable edit descriptor.
  All data requires a repeatable edit descriptor in the format.
@@ -660,41 +566,41 @@ FM_REP [j  r0] I/O—p‚Æ‚µ‚ÄFORMAT‚Ì’†‚Ì‘®d—l‚ÉŒJ‚è•Ô‚µw’è‚ª•K—v‚Å‚·B
  and Zw where w and e are positive unsigned integer constants, and d
  and m are unsigned integer constants.
 FM_ASSUME_CONST [    2] missing constant before X edit descriptor, 1 assumed
-FM_ASSUME_CONST [j   2] X•ÒW‹Lqq‚Ì‘O‚É’è”‚ª‚ ‚è‚Ü‚¹‚ñB1 ‚ğ‘}“ü‚µ‚Ü‚µ‚½B
+FM_ASSUME_CONST [j   2] Xç·¨é›†è¨˜è¿°å­ã®å‰ã«å®šæ•°ãŒã‚ã‚Šã¾ã›ã‚“ã€‚1 ã‚’æŒ¿å…¥ã—ã¾ã—ãŸã€‚
  The omission of the constant before an X edit descriptor in a format
  specification is an extension to the FORTRAN 77 language.
 FM_Q_EXT [    0] Ew.dQe format code is not FORTRAN 77 standard
-FM_Q_EXT [j   0] Ew.dQeŒ`®‚Ì•ÒW‹Lqq‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+FM_Q_EXT [j   0] Ew.dQeå½¢å¼ã®ç·¨é›†è¨˜è¿°å­ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The edit descriptor Ew.dQe is an extension to the FORTRAN 77
  language.
 FM_Q_FORMAT [    0] Qw.d format code is not FORTRAN 77 standard
-FM_Q_FORMAT [j   0] Qw.dŒ`®‚Ì•ÒW‹Lqq‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+FM_Q_FORMAT [j   0] Qw.då½¢å¼ã®ç·¨é›†è¨˜è¿°å­ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The edit descriptor Qw.d is an extension to the FORTRAN 77
  language.
 GO GOTO and ASSIGN Statements
 GO_ASSIGNED_BAD [   c0] %s1 statement label may not appear in ASSIGN statement but did in line %d2
-GO_ASSIGNED_BAD [j  c0] %s1•¶×ÍŞÙ‚ÍASSIGN•¶‚Ég‚¦‚Ü‚¹‚ñB%d2s‚ğÁª¯¸‚µ‚Ä‚­‚¾‚³‚¢B
+GO_ASSIGNED_BAD [j  c0] %s1æ–‡ï¾—ï¾ï¾ï¾™ã¯ASSIGNæ–‡ã«ä½¿ãˆã¾ã›ã‚“ã€‚%d2è¡Œã‚’ï¾ï½ªï½¯ï½¸ã—ã¦ãã ã•ã„ã€‚
  The statement label in the ASSIGN statement in line %d2 references a
  %s1 statement.
  The statement label in the ASSIGN statement must appear in the same
  program unit and must be that of an executable statement or a FORMAT
  statement.
 GO_CANNOT_ASSIGN [   c2] ASSIGN of statement number %i1 in line %d2 not allowed
-GO_CANNOT_ASSIGN [j  c2] ASSIGN‚Ì¦‚·•¶”Ô†%i1‚ÍÀs‚Å‚«‚È‚¢s‚ğw‚µ‚Ä‚¢‚Ü‚·B%d2s‚ğÁª¯¸‚µ‚Ä‚­‚¾‚³‚¢B
+GO_CANNOT_ASSIGN [j  c2] ASSIGNã®ç¤ºã™æ–‡ç•ªå·%i1ã¯å®Ÿè¡Œã§ããªã„è¡Œã‚’æŒ‡ã—ã¦ã„ã¾ã™ã€‚%d2è¡Œã‚’ï¾ï½ªï½¯ï½¸ã—ã¦ãã ã•ã„ã€‚
  The statement label %d1 in the ASSIGN statement is used in the line
  %d2 which references a non-executable statement.
  A statement label must appear in the same program unit as the ASSIGN
  statement and must be that of an executable statement or a FORMAT
  statement.
 GO_NO_TO [   c2] expecting TO
-GO_NO_TO [j  c2] ASSIGN‚ÌTO‚ª–³‚¢‚©ˆÊ’u‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
+GO_NO_TO [j  c2] ASSIGNã®TOãŒç„¡ã„ã‹ä½ç½®ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚
  The keyword TO is missing or misplaced in the ASSIGN statement.
 HO Hollerith Constants
 HO_CONST [   c0] hollerith constant is not FORTRAN 77 standard
-HO_CONST [j  c0] ÎÚØ½’è”‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+HO_CONST [j  c0] ï¾ï¾šï¾˜ï½½å®šæ•°ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  Hollerith constants are an extension to the FORTRAN 77 language.
 HO_CUT_OFF [   c0] not enough characters for hollerith constant
-HO_CUT_OFF [j  c0] •ÒW‹Lqq‚ÌH‚©h‚Ì‘O‚Ì”(hollerith’è”)‚É‘Î‚µ‚Ä‚»‚ê‚É‘±‚­•¶š‚ª‘«‚è‚Ü‚¹‚ñB
+HO_CUT_OFF [j  c0] ç·¨é›†è¨˜è¿°å­ã®Hã‹hã®å‰ã®æ•°(hollerithå®šæ•°)ã«å¯¾ã—ã¦ãã‚Œã«ç¶šãæ–‡å­—ãŒè¶³ã‚Šã¾ã›ã‚“ã€‚
  The number of characters following the H or h is not equal to the
  constant preceding the H or h.
  A hollerith constant consists of a positive unsigned integer constant
@@ -702,7 +608,7 @@ HO_CUT_OFF [j  c0] •ÒW‹Lqq‚ÌH‚©h‚Ì‘O‚Ì”(hollerith’è”)‚É‘Î‚µ‚Ä‚»‚ê‚É‘±‚­•¶š
  characters.
 IF IF Statements
 IF_ELSE_LAST [   c0] ELSE block must be the last block in block IF
-IF_ELSE_LAST [j  c0] ELSEÌŞÛ¯¸‚ÌŒã‚É‚Ü‚½ELSE IFÌŞÛ¯¸‚ª‘±‚¢‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB‚±‚ê‚ªIFƒuƒƒbƒN‚ÌÅŒã‚ÌÌŞÛ¯¸‚Å‚È‚¯‚ê‚È‚è‚Ü‚¹‚ñB
+IF_ELSE_LAST [j  c0] ELSEï¾Œï¾ï¾›ï½¯ï½¸ã®å¾Œã«ã¾ãŸELSE IFï¾Œï¾ï¾›ï½¯ï½¸ãŒç¶šã„ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚ã“ã‚ŒãŒIFãƒ–ãƒ­ãƒƒã‚¯ã®æœ€å¾Œã®ï¾Œï¾ï¾›ï½¯ï½¸ã§ãªã‘ã‚Œãªã‚Šã¾ã›ã‚“ã€‚
  Another ELSE IF block has been found after the ELSE block.
  The ELSE block must be the last block in an IF block.
  The form of the block IF is as follows:
@@ -716,7 +622,7 @@ IF_ELSE_LAST [j  c0] ELSEÌŞÛ¯¸‚ÌŒã‚É‚Ü‚½ELSE IFÌŞÛ¯¸‚ª‘±‚¢‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB‚±‚ê‚ª
  ENDIF
  .millust end
 IF_NO_THEN [   c1] expecting THEN
-IF_NO_THEN [j  c1] IF‚É‚ÍTHEN‚ª•K—v‚Å‚·B
+IF_NO_THEN [j  c1] IFã«ã¯THENãŒå¿…è¦ã§ã™ã€‚
  The keyword THEN is missing or misplaced in the block IF statement.
  The form of the block IF is as follows:
  .millust begin
@@ -730,7 +636,7 @@ IF_NO_THEN [j  c1] IF‚É‚ÍTHEN‚ª•K—v‚Å‚·B
  .millust end
 IL I/O Lists
 IL_BAD_FMT_SPEC [   c2] missing or invalid format/FMT specification
-IL_BAD_FMT_SPEC [j  c2] FORMAT/FMTd—l‚ª‚È‚¢‚©A‚ ‚é‚¢‚Í³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+IL_BAD_FMT_SPEC [j  c2] FORMAT/FMTä»•æ§˜ãŒãªã„ã‹ã€ã‚ã‚‹ã„ã¯æ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  A valid format specification is required on all READ and WRITE
  statements.
  The format specification is specified by:
@@ -742,45 +648,45 @@ IL_BAD_FMT_SPEC [j  c2] FORMAT/FMTd—l‚ª‚È‚¢‚©A‚ ‚é‚¢‚Í³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
  is one of the following: statement label, integer variable-name,
  character array-name, character expression, or *.
 IL_BAD_INTL [   c2] the UNIT may not be an internal file for this statement
-IL_BAD_INTL [j  c2] ‚±‚Ì•¶‚ÅUNIT‚É“à•”Ì§²Ù‚ğw’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñ(READ,WRITE‚Ì‚İ‚Å‚·)B
+IL_BAD_INTL [j  c2] ã“ã®æ–‡ã§UNITã«å†…éƒ¨ï¾Œï½§ï½²ï¾™ã‚’æŒ‡å®šã—ã¦ã¯ã„ã‘ã¾ã›ã‚“(READ,WRITEã®ã¿ã§ã™)ã€‚
  An internal file may only be referenced in a READ or WRITE statement.
  An internal file may not be referenced in a BACKSPACE, CLOSE,
  ENDFILE, INQUIRE, OPEN, or REWIND statement.
 IL_BAD_LIST [   c2] %s1 statement cannot have %s2 specification
-IL_BAD_LIST [j  c2] %s1•¶‚É%s2d—l‚Íw’è‚Å‚«‚Ü‚¹‚ñB
+IL_BAD_LIST [j  c2] %s1æ–‡ã«%s2ä»•æ§˜ã¯æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  The I/O statement %s1 may not have the control information %s2
  specified.
 IL_BAD_SIZE [   c2] variable must have a size of 4
-IL_BAD_SIZE [j  c2] ‚±‚Ì•Ï”‚Ì’·‚³‚Í4‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+IL_BAD_SIZE [j  c2] ã“ã®å¤‰æ•°ã®é•·ã•ã¯4ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The variable used as a specifier in an I/O statement must be of size
  4 but another size was specified.
  These include the EXIST, OPENED, RECL, IOSTAT, NEXTREC, and NUMBER.
  The name used in the ASSIGN statement must also be of size 4 but a
  different size was specified.
 IL_CTRL_LIST [   c2] missing or unrecognizable control list item %s1
-IL_CTRL_LIST [j  c2] I/O‚ğ§Œä‚·‚é %s1€–Ú‚É•s‘«‚ª‚ ‚é‚©,ŠÔˆá‚Á‚½‚à‚Ì‚ª‚ ‚è‚Ü‚·B
+IL_CTRL_LIST [j  c2] I/Oã‚’åˆ¶å¾¡ã™ã‚‹ %s1é …ç›®ã«ä¸è¶³ãŒã‚ã‚‹ã‹,é–“é•ã£ãŸã‚‚ã®ãŒã‚ã‚Šã¾ã™ã€‚
  A control list item %s1 was encountered in an I/O statement and is not
  a valid control list item for that statement, or a control list item
  was expected and was not found.
 IL_DUP_LIST [   c2] attempt to specify control list item %s1 more than once
-IL_DUP_LIST [j  c2] ‚±‚ÌI/O‚ğ§Œä‚·‚é‚½‚ß‚Ì€–Ú%s1‚Íd•¡‚µ‚Äw’è‚Å‚«‚Ü‚¹‚ñB
+IL_DUP_LIST [j  c2] ã“ã®I/Oã‚’åˆ¶å¾¡ã™ã‚‹ãŸã‚ã®é …ç›®%s1ã¯é‡è¤‡ã—ã¦æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  The control list item %s1 in the indicated I/O statement, has been
  named more than once.
 IL_EMPTY_IMP_DO [   c1] implied DO loop has no input/output list
-IL_EMPTY_IMP_DO [j  c1] DOŒ`•À‚Ñ‚ÌÙ°Ìß‚ªAI/OƒŠƒXƒg‚Ì•Ï”‚â®‚É‘Î‰‚µ‚Ä‚¢‚Ü‚¹‚ñB
+IL_EMPTY_IMP_DO [j  c1] DOå½¢ä¸¦ã³ã®ï¾™ï½°ï¾Œï¾ŸãŒã€I/Oãƒªã‚¹ãƒˆã®å¤‰æ•°ã‚„å¼ã«å¯¾å¿œã—ã¦ã„ã¾ã›ã‚“ã€‚
  The implied DO loop specified in the I/O statement does not
  correspond with a variable or expression in the input/output list.
 IL_ILST [   c0] list-directed input/output with internal files is not FORTRAN 77 standard
-IL_ILST [j  c0] “à•”Ì§²Ù‚Ö‚Ì•À‚Ñ‚É‚æ‚é“üo—Íˆ—‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+IL_ILST [j  c0] å†…éƒ¨ï¾Œï½§ï½²ï¾™ã¸ã®ä¸¦ã³ã«ã‚ˆã‚‹å…¥å‡ºåŠ›å‡¦ç†ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  List-directed input/output with internal files is an extension to the
  FORTRAN 77 language.
 IL_NO_ASTERISK [   c2] FORTRAN 77 standard requires an asterisk for list-directed formatting
-IL_NO_ASTERISK [j  c2] FORTRAN 77•W€‚Ìê‡,•À‚Ñ‚É‚æ‚é‘®‚É‚Í(*)±½ÀØ½¸‚ª•K—v‚Å‚·B
+IL_NO_ASTERISK [j  c2] FORTRAN 77æ¨™æº–ã®å ´åˆ,ä¸¦ã³ã«ã‚ˆã‚‹æ›¸å¼ã«ã¯(*)ï½±ï½½ï¾€ï¾˜ï½½ï½¸ãŒå¿…è¦ã§ã™ã€‚
  An optional asterisk for list-directed formatting is an extension to
  the FORTRAN 77 language.
  The standard FORTRAN 77 language specifies that an asterisk is required.
 IL_NO_UNIT_ID [   c0] missing or improper unit identification
-IL_NO_UNIT_ID [j  c0] UNIT‚ª–³‚¢‚©,‚»‚ÌÌ§²Ù¯•Êq(Ì§²Ù”Ô†)‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+IL_NO_UNIT_ID [j  c0] UNITãŒç„¡ã„ã‹,ãã®ï¾Œï½§ï½²ï¾™è­˜åˆ¥å­(ï¾Œï½§ï½²ï¾™ç•ªå·)ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  The control specifier, UNIT, in the I/O statement is either missing
  or identifies an improper unit.
  The unit specifier specifies an external unit or internal file.
@@ -789,208 +695,208 @@ IL_NO_UNIT_ID [j  c0] UNIT‚ª–³‚¢‚©,‚»‚ÌÌ§²Ù¯•Êq(Ì§²Ù”Ô†)‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
  The internal file identifier is character variable, character array,
  character array element, or character substring.
 IL_NO_FILE_OR_UNIT [   c0] missing unit identification or file specification
-IL_NO_FILE_OR_UNIT [j  c0] UNIT‚©FILE‚Ìw’è‚ª‚È‚¢‚©AŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
+IL_NO_FILE_OR_UNIT [j  c0] UNITã‹FILEã®æŒ‡å®šãŒãªã„ã‹ã€é–“é•ã£ã¦ã„ã¾ã™ã€‚
  An identifier to specifically identify the required file is missing.
  The UNIT specifier is used to identify the external unit or internal
  file.
  The FILE specifier in the INQUIRE and OPEN statements is used to
  identify the file name.
 IL_STAR_NOT_ALLOWED [   c1] asterisk unit identifier not allowed in %s1 statement
-IL_STAR_NOT_ALLOWED [j  c1] %s1•¶‚Å‚Í±½ÀØ½¸(*)‚Å‚È‚­,Ì§²Ù¯•Êq(Ì§²Ù”Ô†)‚ª•K—v‚Å‚·B
+IL_STAR_NOT_ALLOWED [j  c1] %s1æ–‡ã§ã¯ï½±ï½½ï¾€ï¾˜ï½½ï½¸(*)ã§ãªã,ï¾Œï½§ï½²ï¾™è­˜åˆ¥å­(ï¾Œï½§ï½²ï¾™ç•ªå·)ãŒå¿…è¦ã§ã™ã€‚
  The BACKSPACE, CLOSE, ENDFILE, INQUIRE, OPEN, and REWIND statements
  require the external unit identifier be an unsigned positive integer
  from 0 to 999.
 IL_UNIT_AND_FILE [   c0] cannot have both UNIT and FILE specifier
-IL_UNIT_AND_FILE [j  c0] UNIT‚ÆFILE‚Ì—¼•û‚Í“¯‚Éw’è‚Å‚«‚Ü‚¹‚ñB
+IL_UNIT_AND_FILE [j  c0] UNITã¨FILEã®ä¸¡æ–¹ã¯åŒæ™‚ã«æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  There are two valid forms of the INQUIRE statement; INQUIRE by FILE
  and INQUIRE by UNIT.
  Both of these specifiers cannot be specified in the same statement.
 IL_AINTL [   c0] internal files require sequential access
-IL_AINTL [j  c0] “à•”Ì§²Ù‚Í‡Ÿ±¸¾½ˆ—‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+IL_AINTL [j  c0] å†…éƒ¨ï¾Œï½§ï½²ï¾™ã¯é †æ¬¡ï½±ï½¸ï½¾ï½½å‡¦ç†ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  An attempt has been made to randomly access an internal file.
  Internal files may only be accessed sequentially.
 IL_END_REC [   c0] END specifier with REC specifier is not FORTRAN 77 standard
-IL_END_REC [j  c0] REC‚ğ”º‚¤END‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+IL_END_REC [j  c0] RECã‚’ä¼´ã†ENDã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The FORTRAN 77 standard specifies that an end-of-file condition can only
  occur with a file connected for sequential access or an internal file.
  The REC specifier indicates that the file is connected for direct access.
  This extension allows the programmer to detect an end-of-file condition when
  reading the records sequentially from a file connected for direct access.
 IL_SPECIFIER_NOT_STANDARD [   c0] %s1 specifier in i/o list is not FORTRAN 77 standard
-IL_SPECIFIER_NOT_STANDARD [j  c0] “üo—Í•À‚Ñ’†‚Ì%s1w’èq‚ÍFORTRAN 77•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+IL_SPECIFIER_NOT_STANDARD [j  c0] å…¥å‡ºåŠ›ä¸¦ã³ä¸­ã®%s1æŒ‡å®šå­ã¯FORTRAN 77æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The specified i/o list item is provided as an extension to the
  FORTRAN 77 language.
 IL_NO_IOLIST [   c0] i/o list is not allowed with NAMELIST-directed format
-IL_NO_IOLIST [j  c0] NAMELISTwŒü‚Ì‘®‚Å‚Í,“üo—Í•À‚Ñ‚Í‹–‚³‚ê‚Ü‚¹‚ñB
+IL_NO_IOLIST [j  c0] NAMELISTæŒ‡å‘ã®æ›¸å¼ã§ã¯,å…¥å‡ºåŠ›ä¸¦ã³ã¯è¨±ã•ã‚Œã¾ã›ã‚“ã€‚
  An i/o list is not allowed when the format specification is a NAMELIST.
 IL_NON_CHARACTER [   c2] non-character array as format specifier is not FORTRAN 77 standard
-IL_NON_CHARACTER [j  c2] ‘®w’è‚É•¶šˆÈŠO‚Ì”z—ñ‚ğg—p‚·‚é‚Ì‚Í,FORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+IL_NON_CHARACTER [j  c2] æ›¸å¼æŒ‡å®šã«æ–‡å­—ä»¥å¤–ã®é…åˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã®ã¯,FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  A format specifier must be of type character unless it is an array name.
  Allowing a non-character array name is an extension to the FORTRAN 77 standard.
 IM IMPLICIT Statements
 IM_ILLEGAL_RANGE [   c2] illegal range of characters
-IM_ILLEGAL_RANGE [j  c2] ”ÍˆÍ‚ğw’è‚·‚é•¶š‚Ì‡˜‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+IM_ILLEGAL_RANGE [j  c2] ç¯„å›²ã‚’æŒ‡å®šã™ã‚‹æ–‡å­—ã®é †åºãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  In the IMPLICIT statement, the first letter in the range of
  characters must be smaller in the collating sequence than
  the second letter in the range.
 IM_PREV_IMPLICIT [   c2] letter can only be implicitly declared once
-IM_PREV_IMPLICIT [j  c2] IMPLICIT‚Å“¯‚¶•¶š‚ğd•¡‚µ‚ÄAw’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+IM_PREV_IMPLICIT [j  c2] IMPLICITã§åŒã˜æ–‡å­—ã‚’é‡è¤‡ã—ã¦ã€æŒ‡å®šã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The indicated letter has been named more than once in this or a
  previous IMPLICIT statement.
  A letter may only be named once.
 IM_UNRECOG_TYPE [   c2] unrecognizable type
-IM_UNRECOG_TYPE [j  c2] IMPLICIT‚Ìw’è‚³‚ê‚½Œ^‚ªˆá‚¢‚Ü‚·B
+IM_UNRECOG_TYPE [j  c2] IMPLICITã®æŒ‡å®šã•ã‚ŒãŸå‹ãŒé•ã„ã¾ã™ã€‚
  The type declared in the IMPLICIT statement is not one of INTEGER,
  REAL, DOUBLE PRECISION, COMPLEX, LOGICAL or CHARACTER.
 IM_CHAR_STAR_STAR [   c1] (*) length specifier in an IMPLICIT statement is not FORTRAN 77 standard
-IM_CHAR_STAR_STAR [j  c1] IMPLICIT•¶‚Ì’†‚Å(*)‚Ì’·‚³‚Ìw’è‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+IM_CHAR_STAR_STAR [j  c1] IMPLICITæ–‡ã®ä¸­ã§(*)ã®é•·ã•ã®æŒ‡å®šã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  A character length specified of (*) in an IMPLICIT statement is an
  extension to the FORTRAN 77 language.
 IM_NONE_USED [   c0] IMPLICIT NONE allowed once or not allowed with other IMPLICIT statements
-IM_NONE_USED [j  c0] IMPLICIT NONE‚ğw’è‚·‚é‚Æ‘¼‚Ì‚Ç‚ñ‚ÈIMPLICIT‚à‘‚¢‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+IM_NONE_USED [j  c0] IMPLICIT NONEã‚’æŒ‡å®šã™ã‚‹ã¨ä»–ã®ã©ã‚“ãªIMPLICITã‚‚æ›¸ã„ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The IMPLICIT NONE statement must be the only IMPLICIT statement in
  the program unit in which it appears.
  Only one IMPLICIT NONE statement is allowed in a program unit.
 IO Input/Output
 IO_ABACK [   r0] BACKSPACE statement requires sequential access mode
-IO_ABACK [j  r0] ‡Ÿ±¸¾½‚Å‚È‚¯‚ê‚ÎBACKSPACE‚Íw’è‚Å‚«‚Ü‚¹‚ñB
+IO_ABACK [j  r0] é †æ¬¡ï½±ï½¸ï½¾ï½½ã§ãªã‘ã‚Œã°BACKSPACEã¯æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  The file connected to the unit specified in the BACKSPACE statement
  has not been opened for sequential access.
 IO_ACTIVE_ALREADY [   r0] input/output is already active
-IO_ACTIVE_ALREADY [j  r0] I/O‚ÌÀs’†‚É•Ê‚ÈI/O‚ÍÀs‚Å‚«‚Ü‚¹‚ñB
+IO_ACTIVE_ALREADY [j  r0] I/Oã®å®Ÿè¡Œä¸­ã«åˆ¥ãªI/Oã¯å®Ÿè¡Œã§ãã¾ã›ã‚“ã€‚
  An attempt has been made to read or write a record when there is an
  already active read or write in progress.
  The execution of a READ or WRITE statement has caused transfer to a
  function that contains a READ or WRITE statement.
 IO_AEND [   r0] ENDFILE statement requires sequential access mode
-IO_AEND [j  r0] ENDFILE‚Í‡Ÿ±¸¾½ˆ—‚Å‚È‚¯‚ê‚Îw’è‚Å‚«‚Ü‚¹‚ñB
+IO_AEND [j  r0] ENDFILEã¯é †æ¬¡ï½±ï½¸ï½¾ï½½å‡¦ç†ã§ãªã‘ã‚Œã°æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  The specified external unit identifier must be connected for
  sequential access but was connected for direct access.
 IO_AF1 [   r0] formatted connection requires formatted input/output statements
-IO_AF1 [j  r0] OPEN‚ÅFORM='FORMATTED'‚Ì‚ÍREAD/WRITE‚ÍFORMATTEDŒ`®‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+IO_AF1 [j  r0] OPENã§FORM='FORMATTED'ã®æ™‚ã¯READ/WRITEã¯FORMATTEDå½¢å¼ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The FORM specifier in the OPEN statement specifies FORMATTED and the
  subsequent READ and/or WRITE statement does not use formatted I/O.
  If the FORM specifier has been omitted and access is SEQUENTIAL then
  FORMATTED is assumed.
  If the access is DIRECT then UNFORMATTED is assumed.
 IO_AF2 [   r0] unformatted connection requires unformatted input/output statements
-IO_AF2 [j  r0] OPEN‚ÅFORM='UNFORMATTED'‚Ì‚ÍREAD/WRITE‚ÍUNFORMATTEDŒ`®‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+IO_AF2 [j  r0] OPENã§FORM='UNFORMATTED'ã®æ™‚ã¯READ/WRITEã¯UNFORMATTEDå½¢å¼ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The FORM specifier in the OPEN statement specifies UNFORMATTED and
  the subsequent READ and/or WRITE statement uses formatted I/O.
  If the FORM specifier has been omitted and access is SEQUENTIAL then
  FORMATTED is assumed.
  If the access is DIRECT then UNFORMATTED is assumed.
 IO_AREW [   r0] REWIND statement requires sequential access
-IO_AREW [j  r0] REWIND•¶‚Í‡Ÿ±¸¾½ˆ—‚Å‚È‚¯‚ê‚Îw’è‚Å‚«‚Ü‚¹‚ñB
+IO_AREW [j  r0] REWINDæ–‡ã¯é †æ¬¡ï½±ï½¸ï½¾ï½½å‡¦ç†ã§ãªã‘ã‚Œã°æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  The external unit identifier is not connected to a sequential file.
  The REWIND statement positions to the first record in the file.
 IO_BAD_CHAR [   r0] bad character in input field
-IO_BAD_CHAR [j  r0] “ü—ÍÃŞ°À‚É‘®‚É‡‚í‚È‚¢•¶š‚ª“ü‚Á‚Ä‚¢‚Ü‚·B
+IO_BAD_CHAR [j  r0] å…¥åŠ›ï¾ƒï¾ï½°ï¾€ã«æ›¸å¼ã«åˆã‚ãªã„æ–‡å­—ãŒå…¥ã£ã¦ã„ã¾ã™ã€‚
  The data received from the record in a file does not match the type
  of the input list item.
 IO_BLNK_FMT [   r0] BLANK specifier requires FORM specifier to be 'FORMATTED'
-IO_BLNK_FMT [j  r0] BLANK‚ÍFORM='FORMATTED'‚Å‚È‚¯‚ê‚Îw’è‚Å‚«‚Ü‚¹‚ñB
+IO_BLNK_FMT [j  r0] BLANKã¯FORM='FORMATTED'ã§ãªã‘ã‚Œã°æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  In the OPEN statement, the BLANK specifier may only be used when the
  FORM specifier has the value of FORMATTED.
  The BLANK specifier indicates whether blanks are treated as zeroes or
  ignored.
 IO_FILE_PROBLEM [   r0] system file error - %s1
-IO_FILE_PROBLEM [j  r0] ¼½ÃÑÌ§²Ù¥I/O´×°‚Å‚·B-%s1
+IO_FILE_PROBLEM [j  r0] ï½¼ï½½ï¾ƒï¾‘ï¾Œï½§ï½²ï¾™ï½¥I/Oï½´ï¾—ï½°ã§ã™ã€‚-%s1
  A system error has occurred while attempting to access a file.
  The I/O system error message is displayed.
 IO_FMT_MISMATCH [   r0] format specification does not match data type
-IO_FMT_MISMATCH [j  r0] ‘®‚Ì’†‚ÅÃŞ-Àd—l‚ÆÃŞ°ÀŒ^‚ª‚¿‚ª‚Á‚Ä‚¢‚Ü‚·B
+IO_FMT_MISMATCH [j  r0] æ›¸å¼ã®ä¸­ã§ï¾ƒï¾-ï¾€ä»•æ§˜ã¨ï¾ƒï¾ï½°ï¾€å‹ãŒã¡ãŒã£ã¦ã„ã¾ã™ã€‚
  A format specification in the FMT specifier or FORMAT statement
  specifies data of one type and the variable list specifies data of a
  different type.
 IO_FREE_MISMATCH [   r0] input item does not match the data type of list variable
-IO_FREE_MISMATCH [j  r0] “ü—Í‚Ì’†‚ÅÀÛ‚ÌÃŞ-À‚Æ•Ï”‚ÌŒ^‚ª‡‚Á‚Ä‚¢‚Ü‚¹‚ñB
+IO_FREE_MISMATCH [j  r0] å…¥åŠ›ã®ä¸­ã§å®Ÿéš›ã®ï¾ƒï¾-ï¾€ã¨å¤‰æ•°ã®å‹ãŒåˆã£ã¦ã„ã¾ã›ã‚“ã€‚
  In the READ statement, the data type of a variable listed is not of
  the same data type in the data file.
  For example, non-digit character data being read into an integer
  item.
 IO_IFULL [   r0] internal file is full
-IO_IFULL [j  r0] “à•”Ì§²Ù‚ªˆê”t‚Å‚·B
+IO_IFULL [j  r0] å†…éƒ¨ï¾Œï½§ï½²ï¾™ãŒä¸€æ¯ã§ã™ã€‚
  The internal file is full of data.
  If a file is a variable then the file may only contain one record.
  If the file is a character array then there can be one record for
  each array element.
 IO_IRECL [   r0] RECL specifier is invalid
-IO_IRECL [j  r0] RECL(Úº-ÄŞ‚Ì’·‚³)‚Í³‚Ì®”/®”®‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+IO_IRECL [j  r0] RECL(ï¾šï½º-ï¾„ï¾ã®é•·ã•)ã¯æ­£ã®æ•´æ•°/æ•´æ•°å¼ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  In the OPEN statement, the record length specifier must be a positive
  integer expression.
 IO_ISTAT [   r0] invalid STATUS specifier in CLOSE statement
-IO_ISTAT [j  r0] CLOSE‚ÌSTATUS‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñ(OPEN‚ÆCLOSE‚ÌSTATUS‚ª•sˆê’v‚Å‚·)B
+IO_ISTAT [j  r0] CLOSEã®STATUSãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“(OPENã¨CLOSEã®STATUSãŒä¸ä¸€è‡´ã§ã™)ã€‚
  The STATUS specifier can only have a value of KEEP or DELETE.
  If the STATUS in the OPEN statement is SCRATCH then the KEEP status
  on the CLOSE statement cannot be used.
 IO_NOT_CONNECTED [   r0] unit specified is not connected
-IO_NOT_CONNECTED [j  r0] UNIT‚ÌÌ§²Ù¯•Êq(Ì§²Ù”Ô†)‚ª³‚µ‚­Ì§²Ù‚ÉŠÖŒW‚Â‚¯‚ç‚ê‚Ä‚¢‚Ü‚¹‚ñB
+IO_NOT_CONNECTED [j  r0] UNITã®ï¾Œï½§ï½²ï¾™è­˜åˆ¥å­(ï¾Œï½§ï½²ï¾™ç•ªå·)ãŒæ­£ã—ãï¾Œï½§ï½²ï¾™ã«é–¢ä¿‚ã¤ã‘ã‚‰ã‚Œã¦ã„ã¾ã›ã‚“ã€‚
  The unit number specified in the I/O statement has not been
  previously connected.
 IO_PAST_EOF [   r0] attempt to perform data transfer past end of file
-IO_PAST_EOF [j  r0] END FILE‚ÌŒã‚ÉX‚ÉÃŞ°À‚Ì“Ç‚İ‘‚«‚ğ‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+IO_PAST_EOF [j  r0] END FILEã®å¾Œã«æ›´ã«ï¾ƒï¾ï½°ï¾€ã®èª­ã¿æ›¸ãã‚’ã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  An attempt has been made to read or write data after the end of file
  has been read or written.
 IO_RACCM [   r0] invalid RECL specifier/ACCESS specifier combination
-IO_RACCM [j  r0] ACCESS‚ªDIRECT‚Ì‚ÍRECL‚ª•K—v‚Å‚·B
+IO_RACCM [j  r0] ACCESSãŒDIRECTã®æ™‚ã¯RECLãŒå¿…è¦ã§ã™ã€‚
  In the OPEN statement, if the ACCESS specifier is DIRECT then the
  RECL specifier must be given.
 IO_REC1_ACCM [   r0] REC specifier required in direct access input/output statements
-IO_REC1_ACCM [j  r0] ’¼Ú±¸¾½¥I/O•¶‚Ì’†‚É‚ÍREC‚Ìw’è‚ª•K—v‚Å‚·B
+IO_REC1_ACCM [j  r0] ç›´æ¥ï½±ï½¸ï½¾ï½½ï½¥I/Oæ–‡ã®ä¸­ã«ã¯RECã®æŒ‡å®šãŒå¿…è¦ã§ã™ã€‚
  In the OPEN statement, the ACCESS  specified was DIRECT.
  All subsequent input/output statements for that file must use the REC
  specifier to indicate which record to access.
 IO_REC2_ACCM [   r0] REC specifier not allowed in sequential access input/output statements
-IO_REC2_ACCM [j  r0] REC‚Í‡Ÿ±¸¾½¥I/O•¶‚Ì’†‚Éw’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+IO_REC2_ACCM [j  r0] RECã¯é †æ¬¡ï½±ï½¸ï½¾ï½½ï½¥I/Oæ–‡ã®ä¸­ã«æŒ‡å®šã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  In the OPEN statement, the ACCESS specified was SEQUENTIAL.
  The REC specifier may not be used in subsequent I/O statements for
  that file.
  The REC specifier is used to indicate which record to access when
  access is DIRECT.
 IO_SUBSEQUENT_OPEN [   r0] %s1 specifier may not change in a subsequent OPEN statement
-IO_SUBSEQUENT_OPEN [j  r0] “¯ˆêÌ§²Ù‚É‘Î‚µ‚ÄOPENŒã,•Ê‚ÌOPEN‚Å%s1‚Ìw’è‚ğ•ÏX‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+IO_SUBSEQUENT_OPEN [j  r0] åŒä¸€ï¾Œï½§ï½²ï¾™ã«å¯¾ã—ã¦OPENå¾Œ,åˆ¥ã®OPENã§%s1ã®æŒ‡å®šã‚’å¤‰æ›´ã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The %s1 specifier may not be changed on a subsequent OPEN statement
  for the same file, in the same program.
  Only the BLANK specifier may be changed.
 IO_SFILE [   r0] invalid STATUS specifier for given file
-IO_SFILE [j  r0] STATUS‚Ìw’è‚ÆÀÛ‚ÌÌ§²Ù‚Ìó‘Ô‚ª‡‚Á‚Ä‚¢‚Ü‚¹‚ñB
+IO_SFILE [j  r0] STATUSã®æŒ‡å®šã¨å®Ÿéš›ã®ï¾Œï½§ï½²ï¾™ã®çŠ¶æ…‹ãŒåˆã£ã¦ã„ã¾ã›ã‚“ã€‚
  In the OPEN statement, the STATUS specifier does not match with the
  actual file status: OLD means the file must exist, NEW means the file
  must not exist.
  If the STATUS specifier is omitted, UNKNOWN is assumed.
 IO_SNAME [   r0] invalid STATUS specifier/FILE specifier combination
-IO_SNAME [j  r0] STATUS‚ÆFILE‚Ìw’è“à—e‚ªH‚¢ˆá‚Á‚Ä‚¢‚Ü‚·B
+IO_SNAME [j  r0] STATUSã¨FILEã®æŒ‡å®šå†…å®¹ãŒé£Ÿã„é•ã£ã¦ã„ã¾ã™ã€‚
  In the OPEN statement, if the STATUS is SCRATCH, the FILE specifier
  cannot be used.
  If the STATUS is NEW or OLD, the FILE specifier must be given.
 IO_UNFMT_RECL [   r0] record size exceeded during unformatted input/output
-IO_UNFMT_RECL [j  r0] UNFORMATTED I/O‚ÅƒŒƒR[ƒh‚Ì‘å‚«‚³‚ªÅ‘å’·‚ğ’´‚¦‚Ü‚µ‚½B
+IO_UNFMT_RECL [j  r0] UNFORMATTED I/Oã§ãƒ¬ã‚³ãƒ¼ãƒ‰ã®å¤§ãã•ãŒæœ€å¤§é•·ã‚’è¶…ãˆã¾ã—ãŸã€‚
  This error is issued when the size of an i/o list item exceeds the
  maximum record size of the file.
  The record size can be specified using the RECL= specified in the OPEN
  statement.
 IO_UNIT_EXIST [   r0] unit specified does not exist
-IO_UNIT_EXIST [j  r0] UNIT‚ÌÌ§²Ù¯•Êq‚ÉÌ§²Ù‚ªÚ‘±‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
+IO_UNIT_EXIST [j  r0] UNITã®ï¾Œï½§ï½²ï¾™è­˜åˆ¥å­ã«ï¾Œï½§ï½²ï¾™ãŒæ¥ç¶šã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚
  The external unit identifier specified in the input/output statement
  has not yet been connected.
  Use preconnection or the OPEN statement to connect a file to the
  external unit identifier.
 IO_IREC [   r0] REC specifier is invalid
-IO_IREC [j  r0] REC‚Í•„†‚È‚µ‚Ì³‚Ì®”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+IO_IREC [j  r0] RECã¯ç¬¦å·ãªã—ã®æ­£ã®æ•´æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The REC specifier must be an unsigned positive integer.
 IO_IUNIT [   r0] UNIT specifier is invalid
-IO_IUNIT [j  r0] UNIT‚Ì¯•Êq(Ì§²Ù”Ô†)‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+IO_IUNIT [j  r0] UNITã®è­˜åˆ¥å­(ï¾Œï½§ï½²ï¾™ç•ªå·)ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  The UNIT specifier must be an unsigned integer between 0 and 999
  inclusive.
 IO_BUFF_LEN [   r0] formatted record or format edit descriptor is too large for record size
-IO_BUFF_LEN [j  r0] ‘®‚Â‚«Úº°ÄŞ‚Ü‚½‚Í‘®‚Åw’è‚µ‚½•ÒW‹Lqq‚Ì’·‚³‚ªÚº°ÄŞ»²½Ş‚æ‚è‘å‚«‚·‚¬‚Ü‚·B
+IO_BUFF_LEN [j  r0] æ›¸å¼ã¤ãï¾šï½ºï½°ï¾„ï¾ã¾ãŸã¯æ›¸å¼ã§æŒ‡å®šã—ãŸç·¨é›†è¨˜è¿°å­ã®é•·ã•ãŒï¾šï½ºï½°ï¾„ï¾ï½»ï½²ï½½ï¾ã‚ˆã‚Šå¤§ãã™ãã¾ã™ã€‚
  This error is issued when the amount of formatted data in a READ, WRITE or
  PRINT statement exceeds the maximum record size of the file.
  The record size can be specified using the RECL= specified in the OPEN
  statement.
 IO_BAD_SPEC [   r0] illegal '%s1=' specifier
-IO_BAD_SPEC [j  r0] %s1= ‚Ìw’è‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+IO_BAD_SPEC [j  r0] %s1= ã®æŒ‡å®šãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  In the OPEN or CLOSE statement the value associated with the %s1
  specifier is not a valid value.
  In the OPEN statement,
@@ -1003,223 +909,205 @@ IO_BAD_SPEC [j  r0] %s1= ‚Ìw’è‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
  BLANK may only be one of NULL, or ZERO.
  In the CLOSE statement the STATUS may only be one of KEEP or DELETE.
 IO_CC_FORM [   r0] invalid CARRIAGECONTROL specifier/FORM specifier combination
-IO_CC_FORM [j  r0] CARRIAGECONTROL‚ÆFORMw’èq‚Ì‘g‡‚¹‚ª–³Œø‚Å‚·B
+IO_CC_FORM [j  r0] CARRIAGECONTROLã¨FORMæŒ‡å®šå­ã®çµ„åˆã›ãŒç„¡åŠ¹ã§ã™ã€‚
  The CARRIAGECONTROL specifier is only allowed with formatted i/o statements.
 IO_BAD_ACTION [   r0] i/o operation not consistent with file attributes
-IO_BAD_ACTION [j  r0] w’è‚³‚ê‚½Ì§²Ù‘®«‚Å‚Í,‚±‚Ì“üo—Í‘€ì‚Í‹–‚³‚ê‚Ü‚¹‚ñB
+IO_BAD_ACTION [j  r0] æŒ‡å®šã•ã‚ŒãŸï¾Œï½§ï½²ï¾™å±æ€§ã§ã¯,ã“ã®å…¥å‡ºåŠ›æ“ä½œã¯è¨±ã•ã‚Œã¾ã›ã‚“ã€‚
  An attempt was made to read from a file that was opened with
  ACTION=WRITE or write to a file that was opened with ACTION=READ.
  This message is also issued if you attempt to write to a read-only file or
  read from a write-only file.
 IO_NML_NO_SUCH_NAME [   r0] symbol %s1 not found in NAMELIST
-IO_NML_NO_SUCH_NAME [j  r0] NAMELIST’†‚Å¼İÎŞÙ%s1‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB
+IO_NML_NO_SUCH_NAME [j  r0] NAMELISTä¸­ã§ï½¼ï¾ï¾ï¾ï¾™%s1ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚
  During NAMELIST-directed input, a symbol was specified that does not belong
  to the NAMELIST group specified in the i/o statement.
 IO_NML_BAD_SYNTAX [   r0] syntax error during NAMELIST-directed input
-IO_NML_BAD_SYNTAX [j  r0] NAMELISTwŒü‚Ì“ü—Í‚Å,¼İÀ¯¸½´×°‚ª‚ ‚è‚Ü‚·B
+IO_NML_BAD_SYNTAX [j  r0] NAMELISTæŒ‡å‘ã®å…¥åŠ›ã§,ï½¼ï¾ï¾€ï½¯ï½¸ï½½ï½´ï¾—ï½°ãŒã‚ã‚Šã¾ã™ã€‚
  Bad input was encountered during NAMELIST-directed input.
  Data must be in a special form during NAMELIST-directed input.
 IO_NML_BAD_SUBSCRIPT [   r0] subscripting error during NAMELIST-directed i/o
-IO_NML_BAD_SUBSCRIPT [j  r0] NAMELISTwŒü‚Ì“üo—Í‚Å,“Yš‚É´×°‚ª‚ ‚è‚Ü‚·B
+IO_NML_BAD_SUBSCRIPT [j  r0] NAMELISTæŒ‡å‘ã®å…¥å‡ºåŠ›ã§,æ·»å­—ã«ï½´ï¾—ï½°ãŒã‚ã‚Šã¾ã™ã€‚
  An array was incorrectly subscripted during NAMELIST-directed input.
 IO_NML_BAD_SUBSTRING [   r0] substring error during NAMELIST-directed i/o
-IO_NML_BAD_SUBSTRING [j  r0] NAMELISTwŒü‚Ì“üo—Í‚Å,•”•ª•¶š—ñ‚É´×°‚ª‚ ‚è‚Ü‚·B
- An character array element or variable was incorrectly substrung during
+IO_NML_BAD_SUBSTRING [j  r0] NAMELISTæŒ‡å‘ã®å…¥å‡ºåŠ›ã§,éƒ¨åˆ†æ–‡å­—åˆ—ã«ï½´ï¾—ï½°ãŒã‚ã‚Šã¾ã™ã€‚
+ An character array element or variable was incorrectly substring during
  NAMELIST-directed input.
 IO_IBLOCKSIZE [   r0] BLOCKSIZE specifier is invalid
-IO_IBLOCKSIZE [j  r0] BLOCKSIZE ‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+IO_IBLOCKSIZE [j  r0] BLOCKSIZE ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  In the OPEN statement, the block size specifier must be a positive
  integer expression.
 IO_NO_RECORDS [   r0] invalid operation for files with no record structure
-IO_NO_RECORDS [j  r0] Úº°ÄŞ\‘¢‚ğ‚à‚½‚È‚¢Ì§²Ù‚É‘Î‚µ‚Ä‘€ì‚ªŒë‚Á‚Ä‚¢‚Ü‚·B
+IO_NO_RECORDS [j  r0] ï¾šï½ºï½°ï¾„ï¾æ§‹é€ ã‚’ã‚‚ãŸãªã„ï¾Œï½§ï½²ï¾™ã«å¯¾ã—ã¦æ“ä½œãŒèª¤ã£ã¦ã„ã¾ã™ã€‚
  An attempt has been made to perform an i/o operation on a file that requires
  a record structure.
  For example, it is illegal to use a BACKSPACE statement for a file that
  has no record structure.
 IO_IOVERFLOW [   r0] integer overflow converting character data to integer
-IO_IOVERFLOW [j  r0] •¶šÃŞ°À‚ğ®”‚É•ÏŠ·‚·‚é‚Æ‚«®”‚ªŒ…‚ ‚Ó‚ê‚µ‚Ü‚µ‚½B
+IO_IOVERFLOW [j  r0] æ–‡å­—ï¾ƒï¾ï½°ï¾€ã‚’æ•´æ•°ã«å¤‰æ›ã™ã‚‹ã¨ãæ•´æ•°ãŒæ¡ã‚ãµã‚Œã—ã¾ã—ãŸã€‚
  An overflow has occurred while converting the character data read to its
  internal representation as an integer.
 IO_FRANGE_EXCEEDED [   r0] range exceeded converting character data to floating-point
-IO_FRANGE_EXCEEDED [j  r0] •¶šÃŞ°À‚ğ•‚“®¬”“_”‚É•ÏŠ·‚µ‚½‚Æ‚«”ÍˆÍ‚ğ‰z‚¦‚Ü‚µ‚½B
+IO_FRANGE_EXCEEDED [j  r0] æ–‡å­—ï¾ƒï¾ï½°ï¾€ã‚’æµ®å‹•å°æ•°ç‚¹æ•°ã«å¤‰æ›ã—ãŸã¨ãç¯„å›²ã‚’è¶Šãˆã¾ã—ãŸã€‚
  An overflow or underflow has occurred while converting the character data
  read to its internal representation as a floating-point number.
 KO Program Termination
 KO_FDIV_ZERO [    0] floating-point divide by zero
-KO_FDIV_ZERO [j   0] •‚“®¬”“_”‚Í¾ŞÛ‚ÅŠ„‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+KO_FDIV_ZERO [j   0] æµ®å‹•å°æ•°ç‚¹æ•°ã¯ï½¾ï¾ï¾›ã§å‰²ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
  An attempt has been made to divide a number by zero in a
  floating-point expression.
 KO_FOVERFLOW [    0] floating-point overflow
-KO_FOVERFLOW [j   0] •‚“®¬”“_”‚ªŒ…‚ ‚Ó‚ê‚µ‚Ü‚µ‚½B
+KO_FOVERFLOW [j   0] æµ®å‹•å°æ•°ç‚¹æ•°ãŒæ¡ã‚ãµã‚Œã—ã¾ã—ãŸã€‚
  The floating-point expression result has exceeded the maximum
  floating-point number.
 KO_FUNDERFLOW [    0] floating-point underflow
-KO_FUNDERFLOW [j   0] •‚“®¬”“_”‚ªw”‰ºˆÊŒ…‚ ‚Ó‚ê‚ğ‚µ‚Ü‚µ‚½B
+KO_FUNDERFLOW [j   0] æµ®å‹•å°æ•°ç‚¹æ•°ãŒæŒ‡æ•°ä¸‹ä½æ¡ã‚ãµã‚Œã‚’ã—ã¾ã—ãŸã€‚
  The floating-point expression result has exceeded the minimum
  floating-point number.
 KO_IDIV_ZERO [    0] integer divide by zero
-KO_IDIV_ZERO [j   0] ®”‚Í¾ŞÛ‚ÅŠ„‚ê‚Ü‚¹‚ñB
+KO_IDIV_ZERO [j   0] æ•´æ•°ã¯ï½¾ï¾ï¾›ã§å‰²ã‚Œã¾ã›ã‚“ã€‚
  An attempt has been made to divide a number by zero in an integer
  expression.
 KO_INTERRUPT [    0] program interrupted from keyboard
-KO_INTERRUPT [j   0] Às‚ğ’†’f‚µ‚Ü‚µ‚½B
+KO_INTERRUPT [j   0] å®Ÿè¡Œã‚’ä¸­æ–­ã—ã¾ã—ãŸã€‚
  The user has interrupted the compilation or execution of a program
  through use of the keyboard.
 KO_IOVERFLOW [    1] integer overflow
-KO_IOVERFLOW [j   1] ®”‚ªŒ…‚ ‚Ó‚ê‚µ‚Ü‚µ‚½B
+KO_IOVERFLOW [j   1] æ•´æ•°ãŒæ¡ã‚ãµã‚Œã—ã¾ã—ãŸã€‚
  The integer expression result has exceeded the maximum integer
  number.
-KO_PAGES_OUT [ w r0] maximum pages of output exceeded
-KO_PAGES_OUT [jw r0] ˆóüÍß°¼Ş”‚ªºİÊß²×¥µÌß¼®İPAGES‚Åw’è‚µ‚½Å‚’l‚ğ‚±‚¦‚Ü‚µ‚½B
- The specified maximum number of output pages has been exceeded.
- The maximum number of output pages can be increased
- by using the "pages=n" option in the command line
- or specifying C$PAGES=n in the source file.
-KO_STMT_CNT [ w r0] statement count has been exceeded
-KO_STMT_CNT [jw r0] ÌßÛ¸Ş×Ñ‚Ìs”‚ªºİÊß²×¥µÌß¼®İSTATEMENTS‚Åw’è‚µ‚½Å‚’l‚ğ’´‚¦‚Ü‚µ‚½B
- The maximum number of source statements has been executed.
- The maximum number of source statements that can be executed can be
- increased by using the "statements=n" option in the command line or
- specifying C$STATEMENTS=n in the source file.
-KO_TIME_OUT [ w r0] time limit exceeded
-KO_TIME_OUT [jw r0] ŠÔØ‚ê‚Å‚·(Às‚ğ’†~‚µ‚Ü‚·)B
- The maximum amount of time for program execution has been exceeded.
- The maximum amount of time can be increased
- by using the "time=t" option in the command line or specifying C$TIME=t
- in the source file.
 LI Library Routines
 LI_ARG_GT_ZERO [   r0] argument must be greater than zero
-LI_ARG_GT_ZERO [j  r0] ˆø”‚Í1ŒÂˆÈã‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+LI_ARG_GT_ZERO [j  r0] å¼•æ•°ã¯1å€‹ä»¥ä¸Šã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The argument to the intrinsic function must be greater than zero
  (i.e., a positive number).
 LI_ARG_LE_ONE [   r0] absolute value of argument to arcsine, arccosine must not exceed one
-LI_ARG_LE_ONE [j  r0] ASIN,ACOS‚Ìˆø”‚Ìâ‘Î’l‚Í1‚ğ’´‚¦‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+LI_ARG_LE_ONE [j  r0] ASIN,ACOSã®å¼•æ•°ã®çµ¶å¯¾å€¤ã¯1ã‚’è¶…ãˆã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The absolute value of the argument to the intrinsic function ASIN or
  ACOS cannot be greater than or equal to the value 1.0.
 LI_ARG_NEG [   r0] argument must not be negative
-LI_ARG_NEG [j  r0] ‘g‚İŠÖ”‚É‘Î‚·‚éˆø”‚ÍÏ²Å½‚Å‚Í‚¢‚¯‚Ü‚¹‚ñB
+LI_ARG_NEG [j  r0] çµ„è¾¼ã¿é–¢æ•°ã«å¯¾ã™ã‚‹å¼•æ•°ã¯ï¾ï½²ï¾…ï½½ã§ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The argument to the intrinsic function must be greater than or equal
  to zero.
 LI_ARG_ZERO [   r0] argument(s) must not be zero
-LI_ARG_ZERO [j  r0] ‘g‚İŠÖ”‚É‘Î‚·‚éˆø”‚Í¾ŞÛ‚Å‚Í‚¢‚¯‚Ü‚¹‚ñB
+LI_ARG_ZERO [j  r0] çµ„è¾¼ã¿é–¢æ•°ã«å¯¾ã™ã‚‹å¼•æ•°ã¯ï½¾ï¾ï¾›ã§ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The argument(s) to the intrinsic function must not be zero.
 LI_CHAR_BOUND [    0] argument of CHAR must be in the range zero to 255
-LI_CHAR_BOUND [j   0] CHAR‚É‘Î‚·‚éˆø”‚Ì’l‚Í0‚©‚ç255‚ÌŠÔ‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+LI_CHAR_BOUND [j   0] CHARã«å¯¾ã™ã‚‹å¼•æ•°ã®å€¤ã¯0ã‹ã‚‰255ã®é–“ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The argument to the intrinsic function CHAR must be in the range 0 to
  255 inclusive.
  CHAR returns the character represented by an 8-bit pattern.
 LI_2_CMPLX [   c2] %s1 intrinsic function cannot be passed 2 complex arguments
-LI_2_CMPLX [j  c2] %s1‘g‚İŠÖ”‚Ì‘æ2ˆø”‚É•¡‘f”‚ğw’è‚Å‚«‚Ü‚¹‚ñB
+LI_2_CMPLX [j  c2] %s1çµ„è¾¼ã¿é–¢æ•°ã®ç¬¬2å¼•æ•°ã«è¤‡ç´ æ•°ã‚’æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  The second argument to the intrinsic function CMPLX and DCMPLX cannot
  be a complex number.
 LI_CMPLX_TYPES [   c2] argument types must be the same for the %s1 intrinsic function
-LI_CMPLX_TYPES [j  c2] %s1‘g‚İŠÖ”‚Ì‘æ2ˆø”‚ÌŒ^‚Í‘æ1ˆø”‚ÌŒ^‚Æ“¯‚¶‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+LI_CMPLX_TYPES [j  c2] %s1çµ„è¾¼ã¿é–¢æ•°ã®ç¬¬2å¼•æ•°ã®å‹ã¯ç¬¬1å¼•æ•°ã®å‹ã¨åŒã˜ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The second argument to the intrinsic function CMPLX or DCMPLX must be
  of the same type as the first argument.
  The second argument may only be used when the first argument is of
  type INTEGER, REAL or DOUBLE PRECISION.
 LI_EXP_CNV_TYPE [   c2] expecting numeric argument, but %s1 argument was found
-LI_EXP_CNV_TYPE [j  c2] ”’lŒ^‚Ìˆø”‚ª•K—v‚Å‚·‚ª%s1Œ^‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚·B
+LI_EXP_CNV_TYPE [j  c2] æ•°å€¤å‹ã®å¼•æ•°ãŒå¿…è¦ã§ã™ãŒ%s1å‹ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™ã€‚
  The argument to the intrinsic function, INT, REAL, DBLE, CMPLX, or
  DCMPLX was of type %s1 and a numeric argument was expected.
 LI_ICHAR_ONE [   r0] length of ICHAR argument greater than one
-LI_ICHAR_ONE [j  r0] ICHARˆø”‚Í•¶šŒ^‚Å’·‚³‚Í1‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+LI_ICHAR_ONE [j  r0] ICHARå¼•æ•°ã¯æ–‡å­—å‹ã§é•·ã•ã¯1ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The length of the argument to the intrinsic function ICHAR must be of
  type CHARACTER and length of 1.
  ICHAR converts a character to its integer representation.
 LI_ILL_PARM_CODE [   c2] cannot pass %s1 as argument to intrinsic function
-LI_ILL_PARM_CODE [j  c2] ‘g‚İŠÖ”‚Ìˆø”‚Æ‚µ‚Ä%s1‚ğw’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+LI_ILL_PARM_CODE [j  c2] çµ„è¾¼ã¿é–¢æ•°ã®å¼•æ•°ã¨ã—ã¦%s1ã‚’æŒ‡å®šã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The item %s1 cannot be used as an argument to an intrinsic function.
- Only constants, simple variables, array elements, and substrung array
+ Only constants, simple variables, array elements, and substring array
  elements may be used as arguments.
 LI_NO_PARM [   c2] intrinsic function requires argument(s)
-LI_NO_PARM [j  c2] ‘g‚İŠÖ”‚É‚Íˆø”‚ª•K—v‚Å‚·B
+LI_NO_PARM [j  c2] çµ„è¾¼ã¿é–¢æ•°ã«ã¯å¼•æ•°ãŒå¿…è¦ã§ã™ã€‚
  An attempt has been made to invoke an intrinsic function and no
  actual arguments were listed.
 LI_NO_SPECIFIC [   c2] %s1 argument type is invalid for this generic function
-LI_NO_SPECIFIC [j  c2] ‚±‚Ì‘ÌŠÖ”‚É‘Î‚µ‚Ä%s1‚Ìˆø”Œ^‚Íw’è‚Å‚«‚Ü‚¹‚ñB
+LI_NO_SPECIFIC [j  c2] ã“ã®ç·ç§°é–¢æ•°ã«å¯¾ã—ã¦%s1ã®å¼•æ•°å‹ã¯æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  The type of the argument used in the generic intrinsic function is
  not correct.
 LI_NOT_PARM [   c2] this intrinsic function cannot be passed as an argument
-LI_NOT_PARM [j  c2] ‘g‚İŠÖ”–¼‚ÍÀˆø”‚Æ‚µ‚Äw’è‚Å‚«‚Ü‚¹‚ñB
+LI_NOT_PARM [j  c2] çµ„è¾¼ã¿é–¢æ•°åã¯å®Ÿå¼•æ•°ã¨ã—ã¦æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  Only the specific name of the intrinsic function can be used as an
  actual argument.
  The generic name may not be used.
  When the generic and intrinsic names are the same, use the INTRINSIC
  statement.
 LI_PT_MISMATCH [   c2] expecting %s1 argument, but %s2 argument was found
-LI_PT_MISMATCH [j  c2] %s1Œ^‚Ìˆø”‚ª•K—v‚Å‚·‚ª%s2‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚·B
+LI_PT_MISMATCH [j  c2] %s1å‹ã®å¼•æ•°ãŒå¿…è¦ã§ã™ãŒ%s2ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™ã€‚
  An argument of type %s2 was passed to a function but an argument of
  type %s1 was expected.
 LI_WRONG_TYPE [   c2] intrinsic function was assigned wrong type
-LI_WRONG_TYPE [j  c2] ’è‹`‚³‚ê‚½‘g‚İŠÖ”‚ÌŒ^‚ÆŒÄ‚Ño‚µ‚ÌŒ^‚Íˆê’v‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+LI_WRONG_TYPE [j  c2] å®šç¾©ã•ã‚ŒãŸçµ„è¾¼ã¿é–¢æ•°ã®å‹ã¨å‘¼ã³å‡ºã—ã®å‹ã¯ä¸€è‡´ã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The declared type of an intrinsic function does not agree with the
  actual type.
 LI_IF_NOT_STANDARD [   c2] intrinsic function %s1 is not FORTRAN 77 standard
-LI_IF_NOT_STANDARD [j  c2] ‘g‚İŠÖ”%s1‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+LI_IF_NOT_STANDARD [j  c2] çµ„è¾¼ã¿é–¢æ•°%s1ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The specified intrinsic function is provided as an extension to the
  FORTRAN 77 language.
 LI_ARG_ALLOCATED [   c2] argument to ALLOCATED intrinsic function must be an allocatable array or character*(*) variable
-LI_ARG_ALLOCATED [j  c2] ALLOCATED‘g‚İŠÖ”‚Ìˆø”‚ÍAŠ„‚è•t‚¯‰Â”\‚È”z—ñ‚Ü‚½‚Ícharacter*(*)Œ^‚Ì•Ï”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+LI_ARG_ALLOCATED [j  c2] ALLOCATEDçµ„è¾¼ã¿é–¢æ•°ã®å¼•æ•°ã¯ã€å‰²ã‚Šä»˜ã‘å¯èƒ½ãªé…åˆ—ã¾ãŸã¯character*(*)å‹ã®å¤‰æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The argument to the intrinsic function ALLOCATED must be an allocatable
  array or character*(*) variable.
 LI_ARG_ISIZEOF [   c2] invalid argument to ISIZEOF intrinsic function
-LI_ARG_ISIZEOF [j  c2] ‘g‚İŠÖ”ISIZEOF‚Ìˆø”‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
+LI_ARG_ISIZEOF [j  c2] çµ„è¾¼ã¿é–¢æ•°ISIZEOFã®å¼•æ•°ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚
  The argument to the intrinsic function ISIZEOF must be a user-defined
  structure name, a symbol name, or a constant.
 MD Mixed Mode
 MD_BAD_REL_OPN [   c1] relational operator has a logical operand
-MD_BAD_REL_OPN [j  c1] ŠÖŒW‰‰Zq(.GT.,.LT.‚È‚Ç)‚ª˜_—‰‰Zq(.OR.,.AND.)‚Æ‚µ‚Äg‚í‚ê‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+MD_BAD_REL_OPN [j  c1] é–¢ä¿‚æ¼”ç®—å­(.GT.,.LT.ãªã©)ãŒè«–ç†æ¼”ç®—å­(.OR.,.AND.)ã¨ã—ã¦ä½¿ã‚ã‚Œã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The operands of a relational expression must either be both
  arithmetic or both character expressions.
  The operand indicated is a logical expression.
 MD_DBLE_WITH_CMPLX [   c1] mixing DOUBLE PRECISION and COMPLEX types is not FORTRAN 77 standard
-MD_DBLE_WITH_CMPLX [j  c1] ”{¸“x‚Æ•¡‘f”Œ^‚ğ®‚É“¯‚É‘‚­‚±‚Æ‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+MD_DBLE_WITH_CMPLX [j  c1] å€ç²¾åº¦ã¨è¤‡ç´ æ•°å‹ã‚’å¼ã«åŒæ™‚ã«æ›¸ãã“ã¨ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The mixing of items of type DOUBLE PRECISION and COMPLEX in an
  expression is an extension to the FORTRAN 77 language.
 MD_ILL_OPR [   c1] operator not expecting %s1 operands
-MD_ILL_OPR [j  c1] ‚±‚Ì‰‰Zq‚Í%s1Œ^‚Ì—v‘f‚ğˆµ‚¦‚Ü‚¹‚ñB
+MD_ILL_OPR [j  c1] ã“ã®æ¼”ç®—å­ã¯%s1å‹ã®è¦ç´ ã‚’æ‰±ãˆã¾ã›ã‚“ã€‚
  Operands of type %s1 cannot be used with the indicated operator.
  The operators **, /, *, +, and &minus. may only have numeric type data.
  The operator // may only have character type data.
 MD_MIXED [   c1] operator not expecting %s1 and %s2 operands
-MD_MIXED [j  c1] ‚±‚Ì‰‰Zq‚Í%s1Œ^‚Æ%s2Œ^‚Ì—v‘f‚ğˆµ‚¦‚Ü‚¹‚ñB
+MD_MIXED [j  c1] ã“ã®æ¼”ç®—å­ã¯%s1å‹ã¨%s2å‹ã®è¦ç´ ã‚’æ‰±ãˆã¾ã›ã‚“ã€‚
  Operands of conflicting type have been encountered.
  For example, in a relational expression, it is not possible to compare a
  character expression to an arithmetic expression.
  Also, the type of the left hand operand of the field selection operator must
  be a user-defined structure.
 MD_RELOP_OPND_COMPLEX [   c1] complex quantities can only be compared using .EQ. or .NE.
-MD_RELOP_OPND_COMPLEX [j  c1] •¡‘f”‚Ì”äŠr‚É‚Í.EQ.‚Æ.NE.‚µ‚©g‚¦‚Ü‚¹‚ñB
+MD_RELOP_OPND_COMPLEX [j  c1] è¤‡ç´ æ•°ã®æ¯”è¼ƒã«ã¯.EQ.ã¨.NE.ã—ã‹ä½¿ãˆã¾ã›ã‚“ã€‚
  Complex operands cannot be compared using less than (.LT.), less than
  or equal (.LE.), greater than (.GT.), or greater than or equal (.GE.)
  operators.
 MD_UNARY_OP [   c2] unary operator not expecting %s1 type
-MD_UNARY_OP [j  c2] ’P€‰‰Zq(1ŒÂ‚Åì—p‚·‚é+,-,.NOT.‚È‚Ç)‚Í%s1Œ^‚Ég‚¦‚Ü‚¹‚ñB
+MD_UNARY_OP [j  c2] å˜é …æ¼”ç®—å­(1å€‹ã§ä½œç”¨ã™ã‚‹+,-,.NOT.ãªã©)ã¯%s1å‹ã«ä½¿ãˆã¾ã›ã‚“ã€‚
  The unary operators, + and &minus., may only be used with numeric types.
  The unary operator .NOT. may be used only with a logical or integer operand.
  The indicated operand was of type %s1 which is not one of the valid types.
 MD_LOGOPR_INTOPN [   c1] logical operator with integer operands is not FORTRAN 77 standard
-MD_LOGOPR_INTOPN [j  c1] ®”—v‘f‚É‘Î‚·‚é˜_—‰‰Zq‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+MD_LOGOPR_INTOPN [j  c1] æ•´æ•°è¦ç´ ã«å¯¾ã™ã‚‹è«–ç†æ¼”ç®—å­ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  Integer operands are permitted with the logical
  operators .AND., .OR., .EQV., .NEQV., .NOT. and .XOR. as an extension to the
  FORTRAN 77 language.
 MD_LOGOPR_EXTN [   c0] logical operator %s1 is not FORTRAN 77 standard
-MD_LOGOPR_EXTN [j  c0] ˜_—‰‰Zq%s1‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+MD_LOGOPR_EXTN [j  c0] è«–ç†æ¼”ç®—å­%s1ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The specified logical operator is an extension to the FORTRAN 77 standard.
 MO Memory Overflow
 MO_COMPILER_LIMIT [   c0] %s1 exceeds compiler limit of %u2 bytes
-MO_COMPILER_LIMIT [j  c0] %s1‚Ì‘å‚«‚³‚ªºİÊß²×ŒÀ“x‚Å‚ ‚é%u2ÊŞ²Ä(•¶š)‚ğ’´‚¦‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+MO_COMPILER_LIMIT [j  c0] %s1ã®å¤§ãã•ãŒï½ºï¾ï¾Šï¾Ÿï½²ï¾—é™åº¦ã§ã‚ã‚‹%u2ï¾Šï¾ï½²ï¾„(æ–‡å­—)ã‚’è¶…ãˆã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  An internal compiler limit has been reached.
  %s1 describes the limit and %d2 specifies the limit.
 MO_DYNAMIC_OUT [    0] out of memory
-MO_DYNAMIC_OUT [j   0] ƒƒ‚ƒŠ•s‘«‚Å‚·B
+MO_DYNAMIC_OUT [j   0] ãƒ¡ãƒ¢ãƒªä¸è¶³ã§ã™ã€‚
  All available memory has been used up.
  During the compilation phase, memory is primarily used for the symbol table.
  During execution, memory is used for file descriptors and buffers,
  and dynamically allocatable arrays and character*(*) variables.
 MO_LIST_TOO_BIG [   c0] dynamic memory exhausted due to length of this statement - statement ignored
-MO_LIST_TOO_BIG [j  c0] ‚±‚Ì•¶‚ª’·‚¢‚½‚ß‚ÉA“®“IÒÓØ‚ª•s‘«‚µ‚Ü‚µ‚½B°‚±‚Ì•¶‚ğ–³‹‚µ‚Ü‚·B
+MO_LIST_TOO_BIG [j  c0] ã“ã®æ–‡ãŒé•·ã„ãŸã‚ã«ã€å‹•çš„ï¾’ï¾“ï¾˜ãŒä¸è¶³ã—ã¾ã—ãŸã€‚ï½°ã“ã®æ–‡ã‚’ç„¡è¦–ã—ã¾ã™ã€‚
  There was not enough memory to encode the specified statement.
  This message is usually issued when the compiler is low on memory or if the
  statement is a very large statement that spans many continuation lines.
@@ -1227,40 +1115,34 @@ MO_LIST_TOO_BIG [j  c0] ‚±‚Ì•¶‚ª’·‚¢‚½‚ß‚ÉA“®“IÒÓØ‚ª•s‘«‚µ‚Ü‚µ‚½B°‚±‚Ì•¶‚ğ–³‹
  a very large statement.
  The compiler attempts to compile the remaining statements.
 MO_STORAGE_NOT_ALLOCATED [   r0] attempt to deallocate an unallocated array or character*(*) variable
-MO_STORAGE_NOT_ALLOCATED [j  r0] ÒÓØ‚ğŠ„‚è•t‚¯‚½”z—ñ‚ ‚é‚¢‚Ícharacter*(*)Œ^‚Ì•Ï”ˆÈŠO‚Ìƒƒ‚ƒŠ‚Í‰ğ•ú‚Å‚«‚Ü‚¹‚ñB
+MO_STORAGE_NOT_ALLOCATED [j  r0] ï¾’ï¾“ï¾˜ã‚’å‰²ã‚Šä»˜ã‘ãŸé…åˆ—ã‚ã‚‹ã„ã¯character*(*)å‹ã®å¤‰æ•°ä»¥å¤–ã®ãƒ¡ãƒ¢ãƒªã¯è§£æ”¾ã§ãã¾ã›ã‚“ã€‚
  An attempt has been made to deallocate an array that has not been previously
  allocated.
  An array or character*(*) variable must be allocated using an ALLOCATE
  statement.
 MO_STORAGE_ALLOCATED [   r0] attempt to allocate an already allocated array or character*(*) variable
-MO_STORAGE_ALLOCATED [j  r0] Šù‚ÉÒÓØ‚ğŠ„‚è•t‚¯‚½”z—ñ‚ ‚é‚¢‚Ícharacter*(*)Œ^‚Ì•Ï”‚É‚ÍÒÓØ‚ğŠ„‚è•t‚¯‚ç‚ê‚Ü‚¹‚ñB
+MO_STORAGE_ALLOCATED [j  r0] æ—¢ã«ï¾’ï¾“ï¾˜ã‚’å‰²ã‚Šä»˜ã‘ãŸé…åˆ—ã‚ã‚‹ã„ã¯character*(*)å‹ã®å¤‰æ•°ã«ã¯ï¾’ï¾“ï¾˜ã‚’å‰²ã‚Šä»˜ã‘ã‚‰ã‚Œã¾ã›ã‚“ã€‚
  An attempt has been made to allocate an array or character*(*) variable that
  has been previously allocated in an ALLOCATE statement.
-MO_OBJECT_OUT [ w c0] object memory exhausted
-MO_OBJECT_OUT [jw c0] ÌßÛ¸Ş×Ñ‚ÌµÌŞ¼Şª¸Ä¥º°ÄŞ‚ª‘å‚«‚·‚¬‚Ä“ü‚è‚Ü‚¹‚ñB
- The amount of object code generated for the program has exceeded the amount
- of memory allocated to store the object code.
- The "/codesize" option can be used to increase the amount of memory
- allocated for object code.
 PC Parentheses
 PC_NO_CLOSEPAREN [   c1] missing or misplaced closing parenthesis
-PC_NO_CLOSEPAREN [j  c1] ‰E‚©‚Á‚±')'‚ª‚ ‚è‚Ü‚¹‚ñB
+PC_NO_CLOSEPAREN [j  c1] å³ã‹ã£ã“')'ãŒã‚ã‚Šã¾ã›ã‚“ã€‚
  An opening parenthesis '(' was found but no matching closing
  parenthesis ')' was found before the end of the statement.
 PC_NO_OPENPAREN [    1] missing or misplaced opening parenthesis
-PC_NO_OPENPAREN [j   1] ¶‚©‚Á‚±'('‚ª‚ ‚è‚Ü‚¹‚ñB
+PC_NO_OPENPAREN [j   1] å·¦ã‹ã£ã“'('ãŒã‚ã‚Šã¾ã›ã‚“ã€‚
  A closing parenthesis ')' was found before the matching opening
  parenthesis '('.
 PC_SURP_PAREN [   c1] unexpected parenthesis
-PC_SURP_PAREN [j  c1] •K—v‚Ì‚È‚¢‚©‚Á‚±‚ª‚ ‚è‚Ü‚·B
+PC_SURP_PAREN [j  c1] å¿…è¦ã®ãªã„ã‹ã£ã“ãŒã‚ã‚Šã¾ã™ã€‚
  A parenthesis was found in a statement where parentheses are not
  expected.
 PC_UNMATCH_PAREN [    1] unmatched parentheses
-PC_UNMATCH_PAREN [j   1] ¶‰E‚Ì‚©‚Á‚±‚Ì‘g‡‚¹‚ª‡‚Á‚Ä‚¢‚Ü‚¹‚ñB
+PC_UNMATCH_PAREN [j   1] å·¦å³ã®ã‹ã£ã“ã®çµ„åˆã›ãŒåˆã£ã¦ã„ã¾ã›ã‚“ã€‚
  The parentheses in the expression are not balanced.
 PR PRAGMA Compiler Directive
 PR_SYMBOL_NAME [   c0] expecting symbolic name
-PR_SYMBOL_NAME [j  c0] ¼İÎŞÙ–¼‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B
+PR_SYMBOL_NAME [j  c0] ï½¼ï¾ï¾ï¾ï¾™åã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚
  Every auxiliary pragma must refer to a symbol.
  This error is issued when the symbolic name is illegal or missing.
  Valid symbolic names are formed from the following characters: a dollar
@@ -1268,92 +1150,92 @@ PR_SYMBOL_NAME [j  c0] ¼İÎŞÙ–¼‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B
  The first character of a symbolic name must be alphabetic, a dollar sign, or
  an underscore.
 PR_BAD_PARM_SIZE [   c0] illegal size specified for VALUE attribute
-PR_BAD_PARM_SIZE [j  c0] VALUE‘®«‚É‘Î‚·‚é»²½Şw’è‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
+PR_BAD_PARM_SIZE [j  c0] VALUEå±æ€§ã«å¯¾ã™ã‚‹ï½»ï½²ï½½ï¾æŒ‡å®šãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚
  The VALUE argument attribute of an auxiliary pragma contains in illegal
  length specification.
  Valid length specifications are 1, 2, 4 and 8.
 PR_BAD_PARM_ATTR [   c0] illegal argument attribute
-PR_BAD_PARM_ATTR [j  c0] ˆø”‘®«‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
+PR_BAD_PARM_ATTR [j  c0] å¼•æ•°å±æ€§ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚
  An illegal argument attribute was specified.
  Valid argument attributes are VALUE, REFERENCE, or DATA_REFERENCE.
 PR_BAD_CONTINUATION [   c0] continuation line must contain a comment character in column 1
-PR_BAD_CONTINUATION [j  c0] Œp‘±s‚Í1¶×Ñ–Ú‚ÉºÒİÄ•¶š‚ª•K—v‚Å‚·B
+PR_BAD_CONTINUATION [j  c0] ç¶™ç¶šè¡Œã¯1ï½¶ï¾—ï¾‘ç›®ã«ï½ºï¾’ï¾ï¾„æ–‡å­—ãŒå¿…è¦ã§ã™ã€‚
  When continuing a line of an auxiliary pragma directive, the continued line
  must end with a back-slash ('\') character and the continuation line must
  begin with a comment character ('c', 'C' or '*') in column 1.
 PR_BAD_SYNTAX [   c0] expecting '%s1' near '%s2'
-PR_BAD_SYNTAX [j  c0] '%s1'‚ª•K—v‚ÈŠ‚É‚ ‚è‚Ü‚¹‚ñBêŠ‚Í'%s2'‚Ì‹ß‚­‚Å‚·B
+PR_BAD_SYNTAX [j  c0] '%s1'ãŒå¿…è¦ãªæ‰€ã«ã‚ã‚Šã¾ã›ã‚“ã€‚å ´æ‰€ã¯'%s2'ã®è¿‘ãã§ã™ã€‚
  A syntax error was found while processing a PRAGMA directive.
  %s1 identifies the expected information and %s2 identifies where in the
  pragma the error occurred.
 PR_BYTE_SEQ_LIMIT [ o c0] in-line byte sequence limit exceeded
-PR_BYTE_SEQ_LIMIT [jo c0] ²İ×²İ¥ÊŞ²Ä¼°¹İ½‚Ì§ŒÀ‚ğ’´‚¦‚Ü‚µ‚½B
+PR_BYTE_SEQ_LIMIT [jo c0] ï½²ï¾ï¾—ï½²ï¾ï½¥ï¾Šï¾ï½²ï¾„ï½¼ï½°ï½¹ï¾ï½½ã®åˆ¶é™ã‚’è¶…ãˆã¾ã—ãŸã€‚
  The limit on the number of bytes of code that can be generated in-line using
  a an auxiliary pragma has been exceeded.
  The limit is 127 bytes.
 PR_BAD_BYTE_SEQ [ o c0] illegal hexadecimal data in byte sequence
-PR_BAD_BYTE_SEQ [jo c0] ÊŞ²Ä¼°¹İ½’†‚É•s³‚È16iÃŞ°À‚ª‚ ‚è‚Ü‚·B
+PR_BAD_BYTE_SEQ [jo c0] ï¾Šï¾ï½²ï¾„ï½¼ï½°ï½¹ï¾ï½½ä¸­ã«ä¸æ­£ãª16é€²ï¾ƒï¾ï½°ï¾€ãŒã‚ã‚Šã¾ã™ã€‚
  An illegal hexadecimal constant was encountered while processing a in-line
  byte sequence of an auxiliary pragma.
  Valid hexadecimal constants in an in-line byte sequence must begin with the
  letter Z or z and followed by a string of hexadecimal digits.
 PR_SYMBOL_UNRESOLVED [ o c0] symbol '%s1' in in-line assembly code cannot be resolved
-PR_SYMBOL_UNRESOLVED [jo c0] ²İ×²İ¥±¾İÌŞØ¥º°ÄŞ“à‚Ì¼İÎŞÙ '%s1'‚ÍQÆ–¢‰ğŒˆ‚Å‚·B
+PR_SYMBOL_UNRESOLVED [jo c0] ï½²ï¾ï¾—ï½²ï¾ï½¥ï½±ï½¾ï¾ï¾Œï¾ï¾˜ï½¥ï½ºï½°ï¾„ï¾å†…ã®ï½¼ï¾ï¾ï¾ï¾™ '%s1'ã¯å‚ç…§æœªè§£æ±ºã§ã™ã€‚
  The symbol %s1, referenced in an assembly language instruction in an
  auxiliary pragma, could not be resolved.
 RE RETURN Statement
 RE_ALT_IN_SUBROUTINE [   c2] alternate return specifier only allowed in subroutine
-RE_ALT_IN_SUBROUTINE [j  c2] ‘ã‘Ö–ß‚èw’èq‚ÍA»ÌŞÙ°Áİ‚¾‚¯‚É‹–‚³‚ê‚Ü‚·B
+RE_ALT_IN_SUBROUTINE [j  c2] ä»£æ›¿æˆ»ã‚ŠæŒ‡å®šå­ã¯ã€ï½»ï¾Œï¾ï¾™ï½°ï¾ï¾ã ã‘ã«è¨±ã•ã‚Œã¾ã™ã€‚
  An alternate return specifier, in the RETURN statement, may only be
  specified when returning from a subroutine.
 RE_IN_PROGRAM [   c0] RETURN statement in main program is not FORTRAN 77 standard
-RE_IN_PROGRAM [j  c0] Ò²İÌßÛ¸Ş×Ñ’†‚ÌRETURN•¶‚Í,FORTRAN 77•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+RE_IN_PROGRAM [j  c0] ï¾’ï½²ï¾ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ä¸­ã®RETURNæ–‡ã¯,FORTRAN 77æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  A RETURN statement in the main program is allowed as an extension to the
  FORTRAN 77 standard.
 SA SAVE Statement
 SA_COMBLK_EMPTY [   c0] COMMON block %s1 saved but not properly defined
-SA_COMBLK_EMPTY [j  c0] COMMONÌŞÛ¯¸%s1‚ğSAVE‚³‚ê‚Ä‚¢‚Ü‚·‚ªA‚»‚ÌCOMMONÌŞÛ¯¸–¼‚ª’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
+SA_COMBLK_EMPTY [j  c0] COMMONï¾Œï¾ï¾›ï½¯ï½¸%s1ã‚’SAVEã•ã‚Œã¦ã„ã¾ã™ãŒã€ãã®COMMONï¾Œï¾ï¾›ï½¯ï½¸åãŒå®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚
  The named COMMON block %s1 was listed in a SAVE statement but there is
  no named COMMON block defined by that name.
 SA_COMMON_NOT_SAVED [   c0] COMMON block %s1 must be saved in every subprogram in which it appears
-SA_COMMON_NOT_SAVED [j  c0] COMMONÌŞÛ¯¸%s1‚ÍA‚»‚ÌCOMMONÌŞÛ¯¸‚ª‚ ‚é‘S‚Ä‚Ì•›ÌßÛ¸Ş×Ñ‚ÅSAVE‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SA_COMMON_NOT_SAVED [j  c0] COMMONï¾Œï¾ï¾›ï½¯ï½¸%s1ã¯ã€ãã®COMMONï¾Œï¾ï¾›ï½¯ï½¸ãŒã‚ã‚‹å…¨ã¦ã®å‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã§SAVEã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The named COMMON block %s1 appears in a SAVE statement in another
  subprogram and is not in a SAVE statement in this subprogram.
  If a named COMMON block is specified in a SAVE statement in a
  subprogram, it must be specified in a SAVE statement in every
  subprogram in which that COMMON block appears.
 SA_SAVED [   c2] name already appeared in a previous SAVE statement
-SA_SAVED [j  c2] “¯‚¶ÌßÛ¸Ş×Ñ‚Ì’†‚Å2“xˆÈã“¯‚¶–¼‘O‚ÅSAVE‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+SA_SAVED [j  c2] åŒã˜ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®ä¸­ã§2åº¦ä»¥ä¸ŠåŒã˜åå‰ã§SAVEã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The indicated name has already been referenced in another SAVE
  statement in this subprogram.
 SF Statement Functions
 SF_DUPLICATE_DUMMY_PARM [   c2] statement function definition contains duplicate dummy arguments
-SF_DUPLICATE_DUMMY_PARM [j  c2] •¶ŠÖ”‚Ì’è‹`‚·‚é‰¼ˆø”‚ªd•¡‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+SF_DUPLICATE_DUMMY_PARM [j  c2] æ–‡é–¢æ•°ã®å®šç¾©ã™ã‚‹ä»®å¼•æ•°ãŒé‡è¤‡ã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  A dummy argument is repeated in the argument list of the statement function.
 SF_ILL_CHAR_LEN [   c2] character length of statement function name must not be (*)
-SF_ILL_CHAR_LEN [j  c2] •¶ŠÖ”‚Ì•¶š”‚Í(*)‚Å‚ ‚Á‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB ®”‚É‚µ‚Ä‚­‚¾‚³‚¢B
+SF_ILL_CHAR_LEN [j  c2] æ–‡é–¢æ•°ã®æ–‡å­—æ•°ã¯(*)ã§ã‚ã£ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚ æ•´æ•°ã«ã—ã¦ãã ã•ã„ã€‚
  If the type of a character function is character, its length specification
  must not be (*); it must be a constant integer expression.
 SF_ILL_DUMMY_PARM [   c2] statement function definition contains illegal dummy argument
-SF_ILL_DUMMY_PARM [j  c2] •¶ŠÖ”‚Ì•¶šŒ^‰¼ˆø”‚Í(*)‚Ì’·‚³‚ğ‚Á‚Ä‚¢‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+SF_ILL_DUMMY_PARM [j  c2] æ–‡é–¢æ•°ã®æ–‡å­—å‹ä»®å¼•æ•°ã¯(*)ã®é•·ã•ã‚’æŒã£ã¦ã„ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  A dummy argument of type CHARACTER must have a length specification
  of an integer constant expression that is not (*).
 SF_ILL_PARM_PASSED [   c2] cannot pass %s1 %s2 to statement function
-SF_ILL_PARM_PASSED [j  c2] ŠÔˆá‚Á‚½(*)’·‚³‚Å•¶šŒ‹‡‚µ‚Ä‚¢‚é%s1 %s2‚Í•¶ŠÖ”‚ÌÀˆø”‚Éw’è‚Å‚«‚Ü‚¹‚ñB
+SF_ILL_PARM_PASSED [j  c2] é–“é•ã£ãŸ(*)é•·ã•ã§æ–‡å­—çµåˆã—ã¦ã„ã‚‹%s1 %s2ã¯æ–‡é–¢æ•°ã®å®Ÿå¼•æ•°ã«æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  The actual arguments to a statement function can be any expression
  except character expressions involving the concatenation of an
  operand whose length specification is (*) unless the operand is a
  symbolic constant.
 SF_PARM_TYPE_MISMATCH [   c2] %s1 actual argument was passed to %s2 dummy argument
-SF_PARM_TYPE_MISMATCH [j  c2] Àˆø”‚ÌŒ^%s1‚Æ‰¼ˆø”‚ÌŒ^%s2‚ª‡‚¢‚Ü‚¹‚ñB
+SF_PARM_TYPE_MISMATCH [j  c2] å®Ÿå¼•æ•°ã®å‹%s1ã¨ä»®å¼•æ•°ã®å‹%s2ãŒåˆã„ã¾ã›ã‚“ã€‚
  The indicated actual argument is of type %s1 which is not the same
  type as that of the dummy argument of type %s2.
 SF_WRONG_NUM_PARMS [   c2] incorrect number of arguments passed to statement function %s1
-SF_WRONG_NUM_PARMS [j  c2] •¶ŠÖ”%s1‚É“n‚·ˆø”‚Ì”‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
+SF_WRONG_NUM_PARMS [j  c2] æ–‡é–¢æ•°%s1ã«æ¸¡ã™å¼•æ•°ã®æ•°ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚
  The number of arguments passed to statement function %s1 does not
  agree with the number of dummy arguments specified in its definition.
 SF_ILL_TYPE [   c2] type of statement function name must not be a user-defined structure
-SF_ILL_TYPE [j  c2] •¶ŠÖ”–¼‚ÌŒ^‚ÉÕ°»Ş°’è‹`‚Ì\‘¢‘Ì‚ğw’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+SF_ILL_TYPE [j  c2] æ–‡é–¢æ•°åã®å‹ã«ï¾•ï½°ï½»ï¾ï½°å®šç¾©ã®æ§‹é€ ä½“ã‚’æŒ‡å®šã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The type of a statement function cannot be a user-defined structure.
  Valid types for statement functions are: LOGICAL*1, LOGICAL, INTEGER*1,
  INTEGER*2, INTEGER, REAL, DOUBLE PRECISION, COMPLEX, DOUBLE COMPLEX, and
@@ -1362,27 +1244,19 @@ SF_ILL_TYPE [j  c2] •¶ŠÖ”–¼‚ÌŒ^‚ÉÕ°»Ş°’è‹`‚Ì\‘¢‘Ì‚ğw’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
  must not be (*); it must be an integer constant expression.
 SM Source Management
 SM_IO_READ_ERR [   c0] system file error reading %s1 - %s2
-SM_IO_READ_ERR [j  c0] ¼½ÃÑ¥Ì§²Ù“Ç‚İ‚İ´×°: %s1 - %s2
+SM_IO_READ_ERR [j  c0] ï½¼ï½½ï¾ƒï¾‘ï½¥ï¾Œï½§ï½²ï¾™èª­ã¿è¾¼ã¿ï½´ï¾—ï½°: %s1 - %s2
  An I/O error, described by %s2, has occurred while reading the
  FORTRAN source file %s1.
 SM_OPENING_FILE [   c0] error opening file %s1 - %s2
-SM_OPENING_FILE [j  c0] Ì§²Ùµ°Ìßİ´×°: %s1 - %s2
+SM_OPENING_FILE [j  c0] ï¾Œï½§ï½²ï¾™ï½µï½°ï¾Œï¾Ÿï¾ï½´ï¾—ï½°: %s1 - %s2
  The FORTRAN source file %s1 could not be opened.
  The error is described by %s2.
 SM_IO_WRITE_ERR [   c0] system file error writing %s1 - %s2
-SM_IO_WRITE_ERR [j  c0] ¼½ÃÑ¥Ì§²Ù‘o‚µ´×°: %s1 - %s2
+SM_IO_WRITE_ERR [j  c0] ï½¼ï½½ï¾ƒï¾‘ï½¥ï¾Œï½§ï½²ï¾™æ›¸å‡ºã—ï½´ï¾—ï½°: %s1 - %s2
  An I/O error, described by %s2, has occurred while writing to the
  file %s1.
-SM_SPAWN_ERR [ w c0] error spawning %s1 - %s2
-SM_SPAWN_ERR [jw c0] spawn´×° : %s1 - %s2
- An error, described by %s2, occurred while trying to spawn the external
- program named %s1.
-SM_LINK_ERR [ w c0] error while linking
-SM_LINK_ERR [jw c0] Øİ¸´×°
- An error occurred while trying to create the executable file.  See the
- WLINK documentation for a description of the error.
 SM_OUT_OF_VM_FILES [ o c0] error opening %s1 - too many temporary files exist
-SM_OUT_OF_VM_FILES [jo c0] Ì§²Ùµ°Ìßİ´×° %s1 - ÃİÎß×ØÌ§²Ù‚ª‘½‚·‚¬‚Ü‚·B
+SM_OUT_OF_VM_FILES [jo c0] ï¾Œï½§ï½²ï¾™ï½µï½°ï¾Œï¾Ÿï¾ï½´ï¾—ï½° %s1 - ï¾ƒï¾ï¾ï¾Ÿï¾—ï¾˜ï¾Œï½§ï½²ï¾™ãŒå¤šã™ãã¾ã™ã€‚
  The compiler was not able to open a temporary file for intermediate storage
  during code generation.
  Temporary files are created in the directory specified by the TMP
@@ -1394,25 +1268,25 @@ SM_OUT_OF_VM_FILES [jo c0] Ì§²Ùµ°Ìßİ´×° %s1 - ÃİÎß×ØÌ§²Ù‚ª‘½‚·‚¬‚Ü‚·B
  in a multi-tasking environment and the directory in which the temporary
  files are created is the same for all compilation processes.
 SM_BROWSE_ERROR [   c0] generation of browsing information failed
-SM_BROWSE_ERROR [j  c0] ÌŞ×³½Şî•ñ‚Ì¶¬‚É¸”s‚µ‚Ü‚µ‚½B
+SM_BROWSE_ERROR [j  c0] ï¾Œï¾ï¾—ï½³ï½½ï¾æƒ…å ±ã®ç”Ÿæˆã«å¤±æ•—ã—ã¾ã—ãŸã€‚
  An error occurred during the generation of browsing information.
  For example, a disk full condition encountered during the creation of the
  browser module file will cause this message to be issued.
  Browsing information is generated when the /db switch is specified.
 SP Structured Programming Features
 SP_ATEND_AND_ENDEQUALS [   c0] cannot have both ATEND and the END= specifier
-SP_ATEND_AND_ENDEQUALS [j  c0] READ‚ÉAT END‚ÆEND=‚ğ“¯‚Éw’è‚Å‚«‚Ü‚¹‚ñB
+SP_ATEND_AND_ENDEQUALS [j  c0] READã«AT ENDã¨END=ã‚’åŒæ™‚ã«æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  It is not valid to use the AT END control statement and the END=
  option on the READ statement.
  Only one method can be used to control the end-of-file condition.
 SP_READ_NO_ATEND [   c0] ATEND must immediately follow a READ statement
-SP_READ_NO_ATEND [j  c0] AT END‚ÍREAD‚Ì‚·‚®Œã‚É—ˆ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SP_READ_NO_ATEND [j  c0] AT ENDã¯READã®ã™ãå¾Œã«æ¥ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The indicated AT END control statement or block does not immediately
  follow a READ statement.
  The AT END control statement or block is executed when an end-of-file
  condition is encountered during the read.
 SP_BAD_LABEL [   c2] block label must be a symbolic name
-SP_BAD_LABEL [j  c2] ÌŞÛ¯¸¥×ÍŞÙ‚Í¼İÎŞÙ–¼‚Å‚È‚­‚Ä‚Í‚È‚è‚Ü‚¹‚ñB
+SP_BAD_LABEL [j  c2] ï¾Œï¾ï¾›ï½¯ï½¸ï½¥ï¾—ï¾ï¾ï¾™ã¯ï½¼ï¾ï¾ï¾ï¾™åã§ãªãã¦ã¯ãªã‚Šã¾ã›ã‚“ã€‚
  The indicated block label must be a symbolic name.
  A symbolic name must start with a letter and contain no more than 32
  letters and digits.
@@ -1420,7 +1294,7 @@ SP_BAD_LABEL [j  c2] ÌŞÛ¯¸¥×ÍŞÙ‚Í¼İÎŞÙ–¼‚Å‚È‚­‚Ä‚Í‚È‚è‚Ü‚¹‚ñB
  or an underscore (_).
  A digit is a character in the range '0' to '9'.
 SP_BAD_QUIT [   c0] could not find a structure to %s1 from
-SP_BAD_QUIT [j  c0] %s1‚Ö‚Ì\‘¢‘Ì‚ğŒŸo‚Å‚«‚Ü‚¹‚ñB
+SP_BAD_QUIT [j  c0] %s1ã¸ã®æ§‹é€ ä½“ã‚’æ¤œå‡ºã§ãã¾ã›ã‚“ã€‚
  This message is issued in the following cases.
  .autonote
  .note
@@ -1442,7 +1316,7 @@ SP_BAD_QUIT [j  c0] %s1‚Ö‚Ì\‘¢‘Ì‚ğŒŸo‚Å‚«‚Ü‚¹‚ñB
  DO, DO WHILE, WHILE and LOOP control structure.
  .endnote
 SP_BLK_IN_STRUCTURE [   c0] REMOTE BLOCK is not allowed in the range of any control structure
-SP_BLK_IN_STRUCTURE [j  c0] §Œä\‘¢“à•”‚ÉREMOTE BLOCK‚ğŠÜ‚ß‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+SP_BLK_IN_STRUCTURE [j  c0] åˆ¶å¾¡æ§‹é€ å†…éƒ¨ã«REMOTE BLOCKã‚’å«ã‚ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
  An attempt has been made to define a REMOTE BLOCK inside a control
  structure.
  Control structures include IF, LOOP, WHILE, DO, SELECT and GUESS.
@@ -1450,127 +1324,127 @@ SP_BLK_IN_STRUCTURE [j  c0] §Œä\‘¢“à•”‚ÉREMOTE BLOCK‚ğŠÜ‚ß‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
  control is transferred to the statement following the corresponding
  END BLOCK statement.
 SP_SELECT_THEN_CASE [   c0] the SELECT statement must be followed immediately by a CASE statement
-SP_SELECT_THEN_CASE [j  c0] SELECT‚Ì‚·‚®Œã‚ÉCASE‚ª—ˆ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SP_SELECT_THEN_CASE [j  c0] SELECTã®ã™ãå¾Œã«CASEãŒæ¥ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The statement immediately after the SELECT statement must be a CASE
  statement.
  The SELECT statement allows one of a number of blocks of code (case
  blocks) to be selected for execution by means of an integer
  expression in the SELECT statement.
 SP_CASE_OVERLAP [   c0] cases are overlapping
-SP_CASE_OVERLAP [j  c0] CASE‚Ìw’èq‚ªd•¡‚µ‚Ä‚¢‚Ü‚·B
+SP_CASE_OVERLAP [j  c0] CASEã®æŒ‡å®šå­ãŒé‡è¤‡ã—ã¦ã„ã¾ã™ã€‚
  The case lists specified in the CASE statements in the SELECT control
  structure are in conflict.
  Each case list must specify a unique integer constant expression or
  range.
 SP_EMPTY_SELECT [   c0] select structure requires at least one CASE statement
-SP_EMPTY_SELECT [j  c0] SELECT‚É‚Í­‚È‚­‚Æ‚à1‚Â‚ÌCASE•¶‚ª•K—v‚Å‚·B
+SP_EMPTY_SELECT [j  c0] SELECTã«ã¯å°‘ãªãã¨ã‚‚1ã¤ã®CASEæ–‡ãŒå¿…è¦ã§ã™ã€‚
  In the SELECT control structure, there must be at least one CASE
  statement.
 SP_FROM_OUTSIDE [   c0] cannot branch to %i1 from outside control structure in line %d2
-SP_FROM_OUTSIDE [j  c0] §Œä\‘¢‚ÌŠO•”‚©‚ç%i1‚É%d2s–Ú‚Ì‚æ‚¤‚É“ü‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+SP_FROM_OUTSIDE [j  c0] åˆ¶å¾¡æ§‹é€ ã®å¤–éƒ¨ã‹ã‚‰%i1ã«%d2è¡Œç›®ã®ã‚ˆã†ã«å…¥ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
  The statement in line %d2 passes control to the statement %d1 in a
  control structure.
  Control may only be passed out of a control structure or to another
  place in that control structure.
  Control structures include DO, GUESS, IF, LOOP, SELECT, and WHILE.
 SP_INTO_STRUCTURE [   c0] cannot branch to %i1 inside structure on line %d2
-SP_INTO_STRUCTURE [j  c0] §Œä\‘¢“à•”‚Ì%i1(%d2s–Ú)‚É”ò‚Ô‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+SP_INTO_STRUCTURE [j  c0] åˆ¶å¾¡æ§‹é€ å†…éƒ¨ã®%i1(%d2è¡Œç›®)ã«é£›ã¶ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
  The statement attempts to pass control to statement %d1 in line %d2
  which is in a control structure.
  Control may only be passed out of a control structure or to another
  place in that control structure.
  Control structures include DO, GUESS, IF, LOOP, SELECT, and WHILE.
 SP_NEVER_CASE [   c0] low end of range exceeds the high end
-SP_NEVER_CASE [j  c0] ”ÍˆÍ‚Ì‰‚ß‚ğ¦‚·”Ô†‚ªI‚è‚Ì”Ô†‚æ‚è‘å‚«‚­‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+SP_NEVER_CASE [j  c0] ç¯„å›²ã®åˆã‚ã‚’ç¤ºã™ç•ªå·ãŒçµ‚ã‚Šã®ç•ªå·ã‚ˆã‚Šå¤§ããã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The first number, the low end of the range, is greater than the
  second number, the high end of the range.
 SP_OTHERWISE_LAST [   c0] default case block must follow all case blocks
-SP_OTHERWISE_LAST [j  c0] ÃŞÌ«ÙÄ‚ÌCASEÌŞÛ¯¸‚Í‘S‚Ä‚ÌCASEÌŞÛ¯¸‚ÌŒã‚É—ˆ‚È‚­‚Ä‚Í‚È‚è‚Ü‚¹‚ñB
+SP_OTHERWISE_LAST [j  c0] ï¾ƒï¾ï¾Œï½«ï¾™ï¾„ã®CASEï¾Œï¾ï¾›ï½¯ï½¸ã¯å…¨ã¦ã®CASEï¾Œï¾ï¾›ï½¯ï½¸ã®å¾Œã«æ¥ãªãã¦ã¯ãªã‚Šã¾ã›ã‚“ã€‚
  The default case block in the SELECT control structure must be the last
  case block.
  A case block may not follow the default case block.
 SP_OUT_OF_BLOCK [   c0] attempt to branch out of a REMOTE BLOCK
-SP_OUT_OF_BLOCK [j  c0] REMOTE BLOCK‚©‚çŠO‚É”ò‚Ño‚é‚±‚Æ‚Í‹–‚³‚ê‚Ü‚¹‚ñ(END BLOCK‚ÅI‚ç‚¹‚Ä‚­‚¾‚³‚¢)B
+SP_OUT_OF_BLOCK [j  c0] REMOTE BLOCKã‹ã‚‰å¤–ã«é£›ã³å‡ºã‚‹ã“ã¨ã¯è¨±ã•ã‚Œã¾ã›ã‚“(END BLOCKã§çµ‚ã‚‰ã›ã¦ãã ã•ã„)ã€‚
  An attempt has been made to transfer execution control out of a
  REMOTE BLOCK.
  A REMOTE BLOCK may only be terminated with the END BLOCK statement.
  Execution of a REMOTE BLOCK is similar in concept to execution of a
  subroutine.
 SP_RB_UNDEFINED [   c0] attempt to EXECUTE undefined REMOTE BLOCK %s1
-SP_RB_UNDEFINED [j  c0] EXECUTE‚³‚ê‚éREMOTEÌŞÛ¯¸ %s1‚Í“¯‚¶ÌßÛ¸Ş×Ñ‚Ì’†‚É‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SP_RB_UNDEFINED [j  c0] EXECUTEã•ã‚Œã‚‹REMOTEï¾Œï¾ï¾›ï½¯ï½¸ %s1ã¯åŒã˜ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®ä¸­ã«ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The REMOTE BLOCK %s1 referenced in the EXECUTE statement does not
  exist in the current program unit.
  A REMOTE BLOCK is local to the program unit in which it is defined
  and may not be referenced from another program unit.
 SP_RECURSE [   c0] attempted to use REMOTE BLOCK recursively
-SP_RECURSE [j  c0] REMOTE BLOCK ‚ÍÄ‹A“I‚ÉÀs‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+SP_RECURSE [j  c0] REMOTE BLOCK ã¯å†å¸°çš„ã«å®Ÿè¡Œã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
  An attempt was made to execute a REMOTE BLOCK which was already
  active.
 SP_RET_IN_REMOTE [   c0] cannot RETURN from subprogram within a REMOTE BLOCK
-SP_RET_IN_REMOTE [j  c0] •›ÌßÛ¸Ş×Ñ‚ÌREMOTE BLOCK‚Ì’†‚ÅRETURN‚ğÀs‚Å‚«‚Ü‚¹‚ñB
+SP_RET_IN_REMOTE [j  c0] å‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®REMOTE BLOCKã®ä¸­ã§RETURNã‚’å®Ÿè¡Œã§ãã¾ã›ã‚“ã€‚
  An illegal attempt has been made to execute a RETURN statement within
  a REMOTE BLOCK in a subprogram.
 SP_STRUCTURED_EXT [   c0] %s1 statement is not FORTRAN 77 standard
-SP_STRUCTURED_EXT [j  c0] %s1•¶‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+SP_STRUCTURED_EXT [j  c0] %s1æ–‡ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The statement %s1 is an extension to the FORTRAN 77 language.
 SP_UNFINISHED [   c0] %s1 block is unfinished
-SP_UNFINISHED [j  c0] %s1ÌŞÛ¯¸‚ğI—¹‚³‚¹‚é•¶‚ª‚ ‚è‚Ü‚¹‚ñB
+SP_UNFINISHED [j  c0] %s1ï¾Œï¾ï¾›ï½¯ï½¸ã‚’çµ‚äº†ã•ã›ã‚‹æ–‡ãŒã‚ã‚Šã¾ã›ã‚“ã€‚
  The block starting with the statement %s1 does not have the ending
  block statement.
  For example: ATENDDO-ENDATEND, DO-ENDDO, GUESS-ENDGUESS, IF-ENDIF,
  LOOP-ENDLOOP, SELECT-ENDSELECT, STRUCTURE-ENDSTRUCTURE and WHILE-ENDWHILE.
 SP_UNMATCHED [   c0] %s1 statement does not match with %s2 statement
-SP_UNMATCHED [j  c0] •¶%s1‚Í•¶%s2‚Æ‘g‡‚¹‚ç‚ê‚Ü‚¹‚ñB
+SP_UNMATCHED [j  c0] æ–‡%s1ã¯æ–‡%s2ã¨çµ„åˆã›ã‚‰ã‚Œã¾ã›ã‚“ã€‚
  The statement %s1, which ends a control structure, cannot be used with
  statement %s2 to form a control structure.
  Valid control structures are: LOOP - ENDLOOP, LOOP - UNTIL, WHILE -
  ENDWHILE, and WHILE - UNTIL.
 SP_INCOMPLETE [   c0] incomplete control structure found at %s1 statement
-SP_INCOMPLETE [j  c0] %s1‚É‘Î‰‚µ‚Ä§Œä\‘¢‚Ì‰‚ß‚ğ¦‚·•¶‚ª‚ ‚è‚Ü‚¹‚ñB
+SP_INCOMPLETE [j  c0] %s1ã«å¯¾å¿œã—ã¦åˆ¶å¾¡æ§‹é€ ã®åˆã‚ã‚’ç¤ºã™æ–‡ãŒã‚ã‚Šã¾ã›ã‚“ã€‚
  The ending control structure statement %s1 was found and there was no
  preceding matching beginning statement.
  Valid control structures include: ATENDDO - ENDATEND, GUESS -
  ENDGUESS, IF - ENDIF, LOOP - ENDLOOP, REMOTE BLOCK - ENDBLOCK, and
  SELECT - ENDSELECT.
 SP_NOT_IN_STRUCTURE [   c0] %s1 statement is not allowed in %s2 definition
-SP_NOT_IN_STRUCTURE [j  c0] %s1•¶‚Í%s2’è‹`“à‚Å‚Íw’è‚Å‚«‚Ü‚¹‚ñB
+SP_NOT_IN_STRUCTURE [j  c0] %s1æ–‡ã¯%s2å®šç¾©å†…ã§ã¯æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  Statement %s1 is not allowed between a %s2 statement and the
  corresponding END %s2 statement.
  For example, an EXTERNAL statement is not allowed between a STRUCTURE and
  END STRUCTURE statement, a UNION and END UNION statement, or a MAP and
  END MAP statement.
 SP_NO_SUCH_FIELD [   c2] no such field name found in structure %s1
-SP_NO_SUCH_FIELD [j  c2] \‘¢‘Ì%s1‚Ì’†‚É,‚±‚ÌÌ¨°ÙÄŞ–¼‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB
+SP_NO_SUCH_FIELD [j  c2] æ§‹é€ ä½“%s1ã®ä¸­ã«,ã“ã®ï¾Œï½¨ï½°ï¾™ï¾„ï¾åãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚
  A structure reference contained a field name that does not belong to the
  specified structure.
 SP_DUPLICATE_FIELD [   c2] multiple definition of field name %s1
-SP_DUPLICATE_FIELD [j  c2] Ì¨°ÙÄŞ–¼%s1‚Íd•¡‚µ‚Ä’è‹`‚³‚ê‚Ä‚¢‚Ü‚·B
+SP_DUPLICATE_FIELD [j  c2] ï¾Œï½¨ï½°ï¾™ï¾„ï¾å%s1ã¯é‡è¤‡ã—ã¦å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ã€‚
  The field name %s1 has already been defined in a structure.
 SP_UNDEF_STRUCT [   c0] structure %s1 has not been defined
-SP_UNDEF_STRUCT [j  c0] \‘¢‘Ì%s1‚Í’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
+SP_UNDEF_STRUCT [j  c0] æ§‹é€ ä½“%s1ã¯å®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚
  An attempt has been made to declare a symbol of user-defined type %s1.
  No structure definition for %s1 has occurred.
 SP_STRUCT_DEFINED [   c2] structure %s1 has already been defined
-SP_STRUCT_DEFINED [j  c2] \‘¢‘Ì%s1‚ÍŠù‚É’è‹`‚³‚ê‚Ä‚¢‚Ü‚·B
+SP_STRUCT_DEFINED [j  c2] æ§‹é€ ä½“%s1ã¯æ—¢ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ã€‚
  The specified structure has already been defined as a structure.
 SP_STRUCT_NEEDS_FIELD [   c0] structure %s1 must contain at least one field
-SP_STRUCT_NEEDS_FIELD [j  c0] \‘¢‘Ì%s1‚É‚Í,­‚È‚­‚Æ‚à1‚Â‚ÌÌ¨°ÙÄŞ‚ª•K—v‚Å‚·B
+SP_STRUCT_NEEDS_FIELD [j  c0] æ§‹é€ ä½“%s1ã«ã¯,å°‘ãªãã¨ã‚‚1ã¤ã®ï¾Œï½¨ï½°ï¾™ï¾„ï¾ãŒå¿…è¦ã§ã™ã€‚
  Structures must contain at least one field definition.
 SP_STRUCT_RECURSION [   c0] recursion detected in definition of structure %s1
-SP_STRUCT_RECURSION [j  c0] \‘¢‘Ì%s1‚Ì’è‹`‚Ì’†‚É,Ä‹A’è‹`‚ª‚ ‚è‚Ü‚·B
+SP_STRUCT_RECURSION [j  c0] æ§‹é€ ä½“%s1ã®å®šç¾©ã®ä¸­ã«,å†å¸°å®šç¾©ãŒã‚ã‚Šã¾ã™ã€‚
  Structure %s1 has been defined recursively.
  For example, it is illegal for structure X to contain a field that is itself
  a structure named X.
 SP_STRUCT_HAS_UNION [   c2] illegal use of structure %s1 containing union
-SP_STRUCT_HAS_UNION [j  c2] ‹¤—p‘Ì‚ğŠÜ‚Ş\‘¢‘Ì%s1‚Ìg‚¢•û‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
+SP_STRUCT_HAS_UNION [j  c2] å…±ç”¨ä½“ã‚’å«ã‚€æ§‹é€ ä½“%s1ã®ä½¿ã„æ–¹ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚
  Structures containing unions cannot be used in formatted I/O statements or
  data initialized.
 SP_ALLOC_NOT_IN_STRUCT [   c0] allocatable arrays cannot be fields within structures
-SP_ALLOC_NOT_IN_STRUCT [j  c0] Š„‚è“–‚Ä‰Â”\‚È”z—ñ‚Í,\‘¢‘Ì‚ÌÌ¨°ÙÄŞ‚É‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+SP_ALLOC_NOT_IN_STRUCT [j  c0] å‰²ã‚Šå½“ã¦å¯èƒ½ãªé…åˆ—ã¯,æ§‹é€ ä½“ã®ï¾Œï½¨ï½°ï¾™ï¾„ï¾ã«ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
  An allocatable array cannot appear as a field name within a structure
  definition.
 SP_INTEGER_CONDITION [   c2] an integer conditional expression is not FORTRAN 77 standard
-SP_INTEGER_CONDITION [j  c2] ®”ğŒ®‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+SP_INTEGER_CONDITION [j  c2] æ•´æ•°æ¡ä»¶å¼ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  A conditional expression is the expression that is evaluated and checked to
  determine a path of execution.
  A conditional expression can be found in an IF or WHILE statement.
@@ -1579,133 +1453,87 @@ SP_INTEGER_CONDITION [j  c2] ®”ğŒ®‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
  When an integer expression is used, it is converted to a logical expression
  by comparing the value of the integer expression to zero.
 SP_STATEMENT_REQUIRED [   c2] %s1 statement must be used within %s2 definition
-SP_STATEMENT_REQUIRED [j  c2] %s1•¶‚Í%s2‚Ì’è‹`‚Ì’†‚Åg—p‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SP_STATEMENT_REQUIRED [j  c2] %s1æ–‡ã¯%s2ã®å®šç¾©ã®ä¸­ã§ä½¿ç”¨ã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The statement identified by %s1 must appear within a definition identified
  by %s2.
 SR Subprograms
 SR_EXTRNED_TWICE [   c2] name can only appear in an EXTERNAL statement once
-SR_EXTRNED_TWICE [j  c2] ŠÖ”/»ÌŞÙ°Áİ–¼‚ÍEXTERNAL‚Ì’†‚É2“xˆÈãw’è‚Å‚«‚Ü‚¹‚ñB
+SR_EXTRNED_TWICE [j  c2] é–¢æ•°/ï½»ï¾Œï¾ï¾™ï½°ï¾ï¾åã¯EXTERNALã®ä¸­ã«2åº¦ä»¥ä¸ŠæŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  A function/subroutine name appears more than once in an EXTERNAL
  statement.
 SR_ILL_CHARFUNC [   c2] character function %s1 may not be called since size was declared as (*)
-SR_ILL_CHARFUNC [j  c2] »²½Ş‚ª(*)‚Ì•¶šŒ^ŠÖ”%s1‚ÍŒÄo‚¹‚Ü‚¹‚ñ(*‚ÍŠO•”ŠÖ”,‰¼ˆø”,PARAMETER•¶š’è”‚É‘Î‚µ‚Ä‚Ì‚İ‚Å‚·)B
+SR_ILL_CHARFUNC [j  c2] ï½»ï½²ï½½ï¾ãŒ(*)ã®æ–‡å­—å‹é–¢æ•°%s1ã¯å‘¼å‡ºã›ã¾ã›ã‚“(*ã¯å¤–éƒ¨é–¢æ•°,ä»®å¼•æ•°,PARAMETERæ–‡å­—å®šæ•°ã«å¯¾ã—ã¦ã®ã¿ã§ã™)ã€‚
  In the declaration of the character function name, the length was
  defined to be (*).
  The (*) length specification is only allowed for external functions,
  dummy arguments or symbolic character constants.
 SR_ILL_PARM [   c2] %s1 can only be used an an argument to a subroutine
-SR_ILL_PARM [j  c2] %s1‚Í»ÌŞÙ°Áİ‚É‘Î‚·‚éˆø”‚Æ‚µ‚Ä‚Ì‚İg—p‚Å‚«‚Ü‚·B
+SR_ILL_PARM [j  c2] %s1ã¯ï½»ï¾Œï¾ï¾™ï½°ï¾ï¾ã«å¯¾ã™ã‚‹å¼•æ•°ã¨ã—ã¦ã®ã¿ä½¿ç”¨ã§ãã¾ã™ã€‚
  The specified class of an argument must only be passed to a subroutine.
  For example, an alternate return specifier is illegal as a subscript or
  an argument to a function.
 SR_INTRNSC_EXTRN [   c2] name cannot appear in both an INTRINSIC and EXTERNAL statement
-SR_INTRNSC_EXTRN [j  c2] “¯‚¶–¼‘O‚ğINTRINSIC‚ÆEXTERNAL‚Ì—¼•û‚Éw’è‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+SR_INTRNSC_EXTRN [j  c2] åŒã˜åå‰ã‚’INTRINSICã¨EXTERNALã®ä¸¡æ–¹ã«æŒ‡å®šã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
  The same name appears in an INTRINSIC statement and in an EXTERNAL
  statement.
 SR_NO_SUBRTN_NAME [   c2] expecting a subroutine name
-SR_NO_SUBRTN_NAME [j  c2] SUBROUTINE‚Å»ÌŞÙ°Áİ–¼‚ğ’è‹`‚µ‚Ä‰º‚³‚¢B
+SR_NO_SUBRTN_NAME [j  c2] SUBROUTINEã§ï½»ï¾Œï¾ï¾™ï½°ï¾ï¾åã‚’å®šç¾©ã—ã¦ä¸‹ã•ã„ã€‚
  The subroutine named in the CALL statement does not define a
  subroutine.
  A subroutine is declared in a SUBROUTINE statement.
 SR_ILL_IN_PROG [   c0] %s1 statement not allowed in main program
-SR_ILL_IN_PROG [j  c0] %s1•¶‚ÍÒ²İ¥ÌßÛ¸Ş×Ñ‚Ì’†‚É‘‚¢‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+SR_ILL_IN_PROG [j  c0] %s1æ–‡ã¯ï¾’ï½²ï¾ï½¥ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®ä¸­ã«æ›¸ã„ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The main program can contain any statements except a FUNCTION,
  SUBROUTINE, BLOCK DATA, or ENTRY statement.
  A SAVE statement is allowed but has no effect in the main program.
  A RETURN statement in the main program is an extension to the
  FORTRAN 77 language.
 SR_NOT_INTRNSC [   c2] not an intrinsic FUNCTION name
-SR_NOT_INTRNSC [j  c2] INTRINSIC‚Ì–¼‘O‚Í‘g‚İŠÖ”–¼‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SR_NOT_INTRNSC [j  c2] INTRINSICã®åå‰ã¯çµ„è¾¼ã¿é–¢æ•°åã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  A name in the INTRINSIC statement is not an intrinsic function name.
  Refer to the Language Reference for a complete list of the intrinsic
  functions.
 SR_PREV_INTRNSC [   c2] name can only appear in an INTRINSIC statement once
-SR_PREV_INTRNSC [j  c2] “¯‚¶‘g‚İŠÖ”–¼‚ğd•¡‚µ‚ÄINTRINSIC‚Ì’†‚Éw’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+SR_PREV_INTRNSC [j  c2] åŒã˜çµ„è¾¼ã¿é–¢æ•°åã‚’é‡è¤‡ã—ã¦INTRINSICã®ä¸­ã«æŒ‡å®šã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  An intrinsic function name appears more than once in the intrinsic
  function list.
 SR_TRIED_RECURSION [   c2] subprogram recursion detected
-SR_TRIED_RECURSION [j  c2] •›ÌßÛ¸Ş×Ñ‚ÌÄ‹AŒÄo‚µ‚ªŒŸo‚³‚ê‚Ü‚µ‚½B
+SR_TRIED_RECURSION [j  c2] å‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®å†å¸°å‘¼å‡ºã—ãŒæ¤œå‡ºã•ã‚Œã¾ã—ãŸã€‚
  An attempt has been made to recursively invoke a subprogram, that is,
  to invoke an already active subprogram.
 SR_TWO_PROGRAMS [   c0] two main program units in the same file
-SR_TWO_PROGRAMS [j  c0] 1ŒÂ‚ÌÌßÛ¸Ş×Ñ“à‚ÉÒ²İ¥ÌßÛ¸Ş×Ñ‚Ì‰‚ß‚ğ¦‚·–½—ß‚ª2ŒÂˆÈã‚ ‚Á‚Ä‚Í‚È‚è‚Ü‚¹‚ñB
+SR_TWO_PROGRAMS [j  c0] 1å€‹ã®ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘å†…ã«ï¾’ï½²ï¾ï½¥ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®åˆã‚ã‚’ç¤ºã™å‘½ä»¤ãŒ2å€‹ä»¥ä¸Šã‚ã£ã¦ã¯ãªã‚Šã¾ã›ã‚“ã€‚
  There are two places in the program that signify the start of a main
  program.
  The PROGRAM statement or the first statement that is not enclosed by
  a PROGRAM, FUNCTION, SUBROUTINE or BLOCK DATA statement specifies the
  main program start.
 SR_TWO_UNNAMED [   c0] only one unnamed %s1 is allowed in an executable program
-SR_TWO_UNNAMED [j  c0] –¼‘O‚Ì–³‚¢%s1‚ÍÌßÛ¸Ş×Ñ‚Ì’†‚É1ŒÂ‚µ‚©w’è‚Å‚«‚Ü‚¹‚ñB
+SR_TWO_UNNAMED [j  c0] åå‰ã®ç„¡ã„%s1ã¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®ä¸­ã«1å€‹ã—ã‹æŒ‡å®šã§ãã¾ã›ã‚“ã€‚
  There may only be one unnamed BLOCK DATA subprogram or main program
  in an executable program.
 SR_FUNC_AS_SUB [   c2] function referenced as a subroutine
-SR_FUNC_AS_SUB [j  c2] ŠÖ”‚Í»ÌŞÙ°Áİ‚Æ‚µ‚Äg‚¦‚Ü‚¹‚ñB
+SR_FUNC_AS_SUB [j  c2] é–¢æ•°ã¯ï½»ï¾Œï¾ï¾™ï½°ï¾ï¾ã¨ã—ã¦ä½¿ãˆã¾ã›ã‚“ã€‚
  An attempt has been made to invoke a function using the CALL
  statement.
-SR_ALREADY_ACTIVE [ w r0] attempt to invoke active function/subroutine
-SR_ALREADY_ACTIVE [jw r0] ŠÖ”/»ÌŞÙ°Áİ‚Í©•ª‚Ì’†‚©‚ç©•ª‚ğA‚Ü‚½‚ÍŒÄ‚Ño‚µ‚½e‚ğŒÄ‚Ño‚·‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
- An attempt has been made to invoke the current function/subroutine or
- a function/subroutine that was used to invoke current
- function/subroutine.
- The traceback produced when the error occurred lists all currently
- active functions/subroutines.
-SR_ARG_USED_NOT_PASSED [ w r0] dummy argument %s1 is not in dummy argument list of entered subprogram
-SR_ARG_USED_NOT_PASSED [jw r0] ‰¼ˆø”%s1‚ÍENTRY‚Æ•›ÌßÛ¸Ş×Ñ‚Ì—¼•û‚Éˆø”‚Æ‚µ‚Ä’è‹`‚µ‚Ä‚­‚¾‚³‚¢B
- The named dummy argument found in the ENTRY statement does not appear
- in the subroutine's dummy argument list in the subprogram statement.
-SR_BAD_TYPE [ w r0] function referenced as %s1 but defined to be %s2
-SR_BAD_TYPE [jw r0] ŒÄ‚Ño‚³‚ê‚½ŠÖ”‚Í%s1Œ^‚Å‚·‚ªFUNCTION/ENTRY‚Å%s2‚Æ‚È‚Á‚Ä‚¢‚Äˆê’v‚µ‚Ü‚¹‚ñB
- An attempt has been made to invoke a function of the type %s1 but the
- function was defined as %s2 in the FUNCTION or ENTRY statement.
- The function name's type must be correctly declared in the main
- program.
-SR_CHAR_SIZE_MISMATCH [ w r0] function referenced as CHARACTER*%u1 but defined to be CHARACTER*%u2
-SR_CHAR_SIZE_MISMATCH [jw r0] CHARACTER*%u1‚Æ‚µ‚ÄŒÄo‚³‚ê‚½ŠÖ”–¼‚ÍCHARACTER*%u2‚Æ‚µ‚Ä’è‹`‚³‚ê‚Ä‚¢‚Ä’·‚³‚ª‡‚¢‚Ü‚¹‚ñB
- The character length of the function in the calling subprogram is %d1 but
- the length used to define the function is %d2.
- These two lengths must match.
-SR_NO_PROG [ w c0] missing main program
-SR_NO_PROG [jw c0] PROGRAM(È—ª‰Â”\)‚Ån‚Ü‚èEND‚ÅI‚í‚éÒ²İ¥ÌßÛ¸Ş×Ñ‚ª•K—v‚Å‚·B
- The program file is either empty or contains only subroutines and
- functions.
- Each program require a main program.
- A main program starts with an optional PROGRAM statement and ends
- with an END statement.
-SR_SUB_AS_FUNC [ w r0] subroutine referenced as a function
-SR_SUB_AS_FUNC [jw r0] »ÌŞÙ°Áİ‚ÍŠÖ”‚Æ‚µ‚Äg‚¦‚Ü‚¹‚ñB
- An attempt has been made to invoke a name as a function and has been
- defined as a subroutine in a SUBROUTINE or ENTRY statement.
-SR_BLKDAT_CALLED [ w r0] attempt to invoke a block data subprogram
-SR_BLKDAT_CALLED [jw r0] BLOCK DATA•›ÌßÛ¸Ş×Ñ‚Í•Ï”‚Ì‰Šú’l‰»‚Ì‚½‚ß‚Ì‚à‚Ì‚ÅŒÄ‚Ño‚·‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
- An attempt has been made to invoke a block data subprogram.
- Block data subprograms are used to initialize variables before
- program execution commences.
-SR_STRUCT_MISMATCH [ w r0] structure type of function %s1 does not match expected structure type
-SR_STRUCT_MISMATCH [jw r0] ŠÖ”%s1‚Ì\‘¢‘Ì‚ÌŒ^‚ªˆê’v‚µ‚Ü‚¹‚ñB
- The function returns a structure that is not equivalent to the structure
- expected.
- Two structures are equivalent if the types and orders of each field
- are the same.
- Unions are considered equivalent if their sizes are the same.
- Field names, and the structure name itself, do not have to be the same.
 SS Subscripts and Substrings
 SS_FUNCTION_VALUE [   c2] substringing of function or statement function return value is not FORTRAN 77 standard
-SS_FUNCTION_VALUE [j  c2] •¶šŒ^ŠÖ”‚â•¶ŠÖ”‚Åæ‚èo‚µ‚½•¶š—ñ‚Ì•”•ª—ñ‰»‚Í,FORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+SS_FUNCTION_VALUE [j  c2] æ–‡å­—å‹é–¢æ•°ã‚„æ–‡é–¢æ•°ã§å–ã‚Šå‡ºã—ãŸæ–‡å­—åˆ—ã®éƒ¨åˆ†åˆ—åŒ–ã¯,FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The character value returned from a CHARACTER function or statement
- function cannot be substrung.
+ function cannot be substring.
  Only character variable names and array element names may be
- substrung.
+ substring.
 SS_ONLY_IF_CHAR [   c2] substringing valid only for character variables and array elements
-SS_ONLY_IF_CHAR [j  c2] •¶šŒ^•Ï”‚â”z—ñ—v‘fˆÈŠO‚Í•”•ª—ñ‚É‚Å‚«‚Ü‚¹‚ñB
+SS_ONLY_IF_CHAR [j  c2] æ–‡å­—å‹å¤‰æ•°ã‚„é…åˆ—è¦ç´ ä»¥å¤–ã¯éƒ¨åˆ†åˆ—ã«ã§ãã¾ã›ã‚“ã€‚
  An attempt has been made to substring a name that is not defined to
  be of type CHARACTER and is neither a variable nor an array element.
 SS_SSCR_RANGE [   r0] subscript expression out of range; %s1 does not exist
-SS_SSCR_RANGE [j  r0] “Yš®‚ª”z—ñ‚Ì”ÍˆÍŠO‚ğŠÔˆá‚Á‚Äw‚µ‚Ä‚¢‚Ü‚·(%s1‚Í‘¶İ‚µ‚Ü‚¹‚ñ)B
+SS_SSCR_RANGE [j  r0] æ·»å­—å¼ãŒé…åˆ—ã®ç¯„å›²å¤–ã‚’é–“é•ã£ã¦æŒ‡ã—ã¦ã„ã¾ã™(%s1ã¯å­˜åœ¨ã—ã¾ã›ã‚“)ã€‚
  An attempt has been made to reference an element in an array that is
  out of bounds of the declared array size.
  The array element %s1 does not exist.
 SS_SSTR_RANGE [   r0] substring expression (%i1:%i2) is out of range
-SS_SSTR_RANGE [j  r0] •”•ª—ñ‚Ì®(%i1:%i2)‚ª”ÍˆÍŠO‚ğŠÔˆá‚Á‚Äw‚µ‚Ä‚¢‚Ü‚·B
+SS_SSTR_RANGE [j  r0] éƒ¨åˆ†åˆ—ã®å¼(%i1:%i2)ãŒç¯„å›²å¤–ã‚’é–“é•ã£ã¦æŒ‡ã—ã¦ã„ã¾ã™ã€‚
  An expression in the substring is larger than the string length or
  less than the value 1.
  The substring expression must be one in which
@@ -1714,11 +1542,11 @@ SS_SSTR_RANGE [j  r0] •”•ª—ñ‚Ì®(%i1:%i2)‚ª”ÍˆÍŠO‚ğŠÔˆá‚Á‚Äw‚µ‚Ä‚¢‚Ü‚·B
  .millust end
 ST Statements and Statement Numbers
 ST_ALREADY [   c0] statement number %i1 has already been defined in line %d2
-ST_ALREADY [j  c0] d•¡‚µ‚Ä•¶”Ô†%i1‚ğ%d2s–Ú‚Å’è‹`‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+ST_ALREADY [j  c0] é‡è¤‡ã—ã¦æ–‡ç•ªå·%i1ã‚’%d2è¡Œç›®ã§å®šç¾©ã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The two statements, in line %d2 and the current line, in the current
  program unit have the same statement label number, namely %d1.
 ST_ASF_LATE [   c0] statement function definition appears after first executable statement
-ST_ASF_LATE [j  c0] •¶ŠÖ”‚Ì’è‹`‚ÍÌßÛ¸Ş×Ñ‚Ì’†‚ÅÅ‰‚ÌÀs‰Â”\‚È•¶‚Ì‘O‚É‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+ST_ASF_LATE [j  c0] æ–‡é–¢æ•°ã®å®šç¾©ã¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®ä¸­ã§æœ€åˆã®å®Ÿè¡Œå¯èƒ½ãªæ–‡ã®å‰ã«ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  There is a statement function definition after the first executable
  statement in the program unit.
  Statement function definitions must follow specification statements
@@ -1726,7 +1554,7 @@ ST_ASF_LATE [j  c0] •¶ŠÖ”‚Ì’è‹`‚ÍÌßÛ¸Ş×Ñ‚Ì’†‚ÅÅ‰‚ÌÀs‰Â”\‚È•¶‚Ì‘O‚É‚È‚¯‚ê‚Î‚
  Check that the statement function name is not an undeclared array
  name.
 ST_BAD_BRANCHED [   c0] %s1 statement must not be branched to but was in line %d2
-ST_BAD_BRANCHED [j  c0] %s1•¶‚Í%d2s–Ú‚©‚çGOTO‚ğó‚¯‚é‚±‚Æ‚ª‚Å‚«‚È‚¢–½—ß‚Å‚·B
+ST_BAD_BRANCHED [j  c0] %s1æ–‡ã¯%d2è¡Œç›®ã‹ã‚‰GOTOã‚’å—ã‘ã‚‹ã“ã¨ãŒã§ããªã„å‘½ä»¤ã§ã™ã€‚
  Line %d2 passed execution control down to the statement %s1.
  The specification statements, ADMIT, AT END, BLOCK DATA, CASE, ELSE,
  ELSE IF, END AT END, END BLOCK, END DO, END LOOP, END SELECT, END
@@ -1734,7 +1562,7 @@ ST_BAD_BRANCHED [j  c0] %s1•¶‚Í%d2s–Ú‚©‚çGOTO‚ğó‚¯‚é‚±‚Æ‚ª‚Å‚«‚È‚¢–½—ß‚Å‚·B
  BLOCK, SAVE, SUBROUTINE, and UNTIL statements may not have control of
  execution transferred to it.
 ST_CANNOT_BRANCH [   c2] branch to statement %i1 in line %d2 not allowed
-ST_CANNOT_BRANCH [j  c2] %i1•¶(%d2s–Ú)‚É”ò‚Ô‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
+ST_CANNOT_BRANCH [j  c2] %i1æ–‡(%d2è¡Œç›®)ã«é£›ã¶ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚
  An attempt has been made to pass execution control up to the
  statement labelled %d1 in line %d2.
  The specification statements, ADMIT, AT END, BLOCK DATA, CASE, ELSE,
@@ -1743,43 +1571,43 @@ ST_CANNOT_BRANCH [j  c2] %i1•¶(%d2s–Ú)‚É”ò‚Ô‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
  BLOCK, SAVE, SUBROUTINE, and UNTIL statements may not have control of
  execution transferred to it.
 ST_DATA_ALREADY [   c2] specification statement must appear before %s1 is initialized
-ST_DATA_ALREADY [j  c2] •Ï”“™‚Ì’è‹`‚Í%s1‚ª‰Šú‰»‚³‚ê‚é‘O‚Éw’è‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+ST_DATA_ALREADY [j  c2] å¤‰æ•°ç­‰ã®å®šç¾©ã¯%s1ãŒåˆæœŸåŒ–ã•ã‚Œã‚‹å‰ã«æŒ‡å®šã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The variable %s1 has been initialized in a specification statement.
  A COMMON or EQUIVALENCE statement then references the variable.
  The COMMON or EQUIVALENCE statement must appear before the item can
  be initialized.
  Use the DATA statement to initialize data in this case.
 ST_EXPECT_FORMAT [   c0] statement %i1 was referenced as a FORMAT statement in line %d2
-ST_EXPECT_FORMAT [j  c0] %i1•¶(%d2s–Ú)‚ªŠÔˆá‚Á‚ÄFORMAT‚Æ‚µ‚Äw’è‚³‚ê‚Ä‚¢‚Ü‚·B
+ST_EXPECT_FORMAT [j  c0] %i1æ–‡(%d2è¡Œç›®)ãŒé–“é•ã£ã¦FORMATã¨ã—ã¦æŒ‡å®šã•ã‚Œã¦ã„ã¾ã™ã€‚
  The statement in line %d2 references statement label %d1 as a FORMAT
  statement.
  The statement at that label is not a FORMAT statement.
 ST_IMPLICIT_LATE [   c0] IMPLICIT statement appears too late
-ST_IMPLICIT_LATE [j  c0] IMPLICIT‚Í(PARAMETERˆÈŠO‚Ì)•Ï”‚Ì’è‹`‚ğ‚·‚é•¶‚Ì‘O‚Éw’è‚µ‚Ä‚­‚¾‚³‚¢B
+ST_IMPLICIT_LATE [j  c0] IMPLICITã¯(PARAMETERä»¥å¤–ã®)å¤‰æ•°ã®å®šç¾©ã‚’ã™ã‚‹æ–‡ã®å‰ã«æŒ‡å®šã—ã¦ãã ã•ã„ã€‚
  The current IMPLICIT statement is out of order.
  The IMPLICIT statement may be interspersed with the PARAMETER
  statement but must appear before other specification statements.
 ST_NO_EXEC [   c0] this statement will never be executed due to the preceding branch
-ST_NO_EXEC [j  c0] ‚±‚Ì•¶‚Í‚±‚Ì‘O‚É”ò‰z‚µ–½—ß‚ª‚ ‚é‚Ì‚ÅÀs‚³‚ê‚é‚±‚Æ‚ª‚ ‚è‚Ü‚¹‚ñB
+ST_NO_EXEC [j  c0] ã“ã®æ–‡ã¯ã“ã®å‰ã«é£›è¶Šã—å‘½ä»¤ãŒã‚ã‚‹ã®ã§å®Ÿè¡Œã•ã‚Œã‚‹ã“ã¨ãŒã‚ã‚Šã¾ã›ã‚“ã€‚
  Because execution control will always be passed around the indicated
  statement, the statement will never be executed.
 ST_NO_STMTNO [   c2] expecting statement number
-ST_NO_STMTNO [j  c2] •¶”Ô†‚ğ“ü‚ê‚Ä‰º‚³‚¢B
+ST_NO_STMTNO [j  c2] æ–‡ç•ªå·ã‚’å…¥ã‚Œã¦ä¸‹ã•ã„ã€‚
  The keyword GOTO or ASSIGN has been detected and the next part of the
  statement was not a statement number as was expected.
 ST_NOT_FORMAT [   c2] statement number %i1 was not used as a FORMAT statement in line %d2
-ST_NOT_FORMAT [j  c2] •¶”Ô†%i1(%d2s–Ú)‚ÍFORMAT•¶‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚ªAFORMAT•¶‚Å‚ ‚é‚©‚Ì‚æ‚¤‚Ég—p‚³‚ê‚Ä‚¢‚Ü‚·B
+ST_NOT_FORMAT [j  c2] æ–‡ç•ªå·%i1(%d2è¡Œç›®)ã¯FORMATæ–‡ã§ã¯ã‚ã‚Šã¾ã›ã‚“ãŒã€FORMATæ–‡ã§ã‚ã‚‹ã‹ã®ã‚ˆã†ã«ä½¿ç”¨ã•ã‚Œã¦ã„ã¾ã™ã€‚
  The statement at line %d2 with statement number %d1 is not a FORMAT
  statement but the current statement uses statement number %d1
  as if it labelled a FORMAT statement.
 ST_SPEC_LATE [   c0] specification statement appears too late
-ST_SPEC_LATE [j  c0] •Ï”“™‚Ì’è‹`‚ÍDATAA•¶ŠÖ”AÀs‰Â”\–½—ß‚Ì‘O‚Éw’è‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+ST_SPEC_LATE [j  c0] å¤‰æ•°ç­‰ã®å®šç¾©ã¯DATAã€æ–‡é–¢æ•°ã€å®Ÿè¡Œå¯èƒ½å‘½ä»¤ã®å‰ã«æŒ‡å®šã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The indicated specification statement appears after
  a statement function definition or an executable statement.
  All specification statements must appear before these types of
  statements.
 ST_NOT_ALLOWED [   c2] %s1 statement not allowed after %s2 statement
-ST_NOT_ALLOWED [j  c2] %s1•¶‚Í%s2•¶‚ÌŒã‚Éw’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+ST_NOT_ALLOWED [j  c2] %s1æ–‡ã¯%s2æ–‡ã®å¾Œã«æŒ‡å®šã—ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The statement %s1 cannot be the object of a %s2 statement.
  %s2 represents a logical IF or WHILE statement.
  These statements include: specification statements, ADMIT, AT END,
@@ -1788,107 +1616,90 @@ ST_NOT_ALLOWED [j  c2] %s1•¶‚Í%s2•¶‚ÌŒã‚Éw’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
  FUNCTION, GUESS, logical IF, block IF, LOOP, OTHERWISE, PROGRAM,
  REMOTE BLOCK, SAVE, SELECT, SUBROUTINE, UNTIL, and WHILE.
 ST_NUM_TOO_BIG [   c2] statement number must be 99999 or less
-ST_NUM_TOO_BIG [j  c2] •¶”Ô†‚Í99999‚©‚»‚êˆÈ‰º‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+ST_NUM_TOO_BIG [j  c2] æ–‡ç•ªå·ã¯99999ã‹ãã‚Œä»¥ä¸‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The statement label number specified in the indicated statement has
  more than 5 digits.
 ST_NUM_ZERO [   c1] statement number cannot be zero
-ST_NUM_ZERO [j  c1] •¶”Ô†‚Í0‚Å‚ ‚Á‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+ST_NUM_ZERO [j  c1] æ–‡ç•ªå·ã¯0ã§ã‚ã£ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The statement label number specified in the indicated statement is
  zero.
  Statement label numbers must be greater than 0 and less than or equal
  to 99999.
 ST_TO_SELF [   c2] this statement could branch to itself
-ST_TO_SELF [j  c2] ©•ª©g‚É”ò‚ñ‚Å‚Í‚¢‚¯‚Ü‚¹‚ñB
+ST_TO_SELF [j  c2] è‡ªåˆ†è‡ªèº«ã«é£›ã‚“ã§ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The indicated statement refers to a statement label number which
  appears on the statement itself and therefore could branch to itself,
  creating an endless loop.
 ST_UNDEFINED [   c0] missing statement number %i1 - used in line %d2
-ST_UNDEFINED [j  c0] •¶”Ô†%i1‚ÍÌßÛ¸Ş×Ñ‚Ì’†‚É–³‚¢‚Ì‚Å%d2s–Ú‚Ìw’è‚Í´×°‚Å‚·B
+ST_UNDEFINED [j  c0] æ–‡ç•ªå·%i1ã¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®ä¸­ã«ç„¡ã„ã®ã§%d2è¡Œç›®ã®æŒ‡å®šã¯ï½´ï¾—ï½°ã§ã™ã€‚
  A statement with the statement label number %d1 does not exist in the
  current program unit.
  The statement label number is referenced in line %d2 of the program
  unit.
 ST_UNKNOWN_STMT [   c2] undecodeable statement or misspelled word %s1
-ST_UNKNOWN_STMT [j  c2] ‘ã“ü•¶‚Æ‚µ‚ÄŠÔˆá‚Á‚Ä‚¢‚é‚©A•¶š‚Ì‚Â‚Ã‚è‚ªŠÔˆá‚Á‚½%s1‚ª‚ ‚è‚Ü‚·B
+ST_UNKNOWN_STMT [j  c2] ä»£å…¥æ–‡ã¨ã—ã¦é–“é•ã£ã¦ã„ã‚‹ã‹ã€æ–‡å­—ã®ã¤ã¥ã‚ŠãŒé–“é•ã£ãŸ%s1ãŒã‚ã‚Šã¾ã™ã€‚
  The statement cannot be identified as an assignment statement or any
  other type of FORTRAN statement.
  The first word of a FORTRAN statement must be a statement keyword or
  the statement must be an assignment statement.
 ST_UNREFERENCED [   c0] statement %i1 will never be executed due to the preceding branch
-ST_UNREFERENCED [j  c0] •¶%i1‚Í‚±‚Ì‘O‚É”ò‰z‚µ–½—ß‚ª‚ ‚é‚Ì‚ÅÀs‚³‚ê‚é‚±‚Æ‚Í‚ ‚è‚Ü‚¹‚ñB
+ST_UNREFERENCED [j  c0] æ–‡%i1ã¯ã“ã®å‰ã«é£›è¶Šã—å‘½ä»¤ãŒã‚ã‚‹ã®ã§å®Ÿè¡Œã•ã‚Œã‚‹ã“ã¨ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The statement with the statement label number of %d1 will never be
  executed because the preceding statement will always pass execution
  control around the statement and no other reference is made to the
  statement label.
 ST_WANT_NAME [   c1] expecting keyword or symbolic name
-ST_WANT_NAME [j  c1] ·°Ü°ÄŞ‚©¼İÎŞÙ–¼‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B
+ST_WANT_NAME [j  c1] ï½·ï½°ï¾œï½°ï¾„ï¾ã‹ï½¼ï¾ï¾ï¾ï¾™åã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚
  The first character of a statement is not an alphabetic.
  The first word of a statement must be a statement keyword or a
  symbolic name.
  Symbolic names must start with a letter (upper case or lower case), a
  dollar sign ($) or an underscore (_).
 ST_LONG_NUM [   c1] number in %s1 statement is longer than 5 digits
-ST_LONG_NUM [j  c1] %s1‚Ì”š‚Í5Œ…‚æ‚è‘å‚«‚­‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+ST_LONG_NUM [j  c1] %s1ã®æ•°å­—ã¯5æ¡ã‚ˆã‚Šå¤§ããã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The number in the PAUSE or STOP statement is longer than 5 digits.
 ST_DATA_TOO_EARLY [   c0] position of DATA statement is not FORTRAN 77 standard
-ST_DATA_TOO_EARLY [j  c0] DATA •¶‚ÌˆÊ’u‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+ST_DATA_TOO_EARLY [j  c0] DATA æ–‡ã®ä½ç½®ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  The FORTRAN 77 standard requires DATA statements to appear after all
  specification statements.
  As an extension to the standard, Watcom FORTRAN 77 allows DATA statements
  to appear before specification statements.
  Note that in the latter case, the type of the symbol must be established
  before data initialization occurs.
-ST_FORMAT_LABEL [ w r0] no FORMAT statement with given label
-ST_FORMAT_LABEL [jw r0] w’è‚µ‚½×ÍŞÙ‚ÌˆÊ’u‚ÉFORMAT•¶‚ª‚ ‚è‚Ü‚¹‚ñB
- The current statement refers to the label of a FORMAT statement but
- the label appears on some other statement that is not a FORMAT
- statement.
-ST_NUMBER [ w r0] statement number not in list or not the label of an executable statement
-ST_NUMBER [jw r0] •¶”Ô†‚ª‚©‚Á‚±‚Ì’†‚É‚È‚¢‚âÀs‰Â”\‚È•¶‚É•t‚¢‚Ä‚¢‚È‚¢‚Í´×°‚Å‚·B
- The specified statement number in the indicated statement is not in
- the list of statement numbers or it is not the statement label number
- of an executable statement.
-ST_BRANCH_INTO [ w r0] attempt to branch into a control structure
-ST_BRANCH_INTO [jw r0] ‚±‚Ì§Œä\‘¢‚Ì’†‚É”ò‚Ñ‚Ş‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB
- An attempt has been made to pass execution control into a control
- structure.
- A statement uses a computed statement label number to transfer
- control.
- This value references a statement inside a control structure.
 SV Subscripted Variables
 SV_ARR_DECL [   c0] variable %s1 in array declarator must be in COMMON or a dummy argument
-SV_ARR_DECL [j  c0] ”z—ñ‚ÌéŒ¾q‚Å‚ ‚é•Ï”%s1‚ÍCOMMON‚Ì’†‚©‰¼ˆø”‚Æ‚µ‚Äw’è‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SV_ARR_DECL [j  c0] é…åˆ—ã®å®£è¨€å­ã§ã‚ã‚‹å¤‰æ•°%s1ã¯COMMONã®ä¸­ã‹ä»®å¼•æ•°ã¨ã—ã¦æŒ‡å®šã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The variable %s1 was used as an array declarator in a subroutine or
  function but the variable was not in a COMMON block nor was it a
  dummy argument in the FUNCTION, SUBROUTINE or ENTRY statement.
 SV_ARR_PARM [   c0] adjustable/assumed size array %s1 must be a dummy argument
-SV_ARR_PARM [j  c0] ’²®‰Â”\‚ÈA‚ ‚é‚¢‚Í‰¼»²½Ş‚Ì”z—ñ%s1‚Í‰¼ˆø”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SV_ARR_PARM [j  c0] èª¿æ•´å¯èƒ½ãªã€ã‚ã‚‹ã„ã¯ä»®ï½»ï½²ï½½ï¾ã®é…åˆ—%s1ã¯ä»®å¼•æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The array %s1 used in the current subroutine or function must be a
  dummy argument.
  When the array declarator is adjustable or assumed-size, the array
  name must be a dummy argument.
 SV_BAD_SSCR [    2] invalid subscript expression
-SV_BAD_SSCR [j   2] “Yš®‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·B
+SV_BAD_SSCR [j   2] æ·»å­—å¼ãŒé–“é•ã£ã¦ã„ã¾ã™ã€‚
  The indicated subscript expression is not a valid integer expression
  or the high bound of the array is less than the low bound of the
  array when declaring the size of the array.
 SV_INV_SSCR [   c2] invalid number of subscripts
-SV_INV_SSCR [j  c2] “Yš‚ÌŒÂ”‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+SV_INV_SSCR [j  c2] æ·»å­—ã®å€‹æ•°ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  The number of subscripts used to describe an array element does not
  match the number of subscripts in the array declaration.
  The maximum number of subscripts allowed is 7.
 SV_NO_LIST [   c2] using %s1 name incorrectly without list
-SV_NO_LIST [j  c2] %s1‚Í“Yš‚È‚µ‚Ég‚¦‚Ü‚¹‚ñB
+SV_NO_LIST [j  c2] %s1ã¯æ·»å­—ãªã—ã«ä½¿ãˆã¾ã›ã‚“ã€‚
  An attempt has been made to assign a value to the declared array %s1.
  Values may only be assigned to elements in the array.
  An array element is the array name followed by integer expressions
  enclosed in parentheses and separated by commas.
 SV_TRIED_SSTR [   c1] cannot substring array name %s1
-SV_TRIED_SSTR [j  c1] ”z—ñ–¼%s1‚Í“Yš‚ª‚È‚¢‚Æ•”•ª—ñ‚É‚Å‚«‚Ü‚¹‚ñB
+SV_TRIED_SSTR [j  c1] é…åˆ—å%s1ã¯æ·»å­—ãŒãªã„ã¨éƒ¨åˆ†åˆ—ã«ã§ãã¾ã›ã‚“ã€‚
  An attempt has been made to substring the array %s1.
- Only an array element may be substrung.
+ Only an array element may be substring.
 SV_PVD [   c0] %s1 treated as an assumed size array
-SV_PVD [j  c0] %s1‚Í‹[¡–@‰¼”z—ñ‚Æ‚İ‚È‚µ‚Ü‚·(ÅŒã‚ÌŸŒ³‚ª1‚Ì‚È‚Ç‚Å‚·)B
+SV_PVD [j  c0] %s1ã¯æ“¬å¯¸æ³•ä»®é…åˆ—ã¨ã¿ãªã—ã¾ã™(æœ€å¾Œã®æ¬¡å…ƒãŒ1ã®æ™‚ãªã©ã§ã™)ã€‚
  A dummy array argument has been declared with 1 in the last
  dimension.
  The array is treated as if an '*' had been specified in place of the
@@ -1897,20 +1708,20 @@ SV_PVD [j  c0] %s1‚Í‹[¡–@‰¼”z—ñ‚Æ‚İ‚È‚µ‚Ü‚·(ÅŒã‚ÌŸŒ³‚ª1‚Ì‚È‚Ç‚Å‚·)B
  dimensioning" which was supported by some FORTRAN IV compilers and is
  identical in concept to FORTRAN 77 assumed-size arrays.
 SV_CANT_USE_ASSUMED [   c2] assumed size array %s1 cannot be used as an i/o list item or a format/unit identifier
-SV_CANT_USE_ASSUMED [j  c2] ‹[¡–@‰¼”z—ñ(ÅŒã‚ÌŸŒ³‚ª*‚Ì)%s1‚ÍI/O‘®‚âFORMAT/UNIT‚Ì’†‚Ég‚¦‚Ü‚¹‚ñB
+SV_CANT_USE_ASSUMED [j  c2] æ“¬å¯¸æ³•ä»®é…åˆ—(æœ€å¾Œã®æ¬¡å…ƒãŒ*ã®æ™‚)%s1ã¯I/Oæ›¸å¼ã‚„FORMAT/UNITã®ä¸­ã«ä½¿ãˆã¾ã›ã‚“ã€‚
  Assumed size arrays (arrays whose last dimension is '*') must not
  appear as an i/o list item (i.e. in a PRINT statement), a format
  identifier or an internal file specifier.
 SV_DIMENSION_LIMIT [    2] limit of 65535 elements per dimension has been exceeded
-SV_DIMENSION_LIMIT [j   2] ŸŒ³‚Ì—v‘fŒÀ“x‚Í65535‚ğ’´‚¦‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+SV_DIMENSION_LIMIT [j   2] æ¬¡å…ƒã®è¦ç´ é™åº¦ã¯65535ã‚’è¶…ãˆã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  On the IBM PC, for 16-bit real mode applications, the number of elements in a
  dimension must not exceed 65535.
 SX Syntax Errors
 SX_UNEXPECTED_OPN [   c2] unexpected number or name %s1
-SX_UNEXPECTED_OPN [j  c2] ”š‚©–¼‘O%s1‚ª‚Ü‚¿‚ª‚Á‚½êŠ‚É‚ ‚è‚Ü‚·B
+SX_UNEXPECTED_OPN [j  c2] æ•°å­—ã‹åå‰%s1ãŒã¾ã¡ãŒã£ãŸå ´æ‰€ã«ã‚ã‚Šã¾ã™ã€‚
  The number or name %s1 is in an unexpected place in the statement.
 SX_BAD_OPR_SEQ [   c2] bad sequence of operators
-SX_BAD_OPR_SEQ [j  c2] ‰‰Zq‚Ì‡”Ô‚ª‚Ü‚¿‚ª‚Á‚Ä‚¢‚Ü‚·B
+SX_BAD_OPR_SEQ [j  c2] æ¼”ç®—å­ã®é †ç•ªãŒã¾ã¡ãŒã£ã¦ã„ã¾ã™ã€‚
  The indicated arithmetic operator is out of order.
  An arithmetic operator is one of the following:
  **, *, /, +, and &minus..
@@ -1918,35 +1729,35 @@ SX_BAD_OPR_SEQ [j  c2] ‰‰Zq‚Ì‡”Ô‚ª‚Ü‚¿‚ª‚Á‚Ä‚¢‚Ü‚·B
  A primary is an array element, constant, (expression), function name,
  or variable name.
 SX_INV_OPR [   c1] invalid operator
-SX_INV_OPR [j  c1] ‰‰Zq‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+SX_INV_OPR [j  c1] æ¼”ç®—å­ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  The indicated operator between the two arithmetic primaries is not a
  valid operator.
  Valid arithmetic operators include: **, *, /, +, and &minus..
  A primary is an array element, constant, (expression), function name,
  or variable name.
 SX_JUNK_AFTER_RBR [   c0] expecting end of statement after right parenthesis
-SX_JUNK_AFTER_RBR [j  c0] ‰E‚©‚Á‚±‚ÌŒã‚É½Ã°ÄÒİÄ‚ğ‚Â‚Ã‚¯‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB
+SX_JUNK_AFTER_RBR [j  c0] å³ã‹ã£ã“ã®å¾Œã«ï½½ï¾ƒï½°ï¾„ï¾’ï¾ï¾„ã‚’ã¤ã¥ã‘ã¦ã¯ã„ã‘ã¾ã›ã‚“ã€‚
  The end of the statement is indicated by the closing right
  parenthesis but more characters were found on the line.
  Multiple statements per line are not allowed in FORTRAN 77.
 SX_NO_ASTERISK [   c1] expecting an asterisk
-SX_NO_ASTERISK [j  c1] ±½ÀØ½¸(*)‚ª•K—v‚Å‚·B
+SX_NO_ASTERISK [j  c1] ï½±ï½½ï¾€ï¾˜ï½½ï½¸(*)ãŒå¿…è¦ã§ã™ã€‚
  The next character of the statement should be an asterisk but another
  character was found instead.
 SX_NO_COLON [   c1] expecting colon
-SX_NO_COLON [j  c1] ºÛİ(:)‚ª•K—v‚Å‚·B
+SX_NO_COLON [j  c1] ï½ºï¾›ï¾(:)ãŒå¿…è¦ã§ã™ã€‚
  A colon (:) was expecting but not found.
  For example, the colon separating the low and high bounds of a
  character substring was not found.
 SX_NO_EOS_OR_COLON [   c2] expecting colon or end of statement
-SX_NO_EOS_OR_COLON [j  c2] §Œä•¶‚ÌI‚è‚ÉŠÖŒW‚Ì‚È‚¢‚à‚Ì‚ª‚ ‚è‚Ü‚·( : ‚©ÌŞÛ¯¸¥×ÍŞÙ‚ª•K—v‚Å‚·)B
+SX_NO_EOS_OR_COLON [j  c2] åˆ¶å¾¡æ–‡ã®çµ‚ã‚Šã«é–¢ä¿‚ã®ãªã„ã‚‚ã®ãŒã‚ã‚Šã¾ã™( : ã‹ï¾Œï¾ï¾›ï½¯ï½¸ï½¥ï¾—ï¾ï¾ï¾™ãŒå¿…è¦ã§ã™)ã€‚
  On a control statement, a word was found at the end of the statement
  that cannot be related to the statement.
  The last word on several of the control statements may be a block
  label.
  All block labels must be preceded by a colon (:).
 SX_MISSING_COMMA [   c1] missing comma
-SX_MISSING_COMMA [j  c1] ºİÏ‚ª‚ ‚è‚Ü‚¹‚ñB
+SX_MISSING_COMMA [j  c1] ï½ºï¾ï¾ãŒã‚ã‚Šã¾ã›ã‚“ã€‚
  A comma was expected and is missing.
  There must be a comma after the statement keyword AT END when a
  statement follows.
@@ -1957,85 +1768,85 @@ SX_MISSING_COMMA [j  c1] ºİÏ‚ª‚ ‚è‚Ü‚¹‚ñB
  and specification statements.
  A comma must occur between the specifiers in I/O statements.
 SX_EOS_EXPECTED [   c1] expecting end of statement
-SX_EOS_EXPECTED [j  c1] •¶‚ÌI‚è‚ÉŠÖŒW‚Ì‚È‚¢‚à‚Ì‚ª‚ ‚è‚Ü‚·(1s‚É1•¶‚µ‚©‘‚¯‚Ü‚¹‚ñ)B
+SX_EOS_EXPECTED [j  c1] æ–‡ã®çµ‚ã‚Šã«é–¢ä¿‚ã®ãªã„ã‚‚ã®ãŒã‚ã‚Šã¾ã™(1è¡Œã«1æ–‡ã—ã‹æ›¸ã‘ã¾ã›ã‚“)ã€‚
  The end of the statement was expected but more words were found on
  the line and cannot be associated to the statement.
  FORTRAN 77 only allows for one statement per line.
 SX_NO_INTEGER_VAR [   c2] expecting integer variable
-SX_NO_INTEGER_VAR [j  c2] ®”Œ^•Ï”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SX_NO_INTEGER_VAR [j  c2] æ•´æ•°å‹å¤‰æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The name indicated in the statement must be of type INTEGER but is
  not.
 SX_NO_NAME [   c2] expecting %s1 name
-SX_NO_NAME [j  c2] –¼‘O%s1‚ª‚±‚±‚É‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SX_NO_NAME [j  c2] åå‰%s1ãŒã“ã“ã«ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  A name with the characteristic %s1 was expected at the indicated place
  in the statement but is missing.
 SX_EXPECT_INT [   c2] expecting an integer
-SX_EXPECT_INT [j  c2] ®”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SX_EXPECT_INT [j  c2] æ•´æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The length specifier, as in the IMPLICIT statement, must be an
  integer constant or an integer constant expression.
  The repeat specifier of the value to be assigned to the variables, as
  in the DATA statement, must be an integer constant or an integer
  constant expression.
 SX_NO_NUMBER_VAR [   c2] expecting INTEGER, REAL, or DOUBLE PRECISION variable
-SX_NO_NUMBER_VAR [j  c2] ®”‚©À”‚©”{¸“xŒ^‚Ì•Ï”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SX_NO_NUMBER_VAR [j  c2] æ•´æ•°ã‹å®Ÿæ•°ã‹å€ç²¾åº¦å‹ã®å¤‰æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The indicated DO variable is not one of the types INTEGER, REAL, or
  DOUBLE PRECISION.
 SX_NO_OPR [   c1] missing operator
-SX_NO_OPR [j  c1] ‰‰Zq‚ª‚ ‚è‚Ü‚¹‚ñB
+SX_NO_OPR [j  c1] æ¼”ç®—å­ãŒã‚ã‚Šã¾ã›ã‚“ã€‚
  Two primaries were found in an expression and an operator was not
  found in between.
  A primary is an array element, constant, (expression), function name,
  or variable name.
 SX_NO_SLASH [   c1] expecting a slash
-SX_NO_SLASH [j  c1] ½×¯¼­(/)‚ª•K—v‚Å‚·B
+SX_NO_SLASH [j  c1] ï½½ï¾—ï½¯ï½¼ï½­(/)ãŒå¿…è¦ã§ã™ã€‚
  A slash is expected in the indicated place in the statement.
  Slashes must be balanced as parentheses.
  Slashes are used to enclose the initial data values in specification
  statements or to enclose names of COMMON blocks.
 SX_WRONG_TYPE [   c2] expecting %s1 expression
-SX_WRONG_TYPE [j  c2] À²Ìß%s1‚Ì®‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SX_WRONG_TYPE [j  c2] ï¾€ï½²ï¾Œï¾Ÿ%s1ã®å¼ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  An expression of type %s1 is required.
 SX_NOT_CONST_EXPR [   c2] expecting a constant expression
-SX_NOT_CONST_EXPR [j  c2] ’è”®‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SX_NOT_CONST_EXPR [j  c2] å®šæ•°å¼ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  A constant expression is required.
 SX_NOT_SIMPLE_NUMBER [   c2] expecting INTEGER, REAL, or DOUBLE PRECISION expression
-SX_NOT_SIMPLE_NUMBER [j  c2] ®”‚©À”‚©”{¸“x‚Ì”®‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SX_NOT_SIMPLE_NUMBER [j  c2] æ•´æ•°ã‹å®Ÿæ•°ã‹å€ç²¾åº¦ã®æ•°å¼ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  The indicated expression is not one of type INTEGER, REAL, or DOUBLE
  PRECISION.
  Each expression following the DO variable must be an expression of
  one of these types.
 SX_NUM_OR_LIT [   c2] expecting INTEGER or CHARACTER constant
-SX_NUM_OR_LIT [j  c2] ®”Œ^‚©•¶šŒ^’è”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SX_NUM_OR_LIT [j  c2] æ•´æ•°å‹ã‹æ–‡å­—å‹å®šæ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  In the PAUSE and STOP statement, the name following the keyword must
  be a constant of type INTEGER or of type CHARACTER.
  This constant will be printed on the console when the statement is
  executed.
 SX_SURP_OPR [   c1] unexpected operator
-SX_SURP_OPR [j  c1] —]•ª‚È‰‰Zq‚ª‚ ‚è‚Ü‚·B
+SX_SURP_OPR [j  c1] ä½™åˆ†ãªæ¼”ç®—å­ãŒã‚ã‚Šã¾ã™ã€‚
  An operand was expected but none was found.
  For example, in an I/O statement, the comma is used to separate I/O
  list items.
  Two consecutive commas without an I/O list item between them would
  result in this error.
 SX_QUOTE [   c2] no closing quote on literal string
-SX_QUOTE [j  c2] •¶š—ñ‚ğ•Â‚¶‚é‰E‚Ì(')ˆø—p•„‚ª‚ ‚è‚Ü‚¹‚ñB
+SX_QUOTE [j  c2] æ–‡å­—åˆ—ã‚’é–‰ã˜ã‚‹å³ã®(')å¼•ç”¨ç¬¦ãŒã‚ã‚Šã¾ã›ã‚“ã€‚
  The closing quote of a literal string was not found before the end of
  the statement.
 SX_CONST [   c2] missing or invalid constant
-SX_CONST [j  c2] ’è”‚ª–³‚¢‚©AŒ`®‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+SX_CONST [j  c2] å®šæ•°ãŒç„¡ã„ã‹ã€å½¢å¼ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  In a DATA statement, the constant required to initialize a variable
  was not found or incorrectly specified.
 SX_EXPECT_CHAR_CONST [   c2] expecting character constant
-SX_EXPECT_CHAR_CONST [j  c2] •¶šŒ^’è”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
+SX_EXPECT_CHAR_CONST [j  c2] æ–‡å­—å‹å®šæ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚
  A character constant is required.
 TY Type Statements
 TY_CHAR_BEFORE_PAREN [   c1] length specification before array declarator is not FORTRAN 77 standard
-TY_CHAR_BEFORE_PAREN [j  c1] ”z—ñéŒ¾q‚Ì‘O‚Ì’·‚³w’è‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+TY_CHAR_BEFORE_PAREN [j  c1] é…åˆ—å®£è¨€å­ã®å‰ã®é•·ã•æŒ‡å®šã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  An array declarator specified immediately after the length
  specification of the array is an extension to the FORTRAN 77
  language.
 TY_ILL_TYP_SIZE [   c2] %i1 is an illegal length for %s2 type
-TY_ILL_TYP_SIZE [j  c2] %i1‚Ì’·‚³w’è‚Í%s2Œ^‚É‘Î‚µ‚Ä³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
+TY_ILL_TYP_SIZE [j  c2] %i1ã®é•·ã•æŒ‡å®šã¯%s2å‹ã«å¯¾ã—ã¦æ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚
  The length specifier %d1 is not valid for the type %s2.
  For type LOGICAL, valid lengths are 1 and 4.
  For the type INTEGER, valid lengths are 1, 2, and 4.
@@ -2044,556 +1855,129 @@ TY_ILL_TYP_SIZE [j  c2] %i1‚Ì’·‚³w’è‚Í%s2Œ^‚É‘Î‚µ‚Ä³‚µ‚­‚ ‚è‚Ü‚¹‚ñB
  On the IBM PC, the length specifier for items of type CHARACTER must
  be greater than 0 and not exceed 65535.
 TY_LEN_SPEC [   c1] length specifier in %s1 statement is not FORTRAN 77 standard
-TY_LEN_SPEC [j  c1] %s1•¶‚Ì’·‚³w’è‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+TY_LEN_SPEC [j  c1] %s1æ–‡ã®é•·ã•æŒ‡å®šã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  A length specifier in certain type specification statements is an
  extension to the FORTRAN 77 language.
  These include: LOGICAL*1, LOGICAL*4, INTEGER*1, INTEGER*2, INTEGER*4,
  REAL*4, REAL*8, COMPLEX*8, and COMPLEX*16.
 TY_NOT_DBL_PREC [   c2] length specification not allowed with type %s1
-TY_NOT_DBL_PREC [j  c2] %s1À²Ìß‚Ì½Ã°ÄÒİÄ‚É’·‚³w’è‚Í‚¢‚è‚Ü‚¹‚ñB
+TY_NOT_DBL_PREC [j  c2] %s1ï¾€ï½²ï¾Œï¾Ÿã®ï½½ï¾ƒï½°ï¾„ï¾’ï¾ï¾„ã«é•·ã•æŒ‡å®šã¯ã„ã‚Šã¾ã›ã‚“ã€‚
  A length specification is not allowed in a DOUBLE PRECISION or
  DOUBLE COMPLEX statement.
 TY_TYP_PREV_DEF [   c2] type of %s1 has already been established as %s2
-TY_TYP_PREV_DEF [j  c2] %s1‚Í%s2‚Æ‚µ‚Ä’è‹`‚³‚ê‚Ä‚¢‚Ü‚·‚Ì‚ÅA•Ê‚È–¼‘O‚É•Ï‚¦‚Ä‚­‚¾‚³‚¢B
+TY_TYP_PREV_DEF [j  c2] %s1ã¯%s2ã¨ã—ã¦å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ã®ã§ã€åˆ¥ãªåå‰ã«å¤‰ãˆã¦ãã ã•ã„ã€‚
  The indicated name %s1 has already been declared to have a different
  type, namely %s2.
  The name %s1 cannot be used in this specification statement.
 TY_UNDECLARED [   c2] type of %s1 has not been declared
-TY_UNDECLARED [j  c2] IMPLICIT NONE‚Ì‚Í%s1‚ÌŒ^‚Í’è‹`‚µ‚Ä‚­‚¾‚³‚¢B
+TY_UNDECLARED [j  c2] IMPLICIT NONEã®æ™‚ã¯%s1ã®å‹ã¯å®šç¾©ã—ã¦ãã ã•ã„ã€‚
  The indicated name %s1 has not been declared.
  This message is only issued when the IMPLICIT NONE specification
  statement is used.
 TY_ILL_USE [   c2] %s1 of type %s2 is illegal in %s3 statement
-TY_ILL_USE [j  c2] %s2Œ^‚Å‚ ‚é%s1‚Í%s3•¶’†‚ÅŠÔˆá‚Á‚Äg‚í‚ê‚Ä‚¢‚Ü‚·B
+TY_ILL_USE [j  c2] %s2å‹ã§ã‚ã‚‹%s1ã¯%s3æ–‡ä¸­ã§é–“é•ã£ã¦ä½¿ã‚ã‚Œã¦ã„ã¾ã™ã€‚
  The symbol %s1 with type %s2 cannot be used in statement %s3.
  For example, a symbol of type STRUCTURE cannot be used in a PARAMETER
  statement.
-UV Undefined Variables
-UV_CH_ASGN_UNDEFINED [ w r0] substring (%u1:%u2) of expression on right side of equal sign is undefined
-UV_CH_ASGN_UNDEFINED [jw r0] =‚Ì‰E‘¤‚Ì®‚Ì•”•ª—ñ(%u1:%u2)‚É’l‚ª“ü‚Á‚Ä‚¢‚Ü‚¹‚ñB
- The substring (%d1:%d2) has been used on the right hand side of an
- expression and its value is undefined.
- A value must be assigned to the variable name or array element name
- before it can be used in an expression.
-UV_CH_FN_UNDEFINED [ w r0] substring (%u1:%u2) of return value of character function %s3 is undefined
-UV_CH_FN_UNDEFINED [jw r0] –ß‚Á‚½Œ‹‰Ê‚Ì•”•ª—ñ(%u1:%u2)[•¶šŠÖ”%s3‚©‚ç]‚Ì’†‚É’l‚ª“ü‚Á‚Ä‚¢‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñB
- The character function %s3 has been referenced and the function name
- has not been assigned a value in the function.
- The substring (%d1:%d2) does not have a value.
-UV_CH_REL_UNDEFINED [ w r0] substring (%u1:%u2) of an operand in a relational expression is undefined
-UV_CH_REL_UNDEFINED [jw r0] ŠÖŒW®‚Ì•”•ª—ñ(%u1:%u2)‚É’l‚ª“ü‚Á‚Ä‚¢‚Ü‚¹‚ñB
- The substring (%d1:%d2) has been used in a relational expression and
- has not previously been assigned a value.
-UV_IF_CHAR_ARG_UNDEFINED [ w r0] substring (%u1:%u2) of an argument to an intrinsic function is undefined
-UV_IF_CHAR_ARG_UNDEFINED [jw r0] ‘g‚İŠÖ”‚Ìˆø”‚Å‚ ‚é•”•ª—ñ(%u1:%u2)‚É’l‚ª“ü‚Á‚Ä‚¢‚Ü‚¹‚ñB
- The substring (%d1:%d2), which is an actual argument to an intrinsic
- function, does not have a value assigned to it.
-UV_UNDEFD [ w r0] the value of %s1 is undefined
-UV_UNDEFD [jw r0] %s1‚É’l‚ª“ü‚Á‚Ä‚¢‚Ü‚¹‚ñB
- The variable name %s1 has been used in a statement and a value has not
- yet been assigned to it.
- All variables must first be initialized through the use of statements
- or data initialization in specification statements.
-UV_ARG_UNDEFINED [ w r0] argument number %d1 passed to intrinsic function is undefined
-UV_ARG_UNDEFINED [jw r0] ‘g‚İŠÖ”‚Ì‘æ%d1”Ô–Ú‚Ìˆø”‚É’l‚ª“ü‚Á‚Ä‚¢‚Ü‚¹‚ñB
- The actual argument number %d1 does not have a value assigned to it.
 VA Variable Names
 VA_ILL_USE [   c2] illegal use of %s1 name %s2 in %s3 statement
-VA_ILL_USE [j  c2] %s1‚Æ’è‹`‚³‚ê‚½–¼‘O%s2‚Í%s3•¶‚Å‚Íg‚¦‚Ü‚¹‚ñB
+VA_ILL_USE [j  c2] %s1ã¨å®šç¾©ã•ã‚ŒãŸåå‰%s2ã¯%s3æ–‡ã§ã¯ä½¿ãˆã¾ã›ã‚“ã€‚
  The name %s2 has been defined as %s1 and cannot be used as a name in
  the statement %s3.
 VA_NAME_LEN_EXT [   c0] symbolic name %s1 is longer than 6 characters
-VA_NAME_LEN_EXT [j  c0] ¼İÎŞÙ–¼%s1‚É7•¶šˆÈãg‚¦‚é‚Ì‚Í•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+VA_NAME_LEN_EXT [j  c0] ï½¼ï¾ï¾ï¾ï¾™å%s1ã«7æ–‡å­—ä»¥ä¸Šä½¿ãˆã‚‹ã®ã¯æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  Symbolic names greater than 6 characters is an extension to the
  FORTRAN 77 language.
  The maximum length is 32 characters.
 VA_PREV_DEF_NAM [   c0] %s1 has already been defined as a %s2
-VA_PREV_DEF_NAM [j  c0] %s1‚Í‚·‚Å‚É%s2‚Æ‚µ‚Ä’è‹`‚³‚ê‚Ä‚¢‚Ü‚·B
+VA_PREV_DEF_NAM [j  c0] %s1ã¯ã™ã§ã«%s2ã¨ã—ã¦å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ã€‚
  The name %s1 has been previously defined as a %s2 in another
  statement and cannot be redefined as specified in the indicated
  statement.
 VA_UNDEFINED [   c0] %s1 %s2 has not been defined
-VA_UNDEFINED [j  c0] %s1‚Æ‚µ‚Ä%s2‚Íg‚í‚ê‚Ä‚¢‚Ü‚·‚ªA‚»‚Ì‚æ‚¤‚É’è‹`‚µ‚Ä‚­‚¾‚³‚¢B
+VA_UNDEFINED [j  c0] %s1ã¨ã—ã¦%s2ã¯ä½¿ã‚ã‚Œã¦ã„ã¾ã™ãŒã€ãã®ã‚ˆã†ã«å®šç¾©ã—ã¦ãã ã•ã„ã€‚
  The name %s2 has been referenced to be a %s1 but has not been defined
  as such in the program unit.
 VA_UNREFERENCED [   c0] %s1 is an unreferenced symbol
-VA_UNREFERENCED [j  c0] %s1‚Í’è‹`‚³‚ê‚Ü‚µ‚½‚ªg‚í‚ê‚Ä‚¢‚Ü‚¹‚ñB
+VA_UNREFERENCED [j  c0] %s1ã¯å®šç¾©ã•ã‚Œã¾ã—ãŸãŒä½¿ã‚ã‚Œã¦ã„ã¾ã›ã‚“ã€‚
  The name %s1 has been defined but not referenced.
 VA_SAME_NAMELIST [   c2] %s1 already belongs to this NAMELIST group
-VA_SAME_NAMELIST [j  c2] %s1‚ÍŠù‚É‚±‚ÌNAMELIST¸ŞÙ°Ìß‚É‘®‚µ‚Ä‚¢‚Ü‚·B
+VA_SAME_NAMELIST [j  c2] %s1ã¯æ—¢ã«ã“ã®NAMELISTï½¸ï¾ï¾™ï½°ï¾Œï¾Ÿã«å±ã—ã¦ã„ã¾ã™ã€‚
  The name %s1 can only appear in a NAMELIST group once.
  However, a name can belong to multiple NAMELIST groups.
 VA_USED_NOT_DEFINED [   c0] %s1 has been used but not defined
-VA_USED_NOT_DEFINED [j  c0] %s1‚ªg‚í‚ê‚Ü‚µ‚½‚ªA’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
+VA_USED_NOT_DEFINED [j  c0] %s1ãŒä½¿ã‚ã‚Œã¾ã—ãŸãŒã€å®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚
  %s1 has not been defined before using it in a way that requires its
  definition.
  Note that symbols that are equivalenced, belong to a common block, are
  dummy arguments, or passed as an argument to a subprogram, will not be
  checked to ensure that they have been defined before requiring a value.
 VA_ALLOCATABLE_STORAGE [   c2] dynamically allocating %s1 is not FORTRAN 77 standard
-VA_ALLOCATABLE_STORAGE [j  c2] “®“I‚ÉŠ„‚è“–‚Ä‚Ä‚¢‚é%s1‚ÍFORTRAN 77‚Ì•W€‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
+VA_ALLOCATABLE_STORAGE [j  c2] å‹•çš„ã«å‰²ã‚Šå½“ã¦ã¦ã„ã‚‹%s1ã¯FORTRAN 77ã®æ¨™æº–ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
  Allocatable storage are extensions to the FORTRAN 77 standard.
 VA_BAD_SYM_IN_NAMELIST [   c0] %s1 in NAMELIST %s2 is illegal
-VA_BAD_SYM_IN_NAMELIST [j  c0] NAMELIST %s2‚Ì’†‚Ì%s1‚Í•s³‚Å‚·B
+VA_BAD_SYM_IN_NAMELIST [j  c0] NAMELIST %s2ã®ä¸­ã®%s1ã¯ä¸æ­£ã§ã™ã€‚
  Symbol %s1 appearing in NAMELIST %s2 is illegal.
  Symbols appearing in a NAMELIST cannot be dummy arguments, allocatable, or of
  a user-defined type.
 MS Additional Messages
-MS_USAGE_LINE [ o c0] Usage: %s1 {- or /<option>} <file-spec> {- or /<option>}
-MS_USAGE_LINE [jo c0] g—p•û–@: %s1 {- or /<option>} <file-spec> {- or /<option>}
-MS_USAGE_LINE [ w c0] Usage: %s1 {- or /<option>} <file-spec> {- or /<option>} {<prog-parm>}
-MS_USAGE_LINE [jw c0] g—p•û–@: %s1 {- or /<option>} <file-spec> {- or /<option>} {<prog-parm>}
-MS_OPT_LIST [ . c0] generate a listing file
-MS_OPT_LIST [j. c0] Ø½ÄÌ§²Ù‚Ì¶¬
-MS_OPT_PRINT [ . c0] listing file to printer
-MS_OPT_PRINT [j. c0] Ø½ÄÌ§²Ù‚ğÌßØİÀ°‚Éo—Í
-MS_OPT_TYPE [ . c0] listing file to terminal
-MS_OPT_TYPE [j. c0] Ø½ÄÌ§²Ù‚ğ‰æ–Ê‚Éo—Í
-MS_OPT_DISK [ . c0] listing file to disk
-MS_OPT_DISK [j. c0] Ø½ÄÌ§²Ù‚ğÃŞ¨½¸‚Éo—Í
-MS_OPT_ERRFILE [ . c0] generate an error file
-MS_OPT_ERRFILE [j. c0] ´×°Ì§²Ù‚Ì¶¬
-MS_OPT_EXT [ . c0] issue extension messages
-MS_OPT_EXT [j. c0] Šg’£Ò¯¾°¼Ş‚Ìo—Í
-MS_OPT_REFERENCE [ . c0] issue unreferenced warning
-MS_OPT_REFERENCE [j. c0] –¢QÆŒx´×°‚Ìo—Í
-MS_OPT_WARN [ . c0] issue warning messages
-MS_OPT_WARN [j. c0] Œx´×°Ò¯¾°¼Ş‚Ìo—Í
-MS_OPT_SHORT [ . c0] INTEGER/LOGICAL size 2/1
-MS_OPT_SHORT [j. c0] INTEGER/LOGICAL ‚Ì‘å‚«‚³‚Í 2/1
-MS_OPT_INCLIST [ . c0] list INCLUDE files
-MS_OPT_INCLIST [j. c0] INCLUDE Ì§²Ù‚ÌØ½Ä
-MS_OPT_TERM [ . c0] display diagnostic messages
-MS_OPT_TERM [j. c0] f’fÒ¯¾°¼Ş‚Ì•\¦
-MS_OPT_EXPLICIT [ . c0] explicit typing required
-MS_OPT_EXPLICIT [j. c0] –¾¦“I‚ÈŒ^‚ª•K—v
-MS_OPT_XLINE [ . c0] extend line length
-MS_OPT_XLINE [j. c0] s‚Ì’·‚³‚ğŠg’£
-MS_OPT_DEBUG [ w c0] invoke run-time debugger
-MS_OPT_DEBUG [jw c0] ×İÀ²ÑÃŞÊŞ¯¶Ş‚Ì‹N“®
-MS_OPT_DEBUG [ c c0] /trace /bounds
-MS_OPT_DEBUG [jc c0] /trace /bounds
-MS_OPT_DEFINE [ . c0] define macro
-MS_OPT_DEFINE [j. c0] Ï¸Û’è‹`
-MS_OPT_EXTEND_FORMAT [ . c0] relax FORMAT type checking
-MS_OPT_EXTEND_FORMAT [j. c0] FORMAT À²ÌßÁª¯¸‚ÌŠÉ˜a
-MS_OPT_WILD [ . c0] relax wild branch checking
-MS_OPT_WILD [j. c0] Ü²ÙÄŞÌŞ×İÁÁª¯¸‚ÌŠÉ˜a
-MS_OPT_OBJECT [ w c0] generate object code
-MS_OPT_OBJECT [jw c0] µÌŞ¼Şª¸Äº°ÄŞ‚Ì¶¬
-MS_OPT_EDIT [ w c0] use editor interface
-MS_OPT_EDIT [jw c0] ´ÃŞ¨À°²İÀ°Ìª°½‚Ìg—p
-MS_OPT_LINK [ w c0] generate an executable
-MS_OPT_LINK [jw c0] ÀsÌ§²Ù‚Ì¶¬
-MS_OPT_RUN [ w c0] run the executable file
-MS_OPT_RUN [jw c0] ÀsÌ§²Ù‚Ì‹N“®
-MS_OPT_XTYPE [ w c0] unit 6 output to terminal
-MS_OPT_XTYPE [jw c0] ‘•’u6 ‚Í’[––‚ÉÚ‘±
-MS_OPT_LOG_IO [ w c0] log unit *
-MS_OPT_LOG_IO [jw c0] log unit *
-MS_OPT_CHECK [ w c0] undefined variable checking
-MS_OPT_CHECK [jw c0] –¢’è‹`•Ï”‚ÌÁª¯¸
-MS_OPT_ARRCHECK [ w c0] array type checking
-MS_OPT_ARRCHECK [jw c0] ”z—ñÀ²Ìß‚ÌÁª¯¸
-MS_OPT_ST_LIM [ w c0] statement limit
-MS_OPT_ST_LIM [jw c0] •¶ØĞ¯Ä
-MS_OPT_PG_LIM [ w c0] page limit
-MS_OPT_PG_LIM [jw c0] Íß°¼ŞØĞ¯Ä
-MS_OPT_TM_LIM [ w c0] time limit
-MS_OPT_TM_LIM [jw c0] À²ÑØĞ¯Ä
-MS_OPT_MM_LIM [ w c0] code size limit
-MS_OPT_MM_LIM [jw c0] º°ÄŞ»²½ŞØĞ¯Ä
-MS_OPT_PAGE_SIZE [ w c0] number of lines per page
-MS_OPT_PAGE_SIZE [jw c0] 1Íß°¼Ş‚ ‚½‚è‚Ìs”
-MS_OPT_MATH_INT_OVER [ w c0] report integer overflows
-MS_OPT_MATH_INT_OVER [jw c0] ®”µ°ÊŞ°ÌÛ°‚Ì•ñ
-MS_OPT_MATH_FLT_OVER [ w c0] report float-pt. overflows
-MS_OPT_MATH_FLT_OVER [jw c0] •‚“®¬”“_µ°ÊŞ°ÌÛ°‚Ì•ñ
-MS_OPT_MATH_FLT_UNDER [ w c0] report float-pt. underflows
-MS_OPT_MATH_FLT_UNDER [jw c0] •‚“®¬”“_±İÀŞ°ÌÛ°‚Ì•ñ
-MS_OPT_SYNTAX [ c c0] syntax check only
-MS_OPT_SYNTAX [jc c0] •¶–@Áª¯¸‚Ì‚İ
-MS_OPT_DFLT_LIB [ c c0] generate default libraries
-MS_OPT_DFLT_LIB [jc c0] ÃŞÌ«ÙÄ×²ÌŞ×Ø‚Ì¶¬
-MS_CPUOPT_FPC [ c8c0] floating-point calls
-MS_CPUOPT_FPC [jc8c0] •‚“®¬”“_ŒÄ‚Ño‚µ
-MS_CPUOPT_FPI [ c8c0] emulate 80x87 instructions
-MS_CPUOPT_FPI [jc8c0] 80x87 –½—ß‚Ì´Ğ­Ú°Ä
-MS_CPUOPT_FPI87 [ c8c0] in-line 80x87 instructions
-MS_CPUOPT_FPI87 [jc8c0] 80x87 ²İ×²İ–½—ß
-MS_CPUOPT_FP287 [ c8c0] 80287 instructions
-MS_CPUOPT_FP287 [jc8c0] 80287 –½—ß
-MS_CPUOPT_FP387 [ c8c0] 80387 instructions
-MS_CPUOPT_FP387 [jc8c0] 80387 –½—ß
-MS_CPUOPT_FP5 [ c8c0] /fp3 optimized for Pentium
-MS_CPUOPT_FP5 [jc8c0] Pentium—pÅ“K‰»‚ğ‚·‚é/fp3µÌß¼®İ
-MS_CPUOPT_FPR [ c8c0] 80x87 reverse compatibility
-MS_CPUOPT_FPR [jc8c0] 80x87 ØÊŞ°½ŒİŠ·
-MS_CGOPT_DB_LINE [ c c0] line # debugging information
-MS_CGOPT_DB_LINE [jc c0] line # ÃŞÊŞ¯¸Şî•ñ
-MS_CGOPT_DB_LOCALS [ c c0] full debugging information
-MS_CGOPT_DB_LOCALS [jc c0] ‘S‚Ä‚ÌÃŞÊŞ¯¸Şî•ñ
-MS_OZOPT_O_BASE_PTR [ c3c0] base pointer optimizations
-MS_OZOPT_O_BASE_PTR [jc3c0] ÍŞ°½Îß²İÀ‚ÌÅ“K‰»
-MS_OZOPT_O_CALL_RET [ c c0] no call-ret optimizations
-MS_OZOPT_O_CALL_RET [jc c0] call-ret‚ÌÅ“K‰»‚È‚µ
-MS_OZOPT_O_DISABLE [ c c0] disable optimizations
-MS_OZOPT_O_DISABLE [jc c0] Å“K‰»‚Ì‹Ö~
-MS_OZOPT_O_NEED_FRAME [ c8c0] no stack frame optimizations
-MS_OZOPT_O_NEED_FRAME [jc8c0] ½À¯¸ÌÚ°Ñ‚ÌÅ“K‰»‚È‚µ
-MS_OZOPT_O_INLINE [ c c0] statement functions in-line
-MS_OZOPT_O_INLINE [jc c0] ²İ×²İ•¶ŠÖ”
-MS_OZOPT_O_LOOP [ c c0] loop optimizations
-MS_OZOPT_O_LOOP [jc c0] Ù°Ìß‚ÌÅ“K‰»
-MS_OZOPT_O_MATH [ c c0] math optimizations
-MS_OZOPT_O_MATH [jc c0] ”Šw“IÅ“K‰»
-MS_OZOPT_O_NUMERIC [ c c0] numerical optimizations
-MS_OZOPT_O_NUMERIC [jc c0] ”’l‚ÌÅ“K‰»
-MS_OZOPT_O_VOLATILE [ c c0] precision optimizations
-MS_OZOPT_O_VOLATILE [jc c0] ¸“x‚ÌÅ“K‰»
-MS_OZOPT_O_INSSCHED [ c c0] instruction scheduling
-MS_OZOPT_O_INSSCHED [jc c0] –½—ß½¹¼Ş­°Øİ¸Ş
-MS_OZOPT_O_SPACE [ c c0] space optimizations
-MS_OZOPT_O_SPACE [jc c0] »²½Ş‚ÌÅ“K‰»
-MS_OZOPT_O_TIME [ c c0] time optimizations
-MS_OZOPT_O_TIME [jc c0] ŠÔ‚ÌÅ“K‰»
-MS_OZOPT_O_X [ c3c0] /o[b,bp,i,k,l,m,r,t,do]
-MS_OZOPT_O_X [jc3c0] /o[b,bp,i,k,l,m,r,t,do]
-MS_OZOPT_O_X [ cic0] /o[bp,i,l,k,m,r,t,do]
-MS_OZOPT_O_X [jcic0] /o[bp,i,l,k,m,r,t,do]
-MS_OZOPT_O_X [ crc0] /o[bp,i,l,k,m,r,t,do]
-MS_OZOPT_O_X [jcrc0] /o[bp,i,l,k,m,r,t,do]
-MS_CGOPT_STACK_CHK [ c c0] stack checking
-MS_CGOPT_STACK_CHK [jc c0] ½À¯¸Áª¯¸
-MS_CGOPT_DATA_THRESH [ c c0] set data threshold
-MS_CGOPT_DATA_THRESH [jc c0] ÃŞ°À½Ú¯¼®ÙÄŞ‚Ìİ’è
-MS_OPT_AUTOMATIC [ c c0] local variables on the stack
-MS_OPT_AUTOMATIC [jc c0] ½À¯¸ã‚ÌÛ°¶Ù•Ï”
-MS_OPT_DESCRIPTOR [ c c0] pass character descriptors
-MS_OPT_DESCRIPTOR [jc c0] •¶šw¦q“n‚µ
-MS_OPT_SAVE [ c c0] SAVE local variables
-MS_OPT_SAVE [jc c0] Û°¶Ù•Ï”‚ğ‘Ò”ğ(SAVE•¶‚Æ“¯‚¶)
-MS_CGOPT_OBJ_NAME [ c c0] name object file
-MS_CGOPT_OBJ_NAME [jc c0] µÌŞ¼Şª¸ÄÌ§²Ù–¼‚Ìw’è
-MS_CGOPT_CONST_CODE [ c8c0] constants in code segment
-MS_CGOPT_CONST_CODE [jc8c0] º°ÄŞ¾¸ŞÒİÄ“à‚Ì’è”
-MS_CGOPT_M_MEDIUM [ cic0] medium memory model
-MS_CGOPT_M_MEDIUM [jcic0] ĞÃŞ¨±ÑÒÓØÓÃŞÙ
-MS_CGOPT_M_LARGE [ cic0] large memory model
-MS_CGOPT_M_LARGE [jcic0] ×°¼ŞÒÓØÓÃŞÙ
-MS_CGOPT_M_HUGE [ cic0] huge memory model
-MS_CGOPT_M_HUGE [jcic0] Ë­°¼ŞÒÓØÓÃŞÙ
-MS_CPUOPT_8086 [ cic0] assume 8086 processor
-MS_CPUOPT_8086 [jcic0] 8086 ÌßÛ¾¯»–½—ß‚ğg—p
-MS_CPUOPT_80186 [ cic0] assume 80186 processor
-MS_CPUOPT_80186 [jcic0] 80186 ÌßÛ¾¯»–½—ß‚ğg—p
-MS_CPUOPT_80286 [ cic0] assume 80286 processor
-MS_CPUOPT_80286 [jcic0] 80286 ÌßÛ¾¯»–½—ß‚ğg—p
-MS_CGOPT_STK_ARGS [ c3c0] stack calling convention
-MS_CGOPT_STK_ARGS [jc3c0] ½À¯¸ŒÄ‚Ño‚µ‹K–ñ
-MS_CGOPT_EZ_OMF [ c3c0] Easy OMF-386 object files
-MS_CGOPT_EZ_OMF [jc3c0] Easy OMF-386 µÌŞ¼Şª¸ÄÌ§²Ù
-MS_CGOPT_BW [ c c0] default windowed application
-MS_CGOPT_BW [jc c0] ÃŞÌ«ÙÄ³¨İÄŞ³±ÌßØ¹°¼®İ
-MS_CGOPT_BM [ c3c0] multithread application
-MS_CGOPT_BM [jc3c0] ÏÙÁ½Ú¯ÄŞ±ÌßØ¹°¼®İ
-MS_CGOPT_BM [ crc0] multithread application
-MS_CGOPT_BM [jcrc0] ÏÙÁ½Ú¯ÄŞ±ÌßØ¹°¼®İ
-MS_CGOPT_BD [ c3c0] dynamic link library
-MS_CGOPT_BD [jc3c0] ÀŞ²ÅĞ¯¸Øİ¸×²ÌŞ×Ø
-MS_CGOPT_BD [ crc0] dynamic link library
-MS_CGOPT_BD [jcrc0] ÀŞ²ÅĞ¯¸Øİ¸×²ÌŞ×Ø
-MS_CGOPT_STACK_GROW [ c3c0] automatic stack growing
-MS_CGOPT_STACK_GROW [jc3c0] ½À¯¸‚Ì©“®L’£
-MS_CGOPT_M_FLAT [ c3c0] flat memory model
-MS_CGOPT_M_FLAT [jc3c0] Ì×¯ÄÒÓØÓÃŞÙ
-MS_CGOPT_M_SMALL [ c3c0] small memory model
-MS_CGOPT_M_SMALL [jc3c0] ½Ó°ÙÒÓØÓÃŞÙ
-MS_CGOPT_M_COMPACT [ c3c0] compact memory model
-MS_CGOPT_M_COMPACT [jc3c0] ºİÊß¸ÄÒÓØÓÃŞÙ
-MS_CGOPT_M_MEDIUM [ c3c0] medium memory model
-MS_CGOPT_M_MEDIUM [jc3c0] ĞÃŞ¨±ÑÒÓØÓÃŞÙ
-MS_CGOPT_M_LARGE [ c3c0] large memory model
-MS_CGOPT_M_LARGE [jc3c0] ×°¼ŞÒÓØÓÃŞÙ
-MS_CPUOPT_80386 [ c8c0] assume 80386 processor
-MS_CPUOPT_80386 [jc8c0] 80386 ÌßÛ¾¯»–½—ß‚ğg—p
-MS_CPUOPT_80486 [ c8c0] /3 optimized for 80486
-MS_CPUOPT_80486 [jc8c0] 80486—pÅ“K‰»‚ğ‚·‚é/3µÌß¼®İ
-MS_CPUOPT_80586 [ c8c0] /3 optimized for Pentium
-MS_CPUOPT_80586 [jc8c0] Pentium—pÅ“K‰»‚ğ‚·‚é/3µÌß¼®İ
-MS_CGOPT_SEG_REGS [ c8c0] save/restore segment regs
-MS_CGOPT_SEG_REGS [jc8c0] ¾¸ŞÒİÄÚ¼Ş½À‚Ì‘Ò”ğ/•œ‹A
-MS_CGOPT_FS_FLOATS [ c8c0] FS not fixed
-MS_CGOPT_FS_FLOATS [jc8c0] FS‚ğŒÅ’è‚µ‚È‚¢
-MS_CGOPT_GS_FLOATS [ c8c0] GS not fixed
-MS_CGOPT_GS_FLOATS [jc8c0] GS‚ğŒÅ’è‚µ‚È‚¢
-MS_CGOPT_SS_FLOATS [ cic0] SS not default data segment
-MS_CGOPT_SS_FLOATS [jcic0] SS‚ÍÃŞÌ«ÙÄ‚ÌÃŞ°À¾¸ŞÒİÄ‚Å‚È‚¢
-MS_CGOPT_WINDOWS [ c8c0] generate code for Windows
-MS_CGOPT_WINDOWS [jc8c0] ³¨İÄŞ³½Ş—pº°ÄŞ¶¬
 MS_STRUCT_DEFN [   c0] structure definition
-MS_STRUCT_DEFN [j  c0] \‘¢‘Ì’è‹`
+MS_STRUCT_DEFN [j  c0] æ§‹é€ ä½“å®šç¾©
 MS_GROUP_NAME [   c0] group name
-MS_GROUP_NAME [j  c0] ¸ŞÙ°Ìß–¼
+MS_GROUP_NAME [j  c0] ï½¸ï¾ï¾™ï½°ï¾Œï¾Ÿå
 MS_STMT_FUNC [   c0] statement function
-MS_STMT_FUNC [j  c0] •¶ŠÖ”
+MS_STMT_FUNC [j  c0] æ–‡é–¢æ•°
 MS_STMT_FUNC_DEFN [   c0] statement function definition
-MS_STMT_FUNC_DEFN [j  c0] •¶ŠÖ”’è‹`
+MS_STMT_FUNC_DEFN [j  c0] æ–‡é–¢æ•°å®šç¾©
 MS_SIMP_VAR [   c0] simple variable
-MS_SIMP_VAR [j  c0] ’Pƒ•Ï”
+MS_SIMP_VAR [j  c0] å˜ç´”å¤‰æ•°
 MS_COM_VAR [   c0] variable in COMMON
-MS_COM_VAR [j  c0] COMMON“à•Ï”
+MS_COM_VAR [j  c0] COMMONå†…å¤‰æ•°
 MS_EQUIV_VAR [   c0] equivalenced variable
-MS_EQUIV_VAR [j  c0] “™‰¿•Ï”
+MS_EQUIV_VAR [j  c0] ç­‰ä¾¡å¤‰æ•°
 MS_SP_ARG [   c0] subprogram argument
-MS_SP_ARG [j  c0] •›ÌßÛ¸Ş×Ñˆø”
+MS_SP_ARG [j  c0] å‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘å¼•æ•°
 MS_SF_ARG [   c0] statement function argument
-MS_SF_ARG [j  c0] •¶ŠÖ”ˆø”
+MS_SF_ARG [j  c0] æ–‡é–¢æ•°å¼•æ•°
 MS_ARRAY [   c0] array
-MS_ARRAY [j  c0] ”z—ñ
+MS_ARRAY [j  c0] é…åˆ—
 MS_ALLOC_ARRAY [   c0] allocated array
-MS_ALLOC_ARRAY [j  c0] Š„‚è“–‚Ä‚ç‚ê‚½”z—ñ
+MS_ALLOC_ARRAY [j  c0] å‰²ã‚Šå½“ã¦ã‚‰ã‚ŒãŸé…åˆ—
 MS_VAR_ARR [   c0] variable or array
-MS_VAR_ARR [j  c0] •Ï”‚Ü‚½‚Í”z—ñ
+MS_VAR_ARR [j  c0] å¤‰æ•°ã¾ãŸã¯é…åˆ—
 MS_INTR_FUNC [   c0] intrinsic function
-MS_INTR_FUNC [j  c0] ‘g‚İ‚İŠÖ”
+MS_INTR_FUNC [j  c0] çµ„ã¿è¾¼ã¿é–¢æ•°
 MS_EXT_PROC [ o c0] external subprogram
-MS_EXT_PROC [jo c0] ŠO•”•›ÌßÛ¸Ş×Ñ
-MS_EXT_PROC [ w  0] external subprogram
-MS_EXT_PROC [jw  0] ŠO•”•›ÌßÛ¸Ş×Ñ
+MS_EXT_PROC [jo c0] å¤–éƒ¨å‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘
 MS_ASSIGN [   c0] assignment
-MS_ASSIGN [j  c0] ‘ã“ü
+MS_ASSIGN [j  c0] ä»£å…¥
 MS_ARITH_IF [   c0] arithmetic if
-MS_ARITH_IF [j  c0] Zp if
+MS_ARITH_IF [j  c0] ç®—è¡“ if
 MS_AT_EOSTMT [   c0] at end of statement,
-MS_AT_EOSTMT [j  c0] •¶‚ÌI‚í‚è,
+MS_AT_EOSTMT [j  c0] æ–‡ã®çµ‚ã‚ã‚Š,
 MS_DEF_SPROG [   c0] Defining subprogram: %s1; first ISN is %u2
-MS_DEF_SPROG [j  c0] •›ÌßÛ¸Ş×Ñ‚Ì’è‹`: %s1; n‚ß‚ÌISN‚Í %u2
+MS_DEF_SPROG [j  c0] å‰¯ï¾Œï¾Ÿï¾›ï½¸ï¾ï¾—ï¾‘ã®å®šç¾©: %s1; å§‹ã‚ã®ISNã¯ %u2
 MS_LIB_MEMBER [   c0] library member %s1,
-MS_LIB_MEMBER [j  c0] ×²ÌŞ×ØÒİÊŞ° %s1,
+MS_LIB_MEMBER [j  c0] ï¾—ï½²ï¾Œï¾ï¾—ï¾˜ï¾’ï¾ï¾Šï¾ï½° %s1,
 MS_COLUMN [   c0] column %d1,
-MS_COLUMN [j  c0] ¶×Ñ %d1,
+MS_COLUMN [j  c0] ï½¶ï¾—ï¾‘ %d1,
 MS_IN [   c0] in %s1,
 MS_IN [j  c0] in %s1,
-MS_NO_EDITOR [ w c0] Unable to start editor
-MS_NO_EDITOR [jw c0] ´ÃŞ¨À°‚ª‹N“®‚Å‚«‚Ü‚¹‚ñ
-MS_WATFOR_EXIT [ w c0] To exit, press Ctrl/Z and then press Enter
-MS_WATFOR_EXIT [jw c0] Ctrl/Z‚ğ‰Ÿ‚µ‚Ä‰üs‚·‚é‚ÆI—¹‚µ‚Ü‚·B
-MS_CANT_EXEC [ w c0] unable to execute command
-MS_CANT_EXEC [jw c0] ºÏİÄŞ‚ªÀs‚Å‚«‚Ü‚¹‚ñB
 MS_STATISTICS [   c0] %d1 statements, %i2 bytes, %d3 extensions, %d4 warnings, %d5 errors
-MS_STATISTICS [j  c0] %d1 ½Ã°ÄÒİÄ, %i2 ÊŞ²Ä, %d3 Šg’£Ò¯¾°¼Ş, %d4 Œx´×°, %d5 ´×°
+MS_STATISTICS [j  c0] %d1 ï½½ï¾ƒï½°ï¾„ï¾’ï¾ï¾„, %i2 ï¾Šï¾ï½²ï¾„, %d3 æ‹¡å¼µï¾’ï½¯ï½¾ï½°ï½¼ï¾, %d4 è­¦å‘Šï½´ï¾—ï½°, %d5 ï½´ï¾—ï½°
 MS_CODE_SIZE [   c0] Code size (in bytes):
-MS_CODE_SIZE [j  c0] º°ÄŞ»²½Ş (ÊŞ²Ä):
+MS_CODE_SIZE [j  c0] ï½ºï½°ï¾„ï¾ï½»ï½²ï½½ï¾ (ï¾Šï¾ï½²ï¾„):
 MS_NUMBER_OF_ERRORS [   c0] Number of errors:
-MS_NUMBER_OF_ERRORS [j  c0] ´×°”:
+MS_NUMBER_OF_ERRORS [j  c0] ï½´ï¾—ï½°æ•°:
 MS_COMPILE_TIME [   c0] Compile time (in seconds):
-MS_COMPILE_TIME [j  c0] ºİÊß²ÙŠÔ (•b):
+MS_COMPILE_TIME [j  c0] ï½ºï¾ï¾Šï¾Ÿï½²ï¾™æ™‚é–“ (ç§’):
 MS_NUMBER_OF_WARNINGS [   c0] Number of warnings:
-MS_NUMBER_OF_WARNINGS [j  c0] Œx´×°”:
+MS_NUMBER_OF_WARNINGS [j  c0] è­¦å‘Šï½´ï¾—ï½°æ•°:
 MS_NUMBER_OF_STATEMENTS [ o c0] Number of statements compiled:
-MS_NUMBER_OF_STATEMENTS [jo c0] ºİÊß²Ù‚³‚ê‚½•¶‚Ì”:
+MS_NUMBER_OF_STATEMENTS [jo c0] ï½ºï¾ï¾Šï¾Ÿï½²ï¾™ã•ã‚ŒãŸæ–‡ã®æ•°:
 MS_NUMBER_OF_EXTENSIONS [   c0] Number of extensions:
-MS_NUMBER_OF_EXTENSIONS [j  c0] Šg’£d—l‚Ìg—p”:
+MS_NUMBER_OF_EXTENSIONS [j  c0] æ‹¡å¼µä»•æ§˜ã®ä½¿ç”¨æ•°:
 MS_TRACE_INFO [   r0] - Executing line %u1 in file %s2
-MS_TRACE_INFO [j  r0] - Às×²İ %u1 Ì§²Ù %s2
+MS_TRACE_INFO [j  r0] - å®Ÿè¡Œï¾—ï½²ï¾ %u1 ï¾Œï½§ï½²ï¾™ %s2
 MS_CALLED_FROM [   r0] - Called from line %u1 in file %s2
-MS_CALLED_FROM [j  r0] - %s2 Ì§²Ù, %u1 s‚©‚ç‚ÌŒÄ‚Ño‚µ
-MS_ERR_WRT_LST [ w r0] error writing to listing file - %s1
-MS_ERR_WRT_LST [jw r0] Ø½ÄÌ§²Ù‚Ö‚Ì‘‚«‚İ´×° - %s1
-MS_EXEC_IN [ w r0] - Executing in
-MS_EXEC_IN [jw r0] - Às’† 
-MS_CALLED_FROM_LG [ w r0] - Called from
-MS_CALLED_FROM_LG [jw r0] - ŒÄ‚Ño‚µ 
-MS_TB_LIBRARY [ w r0] %s1, statement %u2 in library member %s3
-MS_TB_LIBRARY [jw r0] %s1, ½Ã°ÄÒİÄ %u2 ×²ÌŞ×Ø”Ô† %s3
-MS_TB_FILE [ w r0] %s1, statement %u2 in file %s3
-MS_TB_FILE [jw r0] %s1, ½Ã°ÄÒİÄ %u2 Ì§²Ù %s3
-MS_INTERRUPT_PROMPT [ w r0] Do you really want to stop (y/n)?
-MS_INTERRUPT_PROMPT [jw r0] ’†~‚µ‚Ü‚·‚© (y/n)?
-MS_NO_8087 [ w r0] *ERR* math coprocessor is not present\r\n
-MS_NO_8087 [jw r0] *ERR* ”’l‰‰ZºÌßÛ¾¯»‚ª‚ ‚è‚Ü‚¹‚ñB\r\n
-MS_DB_BAD_ISN [ w r0] invalid ISN
-MS_DB_BAD_ISN [jw r0] ISN‚ª–³Œø‚Å‚·B
-MS_DB_ENTERED [ w r0] Debugger entered at %s1
-MS_DB_ENTERED [jw r0] %s1‚ÅÃŞÊŞ¯¶Ş‚É“ü‚è‚Ü‚µ‚½B
-MS_DB_BREAK [ w r0] Breakpoint set at %d1
-MS_DB_BREAK [jw r0] %d1‚ÉÌŞÚ°¸Îß²İÄ‚ğİ’è‚µ‚Ü‚·B
-MS_DB_RET_FROM [ w r0] Returned from %s1
-MS_DB_RET_FROM [jw r0] %s1‚©‚ç–ß‚è‚Ü‚µ‚½B
-MS_DB_TRACE_INSTR [ w r0] Into[I key] Over[space bar] Next[N key] Exit[Enter key]
-MS_DB_TRACE_INSTR [jw r0] ½Ã¯Ìß²İ[I key] ½Ã¯Ìßµ°ÊŞ°[space bar] Ÿs[N key] I—¹[Enter key]
-MS_DB_VAR_NOT_FOUND [ w r0] variable not found
-MS_DB_VAR_NOT_FOUND [jw r0] •Ï”‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB
-MS_DB_ARR_NOT_DIMMED [ w r0] array dimensions not yet established
-MS_DB_ARR_NOT_DIMMED [jw r0] ”z—ñ‚ÌŸŒ³‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB
-MS_DB_SYNTAX_ERR [ w r0] not understood
-MS_DB_SYNTAX_ERR [jw r0] ¼İÀ¯¸½´×°‚Å‚·B
-MS_DB_SSTR_BAD [ w r0] invalid substring list
-MS_DB_SSTR_BAD [jw r0] •”•ª•¶š—ñ‚ª–³Œø‚Å‚·B
-MS_DB_SSCR_BAD [ w r0] invalid subscript list
-MS_DB_SSCR_BAD [jw r0] “Y‚¦š‚ª–³Œø‚Å‚·B
-MS_DB_BAD_UNIT [ w r0] unit not found
-MS_DB_BAD_UNIT [jw r0] ‘•’u‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB
-MS_DB_NO_LISTING_FILE [ w r0] unable to open listing file
-MS_DB_NO_LISTING_FILE [jw r0] Ø½ÄÌ§²Ù‚ªµ°Ìßİ‚Å‚«‚Ü‚¹‚ñB
-MS_DB_HELP_1 [ w r0] Breakpoint[/c] [<isn>].....show/set/clear breakpoint
-MS_DB_HELP_1 [jw r0] Breakpoint[/c] [<isn>].....show/set/clear ÌŞÚ°¸Îß²İÄ
-MS_DB_HELP_2 [ w r0] Display [*|<isn>[:<isn>]]..display source
-MS_DB_HELP_2 [jw r0] Display [*|<isn>[:<isn>]]..¿°½º°ÄŞ‚Ì•\¦
-MS_DB_HELP_3 [ w r0] Go [<isn>].................go [until <isn> reached]
-MS_DB_HELP_3 [jw r0] Go [<isn>].................Às [<isn> ‚Ü‚Å]
-MS_DB_HELP_4 [ w r0] Help.......................display this help screen
-MS_DB_HELP_4 [jw r0] Help.......................ÍÙÌß‰æ–Ê‚Ì•\¦
-MS_DB_HELP_5 [ w r0] Logio [<unit>].............list logged units or toggle logging of unit
-MS_DB_HELP_5 [jw r0] Logio [<unit>].............w’è‘•’u‚Ì“üo—Í‹L˜^‚Ì•\¦‚Ü‚½‚Í‹L˜^‚ÌON/OFFw’è
-MS_DB_HELP_6 [ w r0] Quit.......................quit debugger
-MS_DB_HELP_6 [jw r0] Quit.......................ÃŞÊŞ¯¶Ş‚ÌI—¹
-MS_DB_HELP_7 [ w r0] Trace......................enter trace mode
-MS_DB_HELP_7 [jw r0] Trace......................ÄÚ°½Ó°ÄŞ‚Ì“ü—Í
-MS_DB_HELP_8 [ w r0] Unit [<unit>]..............list information for connected unit(s)
-MS_DB_HELP_8 [jw r0] Unit [<unit>]..............Ú‘±‘•’u‚ÉŠÖ‚·‚éî•ñ‚Ì•\¦
-MS_DB_HELP_9 [ w r0] Where......................display current traceback information
-MS_DB_HELP_9 [jw r0] Where......................Œ»İ‚ÌÀsŒo‰ßî•ñ‚Ì•\¦
-MS_DB_HELP_10 [ w r0] ! [<cmd>]..................system services
-MS_DB_HELP_10 [jw r0] ! [<cmd>]..................¼½ÃÑ»°ËŞ½
-MS_DB_HELP_11 [ w r0] / <x> <y>..................assign <y> to <x>
-MS_DB_HELP_11 [jw r0] / <x> <y>..................<y> ‚ğ <x>‚ÉŠ„‚è“–‚Ä‚é
-MS_DB_HELP_12 [ w r0] ? [(z|a)] [<x>[,<x>]...]...print variables using specified format
-MS_DB_HELP_12 [jw r0] ? [(z|a)] [<x>[,<x>]...]...‘®d—l‚É]‚Á‚½•Ï”î•ñ‚Ì•\¦
-MS_CTG_FILE_MANAGEMENT [ . c0] *File Management Options*
-MS_CTG_FILE_MANAGEMENT [j. c0] *Ì§²ÙÏÈ°¼ŞÒİÄµÌß¼®İ*
-MS_CTG_DIAGNOSTIC [ . c0] *Diagnostic Options*
-MS_CTG_DIAGNOSTIC [j. c0] *f’fµÌß¼®İ*
-MS_CTG_DEBUGGING [ . c0] *Debugging Options*
-MS_CTG_DEBUGGING [j. c0] *ÃŞÊŞ¯¸ŞµÌß¼®İ*
-MS_CTG_MISC [ . c0] *Miscellaneous Options*
-MS_CTG_MISC [j. c0] *‚»‚Ì‘¼‚ÌµÌß¼®İ*
-MS_CTG_FPUOPTS [ c c0] *Floating-Point Options*
-MS_CTG_FPUOPTS [jc c0] *•‚“®¬”“_µÌß¼®İ*
-MS_CTG_OPTIMIZATIONS [ c c0] *Optimizations*
-MS_CTG_OPTIMIZATIONS [jc c0] *Å“K‰»*
-MS_CTG_MEMORY_MODELS [ c c0] *Memory Models*
-MS_CTG_MEMORY_MODELS [jc c0] *ÒÓØÓÃŞÙ*
-MS_CTG_CPU [ c c0] *CPU Targets*
-MS_CTG_CPU [jc c0] *CPU À°¹Ş¯Ä*
-CL_CTG_COMPILE_AND_LINK [ c c0] *Compile and Link Options*
-CL_CTG_COMPILE_AND_LINK [jc c0] *ºİÊß²Ù/Øİ¸µÌß¼®İ*
-CL_USAGE_LINE [ l  0] Usage: %1 {- or /<option> | <file>}
-CL_USAGE_LINE [jl  0] g—p•û–@: %1 {- or /<option> | <file>}
-CL_COMPILE_ONLY [ l  0] compile only, no linking
-CL_COMPILE_ONLY [jl  0] ºİÊß²Ù‚Ì‚İ, Øİ¸‚Ís‚í‚È‚¢
-CL_IGNORE_WFL [ l  0] ignore WFL variable
-CL_IGNORE_WFL [jl  0] WFLŠÂ‹«•Ï”‚ğ–³‹
-CL_RUN_PROTECT [ l  0] run protected mode compiler
-CL_RUN_PROTECT [jl  0] ÌßÛÃ¸ÄÓ°ÄŞºİÊß²×°‚ÌÀs
-CL_GENERATE_MAP [ l  0] generate map file
-CL_GENERATE_MAP [jl  0] Ï¯ÌßÌ§²Ù‚Ì¶¬
-CL_NAME_EXECUTABLE [ l  0] name executable file
-CL_NAME_EXECUTABLE [jl  0] Àsƒtƒ@ƒCƒ‹–¼
-CL_KEEP_DIRECTIVE [ l  0] keep directive file
-CL_KEEP_DIRECTIVE [jl  0] ‹[—–½—ßÌ§²Ù‚Ì•Û
-CL_INCLUDE_DIRECTIVE [ l  0] include directive file
-CL_INCLUDE_DIRECTIVE [jl  0] ‹[—–½—ßÌ§²Ù‚Ì²İ¸Ù°ÄŞ
-CL_LINK_FOR_OS2 [ li 0] link for OS/2 protect-mode
-CL_LINK_FOR_OS2 [jli 0] OS/2 ÌßÛÃ¸ÄÓ°ÄŞ—pØİ¸
-CL_LINK_FOR_DOS [ li 0] link for DOS real-mode
-CL_LINK_FOR_DOS [jli 0] DOS Ø±ÙÓ°ÄŞ—pØİ¸
-CL_LINK_FOR_SYSTEM [ l  0] link for specified system
-CL_LINK_FOR_SYSTEM [jl  0] w’è¼½ÃÑ—pØİ¸
-CL_STACK_SIZE [ l  0] set stack size
-CL_STACK_SIZE [jl  0] ½À¯¸»²½Ş‚Ìİ’è
-CL_LINKER_DIRECTIVES [ l  0] additional linker directives
-CL_LINKER_DIRECTIVES [jl  0] Øİ¶°‹[—–½—ß‚Ì’Ç‰Á
-CL_OUT_OF_MEMORY [ l  0] Out of memory
-CL_OUT_OF_MEMORY [jl  0] ÒÓØ•s‘«
-CL_ERROR_OPENING_TMP_FILE [ l  0] Error: Unable to open temporary file
-CL_ERROR_OPENING_TMP_FILE [jl  0] ´×°  : ÃİÎß×ØÌ§²Ù‚ªµ°Ìßİ‚Å‚«‚È‚¢
-CL_UNABLE_TO_OPEN [ l  0] Unable to open '%s1'
-CL_UNABLE_TO_OPEN [jl  0] '%s1'‚ªµ°Ìßİ‚Å‚«‚È‚¢
-CL_UNABLE_TO_INVOKE_COMPILER [ l  0] Error: Unable to invoke compiler
-CL_UNABLE_TO_INVOKE_COMPILER [jl  0] ´×°  : ºİÊß²×°‚ª‹N“®‚Å‚«‚È‚¢
-CL_BAD_COMPILE [ l  0] Error: Compiler returned a bad status compiling '%s1'
-CL_BAD_COMPILE [jl  0] ´×°  : '%s1'ºİÊß²Ù’†‚ÉºİÊß²×‚ª•s³‚È½Ã°À½‚ğ•Ô‚µ‚½
-CL_UNABLE_TO_INVOKE_LINKER [ l  0] Error: Unable to invoke linker
-CL_UNABLE_TO_INVOKE_LINKER [jl  0] ´×°  : Øİ¶°‚ª‹N“®‚Å‚«‚È‚¢
-CL_BAD_LINK [ l  0] Error: Linker returned a bad status
-CL_BAD_LINK [jl  0] ´×°  : Øİ¶°‚ª•s³‚È½Ã°À½‚ğ•Ô‚µ‚½
-CL_UNABLE_TO_FIND [ l  0] Error: Unable to find '%s1'
-CL_UNABLE_TO_FIND [jl  0] ´×°  : '%s1'‚ªŒ©‚Â‚©‚ç‚È‚¢
-MS_OPT_TRACE [ c c0] generate run-time traceback
-MS_OPT_TRACE [jc c0] ×İÀ²ÑÄÚ°½ÊŞ¯¸‚Ì¶¬
-MS_OPT_BOUNDS [ c c0] generate bounds checking
-MS_OPT_BOUNDS [jc c0] ‹«ŠEÁª¯¸‚Ì¶¬
-MS_CTG_DBCS [ . c0] *Character Set Options*
-MS_CTG_DBCS [j. c0] *•¶š¾¯ÄµÌß¼®İ*
-MS_OPT_CHINESE [ . c0] Chinese character set
-MS_OPT_CHINESE [j. c0] ’†‘Œê•¶š¾¯Ä
-MS_OPT_JAPANESE [ . c0] Japanese character set
-MS_OPT_JAPANESE [j. c0] “ú–{Œê•¶š¾¯Ä
-MS_OPT_KOREAN [ . c0] Korean character set
-MS_OPT_KOREAN [j. c0] ŠØ‘Œê•¶š¾¯Ä
-MS_OPT_DEPENDENCY [ c c0] generate file dependencies
-MS_OPT_DEPENDENCY [jc c0] Ì§²ÙˆË‘¶«î•ñ‚Ì¶¬
-MS_CTG_APPTYPE [ . c0] *Application Type*
-MS_CTG_APPTYPE [j. c0] *±ÌßØ¹°¼®İÀ²Ìß*
-MS_OPT_RESOURCES [ . c0] messages in resource file
-MS_OPT_RESOURCES [j. c0] Ø¿°½Ì§²Ù“à‚ÌÒ¯¾°¼Ş
-MS_OPT_UNIT_6_CC [ . c0] devices are carriage control
-MS_OPT_UNIT_6_CC [j. c0] ‘•’u‚Í·¬Ø¯¼Ş§Œä‚³‚ê‚Ü‚·
-MS_OPT_QUIET [ . c0] operate quietly
-MS_OPT_QUIET [j. c0] ‹N“®Ò¯¾°¼Ş‚ğ•\¦‚µ‚È‚¢
-MS_EXECUTION_TIME [ w c0] Execution time (in seconds):
-MS_EXECUTION_TIME [jw c0] ÀsŠÔ (•b):
-MS_LOCAL_DATA_SIZE [ w c0] Local data size (in bytes):
-MS_LOCAL_DATA_SIZE [jw c0] Û°¶ÙÃŞ°À‚Ì‘å‚«‚³ (ÊŞ²Ä):
-MS_GLOBAL_DATA_SIZE [ w c0] Global data size (in bytes):
-MS_GLOBAL_DATA_SIZE [jw c0] ¸ŞÛ°ÊŞÙÃŞ°À‚Ì‘å‚«‚³ (ÊŞ²Ä):
-MS_BYTES_FREE [ w c0] Object bytes free:
-MS_BYTES_FREE [jw c0] µÌŞ¼Şª¸Ä¥ÊŞ²Ä¥ÌØ°:
-MS_STATEMENTS_EXECUTED [ w c0] Number of statements executed:
-MS_STATEMENTS_EXECUTED [jw c0] Às‚³‚ê‚é•¶‚Ì”:
-MS_OPT_BROWSE [ . c0] generate browse information
-MS_OPT_BROWSE [j. c0] ÌŞ×³½Şî•ñ‚Ì¶¬
-MS_OPT_EXTEND_REAL [ . c0] extend float-pt. precision
-MS_OPT_EXTEND_REAL [j. c0] Šg’£•‚“®¬”“_”¸“x
-MS_OZOPT_O_UNROLL [ c c0] loop optimizations/unrolling
-MS_OZOPT_O_UNROLL [jc c0] Ù°ÌßÅ“K‰»/±İÛ°Øİ¸Ş
-MS_CGOPT_ALIGN [ c c0] align COMMON segments
-MS_CGOPT_ALIGN [jc c0] COMMON¾¸ŞÒİÄ‚Ì®‡
-MS_OPT_LF_WITH_FF [ . c0] LF with FF
-MS_OPT_LF_WITH_FF [j. c0] FF•t‚«LF
-MS_CGOPT_DI_WATCOM [ c c0] WATCOM debugging information
-MS_CGOPT_DI_WATCOM [jc c0] WATCOMÃŞÊŞ¯¸Şî•ñ
-MS_CGOPT_DI_DWARF [ c c0] DWARF debugging information
-MS_CGOPT_DI_DWARF [jc c0] DWARFÃŞÊŞ¯¸Şî•ñ
-MS_CGOPT_DI_CV [ . c0] Codeview debugging info.
-MS_CGOPT_DI_CV [j. c0] CodeviewÃŞÊŞ¯¸Şî•ñ
-CL_UNABLE_TO_INVOKE_CVPACK [ l  0] Error: Unable to invoke CVPACK
-CL_UNABLE_TO_INVOKE_CVPACK [jl  0] ´×°: CVPACK‚ğ‹N“®‚Å‚«‚Ü‚¹‚ñ
-CL_BAD_CVPACK [ l  0] Error: CVPACK returned a bad status
-CL_BAD_CVPACK [jl  0] Error: CVPACK‚ª•s³‚È½Ã°À½‚ğ•Ô‚µ‚Ü‚µ‚½
-MS_OZOPT_O_FASTDO [ . c0] DO-variables do not overflow
-MS_OZOPT_O_FASTDO [j. c0] DO•Ï”‚ªµ°ÊŞ°ÌÛ°‚µ‚Ü‚¹‚ñ
-MS_OPT_INCPATH [ . c0] path for INCLUDE files
-MS_OPT_INCPATH [j. c0] INCLUDEÌ§²Ù—p‚ÌÊß½
-MS_CPUOPT_FPD [ c8c0] enable Pentium FDIV check
-MS_CPUOPT_FPD [jc8c0] Pentium FDIV–½—ß‚ÌÁª¯¸‚ğ—LŒø‚É‚µ‚Ü‚·
-MS_OZOPT_O_BRANCH_PREDICTION [ c c0] branch prediction
-MS_OZOPT_O_BRANCH_PREDICTION [jc c0] •ªŠò—\‘ª
-MS_CGOPT_MANGLE [ c c0] mangle COMMON segment names
-MS_CGOPT_MANGLE [jc c0] COMMON¾¸ŞÒİÄ–¼‚ğÏİ¸ŞÙ‰»‚µ‚Ü‚·
-MS_OPT_PROMOTE [ c c0] promote intrinsic arguments
-MS_OPT_PROMOTE [jc c0] ‘g‚İˆø”‚ğŠiã‚°‚µ‚Ü‚·
-MS_OPT_COMMA_SEP [ c c0] allow comma separator
-MS_OPT_COMMA_SEP [jc c0] ºİÏ‹æØ‚è‚ğ—LŒø‚É‚µ‚Ü‚·
-MS_CPUOPT_FP6 [ c8c0] /fp3 optimized for Pentium Pro
-MS_CPUOPT_FP6 [jc8c0] Pentium Pro—p‚ÉÅ“K‰»‚³‚ê‚½/fp3
-MS_CPUOPT_80686 [ c8c0] /3 optimized for Pentium Pro
-MS_CPUOPT_80686 [jc8c0] Pentium Pro—p‚ÉÅ“K‰»‚³‚ê‚½/3
-MS_OZOPT_O_SUPER_OPTIMAL [ c c0] optimize at expense of compile-time
-MS_OZOPT_O_SUPER_OPTIMAL [jc c0] ºİÊß²ÙŠÔ‚ª’·ˆø‚¢‚Ä‚àÅ“K‰»‚ğ‹­‰»‚µ‚Ü‚·
-MS_OZOPT_O_FLOW_REG_SAVES [ c c0] move register saves into flow graph
-MS_OZOPT_O_FLOW_REG_SAVES [jc c0] Ú¼Ş½À•Û‘¶‚ğÌÛ°¸Ş×Ì‚ÉˆÚ“®‚µ‚Ü‚·
-MS_OZOPT_O_LOOP_INVAR [ c c0] loop optimizations/assume loop invariant float-pt. variables are initialized
-MS_OZOPT_O_LOOP_INVAR [jc c0] Ù°ÌßÅ“K‰»/Ù°Ìß“à‚Å•‚“®¬”“_”‚ª•s•Ï‚Å‚ ‚é‚Æ‰¼’è‚µ‚Ü‚·B•Ï”‚Í‰Šú‰»‚³‚ê‚Ü‚·
+MS_CALLED_FROM [j  r0] - %s2 ï¾Œï½§ï½²ï¾™, %u1 è¡Œã‹ã‚‰ã®å‘¼ã³å‡ºã—

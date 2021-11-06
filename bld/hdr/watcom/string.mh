@@ -140,7 +140,6 @@ _WCRTLINK  extern int       strcmp( const char *__s1, const char *__s2 );
 _WCRTLINK  extern int       strcoll( const char *__s1, const char *__s2 );
 _WCIRTLINK extern char      *strcpy( char *__s1, const char *__s2 );
 _WCRTLINK  extern size_t    strcspn( const char *__s1, const char *__s2 );
-_WCRTLINK  extern char      *strerror( int __errnum );
 _WCIRTLINK extern size_t    strlen( const char *__s );
 _WCRTLINK  extern char      *strncat( char *__s1, const char *__s2, size_t __n );
 _WCRTLINK  extern int       strncmp( const char *__s1, const char *__s2, size_t __n );
@@ -151,38 +150,39 @@ _WCRTLINK  extern size_t    strspn( const char *__s1, const char *__s2 );
 _WCRTLINK  extern char      *strstr( const char *__s1, const char *__s2 );
 _WCRTLINK  extern char      *strtok( char *__s1, const char *__s2 );
 _WCRTLINK  extern size_t    strxfrm( char *__s1, const char *__s2, size_t __n );
+
+:include strerror.sp
 :include nsstdepi.sp
 
 :include ext.sp
 
 /* MS extension functions */
 
-_WCRTLINK  extern int       _stricoll( const char *__s1, const char *__s2 );
-_WCRTLINK  extern int       _strncoll( const char *__s1, const char *__s2, __w_size_t __n );
-_WCRTLINK  extern int       _strnicoll( const char *__s1, const char *__s2, __w_size_t __n );
+:include msstr1.sp
+:include msstr2.sp
+:include msstrdup.sp
+:include memicmp.sp
+:keep ANSINAME
+:include msstr1.sp
+:include msstr2.sp
+:include strerror.sp
+:include msstrdup.sp
+:include memicmp.sp
+:include memccpy.sp
+:remove ANSINAME
 
-:segment DOS | RDOS
-:segment DOS
-#ifdef __NT__
-:endsegment
-_WCRTLINK extern char       *_doserror( int __oserrnum );
-:segment DOS
-#endif
-:endsegment
-:endsegment
-_WCRTLINK extern int        _memicmp( const void *__s1, const void *__s2, __w_size_t __n );
-_WCRTLINK extern char       *_strdup( const char *__string );
-_WCRTLINK extern char       *_strerror( const char *__s );
-_WCRTLINK extern int        _stricmp( const char *__s1, const char *__s2 );
-_WCRTLINK extern char       *_strlwr( char *__string );
-_WCRTLINK extern int        _strnicmp( const char *__s1, const char *__s2, __w_size_t __n );
-_WCRTLINK extern char       *_strnset( char *__string, int __c, __w_size_t __len );
-_WCRTLINK extern char       *_strrev( char *__string );
-_WCRTLINK extern char       *_strset( char *__string, int __c );
-_WCRTLINK extern char       *_strupr( char *__string );
+/* POSIX extension functions */
+
+:include pxstrdup.sp
+:include memccpy.sp
 
 /* WATCOM's Additional Functions (non-ISO, non-POSIX) */
 
+:segment DOS
+#ifdef __NT__
+_WCRTLINK extern char       *_doserror( int __oserrnum );
+#endif
+:endsegment
 _WCRTLINK  extern char      *strspnp( const char *__s1, const char *__s2 );
 _WCRTLINK  extern char      *strtok_r( char *__s1, const char *__s2, char **__p1 );
 
@@ -194,21 +194,6 @@ _WCRTLINK  extern char      *strtok_r( char *__s1, const char *__s2, char **__p1
 
 _WCIRTLINK extern void      movedata( unsigned __srcseg, unsigned __srcoff, unsigned __tgtseg, unsigned __tgtoff, unsigned __len );
 
-_WCRTLINK extern int        bcmp( const void *__s1, const void *__s2, __w_size_t __n );
-_WCRTLINK extern void       bcopy( const void *__s1, void *__s2, __w_size_t __n );
-_WCRTLINK extern void       bzero( void *__s, __w_size_t __n );
-_WCRTLINK extern void       *memccpy( void *__s1, const void *__s2, int __c, __w_size_t __n );
-_WCRTLINK extern int        memicmp( const void *__s1, const void *__s2, __w_size_t __n );
-_WCRTLINK extern int        strcmpi( const char *__s1, const char *__s2 );
-_WCRTLINK extern char       *strdup( const char *__string );
-_WCRTLINK extern int        stricmp( const char *__s1, const char *__s2 );
-_WCRTLINK extern char       *strlwr( char *__string );
-_WCRTLINK extern int        strnicmp( const char *__s1, const char *__s2, __w_size_t __n );
-_WCRTLINK extern char       *strnset( char *__string, int __c, __w_size_t __len );
-_WCRTLINK extern char       *strrev( char *__string );
-_WCRTLINK extern char       *strset( char *__string, int __c );
-_WCRTLINK extern char       *strupr( char *__string );
-
 /* BSD 'safe' string copy functions */
 
 _WCRTLINK extern __w_size_t strlcat( char *__s1, const char *__s2, __w_size_t __n );
@@ -216,6 +201,7 @@ _WCRTLINK extern __w_size_t strlcpy( char *__s1, const char *__s2, __w_size_t __
 
 /* Wide character handling functions */
 
+// C99 functions not officially in string.h
 :: Wide character version
 :include nsstd.sp
 _WCRTLINK extern wchar_t    *wcscat( wchar_t *, const wchar_t * );
@@ -236,50 +222,35 @@ _WCRTLINK extern wchar_t    *wcstok( wchar_t *, const wchar_t *, wchar_t ** );
 _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __n );
 :include nsstdepi.sp
 
-:: Wide character version
-_WCRTLINK extern int        wcscmpi( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t    *wcserror( int );
-:segment DOS | RDOS
+:: Wide character extension functions
+::
+:keep WIDE
+:segment DOS | LINUX | QNX
+/* MS extension functions */
+
+:include strerror.sp
+:include msstr2.sp
+:segment DOS
+
+:include msstr1.sp
+:include msstrdup.sp
+:endsegment
+
+:endsegment
+/* POSIX extension functions */
+
+:include pxstrdup.sp
+:include memccpy.sp
+:remove WIDE
+
+:segment DOS
+/* WATCOM's Additional Functions (non-ISO, non-POSIX) */
+
 #ifdef __NT__
 _WCRTLINK extern wchar_t    *_wdoserror( int __errnum );
 #endif
+
 :endsegment
-
-:: Wide character version
-::_WCRTLINK extern wchar_t  *wcsnset( wchar_t *, int, __w_size_t );
-::_WCRTLINK extern int      wcsnicmp( const wchar_t *, const wchar_t *, __w_size_t );
-::_WCRTLINK extern wchar_t  *wcsdup( const wchar_t * );
-::_WCRTLINK extern wchar_t  *wcslwr( wchar_t * );
-::_WCRTLINK extern wchar_t  *wcsupr( wchar_t * );
-::_WCRTLINK extern int      wcsicmp( const wchar_t *, const wchar_t * );
-::_WCRTLINK extern wchar_t  *wcsrev( wchar_t * );
-::_WCRTLINK extern wchar_t  *wcsset( wchar_t *, wchar_t );
-::
-_WCRTLINK extern wchar_t    *_wcsnset( wchar_t *, int, __w_size_t );
-_WCRTLINK extern wchar_t    *_wcsspnp( const wchar_t *__s1, const wchar_t *__s2 );
-_WCRTLINK extern int        _wcsnicmp( const wchar_t *, const wchar_t *, __w_size_t );
-_WCRTLINK extern wchar_t    *_wcsdup( const wchar_t * );
-_WCRTLINK extern wchar_t    *_wcslwr( wchar_t * );
-_WCRTLINK extern wchar_t    *_wcsupr( wchar_t * );
-_WCRTLINK extern int        _wcsicmp( const wchar_t *, const wchar_t * );
-_WCRTLINK extern int        _wcsicoll( const wchar_t *__s1, const wchar_t *__s2 );
-_WCRTLINK extern int        _wcsncoll( const wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
-_WCRTLINK extern int        _wcsnicoll( const wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
-_WCRTLINK extern wchar_t    *_wcsrev( wchar_t * );
-_WCRTLINK extern wchar_t    *_wcsset( wchar_t *, wchar_t );
-_WCRTLINK extern wchar_t    *_wcserror( const wchar_t * );
-
-/* BSD 'safe' wide character string copy functions */
-
-:: Wide character version
-_WCRTLINK extern __w_size_t wcslcat( wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
-_WCRTLINK extern __w_size_t wcslcpy( wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
-
-/* Additional Functions (POSIX but non-standard in string.h) */
-
-_WCRTLINK extern int        strcasecmp( const char *__s1, const char *__s2 );
-_WCRTLINK extern int        strncasecmp( const char *__s1, const char *__s2, __w_size_t __n );
-
 :segment QNX
 /* QNX's Additional Functions (non-ANSI, non-POSIX) */
 

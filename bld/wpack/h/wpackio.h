@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@ extern int          QOpenM( const char *filename );
 extern unsigned long QFileLen( int file );
 extern unsigned long QGetDate( int handle );
 #endif
-extern void         QSeek( int file, signed long position, int seektype );
+extern void         QSeek( int file, long position, int seektype );
 extern void         QClose( int file );
 extern void         QSetDate( const char *fname, unsigned long stamp );
 extern int          InitIO( void );

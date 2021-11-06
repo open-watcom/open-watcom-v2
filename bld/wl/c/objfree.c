@@ -195,9 +195,11 @@ void CleanLinkStruct( void )
     FreeSections( Root );
     DBICleanup();
     Root = NULL;
-    if( FmtData.type & MK_REAL_MODE ) {
+#ifdef _EXE
+    if( FmtData.type & MK_DOS ) {
         FreeOverlaySupp();
     }
+#endif
 }
 
 #if defined( _OS2 ) || defined( _QNX )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,13 +52,13 @@ WEXPORT WControl::WControl( WWindow* parent, gui_control_class control_class,
     autoPosition( rr );
     _id = WWindow::_idMaster++;
     control_info.control_class = control_class;
-    control_info.text = (char *)text;
+    control_info.text = text;
     control_info.rect.x = rr.x();
     control_info.rect.y = rr.y();
     control_info.rect.width = rr.w();
     control_info.rect.height = rr.h();
     control_info.parent = parent->handle();
-    control_info.scroll = _WStyleToScrollStyle( style );
+    control_info.scroll_style = _WStyleToScrollStyle( style );
     control_style = (gui_control_styles)( _WStyleToControlStyle( style ) | GUI_STYLE_CONTROL_INIT_INVISIBLE );
     if( (control_class != GUI_STATIC) && (control_class != GUI_GROUPBOX) ) {
         control_style = (gui_control_styles)( control_style | GUI_STYLE_CONTROL_TAB_GROUP );

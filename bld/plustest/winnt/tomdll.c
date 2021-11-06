@@ -20,7 +20,7 @@ In Watcom debugger...
 #include <assert.h>
 
 void log_it( char *m ) {
-    FILE *fp = fopen( "tomexe.out", "a" );
+    FILE *fp = fopen( "tom.out", "a" );
     assert( fp != 0 );
     fputs( m, fp );
     fclose( fp );
@@ -44,13 +44,13 @@ void __dll_terminate( void ) {
 
 struct __ {
     __() {
-	__dll_initialize();
+        __dll_initialize();
     }
     ~__() {
-	__dll_terminate();
+        __dll_terminate();
     }
 };
-__ run_init_term;		// gbl ctor+dtor
+__ run_init_term;               // gbl ctor+dtor
 
 extern "C" void __export dll_entry( void ) {
     log_it( "hi from entry\n" );

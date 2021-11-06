@@ -13,7 +13,7 @@ test_flags = -ox-d1-w0-otexanr
 
 test_flags_i86 = -mm
 
-!include testenv1.mif
+!include testenv.mif
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k
@@ -38,15 +38,13 @@ exes = $(oopacks) $(stepanovs)
 # "too fast" and finish at "zero" execution time.
 
 !ifeq arch i86
-test : .symbolic start clean start_test
+test : .symbolic start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
-!else
-test : .symbolic start clean start_test test.lnk $(exes) common_set_result_display
-!endif
     @%make clean
-
-start_test : .symbolic
-    @%make common_start_test
+!else
+test : .symbolic start test.lnk $(exes)
+    $(noecho)%make common_set_result_display
+!endif
 
 clean : .procedure
     @%make echo_clean

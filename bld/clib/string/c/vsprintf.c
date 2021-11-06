@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,18 +43,18 @@
  */
 #ifdef __WIDECHAR__
 
-struct vswprtf_buf {
+typedef struct vswprtf_buf {
     CHAR_TYPE   *bufptr;
     int         chars_output;
     int         max_chars;
-};
+} vswprtf_buf;
 
 static slib_callback_t mem_putc; // setup calling convention
 static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    struct vswprtf_buf  *info;
+    vswprtf_buf     *info;
 
-    info = SLIB2CLIB( struct vswprtf_buf, specs->_dest );
+    info = GET_SPEC_DEST( vswprtf_buf, specs );
     if( info->chars_output + 1 <= info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         specs->_output_count++;
@@ -75,38 +75,38 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 
 
 #ifdef __WIDECHAR__
-_WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_list arg )
+_WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_list args )
 {
-    auto struct vswprtf_buf info;
+    vswprtf_buf     info;
 
     if( n != 0 ) {
         info.bufptr = dest;
         info.chars_output = 0;
         info.max_chars = n - 1;
-        __wprtf( &info, format, arg, mem_putc );
+        __wprtf( &info, format, args, mem_putc );
         dest[info.chars_output] = NULLCHAR;
     }
     return( info.chars_output );
 }
 #endif
 
-_WCRTLINK int __F_NAME(vsprintf,_vswprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *format, va_list arg )
+_WCRTLINK int __F_NAME(vsprintf,_vswprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *format, va_list args )
 {
 #ifndef __WIDECHAR__
-    register int            len;
+    register int    len;
 #else
-    auto struct vswprtf_buf info;
+    vswprtf_buf     info;
 #endif
 
 #ifdef __WIDECHAR__
     info.bufptr = dest;
     info.chars_output = 0;
     info.max_chars = INT_MAX;
-    __wprtf( &info, format, arg, mem_putc );
+    __wprtf( &info, format, args, mem_putc );
     dest[info.chars_output] = NULLCHAR;
     return( info.chars_output );
 #else
-    len = __prtf( dest, format, arg, mem_putc );
+    len = __prtf( dest, format, args, mem_putc );
     dest[len] = NULLCHAR;
     return( len );
 #endif

@@ -5,7 +5,7 @@
 .seelist mblen mbrlen mbrtowc
 .seelist mbsrtowcs mbsrtowcs_s
 .seelist mbstowcs mbstowcs_s
-.seelist mbtowc mbcinit btowc
+.seelist mbtowc mbsinit btowc
 .seelist wcrtomb wcrtomb_s
 .seelist wcsrtombs wcsrtombs_s
 .seelist wcstombs wcstombs_s

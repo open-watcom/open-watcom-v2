@@ -102,10 +102,10 @@ int _wspawnvpe( mode, file, argv, envp );
 .synop end
 .desc begin
 The
-.idbold &function.
+.idbold &functiong.
 functions create and execute a new child process, named by
 .arg pgm
-.ct .li .
+.period
 The value of
 .arg mode
 determines how the program is loaded and how the invoking
@@ -131,14 +131,14 @@ This option is supported under OS/2, Win32 and QNX.
 .do end
 .if '&machsys' eq 'QNX' .do begin
 The
-.kw wait
+.reffunc wait
 function cannot be used to obtain the exit code.
 .do end
 .el .do begin
 The
-.kw wait
+.reffunc wait
 and
-.kw cwait
+.reffunc cwait
 functions cannot be used to obtain the exit code.
 .do end
 .term P_OVERLAY
@@ -150,7 +150,7 @@ This option is supported under DOS (16-bit only), OS/2, Win32, and
 QNX.
 .do end
 This is equivalent to calling the appropriate
-.kw exec&grpsfx
+.reffunc exec&grpsfx
 function.
 .term P_DETACH
 Launches the child process in the background without access to the keyboard or
@@ -165,7 +165,7 @@ This option is supported under only Windows NT.
 .np
 Arguments are passed to the child process by supplying one or more
 pointers to character strings as arguments in the
-.idbold &function.
+.idbold &functiong.
 call.
 .if '&machsys' ne 'QNX' .do begin
 These character strings are concatenated with spaces inserted to separate
@@ -175,22 +175,21 @@ DOS systems.
 .do end
 .np
 The arguments may be passed as a list of arguments (
-.ct .kw spawnl
-.ct,
-.kw spawnle
-.ct,
-.kw spawnlp
+.ct .reffunc spawnl
+.ct ,
+.reffunc spawnle
+.ct ,
+.reffunc spawnlp
 and
-.kw spawnlpe
+.reffunc spawnlpe
 .ct ) or as a vector of pointers (
-.ct .kw spawnv
-.ct,
-.kw spawnve
-.ct,
-.kw spawnvp
-.ct,
-and
-.kw spawnvpe
+.ct .reffunc spawnv
+.ct ,
+.reffunc spawnve
+.ct ,
+.reffunc spawnvp
+.ct , and
+.reffunc spawnvpe
 .ct ).
 At least one argument,
 .arg arg0
@@ -211,22 +210,22 @@ pointer.
 .np
 The environment for the invoked program is inherited from the parent
 process when you use the
-.kw spawnl
-.ct,
-.kw spawnlp
-.ct,
-.kw spawnv
+.reffunc spawnl
+.ct ,
+.reffunc spawnlp
+.ct ,
+.reffunc spawnv
 and
-.kw spawnvp
+.reffunc spawnvp
 functions.
 The
-.kw spawnle
-.ct,
-.kw spawnlpe
-.ct,
-.kw spawnve
+.reffunc spawnle
+.ct ,
+.reffunc spawnlpe
+.ct ,
+.reffunc spawnve
 and
-.kw spawnvpe
+.reffunc spawnvpe
 functions allow a different environment to be passed to the child
 process through the
 .arg envp
@@ -255,19 +254,19 @@ values that have been defined with the
 .if '&machsys' eq 'QNX' .do begin
 .qnxcmd export
 or by the successful execution of the
-.kw putenv
+.reffunc putenv
 or
-.kw setenv
+.reffunc setenv
 functions.
 .do end
 .el .do begin
 .doscmd SET
 or by the successful execution of the
-.kw putenv
+.reffunc putenv
 function.
 .do end
 A program may read these values with the
-.kw getenv
+.reffunc getenv
 function.
 .np
 The following example invokes "myprog" as if
@@ -316,7 +315,7 @@ char *arg_list[] = { "myprog", "ARG1", "ARG2", NULL };
 spawnv( P_WAIT, "myprog", arg_list );
 .millust end
 .*==========================================
-.im widefun5
+.widegrp &wfunc.
 .*==========================================
 .desc end
 .return begin
@@ -328,22 +327,21 @@ is:
 .termhd2 Meaning
 .term P_WAIT
 then the return value from
-.idbold &function.
+.idbold &functiong.
 is the exit status of the child process.
 .term P_NOWAIT
 then the return value from
-.idbold &function.
+.idbold &functiong.
 is the process ID (or process handle
 under Win32) of the child process.
 To obtain the exit code for a process spawned with
 .kw P_NOWAIT
-.ct,
-you must call the
-.kw wait
+.ct , you must call the
+.reffunc wait
 (under OS/2 or QNX)
 .if '&machsys' ne 'QNX' .do begin
 or
-.kw cwait
+.reffunc cwait
 (under OS/2 or Win32)
 .do end
 function specifying the process ID/handle.
@@ -355,18 +353,18 @@ process passed to the
 function.
 .term P_NOWAITO
 then the return value from
-.idbold &function.
+.idbold &functiong.
 is the process ID of the child process.
 The exit code cannot be obtained for a process spawned with
 .kw P_NOWAITO
-.ct .li .
+.period
 .term P_DETACH
 then the return value from
-.idbold &function.
+.idbold &functiong.
 is zero (0) if successful.
 .endterm
 .np
-When an error is detected while invoking the indicated program, &function
+When an error is detected while invoking the indicated program, &functiong
 returns &minus.1 and
 .kw errno
 is set to indicate the error.
@@ -374,7 +372,7 @@ is set to indicate the error.
 .error begin
 .if '&machsys' eq 'QNX' .do begin
 See the
-.kw qnx_spawn
+.reffunc qnx_spawn
 function for a description of possible
 .kw errno
 values.
@@ -400,7 +398,10 @@ Not enough memory is available to execute the child process.
 .*==========================================
 .see begin
 .seelist abort atexit cwait exec&grpsfx exit _Exit _exit
-.seelist getcmd getenv main putenv qnx_spawn qnx_spawn_options
+.seelist getcmd getenv main putenv
+.if '&machsys' eq 'QNX' .do begin
+.seelist qnx_spawn qnx_spawn_options
+.do end
 .seelist system wait
 .see end
 .cp 8

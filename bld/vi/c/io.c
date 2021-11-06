@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,7 +136,8 @@ vi_rc FileOpen( const char *name, bool existflag, int stat, int attr, int *_hand
     for( ;; ) {
         handle = open( name, stat, attr );
         en = errno;
-        if( en == -1 ) en = ENOENT;     /* CLIB BUG in OS2 libraries */
+        if( en == -1 )
+            en = ENOENT;     /* CLIB BUG in OS2 libraries */
         if( handle < 0 && en != ENOENT ) {
             if( en != EMFILE ) {
                 return( ERR_FILE_OPEN );
@@ -159,14 +161,14 @@ vi_rc FileOpen( const char *name, bool existflag, int stat, int attr, int *_hand
 } /* FileOpen */
 
 /*
- * FileSeek - seek location in swap file
+ * FileSeek - seek location in the file
  */
 vi_rc FileSeek( int handle, long where )
 {
     long        i, relo, lastpos;
 
-    lastpos = tell( handle );
-    if( lastpos < 0 ) {
+    lastpos = lseek( handle, 0, SEEK_CUR );
+    if( lastpos == -1L ) {
         return( ERR_FILE_SEEK );
     }
     relo = where - lastpos;
@@ -176,7 +178,7 @@ vi_rc FileSeek( int handle, long where )
         i = lseek( handle, where, SEEK_SET );
     }
 
-    if( i == -1 ) {
+    if( i == -1L ) {
         return( ERR_FILE_SEEK );
     }
     return( ERR_NO_ERR );

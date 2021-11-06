@@ -38,7 +38,7 @@ test_flags_386 += -wx-wcd433-fpi87-fp5-mf
 test_flags_i86 += -wx-wcd433-fpi87-fp5-ml-zm
 test_flags_axp += -wx-wcd433
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifeq alt_error 02
 test_flags += $(br_opt)
@@ -95,6 +95,7 @@ ext =
 names = $+ $(template) $-
 
 # define flags specific to tests here
+opt_lim01 = -ze
 opt_typetr01 = -za0x
 opt_mmwin16 = $(incl_sys_win) -dmmWin16
 opt_mmwindef = $(incl_sys_nt)
@@ -105,12 +106,13 @@ opt_mmwindef += -3
 # the main target to run the test suite
 
 !ifeq arch i86
-test : .symbolic start clean start_test
+test : .symbolic start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
-!else
-test : .symbolic start clean start_test test.lnk $(exes) common_set_result_display
-!endif
     @%make clean
+!else
+test : .symbolic start test.lnk $(exes)
+    $(noecho)%make common_set_result_display
+!endif
 
 # this is my laziness bit...
 $(names) : test.lnk .symbolic
@@ -118,9 +120,9 @@ $(names) : test.lnk .symbolic
     @%make set_path_wlink
     @%make echo_link
     $(noecho)$(linker) @test.lnk NAME $^*.exe FILE $^*.obj
-    @%make set_path_rtdll
+    @%make set_run_path
     $(run) $(exec_prefix)$^*.exe
-    @%make set_old_path
+    @%make set_old_run_path
     @echo PASS
 
 !ifdef __OS2__
@@ -128,17 +130,14 @@ mmwindef.$(exe): .symbolic
     @%append $(%ERROR_FILE) ----------$^*----------
 !endif
 
-start_test : .symbolic
-    @%make common_start_test
-
 # ensures mmwindef.cpp and mmwin16.cpp are always identical to
 # nominmax.cpp
 
 mmwin16.cpp : nominmax.cpp
-    cp nominmax.cpp mmwin16.cpp >$(nulldevice)
+    copy nominmax.cpp mmwin16.cpp
 
 mmwindef.cpp : nominmax.cpp
-    cp nominmax.cpp mmwindef.cpp >$(nulldevice)
+    copy nominmax.cpp mmwindef.cpp
 
 clean : .procedure
     @%make echo_clean

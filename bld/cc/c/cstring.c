@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,8 @@
 #include "scan.h"
 #include "asciiout.h"
 #include "unicode.h"
+#include "escchars.h"
+#include "toggles.h"
 
 #include "clibext.h"
 
@@ -66,13 +69,14 @@ static FILE *OpenUnicodeFile( const char *filename )
 
 static void ReadUnicodeFile( FILE *fp )
 {
-    int             i;
+    size_t          i;
+    size_t          len;
     unicode_type    unicode_table[256];
 
-    fread( unicode_table, sizeof( unicode_type ), 256, fp );
+    len = fread( unicode_table, sizeof( unicode_type ), 256, fp );
     /* UniCode might be a FAR table */
     for( i = 0; i < 256; i++ ) {
-        UniCode[i] = unicode_table[i];
+        UniCode[i] = ( i < len ) ? unicode_table[i] : 0;
     }
 }
 
@@ -112,23 +116,44 @@ void FreeLiteral( STR_HANDLE str_lit )
     CMemFree( str_lit );
 }
 
+static const unsigned char  *pbuf = NULL;
+
+static int read_inp( void )
+{
+    return( *pbuf++ );
+}
+
 #define WRITE_BYTE(x) if( buf != NULL ) buf[olen] = x; ++olen
 
 static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen )
+/*********************************************************************************
+ * check mode if buf == NULL, only check required output size
+ */
 {
     int                 c;
     target_size         olen;
-    bool                error;
-    const unsigned char *end;
-    const unsigned char *p = (const unsigned char *)inbuf;
+    const unsigned char *pend;
 
     olen = 0;
-    error = false;
-    end = p + ilen;
-    while( p < end ) {
-        c = *p++;
+    BadTokenInfo = ERR_NONE;
+    pbuf = (const unsigned char *)inbuf;
+    pend = pbuf + ilen;
+    while( pbuf < pend ) {
+        c = read_inp();
         if( c == '\\' ) {
-            c = ESCChar( *p, &p, &error );
+            c = ESCChar( read_inp(), read_inp, &BadTokenInfo, NULL );
+            if( buf != NULL ) {
+                if( !CompFlags.cpp_mode ) {
+                    if( SkipLevel == NestLevel ) {
+                        if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
+                            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                        } else if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
+                            CErr1( ERR_INVALID_HEX_CONSTANT );
+                        }
+                    }
+                }
+            }
+            pbuf--; // move pointer to first character after Escape sequence
             if( CompFlags.wide_char_string ) {
                 WRITE_BYTE( c );
                 c = c >> 8;
@@ -136,15 +161,14 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
         } else {
             if( CharSet[c] & C_DB ) {       /* if double-byte character */
                 if( CompFlags.jis_to_unicode && CompFlags.wide_char_string ) {
-                    c = (c << 8) + *p;
+                    c = (c << 8) + read_inp();
                     c = JIS2Unicode( c );
                     WRITE_BYTE( c );
                     c = c >> 8;
                 } else {
                     WRITE_BYTE( c );
-                    c = *p;
+                    c = read_inp();
                 }
-                ++p;
             } else if( CompFlags.wide_char_string ) {
                 if( CompFlags.use_unicode ) {
                     c = UniCode[c];
@@ -160,11 +184,6 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
             }
         }
         WRITE_BYTE( c );
-    }
-    if( error && buf != NULL ) {
-        if( NestLevel == SkipLevel ) {
-            CErr1( ERR_INVALID_HEX_CONSTANT );
-        }
     }
     return( olen );
 }
@@ -193,10 +212,10 @@ STR_HANDLE GetLiteral( void )
             q->next_string = p;
         }
         q = p;
-        p->length = TokenLen + 1;
         p->next_string = NULL;
-        p->literal = Buffer;
-        Buffer = CMemAlloc( BufSize );
+        p->length = TokenLen + 1;
+        p->literal = CMemAlloc( TokenLen + 1 );
+        memcpy( p->literal, Buffer, TokenLen + 1 );
     } while( NextToken() == T_STRING );
     CompFlags.wide_char_string = is_wide;
     /* then remove escapes (C99: translation phase 5), and only then
@@ -233,14 +252,14 @@ static TYPEPTR StringLeafType( void )
     TYPEPTR     typ;
 
     if( CompFlags.wide_char_string ) {
-        typ = ArrayNode( GetType( TYPE_USHORT ) );
+        typ = ArrayNode( GetType( TYP_USHORT ) );
         typ->u.array->dimension = CLitLength >> 1;
     } else if( StringArrayType != NULL ) {
         typ = StringArrayType;
         StringArrayType->u.array->dimension = CLitLength;
         StringArrayType = NULL;
     } else {
-        typ = ArrayNode( GetType( TYPE_PLAIN_CHAR ) );
+        typ = ArrayNode( GetType( TYP_PLAIN_CHAR ) );
         typ->u.array->dimension = CLitLength;
     }
     return( typ );
@@ -273,7 +292,7 @@ TREEPTR StringLeaf( string_flags flags )
     if( flags & STRLIT_FAR )
         CompFlags.far_strings = true;
     h = CalcStringHash( new_lit );
-    if( Toggles & TOGGLE_REUSE_DUPLICATE_STRINGS ) {
+    if( TOGGLE( reuse_duplicate_strings ) ) {
         for( strlit = StringHash[h]; strlit != NULL; strlit = strlit->next_string ) {
             if( strlit->length == new_lit->length && strlit->flags == flags ) {
                 if( memcmp( strlit->literal, new_lit->literal, new_lit->length ) == 0 ) {

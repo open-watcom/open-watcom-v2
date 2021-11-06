@@ -13,8 +13,8 @@ function attempts to raise the floating-point exceptions specified by the
 argument.
 .np
 For valid exception values see
-.seekw &function. fegetexceptflag
-.ct .li .
+.reffunc fegetexceptflag
+.period
 .desc end
 .*
 .return begin
@@ -35,7 +35,7 @@ raised. Otherwise, it returns a nonzero value.
 .exmp break
 void main( void )
 {
-	feraiseexcept( FE_DIVBYZERO );
+    feraiseexcept( FE_DIVBYZERO );
 }
 .exmp end
 .class ISO C99

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,8 @@
 #ifndef OMF_TYPE_INCLUDED
 #define OMF_TYPE_INCLUDED
 
+#include "pcobj.h"
+
 #define OMFENTRY
 
 /* status flags
@@ -41,6 +44,7 @@
 #define OMF_STATUS_ADD_LIDATA           0x00000008
 #define OMF_STATUS_EASY_OMF             0x00000010
 #define OMF_STATUS_ADD_BAKPAT           0x00000020
+#define OMF_STATUS_WATCOM               0x00000040
 
 #define OMF_STATUS_ADD_MASK             (OMF_STATUS_ADD_LIDATA | OMF_STATUS_ADD_BAKPAT)
 
@@ -114,6 +118,13 @@ typedef unsigned_8                      *omf_bytes;
 typedef unsigned_8                      omf_rectyp;
 typedef signed_8                        omf_dbg_style;
 
+TYPEDEF_LOCAL_TYPE( omf_thread_fixup );
+
+ORL_STRUCT( omf_thread_fixup ) {
+    omf_idx             idx;
+    unsigned char       method;
+};
+
 ORL_STRUCT( omf_tmp_lidata ) {
     omf_rec_size        size;
     omf_rec_size        used;
@@ -128,13 +139,11 @@ ORL_STRUCT( omf_tmp_lidata ) {
 ORL_STRUCT( omf_tmp_fixup ) {
     omf_tmp_fixup       next;
     bool                is32;
-    int                 mode;
-    int                 location;
+    bool                mode;
+    omf_fix_loc         fix_loc;
     omf_sec_offset      offset;
-    int                 fmethod;
-    omf_idx             fidx;
-    int                 tmethod;
-    omf_idx             tidx;
+    ORL_STRUCT( omf_thread_fixup ) fthread;
+    ORL_STRUCT( omf_thread_fixup ) tthread;
     omf_sec_addend      disp;
 };
 
@@ -157,13 +166,6 @@ ORL_STRUCT( omf_handle ) {
     omf_file_handle     first_file_hnd;
 };
 
-TYPEDEF_LOCAL_TYPE( omf_thred_fixup );
-
-ORL_STRUCT( omf_thred_fixup ) {
-    omf_idx             idx;
-    unsigned char       method;
-};
-
 ORL_STRUCT( omf_file_handle ) {
     omf_handle          omf_hnd;
     omf_file_handle     next;
@@ -177,8 +179,8 @@ ORL_STRUCT( omf_file_handle ) {
     omf_sec_handle      relocs;
     omf_sec_handle      comments;
 
-    ORL_STRUCT( omf_thred_fixup )   frame_thred[4];
-    ORL_STRUCT( omf_thred_fixup )   target_thred[4];
+    ORL_STRUCT( omf_thread_fixup )   frame_thread[4];
+    ORL_STRUCT( omf_thread_fixup )   target_thread[4];
 
     omf_sec_handle      first_sec;
     omf_sec_handle      last_sec;

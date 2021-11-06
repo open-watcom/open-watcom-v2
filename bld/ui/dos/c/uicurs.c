@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,22 +33,13 @@
 
 #include <dos.h>
 #include "uidef.h"
-#include "uidos.h"
 #include "uiattrs.h"
 #include "uicurshk.h"
-#include "biosui.h"
 #include "uicurshk.h"
+#include "int10.h"
 
 
 #define _swap(t,a,b)    {t i; i=a; a=b; b=i;}
-
-#define BIOS_CURSOR_OFF 0x20
-
-#ifdef _M_I86
-    #define intx86      int86
-#else
-    #define intx86      int386
-#endif
 
 static CATTR            OldCursorAttr;
 static CURSORORD        OldCursorRow;
@@ -58,14 +49,12 @@ static CURSOR_TYPE      OldCursorType;
 void UIHOOK _uioffcursor( void )
 /******************************/
 {
-    union REGS      r;
+    int10_cursor_typ    ct;
 
     if( UIData->cursor_on ) {
         /* set OldCursor size */
-        r.h.ah = 1;
-        r.h.ch = BIOS_CURSOR_OFF;
-        r.h.cl = 0;
-        intx86( BIOS_VIDEO, &r, &r );
+        ct.value = NORM_CURSOR_OFF;
+        _BIOSVideoSetCursorTyp( ct );
         UIData->cursor_on = false;
     }
     UIData->cursor_type = C_OFF;
@@ -75,41 +64,29 @@ void UIHOOK _uioffcursor( void )
 void UIHOOK _uioncursor( void )
 /*****************************/
 {
-    union REGS      r;
+    int10_mode_info     info;
+    int10_cursor        c;
+    int10_pixel_data    cursor_pixel;
 
-    /* set OldCursor type */
-    r.h.ah = 1;
     if( ( UIData->colour == M_CGA ) || ( UIData->colour == M_EGA ) ) {
-        r.h.cl = 0x07;
+        c.typ.value = CGA_CURSOR_ON;
     } else {
-        r.h.cl = 0x0c;
+        c.typ.value = MONO_CURSOR_ON;
     }
     if( UIData->cursor_type == C_INSERT ) {
-        r.h.ch = r.h.cl / 2;
-    } else {
-        r.h.ch = r.h.cl - 1;
+        c.typ.s.top_line = ( c.typ.s.bot_line + 1 ) / 2;
     }
-    intx86( BIOS_VIDEO, &r, &r );
-    /* get video state */
-    r.h.ah = 15;
-    intx86( BIOS_VIDEO, &r, &r );
-    /* set OldCursor position */
-    r.h.ah = 2;
-    r.h.dh = (unsigned char)UIData->cursor_row;
-    r.h.dl = (unsigned char)UIData->cursor_col;
-    intx86( BIOS_VIDEO, &r, &r );
+    _BIOSVideoSetCursorTyp( c.typ );
+    info = _BIOSVideoGetModeInfo();
+    c.pos.s.row = UIData->cursor_row;
+    c.pos.s.col = UIData->cursor_col;
+    _BIOSVideoSetCursorPos( info.page, c.pos );
     if( UIData->cursor_attr != CATTR_VOFF ) {
-        /* get video state */
-        r.h.ah = 15;
-        intx86( BIOS_VIDEO, &r, &r );
         /* get current character and attribute */
-        r.h.ah = 8;
-        intx86( BIOS_VIDEO, &r, &r );
+        cursor_pixel = _BIOSVideoGetCharPixel( info.page );
         /* write out the character and the new attribute */
-        r.h.bl = UIData->cursor_attr;
-        r.w.cx = 1;
-        r.h.ah = 9;
-        intx86( BIOS_VIDEO, &r, &r );
+        cursor_pixel.s.attr = UIData->cursor_attr;
+        _BIOSVideoSetCharPixel( info.page, cursor_pixel );
     }
     UIData->cursor_on = true;
 }
@@ -117,29 +94,23 @@ void UIHOOK _uioncursor( void )
 static void savecursor( void )
 /****************************/
 {
-    union REGS      r;
+    int10_mode_info     info;
+    int10_cursor        c;
 
-    /* get current video state */
-    r.h.ah = 15;
-    intx86( BIOS_VIDEO, &r, &r );
-    /* read OldCursor position */
-    r.h.ah = 3;
-    intx86( BIOS_VIDEO, &r, &r );
-    OldCursorRow = r.h.dh;
-    OldCursorCol = r.h.dl;
-    if( r.h.cl - r.h.ch > 1 ) {
+    info = _BIOSVideoGetModeInfo();
+    c = _BIOSVideoGetCursor( info.page );
+    OldCursorRow = c.pos.s.row;
+    OldCursorCol = c.pos.s.col;
+    if( c.typ.s.bot_line - c.typ.s.top_line > 1 ) {
         OldCursorType = C_INSERT;
     } else {
         OldCursorType = C_NORMAL;
     }
-    UIData->cursor_on = ( ( r.h.ch & BIOS_CURSOR_OFF ) == 0 );
+    UIData->cursor_on = ( (c.typ.s.top_line & CURSOR_INVISIBLE) == 0 );
     if( !UIData->cursor_on ) {
         OldCursorType = C_OFF;
     }
-    /* read character and attribute */
-    r.h.ah = 8;
-    intx86( BIOS_VIDEO, &r, &r );
-    OldCursorAttr = r.h.ah;
+    OldCursorAttr = _BIOSVideoGetAttr( info.page );
 }
 
 
@@ -168,17 +139,14 @@ static void swapcursor( void )
 void UIHOOK _uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, CATTR *cattr )
 /********************************************************************************************/
 {
-    union REGS      r;
+    int10_mode_info     info;
+    int10_cursor        c;
 
-    /* get current video state */
-    r.h.ah = 15;
-    intx86( BIOS_VIDEO, &r, &r );
-    /* read OldCursor position */
-    r.h.ah = 3;
-    intx86( BIOS_VIDEO, &r, &r );
-    *crow = r.h.dh;
-    *ccol = r.h.dl;
-    if( r.h.cl > r.h.ch + 1 ) {
+    info = _BIOSVideoGetModeInfo();
+    c = _BIOSVideoGetCursor( info.page );
+    *crow = c.pos.s.row;
+    *ccol = c.pos.s.col;
+    if( c.typ.s.bot_line - c.typ.s.top_line > 1 ) {
         *ctype = C_INSERT;
     } else {
         *ctype = C_NORMAL;
@@ -186,20 +154,17 @@ void UIHOOK _uigetcursor( CURSORORD *crow, CURSORORD *ccol, CURSOR_TYPE *ctype, 
     if( !UIData->cursor_on ) {
         *ctype = C_OFF;
     }
-    /* read character and attribute */
-    r.h.ah = 8;
-    intx86( BIOS_VIDEO, &r, &r );
-    *cattr = r.h.ah;
+    *cattr = _BIOSVideoGetAttr( info.page );
 }
 
 
 void UIHOOK _uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctyp, CATTR cattr )
 /***************************************************************************************/
 {
-    if( ( ctyp != UIData->cursor_type ) ||
-        ( crow != UIData->cursor_row ) ||
-        ( ccol != UIData->cursor_col ) ||
-        ( cattr != UIData->cursor_attr ) ) {
+    if( ( ctyp != UIData->cursor_type )
+      || ( crow != UIData->cursor_row )
+      || ( ccol != UIData->cursor_col )
+      || ( cattr != UIData->cursor_attr ) ) {
         UIData->cursor_type = ctyp;
         UIData->cursor_row = crow;
         UIData->cursor_col = ccol;

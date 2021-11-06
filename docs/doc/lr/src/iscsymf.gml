@@ -20,7 +20,7 @@ The
 function tests for a letter or underscore.
 .sr _func=&__func.
 .im ansiconf
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 A non-zero value is returned when the character is a letter or
@@ -30,7 +30,7 @@ The
 .id &wfunc.
 function returns a non-zero value when
 .arg c
-is a wide-character representation of a letter or underscore character.
+is a wide character representation of a letter or underscore character.
 .do end
 .return end
 .see begin

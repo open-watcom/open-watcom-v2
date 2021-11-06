@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +33,13 @@
 #include "variety.h"
 #include <string.h>
 #include <fcntl.h>
+#include <dos.h>
 #include "seterrno.h"
+#include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
+
 
 #ifdef _M_I86
   #ifdef __BIG_DATA__
@@ -68,50 +73,94 @@ extern unsigned __dos_getfileattr_sfn( const char *path, unsigned *attrib );
         _MOV_AX_W   _GET_ DOS_CHMOD \
         _INT_21             \
         _RST_DS             \
-        RETURN_VALUE        \
-        "call __doserror_"  \
+        "jc short L1"       \
+        SAVE_VALUE          \
+    "L1: call __doserror_"  \
     AUX_INFO
 
 #ifdef __WATCOM_LFN__
-static tiny_ret_t _dos_getfileattr_lfn( const char *path )
-/********************************************************/
+
+#ifdef _M_I86
+extern lfn_ret_t __dos_getfileattr_lfn( const char *path );
+  #ifdef __BIG_DATA__
+    #pragma aux __dos_getfileattr_lfn = \
+            "push   ds"         \
+            "xchg   ax,dx"      \
+            "mov    ds,ax"      \
+            "xor    bl,bl"      \
+            "mov    ax,7143h"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    ds"         \
+            "sbb    dx,dx"      \
+            "jnz short L2"      \
+            "cmp    ax,7100h"   \
+            "jz short L1"       \
+            "mov    ax,cx"      \
+            "jmp short L2"      \
+        "L1: mov    dx,-1"      \
+        "L2:"                   \
+        __parm __caller     [__dx __ax] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __bl __cx __dx]
+  #else
+    #pragma aux __dos_getfileattr_lfn = \
+            "xor    bl,bl"      \
+            "mov    ax,7143h"   \
+            "stc"               \
+            "int 21h"           \
+            "sbb    dx,dx"      \
+            "jnz short L2"      \
+            "cmp    ax,7100h"   \
+            "jz short L1"       \
+            "mov    ax,cx"      \
+            "jmp short L2"      \
+        "L1: mov    dx,-1"      \
+        "L2:"                   \
+        __parm __caller     [__dx] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __bl __cx __dx]
+  #endif
+#endif
+
+static lfn_ret_t _dos_getfileattr_lfn( const char *path )
+/*******************************************************/
 {
   #ifdef _M_I86
     return( __dos_getfileattr_lfn( path ) );
   #else
     call_struct     dpmi_rm;
+    lfn_ret_t       rc;
 
     strcpy( RM_TB_PARM1_LINEAR, path );
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.ds  = RM_TB_PARM1_SEGM;
     dpmi_rm.edx = RM_TB_PARM1_OFFS;
-    dpmi_rm.ecx = 0;
-    dpmi_rm.ebx = 0;
     dpmi_rm.eax = 0x7143;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
+    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+        return( dpmi_rm.cx );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( dpmi_rm.cx );
+    return( rc );
   #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ */
 
 _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attrib )
 /***********************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    if( _RWD_uselfn ) {
+        lfn_ret_t   rc;
 
-    if( _RWD_uselfn && TINY_OK( rc = _dos_getfileattr_lfn( path ) ) ) {
-        *attrib = TINY_INFO( rc );
-        return( 0 );
-    }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+        rc = _dos_getfileattr_lfn( path );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            *attrib = LFN_INFO( rc );
+            return( 0 );
+        }
     }
 #endif
     return( __dos_getfileattr_sfn( path, attrib ) );

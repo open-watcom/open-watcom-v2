@@ -15,22 +15,22 @@ The
 function closes the directory specified by
 .arg dirp
 and frees the memory allocated by
-.kw opendir
-.ct .li .
+.reffunc opendir
+.period
 .if '&machsys' eq 'QNX' .do begin
 .np
 The result of using a directory stream after one of the
-.kw exec
+.reffunc exec&grpsfx
 or
-.kw spawn
+.reffunc spawn&grpsfx
 family of functions is undefined.
 After a call to the
-.kw fork
+.reffunc fork
 function, either the parent or the child (but not both) may continue
 processing the directory stream using
-.kw readdir
+.reffunc readdir
 or
-.kw rewinddir
+.reffunc rewinddir
 or both.
 If both the parent and child processes use these functions, the result
 is undefined.
@@ -45,9 +45,9 @@ The
 function is identical to
 .id &funcb.
 except that it closes a
-directory of wide-character filenames opened by
-.kw _wopendir
-.ct .li .
+directory of wide character filenames opened by
+.reffunc _wopendir
+.period
 .do end
 .desc end
 .return begin

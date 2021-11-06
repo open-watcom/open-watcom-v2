@@ -69,7 +69,7 @@ typedef struct indir {
  */
 HINDIR GetIndirectFunctionHandle( FARPROC proc, ... )
 {
-    va_list         al;
+    va_list         args;
     indir           *curr;
     short           i, len;
     short           num = 0;
@@ -78,9 +78,9 @@ HINDIR GetIndirectFunctionHandle( FARPROC proc, ... )
     /*
      * get count and validate list
      */
-    va_start( al, proc );
+    va_start( args, proc );
     for( ;; ) {
-        len = va_arg( al, int );
+        len = va_arg( args, int );
         if( len == INDIR_ENDLIST )
             break;
         if( len == INDIR_CDECL ) {
@@ -90,13 +90,16 @@ HINDIR GetIndirectFunctionHandle( FARPROC proc, ... )
             len == INDIR_WORD || len == INDIR_DWORD ) {
             num++;
         } else {
-            return( NULL );
+            break;
         }
         if( num > 128 ) {
-            return( NULL ); /* ya, so its arbitrary */
+            break; /* ya, so its arbitrary */
         }
     }
-    va_end( al );
+    va_end( args );
+    if( len != INDIR_ENDLIST ) {
+        return( NULL );
+    }
 
     /*
      * get and add new list item
@@ -114,16 +117,16 @@ HINDIR GetIndirectFunctionHandle( FARPROC proc, ... )
      * get item sizes
      */
     i = 0;
-    va_start( al, proc );
+    va_start( args, proc );
     while( num > 0 ) {
-        len = va_arg( al, short );
+        len = va_arg( args, short );
         if( len != INDIR_CDECL ) {
             curr->lens[i++] = len;
         }
         num--;
     }
+    va_end( args );
 
-    va_end( al );
     return( curr );
 
 } /* GetIndirectFunctionHandle */
@@ -134,14 +137,14 @@ HINDIR GetIndirectFunctionHandle( FARPROC proc, ... )
 DWORD InvokeIndirectFunction( HINDIR handle, ... )
 {
     indir       *curr;
-    DWORD       *vals=NULL,rc;
+    DWORD       *vals = NULL;
+    DWORD       rc;
     short       i;
-    va_list     al;
+    va_list     args;
 
     curr = (indir *)handle;
     if( curr == NULL )
         return( -1L );
-    va_start( al, handle );
 
     /*
      * build type list
@@ -150,17 +153,20 @@ DWORD InvokeIndirectFunction( HINDIR handle, ... )
         vals = malloc( sizeof( DWORD ) * curr->num );
         if( vals == NULL )
             return( -1L );
+        va_start( args, handle );
         for( i = 0; i < curr->num; i++ ) {
             if( curr->lens[i] == -1 ) {
-                vals[i] = va_arg( al, unsigned long );
+                vals[i] = va_arg( args, unsigned long );
                 vals[i] = AllocAlias16( (void *)vals[i] );
                 if( vals[i] == -1 ) {
+                    va_end( args );
                     return( -1L );
                 }
             } else {
-                vals[i] = va_arg( al, DWORD );
+                vals[i] = va_arg( args, DWORD );
             }
         }
+        va_end( args );
     }
 
     /*

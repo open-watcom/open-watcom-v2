@@ -9,12 +9,12 @@ The
 .id &funcb.
 function closes the directory of filenames established by a
 call to the
-.kw _findfirst
+.reffunc _findfirst
 function.
 The
 .arg handle
 argument was returned by the
-.kw _findfirst
+.reffunc _findfirst
 function.
 .desc end
 .return begin

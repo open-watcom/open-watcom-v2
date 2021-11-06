@@ -3,7 +3,7 @@
 .pp
 An object may be declared with the keyword
 .kw const
-..ct ..li .
+.period
 Such an object may not be modified directly by the program.
 For objects with static storage duration,
 this type qualifier describes to the compiler
@@ -20,8 +20,7 @@ modify its value indirectly by storing its address
 in another object
 declared to be a pointer to the same type (without the
 .mono const
-..ct ),
-and then using the second
+.ct ), and then using the second
 object to modify the value to which it points.
 However, this should be done with caution,
 and may fail on computers with protected
@@ -29,48 +28,42 @@ memory.
 .pp
 If the declaration of an object does not include
 .mono *
-..ct ,
-that is to say it is not a pointer of any kind, then the keyword
+.ct , that is to say it is not a pointer of any kind, then the keyword
 .kw const
 appearing anywhere in the type specifier (including any
 .kw typedef
-..ct 's)
-indicates that the object is constant and may not be changed.
+.ct 's) indicates that the object is constant and may not be changed.
 If the object is a pointer and
 .kw const
 appears to the left of the
 .mono *
-..ct ,
-the object is a pointer to a constant value, meaning that
+.ct , the object is a pointer to a constant value, meaning that
 the value to which the pointer points may not be modified,
 although the pointer value may be changed.
 If
 .kw const
 appears to the right of the
 .mono *
-..ct ,
-the object is a constant pointer to a value, meaning that the pointer
+.ct , the object is a constant pointer to a value, meaning that the pointer
 to the value may not be changed,
 although what the pointer points to may be changed.
 If
 .kw const
 appears on both sides of the
 .mono *
-..ct ,
-the object is a constant pointer to a constant value, meaning that the
+.ct , the object is a constant pointer to a constant value, meaning that the
 pointer and the object to which it points
 may not be changed.
 .pp
 If the declaration of a structure, union or array includes
 .kw const
-..ct ,
-then each member of the type, when referred to, is treated as if
+.ct , then each member of the type, when referred to, is treated as if
 .kw const
 had been specified.
 .*.pp
 .*If the type of an object is declared only with the keyword
 .*.kw const
-.*..ct , then
+.*.ct , then
 .*.kw int
 .*is implied.
 .keep begin
@@ -120,8 +113,7 @@ The value of
 may be modified
 via
 .mono byptr
-..ct ,
-but the value of
+.ct , but the value of
 .mono byptr
 itself may not be changed.
 In this case,

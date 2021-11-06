@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,19 +38,16 @@
 #include "ftnstd.h"
 #include <time.h>
 #include "ftnapi.h"
+#include "getctime.h"
 
 
-extern  uint            __getctime(struct tm *);
-
-
-void    __fortran GETTIM( intstar2 *hrs, intstar2 *mins, intstar2 *secs, intstar2 *tics ) {
-//========================================================
-
+void    __fortran GETTIM( intstar2 *hrs, intstar2 *mins, intstar2 *secs, intstar2 *tics )
+//=======================================================================================
+{
     struct tm   tod;
 
-    *tics = __getctime( &tod );
+    *tics = __getctime( &tod ) / 10;    /* we want hundredths of a second */
     *hrs = tod.tm_hour;
     *mins = tod.tm_min;
     *secs = tod.tm_sec;
-    *tics /= 10; // we want hundredths of a second
 }

@@ -10,13 +10,13 @@ The
 function returns the current read/write position
 of the file specified by
 .arg fp
-.ct .li .
+.period
 This position defines the character that will be read or written by the
 next I/O operation on the file.
 The value returned by
 .id &funcb.
 can be used in a subsequent call to
-.kw fseek
+.reffunc fseek
 to set the file to the same position.
 .desc end
 .return begin
@@ -25,7 +25,7 @@ The
 function returns the current read/write position
 of the file specified by
 .arg fp
-.ct .li .
+.period
 When an error is detected,
 .mono -1L
 is returned.

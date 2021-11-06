@@ -28,7 +28,7 @@
 #define MMIOM_GETFILELENGTH MMIOM_USER+10
 #define MMIOM_GETTRACKLENGTH MMIOM_USER+11
 
-#pragma pack(1)
+:include pshpack1.sp
 
 typedef struct _MIDIHEADER {
     CHAR   chHeaderChunk[4];
@@ -46,7 +46,7 @@ typedef struct _MMMIDIHEADER {
     MIDIHEADER midiheader;
 } MMMIDIHEADER, *PMMMIDIHEADER;
 
-#pragma pack()
+:include poppack.sp
 
 :include cplusepi.sp
 

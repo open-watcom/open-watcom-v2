@@ -14,7 +14,7 @@ function constructs a value with type
 that describes a class of wide characters identified by the string
 argument,
 .arg property
-.ct .li .
+.period
 The constructed value is affected by the
 .kw LC_CTYPE
 category of the current locale; the constructed value becomes
@@ -31,32 +31,32 @@ function.
 .*
 .termnx alnum
 any wide character for which one of
-.kw iswalpha
+.reffunc iswalpha
 or
-.kw iswdigit
+.reffunc iswdigit
 is true
 .*
 .termnx alpha
 any wide character for which
-.kw iswupper
+.reffunc iswupper
  or
-.kw iswlower
+.reffunc iswlower
 is true, that is, for any wide character that is one of an
 implementation-defined set for which none of
-.kw iswcntrl
+.reffunc iswcntrl
 .ct ,
-.kw iswdigit
+.reffunc iswdigit
 .ct ,
-.kw iswpunct
+.reffunc iswpunct
 .ct , or
-.kw iswspace
+.reffunc iswspace
 is true
 .*
 .termnx blank
 any wide character corresponding to a standard blank character
 (space or horizontal tab) or is one of an implementation-defined set of wide
 characters for which
-.kw iswblank
+.reffunc iswblank
 is true
 .*
 .termnx cntrl
@@ -71,13 +71,13 @@ any printable wide character except a space wide character
 .termnx lower
 any wide character corresponding to a lowercase letter, or one of an
 implementation-defined set of wide characters for which none of
-.kw iswcntrl
+.reffunc iswcntrl
 .ct ,
-.kw iswdigit
+.reffunc iswdigit
 .ct ,
-.kw iswpunct
+.reffunc iswpunct
 .ct , or
-.kw iswspace
+.reffunc iswspace
 is true
 .*
 .termnx print
@@ -86,26 +86,26 @@ any printable wide character including a space wide character
 .termnx punct
 any printable wide character that is not a space wide character or a
 wide character for which
-.kw iswalnum
+.reffunc iswalnum
 is true
 .*
 .termnx space
 any wide character corresponding to a standard white-space character
 or is one of an implementation-defined set of wide
 characters for which
-.kw iswalnum
+.reffunc iswalnum
 is false
 .*
 .termnx upper
 any wide character corresponding to a uppercase letter, or if c is one
 of an implementation-defined set of wide characters for which none of
-.kw iswcntrl
+.reffunc iswcntrl
 .ct ,
-.kw iswdigit
+.reffunc iswdigit
 .ct ,
-.kw iswpunct
+.reffunc iswpunct
 .ct , or
-.kw iswspace
+.reffunc iswspace
 is true
 .*
 .termnx xdigit
@@ -122,7 +122,7 @@ category of the current locale, the
 .id &funcb.
 function returns a non-zero
 value that is valid as the second argument to the
-.kw iswctype
+.reffunc iswctype
 function; otherwise, it returns zero.
 .return end
 .*

@@ -1,5 +1,5 @@
-.gfunc getfillmask
-.gsynop begin 
+.gfunc _getfillmask
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 unsigned char _FAR * _FAR
     _getfillmask( unsigned char _FAR *mask );
@@ -15,17 +15,17 @@ The
 &routine copies the current fill mask into the area
 located by the argument
 .arg mask
-.ct .li .
+.period
 The fill mask is used by the
-.kw _ellipse
+.reffunc _ellipse
 .ct ,
-.kw _floodfill
+.reffunc _floodfill
 .ct ,
-.kw _pie
+.reffunc _pie
 .ct ,
-.kw _polygon
+.reffunc _polygon
 and
-.kw _rectangle
+.reffunc _rectangle
 &routines that fill an area of the screen.
 .pp
 .im gr_fillm
@@ -39,7 +39,7 @@ the
 .id &funcb.
 &routine returns
 .arg mask
-.ct .li .
+.period
 .return end
 .do end
 .see begin

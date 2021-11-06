@@ -18,7 +18,8 @@ The
 .id &funcb.
 function returns the difference
 between the two times in seconds as a
-.id double.
+.id double
+.period
 .return end
 .see begin
 .im seetime

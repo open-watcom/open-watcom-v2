@@ -3,8 +3,8 @@
 #include <jstring.h>
 JSTRING jstrset( JCHAR *s1, JMOJI fill );
 .ixfunc2 '&Jstring' &funcb
-.if &farfnc eq 1 .do begin
-FJSTRING __far _fjstrset( JCHAR __far *s1, JMOJI fill );
+.if &farfnc ne 0 .do begin
+FJSTRING _fjstrset( JCHAR __far *s1, JMOJI fill );
 .ixfunc2 '&Jstring' &ffunc
 .do end
 .synop end
@@ -25,7 +25,7 @@ the string pointed to by
 .arg s1
 with the value of the argument
 .arg fill
-.ct .li .
+.period
 If
 .arg fill
 is a single-byte character, its value must be in the low-order byte
@@ -49,7 +49,7 @@ ASCII blank (hex '20').
 .np
 The terminating null character in the original string remains
 unchanged.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The address of the original string
@@ -57,7 +57,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist jstrnset jstrset strnset strset
+.seelist jstrnset jstrset _strnset _strset
 .see end
 .exmp begin
 #include <stdio.h>

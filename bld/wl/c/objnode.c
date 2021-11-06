@@ -158,9 +158,11 @@ mod_entry *NewModEntry( void )
     mod_entry           *entry;
 
     entry = CarveZeroAlloc( CarveModEntry );
+#ifdef _EXE
     if( LinkFlags & LF_STRIP_CODE ) {
         InitArcList( entry );
     }
+#endif
     return( entry );
 }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -167,7 +168,7 @@ extern short GetCS( void );
 void StartTimer( void )
 {
     TimerMod = TimerMult;
-    old_timer_handler = HookTimer( MK_FP( GetCS(), (unsigned)&timer_handler ) );
+    old_timer_handler = HookTimer( _MK_FP( GetCS(), (unsigned)&timer_handler ) );
 
     /*
     //  Only access the clock if we have overridden the default

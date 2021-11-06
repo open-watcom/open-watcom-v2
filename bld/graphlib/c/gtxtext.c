@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +52,8 @@ _WCRTLINK void _WCI86FAR _CGRAPH _gettextextent( short x, short y, char _WCI86FA
     y = _GetPhysY( y );
     _L1TXX( x, y, str, concat, extent );
     for( i = 0; i < 4; i++ ) {
-        extent[ i ].xcoord = _GetLogX( extent[ i ].xcoord );
-        extent[ i ].ycoord = _GetLogY( extent[ i ].ycoord );
+        extent[i].xcoord = _GetLogX( extent[i].xcoord );
+        extent[i].ycoord = _GetLogY( extent[i].ycoord );
     }
     concat->xcoord = _GetLogX( concat->xcoord );
     concat->ycoord = _GetLogY( concat->ycoord );

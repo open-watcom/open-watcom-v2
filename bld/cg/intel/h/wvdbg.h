@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,45 +35,9 @@
 
 
 enum {
-        REG_AL,
-        REG_AH,
-        REG_BL,
-        REG_BH,
-        REG_CL,
-        REG_CH,
-        REG_DL,
-        REG_DH,
-        REG_AX,
-        REG_BX,
-        REG_CX,
-        REG_DX,
-        REG_SI,
-        REG_DI,
-        REG_BP,
-        REG_SP,
-        REG_CS,
-        REG_SS,
-        REG_DS,
-        REG_ES,
-        REG_ST0,
-        REG_ST1,
-        REG_ST2,
-        REG_ST3,
-        REG_ST4,
-        REG_ST5,
-        REG_ST6,
-        REG_ST7,
-        REG_EAX,
-        REG_EBX,
-        REG_ECX,
-        REG_EDX,
-        REG_ESI,
-        REG_EDI,
-        REG_EBP,
-        REG_ESP,
-        REG_FS,
-        REG_GS,
-        REG_LAST = REG_GS
+    #define pick(name,ci,start,len)  REG_##name,
+    #include "watdbreg.h"
+    #undef pick
 };
 
 /* % */
@@ -189,7 +154,7 @@ enum {
 #define SET_BASE_286            0x01
 #define SET_BASE_386            0x02
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         #define FORTRAN_TYPE    FORTRAN_TYPE_286
         #define POINTER_NEAR    POINTER_NEAR_286
         #define POINTER_FAR     POINTER_FAR_286

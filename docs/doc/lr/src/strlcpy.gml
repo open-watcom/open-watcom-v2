@@ -24,10 +24,10 @@ characters from the string pointed to by
 .arg src
 into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Copying of overlapping objects is not guaranteed to work properly.
 See the
-.kw memmove
+.reffunc memmove
 function if you wish to copy objects that overlap.
 .np
 If the string pointed to by
@@ -37,7 +37,7 @@ is longer than
 characters, then only
 .arg n
 - 1 characters will be copied and the result will be null terminated.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The
@@ -56,7 +56,7 @@ string, not including the terminating null character.
 void main( void )
 {
     char    buffer[10];
-.exmp break 
+.exmp break
     printf( "%d:'%s'\n", strlcpy( buffer,
         "Buffer overflow", sizeof( buffer ) ), buffer );
 }

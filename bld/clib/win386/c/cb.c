@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -234,7 +235,7 @@ static CALLBACKPTR DoEmitCode( int argcnt, int bytecnt, char *array,
 } /* DoEmitCode */
 
 
-CALLBACKPTR vGetCallbackRoutine( PROCPTR fn, va_list vl )
+CALLBACKPTR vGetCallbackRoutine( PROCPTR fn, va_list args )
 {
     int         type;
     int         bytecnt = 0;
@@ -242,7 +243,7 @@ CALLBACKPTR vGetCallbackRoutine( PROCPTR fn, va_list vl )
     char        array[MAX_CB_PARMS];
     int         is_cdecl = FALSE;
 
-    while( (type = va_arg( vl, int ) ) != GCB_ENDLIST ) {
+    while( (type = va_arg( args, int ) ) != GCB_ENDLIST ) {
         if( type == GCB_CDECL ) {
             is_cdecl = TRUE;
             continue;
@@ -263,12 +264,12 @@ CALLBACKPTR vGetCallbackRoutine( PROCPTR fn, va_list vl )
 
 CALLBACKPTR GetCallbackRoutine( PROCPTR fn, ... )
 {
-    va_list     vl;
+    va_list     args;
     CALLBACKPTR cbp;
 
-    va_start( vl, fn );
-    cbp = vGetCallbackRoutine( fn, vl );
-    va_end( vl );
+    va_start( args, fn );
+    cbp = vGetCallbackRoutine( fn, args );
+    va_end( args );
     return( cbp );
 }
 

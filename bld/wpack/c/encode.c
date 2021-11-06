@@ -697,7 +697,7 @@ static void WriteHeaders( arc_header *header, info_list *list, int numfiles,
 static void ReplaceExt( char *name, const char *new_ext )
 /*******************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
     _makepath( name, pg.drive, pg.dir, pg.fname, new_ext );

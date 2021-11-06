@@ -14,8 +14,8 @@ function enables the floating point exceptions specified by the
 argument.
 .np
 For valid exception values see
-.seekw &function. fegetexceptflag
-.ct .li .
+.reffunc fegetexceptflag
+.period
 .desc end
 .*
 .return begin

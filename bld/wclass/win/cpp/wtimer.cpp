@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,21 +32,18 @@
 
 
 #include "wtimer.hpp"
+#include "wclbproc.h"
 
 WObjectMap WEXPORT WTimer::_timerMap;
 static int _timerId = 1;
 
-extern "C" {
-
-VOID _WEXPORT CALLBACK timerProc( HWND, UINT, UINT_PTR id, DWORD sysTime ) {
-/********************************************************************************/
+extern "C" VOID _WEXPORT CALLBACK timerProc( HWND, UINT, UINT_PTR id, DWORD sysTime ) {
+/*************************************************************************************/
 
     WTimer *timer = (WTimer *)WTimer::_timerMap.findThis( (WHANDLE)id );
     if( timer != NULL ) {
         timer->tick( sysTime );
     }
-}
-
 }
 
 WEXPORT WTimer::WTimer( WObject *owner, cbt notify, unsigned stack )
@@ -56,7 +54,7 @@ WEXPORT WTimer::WTimer( WObject *owner, cbt notify, unsigned stack )
         , _stackSize( stack ) {
 /*****************************/
 
-    _procInst = MakeProcInstance( (FARPROC)timerProc, GUIMainHInst );
+    _procInst = MakeProcInstance_TIMER( timerProc, GUIMainHInst );
 }
 
 
@@ -64,9 +62,7 @@ WEXPORT WTimer::~WTimer() {
 /*************************/
 
     stop();
-#ifndef __NT__
-    FreeProcInstance( _procInst );
-#endif
+    FreeProcInstance_TIMER( _procInst );
 }
 
 
@@ -74,7 +70,7 @@ bool WEXPORT WTimer::start( int interval, int count ) {
 /******************************************************/
 
     _count = count;
-    _id = SetTimer( NULL, _timerId++, interval, (TIMERPROC)_procInst );
+    _id = SetTimer( NULL, _timerId++, interval, _procInst );
     _timerMap.setThis( this, (WHANDLE)_id );
     return( _id != 0 );
 }

@@ -19,15 +19,15 @@ unsigned _dos_findclose( struct find_t *buffer );
 .ixfunc2 '&DosFunc' _dos_findnext
 
 struct find_t {
-    char reserved[21];      /* reserved for use by DOS   */
-    char attrib;            /* attribute byte for file   */
-    unsigned short wr_time; /* time of last write to file*/
-    unsigned short wr_date; /* date of last write to file*/
-    unsigned long  size;    /* length of file in bytes   */
+    char           reserved[21]; /* reserved for use by DOS    */
+    char           attrib;       /* attribute byte for file    */
+    unsigned short wr_time;      /* time of last write to file */
+    unsigned short wr_date;      /* date of last write to file */
+    unsigned long  size;         /* length of file in bytes    */
 #if defined(__OS2__) || defined(__NT__)
-    char name[256];         /* null-terminated filename  */
+    char           name[256];    /* null-terminated filename   */
 #else
-    char name[13];          /* null-terminated filename  */
+    char           name[13];     /* null-terminated filename   */
 #endif
 };
 .if &'length(&wfunc.) ne 0 .do begin
@@ -45,22 +45,22 @@ unsigned _wdos_findclose( struct _wfind_t *buffer );
 .ixfunc2 '&Wide' _wdos_findnext
 
 struct _wfind_t {
-    char reserved[21];      /* reserved for use by DOS    */
-    char attrib;            /* attribute byte for file    */
-    unsigned short wr_time; /* time of last write to file */
-    unsigned short wr_date; /* date of last write to file */
-    unsigned long  size;    /* length of file in bytes    */
+    char           reserved[21]; /* reserved for use by DOS    */
+    char           attrib;       /* attribute byte for file    */
+    unsigned short wr_time;      /* time of last write to file */
+    unsigned short wr_date;      /* date of last write to file */
+    unsigned long  size;         /* length of file in bytes    */
 #if defined(__OS2__) || defined(__NT__)
-    wchar_t name[256];      /* null-terminated filename   */
+    wchar_t        name[256];    /* null-terminated filename   */
 #else
-    wchar_t name[13];       /* null-terminated filename   */
+    wchar_t        name[13];     /* null-terminated filename   */
 #endif
 };
 .do end
 .synop end
 .desc begin
 The
-.kw _dos_findfirst
+.reffunc _dos_findfirst
 function uses system call 0x4E to return information on the first file
 whose name and attributes match the
 .arg path
@@ -71,7 +71,7 @@ The information is returned in a
 .kw find_t
 structure pointed to by
 .arg buffer
-.ct .li .
+.period
 The
 .arg path
 argument may contain wildcard characters ('?' and '*').
@@ -117,9 +117,9 @@ field is described by the following structure
 (this structure is not defined in any &company header file).
 .blkcode begin
 typedef struct {
-    unsigned short  twosecs : 5;    /* seconds / 2 */
+    unsigned short  twosecs : 5;    /* seconds / 2    */
     unsigned short  minutes : 6;    /* minutes (0,59) */
-    unsigned short  hours   : 5;    /* hours (0,23) */
+    unsigned short  hours   : 5;    /* hours (0,23)   */
 } ftime_t;
 .blkcode end
 .np
@@ -129,37 +129,37 @@ field is described by the following structure
 (this structure is not defined in any &company header file).
 .blkcode begin
 typedef struct {
-    unsigned short  day     : 5;    /* day (1,31) */
+    unsigned short  day     : 5;    /* day (1,31)   */
     unsigned short  month   : 4;    /* month (1,12) */
-    unsigned short  year    : 7;    /* 0 is 1980 */
+    unsigned short  year    : 7;    /* 0 is 1980    */
 } fdate_t;
 .blkcode end
 .np
 The
-.kw _dos_findnext
+.reffunc _dos_findnext
 function uses system call 0x4F to return information on the next file
 whose name and attributes match the pattern supplied to the
-.kw _dos_findfirst
+.reffunc _dos_findfirst
 function.
 .np
 On some systems (e.g. Win32, OS/2), you must call
-.kw _dos_findclose
+.reffunc _dos_findclose
 to indicate that you are done matching files.
 This function deallocates any resources that were allocated by the
-.kw _dos_findfirst
+.reffunc _dos_findfirst
 function.
 .*==========================================
-.im widefun5
+.widegrp &wfunc.
 .*==========================================
 .desc end
 .return begin
 The
-.kw _dos_find&grpsfx
+.reffunc _dos_find&grpsfx
 functions return zero if successful.
 Otherwise, the
-.kw _dos_findfirst
+.reffunc _dos_findfirst
 and
-.kw _dos_findnext
+.reffunc _dos_findnext
 functions return an OS error code and set
 .kw errno
 accordingly.

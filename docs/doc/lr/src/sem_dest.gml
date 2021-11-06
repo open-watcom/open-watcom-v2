@@ -1,7 +1,7 @@
 .func sem_destroy
 .synop begin
 #include <semaphore.h>
-int sem_destroy(sem_t *semaphore);    
+int sem_destroy(sem_t *semaphore);
 .synop end
 .desc begin
 The
@@ -27,5 +27,5 @@ The semaphore is currently unavailable.
 .see begin
 .seelist sem_init sem_getvalue sem_post sem_trywait sem_wait
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

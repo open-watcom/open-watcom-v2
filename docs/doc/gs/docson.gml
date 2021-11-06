@@ -258,15 +258,13 @@ or Windows NT/2000/XP, a number of program groups are created.
 You can access the on-line document by opening a program group and
 double-clicking on a help icon.
 .begnote $setptnt 15
-.notehd1 &product Group
-.notehd2 ~b
+.notehdr &product Group
 .note Getting Started
 .book &product Getting Started
 .endnote
 .*
 .begnote $setptnt 15
-.notehd1 &product Tools Help Group
-.notehd2 ~b
+.notehdr &product Tools Help Group
 .note Accelerator Editor Help
 Documentation for the Accelerator Editor
 (excerpt from the

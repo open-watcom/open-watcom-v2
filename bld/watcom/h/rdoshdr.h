@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -38,31 +38,31 @@ typedef struct TRdosObjectHeader
 {
     long sign;
     long len;
-    short int type;
-    unsigned short int crc;
+    short type;
+    unsigned short crc;
 } TRdosObjectHeader;
 
 typedef struct TRdosSimpleDeviceHeader
 {
-    short int StartIp;
+    short StartIp;
 } TRdosSimpleDeviceHeader;
 
 typedef struct TRdosDosDeviceHeader
 {
-    short int Size;
-    short int Sel;
-    short int StartIp;
+    short Size;
+    short Sel;
+    short StartIp;
     char NameParam;
 } TRdosDosDeviceHeader;
 
 typedef struct TRdosDevice16Header
 {
     long Size;
-    short int CodeSize;
-    short int CodeSel;
-    short int DataSize;
-    short int DataSel;
-    short int StartIp;
+    short CodeSize;
+    short CodeSel;
+    short DataSize;
+    short DataSel;
+    short StartIp;
     char NameParam;
 } TRdosDevice16Header;
 
@@ -70,9 +70,9 @@ typedef struct TRdosDevice32Header
 {
     long Size;
     long CodeSize;
-    short int CodeSel;
+    short CodeSel;
     long DataSize;
-    short int DataSel;
+    short DataSel;
     long StartIp;
     char NameParam;
 } TRdosDevice32Header;
@@ -93,9 +93,9 @@ typedef struct TRdosOldFileHeader
     char Ext[3];
     char Attrib;
     char Resv[10];
-    short int Time;
-    short int Date;
-    short int Cluster;
+    short Time;
+    short Date;
+    short Cluster;
     int Size;
 } TRdosOldFileHeader;
 

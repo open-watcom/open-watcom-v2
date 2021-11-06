@@ -1,6 +1,6 @@
 :H2.XMP
 :xmp
-Format&gml. &gml.XMP \(depth='vert-space-unit'\).
+Format&gml. &gml.XMP [depth='vert-space-unit'].
              <paragraph elements>
              <basic document elements>
 :exmp

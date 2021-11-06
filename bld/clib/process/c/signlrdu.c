@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include <excpt.h>
 #include "rtdata.h"
 #include "rtfpehdl.h"
+#include "rtfpesig.h"
 #include "rterrno.h"
 #include "sigfunc.h"
 #include "signlrdu.h"
@@ -112,14 +114,14 @@ static void __sigabort( void )
     raise( SIGABRT );
 }
 
-_WCRTLINK int __sigfpe_handler( int fpe )
+_WCRTLINK int __sigfpe_handler( int fpe_type )
 {
     __sig_func  func;
 
     func = __GetSignalFunc( SIGFPE );
     if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
         __SetSignalFunc( SIGFPE, SIG_DFL );
-        (*(__sigfpe_func)func)( SIGFPE, fpe );
+        SIGFPE_CALL( func, fpe_type );    /* so we can pass 2'nd parm */
         return( 0 );
     } else if( func == SIG_IGN ) {
         return( 0 );
@@ -223,7 +225,7 @@ static void __sig_init( void )
 {
     __sig_init_rtn = __SigInit;
     __sig_fini_rtn = __SigFini;
-    _RWD_FPE_handler = (FPEhandler *)__sigfpe_handler;
+    _RWD_FPE_handler = __sigfpe_handler;
 }
 
 

@@ -16,8 +16,8 @@ The
 function returns a set of bits indicating what is currently
 installed on the machine. Those bits are defined as follows:
 .begnote $compact
-.termhd1 Bit
-.termhd2 Meaning
+.notehd1 Bit
+.notehd2 Meaning
 .sr ptntelmt = 0
 .note bit 0
 Reserved.

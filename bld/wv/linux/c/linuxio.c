@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,11 +45,6 @@
 #include "filelcl.h"
 #include "dbgscrn.h"
 
-
-#define READONLY    0
-#define WRITEONLY   1
-#define READWRITE   2
-#define FROMEND     2
 
 #define SYSH2LH(sh)     (int)((sh).u._32[0])
 #define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0

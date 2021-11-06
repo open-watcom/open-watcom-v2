@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,40 +32,39 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "bool.h"
 #include "watcom.h"
-#include "stdui.h"
-#include "help.h"
 #include "helpscan.h"
-#include "helpchar.h"
 #include "helpmem.h"
+#include "wibhelp.h"
 
-static  unsigned char   specialChars[] = {
-    HELP_ESCAPE,
-    GOOFY_HYPERLINK,
-    FAKE_RIGHT_ARROW,
-    FAKE_LEFT_ARROW,
-    '<',
-    '>',
+
+static char     specialChars[] = {
+    IB_ESCAPE,
+    IB_HLINK,
+    IB_RIGHT_ARROW,
+    IB_LEFT_ARROW,
+    IB_PLAIN_LINK_BEG,
+    IB_PLAIN_LINK_END,
     '{',
     '}',
     '\0'
 };
 
-static  unsigned char   specialHyperChars[] = {
-    HELP_ESCAPE,
-    GOOFY_HYPERLINK,
-    HYPER_TOPIC,
-    '<',
-    '>',
+static char     specialHyperChars[] = {
+    IB_ESCAPE,
+    IB_HLINK,
+    IB_HLINK_BREAK,
+    IB_PLAIN_LINK_BEG,
+    IB_PLAIN_LINK_END,
     '{',
     '}',
     '\0'
 };
 
-static unsigned scanHyperLink( char *line, HelpTokenType *type,
-                               HyperLinkInfo *info )
+static unsigned scanHyperLink( char *line, HelpTokenType *hlink_type, HyperLinkInfo *info )
 {
-    unsigned char       endchar;
+    char                endchar;
     char                *cur;
     char                *topic;
     char                *hfname;
@@ -79,19 +79,19 @@ static unsigned scanHyperLink( char *line, HelpTokenType *type,
     cnt = 0;
     chktopic = false;
     chkhfname = false;
-    if( *(unsigned char *)cur == GOOFY_HYPERLINK ) {
-        *type = TK_GOOFY_LINK;
-        endchar = GOOFY_HYPERLINK;
+    if( *cur == IB_HLINK ) {
+        *hlink_type = TK_GOOFY_LINK;
+        endchar = IB_HLINK;
     } else {
-        *type = TK_PLAIN_LINK;
-        endchar = '>';
+        *hlink_type = TK_PLAIN_LINK;
+        endchar = IB_PLAIN_LINK_END;
     }
     hfname = NULL;
     ++cur;
     topic = cur;
     for( ;; ) {
-        switch( *(unsigned char *)cur ) {
-        case HELP_ESCAPE:
+        switch( *cur ) {
+        case IB_ESCAPE:
             if( cnt == TEXT_BLOCK_SIZE ) {
                 cnt = 0;
                 block->next = HelpMemAlloc( sizeof( TextInfoBlock ) );
@@ -102,19 +102,19 @@ static unsigned scanHyperLink( char *line, HelpTokenType *type,
             block->info[cnt].type = TT_ESC_SEQ;
             block->info[cnt].len = 2;
             cur += 2;
-            cnt ++;
+            cnt++;
             break;
+        case IB_PLAIN_LINK_BEG:
+        case IB_PLAIN_LINK_END:
         case '{':
-        case '>':
         case '}':
-        case '<':
             if( cur[0] == cur[1] ) {
-                cur[0] = HELP_ESCAPE;
-                continue;               // let the HELP_ESCAPE case handle this
+                cur[0] = IB_ESCAPE;
+                continue;               // let the IB_ESCAPE case handle this
             }
             /* fall through */
-        case GOOFY_HYPERLINK:
-            if( *(unsigned char *)cur == endchar ) {
+        case IB_HLINK:
+            if( *cur == endchar ) {
                 info->topic = topic;
                 block->cnt = cnt;
                 if( chkhfname ) {
@@ -129,7 +129,7 @@ static unsigned scanHyperLink( char *line, HelpTokenType *type,
                 return( cur - line + 1 );
             }
             break;
-        case HYPER_TOPIC:
+        case IB_HLINK_BREAK:
             cur++;
             if( !chktopic ) {
                 topic = cur;
@@ -138,9 +138,9 @@ static unsigned scanHyperLink( char *line, HelpTokenType *type,
                 hfname = cur;
                 chkhfname = true;
             }
-            while( (*(unsigned char *)cur != endchar)
-              && (*(unsigned char *)cur != HYPER_TOPIC) ) {
-                if( *cur == HELP_ESCAPE ) cur++;
+            while( (*cur != endchar) && (*cur != IB_HLINK_BREAK) ) {
+                if( *cur == IB_ESCAPE )
+                    cur++;
                 cur++;
             }
             break;
@@ -153,9 +153,9 @@ static unsigned scanHyperLink( char *line, HelpTokenType *type,
             }
             block->info[cnt].str = cur;
             block->info[cnt].type = TT_PLAIN;
-            block->info[cnt].len = strcspn( cur, (char *)specialHyperChars );
+            block->info[cnt].len = strcspn( cur, specialHyperChars );
             cur += block->info[cnt].len;
-            cnt ++;
+            cnt++;
             break;
         }
     }
@@ -176,21 +176,21 @@ bool ScanLine( char *line, ScanCBfunc *cb, void *info )
 {
     char                *cur;
     Info                tinfo;
-    HelpTokenType       type;
+    HelpTokenType       hlink_type;
     bool                newfile;
 
     cur = line;
     newfile = false;
     for( ;; ) {
-        switch( *(unsigned char *)cur ) {
-        case HELP_ESCAPE:
+        switch( *cur ) {
+        case IB_ESCAPE:
             tinfo.u.text.str = cur;
-            cur ++;
+            cur++;
             switch( *cur ) {
-            case H_UNDERLINE:
-            case H_UNDERLINE_END:
-            case H_BOLD:
-            case H_BOLD_END:
+            case IB_UNDERLINE_ON:
+            case IB_UNDERLINE_OFF:
+            case IB_BOLD_ON:
+            case IB_BOLD_OFF:
                 cur++;
                 tinfo.u.text.type = TT_CTRL_SEQ;
                 tinfo.u.text.len = 2;
@@ -203,40 +203,36 @@ bool ScanLine( char *line, ScanCBfunc *cb, void *info )
             }
             cb( TK_TEXT, &tinfo, info );
             break;
+        case IB_PLAIN_LINK_BEG:
+        case IB_PLAIN_LINK_END:
         case '{':
-        case '>':
         case '}':
             if( cur[0] == cur[1] ) {
-                cur[0] = HELP_ESCAPE;
-                continue;               // let the HELP_ESCAPE case handle
-                                        // this
+                cur[0] = IB_ESCAPE;
+                continue;               // let the IB_ESCAPE case handle this
             }
-            break;
-        case '<':
-            if( cur[1] == '<' ) {
-                cur[0] = HELP_ESCAPE;
-                continue;               // let the HELP_ESCAPE case handle
-                                        // this
+            if( *cur != IB_PLAIN_LINK_BEG ) {
+                break;
             }
             /* fall through */
-        case GOOFY_HYPERLINK:
-            cur += scanHyperLink( cur, &type, &tinfo.u.link );
+        case IB_HLINK:
+            cur += scanHyperLink( cur, &hlink_type, &tinfo.u.link );
             if( tinfo.u.link.hfname_len != 0 ) {
                 newfile = true;
             }
-            cb( type, &tinfo, info );
+            cb( hlink_type, &tinfo, info );
             if( tinfo.u.link.block1.next != NULL ) {
                 freeHyperlinkInfo( tinfo.u.link.block1.next );
             }
             break;
-        case FAKE_RIGHT_ARROW:
+        case IB_RIGHT_ARROW:
             tinfo.u.text.str = cur;
             tinfo.u.text.type = TT_RIGHT_ARROW;
             tinfo.u.text.len = 1;
             cb( TK_TEXT, &tinfo, info );
             cur++;
             break;
-        case FAKE_LEFT_ARROW:
+        case IB_LEFT_ARROW:
             tinfo.u.text.str = cur;
             tinfo.u.text.type = TT_LEFT_ARROW;
             tinfo.u.text.len = 1;
@@ -253,7 +249,7 @@ bool ScanLine( char *line, ScanCBfunc *cb, void *info )
         default:
             tinfo.u.text.str = cur;
             tinfo.u.text.type = TT_PLAIN;
-            tinfo.u.text.len = strcspn( cur, (char *)specialChars );
+            tinfo.u.text.len = strcspn( cur, specialChars );
             cur += tinfo.u.text.len;
             cb( TK_TEXT, &tinfo, info );
             break;

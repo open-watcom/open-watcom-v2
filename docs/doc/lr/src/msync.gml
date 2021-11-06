@@ -9,9 +9,9 @@ The
 function writes all modified data to permanent storage
 corresponding to the memory mapping at
 .arg address
-measuring 
+measuring
 .arg len
-bytes.  
+bytes.
 .np
 The
 .arg flags
@@ -57,5 +57,5 @@ currently locked
 .see begin
 .seelist mlock mlockall mmap munlock munlockall munmap
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

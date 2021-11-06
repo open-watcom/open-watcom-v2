@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -639,7 +640,7 @@ dw_handle DWENTRY DWBeginNameSpace( dw_client cli, const char *name )
         abbrev |= AB_NAME;
     StartDIE( cli, abbrev );
     if( name != NULL ) {
-    /* AT_name */
+        /* AT_name */
         InfoString( cli, name );
     }
     EndDIE( cli );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,29 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <io.h>
+#include "cp.h"
 #include <conio.h>
 #include <errno.h>
-#include <dos.h>
-#include <direct.h>
-#if defined( __OS2__ ) && defined( __386__ )
-#define  INCL_DOSFILEMGR
-#define  INCL_DOSERRORS
-#define  INCL_DOSMISC
-#include <os2.h>
-#elif defined( __NT__ )
-#include <windows.h>
-#endif
-#include "bool.h"
-#include "watcom.h"
-#include "cp.h"
 #include "fnutils.h"
 #include "filerx.h"
 
@@ -61,8 +41,9 @@
 
 #define _osmode_REALMODE()  (_osmode == DOS_MODE)
 
-#if defined( __OS2__ ) && defined( _M_I86 ) || defined( __DOS__ )
+#if defined( _M_IX86 )
 extern long DosGetFullPath( char __FAR *org, char __FAR *real );
+#if defined( _M_I86 )
 #pragma aux DosGetFullPath = \
         "push ds"       \
         "mov  si,ax"    \
@@ -74,62 +55,59 @@ extern long DosGetFullPath( char __FAR *org, char __FAR *real );
     __parm      [__dx __ax] [__es __di] \
     __value     [__dx __ax] \
     __modify    [__si]
-
-/*
- * dosSameFile - DOS specific same file test
- */
-static int dosSameFile( char *dest, char *src )
-{
-#define strcmp(p1,p2)           _inline_strcmp(p1,p2)
-extern int _inline_strcmp( char *, char * );
-    char        fullsrc[_MAX_PATH];
-    char        fulldest[_MAX_PATH];
-
-    DosGetFullPath( dest, fulldest );
-    DosGetFullPath( src, fullsrc );
-    if( !strcmp( fulldest, fullsrc ) ) {
-        return( true );
-    }
-    return( false );
-
-} /* dosSameFile */
-
-/*
- * osSameFile - OS/2 specific same file test
- */
-static int osSameFile( char *dest, char *src )
-{
-    if( _osmode_REALMODE() ) {
-        return( dosSameFile( dest, src ) );
-    }
-    src = src;
-    dest = dest;
-    return( true );
-
-} /* osSameFile */
-
-#elif defined( __NT__ )
-/*
- * osSameFile - NT specific same file test
- */
-static int osSameFile( char *dest, char *src )
-{
-    char *fp;
-    char        fullsrc[MAX_PATH];
-    char        fulldest[MAX_PATH];
-
-    GetFullPathName( dest, MAX_PATH, fulldest, &fp );
-    GetFullPathName( src, MAX_PATH, fullsrc, &fp );
-    if( !stricmp( fulldest, fullsrc ) ) {
-        return( true );
-    }
-    return( false );
-
-} /* osSameFile */
-
+#else
+#pragma aux DosGetFullPath = \
+        "push ds"       \
+        "mov  esi,eax"  \
+        "mov  ds,dx"    \
+        "mov  ah,60H"   \
+        "int 21h"       \
+        "sbb  edx,edx"  \
+        "mov  dx,ax"    \
+        "pop  ds"       \
+    __parm      [__dx __eax] [__es __edi] \
+    __value     [__edx] \
+    __modify    [__esi]
+#endif
 #endif
 
-#if !( defined( __OS2__ ) && defined( __386__ ) )
+
+#if defined( __OS2__ ) && !defined( _M_I86 )
+
+// copy by OS
+
+#else
+
+/*
+ * osSameFile - OS specific same file test
+ */
+static int osSameFile( char *dest, char *src )
+{
+    char        fullsrc[_MAX_PATH];
+    char        fulldest[_MAX_PATH];
+#ifdef __NT__
+    char *fp;
+
+    GetFullPathName( dest, _MAX_PATH, fulldest, &fp );
+    GetFullPathName( src, _MAX_PATH, fullsrc, &fp );
+    return( stricmp( fulldest, fullsrc ) == 0 );
+#elif defined( __DOS__ )
+    DosGetFullPath( dest, fulldest );
+    DosGetFullPath( src, fullsrc );
+    return( stricmp( fulldest, fullsrc ) == 0 );
+#elif defined( __OS2__ )
+    if( _osmode_REALMODE() ) {
+        DosGetFullPath( dest, fulldest );
+        DosGetFullPath( src, fullsrc );
+        return( stricmp( fulldest, fullsrc ) == 0 );
+    }
+    return( true );
+#else
+    return( true );
+#endif
+
+} /* osSameFile */
+
 /*
  * sameFile - test if two files are the same
  */
@@ -147,6 +125,7 @@ static int sameFile( char *dest, struct stat *ds, char *src, struct stat *ss )
     return( false );
 
 } /* sameFile */
+
 #endif
 
 
@@ -237,7 +216,7 @@ static void recursiveCp( char *source_head, char *source_tail,
                 int     rc;
 
                 rc = mkdir( dest_head );
-                if( !rc ) {
+                if( rc == 0 ) {
                     DirCnt++;
                 }
                 if( !sflag ) {
@@ -247,10 +226,8 @@ static void recursiveCp( char *source_head, char *source_tail,
                         PrintALineThenDrop( "created new directory %s", dest_head );
                     }
                 }
-                new_dest_tail = pathCopy( dest_head, new_dest_tail,
-                    FILESEPSTR );
-                new_source_tail = pathCopy( source_head, new_source_tail,
-                    FILESEPSTR );
+                new_dest_tail = pathCopy( dest_head, new_dest_tail, FILESEPSTR );
+                new_source_tail = pathCopy( source_head, new_source_tail, FILESEPSTR );
                 recursiveCp( source_head, new_source_tail,
                     rxflag ? "*" : "*.*",
                     dest_head, new_dest_tail );
@@ -307,11 +284,9 @@ void DoCP( char *f, char *dir )
  */
 void CopyOneFile( char *dest, char *src )
 {
-
-
     struct stat stat_s,stat_d;
     int         i;
-    unsigned    srcattr;
+    fattrs      srcattr;
 
     /*
      * first, check if source exists
@@ -320,30 +295,47 @@ void CopyOneFile( char *dest, char *src )
         DropPrintALine("file \"%s\" not found.",src );
         return;
     }
+#ifdef __NT__
+    srcattr = GetFileAttributes( src );
+
+    /*
+     * check if the archive bit is set; if not, go back
+     */
+    if( aflag ) {
+        if( (srcattr & FILE_ATTRIBUTE_ARCHIVE) == 0 ) {
+            return;
+        }
+    }
+#else
     _dos_getfileattr( src, &srcattr );
 
     /*
      * check if the archive bit is set; if not, go back
      */
     if( aflag ) {
-        if( !(srcattr & _A_ARCH) ) {
+        if( (srcattr & _A_ARCH) == 0 ) {
             return;
         }
     }
+#endif
 
     /*
      * if destination exists, make sure we can overwrite it
      */
     if( stat( dest,&stat_d ) != -1 ) {
 
-#if !( defined( __OS2__ ) && defined( __386__ ) )
+#if defined( __OS2__ ) && !defined( _M_I86 )
+
+// copy by OS
+
+#else
         if( sameFile( dest, &stat_d, src, &stat_s ) ) {
             DropPrintALine( "%s and %s the same file, copy failed",src,dest );
             return;
         }
 #endif
 
-        if( !(stat_d.st_mode & S_IWRITE) ) {
+        if( (stat_d.st_mode & S_IWRITE) == 0 ) {
             if( !fflag ) {
                 DropPrintALine( "destination file %s is read only - use cp -f", dest);
                 return;
@@ -356,10 +348,10 @@ void CopyOneFile( char *dest, char *src )
             PrintALine( "overwrite %s (y\\n)", dest );
             i = 0;
             while( i != 'y' && i != 'n' ) {
-                i=getch();
+                i = getch();
             }
             DropALine();
-            if( i=='n' ) {
+            if( i == 'n' ) {
                 return;
             }
         }
@@ -375,7 +367,11 @@ void CopyOneFile( char *dest, char *src )
     }
 
     if( aflag ) {
-        _dos_setfileattr( src, srcattr & (~_A_ARCH) );
+#ifdef __NT__
+        SetFileAttributes( src, srcattr & ~FILE_ATTRIBUTE_ARCHIVE );
+#else
+        _dos_setfileattr( src, srcattr & ~_A_ARCH );
+#endif
     }
 
 } /* CopyOneFile */
@@ -390,7 +386,7 @@ void IOError( int error )
 
 } /* IOError */
 
-#if defined( __OS2__ ) && defined( __386__ )
+#if defined( __OS2__ ) && !defined( _M_I86 )
 /*
  * OS2Error - fatal I/O error encountered
  */
@@ -407,4 +403,3 @@ void OS2Error( int error )
 
 } /* OS2Error */
 #endif
-

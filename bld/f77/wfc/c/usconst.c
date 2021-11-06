@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "opr.h"
 #include "optr.h"
 #include "astype.h"
@@ -51,7 +51,7 @@
 #define UAR_TAB_COLS    2
 #define UAR_TAB_SIZE    18
 
-static  void    (* const __FAR XUArithTab[])(ftn_type *, ftn_type *) = {
+static  void    (* const XUArithTab[])(ftn_type *, ftn_type *) = {
                                         // operator/
                                         //     /
                     // PLUS    MINUS    //  /result
@@ -76,7 +76,7 @@ static  void    (* const __FAR XUArithTab[])(ftn_type *, ftn_type *) = {
 #define AR_TAB_COLS     4
 #define AR_TAB_SIZE     36
 
-static  void    (* const __FAR XArithTab[])(ftn_type *, ftn_type *) = {
+static  void    (* const XArithTab[])(ftn_type *, ftn_type *) = {
                                                  // operator/
                                                  //     /
          // PLUS    MINUS     TIMES     DIVIDE   //  /result
@@ -93,25 +93,25 @@ static  void    (* const __FAR XArithTab[])(ftn_type *, ftn_type *) = {
            &AddX,   &SubX,    &MulX,    &DivX    // xcomplex
                                                  };
 
-static  void    (* const __FAR XCmpTab[])(ftn_type *, ftn_type *, const logstar1 __FAR *) = {
+static  void    (* const XCmpTab[])(ftn_type *, ftn_type *, const logstar1 *) = {
 
 // int*1   int*2   integer real    double  extended complex dcomplex xcomplex character
    &XICmp, &XICmp, &XICmp, &XRCmp, &XDCmp, &XECmp,  &XCCmp, &XQCmp,  &XXCmp,  &XChCmp
           };
 
-static  void    (* const __FAR XLogicalTab[])(ftn_type *, ftn_type *) = {
+static  void    (* const XLogicalTab[])(ftn_type *, ftn_type *) = {
 
        // EQV        NEQV       OR         AND        NOT
          &XLEqv,    &XLNeqv,   &XLOr,     &XLAnd,    &XLNot
          };
 
-static  void    (* const __FAR XBitWiseTab[])(ftn_type *, ftn_type *) = {
+static  void    (* const XBitWiseTab[])(ftn_type *, ftn_type *) = {
 
        // EQV        NEQV       OR         AND        NOT
          &XBitEqv,  &XBitNeqv, &XBitOr,   &XBitAnd,  &XBitNot
          };
 
-static  const logstar1 __FAR    CmpValue[] = {
+static  const logstar1 CmpValue[] = {
                                      // result/
                                      //   /
          // <         =         >    ///operator
@@ -211,13 +211,13 @@ static  void    ExpOp( TYPE typ1, TYPE typ2, OPTR op ) {
 }
 
 
-void    ConstCat( uint size ) {
-//============================
-
+void    ConstCat( size_t size )
+//=============================
+{
     itnode      *last_node;
     byte        *dest;
-    uint        opn_size;
-    uint        size_left;
+    size_t      opn_size;
+    size_t      size_left;
     byte        *string;
     itnode      *link_node;
 
@@ -246,7 +246,7 @@ void    ConstCat( uint size ) {
     FMemFree( string );
 }
 
-void    (* const __FAR ConstTable[])(TYPE, TYPE, OPTR) = {
+void    (* const ConstTable[])(TYPE, TYPE, OPTR) = {
     #define OPTR_SUFFIX _c
     #define pick(id,const,gener) const,
     #include "optrdefn.h"

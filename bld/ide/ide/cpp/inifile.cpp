@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,14 +100,15 @@
             if( SUCCEEDED( getpath( NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, path ) ) ) {
                 if( strlen( path ) + strlen( "\\" IDE_INI_DIR ) + 12 < FILENAME_MAX) {
                     strcat( path, "\\" IDE_INI_DIR);
-                    if( access(path, F_OK) )    // make sure CONFIG_DIR diretory is present
+                    if( access(path, F_OK) ) {  // make sure CONFIG_DIR diretory is present
                         mkdir( path );          // if not, create it
+                    }
                 }
             }
             FreeLibrary( library );
-        }
-        else                                    // should only get here on old machines
+        } else {                                        // should only get here on old machines
             GetWindowsDirectory( path, FILENAME_MAX );  // that don't have shfolder.dll
+        }
 #else
         GetWindowsDirectory( path, FILENAME_MAX );
 #endif

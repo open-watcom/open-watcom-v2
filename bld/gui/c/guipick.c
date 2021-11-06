@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +43,9 @@
 #define DLG_MAX_COLS    75
 
 #define DLGPICK_CTLS() \
-    pick_p4id( LIST,     DLG_LIST_BOX,   1,  1,  29, 10 ) \
-    pick_p3id( OK,       DLG_DEFBUTTON,  2,  12, 12 ) \
-    pick_p3id( CANCEL,   DLG_BUTTON,     18, 12, 28 )
+    pick_p4id( LIST,     GUI_CTL_LIST_BOX,   1,  1,  29, 10 ) \
+    pick_p3id( OK,       GUI_CTL_DEFBUTTON,  2,  12, 11 ) \
+    pick_p3id( CANCEL,   GUI_CTL_BUTTON,     18, 12, 11 )
 
 enum {
     #define pick_p3id(id,m,p1,p2,p3)    id ## _IDX,
@@ -63,24 +63,24 @@ static gui_control_info Controls[] = {
     #undef pick_p3id
 };
 
-bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+bool GUIPickGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id          id;
     dlg_pick            *dlg;
 
-    dlg = (dlg_pick*)GUIGetExtra( gui );
+    dlg = (dlg_pick*)GUIGetExtra( wnd );
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
-        GUIClearList( gui, CTL_PICK_LIST );
-        (*dlg->func)( gui, CTL_PICK_LIST );
-        GUISetFocus( gui, CTL_PICK_LIST );
+        GUIClearList( wnd, CTL_PICK_LIST );
+        (*dlg->func)( wnd, CTL_PICK_LIST );
+        GUISetFocus( wnd, CTL_PICK_LIST );
         return( true );
     case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
         if( id == CTL_PICK_LIST ) {
             dlg->choice = -1;
-            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->choice );
-            GUICloseDialog( gui );
+            GUIGetCurrSelect( wnd, CTL_PICK_LIST, &dlg->choice );
+            GUICloseDialog( wnd );
             return( true );
         }
         break;
@@ -89,10 +89,10 @@ bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         switch( id ) {
         case CTL_PICK_OK:
             dlg->choice = -1;
-            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->choice );
+            GUIGetCurrSelect( wnd, CTL_PICK_LIST, &dlg->choice );
             /* fall through */
         case CTL_PICK_CANCEL:
-            GUICloseDialog( gui );
+            GUICloseDialog( wnd );
             return( true );
         }
         break;
@@ -103,7 +103,7 @@ bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *openrtn, int *choice )
+bool GUIAPI GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *openrtn, int *choice )
 {
     dlg_pick    dlg;
     size_t      len;
@@ -118,7 +118,7 @@ bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPE
     Controls[CANCEL_IDX].text = LIT( Cancel );
     dlg.func = pickinit;
     dlg.choice = -1;
-    openrtn( title, DLG_PICK_ROWS, len, Controls, GUI_ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
+    openrtn( title, DLG_PICK_ROWS, (gui_text_ord)len, Controls, GUI_ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
     if( dlg.choice == -1 )
         return( false );
     *choice = dlg.choice;
@@ -126,7 +126,7 @@ bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPE
 }
 
 
-bool GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice )
+bool GUIAPI GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice )
 {
     return( GUIDlgPickWithRtn( title, pickinit, GUIDlgOpen, choice ) );
 }

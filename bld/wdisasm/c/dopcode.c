@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,8 +181,8 @@ void FormatPcode( char *buf )
 {
     unsigned int   len;
     unsigned int   i;
-    short int      value;
-    long  int      long_val;
+    short          value;
+    long           long_val;
     char          *p;
     uint_32        addr;
 
@@ -201,7 +202,7 @@ void FormatPcode( char *buf )
             buf[1] = 'D';
             value = (DataString[1] << 8) + DataString[0];
             long_val = (DataString[3] << 8) + DataString[2];
-            long_val = (long_val << 16) + (unsigned short int)value;
+            long_val = (long_val << 16) + (unsigned short)value;
             ltoa( long_val, p, 10 );
             break;
         }
@@ -354,7 +355,7 @@ void FormatPcode( char *buf )
             *p = ' ';
             value = (DataString[2] << 8) + DataString[1];
             long_val = (DataString[4] << 8) + DataString[3];
-            long_val = (long_val << 16) + (unsigned short int)value;
+            long_val = (long_val << 16) + (unsigned short)value;
             ltoa( long_val, &buf[16], 10 );
             len = 0;
             break;

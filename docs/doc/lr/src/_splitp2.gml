@@ -133,9 +133,9 @@ corresponding pointer will be set to point at a NULL string ('\0').
 .np
 This function reduces the amount of memory space required when
 compared to the
-.kw splitpath
+.reffunc splitpath
 function.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

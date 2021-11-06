@@ -37,16 +37,16 @@ into the array pointed to by the argument
 according to the
 .arg format
 argument.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
-.kw _wstrftime_ms
+.reffunc _wstrftime_ms
 function is identical to
 .id &wfunc.
 except that the
 .arg format
-is not a wide-character string.
+is not a wide character string.
 .do end
 .np
 The
@@ -60,8 +60,8 @@ No more than
 characters are placed in the array.
 The format directives %D, %h, %n, %r, %t, and %T are from POSIX.
 .begnote
-.termhd1 Directive
-.termhd2 Meaning
+.notehd1 Directive
+.notehd2 Meaning
 .note %a
 locale's abbreviated weekday name
 .note %A
@@ -73,40 +73,40 @@ locale's full month name
 .note %c
 locale's appropriate date and time representation
 .note %C
-is replaced by the year devided by 100 and truncated to an integer (00-99)
+is replaced by the year devided by 100 and truncated to an integer (0-99)
 .note %d
-day of the month as a decimal number (01-31)
+day of the month as a decimal number (1-31)
 .note %D
 date in the format mm/dd/yy (POSIX)
 .note %e
-day of the month as a decimal number ( 1-31), a single digit is preceded by a blank
+day of the month as a decimal number (1-31), a single digit is preceded by a blank
 .note %F
 is equivalent to '%Y-%m-%d' (the ISO 8601 date format)
 .note %g
-is replaced by the last 2 digits of the week-based year as a decimal number (00-99)
+is replaced by the last 2 digits of the week-based year as a decimal number (0-99)
 .note %G
 is replaced by the week-based year as a decimal number (e.g. 2006)
 .note %h
 locale's abbreviated month name (POSIX)
 .note %H
-hour (24-hour clock) as a decimal number (00-23)
+hour (24-hour clock) as a decimal number (0-23)
 .note %I
-hour (12-hour clock) as a decimal number (01-12)
+hour (12-hour clock) as a decimal number (1-12)
 .note %j
-day of the year as a decimal number (001-366)
+day of the year as a decimal number (1-366)
 .note %m
-month as a decimal number (01-12)
+month as a decimal number (1-12)
 .note %M
-minute as a decimal number (00-59)
+minute as a decimal number (0-59)
 .note %n
 newline character (POSIX)
 .note %p
 locale's equivalent of either AM or PM
 .note %r
-12-hour clock time (01-12) using the AM/PM notation in the format
+12-hour clock time (1-12) using the AM/PM notation in the format
 HH:MM:SS (AM|PM) (POSIX)
 .note %S
-second as a decimal number (00-59)
+second as a decimal number (0-59)
 .note %t
 tab character (POSIX)
 .note %T
@@ -114,21 +114,21 @@ tab character (POSIX)
 .note %u
 is replaced by the ISO 8601 weekday as a decimal number (1-7), where Monday is 1
 .note %U
-week number of the year as a decimal number (00-52) where Sunday
+week number of the year as a decimal number (0-52) where Sunday
 is the first day of the week
 .note %V
-is replaced by the ISO 8601 week number as a decimal number (01-53)
+is replaced by the ISO 8601 week number as a decimal number (1-53)
 .note %w
 weekday as a decimal number (0-6) where 0 is Sunday
 .note %W
-week number of the year as a decimal number (00-52) where Monday
+week number of the year as a decimal number (0-52) where Monday
 is the first day of the week
 .note %x
 locale's appropriate date representation
 .note %X
 locale's appropriate time representation
 .note %y
-year without century as a decimal number (00-99)
+year without century as a decimal number (0-99)
 .note %Y
 year with century as a decimal number
 .note %z
@@ -145,7 +145,7 @@ When the
 or
 .mono %z
 directive is specified, the
-.kw tzset
+.reffunc tzset
 function is called.
 .np
 % g, %G, %V give values according to the ISO 8601 week-based year. In this

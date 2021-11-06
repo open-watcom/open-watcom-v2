@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,18 +37,19 @@
 #define INCL_WIN
 #include <wos2.h>
 #include "win.h"
-#include "pmmenu.h"
+#include "pmmenu.rh"
+
+
+static  FATTRS          FontAttrs;
+
+
+#ifdef DEFAULT_WINDOWING
 
 static  char            *WatcomClass = { "WATCOM" };
 static  HWND            ClientWindow;
 static  HMQ             hMessageQueue = { NULLHANDLE };
-static  FATTRS          FontAttrs;
 
-
-extern void _SetWinMenuHandle( HWND hmenu );
-extern HWND _GetWinMenuHandle( void );
-
-_WCRTLINK int   __InitDefaultWin( void )
+_WCRTLINK void  __InitDefaultWin( void )
 //======================================
 {
     ULONG       style;
@@ -63,12 +64,15 @@ _WCRTLINK int   __InitDefaultWin( void )
 
     _AnchorBlock = WinInitialize( 0 );
     if( _AnchorBlock == 0 )
-        return( 0 );
+//        return( 0 );
+        return;
     hMessageQueue = WinCreateMsgQueue( _AnchorBlock, 0 );
     if( hMessageQueue == 0 )
-        return( 0 );
+//        return( 0 );
+        return;
     if( !WinRegisterClass( _AnchorBlock, _ClassName, (PFNWP)_MainDriver, CS_SIZEREDRAW, 0 ) ) {
-        return( 0 );
+//        return( 0 );
+        return;
     }
 
     _InitMainWindowData( 0 );
@@ -79,7 +83,8 @@ _WCRTLINK int   __InitDefaultWin( void )
                         &style, _ClassName, "", 0, NULLHANDLE, 0, &ClientWindow );
 
     if( _MainFrameWindow == 0 )
-        return( 0 );
+//        return( 0 );
+        return;
     WinSendMsg( _MainFrameWindow, WM_SETICON,
         MPFROMLONG( WinQuerySysPointer( HWND_DESKTOP, SPTR_APPICON, TRUE ) ), 0 );
     WinQueryWindowRect( _MainWindow, &rcl );
@@ -178,7 +183,7 @@ _WCRTLINK int   __InitDefaultWin( void )
     swp.fl |= SWP_MAXIMIZE;
     WinSetWindowPos( _MainWindow, HWND_TOP, swp.x, swp.y, swp.cx, swp.cy, SWP_MAXIMIZE | SWP_ACTIVATE | SWP_MOVE | SWP_SHOW | SWP_SIZE );
 
-    return( 1 );
+//    return( 1 );
 }
 
 _WCRTLINK void  __FiniDefaultWin( void )
@@ -193,6 +198,8 @@ _WCRTLINK void  __FiniDefaultWin( void )
     }
     WinTerminate( _AnchorBlock );
 }
+
+#endif
 
 void    _CreateFont( LPWDATA w )
 //==============================

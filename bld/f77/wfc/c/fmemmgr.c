@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,7 @@ void    FMemInit( void ) {
 #endif
 }
 
-
-void    FMemFini( void ) {
+void    FMemErrors( void ) {
 //========================
 
     ProgSw &= ~PS_ERROR; // we always want to report memory problems
@@ -67,6 +66,12 @@ void    FMemFini( void ) {
     } else if( UnFreeMem < 0 ) {
         CompErr( CP_FREEING_UNOWNED_MEMORY );
     }
+}
+
+
+void    FMemFini( void ) {
+//========================
+
 #if defined( TRMEM )
     TRMemClose();
 #else
@@ -144,3 +149,18 @@ void    wres_free( void *p )
     free( p );
 #endif
 }
+
+char *FStrDup( const char *buf )
+//==============================
+{
+    char    *new;
+    size_t  len;
+
+    len = strlen( buf ) + 1;
+    new = FMemAlloc( len );
+    if( new != NULL ) {
+        memcpy( new, buf, len );
+    }
+    return( new );
+}
+

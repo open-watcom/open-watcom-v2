@@ -29,9 +29,8 @@
 ****************************************************************************/
 
 
-extern const char * const AboutMessage[];
-extern int  AboutSize;
-extern int  FingMessageSize;
-
-extern void InitAboutMessage( void );
-extern void FiniAboutMessage( void );
+extern void         InitAboutMessage( void );
+extern void         FiniAboutMessage( void );
+extern const char   *GetAboutMessage( int line );
+extern int          GetAboutSizeText( void );
+extern int          GetAboutSizeFull( void );

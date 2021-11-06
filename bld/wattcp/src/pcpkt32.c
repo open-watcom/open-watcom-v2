@@ -14,9 +14,9 @@
 #include "pcconfig.h"
 #include "pcqueue.h"
 
-#define DEFINE_IREGS
 #include "wdpmi.h"
 #include "pcsed.h"
+#include "iregs.h"
 #include "pcpkt.h"
 #include "pcpkt32.h"
 

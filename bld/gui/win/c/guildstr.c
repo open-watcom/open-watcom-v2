@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,12 +40,12 @@
 static  bool        GUIMsgInitFlag = false;
 static  bool        external = false;
 
-bool GUIIsLoadStrInitialized( void )
+bool GUIAPI GUIIsLoadStrInitialized( void )
 {
     return( GUIMsgInitFlag );
 }
 
-bool GUILoadStrInit( const char * fname )
+bool GUIAPI GUILoadStrInit( const char * fname )
 {
 #ifndef __OS2_PM__
     WPI_INST    library;
@@ -73,7 +74,7 @@ bool GUILoadStrInit( const char * fname )
     }
 }
 
-bool GUILoadStrFini( void )
+bool GUIAPI GUILoadStrFini( void )
 {
     if( GUIMsgInitFlag ) {
 #ifndef __OS2_PM__
@@ -87,7 +88,7 @@ bool GUILoadStrFini( void )
     return( true );
 }
 
-bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
+bool GUIAPI GUILoadString( gui_res_id id, char *buffer, int buffer_length )
 {
     if( buffer != NULL && buffer_length > 0 ) {
         if( _wpi_loadstring( GUIResHInst, id, (LPSTR)buffer, buffer_length ) > 0 ) {

@@ -115,12 +115,9 @@ uint_32 BIOSGetColorRegister( unsigned short a )
     return( 0 );
 }
 
-void BIOSSetNoBlinkAttr( void )
+void BIOSSetBlinkAttr( unsigned char on )
 {
-}
-
-void BIOSSetBlinkAttr( void )
-{
+    /* unused parameters */ (void)on;
 }
 
 void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
@@ -136,9 +133,9 @@ static int CompareEvents( const void *p1, const void *p2 )
 }
 
 /*
- * BIOSSetCursor - set current cursor postion
+ * BIOSSetCursorPos - set current cursor postion
  */
-void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
+void BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col )
 {
     /* unused parameters */ (void)page;
 
@@ -146,18 +143,18 @@ void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
     _cpos.Y = row;
     SetConsoleCursorPosition( OutputHandle, _cpos );
 
-} /* BIOSSetCursor */
+} /* BIOSSetCursorPos */
 
 /*
- * BIOSGetCursor - return current cursor postion
+ * BIOSGetCursorPos - return current cursor postion
  */
-unsigned short BIOSGetCursor( unsigned char page )
+unsigned short BIOSGetCursorPos( unsigned char page )
 {
     /* unused parameters */ (void)page;
 
     return( ( _cpos.Y << 8 ) + ( _cpos.X & 0xFF ) );
 
-} /* BIOSGetCursor */
+} /* BIOSGetCursorPos */
 
 /*
  * eventWeWant - test an input record and see if it is one

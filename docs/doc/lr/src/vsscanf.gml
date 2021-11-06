@@ -2,12 +2,12 @@
 .synop begin
 #include <stdio.h>
 #include <stdarg.h>
-int vsscanf( const char *in_string,
+int vsscanf( const char *s,
              const char *format,
              va_list arg );
 .ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-int vswscanf( const wchar_t *in_string,
+int vswscanf( const wchar_t *s,
               const wchar_t *format,
               va_list arg );
 .ixfunc2 '&String' &wfunc
@@ -21,24 +21,24 @@ int vswscanf( const wchar_t *in_string,
 The
 .id &funcb.
 function scans input from the string designated by
-.arg in_string
+.arg s
 under control of the argument
 .arg format
-.ct .li .
+.period
 The
 .arg format
 string is described under the description of the
-.kw scanf
+.reffunc scanf
 function.
 .pp
 The
 .id &funcb.
 function is equivalent to the
-.kw sscanf
+.reffunc sscanf
 function, with a variable argument list replaced with
 .arg arg
 .ct , which has been initialized using the
-.kw va_start
+.reffunc va_start
 macro.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -47,9 +47,9 @@ The
 function is identical to
 .id &funcb.
 except that it accepts a
-wide-character string argument for
+wide character string argument for
 .arg format
-.ct .li .
+.period
 .do end
 .desc end
 .*

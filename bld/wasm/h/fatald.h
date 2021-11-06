@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,13 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  Fatal error messages, they are shared with WOMP
+* Description:  Fatal error messages
 *
 ****************************************************************************/
 
-pick( MSG_OUT_OF_MEMORY, 0, OUT_OF_MEMORY, AsmShutDown, 0 ),
-pick( MSG_CANNOT_OPEN_FILE, 1, CANNOT_OPEN_FILE, NULL, 1 ),
-pick( MSG_CANNOT_CLOSE_FILE, 1, CANNOT_CLOSE_FILE, NULL, 1 ),
-pick( MSG_CANNOT_GET_START_OF_SOURCE_FILE, 0, CANNOT_GET_FILE, AsmShutDown, 1 ),
-pick( MSG_CANNOT_SET_TO_START_OF_SOURCE_FILE, 0, CANNOT_SET_FILE, AsmShutDown, 1 ),
-pick( MSG_TOO_MANY_FILES, 0, TOO_MANY_FILES, NULL, 1 ),
+pick( MSG_OUT_OF_MEMORY, 0, OUT_OF_MEMORY, AsmShutDown, EXIT_SUCCESS )
+pick( MSG_CANNOT_OPEN_FILE, 1, CANNOT_OPEN_FILE, NULL, EXIT_ERROR )
+pick( MSG_CANNOT_CLOSE_FILE, 1, CANNOT_CLOSE_FILE, NULL, EXIT_ERROR )
+pick( MSG_CANNOT_GET_START_OF_SOURCE_FILE, 0, CANNOT_GET_FILE, AsmShutDown, EXIT_ERROR )
+pick( MSG_CANNOT_SET_TO_START_OF_SOURCE_FILE, 0, CANNOT_SET_FILE, AsmShutDown, EXIT_ERROR )
+pick( MSG_TOO_MANY_FILES, 0, TOO_MANY_FILES, NULL, EXIT_ERROR )
+pick( MSG_OBJECT_FILE_ERROR, 1, OBJECT_FILE_ERROR, AsmShutDown, EXIT_ERROR )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,6 @@
 #include "cgfront.h"
 #include "cgsegid.h"
 #include "codegen.h"
-#include "dbg.h"
 #include "template.h"
 #include "class.h"
 #include "fold.h"
@@ -55,9 +55,11 @@
 #include "objmodel.h"
 #include "asmstmt.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
+    #include "dbg.h"
+    #include "pragdefn.h"
 #endif
-#include "toggle.h"
+#include "toggles.h"
+
 
 static FUNCTION_DATA *currFunction;
 static SUICIDE_CALLBACK functionSuicide;
@@ -442,7 +444,7 @@ static FNLABEL *findLabel( NAME name )
     new_label->dangerous = false;
     new_label->destination.id = CgFrontLabelGoto();
     new_label->destination.defn = LabelAllocLabDef();
-    new_label->referenced = !PragToggle.unreferenced;
+    new_label->referenced = !TOGGLE( unreferenced );
     return( new_label );
 }
 
@@ -695,7 +697,7 @@ static bool is_dup_case(        // DIAGNOSE A DUPLICATE CASE
 {
     SWCASE *curr;               // - current case in search
     target_ulong case_uint;     // - value to look for
-    auto char buff[16];         // - buffer for duplicate value
+    char buff[16];              // - buffer for duplicate value
 
     case_uint = case_value->u.uint_constant;
     RingIterBeg( my_switch->u.s.cases, curr ) {
@@ -1128,7 +1130,7 @@ static TYPE getCatchTypeAttrs(  // GET CATCH TYPE ATTRIBUTES
 
     sptype = TypeCanonicalThr( spectype );
     type = TypeReferenced( sptype );
-    tester = StructType( type );
+    tester = ClassType( type );
     if( tester == NULL ) {
         tester = TypePointedAt( type, &flags );
         if( tester == NULL ) {
@@ -1136,7 +1138,7 @@ static TYPE getCatchTypeAttrs(  // GET CATCH TYPE ATTRIBUTES
             attrs = 0;
         } else {
             type = tester;
-            tester = StructType( tester );
+            tester = ClassType( tester );
             if( tester == NULL ) {
                 tester = type;
                 attrs = CATT_PTR;
@@ -1697,7 +1699,7 @@ static void doFnStartup( SYMBOL func
         /* in case the type was derived from a stack-checked function */
         func->sym_type = RemoveFunctionFlag( func->sym_type, TF1_STACK_CHECK );
     } else {
-        if( PragToggle.check_stack ) {
+        if( TOGGLE( check_stack ) ) {
             func->sym_type = AddFunctionFlag( func->sym_type, TF1_STACK_CHECK );
         }
     }

@@ -36,18 +36,18 @@
  *
  *      DBTableHeader
  *
- *          uint_8              (repeated 256 times)
+ *      uint_8              (repeated 256 times)
  *              this array identifies which characters begin double byte
  *              characters.  If array[x] == DB_BEG_CHAR then x begins
  *              a double byte character.
  *
- *          DBIndexEntry        (repeated num_indices times)
+ *      DBIndexEntry        (repeated num_indices times)
  *              to find the translation of a character x find the index
  *              record where min <= x <= max and  use
  *              (base + x - min) as an index into the array of entries
  *              that follows
  *
- *          uint_16             (repeated( num_entries times)
+ *      uint_16             (repeated( num_entries times)
  *              these are the actual translation values of the characters
  **************************************************************************/
 

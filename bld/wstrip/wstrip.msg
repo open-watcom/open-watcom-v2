@@ -1,75 +1,50 @@
-pick( MSG_INV_OPT,		"Invalid option '%s'" ,
-				"–³Œø‚ÈƒIƒvƒVƒ‡ƒ“ '%s'" )
-pick( MSG_LOW_MEM,		"Too low on memory" ,
-				"ƒtƒ@ƒCƒ‹ƒoƒbƒtƒ@‚Ì‚½‚ß‚Ìƒƒ‚ƒŠ‚ª•s‘«‚Å‚·" )
-pick( MSG_CANT_FIND,		"Unable to find '%s'" ,
-				"ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ '%s'" )
-pick( MSG_CANT_CREATE_TMP,	"Cannot create temporary file" ,
-				"ˆêƒtƒ@ƒCƒ‹‚ªì‚ê‚Ü‚¹‚ñ" )
-pick( MSG_CANT_OPEN,		"Cannot open file '%s'" ,
-				"ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñ '%s'" )
-pick( MSG_NOT_VALID_EXE,	"'%s' is not a valid executable file" ,
-				"'%s' ‚Í³‚µ‚­‚È‚¢Às‰Â”\ƒtƒ@ƒCƒ‹‚Å‚·" )
-pick( MSG_CANT_CREATE_OUTPUT,	"Unable to create output file '%s'" ,
-				"o—Íƒtƒ@ƒCƒ‹‚ªì‚ê‚Ü‚¹‚ñ '%s'" )
-pick( MSG_SEEK_ERROR,		"Seek error on '%s'" ,
-				"ƒV[ƒNEƒGƒ‰[ '%s'" )
-pick( MSG_READ_ERROR,		"Error reading '%s'" ,
-				"“Ç‚İ‚İƒGƒ‰[ '%s'" )
-pick( MSG_WRITE_ERROR,		"Error writing to '%s'" ,
-				"‘‚«‚İƒGƒ‰[ '%s'" )
-pick( MSG_ADD_HEADER_ERROR,	"Error adding resource header" ,
-				"ƒŠƒ\[ƒXƒwƒbƒ_[’Ç‰ÁƒGƒ‰[" )
-pick( MSG_CANT_ERASE,		"Cannot erase file '%s'" ,
-				"ƒtƒ@ƒCƒ‹‚ğíœ‚Å‚«‚Ü‚¹‚ñ '%s'" )
-pick( MSG_CANT_RENAME,		"Cannot rename file '%s'" ,
-				"ƒtƒ@ƒCƒ‹–¼‚ğ•ÏX‚Å‚«‚Ü‚¹‚ñ '%s'" )
-pick( MSG_WSTRIP_ABORT,		"\nwstrip aborted" ,
-				"\nwstrip ‚Ìˆ—‚ğ’†~‚µ‚Ü‚·" )
-pick( MSG_NO_SPECIFIED_0,	"No symbol file specified" ,
-				"ƒVƒ“ƒ{ƒ‹ƒtƒ@ƒCƒ‹‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
-pick( MSG_NO_SPECIFIED_1,	"No resource file specified" ,
-				"ƒŠƒ\[ƒXƒtƒ@ƒCƒ‹‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ" )
-pick( MSG_NO_INFO_0,		"'%s' does not contain debugging information" ,
-				"'%s' ‚ÍƒfƒoƒbƒOî•ñ‚ğŠÜ‚ñ‚Å‚¢‚Ü‚¹‚ñ" )
-pick( MSG_NO_INFO_1,		"'%s' does not contain resource information" ,
-				"'%s' ‚ÍƒŠƒ\[ƒXî•ñ‚ğŠÜ‚ñ‚Å‚¢‚Ü‚¹‚ñ" )
-pick( MSG_HAS_INFO_0,		"'%s' already has debugging information" ,
-				"'%s' ‚ÍŠù‚ÉƒfƒoƒbƒOî•ñ‚ğ‚Á‚Ä‚¢‚Ü‚·" )
-pick( MSG_HAS_INFO_1,		"'%s' already has resource information" ,
-				"'%s' ‚ÍŠù‚ÉƒŠƒ\[ƒXî•ñ‚ğ‚Á‚Ä‚¢‚Ü‚·" )
-pick( MSG_INV_FILE_0,		"'%s' is an invalid symbol file" ,
-				"'%s' ‚Í–³Œø‚ÈƒVƒ“ƒ{ƒ‹ƒtƒ@ƒCƒ‹‚Å‚·" )
-pick( MSG_INV_FILE_1,		"'%s' is an invalid resource file" ,
-				"'%s' ‚Í–³Œø‚ÈƒŠƒ\[ƒXƒtƒ@ƒCƒ‹‚Å‚·" )
-pick( MSG_CANT_CREATE_0,	"Unable to create symbol file '%s'" ,
-				"ƒVƒ“ƒ{ƒ‹ƒtƒ@ƒCƒ‹‚ğì‚ê‚Ü‚¹‚ñ '%s'" )
-pick( MSG_CANT_CREATE_1,	"Unable to create resource file '%s'" ,
-				"ƒŠƒ\[ƒXƒtƒ@ƒCƒ‹‚ğì‚ê‚Ü‚¹‚ñ '%s'" )
-pick( MSG_USAGE_FIRST,		"Usage: wstrip [options] input_file [output_file] [info_file]" ,
-				"g—p•û–@: wstrip [options] input_file [output_file] [info_file]" )
-#ifdef __UNIX__
-pick( MSG_USAGE_1,		"options:" ,
-				"ƒIƒvƒVƒ‡ƒ“:" )
-#else
-pick( MSG_USAGE_1,		"options: (/option is also accepted)" ,
-				"ƒIƒvƒVƒ‡ƒ“: (/µÌß¼®İ ‚àó‚¯•t‚¯‚Ü‚·)" )
-#endif
-pick( MSG_USAGE_2,		"        -q     don't print informational messages" ,
-				"        -q     ƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚¹‚ñ" )
-pick( MSG_USAGE_3,		"        -n     don't print warning messages" ,
-				"        -n     ŒxƒƒbƒZ[ƒW‚ğ•\¦‚µ‚Ü‚¹‚ñ" )
-pick( MSG_USAGE_4,		"        -r     process resource information rather than debugging information" ,
-				"        -r     ƒfƒoƒbƒOî•ñ‚Å‚Í‚È‚­AƒŠƒ\[ƒXî•ñ‚ğˆ—‚µ‚Ü‚·" )
-pick( MSG_USAGE_5,		"        -a     add information rather than delete information" ,
-				"        -a     î•ñíœ‚Å‚Í‚È‚­Aî•ñ•t‰Á‚ğ‚µ‚Ü‚·" )
-pick( MSG_USAGE_6,		"" ,
-				"" )
-pick( MSG_USAGE_7,		"        input_file:  executable file" ,
-				"        input_file:  Às‰Â”\ƒtƒ@ƒCƒ‹" )
-pick( MSG_USAGE_8,		"        output_file: optional output executable or '.'" ,
-				"        output_file: ƒIƒvƒVƒ‡ƒ“‚Åo—ÍÀs‰Â”\ƒtƒ@ƒCƒ‹‚Ü‚½‚Í '.'‚ğw’è‰Â”\" )
-pick( MSG_USAGE_9,		"        info_file:   optional output debugging or resource information file" ,
-				"        info_file:   ƒIƒvƒVƒ‡ƒ“‚ÅƒfƒoƒbƒO‚Ü‚½‚ÍƒŠƒ\[ƒXî•ñƒtƒ@ƒCƒ‹‚Ìo—Í–”‚Í" )
-pick( MSG_USAGE_LAST,		"                     or input debugging or resource information file" ,
-				"                     “ü—Í‚ğw’è‰Â”\" )
+/* UTF-8 encoding, Â¥ */
+
+pick( MSG_INV_OPT,              "Invalid option '%s'" ,
+                                "ç„¡åŠ¹ãªã‚ªãƒ—ã‚·ãƒ§ãƒ³ '%s'" )
+pick( MSG_LOW_MEM,              "Too low on memory" ,
+                                "ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒƒãƒ•ã‚¡ã®ãŸã‚ã®ãƒ¡ãƒ¢ãƒªãŒä¸è¶³ã§ã™" )
+pick( MSG_CANT_FIND,            "Unable to find '%s'" ,
+                                "ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ '%s'" )
+pick( MSG_CANT_CREATE_TMP,      "Cannot create temporary file" ,
+                                "ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ãŒä½œã‚Œã¾ã›ã‚“" )
+pick( MSG_CANT_OPEN,            "Cannot open file '%s'" ,
+                                "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã§ãã¾ã›ã‚“ '%s'" )
+pick( MSG_NOT_VALID_EXE,        "'%s' is not a valid executable file" ,
+                                "'%s' ã¯æ­£ã—ããªã„å®Ÿè¡Œå¯èƒ½ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™" )
+pick( MSG_CANT_CREATE_OUTPUT,   "Unable to create output file '%s'" ,
+                                "å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ãŒä½œã‚Œã¾ã›ã‚“ '%s'" )
+pick( MSG_SEEK_ERROR,           "Seek error on '%s'" ,
+                                "ã‚·ãƒ¼ã‚¯ãƒ»ã‚¨ãƒ©ãƒ¼ '%s'" )
+pick( MSG_READ_ERROR,           "Error reading '%s'" ,
+                                "èª­ã¿è¾¼ã¿ã‚¨ãƒ©ãƒ¼ '%s'" )
+pick( MSG_WRITE_ERROR,          "Error writing to '%s'" ,
+                                "æ›¸ãè¾¼ã¿ã‚¨ãƒ©ãƒ¼ '%s'" )
+pick( MSG_ADD_HEADER_ERROR,     "Error adding resource header" ,
+                                "ãƒªã‚½ãƒ¼ã‚¹ãƒ˜ãƒƒãƒ€ãƒ¼è¿½åŠ ã‚¨ãƒ©ãƒ¼" )
+pick( MSG_CANT_ERASE,           "Cannot erase file '%s'" ,
+                                "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ã§ãã¾ã›ã‚“ '%s'" )
+pick( MSG_CANT_RENAME,          "Cannot rename file '%s'" ,
+                                "ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å¤‰æ›´ã§ãã¾ã›ã‚“ '%s'" )
+pick( MSG_WSTRIP_ABORT,         "\nwstrip aborted" ,
+                                "\nwstrip ã®å‡¦ç†ã‚’ä¸­æ­¢ã—ã¾ã™" )
+pick( MSG_NO_SPECIFIED_0,       "No symbol file specified" ,
+                                "ã‚·ãƒ³ãƒœãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“" )
+pick( MSG_NO_SPECIFIED_1,       "No resource file specified" ,
+                                "ãƒªã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“" )
+pick( MSG_NO_INFO_0,            "'%s' does not contain debugging information" ,
+                                "'%s' ã¯ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã‚’å«ã‚“ã§ã„ã¾ã›ã‚“" )
+pick( MSG_NO_INFO_1,            "'%s' does not contain resource information" ,
+                                "'%s' ã¯ãƒªã‚½ãƒ¼ã‚¹æƒ…å ±ã‚’å«ã‚“ã§ã„ã¾ã›ã‚“" )
+pick( MSG_HAS_INFO_0,           "'%s' already has debugging information" ,
+                                "'%s' ã¯æ—¢ã«ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã‚’æŒã£ã¦ã„ã¾ã™" )
+pick( MSG_HAS_INFO_1,           "'%s' already has resource information" ,
+                                "'%s' ã¯æ—¢ã«ãƒªã‚½ãƒ¼ã‚¹æƒ…å ±ã‚’æŒã£ã¦ã„ã¾ã™" )
+pick( MSG_INV_FILE_0,           "'%s' is an invalid symbol file" ,
+                                "'%s' ã¯ç„¡åŠ¹ãªã‚·ãƒ³ãƒœãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™" )
+pick( MSG_INV_FILE_1,           "'%s' is an invalid resource file" ,
+                                "'%s' ã¯ç„¡åŠ¹ãªãƒªã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã§ã™" )
+pick( MSG_CANT_CREATE_0,        "Unable to create symbol file '%s'" ,
+                                "ã‚·ãƒ³ãƒœãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œã‚Œã¾ã›ã‚“ '%s'" )
+pick( MSG_CANT_CREATE_1,        "Unable to create resource file '%s'" ,
+                                "ãƒªã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œã‚Œã¾ã›ã‚“ '%s'" )

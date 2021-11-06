@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,22 +38,25 @@
 
 enum {
     LCHR_EOF            = 0x0100,       /* last char in program source */
-    LCHR_CONTINUE_STRING,               /* string concatenation in progress */
-    LCHR_CONTINUE_LSTRING,              /* wide string concatenation in progress */
     LCHR_MAX
 };
 
 /*     character classes    */
 
-#define C_AL    0x01    /* alphabetic characters and '_'  */
-#define C_DI    0x02    /* digit 0-9                      */
-#define C_HX    0x04    /* upper or lower case hex character (A-F,a-f) */
-#define C_EX    0x08    /* must be examined by GetNextChar */
-#define C_WS    0x40    /* white space                    */
-#define C_DB    0x80    /* first byte of double-byte char */
-#define C_BC    0       /* illegal source input character */
+typedef enum charset_flags {
+    C_BC = 0,       /* illegal source input character               */
+    C_AL = 0x01,    /* alphabetic characters and '_'                */
+    C_DI = 0x02,    /* digit 0-9                                    */
+    C_HX = 0x04,    /* upper or lower case hex character (A-F,a-f)  */
+    C_EX = 0x08,    /* must be examined by GetNextChar              */
+    C_DE = 0x10,    /* any delimiter character                      */
+    C_WS = 0x40,    /* white space                                  */
+    C_DB = 0x80     /* first byte of double-byte char               */
+} charset_flags;
 
-#define C___    0       /* no flags set for character */
+#define C_XW    (C_WS | C_EX)   /* white space character with check */
+#define C_XD    (C_DE | C_EX)   /* delimiter character with check */
+#define C_AX    (C_AL | C_HX)   /* hexa digit letter */
 
 /*
     After we know a character is a C_HX, we can extract the value
@@ -73,8 +77,11 @@ enum {
 #define HEX_BASE        'a'
 #define ONE_CASE( c )   ((c)|'\x20')
 #endif
+#define ONE_CASE_EQUAL( a, b )  (ONE_CASE( a ) == ONE_CASE( b ))
+#define DEC2BIN( c )            ((c) - '0')
+#define HEX2BIN( c )            (((c) | HEX_MASK) - HEX_BASE + 10)
 
-extern unsigned char        CharSet[];  // character characterizations
+extern charset_flags        CharSet[LCHR_MAX];      // character characterizations
 extern unsigned             JIS2Unicode( unsigned );
 extern const unsigned char  TokValue[];
 

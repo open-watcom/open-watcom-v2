@@ -108,8 +108,7 @@ VTD_End_Min_Int_Period      = 0050004h
 ;******************************************************************************
 ; The following structures are pointed to by EBP when VxD routines are entered,
 ;   both for VxD control calls and traps(I/O traps, software INT traps, etc.).
-;   The first structure as DWORD values, the second WORD values and the last
-;   has BYTE values.
+;   The first structure as DWORD values, the second as WORD values.
 ;
 
 Client_Reg_Struc   struc
@@ -137,55 +136,77 @@ Client_FS       dw      ?               ; FS
                 dw      ?               ;   (padding)
 Client_GS       dw      ?               ; GS
                 dw      ?               ;   (padding)
-Client_Alt_EIP  dd      ?
-Client_Alt_CS   dw      ?
-                dw      ?
-Client_Alt_EFlags  dd   ?
-Client_Alt_ESP  dd      ?
-Client_Alt_SS   dw      ?
-                dw      ?
-Client_Alt_ES   dw      ?
-                dw      ?
-Client_Alt_DS   dw      ?
-                dw      ?
-Client_Alt_FS   dw      ?
-                dw      ?
-Client_Alt_GS   dw      ?
-                dw      ?
+Client_Alt_EIP  dd      ?               ; Alt EIP
+Client_Alt_CS   dw      ?               ; Alt CS
+                dw      ?               ;   (padding)
+Client_Alt_EFlags dd    ?               ; Alt EFLAGS
+Client_Alt_ESP  dd      ?               ; Alt ESP
+Client_Alt_SS   dw      ?               ; Alt SS
+                dw      ?               ;   (padding)
+Client_Alt_ES   dw      ?               ; Alt ES
+                dw      ?               ;   (padding)
+Client_Alt_DS   dw      ?               ; Alt DS
+                dw      ?               ;   (padding)
+Client_Alt_FS   dw      ?               ; Alt FS
+                dw      ?               ;   (padding)
+Client_Alt_GS   dw      ?               ; Alt GS
+                dw      ?               ;   (padding)
 Client_Reg_Struc   ends
 
-Client_Word_Reg_Struc    STRUC
-Client_DI        DW    ?
-Client_res13     DW    ?
-Client_SI        DW    ?
-Client_res14     DW    ?
-Client_BP        DW    ?
-Client_res15     DW    ?
-Client_res16     DD    ?
-Client_BX        DW    ?
-Client_res17     DW    ?
-Client_DX        DW    ?
-Client_res18     DW    ?
-Client_CX        DW    ?
-Client_res19     DW    ?
-Client_AX        DW    ?
-Client_res20     DW    ?
-Client_res21     DD    ?
-Client_IP        DW    ?
-Client_res22     DW    ?
-Client_res23     DD    ?
-Client_Flags     DW    ?
-Client_res24     DW    ?
-Client_SP        DW    ?
-Client_res25     DW    ?
-Client_res26     DD    5 DUP (?)
-Client_Alt_IP    DW    ?
-Client_res27     DW    ?
-Client_res28     DD    ?
-Client_Alt_Flags DW    ?
-Client_res29     DW    ?
-Client_Alt_SP    DW    ?
-Client_Word_Reg_Struc    ENDS
+Client_WReg_Struc    STRUC
+Client_DI       dw      ?               ; Client's DI
+                dw      ?               ;   (padding)
+Client_SI       dw      ?               ; Client's SI
+                dw      ?               ;   (padding)
+Client_BP       dw      ?               ; Client's BP
+                dw      ?               ;   (padding)
+                dd      ?               ; ESP at pushall
+Client_BX       dw      ?               ; Client's BX
+                dw      ?               ;   (padding)
+Client_DX       dw      ?               ; Client's DX
+                dw      ?               ;   (padding)
+Client_CX       dw      ?               ; Client's CX
+                dw      ?               ;   (padding)
+Client_AX       dw      ?               ; Client's AX
+                dw      ?               ;   (padding)
+                dd      ?               ; Dword error code
+Client_IP       dw      ?               ; IP
+                dw      ?               ;   (padding)
+                dw      ?               ; CS
+                dw      ?               ;   (padding)
+Client_Flags    dw      ?               ; FLAGS
+                dw      ?               ;   (padding)
+Client_SP       dw      ?               ; SP
+                dw      ?               ;   (padding)
+                dw      ?               ; SS
+                dw      ?               ;   (padding)
+                dw      ?               ; ES
+                dw      ?               ;   (padding)
+                dw      ?               ; DS
+                dw      ?               ;   (padding)
+                dw      ?               ; FS
+                dw      ?               ;   (padding)
+                dw      ?               ; GS
+                dw      ?               ;   (padding)
+Client_Alt_IP   dw      ?               ; Alt IP
+                dw      ?               ;   (padding)
+                dw      ?               ; Alt CS
+                dw      ?               ;   (padding)
+Client_Alt_Flags dw     ?               ; Alt EFLAGS
+                dw      ?               ;   (padding)
+Client_Alt_SP   dw      ?               ; Alt SP
+                dw      ?               ;   (padding)
+                dw      ?               ; Alt SS
+                dw      ?               ;   (padding)
+                dw      ?               ; Alt ES
+                dw      ?               ;   (padding)
+                dw      ?               ; Alt DS
+                dw      ?               ;   (padding)
+                dw      ?               ; Alt FS
+                dw      ?               ;   (padding)
+                dw      ?               ; Alt GS
+                dw      ?               ;   (padding)
+Client_WReg_Struc    ENDS
 
 cb_s STRUC
 CB_VM_Status      DD ?

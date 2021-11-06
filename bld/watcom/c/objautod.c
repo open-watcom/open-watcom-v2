@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 #include "pcobj.h"
 #include "objautod.h"
 
-#pragma pack(1)
+#pragma pack( __push, 1 )
 enum {
     TIME_SEC_B  = 0,
     TIME_SEC_F  = 0x001f,
@@ -59,12 +60,12 @@ enum {
 
 static int verifyOBJFile( int fh )
 {
-    auto struct {
-        obj_record      header;
-        obj_name        name;
+    struct {
+        omf_record      header;
+        omf_name        name;
     } theadr;
 
-    if( lseek( fh, 0, SEEK_SET ) < 0 ) {
+    if( lseek( fh, 0, SEEK_SET ) == -1L ) {
         return( 0 );
     }
     if( read( fh, &theadr, sizeof( theadr ) ) != sizeof( theadr ) ) {
@@ -76,7 +77,7 @@ static int verifyOBJFile( int fh )
     if(( theadr.name.len + 2 ) != theadr.header.length ) {
         return( 0 );
     }
-    if( lseek( fh, 0, SEEK_SET ) < 0 ) {
+    if( lseek( fh, 0, SEEK_SET ) == -1L ) {
         return( 0 );
     }
     return( 1 );
@@ -107,15 +108,15 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
     time_t DOS_stamp_time;
     int fh;
     unsigned len;
-    auto obj_record header;
-    auto struct {
+    omf_record header;
+    struct {
         uint_8          bits;
         uint_8          type;
         uint_16         dos_time;
         uint_16         dos_date;
         uint_8          name_len;
     } comment;
-    auto char buff[256];
+    char buff[256];
 
     fh = open( file_name, O_RDONLY | O_BINARY );
     if( fh < 0 ) {
@@ -207,4 +208,4 @@ int main( int argc, char **argv )
     return( 0 );
 }
 #endif
-#pragma pack()
+#pragma pack( __pop )

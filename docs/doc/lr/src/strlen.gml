@@ -3,7 +3,7 @@
 #include <string.h>
 size_t strlen( const char *s );
 .ixfunc2 '&String' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 size_t _fstrlen( const char __far *s );
 .ixfunc2 '&String' &ffunc
 .do end
@@ -26,17 +26,18 @@ size_t _fmbslen( const unsigned char __far *s );
 .do end
 .synop end
 .*
-.safealt
+.safealt strnlen_s
 .*
 .desc begin
 The
 .id &funcb.
 function computes the length of the string pointed to by
 .arg s
-.ct .li .
-.im farparm
-.im widefun1
-.im mbsffunc
+.period
+.farfuncp &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
+.mbcsfunc &mfunc. &funcb.
+.farfuncp &fmfunc. &mfunc.
 .desc end
 .return begin
 The

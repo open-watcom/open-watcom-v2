@@ -43,10 +43,6 @@
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
     #include "bool.h"
-  #ifdef __WATCOMC__
-    /* Don't actually include nb30.h because of conflicting definitions. */
-    #pragma library( "netapi32.lib" )
-  #endif
     #define _FAR
 #elif defined( __WINDOWS__ )
     #include <windows.h>

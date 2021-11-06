@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -166,7 +166,7 @@ static void typeSigAccess(      // HANDLE ACCESS FOR TYPE-SIGNATURE
 
     if( (TSA_GEN & acc) == 0 ) {
         info.acc = acc;
-        info.type = StructType( sig->type );
+        info.type = ClassType( sig->type );
         if( info.type != NULL ) {
             info.err_occurred = error_occurred;
             info.err_locn = err_locn;
@@ -383,7 +383,7 @@ INITDEFN( type_signature, typeSigInit, typeSigFini )
 pch_status PCHReadTypeSigs( void )
 {
     TYPE_SIG *s;
-    auto cvinit_t data;
+    cvinit_t data;
 
     type_sigs = TypeSigPCHRead();
     CarveInitStart( carveTYPE_SIG, &data );
@@ -448,7 +448,7 @@ static void saveTypeSig( void *e, carve_walk_base *d )
 
 pch_status PCHWriteTypeSigs( void )
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     TypeSigPCHWrite( type_sigs );
     CarveWalkAllFree( carveTYPE_SIG, markFreeTypeSig );

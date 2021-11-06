@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +99,8 @@ void    DetCallList(void) {
                 Detach( cit );
                 return;
             }
-            if( RecNOpn() ) break;
+            if( RecNOpn() )
+                break;
             SetDefinedStatus();
             AdvanceITPtr();
         }
@@ -117,7 +119,7 @@ void    DetSubList(void) {
     int         dim_no;
     int         dim_cnt;
     itnode      *save_cit;
-    uint        ch_size;
+    size_t      ch_size;
 
     if( CITNode->opn.us & USOPN_FLD ) {
         dim_cnt = _DimCount( CITNode->sym_ptr->u.fd.dim_ext->dim_flags );
@@ -153,7 +155,7 @@ void    DetSubList(void) {
     if( dim_no != dim_cnt ) {
         Error( SV_INV_SSCR );
     }
-    // we must make sure the array isn't substrung before we can set OPN_SS1
+    // we must make sure the array isn't substring before we can set OPN_SS1
     if( (cit->opn.us & USOPN_FLD) == 0 && ( cit->sym_ptr->u.ns.u1.s.typ == FT_CHAR ) ) {
         ch_size = cit->sym_ptr->u.ns.xt.size;
         if( ch_size > 0 ) {
@@ -193,7 +195,8 @@ static  void    SubStrArgs( itnode *cit ) {
         }
         CkScrStr();
         AdvanceITPtr();
-        if( !RecColon() ) break;
+        if( !RecColon() )
+            break;
         ++count;
     }
 }
@@ -206,7 +209,8 @@ static  void    CkScrStr( void ) {
 
     ChkType( FT_INTEGER );
     opn = CITNode->opn.us;
-    if( (opn & USOPN_WHAT) != USOPN_ARR ) return;
+    if( (opn & USOPN_WHAT) != USOPN_ARR )
+        return;
     ClassErr( SV_NO_LIST, CITNode->sym_ptr );
 }
 

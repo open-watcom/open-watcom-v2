@@ -18,12 +18,12 @@ a faster retrieval time.
 :P.
 Elements cannot be inserted into these vectors by assigning to a vector index.
 Vectors automatically grow when necessary to insert an element if the
-.MONO resize_required
+:MONO.resize_required
 .ix 'resize_required' 'exception'
 exception is not enabled.
 :P.
 In the description of each member function, the text
-.MONO Type
+:MONO.Type
 is used to indicate the template parameter defining
 
 .if &lpref. eq Val .do begin
@@ -46,18 +46,22 @@ be the same object.
 
 :P.
 The
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 class stores elements in the order which they are inserted using the
-.MONO insert, append, prepend
+:MONO.insert
+:CONT.,
+:MONO.append
+:CONT.,
+:MONO.prepend
 and
-.MONO insertAt
+:MONO.insertAt
 member functions.  Linear searches are performed to locate entries, and
 the less than operator is not required.
 :P.
 The
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class stores elements in ascending order.  This requires that
-.MONO Type
+:MONO.Type
 provides
 a less than operator.  Insertions are more expensive than inserting or
 appending into an ordered vector, since entries must be moved to make
@@ -65,7 +69,7 @@ room for the new element.  A binary search is used to locate elements in
 a sorted vector, making searches quicker than in the ordered vector.
 :P.
 Care must be taken when using the
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class not to change the ordering of the vector
 elements.
 
@@ -80,9 +84,11 @@ An object pointed to by a vector element must not be changed so that
 it is not equivalent to the value when the pointer was inserted into the
 vector.
 The index operator and the member functions
-.MONO find, first,
-and
-.MONO last
+:MONO.find
+:CONT.,
+:MONO.first
+:CONT., and
+:MONO.last
 all return pointers the elements pointed to by the vector elements.
 Lookups assume elements are in sorted order, so you should not
 use the returned pointers to change the ordering of the value
@@ -91,7 +97,7 @@ pointed to.
 
 :P.
 The
-.MONO WC&lpref.Vector
+:MONO.WC&lpref.Vector
 class is also available.  It provides a resizable and boundary safe vector
 similar to standard arrays.
 :P.
@@ -99,31 +105,32 @@ similar to standard arrays.
 :INCLUDE file='_EXPT_BC'.
 :HDG.Requirements of Type
 Both the &cls. require
-.MONO Type
+:MONO.Type
 to have:
 
 .if &lpref. eq Val .do begin
 :P.
 A default constructor (
-.MONO Type::Type()
+:MONO.Type::Type()
 ).
 :P.
 A well defined copy constructor (
-.MONO Type::Type( const Type & )
+:MONO.Type::Type( const Type & )
 ).
 :P.
 A well defined assignment operator
 .br
 (
-.MONO Type & operator =( const Type & )
+:MONO.Type & operator =( const Type & )
 ).
 :P.
 The following override of
-.MONO operator new()
+:MONO.operator new()
 if
-.MONO Type
+:MONO.Type
 overrides the global
-.MONO operator new():
+:MONO.operator new()
+:CONT.:
 :XMPL
 void * operator new( size_t, void *ptr ) { return( ptr ); }
 :eXMPL
@@ -133,19 +140,19 @@ void * operator new( size_t, void *ptr ) { return( ptr ); }
 A well defined equivalence operator with constant parameters
 .br
 (
-.MONO int operator ==( const Type & ) const
+:MONO.int operator ==( const Type & ) const
 ).
 :P.
 Additionally the
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class requires
-.MONO Type
+:MONO.Type
 to have:
 :P
 A well defined less than operator with constant parameters
 .br
 (
-.MONO int operator <( const Type & ) const
+:MONO.int operator <( const Type & ) const
 ).
 :HDG.Public Member Functions
 The following member functions are declared in the public interface:
@@ -199,7 +206,7 @@ The following member functions are declared in the public interface:
 :MFN index='resize'         .int resize( size_t );
 :eMFNL.
 The following public member functions are available for the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 class only:
 :MFNL.
 .if &lpref. eq Val .do begin
@@ -240,15 +247,15 @@ The following member operators are declared in the public interface:
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.OrderedVector<Type>
+:MONO.WC&lpref.OrderedVector<Type>
 constructor creates an empty
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 object able to store the number of elements specified
 in the first optional parameter, which defaults to the constant
-.MONO WCDEFAULT_VECTOR_LENGTH
+:MONO.WCDEFAULT_VECTOR_LENGTH
 (currently defined as 10).
 If the
-.MONO resize_required
+:MONO.resize_required
 .ix 'resize_required' 'exception'
 exception is not enabled, then the second optional parameter is used to
 specify the value to increase the vector size
@@ -257,16 +264,16 @@ into a full vector.
 If zero(0) is specified as the second parameter, any attempt to insert into
 a full vector fails.
 This parameter defaults to the constant
-.MONO WCDEFAULT_VECTOR_RESIZE_GROW
+:MONO.WCDEFAULT_VECTOR_RESIZE_GROW
 (currently defined as 5).
 :P.
 If the vector object cannot be fully initialized, the vector is created
 with length zero.
 :RSLTS.
 The
-.MONO WC&lpref.OrderedVector<Type>
+:MONO.WC&lpref.OrderedVector<Type>
 constructor creates an empty initialized
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 object.
 :SALSO.
 :SAL typ='omtyp' ocls='WCExcept'.resize_required
@@ -281,23 +288,23 @@ object.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.OrderedVector<Type>
+:MONO.WC&lpref.OrderedVector<Type>
 constructor is the copy constructor for the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 class.
 The new vector is created with the same length and
 resize value as the passed vector.
 All of the vector elements and exception trap states are copied.
 :P.
 If the new vector cannot be fully created, it will have length zero.  The
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if enabled in the vector being copied.
 :RSLTS.
 The
-.MONO WC&lpref.OrderedVector<Type>
+:MONO.WC&lpref.OrderedVector<Type>
 creates a
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 object which is a copy of the passed vector.
 :SALSO.
 :SAL typ='fun'.operator~b=
@@ -313,33 +320,33 @@ object which is a copy of the passed vector.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.OrderedVector<Type>
+:MONO.WC&lpref.OrderedVector<Type>
 destructor is the destructor for the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 class.
 If the vector is not length zero and the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled, the exception is thrown.
 Otherwise, the vector entries are cleared using the
-.MONO clear
+:MONO.clear
 member function.
 
 .if &lpref. eq Ptr .do begin
 The objects which the vector entries point to are not deleted unless the
-.MONO clearAndDestroy
+:MONO.clearAndDestroy
 member function is explicitly called before the destructor is called.
 .do end
 The call to the
-.MONO WC&lpref.OrderedVector<Type>
+:MONO.WC&lpref.OrderedVector<Type>
 destructor is inserted implicitly by the compiler at the point where the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 object goes out of scope.
 :RSLTS.
 The
-.MONO WC&lpref.OrderedVector<Type>
+:MONO.WC&lpref.OrderedVector<Type>
 destructor destroys an
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 object.
 :SALSO.
 :SAL typ='fun'.clear
@@ -359,15 +366,15 @@ object.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.SortedVector<Type>
+:MONO.WC&lpref.SortedVector<Type>
 constructor creates an empty
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 object able to store the number of elements specified
 in the first optional parameter, which defaults to the constant
-.MONO WCDEFAULT_VECTOR_LENGTH
+:MONO.WCDEFAULT_VECTOR_LENGTH
 (currently defined as 10).
 If the
-.MONO resize_required
+:MONO.resize_required
 .ix 'resize_required' 'exception'
 exception is not enabled, then the second optional parameter is used to
 specify the value to increase the vector size when an element is inserted
@@ -375,16 +382,16 @@ into a full vector.
 If zero(0) is specified as the second parameter, any attempt to insert into
 a full vector fails.
 This parameter defaults to the constant
-.MONO WCDEFAULT_VECTOR_RESIZE_GROW
+:MONO.WCDEFAULT_VECTOR_RESIZE_GROW
 (currently defined as 5).
 :P.
 If the vector object cannot be fully initialized, the vector is created
 with length zero.
 :RSLTS.
 The
-.MONO WC&lpref.SortedVector<Type>
+:MONO.WC&lpref.SortedVector<Type>
 constructor creates an empty initialized
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 object.
 :SALSO.
 :SAL typ='omtyp' ocls='WCExcept'.resize_required
@@ -399,23 +406,23 @@ object.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.SortedVector<Type>
+:MONO.WC&lpref.SortedVector<Type>
 constructor is the copy constructor for the
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class.
 The new vector is created with the same length and
 resize value as the passed vector.
 All of the vector elements and exception trap states are copied.
 :P.
 If the new vector cannot be fully created, it will have length zero.  The
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if enabled in the vector being copied.
 :RSLTS.
 The
-.MONO WC&lpref.SortedVector<Type>
+:MONO.WC&lpref.SortedVector<Type>
 constructor creates a
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 object which is a copy of the passed vector.
 :SALSO.
 :SAL typ='fun'.operator~b=
@@ -431,33 +438,33 @@ object which is a copy of the passed vector.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.SortedVector<Type>
+:MONO.WC&lpref.SortedVector<Type>
 destructor is the destructor for the
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class.
 If the vector is not length zero and the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled, the exception is thrown.
 Otherwise, the vector entries are cleared using the
-.MONO clear
+:MONO.clear
 member function.
 
 .if &lpref. eq Ptr .do begin
 The objects which the vector entries point to are not deleted unless the
-.MONO clearAndDestroy
+:MONO.clearAndDestroy
 member function is explicitly called before the destructor is called.
 .do end
 The call to the
-.MONO WC&lpref.SortedVector<Type>
+:MONO.WC&lpref.SortedVector<Type>
 destructor is inserted implicitly by the compiler at the point where the
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 object goes out of scope.
 :RSLTS.
 The
-.MONO WC&lpref.SortedVector<Type>
+:MONO.WC&lpref.SortedVector<Type>
 destructor destroys an
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 object.
 :SALSO.
 :SAL typ='fun'.clear
@@ -487,37 +494,37 @@ The data stored in the vector is a copy of the data passed as a parameter.
 .do end
 
 This member function has the same semantics as the
-.MONO WC&lpref.OrderedVector::insert
+:MONO.WC&lpref.OrderedVector::insert
 member function.
 
 :P.
 This function is not provided by the
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class, since all elements must be inserted in sorted order by the
-.MONO insert
+:MONO.insert
 member function.
 :P.
 Several different results can occur if the vector is not large enough for
 the new element.
 If the
-.MONO resize_required
+:MONO.resize_required
 .ix 'resize_required' 'exception'
 exception is enabled, the exception is thrown.
 If the exception is not enabled, the append fails if the amount the vector
 is to be grown (the second parameter to the constructor) is zero(0).
 Otherwise, the vector is automatically grown by
 the number of elements specified to the constructor, using the
-.MONO resize
+:MONO.resize
 member function.
 If
-.MONO resize
+:MONO.resize
 fails, the element is not appended to the vector and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown, if enabled.
 :RSLTS.
 The &fn. appends an element to the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 object.  A TRUE (non-zero) value is returned if the append is successful.
 If the append fails, a FALSE (zero) value is returned.
 :SALSO.
@@ -541,7 +548,7 @@ is zero size.
 
 .if &lpref. eq Val .do begin
 Elements stored in the vector are destroyed using
-.MONO Type's
+:MONO.Type's
 destructor.
 .do end
 .el .do begin
@@ -598,9 +605,9 @@ themselves.
 .do end
 
 A linear search is used by the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 class to find the value.  The
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class uses a binary search.
 :RSLTS.
 The &fn. returns a TRUE (non-zero) value if the element is found in the
@@ -652,9 +659,9 @@ themselves.
 .do end
 
 The
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 class uses a linear search to find the element, and the
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class uses a binary search.
 
 :RSLTS.
@@ -691,10 +698,10 @@ The &fn. returns the first element in the vector.  The element is not removed
 from the vector.
 :P.
 If the vector is empty, one of two exceptions can be thrown.  The
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is thrown if it is enabled.  Otherwise, if the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception is enabled, it is thrown.
 If neither exception is enabled, a first element of the vector is added
@@ -732,9 +739,9 @@ themselves.
 .do end
 
 A linear search is used by the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 class to find the element.  The
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class uses a binary search.
 :RSLTS.
 The &fn. returns the index of the first element equivalent to the parameter.
@@ -767,15 +774,15 @@ The data stored in the vector is a copy of the data passed as a parameter.
 .do end
 :P.
 The
-.MONO WC&lpref.OrderedVector::insert
+:MONO.WC&lpref.OrderedVector::insert
 function inserts the value as the last element of the vector, and has
 the same semantics as the
-.MONO WC&lpref.OrderedVector::append
+:MONO.WC&lpref.OrderedVector::append
 member function.
 :P.
 A binary search is performed to determine where the value should be inserted
 for the
-.MONO WC&lpref.SortedVector::insert
+:MONO.WC&lpref.SortedVector::insert
 function.
 
 .if &lpref. eq Ptr .do begin
@@ -787,7 +794,7 @@ Any elements greater than the inserted value are copied up one index
 
 .if &lpref. eq Val .do begin
 (using
-.MONO Type's
+:MONO.Type's
 assignment operator),
 .do end
 
@@ -797,19 +804,19 @@ with value less than or equal to it.
 Several different results can occur if the vector is not large enough for
 the new element.
 If the
-.MONO resize_required
+:MONO.resize_required
 .ix 'resize_required' 'exception'
 exception is enabled, the exception is thrown.
 If the exception is not enabled, the insert fails if the amount the vector
 is to be grown (the second parameter to the constructor) is zero(0).
 Otherwise, the vector is automatically grown by
 the number of elements specified to the constructor, using the
-.MONO resize
+:MONO.resize
 member function.
 If
-.MONO resize
+:MONO.resize
 fails, the element is not inserted to the vector and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown, if enabled.
 :RSLTS.
@@ -851,21 +858,21 @@ are copied
 
 .if &lpref. eq Val .do begin
 (using
-.MONO Type's
+:MONO.Type's
 assignment operator)
 .do end
 
 up one index.
 :P.
 This function is not provided by the
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class, since all elements must be inserted in sorted order by the
-.MONO insert
+:MONO.insert
 member function.
 :P.
 If the passed index is negative or greater than the number of entries in
 the vector and the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception is enabled, the exception is thrown.  If the exception is not
 enabled, the new element is inserted as the first element when the index is
@@ -874,24 +881,24 @@ negative, or as the last element when the index is too large.
 Several different results can occur if the vector is not large enough for
 the new element.
 If the
-.MONO resize_required
+:MONO.resize_required
 .ix 'resize_required' 'exception'
 exception is enabled, the exception is thrown.
 If the exception is not enabled, the insert fails if the amount the vector
 is to be grown (the second parameter to the constructor) is zero(0).
 Otherwise, the vector is automatically grown by
 the number of elements specified to the constructor, using the
-.MONO resize
+:MONO.resize
 member function.
 If
-.MONO resize
+:MONO.resize
 fails, the element is not inserted into the vector and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown, if enabled.
 :RSLTS.
 The &fn. inserts an element into the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 object before the element at the given index.
 A TRUE (non-zero) value is returned if the insert is successful.
 If the insert fails, a FALSE (zero) value is returned.
@@ -936,10 +943,10 @@ The &fn. returns the last element in the vector.  The element is not removed
 from the vector.
 :P.
 If the vector is empty, one of two exceptions can be thrown.  The
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is thrown if it is enabled.  Otherwise, if the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception is enabled, it is thrown.
 If neither exception is enabled, a first element of the vector is added
@@ -977,9 +984,9 @@ themselves.
 .do end
 
 A linear search is used by the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 class to find the value.  The
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class uses a binary search.
 :RSLTS.
 The &fn. returns the number of elements equivalent to the passed value.
@@ -1005,33 +1012,43 @@ The &fn. returns the number of elements equivalent to the passed value.
 .do end
 :eSNPL.
 :SMTICS.
-.MONO operator []
+:MONO.operator []
 is the vector index operator.  A reference to the object stored
 in the vector at the given index is returned.  If a constant vector is
 indexed, a reference to a constant element is returned.
 :P.
 The
-.MONO append, insert, insertAt
+:MONO.append
+:CONT.,
+:MONO.insert
+:CONT:,
+:MONO.insertAt
 and
-.MONO prepend
+:MONO.prepend
 member functions are used to insert a new element into a vector, and the
-.MONO remove, removeAll, removeAt, removeFirst
+:MONO.remove
+:CONT.,
+:MONO.removeAll
+:CONT.,
+:MONO.removeAt
+:CONT.,
+:MONO.removeFirst
 and
-.MONO removeLast
+:MONO.removeLast
 member functions remove elements.
 The index operator cannot be used to change the number of entries in the
 vector.
 Searches may be performed using the
-.MONO find
+:MONO.find
 and
-.MONO index
+:MONO.index
 member functions.
 :P.
 If the vector is empty, one of two exceptions can be thrown.  The
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is thrown if it is enabled.  Otherwise, if the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception is enabled, it is thrown.
 If neither exception is enabled, a first element of the vector is added
@@ -1047,24 +1064,24 @@ This element is added so that a reference to a valid vector element can
 be returned.
 :P.
 If the index value is negative and the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception is enabled, the exception is thrown.
 An attempt to index an element with index greater than or equal to the
 number of entries in the vector will also cause the
-.MONO index_range
+:MONO.index_range
 exception to be thrown if enabled.
 If the exception is not enabled, attempting to index a negative element will
 index the first element in the vector, and attempting to index an element
 after the last entry will index the last element.
 :P.
 Care must be taken when using the
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class not to change the ordering of the vector
 elements.
 The result returned by the index operator must not be assigned to or
 modified in such a way that it is no longer equivalent (by
-.MONO Type's
+:MONO.Type's
 equivalence operator) to the value inserted into the vector.
 Failure to comply may cause lookups to work incorrectly, since
 the binary search algorithm assumes elements are in sorted order.
@@ -1102,7 +1119,7 @@ The result of the non-constant index operator may be assigned to.
 :SMTICS.
 The &fn. is the assignment operator for the class.
 The left hand side vector is first cleared using the
-.MONO clear
+:MONO.clear
 member function, and then the right hand side vector is copied.
 The left hand side vector is made to have the same length and growth amount
 as the right hand side (the growth amount is the second argument passed to
@@ -1111,7 +1128,7 @@ All of the vector elements and exception trap states are copied.
 :P.
 If the left hand side vector cannot be fully created, it will have
 zero length.  The
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if enabled in the right hand side vector.
 :RSLTS.
@@ -1164,39 +1181,39 @@ All vector elements contained in the vector are copied
 
 .if &lpref. eq Val .do begin
 (using
-.MONO Type's
+:MONO.Type's
 assignment operator)
 .do end
 
 up one index.
 :P.
 This function is not provided by the
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class, since all elements must be inserted in sorted order by the
-.MONO insert
+:MONO.insert
 member function.
 :P.
 Several different results can occur if the vector is not large enough for
 the new element.
 If the
-.MONO resize_required
+:MONO.resize_required
 .ix 'resize_required' 'exception'
 exception is enabled, the exception is thrown.
 If the exception is not enabled, the prepend fails if the amount the vector
 is to be grown (the second parameter to the constructor) is zero(0).
 Otherwise, the vector is automatically grown by
 the number of elements specified to the constructor, using the
-.MONO resize
+:MONO.resize
 member function.
 If
-.MONO resize
+:MONO.resize
 fails, the element is not inserted to the vector and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown, if enabled.
 :RSLTS.
 The &fn. prepends an element to the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 object.  A TRUE (non-zero) value is returned if the insert is successful.
 If the insert fails, a FALSE (zero) value is returned.
 :SALSO.
@@ -1232,7 +1249,7 @@ All vector elements stored after the removed elements are copied
 
 .if &lpref. eq Val .do begin
 (using
-.MONO Type's
+:MONO.Type's
 assignment operator)
 .do end
 
@@ -1240,9 +1257,9 @@ down one index.
 
 :P.
 A linear search is used by the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 class to find the element being removed.  The
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class uses a binary search.
 :RSLTS.
 The &fn. removes the first element in the vector which is equivalent
@@ -1290,7 +1307,7 @@ All vector elements stored after the removed elements are copied
 
 .if &lpref. eq Val .do begin
 (using
-.MONO Type's
+:MONO.Type's
 assignment operator)
 .do end
 
@@ -1298,9 +1315,9 @@ down one or more indexes to take the place of the removed elements.
 
 :P.
 A linear search is used by the
-.MONO WC&lpref.OrderedVector
+:MONO.WC&lpref.OrderedVector
 class to find the elements being removed.  The
-.MONO WC&lpref.SortedVector
+:MONO.WC&lpref.SortedVector
 class uses a binary search.
 :RSLTS.
 The &fn. removes all elements in the vector which are equivalent
@@ -1337,24 +1354,24 @@ All vector elements stored after the removed elements are copied
 
 .if &lpref. eq Val .do begin
 (using
-.MONO Type's
+:MONO.Type's
 assignment operator)
 .do end
 
 down one index.
 :P.
 If the vector is empty and the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, the exception is thrown.
 :P.
 If an attempt to remove an element with a negative index is made and the
-.MONO index_range
+:MONO.index_range
 exception is enabled, the exception is thrown.
 If the exception is not enabled, the first element is removed from the vector.
 Attempting to remove an element with index greater or equal to the number
 of entries in the vector also causes the
-.MONO index_range
+:MONO.index_range
 exception to be thrown if enabled.  The last element in the vector is removed
 if the exception is not enabled.
 :RSLTS.
@@ -1401,14 +1418,14 @@ All other vector elements are copied
 
 .if &lpref. eq Val .do begin
 (using
-.MONO Type's
+:MONO.Type's
 assignment operator)
 .do end
 
 down one index.
 :P.
 If the vector is empty and the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, the exception is thrown.
 :RSLTS.
@@ -1450,7 +1467,7 @@ If the vector was empty, NULL(0) is returned.
 :SMTICS.
 The &fn. removes the last element from a vector.
 If the vector is empty and the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, the exception is thrown.
 :RSLTS.
@@ -1492,14 +1509,18 @@ elements are copied
 
 .if &lpref eq Val .do begin
 (using
-.MONO Type's
+:MONO.Type's
 copy constructor)
 .do end
 
 into the newly sized vector, and new elements can be added using the
-.MONO append, insert, insertAt,
-and
-.MONO prepend
+:MONO.append
+:CONT.,
+:MONO.insert
+:CONT.,
+:MONO.insertAt
+:CONT., and
+:MONO.prepend
 member functions.
 If the vector is resized to a smaller size, the first :HP1.new_size:eHP1.
 elements are copied (all vector elements if the vector contained
@@ -1507,7 +1528,7 @@ elements are copied (all vector elements if the vector contained
 
 .if &lpref eq Val .do begin
 The remaining elements are destroyed using
-.MONO Type's
+:MONO.Type's
 destructor.
 .do end
 .el .do begin
@@ -1516,11 +1537,12 @@ The objects pointed to by the remaining elements are not deleted.
 
 :P.
 If the resize cannot be performed and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is enabled, the exception is thrown.
 :RSLTS.
-The vector is resized to :HP1.new_size:eHP1.:PERIOD.
+The vector is resized to :HP1.new_size:eHP1.
+:PERIOD.
 A TRUE value (non-zero) is returned if the resize is successful.
 A FALSE (zero) result is returned if the resize fails.
 :SALSO.

@@ -315,7 +315,7 @@ static void CloseFiles( void )
 static void ReplaceExt( char *name, const char *new_ext, bool force )
 /*******************************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( force || pg.ext[0] == '\0' ) {
@@ -569,7 +569,7 @@ int main(int argc, char **argv )
     ClassList->lnameidx = 0;
     memcpy( ClassList->name, DEF_CLASS, sizeof( DEF_CLASS ) - 1 );
     if( ( argc < 2 ) || ( argv[1][0] == '?' ) ) {
-        printf( HelpMsg );
+        printf( "%s", HelpMsg );
     } else {
         argv++;     // skip the program name
         retval = Spawn1( ProcessFiles, argv );

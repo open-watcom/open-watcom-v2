@@ -47,6 +47,8 @@
 #include "loadfile.h"
 
 
+#ifdef _RAW
+
 typedef offset  hex_offset;
 
 typedef segment hex_segment;
@@ -93,14 +95,17 @@ static bool WriteBinSegGroup( group_entry *group )
 
 
 void BinOutput( void )
-/***************************/
+/********************/
 {
     outfilelist         *fnode;
     group_entry         *group;
     bool                repos;
+#if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
     unsigned_32         size;
     signed_32           diff;
+#endif
 
+#if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
     if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_ELF) ) {
         CurrSect = Root;        // needed for WriteInfo.
         Root->sect_addr = Groups->grp_addr;
@@ -125,6 +130,7 @@ void BinOutput( void )
             }
         }
     } else {
+#endif
         OrderGroups( CompareDosSegments );
         CurrSect = Root;        // needed for WriteInfo.
         Root->sect_addr = Groups->grp_addr;
@@ -138,7 +144,9 @@ void BinOutput( void )
                 SeekLoad( fnode->file_loc );
             }
         }
+#if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
     }
+#endif
     DBIWrite();
 }
 
@@ -315,12 +323,14 @@ void HexOutput( void )
 {
     outfilelist         *fnode;
     group_entry         *group;
-    group_entry         *wrkgrp;
     section             *sect;
 #ifdef _INT_DEBUG
     outfilelist         *finfo;
 #endif
+#if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
+    group_entry         *wrkgrp;
     unsigned_32         size;
+#endif
     class_entry         *class;
     grpwriteinfo        info;
 //    unsigned long     file_loc;
@@ -330,6 +340,7 @@ void HexOutput( void )
     linear        = false;  //       in segmented mode
     buf_offset    = 0;
 
+#if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
     if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_ELF) ) {
         CurrSect = Root;    // needed for WriteInfo.
         Root->sect_addr = Groups->grp_addr;
@@ -349,11 +360,11 @@ void HexOutput( void )
                 info.offs = (group->grp_addr.off + group->linear - FmtData.output_offset);
                 sect = wrkgrp->section;
                 CurrSect = sect;
-#ifdef _INT_DEBUG
+    #ifdef _INT_DEBUG
                 finfo = sect->outfile;
                 DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
                     &group->grp_addr, sect->ovlref, info.offs, finfo->fname ));
-#endif
+    #endif
                 if( group->leaders->class->flags & CLASS_COPY ) {
                     Ring2Lookup( wrkgrp->leaders, DoHexDupLeader, &info.offs );
                 } else {
@@ -362,6 +373,7 @@ void HexOutput( void )
             }
         }
     } else {
+#endif
         OrderGroups( CompareDosSegments );
         CurrSect = Root;    // needed for WriteInfo.
         Root->sect_addr = Groups->grp_addr;
@@ -396,7 +408,9 @@ void HexOutput( void )
                 }
             }
         }
+#if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
     }
+#endif
     if( buf_offset > 0 ) {          // If partial record in buffer, flush
         WriteHexLine();
     }
@@ -475,3 +489,5 @@ void FiniRawLoadFile( void )
         DBIWrite();
     }
 }
+
+#endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +126,8 @@ void RefSeg( segdata * seg )
 
     if( seg->isrefd || seg->visited )
         return;
-//  if( !seg->iscode ) return;
+//    if( !seg->iscode )
+//        return;
     seg->isrefd = true;
     seg->visited = true;
     for( edge = seg->a.refs; edge != NULL; edge = next ) {
@@ -164,7 +165,7 @@ void AddEdge( segdata * seg, symbol * sym )
     edgelist *  edge;
 
     if( sym->info & SYM_DEFINED ) {
-        if( !IS_SYM_IMPORTED(sym) && seg != sym->p.seg && sym->p.seg != NULL ) {
+        if( !IS_SYM_IMPORTED( sym ) && seg != sym->p.seg && sym->p.seg != NULL ) {
             if( seg->isrefd || !seg->iscode ) {
                 RefSeg( sym->p.seg );
             } else if( !sym->p.seg->isrefd ) {
@@ -208,13 +209,13 @@ void AddSymEdge( symbol * srcsym, symbol * targsym )
 }
 
 void AddSymSegEdge( symbol *srcsym, segdata *targsdata )
-/*********************************************************/
+/******************************************************/
 /* make a reference from symbol to segment */
 {
     edgelist *  edge;
 
-    if( IS_SYM_IMPORTED(srcsym) ) {
-        RefSeg(targsdata);
+    if( IS_SYM_IMPORTED( srcsym ) ) {
+        RefSeg( targsdata );
         return;
     }
     edge = AllocEdge();

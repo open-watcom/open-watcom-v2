@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of eof().
+* Description:  Implementation of _eof().
 *
 ****************************************************************************/
 
@@ -44,15 +44,15 @@
 #include "thread.h"
 
 
-_WCRTLINK int eof( int handle )         /* determine if at EOF */
+_WCRTLINK int _eof( int handle )        /* determine if at EOF */
 {
     off_t   current_posn, file_len;
 
     __handle_check( handle, -1 );
-    file_len = filelength( handle );
+    file_len = _filelength( handle );
     if( file_len == -1L )
         return( -1 );
-    current_posn = tell( handle );
+    current_posn = _tell( handle );
     if( current_posn == -1L )
         return( -1 );
     if( current_posn == file_len )

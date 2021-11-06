@@ -35,10 +35,6 @@
 
 #define NUM_ROWS    24
 
-#ifdef __OSI__
-    extern       char    *_Copyright;
-#endif
-
 static char const *nextUsage( char const *p )
 {
     while( *p != '\0' ) {
@@ -63,12 +59,6 @@ void CCusage( void )
     int         count;
 
     count = CBanner();
-#ifdef __OSI__
-    if( _Copyright != NULL ) {
-        ConsMsg( _Copyright );
-        ++count;
-    }
-#endif
     if( GlobalCompFlags.ide_console_output && count ) {
         ConsMsg( "" );
         ++count;

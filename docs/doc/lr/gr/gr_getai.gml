@@ -1,5 +1,5 @@
-.gfunc getarcinfo
-.gsynop begin 
+.gfunc _getarcinfo
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _getarcinfo( struct xycoord _FAR *start_pt,
                         struct xycoord _FAR *end_pt,
@@ -18,9 +18,9 @@ The
 .id &funcb.
 &routine returns information about the arc most recently
 drawn by the
-.kw _arc
+.reffunc _arc
 or
-.kw _pie
+.reffunc _pie
 &routines..
 The arguments
 .arg start_pt

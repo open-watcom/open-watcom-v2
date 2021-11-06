@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -685,7 +686,11 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
         } else if( check_both( token_1, token_2, EXPR_ADDR, EXPR_REG ) ) {
 
             if( token_1->type == EXPR_REG ) {
-                if( token_2->instr != T_NULL ) {
+                switch( token_2->instr ) {
+                case T_OFFSET:
+                case T_NULL:
+                    break;
+                default:
                     if( error_msg )
                         AsmError( LABEL_IS_EXPECTED );
                     token_1->type = EXPR_UNDEF;
@@ -1209,7 +1214,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
                 } else if( sym->mem_type == MT_EMPTY ) {
                     token_1->value = 0;
                 } else {
-                    token_1->value = sym->first_length ? sym->first_length : 1;
+                    token_1->value = ( sym->first_length ) ? sym->first_length : 1;
                 }
                 break;
             case T_LENGTHOF:
@@ -1228,7 +1233,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
                     token_1->value = sym->total_size;
                 } else if( sym->mem_type == MT_NEAR ) {
                     if( sym->segment ) {
-                        if( ((dir_node *)sym->segment)->e.seginfo->use_32 ) {
+                        if( ((dir_node *)sym->segment)->e.seginfo->use32 ) {
                             token_1->value = 0xFF04;
                         } else {
                             token_1->value = 0xFF02;
@@ -1238,7 +1243,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
                     }
                 } else if( sym->mem_type == MT_FAR ) {
                     if( sym->segment ) {
-                        if( ((dir_node *)sym->segment)->e.seginfo->use_32 ) {
+                        if( ((dir_node *)sym->segment)->e.seginfo->use32 ) {
                             token_1->value = 0xFF06;
                         } else {
                             token_1->value = 0xFF05;
@@ -1359,22 +1364,22 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_idx index )
         }
         switch( AsmBuffer[index].u.token ) {
         case T_EQ:
-            token_1->value = ( token_1->value == token_2->value ? -1:0 );
+            token_1->value = ( token_1->value == token_2->value ) ? -1 : 0;
             break;
         case T_NE:
-            token_1->value = ( token_1->value != token_2->value ? -1:0 );
+            token_1->value = ( token_1->value != token_2->value ) ? -1 : 0;
             break;
         case T_LT:
-            token_1->value = ( token_1->value < token_2->value ? -1:0 );
+            token_1->value = ( token_1->value < token_2->value ) ? -1 : 0;
             break;
         case T_LE:
-            token_1->value = ( token_1->value <= token_2->value ? -1:0 );
+            token_1->value = ( token_1->value <= token_2->value ) ? -1 : 0;
             break;
         case T_GT:
-            token_1->value = ( token_1->value > token_2->value ? -1:0 );
+            token_1->value = ( token_1->value > token_2->value ) ? -1 : 0;
             break;
         case T_GE:
-            token_1->value = ( token_1->value >= token_2->value ? -1:0 );
+            token_1->value = ( token_1->value >= token_2->value ) ? -1 : 0;
             break;
         }
         break;

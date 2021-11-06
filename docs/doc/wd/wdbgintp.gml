@@ -1,9 +1,10 @@
 .chap *refid=vidintr Interrupting a Running Program
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Overview
-.do end
 .*
+.section Overview
+.*
+.do end
 .np
 .ix 'interrupting a running program'
 .ix 'program' 'interrupting'

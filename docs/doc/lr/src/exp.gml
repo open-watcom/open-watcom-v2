@@ -9,7 +9,7 @@ The
 .id &funcb.
 function computes the exponential function of
 .arg x
-.ct .li .
+.period
 A range error occurs if the magnitude of
 .arg x
 is too large.

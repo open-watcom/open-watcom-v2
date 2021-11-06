@@ -24,26 +24,26 @@
 .dm msgtxt begin
 .cw $
 .se *ttl="&'strip(&*)"
-.if !&*ttl.! ne !filler! .do begin
+.if &'compare(&*ttl.,'filler') ne 0 .do begin
 .   .if &e'&dohelp eq 0 .do begin
-.   .	.keep
-.   .	.note &$$msgnumb
-.   .	.us &*
-.   .	.np
+.   .   .keep
+.   .   .note &$$msgnumb
+.   .   .us &*
+.   .   .np
 .   .do end
 .   .el .do begin
 :ZH2.&$$msgnumb. &*ttl.
-.   .	.cntents &$$msgnumb. &*ttl.
-.   .	.pu 1 .ixsect &$$msgnumb. &*ttl.
+.   .   .cntents &$$msgnumb. &*ttl.
+.   .   .pu 1 .ixsect &$$msgnumb. &*ttl.
 :ZI1.&*ttl.
-.   .	.pu 1 .ixline `&*ttl.`
-.   .	.sr *ctxn=&$$msgcntr.+1
-.   .	.if '&dotarget' eq 'os2' .do begin
-.   .	.   .se *ctxn=/20&'right('&$$msgcntr.',3,'0')/
-.   .	.do end
-.   .	.ctxstr &$$msgnumb. &*ttl.
-.   .	.pu 2 #define HLP_&'upper(&ctx_str.) &*ctxn
-.   .	.np
+.   .   .pu 1 .ixline `&*ttl.`
+.   .   .sr *ctxn=&$$msgcntr.+1
+.   .   .if '&dotarget' eq 'os2' .do begin
+.   .   .   .sr *ctxn=&$$msgcntr.+1+20000
+.   .   .do end
+.   .   .ctxstr &$$msgnumb. &*ttl.
+.   .   .pu 2 #define HLP_&'upper(&ctx_str.) &*ctxn
+.   .   .np
 .   .do end
 .do end
 .cw ;
@@ -54,6 +54,11 @@
 .dm msgjtxt begin
 .dm msgjtxt end
 .gt msgjtxt add msgjtxt att
+.*
+:cmt. :MSGATTR. attribute value
+.dm msgattr begin
+.dm msgattr end
+.gt msgattr add msgattr att
 .*
 :cmt. :ANSI
 .dm ansi begin

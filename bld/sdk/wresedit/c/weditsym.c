@@ -103,11 +103,19 @@ static void addSymbols( WRHashTable *table )
     PP_MacrosWalk( addsym_func, &data );
 }
 
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
+
 char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt )
 {
     char                *name;
     int                 c;
-    unsigned            flags;
+    pp_flags            ppflags;
     char                *inc_path;
     WGetFileStruct      gf;
     bool                ret;
@@ -141,7 +149,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
     WSetWaitCursor( parent, true );
 
     if( ok ) {
-        flags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
+        ppflags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
         inc_path = NULL;
         ret = setjmp( SymEnv ) != 0;
         if( ret ) {
@@ -152,7 +160,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
     }
 
     if( ok ) {
-        ok = !PP_FileInit( name, flags, inc_path );
+        ok = !PP_FileInit( name, ppflags, inc_path );
         if( !ok ) {
             WDisplayErrorMsg( W_NOOPENSYMFILE );
         }
@@ -185,10 +193,10 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
 }
 
 bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
-                   HINSTANCE inst, HELP_CALLBACK help_callback )
+                   HINSTANCE inst, HELPFUNC help_callback )
 {
     WRHashEntryFlags    flags;
-    HELP_CALLBACK       hcb;
+    HELPFUNC            hcb;
     bool                ret;
 
     /* unused parameters */ (void)inst;
@@ -198,16 +206,17 @@ bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
     }
 
     flags = WR_HASHENTRY_ALL;
-    hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)help_callback, inst );
+
+    hcb = MakeProcInstance_HELP( help_callback, inst );
     ret = WREditSym( parent, symbol_table, &flags, hcb );
-    FreeProcInstance( (FARPROC)hcb );
+    FreeProcInstance_HELP( hcb );
 
     return( ret );
 }
 
 char *WCreateSymFileName( const char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        fn_path[_MAX_PATH];
 
     if( fname == NULL ) {

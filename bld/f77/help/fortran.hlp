@@ -1643,43 +1643,43 @@ where:
      nmd       is a logical variable or array element.
 
      fn        is a character variable or array element optionally
-               substrung.
+               substring.
 
      acc       is a character variable or array element optionally
-               substrung.
+               substring.
 
      seq       is a character variable or array element optionally
-               substrung.
+               substring.
 
      dir       is a character variable or array element optionally
-               substrung.
+               substring.
 
      fm        is a character variable or array element optionally
-               substrung.
+               substring.
 
      unf       is a character variable or array element optionally
-               substrung.
+               substring.
 
      rcl       is an integer variable or array element.
 
      nr        is an integer variable or array element.
 
      blnk      is a character variable or array element optionally
-               substrung.
+               substring.
 
      rct       is a character variable or array element optionally
-               substrung.
+               substring.
 
      act       is a character variable or array element optionally
-               substrung.
+               substring.
 
      cc        is a character variable or array element optionally
-               substrung.
+               substring.
 
      bsz       is an integer variable of array element.
 
      shr       is a character variable or array element optionally
-               substrung.
+               substring.
 ::::INT
 Definition:                        Usage:
 -----------                        ------

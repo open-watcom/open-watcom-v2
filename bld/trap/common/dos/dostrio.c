@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,31 +39,11 @@
 #include "digcli.h"
 #include "digld.h"
 #include "servio.h"
+#include "int16.h"
 
 
 #define HANDLE2FP(ph)    ((FILE *)((unsigned long)(ph) + 1))
 #define FP2HANDLE(fp)    ((int)((unsigned long)(fp) - 1))
-
-extern int KeyPress_pragma( void );
-#pragma aux KeyPress_pragma =   \
-        "mov  ah,1"     \
-        "int 16h"       \
-        "jnz short L1"  \
-        "xor  ax,ax"    \
-        "jmp short L2"  \
-    "L1: mov  ax,1"     \
-    "L2:"               \
-    __parm      [] \
-    __value     [__ax] \
-    __modify    [__ax]
-
-extern int KeyGet_pragma( void );
-#pragma aux KeyGet_pragma = \
-        "xor    ah,ah"  \
-        "int    16h"    \
-    __parm      [] \
-    __value     [__ax] \
-    __modify    [__ax]
 
 
 void Output( const char *str )
@@ -86,12 +67,12 @@ void StartupErr( const char *err )
 
 int KeyPress( void )
 {
-    return( KeyPress_pragma() );
+    return( _BIOSKeyboardHit( KEYB_STD ) );
 }
 
 int KeyGet( void )
 {
-    return( KeyGet_pragma() );
+    return( _BIOSKeyboardGet( KEYB_STD ) );
 }
 
 int WantUsage( const char *ptr )

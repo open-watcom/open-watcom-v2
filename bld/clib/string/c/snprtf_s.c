@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,11 +39,11 @@
 #include "printf.h"
 
 
-struct buf_limit {
+typedef struct buf_limit {
     CHAR_TYPE   *bufptr;
     rsize_t     chars_output;
     rsize_t     max_chars;
-};
+} buf_limit;
 
 /*
  * buf_putc -- append a character to a string in memory
@@ -51,9 +51,9 @@ struct buf_limit {
 static slib_callback_t buf_putc; // setup calling convention
 static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    struct buf_limit    *info;
+    buf_limit   *info;
 
-    info = SLIB2CLIB( struct buf_limit, specs->_dest );
+    info = GET_SPEC_DEST( buf_limit, specs );
     if( specs->_output_count < info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         info->chars_output++;
@@ -65,9 +65,9 @@ static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 _WCRTLINK int __F_NAME(snprintf_s,snwprintf_s)( CHAR_TYPE * __restrict s, rsize_t n,
                                           const CHAR_TYPE * __restrict format, ... )
 {
-    va_list             arg;
-    struct buf_limit    info;
-    const char          *msg;
+    va_list         args;
+    buf_limit       info;
+    const char      *msg;
 
     /* First check the critical conditions; if any of those
      * is violated, return immediately and don't touch anything.
@@ -84,9 +84,9 @@ _WCRTLINK int __F_NAME(snprintf_s,snwprintf_s)( CHAR_TYPE * __restrict s, rsize_
             info.chars_output = 0;
             info.max_chars    = n - 1;
             msg = NULL;
-            va_start( arg, format );
-            len = __F_NAME(__prtf_s,__wprtf_s)( &info, format, arg, &msg, buf_putc );
-            va_end( arg );
+            va_start( args, format );
+            len = __F_NAME(__prtf_s,__wprtf_s)( &info, format, args, &msg, buf_putc );
+            va_end( args );
             if( msg == NULL ) {
                 /* No rt-constraint violation while formatting */
                 s[info.chars_output] = NULLCHAR;

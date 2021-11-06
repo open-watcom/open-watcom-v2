@@ -1,7 +1,8 @@
-:cmt ***************************************************************************
+:cmt *****************************************************************************
 :cmt *
 :cmt *                            Open Watcom Project
 :cmt *
+:cmt * Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 :cmt *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt *
 :cmt *  ========================================================================
@@ -26,7 +27,9 @@
 :cmt *
 :cmt * Description:  C++ compiler diagnostic messages.
 :cmt *
-:cmt ***************************************************************************
+:cmt *     UTF-8 encoding, Â¥
+:cmt *
+:cmt *****************************************************************************
 :cmt
 
 :cmt    Word usage:
@@ -42,8 +45,9 @@
 :cmt        :warning <n>    message is a warning with a specific level
 :cmt        :info       informational message
 :cmt
-:cmt        :msgsym <sym>   internal symbolic name for message
-:cmt        :msgtxt <text>  text for message
+:cmt        :msgsym <sym>    internal symbolic name for message
+:cmt        :msgtxt <text>   text for message
+:cmt        :msgattr <value> attribute value for message
 :cmt
 :cmt        :msglvl     start of header title for a group of messages
 :cmt        :emsglvl    end of header title for a group of messages
@@ -76,13 +80,13 @@
 
 :MSGSYM. ERR_CALL_WATCOM
 :MSGTXT. internal compiler error
-:MSGJTXT. “à•”‚ÌƒRƒ“ƒpƒCƒ‰EƒGƒ‰[
+:MSGJTXT. å†…éƒ¨ã®ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ãƒ»ã‚¨ãƒ©ãƒ¼
 If this message appears, please report the problem directly to the
 Open Watcom development team. See http://www.openwatcom.org/.
 
 :MSGSYM. WARN_ASSIGN_CONST_IN_BOOL_EXPR
 :MSGTXT. assignment of constant found in boolean expression
-:MSGJTXT. ’è”‚Ì‘ã“ü‚ª˜_—®‚Ì’†‚É‚ ‚è‚Ü‚·
+:MSGJTXT. å®šæ•°ã®ä»£å…¥ãŒè«–ç†å¼ã®ä¸­ã«ã‚ã‚Šã¾ã™
 :WARNING. 3
 An assignment of a constant has been detected in a boolean expression.
 For example: "if( var = 0 )".
@@ -90,7 +94,7 @@ It is most likely that you want to use "==" for testing for equality.
 
 :MSGSYM. WARN_CONSTANT_TOO_BIG
 :MSGTXT. constant out of range; truncated
-:MSGJTXT. ’è”‚ª”ÍˆÍŠO‚Å‚·GØ‚è‹l‚ß‚ç‚ê‚Ü‚·
+:MSGJTXT. å®šæ•°ãŒç¯„å›²å¤–ã§ã™ï¼›åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã™
 :WARNING. 1
 This message is issued if a constant cannot be represented in 32 bits
 or if a constant is outside the range of valid values
@@ -101,7 +105,7 @@ int a = 12345678901234567890;
 
 :MSGSYM. ERR_MISSING_RETURN_VALUE
 :MSGTXT. missing return value
-:MSGJTXT. –ß‚è’l‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æˆ»ã‚Šå€¤ãŒã‚ã‚Šã¾ã›ã‚“
 A function has been declared with a non-void return type, but no
 .kw return
 statement was found in the function.  Either add a
@@ -118,7 +122,7 @@ The message will be issued at the end of the function.
 
 :MSGSYM. WARN_BASE_CLASS_HAS_NO_VDTOR
 :MSGTXT. base class '%T' does not have a virtual destructor
-:MSGJTXT. Šî’êƒNƒ‰ƒX'%T'‚Í‰¼‘zƒfƒXƒgƒ‰ƒNƒ^‚ğ‚¿‚Ü‚¹‚ñ
+:MSGJTXT. åŸºåº•ã‚¯ãƒ©ã‚¹'%T'ã¯ä»®æƒ³ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’æŒã¡ã¾ã›ã‚“
 :WARNING. 1
 A virtual destructor has been declared in a class with base classes.
 However, one of those base classes does not have a virtual
@@ -140,7 +144,7 @@ virtual destructors.
 
 :MSGSYM. WARN_POINTER_TRUNCATION
 :MSGTXT. pointer or reference truncated
-:MSGJTXT. ƒ|ƒCƒ“ƒ^‚ ‚é‚¢‚ÍQÆ‚ªØ‚è‹l‚ß‚ç‚ê‚Ü‚·
+:MSGJTXT. ãƒã‚¤ãƒ³ã‚¿ã‚ã‚‹ã„ã¯å‚ç…§ãŒåˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã™
 :WARNING. 1
 The expression contains a transfer of a pointer value to another
 pointer value of smaller size.  This can be caused by
@@ -164,7 +168,7 @@ int __near *p_near = p_far; // truncated
 
 :MSGSYM. ERR_SYNTAX_MISSING_SEMICOLON
 :MSGTXT. syntax error; probable cause: missing ';'
-:MSGJTXT. \•¶ƒGƒ‰[G ';'‚ª‚È‚¢‰Â”\«‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. æ§‹æ–‡ã‚¨ãƒ©ãƒ¼ï¼› ';'ãŒãªã„å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™
 The compiler has found a complete expression (or declaration) during
 parsing but could not continue.  The compiler has detected that it could
 have continued if a semicolon was present so there may be a semicolon
@@ -179,7 +183,7 @@ class X {
 
 :MSGSYM. WARN_ADDR_OF_ARRAY
 :MSGTXT. '&array' may not produce intended result
-:MSGJTXT. '&array'‚ÍˆÓ}‚³‚ê‚½Œ‹‰Ê‚ğ¶‚¶‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñ
+:MSGJTXT. '&array'ã¯æ„å›³ã•ã‚ŒãŸçµæœã‚’ç”Ÿã˜ãªã„ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“
 :WARNING. 3
 The type of the expression '&array' is different from the type of the
 expression 'array'.
@@ -199,7 +203,7 @@ array.
 
 :MSGSYM. WARN_RET_ADDR_OF_AUTO
 :MSGTXT. returning address of function argument or of auto or register variable
-:MSGJTXT. ŠÖ”ˆø”‚Ü‚½‚Í©“®^ƒŒƒWƒXƒ^•Ï”‚ÌƒAƒhƒŒƒX‚ğ•Ô‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. é–¢æ•°å¼•æ•°ã¾ãŸã¯è‡ªå‹•ï¼ãƒ¬ã‚¸ã‚¹ã‚¿å¤‰æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’è¿”ã—ã¦ã„ã¾ã™
 :WARNING. 1
 This warning usually indicates a serious programming error.
 When a function exits, the storage allocated on the stack for
@@ -218,20 +222,20 @@ int *foo()
 
 :MSGSYM. ERR_INVALID_OPTION_FILE
 :MSGTXT. option requires a file name
-:MSGJTXT. ƒIƒvƒVƒ‡ƒ“‚Íƒtƒ@ƒCƒ‹–¼‚ğ•K—v‚Æ‚µ‚Ü‚·
+:MSGJTXT. ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã¯ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å¿…è¦ã¨ã—ã¾ã™
 The specified option is not recognized by the compiler
 since there was no file name after it (i.e., "-fo=my.obj" ).
 
 :MSGSYM. WARN_ASM_IGNORED
 :MSGTXT. asm directive ignored
-:MSGJTXT. asm‹[—–½—ß‚ª–³‹‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. asmæ“¬ä¼¼å‘½ä»¤ãŒç„¡è¦–ã•ã‚Œã¾ã—ãŸ
 :WARNING. 1
 The asm directive (e.g., asm( "mov r0,1" ); ) is a non-portable construct.
 The Open Watcom C++ compiler treats all asm directives like comments.
 
 :MSGSYM. WARN_ALL_PRIVATE_IN_CLASS
 :MSGTXT. all members are private
-:MSGJTXT. ‚·‚×‚Ä‚Ìƒƒ“ƒo‚Íƒvƒ‰ƒCƒx[ƒg‚Å‚·
+:MSGJTXT. ã™ã¹ã¦ã®ãƒ¡ãƒ³ãƒã¯ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆã§ã™
 :WARNING. 3
 This message warns the programmer that there will be no way to use the
 contents of the class because all accesses will be flagged as erroneous
@@ -247,7 +251,7 @@ class Private {
 
 :MSGSYM. ERR_INVALID_TEMPLATE_ARG_TYPE
 :MSGTXT. template argument cannot be type '%T'
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgˆø”‚Í'%T'Œ^‚Å‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã¯'%T'å‹ã§ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A template argument can be either a generic type (e.g.,
 .id template < class
 T
@@ -257,7 +261,7 @@ These types are required for expressions that can be checked at compile time.
 
 :MSGSYM. WARN_DEAD_CODE
 :MSGTXT. unreachable code
-:MSGJTXT. ƒR[ƒh‚ÍÀs‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã‚³ãƒ¼ãƒ‰ã¯å®Ÿè¡Œã•ã‚Œã¾ã›ã‚“
 :WARNING. 2
 The indicated statement will never be executed because there is no path
 through the program that causes control to reach that statement.
@@ -275,7 +279,7 @@ statement cannot be reached.
 
 :MSGSYM. WARN_SYM_NOT_REFERENCED
 :MSGTXT. no reference to symbol '%S'
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹'%S'‚Ö‚ÌQÆ‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«'%S'ã¸ã®å‚ç…§ãŒã‚ã‚Šã¾ã›ã‚“
 :WARNING. 2
 There are no references to the declared variable.
 The declaration for the variable can be deleted.
@@ -289,7 +293,7 @@ or adding a statement that assigns the variable to itself.
 
 :MSGSYM. WARN_NESTED_COMMENT
 :MSGTXT. nested comment found in comment started on line %u
-:MSGJTXT. %us‚©‚çn‘Ò‚Á‚½ƒRƒƒ“ƒg‚Ì’†‚ÉƒlƒXƒg‚É‚³‚ê‚½ƒRƒƒ“ƒg‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. %uè¡Œã‹ã‚‰å§‹å¾…ã£ãŸã‚³ãƒ¡ãƒ³ãƒˆã®ä¸­ã«ãƒã‚¹ãƒˆã«ã•ã‚ŒãŸã‚³ãƒ¡ãƒ³ãƒˆãŒã‚ã‚Šã¾ã™
 :WARNING. 3
 While scanning a comment for its end, the compiler detected
 .id /*
@@ -301,13 +305,13 @@ for the previous comment.
 
 :MSGSYM. ERR_TEMPLATE_MUST_HAVE_ARGS
 :MSGTXT. template argument list cannot be empty
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgˆø”ƒŠƒXƒg‚ÍC‹ó‚Å‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ãƒªã‚¹ãƒˆã¯ï¼Œç©ºã§ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 An empty template argument list would result in a template that
 could only define a single class or function.
 
 :MSGSYM. WARN_UNREFERENCED_LABEL
 :MSGTXT. label '%s' has not been referenced by a goto
-:MSGJTXT. ƒ‰ƒxƒ‹'%s'‚Ígoto‚É‚æ‚Á‚ÄQÆ‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ©ãƒ™ãƒ«'%s'ã¯gotoã«ã‚ˆã£ã¦å‚ç…§ã§ãã¾ã›ã‚“
 :WARNING. 3
 The indicated label has not been referenced and, as such, is useless.
 This warning can be safely ignored.
@@ -321,14 +325,14 @@ un_refed:
 
 :MSGSYM. WARN_ANON_NOT_REFERENCED
 :MSGTXT. no reference to anonymous union member '%S'
-:MSGJTXT. –¼‘O–³‚µ‚Ì‹¤—p‘Ì‚Ìƒƒ“ƒo['%S'‚Ö‚ÌQÆ‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. åå‰ç„¡ã—ã®å…±ç”¨ä½“ã®ãƒ¡ãƒ³ãƒãƒ¼'%S'ã¸ã®å‚ç…§ãŒã‚ã‚Šã¾ã›ã‚“
 :WARNING. 2
 The declaration for the anonymous member can be safely deleted without
 any effect.
 
 :MSGSYM. ERR_MISPLACED_BREAK
 :MSGTXT. 'break' may only appear in a for, do, while, or switch statement
-:MSGJTXT. 'break'‚Ífor, do, switch•¶‚Ì’†‚Å‚Ì‚İg‚¦‚Ü‚·
+:MSGJTXT. 'break'ã¯for, do, switchæ–‡ã®ä¸­ã§ã®ã¿ä½¿ãˆã¾ã™
 A
 .kw break
 statement has been found in an illegal place in the program.
@@ -351,7 +355,7 @@ int foo( int a, int b )
 
 :MSGSYM. ERR_MISPLACED_CASE
 :MSGTXT. 'case' may only appear in a switch statement
-:MSGJTXT. 'case'‚Íswitch•¶‚Å‚Ì‚İg‚¦‚Ü‚·
+:MSGJTXT. 'case'ã¯switchæ–‡ã§ã®ã¿ä½¿ãˆã¾ã™
 A
 .kw case
 label has been found that is not inside a
@@ -367,7 +371,7 @@ int foo( int a, int b )
 
 :MSGSYM. ERR_MISPLACED_CONTINUE
 :MSGTXT. 'continue' may only appear in a for, do, or while statement
-:MSGJTXT. 'continue'‚Ífor, do, while•¶‚Å‚Ì‚İg‚¦‚Ü‚·
+:MSGJTXT. 'continue'ã¯for, do, whileæ–‡ã§ã®ã¿ä½¿ãˆã¾ã™
 The
 .kw continue
 statement must be inside a
@@ -396,7 +400,7 @@ int foo( int a, int b )
 
 :MSGSYM. ERR_MISPLACED_DEFAULT
 :MSGTXT. 'default' may only appear in a switch statement
-:MSGJTXT. 'default'‚Íswitch•¶‚Å‚Ì‚İg‚¦‚Ü‚·
+:MSGJTXT. 'default'ã¯switchæ–‡ã§ã®ã¿ä½¿ãˆã¾ã™
 A
 .kw default
 label has been found that is not inside a
@@ -419,7 +423,7 @@ int foo( int a, int b )
 
 :MSGSYM. ERR_MISPLACED_RIGHT_BRACE
 :MSGTXT. misplaced '}' or missing earlier '{'
-:MSGJTXT. '}'‚ÌˆÊ’u‚ªŠÔˆá‚Á‚Ä‚¢‚é‚©C‚à‚Á‚Æ‘O‚É‚ ‚é‚Í‚¸‚Ì'{'‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. '}'ã®ä½ç½®ãŒé–“é•ã£ã¦ã„ã‚‹ã‹ï¼Œã‚‚ã£ã¨å‰ã«ã‚ã‚‹ã¯ãšã®'{'ãŒã‚ã‚Šã¾ã›ã‚“
 An extra
 .id }
 has been found which cannot be matched up with an earlier
@@ -427,7 +431,7 @@ has been found which cannot be matched up with an earlier
 
 :MSGSYM. ERR_MISPLACED_ELIF
 :MSGTXT. misplaced #elif directive
-:MSGJTXT. #elif‹[—–½—ß‚ÌˆÊ’u‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·
+:MSGJTXT. #elifæ“¬ä¼¼å‘½ä»¤ã®ä½ç½®ãŒé–“é•ã£ã¦ã„ã¾ã™
 The
 .kw #elif
 directive must be inside an
@@ -454,7 +458,7 @@ that corresponds to them.
 
 :MSGSYM. ERR_MISPLACED_ELSE
 :MSGTXT. misplaced #else directive
-:MSGJTXT. #else‹[—–½—ß‚ÌˆÊ’u‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·
+:MSGJTXT. #elseæ“¬ä¼¼å‘½ä»¤ã®ä½ç½®ãŒé–“é•ã£ã¦ã„ã¾ã™
 The
 .kw #else
 directive must be inside an
@@ -481,7 +485,7 @@ that corresponds to them.
 
 :MSGSYM. ERR_MISPLACED_ENDIF
 :MSGTXT. misplaced #endif directive
-:MSGJTXT. #endif‹[—–½—ß‚ÌˆÊ’u‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·
+:MSGJTXT. #endifæ“¬ä¼¼å‘½ä»¤ã®ä½ç½®ãŒé–“é•ã£ã¦ã„ã¾ã™
 A
 .kw #endif
 preprocessing directive has been found without a matching
@@ -511,7 +515,7 @@ that corresponds to them.
 
 :MSGSYM. ERR_ONLY_1_DEFAULT
 :MSGTXT. only one 'default' per switch statement is allowed
-:MSGJTXT. 1‚Â‚Ìswitch•¶‚É‹–‚³‚ê‚é'default'‚Í1‚Â‚¾‚¯‚Å‚·
+:MSGJTXT. 1ã¤ã®switchæ–‡ã«è¨±ã•ã‚Œã‚‹'default'ã¯1ã¤ã ã‘ã§ã™
 You cannot have more than one
 .kw default
 label in a
@@ -537,13 +541,13 @@ int translate( int a )
 
 :MSGSYM. ERR_EXPECTING_BUT_FOUND
 :MSGTXT. expecting '%s' but found '%s'
-:MSGJTXT. '%s'‚ª‚ ‚é‚Í‚¸‚Å‚·‚ªC'%s'‚ª‚ ‚è‚Ü‚µ‚½
+:MSGJTXT. '%s'ãŒã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œ'%s'ãŒã‚ã‚Šã¾ã—ãŸ
 A syntax error has been detected.
 The tokens displayed in the message should help you to determine the problem.
 
 :MSGSYM. ERR_UNDECLARED_SYM
 :MSGTXT. symbol '%N' has not been declared
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹'%N'‚ÍéŒ¾‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«'%N'ã¯å®£è¨€ã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ
 The compiler has found a symbol which has not been previously declared.
 The symbol may be spelled differently than the declaration, or you may
 need to
@@ -555,7 +559,7 @@ int a = b;  // b has not been declared
 
 :MSGSYM. ERR_NOT_A_FUNCTION
 :MSGTXT. left expression must be a function or a function pointer
-:MSGJTXT. ¶•Ó‚ÍŠÖ”‚©ŠÖ”ƒ|ƒCƒ“ƒ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦è¾ºã¯é–¢æ•°ã‹é–¢æ•°ãƒã‚¤ãƒ³ã‚¿ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The compiler has found an expression that looks like a function call,
 but it is not defined as a function.
 :errbad.
@@ -565,7 +569,7 @@ int b = a( 12 );
 
 :MSGSYM. ERR_MUST_BE_LVALUE
 :MSGTXT. operand must be an lvalue
-:MSGJTXT. ƒIƒyƒ‰ƒ“ƒh‚Í'¶•Ó’l'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯'å·¦è¾ºå€¤'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The operand on the left side of an "=" sign must be a variable or
 memory location which can have a value assigned to it.
 :errbad.
@@ -580,7 +584,7 @@ expected where the additions are shown.
 
 :MSGSYM. ERR_LABEL_ALREADY_DEFINED
 :MSGTXT. label '%s' already defined
-:MSGJTXT. ƒ‰ƒxƒ‹'%s'‚Í‚·‚Å‚É’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ©ãƒ™ãƒ«'%s'ã¯ã™ã§ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™
 All labels within a function must be unique.
 :errbad.
 void bar( int *p )
@@ -595,7 +599,7 @@ The second label is illegal.
 
 :MSGSYM. ERR_UNDEFINED_LABEL
 :MSGTXT. label '%s' is not defined in function
-:MSGJTXT. ƒ‰ƒxƒ‹'%s'‚ÍŠÖ”‚Ì’†‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ©ãƒ™ãƒ«'%s'ã¯é–¢æ•°ã®ä¸­ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“
 A
 .kw goto
 statement has referenced a label that is not defined in the function.
@@ -615,7 +619,7 @@ is not defined.
 
 :MSGSYM. ERR_ZERO_DIMENSION
 :MSGTXT. dimension cannot be zero
-:MSGJTXT. ŸŒ³‚Íƒ[ƒ‚Å‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ¬¡å…ƒã¯ã‚¼ãƒ­ã§ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The dimension of an array must be non-zero.
 :errbad.
 int array[0];   // not allowed
@@ -623,7 +627,7 @@ int array[0];   // not allowed
 
 :MSGSYM. ERR_NEGATIVE_DIMENSION
 :MSGTXT. dimension cannot be negative
-:MSGJTXT. ŸŒ³‚Í•‰‚Ì”‚Å‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ¬¡å…ƒã¯è² ã®æ•°ã§ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The dimension of an array must be positive.
 :errbad.
 int array[-1];  // not allowed
@@ -631,7 +635,7 @@ int array[-1];  // not allowed
 
 :MSGSYM. ERR_DIMENSION_REQUIRED
 :MSGTXT. dimensions of multi-dimension array must be specified
-:MSGJTXT. ‘½ŸŒ³”z—ñ‚ÌŸŒ³‚Íw’è‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¤šæ¬¡å…ƒé…åˆ—ã®æ¬¡å…ƒã¯æŒ‡å®šã•ã‚Œãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 All dimensions of a multiple dimension array must be specified.
 The only exception is the first dimension which can declared as "[]".
 :errbad.
@@ -640,7 +644,7 @@ int array[][];   // not allowed
 
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_FUNC
 :MSGTXT. invalid storage class for function
-:MSGJTXT. ŠÖ”‚É‘Î‚µ‚Ä•s“KØ‚È‹L‰¯ƒNƒ‰ƒX‚Å‚·
+:MSGJTXT. é–¢æ•°ã«å¯¾ã—ã¦ä¸é©åˆ‡ãªè¨˜æ†¶ã‚¯ãƒ©ã‚¹ã§ã™
 If a storage class is given for a function, it must be
 .kw static
 or
@@ -653,7 +657,7 @@ auto void foo()
 
 :MSGSYM. ERR_EXPR_MUST_BE_POINTER_TO
 :MSGTXT. expression must have pointer type
-:MSGJTXT. ®‚Í'...‚Ö‚Ìƒ|ƒCƒ“ƒ^'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯'...ã¸ã®ãƒã‚¤ãƒ³ã‚¿'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 An attempt has been made to de-reference a variable or expression
 which is not declared to be a pointer.
 :errbad.
@@ -663,7 +667,7 @@ int b = *a;
 
 :MSGSYM. ERR_CANT_TAKE_ADDR_OF_RVALUE
 :MSGTXT. cannot take address of an rvalue
-:MSGJTXT. ‰E•Ó’l‚ÌƒAƒhƒŒƒX‚ğ‚Æ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å³è¾ºå€¤ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã¨ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 You can only take the address of a variable or memory location.
 :errbad.
 char c;
@@ -673,7 +677,7 @@ char *p2 = & (c+1); // not allowed
 
 :MSGSYM. ERR_MUST_BE_STRUCT_OR_UNION
 :MSGTXT. expression for '.' must be a class, struct or union
-:MSGJTXT. '.'‚É‘Î‚·‚é®‚Íclass, struct, ‚Ü‚½‚Íunion‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '.'ã«å¯¾ã™ã‚‹å¼ã¯class, struct, ã¾ãŸã¯unionã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The compiler has encountered the pattern "expression" "." "field_name"
 where the expression is not a
 .kw class,
@@ -692,7 +696,7 @@ int a = fun().a;
 
 :MSGSYM. ERR_MUST_BE_PTR_TO_STRUCT_OR_UNION
 :MSGTXT. expression for '->' must be pointer to class, struct or union
-:MSGJTXT. '->'‚É‘Î‚·‚é®‚Íclass, struct, ‚Ü‚½‚Íunion‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '->'ã«å¯¾ã™ã‚‹å¼ã¯class, struct, ã¾ãŸã¯unionã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The compiler has encountered the pattern "expression" "->"
 "field_name" where the expression is not a pointer to
 .kw class,
@@ -711,7 +715,7 @@ int a = fun()->a;
 
 :MSGSYM. ERR_SYM_ALREADY_DEFINED
 :MSGTXT. symbol '%S' already defined
-:MSGJTXT. '%S'‚Í‚·‚Å‚ÉƒVƒ“ƒ{ƒ‹’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. '%S'ã¯ã™ã§ã«ã‚·ãƒ³ãƒœãƒ«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™
 The specified symbol has already been defined.
 :errbad.
 char a = 2;
@@ -720,7 +724,7 @@ char a = 2; // not allowed
 
 :MSGSYM. ERR_FUNCTION_NOT_DEFINED
 :MSGTXT. static function '%S' has not been defined
-:MSGJTXT. ƒXƒ^ƒeƒBƒbƒNŠÖ”'%S'‚Í’è‹`‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯é–¢æ•°'%S'ã¯å®šç¾©ã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ
 A prototype has been found for a
 .kw static
 function, but a definition for the
@@ -734,7 +738,7 @@ int k = fun();
 
 :MSGSYM. ERR_EXPECTING_LABEL
 :MSGTXT. expecting label for goto statement
-:MSGJTXT. goto•¶‚É‘Î‰‚·‚éƒ‰ƒxƒ‹‚ª‚ ‚é‚Í‚¸‚Å‚·
+:MSGJTXT. gotoæ–‡ã«å¯¾å¿œã™ã‚‹ãƒ©ãƒ™ãƒ«ãŒã‚ã‚‹ã¯ãšã§ã™
 The
 .kw goto
 statement requires the name of a label.
@@ -747,7 +751,7 @@ int fun( void )
 
 :MSGSYM. ERR_DUPLICATE_CASE_VALUE
 :MSGTXT. duplicate case value '%s' found
-:MSGJTXT. case‚Ì’l'%s'‚ª2‚Â‚ ‚è‚Ü‚·
+:MSGJTXT. caseã®å€¤'%s'ãŒ2ã¤ã‚ã‚Šã¾ã™
 Every case value in a
 .kw switch
 statement must be unique.
@@ -768,7 +772,7 @@ int fun( int a )
 
 :MSGSYM. ERR_FIELD_TOO_WIDE
 :MSGTXT. bit-field width is too large
-:MSGJTXT. ƒrƒbƒgƒtƒB[ƒ‹ƒh•‚ª‘å‚«‚·‚¬‚Ü‚·
+:MSGJTXT. ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å¹…ãŒå¤§ãã™ãã¾ã™
 The maximum field width allowed is 16 bits in the 16-bit compiler
 and 32 bits in the 32-bit compiler.
 :errbad.
@@ -780,7 +784,7 @@ struct S
 
 :MSGSYM. ERR_WIDTH_0
 :MSGTXT. width of a named bit-field must not be zero
-:MSGJTXT. –¼‘O‚ğ‚Â‚¯‚ç‚ê‚½ƒrƒbƒgƒtƒB[ƒ‹ƒh‚Ì•‚Íƒ[ƒ‚Å‚ ‚Á‚Ä‚Í‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. åå‰ã‚’ã¤ã‘ã‚‰ã‚ŒãŸãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®å¹…ã¯ã‚¼ãƒ­ã§ã‚ã£ã¦ã¯ãªã‚Šã¾ã›ã‚“
 A bit field must be at least one bit in size.
 :errbad.
 struct S {
@@ -792,7 +796,7 @@ struct S {
 
 :MSGSYM. ERR_WIDTH_NEGATIVE
 :MSGTXT. bit-field width must be positive
-:MSGJTXT. ƒrƒbƒgƒtƒB[ƒ‹ƒh•‚Í³‚Ì”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å¹…ã¯æ­£ã®æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 You cannot have a negative field width.
 :errbad.
 struct S
@@ -803,7 +807,7 @@ struct S
 
 :MSGSYM. ERR_BITFIELD_BAD_BASE_TYPE
 :MSGTXT. bit-field base type must be an integral type
-:MSGJTXT. ƒrƒbƒgƒtƒB[ƒ‹ƒh‚ÌŠî–{Œ^‚Í®”Œ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®åŸºæœ¬å‹ã¯æ•´æ•°å‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The types allowed for bit fields are
 .kw signed
 or
@@ -822,7 +826,7 @@ struct S
 
 :MSGSYM. ERR_EXPR_MUST_BE_ARRAY
 :MSGTXT. subscript on non-array
-:MSGJTXT. ”ñ”z—ñ‚Ö‚Ì“Y‚¦š‚Å‚·
+:MSGJTXT. éé…åˆ—ã¸ã®æ·»ãˆå­—ã§ã™
 One of the operands of '[]' must be an array or a pointer.
 :errbad.
 int array[10];
@@ -833,19 +837,19 @@ int i3 = 0[1];      // illegal
 
 :MSGSYM. ERR_INCOMPLETE_COMMENT
 :MSGTXT. incomplete comment
-:MSGJTXT. •sŠ®‘S‚ÈƒRƒƒ“ƒg‚Å‚·
+:MSGJTXT. ä¸å®Œå…¨ãªã‚³ãƒ¡ãƒ³ãƒˆã§ã™
 The compiler did not find
 .id */
 to mark the end of a comment.
 
 :MSGSYM. ERR_MUST_BE_MACRO_PARM
 :MSGTXT. argument for # must be a macro parm
-:MSGJTXT. #‚Ìˆø”‚Íƒ}ƒNƒ‚Ìƒpƒ‰ƒ[ƒ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. #ã®å¼•æ•°ã¯ãƒã‚¯ãƒ­ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The argument for the stringize operator '#' must be a macro parameter.
 
 :MSGSYM. ERR_UNKNOWN_DIRECTIVE
 :MSGTXT. unknown preprocessing directive '#%s'
-:MSGJTXT. –¢’m‚Ì‘Oˆ—‹[—–½—ß'#%s'‚Å‚·
+:MSGJTXT. æœªçŸ¥ã®å‰å‡¦ç†æ“¬ä¼¼å‘½ä»¤'#%s'ã§ã™
 An unrecognized preprocessing directive has been encountered.
 Check for correct spelling.
 :errbad.
@@ -854,7 +858,7 @@ Check for correct spelling.
 
 :MSGSYM. ERR_INVALID_INCLUDE
 :MSGTXT. invalid #include directive
-:MSGJTXT. •s“KØ‚È#include‹[—–½—ß‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãª#includeæ“¬ä¼¼å‘½ä»¤ã§ã™
 A syntax error has been encountered in a
 .kw #include
 directive.
@@ -866,7 +870,7 @@ Both examples are illegal.
 
 :MSGSYM. ERR_TOO_FEW_MACRO_PARMS
 :MSGTXT. not enough parameters given for macro '%s'
-:MSGJTXT. ƒ}ƒNƒ'%s'‚É—^‚¦‚ç‚ê‚½ƒpƒ‰ƒ[ƒ^[‚ª•s\•ª‚Å‚·
+:MSGJTXT. ãƒã‚¯ãƒ­'%s'ã«ä¸ãˆã‚‰ã‚ŒãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ãŒä¸ååˆ†ã§ã™
 You have not supplied enough parameters to the specified macro.
 :errbad.
 #define mac(a,b) a+b
@@ -875,7 +879,7 @@ int i = mac(123);   // needs 2 parameters
 
 :MSGSYM. ERR_NOT_EXPECTING_RETURN_VALUE
 :MSGTXT. not expecting a return value
-:MSGJTXT. –ß‚è’l‚Í‚È‚¢‚Í‚¸‚Å‚·
+:MSGJTXT. æˆ»ã‚Šå€¤ã¯ãªã„ã¯ãšã§ã™
 The specified function is declared as a
 .kw void
 function.
@@ -891,7 +895,7 @@ void fun()
 
 :MSGSYM. ERR_CANT_TAKE_ADDR_OF_BIT_FIELD
 :MSGTXT. cannot take address of a bit-field
-:MSGJTXT. ƒrƒbƒgƒtƒB[ƒ‹ƒh‚ÌƒAƒhƒŒƒX‚ğ‚Æ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã¨ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The smallest addressable unit is a byte.
 You cannot take the address of a bit field.
 :errbad.
@@ -905,14 +909,14 @@ void* p = &var.bitfield;    // illegal
 
 :MSGSYM. ERR_NOT_A_CONSTANT_EXPR
 :MSGTXT. expression must be a constant
-:MSGJTXT. ®‚Í’è”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯å®šæ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The compiler expects a constant expression.
 This message can occur during static initialization if you are
 trying to initialize a non-pointer type with an address expression.
 
 :MSGSYM. ERR_CANT_OPEN_FILE
 :MSGTXT. unable to open '%s'
-:MSGJTXT. '%s'‚ğƒI[ƒvƒ“‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%s'ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The file specified in an
 .kw #include
 directive could not be located.
@@ -926,7 +930,7 @@ environment variables or in the "i=" option on the command line.
 
 :MSGSYM. ANSI_TOO_MANY_MACRO_PARMS
 :MSGTXT. too many parameters given for macro '%s'
-:MSGJTXT. ƒ}ƒNƒ'%s'‚É—^‚¦‚ç‚ê‚½ƒpƒ‰ƒ[ƒ^‚ª‘½‚·‚¬‚Ü‚·
+:MSGJTXT. ãƒã‚¯ãƒ­'%s'ã«ä¸ãˆã‚‰ã‚ŒãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒå¤šã™ãã¾ã™
 :ANSI. 1
 You have supplied too many parameters for the specified macro.
 The extra parameters are ignored.
@@ -937,7 +941,7 @@ int i = mac(1,2,3); // needs 2 parameters
 
 :MSGSYM. ERR_CANNOT_USE_PCPTR
 :MSGTXT. cannot use __based or __far16 pointers in this context
-:MSGJTXT. ‚±‚ÌƒRƒ“ƒeƒLƒXƒg‚É‚¨‚¢‚ÄC__based‚ ‚é‚¢‚Í__far16ƒ|ƒCƒ“ƒ^‚ğg‚¤‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã“ã®ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã«ãŠã„ã¦ï¼Œ__basedã‚ã‚‹ã„ã¯__far16ãƒã‚¤ãƒ³ã‚¿ã‚’ä½¿ã†ã“ã¨ã¯ã§ãã¾ã›ã‚“
 The use of
 .kw __based
 and
@@ -967,7 +971,7 @@ statements cause this error to be diagnosed.
 
 :MSGSYM. ERR_TOO_MANY_TYPES_IN_DSPEC
 :MSGTXT. only one type is allowed in declaration specifiers
-:MSGJTXT. ˆê‚Â‚ÌŒ^‚¾‚¯‚ªéŒ¾w’èq‚Ì’†‚Å‹–‚³‚ê‚Ü‚·
+:MSGJTXT. ä¸€ã¤ã®å‹ã ã‘ãŒå®£è¨€æŒ‡å®šå­ã®ä¸­ã§è¨±ã•ã‚Œã¾ã™
 Only one type is allowed for the first part of a declaration.
 A common cause of this message is that there
 may be a missing semi-colon (';') after a class definition.
@@ -983,7 +987,7 @@ int foo() { return 7; }
 
 :MSGSYM. ERR_OUT_OF_MEMORY
 :MSGTXT. out of memory
-:MSGJTXT. ƒƒ‚ƒŠ[•s‘«‚Å‚·
+:MSGJTXT. ãƒ¡ãƒ¢ãƒªãƒ¼ä¸è¶³ã§ã™
 The compiler has run out of memory to store information about the file
 being compiled.
 Try reducing the number of data declarations and or the size of the file
@@ -994,7 +998,7 @@ header files that are not required.
 
 :MSGSYM. ERR_INV_CHAR_CONSTANT
 :MSGTXT. invalid character constant
-:MSGJTXT. •s“KØ‚È•¶š’è”‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªæ–‡å­—å®šæ•°ã§ã™
 This message is issued for an improperly formed character constant.
 :errbad.
 char c = '12345';
@@ -1003,7 +1007,7 @@ char d = ''';
 
 :MSGSYM. WARN_CANT_TAKE_ADDR_OF_REGISTER
 :MSGTXT. taking address of variable with storage class 'register'
-:MSGJTXT. ‹L‰¯ƒNƒ‰ƒX'register'‚Ì•Ï”‚ÌƒAƒhƒŒƒX‚ğæ‚Á‚Ä‚¢‚Ü‚·
+:MSGJTXT. è¨˜æ†¶ã‚¯ãƒ©ã‚¹'register'ã®å¤‰æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–ã£ã¦ã„ã¾ã™
 :WARNING. 2
 You can take the address of a
 .kw register
@@ -1024,7 +1028,7 @@ int bar()
 
 :MSGSYM. ANSI_NO_DELETE_SIZE_EXPR
 :MSGTXT. 'delete' expression size is not allowed
-:MSGJTXT. 'delete'®‚Ì‘å‚«‚³‚Ìw’è‚Í‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. 'delete'å¼ã®å¤§ãã•ã®æŒ‡å®šã¯è¨±ã•ã‚Œã¾ã›ã‚“
 :ANSI. 1
 The C++ language has evolved to the point where the
 .kw delete
@@ -1038,7 +1042,7 @@ void fn( unsigned n, char *p ) {
 
 :MSGSYM. ERR_MISSING_QUOTE
 :MSGTXT. ending " missing for string literal
-:MSGJTXT. •¶š—ñ’è”‚É‘Î‚·‚éI—¹‚Ì"‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ–‡å­—åˆ—å®šæ•°ã«å¯¾ã™ã‚‹çµ‚äº†ã®"ãŒã‚ã‚Šã¾ã›ã‚“
 The compiler did not find a second double quote to end the string literal.
 :errbad.
 char *a = "no_ending_quote;
@@ -1046,24 +1050,24 @@ char *a = "no_ending_quote;
 
 :MSGSYM. ERR_INVALID_OPTION
 :MSGTXT. invalid option
-:MSGJTXT. •s“KØ‚ÈƒIƒvƒVƒ‡ƒ“‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§ã™
 The specified option is not recognized by the compiler.
 
 :MSGSYM. ERR_INVALID_OPTIMIZATION
 :MSGTXT. invalid optimization option
-:MSGJTXT. •s“KØ‚ÈÅ“K‰»ƒIƒvƒVƒ‡ƒ“‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªæœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§ã™
 The specified option is an unrecognized optimization option.
 
 :MSGSYM. ERR_INVALID_MEMORY_MODEL
 :MSGTXT. invalid memory model
-:MSGJTXT. •s“KØ‚Èƒƒ‚ƒŠƒ‚ƒfƒ‹‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªãƒ¡ãƒ¢ãƒªãƒ¢ãƒ‡ãƒ«ã§ã™
 Memory model option must be one of "ms", "mm", "mc", "ml", "mh" or
 "mf" which selects the Small, Medium, Compact, Large, Huge or Flat
 memory model.
 
 :MSGSYM. ERR_EXPR_MUST_BE_INTEGRAL
 :MSGTXT. expression must be integral
-:MSGJTXT. ®‚Í®”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯æ•´æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 An integral expression is required.
 :errbad.
 int foo( int a, float b, int *p )
@@ -1081,7 +1085,7 @@ int foo( int a, float b, int *p )
 
 :MSGSYM. ERR_EXPR_MUST_BE_ARITHMETIC
 :MSGTXT. expression must be arithmetic
-:MSGJTXT. ®‚ÍZp®‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯ç®—è¡“å¼ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Arithmetic operations, such as "/" and "*",  require arithmetic operands
 unless the operation has been overloaded
 or unless the operands can be converted to arithmetic operands.
@@ -1097,7 +1101,7 @@ int i = cv / 2;
 
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_LABEL
 :MSGTXT. statement required after label
-:MSGJTXT. ƒ‰ƒxƒ‹‚ÌŒã‚É•¶‚ª•K—v‚Å‚·
+:MSGJTXT. ãƒ©ãƒ™ãƒ«ã®å¾Œã«æ–‡ãŒå¿…è¦ã§ã™
 The C language definition requires a statement following a label.
 You can use a null statement which consists of just a semicolon (";").
 :errbad.
@@ -1113,7 +1117,7 @@ ending:
 
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_DO
 :MSGTXT. statement required after 'do'
-:MSGJTXT. 'do'‚ÌŒã‚É•¶‚ª•K—v‚Å‚·
+:MSGJTXT. 'do'ã®å¾Œã«æ–‡ãŒå¿…è¦ã§ã™
 A statement is required between the
 .kw do
 and
@@ -1122,7 +1126,7 @@ keywords.
 
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_CASE
 :MSGTXT. statement required after 'case'
-:MSGJTXT. 'case'‚ÌŒã‚É•¶‚ª•K—v‚Å‚·
+:MSGJTXT. 'case'ã®å¾Œã«æ–‡ãŒå¿…è¦ã§ã™
 The C language definition requires a statement following a
 .kw case
 label.
@@ -1141,7 +1145,7 @@ int foo( int a )
 
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_DEFAULT
 :MSGTXT. statement required after 'default'
-:MSGJTXT. 'default'‚ÌŒã‚É•¶‚ª•K—v‚Å‚·
+:MSGJTXT. 'default'ã®å¾Œã«æ–‡ãŒå¿…è¦ã§ã™
 The C language definition requires a statement following a
 .kw default
 label.
@@ -1161,7 +1165,7 @@ int foo( int a )
 
 :MSGSYM. ERR_MISSING_CENDIF
 :MSGTXT. missing matching #endif directive
-:MSGJTXT. ‘Î‰‚·‚é#endif‹[—–½—ß‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¯¾å¿œã™ã‚‹#endifæ“¬ä¼¼å‘½ä»¤ãŒã‚ã‚Šã¾ã›ã‚“
 You are missing a
 .kw #endif
 to terminate a
@@ -1178,7 +1182,7 @@ int a;
 
 :MSGSYM. ERR_INVALID_MACRO_DEFN
 :MSGTXT. invalid macro definition, missing ')'
-:MSGJTXT. •s“KØ‚Èƒ}ƒNƒ’è‹`‚Å‚·G j‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ä¸é©åˆ‡ãªãƒã‚¯ãƒ­å®šç¾©ã§ã™ï¼› ï¼‰ãŒã‚ã‚Šã¾ã›ã‚“
 The right parenthesis ")" is required for a function-like macro definition.
 :errbad.
 #define bad_mac( a, b
@@ -1186,7 +1190,7 @@ The right parenthesis ")" is required for a function-like macro definition.
 
 :MSGSYM. ERR_INCOMPLETE_MACRO
 :MSGTXT. missing ')' for expansion of '%s' macro
-:MSGJTXT. '%s'ƒ}ƒNƒ‚Ì“WŠJ‚É‘Î‚µ‚Äj‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%s'ãƒã‚¯ãƒ­ã®å±•é–‹ã«å¯¾ã—ã¦ï¼‰ãŒã‚ã‚Šã¾ã›ã‚“
 The compiler encountered end-of-file while collecting up the argument for a
 function-like macro.
 A right parenthesis ")" is required to mark the end of the argument(s) for
@@ -1208,7 +1212,7 @@ preprocessing directive.
 
 :MSGSYM. ERR_CANT_HAVE_AN_ARRAY_OF_FUNCTIONS
 :MSGTXT. cannot define an array of functions
-:MSGJTXT. ŠÖ”‚Ì”z—ñ‚ğ’è‹`‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ã®é…åˆ—ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 You can have an array of pointers to functions, but not an array
 of functions.
 :errbad.
@@ -1218,7 +1222,7 @@ TD array[12];
 
 :MSGSYM. ERR_FUNCTION_CANT_RETURN_AN_ARRAY
 :MSGTXT. function cannot return an array
-:MSGJTXT. ŠÖ”‚Í”z—ñ‚ğ–ß‚·‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ã¯é…åˆ—ã‚’æˆ»ã™ã“ã¨ãŒã§ãã¾ã›ã‚“
 A function cannot return an array.
 You can return a pointer to an array.
 :errbad.
@@ -1228,7 +1232,7 @@ ARR fun( float );
 
 :MSGSYM. ERR_FUNCTION_CANT_RETURN_A_FUNCTION
 :MSGTXT. function cannot return a function
-:MSGJTXT. ŠÖ”‚ÍŠÖ”‚ğ–ß‚·‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ã¯é–¢æ•°ã‚’æˆ»ã™ã“ã¨ãŒã§ãã¾ã›ã‚“
 You cannot return a function.
 You can return a pointer to a function.
 :errbad.
@@ -1238,7 +1242,7 @@ TD fun( float );
 
 :MSGSYM. ERR_FUNCTION_TEMPLATE_ONLY_GENERICS
 :MSGTXT. function templates can only have type arguments
-:MSGJTXT. ŠÖ”ƒeƒ“ƒvƒŒ[ƒg‚ÍŒ^ˆø”‚ğ‚Â‚±‚Æ‚ª‚Å‚«‚é‚¾‚¯‚Å‚·
+:MSGJTXT. é–¢æ•°ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã¯å‹å¼•æ•°ã‚’æŒã¤ã“ã¨ãŒã§ãã‚‹ã ã‘ã§ã™
 A function template argument can only be a generic type (e.g.,
 .id template < class
 T
@@ -1249,7 +1253,7 @@ automatically instantiate functions purely from the argument types of calls.
 
 :MSGSYM. ERR_MAX_STRUCT_EXCEEDED
 :MSGTXT. maximum class size has been exceeded
-:MSGJTXT. ƒNƒ‰ƒXƒTƒCƒY‚ªÅ‘å’l‚ğ‰z‚¦‚Ü‚µ‚½
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ã‚µã‚¤ã‚ºãŒæœ€å¤§å€¤ã‚’è¶Šãˆã¾ã—ãŸ
 The 16-bit compiler limits the size of a
 .kw struct
 or
@@ -1272,7 +1276,7 @@ struct S
 
 :MSGSYM. ANSI_MACRO_DEFN_NOT_IDENTICAL
 :MSGTXT. definition of macro '%s' not identical to previous definition
-:MSGJTXT. ƒ}ƒNƒ'%s'‚Ì’è‹`‚ªˆÈ‘O‚Ì’è‹`‚Æˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. ãƒã‚¯ãƒ­'%s'ã®å®šç¾©ãŒä»¥å‰ã®å®šç¾©ã¨ä¸€è‡´ã—ã¾ã›ã‚“
 :ANSI. 1
 If a macro is defined more than once, the definitions must be identical.
 If you want to redefine a macro to have a different definition, you must
@@ -1285,7 +1289,7 @@ it before you can define it with a new definition.
 
 :MSGSYM. ERR_CANNOT_INIT_IN_NON_FILE_SCOPE
 :MSGTXT. initialization of '%S' must be in file scope
-:MSGJTXT. '%S'‚Ì‰Šú‰»İ’è‚Íƒtƒ@ƒCƒ‹EƒXƒR[ƒv‚Ì’†‚É‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%S'ã®åˆæœŸåŒ–è¨­å®šã¯ãƒ•ã‚¡ã‚¤ãƒ«ãƒ»ã‚¹ã‚³ãƒ¼ãƒ—ã®ä¸­ã«ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 A file scope variable must be initialized in file scope.
 :errbad.
 void fn()
@@ -1296,7 +1300,7 @@ void fn()
 
 :MSGSYM. WARN_DEFAULT_ARG_ADDED_TO_MEMBER_FN
 :MSGTXT. default argument for '%S' declared outside of class definition
-:MSGJTXT. '%S'‚ÌƒfƒtƒHƒ‹ƒgˆø”‚ªƒNƒ‰ƒX’è‹`‚ÌŠO•”‚ÅéŒ¾‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. '%S'ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ãŒã‚¯ãƒ©ã‚¹å®šç¾©ã®å¤–éƒ¨ã§å®£è¨€ã•ã‚Œã¾ã—ãŸ
 :WARNING. 1
 Problems can occur with member functions that do not declare all of their
 default arguments during the class definition.  For instance, a copy
@@ -1318,7 +1322,7 @@ S::S( S const &, int = 0 )
 
 :MSGSYM. ERR_MISPLACED_SHARP_SHARP
 :MSGTXT. ## must not be at start or end of replacement tokens
-:MSGJTXT. ##‚Í’u‚«Š·‚¦ƒg[ƒNƒ“‚Ìæ“ª‚Ü‚½‚ÍÅŒã‚É‚ ‚Á‚Ä‚Í‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ##ã¯ç½®ãæ›ãˆãƒˆãƒ¼ã‚¯ãƒ³ã®å…ˆé ­ã¾ãŸã¯æœ€å¾Œã«ã‚ã£ã¦ã¯ãªã‚Šã¾ã›ã‚“
 There must be a token on each side of the "##" (token pasting) operator.
 :errbad.
 #define badmac( a, b ) ## a ## b
@@ -1326,7 +1330,7 @@ There must be a token on each side of the "##" (token pasting) operator.
 
 :MSGSYM. ERR_INVALID_FLOATING_POINT_CONSTANT
 :MSGTXT. invalid floating-point constant
-:MSGJTXT. •s“KØ‚È•‚“®¬”“_’è”‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªæµ®å‹•å°æ•°ç‚¹å®šæ•°ã§ã™
 The exponent part of the floating-point constant is not formed correctly.
 :errbad.
 float f = 123.9E+Q;
@@ -1334,7 +1338,7 @@ float f = 123.9E+Q;
 
 :MSGSYM. ERR_CANT_TAKE_SIZEOF_FIELD
 :MSGTXT. 'sizeof' is not allowed for a bit-field
-:MSGJTXT. 'sizeof'‚ÍƒrƒbƒgƒtƒB[ƒ‹ƒh‚É‘Î‚µ‚Ä‚Íg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. 'sizeof'ã¯ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã«å¯¾ã—ã¦ã¯ä½¿ãˆã¾ã›ã‚“
 The smallest object that you can ask for the size of is a char.
 :errbad.
 struct S
@@ -1346,13 +1350,13 @@ int k = sizeof( v.b );
 
 :MSGSYM. ERR_INVALID_OPTION_PATH
 :MSGTXT. option requires a path
-:MSGJTXT. ƒIƒvƒVƒ‡ƒ“‚É‚ÍƒpƒX‚ª•K—v‚Å‚·
+:MSGJTXT. ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«ã¯ãƒ‘ã‚¹ãŒå¿…è¦ã§ã™
 The specified option is not recognized by the compiler
 since there was no path after it (i.e., "-i=d:\include;d:\path" ).
 
 :MSGSYM. ERR_MUST_BE_VAR_PARM_FUNC
 :MSGTXT. must use 'va_start' macro inside function with variable arguments
-:MSGJTXT. 'va_start'ƒ}ƒNƒ‚Í‰Â•ÏŒÂ‚Ìˆø”‚ğ‚Á‚½ŠÖ”‚Ì’†‚Åg‚í‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. 'va_start'ãƒã‚¯ãƒ­ã¯å¯å¤‰å€‹ã®å¼•æ•°ã‚’æŒã£ãŸé–¢æ•°ã®ä¸­ã§ä½¿ã‚ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The
 .id va_start
 macro is used to setup access to the parameters in a function
@@ -1372,13 +1376,13 @@ int foo( int a, int b )
 
 :MSGSYM. ERR_FATAL_ERROR
 :MSGTXT. ***FATAL*** %s
-:MSGJTXT. ***’v–½“I*** %s
+:MSGJTXT. ***è‡´å‘½çš„*** %s
 A fatal error has been detected during code generation time.
 The type of error is displayed in the message.
 
 :MSGSYM. ERR_BACK_END_ERROR
 :MSGTXT. internal compiler error %d
-:MSGJTXT. ƒRƒ“ƒpƒCƒ‰“à•”ƒGƒ‰[ %d
+:MSGJTXT. ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©å†…éƒ¨ã‚¨ãƒ©ãƒ¼ %d
 A bug has been encountered in the compiler.
 Please report the specified internal compiler error number and any other
 helpful details about the program being compiled to the Open Watcom
@@ -1387,18 +1391,18 @@ can fix the problem. See http://www.openwatcom.org/.
 
 :MSGSYM. ERR_BAD_PARM_REGISTER
 :MSGTXT. argument number %d - invalid register in #pragma
-:MSGJTXT. ˆø””Ô†%d - #pragma‚Ì’†‚Ì•s“KØ‚ÈƒŒƒWƒXƒ^w’è
+:MSGJTXT. å¼•æ•°ç•ªå·%d - #pragmaã®ä¸­ã®ä¸é©åˆ‡ãªãƒ¬ã‚¸ã‚¹ã‚¿æŒ‡å®š
 The designated registers cannot hold the value for the parameter.
 
 :MSGSYM. ERR_BAD_RETURN_REGISTER
 :MSGTXT. procedure '%s' has invalid return register in #pragma
-:MSGJTXT. ƒvƒƒV[ƒWƒƒ'%s'‚ÍC#pragma‚Ì’†‚Å•s“KØ‚ÈƒŠƒ^[ƒ“EƒŒƒWƒXƒ^‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£'%s'ã¯ï¼Œ#pragmaã®ä¸­ã§ä¸é©åˆ‡ãªãƒªã‚¿ãƒ¼ãƒ³ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™
 The size of the return register does not match the size of the result
 returned by the function.
 
 :MSGSYM. ERR_BAD_SAVE
 :MSGTXT. illegal register modified by '%s' #pragma
-:MSGJTXT. '%s'#pragma‚É‚æ‚Á‚Äˆá–@‚ÈƒŒƒWƒXƒ^‚ªC³‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. '%s'#pragmaã«ã‚ˆã£ã¦é•æ³•ãªãƒ¬ã‚¸ã‚¹ã‚¿ãŒä¿®æ­£ã•ã‚Œã¦ã„ã¾ã™
 .us For the 16-bit Open Watcom C/C++ compiler:
 The BP, CS, DS, and SS registers cannot be modified in small data models.
 The BP, CS, and SS registers cannot be modified in large data models.
@@ -1412,7 +1416,7 @@ The EBP, CS, and SS registers cannot be modified in large data models.
 
 :MSGSYM. ANSIERR_NO_EXTERNAL_DEFNS_FOUND
 :MSGTXT. file must contain at least one external definition
-:MSGJTXT. ƒtƒ@ƒCƒ‹‚Í­‚­‚Æ‚à1‚Â‚ÌŠO•”’è‹`‚ğŠÜ‚Ü‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ•ã‚¡ã‚¤ãƒ«ã¯å°‘ãã¨ã‚‚1ã¤ã®å¤–éƒ¨å®šç¾©ã‚’å«ã¾ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 :ANSIERR.
 Every file must contain at least one global object, (either a data variable
 or a function).
@@ -1422,17 +1426,17 @@ ISO 1998 C++ standard allows empty translation units.
 
 :MSGSYM. ERR_OUT_OF_MACRO_MEMORY
 :MSGTXT. out of macro space
-:MSGJTXT. ƒ}ƒNƒ‹óŠÔ‚ª•s‘«‚Å‚·
+:MSGJTXT. ãƒã‚¯ãƒ­ç©ºé–“ãŒä¸è¶³ã§ã™
 The compiler ran out of memory for storing macro definitions.
 
 :MSGSYM. ERR_BREAK_KEY_HIT
 :MSGTXT. keyboard interrupt detected
-:MSGJTXT. ƒL[ƒ{[ƒhŠ„‚è‚İ‚ªŒŸo‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å‰²ã‚Šè¾¼ã¿ãŒæ¤œå‡ºã•ã‚Œã¾ã—ãŸ
 The compilation has been aborted with Ctrl/C or Ctrl/Break.
 
 :MSGSYM. ERR_DUPLICATE_MACRO_PARM
 :MSGTXT. duplicate macro parameter '%s'
-:MSGJTXT. ƒ}ƒNƒƒpƒ‰ƒ[ƒ^'%s'‚ª2‚Â‚ ‚è‚Ü‚·
+:MSGJTXT. ãƒã‚¯ãƒ­ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿'%s'ãŒ2ã¤ã‚ã‚Šã¾ã™
 The parameters specified in a macro definition must be unique.
 :errbad.
 #define badmac( a, b, a ) a ## b
@@ -1440,35 +1444,35 @@ The parameters specified in a macro definition must be unique.
 
 :MSGSYM. ERR_UNABLE_TO_OPEN_WORK_FILE
 :MSGTXT. unable to open work file: error code = %d
-:MSGJTXT. ƒ[ƒNEƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñFƒGƒ‰[ƒR[ƒh = %d
+:MSGJTXT. ãƒ¯ãƒ¼ã‚¯ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“ï¼šã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰ = %d
 The compiler tries to open a new work file by the name "__wrkN__.tmp" where
 N is the digit 0 to 9.
 This message will be issued if all of those files already exist.
 
 :MSGSYM. ERR_WORK_FILE_WRITE_ERROR
 :MSGTXT. write error on work file: error code = %d
-:MSGJTXT. ƒ[ƒNEƒtƒ@ƒCƒ‹‚Ì‘‚İƒGƒ‰[FƒGƒ‰[ƒR[ƒh = %d
+:MSGJTXT. ãƒ¯ãƒ¼ã‚¯ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã®æ›¸è¾¼ã¿ã‚¨ãƒ©ãƒ¼ï¼šã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰ = %d
 An error was encountered trying to write information to the work file.
 The disk could be full.
 
 :MSGSYM. ERR_WORK_FILE_READ_ERROR
 :MSGTXT. read error on work file: error code = %d
-:MSGJTXT. ƒ[ƒNEƒtƒ@ƒCƒ‹‚Ì“Çæ‚èƒGƒ‰[FƒGƒ‰[ƒR[ƒh = %d
+:MSGJTXT. ãƒ¯ãƒ¼ã‚¯ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­å–ã‚Šã‚¨ãƒ©ãƒ¼ï¼šã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰ = %d
 An error was encountered trying to read information from the work file.
 
 :MSGSYM. ERR_TOKEN_TRUNCATED
 :MSGTXT. token too long; truncated
-:MSGJTXT. ƒg[ƒNƒ“‚ª’·‚·‚¬‚Ü‚·GØ‚è‹l‚ß‚ç‚ê‚Ü‚·
+:MSGJTXT. ãƒˆãƒ¼ã‚¯ãƒ³ãŒé•·ã™ãã¾ã™ï¼›åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã™
 The token must be less than 510 bytes in length.
 
 :MSGSYM. ERR_FILENAME_REQUIRED
 :MSGTXT. filename required on command line
-:MSGJTXT. ƒRƒ}ƒ“ƒhEƒ‰ƒCƒ“ã‚Åƒtƒ@ƒCƒ‹–¼‚Ìw’è‚ª•K—v‚Å‚·
+:MSGJTXT. ã‚³ãƒãƒ³ãƒ‰ãƒ»ãƒ©ã‚¤ãƒ³ä¸Šã§ãƒ•ã‚¡ã‚¤ãƒ«åã®æŒ‡å®šãŒå¿…è¦ã§ã™
 The name of a file to be compiled must be specified on the command line.
 
 :MSGSYM. ERR_CAN_ONLY_COMPILE_ONE_FILE
 :MSGTXT. command line contains more than one file to compile
-:MSGJTXT. ƒRƒ}ƒ“ƒhEƒ‰ƒCƒ“‚É‚ÍƒRƒ“ƒpƒCƒ‹‚·‚é2‚ÂˆÈã‚Ìƒtƒ@ƒCƒ‹‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. ã‚³ãƒãƒ³ãƒ‰ãƒ»ãƒ©ã‚¤ãƒ³ã«ã¯ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã™ã‚‹2ã¤ä»¥ä¸Šã®ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚Šã¾ã™
 You have more than one file name specified on the command line to be
 compiled.
 The compiler can only compile one file at a time.
@@ -1477,7 +1481,7 @@ single command.
 
 :MSGSYM. ERR_UNION_NO_VIRTUAL_FUNCTIONS
 :MSGTXT. virtual member functions are not allowed in a union
-:MSGJTXT. ‰¼‘zƒƒ“ƒoŠÖ”‚Íunion‚Ì’†‚Å‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ä»®æƒ³ãƒ¡ãƒ³ãƒé–¢æ•°ã¯unionã®ä¸­ã§è¨±ã•ã‚Œã¾ã›ã‚“
 A union can only be used to overlay the storage of data.
 The storage of virtual function
 information (in a safe manner) cannot be done if storage is overlaid.
@@ -1492,7 +1496,7 @@ union un { S1 s1;
 
 :MSGSYM. ERR_UNION_CANNOT_BE_BASE
 :MSGTXT. union cannot be used as a base class
-:MSGJTXT. union‚ÍŠî’êƒNƒ‰ƒX‚Æ‚µ‚Äg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. unionã¯åŸºåº•ã‚¯ãƒ©ã‚¹ã¨ã—ã¦ä½¿ãˆã¾ã›ã‚“
 This restriction prevents C++ programmers from viewing a
 .kw union
 as an encapsulation unit.
@@ -1506,7 +1510,7 @@ class S : public U { int s; };
 
 :MSGSYM. ERR_UNION_CANNOT_HAVE_BASE
 :MSGTXT. union cannot have a base class
-:MSGJTXT. union‚ÍŠî’êƒNƒ‰ƒX‚ğ‚Â‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. unionã¯åŸºåº•ã‚¯ãƒ©ã‚¹ã‚’æŒã¤ã“ã¨ãŒã§ãã¾ã›ã‚“
 This restriction prevents C++ programmers from viewing a
 .kw union
 as an encapsulation unit.
@@ -1520,7 +1524,7 @@ union U : public S { int a; int b; };
 
 :MSGSYM. ERR_CANNOT_INHERIT_UNDEFINED
 :MSGTXT. cannot inherit an undefined base class '%T'
-:MSGJTXT. –¢’è‹`Šî’êƒNƒ‰ƒX'%T'‚ğó‚¯Œp‚®‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æœªå®šç¾©åŸºåº•ã‚¯ãƒ©ã‚¹'%T'ã‚’å—ã‘ç¶™ãã“ã¨ã¯ã§ãã¾ã›ã‚“
 The storage requirements for a
 .kw class
 type must be known when inheritance is involved because
@@ -1535,7 +1539,7 @@ class C : public Undefined {
 
 :MSGSYM. ERR_REPEATED_BASE_CLASS
 :MSGTXT. repeated direct base class will cause ambiguities
-:MSGJTXT. ŒJ‚è•Ô‚³‚ê‚½’¼Ú‚Ìƒx[ƒXƒNƒ‰ƒX‚ªB–†‚³‚ğˆø‚«‹N‚±‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. ç¹°ã‚Šè¿”ã•ã‚ŒãŸç›´æ¥ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ãŒæ›–æ˜§ã•ã‚’å¼•ãèµ·ã“ã—ã¦ã„ã¾ã™
 Almost all accesses will be ambiguous.  This restriction
 is useful in catching programming errors.  The repeated base class
 can be encapsulated in another class if the repetition is required.
@@ -1552,21 +1556,21 @@ class C : public Dup, public Dup
 
 :MSGSYM. ERR_ONLY_GLOBAL_TEMPLATES
 :MSGTXT. templates may only be declared in namespace scope
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒg‚Íƒtƒ@ƒCƒ‹EƒXƒR[ƒv‚Ì’†‚ÅéŒ¾‚³‚ê‚é‚¾‚¯‚Å‚·
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã¯ãƒ•ã‚¡ã‚¤ãƒ«ãƒ»ã‚¹ã‚³ãƒ¼ãƒ—ã®ä¸­ã§å®£è¨€ã•ã‚Œã‚‹ã ã‘ã§ã™
 Currently, templates can only be declared in namespace scope.
 This simple restriction was chosen in favour of more freedom with
 possibly subtle restrictions.
 
 :MSGSYM. ERR_ONLY_GLOBAL_LINKAGES
 :MSGTXT. linkages may only be declared in file scope
-:MSGJTXT. ƒŠƒ“ƒN‚Íƒtƒ@ƒCƒ‹EƒXƒR[ƒv‚Ì’†‚ÅéŒ¾‚³‚ê‚é‚¾‚¯‚Å‚·
+:MSGJTXT. ãƒªãƒ³ã‚¯ã¯ãƒ•ã‚¡ã‚¤ãƒ«ãƒ»ã‚¹ã‚³ãƒ¼ãƒ—ã®ä¸­ã§å®£è¨€ã•ã‚Œã‚‹ã ã‘ã§ã™
 A common source of errors for C and C++ result from the use of prototypes
 inside of functions.  This restriction attempts to prevent
 such errors.
 
 :MSGSYM. ERR_UNKNOWN_LINKAGE
 :MSGTXT. unknown linkage '%s'
-:MSGJTXT. –¢’m‚ÌƒŠƒ“ƒN'%s'‚Å‚·
+:MSGJTXT. æœªçŸ¥ã®ãƒªãƒ³ã‚¯'%s'ã§ã™
 Only the linkages "C" and "C++" are supported by Open Watcom C++.
 :errbad.
 extern "APL" void AplFunc( int* );
@@ -1574,7 +1578,7 @@ extern "APL" void AplFunc( int* );
 
 :MSGSYM. ERR_TOO_MANY_SC_SPECIFIERS
 :MSGTXT. too many storage class specifiers
-:MSGJTXT. ‹L‰¯ƒNƒ‰ƒXw’èq‚ª‘½‚·‚¬‚Ü‚·
+:MSGJTXT. è¨˜æ†¶ã‚¯ãƒ©ã‚¹æŒ‡å®šå­ãŒå¤šã™ãã¾ã™
 This message is a result of duplicating a previous storage class or
 having a different storage class.
 You can only have one of the following storage classes,
@@ -1590,7 +1594,7 @@ extern typedef int (*fn)( void );
 
 :MSGSYM. ERR_NO_DECLARATOR
 :MSGTXT. nameless declaration is not allowed
-:MSGJTXT. –¼‘O‚È‚µéŒ¾‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åå‰ãªã—å®£è¨€ã¯ã§ãã¾ã›ã‚“
 A type was used in a declaration but no name was given.
 :errbad.
 static int;
@@ -1598,7 +1602,7 @@ static int;
 
 :MSGSYM. ERR_ILLEGAL_TYPE_COMBO
 :MSGTXT. illegal combination of type specifiers
-:MSGJTXT. Œ^w’èq‚Ìˆá–@‚È‘g‡‚¹‚Å‚·
+:MSGJTXT. å‹æŒ‡å®šå­ã®é•æ³•ãªçµ„åˆã›ã§ã™
 An incorrect scalar type was found.  Either a scalar keyword
 was repeated or the combination is illegal.
 :errbad.
@@ -1608,7 +1612,7 @@ short long y;
 
 :MSGSYM. ERR_ILLEGAL_QUALIFIER_COMBO
 :MSGTXT. illegal combination of type qualifiers
-:MSGJTXT. Œ^CüŒê‚Ìˆá–@‚È‘g‡‚¹‚Å‚·
+:MSGJTXT. å‹ä¿®é£¾èªã®é•æ³•ãªçµ„åˆã›ã§ã™
 A repetition of a type qualifier has been detected.  Some compilers may
 ignore repetitions but strictly speaking it is incorrect code.
 :errbad.
@@ -1620,34 +1624,34 @@ struct S {
 
 :MSGSYM. ERR_SYNTAX
 :MSGTXT. syntax error
-:MSGJTXT. \•¶ƒGƒ‰[
+:MSGJTXT. æ§‹æ–‡ã‚¨ãƒ©ãƒ¼
 The C++ compiler was unable to interpret the text starting at the location
 of the message.  The C++ language is sufficiently complicated that
 it is difficult for a compiler to correct the error itself.
 
 :MSGSYM. ERR_PARSER_DIED
 :MSGTXT. parser stack corrupted
-:MSGJTXT. \•¶‰ğÍƒvƒƒOƒ‰ƒ€‚ÌƒXƒ^ƒbƒN‚ª‰ó‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. æ§‹æ–‡è§£æãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®ã‚¹ã‚¿ãƒƒã‚¯ãŒå£Šã‚Œã¦ã„ã¾ã™
 The C++ parser has detected an internal problem that usually indicates
 a compiler problem.  Please report this directly to the Open Watcom
 development team. See http://www.openwatcom.org/.
 
 :MSGSYM. ERR_NO_NESTED_TEMPLATES
 :MSGTXT. template declarations cannot be nested within each other
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgéŒ¾‚ÍC‚¨Œİ‚¢‚Ì”ÍˆÍ“à‚ÅƒlƒXƒg‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå®£è¨€ã¯ï¼ŒãŠäº’ã„ã®ç¯„å›²å†…ã§ãƒã‚¹ãƒˆã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 Currently, templates can only be declared in namespace scope.
 Furthermore, a template declaration must be finished before another
 template can be declared.
 
 :MSGSYM. ERR_COMPLICATED_EXPRESSION
 :MSGTXT. expression is too complicated
-:MSGJTXT. ®‚ª•¡G‚·‚¬‚Ü‚·
+:MSGJTXT. å¼ãŒè¤‡é›‘ã™ãã¾ã™
 The expression contains too many levels of nested parentheses.
 Divide the expression up into two or more sub-expressions.
 
 :MSGSYM. ERR_INVALID_TYPEDEF_REDEFINITION
 :MSGTXT. invalid redefinition of the typedef name '%S'
-:MSGJTXT. typedef–¼'%S'‚ÌÄ’è‹`‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. typedefå'%S'ã®å†å®šç¾©ã¯ã§ãã¾ã›ã‚“
 Redefinition of typedef names is only allowed if you are redefining a
 typedef name to itself.
 Any other redefinition is illegal.
@@ -1661,7 +1665,7 @@ typedef float TD;   // illegal
 
 :MSGSYM. ERR_CLASS_REDEFINED
 :MSGTXT. class '%T' has already been defined
-:MSGJTXT. ƒNƒ‰ƒX'%T'‚ÍŠù‚É’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹'%T'ã¯æ—¢ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™
 This message usually results from the definition of two classes in the
 same scope.  This is illegal regardless of whether the class definitions
 are identical.
@@ -1674,7 +1678,7 @@ class C {
 
 :MSGSYM. ERR_CANT_TAKE_SIZEOF_UNDEFINED
 :MSGTXT. 'sizeof' is not allowed for an undefined type
-:MSGJTXT. 'sizeof'‚Í–¢’è‹`‚ÌŒ^‚É‚Íg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'sizeof'ã¯æœªå®šç¾©ã®å‹ã«ã¯ä½¿ç”¨ã§ãã¾ã›ã‚“
 If a type has not been defined, the compiler cannot know how large it is.
 :errbad.
 class C;
@@ -1683,7 +1687,7 @@ int x = sizeof( C );
 
 :MSGSYM. ANSI_INIT_BYPASSED
 :MSGTXT. initializer for variable '%S' cannot be bypassed
-:MSGJTXT. •Ï”'%S'‚Ì‰Šú‰»q‚ÍƒoƒCƒpƒX‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å¤‰æ•°'%S'ã®åˆæœŸåŒ–å­ã¯ãƒã‚¤ãƒ‘ã‚¹ã§ãã¾ã›ã‚“
 :ANSI. 1
 The variable may not be initialized when code is executing
 at the position indicated in the message.  The C++ language
@@ -1704,7 +1708,7 @@ int foo( int a )
 
 :MSGSYM. ERR_DIVISION_BY_ZERO
 :MSGTXT. division by zero in a constant expression
-:MSGJTXT. ’è”®‚Ì’†‚Åƒ[ƒ‚É‚æ‚éœZ‚ª‹N‚±‚è‚Ü‚·
+:MSGJTXT. å®šæ•°å¼ã®ä¸­ã§ã‚¼ãƒ­ã«ã‚ˆã‚‹é™¤ç®—ãŒèµ·ã“ã‚Šã¾ã™
 Division by zero is not allowed in a constant expression.
 The value of the expression cannot be used with this error.
 :errbad.
@@ -1720,7 +1724,7 @@ int foo( int a )
 
 :MSGSYM. ANSI_ARITHMETIC_OVERFLOW
 :MSGTXT. arithmetic overflow in a constant expression
-:MSGJTXT. ’è”®‚Ì’†‚ÅZpƒI[ƒo[ƒtƒ[‚ª‹N‚±‚è‚Ü‚·
+:MSGJTXT. å®šæ•°å¼ã®ä¸­ã§ç®—è¡“ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ãŒèµ·ã“ã‚Šã¾ã™
 :ANSI. 3
 The multiplication of two integral values cannot be represented.
 The value of the expression cannot be used with this error.
@@ -1737,7 +1741,7 @@ int foo( int a )
 
 :MSGSYM. WARN_CG_MEM_PROC
 :MSGTXT. not enough memory to fully optimize procedure '%s'
-:MSGJTXT. ƒvƒƒV[ƒWƒƒ'%s'‚ğ\•ª‚ÉÅ“K‰»‚·‚é‚½‚ß‚Ìƒƒ‚ƒŠ‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£'%s'ã‚’ååˆ†ã«æœ€é©åŒ–ã™ã‚‹ãŸã‚ã®ãƒ¡ãƒ¢ãƒªãŒä¸è¶³ã—ã¦ã„ã¾ã™
 :WARNING. 4
 The indicated procedure cannot be fully optimized with the
 amount of memory available.  The code generated will still be
@@ -1746,7 +1750,7 @@ correct and execute properly.  This message is purely informational
 
 :MSGSYM. WARN_CG_MEM_PEEPHOLE
 :MSGTXT. not enough memory to maintain full peephole
-:MSGJTXT. Š®‘S‚Éƒs[ƒvƒz[ƒ‹‚ğˆÛ‚·‚é‚½‚ß‚Ìƒƒ‚ƒŠ‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. å®Œå…¨ã«ãƒ”ãƒ¼ãƒ—ãƒ›ãƒ¼ãƒ«ã‚’ç¶­æŒã™ã‚‹ãŸã‚ã®ãƒ¡ãƒ¢ãƒªãŒä¸è¶³ã—ã¦ã„ã¾ã™
 :WARNING. 4
 Certain optimizations benefit from being able to store the entire module
 in memory during optimization.
@@ -1758,7 +1762,7 @@ correct and execute properly.  This message is purely informational
 
 :MSGSYM. ERR_EXCEEDED_LIMIT
 :MSGTXT. too many errors: compilation aborted
-:MSGJTXT. ƒGƒ‰[‚ª‘½‚·‚¬‚Ü‚·FƒRƒ“ƒpƒCƒ‹‚Í’†~‚µ‚Ü‚µ‚½
+:MSGJTXT. ã‚¨ãƒ©ãƒ¼ãŒå¤šã™ãã¾ã™ï¼šã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã¯ä¸­æ­¢ã—ã¾ã—ãŸ
 The Open Watcom C++ compiler sets a limit to the number of error messages
 it will issue.
 Once the number of messages reaches the limit the above message is issued.
@@ -1766,13 +1770,13 @@ This limit can be changed via the "/e" command line option.
 
 :MSGSYM. ERR_TOO_MANY_PARM_SETS
 :MSGTXT. too many parm sets
-:MSGJTXT. parm‚Ìİ’è‚ª‘½‚·‚¬‚Ü‚·
+:MSGJTXT. parmã®è¨­å®šãŒå¤šã™ãã¾ã™
 An extra parameter passing description has been found in the aux pragma text.
 Only one parameter passing description is allowed.
 
 :MSGSYM. ERR_BAD_FN_MODIFIER
 :MSGTXT. 'friend', 'virtual' or 'inline' modifiers may only be used on functions
-:MSGJTXT. 'friend'C'virtual'C‚ ‚é‚¢‚ÍC'inline'Cüq‚ªŠÖ”‚É‘Î‚µ‚Ä‚Ì‚İg—p‚Å‚«‚Ü‚·
+:MSGJTXT. 'friend'ï¼Œ'virtual'ï¼Œã‚ã‚‹ã„ã¯ï¼Œ'inline'ä¿®é£¾å­ãŒé–¢æ•°ã«å¯¾ã—ã¦ã®ã¿ä½¿ç”¨ã§ãã¾ã™
 This message indicates that you are trying to declare a strange entity like
 an
 .kw inline
@@ -1781,13 +1785,13 @@ definitions.
 
 :MSGSYM. ERR_MULTIPLE_PRAGMA_MODS
 :MSGTXT. more than one calling convention has been specified
-:MSGJTXT. 2‚ÂˆÈã‚ÌŒÄo‚µ‹K–ñ‚ªw’è‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. 2ã¤ä»¥ä¸Šã®å‘¼å‡ºã—è¦ç´„ãŒæŒ‡å®šã•ã‚Œã¾ã—ãŸ
 A function cannot have more than one #pragma modifier applied to it.
 Combine the pragmas into one pragma and apply it once.
 
 :MSGSYM. ERR_MUST_BE_ZERO
 :MSGTXT. pure member function constant must be '0'
-:MSGJTXT. ƒˆƒƒ“ƒoŠÖ”’è”‚Í'0'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ç´”ç²‹ãƒ¡ãƒ³ãƒé–¢æ•°å®šæ•°ã¯'0'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The constant must be changed to '0' in order for the Open Watcom C++ compiler
 to accept the pure virtual member function declaration.
 :errbad.
@@ -1798,7 +1802,7 @@ struct S {
 
 :MSGSYM. ERR_REPEATED_BASED_MODS
 :MSGTXT. based modifier has been repeated
-:MSGJTXT. basedCüq‚ªŒJ‚è•Ô‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. basedä¿®é£¾å­ãŒç¹°ã‚Šè¿”ã•ã‚Œã¾ã—ãŸ
 A repeated based modifier has been detected.  There are no semantics for
 combining base modifiers so this is not allowed.
 :errbad.
@@ -1808,7 +1812,7 @@ char __based( void ) __based( ptr ) *a;
 
 :MSGSYM. ERR_BAD_ENUM_ASSIGNMENT
 :MSGTXT. enumeration variable is not assigned a constant from its enumeration
-:MSGJTXT. —ñ‹“•Ï”‚É‚»‚Ì—ñ‹“‚Ì’è”‚ª‘ã“ü‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. åˆ—æŒ™å¤‰æ•°ã«ãã®åˆ—æŒ™ã®å®šæ•°ãŒä»£å…¥ã•ã‚Œã¦ã„ã¾ã›ã‚“
 In C++ (as opposed to C), enums represent values of distinct types.
 Thus, the compiler will not automatically convert an integer value
 to an enum type.
@@ -1819,7 +1823,7 @@ enum Days day = 2;
 
 :MSGSYM. ERR_BITFIELD_STG_CLASS
 :MSGTXT. bit-field declaration cannot have a storage class specifier
-:MSGJTXT. ƒrƒbƒgƒtƒB[ƒ‹ƒhéŒ¾‚Í‹L‰¯ƒNƒ‰ƒXw’èq‚ğ‚Â‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å®£è¨€ã¯è¨˜æ†¶ã‚¯ãƒ©ã‚¹æŒ‡å®šå­ã‚’æŒã¤ã“ã¨ãŒã§ãã¾ã›ã‚“
 Bit-fields (along with most members) cannot have storage class specifiers
 in their declaration.  Remove the storage class specifier to correct the
 code.
@@ -1833,7 +1837,7 @@ public:
 
 :MSGSYM. ERR_BITFIELD_NO_BASE_TYPE
 :MSGTXT. bit-field declaration must have a base type specified
-:MSGJTXT. ƒrƒbƒgƒtƒB[ƒ‹ƒhéŒ¾‚ÍŠî–{Œ^‚ğw’è‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å®£è¨€ã¯åŸºæœ¬å‹ã‚’æŒ‡å®šã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 A bit-field cannot make use of a default integer type.  Specify the type
 .kw int
 to correct the code.
@@ -1847,7 +1851,7 @@ public:
 
 :MSGSYM. ERR_BITFIELD_QUALIFIER
 :MSGTXT. illegal qualification of a bit-field declaration
-:MSGJTXT. ƒrƒbƒgƒtƒB[ƒ‹ƒhéŒ¾‚Ìˆá–@‚ÈCüq‚Å‚·
+:MSGJTXT. ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å®£è¨€ã®é•æ³•ãªä¿®é£¾å­ã§ã™
 A bit-field can only be declared
 .kw const
 or
@@ -1866,7 +1870,7 @@ All three declarations of bit-fields are illegal.
 
 :MSGSYM. ERR_REPEATED_BASE_QUALIFIERS
 :MSGTXT. duplicate base qualifier
-:MSGJTXT. Šî–{Cüq‚ğ“ñ“xŒJ‚è•Ô‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. åŸºæœ¬ä¿®é£¾å­ã‚’äºŒåº¦ç¹°ã‚Šè¿”ã—ã¦ã„ã¾ã™
 The compiler has found a repetition of base qualifiers like
 .kw protected
 or
@@ -1878,7 +1882,7 @@ struct Derived : public public Base { int d; };
 
 :MSGSYM. ERR_TOO_MANY_ACCESS_SPECIFIERS
 :MSGTXT. only one access specifier is allowed
-:MSGJTXT. ƒAƒNƒZƒXw’èq‚Í1‚Â‚¾‚¯‹–‚³‚ê‚Ü‚·
+:MSGJTXT. ã‚¢ã‚¯ã‚»ã‚¹æŒ‡å®šå­ã¯1ã¤ã ã‘è¨±ã•ã‚Œã¾ã™
 The compiler has found more than one access specifier for a base class.
 Since the compiler cannot choose one over the other, remove the unwanted
 access specifier to correct the code.
@@ -1889,7 +1893,7 @@ struct Derived : public protected Base { int d; };
 
 :MSGSYM. ANSI_TYPE_SPECIFIER_QUALIFIER
 :MSGTXT. unexpected type qualifier found
-:MSGJTXT. ŠÔˆá‚Á‚½Œ^Cüq‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. é–“é•ã£ãŸå‹ä¿®é£¾å­ãŒã‚ã‚Šã¾ã™
 :ANSI. 1
 Type specifiers cannot have
 .kw const
@@ -1903,7 +1907,7 @@ object.
 
 :MSGSYM. ANSI_TYPE_SPECIFIER_STGCLASS
 :MSGTXT. unexpected storage class specifier found
-:MSGJTXT. ŠÔˆá‚Á‚½‹L‰¯ƒNƒ‰ƒXw’èq‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. é–“é•ã£ãŸè¨˜æ†¶ã‚¯ãƒ©ã‚¹æŒ‡å®šå­ãŒã‚ã‚Šã¾ã™
 :ANSI. 1
 Type specifiers cannot have
 .kw auto
@@ -1917,7 +1921,7 @@ object.
 
 :MSGSYM. ERR_AMBIGUOUS_MEMBER
 :MSGTXT. access to '%S' is not allowed because it is ambiguous
-:MSGJTXT. '%S'‚Ö‚ÌƒAƒNƒZƒX‚ÍCB–†‚³‚Ì‚½‚ß‹–‰Â‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. '%S'ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã¯ï¼Œæ›–æ˜§ã•ã®ãŸã‚è¨±å¯ã•ã‚Œã¾ã›ã‚“
 There are two ways that this error can show up in C++ code.
 The first way a member can be ambiguous is that the same name
 can be used in two different classes.  If these classes are
@@ -1949,7 +1953,7 @@ struct Bot : public Top, public Mid
 
 :MSGSYM. ERR_PRIVATE_MEMBER
 :MSGTXT. access to private member '%S' is not allowed
-:MSGJTXT. ƒvƒ‰ƒCƒx[ƒgEƒƒ“ƒo'%S'‚Ö‚ÌƒAƒNƒZƒX‚Í‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆãƒ»ãƒ¡ãƒ³ãƒ'%S'ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã¯è¨±ã•ã‚Œã¾ã›ã‚“
 The indicated member is being accessed by an expression that does not
 have permission to access private members of the class.
 :errbad.
@@ -1964,7 +1968,7 @@ int k = b.foo();    // foo is private
 
 :MSGSYM. ERR_PROTECTED_MEMBER
 :MSGTXT. access to protected member '%S' is not allowed
-:MSGJTXT. ƒvƒƒeƒNƒgEƒƒ“ƒo'%S'‚Ö‚ÌƒAƒNƒZƒX‚Í‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆãƒ»ãƒ¡ãƒ³ãƒ'%S'ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã¯è¨±ã•ã‚Œã¾ã›ã‚“
 The indicated member is being accessed by an expression that does not
 have permission to access protected members of the class.
 The compiler also requires that
@@ -1989,7 +1993,7 @@ int k = b.foo(); // foo is protected
 
 :MSGSYM. ERR_BOTH_PTRS
 :MSGTXT. operation does not allow both operands to be pointers
-:MSGJTXT. —¼•û‚ÌƒIƒyƒ‰ƒ“ƒh‚ªƒ|ƒCƒ“ƒ^‚Å‚ ‚é‰‰Z‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ä¸¡æ–¹ã®ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒãƒã‚¤ãƒ³ã‚¿ã§ã‚ã‚‹æ¼”ç®—ã¯ã§ãã¾ã›ã‚“
 There may be a missing indirection in the code exhibiting this error.
 An example of this error is adding two pointers.
 :errbad.
@@ -2003,7 +2007,7 @@ void fn()
 
 :MSGSYM. ERR_NOT_PTR_ARITH
 :MSGTXT. operand is neither a pointer nor an arithmetic type
-:MSGJTXT. ƒIƒyƒ‰ƒ“ƒh‚Íƒ|ƒCƒ“ƒ^‚Å‚àZpŒ^‚Å‚à‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ãƒã‚¤ãƒ³ã‚¿ã§ã‚‚ç®—è¡“å‹ã§ã‚‚ã‚ã‚Šã¾ã›ã‚“
 An example of this error is incrementing a class that does not
 have any overloaded operators.
 :errbad.
@@ -2016,7 +2020,7 @@ void fn()
 
 :MSGSYM. ERR_LEFT_NOT_PTR_ARITH
 :MSGTXT. left operand is neither a pointer nor an arithmetic type
-:MSGJTXT. ¶ƒIƒyƒ‰ƒ“ƒh‚Íƒ|ƒCƒ“ƒ^‚Å‚àZpŒ^‚Å‚à‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ãƒã‚¤ãƒ³ã‚¿ã§ã‚‚ç®—è¡“å‹ã§ã‚‚ã‚ã‚Šã¾ã›ã‚“
 An example of this error is trying to add 1 to a class that does not
 have any overloaded operators.
 :errbad.
@@ -2029,7 +2033,7 @@ void fn()
 
 :MSGSYM. ERR_RIGHT_NOT_PTR_ARITH
 :MSGTXT. right operand is neither a pointer nor an arithmetic type
-:MSGJTXT. ‰EƒIƒyƒ‰ƒ“ƒh‚Íƒ|ƒCƒ“ƒ^‚Å‚àZpŒ^‚Å‚à‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å³ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ãƒã‚¤ãƒ³ã‚¿ã§ã‚‚ç®—è¡“å‹ã§ã‚‚ã‚ã‚Šã¾ã›ã‚“
 An example of this error is trying to add 1 to a class that does not
 have any overloaded operators.
 :errbad.
@@ -2042,7 +2046,7 @@ void fn()
 
 :MSGSYM. ERR_SUB_PTR_FROM_ARITH
 :MSGTXT. cannot subtract a pointer from an arithmetic operand
-:MSGJTXT. ƒ|ƒCƒ“ƒ^‚ğZpƒIƒyƒ‰ƒ“ƒh‚©‚çˆø‚­‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒã‚¤ãƒ³ã‚¿ã‚’ç®—è¡“ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã‹ã‚‰å¼•ãã“ã¨ã¯ã§ãã¾ã›ã‚“
 The subtract operands are probably in the wrong order.
 :errbad.
 int fn( char *p )
@@ -2053,7 +2057,7 @@ int fn( char *p )
 
 :MSGSYM. ERR_LEFT_EXPR_MUST_BE_ARITHMETIC
 :MSGTXT. left expression must be arithmetic
-:MSGJTXT. ¶‚Ì®‚ÍZp®‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦ã®å¼ã¯ç®—è¡“å¼ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Certain operations like multiplication require both operands to be
 of arithmetic types.
 :errbad.
@@ -2066,7 +2070,7 @@ void fn()
 
 :MSGSYM. ERR_RIGHT_EXPR_MUST_BE_ARITHMETIC
 :MSGTXT. right expression must be arithmetic
-:MSGJTXT. ‰E‚Ì®‚ÍZp®‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å³ã®å¼ã¯ç®—è¡“å¼ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Certain operations like multiplication require both operands to be
 of arithmetic types.
 :errbad.
@@ -2079,7 +2083,7 @@ void fn()
 
 :MSGSYM. ERR_LEFT_EXPR_MUST_BE_INTEGRAL
 :MSGTXT. left expression must be integral
-:MSGJTXT. ¶‚Ì®‚Í®”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦ã®å¼ã¯æ•´æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Certain operators like the bit manipulation operators require both operands
 to be of integral types.
 :errbad.
@@ -2092,7 +2096,7 @@ void fn()
 
 :MSGSYM. ERR_RIGHT_EXPR_MUST_BE_INTEGRAL
 :MSGTXT. right expression must be integral
-:MSGJTXT. ‰E‚Ì®‚Í®”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å³ã®å¼ã¯æ•´æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Certain operators like the bit manipulation operators require both operands
 to be of integral types.
 :errbad.
@@ -2105,7 +2109,7 @@ void fn()
 
 :MSGSYM. ERR_PTR_TO_ARITH_ASSIGNMENT
 :MSGTXT. cannot assign a pointer value to an arithmetic item
-:MSGJTXT. Zp•Ï”‚Éƒ|ƒCƒ“ƒ^’l‚ğ‘ã“ü‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ç®—è¡“å¤‰æ•°ã«ãƒã‚¤ãƒ³ã‚¿å€¤ã‚’ä»£å…¥ã§ãã¾ã›ã‚“
 The pointer value must be cast to the desired type before the assignment
 takes place.
 :errbad.
@@ -2119,7 +2123,7 @@ void fn( char *p )
 
 :MSGSYM. ERR_DTOR_OBJ_MEM_MODEL
 :MSGTXT. attempt to destroy a far object when the data model is near
-:MSGJTXT. ƒf[ƒ^ƒ‚ƒfƒ‹‚ªnear‚Å‚ ‚é‚Æ‚«CfarƒIƒuƒWƒFƒNƒg‚ÉƒfƒXƒgƒ‰ƒNƒ^‚ğ“K—p‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«ãŒnearã§ã‚ã‚‹ã¨ãï¼Œfarã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’é©ç”¨ã—ã¦ã„ã¾ã™
 Destructors cannot be applied to objects which are stored in far memory
 when the default memory model for data is near.
 :errbad.
@@ -2136,7 +2140,7 @@ small (switch -ms), since the memory model for data is near.
 
 :MSGSYM. ERR_THIS_OBJ_MEM_MODEL
 :MSGTXT. attempt to call member function for far object when the data model is near
-:MSGJTXT. ƒf[ƒ^ƒ‚ƒfƒ‹‚ªnear‚Å‚ ‚é‚Æ‚«CfarƒIƒuƒWƒFƒNƒg‚Ìƒƒ“ƒoŠÖ”‚ğŒÄ‚ñ‚Å‚¢‚Ü‚·
+:MSGJTXT. ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«ãŒnearã§ã‚ã‚‹ã¨ãï¼Œfarã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ¡ãƒ³ãƒé–¢æ•°ã‚’å‘¼ã‚“ã§ã„ã¾ã™
 Member functions cannot be called for objects which are stored in
 far memory when the default memory model for data is near.
 :errbad.
@@ -2154,14 +2158,14 @@ small (switch -ms), since the memory model for data is near.
 
 :MSGSYM. ERR_NO_TYPE_DEFAULTS
 :MSGTXT. template type argument cannot have a default argument
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgŒ^ˆø”‚ÍƒfƒtƒHƒ‹ƒgˆø”‚ğ‚Â‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå‹å¼•æ•°ã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã‚’æŒã¤ã“ã¨ãŒã§ãã¾ã›ã‚“
 This message was produced by earlier versions of the Open Watcom C++
 compiler. Support for default template arguments was added in version
 1.3 and this message was removed at that time.
 
 :MSGSYM. ERR_DLT_OBJ_MEM_MODEL
 :MSGTXT. attempt to delete a far object when the data model is near
-:MSGJTXT. ‚»‚Ìƒf[ƒ^ƒ‚ƒfƒ‹‚ªnear‚Å‚ ‚é‚Æ‚«CfarƒIƒuƒWƒFƒNƒg‚ğ'delete'‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãã®ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«ãŒnearã§ã‚ã‚‹ã¨ãï¼Œfarã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’'delete'ã—ã¦ã„ã¾ã™
 .kw delete
 cannot be used to deallocate objects which are stored in
 far memory when the default memory model for data is near.
@@ -2181,7 +2185,7 @@ is small (switch -ms), since the memory model for data is near.
 
 :MSGSYM. ERR_OFFSETOF_CLASS
 :MSGTXT. first operand is not a class, struct or union
-:MSGJTXT. ‘æ‚PƒIƒyƒ‰ƒ“ƒh‚ªclass, struct, ‚Ü‚½‚Íunion‚Å‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ç¬¬ï¼‘ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒclass, struct, ã¾ãŸã¯unionã§ã‚ã‚Šã¾ã›ã‚“
 The
 .kw offsetof
 operation can only be performed on a type that can
@@ -2197,13 +2201,13 @@ int fn( void )
 
 :MSGSYM. ERR_CLASS_TEMPLATE_REWRITE_ERROR
 :MSGTXT. syntax error: class template cannot be processed
-:MSGJTXT. \•¶ƒGƒ‰[GƒNƒ‰ƒXEƒeƒ“ƒvƒŒ[ƒg‚ªˆ—‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ§‹æ–‡ã‚¨ãƒ©ãƒ¼ï¼›ã‚¯ãƒ©ã‚¹ãƒ»ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãŒå‡¦ç†ã§ãã¾ã›ã‚“
 The class template contains unbalanced braces.  The class definition
 cannot be processed in this form.
 
 :MSGSYM. ERR_PTR_CONVERSION
 :MSGTXT. cannot convert right pointer to type of left operand
-:MSGJTXT. ¶ƒIƒyƒ‰ƒ“ƒh‚ÌŒ^‚É‰E‚Ìƒ|ƒCƒ“ƒ^‚ğ•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å·¦ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®å‹ã«å³ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The C++ language will not allow the implicit conversion of
 unrelated class pointers.  An explicit cast is required.
 :errbad.
@@ -2218,7 +2222,7 @@ void fun( C1* pc1, C2* pc2 )
 
 :MSGSYM. ERR_LEFT_MUST_BE_LVALUE
 :MSGTXT. left operand must be an lvalue
-:MSGJTXT. ¶ƒIƒyƒ‰ƒ“ƒh‚Í'¶•Ó’l'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯'å·¦è¾ºå€¤'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The left operand must be an expression that is valid
 on the left side of an assignment.
 Examples of incorrect lvalues include constants and
@@ -2234,7 +2238,7 @@ void fn()
 
 :MSGSYM. ERR_UNION_NO_STATIC_MEMBERS
 :MSGTXT. static data members are not allowed in an union
-:MSGJTXT. ƒXƒ^ƒeƒBƒbƒNEƒf[ƒ^Eƒƒ“ƒo‚Í‹¤—p‘Ì‚Ì’†‚Å‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ‡ãƒ¼ã‚¿ãƒ»ãƒ¡ãƒ³ãƒã¯å…±ç”¨ä½“ã®ä¸­ã§è¨±ã•ã‚Œã¾ã›ã‚“
 A union should only be used to organize memory in C++.  Enclose
 the union in a class if you need a static data member associated with
 the union.
@@ -2249,7 +2253,7 @@ union U
 
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_MEMBER
 :MSGTXT. invalid storage class for a member
-:MSGJTXT. ƒƒ“ƒo‚É‘Î‚µ‚Ä•s“KØ‚È‹L‰¯ƒNƒ‰ƒX‚Å‚·
+:MSGJTXT. ãƒ¡ãƒ³ãƒã«å¯¾ã—ã¦ä¸é©åˆ‡ãªè¨˜æ†¶ã‚¯ãƒ©ã‚¹ã§ã™
 A class member cannot be declared with
 .kw auto,
 .kw register,
@@ -2265,7 +2269,7 @@ class C
 
 :MSGSYM. ERR_COMPLICATED_DECLARATION
 :MSGTXT. declaration is too complicated
-:MSGJTXT. éŒ¾‚ª•¡G‚·‚¬‚Ü‚·
+:MSGJTXT. å®£è¨€ãŒè¤‡é›‘ã™ãã¾ã™
 The declaration contains too many declarators (i.e., pointer, array, and
 function types).  Break up the declaration into a series of typedefs
 ending in a final declaration.
@@ -2281,14 +2285,14 @@ PD2 ****p;
 
 :MSGSYM. ERR_COMPLICATED_EXCEPTION
 :MSGTXT. exception declaration is too complicated
-:MSGJTXT. —áŠOéŒ¾‚ª•¡G‚·‚¬‚Ü‚·
+:MSGJTXT. ä¾‹å¤–å®£è¨€ãŒè¤‡é›‘ã™ãã¾ã™
 The exception declaration contains too many declarators (i.e., pointer,
 array, and function types).  Break up the declaration into a series
 of typedefs ending in a final declaration.
 
 :MSGSYM. ERR_FLOATING_CONSTANT_OVERFLOW
 :MSGTXT. floating-point constant too large to represent
-:MSGJTXT. •‚“®¬”“_’è”‚ª‘å‚«‚·‚¬‚Ü‚·
+:MSGJTXT. æµ®å‹•å°æ•°ç‚¹å®šæ•°ãŒå¤§ãã™ãã¾ã™
 The Open Watcom C++ compiler cannot represent the floating-point
 constant because the magnitude of the positive exponent is too large.
 :errbad.
@@ -2297,7 +2301,7 @@ float f = 1.2e78965;
 
 :MSGSYM. ERR_FLOATING_CONSTANT_UNDERFLOW
 :MSGTXT. floating-point constant too small to represent
-:MSGJTXT. •‚“®¬”“_’è”‚ª¬‚³‚·‚¬‚Ü‚·
+:MSGJTXT. æµ®å‹•å°æ•°ç‚¹å®šæ•°ãŒå°ã•ã™ãã¾ã™
 The Open Watcom C++ compiler cannot represent the floating-point
 constant because the magnitude of the negative exponent is too large.
 :errbad.
@@ -2306,14 +2310,14 @@ float f = 1.2e-78965;
 
 :MSGSYM. ERR_CANT_OVERLOAD_CLASS_TEMPLATES
 :MSGTXT. class template '%M' cannot be overloaded
-:MSGJTXT. ƒNƒ‰ƒXEƒeƒ“ƒvƒŒ[ƒg'%M'‚ÍƒI[ƒo[ƒ[ƒh‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ»ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ'%M'ã¯ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã§ãã¾ã›ã‚“
 A class template name must be unique across the entire C++ program.
 Furthermore, a class template cannot coexist with another
 class template of the same name.
 
 :MSGSYM. ERR_NO_ENUM_TYPE_POSSIBLE
 :MSGTXT. range of enum constants cannot be represented
-:MSGJTXT. enum’è”‚Í•\Œ»‰Â”\‚È”ÍˆÍ‚ğ’´‚¦‚Ä‚¢‚Ü‚·
+:MSGJTXT. enumå®šæ•°ã¯è¡¨ç¾å¯èƒ½ãªç¯„å›²ã‚’è¶…ãˆã¦ã„ã¾ã™
 If one integral type cannot be chosen to represent all
 values of an enumeration, the values cannot be used
 reliably in the generated code.  Shrink the range of
@@ -2329,13 +2333,13 @@ enum E
 
 :MSGSYM. ERR_NAME_USED_BY_NON_CLASS_TEMPLATE
 :MSGTXT. '%S' cannot be in the same scope as a class template
-:MSGJTXT. '%S'‚ªƒNƒ‰ƒXEƒeƒ“ƒvƒŒ[ƒg‚Æ“¯‚¶ƒXƒR[ƒv‚É‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%S'ãŒã‚¯ãƒ©ã‚¹ãƒ»ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã¨åŒã˜ã‚¹ã‚³ãƒ¼ãƒ—ã«ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A class template name must be unique across the entire C++ program.
 Any other use of a name cannot be in the same scope as the class template.
 
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_FILE_SCOPE
 :MSGTXT. invalid storage class in file scope
-:MSGJTXT. ƒtƒ@ƒCƒ‹EƒXƒR[ƒv‚É•s“KØ‚È‹L‰¯ƒNƒ‰ƒX‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. ãƒ•ã‚¡ã‚¤ãƒ«ãƒ»ã‚¹ã‚³ãƒ¼ãƒ—ã«ä¸é©åˆ‡ãªè¨˜æ†¶ã‚¯ãƒ©ã‚¹ãŒã‚ã‚Šã¾ã™
 A declaration in file scope cannot have a storage class of
 .kw auto
 or
@@ -2346,7 +2350,7 @@ auto int a;
 
 :MSGSYM. ERR_CONST_MUST_BE_INITIALIZED
 :MSGTXT. const object must be initialized
-:MSGJTXT. ConstƒIƒuƒWƒFƒNƒg‚ÍC‰Šú‰»‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. Constã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ï¼ŒåˆæœŸåŒ–ã•ã‚Œãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Constant objects cannot be modified so they must be initialized before use.
 :errbad.
 const int a;
@@ -2354,25 +2358,25 @@ const int a;
 
 :MSGSYM. ERR_NAME_USED_BY_CLASS_TEMPLATE
 :MSGTXT. declaration cannot be in the same scope as class template '%S'
-:MSGJTXT. éŒ¾‚ÍƒNƒ‰ƒXEƒeƒ“ƒvƒŒ[ƒg'%S'‚Æ“¯‚¶ƒXƒR[ƒv‚É‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®£è¨€ã¯ã‚¯ãƒ©ã‚¹ãƒ»ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ'%S'ã¨åŒã˜ã‚¹ã‚³ãƒ¼ãƒ—ã«ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A class template name must be unique across the entire C++ program.
 Any other use of a name cannot be in the same scope as the class template.
 
 :MSGSYM. ERR_NO_UNNAMED_TEMPLATE_ARGS
 :MSGTXT. template arguments must be named
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgˆø”‚É‚Í–¼‘O‚ğ‚Â‚¯‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã«ã¯åå‰ã‚’ã¤ã‘ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 A member function of a template class cannot be defined outside
 the class declaration unless all template arguments have been named.
 
 :MSGSYM. ERR_CANT_REDEFINE_CLASS_TEMPLATES
 :MSGTXT. class template '%M' is already defined
-:MSGJTXT. ƒNƒ‰ƒXEƒeƒ“ƒvƒŒ[ƒg'%M'‚ÍŠù‚É’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ»ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ'%M'ã¯æ—¢ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™
 A class template cannot have its definition repeated regardless of whether
 it is identical to the previous definition.
 
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_PARM
 :MSGTXT. invalid storage class for an argument
-:MSGJTXT. ˆø”‚É‘Î‚µ‚Ä•s“KØ‚È‹L‰¯ƒNƒ‰ƒX‚Å‚·
+:MSGJTXT. å¼•æ•°ã«å¯¾ã—ã¦ä¸é©åˆ‡ãªè¨˜æ†¶ã‚¯ãƒ©ã‚¹ã§ã™
 An argument declaration cannot have a storage class of
 .kw extern,
 .kw static,
@@ -2387,7 +2391,7 @@ int foo( extern int a )
 
 :MSGSYM. ERR_UNION_CANT_HAVE_MEMBER_WITH_CTOR
 :MSGTXT. unions cannot have members with constructors
-:MSGJTXT. ‹¤—p‘Ì‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğ‚Âƒƒ“ƒo‚ğ—L‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å…±ç”¨ä½“ã¯ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’æŒã¤ãƒ¡ãƒ³ãƒã‚’æœ‰ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A union should only be used to organize memory in C++.
 Allowing union members to have constructors would mean
 that the same piece of memory could be constructed twice.
@@ -2405,20 +2409,20 @@ union U
 
 :MSGSYM. ERR_COMPLICATED_STATEMENT
 :MSGTXT. statement is too complicated
-:MSGJTXT. •¶‚ª•¡G‚·‚¬‚Ü‚·
+:MSGJTXT. æ–‡ãŒè¤‡é›‘ã™ãã¾ã™
 The statement contains too many nested constructs.
 Break up the statement into multiple statements.
 
 :MSGSYM. ERR_NAME_NOT_A_CLASS_OR_NAMESPACE
 :MSGTXT. '%s' is not the name of a class or namespace
-:MSGJTXT. '%s'‚ÍƒNƒ‰ƒX‚Ü‚½‚Í–¼‘O‹óŠÔ‚Ì–¼‘O‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%s'ã¯ã‚¯ãƒ©ã‚¹ã¾ãŸã¯åå‰ç©ºé–“ã®åå‰ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 The right hand operand of a '::' operator turned out not to reference
 a class type or namespace.  Because the name is followed by another '::',
 it must name a class or namespace.
 
 :MSGSYM. ERR_MODIFY_CONSTANT
 :MSGTXT. attempt to modify a constant value
-:MSGJTXT. ’è”’l‚ğ•ÏX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. å®šæ•°å€¤ã‚’å¤‰æ›´ã—ã‚ˆã†ã¨ã—ã¦ã„ã¾ã™
 Modification of a constant value is not allowed.  If you must force
 this to work, take the address and cast away the constant nature
 of the type.
@@ -2433,7 +2437,7 @@ void foo()
 
 :MSGSYM. ERR_OFFSETOF_BITFIELD
 :MSGTXT. 'offsetof' is not allowed for a bit-field
-:MSGJTXT. 'offsetof'‚ÍƒrƒbƒgƒtƒB[ƒ‹ƒh‚Ég‚¦‚Ü‚¹‚ñ
+:MSGJTXT. 'offsetof'ã¯ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã«ä½¿ãˆã¾ã›ã‚“
 A bit-field cannot have a simple offset so it cannot be referenced in an
 .kw offsetof
 expression.
@@ -2450,7 +2454,7 @@ int k = offsetof( S, b2 );
 
 :MSGSYM. WARN_PRIVATE_BASE_ASSUMED
 :MSGTXT. base class is inherited with private access
-:MSGJTXT. Šî’êƒNƒ‰ƒX‚Íƒvƒ‰ƒCƒx[ƒgEƒAƒNƒZƒX‚ÅŒp³‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. åŸºåº•ã‚¯ãƒ©ã‚¹ã¯ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆãƒ»ã‚¢ã‚¯ã‚»ã‚¹ã§ç¶™æ‰¿ã•ã‚Œã¦ã„ã¾ã™
 :WARNING. 1
 This warning indicates that the base class was originally declared
 as a
@@ -2468,7 +2472,7 @@ access specifier to prevent this message depending on the intended access.
 
 :MSGSYM. ERR_FUNCTION_NO_OVERLOAD
 :MSGTXT. overloaded function cannot be selected for arguments used in call
-:MSGJTXT. ŒÄ‚Ño‚µ‚Ì’†‚Åg‚í‚ê‚éˆø”‚É‚æ‚Á‚ÄƒI[ƒo[ƒ[ƒhŠÖ”‚ğŒˆ’è‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å‘¼ã³å‡ºã—ã®ä¸­ã§ä½¿ã‚ã‚Œã‚‹å¼•æ•°ã«ã‚ˆã£ã¦ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰é–¢æ•°ã‚’æ±ºå®šã§ãã¾ã›ã‚“
 Either conversions were not possible for an argument to the function or
 a function with the right number of arguments was not available.
 :errbad.
@@ -2481,7 +2485,7 @@ int k = foo( 5 );
 
 :MSGSYM. ERR_SEGOP_OPERANDS
 :MSGTXT. base operator operands must be " __segment :> pointer "
-:MSGJTXT. ƒx[ƒX‰‰Zq‚ÌƒIƒyƒ‰ƒ“ƒh‚Í"__segmentF>ƒ|ƒCƒ“ƒ^"‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ™ãƒ¼ã‚¹æ¼”ç®—å­ã®ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯"__segmentï¼š>ãƒã‚¤ãƒ³ã‚¿"ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The base operator (:>) requires the left operand to be of type __segment
 and the right operand to be a pointer.
 :errbad.
@@ -2498,7 +2502,7 @@ char __far *c_fp_2 = __segname( "_DATA" ) :> c_bv;
 
 :MSGSYM. ERR_NOT_PTR_OR_ZERO
 :MSGTXT. expression must be a pointer or a zero constant
-:MSGJTXT. ®‚Íƒ|ƒCƒ“ƒ^‚Ü‚½‚Íƒ[ƒ’è”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯ãƒã‚¤ãƒ³ã‚¿ã¾ãŸã¯ã‚¼ãƒ­å®šæ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 In a conditional expression, if one side of the ':' is a pointer then
 the other side must also be a pointer or a zero constant.
 :errbad.
@@ -2508,7 +2512,7 @@ int *p = ( a > 7 ) ? &a : 12;
 
 :MSGSYM. ERR_PTR_SCALES_LEFT
 :MSGTXT. left expression pointer type cannot be incremented or decremented
-:MSGJTXT. ¶®‚Ìƒ|ƒCƒ“ƒ^‚ÍƒCƒ“ƒNƒŠƒƒ“ƒg‚Ü‚½‚ÍƒfƒBƒNƒŠƒƒ“ƒg‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å·¦å¼ã®ãƒã‚¤ãƒ³ã‚¿ã¯ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã¾ãŸã¯ãƒ‡ã‚£ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã§ãã¾ã›ã‚“
 The expression requires that the scaling size of the pointer be known.
 Pointers to
 functions,
@@ -2525,7 +2529,7 @@ void *q = p + 2;
 
 :MSGSYM. ERR_PTR_SCALES_RIGHT
 :MSGTXT. right expression pointer type cannot be incremented or decremented
-:MSGJTXT. ‰E®‚Ìƒ|ƒCƒ“ƒ^‚ÍƒCƒ“ƒNƒŠƒƒ“ƒg‚Ü‚½‚ÍƒfƒBƒNƒŠƒƒ“ƒg‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å³å¼ã®ãƒã‚¤ãƒ³ã‚¿ã¯ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã¾ãŸã¯ãƒ‡ã‚£ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã§ãã¾ã›ã‚“
 The expression requires that the scaling size of the pointer be known.
 Pointers to
 functions,
@@ -2542,7 +2546,7 @@ void *q = 2 + p;
 
 :MSGSYM. ERR_PTR_SCALES
 :MSGTXT. expression pointer type cannot be incremented or decremented
-:MSGJTXT. ®‚Ìƒ|ƒCƒ“ƒ^‚ÍƒCƒ“ƒNƒŠƒƒ“ƒg‚Ü‚½‚ÍƒfƒBƒNƒŠƒƒ“ƒg‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã®ãƒã‚¤ãƒ³ã‚¿ã¯ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã¾ãŸã¯ãƒ‡ã‚£ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã§ãã¾ã›ã‚“
 The expression requires that the scaling size of the pointer be known.
 Pointers to
 functions,
@@ -2559,7 +2563,7 @@ void *q = ++p;
 
 :MSGSYM. ERR_CANT_TAKE_SIZEOF_FUNC
 :MSGTXT. 'sizeof' is not allowed for a function
-:MSGJTXT. 'sizeof'‚ÍŠÖ”‚É‘Î‚µ‚Äg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'sizeof'ã¯é–¢æ•°ã«å¯¾ã—ã¦ä½¿ç”¨ã§ãã¾ã›ã‚“
 A function has no size defined for it by the C++ language specification.
 :errbad.
 typedef int FT( int );
@@ -2569,7 +2573,7 @@ unsigned y = sizeof( FT );
 
 :MSGSYM. ERR_CANT_TAKE_SIZEOF_VOID
 :MSGTXT. 'sizeof' is not allowed for type void
-:MSGJTXT. 'sizeof'‚Í'void'Œ^‚É‘Î‚µ‚Äg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'sizeof'ã¯'void'å‹ã«å¯¾ã—ã¦ä½¿ç”¨ã§ãã¾ã›ã‚“
 The type
 .kw void
 has no size defined for it by the C++ language specification.
@@ -2580,7 +2584,7 @@ unsigned size = sizeof( *p );
 
 :MSGSYM. ERR_TYPE_SPECIFIER_DEFINES
 :MSGTXT. type cannot be defined in this context
-:MSGJTXT. ‚±‚±‚ÅŒ^‚ğ’è‹`‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã“ã“ã§å‹ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 A type cannot be defined in certain contexts.  For example,
 a new type cannot be defined in an argument list, a
 .kw new
@@ -2599,7 +2603,7 @@ int foo()
 
 :MSGSYM. ERR_INVALID_TEMPLATE_PARM
 :MSGTXT. expression cannot be used as a class template parameter
-:MSGJTXT. ®‚ÍƒNƒ‰ƒXEƒeƒ“ƒvƒŒ[ƒgEƒpƒ‰ƒ[ƒ^‚Æ‚µ‚Äg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯ã‚¯ãƒ©ã‚¹ãƒ»ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ»ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã¨ã—ã¦ä½¿ãˆã¾ã›ã‚“
 The compiler has to be able to compare expressions during
 compilation so this limits the complexity of expressions
 that can be used for template parameters.
@@ -2609,13 +2613,13 @@ Any symbols must have external linkage or must be static class members.
 
 :MSGSYM. ERR_PREMATURE_ENDFILE
 :MSGTXT. premature end-of-file encountered during compilation
-:MSGJTXT. ƒRƒ“ƒpƒCƒ‹‚Ì“r’†‚Åƒtƒ@ƒCƒ‹‚ªI‚í‚è‚Ü‚µ‚½
+:MSGJTXT. ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã®é€”ä¸­ã§ãƒ•ã‚¡ã‚¤ãƒ«ãŒçµ‚ã‚ã‚Šã¾ã—ãŸ
 The compiler expects more source code at this point.  This can be due
 to missing parentheses (')') or missing closing braces ('}').
 
 :MSGSYM. ERR_DUPLICATE_CONV_CASE_VALUE
 :MSGTXT. duplicate case value '%s' after conversion to type of switch expression
-:MSGJTXT. switch®‚ÅŒ^•ÏŠ·‚ğs‚Á‚½ŒãC“¯‚¶case’l'%s'‚ª2‚Â‘¶İ‚µ‚Ü‚·
+:MSGJTXT. switchå¼ã§å‹å¤‰æ›ã‚’è¡Œã£ãŸå¾Œï¼ŒåŒã˜caseå€¤'%s'ãŒ2ã¤å­˜åœ¨ã—ã¾ã™
 A duplicate
 .kw case
 value has been found.  Keep in mind that all case values must be converted
@@ -2635,7 +2639,7 @@ void foo( short a )
 
 :MSGSYM. WARN_DCL_IF
 :MSGTXT. declaration statement follows an if statement
-:MSGJTXT. éŒ¾•¶‚Ì‘O‚Éif•¶‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. å®£è¨€æ–‡ã®å‰ã«ifæ–‡ãŒã‚ã‚Šã¾ã™
 :WARNING. 1
 :cmt was illegal in the ARM but clarified in X3J16 and it is now legal
 There are implicit scopes created for most control structures.
@@ -2653,7 +2657,7 @@ void foo( int a )
 
 :MSGSYM. WARN_DCL_ELSE
 :MSGTXT. declaration statement follows an else statement
-:MSGJTXT. éŒ¾•¶‚Ì‘O‚Éelse•¶‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. å®£è¨€æ–‡ã®å‰ã«elseæ–‡ãŒã‚ã‚Šã¾ã™
 :WARNING. 1
 :cmt was illegal in the ARM but clarified in X3J16 and it is now legal
 There are implicit scopes created for most control structures.
@@ -2673,7 +2677,7 @@ void foo( int a )
 
 :MSGSYM. WARN_DCL_SWITCH
 :MSGTXT. declaration statement follows a switch statement
-:MSGJTXT. éŒ¾•¶‚Ì‘O‚Éswitch•¶‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. å®£è¨€æ–‡ã®å‰ã«switchæ–‡ãŒã‚ã‚Šã¾ã™
 :WARNING. 1
 :cmt was illegal in the ARM but clarified in X3J16 and it is now legal
 There are implicit scopes created for most control structures.
@@ -2691,7 +2695,7 @@ void foo( int a )
 
 :MSGSYM. ERR_NO_THIS_PTR_DEFINED
 :MSGTXT. 'this' pointer is not defined
-:MSGJTXT. 'this'ƒ|ƒCƒ“ƒ^‚Í’è‹`‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. 'this'ãƒã‚¤ãƒ³ã‚¿ã¯å®šç¾©ã•ã‚Œã¾ã›ã‚“
 The
 .kw this
 value can only be used from within non-static member functions.
@@ -2704,7 +2708,7 @@ void *fn()
 
 :MSGSYM. WARN_DCL_WHILE
 :MSGTXT. declaration statement cannot follow a while statement
-:MSGJTXT. éŒ¾•¶‚Íwhile•¶‚É‘±‚­‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®£è¨€æ–‡ã¯whileæ–‡ã«ç¶šãã“ã¨ãŒã§ãã¾ã›ã‚“
 :WARNING. 1
 :cmt was illegal in the ARM but clarified in X3J16 and it is now legal
 There are implicit scopes created for most control structures.
@@ -2722,7 +2726,7 @@ void foo( int a )
 
 :MSGSYM. WARN_DCL_DO
 :MSGTXT. declaration statement cannot follow a do statement
-:MSGJTXT. éŒ¾•¶‚Ído•¶‚É‘±‚­‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®£è¨€æ–‡ã¯doæ–‡ã«ç¶šãã“ã¨ãŒã§ãã¾ã›ã‚“
 :WARNING. 1
 :cmt was illegal in the ARM but clarified in X3J16 and it is now legal
 There are implicit scopes created for most control structures.
@@ -2741,7 +2745,7 @@ void foo( int a )
 
 :MSGSYM. WARN_DCL_FOR
 :MSGTXT. declaration statement cannot follow a for statement
-:MSGJTXT. éŒ¾•¶‚Ífor•¶‚É‘±‚­‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®£è¨€æ–‡ã¯foræ–‡ã«ç¶šãã“ã¨ãŒã§ãã¾ã›ã‚“
 :WARNING. 1
 :cmt was illegal in the ARM but clarified in X3J16 and it is now legal
 There are implicit scopes created for most control structures.
@@ -2773,7 +2777,7 @@ void foo( int a )
 
 :MSGSYM. ERR_CONVERT_FROM_VIRTUAL_BASE
 :MSGTXT. pointer to virtual base class converted to pointer to derived class
-:MSGJTXT. ‰¼‘zŠî’êƒNƒ‰ƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÍC”h¶ƒNƒ‰ƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^‚É•ÏŠ·‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ä»®æƒ³åŸºåº•ã‚¯ãƒ©ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã¯ï¼Œæ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã«å¤‰æ›ã•ã‚Œã¾ã—ãŸ
 Since the relative position of a virtual base can change through repeated
 derivations, this conversion is very dangerous.  All C++ translators must
 report an error for this type of conversion.
@@ -2786,7 +2790,7 @@ Der *pd = (Der *)pv;
 
 :MSGSYM. ERR_USE_FAR
 :MSGTXT. cannot use far pointer in this context
-:MSGJTXT. ‚±‚±‚Åfarƒ|ƒCƒ“ƒ^‚ğg‚¤‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã“ã“ã§farãƒã‚¤ãƒ³ã‚¿ã‚’ä½¿ã†ã“ã¨ã¯ã§ãã¾ã›ã‚“
 Only near pointers can be thrown when the data memory model is near.
 :errbad.
 extern int __far *p;
@@ -2804,7 +2808,7 @@ statements when the data memory model is near.
 
 :MSGSYM. ERR_RET_AUTO_REF
 :MSGTXT. returning reference to function argument or to auto or register variable
-:MSGJTXT. ŠÖ”ˆø”‚Ö‚ÌQÆC‚Ü‚½‚Í©“®^ƒŒƒWƒXƒ^•Ï”‚Ö‚ÌQÆ‚ğ•Ô‚µ‚Ü‚·
+:MSGJTXT. é–¢æ•°å¼•æ•°ã¸ã®å‚ç…§ï¼Œã¾ãŸã¯è‡ªå‹•ï¼ãƒ¬ã‚¸ã‚¹ã‚¿å¤‰æ•°ã¸ã®å‚ç…§ã‚’è¿”ã—ã¾ã™
 The storage for the automatic variable will be destroyed immediately upon
 function return.  Returning a reference effectively allows the caller
 to modify storage which does not exist.
@@ -2826,7 +2830,7 @@ C& foo()
 
 :MSGSYM. WARN_PRAGMA_MERGE
 :MSGTXT. #pragma attributes for '%S' may be inconsistent
-:MSGJTXT. '%S'‚É‘Î‚·‚é#pragma‘®«‚Í–µ‚‚µ‚Ä‚¢‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñ
+:MSGJTXT. '%S'ã«å¯¾ã™ã‚‹#pragmaå±æ€§ã¯çŸ›ç›¾ã—ã¦ã„ã‚‹ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“
 :WARNING. 1
 A pragma attribute was changed to a value which matches neither the current
 default not the previous value for that attribute.
@@ -2837,7 +2841,7 @@ two pragmas for the same object.
 
 :MSGSYM. ERR_NO_VOID_PARMS
 :MSGTXT. function arguments cannot be of type void
-:MSGJTXT. ŠÖ”ˆø”‚Í'void'Œ^‚Å‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°å¼•æ•°ã¯'void'å‹ã§ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 Having more than one
 .kw void
 argument is not allowed.  The special case of one
@@ -2866,7 +2870,7 @@ so the class cannot be instantiated properly.
 
 :MSGSYM. ERR_NEW_OVERLOAD_FAILURE
 :MSGTXT. no declared 'operator new' has arguments that match
-:MSGJTXT. éŒ¾‚³‚ê‚½'operator new'‚Íˆê’v‚·‚éˆø”‚ğ‚¿‚Ü‚¹‚ñ
+:MSGJTXT. å®£è¨€ã•ã‚ŒãŸ'operator new'ã¯ä¸€è‡´ã™ã‚‹å¼•æ•°ã‚’æŒã¡ã¾ã›ã‚“
 An
 .kw operator new
 could not be found to match the
@@ -2890,7 +2894,7 @@ void fn()
 
 :MSGSYM. ERR_MISMATCHED_WIDE_STRING_CONCATENATION
 :MSGTXT. wide character string concatenated with a simple character string
-:MSGJTXT. ƒƒCƒhƒLƒƒƒ‰ƒNƒ^•¶š—ñ‚ÉƒVƒ“ƒOƒ‹EƒLƒƒƒ‰ƒNƒ^•¶š—ñ‚ğ˜AŒ‹‚µ‚Ü‚µ‚½
+:MSGJTXT. ãƒ¯ã‚¤ãƒ‰ã‚­ãƒ£ãƒ©ã‚¯ã‚¿æ–‡å­—åˆ—ã«ã‚·ãƒ³ã‚°ãƒ«ãƒ»ã‚­ãƒ£ãƒ©ã‚¯ã‚¿æ–‡å­—åˆ—ã‚’é€£çµã—ã¾ã—ãŸ
 There are no semantics defined for combining a wide character string
 with a simple character string.  To correct the problem, make the simple
 character string a wide character string by prefixing it with a
@@ -2901,7 +2905,7 @@ char *p = "1234" L"5678";
 
 :MSGSYM. ERR_OFFSETOF_STATIC
 :MSGTXT. 'offsetof' is not allowed for a static member
-:MSGJTXT. 'offsetof'‚ÍƒXƒ^ƒeƒBƒbƒN‚Èƒƒ“ƒo‚Ég—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'offsetof'ã¯ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãªãƒ¡ãƒ³ãƒã«ä½¿ç”¨ã§ãã¾ã›ã‚“
 A
 .kw static
 member does not have an offset like simple data members.
@@ -2923,7 +2927,7 @@ int size_2 = offsetof( C, memb );   // ok
 
 :MSGSYM. ERR_CANT_HAVE_AN_ARRAY_OF_VOID
 :MSGTXT. cannot define an array of void
-:MSGJTXT. 'void'‚Ì”z—ñ‚ğ’è‹`‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'void'ã®é…åˆ—ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 Since the
 .kw void
 type has no size and there are no values of
@@ -2936,7 +2940,7 @@ void array[24];
 
 :MSGSYM. ERR_CANT_HAVE_AN_ARRAY_OF_REFERENCES
 :MSGTXT. cannot define an array of references
-:MSGJTXT. QÆ‚Ì”z—ñ‚ğ’è‹`‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å‚ç…§ã®é…åˆ—ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 References are not objects, they are simply a way of
 creating an efficient alias to another name.
 Creating an array of references is currently not
@@ -2947,7 +2951,7 @@ int& array[24];
 
 :MSGSYM. ERR_CANT_HAVE_REFERENCE_TO_VOID
 :MSGTXT. cannot define a reference to void
-:MSGJTXT. 'void'‚ÌQÆ‚ğ’è‹`‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'void'ã®å‚ç…§ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 One cannot create a reference to a
 .kw void
 because there can be no
@@ -2959,7 +2963,7 @@ void& ref;
 
 :MSGSYM. ERR_CANT_HAVE_REFERENCE_TO_REFERENCE
 :MSGTXT. cannot define a reference to another reference
-:MSGJTXT. ‘¼‚ÌQÆ‚Ö‚ÌQÆ‚ğ’è‹`‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ä»–ã®å‚ç…§ã¸ã®å‚ç…§ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 References are not objects, they are simply a way of
 creating an efficient alias to another name.
 Creating a reference to another reference is currently not
@@ -2970,7 +2974,7 @@ int & & ref;
 
 :MSGSYM. ERR_CANT_HAVE_POINTER_TO_REFERENCE
 :MSGTXT. cannot define a pointer to a reference
-:MSGJTXT. QÆ‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ’è‹`‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å‚ç…§ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 References are not objects, they are simply a way of
 creating an efficient alias to another name.
 Creating a pointer to a reference is currently not
@@ -2981,7 +2985,7 @@ char& *ptr;
 
 :MSGSYM. ERR_CANT_INIT_NEW_ARRAY
 :MSGTXT. cannot initialize array with 'operator new'
-:MSGJTXT. 'operator new'‚Å”z—ñ‚ğ‰Šú‰»‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'operator new'ã§é…åˆ—ã‚’åˆæœŸåŒ–ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 The initialization of arrays created with
 .kw operator new
 can only be done with default constructors.
@@ -2997,7 +3001,7 @@ S *p = new S[10] ( 12 );
 
 :MSGSYM. ERR_CANT_HAVE_VOID_VARIABLE
 :MSGTXT. '%N' is a variable of type void
-:MSGJTXT. '%N'‚Í'void'Œ^‚Ì•Ï”‚Å‚·
+:MSGJTXT. '%N'ã¯'void'å‹ã®å¤‰æ•°ã§ã™
 A variable cannot be of type
 .kw void.
 The
@@ -3012,7 +3016,7 @@ is used as a generic pointer but it cannot be dereferenced.
 
 :MSGSYM. ERR_CANT_HAVE_MEMBER_POINTER_TO_REFERENCE
 :MSGTXT. cannot define a member pointer to a reference
-:MSGJTXT. QÆ‚Ö‚Ìƒƒ“ƒoEƒ|ƒCƒ“ƒ^‚ğ’è‹`‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å‚ç…§ã¸ã®ãƒ¡ãƒ³ãƒãƒ»ãƒã‚¤ãƒ³ã‚¿ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 References are not objects, they are simply a way of
 creating an efficient alias to another name.
 Creating a member pointer to a reference is currently not
@@ -3029,7 +3033,7 @@ int& S::* p;
 
 :MSGSYM. ERR_FUNCTION_NOT_DISTINCT
 :MSGTXT. function '%S' is not distinct
-:MSGJTXT. ŠÖ”'%S'‚Í‹æ•Ê‚ª‚Â‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°'%S'ã¯åŒºåˆ¥ãŒã¤ãã¾ã›ã‚“
 The function being declared is not distinct enough from the
 other functions of the same name.  This means that all function
 overloads involving the function's argument types will be ambiguous.
@@ -3043,7 +3047,7 @@ extern int foo( S* const ); // not distinct enough
 
 :MSGSYM. ERR_FUNCTION_AMBIGUOUS_OVERLOAD
 :MSGTXT. overloaded function is ambiguous for arguments used in call
-:MSGJTXT. ŒÄ‚Ño‚µ‚É—p‚¢‚ç‚ê‚Ä‚¢‚éˆø”‚ª‘½d’è‹`ŠÖ”‚É‘Î‚µ‚ÄB–†‚Å‚·
+:MSGJTXT. å‘¼ã³å‡ºã—ã«ç”¨ã„ã‚‰ã‚Œã¦ã„ã‚‹å¼•æ•°ãŒå¤šé‡å®šç¾©é–¢æ•°ã«å¯¾ã—ã¦æ›–æ˜§ã§ã™
 The compiler could not find an unambiguous choice for
 the function being called.
 :errbad.
@@ -3054,7 +3058,7 @@ int k = foo( 4 );
 
 :MSGSYM. ERR_NEW_OVERLOAD_AMBIGUOUS
 :MSGTXT. declared 'operator new' is ambiguous for arguments used
-:MSGJTXT. g—p‚³‚ê‚½ˆø”‚ÍéŒ¾‚³‚ê‚½'operator new'‚É‘Î‚µ‚ÄB–†‚Å‚·
+:MSGJTXT. ä½¿ç”¨ã•ã‚ŒãŸå¼•æ•°ã¯å®£è¨€ã•ã‚ŒãŸ'operator new'ã«å¯¾ã—ã¦æ›–æ˜§ã§ã™
 The compiler could not find an unambiguous choice for
 .kw operator new.
 :errbad.
@@ -3070,7 +3074,7 @@ Der *p = new(10) Der;
 
 :MSGSYM. ERR_FUNCTION_REDEFINITION
 :MSGTXT. function '%S' has already been defined
-:MSGJTXT. ŠÖ”'%S'‚ÍŠù‚É’è‹`‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. é–¢æ•°'%S'ã¯æ—¢ã«å®šç¾©ã•ã‚Œã¾ã—ãŸ
 The function being defined has already been defined elsewhere.
 Even if the two function bodies are identical, there must be only
 one definition for a particular function.
@@ -3081,7 +3085,7 @@ int foo( int s ) { return s; }  // illegal
 
 :MSGSYM. ERR_ARRAY_LEFT
 :MSGTXT. expression on left is an array
-:MSGJTXT. ¶®‚Í”z—ñ‚Å‚·
+:MSGJTXT. å·¦å¼ã¯é…åˆ—ã§ã™
 The array expression is being used in a context where only pointers
 are allowed.
 :errbad.
@@ -3097,7 +3101,7 @@ void fn( void *p )
 
 :MSGSYM. ERR_USER_CONV_BAD_RETURN
 :MSGTXT. user-defined conversion has a return type
-:MSGJTXT. ƒ†[ƒU[’è‹`•ÏŠ·‚Í–ß‚èŒ^‚ğ‚¿‚Ü‚·
+:MSGJTXT. ãƒ¦ãƒ¼ã‚¶ãƒ¼å®šç¾©å¤‰æ›ã¯æˆ»ã‚Šå‹ã‚’æŒã¡ã¾ã™
 A user-defined conversion cannot be declared with a return type.
 The "return type" of the user-defined conversion is implicit in the
 name of the user-defined conversion.
@@ -3109,7 +3113,7 @@ struct S {
 
 :MSGSYM. ERR_USER_CONV_BAD_DECL
 :MSGTXT. user-defined conversion must be a function
-:MSGJTXT. ƒ†[ƒU[’è‹`•ÏŠ·‚ÍŠÖ”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¦ãƒ¼ã‚¶ãƒ¼å®šç¾©å¤‰æ›ã¯é–¢æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The operator name describing a user-defined conversion can only be
 used to designate functions.
 :errbad.
@@ -3119,7 +3123,7 @@ int operator char = 9;
 
 :MSGSYM. ERR_USER_CONV_BAD_FUNC
 :MSGTXT. user-defined conversion has an argument list
-:MSGJTXT. ƒ†[ƒU[’è‹`•ÏŠ·‚Íˆø”ƒŠƒXƒg‚ğ‚¿‚Ü‚·
+:MSGJTXT. ãƒ¦ãƒ¼ã‚¶ãƒ¼å®šç¾©å¤‰æ›ã¯å¼•æ•°ãƒªã‚¹ãƒˆã‚’æŒã¡ã¾ã™
 A user-defined conversion cannot have an argument list.
 Since user-defined conversions can only be non-static member
 functions, they have an implicit
@@ -3133,7 +3137,7 @@ struct S {
 
 :MSGSYM. ERR_DESTRUCTOR_BAD_RETURN
 :MSGTXT. destructor cannot have a return type
-:MSGJTXT. ƒfƒXƒgƒ‰ƒNƒ^‚Í–ß‚è’l‚ğ‚Ä‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯æˆ»ã‚Šå€¤ã‚’æŒã¦ã¾ã›ã‚“
 A destructor cannot have a return type (even
 .kw void
 ).
@@ -3149,7 +3153,7 @@ struct S {
 
 :MSGSYM. ERR_DESTRUCTOR_BAD_DECL
 :MSGTXT. destructor must be a function
-:MSGJTXT. ƒfƒXƒgƒ‰ƒNƒ^‚ÍŠÖ”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯é–¢æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The tilde ('~') style of name is reserved for declaring destructor functions.
 Variable names cannot make use of the destructor style of names.
 :errbad.
@@ -3160,7 +3164,7 @@ struct S {
 
 :MSGSYM. ERR_DESTRUCTOR_BAD_FUNC
 :MSGTXT. destructor has an argument list
-:MSGJTXT. ƒfƒXƒgƒ‰ƒNƒ^‚Íˆø”ƒŠƒXƒg‚ğ‚¿‚Ü‚·
+:MSGJTXT. ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯å¼•æ•°ãƒªã‚¹ãƒˆã‚’æŒã¡ã¾ã™
 A destructor cannot have an argument list.
 Since destructors can only be non-static member
 functions, they have an implicit
@@ -3174,7 +3178,7 @@ struct S {
 
 :MSGSYM. ERR_OPERATOR_BAD_DECL
 :MSGTXT. '%N' must be a function
-:MSGJTXT. '%N'‚ÍŠÖ”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯é–¢æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The
 .kw operator
 style of name is reserved for declaring operator functions.
@@ -3189,7 +3193,7 @@ struct S {
 
 :MSGSYM. ERR_INCORRECT_FUNCTION_DECL
 :MSGTXT. '%N' is not a function
-:MSGJTXT. '%N'‚ÍŠÖ”‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯é–¢æ•°ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 The compiler has detected what looks like a function body.
 The message is a result of not finding a function being declared.
 This can happen in many ways, such as dropping the ':' before
@@ -3201,7 +3205,7 @@ struct D B { int i; };
 
 :MSGSYM. ERR_UNDECLARED_NESTED_CLASS_SYM
 :MSGTXT. nested type class '%s' has not been declared
-:MSGJTXT. ƒlƒXƒg‚É‚³‚ê‚½class '%s'Œ^‚ÍéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ãƒã‚¹ãƒˆã«ã•ã‚ŒãŸclass '%s'å‹ã¯å®£è¨€ã•ã‚Œã¦ã„ã¾ã›ã‚“
 A nested class has not been found but is required by the use of
 repeated '::' operators.  The construct "A::B::C" requires that
 'A' be a class type, and 'B' be a nested class within the scope
@@ -3226,7 +3230,7 @@ int A::B::b = 2;    // B nested in A
 
 :MSGSYM. ERR_UNDECLARED_ENUM_SYM
 :MSGTXT. enum '%s' has not been declared
-:MSGJTXT. enum '%s'‚ÍéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. enum '%s'ã¯å®£è¨€ã•ã‚Œã¦ã„ã¾ã›ã‚“
 An elaborated reference to an
 .kw enum
 could not be satisfied.  All enclosing scopes have been searched for an
@@ -3242,7 +3246,7 @@ enum E enum_var;    // E not visible
 
 :MSGSYM. ERR_UNDECLARED_CLASSNAMESPACE_SYM
 :MSGTXT. class or namespace '%s' has not been declared
-:MSGJTXT. 'ƒNƒ‰ƒX%s'‚ÍéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. 'ã‚¯ãƒ©ã‚¹%s'ã¯å®£è¨€ã•ã‚Œã¦ã„ã¾ã›ã‚“
 The construct "A::B::C" requires that
 'A' be a class type or a namespace, and 'B' be a nested class or
 namespace within the scope of 'A'.
@@ -3261,7 +3265,7 @@ int c = B::A::b;
 
 :MSGSYM. ERR_ONE_CTOR_ARG_REQD
 :MSGTXT. only one initializer argument allowed
-:MSGJTXT. ƒXƒJƒ‰[Œ^‚É‘Î‚µ‚Ä‚ÍCˆê‚Â‚Ì‰Šú‰»ˆø”‚¾‚¯‚ª‹–‚³‚ê‚Ü‚·
+:MSGJTXT. ã‚¹ã‚«ãƒ©ãƒ¼å‹ã«å¯¾ã—ã¦ã¯ï¼Œä¸€ã¤ã®åˆæœŸåŒ–å¼•æ•°ã ã‘ãŒè¨±ã•ã‚Œã¾ã™
 The comma (',') in a function like cast is treated like
 an argument list comma (',').
 If a comma expression is desired, use parentheses to enclose the comma
@@ -3278,7 +3282,7 @@ void fn()
 
 :MSGSYM. ERR_DEFAULT_ARGS_IN_A_TYPE
 :MSGTXT. default arguments are not part of a function's type
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgˆø”‚ÍŠÖ”‚ÌŒ^‚Ìˆê•”‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã¯é–¢æ•°ã®å‹ã®ä¸€éƒ¨ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 This message indicates that a declaration has been found that
 requires default arguments to be part of a function's type.
 Either declaring a function
@@ -3292,7 +3296,7 @@ int (*p)( int, int a = 14 ) = 0;
 
 :MSGSYM. ERR_DEFAULT_ARGS_MISSING
 :MSGTXT. missing default arguments
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgˆø”‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ãŒã‚ã‚Šã¾ã›ã‚“
 Gaps in a succession of default arguments are not allowed in the
 C++ language.
 :errbad.
@@ -3301,7 +3305,7 @@ void fn( int = 1, int, int = 3 );
 
 :MSGSYM. ERR_DEFAULT_ARGS_OPERATOR
 :MSGTXT. overloaded operator cannot have default arguments
-:MSGJTXT. ƒI[ƒo[ƒ[ƒh‰‰Zq‚ÍƒfƒtƒHƒ‹ƒgˆø”‚ğ‚Â‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰æ¼”ç®—å­ã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã‚’æŒã¤ã“ã¨ãŒã§ãã¾ã›ã‚“
 Preventing overloaded operators from having default arguments
 enforces the property that binary operators will only be called
 from a use of a binary operator.  Allowing default arguments
@@ -3319,7 +3323,7 @@ public:
 
 :MSGSYM. ERR_LEFT_NOT_CONST_PTR
 :MSGTXT. left expression is not a pointer to a constant object
-:MSGJTXT. ¶®‚Í’è”ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦å¼ã¯å®šæ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 One cannot assign a pointer to a constant type to a pointer to a
 non-constant type.  This would allow a constant object to be modified
 via the non-constant pointer.  Use a cast if this is absolutely
@@ -3335,7 +3339,7 @@ char* fun( const char* p )
 
 :MSGSYM. ERR_DEFAULT_ARG_REDEFINED
 :MSGTXT. cannot redefine default argument for '%S'
-:MSGJTXT. '%S'‚É‘Î‚·‚éƒfƒtƒHƒ‹ƒgˆø”‚ğÄ’è‹`‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%S'ã«å¯¾ã™ã‚‹ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã‚’å†å®šç¾©ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 Default arguments can only be defined once in a program regardless of
 whether the value of the default argument is identical.
 :errbad.
@@ -3348,7 +3352,7 @@ static int foo( int a = 10 )
 
 :MSGSYM. WARN_DEFAULT_ARG_HITS_ANOTHER_SYM
 :MSGTXT. using default arguments would be overload ambiguous with '%S'
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgˆø”‚Ìg—p‚ÍC'%S'‚ÅB–†‚ÈƒI[ƒo[ƒ[ƒh‚Æ‚È‚è‚Ü‚·
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã®ä½¿ç”¨ã¯ï¼Œ'%S'ã§æ›–æ˜§ãªã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã¨ãªã‚Šã¾ã™
 :WARNING. 3
 The declaration declares enough default arguments that the function
 is indistinguishable from another function of the same name.
@@ -3363,7 +3367,7 @@ the second 'fn' with a default argument applied.
 
 :MSGSYM. WARN_DEFAULT_ARG_HITS_ANOTHER_ARG
 :MSGTXT. using default arguments would be overload ambiguous with '%S' using default arguments
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgˆø”‚Ìg—p‚ÍCƒfƒtƒHƒ‹ƒgˆø”‚ğg‚Á‚Ä‚¢‚é'%S'‚ÅB–†‚ÈƒI[ƒo[ƒ[ƒh‚Æ‚È‚è‚Ü‚·
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã®ä½¿ç”¨ã¯ï¼Œãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã‚’ä½¿ã£ã¦ã„ã‚‹'%S'ã§æ›–æ˜§ãªã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã¨ãªã‚Šã¾ã™
 :WARNING. 3
 The declaration declares enough default arguments that the function
 is indistinguishable from another function of the same name with default arguments.
@@ -3378,7 +3382,7 @@ the second 'fn' with a default argument applied.
 
 :MSGSYM. ERR_DEFAULT_ARGS_MISSING_FOR_SYM
 :MSGTXT. missing default argument for '%S'
-:MSGJTXT. '%S'‚É‘Î‚·‚éƒfƒtƒHƒ‹ƒgˆø”‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%S'ã«å¯¾ã™ã‚‹ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ãŒã‚ã‚Šã¾ã›ã‚“
 In C++, one is allowed to add default arguments to the right hand arguments
 of a function declaration in successive declarations.
 The message indicates that the declaration is only valid if there
@@ -3394,7 +3398,7 @@ void fn2( int = 2, int     );   // Error!
 
 :MSGSYM. ERR_CANNOT_REFERENCE_UNNAMED_ENUM
 :MSGTXT. enum references must have an identifier
-:MSGJTXT. enumQÆ‚Í¯•Êq‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. enumå‚ç…§ã¯è­˜åˆ¥å­ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 There is no way to reference an anonymous
 .kw enum.
 If all enums are named, the cause of this message is most likely
@@ -3409,7 +3413,7 @@ void fn()
 
 :MSGSYM. ERR_INVALID_DESTRUCTOR_NAME
 :MSGTXT. class declaration has not been seen for '~%s'
-:MSGJTXT. '~%s'‚É‘Î‚·‚éƒNƒ‰ƒXéŒ¾‚ÍŒ©‚Â‚©‚è‚Ü‚¹‚ñ
+:MSGJTXT. '~%s'ã«å¯¾ã™ã‚‹ã‚¯ãƒ©ã‚¹å®£è¨€ã¯è¦‹ã¤ã‹ã‚Šã¾ã›ã‚“
 A destructor has been used in a context where its class is
 not visible.
 :errbad.
@@ -3423,7 +3427,7 @@ void fun( C* p )
 
 :MSGSYM. ERR_CANNOT_USE_QUALIFIED_DECLARATOR
 :MSGTXT. '::' qualifier cannot be used in this context
-:MSGJTXT. '::'Cüq‚Í‚±‚±‚Å‚Íg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. '::'ä¿®é£¾å­ã¯ã“ã“ã§ã¯ä½¿ãˆã¾ã›ã‚“
 Qualified identifiers in a class context are allowed for declaring
 .kw friend
 member functions.
@@ -3444,7 +3448,7 @@ struct S {
 
 :MSGSYM. ERR_NOT_A_MEMBER
 :MSGTXT. '%S' has not been declared as a member
-:MSGJTXT. '%S'‚Íƒƒ“ƒo‚Æ‚µ‚ÄéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. '%S'ã¯ãƒ¡ãƒ³ãƒã¨ã—ã¦å®£è¨€ã•ã‚Œã¦ã„ã¾ã›ã‚“
 In a definition of a class member, the indicated declaration must already
 have been declared when the class was defined.
 :errbad.
@@ -3460,7 +3464,7 @@ C::not_decled() { }
 
 :MSGSYM. ERR_DEFAULT_ARG_USES_ARG
 :MSGTXT. default argument expression cannot use function argument '%S'
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgˆø”®‚ÍCŠÖ”ˆø”'%S'‚ğg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°å¼ã¯ï¼Œé–¢æ•°å¼•æ•°'%S'ã‚’ä½¿ãˆã¾ã›ã‚“
 Default arguments must be evaluated at each call.  Since the order
 of evaluation for arguments is undefined, a compiler must diagnose
 all default arguments that depend on other arguments.
@@ -3479,7 +3483,7 @@ void goop( int d )
 
 :MSGSYM. ERR_DEFAULT_ARG_USES_LOCAL
 :MSGTXT. default argument expression cannot use local variable '%S'
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgˆø”®‚ÍC‹ÇŠ•Ï”'%S'‚ğg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°å¼ã¯ï¼Œå±€æ‰€å¤‰æ•°'%S'ã‚’ä½¿ãˆã¾ã›ã‚“
 Default arguments must be evaluated at each call.  Since a local
 variable is not always available in all contexts (e.g., file scope
 initializers), a compiler must diagnose all default arguments that
@@ -3500,7 +3504,7 @@ void goop( void )
 
 :MSGSYM. ERR_ACCESS_DECL_IN_PRIVATE
 :MSGTXT. access declarations may only be 'public' or 'protected'
-:MSGJTXT. ƒAƒNƒZƒXéŒ¾‚Í'public'‚Ü‚½‚Í'protected'‚Ì‚İ‚Å‚·
+:MSGJTXT. ã‚¢ã‚¯ã‚»ã‚¹å®£è¨€ã¯'public'ã¾ãŸã¯'protected'ã®ã¿ã§ã™
 Access declarations are used to increase access.  A
 .kw private
 access declaration is useless because there is no access level for which
@@ -3523,7 +3527,7 @@ class Derived : public Base
 
 :MSGSYM. ERR_MIXING_FUNCTIONS_AND_VARS
 :MSGTXT. cannot declare both a function and variable of the same name ('%N')
-:MSGJTXT. “¯‚¶–¼‘Oi'%N'j‚ÌŠÖ”‚Æ•Ï”‚ğéŒ¾‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åŒã˜åå‰ï¼ˆ'%N'ï¼‰ã®é–¢æ•°ã¨å¤‰æ•°ã‚’å®£è¨€ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 Functions can be overloaded in C++ but they cannot be overloaded in
 the presence of a variable of the same name.  Likewise, one cannot
 declare a variable in the same scope as a set of overloaded functions
@@ -3539,7 +3543,7 @@ struct S {
 
 :MSGSYM. ERR_NOT_A_DIRECT_BASE_CLASS
 :MSGTXT. class in access declaration ('%T') must be a direct base class
-:MSGJTXT. ƒAƒNƒZƒXéŒ¾i'%T'j‚Ì’†‚ÌƒNƒ‰ƒX‚ÍC’¼Ú‚ÌŠî’êƒNƒ‰ƒX‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¢ã‚¯ã‚»ã‚¹å®£è¨€ï¼ˆ'%T'ï¼‰ã®ä¸­ã®ã‚¯ãƒ©ã‚¹ã¯ï¼Œç›´æ¥ã®åŸºåº•ã‚¯ãƒ©ã‚¹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Access declarations can only be applied to direct (immediate) base classes.
 :errbad.
 struct B {
@@ -3558,7 +3562,7 @@ base class of "C", but "B" is not a direct base class of "D".
 
 :MSGSYM. ERR_ACCESS_DECL_ALL_SAME
 :MSGTXT. overloaded functions ('%N') do not have the same access
-:MSGJTXT. ƒI[ƒo[ƒ[ƒhŠÖ”i'%N'j‚Í“¯‚¶ƒAƒNƒZƒX‚ğ‚¿‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰é–¢æ•°ï¼ˆ'%N'ï¼‰ã¯åŒã˜ã‚¢ã‚¯ã‚»ã‚¹ã‚’æŒã¡ã¾ã›ã‚“
 If an access declaration is referencing a set of overloaded functions,
 then they all must have the same access.  This is due to the lack
 of a type in an access declaration.
@@ -3578,7 +3582,7 @@ public: C::foo;
 
 :MSGSYM. ERR_ACCESS_DECL_INCREASE
 :MSGTXT. cannot grant access to '%N'
-:MSGJTXT. '%N'‚ÉƒAƒNƒZƒX‚ğ—^‚¦‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã«ã‚¢ã‚¯ã‚»ã‚¹ã‚’ä¸ãˆã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A derived class cannot change the access of a base class member
 with an access declaration.  The access declaration can only be used
 to restore access changed by inheritance.
@@ -3599,7 +3603,7 @@ class Der : private Base
 
 :MSGSYM. ERR_ACCESS_DECL_DECREASE
 :MSGTXT. cannot reduce access to '%N'
-:MSGJTXT. '%N'‚Ö‚ÌƒAƒNƒZƒX‚ğ•ÏX‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã‚’å¤‰æ›´ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 A derived class cannot change the access of a base class member
 with an access declaration.  The access declaration can only be used
 to restore access changed by inheritance.
@@ -3620,7 +3624,7 @@ class Der : public Base
 
 :MSGSYM. ERR_NESTED_CLASS_NOT_DEFINED
 :MSGTXT. nested class '%N' has not been defined
-:MSGJTXT. ƒlƒXƒg‚³‚ê‚½ƒNƒ‰ƒX'%N'‚Í’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ãƒã‚¹ãƒˆã•ã‚ŒãŸã‚¯ãƒ©ã‚¹'%N'ã¯å®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“
 The current state of the C++ language supports nested types.
 Unfortunately, this means that some working C code will not work
 unchanged.
@@ -3645,7 +3649,7 @@ struct S {
 
 :MSGSYM. ERR_USER_CONV_NOT_MEMBER
 :MSGTXT. user-defined conversion must be a non-static member function
-:MSGJTXT. ƒ†[ƒU-’è‹`•ÏŠ·‚ÍC”ñƒXƒ^ƒeƒBƒbƒNEƒƒ“ƒoŠÖ”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¦ãƒ¼ã‚¶-å®šç¾©å¤‰æ›ã¯ï¼Œéã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ¡ãƒ³ãƒé–¢æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 A user-defined conversion is a special member function that allows the
 class to be converted implicitly (or explicitly) to an arbitrary type.
 In order to do this, it must have access to an instance of the class
@@ -3659,7 +3663,7 @@ struct S
 
 :MSGSYM. ERR_DESTRUCTOR_NOT_MEMBER
 :MSGTXT. destructor must be a non-static member function
-:MSGJTXT. ƒfƒXƒgƒ‰ƒNƒ^‚ÍC”ñƒXƒ^ƒeƒBƒbƒNEƒƒ“ƒoŠÖ”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯ï¼Œéã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ¡ãƒ³ãƒé–¢æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 A destructor is a special member function that will perform cleanup on a
 class before the storage for the class will be released.  In order to do
 this, it must have access to an instance of the class so it is
@@ -3673,7 +3677,7 @@ struct S
 
 :MSGSYM. ERR_OPERATOR_NOT_MEMBER
 :MSGTXT. '%N' must be a non-static member function
-:MSGJTXT. '%N'‚Í”ñƒXƒ^ƒeƒBƒbƒNEƒƒ“ƒoŠÖ”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯éã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ¡ãƒ³ãƒé–¢æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The operator function in the message is restricted to being a non-static
 member function.  This usually means that the operator function is treated
 in a special manner by the compiler.
@@ -3687,7 +3691,7 @@ public:
 
 :MSGSYM. ERR_OPERATOR_MUST_HAVE_1_ARG
 :MSGTXT. '%N' must have one argument
-:MSGJTXT. '%N'‚Í1ŒÂ‚Ìˆø”‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯1å€‹ã®å¼•æ•°ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The operator function in the message is only allowed to have one
 argument.  An operator like
 .kw operator ~
@@ -3702,7 +3706,7 @@ C& operator~( const C&, int );
 
 :MSGSYM. ERR_OPERATOR_MUST_HAVE_2_ARGS
 :MSGTXT. '%N' must have two arguments
-:MSGJTXT. '%N'‚Í2ŒÂ‚Ìˆø”‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯2å€‹ã®å¼•æ•°ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The operator function in the message must have two
 arguments.  An operator like
 .kw operator +=
@@ -3717,7 +3721,7 @@ C& operator += ( const C& );
 
 :MSGSYM. ERR_OPERATOR_MUST_HAVE_1_OR_2_ARGS
 :MSGTXT. '%N' must have either one argument or two arguments
-:MSGJTXT. '%N'‚Í1ŒÂ‚Ü‚½‚Í2ŒÂ‚Ìˆø”‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯1å€‹ã¾ãŸã¯2å€‹ã®å¼•æ•°ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The operator function in the message must have either one argument or two
 arguments.  An operator like
 .kw operator +
@@ -3732,7 +3736,7 @@ C& operator+( const C&, int, float );
 
 :MSGSYM. ERR_OPERATOR_NEW_MUST_HAVE_ARGS
 :MSGTXT. '%N' must have at least one argument
-:MSGJTXT. '%N'‚Í­‚­‚Æ‚à1ŒÂ‚Ìˆø”‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯å°‘ãã¨ã‚‚1å€‹ã®å¼•æ•°ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The
 .kw operator new
 and
@@ -3757,7 +3761,7 @@ void fn()
 
 :MSGSYM. ERR_OPERATOR_DEL_RETURNS_VOID
 :MSGTXT. '%N' must have a return type of void
-:MSGJTXT. '%N‚Í'void'‚Ì–ß‚èŒ^‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%Nã¯'void'ã®æˆ»ã‚Šå‹ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The C++ language requires that
 .kw operator delete
 and
@@ -3776,7 +3780,7 @@ public:
 
 :MSGSYM. ERR_OPERATOR_NEW_RETURNS_VOID
 :MSGTXT. '%N' must have a return type of pointer to void
-:MSGJTXT. '%N‚Í'void *'‚Ì–ß‚èŒ^‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%Nã¯'void *'ã®æˆ»ã‚Šå‹ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The C++ language requires that both
 .kw operator new
 and
@@ -3796,7 +3800,7 @@ public:
 
 :MSGSYM. ERR_OPERATOR_NEW_FIRST_ARG
 :MSGTXT. the first argument of '%N' must be of type size_t
-:MSGJTXT. '%N'‚ÌÅ‰‚Ìˆø”‚Í'size_t'Œ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã®æœ€åˆã®å¼•æ•°ã¯'size_t'å‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The C++ language requires that the first argument for
 .kw operator new
 and
@@ -3812,7 +3816,7 @@ void *operator new []( double size, char c );
 
 :MSGSYM. ERR_OPERATOR_DEL_FIRST_ARG
 :MSGTXT. the first argument of '%N' must be of type pointer to void
-:MSGJTXT. '%N'‚ÌÅ‰‚Ìˆø”‚Í'void *'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã®æœ€åˆã®å¼•æ•°ã¯'void *'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The C++ language requires that the first argument for
 .kw operator delete
 and
@@ -3827,7 +3831,7 @@ void operator delete []( C* );
 
 :MSGSYM. ERR_OPERATOR_DEL_SECOND_ARG
 :MSGTXT. the second argument of '%N' must be of type size_t
-:MSGJTXT. '%N'‚Ì“ñ”Ô–Ú‚Ìˆø”‚Í'size_t'Œ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã®äºŒç•ªç›®ã®å¼•æ•°ã¯'size_t'å‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The C++ language requires that the second argument for
 .kw operator delete
 and
@@ -3849,7 +3853,7 @@ struct S {
 
 :MSGSYM. ERR_OPERATOR_INC_DEC_SECOND_ARG
 :MSGTXT. the second argument of 'operator ++' or 'operator --' must be int
-:MSGJTXT. 'operator ++'‚©'operator --'‚Ì“ñ”Ô–Ú‚Ìˆø”‚Íint‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. 'operator ++'ã‹'operator --'ã®äºŒç•ªç›®ã®å¼•æ•°ã¯intã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The C++ language requires that the second argument for
 .kw operator ++
 be
@@ -3868,7 +3872,7 @@ C& operator ++( C&, unsigned );
 
 :MSGSYM. ERR_OPERATOR_ARROW_RETURN_BAD
 :MSGTXT. return type of '%S' must allow the '->' operator to be applied
-:MSGJTXT. '%S'‚Ì–ß‚èŒ^‚ÍC'->'‰‰Zq‚ª“K—p‚³‚ê‚é‚Ì‚ğ‹–‚³‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%S'ã®æˆ»ã‚Šå‹ã¯ï¼Œ'->'æ¼”ç®—å­ãŒé©ç”¨ã•ã‚Œã‚‹ã®ã‚’è¨±ã•ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 This restriction is a result of the transformation that the compiler performs
 when the
 .kw operator ->
@@ -3889,7 +3893,7 @@ void fn( S &q )
 
 :MSGSYM. ERR_OPERATOR_MUST_TAKE_CLASS_OR_ENUM
 :MSGTXT. '%N' must take at least one argument of a class/enum or a reference to a class/enum
-:MSGJTXT. '%N'‚ÍCclass/enum‚©class/enum‚Ö‚ÌQÆ‚Ì­‚­‚Æ‚à1‚Â‚Ìˆø”‚ğ‚Æ‚ç‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯ï¼Œclass/enumã‹class/enumã¸ã®å‚ç…§ã®å°‘ãã¨ã‚‚1ã¤ã®å¼•æ•°ã‚’ã¨ã‚‰ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Overloaded operators can only be defined for classes and enumerations.
 At least one argument, must be a class or an enum type in order for the
 C++ compiler to distinguish the operator from the built-in operators.
@@ -3903,7 +3907,7 @@ C& operator ++( unsigned, int );
 
 :MSGSYM. ERR_TOO_MANY_INITIALIZERS
 :MSGTXT. too many initializers
-:MSGJTXT. ‰Šú‰»w’è‚ª‘½‚·‚¬‚Ü‚·
+:MSGJTXT. åˆæœŸåŒ–æŒ‡å®šãŒå¤šã™ãã¾ã™
 The compiler has detected extra initializers.
 :errbad.
 int a[3] = { 1, 2, 3, 4 };
@@ -3911,7 +3915,7 @@ int a[3] = { 1, 2, 3, 4 };
 
 :MSGSYM. ERR_TOO_MANY_STRING_INITIALIZERS
 :MSGTXT. too many initializers for character string
-:MSGJTXT. •¶š—ñ‚É‘Î‚µ‚Ä‰Šú‰»w’è‚ª‘½‚·‚¬‚Ü‚·
+:MSGJTXT. æ–‡å­—åˆ—ã«å¯¾ã—ã¦åˆæœŸåŒ–æŒ‡å®šãŒå¤šã™ãã¾ã™
 A string literal used in an initialization of a character
 array is viewed as providing the terminating null character.
 If the number of array elements isn't enough to accept the
@@ -3922,7 +3926,7 @@ char ac[3] = "abc";
 
 :MSGSYM. ERR_EXPECTING_BUT_FOUND_EXPRESSION
 :MSGTXT. expecting '%s' but found expression
-:MSGJTXT. '%s'‚ª‚ ‚é‚Í‚¸‚Å‚·‚ªC®‚ª‚ ‚è‚Ü‚µ‚½
+:MSGJTXT. '%s'ãŒã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œå¼ãŒã‚ã‚Šã¾ã—ãŸ
 This message is output when some bracing or punctuation is expected but
 an expression was encountered.
 :errbad.
@@ -3931,7 +3935,7 @@ int b[3] = 3;
 
 :MSGSYM. ERR_ANONYMOUS_SAME_NAME_AS_CLASS
 :MSGTXT. anonymous struct/union member '%N' cannot be declared in this class
-:MSGJTXT. –¼‘O‚È‚µ‚Ìstruct/unionƒƒ“ƒo['%N'‚ÍC‚±‚ÌƒNƒ‰ƒX‚É‚¨‚¢‚ÄéŒ¾‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åå‰ãªã—ã®struct/unionãƒ¡ãƒ³ãƒãƒ¼'%N'ã¯ï¼Œã“ã®ã‚¯ãƒ©ã‚¹ã«ãŠã„ã¦å®£è¨€ã§ãã¾ã›ã‚“
 An anonymous member cannot be declared with the same name as its containing
 class.
 :errbad.
@@ -3945,7 +3949,7 @@ struct S {
 
 :MSGSYM. ERR_UNEXPECTED_DURING_INITIALIZATION
 :MSGTXT. unexpected '%s' during initialization
-:MSGJTXT. ‰Šúó‘Ôİ’è‚ÌŠÔ‚É'%s'‚ªŒ©‚Â‚©‚è‚Ü‚µ‚½
+:MSGJTXT. åˆæœŸçŠ¶æ…‹è¨­å®šã®é–“ã«'%s'ãŒè¦‹ã¤ã‹ã‚Šã¾ã—ãŸ
 This message is output when some unexpected bracing or punctuation
 is encountered during initialization.
 :errbad.
@@ -3954,7 +3958,7 @@ int e = { { 1 };
 
 :MSGSYM. ERR_TYPEDEF_SAME_NAME_AS_CLASS
 :MSGTXT. nested type '%N' cannot be declared in this class
-:MSGJTXT. ƒlƒXƒg‚É‚³‚ê‚½Œ^'%N'‚ÍC‚±‚ÌƒNƒ‰ƒX‚É‚¨‚¢‚ÄéŒ¾‚³‚ê‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒã‚¹ãƒˆã«ã•ã‚ŒãŸå‹'%N'ã¯ï¼Œã“ã®ã‚¯ãƒ©ã‚¹ã«ãŠã„ã¦å®£è¨€ã•ã‚Œã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A nested type cannot be declared with the same name as its containing
 class.
 :errbad.
@@ -3965,7 +3969,7 @@ struct S {
 
 :MSGSYM. ERR_ENUM_SAME_NAME_AS_CLASS
 :MSGTXT. enumerator '%N' cannot be declared in this class
-:MSGJTXT. —ñ‹“q'%N'‚ÍC‚±‚ÌƒNƒ‰ƒX‚É‚¨‚¢‚ÄéŒ¾‚³‚ê‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åˆ—æŒ™å­'%N'ã¯ï¼Œã“ã®ã‚¯ãƒ©ã‚¹ã«ãŠã„ã¦å®£è¨€ã•ã‚Œã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 An enumerator cannot be declared with the same name as its containing
 class.
 :errbad.
@@ -3979,7 +3983,7 @@ struct S {
 
 :MSGSYM. ERR_STATIC_SAME_NAME_AS_CLASS
 :MSGTXT. static member '%N' cannot be declared in this class
-:MSGJTXT. ƒXƒ^ƒeƒBƒbƒNEƒƒ“ƒo'%N'‚ÍC‚±‚ÌƒNƒ‰ƒX‚É‚¨‚¢‚ÄéŒ¾‚³‚ê‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ¡ãƒ³ãƒ'%N'ã¯ï¼Œã“ã®ã‚¯ãƒ©ã‚¹ã«ãŠã„ã¦å®£è¨€ã•ã‚Œã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A static member cannot be declared with the same name as its containing
 class.
 :errbad.
@@ -3990,7 +3994,7 @@ struct S {
 
 :MSGSYM. ERR_CTOR_RETURNS_NOTHING
 :MSGTXT. constructor cannot have a return type
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Í–ß‚è’l‚ğ‚Ä‚Ü‚¹‚ñ
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯æˆ»ã‚Šå€¤ã‚’æŒã¦ã¾ã›ã‚“
 A constructor cannot have a return type (even
 .kw void
 ).
@@ -4007,7 +4011,7 @@ public:
 
 :MSGSYM. ERR_CTOR_CANT_BE_STATIC
 :MSGTXT. constructor cannot be a static member
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÍƒXƒ^ƒeƒBƒbƒNŠÖ”‚ğ‚Ä‚Ü‚¹‚ñ
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯é–¢æ•°ã‚’æŒã¦ã¾ã›ã‚“
 A constructor is a special member function that takes raw storage and
 changes it into an instance of a class.  In order to do this, it must
 have access to storage for the instance of the class so it is restricted
@@ -4021,7 +4025,7 @@ public:
 
 :MSGSYM. ERR_CTOR_BAD_ARG_LIST
 :MSGTXT. invalid copy constructor argument list (causes infinite recursion)
-:MSGJTXT. •s“KØ‚ÈƒRƒs[EƒRƒ“ƒXƒgƒ‰ƒNƒ^ˆø”ƒŠƒXƒgiŒ´ˆöF–³ŒÀ‚ÌÄ‹Aj
+:MSGJTXT. ä¸é©åˆ‡ãªã‚³ãƒ”ãƒ¼ãƒ»ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿å¼•æ•°ãƒªã‚¹ãƒˆï¼ˆåŸå› ï¼šç„¡é™ã®å†å¸°ï¼‰
 A copy constructor's first argument must be a reference argument.
 Furthermore, any default arguments must also be reference arguments.
 Without the reference, a copy constructor would require a
@@ -4036,7 +4040,7 @@ struct S {
 
 :MSGSYM. ERR_CTOR_CANT_BE_CONST_VOLATILE
 :MSGTXT. constructor cannot be declared const or volatile
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Í'const'‚Ü‚½‚Í'volatile'‚Æ‚µ‚ÄéŒ¾‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯'const'ã¾ãŸã¯'volatile'ã¨ã—ã¦å®£è¨€ã§ãã¾ã›ã‚“
 A constructor must be able to operate on all instances of classes
 regardless of whether they are
 .kw const
@@ -4052,7 +4056,7 @@ public:
 
 :MSGSYM. ERR_CTOR_CANT_BE_VIRTUAL
 :MSGTXT. constructor cannot be virtual
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Í'virtual'‚É‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯'virtual'ã«ã¯ã§ãã¾ã›ã‚“
 Virtual functions cannot be called for an object before it is
 constructed.  For this reason, a virtual constructor is not
 allowed in the C++ language.  Techniques for simulating a
@@ -4067,7 +4071,7 @@ public:
 
 :MSGSYM. ERR_INVALID_SCALAR_DESTRUCTOR
 :MSGTXT. types do not match in simple type destructor
-:MSGJTXT. Œ^‚ÍC’Pƒ‚ÈŒ^ƒfƒXƒgƒ‰ƒNƒ^‚Ì’†‚Åˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. å‹ã¯ï¼Œå˜ç´”ãªå‹ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ä¸­ã§ä¸€è‡´ã—ã¾ã›ã‚“
 A simple type destructor is available for "destructing" simple
 types.  The destructor has no effect.  Both of the types
 must be identical, for the destructor to have meaning.
@@ -4080,7 +4084,7 @@ void foo( int *p )
 
 :MSGSYM. ERR_OPERATOR_AMBIGUOUS_OVERLOAD
 :MSGTXT. overloaded operator is ambiguous for operands used
-:MSGJTXT. g‚í‚ê‚Ä‚¢‚éƒIƒyƒ‰ƒ“ƒh‚Ì‚½‚ßCƒI[ƒo[ƒ[ƒh‰‰Zq‚ªB–†‚Å‚·
+:MSGJTXT. ä½¿ã‚ã‚Œã¦ã„ã‚‹ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®ãŸã‚ï¼Œã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰æ¼”ç®—å­ãŒæ›–æ˜§ã§ã™
 The Open Watcom C++ compiler performs exhaustive analysis using formalized
 techniques in order to decide what implicit conversions should be
 applied for overloading operators.  Because of this, Open Watcom C++
@@ -4109,12 +4113,12 @@ cannot decide which one it should choose, hence an ambiguity.
 
 :MSGSYM. ERR_NOT_IMPLEMENTED
 :MSGTXT. feature not implemented
-:MSGJTXT. ‹@”\‚ÍÀ‘•‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. æ©Ÿèƒ½ã¯å®Ÿè£…ã•ã‚Œã¦ã„ã¾ã›ã‚“
 The compiler does not support the indicated feature.
 
 :MSGSYM. ERR_FRIEND_BAD
 :MSGTXT. invalid friend declaration
-:MSGJTXT. •s“KØ‚ÈƒtƒŒƒ“ƒhéŒ¾‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªãƒ•ãƒ¬ãƒ³ãƒ‰å®£è¨€ã§ã™
 This message indicates that the compiler found
 extra declaration specifiers like
 .kw auto,
@@ -4131,7 +4135,7 @@ class C
 
 :MSGSYM. ERR_FRIEND_NOT_IN_CLASS
 :MSGTXT. friend declarations may only be declared in a class
-:MSGJTXT. ƒtƒŒƒ“ƒhéŒ¾‚ÍƒNƒ‰ƒX‚Ì’†‚Å‚Ì‚İéŒ¾‚Å‚«‚Ü‚·
+:MSGJTXT. ãƒ•ãƒ¬ãƒ³ãƒ‰å®£è¨€ã¯ã‚¯ãƒ©ã‚¹ã®ä¸­ã§ã®ã¿å®£è¨€ã§ãã¾ã™
 This message indicates that a
 .kw friend
 declaration was found outside a class scope (i.e., a class
@@ -4143,7 +4147,7 @@ friend void foo();
 
 :MSGSYM. ANSI_CLASS_FRIEND_NEEDS_CLASS
 :MSGTXT. class friend declaration needs 'class' or 'struct' keyword
-:MSGJTXT. ƒNƒ‰ƒXEƒtƒŒƒ“ƒhéŒ¾‚ÍC'class'‚©'struct'ƒL[ƒ[ƒh‚ğ•K—v‚Æ‚µ‚Ü‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ»ãƒ•ãƒ¬ãƒ³ãƒ‰å®£è¨€ã¯ï¼Œ'class'ã‹'struct'ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã‚’å¿…è¦ã¨ã—ã¾ã™
 :ANSI. 4
 The C++ language has evolved to require that all friend class declarations
 be of the form "class S" or "struct S".  The Open Watcom C++ compiler accepts
@@ -4158,7 +4162,7 @@ struct T {
 
 :MSGSYM. ERR_CLASS_FRIEND_DEFINES_SOMETHING
 :MSGTXT. class friend declarations cannot contain a class definition
-:MSGJTXT. ƒNƒ‰ƒXEƒtƒŒƒ“ƒhéŒ¾‚ÍCƒNƒ‰ƒX’è‹`‚ğŠÜ‚Ş‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ»ãƒ•ãƒ¬ãƒ³ãƒ‰å®£è¨€ã¯ï¼Œã‚¯ãƒ©ã‚¹å®šç¾©ã‚’å«ã‚€ã“ã¨ãŒã§ãã¾ã›ã‚“
 A class friend declaration cannot define a new class.  This is a restriction
 required in the C++ language.
 :errbad.
@@ -4171,7 +4175,7 @@ struct S {
 
 :MSGSYM. WARN_CLASS_FRIEND_REPEATED
 :MSGTXT. '%T' has already been declared as a friend
-:MSGJTXT. '%T'‚ÍƒtƒŒƒ“ƒh‚Æ‚µ‚ÄŠù‚ÉéŒ¾‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. '%T'ã¯ãƒ•ãƒ¬ãƒ³ãƒ‰ã¨ã—ã¦æ—¢ã«å®£è¨€ã•ã‚Œã¾ã—ãŸ
 :WARNING. 2
 The class in the message has already been declared as a friend.
 Remove the extra friend declaration.
@@ -4186,7 +4190,7 @@ class T {
 
 :MSGSYM. WARN_FN_FRIEND_REPEATED
 :MSGTXT. function '%S' has already been declared as a friend
-:MSGJTXT. ŠÖ”'%S'‚ÍƒtƒŒƒ“ƒh‚Æ‚µ‚ÄŠù‚ÉéŒ¾‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. é–¢æ•°'%S'ã¯ãƒ•ãƒ¬ãƒ³ãƒ‰ã¨ã—ã¦æ—¢ã«å®£è¨€ã•ã‚Œã¾ã—ãŸ
 :WARNING. 2
 The function in the message has already been declared as a friend.
 Remove the extra friend declaration.
@@ -4201,7 +4205,7 @@ class T {
 
 :MSGSYM. ERR_BAD_FIV_MODIFIER
 :MSGTXT. 'friend', 'virtual' or 'inline' modifiers are not part of a function's type
-:MSGJTXT. 'friend'C'virtual'C‚ ‚é‚¢‚ÍC'inline'Cüq‚ÍCŠÖ”‚ÌŒ^‚Ìˆê•”‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. 'friend'ï¼Œ'virtual'ï¼Œã‚ã‚‹ã„ã¯ï¼Œ'inline'ä¿®é£¾å­ã¯ï¼Œé–¢æ•°ã®å‹ã®ä¸€éƒ¨ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 This message indicates that the modifiers may be incorrectly placed in
 the declaration.  If the declaration is intended, it cannot be accepted
 because the modifiers can only be applied to functions that have code
@@ -4212,7 +4216,7 @@ typedef friend (*PF)( void );
 
 :MSGSYM. ERR_ASSIGN_IMPOSSIBLE
 :MSGTXT. cannot assign right expression to element on left
-:MSGJTXT. ¶‚Ì—v‘f‚É‰E‚Ì®‚ğ‘ã“ü‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å·¦ã®è¦ç´ ã«å³ã®å¼ã‚’ä»£å…¥ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 This message indicates that the assignment cannot be performed.
 It usually arises in assignments of a class type to an arithmetic type.
 :errbad.
@@ -4230,7 +4234,7 @@ int foo()
 
 :MSGSYM. ERR_CTOR_AMBIGUOUS
 :MSGTXT. constructor is ambiguous for operands used
-:MSGJTXT. g—p‚³‚ê‚Ä‚¢‚éƒIƒyƒ‰ƒ“ƒh‚Ì‚½‚ßCƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ªB–†‚Å‚·
+:MSGJTXT. ä½¿ç”¨ã•ã‚Œã¦ã„ã‚‹ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®ãŸã‚ï¼Œã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãŒæ›–æ˜§ã§ã™
 The operands provided for the constructor did not select a unique constructor.
 :errbad.
 struct S {
@@ -4243,7 +4247,7 @@ S x = S(1.0);
 
 :MSGSYM. ERR_CLASS_NOT_DEFINED
 :MSGTXT. class '%s' has not been defined
-:MSGJTXT. class '%s'‚Í’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. class '%s'ã¯å®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“
 The name before a '::' scope resolution operator must be defined
 unless a member pointer is being declared.
 :errbad.
@@ -4255,7 +4259,7 @@ int S::a = 1;   // Error!
 
 :MSGSYM. ERR_UNION_UNNAMED_BITFIELD
 :MSGTXT. all bit-fields in a union must be named
-:MSGJTXT. ‹¤—p‘Ì’†‚Ì‚·‚×‚Ä‚ÌƒrƒbƒgƒtƒB[ƒ‹ƒh‚Í–¼‘O‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å…±ç”¨ä½“ä¸­ã®ã™ã¹ã¦ã®ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã¯åå‰ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 This is a restriction in the C++ language.
 The same effect can be achieved with a named bitfield.
 :errbad.
@@ -4267,7 +4271,7 @@ union u
 
 :MSGSYM. ERR_CAST_ILLEGAL
 :MSGTXT. cannot convert expression to type of cast
-:MSGJTXT. ƒLƒƒƒXƒg‚ÌŒ^‚É®‚ğ•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚­ãƒ£ã‚¹ãƒˆã®å‹ã«å¼ã‚’å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The cast is trying to convert an expression to a completely unrelated
 type.  There is no way the compiler can provide any meaning for the
 intended cast.
@@ -4283,7 +4287,7 @@ void fn()
 
 :MSGSYM. ERR_CAST_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [expression] to [cast type]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[®]‚©‚ç[ƒLƒƒƒXƒgŒ^]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[å¼]ã‹ã‚‰[ã‚­ãƒ£ã‚¹ãƒˆå‹]ã¸
 The cast caused a constructor overload to occur.
 The operands provided for the constructor did not select a unique constructor.
 :errbad.
@@ -4300,7 +4304,7 @@ void fn()
 
 :MSGSYM. ERR_UNNAMED_CLASS_USELESS
 :MSGTXT. an anonymous class without a declarator is useless
-:MSGJTXT. éŒ¾q‚Ì‚È‚¢–¼‘O‚È‚µƒNƒ‰ƒX‚Í–ğ‚É—§‚¿‚Ü‚¹‚ñ
+:MSGJTXT. å®£è¨€å­ã®ãªã„åå‰ãªã—ã‚¯ãƒ©ã‚¹ã¯å½¹ã«ç«‹ã¡ã¾ã›ã‚“
 There is no way to reference the type in this kind of declaration.
 A name must be provided for either the class or a variable using
 the class as its type.
@@ -4313,7 +4317,7 @@ struct {
 
 :MSGSYM. ERR_GLOBAL_ANONYMOUS_UNION_MUST_BE_STATIC
 :MSGTXT. global anonymous union must be declared static
-:MSGJTXT. ƒOƒ[ƒoƒ‹‚È–¼‘O‚È‚µ‹¤—p‘Ì‚ÍC'static'‚ÆéŒ¾‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚°ãƒ­ãƒ¼ãƒãƒ«ãªåå‰ãªã—å…±ç”¨ä½“ã¯ï¼Œ'static'ã¨å®£è¨€ã•ã‚Œãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 This is a restriction in the C++ language.  Since there is no unique
 name for the anonymous union, it is difficult for C++ translators
 to provide a correct implementation of external linkage anonymous unions.
@@ -4326,7 +4330,7 @@ static union {
 
 :MSGSYM. ERR_NONGLOBAL_ANONYMOUS_UNION_CANT_BE_ANYTHING
 :MSGTXT. anonymous struct/union cannot have storage class in this context
-:MSGJTXT. –¼‘O‚È‚µstruct/union‚ÍC‚±‚±‚Å‹L‰¯ƒNƒ‰ƒX‚ğ‚Â‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åå‰ãªã—struct/unionã¯ï¼Œã“ã“ã§è¨˜æ†¶ã‚¯ãƒ©ã‚¹ã‚’æŒã¤ã“ã¨ãŒã§ãã¾ã›ã‚“
 Anonymous unions (or structs) declared in class scopes cannot be
 .kw static.
 Any other storage class is also disallowed.
@@ -4341,7 +4345,7 @@ struct S {
 
 :MSGSYM. WARN_UNION_PROTECTED_MEMBER
 :MSGTXT. union contains a protected member
-:MSGJTXT. ‹¤—p‘Ì‚Í'protected'ƒƒ“ƒo‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. å…±ç”¨ä½“ã¯'protected'ãƒ¡ãƒ³ãƒã‚’å«ã¿ã¾ã™
 :WARNING. 1
 A union cannot have a
 .kw protected
@@ -4356,7 +4360,7 @@ protected:
 
 :MSGSYM. ERR_UNION_PRIVATE_MEMBER
 :MSGTXT. anonymous struct/union contains a private member '%S'
-:MSGJTXT. –¼‘O‚È‚µstruct/union‚ÍCƒvƒ‰ƒCƒx[ƒgEƒƒ“ƒo'%S'‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. åå‰ãªã—struct/unionã¯ï¼Œãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆãƒ»ãƒ¡ãƒ³ãƒ'%S'ã‚’å«ã¿ã¾ã™
 An anonymous union (or struct) cannot have member functions or friends
 so it cannot have
 .kw private
@@ -4371,7 +4375,7 @@ private:
 
 :MSGSYM. ERR_UNION_FUNCTION_MEMBER
 :MSGTXT. anonymous struct/union contains a function member '%S'
-:MSGJTXT. –¼‘O‚È‚µstruct/union‚ÍCŠÖ”ƒƒ“ƒo'%S'‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. åå‰ãªã—struct/unionã¯ï¼Œé–¢æ•°ãƒ¡ãƒ³ãƒ'%S'ã‚’å«ã¿ã¾ã™
 An anonymous union (or struct) cannot have any function members.
 This is a restriction in the C++ language.
 :errbad.
@@ -4384,7 +4388,7 @@ static union {
 
 :MSGSYM. ERR_UNION_TYPEDEF_MEMBER
 :MSGTXT. anonymous struct/union contains a typedef member '%S'
-:MSGJTXT. –¼‘O‚È‚µstruct/union‚ÍCtypedefƒƒ“ƒo'%S'‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. åå‰ãªã—struct/unionã¯ï¼Œtypedefãƒ¡ãƒ³ãƒ'%S'ã‚’å«ã¿ã¾ã™
 An anonymous union (or struct) cannot have any nested types.
 This is a restriction in the C++ language.
 :errbad.
@@ -4398,7 +4402,7 @@ static union {
 
 :MSGSYM. ERR_UNION_ENUMERATION_MEMBER
 :MSGTXT. anonymous struct/union contains an enumeration member '%S'
-:MSGJTXT. –¼‘O‚È‚µstruct/union‚ÍC—ñ‹“Œ^ƒƒ“ƒo'%S'‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. åå‰ãªã—struct/unionã¯ï¼Œåˆ—æŒ™å‹ãƒ¡ãƒ³ãƒ'%S'ã‚’å«ã¿ã¾ã™
 An anonymous union (or struct) cannot have any enumeration members.
 This is a restriction in the C++ language.
 :errbad.
@@ -4412,7 +4416,7 @@ static union {
 
 :MSGSYM. ERR_UNION_COLLISION_MEMBER
 :MSGTXT. anonymous struct/union member '%s' is not distinct in enclosing scope
-:MSGJTXT. –¼‘O‚È‚µstruct/unionƒƒ“ƒo['%s'‚ÍƒXƒR[ƒv‚Ì’†‚Å‹æ•Ê‚ª‚Â‚«‚Ü‚¹‚ñ
+:MSGJTXT. åå‰ãªã—struct/unionãƒ¡ãƒ³ãƒãƒ¼'%s'ã¯ã‚¹ã‚³ãƒ¼ãƒ—ã®ä¸­ã§åŒºåˆ¥ãŒã¤ãã¾ã›ã‚“
 Since an anonymous union (or struct) provides its member names to the
 enclosing scope, the names must not collide with other names in the
 enclosing scope.
@@ -4427,7 +4431,7 @@ static union {
 
 :MSGSYM. ERR_UNION_CANT_HAVE_MEMBER_WITH_DTOR
 :MSGTXT. unions cannot have members with destructors
-:MSGJTXT. ‹¤—p‘Ì‚ÍƒfƒXƒgƒ‰ƒNƒ^‚ğ‚Âƒƒ“ƒo‚ğ—L‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å…±ç”¨ä½“ã¯ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’æŒã¤ãƒ¡ãƒ³ãƒã‚’æœ‰ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A union should only be used to organize memory in C++.
 Allowing union members to have destructors would mean
 that the same piece of memory could be destructed twice.
@@ -4447,7 +4451,7 @@ static union
 
 :MSGSYM. ERR_UNION_CANT_HAVE_MEMBER_WITH_ASSIGN
 :MSGTXT. unions cannot have members with user-defined assignment operators
-:MSGJTXT. ‹¤—p‘Ì‚ÍCƒ†[ƒU-’è‹`‘ã“ü‰‰Zq‚ğ‚Âƒƒ“ƒo‚ğ—L‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å…±ç”¨ä½“ã¯ï¼Œãƒ¦ãƒ¼ã‚¶-å®šç¾©ä»£å…¥æ¼”ç®—å­ã‚’æŒã¤ãƒ¡ãƒ³ãƒã‚’æœ‰ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A union should only be used to organize memory in C++.
 Allowing union members to have assignment operators would mean
 that the same piece of memory could be assigned twice.
@@ -4469,7 +4473,7 @@ static union
 
 :MSGSYM. ERR_UNION_CANT_HAVE_FRIENDS
 :MSGTXT. anonymous struct/union cannot have any friends
-:MSGJTXT. –¼‘O‚È‚µstruct/union‚ÍƒtƒŒƒ“ƒh‚ğ‚Â‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åå‰ãªã—struct/unionã¯ãƒ•ãƒ¬ãƒ³ãƒ‰ã‚’æŒã¤ã“ã¨ãŒã§ãã¾ã›ã‚“
 An anonymous union (or struct) cannot have any friends.
 This is a restriction in the C++ language.
 :errbad.
@@ -4485,7 +4489,7 @@ static union {
 
 :MSGSYM. ERR_ONLY_GLOBAL_SPECIFICS
 :MSGTXT. specific versions of template classes can only be defined in file scope
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgEƒNƒ‰ƒX‚Ì“Á’è‚Ìƒo[ƒWƒ‡ƒ“‚ÍCƒtƒ@ƒCƒ‹¥ƒXƒR[ƒv‚Ì’†‚Å‚Ì‚İ’è‹`‚Å‚«‚Ü‚·
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ»ã‚¯ãƒ©ã‚¹ã®ç‰¹å®šã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã¯ï¼Œãƒ•ã‚¡ã‚¤ãƒ«ï½¥ã‚¹ã‚³ãƒ¼ãƒ—ã®ä¸­ã§ã®ã¿å®šç¾©ã§ãã¾ã™
 Currently, specific versions of class templates can only be declared at
 file scope.  This simple restriction was chosen in favour of more
 freedom with possibly subtle restrictions.
@@ -4510,7 +4514,7 @@ void foo()
 
 :MSGSYM. ERR_FUNCTION_ANONYMOUS_UNION
 :MSGTXT. anonymous union in a function may only be static or auto
-:MSGJTXT. ŠÖ”‚Ì’†‚Ì–¼‘O‚È‚µ‹¤—p‘Ì‚Í'static'‚Ü‚½‚Í'auto'‚Å‚È‚¯‚ê‚Î‚ñ‚è‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ã®ä¸­ã®åå‰ãªã—å…±ç”¨ä½“ã¯'static'ã¾ãŸã¯'auto'ã§ãªã‘ã‚Œã°ã‚“ã‚Šã¾ã›ã‚“
 The current C++ language definition only allows
 .kw auto
 anonymous unions.  The Open Watcom C++ compiler allows
@@ -4520,7 +4524,7 @@ Any other storage class is not allowed.
 
 :MSGSYM. ERR_LOCAL_CLASS_NO_STATIC_MEMBERS
 :MSGTXT. static data members are not allowed in a local class
-:MSGJTXT. ƒXƒ^ƒeƒBƒbƒNEƒf[ƒ^Eƒƒ“ƒo‚ÍCƒ[ƒJƒ‹EƒNƒ‰ƒX‚Å‚Í‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ‡ãƒ¼ã‚¿ãƒ»ãƒ¡ãƒ³ãƒã¯ï¼Œãƒ­ãƒ¼ã‚«ãƒ«ãƒ»ã‚¯ãƒ©ã‚¹ã§ã¯è¨±ã•ã‚Œã¾ã›ã‚“
 Static data members are not allowed in a local class because there
 is no way to define the static member in file scope.
 :errbad.
@@ -4539,7 +4543,7 @@ int foo()
 
 :MSGSYM. ERR_RETURN_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [return value] to [return type of function]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[–ß‚è’l]‚©‚ç[ŠÖ”‚Ì–ß‚èŒ^]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[æˆ»ã‚Šå€¤]ã‹ã‚‰[é–¢æ•°ã®æˆ»ã‚Šå‹]ã¸
 The cast caused a constructor overload to occur.
 The operands provided for the constructor did not select a unique constructor.
 :errbad.
@@ -4556,7 +4560,7 @@ S fn()
 
 :MSGSYM. ERR_RETURN_IMPOSSIBLE
 :MSGTXT. conversion of return value is impossible
-:MSGJTXT. –ß‚è’l‚Ì•ÏŠ·‚Í•s‰Â”\‚Å‚·
+:MSGJTXT. æˆ»ã‚Šå€¤ã®å¤‰æ›ã¯ä¸å¯èƒ½ã§ã™
 The return is trying to convert an expression to a completely unrelated
 type.  There is no way the compiler can provide any meaning for the
 intended return type.
@@ -4572,7 +4576,7 @@ T fn()
 
 :MSGSYM. ERR_FUNCTION_CANT_RETURN_BASED_SELF
 :MSGTXT. function cannot return a pointer based on __self
-:MSGJTXT. ŠÖ”‚ÍC__self‚ÉŠî‚Ã‚­ƒ|ƒCƒ“ƒ^‚ğ–ß‚·‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ã¯ï¼Œ__selfã«åŸºã¥ããƒã‚¤ãƒ³ã‚¿ã‚’æˆ»ã™ã“ã¨ãŒã§ãã¾ã›ã‚“
 A function cannot return a pointer that is based on
 .kw __self.
 :errbad.
@@ -4581,7 +4585,7 @@ void __based(__self) *fn( unsigned );
 
 :MSGSYM. ERR_CANNOT_DEFINE_VARIABLE
 :MSGTXT. defining '%S' is not possible because its type has unknown size
-:MSGJTXT. ‚»‚ÌŒ^‚ª–¢’m‚Ì‘å‚«‚³‚ğ‚¿‚Ü‚·‚Ì‚ÅC'%S'‚ğ’è‹`‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãã®å‹ãŒæœªçŸ¥ã®å¤§ãã•ã‚’æŒã¡ã¾ã™ã®ã§ï¼Œ'%S'ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 In order to define a variable, the size must be known so that the
 correct amount of storage can be reserved.
 :errbad.
@@ -4591,7 +4595,7 @@ S sv;
 
 :MSGSYM. ERR_CANNOT_INIT_TYPEDEF
 :MSGTXT. typedef cannot be initialized
-:MSGJTXT. typedef‚Í‰Šú‰»‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. typedefã¯åˆæœŸåŒ–ã§ãã¾ã›ã‚“
 Initializing a
 .kw typedef
 is meaningless in the C++ language.
@@ -4601,7 +4605,7 @@ typedef int INT = 15;
 
 :MSGSYM. ERR_CONFLICTING_STORAGE_CLASSES
 :MSGTXT. storage class of '%S' conflicts with previous declaration
-:MSGJTXT. '%S'‚Ì‹L‰¯ƒNƒ‰ƒX‚ÍC‘O‚ÌéŒ¾‚Æ–µ‚‚µ‚Ü‚·
+:MSGJTXT. '%S'ã®è¨˜æ†¶ã‚¯ãƒ©ã‚¹ã¯ï¼Œå‰ã®å®£è¨€ã¨çŸ›ç›¾ã—ã¾ã™
 The symbol declaration conflicts with a previous declaration with regard
 to storage class.  A symbol cannot be both
 .kw static
@@ -4610,21 +4614,21 @@ and
 
 :MSGSYM. ERR_CONFLICTING_MODIFIERS
 :MSGTXT. modifiers of '%S' conflict with previous declaration
-:MSGJTXT. '%S'‚ÌCüq‚ÍC‘O‚ÌéŒ¾‚Æ–µ‚‚µ‚Ü‚·
+:MSGJTXT. '%S'ã®ä¿®é£¾å­ã¯ï¼Œå‰ã®å®£è¨€ã¨çŸ›ç›¾ã—ã¾ã™
 The symbol declaration conflicts with a previous declaration with regard
 to modifiers.  Correct the program by using the same modifiers for
 both declarations.
 
 :MSGSYM. ERR_CANNOT_INIT_FUNCTION
 :MSGTXT. function cannot be initialized
-:MSGJTXT. ŠÖ”‚Í‰Šú‰»‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ã¯åˆæœŸåŒ–ã§ãã¾ã›ã‚“
 A function cannot be initialized with an initializer syntax intended for
 variables.  A function body is the only way to provide a definition
 for a function.
 
 :MSGSYM. ERR_CLASS_ACCESS
 :MSGTXT. access permission of nested class '%T' conflicts with previous declaration
-:MSGJTXT. ƒlƒXƒg‚É‚³‚ê‚½ƒNƒ‰ƒX'%T'‚ÌƒAƒNƒZƒX‹–‰Â‚ÍC‘O‚ÌéŒ¾‚Æ–µ‚‚µ‚Ü‚·
+:MSGJTXT. ãƒã‚¹ãƒˆã«ã•ã‚ŒãŸã‚¯ãƒ©ã‚¹'%T'ã®ã‚¢ã‚¯ã‚»ã‚¹è¨±å¯ã¯ï¼Œå‰ã®å®£è¨€ã¨çŸ›ç›¾ã—ã¾ã™
 :errbad.
 struct S {
     struct N;   // public
@@ -4636,13 +4640,13 @@ private:
 
 :MSGSYM. ERR_FRONT_END
 :MSGTXT. *** FATAL *** internal error in front end
-:MSGJTXT. *** ’v–½“I *** ƒtƒƒ“ƒgƒGƒ“ƒh‚Ì’†‚Å“à•”ƒGƒ‰[
+:MSGJTXT. *** è‡´å‘½çš„ *** ãƒ•ãƒ­ãƒ³ãƒˆã‚¨ãƒ³ãƒ‰ã®ä¸­ã§å†…éƒ¨ã‚¨ãƒ©ãƒ¼
 If this message appears, please report the problem directly to the
 Open Watcom development team. See http://www.openwatcom.org/.
 
 :MSGSYM. ERR_PARM_IMPOSSIBLE
 :MSGTXT. cannot convert argument to type specified in function prototype
-:MSGJTXT. ŠÖ”‚Ìƒvƒƒgƒ^ƒCƒv‚Ì’†‚Åw’è‚³‚ê‚½Œ^‚Éˆø”‚ğ•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ã®ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—ã®ä¸­ã§æŒ‡å®šã•ã‚ŒãŸå‹ã«å¼•æ•°ã‚’å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 It is impossible to convert the indicated argument in the function.
 :errbad.
 extern int foo( int& );
@@ -4666,7 +4670,7 @@ int k = foo( m + n );
 
 :MSGSYM. ERR_PARM_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [argument] to [argument type in prototype]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[ˆø”]‚©‚ç[ƒvƒƒgƒ^ƒCƒv‚Ì’†‚Ìˆø”‚ÌŒ^]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[å¼•æ•°]ã‹ã‚‰[ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—ã®ä¸­ã®å¼•æ•°ã®å‹]ã¸
 An argument in the function call could not be converted since
 there is more than one constructor or user-defined conversion which could be
 used to convert the argument.
@@ -4692,7 +4696,7 @@ in class "T" and by the user-conversion in class "S".
 
 :MSGSYM. ERR_BASED_ON_BASED
 :MSGTXT. cannot be based on based pointer '%S'
-:MSGJTXT. ƒx[ƒXEƒ|ƒCƒ“ƒ^'%S'‚ÉŠî‚Ã‚­‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ™ãƒ¼ã‚¹ãƒ»ãƒã‚¤ãƒ³ã‚¿'%S'ã«åŸºã¥ãã“ã¨ãŒã§ãã¾ã›ã‚“
 A based pointer cannot be based on another based pointer.
 :errbad.
 __segment s;
@@ -4702,7 +4706,7 @@ void __based(p) *q;
 
 :MSGSYM. ERR_MISSING_DECL_SPECS
 :MSGTXT. declaration specifiers are required to declare '%N'
-:MSGJTXT. éŒ¾w’èq‚ÍC'%N'‚ğéŒ¾‚µ‚È‚¯‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å®£è¨€æŒ‡å®šå­ã¯ï¼Œ'%N'ã‚’å®£è¨€ã—ãªã‘ã°ãªã‚Šã¾ã›ã‚“
 The compiler has detected that the name does not represent a function.
 Only function declarations can leave out declaration specifiers.
 This error also shows up when a typedef name declaration is missing.
@@ -4713,7 +4717,7 @@ typedef int;
 
 :MSGSYM. ERR_STATIC_FN_DECL_IN_FUNCTION
 :MSGTXT. static function declared in block scope
-:MSGJTXT. ƒXƒ^ƒeƒBƒbƒNŠÖ”‚ªƒuƒƒbƒN¥ƒXƒR[ƒv“à‚ÅéŒ¾‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯é–¢æ•°ãŒãƒ–ãƒ­ãƒƒã‚¯ï½¥ã‚¹ã‚³ãƒ¼ãƒ—å†…ã§å®£è¨€ã•ã‚Œã¦ã„ã¾ã™
 The C++ language does not allow static functions to be declared in block scope.
 This error can be triggered when the intent is to define a
 .kw static
@@ -4735,7 +4739,7 @@ void foo()
 
 :MSGSYM. ERR_CANT_HAVE_BASED_REFERENCE
 :MSGTXT. cannot define a __based reference
-:MSGJTXT. __basedQÆ‚ğ’è‹`‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. __basedå‚ç…§ã‚’å®šç¾©ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A C++ reference cannot be based on anything.
 Based modifiers can only be used with pointers.
 :errbad.
@@ -4745,19 +4749,19 @@ void fn( int __based(s) & x );
 
 :MSGSYM. ERR_PTR_COMMON_AMBIGUOUS
 :MSGTXT. conversion ambiguity: conversion to common pointer type
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F‹¤’Ê‚Ìƒ|ƒCƒ“ƒ^Œ^‚Ö‚Ì•ÏŠ·
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼šå…±é€šã®ãƒã‚¤ãƒ³ã‚¿å‹ã¸ã®å¤‰æ›
 A conversion to a common base class of two different pointers has been attempted.
 The pointer conversion could not be performed because the destination
 type points to an ambiguous base class of one of the source types.
 
 :MSGSYM. ERR_CTOR_IMPOSSIBLE
 :MSGTXT. cannot construct object from argument(s)
-:MSGJTXT. ˆø”‚©‚çƒIƒuƒWƒFƒNƒg‚ğ‚Â‚­‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ (“KØ‚ÈƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ª‚ ‚è‚Ü‚¹‚ñ)
+:MSGJTXT. å¼•æ•°ã‹ã‚‰ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã¤ãã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“ (é©åˆ‡ãªã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãŒã‚ã‚Šã¾ã›ã‚“)
 There is not an appropriate constructor for the set of arguments provided.
 
 :MSGSYM. ERR_PARM_COUNT_MISMATCH
 :MSGTXT. number of arguments for function '%S' is incorrect
-:MSGJTXT. ŠÖ”'%S'‚É‘Î‚·‚éˆø”‚Ì”‚ª•s³Šm‚Å‚·
+:MSGJTXT. é–¢æ•°'%S'ã«å¯¾ã™ã‚‹å¼•æ•°ã®æ•°ãŒä¸æ­£ç¢ºã§ã™
 The number of arguments in the function call does not match the number
 declared for the indicated non-overloaded function.
 :errbad.
@@ -4769,7 +4773,7 @@ Three arguments were used in the call.
 
 :MSGSYM. ERR_CAST_PRIVATE
 :MSGTXT. private base class accessed to convert cast expression
-:MSGJTXT. ƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ÍCƒLƒƒƒXƒg®‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼Œã‚­ãƒ£ã‚¹ãƒˆå¼ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a private base class.  The access check did not succeed so the
 conversion is not allowed.
@@ -4789,7 +4793,7 @@ Priv *pp = (Priv*)pd;
 
 :MSGSYM. ERR_RETURN_PRIVATE
 :MSGTXT. private base class accessed to convert return expression
-:MSGJTXT. ƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ÍCƒŠƒ^[ƒ“®‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼Œãƒªã‚¿ãƒ¼ãƒ³å¼ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a private base class.  The access check did not succeed so the
 conversion is not allowed.
@@ -4811,7 +4815,7 @@ Priv *foo( Der *p )
 
 :MSGSYM. ERR_BAD_PTR_MINUS_OPERANDS
 :MSGTXT. cannot subtract pointers to different objects
-:MSGJTXT. ˆÙ‚È‚éƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Ì·‚ğ‹‚ß‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ç•°ãªã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®å·®ã‚’æ±‚ã‚ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 Pointer subtraction can be performed only for objects of the same type.
 :errbad.
 #include <stddef.h>
@@ -4829,7 +4833,7 @@ object.
 
 :MSGSYM. ERR_PTR_COMMON_PRIVATE
 :MSGTXT. private base class accessed to convert to common pointer type
-:MSGJTXT. ƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ÍC‹¤’Ê‚Ìƒ|ƒCƒ“ƒ^Œ^‚É•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼Œå…±é€šã®ãƒã‚¤ãƒ³ã‚¿å‹ã«å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a private base class.  The access check did not succeed so the
 conversion is not allowed.
@@ -4851,7 +4855,7 @@ int foo( Der *pd, Priv *pp )
 
 :MSGSYM. ERR_CAST_PROTECTED
 :MSGTXT. protected base class accessed to convert cast expression
-:MSGJTXT. ƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ÍCƒLƒƒƒXƒg®‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼Œã‚­ãƒ£ã‚¹ãƒˆå¼ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a protected base class.  The access check did not succeed so the
 conversion is not allowed.
@@ -4871,7 +4875,7 @@ Prot *pp = (Prot*)pd;
 
 :MSGSYM. ERR_RETURN_PROTECTED
 :MSGTXT. protected base class accessed to convert return expression
-:MSGJTXT. ƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ÍCƒŠƒ^[ƒ“®‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼Œãƒªã‚¿ãƒ¼ãƒ³å¼ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a protected base class.  The access check did not succeed so the
 conversion is not allowed.
@@ -4893,7 +4897,7 @@ Prot *foo( Der *p )
 
 :MSGSYM. ERR_CANT_HAVE_MEMBER_POINTER_TO_MEM_MODEL
 :MSGTXT. cannot define a member pointer with a memory model modifier
-:MSGJTXT. ƒƒ‚ƒŠ[ƒ‚ƒfƒ‹Cüq‚Æ‹¤‚Éƒƒ“ƒoEƒ|ƒCƒ“ƒ^‚ğ’è‹`‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¡ãƒ¢ãƒªãƒ¼ãƒ¢ãƒ‡ãƒ«ä¿®é£¾å­ã¨å…±ã«ãƒ¡ãƒ³ãƒãƒ»ãƒã‚¤ãƒ³ã‚¿ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 A member pointer describes how to access a field from a class.
 Because of this a member pointer must be independent of any memory
 model considerations.
@@ -4905,7 +4909,7 @@ int near S::*mp;
 
 :MSGSYM. ERR_PTR_COMMON_PROTECTED
 :MSGTXT. protected base class accessed to convert to common pointer type
-:MSGJTXT. ƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ÍC‹¤’Ê‚Ìƒ|ƒCƒ“ƒ^Œ^‚É•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼Œå…±é€šã®ãƒã‚¤ãƒ³ã‚¿å‹ã«å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a protected base class.  The access check did not succeed so the
 conversion is not allowed.
@@ -4927,14 +4931,14 @@ int foo( Der *pd, Prot *pp )
 
 :MSGSYM. ERR_NON_TYPE_PROVIDED_FOR_TYPE
 :MSGTXT. non-type parameter supplied for a type argument
-:MSGJTXT. Œ^‚ğw’è‚·‚éƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚ÄCŒ^‚ªw’è‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. å‹ã‚’æŒ‡å®šã™ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã«å¯¾ã—ã¦ï¼Œå‹ãŒæŒ‡å®šã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ
 A non-type parameter (e.g., an address or a constant expression) has
 been supplied for a template type argument.  A type should be used
 instead.
 
 :MSGSYM. ERR_TYPE_PROVIDED_FOR_NON_TYPE
 :MSGTXT. type parameter supplied for a non-type argument
-:MSGJTXT. Œ^‚ğw’è‚µ‚È‚¢ƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚ÄŒ^‚ªw’è‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. å‹ã‚’æŒ‡å®šã—ãªã„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã«å¯¾ã—ã¦å‹ãŒæŒ‡å®šã•ã‚Œã¾ã—ãŸ
 A type parameter (e.g.,
 .kw int
 ) has
@@ -4943,7 +4947,7 @@ constant expression should be used instead.
 
 :MSGSYM. ERR_LOCAL_ACCESSING_AUTO
 :MSGTXT. cannot access enclosing function's auto variable '%S'
-:MSGJTXT. ˆÍ‚ñ‚Å‚¢‚éŠÖ”‚Ì©“®•Ï”'%S'‚ÉƒAƒNƒZƒX‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å›²ã‚“ã§ã„ã‚‹é–¢æ•°ã®è‡ªå‹•å¤‰æ•°'%S'ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A local class member function cannot access its enclosing function's
 automatic variables.
 :errbad.
@@ -4962,7 +4966,7 @@ void goop( void )
 
 :MSGSYM. ERR_CONST_PTR_INIT
 :MSGTXT. cannot initialize pointer to non-constant with a pointer to constant
-:MSGJTXT. ”ñ’è”‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å’è”‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ‰Šú‰»‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. éå®šæ•°ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§å®šæ•°ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A pointer to a non-constant type cannot be initialized with a pointer to
 a constant type because this would allow constant data to be modified
 via the non-constant pointer to it.
@@ -4973,7 +4977,7 @@ extern int *pi = pic;
 
 :MSGSYM. WARN_POINTER_GE_0
 :MSGTXT. pointer expression is always >= 0
-:MSGJTXT. ƒ|ƒCƒ“ƒ^®‚Íí‚É >= 0 ‚Å‚·
+:MSGJTXT. ãƒã‚¤ãƒ³ã‚¿å¼ã¯å¸¸ã« >= 0 ã§ã™
 :WARNING. 1
 The indicated pointer expression will always be true because the pointer
 value is always treated as an unsigned quantity, which will be greater or
@@ -4985,7 +4989,7 @@ unsigned k = ( 0 <= p );    // always 1
 
 :MSGSYM. WARN_POINTER_LT_0
 :MSGTXT. pointer expression is never < 0
-:MSGJTXT. ƒ|ƒCƒ“ƒ^®‚Íí‚É < 0 ‚Å‚·
+:MSGJTXT. ãƒã‚¤ãƒ³ã‚¿å¼ã¯å¸¸ã« < 0 ã§ã™
 :WARNING. 1
 The indicated pointer expression will always be false because the pointer
 value is always treated as an unsigned quantity, which will be greater or
@@ -4997,7 +5001,7 @@ unsigned k = ( 0 >= p );   // always 0
 
 :MSGSYM. ERR_ILLEGAL_TYPE_USE
 :MSGTXT. type cannot be used in this context
-:MSGJTXT. ‚±‚±‚Å‚ÍŒ^–¼‚Íg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã“ã“ã§ã¯å‹åã¯ä½¿ç”¨ã§ãã¾ã›ã‚“
 This message is issued when a type name is being used in a context
 where a non-type name should be used.
 :errbad.
@@ -5013,7 +5017,7 @@ void fn( S *p )
 
 :MSGSYM. ERR_VIRTUAL_ONLY_IN_CLASS
 :MSGTXT. virtual function may only be declared in a class
-:MSGJTXT. ‰¼‘zŠÖ”‚ÍƒNƒ‰ƒX‚Ì’†‚Å‚Ì‚İéŒ¾‚Å‚«‚Ü‚·
+:MSGJTXT. ä»®æƒ³é–¢æ•°ã¯ã‚¯ãƒ©ã‚¹ã®ä¸­ã§ã®ã¿å®£è¨€ã§ãã¾ã™
 Virtual functions can only be declared inside of a class.
 This error may be a result of forgetting the "C::" qualification
 of a virtual function's name.
@@ -5032,7 +5036,7 @@ virtual void bar()
 
 :MSGSYM. ERR_CLASS_REF_UNION_CLASS
 :MSGTXT. '%T' referenced as a union
-:MSGJTXT. '%T'‚ª‹¤—p‘Ì‚Æ‚µ‚ÄQÆ‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. '%T'ãŒå…±ç”¨ä½“ã¨ã—ã¦å‚ç…§ã•ã‚Œã¦ã„ã¾ã™
 A class type defined as a
 .kw class
 or
@@ -5050,7 +5054,7 @@ union S var;
 
 :MSGSYM. ERR_CLASS_REF_CLASS_UNION
 :MSGTXT. union '%T' referenced as a class
-:MSGJTXT. union '%T'‚ªƒNƒ‰ƒX‚Æ‚µ‚ÄQÆ‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. union '%T'ãŒã‚¯ãƒ©ã‚¹ã¨ã—ã¦å‚ç…§ã•ã‚Œã¦ã„ã¾ã™
 A class type defined as a
 .kw union
 has been referenced as a
@@ -5068,7 +5072,7 @@ struct S var;
 
 :MSGSYM. ERR_TYPEDEF_ONLY_DEFAULT_INT
 :MSGTXT. typedef '%N' defined without an explicit type
-:MSGJTXT. typedef '%N' ‚ª–¾¦“I‚ÈŒ^‚È‚µ‚É’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. typedef '%N' ãŒæ˜ç¤ºçš„ãªå‹ãªã—ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™
 The typedef declaration was found to not have an explicit type
 in the declaration.  If
 .kw int
@@ -5081,7 +5085,7 @@ typedef T;
 
 :MSGSYM. WARN_LOCAL_CLASS_FUNCTION
 :MSGTXT. member function was not defined in its class
-:MSGJTXT. ƒƒ“ƒo[ŠÖ”‚ª‚»‚ÌƒNƒ‰ƒX‚Ì’†‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ãŒãã®ã‚¯ãƒ©ã‚¹ã®ä¸­ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“
 :WARNING. 1
 Member functions of local classes must be
 defined in their class if they will be defined at all.
@@ -5098,7 +5102,7 @@ void fn()
 
 :MSGSYM. ERR_LOCAL_CLASS_NO_FRIEND_FNS
 :MSGTXT. local class can only have its containing function as a friend
-:MSGJTXT. ƒ[ƒJƒ‹¥ƒNƒ‰ƒX‚Í‚»‚±‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚éŠÖ”‚ğƒtƒŒƒ“ƒh‚Æ‚µ‚Ä‚Â‚±‚Æ‚¾‚¯‚ª‚Å‚«‚Ü‚·
+:MSGJTXT. ãƒ­ãƒ¼ã‚«ãƒ«ï½¥ã‚¯ãƒ©ã‚¹ã¯ãã“ã«å«ã¾ã‚Œã¦ã„ã‚‹é–¢æ•°ã‚’ãƒ•ãƒ¬ãƒ³ãƒ‰ã¨ã—ã¦æŒã¤ã“ã¨ã ã‘ãŒã§ãã¾ã™
 A local class can only be referenced from within its containing function.
 It is impossible to define an external function that can reference
 the type of the local class.
@@ -5118,7 +5122,7 @@ void foo()
 
 :MSGSYM. ERR_LOCAL_CLASS_FRIEND_CLASS
 :MSGTXT. local class cannot have '%S' as a friend
-:MSGJTXT. ƒ[ƒJƒ‹‚ÈƒNƒ‰ƒX‚ÍCƒtƒŒƒ“ƒh‚Æ‚µ‚Ä'%S'‚ğ‚Â‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ­ãƒ¼ã‚«ãƒ«ãªã‚¯ãƒ©ã‚¹ã¯ï¼Œãƒ•ãƒ¬ãƒ³ãƒ‰ã¨ã—ã¦'%S'ã‚’æŒã¤ã“ã¨ãŒã§ãã¾ã›ã‚“
 The only classes that a local class can have as a friend are classes within
 its own containing scope.
 :errbad.
@@ -5140,7 +5144,7 @@ void foo()
 
 :MSGSYM. WARN_ADJACENT_RELN_OPS
 :MSGTXT. adjacent >=, <=, >, < operators
-:MSGJTXT. >=, <=, >, < ‰‰Zq‚ª—×Ú‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. >=, <=, >, < æ¼”ç®—å­ãŒéš£æ¥ã—ã¦ã„ã¾ã™
 :WARNING. 3
 This message is warning about the possibility that the code may not do
 what was intended.  An expression like "a > b > c" evaluates one relational
@@ -5155,7 +5159,7 @@ int k = a > b > c;
 
 :MSGSYM. ERR_LOCAL_ACCESSING_ARG
 :MSGTXT. cannot access enclosing function's argument '%S'
-:MSGJTXT. ˆÍ‚ñ‚Å‚¢‚éŠÖ”‚Ìˆø”'%S'‚ÉƒAƒNƒZƒX‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å›²ã‚“ã§ã„ã‚‹é–¢æ•°ã®å¼•æ•°'%S'ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A local class member function cannot access its enclosing function's
 arguments.
 :errbad.
@@ -5173,14 +5177,14 @@ void goop( int d )
 
 :MSGSYM. WARN_SWITCH_NOT_IMPL
 :MSGTXT. support for switch '%s' is not implemented
-:MSGJTXT. switch '%s'‚ÌƒTƒ|[ƒg‚ÍÀ‘•‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. switch '%s'ã®ã‚µãƒãƒ¼ãƒˆã¯å®Ÿè£…ã•ã‚Œã¦ã„ã¾ã›ã‚“
 :WARNING. 1
 Actions for the indicated switch have not been implemented.
 The switch is supported for compatibility with the Open Watcom C compiler.
 
 :MSGSYM. WARN_IF_ALWAYS_TRUE
 :MSGTXT. conditional expression in if statement is always true
-:MSGJTXT. if•¶‚Ì’†‚ÌğŒ®‚Íí‚É^‚Å‚·
+:MSGJTXT. ifæ–‡ã®ä¸­ã®æ¡ä»¶å¼ã¯å¸¸ã«çœŸã§ã™
 :WARNING. 3
 The compiler has detected that the expression will always be true.
 If this is not the expected behaviour, the code may contain a
@@ -5198,7 +5202,7 @@ int foo( int a, int b )
 
 :MSGSYM. WARN_IF_ALWAYS_FALSE
 :MSGTXT. conditional expression in if statement is always false
-:MSGJTXT. if•¶‚Ì’†‚ÌğŒ®‚Íí‚É‹U‚Å‚·
+:MSGJTXT. ifæ–‡ã®ä¸­ã®æ¡ä»¶å¼ã¯å¸¸ã«å½ã§ã™
 :WARNING. 3
 The compiler has detected that the expression will always be false.
 If this is not the expected behaviour, the code may contain a
@@ -5216,7 +5220,7 @@ int foo( int a, int b )
 
 :MSGSYM. WARN_SWITCH_ALWAYS_CONSTANT
 :MSGTXT. selection expression in switch statement is a constant value
-:MSGJTXT. switch•¶‚Ì’†‚Ì‘I‘ğ®‚Í’è”’l‚Å‚·
+:MSGJTXT. switchæ–‡ã®ä¸­ã®é¸æŠå¼ã¯å®šæ•°å€¤ã§ã™
 :WARNING. 3
 The expression in the
 .kw switch
@@ -5238,7 +5242,7 @@ int foo( int a, int b )
 
 :MSGSYM. ERR_CONST_MEMBER_MEANS_CTOR
 :MSGTXT. constructor is required for a class with a const member
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚ÍCconstƒƒ“ƒo[‚ğ‚Á‚½ƒNƒ‰ƒX‚ª•K—v‚Å‚·
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã«ã¯ï¼Œconstãƒ¡ãƒ³ãƒãƒ¼ã‚’æŒã£ãŸã‚¯ãƒ©ã‚¹ãŒå¿…è¦ã§ã™
 If a class has a constant member, a constructor is required in order
 to initialize it.
 :errbad.
@@ -5251,7 +5255,7 @@ struct S
 
 :MSGSYM. ERR_REFERENCE_MEMBER_MEANS_CTOR
 :MSGTXT. constructor is required for a class with a reference member
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚ÍCQÆƒƒ“ƒo[‚ğ‚Á‚½ƒNƒ‰ƒX‚ª•K—v‚Å‚·
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã«ã¯ï¼Œå‚ç…§ãƒ¡ãƒ³ãƒãƒ¼ã‚’æŒã£ãŸã‚¯ãƒ©ã‚¹ãŒå¿…è¦ã§ã™
 If a class has a reference member, a constructor is required in order
 to initialize it.
 :errbad.
@@ -5264,14 +5268,14 @@ struct S
 
 :MSGSYM. ERR_INLINE_MEMBER_FRIEND
 :MSGTXT. inline member friend function '%S' is not allowed
-:MSGJTXT. ƒCƒ“ƒ‰ƒCƒ“Eƒƒ“ƒoEƒtƒŒƒ“ƒhŠÖ”'%S'‚Í‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³ãƒ»ãƒ¡ãƒ³ãƒãƒ»ãƒ•ãƒ¬ãƒ³ãƒ‰é–¢æ•°'%S'ã¯è¨±ã•ã‚Œã¾ã›ã‚“
 A friend that is a member function of another class
 cannot be defined.  Inline friend rules are currently
 in flux so it is best to avoid inline friends.
 
 :MSGSYM. ERR_BAD_MODIFY_AUTO
 :MSGTXT. invalid modifier for auto variable
-:MSGJTXT. ©“®•Ï”‚É‘Î‚µ‚Ä•s“KØ‚ÈCüq‚Å‚·
+:MSGJTXT. è‡ªå‹•å¤‰æ•°ã«å¯¾ã—ã¦ä¸é©åˆ‡ãªä¿®é£¾å­ã§ã™
 An automatic variable cannot have a memory model adjustment because
 they are always located on the stack (or in a register).
 There are also other types of modifiers that are not allowed for auto
@@ -5286,7 +5290,7 @@ int fn( int far x )
 
 :MSGSYM. ERR_INVALID_NONSTATIC_ACCESS
 :MSGTXT. object (or object pointer) required to access non-static data member
-:MSGJTXT. ƒIƒuƒWƒFƒNƒgi‚ ‚é‚¢‚ÍCƒIƒuƒWƒFƒNƒgEƒ|ƒCƒ“ƒ^j‚ÍC”ñƒXƒ^ƒeƒBƒbƒNEƒf[ƒ^Eƒƒ“ƒo‚ÉƒAƒNƒZƒX‚·‚é‚½‚ß‚É•K—v‚Å‚·
+:MSGJTXT. ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼ˆã‚ã‚‹ã„ã¯ï¼Œã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ»ãƒã‚¤ãƒ³ã‚¿ï¼‰ã¯ï¼Œéã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ‡ãƒ¼ã‚¿ãƒ»ãƒ¡ãƒ³ãƒã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ãŸã‚ã«å¿…è¦ã§ã™
 A reference to a member in a class has occurred.
 The member is non-static so in order to access it, an object
 of the class is required.
@@ -5302,7 +5306,7 @@ struct S {
 
 :MSGSYM. ERR_CONVERSION_NOT_DEFINED
 :MSGTXT. user-defined conversion has not been declared
-:MSGJTXT. ƒ†[ƒU[’è‹`•ÏŠ·‚ÍéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¦ãƒ¼ã‚¶ãƒ¼å®šç¾©å¤‰æ›ã¯å®£è¨€ã•ã‚Œã¦ã„ã¾ã›ã‚“
 The named user-defined conversion has not been declared in the
 class of any of its base classes.
 :errbad.
@@ -5319,7 +5323,7 @@ double fn( S *p )
 
 :MSGSYM. ERR_NO_STATIC_VIRTUAL
 :MSGTXT. virtual function must be a non-static member function
-:MSGJTXT. ‰¼‘zŠÖ”‚Í”ñƒXƒ^ƒeƒBƒbƒN¥ƒƒ“ƒo[ŠÖ”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ä»®æƒ³é–¢æ•°ã¯éã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ï½¥ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 A member function cannot be both a
 .kw static
 function and a
@@ -5344,7 +5348,7 @@ struct S
 
 :MSGSYM. ERR_PARM_PROTECTED
 :MSGTXT. protected base class accessed to convert argument expression
-:MSGJTXT. ƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ÍCˆø”®‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼Œå¼•æ•°å¼ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a protected base class.  The access check did not succeed so the
 conversion is not allowed.
@@ -5365,7 +5369,7 @@ The last line is erroneous since the constructor is protected.
 
 :MSGSYM. ERR_PARM_PRIVATE
 :MSGTXT. private base class accessed to convert argument expression
-:MSGJTXT. ƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ÍCˆø”®‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼Œå¼•æ•°å¼ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a private base class.  The access check did not succeed so the
 conversion is not allowed.
@@ -5385,7 +5389,7 @@ The last line is erroneous since the constructor is private.
 
 :MSGSYM. WARN_VIRTUAL_DTOR_DELETE
 :MSGTXT. delete expression will invoke a non-virtual destructor
-:MSGJTXT. delete®‚ÍC”ñ‰¼‘zƒfƒXƒgƒ‰ƒNƒ^‚ğ‹N“®‚µ‚Ü‚·
+:MSGJTXT. deleteå¼ã¯ï¼Œéä»®æƒ³ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’èµ·å‹•ã—ã¾ã™
 :WARNING. 1
 In C++, it is possible to assign a base class pointer the value
 of a derived class pointer so that code that makes use of
@@ -5430,7 +5434,7 @@ void dfn( B *p )
 
 :MSGSYM. ERR_OFFSETOF_FUNCTION
 :MSGTXT. 'offsetof' is not allowed for a function
-:MSGJTXT. 'offsetof'‚ÍŠÖ”‚É‘Î‚µ‚Äg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'offsetof'ã¯é–¢æ•°ã«å¯¾ã—ã¦ä½¿ç”¨ã§ãã¾ã›ã‚“
 A member function does not have an offset like simple data members.
 If this is required, use a member pointer.
 :errbad.
@@ -5446,7 +5450,7 @@ int s = offsetof( S, fun );
 
 :MSGSYM. ERR_OFFSETOF_ENUM
 :MSGTXT. 'offsetof' is not allowed for an enumeration
-:MSGJTXT. 'offsetof'‚Í—ñ‹“‚É‘Î‚µ‚Äg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'offsetof'ã¯åˆ—æŒ™ã«å¯¾ã—ã¦ä½¿ç”¨ã§ãã¾ã›ã‚“
 An enumeration does not have an offset like simple data members.
 :errbad.
 #include <stddef.h>
@@ -5462,7 +5466,7 @@ int s = offsetof( S, SE );
 
 :MSGSYM. ERR_CODEGEN_CANT_INITIALIZE
 :MSGTXT. could not initialize for code generation
-:MSGJTXT. ƒR[ƒh¶¬‚Å‰Šú‰»‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. ã‚³ãƒ¼ãƒ‰ç”Ÿæˆã§åˆæœŸåŒ–ã§ãã¾ã›ã‚“ã§ã—ãŸ
 The source code has been parsed and fully analysed when this
 error is emitted.
 The compiler attempted to start generating object code
@@ -5472,7 +5476,7 @@ Try changing the compilation environment to eliminate this error.
 
 :MSGSYM. ERR_OFFSETOF_UNDEFINED_TYPE
 :MSGTXT. 'offsetof' is not allowed for an undefined type
-:MSGJTXT. 'offsetof'‚Í–¢’è‹`‚ÌŒ^‚É‘Î‚µ‚Äg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'offsetof'ã¯æœªå®šç¾©ã®å‹ã«å¯¾ã—ã¦ä½¿ç”¨ã§ãã¾ã›ã‚“
 The class type used in
 .kw offsetof
 must be completely defined,
@@ -5489,7 +5493,7 @@ struct S {
 
 :MSGSYM. ERR_ATTEMPT_TO_OVERRIDE_RETURN
 :MSGTXT. attempt to override virtual function '%S' with a different return type
-:MSGJTXT. ˆÙ‚È‚é–ß‚èŒ^‚ğ‚Á‚½‰¼‘zŠÖ”'%S'‚ğƒI[ƒo[ƒ‰ƒCƒh‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½
+:MSGJTXT. ç•°ãªã‚‹æˆ»ã‚Šå‹ã‚’æŒã£ãŸä»®æƒ³é–¢æ•°'%S'ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ã‚ˆã†ã¨ã—ã¾ã—ãŸ
 A function cannot be overloaded with identical argument types and a
 different return type.  This is due to the fact that the C++ language
 does not consider the function's return type when overloading.
@@ -5508,7 +5512,7 @@ struct D : B {
 
 :MSGSYM. ERR_ATTEMPT_TO_OVERLOAD_RETURN
 :MSGTXT. attempt to overload function '%S' with a different return type
-:MSGJTXT. ˆÙ‚È‚é–ß‚èŒ^‚ğ‚Á‚½ŠÖ”'%S'‚ğƒI[ƒo[ƒ[ƒh‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½
+:MSGJTXT. ç•°ãªã‚‹æˆ»ã‚Šå‹ã‚’æŒã£ãŸé–¢æ•°'%S'ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã—ã‚ˆã†ã¨ã—ã¾ã—ãŸ
 A function cannot be overloaded with identical argument types and a
 different return type.  This is due to the fact that the C++ language
 does not consider the function's return type when overloading.
@@ -5519,7 +5523,7 @@ unsigned foo( char );
 
 :MSGSYM. ERR_UNDEFED_CLASS_PTR
 :MSGTXT. attempt to use pointer to undefined class
-:MSGJTXT. –¢’è‹`‚ÌƒNƒ‰ƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğg—p‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. æœªå®šç¾©ã®ã‚¯ãƒ©ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ä½¿ç”¨ã—ã‚ˆã†ã¨ã—ã¦ã„ã¾ã™
 An attempt was made to indirect or increment a pointer to an undefined
 class.  Since the class is undefined, the size is not known so the
 compiler cannot compile the expression properly.
@@ -5536,7 +5540,7 @@ int foo( C*p )
 
 :MSGSYM. WARN_ONLY_SIDE_EFFECT
 :MSGTXT. expression is useful only for its side effects
-:MSGJTXT. ®‚ÍC‚»‚Ì•›ì—p‚µ‚©Œø‰Ê‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯ï¼Œãã®å‰¯ä½œç”¨ã—ã‹åŠ¹æœãŒã‚ã‚Šã¾ã›ã‚“
 :WARNING. 3
 The indicated expression is not meaningful.
 The expression, however, does contain one or more side effects.
@@ -5553,7 +5557,7 @@ The incrementation of the pointer in the expression is a side effect.
 
 :MSGSYM. WARN_TRUNC_INT_CONSTANT
 :MSGTXT. integral constant will be truncated during assignment or initialization
-:MSGJTXT. ®”’è”‚ÍC‘ã“ü‚©‰Šú‰»‚ÌŠÔ‚ÉØ‚è‹l‚ß‚ç‚ê‚Ü‚·
+:MSGJTXT. æ•´æ•°å®šæ•°ã¯ï¼Œä»£å…¥ã‹åˆæœŸåŒ–ã®é–“ã«åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã™
 :WARNING. 1
 This message indicates that the compiler knows that a constant value will
 not be preserved after the assignment.  If this is acceptable, cast the
@@ -5564,7 +5568,7 @@ unsigned char c = 567;
 
 :MSGSYM. WARN_TRUNC_INT_VALUE
 :MSGTXT. integral value may be truncated during assignment or initialization
-:MSGJTXT. ®”’l‚ÍC‘ã“ü‚©‰Šú‰»‚ÌŠÔ‚ÉØ‚è‹l‚ß‚ç‚ê‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñ
+:MSGJTXT. æ•´æ•°å€¤ã¯ï¼Œä»£å…¥ã‹åˆæœŸåŒ–ã®é–“ã«åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã‚‹ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“
 :WARNING. 4
 This message indicates that the compiler knows that all values will
 not be preserved after the assignment.  If this is acceptable, cast the
@@ -5576,7 +5580,7 @@ unsigned char c = s;
 
 :MSGSYM. ERR_NO_DEFAULT_INIT_CTOR
 :MSGTXT. cannot generate default constructor to initialize '%T' since constructors were declared
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ªéŒ¾‚³‚ê‚Ä‚¢‚½‚Ì‚ÅC'%T'‚ğ‰Šúó‘Ô‚É‚·‚é‚½‚ß‚ÉƒfƒtƒHƒ‹ƒgEƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğ¶¬‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãŒå®£è¨€ã•ã‚Œã¦ã„ãŸã®ã§ï¼Œ'%T'ã‚’åˆæœŸçŠ¶æ…‹ã«ã™ã‚‹ãŸã‚ã«ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ»ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’ç”Ÿæˆã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A default constructor will not be generated by the compiler if there
 are already constructors declared.  Try using default arguments to
 change one of the constructors to a default constructor or define a
@@ -5592,7 +5596,7 @@ C cv;
 
 :MSGSYM. WARN_ASSIGN_VALUE_IN_BOOL_EXPR
 :MSGTXT. assignment found in boolean expression
-:MSGJTXT. ˜_—®‚Ì’†‚É‘ã“ü‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. è«–ç†å¼ã®ä¸­ã«ä»£å…¥ãŒã‚ã‚Šã¾ã™
 :WARNING. 3
 This is a construct that can lead to errors if it was intended
 to be an equality (using "==") test.
@@ -5608,7 +5612,7 @@ int foo( int a, int b )
 
 :MSGSYM. INF_SYMBOL_DECLARATION
 :MSGTXT. definition: '%F'
-:MSGJTXT. '%F'‚Í’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F
+:MSGJTXT. '%F'ã¯å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š
 :INFO.
 This informational message indicates where the symbol in question was defined.
 The message is displayed following an error or warning diagnostic for the
@@ -5624,7 +5628,7 @@ which 'a' was declared.
 
 :MSGSYM. INF_FILE_NEST
 :MSGTXT. included from %s(%u)
-:MSGJTXT. %s(%u)‚©‚çƒCƒ“ƒNƒ‹[ƒh‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. %s(%u)ã‹ã‚‰ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã•ã‚Œã¦ã„ã¾ã™
 :INFO.
 This informational message indicates the line number of the file including
 the file in which an error or warning was diagnosed.
@@ -5634,7 +5638,7 @@ directives which are currently being processed.
 
 :MSGSYM. ERR_REFERENCE_MUST_BE_INITIALIZED
 :MSGTXT. reference object must be initialized
-:MSGJTXT. QÆƒIƒuƒWƒFƒNƒg‚Í‰Šú‰»‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å‚ç…§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯åˆæœŸåŒ–ã•ã‚Œãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 A reference cannot be set except through initialization.
 Also references cannot be 0 so they must always be initialized.
 :errbad.
@@ -5643,13 +5647,13 @@ int & ref;
 
 :MSGSYM. ERR_INVALID_OPTION_ID
 :MSGTXT. option requires an identifier
-:MSGJTXT. ƒIƒvƒVƒ‡ƒ“‚É‚Í¯•Êq‚ª•K—v‚Å‚·
+:MSGJTXT. ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«ã¯è­˜åˆ¥å­ãŒå¿…è¦ã§ã™
 The specified option is not recognized by the compiler
 since there was no identifier after it (i.e., "-nt=module" ).
 
 :MSGSYM. ERR_MAIN_CANNOT_BE_OVERLOADED
 :MSGTXT. 'main' cannot be overloaded
-:MSGJTXT. 'main'‚ÍƒI[ƒo[ƒ[ƒh‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'main'ã¯ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã§ãã¾ã›ã‚“
 There can only be one entry point for a C++ program.  The "main"
 function cannot be overloaded.
 :errbad.
@@ -5659,7 +5663,7 @@ int main( int );
 
 :MSGSYM. ERR_NEW_TYPE_VOID
 :MSGTXT. 'new' expression cannot allocate a void
-:MSGJTXT. 'new'®‚ÍvoidŒ^‚ğŠ„‚è•t‚¯‚ç‚ê‚Ü‚¹‚ñ
+:MSGJTXT. 'new'å¼ã¯voidå‹ã‚’å‰²ã‚Šä»˜ã‘ã‚‰ã‚Œã¾ã›ã‚“
 Since the
 .kw void
 type has no size and there are no values of
@@ -5672,7 +5676,7 @@ void *p = new void;
 
 :MSGSYM. ERR_NEW_TYPE_FUNCTION
 :MSGTXT. 'new' expression cannot allocate a function
-:MSGJTXT. 'new'®‚ÍŠÖ”‚ğŠ„‚è•t‚¯‚ç‚ê‚Ü‚¹‚ñ
+:MSGJTXT. 'new'å¼ã¯é–¢æ•°ã‚’å‰²ã‚Šä»˜ã‘ã‚‰ã‚Œã¾ã›ã‚“
 A function type cannot be allocated since there is no meaningful
 size that can be used.
 The
@@ -5685,7 +5689,7 @@ tdfun *tdv = new tdfun;
 
 :MSGSYM. WARN_NEW_TYPE_CONST_VOLATILE
 :MSGTXT. 'new' expression allocates a const or volatile object
-:MSGJTXT. 'new'®‚ÍCconst‚©volatileƒIƒuƒWƒFƒNƒg‚ğŠ„‚è“–‚Ä‚Ü‚·
+:MSGJTXT. 'new'å¼ã¯ï¼Œconstã‹volatileã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰²ã‚Šå½“ã¦ã¾ã™
 :WARNING. 3
 The pool of raw memory cannot be guaranteed to support
 .kw const
@@ -5703,7 +5707,7 @@ con_int* p = new con_int;
 
 :MSGSYM. ERR_INIT_IMPOSSIBLE
 :MSGTXT. cannot convert right expression for initialization
-:MSGJTXT. ‰Šúó‘Ôİ’è‚Ì‚½‚ß‚É‰E‚Ì®‚ğ•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åˆæœŸçŠ¶æ…‹è¨­å®šã®ãŸã‚ã«å³ã®å¼ã‚’å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The initialization is trying to convert an argument expression to
 a completely unrelated
 type.  There is no way the compiler can provide any meaning for the
@@ -5717,7 +5721,7 @@ T x = 0;
 
 :MSGSYM. ERR_INIT_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [initialization expression] to [type of object]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[‰Šú‰»®]‚©‚ç[ƒIƒuƒWƒFƒNƒg‚ÌŒ^]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[åˆæœŸåŒ–å¼]ã‹ã‚‰[ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å‹]ã¸
 The initialization caused a constructor overload to occur.
 The operands provided for the constructor did not select a unique constructor.
 :errbad.
@@ -5731,7 +5735,7 @@ S x = 1.0;
 
 :MSGSYM. WARN_CLASS_TEMPLATE_FRIEND_REPEATED
 :MSGTXT. class template '%S' has already been declared as a friend
-:MSGJTXT. ƒNƒ‰ƒXEƒeƒ“ƒvƒŒ[ƒg'%S'‚ÍCƒtƒŒƒ“ƒh‚Æ‚µ‚Ä‚·‚Å‚ÉéŒ¾‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ»ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ'%S'ã¯ï¼Œãƒ•ãƒ¬ãƒ³ãƒ‰ã¨ã—ã¦ã™ã§ã«å®£è¨€ã•ã‚Œã¾ã—ãŸ
 :WARNING. 2
 The class template in the message has already been declared as a friend.
 Remove the extra friend declaration.
@@ -5748,21 +5752,21 @@ class X {
 
 :MSGSYM. ERR_INIT_PRIVATE
 :MSGTXT. private base class accessed to convert initialization expression
-:MSGJTXT. ƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ÍC‰Šú‰»®‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼ŒåˆæœŸåŒ–å¼ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a private base class.  The access check did not succeed so the
 conversion is not allowed.
 
 :MSGSYM. ERR_INIT_PROTECTED
 :MSGTXT. protected base class accessed to convert initialization expression
-:MSGJTXT. ƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ÍC‰Šú‰»®‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼ŒåˆæœŸåŒ–å¼ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a protected base class.  The access check did not succeed so the
 conversion is not allowed.
 
 :MSGSYM. ERR_CONST_PTR_RETURN
 :MSGTXT. cannot return a pointer or reference to a constant object
-:MSGJTXT. ’è”‚ÌƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Ü‚½‚ÍQÆ‚ğ–ß‚·‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®šæ•°ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã¾ãŸã¯å‚ç…§ã‚’æˆ»ã™ã“ã¨ãŒã§ãã¾ã›ã‚“
 A pointer or reference to a constant object cannot be returned.
 :errbad.
 int *foo( const int *p )
@@ -5773,7 +5777,7 @@ int *foo( const int *p )
 
 :MSGSYM. ERR_CONST_PTR_ARG
 :MSGTXT. cannot pass a pointer or reference to a constant object
-:MSGJTXT. ’è”‚ÌƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚©QÆ‚ğ“n‚·‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®šæ•°ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‹å‚ç…§ã‚’æ¸¡ã™ã“ã¨ãŒã§ãã¾ã›ã‚“
 A pointer or reference to a constant object could not be passed as
 an argument.
 :errbad.
@@ -5786,7 +5790,7 @@ int *foo( const int *p )
 
 :MSGSYM. ERR_CLASS_TEMPLATE_MUST_BE_NAMED
 :MSGTXT. class templates must be named
-:MSGJTXT. ƒNƒ‰ƒXEƒeƒ“ƒvƒŒ[ƒg‚É‚Í–¼‘O‚ª•K—v‚Å‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ»ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã«ã¯åå‰ãŒå¿…è¦ã§ã™
 There is no syntax in the C++ language to reference an
 unnamed class template.
 :errbad.
@@ -5797,7 +5801,7 @@ template <class T>
 
 :MSGSYM. ERR_NO_VARIABLE_TEMPLATES
 :MSGTXT. function templates can only name functions
-:MSGJTXT. ŠÖ”ƒeƒ“ƒvƒŒ[ƒg‚ÍCŠÖ”‚É–¼‘O‚ğ‚Â‚¯‚é‚±‚Æ‚¾‚¯‚ª‚Å‚«‚Ü‚·
+:MSGJTXT. é–¢æ•°ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã¯ï¼Œé–¢æ•°ã«åå‰ã‚’ã¤ã‘ã‚‹ã“ã¨ã ã‘ãŒã§ãã¾ã™
 Variables cannot be overloaded in C++ so it is not
 possible to have many different instances of a variable
 with different types.
@@ -5808,7 +5812,7 @@ template <class T>
 
 :MSGSYM. ERR_FUNCTION_TEMPLATE_MUST_USE_ALL_ARGS
 :MSGTXT. template argument '%S' is not used in the function argument list
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgˆø”'%S'‚ªŠÖ”ˆø”ƒŠƒXƒg‚Ì’†‚Åg‚í‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°'%S'ãŒé–¢æ•°å¼•æ•°ãƒªã‚¹ãƒˆã®ä¸­ã§ä½¿ã‚ã‚Œã¦ã„ã¾ã›ã‚“
 This restriction ensures that function templates can be bound to
 types during overload resolution.
 Functions currently can only be overloaded based on argument types.
@@ -5821,7 +5825,7 @@ template <class T>
 
 :MSGSYM. ERR_DTOR_CANT_BE_CONST_VOLATILE
 :MSGTXT. destructor cannot be declared const or volatile
-:MSGJTXT. ƒfƒXƒgƒ‰ƒNƒ^‚ÍCconst‚Ü‚½‚Ívolatile‚ÆéŒ¾‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯ï¼Œconstã¾ãŸã¯volatileã¨å®£è¨€ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 A destructor must be able to operate on all instances of classes
 regardless of whether they are
 .kw const
@@ -5830,7 +5834,7 @@ or
 
 :MSGSYM. ERR_STATIC_CANT_BE_CONST_VOLATILE
 :MSGTXT. static member function cannot be declared const or volatile
-:MSGJTXT. ƒXƒ^ƒeƒBƒbƒNEƒƒ“ƒoŠÖ”‚ÍC'const'‚Ü‚½‚Í'volatile'‚ÆéŒ¾‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ¡ãƒ³ãƒé–¢æ•°ã¯ï¼Œ'const'ã¾ãŸã¯'volatile'ã¨å®£è¨€ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 A static member function does not have an implicit
 .kw this
 argument so the
@@ -5841,7 +5845,7 @@ function qualifiers cannot be used.
 
 :MSGSYM. ERR_NON_MEMBER_CANT_BE_CONST_VOLATILE
 :MSGTXT. only member functions can be declared const or volatile
-:MSGJTXT. ƒƒ“ƒoŠÖ”‚¾‚¯‚ÍC'const'‚Ü‚½‚Í'volatile'‚ÆéŒ¾‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·
+:MSGJTXT. ãƒ¡ãƒ³ãƒé–¢æ•°ã ã‘ã¯ï¼Œ'const'ã¾ãŸã¯'volatile'ã¨å®£è¨€ã™ã‚‹ã“ã¨ãŒã§ãã¾ã™
 A non-member function does not have an implicit
 .kw this
 argument so the
@@ -5852,7 +5856,7 @@ function qualifiers cannot be used.
 
 :MSGSYM. ERR_CONST_VOLATILE_IN_A_TYPE
 :MSGTXT. 'const' or 'volatile' modifiers are not part of a function's type
-:MSGJTXT. 'const'‚Ü‚½‚Í'volatile'Cüq‚ÍCŠÖ”‚ÌŒ^‚Ìˆê•”‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. 'const'ã¾ãŸã¯'volatile'ä¿®é£¾å­ã¯ï¼Œé–¢æ•°ã®å‹ã®ä¸€éƒ¨ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 The
 .kw const
 and
@@ -5881,7 +5885,7 @@ void S::fun() const
 
 :MSGSYM. ERR_TYPE_CREATED_IN_ARG
 :MSGTXT. type cannot be defined in an argument
-:MSGJTXT. Œ^‚Íˆø”‚Ì’†‚Å’è‹`‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å‹ã¯å¼•æ•°ã®ä¸­ã§å®šç¾©ã§ãã¾ã›ã‚“
 A new type cannot be defined in an argument because the type will only
 be visible within the function.  This amounts to defining a function
 that can never be called because C++ uses name equivalence for type checking.
@@ -5891,7 +5895,7 @@ extern foo( struct S { int s; } );
 
 :MSGSYM. ERR_TYPE_CREATED_IN_RETURN
 :MSGTXT. type cannot be defined in return type
-:MSGJTXT. Œ^‚Í–ß‚èŒ^‚Ì’†‚Å’è‹`‚Ü‚½‚ÍéŒ¾‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å‹ã¯æˆ»ã‚Šå‹ã®ä¸­ã§å®šç¾©ã¾ãŸã¯å®£è¨€ã§ãã¾ã›ã‚“
 This is a restriction in the current C++ language.  A function
 prototype should only use previously declared types in order
 to guarantee that it can be called from other functions.
@@ -5924,7 +5928,7 @@ S::S( int x, int y ) : x(x), y(y) {
 
 :MSGSYM. ERR_PURE_FUNCTIONS_ONLY
 :MSGTXT. data members cannot be initialized inside a class definition
-:MSGJTXT. ƒf[ƒ^Eƒƒ“ƒo‚ÍCƒNƒ‰ƒX’è‹`‚Ì“à‘¤‚Å‰Šú‰»‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ãƒ¼ã‚¿ãƒ»ãƒ¡ãƒ³ãƒã¯ï¼Œã‚¯ãƒ©ã‚¹å®šç¾©ã®å†…å´ã§åˆæœŸåŒ–ã§ãã¾ã›ã‚“
 This message appears when an initialization is attempted inside
 of a class definition.  In the case of static data members, initialization
 must be done outside the class definition.
@@ -5937,7 +5941,7 @@ struct S {
 
 :MSGSYM. ERR_PURE_VIRTUAL_FUNCTIONS_ONLY
 :MSGTXT. only virtual functions may be declared pure
-:MSGJTXT. ‰¼‘zŠÖ”‚¾‚¯pure‚ÆéŒ¾‚Å‚«‚Ü‚·
+:MSGJTXT. ä»®æƒ³é–¢æ•°ã ã‘pureã¨å®£è¨€ã§ãã¾ã™
 The C++ language requires that all pure functions be declared virtual.
 A pure function establishes an interface that must consist of virtual
 functions because the functions are required to be defined in the
@@ -5950,13 +5954,13 @@ struct S {
 
 :MSGSYM. ERR_DESTRUCTOR_IN_WRONG_CLASS
 :MSGTXT. destructor is not declared in its proper class
-:MSGJTXT. ƒfƒXƒgƒ‰ƒNƒ^‚ÍC‚»‚Ì“K“–‚ÈƒNƒ‰ƒX‚É‚¨‚¢‚ÄéŒ¾‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯ï¼Œãã®é©å½“ãªã‚¯ãƒ©ã‚¹ã«ãŠã„ã¦å®£è¨€ã•ã‚Œã¾ã›ã‚“
 The destructor name is not declared in its own class or qualified
 by its own class.  This is required in the C++ language.
 
 :MSGSYM. ERR_CONST_PTR_THIS
 :MSGTXT. cannot call non-const function for a constant object
-:MSGJTXT. ’è”‚ÌƒIƒuƒWƒFƒNƒg‚É‘Î‚µ‚Äconst‚Å‚È‚¢ŠÖ”‚ğŒÄ‚Ô‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®šæ•°ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«å¯¾ã—ã¦constã§ãªã„é–¢æ•°ã‚’å‘¼ã¶ã“ã¨ãŒã§ãã¾ã›ã‚“
 A function that does not promise to not modify an object
 cannot be called for a constant object.
 A function can declare its intention to not modify an object
@@ -5976,53 +5980,53 @@ void cfn( const S *p )
 
 :MSGSYM. ERR_MEM_INIT_MUST_BE_CTOR
 :MSGTXT. memory initializer list may only appear in a constructor definition
-:MSGJTXT. ƒƒ‚ƒŠ‰Šú‰»q‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^’è‹`‚Ì’†‚Å‚Ì‚İg‚¦‚Ü‚·
+:MSGJTXT. ãƒ¡ãƒ¢ãƒªåˆæœŸåŒ–å­ã¯ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿å®šç¾©ã®ä¸­ã§ã®ã¿ä½¿ãˆã¾ã™
 A memory initializer list should be declared along with the body
 of the constructor function.
 
 :MSGSYM. ERR_DUPLICATE_MEMBER_INIT
 :MSGTXT. cannot initialize member '%N' twice
-:MSGJTXT. ƒƒ“ƒo'%N'‚ğ2‰ñ‰Šú‰»‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¡ãƒ³ãƒ'%N'ã‚’2å›åˆæœŸåŒ–ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 A member cannot be initialized twice in a member initialization list.
 
 :MSGSYM. ERR_DUPLICATE_BASE_INIT
 :MSGTXT. cannot initialize base class '%T' twice
-:MSGJTXT. Šî’êƒNƒ‰ƒX'%T'‚ğ2‰ñ‰Šú‰»‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åŸºåº•ã‚¯ãƒ©ã‚¹'%T'ã‚’2å›åˆæœŸåŒ–ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 A base class cannot be constructed twice in a member initialization list.
 
 :MSGSYM. ERR_NOT_DIRECT_BASE_INIT
 :MSGTXT. '%T' is not a direct base class
-:MSGJTXT. '%T'‚Í’¼Ú‚ÌŠî’êƒNƒ‰ƒX‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%T'ã¯ç›´æ¥ã®åŸºåº•ã‚¯ãƒ©ã‚¹ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 A base class initializer in a member initialization list must either
 be a direct base class or a virtual base class.
 
 :MSGSYM. ERR_NOT_MEMBER_MEMBER_INIT
 :MSGTXT. '%N' cannot be initialized because it is not a member
-:MSGJTXT. '%N'‚Íƒƒ“ƒo‚Å‚Í‚ ‚è‚Ü‚¹‚ñ‚Ì‚ÅC‰Šú‰»‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯ãƒ¡ãƒ³ãƒã§ã¯ã‚ã‚Šã¾ã›ã‚“ã®ã§ï¼ŒåˆæœŸåŒ–ã§ãã¾ã›ã‚“
 The name used in the member initialization list does not name a member
 in the class.
 
 :MSGSYM. ERR_FN_MEMBER_MEMBER_INIT
 :MSGTXT. '%N' cannot be initialized because it is a member function
-:MSGJTXT. '%N'‚Íƒƒ“ƒoŠÖ”‚Å‚·‚Ì‚ÅC‰Šú‰»‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯ãƒ¡ãƒ³ãƒé–¢æ•°ã§ã™ã®ã§ï¼ŒåˆæœŸåŒ–ã§ãã¾ã›ã‚“
 The name used in the member initialization list does not name
 a non-static data member in the class.
 
 :MSGSYM. ERR_STATIC_MEMBER_MEMBER_INIT
 :MSGTXT. '%N' cannot be initialized because it is a static member
-:MSGJTXT. '%N'‚ÍƒXƒ^ƒeƒBƒbƒNEƒƒ“ƒo‚Å‚·‚Ì‚ÅC‰Šú‰»‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ¡ãƒ³ãƒã§ã™ã®ã§ï¼ŒåˆæœŸåŒ–ã§ãã¾ã›ã‚“
 The name used in the member initialization list does not name
 a non-static data member in the class.
 
 :MSGSYM. ERR_NOT_A_MEMBER_NAME
 :MSGTXT. '%N' has not been declared as a member
-:MSGJTXT. '%N'‚Íƒƒ“ƒo‚Æ‚µ‚ÄéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯ãƒ¡ãƒ³ãƒã¨ã—ã¦å®£è¨€ã•ã‚Œã¦ã„ã¾ã›ã‚“
 This message indicates that the member does not exist in the qualified
 class.  This usually occurs in the context of access declarations.
 
 :MSGSYM. ERR_MEMBER_WILL_NOT_BE_INIT
 :MSGTXT. const/reference member '%S' must have an initializer
-:MSGJTXT. const/QÆƒƒ“ƒo['%S'‚Í‰Šú‰»q‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. const/å‚ç…§ãƒ¡ãƒ³ãƒãƒ¼'%S'ã¯åˆæœŸåŒ–å­ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The
 .kw const
 or reference member does not have an initializer so the constructor
@@ -6031,35 +6035,35 @@ way to initialize these types of members.
 
 :MSGSYM. ERR_ARG_ABSTRACT_TYPE
 :MSGTXT. abstract class '%T' cannot be used as an argument type
-:MSGJTXT. ’ŠÛ“I‚ÈƒNƒ‰ƒX'%T'‚ÍCˆø”‚ÌŒ^‚Æ‚µ‚Äg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. æŠ½è±¡çš„ãªã‚¯ãƒ©ã‚¹'%T'ã¯ï¼Œå¼•æ•°ã®å‹ã¨ã—ã¦ä½¿ãˆã¾ã›ã‚“
 An abstract class can only exist as a base class of another class.
 The C++ language does not allow an abstract class to be used as
 an argument type.
 
 :MSGSYM. ERR_FUNCTION_CANT_RETURN_AN_ABSTRACT
 :MSGTXT. abstract class '%T' cannot be used as a function return type
-:MSGJTXT. ’ŠÛ“I‚ÈƒNƒ‰ƒX'%T'‚ÍCŠÖ”–ß‚èŒ^‚Æ‚µ‚Äg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. æŠ½è±¡çš„ãªã‚¯ãƒ©ã‚¹'%T'ã¯ï¼Œé–¢æ•°æˆ»ã‚Šå‹ã¨ã—ã¦ä½¿ãˆã¾ã›ã‚“
 An abstract class can only exist as a base class of another class.
 The C++ language does not allow an abstract class to be used as
 a return type.
 
 :MSGSYM. ERR_CANNOT_DEFINE_ABSTRACT_VARIABLE
 :MSGTXT. defining '%S' is not possible because '%T' is an abstract class
-:MSGJTXT. '%T'‚ª’ŠÛ“I‚ÈƒNƒ‰ƒX‚Å‚·‚Ì‚ÅC'%S'‚ğ’è‹`‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%T'ãŒæŠ½è±¡çš„ãªã‚¯ãƒ©ã‚¹ã§ã™ã®ã§ï¼Œ'%S'ã‚’å®šç¾©ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 An abstract class can only exist as a base class of another class.
 The C++ language does not allow an abstract class to be used as
 either a member or a variable.
 
 :MSGSYM. ERR_CONVERT_TO_ABSTRACT_TYPE
 :MSGTXT. cannot convert to an abstract class '%T'
-:MSGJTXT. ’ŠÛ“I‚ÈƒNƒ‰ƒX'%T'‚É•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æŠ½è±¡çš„ãªã‚¯ãƒ©ã‚¹'%T'ã«å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 An abstract class can only exist as a base class of another class.
 The C++ language does not allow an abstract class to be used as
 the destination type in a conversion.
 
 :MSGSYM. WARN_MANGLED_NAME_TOO_LONG
 :MSGTXT. mangled name for '%S' has been truncated
-:MSGJTXT. '%S'‚É‘Î‚·‚éƒ}ƒ“ƒOƒ‹–¼‚ÍØ‚è‹l‚ß‚ç‚ê‚Ü‚µ‚½
+:MSGJTXT. '%S'ã«å¯¾ã™ã‚‹ãƒãƒ³ã‚°ãƒ«åã¯åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã—ãŸ
 :WARNING. 9
 The name used in the object file that encodes the name and full type
 of the symbol is often called a mangled name.  The warning indicates
@@ -6068,33 +6072,33 @@ object file format.
 
 :MSGSYM. ERR_CONVERT_TO_UNDEFD_TYPE
 :MSGTXT. cannot convert to a type of unknown size
-:MSGJTXT. –¢’m‚Ì‘å‚«‚³‚ÌŒ^‚É•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æœªçŸ¥ã®å¤§ãã•ã®å‹ã«å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A completely unknown type cannot be used in a conversion
 because its size is not known.
 The behaviour of the conversion would be undefined also.
 
 :MSGSYM. ERR_CONVERT_FROM_UNDEFD_TYPE
 :MSGTXT. cannot convert a type of unknown size
-:MSGJTXT. –¢’m‚Ì‘å‚«‚³‚ÌŒ^‚ğ•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æœªçŸ¥ã®å¤§ãã•ã®å‹ã‚’å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A completely unknown type cannot be used in a conversion
 because its size is not known.
 The behaviour of the conversion would be undefined also.
 
 :MSGSYM. ERR_CONSTRUCT_AN_ABSTRACT_TYPE
 :MSGTXT. cannot construct an abstract class
-:MSGJTXT. ’ŠÛƒNƒ‰ƒX‚ğƒCƒ“ƒXƒ^ƒ“ƒX‰»‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æŠ½è±¡ã‚¯ãƒ©ã‚¹ã‚’ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 An instance of an abstract class cannot be created because an abstract
 class can only be used as a base class.
 
 :MSGSYM. ERR_CONSTRUCT_AN_UNDEFD_TYPE
 :MSGTXT. cannot construct an undefined class
-:MSGJTXT. –¢’è‹`ƒNƒ‰ƒX‚ğƒCƒ“ƒXƒ^ƒ“ƒX‰»‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æœªå®šç¾©ã‚¯ãƒ©ã‚¹ã‚’ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 An instance of an undefined class cannot be created because
 the size is not known.
 
 :MSGSYM. WARN_STRING_CONCAT_IN_ARRAY
 :MSGTXT. string literal concatenated during array initialization
-:MSGJTXT. ”z—ñ‚Ì‰Šú‰»’†C•¶š—ñƒŠƒeƒ‰ƒ‹‚Í˜AŒ‹‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. é…åˆ—ã®åˆæœŸåŒ–ä¸­ï¼Œæ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã¯é€£çµã•ã‚Œã¾ã—ãŸ
 :WARNING. 3
 This message indicates that a missing comma (',') could have
 made a quiet change in the program.  Otherwise, ignore this
@@ -6102,19 +6106,19 @@ message.
 
 :MSGSYM. ERR_MAX_SEGMENT_EXCEEDED
 :MSGTXT. maximum size of segment '%s' has been exceeded for '%S'
-:MSGJTXT. ƒZƒOƒƒ“ƒg'%s'‚ÌÅ‘åƒTƒCƒY‚ğC'%S'‚Ì‚½‚ß‚É‰z‚¦‚Ü‚µ‚½
+:MSGJTXT. ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ'%s'ã®æœ€å¤§ã‚µã‚¤ã‚ºã‚’ï¼Œ'%S'ã®ãŸã‚ã«è¶Šãˆã¾ã—ãŸ
 The indicated symbol has grown in size to a point where it
 has caused the segment it is defined inside of to be exhausted.
 
 :MSGSYM. ERR_DATA_TOO_BIG
 :MSGTXT. maximum data item size has been exceeded for '%S'
-:MSGJTXT. Å‘åƒf[ƒ^€–ÚƒTƒCƒY‚ğC'%S'‚Ì‚½‚ß‚É‰z‚¦‚Ü‚µ‚½
+:MSGJTXT. æœ€å¤§ãƒ‡ãƒ¼ã‚¿é …ç›®ã‚µã‚¤ã‚ºã‚’ï¼Œ'%S'ã®ãŸã‚ã«è¶Šãˆã¾ã—ãŸ
 A non-huge data item is larger than 64k bytes in size.
 This message only occurs during 16-bit compilation of C++ code.
 
 :MSGSYM. WARN_REPEATED_FUNCTION_MODS
 :MSGTXT. function attribute has been repeated
-:MSGJTXT. ŠÖ”‘®«‚ªŒJ‚è•Ô‚µg‚í‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. é–¢æ•°å±æ€§ãŒç¹°ã‚Šè¿”ã—ä½¿ã‚ã‚Œã¦ã„ã¾ã™
 :WARNING. 1
 A function attribute (like the
 .kw __export
@@ -6123,7 +6127,7 @@ Remove the extra attribute to correct the declaration.
 
 :MSGSYM. WARN_REPEATED_DATA_MODS
 :MSGTXT. modifier has been repeated
-:MSGJTXT. Cüq‚ªŒJ‚è•Ô‚µg‚í‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ä¿®é£¾å­ãŒç¹°ã‚Šè¿”ã—ä½¿ã‚ã‚Œã¦ã„ã¾ã™
 :WARNING. 1
 A modifier (like the
 .kw far
@@ -6132,25 +6136,25 @@ Remove the extra modifier to correct the declaration.
 
 :MSGSYM. ERR_UNCOMBINABLE_MEM_MODS
 :MSGTXT. illegal combination of memory model modifiers
-:MSGJTXT. ƒƒ‚ƒŠEƒ‚ƒfƒ‹Cüq‚Ìˆá–@‚È‘g‡‚¹‚Å‚·
+:MSGJTXT. ãƒ¡ãƒ¢ãƒªãƒ»ãƒ¢ãƒ‡ãƒ«ä¿®é£¾å­ã®é•æ³•ãªçµ„åˆã›ã§ã™
 Memory model modifiers must be used individually because they cannot
 be combined meaningfully.
 
 :MSGSYM. ERR_DUPLICATE_ARG_NAME
 :MSGTXT. argument name '%N' has already been used
-:MSGJTXT. ˆø”–¼'%N'‚ÍŠù‚Ég‚í‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. å¼•æ•°å'%N'ã¯æ—¢ã«ä½¿ã‚ã‚Œã¦ã„ã¾ã™
 The indicated argument name has already been used in the same argument
 list.  This is not allowed in the C++ language.
 
 :MSGSYM. ERR_BAD_FUNCTION_TYPE
 :MSGTXT. function definition for '%S' must be declared with an explicit argument list
-:MSGJTXT. '%S'‚É‘Î‚·‚éŠÖ”’è‹`‚ÍC–¾¦“I‚Èˆø”ƒŠƒXƒg‚ÅéŒ¾‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%S'ã«å¯¾ã™ã‚‹é–¢æ•°å®šç¾©ã¯ï¼Œæ˜ç¤ºçš„ãªå¼•æ•°ãƒªã‚¹ãƒˆã§å®£è¨€ã•ã‚Œãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 A function cannot be defined with a typedef.  The argument list
 must be explicit.
 
 :MSGSYM. ANSI_USER_CONV_REF_DERIVED
 :MSGTXT. user-defined conversion cannot convert to its own class or base class
-:MSGJTXT. ƒ†[ƒU’è‹`•ÏŠ·‚ÍC‚»‚ê©g‚ÌƒNƒ‰ƒX‚Ü‚½‚Íƒx[ƒXƒNƒ‰ƒX‚ğ•ÏŠ·‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¦ãƒ¼ã‚¶å®šç¾©å¤‰æ›ã¯ï¼Œãã‚Œè‡ªèº«ã®ã‚¯ãƒ©ã‚¹ã¾ãŸã¯ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‚’å¤‰æ›ã§ãã¾ã›ã‚“
 :ANSI. 1
 A user-defined conversion cannot be declared as a conversion either to
 its own class or to a base class of itself.
@@ -6164,7 +6168,7 @@ struct D : private B {
 
 :MSGSYM. ERR_USER_CONV_VOID
 :MSGTXT. user-defined conversion cannot convert to void
-:MSGJTXT. ƒ†[ƒU’è‹`•ÏŠ·‚Í'void'Œ^‚É•ÏŠ·‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¦ãƒ¼ã‚¶å®šç¾©å¤‰æ›ã¯'void'å‹ã«å¤‰æ›ã§ãã¾ã›ã‚“
 A user-defined conversion cannot be declared as a conversion to
 .kw void.
 :errbad.
@@ -6175,19 +6179,19 @@ struct S {
 
 :MSGSYM. ERR_EXPECTING_ID
 :MSGTXT. expecting identifier
-:MSGJTXT. ¯•Êq‚ª‚ ‚é‚Í‚¸‚Å‚·
+:MSGJTXT. è­˜åˆ¥å­ãŒã‚ã‚‹ã¯ãšã§ã™
 An identifier was expected during processing.
 
 :MSGSYM. ERR_BASED_EXTRACT_NO_SEG
 :MSGTXT. symbol '%S' does not have a segment associated with it
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹'%S'‚ÍC‚»‚ê‚ÆŠÖ˜A‚·‚éƒZƒOƒƒ“ƒg‚ğ‚¿‚Ü‚¹‚ñ
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«'%S'ã¯ï¼Œãã‚Œã¨é–¢é€£ã™ã‚‹ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã‚’æŒã¡ã¾ã›ã‚“
 A pointer cannot be based on a member because it has no segment associated
 with it.  A member describes a layout of storage that can occur in any
 segment.
 
 :MSGSYM. ERR_BASED_FETCH_NO_SEG
 :MSGTXT. symbol '%S' must have integral or pointer type
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹'%S'‚ÍC®”Œ^‚©ƒ|ƒCƒ“ƒ^Œ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«'%S'ã¯ï¼Œæ•´æ•°å‹ã‹ãƒã‚¤ãƒ³ã‚¿å‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 If a symbol is based on another symbol, it must be integral or a pointer
 type.  An integral type indicates the segment value that will be used.
 A pointer type means that all accesses will be added to the pointer value
@@ -6195,25 +6199,25 @@ to construct a full pointer.
 
 :MSGSYM. ERR_CANNOT_ALWAYS_ACCESS
 :MSGTXT. symbol '%S' cannot be accessed in all contexts
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹'%S'‚ÍC‚·‚×‚Ä‚ÌƒRƒ“ƒeƒNƒXƒg‚Ì’†‚ÅƒAƒNƒZƒX‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«'%S'ã¯ï¼Œã™ã¹ã¦ã®ã‚³ãƒ³ãƒ†ã‚¯ã‚¹ãƒˆã®ä¸­ã§ã‚¢ã‚¯ã‚»ã‚¹ã§ãã¾ã›ã‚“
 The symbol that the pointer is based on is in another class so it cannot
 be accessed in all contexts that the based pointer can be accessed.
 
 :MSGSYM. ERR_COPYCTOR_IMPOSSIBLE
 :MSGTXT. cannot convert class expression to be copied
-:MSGJTXT. ƒRƒs[‚³‚ê‚é‚½‚ß‚ÉƒNƒ‰ƒX®‚ğ•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚³ãƒ”ãƒ¼ã•ã‚Œã‚‹ãŸã‚ã«ã‚¯ãƒ©ã‚¹å¼ã‚’å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 :cmt JWW to look at
 A convert class expression could not be copied.
 
 :MSGSYM. ERR_COPYCTOR_AMBIGUOUS
 :MSGTXT. conversion ambiguity: multiple copy constructors
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F•¡”‚ÌƒRƒs[EƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼šè¤‡æ•°ã®ã‚³ãƒ”ãƒ¼ãƒ»ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãŒã‚ã‚Šã¾ã™
 :cmt JWW to look at
 More than one constructor could be used to copy a class object.
 
 :MSGSYM. ERR_FUNCTION_TEMPLATE_ALREADY_HAS_DEFN
 :MSGTXT. function template '%S' already has a definition
-:MSGJTXT. ŠÖ”ƒeƒ“ƒvƒŒ[ƒg'%S'‚ÍŠù‚É’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. é–¢æ•°ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ'%S'ã¯æ—¢ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™
 The function template has already been defined with a
 function body.  A function template cannot be
 defined twice even if the function body is identical.
@@ -6230,7 +6234,7 @@ template <class T>
 
 :MSGSYM. ERR_FUNCTION_TEMPLATE_NO_DEFARGS
 :MSGTXT. function templates cannot have default arguments
-:MSGJTXT. ŠÖ”ƒeƒ“ƒvƒŒ[ƒg‚ÍCƒfƒtƒHƒ‹ƒgˆø”‚ğ‚Â‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã¯ï¼Œãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã‚’æŒã¤ã“ã¨ãŒã§ãã¾ã›ã‚“
 A function template must not have default arguments because
 there are certain types of default arguments that do not force
 the function argument to be a specific type.
@@ -6243,14 +6247,14 @@ template <class T>
 
 :MSGSYM. ERR_MAIN_CANNOT_BE_FN_TEMPLATE
 :MSGTXT. 'main' cannot be a function template
-:MSGJTXT. 'main'‚ÍŠÖ”ƒeƒ“ƒvƒŒ[ƒg‚Å‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'main'ã¯é–¢æ•°ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã§ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 This is a restriction in the C++ language because "main"
 cannot be overloaded.  A function template provides the
 possibility of having more than one "main" function.
 
 :MSGSYM. ERR_PREV_MUST_BE_ELABORATED_TYPEDEF
 :MSGTXT. '%S' was previously declared as a typedef
-:MSGJTXT. '%S'‚Ítypedef‚Æ‚µ‚ÄˆÈ‘O‚ÉéŒ¾‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. '%S'ã¯typedefã¨ã—ã¦ä»¥å‰ã«å®£è¨€ã•ã‚Œã¾ã—ãŸ
 The C++ language only allows function and variable names
 to coexist with names of classes or enumerations.
 This is due to the fact that the class and enumeration
@@ -6277,7 +6281,7 @@ void C()
 
 :MSGSYM. ERR_CURR_MUST_BE_ELABORATED_TYPEDEF
 :MSGTXT. '%S' was previously declared as a variable/function
-:MSGJTXT. '%S'‚Í•Ï”^ŠÖ”‚Æ‚µ‚ÄˆÈ‘O‚ÉéŒ¾‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. '%S'ã¯å¤‰æ•°ï¼é–¢æ•°ã¨ã—ã¦ä»¥å‰ã«å®£è¨€ã•ã‚Œã¾ã—ãŸ
 The C++ language only allows function and variable names
 to coexist with names of classes or enumerations.
 This is due to the fact that the class and enumeration
@@ -6306,21 +6310,21 @@ class C x;      // use "class C"
 
 :MSGSYM. ERR_ASSIGN_PRIVATE
 :MSGTXT. private base class accessed to convert assignment expression
-:MSGJTXT. ƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ÍC‘ã“ü®‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼Œä»£å…¥å¼ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a private base class.  The access check did not succeed so the
 conversion is not allowed.
 
 :MSGSYM. ERR_ASSIGN_PROTECTED
 :MSGTXT. protected base class accessed to convert assignment expression
-:MSGJTXT. ƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ÍC‘ã“ü®‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÉƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ï¼Œä»£å…¥å¼ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion involving the inheritance hierarchy required access
 to a protected base class.  The access check did not succeed so the
 conversion is not allowed.
 
 :MSGSYM. ERR_MAX_DGROUP_EXCEEDED
 :MSGTXT. maximum size of DGROUP has been exceeded for '%S' in segment '%s'
-:MSGJTXT. DGROUP‚ÌÅ‘åƒTƒCƒY‚ÍC'%S'‚Ì‚½‚ß‚ÉƒZƒOƒƒ“ƒg'%s'‚Ì’†‚Å‰z‚¦‚Ü‚µ‚½
+:MSGJTXT. DGROUPã®æœ€å¤§ã‚µã‚¤ã‚ºã¯ï¼Œ'%S'ã®ãŸã‚ã«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ'%s'ã®ä¸­ã§è¶Šãˆã¾ã—ãŸ
 The indicated symbol's size has caused the DGROUP contribution of this
 module to exceed 64k.  Changing memory models or declaring some data as
 .kw far
@@ -6328,32 +6332,32 @@ data are two ways of fixing this problem.
 
 :MSGSYM. ERR_BAD_ENUM_RETURN
 :MSGTXT. type of return value is not the enumeration type of function
-:MSGJTXT. –ß‚è’l‚ÌŒ^‚ÍCŠÖ”‚Ì—ñ‹“Œ^‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æˆ»ã‚Šå€¤ã®å‹ã¯ï¼Œé–¢æ•°ã®åˆ—æŒ™å‹ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 The return value does not have the proper enumeration type.
 Keep in mind that integral values are not automatically converted
 to enum types like the C language.
 
 :MSGSYM. ERR_MISPLACED_EXTERN_LINKAGE
 :MSGTXT. linkage must be first in a declaration; probable cause: missing ';'
-:MSGJTXT. ƒŠƒ“ƒN‚ÍéŒ¾‚Ì’†‚ÅÅ‰‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñGl‚¦‚ç‚ê‚éŒ´ˆöF';'‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒªãƒ³ã‚¯ã¯å®£è¨€ã®ä¸­ã§æœ€åˆã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ï¼›è€ƒãˆã‚‰ã‚Œã‚‹åŸå› ï¼š';'ãŒã‚ã‚Šã¾ã›ã‚“
 This message usually indicates a missing semicolon (';').  The linkage
 specification must be the first part of a declaration if it is used.
 
 :MSGSYM. ERR_MAIN_CANNOT_BE_STATIC
 :MSGTXT. 'main' cannot be a static function
-:MSGJTXT. 'main'‚ÍƒXƒ^ƒeƒBƒbƒNŠÖ”‚Å‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'main'ã¯ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯é–¢æ•°ã§ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 This is a restriction in the C++ language because "main"
 must have external linkage.
 
 :MSGSYM. ERR_MAIN_CANNOT_BE_INLINE
 :MSGTXT. 'main' cannot be an inline function
-:MSGJTXT. 'main'‚ÍƒCƒ“ƒ‰ƒCƒ“ŠÖ”‚Å‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'main'ã¯ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³é–¢æ•°ã§ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 This is a restriction in the C++ language because "main"
 must have external linkage.
 
 :MSGSYM. ERR_REFERENCED_MAIN
 :MSGTXT. 'main' cannot be referenced
-:MSGJTXT. 'main'‚ÍQÆ‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'main'ã¯å‚ç…§ã§ãã¾ã›ã‚“
 This is a restriction in the C++ language to prevent implementations
 from having to work around multiple invocations of "main".
 This can occur if an implementation has to generate special code in
@@ -6361,7 +6365,7 @@ This can occur if an implementation has to generate special code in
 
 :MSGSYM. ERR_VOLATILE_PTR_THIS
 :MSGTXT. cannot call a non-volatile function for a volatile object
-:MSGJTXT. Šö”­«ƒIƒuƒWƒFƒNƒg‚É‘Î‚µ‚Ä•sŠö”­«ŠÖ”‚ğŒÄ‚Ô‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ®ç™ºæ€§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«å¯¾ã—ã¦ä¸æ®ç™ºæ€§é–¢æ•°ã‚’å‘¼ã¶ã“ã¨ãŒã§ãã¾ã›ã‚“
 A function that does not promise to not modify an object using
 .kw volatile
 semantics cannot be called for a volatile object.
@@ -6384,7 +6388,7 @@ void cfn( volatile S *p )
 
 :MSGSYM. ERR_CNV_VOID_STAR
 :MSGTXT. cannot convert pointer to constant or volatile objects to pointer to void
-:MSGJTXT. ’è”‚Ü‚½‚ÍŠö”­«ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ'void *'‚É•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®šæ•°ã¾ãŸã¯æ®ç™ºæ€§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’'void *'ã«å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 You cannot convert a pointer to constant or volatile objects to 'void*'.
 :errbad.
 extern const int* pci;
@@ -6395,7 +6399,7 @@ int k = ( pci == vp );
 
 :MSGSYM. ERR_CNV_VOID_STAR_VOLATILE
 :MSGTXT. cannot convert pointer to constant or non-volatile objects to pointer to volatile void
-:MSGJTXT. ’è”‚©•sŠö”­«ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ'volatile void *'‚É•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®šæ•°ã‹ä¸æ®ç™ºæ€§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’'volatile void *'ã«å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 You cannot convert a pointer to constant or non-volatile objects
 to 'volatile void*'.
 :errbad.
@@ -6407,7 +6411,7 @@ int k = ( pci == vp );
 
 :MSGSYM. ERR_FUNC_ADDR_TOO_BIG
 :MSGTXT. address of function is too large to be converted to pointer to void
-:MSGJTXT. ŠÖ”‚ÌƒAƒhƒŒƒX‚Í'void*'‚É•Ï‚¦‚é‚É‚Í‘å‚«‚·‚¬‚Ü‚·
+:MSGJTXT. é–¢æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã¯'void*'ã«å¤‰ãˆã‚‹ã«ã¯å¤§ãã™ãã¾ã™
 The address of a function can be converted to 'void*' only when the size
 of a 'void*' object is large enough to contain the function pointer.
 :errbad.
@@ -6417,7 +6421,7 @@ void __near *v = &foo;
 
 :MSGSYM. ERR_OBJECT_ADDR_TOO_BIG
 :MSGTXT. address of data object is too large to be converted to pointer to void
-:MSGJTXT. ƒf[ƒ^ƒIƒuƒWƒFƒNƒg‚ÌƒAƒhƒŒƒX‚ÍC'void*'‚É•Ï‚¦‚é‚É‚Í‘å‚«‚·‚¬‚Ü‚·
+:MSGJTXT. ãƒ‡ãƒ¼ã‚¿ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã¯ï¼Œ'void*'ã«å¤‰ãˆã‚‹ã«ã¯å¤§ãã™ãã¾ã™
 The address of an object can be converted to 'void*' only when the size
 of a 'void*' object is large enough to contain the pointer.
 :errbad.
@@ -6427,7 +6431,7 @@ void __near *v = ip;
 
 :MSGSYM. WARN_SIZEOF_SIDE_EFFECT
 :MSGTXT. expression with side effect in sizeof discarded
-:MSGJTXT. 'sizeof'‚Ì’†‚Ì•›ì—p‚ğ‚à‚Â®‚Í”jŠü‚³‚ê‚Ü‚·
+:MSGJTXT. 'sizeof'ã®ä¸­ã®å‰¯ä½œç”¨ã‚’ã‚‚ã¤å¼ã¯ç ´æ£„ã•ã‚Œã¾ã™
 :WARNING. 1
 The indicated expression will be discarded; consequently, any side effects
 in that expression will not be executed.
@@ -6443,7 +6447,7 @@ has been initialized.
 
 :MSGSYM. ERR_FUNCTION_NO_MATCH
 :MSGTXT. function argument(s) do not match those in prototype
-:MSGJTXT. ŠÖ”ˆø”‚ÍCƒvƒƒgƒ^ƒCƒv‚Ì’†‚Å‚»‚ê‚ç‚Æˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°å¼•æ•°ã¯ï¼Œãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—ã®ä¸­ã§ãã‚Œã‚‰ã¨ä¸€è‡´ã—ã¾ã›ã‚“
 The C++ language requires great precision in specifying arguments
 for a function.  For instance, a pointer to
 .id char
@@ -6459,19 +6463,19 @@ in the prototype.
 
 :MSGSYM. ERR_ASSIGN_OPR_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [expression] to [class object]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[®]‚©‚ç[ƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[å¼]ã‹ã‚‰[ã‚¯ãƒ©ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ]ã¸
 :cmt JWW to look at
 The conversion of the expression to a class object is ambiguous.
 
 :MSGSYM. ERR_ASSIGN_OPR_NO_MATCH
 :MSGTXT. cannot assign right expression to class object
-:MSGJTXT. ƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg‚É‰E‚Ì®‚ğ‘ã“ü‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«å³ã®å¼ã‚’ä»£å…¥ã§ãã¾ã›ã‚“
 :cmt JWW to look at
 The expression on the right cannot be assigned to the indicated class object.
 
 :MSGSYM. INF_NUMBER_ARGS_HAS_THIS
 :MSGTXT. argument count is %d since there is an implicit 'this' argument
-:MSGJTXT. ˆÃ–Ù‚Ì'this'ˆø”‚ª‚ ‚é‚Ì‚ÅCˆø”‚Ì”‚Í%d‚Å‚·
+:MSGJTXT. æš—é»™ã®'this'å¼•æ•°ãŒã‚ã‚‹ã®ã§ï¼Œå¼•æ•°ã®æ•°ã¯%dã§ã™
 :INFO.
 This informational message indicates the number of arguments
 for the function mentioned in the error message.
@@ -6481,7 +6485,7 @@ argument so it may have one more argument than expected.
 
 :MSGSYM. INF_NUMBER_ARGS_NO_THIS
 :MSGTXT. argument count is %d since there is no implicit 'this' argument
-:MSGJTXT. ˆÃ–Ù‚Ì'this'ˆø”‚ª‚È‚¢‚Ì‚ÅCˆø”‚Ì”‚Í%d‚Å‚·
+:MSGJTXT. æš—é»™ã®'this'å¼•æ•°ãŒãªã„ã®ã§ï¼Œå¼•æ•°ã®æ•°ã¯%dã§ã™
 :INFO.
 This informational message indicates the number of arguments
 for the function mentioned in the error message.
@@ -6491,7 +6495,7 @@ argument so it may have one less argument than expected.
 
 :MSGSYM. INF_NUMBER_ARGS
 :MSGTXT. argument count is %d for a non-member function
-:MSGJTXT. ˆø”‚Ì”‚ÍC”ñƒƒ“ƒo[ŠÖ”‚É‘Î‚µ‚Ä%d‚Å‚·
+:MSGJTXT. å¼•æ•°ã®æ•°ã¯ï¼Œéãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã«å¯¾ã—ã¦%dã§ã™
 :INFO.
 This informational message indicates the number of arguments
 for the function mentioned in the error message.
@@ -6501,13 +6505,13 @@ function.
 
 :MSGSYM. ERR_ARRAY_COPY_CTOR_AMBIGUOUS
 :MSGTXT. conversion ambiguity: multiple copy constructors to copy array '%S'
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F”z—ñ'%S'‚ğƒRƒs[‚·‚é•¡”‚ÌƒRƒs[EƒRƒ“ƒXƒgƒ‰ƒNƒ^
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼šé…åˆ—'%S'ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹è¤‡æ•°ã®ã‚³ãƒ”ãƒ¼ãƒ»ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 :cmt JWW to look at
 More than one constructor to copy the indicated array exists.
 
 :MSGSYM. WARN_TYPEDEF_HAS_SAME_NAME
 :MSGTXT. variable/function has the same name as the class/enum '%S'
-:MSGJTXT. •Ï”/ŠÖ”‚ÍC‚»‚Ìclass/enum'%S'‚Æ“¯‚¶–¼‚ğ‚¿‚Ü‚·
+:MSGJTXT. å¤‰æ•°/é–¢æ•°ã¯ï¼Œãã®class/enum'%S'ã¨åŒã˜åã‚’æŒã¡ã¾ã™
 :WARNING. 3
 In C++, a class or enum name can coexist with a variable or function of
 the same name in a scope.  This warning is indicating that the current
@@ -6517,7 +6521,7 @@ unrelated uses of the same name.
 
 :MSGSYM. WARN_NON_TYPEDEF_HAS_SAME_NAME
 :MSGTXT. class/enum has the same name as the function/variable '%S'
-:MSGJTXT. class/enum‚ÍC‚»‚ÌŠÖ”/•Ï”'%S'‚Æ“¯‚¶–¼‚ğ‚¿‚Ü‚·
+:MSGJTXT. class/enumã¯ï¼Œãã®é–¢æ•°/å¤‰æ•°'%S'ã¨åŒã˜åã‚’æŒã¡ã¾ã™
 :WARNING. 1
 In C++, a class or enum name can coexist with a variable or function of
 the same name in a scope.  This warning is indicating that the current
@@ -6529,7 +6533,7 @@ order for subsequent references to compile properly.
 
 :MSGSYM. ERR_DEF_CTOR_IMPOSSIBLE
 :MSGTXT. cannot create a default constructor
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgEƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğ‚Â‚­‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ»ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’ã¤ãã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A default constructor could not be created, because other constructors were
 declared for the class in question.
 :errbad.
@@ -6550,20 +6554,20 @@ constructor has been declared.
 
 :MSGSYM. INF_DEF_CTOR
 :MSGTXT. attempting to access default constructor for %T
-:MSGJTXT. %T‚Ì‚½‚ß‚ÉƒfƒtƒHƒ‹ƒgEƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. %Tã®ãŸã‚ã«ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ»ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã«ã‚¢ã‚¯ã‚»ã‚¹ã—ã‚ˆã†ã¨ã—ã¦ã„ã¾ã™
 :INFO.
 This informational message indicates that a default constructor
 was referenced but could not be generated.
 
 :MSGSYM. ERR_HUGE_SYM_ALIGN
 :MSGTXT. cannot align symbol '%S' to segment boundary
-:MSGJTXT. ƒZƒOƒƒ“ƒg‹«ŠE‚ÉƒVƒ“ƒ{ƒ‹'%S'‚ğ®—ñ‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚»ã‚°ãƒ¡ãƒ³ãƒˆå¢ƒç•Œã«ã‚·ãƒ³ãƒœãƒ«'%S'ã‚’æ•´åˆ—ã§ãã¾ã›ã‚“
 The indicated symbol requires more than one segment of storage and the
 symbol's components cannot be aligned to the segment boundary.
 
 :MSGSYM. ERR_CLASS_FRIEND_NO_CLASS
 :MSGTXT. friend declaration does not specify a class or function
-:MSGJTXT. ƒtƒŒƒ“ƒhéŒ¾‚ÍCƒNƒ‰ƒX‚Ü‚½‚ÍŠÖ”‚ğw’è‚µ‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ•ãƒ¬ãƒ³ãƒ‰å®£è¨€ã¯ï¼Œã‚¯ãƒ©ã‚¹ã¾ãŸã¯é–¢æ•°ã‚’æŒ‡å®šã—ã¦ã„ã¾ã›ã‚“
 A class or function must be declared as a friend.
 :errbad.
 struct T {
@@ -6574,7 +6578,7 @@ struct T {
 
 :MSGSYM. ERR_ADDR_OF_OVERLOADED_FUN
 :MSGTXT. cannot take address of overloaded function
-:MSGJTXT. ƒI[ƒo[ƒ[ƒhŠÖ”‚ÌƒAƒhƒŒƒX‚ğ‚Æ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰é–¢æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã¨ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 This message indicates that an overloaded function's name was
 used in a context where a final type could not be found.
 Because a final type was not specified, the compiler cannot
@@ -6604,7 +6608,7 @@ int k = ( p == temp );
 
 :MSGSYM. ERR_ELLIPSE_ADDR_OVERLOAD
 :MSGTXT. cannot use address of overloaded function as a variable argument
-:MSGJTXT. ƒI[ƒo[ƒ[ƒhŠÖ”‚ÌƒAƒhƒŒƒX‚ğ•Ï”ˆø”‚Æ‚µ‚Äg‚¤‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰é–¢æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å¤‰æ•°å¼•æ•°ã¨ã—ã¦ä½¿ã†ã“ã¨ãŒã§ãã¾ã›ã‚“
 This message indicates that an overloaded function's name was
 used as a argument for a "..." style function.
 Because a final function type is not present, the compiler cannot
@@ -6632,26 +6636,26 @@ int k = ellip_fun( 14, temp );      // ok
 
 :MSGSYM. ERR_FUNCTION_CANNOT_BE_OVERLOADED
 :MSGTXT. '%N' cannot be overloaded
-:MSGJTXT. '%N'‚ÍƒI[ƒo[ƒ[ƒh‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã¯ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã§ãã¾ã›ã‚“
 The indicated function cannot be overloaded.  Functions that fall into
 this category include
 .kw operator delete.
 
 :MSGSYM. ERR_CANNOT_INIT_AGAIN
 :MSGTXT. symbol '%S' has already been initialized
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹'%S'‚ÍŠù‚É‰Šú‰»‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«'%S'ã¯æ—¢ã«åˆæœŸåŒ–ã•ã‚Œã¦ã„ã¾ã™
 The indicated symbol has already been initialized.  It cannot be
 initialized twice even if the initialization value is identical.
 
 :MSGSYM. ERR_DLT_PTR_TO_FUNCTION
 :MSGTXT. delete expression is a pointer to a function
-:MSGJTXT. delete®‚ÍŠÖ”‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‚·
+:MSGJTXT. deleteå¼ã¯é–¢æ•°ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§ã™
 A pointer to a function cannot be allocated so it cannot be
 deleted.
 
 :MSGSYM. WARN_DLT_PTR_TO_CONST
 :MSGTXT. delete of a pointer to const data
-:MSGJTXT. delete‰‰Zq‚Åconstƒf[ƒ^‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğíœ‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. deleteæ¼”ç®—å­ã§constãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å‰Šé™¤ã—ã¦ã„ã¾ã™
 :WARNING. 1
 Since deleting a pointer may involve modification
 of data, it is not always safe to delete a pointer
@@ -6666,7 +6670,7 @@ void fn( S const *p, S const *q ) {
 
 :MSGSYM. ERR_DLT_NOT_PTR_TO_DATA
 :MSGTXT. delete expression is not a pointer to data
-:MSGJTXT. delete®‚Íƒf[ƒ^‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. deleteå¼ã¯ãƒ‡ãƒ¼ã‚¿ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 A
 .kw delete
 expression can only delete pointers.
@@ -6682,7 +6686,7 @@ void fn( int a )
 
 :MSGSYM. ERR_TEMPLATE_ARG_NON_CONSTANT
 :MSGTXT. template argument is not a constant expression
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgˆø”‚Í’è”®‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã¯å®šæ•°å¼ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 The compiler has found an incorrect expression provided
 as the value for a constant value template argument.
 The only expressions allowed for scalar template arguments
@@ -6690,7 +6694,7 @@ are integral constant expressions.
 
 :MSGSYM. ERR_TEMPLATE_ARG_NOT_SYMBOL
 :MSGTXT. template argument is not an external linkage symbol
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgˆø”‚ÍŠO•”‚ÌƒŠƒ“ƒNEƒVƒ“ƒ{ƒ‹‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã¯å¤–éƒ¨ã®ãƒªãƒ³ã‚¯ãƒ»ã‚·ãƒ³ãƒœãƒ«ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 The compiler has found an incorrect expression provided
 as the value for a pointer value template argument.
 The only expressions allowed for pointer template arguments
@@ -6699,7 +6703,7 @@ Any symbols must have external linkage or must be static class members.
 
 :MSGSYM. ERR_REF_CNV_CONST_VOLATILE
 :MSGTXT. conversion of const reference to volatile reference
-:MSGJTXT. constQÆ‚©‚çŠö”­«QÆ‚Ö‚Ì•ÏŠ·‚Å‚·
+:MSGJTXT. constå‚ç…§ã‹ã‚‰æ®ç™ºæ€§å‚ç…§ã¸ã®å¤‰æ›ã§ã™
 The constant value can be modified by assigning into the
 volatile reference.  This would allow constant data to be
 modified quietly.
@@ -6712,7 +6716,7 @@ void fn( const int &rci )
 
 :MSGSYM. ERR_REF_CNV_VOLATILE_CONST
 :MSGTXT. conversion of volatile reference to const reference
-:MSGJTXT. Šö”­«QÆ‚©‚çconstQÆ‚Ö‚Ì•ÏŠ·‚Å‚·
+:MSGJTXT. æ®ç™ºæ€§å‚ç…§ã‹ã‚‰constå‚ç…§ã¸ã®å¤‰æ›ã§ã™
 The volatile value can be read incorrectly by accessing the
 const reference.  This would allow volatile data to be
 accessed without correct volatile semantics.
@@ -6725,7 +6729,7 @@ void fn( volatile int &rvi )
 
 :MSGSYM. ERR_REF_CNV_CV_PLAIN
 :MSGTXT. conversion of const or volatile reference to plain reference
-:MSGJTXT. const‚Ü‚½‚ÍvolatileQÆ‚©‚çCüq‚È‚µ‚ÌQÆ‚Ö‚Ì•ÏŠ·‚Å‚·
+:MSGJTXT. constã¾ãŸã¯volatileå‚ç…§ã‹ã‚‰ä¿®é£¾å­ãªã—ã®å‚ç…§ã¸ã®å¤‰æ›ã§ã™
 The constant value can be modified by assigning into the
 plain reference.  This would allow constant data to be
 modified quietly.  In the case of volatile data, any access to
@@ -6741,14 +6745,14 @@ void fn( const int &rci, volatile int &rvi )
 
 :MSGSYM. ERR_SYNTAX_UNDECLARED_ID
 :MSGTXT. syntax error before '%s'; probable cause: incorrectly spelled type name
-:MSGJTXT. '%s'‚Ì‘O‚Ì\•¶ƒGƒ‰[Gl‚¦‚ç‚ê‚éŒ´ˆöFŠÔˆá‚Á‚Ä‚Â‚Ã‚ç‚ê‚½Œ^–¼
+:MSGJTXT. '%s'ã®å‰ã®æ§‹æ–‡ã‚¨ãƒ©ãƒ¼ï¼›è€ƒãˆã‚‰ã‚Œã‚‹åŸå› ï¼šé–“é•ã£ã¦ã¤ã¥ã‚‰ã‚ŒãŸå‹å
 The identifier in the error message has not been declared as a type name
 in any scope at this point in the code.  This may be the cause of the
 syntax error.
 
 :MSGSYM. ERR_BARE_FUNCTION_ACCESS
 :MSGTXT. object (or object pointer) required to access non-static member function
-:MSGJTXT. ƒIƒuƒWƒFƒNƒgi‚ ‚é‚¢‚ÍCƒIƒuƒWƒFƒNƒgEƒ|ƒCƒ“ƒ^j‚ÍC”ñƒXƒ^ƒeƒBƒbƒNEƒƒ“ƒoŠÖ”‚ÉƒAƒNƒZƒX‚·‚é‚½‚ß‚É•K—v‚Å‚·
+:MSGJTXT. ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼ˆã‚ã‚‹ã„ã¯ï¼Œã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ»ãƒã‚¤ãƒ³ã‚¿ï¼‰ã¯ï¼Œéã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ¡ãƒ³ãƒé–¢æ•°ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ãŸã‚ã«å¿…è¦ã§ã™
 A reference to a member function in a class has occurred.
 The member is non-static so in order to access it, an object
 of the class is required.
@@ -6764,37 +6768,37 @@ struct S {
 
 :MSGSYM. ERR_EXTRA_THIS_FOR_FUNCTION
 :MSGTXT. object (or object pointer) cannot be used to access function
-:MSGJTXT. ƒIƒuƒWƒFƒNƒgi‚ ‚é‚¢‚ÍCƒIƒuƒWƒFƒNƒgƒ|ƒCƒ“ƒ^j‚ÍCŠÖ”‚ÉƒAƒNƒZƒX‚·‚é‚½‚ß‚Ég—p‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼ˆã‚ã‚‹ã„ã¯ï¼Œã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒã‚¤ãƒ³ã‚¿ï¼‰ã¯ï¼Œé–¢æ•°ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 :cmt JWW to look at
 The indicated object (or object pointer) cannot be used to access function.
 
 :MSGSYM. ERR_EXTRA_THIS_FOR_DATA
 :MSGTXT. object (or object pointer) cannot be used to access data
-:MSGJTXT. ƒIƒuƒWƒFƒNƒgi‚ ‚é‚¢‚ÍCƒIƒuƒWƒFƒNƒgƒ|ƒCƒ“ƒ^j‚ªCƒf[ƒ^‚ÉƒAƒNƒZƒX‚·‚é‚½‚ß‚Ég—p‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼ˆã‚ã‚‹ã„ã¯ï¼Œã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒã‚¤ãƒ³ã‚¿ï¼‰ãŒï¼Œãƒ‡ãƒ¼ã‚¿ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 :cmt JWW to look at
 The indicated object (or object pointer) cannot be used to access data.
 
 :MSGSYM. ERR_ENCLOSING_THIS_FUNCTION
 :MSGTXT. cannot access member function in enclosing class
-:MSGJTXT. ˆÍ‚ñ‚Å‚¢‚éƒNƒ‰ƒX‚Ìƒƒ“ƒoŠÖ”‚ÉƒAƒNƒZƒX‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å›²ã‚“ã§ã„ã‚‹ã‚¯ãƒ©ã‚¹ã®ãƒ¡ãƒ³ãƒé–¢æ•°ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 :cmt JWW to look at
 A member function in enclosing class cannot be accessed.
 
 :MSGSYM. ERR_ENCLOSING_THIS_DATA
 :MSGTXT. cannot access data member in enclosing class
-:MSGJTXT. ˆÍ‚ñ‚Å‚¢‚éƒNƒ‰ƒX‚Ìƒf[ƒ^Eƒƒ“ƒo‚ÉƒAƒNƒZƒX‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å›²ã‚“ã§ã„ã‚‹ã‚¯ãƒ©ã‚¹ã®ãƒ‡ãƒ¼ã‚¿ãƒ»ãƒ¡ãƒ³ãƒã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 :cmt JWW to look at
 A data member in enclosing class cannot be accessed.
 
 :MSGSYM. ERR_SYNTAX_TYPE_NAME
 :MSGTXT. syntax error before type name '%s'
-:MSGJTXT. Œ^–¼'%s'‚Ì‘O‚Ì\•¶ƒGƒ‰[
+:MSGJTXT. å‹å'%s'ã®å‰ã®æ§‹æ–‡ã‚¨ãƒ©ãƒ¼
 The identifier in the error message has been declared as a type name
 at this point in the code.  This may be the cause of the syntax error.
 
 :MSGSYM. ERR_NO_VIRTUAL_ELLIPSE_FUNCTION_THUNKS
 :MSGTXT. implementation restriction: cannot generate thunk from '%S'
-:MSGJTXT. À‘•§ŒÀ: '%S'‚©‚çƒTƒ“ƒN‚ğ¶¬‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®Ÿè£…åˆ¶é™: '%S'ã‹ã‚‰ã‚µãƒ³ã‚¯ã‚’ç”Ÿæˆã§ãã¾ã›ã‚“
 This implementation restriction is due to the use of a shared code generator
 between Open Watcom compilers.
 The virtual
@@ -6911,7 +6915,7 @@ void main()
 
 :MSGSYM. ERR_VIRTUAL_FOR_BASED_VOID
 :MSGTXT. conversion of __based( void ) pointer to virtual base class
-:MSGJTXT. __based(voidjƒ|ƒCƒ“ƒ^‚©‚ç‰¼‘zŠî’êƒNƒ‰ƒX‚Ö‚Ì•ÏŠ·‚Å‚·
+:MSGJTXT. __based(voidï¼‰ãƒã‚¤ãƒ³ã‚¿ã‹ã‚‰ä»®æƒ³åŸºåº•ã‚¯ãƒ©ã‚¹ã¸ã®å¤‰æ›ã§ã™
 An __based(void) pointer to a class object cannot be converted to a pointer
 to virtual base class, since this conversion applies only to specific
 objects.
@@ -6925,64 +6929,64 @@ The conversion would be allowed if the base class were not virtual.
 
 :MSGSYM. ERR_MEMB_PTR_NOT_DERIVED
 :MSGTXT. class for target operand is not derived from class for source operand
-:MSGJTXT. ƒ^[ƒQƒbƒg¥I‚¦ƒ‰ƒ“ƒh‚ÌƒNƒ‰ƒX‚Íƒ\[ƒX¥ƒIƒyƒ‰ƒ“ƒh‚ÌƒNƒ‰ƒX‚©‚ç”h¶‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï½¥çµ‚ãˆãƒ©ãƒ³ãƒ‰ã®ã‚¯ãƒ©ã‚¹ã¯ã‚½ãƒ¼ã‚¹ï½¥ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®ã‚¯ãƒ©ã‚¹ã‹ã‚‰æ´¾ç”Ÿã•ã‚Œã¦ã„ã¾ã™
 A member pointer conversion can only be performed safely when converting
 a base class member pointer to a derived class member pointer.
 
 :MSGSYM. ERR_MEMB_PTR_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [pointer to class member] to [assignment object]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[ƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^]‚©‚ç[‘ã“üƒIƒuƒWƒFƒNƒg]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿]ã‹ã‚‰[ä»£å…¥ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ]ã¸
 The base class in the original member pointer is not a unique base class
 of the derived class.
 
 :MSGSYM. ERR_MEMB_PTR_PRIVATE
 :MSGTXT. conversion of pointer to class member involves a private base class
-:MSGJTXT. ƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Ì•ÏŠ·‚ÍCƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®å¤‰æ›ã¯ï¼Œãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã‚’å«ã¿ã¾ã™
 The member pointer conversion required access
 to a private base class.  The access check did not succeed so the
 conversion is not allowed.
 
 :MSGSYM. ERR_MEMB_PTR_PROTECTED
 :MSGTXT. conversion of pointer to class member involves a protected base class
-:MSGJTXT. ƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Ì•ÏŠ·‚ÍCƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®å¤‰æ›ã¯ï¼Œãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã‚’å«ã¿ã¾ã™
 The member pointer conversion required access
 to a protected base class.  The access check did not succeed so the
 conversion is not allowed.
 
 :MSGSYM. ERR_MEMB_PTR_ADDR_OF
 :MSGTXT. item is neither a non-static member function nor data member
-:MSGJTXT. €–Ú‚ÍC”ñƒXƒ^ƒeƒBƒbƒNEƒƒ“ƒoŠÖ”‚Å‚àƒf[ƒ^Eƒƒ“ƒo‚Å‚à‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. é …ç›®ã¯ï¼Œéã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ¡ãƒ³ãƒé–¢æ•°ã§ã‚‚ãƒ‡ãƒ¼ã‚¿ãƒ»ãƒ¡ãƒ³ãƒã§ã‚‚ã‚ã‚Šã¾ã›ã‚“
 A member pointer can only be created for non-static member functions
 and non-static data members.  Static members can have their address
 taken just like their file scope counterparts.
 
 :MSGSYM. ERR_MEMB_PTR_FUN_IMPOSSIBLE
 :MSGTXT. function address cannot be converted to pointer to class member
-:MSGJTXT. ŠÖ”ƒAƒhƒŒƒX‚ÍCƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚É•ÏŠ·‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ã‚¢ãƒ‰ãƒ¬ã‚¹ã¯ï¼Œã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã«å¤‰æ›ã§ãã¾ã›ã‚“
 :cmt JWW to look at
 The indicated function address cannot be converted to pointer to class member.
 
 :MSGSYM. ERR_MEMB_PTR_FUN_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [address of function] to [pointer to class member]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[ŠÖ”‚ÌƒAƒhƒŒƒX]‚©‚ç[ƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[é–¢æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹]ã‹ã‚‰[ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿]ã¸
 :cmt JWW to look at
 The indicated conversion is ambiguous.
 
 :MSGSYM. ERR_MEMB_PTR_FUN_PRIVATE
 :MSGTXT. addressed function is in a private base class
-:MSGJTXT. ƒAƒhƒŒƒXw’è‚³‚ê‚½ŠÖ”‚ªCƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚É‚ ‚è‚Ü‚·
+:MSGJTXT. ã‚¢ãƒ‰ãƒ¬ã‚¹æŒ‡å®šã•ã‚ŒãŸé–¢æ•°ãŒï¼Œãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã«ã‚ã‚Šã¾ã™
 :cmt JWW to look at
 The addressed function is in a private base class.
 
 :MSGSYM. ERR_MEMB_PTR_FUN_PROTECTED
 :MSGTXT. addressed function is in a protected base class
-:MSGJTXT. ƒAƒhƒŒƒXw’è‚³‚ê‚½ŠÖ”‚ªCƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚É‚ ‚è‚Ü‚·
+:MSGJTXT. ã‚¢ãƒ‰ãƒ¬ã‚¹æŒ‡å®šã•ã‚ŒãŸé–¢æ•°ãŒï¼Œãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã«ã‚ã‚Šã¾ã™
 :cmt JWW to look at
 The addressed function is in a protected base class.
 
 :MSGSYM. ERR_UNDEFINED_CLASS_OBJECT
 :MSGTXT. class for object is not defined
-:MSGJTXT. ƒIƒuƒWƒFƒNƒg‚É‘Î‚·‚éƒNƒ‰ƒX‚ÍC’è‹`‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«å¯¾ã™ã‚‹ã‚¯ãƒ©ã‚¹ã¯ï¼Œå®šç¾©ã•ã‚Œã¾ã›ã‚“
 The left hand operand for the "." or ".*" operator must be of a class type
 that is completely defined.
 :errbad.
@@ -6996,73 +7000,73 @@ int fun( C& x )
 
 :MSGSYM. ERR_NOT_CLASS
 :MSGTXT. left expression is not a class object
-:MSGJTXT. ¶®‚ÍƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦å¼ã¯ã‚¯ãƒ©ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§ã¯ã‚ã‚Šã¾ã›ã‚“
 The left hand operand for the ".*" operator must be of a class type
 since member pointers can only be used with classes.
 
 :MSGSYM. ERR_RIGHT_NOT_MEMBPTR
 :MSGTXT. right expression is not a pointer to class member
-:MSGJTXT. ‰E®‚ÍƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å³å¼ã¯ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 The right hand operand for the ".*" operator must be a
 member pointer type.
 
 :MSGSYM. ERR_MP_PTR_IMPOSSIBLE
 :MSGTXT. cannot convert pointer to class of member pointer
-:MSGJTXT. ƒƒ“ƒoEƒ|ƒCƒ“ƒ^‚ÌƒNƒ‰ƒX‚Éƒ|ƒCƒ“ƒ^‚ğ•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¡ãƒ³ãƒãƒ»ãƒã‚¤ãƒ³ã‚¿ã®ã‚¯ãƒ©ã‚¹ã«ãƒã‚¤ãƒ³ã‚¿ã‚’å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The class of the left hand operand cannot be converted to the
 class of the member pointer because it is not a derived class.
 
 :MSGSYM. ERR_MP_PTR_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [pointer] to [class of pointer to class member]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[ƒ|ƒCƒ“ƒ^]‚©‚ç[ƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÌƒNƒ‰ƒX]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[ãƒã‚¤ãƒ³ã‚¿]ã‹ã‚‰[ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®ã‚¯ãƒ©ã‚¹]ã¸
 The class of the pointer to member is an ambiguous base class of the left
 hand operand.
 
 :MSGSYM. ERR_MP_PTR_PRIVATE
 :MSGTXT. conversion of pointer to class of member pointer involves a private base class
-:MSGJTXT. ƒƒ“ƒoEƒ|ƒCƒ“ƒ^‚ÌƒNƒ‰ƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Ì•ÏŠ·‚ÍCƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. ãƒ¡ãƒ³ãƒãƒ»ãƒã‚¤ãƒ³ã‚¿ã®ã‚¯ãƒ©ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®å¤‰æ›ã¯ï¼Œãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã‚’å«ã¿ã¾ã™
 The class of the pointer to member is a private base class of the left
 hand operand.
 
 :MSGSYM. ERR_MP_PTR_PROTECTED
 :MSGTXT. conversion of pointer to class of member pointer involves a protected base class
-:MSGJTXT. ƒƒ“ƒoEƒ|ƒCƒ“ƒ^‚ÌƒNƒ‰ƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Ì•ÏŠ·‚ÍCƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. ãƒ¡ãƒ³ãƒãƒ»ãƒã‚¤ãƒ³ã‚¿ã®ã‚¯ãƒ©ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®å¤‰æ›ã¯ï¼Œãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã‚’å«ã¿ã¾ã™
 The class of the pointer to member is a protected base class of the left
 hand operand.
 
 :MSGSYM. ERR_MP_OBJECT_IMPOSSIBLE
 :MSGTXT. cannot convert object to class of member pointer
-:MSGJTXT. ƒƒ“ƒoEƒ|ƒCƒ“ƒ^‚ÌƒNƒ‰ƒX‚ÉƒIƒuƒWƒFƒNƒg‚ğ•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¡ãƒ³ãƒãƒ»ãƒã‚¤ãƒ³ã‚¿ã®ã‚¯ãƒ©ã‚¹ã«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The class of the left hand operand cannot be converted to the
 class of the member pointer because it is not a derived class.
 
 :MSGSYM. ERR_MP_OBJECT_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [object] to [class object of pointer to class member]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[ƒIƒuƒWƒFƒNƒg]‚©‚ç[ƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÌƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ]ã‹ã‚‰[ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®ã‚¯ãƒ©ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ]ã¸
 The class of the pointer to member is an ambiguous base class of the left
 hand operand.
 
 :MSGSYM. ERR_MP_OBJECT_PRIVATE
 :MSGTXT. conversion of object to class of member pointer involves a private base class
-:MSGJTXT. ƒƒ“ƒoEƒ|ƒCƒ“ƒ^‚ÌƒNƒ‰ƒX‚Ö‚ÌƒIƒuƒWƒFƒNƒg‚Ì•ÏŠ·‚ÍCƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. ãƒ¡ãƒ³ãƒãƒ»ãƒã‚¤ãƒ³ã‚¿ã®ã‚¯ãƒ©ã‚¹ã¸ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å¤‰æ›ã¯ï¼Œãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã‚’å«ã¿ã¾ã™
 The class of the pointer to member is a private base class of the left
 hand operand.
 
 :MSGSYM. ERR_MP_OBJECT_PROTECTED
 :MSGTXT. conversion of object to class of member pointer involves a protected base class
-:MSGJTXT. ƒƒ“ƒoEƒ|ƒCƒ“ƒ^‚ÌƒNƒ‰ƒX‚Ö‚ÌƒIƒuƒWƒFƒNƒg‚Ì•ÏŠ·‚ÍCƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. ãƒ¡ãƒ³ãƒãƒ»ãƒã‚¤ãƒ³ã‚¿ã®ã‚¯ãƒ©ã‚¹ã¸ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å¤‰æ›ã¯ï¼Œãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã‚’å«ã¿ã¾ã™
 The class of the pointer to member is a protected base class of the left
 hand operand.
 
 :MSGSYM. ERR_MEMB_PTR_DERIVED
 :MSGTXT. conversion of pointer to class member from a derived to a base class
-:MSGJTXT. ƒNƒ‰ƒXƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Ì”h¶ƒNƒ‰ƒX‚©‚çŠî’êƒNƒ‰ƒX‚Ö‚Ì•ÏŠ·‚Å‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã‹ã‚‰åŸºåº•ã‚¯ãƒ©ã‚¹ã¸ã®å¤‰æ›ã§ã™
 A member pointer can only be converted from a base class to a derived class.
 This is the opposite of the conversion rule for pointers.
 
 :MSGSYM. ERR_PRAG_INLINE_RECURSION
 :MSGTXT. form is '#pragma inline_recursion en' where 'en' is 'on' or 'off'
-:MSGJTXT. ‘®‚Í'#pragma inline_recursion en'‚Å‚·B‚±‚±‚Å'en'‚Í'on'‚Ü‚½‚Í'off'‚Å‚·
+:MSGJTXT. æ›¸å¼ã¯'#pragma inline_recursion en'ã§ã™ã€‚ã“ã“ã§'en'ã¯'on'ã¾ãŸã¯'off'ã§ã™
 This
 .kw pragma
 indicates whether inline expansion will occur for an inline
@@ -7072,7 +7076,7 @@ Either 'on' or 'off' must be specified.
 
 :MSGSYM. ERR_NEW_ARRAY_EXPRESSION
 :MSGTXT. expression for number of array elements must be integral
-:MSGJTXT. ”z—ñ—v‘f‚Ì”‚É‘Î‚·‚é®‚ÍC®”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. é…åˆ—è¦ç´ ã®æ•°ã«å¯¾ã™ã‚‹å¼ã¯ï¼Œæ•´æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The expression for the number of elements in a
 .kw new
 expression must be integral because it is used to calculate the size
@@ -7082,32 +7086,32 @@ truncation issues with floating-point values.
 
 :MSGSYM. ERR_MEMB_PTR_FUNC_NOT_CALLED
 :MSGTXT. function accessed with '.*' or '->*' can only be called
-:MSGJTXT. '.*'‚©'->*'‚ÅƒAƒNƒZƒX‚³‚ê‚½ŠÖ”‚ÍCŒÄ‚Ño‚³‚ê‚é‚Ì‚İ‚Å‚·
+:MSGJTXT. '.*'ã‹'->*'ã§ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚ŒãŸé–¢æ•°ã¯ï¼Œå‘¼ã³å‡ºã•ã‚Œã‚‹ã®ã¿ã§ã™
 The result of the ".*" and "->*" operators can only be called
 because it is often specific to the instance used for the left hand
 operand.
 
 :MSGSYM. ERR_LEFT_NOT_PTR_ARITH_MP
 :MSGTXT. left operand must be a pointer, pointer to class member, or arithmetic
-:MSGJTXT. ¶ƒIƒyƒ‰ƒ“ƒh‚ÍCƒ|ƒCƒ“ƒ^CƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ ‚é‚¢‚ÍZp‰‰ZŒ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ï¼Œãƒã‚¤ãƒ³ã‚¿ï¼Œã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚ã‚‹ã„ã¯ç®—è¡“æ¼”ç®—å‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 :cmt JWW to look at
 The left operand must be a pointer, pointer to class member, or arithmetic.
 
 :MSGSYM. ERR_RIGHT_NOT_PTR_ARITH_MP
 :MSGTXT. right operand must be a pointer, pointer to class member, or arithmetic
-:MSGJTXT. ‰EƒIƒyƒ‰ƒ“ƒh‚ÍCƒ|ƒCƒ“ƒ^CƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ ‚é‚¢‚ÍZp‰‰ZŒ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å³ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ï¼Œãƒã‚¤ãƒ³ã‚¿ï¼Œã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚ã‚‹ã„ã¯ç®—è¡“æ¼”ç®—å‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 :cmt JWW to look at
 The right operand must be a pointer, pointer to class member, or arithmetic.
 
 :MSGSYM. ERR_MEMB_PTR_CMP_NOT_DERIVED
 :MSGTXT. neither pointer to class member can be converted to the other
-:MSGJTXT. ƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ì‚Ç‚¿‚ç‚Ìƒ|ƒCƒ“ƒ^‚àC‚à‚¤ˆê•û‚É•ÏŠ·‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ã©ã¡ã‚‰ã®ãƒã‚¤ãƒ³ã‚¿ã‚‚ï¼Œã‚‚ã†ä¸€æ–¹ã«å¤‰æ›ã§ãã¾ã›ã‚“
 The two member pointers being compared are from two unrelated classes.
 They cannot be compared since their members can never be related.
 
 :MSGSYM. ERR_LEFT_MEMB_PTR_OPERAND
 :MSGTXT. left operand is not a valid pointer to class member
-:MSGJTXT. ¶ƒIƒyƒ‰ƒ“ƒh‚ÍCƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ì—LŒø‚Èƒ|ƒCƒ“ƒ^‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ï¼Œã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®æœ‰åŠ¹ãªãƒã‚¤ãƒ³ã‚¿ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 The specified operator requires a pointer to member as the left operand.
 :errbad.
 struct S;
@@ -7120,7 +7124,7 @@ void fn( int S::* mp, int *p )
 
 :MSGSYM. ERR_RIGHT_MEMB_PTR_OPERAND
 :MSGTXT. right operand is not a valid pointer to class member
-:MSGJTXT. ‰EƒIƒyƒ‰ƒ“ƒh‚ÍCƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ì—LŒø‚Èƒ|ƒCƒ“ƒ^‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å³ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ï¼Œã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®æœ‰åŠ¹ãªãƒã‚¤ãƒ³ã‚¿ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 The specified operator requires a pointer to member as the right operand.
 :errbad.
 struct S;
@@ -7133,13 +7137,13 @@ void fn( int S::* mp, int *p )
 
 :MSGSYM. ERR_MEMB_PTR_DEREF_ZERO
 :MSGTXT. cannot use '.*' nor '->*' with pointer to class member with zero value
-:MSGJTXT. ’l‚ª0‚ÌƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Æ‚Æ‚à‚ÉC'.*'‚à'->*'‚àg‚¤‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å€¤ãŒ0ã®ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã¨ã¨ã‚‚ã«ï¼Œ'.*'ã‚‚'->*'ã‚‚ä½¿ã†ã“ã¨ãŒã§ãã¾ã›ã‚“
 The compiler has detected a NULL pointer use with a member pointer
 dereference.
 
 :MSGSYM. ERR_MEMB_PTR_OPERAND
 :MSGTXT. operand is not a valid pointer to class member
-:MSGJTXT. ƒIƒyƒ‰ƒ“ƒh‚ÍCƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ì—LŒø‚Èƒ|ƒCƒ“ƒ^‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ï¼Œã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®æœ‰åŠ¹ãªãƒã‚¤ãƒ³ã‚¿ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 The operand cannot be converted to a valid pointer to class member.
 :errbad.
 struct S;
@@ -7152,38 +7156,38 @@ int S::* fn()
 
 :MSGSYM. ERR_DTOR_NO_OBJECT
 :MSGTXT. destructor can be invoked only with '.' or '->'
-:MSGJTXT. ƒfƒXƒgƒ‰ƒNƒ^‚Í'.'‚©'->'‚Å‹N“®‚Å‚«‚Ü‚·
+:MSGJTXT. ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯'.'ã‹'->'ã§èµ·å‹•ã§ãã¾ã™
 This is a restriction in the C++ language.  An explicit invocation
 of a destructor is not recommended for objects that have their
 destructor called automatically.
 
 :MSGSYM. ERR_DTOR_NOT_SAME
 :MSGTXT. class of destructor must be class of object being destructed
-:MSGJTXT. ƒfƒXƒgƒ‰ƒNƒ^‚ÌƒNƒ‰ƒX‚ÍCÁ‹‚³‚ê‚éƒIƒuƒWƒFƒNƒg‚ÌƒNƒ‰ƒX‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ã‚¯ãƒ©ã‚¹ã¯ï¼Œæ¶ˆå»ã•ã‚Œã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¯ãƒ©ã‚¹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Destructors can only be called for the exact static type of the object being
 destroyed.
 
 :MSGSYM. ERR_DTOR_BAD_QUAL
 :MSGTXT. destructor is not properly qualified
-:MSGJTXT. ƒfƒXƒgƒ‰ƒNƒ^‚Í³‚µ‚­Cü‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯æ­£ã—ãä¿®é£¾ã•ã‚Œã¦ã„ã¾ã›ã‚“
 An explicit destructor invocation can only be qualified with its own
 class.
 
 :MSGSYM. ERR_MEMB_PTR_OBJS_MISMATCH
 :MSGTXT. pointers to class members reference different object types
-:MSGJTXT. ƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÍˆÙ‚È‚éƒIƒuƒWƒFƒNƒgŒ^‚ğQÆ‚µ‚Ü‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã¯ç•°ãªã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå‹ã‚’å‚ç…§ã—ã¾ã™
 Conversion of member pointers can only occur if the object types
 are identical.  This is necessary to ensure type safety.
 
 :MSGSYM. ERR_NOT_CLASS_PTR
 :MSGTXT. operand must be pointer to class or struct
-:MSGJTXT. ƒIƒyƒ‰ƒ“ƒh‚ÍCclass‚©struct‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ï¼Œclassã‹structã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The left hand operand of a '->*' operator must be a pointer to a class.
 This is a restriction in the C++ language.
 
 :MSGSYM. ERR_NOT_VOID
 :MSGTXT. expression must have void type
-:MSGJTXT. ®‚Í'void'Œ^‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯'void'å‹ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 If one operand of the ':' operator has
 .kw void
 type, then the other operand must also have
@@ -7192,14 +7196,14 @@ type.
 
 :MSGSYM. ERR_BAD_COLON_OPERANDS
 :MSGTXT. expression types do not match for ':' operator
-:MSGJTXT. ®‚ÌŒ^‚Í'F'‰‰Zq‚É‘Î‚µ‚Äˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã®å‹ã¯'ï¼š'æ¼”ç®—å­ã«å¯¾ã—ã¦ä¸€è‡´ã—ã¾ã›ã‚“
 The compiler could not bring both operands to a common type.
 This is necessary because the result of the conditional
 operator must be a unique type.
 
 :MSGSYM. ERR_CANT_NEW_UNDEFD
 :MSGTXT. cannot create an undefined type with 'operator new'
-:MSGJTXT. –¢’è‹`‚ÌŒ^‚ğ'operator new'‚Åì‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æœªå®šç¾©ã®å‹ã‚’'operator new'ã§ä½œã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A
 .kw new
 expression cannot allocate an undefined type because it must know how
@@ -7208,7 +7212,7 @@ are any constructors to execute.
 
 :MSGSYM. WARN_CANT_DEL_UNDEFD
 :MSGTXT. delete of a pointer to an undefined type
-:MSGJTXT. delete‰‰Zq‚Å–¢’è‹`Œ^‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğíœ‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. deleteæ¼”ç®—å­ã§æœªå®šç¾©å‹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å‰Šé™¤ã—ã¦ã„ã¾ã™
 :WARNING. 1
 A
 .kw delete
@@ -7227,19 +7231,19 @@ void foo( U *p, U *q ) {
 
 :MSGSYM. ERR_ACCESS_THROUGH_PRIVATE
 :MSGTXT. cannot access '%S' through a private base class
-:MSGJTXT. ƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ğ’Ê‚µ‚Ä'%S'‚ÉƒAƒNƒZƒX‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã‚’é€šã—ã¦'%S'ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The indicated symbol cannot be accessed because it requires
 access to a private base class.
 
 :MSGSYM. ERR_ACCESS_THROUGH_PROTECTED
 :MSGTXT. cannot access '%S' through a protected base class
-:MSGJTXT. ƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ğ’Ê‚µ‚Ä'%S'‚ÉƒAƒNƒZƒX‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã‚’é€šã—ã¦'%S'ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The indicated symbol cannot be accessed because it requires
 access to a protected base class.
 
 :MSGSYM. WARN_CLASS_HAS_SPECIAL_FIELDS
 :MSGTXT. 'sizeof' operand contains compiler generated information
-:MSGJTXT. 'sizeof'ƒIƒyƒ‰ƒ“ƒh‚ÍCƒRƒ“ƒpƒCƒ‰‚ª¶¬‚³‚ê‚½î•ñ‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. 'sizeof'ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ï¼Œã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ãŒç”Ÿæˆã•ã‚ŒãŸæƒ…å ±ã‚’å«ã¿ã¾ã™
 :WARNING. 3
 The type used in the 'sizeof' operand contains compiler generated
 information.  Clearing a struct with a call to memset() would
@@ -7247,39 +7251,39 @@ invalidate all of this information.
 
 :MSGSYM. ERR_COLON_REF_CNV_IMPOSSIBLE
 :MSGTXT. cannot convert ':' operands to a common reference type
-:MSGJTXT. 'F'‚ÌƒIƒyƒ‰ƒ“ƒh‚ğ‹¤’Ê‚ÌQÆŒ^‚Ö•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'ï¼š'ã®ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã‚’å…±é€šã®å‚ç…§å‹ã¸å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The two reference types cannot be converted to a common reference type.
 This can happen when the types are not related through base class inheritance.
 
 :MSGSYM. ERR_COLON_REF_CNV_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [reference to object] to [type of opposite ':' operand]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[ƒIƒuƒWƒFƒNƒg‚Ö‚ÌQÆ]‚©‚ç [³”½‘Î‚ÌŒ^ƒIƒyƒ‰ƒ“ƒh‚É‚Æ‚Á‚Ä]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®å‚ç…§]ã‹ã‚‰ [æ­£åå¯¾ã®å‹ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã«ã¨ã£ã¦]ã¸
 One of the reference types is an ambiguous base class of the other.
 This prevents the compiler from converting the operand to a unique
 common type.
 
 :MSGSYM. ERR_COLON_REF_CNV_PRIVATE
 :MSGTXT. conversion of reference to ':' object involves a private base class
-:MSGJTXT. 'F'ƒIƒuƒWƒFƒNƒg‚Ö‚ÌQÆ‚Ì•ÏŠ·‚ÍCƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. 'ï¼š'ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®å‚ç…§ã®å¤‰æ›ã¯ï¼Œãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã‚’å«ã¿ã¾ã™
 The conversion of the reference operands requires a conversion through
 a private base class.
 
 :MSGSYM. ERR_COLON_REF_CNV_PROTECTED
 :MSGTXT. conversion of reference to ':' object involves a protected base class
-:MSGJTXT. 'F'ƒIƒuƒWƒFƒNƒg‚Ö‚ÌQÆ‚Ì•ÏŠ·‚ÍCƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. 'ï¼š'ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®å‚ç…§ã®å¤‰æ›ã¯ï¼Œãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã‚’å«ã¿ã¾ã™
 The conversion of the reference operands requires a conversion through
 a protected base class.
 
 :MSGSYM. ERR_NOT_BOOLEAN
 :MSGTXT. expression must have type arithmetic, pointer, or pointer to class member
-:MSGJTXT. ®‚ÍCZp‰‰ZŒ^Cƒ|ƒCƒ“ƒ^‚Ü‚½‚ÍƒNƒ‰ƒXEƒƒ“ƒo‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯ï¼Œç®—è¡“æ¼”ç®—å‹ï¼Œãƒã‚¤ãƒ³ã‚¿ã¾ãŸã¯ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 This message means that the type cannot be converted to any of these
 types, also.  All of the mentioned types can be compared against zero ('0')
 to produce a true or false value.
 
 :MSGSYM. WARN_WHILE_FALSE
 :MSGTXT. expression for 'while' is always false
-:MSGJTXT. 'while'‚É‘Î‚·‚é®‚ÍCí‚É‹U‚Å‚·
+:MSGJTXT. 'while'ã«å¯¾ã™ã‚‹å¼ã¯ï¼Œå¸¸ã«å½ã§ã™
 :WARNING. 3
 The compiler has detected that the expression will always be false.
 If this is not the expected behaviour, the code may contain a
@@ -7289,7 +7293,7 @@ against zero for addresses can also result in trivially false expressions.
 
 :MSGSYM. WARN_FOR_FALSE
 :MSGTXT. testing expression for 'for' is always false
-:MSGJTXT. 'for'‚É‘Î‚·‚é®‚ÌƒeƒXƒg‚ÍCí‚É‹U‚Å‚·
+:MSGJTXT. 'for'ã«å¯¾ã™ã‚‹å¼ã®ãƒ†ã‚¹ãƒˆã¯ï¼Œå¸¸ã«å½ã§ã™
 :WARNING. 3
 The compiler has detected that the expression will always be false.
 If this is not the expected behaviour, the code may contain a
@@ -7299,14 +7303,14 @@ against zero for addresses can also result in trivially false expressions.
 
 :MSGSYM. ERR_PRAG_WARNING_BAD_MESSAGE
 :MSGTXT. message number '%d' is invalid
-:MSGJTXT. ƒƒbƒZ[ƒW”Ô†'%d'‚Í•s“KØ‚Å‚·
+:MSGJTXT. ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç•ªå·'%d'ã¯ä¸é©åˆ‡ã§ã™
 The message number used in the #pragma does not match the message number
 for any warning message.  This message can also indicate that a number
 or '*' (meaning all warnings) was not found when it was expected.
 
 :MSGSYM. ERR_PRAG_WARNING_BAD_LEVEL
 :MSGTXT. warning level must be an integer in range 0 to 9
-:MSGJTXT. ŒxƒŒƒxƒ‹‚ÍC0`9‚Ì”ÍˆÍ‚Ì®”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. è­¦å‘Šãƒ¬ãƒ™ãƒ«ã¯ï¼Œ0ï½9ã®ç¯„å›²ã®æ•´æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The new warning level that can be used for the warning can be in the range
 0 to 9.  The level 0 means that the warning will be treated as an error
 (compilation will not succeed).  Levels 1 up to 9 are used to classify
@@ -7316,7 +7320,7 @@ ignore all cases where the warning shows up.
 
 :MSGSYM. ERR_CANNOT_DEFINE_DEFAULT
 :MSGTXT. function '%S' cannot be defined because it is generated by the compiler
-:MSGJTXT. ŠÖ”'%S'‚ÍCƒRƒ“ƒpƒCƒ‰‚É‚æ‚Á‚Ä¶¬‚³‚ê‚Ü‚·‚Ì‚ÅC’è‹`‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°'%S'ã¯ï¼Œã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ã«ã‚ˆã£ã¦ç”Ÿæˆã•ã‚Œã¾ã™ã®ã§ï¼Œå®šç¾©ã§ãã¾ã›ã‚“
 The indicated function cannot be defined because it is generated by the compiler.
 The compiler will automatically generate default constructors, copy constructors,
 assignment operators, and destructors according to the rules of the C++ language.
@@ -7325,7 +7329,7 @@ definition.
 
 :MSGSYM. ERR_BAD_CMD_INDIRECTION
 :MSGTXT. neither environment variable nor file found for '@' name
-:MSGJTXT. '@' name ‚Åw’è‚³‚ê‚½ŠÂ‹«•Ï”‚àƒtƒ@ƒCƒ‹‚àŒ©‚Â‚©‚è‚Ü‚¹‚ñ
+:MSGJTXT. '@' name ã§æŒ‡å®šã•ã‚ŒãŸç’°å¢ƒå¤‰æ•°ã‚‚ãƒ•ã‚¡ã‚¤ãƒ«ã‚‚è¦‹ã¤ã‹ã‚Šã¾ã›ã‚“
 The indirection operator for the command line will first check for an
 environment variable of the name and use the contents for the command line.
 If an environment variable is not found, a check for a file
@@ -7333,59 +7337,59 @@ with the same name will occur.
 
 :MSGSYM. ERR_MAX_CMD_INDIRECTION
 :MSGTXT. more than 5 indirections during command line processing
-:MSGJTXT. ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆ—’†‚É6ŒÂˆÈã‚ÌƒlƒXƒg‚³‚ê‚½ŠÔÚQÆ‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å‡¦ç†ä¸­ã«6å€‹ä»¥ä¸Šã®ãƒã‚¹ãƒˆã•ã‚ŒãŸé–“æ¥å‚ç…§ãŒã‚ã‚Šã¾ã™
 The Open Watcom C++ compiler only allows a fixed number nested indirections using
 files or environment variables,
 to prevent runaway chains of indirections.
 
 :MSGSYM. ERR_ADDR_NONSTAT_MEMBER_FUNC
 :MSGTXT. cannot take address of non-static member function
-:MSGJTXT. ”ñƒXƒ^ƒeƒBƒbƒNEƒƒ“ƒoŠÖ”‚ÌƒAƒhƒŒƒX‚ğ‚Æ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. éã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ¡ãƒ³ãƒé–¢æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã¨ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The only way to create a value that described the non-static member function
 is to use a member pointer.
 
 :MSGSYM. ERR_CANNOT_GENERATE_DEFAULT
 :MSGTXT. cannot generate default '%S' because class contains either a constant or a reference member
-:MSGJTXT. ƒNƒ‰ƒX‚ª’è”‚©QÆƒƒ“ƒo‚ğŠÜ‚İ‚Ü‚·‚Ì‚ÅCƒfƒtƒHƒ‹ƒg'%S'‚ğ¶¬‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãŒå®šæ•°ã‹å‚ç…§ãƒ¡ãƒ³ãƒã‚’å«ã¿ã¾ã™ã®ã§ï¼Œãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ'%S'ã‚’ç”Ÿæˆã§ãã¾ã›ã‚“
 An assignment operator cannot be generated because the class contains
 members that cannot be assigned into.
 
 :MSGSYM. ERR_CNV_VOID_STAR_CONST
 :MSGTXT. cannot convert pointer to non-constant or volatile objects to pointer to const void
-:MSGJTXT. ”ñ’è”‚©Šö”­«ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ'const void*'‚É•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. éå®šæ•°ã‹æ®ç™ºæ€§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’'const void*'ã«å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 :cmt JWW to look at
 A pointer to non-constant or volatile objects cannot be converted
 to 'const void*'.
 
 :MSGSYM. ERR_CNV_VOID_STAR_CONST_VOLATILE
 :MSGTXT. cannot convert pointer to non-constant or non-volatile objects to pointer to const volatile void
-:MSGJTXT. ”ñ’è”‚©•sŠö”­«ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ'const volatile void*'‚É•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. éå®šæ•°ã‹ä¸æ®ç™ºæ€§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’'const volatile void*'ã«å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 :cmt JWW to look at
 A pointer to non-constant or non-volatile objects cannot be converted
 to 'const volatile void*'.
 
 :MSGSYM. ERR_VOLATILE_PTR_INIT
 :MSGTXT. cannot initialize pointer to non-volatile with a pointer to volatile
-:MSGJTXT. •sŠö”­«ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğŠö”­«‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‰Šúó‘Ô‚É‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ä¸æ®ç™ºæ€§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æ®ç™ºæ€§ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§åˆæœŸçŠ¶æ…‹ã«ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A pointer to a non-volatile type cannot be initialized with a pointer to
 a volatile type because this would allow volatile data to be modified
 without volatile semantics via the non-volatile pointer to it.
 
 :MSGSYM. ERR_VOLATILE_PTR_ARG
 :MSGTXT. cannot pass a pointer or reference to a volatile object
-:MSGJTXT. Šö”­«ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚©QÆ‚ğ“n‚·‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ®ç™ºæ€§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‹å‚ç…§ã‚’æ¸¡ã™ã“ã¨ãŒã§ãã¾ã›ã‚“
 :cmt JWW to look at
 A pointer or reference to a volatile object cannot be passed in this context.
 
 :MSGSYM. ERR_VOLATILE_PTR_RETURN
 :MSGTXT. cannot return a pointer or reference to a volatile object
-:MSGJTXT. Šö”­«ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚©QÆ‚ğ–ß‚·‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ®ç™ºæ€§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‹å‚ç…§ã‚’æˆ»ã™ã“ã¨ãŒã§ãã¾ã›ã‚“
 :cmt JWW to look at
 A pointer or reference to a volatile object cannot be returned.
 
 :MSGSYM. ERR_LEFT_NOT_VOLATILE_PTR
 :MSGTXT. left expression is not a pointer to a volatile object
-:MSGJTXT. ¶‚Ì®‚ÍCŠö”­«ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦ã®å¼ã¯ï¼Œæ®ç™ºæ€§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 One cannot assign a pointer to a volatile type to a pointer to a
 non-volatile type.  This would allow a volatile object to be modified
 via the non-volatile pointer.  Use a cast if this is absolutely
@@ -7393,7 +7397,7 @@ necessary.
 
 :MSGSYM. ERR_VFTABLE_CONSTRUCTION_AMBIGUITY
 :MSGTXT. virtual function override for '%S' is ambiguous
-:MSGJTXT. '%S'‚ğƒI[ƒo[ƒ‰ƒCƒh‚·‚é‰¼‘zŠÖ”‚ÍB–†‚Å‚·
+:MSGJTXT. '%S'ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã™ã‚‹ä»®æƒ³é–¢æ•°ã¯æ›–æ˜§ã§ã™
 This message indicates that there are at least two overrides for the function
 in the base class.  The compiler cannot arbitrarily choose one so it
 is up to the programmer to make sure there is an unambiguous choice.
@@ -7401,13 +7405,13 @@ Two of the overriding functions are listed as informational messages.
 
 :MSGSYM. ERR_PRAG_INITIALIZE_PRIORITY
 :MSGTXT. initialization priority must be number 0-255, 'library', or 'program'
-:MSGJTXT. ‰Šú‰»—Dæ‡ˆÊ‚ÍC”Ô†0-255C'library'‚©'program'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. åˆæœŸåŒ–å„ªå…ˆé †ä½ã¯ï¼Œç•ªå·0-255ï¼Œ'library'ã‹'program'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 An incorrect module initialization priority has been provided.
 Check the User's Guide for the correct format of the priority directive.
 
 :MSGSYM. INF_PREVIOUS_CASE
 :MSGTXT. previous case label defined %L
-:MSGJTXT. ‘O‚Ì'case'ƒ‰ƒxƒ‹‚ÍCŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. å‰ã®'case'ãƒ©ãƒ™ãƒ«ã¯ï¼Œæ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message indicates where a preceding
 .kw case
@@ -7415,7 +7419,7 @@ label is defined.
 
 :MSGSYM. INF_PREVIOUS_DEFAULT
 :MSGTXT. previous default label defined %L
-:MSGJTXT. ‘O‚Ì'default'ƒ‰ƒxƒ‹‚ÍCŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. å‰ã®'default'ãƒ©ãƒ™ãƒ«ã¯ï¼Œæ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message indicates where a preceding
 .kw default
@@ -7423,25 +7427,25 @@ label is defined.
 
 :MSGSYM. INF_PREVIOUS_LABEL
 :MSGTXT. label defined %L
-:MSGJTXT. ƒ‰ƒxƒ‹‚ÍCŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. ãƒ©ãƒ™ãƒ«ã¯ï¼Œæ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message indicates where a label is defined.
 
 :MSGSYM. INF_PREVIOUS_LABEL_REF
 :MSGTXT. label referenced %L
-:MSGJTXT. ƒ‰ƒxƒ‹‚ÍCŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. ãƒ©ãƒ™ãƒ«ã¯ï¼Œæ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message indicates where a label is referenced.
 
 :MSGSYM. INF_THROW_TYPE
 :MSGTXT. object thrown has type: %T
-:MSGJTXT. ‘—o‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ÍCŸ‚ÌŒ^‚ğ‚¿‚Ü‚·F%T
+:MSGJTXT. é€å‡ºã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ï¼Œæ¬¡ã®å‹ã‚’æŒã¡ã¾ã™ï¼š%T
 :INFO.
 This informational message indicates the type of the object being thrown.
 
 :MSGSYM. ERR_THR_AMBIGUOUS_CLASS
 :MSGTXT. object thrown has an ambiguous base class %T
-:MSGJTXT. ‘—o‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ÍCB–†‚ÈŠî’êƒNƒ‰ƒX%T‚ğ‚¿‚Ü‚·
+:MSGJTXT. é€å‡ºã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ï¼Œæ›–æ˜§ãªåŸºåº•ã‚¯ãƒ©ã‚¹%Tã‚’æŒã¡ã¾ã™
 It is illegal to throw an object with a base class to which a conversion
 would be ambiguous.
 :errbad.
@@ -7463,7 +7467,7 @@ cannot be converted to an object of type "ambiguous".
 
 :MSGSYM. ERR_PRAG_INLINE_DEPTH
 :MSGTXT. form is '#pragma inline_depth level' where 'level' is 0 to 255
-:MSGJTXT. ‘®‚ÍC'#pragma inline_depth level'‚Å‚·B‚±‚±‚Å'level'‚Í0`255‚Å‚·
+:MSGJTXT. æ›¸å¼ã¯ï¼Œ'#pragma inline_depth level'ã§ã™ã€‚ã“ã“ã§'level'ã¯0ï½255ã§ã™
 This
 .kw pragma
 sets the number of times inline expansion will occur for an inline
@@ -7473,7 +7477,7 @@ When the level is zero, no inline expansion occurs.
 
 :MSGSYM. WARN_POINTER_TRUNCATION_CAST
 :MSGTXT. pointer or reference truncated by cast
-:MSGJTXT. ƒ|ƒCƒ“ƒ^‚©QÆ‚ÍƒLƒƒƒXƒg‚É‚æ‚Á‚ÄØ‚è‹l‚ß‚ç‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒã‚¤ãƒ³ã‚¿ã‹å‚ç…§ã¯ã‚­ãƒ£ã‚¹ãƒˆã«ã‚ˆã£ã¦åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã—ãŸ
 :WARNING. 10
 The cast expression causes a conversion of a pointer value to another
 pointer value of smaller size.  This can be caused by
@@ -7492,28 +7496,28 @@ code carefully.
 
 :MSGSYM. ERR_NO_CTOR_FOR_NEW
 :MSGTXT. cannot find a constructor for given initializer argument list
-:MSGJTXT. —^‚¦‚ç‚ê‚½‰Šú‰»ˆø”ƒŠƒXƒg‚Ì‚½‚ß‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ä¸ãˆã‚‰ã‚ŒãŸåˆæœŸåŒ–å¼•æ•°ãƒªã‚¹ãƒˆã®ãŸã‚ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãŒã‚ã‚Šã¾ã›ã‚“
 The initializer list provided for the
 .kw new
 expression does not uniquely identify a single constructor.
 
 :MSGSYM. ERR_CANT_HAVE_BASED_VARIABLE
 :MSGTXT. variable '%N' can only be based on a string in this context
-:MSGJTXT. •Ï”'%N'‚ÍC‚±‚ÌƒRƒ“ƒeƒLƒXƒg‚É‚¨‚¢‚ÄC•¶š—ñ‚ğƒx[ƒX‚É‚Å‚«‚é‚¾‚¯‚Å‚·
+:MSGJTXT. å¤‰æ•°'%N'ã¯ï¼Œã“ã®ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã«ãŠã„ã¦ï¼Œæ–‡å­—åˆ—ã‚’ãƒ™ãƒ¼ã‚¹ã«ã§ãã‚‹ã ã‘ã§ã™
 All of the based modifiers can only be applied to pointer types.
 The only based modifier that can be applied to non-pointer types
 is the '__based(__segname("WATCOM"))' style.
 
 :MSGSYM. ERR_MEM_MODEL_CLASS
 :MSGTXT. memory model modifiers are not allowed for class members
-:MSGJTXT. ƒƒ‚ƒŠEƒ‚ƒfƒ‹Cüq‚ÍCƒNƒ‰ƒXEƒƒ“ƒo‚É‘Î‚µ‚Ä‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¡ãƒ¢ãƒªãƒ»ãƒ¢ãƒ‡ãƒ«ä¿®é£¾å­ã¯ï¼Œã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒã«å¯¾ã—ã¦è¨±ã•ã‚Œã¾ã›ã‚“
 Class members describe the arrangement and interpretation of memory
 and, as such, assume the memory model of the address used to access
 the member.
 
 :MSGSYM. WARN_BENIGN_TYPEDEF_REDEFN
 :MSGTXT. redefinition of the typedef name '%S' ignored
-:MSGJTXT. typedef–¼'%S'‚ÌÄ’è‹`‚ğ–³‹‚µ‚Ü‚µ‚½
+:MSGJTXT. typedefå'%S'ã®å†å®šç¾©ã‚’ç„¡è¦–ã—ã¾ã—ãŸ
 :WARNING. 2
 The compiler has detected that a slightly different type has been assigned
 to a typedef name.  The type is functionally equivalent but typedef
@@ -7521,7 +7525,7 @@ redefinitions should be precisely identical.
 
 :MSGSYM. ERR_CTOR_BYPASSED
 :MSGTXT. constructor for variable '%S' cannot be bypassed
-:MSGJTXT. •Ï”'%S'‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÍƒoƒCƒpƒX‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å¤‰æ•°'%S'ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯ãƒã‚¤ãƒ‘ã‚¹ã§ãã¾ã›ã‚“
 The variable may not be constructed when code is executing
 at the position the message indicated.  The C++ language
 places these restrictions to prevent the use of unconstructed
@@ -7529,7 +7533,7 @@ variables.
 
 :MSGSYM. ERR_MEM_INIT_REWRITE_ERROR
 :MSGTXT. syntax error; missing start of function body after constructor initializer
-:MSGJTXT. \•¶ƒGƒ‰[GƒRƒ“ƒXƒgƒ‰ƒNƒ^‰Šú‰»‚ÌŒã‚ÌŠÖ”‚Ì–{‘Ì‚ÌƒXƒ^[ƒg‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ§‹æ–‡ã‚¨ãƒ©ãƒ¼ï¼›ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿åˆæœŸåŒ–ã®å¾Œã®é–¢æ•°ã®æœ¬ä½“ã®ã‚¹ã‚¿ãƒ¼ãƒˆãŒã‚ã‚Šã¾ã›ã‚“
 Member initializers can only be used in a constructor's definition.
 :errgood.
 struct S {
@@ -7542,37 +7546,37 @@ struct S {
 
 :MSGSYM. ERR_DEFARG_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [expression] to [type of default argument]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[®]‚©‚ç[ƒfƒtƒHƒ‹ƒgˆø”‚ÌŒ^]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[å¼]ã‹ã‚‰[ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã®å‹]ã¸
 A conversion to an ambiguous base class was detected in the default
 argument expression.
 
 :MSGSYM. ERR_DEFARG_IMPOSSIBLE
 :MSGTXT. conversion of expression for default argument is impossible
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgˆø”‚É‘Î‚·‚é®‚Ì•ÏŠ·‚ÍC•s‰Â”\‚Å‚·
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã«å¯¾ã™ã‚‹å¼ã®å¤‰æ›ã¯ï¼Œä¸å¯èƒ½ã§ã™
 A conversion to a unrelated class was detected in the default
 argument expression.
 
 :MSGSYM. ERR_SYNTAX_TEMPLATE_NAME
 :MSGTXT. syntax error before template name '%s'
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒg–¼'%s'‚Ì‘O‚Ì\•¶ƒGƒ‰[
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå'%s'ã®å‰ã®æ§‹æ–‡ã‚¨ãƒ©ãƒ¼
 The identifier in the error message has been declared as a template name
 at this point in the code.  This may be the cause of the syntax error.
 
 :MSGSYM. ERR_DEFARG_PRIVATE
 :MSGTXT. private base class accessed to convert default argument
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgˆø”‚ğ•ÏŠ·‚·‚é‚½‚ß‚Éƒvƒ‰ƒCƒx[ƒgŠî’êƒNƒ‰ƒX‚ÍƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion to a private base class was detected in the default
 argument expression.
 
 :MSGSYM. ERR_DEFARG_PROTECTED
 :MSGTXT. protected base class accessed to convert default argument
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgˆø”‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÉƒvƒƒeƒNƒgŠî’êƒNƒ‰ƒX‚ÍƒAƒNƒZƒX‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã«ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆåŸºåº•ã‚¯ãƒ©ã‚¹ã¯ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã¾ã—ãŸ
 A conversion to a protected base class was detected in the default
 argument expression.
 
 :MSGSYM. ERR_MUST_BE_LVALUE_CAST
 :MSGTXT. operand must be an lvalue (cast produces rvalue)
-:MSGJTXT. ƒIƒyƒ‰ƒ“ƒh‚ÍC'¶•Ó’l'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñiƒLƒƒƒXƒg‚Í'‰E•Ó’l'‚ğ¶‚¶‚Ü‚·j
+:MSGJTXT. ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ï¼Œ'å·¦è¾ºå€¤'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ï¼ˆã‚­ãƒ£ã‚¹ãƒˆã¯'å³è¾ºå€¤'ã‚’ç”Ÿã˜ã¾ã™ï¼‰
 The compiler is expecting a value which can be assigned into.
 The result of a cast cannot be assigned into because a brand new
 value is always created.  Assigning a new value to a temporary
@@ -7580,7 +7584,7 @@ is a meaningless operation.
 
 :MSGSYM. ERR_LEFT_MUST_BE_LVALUE_CAST
 :MSGTXT. left operand must be an lvalue (cast produces rvalue)
-:MSGJTXT. ¶ƒIƒyƒ‰ƒ“ƒh‚ÍC'¶•Ó’l'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñiƒLƒƒƒXƒg‚Í'‰E•Ó’l'‚ğ¶‚¶‚Ü‚·j
+:MSGJTXT. å·¦ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ï¼Œ'å·¦è¾ºå€¤'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ï¼ˆã‚­ãƒ£ã‚¹ãƒˆã¯'å³è¾ºå€¤'ã‚’ç”Ÿã˜ã¾ã™ï¼‰
 The compiler is expecting a value which can be assigned into.
 The result of a cast cannot be assigned into because a brand new
 value is always created.  Assigning a new value to a temporary
@@ -7588,7 +7592,7 @@ is a meaningless operation.
 
 :MSGSYM. ERR_RIGHT_MUST_BE_LVALUE_CAST
 :MSGTXT. right operand must be an lvalue (cast produces rvalue)
-:MSGJTXT. ‰EƒIƒyƒ‰ƒ“ƒh‚ÍC'¶•Ó’l'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñiƒLƒƒƒXƒg‚Í'‰E•Ó’l'‚ğ¶‚¶‚Ü‚·j
+:MSGJTXT. å³ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ï¼Œ'å·¦è¾ºå€¤'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ï¼ˆã‚­ãƒ£ã‚¹ãƒˆã¯'å³è¾ºå€¤'ã‚’ç”Ÿã˜ã¾ã™ï¼‰
 The compiler is expecting a value which can be assigned into.
 The result of a cast cannot be assigned into because a brand new
 value is always created.  Assigning a new value to a temporary
@@ -7596,7 +7600,7 @@ is a meaningless operation.
 
 :MSGSYM. WARN_AMBIGUOUS_CONSTRUCT_DECL
 :MSGTXT. construct resolved as a declaration/type
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒg‚ÍéŒ¾/Œ^‚Æ‚µ‚Ä‰ğŒˆ‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ãƒˆã¯å®£è¨€/å‹ã¨ã—ã¦è§£æ±ºã•ã‚Œã¾ã—ãŸ
 :WARNING. 9
 The C++ language contains language ambiguities that force compilers to
 rely on extra information in order to understand certain language
@@ -7615,7 +7619,7 @@ is more than three tokens away from the start of the ambiguity.
 
 :MSGSYM. WARN_AMBIGUOUS_CONSTRUCT_EXPR
 :MSGTXT. construct resolved as an expression
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒg‚Í®‚Æ‚µ‚Ä‰ğŒˆ‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ãƒˆã¯å¼ã¨ã—ã¦è§£æ±ºã•ã‚Œã¾ã—ãŸ
 :WARNING. 9
 The C++ language contains language ambiguities that force compilers to
 rely on extra information in order to understand certain language
@@ -7635,7 +7639,7 @@ is more than three tokens away from the start of the ambiguity.
 
 :MSGSYM. WARN_AMBIGUOUS_CONSTRUCT_UNKNOWN
 :MSGTXT. construct cannot be resolved
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒg‚Í‰ğŒˆ‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ãƒˆã¯è§£æ±ºã•ã‚Œã¾ã›ã‚“
 :WARNING. 9
 The C++ language contains language ambiguities that force compilers to
 rely on extra information in order to understand certain language
@@ -7651,7 +7655,7 @@ problem can be analysed. See http://www.openwatcom.org/.
 
 :MSGSYM. WARN_AMBIGUOUS_CONSTRUCT_AGAIN
 :MSGTXT. encountered another ambiguous construct during disambiguation
-:MSGJTXT. B–†‚³‚ğ‰ğŒˆ‚·‚é“r’†‚ÅC‚à‚¤ˆê‚Â‚ÌB–†‚ÈƒRƒ“ƒXƒgƒ‰ƒNƒg‚ª‚ ‚è‚Ü‚µ‚½
+:MSGJTXT. æ›–æ˜§ã•ã‚’è§£æ±ºã™ã‚‹é€”ä¸­ã§ï¼Œã‚‚ã†ä¸€ã¤ã®æ›–æ˜§ãªã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ãƒˆãŒã‚ã‚Šã¾ã—ãŸ
 :WARNING. 9
 The C++ language contains language ambiguities that force compilers to
 rely on extra information in order to understand certain language
@@ -7668,7 +7672,7 @@ uncharted territory in the C++ language.
 
 :MSGSYM. WARN_ELLIPSIS_CLASS_ARG
 :MSGTXT. ellipsis (...) argument contains compiler generated information
-:MSGJTXT. È—ª‹L†i...jˆø”‚ÍCƒRƒ“ƒpƒCƒ‰‚ª¶¬‚µ‚½î•ñ‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. çœç•¥è¨˜å·ï¼ˆ...ï¼‰å¼•æ•°ã¯ï¼Œã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ãŒç”Ÿæˆã—ãŸæƒ…å ±ã‚’å«ã¿ã¾ã™
 :WARNING. 1
 A class with virtual functions or virtual bases is being
 passed to a function that will not know the type of the argument.
@@ -7691,27 +7695,27 @@ information associated with the virtual function for that class.
 
 :MSGSYM. ERR_ELLIPSIS_IMPOSSIBLE
 :MSGTXT. cannot convert argument for ellipsis (...) argument
-:MSGJTXT. È—ª‹L†i...jˆø”‚É‘Î‚·‚éˆø”‚ğ•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. çœç•¥è¨˜å·ï¼ˆ...ï¼‰å¼•æ•°ã«å¯¾ã™ã‚‹å¼•æ•°ã‚’å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 :cmt JWW to look at
 This argument cannot be used as an ellipsis (...) argument to a function.
 
 :MSGSYM. ERR_ELLIPSIS_AMBIGUOUS
 :MSGTXT. conversion ambiguity: [argument] to [ellipsis (...) argument]
-:MSGJTXT. •ÏŠ·‚ÌB–†‚³F[ˆø”]‚©‚ç[È—ª‹L†i...jˆø”]‚Ö
+:MSGJTXT. å¤‰æ›ã®æ›–æ˜§ã•ï¼š[å¼•æ•°]ã‹ã‚‰[çœç•¥è¨˜å·ï¼ˆ...ï¼‰å¼•æ•°]ã¸
 :cmt JWW to look at
 A conversion ambiguity was detected while converting an argument
 to an ellipsis (...) argument.
 
 :MSGSYM. WARN_CNV_FUNC_PRAGMA
 :MSGTXT. converted function type has different #pragma from original function type
-:MSGJTXT. •ÏŠ·‚³‚ê‚½ŠÖ”Œ^‚ÍCƒIƒŠƒWƒiƒ‹‚ÌŠÖ”Œ^‚ÆˆÙ‚È‚é#pragma‚ğ‚¿‚Ü‚·
+:MSGJTXT. å¤‰æ›ã•ã‚ŒãŸé–¢æ•°å‹ã¯ï¼Œã‚ªãƒªã‚¸ãƒŠãƒ«ã®é–¢æ•°å‹ã¨ç•°ãªã‚‹#pragmaã‚’æŒã¡ã¾ã™
 :WARNING. 1
 Since a #pragma can affect calling conventions, one must be very careful
 performing casts involving different calling conventions.
 
 :MSGSYM. WARN_CNV_PRO_CLASS_VALUE
 :MSGTXT. class value used as return value or argument in converted function type
-:MSGJTXT. ƒNƒ‰ƒX’l‚ª•ÏŠ·‚³‚ê‚½ŠÖ”Œ^‚Ì’†‚Å–ß‚è’l‚©ˆø”‚Æ‚µ‚Äg‚í‚ê‚Ü‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹å€¤ãŒå¤‰æ›ã•ã‚ŒãŸé–¢æ•°å‹ã®ä¸­ã§æˆ»ã‚Šå€¤ã‹å¼•æ•°ã¨ã—ã¦ä½¿ã‚ã‚Œã¾ã™
 :WARNING. 1
 The compiler has detected a cast between "C" and "C++" linkage function
 types.  The calling conventions are different because of the different
@@ -7719,7 +7723,7 @@ language rules for copying structures.
 
 :MSGSYM. WARN_CNV_ARG_CLASS_VALUE
 :MSGTXT. class value used as return value or argument in original function type
-:MSGJTXT. ƒNƒ‰ƒX’l‚ªƒIƒŠƒWƒiƒ‹‚ÌŠÖ”Œ^‚Ì’†‚Å–ß‚è’l‚©ˆø”‚Æ‚µ‚Äg‚í‚ê‚Ü‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹å€¤ãŒã‚ªãƒªã‚¸ãƒŠãƒ«ã®é–¢æ•°å‹ã®ä¸­ã§æˆ»ã‚Šå€¤ã‹å¼•æ•°ã¨ã—ã¦ä½¿ã‚ã‚Œã¾ã™
 :WARNING. 1
 The compiler has detected a cast between "C" and "C++" linkage function
 types.  The calling conventions are different because of the different
@@ -7727,7 +7731,7 @@ language rules for copying structures.
 
 :MSGSYM. WARN_AMBIGUOUS_CONSTRUCT
 :MSGTXT. must look ahead to determine whether construct is a declaration/type or an expression
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒg‚ªéŒ¾/Œ^‚©®‚Å‚ ‚é‚©‚Ç‚¤‚©Œˆ’è‚·‚é‚½‚ß‚É‘O•ûQÆ‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ãƒˆãŒå®£è¨€/å‹ã‹å¼ã§ã‚ã‚‹ã‹ã©ã†ã‹æ±ºå®šã™ã‚‹ãŸã‚ã«å‰æ–¹å‚ç…§ã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 :WARNING. 9
 The C++ language contains language ambiguities that force compilers to
 rely on extra information in order to understand certain language
@@ -7743,12 +7747,12 @@ ambiguous.
 
 :MSGSYM. ERR_ASSEMBLER_ERROR
 :MSGTXT. assembler: '%s'
-:MSGJTXT. ƒAƒZƒ“ƒuƒ‰: '%s'
+:MSGJTXT. ã‚¢ã‚»ãƒ³ãƒ–ãƒ©: '%s'
 An error has been detected by the #pragma inline assembler.
 
 :MSGSYM. ERR_DEFAULT_ARG_USES_THIS
 :MSGTXT. default argument expression cannot reference 'this'
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgˆø”®‚ÍC'this'‚ğQÆ‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°å¼ã¯ï¼Œ'this'ã‚’å‚ç…§ã§ãã¾ã›ã‚“
 The order of evaluation for function arguments is unspecified in the
 C++ language document.  Thus, a default argument must be able to
 be evaluated before the 'this' argument (or any other
@@ -7756,7 +7760,7 @@ argument) is evaluated.
 
 :MSGSYM. ERR_PRAGMA_AUX_CANNOT_OVERLOAD
 :MSGTXT. #pragma aux must reference a "C" linkage function '%S'
-:MSGJTXT. #pragma aux‚ÍC"‚b"ƒŠƒ“ƒP[ƒWŠÖ”'%S'‚ğQÆ‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. #pragma auxã¯ï¼Œ"ï¼£"ãƒªãƒ³ã‚±ãƒ¼ã‚¸é–¢æ•°'%S'ã‚’å‚ç…§ã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The method of assigning pragma information via the #pragma syntax
 is provided for compatibility with Open Watcom C.  Because C only
 allows one function per name, this was adequate for the C language.
@@ -7773,7 +7777,7 @@ struct S {
 
 :MSGSYM. ERR_ASSIGN_AMBIGUOUS
 :MSGTXT. assignment is ambiguous for operands used
-:MSGJTXT. g‚í‚ê‚éƒIƒyƒ‰ƒ“ƒh‚Ì‚½‚ßC‘ã“ü‚ªB–†‚Å‚·
+:MSGJTXT. ä½¿ã‚ã‚Œã‚‹ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®ãŸã‚ï¼Œä»£å…¥ãŒæ›–æ˜§ã§ã™
 An ambiguity was detected while attempting to convert the right operand
 to the type of the left operand.
 :errbad.
@@ -7808,7 +7812,7 @@ object.
 
 :MSGSYM. ERR_PRAGMA_NOT_FOUND
 :MSGTXT. pragma name '%s' is not defined
-:MSGJTXT. ƒvƒ‰ƒOƒ}–¼'%s'‚Í’è‹`‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ—ãƒ©ã‚°ãƒå'%s'ã¯å®šç¾©ã•ã‚Œã¾ã›ã‚“
 Pragmas are defined with the #pragma aux syntax.  See the User's
 Guide for the details of defining a pragma name.  If the pragma
 has been defined then check the spelling between the definition
@@ -7816,14 +7820,14 @@ and the reference of the pragma name.
 
 :MSGSYM. ERR_DURING_GEN
 :MSGTXT. '%S' could not be generated by the compiler
-:MSGJTXT. '%S'‚ÍƒRƒ“ƒpƒCƒ‰‚É‚æ‚Á‚Ä¶¬‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. '%S'ã¯ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ã«ã‚ˆã£ã¦ç”Ÿæˆã§ãã¾ã›ã‚“ã§ã—ãŸ
 An error occurred while the compiler tried to generate the specified
 function.  The error prevented the compiler from generating the
 function properly so the compilation cannot continue.
 
 :MSGSYM. ERR_MISPLACED_CATCH
 :MSGTXT. 'catch' does not immediately follow a 'try' or 'catch'
-:MSGJTXT. 'catch'‚ÍC'try'‚Ü‚½‚Í'catch'‚Ì‚·‚®Œã‚É‚Í‘±‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'catch'ã¯ï¼Œ'try'ã¾ãŸã¯'catch'ã®ã™ãå¾Œã«ã¯ç¶šãã¾ã›ã‚“
 The catch handler syntax must be used in conjunction with a try block.
 :errgood.
 void f()
@@ -7840,7 +7844,7 @@ void f()
 
 :MSGSYM. ERR_CATCH_FOLLOWS_ELLIPSIS
 :MSGTXT. preceding catch specified '...'
-:MSGJTXT. '...'‚ğw’è‚µ‚½'catch'‚ª‘O‚É‚ ‚è‚Ü‚·
+:MSGJTXT. '...'ã‚’æŒ‡å®šã—ãŸ'catch'ãŒå‰ã«ã‚ã‚Šã¾ã™
 Since an ellipsis "..." catch handler will handle any type
 of exception, no further catch handlers can exist afterwards
 because they will never execute.  Reorder the catch handlers
@@ -7848,7 +7852,7 @@ so that the "..." catch handler is the last handler.
 
 :MSGSYM. WARN_EXTERN_C_CLASS_ARG
 :MSGTXT. argument to extern "C" function contains compiler generated information
-:MSGJTXT. extern "C"ŠÖ”‚Ö‚Ìˆø”‚ÍCƒRƒ“ƒpƒCƒ‰‚ª¶¬‚³‚ê‚½î•ñ‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. extern "C"é–¢æ•°ã¸ã®å¼•æ•°ã¯ï¼Œã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ãŒç”Ÿæˆã•ã‚ŒãŸæƒ…å ±ã‚’å«ã¿ã¾ã™
 :WARNING. 1
 A class with virtual functions or virtual bases is being
 passed to a function that will not know the type of the argument.
@@ -7871,7 +7875,7 @@ information associated with the virtual function for that class.
 
 :MSGSYM. INF_PREVIOUS_TRY
 :MSGTXT. previous try block defined %L
-:MSGJTXT. ‘O‚Ìƒgƒ‰ƒCEƒuƒƒbƒN‚ÍCŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. å‰ã®ãƒˆãƒ©ã‚¤ãƒ»ãƒ–ãƒ­ãƒƒã‚¯ã¯ï¼Œæ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message indicates where a preceding
 .kw try
@@ -7879,7 +7883,7 @@ block is defined.
 
 :MSGSYM. INF_PREVIOUS_CATCH
 :MSGTXT. previous catch block defined %L
-:MSGJTXT. ‘O‚ÌƒLƒƒƒbƒ`EƒuƒƒbƒN‚ÍCŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. å‰ã®ã‚­ãƒ£ãƒƒãƒãƒ»ãƒ–ãƒ­ãƒƒã‚¯ã¯ï¼Œæ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message indicates where a preceding
 .kw catch
@@ -7887,7 +7891,7 @@ block is defined.
 
 :MSGSYM. WARN_CATCH_PREVIOUS
 :MSGTXT. catch handler can never be invoked
-:MSGJTXT. 'catch'ƒnƒ“ƒhƒ‰‚ÍCŒˆ‚µ‚Ä‹N“®‚³‚ê‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'catch'ãƒãƒ³ãƒ‰ãƒ©ã¯ï¼Œæ±ºã—ã¦èµ·å‹•ã•ã‚Œã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 :WARNING. 1
 Because the handlers for a
 .kw try
@@ -7932,7 +7936,7 @@ which caused the error.
 
 :MSGSYM. ERR_ONLY_ONE_C_LINKAGE
 :MSGTXT. cannot overload extern "C" functions (the other function is '%S')
-:MSGJTXT. extern "C"ŠÖ”‚ğƒI[ƒo[ƒ[ƒh‚Å‚«‚Ü‚¹‚ñi‘¼‚ÌŠÖ”‚Í'%S'‚Å‚·j
+:MSGJTXT. extern "C"é–¢æ•°ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã§ãã¾ã›ã‚“ï¼ˆä»–ã®é–¢æ•°ã¯'%S'ã§ã™ï¼‰
 The C++ language only allows you to overload functions that are strictly
 C++ functions.  The compiler will automatically generate the correct
 code to distinguish each particular function based on its argument types.
@@ -7942,7 +7946,7 @@ does not support function overloading.
 
 :MSGSYM. WARN_FN_HITS_ANOTHER_ARG
 :MSGTXT. function will be overload ambiguous with '%S' using default arguments
-:MSGJTXT. ŠÖ”‚ÍCƒfƒtƒHƒ‹ƒgˆø”‚ğg‚Á‚Ä‚¢‚é'%S'‚ÅB–†‚ÈƒI[ƒo[ƒ[ƒh‚Å‚·
+:MSGJTXT. é–¢æ•°ã¯ï¼Œãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã‚’ä½¿ã£ã¦ã„ã‚‹'%S'ã§æ›–æ˜§ãªã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã§ã™
 :WARNING. 3
 The declaration declares a function that is indistinguishable from
 another function of the same name with default arguments.
@@ -7957,7 +7961,7 @@ the second 'fn' without any default arguments.
 
 :MSGSYM. ERR_CONFLICTING_LINKAGE_SPEC
 :MSGTXT. linkage specification is different than previous declaration '%S'
-:MSGJTXT. ƒŠƒ“ƒNd—l‚ª‘O‚ÌéŒ¾'%S'‚ÆˆÙ‚È‚è‚Ü‚·
+:MSGJTXT. ãƒªãƒ³ã‚¯ä»•æ§˜ãŒå‰ã®å®£è¨€'%S'ã¨ç•°ãªã‚Šã¾ã™
 The linkage specification affects the binding of names throughout a
 program.  It is important to maintain consistency because subtle
 problems could arise when the incorrect function is called.  Usually
@@ -7972,7 +7976,7 @@ void fn( void )
 
 :MSGSYM. ERR_NO_SEG_REGS
 :MSGTXT. not enough segment registers available to generate '%s'
-:MSGJTXT. '%s'‚ğ¶¬‚·‚é‚Ì‚É\•ª‚É—˜—p‚Å‚«‚éƒZƒOƒƒ“ƒgEƒŒƒWƒXƒ^‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%s'ã‚’ç”Ÿæˆã™ã‚‹ã®ã«ååˆ†ã«åˆ©ç”¨ã§ãã‚‹ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ãŒã‚ã‚Šã¾ã›ã‚“
 Through a combination of options, the number of available segment registers
 is too small.   This can occur when too many segment registers are pegged.
 This can be fixed by changing the command line options to only peg the
@@ -7980,7 +7984,7 @@ segment registers that must absolutely be pegged.
 
 :MSGSYM. WARN_VDTOR_MUST_BE_DEFINED
 :MSGTXT. pure virtual destructors must have a definition
-:MSGJTXT. ƒˆ‰¼‘zƒfƒXƒgƒ‰ƒNƒ^‚Í’è‹`‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ç´”ç²‹ä»®æƒ³ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯å®šç¾©ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 :WARNING. 10
 This is an anomaly for pure virtual functions.  A destructor is
 the only special function that is inherited and allowed to be
@@ -7990,7 +7994,7 @@ C++ program.
 
 :MSGSYM. ERR_JUMP_INTO_TRY
 :MSGTXT. jump into try block
-:MSGJTXT. ƒgƒ‰ƒCEƒuƒƒbƒN‚É”ò‚Ñ‚Ü‚·
+:MSGJTXT. ãƒˆãƒ©ã‚¤ãƒ»ãƒ–ãƒ­ãƒƒã‚¯ã«é£›ã³ã¾ã™
 Jumps cannot enter
 .kw try
 blocks.
@@ -8015,7 +8019,7 @@ for forward jumps and at the goto's for backward jumps.
 
 :MSGSYM. ERR_JUMP_INTO_CATCH
 :MSGTXT. jump into catch handler
-:MSGJTXT. ƒLƒƒƒbƒ`Eƒnƒ“ƒhƒ‰‚É”ò‚Ñ‚Ü‚·
+:MSGJTXT. ã‚­ãƒ£ãƒƒãƒãƒ»ãƒãƒ³ãƒ‰ãƒ©ã«é£›ã³ã¾ã™
 Jumps cannot enter
 .kw catch
 handlers.
@@ -8039,7 +8043,7 @@ for forward jumps and at the goto's for backward jumps.
 
 :MSGSYM. ERR_CATCH_MISSING
 :MSGTXT. catch block does not immediately follow try block
-:MSGJTXT. ƒLƒƒƒbƒ`EƒuƒƒbƒN‚Íƒgƒ‰ƒCEƒuƒƒbƒN‚Ì’¼Œã‚É‚Í’u‚¯‚Ü‚¹‚ñ
+:MSGJTXT. ã‚­ãƒ£ãƒƒãƒãƒ»ãƒ–ãƒ­ãƒƒã‚¯ã¯ãƒˆãƒ©ã‚¤ãƒ»ãƒ–ãƒ­ãƒƒã‚¯ã®ç›´å¾Œã«ã¯ç½®ã‘ã¾ã›ã‚“
 At least one
 .kw catch
 handler must immediately follow the "}" of a
@@ -8061,7 +8065,7 @@ block.
 
 :MSGSYM. ERR_EXCEPTIONS_DISABLED
 :MSGTXT. exceptions must be enabled to use feature (use 'xs' option)
-:MSGJTXT. ‹@”\‚ğg—p‚·‚é‚½‚ß‚É—áŠO‚ğg—p‰Â”\‚É‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ('xs'ƒIƒvƒVƒ‡ƒ“‚ğg—p‚µ‚Ä‚­‚¾‚³‚¢)
+:MSGJTXT. æ©Ÿèƒ½ã‚’ä½¿ç”¨ã™ã‚‹ãŸã‚ã«ä¾‹å¤–ã‚’ä½¿ç”¨å¯èƒ½ã«ã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“('xs'ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’ä½¿ç”¨ã—ã¦ãã ã•ã„)
 Exceptions are enabled by specifying the 'xs' option when the compiler is
 invoked.  The error message indicates that a feature such as
 .kw try,
@@ -8072,14 +8076,14 @@ exceptions.
 
 :MSGSYM. ERR_IO_ERR
 :MSGTXT. I/O error reading '%s': %s"
-:MSGJTXT. '%s'‚Ì“Ç‚İ‚İ‚h^‚nƒGƒ‰[F%s"
+:MSGJTXT. '%s'ã®èª­ã¿è¾¼ã¿ï¼©ï¼ï¼¯ã‚¨ãƒ©ãƒ¼ï¼š%s"
 When attempting to read data from a source or header file, the
 indicated system error occurred. Likely there is a hardware problem,
 or the file system has become corrupt.
 
 :MSGSYM. ANSI_JUNK_FOLLOWS_DIRECTIVE
 :MSGTXT. text following pre-processor directive
-:MSGJTXT. ƒvƒŠƒvƒƒZƒbƒT‹[—–½—ß‚ÉƒeƒLƒXƒg‚ª‘±‚¢‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µæ“¬ä¼¼å‘½ä»¤ã«ãƒ†ã‚­ã‚¹ãƒˆãŒç¶šã„ã¦ã„ã¾ã™
 :ANSI. 4
 A
 .kw #else
@@ -8091,7 +8095,7 @@ is not legal under standard C or C++. Make the tokens into a comment.
 
 :MSGSYM. WARN_EXPR_NOT_MEANINGFUL
 :MSGTXT. expression is not meaningful
-:MSGJTXT. ®‚ÍˆÓ–¡‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯æ„å‘³ãŒã‚ã‚Šã¾ã›ã‚“
 :WARNING. 1
 This message indicates that the indicated expression is not meaningful.
 An expression is meaningful when a function is invoked, when an
@@ -8106,7 +8110,7 @@ void foo( int i, int j )
 
 :MSGSYM. WARN_EXPR_NO_SIDE_EFFECT
 :MSGTXT. expression has no side effect
-:MSGJTXT. ®‚Í•›ì—p‚ğ‚¿‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯å‰¯ä½œç”¨ã‚’æŒã¡ã¾ã›ã‚“
 :WARNING. 1
 The indicated expression does not cause a side effect.
 A side effect is caused by invoking a function, by an assignment or an
@@ -8124,21 +8128,21 @@ void foo( int i, int j )
 
 :MSGSYM. INF_SRC_CNV_TYPE
 :MSGTXT. source conversion type is '%T'
-:MSGJTXT. •ÏŠ·ƒ\[ƒX‚ÌŒ^‚Í"%T"‚Å‚·
+:MSGJTXT. å¤‰æ›ã‚½ãƒ¼ã‚¹ã®å‹ã¯"%T"ã§ã™
 :INFO.
 This informational message indicates the type of the source operand, for the
 preceding conversion diagnostic.
 
 :MSGSYM. INF_TGT_CNV_TYPE
 :MSGTXT. target conversion type is '%T'
-:MSGJTXT. •ÏŠ·ƒ^[ƒQƒbƒg‚ÌŒ^‚Í"%T"‚Å‚·
+:MSGJTXT. å¤‰æ›ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å‹ã¯"%T"ã§ã™
 :INFO.
 This informational message indicates the target type of the conversion,
 for the preceding conversion diagnostic.
 
 :MSGSYM. ERR_CANNOT_REDECLARE_FUNCTION_PROPERTIES
 :MSGTXT. redeclaration of '%S' has different attributes
-:MSGJTXT. '%S'‚ÌÄéŒ¾‚ÍˆÙ‚È‚é‘®«‚ğ‚¿‚Ü‚·
+:MSGJTXT. '%S'ã®å†å®£è¨€ã¯ç•°ãªã‚‹å±æ€§ã‚’æŒã¡ã¾ã™
 A function cannot be made
 .kw virtual
 or pure
@@ -8159,7 +8163,7 @@ virtual void S::fun()
 
 :MSGSYM. INF_TEMPLATE_CLASS_DEFN_TRACEBACK
 :MSGTXT. template class instantiation for '%T' was %L
-:MSGJTXT. '%T'‚É‘Î‚·‚éƒeƒ“ƒvƒŒ[ƒgEƒNƒ‰ƒXEƒCƒ“ƒXƒ^ƒ“ƒX‰»‚ÍC%L‚Å‚µ‚½
+:MSGJTXT. '%T'ã«å¯¾ã™ã‚‹ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ»ã‚¯ãƒ©ã‚¹ãƒ»ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã¯ï¼Œ%Lã§ã—ãŸ
 :INFO.
 This informational message indicates that the error or warning was
 detected during the instantiation of a class template.  The final type
@@ -8168,7 +8172,7 @@ where the instantiation was initiated.
 
 :MSGSYM. INF_TEMPLATE_FN_DEFN_TRACEBACK
 :MSGTXT. template function instantiation for '%S' was %L
-:MSGJTXT. '%S'‚É‘Î‚·‚éƒeƒ“ƒvƒŒ[ƒgŠÖ”ƒCƒ“ƒXƒ^ƒ“ƒX‰»‚Í%L‚Å‚µ‚½
+:MSGJTXT. '%S'ã«å¯¾ã™ã‚‹ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆé–¢æ•°ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã¯%Lã§ã—ãŸ
 :INFO.
 This informational message indicates that the error or warning was
 detected during the instantiation of a function template.  The final
@@ -8177,7 +8181,7 @@ source where the instantiation was initiated.
 
 :MSGSYM. INF_TEMPLATE_MEMBER_DEFN_TRACEBACK
 :MSGTXT. template class member instantiation was %L
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgEƒNƒ‰ƒXEƒƒ“ƒoEƒCƒ“ƒXƒ^ƒ“ƒX‰»‚Í%L‚Å‚µ‚½
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ»ã‚¯ãƒ©ã‚¹ãƒ»ãƒ¡ãƒ³ãƒãƒ»ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã¯%Lã§ã—ãŸ
 :INFO.
 This informational message indicates that the error or warning was
 detected during the instantiation of a member of a class template.  The
@@ -8185,7 +8189,7 @@ location in the source where the instantiation was initiated is shown.
 
 :MSGSYM. INF_TEMPLATE_FN_BIND_TRACEBACK
 :MSGTXT. function template binding for '%S' was %L
-:MSGJTXT. '%S'‚É‘Î‚·‚éŠÖ”ƒeƒ“ƒvƒŒ[ƒgEƒoƒCƒ“ƒh‚Í%L‚Å‚µ‚½
+:MSGJTXT. '%S'ã«å¯¾ã™ã‚‹é–¢æ•°ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ»ãƒã‚¤ãƒ³ãƒ‰ã¯%Lã§ã—ãŸ
 :INFO.
 This informational message indicates that the error or warning was
 detected during the binding process of a function template.
@@ -8197,7 +8201,7 @@ in the source code that initiated the binding process.
 
 :MSGSYM. INF_TEMPLATE_FN_BIND_AND_GEN_TRACEBACK
 :MSGTXT. function template binding of '%S' was %L
-:MSGJTXT. '%S'‚ÌŠÖ”ƒeƒ“ƒvƒŒ[ƒgEƒoƒCƒ“ƒh‚Í%L‚Å‚µ‚½
+:MSGJTXT. '%S'ã®é–¢æ•°ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ»ãƒã‚¤ãƒ³ãƒ‰ã¯%Lã§ã—ãŸ
 :INFO.
 This informational message indicates that the error or warning was
 detected during the binding process of a function template.
@@ -8209,7 +8213,7 @@ in the source code that initiated the binding process.
 
 :MSGSYM. INF_CLASS_DECLARATION
 :MSGTXT. '%s' defined %L
-:MSGJTXT. '%s'‚ÍŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. '%s'ã¯æ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message indicates where the class in question was defined.
 The message is displayed following an error or warning diagnostic for the
@@ -8230,7 +8234,7 @@ which the class S was declared.
 
 :MSGSYM. ERR_PRAG_TEMPLATE_DEPTH
 :MSGTXT. form is '#pragma template_depth level' where 'level' is a non-zero number
-:MSGJTXT. ‘®‚Í'#pragma template_depth level'‚Å‚·B‚±‚±‚Å'level'‚ª0ˆÈŠO‚Ì”’l‚Å‚·
+:MSGJTXT. æ›¸å¼ã¯'#pragma template_depth level'ã§ã™ã€‚ã“ã“ã§'level'ãŒ0ä»¥å¤–ã®æ•°å€¤ã§ã™
 This
 .kw pragma
 sets the number of times templates will be instantiated for nested
@@ -8239,7 +8243,7 @@ The depth check prevents infinite compile times for incorrect programs.
 
 :MSGSYM. ERR_TEMPLATE_DEPTH_EXHAUSTED
 :MSGTXT. possible non-terminating template instantiation (use "#pragma template_depth %d" to increase depth)
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgEƒCƒ“ƒXƒ^ƒ“ƒX‰»‚ğŠ®—¹‚Å‚«‚Ü‚¹‚ñi“WŠJ[“x‚ğ‘‚â‚·‚½‚ß‚É"#pragma template_depth %d"‚ğg‚¢‚Ü‚·j
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ»ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã‚’å®Œäº†ã§ãã¾ã›ã‚“ï¼ˆå±•é–‹æ·±åº¦ã‚’å¢—ã‚„ã™ãŸã‚ã«"#pragma template_depth %d"ã‚’ä½¿ã„ã¾ã™ï¼‰
 This message indicates that a large number of expansions were required
 to complete a template class or template function instantiation.  This
 may indicate that there is an erroneous use of a template.  If the program
@@ -8249,7 +8253,7 @@ value.
 
 :MSGSYM. ERR_CANNOT_INHERIT_PARTIALLY_DEFINED
 :MSGTXT. cannot inherit a partially defined base class '%T'
-:MSGJTXT. •”•ª“I‚É’è‹`‚³‚ê‚½Šî’êƒNƒ‰ƒX'%T'‚ğŒp³‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. éƒ¨åˆ†çš„ã«å®šç¾©ã•ã‚ŒãŸåŸºåº•ã‚¯ãƒ©ã‚¹'%T'ã‚’ç¶™æ‰¿ã§ãã¾ã›ã‚“
 This message indicates that the base class was in the midst of being
 defined when it was inherited.
 The storage requirements for a
@@ -8267,7 +8271,7 @@ struct Partial {
 
 :MSGSYM. INF_FUNC_AMBIGUOUS
 :MSGTXT. ambiguous function: %F defined %L
-:MSGJTXT. B–†‚ÈŠÖ”F%F‚ÍCŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. æ›–æ˜§ãªé–¢æ•°ï¼š%Fã¯ï¼Œæ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message shows the functions that were detected to be
 ambiguous.
@@ -8288,7 +8292,7 @@ a different number of arguments.
 
 :MSGSYM. INF_FUNC_PARM_MISMATCH
 :MSGTXT. cannot convert argument %d defined %L
-:MSGJTXT. ˆø”%d(%L‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·)‚ğ•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å¼•æ•°%d(%Lã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™)ã‚’å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 :INFO.
 This informational message indicates the first argument which could not be
 converted to the corresponding type for the declared function.
@@ -8297,7 +8301,7 @@ name.
 
 :MSGSYM. INF_THIS_MISMATCH
 :MSGTXT. 'this' cannot be converted
-:MSGJTXT. 'this'‚Í•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'this'ã¯å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 :INFO.
 This informational message indicates the
 .kw this
@@ -8310,7 +8314,7 @@ name.
 
 :MSGSYM. INF_FUNC_REJECTED
 :MSGTXT. rejected function: %F defined %L
-:MSGJTXT. œŠO‚³‚ê‚½ŠÖ”F%F‚ÍŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. é™¤å¤–ã•ã‚ŒãŸé–¢æ•°ï¼š%Fã¯æ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message shows the overloaded functions which were
 rejected from consideration during function-overload resolution.
@@ -8319,7 +8323,7 @@ with the indicated name.
 
 :MSGSYM. INF_CONV_AMBIG_SCALAR
 :MSGTXT. '%T' operator can be used
-:MSGJTXT. '%T'‰‰Zq‚ªg‚¦‚Ü‚·
+:MSGJTXT. '%T'æ¼”ç®—å­ãŒä½¿ãˆã¾ã™
 :INFO.
 Following a diagnosis of operator ambiguity, this information message indicates
 that the operator can be applied with operands of the type indicated in the
@@ -8342,7 +8346,7 @@ This informational message indicates that the first is possible.
 
 :MSGSYM. ERR_UNDEF_IMPOSSIBLE
 :MSGTXT. cannot #undef '%s'
-:MSGJTXT. '%s'‚ğ#undef‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%s'ã‚’#undefã§ãã¾ã›ã‚“
 The predefined macros
 .id __cplusplus, __DATE__, __FILE__, __LINE__, __STDC__, __TIME__, __FUNCTION__
 and
@@ -8364,7 +8368,7 @@ All of the preceding directives are not permitted.
 
 :MSGSYM. ERR_DEFINE_IMPOSSIBLE
 :MSGTXT. cannot #define '%s'
-:MSGJTXT. '%s'‚ğ#define‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%s'ã‚’#defineã§ãã¾ã›ã‚“
 The predefined macros
 .id __cplusplus, __DATE__, __FILE__, __LINE__, __STDC__,
 and
@@ -8384,7 +8388,7 @@ All of the preceding directives are not permitted.
 
 :MSGSYM. INF_TEMPLATE_FN_DECL
 :MSGTXT. template function '%F' defined %L
-:MSGJTXT. ƒeƒ“ƒvƒŒ[ƒgŠÖ”'%F'‚ÍŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆé–¢æ•°'%F'ã¯æ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message indicates where the function template in question
 was defined.
@@ -8411,14 +8415,14 @@ was declared.
 
 :MSGSYM. INF_TEMPLATE_FN_AMBIGUOUS
 :MSGTXT. ambiguous function template: %F defined %L
-:MSGJTXT. B–†‚ÈŠÖ”ƒeƒ“ƒvƒŒ[ƒgF%F‚ÍŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. æ›–æ˜§ãªé–¢æ•°ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆï¼š%Fã¯æ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message shows the function templates that were detected
 to be ambiguous for the arguments at the call point.
 
 :MSGSYM. ERR_TEMPLATE_FN_MISMATCH
 :MSGTXT. cannot instantiate %S
-:MSGJTXT. %S‚ğƒCƒ“ƒXƒ^ƒ“ƒX‰»‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. %Sã‚’ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 This message indicates that the function template could not be instantiated
 for the arguments supplied.
 It is displayed when there is exactly one function template declared with
@@ -8426,7 +8430,7 @@ the indicated name.
 
 :MSGSYM. INF_TEMPLATE_FN_REJECTED
 :MSGTXT. rejected function template: %F defined %L
-:MSGJTXT. œŠO‚³‚ê‚½ŠÖ”ƒeƒ“ƒvƒŒ[ƒgF%F‚ÍŸ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·F%L
+:MSGJTXT. é™¤å¤–ã•ã‚ŒãŸé–¢æ•°ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆï¼š%Fã¯æ¬¡ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ï¼š%L
 :INFO.
 This informational message shows the overloaded function template which was
 rejected from consideration during function-overload resolution.
@@ -8435,7 +8439,7 @@ function template with the indicated name.
 
 :MSGSYM. ERR_CANT_BE_FUNC
 :MSGTXT. operand cannot be a function
-:MSGJTXT. ƒIƒyƒ‰ƒ“ƒh‚ÍŠÖ”‚Å‚Í‚ ‚è‚¦‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯é–¢æ•°ã§ã¯ã‚ã‚Šãˆã¾ã›ã‚“
 The indicated operation cannot be applied to a function.
 :errbad.
 int Fun();
@@ -8445,7 +8449,7 @@ In the example, the attempt to increment a function is illegal.
 
 :MSGSYM. ERR_CANT_BE_FUNC_LEFT
 :MSGTXT. left operand cannot be a function
-:MSGJTXT. ¶ƒIƒyƒ‰ƒ“ƒh‚ÍŠÖ”‚Å‚Í‚ ‚è‚¦‚Ü‚¹‚ñ
+:MSGJTXT. å·¦ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯é–¢æ•°ã§ã¯ã‚ã‚Šãˆã¾ã›ã‚“
 The indicated operation cannot be applied to the left operand which
 is a function.
 :errbad.
@@ -8459,7 +8463,7 @@ In the example, the attempt to assign zero to a function is illegal.
 
 :MSGSYM. ERR_CANT_BE_FUNC_RIGHT
 :MSGTXT. right operand cannot be a function
-:MSGJTXT. ‰EƒIƒyƒ‰ƒ“ƒh‚ÍŠÖ”‚Å‚Í‚ ‚è‚¦‚Ü‚¹‚ñ
+:MSGJTXT. å³ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯é–¢æ•°ã§ã¯ã‚ã‚Šãˆã¾ã›ã‚“
 The indicated operation cannot be applied to the right operand which
 is a function.
 :errbad.
@@ -8473,7 +8477,7 @@ In the example, the attempt to subscript a function is illegal.
 
 :MSGSYM. WARN_OPTIMIZE_IF_INLINE
 :MSGTXT. define this function inside its class definition (may improve code quality)
-:MSGJTXT. ‚»‚ÌƒNƒ‰ƒX’è‹`‚Ì“à‘¤‚Å‚±‚ÌŠÖ”‚ğ’è‹`‚µ‚Ü‚·iƒR[ƒh•i¿‚ğ‰ü‘P‚·‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñj
+:MSGJTXT. ãã®ã‚¯ãƒ©ã‚¹å®šç¾©ã®å†…å´ã§ã“ã®é–¢æ•°ã‚’å®šç¾©ã—ã¾ã™ï¼ˆã‚³ãƒ¼ãƒ‰å“è³ªã‚’æ”¹å–„ã™ã‚‹ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“ï¼‰
 :WARNING. 5
 The Open Watcom C++ compiler has found a constructor or destructor with
 an empty function body.  An empty function body can usually provide
@@ -8491,7 +8495,7 @@ S::~S() {
 
 :MSGSYM. WARN_OPTIMIZE_IF_EARLIER
 :MSGTXT. define this function inside its class definition (could have improved code quality)
-:MSGJTXT. ‚»‚ÌƒNƒ‰ƒX’è‹`‚Ì“à‘¤‚Å‚±‚ÌŠÖ”‚ğ’è‹`‚µ‚Ü‚·iƒR[ƒh•i¿‚ğ‰ü‘P‚Å‚«‚½‚©‚à‚µ‚ê‚Ü‚¹‚ñj
+:MSGJTXT. ãã®ã‚¯ãƒ©ã‚¹å®šç¾©ã®å†…å´ã§ã“ã®é–¢æ•°ã‚’å®šç¾©ã—ã¾ã™ï¼ˆã‚³ãƒ¼ãƒ‰å“è³ªã‚’æ”¹å–„ã§ããŸã‹ã‚‚ã—ã‚Œã¾ã›ã‚“ï¼‰
 :WARNING. 5
 The Open Watcom C++ compiler has found a constructor or destructor with
 an empty function body.  An empty function body can usually provide
@@ -8515,7 +8519,7 @@ S::~S() {
 
 :MSGSYM. INF_BAD_FN_OVERLOAD
 :MSGTXT. cannot convert address of overloaded function '%S'
-:MSGJTXT. ƒI[ƒo[ƒ[ƒhŠÖ”'%S'‚ÌƒAƒhƒŒƒX‚ğ•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰é–¢æ•°'%S'ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 :INFO.
 This information message indicates that
 an address of an overloaded function cannot be converted to the
@@ -8532,7 +8536,7 @@ cannot be converted, resulting in the informational message.
 
 :MSGSYM. ERR_EXPR_IS_VOID
 :MSGTXT. expression cannot have void type
-:MSGJTXT. ®‚Í'void'Œ^‚ğ‚Â‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯'void'å‹ã‚’æŒã¤ã“ã¨ãŒã§ãã¾ã›ã‚“
 The indicated expression cannot have a
 .kw void
 type.
@@ -8554,7 +8558,7 @@ type.
 
 :MSGSYM. ERR_CANT_REFERENCE_A_BIT_FIELD
 :MSGTXT. cannot reference a bit field
-:MSGJTXT. ƒrƒbƒgƒtƒB[ƒ‹ƒhQÆ‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å‚ç…§ã§ãã¾ã›ã‚“
 The smallest addressable unit is a byte.
 You cannot reference a bit field.
 :errbad.
@@ -8568,7 +8572,7 @@ int& ref = var.bitfield;    // illegal
 
 :MSGSYM. ERR_ASSIGN_TO_UNDEF_CLASS
 :MSGTXT. cannot assign to object having an undefined class
-:MSGJTXT. –¢’è‹`‚ÌƒNƒ‰ƒX‚ğ‚ÂƒIƒuƒWƒFƒNƒg‚ğ‘ã“ü‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æœªå®šç¾©ã®ã‚¯ãƒ©ã‚¹ã‚’æŒã¤ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä»£å…¥ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 An assignment cannot be be made to an object whose class has not been
 defined.
 :errbad.
@@ -8583,7 +8587,7 @@ void goop()
 
 :MSGSYM. ERR_ADDR_OF_CTOR
 :MSGTXT. cannot create member pointer to constructor
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ö‚Ìƒƒ“ƒoEƒ|ƒCƒ“ƒ^‚ğ‚Â‚­‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¸ã®ãƒ¡ãƒ³ãƒãƒ»ãƒã‚¤ãƒ³ã‚¿ã‚’ã¤ãã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A member pointer value cannot reference a constructor.
 :errbad.
 class C {
@@ -8597,7 +8601,7 @@ int foo()
 
 :MSGSYM. ERR_ADDR_OF_DTOR
 :MSGTXT. cannot create member pointer to destructor
-:MSGJTXT. ƒfƒXƒgƒ‰ƒNƒ^‚Ö‚Ìƒƒ“ƒoEƒ|ƒCƒ“ƒ^‚ğ‚Â‚­‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¸ã®ãƒ¡ãƒ³ãƒãƒ»ãƒã‚¤ãƒ³ã‚¿ã‚’ã¤ãã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 A member pointer value cannot reference a destructor.
 :errbad.
 class C {
@@ -8611,7 +8615,7 @@ int foo()
 
 :MSGSYM. ERR_TEMP_AS_NONCONST_REF
 :MSGTXT. attempt to initialize a non-constant reference with a temporary object
-:MSGJTXT. ˆêƒIƒuƒWƒFƒNƒg‚Å”ñ’è”‚ÌQÆ‚ğ‰Šúó‘Ô‚É‚µ‚æ‚¤‚Æ‚µ‚Ü‚·
+:MSGJTXT. ä¸€æ™‚ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§éå®šæ•°ã®å‚ç…§ã‚’åˆæœŸçŠ¶æ…‹ã«ã—ã‚ˆã†ã¨ã—ã¾ã™
 A temporary value cannot be converted to a non-constant reference type.
 :errbad.
 struct C {
@@ -8640,7 +8644,7 @@ bound to the non-const reference argument of the copy constructor.
 
 :MSGSYM. ANSI_TEMP_USED_TO_INIT_NONCONST_REF
 :MSGTXT. temporary object used to initialize a non-constant reference
-:MSGJTXT. ˆêƒIƒuƒWƒFƒNƒg‚ÍC”ñ’è”‚ÌQÆ‚ğ‰Šú‚·‚é‚½‚ß‚Ég‚í‚ê‚Ü‚µ‚½
+:MSGJTXT. ä¸€æ™‚ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ï¼Œéå®šæ•°ã®å‚ç…§ã‚’åˆæœŸã™ã‚‹ãŸã‚ã«ä½¿ã‚ã‚Œã¾ã—ãŸ
 :ANSI. 1
 Ordinarily, a temporary value cannot be bound to a non-constant
 reference.  There is enough legacy code present that the Open Watcom C++
@@ -8650,7 +8654,7 @@ as soon as possible.
 
 :MSGSYM. WARN_ASSUMING_NO_OVERLOADED_OP_ADDR
 :MSGTXT. assuming unary 'operator &' not overloaded for type '%T'
-:MSGJTXT. ˆÃ–Ù‚Ì’P€‚Ì'operator &'‚Í'%T'Œ^‚ÅƒI[ƒo[ƒ[ƒh‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. æš—é»™ã®å˜é …ã®'operator &'ã¯'%T'å‹ã§ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã•ã‚Œã¾ã›ã‚“
 :WARNING. 3
 An explicit address operator can be applied to a reference
 to an undefined class.  The Open Watcom C++ compiler will assume
@@ -8668,7 +8672,7 @@ S * fn( S &y ) {
 
 :MSGSYM. WARN_NO_ARG_BEFORE_ELLIPSE
 :MSGTXT. 'va_start' macro will not work without an argument before '...'
-:MSGJTXT. 'va_start'ƒ}ƒNƒ‚ÍC"..."‚Ì‘O‚Éˆø”‚ª‚È‚¢‚Æ“­‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'va_start'ãƒã‚¯ãƒ­ã¯ï¼Œ"..."ã®å‰ã«å¼•æ•°ãŒãªã„ã¨åƒãã¾ã›ã‚“
 :WARNING. 3
 The warning indicates that it is impossible to access the arguments
 passed to the function without declaring an argument before the "..."
@@ -8683,7 +8687,7 @@ void fn( ... )
 
 :MSGSYM. WARN_REF_ARG_BEFORE_ELLIPSE
 :MSGTXT. 'va_start' macro will not work with a reference argument before '...'
-:MSGJTXT. 'va_start'ƒ}ƒNƒ‚ÍC"..."‚Ì‘O‚ÉQÆˆø”‚ª‚ ‚é‚Æ“­‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'va_start'ãƒã‚¯ãƒ­ã¯ï¼Œ"..."ã®å‰ã«å‚ç…§å¼•æ•°ãŒã‚ã‚‹ã¨åƒãã¾ã›ã‚“
 :WARNING. 1
 The warning indicates that taking the address of the argument before the
 "..." argument, which 'va_start' does in order to access the
@@ -8710,7 +8714,7 @@ void fn( int &r, ... )
 
 :MSGSYM. WARN_CLASS_ARG_BEFORE_ELLIPSE
 :MSGTXT. 'va_start' macro will not work with a class argument before '...'
-:MSGJTXT. 'va_start'ƒ}ƒNƒ‚ÍC"..."‚Ì‘O‚ÉƒNƒ‰ƒXˆø”‚ª‚ ‚é‚Æ“­‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'va_start'ãƒã‚¯ãƒ­ã¯ï¼Œ"..."ã®å‰ã«ã‚¯ãƒ©ã‚¹å¼•æ•°ãŒã‚ã‚‹ã¨åƒãã¾ã›ã‚“
 :WARNING. 1
 This warning is specific to C++ compilers that quietly convert
 class arguments to class reference arguments.  The warning
@@ -8745,7 +8749,7 @@ void fn( S c, ... )
 
 :MSGSYM. ERR_CONFLICTING_PRAGMA_MODIFIERS
 :MSGTXT. function modifier conflicts with previous declaration '%S'
-:MSGJTXT. ŠÖ”Cüq‚Í‘O‚ÌéŒ¾'%S'‚Æ–µ‚‚µ‚Ü‚·
+:MSGJTXT. é–¢æ•°ä¿®é£¾å­ã¯å‰ã®å®£è¨€'%S'ã¨çŸ›ç›¾ã—ã¾ã™
 The symbol declaration conflicts with a previous declaration with regard
 to function modifiers.  Either the previous declaration did not have a
 function modifier or it had a different one.
@@ -8758,7 +8762,7 @@ void __pragma("never_returns") fn( int, int );
 
 :MSGSYM. ERR_FUNCTION_MOD_ON_VAR
 :MSGTXT. function modifier cannot be used on a variable
-:MSGJTXT. ŠÖ”Cüq‚Í•Ï”‚É‘Î‚µ‚Äg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ä¿®é£¾å­ã¯å¤‰æ•°ã«å¯¾ã—ã¦ä½¿ç”¨ã§ãã¾ã›ã‚“
 The symbol declaration has a function modifier being applied to
 a variable or non-function.  The cause of this may be a
 declaration with a missing function argument list.
@@ -8769,7 +8773,7 @@ int (* __pascal not_ok);
 
 :MSGSYM. INF_CLASS_CONTAINS_PURE
 :MSGTXT. '%T' contains the following pure virtual functions
-:MSGJTXT. '%T'‚ÍˆÈ‰º‚Ìƒˆ‚È‰¼‘zŠÖ”‚ğŠÜ‚İ‚Ü‚·
+:MSGJTXT. '%T'ã¯ä»¥ä¸‹ã®ç´”ç²‹ãªä»®æƒ³é–¢æ•°ã‚’å«ã¿ã¾ã™
 :INFO.
 This informational message indicates that the class contains pure
 virtual function declarations.  The class is definitely abstract
@@ -8786,7 +8790,7 @@ A x;
 
 :MSGSYM. INF_CLASS_DIDNT_DEFINE_PURE
 :MSGTXT. '%T' has no implementation for the following pure virtual functions
-:MSGJTXT. '%T'‚ÍCˆÈ‰º‚Ìƒˆ‚È‰¼‘zŠÖ”‚É‘Î‰‚·‚éÀ‘•‚ğ‚¿‚Ü‚¹‚ñ
+:MSGJTXT. '%T'ã¯ï¼Œä»¥ä¸‹ã®ç´”ç²‹ãªä»®æƒ³é–¢æ•°ã«å¯¾å¿œã™ã‚‹å®Ÿè£…ã‚’æŒã¡ã¾ã›ã‚“
 :INFO.
 This informational message indicates that the class is derived
 from an abstract class but the class did not override enough
@@ -8805,7 +8809,7 @@ D x;
 
 :MSGSYM. INF_PURE_FUNCTION
 :MSGTXT. pure virtual function '%F' defined %L
-:MSGJTXT. ƒˆ‰¼‘zŠÖ”'%F'‚Í’è‹`‚³‚ê‚Ä‚¢‚Ü‚·: %L
+:MSGJTXT. ç´”ç²‹ä»®æƒ³é–¢æ•°'%F'ã¯å®šç¾©ã•ã‚Œã¦ã„ã¾ã™: %L
 :INFO.
 This informational message indicates that the pure virtual function
 has not been overridden.  This means that the class is abstract.
@@ -8822,7 +8826,7 @@ D x;
 
 :MSGSYM. ERR_BAD_CALL_CONVENTION
 :MSGTXT. restriction: standard calling convention required for '%S'
-:MSGJTXT. §ŒÀF•W€‚ÌŒÄo‚µ‹K–ñ‚Í'%S'‚É‘Î‚µ‚Ä•K—v‚Å‚·
+:MSGJTXT. åˆ¶é™ï¼šæ¨™æº–ã®å‘¼å‡ºã—è¦ç´„ã¯'%S'ã«å¯¾ã—ã¦å¿…è¦ã§ã™
 The indicated function may be called by the C++ run-time system using
 the standard calling convention.
 The calling convention specified for the function is incompatible with
@@ -8839,7 +8843,7 @@ for the function.
 
 :MSGSYM. ERR_PARM_COUNT_MISMATCH_POINTER
 :MSGTXT. number of arguments in function call is incorrect
-:MSGJTXT. ŠÖ”ŒÄo‚µ‚Ì’†‚Ìˆø”‚Ì”‚Í•s³Šm‚Å‚·
+:MSGJTXT. é–¢æ•°å‘¼å‡ºã—ã®ä¸­ã®å¼•æ•°ã®æ•°ã¯ä¸æ­£ç¢ºã§ã™
 The number of arguments in the function call does not match the number
 declared for the function type.
 :errbad.
@@ -8851,13 +8855,13 @@ Three arguments were used in the call.
 
 :MSGSYM. INF_FUNCTION_TYPE
 :MSGTXT. function has type '%T'
-:MSGJTXT. ŠÖ”‚Í'%T'Œ^‚ğ‚¿‚Ü‚·
+:MSGJTXT. é–¢æ•°ã¯'%T'å‹ã‚’æŒã¡ã¾ã™
 :INFO.
 This informational message indicates the type of the function being called.
 
 :MSGSYM. ERR_INVALID_OCTAL_CONSTANT
 :MSGTXT. invalid octal constant
-:MSGJTXT. •s“KØ‚È‚Wi’è”‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªï¼˜é€²å®šæ•°ã§ã™
 The constant started with a '0' digit which makes it look like an octal
 constant but the constant contained the digits '8' and '9'.  The problem
 could be an incorrect octal constant or a missing '.' for a floating
@@ -8869,7 +8873,7 @@ double d = 0123456789;  // missing '.'?
 
 :MSGSYM. INF_CLASS_TEMPLATE_STARTED_HERE
 :MSGTXT. class template definition started %L
-:MSGJTXT. ƒNƒ‰ƒXEƒeƒ“ƒvƒŒ[ƒg’è‹`‚Í%L‚Ån‚Ü‚è‚Ü‚µ‚½
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ãƒ»ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå®šç¾©ã¯%Lã§å§‹ã¾ã‚Šã¾ã—ãŸ
 :INFO.
 This informational message indicates where the class template
 definition started so that any problems with missing braces can
@@ -8890,7 +8894,7 @@ template <class T>
 
 :MSGSYM. INF_CTOR_INIT_STARTED_HERE
 :MSGTXT. constructor initializer started %L
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒ^EƒCƒjƒVƒƒƒ‰ƒCƒU‚Í%L‚Ån‚Ü‚è‚Ü‚µ‚½
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ»ã‚¤ãƒ‹ã‚·ãƒ£ãƒ©ã‚¤ã‚¶ã¯%Lã§å§‹ã¾ã‚Šã¾ã—ãŸ
 :INFO.
 This informational message indicates where the constructor initializer
 started so that any problems with missing parenthesis can
@@ -8905,7 +8909,7 @@ struct S {
 
 :MSGSYM. ERR_ZERO_ARRAY_MUST_BE_LAST
 :MSGTXT. zero size array must be the last data member
-:MSGJTXT. ‘å‚«‚³‚ª–³w’è‚Ì”z—ñ‚ÍCÅŒã‚Ìƒf[ƒ^Eƒƒ“ƒo‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¤§ãã•ãŒç„¡æŒ‡å®šã®é…åˆ—ã¯ï¼Œæœ€å¾Œã®ãƒ‡ãƒ¼ã‚¿ãƒ»ãƒ¡ãƒ³ãƒã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The language extension that allows a zero size array to be declared
 in a class definition requires that the array be the last data
 member in the class.
@@ -8918,7 +8922,7 @@ struct S {
 
 :MSGSYM. ERR_CANNOT_INHERIT_CLASS_WITH_ZERO_ARRAY
 :MSGTXT. cannot inherit a class that contains a zero size array
-:MSGJTXT. ‘å‚«‚³‚ª–³w’è‚Ì”z—ñ‚ğŠÜ‚ŞƒNƒ‰ƒX‚ğŒp³‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å¤§ãã•ãŒç„¡æŒ‡å®šã®é…åˆ—ã‚’å«ã‚€ã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 The language extension that allows a zero size array to be declared
 in a class definition disallows the use of the class as a base
 class.
@@ -8936,7 +8940,7 @@ struct D : B {
 
 :MSGSYM. ERR_CANNOT_HAVE_ZERO_ARRAY_AND_BASES
 :MSGTXT. zero size array '%S' cannot be used in a class with base classes
-:MSGJTXT. ‘å‚«‚³‚ª–³w’è‚Ì”z—ñ'%S'‚ÍCŠî’êƒNƒ‰ƒX‚ğ‚Á‚½ƒNƒ‰ƒX‚É‚¨‚¢‚Äg‚¤‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å¤§ãã•ãŒç„¡æŒ‡å®šã®é…åˆ—'%S'ã¯ï¼ŒåŸºåº•ã‚¯ãƒ©ã‚¹ã‚’æŒã£ãŸã‚¯ãƒ©ã‚¹ã«ãŠã„ã¦ä½¿ã†ã“ã¨ã¯ã§ãã¾ã›ã‚“
 The language extension that allows a zero size array to be declared
 in a class definition requires that the class not have any base classes.
 This is required because the C++ compiler must be free to organize base
@@ -8953,7 +8957,7 @@ struct D : B {
 
 :MSGSYM. ERR_CATCH_ABSTRACT
 :MSGTXT. cannot catch abstract class object
-:MSGJTXT. ’ŠÛƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ğ'catch'‚Å•ß‚¦‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æŠ½è±¡ã‚¯ãƒ©ã‚¹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’'catch'ã§æ•ãˆã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 C++ does not allow abstract classes to be instantiated and so an abstract
 class object cannot be specified in a
 .kw catch
@@ -9005,7 +9009,7 @@ void func( void ) {
 
 :MSGSYM. ERR_CANT_BE_MEMB_FUN
 :MSGTXT. non-static member function '%S' cannot be specified
-:MSGJTXT. ”ñƒXƒ^ƒeƒBƒbƒNEƒƒ“ƒoŠÖ”'%S'‚Íw’è‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. éã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ»ãƒ¡ãƒ³ãƒé–¢æ•°'%S'ã¯æŒ‡å®šã§ãã¾ã›ã‚“
 The indicated non-static member function cannot be used in this context.
 For example, such a function cannot be used as the second or third operand
 of the conditional operator.
@@ -9040,7 +9044,7 @@ int S::fun( int i ) {
 
 :MSGSYM. ERR_CONV_BASE_TO_DERIVED
 :MSGTXT. attempt to convert pointer or reference from a base to a derived class
-:MSGJTXT. Šî’êƒNƒ‰ƒX‚©‚ç”h¶ƒNƒ‰ƒX‚Öƒ|ƒCƒ“ƒ^‚©QÆ‚ğ•ÏŠ·‚µ‚æ‚¤‚Æ‚µ‚Ü‚·
+:MSGJTXT. åŸºåº•ã‚¯ãƒ©ã‚¹ã‹ã‚‰æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã¸ãƒã‚¤ãƒ³ã‚¿ã‹å‚ç…§ã‚’å¤‰æ›ã—ã‚ˆã†ã¨ã—ã¾ã™
 A pointer or reference to a base class cannot be converted to a pointer
 or reference, respectively, of a derived class, unless there is an explicit
 cast.  The
@@ -9068,7 +9072,7 @@ Derived& ReturnRef() { return (Derived&)b; }
 
 :MSGSYM. WARN_WHILE_TRUE
 :MSGTXT. expression for 'while' is always true
-:MSGJTXT. 'while'‚É‘Î‚·‚é®‚Íí‚É^‚Å‚·
+:MSGJTXT. 'while'ã«å¯¾ã™ã‚‹å¼ã¯å¸¸ã«çœŸã§ã™
 :WARNING. 3
 The compiler has detected that the expression will always be true.
 Consequently, the loop will execute infinitely unless there is a
@@ -9083,7 +9087,7 @@ without causing warnings.
 
 :MSGSYM. WARN_FOR_TRUE
 :MSGTXT. testing expression for 'for' is always true
-:MSGJTXT. 'for'‚ÌğŒ®‚Íí‚É^‚Å‚·
+:MSGJTXT. 'for'ã®æ¡ä»¶å¼ã¯å¸¸ã«çœŸã§ã™
 :WARNING. 3
 The compiler has detected that the expression will always be true.
 Consequently, the loop will execute infinitely unless there is a
@@ -9099,20 +9103,20 @@ without causing warnings.
 
 :MSGSYM. WARN_ALWAYS_TRUE
 :MSGTXT. conditional expression is always true (non-zero)
-:MSGJTXT. ğŒ®‚Íí‚É^i”ñƒ[ƒj‚Å‚·
+:MSGJTXT. æ¡ä»¶å¼ã¯å¸¸ã«çœŸï¼ˆéã‚¼ãƒ­ï¼‰ã§ã™
 :WARNING. 4
 The indicated expression is a non-zero constant and so will always be true.
 
 
 :MSGSYM. WARN_ALWAYS_FALSE
 :MSGTXT. conditional expression is always false (zero)
-:MSGJTXT. ğŒ®‚Íí‚É‹Uiƒ[ƒj‚Å‚·
+:MSGJTXT. æ¡ä»¶å¼ã¯å¸¸ã«å½ï¼ˆã‚¼ãƒ­ï¼‰ã§ã™
 :WARNING. 4
 The indicated expression is a zero constant and so will always be false.
 
 :MSGSYM. ERR_INVALID_TEMPLATE_MEMBER
 :MSGTXT. expecting a member of '%T' to be defined in this context
-:MSGJTXT. '%T'‚Ìƒƒ“ƒo‚ÍC‚±‚±‚Å’è‹`‚³‚ê‚é‚Í‚¸‚Å‚·
+:MSGJTXT. '%T'ã®ãƒ¡ãƒ³ãƒã¯ï¼Œã“ã“ã§å®šç¾©ã•ã‚Œã‚‹ã¯ãšã§ã™
 A class template member definition must define a member of the
 associated class template.  The complexity of the C++ declaration
 syntax can make this error hard to identify visually.
@@ -9138,7 +9142,7 @@ S<int> x;
 
 :MSGSYM. ERR_THROW_ABSTRACT
 :MSGTXT. cannot throw an abstract class
-:MSGJTXT. ’ŠÛƒNƒ‰ƒX‚ğthrow‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æŠ½è±¡ã‚¯ãƒ©ã‚¹ã‚’throwã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 An abstract class cannot be thrown since copies of that object may have to be
 made (which is impossible );
 :errbad.
@@ -9158,25 +9162,25 @@ expression is illegal since it specifies an abstract class.
 
 :MSGSYM. ERR_PCH_CREATE_ERROR
 :MSGTXT. cannot create pre-compiled header file '%s'
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹Eƒwƒbƒ_[ƒtƒ@ƒCƒ‹'%s'‚ğ‚Â‚­‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãƒ»ãƒ˜ãƒƒãƒ€ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«'%s'ã‚’ã¤ãã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The compiler has detected a problem while trying to open the
 pre-compiled header file for write access.
 
 :MSGSYM. ERR_PCH_WRITE_ERROR
 :MSGTXT. error occurred while writing pre-compiled header file
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[‚ğ‘‚¢‚Ä‚¢‚éÅ’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ã‚’æ›¸ã„ã¦ã„ã‚‹æœ€ä¸­ã«ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ
 The compiler has detected a problem while trying to write some data
 to the pre-compiled header file.
 
 :MSGSYM. ERR_PCH_READ_ERROR
 :MSGTXT. error occurred while reading pre-compiled header file
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[‚ğ“Ç‚ñ‚Å‚¢‚éÅ’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ã‚’èª­ã‚“ã§ã„ã‚‹æœ€ä¸­ã«ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ
 The compiler has detected a problem while trying to read some data
 from the pre-compiled header file.
 
 :MSGSYM. WARN_PCH_CONTENTS_HEADER_ERROR
 :MSGTXT. pre-compiled header file being recreated
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[¥ƒtƒ@ƒCƒ‹‚ªÄì¬‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ï½¥ãƒ•ã‚¡ã‚¤ãƒ«ãŒå†ä½œæˆã•ã‚Œã¦ã„ã¾ã™
 :WARNING. 1
 The existing pre-compiled header file may either be corrupted or is a version
 that the compiler cannot use due to updates to the compiler.
@@ -9184,7 +9188,7 @@ A new version of the pre-compiled header file will be created.
 
 :MSGSYM. WARN_PCH_CONTENTS_OPTIONS
 :MSGTXT. pre-compiled header file being recreated (different compile options)
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[¥ƒtƒ@ƒCƒ‹‚ªÄì¬‚³‚ê‚Ä‚¢‚Ü‚·(ƒRƒ“ƒpƒCƒ‹¥ƒIƒvƒVƒ‡ƒ“‚ªˆÙ‚È‚è‚Ü‚·)
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ï½¥ãƒ•ã‚¡ã‚¤ãƒ«ãŒå†ä½œæˆã•ã‚Œã¦ã„ã¾ã™(ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒç•°ãªã‚Šã¾ã™)
 :WARNING. 1
 The compiler has detected that the command line options have changed
 enough so the contents of the pre-compiled header file cannot be used.
@@ -9192,7 +9196,7 @@ A new version of the pre-compiled header file will be created.
 
 :MSGSYM. WARN_PCH_CONTENTS_INCFILE
 :MSGTXT. pre-compiled header file being recreated (different #include file)
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[¥ƒtƒ@ƒCƒ‹‚ªÄì¬‚³‚ê‚Ä‚¢‚Ü‚·(#includeƒtƒ@ƒCƒ‹‚ªˆÙ‚È‚è‚Ü‚·)
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ï½¥ãƒ•ã‚¡ã‚¤ãƒ«ãŒå†ä½œæˆã•ã‚Œã¦ã„ã¾ã™(#includeãƒ•ã‚¡ã‚¤ãƒ«ãŒç•°ãªã‚Šã¾ã™)
 :WARNING. 1
 The compiler has detected that the first
 .kw #include
@@ -9202,7 +9206,7 @@ A new version of the pre-compiled header file will be created.
 
 :MSGSYM. WARN_PCH_CONTENTS_CWD
 :MSGTXT. pre-compiled header file being recreated (different current directory)
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[¥ƒtƒ@ƒCƒ‹‚ªÄì¬‚³‚ê‚Ä‚¢‚Ü‚·(ƒJƒŒƒ“ƒg¥ƒfƒBƒŒƒNƒgƒŠ‚ªˆÙ‚È‚è‚Ü‚·)
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ï½¥ãƒ•ã‚¡ã‚¤ãƒ«ãŒå†ä½œæˆã•ã‚Œã¦ã„ã¾ã™(ã‚«ãƒ¬ãƒ³ãƒˆï½¥ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒç•°ãªã‚Šã¾ã™)
 :WARNING. 1
 The compiler has detected that the working directory is different so
 the contents of the pre-compiled header file cannot be used.
@@ -9210,7 +9214,7 @@ A new version of the pre-compiled header file will be created.
 
 :MSGSYM. WARN_PCH_CONTENTS_INCLUDE
 :MSGTXT. pre-compiled header file being recreated (different INCLUDE path)
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[¥ƒtƒ@ƒCƒ‹‚ªÄì¬‚³‚ê‚Ä‚¢‚Ü‚·(INCLUDEƒpƒX‚ªˆÙ‚È‚è‚Ü‚·)
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ï½¥ãƒ•ã‚¡ã‚¤ãƒ«ãŒå†ä½œæˆã•ã‚Œã¦ã„ã¾ã™(INCLUDEãƒ‘ã‚¹ãŒç•°ãªã‚Šã¾ã™)
 :WARNING. 1
 The compiler has detected that the INCLUDE path is different so
 the contents of the pre-compiled header file cannot be used.
@@ -9218,7 +9222,7 @@ A new version of the pre-compiled header file will be created.
 
 :MSGSYM. WARN_PCH_CONTENTS_HFILE
 :MSGTXT. pre-compiled header file being recreated ('%s' has been modified)
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[¥ƒtƒ@ƒCƒ‹‚ªÄì¬‚³‚ê‚Ä‚¢‚Ü‚·('%s'‚ªC³‚³‚ê‚Ü‚µ‚½)
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ï½¥ãƒ•ã‚¡ã‚¤ãƒ«ãŒå†ä½œæˆã•ã‚Œã¦ã„ã¾ã™('%s'ãŒä¿®æ­£ã•ã‚Œã¾ã—ãŸ)
 :WARNING. 1
 The compiler has detected that an include file has changed so
 the contents of the pre-compiled header file cannot be used.
@@ -9226,7 +9230,7 @@ A new version of the pre-compiled header file will be created.
 
 :MSGSYM. WARN_PCH_CONTENTS_MACRO_DIFFERENT
 :MSGTXT. pre-compiled header file being recreated (macro '%s' is different)
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[¥ƒtƒ@ƒCƒ‹‚ªÄì¬‚³‚ê‚Ä‚¢‚Ü‚·(ƒ}ƒNƒ'%s'‚ªˆÙ‚È‚è‚Ü‚·)
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ï½¥ãƒ•ã‚¡ã‚¤ãƒ«ãŒå†ä½œæˆã•ã‚Œã¦ã„ã¾ã™(ãƒã‚¯ãƒ­'%s'ãŒç•°ãªã‚Šã¾ã™)
 :WARNING. 1
 The compiler has detected that a macro definition is different so
 the contents of the pre-compiled header file cannot be used.
@@ -9237,7 +9241,7 @@ A new version of the pre-compiled header file will be created.
 
 :MSGSYM. WARN_PCH_CONTENTS_MACRO_NOT_PRESENT
 :MSGTXT. pre-compiled header file being recreated (macro '%s' is not defined)
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[¥ƒtƒ@ƒCƒ‹‚ªÄì¬‚³‚ê‚Ä‚¢‚Ü‚·(ƒ}ƒNƒ'%s'‚ª’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ)
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ï½¥ãƒ•ã‚¡ã‚¤ãƒ«ãŒå†ä½œæˆã•ã‚Œã¦ã„ã¾ã™(ãƒã‚¯ãƒ­'%s'ãŒå®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“)
 :WARNING. 1
 The compiler has detected that a macro has not been defined so
 the contents of the pre-compiled header file cannot be used.
@@ -9248,21 +9252,21 @@ A new version of the pre-compiled header file will be created.
 
 :MSGSYM. ERR_ZWS_MUST_HAVE_SS_DS_SAME
 :MSGTXT. command line specifies smart windows callbacks and DS not equal to SS
-:MSGJTXT. ƒRƒ}ƒ“ƒhEƒ‰ƒCƒ“‚ÅCƒXƒ}[ƒgEƒEƒBƒ“ƒhƒEEƒR[ƒ‹ƒoƒbƒN‚ÆCSS‚Æ“™‚­‚È‚¢DS‚Ìİ’è‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚³ãƒãƒ³ãƒ‰ãƒ»ãƒ©ã‚¤ãƒ³ã§ï¼Œã‚¹ãƒãƒ¼ãƒˆãƒ»ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ»ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã¨ï¼ŒSSã¨ç­‰ããªã„DSã®è¨­å®šãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™
 An illegal combination of switches has been detected.  The windows smart
 callbacks option cannot be combined with either of the build DLL or DS not
 equal to SS options.
 
 :MSGSYM. ERR_DUMP_OBJ_MODEL
 :MSGTXT. class '%N' cannot be used with #pragma dump_object_model
-:MSGJTXT. ƒNƒ‰ƒX'%N'‚ÍC#pragma dump_object_model‚Æ‚Æ‚à‚É‚Íg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¯ãƒ©ã‚¹'%N'ã¯ï¼Œ#pragma dump_object_modelã¨ã¨ã‚‚ã«ã¯ä½¿ãˆã¾ã›ã‚“
 The indicated name has not yet been declared or has been declared but not
 yet been defined as a class.
 Consequently, the object model cannot be dumped.
 
 :MSGSYM. INF_REPEATED_ITEM
 :MSGTXT. repeated modifier is '%s'
-:MSGJTXT. ŒJ‚è•Ô‚³‚ê‚½Cüq‚Í'%s'‚Å‚·
+:MSGJTXT. ç¹°ã‚Šè¿”ã•ã‚ŒãŸä¿®é£¾å­ã¯'%s'ã§ã™
 :INFO.
 This informational message indicates what modifier was repeated
 in the declaration.
@@ -9273,7 +9277,7 @@ FARINT __far *p;    // repeated __far modifier
 
 :MSGSYM. INF_MISSING_SEMICOLON_AFTER_CLASS_ENUM_DEFN
 :MSGTXT. semicolon (';') may be missing after class/enum definition
-:MSGJTXT. class/enum’è‹`‚ÌŒãCƒZƒ~ƒRƒƒ“i';'j‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. class/enumå®šç¾©ã®å¾Œï¼Œã‚»ãƒŸã‚³ãƒ­ãƒ³ï¼ˆ';'ï¼‰ãŒã‚ã‚Šã¾ã›ã‚“
 :INFO.
 This informational message indicates that a missing semicolon (';')
 may be the cause of the error.
@@ -9289,7 +9293,7 @@ S::S( int x, int y ) : x(x), y(y) {
 
 :MSGSYM. ERR_RETURN_UNDEFD_TYPE
 :MSGTXT. cannot return a type of unknown size
-:MSGJTXT. –¢’m‚Ì‘å‚«‚³‚ÌŒ^‚ğ–ß‚·‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æœªçŸ¥ã®å¤§ãã•ã®å‹ã‚’æˆ»ã™ã“ã¨ãŒã§ãã¾ã›ã‚“
 A value of an unknown type cannot be returned.
 :errbad.
 class S;
@@ -9305,7 +9309,7 @@ returns has not been defined.
 
 :MSGSYM. ERR_MEM_INIT_MEMBER
 :MSGTXT. cannot initialize array member '%S'
-:MSGJTXT. ”z—ñƒƒ“ƒo'%S'‚ğ‰Šú‰»‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é…åˆ—ãƒ¡ãƒ³ãƒ'%S'ã‚’åˆæœŸåŒ–ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 An array class member cannot be specified as a constructor initializer.
 :errbad.
 class S {
@@ -9335,7 +9339,7 @@ S::S()
 
 :MSGSYM. ERR_RECURSIVE_FILE_INCLUDE
 :MSGTXT. file '%s' will #include itself forever
-:MSGJTXT. ƒtƒ@ƒCƒ‹'%s'‚Í‰i‰“‚É‚»‚ê©g‚ğ#include‚µ‚Ü‚·
+:MSGJTXT. ãƒ•ã‚¡ã‚¤ãƒ«'%s'ã¯æ°¸é ã«ãã‚Œè‡ªèº«ã‚’#includeã—ã¾ã™
 The compiler has detected that the file in the message has been
 .kw #include
 from within itself without protecting against infinite inclusion.
@@ -9350,7 +9354,7 @@ header file protection has not been used properly.
 
 :MSGSYM. ERR_INVALID_USE_OF_MUTABLE
 :MSGTXT. 'mutable' may only be used for non-static class members
-:MSGJTXT. 'mutable'‚Í”ñƒXƒ^ƒeƒBƒbƒN‚ÈƒNƒ‰ƒX¥ƒƒ“ƒo[‚É‘Î‚µ‚Ä‚Ì‚İg—p‚Å‚«‚Ü‚·
+:MSGJTXT. 'mutable'ã¯éã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãªã‚¯ãƒ©ã‚¹ï½¥ãƒ¡ãƒ³ãƒãƒ¼ã«å¯¾ã—ã¦ã®ã¿ä½¿ç”¨ã§ãã¾ã™
 A declaration in file scope or block scope cannot have a storage class of
 .kw mutable.
 :errbad.
@@ -9359,7 +9363,7 @@ mutable int a;
 
 :MSGSYM. ERR_MUTABLE_CANT_BE_CONST
 :MSGTXT. 'mutable' member cannot also be const
-:MSGJTXT. 'mutable'ƒƒ“ƒo[‚Í'const'‚É‚Í‚È‚è“¾‚Ü‚¹‚ñ
+:MSGJTXT. 'mutable'ãƒ¡ãƒ³ãƒãƒ¼ã¯'const'ã«ã¯ãªã‚Šå¾—ã¾ã›ã‚“
 A
 .kw mutable
 member can be modified even if its class object is
@@ -9381,7 +9385,7 @@ struct S {
 
 :MSGSYM. ERR_BAD_BOOL_ASSIGNMENT
 :MSGTXT. left operand cannot be of type bool
-:MSGJTXT. ¶ƒIƒyƒ‰ƒ“ƒh‚Í'bool'Œ^‚É‚Í‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯'bool'å‹ã«ã¯ãªã‚Šã¾ã›ã‚“
 The left hand side of an assignment operator cannot be of type
 .kw bool
 except for simple assignment.
@@ -9397,7 +9401,7 @@ void fn()
 
 :MSGSYM. ERR_CANT_DEC_BOOL
 :MSGTXT. operand cannot be of type bool
-:MSGJTXT. ƒIƒyƒ‰ƒ“ƒh‚Í'bool'Œ^‚É‚Í‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯'bool'å‹ã«ã¯ãªã‚Šã¾ã›ã‚“
 The operand of both postfix and prefix "--" operators
 cannot be of type
 .kw bool.
@@ -9414,7 +9418,7 @@ void fn()
 
 :MSGSYM. ERR_UNDECLARED_MEMBER
 :MSGTXT. member '%N' has not been declared in '%T'
-:MSGJTXT. ƒƒ“ƒo['%N'‚Í'%T'‚Ì’†‚ÅéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¡ãƒ³ãƒãƒ¼'%N'ã¯'%T'ã®ä¸­ã§å®£è¨€ã•ã‚Œã¦ã„ã¾ã›ã‚“
 The compiler has found a member which has not been previously declared.
 The symbol may be spelled differently than the declaration, or the declaration
 may simply not be present.
@@ -9429,7 +9433,7 @@ void fn( X *p )
 
 :MSGSYM. WARN_TRUNC_INT_VALUE_PROMOTED
 :MSGTXT. integral value may be truncated
-:MSGJTXT. ®”’l‚ÍØ‚è‹l‚ß‚ç‚ê‚Ü‚·
+:MSGJTXT. æ•´æ•°å€¤ã¯åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã™
 :WARNING. 9
 This message indicates that the compiler knows that all values will
 not be preserved after the assignment or initialization.
@@ -9444,33 +9448,33 @@ char inc( char c )
 
 :MSGSYM. INF_LEFT_OPERAND_TYPE
 :MSGTXT. left operand type is '%T'
-:MSGJTXT. ¶ƒIƒyƒ‰ƒ“ƒh‚ÌŒ^‚Í'%T'‚Å‚·
+:MSGJTXT. å·¦ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®å‹ã¯'%T'ã§ã™
 :INFO.
 This informational message indicates the type of the left hand
 side of the expression.
 
 :MSGSYM. INF_RIGHT_OPERAND_TYPE
 :MSGTXT. right operand type is '%T'
-:MSGJTXT. ‰EƒIƒyƒ‰ƒ“ƒh‚ÌŒ^‚Í'%T'‚Å‚·
+:MSGJTXT. å³ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®å‹ã¯'%T'ã§ã™
 :INFO.
 This informational message indicates the type of the right hand
 side of the expression.
 
 :MSGSYM. INF_OPERAND_TYPE
 :MSGTXT. operand type is '%T'
-:MSGJTXT. ƒIƒyƒ‰ƒ“ƒh‚ÌŒ^‚Í'%T'‚Å‚·
+:MSGJTXT. ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®å‹ã¯'%T'ã§ã™
 :INFO.
 This informational message indicates the type of the operand.
 
 :MSGSYM. INF_EXPR_TYPE
 :MSGTXT. expression type is '%T'
-:MSGJTXT. ®‚ÌŒ^‚Í'%T'‚Å‚·
+:MSGJTXT. å¼ã®å‹ã¯'%T'ã§ã™
 :INFO.
 This informational message indicates the type of the expression.
 
 :MSGSYM. ERR_CANT_GENERATE_RETURN_THUNK
 :MSGTXT. virtual function '%S' cannot have its return type changed
-:MSGJTXT. ‰¼‘zŠÖ”'%S'‚ÍC‚»‚Ì–ß‚èŒ^‚ğ•ÏX‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. ä»®æƒ³é–¢æ•°'%S'ã¯ï¼Œãã®æˆ»ã‚Šå‹ã‚’å¤‰æ›´ã§ãã¾ã›ã‚“ã§ã—ãŸ
 This restriction is due to the relatively new feature in the C++
 language that allows return values to be changed when a virtual
 function has been overridden.  It is not possible to support both
@@ -9495,14 +9499,14 @@ struct Y : X {
 
 :MSGSYM. ERR_UNSUPPORTED_DECLSPEC
 :MSGTXT. __declspec( '%N' ) is not supported
-:MSGJTXT. __declspec('%N'j‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. __declspec('%N'ï¼‰ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“
 The identifier used in the
 .kw __declspec
 declaration modifier is not supported by Open Watcom C++.
 
 :MSGSYM. ERR_CTOR_OBJ_MEM_MODEL
 :MSGTXT. attempt to construct a far object when the data model is near
-:MSGJTXT. ƒf[ƒ^ƒ‚ƒfƒ‹‚ªnear‚Å‚ ‚é‚Æ‚«CfarƒIƒuƒWƒFƒNƒg‚ğ‚Â‚­‚ë‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«ãŒnearã§ã‚ã‚‹ã¨ãï¼Œfarã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã¤ãã‚ã†ã¨ã—ã¦ã„ã¾ã™
 Constructors cannot be applied to objects which are stored in far memory
 when the default memory model for data is near.
 :errbad.
@@ -9519,7 +9523,7 @@ small (switch -ms), since the memory model for data is near.
 
 :MSGSYM. WARN_ZO_OBSOLETE
 :MSGTXT. -zo is an obsolete switch (has no effect)
-:MSGJTXT. -zo‚Í‹Œ®‚ÌƒXƒCƒbƒ`‚Å‚·(Œø‰Ê‚Í‚ ‚è‚Ü‚¹‚ñ)
+:MSGJTXT. -zoã¯æ—§å¼ã®ã‚¹ã‚¤ãƒƒãƒã§ã™(åŠ¹æœã¯ã‚ã‚Šã¾ã›ã‚“)
 :WARNING. 1
 The
 .kw -zo
@@ -9540,7 +9544,7 @@ preprocessing directive.
 
 :MSGSYM. WARN_PARM_NOT_REFERENCED
 :MSGTXT. no reference to formal parameter '%S'
-:MSGJTXT. Œ`®ˆø”'%S'‚ÍQÆ‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. å½¢å¼å¼•æ•°'%S'ã¯å‚ç…§ã•ã‚Œã¦ã„ã¾ã›ã‚“
 :WARNING. 4
 There are no references to the declared formal parameter.
 The simplest way to remove this warning in C++ is to
@@ -9559,7 +9563,7 @@ int fn2( int a, int /* b */, int c )
 
 :MSGSYM. ERR_VOID_INDIRECTION
 :MSGTXT. cannot dereference a pointer to void
-:MSGJTXT. 'void'Œ^‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÍQÆ‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'void'å‹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã¯å‚ç…§ã§ãã¾ã›ã‚“
 A pointer to
 .kw void
 is used as a generic pointer but it cannot be dereferenced.
@@ -9572,7 +9576,7 @@ void fn( void *p )
 
 :MSGSYM. WARN_CONFLICTING_CLASS_MODS
 :MSGTXT. class modifiers for '%T' conflict with class modifiers for '%T'
-:MSGJTXT. '%T'‚É‘Î‚·‚éƒNƒ‰ƒXCüq‚ÍC'%T'‚Ì‚½‚ß‚ÉƒNƒ‰ƒXCüq‚Æ–µ‚‚µ‚Ü‚·
+:MSGJTXT. '%T'ã«å¯¾ã™ã‚‹ã‚¯ãƒ©ã‚¹ä¿®é£¾å­ã¯ï¼Œ'%T'ã®ãŸã‚ã«ã‚¯ãƒ©ã‚¹ä¿®é£¾å­ã¨çŸ›ç›¾ã—ã¾ã™
 :WARNING. 1
 A conflict between class modifiers for classes related through inheritance
 has been detected.
@@ -9594,7 +9598,7 @@ struct D : B1, B2 {
 
 :MSGSYM. ERR_INVALID_HEX_CONSTANT
 :MSGTXT. invalid hexadecimal constant
-:MSGJTXT. •s“KØ‚È16i’è”‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãª16é€²å®šæ•°ã§ã™
 The constant started with a '0x' prefix which makes it look like a hexadecimal
 constant but the constant was not followed by any hexadecimal digits.
 :errbad.
@@ -9603,7 +9607,7 @@ unsigned i = 0x;     // invalid hex constant
 
 :MSGSYM. WARN_OPERATOR_ARROW_WONT_WORK
 :MSGTXT. return type of 'operator ->' will not allow '->' to be applied
-:MSGJTXT. 'operator ->'‚Ì–ß‚èŒ^‚ÍC'->'‚ª“K—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'operator ->'ã®æˆ»ã‚Šå‹ã¯ï¼Œ'->'ãŒé©ç”¨ã§ãã¾ã›ã‚“
 :WARNING. 1
 This restriction is a result of the transformation that the compiler performs
 when the
@@ -9629,7 +9633,7 @@ void *fn( S &q )
 
 :MSGSYM. WARN_UNNAMED_CLASS_HAS_SPECIAL_MEMBER
 :MSGTXT. class should have a name since it needs a constructor or a destructor
-:MSGJTXT. ƒNƒ‰ƒX‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ü‚½‚ÍƒfƒXƒgƒ‰ƒNƒ^‚ğ•K—v‚Æ‚·‚é‚Ì‚ÅC–¼‘O‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ã¯ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¾ãŸã¯ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’å¿…è¦ã¨ã™ã‚‹ã®ã§ï¼Œåå‰ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 :WARNING. 1
 The class definition does not have a class name but it includes members
 that have constructors or destructors.
@@ -9649,7 +9653,7 @@ typedef struct {
 
 :MSGSYM. WARN_UNNAMED_CLASS_INHERITS
 :MSGTXT. class should have a name since it inherits a class
-:MSGJTXT. ƒNƒ‰ƒX‚ÍŒp³‚·‚é‚Ì‚ÅC–¼‘O‚ğ‚Â‚×‚«‚Å‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹ã¯ç¶™æ‰¿ã™ã‚‹ã®ã§ï¼Œåå‰ã‚’æŒã¤ã¹ãã§ã™
 :WARNING. 1
 The class definition does not have a class name but it inherits a class.
 Since the class has C++ semantics, it should be have a name in case the
@@ -9667,20 +9671,20 @@ typedef struct : P {
 
 :MSGSYM. ERR_PCH_OPEN_ERROR
 :MSGTXT. cannot open pre-compiled header file '%s'
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[¥ƒtƒ@ƒCƒ‹'%s'‚ğŠJ‚¯‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ï½¥ãƒ•ã‚¡ã‚¤ãƒ«'%s'ã‚’é–‹ã‘ã¾ã›ã‚“
 The compiler has detected a problem while trying to open the
 pre-compiled header file for read/write access.
 
 :MSGSYM. ERR_INVALID_VASTART_SYMBOL
 :MSGTXT. invalid second argument to va_start
-:MSGJTXT. 'va_start'‚Ö‚Ì‘æ2ˆø”‚ª•s“KØ‚Å‚·
+:MSGJTXT. 'va_start'ã¸ã®ç¬¬2å¼•æ•°ãŒä¸é©åˆ‡ã§ã™
 The second argument to the va_start macro should be
 the name of the argument just before the "..." in the
 argument list.
 
 :MSGSYM. WARN_SPLICE_IN_CPP_COMMENT
 :MSGTXT. '//' style comment continues on next line
-:MSGJTXT. '//'Œ`®‚ÌƒRƒƒ“ƒg‚ªŸs‚ÉŒp‘±‚µ‚Ü‚·
+:MSGJTXT. '//'å½¢å¼ã®ã‚³ãƒ¡ãƒ³ãƒˆãŒæ¬¡è¡Œã«ç¶™ç¶šã—ã¾ã™
 :WARNING. 1
 The compiler has detected a line continuation during the processing
 of a C++ style comment ("//").  The warning can be removed by switching to
@@ -9698,13 +9702,13 @@ comment end
 
 :MSGSYM. ERR_CANNOT_CREATE_OUTPUT_FILE
 :MSGTXT. cannot open file '%s' for write access
-:MSGJTXT. ‘‚«‚İƒAƒNƒZƒX‚ÅCƒtƒ@ƒCƒ‹'%s'‚ğƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ›¸ãè¾¼ã¿ã‚¢ã‚¯ã‚»ã‚¹ã§ï¼Œãƒ•ã‚¡ã‚¤ãƒ«'%s'ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã§ãã¾ã›ã‚“
 The compiler has detected a problem while trying to open the indicated
 file for write access.
 
 :MSGSYM. ERR_PTR_INTEGER_EXTENSION
 :MSGTXT. implicit conversion of pointers to integral types of same size
-:MSGJTXT. “¯‚¶‘å‚«‚Ì®”Œ^‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Ö‚ÌˆÃ–Ù‚Ì•ÏŠ·‚Å‚·
+:MSGJTXT. åŒã˜å¤§ãã®æ•´æ•°å‹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã¸ã®æš—é»™ã®å¤‰æ›ã§ã™
 According to the ISO/ANSI Draft Working Paper, a string literal is an array of
 .kw char.
 Consequently, it is illegal to initialize or assign the pointer resulting
@@ -9716,44 +9720,44 @@ since these pointers point at objects of a different type.
 
 :MSGSYM. ERR_INVALID_OPTION_NUMBER
 :MSGTXT. option requires a number
-:MSGJTXT. ƒIƒvƒVƒ‡ƒ“‚É”’l‚ª•K—v‚Å‚·
+:MSGJTXT. ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«æ•°å€¤ãŒå¿…è¦ã§ã™
 The specified option is not recognized by the compiler
 since there was no number after it (i.e., "-w=1").
 Numbers must be non-negative decimal numbers.
 
 :MSGSYM. ERR_FC_MORE_THAN_ONCE
 :MSGTXT. option -fc specified more than once
-:MSGJTXT. ƒIƒvƒVƒ‡ƒ“-fc‚Í2‰ñˆÈãw’è‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚ªãƒ—ã‚·ãƒ§ãƒ³-fcã¯2å›ä»¥ä¸ŠæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™
 The -fc option can be specified at most once on a command line.
 
 :MSGSYM. ERR_FC_IN_BATCH_FILE
 :MSGTXT. option -fc specified in batch file of commands
-:MSGJTXT. ƒIƒvƒVƒ‡ƒ“-fc‚ÍƒRƒ}ƒ“ƒh‚Ìƒoƒbƒ`¥ƒtƒ@ƒCƒ‹‚Ì’†‚Åw’è‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚ªãƒ—ã‚·ãƒ§ãƒ³-fcã¯ã‚³ãƒãƒ³ãƒ‰ã®ãƒãƒƒãƒï½¥ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¸­ã§æŒ‡å®šã•ã‚Œã¦ã„ã¾ã™
 The -fc option cannot be specified on a line in the
 batch file of command lines specified by the -fc option on the
 command line used to invoke the compiler.
 
 :MSGSYM. ERR_FC_EMPTY
 :MSGTXT. file specified by -fc is empty or cannot be read
-:MSGJTXT. -fc‚Åw’è‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Í‹ó‚©C“Ç‚İ‚İ‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. -fcã§æŒ‡å®šã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã¯ç©ºã‹ï¼Œèª­ã¿è¾¼ã¿ã§ãã¾ã›ã‚“
 The file specified using the -fc option is either empty or an input/output
 error was diagnosed for the file.
 
 :MSGSYM. ERR_FC_OPEN
 :MSGTXT. cannot open file specified by -fc option
-:MSGJTXT. -fcƒIƒvƒVƒ‡ƒ“‚Åw’è‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. -fcã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§æŒ‡å®šã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã§ãã¾ã›ã‚“
 The compiler was unable to open the indicated file.  Most likely, the file
 does not exist.  An input/output error is also possible.
 
 :MSGSYM. ERR_FC_READ
 :MSGTXT. input/output error reading the file specified by -fc option
-:MSGJTXT. -fcƒIƒvƒVƒ‡ƒ“‚Åw’è‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş‚Æ‚«C“üo—ÍƒGƒ‰[‚ªo‚Ü‚µ‚½
+:MSGJTXT. -fcã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§æŒ‡å®šã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€ã¨ãï¼Œå…¥å‡ºåŠ›ã‚¨ãƒ©ãƒ¼ãŒå‡ºã¾ã—ãŸ
 The compiler was unable to open the indicated file.  Most likely, the file
 does not exist.  An input/output error is also possible.
 
 :MSGSYM. WARN_OPERATOR_BAD_RETURN
 :MSGTXT. '%N' does not have a return type specified (int assumed)
-:MSGJTXT. '%N'‚Íw’è‚³‚ê‚½–ß‚èŒ^‚ğ‚¿‚Ü‚¹‚ñ('int'‚ğ‰¼’è‚µ‚Ü‚·)
+:MSGJTXT. '%N'ã¯æŒ‡å®šã•ã‚ŒãŸæˆ»ã‚Šå‹ã‚’æŒã¡ã¾ã›ã‚“('int'ã‚’ä»®å®šã—ã¾ã™)
 :WARNING. 1
 In C++, operator functions should have an explicit return type
 specified.  In future revisions of the ISO/ANSI C++ standard,
@@ -9769,7 +9773,7 @@ struct S {
 
 :MSGSYM. ERR_CONST_REF_INIT
 :MSGTXT. cannot initialize reference to non-constant with a constant object
-:MSGJTXT. ”ñ’è”‚Ö‚ÌQÆ‚ğ’è”ƒIƒuƒWƒFƒNƒg‚Å‰Šú‰»‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. éå®šæ•°ã¸ã®å‚ç…§ã‚’å®šæ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§åˆæœŸåŒ–ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 A reference to a non-constant object cannot be initialized with a reference to
 a constant type because this would allow constant data to be modified
 via the non-constant pointer to it.
@@ -9780,7 +9784,7 @@ extern int & ref = pic;
 
 :MSGSYM. INF_SWITCH
 :MSGTXT. processing %s
-:MSGJTXT. %s‚ğˆ—‚µ‚Ü‚·
+:MSGJTXT. %sã‚’å‡¦ç†ã—ã¾ã™
 :INFO.
 This informational message indicates where an error or warning was detected
 while processing the switches specified on the command line, in environment
@@ -9789,7 +9793,7 @@ file (specified using the -fc option).
 
 :MSGSYM. INF_CLASS_NOT_DEFINED
 :MSGTXT. class '%T' has not been defined
-:MSGJTXT. class '%T'‚Í’è‹`‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. class '%T'ã¯å®šç¾©ã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ
 :INFO.
 This informational message indicates a class which was not defined.  This is
 noted following an error or warning message because it often helps to a user
@@ -9797,7 +9801,7 @@ to determine the cause of that diagnostic.
 
 :MSGSYM. ERR_CATCH_UNDEFED
 :MSGTXT. cannot catch undefined class object
-:MSGJTXT. –¢’è‹`ƒNƒ‰ƒX¥ƒIƒuƒWƒFƒNƒg‚Ícatch‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æœªå®šç¾©ã‚¯ãƒ©ã‚¹ï½¥ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯catchã§ãã¾ã›ã‚“
 C++ does not allow abstract classes to be copied and so an undefined
 class object cannot be specified in a
 .kw catch
@@ -9805,13 +9809,13 @@ clause.  It is permissible to catch a reference to an undefined class.
 
 :MSGSYM. ERR_CLASS_CORRUPTED
 :MSGTXT. class '%T' cannot be used since its definition has errors
-:MSGJTXT. ƒNƒ‰ƒX’è‹`‚ªƒGƒ‰[‚È‚Ì‚ÅCƒNƒ‰ƒX'%T'‚Íg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¯ãƒ©ã‚¹å®šç¾©ãŒã‚¨ãƒ©ãƒ¼ãªã®ã§ï¼Œã‚¯ãƒ©ã‚¹'%T'ã¯ä½¿ç”¨ã§ãã¾ã›ã‚“
 The analysis of the expression could not continue due to previous
 errors diagnosed in the class definition.
 
 :MSGSYM. WARN_LOCAL_FN_PROTOTYPE
 :MSGTXT. function prototype in block scope missing 'extern'
-:MSGJTXT. ƒuƒƒbƒN¥ƒXƒR[ƒv‚Ì’†‚ÌŠÖ”ƒvƒƒgƒ^ƒCƒv‚É'extern'‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ–ãƒ­ãƒƒã‚¯ï½¥ã‚¹ã‚³ãƒ¼ãƒ—ã®ä¸­ã®é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—ã«'extern'ãŒã‚ã‚Šã¾ã›ã‚“
 :WARNING. 1
 This warning can be triggered when the intent is to define a variable
 with a constructor.
@@ -9839,14 +9843,14 @@ void foo()
 
 :MSGSYM. INF_FUNCTION_PROTOTYPE
 :MSGTXT. function prototype is '%T'
-:MSGJTXT. ŠÖ”ƒvƒƒgƒ^ƒCƒv‚Í'%T'‚Å‚·
+:MSGJTXT. é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—ã¯'%T'ã§ã™
 :INFO.
 This informational message indicates what the type of the function
 prototype is for the message in question.
 
 :MSGSYM. WARN_ZERO_ARRAY_CLASS_USED
 :MSGTXT. class '%T' contains a zero size array
-:MSGJTXT. ƒNƒ‰ƒX'%T'‚É‚Í‘å‚«‚³‚ªƒ[ƒ‚Ì”z—ñ‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹'%T'ã«ã¯å¤§ãã•ãŒã‚¼ãƒ­ã®é…åˆ—ãŒã‚ã‚Šã¾ã™
 :WARNING. 1
 This warning is triggered when a class with a zero sized array
 is used in an array or as a class member.
@@ -9868,7 +9872,7 @@ C a[10];
 
 :MSGSYM. ERR_INVALID_NEW_MODIFIER
 :MSGTXT. invalid 'new' modifier
-:MSGJTXT. 'new'‚É‘Î‚µ‚Ä•s“KØ‚ÈCüq‚Å‚·
+:MSGJTXT. 'new'ã«å¯¾ã—ã¦ä¸é©åˆ‡ãªä¿®é£¾å­ã§ã™
 The Open Watcom C++ compiler does not support new expression modifiers
 but allows them to match the ambient memory model for compatibility.
 Invalid memory model modifiers are also rejected by the compiler.
@@ -9881,7 +9885,7 @@ int *fn( unsigned x )
 
 :MSGSYM. ERR_THREAD_CODE_REQD
 :MSGTXT. '__declspec(thread)' data '%S' must be link-time initialized
-:MSGJTXT. '__declspec(thread)'ƒf[ƒ^'%S'‚ÍƒŠƒ“ƒN‚É‰Šú‰»‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '__declspec(thread)'ãƒ‡ãƒ¼ã‚¿'%S'ã¯ãƒªãƒ³ã‚¯æ™‚ã«åˆæœŸåŒ–ã•ã‚Œãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 This error message indicates that the data item in question either
 requires a constructor, destructor, or run-time initialization.
 This cannot be supported for thread-specific data at this time.
@@ -9902,7 +9906,7 @@ int __declspec(thread) e = rand();
 
 :MSGSYM. WARN_CODE_MAY_BE_SPLIT_ACROSS_SEGS
 :MSGTXT. code may not work properly if this module is split across a code segment
-:MSGJTXT. ‚±‚Ìƒ‚ƒWƒ…[ƒ‹‚ªƒR[ƒh¥ƒZƒOƒƒ“ƒg‚ğ‚Ü‚½‚ª‚Á‚Ä•ªŠ„‚³‚ê‚é‚ÆCƒR[ƒh‚Í³‚µ‚­“®ì‚µ‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã“ã®ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ãŒã‚³ãƒ¼ãƒ‰ï½¥ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã‚’ã¾ãŸãŒã£ã¦åˆ†å‰²ã•ã‚Œã‚‹ã¨ï¼Œã‚³ãƒ¼ãƒ‰ã¯æ­£ã—ãå‹•ä½œã—ãªã„ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“
 :WARNING. 4
 The "zm" option allows the compiler to generate functions into separate
 segments that have different names so that more than 64k of code can
@@ -9933,7 +9937,7 @@ int far_fn( int y )
 
 :MSGSYM. ERR_PRAG_EXTREF_NONE
 :MSGTXT. #pragma extref: symbol '%N' not declared
-:MSGJTXT. #pragma extref: ƒVƒ“ƒ{ƒ‹'%N'‚ªéŒ¾‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. #pragma extref: ã‚·ãƒ³ãƒœãƒ«'%N'ãŒå®£è¨€ã•ã‚Œã¦ã„ã¾ã›ã‚“
 This error message indicates that the symbol referenced by
 .kw #pragma extref
 has not been declared in the context where the pragma was
@@ -9941,13 +9945,13 @@ encountered.
 
 :MSGSYM. ERR_PRAG_EXTREF_OVERLOADED
 :MSGTXT. #pragma extref: overloaded function '%S' cannot be used
-:MSGJTXT. #pragma extref: ƒI[ƒo[ƒ[ƒhŠÖ”'%S'‚ğg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. #pragma extref: ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰é–¢æ•°'%S'ã‚’ä½¿ç”¨ã§ãã¾ã›ã‚“
 An external reference can be emitted only for
 external functions which are not overloaded.
 
 :MSGSYM. ERR_PRAG_EXTREF_BAD
 :MSGTXT. #pragma extref: '%N' is not a function or data
-:MSGJTXT. #pragma extref: '%N'‚ÍŠÖ”‚Ü‚½‚Íƒf[ƒ^‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. #pragma extref: '%N'ã¯é–¢æ•°ã¾ãŸã¯ãƒ‡ãƒ¼ã‚¿ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 This error message indicates that the symbol referenced by
 .kw #pragma extref
 cannot have an external reference emitted for it
@@ -9957,7 +9961,7 @@ not overloaded and for external data items.
 
 :MSGSYM. ERR_PRAG_EXTREF_EXTERN
 :MSGTXT. #pragma extref: '%S' is not external
-:MSGJTXT. #pragma extref: '%S'‚ÍŠO•”QÆ‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. #pragma extref: '%S'ã¯å¤–éƒ¨å‚ç…§ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 This error message indicates that the symbol referenced by
 .kw #pragma extref
 cannot have an external reference emitted for it
@@ -9967,7 +9971,7 @@ not overloaded and for external data items.
 
 :MSGSYM. WARN_PCH_DEBUG_OPTIMIZE
 :MSGTXT. pre-compiled header file being recreated (debugging info may change)
-:MSGJTXT. ƒvƒŠƒRƒ“ƒpƒCƒ‹¥ƒwƒbƒ_[¥ƒtƒ@ƒCƒ‹‚ÍÄì¬‚³‚ê‚Ü‚·(ƒfƒoƒbƒOî•ñ‚ª•Ï‚í‚Á‚½‚©‚à‚µ‚ê‚Ü‚¹‚ñ)
+:MSGJTXT. ãƒ—ãƒªã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ï½¥ãƒ˜ãƒƒãƒ€ãƒ¼ï½¥ãƒ•ã‚¡ã‚¤ãƒ«ã¯å†ä½œæˆã•ã‚Œã¾ã™(ãƒ‡ãƒãƒƒã‚°æƒ…å ±ãŒå¤‰ã‚ã£ãŸã‹ã‚‚ã—ã‚Œã¾ã›ã‚“)
 :WARNING. 1
 The compiler has detected that the module being compiled was used to create
 debugging information for use by other modules.  In order to maintain
@@ -9976,7 +9980,7 @@ the object file.
 
 :MSGSYM. ANSI_INVALID_OCTAL_ESCAPE
 :MSGTXT. octal escape sequence out of range; truncated
-:MSGJTXT. 8i”‚ÌƒGƒXƒP[ƒv¥ƒV[ƒPƒ“ƒX‚ª”ÍˆÍŠO‚Å‚·; Ø‚è‹l‚ß‚ç‚ê‚Ü‚·
+:MSGJTXT. 8é€²æ•°ã®ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ï½¥ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãŒç¯„å›²å¤–ã§ã™; åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã™
 :ANSI. 1
 This message indicates that the octal escape sequence
 produces an integer that cannot fit into the required character type.
@@ -9986,85 +9990,85 @@ char *p = "\406";
 
 :MSGSYM. ERR_BINARY_MISSING_RIGHT_OPERAND
 :MSGTXT. binary operator '%s' missing right operand
-:MSGJTXT. 2€‰‰Zq'%s'‚É‰EƒIƒyƒ‰ƒ“ƒh‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. 2é …æ¼”ç®—å­'%s'ã«å³ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
 There is no expression to the right of the indicated binary operator.
 
 :MSGSYM. ERR_BINARY_MISSING_LEFT_OPERAND
 :MSGTXT. binary operator '%s' missing left operand
-:MSGJTXT. 2€‰‰Zq'%s'‚É¶ƒIƒyƒ‰ƒ“ƒh‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. 2é …æ¼”ç®—å­'%s'ã«å·¦ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
 There is no expression to the left of the indicated binary operator.
 
 :MSGSYM. ERR_EXTRA_OPERAND
 :MSGTXT. expression contains extra operand(s)
-:MSGJTXT. ®‚É—]•ª‚ÈƒIƒyƒ‰ƒ“ƒh‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. å¼ã«ä½™åˆ†ãªã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã™
 The expression contains operand(s) without an operator
 
 :MSGSYM. ERR_CONSECUTIVE_OPERANDS
 :MSGTXT. expression contains consecutive operand(s)
-:MSGJTXT. ®‚É˜A‘±‚µ‚½ƒIƒyƒ‰ƒ“ƒh‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. å¼ã«é€£ç¶šã—ãŸã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã™
 More than one operand found in a row.
 
 :MSGSYM. ERR_UNMATCHED_RIGHT_PAREN
 :MSGTXT. unmatched right parenthesis ')'
-:MSGJTXT. ‰EŠ‡ŒÊ")"‚ªˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. å³æ‹¬å¼§")"ãŒä¸€è‡´ã—ã¾ã›ã‚“
 The expression contains a right parenthesis ")" without a matching left
 parenthesis.
 
 :MSGSYM. ERR_UNMATCHED_LEFT_PAREN
 :MSGTXT. unmatched left parenthesis '('
-:MSGJTXT. ¶Š‡ŒÊ"("‚ªˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. å·¦æ‹¬å¼§"("ãŒä¸€è‡´ã—ã¾ã›ã‚“
 The expression contains a left parenthesis "(" without a matching right
 parenthesis.
 
 :MSGSYM. ERR_EMPTY_PAREN
 :MSGTXT. no expression between parentheses '( )'
-:MSGJTXT. Š‡ŒÊ"()"‚Ì’†‚É®‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ‹¬å¼§"()"ã®ä¸­ã«å¼ãŒã‚ã‚Šã¾ã›ã‚“
 There is a matching set of parenthesis "()" which do not contain an expression.
 
 :MSGSYM. ERR_CONDITIONAL_MISSING_COLON
 :MSGTXT. expecting ':' operator in conditional expression
-:MSGJTXT. ğŒ®‚Ì':'‰‰Zq‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ¡ä»¶å¼ã®':'æ¼”ç®—å­ãŒã‚ã‚Šã¾ã›ã‚“
 A conditional expression exists without the ':' operator.
 
 :MSGSYM. ERR_CONDITIONAL_MISSING_QUESTION
 :MSGTXT. expecting '?' operator in conditional expression
-:MSGJTXT. ğŒ®‚Ì'?'‰‰Zq‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ¡ä»¶å¼ã®'?'æ¼”ç®—å­ãŒã‚ã‚Šã¾ã›ã‚“
 A conditional expression exists without the '?' operator.
 
 :MSGSYM. ERR_CONDITIONAL_MISSING_FIRST_OPERAND
 :MSGTXT. expecting first operand in conditional expression
-:MSGJTXT. ğŒ®‚Ì‘æ1ƒIƒyƒ‰ƒ“ƒh‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ¡ä»¶å¼ã®ç¬¬1ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
 A conditional expression exists without the first operand.
 
 :MSGSYM. ERR_CONDITIONAL_MISSING_SECOND_OPERAND
 :MSGTXT. expecting second operand in conditional expression
-:MSGJTXT. ğŒ®‚Ì‘æ2ƒIƒyƒ‰ƒ“ƒh‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ¡ä»¶å¼ã®ç¬¬2ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
 A conditional expression exists without the second operand.
 
 :MSGSYM. ERR_CONDITIONAL_MISSING_THIRD_OPERAND
 :MSGTXT. expecting third operand in conditional expression
-:MSGJTXT. ğŒ®‚Ì‘æ3ƒIƒyƒ‰ƒ“ƒh‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ¡ä»¶å¼ã®ç¬¬3ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
 A conditional expression exists without the third operand.
 
 :MSGSYM. ERR_UNARY_OPERATOR_MISSING_OPERAND
 :MSGTXT. expecting operand after unary operator '%s'
-:MSGJTXT. ’P€‰‰Zq'%s'‚ÌŒã‚ÌƒIƒyƒ‰ƒ“ƒh‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å˜é …æ¼”ç®—å­'%s'ã®å¾Œã®ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
 A unary operator without being followed by an operand.
 
 :MSGSYM. ERR_UNEXPECTED_IN_CONSTANT_EXPRESSION
 :MSGTXT. '%s' unexpected in constant expression
-:MSGJTXT. ğŒ®‚Ì’†‚É'%s'‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. æ¡ä»¶å¼ã®ä¸­ã«'%s'ãŒã‚ã‚Šã¾ã™
 '%s' not allowed in constant expression
 
 :MSGSYM. WARN_ASSEMBLER_WARNING
 :MSGTXT. assembler: '%s'
-:MSGJTXT. ƒAƒZƒ“ƒuƒ‰: '%s'
+:MSGJTXT. ã‚¢ã‚»ãƒ³ãƒ–ãƒ©: '%s'
 :WARNING. 1
 A warning has been issued by the #pragma inline assembler.
 
 :MSGSYM. ERR_COLON_COLON_SYNTAX
 :MSGTXT. expecting 'id' after '::' but found '%s'
-:MSGJTXT. '::'‚ÌŒã‚É'id'‚ª‚ ‚é‚Í‚¸‚Å‚·‚ªC'%s'‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. '::'ã®å¾Œã«'id'ãŒã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œ'%s'ãŒã‚ã‚Šã¾ã™
 The '::' operator has an invalid token following it.
 :errbad.
 #define fn( x ) ((x)+1)
@@ -10078,7 +10082,7 @@ struct S {
 
 :MSGSYM. ERR_EXPLICIT_FNS
 :MSGTXT. only constructors can be declared explicit
-:MSGJTXT. ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‚İ'explicit'‚ÆéŒ¾‚Å‚«‚Ü‚·
+:MSGJTXT. ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ã¿'explicit'ã¨å®£è¨€ã§ãã¾ã™
 Currently, only constructors can be declared with the
 .kw explicit
 keyword.
@@ -10091,7 +10095,7 @@ int explicit fn( int x ) {
 
 :MSGSYM. ERR_CONST_CAST_TYPE
 :MSGTXT. const_cast type must be pointer, member pointer, or reference
-:MSGJTXT. const_castŒ^‚Íƒ|ƒCƒ“ƒ^Cƒƒ“ƒo[ƒ|ƒCƒ“ƒ^CQÆ‚Ì‚¢‚¸‚ê‚©‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. const_castå‹ã¯ãƒã‚¤ãƒ³ã‚¿ï¼Œãƒ¡ãƒ³ãƒãƒ¼ãƒã‚¤ãƒ³ã‚¿ï¼Œå‚ç…§ã®ã„ãšã‚Œã‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The type specified in a
 .kw const_cast
 operator must be a pointer, a pointer to a member of a class, or a reference.
@@ -10102,7 +10106,7 @@ long lp = const_cast<long>( p );
 
 :MSGSYM. ERR_CONST_CAST_PTR_TYPE
 :MSGTXT. const_cast expression must be pointer to same kind of object
-:MSGJTXT. const_cast®‚Í“¯‚¶í—Ş‚ÌƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. const_castå¼ã¯åŒã˜ç¨®é¡ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Ignoring
 .kw const
 and
@@ -10118,7 +10122,7 @@ long* lp = const_cast<long*>( ip );
 
 :MSGSYM. ERR_CONST_CAST_REF_TYPE
 :MSGTXT. const_cast expression must be lvalue of the same kind of object
-:MSGJTXT. const_cast®‚Í“¯‚¶í—Ş‚ÌƒIƒuƒWƒFƒNƒg‚Ì¶•Ó’l‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. const_castå¼ã¯åŒã˜ç¨®é¡ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å·¦è¾ºå€¤ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Ignoring
 .kw const
 and
@@ -10134,7 +10138,7 @@ long& lr = const_cast<long&>( i );
 
 :MSGSYM. ERR_CONST_CAST_MPTR_CLASS
 :MSGTXT. expression must be pointer to member from same class in const_cast
-:MSGJTXT. ®‚Íconst_cast‚Ì“¯‚¶ƒNƒ‰ƒX‚©‚ç‚Ìƒƒ“ƒo[‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯const_castã®åŒã˜ã‚¯ãƒ©ã‚¹ã‹ã‚‰ã®ãƒ¡ãƒ³ãƒãƒ¼ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The expression must be a pointer to member from the same class
 as that specified in the
 .kw const_cast
@@ -10151,7 +10155,7 @@ int D::* imd const_cast<int D::*>( imb );
 
 :MSGSYM. ERR_CONST_CAST_MPTR_TYPE
 :MSGTXT. expression must be member pointer to same type as specified in const_cast
-:MSGJTXT. ®‚Íconst_cast‚Åw’è‚³‚ê‚½‚Ì‚Æ“¯‚¶Œ^‚Ö‚Ìƒƒ“ƒo[ƒ|ƒCƒ“ƒ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯const_castã§æŒ‡å®šã•ã‚ŒãŸã®ã¨åŒã˜å‹ã¸ã®ãƒ¡ãƒ³ãƒãƒ¼ãƒã‚¤ãƒ³ã‚¿ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Ignoring
 .kw const
 and
@@ -10170,7 +10174,7 @@ int D::* imd const_cast<int D::*>( &B::lb );
 
 :MSGSYM. ERR_REINT_CAST_PTR_TYPE
 :MSGTXT. reinterpret_cast expression must be pointer or integral object
-:MSGJTXT. reinterpret_cast®ƒ|ƒCƒ“ƒ^‚Ü‚½‚Í®”ƒIƒuƒWƒFƒNƒg‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. reinterpret_castå¼ãƒã‚¤ãƒ³ã‚¿ã¾ãŸã¯æ•´æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 When a pointer type is specified in the
 .kw reinterpret_cast
 operator, the expression must be a pointer or an integer.
@@ -10184,7 +10188,7 @@ type and so is illegal.
 
 :MSGSYM. ERR_REINT_CAST_REF_TYPE
 :MSGTXT. reinterpret_cast expression cannot be casted to reference type
-:MSGJTXT. reinterpret_cast®‚ÍQÆŒ^‚ÉƒLƒƒƒXƒg‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. reinterpret_castå¼ã¯å‚ç…§å‹ã«ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 When a reference type is specified in the
 .kw reinterpret_cast
 operator, the expression must be an lvalue (or have reference type).
@@ -10201,7 +10205,7 @@ The second cast expression attempts to cast away constness.
 
 :MSGSYM. ERR_REINT_CAST_MPTR_TYPE
 :MSGTXT. reinterpret_cast expression cannot be casted to pointer to member
-:MSGJTXT. reinterpret_cast®‚Íƒƒ“ƒo[‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ÉƒLƒƒƒXƒg‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. reinterpret_castå¼ã¯ãƒ¡ãƒ³ãƒãƒ¼ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã«ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 When a pointer to member type is specified in the
 .kw reinterpret_cast
 operator, the expression must be a pointer to member.
@@ -10221,7 +10225,7 @@ The second cast expression attempts to cast away constness.
 
 :MSGSYM. ERR_REINT_CAST_INT_TYPE
 :MSGTXT. only integral arithmetic types can be used with reinterpret_cast
-:MSGJTXT. ®”ZpŒ^‚Ì‚İ‚ªreinterpret_cast‚Æ‚Æ‚à‚Ég—p‚Å‚«‚Ü‚·
+:MSGJTXT. æ•´æ•°ç®—è¡“å‹ã®ã¿ãŒreinterpret_castã¨ã¨ã‚‚ã«ä½¿ç”¨ã§ãã¾ã™
 Pointers can only be casted to sufficiently large integral types.
 :errbad.
 void* p;
@@ -10233,7 +10237,7 @@ type is specified.
 
 :MSGSYM. ERR_REINT_CAST_ARITH_PTR
 :MSGTXT. only integral arithmetic types can be used with reinterpret_cast
-:MSGJTXT. ®”ZpŒ^‚Ì‚İ‚ªreinterpret_cast‚Æ‚Æ‚à‚Ég—p‚Å‚«‚Ü‚·
+:MSGJTXT. æ•´æ•°ç®—è¡“å‹ã®ã¿ãŒreinterpret_castã¨ã¨ã‚‚ã«ä½¿ç”¨ã§ãã¾ã™
 Only integral arithmetic types can be casted to pointer types.
 :errbad.
 float flt;
@@ -10247,7 +10251,7 @@ type which is not integral.
 
 :MSGSYM. ERR_CAST_AWAY_CONST
 :MSGTXT. cannot cast away constness
-:MSGJTXT. const‚ğ‚Í‚¸‚·ƒLƒƒƒXƒg‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. constã‚’ã¯ãšã™ã‚­ãƒ£ã‚¹ãƒˆã¯ã§ãã¾ã›ã‚“
 A cast or implicit conversion is illegal because a conversion to the target
 type would remove constness from a pointer, reference, or pointer to member.
 :errbad.
@@ -10265,7 +10269,7 @@ constness.
 
 :MSGSYM. ERR_REINT_INTEGRAL_PTR
 :MSGTXT. size of integral type in cast less than size of pointer
-:MSGJTXT. ƒLƒƒƒXƒg‚Ì®”Œ^‚Ì‘å‚«‚³‚ªƒ|ƒCƒ“ƒ^‚Ì‘å‚«‚³‚æ‚è¬‚³‚¢‚Å‚·
+:MSGJTXT. ã‚­ãƒ£ã‚¹ãƒˆã®æ•´æ•°å‹ã®å¤§ãã•ãŒãƒã‚¤ãƒ³ã‚¿ã®å¤§ãã•ã‚ˆã‚Šå°ã•ã„ã§ã™
 An object of the indicated integral type is too small to contain the value
 of the indicated pointer.
 :errbad.
@@ -10279,7 +10283,7 @@ is smaller than a pointer.
 
 :MSGSYM. ERR_REINT_CAST_TYPE
 :MSGTXT. type cannot be used in reinterpret_cast
-:MSGJTXT. ‚±‚ÌŒ^‚Íreinterpret_cast‚Åg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã“ã®å‹ã¯reinterpret_castã§ä½¿ç”¨ã§ãã¾ã›ã‚“
 The type specified with reinterpret_cast must be an integral type, a pointer
 type, a pointer to a member of a class, or a reference type.
 :errbad.
@@ -10291,7 +10295,7 @@ The casts specify illegal types.
 
 :MSGSYM. ERR_REINT_TO_INT_TYPE
 :MSGTXT. only pointers can be casted to integral types with reinterpret_cast
-:MSGJTXT. ƒ|ƒCƒ“ƒ^‚Ì‚İ‚ªreinterpret_cast‚Å®”Œ^‚ÉƒLƒƒƒXƒg‚Å‚«‚Ü‚·
+:MSGJTXT. ãƒã‚¤ãƒ³ã‚¿ã®ã¿ãŒreinterpret_castã§æ•´æ•°å‹ã«ã‚­ãƒ£ã‚¹ãƒˆã§ãã¾ã™
 The expression must be a pointer type.
 :errbad.
 void* p;
@@ -10302,7 +10306,7 @@ The casts specify illegal types.
 
 :MSGSYM. ERR_REINT_TO_PTR_TYPE
 :MSGTXT. only integers and pointers can be casted to pointer types with reinterpret_cast
-:MSGJTXT. ®”‚Æƒ|ƒCƒ“ƒ^‚Ì‚İ‚ªreinterpret_cast‚Åƒ|ƒCƒ“ƒ^‚ÉƒLƒƒƒXƒg‚Å‚«‚Ü‚·
+:MSGJTXT. æ•´æ•°ã¨ãƒã‚¤ãƒ³ã‚¿ã®ã¿ãŒreinterpret_castã§ãƒã‚¤ãƒ³ã‚¿ã«ã‚­ãƒ£ã‚¹ãƒˆã§ãã¾ã™
 The expression must be a pointer or integral type.
 :errbad.
 void* x;
@@ -10313,7 +10317,7 @@ The casts specify illegal types.
 
 :MSGSYM. ERR_STATIC_CAST_EXPR
 :MSGTXT. static_cast cannot convert the expression
-:MSGJTXT. static_cast‚Í®‚ğ•ÏŠ·‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. static_castã¯å¼ã‚’å¤‰æ›ã§ãã¾ã›ã‚“
 The indicated expression cannot be converted to the type specified with the
 .kw static_cast
 operator.
@@ -10321,7 +10325,7 @@ Perhaps reinterpret_cast or dynamic_cast should be used instead;
 
 :MSGSYM. ERR_STATIC_CAST_TYPE
 :MSGTXT. static_cast cannot be used with the type specified
-:MSGJTXT. static_cast‚Íw’è‚³‚ê‚½Œ^‚Æ‚¢‚Á‚µ‚å‚É‚Íg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. static_castã¯æŒ‡å®šã•ã‚ŒãŸå‹ã¨ã„ã£ã—ã‚‡ã«ã¯ä½¿ãˆã¾ã›ã‚“
 A static cast cannot be used with a function type or array type.
 :errbad.
 typedef int fun( int );
@@ -10332,7 +10336,7 @@ Perhaps reinterpret_cast or dynamic_cast should be used instead;
 
 :MSGSYM. ERR_STATIC_CAST_REF_TYPE
 :MSGTXT. static_cast cannot be used with the reference type specified
-:MSGJTXT. static_cast‚Íw’è‚³‚ê‚½QÆŒ^‚Æ‚¢‚Á‚µ‚å‚É‚Íg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. static_castã¯æŒ‡å®šã•ã‚ŒãŸå‚ç…§å‹ã¨ã„ã£ã—ã‚‡ã«ã¯ä½¿ãˆã¾ã›ã‚“
 The expression could not be converted to the specified type using static_cast.
 :errbad.
 long lng;
@@ -10342,7 +10346,7 @@ Perhaps reinterpret_cast or dynamic_cast should be used instead;
 
 :MSGSYM. ERR_STATIC_CAST_PTR_TYPE
 :MSGTXT. static_cast cannot be used with the pointer type specified
-:MSGJTXT. static_cas‚Íw’è‚³‚ê‚½ƒ|ƒCƒ“ƒ^Œ^‚Æ‚¢‚Á‚µ‚å‚É‚Íg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. static_casã¯æŒ‡å®šã•ã‚ŒãŸãƒã‚¤ãƒ³ã‚¿å‹ã¨ã„ã£ã—ã‚‡ã«ã¯ä½¿ãˆã¾ã›ã‚“
 The expression could not be converted to the specified type using static_cast.
 :errbad.
 long lng;
@@ -10352,7 +10356,7 @@ Perhaps reinterpret_cast or dynamic_cast should be used instead;
 
 :MSGSYM. ERR_STATIC_CAST_MPTR_TYPE
 :MSGTXT. static_cast cannot be used with the member pointer type specified
-:MSGJTXT. static_castw’è‚³‚ê‚½ƒƒ“ƒo[ƒ|ƒCƒ“ƒ^Œ^‚Æ‚¢‚Á‚µ‚å‚É‚Íg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. static_castæŒ‡å®šã•ã‚ŒãŸãƒ¡ãƒ³ãƒãƒ¼ãƒã‚¤ãƒ³ã‚¿å‹ã¨ã„ã£ã—ã‚‡ã«ã¯ä½¿ãˆã¾ã›ã‚“
 The expression could not be converted to the specified type using static_cast.
 :errbad.
 struct S {
@@ -10364,13 +10368,13 @@ Perhaps reinterpret_cast or dynamic_cast should be used instead;
 
 :MSGSYM. ERR_STATIC_CAST_AMBIG
 :MSGTXT. static_cast type is ambiguous
-:MSGJTXT. static_cast‚³‚ê‚½Œ^‚ÍB–†‚Å‚·
+:MSGJTXT. static_castã•ã‚ŒãŸå‹ã¯æ›–æ˜§ã§ã™
 More than one constructor and/or used-defined conversion function can be used
 to convert the expression to the indicated type.
 
 :MSGSYM. ERR_CAST_FROM_AMBIGUITY
 :MSGTXT. cannot cast from ambiguous base class
-:MSGJTXT. B–†‚Èƒx[ƒXƒNƒ‰ƒX‚©‚çƒLƒƒƒXƒg‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ›–æ˜§ãªãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‹ã‚‰ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 When more than one base class of a given type exists, with respect to a
 derived class, it is impossible to cast from the base class to the
 derived class.
@@ -10391,7 +10395,7 @@ is an ambiguous base class for
 
 :MSGSYM. ERR_CAST_TO_AMBIGUITY
 :MSGTXT. cannot cast to ambiguous base class
-:MSGJTXT. B–†‚Èƒx[ƒXƒNƒ‰ƒX‚ÖƒLƒƒƒXƒg‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ›–æ˜§ãªãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã¸ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 When more than one base class of a given type exists, with respect to a
 derived class, it is impossible to cast from the derived class to the
 base class.
@@ -10412,7 +10416,7 @@ is an ambiguous base class for
 
 :MSGSYM. ERR_STATIC_CAST_OTHER_TO_ENUM
 :MSGTXT. can only static_cast integers to enumeration type
-:MSGJTXT. static_cast‚Ì‚İ‚ª®”‚ğ—ñ‹“Œ^‚ÖƒLƒƒƒXƒg‚Å‚«‚Ü‚·
+:MSGJTXT. static_castã®ã¿ãŒæ•´æ•°ã‚’åˆ—æŒ™å‹ã¸ã‚­ãƒ£ã‚¹ãƒˆã§ãã¾ã™
 When an enumeration type is specified with
 .kw static_cast,
 the expression must be an integer.
@@ -10424,7 +10428,7 @@ The cast is illegal because the expression is not an integer.
 
 :MSGSYM. ERR_DYNAMIC_CAST_TYPE
 :MSGTXT. dynamic_cast cannot be used with the type specified
-:MSGJTXT. dynamic_cast‚Íw’è‚³‚ê‚½Œ^‚Æ¸‰‚É‚Íg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. dynamic_castã¯æŒ‡å®šã•ã‚ŒãŸå‹ã¨å¤±åˆã«ã¯ä½¿ãˆã¾ã›ã‚“
 A dynamic cast can only specify a reference to a class or a pointer to
 a class or
 .kw void.
@@ -10433,7 +10437,7 @@ that class or a base class of that class.
 
 :MSGSYM. ERR_DYNAMIC_CAST_EXPR
 :MSGTXT. dynamic_cast cannot convert the expression
-:MSGJTXT. dynamic_cast‚Í‚»‚Ì®‚ğ•ÏŠ·‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. dynamic_castã¯ãã®å¼ã‚’å¤‰æ›ã§ãã¾ã›ã‚“
 The indicated expression cannot be converted to the type specified with the
 .kw dynamic_cast
 operator. Only a pointer or reference to a class object can be converted.
@@ -10442,13 +10446,13 @@ within that class or a base class of that class.
 
 :MSGSYM. ERR_DYNAMIC_CAST_NO_VFN
 :MSGTXT. dynamic_cast requires class '%T' to have virtual functions
-:MSGJTXT. dynamic_cast‚ğg—p‚·‚é‚É‚ÍCƒNƒ‰ƒX'%T'‚Í‰¼‘zŠÖ”‚ğ‚½‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. dynamic_castã‚’ä½¿ç”¨ã™ã‚‹ã«ã¯ï¼Œã‚¯ãƒ©ã‚¹'%T'ã¯ä»®æƒ³é–¢æ•°ã‚’æŒãŸãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The indicated class must have virtual functions defined
 within that class or a base class of that class.
 
 :MSGSYM. WARN_DYNAMIC_CAST_AMBIGUOUS
 :MSGTXT. base class for type in dynamic_cast is ambiguous (will fail)
-:MSGJTXT. dynamic_cast‚Ì’†‚ÌŒ^‚Ìƒx[ƒXƒNƒ‰ƒX‚ªB–†‚Å‚·(ƒGƒ‰[‚É‚È‚è‚Ü‚·)
+:MSGJTXT. dynamic_castã®ä¸­ã®å‹ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ãŒæ›–æ˜§ã§ã™(ã‚¨ãƒ©ãƒ¼ã«ãªã‚Šã¾ã™)
 :WARNING. 1
 The type in the
 .kw dynamic_cast
@@ -10467,7 +10471,7 @@ A *foo( D *p ) {
 
 :MSGSYM. WARN_DYNAMIC_CAST_PRIVATE
 :MSGTXT. base class for type in dynamic_cast is private (may fail)
-:MSGJTXT. dynamic_cast‚Ì’†‚ÌŒ^‚Ìƒx[ƒXƒNƒ‰ƒX‚Íƒvƒ‰ƒCƒx[ƒg‘®«‚Å‚·(ƒGƒ‰[‚É‚È‚è‚Ü‚·)
+:MSGJTXT. dynamic_castã®ä¸­ã®å‹ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã¯ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆå±æ€§ã§ã™(ã‚¨ãƒ©ãƒ¼ã«ãªã‚Šã¾ã™)
 :WARNING. 1
 The type in the
 .kw dynamic_cast
@@ -10486,7 +10490,7 @@ V *foo( A *p ) {
 
 :MSGSYM. WARN_DYNAMIC_CAST_PROTECTED
 :MSGTXT. base class for type in dynamic_cast is protected (may fail)
-:MSGJTXT. dynamic_cast‚Ì’†‚ÌŒ^‚Ìƒx[ƒXƒNƒ‰ƒX‚ÍƒvƒƒeƒNƒg‘®«‚Å‚·(ƒGƒ‰[‚É‚È‚é‚©‚à‚µ‚ê‚Ü‚¹‚ñ)
+:MSGJTXT. dynamic_castã®ä¸­ã®å‹ã®ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã¯ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆå±æ€§ã§ã™(ã‚¨ãƒ©ãƒ¼ã«ãªã‚‹ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“)
 :WARNING. 1
 The type in the
 .kw dynamic_cast
@@ -10505,13 +10509,13 @@ V *foo( A *p ) {
 
 :MSGSYM. ERR_EXPLICIT_CAST_TYPE
 :MSGTXT. type cannot be used with an explicit cast
-:MSGJTXT. ‚±‚ÌŒ^‚Í–¾¦“IƒLƒƒƒXƒg‚Æ‚Æ‚à‚Ég—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã“ã®å‹ã¯æ˜ç¤ºçš„ã‚­ãƒ£ã‚¹ãƒˆã¨ã¨ã‚‚ã«ä½¿ç”¨ã§ãã¾ã›ã‚“
 The indicated type cannot be specified as the type of an explicit cast. For
 example, it is illegal to cast to an array or function type.
 
 :MSGSYM. ERR_CAST_TO_ARRAY
 :MSGTXT. cannot cast to an array type
-:MSGJTXT. ”z—ñŒ^‚Ö‚ÌƒLƒƒƒXƒg‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é…åˆ—å‹ã¸ã®ã‚­ãƒ£ã‚¹ãƒˆã¯ã§ãã¾ã›ã‚“
 It is not permitted to cast to an array type.
 :errbad.
 typedef int array_type[5];
@@ -10521,7 +10525,7 @@ int* p = (array_type)array;
 
 :MSGSYM. ERR_CAST_TO_FUNCTION
 :MSGTXT. cannot cast to a function type
-:MSGJTXT. ŠÖ”Œ^‚Ö‚ÌƒLƒƒƒXƒg‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°å‹ã¸ã®ã‚­ãƒ£ã‚¹ãƒˆã¯ã§ãã¾ã›ã‚“
 It is not permitted to cast to a function type.
 :errbad.
 typedef int fun_type( void );
@@ -10530,7 +10534,7 @@ void* p = (fun_type)0;
 
 :MSGSYM. ERR_TOO_MUCH_FOR_RTTI
 :MSGTXT. implementation restriction: cannot generate RTTI info for '%T' (%d classes)
-:MSGJTXT. À‘•§ŒÀ: '%T'‚É‘Î‚·‚éRTTIî•ñ‚ğ¶¬‚Å‚«‚Ü‚¹‚ñ (%d ƒNƒ‰ƒX)
+:MSGJTXT. å®Ÿè£…åˆ¶é™: '%T'ã«å¯¾ã™ã‚‹RTTIæƒ…å ±ã‚’ç”Ÿæˆã§ãã¾ã›ã‚“ (%d ã‚¯ãƒ©ã‚¹)
 The information for one class must fit into one segment.
 If the segment size is restricted to 64k, the compiler may not be able
 to emit the correct information properly if it requires more than 64k
@@ -10538,7 +10542,7 @@ of memory to represent the class hierarchy.
 
 :MSGSYM. ERR_NO_UNIQUE_DEFAULT_CTOR
 :MSGTXT. more than one default constructor for '%T'
-:MSGJTXT. '%T'‚É‘Î‚µ‚Ä2ŒÂˆÈã‚ÌƒfƒtƒHƒ‹ƒgEƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. '%T'ã«å¯¾ã—ã¦2å€‹ä»¥ä¸Šã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ»ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãŒã‚ã‚Šã¾ã™
 The compiler found more than one default constructor signature
 in the class definition.
 There must be only one constructor declared that accepts no arguments.
@@ -10552,7 +10556,7 @@ C cv;
 
 :MSGSYM. ERR_UDC_AMBIGUOUS
 :MSGTXT. user-defined conversion is ambiguous
-:MSGJTXT. ƒ†[ƒU’è‹`•ÏŠ·‚ªB–†‚Å‚·
+:MSGJTXT. ãƒ¦ãƒ¼ã‚¶å®šç¾©å¤‰æ›ãŒæ›–æ˜§ã§ã™
 The compiler found more than one user-defined conversion which could be
 performed.  The indicated functions that could be used are shown.
 :errbad.
@@ -10569,7 +10573,7 @@ Either the constructor or the conversion function could be used; consequently,
 the conversion is ambiguous.
 :MSGSYM. INF_UNSIGNED_TYPE_RANGE
 :MSGTXT. range of possible values for type '%T' is %s to %s
-:MSGJTXT. '%T'Œ^‚É‘Î‚µ‚Ä‰Â”\‚È’l‚Ì”ÍˆÍ‚Í%s‚©‚ç%s‚Ü‚Å‚Å‚·
+:MSGJTXT. '%T'å‹ã«å¯¾ã—ã¦å¯èƒ½ãªå€¤ã®ç¯„å›²ã¯%sã‹ã‚‰%sã¾ã§ã§ã™
 :INFO.
 This informational message indicates the range of values possible for the
 indicated unsigned type.
@@ -10583,7 +10587,7 @@ of values for the unsigned type involved.
 
 :MSGSYM. INF_SIGNED_TYPE_RANGE
 :MSGTXT. range of possible values for type '%T' is %s to %s
-:MSGJTXT. '%T'Œ^‚É‘Î‚µ‚Ä‰Â”\‚È’l‚Ì”ÍˆÍ‚Í%s‚©‚ç%s‚Ü‚Å‚Å‚·
+:MSGJTXT. '%T'å‹ã«å¯¾ã—ã¦å¯èƒ½ãªå€¤ã®ç¯„å›²ã¯%sã‹ã‚‰%sã¾ã§ã§ã™
 :INFO.
 This informational message indicates the range of values possible for the
 indicated signed type.
@@ -10597,7 +10601,7 @@ of values for the signed type involved.
 
 :MSGSYM. INF_SIGNED_CONST_EXPR_VALUE
 :MSGTXT. constant expression in comparison has value %s
-:MSGJTXT. ”äŠr‚Ì’†‚Ì’è”®‚ÍC’l%s‚ğ‚¿‚Ü‚·
+:MSGJTXT. æ¯”è¼ƒã®ä¸­ã®å®šæ•°å¼ã¯ï¼Œå€¤%sã‚’æŒã¡ã¾ã™
 :INFO.
 This informational message indicates the value of the constant expression
 involved in a comparison which caused a warning to be issued.
@@ -10611,7 +10615,7 @@ value (0 in this case) involved in the comparison.
 
 :MSGSYM. INF_UNSIGNED_CONST_EXPR_VALUE
 :MSGTXT. constant expression in comparison has value %s
-:MSGJTXT. ”äŠr‚Ì’†‚Ì’è”®‚ÍC’l%s‚ğ‚¿‚Ü‚·
+:MSGJTXT. æ¯”è¼ƒã®ä¸­ã®å®šæ•°å¼ã¯ï¼Œå€¤%sã‚’æŒã¡ã¾ã™
 :INFO.
 This informational message indicates the value of the constant expression
 involved in a comparison which caused a warning to be issued.
@@ -10625,7 +10629,7 @@ value (127 in this case) involved in the comparison.
 
 :MSGSYM. ERR_REF_CNV_ADDS_CONST
 :MSGTXT. conversion of const reference to non-const reference
-:MSGJTXT. constQÆ‚©‚ç”ñconstQÆ‚Ö‚Ì•ÏŠ·‚Å‚·
+:MSGJTXT. constå‚ç…§ã‹ã‚‰éconstå‚ç…§ã¸ã®å¤‰æ›ã§ã™
 A reference to a constant object is being converted to a reference to
 a non-constant object.
 This can only be accomplished by using an explicit or
@@ -10638,7 +10642,7 @@ int & non_const_ref = const_ref;
 
 :MSGSYM. ERR_REF_CNV_ADDS_VOLATILE
 :MSGTXT. conversion of volatile reference to non-volatile reference
-:MSGJTXT. volatileQÆ‚©‚ç”ñvolatileQÆ‚Ö‚Ì•ÏŠ·‚Å‚·
+:MSGJTXT. volatileå‚ç…§ã‹ã‚‰évolatileå‚ç…§ã¸ã®å¤‰æ›ã§ã™
 A reference to a volatile object is being converted to a reference to
 a non-volatile object.
 This can only be accomplished by using an explicit or
@@ -10651,7 +10655,7 @@ int & non_volatile_ref = volatile_ref;
 
 :MSGSYM. ERR_REF_CNV_ADDS_BOTH
 :MSGTXT. conversion of const volatile reference to plain reference
-:MSGJTXT. const volatileQÆ‚©‚çCüq‚È‚µ‚ÌQÆ‚Ö‚Ì•ÏŠ·‚Å‚·
+:MSGJTXT. const volatileå‚ç…§ã‹ã‚‰ä¿®é£¾å­ãªã—ã®å‚ç…§ã¸ã®å¤‰æ›ã§ã™
 A reference to a constant and volatile object is being converted to a reference to
 a non-volatile and non-constant object.
 This can only be accomplished by using an explicit or
@@ -10664,7 +10668,7 @@ int & non_const_volatile_ref = const_volatile_ref;
 
 :MSGSYM. INF_CURR_DECL_TYPE
 :MSGTXT. current declaration has type '%T'
-:MSGJTXT. Œ»İ‚ÌéŒ¾‚Í'%T'Œ^‚Å‚·
+:MSGJTXT. ç¾åœ¨ã®å®£è¨€ã¯'%T'å‹ã§ã™
 :INFO.
 This informational message indicates the type of the current declaration
 that caused the message to be issued.
@@ -10675,7 +10679,7 @@ extern int __far foo( int );
 
 :MSGSYM. ERR_NOT_CONST_REF
 :MSGTXT. only a non-volatile const reference can be bound to temporary
-:MSGJTXT. ”ñvolatile‚ÌconstQÆ‚Ì‚İ‚ğˆê“I‚ÉƒoƒCƒ“ƒh‚Å‚«‚Ü‚·
+:MSGJTXT. évolatileã®constå‚ç…§ã®ã¿ã‚’ä¸€æ™‚çš„ã«ãƒã‚¤ãƒ³ãƒ‰ã§ãã¾ã™
 The expression being bound to a reference will need to be converted to a
 temporary of the type referenced.  This means that the reference will be
 bound to that temporary and so the reference must be a non-volatile const
@@ -10690,7 +10694,7 @@ void * const volatile & r4 = pi;// error
 
 :MSGSYM. ANSI_MPTR_ACROSS_VIRTUAL
 :MSGTXT. conversion of pointer to member across a virtual base
-:MSGJTXT. ‰¼‘zƒx[ƒX‚ğ‚Ü‚½‚ª‚éƒƒ“ƒo[‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‚·
+:MSGJTXT. ä»®æƒ³ãƒ™ãƒ¼ã‚¹ã‚’ã¾ãŸãŒã‚‹ãƒ¡ãƒ³ãƒãƒ¼ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§ã™
 :ANSI. 1
 In November 1995, the Draft Working Paper was amended to disallow pointer
 to member conversions when the source class is a virtual base of the target
@@ -10712,7 +10716,7 @@ int D::* mp_d = mp_b;       // conversion across a virtual base
 
 :MSGSYM. ERR_NAME_USED_BY_NAMESPACE
 :MSGTXT. declaration cannot be in the same scope as namespace '%S'
-:MSGJTXT. éŒ¾‚Íƒl[ƒ€ƒXƒy[ƒX'%S'‚Æ“¯‚¶ƒXƒR[ƒv‚É“ü‚ê‚ç‚ê‚Ü‚¹‚ñ
+:MSGJTXT. å®£è¨€ã¯ãƒãƒ¼ãƒ ã‚¹ãƒšãƒ¼ã‚¹'%S'ã¨åŒã˜ã‚¹ã‚³ãƒ¼ãƒ—ã«å…¥ã‚Œã‚‰ã‚Œã¾ã›ã‚“
 A namespace name must be unique across the entire C++ program.
 Any other use of a name cannot be in the same scope as the namespace.
 :errbad.
@@ -10724,7 +10728,7 @@ int x;
 
 :MSGSYM. ERR_NAME_USED_BY_NON_NAMESPACE
 :MSGTXT. '%S' cannot be in the same scope as a namespace
-:MSGJTXT. '%S'‚Íƒl[ƒ€ƒXƒy[ƒX‚Æ“¯‚¶ƒXƒR[ƒv‚É“ü‚ê‚ç‚ê‚Ü‚¹‚ñ
+:MSGJTXT. '%S'ã¯ãƒãƒ¼ãƒ ã‚¹ãƒšãƒ¼ã‚¹ã¨åŒã˜ã‚¹ã‚³ãƒ¼ãƒ—ã«å…¥ã‚Œã‚‰ã‚Œã¾ã›ã‚“
 A namespace name must be unique across the entire C++ program.
 Any other use of a name cannot be in the same scope as the namespace.
 :errbad.
@@ -10736,7 +10740,7 @@ namespace x {
 
 :MSGSYM. INF_FILE_LOCATION
 :MSGTXT. File: %s
-:MSGJTXT. ƒtƒ@ƒCƒ‹: %s
+:MSGJTXT. ãƒ•ã‚¡ã‚¤ãƒ«: %s
 :INFO.
 This informative message is written when the -ew switch is specified on a
 command line.
@@ -10783,7 +10787,7 @@ from which the message originated.
 
 :MSGSYM. INF_VFTABLE_OVERRIDE
 :MSGTXT. possible override is '%S'
-:MSGJTXT. ‰Â”\‚ÈƒI[ƒo[ƒ‰ƒCƒh‚Í'%S'‚Å‚·
+:MSGJTXT. å¯èƒ½ãªã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã¯'%S'ã§ã™
 :INFO.
 The indicated function is ambiguous since that name was defined in more than
 one base class and one or more of these functions is virtual.
@@ -10792,14 +10796,14 @@ in a class derived from these base classes.
 
 :MSGSYM. INF_THUNK_TARGET
 :MSGTXT. function being overridden is '%S'
-:MSGJTXT. ƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚Ä‚¢‚éŠÖ”‚Í'%S'‚Å‚·
+:MSGJTXT. ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã•ã‚Œã¦ã„ã‚‹é–¢æ•°ã¯'%S'ã§ã™
 :INFO.
 This informational message indicates a function which cannot be overridden
 by a virtual function which has ellipsis parameters.
 
 :MSGSYM. ERR_NAME_DOESNT_REF_NAMESPACE
 :MSGTXT. name does not reference a namespace
-:MSGJTXT. –¼‘O‚Íƒl[ƒ€ƒXƒy[ƒX‚ğQÆ‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åå‰ã¯ãƒãƒ¼ãƒ ã‚¹ãƒšãƒ¼ã‚¹ã‚’å‚ç…§ã§ãã¾ã›ã‚“
 A
 .kw namespace
 alias definition must reference a
@@ -10812,7 +10816,7 @@ namespace a = T;
 
 :MSGSYM. ERR_NAMESPACE_ALIAS_DIFFERENT
 :MSGTXT. namespace alias cannot be changed
-:MSGJTXT. ƒl[ƒ€ƒXƒy[ƒX¥ƒGƒCƒŠƒAƒX‚Í•ÏX‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒãƒ¼ãƒ ã‚¹ãƒšãƒ¼ã‚¹ï½¥ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã¯å¤‰æ›´ã§ãã¾ã›ã‚“
 A
 .kw namespace
 alias definition cannot change which
@@ -10827,7 +10831,7 @@ namespace a = ns2;
 
 :MSGSYM. ERR_THROW_UNDEFED
 :MSGTXT. cannot throw undefined class object
-:MSGJTXT. –¢’è‹`ƒNƒ‰ƒXƒIƒuƒWƒFƒNƒg‚ğthrow‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æœªå®šç¾©ã‚¯ãƒ©ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’throwã§ãã¾ã›ã‚“
 C++ does not allow undefined classes to be copied and so an undefined
 class object cannot be specified in a
 .kw throw
@@ -10835,7 +10839,7 @@ expression.
 
 :MSGSYM. WARN_DECL_NOT_SAME_TYPE
 :MSGTXT. symbol has different type than previous symbol in same declaration
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹‚Í“¯‚¶éŒ¾‚Ì’†‚Ì‘O‚ÌƒVƒ“ƒ{ƒ‹‚ÆˆÙ‚È‚éŒ^‚ğ‚¿‚Ü‚·
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«ã¯åŒã˜å®£è¨€ã®ä¸­ã®å‰ã®ã‚·ãƒ³ãƒœãƒ«ã¨ç•°ãªã‚‹å‹ã‚’æŒã¡ã¾ã™
 :WARNING. 4
 This warning indicates that two symbols in the same declaration
 have different types.  This may be intended but it is often
@@ -10851,20 +10855,20 @@ char* p, q;
 
 :MSGSYM. INF_OTHER_DEFN
 :MSGTXT. companion definition is '%S'
-:MSGJTXT. ”äŠr‚Ì’è‹`‚Í'%S'‚Å‚·
+:MSGJTXT. æ¯”è¼ƒã®å®šç¾©ã¯'%S'ã§ã™
 :INFO.
 This informational message indicates the other symbol
 that shares a common base type in the same declaration.
 
 :MSGSYM. ERR_DEF_ARG_REWRITE_ERROR
 :MSGTXT. syntax error; default argument cannot be processed
-:MSGJTXT. •¶–@ƒGƒ‰[; ƒfƒtƒHƒ‹ƒgˆø”‚ğˆ—‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ–‡æ³•ã‚¨ãƒ©ãƒ¼; ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã‚’å‡¦ç†ã§ãã¾ã›ã‚“
 The default argument contains unbalanced braces or parenthesis.  The
 default argument cannot be processed in this form.
 
 :MSGSYM. INF_DEF_ARG_STARTED_HERE
 :MSGTXT. default argument started %L
-:MSGJTXT. ƒfƒtƒHƒ‹ƒgˆø”‚Ìæ“ª‚Å‚· %L
+:MSGJTXT. ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã®å…ˆé ­ã§ã™ %L
 :INFO.
 This informational message indicates where the default argument
 started so that any problems with missing braces or parenthesis can
@@ -10878,7 +10882,7 @@ struct S {
 
 :MSGSYM. ANSI_NAME_CANT_BE_IN_NAMESPACE
 :MSGTXT. '%N' cannot be declared in a namespace
-:MSGJTXT. '%N'‚ğƒl[ƒ€ƒXƒy[ƒX‚Ì’†‚ÅéŒ¾‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã‚’ãƒãƒ¼ãƒ ã‚¹ãƒšãƒ¼ã‚¹ã®ä¸­ã§å®£è¨€ã§ãã¾ã›ã‚“
 :ANSI. 1
 A
 .kw namespace
@@ -10901,7 +10905,7 @@ namespace N {
 
 :MSGSYM. ERR_NAMESPACE_MUST_BE_GLOBAL
 :MSGTXT. namespace cannot be defined in a non-namespace scope
-:MSGJTXT. ƒl[ƒ€ƒXƒy[ƒX‚ğ”ñƒl[ƒ€ƒXƒy[ƒX¥ƒXƒR[ƒv‚Ì’†‚Å’è‹`‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒãƒ¼ãƒ ã‚¹ãƒšãƒ¼ã‚¹ã‚’éãƒãƒ¼ãƒ ã‚¹ãƒšãƒ¼ã‚¹ï½¥ã‚¹ã‚³ãƒ¼ãƒ—ã®ä¸­ã§å®šç¾©ã§ãã¾ã›ã‚“
 A
 .kw namespace
 can only be defined in either the
@@ -10917,7 +10921,7 @@ struct S {
 
 :MSGSYM. ERR_CANNOT_USE_NAMESPACE_QUALIFIED_DECLARATOR
 :MSGTXT. namespace '::' qualifier cannot be used in this context
-:MSGJTXT. ƒl[ƒ€ƒXƒy[ƒX '::' Cüq‚Í‚±‚±‚Å‚Íg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒãƒ¼ãƒ ã‚¹ãƒšãƒ¼ã‚¹ '::' ä¿®é£¾å­ã¯ã“ã“ã§ã¯ä½¿ç”¨ã§ãã¾ã›ã‚“
 Qualified identifiers in a class context are allowed for declaring
 .kw friend
 functions.
@@ -10944,7 +10948,7 @@ namespace M {
 
 :MSGSYM. ERR_CAST_AWAY_VOLATILE
 :MSGTXT. cannot cast away volatility
-:MSGJTXT. volatile‚ğ‚Í‚¸‚·ƒLƒƒƒXƒg‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. volatileã‚’ã¯ãšã™ã‚­ãƒ£ã‚¹ãƒˆã¯ã§ãã¾ã›ã‚“
 A cast or implicit conversion is illegal because a conversion to the target
 type would remove volatility from a pointer, reference, or pointer to member.
 :errbad.
@@ -10962,7 +10966,7 @@ volatility.
 
 :MSGSYM. ERR_CAST_AWAY_CONSTVOL
 :MSGTXT. cannot cast away constness and volatility
-:MSGJTXT. const‚Ævolatile‚ğ‚Í‚¸‚·ƒLƒƒƒXƒg‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. constã¨volatileã‚’ã¯ãšã™ã‚­ãƒ£ã‚¹ãƒˆã¯ã§ãã¾ã›ã‚“
 A cast or implicit conversion is illegal because a conversion to the target
 type would remove constness and volatility from a pointer, reference, or
 pointer to member.
@@ -10981,7 +10985,7 @@ constness and volatility.
 
 :MSGSYM. ERR_CAST_AWAY_UNALIGNED
 :MSGTXT. cannot cast away unaligned
-:MSGJTXT. unaligned‚ğ‚Í‚¸‚·ƒLƒƒƒXƒg‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. unalignedã‚’ã¯ãšã™ã‚­ãƒ£ã‚¹ãƒˆã¯ã§ãã¾ã›ã‚“
 A cast or implicit conversion is illegal because a conversion to the target
 type would add alignment to a pointer, reference, or pointer to member.
 :errbad.
@@ -10999,7 +11003,7 @@ alignment.
 
 :MSGSYM. ERR_INDEX_MUST_BE_INTEGRAL
 :MSGTXT. subscript expression must be integral
-:MSGJTXT. “Yš®‚Í®”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ·»å­—å¼ã¯æ•´æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 Both of the operands of the indicated index expression are pointers.
 There may be a missing indirection or function call.
 :errbad.
@@ -11012,7 +11016,7 @@ int g() {
 
 :MSGSYM. ANSI_EXTENDED_CONVERSION_UDC
 :MSGTXT. extension: non-standard user-defined conversion
-:MSGJTXT. Šg’£: ”ñ•W€‚Ìƒ†[ƒU[’è‹`•ÏŠ·‚Å‚·
+:MSGJTXT. æ‹¡å¼µ: éæ¨™æº–ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼å®šç¾©å¤‰æ›ã§ã™
 :ANSI. 1
 An extended conversion was allowed.
 The latest draft of the C++ working paper does not allow a user-defined
@@ -11022,7 +11026,7 @@ legacy code would not compile without the extension.
 
 :MSGSYM. WARN_USELESS_USING_DIRECTIVE
 :MSGTXT. useless using directive ignored
-:MSGJTXT. ˆÓ–¡‚Ì‚È‚¢‹[—–½—ß‚Ìg—p‚Í–³‹‚µ‚Ü‚·
+:MSGJTXT. æ„å‘³ã®ãªã„æ“¬ä¼¼å‘½ä»¤ã®ä½¿ç”¨ã¯ç„¡è¦–ã—ã¾ã™
 :WARNING. 1
 This warning indicates that for most purposes,
 the
@@ -11036,7 +11040,7 @@ namespace A {
 
 :MSGSYM. WARN_HIDDEN_VIRTUAL
 :MSGTXT. base class virtual function has not been overridden
-:MSGJTXT. ƒx[ƒXƒNƒ‰ƒX‚Ì‰¼‘zŠÖ”‚ÍƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã®ä»®æƒ³é–¢æ•°ã¯ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ
 :WARNING. 4
 This warning indicates that a virtual function name has been
 overridden but in an incomplete manner, namely,
@@ -11053,14 +11057,14 @@ struct D : B {
 
 :MSGSYM. INF_BASE_VFN
 :MSGTXT. virtual function is '%S'
-:MSGJTXT. ‰¼‘zŠÖ”‚Í'%S'‚Å‚·
+:MSGJTXT. ä»®æƒ³é–¢æ•°ã¯'%S'ã§ã™
 :INFO.
 This message indicates which virtual function has not
 been overridden.
 
 :MSGSYM. INF_MACRO_DECLARATION
 :MSGTXT. macro '%s' defined %L
-:MSGJTXT. ƒ}ƒNƒ'%s'‚Í’è‹`‚³‚ê‚Ä‚¢‚Ü‚· %L
+:MSGJTXT. ãƒã‚¯ãƒ­'%s'ã¯å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ %L
 :INFO.
 This informational message indicates where the macro in question was defined.
 The message is displayed following an error or warning diagnostic for the
@@ -11077,7 +11081,7 @@ The informational message will indicate where the macro was defined.
 
 :MSGSYM. INF_MACRO_EXPANSION
 :MSGTXT. expanding macro '%s' defined %L
-:MSGJTXT. “WŠJ‚µ‚Ä‚¢‚éƒ}ƒNƒ'%s'‚Í’è‹`‚³‚ê‚Ä‚¢‚Ü‚· %L
+:MSGJTXT. å±•é–‹ã—ã¦ã„ã‚‹ãƒã‚¯ãƒ­'%s'ã¯å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ %L
 :INFO.
 These informational messages indicate the macros that are currently being
 expanded, along with the location at which they were defined.
@@ -11086,7 +11090,7 @@ macro expansion.
 
 :MSGSYM. ERR_COMMON_CL_IMPOSSIBLE
 :MSGTXT. conversion to common class type is impossible
-:MSGJTXT. ‹¤’Ê‚ÌƒNƒ‰ƒXŒ^‚Ö‚Ì•ÏŠ·‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å…±é€šã®ã‚¯ãƒ©ã‚¹å‹ã¸ã®å¤‰æ›ã¯ã§ãã¾ã›ã‚“
 The conversion to a common class is impossible.
 One or more of the left and right operands are class types.
 The informational messages indicate these types.
@@ -11102,7 +11106,7 @@ impossible.
 
 :MSGSYM. ERR_COMMON_CL_AMBIGUOUS
 :MSGTXT. conversion to common class type is ambiguous
-:MSGJTXT. ‹¤’Ê‚ÌƒNƒ‰ƒXŒ^‚Ö‚Ì•ÏŠ·‚ÍB–†‚Å‚·
+:MSGJTXT. å…±é€šã®ã‚¯ãƒ©ã‚¹å‹ã¸ã®å¤‰æ›ã¯æ›–æ˜§ã§ã™
 The conversion to a common class is ambiguous.
 One or more of the left and right operands are class types.
 The informational messages indicate these types.
@@ -11120,7 +11124,7 @@ ambiguous.
 
 :MSGSYM. ERR_COMMON_CL_PRIVATE
 :MSGTXT. conversion to common class type requires private access
-:MSGJTXT. ‹¤’Ê‚ÌƒNƒ‰ƒXŒ^‚Ö‚Ì•ÏŠ·‚É‚Íƒvƒ‰ƒCƒx[ƒg‘®«‚Ö‚ÌƒAƒNƒZƒX‚ª•K—v‚Å‚·
+:MSGJTXT. å…±é€šã®ã‚¯ãƒ©ã‚¹å‹ã¸ã®å¤‰æ›ã«ã¯ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆå±æ€§ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ãŒå¿…è¦ã§ã™
 The conversion to a common class violates the access permission which was
 private.
 One or more of the left and right operands are class types.
@@ -11137,7 +11141,7 @@ violates the (private) access permission.
 
 :MSGSYM. ERR_COMMON_CL_PROTECTED
 :MSGTXT. conversion to common class type requires protected access
-:MSGJTXT. ‹¤’Ê‚ÌƒNƒ‰ƒXŒ^‚Ö‚Ì•ÏŠ·‚É‚ÍƒvƒƒeƒNƒg‘®«‚Ö‚ÌƒAƒNƒZƒX‚ª•K—v‚Å‚·
+:MSGJTXT. å…±é€šã®ã‚¯ãƒ©ã‚¹å‹ã¸ã®å¤‰æ›ã«ã¯ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆå±æ€§ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ãŒå¿…è¦ã§ã™
 The conversion to a common class violates the access permission which was
 protected.
 One or more of the left and right operands are class types.
@@ -11154,7 +11158,7 @@ violates the (protected) access permission.
 
 :MSGSYM. ERR_AMBIGUOUS_NAMESPACE_LOOKUP
 :MSGTXT. namespace lookup is ambiguous
-:MSGJTXT. ƒl[ƒ€ƒXƒR[ƒv¥ƒ‹ƒbƒNƒAƒbƒv‚ªB–†‚Å‚·
+:MSGJTXT. ãƒãƒ¼ãƒ ã‚¹ã‚³ãƒ¼ãƒ—ï½¥ãƒ«ãƒƒã‚¯ã‚¢ãƒƒãƒ—ãŒæ›–æ˜§ã§ã™
 A lookup for a name resulted in two or more non-function
 names being found.  This is not allowed according to the
 C++ working paper.
@@ -11174,14 +11178,14 @@ void f() {
 
 :MSGSYM. INF_AMBIGUOUS_NAMESPACE_SYM
 :MSGTXT. ambiguous namespace symbol is '%S'
-:MSGJTXT. B–†‚Èƒl[ƒ€ƒXƒR[ƒv¥ƒVƒ“ƒ{ƒ‹‚Í'%S'‚Å‚·
+:MSGJTXT. æ›–æ˜§ãªãƒãƒ¼ãƒ ã‚¹ã‚³ãƒ¼ãƒ—ï½¥ã‚·ãƒ³ãƒœãƒ«ã¯'%S'ã§ã™
 :INFO.
 This informational message shows a symbol that conflicted with another
 symbol during a lookup.
 
 :MSGSYM. ERR_STATIC_CAST_ACROSS_PRIVATE
 :MSGTXT. attempt to static_cast from a private base class
-:MSGJTXT. ƒvƒ‰ƒCƒx[ƒg¥ƒx[ƒXƒNƒ‰ƒX‚©‚çstatic_cast‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆï½¥ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‹ã‚‰static_castã—ã‚ˆã†ã¨ã—ã¦ã„ã¾ã™
 An attempt was made to static_cast a pointer or reference to a private base
 class to a derived class.
 :errbad.
@@ -11202,7 +11206,7 @@ from a private base class.
 
 :MSGSYM. ERR_STATIC_CAST_ACROSS_PROTECTED
 :MSGTXT. attempt to static_cast from a protected base class
-:MSGJTXT. ƒvƒƒeƒNƒg¥ƒx[ƒXƒNƒ‰ƒX‚©‚çstatic_cast‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆï½¥ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‹ã‚‰static_castã—ã‚ˆã†ã¨ã—ã¦ã„ã¾ã™
 An attempt was made to static_cast a pointer or reference to a protected base
 class to a derived class.
 :errbad.
@@ -11223,7 +11227,7 @@ from a protected base class.
 
 :MSGSYM. ERR_CURRSCOPE_DOESNT_ENCLOSE
 :MSGTXT. qualified symbol cannot be defined in this scope
-:MSGJTXT. Cü‚³‚ê‚½ƒVƒ“ƒ{ƒ‹‚Í‚±‚ÌƒXƒR[ƒv‚Ì’†‚Å’è‹`‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ä¿®é£¾ã•ã‚ŒãŸã‚·ãƒ³ãƒœãƒ«ã¯ã“ã®ã‚¹ã‚³ãƒ¼ãƒ—ã®ä¸­ã§å®šç¾©ã§ãã¾ã›ã‚“
 This message indicates that the scope of the symbol is not
 nested in the current scope.  This is a restriction in the
 C++ language.
@@ -11252,7 +11256,7 @@ namespace B {
 
 :MSGSYM. ERR_MEMBER_USING_DECL_REFS_NON_MEMBER
 :MSGTXT. using declaration references non-member
-:MSGJTXT. g—p‚µ‚Ä‚¢‚ééŒ¾‚Í”ñƒƒ“ƒo[‚ğQÆ‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. ä½¿ç”¨ã—ã¦ã„ã‚‹å®£è¨€ã¯éãƒ¡ãƒ³ãƒãƒ¼ã‚’å‚ç…§ã—ã¦ã„ã¾ã™
 This message indicates that the entity referenced
 by the
 .kw using
@@ -11271,7 +11275,7 @@ struct D {
 
 :MSGSYM. ERR_USING_DECL_REFS_MEMBER
 :MSGTXT. using declaration references class member
-:MSGJTXT. g—p‚µ‚Ä‚¢‚ééŒ¾‚ÍƒNƒ‰ƒX¥ƒƒ“ƒo[‚ğQÆ‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. ä½¿ç”¨ã—ã¦ã„ã‚‹å®£è¨€ã¯ã‚¯ãƒ©ã‚¹ï½¥ãƒ¡ãƒ³ãƒãƒ¼ã‚’å‚ç…§ã—ã¦ã„ã¾ã™
 This message indicates that the entity referenced
 by the
 .kw using
@@ -11288,7 +11292,7 @@ using B::m;
 
 :MSGSYM. ERR_INVALID_CONSTANT_SUFFIX
 :MSGTXT. invalid suffix for a constant
-:MSGJTXT. ’è”‚É•s“KØ‚ÈÚ”ö«‚ª‚Â‚¢‚Ä‚¢‚Ü‚·
+:MSGJTXT. å®šæ•°ã«ä¸é©åˆ‡ãªæ¥å°¾è¾ãŒã¤ã„ã¦ã„ã¾ã™
 An invalid suffix was coded for a constant.
 :errbad.
 __int64 a[] = {
@@ -11305,7 +11309,7 @@ __int64 a[] = {
 
 :MSGSYM. ERR_USING_DECL_NOT_A_BASE_CLASS
 :MSGTXT. class in using declaration ('%T') must be a base class
-:MSGJTXT. g—p‚µ‚Ä‚¢‚ééŒ¾‚Ì’†‚ÌƒNƒ‰ƒX('%T')‚Íƒx[ƒXƒNƒ‰ƒX‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ä½¿ç”¨ã—ã¦ã„ã‚‹å®£è¨€ã®ä¸­ã®ã‚¯ãƒ©ã‚¹('%T')ã¯ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 A
 .kw using
 declaration declared in a class scope
@@ -11324,7 +11328,7 @@ struct D : private C {
 
 :MSGSYM. ERR_USING_DECL_NAME_SAME
 :MSGTXT. name in using declaration is already in scope
-:MSGJTXT. g—p‚µ‚Ä‚¢‚ééŒ¾‚Ì’†‚Ì–¼‘O‚ÍŠù‚ÉƒXƒR[ƒv‚Ì’†‚É‚ ‚è‚Ü‚·
+:MSGJTXT. ä½¿ç”¨ã—ã¦ã„ã‚‹å®£è¨€ã®ä¸­ã®åå‰ã¯æ—¢ã«ã‚¹ã‚³ãƒ¼ãƒ—ã®ä¸­ã«ã‚ã‚Šã¾ã™
 A
 .kw using
 declaration can only reference entities in other scopes.
@@ -11338,7 +11342,7 @@ namespace B {
 
 :MSGSYM. ERR_PREV_USING_DECL
 :MSGTXT. conflict with a previous using-decl '%S'
-:MSGJTXT. ‘O‚Ég—p‚µ‚Ä‚¢‚ééŒ¾'%S'‚ÆÕ“Ë‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. å‰ã«ä½¿ç”¨ã—ã¦ã„ã‚‹å®£è¨€'%S'ã¨è¡çªã—ã¦ã„ã¾ã™
 A
 .kw using
 declaration can only reference entities in other scopes.
@@ -11352,7 +11356,7 @@ namespace B {
 
 :MSGSYM. ERR_CURR_USING_DECL
 :MSGTXT. conflict with current using-decl '%S'
-:MSGJTXT. Œ»İg—p‚µ‚Ä‚¢‚ééŒ¾'%S'‚ÆÕ“Ë‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. ç¾åœ¨ä½¿ç”¨ã—ã¦ã„ã‚‹å®£è¨€'%S'ã¨è¡çªã—ã¦ã„ã¾ã™
 A
 .kw using
 declaration can only reference entities in other scopes.
@@ -11366,7 +11370,7 @@ namespace B {
 
 :MSGSYM. WARN_MUST_BE_MULTITHREADED
 :MSGTXT. use of '%N' requires build target to be multi-threaded
-:MSGJTXT. '%N'‚ğg—p‚·‚é‚É‚ÍCƒ}ƒ‹ƒ`¥ƒXƒŒƒbƒh‚Ìƒ^[ƒQƒbƒg‚Æ‚µ‚Äì¬‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%N'ã‚’ä½¿ç”¨ã™ã‚‹ã«ã¯ï¼Œãƒãƒ«ãƒï½¥ã‚¹ãƒ¬ãƒƒãƒ‰ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ã—ã¦ä½œæˆã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 :WARNING. 1
 The compiler has detected a use of a run-time function that
 will create a new thread but the current build target indicates
@@ -11377,24 +11381,24 @@ selecting multi-threaded applications through a dialogue.
 
 :MSGSYM. ERR_64BIT_SWITCH
 :MSGTXT. implementation restriction: cannot use 64-bit value in switch statement
-:MSGJTXT. À‘•§ŒÀ: switch•¶‚Ì’†‚É64ƒrƒbƒg‚Ì’l‚ğg—p‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®Ÿè£…åˆ¶é™: switchæ–‡ã®ä¸­ã«64ãƒ“ãƒƒãƒˆã®å€¤ã‚’ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 The use of 64-bit values in switch statements has not been implemented.
 
 :MSGSYM. ERR_64BIT_CASE
 :MSGTXT. implementation restriction: cannot use 64-bit value in case statement
-:MSGJTXT. À‘•§ŒÀ: case•¶‚Ì’†‚É64ƒrƒbƒg‚Ì’l‚ğg—p‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®Ÿè£…åˆ¶é™: caseæ–‡ã®ä¸­ã«64ãƒ“ãƒƒãƒˆã®å€¤ã‚’ä½¿ç”¨ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 The use of 64-bit values in case statements has not been implemented.
 
 :MSGSYM. ERR_64BIT_BITFIELD
 :MSGTXT. implementation restriction: cannot use __int64 as bit-field base type
-:MSGJTXT. À‘•§ŒÀ: __int64‚ÍƒrƒbƒgƒtƒB[ƒ‹ƒh‚Ìƒx[ƒXŒ^‚Æ‚µ‚Äg—p‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®Ÿè£…åˆ¶é™: __int64ã¯ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®ãƒ™ãƒ¼ã‚¹å‹ã¨ã—ã¦ä½¿ç”¨ã§ãã¾ã›ã‚“
 The use of
 .kw __int64
 for the base type of a bit-field has not been implemented.
 
 :MSGSYM. ERR_CODE_IN_NONCODE_SEG
 :MSGTXT. based function object cannot be placed in non-code segment "%s".
-:MSGJTXT. 'based'ŠÖ”ƒIƒuƒWƒFƒNƒg‚ğ”ñƒR[ƒh¥ƒZƒOƒƒ“ƒg"%s"‚É’u‚­‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. 'based'é–¢æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’éã‚³ãƒ¼ãƒ‰ï½¥ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ"%s"ã«ç½®ãã“ã¨ã¯ã§ãã¾ã›ã‚“
 Use
 .kw __segname
 with the default code segment "_CODE", or a code segment with the appropriate
@@ -11408,7 +11412,7 @@ int __based(__segname("_CODE")) f() {return 1;}
 
 :MSGSYM. INF_CODE_SEGMENT_SUFFIX
 :MSGTXT. Use a segment name ending in "%s", or the default code segment "_CODE".
-:MSGJTXT. "%s"‚ÅI‚í‚éƒZƒOƒƒ“ƒg–¼‚ğg—p‚·‚é‚©CƒfƒtƒHƒ‹ƒg¥ƒR[ƒhƒZƒOƒƒ“ƒg"_CODE"‚ğg—p‚µ‚Ü‚·
+:MSGJTXT. "%s"ã§çµ‚ã‚ã‚‹ã‚»ã‚°ãƒ¡ãƒ³ãƒˆåã‚’ä½¿ç”¨ã™ã‚‹ã‹ï¼Œãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï½¥ã‚³ãƒ¼ãƒ‰ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ"_CODE"ã‚’ä½¿ç”¨ã—ã¾ã™
 :INFO.
 This informational message explains how to use
 .kw __segname
@@ -11416,7 +11420,7 @@ to name a code segment.
 
 :MSGSYM. ERR_RTTI_DISABLED
 :MSGTXT. RTTI must be enabled to use feature (use 'xr' option)
-:MSGJTXT. RTTI‚ğg‚¤‚É‚ÍC‚±‚Ì‹@”\‚ğg—p‚Å‚«‚é‚æ‚¤‚É‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ('xr'ƒIƒvƒVƒ‡ƒ“‚ğg—p‚µ‚Ä‚­‚¾‚³‚¢)
+:MSGJTXT. RTTIã‚’ä½¿ã†ã«ã¯ï¼Œã“ã®æ©Ÿèƒ½ã‚’ä½¿ç”¨ã§ãã‚‹ã‚ˆã†ã«ã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“('xr'ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’ä½¿ç”¨ã—ã¦ãã ã•ã„)
 RTTI must be enabled by specifying the 'xr' option when the compiler is
 invoked.  The error message indicates that a feature such as
 .kw dynamic_cast,
@@ -11426,7 +11430,7 @@ has been used without enabling RTTI.
 
 :MSGSYM. ERR_TYPEID_CLASS_MUST_BE_DEFINED
 :MSGTXT. 'typeid' class type must be defined
-:MSGJTXT. 'typeid'ƒNƒ‰ƒXŒ^‚Í’è‹`‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. 'typeid'ã‚¯ãƒ©ã‚¹å‹ã¯å®šç¾©ã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 The compile-time type of the expression or type must be
 completely defined if it is a class type.
 :errbad.
@@ -11439,7 +11443,7 @@ void foo( S *p ) {
 
 :MSGSYM. WARN_REINT_FOR_EXPLICIT_MPTR_UNRELATED
 :MSGTXT. cast involves unrelated member pointers
-:MSGJTXT. ƒLƒƒƒXƒg‚É–³ŠÖŒW‚Èƒƒ“ƒo[ƒ|ƒCƒ“ƒ^‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚­ãƒ£ã‚¹ãƒˆã«ç„¡é–¢ä¿‚ãªãƒ¡ãƒ³ãƒãƒ¼ãƒã‚¤ãƒ³ã‚¿ãŒå«ã¾ã‚Œã¦ã„ã¾ã™
 :WARNING. 4
 This warning is issued to indicate that a dangerous cast of a member pointer
 has been used.
@@ -11464,7 +11468,7 @@ The cast on the last line of the example would be diagnosed.
 
 :MSGSYM. ERR_UNEXPECTED_DECLSPEC_MOD
 :MSGTXT. unexpected type modifier found
-:MSGJTXT. ƒTƒ|[ƒg‚µ‚Ä‚¢‚È‚¢Œ^Cüq‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ãªã„å‹ä¿®é£¾å­ãŒã‚ã‚Šã¾ã™
 A
 .kw __declspec
 modifier was found that could not be applied to an object
@@ -11476,7 +11480,7 @@ __declspec(thread) struct S {
 
 :MSGSYM. ERR_INVALID_BITFIELD_ID
 :MSGTXT. invalid bit-field name '%N'
-:MSGJTXT. •s“KØ‚ÈƒrƒbƒgƒtƒB[ƒ‹ƒh–¼'%N'‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å'%N'ã§ã™
 A bit-field can only have a simple identifier
 as its name.  A qualified name is also not
 allowed for a bit-field.
@@ -11488,7 +11492,7 @@ struct S {
 
 :MSGSYM. WARN_PADDING_ADDED
 :MSGTXT. %u padding byte(s) added
-:MSGJTXT. %uƒoƒCƒg‚ÌƒpƒfƒBƒ“ƒO(–„‚ß‚İ)‚ª’Ç‰Á‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. %uãƒã‚¤ãƒˆã®ãƒ‘ãƒ‡ã‚£ãƒ³ã‚°(åŸ‹ã‚è¾¼ã¿)ãŒè¿½åŠ ã•ã‚Œã¾ã—ãŸ
 :WARNING. 1
 This warning indicates that some extra bytes
 have been added to a class in order to align
@@ -11504,14 +11508,14 @@ struct S {
 
 :MSGSYM. INF_HIDDEN_WHY
 :MSGTXT. cannot be called with a '%T *'
-:MSGJTXT. '%T *'‚ÅŒÄ‚Ño‚·‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%T *'ã§å‘¼ã³å‡ºã™ã“ã¨ã¯ã§ãã¾ã›ã‚“
 :INFO.
 This message indicates that the virtual function cannot be called
 with a pointer or reference to the current class.
 
 :MSGSYM. WARN_REINT_FOR_EXPLICIT_MPTR_UNDEFD
 :MSGTXT. cast involves an undefined member pointer
-:MSGJTXT. ƒLƒƒƒXƒg‚É–¢’è‹`‚Ìƒƒ“ƒo[ƒ|ƒCƒ“ƒ^‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚­ãƒ£ã‚¹ãƒˆã«æœªå®šç¾©ã®ãƒ¡ãƒ³ãƒãƒ¼ãƒã‚¤ãƒ³ã‚¿ãŒå«ã¾ã‚Œã¦ã„ã¾ã™
 :WARNING. 1
 This warning is issued to indicate that a dangerous cast of a member pointer
 has been used.
@@ -11541,7 +11545,7 @@ The cast on the last line of the example would be diagnosed.
 
 :MSGSYM. WARN_REINT_FOR_EXPLICIT_MPTR_DERIVED
 :MSGTXT. cast changes both member pointer object and class type
-:MSGJTXT. ƒLƒƒƒXƒg‚Íƒƒ“ƒo[ƒ|ƒCƒ“ƒ^¥ƒIƒuƒWƒFƒNƒg‚ÆƒNƒ‰ƒXŒ^‚Ì—¼•û‚ğ•Ï‚¦‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚­ãƒ£ã‚¹ãƒˆã¯ãƒ¡ãƒ³ãƒãƒ¼ãƒã‚¤ãƒ³ã‚¿ï½¥ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨ã‚¯ãƒ©ã‚¹å‹ã®ä¸¡æ–¹ã‚’å¤‰ãˆã¦ã„ã¾ã™
 :WARNING. 1
 This warning is issued to indicate that a dangerous cast of a member pointer
 has been used.
@@ -11572,7 +11576,7 @@ The cast on the last line of the example would be diagnosed.
 
 :MSGSYM. ERR_OVERRIDE_CHANGES_CONVENTION
 :MSGTXT. virtual function '%S' has a different calling convention
-:MSGJTXT. ‰¼‘zŠÖ”'%S'‚ÉˆÙ‚È‚éŒÄ‚Ño‚µ‹K–ñ‚ªéŒ¾‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ä»®æƒ³é–¢æ•°'%S'ã«ç•°ãªã‚‹å‘¼ã³å‡ºã—è¦ç´„ãŒå®£è¨€ã•ã‚Œã¦ã„ã¾ã™
 This error indicates that the calling conventions specified
 in the virtual function prototypes are different.
 This means that virtual function calls will not
@@ -11591,7 +11595,7 @@ struct D : B {
 
 :MSGSYM. WARN_WEIRD_ENDIF_ENCOUNTER
 :MSGTXT. #endif matches #if in different source file
-:MSGJTXT. #endif‚É‘Î‰‚·‚é#if‚ªˆÙ‚È‚éƒ\[ƒXƒtƒ@ƒCƒ‹‚É‚ ‚è‚Ü‚·
+:MSGJTXT. #endifã«å¯¾å¿œã™ã‚‹#ifãŒç•°ãªã‚‹ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã«ã‚ã‚Šã¾ã™
 :WARNING. 1
 This warning may indicate a
 .kw #endif
@@ -11604,14 +11608,14 @@ solve a preprocessing directive problem.
 
 :MSGSYM. INF_PP_DIRECTIVE_LOCN
 :MSGTXT. preprocessing directive found %L
-:MSGJTXT. ‘Oˆ—‹[—–½—ß‚ª%Ls‚É‚ ‚è‚Ü‚·
+:MSGJTXT. å‰å‡¦ç†æ“¬ä¼¼å‘½ä»¤ãŒ%Lè¡Œã«ã‚ã‚Šã¾ã™
 :INFO.
 This informational message indicates the location of a preprocessing
 directive associated with the error or warning message.
 
 :MSGSYM. WARN_NEGATE_UNSIGNED
 :MSGTXT. unary '-' of unsigned operand produces unsigned result
-:MSGJTXT. •„†‚È‚µƒIƒyƒ‰ƒ“ƒh‚É’P€‰‰Zq‚Ì'-'‚ğ•t‚¯‚Ä‚àŒ‹‰Ê‚Í•„‡‚È‚µ‚É‚È‚è‚Ü‚·
+:MSGJTXT. ç¬¦å·ãªã—ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã«å˜é …æ¼”ç®—å­ã®'-'ã‚’ä»˜ã‘ã¦ã‚‚çµæœã¯ç¬¦åˆãªã—ã«ãªã‚Šã¾ã™
 :WARNING. 3
 When a unary minus ('-') operator is applied
 to an unsigned operand, the result has an unsigned
@@ -11632,7 +11636,7 @@ void fn( unsigned x ) {
 
 :MSGSYM. WARN_EXPANDED_TRIGRAPH
 :MSGTXT. trigraph expansion produced '%c'
-:MSGJTXT. 3•¶š•\‹L(ƒgƒ‰ƒCƒOƒ‰ƒt)‚ğ“WŠJ‚µ‚Ä•¶š'%c'‚É‚È‚è‚Ü‚µ‚½
+:MSGJTXT. 3æ–‡å­—è¡¨è¨˜(ãƒˆãƒ©ã‚¤ã‚°ãƒ©ãƒ•)ã‚’å±•é–‹ã—ã¦æ–‡å­—'%c'ã«ãªã‚Šã¾ã—ãŸ
 :WARNING. 1
 Trigraph expansion occurs at a very low-level
 so it can affect string literals that contain
@@ -11650,7 +11654,7 @@ char *g = "(\?\?\?)\?\?\?-\?\?\?\?";
 
 :MSGSYM. ANSI_INVALID_HEX_ESCAPE
 :MSGTXT. hexadecimal escape sequence out of range; truncated
-:MSGJTXT. 16i”‚ÌƒGƒXƒP[ƒvƒV[ƒPƒ“ƒX‚ª”ÍˆÍŠO‚Å‚·GØ‚è‹l‚ß‚ç‚ê‚Ü‚µ‚½
+:MSGJTXT. 16é€²æ•°ã®ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãŒç¯„å›²å¤–ã§ã™ï¼›åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã—ãŸ
 :ANSI. 1
 This message indicates that the hexadecimal escape sequence
 produces an integer that cannot fit into the required character type.
@@ -11660,7 +11664,7 @@ char *p = "\x0aCache Timings\x0a";
 
 :MSGSYM. WARN_UNDEFD_MACRO_IS_ZERO
 :MSGTXT. undefined macro '%s' evaluates to 0
-:MSGJTXT. –¢’è‹`ƒ}ƒNƒ '%s' ‚ğ0‚Æ‚İ‚È‚µ‚Ü‚·
+:MSGJTXT. æœªå®šç¾©ãƒã‚¯ãƒ­ '%s' ã‚’0ã¨ã¿ãªã—ã¾ã™
 :WARNING. 10
 The ISO C/C++ standard requires that undefined
 macros evaluate to zero during preprocessor
@@ -11676,7 +11680,7 @@ environments where all macros will be defined.
 
 :MSGSYM. WARN_CHAR_VALUE_LARGE
 :MSGTXT. char constant has value %u (more than 8 bits)
-:MSGJTXT. char’è”‚Ì’l‚ª %u (8ƒrƒbƒg‚æ‚è‘å‚«‚¢)‚Å‚·B
+:MSGJTXT. charå®šæ•°ã®å€¤ãŒ %u (8ãƒ“ãƒƒãƒˆã‚ˆã‚Šå¤§ãã„)ã§ã™ã€‚
 :WARNING. 9
 The ISO C/C++ standard requires that multi-char character
 constants be accepted with an implementation defined
@@ -11690,7 +11694,7 @@ int y = '\x1a';
 
 :MSGSYM. WARN_CHAR_PROMOTION
 :MSGTXT. promotion of unadorned char type to int
-:MSGJTXT. •„†‚ª–³w’è‚ÌcharŒ^‚©‚çintŒ^‚Ö‚Ì•ÏŠ·‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. ç¬¦å·ãŒç„¡æŒ‡å®šã®charå‹ã‹ã‚‰intå‹ã¸ã®å¤‰æ›ãŒã‚ã‚Šã¾ã™
 :WARNING. 1
 This message is enabled by the hidden -jw option.
 The warning may be used to locate all places where an
@@ -11710,7 +11714,7 @@ values, depending on the choice being made.
 
 :MSGSYM. WARN_SWITCH_NO_CASE_LABELS
 :MSGTXT. switch statement has no case labels
-:MSGJTXT. switch•¶‚Ì’†‚Écaseƒ‰ƒxƒ‹‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. switchæ–‡ã®ä¸­ã«caseãƒ©ãƒ™ãƒ«ãŒã‚ã‚Šã¾ã›ã‚“
 :WARNING. 4
 The switch
 statement referenced in the warning did not have
@@ -11729,7 +11733,7 @@ void fn( int x )
 
 :MSGSYM. WARN_WEIRD_CHARACTER
 :MSGTXT. unexpected character (%u) in source file
-:MSGJTXT. ƒ\[ƒXƒtƒ@ƒCƒ‹‚É—\Šú‚³‚ê‚È‚¢•¶š(%u)‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã«äºˆæœŸã•ã‚Œãªã„æ–‡å­—(%u)ãŒã‚ã‚Šã¾ã™
 :WARNING. 1
 The compiler has encountered a character in the
 source file that is not in the allowable set of
@@ -11741,14 +11745,14 @@ character byte is output for diagnostic purposes.
 
 :MSGSYM. WARN_WHITE_AFTER_SPLICE
 :MSGTXT. ignoring whitespace after line splice
-:MSGJTXT. sŒ‹‡‚ÌŒã‚Ì‹ó”’‚Í–³‹‚³‚ê‚Ü‚·
+:MSGJTXT. è¡Œçµåˆã®å¾Œã®ç©ºç™½ã¯ç„¡è¦–ã•ã‚Œã¾ã™
 :WARNING. 10
 The compiler is ignoring some whitespace characters
 that occur after the line splice.  This warning
 is useful when the source code must be compiled
 with other compilers that do not allow this extension.
 :errbad.
-#define XXXX int \
+#define XXXX int  \
 x;
 
 XXXX
@@ -11756,7 +11760,7 @@ XXXX
 
 :MSGSYM. WARN_EMPTY_MEMBER_DECL
 :MSGTXT. empty member declaration
-:MSGJTXT. ƒƒ“ƒoéŒ¾‚Ì“à—e‚ª‹ó‚Å‚·
+:MSGJTXT. ãƒ¡ãƒ³ãƒå®£è¨€ã®å†…å®¹ãŒç©ºã§ã™
 :WARNING. 10
 The compiler is warning about an extra semicolon
 found in a class definition.  The extra semicolon
@@ -11768,7 +11772,7 @@ struct S { ; };
 
 :MSGSYM. WARN_NON_PORTABLE_DECL_ZERO_SIZED_ARRAY
 :MSGTXT. '%S' makes use of a non-portable feature (zero-sized array)
-:MSGJTXT. '%S'‚ÍˆÚA«‚Ì‚È‚¢‹@”\‚ğ—˜—p‚µ‚Ä‚¢‚Ü‚·(ƒTƒCƒY‚ªƒ[ƒ‚Ì”z—ñ)
+:MSGJTXT. '%S'ã¯ç§»æ¤æ€§ã®ãªã„æ©Ÿèƒ½ã‚’åˆ©ç”¨ã—ã¦ã„ã¾ã™(ã‚µã‚¤ã‚ºãŒã‚¼ãƒ­ã®é…åˆ—)
 :WARNING. 10
 The compiler is warning about the use of a non-portable feature
 in a declaration or definition.
@@ -11784,7 +11788,7 @@ struct D {
 
 :MSGSYM. ERR_MUST_BE_CONST_STATIC_INTEGRAL
 :MSGTXT. in-class initialization is only allowed for const static integral members
-:MSGJTXT. ƒNƒ‰ƒX’è‹`‚É‰Šú‰»‚Å‚«‚é‚Ì‚ÍCstatic const‚Ì®”Œ^ƒƒ“ƒo[•Ï”‚ÉŒÀ‚ç‚ê‚Ü‚·
+:MSGJTXT. ã‚¯ãƒ©ã‚¹å®šç¾©æ™‚ã«åˆæœŸåŒ–ã§ãã‚‹ã®ã¯ï¼Œstatic constã®æ•´æ•°å‹ãƒ¡ãƒ³ãƒãƒ¼å¤‰æ•°ã«é™ã‚‰ã‚Œã¾ã™
 :errbad.
 struct A {
     static int i = 0;
@@ -11793,7 +11797,7 @@ struct A {
 
 :MSGSYM. ERR_IMPLICIT_CAST_ILLEGAL
 :MSGTXT. cannot convert expression to target type
-:MSGJTXT. w’è‚µ‚½Œ^‚É•ÏŠ·‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æŒ‡å®šã—ãŸå‹ã«å¤‰æ›ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 The implicit cast is trying to convert an expression to a completely
 unrelated type.  There is no way the compiler can provide any meaning
 for the intended cast.
@@ -11809,7 +11813,7 @@ void fn()
 
 :MSGSYM. ERR_UNKNOWN_TEMPLATE_SPECIALIZATION
 :MSGTXT. unknown template specialization of '%S'
-:MSGJTXT. '%S'‚Ìƒeƒ“ƒvƒŒ[ƒg“Áê‰»‚Í–¢’m‚Å‚·
+:MSGJTXT. '%S'ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆç‰¹æ®ŠåŒ–ã¯æœªçŸ¥ã§ã™
 :errbad.
 template<class T>
 struct A { };
@@ -11821,7 +11825,7 @@ void A<T *>::f() {
 
 :MSGSYM. ERR_WRONG_NR_TEMPLATE_ARGUMENTS
 :MSGTXT. wrong number of template arguments for '%S'
-:MSGJTXT. '%S'‚É‘Î‚·‚éƒeƒ“ƒvƒŒ[ƒgˆø”‚Ì”‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·
+:MSGJTXT. '%S'ã«å¯¾ã™ã‚‹ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå¼•æ•°ã®æ•°ãŒé–“é•ã£ã¦ã„ã¾ã™
 :errbad.
 template<class T>
 struct A { };
@@ -11833,7 +11837,7 @@ struct A<T, U> { };
 
 :MSGSYM. ERR_CANNOT_EXPLICITLY_SPECIALIZE_MEMBER
 :MSGTXT. cannot explicitly specialize member of '%S'
-:MSGJTXT. ƒƒ“ƒo['%S'‚ğ–¾¦“I‚É“Áê‰»‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¡ãƒ³ãƒãƒ¼'%S'ã‚’æ˜ç¤ºçš„ã«ç‰¹æ®ŠåŒ–ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 :errbad.
 template<class T>
 struct A { };
@@ -11861,7 +11865,7 @@ struct A<T> { };
 
 :MSGSYM. ERR_TEMPLATE_SPECIALIZATION_AMBIGUOUS
 :MSGTXT. partial template specialization for '%S' ambiguous
-:MSGJTXT. '%S'‚É‘Î‚·‚é•”•ª“Iƒeƒ“ƒvƒŒ[ƒg“Áê‰»‚ª•s–¾Šm‚Å‚·
+:MSGJTXT. '%S'ã«å¯¾ã™ã‚‹éƒ¨åˆ†çš„ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆç‰¹æ®ŠåŒ–ãŒä¸æ˜ç¢ºã§ã™
 :errbad.
 template<class T, class U>
 struct A { };
@@ -11877,14 +11881,14 @@ A<int *, int *> a;
 
 :MSGSYM. ERR_STATIC_ASSERTION_FAILURE
 :MSGTXT. static assertion failed '%s'
-:MSGJTXT. Ã“IƒAƒT[ƒg'%s'‚ª¸”s‚µ‚Ü‚µ‚½
+:MSGJTXT. é™çš„ã‚¢ã‚µãƒ¼ãƒˆ'%s'ãŒå¤±æ•—ã—ã¾ã—ãŸ
 :errbad.
 static_assert( false, "false" );
 :eerrbad.
 
 :MSGSYM. WARN_UNSUPPORTED_TEMPLATE_EXPORT
 :MSGTXT. Exported templates are not supported by Open Watcom C++
-:MSGJTXT. ƒGƒNƒXƒ|[ƒg‚³‚ê‚½ƒeƒ“ƒvƒŒ[ƒg‚ÍOpen Watcom C++‚Å‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã•ã‚ŒãŸãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã¯Open Watcom C++ã§ã¯ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“
 :WARNING. 1
 :errbad.
 export template< class T >
@@ -11894,7 +11898,7 @@ struct A {
 
 :MSGSYM. ERR_CANNOT_REDECLARE_MEMBER_FUNCTION
 :MSGTXT. redeclaration of member function '%S' not allowed
-:MSGJTXT. ƒƒ“ƒo[ŠÖ”'%S'‚ÌÄéŒ¾‚Í”F‚ß‚ç‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°'%S'ã®å†å®£è¨€ã¯èªã‚ã‚‰ã‚Œã¾ã›ã‚“
 :errbad.
 struct A {
     void f();
@@ -11904,19 +11908,19 @@ struct A {
 
 :MSGSYM. INF_CANDIATE_DEFINITION
 :MSGTXT. candidate defined %L
-:MSGJTXT. candidate‚Í%L‚ğ’è‹`‚µ‚Ü‚µ‚½
+:MSGJTXT. candidateã¯%Lã‚’å®šç¾©ã—ã¾ã—ãŸ
 :INFO.
 
 :MSGSYM. ERR_BAD_REGISTER_NAME
 :MSGTXT. Invalid register name '%s' in #pragma
-:MSGJTXT. #pragma‚Ì’†‚É–³Œø‚ÈƒŒƒWƒXƒ^–¼'%s'‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. #pragmaã®ä¸­ã«ç„¡åŠ¹ãªãƒ¬ã‚¸ã‚¹ã‚¿å'%s'ãŒã‚ã‚Šã¾ã™
 The register name is invalid/unknown.
 
 :MSGSYM. WARN_MISSING_KEYWORD_IN_EXPLICT_INSTANTIATION
 :MSGTXT. Archaic syntax: class/struct missing in explicit template instantiation
-:MSGJTXT. ‹Œ®‚È\•¶Fexplicit‚Èƒeƒ“ƒvƒŒ[ƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‰»‚Éclass/struct‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ—§å¼ãªæ§‹æ–‡ï¼šexplicitãªãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã«class/structãŒã‚ã‚Šã¾ã›ã‚“
 :WARNING. 1
-Archaic syntax has been used.  The standard requires a 
+Archaic syntax has been used.  The standard requires a
 .kw class
 or
 .kw struct
@@ -12188,14 +12192,14 @@ A< int >::A( )
 
 :MSGSYM. ERR_PRAG_ENABLE_MESSAGE
 :MSGTXT. form is '#pragma enable_message( msgnum )'
-:MSGJTXT. ‘®‚ÍC'#pragma enable_message( msgnum )'
+:MSGJTXT. æ›¸å¼ã¯ï¼Œ'#pragma enable_message( msgnum )'
 This
 .kw pragma
 enables the specified warning message.
 
 :MSGSYM. ERR_PRAG_DISABLE_MESSAGE
 :MSGTXT. form is '#pragma disable_message( msgnum )'
-:MSGJTXT. ‘®‚ÍC'#pragma disable_message( msgnum )'
+:MSGJTXT. æ›¸å¼ã¯ï¼Œ'#pragma disable_message( msgnum )'
 This
 .kw pragma
 disables the specified warning message.

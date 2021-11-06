@@ -1,11 +1,5 @@
 proj_name = fmedit
 
-#
-#   REPORT EDITOR make include file
-#
-
-name      = fmedit
-
 fmedit_autodepends = .autodepend
 
 sys_dll = 1
@@ -16,42 +10,12 @@ suppress_bd = 1
 !include defrule.mif
 !include deftarg.mif
 
-.extensions: .res .dlg .rc .cur .ico
-
-objs =  align.obj       &
-        space.obj       &
-        fmedit.obj      &
-        grid.obj        &
-        paint.obj       &
-        mouse.obj       &
-        eatom.obj       &
-        object.obj      &
-        state.obj       &
-        list.obj        &
-        memory.obj      &
-        cursor.obj      &
-        scroll.obj      &
-        oitem.obj       &
-        currobj.obj     &
-        curritem.obj    &
-        clip.obj        &
-        dlist.obj       &
-        keybd.obj       &
-        verdll.obj
-
-objs_win = wclbproc.obj
-
-objs = $(objs) $(objs_$(host_os))
-
 #
-# Source info
+# cflags
 #
-
 .c:   ../src;$(version_dir);$(watcom_dir)/c
 
 inc_dirs = -I"../src" -I"../dev" -I"../res"
-
-rc_inc_dirs = -I"../res" -I"../dev"
 
 extra_cpp_flags = -DFMEDITDLL
 
@@ -61,26 +25,55 @@ extra_c_flags_win = -zu -zw
 extra_c_flags_fmedit = -bd
 !endif
 
-extra_rc_flags_win = -30
-
+#
+# lflags
+#
 extra_l_flags_dll     = op implib
 extra_l_flags_dll_win = op rwr export WEP RESIDENT
 
-# systems where version resource must be added to .DLL
-version_res_dll_nt_386 = version.res
-version_res_dll_nt_x64 = version.res
+# explicit rules
+#################
 
+#
+# DLL
+#
+dlltarg_objs = &
+    align.obj &
+    space.obj &
+    fmedit.obj &
+    grid.obj &
+    paint.obj &
+    mouse.obj &
+    eatom.obj &
+    object.obj &
+    state.obj &
+    list.obj &
+    memory.obj &
+    cursor.obj &
+    scroll.obj &
+    oitem.obj &
+    currobj.obj &
+    curritem.obj &
+    clip.obj &
+    dlist.obj &
+    keybd.obj &
+    verdll.obj &
+    $(objs_$(host_os)) &
+    verimp.obj
+dlltarg_res_version_nt_386 = version.res
+dlltarg_res_version_nt_x64 = version.res
+dlltarg_res           = $(proj_name).res
+!include dlltarg.mif
+
+#
+# rc and others
+#
 !include verrc.mif
 
-$(name).dll: $(objs) verimp.obj $(library_files) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) verimp.obj $(library_files) $(ldflags)
-!else
-    $(linker) name $^@ $(lflags) file {$(objs) verimp.obj}
-!endif
-    @%make bind_res_add_version_dll
+rc_inc_dirs = -I"../res" -I"../dev"
 
-$(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
+extra_rc_flags_win = -30
+
+$(proj_name).res: ../res/fmedit.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
+    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

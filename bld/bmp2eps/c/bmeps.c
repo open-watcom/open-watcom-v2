@@ -848,7 +848,7 @@ void bmeps_copy_cfg(BmepsConfiguration *d, BmepsConfiguration *s)
 void bmeps_delete(char *filename)
 {
   if(filename) {
-    unlink(filename);
+    remove(filename);
   }
 }
 

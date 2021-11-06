@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,11 +45,9 @@
 #include "dbgshow.h"
 #include "dbgupdt.h"
 #include "dbgsetfg.h"
+#include "dbgmisc.h"
 
 #include "clibext.h"
-
-
-static const char AddTab[] = { "Add\0" };
 
 
 void FreeRing( char_ring *p )
@@ -153,7 +151,7 @@ void SourceSet( void )
 
     if( CurrToken == T_DIV ) {
         Scan();
-        if( ScanCmd( AddTab ) < 0 ) {
+        if( !ScanCmdAdd() ) {
             Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
         }
         owner = RingEnd( &SrcSpec );

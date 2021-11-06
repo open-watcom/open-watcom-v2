@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,19 +136,6 @@ static void setFirstTarget( TLIST *potential_first )
     /*  Note all first targets must not have attribute explicit */
     firstTargFound = potential_first;
 }
-
-void Header( void )
-/*****************/
-{
-    if( Glob.noheader ) {
-        return;
-    }
-    if( !Glob.headerout ) {
-        Glob.headerout = true;  /* so we don't print more than once */
-        PrtMsg( INF | BANNER );
-    }
-}
-
 
 STATIC void handleMacroDefn( const char *buf )
 /*********************************************
@@ -632,7 +620,7 @@ static int ExitSafe( int rc )
         CacheFini();
         VecFini();
 #ifndef NDEBUG
-        PutEnvFini();
+        SetEnvFini();
         DLLFini();
 #endif
         MsgFini();
@@ -674,7 +662,9 @@ int main( int argc, char **argv )
     InitSignals();
     InitHardErr();
     init( (const char **)argv );        /* initialize, process cmdline */
-    Header();
+    if( !Glob.noheader && !Glob.headerout ) {
+        PrintBanner();
+    }
     parseFiles();
     if( Glob.print ) {
         print();

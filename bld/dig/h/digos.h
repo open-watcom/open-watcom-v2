@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,5 +48,5 @@ pick( OS_NT,        "Win32" )
 pick( OS_AUTOCAD,   "Autocad" )
 pick( OS_NEUTRINO,  "QNX 6.x Neutrino" )
 pick( OS_LINUX,     "Linux" )
-pick( OS_FREEBSD,   "Free BSD" )
-pick( OS_NT64,      "Win64" )
+pick( OS_FREEBSD,   "FreeBSD" )
+pick( OS_NT64,      "Windows 64-bit" )

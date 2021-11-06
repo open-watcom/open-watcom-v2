@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,10 +29,12 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <rdos.h>
 #include <time.h>
-#include "timedata.h"
+#include "getctime.h"
+
 
 int __getctime( struct tm *t )
 {
@@ -42,8 +45,8 @@ int __getctime( struct tm *t )
 
     RdosGetTime( &msb, &lsb );
 
-    RdosDecodeMsbTics( msb, 
-                       &t->tm_year, 
+    RdosDecodeMsbTics( msb,
+                       &t->tm_year,
                        &t->tm_mon,
                        &t->tm_mday,
                        &t->tm_hour );
@@ -53,7 +56,7 @@ int __getctime( struct tm *t )
                        &t->tm_sec,
                        &ms,
                        &us );
-                           
+
     t->tm_year -= 1900;
     t->tm_mon--;
     t->tm_isdst = -1;

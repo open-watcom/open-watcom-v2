@@ -12,7 +12,7 @@
 char SIZE_FAR two[60u*1024];
 char SIZE_HUGE four[120L*1024];
 size_t check_two = sizeof( size_t );
-size_t check_four = sizeof( unsigned long );
+size_t check_four = sizeof unsigned long ;
 
 main()
 {

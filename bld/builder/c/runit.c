@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +49,9 @@
     #include <direct.h>
     #include <dos.h>
 #endif
+#ifdef __NT__
+    #include <windows.h>
+#endif
 #include "watcom.h"
 #include "builder.h"
 #include "pmake.h"
@@ -63,8 +66,8 @@
 
 #ifdef __UNIX__
     #define MASK_ALL_ITEMS              "*"
-    #define ENTRY_INVALID1(e)           IsDotOrDotDot(e->d_name)
-    #define ENTRY_INVALID2(n,e)         (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE) == FNM_NOMATCH)
+    #define ENTRY_INVALID(e)            IsDotOrDotDot(e->d_name)
+    #define ENTRY_NOMATCH(n,e)          (fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE) == FNM_NOMATCH)
     #define ENTRY_SUBDIR(n,e)           chk_is_dir(n)
     #define ENTRY_RDONLY(n,e)           (access( n, W_OK ) == -1 && errno == EACCES)
     /* Linux has (strangely) no 'archive' attribute, compare modification times */
@@ -72,8 +75,8 @@
     #define ENTRY_CHANGED2(n1,e1,n2)    !chk_same_time(n1, n2)
 #else
     #define MASK_ALL_ITEMS              "*.*"
-    #define ENTRY_INVALID1(e)           (IsDotOrDotDot(e->d_name) || (e->d_attr & _A_VOLID))
-    #define ENTRY_INVALID2(n,e)         (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE) == FNM_NOMATCH)
+    #define ENTRY_INVALID(e)            (IsDotOrDotDot(e->d_name) || (e->d_attr & _A_VOLID))
+    #define ENTRY_NOMATCH(n,e)          (fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE) == FNM_NOMATCH)
     #define ENTRY_SUBDIR(n,e)           (e->d_attr & _A_SUBDIR)
     #define ENTRY_RDONLY(n,e)           (e->d_attr & _A_RDONLY)
     #define ENTRY_CHANGED1(n1,n2)       (access(n2, R_OK) == -1 || chk_is_archived(n1))
@@ -81,6 +84,12 @@
 #endif
 
 #define COPY_BUFF_SIZE  (32 * 1024)
+
+#ifdef __NT__
+typedef DWORD           fattrs;
+#else
+typedef unsigned        fattrs;
+#endif
 
 typedef struct struct_copy {
     struct struct_copy  *next;
@@ -90,15 +99,15 @@ typedef struct struct_copy {
 
 typedef struct dd {
     struct dd   *next;
-    char        attr;
+//    char        attr;
     char        name[1];
 } iolist;
 
 char            tmp_buf[MAX_LINE];
 
-static int      rflag = false;
-static int      fflag = false;
-static int      sflag = true;
+static int      rm_rflag;
+static int      rm_fflag;
+static int      rm_sflag;
 
 static int RecursiveRM( const char *dir );
 
@@ -120,9 +129,14 @@ static bool chk_same_time( const char *name1, const char *name2 )
 #else
 static bool chk_is_archived( const char *name )
 {
-    unsigned    attr;
+    fattrs      attr;
 
+#if defined( __NT__ )
+    attr = GetFileAttributes( name );
+    return( attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_ARCHIVE) );
+#else
     return( _dos_getfileattr( name, &attr ) == 0 && (attr & _A_ARCH) );
+#endif
 }
 #endif
 
@@ -184,13 +198,20 @@ static int ProcSet( const char *cmd )
 void ResetArchives( copy_entry list )
 {
     copy_entry  next;
-#ifndef __UNIX__
-    unsigned    attr;
+#if defined( __UNIX__ )
+#else
+    fattrs      attr;
 #endif
 
     while( list != NULL ) {
         next = list->next;
-#ifndef __UNIX__
+#if defined( __UNIX__ )
+#elif defined( __NT__ )
+        attr = GetFileAttributes( list->src );
+        if( attr != INVALID_FILE_ATTRIBUTES ) {
+            SetFileAttributes( list->src, attr & ~FILE_ATTRIBUTE_ARCHIVE );
+        }
+#else
         if( _dos_getfileattr( list->src, &attr ) == 0 ) {
             _dos_setfileattr( list->src, attr & ~_A_ARCH );
         }
@@ -221,7 +242,7 @@ static copy_entry *add_copy_entry( copy_entry *list, char *src, char *dst )
 static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy_entry *list )
 {
     char                *dst_end;
-    PGROUP2             pg;
+    pgroup2             pg;
     char                full[_MAX_PATH];
     DIR                 *dirp;
     struct dirent       *dire;
@@ -268,6 +289,8 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         dirp = opendir( src );
     }
 #else
+    if( pg.fname[0] == '*' && pg.fname[1] == '\0' && pg.ext[0] == '\0' )
+        strcat( src, ".*" );
     dirp = opendir( src );
 #endif
     rc = 1;
@@ -280,19 +303,16 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         char *src_end = src + strlen( src );
 #endif
         while( (dire = readdir( dirp )) != NULL ) {
-            if( ENTRY_INVALID1( dire ) )
+            if( ENTRY_INVALID( dire ) )
                 continue;
             rc = 0;
 #ifdef __UNIX__
-            if( fnmatch( pattern, dire->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
+            if( ENTRY_NOMATCH( pattern, dire ) )
                 continue;
             strcpy( src_end, dire->d_name );
-            if( chk_is_dir( src ) )
-                continue;
-#else
-            if( dire->d_attr & _A_SUBDIR )
-                continue;
 #endif
+            if( ENTRY_SUBDIR( src, dire ) )
+                continue;
             _makepath( full, pg.drive, pg.dir, dire->d_name, NULL );
             _fullpath( entry_src, full, sizeof( entry_src ) );
             strcpy( full, dst );
@@ -537,23 +557,21 @@ static int DoPMake( pmake_data *data )
 
 static int ProcPMake( const char *cmd, bool ignore_errors )
 {
-    pmake_data  *data;
+    pmake_data  pmake;
     int         res;
     char        save[_MAX_PATH];
 
-    data = PMakeBuild( cmd );
-    if( data == NULL )
-        return( 1 );
-    if( data->want_help || data->signaled ) {
-        PMakeCleanup( data );
-        return( 2 );
+    res = -1;
+    if( PMakeBuild( &pmake, cmd ) != NULL ) {
+        if( !pmake.want_help && !pmake.signaled ) {
+            pmake.ignore_errors = ignore_errors;
+            strcpy( save, GetIncludeCWD() );
+            res = DoPMake( &pmake );
+            SysChdir( save );
+            SetIncludeCWD();
+        }
+        PMakeCleanup( &pmake );
     }
-    data->ignore_errors = ignore_errors;
-    strcpy( save, GetIncludeCWD() );
-    res = DoPMake( data );
-    PMakeCleanup( data );
-    SysChdir( save );
-    SetIncludeCWD();
     return( res );
 }
 
@@ -570,26 +588,26 @@ static int remove_item( const char *name, bool dir )
     } else {
         err_msg = "Unable to delete file %s\n";
         inf_msg = "File %s deleted\n";
-        rc = unlink( name );
+        rc = remove( name );
     }
-    if( fflag && rc != 0 && errno == EACCES ) {
+    if( rm_fflag && rc != 0 && errno == EACCES ) {
         rc = chmod( name, PMODE_RW );
         if( rc == 0 ) {
             if( dir ) {
                 rc = rmdir( name );
             } else {
-                rc = unlink( name );
+                rc = remove( name );
             }
         }
     }
-    if( fflag && rc != 0 && errno == ENOENT ) {
+    if( rm_fflag && rc != 0 && errno == ENOENT ) {
         rc = 0;
     }
     if( rc != 0 ) {
         rc = errno;
         Log( false, err_msg, name );
         return( rc );
-    } else if( !sflag ) {
+    } else if( !rm_sflag ) {
         Log( false, inf_msg, name );
     }
     return( 0 );
@@ -647,7 +665,9 @@ static int DoRM( const char *f )
     }
 
     while( (dire = readdir( dirp )) != NULL ) {
-        if( ENTRY_INVALID2( fname, dire ) )
+        if( ENTRY_INVALID( dire ) )
+            continue;
+        if( ENTRY_NOMATCH( fname, dire ) )
             continue;
         /* set up file name, then try to delete it */
         len = strlen( dire->d_name );
@@ -655,7 +675,7 @@ static int DoRM( const char *f )
         fpathend[len] = '\0';
         if( ENTRY_SUBDIR( fpath, dire ) ) {
             /* process a directory */
-            if( rflag ) {
+            if( rm_rflag ) {
                 /* build directory list */
                 len += i + 1;
                 tmp = MAlloc( offsetof( iolist, name ) + len );
@@ -671,7 +691,7 @@ static int DoRM( const char *f )
                 Log( false, "%s is a directory, use -r\n", fpath );
                 retval = EACCES;
             }
-        } else if( !fflag && ENTRY_RDONLY( fpath, dire ) ) {
+        } else if( !rm_fflag && ENTRY_RDONLY( fpath, dire ) ) {
             Log( false, "%s is read-only, use -f\n", fpath );
             retval = EACCES;
         } else {
@@ -739,6 +759,9 @@ static int ProcRm( const char *cmd )
     int     retval = 0;
 
     /* gather options */
+    rm_rflag = false;
+    rm_fflag = false;
+    rm_sflag = true;
     for( ;; ) {
         while( isspace( *cmd ) )
             ++cmd;
@@ -748,14 +771,14 @@ static int ProcRm( const char *cmd )
         while( isalpha( *cmd ) ) {
             switch( *cmd++ ) {
             case 'f':
-                fflag = true;
+                rm_fflag = true;
                 break;
             case 'R':
             case 'r':
-                rflag = true;
+                rm_rflag = true;
                 break;
             case 'v':
-                sflag = false;
+                rm_sflag = false;
                 break;
             default:
                 return( 1 );
@@ -763,7 +786,7 @@ static int ProcRm( const char *cmd )
         }
     }
 
-    if( rflag ) {
+    if( rm_rflag ) {
         /* process -r option */
         while( (cmd = GetString( cmd, buffer )) != NULL ) {
             if( strcmp( buffer, MASK_ALL_ITEMS ) == 0 ) {

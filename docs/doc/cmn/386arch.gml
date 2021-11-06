@@ -212,31 +212,31 @@ You must look up the description of a particular instruction to see
 what effect it might have, if any, on the flags register.
 :image depth='1.5i' file='386ARCH3' text='Flags Register'.
 .synote compact
-.note VM
+.mnote VM
 = Virtual 8086 Mode
-.note RF
+.mnote RF
 = Resume Flag
-.note NT
+.mnote NT
 = Nested Task Flag
-.note IOPL
+.mnote IOPL
 = I/O Privilege Level
-.note OF
+.mnote OF
 = Overflow Flag
-.note DF
+.mnote DF
 = Direction Flag
-.note IF
+.mnote IF
 = Interrupt Flag
-.note TF
+.mnote TF
 = Trace Flag
-.note SF
+.mnote SF
 = Sign Flag
-.note ZF
+.mnote ZF
 = Zero Flag
-.note AF
+.mnote AF
 = Auxiliary Carry Flag
-.note PF
+.mnote PF
 = Parity Flag
-.note CF
+.mnote CF
 = Carry Flag
 .esynote
 .*

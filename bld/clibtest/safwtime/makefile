@@ -1,4 +1,4 @@
 clibtest_name = safwtime
 
-srcfile = $(clib_dir)/time/c/safwtime.c
+srcfile = c/safwtime.c
 !include ../master.mif

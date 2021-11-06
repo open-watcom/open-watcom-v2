@@ -46,8 +46,8 @@ A list of valid options, each preceded by a slash (/) or a dash (&minus.).
 .np
 Options may be specified in any order.
 .begpoint $compact $setptnt 11
-:DTHD.Options:
-:DDHD.Description:
+.notehd1 Options:
+.notehd2 Description:
 .point &sw.?
 print this help summary
 .point &sw.q
@@ -293,8 +293,8 @@ semantics of such resource files.
 .ix '&wrccmdup options'
 .ix '&wrcname' 'options'
 .begpoint $break
-:DTHD.Options:
-:DDHD.Description:
+.notehd1 Options:
+.notehd2 Description:
 .*
 .point &sw.?
 Displays a summary of &wrcname command line options.
@@ -357,6 +357,9 @@ resource compiler)
 This option affects pass one only.  During pass two the target is
 inferred from the format of the input files.
 .*
+.point &sw.c=name
+Set the code page conversion file.
+.*
 .point &sw.e
 Specifies that global memory is above the EMS line in a Windows 3.0
 DLL.
@@ -386,6 +389,9 @@ Specifies an include path.
 This include path is searched before the directories specified in the
 .ev INCLUDE
 environment variable.  This option affects pass one only.
+.np
+Note: to be host platform independent the form like &sw.i="../h"
+(quoted path and forward slash separator) is recommended.
 .*
 .point &sw.k
 Disables the segment sorting feature (load optimization).

@@ -119,18 +119,13 @@ static VEDITLINE DirEdit = {
 static  char            FullMask[] = FULL_MASK;
 
 
- static void outnames( wptr, dirptr, start, stop )
-/*************************************************/
-
-    register VSCREEN            *wptr;
-    register DIRECTORY          *dirptr;
-    register int                start;
-    register int                stop;
+static void outnames( VSCREEN *wptr, DIRECTORY *dirptr, int start, int stop )
+/***************************************************************************/
 {
-    register int                index;
-    register ORD                row;
-    register int                attr;
-    register char               *str;
+    int                index;
+    ORD                row;
+    int                attr;
+    char               *str;
 
     for( index = start; index <= stop; ++index ) {
         row = index - dirptr->index + dirptr->currrow;
@@ -210,21 +205,16 @@ static bool checkMask( char *name, char *mask )
 #endif
 
 
- static int addnames( dirptr, mask, flag, index )
-/************************************************/
-
-    register DIRECTORY          *dirptr;
-    register char               *mask;
-    register int                flag;
-    register int                index;
+static int addnames( DIRECTORY *dirptr, char *mask, int flag, int index )
+/***********************************************************************/
 {
-    register size_t             len;
+    size_t          len;
 #ifndef __QNX__
-    register char               *str;
+    char            *str;
 #endif
-    register DIR                *dirp;
-    register int                add_mask;
-    struct   dirent             *dire;
+    DIR             *dirp;
+    int             add_mask;
+    struct dirent   *dire;
 
     add_mask = concat( dirptr, mask );
     dirp = opendir( dirptr->pathbuff );
@@ -287,8 +277,8 @@ static bool checkMask( char *name, char *mask )
 }
 
 
- static makedir( char *buff )
-/***************************/
+static makedir( char *buff )
+/**************************/
 {
 #ifdef __QNX__
     buff = buff;
@@ -305,8 +295,8 @@ static bool checkMask( char *name, char *mask )
 }
 
 
- static int outdir( VSCREEN *wptr, char *buff )
-/*********************************************/
+static int outdir( VSCREEN *wptr, char *buff )
+/********************************************/
 {
     size_t      len;
     int         width;
@@ -324,14 +314,14 @@ static bool checkMask( char *name, char *mask )
 }
 
 
- static int concat( DIRECTORY *dirptr, char *str )
-/************************************************/
+static int concat( DIRECTORY *dirptr, char *str )
+/***********************************************/
 {
 #ifdef __QNX__
     dirptr = dirptr;
     str = str;
 #else
-    register char               *buf;
+    char               *buf;
 
     buf = dirptr->pathbuff;
     while( ( *buf != ' ' ) && ( *buf != '\0' ) ) {
@@ -367,14 +357,14 @@ static bool checkMask( char *name, char *mask )
 }
 
 
- static int strip( DIRECTORY *dirptr, char *mask )
-/************************************************/
+static int strip( DIRECTORY *dirptr, char *mask )
+/***********************************************/
 {
 #ifdef __QNX__
     dirptr = dirptr;
     mask = mask;
 #else
-    register char               *buf;
+    char               *buf;
 
     buf = dirptr->pathbuff + strlen( dirptr->pathbuff ) - 1;
     while( buf >= dirptr->pathbuff ) {
@@ -393,17 +383,13 @@ static bool checkMask( char *name, char *mask )
 }
 
 
- static int dircount( dirptr, mask, flag )
-/*****************************************/
-
-    register DIRECTORY          *dirptr;
-    register char               *mask;
-    register int                flag;
+static int dircount( DIRECTORY *dirptr, char *mask, int flag )
+/************************************************************/
 {
-    register unsigned           count;
-    register DIR                *dirp;
-    register int                add_mask;
-    struct   dirent             *dire;
+    unsigned        count;
+    DIR             *dirp;
+    int             add_mask;
+    struct dirent   *dire;
 
     count = 0;
     if( mask != NULL ) {
@@ -439,8 +425,8 @@ static bool checkMask( char *name, char *mask )
     return( count );
 }
 
- static void InvalidDir( DIRECTORY *dirptr, VSCREEN *wptr )
-/**********************************************************/
+static void InvalidDir( DIRECTORY *dirptr, VSCREEN *wptr )
+/********************************************************/
 {
     unsigned    i;
     int         row;
@@ -458,18 +444,15 @@ static bool checkMask( char *name, char *mask )
 }
 
 
- static int displaydir( wptr, dirptr )
-/*************************************/
-
-    register VSCREEN            *wptr;
-    register DIRECTORY          *dirptr;
+static int displaydir( VSCREEN *wptr, DIRECTORY *dirptr )
+/*******************************************************/
 {
-    register int                index;
-    register char               *mask;
-    auto     char               buff[DIR_MAX + 1];
-             void               *tmp;
-             int                ret;
-    struct   stat               blk;
+    int             index;
+    char            *mask;
+    char            buff[DIR_MAX + 1];
+    void            *tmp;
+    int             ret;
+    struct stat     blk;
 
     Names = NULL;
     index = 0;
@@ -527,11 +510,8 @@ static bool checkMask( char *name, char *mask )
 }
 
 
- int initdir( wptr, dirptr )
-/***************************/
-
-    register VSCREEN            *wptr;
-    register DIRECTORY          *dirptr;
+int initdir( VSCREEN *wptr, DIRECTORY *dirptr )
+/*********************************************/
 {
     int                         ret;
 
@@ -545,20 +525,16 @@ static bool checkMask( char *name, char *mask )
 }
 
 
- static int getdir( wptr, dirptr, new_dir )
-/*********************************/
-
-    register VSCREEN            *wptr;
-    register DIRECTORY          *dirptr;
-             bool               *new_dir;
+static int getdir( VSCREEN *wptr, DIRECTORY *dirptr, bool *new_dir )
+/******************************************************************/
 {
-    register char               *str;
-    register int                len;
-    register ui_event           ui_ev;
-    register ui_event           new_ui_ev;
-    register ATTR               attr;
-    auto     char               olddir[DIR_MAX + 1];
-             int                ret;
+    char               *str;
+    int                len;
+    ui_event           ui_ev;
+    ui_event           new_ui_ev;
+    ATTR               attr;
+    char               olddir[DIR_MAX + 1];
+    int                ret;
 
     strcpy( olddir, dirptr->pathbuff );
     DirEdit.attr = UIData->attrs[ATTR_BRIGHT];
@@ -619,18 +595,15 @@ static bool checkMask( char *name, char *mask )
 
 #define NO_ROW  ((ORD)-1)
 
- ui_event directory( wptr, dirptr )
-/*********************************/
-
-    register VSCREEN            *wptr;
-    register DIRECTORY          *dirptr;
+ui_event directory( VSCREEN *wptr, DIRECTORY *dirptr )
+/****************************************************/
 {
-    register ui_event           ui_ev;
-    register ui_event           new_ui_ev;
-    SAREA                       area;
-    register int                index;
-    ORD                         row, col;
-    bool                        got_new_dir;
+    ui_event        ui_ev;
+    ui_event        new_ui_ev;
+    SAREA           area;
+    int             index;
+    ORD             row, col;
+    bool            got_new_dir;
 
     uipushlist( DirEvents );
     ui_ev = uivgetevent( wptr );
@@ -819,8 +792,8 @@ static bool checkMask( char *name, char *mask )
 
 
 #pragma off(unreferenced);
- void finidir( VSCREEN *wptr, DIRECTORY *dirptr )
-/***********************************************/
+void finidir( VSCREEN *wptr, DIRECTORY *dirptr )
+/**********************************************/
 #pragma on(unreferenced);
 {
     if( Names != NULL ) {

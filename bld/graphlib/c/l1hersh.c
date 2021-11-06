@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +35,6 @@
 #include "gdefn.h"
 
 
-static short            Map( short, short, short, short );
-static void             DrawChar( char, short, short, short, short, short, short );
-
-
 #if defined( _FRENCH )
 #include "french.h"
 
@@ -45,7 +42,7 @@ static void             DrawChar( char, short, short, short, short, short, short
 /* The three CodePage arrays contain indices into the
    MultiLingIndex array to avoid repetition of font data. */
 
-static unsigned char CodePage437[ 99 ] = {
+static unsigned char CodePage437[99] = {
             98,                                         // number of entries
         C_CEDL, u_UMLT, e_AIGU, a_CIRC, a_UMLT, a_GRAV,   0xff, c_CEDL,
         e_CIRC, e_UMLT, e_GRAV, i_UMLT, i_CIRC, i_GRAV, A_UMLT,   0xff,
@@ -62,7 +59,7 @@ static unsigned char CodePage437[ 99 ] = {
           0xff, b_BETA
 };
 
-static unsigned char CodePage863[ 99 ] = {
+static unsigned char CodePage863[99] = {
             98,                                         // number of entries
         C_CEDL, u_UMLT, e_AIGU, a_CIRC, A_CIRC, a_GRAV,   0xff, c_CEDL,
         e_CIRC, e_UMLT, e_GRAV, i_UMLT, i_CIRC,   0xff, A_GRAV,   0xff,
@@ -79,7 +76,7 @@ static unsigned char CodePage863[ 99 ] = {
           0xff, b_BETA
 };
 
-static unsigned char CodePage850[ 111 ] = {
+static unsigned char CodePage850[111] = {
            110,                                         // number of entries
         C_CEDL, u_UMLT, e_AIGU, a_CIRC, a_UMLT, a_GRAV,   0xff, c_CEDL,
         e_CIRC, e_UMLT, e_GRAV, i_UMLT, i_CIRC, i_GRAV, A_UMLT,   0xff,
@@ -101,7 +98,7 @@ static unsigned char CodePage850[ 111 ] = {
 // Multi-lingual characters are made up by drawing two characters,
 // the regular character, followed by the accent.
 
-static unsigned char MultiLingIndex[ NUM_LANG_CHARS ][ 2 ] = {
+static unsigned char MultiLingIndex[NUM_LANG_CHARS][2] = {
         { 'a',             LC_AIGU },       // a_AIGU
         { 'A',             UC_AIGU },       // A_AIGU
         { 'e',             LC_AIGU },       // e_AIGU
@@ -155,39 +152,28 @@ static unsigned char MultiLingIndex[ NUM_LANG_CHARS ][ 2 ] = {
 #endif
 
 
-void _HershDraw( char pc, short cx, short cy, short bx, short by,
-/*=========================================*/ short px, short py )
+static short Map( short a, short b, short v1, short v2 )
+/*======================================================
+
+    Map the point (a,b) inside the character definition grid to the
+    character drawing parallelogram. Return one component at a time.
+
+    Calculate: (x', y') = ( a * vx1 + b * vx2 , a * vy1 + b * vy2 ) / MAX
+ */
 
 {
-    unsigned char   ch = pc;
+    long         p1;
+    long         p2;
 
-    if( ch >= '!' && ch <= 0x7e ) {
-        DrawChar( ch, cx, cy, bx, by, px, py );
-#if defined( _FRENCH )
-    } else if( ch >= 0x80 ) {
-        short           codepage;
-        unsigned char   *cp_array;
-
-        codepage = GetCodePage();
-        if( codepage == 850 ) {
-            cp_array = CodePage850;
-        } else if( codepage == 863 ) {
-            cp_array = CodePage863;
-        } else {        // assume that we use 437 for all others
-            cp_array = CodePage437;
-        }
-        ch -= 0x80;
-        if( ch > cp_array[ 0 ] ) {
-            return;
-        }
-        ch = cp_array[ ch + 1 ];     // skip over size
-        if( ch == 0xff ) {
-            return;
-        }
-        DrawChar( MultiLingIndex[ ch ][ 0 ], cx, cy, bx, by, px, py );
-        DrawChar( MultiLingIndex[ ch ][ 1 ], cx, cy, bx, by, px, py );
-#endif
+    p1 = (long)a * v1;
+    p2 = (long)b * v2;
+    p1 += p2;
+    if( p1 < 0 ) {
+        p1 -= MAX/2;                    /* round point to nearest pixel */
+    } else {
+        p1 += MAX/2;                    /* round point to nearest pixel */
     }
+    return( (long)p1 / MAX );
 }
 
 
@@ -206,8 +192,8 @@ static void DrawChar( char ch, short cx, short cy, short bx, short by,
     short               y1;
     char                join_points;
 
-    offset = _CurrFont->key[ ch - '!' ];
-    len = _CurrFont->key[ ch - '!' + 1 ] - offset;
+    offset = _CurrFont->key[ch - '!'];
+    len = _CurrFont->key[ch - '!' + 1] - offset;
     data_ptr = (signed char _WCI86FAR *)&_CurrFont->data + offset;
 
     join_points = FALSE;
@@ -235,26 +221,37 @@ static void DrawChar( char ch, short cx, short cy, short bx, short by,
 }
 
 
-static short Map( short a, short b, short v1, short v2 )
-/*======================================================
-
-    Map the point (a,b) inside the character definition grid to the
-    character drawing parallelogram. Return one component at a time.
-
-    Calculate: (x', y') = ( a * vx1 + b * vx2 , a * vy1 + b * vy2 ) / MAX
- */
+void _HershDraw( char pc, short cx, short cy, short bx, short by,
+/*=========================================*/ short px, short py )
 
 {
-    signed long         p1;
-    signed long         p2;
+    unsigned char   ch = pc;
 
-    p1 = (long)a * v1;
-    p2 = (long)b * v2;
-    p1 += p2;
-    if( p1 < 0 ) {
-        p1 -= MAX/2;                    /* round point to nearest pixel */
-    } else {
-        p1 += MAX/2;                    /* round point to nearest pixel */
+    if( ch >= '!' && ch <= 0x7e ) {
+        DrawChar( ch, cx, cy, bx, by, px, py );
+#if defined( _FRENCH )
+    } else if( ch >= 0x80 ) {
+        short           codepage;
+        unsigned char   *cp_array;
+
+        codepage = GetCodePage();
+        if( codepage == 850 ) {
+            cp_array = CodePage850;
+        } else if( codepage == 863 ) {
+            cp_array = CodePage863;
+        } else {        // assume that we use 437 for all others
+            cp_array = CodePage437;
+        }
+        ch -= 0x80;
+        if( ch > cp_array[0] ) {
+            return;
+        }
+        ch = cp_array[ch + 1];     // skip over size
+        if( ch == 0xff ) {
+            return;
+        }
+        DrawChar( MultiLingIndex[ch][0], cx, cy, bx, by, px, py );
+        DrawChar( MultiLingIndex[ch][1], cx, cy, bx, by, px, py );
+#endif
     }
-    return( (long)p1 / MAX );
 }

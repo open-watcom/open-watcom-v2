@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,6 @@
 //
 
 #include "ftnstd.h"
-#include <string.h>
 #include <limits.h>
 #include "opr.h"
 #include "errcod.h"
@@ -55,11 +55,10 @@
 #include "fmtcnvt.h"
 
 
-static  bool    ReqChar( void ) {
-//=========================
-
+static  bool    ReqChar( void )
+//=============================
 // Recognize one character operand.
-
+{
     if( RecName() && (CITNode->opnd_size == 1) && !CharSetInfo.is_foreign( *CITNode->opnd ) )
         return( true );
     Error( IM_ILLEGAL_RANGE );
@@ -151,11 +150,10 @@ static  bool    CheckSize( TYPE typ, intstar4 size, itnode *start )
 }
 
 
-bool    LenSpec( TYPE typ, uint *size_ptr ) {
-//==========================================
-
+bool    LenSpec( TYPE typ, size_t *size_ptr )
+//===========================================
 // Process a length specification.
-
+{
     itnode      *save_itptr;
     bool        len_spec;
     itnode      *temp;
@@ -201,7 +199,7 @@ bool    LenSpec( TYPE typ, uint *size_ptr ) {
             if( len_spec ) {
                 len_spec = CheckSize( typ, ivalue, save_itptr );
                 if( len_spec ) {
-                    *size_ptr = (uint)ivalue;
+                    *size_ptr = (size_t)(unsigned_32)ivalue;
                 }
             }
         }
@@ -245,12 +243,12 @@ void    CpImplicit( void ) {
     byte        chr2;
     TYPE        typ;
     bool        valid_range;
-    uint        size;
+    size_t      size;
 
     if( (CITNode->opnd_size == 4) && (memcmp( CITNode->opnd, "NONE", 4 ) == 0) ) {
         AdvanceITPtr();
         Extension( SP_STRUCTURED_EXT, "IMPLICIT NONE" );
-        if( SgmtSw & ( SG_IMPLICIT_STMT | SG_IMPLICIT_NONE ) ) {
+        if( SgmtSw & (SG_IMPLICIT_STMT | SG_IMPLICIT_NONE) ) {
             Error( IM_NONE_USED );
         }
         SgmtSw |= SG_IMPLICIT_NONE;

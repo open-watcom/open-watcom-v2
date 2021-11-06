@@ -9,7 +9,7 @@ The
 .id &funcb.
 function gets the current value of interrupt vector number
 .arg intnum
-.ct .li .
+.period
 .desc end
 .return begin
 The
@@ -17,10 +17,10 @@ The
 function returns a far pointer to the current interrupt
 handler for interrupt number
 .arg intnum
-.ct .li .
+.period
 .return end
 .see begin
-.seelist getvect _chain_intr _dos_keep _dos_setvect
+.seelist _dos_getvect _chain_intr _dos_keep _dos_setvect
 .see end
 .exmp begin
 #include <stdio.h>

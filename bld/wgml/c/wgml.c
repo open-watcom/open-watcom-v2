@@ -108,7 +108,7 @@ char *get_filename_full_path( char *buff, char const * name, size_t max )
 
 static  void    set_default_extension( const char * masterfname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( masterfname, pg.buffer, NULL, NULL, NULL, &pg.ext );
     if( pg.ext[0] != '\0' ) {

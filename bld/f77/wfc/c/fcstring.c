@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +37,9 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "rtconst.h"
 #include "wf77defs.h"
-#include "wf77auxd.h"
+#include "wf77aux.h"
 #include "tmpdefs.h"
-#include "cg.h"
 #include "cpopt.h"
 #include "inline.h"
 #include "emitobj.h"
@@ -51,7 +50,6 @@
 #include "fcstruct.h"
 #include "fcsubscr.h"
 #include "fctemp.h"
-#include "fcrtns.h"
 #include "fcstack.h"
 #include "rstmgr.h"
 #include "cgswitch.h"

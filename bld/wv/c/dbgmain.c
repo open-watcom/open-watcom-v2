@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,21 +86,21 @@ extern void             RestoreHandlers( void );
 
 extern int              ScanSavePtr;
 
-#define pick( a, b, c ) extern void b( void );
-#include "_dbgcmd.h"
+#define pick(t,e,c)     extern void c( void );
+#include "_dbgcmds.h"
 #undef pick
 
 static void         ProcNil( void );
 
 static const char CmdNameTab[] = {
-    #define pick( a, b, c ) c
-    #include "_dbgcmd.h"
+    #define pick(t,e,c)     t "\0"
+    #include "_dbgcmds.h"
     #undef pick
 };
 
 static void ( * const CmdJmpTab[] )( void ) = {
-    #define pick( a, b, c ) &b,
-    #include "_dbgcmd.h"
+    #define pick(t,e,c)     &c,
+    #include "_dbgcmds.h"
     #undef pick
 };
 
@@ -129,8 +129,8 @@ void DebugInit( void )
     NameBuff = DbgBuffers + TXT_LEN + 1;
     *NameBuff = NULLCHAR;
     CurrRadix = DefRadix = 10;
-    DbgLevel = MIX;
-    ActiveWindowLevel = MIX;
+    DbgLevel = LEVEL_MIX;
+    ActiveWindowLevel = LEVEL_MIX;
     _SwitchOn( SW_BELL );
     _SwitchOn( SW_FLIP );
     _SwitchOn( SW_RECURSE_CHECK );

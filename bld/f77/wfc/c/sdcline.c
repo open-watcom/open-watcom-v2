@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #include "global.h"
 #include "cpopt.h"
 #include "sdcline.h"
-#include "boot77.h"
+#include "option.h"
 
 
 #if defined( __UNIX__ )
@@ -49,19 +49,9 @@
 #endif
 
 
-bool    ParseCmdLine( char **fname, char **rest, char **opt_array, char *p ) {
-//============================================================================
-
-    /* unused parameters */ (void)fname; (void)rest; (void)p;
-
-    *opt_array = NULL;
-    return( true );
-}
-
-
-bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
-//=====================================================================
-
+bool MainCmdLine( char **fn, char **rest, char **opts, char *ptr )
+//================================================================
+{
     uint        opt_num;
     bool        scanning_file_name;
     bool        quoted;
@@ -73,7 +63,8 @@ bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
         scanning_file_name = false;
         quoted = false;
         ptr = SkipBlanks( ptr );
-        if( *ptr == NULLCHAR ) break;
+        if( *ptr == NULLCHAR )
+            break;
         if( _IsSwitchChar( *ptr ) ) {
             *ptr = NULLCHAR;    // terminate previous option or filename
             ++ptr;
@@ -89,19 +80,19 @@ bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
             *rest = ptr;
             break;
         }
-        for(;;) {
-            if( *ptr == NULLCHAR )
-                break;
+        for( ; *ptr != NULLCHAR; ptr++ ) {
             if( quoted ) {
                 if( *ptr == '\"' ) {
                     quoted = false;
-                    if(scanning_file_name)
+                    if( scanning_file_name ) {
                         *ptr = NULLCHAR;
+                    }
                 }
             } else if( *ptr == '\"' ) {
                 quoted = true;
-                if(scanning_file_name)
-                    *fn = ptr+1;
+                if( scanning_file_name ) {
+                    *fn = ptr + 1;
+                }
             } else if( ( *ptr == ' ' ) || ( *ptr == '\t' ) ) {
                 *ptr = NULLCHAR;
                 ++ptr;
@@ -112,19 +103,8 @@ bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
                     break;
                 }
             }
-            ++ptr;
         }
     }
     *opts = NULL;
     return( (*fn != NULL) && (opt_num <= MAX_OPTIONS) && (*rest == NULL) );
-}
-
-
-char    *Batch( char *buffer, uint num ) {
-//========================================
-
-    if( num > 0 ) {
-        buffer = NULL;
-    }
-    return( buffer );
 }

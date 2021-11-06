@@ -1,0 +1,16 @@
+:CMT.
+:CMT. This is empiricaly derived source for mono01 font.
+:CMT.
+
+:FONT
+  defined_name     = 'mono01'
+  member_name      = 'mono01'
+  font_out_name1   = ''
+  line_height      = 1
+  line_space       = 0
+  scale_basis      = 0
+  scale_min        = 0
+  scale_max        = 0
+  char_width       = 1
+
+:eFONT.

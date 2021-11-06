@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #ifndef whotspot_class
 #define whotspot_class
 
-#include "wres.hpp"
+#include "_windows.hpp"
 #include "wobject.hpp"
 #include "wvlist.hpp"
 #include "wpoint.hpp"
@@ -43,7 +44,7 @@ WCLASS WHotSpots : public WObject {
         WEXPORT WHotSpots( int );
         WEXPORT ~WHotSpots();
 
-        void WEXPORT addHotSpot( WResource, char * );
+        void WEXPORT addHotSpot( WResourceId, char * );
         void WEXPORT hotSpotSize( int, WPoint & );
         void WEXPORT attach();
 

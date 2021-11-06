@@ -37,19 +37,19 @@
 
 static UI_WINDOW        BandWnd;
 static SAREA            BandArea;
-static ATTR             Attr;
+static ATTR             BandAttr;
 
 
 static void drawband_update_fn( SAREA area, void *dummy )
 {
     /* unused parameters */ (void)area; (void)dummy;
 
-    drawbox( &UIData->screen, BandArea, SBOX_CHARS(), Attr, false );
+    drawbox( &UIData->screen, BandArea, SBOX_CHARS(), BandAttr, false );
 }
 
 void UIAPI uibandinit( SAREA area, ATTR attr )
 {
-    Attr = attr;
+    BandAttr = attr;
     area.width++;
     area.height++;
     BandArea = area;

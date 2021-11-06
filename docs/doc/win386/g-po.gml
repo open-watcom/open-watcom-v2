@@ -151,8 +151,8 @@ header file will apply to routines declared
 in the other header files.
 .np
 .begnote $compact $setptnt 30
-:DTHD.Macro name
-:DDHD.File included
+.notehd1 Macro name
+.notehd2 File included
 .note #define INCLUDE_COMMDLG_H
 .ix 'COMMDLG.H'
 .fi COMMDLG.H
@@ -693,7 +693,7 @@ The only time
 .kw GlobalAlloc
 is needed is when allocating shared memory, i.e.,
 .kw GMEM_DDESHARE
-.ct .li .
+.period
 .if '&lang' eq 'FORTRAN 77' .do begin
 .np
 The
@@ -722,7 +722,7 @@ permit.
 .np
 To access a callback function, an instance of it must be created using
 .kw MakeProcInstance
-.ct .li .
+.period
 This creates a "thunk" (a special piece of code) that automatically
 puts the application's data segment into the AX register, and then
 calls the specified callback function.
@@ -942,7 +942,7 @@ as in the following example.
 .np
 Be careful of the following when using
 .kw NOAUTOPROCS
-.ct .li .
+.period
 .autonote
 .note
 The call to
@@ -1142,8 +1142,8 @@ The second argument to
 is a string identifying the types of the parameters to be passed to
 the 16-bit function.
 .begnote $compact
-:DTHD.Character
-:DDHD.Parameter Type
+.notehd1 Character
+.notehd2 Parameter Type
 .note c
 call a 'cdecl' function as opposed to a 'pascal' function
 (if specified, it must be listed first)
@@ -1181,7 +1181,7 @@ The return value from
 .kw _Call16
 is a
 .kw DWORD
-.ct .li .
+.period
 .np
 .if '&lang' eq 'FORTRAN 77' .do begin
 .code begin
@@ -1342,7 +1342,7 @@ These are useful when using pointers obtained by
 .kw MK_FP32
 and
 .kw MK_LOCAL32
-.ct .li .
+.period
 .np
 Memory manipulation:
 .* .ix '_fmemccpy'

@@ -41,6 +41,9 @@
 #define _MAX_PATH PATH_MAX
 #endif
 
+#define ASM_FILE_EXT    ".gas"
+#define OBJ_FILE_EXT    ".obj"
+
 struct SysElem {
     char *              system;
     struct SysElem *    next;
@@ -272,7 +275,7 @@ static void make_asm_axp( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_a%6s.gas", outdir, alias->filename );
+    sprintf( filename, "%s_a%6s" ASM_FILE_EXT, outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );
@@ -288,7 +291,7 @@ static void make_asm_axp( FILE *miffile, struct Alias *alias, char *outdir )
     }
     fclose( asmfile );
 
-    sprintf( filename, "_a%6s.obj", alias->filename );
+    sprintf( filename, "_a%6s" OBJ_FILE_EXT, alias->filename );
     update_mif_file( miffile, filename, alias );
 }
 
@@ -303,7 +306,7 @@ static void make_asm_ix86( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_i%6s.gas", outdir, alias->filename );
+    sprintf( filename, "%s_i%6s" ASM_FILE_EXT, outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );
@@ -319,7 +322,7 @@ static void make_asm_ix86( FILE *miffile, struct Alias *alias, char *outdir )
     }
     fclose( asmfile );
 
-    sprintf( filename, "_i%6s.obj", alias->filename );
+    sprintf( filename, "_i%6s" OBJ_FILE_EXT, alias->filename );
     update_mif_file( miffile, filename, alias );
 }
 
@@ -334,7 +337,7 @@ static void make_asm_ppc( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_p%6s.gas", outdir, alias->filename );
+    sprintf( filename, "%s_p%6s" ASM_FILE_EXT, outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );
@@ -350,7 +353,7 @@ static void make_asm_ppc( FILE *miffile, struct Alias *alias, char *outdir )
     }
     fclose( asmfile );
 
-    sprintf( filename, "_p%6s.obj", alias->filename );
+    sprintf( filename, "_p%6s" OBJ_FILE_EXT, alias->filename );
     update_mif_file( miffile, filename, alias );
 }
 
@@ -365,7 +368,7 @@ static void make_asm_mips( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_m%6s.gas", outdir, alias->filename );
+    sprintf( filename, "%s_m%6s" ASM_FILE_EXT, outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );
@@ -381,7 +384,7 @@ static void make_asm_mips( FILE *miffile, struct Alias *alias, char *outdir )
     }
     fclose( asmfile );
 
-    sprintf( filename, "_m%6s.obj", alias->filename );
+    sprintf( filename, "_m%6s" OBJ_FILE_EXT, alias->filename );
     update_mif_file( miffile, filename, alias );
 }
 

@@ -5,7 +5,7 @@
 #
 # Expects POSIX tools.
 
-mkdir $OWBINDIR
+mkdir $OWBINDIR/$OWOBJDIR
 
 mkdir $OWSRCDIR/wmake/$OWOBJDIR
 cd $OWSRCDIR/wmake/$OWOBJDIR
@@ -32,9 +32,10 @@ RC=$?
 if [ $RC -ne 0 ]; then
     echo "wmake bootstrap build error"
 else
+    export OWVERBOSE=1
     mkdir $OWSRCDIR/builder/$OWOBJDIR
     cd $OWSRCDIR/builder/$OWOBJDIR
-    $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
+    $OWBINDIR/$OWOBJDIR/wmake -f ../binmake bootstrap=1
     cd $OWSRCDIR
     builder boot
     RC=$?

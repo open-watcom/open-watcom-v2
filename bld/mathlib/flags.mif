@@ -1,7 +1,11 @@
+!ifdef lib_debug
+release = 0
+!endif
+
 !ifeq release 0
-sw_c_common = $(watcom_common_cflags)-w8-j-za99-we-x-xx-zam-oax-zl-wpx
+sw_c_common = $(watcom_common_cflags)-j-za99-we-x-xx-zam-oax-zl-wpx
 !else
-sw_c_common = $(watcom_common_cflags)-w8-j-za99-we-x-xx-zam-s-oax-zl-wpx
+sw_c_common = $(watcom_common_cflags)-j-za99-we-x-xx-zam-s-oax-zl-wpx
 !endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
@@ -117,10 +121,6 @@ mlib_a_flags = $(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(mlib_$(processor))_$(m
 !ifeq release 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
-!ifdef debug
-c_dbg_flags += -D$(debug)
-a_dbg_flags += -D$(debug)
-!endif
 !else
 c_dbg_flags = -DNDEBUG
 a_dbg_flags = -DNDEBUG

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -634,7 +634,7 @@ typedef vi_rc checkres_fn( const char *, char *, int * );
 typedef struct {
     file                *f;                     // file with data for lines
     char                **vals;                 // values associated with each line
-    unsigned            valoff;                 // offset to display values beside line data
+    size_t              valoff;                 // offset to display values beside line data
     window_info         *wi;                    // info describing window to create
     list_linenum        sl;                     // selected line
     char                *title;                 // title of window

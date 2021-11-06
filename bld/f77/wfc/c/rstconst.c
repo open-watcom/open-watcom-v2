@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "global.h"
 #include "fmemmgr.h"
 #include "fhash.h"
@@ -40,7 +40,7 @@
 
 hash_entry              ConstHashTable[HASH_PRIME];
 
-sym_id  STConst( void *ptr, TYPE typ, uint size ) {
+sym_id  STConst( void *ptr, TYPE typ, size_t size ) {
 //=================================================
 
 // Search the symbol table for a constant. If the constant is not in the
@@ -64,7 +64,8 @@ sym_id  STConst( void *ptr, TYPE typ, uint size ) {
                     return( head );
                 }
             }
-            if( head == tail ) break;
+            if( head == tail )
+                break;
             head = head->u.cn.link;
         }
     }

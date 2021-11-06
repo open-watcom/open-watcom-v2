@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,8 @@
 #define TOK_INVALID             (-1)
 
 #define GET_BOOL_PREFIX(b)      ((b) ? "" : "no")
+
+#define CFG_SET_SEPARATOR       " = "   // alternate value " "
 
 #define ROUNDUP( size, word )   (((size)+((word)-1)) & ~((word)-1))
 
@@ -140,15 +143,6 @@ typedef enum {
     GF_FILE,
     GF_BUFFER
 } gftype;
-
-/*
- * data files
- */
-#define ED_CFG                  0
-#define BIND_DAT                1
-#define ERRMSG_DAT              2
-#define ERROR_DAT               3
-#define DATA_FILE_CNT           4
 
 /*
  * savebuf constants

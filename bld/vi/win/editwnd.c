@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -683,24 +683,24 @@ static void doHScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
 #endif
     EditFlags.ScrollCommand = true;
     switch( GET_WM_HSCROLL_CODE( wparam, lparam ) ) {
-    case SB_LINEUP:
+    case SB_LINELEFT:
         newLeftColumn = LeftTopPos.column - 1;
         if( EditFlags.JumpyScroll ) {
             newLeftColumn = LeftTopPos.column - SCROLL_HLINE;
         }
         MoveScreenLeftRightML( newLeftColumn );
         break;
-    case SB_LINEDOWN:
+    case SB_LINERIGHT:
         newLeftColumn = LeftTopPos.column + 1;
         if( EditFlags.JumpyScroll ) {
             newLeftColumn = LeftTopPos.column + SCROLL_HLINE;
         }
         MoveScreenLeftRightML( newLeftColumn );
         break;
-    case SB_PAGEUP:
+    case SB_PAGELEFT:
         MoveScreenLeftPageML();
         break;
-    case SB_PAGEDOWN:
+    case SB_PAGERIGHT:
         MoveScreenRightPageML();
         break;
     case SB_THUMBTRACK:

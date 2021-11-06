@@ -71,6 +71,11 @@
 :CMT. :hotlink refid='SW6RS'.
 :CMT. .br
 .*
+:CMT. .note aa
+:hotlink refid='SWaa'.
+~b~b~b~b~b~b
+.br
+.*
 :CMT. .note ad
 :hotlink refid='SWad'.
 ~b~b~b~b~b~b
@@ -489,7 +494,7 @@
 ~b~b~b~b~b~b
 .br
 .*
-.if &e'&wcldesc. eq 1 .do begin
+.if &e'&wcldesc. ne 0 .do begin
 :CMT. .note mt
 .do end
 .*
@@ -513,7 +518,7 @@
 ~b~b~b~b~b~b
 .br
 .*
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 :CMT. .note oa
 :hotlink refid='SWoa'.
 ~b~b~b~b~b~b

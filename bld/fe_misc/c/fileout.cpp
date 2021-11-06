@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +72,7 @@ bool FileOut::seek                      // Seek in file
 {
     writeBuffer( (char*)_output - (char*)_buffer );
     int retn;
-    if( -1 == ::lseek( _handle, new_posn, SEEK_SET ) ) {
+    if( -1L == ::lseek( _handle, new_posn, SEEK_SET ) ) {
         retn = setError();
     } else {
         _disk_addr = new_posn;

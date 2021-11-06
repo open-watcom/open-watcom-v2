@@ -2,7 +2,7 @@
 .synop begin
 #include <fenv.h>
 int fesetenv( const fenv_t *envp );
-.ixfunc2 'Floating Point Environment' &funcb
+.ixfunc2 'Floating Point Environment' fesetenv
 .synop end
 .*
 .desc begin
@@ -14,12 +14,14 @@ represented by the object pointed by
 argument. The
 .arg envp
 argument shall point to an object set by a call to
-.kw fegetenv
+.reffunc fegetenv
 or
-.kw feholdexcept
-, or equal the
+.reffunc feholdexcept
+.ct , or equal the
 .kw FE_DFL_ENV
-macro. Note that fesetenv merely installs the state of the floating-point
+macro. Note that
+.reffunc fesetenv
+merely installs the state of the floating-point
 status flags represented through its argument, and does not raise these
 floating-point exceptions.
 .desc end

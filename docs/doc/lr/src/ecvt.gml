@@ -47,7 +47,7 @@ The integer pointed to by
 will contain 0 if the number is positive, and non-zero if the number
 is negative.
 .im ansiconf
-.im widefun3
+.widefunc &wfunc. &funcb. <ret>
 .desc end
 .return begin
 The
@@ -57,7 +57,7 @@ converted string of digits.
 Note:
 .id &funcb.
 and
-.kw fcvt
+.reffunc fcvt
 both use the same static buffer.
 .return end
 .see begin

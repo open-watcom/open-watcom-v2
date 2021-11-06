@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,14 +40,14 @@
  *                   contents of window wnd are bad.
  */
 
-void GUIWndDirtyRect( gui_window * wnd, gui_rect * rect )
+void GUIAPI GUIWndDirtyRect( gui_window *wnd, const gui_rect *rect )
 {
     SAREA       area;
 
     GUIScaleToScreenRectR( rect, &area );
 
     /* adjust for scrolling */
-    if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_VSCROLL( wnd ) ) {
         if( area.row < wnd->vgadget->pos ) {
             if( ( area.row + area.height ) < wnd->vgadget->pos ) {
                 return; // rect entirely above visible area;
@@ -59,7 +60,7 @@ void GUIWndDirtyRect( gui_window * wnd, gui_rect * rect )
             area.row -= wnd->vgadget->pos;
         }
     }
-    if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_HSCROLL( wnd ) ) {
         if( area.col < wnd->hgadget->pos ) {
             if( ( area.col + area.width ) < wnd->hgadget->pos ) {
                 return; // rect entirely to left of visible area;

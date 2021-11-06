@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@ static bool WSetFlagsText( uint_16 flags, char **text )
     int         tlen;
 
     if( text == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     tlen = 0;
@@ -68,12 +69,12 @@ static bool WSetFlagsText( uint_16 flags, char **text )
     }
 
     if( tlen == 0 ) {
-        return( TRUE );
+        return( true );
     }
 
     *text = (char *)WRMemAlloc( tlen + 1 );
     if( *text == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     (*text)[0] = '\0';
@@ -98,7 +99,7 @@ static bool WSetFlagsText( uint_16 flags, char **text )
         strcat( *text, ControlText );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 static bool WWriteEntryToRC( WAccelEditInfo *einfo, WAccelEntry *entry, FILE *fp )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,21 +33,20 @@
 #include "variety.h"
 #include "rtinit.h"
 #include "defwin.h"
+#include "initwin.h"
+
 
 #if defined(_M_IX86)
- #pragma aux __init_default_win "*";
+#pragma aux __init_default_win "*";
 #endif
 char __init_default_win;
 
 #ifdef DEFAULT_WINDOWING
 
-_WCRTLINK extern void __InitDefaultWin( void );
-_WCRTLINK extern void __FiniDefaultWin( void );
-
 #if defined(__SW_BR)
     // need a thunking layer
-    void __tnk__InitDefaultWin( void ) { __InitDefaultWin(); }
-    void __tnk__FiniDefaultWin( void ) { __FiniDefaultWin(); }
+static void __tnk__InitDefaultWin( void ) { __InitDefaultWin(); }
+static void __tnk__FiniDefaultWin( void ) { __FiniDefaultWin(); }
     AXI( __tnk__InitDefaultWin, INIT_PRIORITY_LIBRARY )
     AYI( __tnk__FiniDefaultWin, INIT_PRIORITY_LIBRARY )
 #else

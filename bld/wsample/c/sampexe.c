@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,21 +55,19 @@
 extern void CloseShop( void );
 #endif
 
-void GetProg( char *cmd, char *eoc )
+void GetProg( const char *cmd, size_t len )
 {
-    char        save;
     char        prog_name[_MAX_PATH];
-    PGROUP2     pg1;
-    PGROUP2     pg2;
+    pgroup2     pg1;
+    pgroup2     pg2;
 #ifdef __WINDOWS__
-    PGROUP2     pg3;
+    pgroup2     pg3;
     unsigned    a,b;
 #endif
 
-    save = *eoc;
-    *eoc = '\0';
-    _splitpath2( cmd, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
-    *eoc = save;
+    memcpy( prog_name, cmd, len );
+    prog_name[len] = '\0';
+    _splitpath2( prog_name, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
 #ifdef __NETWARE__
     if( pg1.ext[0] == '\0' )
         pg1.ext = "nlm";

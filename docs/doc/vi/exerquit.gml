@@ -26,13 +26,17 @@
 .*
 .* Description:  Marks.
 .*
-.* Date		By		Reason
-.* ----		--		------
-.* 18-aug-92	Craig Eisler	initial draft
+.* Date         By              Reason
+.* ----         --              ------
+.* 18-aug-92    Craig Eisler    initial draft
 .* 28-sept-05   L. Haynes       reformat for hlp
 .*
 .****************************************************************************/
-:LI.Make sure you are in &cmdmode and enter the &cmdline
+:LI.Make sure you are in
+.keyword &cmdmode
+and enter the
+.keyword &cmdline
+command:
 .millust begin
 :q!
 .millust end

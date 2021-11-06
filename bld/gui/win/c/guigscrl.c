@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include "guiscale.h"
 #include "guixutil.h"
 
-static int GetPos( gui_window *wnd, int bar )
+static guix_ord GetPos( gui_window *wnd, int bar )
 {
     if( GUIScrollOn( wnd, bar ) ) {
         return( GUIGetScrollPos( wnd, bar ) );
@@ -47,7 +48,7 @@ static int GetPos( gui_window *wnd, int bar )
  * GUIGetHScrollCol --
  */
 
-int GUIGetHScrollCol( gui_window *wnd )
+gui_text_ord GUIAPI GUIGetHScrollCol( gui_window *wnd )
 {
     return( GUIToTextX( GetPos( wnd, SB_HORZ ), wnd ) );
 }
@@ -56,7 +57,7 @@ int GUIGetHScrollCol( gui_window *wnd )
  * GUIGetVScrollRow --
  */
 
-int GUIGetVScrollRow( gui_window *wnd )
+gui_text_ord GUIAPI GUIGetVScrollRow( gui_window *wnd )
 {
     return( GUIToTextY( GetPos( wnd, SB_VERT ), wnd ) );
 }
@@ -64,24 +65,21 @@ int GUIGetVScrollRow( gui_window *wnd )
 
 static gui_ord GetScroll( gui_window *wnd, int bar )
 {
-    gui_coord coord;
-    gui_ord * pos;
+    guix_ord    pos;
 
+    pos = GetPos( wnd, bar );
     if( bar == SB_HORZ ) {
-        pos = &coord.x;
+        return( GUIScreenToScaleH( pos ) );
     } else {
-        pos = &coord.y;
+        return( GUIScreenToScaleV( pos ) );
     }
-    *pos = GetPos( wnd, bar );
-    GUIScreenToScaleR( &coord );
-    return( *pos );
 }
 
 /*
  * GUIGetHScroll --
  */
 
-gui_ord GUIGetHScroll( gui_window *wnd )
+gui_ord GUIAPI GUIGetHScroll( gui_window *wnd )
 {
     return( GetScroll( wnd, SB_HORZ ) );
 }
@@ -90,7 +88,7 @@ gui_ord GUIGetHScroll( gui_window *wnd )
  * GUIGetVScroll --
  */
 
-gui_ord GUIGetVScroll( gui_window *wnd )
+gui_ord GUIAPI GUIGetVScroll( gui_window *wnd )
 {
     return( GetScroll( wnd, SB_VERT ) );
 }

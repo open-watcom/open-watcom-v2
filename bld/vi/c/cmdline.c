@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -320,15 +320,13 @@ vi_rc RunCommandLine( const char *cmdl )
         rc = PopFileStack();
         break;
     case PCL_T_EXECUTE:
-        data = SkipLeadingSpaces( data );
         if( *data != '\0' ) {
             key_map     scr;
 
             rc = AddKeyMap( &scr, data );
-            if( rc != ERR_NO_ERR ) {
-                break;
+            if( rc == ERR_NO_ERR ) {
+                rc = RunKeyMap( &scr, 1L );
             }
-            rc = RunKeyMap( &scr, 1L );
             MemFree( scr.data );
         }
         break;
@@ -367,7 +365,6 @@ vi_rc RunCommandLine( const char *cmdl )
         rc = ERR_NO_ERR;
         break;
     case PCL_T_KEYADD:
-        data = SkipLeadingSpaces( data );
         KeyAddString( data );
         rc = ERR_NO_ERR;
         break;
@@ -677,7 +674,6 @@ vi_rc RunCommandLine( const char *cmdl )
         if( n1f && n2f ) {
             rc = DoGenericFilter( n1, n2, data );
         } else {
-            data = SkipLeadingSpaces( data );
             if( *data == '\0' ) {
                 goto EVIL_SHELL;
             }
@@ -733,64 +729,59 @@ vi_rc RunCommandLine( const char *cmdl )
     case PCL_T_FGREP:
         {
             bool        ci;
+#ifdef __WIN__
+            fancy_find  *ff;
+            /* ff will be set to point at a static fancy find struct
+             * in the snoop module
+             */
+            char        snoopbuf[FILENAME_MAX];
+#endif
 
-            data = SkipLeadingSpaces( data );
             ci = EditFlags.CaseIgnore;
             if( data[0] == '-' ) {
                 if( data[1] == 'c' ) {
                     ci = false;
                     data += 2;
-                    data = SkipLeadingSpaces( data );
-                    rc = GetStringWithPossibleQuote( &data, st );
+                    SKIP_SPACES( data );
                 } else if( data[1] == 'i' ) {
                     ci = true;
                     data += 2;
-                    data = SkipLeadingSpaces( data );
-                    rc = GetStringWithPossibleQuote( &data, st );
+                    SKIP_SPACES( data );
                 } else if( data[1] == 'f' ) {
                     data += 2;
-                    data = SkipLeadingSpaces( data );
+                    SKIP_SPACES( data );
 #ifdef __WIN__
                     // call fancy grep window
-                    {
-                        fancy_find      *ff;
-                        /* ff will be set to point at a static fancy find struct
-                         * in the snoop module */
-                        char snoopbuf[FILENAME_MAX];
-
-                        if( !GetSnoopStringDialog( &ff ) ) {
-                            return( ERR_NO_ERR );
-                        }
-
-                        strcpy( snoopbuf, ff->path );
-                        /* assume no string means current directory */
-                        if( strlen( snoopbuf ) &&
-                            snoopbuf[strlen( snoopbuf ) - 1] != '\\' ) {
-                            strcat( snoopbuf, "\\" );
-                        }
-                        MySprintf( st, "%s", ff->find );
-                        strcat( snoopbuf, ff->ext );
-                        ci = ff->case_ignore;
-                        if( !ff->use_regexp ) {
-                            //MakeExpressionNonRegular( st );
-                            rc = DoFGREP( snoopbuf, st, ci );
-                        } else {
-                            rc = DoEGREP( snoopbuf, st );
-                        }
-                        break;
+                    if( !GetSnoopStringDialog( &ff ) ) {
+                        return( ERR_NO_ERR );
                     }
+                    strcpy( snoopbuf, ff->path );
+                    /* assume no string means current directory */
+                    if( strlen( snoopbuf ) &&
+                        snoopbuf[strlen( snoopbuf ) - 1] != '\\' ) {
+                        strcat( snoopbuf, "\\" );
+                    }
+                    MySprintf( st, "%s", ff->find );
+                    strcat( snoopbuf, ff->ext );
+                    ci = ff->case_ignore;
+                    if( !ff->use_regexp ) {
+                        //MakeExpressionNonRegular( st );
+                        rc = DoFGREP( snoopbuf, st, ci );
+                    } else {
+                        rc = DoEGREP( snoopbuf, st );
+                    }
+                    break;
 #endif
                 }
-            } else {
-                rc = GetStringWithPossibleQuote( &data, st );
             }
+            rc = GetNextWordOrString( &data, st );
             if( rc != ERR_NO_STRING ) {
                 rc = DoFGREP( data, st, ci );
             }
         }
         break;
     case PCL_T_EGREP:
-        rc = GetStringWithPossibleQuote( &data, st );
+        rc = GetNextWordOrString( &data, st );
         if( rc != ERR_NO_STRING ) {
             rc = DoEGREP( data, st );
         }
@@ -832,14 +823,13 @@ vi_rc RunCommandLine( const char *cmdl )
             break;
         }
         x = atoi( st );
-        data = SkipLeadingSpaces( data );
         /*
          * FIXME: This is not good - I will definately have to
          * fix this code up. But right now I have to get the
          * editor ready for tomorrow. Brad.
          */
         if( data[0] == '"' || data[0] == '/' ) {
-            GetStringWithPossibleQuote( &data, st );
+            GetNextWordOrString( &data, st );
             if( x > 2 ) {
                 /* this is obviously a sick individual */
                 Error( "Invalid Echo" );

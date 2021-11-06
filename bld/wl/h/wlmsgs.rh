@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +29,6 @@
 *
 ****************************************************************************/
 
-
-#define MSG_LANG_SPACING        1000
 
 #define    MSG_INTERNAL                           2 + MSG_BASE
 #define    MSG_LOADING_OBJECT                     3 + MSG_BASE
@@ -204,7 +202,10 @@
 #define    MSG_IMPORT_LOCAL                     171 + MSG_BASE
 #define    MSG_STACK_SMALL                      172 + MSG_BASE
 #define    MSG_DEFDATA_TOO_BIG                  173 + MSG_BASE
-#define    MSG_MAX_ERR_MSG_NUM                  173 + MSG_BASE
+#define    MSG_IOPL_BYTES_ODD                   174 + MSG_BASE
+#define    MSG_FIXUP_MISSING_THREAD             175 + MSG_BASE
+#define    MSG_TRACE_SYM_NOT_FOUND              176 + MSG_BASE
+#define    MSG_MAX_ERR_MSG_NUM                  176 + MSG_BASE
 
 #define    MSG_FILE_REC_NAME_0                  227 + MSG_BASE
 #define    MSG_FILE_REC_NAME_1                  228 + MSG_BASE
@@ -230,75 +231,86 @@
 #define    MSG_IOERRLIST_6                      248 + MSG_BASE
 #define    MSG_IOERRLIST_7                      249 + MSG_BASE
 #define    MSG_PRESS_KEY                        250 + MSG_BASE
-/* gap here.. */
-#define    MSG_FILE_TYPES_0                     252 + MSG_BASE
-#define    MSG_FILE_TYPES_1                     253 + MSG_BASE
-#define    MSG_FILE_TYPES_2                     254 + MSG_BASE
-#define    MSG_FILE_TYPES_3                     255 + MSG_BASE
-#define    MSG_FILE_TYPES_4                     256 + MSG_BASE
-#define    MSG_FILE_TYPES_5                     257 + MSG_BASE
-#define    MSG_FILE_TYPES_6                     258 + MSG_BASE
-#define    MSG_FILE_TYPES_7                     259 + MSG_BASE
-#define    MSG_FILE_TYPES_8                     260 + MSG_BASE
-#define    MSG_FILE_TYPES_9                     261 + MSG_BASE
-#define    MSG_FILE_TYPES_10                    262 + MSG_BASE
-#define    MSG_FILE_TYPES_11                    263 + MSG_BASE
-#define    MSG_FILE_TYPES_12                    264 + MSG_BASE
-#define    MSG_FILE_TYPES_13                    265 + MSG_BASE
-#define    MSG_FILE_TYPES_14                    266 + MSG_BASE
-#define    MSG_FILE_TYPES_15                    267 + MSG_BASE
-#define    MSG_FILE_TYPES_16                    268 + MSG_BASE
-#define    MSG_FILE_TYPES_17                    269 + MSG_BASE
-#define    MSG_FILE_TYPES_18                    270 + MSG_BASE
-#define    MSG_FILE_TYPES_19                    271 + MSG_BASE
-#define    MSG_FILE_TYPES_20                    272 + MSG_BASE
-#define    MSG_CREATE_TYPE_DLL                  273 + MSG_BASE
-#define    MSG_CREATE_TYPE_EXE                  274 + MSG_BASE
-#define    MSG_IS_A_EXE                         275 + MSG_BASE
 
-#define    MSG_MAP_BOX_GROUP                    276 + MSG_BASE
-#define    MSG_MAP_TITLE_GROUP_0                277 + MSG_BASE
-#define    MSG_MAP_TITLE_GROUP_1                278 + MSG_BASE
-#define    MSG_MAP_BOX_ABS_SEG                  279 + MSG_BASE
-#define    MSG_MAP_TITLE_ABS_SEG_0              280 + MSG_BASE
-#define    MSG_MAP_TITLE_ABS_SEG_1              281 + MSG_BASE
-#define    MSG_MAP_BOX_SEGMENTS                 282 + MSG_BASE
-#define    MSG_MAP_TITLE_SEGMENTS_0             283 + MSG_BASE
-#define    MSG_MAP_TITLE_SEGMENTS_1             284 + MSG_BASE
-#define    MSG_MAP_BOX_MEMORY_MAP               285 + MSG_BASE
-#define    MSG_MAP_UNREF_SYM                    286 + MSG_BASE
-#define    MSG_MAP_REF_LOCAL_SYM                287 + MSG_BASE
-#define    MSG_MAP_TITLE_MEMORY_MAP_0           288 + MSG_BASE
-#define    MSG_MAP_TITLE_MEMORY_MAP_1           289 + MSG_BASE
-#define    MSG_MAP_BOX_OVERLAY_VECTOR           290 + MSG_BASE
-#define    MSG_MAP_BOX_COMMUNAL                 291 + MSG_BASE
-#define    MSG_MAP_TITLE_COMMUNAL_0             292 + MSG_BASE
-#define    MSG_MAP_TITLE_COMMUNAL_1             293 + MSG_BASE
-#define    MSG_MAP_BOX_MOD_SEG                  294 + MSG_BASE
-#define    MSG_MAP_ABS_ADDR                     295 + MSG_BASE
-#define    MSG_MAP_32BIT_SEG                    296 + MSG_BASE
-#define    MSG_MAP_TITLE_MOD_SEG_0              297 + MSG_BASE
-#define    MSG_MAP_TITLE_MOD_SEG_1              298 + MSG_BASE
-#define    MSG_MAP_BOX_TRACE_SYM                299 + MSG_BASE
-#define    MSG_MAP_BOX_IMP_SYM                  300 + MSG_BASE
-#define    MSG_MAP_TITLE_IMP_SYM_0              301 + MSG_BASE
-#define    MSG_MAP_TITLE_IMP_SYM_1              302 + MSG_BASE
-#define    MSG_MAP_TITLE_IMP_SYM_2              303 + MSG_BASE
-#define    MSG_MAP_TITLE_IMP_SYM_3              304 + MSG_BASE
-#define    MSG_MAP_BOX_UNRES_REF                305 + MSG_BASE
-#define    MSG_MAP_TITLE_UNRES_REF_0            306 + MSG_BASE
-#define    MSG_MAP_TITLE_UNRES_REF_1            307 + MSG_BASE
-#define    MSG_MAP_BOX_LIB_USED                 308 + MSG_BASE
-#define    MSG_MAP_BOX_LINKER_STAT              309 + MSG_BASE
-#define    MSG_MAP_STACK_SIZE                   310 + MSG_BASE
-#define    MSG_MAP_MEM_SIZE                     311 + MSG_BASE
-#define    MSG_MAP_OVL_SIZE                     312 + MSG_BASE
-#define    MSG_MAP_ENTRY_PT_ADDR                313 + MSG_BASE
-#define    MSG_MAP_STUB_FILE                    314 + MSG_BASE
-#define    MSG_MAP_LINK_TIME                    315 + MSG_BASE
-#define    MSG_MAP_COMDAT                       316 + MSG_BASE
-#define    MSG_MAP_SYM_STATIC                   317 + MSG_BASE
-#define    MSG_MAP_DEFINING_MODULE              318 + MSG_BASE
+#define    MSG_FILE_TYPES_0                     251 + MSG_BASE  /* OS/2 NE */
+#define    MSG_FILE_TYPES_1                     252 + MSG_BASE  /* OS/2 LE */
+#define    MSG_FILE_TYPES_2                     253 + MSG_BASE  /* OS/2 LX */
+#define    MSG_FILE_TYPES_3                     254 + MSG_BASE  /* Windows NE */
+#define    MSG_FILE_TYPES_4                     255 + MSG_BASE  /* NT PE */
+#define    MSG_FILE_TYPES_5                     256 + MSG_BASE  /* DOS EXE */
+#define    MSG_FILE_TYPES_6                     257 + MSG_BASE  /* DOS COM */
+#define    MSG_FILE_TYPES_7                     258 + MSG_BASE  /* DOS Overlay */
+#define    MSG_FILE_TYPES_8                     259 + MSG_BASE  /* Netware */
+#define    MSG_FILE_TYPES_9                     260 + MSG_BASE  /* QNX 16-bit */
+#define    MSG_FILE_TYPES_10                    261 + MSG_BASE  /* Pharlap */
+#define    MSG_FILE_TYPES_11                    262 + MSG_BASE  /* Pharlap */
+#define    MSG_FILE_TYPES_12                    263 + MSG_BASE  /* Pharlap */
+#define    MSG_FILE_TYPES_13                    264 + MSG_BASE  /* Pharlap */
+#define    MSG_FILE_TYPES_14                    265 + MSG_BASE  /* QNX 32-bit */
+#define    MSG_FILE_TYPES_15                    266 + MSG_BASE  /* ELF */
+#define    MSG_FILE_TYPES_16                    267 + MSG_BASE  /* Windows VXD */
+#define    MSG_FILE_TYPES_17                    268 + MSG_BASE  /* DOS 16m */
+#define    MSG_FILE_TYPES_18                    269 + MSG_BASE  /* ZDOS */
+#define    MSG_FILE_TYPES_19                    270 + MSG_BASE  /* RAW */
+#define    MSG_FILE_TYPES_20                    271 + MSG_BASE  /* RDOS flat */
+#define    MSG_FILE_TYPES_21                    272 + MSG_BASE  /* RDOS 16-bit */
+#define    MSG_FILE_TYPES_22                    273 + MSG_BASE  /* unused bit 22 */
+#define    MSG_FILE_TYPES_23                    274 + MSG_BASE  /* unused bit 23 */
+#define    MSG_FILE_TYPES_24                    275 + MSG_BASE  /* unused bit 24 */
+#define    MSG_FILE_TYPES_25                    276 + MSG_BASE  /* unused bit 25 */
+#define    MSG_FILE_TYPES_26                    277 + MSG_BASE  /* unused bit 26 */
+#define    MSG_FILE_TYPES_27                    278 + MSG_BASE  /* unused bit 27 */
+#define    MSG_FILE_TYPES_28                    279 + MSG_BASE  /* unused bit 28 */
+#define    MSG_FILE_TYPES_29                    280 + MSG_BASE  /* unused bit 29 */
+#define    MSG_FILE_TYPES_30                    281 + MSG_BASE  /* unused bit 30 */
+#define    MSG_FILE_TYPES_31                    282 + MSG_BASE  /* unused bit 31 */
+#define    MSG_CREATE_TYPE_DLL                  283 + MSG_BASE
+#define    MSG_CREATE_TYPE_EXE                  284 + MSG_BASE
+#define    MSG_IS_A_EXE                         285 + MSG_BASE
+
+#define    MSG_MAP_BOX_GROUP                    286 + MSG_BASE
+#define    MSG_MAP_TITLE_GROUP_0                287 + MSG_BASE
+#define    MSG_MAP_TITLE_GROUP_1                288 + MSG_BASE
+#define    MSG_MAP_BOX_ABS_SEG                  289 + MSG_BASE
+#define    MSG_MAP_TITLE_ABS_SEG_0              290 + MSG_BASE
+#define    MSG_MAP_TITLE_ABS_SEG_1              291 + MSG_BASE
+#define    MSG_MAP_BOX_SEGMENTS                 292 + MSG_BASE
+#define    MSG_MAP_TITLE_SEGMENTS_0             293 + MSG_BASE
+#define    MSG_MAP_TITLE_SEGMENTS_1             294 + MSG_BASE
+#define    MSG_MAP_BOX_MEMORY_MAP               295 + MSG_BASE
+#define    MSG_MAP_UNREF_SYM                    296 + MSG_BASE
+#define    MSG_MAP_REF_LOCAL_SYM                297 + MSG_BASE
+#define    MSG_MAP_TITLE_MEMORY_MAP_0           298 + MSG_BASE
+#define    MSG_MAP_TITLE_MEMORY_MAP_1           299 + MSG_BASE
+#define    MSG_MAP_BOX_OVERLAY_VECTOR           300 + MSG_BASE
+#define    MSG_MAP_BOX_COMMUNAL                 301 + MSG_BASE
+#define    MSG_MAP_TITLE_COMMUNAL_0             302 + MSG_BASE
+#define    MSG_MAP_TITLE_COMMUNAL_1             303 + MSG_BASE
+#define    MSG_MAP_BOX_MOD_SEG                  304 + MSG_BASE
+#define    MSG_MAP_ABS_ADDR                     305 + MSG_BASE
+#define    MSG_MAP_32BIT_SEG                    306 + MSG_BASE
+#define    MSG_MAP_TITLE_MOD_SEG_0              307 + MSG_BASE
+#define    MSG_MAP_TITLE_MOD_SEG_1              308 + MSG_BASE
+#define    MSG_MAP_BOX_TRACE_SYM                309 + MSG_BASE
+#define    MSG_MAP_BOX_IMP_SYM                  310 + MSG_BASE
+#define    MSG_MAP_TITLE_IMP_SYM_0              311 + MSG_BASE
+#define    MSG_MAP_TITLE_IMP_SYM_1              312 + MSG_BASE
+#define    MSG_MAP_TITLE_IMP_SYM_2              313 + MSG_BASE
+#define    MSG_MAP_TITLE_IMP_SYM_3              314 + MSG_BASE
+#define    MSG_MAP_BOX_UNRES_REF                315 + MSG_BASE
+#define    MSG_MAP_TITLE_UNRES_REF_0            316 + MSG_BASE
+#define    MSG_MAP_TITLE_UNRES_REF_1            317 + MSG_BASE
+#define    MSG_MAP_BOX_LIB_USED                 318 + MSG_BASE
+#define    MSG_MAP_BOX_LINKER_STAT              319 + MSG_BASE
+#define    MSG_MAP_STACK_SIZE                   320 + MSG_BASE
+#define    MSG_MAP_MEM_SIZE                     321 + MSG_BASE
+#define    MSG_MAP_OVL_SIZE                     322 + MSG_BASE
+#define    MSG_MAP_ENTRY_PT_ADDR                323 + MSG_BASE
+#define    MSG_MAP_STUB_FILE                    324 + MSG_BASE
+#define    MSG_MAP_LINK_TIME                    325 + MSG_BASE
+#define    MSG_MAP_COMDAT                       326 + MSG_BASE
+#define    MSG_MAP_SYM_STATIC                   327 + MSG_BASE
+#define    MSG_MAP_DEFINING_MODULE              328 + MSG_BASE
 
 #define    MSG_GENERAL_HELP_0                   340 + MSG_BASE
 #define    MSG_GENERAL_HELP_1                   341 + MSG_BASE

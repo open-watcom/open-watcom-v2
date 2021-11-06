@@ -18,16 +18,16 @@ function pushes the character specified by
 .arg c
 back onto the input stream pointed to by
 .arg fp
-.ct .li .
+.period
 This character will be returned by the next read on the stream.
 The pushed-back character will be discarded if a call is made to the
-.kw fflush
+.reffunc fflush
 function or to a file positioning function (
-.ct .kw fseek
-.ct,
-.kw fsetpos
+.ct .reffunc fseek
+.ct ,
+.reffunc fsetpos
 or
-.kw rewind
+.reffunc rewind
 .ct ) before the next read operation is performed.
 .np
 Only one character (the most recent one) of pushback is remembered.
@@ -39,7 +39,7 @@ of
 .arg c
 is
 .kw EOF
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -51,7 +51,7 @@ wide character specified by
 .arg c
 back onto the input stream pointed to by
 .arg fp
-.ct .li .
+.period
 .np
 The
 .id &wfunc.
@@ -60,7 +60,7 @@ of
 .arg c
 is
 .kw WEOF
-.ct .li .
+.period
 .do end
 .desc end
 .return begin

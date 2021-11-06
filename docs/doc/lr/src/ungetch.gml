@@ -11,12 +11,12 @@ function pushes the character specified by
 .arg c
 back onto the input stream for the console.
 This character will be returned by the next read from the console (with
-.kw getch
+.reffunc getch
 or
-.kw getche
+.reffunc getche
 functions) and will be detected by the function
-.kw kbhit
-.ct .li .
+.reffunc kbhit
+.period
 Only the last character returned in this way is remembered.
 .pp
 The
@@ -25,7 +25,7 @@ function clears the end-of-file indicator, unless the value of
 .arg c
 is
 .kw EOF
-.ct .li .
+.period
 .desc end
 .return begin
 The

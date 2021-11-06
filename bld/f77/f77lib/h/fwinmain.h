@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +32,13 @@
 
 #if defined( __WINDOWS__ ) || defined( __NT__ )
 
+#if defined( _M_IX86 )
+    #pragma aux FWINMAIN "*";
+#endif
 extern intstar4 FWINMAIN( HINSTANCE thisinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow );
 
 #if defined( __WINDOWS__ )
 extern int      PASCAL  DefaultWinMain( HINSTANCE, HINSTANCE, LPSTR, int, int(*)(int,char **) );
-extern void     FMAIN( void );
-extern int      main( int argc, char **argv );
 #endif
 
 #endif

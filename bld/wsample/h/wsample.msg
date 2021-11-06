@@ -1,77 +1,77 @@
 pick( ERR_DISK_FULL
         , "Fatal Error: Disk full."
-        , "d‘å‚ÈƒGƒ‰[:ƒfƒBƒXƒN‚ª‚¢‚Á‚Ï‚¢‚Å‚·"
+        , "é‡å¤§ãªã‚¨ãƒ©ãƒ¼:ãƒ‡ã‚£ã‚¹ã‚¯ãŒã„ã£ã±ã„ã§ã™"
 )
 pick( ERR_SAMPLES_LOST
-        , "ƒGƒ‰[:ƒTƒ“ƒvƒŠƒ“ƒOEƒf[ƒ^‚Ìˆê•”‚ª¸‚í‚ê‚Ü‚µ‚½"
+        , "ã‚¨ãƒ©ãƒ¼:ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ»ãƒ‡ãƒ¼ã‚¿ã®ä¸€éƒ¨ãŒå¤±ã‚ã‚Œã¾ã—ãŸ"
         , "Error: some samples have been lost"
 )
 pick( ERR_SAMPLE_TRUNCATE
         , "Error: Out of disk space. Sample file truncated"
-        , "ƒGƒ‰[:ƒfƒBƒXƒN‚Ì‹ó‚«—Ìˆæ‚ª•s‘«‚Å‚·.ƒTƒ“ƒvƒ‹ƒtƒ@ƒCƒ‹‚ğØ‚è‹l‚ß‚Ü‚· "
+        , "ã‚¨ãƒ©ãƒ¼:ãƒ‡ã‚£ã‚¹ã‚¯ã®ç©ºãé ˜åŸŸãŒä¸è¶³ã§ã™.ã‚µãƒ³ãƒ—ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’åˆ‡ã‚Šè©°ã‚ã¾ã™ "
 )
 pick( MSG_EXPECTING
         , "Expecting either a '=' or a '#' instead found: "
-        , "'=' ‚Ü‚½‚Í '#' ‚ª‚ ‚é‚×‚«‰ÓŠ‚ÉŸ‚ÌƒR[ƒh‚ª‚ ‚è‚Ü‚µ‚½: "
+        , "'=' ã¾ãŸã¯ '#' ãŒã‚ã‚‹ã¹ãç®‡æ‰€ã«æ¬¡ã®ã‚³ãƒ¼ãƒ‰ãŒã‚ã‚Šã¾ã—ãŸ: "
 )
 pick( MSG_INVALID_CHAR
         , "Invalid character after number"
-        , "”š‚ÌŒã‚É–³Œø‚È•¶š‚ª‚ ‚è‚Ü‚·"
+        , "æ•°å­—ã®å¾Œã«ç„¡åŠ¹ãªæ–‡å­—ãŒã‚ã‚Šã¾ã™"
 )
 pick( MSG_OUT_OF_RANGE
         , "number is outside of its allowable range"
-        , "”š‚ª—LŒø”ÍˆÍ“à‚É‚ ‚è‚Ü‚¹‚ñ"
+        , "æ•°å­—ãŒæœ‰åŠ¹ç¯„å›²å†…ã«ã‚ã‚Šã¾ã›ã‚“"
 )
 pick( MSG_SAMPLE_BUFF
         , "Can't allocate sample buffer"
-        , "ƒTƒ“ƒvƒŠƒ“ƒO—pƒoƒbƒtƒ@‚Ìƒƒ‚ƒŠ‚ªŠm•Û‚Å‚«‚Ü‚¹‚ñ"
+        , "ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ç”¨ãƒãƒƒãƒ•ã‚¡ã®ãƒ¡ãƒ¢ãƒªãŒç¢ºä¿ã§ãã¾ã›ã‚“"
 )
 pick( MSG_CALLGRAPH_BUFF
         , "Can't allocate callgraph buffer"
-        , "ƒR[ƒ‹ƒOƒ‰ƒt—pƒoƒbƒtƒ@‚Ìƒƒ‚ƒŠ‚ğŠm•Û‚Å‚«‚Ü‚¹‚ñ"
+        , "ã‚³ãƒ¼ãƒ«ã‚°ãƒ©ãƒ•ç”¨ãƒãƒƒãƒ•ã‚¡ã®ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã§ãã¾ã›ã‚“"
 )
 pick( MSG_VERSION
         , "Can't work with this version of the operating system"
-        , "‚±‚Ìƒo[ƒWƒ‡ƒ“‚ÌƒIƒyƒŒ[ƒeƒBƒ“ƒOEƒVƒXƒeƒ€‚Ìã‚Å‚Í“®ì‚Å‚«‚Ü‚¹‚ñ"
+        , "ã“ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã®ã‚ªãƒšãƒ¬ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ãƒ»ã‚·ã‚¹ãƒ†ãƒ ã®ä¸Šã§ã¯å‹•ä½œã§ãã¾ã›ã‚“"
 )
 pick( MSG_SAMPLE_FILE
         , "Can't open sample file"
-        , "ƒTƒ“ƒvƒ‹ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“‚Å‚«‚Ü‚¹‚ñ"
+        , "ã‚µãƒ³ãƒ—ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã§ãã¾ã›ã‚“"
 )
 pick( MSG_PROGRAM
         , "Can't find program: "
-        , "ƒvƒƒOƒ‰ƒ€‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ: "
+        , "ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“: "
 )
 pick( MSG_BUFF_SMALL
         , "Buffer size too small for timer rate"
-        , "ƒ^ƒCƒ}[ŠÔŠu‚É‘Î‚µ‚Äƒoƒbƒtƒ@‚ª¬‚³‚·‚¬‚Ü‚·"
+        , "ã‚¿ã‚¤ãƒãƒ¼é–“éš”ã«å¯¾ã—ã¦ãƒãƒƒãƒ•ã‚¡ãŒå°ã•ã™ãã¾ã™"
 )
 pick( MSG_INVALID_OPTION
         , "invalid option: "
-        , "–³Œø‚ÈƒIƒvƒVƒ‡ƒ“: "
+        , "ç„¡åŠ¹ãªã‚ªãƒ—ã‚·ãƒ§ãƒ³: "
 )
 
 pick( MSG_USAGE_LN_1
         , "Usage: wsample [options] program [program arguments]"
-        , "g—p•û–@: wsample [options] program [program arguments]"
+        , "ä½¿ç”¨æ–¹æ³•: wsample [options] program [program arguments]"
 )
 pick( MSG_USAGE_LN_2
         , "Options:"
-        , "ƒIƒvƒVƒ‡ƒ“:"
+        , "ã‚ªãƒ—ã‚·ãƒ§ãƒ³:"
 )
 #ifndef __WINDOWS__
 pick( MSG_USAGE_LN_3
         , "    -b=<size> specify the buffer size for samples (default: 63KB)"
-        , "    -b=<size> ƒTƒ“ƒvƒŠƒ“ƒO—pƒoƒbƒtƒ@ƒTƒCƒY (ÃŞÌ«ÙÄ: 63KB)"
+        , "    -b=<size> ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ç”¨ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º (ï¾ƒï¾ï¾Œï½«ï¾™ï¾„: 63KB)"
 )
 #endif
 pick( MSG_USAGE_LN_4
         , "    -c        callgraph information is to be included in the sample file"
-        , "    -c        ƒR[ƒ‹ƒOƒ‰ƒtî•ñ‚ğƒTƒ“ƒvƒ‹ƒtƒ@ƒCƒ‹‚ÉŠÜ‚ß‚Ü‚·"
+        , "    -c        ã‚³ãƒ¼ãƒ«ã‚°ãƒ©ãƒ•æƒ…å ±ã‚’ã‚µãƒ³ãƒ—ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã«å«ã‚ã¾ã™"
 )
 pick( MSG_USAGE_LN_5
         , "    -f=<file> specify the output filename for the sample file"
-        , "    -f=<file> ƒTƒ“ƒvƒ‹ƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹–¼"
+        , "    -f=<file> ã‚µãƒ³ãƒ—ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«å"
 )
 #if defined(__NETWARE__)
 pick( MSG_USAGE_LN_6
@@ -86,365 +86,365 @@ pick( MSG_USAGE_LN_7
 
 pick( MSG_OPTIONS_1
         , "    -r=<rate> specify the sampling rate"
-        , "    -r=<rate> ƒTƒ“ƒvƒŠƒ“ƒOŠÔŠu"
+        , "    -r=<rate> ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°é–“éš”"
 )
 #ifdef __DOS__      /* messages in sampdos */
 pick( MSG_OPTIONS_2
         , "    -i=<intr> specify an interrupt number for assigning samples"
-        , "    -i=<intr> ƒTƒ“ƒvƒŠƒ“ƒO‚ğs‚¤Š„‚İ”Ô†"
+        , "    -i=<intr> ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã‚’è¡Œã†å‰²è¾¼ã¿ç•ªå·"
 )
 pick( MSG_OPTIONS_3
         , "    -d        disable assignment of DOS interrupts to application"
-        , "    -d        DOSŠ„‚İ‚ÌŠÄ‹‚Ì‹Ö~"
+        , "    -d        DOSå‰²è¾¼ã¿ã®ç›£è¦–ã®ç¦æ­¢"
 )
 #endif
 
 #if defined(__OS2__)      /* messages in sampos2 and sampos22 */
 pick( MSG_OPTIONS_2
         , "    -s        start the program in a new session"
-        , "    -s        V‚µ‚¢ƒZƒbƒVƒ‡ƒ“‚Å‚ÌƒvƒƒOƒ‰ƒ€‚ÌŠJn"
+        , "    -s        æ–°ã—ã„ã‚»ãƒƒã‚·ãƒ§ãƒ³ã§ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®é–‹å§‹"
 )
 #endif
 
 #ifndef __WINDOWS__
 pick( MSG_USAGE_LN_8
         , "\n    <size>    is a number in the range 1 to 63 (default: 63 KB)"
-        , "\n    <size>    ‚Í 1 ‚©‚ç 63 ‚Ü‚Å‚Ì”ÍˆÍ‚Å‚· (ÃŞÌ«ÙÄ: 63 KB)"
+        , "\n    <size>    ã¯ 1 ã‹ã‚‰ 63 ã¾ã§ã®ç¯„å›²ã§ã™ (ï¾ƒï¾ï¾Œï½«ï¾™ï¾„: 63 KB)"
 )
 #endif
 
 #ifdef __DOS__      /* messages in sampdos */
 pick( MSG_EXPLAIN_1
         , "    <rate>    is a number (range 1 to 55) specifying the approximate"
-        , "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu(ĞØ•b’PˆÊ)‚ğ"
+        , "    <rate>    ã¯ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°é–“ã®ãŠã‚ˆãã®æ™‚é–“é–“éš”(ï¾ï¾˜ç§’å˜ä½)ã‚’"
 )
 pick( MSG_EXPLAIN_2
         , "              time interval (in milliseconds) between samples (default: 55)"
-        , "              w’è‚·‚é”’l(”ÍˆÍ:1‚©‚ç55‚Ü‚Å)‚Å‚· (ÃŞÌ«ÙÄ: 55)"
+        , "              æŒ‡å®šã™ã‚‹æ•°å€¤(ç¯„å›²:1ã‹ã‚‰55ã¾ã§)ã§ã™ (ï¾ƒï¾ï¾Œï½«ï¾™ï¾„: 55)"
 )
 pick( MSG_EXPLAIN_3
         , "    <intr>    is a hex (base 16) number (range 20 to ff) specifying"
-        , "    <intr>    ‚Í16i”(”ÍˆÍ:20‚©‚çff‚Ü‚Å)‚ÅAˆÈ‰º‚Ì“Á•Ê‚È•û–@‚Åˆ—‚·‚é"
+        , "    <intr>    ã¯16é€²æ•°(ç¯„å›²:20ã‹ã‚‰ffã¾ã§)ã§ã€ä»¥ä¸‹ã®ç‰¹åˆ¥ãªæ–¹æ³•ã§å‡¦ç†ã™ã‚‹"
 )
 pick( MSG_EXPLAIN_4
         , "              an interrupt number to treat in a special manner - "
-        , "              Š„‚İ”Ô†‚Å‚· - "
+        , "              å‰²è¾¼ã¿ç•ªå·ã§ã™ - "
 )
 pick( MSG_EXPLAIN_5
         , "              any samples during the execution of the software interrupt"
-        , "              ƒ\ƒtƒgƒEƒFƒAŠ„‚İÀs’†‚ÌƒTƒ“ƒvƒŠƒ“ƒO‚ÍAŠ„‚İ‚ğ”­¶‚µ‚½–½—ß‚É"
+        , "              ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰²è¾¼ã¿å®Ÿè¡Œä¸­ã®ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã¯ã€å‰²è¾¼ã¿ã‚’ç™ºç”Ÿã—ãŸå‘½ä»¤ã«"
 )
 pick( MSG_EXPLAIN_6
         , "              are assigned to the instruction that invoked the interrupt"
-        , "              Š„‚è“–‚Ä‚Ü‚·"
+        , "              å‰²ã‚Šå½“ã¦ã¾ã™"
 )
 pick( MSG_EXPLAIN_7
         , "              (default: the DOS interrupt 21 is monitored)"
-        , "              (ÃŞÌ«ÙÄ: DOS Š„‚İ 21 ‚ªÓÆÀ°‚³‚ê‚Ä‚¢‚Ü‚·)"
+        , "              (ï¾ƒï¾ï¾Œï½«ï¾™ï¾„: DOS å‰²è¾¼ã¿ 21 ãŒï¾“ï¾†ï¾€ï½°ã•ã‚Œã¦ã„ã¾ã™)"
 )
 #endif
 
 #if defined(__OS2__)      /* messages in sampos2 and sampos22 */
 pick( MSG_EXPLAIN_1
         , "    <rate>    is a number (range 1 to 1000) specifying the approximate"
-        , "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ"
+        , "    <rate>    ã¯ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°é–“ã®ãŠã‚ˆãã®æ™‚é–“é–“éš” (å˜ä½:ï¾ï¾˜ç§’) ã‚’"
 )
 pick( MSG_EXPLAIN_2
         , "              time interval (in milliseconds) between samples (default: 55)"
-        , "              w’è‚·‚é”’l (”ÍˆÍ:27 ‚©‚ç 1000‚Ü‚Å) ‚Å‚· (ÃŞÌ«ÙÄ: 55)"
+        , "              æŒ‡å®šã™ã‚‹æ•°å€¤ (ç¯„å›²:27 ã‹ã‚‰ 1000ã¾ã§) ã§ã™ (ï¾ƒï¾ï¾Œï½«ï¾™ï¾„: 55)"
 )
 #endif
 
 #ifdef __LINUX__      /* messages in samplinux */
 pick( MSG_EXPLAIN_1
         , "    <rate>    is a number (range 1 to 1000) specifying the approximate"
-        , "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ"
+        , "    <rate>    ã¯ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°é–“ã®ãŠã‚ˆãã®æ™‚é–“é–“éš” (å˜ä½:ï¾ï¾˜ç§’) ã‚’"
 )
 pick( MSG_EXPLAIN_2
         , "              time interval (in milliseconds) between samples (default: 10)"
-        , "              w’è‚·‚é”’l (”ÍˆÍ:27 ‚©‚ç 1000‚Ü‚Å) ‚Å‚· (ÃŞÌ«ÙÄ: 10)"
+        , "              æŒ‡å®šã™ã‚‹æ•°å€¤ (ç¯„å›²:27 ã‹ã‚‰ 1000ã¾ã§) ã§ã™ (ï¾ƒï¾ï¾Œï½«ï¾™ï¾„: 10)"
 )
 #endif
 
 #if defined(__PLS__) || defined(__NETWARE__)      /* messages in samppls and sampnlm */
 pick( MSG_EXPLAIN_1
         , "    <rate>    is a number (range 1 to 55) specifying the approximate"
-        , "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ"
+        , "    <rate>    ã¯ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°é–“ã®ãŠã‚ˆãã®æ™‚é–“é–“éš” (å˜ä½:ï¾ï¾˜ç§’) ã‚’"
 )
 pick( MSG_EXPLAIN_2
         , "    <rate>    is a number (range 1 to 55) specifying the approximate"
-        , "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ"
+        , "    <rate>    ã¯ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°é–“ã®ãŠã‚ˆãã®æ™‚é–“é–“éš” (å˜ä½:ï¾ï¾˜ç§’) ã‚’"
 )
 pick( MSG_EXPLAIN_3
         , "              time interval (in milliseconds) between samples (default: 55)"
-        , "              w’è‚·‚é”’l (”ÍˆÍ:1 ‚©‚ç 55‚Ü‚Å) ‚Å‚· (ÃŞÌ«ÙÄ: 55)"
+        , "              æŒ‡å®šã™ã‚‹æ•°å€¤ (ç¯„å›²:1 ã‹ã‚‰ 55ã¾ã§) ã§ã™ (ï¾ƒï¾ï¾Œï½«ï¾™ï¾„: 55)"
 )
 pick( MSG_EXPLAIN_4
         , "              NB: use this switch with caution. It will cause the time"
-        , "              ’ˆÓ: ‚±‚ÌƒXƒCƒbƒ`‚Ìg—p‚É‚Í’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢.ƒvƒƒOƒ‰ƒ€Às’†‚Ì"
+        , "              æ³¨æ„: ã“ã®ã‚¹ã‚¤ãƒƒãƒã®ä½¿ç”¨ã«ã¯æ³¨æ„ã—ã¦ãã ã•ã„.ãƒ—ãƒ­ã‚°ãƒ©ãƒ å®Ÿè¡Œä¸­ã®"
 )
 pick( MSG_EXPLAIN_5
         , "                  to be incorrect during program execution. Also, rates"
-        , "                  ŠÔ‚ª³‚µ‚­‚È‚­‚È‚è‚Ü‚·.‚Ü‚½A’l‚ª¬‚³‚·‚¬‚é‚ÆA’x‚¢ƒVƒXƒeƒ€"
+        , "                  æ™‚é–“ãŒæ­£ã—ããªããªã‚Šã¾ã™.ã¾ãŸã€å€¤ãŒå°ã•ã™ãã‚‹ã¨ã€é…ã„ã‚·ã‚¹ãƒ†ãƒ "
 )
 pick( MSG_EXPLAIN_6
         , "                  which are too small, may crash slower systems."
-        , "                  ‚Ìê‡AƒNƒ‰ƒbƒVƒ…‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·."
+        , "                  ã®å ´åˆã€ã‚¯ãƒ©ãƒƒã‚·ãƒ¥ã™ã‚‹å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™."
 )
 #endif
 
 #if defined(__RSI__)      /* messages in samprsi */
 pick( MSG_EXPLAIN_1
         , "    <rate>    is a number (range 1 to 55) specifying the approximate"
-        , "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ"
+        , "    <rate>    ã¯ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°é–“ã®ãŠã‚ˆãã®æ™‚é–“é–“éš” (å˜ä½:ï¾ï¾˜ç§’) ã‚’"
 )
 pick( MSG_EXPLAIN_2
         , "              time interval (in milliseconds) between samples (default: 55)"
-        , "              w’è‚·‚é”’l (”ÍˆÍ:1 ‚©‚ç 55‚Ü‚Å) ‚Å‚· (ÃŞÌ«ÙÄ: 55)"
+        , "              æŒ‡å®šã™ã‚‹æ•°å€¤ (ç¯„å›²:1 ã‹ã‚‰ 55ã¾ã§) ã§ã™ (ï¾ƒï¾ï¾Œï½«ï¾™ï¾„: 55)"
 )
 #endif
 
 #ifdef __WINDOWS__      /* messages in sampwin */
 pick( MSG_EXPLAIN_1
         , "    <rate>    is a number (range 1 to 1000) specifying the approximate"
-        , "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ"
+        , "    <rate>    ã¯ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°é–“ã®ãŠã‚ˆãã®æ™‚é–“é–“éš” (å˜ä½:ï¾ï¾˜ç§’) ã‚’"
 )
 pick( MSG_EXPLAIN_2
         , "              time interval (in milliseconds) between samples (default: 55)"
-        , "              w’è‚·‚é”’l (”ÍˆÍ:1 ‚©‚ç 1000‚Ü‚Å) ‚Å‚· (ÃŞÌ«ÙÄ: 55)"
+        , "              æŒ‡å®šã™ã‚‹æ•°å€¤ (ç¯„å›²:1 ã‹ã‚‰ 1000ã¾ã§) ã§ã™ (ï¾ƒï¾ï¾Œï½«ï¾™ï¾„: 55)"
 )
 #endif
 
 pick( MSG_USAGE_LN_9
         , "\n   '#' may be used instead of '=' in options (eg. -b#10)"
-        , "\n   ƒIƒvƒVƒ‡ƒ“‚Ì’†‚Å‚Í '=' ‚Ì‘ã‚è‚É '#' ‚ğg‚Á‚Ä‚­‚¾‚³‚¢ (—á -b#10)"
+        , "\n   ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®ä¸­ã§ã¯ '=' ã®ä»£ã‚Šã« '#' ã‚’ä½¿ã£ã¦ãã ã•ã„ (ä¾‹ -b#10)"
 )
 
 #ifdef __DOS__      /* messages in sampdos */
 pick( MSG_SAMPLE_1
         , "Too many sections in program"
-        , "ƒvƒƒOƒ‰ƒ€‚Ì’†‚ÌƒZƒNƒVƒ‡ƒ“‚ª‘½‚·‚¬‚Ü‚·"
+        , "ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®ä¸­ã®ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãŒå¤šã™ãã¾ã™"
 )
 pick( MSG_SAMPLE_2
         , "Interrupts 34 to 3d are reserved for 80x87 emulation and cannot be monitored"
-        , "Š„‚İ 34 ‚©‚ç 3d ‚Í 80x87 ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚Ì‚½‚ß‚É—\–ñ‚³‚ê‚Ä‚¨‚èAƒ‚ƒjƒ^[‚Å‚«‚Ü‚¹‚ñ"
+        , "å‰²è¾¼ã¿ 34 ã‹ã‚‰ 3d ã¯ 80x87 ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã®ãŸã‚ã«äºˆç´„ã•ã‚Œã¦ãŠã‚Šã€ãƒ¢ãƒ‹ã‚¿ãƒ¼ã§ãã¾ã›ã‚“"
 )
 pick( MSG_SAMPLE_3
         , "Cannot monitor more than eight interrupts"
-        , "9ŒÂˆÈã‚ÌŠ„‚İ‚Íƒ‚ƒjƒ^[‚Å‚«‚Ü‚¹‚ñ"
+        , "9å€‹ä»¥ä¸Šã®å‰²è¾¼ã¿ã¯ãƒ¢ãƒ‹ã‚¿ãƒ¼ã§ãã¾ã›ã‚“"
 )
 #endif
 
 #if defined( __OS2__ ) && defined( _M_I86 )      /* messages in sampos2 */
 pick( MSG_SAMPLE_1
         , "Executing: "
-        , "Às’†: "
+        , "å®Ÿè¡Œä¸­: "
 )
 pick( MSG_SAMPLE_2
         , "internal error: "
-        , "“à•”ƒGƒ‰[: "
+        , "å†…éƒ¨ã‚¨ãƒ©ãƒ¼: "
 )
 pick( MSG_SAMPLE_3
         , "Cannot execute file"
-        , "ƒtƒ@ƒCƒ‹‚ğÀs‚Å‚«‚Ü‚¹‚ñ"
+        , "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å®Ÿè¡Œã§ãã¾ã›ã‚“"
 )
 pick( MSG_SAMPLE_4
         , "Cannot create a new thread"
-        , "V‚µ‚¢ƒXƒŒƒbƒh‚ğì‚ê‚Ü‚¹‚ñ"
+        , "æ–°ã—ã„ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ä½œã‚Œã¾ã›ã‚“"
 )
 pick( MSG_SAMPLE_5
         , "Cannot boost sleeper thread priority"
-        , "ƒXƒŠ[ƒpEƒXƒŒƒbƒh‚Ì—Dæ‡ˆÊ‚ğã‚°‚ç‚ê‚Ü‚¹‚ñ"
+        , "ã‚¹ãƒªãƒ¼ãƒ‘ãƒ»ã‚¹ãƒ¬ãƒƒãƒ‰ã®å„ªå…ˆé †ä½ã‚’ä¸Šã’ã‚‰ã‚Œã¾ã›ã‚“"
 )
 pick( MSG_SAMPLE_6
         , "Unexpected notification"
-        , "‹L–@‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·"
+        , "è¨˜æ³•ãŒé–“é•ã£ã¦ã„ã¾ã™"
 )
 pick( MSG_SAMPLE_7
         , "DosPTrace( GO ) failed"
-        , "DosPTrace( GO ) ‚ª¸”s‚µ‚Ü‚µ‚½"
+        , "DosPTrace( GO ) ãŒå¤±æ•—ã—ã¾ã—ãŸ"
 )
 pick( MSG_SAMPLE_8
         , "Cannot find OS/2 2.x sampler"
-        , "OS/2 2.x —pƒTƒ“ƒvƒ‰‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ"
+        , "OS/2 2.x ç”¨ã‚µãƒ³ãƒ—ãƒ©ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“"
 )
 pick( MSG_SAMPLE_9
         , "Cannot start OS/2 2.x sampler"
-        , "OS/2 2.x —pƒTƒ“ƒvƒ‰‚ğŠJn‚Å‚«‚Ü‚¹‚ñ"
+        , "OS/2 2.x ç”¨ã‚µãƒ³ãƒ—ãƒ©ã‚’é–‹å§‹ã§ãã¾ã›ã‚“"
 )
 #endif
 
 #if defined( __OS2__ ) && !defined( _M_I86 )     /* messages in sampos22 */
 pick( MSG_SAMPLE_1
         , "Executing: "
-        , "Às’†: "
+        , "å®Ÿè¡Œä¸­: "
 )
 pick( MSG_SAMPLE_2
         , "internal error: "
-        , "“à•”ƒGƒ‰[: "
+        , "å†…éƒ¨ã‚¨ãƒ©ãƒ¼: "
 )
 pick( MSG_SAMPLE_3
         , "Cannot execute file"
-        , "ƒtƒ@ƒCƒ‹‚ğÀs‚Å‚«‚Ü‚¹‚ñ"
+        , "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å®Ÿè¡Œã§ãã¾ã›ã‚“"
 )
 pick( MSG_SAMPLE_4
         , "Cannot create a new thread"
-        , "V‚µ‚¢ƒXƒŒƒbƒh‚ğì‚ê‚Ü‚¹‚ñ"
+        , "æ–°ã—ã„ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ä½œã‚Œã¾ã›ã‚“"
 )
 pick( MSG_SAMPLE_5
         , "Cannot boost sleeper thread priority"
-        , "ƒXƒŠ[ƒpEƒXƒŒƒbƒh‚Ì—Dæ‡ˆÊ‚ğã‚°‚ç‚ê‚Ü‚¹‚ñ"
+        , "ã‚¹ãƒªãƒ¼ãƒ‘ãƒ»ã‚¹ãƒ¬ãƒƒãƒ‰ã®å„ªå…ˆé †ä½ã‚’ä¸Šã’ã‚‰ã‚Œã¾ã›ã‚“"
 )
 pick( MSG_SAMPLE_6
         , "Unexpected notification"
-        , "‹L–@‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·"
+        , "è¨˜æ³•ãŒé–“é•ã£ã¦ã„ã¾ã™"
 )
 pick( MSG_SAMPLE_7
         , "DosDebug call failed"
-        , "DosDebug ƒR[ƒ‹‚ª¸”s‚µ‚Ü‚µ‚½"
+        , "DosDebug ã‚³ãƒ¼ãƒ«ãŒå¤±æ•—ã—ã¾ã—ãŸ"
 )
 pick( MSG_SAMPLE_8
         , "DosDebug( STOP ) failed"
-        , "DosDebug( STOP ) ‚ª¸”s‚µ‚Ü‚µ‚½"
+        , "DosDebug( STOP ) ãŒå¤±æ•—ã—ã¾ã—ãŸ"
 )
 pick( MSG_SAMPLE_9
         , "Unable to attach to process"
-        , "ƒvƒƒZƒX‚ÉÚG‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½"
+        , "ãƒ—ãƒ­ã‚»ã‚¹ã«æ¥è§¦ã§ãã¾ã›ã‚“ã§ã—ãŸ"
 )
 pick( MSG_SAMPLE_10
         , "CPU exception reported"
-        , "CPU —áŠO‚ª•ñ‚³‚ê‚Ä‚¢‚Ü‚·"
+        , "CPU ä¾‹å¤–ãŒå ±å‘Šã•ã‚Œã¦ã„ã¾ã™"
 )
 #endif
 
 #ifdef __LINUX__      /* messages in samplnx */
 pick( MSG_SAMPLE_1
         , "Executing: "
-        , "Às’†: "
+        , "å®Ÿè¡Œä¸­: "
 )
 pick( MSG_SAMPLE_2
         , "internal error: "
-        , "“à•”ƒGƒ‰[: "
+        , "å†…éƒ¨ã‚¨ãƒ©ãƒ¼: "
 )
 pick( MSG_SAMPLE_3
         , "Cannot execute file"
-        , "ƒtƒ@ƒCƒ‹‚ğÀs‚Å‚«‚Ü‚¹‚ñ"
+        , "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å®Ÿè¡Œã§ãã¾ã›ã‚“"
 )
 pick( MSG_SAMPLE_4
         , "ptrace() failed"
-        , "ptrace() ‚ª¸”s‚µ‚Ü‚µ‚½"
+        , "ptrace() ãŒå¤±æ•—ã—ã¾ã—ãŸ"
 )
 pick( MSG_SAMPLE_5
         , "Unable to attach to process"
-        , "ƒvƒƒZƒX‚ÉÚG‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½"
+        , "ãƒ—ãƒ­ã‚»ã‚¹ã«æ¥è§¦ã§ãã¾ã›ã‚“ã§ã—ãŸ"
 )
 pick( MSG_SAMPLE_6
         , "setitimer() failed"
-        , "setitimer() ‚ª¸”s‚µ‚Ü‚µ‚½"
+        , "setitimer() ãŒå¤±æ•—ã—ã¾ã—ãŸ"
 )
 #endif
 
 #ifdef __PLS__      /* messages in samppls */
 pick( MSG_SAMPLE_1
         , "Internal error"
-        , "“à•”ƒGƒ‰["
+        , "å†…éƒ¨ã‚¨ãƒ©ãƒ¼"
 )
 pick( MSG_SAMPLE_2
         , "Unable to load: "
-        , "ƒ[ƒh‚Å‚«‚Ü‚¹‚ñ: "
+        , "ãƒ­ãƒ¼ãƒ‰ã§ãã¾ã›ã‚“: "
 )
 pick( MSG_SAMPLE_3
         , "Task Exception: "
-        , "ƒ^ƒXƒN—áŠO: "
+        , "ã‚¿ã‚¹ã‚¯ä¾‹å¤–: "
 )
 pick( MSG_SAMPLE_4
         , "Unexpected Exception: "
-        , "—\Šú‚µ‚È‚¢—áŠO: "
+        , "äºˆæœŸã—ãªã„ä¾‹å¤–: "
 )
 #endif
 
 #ifdef __NETWARE__      /* messages in sampnlm */
 pick( MSG_SAMPLE_1
         , "Error! Cannot execute: "
-        , "ƒGƒ‰[! Às‚Å‚«‚Ü‚¹‚ñ: "
+        , "ã‚¨ãƒ©ãƒ¼! å®Ÿè¡Œã§ãã¾ã›ã‚“: "
 )
 #endif
 
 #ifdef __RSI__      /* messages in samprsi */
 pick( MSG_SAMPLE_1
         , "Task Exception: "
-        , "ƒ^ƒXƒN—áŠO: "
+        , "ã‚¿ã‚¹ã‚¯ä¾‹å¤–: "
 )
 pick( MSG_SAMPLE_2
         , "Unable to load: "
-        , "ƒ[ƒh‚Å‚«‚Ü‚¹‚ñ: "
+        , "ãƒ­ãƒ¼ãƒ‰ã§ãã¾ã›ã‚“: "
 )
 #endif
 
 #ifdef __WINDOWS__      /* messages in sampwin */
 pick( MSG_SAMPLE_1
         , "Couldn't find any modules!"
-        , "ƒ‚ƒWƒ…[ƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ!"
+        , "ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“!"
 )
 pick( MSG_SAMPLE_2
         , "Failed to hook interrupts"
-        , "Š„‚İ‚ÌƒtƒbƒN‚É¸”s‚µ‚Ü‚µ‚½"
+        , "å‰²è¾¼ã¿ã®ãƒ•ãƒƒã‚¯ã«å¤±æ•—ã—ã¾ã—ãŸ"
 )
 pick( MSG_SAMPLE_3
         , "Failed to get notify hook"
-        , "ƒtƒbƒN‚Ì’Ê’m‚ğó‚¯‚é‚Ì‚É¸”s‚µ‚Ü‚µ‚½"
+        , "ãƒ•ãƒƒã‚¯ã®é€šçŸ¥ã‚’å—ã‘ã‚‹ã®ã«å¤±æ•—ã—ã¾ã—ãŸ"
 )
 pick( MSG_SAMPLE_4
         , "Could not start sampling!"
-        , "ƒTƒ“ƒvƒŠƒ“ƒO‚ğŠJn‚Å‚«‚Ü‚¹‚ñ!"
+        , "ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã‚’é–‹å§‹ã§ãã¾ã›ã‚“!"
 )
 pick( MSG_SAMPLE_5
         , "Sample buffer flushed"
-        , "ƒTƒ“ƒvƒ‹ƒoƒbƒtƒ@‚ğƒtƒ‰ƒbƒVƒ…‚µ‚Ü‚µ‚½"
+        , "ã‚µãƒ³ãƒ—ãƒ«ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ã—ã¾ã—ãŸ"
 )
 pick( MSG_SAMPLE_6
         , "internal error: "
-        , "“à•”ƒGƒ‰[: "
+        , "å†…éƒ¨ã‚¨ãƒ©ãƒ¼: "
 )
 pick( MSG_SAMPLE_7
         , "Timer rate set to "
-        , "ƒ^ƒCƒ}ŠÔŠu‚ğ "
+        , "ã‚¿ã‚¤ãƒé–“éš”ã‚’ "
 )
 pick( MSG_SAMPLE_8
         , " ms"
-        , "ƒ ms"
+        , " ms"
 )
 pick( MSG_SAMPLE_9
         , "Determining what other modules are present..."
-        , "‘¼‚Ì‚Ç‚Ì‚æ‚¤‚Èƒ‚ƒWƒ…[ƒ‹‚ª‚ ‚é‚©‚ğ’Tõ’†..."
+        , "ä»–ã®ã©ã®ã‚ˆã†ãªãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ãŒã‚ã‚‹ã‹ã‚’æ¢ç´¢ä¸­..."
 )
 pick( MSG_SAMPLE_10
         , "Found "
-        , "‚Ù‚©‚É "
+        , "ã»ã‹ã« "
 )
 pick( MSG_SAMPLE_11
         , " other modules"
-        , " ŒÂ‚Ìƒ‚ƒWƒ…[ƒ‹‚ª‚ ‚è‚Ü‚·"
+        , " å€‹ã®ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ãŒã‚ã‚Šã¾ã™"
 )
 pick( MSG_SAMPLE_12
         , "Will use WDEBUG.386"
-        , "WDEBUG.386‚ğg—p‚µ‚Ü‚·"
+        , "WDEBUG.386ã‚’ä½¿ç”¨ã—ã¾ã™"
 )
 pick( MSG_SAMPLE_13
         , "Execution finished, total time="
-        , "ÀsI—¹, ‘SŠÔ="
+        , "å®Ÿè¡Œçµ‚äº†, å…¨æ™‚é–“="
 )
 pick( MSG_SAMPLE_14
         , " seconds"
-        , " •b"
+        , " ç§’"
 )
 pick( MSG_SAMPLE_15
         , "Error loading sampler!"
-        , "ƒTƒ“ƒvƒ‰Eƒ[ƒhEƒGƒ‰[!"
+        , "ã‚µãƒ³ãƒ—ãƒ©ãƒ»ãƒ­ãƒ¼ãƒ‰ãƒ»ã‚¨ãƒ©ãƒ¼!"
 )
 pick( MSG_SAMPLE_16
         , "Cannot close sampler!"
-        , "ƒTƒ“ƒvƒ‰‚ğƒNƒ[ƒY‚Å‚«‚Ü‚¹‚ñ!"
+        , "ã‚µãƒ³ãƒ—ãƒ©ã‚’ã‚¯ãƒ­ãƒ¼ã‚ºã§ãã¾ã›ã‚“!"
 )
 #endif
 
@@ -455,58 +455,58 @@ pick( MSG_EXCEPT_0
 )
 pick( MSG_EXCEPT_1
         , "divide overflow"
-        , "œZƒI[ƒo[ƒtƒ["
+        , "é™¤ç®—ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼"
 )
 pick( MSG_EXCEPT_2
         , "non-maskable interrupt"
-        , "ƒ}ƒXƒN•s‰Â”\Š„‚İ(ÉİÏ½¶ÌŞÙŠ„‚İ,NMI)"
+        , "ãƒã‚¹ã‚¯ä¸å¯èƒ½å‰²è¾¼ã¿(ï¾‰ï¾ï¾ï½½ï½¶ï¾Œï¾ï¾™å‰²è¾¼ã¿,NMI)"
 )
 pick( MSG_EXCEPT_3
         , "integer overflow"
-        , "®”ƒI[ƒo[ƒtƒ["
+        , "æ•´æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼"
 )
 pick( MSG_EXCEPT_4
         , "bounds check"
-        , "‹«ŠEŒŸ¸"
+        , "å¢ƒç•Œæ¤œæŸ»"
 )
 pick( MSG_EXCEPT_5
         , "invalid opcode"
-        , "–³Œø‚ÈƒIƒyƒR[ƒh"
+        , "ç„¡åŠ¹ãªã‚ªãƒšã‚³ãƒ¼ãƒ‰"
 )
 pick( MSG_EXCEPT_6
         , "coprocessor not available"
-        , "ƒRƒvƒƒZƒbƒT‚Í‚ ‚è‚Ü‚¹‚ñ"
+        , "ã‚³ãƒ—ãƒ­ã‚»ãƒƒã‚µã¯ã‚ã‚Šã¾ã›ã‚“"
 )
 pick( MSG_EXCEPT_7
         , "double fault"
-        , "“ñdƒtƒH[ƒ‹ƒg"
+        , "äºŒé‡ãƒ•ã‚©ãƒ¼ãƒ«ãƒˆ"
 )
 pick( MSG_EXCEPT_8
         , "coprocessor segment overrun"
-        , "ƒRƒvƒƒZƒbƒTEƒZƒOƒƒ“ƒgEƒI[ƒo[ƒ‰ƒ“"
+        , "ã‚³ãƒ—ãƒ­ã‚»ãƒƒã‚µãƒ»ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ»ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒ³"
 )
 pick( MSG_EXCEPT_9
         , "invalid TSS"
-        , "–³Œø‚ÈTSS"
+        , "ç„¡åŠ¹ãªTSS"
 )
 pick( MSG_EXCEPT_10
         , "segment not present"
-        , "ƒZƒOƒƒ“ƒg‚ª(ƒƒ‚ƒŠã‚É)‚ ‚è‚Ü‚¹‚ñ"
+        , "ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãŒ(ãƒ¡ãƒ¢ãƒªä¸Šã«)ã‚ã‚Šã¾ã›ã‚“"
 )
 pick( MSG_EXCEPT_11
         , "stack exception"
-        , "ƒXƒ^ƒbƒN—áŠO"
+        , "ã‚¹ã‚¿ãƒƒã‚¯ä¾‹å¤–"
 )
 pick( MSG_EXCEPT_12
         , "general protection fault"
-        , "ˆê”Ê•ÛŒìƒtƒH[ƒ‹ƒg"
+        , "ä¸€èˆ¬ä¿è­·ãƒ•ã‚©ãƒ¼ãƒ«ãƒˆ"
 )
 pick( MSG_EXCEPT_13
         , "page fault"
-        , "ƒy[ƒWEƒtƒH[ƒ‹ƒg"
+        , "ãƒšãƒ¼ã‚¸ãƒ»ãƒ•ã‚©ãƒ¼ãƒ«ãƒˆ"
 )
 pick( MSG_EXCEPT_14
         , "coprocessor error"
-        , "ƒRƒvƒƒZƒbƒTEƒGƒ‰["
+        , "ã‚³ãƒ—ãƒ­ã‚»ãƒƒã‚µãƒ»ã‚¨ãƒ©ãƒ¼"
 )
 #endif

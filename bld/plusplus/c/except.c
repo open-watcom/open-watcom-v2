@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +89,7 @@ THROBJ ThrowCategory(           // GET THROW-OBJECT CATEGORY FOR A TYPE
         retn = THROBJ_PTR_FUN;
     } else if( NULL != TypeReference( type ) ) {
         retn = THROBJ_REFERENCE;
-    } else if( NULL != (cltype = StructType( type ) ) ) {
+    } else if( NULL != (cltype = ClassType( type ) ) ) {
         if( cltype->u.c.info->last_vbase == 0 ) {
             retn = THROBJ_CLASS;
         } else {
@@ -98,7 +99,7 @@ THROBJ ThrowCategory(           // GET THROW-OBJECT CATEGORY FOR A TYPE
         type = PointerTypeEquivalent( type );
         if( type == NULL ) {
             retn = THROBJ_SCALAR;
-        } else if( StructType( type->of ) ) {
+        } else if( ClassType( type->of ) ) {
             retn = THROBJ_PTR_CLASS;
         } else {
             type = TypedefModifierRemove( type->of );
@@ -278,12 +279,12 @@ unsigned ThrowCnvInit(          // THROW CONVERSIONS: INITIALIZE
         break;
     case THROBJ_REFERENCE :
         type = TypeReference( type );
-        if( NULL != StructType( type ) ) {
+        if( NULL != ClassType( type ) ) {
             throwClassCnvs( type, ctl );
         } else {
             type = TypePointedAt( type, &not_used );
             if( type != NULL ) {
-                type = StructType( type );
+                type = ClassType( type );
                 if( type != NULL ) {
                     throwClassPtrCnvs( type, ctl );
                 }

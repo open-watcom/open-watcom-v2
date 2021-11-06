@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,23 +55,24 @@ static  PFN             F1ProcInst;
 // What the hell does this do??!!
 static bool scroll_catch_check( WPI_QMSG *qmsg )
 {
-    qmsg=qmsg;
+    (void)qmsg;
+
     return( false );
 }
 
 static gui_window *getFirstGUIParent( HWND hwnd )
 {
     HWND        parent;
-    gui_window  *gui;
+    gui_window  *wnd;
 
-    gui = NULL;
+    wnd = NULL;
 
     for( ;; ) {
-        gui = GUIGetCtrlWnd( hwnd );
-        if( gui != NULL )
+        wnd = GUIGetCtrlWnd( hwnd );
+        if( wnd != NULL )
             break;
-        //gui = GUIFindWindowFromHWND( hwnd );
-        //if( gui != NULL )
+        //wnd = GUIFindWindowFromHWND( hwnd );
+        //if( wnd != NULL )
         //    break;
         parent = _wpi_getparent( hwnd );
         if( parent == HWND_DESKTOP )
@@ -79,7 +80,7 @@ static gui_window *getFirstGUIParent( HWND hwnd )
         hwnd = parent;
     }
 
-    return( gui );
+    return( wnd );
 }
 
 #ifdef __OS2_PM__
@@ -136,7 +137,7 @@ LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
 #endif
 }
 
-void GUIHookF1( void )
+void GUIAPI GUIHookF1( void )
 {
     if( F1Hooked == 0 ) {
 #ifndef __OS2_PM__
@@ -161,7 +162,7 @@ void GUIHookF1( void )
     F1Hooked++;
 }
 
-void GUIUnHookF1( void )
+void GUIAPI GUIUnHookF1( void )
 {
     if( F1Hooked == 1 ) {
 #ifndef __OS2_PM__

@@ -18,7 +18,7 @@ function writes the character specified by the argument
 .arg c
 to the output stream designated by
 .arg fp
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -39,7 +39,7 @@ occurs, the error indicator is set and
 .id &funcb.
 returns
 .kw EOF
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -49,7 +49,7 @@ error occurs, the error indicator is set and
 .id &wfunc.
 returns
 .kw WEOF
-.ct .li .
+.period
 If an encoding error occurs,
 .kw errno
 is set to
@@ -58,7 +58,7 @@ and
 .id &wfunc.
 returns
 .kw WEOF
-.ct .li .
+.period
 .do end
 .np
 .im errnoref

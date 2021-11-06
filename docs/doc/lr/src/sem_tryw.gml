@@ -1,17 +1,17 @@
 .func sem_trywait
 .synop begin
 #include <semaphore.h>
-int sem_trywait(sem_t *semaphore);    
+int sem_trywait(sem_t *semaphore);
 .synop end
 .desc begin
 The
 .id &funcb.
-function attempts to lock a semaphore pointed to by the 
+function attempts to lock a semaphore pointed to by the
 .arg semaphore
 argument, and returns immediately regardless of success.
 .desc end
 .return begin
-If the semaphore was successfully locked, the function 
+If the semaphore was successfully locked, the function
 will return zero. If the call fails or the semaphore could
 not be locked, the function returns -1 and
 .kw errno
@@ -33,5 +33,5 @@ The semaphore is currently locked.
 .see begin
 .seelist sem_destroy sem_getvalue sem_init sem_post sem_wait
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

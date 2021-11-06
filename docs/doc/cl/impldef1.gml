@@ -25,7 +25,7 @@ msg_text
 .cillust end
 .pp
 where:
-..if &e'&dohelp eq 1 ..in 0
+..if &e'&dohelp ne 0 ..in 0
 :ZDL termhi=1 tsize='1.0i' break.
 :ZDT.filename
 :ZDD.
@@ -90,8 +90,7 @@ For example, for the command line,
 .mono argc
 would have the value
 .mono 5
-..ct ,
-and the five elements of
+.ct , and the five elements of
 .mono argv
 would be,
 .millust begin
@@ -107,12 +106,15 @@ What constitutes an interactive device (5.1.2.3).
 For &wcboth., the keyboard and the video display are considered
 interactive devices.
 .endbigterms
-.*
 ..if &e'&dohelp eq 0 ..do begin
+.*
 .section Identifiers
+.*
 ..do end
 ..el .do begin
+.*
 .section Behaviour Concerning Identifiers
+.*
 ..do end
 .*
 .bigterms
@@ -200,55 +202,55 @@ $Sequence$Value$Meaning
 .monoon
 $\a$07
 .monooff
-..ct $Bell or alert
+.ct $Bell or alert
 .monoon
 $\b$08
 .monooff
-..ct $Backspace
+.ct $Backspace
 .monoon
 $\f$0C
 .monooff
-..ct $Form feed
+.ct $Form feed
 .monoon
 $\n$0A
 .monooff
-..ct $New-line
+.ct $New-line
 .monoon
 $\r$0D
 .monooff
-..ct $Carriage return
+.ct $Carriage return
 .monoon
 $\t$09
 .monooff
-..ct $Horizontal tab
+.ct $Horizontal tab
 .monoon
 $\v$0B
 .monooff
-..ct $Vertical tab
+.ct $Vertical tab
 .monoon
 $\'$27
 .monooff
-..ct $Apostrophe or single quote
+.ct $Apostrophe or single quote
 .monoon
 $\"$22
 .monooff
-..ct $Double quote
+.ct $Double quote
 .monoon
 $\?$3F
 .monooff
-..ct $Question mark
+.ct $Question mark
 .monoon
 $\\$5C
 .monooff
-..ct $Backslash
+.ct $Backslash
 .monoon
 $\:HP1.ddd:eHP1.$
 .monooff
-..ct $Octal value
+.ct $Octal value
 .monoon
 $\x:HP1.ddd:eHP1.$
 .monooff
-..ct $Hexadecimal value
+.ct $Hexadecimal value
 .boxend
 .do end
 .el .do begin
@@ -323,11 +325,9 @@ or
 .kw char
 as
 .kw unsigned
-..ct ,
-although a compiler command line switch
-can be used to make it
+.ct , although a compiler command line switch can be used to make it
 .kw signed
-..ct ..li .
+.period
 .endbigterms
 .*
 .section Integers
@@ -359,12 +359,11 @@ For example, converting the signed long integer
 .mono -15584170
 (hexadecimal
 .mono 0xFF123456
-..ct )
-to a signed short integer yields the result
+.ct ) to a signed short integer yields the result
 .mono 13398
 (hexadecimal
 .mono 0x3456
-..ct ).
+.ct ).
 .pp
 When converting an unsigned integer to a signed integer of equal length,
 the bits are simply re-interpreted according to the new type.
@@ -373,12 +372,11 @@ For example, converting the unsigned short integer
 .mono 65535
 (hexadecimal
 .mono 0xFFFF
-..ct )
-to a signed short integer yields the result
+.ct ) to a signed short integer yields the result
 .mono -1
 (hexadecimal
 .mono 0xFFFF
-..ct ).
+.ct ).
 .bigterm
 The results of bitwise operations on signed integers (6.3).
 .bigdesc
@@ -394,11 +392,10 @@ interpreted according to the result type.
 :CMT. .pp
 :CMT. There are two characters in an
 :CMT. .kw int
-:CMT. ..ct ,
-:CMT. with the low-order portion of the integer being stored at a lower
+:CMT. .ct , with the low-order portion of the integer being stored at a lower
 :CMT. address than the high-order portion. There are four characters in a
 :CMT. .kw long int
-:CMT. ..ct ..li .
+:CMT. .period
 .bigterm
 The sign of the remainder on integer division (6.3.5).
 .bigdesc
@@ -447,7 +444,7 @@ Truncation is only possible when converting a
 .kw long int
 (signed or unsigned) to
 .kw float
-..ct ..li .
+.period
 The 24 most-significant bits (including sign bit) are used.
 The 25th is examined,
 and if it is 1, the value is rounded up by adding one to the 24-bit
@@ -677,14 +674,14 @@ huge memory model is being used,
 .kw ptrdiff_t
 has type
 .kw long int
-..ct ..li .
+.period
 .pp
 For all other memory models,
 .ix 'ptrdiff_t'
 .kw ptrdiff_t
 has type
 .kw int
-..ct ..li .
+.period
 .pp
 If two huge pointers are subtracted and the huge memory model is
 not being used,
@@ -695,7 +692,7 @@ even though
 .kw ptrdiff_t
 is
 .kw int
-..ct ..li .
+.period
 .endbigterms
 .*
 .section Registers
@@ -784,7 +781,7 @@ will be chosen according to the following table:
 Both compilers have a command-line switch that force all enumerations
 to type
 .kw int
-..ct ..li .
+.period
 See the &userguide. for details.
 .endbigterms
 .*
@@ -808,12 +805,15 @@ structure or union type (6.5.4).
 .pp
 Limited only by available memory.
 .endbigterms
-.*
 ..if &e'&dohelp eq 0 ..do begin
+.*
 .section Statements
+.*
 ..do end
 ..el .do begin
+.*
 .section Behaviour Concerning Statements
+.*
 ..do end
 .*
 .bigterms
@@ -868,11 +868,9 @@ directive (6.8.6).
 See the &userguide..
 .bigterm
 The definitions for
-.mkwix &mkwDATE_sp.
-.mkwfont &mkwDATE.
+.mkw &mkwDATE.
 and
-.mkwix &mkwTIME_sp.
-.mkwfont &mkwTIME.
+.mkw &mkwTIME.
 when respectively, the date and time of translation are not available (6.8.8).
 .bigdesc
 .pp

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,7 +145,7 @@ bool InitFileSupp( void )
 
     InitHandleCache();
 
-    SuppFileId = GetSuppId( FILE_SUPP_NAME );
+    SuppFileId = GETSUPPID( FILE_SUPP_NAME );
     if( SuppFileId == 0 )
         return( false );
     SUPP_FILE_SERVICE( acc, REQ_FILE_GET_CONFIG );

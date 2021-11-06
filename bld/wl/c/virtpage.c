@@ -58,7 +58,7 @@ virt_mem AllocStg( virt_mem_size size )
     vmemblock * ptr;
 
     if( size == 0 )
-        return 0;
+        return( 0 );
     if( size < TINY_ALLOC_CUTOFF ) {
         _PermAlloc( ptr, size + sizeof( vmemblock ) - 1 );
         ptr->next = ptr;
@@ -71,7 +71,7 @@ virt_mem AllocStg( virt_mem_size size )
         }
         VMemBlocks = ptr;
     }
-    return (virt_mem) ptr->mem;
+    return( (virt_mem) ptr->mem );
 }
 
 void ReleaseInfo( virt_mem v )
@@ -79,10 +79,13 @@ void ReleaseInfo( virt_mem v )
 {
     vmemblock * ptr;
 
-    if( v == 0 ) return;
-    if( VMemBlocks == NULL ) return;
+    if( v == 0 )
+        return;
+    if( VMemBlocks == NULL )
+        return;
     ptr = (vmemblock *)( v - offsetof( vmemblock, mem ) );
-    if( ptr->next == ptr ) return;
+    if( ptr->next == ptr )
+        return;
     if( ptr->prev == NULL ) {
         VMemBlocks = ptr->next;
         if( VMemBlocks != NULL ) {

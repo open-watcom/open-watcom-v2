@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 #elif defined __OS2__
     #define INCL_DOSNLS
     #include <wos2.h>
-#elif defined __OSI__
 #elif defined __DOS__
     #include <dos.h>
     #include <i86.h>
@@ -79,7 +78,7 @@ static void clear_dbcs_table( void )
     memset( __MBCSIsTable, 0, 257 );
 }
 
-#if defined( __DOS__ ) && !defined( __OSI__ ) || defined( __NT__ ) || defined( __OS2__ )
+#if defined( __DOS__ ) || defined( __NT__ ) || defined( __OS2__ )
 static void set_dbcs_table( unsigned short DOS_FAR *lead_bytes )
 {
     unsigned short range;
@@ -120,7 +119,6 @@ int __mbinit( int codepage )
     APIRET                  rc;
     OS_UINT                 buf[8];
     OS_UINT                 bytes;
-#elif defined( __OSI__ )
 #elif defined( __DOS__ )
     unsigned short          __far *leadBytes;
 #elif defined( __WINDOWS__ )
@@ -171,20 +169,20 @@ int __mbinit( int codepage )
     /*** Initialize the __MBCSIsTable values ***/
     countryInfo.country = 0;                /* default country */
     countryInfo.codepage = codepage;        /* specified code page */
-  #if defined(__WARP__)
-    rc = DosQueryDBCSEnv( sizeof( leadBytes ), &countryInfo, (PCHAR)leadBytes );
-  #else
+  #if defined(_M_I86)
     rc = DosGetDBCSEv( sizeof( leadBytes ), &countryInfo, (PCHAR)leadBytes );
+  #else
+    rc = DosQueryDBCSEnv( sizeof( leadBytes ), &countryInfo, (PCHAR)leadBytes );
   #endif
     if( rc != 0 )
         return( 1 );
     set_dbcs_table( leadBytes );
     /*** Update __MBCodePage ***/
     if( codepage == 0 ) {
-  #if defined(__386__) || defined(__PPC__)
-        rc = DosQueryCp( sizeof( buf ), &buf, &bytes );
-  #else
+  #if defined(_M_I86)
         rc = DosGetCp( sizeof( buf ), &buf, &bytes );
+  #else
+        rc = DosQueryCp( sizeof( buf ), &buf, &bytes );
   #endif
         if( rc != 0 ) {
             __MBCodePage = 0;
@@ -194,7 +192,6 @@ int __mbinit( int codepage )
     } else {
         __MBCodePage = codepage;
     }
-#elif defined __OSI__
 #elif defined __DOS__
     /*** Initialize the __MBCSIsTable values ***/
     if( codepage != 0 )

@@ -26,7 +26,7 @@ function converts the calendar time pointed to by
 into a broken-down time, expressed as local time.
 The broken-down time is stored in the structure pointed to by
 .arg result
-.ct .li .
+.period
 .desc end
 .*
 .return begin

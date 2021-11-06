@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,8 @@
 
 static char     ConvBuffer[CONV_BUF_SIZE];
 
-static size_t DefaultConversion( size_t len, const char *str, char *buf )
+static size_t DefaultUNIConversion( size_t len, const char *str, char *buf )
+/**************************************************************************/
 {
     size_t  i;
 
@@ -55,6 +57,15 @@ static size_t DefaultConversion( size_t len, const char *str, char *buf )
         }
     }
     return( len * 2 );
+}
+
+static size_t DefaultMBConversion( size_t len, const char *str, char *buf )
+/*************************************************************************/
+{
+    if( buf != NULL ) {
+        memcpy( buf, str, len );
+    }
+    return( len );
 }
 
 bool ResWriteUint8( uint_8 newint, FILE *fp )
@@ -91,7 +102,7 @@ bool ResWritePadDWord( FILE *fp )
     curr_pos = WRESTELL( fp );
     if( curr_pos == -1L )
         return( WRES_ERROR( WRS_TELL_FAILED ) );
-    padding = RES_PADDING( curr_pos, sizeof( zero ) );
+    padding = RES_PADDING_DWORD( curr_pos );
     if( padding != 0 ) {
         if( WRESWRITE( fp, &zero, padding ) != padding ) {
             return( WRES_ERROR( WRS_WRITE_FAILED ) );
@@ -100,8 +111,8 @@ bool ResWritePadDWord( FILE *fp )
     return( false );
 }
 
-bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, FILE *fp )
-/*******************************************************************************/
+bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp )
+/****************************************************************************/
 {
     bool            error;
     unsigned        numchars;
@@ -116,21 +127,21 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, FILE *fp 
     } else {
         numchars = name->NumChars;
     }
+    // for short strings use a static buffer in improve performance
+    if( numchars <= CONV_BUF_SIZE / 2 ) {
+        ptr = ConvBuffer;
+    } else {
+        freebuf = true;
+        ptr = WRESALLOC( 2 * numchars );
+    }
     if( use_unicode ) {
-        // for short strings use a static buffer in improve performance
-        if( numchars <= CONV_BUF_SIZE / 2 ) {
-            ptr = ConvBuffer;
-        } else {
-            freebuf = true;
-            ptr = WRESALLOC( 2 * numchars );
-        }
         numchars = ConvToUnicode( numchars, name->Name, ptr );
         error = ResWriteUint16( numchars / 2, fp );
     } else {
+        numchars = ConvToMultiByte( numchars, name->Name, ptr );
         /* in 16-bit resources the string can be no more than 255 characters */
         if( numchars > 255 )
             numchars = 255;
-        ptr = (char *)name->Name;
         error = ResWriteUint8( numchars, fp );
     }
     if( !error && numchars > 0 ) {
@@ -142,13 +153,7 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, FILE *fp 
         WRESFREE( ptr );
     }
     return( error );
-} /* WResWriteWResIDNameUni */
-
-bool WResWriteWResIDName( const WResIDName *name, FILE *fp )
-/**********************************************************/
-{
-    return( WResWriteWResIDNameUni( name, false, fp ) );
-}
+} /* WResWriteWResIDName */
 
 bool WResWriteWResID( const WResID *name, FILE *fp )
 /**************************************************/
@@ -158,7 +163,7 @@ bool WResWriteWResID( const WResID *name, FILE *fp )
     error = ResWriteUint8( name->IsName, fp );
     if( !error ) {
         if( name->IsName ) {
-            error = WResWriteWResIDName( &(name->ID.Name), fp );
+            error = WResWriteWResIDName( &(name->ID.Name), false, fp );
         } else {
             error = ResWriteUint16( name->ID.Num, fp );
         }
@@ -172,6 +177,7 @@ bool WResWriteWResID( const WResID *name, FILE *fp )
  *                       in the file identified by fp
  */
 bool WResWriteTypeRecord( const WResTypeInfo *type, FILE *fp )
+/************************************************************/
 {
     size_t      size;
 
@@ -240,22 +246,21 @@ bool ResWriteStringLen( const char *string, bool use_unicode, FILE *fp, size_t l
     char            *buf = NULL;
     bool            error;
 
+    if( len * 2 > CONV_BUF_SIZE ) {
+        buf = WRESALLOC( 2 * len );
+    } else {
+        buf = ConvBuffer;
+    }
     if( use_unicode ) {
-        if( len * 2 > CONV_BUF_SIZE ) {
-            buf = WRESALLOC( 2 * len );
-        } else {
-            buf = ConvBuffer;
-        }
         len = ConvToUnicode( len, string, buf );
-        string = buf;
+    } else {
+        len = ConvToMultiByte( len, string, buf );
     }
     error = false;
-    if( WRESWRITE( fp, string, len ) != len )
+    if( WRESWRITE( fp, buf, len ) != len )
         error = WRES_ERROR( WRS_WRITE_FAILED );
-    if( use_unicode ) {
-        if( buf != ConvBuffer ) {
-            WRESFREE( buf );
-        }
+    if( buf != ConvBuffer ) {
+        WRESFREE( buf );
     }
     return( error );
 }
@@ -330,7 +335,7 @@ static size_t MResFindHeaderSize( MResResourceHeader *header, bool use_unicode )
     namesize = MResFindNameOrOrdSize( header->Name, use_unicode );
     typesize = MResFindNameOrOrdSize( header->Type, use_unicode );
     headersize += ( namesize + typesize );
-    padding = RES_PADDING( typesize + namesize, sizeof( uint_32 ) );
+    padding = RES_PADDING_DWORD( typesize + namesize );
 
     return( headersize + padding );
 }
@@ -391,4 +396,5 @@ void WriteInitStatics( void )
     memset( ConvBuffer, 0, CONV_BUF_SIZE * sizeof( char ) );
 }
 
-ConvToUnicode_fn    *ConvToUnicode = DefaultConversion;
+ConvToUnicode_fn    *ConvToUnicode = DefaultUNIConversion;
+ConvToMultiByte_fn  *ConvToMultiByte = DefaultMBConversion;

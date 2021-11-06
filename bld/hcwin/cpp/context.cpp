@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -133,24 +134,13 @@ int ContextRec::dump( OutFile * dest )
 }
 
 
-// The 'magic number' for the |CONTEXT btree.
-
-char const HFContext::_conMagic[Btree::_magNumSize] = {
-    0x3B, 0x29, 0x02, 0x00, 0x00,
-    0x08, 0x4C, 0x34, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00
-};
-
-
 //  HFContext::HFContext
 
 HFContext::HFContext( HFSDirectory * d_file )
     : _head( NULL ),
       _tail( NULL )
 {
-    _data = new Btree( _conMagic );
+    _data = new Btree( false, "L4" );
     d_file->addFile( this, "|CONTEXT" );
 }
 
@@ -234,7 +224,6 @@ void HFContext::recordContext( char const str[] )
         return;
 
     FutureHash  *current;
-    size_t  length = strlen( str ) + 1;
 
     // Check to see if this topic has already been referenced.
     for( current = _head; current != NULL; current = current->_next ) {
@@ -248,8 +237,8 @@ void HFContext::recordContext( char const str[] )
 
     // If this topic has not been referenced or defined before,
     // add it to the list of references.
-    FutureHash  *newnode = new FutureHash( length );
-    memcpy( newnode->_string, str, length );
+    FutureHash  *newnode = new FutureHash( strlen( str ) + 1 );
+    strcpy( newnode->_string, str );
     if( current == NULL ) {
         newnode->_prev = _tail;
         _tail = newnode;

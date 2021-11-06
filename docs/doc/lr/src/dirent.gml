@@ -11,15 +11,15 @@ type.
 In QNX the
 .kw dirent
 structure contains a
-.kw stat
+.reffunc stat
 structure in the
 .kw d_stat
 member.
 To speed up applications which often want both the name and the stat
 data, a resource manager may return the
-.kw stat
+.reffunc stat
 information at the same time the
-.kw readdir
+.reffunc readdir
 function is called.
 .np
 However, since the support of this feature is left to the discretion
@@ -32,22 +32,22 @@ d_stat.st_status & _FILE_USED
 .millust end
 .pc
 This test must be performed after every
-.kw readdir
+.reffunc readdir
 call.
 .np
 If the
 .kw d_stat
 member doesn't contain valid data and the data is needed then the
 application should construct the file's pathname and call
-.kw stat
+.reffunc stat
 or
-.kw lstat
+.reffunc lstat
 as appropriate.
 .do end
 .*
 .el .do begin
 .kw dirent
-.ct .li .
+.period
 .blkcode begin
 #if defined(__OS2__) || defined(__NT__)
 #define NAME_MAX 255    /* maximum for HPFS or NTFS */
@@ -56,14 +56,14 @@ as appropriate.
 #endif
 
 struct dirent {
-    char    d_dta[ 21 ];        /* disk transfer area */
-    char    d_attr;             /* file's attribute */
-    unsigned short int d_time;  /* file's time */
-    unsigned short int d_date;  /* file's date */
-    long    d_size;             /* file's size */
-    char    d_name[ NAME_MAX + 1 ]; /* file's name */
-    unsigned short d_ino;       /* serial number */
-    char    d_first;            /* flag for 1st time */
+    char            d_dta[21];          /* disk transfer area */
+    char            d_attr;             /* file's attribute   */
+    unsigned short  d_time;             /* file's time        */
+    unsigned short  d_date;             /* file's date        */
+    long            d_size;             /* file's size        */
+    char            d_name[NAME_MAX+1]; /* file's name        */
+    unsigned short  d_ino;              /* serial number      */
+    char            d_first;            /* flag for 1st time  */
 };
 .blkcode end
 .np
@@ -89,9 +89,9 @@ field is described by the following structure
 (this structure is not defined in any &company header file).
 .blkcode begin
 typedef struct {
-    unsigned short  twosecs : 5;    /* seconds / 2 */
+    unsigned short  twosecs : 5;    /* seconds / 2    */
     unsigned short  minutes : 6;    /* minutes (0,59) */
-    unsigned short  hours   : 5;    /* hours (0,23) */
+    unsigned short  hours   : 5;    /* hours (0,23)   */
 } ftime_t;
 .blkcode end
 .np
@@ -101,9 +101,9 @@ field is described by the following structure
 (this structure is not defined in any &company header file).
 .blkcode begin
 typedef struct {
-    unsigned short  day     : 5;    /* day (1,31) */
+    unsigned short  day     : 5;    /* day (1,31)   */
     unsigned short  month   : 4;    /* month (1,12) */
-    unsigned short  year    : 7;    /* 0 is 1980 */
+    unsigned short  year    : 7;    /* 0 is 1980    */
 } fdate_t;
 .blkcode end
 .np

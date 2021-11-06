@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,15 +35,21 @@
 #include "trptypes.h"
 #include <time.h>
 
-#include "pushpck1.h"
+#define FILE_INFO_SUPP_NAME     FileInfo
+#define TRAP_FILE_INFO(s)       TRAP_SYM( FILE_INFO_SUPP_NAME, s )
 
-#define FILE_INFO_SUPP_NAME     "FileInfo"
+//#define REQ_FILE_INFO_DEF(sym,func)
+#define REQ_FILE_INFO_DEFS() \
+    REQ_FILE_INFO_DEF( GET_DATE,   get_date ) \
+    REQ_FILE_INFO_DEF( SET_DATE,   set_date )
 
 enum {
-    REQ_FILE_INFO_GET_DATE,             /* 00 */
-    REQ_FILE_INFO_SET_DATE,             /* 01 */
+    #define REQ_FILE_INFO_DEF(sym,func)   REQ_FILE_INFO_ ## sym,
+    REQ_FILE_INFO_DEFS()
+    #undef REQ_FILE_INFO_DEF
 };
 
+#include "pushpck1.h"
 
 /*======================= REQ_FILE_GET_DATE ================*/
 

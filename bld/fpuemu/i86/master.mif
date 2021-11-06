@@ -7,8 +7,6 @@ proj_name = emui86
 emui86_autodepends = .AUTODEPEND
 emui86_distrib_lib = 1
 
-additional_cleanup = usage.u
-
 memory_model_i86 = s
 memory_model_386 = s
 
@@ -22,7 +20,25 @@ fpu_flags_qnx_386 = -fpc
 !include defrule.mif
 !include deftarg.mif
 
-.c : ../c
+#
+# cflags
+#
+.c : ../c;../../c
+
+extra_cpp_flags_qnx = -DQNX$(cpu_size)
+
+extra_c_flags_dos = -zl -zls
+extra_c_flags_os2 = -zl -zls
+extra_c_flags_win = -zl -zls
+extra_c_flags_qnx = -oais -i"$(new_qnx_h)"
+
+extra_c_flags_hook8087 = -i"../h"
+extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
+extra_c_flags_fpeqnx = -I"$(clib_dir)/h"
+
+#
+# aflags
+#
 .asm : ../asm
 
 aflag_386 =
@@ -38,41 +54,29 @@ extra_a_flags_initemuw = -fpc -i"$(comp_cfg_dir)/h"
 extra_a_flags_emu8087  = -fpc -i"../inc" -i"../../inc" -i"$(mathlib_dir)/h"
 extra_a_flags_emustub =
 
-extra_cpp_flags_qnx = -DQNX$(cpu_size)
-
-extra_c_flags_dos = -zl -zls
-extra_c_flags_os2 = -zl -zls
-extra_c_flags_win = -zl -zls
-extra_c_flags_qnx = -oais -i"$(new_qnx_h)"
-
-extra_c_flags_hook8087 = -i"../h"
-extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
-extra_c_flags_fpeqnx = -I"$(clib_dir)/h"
-
-objs_dos = initemu.obj emu8087.obj dosinit.obj
-objs_os2 = initemu2.obj emu8087.obj hook8087.obj
-objs_win = initemuw.obj
-
-extra_link_res_qnx = usage.u
+# explicit rules
+#################
 
 !ifeq host_os qnx
 
-.c : ../../c
+exes_16 = emu87_16.exe emu87.exe
+exes_32 = emu87_32.exe
 
-objs_16 = emu86_16.exe emu86.exe
-objs_32 = emu86_32.exe
+all: $(exes_$(cpu_size)) .SYMBOLIC
 
-all: $(objs_$(cpu_size)) .SYMBOLIC
+#
+# EXE's
+#
+exetarg_objs    = qemu87.obj
+exetarg_qnx_res = usage.u
+exetarg_name    = emu87
+!include exetarg.mif
 
-emu86.exe : $(extra_link_res_qnx) qemu87.obj $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $^@ $(lflags) opt res=$(extra_link_res_qnx) file {qemu87.obj}
-
-objs = qnxemu87.obj emu8087.obj fpeqnx.obj
-
-emu86_$(cpu_size).exe: $(extra_link_res_qnx) $(objs) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $^@ $(lflags) opt priv=0,long,res=$(extra_link_res_qnx) file {$(objs)}
+exetarg_objs    = qnxemu87.obj emu8087.obj fpeqnx.obj
+exetarg_qnx_res = usage.u
+exetarg_opts    = opt priv=0, long
+exetarg_name    = emu87_$(cpu_size)
+!include exetarg.mif
 
 usage.u : ../../usage.sp
     @%make echo_wsplice
@@ -80,19 +84,29 @@ usage.u : ../../usage.sp
 
 !else ifeq host_os stub
 
-objs = emustub.obj
+all : emu87.lib noemu87.lib .SYMBOLIC
 
-emu87.lib noemu87.lib: $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) $(objs)
+#
+# LIB's
+#
+libtarg_objs    = emustub.obj
+libtarg_name    = emu87
+!include libtarg.mif
+
+libtarg_name    = noemu87
+!include libtarg.mif
 
 !else
 
-objs = $(objs_$(host_os))
-
-emu87.lib: $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) $(objs)
+#
+# LIB
+#
+libtarg_objs_dos = initemu.obj emu8087.obj dosinit.obj
+libtarg_objs_os2 = initemu2.obj emu8087.obj hook8087.obj
+libtarg_objs_win = initemuw.obj
+libtarg_objs     = $(libtarg_objs_$(host_os))
+libtarg_name     = emu87
+!include libtarg.mif
 
 !endif
 

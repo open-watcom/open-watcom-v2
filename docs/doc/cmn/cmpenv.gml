@@ -30,16 +30,6 @@ These options are processed before options specified on the command
 line.
 .ix '&setcmdup' '&cvarup16 environment variable'
 .ix '&setcmdup' '&cvarup32 environment variable'
-.if '&cmpclass' eq 'load-n-go' .do begin
-.exam begin 1
-&prompt.&setcmd &setdelim.&cvar16=&sw.noext &sw.nowarn&setdelim
-&prompt.&setcmd &setdelim.&cvar32=&sw.noext &sw.nowarn&setdelim
-.exam end
-.pc
-The above example defines the default options to be "noext" (do not issue
-extension messages), and "nowarn" (do not issue warning messages).
-.do end
-.el .do begin
 .exam begin 2
 &prompt.&setcmd &setdelim.&cvar16=&sw.d1 &sw.ot&setdelim
 &prompt.&setcmd &setdelim.&cvar32=&sw.d1 &sw.ot&setdelim
@@ -52,7 +42,6 @@ extension messages), and "nowarn" (do not issue warning messages).
 The above example defines the default options to be "d1" (include line
 number debugging information in the object file), and "ot" (favour
 time optimizations over size optimizations).
-.do end
 .if '&target' ne 'QNX' .do begin
 .np
 .ix 'environment string' '= substitute'
@@ -95,7 +84,6 @@ The &cmppname compiler command line can be used to override any
 options specified in the environment string.
 .do end
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .if '&target' ne 'QNX' .do begin
 .np
 These environment variables are not examined by &wclcmdup16 or
@@ -122,7 +110,6 @@ and
 .ev &pvarup32
 .do end
 environment variable options.
-.do end
 .do end
 .keep 18
 .hint

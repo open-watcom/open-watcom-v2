@@ -15,7 +15,7 @@ static int  tcp_connect  (Socket *socket);
 static int  udp_connect  (Socket *socket);
 static int  raw_connect  (Socket *socket);
 static int  nblk_connect (Socket *socket);
-static void set_keepalive(Socket *sock);
+static void set_keepalive(Socket *socket);
 
 /*
  * connect
@@ -24,7 +24,7 @@ static void set_keepalive(Socket *sock);
  *  address and foreign port number in the "servaddr".
  */
 
-int connect (int s, const struct sockaddr *servaddr, int addrlen)
+int connect (int s, const struct sockaddr *servaddr, socklen_t addrlen)
 {
   struct   sockaddr_in *addr   = (struct sockaddr_in*) servaddr;
   struct   Socket      *socket = _socklist_find (s);
@@ -59,7 +59,7 @@ int connect (int s, const struct sockaddr *servaddr, int addrlen)
     SOCK_DEBUGF ((socket, ", EINVAL"));
     SOCK_ERR (EINVAL);
     return (-1);
-  } 
+  }
 
   if (socket->remote_addr)
   {
@@ -186,6 +186,7 @@ static int tcp_connect (Socket *socket)
 {
   DWORD timeout;
   int   status;
+  sock_type *sk;
 
   if (!_TCP_open (socket,
                   socket->remote_addr->sin_addr,
@@ -201,7 +202,8 @@ static int tcp_connect (Socket *socket)
   /* Don't let tcp_Retransmitter() kill this socket
    * before our `socket->timeout' expires
    */
-  socket->tcp_sock->locflags |= LF_RCVTIMEO;
+  sk = socket->proto_sock;
+  sk->tcp.locflags |= LF_RCVTIMEO;
 
   /* We're here only when connect() is called the 1st time
    * (blocking or non-blocking socket).
@@ -212,7 +214,7 @@ static int tcp_connect (Socket *socket)
   {
     /* if user calls getsockopt(SO_ERROR) before calling connect() again
      */
-    socket->so_error = EALREADY;   
+    socket->so_error = EALREADY;
     SOCK_DEBUGF ((socket, ", EINPROGRESS"));
     SOCK_ERR (EINPROGRESS);
     return (-1);
@@ -222,8 +224,7 @@ static int tcp_connect (Socket *socket)
    * maybe we should use select_s() instead ?
    */
   timeout = set_timeout (1000 * socket->timeout);
-  status  = _ip_delay0 ((sock_type*)socket->tcp_sock,
-                        socket->timeout, NULL, NULL);
+  status  = _ip_delay0 (sk, socket->timeout, NULL, NULL);
 
 
   /* We got an ICMP_UNREACH from our peer
@@ -251,8 +252,7 @@ static int tcp_connect (Socket *socket)
     return (-1);
   }
 
-  socket->so_state &= ~SS_UNCONNECTED;
-  socket->so_state &= ~SS_ISCONNECTING;
+  socket->so_state &= ~(SS_UNCONNECTED | SS_ISCONNECTING);
   socket->so_state |=  SS_ISCONNECTED;
   set_keepalive (socket);
   return (0);
@@ -275,7 +275,7 @@ static int nblk_connect (Socket *socket)
   }
 
   if ((socket->so_state & (SS_ISDISCONNECTING | SS_CONN_REFUSED)) ||
-      (socket->tcp_sock->state >= tcp_StateCLOSED))
+      (socket->proto_sock->tcp.state >= tcp_StateCLOSED))
   {
     SOCK_DEBUGF ((socket, ", ECONNREFUSED"));
     socket->so_error = ECONNREFUSED;
@@ -299,10 +299,10 @@ static int nblk_connect (Socket *socket)
 /*
  * Sets keepalive timer on DGRAM/STREAM socket
  */
-static void set_keepalive (Socket *sock)
+static void set_keepalive (Socket *socket)
 {
-  if ((sock->so_options & SO_KEEPALIVE) && tcp_keepalive)
-     sock->keepalive = set_timeout (1000 * tcp_keepalive);
+  if ((socket->so_options & SO_KEEPALIVE) && tcp_keepalive)
+     socket->keepalive = set_timeout (1000 * tcp_keepalive);
 }
 
 #endif /* USE_BSD_FUNC */

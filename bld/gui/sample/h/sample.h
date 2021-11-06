@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,8 +57,8 @@
 #define HEIGHT 1100
 
 typedef struct attr_entry {
-    gui_ord             start;
-    gui_ord             end;
+    gui_text_ord        start;
+    gui_text_ord        end;
     gui_attr            attr;
     struct attr_entry * next;
 } attr_entry;
@@ -69,9 +70,9 @@ typedef struct {
 } disp_entry;
 
 typedef struct {
-    int          numrows;
-    gui_ord      start_row;
-    disp_entry * display;
+    gui_text_ord    numrows;
+    gui_text_ord    start_row;
+    disp_entry      *display;
 } out_info;
 
 extern GUICALLBACK     MainWndGUIEventProc;

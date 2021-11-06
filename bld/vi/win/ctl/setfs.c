@@ -45,8 +45,8 @@
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT INT_PTR CALLBACK SetFSDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
 
-#define VI_LANG_FIRST   VI_LANG_LANG0
-#define VI_LANG_LAST    VI_LANG_LANG0 + LANG_MAX - 1
+#define RC_VI_LANG_FIRST   RC_VI_LANG_LANG0
+#define RC_VI_LANG_LAST    RC_VI_LANG_LANG0 + VI_LANG_MAX - 1
 
 #define TAGFILENAMEWIDTH        129
 #define GREPDEFAULTWIDTH        20
@@ -84,8 +84,8 @@ static dyn_dim_type dynGetLanguage( HWND hwndDlg, bool initial )
     initial = initial;
     sel = (int)SendDlgItemMessage( hwndDlg, SETFS_LANGUAGESELECT, CB_GETCURSEL, 0, 0L );
     switch( sel ) {
-    case LANG_NONE:
-    case LANG_USER:
+    case VI_LANG_NONE:
+    case VI_LANG_USER:
         return( DYN_DIM );
     }
     return( DYN_VISIBLE );
@@ -292,7 +292,7 @@ static void globalTodlgData( dlg_data *data, info *envInfo )
 
 static void dlgDataDefault( dlg_data *data )
 {
-    data->Language       = LANG_NONE;
+    data->Language       = VI_LANG_NONE;
     data->PPKeywordOnly  = false;
     data->CMode          = false;
     data->ReadEntireFile = false;

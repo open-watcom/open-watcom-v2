@@ -3,7 +3,7 @@
 .pp
 An object may be declared with the keyword
 .kw volatile
-..ct ..li .
+.period
 Such an object may be freely modified by the program, and its value
 also may be modified through actions outside the program. For example, a
 flag may be set when a given interrupt occurs. The keyword
@@ -26,58 +26,50 @@ reflected in the program's behavior.
 .* .mono *
 .* (as in
 .* .mono volatile *)
-.* ..ct ,
-.* then the pointer points to something volatile. Otherwise, if
+.* .ct , then the pointer points to something volatile. Otherwise, if
 .* .kw volatile
 .* precedes the identifier of the object or function being declared
 .* (as in
 .* .mono volatile x)
-.* ..ct ,
-.* then the object itself is volatile.
+.* .ct , then the object itself is volatile.
 .pp
 If the declaration of an object does not include
 .mono *
-..ct ,
-that is to say it is not a pointer of any kind, then the keyword
+.ct , that is to say it is not a pointer of any kind, then the keyword
 .kw volatile
 appearing anywhere in the type specifier (including any
 .kw typedef
-..ct 's)
-indicates that the object is volatile and may be changed at any time
+.ct 's) indicates that the object is volatile and may be changed at any time
 without the program knowing.
 If the object is a pointer and
 .kw volatile
 appears to the left of the
 .mono *
-..ct ,
-the object is a pointer to a volatile value, meaning that
+.ct , the object is a pointer to a volatile value, meaning that
 the value to which the pointer points may be changed at any time.
 If
 .kw volatile
 appears to the right of the
 .mono *
-..ct ,
-the object is a volatile pointer to a value, meaning that the pointer
+.ct , the object is a volatile pointer to a value, meaning that the pointer
 to the value may be changed at any time.
 If
 .kw volatile
 appears on both the left and the right of the
 .mono *
-..ct ,
-the object is a volatile pointer to a volatile value, meaning that the
+.ct , the object is a volatile pointer to a volatile value, meaning that the
 pointer or the value to which it points may
 be changed at any time.
 .pp
 If the declaration of a structure, union or array includes
 .kw volatile
-..ct ,
-then each member of the type, when referred to, is treated as if
+.ct , then each member of the type, when referred to, is treated as if
 .kw volatile
 had been specified.
 .* .pp
 .* If a type is declared only with the keyword
 .* .kw volatile
-.* ..ct , then
+.* .ct , then
 .* .kw int
 .* is implied.
 .pp

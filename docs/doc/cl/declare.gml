@@ -18,11 +18,11 @@ This is called the
 .us type.
 Examples include
 .mono int
-..ct ,
+.ct ,
 .mono float
 and
 .mono struct list
-..ct ..li .
+.period
 .bull
 Whether the name is visible only within the module being compiled, or
 throughout the program.
@@ -45,9 +45,9 @@ and is part of the
 .us storage class.
 The keywords
 .kw extern
-..ct ,
+.ct ,
 .kw static
-..ct ,
+.ct ,
 .kw auto
 and
 .kw register
@@ -164,7 +164,7 @@ is declared to be an
 .us integer,
 with
 .us automatic storage duration
-..ct ..li .
+.period
 Its
 value is available only within the function (or
 .ix 'statement' 'compound'
@@ -181,7 +181,7 @@ is created and declared to be an
 .us integer
 with
 .us static storage duration
-..ct ..li .
+.period
 Its value is available within the
 .us module
 in which it is defined, and has
@@ -226,7 +226,7 @@ are declared to be
 .us signed long integers
 with
 .us automatic storage duration
-..ct ..li .
+.period
 This is also a definition.
 .inside end
 .keep end
@@ -246,7 +246,7 @@ is declared to be an
 .us array of 10 integers
 with
 .us static storage duration
-..ct ..li .
+.period
 Its value is only available within the function, and will be preserved
 between calls to the function.
 This is also a definition.
@@ -259,16 +259,17 @@ is declared to be an
 .us array of 10 integers
 with
 .us static storage duration
-..ct ..li .
+.period
 Its value is only available within the
 .us module
-..ct ..li .
+.period
 (The difference is the
 .ix 'scope'
 .us scope
 of the object
 .mono nums
-..ct ..li .)
+.period
+.ct )
 This is also a definition.
 .outside end
 .keep begin
@@ -282,7 +283,7 @@ is declared to be an
 .us integer
 with
 .us static storage duration
-..ct ..li .
+.period
 No other functions within the current module may refer to
 .mono x
 unless they also declare it.
@@ -297,7 +298,7 @@ is declared to be an
 .us integer
 with
 .us static storage duration
-..ct ..li .
+.period
 Its value is available to all functions within the module.
 The object is defined in another module, or elsewhere in this module.
 .outside end
@@ -316,7 +317,7 @@ of declarations of objects and functions.
 An identifier may be referenced
 only within its
 .us scope
-..ct ..li .
+.period
 .ix 'scope'
 .pp
 An identifier declared within a function or within a
@@ -436,7 +437,7 @@ and may also include the following
 .shade begin
 The &company. compilers also provide the following extended
 .us type qualifiers
-..ct :
+.ct :
 ..sk 1 c
 .im tqwatcom
 .sk 1
@@ -448,7 +449,7 @@ For the extended type qualifiers, see the appendix "&appkw.".
 .* .shade begin
 .* The &wlooc. compiler does not provide any additional
 .* .us type qualifiers
-.* ..ct ..li .
+.* .period
 .* .shade end
 .* ..do end
 .*
@@ -460,22 +461,22 @@ an object. Refer to the section on the type being defined.
 .pp
 The main types are
 .kw char
-..ct ,
+.ct ,
 .kw int
-..ct ,
+.ct ,
 .kw float
 and
 .kw double
-..ct ..li .
+.period
 The keywords
 .kw short
-..ct ,
+.ct ,
 .kw long
-..ct ,
+.ct ,
 .kw signed
-..ct ,
+.ct ,
 .kw unsigned
-..ct ,
+.ct ,
 .kw const
 and
 .kw volatile

@@ -17,8 +17,7 @@ There's one other link going in the other direction: certain documentation
 files live with their respective projects and not in the documents tree.
 This is especially true for error message documentation for the compilers
 and tools.
-
-
+.*
 .section Setting up
 .*
 .np
@@ -36,19 +35,20 @@ must point to the root of the docunmentation tree.
 Add
 .id %doc_root%\cmds
 to your
-.id PATH.
+.id PATH
+.period
 Your
 .id PATH
 must also contain the Open Watcom C/C++
 binary directories appropriate for your host platform (for wmake). This is
 taken care of automatically by using
-.id setvars.cmd/setvars.bat.
+.id setvars.cmd/setvars.bat
+.period
 .np
 Note that to produce Windows and/or OS/2 online documentation, you will need
 the appropriate SDKs and Toolkits containing the platform specific online
 help compilers.
-
-
+.*
 .section Building PostScript Documentation
 .*
 .ix 'PostScript'
@@ -86,11 +86,11 @@ wd          Debugger User's Guide
 .millust end
 .np
 The output file is of type
-.id .ps.
+.id .ps
+.period
 You should be able to send this file to any PostScript printer or view
 it in GhostScript or convert it to PDF or do whatever it is you do with
 PostScript files.
-
 .*
 .section Building Online Help Documentation
 .*
@@ -181,7 +181,8 @@ followed by some letters and digits and end with a period). GML tags
 will be most familiar to anyone who has ever used IBM GML or Waterloo
 GML. This tag set is a variant of SGML. The most familiar SGML tag
 format is
-.id <TAG>.
+.id <TAG>
+.period
 In Watcom GML, the "<" and ">" are replaced by the
 ":" and ".". If you know HTML, you know how tags work &mdash HTML is
 just another variant of SGML.
@@ -192,10 +193,12 @@ macro language. The base Script tag set employs two letters (e.g.,
 .dm, .if, .se, .cp, .us). The user-defined (extended set) can employ
 two, three, four or more letters (e.g. .chapter, .section, .beglevel).
 For a good example of user-defined Script tags, see
-.id %doc_root%\doc\gml\fmtmacro.gml.
+.id %doc_root%\doc\gml\fmtmacro.gml
+.period
 GML tags can also be defined. For a
 good example of user-defined GML tags, see
-.id %doc_root%\doc\gml\cppextra.gml.
+.id %doc_root%\doc\gml\cppextra.gml
+.period
 .np
 These tags are described here for you, not so that you can begin defining
 your own tags, but so that you will recognize them in the ASCII text

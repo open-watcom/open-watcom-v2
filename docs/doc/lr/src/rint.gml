@@ -9,17 +9,17 @@ The
 .id &funcb.
 function rounds the argument
 .arg x
-to a nearby integer.  The direction of the rounding 
+to a nearby integer.  The direction of the rounding
 is determined by the current value of
 .kw fegetround
-.ct .li . If supported, this function will throw a 
+.period If supported, this function will throw a
 floating point error if an overflow occurs due to the
 current rounding mode.
 .desc end
 .return begin
-The rounded value of 
+The rounded value of
 .arg x
-.ct .li .
+.period
 .return end
 .see begin
 .seelist fegetround fesetround nearbyint round trunc

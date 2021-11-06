@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 
 /* Note: We've got problems if there are more than 32 hook_types */
 typedef enum {
-    #define pick(e,name)    e,
+    #define pick(t,e)   e,
     #include "_dbghook.h"
     #undef pick
     HOOK_NUM,

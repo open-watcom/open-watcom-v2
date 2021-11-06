@@ -32,15 +32,15 @@ The information is returned in a
 .kw _finddata_t
 structure pointed to by
 .arg fileinfo
-.ct .li .
+.period
 .millust begin
 struct _finddata_t {
-  unsigned  attrib;
-  time_t    time_create;  /* -1 for FAT file systems */
-  time_t    time_access;  /* -1 for FAT file systems */
-  time_t    time_write;
-  _fsize_t  size;
-  char      name[_MAX_PATH];
+    unsigned    attrib;
+    time_t      time_create;     /* -1 for FAT file systems */
+    time_t      time_access;     /* -1 for FAT file systems */
+    time_t      time_write;
+    _fsize_t    size;
+    char        name[_MAX_PATH];
 };
 .millust end
 .np
@@ -59,44 +59,44 @@ The information is returned in a
 .kw _finddatai64_t
 structure pointed to by
 .arg fileinfo
-.ct .li .
+.period
 .millust begin
 struct _finddatai64_t {
-  unsigned  attrib;
-  time_t    time_create;  /* -1 for FAT file systems */
-  time_t    time_access;  /* -1 for FAT file systems */
-  time_t    time_write;
-  __int64   size;         /* 64-bit size info */
-  char      name[_MAX_PATH];
+    unsigned    attrib;
+    time_t      time_create;     /* -1 for FAT file systems */
+    time_t      time_access;     /* -1 for FAT file systems */
+    time_t      time_write;
+    __int64     size;            /* 64-bit size info        */
+    char        name[_MAX_PATH];
 };
 .millust end
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 .millust begin
 struct _wfinddata_t {
-  unsigned  attrib;
-  time_t    time_create;  /* -1 for FAT file systems */
-  time_t    time_access;  /* -1 for FAT file systems */
-  time_t    time_write;
-  _fsize_t  size;
-  wchar_t   name[_MAX_PATH];
+    unsigned    attrib;
+    time_t      time_create;     /* -1 for FAT file systems */
+    time_t      time_access;     /* -1 for FAT file systems */
+    time_t      time_write;
+    _fsize_t    size;
+    wchar_t     name[_MAX_PATH];
 };
 .millust end
 .np
-The wide-character &wfunc64 function is similar to the &func64
-function but operates on wide-character strings.
+The wide character &wfunc64 function is similar to the &func64
+function but operates on wide character strings.
 It differs from the
 .id &wfunc.
 function in that it returns a 64-bit file
 size.
 .millust begin
 struct _wfinddatai64_t {
-  unsigned  attrib;
-  time_t    time_create;  /* -1 for FAT file systems */
-  time_t    time_access;  /* -1 for FAT file systems */
-  time_t    time_write;
-  __int64   size;         /* 64-bit size info */
-  wchar_t   name[_MAX_PATH];
+    unsigned    attrib;
+    time_t      time_create;     /* -1 for FAT file systems */
+    time_t      time_access;     /* -1 for FAT file systems */
+    time_t      time_write;
+    __int64     size;            /* 64-bit size info        */
+    wchar_t     name[_MAX_PATH];
 };
 .millust end
 .do end
@@ -108,10 +108,10 @@ returns a unique search handle identifying the
 file or group of files matching the
 .arg filespec
 specification, which can be used in a subsequent call to
-.kw _findnext
+.reffunc _findnext
 or to
-.kw _findclose
-.ct .li .
+.reffunc _findclose
+.period
 Otherwise,
 .id &_func.
 returns &minus.1 and sets

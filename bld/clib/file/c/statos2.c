@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,7 +152,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
 #ifdef __WIDECHAR__
         char        mbPath[MB_CUR_MAX * _MAX_PATH];
 
-        if( wcstombs( mbPath, path, sizeof( mbPath ) ) == -1 ) {
+        if( wcstombs( mbPath, path, sizeof( mbPath ) ) == (size_t)-1 ) {
             mbPath[0] = '\0';
         }
 #endif
@@ -167,9 +167,9 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
                 _RWD_errno = ENOENT;
                 return( -1 );
 #ifdef __INT64__
-            } else if( __F_NAME(_fstati64,_wfstati64)( handle, buf ) == -1 ) {
+            } else if( _fstati64( handle, buf ) == -1 ) {
 #else
-            } else if( __F_NAME(fstat,_wfstat)( handle, buf ) == -1 ) {
+            } else if( fstat( handle, buf ) == -1 ) {
 #endif
                 rc = _RWD_errno;
             }

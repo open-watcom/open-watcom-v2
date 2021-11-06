@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,8 +51,5 @@
 #define TERM_COREDUMP(status)   (((status) & 0x80) != 0)
 #define TERM_VALUE(status)      ((status) >> 8)
 
-extern char *index(char *s, int c);
-extern char *rindex(char *s, int c);
-extern char *valloc(unsigned size);
 extern void uprintf(int, char *, ... );
 extern int  ugetc(int f);

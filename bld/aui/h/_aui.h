@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -137,13 +138,13 @@ extern wnd_piece        WndMenuPiece;
 
 #define WndVirtualRow( wnd, row ) \
         ( ( row ) == WND_NO_ROW ) ? \
-        ( row ) : ( ( row ) + ( wnd )->top - ( wnd )->title_size )
+        ( row ) : ( ( row ) + ( wnd )->top - ( wnd )->title_rows )
 
 #define WndScreenRow( wnd, row ) \
         ( ( row ) == WND_NO_ROW ) ? \
-        ( row ) : ( ( row ) - ( wnd )->top + ( wnd )->title_size )
+        ( row ) : ( ( row ) - ( wnd )->top + ( wnd )->title_rows )
 
-#define WndVirtualTop( wnd )    WndVirtualRow( wnd, wnd->title_size )
+#define WndVirtualTop( wnd )    WndVirtualRow( wnd, wnd->title_rows )
 #define WndVirtualBottom( wnd ) WndVirtualRow( wnd, wnd->rows )
 
 #endif // __AUI_H_INCLUDED

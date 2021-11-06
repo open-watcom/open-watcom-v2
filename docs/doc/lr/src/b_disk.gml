@@ -3,13 +3,13 @@
 #include <bios.h>
 unsigned short _bios_disk( unsigned service,
                            struct diskinfo_t *diskinfo );
-struct  diskinfo_t {        /* disk parameters   */
-        unsigned drive;     /* drive number      */
-        unsigned head;      /* head number       */
-        unsigned track;     /* track number      */
-        unsigned sector;    /* sector number     */
-        unsigned nsectors;  /* number of sectors */
-        void __far *buffer; /* buffer address    */
+struct  diskinfo_t {     /* disk parameters   */
+    unsigned   drive;    /* drive number      */
+    unsigned   head;     /* head number       */
+    unsigned   track;    /* track number      */
+    unsigned   sector;   /* sector number     */
+    unsigned   nsectors; /* number of sectors */
+    void __far *buffer;  /* buffer address    */
 };
 .ixfunc2 '&BiosFunc' &funcb
 .synop end
@@ -24,7 +24,7 @@ is passed the
 .kw diskinfo_t
 structure pointed to by
 .arg diskinfo
-.ct .li .
+.period
 The value for
 .arg service
 can be one of the following values:
@@ -82,8 +82,8 @@ function returns status information in the high-order byte when
 is _DISK_STATUS, _DISK_READ, _DISK_WRITE, or _DISK_VERIFY.
 The possible values are:
 .begnote $compact
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .sr ptntelmt = 0
 .note 0x00
 Operation successful

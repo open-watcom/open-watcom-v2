@@ -37,7 +37,7 @@ test_flags_386 += -3s-mf
 test_flags_i86 += -3-ml -fi="source/noinline.h"
 test_flags_axp += -si
 
-!include testenv1.mif
+!include testenv.mif
 
 opt_memchk = -zl -wcd=887
 
@@ -218,11 +218,10 @@ exes = $(wc_list_template) $(wc_vect_template) $(wc_hash_template) &
 
 .cpp : source
 
-test : .symbolic start clean start_test memchk.obj test.lnk $(exes) common_set_result
-    @%make clean
+test : .symbolic start start_test memchk.obj test.lnk $(exes)
+    $(noecho)%make common_set_result
 
 start_test : .symbolic
-    @%make common_start_test
     @set ERROR_MSG=general error
 
 clean : .procedure

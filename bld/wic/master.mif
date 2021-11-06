@@ -4,63 +4,56 @@
 ##############################################################################
 
 proj_name = wic
-name = wic
 
 wic_autodepends = .AUTODEPEND
 
 wic_trmem = 1
 
-.extensions: .rc
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include osi.mif
 !include wres.mif
 !include trmem.mif
 
 !include ../objsdef.mif                #   get objs macro
 
-##############################################################################
+#
+# cflags
+#
+.c : ../c;$(trmem_dir)
+
+inc_dirs = -I"../h"
 
 extra_cpp_flags_wicgener = $(trmem_cpp_flags)
 
 extra_c_flags = -zp1
 
-extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_wicgener = $(trmem_cover_cflags)
 
-##############################################################################
+# explicit rules
+#################
 
+#
+# EXE
+#
+exetarg_objs = $(objs)
+exetarg_libs = $(wres_lib)
+exetarg_res_wresui = wresui.res
+!include exetarg.mif
 
-.h : ../h
-.c : ../c;$(trmem_dir)
-
-inc_dirs = -I"../h"
-
-libs = $(wres_lib) $(osildr)
-
-##############################################################################
-
-$(name).exe : $(objs) wresui.res $(sys_objs) $(libs) $(sys_libs) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(sys_objs) $(libs) $(sys_libs) $(ldflags)
-!else
-    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs) $(sys_libs)}
-!endif
-    @%make bind_osildr
-    @%make bind_res_wresui
-
-##############################################################################
+#
+# rc and others
+#
+rcui_inc_dirs = -I"../res" -I"../h"
 
 wresui.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     @%make echo_rc
-    $(rc_aui) $[@ -fo=$^@
+    $(rcui)
 
 usagee.gh:  ../res/usage.sp
     @%make echo_wsplice
-    $(wsplice) -kENGLISH -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< $^@
+    $(wsplice) -kENGLISH -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $< $@
 
 usagej.gh:  ../res/usage.sp
     @%make echo_wsplice
-    $(wsplice) -kJAPANESE -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< $^@
+    $(wsplice) -kJAPANESE -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $< $@

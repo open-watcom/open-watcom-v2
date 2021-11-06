@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@ static const char *usageMsg[] = {
 };
 
 typedef struct format {
-    long int    offset;             // initial file offset
+    long        offset;             // initial file offset
     unsigned    osfmt : 1;          // offset format ( dec. = ON, oct. = OFF )
 
     unsigned    b_asc : 1;          // b = bytes, w = words, dw = double words
@@ -284,7 +284,7 @@ static void dumpFile( FILE *fp, format *fmt )
 
 static void parseOffset( char *str, format *fmt )
 {
-    long int    mult = 1L;
+    long       mult = 1L;
     char       *p, *fs = "%lo";
 
     if( *str == '+' ) {                         // ignore the '+'

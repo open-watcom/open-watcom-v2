@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 
 static  gui_rect        Scale           = { 0, 0, 1000, 1000 };
 
-bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     /* unused parameters */ (void)gui; (void)gui_ev; (void)param;
 
@@ -52,8 +52,8 @@ static gui_create_info Parent = {
     GUI_NO_MENU,                    // Menu array
     GUI_NO_COLOUR,                  // Colour attribute array
     &MainWndGUIEventProc,           // GUI Event Callback function
-    NULL,
-    NULL,
+    NULL,                           // Extra
+    NULL,                           // Icon
     NULL                            // Menu Resource
 };
 
@@ -66,12 +66,12 @@ static gui_create_info Child = {
     GUI_NO_MENU,                    // Menu array
     GUI_NO_COLOUR,                  // Colour attribute array
     &MainWndGUIEventProc,           // GUI Event Callback function
-    NULL,
-    NULL,
+    NULL,                           // Extra
+    NULL,                           // Icon
     NULL                            // Menu Resource
 };
 
-void GUImain( void )
+void GUIAPI GUImain( void )
 {
     GUIWndInit( 300 /* ms */, GUI_GMOUSE );
     GUISetScale( &Scale );

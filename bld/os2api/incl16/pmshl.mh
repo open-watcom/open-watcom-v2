@@ -15,7 +15,7 @@
 #define XYF_MINIMIZED    0x0004
 #define XYF_MAXIMIZED    0x0002
 #define XYF_INVISIBLE    0x0001
-#define XYF_NORMAL       0X0000
+#define XYF_NORMAL       0x0000
 
 #define HINI_PROFILE       (HINI) NULL
 #define HINI_USERPROFILE   ((HINI)-1L)

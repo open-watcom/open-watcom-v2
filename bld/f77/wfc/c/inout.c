@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,14 +31,11 @@
 
 
 #include "ftnstd.h"
-#include <stdio.h>
-#include <string.h>
 #include <time.h>
 #include "progsw.h"
 #include "cpopt.h"
 #include "errcod.h"
 #include "global.h"
-#include "omodes.h"
 #include "cioconst.h"
 #include "csetinfo.h"
 #include "fmemmgr.h"
@@ -51,12 +48,10 @@
 #include "filescan.h"
 #include "sdcio.h"
 #include "libsupp.h"
-#include "wf77auxd.h"
-#include "wf77aux.h"
+#include "wf77prag.h"
 #include "errutil.h"
 #include "sdfile.h"
 #include "brseinfo.h"
-#include "posdat.h"
 
 #include "clibext.h"
 
@@ -73,38 +68,23 @@
     #error Unknown System
 #endif
 
-static f_attrs          DskAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static f_attrs          PrtAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static f_attrs          TrmAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static f_attrs          ErrAttr = { REC_TEXT };
-
 static char             ErrExtn[] = { "err" };
 static char             LstExtn[] = { "lst" };
 
 static char             *ListBuff;      // listing file buffer
 static file_handle      ListFile;       // file pointer for the listing file
-static int              ListCursor;     // offset into "ListBuff"
+static size_t           ListCursor;     // offset into "ListBuff"
 
 static byte             ListCount;      // # of lines printed to listing file
 static byte             ListFlag;       // flag for listing file
 
 static char             *ErrBuff;       // error file buffer
 static file_handle      ErrFile;        // file pointer for the error file
-static int              ErrCursor;      // offset into "ErrBuff"
+static size_t           ErrCursor;      // offset into "ErrBuff"
 
 static char             *TermBuff;      // terminal file buffer
 static file_handle      TermFile;       // file pointer for terminal
-static int              TermCursor;     // offset into "TermBuff"
-
-/* Forward declarations */
-static  void    SendRec( void );
-static  void    SetCtrlSeq( void );
-static  void    PutLst( const char *string );
-static  void    ChkErrErr( void );
-static  void    ErrOut( const char *string );
-static  void    ErrNL( void );
-static  void    ChkLstErr( void );
-static  void    Erase( char *extn );
+static size_t           TermCursor;     // offset into "TermBuff"
 
 
 //========================================================================
@@ -120,45 +100,23 @@ void    InitComIO( void ) {
     TermCursor = 0;
     ErrCursor  = 0;
     ListCursor = 0;
-    // Point "terminal" buffer and ".ERR" file buffer to static area
-    // so that we can report an error before memory initialization.
-    TermBuff = TokenBuff;
-    ErrBuff = &TokenBuff[ 256 ];
+    TermBuff = FMemAlloc( TERM_BUFF_SIZE );
+    ErrBuff = NULL;
     ListBuff = NULL;
     CurrFile = NULL;
     ErrFile = NULL;
     ListFile = NULL;
     ListFlag = 0;
-    ListCursor = 0;
     ListCount = 0;
     SDInitIO();
     TermFile = FStdOut;
 }
 
 
-void    InitMemIO( void ) {
-//===================
-
-    // We've initialized memory - now we can allocate file buffers.
-    TermBuff = FMemAlloc( TERM_BUFF_SIZE );
-    if( ErrFile == NULL ) {
-        // we haven't opened the error file yet so set ErrBuff to NULL
-        // so that when we do open the error file we can allocate the
-        // buffer at that time
-        ErrBuff = NULL;
-    } else {
-        // the error file has been opened so allocate a buffer for it
-        ErrBuff = FMemAlloc( ERR_BUFF_SIZE );
-    }
-}
-
-
 void    FiniComIO( void ) {
 //===================
 
-    if( TermBuff != TokenBuff ) {
-        FMemFree( TermBuff );
-    }
+    FMemFree( TermBuff );
 }
 
 
@@ -167,6 +125,16 @@ void    FiniComIO( void ) {
 //  Source file routines
 //
 //========================================================================
+
+
+static  void    Erase( char *extn ) {
+//===================================
+
+    char        buffer[_MAX_PATH];
+
+    MakeName( SDFName( SrcName ), extn, buffer );
+    SDScratch( buffer );
+}
 
 
 void    OpenSrc( void ) {
@@ -178,14 +146,13 @@ void    OpenSrc( void ) {
     bool        erase_err;
 
     erase_err = ErrFile == NULL;
-    SDInitAttr();
     MakeName( SrcName, SrcExtn, bld_name );
-    fp = SDOpen( bld_name, READ_FILE );
+    fp = SDOpenText( bld_name, "rt" );
     if( fp != NULL ) {
         SrcInclude( bld_name );
         CurrFile->fileptr = fp;
     } else {
-        SDError( NULL, err_msg );
+        SDError( NULL, err_msg, sizeof( err_msg ) );
         InfoError( SM_OPENING_FILE, bld_name, err_msg );
     }
     if( erase_err ) {
@@ -206,30 +173,20 @@ void    IOPurge( void ) {
 }
 
 
-static  uint    SrcRead( void ) {
-//===============================
-
-    uint        len;
+static size_t SrcRead( void )
+//===========================
+{
+    size_t      len;
     file_handle fp;
     char        msg[81];
 
     fp = CurrFile->fileptr;
-    if( CurrFile->flags & INC_LIB_MEMBER ) {
-        len = LibRead( fp );
-        if( LibEof( fp ) ) {
-            ProgSw |= PS_INC_EOF;
-        } else if( LibError( fp, msg ) ) {
-            InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
-            ProgSw |= PS_INC_EOF;
-        }
-    } else {
-        len = SDRead( fp, SrcBuff, SRCLEN );
-        if( SDEof( fp ) ) {
-            ProgSw |= PS_INC_EOF;
-        } else if( SDError( fp, msg ) ) {
-            InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
-            ProgSw |= PS_INC_EOF;
-        }
+    len = SDReadText( fp, SrcBuff, SRCLEN );
+    if( SDEof( fp ) ) {
+        ProgSw |= PS_INC_EOF;
+    } else if( SDError( fp, msg, sizeof( msg ) ) ) {
+        InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
+        ProgSw |= PS_INC_EOF;
     }
     return( len );
 }
@@ -238,7 +195,7 @@ static  uint    SrcRead( void ) {
 void    ReadSrc( void ) {
 //=======================
 
-    uint        len;
+    size_t      len;
 
     // If we are loading source as a result of an undefined
     // subprogram (as opposed to using an C$INCLUDE option),
@@ -287,21 +244,20 @@ void    Include( const char *inc_name )
     char        bld_name[_MAX_PATH];
     char        err_msg[ERR_BUFF_SIZE+1];
 
-    SDInitAttr();
     CopyMaxStr( inc_name, bld_name, _MAX_PATH - 1 );
-    MakeName( bld_name, SDSrcExtn( bld_name ), bld_name );
+    MakeName( bld_name, SDSplitSrcExtn( bld_name ), bld_name );
     if( AlreadyOpen( inc_name ) )
         return;
     if( AlreadyOpen( bld_name ) )
         return;
     // try file called <include_name>.FOR.
-    fp = SDOpen( bld_name, READ_FILE );
+    fp = SDOpenText( bld_name, "rt" );
     if( fp != NULL ) {
         SrcInclude( bld_name );
         CurrFile->fileptr = fp;
     } else {
         // get error message before next i/o
-        SDError( NULL, err_msg );
+        SDError( NULL, err_msg, sizeof( err_msg ) );
         // try library
         fp = IncSearch( inc_name );
         if( fp != NULL ) {
@@ -325,7 +281,7 @@ bool    SetLst( bool new ) {
 
     bool        old;
 
-    old = ( ListFlag & LF_QUIET ) == 0;
+    old = ( (ListFlag & LF_QUIET) == 0 );
     if( new ) {
         ListFlag &= ~LF_QUIET;
     } else {
@@ -349,7 +305,7 @@ void    SrcInclude( const char *name )
     src->flags = 0;
     if( CurrFile != NULL ) {
         NewOptions = Options;
-        if( ( Options & OPT_INCLIST ) == 0 ) {
+        if( (Options & OPT_INCLIST) == 0 ) {
             SetLst( false );
         }
     }
@@ -372,18 +328,14 @@ void    Conclude( void ) {
     if( CurrFile != NULL ) {
         NewOptions = old->options;
         Options = NewOptions;
-        if( ( ( CurrFile->link == NULL ) && ( Options & OPT_LIST ) ) ||
-              ( Options & OPT_INCLIST ) ) {
+        if( ( ( CurrFile->link == NULL ) && (Options & OPT_LIST) ) ||
+              (Options & OPT_INCLIST) ) {
             SetLst( true );
         } else {
             SetLst( false );
         }
     }
-    if( old->flags & INC_LIB_MEMBER ) {
-        IncMemClose( old->fileptr );
-    } else {
-        SDClose( old->fileptr );
-    }
+    SDClose( old->fileptr );
     FMemFree( old->name );
     FMemFree( old );
     ProgSw &= ~PS_INC_EOF;
@@ -398,36 +350,21 @@ void    Conclude( void ) {
 //========================================================================
 
 
-static  file_handle Open( char *fn, char *extn, int mode ) {
-//==========================================================
-
-    file_handle ptr;
-    char        buffer[_MAX_PATH];
-    char        errmsg[81];
-
-    MakeName( fn, extn, buffer );
-    ptr = SDOpen( buffer, mode );
-    if( SDError( ptr, errmsg ) ) {
-        InfoError( SM_OPENING_FILE, &buffer, &errmsg );
-    }
-    return( ptr );
-}
-
-
 void    OpenErr( void ) {
 //=======================
 
-    if( ( Options & OPT_ERRFILE ) &&
-        ( ( ProgSw & PS_ERR_OPEN_TRIED ) == 0 ) ) {
+    char        buffer[_MAX_PATH];
+    char        errmsg[81];
+
+    if( (Options & OPT_ERRFILE) && ( (ProgSw & PS_ERR_OPEN_TRIED) == 0 ) ) {
         ProgSw |= PS_ERR_OPEN_TRIED;
-        SDSetAttr( ErrAttr );
-        ErrFile = Open( SDFName( SrcName ), ErrExtn, WRITE_FILE );
+        MakeName( SDFName( SrcName ), ErrExtn, buffer );
+        ErrFile = SDOpenText( buffer, "wt" );
+        if( SDError( ErrFile, errmsg, sizeof( errmsg ) ) ) {
+            InfoError( SM_OPENING_FILE, &buffer, &errmsg );
+        }
         if( ErrFile != NULL ) {
-            SDInitAttr();
             ErrCursor = 0;
-            // ErrBuff will be non-NULL iff we have opened the error file
-            // before initializing memory (i.e. a warning message during
-            // options processing).
             if( ErrBuff == NULL ) {
                 ErrBuff = FMemAlloc( ERR_BUFF_SIZE );
             }
@@ -454,11 +391,38 @@ void    PrintErr( const char *string )
 static  bool    ErrToTerm( void ) {
 //=================================
 
-    if( ( Options & OPT_TERM ) == 0 )
+    if( (Options & OPT_TERM) == 0 )
         return( false );
-    if( ( Options & OPT_TYPE ) && ( ListFile != NULL ) )
+    if( (Options & OPT_TYPE) && ( ListFile != NULL ) )
         return( false );
     return( true );
+}
+
+
+static  void    ChkErrErr( void ) {
+//=================================
+
+    char        msg[81];
+    char        fnbuff[_MAX_PATH];
+
+    if( SDError( ErrFile, msg, sizeof( msg ) ) ) {
+        CloseErr();
+        Options |= OPT_TERM;
+        TermCursor = 0;
+        MakeName( SDFName( SrcName ), ErrExtn, fnbuff );
+        InfoError( SM_IO_WRITE_ERR, fnbuff, msg );
+    }
+}
+
+
+static  void    ErrNL( void ) {
+//=============================
+
+    if( ErrFile != NULL ) {
+        SDWriteTextNL( ErrFile, ErrBuff, ErrCursor );
+        ChkErrErr();
+    }
+    ErrCursor = 0;
 }
 
 
@@ -473,58 +437,11 @@ void    PrtErrNL( void ) {
 }
 
 
-void    JustErr( const char *string )
-//===================================
-{
-    if( ErrToTerm() ) {
-        TOut( string );
-    }
-    ErrOut( string );
-}
-
-
-static  void    ErrNL( void ) {
-//=============================
-
-    if( ErrFile != NULL ) {
-        SDWrite( ErrFile, ErrBuff, ErrCursor );
-        ChkErrErr();
-    }
-    ErrCursor = 0;
-}
-
-
-static  void    ChkErrErr( void ) {
-//=================================
-
-    char        msg[81];
-    char        fnbuff[_MAX_PATH];
-
-    if( SDError( ErrFile, msg ) ) {
-        CloseErr();
-        Options |= OPT_TERM;
-        TermCursor = 0;
-        MakeName( SDFName( SrcName ), ErrExtn, fnbuff );
-        InfoError( SM_IO_WRITE_ERR, fnbuff, msg );
-    }
-}
-
-void    ChkErrFile( void ) {
-//==========================
-
-// Make sure error file is opened.
-
-    if( ErrFile == NULL ) {
-        OpenErr();
-    }
-}
-
-
-static  void    SendBuff( const char *str, char *buff, int buff_size, int *cursor,
+static  void    SendBuff( const char *str, char *buff, size_t buff_size, size_t *cursor,
                           file_handle fp, void (*err_rtn)( void ) ) {
 //==========================================================================
 
-    int         len;
+    size_t  len;
 
     for( ; fp != NULL; ) {
         len = buff_size - 1 - *cursor;
@@ -534,7 +451,7 @@ static  void    SendBuff( const char *str, char *buff, int buff_size, int *curso
         str += len;
         if( *str == NULLCHAR )
             break;
-        SDWrite( fp, buff, *cursor );
+        SDWriteTextNL( fp, buff, *cursor );
         err_rtn();
         *cursor = 0;
     }
@@ -546,6 +463,27 @@ static  void    ErrOut( const char *string )
 {
     if( ErrFile != NULL ) {
         SendBuff( string, ErrBuff, ERR_BUFF_SIZE, &ErrCursor, ErrFile, &ChkErrErr );
+    }
+}
+
+
+void    JustErr( const char *string )
+//===================================
+{
+    if( ErrToTerm() ) {
+        TOut( string );
+    }
+    ErrOut( string );
+}
+
+
+void    ChkErrFile( void ) {
+//==========================
+
+// Make sure error file is opened.
+
+    if( ErrFile == NULL ) {
+        OpenErr();
     }
 }
 
@@ -580,7 +518,7 @@ void    TOutNL( const char *string )
 //==================================
 {
     TOut( string );
-    SDWrite( TermFile, TermBuff, TermCursor );
+    SDWriteTextNL( TermFile, TermBuff, TermCursor );
     TermCursor = 0;
 }
 
@@ -607,31 +545,22 @@ static  void    OpenListingFile( bool reopen ) {
 
     /* unused parameters */ (void)reopen;
 
-    if( ( Options & OPT_LIST ) == 0 ) {
+    if( (Options & OPT_LIST) == 0 ) {
         // no listing file
         // ignore other listing file options
     } else {
         GetLstName( name );
-        if( Options & OPT_TYPE ) {
-            SDSetAttr( TrmAttr );
-        // On the VAX, /PRINT means to generate a disk file "xxx.LIS"
-        // and set the spooling bit
-        } else if( Options & OPT_PRINT ) {
-            SDSetAttr( PrtAttr );
-        } else { // DISK file
-            SDSetAttr( DskAttr );
-        }
-        ListFile = SDOpen( name, WRITE_FILE );
-        if( SDError( ListFile, errmsg ) ) {
+        ListFile = SDOpenText( name, "wb" );
+        if( SDError( ListFile, errmsg, sizeof( errmsg ) ) ) {
             InfoError( SM_OPENING_FILE, name, errmsg );
         } else {
+            ListFlag |= LF_CC_NOLF;
             ListBuff = FMemAlloc( LIST_BUFF_SIZE + 1 );
             if( ListBuff == NULL ) {
                 CloseLst();
                 InfoError( MO_DYNAMIC_OUT );
             }
         }
-        SDInitAttr();
     }
 }
 
@@ -664,7 +593,7 @@ void    ChkPntLst( void ) {
 bool    WasStmtListed( void ) {
 //=============================
 
-    return( ( ListFlag & LF_STMT_LISTED ) != 0 );
+    return( (ListFlag & LF_STMT_LISTED) != 0 );
 }
 
 
@@ -739,66 +668,69 @@ void    PrtLstNL( const char *string )
 }
 
 
-void    PrtLst( const char *string )
-//==================================
-{
-    if( ListFlag & LF_QUIET )
-        return;
-    if( ListFile == NULL )
-        return;
-    PutLst( string );
+static  void    ChkLstErr( void ) {
+//=================================
+
+    char        msg[81];
+    char        fnbuff[_MAX_PATH];
+
+    if( SDError( ListFile, msg, sizeof( msg ) ) ) {
+        CloseLst();
+        Options |= OPT_TERM;
+        TermCursor = 0;
+        GetLstName( fnbuff );
+        InfoError( SM_IO_WRITE_ERR, fnbuff, msg );
+    }
 }
 
 
-void    CloseLst( void ) {
-//========================
+static  void    SendRec( void ) {
+//===============================
 
-    if( ListFile == NULL )
-        return;
-    SDClose( ListFile );
-    ListFile = NULL;
-    if( ListBuff == NULL )
-        return;
-    FMemFree( ListBuff );
-    ListBuff = NULL;
-}
-
-
-void    LFEndSrc( void ) {
-//==================
-
-    if( ListFile == NULL ) return;
+    if( ListFile != NULL ) {
+        SDWriteCCChar( ListFile, *ListBuff, (ListFlag & LF_CC_NOLF) );
+        SDWrite( ListFile, ListBuff + 1, ListCursor - 1 );
+        SDWrite( ListFile, "\r", 1 );
+        ChkLstErr();
+        ListFlag &= ~LF_CC_NOLF;
+    }
     ListFlag &= LF_OFF;
     ListCursor = 0;
-    SetCtrlSeq();
-    SendRec();
 }
 
 
-void    LFNewPage( void ) {
-//=========================
+static  void    SetCtrlSeq( void ) {
+//==================================
 
-    ListFlag |= LF_PAGE_FLAG;
-}
+    char        *ctrlseq;
 
-
-void    LFSkip( void ) {
-//======================
-
-    ListFlag |= LF_SKIP_FLAG;
-    if( ( ListFlag & LF_QUIET ) == 0 ) {
-        ++ListCount;
+    ++ListCount;
+    if( ListCount >= LinesPerPage - LF_PAGE_BOUNDARY ) {
+        ListFlag |= LF_PAGE_FLAG;
     }
+    if( ListFlag & LF_PAGE_FLAG ) {
+        ListCount = 0;
+        if( Options & OPT_TYPE ) {
+            ctrlseq = SkipCtrlSeq;
+        } else {
+            ctrlseq = FFCtrlSeq;
+        }
+    } else if( ListFlag & LF_SKIP_FLAG ) {
+        ctrlseq = SkipCtrlSeq;
+    } else {
+        ctrlseq = NormalCtrlSeq;
+    }
+    ListCursor = CopyMaxStr( ctrlseq, ListBuff, LIST_BUFF_SIZE );
 }
 
 
 static  void    PutLst( const char *string )
 //==========================================
 {
-    int         len;
+    size_t      len;
     bool        newline;
 
-    newline = ( ListFlag & LF_NEW_LINE );
+    newline = (ListFlag & LF_NEW_LINE);
     for( ; ListFile != NULL; ) {
         if( ListCursor == 0 ) {
             SetCtrlSeq();
@@ -818,65 +750,56 @@ static  void    PutLst( const char *string )
 }
 
 
-static  void    SetCtrlSeq( void ) {
+void    PrtLst( const char *string )
 //==================================
-
-    char        *ctrlseq;
-
-    ++ListCount;
-    if( ListCount >= LinesPerPage - LF_PAGE_BOUNDARY ) {
-        ListFlag |= LF_PAGE_FLAG;
-    }
-    if(  ListFlag & LF_PAGE_FLAG ) {
-        ListCount = 0;
-        if( Options & OPT_TYPE ) {
-            ctrlseq = SkipCtrlSeq;
-        } else {
-            ctrlseq = FFCtrlSeq;
-        }
-    } else if( ListFlag & LF_SKIP_FLAG ) {
-        ctrlseq = SkipCtrlSeq;
-    } else {
-        ctrlseq = NormalCtrlSeq;
-    }
-    ListCursor = CopyMaxStr( ctrlseq, ListBuff, LIST_BUFF_SIZE );
+{
+    if( ListFlag & LF_QUIET )
+        return;
+    if( ListFile == NULL )
+        return;
+    PutLst( string );
 }
 
 
-static  void    SendRec( void ) {
-//===============================
+void    CloseLst( void ) {
+//========================
 
-    if( ListFile != NULL ) {
-        SDWrite( ListFile, ListBuff, ListCursor );
-        ChkLstErr();
-    }
+    if( ListFile == NULL )
+        return;
+    SDWriteCCChar( ListFile, ' ', (ListFlag & LF_CC_NOLF) );
+    SDClose( ListFile );
+    ListFile = NULL;
+    if( ListBuff == NULL )
+        return;
+    FMemFree( ListBuff );
+    ListBuff = NULL;
+}
+
+
+void    LFEndSrc( void ) {
+//==================
+
+    if( ListFile == NULL )
+        return;
     ListFlag &= LF_OFF;
     ListCursor = 0;
+    SetCtrlSeq();
+    SendRec();
 }
 
 
-static  void    ChkLstErr( void ) {
-//=================================
+void    LFNewPage( void ) {
+//=========================
 
-    char        msg[81];
-    char        fnbuff[_MAX_PATH];
+    ListFlag |= LF_PAGE_FLAG;
+}
 
-    if( SDError( ListFile, msg ) ) {
-        CloseLst();
-        Options |= OPT_TERM;
-        TermCursor = 0;
-        GetLstName( fnbuff );
-        InfoError( SM_IO_WRITE_ERR, fnbuff, msg );
+
+void    LFSkip( void ) {
+//======================
+
+    ListFlag |= LF_SKIP_FLAG;
+    if( (ListFlag & LF_QUIET) == 0 ) {
+        ++ListCount;
     }
 }
-
-
-static  void    Erase( char *extn ) {
-//===================================
-
-    char        buffer[_MAX_PATH];
-
-    MakeName( SDFName( SrcName ), extn, buffer );
-    SDScratch( buffer );
-}
-

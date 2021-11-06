@@ -29,7 +29,7 @@ is called a
 .ix 'dummy argument'
 .ix 'argument' 'dummy'
 An asterisk is allowed only in a subroutine subprogram.
-.endnote
+.esynote
 .np
 The
 .kw ENTRY

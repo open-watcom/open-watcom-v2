@@ -18,14 +18,34 @@ sys_windowed = 1
 
 !include $(wdisasm_dir)/client.mif
 
-msgfiles = &
-        ../res/about.msg &
-        ../res/alias.msg &
-        ../res/hint.msg &
-        ../res/log.msg &
-        ../res/memwnd.msg &
-        ../res/savelbox.msg
+#
+# cflags
+#
+.c: ../c;$(watcom_dir)/c
 
+inc_dirs = -I. -I"../h" $(wpi_inc_dirs) $(dis_includes)
+
+extra_cpp_flags     = -DGUI_IS_GUI
+extra_cpp_flags_nt  = -DNOUSE3D
+extra_cpp_flags_os2 = -D__OS2_PM__
+
+extra_c_flags = -fh
+extra_c_flags_i86 = -zu -zc
+extra_c_flags_win_i86 = -zW
+extra_c_flags_win_386 = -zw
+
+#
+# aflags
+#
+.asm: ../asm
+
+# explicit rules
+#################
+
+#
+# LIB
+#
+libtarg_prebuild_objs = uistr.gh
 #                     nt win os2 win...
 #======================================
 !inject about.obj     nt win
@@ -64,45 +84,28 @@ msgfiles = &
 !inject statwnd.obj   nt win os2         # shared with gui project
 !inject strsup.obj    nt win
 !inject toolbr.obj    nt win os2         # shared with gui project
-!inject wclbproc.obj     win     win386
 !inject windlg.obj    nt win             # shared with gui project
 !inject wmdisim.obj   nt win os2         # shared with gui project
 !inject wwinhelp.obj  nt win             # shared with gui project
-
+#
 !ifeq name windbg
-objs = $(windbg)
+libtarg_objs = $(windbg)
 !else
-objs = $($(host_os)) $($(host_os)$(host_cpu))
+libtarg_objs = $($(host_os)) $($(objs_subdir))
 !ifeq host_cpu i86
-objs += $($(host_os)dbg)
+libtarg_objs += $($(host_os)dbg)
 !endif
 !endif
+libtarg_name = $(name)
+!include libtarg.mif
 
-extra_cpp_flags_nt  = -DNOUSE3D
-extra_cpp_flags_os2 = -D__OS2_PM__
-
-extra_c_flags = -fh
-extra_c_flags_i86 = -zu -zc
-extra_c_flags_win_i86 = -zW
-extra_c_flags_win_386 = -zw
-
-inc_dirs = -I. -I"../h" $(wpi_inc_dirs) $(dis_includes)
-
-.c: ../c;$(watcom_dir)/c
-.asm: ../asm
-
-$(name).lib : uistr.gh $(objs) $(libs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs) $(libs)
-!else
-    $(librarian) $(libflags) $(objs) $(libs)
-!endif
-
+#
+# rc and others
+#
 uistr.gh : uistrmsg.gh
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_CUI_BASE -v OUTFILE=$^. $[@
 
 uistrmsg.gh : ../res/commonui.msg
     @%make echo_cpp
-    $(cpp) $(rc_aui_flags) -I"../h" -o$^@ $[@
+    $(cpp) $(rc_ui_flags) -I"../h" -o$@ $[@

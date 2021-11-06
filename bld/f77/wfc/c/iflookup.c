@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "iflookup.h"
 #include "errcod.h"
 #include "global.h"
@@ -63,22 +63,22 @@ typedef struct iff_data {
 #define IF_GENERIC      0x20
 #define IF_NOT_GEN      0x00
 
-static char __FAR *IFNames[] = {
+static const char   *IFNames[] = {
     #define pick(id,text,next,res,arg,flags) text,
     #include "ifdefn.h"
     #undef pick
     NULL
 };
 
-static iff_data __FAR IFFlags[] = {
+static iff_data     IFFlags[] = {
     #define pick( id, text, next, res, arg, flags) {next, res, arg, flags},
     #include "ifdefn.h"
     #undef pick
 };
 
-int     IFIndex( char *name ) {
+int IFIndex( const char *name )
 //=============================
-
+{
     return( KwLookUp( IFNames, IF_MAX_NAME, name, strlen( name ), true ) );
 }
 
@@ -90,14 +90,14 @@ IFF     IFLookUp( void ) {
 }
 
 
-static  sym_id  IFSymLookup( char *name, uint len ) {
-//===================================================
-
+static sym_id IFSymLookup( const char *name, size_t len )
+//=======================================================
+{
     sym_id      sym;
 
     sym = STNameSearch( name, len );
     if( sym != NULL ) {
-        if( ((sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM) &&
+        if( ( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) &&
                (sym->u.ns.flags & SY_INTRINSIC) ) {
             return( sym );
         }
@@ -116,21 +116,21 @@ static  sym_id  IFSymLookup( char *name, uint len ) {
 bool    IFIsGeneric( IFF func ) {
 //================================
 
-    return( ( IFFlags[ func ].flags & IF_GENERIC ) != 0 );
+    return( (IFFlags[func].flags & IF_GENERIC) != 0 );
 }
 
 
 bool    IFIsMagic( IFF func ) {
 //==============================
 
-    return( IFFlags[ func ].next == MAGIC );
+    return( IFFlags[func].next == MAGIC );
 }
 
 
 TYPE    IFType( IFF func ) {
 //===========================
 
-    return( IFFlags[ func ].ret_typ );
+    return( IFFlags[func].ret_typ );
 }
 
 
@@ -143,18 +143,18 @@ IFF     IFSpecific( TYPE typ ) {
 
     magic = 0;
     func = CITNode->sym_ptr->u.ns.si.fi.index;
-    if( IFFlags[ func ].next == MAGIC ) {
+    if( IFFlags[func].next == MAGIC ) {
         magic = MAGIC;
-    } else if( IFFlags[ func ].flags & IF_GENERIC ) {
-        for( ; IFFlags[ func ].arg_typ != typ; ) {
-            func = IFFlags[ func ].next;
+    } else if( IFFlags[func].flags & IF_GENERIC ) {
+        for( ; IFFlags[func].arg_typ != typ; ) {
+            func = IFFlags[func].next;
             if( func == IF_NO_MORE ) {
                 TypeErr( LI_NO_SPECIFIC, typ );
                 return( magic );
             }
         }
-        sym = IFSymLookup( IFNames[ func ], strlen( IFNames[ func ] ) );
-        typ = IFFlags[ func ].ret_typ;
+        sym = IFSymLookup( IFNames[func], strlen( IFNames[func] ) );
+        typ = IFFlags[func].ret_typ;
         // merge flags - don't assign them from CITNode->sym_ptr->u.ns.flags
         // since SY_IF_ARGUMENT may be set in sym->flags
         // Consider:        DOUBLE PRECISION X
@@ -168,17 +168,17 @@ IFF     IFSpecific( TYPE typ ) {
         sym->u.ns.xt.size = TypeSize( typ );
         sym->u.ns.si.fi.index = func;
         CITNode->sym_ptr = sym;
-        if( IFFlags[ func ].flags & IF_IN_LINE ) {
+        if( IFFlags[func].flags & IF_IN_LINE ) {
             magic = MAGIC;
         } else {
             MarkIFUsed( func );
         }
-    } else if( IFFlags[ func ].flags & IF_IN_LINE ) {
+    } else if( IFFlags[func].flags & IF_IN_LINE ) {
         magic = MAGIC;
     } else {
         MarkIFUsed( func );
     }
-    typ = IFFlags[ func ].ret_typ;
+    typ = IFFlags[func].ret_typ;
     CITNode->typ = typ;
     CITNode->size = TypeSize( typ );
     return( magic );
@@ -210,29 +210,29 @@ bool    IsIFMin( IFF func ) {
 bool    IsIntrinsic( unsigned_16 flags ) {
 //========================================
 
-    return( ( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) &&
-            ( ( flags & SY_INTRINSIC ) != 0 ) );
+    return( ( (flags & SY_CLASS) == SY_SUBPROGRAM ) &&
+            ( (flags & SY_INTRINSIC) != 0 ) );
 }
 
 
 bool    IFAsArg( IFF func ) {
 //==============================
 
-    return( IFFlags[ func ].flags & IF_ARG_OK );
+    return( IFFlags[func].flags & IF_ARG_OK );
 }
 
 bool    IFVarArgs( IFF func ) {
 //==============================
 
-    return( ( IFFlags[ func ].flags & IF_COUNT_MASK ) == TWO_OR_MORE );
+    return( (IFFlags[func].flags & IF_COUNT_MASK) == TWO_OR_MORE );
 }
 
 
 void    IFChkExtension( IFF func ) {
 //==================================
 
-    if( IFFlags[ func ].flags & IF_EXTENSION ) {
-        Extension( LI_IF_NOT_STANDARD, IFNames[ func ] );
+    if( IFFlags[func].flags & IF_EXTENSION ) {
+        Extension( LI_IF_NOT_STANDARD, IFNames[func] );
     }
 }
 
@@ -242,7 +242,7 @@ void    IFCntPrms( IFF func, int actual_cnt ) {
 
     int         need;
 
-    need = IFFlags[ func ].flags & IF_COUNT_MASK;
+    need = (IFFlags[func].flags & IF_COUNT_MASK);
     if( need == TWO_OR_MORE ) {
         if( actual_cnt >= 2 ) {
             return;
@@ -263,18 +263,18 @@ void    IFCntPrms( IFF func, int actual_cnt ) {
 bool    IFGenInLine( IFF func ) {
 //================================
 
-    return( ( IFFlags[ func ].flags & IF_IN_LINE ) != 0 );
+    return( (IFFlags[func].flags & IF_IN_LINE) != 0 );
 }
 
 
 TYPE    IFArgType( IFF func ) {
 //==============================
 
-    return( IFFlags[ func ].arg_typ );
+    return( IFFlags[func].arg_typ );
 }
 
-char    *IFName( IFF func ) {
-//==============================
-
-    return( IFNames[ func ] );
+const char *IFName( IFF func )
+//============================
+{
+    return( IFNames[func] );
 }

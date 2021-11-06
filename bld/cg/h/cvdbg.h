@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 
 
 #define CV_MAX_REC 256
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     #define CVSIZE 16  // 16:16 compiler
 #elif _TARGET & (_TARG_80386 | _TARG_AXP | _TARG_PPC | _TARG_MIPS)
     #define CVSIZE 32  // 16:32 or 0:32 compiler

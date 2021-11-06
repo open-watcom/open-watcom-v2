@@ -9,7 +9,7 @@ is the statement label of an executable statement that appears in
 the same program unit as the
 .kw GO TO
 statement.
-.endnote
+.esynote
 .exam begin
       GO TO 10
       .
@@ -55,7 +55,7 @@ is the statement label of an executable statement that appears in
 the same program unit as the computed
 .kw GO TO
 statement.
-.endnote
+.esynote
 .np
 The integer expression
 .id i
@@ -108,7 +108,7 @@ is the statement label of an executable statement that appears in
 the same program unit as the assigned
 .kw GO TO
 statement.
-.endnote
+.esynote
 .np
 The variable
 .id i

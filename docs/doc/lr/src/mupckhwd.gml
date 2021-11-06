@@ -11,7 +11,7 @@ high-order data elements of
 .arg m1
 and
 .arg m2
-.ct .li .
+.period
 It ignores the low-order words.
 When unpacking from a memory operand, the full 64-bit operand
 is accessed from memory but only the high-order 32 bits are utilized.

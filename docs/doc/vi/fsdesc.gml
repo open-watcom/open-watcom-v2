@@ -26,10 +26,10 @@
 .*
 .* Description:  Directory listing text.
 .*
-.* Date		By		Reason
-.* ----		--		------
-.* 12-aug-92	Craig Eisler	initial draft
-.* 28-sep-05	L. Haynes		reformatted
+.* Date         By              Reason
+.* ----         --              ------
+.* 12-aug-92    Craig Eisler    initial draft
+.* 28-sep-05    L. Haynes       reformatted
 .****************************************************************************/
 From this listing, you may pick a file, another directory, or another
 drive (the available drives are at the end of the listing).

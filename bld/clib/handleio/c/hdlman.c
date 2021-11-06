@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -274,12 +274,13 @@ _WCRTLINK int _grow_handles( int num )
                 _enable();
             }
         }
-#elif defined( __OS2_286__ )
+#elif defined( __OS2__ )
         {
-            int     rc;
+            APIRET  rc;
 
+    #if defined( _M_I86 )
             rc = DosSetMaxFH( num );
-            if( rc != 0 ) {
+            if( rc ) {
                 if( rc == ERROR_NOT_ENOUGH_MEMORY ) {
                     __set_errno_dos( rc );
                     num = __NHandles;
@@ -300,16 +301,14 @@ _WCRTLINK int _grow_handles( int num )
                     }
                 }
             }
-        }
-#elif defined( __WARP__ )
-        {
+    #else
             LONG    req_count;
             ULONG   curr_max_fh;
-            APIRET  rc;
 
             req_count = num - __NHandles;
             rc = DosSetRelMaxFH( &req_count, &curr_max_fh );
             num = curr_max_fh;
+    #endif
         }
 #elif defined(__WINDOWS__)
         {

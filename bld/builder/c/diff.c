@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@
 
 
 typedef unsigned long ULONG;
-typedef signed long SLONG;
+typedef long SLONG;
 typedef unsigned short USHORT;
 typedef int INT;
 
@@ -148,7 +148,7 @@ static ULONG   search( ULONG, ULONG, SLONG );
 static USHORT  hash( char * );
 static char    *myalloc( ULONG, char * );
 static char    *compact( char *, ULONG, char * );
-static char    *fgetss( char *, int, FILE * );
+static char    *my_fgets( char *, int, FILE * );
 static void    cant( char *, char *, SLONG );
 static void    input( SLONG );
 static void    squish( void );
@@ -175,11 +175,11 @@ static void    fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE
 
 INT main( int argc, char **argv )
 {
-    register SLONG      i;
-    register char       *ap;
-    struct stat         st;
-    char                path[_MAX_PATH];
-    PGROUP2             pg;
+    SLONG           i;
+    char            *ap;
+    struct stat     st;
+    char            path[_MAX_PATH];
+    pgroup2         pg;
 
     while( argc > 1 && *( ap = argv[1] ) == '-' && *++ap != EOS ) {
         while( *ap != EOS ) {
@@ -349,7 +349,7 @@ INT main( int argc, char **argv )
     output( argv[0], argv[1] );
     if( tempfd != NULL ) {
         fclose( tempfd );
-        unlink( TEMPFILE );
+        remove( TEMPFILE );
     }
     myfree( &oldseek );
     myfree( &newseek );
@@ -366,11 +366,11 @@ INT main( int argc, char **argv )
 void input( SLONG which )
     /* 0 or 1 to redefine infd[]  */
 {
-    register LINE       *lentry;
-    register SLONG      linect = 0;
-    FILE                *fd;
+    LINE        *lentry;
+    SLONG       linect = 0;
+    FILE        *fd;
 #define LSIZE_INC 200           /* # of line entries to alloc at once */
-    SLONG               lsize = LSIZE_INC;
+    SLONG       lsize = LSIZE_INC;
 
     lentry = (LINE *)myalloc( sizeof( LINE ) * ( lsize + 3 ), "line" );
     fd = infd[which];
@@ -407,11 +407,11 @@ void input( SLONG which )
 
 void squish( void )
 {
-    register SLONG      i;
-    register LINE       *ap;
-    register LINE       *bp;
-    SLONG               j;
-    SLONG               k;
+    SLONG       i;
+    LINE        *ap;
+    LINE        *bp;
+    SLONG       j;
+    SLONG       k;
 
     /*
      * prefix -> first line (from start) that doesn't hash identically
@@ -460,12 +460,12 @@ void squish( void )
 
 void sort( LINE *vector, SLONG vecsize )
 {
-    register SLONG      j;
-    register LINE       *aim;
-    register LINE       *ai;
-    SLONG               mid;
-    SLONG               k;
-    LINE                work;
+    SLONG       j;
+    LINE        *aim;
+    LINE        *ai;
+    SLONG       mid;
+    SLONG       k;
+    LINE        work;
 
     for( j = 1; j <= vecsize; j *= 2 )
         ;
@@ -497,13 +497,13 @@ void sort( LINE *vector, SLONG vecsize )
 
 void equiv( void )
 {
-    register LINE       *ap;
+    LINE        *ap;
     union {
         LINE    *bp;
         short   *mp;
     }                   r;
-    register SLONG      j;
-    LINE                *atop;
+    SLONG       j;
+    LINE        *atop;
 
 #ifdef DEBUG
     printf( "equiv entry\n" );
@@ -574,16 +574,16 @@ void equiv( void )
 
 void unsort( void )
 {
-    SLONG               *temp;
-    register SLONG      *tp;
+    SLONG       *temp;
+    SLONG       *tp;
     union {
         LINE    *ap;
         short   *cp;
-    }                   u;
-    LINE                *evec;
-    short               *eclass;
+    }           u;
+    LINE        *evec;
+    short       *eclass;
 #ifdef DEBUG
-    SLONG               i;
+    SLONG       i;
 #endif
 
     temp = (SLONG *)myalloc( ( slenA + 1 ) * sizeof( SLONG ), "unsort scratch" );
@@ -624,7 +624,7 @@ newcand(    SLONG a,        /* Line in fileA      */
             SLONG b,        /* Line in fileB      */
             SLONG pred      /* Line in fileB      */ )
 {
-    register CANDIDATE  *new;
+    CANDIDATE   *new;
 
     clength++;
     if( ++clength >= csize ) {
@@ -643,13 +643,13 @@ newcand(    SLONG a,        /* Line in fileA      */
 
 SLONG subseq( void )
 {
-    SLONG               a;
-    register ULONG      ktop;
-    register SLONG      b;
-    register ULONG      s;
-    ULONG               r;
-    SLONG               i;
-    SLONG               cand;
+    SLONG       a;
+    ULONG       ktop;
+    SLONG       b;
+    ULONG       s;
+    ULONG       r;
+    SLONG       i;
+    SLONG       cand;
 
     klist[0] = newcand( 0, 0, -1 );
     klist[1] = newcand( slenA + 1, slenB + 1, -1 );
@@ -715,8 +715,8 @@ SLONG subseq( void )
 
 ULONG search( ULONG low, ULONG high, SLONG b )
 {
-    register SLONG      temp;
-    register ULONG      mid;
+    SLONG       temp;
+    ULONG       mid;
 
     if( clist[klist[low]].b >= b )
         return( 0 );
@@ -734,10 +734,10 @@ ULONG search( ULONG low, ULONG high, SLONG b )
 
 void unravel( SLONG k )
 {
-    register SLONG      i;
-    register CANDIDATE  *cp;
-    SLONG               first_trailer;
-    SLONG               difference;
+    SLONG       i;
+    CANDIDATE   *cp;
+    SLONG       first_trailer;
+    SLONG       difference;
 
     first_trailer = lenA - suffix;
     difference = lenB - lenA;
@@ -1049,7 +1049,7 @@ void fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char
             seekvec[first], ( fd == infd[0] ) ? 'A' : 'B' );
     } else {
         for( i = first; i <= last; i++ ) {
-            if( fgetss( text, sizeof( text ), fd ) == NULL ) {
+            if( my_fgets( text, sizeof( text ), fd ) == NULL ) {
                 fatal( "** Unexpected end of file\n" );
                 break;
             }
@@ -1078,7 +1078,7 @@ INT getinpline( FILE *fd, char *buffer, int max_len )
     char     *fromp;
     char      c;
 
-    if( fgetss( buffer, max_len, fd ) == NULL ) {
+    if( my_fgets( buffer, max_len, fd ) == NULL ) {
         *buffer = EOS;
         return( true );
     }
@@ -1202,7 +1202,7 @@ void noroom( char *why )
         printf( "d1 %ld\n", lenA );
         printf( "a1 %ld\n", lenB );
         fseek( infd[1], 0, 0 );
-        while( fgetss( text, sizeof( text ), infd[1] ) != NULL )
+        while( my_fgets( text, sizeof( text ), infd[1] ) != NULL )
             printf( "%s\n", text );
         exit( xflag + DIFF_HAVE_DIFFS );
     } else {
@@ -1350,11 +1350,11 @@ void fputss( char *s, FILE *iop )
 }
 
 /*
- * Fgetss() is like fgets() except that the terminating newline
+ * my_fgets() is like fgets() except that the terminating newline
  * is removed.
  */
 
-char *fgetss( char *s, int max_len, FILE *iop )
+char *my_fgets( char *s, int max_len, FILE *iop )
 {
     char    *cs;
     size_t  len1;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,8 @@
 #define WPI_SIZEOS2BMPINFOHDR           64
 
 #define WPI_EXPORT                      WINEXPORT
+
+#define WPI_NULL                        ((WPI_HANDLE)NULL)
 
 /*************************/
 /* new types - both ways */
@@ -133,6 +135,7 @@
     #define WPI_BITMAPINFOHEADER        BITMAPINFOHEADER
     #define WPI_BITMAPFILEHEADER        BITMAPFILEHEADER
     #define WPI_BMPBITS                 LPSTR
+    #define WPI_HBITMAP                 HBITMAP
     #define WPI_HLIB                    HANDLE
     #define WPI_TEXTMETRIC              TEXTMETRIC
     #define WPI_LPTEXTMETRIC            LPTEXTMETRIC
@@ -187,24 +190,9 @@
         HWND            hwndSubMenu;
         unsigned long   hItem;
     } WPI_MENUITEM;
-    #ifndef WC_BUTTON
-        #define WC_BUTTON               "button"
-    #endif
-    #ifndef WC_COMBOBOX
-        #define WC_COMBOBOX             "combobox"
-    #endif
-    #define WC_MLE                      "edit"
-    #define WC_ENTRYFIELD               "edit"
-    #ifndef WC_LISTBOX
-        #define WC_LISTBOX              "listbox"
-    #endif
-    #ifndef WC_SCROLLBAR
-        #define WC_SCROLLBAR            "scrollbar"
-    #endif
-    #ifndef WC_STATIC
-        #define WC_STATIC               "static"
-    #endif
-    #define WC_GROUPBOX                 "button"
+    #define WC_MLE                      WC_EDIT
+    #define WC_ENTRYFIELD               WC_EDIT
+    #define WC_GROUPBOX                 WC_BUTTON
 #endif
 
 /*******************************/
@@ -707,6 +695,7 @@ typedef enum {
     WPI_BITMAP_OBJ      = 5,
     WPI_PATBRUSH_OBJ    = 6,
     WPI_HLWBRUSH_OBJ    = 7,
+    WPI_DATA_OBJ        = 8,
 } WPI_OBJECTTYPE;
 
 typedef struct {
@@ -720,6 +709,7 @@ typedef struct {
         LINEBUNDLE      pen;
         WPI_BRUSHTYPE   brush;
         HBITMAP         bitmap;
+        ULONG           data;
     };
 } WPI_OBJECT;
 /*
@@ -727,12 +717,10 @@ typedef struct {
  * someone using WPI, this should all be invisible.
  */
 
-typedef LHANDLE         WPI_HANDLE;
+typedef WPI_OBJECT      *WPI_HANDLE;
 typedef AREABUNDLE      LOGBRUSH;
 typedef WPI_HANDLE      HBRUSH;
 typedef WPI_HANDLE      HPEN;
-typedef WPI_HANDLE      WPI_HBRUSH;
-typedef WPI_HANDLE      WPI_HPEN;
 typedef WPI_HANDLE      WPI_HBITMAP;
 
 /* This is used in OS/2 much like a Windows LOGFONT. Use it only

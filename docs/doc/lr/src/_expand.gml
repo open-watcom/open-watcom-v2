@@ -50,12 +50,12 @@ Near heap (inside the default data segment)
 In a small data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _nexpand
+.reffunc _nexpand
 function; in a large data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _fexpand
+.reffunc _fexpand
 function.
 .desc end
 .return begin
@@ -69,13 +69,13 @@ The return value is
 (
 .ct .mono _NULLOFF
 for
-.kw _bexpand
+.reffunc _bexpand
 .ct )
 if the memory block could not be expanded to the desired size.
 It will be expanded as much as possible in this case.
 .np
 The appropriate
-.kw _msize
+.reffunc _msize
 function can be used to determine the new size of the expanded block.
 .return end
 .see begin

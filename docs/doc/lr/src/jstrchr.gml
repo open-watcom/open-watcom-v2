@@ -4,8 +4,8 @@
 JSTRING jstrchr( const JCHAR *s, JMOJI c );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
-.if &farfnc eq 1 .do begin
-FJSTRING __far _fjstrchr( const JCHAR __far *s, JMOJI c );
+.if &farfnc ne 0 .do begin
+FJSTRING _fjstrchr( const JCHAR __far *s, JMOJI c );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jsearch' &ffunc
 .do end
@@ -23,13 +23,13 @@ and
 .id &ffunc.
 functions locate
 .do end
-the first occurrence of the single- or double-byte character
+the first occurrence of the single-byte or double-byte character
 .arg c
 in the Kanji string pointed to by
 .arg s
-.ct .li .
+.period
 The terminating null character is considered to be part of the string.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

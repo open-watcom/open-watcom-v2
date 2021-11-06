@@ -32,12 +32,18 @@
 
 
 #include "bdiff.h"
+#ifdef __UNIX__
+#include <dirent.h>
+#else
 #include <direct.h>
+#endif
 #include "wpatchio.h"
 #include "msg.h"
 
 #include "clibext.h"
 
+
+#define SKIP_ENTRY(e)   ((e->d_attr & _A_SUBDIR) && e->d_name[0] == '.' && (e->d_name[1] == '\0' || dire->d_name[1] == '.' && e->d_name[2] == '\0'))
 
 struct {
     size_t origSrcDirLen;
@@ -55,9 +61,9 @@ void main( int argc, char *argv[] )
     MsgInit();
     if( argc != 3 ) {
         printf( "Usage: WPATCH patchfile target-dir\n" );
-        printf( "where target-dir is the directory containing files to be modified,\n" );
-        printf( "and patchfile contains patch information for modifying target-dir.\n" );
-        printf( "(as created by WCPATCH)\n\n" );
+        printf( "    where target-dir is the directory containing files to be modified,\n" );
+        printf( "    and patchfile contains patch information for modifying target-dir.\n" );
+        printf( "    (as created by WCPATCH)\n\n" );
         exit( -2 );
     } else {
         printf( "Watcom Patch version 11.0\n" );
@@ -148,23 +154,22 @@ void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
     struct dirent   *dire;
     int             file = 0;
     int             dir  = 0;
+    char            *diritem;
 
     for( ; (dire = readdir( dirp )) != NULL; ) {
+        if( SKIP_ENTRY( dire ) )
+            continue;
+        diritem = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
+        strcpy( diritem, dire->d_name );
         if(( dire->d_attr & _A_SUBDIR ) == 0 ) {
             /* must be a file */
-            Files[file] = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
-            strcpy( Files[file], dire->d_name );
-            file += 1;
+            Files[file++] = diritem;
             if( file >= 1000 ) {
                 perror( "File limit in directory is 1000." );
             }
         } else {
             /* must be a directory */
-            Dirs[dir] = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
-            strcpy( Dirs[dir], dire->d_name );
-            if( strcmp( Dirs[dir], "." ) != 0 && strcmp( Dirs[dir], ".." ) != 0 ) {
-                dir += 1;
-            }
+            Dirs[dir++] = diritem;
             if( dir >= 500 ) {
                 perror( "Subdirectory limit is 500." );
             }

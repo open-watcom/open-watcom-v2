@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "global.h"
 #include "opr.h"
 #include "errcod.h"
@@ -84,13 +84,13 @@ void    CpEquivalence(void) {
     sym_id              sym;
     int                 num_equived;
     intstar4            *subscripts;
-    int                 eq_size;
+    size_t              eq_size;
     act_eq_entry        *new_eq;
     act_eq_entry        *eqv_entry;
     act_eq_entry        *eq_head;
     act_eq_entry        *eq_set;
     bool                ill_name;
-    bool                sub_strung;
+    bool                sub_string;
     act_eq_entry        equiv;
 
     eq_set = EquivSets;
@@ -113,12 +113,12 @@ void    CpEquivalence(void) {
                 num_equived++;
                 sym = LkSym();
                 ill_name = true;
-                if( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
+                if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
                     if( sym->u.ns.flags & SY_DATA_INIT ) {
                         NameErr( ST_DATA_ALREADY, sym );
                     } else if( sym->u.ns.flags & SY_SUB_PARM ) {
                         IllName( sym );
-                    } else if( ( sym->u.ns.flags & SY_SUBSCRIPTED ) &&
+                    } else if( (sym->u.ns.flags & SY_SUBSCRIPTED) &&
                                 _Allocatable( sym ) ) {
                         IllName( sym );
                     } else {
@@ -139,13 +139,13 @@ void    CpEquivalence(void) {
                 subscripts = equiv.subscrs;
                 if( RecOpenParen() ) {
                     if( !RecNOpn() || !RecNextOpr( OPR_COL ) ) {
-                        sub_strung = false;
+                        sub_string = false;
                         for( ;; ) {
                             CIntExpr();
                             *subscripts = ITIntValue( CITNode );
                             AdvanceITPtr();
                             if( RecColon() ) {
-                                sub_strung = true;
+                                sub_string = true;
                                 break;
                             }
                             subscripts++;
@@ -156,7 +156,7 @@ void    CpEquivalence(void) {
                                 break;
                             }
                         }
-                        if( !sub_strung ) {
+                        if( !sub_string ) {
                             ReqCloseParen();
                             ReqNOpn();
                             AdvanceITPtr();
@@ -167,13 +167,13 @@ void    CpEquivalence(void) {
                                     *subscripts = ITIntValue( CITNode );
                                 }
                                 AdvanceITPtr();
-                                sub_strung = ReqColon();
+                                sub_string = ReqColon();
                             }
                         }
                     } else {
-                        sub_strung = true;
+                        sub_string = true;
                     }
-                    if( sub_strung ) {
+                    if( sub_string ) {
                         equiv.substr = 1;
                         if( SubStr2( subscripts ) ) {
                             equiv.substr = 2;
@@ -184,9 +184,8 @@ void    CpEquivalence(void) {
                     equiv.subs_no = 0;
                     equiv.substr = 0;
                 }
-                if( ( ( SgmtSw & SG_SYMTAB_RESOLVED ) == 0 ) && !ill_name ) {
-                    eq_size = sizeof( eq_entry ) +
-                              equiv.subs_no * sizeof( intstar4 );
+                if( ( (SgmtSw & SG_SYMTAB_RESOLVED) == 0 ) && !ill_name ) {
+                    eq_size = sizeof( eq_entry ) + equiv.subs_no * sizeof( intstar4 );
                     if( equiv.substr != 0 ) {
                         eq_size += 2 * sizeof( intstar4 );
                     }

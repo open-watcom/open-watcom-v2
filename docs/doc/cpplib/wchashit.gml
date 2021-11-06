@@ -9,11 +9,11 @@ or call operator.
 An increment operation causing the iterator to be positioned after the end
 of the hash returns zero.
 Further increments will cause the
-.MONO undef_iter
+:MONO.undef_iter
 .ix 'undex_iter' 'exception'
 exception to be thrown, if it is enabled.
 The
-.MONO WCIterExcept
+:MONO.WCIterExcept
 class provides the common exception handling
 control interface for all of the iterators.
 :P.

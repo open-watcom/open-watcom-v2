@@ -8,12 +8,15 @@ jobs:
     variables:
       ${{ if eq(parameters.arch, 'lnx') }}:
         owtools:      $(owtools_lnx)
+        owtoolsv:     $(owtoolsv_lnx)
         owscript:     $(owscript_lnx)
       ${{ if eq(parameters.arch, 'nt') }}:
         owtools:      $(owtools_nt)
+        owtoolsv:     $(owtoolsv_nt)
         owscript:     $(owscript_nt)
       ${{ if eq(parameters.arch, 'osx') }}:
         owtools:      $(owtools_osx)
+        owtoolsv:     $(owtoolsv_osx)
         owscript:     $(owscript_osx)
       owbuild.stage:    boot
     pool:
@@ -27,18 +30,10 @@ jobs:
     - script: $(owscript)
       displayName: "Bootstrap"
     - template: artfsave.yml
-      parameters: 
-        arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     build\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     build/$(owobjdir)
+      parameters:
+        path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
     - template: artfsave.yml
-      parameters: 
-        arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     bld\watcom\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     bld/watcom/$(owobjdir)
+      parameters:
+        path:       bld/watcom/$(owobjdir)
         artifname:  bld-watcom-${{ parameters.arch }}

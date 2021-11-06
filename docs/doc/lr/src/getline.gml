@@ -6,7 +6,7 @@ ssize_t getline( char **line, size_t *n, FILE *fp );
 .desc begin
 The
 .id &funcb.
-function reads a single line of text from a stream 
+function reads a single line of text from a stream
 .arg fp
 and returns the resulting text, including any new line characters, in a buffer pointed to by
 .arg line
@@ -16,13 +16,13 @@ should be of the size pointed to by
 .arg n
 initially.
 .np
-The buffer pointed to by 
+The buffer pointed to by
 .arg line
 can initially be null and
 .arg n
-should reflect the size of 
+should reflect the size of
 .arg line
-and be set to 0.  When 
+and be set to 0.  When
 .id &funcb.
 is invoked, it will check if the buffer pointed to by
 .arg line
@@ -30,7 +30,7 @@ is allocated and large enough.  If not, it will first call
 .id realloc
 to resize the buffer appropriately and adjust the value pointed to by
 .arg n
-to reflect the new size of 
+to reflect the new size of
 .arg line
 after reallocation.  If allocation fails, errno will be set to ENOMEM.
 .desc end
@@ -50,7 +50,7 @@ void main()
     char *line;
     size_t n;
     FILE *fp;
-    
+
     fp = fopen("test.txt", "r");
     while(getline(&line, &n, fp) >= 0) {
         printf("> %s", line);
@@ -59,5 +59,5 @@ void main()
   }
 .blkcode end
 .exmp end
-.class POSIX
+.class POSIX 1003.1
 .system

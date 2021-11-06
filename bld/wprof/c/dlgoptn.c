@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,20 +65,20 @@
 #define B3 BUTTON_POS( 3, 3, W, BW )
 
 #define DLGOPTS_CTLS() \
-    pick_p5(   BARGRAPHBOX, DLG_BOX,            "Bar Graph",                    C1+1, R0,   W-2, R0+4 ) \
-    pick_p4id( STRETCH,     DLG_CHECK,          "&Stretch the graph",           C1+2, R0+1, W-3 ) \
-    pick_p4id( ABS_BAR,     DLG_CHECK,          "Show &Absolute Bar Graphs",    C1+2, R0+2, W-3 ) \
-    pick_p4id( REL_BAR,     DLG_CHECK,          "Show &Relative Bar Graphs",    C1+2, R0+3, W-3 ) \
-    pick_p5(   SORTBYBOX,   DLG_BOX,            "Sort by",                      C1+1, R1,   W-2, R1+3 ) \
-    pick_p4id( SORT_COUNT,  DLG_RADIO_START,    "Sample &Count",                C1+2, R1+1, W-3 ) \
-    pick_p4id( SORT_NAME,   DLG_RADIO_END,      "&Name",                        C1+2, R1+2, W-3 ) \
-    pick_p5(   GATHERBOX,   DLG_BOX,            "Gather",                       C1+1, R2,   W-2, R2+4 ) \
-    pick_p4id( GATHER_TEXT, DLG_DYNSTRING,      "Cutoff Percentage",            C1+2, R2+1, W-3 ) \
-    pick_p4id( GATHER_CUT,  DLG_EDIT,           "",                             W-13, R2+1, W-3 ) \
-    pick_p4id( GATHER,      DLG_CHECK,          "Gather Small &Values",         C1+2, R2+3, W-3 ) \
-    pick_p4id( OK,          DLG_DEFBUTTON,      "OK",                           B1,   R3,   B1+BW ) \
-    pick_p4id( DEFAULTS,    DLG_BUTTON,         "&Defaults",                    B2,   R3,   B2+BW ) \
-    pick_p4id( CANCEL,      DLG_BUTTON,         "Cancel",                       B3,   R3,   B3+BW )
+    pick_p5(   BARGRAPHBOX, GUI_CTL_BOX,            "Bar Graph",                    C1+1, R0,   W-C1-2, 5 ) \
+    pick_p4id( STRETCH,     GUI_CTL_CHECK,          "&Stretch the graph",           C1+2, R0+1, W-C1-4 ) \
+    pick_p4id( ABS_BAR,     GUI_CTL_CHECK,          "Show &Absolute Bar Graphs",    C1+2, R0+2, W-C1-4 ) \
+    pick_p4id( REL_BAR,     GUI_CTL_CHECK,          "Show &Relative Bar Graphs",    C1+2, R0+3, W-C1-4 ) \
+    pick_p5(   SORTBYBOX,   GUI_CTL_BOX,            "Sort by",                      C1+1, R1,   W-C1-2, 4 ) \
+    pick_p4id( SORT_COUNT,  GUI_CTL_RADIO_START,    "Sample &Count",                C1+2, R1+1, W-C1-4 ) \
+    pick_p4id( SORT_NAME,   GUI_CTL_RADIO_END,      "&Name",                        C1+2, R1+2, W-C1-4 ) \
+    pick_p5(   GATHERBOX,   GUI_CTL_BOX,            "Gather",                       C1+1, R2,   W-C1-2, 5 ) \
+    pick_p4id( GATHER_TEXT, GUI_CTL_DYNSTRING,      "Cutoff Percentage",            C1+2, R2+1, W-C1-4 ) \
+    pick_p4id( GATHER_CUT,  GUI_CTL_EDIT,           "",                             W-13, R2+1, 11 ) \
+    pick_p4id( GATHER,      GUI_CTL_CHECK,          "Gather Small &Values",         C1+2, R2+3, W-C1-4 ) \
+    pick_p4id( OK,          GUI_CTL_DEFBUTTON,      "OK",                           B1,   R3,   BW+1 ) \
+    pick_p4id( DEFAULTS,    GUI_CTL_BUTTON,         "&Defaults",                    B2,   R3,   BW+1 ) \
+    pick_p4id( CANCEL,      GUI_CTL_BUTTON,         "Cancel",                       B3,   R3,   BW+1 )
 
 enum {
     DUMMY_ID = 100,

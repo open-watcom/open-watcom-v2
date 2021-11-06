@@ -2,13 +2,16 @@
 .if &e'&dohelp eq 0 .do begin
 :INCLUDE file='wnohelp'.
 .do end
+.el .do begin
+:INCLUDE file='whelp'.
+.do end
 :INCLUDE file='fmtmacro'.
 :INCLUDE file='xdefs'.
 :set symbol="lang"       value="C/C++".
 :INCLUDE file='defs'.
 :INCLUDE file='cppextra'.
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .dm sepsect begin
 .dm sepsect end
 .do end
@@ -40,7 +43,7 @@
 .do end
 .*
 :BODY.
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 :exhelp
 :include file='&book..idx'
 :include file='&book..tbl'
@@ -119,7 +122,6 @@
 . :INCLUDE file='string_'
 .if &e'&dohelp eq 0 .do begin
 :BACKM.
-.cd set 2
 :INDEX.
 .do end
 :eGDOC.

@@ -6,7 +6,7 @@
 .synote
 .mnote f
 is the name of an intrinsic function name.
-.endnote
+.esynote
 .np
 An
 .kw INTRINSIC

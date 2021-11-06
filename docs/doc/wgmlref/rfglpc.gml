@@ -15,7 +15,7 @@ To locate the library, &WGML. and WATCOM GENDEV must have
 a list of library directories.
 This list is defined with the DOS :HP2.SET:eHP2. command.
 :FIG place=inline frame=box.
-SET GMLLIB=A:\\wgmlib\\
+SET GMLLIB=A:\wgmlib\
 :FIGCAP.Defining the &ibmpc. Library List
 :eFIG.
 :PC.
@@ -32,7 +32,7 @@ If :HP1.wgmlib:eHP1. is the shared library directory and :HP1.mylib:eHP1.
 is the personal library directory, the following command specifies the
 proper library list.
 :FIG place=inline frame=box.
-SET GMLLIB=A:\\mylib\\;A:\\wgmlib\\
+SET GMLLIB=A:\mylib\;A:\wgmlib\
 :FIGCAP.
 :eFIG.
 :PC.

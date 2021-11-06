@@ -1,5 +1,5 @@
-.gfunc settextposition
-.gsynop begin 
+.gfunc _settextposition
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 struct rccoord _FAR _settextposition( short row,
                                       short col );
@@ -21,15 +21,15 @@ It defaults to the top left corner of the screen,
 .coord 1 1 ,
 when a new video mode is selected, or when a new text window is set.
 The position is updated as text is drawn with the
-.kw _outtext
+.reffunc _outtext
 and
-.kw _outmem
+.reffunc _outmem
 &routines..
 .np
 Note that the output position for graphics output differs from that
 for text output.
 The output position for graphics output can be set by use of the
-.kw _moveto
+.reffunc _moveto
 &routine..
 .if '&lang' eq 'C' .do begin
 .np
@@ -39,14 +39,14 @@ Also note that output to the standard output file,
 It may be necessary to flush the output stream using
 .mono fflush( stdout )
 after a
-.kw printf
+.reffunc printf
 call if your output does not contain a newline character.
 Mixing of calls to
-.kw _outtext
+.reffunc _outtext
 and
-.kw printf
+.reffunc printf
 may cause overlapped text since
-.kw _outtext
+.reffunc _outtext
 uses the output position that was set by &funcb..
 .do end
 .desc end

@@ -50,7 +50,7 @@ function places the result string in a static buffer that is
 re-used each time
 .id &funcb.
 or
-.kw jctime
+.reffunc jctime
 is called.
 .desc end
 .return begin

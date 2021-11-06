@@ -5,10 +5,6 @@
 ApplIcon    ICON     PRELOAD FIXED setup.ico
 ICN_DISK    ICON     PRELOAD FIXED disk.ico
 
-/* Enables XP L&F for appl windows/dlgs and            */
-/* new common dialogs 6.0 when executed on XP an newer */
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
-
 #include "splash.rc"
 
 #include "gui.rc"

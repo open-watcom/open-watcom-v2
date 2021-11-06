@@ -73,13 +73,23 @@
 
 #include "clibext.h"
 
-#define I386_TRANSFER_OP1       0xff    /* first byte of a "JMP [FOO]" */
-#define I386_TRANSFER_OP2       0x25    /* second byte of a "JMP [FOO]" */
 
-#define MINIMUM_SEG_SHIFT       2       /* Corresponds to 2^2 == 4 bytes */
-#define DEFAULT_SEG_SHIFT       9       /* Corresponds to 2^9 == 512 bytes */
+#ifdef _OS2
 
-#define STUB_ALIGN 8    /* for PE format */
+#define I386_TRANSFER_OP1       0xff        /* first byte of a "JMP [FOO]" */
+#define I386_TRANSFER_OP2       0x25        /* second byte of a "JMP [FOO]" */
+
+#define MINIMUM_SEG_SHIFT       2           /* Corresponds to 2^2 == 4 bytes */
+#define DEFAULT_SEG_SHIFT       9           /* Corresponds to 2^9 == 512 bytes */
+
+#define STUB_ALIGN              8           /* for PE format */
+
+/* RDOS OS default major/minor version numbers */
+#define PE_RDOS_OS_MAJOR        8
+#define PE_RDOS_OS_MINOR        8
+/* RDOS Subsystem default major/minor version numbers */
+#define PE_RDOS_SS_MAJOR        1
+#define PE_RDOS_SS_MINOR        0
 
 #include "pushpck1.h"
 
@@ -384,7 +394,8 @@ static unsigned_32 WriteDataPages( exe_pe_header *h, pe_object *object, unsigned
     code_base = 0xFFFFFFFFUL;
     data_base = 0xFFFFFFFFUL;
     for( group = Groups; group != NULL; group = group->next_group) {
-        if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
+        if( group->totalsize == 0 )
+            continue;   // DANGER DANGER DANGER <--!!!
         name = group->sym->name.u.ptr;
         if( name == NULL || name[0] == 0 ) {
             leader = Ring2First( group->leaders );
@@ -618,9 +629,9 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     dir.major = 0;
     dir.minor = 0;
     dir.name_rva = object->rva + sizeof( dir );
-    dir.ordinal_base = FmtData.u.os2.exports->ordinal;
-    if( FmtData.u.os2.module_name != NULL ) {
-        name = FmtData.u.os2.module_name;
+    dir.ordinal_base = FmtData.u.os2fam.exports->ordinal;
+    if( FmtData.u.os2fam.module_name != NULL ) {
+        name = FmtData.u.os2fam.module_name;
     } else {
         name = GetBaseName( Root->outfile->fname, 0, &namelen );
     }
@@ -630,7 +641,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     namelen = strlen( name ) + 1;
     dir.address_table_rva = ROUND_UP( dir.name_rva + namelen, sizeof( pe_va ) );
     num_entries = 0;
-    for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {
+    for( exp = FmtData.u.os2fam.exports; exp != NULL; exp = exp->next ) {
         high_ord = exp->ordinal;
         ++num_entries;
         if( !exp->isprivate ) {
@@ -654,7 +665,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     /* write the export address table */
     i = 0;
     next_ord = dir.ordinal_base;
-    for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {
+    for( exp = FmtData.u.os2fam.exports; exp != NULL; exp = exp->next ) {
         sort[i++] = exp;
         eat = exp->addr.off;
         if( next_ord < exp->ordinal ) {
@@ -1007,7 +1018,7 @@ static unsigned FindNumObjects( void )
     num_objects = NumGroups;
     if( LinkState & LS_MAKE_RELOCS )
         ++num_objects;
-    if( FmtData.u.os2.exports != NULL )
+    if( FmtData.u.os2fam.exports != NULL )
         ++num_objects;
     if( LinkFlags & LF_CV_DBI_FLAG )
         ++num_objects;
@@ -1019,6 +1030,7 @@ static unsigned FindNumObjects( void )
 }
 
 static unsigned long CalcPEChecksum( unsigned long dwInitialCount, unsigned short *pwBuffer, unsigned long dwWordCount )
+/**********************************************************************************************************************/
 {
     unsigned long      __wCrc      = dwInitialCount;
     unsigned short     *__pwBuffer = pwBuffer;
@@ -1049,18 +1061,14 @@ void FiniPELoadFile( void )
     unsigned_32     size;
     unsigned_32     image_size;
 
-    file_align = 1UL << FmtData.u.os2.segment_shift;
+    file_align = 1UL << FmtData.u.os2fam.segment_shift;
     CheckNumRelocs();
     num_objects = FindNumObjects();
     memset( &h, 0, sizeof( h ) ); /* zero all header fields */
     if( LinkState & LS_HAVE_X64_CODE ) {
         head_size = sizeof( pe_header64 );
         PE64( h ).magic = 0x20b;
-        if( FmtData.u.pe.signature != 0 ) {
-            PE64( h ).signature = FmtData.u.pe.signature;
-        } else {
-            PE64( h ).signature = PE_SIGNATURE;
-        }
+        PE64( h ).signature = PE_SIGNATURE;
         PE64( h ).cpu_type = PE_CPU_AMD64;
         PE64( h ).num_objects = num_objects;
         PE64( h ).time_stamp = (unsigned_32)time( NULL );
@@ -1077,14 +1085,14 @@ void FiniPELoadFile( void )
         }
         if( FmtData.dll ) {
             PE64( h ).flags |= PE_FLG_LIBRARY;
-            if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
+            if( FmtData.u.os2fam.flags & INIT_INSTANCE_FLAG ) {
                 PE64( h ).dll_flags |= PE_DLL_PERPROC_INIT;
-            } else if( FmtData.u.os2.flags & INIT_THREAD_FLAG ) {
+            } else if( FmtData.u.os2fam.flags & INIT_THREAD_FLAG ) {
                 PE64( h ).dll_flags |= PE_DLL_PERTHRD_INIT;
             }
-            if( FmtData.u.os2.flags & TERM_INSTANCE_FLAG ) {
+            if( FmtData.u.os2fam.flags & TERM_INSTANCE_FLAG ) {
                 PE64( h ).dll_flags |= PE_DLL_PERPROC_TERM;
-            } else if( FmtData.u.os2.flags & TERM_THREAD_FLAG ) {
+            } else if( FmtData.u.os2fam.flags & TERM_THREAD_FLAG ) {
                 PE64( h ).dll_flags |= PE_DLL_PERTHRD_TERM;
             }
         }
@@ -1104,9 +1112,9 @@ void FiniPELoadFile( void )
          *  I have changed this to allow programmers to control this shift. MS has 0x20 byte segments
          *  in some drivers! Who are we to argue? Never mind it's against the PE spec.
          */
-        if( FmtData.u.os2.segment_shift < MINIMUM_SEG_SHIFT ) {
-            LnkMsg( WRN+MSG_VALUE_INCORRECT, "s", "alignment" );
-            FmtData.u.os2.segment_shift = DEFAULT_SEG_SHIFT;
+        if( FmtData.u.os2fam.segment_shift < MINIMUM_SEG_SHIFT ) {
+            LnkMsg( WRN+MSG_VALUE_INCORRECT, "s", "ALIGNMENT" );
+            FmtData.u.os2fam.segment_shift = DEFAULT_SEG_SHIFT;
         }
 
         PE64( h ).file_align = file_align;
@@ -1148,10 +1156,10 @@ void FiniPELoadFile( void )
             PE64( h ).stack_commit_size.u._32[0] = FmtData.u.pe.stackcommit;
             PE64( h ).stack_commit_size.u._32[1] = 0;
         }
-        PE64( h ).heap_reserve_size.u._32[0] = FmtData.u.os2.heapsize;
+        PE64( h ).heap_reserve_size.u._32[0] = FmtData.u.os2fam.heapsize;
         PE64( h ).heap_reserve_size.u._32[1] = 0;
-        if( FmtData.u.pe.heapcommit > FmtData.u.os2.heapsize ) {
-            PE64( h ).heap_commit_size.u._32[0] = FmtData.u.os2.heapsize;
+        if( FmtData.u.pe.heapcommit > FmtData.u.os2fam.heapsize ) {
+            PE64( h ).heap_commit_size.u._32[0] = FmtData.u.os2fam.heapsize;
             PE64( h ).heap_commit_size.u._32[1] = 0;
         } else {
             PE64( h ).heap_commit_size.u._32[0] = FmtData.u.pe.heapcommit;
@@ -1170,7 +1178,7 @@ void FiniPELoadFile( void )
         SetMiscTableEntries( PE64( h ).table );
         image_size = WriteDataPages( &h, object, file_align );
         tbl_obj = &object[NumGroups];
-        if( FmtData.u.os2.exports != NULL ) {
+        if( FmtData.u.os2fam.exports != NULL ) {
             tbl_obj->rva = image_size;
             size = WriteExportInfo( tbl_obj, file_align, PE64( h ).table );
             image_size += ROUND_UP( size, FmtData.objalign );
@@ -1206,8 +1214,8 @@ void FiniPELoadFile( void )
     } else {
         head_size = sizeof( pe_header );
         PE32( h ).magic = 0x10b;
-        if( FmtData.u.pe.signature != 0 ) {
-            PE32( h ).signature = FmtData.u.pe.signature;
+        if( FmtData.u.pe.tnt || FmtData.u.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
+            PE32( h ).signature = PL_SIGNATURE;
         } else {
             PE32( h ).signature = PE_SIGNATURE;
         }
@@ -1233,14 +1241,14 @@ void FiniPELoadFile( void )
         }
         if( FmtData.dll ) {
             PE32( h ).flags |= PE_FLG_LIBRARY;
-            if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
+            if( FmtData.u.os2fam.flags & INIT_INSTANCE_FLAG ) {
                 PE32( h ).dll_flags |= PE_DLL_PERPROC_INIT;
-            } else if( FmtData.u.os2.flags & INIT_THREAD_FLAG ) {
+            } else if( FmtData.u.os2fam.flags & INIT_THREAD_FLAG ) {
                 PE32( h ).dll_flags |= PE_DLL_PERTHRD_INIT;
             }
-            if( FmtData.u.os2.flags & TERM_INSTANCE_FLAG ) {
+            if( FmtData.u.os2fam.flags & TERM_INSTANCE_FLAG ) {
                 PE32( h ).dll_flags |= PE_DLL_PERPROC_TERM;
-            } else if( FmtData.u.os2.flags & TERM_THREAD_FLAG ) {
+            } else if( FmtData.u.os2fam.flags & TERM_THREAD_FLAG ) {
                 PE32( h ).dll_flags |= PE_DLL_PERTHRD_TERM;
             }
         }
@@ -1259,17 +1267,21 @@ void FiniPELoadFile( void )
          *  I have changed this to allow programmers to control this shift. MS has 0x20 byte segments
          *  in some drivers! Who are we to argue? Never mind it's against the PE spec.
          */
-        if( FmtData.u.os2.segment_shift < MINIMUM_SEG_SHIFT ) {
-            LnkMsg( WRN+MSG_VALUE_INCORRECT, "s", "alignment" );
-            FmtData.u.os2.segment_shift = DEFAULT_SEG_SHIFT;
+        if( FmtData.u.os2fam.segment_shift < MINIMUM_SEG_SHIFT ) {
+            LnkMsg( WRN+MSG_VALUE_INCORRECT, "s", "ALIGNMENT" );
+            FmtData.u.os2fam.segment_shift = DEFAULT_SEG_SHIFT;
         }
 
-        file_align = 1UL << FmtData.u.os2.segment_shift;
+        file_align = 1UL << FmtData.u.os2fam.segment_shift;
         PE32( h ).file_align = file_align;
 
         if( FmtData.u.pe.osv_specd ) {
             PE32( h ).os_major = FmtData.u.pe.osmajor;
             PE32( h ).os_minor = FmtData.u.pe.osminor;
+        } else if( FmtData.u.pe.subsystem == PE_SS_RDOS ) {
+            // RDOS default
+            PE32( h ).os_major = PE_RDOS_OS_MAJOR;
+            PE32( h ).os_minor = PE_RDOS_OS_MINOR;
         } else {
             PE32( h ).os_major = PE_OS_MAJOR;
             PE32( h ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
@@ -1280,6 +1292,10 @@ void FiniPELoadFile( void )
         if( FmtData.u.pe.sub_specd ) {
             PE32( h ).subsys_major = FmtData.u.pe.submajor;
             PE32( h ).subsys_minor = FmtData.u.pe.subminor;
+        } else if( FmtData.u.pe.subsystem == PE_SS_RDOS ) {
+            // RDOS default
+            PE32( h ).subsys_major = PE_RDOS_SS_MAJOR;
+            PE32( h ).subsys_minor = PE_RDOS_SS_MINOR;
         } else {
             PE32( h ).subsys_major = 3;
             PE32( h ).subsys_minor = 0xa;
@@ -1300,9 +1316,9 @@ void FiniPELoadFile( void )
         } else {
             PE32( h ).stack_commit_size = FmtData.u.pe.stackcommit;
         }
-        PE32( h ).heap_reserve_size = FmtData.u.os2.heapsize;
-        if( FmtData.u.pe.heapcommit > FmtData.u.os2.heapsize ) {
-            PE32( h ).heap_commit_size = FmtData.u.os2.heapsize;
+        PE32( h ).heap_reserve_size = FmtData.u.os2fam.heapsize;
+        if( FmtData.u.pe.heapcommit > FmtData.u.os2fam.heapsize ) {
+            PE32( h ).heap_commit_size = FmtData.u.os2fam.heapsize;
         } else {
             PE32( h ).heap_commit_size = FmtData.u.pe.heapcommit;
         }
@@ -1319,7 +1335,7 @@ void FiniPELoadFile( void )
         SetMiscTableEntries( PE32( h ).table );
         image_size = WriteDataPages( &h, object, file_align );
         tbl_obj = &object[NumGroups];
-        if( FmtData.u.os2.exports != NULL ) {
+        if( FmtData.u.os2fam.exports != NULL ) {
             tbl_obj->rva = image_size;
             size = WriteExportInfo( tbl_obj, file_align, PE32( h ).table );
             image_size += ROUND_UP( size, FmtData.objalign );
@@ -1397,7 +1413,7 @@ void FiniPELoadFile( void )
                 memset( buffer, 0, CRC_BUFF_SIZE );
                 buffsize = QRead( outfile->handle, buffer, CRC_BUFF_SIZE, outfile->fname );
                 DbgAssert( buffsize == IOERROR );
-                DbgAssert( ( buffsize % 2 ) != 1 ); /* check for odd length */
+                DbgAssert( (buffsize % 2) != 1 ); /* check for odd length */
 
                 crc = CalcPEChecksum( crc, (unsigned short *)buffer, buffsize / sizeof( unsigned short ) );
             }
@@ -1431,20 +1447,20 @@ static unsigned_32 getStubSize( void )
     char            fullname[PATH_MAX];
     size_t          len;
 
-    if( FmtData.u.os2.no_stub ) {
+    if( FmtData.u.os2fam.no_stub ) {
         return( 0 );
     }
     stub_len = GetDOSDefStubSize();
-    if( FmtData.u.os2.stub_file_name != NULL && stricmp( FmtData.u.os2.stub_file_name, Root->outfile->fname ) != 0 ) {
-        the_file = FindPath( FmtData.u.os2.stub_file_name, fullname );
+    if( FmtData.u.os2fam.stub_file_name != NULL && stricmp( FmtData.u.os2fam.stub_file_name, Root->outfile->fname ) != 0 ) {
+        the_file = FindPath( FmtData.u.os2fam.stub_file_name, fullname );
         if( the_file == NIL_FHANDLE ) {
-            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2.stub_file_name );
+            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2fam.stub_file_name );
         } else {
-            _LnkFree( FmtData.u.os2.stub_file_name );
+            _LnkFree( FmtData.u.os2fam.stub_file_name );
             len = strlen( fullname ) + 1;
-            _ChkAlloc( FmtData.u.os2.stub_file_name, len );
-            memcpy( FmtData.u.os2.stub_file_name, fullname, len );
-            QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2.stub_file_name );
+            _ChkAlloc( FmtData.u.os2fam.stub_file_name, len );
+            memcpy( FmtData.u.os2fam.stub_file_name, fullname, len );
+            QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2fam.stub_file_name );
             if( dosheader.signature == DOS_SIGNATURE ) {
                 code_start = dosheader.hdr_size * 16ul;
                 read_len = dosheader.file_size * 512ul - (-dosheader.mod_size & 0x1ff) - code_start;
@@ -1453,7 +1469,7 @@ static unsigned_32 getStubSize( void )
                 dosheader.hdr_size = 4 + reloc_size / 16;
                 stub_len = read_len + dosheader.hdr_size * 16ul;
             }
-            QClose( the_file, FmtData.u.os2.stub_file_name );
+            QClose( the_file, FmtData.u.os2fam.stub_file_name );
         }
     }
     return( stub_len );
@@ -1492,7 +1508,7 @@ static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
     nameptr = TokBuff,
     ordptr = ordbuf;
     for( ; numords > 0; --numords ) {
-        CheckExport( nameptr, *ordptr + ord_base, strcmp );
+        CheckExport( nameptr, *ordptr + ord_base, true );
         while( *nameptr != '\0' )
             nameptr++;
         nameptr++;
@@ -1514,7 +1530,7 @@ void ReadPEExportTable( f_handle file, pe_hdr_table_entry *base )
     unsigned_32         *curr;
     unsigned_32         namestart;
 
-    fname = FmtData.u.os2.old_lib_name;
+    fname = FmtData.u.os2fam.old_lib_name;
     QRead( file, &table, sizeof( pe_export_directory ), fname );
     nameptrsize = table.num_name_ptrs * sizeof( unsigned_32 );
     if( nameptrsize == 0 )                      /* NOTE: <-- premature return */
@@ -1610,13 +1626,18 @@ static void RegisterImport( dll_sym_info *sym )
     if( os2_imp != NULL ) {
         for( ;; ) {
             chk = *owner;
-            if( chk == NULL ) break;
+            if( chk == NULL )
+                break;
             if( chk->imp != NULL ) {
                 len = chk->imp->len;
-                if( len > os2_imp->len ) len = os2_imp->len;
+                if( len > os2_imp->len )
+                    len = os2_imp->len;
                 cmp = memcmp( chk->imp->name.u.ptr, os2_imp->name.u.ptr, len );
-                if( cmp > 0 ) break;
-                if( cmp == 0 && len > chk->imp->len ) break;
+                if( cmp > 0 )
+                    break;
+                if( cmp == 0 && len > chk->imp->len ) {
+                    break;
+                }
             }
             owner = &chk->next;
         }
@@ -1756,22 +1777,22 @@ bool ImportPELocalSym( symbol *iatsym )
 /*************************************/
 {
     const char      *name;
-    symbol          *locsym;
+    symbol          *sym;
 
     name = iatsym->name.u.ptr;
     if( memcmp( name, ImportSymPrefix, PREFIX_LEN ) != 0 )
         return( false );
-    locsym = FindISymbol( name + PREFIX_LEN );
-    if( locsym == NULL )
+    sym = FindISymbol( name + PREFIX_LEN );
+    if( sym == NULL )
         return( false );
-    if( IS_SYM_IMPORTED( locsym ) )
+    if( IS_SYM_IMPORTED( sym ) )
         return( false );
-    LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", locsym->name.u.ptr );
+    LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name.u.ptr );
     iatsym->info |= SYM_DEFINED | SYM_DCE_REF;
     if( LinkFlags & LF_STRIP_CODE ) {
         DefStripImpSym( iatsym );
     }
-    AddPEImportLocalSym( locsym, iatsym );
+    AddPEImportLocalSym( sym, iatsym );
     return( true );
 }
 
@@ -1782,3 +1803,5 @@ void FreePELocalImports( void )
     PELocalImpList = NULL;
     NumLocalImports = 0;
 }
+
+#endif

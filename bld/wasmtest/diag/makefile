@@ -24,6 +24,8 @@ diag05.dum &
 diag06.dum &
 diag07.dum &
 diag08.dum &
+diag09.dum &
+diag10.dum &
 error1.dum &
 extern1.dum &
 include.dum &
@@ -34,5 +36,7 @@ asm_flags_diag01 = -4s
 asm_flags_diag02 = -3
 asm_flags_diag03 = -wx
 asm_flags_diag05 = -e100
+asm_flags_diag09 = -ml
+asm_flags_diag10 = -ml -3
 
 !include ../test.mif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  DOS implementation of open() and sopen().
+* Description:  DOS implementation of open() and _sopen().
 *
 ****************************************************************************/
 
@@ -76,7 +77,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
         ++name;
 #ifdef __WIDECHAR__
     /*** If necessary, convert the wide filename to multibyte form ***/
-    if( wcstombs( mbName, name, sizeof( mbName ) ) == -1 ) {
+    if( wcstombs( mbName, name, sizeof( mbName ) ) == (size_t)-1 ) {
         mbName[0] = '\0';
     }
 #endif
@@ -99,13 +100,13 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
                     handle = -1;
                 } else if( mode & O_EXCL ) {    /* must not exist */
 #else
-    /*
-    Don't need to do the access check, since the file was opened
-    and therefore must exist (TinyOpen can't create a file).
-    We don't want to do the check because there are classes of items
-    in the file system namespace that are not devices, but the TinyAccess
-    will fail on (e.g. named pipes).
-    */
+                /*
+                 * Don't need to do the access check, since the file was opened
+                 * and therefore must exist (TinyOpen can't create a file).
+                 * We don't want to do the check because there are classes of items
+                 * in the file system namespace that are not devices, but
+                 * the TinyAccess will fail on (e.g. named pipes).
+                 */
                 /* must not exist if O_CREAT specified */
                 if( (mode & O_EXCL) && (mode & O_CREAT) ) {
 #endif
@@ -128,7 +129,6 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
         }
         /* creating the file */
         permission = va_arg( args, int );
-        va_end( args );
         if( permission == 0 )
             permission = S_IWRITE | S_IREAD;
         permission &= ~_RWD_umaskval;               /* 05-jan-95 */
@@ -199,7 +199,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
     __SetIOMode( handle, iomode_flags );
 #ifdef DEFAULT_WINDOWING
     if( _WindowsNewWindow != NULL ) {
-        if( !__F_NAME(stricmp,wcscmp)( name, STRING( "con" ) ) ) {
+        if( !__F_NAME(_stricmp,_wcsicmp)( name, STRING( "con" ) ) ) {
             _WindowsNewWindow( NULL, handle, -1 );
         }
     }
@@ -216,14 +216,17 @@ _WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int mode, ... )
     va_start( args, mode );
     permission = va_arg( args, int );
     va_end( args );
-    return( __F_NAME(sopen,_wsopen)( name, mode, 0, permission ) );
+    return( __F_NAME(_sopen,_wsopen)( name, mode, 0, permission ) );
 }
 
 
-_WCRTLINK int __F_NAME(sopen,_wsopen)( const CHAR_TYPE *name, int mode, int shflag, ... )
+_WCRTLINK int __F_NAME(_sopen,_wsopen)( const CHAR_TYPE *name, int mode, int shflag, ... )
 {
     va_list     args;
+    int         ret;
 
     va_start( args, shflag );
-    return( __F_NAME(__sopen,__wsopen)( name, mode, shflag, args ) );
+    ret = __F_NAME(__sopen,__wsopen)( name, mode, shflag, args );
+    va_end( args );
+    return( ret );
 }

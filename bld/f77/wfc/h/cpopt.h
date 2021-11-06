@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,25 +187,25 @@ typedef unsigned_32     comp_options;
 #endif
 #if _CPU == 8086
 
-#define _SmallDataModel( opts ) ( opts & ( CGOPT_M_MEDIUM ) )
-#define _BigDataModel( opts )   ( opts & ( CGOPT_M_LARGE | CGOPT_M_HUGE ) )
-#define CGOPT_NO_NO     (CGOPT_DB_LINE|CGOPT_DB_LOCALS| \
-                         CGOPT_DI_CV|CGOPT_DI_DWARF|CGOPT_DI_WATCOM| \
-                         CGOPT_M_MEDIUM|CGOPT_M_LARGE|CGOPT_M_HUGE)
-#define OZOPT_NO_NO     (OZOPT_O_DISABLE|OZOPT_O_SPACE|OZOPT_O_TIME| \
-                         OZOPT_O_LOOP|OZOPT_O_VOLATILE|OZOPT_O_CALL_RET| \
-                         OZOPT_O_MATH|OZOPT_O_FRAME|OZOPT_O_INSSCHED| \
-                         OZOPT_O_INLINE|OZOPT_O_NUMERIC|OZOPT_O_UNROLL| \
-                         OZOPT_O_FASTDO|OZOPT_O_FLOW_REG_SAVES| \
-                         OZOPT_O_SUPER_OPTIMAL|OZOPT_O_LOOP_INVAR)
-#define CPUOPT_NO_NO    (CPUOPT_FPC|CPUOPT_FPI|CPUOPT_FPI87| \
-                         CPUOPT_FP287|CPUOPT_FP387|CPUOPT_FP5|CPUOPT_FP6| \
-                         CPUOPT_8086|CPUOPT_80286|CPUOPT_80286| \
-                         CPUOPT_80386|CPUOPT_80486|CPUOPT_80586|CPUOPT_80686)
-#define _FloatingDS( opts ) ( ( opts & (CGOPT_M_MEDIUM | CGOPT_WINDOWS) ) == 0 )
+#define _SmallDataModel( opts ) (opts & (CGOPT_M_MEDIUM))
+#define _BigDataModel( opts )   (opts & (CGOPT_M_LARGE | CGOPT_M_HUGE))
+#define CGOPT_NO_NO     (CGOPT_DB_LINE | CGOPT_DB_LOCALS | \
+                         CGOPT_DI_CV | CGOPT_DI_DWARF | CGOPT_DI_WATCOM | \
+                         CGOPT_M_MEDIUM | CGOPT_M_LARGE | CGOPT_M_HUGE)
+#define OZOPT_NO_NO     (OZOPT_O_DISABLE | OZOPT_O_SPACE | OZOPT_O_TIME | \
+                         OZOPT_O_LOOP | OZOPT_O_VOLATILE | OZOPT_O_CALL_RET | \
+                         OZOPT_O_MATH | OZOPT_O_FRAME | OZOPT_O_INSSCHED | \
+                         OZOPT_O_INLINE | OZOPT_O_NUMERIC | OZOPT_O_UNROLL | \
+                         OZOPT_O_FASTDO | OZOPT_O_FLOW_REG_SAVES | \
+                         OZOPT_O_SUPER_OPTIMAL | OZOPT_O_LOOP_INVAR)
+#define CPUOPT_NO_NO    (CPUOPT_FPC | CPUOPT_FPI | CPUOPT_FPI87 | \
+                         CPUOPT_FP287 | CPUOPT_FP387 | CPUOPT_FP5 | CPUOPT_FP6 | \
+                         CPUOPT_8086 | CPUOPT_80286 | CPUOPT_80286 | \
+                         CPUOPT_80386 | CPUOPT_80486 | CPUOPT_80586 | CPUOPT_80686)
+#define _FloatingDS( opts ) ( (opts & (CGOPT_M_MEDIUM | CGOPT_WINDOWS)) == 0 )
 #define _FloatingES( opts ) ( 1 )
-#define _FloatingFS( opts ) ( opts & CGOPT_FS_FLOATS )
-#define _FloatingGS( opts ) ( opts & CGOPT_GS_FLOATS )
+#define _FloatingFS( opts ) (opts & CGOPT_FS_FLOATS)
+#define _FloatingGS( opts ) (opts & CGOPT_GS_FLOATS)
 
 #define OZOPT_O_X       (OZOPT_O_LOOP | OZOPT_O_MATH | OZOPT_O_TIME | \
                          OZOPT_O_INSSCHED | OZOPT_O_INLINE | OZOPT_O_FASTDO | \
@@ -212,30 +213,28 @@ typedef unsigned_32     comp_options;
 
 #elif _CPU == 386
 
-#define _SmallDataModel( opts ) ( opts &                                       \
-                                ( CGOPT_M_FLAT|CGOPT_M_SMALL|CGOPT_M_MEDIUM ) )
-#define _BigDataModel( opts )   ( opts & ( CGOPT_M_COMPACT | CGOPT_M_LARGE ) )
-#define CGOPT_NO_NO     (CGOPT_DB_LINE|CGOPT_DB_LOCALS| \
-                         CGOPT_DI_CV|CGOPT_DI_DWARF|CGOPT_DI_WATCOM| \
-                         CGOPT_M_FLAT|CGOPT_M_SMALL|CGOPT_M_MEDIUM| \
-                         CGOPT_M_COMPACT|CGOPT_M_LARGE| \
-                         CGOPT_BD|CGOPT_BM)
-#define OZOPT_NO_NO     (OZOPT_O_DISABLE|OZOPT_O_SPACE|OZOPT_O_TIME| \
-                         OZOPT_O_LOOP|OZOPT_O_VOLATILE|OZOPT_O_FRAME| \
-                         OZOPT_O_INSSCHED|OZOPT_O_MATH|OZOPT_O_CALL_RET| \
-                         OZOPT_O_INLINE|OZOPT_O_BASE_PTR|OZOPT_O_NUMERIC| \
-                         OZOPT_O_UNROLL|OZOPT_O_FASTDO|OZOPT_O_FLOW_REG_SAVES| \
-                         OZOPT_O_BRANCH_PREDICTION|OZOPT_O_SUPER_OPTIMAL| \
+#define _SmallDataModel( opts ) (opts &                                       \
+                                (CGOPT_M_FLAT | CGOPT_M_SMALL | CGOPT_M_MEDIUM))
+#define _BigDataModel( opts )   (opts & (CGOPT_M_COMPACT | CGOPT_M_LARGE))
+#define CGOPT_NO_NO     (CGOPT_DB_LINE | CGOPT_DB_LOCALS | \
+                         CGOPT_DI_CV | CGOPT_DI_DWARF | CGOPT_DI_WATCOM | \
+                         CGOPT_M_FLAT | CGOPT_M_SMALL | CGOPT_M_MEDIUM | \
+                         CGOPT_M_COMPACT | CGOPT_M_LARGE | \
+                         CGOPT_BD | CGOPT_BM)
+#define OZOPT_NO_NO     (OZOPT_O_DISABLE | OZOPT_O_SPACE | OZOPT_O_TIME | \
+                         OZOPT_O_LOOP | OZOPT_O_VOLATILE | OZOPT_O_FRAME | \
+                         OZOPT_O_INSSCHED | OZOPT_O_MATH | OZOPT_O_CALL_RET | \
+                         OZOPT_O_INLINE | OZOPT_O_BASE_PTR | OZOPT_O_NUMERIC | \
+                         OZOPT_O_UNROLL | OZOPT_O_FASTDO | OZOPT_O_FLOW_REG_SAVES | \
+                         OZOPT_O_BRANCH_PREDICTION | OZOPT_O_SUPER_OPTIMAL | \
                          OZOPT_O_LOOP_INVAR)
-#define CPUOPT_NO_NO    (CPUOPT_FPC|CPUOPT_FPI|CPUOPT_FPI87| \
-                         CPUOPT_FP287|CPUOPT_FP387|CPUOPT_FP5|CPUOPT_FP6| \
-                         CPUOPT_80386|CPUOPT_80486|CPUOPT_80586|CPUOPT_80686)
-#define _FloatingDS( opts ) ( ( opts & (CGOPT_M_MEDIUM | CGOPT_M_SMALL |       \
-                                        CGOPT_M_FLAT) ) == 0 )
-#define _FloatingES( opts ) ( ( opts & CGOPT_M_FLAT ) == 0 )
-#define _FloatingFS( opts ) ( ( ( opts & CGOPT_M_FLAT ) == 0 ) || \
-                              ( opts & CGOPT_FS_FLOATS ) )
-#define _FloatingGS( opts ) ( opts & CGOPT_GS_FLOATS )
+#define CPUOPT_NO_NO    (CPUOPT_FPC | CPUOPT_FPI | CPUOPT_FPI87 | \
+                         CPUOPT_FP287 | CPUOPT_FP387 | CPUOPT_FP5 | CPUOPT_FP6 | \
+                         CPUOPT_80386 | CPUOPT_80486 | CPUOPT_80586 | CPUOPT_80686)
+#define _FloatingDS( opts ) ( (opts & (CGOPT_M_MEDIUM | CGOPT_M_SMALL | CGOPT_M_FLAT)) == 0 )
+#define _FloatingES( opts ) ( (opts & CGOPT_M_FLAT) == 0 )
+#define _FloatingFS( opts ) ( ( (opts & CGOPT_M_FLAT) == 0 ) || (opts & CGOPT_FS_FLOATS) )
+#define _FloatingGS( opts ) (opts & CGOPT_GS_FLOATS)
 
 #define OZOPT_O_X       (OZOPT_O_LOOP | OZOPT_O_MATH | OZOPT_O_TIME | \
                          OZOPT_O_INSSCHED | OZOPT_O_INLINE | \
@@ -243,32 +242,32 @@ typedef unsigned_32     comp_options;
                          OZOPT_O_BRANCH_PREDICTION | OZOPT_O_FLOW_REG_SAVES )
 
 #elif _CPU == _AXP
-#define CGOPT_NO_NO     (CGOPT_DB_LINE|CGOPT_DB_LOCALS| \
-                         CGOPT_DI_CV|CGOPT_DI_DWARF|CGOPT_DI_WATCOM| \
-                         CGOPT_BD|CGOPT_BM)
-#define OZOPT_NO_NO     (OZOPT_O_DISABLE|OZOPT_O_SPACE|OZOPT_O_TIME| \
-                         OZOPT_O_LOOP|OZOPT_O_VOLATILE| \
-                         OZOPT_O_INSSCHED|OZOPT_O_MATH|OZOPT_O_CALL_RET| \
-                         OZOPT_O_INLINE|OZOPT_O_NUMERIC| \
-                         OZOPT_O_UNROLL|OZOPT_O_FASTDO| \
-                         OZOPT_O_FLOW_REG_SAVES|OZOPT_O_BRANCH_PREDICTION| \
-                         OZOPT_O_SUPER_OPTIMAL|OZOPT_O_LOOP_INVAR)
+#define CGOPT_NO_NO     (CGOPT_DB_LINE | CGOPT_DB_LOCALS | \
+                         CGOPT_DI_CV | CGOPT_DI_DWARF | CGOPT_DI_WATCOM | \
+                         CGOPT_BD | CGOPT_BM)
+#define OZOPT_NO_NO     (OZOPT_O_DISABLE | OZOPT_O_SPACE | OZOPT_O_TIME | \
+                         OZOPT_O_LOOP | OZOPT_O_VOLATILE | \
+                         OZOPT_O_INSSCHED | OZOPT_O_MATH | OZOPT_O_CALL_RET | \
+                         OZOPT_O_INLINE | OZOPT_O_NUMERIC | \
+                         OZOPT_O_UNROLL | OZOPT_O_FASTDO | \
+                         OZOPT_O_FLOW_REG_SAVES | OZOPT_O_BRANCH_PREDICTION | \
+                         OZOPT_O_SUPER_OPTIMAL | OZOPT_O_LOOP_INVAR)
 #define CPUOPT_NO_NO     0x00000000L
 #define OZOPT_O_X       (OZOPT_O_LOOP | OZOPT_O_MATH | OZOPT_O_TIME | \
                          OZOPT_O_INSSCHED | OZOPT_O_INLINE | \
                          OZOPT_O_FASTDO | OZOPT_O_BRANCH_PREDICTION | \
                          OZOPT_O_FLOW_REG_SAVES )
 #elif _CPU == _PPC
-#define CGOPT_NO_NO     (CGOPT_DB_LINE|CGOPT_DB_LOCALS| \
-                         CGOPT_DI_CV|CGOPT_DI_DWARF|CGOPT_DI_WATCOM| \
-                         CGOPT_BD|CGOPT_BM)
-#define OZOPT_NO_NO     (OZOPT_O_DISABLE|OZOPT_O_SPACE|OZOPT_O_TIME| \
-                         OZOPT_O_LOOP|OZOPT_O_VOLATILE| \
-                         OZOPT_O_INSSCHED|OZOPT_O_MATH|OZOPT_O_CALL_RET| \
-                         OZOPT_O_INLINE|OZOPT_O_NUMERIC| \
-                         OZOPT_O_UNROLL|OZOPT_O_FASTDO| \
-                         OZOPT_O_FLOW_REG_SAVES|OZOPT_O_BRANCH_PREDICTION| \
-                         OZOPT_O_SUPER_OPTIMAL|OZOPT_O_LOOP_INVAR)
+#define CGOPT_NO_NO     (CGOPT_DB_LINE | CGOPT_DB_LOCALS | \
+                         CGOPT_DI_CV | CGOPT_DI_DWARF | CGOPT_DI_WATCOM | \
+                         CGOPT_BD | CGOPT_BM)
+#define OZOPT_NO_NO     (OZOPT_O_DISABLE | OZOPT_O_SPACE | OZOPT_O_TIME | \
+                         OZOPT_O_LOOP | OZOPT_O_VOLATILE | \
+                         OZOPT_O_INSSCHED | OZOPT_O_MATH | OZOPT_O_CALL_RET | \
+                         OZOPT_O_INLINE | OZOPT_O_NUMERIC | \
+                         OZOPT_O_UNROLL | OZOPT_O_FASTDO | \
+                         OZOPT_O_FLOW_REG_SAVES | OZOPT_O_BRANCH_PREDICTION | \
+                         OZOPT_O_SUPER_OPTIMAL | OZOPT_O_LOOP_INVAR)
 #define CPUOPT_NO_NO     0x00000000L
 #define OZOPT_O_X       (OZOPT_O_LOOP | OZOPT_O_MATH | OZOPT_O_TIME | \
                          OZOPT_O_INSSCHED | OZOPT_O_INLINE | \
@@ -279,21 +278,17 @@ typedef unsigned_32     comp_options;
 #endif
 
 
-#define OPT_NO_NO       (OPT_TYPE|OPT_PRINT|OPT_CHINESE|OPT_JAPANESE| \
-                         OPT_KOREAN)
+#define OPT_NO_NO       (OPT_TYPE | OPT_PRINT | OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN)
 
 #define MAX_OPTIONS     64
 
 
-struct opt_entry;
-
 typedef struct opt_entry {
     char        *option;        // pointer to option name
-    uint        description;    // description id
     unsigned_8  flags;          // option flags
-#if !defined( __WFL__ )
     unsigned_32 value;          // value of option
-    void        (*proc_rtnstr)(struct opt_entry *, char *);  // option processing for strin options
-    void        (*proc_rtnbool)(struct opt_entry *, bool);   // for negatable options
-#endif
+    void        (*proc_rtnstr)(struct opt_entry *, const char *);   // option processing for string options
+    void        (*proc_rtnbool)(struct opt_entry *, bool);          // for negatable options
 } opt_entry;
+
+extern opt_entry    CompOptns[];

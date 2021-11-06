@@ -726,9 +726,9 @@ static void ob_insert_def_ot( const char *in_block, size_t count, font_number fo
 
 static void set_out_file( void )
 {
-    PGROUP2     cmd;
-    PGROUP2     dev;
-    PGROUP2     doc;
+    pgroup2     cmd;
+    pgroup2     dev;
+    pgroup2     doc;
 
     char        temp_outfile[_MAX_PATH];
 

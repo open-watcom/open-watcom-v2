@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "global.h"
 #include "segsw.h"
 #include "stmtsw.h"
@@ -41,23 +41,24 @@
 #include "rststruc.h"
 
 
-static  sym_id  AddStruct( char *name, uint length )
-//==================================================
+static sym_id AddStruct( const char *name, size_t length )
+//========================================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
 {
     sym_id      sym;
 
-    sym = FMemAlloc( sizeof( fstruct ) + AllocName( length ) );
+    sym = FMemAlloc( sizeof( fstruct ) + length );
     sym->u.sd.dbh = 0;
     sym->u.sd.name_len = length;
     memcpy( &sym->u.sd.name, name, length );
+    sym->u.sd.name[length] = NULLCHAR;
     return( sym );
 }
 
 
-sym_id  FindStruct( char *name, uint len )
-//========================================
+sym_id FindStruct( const char *name, size_t len )
+//===============================================
 // Search symbol table for given name.
 {
     sym_id      head;
@@ -76,8 +77,8 @@ sym_id  FindStruct( char *name, uint len )
 }
 
 
-sym_id  STStruct( char *name, uint length )
-//=========================================
+sym_id STStruct( const char *name, size_t length )
+//================================================
 // Lookup the specified structure name in the symbol table.
 {
     sym_id      sym;
@@ -141,8 +142,8 @@ char    *STFieldName( sym_id sym, char *buff ) {
 }
 
 
-static  sym_id  *Strut( sym_id *p_field, char *name, uint len )
-//=============================================================s
+static sym_id *Strut( sym_id *p_field, const char *name, size_t len )
+//===================================================================
 {
     sym_id      map;
     sym_id      field;
@@ -160,7 +161,7 @@ static  sym_id  *Strut( sym_id *p_field, char *name, uint len )
                     FieldErr( SP_DUPLICATE_FIELD, *q_field );
                 }
             }
-            if( ( SgmtSw & SG_DEFINING_MAP ) && ( field->u.fd.link == NULL ) ) {
+            if( (SgmtSw & SG_DEFINING_MAP) && ( field->u.fd.link == NULL ) ) {
                 return( q_field );
             }
         } else {
@@ -175,25 +176,25 @@ static  sym_id  *Strut( sym_id *p_field, char *name, uint len )
 }
 
 
-static  sym_id  AddField( char *name, uint length )
-//=================================================
+static sym_id AddField( const char *name, size_t length )
+//=======================================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
 {
     sym_id      sym;
 
-    sym = FMemAlloc( sizeof( field ) + AllocName( length ) );
+    sym = FMemAlloc( sizeof( field ) + length );
     sym->u.fd.name_len = length;
     memcpy( &sym->u.fd.name, name, length );
+    sym->u.fd.name[length] = NULLCHAR;
     return( sym );
 }
 
 
-sym_id  STField( char *name, uint len ) {
-//=======================================
-
+sym_id STField( const char *name, size_t len )
+//============================================
 // Allocate a field name.
-
+{
     sym_id      *p_field;
 
     if( len > MAX_SYMLEN ) {
@@ -207,10 +208,9 @@ sym_id  STField( char *name, uint len ) {
 }
 
 
-static  sym_id  LookupField( sym_id field, char *name, uint len,
-                             intstar4 *offset ) {
-//==============================================================
-
+static sym_id LookupField( sym_id field, const char *name, size_t len, intstar4 *offset )
+//=======================================================================================
+{
     sym_id      map;
     sym_id      u_field;
     intstar4    size;
@@ -218,12 +218,10 @@ static  sym_id  LookupField( sym_id field, char *name, uint len,
     intstar4    f_offset;
 
     f_offset = 0;
-    for(;;) {
-        if( field == NULL ) return( NULL );
+    for( ; field != NULL; field = field->u.fd.link ) {
         if( field->u.fd.typ == FT_UNION ) {
             size = 0;
-            map = field->u.fd.xt.sym_record;
-            while( map != NULL ) {
+            for( map = field->u.fd.xt.sym_record; map != NULL; map = map->u.sd.link ) {
                 u_field = LookupField( map->u.sd.fl.sym_fields, name, len, &f_size );
                 if( u_field != NULL ) {
                     *offset = f_offset + f_size;
@@ -232,13 +230,12 @@ static  sym_id  LookupField( sym_id field, char *name, uint len,
                 if( size < map->u.sd.size ) {
                     size = map->u.sd.size;
                 }
-                map = map->u.sd.link;
             }
         } else {
             if( field->u.fd.name_len == len ) {
                 if( memcmp( name, &field->u.fd.name, len ) == 0 ) {
                     *offset = f_offset;
-                    return( field );
+                    break;
                 }
             }
             size = _FieldSize( field );
@@ -247,16 +244,15 @@ static  sym_id  LookupField( sym_id field, char *name, uint len,
             }
         }
         f_offset += size;
-        field = field->u.fd.link;
     }
+    return( field );
 }
 
 
-sym_id  FieldLookup( sym_id prev, char *name, uint len, intstar4 *offset ) {
-//==========================================================================
-
+sym_id FieldLookup( sym_id prev, const char *name, size_t len, intstar4 *offset )
+//===============================================================================
 // Search for a field name.
-
+{
     *offset = 0;
     return( LookupField( prev, name, len, offset ) );
 }
@@ -275,19 +271,18 @@ bool    CalcStructSize( sym_id sd ) {
     intstar4    total_size;
 
     // in case size of structure already calculated
-    if( sd->u.sd.size != 0 ) return( false );
+    if( sd->u.sd.size != 0 )
+        return( false );
     saved_link = sd->u.sd.link;
     if( saved_link == sd ) {
         return( true );         // recursion detected!
     }
     sd->u.sd.link = sd;           // to protect against recursion
     total_size = 0;
-    field = sd->u.sd.fl.sym_fields;
-    while( field != NULL ) {
+    for( field = sd->u.sd.fl.sym_fields; field != NULL; field = field->u.fd.link ) {
         size = 0;
         if( field->u.fd.typ == FT_UNION ) {
-            map = field->u.fd.xt.sym_record;
-            while( map != NULL ) {
+            for( map = field->u.fd.xt.sym_record; map != NULL; map = map->u.sd.link ) {
                 if( CalcStructSize( map ) ) {
                     sd->u.sd.link = saved_link;
                     return( true );             // recursion detected
@@ -295,7 +290,6 @@ bool    CalcStructSize( sym_id sd ) {
                 if( size < map->u.sd.size ) {
                     size = map->u.sd.size;
                 }
-                map = map->u.sd.link;
             }
         } else {
             if( field->u.fd.typ == FT_STRUCTURE ) {
@@ -315,7 +309,6 @@ bool    CalcStructSize( sym_id sd ) {
             }
         }
         total_size += size;
-        field = field->u.fd.link;
     }
     sd->u.sd.size = total_size;
     sd->u.sd.link = saved_link;                   // restore saved link
@@ -336,7 +329,8 @@ void    STUnion( void ) {
     //                      MAP
     //                          INTEGER I
     //                      ENDMAP
-    if( CurrStruct == NULL ) return;
+    if( CurrStruct == NULL )
+        return;
     un = FMemAlloc( sizeof( funion ) );
     un->u.fd.typ = FT_UNION;
     un->u.fd.link = NULL;
@@ -365,13 +359,15 @@ void    STMap( void ) {
     // make sure that a STRUCTURE was defined
     // Consider:        MAP
     //                      INTEGER I
-    if( CurrStruct == NULL ) return;
+    if( CurrStruct == NULL )
+        return;
     field = CurrStruct->u.sd.fl.sym_fields;
     // make sure that a UNION was defined
     // Consider:      STRUCTURE /STRUCT/
     //                    MAP
     //                        INTEGER I
-    if( field == NULL ) return;
+    if( field == NULL )
+        return;
     md = FMemAlloc( sizeof( fmap ) );
     md->u.sd.link = NULL;
     md->u.sd.fl.fields = NULL;

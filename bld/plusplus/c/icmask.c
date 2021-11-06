@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -396,9 +397,10 @@ static int indirEnvOrFile( char *name, char ***args )
             *args = NULL;
             return( 0 );
         }
-        fgets( fbuf, sizeof( fbuf ), fh );
+        optstring = fgets( fbuf, sizeof( fbuf ), fh );
+        if( optstring == NULL )
+            optstring = "";
         fclose( fh );
-        optstring = fbuf;
     }
     argc = ParseVariable( optstring, NULL, NULL );  // count parameters.
     argbufsize = strlen( optstring ) + 1 + argc;    // inter-parameter spaces map to 0

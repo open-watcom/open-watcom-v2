@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,18 +40,18 @@
 /*
  * Library stuff
  */
-typedef struct lib_header {
+typedef struct omf_lib_header {
     uint_8      cmd;
     uint_16     length;
     uint_32     dict_start;
     uint_16     dict_size;
-} lib_header;
+} omf_lib_header;
 
 enum {
-    LIB_FULL_PAGE       = 0xff,
     LIB_NOT_FOUND       = 0,
     LIB_HEADER_REC      = 0xf0,
-    LIB_TRAILER_REC     = 0xf1
+    LIB_TRAILER_REC     = 0xf1,
+    LIB_FULL_PAGE       = 0xff
 };
 
 #define DIC_REC_SIZE    512U        /* record size of dictionary entry */
@@ -58,7 +59,7 @@ enum {
 /*
  *  INTEL Segment Alignment Specifiers - A field
  */
- enum {
+enum {
     ALIGN_ABS           = 0,        /* absolute segment - no alignment  */
     ALIGN_BYTE          = 1,        /* relocatable seg - byte aligned   */
     ALIGN_WORD          = 2,        /* relocatable seg - word aligned   */
@@ -90,18 +91,18 @@ enum {
 #define SEGATTR_A( a )  (ALIGN_##a << 5)
 #define SEGATTR_C( a )  (COMB_##a << 2)
 enum {
-      SEGATTR_BIG  =   1<< 1,   // exactly 64k or 2**32
+      SEGATTR_BIG  =   1 << 1,  // exactly 64k or 2**32
       SEGATTR_P    =   1,       // use 32
 };
 /*  Bits in FIXUPP records          TAI */
 
 enum {
     FIXUPP_FIXUP        = 0x80,
+    FIXUPP_MBIT         = 0x40,
 
     FIXDAT_FTHREAD      = 0x80,
     FIXDAT_TTHREAD      = 8,
     FIXDAT_PBIT         = 4,
-    FIXDAT_MBIT         = 0x40,
     TRDDAT_DBIT         = 0x40,
 
 /*
@@ -120,16 +121,10 @@ enum {
  *  INTEL Target Specifiers
  */
 
-    TARGET_SEGWD        = 0,        /* segment index with displacement  */
-    TARGET_GRPWD        = 1,        /* group index with displacement    */
-    TARGET_EXTWD        = 2,        /* external index with displacement */
-    TARGET_ABSWD        = 3,        /* abs frame num with displacement  */
-    TARGET_SEG          = 4,        /* segment index, no displacement   */
-    TARGET_GRP          = 5,        /* group index, no displacement     */
-    TARGET_EXT          = 6,        /* external index, no displacement  */
-    TARGET_ABS          = 7,        /* abs frame num, no displacement   */
-
-    TARGET_WITH_DISPL   = ~4,       /* frame with displacement          */
+    TARGET_SEG          = 0,        /* segment index with displacement  */
+    TARGET_GRP          = 1,        /* group index with displacement    */
+    TARGET_EXT          = 2,        /* external index with displacement */
+    TARGET_ABS          = 3,        /* abs frame num with displacement  */
 
 /*
  *  INTEL Group Specifiers
@@ -142,11 +137,13 @@ enum {
     GRP_ADDR            = 0xfa,     /* load time addr for the group     */
 };
 
+#define TARGET_NO_DISPL(x)  ((x) | 4) /* frame without displacement       */
+
 /*
  *  INTEL Object Record Types
  */
 
-typedef enum {
+typedef enum omf_cmd {
     CMD_MIN_CMD         = 0x6e,     /* minimum cmd enum                 */
     CMD_RHEADR          = 0x6e,
     CMD_REGINT          = 0x70,
@@ -225,31 +222,31 @@ typedef enum {
     CMD_VERNUM          = 0xcc,     /* TIS version number record        */
     CMD_VENDEXT         = 0xce,     /* TIS vendor extension record      */
     CMD_MAX_CMD         = 0xce      /* maximum cmd enum                 */
-}cmd_omf;
+} omf_cmd;
 
-enum {
-    LOC_OFFSET_LO       = 0,        /* relocate lo byte of offset       */
-    LOC_OFFSET          = 1,        /* relocate offset                  */
-    LOC_BASE            = 2,        /* relocate segment                 */
-    LOC_BASE_OFFSET     = 3,        /* relocate segment and offset      */
-    LOC_OFFSET_HI       = 4,        /* relocate hi byte of offset       */
-    LOC_MS_LINK_OFFSET  = 5,        /* like OFFSET but loader resolved  */
-    LOC_OFFSET_32       = 5,        /* relocate 32-bit offset           */
-    LOC_BASE_OFFSET_32  = 6,        /* relocate segment and 32-bit offset*/
-    LOC_MS_OFFSET_32    = 9,        /* MS 32-bit offset                 */
-    LOC_MS_BASE_OFFSET_32= 11,      /* MS 48-bit pointer                */
-    LOC_MS_LINK_OFFSET_32= 13       /* like OFFSET_32 but loader resolved*/
-};
+typedef enum omf_fix_loc {
+    LOC_OFFSET_LO        = 0,       /* relocate lo byte of offset           */
+    LOC_OFFSET           = 1,       /* relocate offset                      */
+    LOC_BASE             = 2,       /* relocate segment                     */
+    LOC_BASE_OFFSET      = 3,       /* relocate segment and offset          */
+    LOC_OFFSET_HI        = 4,       /* relocate hi byte of offset           */
+    LOC_OFFSET_LOADER    = 5,       /* like OFFSET but loader resolved      */
+    LOC_OFFSET_32        = 9,       /* relocate 32-bit offset               */
+    LOC_BASE_OFFSET_32   = 11,      /* relocate 48-bit pointer              */
+    LOC_OFFSET_32_LOADER = 13       /* like OFFSET_32 but loader resolved   */
+} omf_fix_loc;
+#define LOC_PHARLAP_OFFSET_32       LOC_OFFSET_LOADER       /* Pharlap, relocate 32-bit offset  */
+#define LOC_PHARLAP_BASE_OFFSET_32  (LOC_OFFSET_LOADER + 1) /* Pharlap, relocate segment and 32-bit offset */
 
-typedef struct obj_record {
+typedef struct omf_record {
     uint_8      command;
     uint_16     length;
-} obj_record;
+} omf_record;
 
-typedef struct obj_name {
+typedef struct omf_name {
     uint_8      len;
     char        name[ 1 ];
-} obj_name;
+} omf_name;
 /*
     Comment Type
 */
@@ -314,7 +311,7 @@ typedef struct {
     char    mem_model;
     char    unknown;
     char    emulation;
-} cpu_data;
+} omf_cpu_data;
 
 /*
     Linker directives (mostly WLINK directives)

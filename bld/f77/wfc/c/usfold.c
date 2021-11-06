@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "intarith.h"
 
 
-extern  void            (* const __FAR GenOprTable[])(TYPE, TYPE, OPTR);
+extern  void            (* const GenOprTable[])(TYPE, TYPE, OPTR);
 
 
 static void    MulIOFlow ( ftn_type *arg1, ftn_type *arg2 ) {
@@ -505,7 +505,7 @@ void    XBitNeqv( ftn_type *opnd1, ftn_type *opnd2 ) {
 void    XBitAnd( ftn_type *opnd1, ftn_type *opnd2 ) {
 //===================================================
 
-    opnd1->intstar4 = ( opnd1->intstar4 & opnd2->intstar4 );
+    opnd1->intstar4 = (opnd1->intstar4 & opnd2->intstar4);
 }
 
 
@@ -526,7 +526,7 @@ void    XBitNot( ftn_type *opnd1, ftn_type *opnd2 ) {
 //------------------------------------------- CMP routines
 
 
-void    XICmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
+void    XICmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 //============================================================================
 
     int         cmp;
@@ -542,7 +542,7 @@ void    XICmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
 }
 
 
-void    XRCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
+void    XRCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 //============================================================================
 
     int         cmp;
@@ -558,7 +558,7 @@ void    XRCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
 }
 
 
-void    XDCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
+void    XDCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 //============================================================================
 
     int         cmp;
@@ -574,7 +574,7 @@ void    XDCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
 }
 
 
-void    XECmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
+void    XECmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 //============================================================================
 
     int         cmp;
@@ -590,7 +590,7 @@ void    XECmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
 }
 
 
-void    XCCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
+void    XCCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 //============================================================================
 
     int         cmp;
@@ -604,7 +604,7 @@ void    XCCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
 }
 
 
-void    XQCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
+void    XQCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 //============================================================================
 
     int         cmp;
@@ -618,7 +618,7 @@ void    XQCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
 }
 
 
-void    XXCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
+void    XXCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 //============================================================================
 
     int         cmp;
@@ -632,7 +632,7 @@ void    XXCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
 }
 
 
-void    XChCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 __FAR *res ) {
+void    XChCmp( ftn_type *opnd1, ftn_type *opnd2, const logstar1 *res ) {
 //=============================================================================
 
     opnd1->logstar4 = res[ 1 + LexStrCmp( opnd1->cstring.strptr,
@@ -716,11 +716,11 @@ static  bool    ZeroBase( TYPE typ, ftn_type *base ) {
 }
 
 
-static  void            (* const __FAR Mul[])( ftn_type *, ftn_type * ) =
+static  void            (* const Mul[])( ftn_type *, ftn_type * ) =
                                     { &MulIOFlow, &MulIOFlow, &MulIOFlow,
                                       &MulR, &MulD, &MulE,
                                       &MulC, &MulQ, &MulX };
-static  void            (* const __FAR Div[])( ftn_type *_x, ftn_type *_y ) =
+static  void            (* const Div[])( ftn_type *_x, ftn_type *_y ) =
                                     { &DivI, &DivI, &DivI,
                                       &DivR, &DivD, &DivE,
                                       &DivC, &DivQ, &DivX };
@@ -747,16 +747,18 @@ void    ExpI( TYPE typ, ftn_type *base, intstar4 exponent ) {
             InitOne( typ, &result );
             exponent = -exponent;
         }
-        if( ( exponent & 1 ) != 0 ) {
+        if( (exponent & 1) != 0 ) {
             result = *base;
         }
         exponent /= 2;
         while( exponent != 0 ) {
             for(;;) {
                 Mul[ typ - FT_INTEGER_1 ]( base, base );
-                odd = ( ( exponent & 1 ) != 0 );
+                odd = ( (exponent & 1) != 0 );
                 exponent /= 2;
-                if( odd ) break;
+                if( odd ) {
+                    break;
+                }
             }
             Mul[ typ - FT_INTEGER_1 ]( &result, base );
         }

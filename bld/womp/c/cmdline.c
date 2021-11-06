@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,6 +138,13 @@ enum omf_generators {
     OGEN_PHARLAP
 };
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(num,eng,jap)   + 1
+    #include "usage.gh"
+    #undef pick
+};
+
 STATIC cmdline_t    cmdLine;
 STATIC act_grp_t    *curAct;    /* stack of actions */
 STATIC int          headerDone;
@@ -179,9 +186,8 @@ STATIC void usage( void ) {
     int         i;
 
     header();
-    for( i = MSG_USE_BASE;; i++ ) {
+    for( i = MSG_USAGE_BASE; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         MsgGet( i, msgbuff );
-        if( ( msgbuff[ 0 ] == '.' ) && ( msgbuff[ 1 ] == 0 ) ) break;
         if( previous_null ) {
             if( msgbuff[0] != '\0' ) {
                 waitForKey();
@@ -364,7 +370,7 @@ STATIC const char *addFile( const char *str ) {
 
     DIR                 *dirp;
     struct dirent       *dire;
-    PGROUP2             pg;
+    pgroup2             pg;
     char                path[ _MAX_PATH ];
     char                *p;
     size_t              len;
@@ -435,7 +441,7 @@ STATIC const char *doComment( const char *str ) {
 */
 STATIC int openIncludeFile( const char * file_name )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[ _MAX_PATH ];
     int         fh;
 
@@ -492,7 +498,7 @@ STATIC char *readIncludeFile( int fh ) {
     }
     if( file_len > 0 ) {
         /* now read the file into an array of the appropriate size */
-        if( lseek( fh, (long)0, SEEK_SET ) == -1 ) {
+        if( lseek( fh, (long)0, SEEK_SET ) == -1L ) {
             Fatal( MSG_DISK_ERROR, "lseek" );
         }
         file = MemAlloc( file_len + 1 );
@@ -743,7 +749,7 @@ void ActionFini( cmdline_t *cmd ) {
 void ActionInfile( cmdline_t *cmd, char *buf, uint file_num ) {
 /***********************************************************/
 
-    PGROUP2     pg;
+    pgroup2     pg;
 
 /**/myassert( cmd != NULL );
 /**/myassert( cmd->action != NULL );
@@ -755,7 +761,7 @@ void ActionInfile( cmdline_t *cmd, char *buf, uint file_num ) {
 void ActionOutfile( cmdline_t *cmd, char *buf, uint file_num ) {
 /************************************************************/
 
-    PGROUP2     pg;
+    pgroup2     pg;
     char        fname[ _MAX_FNAME ];
     const char *output;
 
@@ -784,8 +790,8 @@ void ActionRename( cmdline_t *cmd, const char *in, const char *out,
     uint file_num, int make_lib, size_t page_size )
 /*************************************************/
 {
-    PGROUP2     pg1;
-    PGROUP2     pg2;
+    pgroup2     pg1;
+    pgroup2     pg2;
     char        buf[ _MAX_PATH ];
     const char  *output;
     act_grp_t   *cur;
@@ -838,15 +844,15 @@ void ActionRename( cmdline_t *cmd, const char *in, const char *out,
             } else if( rc > 0 ) {
                 Fatal( MSG_WLIB_ERROR );
             }
-            if( unlink( out ) != 0 ) {
-                Fatal( MSG_DISK_ERROR, "unlink" );
+            if( remove( out ) != 0 ) {
+                Fatal( MSG_DISK_ERROR, "remove" );
             }
         }
     } else if( cur->batch ) {
         PrtFmt( "if exist %s del %s\n", buf, buf );
         PrtFmt( "rename %s %s\n", out, buf );
     } else {
-        unlink( buf );          /* delete any file of this name */
+        remove( buf );          /* delete any file of this name */
         if( rename( out, buf ) != 0 ) {
             Fatal( MSG_DISK_ERROR, "rename" );
         }

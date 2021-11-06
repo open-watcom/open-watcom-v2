@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -342,7 +342,7 @@ int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
     int                 reclength;
 
     reclength = 0;
-    header = CacheRead( list, *loc, sizeof( lib_header ) );
+    header = CacheRead( list, *loc, sizeof( omf_lib_header ) );
     if( header[0] == 0xf0 && header[1] == 0x01 ) {
         // COFF object for PPC
     } else if( header[0] == LIB_HEADER_REC ) {   // reading from a library
@@ -351,7 +351,7 @@ int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
         if( reclength < 0 ) {
             return( -1 );
         }
-        *loc += ROUND_UP( sizeof( lib_header ), reclength );
+        *loc += ROUND_UP( sizeof( omf_lib_header ), reclength );
     } else if( memcmp( header, AR_IDENT, AR_IDENT_LEN ) == 0 ) {
         list->flags |= STAT_AR_LIB;
         reclength = 2;
@@ -443,8 +443,8 @@ static void SetDict( file_list *lib, unsigned dict_page )
     }
 }
 
-static unsigned OMFCompName( const char *name, const unsigned_8 *buff, unsigned index )
-/*************************************************************************************/
+static unsigned OMFCompName( const char *name, const char *buff, unsigned index )
+/*******************************************************************************/
 /* Compare name. */
 {
     size_t      len;
@@ -453,13 +453,14 @@ static unsigned OMFCompName( const char *name, const unsigned_8 *buff, unsigned 
     int         result;
 
     returnval = 0;
-    off = buff[index];
+    off = ((unsigned char *)buff)[index];
     buff += off * 2;
-    len = *buff++;
+    len = *(unsigned char *)buff;
+    buff++;
     if( LinkFlags & LF_CASE_FLAG ) {
-        result = memcmp( buff, name, len );
+        result = strncmp( buff, name, len );
     } else {
-        result = memicmp( buff, name, len );
+        result = strnicmp( buff, name, len );
     }
     if( result == 0 && name[len] == '\0' ) {
         returnval = _ReadLittleEndian16UN( buff + len );
@@ -491,7 +492,7 @@ static bool OMFSearchExtLib( file_list *lib, const char *name, unsigned long *of
                     return( false );
                 break;
             }
-            sector = OMFCompName( name, dict->buffer, h.bucket );
+            sector = OMFCompName( name, (char *)dict->buffer, h.bucket );
             if( sector != 0 ) {
                 *off = dict->rec_length * sector;
                 return( true );
@@ -633,9 +634,9 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     if( !retval )
         return( NULL );
 
-/*
-    update lib struct since we found desired object file
-*/
+    /*
+     *  update lib struct since we found desired object file
+     */
     obj = NewModEntry();
     obj->name.u.ptr = IdentifyObject( lib, &pos, &dummy );
     obj->location = pos;

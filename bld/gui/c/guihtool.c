@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +34,13 @@
 #include "guiwind.h"
 
 
-bool GUICreateFloatToolBar( gui_window *wnd, bool fixed, gui_ord height,
+bool GUIAPI GUICreateFloatToolBar( gui_window *wnd, bool fixed, gui_ord height,
                             const gui_toolbar_items *toolinfo,
                             bool excl, gui_colour_set *plain,
-                            gui_colour_set *standout, gui_rect *rect )
+                            gui_colour_set *standout, const gui_rect *float_pos )
 {
     if( toolinfo->num_items > 0 ) {
-        if( GUIXCreateToolBar( wnd, fixed, height, toolinfo, excl, plain, standout, rect ) ) {
+        if( GUIXCreateToolBar( wnd, fixed, height, toolinfo, excl, plain, standout, float_pos ) ) {
             GUIInitToolbarHint( wnd, toolinfo );
             return( true );
         }
@@ -47,7 +48,7 @@ bool GUICreateFloatToolBar( gui_window *wnd, bool fixed, gui_ord height,
     return( false );
 }
 
-bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
+bool GUIAPI GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                               const gui_toolbar_items *toolinfo,
                               bool excl, gui_colour_set *plain,
                               gui_colour_set *standout )
@@ -61,7 +62,7 @@ bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
     return( false );
 }
 
-bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
+bool GUIAPI GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
                                       const gui_toolbar_items *toolinfo,
                                       bool excl, gui_colour_set *plain,
                                       gui_colour_set *standout )
@@ -75,7 +76,7 @@ bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     return( false );
 }
 
-bool GUICloseToolBar( gui_window *wnd )
+bool GUIAPI GUICloseToolBar( gui_window *wnd )
 {
     if( GUIXCloseToolBar( wnd ) ) {
         GUIInitToolbarHint( wnd, &NoToolbar );

@@ -1,4 +1,4 @@
-.chap *refid=diffs Release Notes for &product &ver..&rev
+.chap *refid=diffs Release Notes for &product &verrev
 .*
 .np
 There are a number of enhancements and changes in this new version of
@@ -25,7 +25,7 @@ Following is a list of changes made in &product 2.0:
 OW tools ported to 64-bit host platform (Linux and Windows)
 .bull
 OW installer for 64-bit host platform (Linux and Windows)
-.endbull 
+.endbull
 .np
 C compiler changes:
 .begbull
@@ -34,7 +34,7 @@ C99 preprocessor _Pragma() operator was added
 .bull
 pragma "warning" was added
 .bull
-new option -zam was added to supress predefined macros non-conforming 
+new option -zam was added to supress predefined macros non-conforming
 ISO standard naming convention (macros without leading underscore)
 .bull
 Warning W303 "Parameter '%s' has been defined, but not referenced" was enabled by default.
@@ -53,11 +53,11 @@ C99 preprocessor _Pragma() operator was added
 .bull
 fix pragmas "enable_message" and "disable_message" to not change warning level
 .bull
-new option -zam was added to supress predefined macros non-conforming 
+new option -zam was added to supress predefined macros non-conforming
 ISO standard naming convention (macros without leading underscore)
 .bull
 predefined macro NO_EXT_KEYS was replaced by _NO_EXT_KEYS, old one is defined if -zam option is not used
-.endbull 
+.endbull
 .np
 Linker changes:
 .begbull
@@ -66,19 +66,19 @@ added support for 64-bit COFF objects and 64-bit PE executable
 .bull
 default stack size for Windows NT was changed to 1 MB for better
 compatibility with Microsoft linker
-.endbull 
+.endbull
 .np
 C run-time library changes:
 .begbull
 .bull
 POSIX threads implementation was added for Linux target
-.endbull 
+.endbull
 Wmake utility changes:
 .begbull
 .bull
 add interception for rm, mkdir and rmdir commands
 to be processed by wmake (POSIX simplified implementation)
-.endbull 
+.endbull
 .*
 .*
 .section Differences from Open Watcom version 1.8
@@ -237,7 +237,7 @@ running on Windows NT (through NTVDM).
 .bull
 The 16-bit Windows GUI tools no longer require CTL3DV2.DLL, but still use
 it if the library is present.
-.endbull 
+.endbull
 .*
 .section Differences from Open Watcom Version 1.7
 .*
@@ -318,7 +318,7 @@ The MinGW headers and libraries are no longer being used. The new headers and
 libraries provider greater compatibility with the Microsoft SDK and better
 support for Microsoft Vista.
 .bull
-The version of Causeway in the official distribution is now version 4.03. 
+The version of Causeway in the official distribution is now version 4.03.
 .bull
 The Linux run time libraries now have recvfrom() and sendto() implementations.
 .bull
@@ -382,7 +382,7 @@ specified.
 WASM now handles EXTERNDEF directives properly; an EXTDEF record is created
 only if the symbol is actually referenced.
 .bull
-WASM now handles the auto-dependency filename properly. 
+WASM now handles the auto-dependency filename properly.
 .bull
 WASM now implicitly creates the __UNIX__ macro for the BSD target as it has
 for LINUX and QNX.
@@ -415,7 +415,7 @@ WLINK now properly emits segments overlapped by groups to output file.
 WLINK now properly handles imported symbols that are locally defined with the
 dllimport specifier in PE formatted files.
 .bull
-WLINK DLL was renamed from wlink.dll to wlinkd.dll. It requires to correct 
+WLINK DLL was renamed from wlink.dll to wlinkd.dll. It requires to correct
 wmake directive "!loaddll" to use this new name if it is used in makefile.
 .bull
 WRC on Far-Eastern NT-based systems now honors the DBCS encoding specified on
@@ -1539,7 +1539,7 @@ Components of the Win32 SDK and OS/2 Toolkits are no longer supplied.
 .bull
 MFC libraries, source code and documentation are no longer supplied.
 .endbull
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 .*
 .section Changes in 11.0 that may Require Recompilation
 .*
@@ -1988,7 +1988,7 @@ This new version fixes all known bugs in the previous version.
 .*
 .do end
 .*
-.if &version ge 106 .do begin
+.if &vermacro ge 1060 .do begin
 .*
 .section Changes in 10.6 that may Require Recompilation
 .*
@@ -3229,7 +3229,7 @@ DOS system or in a Windows 3.x DOS box operating in enhanced mode.
 .*
 .if '&lang' eq 'FORTRAN 77' .do begin
 .*
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 .*
 .section Changes in 11.0 that may Require Recompilation
 .*
@@ -3378,7 +3378,7 @@ platforms.
 .*
 .do end
 .*
-.if &version ge 106 .do begin
+.if &vermacro ge 1060 .do begin
 .*
 .section Changes in 10.6 that may Require Recompilation
 .*

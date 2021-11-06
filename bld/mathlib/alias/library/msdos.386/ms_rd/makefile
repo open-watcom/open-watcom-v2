@@ -6,6 +6,6 @@ system     = msdos
 linkage    = static
 convention = register
 
-mathlib_release = 0
+lib_debug = 1
 
 !include $(mathlib_dir)/mklib.mif

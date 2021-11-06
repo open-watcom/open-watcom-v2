@@ -38,12 +38,7 @@
 
 #define NUM_ROWS        24
 
-#ifdef __OSI__
-#define ConsoleMessage(text)    puts(text)
-extern  char                    *_Copyright;
-#else
 #define ConsoleMessage(text)    MsgDisplayLine( text )
-#endif
 
 static const char EUsage[] = {
     #include "cmdlnusg.gh"
@@ -79,12 +74,6 @@ void CCusage( void )
     int         count;
 
     count = CBanner();
-#ifdef __OSI__
-    if( _Copyright != NULL ) {
-        ConsoleMessage( _Copyright );
-        ++count;
-    }
-#endif
     if( CompFlags.ide_console_output && count ) {
         ConsoleMessage( "" );
         ++count;

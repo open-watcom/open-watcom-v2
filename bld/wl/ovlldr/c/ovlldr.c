@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,8 +49,8 @@ static void MungeVectors( unsigned ovl_num )
         if( vect->sec_num == ovl_num ) {
             if( __OVLDOPAR__ ) {
                 vect->call_op = CALL_INSTRUCTION;
-                vect->ldr_addr = FP_OFF( NAME( CHPOVLLDR ) )
-                      - FP_OFF( &vect->ldr_addr ) - sizeof( vect->ldr_addr );
+                vect->ldr_addr = _FP_OFF( NAME( CHPOVLLDR ) )
+                      - _FP_OFF( &vect->ldr_addr ) - sizeof( vect->ldr_addr );
             } else {
                 vect->call_op = vect->jmp_op;
                 vect->ldr_addr = vect->target
@@ -60,8 +61,8 @@ static void MungeVectors( unsigned ovl_num )
         if( vect->u.v.sec_num == ovl_num ) {
             if( __OVLDOPAR__ ) {
                 vect->u.v.call_op = CALL_INSTRUCTION;
-                vect->u.v.ldr_addr = FP_OFF( NAME( CHPOVLLDR ) )
-                  - FP_OFF( &vect->u.v.ldr_addr ) - sizeof( vect->u.v.ldr_addr );
+                vect->u.v.ldr_addr = _FP_OFF( NAME( CHPOVLLDR ) )
+                  - _FP_OFF( &vect->u.v.ldr_addr ) - sizeof( vect->u.v.ldr_addr );
             } else {
                 vect->u.m.big_nop = OVV_MOV_AX_AX;
                 vect->u.m.test_op = OVV_TEST_OPCODE;
@@ -81,14 +82,14 @@ static void DeMungeVectors( unsigned ovl_num )
 #ifdef OVL_SMALL
         if( vect->sec_num == ovl_num ) {
             vect->call_op = CALL_INSTRUCTION;
-            vect->ldr_addr = FP_OFF( NAME( OVLLDR ) )
-              - FP_OFF( &vect->ldr_addr ) - sizeof( vect->ldr_addr );
+            vect->ldr_addr = _FP_OFF( NAME( OVLLDR ) )
+              - _FP_OFF( &vect->ldr_addr ) - sizeof( vect->ldr_addr );
         }
 #else
         if( vect->u.v.sec_num == ovl_num ) {
             vect->u.v.call_op = CALL_INSTRUCTION;
-            vect->u.v.ldr_addr = FP_OFF( NAME( OVLLDR ) )
-              - FP_OFF( &vect->u.v.ldr_addr ) - sizeof( vect->u.v.ldr_addr );
+            vect->u.v.ldr_addr = _FP_OFF( NAME( OVLLDR ) )
+              - _FP_OFF( &vect->u.v.ldr_addr ) - sizeof( vect->u.v.ldr_addr );
         }
 #endif
     }

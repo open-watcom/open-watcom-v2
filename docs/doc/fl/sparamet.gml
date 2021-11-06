@@ -9,7 +9,7 @@ is a symbolic name.
 .mnote e
 is a constant expression.
 Refer to the chapter entitled :HDREF refid='fexpr'. for more information.
-.endnote
+.esynote
 .np
 .id p
 is known as a symbolic constant whose value is determined by the

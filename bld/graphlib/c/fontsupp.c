@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,37 +31,79 @@
 
 
 #include <string.h>
+#include <limits.h>
 #include "gdefn.h"
 #include "fontsupp.h"
+#if defined( __QNX__ )
+  #include <dirent.h>
+  #include <unistd.h>
+  #include <fcntl.h>
+  #if defined( _M_I86 )
+    #include <sys/slib16.h>
+  #endif
+#else
+  #include "tinyio.h"
+#endif
 #if !defined( _DEFAULT_WINDOWS )
+  #include "8x8font.h"
+#endif
 
 
-typedef _Packed struct font_entry {
-    short                   type;       // 0 == bitmap, 1 == vector
-    short                   ascent;     // distance from top to baseline (in pixels)
-    short                   width;      // character width in pixels, 0 == proportional
-    short                   height;     // character height in pixels
-    short                   avgwidth;   // average character width
-    short                   firstchar;
-    short                   lastchar;
-    char                    filename[ 81 ];
-    char                    facename[ 32 ];
-    char                    filler;
-    short                   version;
-    char _WCI86FAR          *glyph_table;
-    char _WCI86FAR          *bitmap_table;
-    long                    start_offset;
-    long                    glyph_offset;
-    long                    bitmap_offset;
-    unsigned short          bitmap_size;
-    struct font_entry _WCI86FAR  *link;
-} FONT_ENTRY;
+#define _UNDEFINED          (-1)
 
+#define _BITMAP             0
+#define _STROKE             1
+
+#if defined( _DEFAULT_WINDOWS )
+  #if defined( __OS2__ )
+    // Font ID for OS2
+    #define _STDFONTID      250
+  #endif
+#else
+    #define _PROPORTIONAL   0
+    #define _FIXED          1
+#endif
+
+#if defined( _M_I86 )
+    #define MemCpy          _fmemcpy
+    #define MemSet          _fmemset
+    #define StrCpy          _fstrcpy
+    #define StrCmp          _fstrcmp
+    #define StrLen          _fstrlen
+#else
+    #define MemCpy          memcpy
+    #define MemSet          memset
+    #define StrCpy          strcpy
+    #define StrCmp          strcmp
+    #define StrLen          strlen
+#endif
+
+#if defined( __QNX__ )
+  #define tiny_ret_t                    int
+  #define tiny_handle_t                 int
+  #define TINY_ERROR( rc )              ( rc < 0 )
+  #define TINY_OK( rc )                 ( rc >= 0 )
+  #define TINY_INFO( rc )               ( rc )
+  #define TinyOpen( f, m )              __open_slib( f, O_RDONLY, 0 )
+  #define FontSeekSet( f, o )           ( ( lseek( f, o, SEEK_SET ) == -1L ) ? -1 : 0 )
+  #define TinyRead( f, b, l )           read( f, b, l )
+  #define MyTinyFarRead( f, b, l )      read( f, b, l )
+  #define TinyClose( f )                close( f )
+#else
+  #if defined( _M_I86 )
+    #define MyTinyFarRead( h, b, l )    TinyFarRead( h, b, l )
+  #else
+    #define MyTinyFarRead( h, b, l )    TinyRead( h, b, l )
+  #endif
+  #define FontSeekSet( f, o )           TinySeek( f, o, TIO_SEEK_START )
+#endif
+
+#if !defined( _DEFAULT_WINDOWS )
 
 typedef _Packed struct windows_font {
     short               dfVersion;
     long                dfSize;
-    char                dfCopyright[ 60 ];
+    char                dfCopyright[60];
     short               dfType;     // 0 == bitmap, 1 == vector
     short               dfPoints;
     short               dfVertRes;
@@ -90,76 +132,21 @@ typedef _Packed struct windows_font {
     long                dfBitsOffset;
     // additional fields have been omitted
 } WINDOWS_FONT;
+
 #endif
-
-
-#define _UNDEFINED      (-1)
-
-#define _BITMAP         0
-#define _STROKE         1
 
 static short            _XVecDir = 1;      // text vector direction
 static short            _YVecDir = 0;
 
 #if defined( _DEFAULT_WINDOWS )
   #if defined( __WINDOWS__ )
-    static short        StockFont = TRUE;
-  #else
-    // Font ID for OS2
-    #include< limits.h >
-    #define _STDFONTID  250
+    static short            StockFont = TRUE;
   #endif
-    static int YVec2Degs( short YDir );
 #else
-    #define _PROPORTIONAL   0
-    #define _FIXED          1
-
-    extern FONT_ENTRY _WCI86FAR  _8x8Font;
-    static FONT_ENTRY _WCI86FAR  *_CurFont = &_8x8Font;
+    static FONT_ENTRY _WCI86FAR  *_CurFont = &_8x8FontDef;
     static FONT_ENTRY _WCI86FAR  *_FontList = NULL;
     static float            _XVecScale = 1;    // magnification factor for
     static float            _YVecScale = 1;    // stroke fonts
-#endif
-
-#if defined( _M_I86 )
-    #define MemCpy( dst, src, len )     _fmemcpy( dst, src, len )
-    #define MemSet( s, c, len )         _fmemset( s, c, len )
-    #define StrCpy( dst, src )          _fstrcpy( dst, src )
-    #define StrCmp( dst, src )          _fstrcmp( dst, src )
-    #define StrLen( s )                 _fstrlen( s )
-#else
-    #define MemCpy( dst, src, len )     memcpy( dst, src, len )
-    #define MemSet( s, c, len )         memset( s, c, len )
-    #define StrCpy( dst, src )          strcpy( dst, src )
-    #define StrCmp( dst, src )          strcmp( dst, src )
-    #define StrLen( s )                 strlen( s )
-#endif
-
-#if defined( __QNX__ )
-  #include <dirent.h>
-  #include <unistd.h>
-  #include <fcntl.h>
-  #if defined( _M_I86 )
-    #include <sys/slib16.h>
-  #endif
-  #define tiny_ret_t                    int
-  #define tiny_handle_t                 int
-  #define TINY_ERROR( rc )              ( rc < 0 )
-  #define TINY_OK( rc )                 ( rc >= 0 )
-  #define TINY_INFO( rc )               ( rc )
-  #define TinyOpen( f, m )              __open_slib( f, O_RDONLY, 0 )
-  #define FontSeekSet( f, o )           ( ( lseek( f, o, SEEK_SET ) == -1 ) ? -1 : 0 )
-  #define TinyRead( f, b, l )           read( f, b, l )
-  #define MyTinyFarRead( f, b, l )      read( f, b, l )
-  #define TinyClose( f )                close( f )
-#else
-  #include "tinyio.h"
-  #if defined( _M_I86 )
-    #define MyTinyFarRead( h, b, l )    TinyFarRead( h, b, l )
-  #else
-    #define MyTinyFarRead( h, b, l )    TinyRead( h, b, l )
-  #endif
-  #define FontSeekSet( f, o )           TinySeek( f, o, TIO_SEEK_START )
 #endif
 
 
@@ -239,7 +226,7 @@ static short addfont( long offset, tiny_handle_t handle, char *font_file )
     tiny_ret_t              rc;
     WINDOWS_FONT            w_font;
     FONT_ENTRY _WCI86FAR    *curr;
-    char                    facename[ 32 ];
+    char                    facename[32];
 
 //  printf( "found font at %lx\n", offset );
     if( seek_and_read( handle, offset, &w_font, sizeof( WINDOWS_FONT ) ) == 0 ) {
@@ -257,7 +244,7 @@ static short addfont( long offset, tiny_handle_t handle, char *font_file )
         TinyClose( handle );
         return( 0 );
     }
-    facename[ 31 ] = '\0';
+    facename[31] = '\0';
     curr = Alloc( sizeof( FONT_ENTRY ) );
     if( curr == NULL ) {
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
@@ -304,7 +291,7 @@ static short readfontfile( char *font_file )
     short               i;
     tiny_ret_t          rc;
     tiny_handle_t       handle;
-    short               table[ RS_DESC ];
+    short               table[RS_DESC];
 
 //  printf( "Found file '%s'\n", font_file );
     rc = TinyOpen( font_file, TIO_READ );
@@ -341,8 +328,8 @@ static short readfontfile( char *font_file )
         if( seek_and_read( handle, ne_offset, &table, RS_HEADER ) == 0 ) {
             return( 0 );
         }
-        type = table[ 0 ];
-        count = table[ 1 ];
+        type = table[0];
+        count = table[1];
         if( type == 0 ) {
             break;
         } else if( type == 0x8008 ) {   // font
@@ -350,7 +337,7 @@ static short readfontfile( char *font_file )
                 if( seek_and_read( handle, ne_offset + RS_HEADER + i * RS_DESC, &table, RS_DESC ) == 0 ) {
                     return( 0 );
                 }
-                if( addfont( (long) table[ 0 ] << shift_count, handle, font_file ) == 0 ) {
+                if( addfont( (long) table[0] << shift_count, handle, font_file ) == 0 ) {
                     return( 0 );
                 }
             }
@@ -389,101 +376,6 @@ static short GlyphWidth( FONT_ENTRY _WCI86FAR *curr )
 }
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
-//=======================================================
-{
-#if defined( __QNX__ )
-    DIR _WCI86FAR           *dirp;
-    struct dirent _WCI86FAR *dire;
-#else
-    tiny_ret_t              rc;
-    tiny_find_t             fileinfo;
-    char _WCI86FAR          *p;
-#endif
-    short                   count;
-    FONT_ENTRY _WCI86FAR    *curr;
-    short                   len;
-    char                    curr_file[ _MAX_PATH ];
-
-    _ErrorStatus = _GROK;
-    _unregisterfonts();         // free previous fonts, if any
-    StrCpy( curr_file, font_path );     // copy into near buffer
-#if defined( __QNX__ )
-    dirp = opendir( curr_file );
-    if( dirp == NULL ) {
-        _ErrorStatus = _GRFONTFILENOTFOUND;
-        return( -1 );   // No such file
-    }
-    for( ; (dire = readdir( dirp )) != NULL; ) {
-        len = StrLen( dire->d_name );
-        if( len > 4 && StrCmp( dire->d_name + len - 4, ".fon" ) == 0 ) {
-            StrCpy( curr_file, font_path );
-            len = strlen( curr_file );
-            curr_file[ len ] = '/';
-            StrCpy( curr_file + len + 1, dire->d_name );
-            if( !readfontfile( curr_file ) ) {
-                return( -2 );   // bad font file or out of memory
-            }
-        }
-    }
-    closedir( dirp );
-#else
-    TinySetDTA( &fileinfo );
-    rc = TinyFindFirst( curr_file, TIO_NORMAL );
-    if( TINY_ERROR( rc ) ) {
-        _ErrorStatus = _GRFONTFILENOTFOUND;
-        return( -1 );   // No such file
-    }
-    p = font_path + StrLen( font_path ) - 1;
-    while( p != font_path ) {
-        if( *p == '\\' || *p == '/' ) {
-            ++p;
-            break;
-        }
-        --p;
-    }
-    len = p - font_path;    // length of path specified
-    do {
-        MemCpy( curr_file, font_path, len );
-        strcpy( curr_file + len, fileinfo.name );
-        if( !readfontfile( curr_file ) ) {
-            return( -2 );   // bad font file or out of memory
-        }
-        rc = TinyFindNext();
-    } while( TINY_OK( rc ) );
-#endif
-    count = 0;
-    for( curr = _FontList; curr != NULL; curr = curr->link ) {
-        ++count;
-    }
-    return( count );
-}
-
-Entry1( _REGISTERFONTS, _registerfonts ) // alternate entry-point
-
-
-_WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
-//========================================
-{
-    FONT_ENTRY _WCI86FAR     *curr;
-    FONT_ENTRY _WCI86FAR     *next;
-
-    _ErrorStatus = _GROK;
-    if( _CurFont != &_8x8Font ) {
-        Free( _CurFont->glyph_table );
-        Free( _CurFont->bitmap_table );
-        _CurFont = &_8x8Font;
-    }
-    for( curr = _FontList; curr != NULL; curr = next ) {
-        next = curr->link;
-        Free( curr );
-    }
-    _FontList = NULL;
-}
-
-Entry1( _UNREGISTERFONTS, _unregisterfonts ) // alternate entry-point
-
-
 static short loadfont( FONT_ENTRY _WCI86FAR *curr, short height, short width )
 //=======================================================================
 {
@@ -491,7 +383,7 @@ static short loadfont( FONT_ENTRY _WCI86FAR *curr, short height, short width )
     tiny_handle_t       handle;
     short               num;
     short               glyph_width;
-    char                file_name[ _MAX_PATH ];
+    char                file_name[_MAX_PATH];
 
     StrCpy( file_name, curr->filename );        // copy into near memory
     rc = TinyOpen( file_name, TIO_READ );
@@ -567,7 +459,7 @@ static short error_func( short font_type, short height, char *facename,
 {
     short               error = 0;
     short               len;
-//char buff[ 80 ];
+//char buff[80];
 
     if( curr->type == _BITMAP ) {
         if( font_type == _STROKE ) {
@@ -613,10 +505,104 @@ static short error_func( short font_type, short height, char *facename,
 }
 
 
+_WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
+//=======================================================
+{
+#if defined( __QNX__ )
+    DIR _WCI86FAR           *dirp;
+    struct dirent _WCI86FAR *dire;
+#else
+    tiny_ret_t              rc;
+    tiny_find_t             fileinfo;
+    char _WCI86FAR          *p;
+#endif
+    short                   count;
+    FONT_ENTRY _WCI86FAR    *curr;
+    short                   len;
+    char                    curr_file[_MAX_PATH];
+
+    _ErrorStatus = _GROK;
+    _unregisterfonts();         // free previous fonts, if any
+    StrCpy( curr_file, font_path );     // copy into near buffer
+#if defined( __QNX__ )
+    dirp = opendir( curr_file );
+    if( dirp == NULL ) {
+        _ErrorStatus = _GRFONTFILENOTFOUND;
+        return( -1 );   // No such file
+    }
+    for( ; (dire = readdir( dirp )) != NULL; ) {
+        len = StrLen( dire->d_name );
+        if( len > 4 && StrCmp( dire->d_name + len - 4, ".fon" ) == 0 ) {
+            StrCpy( curr_file, font_path );
+            len = strlen( curr_file );
+            curr_file[len] = '/';
+            StrCpy( curr_file + len + 1, dire->d_name );
+            if( !readfontfile( curr_file ) ) {
+                return( -2 );   // bad font file or out of memory
+            }
+        }
+    }
+    closedir( dirp );
+#else
+    TinySetDTA( &fileinfo );
+    rc = TinyFindFirst( curr_file, TIO_NORMAL );
+    if( TINY_ERROR( rc ) ) {
+        _ErrorStatus = _GRFONTFILENOTFOUND;
+        return( -1 );   // No such file
+    }
+    p = font_path + StrLen( font_path ) - 1;
+    while( p != font_path ) {
+        if( *p == '\\' || *p == '/' ) {
+            ++p;
+            break;
+        }
+        --p;
+    }
+    len = p - font_path;    // length of path specified
+    do {
+        MemCpy( curr_file, font_path, len );
+        strcpy( curr_file + len, fileinfo.name );
+        if( !readfontfile( curr_file ) ) {
+            return( -2 );   // bad font file or out of memory
+        }
+        rc = TinyFindNext();
+    } while( TINY_OK( rc ) );
+#endif
+    count = 0;
+    for( curr = _FontList; curr != NULL; curr = curr->link ) {
+        ++count;
+    }
+    return( count );
+}
+
+Entry1( _REGISTERFONTS, _registerfonts ) // alternate entry-point
+
+
+_WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
+//========================================
+{
+    FONT_ENTRY _WCI86FAR     *curr;
+    FONT_ENTRY _WCI86FAR     *next;
+
+    _ErrorStatus = _GROK;
+    if( _CurFont != &_8x8FontDef ) {
+        Free( _CurFont->glyph_table );
+        Free( _CurFont->bitmap_table );
+        _CurFont = &_8x8FontDef;
+    }
+    for( curr = _FontList; curr != NULL; curr = next ) {
+        next = curr->link;
+        Free( curr );
+    }
+    _FontList = NULL;
+}
+
+Entry1( _UNREGISTERFONTS, _unregisterfonts ) // alternate entry-point
+
 #else
 
-short _IsStockFont()
-/*==================
+short _IsStockFont( void )
+/*========================
 This function tells if the current font is a stock font.*/
 {
 #if defined( __OS2__ )
@@ -674,7 +660,7 @@ static PFONTMETRICS getfonts( WPI_PRES dc, PLONG fnts, char* facename )
 
     *fnts = GpiQueryFonts( dc, QF_PUBLIC, facename, &num, sizeof( *afm ), NULL );
     afm = _MyAlloc( sizeof( *afm ) * ( *fnts ) );
-    if( afm == NULL ){
+    if( afm == NULL ) {
         GpiQueryFonts( dc, QF_PUBLIC, facename, &num, sizeof( *afm ), afm );
     }
     return( afm );
@@ -685,37 +671,37 @@ static PFONTMETRICS getfonts( WPI_PRES dc, PLONG fnts, char* facename )
 _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
 //===========================================
 {
-    short               height;
-    short               width;
-    short               spacing;
-    short               font_type;
-    short               best_fit;
-    char                option;
-    char                *face;
-    char                facename[ 32 ];
+    short                   height;
+    short                   width;
+    short                   spacing;
+    short                   font_type;
+    short                   best_fit;
+    char                    option;
+    char                    *face;
+    char                    facename[32];
 #if defined( __OS2__ )
-    FATTRS              fat;
-    PFONTMETRICS        afm;
-    long                rc;
-    long                i;
-    long                numfnts;
-    long                fntindex = -1;
-    long                mindiff = LONG_MAX;
-    long                diff;
+    FATTRS                  fat;
+    PFONTMETRICS            afm;
+    long                    rc;
+    long                    i;
+    long                    numfnts;
+    long                    fntindex = -1;
+    long                    mindiff = LONG_MAX;
+    long                    diff;
 #elif !defined( __WINDOWS__ )
-    FONT_ENTRY _WCI86FAR     *curr;
-    unsigned short      best_so_far = 65535;
-    unsigned short      value;
-    FONT_ENTRY _WCI86FAR     *best = NULL;
-    short               font_num;
+    FONT_ENTRY _WCI86FAR    *curr;
+    unsigned short          best_so_far = 65535;
+    unsigned short          value;
+    FONT_ENTRY _WCI86FAR    *best = NULL;
+    short                   font_num;
 #endif
 
     _ErrorStatus = _GROK;
 #if !defined( _DEFAULT_WINDOWS )
-    if( _CurFont != &_8x8Font ) {   // free old defn
+    if( _CurFont != &_8x8FontDef ) {   // free old defn
         Free( _CurFont->glyph_table );
         Free( _CurFont->bitmap_table );
-        _CurFont = &_8x8Font;
+        _CurFont = &_8x8FontDef;
     }
 #endif
     if( opt == NULL ) {     // use default font
@@ -726,7 +712,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
         return( -1 );       // no fonts have been registered
     }
 #endif
-    facename[ 0 ] = '\0';
+    facename[0] = '\0';
     height = 0;
     width = 0;
     spacing = _UNDEFINED;
@@ -838,7 +824,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
         }
         for( i = 0; i < numfnts; i++ ) {
             if( ( afm[i].fsType & FM_TYPE_FIXED ) &&
-                ( afm[i].fsDefn & FM_DEFN_OUTLINE ) ){
+                ( afm[i].fsDefn & FM_DEFN_OUTLINE ) ) {
                 if( ( afm[i].lMaxBaselineExt == height ) &&
                     ( afm[i].lAveCharWidth == width ) ) {
                     fntindex = i;
@@ -858,6 +844,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
             fat.lMaxBaselineExt = afm[i].lMaxBaselineExt;
             fat.lAveCharWidth = afm[i].lAveCharWidth;
         }
+        _MyFree( afm );
     }
     if( GpiQueryCharSet( _Mem_dc ) == _STDFONTID ) {
         GpiSetCharSet( _Mem_dc, LCID_DEFAULT );
@@ -917,7 +904,7 @@ static short _charwidth( short ch )
             return( *glyph );
         }
         if( _CurFont->width == 0 ) {    // proportional
-            width = glyph[ 1 ];         // 2nd entry is the width
+            width = glyph[1];         // 2nd entry is the width
         } else {
             width = _CurFont->width;
         }
@@ -980,25 +967,27 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getgtextextent( char _WCI86FAR *text )
 //============================================================
 /*  Calculates the width of 'text' in pixels.  */
 {
-    int                 width;
 #if defined( _DEFAULT_WINDOWS )
     WPI_PRES            dc;
     HFONT               old_font;
-    int                 height;
+    WPI_RECTDIM         width;
+    WPI_RECTDIM         height;
 
     dc = _Mem_dc;
     old_font  = _MySelectFont( dc, _CurFnt );
     _wpi_gettextextent( dc, text, StrLen( text ), &width, &height );
-    height= height;
+    (void)height;
     _MyGetOldFont( dc, old_font );
 #else
+    int                 width;
+
     width = 0;
     while( *text != '\0' ) {
         width += _charwidth( (unsigned char)*text );
         ++text;
     }
 #endif
-    return( width );
+    return( (short)width );
 }
 
 Entry1( _GETGTEXTEXTENT, _getgtextextent ) // alternate entry-point
@@ -1069,7 +1058,7 @@ static void _outdot( short x, short y )
     if( _L1OutCode( x, y ) == 0 ) {             /* check if inside viewport */
         dev_ptr = _CurrState->deviceptr;
         ( *dev_ptr->setup )( x, y, _CurrColor );
-        putdot = dev_ptr->plot[ _PlotAct ];
+        putdot = dev_ptr->plot[_PlotAct];
         ( *putdot )( _Screen.mem, _Screen.colour, _Screen.mask );
     } else {
         _ErrorStatus = _GRNOOUTPUT;
@@ -1152,13 +1141,13 @@ static struct xycoord _outstrokechar( float x0, float y0, short ch )
 
     ch -= _CurFont->firstchar;
     glyph = (short _WCI86FAR *) ( _CurFont->glyph_table + ch * GlyphWidth( _CurFont ) );
-    offset = glyph[ 0 ];
+    offset = glyph[0];
     if( _CurFont->width == 0 ) {    // proportional
-        width = glyph[ 1 ];
-        length = glyph[ 2 ] - offset;
+        width = glyph[1];
+        length = glyph[2] - offset;
     } else {
         width = _CurFont->width;
-        length = glyph[ 1 ] - offset;
+        length = glyph[1] - offset;
     }
     strokes = (signed char _WCI86FAR *)_CurFont->bitmap_table + offset;
     x1 = x0 + _XVecDir * width * _XVecScale;
@@ -1200,8 +1189,8 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
     WPI_PRES            dc;
     HFONT               old_font;
     HFONT               original_font;
-    int                 width;
-    int                 height;
+    WPI_RECTDIM         width;
+    WPI_RECTDIM         height;
     WPI_COLOUR          old_color;
     WPI_COLOUR          old_bkcolor;
     int                 x1, y1, x2, y2, outy;
@@ -1235,12 +1224,15 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
     dc = _Mem_dc;
 #if defined( __WINDOWS__ )
     switch( _XVecDir ) {
-        case 1  : escape = YVec2Degs( _YVecDir );
-                  break;
-        case 0  : escape = YVec2Degs( _YVecDir ) * 2;
-                  break;
-        case -1 : escape = 1800 - YVec2Degs( _YVecDir );
-                  break;
+    case 1:
+        escape = YVec2Degs( _YVecDir );
+        break;
+    case 0:
+        escape = YVec2Degs( _YVecDir ) * 2;
+        break;
+    case -1:
+        escape = 1800 - YVec2Degs( _YVecDir );
+        break;
     }
 #else
     angle.x = _XVecDir;

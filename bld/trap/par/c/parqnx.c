@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ int NumPrinters()
     unsigned short  __far *par;
     int i;
 
-    par = MK_FP( INFO_SEG, PAR_BASE );
+    par = _MK_FP( INFO_SEG, PAR_BASE );
     for( i = 3; i > 0; --i ) {
         if( par[i-1] != 0 ) return( i );
     }
@@ -58,7 +59,7 @@ unsigned PrnAddress( int printer )
 {
     unsigned short  __far *par;
 
-    par = MK_FP( INFO_SEG, PAR_BASE );
+    par = _MK_FP( INFO_SEG, PAR_BASE );
     return( par[printer] );
 }
 
@@ -95,7 +96,7 @@ char *InitSys()
         return( TRP_ERR_cannot_access_parallel_ports );
     }
     qnx_osinfo( 0, &osinfo );
-    SysTime = MK_FP( osinfo.timesel, 0 );
+    SysTime = _MK_FP( osinfo.timesel, 0 );
     return( NULL );
 }
 

@@ -1,0 +1,28 @@
+/* UTF-8 encoding, ¥ */
+
+#include "switch.h"
+#include "wreslang.rh"
+#include "wfc.rh"
+
+STRINGTABLE
+BEGIN
+    #define pick(c,e,j) (c + MSG_RC_BASE + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+
+    #include "wfcmsgs.gh"
+#if _CPU == 8086 || _CPU == 386
+    #include "wasmc.msg"
+#endif
+    #include "usage.gh"
+
+    #undef pick
+
+    #define pick(c,e,j) (c + MSG_RC_BASE + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+
+    #include "wfcmsgs.gh"
+#if _CPU == 8086 || _CPU == 386
+    #include "wasmc.msg"
+#endif
+    #include "usage.gh"
+
+    #undef pick
+END

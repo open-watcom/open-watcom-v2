@@ -14,7 +14,7 @@ The amount of memory kept for the program is
 paragraphs (a paragraph is 16 bytes) from the Program Segment Prefix
 which is stored in the variable
 .kw _psp
-.ct .li .
+.period
 The value of
 .arg retcode
 is returned to the parent process.
@@ -51,6 +51,7 @@ void main()
     /*
         now terminate and keep resident
         the non-transient portion
+        Note: following calculation only works in .COM files
     */
     _dos_keep( 0, (FP_OFF( transient ) + 15) >> 4 );
   }

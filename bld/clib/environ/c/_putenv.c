@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#if !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+#if defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
 #ifdef __WIDECHAR__
@@ -54,20 +54,24 @@
 #endif
 #include "liballoc.h"
 #include "_environ.h"
+#include "_tcsstr.h"
 
 
 int __F_NAME(__putenv,__wputenv)( const CHAR_TYPE *env_string )
+/*
+ * return 0 if succeded
+ * otherwise return -1
+ */
 {
 #ifdef __NETWARE__
     env_string = env_string;
     return( -1 );
 #else
-    int                 index = -1;
+    int                 index;
     const CHAR_TYPE     *p;
-    int                 delete_var;
 
     if( env_string == NULL || _TCSTERM( env_string ) )
-        return( index );
+        return( -1 );
     // handle NAME=STRING
     for( p = _TCSINC( env_string ); !_TCSTERM( p ); p = _TCSINC( p ) ) {    // (used under NT)
         if( _TCSNEXTC( p ) == STRING( '=' ) ) {
@@ -75,20 +79,18 @@ int __F_NAME(__putenv,__wputenv)( const CHAR_TYPE *env_string )
         }
     }
     if( _TCSTERM( p ) )
-        return( index ); /* <name> with no '=' is illegal */
-    delete_var = ( _TCSTERM( _TCSINC( p ) ) );
-    index = __F_NAME(__findenv,__wfindenv)( env_string, delete_var );
-    if( delete_var )
-        return( 0 );
-    if( index == -1 ) {
-        return( index );
+        return( -1 ); /* <name> with no '=' is illegal */
+    if( _TCSTERM( _TCSINC( p ) ) ) {
+        return( __F_NAME(__findenvdel,__wfindenvdel)( env_string ) );
     }
-    if( index > 0 ) {
-        ((const CHAR_TYPE **)__F_NAME(_RWD_environ,_RWD_wenviron))[index - 1] = env_string;
+    index = __F_NAME(__findenvadd,__wfindenvadd)( env_string );
+    if( index < 0 ) {
+        return( -1 );
+    }
+    ((const CHAR_TYPE **)__F_NAME(_RWD_environ,_RWD_wenviron))[index] = env_string;
   #ifndef __WIDECHAR__
-        _RWD_env_mask[index - 1] = 0;     /* indicate not alloc'd */
+    _RWD_env_mask[index] = 0;     /* indicate not alloc'd */
   #endif
-    }
     return( 0 );
 #endif
 }

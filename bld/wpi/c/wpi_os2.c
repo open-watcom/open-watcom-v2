@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,7 @@
 #define INCL_DOSDEVICES
 #include <wos2.h>
 #include "wpi.h"
+#include "oswincls.h"
 
 #define PATBRUSHID 200   /* This is the constant id for pattern brushes */
 static char sys_font_facename[] = "System Proportional";
@@ -163,20 +164,25 @@ static BOOL _wpi_getmenuparentpos( HMENU hmenu, unsigned id, HMENU *parent, int 
 }
 
 static void _OldBrush( WPI_PRES pres, WPI_OBJECT *brush )
-/*******************************************************/
-/* The function is used to determine the type of and retrieve the
-   old brush. */
+/********************************************************
+ * The function is used to determine the type of and retrieve the
+ * old brush.
+ */
 {
     GpiQueryAttrs( pres, PRIM_AREA,
                    ABB_COLOR | ABB_SYMBOL | ABB_MIX_MODE | ABB_SET,
                    &(brush->brush.info) );
 
     if( brush->brush.info.usSet > 0 ) {
-        /* if the pattern is not the default pattern
-           then it is a pattern brush*/
+        /*
+         * if the pattern is not the default pattern
+         * then it is a pattern brush
+         */
         brush->type = WPI_PATBRUSH_OBJ;
     } else {
-        /* Otherwise, it only a regular brush */
+        /*
+         * Otherwise, it only a regular brush
+         */
         brush->type = WPI_BRUSH_OBJ;
     }
 }
@@ -233,9 +239,10 @@ BOOL _wpi_showwindow( HWND hwnd, int state )
 
 void _wpi_bitblt( WPI_PRES dest, int x_dest, int y_dest, int cx, int cy,
                         WPI_PRES source, int x_src, int y_src, LONG format )
-/**********************************************************************/
-/* The x and y values are platform dependent.  ie. (0,0) is top left  */
-/* for windows and bottom left for PM.                                */
+/***************************************************************************
+ * The x and y values are platform dependent.  ie. (0,0) is top left
+ * for windows and bottom left for PM.
+ */
 {
     POINTL      pts[3];
 
@@ -248,10 +255,11 @@ void _wpi_bitblt( WPI_PRES dest, int x_dest, int y_dest, int cx, int cy,
     GpiBitBlt( dest, source, 3, pts, format, BBO_IGNORE );
 } /* _wpi_bitblt */
 
-WPI_HANDLE _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height )
-/**********************************************************************/
-/* Note that the bitmap returned is of type WPI_OBJECT.  So we declare*/
-/* the routine to be void*.                                           */
+WPI_HBITMAP _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height )
+/******************************************************************************
+ * Note that the bitmap returned is of type WPI_OBJECT.  So we declare
+ * the routine to be void*.
+ */
 {
     WPI_BITMAP          bmih;
     LONG                formats[24];
@@ -269,25 +277,26 @@ WPI_HANDLE _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height )
     obj->type = WPI_BITMAP_OBJ;
     obj->bitmap = GpiCreateBitmap( pres, &bmih, 0L, NULL, NULL );
 
-    return( (WPI_HANDLE)obj );
+    return( (WPI_HBITMAP)obj );
 }
 
 WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hdc )
-/**********************************************************************/
+/**************************************************************************/
 {
     WPI_PRES            mempres;
     SIZEL               sizl = { 0, 0 };
     DEVOPENSTRUC        dop = { 0L, "DISPLAY", NULL, 0L,
                                 0L, 0L, 0L, 0L, 0L };
 
-    pres = pres;                        // PM doesn't use this variable
+    /* unused parameters */ (void)pres;
+
     *hdc = DevOpenDC( inst.hab, OD_MEMORY, "*", 5L, (PDEVOPENDATA)&dop, NULLHANDLE );
     mempres = GpiCreatePS( inst.hab, *hdc, &sizl, PU_PELS | GPIA_ASSOC );
     return( mempres );
 } /* _wpi_createcompatiblepres */
 
 WPI_PRES _wpi_createos2normpres( WPI_INST inst, HWND hwnd )
-/**********************************************************************/
+/*********************************************************/
 {
     SIZEL               sizel = { 0, 0 };
     WPI_PRES            hps;
@@ -298,21 +307,21 @@ WPI_PRES _wpi_createos2normpres( WPI_INST inst, HWND hwnd )
 } /* _wpi_createos2normpres */
 
 void _wpi_deletecompatiblepres( WPI_PRES pres, HDC hdc )
-/**********************************************************************/
+/******************************************************/
 {
     GpiDestroyPS( pres );
     DevCloseDC( hdc );
 } /* _wpi_deletecompatiblepres */
 
 void _wpi_deleteos2normpres( WPI_PRES pres )
-/**********************************************************************/
+/******************************************/
 {
     GpiAssociate( pres, NULLHANDLE );
     GpiDestroyPS( pres );
 } /* _wpi_deleteos2normpres */
 
 void _wpi_deletepres( WPI_PRES pres, HDC hdc )
-/**********************************************************************/
+/********************************************/
 {
     GpiDestroyPS( pres );
     DevCloseDC( hdc );
@@ -384,7 +393,8 @@ void _wpi_fillrect( WPI_PRES pres, WPI_RECT *rect, WPI_COLOUR colour, HBRUSH bru
 {
     RECTL       newrect;
 
-    brush = brush;                      // PM doesn't use this
+    /* unused parameters */ (void)brush;
+
     newrect.xLeft = rect->xLeft;
     newrect.xRight = rect->xRight;
     newrect.yTop = rect->yTop;
@@ -392,13 +402,13 @@ void _wpi_fillrect( WPI_PRES pres, WPI_RECT *rect, WPI_COLOUR colour, HBRUSH bru
     WinFillRect( pres, (PRECTL)&newrect, colour );
 } /* _wpi_fillrect */
 
-void _wpi_getbitmapdim( WPI_HANDLE hbmp, int *pwidth, int *pheight )
+void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight )
 /*******************************************************************/
 {
     BITMAPINFOHEADER    bih;
     WPI_OBJECT          *obj;
 
-    obj = (WPI_OBJECT *)hbmp;
+    obj = (WPI_OBJECT *)hbitmap;
     bih.cbFix = sizeof( BITMAPINFOHEADER );
     GpiQueryBitmapParameters( obj->bitmap, &bih );
     *pwidth = bih.cx;
@@ -406,9 +416,10 @@ void _wpi_getbitmapdim( WPI_HANDLE hbmp, int *pwidth, int *pheight )
 } /* _wpi_getbitmapdim */
 
 BOOL _wpi_getclassinfo( WPI_INST inst, PSZ name, WPI_WNDCLASS *info )
-/*******************************************************************/
-/* Since there is no WNDCLASS structure in OS/2, we made one. But this
-   function must then be defined */
+/********************************************************************
+ * Since there is no WNDCLASS structure in OS/2, we made one.
+ * But this function must then be defined
+ */
 {
     CLASSINFO           ci;
     BOOL                ret;
@@ -436,13 +447,13 @@ WPI_TASK _wpi_getcurrenttask( void )
 #endif
 
 int _wpi_getdlgitemint( HWND hwnd, int item, BOOL *retcode, BOOL issigned )
-/**********************************************************************/
+/*************************************************************************/
 {
     char                buffer[20];
     char                dummy[2];
     int                 result = 0;
 
-    issigned = issigned;                // PM doesn't use this
+    /* unused parameters */ (void)issigned;
 
     *retcode = TRUE;
     if( WinQueryDlgItemText( hwnd, (ULONG)item, 20, buffer ) != 0 ) {
@@ -461,9 +472,9 @@ void _wpi_getpaintrect( PAINTSTRUCT *ps, WPI_RECT *rect )
 /**********************************************************************/
 {
     rect->xLeft = ps->xLeft;
-    rect->xRight =  ps->xRight;
-    rect->yBottom =  ps->yTop;
-    rect->yTop =  ps->yBottom;
+    rect->xRight = ps->xRight;
+    rect->yBottom = ps->yTop;
+    rect->yTop = ps->yBottom;
 } /* _wpi_getpaintrect */
 
 WPI_COLOUR _wpi_getpixel( WPI_PRES hps, int x, int y )
@@ -552,9 +563,10 @@ BOOL _wpi_isiconic( HWND hwnd )
  } /* _wpi_isiconic */
 
 void _wpi_patblt( WPI_PRES dest, int x_pos, int y_pos, int cx, int cy, LONG format )
-/***********************************************************************/
-/* NOTE: for PM version, y_pos is taken to be the lower left corner,   */
-/* not the upper left as it would be for the windows version.          */
+/***********************************************************************************
+ * NOTE: for PM version, y_pos is taken to be the lower left corner,
+ * not the upper left as it would be for the windows version.
+ */
 {
     HPS         hps;
     POINTL      pts[3];
@@ -589,11 +601,12 @@ BOOL _wpi_polygon( WPI_PRES pres, WPI_POINT *pts, int num_pts )
 #endif
 
 void _wpi_preparemono( WPI_PRES hps, WPI_COLOUR colour, WPI_COLOUR back_colour )
-/**********************************************************************/
-/* This is necessary for bltting a monochrome bitmap.  The colour     */
-/* parameter should be the colour of the 1's on the bitmap (normally  */
-/* white).  The back_colour parameter should be the colour of the 0's */
-/* on the bitmap (normally black) Also, hps needs to be in RGB mode.  */
+/*******************************************************************************
+ * This is necessary for bltting a monochrome bitmap.  The colour
+ * parameter should be the colour of the 1's on the bitmap (normally
+ * white).  The back_colour parameter should be the colour of the 0's
+ * on the bitmap (normally black) Also, hps needs to be in RGB mode.
+ */
 {
     IMAGEBUNDLE         imb;
 
@@ -604,9 +617,10 @@ void _wpi_preparemono( WPI_PRES hps, WPI_COLOUR colour, WPI_COLOUR back_colour )
 } /* _wpi_preparemono */
 
 BOOL _wpi_rectangle( WPI_PRES pres, int left, int top, int right, int bottom )
-/**********************************************************************/
-/* The coordinates are assumed to be in the order of the parameter    */
-/* list.  The right and bottom are adjusted to be consisten with Win  */
+/*****************************************************************************
+ * The coordinates are assumed to be in the order of the parameter
+ * list.  The right and bottom are adjusted to be consisten with Win
+ */
 {
     POINTL              pt;
     BOOL                ret;
@@ -627,48 +641,48 @@ BOOL _wpi_rectangle( WPI_PRES pres, int left, int top, int right, int bottom )
 void _wpi_releasepres( HWND hwnd, WPI_PRES pres )
 /**********************************************************************/
 {
-    hwnd = hwnd;
+    /* unused parameters */ (void)hwnd;
+
     GpiAssociate( pres, NULLHANDLE );
     WinReleasePS( pres );
 } /* _wpi_releasepres */
 
-WPI_HANDLE _wpi_selectbitmap( WPI_PRES pres, WPI_HANDLE bitmap )
-/**********************************************************************/
+WPI_HBITMAP _wpi_selectbitmap( WPI_PRES pres, WPI_HBITMAP hbitmap )
+/*****************************************************************/
 {
     WPI_OBJECT  *obj;
     WPI_OBJECT  *old_obj;
 
-    obj = (WPI_OBJECT *)bitmap;
-
+    obj = (WPI_OBJECT *)hbitmap;
     if( obj != NULL ) {
         old_obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
         old_obj->type = WPI_BITMAP_OBJ;
         old_obj->bitmap = GpiSetBitmap( pres, obj->bitmap );
-        return( (WPI_HANDLE)old_obj );
+        return( (WPI_HBITMAP)old_obj );
     }
-    return( NULLHANDLE );
+    return( WPI_NULL );
 } /* _wpi_selectbitmap */
 
-void _wpi_getoldbitmap( WPI_PRES pres, WPI_HANDLE oldobj )
-/********************************************************/
+void _wpi_getoldbitmap( WPI_PRES pres, WPI_HBITMAP old_hbitmap )
+/**************************************************************/
 {
-    WPI_OBJECT  *old_bitmap;
+    WPI_OBJECT  *old_obj;
 
-    old_bitmap = (WPI_OBJECT *)oldobj;
+    old_obj = (WPI_OBJECT *)old_hbitmap;
 
-    if( old_bitmap != NULL && old_bitmap->type == WPI_BITMAP_OBJ ) {
-        GpiSetBitmap( pres, old_bitmap->bitmap );
-        _wpi_free( old_bitmap );
+    if( old_obj != NULL && old_obj->type == WPI_BITMAP_OBJ ) {
+        GpiSetBitmap( pres, old_obj->bitmap );
+        _wpi_free( old_obj );
     }
 } /* _wpi_getoldbitmap */
 
 
-void _wpi_deletebitmap( WPI_HANDLE bmp )
-/**********************************************************************/
+void _wpi_deletebitmap( WPI_HBITMAP hbitmap )
+/*******************************************/
 {
     WPI_OBJECT  *obj;
 
-    obj = (WPI_OBJECT *)bmp;
+    obj = (WPI_OBJECT *)hbitmap;
 
     if( obj != NULL ) {
         if( obj->bitmap != NULLHANDLE ) {
@@ -678,9 +692,24 @@ void _wpi_deletebitmap( WPI_HANDLE bmp )
     }
 } /* _wpi_deletebitmap */
 
+/*
+ * _wpi_makewpibitmap - Converts an HBITMAP to a WPI_HANDLE
+ */
+WPI_HBITMAP _wpi_makewpibitmap( HBITMAP hbitmap )
+/***********************************************/
+{
+    WPI_OBJECT      *obj;
+
+    obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
+    obj->type = WPI_BITMAP_OBJ;
+    obj->bitmap = hbitmap;
+
+    return( (WPI_HBITMAP)obj );
+} /* _wpi_makewpibitmap */
+
 #ifdef __FLAT__
 void _wpi_setmodhandle( char *name, WPI_INST *inst )
-/**********************************************************************/
+/**************************************************/
 {
     if( DosQueryModuleHandle( name, &(inst->mod_handle) ) != 0 ) {
         inst->mod_handle = NULLHANDLE;
@@ -689,7 +718,7 @@ void _wpi_setmodhandle( char *name, WPI_INST *inst )
 #endif
 
 WPI_COLOUR _wpi_setpixel( WPI_PRES hps, int x, int y, WPI_COLOUR clr )
-/**********************************************************************/
+/********************************************************************/
 {
     LONG        oldclr;
     WPI_COLOUR  setclr;
@@ -720,9 +749,10 @@ void _wpi_setpoint( WPI_POINT *pt, int x, int y )
 
 void _wpi_stretchblt( WPI_PRES dest, int x_dest, int y_dest, int cx_dest,
     int cy_dest, WPI_PRES src, int x_src, int y_src, int cx_src, int cy_src, LONG rop )
-/**********************************************************************/
-/* NOTE:  the coordinates to this function must be in PM units AND    */
-/* in PM convention.                                                  */
+/**************************************************************************************
+ * NOTE:  the coordinates to this function must be in PM units AND
+ * in PM convention.
+ */
 {
     POINTL              pts[4];
 
@@ -1119,16 +1149,18 @@ WPI_FONT _wpi_selectfont( WPI_PRES hps, WPI_FONT wfont )
     _wpi_free( tmp_wfont );
 
     GpiSetCharSet( hps, 1L );
-
-    /* Critical for printing                            */
-    /* get minimum of pixel density                     */
+    /*
+     * Critical for printing
+     * get minimum of pixel density
+     */
     pix_per_inch = _wpi_devicecapableinch( hps, LOGPIXELSX );
     i = _wpi_devicecapableinch( hps, LOGPIXELSY );
     if( i < pix_per_inch )
         pix_per_inch = i;
     pix_per_point = ( pix_per_inch + 71 ) / 72;
-
-    /* Set the font size ( for outline/sizeable fonts ) */
+    /*
+     * Set the font size ( for outline/sizeable fonts )
+     */
     point_size_x = ( wfont->lAveCharWidth ) * pix_per_point;
     point_size_y = ( wfont->lMaxBaselineExt ) * pix_per_point;
     box.cx = MAKEFIXED( point_size_x, 0 );
@@ -1164,7 +1196,7 @@ BOOL _wpi_setscrollpos( HWND parent, int scroll, int pos, BOOL redraw )
 {
     HWND        scroll_bar;
 
-    redraw = redraw; // scroll bar always redrawn
+    /* unused parameters */ (void)redraw;
 
     scroll_bar =  _wpi_getscrollhwnd( parent, scroll );
 
@@ -1190,7 +1222,7 @@ BOOL _wpi_setscrollrange( HWND parent, int scroll, int min, int max, BOOL redraw
     HWND        scroll_bar;
     SHORT       pos;
 
-    redraw = redraw; // scroll bar always redrawn
+    /* unused parameters */ (void)redraw;
 
     scroll_bar =  _wpi_getscrollhwnd( parent, scroll );
     if( scroll_bar == NULLHANDLE ) {
@@ -1282,11 +1314,13 @@ void _wpi_drawmenubar( HWND hwnd )
     WinSendMsg( hwnd, WM_UPDATEFRAME, (WPI_PARAM1)FCF_MENU, NULL );
 }
 
-// NOTE: This function will return HWND_DESKTOP if the parent is the desktop
-//       and NOT the window handle of the desktop!! Most PM functions accept
-//       HWND_DESKTOP instead the desktop HWND.
-//       This change is not duplicated for _wpi_getowner!!
 HWND _wpi_getparent( HWND hwnd )
+/********************************
+ * NOTE: This function will return HWND_DESKTOP if the parent is the desktop
+ *       and NOT the window handle of the desktop!! Most PM functions accept
+ *       HWND_DESKTOP instead the desktop HWND.
+ *       This change is not duplicated for _wpi_getowner!!
+ */
 {
     HWND        parent;
     HAB         ab;
@@ -1304,7 +1338,7 @@ HWND _wpi_getparent( HWND hwnd )
 }
 
 HCURSOR _wpi_setcursor( HCURSOR newcursor )
-/****************************************************************/
+/*****************************************/
 {
     HCURSOR     oldcursor;
 
@@ -1315,12 +1349,13 @@ HCURSOR _wpi_setcursor( HCURSOR newcursor )
 } /* _wpi_setcursor */
 
 void _wpi_enddialog( HWND hwnd, ULONG result )
+/********************************************/
 {
     WinDismissDlg( hwnd, result );
 }
 
 HBRUSH _wpi_createnullbrush( void )
-/**********************************************************************/
+/*********************************/
 {
     WPI_OBJECT  *null_brush;
 
@@ -1332,13 +1367,13 @@ HBRUSH _wpi_createnullbrush( void )
     return( (HBRUSH)null_brush );
 } /* _wpi_createnullbrush */
 
-HBRUSH _wpi_createpatternbrush( WPI_HANDLE bitmap )
-/**********************************************************************/
+HBRUSH _wpi_createpatternbrush( WPI_HBITMAP hbitmap )
+/***************************************************/
 {
     WPI_OBJECT          *obj;
     WPI_OBJECT          *brush;
 
-    obj = (WPI_OBJECT *)bitmap;
+    obj = (WPI_OBJECT *)hbitmap;
     brush = _wpi_malloc( sizeof( WPI_OBJECT ) );
     brush->type = WPI_PATBRUSH_OBJ;
     brush->brush.info.usMixMode = FM_OVERPAINT;
@@ -1351,7 +1386,7 @@ HBRUSH _wpi_createpatternbrush( WPI_HANDLE bitmap )
 
 
 HBRUSH _wpi_createsolidbrush( WPI_COLOUR colour )
-/**********************************************************************/
+/***********************************************/
 {
     WPI_OBJECT  *new_brush;
 
@@ -1394,10 +1429,10 @@ void _wpi_setlogbrushnull( LOGBRUSH *brush )
 {
     brush->usMixMode = FM_LEAVEALONE;
 #if 0
-    // This should explicitly null ou the background
+    /* This should explicitly null ou the background */
     brush->usSymbol = PATSYM_SOLID;
 #else
-    // this probably leaves the background area alone
+    /* this probably leaves the background area alone */
     brush->usSymbol = PATSYM_BLANK;
 #endif
 } /* _wpi_setlogbrushnull */
@@ -1424,10 +1459,12 @@ HBRUSH _wpi_createbrush( LOGBRUSH *log_brush )
         switch( log_brush->usSymbol ) {
 
         case PATSYM_NOSHADE:
-            /* OS/2 has no concept of a hollow brush like Windows. The best
-               equivalent is to use a pattern brush, drawn in the background
-               colour. I tried a solid brush, and it didn't work. See
-               'selectbrush/object' for the other changes nesc. djp */
+            /*
+             * OS/2 has no concept of a hollow brush like Windows. The best
+             * equivalent is to use a pattern brush, drawn in the background
+             * colour. I tried a solid brush, and it didn't work. See
+             * 'selectbrush/object' for the other changes nesc. djp
+             */
             brush->type = WPI_HLWBRUSH_OBJ;
             brush->brush.info.usSymbol = BS_HATCHED;
             break;
@@ -1437,11 +1474,11 @@ HBRUSH _wpi_createbrush( LOGBRUSH *log_brush )
             break;
 
         default:
-            /*
-            case PATSYM_HATCH:
-            case PATSYM_SOLID:
-            case PATSYM_DEFAULT:
-            */
+        /*
+        case PATSYM_HATCH:
+        case PATSYM_SOLID:
+        case PATSYM_DEFAULT:
+        */
             brush->type = WPI_BRUSH_OBJ;
             break;
         }
@@ -1473,10 +1510,14 @@ HBRUSH _wpi_selectbrush( WPI_PRES pres, HBRUSH obj )
 
     case WPI_PATBRUSH_OBJ:      /* Pattern brushes */
         GpiSetPatternSet( pres, 0 ); /* Reset the selected pattern to default */
-        /* set background and foreground colors */
+        /*
+         * set background and foreground colors
+         */
         brush->brush.info.lColor = GpiQueryColor( pres );
         brush->brush.info.lBackColor = GpiQueryBackColor( pres );
-        /* give the bitmap an id */
+        /*
+         * give the bitmap an id
+         */
         GpiSetBitmapId( pres, brush->brush.bitmap, brush->brush.info.usSet );
         GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_BACK_COLOR |
                            ABB_MIX_MODE | ABB_BACK_MIX_MODE | ABB_SET,
@@ -1531,10 +1572,14 @@ WPI_HANDLE _wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj )
     case WPI_PATBRUSH_OBJ:
         _OldBrush( pres, old_obj );
         GpiSetPatternSet( pres, 0 ); /* Reset the selected pattern to default */
-        /* Set background and foreground colors */
+        /*
+         * Set background and foreground colors
+         */
         obj->brush.info.lColor = GpiQueryColor( pres );
         obj->brush.info.lBackColor = GpiQueryBackColor( pres );
-        /* give the bitmap an id */
+        /*
+         * give the bitmap an id
+         */
         GpiSetBitmapId( pres, obj->brush.bitmap, obj->brush.info.usSet );
         GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_BACK_COLOR | ABB_MIX_MODE | ABB_BACK_MIX_MODE | ABB_SET,
                                                   0L, &(obj->brush.info) );
@@ -1588,7 +1633,7 @@ void _wpi_getoldobject( WPI_PRES pres, WPI_HANDLE v_old_obj )
 } /* _wpi_getoldobject */
 
 void _wpi_deleteobject( WPI_HANDLE object )
-/**********************************************************************/
+/*****************************************/
 {
     WPI_OBJECT  *obj;
 
@@ -1601,7 +1646,7 @@ void _wpi_deleteobject( WPI_HANDLE object )
 } /* _wpi_deleteobject */
 
 HPEN _wpi_createnullpen( void )
-/**********************************************************************/
+/*****************************/
 {
     WPI_OBJECT  *nullpen;
 
@@ -1618,7 +1663,7 @@ HPEN _wpi_createnullpen( void )
 } /* _wpi_createnullpen */
 
 HPEN _wpi_createpen( USHORT type, short width, WPI_COLOUR colour )
-/**********************************************************************/
+/****************************************************************/
 {
     WPI_OBJECT  *new_pen;
 
@@ -1637,7 +1682,7 @@ HPEN _wpi_createpen( USHORT type, short width, WPI_COLOUR colour )
 } /* _wpi_createpen */
 
 HPEN _wpi_selectpen( WPI_PRES pres, HPEN obj )
-/**********************************************************************/
+/********************************************/
 {
     WPI_OBJECT  *old_pen;
     WPI_OBJECT  *pen;
@@ -1674,8 +1719,9 @@ void _wpi_getoldpen( WPI_PRES pres, HPEN oldobj )
 } /* _wpi_getoldpen */
 
 void _wpi_enumfonts( WPI_PRES pres, char *facename, WPI_FONTENUMPROC proc, char *data )
-/*************************************************************************************/
-/* This routine closely approximates the enumerate routine for Windows  */
+/**************************************************************************************
+ * This routine closely approximates the enumerate routine for Windows
+ */
 {
     PFONTMETRICS        pfm;
     LONG                ltemp = 0L;
@@ -1683,7 +1729,7 @@ void _wpi_enumfonts( WPI_PRES pres, char *facename, WPI_FONTENUMPROC proc, char 
     int                 i;
     BOOL                ret;
 
-    facename = facename;                // not used in PM version
+    /* unused parameters */ (void)facename;
 
     num_fonts = GpiQueryFonts( pres, (ULONG)QF_PUBLIC | QF_PRIVATE, (PSZ)NULL,
                                         &ltemp, (LONG)sizeof( FONTMETRICS ),
@@ -1705,9 +1751,10 @@ void _wpi_enumfonts( WPI_PRES pres, char *facename, WPI_FONTENUMPROC proc, char 
 } /* _wpi_enumfonts */
 
 void _wpi_enumchildwindows( HWND hwnd, WPI_ENUMPROC proc, LPARAM data )
-/************************************************************************/
-/* the hwnd sent to the enum proc is that of the frame window! use      */
-/* _wpi_getclient if you need the client window handle                  */
+/**********************************************************************
+ * the hwnd sent to the enum proc is that of the frame window! use
+ * _wpi_getclient if you need the client window handle
+ */
 {
     HENUM       henum;
     int         ret;
@@ -1766,10 +1813,11 @@ char *_wpi_menutext2pm( const char *text )
     return( (char *)text );
 }
 
-LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
-/****************************************************************/
-/* The bitmap may NOT be selected into an HPS when calling      */
-/* this function.                                               */
+LONG _wpi_getbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits )
+/*******************************************************************
+ * The bitmap may NOT be selected into an HPS when calling
+ * this function.
+ */
 {
     BITMAPINFOHEADER    ih;             // Not BITMAPINFOHEADER2 so it will
     BITMAPINFO          *bmi;           // work for 16 bit.
@@ -1779,7 +1827,7 @@ LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
     HDC                 hdc;
     HAB                 hab;
     WPI_OBJECT          *obj;
-    HBITMAP             old_bitmap;
+    HBITMAP             old_hbitmap;
     int                 bitsize;
     SIZEL               sizl = { 0, 0 };
     DEVOPENSTRUC        dop = { 0L, "DISPLAY", NULL, 0L,
@@ -1801,13 +1849,13 @@ LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
     hdc = DevOpenDC( hab, OD_MEMORY, "*", 5L, (PDEVOPENDATA)&dop, NULLHANDLE );
     memhps = GpiCreatePS( hab, hdc, &sizl, PU_PELS | GPIA_ASSOC );
 
-    old_bitmap = GpiSetBitmap( memhps, obj->bitmap );
+    old_hbitmap = GpiSetBitmap( memhps, obj->bitmap );
     slcount = ( 32 * size ) / ( 4 * ih.cx * ih.cBitCount );
     if( ih.cy < slcount )
         slcount = ih.cy;
     ret = GpiQueryBitmapBits( memhps, 0L, slcount, bits, (WPI_BITMAPINFO *)bmi );
 
-    GpiSetBitmap( memhps, old_bitmap );
+    GpiSetBitmap( memhps, old_hbitmap );
     GpiDestroyPS( memhps );
     DevCloseDC( hdc );
 
@@ -1815,12 +1863,12 @@ LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
     return( ret );
 } /* _wpi_getbitmapbits */
 
-LONG _wpi_setbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
+LONG _wpi_setbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits )
 {
     BITMAPINFO          *bmi;
     BITMAPINFOHEADER    ih;
     WPI_OBJECT          *obj;
-    HBITMAP             old_bitmap;
+    HBITMAP             old_hbitmap;
     LONG                ret;
     HPS                 memhps;
     HDC                 hdc;
@@ -1840,14 +1888,14 @@ LONG _wpi_setbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
     hdc = DevOpenDC( hab, OD_MEMORY, "*", 5L, (PDEVOPENDATA)&dop, NULLHANDLE );
     memhps = GpiCreatePS( hab, hdc, &sizl, PU_PELS | GPIA_ASSOC );
 
-    old_bitmap = GpiSetBitmap( memhps, obj->bitmap );
+    old_hbitmap = GpiSetBitmap( memhps, obj->bitmap );
     slcount = ( 32 * size ) / ( 4 * ih.cx * ih.cBitCount );
     if( ih.cy < slcount )
         slcount = ih.cy;
     GpiQueryBitmapBits( memhps, 0L, (LONG)slcount, NULL, (WPI_BITMAPINFO *)bmi);
     ret = GpiSetBitmapBits( memhps, 0L, (LONG)slcount, bits, (WPI_BITMAPINFO *)bmi );
 
-    GpiSetBitmap( memhps, old_bitmap );
+    GpiSetBitmap( memhps, old_hbitmap );
     GpiDestroyPS( memhps );
     DevCloseDC( hdc );
 
@@ -1871,9 +1919,10 @@ BOOL _wpi_movewindow( HWND hwnd, int x, int y, int width, int height, BOOL repai
 } /* _wpi_movewindow */
 
 void _wpi_recttowpirect( RECT *src_rc, WPI_RECT *dest_rc )
-/****************************************************************/
-/* This routine converts a RECT (ie. the windows form) to a     */
-/* WPI_RECT (ie. in this case, a RECTL)                         */
+/*********************************************************
+ * This routine converts a RECT (ie. the windows form) to
+ * a WPI_RECT (ie. in this case, a RECTL)
+ */
 {
     dest_rc->xLeft = src_rc->left;
     dest_rc->xRight = src_rc->right;
@@ -1882,9 +1931,10 @@ void _wpi_recttowpirect( RECT *src_rc, WPI_RECT *dest_rc )
 } /* _wpi_recttowpirect */
 
 void _wpi_wpirecttorect( WPI_RECT *src_rc, RECT *dest_rc )
-/****************************************************************/
-/* This routine assigns a WPI_RECT (ie. a RECTL) to a RECT      */
-/* (ie. the windows form).                                      */
+/*********************************************************
+ * This routine assigns a WPI_RECT (ie. a RECTL) to a RECT
+ * (ie. the windows form).
+ */
 {
     dest_rc->left = src_rc->xLeft;
     dest_rc->right = src_rc->xRight;
@@ -1893,7 +1943,7 @@ void _wpi_wpirecttorect( WPI_RECT *src_rc, RECT *dest_rc )
 } /* _wpi_wpirecttorect */
 
 int _wpi_setrop2( WPI_PRES pres, int mode )
-/****************************************************************/
+/*****************************************/
 {
     int         prevmode;
 
@@ -1902,8 +1952,8 @@ int _wpi_setrop2( WPI_PRES pres, int mode )
     return( prevmode );
 } /* _wpi_setrop2 */
 
-WPI_HANDLE _wpi_loadbitmap( WPI_INST inst, int id )
-/***********************************************************/
+WPI_HBITMAP _wpi_loadbitmap( WPI_INST inst, int id )
+/**************************************************/
 {
     WPI_OBJECT  *obj;
     WPI_PRES    pres;
@@ -1914,12 +1964,25 @@ WPI_HANDLE _wpi_loadbitmap( WPI_INST inst, int id )
     obj->bitmap = GpiLoadBitmap( pres, inst.mod_handle, (ULONG)id, 0, 0 );
     _wpi_releasepres( HWND_DESKTOP, pres );
 
-    return( (WPI_HANDLE)obj );
+    return( (WPI_HBITMAP)obj );
 } /* _wpi_loadbitmap */
 
-WPI_HANDLE _wpi_createbitmap( int width, int height, int planes, int bitcount,
-                                                                BYTE *bits )
-/**************************************************************************/
+WPI_HBITMAP _wpi_loadsysbitmap( WPI_INST inst, int id )
+/*****************************************************/
+{
+    WPI_OBJECT  *obj;
+
+    /* unused parameters */ (void)inst;
+
+    obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
+    obj->type = WPI_BITMAP_OBJ;
+    obj->bitmap = WinGetSysBitmap( HWND_DESKTOP, (OS_UINT)id );
+
+    return( (WPI_HBITMAP)obj );
+} /* _wpi_loadsysbitmap */
+
+WPI_HBITMAP _wpi_createbitmap( int width, int height, int planes, int bitcount, BYTE *bits )
+/******************************************************************************************/
 {
     WPI_BITMAPINFOHEADER        bmih;
     WPI_BITMAPINFO              bitsinfo;
@@ -1927,27 +1990,27 @@ WPI_HANDLE _wpi_createbitmap( int width, int height, int planes, int bitcount,
     WPI_OBJECT                  *obj;
 
     memset( &bitsinfo, 0, sizeof( WPI_BITMAPINFO ) );
-    (bitsinfo).cbFix = sizeof( WPI_BITMAPINFO );
-    (bitsinfo).cx = width;
-    (bitsinfo).cy = height;
+    bitsinfo.cbFix = sizeof( WPI_BITMAPINFO );
+    bitsinfo.cx = width;
+    bitsinfo.cy = height;
 #ifdef __FLAT__
-    (bitsinfo).ulCompression = BCA_UNCOMP;
-    (bitsinfo).usUnits = BRU_METRIC;
-    (bitsinfo).usRendering = BRH_NOTHALFTONED;
-    (bitsinfo).cSize1 = width;
-    (bitsinfo).cSize2 = height;
-    (bitsinfo).ulColorEncoding = BCE_RGB;
+    bitsinfo.ulCompression = BCA_UNCOMP;
+    bitsinfo.usUnits = BRU_METRIC;
+    bitsinfo.usRendering = BRH_NOTHALFTONED;
+    bitsinfo.cSize1 = width;
+    bitsinfo.cSize2 = height;
+    bitsinfo.ulColorEncoding = BCE_RGB;
 #endif
 
     memset( &bmih, 0, sizeof( WPI_BITMAPINFOHEADER ) );
-    (bmih).cbFix = sizeof( WPI_BITMAPINFOHEADER );
-    (bmih).cx = width;
-    (bmih).cy = height;
-    (bmih).cPlanes = (USHORT)planes;
+    bmih.cbFix = sizeof( WPI_BITMAPINFOHEADER );
+    bmih.cx = width;
+    bmih.cy = height;
+    bmih.cPlanes = (USHORT)planes;
     /*
      * the windows CreateBitmap takes the bitspixel but PM takes bitcount
      */
-    (bmih).cBitCount = (USHORT)bitcount;
+    bmih.cBitCount = (USHORT)bitcount;
 
     obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
     obj->type = WPI_BITMAP_OBJ;
@@ -1959,30 +2022,29 @@ WPI_HANDLE _wpi_createbitmap( int width, int height, int planes, int bitcount,
         obj->bitmap = GpiCreateBitmap( hps, &bmih, 0L, NULL, NULL );
     }
     WinReleasePS( hps );
-    return( (WPI_HANDLE)obj );
+    return( (WPI_HBITMAP)obj );
 } /* _wpi_createbitmap */
 
-WPI_HANDLE _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info, ULONG opt,
+WPI_HBITMAP _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info, ULONG opt,
                                 BYTE *data, WPI_BITMAPINFO *table, int opt2 )
+/***************************************************************************/
 {
     WPI_OBJECT  *obj;
 
+    /* unused parameters */ (void)opt2;
+
     obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
     if( !obj )
-        return( NULLHANDLE );
+        return( WPI_NULL );
 
     obj->type = WPI_BITMAP_OBJ;
-    obj->bitmap = GpiCreateBitmap( pres, (WPI_BITMAP *)info, opt, data,
-                                                (WPI_BITMAPINFO *)table );
-    opt2 = opt2;                                // not used in PM
-
-    return( (WPI_HANDLE)obj );
+    obj->bitmap = GpiCreateBitmap( pres, info, opt, data, table );
+    return( (WPI_HBITMAP)obj );
 } /* _wpi_createdibitmap */
 
 #ifdef __FLAT__
-void _wpi_setclipboarddata( WPI_INST inst, UINT format, WPI_HANDLE data,
-                                                                BOOL is_bitmap )
-/*****************************************************************************/
+void _wpi_setclipboarddata( WPI_INST inst, UINT format, WPI_HANDLE data, BOOL is_bitmap )
+/***************************************************************************************/
 {
     WPI_OBJECT  *obj;
 
@@ -1993,7 +2055,9 @@ void _wpi_setclipboarddata( WPI_INST inst, UINT format, WPI_HANDLE data,
     } else if( format == CF_TEXT ) {
         PCHAR           tmp;
 
-        /* has to be allocated with DosAllocSharedMem */
+        /*
+         * has to be allocated with DosAllocSharedMem
+         */
         if( DosAllocSharedMem( (PPVOID)&tmp, NULL, strlen( (char *)data ) + 100,
                             PAG_WRITE | PAG_READ | OBJ_GIVEABLE
                             | OBJ_GETTABLE | PAG_COMMIT ) == 0 ) {
@@ -2007,6 +2071,7 @@ void _wpi_setclipboarddata( WPI_INST inst, UINT format, WPI_HANDLE data,
 #ifndef __FLAT__
 static BOOL WinPopupMenu( HWND hwndParent, HWND hwndOwner, HWND hwndMenu,
                           LONG x, LONG y, LONG idItem, ULONG fs)
+/***********************************************************************/
 {
     WPI_RECT    mrect;
     WPI_RECT    crect;
@@ -2014,31 +2079,34 @@ static BOOL WinPopupMenu( HWND hwndParent, HWND hwndOwner, HWND hwndMenu,
     int         pos, item_count;
     unsigned    id;
 
-    hwndParent = hwndParent;
-    fs = fs;
-    idItem = idItem;
+    /* unused parameters */ (void)hwndParent; (void)fs; (void)idItem;
 
     WinSetWindowULong( hwndMenu, QWL_STYLE, WS_SYNCPAINT | WS_SAVEBITS | 0x00000008 );
     WinSetParent( hwndMenu, HWND_DESKTOP, FALSE );
     WinSetOwner( hwndMenu, hwndOwner );
-    // dimensions of 100x100 are arbitrary - I just wanted to force the menu
-    // to size itself. Apparently menus will choose their own dimensions
+    /*
+     * dimensions of 100x100 are arbitrary - I just wanted to force the menu
+     * to size itself. Apparently menus will choose their own dimensions
+     */
     WinSetWindowPos( hwndMenu, HWND_TOP, x, y, 100, 100,
                      SWP_MOVE | SWP_SIZE | SWP_ZORDER );
+    /*
+     * Forgive the scary nature of the following code. One must remember
+     * it is the result of bitter, not without vitriolic rejoiner, hacking
+     * at the midnight hour. Fortunately, however, I have not lost my keen
+     * wit and ability to turn a phrase.
+     *                         Wes "Paint problems be damned" Nelson
+     */
 
-    // Forgive the scary nature of the following code. One must remember
-    // it is the result of bitter, not without vitriolic rejoiner, hacking
-    // at the midnight hour. Fortunately, however, I have not lost my keen
-    // wit and ability to turn a phrase.
-    //                          Wes "Paint problems be damned" Nelson
-
-    //move the y position down by the height of the menu
+    /*
+     * move the y position down by the height of the menu
+     */
     WinQueryWindowRect( hwndMenu, &mrect );
     y -= ( mrect.yTop - mrect.yBottom );
     WinSetWindowPos( hwndMenu, NULL, x, y, 0, 0, SWP_MOVE );
-
-    // adjust the position of the menu window if it can't fit in the
-    // parent window
+    /*
+     * adjust the position of the menu window if it can't fit in the parent window
+     */
     x_adjust = 0;
     y_adjust = 0;
     _wpi_getwindowrect( HWND_DESKTOP, &crect );
@@ -2060,8 +2128,9 @@ static BOOL WinPopupMenu( HWND hwndParent, HWND hwndOwner, HWND hwndMenu,
         y += y_adjust;
     }
     WinSetWindowPos( hwndMenu, NULL, x, y, 0, 0, SWP_MOVE | SWP_SHOW );
-
-    // set the initially selected item to be the first selectable one
+    /*
+     * set the initially selected item to be the first selectable one
+     */
     item_count = _wpi_getmenuitemcount( hwndMenu );
     for( pos = 0; pos <= item_count; ++pos ) {
         id = _wpi_getmenuitemidfrompos( hwndMenu, pos );
@@ -2070,9 +2139,10 @@ static BOOL WinPopupMenu( HWND hwndParent, HWND hwndOwner, HWND hwndMenu,
             break;
         }
     }
-
-    // if no selectable item was found then set the initially selected
-    // item to be the first one
+    /*
+     * if no selectable item was found then set the initially selected
+     * item to be the first one
+     */
     if( pos > item_count ) {
         id = _wpi_getmenuitemidfrompos( hwndMenu, 0 );
         WinSendMsg( hwndMenu, MM_SELECTITEM, MPFROM2SHORT( id, FALSE ), NULL );
@@ -2125,18 +2195,24 @@ BOOL _wpi_trackpopupmenu( HMENU hmenu, ULONG flags, LONG x, LONG y,
         }
         switch ( msg.msg ) {
         case WM_MOUSEMOVE:
-            // a mousemove in the menu is ok
+            /*
+             * a mousemove in the menu is ok
+             */
             if( ( msg.hwnd == hmenu ) ) {
                 break;
             }
-            // a mousemove in a window that is not the menu AND not a
-            // child of the desktop means we chuck the msg
+            /*
+             * a mousemove in a window that is not the menu AND not a
+             * child of the desktop means we chuck the msg
+             */
             if( _wpi_getparent( msg.hwnd ) != HWND_DESKTOP ) {
                 discard_msg = TRUE;
             } else {
-                // lets make sure this child of the desktop is a menu!!
+                /*
+                 * lets make sure this child of the desktop is a menu!!
+                 */
                 WinQueryClassName( msg.hwnd, 9, class_name );
-                if( memcmp( class_name, "#4", 2 ) ) {
+                if( strcmp( class_name, WC_SYS_MENU ) ) {
                     discard_msg = TRUE;
                 }
             }
@@ -2147,26 +2223,35 @@ BOOL _wpi_trackpopupmenu( HMENU hmenu, ULONG flags, LONG x, LONG y,
         case WM_LBUTTONDOWN:
         case WM_RBUTTONDOWN:
         case WM_MBUTTONDOWN:
-            // clicking in the menu is ok
-            // the following code is commented out 'cause the menu
-            // window will set mouse capture. As a result button down
-            // messages outside the window will still come here -- Wes
-            //if( ( msg.hwnd == hmenu ) ) {
-                //break;
-            //}
-
-            // clicking in a window that is not the menu AND not a
-            // child of the desktop means a non popup menu was clicked
+            /*
+             * clicking in the menu is ok
+             * the following code is commented out 'cause the menu
+             * window will set mouse capture. As a result button down
+             * messages outside the window will still come here -- Wes
+             */
+//            if( ( msg.hwnd == hmenu ) ) {
+//                break;
+//            }
+            /*
+             * clicking in a window that is not the menu AND not a
+             * child of the desktop means a non popup menu was clicked
+             */
             if( _wpi_getparent( msg.hwnd ) != HWND_DESKTOP ) {
                 quit_loop = TRUE;
             } else {
-                // lets make sure this child of the desktop is a menu!!
+                /*
+                 * lets make sure this child of the desktop is a menu!!
+                 */
                 WinQueryClassName( msg.hwnd, 9, class_name );
-                if( memcmp( class_name, "#4", 2 ) ) {
-                    // the window is not a menu
+                if( strcmp( class_name, WC_SYS_MENU ) ) {
+                    /*
+                     * the window is not a menu
+                     */
                     quit_loop = TRUE;
                 } else {
-                    // the window is a menu
+                    /*
+                     * the window is a menu
+                     */
                     pt.x = (LONG) SHORT1FROMMP( msg.mp1 );
                     pt.y = (LONG) SHORT2FROMMP( msg.mp1 );
                     WinQueryWindowRect( msg.hwnd, &rect );
@@ -2201,7 +2286,7 @@ BOOL _wpi_trackpopupmenu( HMENU hmenu, ULONG flags, LONG x, LONG y,
             break;
         }
         if( quit_loop ) {
-            //WinShowWindow( hmenu, FALSE );
+//            WinShowWindow( hmenu, FALSE );
         } else {
             WinGetMsg( ab, &msg, NULLHANDLE, 0, 0 );
             if( !discard_msg ) {
@@ -2217,19 +2302,22 @@ BOOL _wpi_trackpopupmenu( HMENU hmenu, ULONG flags, LONG x, LONG y,
 
 #ifdef __FLAT__
 WPI_HANDLE _wpi_getclipboarddata( WPI_INST inst, UINT format )
-/************************************************************/
-/* Currently this only gets bitmaps from the clipboard.     */
-/* Added capability for personally defined stuff            */
+/*************************************************************
+ * Currently this only gets bitmaps from the clipboard.
+ * Added capability for personally defined stuff
+ */
 {
     WPI_OBJECT  *obj;
+    ULONG       data;
 
+    obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
+    data = WinQueryClipbrdData( inst.hab, (ULONG)format );
     if( format == CF_BITMAP ) {
-        obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
         obj->type = WPI_BITMAP_OBJ;
-        obj->bitmap = WinQueryClipbrdData( inst.hab, (ULONG)format );
+        obj->bitmap = data;
     } else {
-        /* Your own defined format */
-        return( WinQueryClipbrdData( inst.hab, (ULONG)format ) );
+        obj->type = WPI_DATA_OBJ;
+        obj->data = data;
     }
     return( (WPI_HANDLE)obj );
 
@@ -2275,10 +2363,11 @@ BOOL _wpi_extfloodfill( WPI_PRES hps, int x, int y, WPI_COLOUR clr, UINT mode )
 } /* _wpi_extfloodfill */
 #endif
 
-void _wpi_getbitmapparms( WPI_HANDLE hbitmap, int *width, int *height,
+void _wpi_getbitmapparms( WPI_HBITMAP hbitmap, int *width, int *height,
                                     int *planes, int *notused1, int *bitcount )
-/****************************************************************/
-/* This routine is used when particular fields are wanted.      */
+/******************************************************************************
+ * This routine is used when particular fields are wanted.
+ */
 {
     BITMAPINFOHEADER    bih;
     WPI_OBJECT          *obj;
@@ -2304,11 +2393,11 @@ void _wpi_getbitmapparms( WPI_HANDLE hbitmap, int *width, int *height,
     }
 } /* _wpi_getbitmapparms */
 
-LONG _wpi_getbitmapstruct( WPI_HANDLE bitmap, WPI_BITMAP *info )
+LONG _wpi_getbitmapstruct( WPI_HBITMAP hbitmap, WPI_BITMAP *info )
 {
     WPI_OBJECT  *obj;
 
-    obj = (WPI_OBJECT *)bitmap;
+    obj = (WPI_OBJECT *)hbitmap;
     info->cbFix = sizeof( WPI_BITMAP );
 #ifdef __FLAT__
     GpiQueryBitmapInfoHeader( obj->bitmap, info );
@@ -2332,39 +2421,40 @@ void _wpi_setqmsgvalues( WPI_QMSG *qmsg, HWND hwnd, WPI_MSG message,
     qmsg->ptl.y = wpi_pt.y;
 } /* _wpi_setqmsgvalues */
 
-void _wpi_getqmsgvalues( WPI_QMSG qmsg, HWND *hwnd, WPI_MSG *message,
+void _wpi_getqmsgvalues( WPI_QMSG *qmsg, HWND *hwnd, WPI_MSG *message,
                         WPI_PARAM1 *parm1, WPI_PARAM2 *parm2, ULONG *wpi_time,
                         WPI_POINT *wpi_pt )
 /*************************************************************************/
 {
     if( hwnd ) {
-        *hwnd = qmsg.hwnd;
+        *hwnd = qmsg->hwnd;
     }
     if( message ) {
-        *message = qmsg.msg;
+        *message = qmsg->msg;
     }
     if( parm1 ) {
-        *parm1 = qmsg.mp1;
+        *parm1 = qmsg->mp1;
     }
     if( parm2 ) {
-        *parm2 = qmsg.mp2;
+        *parm2 = qmsg->mp2;
     }
     if( wpi_time ) {
-        *wpi_time = qmsg.time;
+        *wpi_time = qmsg->time;
     }
     if( wpi_pt ) {
-        wpi_pt->x = qmsg.ptl.x;
-        wpi_pt->y = qmsg.ptl.y;
+        wpi_pt->x = qmsg->ptl.x;
+        wpi_pt->y = qmsg->ptl.y;
     }
 } /* _wpi_getqmsgvalues */
 
 
 void _wpi_setrectvalues( WPI_RECT *rect, WPI_RECTDIM in_left, WPI_RECTDIM
                         in_top, WPI_RECTDIM in_right, WPI_RECTDIM in_bottom )
-/***************************************************************************/
-/* Note that for this routine yTop is assigned to in_bottom.  This is for  */
-/* Gpi drawing, to ensure that if bottom > top for Windows (which is       */
-/* normal) then top > bottom for PM (which is normal).                     */
+/****************************************************************************
+ * Note that for this routine yTop is assigned to in_bottom.  This is for
+ * Gpi drawing, to ensure that if bottom > top for Windows (which is
+ * normal) then top > bottom for PM (which is normal).
+ */
 {
     rect->xLeft = in_left;
     rect->xRight = in_right;
@@ -2374,9 +2464,10 @@ void _wpi_setrectvalues( WPI_RECT *rect, WPI_RECTDIM in_left, WPI_RECTDIM
 
 void _wpi_getrectvalues( WPI_RECT rect, WPI_RECTDIM *left,
         WPI_RECTDIM *top, WPI_RECTDIM *right, WPI_RECTDIM *bottom )
-/***************************************************************************/
-/* Note that this routine assigns top to yBottom.  This routine should be  */
-/* used with _wpi_setrectvalues.                                           */
+/***************************************************************************
+ * Note that this routine assigns top to yBottom.  This routine should be
+ * used with _wpi_setrectvalues.
+ */
 {
     if( left ) *left = rect.xLeft;
     if( right ) *right = rect.xRight;
@@ -2386,8 +2477,9 @@ void _wpi_getrectvalues( WPI_RECT rect, WPI_RECTDIM *left,
 
 void _wpi_setwrectvalues( WPI_RECT *rect, WPI_RECTDIM in_left, WPI_RECTDIM
                         in_top, WPI_RECTDIM in_right, WPI_RECTDIM in_bottom )
-/***************************************************************************/
-/* This routine can be used when one wants yTop to be the value of top.    */
+/****************************************************************************
+ * This routine can be used when one wants yTop to be the value of top.
+ */
 {
     rect->xLeft = in_left;
     rect->xRight = in_right;
@@ -2397,9 +2489,10 @@ void _wpi_setwrectvalues( WPI_RECT *rect, WPI_RECTDIM in_left, WPI_RECTDIM
 
 void _wpi_getwrectvalues( WPI_RECT rect, WPI_RECTDIM *left,
                 WPI_RECTDIM *top, WPI_RECTDIM *right, WPI_RECTDIM *bottom)
-/***************************************************************************/
-/* Note that this routine assigns bottom to yBottom.  It should be used    */
-/* _wpi_setwrectvalues.                                                    */
+/*************************************************************************
+ * Note that this routine assigns bottom to yBottom.  It should be used
+ * _wpi_setwrectvalues.
+ */
 {
     if( left ) *left = rect.xLeft;
     if( right ) *right = rect.xRight;
@@ -2409,10 +2502,11 @@ void _wpi_getwrectvalues( WPI_RECT rect, WPI_RECTDIM *left,
 
 void _wpi_setintrectvalues( WPI_RECT *rect, int in_left, int in_top,
                                                 int in_right, int in_bottom )
-/***************************************************************************/
-/* Note that for this routine yTop is assigned to in_bottom.  This is for  */
-/* Gpi drawing, to ensure that if bottom > top for Windows (which is       */
-/* normal) then top > bottom for PM (which is normal).                     */
+/****************************************************************************
+ * Note that for this routine yTop is assigned to in_bottom.  This is for
+ * Gpi drawing, to ensure that if bottom > top for Windows (which is
+ * normal) then top > bottom for PM (which is normal).
+ */
 {
     rect->xLeft = (LONG)in_left;
     rect->xRight = (LONG)in_right;
@@ -2422,9 +2516,10 @@ void _wpi_setintrectvalues( WPI_RECT *rect, int in_left, int in_top,
 
 void _wpi_getintrectvalues( WPI_RECT rect, int *left, int *top, int *right,
                                                                 int *bottom )
-/***************************************************************************/
-/* Note that this routine assigns top to yBottom.  This routine should be  */
-/* used with _wpi_setrectvalues.                                           */
+/****************************************************************************
+ * Note that this routine assigns top to yBottom.  This routine should be
+ * used with _wpi_setrectvalues.
+ */
 {
     if( left ) *left = (int)rect.xLeft;
     if( right ) *right = (int)rect.xRight;
@@ -2434,8 +2529,9 @@ void _wpi_getintrectvalues( WPI_RECT rect, int *left, int *top, int *right,
 
 void _wpi_setintwrectvalues( WPI_RECT *rect, int in_left, int in_top,
                                                 int in_right, int in_bottom )
-/***************************************************************************/
-/* This routine can be used when one wants yTop to be the value of top.    */
+/****************************************************************************
+ * This routine can be used when one wants yTop to be the value of top.
+ */
 {
     rect->xLeft = (LONG)in_left;
     rect->xRight = (LONG)in_right;
@@ -2445,9 +2541,10 @@ void _wpi_setintwrectvalues( WPI_RECT *rect, int in_left, int in_top,
 
 void _wpi_getintwrectvalues( WPI_RECT rect, int *left, int *top, int *right,
                                                                     int *bottom)
-/***************************************************************************/
-/* Note that this routine assigns bottom to yBottom.  It should be used    */
-/* _wpi_setwrectvalues.                                                    */
+/*******************************************************************************
+ * Note that this routine assigns bottom to yBottom.  It should be used
+ * _wpi_setwrectvalues.
+ */
 {
     if( left ) *left = (int)rect.xLeft;
     if( right ) *right = (int)rect.xRight;
@@ -2464,10 +2561,11 @@ BOOL _wpi_equalrect( WPI_PRECT prect1, WPI_PRECT prect2 )
             ( prect1->yBottom == prect2->yBottom ) );
 } /* _wpi_equalrect */
 
-void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg )
-/******************************************************/
+void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg )
+/*******************************************************/
 {
-    *msg = *msg;
+    (void)qmsg;
+
     DosSuspendThread( thread_id );
 } /* _wpi_suspendthread */
 
@@ -2548,14 +2646,15 @@ WPI_COLOUR _wpi_palettergb( WPI_PRES pres, short red,
     return( GpiQueryNearestColor( pres, 0, colour ) );
 }
 
-int _wpi_getdibits( WPI_PRES pres, WPI_HANDLE bitmap, UINT start, UINT count,
+int _wpi_getdibits( WPI_PRES pres, WPI_HBITMAP hbitmap, UINT start, UINT count,
                             BYTE *buffer, WPI_BITMAPINFO *info, UINT notused )
-/****************************************************************************/
-/* According to windows, the bitmap should not be selected into the pres.   */
-/* so I assume it isn't here either.                                        */
+/*****************************************************************************
+ * According to windows, the bitmap should not be selected into the pres.
+ * so I assume it isn't here either.
+ */
 {
-    HBITMAP             old_bitmap;
-    HBITMAP             old_bitmap2;
+    HBITMAP             old_hbitmap;
+    HBITMAP             old_hbitmap2;
     WPI_OBJECT          *obj;
     HDC                 hdc;
     HPS                 memhps;
@@ -2566,26 +2665,26 @@ int _wpi_getdibits( WPI_PRES pres, WPI_HANDLE bitmap, UINT start, UINT count,
                                 0L, 0L, 0L, 0L, 0L };
     ERRORID             err;
 
-    notused = notused;
+    /* unused parameters */ (void)notused;
 
-    obj = (WPI_OBJECT *)bitmap;
+    obj = (WPI_OBJECT *)hbitmap;
     if( obj->type != WPI_BITMAP_OBJ ) {
         return( 0 );
     }
-    old_bitmap = GpiSetBitmap( pres, obj->bitmap );
+    old_hbitmap = GpiSetBitmap( pres, obj->bitmap );
     hab = WinQueryAnchorBlock( HWND_DESKTOP );
-    ret = (int)GpiQueryBitmapBits(pres, (LONG)start, (LONG)count, buffer, info);
+    ret = (int)GpiQueryBitmapBits( pres, (LONG)start, (LONG)count, buffer, info );
     err = WinGetLastError( hab );
     if( ret == -1 ) {
         hdc = DevOpenDC( hab, OD_MEMORY, "*", 5L, (PDEVOPENDATA)&dop, NULLHANDLE );
         memhps = GpiCreatePS( hab, hdc, &sizl, PU_PELS | GPIA_ASSOC );
-        old_bitmap2 = GpiSetBitmap( memhps, obj->bitmap );
-        ret = (int)GpiQueryBitmapBits( memhps, (LONG)start, (LONG)count, buffer, info);
-        GpiSetBitmap( memhps, old_bitmap2 );
+        old_hbitmap2 = GpiSetBitmap( memhps, obj->bitmap );
+        ret = (int)GpiQueryBitmapBits( memhps, (LONG)start, (LONG)count, buffer, info );
+        GpiSetBitmap( memhps, old_hbitmap2 );
         GpiDestroyPS( memhps );
         DevCloseDC( hdc );
     }
-    GpiSetBitmap( pres, old_bitmap );
+    GpiSetBitmap( pres, old_hbitmap );
 
     return( ret );
 } /* _wpi_getdibits */
@@ -2598,9 +2697,11 @@ HWND _wpi_createwindow( LPSTR class, LPSTR name, ULONG frame_style,
 {
     HWND    hwnd = 0;
 
-    param = param;
+    /* unused parameters */ (void)param;
 
-    // Old _wpi_createwindow used HWND_DESKTOP instead of parent_hwnd
+    /*
+     * Old _wpi_createwindow used HWND_DESKTOP instead of parent_hwnd
+     */
     if( parent == NULLHANDLE ) {
         parent = HWND_DESKTOP;
     }
@@ -2625,8 +2726,7 @@ HWND _wpi_createobjwindow( LPSTR class, LPSTR name, ULONG style, int x, int y,
     ULONG   flags = FCF_TITLEBAR | FCF_SIZEBORDER | FCF_SYSMENU |
                      FCF_SHELLPOSITION | FCF_MINMAX | FCF_MENU;
 
-    parent = parent;
-    param = param;
+    /* unused parameters */ (void)parent; (void)param;
 
 #ifdef __FLAT__
     *frame = WinCreateStdWindow( HWND_OBJECT, 0L, &flags, class, name,
@@ -2750,12 +2850,7 @@ void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
     bmih->cclrUsed = used;
     bmih->cclrImportant = important;
 #else
-    comp = comp;
-    size_image = size_image;
-    xpels = xpels;
-    ypels = ypels;
-    used = used;
-    important = important;
+    /* unused parameters */ (void)comp; (void)size_image; (void)xpels; (void)ypels; (void)used; (void)important;
 #endif
 } /* _wpi_setbmphdrvalues */
 
@@ -2820,8 +2915,7 @@ void _wpi_deletesysmenupos( HMENU hmenu, SHORT pos )
     MENUITEM            mi;
     HWND                newmenu;
 
-    WinSendMsg(hmenu, MM_QUERYITEM, MPFROM2SHORT(SC_SYSMENU, FALSE),
-                                                            MPFROMP((PSZ)&mi));
+    WinSendMsg(hmenu, MM_QUERYITEM, MPFROM2SHORT(SC_SYSMENU, FALSE), MPFROMP((PSZ)&mi));
     newmenu = mi.hwndSubMenu;
 
     id = SHORT1FROMMR( WinSendMsg(newmenu, MM_ITEMIDFROMPOSITION,
@@ -2831,11 +2925,11 @@ void _wpi_deletesysmenupos( HMENU hmenu, SHORT pos )
 } /* _wpi_deletesysmenupos */
 
 void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
-                                                    int *width, int *height )
+                                    WPI_RECTDIM *width, WPI_RECTDIM *height )
 /***************************************************************************/
 {
     WPI_POINT           pts[TXTBOX_COUNT];
-    int                 t_max, t_min;
+    WPI_RECTDIM         t_max, t_min;
 
     GpiQueryTextBox( pres, (LONG)len_string, (PCH)string, TXTBOX_COUNT, pts );
 
@@ -2884,10 +2978,14 @@ void _wpi_getrestoredrect( HWND hwnd, WPI_RECT *prect )
 
     WinQueryWindowPos( hwnd, &swp );
     if( PM1632SWP_FLAG( swp ) & SWP_MINIMIZE ) {
-        // this is seriously hokey so if anyone figures out a better
-        // way to do this change this code - Wes
+        /*
+         * this is seriously hokey so if anyone figures out a better
+         * way to do this change this code - Wes
+         */
 
-        // if the window is minimized lets restore it then minimize it
+        /*
+         * if the window is minimized lets restore it then minimize it
+         */
         _wpi_setredraw( hwnd, FALSE );
         _wpi_restorewindow( hwnd );
         WinQueryWindowPos( hwnd, &swp );
@@ -2951,9 +3049,10 @@ LONG _wpi_cvth_wanchor( LONG y, LONG window_height, LONG parent_height )
 } /* _wpi_cvth_wanchor */
 
 LONG _wpi_cvtc_y( HWND hwnd, LONG y )
-/***********************************/
-/* convert a point for the given   */
-/* client window.                  */
+/************************************
+ * convert a point for the given
+ * client window.
+ */
 {
     WPI_RECT    rect;
     LONG        ret;
@@ -2964,9 +3063,10 @@ LONG _wpi_cvtc_y( HWND hwnd, LONG y )
 } /* _wpi_cvtc_y */
 
 void _wpi_cvtc_rect( HWND hwnd, WPI_RECT *rect )
-/**********************************************/
-/* convert a rectangle for the given client   */
-/* window.                                    */
+/***********************************************
+ * convert a rectangle for the given client
+ * window.
+ */
 {
     WPI_RECT    r;
     int         h;
@@ -3002,11 +3102,13 @@ LONG _wpi_getclipbox( WPI_PRES pres, WPI_PRECT rcl )
 int _wpi_dlg_command( HWND dlg_hld, WPI_MSG *msg, WPI_PARAM1 *parm1, WPI_PARAM2 *parm2 )
 /**************************************************************************************/
 {
-    dlg_hld = dlg_hld;
+    /* unused parameters */ (void)dlg_hld;
 
     if( *msg == WM_CLOSE ) {
-        /* in Windows, this is automatically generated on a sysmenu
-           close. But OS/2 is dumb, so we fake it */
+        /*
+         * in Windows, this is automatically generated on a sysmenu
+         * close. But OS/2 is dumb, so we fake it
+         */
         *msg = WM_COMMAND;
         *parm1 = (WPI_PARAM1)IDCANCEL;
         *parm2 = 0;
@@ -3016,8 +3118,7 @@ int _wpi_dlg_command( HWND dlg_hld, WPI_MSG *msg, WPI_PARAM1 *parm1, WPI_PARAM2 
             *parm1 = MPFROM2SHORT( _wpi_getid( *parm1 ), BN_CLICKED );
         }
         return( TRUE );
-    } else if( *msg == WM_DLGCOMMAND &&
-                                SHORT2FROMMP( *parm1 ) != BN_PAINT ) {
+    } else if( *msg == WM_DLGCOMMAND && SHORT2FROMMP( *parm1 ) != BN_PAINT ) {
         return( TRUE );
     }
 
@@ -3030,7 +3131,8 @@ int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *textmetric,
 {
     int     pointsize;
 
-    pres = pres;
+    /* unused parameters */ (void)pres;
+
     pointsize = (int)textmetric->sNominalPointSize / 10;
     *match_num = (int)textmetric->lMatch;
     *pix_size = 0;

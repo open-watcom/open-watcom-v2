@@ -53,8 +53,8 @@ argument to
 .id &funcb.
 is a string that specifies an I/O mode for the pipe.
 .begnote
-.termhd1 Mode
-.termhd2 Meaning
+.notehd1 Mode
+.notehd2 Meaning
 .note "r"
 The calling process will read from the standard output of the child
 process using the stream pointer returned by
@@ -86,7 +86,7 @@ mode.
 A stream opened by
 .id &funcb.
 should be closed by the
-.kw _pclose
+.reffunc _pclose
 function.
 .desc end
 .return begin
@@ -104,8 +104,8 @@ is set appropriately.
 .return end
 .error begin
 .begterm 12
-:DTHD.Constant
-:DDHD.Meaning
+.termhd1 Constant
+.termhd2 Meaning
 .term EINVAL
 The
 .arg mode
@@ -116,9 +116,9 @@ argument is invalid.
 may also set
 .kw errno
 values as described by the
-.kw _pipe
+.reffunc _pipe
 and
-.kw spawnl
+.reffunc spawnl
 functions.
 .error end
 .see begin

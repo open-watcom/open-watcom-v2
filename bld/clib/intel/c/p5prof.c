@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +36,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <limits.h>
 #include "rtinit.h"
 #include "p5prof.h"
 #include "pathgrp2.h"
 
 
-extern  void _Bin2String(short int _WCNEAR *, char _WCNEAR *, int);
+extern  void _Bin2String( short _WCNEAR *, char _WCNEAR *, int );
 #if defined(__386__)
  #pragma aux _Bin2String "_*" __parm __routine [__eax] [__edx] [__ebx]
 #elif defined( _M_I86 )
@@ -51,7 +52,7 @@ extern  void _Bin2String(short int _WCNEAR *, char _WCNEAR *, int);
 #endif
 
 union tsc {
-    short int       bigint[4];
+    short           bigint[4];
     struct {
         reg_32      lo_cycle;
         reg_32      hi_cycle;
@@ -124,7 +125,7 @@ static void p5_profile_fini( void )
         strcpy( &pname[i], "." "prf" );
 #else
     if( *_argv != NULL ) {
-        PGROUP2     pg;
+        pgroup2     pg;
 
         _splitpath2( *_argv, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         _makepath( pname, pg.drive, pg.dir, pg.fname, "prf" );
@@ -149,7 +150,7 @@ static void p5_profile_fini( void )
             }
             u.hi_cycle += final_tsc.hi_cycle;
         }
-        _Bin2String( (short int _WCNEAR *)&u.bigint[0], (char _WCNEAR *)stkbuf, 20 );
+        _Bin2String( (short _WCNEAR *)&u.bigint[0], (char _WCNEAR *)stkbuf, 20 );
         for( i = 0; stkbuf[i + 1] != '\0'; i++ ) {
             if( stkbuf[i] != '0' )
                 break;

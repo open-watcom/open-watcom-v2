@@ -10,11 +10,24 @@ rescmp_trmem = 1
 !include wres.mif
 !include trmem.mif
 
-inc_dirs = -I"../h" $(wres_inc_dirs)
-
+#
+# cflags
+#
 .c: ../c;$(trmem_dir);$(watcom_dir)/c
 
-objs = &
+inc_dirs = -I"../h" $(wres_inc_dirs)
+
+extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
+
+extra_c_flags_trmemcvr = $(trmem_cover_cflags)
+
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = &
     bincmp.obj &
     cmpcont.obj &
     cmpfiles.obj &
@@ -24,15 +37,5 @@ objs = &
     param.obj &
     rescmp.obj &
     trmemcvr.obj $(trmem_objs)
-
-extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
-
-extra_c_flags_cmpres   = $(trmem_cflags)
-extra_c_flags_layer0   = $(trmem_cflags)
-extra_c_flags_rescmp   = $(trmem_cflags)
-extra_c_flags_trmem    = $(trmem_cflags)
-extra_c_flags_trmemcvr = $(trmem_cover_cflags)
-
-libs = $(wres_lib)
-
+exetarg_libs = $(wres_lib)
 !include exetarg.mif

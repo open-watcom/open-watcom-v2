@@ -18,12 +18,12 @@
 #include "pcpkt.h"
 #include "pcstat.h"
 
-int sock_stats (tcp_Socket *s, WORD *days, WORD *inactive,
+int sock_stats (const sock_type *sk, WORD *days, WORD *inactive,
                 WORD *cwindow, WORD *avg,  WORD *sd)
 {
   time_t now = time (NULL);
 
-  if (s->ip_type != TCP_PROTO)
+  if (sk->u.ip_type != TCP_PROTO)
      return (0);
 
   if (days)     *days     = (WORD) (now / (3600*24) - _watt_start_day);
@@ -33,9 +33,9 @@ int sock_stats (tcp_Socket *s, WORD *days, WORD *inactive,
   if (avg)      *avg      = 0;
   if (sd)       *sd       = 0;
 #else
-  if (cwindow)  *cwindow  = s->cwindow;
-  if (avg)      *avg      = s->vj_sa >> 3;
-  if (sd)       *sd       = s->vj_sd >> 2;
+  if (cwindow)  *cwindow  = sk->tcp.cwindow;
+  if (avg)      *avg      = sk->tcp.vj_sa >> 3;
+  if (sd)       *sd       = sk->tcp.vj_sd >> 2;
 #endif
   return (1);
 }
@@ -357,7 +357,7 @@ void update_out_stat (const void *pkt, WORD proto)
   if (proto != IP_TYPE)    /* should never happen */
   {
     macstats.non_ip_sent++;
-    return; 
+    return;
   }
 
   ipstats.ips_rawout++;   /* count raw IP (fragmented or not) */
@@ -365,9 +365,9 @@ void update_out_stat (const void *pkt, WORD proto)
   ip  = (in_Header*) pkt;
   ofs = intel16 (ip->frag_ofs);
   ofs = (ofs & IP_OFFMASK) << 3;
-   
+
   if (ofs)       /* don't count each fragment (only with ofs 0) */
-     return;  
+     return;
 
   hlen = in_GetHdrLen (ip);
 
@@ -398,9 +398,9 @@ void update_out_stat (const void *pkt, WORD proto)
 
   if (ip->proto == TCP_PROTO)
   {
-    tcp_Header *tcp   = (tcp_Header*) ((BYTE*)ip + hlen);
-    BYTE        flags = tcp->flags & tcp_FlagMASK;
-    int         tlen  = intel16 (ip->length) - hlen - (tcp->offset << 2);
+    tcp_Header *tcp_hdr = (tcp_Header*) ((BYTE*)ip + hlen);
+    BYTE        flags = tcp_hdr->flags & tcp_FlagMASK;
+    int         tlen  = intel16 (ip->length) - hlen - (tcp_hdr->offset << 2);
 
     tcpstats.tcps_sndtotal++;
 

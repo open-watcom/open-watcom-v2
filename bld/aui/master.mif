@@ -6,26 +6,18 @@ aui_autodepends = .AUTODEPEND
 
 suppress_zc = 1
 
-dlgfiles = dlgrx.gdl dlgsrch.gdl dlgsrcha.gdl japrx.gdl japsrch.gdl japsrcha.gdl
-
-additional_cleanup = *.gdl
-
-!ifeq sys_windowed 1
-!ifeq host_os os2
-os2pm = 1
-!endif
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-.EXTENSIONS: .rc
+!include $(gui_dir)/client.mif
 
-inc_dirs = -I. -I"../h" -I"$(gui_dir)/h" -I"$(posix_dir)/h"
-
+#
+# cflags
+#
 .c: .;../c;$(posix_dir)/misc
-.h: .;../h
+
+inc_dirs = -I. -I"../h" $(gui_inc_dirs) -I"$(posix_dir)/h"
 
 extra_c_flags_i86 = -zc
 extra_c_flags_nov = -4s -ot
@@ -36,7 +28,39 @@ extra_c_flags_os2_i86 = -zu
 extra_c_flags_win_i86 = -zW
 extra_c_flags_win_386 = -zw
 
-objs = &
+# explicit rules
+#################
+
+#
+# objects
+#
+!ifdef gui_os2pm
+
+aui_dialogs = &
+    dlgrx.dlg &
+    dlgsrch.dlg &
+    dlgsrcha.dlg &
+    japrx.dlg &
+    japsrch.dlg &
+    japsrcha.dlg
+
+!else
+
+aui_dialogs = &
+    ../res/dlgs/dlgrx.dlg &
+    ../res/dlgs/dlgsrch.dlg &
+    ../res/dlgs/dlgsrcha.dlg &
+    ../res/dlgs/japrx.dlg &
+    ../res/dlgs/japsrch.dlg &
+    ../res/dlgs/japsrcha.dlg
+
+!endif
+
+#
+# LIB
+#
+libtarg_prebuild_objs = auistr.gh $(aui_dialogs)
+libtarg_objs = &
     guimain.obj &
     wndgadgt.obj &
     wndrect.obj &
@@ -95,38 +119,33 @@ objs = &
     wndmsg.obj &
     wndmnsz.obj &
     wndimain.obj
+!include libtarg.mif
 
-all : $(dlgfiles) aui.lib .SYMBOLIC
+#
+# rc and others
+#
+!ifdef gui_os2pm
 
-aui.lib : auistr.gh $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
+additional_clean = *.dlg
+
+dlg_opts  = -font=10.Helv
+dlgj_opts =
+
+dlgrx.dlg : ../res/dlgs/dlgrx.dlg
+    parsedlg $(dlg_opts) $[@ $@
+dlgsrch.dlg : ../res/dlgs/dlgsrch.dlg
+    parsedlg $(dlg_opts) $[@ $@
+dlgsrcha.dlg : ../res/dlgs/dlgsrcha.dlg
+    parsedlg $(dlg_opts) $[@ $@
+
+japrx.dlg : ../res/dlgs/japrx.dlg
+    parsedlg $(dlgj_opts) $[@ $@
+japsrch.dlg : ../res/dlgs/japsrch.dlg
+    parsedlg $(dlgj_opts) $[@ $@
+japsrcha.dlg : ../res/dlgs/japsrcha.dlg
+    parsedlg $(dlgj_opts) $[@ $@
+
 !endif
-
-!ifeq os2pm 1
-dlg_command  = parsedlg -font=10.Helv $[@ $@
-dlgj_command = parsedlg $[@ $@
-!else
-dlg_command  = cp $[@ $@
-dlgj_command = cp $[@ $@
-!endif
-
-dlgrx.gdl : ../res/dlgs/dlgrx.dlg
-    $(dlg_command)
-dlgsrch.gdl : ../res/dlgs/dlgsrch.dlg
-    $(dlg_command)
-dlgsrcha.gdl : ../res/dlgs/dlgsrcha.dlg
-    $(dlg_command)
-
-japrx.gdl : ../res/dlgs/japrx.dlg
-    $(dlgj_command)
-japsrch.gdl : ../res/dlgs/japsrch.dlg
-    $(dlgj_command)
-japsrcha.gdl : ../res/dlgs/japsrcha.dlg
-    $(dlgj_command)
 
 auistr.gh : ../res/aui.msg
     @%make echo_awk

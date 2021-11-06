@@ -1,5 +1,5 @@
-.gfunc pg_initchart
-.gsynop begin 
+.gfunc _pg_initchart
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_initchart( void );
 .do end
@@ -19,12 +19,12 @@ This &routine must be called before any of the other presentation graphics
 The initialization of the presentation graphics system requires that
 a valid graphics mode has been selected.
 For this reason the
-.kw _setvideomode
+.reffunc _setvideomode
 &routine must be called before
 .id &funcb.
 is called.
 If a font has been selected (with the
-.kw _setfont
+.reffunc _setfont
 &routine), that font will be used when text is displayed in a chart.
 Font selection should also be done before initializing
 the presentation graphics system.

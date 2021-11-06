@@ -146,7 +146,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
     BOOL            ret;
     DWORD           error;
     size_t          len;
-    PGROUP2         pg;
+    pgroup2         pg;
     HINSTANCE       app_inst;
 
     if( gf == NULL ) {
@@ -292,7 +292,7 @@ WINEXPORT UINT_PTR CALLBACK WOpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam
 
 bool WGetInternalRESName( const char *filename, char *newname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( filename != NULL && newname != NULL ) {
         _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );

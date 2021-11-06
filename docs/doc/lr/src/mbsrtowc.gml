@@ -5,7 +5,7 @@ size_t mbsrtowcs( wchar_t *dst,
                const char **src,
                size_t len, mbstate_t *ps );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 #include <mbstring.h>
 size_t _fmbsrtowcs( wchar_t __far *dst,
          const char __far * __far *src,
@@ -29,7 +29,7 @@ into a sequence of corresponding wide characters, which, if
 .arg dst
 is not a null pointer, are then stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Conversion continues up to and including a terminating null character,
 but the terminating null wide character will not be stored.
 Conversion will stop earlier in two cases: when a sequence of bytes is
@@ -40,9 +40,9 @@ when
 .arg len
 codes have been stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Each conversion takes place as if by a call to the
-.kw mbrtowc
+.reffunc mbrtowc
 function.
 .np
 If
@@ -57,20 +57,13 @@ if
 .arg dst
 is not a null pointer, the resulting state described will be the
 initial conversion state.
-.im farparm
+.farfuncp &ffunc. &funcb.
 .im mbsrstrt
 .desc end
 .return begin
 If the input string does not begin with a valid multibyte character, an
-encoding error occurs: The
-.id &funcb.
-function stores the value of the macro
-.kw EILSEQ
-in
-.kw errno
-and returns
-.mono (size_t)&minus.1,
-but the conversion state will be unchanged.
+encoding error occurs:
+.im _mbsret1
 Otherwise, it returns the number of multibyte characters successfully
 converted, which is the same as the number of array elements modified
 when

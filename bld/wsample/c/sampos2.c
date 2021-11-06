@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,7 @@ void InitTimerRate( void )
     SleepTime = 55;
 }
 
-void SetTimerRate( char **cmd )
+void SetTimerRate( const char **cmd )
 {
     SleepTime = GetNumber( 1, 1000, cmd, 10 );
 }
@@ -184,7 +184,7 @@ bool VersionCheck( void )
             internalErrorMsg( MSG_SAMPLE_8 );
         }
         DosGetEnv( &env_sel, &cmd_off );
-        if( DosExecPgm( NULL, 0, EXEC_ASYNC, MK_FP( env_sel, cmd_off ), NULL, &res, UtilBuff ) != 0 ) {
+        if( DosExecPgm( NULL, 0, EXEC_ASYNC, _MK_FP( env_sel, cmd_off ), NULL, &res, UtilBuff ) != 0 ) {
             internalErrorMsg( MSG_SAMPLE_9 );
         }
         _exit( 0 );
@@ -335,8 +335,8 @@ void GetNextAddr( void )
         CGraphOff = 0;
         CGraphSeg = 0;
     } else {
-        addr.segment = FP_SEG( Comm.cgraph_top );
-        addr.offset = FP_OFF( Comm.cgraph_top );
+        addr.segment = _FP_SEG( Comm.cgraph_top );
+        addr.offset = _FP_OFF( Comm.cgraph_top );
         readMemory( &addr, sizeof( stack_entry ), (char *)&stack_entry );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
@@ -390,8 +390,8 @@ static USHORT LibLoadPTrace( TRACEBUF FAR_PTR *buff )
         if( buff->cmd != PT_RET_LIB_LOADED )
             return( rv );
         buff->cmd = PT_CMD_GET_LIB_NAME;
-        buff->segv = FP_SEG( name );
-        buff->offv = FP_OFF( name );
+        buff->segv = _FP_SEG( name );
+        buff->offv = _FP_OFF( name );
         DosPTrace( buff );
         CodeLoad( buff, buff->value, name, ( MainMod == buff->value ) ? SAMP_MAIN_LOAD : SAMP_CODE_LOAD );
         buff->value = value;
@@ -442,7 +442,7 @@ typedef struct _NEWSTARTDATA {  /* stdata */
     ULONG   ObjectBuffLen;
 } NEWSTARTDATA;
 
-static void LoadProg( char *cmd, char *cmd_tail )
+static void LoadProg( char *cmd, char *cmd_args )
 {
     RESULTCODES         res;
     NEWSTARTDATA        start;
@@ -455,11 +455,11 @@ static void LoadProg( char *cmd, char *cmd_tail )
         start.TraceOpt = 1;
         start.PgmTitle = cmd;
         start.PgmName = cmd;
-        start.PgmInputs = (PBYTE)cmd_tail;
+        start.PgmInputs = (PBYTE)cmd_args;
         start.TermQ = 0;
         start.Environment = NULL;
         start.InheritOpt = 1;
-        start.SessionType = 0;
+        start.SessionType = SSF_TYPE_DEFAULT;
         start.IconFile = NULL;
         start.PgmHandle = 0;
         start.PgmControl = 0;
@@ -477,7 +477,7 @@ static void LoadProg( char *cmd, char *cmd_tail )
 
 #define BSIZE 256
 
-void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
 
     const char  *src;
@@ -489,7 +489,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     USHORT      rc;
     char        buff[BSIZE];
     seg_offset  where;
-    char        *cmd_tail;
+    char        *cmd_args;
 
     /* unused parameters */ (void)cmd; (void)dos_args;
 
@@ -519,13 +519,13 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
             *dst++ = '\\';
         }
     }
-    strcpy( dst, src );
-    dst = UtilBuff + strlen( UtilBuff ) + 1;
-    cmd_tail = dst;
-    strcpy( dst, full_args );
-    dst += strlen( dst );
-    *++dst = '\0';      /* Need two nulls at end */
-    LoadProg( UtilBuff, cmd_tail );
+    while( (*dst++ = *src++) != '\0' )
+        ;
+    cmd_args = dst;
+    while( (*dst++ = *full_args++) != '\0' )
+        ;
+    *dst = '\0';  /* Need two nulls at end */
+    LoadProg( UtilBuff, cmd_args );
     OutputMsgParmNL( MSG_SAMPLE_1, UtilBuff );
     Buff.pid = Pid;
     Buff.tid = 1;
@@ -605,7 +605,7 @@ void SysDefaultOptions( void )
 }
 
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     switch( c ) {
     case 'r':

@@ -20,9 +20,9 @@ function writes the character specified by the argument
 .arg c
 to the output stream
 .kw stdout
-.ct .li .
+.period
 This function is identical to the
-.kw putchar
+.reffunc putchar
 function.
 .np
 The function is equivalent to:
@@ -50,7 +50,7 @@ occurs, the error indicator is set and
 .id &funcb.
 returns
 .kw EOF
-.ct .li .
+.period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
@@ -60,7 +60,7 @@ error occurs, the error indicator is set and
 .id &wfunc.
 returns
 .kw WEOF
-.ct .li .
+.period
 .do end
 .np
 .im errnoref

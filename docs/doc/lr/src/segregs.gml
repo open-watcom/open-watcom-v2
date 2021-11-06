@@ -4,7 +4,7 @@ in protect mode.
 If you don't care about a particular segment register, then it
 can be set to 0 which will not cause a segment violation.
 The function
-.kw segread
+.reffunc segread
 can be used to initialize
 .arg seg_regs
 to their current values.

@@ -16,8 +16,8 @@ was last modified.
 The date consists of the year, month and day packed into 16 bits as
 follows:
 .begnote $compact $setptnt 10
-.termhd1 Bits
-.termhd2 Meaning
+.notehd1 Bits
+.notehd2 Meaning
 .note bits 0-4
 Day (1-31)
 .note bits 5-8
@@ -29,8 +29,8 @@ Year (0-119 representing 1980-2099)
 The time consists of the hour, minute and seconds/2 packed into 16
 bits as follows:
 .begnote $compact $setptnt 10
-.termhd1 Bits
-.termhd2 Meaning
+.notehd1 Bits
+.notehd2 Meaning
 .note bits 0-4
 Seconds/2 (0-29)
 .note bits 5-10

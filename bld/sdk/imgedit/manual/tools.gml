@@ -17,8 +17,8 @@
 .do end
 Any image can be designed by simply setting each pixel to the
 desired color with the pencil tool.  However, this can be a long
-and tedious process and it is not very practical for larger bitmaps. 
-Hence &imgname provides various tools to aid in drawing.  
+and tedious process and it is not very practical for larger bitmaps.
+Hence &imgname provides various tools to aid in drawing.
 :P.
 Recall that the tool window looks like the following:
 .snap 'toolwnd' '1.37' 'WATCOM Image Editor Tool Window.'
@@ -49,19 +49,19 @@ accuracy.
 The line drawing tool is represented by the button on the tool window
 with the line on it.  The cursor corresponding to the line drawing
 tool is a cross hairs cursor.  To draw a line, move the cursor to
-where one of the end points of the line is to be in the edit window. 
+where one of the end points of the line is to be in the edit window.
 Hold the mouse button down and move the mouse to the location of the
 other end point.  A thin line approximating the results of the line
 draw appears and alters every time the mouse is moved.  When the
-mouse button is released, the line is drawn.  
+mouse button is released, the line is drawn.
 :P.
 If at any time while
-holding the button down, the line is no longer desired, hitting the 
+holding the button down, the line is no longer desired, hitting the
 :HILITE.ESC
 key will cancel the operation.  While moving the mouse around with
 the mouse button held down, the
 :HILITE.Size
-section in the status window indicates the size of the line in the 
+section in the status window indicates the size of the line in the
 :ITALICS.x
 and
 :ITALICS.y
@@ -69,12 +69,12 @@ directions.
 :SECTION.Drawing Ellipses and Rectangles
 Ellipses and rectangles
 can be drawn in either filled or outlined form.  These are
-in the 
+in the
 :HILITE.Tools
-menu and are shown on the tool window with a filled and outlined ellipse 
+menu and are shown on the tool window with a filled and outlined ellipse
 and similar
 rectangles.  The edit cursor for all four of these drawing tools are
-the cross hairs.  
+the cross hairs.
 :P.
 A rectangle is drawn by clicking on the rectangle tool and moving to
 the desired location of one of the rectangle corners in the edit window.
@@ -91,11 +91,11 @@ window to the location of one of the corners of the desired bounding
 rectangle.  Hold the mouse button down and move the cursor to the
 corner diagonal to the initial corner.  As the mouse is moved with
 the button held down, an approximation of the ellipse is shown in the
-edit window.  
+edit window.
 Releasing the mouse button will cause
 the ellipse to be drawn according to the mouse position.
 :P.
-For both ellipses and rectangles, the 
+For both ellipses and rectangles, the
 :ITALICS.Size
 section of the status window will display the current size of the
 shape in the
@@ -104,7 +104,7 @@ and
 :ITALICS.y
 directions while the mouse button is held down.
 Once
-again, hitting the 
+again, hitting the
 :HILITE.ESC
 key while holding the mouse button down will cause the draw to be
 cancelled.
@@ -116,16 +116,16 @@ that area can be cleared, cut to the clipboard, copied to the
 clipboard, the recipient of a paste, rotated or reflected.  The
 cursor for the region selector is also the cross hairs.
 :P.
-A region is selected exactly the same way that a rectangle is drawn. 
+A region is selected exactly the same way that a rectangle is drawn.
 However, when the mouse button is released the outlined region stays
 there until an edit operation is performed.  Attempting to select
 multiple regions will simply cause the previous region selected to
 disappear.  As with the other shape tools, hitting
 :HILITE.ESC
 while holding the mouse button down will cancel the current region
-selection and the size of the selected region is given in the 
+selection and the size of the selected region is given in the
 :ITALICS.Size
-section of the status window.  
+section of the status window.
 The current color selection for the region selecting tool has
 no effect on the operation.
 :SECTION.Paint Brush
@@ -133,9 +133,9 @@ The paint brush tool is very similar to the pencil tool.  However,
 the paint brush paints more than 1 pixel simultaneously.  Depending
 on the currently selected brush width (indicated in the
 :HILITE.Brush Width
-submenu of the 
+submenu of the
 :HILITE.Options
-menu) the brush draws in 2x2, 3x3, 4x4 or 5x5 pixel brush sizes. 
+menu) the brush draws in 2x2, 3x3, 4x4 or 5x5 pixel brush sizes.
 This tool is used when thick pen width is desired or
 when erasing a certain portion of the image.  To draw with the paint
 brush, follow the instructions for drawing with the pencil.  The edit
@@ -146,7 +146,7 @@ The filling tool is used to fill a specific area with a selected
 color.  The fill tool is represented on the tool window with a pouring
 can of paint which is also the cursor for the paint tool.  To fill an
 area move the cursor to the area that is to be filled.  An area is
-considered to be a set of pixels identical in color that are 
+considered to be a set of pixels identical in color that are
 adjacent to each other.  Clicking the
 mouse button over an area will cause all the pixels in that area to
 become the color of the currently selected color.  Note that breaks in

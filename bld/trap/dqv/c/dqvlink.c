@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,8 +65,8 @@ unsigned RemoteGet( void __far *data, unsigned len )
 
     len=len;
     status = mal_read( GetHandle, &buffer, &buflen );
-    movedata( FP_SEG( buffer ), FP_OFF( buffer ),
-              FP_SEG( data ), FP_OFF( data ),
+    movedata( _FP_SEG( buffer ), _FP_OFF( buffer ),
+              _FP_SEG( data ), _FP_OFF( data ),
               buflen );
     return( buflen );
 }
@@ -76,7 +77,7 @@ void RemotePut( void __far *data, unsigned len )
 }
 
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
     int                 status;
     char                __far *buffer;
@@ -85,24 +86,24 @@ char RemoteConnect( void )
 
 #ifdef SERVER
     status = mal_sizeof( GetHandle );
-    if( status == 0 ) return( 0 );
+    if( status == 0 )
+        return( false );
     status = mal_read( GetHandle, &buffer, &buflen );
     if( *buffer == PATTERN ){
         PutHandle = mal_of( mal_addr( GetHandle ) );
         pattern = PATTERN;
         mal_write( PutHandle, &pattern, sizeof(pattern) );
-        return( 1 );
+        return( true );
     }
-    return( 0 );
 #else
     pattern = PATTERN;
     mal_write( PutHandle, &pattern, sizeof( pattern ) );
     status = mal_read( GetHandle, &buffer, &buflen );
-    if( *buffer != PATTERN ){
-        return( 0 );
+    if( *buffer == PATTERN ){
+        return( true );
     }
-    return( 1 );
 #endif
+    return( false );
 }
 
 void RemoteDisco( void )
@@ -147,6 +148,6 @@ const char *RemoteLink( const char __far *parms, char server )
 void RemoteUnLink( void )
 {
 #ifdef SERVER
-        mal_free( GetHandle );
+    mal_free( GetHandle );
 #endif
 }

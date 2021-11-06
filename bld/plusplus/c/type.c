@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +42,10 @@
 #include "ring.h"
 #include "carve.h"
 #include "preproc.h"
-#include "dbg.h"
 #include "template.h"
 #include "class.h"
 #include "name.h"
-#include "toggle.h"
+#include "toggles.h"
 #include "fnovload.h"
 #include "fnbody.h"
 #include "pragdefn.h"
@@ -65,6 +64,10 @@
 #include "rtti.h"
 #include "dumpapi.h"
 #include "compinfo.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+    #include "togglesd.h"
+#endif
 
 
 #define TYPE_HASH_MODULUS       (1<<5)  // modulus when type hashed
@@ -386,8 +389,8 @@ static void typeFree( TYPE type )
     ExtraRptDecrementCtr( types_defined );
 }
 
-TYPE MakeArrayType( target_size_t size )
-/**************************************/
+TYPE MakeArrayTypeAndSize( target_size_t size )
+/*********************************************/
 {
     TYPE    new_type;
 
@@ -401,7 +404,7 @@ TYPE MakeArrayOf( target_size_t size, TYPE base )
 {
     TYPE array_type;
 
-    array_type = MakeArrayType( size );
+    array_type = MakeArrayTypeAndSize( size );
     return( MakeTypeOf( array_type, base ) );
 }
 
@@ -413,7 +416,7 @@ TYPE MakeExpandableType( type_id base_id )
 {
     TYPE expands;
 
-    expands = MakeArrayType( 1 );
+    expands = MakeArrayTypeAndSize( 1 );
     expands->of = GetBasicType( base_id );
     return( expands );
 }
@@ -761,7 +764,7 @@ TYPE MakeMemberPointerTo( TYPE class_type, TYPE base_type )
     type_flag flags;
     void *base;
 
-    class_type = StructType( class_type );
+    class_type = ClassType( class_type );
     mptr_type = makeMemberPointerType( class_type, STY_NULL );
     base_type = TypeReferenced( base_type );
     unmod_type = TypeModExtract( base_type, &flags, &base, TC1_NOT_ENUM_CHAR );
@@ -1235,7 +1238,7 @@ DECL_INFO *MakeNewDeclarator( DECL_SPEC *dspec,DECL_INFO *ptrs,DECL_INFO*arrays)
     }
     arrays = FinishDeclarator( dspec, arrays );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_types ) {
+    if( TOGGLEDBG( dump_types ) ) {
         DumpFullType( arrays->type );
     }
 #endif
@@ -1277,10 +1280,10 @@ DECL_INFO *AddArrayDeclarator( DECL_INFO *dinfo, PTREE size )
 
     if( size != NULL ) {
         CheckDimension( size );
-        array_type = MakeArrayType( size->u.uint_constant );
+        array_type = MakeArrayTypeAndSize( size->u.uint_constant );
         PTreeFree( size );
     } else {
-        array_type = MakeArrayType( 0 );
+        array_type = MakeArrayTypeAndSize( 0 );
     }
     return( prependTypeToDeclarator( dinfo, array_type ) );
 }
@@ -1467,7 +1470,6 @@ static TYPE buildFnType( TYPE ret_type, va_list count_args, va_list use_args )
             break;
         ++num_args;
     }
-    va_end( count_args );
     args = AllocArgListPerm( num_args );
     curr_arg = args->type_list;
     for(;;) {
@@ -1477,7 +1479,6 @@ static TYPE buildFnType( TYPE ret_type, va_list count_args, va_list use_args )
         *curr_arg = arg_type;
         ++curr_arg;
     }
-    va_end( use_args );
     fn_type = MakeType( TYP_FUNCTION );
     fn_type->of = ret_type;
     fn_type->flag |= TF1_PLUSPLUS;
@@ -2388,7 +2389,7 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, bool decl_done )
     original_type = dspec->partial;
     type = original_type;
     if( type != NULL ) {
-        type = StructType( type );
+        type = ClassType( type );
     }
     name = dspec->name;
     if( dspec->type_defined ) {
@@ -2420,7 +2421,7 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, bool decl_done )
             ScopeAddFriendSym( GetCurrScope(), sym );
         } else {
             if( sym != NULL ) {
-                type = StructType( sym->sym_type );
+                type = ClassType( sym->sym_type );
             }
 
             if( type != NULL ) {
@@ -2687,7 +2688,7 @@ static TYPE dupArray( TYPE type, TYPE ref_type, target_size_t size, type_flag fl
 
     mod_list = duplicateModifiers( type, ref_type );
     base_type = ref_type->of;
-    array_type = MakeArrayType( size );
+    array_type = MakeArrayTypeAndSize( size );
     array_type->flag |= flag;
     base_type = MakeTypeOf( array_type, base_type );
     base_type = replaceModifiers( mod_list, base_type );
@@ -3443,7 +3444,7 @@ static void adjustMemberFn( TYPE fn_type, TYPE member_ptr )
     DbgAssert( member_ptr->id == TYP_MEMBER_POINTER );
     // a member pointer can only point to "C++" fns
     fn_type->flag |= TF1_PLUSPLUS | TF1_PLUSPLUS_SET;
-    class_type = StructType( member_ptr->u.mp.host );
+    class_type = ClassType( member_ptr->u.mp.host );
     if( class_type == NULL ) {
         return;
     }
@@ -3653,7 +3654,7 @@ static void checkForUnnamedStruct( DECL_SPEC *dspec, NAME id )
     if( ! dspec->type_defined ) {
         return;
     }
-    base_type = StructType( dspec->partial );
+    base_type = ClassType( dspec->partial );
     if( base_type == NULL ) {
         return;
     }
@@ -4002,7 +4003,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         }
         setStorageClass( sym, dspec->stg_class );
         SymbolLocnDefine( &(id_tree->locn), sym );
-        if( !PragToggle.unreferenced ) {
+        if( !TOGGLE( unreferenced ) ) {
             sym->flag |= SYMF_NO_REF_WARN;
         }
         dinfo->sym = sym;
@@ -4035,7 +4036,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         }
     }
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_types ) {
+    if( TOGGLEDBG( dump_types ) ) {
         DumpFullType( prev_type );
     }
 #endif
@@ -4462,25 +4463,25 @@ TYPE MakePragma( const char *name )
 /*********************************/
 {
     TYPE type;
-    AUX_INFO *pragma;
+    AUX_INFO *info;
 
-    pragma = PragmaLookup( name, M_UNKNOWN );
-    if( pragma == NULL ) {
+    info = PragmaLookup( name );
+    if( info == NULL ) {
         CErr2p( ERR_PRAGMA_NOT_FOUND, name );
     }
-    type = MakePragmaModifier( pragma );
+    type = MakePragmaModifier( info );
     type->flag |= TF1_TYP_FUNCTION;
     return( type );
 }
 
-TYPE MakeIndexPragma( magic_word_idx index )
-/******************************************/
+TYPE MakePragmaMagic( magic_words mword )
+/***************************************/
 {
     TYPE type;
-    AUX_INFO *pragma;
+    AUX_INFO *info;
 
-    pragma = PragmaLookup( NULL, index );
-    type = MakePragmaModifier( pragma );
+    info = PragmaLookupMagic( mword );
+    type = MakePragmaModifier( info );
     type->flag |= TF1_TYP_FUNCTION;
     return( type );
 }
@@ -4724,9 +4725,8 @@ TYPE ElaboratableType( TYPE type )
     return( type );
 }
 
-// 'ClassType' is used by code generator!
-TYPE StructType( TYPE type )
-/**************************/
+TYPE ClassType( TYPE type )
+/*************************/
 {
     if( type != NULL ) {
         TypeStripTdMod( type );
@@ -4740,7 +4740,7 @@ TYPE StructType( TYPE type )
 TYPE PolymorphicType( TYPE type )
 /*******************************/
 {
-    type = StructType( type );
+    type = ClassType( type );
     if( type != NULL && type->u.c.info->has_vfn ) {
         return( type );
     }
@@ -4750,7 +4750,7 @@ TYPE PolymorphicType( TYPE type )
 TYPE StructOpened( TYPE type )
 /****************************/
 {
-    type = StructType( type );
+    type = ClassType( type );
     if( type != NULL && type->u.c.info->opened ) {
         return( type );
     }
@@ -4760,7 +4760,7 @@ TYPE StructOpened( TYPE type )
 TYPE AbstractClassType( TYPE type )
 /*********************************/
 {
-    type = StructType( type );
+    type = ClassType( type );
     if( type != NULL ) {
         if( verifyAbstractStatus( type ) ) {
             return( type );
@@ -6005,7 +6005,7 @@ static bool isClassPtr( TYPE type )
     type = TypedefRemove( type );
     if( type->id == TYP_POINTER ) {
         if( (type->flag & TF1_REFERENCE) == 0 ) {
-            if( StructType( type->of ) != NULL ) {
+            if( ClassType( type->of ) != NULL ) {
                 return( true );
             }
         }
@@ -6017,12 +6017,12 @@ static TYPE classOrClassRef( TYPE type )
 {
     TYPE class_type;
 
-    class_type = StructType( type );
+    class_type = ClassType( type );
     if( class_type == NULL ) {
         TypeStripTdMod( type );
         if( type->id == TYP_POINTER ) {
             if( (type->flag & TF1_REFERENCE) != 0 ) {
-                class_type = StructType( type->of );
+                class_type = ClassType( type->of );
             }
         }
     }
@@ -7195,7 +7195,7 @@ bool TypeHasVirtualBases( TYPE type )
 {
     bool ok;
 
-    type = StructType( type );
+    type = ClassType( type );
     if( type == NULL ) {
         ok = false;
     } else {
@@ -7280,7 +7280,7 @@ bool TypeVAStartWontWork( TYPE fn_type, MSG_NUM *msg )
             *msg = WARN_REF_ARG_BEFORE_ELLIPSE;
             return( true );
         }
-        arg_type = StructType( arg_type );
+        arg_type = ClassType( arg_type );
         if( arg_type != NULL
          && OMR_CLASS_REF == ObjModelArgument( arg_type ) ) {
             /* arg before ... arg is a class arg (WATCOM passes these as refs) */
@@ -7307,7 +7307,7 @@ TYPE MemberPtrClass( TYPE type )
 /******************************/
 {
     if( type != NULL ) {
-        type = StructType( type->u.mp.host );
+        type = ClassType( type->u.mp.host );
     }
     return( type );
 }
@@ -7337,7 +7337,7 @@ bool TypeHasSpecialFields( TYPE type )
 {
     CLASSINFO *info;
 
-    type = StructType( type );
+    type = ClassType( type );
     if( type != NULL ) {
         info = type->u.c.info;
         if( info->has_comp_info ) {
@@ -7427,7 +7427,7 @@ static void pushArguments( PSTK_CTL *stk, arg_list *args )
         type = *p;
         TypeStripTdMod( type );
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_types ) {
+        if( TOGGLEDBG( dump_types ) ) {
             printf( "arg #%u\n", ( args->num_args - i ) + 1 );
             DumpFullType( type );
         }
@@ -7472,7 +7472,7 @@ static void pushPrototypeAndArguments( type_bind_info *data,
         }
 
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_types ) {
+        if( TOGGLEDBG( dump_types ) ) {
             printf( "p_arg #%u\n", i + 1 );
             if( p->op == PT_TYPE ) {
                 DumpFullType( p_type );
@@ -7613,7 +7613,7 @@ bool FunctionUsesAllTypes( SYMBOL sym, SCOPE scope, void (*diag)( SYMBOL ) )
 {
     TYPE fn_type;
     TYPE *top;
-    auto PSTK_CTL type_stack;
+    PSTK_CTL type_stack;
 
     fn_type = FunctionDeclarationType( sym->sym_type );
     if( fn_type == NULL ) {
@@ -8357,7 +8357,7 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
     SYMBOL curr, stop;
     tb_status bind_status;
     bool result;
-    auto type_bind_info data;
+    type_bind_info data;
 
     DbgAssert( parm_scope != NULL );
 
@@ -8577,7 +8577,7 @@ static void typesInit(          // TYPES INITIALIZATION
     CompInfo.ptr_diff_far16 = basicTypes[TYP_SSHORT];
     CompInfo.ptr_diff_huge = basicTypes[TYP_SLONG];
     ClassInit();
-    cdeclPragma = PragmaLookup( NULL, M_CDECL );
+    cdeclPragma = PragmaLookupMagic( M_CDECL );
     ExtraRptRegisterCtr( &types_defined, "unique type entries defined" );
     ExtraRptRegisterCtr( &types_alloced, "type entries allocated" );
     ExtraRptRegisterCtr( &ctr_dups, "type duplication checks" );
@@ -8661,7 +8661,7 @@ static void dumpXrefType( void *e, carve_walk_base *d )
 void DumpOfRefs( void )
 {
     FILE *fp;
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     if( CompFlags.extra_stats_wanted ) {
         CarveWalkAllFree( carveTYPE, markFreeType );
@@ -8692,7 +8692,7 @@ static void freeTypeName( void *e, carve_walk_base *d )
 static void typesFini(          // COMPLETION OF TYPES PROCESSING
     INITFINI* defn )            // - definition
 {
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     /* unused parameters */ (void)defn;
 
@@ -9185,8 +9185,8 @@ pch_status PCHWriteTypes( void )
 {
     unsigned i;
     unsigned tci;
-    auto type_pch_walk type_data;
-    auto carve_walk_base data;
+    type_pch_walk type_data;
+    carve_walk_base data;
 
     memset( &type_data, 0, sizeof( type_data ) );
     writeType( TypeError );
@@ -9262,7 +9262,7 @@ static void readTypes( type_pch_walk *type_data )
 {
     unsigned int l;
     TYPE t;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveTYPE, &data );
     for( ; (t = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -9316,7 +9316,7 @@ static void readClassInfos( void )
 {
     CLASSINFO *ci;
     signed char friend_is_type;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveCLASSINFO, &data );
     for( ; (ci = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -9343,7 +9343,7 @@ static void readClassInfos( void )
 static void readDeclInfos( void )
 {
     DECL_INFO *dinfo;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveDECL_INFO, &data );
     for( ; (dinfo = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -9378,8 +9378,8 @@ pch_status PCHReadTypes( void )
     arg_list **translate;
     arg_list *args;
     arg_list **set;
-    auto type_pch_walk type_data;
-    auto arg_list tmp_arglist;
+    type_pch_walk type_data;
+    arg_list tmp_arglist;
 
     readType( &TypeError );
     readType( &uniqueTypes );
@@ -9510,7 +9510,7 @@ static void relocType( void *e, carve_walk_base *d )
 
 pch_status PCHRelocTypes( char *block, size_t size )
 {
-    auto type_reloc_pch_walk type_data;
+    type_reloc_pch_walk type_data;
 
     type_data.curr = block;
     type_data.amount = size;

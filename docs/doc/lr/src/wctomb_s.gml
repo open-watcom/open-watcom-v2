@@ -8,15 +8,15 @@ errno_t wctomb_s( int * restrict status,
                   char * restrict s,
                   rsize_t smax,
                   wchar_t wc);
-.ixfunc2 '&Wide' &funcb
-.ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.ixfunc2 '&Wide' wctomb_s
+.ixfunc2 '&Multibyte' wctomb_s
+.if &farfnc ne 0 .do begin
 errno_t _fwctomb_s( int __far * restrict status,
                   char __far * restrict s,
                   rsize_t smax,
                   wchar_t wc);
-.ixfunc2 '&Wide' &fwfunc
-.ixfunc2 '&Multibyte' &fwfunc
+.ixfunc2 '&Wide' _fwctomb_s
+.ixfunc2 '&Multibyte' _fwctomb_s
 .do end
 .synop end
 .*
@@ -38,7 +38,7 @@ shall not be less than
 .arg smax
 shall not be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 If
 .arg s
 is a null pointer, then
@@ -77,7 +77,7 @@ number of characters stored never exceeds
 .kw MB_CUR_MAX
 or
 .arg smax
-.ct .li .
+.period
 If
 .arg wc
 is a null wide character, a null byte is stored, preceded by any shift
@@ -116,7 +116,7 @@ In no case will the int pointed to by
 be set to a value greater than the
 .kw MB_CUR_MAX
 macro.
-.im safefarw
+.farfuncp &ffunc. &funcb.
 .desc end
 .*
 .return begin

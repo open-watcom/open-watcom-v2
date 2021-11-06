@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +36,10 @@
 #ifdef __WIN__
     #include "winrtns.h"
 #endif
+#include "myio.h"
 
 #include "clibext.h"
 
-
-#define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
 extern char _NEAR   META[];
 
@@ -69,7 +69,7 @@ vi_rc TagHunt( const char *str )
     int         num;
     vi_rc       rc;
 
-    rc = LocateTag( str, file, buff );
+    rc = LocateTag( str, file, buff, sizeof( buff ) );
     if( rc == ERR_NO_ERR ) {
 
         PushFileStack();
@@ -162,36 +162,31 @@ static list_linenum PickATag( list_linenum tag_count, char **tag_list, const cha
 /*
  * selectTag - select a tag from a list of possible tags
  */
-static vi_rc selectTag( FILE *fp, const char *str, char *buff, char *fname )
+static vi_rc selectTag( FILE *fp, const char *str, char *fname, char *buff, int max_len )
 {
     list_linenum    tag_count;
     char            **tag_list;
     int             i;
     list_linenum    whichtag;
     char            tag[MAX_STR];
-    char            *p;
+    const char      *p;
+    char            *p1;
 
     tag_count = 0;
     tag_list = NULL;
     p = GetNextWord1( buff, tag );
     for( ;; ) {
-        p = SkipLeadingSpaces( p );
         tag_list = _MemReallocList( tag_list, tag_count + 1 );
-        tag_list[tag_count] = DupString( p );
-        i = 0;
-        p = tag_list[tag_count];
-        while( !isspace( p[i] ) && p[i] != '\0' ) {
-            i++;
-        }
-        p[i] = '\0';
+        p1 = tag_list[tag_count] = DupString( p );
+        SKIP_NOSPACES( p1 );
+        p1 = strchr( tag_list[tag_count], ' ' );
+        if( p1 != tag_list[tag_count] )
+            *p1 = '\0';
         tag_count++;
-        if( fgets( buff, MAX_STR, fp ) == NULL )  {
+        if( (p = myfgets( buff, max_len, fp )) == NULL )  {
             break;
         }
-        for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
-            buff[i - 1] = '\0';
-        }
-        p = GetNextWord1( buff, tag );
+        p = GetNextWord1( p, tag );
         if( *tag == '\0' ) {
             continue;
         }
@@ -204,7 +199,6 @@ static vi_rc selectTag( FILE *fp, const char *str, char *buff, char *fname )
             break;
         }
     }
-    fclose( fp );
     if( EditFlags.TagPrompt && EditFlags.WindowsStarted && tag_count > 1 ) {
         whichtag = PickATag( tag_count, tag_list, str );
         if( whichtag < 0 ) {
@@ -220,7 +214,6 @@ static vi_rc selectTag( FILE *fp, const char *str, char *buff, char *fname )
     if( *fname == '\0' ) {
         return( ERR_INVALID_TAG_FOUND );
     }
-    p = SkipLeadingSpaces( p );
     if( p[0] == '\0' ) {
         return( ERR_INVALID_TAG_FOUND );
     }
@@ -280,11 +273,12 @@ static FILE *SearchForTags( void )
 /*
  * LocateTag - locate a tag in the tag file
  */
-vi_rc LocateTag( const char *str, char *fname, char *buff )
+vi_rc LocateTag( const char *str, char *fname, char *buff, int max_len )
 {
     char        tag[MAX_STR];
     int         i;
     FILE        *fp;
+    vi_rc       rc;
 
     /*
      * get file and buffer
@@ -304,12 +298,9 @@ vi_rc LocateTag( const char *str, char *fname, char *buff )
      * loop until tag found
      */
     for( ;; ) {
-        if( fgets( buff, MAX_STR, fp ) == NULL )  {
-            fclose( fp );
-            return( ERR_TAG_NOT_FOUND );
-        }
-        for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
-            buff[i - 1] = '\0';
+        if( myfgets( buff, max_len, fp ) == NULL )  {
+            rc = ERR_TAG_NOT_FOUND;
+            break;
         }
         GetNextWord1( buff, tag );
         if( *tag == '\0' ) {
@@ -320,13 +311,16 @@ vi_rc LocateTag( const char *str, char *fname, char *buff )
         } else {
             i = strcmp( str, tag );
             if( i < 0 ) {
-                fclose( fp );
-                return( ERR_TAG_NOT_FOUND );
+                rc = ERR_TAG_NOT_FOUND;
+                break;
             }
         }
         if( i == 0 ) {
-            return( selectTag( fp, str, buff, fname ) );
+            rc = selectTag( fp, str, fname, buff, max_len );
+            break;
         }
     }
+    fclose( fp );
+    return( rc );
 
 } /* LocateTag */

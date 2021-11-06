@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,11 +69,16 @@
 
 #define IS_EMPTY(p)         ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
+#define IS_WS(c)            ((c) == ' ' || (c) == '\t')
+#define SKIP_WS(p)          while(IS_WS(*(p))) (p)++
+
 #define RoundUp( v, r )     (((v) + (r) - 1) & ~(unsigned long)((r)-1))
 
 #define BUF_SIZE            8192
 
 #define MAX_WINDOW_WIDTH    90
+
+#define TreeNodeUni(op)     TreeNode(op, NULL, NULL)
 
 #define NONMAGICVARS( x, y ) \
     x( IsDos, y ) \
@@ -90,8 +95,7 @@
     x( IsWin2000, y ) \
     x( IsLinux32, y ) \
     x( IsLinux64, y ) \
-    x( IsAlpha, y ) \
-    x( HelpFiles, y ) \
+    x( IsAlpha, y )
 
 typedef struct a_file_info {
     VBUF                name;
@@ -119,10 +123,13 @@ typedef enum {
 } tree_op;
 
 typedef struct tree_node {
-    union {
-        struct tree_node    *left;
-        vhandle             v;
-    } u;
+    struct {
+        union {
+            struct tree_node    *node;
+            vhandle             var;
+            char                *str;
+        } u;
+    } left;
     struct tree_node        *right;
     tree_op                 op;
 } tree_node;
@@ -355,14 +362,15 @@ static void toBackSlash( char *name )
 /**********************************************************************/
 /*                   EXPRESSION EVALUTORS                             */
 /**********************************************************************/
-static tree_node *TreeNode( tree_op op, void *left, void *right )
-/***************************************************************/
+
+static tree_node *TreeNode( tree_op op, tree_node *left, tree_node *right )
+/*************************************************************************/
 {
     tree_node   *tree;
 
     tree = GUIMemAlloc( sizeof( tree_node ) );
     tree->op = op;
-    tree->u.left = left;
+    tree->left.u.node = left;
     tree->right = right;
     return( tree );
 }
@@ -379,7 +387,7 @@ static tree_node *BuildExprTree( const char *str )
     #define STACK_SIZE  ( sizeof( stack ) / sizeof( *stack ) )
 
     if( str == NULL || IS_EMPTY( str ) ) {
-        return( TreeNode( OP_TRUE, NULL, NULL ) );
+        return( TreeNodeUni( OP_TRUE ) );
     }
     stack_top = -1;
     str2 = GUIStrDup( str, NULL );  // copy string so we can use STRTOK
@@ -408,8 +416,8 @@ static tree_node *BuildExprTree( const char *str )
                 GUIDisplayMessage( MainWnd, "Expression stack overflow!", "Setup script", GUI_OK );
                 stack_top = STACK_SIZE - 1;
             } else {
-                token = GUIStrDup( token + 1, NULL );
-                stack[stack_top] = TreeNode( OP_EXIST, token, NULL );
+                stack[stack_top] = TreeNodeUni( OP_EXIST );
+                stack[stack_top]->left.u.str = GUIStrDup( token + 1, NULL );
             }
         } else {                // push current value
             ++stack_top;
@@ -417,14 +425,14 @@ static tree_node *BuildExprTree( const char *str )
                 GUIDisplayMessage( MainWnd, "Expression stack overflow!", "Setup script", GUI_OK );
                 stack_top = STACK_SIZE - 1;
             } else {
-                stack[stack_top] = TreeNode( OP_VAR, NULL, NULL );
-                stack[stack_top]->u.v = GetTokenHandle( token );
+                stack[stack_top] = TreeNodeUni( OP_VAR );
+                stack[stack_top]->left.u.var = GetTokenHandle( token );
             }
         }
     }
     // and together whatever is left on stack
     tree = stack[stack_top];
-    while( --stack_top >= 0 ) {
+    while( stack_top-- > 0 ) {
         tree = TreeNode( OP_AND, tree, stack[stack_top] );
     }
     GUIMemFree( str2 );
@@ -443,13 +451,13 @@ static bool SameExprTree( tree_node *a, tree_node *b )
     switch( a->op ) {
     case OP_AND:
     case OP_OR:
-        return( SameExprTree( a->u.left, b->u.left ) && SameExprTree( a->right, b->right ) );
+        return( SameExprTree( a->left.u.node, b->left.u.node ) && SameExprTree( a->right, b->right ) );
     case OP_NOT:
-        return( SameExprTree( a->u.left, b->u.left ) );
+        return( SameExprTree( a->left.u.node, b->left.u.node ) );
     case OP_EXIST:
-        return( stricmp( (char *)a->u.left, (char *)b->u.left ) == 0 );
+        return( stricmp( a->left.u.str, b->left.u.str ) == 0 );
     case OP_VAR:
-        return( (vhandle)(pointer_uint)a->u.left == (vhandle)(pointer_uint)b->u.left );
+        return( a->left.u.var == b->left.u.var );
         break;
     case OP_TRUE:
     case OP_FALSE:
@@ -468,10 +476,10 @@ static void BurnTree( tree_node *tree )
         BurnTree( tree->right );
         /* fall through */
     case OP_NOT:
-        BurnTree( tree->u.left );
+        BurnTree( tree->left.u.node );
         break;
     case OP_EXIST:
-        GUIMemFree( tree->u.left );
+        GUIMemFree( tree->left.u.str );
         break;
     case OP_VAR:
     case OP_TRUE:
@@ -521,8 +529,8 @@ static vhandle GetTokenHandle( const char *p )
 #define orvar( x, y ) x == y ||
 #define IsMagicVar( v ) MAGICVARS( orvar, v ) false
 
-bool GetOptionVarValue( vhandle var_handle, bool is_minimal )
-/***********************************************************/
+bool GetOptionVarValue( vhandle var_handle )
+/******************************************/
 {
 //    if( GetVariableBoolVal( "_Visibility_Condition_" ) ) {
     if( VisibilityCondition ) {
@@ -536,12 +544,6 @@ bool GetOptionVarValue( vhandle var_handle, bool is_minimal )
     } else if( VarGetBoolVal( FullInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
         // fullinstall pretends all options are turned on
         return( true );
-    } else if( VarGetBoolVal( FullCDInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
-        // fullinstallcd pretends all options are turned on except 'HelpFiles'
-        return( var_handle != HelpFiles );
-    } else if( is_minimal ) {
-        // is_minimal makes all file condition variables false
-        return( false );
     } else {
         return( VarGetBoolVal( var_handle ) );
     }
@@ -549,33 +551,33 @@ bool GetOptionVarValue( vhandle var_handle, bool is_minimal )
 
 #undef orvar
 
-static bool EvalExprTree( tree_node *tree, bool is_minimal )
-/**********************************************************/
+static bool EvalExprTree( tree_node *tree )
+/*****************************************/
 {
     bool        value;
     VBUF        tmp;
 
     switch( tree->op ) {
     case OP_AND:
-        value = EvalExprTree( tree->u.left, is_minimal ) & EvalExprTree( tree->right, is_minimal );
+        value = EvalExprTree( tree->left.u.node ) & EvalExprTree( tree->right );
         break;
     case OP_OR:
-        value = EvalExprTree( tree->u.left, is_minimal ) | EvalExprTree( tree->right, is_minimal );
+        value = EvalExprTree( tree->left.u.node ) | EvalExprTree( tree->right );
         break;
     case OP_NOT:
-        value = !EvalExprTree( tree->u.left, is_minimal );
+        value = !EvalExprTree( tree->left.u.node );
         break;
     case OP_EXIST:
         VbufInit( &tmp );
-        ReplaceVars( &tmp, (char *)tree->u.left );
+        ReplaceVars( &tmp, tree->left.u.str );
         value = ( access_vbuf( &tmp, F_OK ) == 0 );
         VbufFree( &tmp );
         break;
     case OP_VAR:
-        value = GetOptionVarValue( (vhandle)(pointer_uint)tree->u.left, is_minimal );
+        value = GetOptionVarValue( tree->left.u.var );
         break;
     case OP_TRUE:
-        value = !is_minimal;
+        value = true;
         break;
     case OP_FALSE:
     default:
@@ -585,14 +587,14 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
     return( value );
 }
 
-static bool DoEvalCondition( const char *str, bool is_minimal )
-/*************************************************************/
+static bool DoEvalCondition( const char *str )
+/********************************************/
 {
     bool        value;
     tree_node   *tree;
 
     tree = BuildExprTree( str );
-    value = EvalExprTree( tree, is_minimal );
+    value = EvalExprTree( tree );
     BurnTree( tree );
     return( value );
 }
@@ -602,7 +604,7 @@ bool EvalCondition( const char *str )
 {
     if( str == NULL || *str == '\0' )
         return( true );
-    return( DoEvalCondition( str, false ) );
+    return( DoEvalCondition( str ) );
 }
 
 static void PropagateValue( tree_node *tree, bool value )
@@ -613,22 +615,22 @@ static void PropagateValue( tree_node *tree, bool value )
     switch( tree->op ) {
     case OP_AND:
         if( value ) {
-            PropagateValue( tree->u.left, true );
+            PropagateValue( tree->left.u.node, true );
             PropagateValue( tree->right, true );
         }
         break;
     case OP_OR:
         if( !value ) {
-            PropagateValue( tree->u.left, false );
+            PropagateValue( tree->left.u.node, false );
             PropagateValue( tree->right, false );
         }
         break;
     case OP_NOT:
-        PropagateValue( tree->u.left, !value );
+        PropagateValue( tree->left.u.node, !value );
         break;
     case OP_VAR:
         if( value ) {
-            var_handle = (vhandle)(pointer_uint)tree->u.left;
+            var_handle = tree->left.u.var;
             if( VarGetAutoSetCond( var_handle ) != NULL ) {
                 if( !VarIsRestrictedFalse( var_handle ) ) {
                     SetBoolVariableByHandle( PreviousInstall, true );
@@ -657,12 +659,12 @@ static char *NextToken( char *buf, char delim )
     if( p != NULL ) {
         *p = '\0';
         q = p - 1;
-        while( q >= buf && (*q == ' ' || *q == '\t') ) {
+        while( q >= buf && IS_WS( *q ) ) {
             *q = '\0';
             --q;
         }
         ++p;
-        while( *p == ' ' || *p == '\t' ) ++p;
+        SKIP_WS( p );
     }
     return( p );
 }
@@ -677,10 +679,9 @@ static char *StripBlanks( char *p )
         return p;
     }
 
-    while( *p == ' ' || *p == '\t' )
-        ++p;
+    SKIP_WS( p );
     q = p + strlen( p ) - 1;
-    while( q >= p && (*q == ' ' || *q == '\t' || *q == '\n') ) {
+    while( q >= p && (IS_WS( *q ) || *q == '\n') ) {
         *q = '\0';
         --q;
     }
@@ -801,7 +802,8 @@ static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth
 
     // Line endings are word breaks already
     s = text;
-    while( *s && (*s != '\r') && (*s != '\n') ) s++;
+    while( *s && (*s != '\r') && (*s != '\n') )
+        s++;
     len = s - text;
 
     winwidth = parse_dlg->wrap_width * CharWidth;
@@ -829,7 +831,7 @@ static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth
         if( width >= winwidth )
             break;
         // is this a good place to break?
-        if( *e == ' ' || *e == '\t' ) { // English
+        if( IS_WS( *e ) ) { // English
             br = n;
         } else if( valid_last_char( e ) && valid_first_char( n ) ) {
             br = n;
@@ -870,7 +872,7 @@ static bool dialog_static( char *next, DIALOG_PARSER_INFO *parse_dlg )
             len = VbufLen( &text );
         }
         set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
-            VbufString( &text ), VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num, parse_dlg->col_num + len );
+            VbufString( &text ), VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num, len );
         if( len > 0 ) {
             if( parse_dlg->max_width < parse_dlg->col_num + len ) {
                 parse_dlg->max_width = parse_dlg->col_num + len;
@@ -950,9 +952,7 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
     break_candidate = find_break( orig_index, parse_dlg, &chwidth );
     for( ; *orig_index != '\0'; orig_index++ ) {
         if( new_line ) {
-            while( *orig_index == '\t' || *orig_index == ' ' ) {
-                orig_index++;
-            }
+            SKIP_WS( orig_index );
         }
 
         if( convert_newline && *orig_index == '\\' && *(orig_index + 1) == 'n' ) {
@@ -1041,13 +1041,14 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
             set_dlg_textwindow( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
-                text, VarGetId( var_handle ), C0, parse_dlg->row_num, parse_dlg->max_width + 2,
-                rows, GUI_VSCROLL );
+                text, VarGetId( var_handle ), C0, parse_dlg->row_num, parse_dlg->max_width + 2 - C0,
+                rows - parse_dlg->row_num, GUI_VSCROLL );
+#if defined( __DOS__ )
+            parse_dlg->curr_dialog->rows += rows + 2;
+            parse_dlg->row_num += rows + 2;
+#else
             parse_dlg->curr_dialog->rows += rows;
             parse_dlg->row_num += rows;
-#if defined( __DOS__ )
-            parse_dlg->curr_dialog->rows += 2;
-            parse_dlg->row_num += 2;
 #endif
         } else {
             rc = false;
@@ -1092,8 +1093,7 @@ static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
         if( parse_dlg->max_width < 60 )
             parse_dlg->max_width = 60;
         set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
-                             text, VarGetId( var_handle ), C0, parse_dlg->row_num,
-                             C0 + parse_dlg->max_width );
+                             text, VarGetId( var_handle ), C0, parse_dlg->row_num, parse_dlg->max_width );
     } else {
         rc = false;
     }
@@ -1227,7 +1227,7 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
-                      VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + BW - 1 );
+                      VarGetId( var_handle ), C0, parse_dlg->row_num, BW );
         if( VbufLen( &buff ) > 0 ) {
             BumpDlgArrays( parse_dlg );
             // condition for visibility (dynamic)
@@ -1235,7 +1235,7 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
             set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
-                                 VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + VbufLen( &buff ) );
+                                 VarGetId( var_handle ), C0, parse_dlg->row_num, VbufLen( &buff ) );
         }
         if( parse_dlg->max_width < 2 * VbufLen( &buff ) ) {
             parse_dlg->max_width = 2 * VbufLen( &buff );
@@ -1350,7 +1350,7 @@ static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_radio( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
-                       parse_dlg->num_radio_buttons, text, VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + len );
+                       parse_dlg->num_radio_buttons, text, VarGetId( var_handle ), C0, parse_dlg->row_num, len );
         if( parse_dlg->max_width < len ) {
             parse_dlg->max_width = len;
         }
@@ -1407,8 +1407,7 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_check( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, text,
-                       VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num,
-                       parse_dlg->col_num + len );
+                       VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num, len );
         if( parse_dlg->col_num == C0 ) {
             // 1st check-box on line
             if( parse_dlg->max_width < len )
@@ -1513,7 +1512,7 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
-                      VbufString( &buff ), VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + W - 1 );
+                      VbufString( &buff ), VarGetId( var_handle ), C0, parse_dlg->row_num, W );
         if( VbufLen( &buff ) > 0 ) {
             BumpDlgArrays( parse_dlg );
             // condition for visibility (dynamic)
@@ -1521,7 +1520,7 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
             set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
-                                 VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + VbufLen( &buff ) );
+                                 VarGetId( var_handle ), C0, parse_dlg->row_num, VbufLen( &buff ) );
         }
         if( parse_dlg->max_width < 2 * VbufLen( &buff ) ) {
             parse_dlg->max_width = 2 * VbufLen( &buff );
@@ -2264,6 +2263,7 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
     size_t              len;
     char                *p;
 
+    RawBufPos = NULL;       // reset buffer position
     LineCountPointer = &NoLineCount;
     old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
     result = SIM_INIT_NOERROR;
@@ -2283,9 +2283,8 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
             // Eliminate leading blanks on continued lines
             if( len > 0 ) {
                 p = ReadBuf + len;
-                while( *p == ' ' || *p == '\t' )
-                    ++p;
-                memmove( ReadBuf + len, p, strlen( p )+1 );
+                SKIP_WS( p );
+                memmove( ReadBuf + len, p, strlen( p ) + 1 );
             }
             len = strlen( ReadBuf );
             if( len == 0 )
@@ -2371,8 +2370,6 @@ long SimInit( const VBUF *inf_name )
     if( RawReadBuf == NULL ) {
         return( SIM_INIT_NOMEM );
     }
-    RawBufPos = NULL;       // reset buffer position
-
     fh = FileOpen( inf_name, "rb" );
     if( fh == NULL ) {
         GUIMemFree( ReadBuf );
@@ -2381,10 +2378,6 @@ long SimInit( const VBUF *inf_name )
     }
     SetVariableByName_vbuf( "SetupInfFile", inf_name );
     result = PrepareSetupInfo( fh, PRESCAN_FILE );
-#if 0
-    // Currently doesn't work for archives
-    FileSeek( fh, 0, SEEK_SET );
-#else
     FileClose( fh );
     fh = FileOpen( inf_name, "rb" );
     if( fh == NULL ) {
@@ -2392,7 +2385,6 @@ long SimInit( const VBUF *inf_name )
         GUIMemFree( RawReadBuf );
         return( SIM_INIT_NOFILE );
     }
-#endif
     InitArray( (void **)&DirInfo, sizeof( struct dir_info ), &SetupInfo.dirs );
     InitArray( (void **)&FileInfo, sizeof( struct file_info ), &SetupInfo.files );
     InitArray( (void **)&PMInfo, sizeof( struct pm_info ), &SetupInfo.pm_files );
@@ -2599,7 +2591,7 @@ long SimFileSize( int parm )
 
     size = 0;
     len = FileInfo[parm].num_files;
-    while( --len >= 0 ) {
+    while( len-- > 0 ) {
         size += FileInfo[parm].files[len].size;
     }
     return( size );
@@ -3123,10 +3115,8 @@ static void MarkUsed( int dir_index )
     int         parent;
 
     DirInfo[dir_index].used = true;
-    parent = DirInfo[dir_index].parent;
-    while( parent != -1 ) {
+    for( parent = DirInfo[dir_index].parent; parent != -1; parent = DirInfo[parent].parent ) {
         DirInfo[parent].used = true;
-        parent = DirInfo[parent].parent;
     }
 }
 
@@ -3244,7 +3234,7 @@ void SimCalcAddRemove( void )
     for( i = 0; ok && i < SetupInfo.files.num; ++i ) {
         dir_index = FileInfo[i].dir_index;
         targ_index = DirInfo[dir_index].target;
-        add = EvalExprTree( FileInfo[i].condition.p->cond, VarGetBoolVal( MinimalInstall ) );
+        add = EvalExprTree( FileInfo[i].condition.p->cond );
         if( FileInfo[i].supplemental ) {
             remove = false;
             if( uninstall ) {
@@ -3739,12 +3729,10 @@ static void ZeroAutoSetValues( void )
 {
     vhandle     var_handle;
 
-    var_handle = NextGlobalVar( NO_VAR );
-    while( var_handle != NO_VAR ) {
+    for( var_handle = NextGlobalVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextGlobalVar( var_handle ) ) {
         if( VarGetAutoSetCond( var_handle ) != NULL ) {
             SetBoolVariableByHandle( var_handle, VarIsRestrictedTrue( var_handle ) );
         }
-        var_handle = NextGlobalVar( var_handle );
     }
 }
 
@@ -3765,10 +3753,8 @@ static void InitAutoSetValues( void )
 {
     vhandle     var_handle;
 
-    var_handle = NextGlobalVar( NO_VAR );
-    while( var_handle != NO_VAR ) {
+    for( var_handle = NextGlobalVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextGlobalVar( var_handle ) ) {
         SetDefaultAutoSetValue( var_handle );
-        var_handle = NextGlobalVar( var_handle );
     }
     NeedInitAutoSetValues = false;
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,95 +66,84 @@ static bakpat_list      *BakPats;
 static frame_spec       FrameThreads[MAX_THREADS];
 static target_spec      TargThreads[MAX_THREADS];
 
-static fix_type RelocTypeMap[] = {
-    FIX_OFFSET_8,       // LOC_OFFSET_LO
-    FIX_OFFSET_16,      // LOC_OFFSET
-    FIX_BASE,           // LOC_BASE
-    FIX_BASE_OFFSET_16, // LOC_BASE_OFFSET
-    FIX_HIGH_OFFSET_8,  // LOC_OFFSET_HI
-    FIX_OFFSET_32,      // LOC_OFFSET_32
-    FIX_BASE_OFFSET_32, // LOC_BASE_OFFSET_32
-    FIX_OFFSET_16 | FIX_LOADER_RES      // modified loader resolved off_16
-};
-
 void ResetOMFReloc( void )
-/*******************************/
+/************************/
 {
     BakPats = NULL;
 }
 
-static void GetFrame( unsigned frame, frame_spec *refframe )
-/**********************************************************/
+static void GetFrame( unsigned method, frame_spec *frame )
+/********************************************************/
 /* Get frame for fixup. */
 {
     extnode     *ext;
     grpnode     *group;
     segnode     *seg;
-    unsigned    index;
 
-    index = 0;
-    if( frame < FRAME_LOC ) {
-        index = GetIdx();
-    }
-    switch( frame ) {
+    switch( method ) {
     case FRAME_SEG:
-        seg = (segnode *) FindNode( SegNodes, index );
-        refframe->u.sdata = seg->entry;
-        refframe->type = FIX_FRAME_SEG;
+        seg = (segnode *) FindNode( SegNodes, GetIdx() );
+        frame->u.sdata = seg->entry;
+        frame->type = FIX_FRAME_SEG;
         break;
     case FRAME_GRP:
-        group = (grpnode *) FindNode( GrpNodes, index );
+        group = (grpnode *) FindNode( GrpNodes, GetIdx() );
         if( group->entry == NULL ) {
-            refframe->type = FIX_FRAME_FLAT;
+            frame->type = FIX_FRAME_FLAT;
         } else {
-            refframe->u.group = group->entry;
-            refframe->type = FIX_FRAME_GRP;
+            frame->u.group = group->entry;
+            frame->type = FIX_FRAME_GRP;
         }
         break;
     case FRAME_EXT:
-        ext = (extnode *) FindNode( ExtNodes, index );
+        ext = (extnode *) FindNode( ExtNodes, GetIdx() );
         if( IS_SYM_IMPORTED( ext->entry ) ) {
-            refframe->type = FIX_FRAME_TARG;
+            frame->type = FIX_FRAME_TARG;
         } else {
-            refframe->u.sym = ext->entry;
-            refframe->type = FIX_FRAME_EXT;
+            frame->u.sym = ext->entry;
+            frame->type = FIX_FRAME_EXT;
         }
         break;
-    case FRAME_TARG:
-        refframe->type = FIX_FRAME_TARG;
+    case FRAME_ABS:
+        _TargU16toHost( _GetU16UN( ObjBuff ), frame->u.abs );
+        ObjBuff += sizeof( unsigned_16 );
+        frame->type = FIX_FRAME_ABS;
         break;
     case FRAME_LOC:
-        refframe->type = FIX_FRAME_LOC;
+        frame->type = FIX_FRAME_LOC;
+        break;
+    case FRAME_TARG:
+        frame->type = FIX_FRAME_TARG;
         break;
     default:
         BadObject();
     }
 }
 
-static void GetTarget( unsigned loc, target_spec *target )
-/********************************************************/
+static void GetTarget( unsigned method, target_spec *target )
+/***********************************************************/
 {
     extnode             *ext;
     grpnode             *group;
     segnode             *seg;
 
-    switch( loc & 3 ) {
-    case TARGET_SEGWD:
+    switch( method ) {
+    case TARGET_SEG:
         seg = (segnode *) FindNode( SegNodes, GetIdx() );
         target->u.sdata = seg->entry;
         target->type = FIX_TARGET_SEG;
         break;
-    case TARGET_GRPWD:
+    case TARGET_GRP:
         group = (grpnode *) FindNode( GrpNodes, GetIdx() );
         target->u.group = group->entry;
         target->type = FIX_TARGET_GRP;
         break;
-    case TARGET_EXTWD:
+    case TARGET_EXT:
         ext = (extnode *) FindNode( ExtNodes, GetIdx() );
         target->u.sym = ext->entry;
         target->type = FIX_TARGET_EXT;
         break;
-    case TARGET_ABSWD:
+    case TARGET_ABS:
         _TargU16toHost( _GetU16UN( ObjBuff ), target->u.abs );
         ObjBuff += sizeof( unsigned_16 );
         target->type = FIX_TARGET_ABS;
@@ -168,9 +157,7 @@ void DoRelocs( void )
 {
     fix_type    fixtype;
     unsigned    typ;
-    unsigned    omftype;
-    offset      place_to_fix;
-    unsigned    loc;
+    offset      location;
     offset      addend;
     frame_spec  fthread;
     target_spec tthread;
@@ -183,47 +170,77 @@ void DoRelocs( void )
     }
     do {
         typ = *ObjBuff++;
-        omftype = (typ >> 2) & 7;
-        if( (typ & 0x80) == 0 ) {   /*  thread */
-            if( typ & 0x40 ) {      /*  frame */
-                GetFrame( omftype, &FrameThreads[typ & 3] );
-            } else {                /*  target */
-                GetTarget( omftype, &TargThreads[typ & 3] );
-            }
-        } else {                    /* fixup */
-            if( typ & 0x20 ) {      // used in 32-bit microsoft fixups.
-                switch( omftype ) {
-                case LOC_OFFSET:
-                case LOC_MS_LINK_OFFSET:
-                    omftype = LOC_OFFSET_32;
-                    break;
-                case LOC_BASE_OFFSET:
-                    omftype = LOC_BASE_OFFSET_32;
-                    break;
+        if( typ & FIXUPP_FIXUP ) {
+            /*
+             * fixup
+             */
+            fixtype = 0;
+            switch( (typ >> 2) & 0x0F ) {
+            case LOC_OFFSET_LO:
+                fixtype = FIX_OFFSET_8;
+                break;
+            case LOC_OFFSET:
+                fixtype = FIX_OFFSET_16;
+                break;
+            case LOC_BASE:
+                fixtype = FIX_BASE;
+                break;
+            case LOC_BASE_OFFSET:
+                fixtype = FIX_BASE_OFFSET_16;
+                break;
+            case LOC_OFFSET_HI:
+                fixtype = FIX_HIGH_OFFSET_8;
+                break;
+            case LOC_OFFSET_LOADER:
+                if( ObjFormat & FMT_EASY_OMF ) {
+                    fixtype = FIX_OFFSET_32;                    /* Pharlap only */
+                } else {
+                    fixtype = FIX_OFFSET_16 | FIX_LOADER_RES;   /* OMF standard */
                 }
-            } else if( omftype == LOC_MS_LINK_OFFSET && (ObjFormat & FMT_32BIT_REC) == 0 ) {
-                omftype = LOC_BASE_OFFSET_32 + 1; // index of special table.
+                break;
+            case LOC_PHARLAP_BASE_OFFSET_32:
+                if( ObjFormat & FMT_EASY_OMF ) {
+                    fixtype = FIX_BASE_OFFSET_32;               /* Pharlap only */
+                }
+                break;
+            case LOC_OFFSET_32:
+                fixtype = FIX_OFFSET_32;
+                break;
+            case LOC_BASE_OFFSET_32:
+                fixtype = FIX_BASE_OFFSET_32;
+                break;
+            case LOC_OFFSET_32_LOADER:
+                fixtype = FIX_OFFSET_32; //| FIX_LOADER_RES;
+                break;
+            default:
+                break;
             }
-            fixtype = RelocTypeMap[omftype];
-            if( (typ & 0x40) == 0 ) {
+            if( fixtype && (typ & FIXUPP_MBIT) == 0 ) {
                 fixtype |= FIX_REL;
             }
-            place_to_fix = ((typ & 3) << 8) + *ObjBuff++;
+            location = ((typ & 3) << 8) + *ObjBuff++;
             typ = *ObjBuff++;
-            loc = typ >> 4 & 7;
-            if( typ & 0x80 ) {
-                fthread = FrameThreads[loc & 3];
+            /*
+             * frame processing
+             */
+            if( typ & FIXDAT_FTHREAD ) {
+                fthread = FrameThreads[( typ >> 4 ) & 3];
             } else {
-                GetFrame( loc, &fthread );
+                GetFrame( ( typ >> 4 ) & 7, &fthread );
             }
-            loc = typ & 7;
-            if( typ & 8 ) {
-                tthread = TargThreads[loc & 3];
+            /*
+             * target processing
+             */
+            if( typ & FIXDAT_TTHREAD ) {
+                tthread = TargThreads[typ & 3];
             } else {
-                GetTarget( loc, &tthread );
+                GetTarget( typ & 3, &tthread );
             }
+            /*
+             * target addend processing
+             */
             addend = 0;
-            if( loc <= TARGET_ABSWD ) {  /*  if( (loc & 4) == 0 )then */
+            if( (typ & FIXDAT_PBIT) == 0 ) {
                 if( ObjFormat & FMT_32BIT_REC ) {
                     addend = GET_U32_UN( ObjBuff );
                     ObjBuff += sizeof( unsigned_32 );
@@ -232,7 +249,18 @@ void DoRelocs( void )
                     ObjBuff += sizeof( unsigned_16 );
                 }
             }
-            StoreFixup( place_to_fix, fixtype, &fthread, &tthread, addend );
+            StoreFixup( location, fixtype, &fthread, &tthread, addend );
+        } else {
+            /*
+             * thread
+             */
+            if( typ & 0x40 ) {
+                /*  frame */
+                GetFrame( (typ >> 2) & 7, &FrameThreads[typ & 3] );
+            } else {
+                /*  target */
+                GetTarget( (typ >> 2) & 3, &TargThreads[typ & 3] );
+            }
         }
     } while( ObjBuff < EOObjRec );
 }
@@ -337,7 +365,7 @@ void ProcNbkpat( void )
     loctype = *ObjBuff++;
     symname = FindName( GetIdx() );
     sym = RefISymbol( symname->name );
-    if( !IS_SYM_COMDAT(sym) )           /* can't handle these otherwise */
+    if( !IS_SYM_COMDAT( sym ) )         /* can't handle these otherwise */
         return;
     if( sym->info & SYM_DEAD )
         return;

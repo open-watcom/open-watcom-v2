@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,7 @@
 #include "tcerr.h"
 #include "nothing.h"
 #include "options.h"
+#include "wclbproc.h"
 
 
 extern trap_version TrapVersion;
@@ -213,7 +214,7 @@ static bool Exit = FALSE;
  */
 WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     const char  *err;
     HMENU       hMenu;
 
@@ -221,9 +222,9 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case MENU_ABOUT:
-            proc = MakeProcInstance( (FARPROC)AboutDlgProc, Instance );
-            DialogBox( Instance,"AboutBox", hwnd, (DLGPROC)proc );
-            FreeProcInstance( proc );
+            dlgproc = MakeProcInstance_DLG( AboutDlgProc, Instance );
+            DialogBox( Instance,"AboutBox", hwnd, dlgproc );
+            FreeProcInstance_DLG( dlgproc );
             break;
 
         case MENU_DISCONNECT:
@@ -279,11 +280,12 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 
             break;
         case MENU_OPTIONS:
-            proc = MakeProcInstance( (FARPROC)OptionsDlgProc, Instance );
-            if( Linked ) RemoteUnLink();
+            dlgproc = MakeProcInstance_DLG( OptionsDlgProc, Instance );
+            if( Linked )
+                RemoteUnLink();
             Linked = FALSE;
-            DialogBox( Instance, "Options", hwnd, (DLGPROC)proc );
-            FreeProcInstance( proc );
+            DialogBox( Instance, "Options", hwnd, dlgproc );
+            FreeProcInstance_DLG( dlgproc );
             break;
         case MENU_EXIT:
             Disconnect = TRUE;

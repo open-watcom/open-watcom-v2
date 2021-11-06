@@ -1,4 +1,4 @@
-#pmake: build small cpu_i86 os_osi os_os2
+#pmake: build small cpu_i86 os_dos os_os2 os_win os_qnx
 #
 # iosts.lib -- small memory-model IOSTREAM library
 #

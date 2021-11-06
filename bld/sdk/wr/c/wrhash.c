@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,14 +61,14 @@ typedef struct SymInitStruct {
 } SymInitStruct;
 
 typedef struct WREditSymInfo {
-    HELP_CALLBACK       help_callback;
+    HELPFUNC            help_callback;
     WRHashTable         *table;
     bool                modified;
     WRHashEntryFlags    flags;
 } WREditSymInfo;
 
 typedef struct WRAddSymInfo {
-    HELP_CALLBACK   help_callback;
+    HELPFUNC        help_callback;
     WRHashTable     *table;
     char            *symbol;
     WRHashValue     value;
@@ -698,7 +698,7 @@ WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, const char *name, WRHash
         if( !*dup && query_force ) {
             *dup = WRForceAddQuery();
         }
-        // If dup is TRUE force the add
+        // If dup is true force the add
         if( *dup ) {
             if( !WRRemoveName( table, symbol ) ) {
                 return( NULL );
@@ -912,14 +912,14 @@ WRHashValueList * WRAPI WRLookupValue( WRHashTable *table, WRHashValue value )
     return( list );
 }
 
-int WRAPI WRValueExists( WRHashTable *table, WRHashValue value )
+bool WRAPI WRValueExists( WRHashTable *table, WRHashValue value )
 {
     WRHashEntry         *entry;
     unsigned int        hash;
     int                 count;
 
     if( table == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     count = 0;
@@ -930,7 +930,7 @@ int WRAPI WRValueExists( WRHashTable *table, WRHashValue value )
         }
     }
 
-    return( count );
+    return( count != 0 );
 }
 
 void WRAPI WRStripSymbol( char *symbol )
@@ -961,7 +961,7 @@ bool WRAPI WRIsValidSymbol( const char *symbol )
 }
 
 bool WRAPI WREditSym( HWND parent, WRHashTable **table,
-                          WRHashEntryFlags *flags, HELP_CALLBACK help_callback )
+                          WRHashEntryFlags *flags, HELPFUNC help_callback )
 {
     WREditSymInfo       info;
     WRHashTable         *tmp;
@@ -1021,7 +1021,7 @@ static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
 
     /* unused parameters */ (void)table;
 
-    standard_entry = FALSE;
+    standard_entry = false;
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );
     index = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
     ok = (index != LB_ERR);
@@ -1121,7 +1121,7 @@ static WRHashEntry *getHashEntry( HWND hDlg )
     return( entry );
 }
 
-static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, HELP_CALLBACK help_callback, bool modify )
+static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, HELPFUNC help_callback, bool modify )
 {
     WRAddSymInfo        info;
     WRHashEntry         *entry;
@@ -1309,7 +1309,7 @@ static void WRDrawHashListBoxItem( HWND hDlg, DRAWITEMSTRUCT *dis )
 
     if( !TextWidthInit ) {
         InitTextWidth( hDlg );
-        TextWidthInit = TRUE;
+        TextWidthInit = true;
     }
 
     entry = NULL;
@@ -1378,7 +1378,7 @@ WINEXPORT INT_PTR CALLBACK WREditSymbolsDlgProc( HWND hDlg, UINT message, WPARAM
             EndDialog( hDlg, FALSE );
             break;
         }
-        WRSetupEditSymDialog( hDlg, info, TRUE );
+        WRSetupEditSymDialog( hDlg, info, true );
         ret = true;
         break;
 
@@ -1405,12 +1405,12 @@ WINEXPORT INT_PTR CALLBACK WREditSymbolsDlgProc( HWND hDlg, UINT message, WPARAM
 //      case IDB_SYM_SHOW_UNUSED:
             if( cmd == BN_CLICKED ) {
                 info->flags = WRGetEditSymEntryFlags( hDlg );
-                WRSetupEditSymDialog( hDlg, info, FALSE );
+                WRSetupEditSymDialog( hDlg, info, false );
             }
             break;
 
         case IDB_SYM_HELP:
-            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+            if( info != NULL && info->help_callback != NULL ) {
                 info->help_callback();
             }
             break;
@@ -1488,13 +1488,13 @@ static void WRSetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
                                     info->table->next_default_value ) ) {
             value = info->table->next_default_value;
         }
-        WRSetEditWithSLONG( (signed long)value, 10, hDlg, IDB_ADDSYM_VAL );
+        WRSetEditWithSLONG( (long)value, 10, hDlg, IDB_ADDSYM_VAL );
     }
 }
 
 static bool WRGetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
 {
-    signed long val;
+    long    val;
 
     if( info == NULL ) {
         return( false );
@@ -1523,7 +1523,7 @@ static bool WRGetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
 static void WRSetAddSymOK( HWND hDlg )
 {
     char        *str;
-    signed long val;
+    long        val;
     bool        enable;
 
     enable = false;
@@ -1566,7 +1566,7 @@ WINEXPORT INT_PTR CALLBACK WRAddSymDlgProc( HWND hDlg, UINT message, WPARAM wPar
         info = (WRAddSymInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDB_ADDSYM_HELP:
-            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+            if( info != NULL && info->help_callback != NULL ) {
                 info->help_callback();
             }
             break;

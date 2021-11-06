@@ -39,7 +39,7 @@ A positive integer constant expression enclosed in parentheses.
 An asterisk in parentheses
 .mono (*).
 .endnote
-.endnote
+.esynote
 .np
 The length specification immediately following the word
 .mono CHARACTER

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +36,14 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/stat.h>
-#ifdef __OSI__
-    #include "ostype.h"
-#endif
 #include "cgdefs.h"
 #include "feprotos.h"
 #include "swchar.h"
 #include "cfeinfo.h"
 #include "pathlist.h"
+#include "cmacadd.h"
 #include "pathgrp2.h"
+#include "cscanbuf.h"
 
 #include "clibext.h"
 #include "clibint.h"
@@ -95,7 +94,7 @@ void FrontEndFini( void )
     GlobalCompFlags.cc_first_use = true;
 }
 
-static void ClearGlobals( void )
+static void initGlobals( void )
 {
     InitStats();
     IsStdIn = false;
@@ -109,12 +108,16 @@ static void ClearGlobals( void )
     DepFile = NULL;
     IncPathList = CMemAlloc( 1 );
     SegmentNum = FIRST_PRIVATE_SEGMENT;
-    BufSize = BUF_SIZE;
-    Buffer = CMemAlloc( BufSize );
-    TokenBuf = CMemAlloc( BufSize );
+    InitBuffer( BUF_SIZE );
+    InitTokenBuf( BUF_SIZE );
     FNameBuf = CMemAlloc( _MAX_PATH );
     InitIncFile();
     InitErrLoc();
+}
+
+static void finiGlobals( void )
+{
+    FiniBuffer();
 }
 
 static bool ParseCmdLine( char **cmdline )
@@ -203,7 +206,7 @@ static void DelDepFile( void )
 
 static char *createFileName( const char *template, const char *ext, bool forceext )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     bool        use_defaults;
 
     use_defaults = ( template == NULL );
@@ -300,23 +303,13 @@ static const char *IncludeAlias( const char *filename, bool is_lib )
     return( filename );
 }
 
-void CppPrtfFilenameErr( const char *filename, src_file_type typ, bool print_error )
+void PrtfFilenameErr( const char *filename, src_file_type typ, bool print_error )
 {
-    bool        save;
+    /* unused parameters */ (void)typ;
 
-    save = CompFlags.cpp_output;
-    if( CompFlags.cpp_output ) {
-        if( typ == FT_LIBRARY || typ == FT_HEADER_PRE ) {
-            CppPrtf( "#include <%s>", filename );
-        } else {
-            CppPrtf( "#include \"%s\"", filename );
-        }
-        CompFlags.cpp_output = false;
-    }
     if( print_error ) {
         CErr2p( ERR_CANT_OPEN_FILE, filename );
     }
-    CompFlags.cpp_output = save;
 }
 
 static bool openForcePreInclude( void )
@@ -325,7 +318,7 @@ static bool openForcePreInclude( void )
 
     ok = OpenSrcFile( ForcePreInclude, FT_HEADER_PRE );
     if( !ok )
-        CppPrtfFilenameErr( ForcePreInclude, FT_HEADER_PRE, false );
+        PrtfFilenameErr( ForcePreInclude, FT_HEADER_PRE, false );
     return( ok );
 }
 
@@ -340,7 +333,7 @@ static void MakePgmName( void )
 // if stdin a "." then replace with "stdin" don't whack ".c"
 // If no module name make the same as fname
     size_t      len;
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( WholeFName[0] == '.' && WholeFName[1] == '\0' ) {
         IsStdIn = true;
@@ -385,27 +378,7 @@ void SetCppWidth( unsigned width )
     CppWidth = width - 1;
 }
 
-void CppComment( int ch )
-{
-    if( CompFlags.keep_comments && CppPrinting() ) {
-        if( ch != '\0' ) {
-            if( CppColumn + 2 >= CppWidth )
-                CppPutc( '\n' );
-            CppPutc( '/' );
-            CppPutc( ch );
-        } else if( CommentChar == '*' ) {
-            if( CppColumn + 2 >= CppWidth )
-                CppPutc( '\n' );
-            CppPutc( '*' );
-            CppPutc( '/' );
-//        } else if( CommentChar == '/' ) {
-//            CppPutc( '\n' );
-        }
-        CommentChar = ch;
-    }
-}
-
-void CppPutc( int ch )
+static void CppPutc( int ch )
 {
     int     rc;
 
@@ -445,20 +418,40 @@ void CppPutc( int ch )
     }
 }
 
-void CppPrtf( char *fmt, ... )
+void CppComment( int ch )
 {
-    va_list     arg;
-    char        *p;
-    char        *buff;
-
-    buff = CMemAlloc( BufSize );
-    va_start( arg, fmt );
-    vsnprintf( buff, BufSize, fmt, arg );
-    for( p = buff; *p != '\0'; ++p ) {
-        CppPutc( *p );
+    if( CompFlags.cpp_keep_comments && CppPrinting() && CompFlags.cpp_output ) {
+        if( ch != '\0' ) {
+            if( CppColumn + 2 >= CppWidth )
+                CppPutc( '\n' );
+            CppPutc( '/' );
+            CppPutc( ch );
+        } else if( CommentChar == '*' ) {
+            if( CppColumn + 2 >= CppWidth )
+                CppPutc( '\n' );
+            CppPutc( '*' );
+            CppPutc( '/' );
+//        } else if( CommentChar == '/' ) {
+//            CppPutc( '\n' );
+        }
+        CommentChar = ch;
     }
-    va_end( arg );
-    CMemFree( buff );
+}
+
+void CppPuts( const char *s )
+{
+    while( *s != '\0' ) {
+        CppPutc( *s++ );
+    }
+}
+
+void CppPutsQuoted( const char *s )
+{
+    CppPutc( '"' );
+    while( *s != '\0' ) {
+        CppPutc( *s++ );
+    }
+    CppPutc( '"' );
 }
 
 static void OpenCppFile( void )
@@ -486,7 +479,7 @@ static void OpenCppFile( void )
 
 char *GetSourceDepName( void )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( WholeFName, pg.buffer, NULL, NULL, NULL, &pg.ext );
     return( createFileName( SrcDepName, pg.ext, false ) );
@@ -517,14 +510,14 @@ char *ErrFileName( void )
 
 void CppPrtChar( int c )
 {
-    if( CppPrinting() ) {
+    if( CppPrinting() && CompFlags.cpp_output ) {
         CppPutc( c );
     }
 }
 
 void OpenDefFile( void )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        name[_MAX_PATH];
 
     if( DefFName == NULL ) {
@@ -541,7 +534,7 @@ void OpenDefFile( void )
 
 FILE *OpenBrowseFile( void )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        name[_MAX_PATH];
     FILE        *mbr_file;
 
@@ -613,19 +606,30 @@ static FNAMEPTR FindFlist( char const *filename )
 static bool IsFNameOnce( char const *filename )
 {
     FNAMEPTR    flist;
+    char        fullfilename[_MAX_PATH];
+    char        *fullpath;
 
-    flist = FindFlist( filename );
+    fullpath = SrcFullPath( filename, fullfilename, sizeof( fullfilename ) );
+    if( fullpath == NULL )
+        return( false );
+    for( flist = FNames; flist != NULL; flist = flist->next ) {
+        if( flist->fullpath != NULL ) {
+            if( FNAMECMPSTR( fullpath, flist->fullpath ) == 0 ) {
+                break;
+            }
+        }
+    }
     if( flist == NULL )
         return( false );
     return( flist->once );
 }
 
-static bool TryOpen( const char *path, PGROUP2 *ff, src_file_type typ )
+static bool TryOpen( const char *path, pgroup2 *ff, src_file_type typ )
 {
     FILE        *fp;
     char        filename[_MAX_PATH];
     char        *p;
-    PGROUP2     fd;
+    pgroup2     fd;
 
     _splitpath2( path, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
     if( ff->drive[0] != '\0' && fd.drive[0] != '\0' ) {
@@ -662,10 +666,10 @@ static bool TryOpen( const char *path, PGROUP2 *ff, src_file_type typ )
     }
 */
     if( OpenFCB( fp, filename, typ ) ) {
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             if( CppFile == NULL )
                 OpenCppFile();
-            EmitPoundLine( 1, filename, true );
+            CppEmitPoundLine( 1, filename, true );
             CppFirstChar = true;
         }
         return( true );
@@ -922,10 +926,10 @@ static bool OpenPgmFile( void )
 {
     if( IsStdIn ) {
         if( OpenFCB( stdin, "stdin", FT_SRC ) ) {
-            if( CompFlags.cpp_output ) {
+            if( CompFlags.cpp_mode ) {
                 if( CppFile == NULL )
                     OpenCppFile();
-                EmitPoundLine( 1, "stdin", true );
+                CppEmitPoundLine( 1, "stdin", true );
                 CppFirstChar = true;
             }
             MainSrcFile = SrcFile;
@@ -939,7 +943,7 @@ static bool OpenPgmFile( void )
         return( false );
     }
 #if _CPU == 370
-    SrcFile->colum = Column;
+    SrcFile->column = Column;
     SrcFile->trunc = Trunc;
 #endif
     MainSrcFile = SrcFile;
@@ -956,7 +960,7 @@ static void Parse( void )
     // header if the user requested such and it is a #include directive.
     if( ForceInclude != NULL ) {
         if( !OpenSrcFile( ForceInclude, FT_HEADER_FORCED ) ) {
-            CppPrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
+            PrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
         }
     }
     if( ForcePreInclude != NULL ) {
@@ -982,13 +986,13 @@ static void CPP_Parse( void )
     if( ForceInclude != NULL ) {
         CppPrtChar( '\n' );
         if( !OpenSrcFile( ForceInclude, FT_HEADER_FORCED ) ) {
-            CppPrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
+            PrtfFilenameErr( ForceInclude, FT_HEADER_FORCED, true );
         }
     }
     CurToken = T_NULL;
     while( CurToken != T_EOF ) {
-        GetNextToken();
-        CppPrtToken();
+        CurToken = GetNextToken();
+        CppPrtToken( CurToken );
     }
     MacroFini();
 }
@@ -1022,14 +1026,16 @@ static void DoCCompile( char **cmdline )
 #if _CPU == 370
         ParseAuxFile();
 #endif
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             PrintWhiteSpace = true;
             if( ForcePreInclude != NULL ) {
+                if( CppFile == NULL )
+                    OpenCppFile();
                 CompFlags.cpp_output = false;
                 if( openForcePreInclude() ) {
                     CurToken = T_NULL;
                     while( CurToken != T_EOF ) {
-                        GetNextToken();
+                        CurToken = GetNextToken();
                     }
                 }
                 CompFlags.cpp_output = true;
@@ -1080,7 +1086,7 @@ static void DoCCompile( char **cmdline )
     FreeIncFileList();
 }
 
-static bool try_open_file( const char *path, PGROUP2 *fp, PGROUP2 *fa, src_file_type typ )
+static bool try_open_file( const char *path, pgroup2 *fp, pgroup2 *fa, src_file_type typ )
 {
     bool    ok;
     char    save_chr_fname;
@@ -1125,14 +1131,14 @@ static bool try_open_file( const char *path, PGROUP2 *fp, PGROUP2 *fa, src_file_
     return( ok );
 }
 
-static bool doOpenSrcFile( PGROUP2 *fp, PGROUP2 *fa, src_file_type typ )
+static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
 {
     char        *s;
     char        *p;
     char        try[_MAX_PATH];
     FCB         *curr;
     char        c;
-    PGROUP2     fd;
+    pgroup2     fd;
 
     if( typ == FT_SRC ) {
         if( try_open_file( "", fp, NULL, typ ) )
@@ -1238,9 +1244,9 @@ static void normalizeSep( char *dir )
 bool OpenSrcFile( const char *filename, src_file_type typ )
 {
     const char  *alias_filename;
-    PGROUP2     fp;
-    PGROUP2     fa;
-    PGROUP2     *fap;
+    pgroup2     fp;
+    pgroup2     fa;
+    pgroup2     *fap;
 
     _splitpath2( filename, fp.buffer, &fp.drive, &fp.dir, &fp.fname, &fp.ext );
     normalizeSep( fp.dir );
@@ -1265,78 +1271,74 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
 }
 
 
-void EmitPoundLine( unsigned line_num, const char *filename, bool newline )
+void CppEmitPoundLine( unsigned line_num, const char *filename, bool newline )
 {
-    if( CompFlags.cpp_line_wanted && CppPrinting() ) {
-        CppPrtf( "#line %u \"", line_num );
-        while( *filename != '\0' ) {
-            CppPutc( *filename );
-            ++filename;
-        }
-        CppPutc( '\"' );
+    char    buf[30];
+
+    if( CompFlags.cpp_line_wanted && CppPrinting() && CompFlags.cpp_output ) {
+        sprintf( buf, "#line %u ", line_num );
+        CppPuts( buf );
+        CppPutsQuoted( filename );
         if( newline ) {
             CppPutc( '\n' );
         }
     }
 }
 
-void EmitLine( unsigned line_num, const char *filename )
-{
-    EmitPoundLine( line_num, filename, false );
-}
-
 bool CppPrinting( void )
 {
-    return( NestLevel == SkipLevel );
+    return( SkipLevel == NestLevel );
 }
 
-void CppPrtToken( void )
+void CppPrtToken( TOKEN token )
 {
-    if( CppPrinting() ) {
-        switch( CurToken ) {
+    if( CppPrinting() && CompFlags.cpp_output ) {
+        switch( token ) {
         case T_BAD_CHAR:
         case T_BAD_TOKEN:
         case T_ID:
         case T_CONSTANT:
-            CppPrtf( "%s", Buffer );
+            CppPuts( Buffer );
             break;
         case T_STRING:
             if( CompFlags.wide_char_string )
                 CppPutc( 'L' );
-            CppPrtf( "\"%s\"", Buffer );
+            CppPutsQuoted( Buffer );
             break;
         case T_EOF:
         case T_NULL:
             break;
         case T_WHITE_SPACE:
             if( PrintWhiteSpace || CompFlags.in_pragma ) {
-                CppPrtf( "%s", Tokens[CurToken] );
+                CppPuts( Tokens[token] );
             } else {
                 PrintWhiteSpace = true; //Toggle
             }
             break;
         default:
-            CppPrtf( "%s", Tokens[CurToken] );
+            CppPuts( Tokens[token] );
         }
     }
 }
 
 
-void GetNextToken( void )
+TOKEN GetNextToken( void )
 {
-    CurToken = T_NULL;
+    TOKEN   token;
+
     if( MacroPtr != NULL ) {
-        GetMacroToken();
+        token = GetMacroToken();
     } else {
-        while( CurrChar != EOF_CHAR ) {
+        while( CurrChar != LCHR_EOF ) {
             if( (CharSet[CurrChar] & C_WS) == 0 )
                 break;
             if( CurrChar != '\r' )
                 CppPrtChar( CurrChar );
             NextChar();
         }
-        CurToken = ScanToken();
+        token = ScanToken();
     }
+    return( token );
 }
 
 void CloseFiles( void )
@@ -1383,8 +1385,9 @@ bool FrontEnd( char **cmdline )
     InitPurge();
 
     SwitchChar = _dos_switch_char();
-    ClearGlobals();
+    initGlobals();
     DoCCompile( cmdline );
+    finiGlobals();
     PurgeMemory();
     FiniMsg();
     CMemFini();

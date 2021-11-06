@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,29 +154,29 @@ static void setoptions( char *p )
 
 void warn( char *fmt, ... )
 {
-    va_list arg_ptr;
+    va_list args;
 
     if( srcname != NULL ) {
         printf( "%s(%d): ", srcname, lineno );
     }
     printf( "Warning! " );
-    va_start( arg_ptr, fmt );
-    vprintf( fmt, arg_ptr );
-    va_end( arg_ptr );
+    va_start( args, fmt );
+    vprintf( fmt, args );
+    va_end( args );
     ++warnings;
 }
 
 void msg( char *fmt, ... )
 {
-    va_list arg_ptr;
+    va_list args;
 
     if( srcname != NULL ) {
         printf( "%s(%d): ", srcname, lineno );
     }
     printf( "Error! " );
-    va_start( arg_ptr, fmt );
-    vprintf( fmt, arg_ptr );
-    va_end( arg_ptr );
+    va_start( args, fmt );
+    vprintf( fmt, args );
+    va_end( args );
     exit( 1 );
 }
 

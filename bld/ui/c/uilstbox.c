@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,7 @@ void uipaintlistbox( a_list *list )
     char            *buf;
     bool            ok;
     unsigned        length;
-    ATTR            attr;
+    UIATTR          uiattr;
     UIPICKGETTEXT   *fn_get;
 
     if( list->box == NULL ) {
@@ -94,9 +94,9 @@ void uipaintlistbox( a_list *list )
     if( fn_get == NULL )
         fn_get = uigetlistelement;
     for( i = 0; i < list->box->area.height; ++i ) {
-        attr = ATTR_NORMAL;
+        uiattr = ATTR_NORMAL;
         if( list->box->row == i + list->box->line ) {
-            attr = list->box->attr;
+            uiattr = list->box->uiattr;
         }
         ok = (*fn_get)( list->data_handle, list->box->line + i, buf, length );
         /* buf does not have to be null terminated */
@@ -105,7 +105,7 @@ void uipaintlistbox( a_list *list )
         if( ok ) {
             uitextfield( list->box->vs, list->box->area.row + i,
                          list->box->area.col, list->box->area.width,
-                         UIData->attrs[attr], buf, strlen( buf ) );
+                         UIData->attrs[uiattr], buf, strlen( buf ) );
         } else {
             break;
         }
@@ -259,7 +259,7 @@ a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
     box->area   = *area;
     box->line   = list->choice;
     box->row    = list->choice;
-    box->attr   = ATTR_EDIT;
+    box->uiattr = ATTR_EDIT;
 
     maxline = uilistsize( list );
 

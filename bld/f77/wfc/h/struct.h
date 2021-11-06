@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 
 
 typedef union ext_inf {
-    uint                size;                   // size of field
+    size_t              size;                   // size of field
     struct fstruct      *record;                // pointer to structure
     sym_id              sym_record;             // sym_id type pointer
 } ext_inf;
@@ -45,8 +46,8 @@ typedef struct fstruct {
     unsigned short      cg_typ;                 // type for code generator
     unsigned short      dbi;                    // for debugging information
     unsigned_32         dbh;                    // browsing info handle
-    byte                name_len;               // length of structure name
-    char                name[STD_SYMLEN];       // structure name
+    size_t              name_len;               // length of structure name
+    char                name[1];                // structure name
 } fstruct;
 
 // Note: the fields of "fmap" must match the fields in "fstruct".
@@ -62,8 +63,8 @@ typedef struct field {
     byte                typ;                    // type of field
     ext_inf             xt;                     // extended info
     struct act_dim_list *dim_ext;               // dimension information
-    byte                name_len;               // length of name of field
-    char                name[STD_SYMLEN];       // name of field
+    size_t              name_len;               // length of name of field
+    char                name[1];                // name of field
 } field;
 
 // Note: the fields of "funion" must match the fields in "field".
@@ -71,7 +72,7 @@ typedef struct field {
 typedef struct funion {
     sym_id              link;                   // next field
     byte                typ;                    // type of field
-    struct fmap         *record;                // pointer to map
+    ext_inf             xt;                     // extended info
 } funion;
 
 extern void    StructResolve( void );

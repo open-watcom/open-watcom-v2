@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,18 +29,19 @@
 *
 ****************************************************************************/
 
+
 #ifndef __HASHTAB_H
 #define __HASHTAB_H
 
 typedef struct symbol {
-        struct symbol   *next;
-        char            *name;
-        char            *value;
+    struct symbol   *next;
+    char            *name;
+    void            *value;
 } symbol, **sym_table;
 
-extern  void        AddSymbol( sym_table, char *, char * );
-extern  char        *SymbolExists( sym_table, char * );
+extern  void        AddSymbol( sym_table tab, const char *name, const void *value, size_t len );
+extern  void        *SymbolExists( sym_table tab, const char *name );
 extern  sym_table   SymbolInit( void );
-extern  void        SymbolFini( sym_table );
+extern  void        SymbolFini( sym_table tab );
 
 #endif

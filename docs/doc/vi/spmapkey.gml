@@ -35,12 +35,12 @@
 :DT.\&lt."key"&gt.
 :DD.Any special key may be inserted for
 .param "key"
-:period.
+.period
 The angle brackets are required.
-There are a number of pre-defined keys
-symbols that are recognized. These are described in the Appendix
+There are a number of pre-defined keys symbols that are recognized.
+These are described in the Appendix
 :HDREF refid='symkey'.
-:period.
+.period
 
 :DT.\e
 :DD.Short form for the escape key (rather than \&lt.ESC&gt.).
@@ -49,8 +49,11 @@ symbols that are recognized. These are described in the Appendix
 :DD.Short form for the enter key (rather than \&lt.ENTER&gt.).
 
 :DT.\h
-:DD.If a &cmdline command is used in the sequence, and it follows the
-colon (':'), the command is not added to the history.  For example:
+:DD.If a
+.keyword &cmdline
+command is used in the sequence, and it follows the colon (':'),
+the command is not added to the history.
+For example:
 .millust begin
 :\hdate\n
 .millust end
@@ -58,9 +61,13 @@ will display the current date and time, but the command will not enter
 the command history.
 
 :DT.\x
-:DD.If a &cmdline command is used in the sequence, then this stops the
-command window from opening.  This prevents the "flashing" of the
-command window as it is opened then closed. For example:
+:DD.If a
+.keyword &cmdline
+command is used in the sequence, then this stops the command window
+from opening.
+This prevents the "flashing" of the command window as it is opened
+then closed.
+For example:
 .millust begin
 \x:date\n
 .millust end

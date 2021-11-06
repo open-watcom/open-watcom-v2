@@ -63,7 +63,7 @@ If we compile this program with the "extensions" option, the following
 output appears on the screen.
 .code begin
 C>&ccmd16 demo1 /exten
-WATCOM FORTRAN 77/16 Optimizing Compiler Version &ver..&rev &cdate
+WATCOM FORTRAN 77/16 Optimizing Compiler Version &verrev &cdate
 .cpyrit 1984
 .trdmrk
 demo1.for(14): *EXT* DO-05 this DO loop form is not FORTRAN 77 standard
@@ -106,18 +106,20 @@ presented.
 The messages contain references to
 .id %s
 and
-.id %d.
+.id %d
+.period
 They represent strings that are substituted by &cmpname to make the
 error message more exact.
 .id %d
 represents a string of digits;
 .id %s
 any string, usually a symbolic name such as
-.id AMOUNT,
-a type such as
-.id INTEGER,
-or a symbol class such as
-.id SUBROUTINE.
+.id AMOUNT
+.ct , a type such as
+.id INTEGER
+.ct , or a symbol class such as
+.id SUBROUTINE
+.period
 An error message may contain more than one reference to %d.
 In such a case, the description will reference them as %dn where n is
 the occurrence of %d in the error message.

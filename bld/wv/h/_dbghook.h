@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,13 +30,13 @@
 ****************************************************************************/
 
 
-pick( HOOK_PROG_START, "PROGStart\0" )
-pick( HOOK_PROG_END,   "PROGEnd\0" )
-pick( HOOK_DLL_START,  "DLLStart\0" )
-pick( HOOK_DLL_END,    "DLLEnd\0" )     /* not used yet */
-pick( HOOK_EXEC_START, "EXECStart\0" )
-pick( HOOK_EXEC_END,   "EXECEnd\0" )
-pick( HOOK_SRC_START,  "Sourceinfo\0" )
-pick( HOOK_SRC_END,    "Assemblyinfo\0" )
-pick( HOOK_NEW_MODULE, "Modulechange\0" )
-pick( HOOK_QUIT,       "Quit\0" )
+pick( "PROGStart",      HOOK_PROG_START )
+pick( "PROGEnd",        HOOK_PROG_END   )
+pick( "DLLStart",       HOOK_DLL_START  )
+pick( "DLLEnd",         HOOK_DLL_END    )   /* not used yet */
+pick( "EXECStart",      HOOK_EXEC_START )
+pick( "EXECEnd",        HOOK_EXEC_END   )
+pick( "Sourceinfo",     HOOK_SRC_START  )
+pick( "Assemblyinfo",   HOOK_SRC_END    )
+pick( "Modulechange",   HOOK_NEW_MODULE )
+pick( "Quit",           HOOK_QUIT       )

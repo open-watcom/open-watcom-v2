@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,12 @@
 #include "ring.h"
 #include "pstk.h"
 #include "initdefs.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+    #include "togglesd.h"
+    #include "pragdefn.h"
+#endif
+
 
 static PSTK_CTL stack_cond_blks;    // stack: conditional DTOR blocks
 static carve_t carveInfo;           // conditional dtor block
@@ -60,13 +67,9 @@ typedef struct {                // INFO FOR A CONDITION
 } COND_STK;
 
 #ifndef NDEBUG
-    #include "dbg.h"
-    #include "toggle.h"
-    #include "pragdefn.h"
-
     static void _Dump( COND_STK* cond, const char* msg )
     {
-        if( PragDbgToggle.dump_stab ) {
+        if( TOGGLEDBG( dump_stab ) ) {
             printf( "COND_STK[%p]: flag(%d) %s\n"
                     "  last(%p) true(%p) false(%p)\n"
                     "  patch_set(%p) patch_clr(%p) mask_set(%x) mask_clr(%x)\n"

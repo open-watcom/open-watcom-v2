@@ -466,7 +466,7 @@ static void get_executable_name( const OPT_STORAGE *cmdOpts, char *firstObj,
                                  char *executable )
 /**************************************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( cmdOpts->out ) {
         strcpy( executable, cmdOpts->out_value->data );
@@ -727,7 +727,7 @@ static void linker_opts( struct XlatStatus *status,
         AppendCmdLine( cmdLine, LINK_OPTS_SECTION, "OPTION nodefaultlibs" );
     }
 
-    if( cmdOpts->opt_level == OPT_opt_level_opt_ref ) {
+    if( cmdOpts->opt_level == OPT_ENUM_opt_level_opt_ref ) {
         AppendCmdLine( cmdLine, LINK_OPTS_SECTION, "OPTION eliminate" );
     }
 

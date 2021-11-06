@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@
 ***** the number of bytes which form the valid multibyte character.
 ****/
 
-_WCRTLINK int _NEARFAR(mbrlen,_fmbrlen)( const char _FFAR *s, size_t n, mbstate_t _FFAR *ps )
+_WCRTLINK size_t _NEARFAR(mbrlen,_fmbrlen)( const char _FFAR *s, size_t n, mbstate_t _FFAR *ps )
 {
     /* unused parameters */ (void)ps;
 

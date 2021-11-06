@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,6 +73,8 @@ MACRO_TOKEN         *PPTokenList;                   // pointer to list of tokens
 MACRO_TOKEN         *PPCurToken;                    // pointer to current token
 char                PPSavedChar;                    // saved char at end of token
 
+void                (* PPErrorCallback)( const char * ) = NULL;
+
 static pp_callback  *PP_CallBack;                   // mkmk dependency callback function
 
 static CPP_INFO     *PPStack;
@@ -86,6 +88,7 @@ static char         PPPreProcChar;                  // preprocessor line intro
 static const char   *PPBufPtr;                      // block buffer pointer
 static char         *PPLineBuf;                     // line buffer
 static size_t       PPLineBufSize;                  // line buffer size
+static unsigned     PPErrorCount = 0;
 
 static char         *IncludePath1 = NULL;           // include path from cmdl
 static char         *IncludePath2 = NULL;           // include path from env
@@ -97,8 +100,6 @@ static const char * const Months[] = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
-
-static char MBCharLen[256];         // multi-byte character len table
 
 static char *str_dup( const char *str )
 {
@@ -122,10 +123,10 @@ static FILE *PP_Open( const char *filename )
         prev_file = PP_File;
         PP_File = (FILELIST *)PP_Malloc( sizeof( FILELIST ) );
         if( PP_File == NULL ) {
-            PP_OutOfMemory();
             fclose( handle );
             handle = NULL;
             PP_File = prev_file;
+            PP_OutOfMemory();
         } else {
             PP_File->prev_file = prev_file;
             PP_File->handle    = handle;
@@ -137,6 +138,19 @@ static FILE *PP_Open( const char *filename )
         }
     }
     return( handle );
+}
+
+static FILELIST *PP_Close( void )
+{
+    FILELIST    *this_file;
+
+    this_file = PP_File;
+    fclose( this_file->handle );
+    PP_File = this_file->prev_file;
+    PPBufPtr = this_file->prev_bufptr;
+    PP_Free( this_file->filename );
+    PP_Free( this_file );
+    return( PP_File );
 }
 
 static char *AddIncludePath( char *old_list, const char *path_list )
@@ -184,13 +198,38 @@ void PPENTRY PP_IncludePathFini( void )
     PP_Free( IncludePath1 );
 }
 
+static int checkfullpath( const char *filename, char *fullfilename )
+{
+    _fullpath( fullfilename, filename, _MAX_PATH );
+    return( access( fullfilename, R_OK ) );
+}
+
+static const char *get_parent_filename( void **cookie )
+{
+    FILELIST    **last;
+
+    if( cookie != NULL ) {
+        last = (FILELIST **)cookie;
+        if( *last != NULL ) {
+            *last = (*last)->prev_file;
+        } else {
+            *last = PP_File;
+        }
+        if( *last != NULL ) {
+            return( (*last)->filename );
+        }
+    }
+    return( NULL );
+}
+
 static int findInclude( const char *path, const char *filename, size_t len, char *fullfilename )
 {
     char        *p;
     char        c;
+    char        fname[_MAX_PATH];
 
     while( (c = *path) != '\0' ) {
-        p = fullfilename;
+        p = fname;
         do {
             ++path;
             if( IS_PATH_LIST_SEP( c ) ) {
@@ -204,87 +243,95 @@ static int findInclude( const char *path, const char *filename, size_t len, char
         }
         memcpy( p, filename, len );
         p[len] = '\0';
-        if( access( fullfilename, R_OK ) == 0 ) {
+        if( checkfullpath( fname, fullfilename ) == 0 ) {
             return( 0 );
         }
     }
     return( -1 );
 }
 
-/* Include search order is intended to be compatible with C/C++ compilers
- * and is as follows:
+int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype, pp_parent_func fn )
+/****************************************************************************************************************************
+ * Include search order is intended to be compatible with C/C++ compilers and is as follows:
  *
  * 1) For absolute pathnames, try only that pathname and nothing else
  *
  * 2) For includes in double quotes only, search current directory
  *
- * 3) For includes in double quotes only, search the directory
- *    of including file
+ * 3) For includes in double quotes only, search the directory of including file
  *
- * 4) Search include directories specified by IncludePath1 (usually command
- *    line -I argument(s)
+ * 4) Search include directories specified by IncludePath1 (usually command line -I argument(s))
  *
  * 5) Search include directories specified by IncludePath2 (usualy INCLUDE path)
  *
  * 6) Directory 'h' adjacent to current directory (../h)
  *
- * Note that some of these steps will be skipped if PPFLAG_IGNORE_CWD and/or
- * PPFLAG_IGNORE_INCLUDE is set.
+ * Note that some of these steps will be skipped if PPFLAG_IGNORE_CWD and/or PPFLAG_IGNORE_INCLUDE is set.
  */
-int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, int incl_type )
 {
     int         rc = -1;
+    char        fname[_MAX_PATH];
 
-    memcpy( fullfilename, filename, len );
-    fullfilename[len] = '\0';
-    if( HAS_PATH( fullfilename ) ) {
-        rc = access( fullfilename, R_OK );
+    memcpy( fname, filename, len );
+    fname[len] = '\0';
+    if( HAS_PATH( fname ) ) {
+        /* rule 1 */
+        rc = checkfullpath( fname, fullfilename );
     } else {
-        if( rc == -1 && incl_type != PPINCLUDE_SYS && (PPFlags & PPFLAG_IGNORE_CWD) == 0 ) {
-            rc = access( fullfilename, R_OK );
+        /* rule 2 */
+        if( rc == -1 && incltype != PPINCLUDE_SYS && (PPFlags & PPFLAG_IGNORE_CWD) == 0 ) {
+            rc = checkfullpath( fname, fullfilename );
         }
-        if( rc == -1 && incl_type == PPINCLUDE_USR && PP_File != NULL ) {
-            PGROUP2     pg;
+        /* rule 3 */
+        if( rc == -1 && incltype == PPINCLUDE_USR && fn != NULL ) {
+            pgroup2     pg;
             size_t      len1;
+            void        *cookie = NULL;
+            const char  *p;
 
-            _splitpath2( PP_File->filename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
-            _makepath( fullfilename, pg.drive, pg.dir, NULL, NULL );
-            len1 = strlen( fullfilename );
-            if( len1 > 0 ) {
-                char c = fullfilename[len1 - 1];
-                if( !IS_PATH_SEP( c ) ) {
-                    fullfilename[len1++] = DIR_SEP;
+            while( rc == -1 && (p = fn( &cookie )) != NULL ) {
+                _splitpath2( p, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+                _makepath( fname, pg.drive, pg.dir, NULL, NULL );
+                len1 = strlen( fname );
+                if( len1 > 0 ) {
+                    char c = fname[len1 - 1];
+                    if( !IS_PATH_SEP( c ) ) {
+                        fname[len1++] = DIR_SEP;
+                    }
                 }
+                memcpy( fname + len1, filename, len );
+                fname[len1 + len] = '\0';
+                rc = checkfullpath( fname, fullfilename );
             }
-            memcpy( fullfilename + len1, filename, len );
-            fullfilename[len1 + len] = '\0';
-            rc = access( fullfilename, R_OK );
         }
+        /* rule 4 */
         if( rc == -1 && IncludePath1 != NULL ) {
             rc = findInclude( IncludePath1, filename, len, fullfilename );
         }
+        /* rule 5 */
         if( rc == -1 && IncludePath2 != NULL ) {
             rc = findInclude( IncludePath2, filename, len, fullfilename );
         }
-        if( rc == -1 && incl_type == PPINCLUDE_USR && (PPFlags & PPFLAG_IGNORE_DEFDIRS) == 0 ) {
-            memcpy( fullfilename, H_DIR, sizeof( H_DIR ) - 1 );
-            memcpy( fullfilename + sizeof( H_DIR ) - 1, filename, len );
-            fullfilename[sizeof( H_DIR ) - 1 + len] = '\0';
-            rc = access( fullfilename, R_OK );
+        /* rule 6 */
+        if( rc == -1 && incltype == PPINCLUDE_USR && (PPFlags & PPFLAG_IGNORE_DEFDIRS) == 0 ) {
+            memcpy( fname, H_DIR, sizeof( H_DIR ) - 1 );
+            memcpy( fname + sizeof( H_DIR ) - 1, filename, len );
+            fname[sizeof( H_DIR ) - 1 + len] = '\0';
+            rc = checkfullpath( fname, fullfilename );
         }
     }
     return( rc );
 }
 
 
-static FILE *PP_OpenInclude( const char *filename, size_t len, int incl_type )
+static FILE *PP_OpenInclude( const char *filename, size_t len, incl_type incltype )
 {
     char        fullfilename[_MAX_PATH];
     int         rc;
 
-    rc = PP_IncludePathFind( filename, len, fullfilename, incl_type );
+    rc = PP_IncludePathFind( filename, len, fullfilename, incltype, get_parent_filename );
     if( PPFlags & PPFLAG_DEPENDENCIES ) {
-        (*PP_CallBack)( filename, len, fullfilename, incl_type );
+        (*PP_CallBack)( filename, len, fullfilename, incltype );
     } else if( rc == 0 ) {
         return( PP_Open( fullfilename ) );
     }
@@ -295,7 +342,7 @@ static void PP_GenLine( void )
 {
     char        *p;
     const char  *fname;
-    int         i;
+    int         len;
 
     p = PPLineBuf + 1;
     if( PPFlags & PPFLAG_EMIT_LINE ) {
@@ -310,7 +357,8 @@ static void PP_GenLine( void )
                 continue;
             }
 #endif
-            for( i = MBCharLen[*(unsigned char *)fname] + 1; i > 0; --i ) {
+            len = PP_MBCharLen( fname );
+            while( len-- > 0 ) {
                 *p++ = *fname++;
             }
         }
@@ -338,30 +386,7 @@ static void PP_TimeInit( void )
     sprintf( PP__DATE__, "\"%3s %2d %d\"", Months[tod->tm_mon], tod->tm_mday, tod->tm_year + 1900 );
 }
 
-static void SetRange( int low, int high, char data )
-{
-    int     i;
-
-    for( i = low; i <= high; ++i ) {
-        MBCharLen[i] = data;
-    }
-}
-
-void PP_SetLeadBytes( const char *bytes )
-{
-    unsigned    i;
-
-    for( i = 0; i < 256; i++ ) {
-        MBCharLen[i] = bytes[i];
-    }
-}
-
-int PPENTRY PP_FileInit( const char *filename, pp_flags flags, const char *include_path )
-{
-    return( PP_FileInit2( filename, flags, include_path, NULL ) );
-}
-
-int PPENTRY PP_FileInit2( const char *filename, pp_flags flags, const char *include_path, const char *leadbytes )
+int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags, const char *include_path )
 {
     FILE        *handle;
     int         hash;
@@ -369,26 +394,9 @@ int PPENTRY PP_FileInit2( const char *filename, pp_flags flags, const char *incl
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
         PPHashTable[hash] = NULL;
     }
+    PPFlags = ppflags;
     NestLevel = 0;
     SkipLevel = 0;
-    PPFlags = flags;
-    memset( MBCharLen, 0, 256 );
-    if( leadbytes != NULL ) {
-        PP_SetLeadBytes( leadbytes );
-    } else if( flags & PPFLAG_DB_KANJI ) {
-        SetRange( 0x81, 0x9f, 1 );
-        SetRange( 0xe0, 0xfc, 1 );
-    } else if( flags & PPFLAG_DB_CHINESE ) {
-        SetRange( 0x81, 0xfc, 1 );
-    } else if( flags & PPFLAG_DB_KOREAN ) {
-        SetRange( 0x81, 0xfd, 1 );
-    } else if( flags & PPFLAG_UTF8 ) {
-        SetRange( 0xc0, 0xdf, 1 );
-        SetRange( 0xe0, 0xef, 2 );
-        SetRange( 0xf0, 0xf7, 3 );
-        SetRange( 0xf8, 0xfb, 4 );
-        SetRange( 0xfc, 0xfd, 5 );
-    }
     IncludePath2 = PP_Malloc( 1 );
     *IncludePath2 = '\0';
     IncludePath2 = AddIncludePath( IncludePath2, include_path );
@@ -421,14 +429,8 @@ void PP_Dependency_List( pp_callback *callback )
 
 static void PP_CloseAllFiles( void )
 {
-    FILELIST    *tmp;
-
     while( PP_File != NULL ) {
-        tmp = PP_File;
-        PP_File = PP_File->prev_file;
-        fclose( tmp->handle );
-        PP_Free( tmp->filename );
-        PP_Free( tmp );
+        PP_Close();
     }
 }
 
@@ -493,7 +495,6 @@ static size_t PP_ReadBuf( size_t line_len )
 
 static size_t PP_ReadLine( bool *line_generated )
 {
-    FILELIST            *this_file;
     size_t              line_len;
     unsigned char       c;
 
@@ -527,13 +528,7 @@ static size_t PP_ReadLine( bool *line_generated )
                         c = '\n';
                         break;
                     }
-                    this_file = PP_File;
-                    fclose( this_file->handle );
-                    PP_File = this_file->prev_file;
-                    PPBufPtr = this_file->prev_bufptr;
-                    PP_Free( this_file->filename );
-                    PP_Free( this_file );
-                    if( PP_File == NULL ) {     // if end of main file
+                    if( PP_Close() == NULL ) {  // if end of main file
                         return( 0 );            // - indicate EOF
                     }
                     PP_GenLine();
@@ -599,21 +594,25 @@ const char *PP_ScanName( const char *ptr )
     return( ptr );
 }
 
-static void open_include_file( const char *filename, const char *end, int incl_type )
+static void open_include_file( const char *filename, const char *end, incl_type incltype )
 {
     size_t      len;
     char        *buffer;
 
     len = end - filename;
-    if( PP_OpenInclude( filename, len, incl_type ) == NULL ) {
+    if( PP_OpenInclude( filename, len, incltype ) == NULL ) {
         /* filename is located in preprocessor buffer
          * temporary copy is necessary, because buffer is
          * overwriten by sprintf function
          */
         buffer = str_dup( filename );
+        if( PPErrorCallback != NULL ) {
+            PPErrorCallback( buffer );
+        }
         sprintf( PPLineBuf + 1, "%cerror Unable to open '%.*s'\n", PPPreProcChar, (int)len, buffer );
         PP_Free( buffer );
         PPNextTokenPtr = PPLineBuf + 1;
+        PPErrorCount++;
     } else {
         PP_GenLine();
     }
@@ -623,25 +622,29 @@ static void PP_Include( const char *ptr )
 {
     const char  *filename;
     char        delim;
-    int         incl_type;
+    incl_type   incltype;
 
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
     filename = ptr + 1;
     if( *ptr == '<' ) {
         delim = '>';
-        incl_type = PPINCLUDE_SYS;
+        incltype = PPINCLUDE_SYS;
     } else if( *ptr == '"' ) {
         delim = '"';
-        incl_type = PPINCLUDE_USR;
+        incltype = PPINCLUDE_USR;
     } else {
+        if( PPErrorCallback != NULL ) {
+            PPErrorCallback( "Unrecognized INCLUDE directive" );
+        }
         PP_GenError( "Unrecognized INCLUDE directive" );
+        PPErrorCount++;
         return;
     }
     ++ptr;
     while( *ptr != delim && *ptr != '\0' )
         ++ptr;
-    open_include_file( filename, ptr, incl_type );
+    open_include_file( filename, ptr, incltype );
 }
 
 static void PP_RCInclude( const char *ptr )
@@ -872,7 +875,7 @@ MACRO_ENTRY *PP_ScanMacroLookup( const char *ptr )
     return( me );
 }
 
-void PPENTRY PP_MacrosWalk( walk_func fn, void *cookies )
+void PPENTRY PP_MacrosWalk( pp_walk_func fn, void *cookies )
 {
     int             hash;
     const char      *endptr;
@@ -1123,28 +1126,24 @@ static int PP_Read( void )
 static const char *PPScanLiteral( const char *p )
 {
     char        quote_char;
-    int         i;
+    int         len;
 
-    quote_char = *p++;
-    for( ;; ) {
-        i = MBCharLen[*(unsigned char *)p];
-        if( i )  {
-            p += i + 1;
-            continue;
-        }
-        if( *p == '\0' )
-            break;
-        if( *p == quote_char ) {
-            ++p;
-            break;
-        }
-        if( *p == '\\' ) {
-            ++p;
-            if( *p == '\0' ) {
+    for( quote_char = *p++; ; p += len ) {
+        len = PP_MBCharLen( p );
+        if( len == 1 )  {
+            if( *p == '\0' )
+                break;
+            if( *p == quote_char ) {
+                ++p;
                 break;
             }
+            if( *p == '\\' ) {
+                ++p;
+                if( *p == '\0' ) {
+                    break;
+                }
+            }
         }
-        ++p;
     }
     return( p );
 }
@@ -1414,6 +1413,7 @@ void PPENTRY PP_Init( char c )
 {
     PP_File = NULL;
     PPStack = NULL;
+    PPErrorCount = 0;
     PPLineNumber = 0;
     strcpy( PP__DATE__, "\"Dec 31 2005\"" );
     strcpy( PP__TIME__, "\"12:00:00\"" );
@@ -1429,10 +1429,11 @@ void PPENTRY PP_Init( char c )
     PPMacroVarInit();
 }
 
-void PPENTRY PP_Fini( void )
-/**************************/
+int PPENTRY PP_Fini( void )
+/*************************/
 {
     PPMacroVarFini();
     PP_Free( PPLineBuf );
     PPLineBuf = NULL;
+    return( PPErrorCount > 0 );
 }

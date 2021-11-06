@@ -118,7 +118,7 @@ best optimizing compiler.
 New optimizations with regard to identifying functions that do not
 throw exceptions were developed this year.  These techniques reduce
 or eliminate the need for compiler generated "book keeping" code that
-contributes to the bloat of current C++ generated code.  
+contributes to the bloat of current C++ generated code.
 The C++ compiler that contains these optimizations is still in
 development and has not been released yet.
 
@@ -166,7 +166,7 @@ files of source code became an important task.
 :P
 The method we used to solve this problem is called a pre-compiled header file.
 The problems encountered in implementing this feature of the compiler include
-saving and restoring the complete internal state of the compiler.  This 
+saving and restoring the complete internal state of the compiler.  This
 involved research into the latest papers on persistent objects combined
 with some Watcom innovations.  The completed implementation satisfied our
 goal of increased throughput during compilation of C++ source code.
@@ -247,22 +247,22 @@ the ISO C++ WP.  We continue to attend the standards
 committee meeting in the hope that we can minimize these
 kinds of surprises.
 :P.
-As the WP chapter on overloading has remained mostly unchanged for at 
-least a year, our support for overloading has undergone major revisions 
-in order to conform more closely to the WP.  To thoroughly 
-understand the WP chapter on overloading, several other areas of the WP 
-needed to be revisited and re-interpreted in light of their use in the 
-context of overloading.  The result was not only the change of overloading 
-code, but also the rewrite of type conversion code in order to avoid 
-duplication of logic and inconsistent interpretation of the standard 
+As the WP chapter on overloading has remained mostly unchanged for at
+least a year, our support for overloading has undergone major revisions
+in order to conform more closely to the WP.  To thoroughly
+understand the WP chapter on overloading, several other areas of the WP
+needed to be revisited and re-interpreted in light of their use in the
+context of overloading.  The result was not only the change of overloading
+code, but also the rewrite of type conversion code in order to avoid
+duplication of logic and inconsistent interpretation of the standard
 within the compiler.
 :P.
 In several cases, it was impossible to conform to both the WP and the
-existing practices of our major competitors.  This created the need for the 
-compiler to work either way depending on how it is invoked.  In such 
-situations, reverse engineering is required in order to understand how the 
+existing practices of our major competitors.  This created the need for the
+compiler to work either way depending on how it is invoked.  In such
+situations, reverse engineering is required in order to understand how the
 competitor must have interpreted the WP.  Once this is established,
-a consistent implementation can be created.  
+a consistent implementation can be created.
 :eUL.
 
 :H5.Run-time libraries
@@ -285,7 +285,7 @@ these opposing forces.
 :H6.The compiler support routines
 
 :P.
-The ISO C++ standard was changed to specify that the life-time of 
+The ISO C++ standard was changed to specify that the life-time of
 temporary objects is the duration of a statement. The WATCOM compiler
 was implemented with life-times being the duration of a scope.
 :P

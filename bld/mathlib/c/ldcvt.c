@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -526,7 +527,7 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
     char        drop;
     long        value;
     long_double ld;
-    auto char   stkbuf[STK_BUF_SIZE];
+    char        stkbuf[STK_BUF_SIZE];
     int         maxsize;
 #if defined( _LONG_DOUBLE_ ) && defined( __FPI__ )
     unsigned short _8087cw = __Get87CW();

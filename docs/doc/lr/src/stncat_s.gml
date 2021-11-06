@@ -37,7 +37,7 @@ nor
 .arg n
 shall be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 .arg s1max
 shall not equal zero.
 .arg m
@@ -48,7 +48,7 @@ is not less than
 .arg m
 shall be greater than
 .arg strnlen_s(s2, m)
-.ct .li .
+.period
 Copying shall not take place between objects that overlap.
 .np
 If there is a runtime-constraint violation, then if
@@ -75,12 +75,12 @@ from the array pointed to by
 .arg s2
 to the end of the string pointed to by
 .arg s1
-.ct .li .
+.period
 The initial character from
 .arg s2
 overwrites the null character at the end of
 .arg s1
-.ct .li .
+.period
 If no null character was copied from
 .arg s2,then
 .arg s1[s1max-m+n]
@@ -95,7 +95,7 @@ characters pointed to by
 take unspecified values when
 .id &funcb.
 returns.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

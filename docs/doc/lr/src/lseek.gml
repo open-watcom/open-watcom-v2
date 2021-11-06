@@ -26,28 +26,28 @@ The file is referenced using the file &handle
 .arg &fd
 returned by a successful execution of one of the
 .if '&machsys' eq 'QNX' .do begin
-.kw creat
-.ct,
-.kw dup
-.ct,
-.kw dup2
-.ct,
-.kw fcntl
-.ct,
-.kw open
+.reffunc creat
+.ct ,
+.reffunc dup
+.ct ,
+.reffunc dup2
+.ct ,
+.reffunc fcntl
+.ct ,
+.reffunc open
 or
-.kw sopen
+.reffunc _sopen
 .do end
 .el .do begin
-.kw creat
-.ct,
-.kw dup
-.ct,
-.kw dup2
-.ct,
-.kw open
+.reffunc creat
+.ct ,
+.reffunc dup
+.ct ,
+.reffunc dup2
+.ct ,
+.reffunc open
 or
-.kw sopen
+.reffunc _sopen
 .do end
 functions.
 The value of
@@ -55,7 +55,7 @@ The value of
 is used as a relative offset from a file position determined by the
 value of the argument
 .arg origin
-.ct .li .
+.period
 .np
 The new file position is determined in a manner dependent upon the
 value of
@@ -103,10 +103,9 @@ not be supported in future versions of MS-DOS.
 .np
 The
 .id &funcb.
-function does not, in itself, extend the size of a file (see
-the description of the
-.kw chsize
-function).
+function does not, in itself, extend the size of a file
+.seeref _chsize
+.period
 .im ansiconf
 .np
 The &func64 function is identical to
@@ -120,8 +119,8 @@ The
 .id &funcb.
 function can be used to obtain the current file position
 (the
-.kw tell
-function is implemented in terms of &func).
+.reffunc _tell
+function is implemented in terms of &funcb).
 This value can then be used with the
 .id &funcb.
 function to reset the file
@@ -133,7 +132,7 @@ int &fd;
 /* get current file position */
 file_posn = lseek( &fd, 0L, SEEK_CUR );
   /* or */
-file_posn = tell( &fd );
+file_posn = _tell( &fd );
 
 /* return to previous file position */
 file_posn = lseek( &fd, file_posn, SEEK_SET );
@@ -228,8 +227,7 @@ void main( void )
     if( &fd != -1 ) {
 .exmp break
         /* read a piece of the text */
-        size_read = 
-	    read_record( &fd, 1, 80, buffer );
+        size_read = read_record( &fd, 1, 80, buffer );
 .exmp break
         /* test for error */
         if( size_read == -1 ) {

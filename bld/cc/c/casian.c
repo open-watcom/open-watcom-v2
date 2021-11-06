@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,17 +51,18 @@ switch  Character Set           of a double-byte character
 
 #include "scan.h"
 
-#define LEAD_BYTE_INIT  ( C_DB | C_EX )
+
+#define SET_CHARSET_DB(x)   CharSet[x] = C_DB | C_EX
 
 static void setRange( unsigned low, unsigned high )
+/*************************************************/
 {
     unsigned    i;
 
     for( i = low; i <= high; ++i ) {
-        CharSet[i] = LEAD_BYTE_INIT;
+        SET_CHARSET_DB( i );
     }
 }
-
 
 void SetDBChar( int character_set )
 /*********************************/
@@ -84,10 +86,11 @@ void SetDBChar( int character_set )
 #elif defined( __WATCOMC__ ) || !defined( __UNIX__ )
         {
             unsigned    i;
+
             _setmbcp( _MB_CP_ANSI );
             for( i = 0x80; i <= 0x0ff; ++i ) {
                 if( _ismbblead( i ) ) {
-                     CharSet[i] = C_DB;
+                    SET_CHARSET_DB( i );
                 }
             }
         }

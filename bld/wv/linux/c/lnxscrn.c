@@ -66,19 +66,6 @@
 #include "clibext.h"
 
 
-char            XConfig[2048];
-char            *DbgTerminal;
-unsigned        DbgConsole;
-unsigned        PrevConsole;
-unsigned        InitConsole = -1;
-int             DbgConHandle = -1;
-int             DbgLines;
-int             DbgColumns;
-int             PrevLines;
-int             PrevColumns;
-
-pid_t           XTermPid;
-
 /* definitions which should be in sys/vt.h */
 #define VT_OPENQRY      0x5600  /* find available vt */
 #define VT_GETSTATE     0x5603  /* get global vt state info */
@@ -98,7 +85,19 @@ struct vt_stat {
     unsigned short v_signal;        /* signal to send */
     unsigned short v_state;         /* vt bitmask */
 };
-/* ... */
+
+char            XConfig[2048] = { 0 };
+char            *DbgTerminal = NULL;
+unsigned        DbgConsole;
+unsigned        PrevConsole;
+unsigned        InitConsole = -1;
+int             DbgConHandle = -1;
+int             DbgLines;
+int             DbgColumns;
+int             PrevLines;
+int             PrevColumns;
+
+pid_t           XTermPid;
 
 enum { C_XWIN, C_VC, C_TTY, C_CURTTY } ConMode;
 
@@ -491,26 +490,16 @@ void ScrnSpawnEnd( void )
 }
 
 
-/*****************************************************************************\
+/*****************************************************************************
  *                                                                           *
  *            Replacement routines for User Interface library                *
  *                                                                           *
-\*****************************************************************************/
+ *****************************************************************************/
 
 void PopErrBox( const char *buff )
 {
     WriteText( STD_ERR, buff, strlen( buff ) );
 }
-
-static const char SysOptNameTab[] = {
-    "Console\0"
-    "XConfig\0"
-};
-
-enum {
-    OPT_CONSOLE,
-    OPT_XCONFIG
-};
 
 void SetNumLines( int num )
 {
@@ -528,27 +517,9 @@ void SetNumColumns( int num )
 
 bool ScreenOption( const char *start, unsigned len, int pass )
 {
-    char        *p;
+    /* unused parameters */ (void)start; (void)len; (void)pass;
 
-    /* unused parameters */ (void)pass;
-
-    switch( Lookup( SysOptNameTab, start, len ) ) {
-    case OPT_CONSOLE:
-        _Free( DbgTerminal );
-        DbgTerminal = GetFileName( pass );
-        break;
-    case OPT_XCONFIG:
-        WantEquals();
-        p = XConfig + strlen( XConfig );
-        *p++ = ' ';
-        GetRawItem( p );
-        if( pass == 1 )
-            XConfig[0] = NULLCHAR;
-        break;
-    default:
-        return( false );
-    }
-    return( true );
+    return( false );
 }
 
 void ScreenOptInit( void )

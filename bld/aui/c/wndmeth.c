@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@ wnd_info NoInfo = {
     NoRefresh,
     NoGetLine,
     NoMenuItem,
-    NoScroll,
+    NoVScroll,
     NoBegPaint,
     NoEndPaint,
     NoModify,
@@ -92,7 +93,7 @@ void NoMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 }
 
 
-int NoScroll( a_window wnd, int lines )
+int NoVScroll( a_window wnd, int lines )
 {
     /* unused parameters */ (void)wnd; (void)lines;
 
@@ -274,7 +275,7 @@ bool WndGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *lin
     line->use_key = true;
     line->text = "";
     line->hint = "";
-    if( virtual_row < -wnd->title_size )
+    if( virtual_row < -wnd->title_rows )
         return( false );
     if( row == wnd->button_down.row && piece == wnd->button_down.piece ) {
         WndSetSwitches( wnd, WSW_ALTERNATE_BIT );
@@ -347,7 +348,7 @@ void WndRefresh( a_window wnd )
 
 wnd_row WndNumRows( a_window wnd )
 {
-    return( wnd->info->numrows( wnd ) + wnd->title_size );
+    return( wnd->info->numrows( wnd ) + wnd->title_rows );
 }
 
 

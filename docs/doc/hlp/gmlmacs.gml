@@ -24,19 +24,19 @@
 .dm sy end
 .*
 .dm ev begin
-:SF font=2.&*:eSF.
 .ix 'environment variables' '&*'
 .ix '&* environment variable'
+:SF font=2.&*:eSF.
 .dm ev end
 .*
 .dm kw begin
-:SF font=3.&*:eSF.
 .ix '&*'
+:SF font=3.&*:eSF.
 .dm kw end
 .*
 .dm kwm begin
-:SF font=4.&*:eSF.
 .ix '&*'
+:SF font=4.&*:eSF.
 .dm kwm end
 .*
 .dm id begin
@@ -79,16 +79,16 @@
 .*
 .dm figure begin
 .se *figttl=&*
-.if '&*depth.' eq '' or '&*depth.' eq '1.xx' .do begin
+.if &'length(&*depth.) eq 0 or '&*depth.' eq '1.xx' .do begin
 .   .ty *** Missing picture file '&*figttl.'
 .   .me
 .do end
-.if '&*scale.' eq '' .do begin
+.if &'length(&*scale.) eq 0 .do begin
 .   .se *scale=100
 .do end
 :FIG place=inline frame=none.
-.if '&*file.' ne '' .do begin
-.   .if &e'&dohelp eq 1 .do begin
+.if &'length(&*file.) ne 0 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 :HBMP '&*file..bmp' c
 .   .do end
 .   .el .do begin
@@ -106,12 +106,12 @@
 :cmt. .dm pict begin
 :cmt. :FIG place=inline frame=none.
 :cmt. :cmt. .in +&INDlvl.
-:cmt. .if '&*depth' eq '' .do begin
+:cmt. .if &'length(&*depth.) eq 0 .do begin
 :cmt. :cmt. :GRAPHIC depth='2.73i' file='&*file..ps'.
 :cmt. :cmt. :GRAPHIC depth='2.70i' file='&*file..ps'.
 :cmt. :GRAPHIC depth='2.65i' file='&*file..ps'.
 :cmt. .do end
-:cmt. .if '&*depth' ne '' .do begin
+:cmt. .if &'length(&*depth.) ne 0 .do begin
 :cmt. :GRAPHIC depth='&*depth' file='&*file..ps'.
 :cmt. .do end
 :cmt. :FIGCAP.&*text
@@ -127,7 +127,7 @@
 :cmt. .ga * text any
 .*
 .dm image begin
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
     .imbmp &*xoff. &*depth. &*file. &*text.
 .do end
 .el .do begin
@@ -148,7 +148,7 @@
 :P.
 .ce;.us *** &*file..bmp GOES HERE ***
 :P.
-.if '&*text' ne '' .do begin
+.if &'length(&*text.) ne 0 .do begin
 .   .us &*text.
 .do end
 :eFIG.
@@ -156,13 +156,13 @@
 .*
 .dm imposts begin
 :FIG place=inline frame=none.
-.if '&*xoff' ne '' .do begin
+.if &'length(&*xoff.) ne 0 .do begin
 .   .:GRAPHIC depth='&*depth.' xoff='&*xoff.' file='&*file..eps'.
 .do end
 .el .do begin
 .   .:GRAPHIC depth='&*depth.' file='&*file..eps'.
 .do end
-.if '&*text' ne '' .do begin
+.if &'length(&*text.) ne 0 .do begin
 .   .:FIGCAP.&*text.
 .do end
 :eFIG.
@@ -282,11 +282,11 @@
 .begnote
 .if &e'&dohelp eq 0 .do begin
 :DTHD.where
-:DDHD.description:
+:DDHD.description
 .do end
 .el .do begin
-:ZDT.where
-:ZDD.:SF font=2.description:eSF.
+:ZDTHD3.where
+:ZDDHD3.description
 .do end
 .dm synote end
 .*
@@ -301,14 +301,14 @@
 .dm optlist begin
 .sr OLDlvl=&SCTlvl.
 .sr SCTlvl=3
-:cmt. :ZDL termhi=3 tsize=10.
+:cmt. :ZDL termhi=3 tsize='10'.
 :cmt. :ZDT.Option:
 :cmt. :ZDD.Description:
 .dm optlist end
 .gt optlist add optlist
 .*
 .dm opt begin
-.if '&*refid.' ne '' .do begin
+.if &'length(&*refid.) ne 0 .do begin
 .section *refid=&*refid. &*name.&*
 .do end
 .el .do begin
@@ -406,7 +406,7 @@
 .*
 .dm exam begin
 .  .if '&*1' eq 'begin' .do begin
-.  .  .if '&*2' ne '' .do begin
+.  .  .if &'length(&*2.) ne 0 .do begin
 .  .  .  .se *tmplvl=3+&*2
 .  .  .  .cp &*tmplvl
 .  .  .do end
@@ -430,7 +430,7 @@
 .*
 .dm tinyexam begin
 .  .if '&*1' eq 'begin' .do begin
-.  .  .if '&*2' ne '' .do begin
+.  .  .if &'length(&*2.) ne 0 .do begin
 .  .  .  .cp &*2
 .  .  .do end
 .  .  .el .do begin
@@ -468,39 +468,39 @@
 .dm initstep begin
 .sr tmplvl=&WDWlvl.-3
 .cp &tmplvl
-:ZDL tsize=3 termhi=2 break.
-.if '&*1' ne '' .do begin
+:ZDL tsize='3' termhi=2 break.
+.if &'length(&*1.) ne 0 .do begin
+.   .stephdr &*.
+.do end
+.dm initstep end
+.*
+.dm stephdr begin
 .if &e'&dohelp eq 0 .do begin
 :DTHD.&*
 :DDHD.~b
 .do end
 .el .do begin
-:ZDT.&*
-:ZDD.~b
+:ZDTHD3.&*
+:ZDDHD3.~b
 .do end
-.do end
-.dm initstep end
+.dm stephdr end
 .*
 .dm step begin
 .sr stplvl=&stplvl.+1
 .if &stplvl. eq 0 .do begin
-:ZDT.~b
+:ZDT2.~b
 .do end
 .el .do begin
-:ZDT.(&stplvl.)
+:ZDT2.(&stplvl.)
 .do end
-:ZDD.
-:SF font=2.&*
-:eSF.
+:ZDD2.&*.
 .dm step end
 .*
 .dm orstep begin
 .np
 or
-:ZDT.~b
-:ZDD.
-:SF font=2.&*
-:eSF.
+:ZDT2.~b
+:ZDD2.&*.
 .dm orstep end
 .*
 .dm result begin
@@ -517,8 +517,8 @@ or
 .dm topsect end
 .*
 .dm helppref begin
-.if &e'&dohelp eq 1 .do begin
-.if '&*' ne '' .do begin
+.if &e'&dohelp ne 0 .do begin
+.if &'length(&*.) ne 0 .do begin
 :helppfx pfx='&* '.
 .   .if '&dotarget' eq 'os2' .do begin
 .   .   .se pfx$='&* *'
@@ -586,10 +586,10 @@ The following pages contain cross-references to the
 .se *iwrd="&*1"
 .se *iwrd="&'strip(&*iwrd.,'T',',')"
 .se *iwrd="&'strip(&*iwrd.,'T','.')"
-.if ›&*3› ne ›› .do begin
+.if &'length(&*3) ne 0 .do begin
 .   .sr *ixstr="&*iwrd., &*2, &*3"
 .do end
-.el .if ›&*2› ne ›› .do begin
+.el .if &'length(&*2) ne 0 .do begin
 .   .sr *ixstr="&*iwrd., &*2"
 .do end
 .el .do begin
@@ -665,9 +665,15 @@ menu
 from the pop-up menu
 .dm popup end
 
-.dm dot begin
+.dm period begin
 .ct .li .
-.dm dot end
+.dm period end
+.gt period add period
+
+.dm @cont begin
+.ct &*
+.dm @cont end
+.gt cont add @cont
 
 .dm cmddef begin
 .section &*

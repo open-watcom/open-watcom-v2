@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,16 +37,7 @@
 #include <signal.h>
 #include <io.h>
 #include <fcntl.h>
-#ifndef DLL32
 #include <stdarg.h>
-#else
-typedef char __far *va_list[1];
-#define va_start(ap,pn) ((ap)[0]=(char __far*)&pn+((sizeof(pn)+1)&~1),(void)0)
-#define va_arg(ap,type) ((ap)[0]+=((sizeof(type)+1)&~1),\
-                        (*(type __far *)((ap)[0]-((sizeof(type)+1)&~1))))
-#define va_end(ap)      ((ap)[0]=0,(void)0)
-#endif
-
 #include <dos.h>
 #include <share.h>
 #include <sys/stat.h>
@@ -429,24 +420,24 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     /*
      * ptrs to some data areas
      */
-    dataptr->CodeSelectorBase.seg =  (WORD) FP_SEG( &CodeSelectorBase );
-    dataptr->CodeSelectorBase.off = (DWORD) FP_OFF( &CodeSelectorBase );
-    dataptr->DataSelectorBase.seg =  (WORD) FP_SEG( &DataSelectorBase );
-    dataptr->DataSelectorBase.off = (DWORD) FP_OFF( &DataSelectorBase );
-    dataptr->_32BitCallBackAddr.seg =  (WORD) FP_SEG( &_32BitCallBackAddr );
-    dataptr->_32BitCallBackAddr.off = (DWORD) FP_OFF( &_32BitCallBackAddr );
-    dataptr->_DLLEntryAddr.seg =  (WORD) FP_SEG( &_DLLEntryAddr );
-    dataptr->_DLLEntryAddr.off = (DWORD) FP_OFF( &_DLLEntryAddr );
-    dataptr->_WEPAddr.seg =  (WORD) FP_SEG( &_WEPAddr );
-    dataptr->_WEPAddr.off = (DWORD) FP_OFF( &_WEPAddr );
+    dataptr->CodeSelectorBase.seg =  (WORD)_FP_SEG( &CodeSelectorBase );
+    dataptr->CodeSelectorBase.off = (DWORD)_FP_OFF( &CodeSelectorBase );
+    dataptr->DataSelectorBase.seg =  (WORD)_FP_SEG( &DataSelectorBase );
+    dataptr->DataSelectorBase.off = (DWORD)_FP_OFF( &DataSelectorBase );
+    dataptr->_32BitCallBackAddr.seg =  (WORD)_FP_SEG( &_32BitCallBackAddr );
+    dataptr->_32BitCallBackAddr.off = (DWORD)_FP_OFF( &_32BitCallBackAddr );
+    dataptr->_DLLEntryAddr.seg =  (WORD)_FP_SEG( &_DLLEntryAddr );
+    dataptr->_DLLEntryAddr.off = (DWORD)_FP_OFF( &_DLLEntryAddr );
+    dataptr->_WEPAddr.seg =  (WORD)_FP_SEG( &_WEPAddr );
+    dataptr->_WEPAddr.off = (DWORD)_FP_OFF( &_WEPAddr );
     dataptr->_16BitCallBackAddr = &__CallBack;
 
     /*
      * insert glue routines into data area of caller
      */
     for( j = 0; j < MaxGlueRoutines; j++ ) {
-        dataptr->gluertns[j].seg =  (WORD) FP_SEG( Glue[j].rtn );
-        dataptr->gluertns[j].off = (DWORD) FP_OFF( Glue[j].rtn );
+        dataptr->gluertns[j].seg =  (WORD)_FP_SEG( Glue[j].rtn );
+        dataptr->gluertns[j].off = (DWORD)_FP_OFF( Glue[j].rtn );
     }
     _DPMIFreeAlias( sel );
 
@@ -546,9 +537,11 @@ static bool doneFini = false;
  */
 int Fini( int strcnt, ... )
 {
-#ifndef DLL32
+#ifdef DLL32
+    /* unused parameters */ (void)strcnt;
+#else
     char        tmp[128];
-    va_list     arg;
+    va_list     args;
     char        _FAR *n;
 #endif
 
@@ -556,21 +549,18 @@ int Fini( int strcnt, ... )
         return( 0 );
     }
     doneFini = true;
-
 #ifndef DLL32
-    va_start( arg, strcnt );
+    va_start( args, strcnt );
     tmp[0] = 0;
     while( strcnt > 0 ) {
-        n = va_arg( arg, char _FAR * );
+        n = va_arg( args, char _FAR * );
         strcat( tmp, n );
         strcnt--;
     }
-    va_end( arg );
+    va_end( args );
     if( tmp[0] != 0 ) {
         MessageBox( NULL, tmp, MsgTitle, MB_OK | MB_ICONHAND | MB_TASKMODAL );
     }
-#else
-    strcnt = strcnt;
 #endif
     Cleanup();
     return( false );

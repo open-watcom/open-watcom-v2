@@ -139,8 +139,10 @@ hash_table HashTableCreate( hash_value size, hash_table_type type )
     if( hash_tbl == NULL )
         return( NULL );
     hash_tbl->table = (hash_entry_struct **)MemAlloc( size * sizeof( hash_entry_struct * ) );
-    if( hash_tbl->table == NULL )
+    if( hash_tbl->table == NULL ) {
+        MemFree( hash_tbl );
         return( NULL );
+    }
     hash_tbl->size = size;
     switch( type ) {
     case HASH_HANDLE:

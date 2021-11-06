@@ -23,16 +23,16 @@ int _nheapset( unsigned int fill_char );
 The
 .id &funcb.
 functions along with
-.kw _heapchk
+.reffunc _heapchk
 and
-.kw _heapwalk
+.reffunc _heapwalk
 are provided for debugging heap related problems in programs.
 .np
 The
 .id &funcb.
 functions perform a consistency check on the unallocated
 memory space or "heap" just as
-.kw _heapchk
+.reffunc _heapchk
 does, and sets the heap's free entries with the
 .arg fill_char
 value.
@@ -58,12 +58,12 @@ Near heap (inside the default data segment)
 In a small data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _nheapset
+.reffunc _nheapset
 function; in a large data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _fheapset
+.reffunc _fheapset
 function.
 .desc end
 .return begin

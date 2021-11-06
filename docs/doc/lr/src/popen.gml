@@ -29,8 +29,8 @@ argument to
 .id &funcb.
 is a string that specifies an I/O mode for the pipe.
 .begnote
-.termhd1 Mode
-.termhd2 Meaning
+.notehd1 Mode
+.notehd2 Meaning
 .note "r"
 The calling process will read from the standard output of the child
 process using the stream pointer returned by
@@ -46,7 +46,7 @@ process using the stream pointer returned by
 A stream opened by
 .id &funcb.
 should be closed by the
-.kw pclose
+.reffunc pclose
 function.
 .desc end
 .return begin
@@ -64,8 +64,8 @@ is set appropriately.
 .return end
 .error begin
 .begterm 12
-:DTHD.Constant
-:DDHD.Meaning
+.termhd1 Constant
+.termhd2 Meaning
 .term EINVAL
 The
 .arg mode
@@ -76,11 +76,11 @@ argument is invalid.
 may also set
 .kw errno
 values as described by the
-.kw pipe
-,
-.kw fork
-, and
-.kw execl
+.reffunc pipe
+.ct ,
+.reffunc fork
+.ct , and
+.reffunc execl
 functions.
 .error end
 .see begin
@@ -97,18 +97,18 @@ int main()
 {
     FILE *fp;
     char readbuf[256];
-    
+
     fp = popen("ls", "r");
     if(fp == NULL) {
         printf("Failed to open pipe\n");
         exit(1);
     }
-    
+
     while(fgets(readbuf, 256, fp))
         printf("-> %s", readbuf);
-        
+
     pclose(fp);
-    
+
     return 0;
 }
 .exmp end

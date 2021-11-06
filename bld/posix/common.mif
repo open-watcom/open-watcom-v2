@@ -19,41 +19,53 @@
 #               contain the source for the command.
 
 #
-#       some people don't have the linker variable in their makeinit
+# definitions for POSIX library build
 #
-proj_name = posix
 
-posix_autodepends = .AUTODEPEND
+std_subdir_i86 = m$(model)
+std_subdir_386 = m$(model)
+std_subdir_x64 = _s
+std_subdir_axp = _s
+std_subdir_mps = _s
+std_subdir_ppc = _s
 
-!ifndef model
-!ifeq host_cpu i86
-model=c
-!else ifeq host_cpu 386
-!ifeq host_os qnx
-model=s
-!else
-model=f
+alt_subdir_dosi86s = mc
+alt_subdir_os2i86s = mc
+alt_subdir_dosi86c = ms
+alt_subdir_os2i86c = ms
+
+!ifeq proj_name posix_all
+!ifdef alt_subdir_$(host_os)$(host_cpu)$(model)
+alt_posixlib = 1
 !endif
 !endif
-!endif
 
-memory_model_i86=$(model)
-memory_model_386=$(model)
-
-!include cproj.mif
-!include defrule.mif
-
-subdir_i86 = m$(model)
-subdir_386 = m$(model)
-subdir_x64 = _s
-subdir_axp = _s
-subdir_mps = _s
-subdir_ppc = _s
+posixlib_objs = &
+    $(_subdir_)alloc.obj &
+    $(_subdir_)argvenv.obj &
+    $(_subdir_)argvrx.obj &
+    $(_subdir_)console.obj &
+    $(_subdir_)die.obj &
+    $(_subdir_)filerx.obj &
+    $(_subdir_)fnlower.obj &
+    $(_subdir_)fncomp.obj &
+    $(_subdir_)getclsz.obj &
+    $(_subdir_)getopt.obj &
+    $(_subdir_)isdotdot.obj &
+    $(_subdir_)lineprt.obj &
+    $(_subdir_)quit.obj &
+    $(_subdir_)regexp.obj
 
 !ifdef bootstrap
-libdir=$(subdir_$(host_cpu))
+stdlibdir=$(std_subdir_$(host_cpu))
+!ifdef alt_posixlib
+altlibdir=$(alt_subdir_$(host_os)$(host_cpu)$(model))
+!endif
 !else
-libdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))
+stdlibdir=$(posix_dir)/misc/$(objs_subdir)/$(std_subdir_$(host_cpu))
+!ifdef alt_posixlib
+altlibdir=$(posix_dir)/misc/$(objs_subdir)/$(alt_subdir_$(host_os)$(host_cpu)$(model))
+!endif
 !endif
 
 #

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1059,13 +1060,13 @@ void ProcLedata( void )
 static void doFrame( byte frame )
 {
     switch( frame ) {
-    case FRAME_SEG:     Output( "SI(%u)%<", GetIndex(), 8 );     break;
-    case FRAME_GRP:     Output( "GI(%u)%<", GetIndex(), 8 );     break;
-    case FRAME_EXT:     Output( "EI(%u)%<", GetIndex(), 8 );     break;
-    case FRAME_ABS:     Output( "%x%<", GetUInt(), 8 );          break;
-    case FRAME_LOC:     Output( "LOCATION" );                    break;
-    case FRAME_TARG:    Output( "TARGET  " );                    break;
-    case FRAME_NONE:    Output( "NONE    " );                    break;
+    case FRAME_SEG:     Output( "SI(%u)%<", GetIndex(), 8 );    break;
+    case FRAME_GRP:     Output( "GI(%u)%<", GetIndex(), 8 );    break;
+    case FRAME_EXT:     Output( "EI(%u)%<", GetIndex(), 8 );    break;
+    case FRAME_ABS:     Output( "%x%<", GetUInt(), 8 );         break;
+    case FRAME_LOC:     Output( "LOCATION" );                   break;
+    case FRAME_TARG:    Output( "TARGET  " );                   break;
+    case FRAME_NONE:    Output( "NONE    " );                   break;
     default:
         Output( BAILOUT "Unknown frame(%b)" CRLF, frame );
         longjmp( BailOutJmp, 1 );
@@ -1075,10 +1076,10 @@ static void doFrame( byte frame )
 static void doTarget( byte target )
 {
     switch( target & 0x03 ) {
-    case TARGET_SEGWD:   Output( "SI(%u)", GetIndex() );         break;
-    case TARGET_GRPWD:   Output( "GI(%u)", GetIndex() );         break;
-    case TARGET_EXTWD:   Output( "EI(%u)", GetIndex() );         break;
-    case TARGET_ABSWD:   Output( "%x", GetUInt() );              break;
+    case TARGET_SEG:    Output( "SI(%u)", GetIndex() );         break;
+    case TARGET_GRP:    Output( "GI(%u)", GetIndex() );         break;
+    case TARGET_EXT:    Output( "EI(%u)", GetIndex() );         break;
+    case TARGET_ABS:    Output( "%x", GetUInt() );              break;
     }
 }
 
@@ -1156,7 +1157,7 @@ static bool doTargetTranslateIndex( byte target, size_t *printpos )
         deltacol = 0;
     }
     switch( target & 0x03 ) {
-    case TARGET_SEGWD:
+    case TARGET_SEG:
         idx = GetIndex();
         sd = GetSegdef( idx );
         if( sd != NULL ) {
@@ -1164,7 +1165,7 @@ static bool doTargetTranslateIndex( byte target, size_t *printpos )
             needcrlf = true;
         }
         break;
-    case TARGET_GRPWD:
+    case TARGET_GRP:
         idx = GetIndex();
         gd = GetGrpdef( idx );
         if( gd != NULL ) {
@@ -1172,14 +1173,14 @@ static bool doTargetTranslateIndex( byte target, size_t *printpos )
             needcrlf = true;
         }
         break;
-    case TARGET_EXTWD:
+    case TARGET_EXT:
         idx = GetIndex();
         if( TranslateIndex ) {
             *printpos = Output( "%<- '%s'", deltacol, GetXname( idx ) );
             needcrlf = true;
         }
         break;
-    case TARGET_ABSWD:
+    case TARGET_ABS:
         GetUInt();
 //        Output( "%x", GetUInt() );
         break;
@@ -1204,43 +1205,69 @@ static void threadFixup( byte typ )
     Output( CRLF );
 }
 
+static void OutputFixup( byte typ, bool indent )
+{
+    byte    num;
+
+    num = ( typ >> 4 ) & 0x07;
+    if( indent ) {
+        Output( INDENT "Frame: " );
+    } else {
+        Output( "  Frame: " );
+    }
+    if( typ & FIXDAT_FTHREAD ) {
+        Output( "THREAD %u", num );
+    } else {
+        doFrame( num );
+    }
+    num = typ & 0x03;
+    Output( "  Target: " );
+    if( typ & FIXDAT_TTHREAD ) {
+        Output( "THREAD %u", num );
+    } else {
+        doTarget( num );
+    }
+    if( typ & FIXDAT_PBIT ) {
+        Output( CRLF );
+    } else {
+        Output( ",%X" CRLF, GetEither() );
+    }
+}
+
 static void explicitFixup( byte typ )
 {
-    byte        loc;
-    unsigned_16 offset;
-    byte        frame;
-    data_ptr    RecPtrsave;
-    data_ptr    RecPtrsave1;
-    bool        needcrlf = false;
-    size_t      printpos;
+    omf_fix_loc     fix_loc;
+    unsigned_16     offset;
+    data_ptr        RecPtrsave;
+    data_ptr        RecPtrsave1;
+    bool            needcrlf = false;
+    size_t          printpos;
 
     offset = ( ( typ & 0x03 ) << 8 ) + GetByte();
-    Output( INDENT "%x %s", offset, ( typ & FIXDAT_MBIT ) ? "Seg " : "Self" );
-    loc = ( ( typ >> 2 ) & 0x0f );
+    Output( INDENT "%x %s", offset, ( typ & FIXUPP_MBIT ) ? "Seg " : "Self" );
+    fix_loc = ( typ >> 2 ) & 0x0f;
     if( IsPharLap ) {
-        if( loc > LOC_BASE_OFFSET_32 ) {
+        if( fix_loc > LOC_PHARLAP_BASE_OFFSET_32 ) {
             Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
             longjmp( BailOutJmp, 1 );
-        } else if( loc == LOC_MS_LINK_OFFSET ) {
-            loc = LOC_MS_OFFSET_32;
+        } else if( fix_loc == LOC_PHARLAP_OFFSET_32 ) {
+            fix_loc = LOC_OFFSET_32;
         }
-    } else if( IsIntel ) {
-        if( loc > LOC_MS_LINK_OFFSET ) {
-            Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
-            longjmp( BailOutJmp, 1 );
-        }
+    } else if( fix_loc == LOC_PHARLAP_BASE_OFFSET_32 ) {
+        Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
+        longjmp( BailOutJmp, 1 );
     }
-    switch( loc ) {
+    switch( fix_loc ) {
     case LOC_OFFSET_LO:         Output( "  LOBYTE     " );   break;
     case LOC_OFFSET:            Output( "  OFFSET     " );   break;
     case LOC_BASE:              Output( "  BASE       " );   break;
     case LOC_BASE_OFFSET:       Output( "  POINTER    " );   break;
     case LOC_OFFSET_HI:         Output( "  HIBYTE     " );   break;
-    case LOC_MS_LINK_OFFSET:    Output( "  LROFFSET   " );   break;
-    case LOC_BASE_OFFSET_32:    /* fall through */
-    case LOC_MS_BASE_OFFSET_32: Output( "  POINTER386 " );   break;
-    case LOC_MS_OFFSET_32:      Output( "  OFFSET386  " );   break;
-    case LOC_MS_LINK_OFFSET_32: Output( "  LROFFSET386" );   break;
+    case LOC_OFFSET_LOADER:     Output( "  LROFFSET   " );   break;
+    case LOC_PHARLAP_BASE_OFFSET_32:    /* fall through */
+    case LOC_BASE_OFFSET_32:    Output( "  POINTER386 " );   break;
+    case LOC_OFFSET_32:         Output( "  OFFSET386  " );   break;
+    case LOC_OFFSET_32_LOADER:  Output( "  LROFFSET386" );   break;
     default:
         Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
         longjmp( BailOutJmp, 1 );
@@ -1251,34 +1278,16 @@ static void explicitFixup( byte typ )
     } else {
         RecPtrsave = NULL;      // shut up gcc
     }
-    frame = ( typ >> 4 ) & 0x07;
-    Output( "  Frame: " );
-    if( typ & FIXDAT_FTHREAD ) {
-        Output( "THREAD %u", frame );
-    } else {
-        doFrame( frame );
-    }
-    loc = typ & 0x03;
-    Output( "  Target: " );
-    if( typ & FIXDAT_TTHREAD ) {
-        Output( "THREAD %u", loc );
-    } else {
-        doTarget( loc );
-    }
-    if( typ & 0x04 ) {
-        Output( CRLF );
-    } else {
-        Output( ",%X" CRLF, GetEither() );
-    }
+    OutputFixup( typ, false );
     if( TranslateIndex ) {
         RecPtrsave1 = RecPtr;
         RecPtr = RecPtrsave;
         printpos = 0;
         if( ! (typ & FIXDAT_FTHREAD) ) {
-            needcrlf |= doFrameTranslateIndex( frame, &printpos );
+            needcrlf |= doFrameTranslateIndex( ( typ >> 4 ) & 0x07, &printpos );
         }
         if( ! (typ & FIXDAT_TTHREAD) ) {
-            needcrlf |= doTargetTranslateIndex( loc, &printpos );
+            needcrlf |= doTargetTranslateIndex( typ & 0x03, &printpos );
         }
         if( needcrlf ) {
             Output( CRLF );
@@ -1313,8 +1322,6 @@ void ProcModEnd( void )
 {
     byte        mod_type;
     byte        typ;
-    byte        frame;
-    byte        loc;
 
     mod_type = GetByte();
     Output( INDENT "mod type:%smain module %s" CRLF,
@@ -1323,25 +1330,7 @@ void ProcModEnd( void )
     );
     if( mod_type & 0x1 && !EndRec() ) {
         typ = GetByte();
-        frame = ( typ >> 4 ) & 0x07;
-        Output( INDENT "Frame: " );
-        if( typ & FIXDAT_FTHREAD ) {
-            Output( "THREAD %u", frame );
-        } else {
-            doFrame( frame );
-        }
-        loc = typ & 0x03;
-        Output( "  Target: " );
-        if( typ & FIXDAT_TTHREAD ) {
-            Output( "THREAD %u", loc & 0x03 );
-        } else {
-            doTarget( loc );
-        }
-        if( typ & 0x04 ) {
-            Output( CRLF );
-        } else {
-            Output( ",%X" CRLF, GetEither() );
-        }
+        OutputFixup( typ, true );
     }
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 #include "aboutdlg.h"
 #include "wwinhelp.h"
 #include "jdlg.h"
-#include "wclbproc.h"
+#include "wclbdde.h"
 
 
 static PFNCALLBACK      DDEProcInst;
@@ -212,7 +212,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     case WM_CREATE:
         DDEMainWnd = hwnd;
         MainWndConfig.hwnd = hwnd;
-        DDEProcInst = (PFNCALLBACK)MakeProcInstance( (FARPROC)DDEProc, Instance );
+        DDEProcInst = MakeProcInstance_DDE( DDEProc, Instance );
         initMonitoring( hwnd );
         DdeInitialize( &DDEInstId, DDEProcInst,
                        APPCLASS_MONITOR | MF_CALLBACKS | MF_CONV |
@@ -479,7 +479,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         HintWndDestroy( info->hintbar );
         HintFini();
         LogFini();
-        FreeProcInstance( (FARPROC)DDEProcInst );
+        FreeProcInstance_DDE( DDEProcInst );
         SaveConfigFile();
         FiniTrackWnd();
         DDEToolBarFini();

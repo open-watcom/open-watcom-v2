@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,7 +33,7 @@ pick( void,             ImageUnload,    ( mod_handle ) )
 pick( void,             MapAddr,        ( addr_ptr *, void * ) )
 pick( imp_sym_handle *, SymCreate,      ( imp_image_handle *, void * ) )
 pick( dip_status,       ItemLocation,   ( location_context *, context_item, location_list * ) )
-pick( dip_status,       AssignLocation, ( location_list *, location_list *, unsigned long ) )
+pick( dip_status,       AssignLocation, ( location_list *, const location_list *, unsigned long ) )
 pick( dip_status,       SameAddrSpace,  ( address, address ) )
 pick( void,             AddrSection,    ( address * ) )
 pick( void,             Status,         ( dip_status ) )

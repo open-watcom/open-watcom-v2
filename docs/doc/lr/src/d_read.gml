@@ -15,11 +15,11 @@ bytes of data from the file specified by
 .arg &fd
 into the buffer pointed to by
 .arg buffer
-.ct .li .
+.period
 The number of bytes successfully read will be stored in the
 unsigned integer pointed to by
 .arg bytes
-.ct .li .
+.period
 .desc end
 .return begin
 The

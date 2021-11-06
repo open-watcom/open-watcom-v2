@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 //
 
 #include "ftnstd.h"
-#include <string.h>
 #include "opn.h"
 #include "opr.h"
 #include "errcod.h"
@@ -109,12 +108,12 @@ sym_id  VarDecl( TYPE typ ) {
     if( flags & SY_TYPE ) {
         NameTypeErr( TY_TYP_PREV_DEF, sym );
     } else {
-        class = flags & SY_CLASS;
+        class = (flags & SY_CLASS);
         if( ( class == SY_COMMON ) || ( class == SY_PARAMETER ) ) {
             IllName( sym );
         } else {
             if( class == SY_SUBPROGRAM ) {
-                sp_type = flags & SY_SUBPROG_TYPE;
+                sp_type = (flags & SY_SUBPROG_TYPE);
                 if( sp_type != 0 ) {
                     if( sp_type != SY_FUNCTION ) {
                         IllName( sym );
@@ -160,12 +159,11 @@ sym_id  FieldDecl( void ) {
 }
 
 
-TYPE    MapTypes( TYPE typ, uint size ) {
-//======================================
-
+TYPE    MapTypes( TYPE typ, size_t size )
+//=======================================
 // Given a type and size, return an equivalent type.
 // For example REAL*8 is equivalent to DOUBLE PRECISION.
-
+{
     if( typ == FT_REAL ) {
         switch( size ) {
         case( sizeof( double ) ):
@@ -216,7 +214,7 @@ void    MustBeTypeDecl( void ) {
 
     SgmtSw |= SG_NO_MORE_IMPLICIT;
     CkDefStmtNo();
-    if( ( SgmtSw & SG_STMT_PROCESSED ) == 0 ) {
+    if( (SgmtSw & SG_STMT_PROCESSED) == 0 ) {
         CtrlFlgs &= ~CF_SUBPROGRAM;        // not TYPE*LEN FUNCTION
         DefProg();
     }
@@ -227,11 +225,11 @@ static  void    TypeDecl( TYPE typ ) {
 
 // Process a type declaration statement.
 
-    uint        default_size;
+    size_t      default_size;
     itnode      *var_node;
     bool        len_spec;
     sym_id      sym;
-    uint        size;
+    size_t      size;
 
     size = SIZE_UNDEF;
     default_size = StorageSize( typ );
@@ -430,12 +428,12 @@ void    ArrayDecl( sym_id sym ) {
     dim_list.dim_flags = 0;
     dim_list.l.init_label = 0;
     allocatable = RecNOpn() && RecNextOpr( OPR_COL );
-    if( ( SgmtSw & SG_DEFINING_STRUCTURE ) == 0 ) {
-        if( ( sym->u.ns.flags & ERR_MASK ) != SY_VARIABLE ) {
+    if( (SgmtSw & SG_DEFINING_STRUCTURE) == 0 ) {
+        if( (sym->u.ns.flags & ERR_MASK) != SY_VARIABLE ) {
             IllName( sym );
             return;
         } else if( allocatable ) {
-            if( sym->u.ns.flags & ( SY_IN_EC | SY_SUB_PARM ) ) {
+            if( sym->u.ns.flags & (SY_IN_EC | SY_SUB_PARM) ) {
                 IllName( sym );
                 return;
             }
@@ -604,6 +602,6 @@ void    ArrayDecl( sym_id sym ) {
             }
         }
         sym->u.ns.si.va.u.dim_ext = STSubsList( &dim_list );
-        sym->u.ns.flags |= ( SY_USAGE | SY_SUBSCRIPTED );
+        sym->u.ns.flags |= SY_USAGE | SY_SUBSCRIPTED;
     }
 }

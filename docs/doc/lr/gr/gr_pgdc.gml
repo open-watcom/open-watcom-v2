@@ -1,5 +1,5 @@
-.gfunc pg_defaultchart
-.gsynop begin 
+.gfunc _pg_defaultchart
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_defaultchart( chartenv _FAR *env,
                              short type, short style );
@@ -22,21 +22,21 @@ The chart type in the structure is initialized to the value
 .arg type
 .ct , and the chart style is initialized to
 .arg style
-.ct .li .
+.period
 .pp
 The argument
 .arg type
 can have one of the following values:
 .begterm 20
-.uterm PG_BARCHART
+.uterm _PG_BARCHART
 Bar chart (horizontal bars)
-.uterm PG_COLUMNCHART
+.uterm _PG_COLUMNCHART
 Column chart (vertical bars)
-.uterm PG_LINECHART
+.uterm _PG_LINECHART
 Line chart
-.uterm PG_SCATTERCHART
+.uterm _PG_SCATTERCHART
 Scatter chart
-.uterm PG_PIECHART
+.uterm _PG_PIECHART
 Pie chart
 .endterm
 .pp

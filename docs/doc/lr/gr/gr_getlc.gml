@@ -1,5 +1,5 @@
-.gfuncwxy getviewcoord
-.gsynop begin 
+.gfuncwxy _getviewcoord
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _getviewcoord( short x, short y );
 
@@ -37,12 +37,12 @@ and
 window coordinate system.
 .np
 Viewport coordinates are defined by the
-.kw _setvieworg
+.reffunc _setvieworg
 and
-.kw _setviewport
+.reffunc _setviewport
 &routines..
 Window coordinates are defined by the
-.kw _setwindow
+.reffunc _setwindow
 &routine..
 .if '&lang' eq 'C' .do begin
 .np

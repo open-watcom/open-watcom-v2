@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +33,10 @@
 #include <dos.h>
 #include "uidef.h"
 #include <windows.h>
-#include "uidos.h"
 #include "uimouse.h"
-#include "biosui.h"
+#include "int33.h"
 #include "uiwin.h"
 
-
-#define MOUSE_SCALE     8
 
 static MOUSESTAT    MouseStatusBits;
 static int          MouseX;
@@ -50,7 +47,7 @@ static int          ScreenYFudge;
 void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
 /****************************************************************************************/
 {
-    MouseDrvCall4( 3 );
+    _BIOSMouseGetPositionAndButtonStatusReset();
     *status = MouseStatusBits;
     *col = MouseX;
     *row = MouseY;
@@ -69,14 +66,14 @@ bool UIAPI initmouse( init_mode install )
     ScreenYFudge = (WORD)( (DWORD)GetSystemMetrics( SM_CYSCREEN ) / (DWORD)UIData->height );
     if( install != INIT_MOUSELESS ) {
         dx = ( UIData->width - 1 ) * MOUSE_SCALE;
-        MouseDrvCall2( 7, 0, 0, dx );
+        _BIOSMouseSetHorizontalLimitsForPointer( 0, dx );
         dx = ( UIData->height - 1 ) * MOUSE_SCALE;
-        MouseDrvCall2( 8, 0, 0, dx );
+        _BIOSMouseSetVerticalLimitsForPointer( 0, dx );
 
         cx = ( UIData->colour == M_MONO ? 0x79ff : 0x7fff );
         dx = ( UIData->colour == M_MONO ? 0x7100 : 0x7700 );
-        MouseDrvCall2( 0x0A, 0, cx, dx );
-        MouseDrvCall3( 0x10, 0, 0, 0, 0 );
+        _BIOSMouseSetTextPointerType( SOFTWARE_CURSOR, cx, dx );
+        _BIOSMouseSetPointerExclusionArea( 0, 0, 0, 0 );
 
         UIData->mouse_swapped = false;
         UIData->mouse_xscale = 1;
@@ -104,7 +101,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
 {
     MouseRow = row;
     MouseCol = col;
-//  MouseDrvCall2( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );
+//  _BIOSMouseSetPointerPosition( col * MOUSE_SCALE, row * MOUSE_SCALE );
     SetCursorPos( col * ScreenXFudge, row * ScreenYFudge );
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,16 +156,22 @@ static void XTimeSymComp( void )
     }
 }
 
+#define INTERNAL_DEFS \
+    pick( "Dumpmenu", XDumpMenus   ) \
+    pick( "Symcomp",  XTimeSymComp )
+
 static const char InternalNameTab[] =
 {
-    "Dumpmenu\0"
-    "Symcomp\0"
+    #define pick(t,p)   t "\0"
+    INTERNAL_DEFS
+    #undef pick
 };
 
 static void (*InternalJmpTab[])() =
 {
-    &XDumpMenus,
-    &XTimeSymComp,
+    #define pick(t,p)   p,
+    INTERNAL_DEFS
+    #undef pick
 };
 #endif
 

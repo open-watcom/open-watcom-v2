@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,25 @@
 #include "dbgname.h"
 #include "dbgmem.h"
 #include "dbgcmdln.h"
+#include "dbglkup.h"
+#include "dbgscrn.h"
 
+
+#define SYS_OPT_DEFS \
+    pick( "Console",    OPT_CONSOLE ) \
+    pick( "XConfig",    OPT_XCONFIG )
+
+enum {
+    #define pick(t,e)   e,
+    SYS_OPT_DEFS
+    #undef pick
+};
+
+static const char SysOptNameTab[] = {
+    #define pick(t,e)   t "\0"
+    SYS_OPT_DEFS
+    #undef pick
+};
 
 bool OptDelim( char ch )
 {
@@ -51,9 +70,27 @@ bool OptDelim( char ch )
 
 bool ProcSysOption( const char *start, unsigned len, int pass )
 {
-    /* unused parameters */ (void)start; (void)len; (void)pass;
+    char        *p;
 
-    return( false );
+    /* unused parameters */ (void)pass;
+
+    switch( Lookup( SysOptNameTab, start, len ) ) {
+    case OPT_CONSOLE:
+        _Free( DbgTerminal );
+        DbgTerminal = GetFileName( pass );
+        break;
+    case OPT_XCONFIG:
+        WantEquals();
+        p = XConfig + strlen( XConfig );
+        *p++ = ' ';
+        GetRawItem( p );
+        if( pass == 1 )
+            XConfig[0] = NULLCHAR;
+        break;
+    default:
+        return( false );
+    }
+    return( true );
 }
 
 

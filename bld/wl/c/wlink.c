@@ -41,7 +41,6 @@
 #include "msg.h"
 #include "alloc.h"
 #include "wlnkmsg.h"
-#include "command.h"
 #include "fileio.h"
 #include "objpass2.h"
 #include "cmdline.h"
@@ -60,6 +59,7 @@
 #include "loadelf.h"
 #include "loadzdos.h"
 #include "loadrdv.h"
+#include "loadphar.h"
 #include "symtrace.h"
 #include "objnode.h"
 #include "objio.h"
@@ -105,14 +105,9 @@ static void PreAddrCalcFormatSpec( void )
 // format specific routines which need to be called before address calculation
 {
 #ifdef _OS2
-    if( FmtData.type & MK_PE ) {
-        SetOS2SegFlags();
-        ChkPEData();
-    } else if( FmtData.type & MK_WIN_VXD ) {
-        SetOS2SegFlags();
-    } else if( FmtData.type & MK_OS2 ) {
+    if( FmtData.type & (MK_PE | MK_WIN_VXD | MK_OS2) ) {
   #if 0
-        if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+        if( (FmtData.type & MK_OS2) && (LinkState & LS_HAVE_PPC_CODE) ) {
             // Development temporarly on hold:
             // ChkOS2ElfData();
         } else {
@@ -122,6 +117,9 @@ static void PreAddrCalcFormatSpec( void )
         SetOS2SegFlags();
   #endif
     }
+    if( FmtData.type & MK_PE ) {
+        ChkPEData();
+    }
 #endif
 #ifdef _NOVELL
     if( FmtData.type & MK_NOVELL ) {
@@ -129,8 +127,8 @@ static void PreAddrCalcFormatSpec( void )
     }
 #endif
 #ifdef _PHARLAP
-    if( (FmtData.type & MK_PHAR_FLAT) && (LinkState & LS_HAVE_16BIT_CODE) && (CmdFlags & CF_HAVE_REALBREAK) == 0 ) {
-        LnkMsg( WRN+MSG_NO_REALBREAK_WITH_16BIT, NULL );
+    if( FmtData.type & MK_PHAR_LAP ) {
+        CheckPharLapData();
     }
 #endif
 }
@@ -140,16 +138,9 @@ static void PostAddrCalcFormatSpec( void )
 // format specific routines which need to be called after address calculation
 {
 #ifdef _OS2
-    if( FmtData.type & MK_PE ) {
-        SetOS2GroupFlags();
-        ChkOS2Exports();
-        AllocPETransferTable();
-    } else if( FmtData.type & MK_WIN_VXD ) {
-        SetOS2GroupFlags();
-        ChkOS2Exports();
-    } else if( FmtData.type & MK_OS2 ) {
+    if( FmtData.type & (MK_PE | MK_WIN_VXD | MK_OS2) ) {
   #if 0
-        if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
+        if( (FmtData.type & MK_OS2) && (LinkState & LS_HAVE_PPC_CODE) ) {
             // Development temporarly on hold:
             //PrepareOS2Elf();
         } else {
@@ -160,6 +151,9 @@ static void PostAddrCalcFormatSpec( void )
         SetOS2GroupFlags();
         ChkOS2Exports();
   #endif
+    }
+    if( FmtData.type & MK_PE ) {
+        AllocPETransferTable();
     }
 #endif
 #ifdef _ELF
@@ -205,9 +199,9 @@ static void DoDefaultSystem( void )
  * system block */
 {
     if( (LinkState & LS_FMT_DECIDED) == 0 ) {
-        if( LinkState & LS_FMT_SEEN_64_BIT ) {
+        if( LinkState & LS_FMT_SEEN_64BIT ) {
             HintFormat( MK_64BIT );
-        } else if( LinkState & LS_FMT_SEEN_32_BIT ) {
+        } else if( LinkState & LS_FMT_SEEN_32BIT ) {
             HintFormat( MK_32BIT );
         } else {
             HintFormat( MK_16BIT | MK_QNX );
@@ -216,9 +210,9 @@ static void DoDefaultSystem( void )
             if( LinkState & LS_FMT_SPECIFIED ) {
                 LnkMsg( FTL+MSG_AMBIG_FORMAT, NULL );
             }
-            if( LinkState & LS_FMT_SEEN_64_BIT ) {
+            if( LinkState & LS_FMT_SEEN_64BIT ) {
                 ExecSystem( "64bit" );
-            } else if( LinkState & LS_FMT_SEEN_32_BIT ) {
+            } else if( LinkState & LS_FMT_SEEN_32BIT ) {
                 ExecSystem( "386" );
             } else {
                 ExecSystem( "286" ); /* no 386 obj's after this */
@@ -231,9 +225,9 @@ static void FindLibPaths( void )
 /******************************/
 {
     AddFmtLibPaths();
-    if( LinkState & LS_FMT_SEEN_64_BIT ) {
+    if( LinkState & LS_FMT_SEEN_64BIT ) {
         AddLibPathsToEnd( GetEnvString( "LIBX64" ) );
-    } else if( LinkState & LS_FMT_SEEN_32_BIT ) {
+    } else if( LinkState & LS_FMT_SEEN_32BIT ) {
         AddLibPathsToEnd( GetEnvString( "LIB386" ) );
     } else {
         AddLibPathsToEnd( GetEnvString( "LIB286" ) );
@@ -256,10 +250,16 @@ static void ResetSubSystems( void )
     ResetDBI();
     ResetMapIO();
     ResetCmdAll();
+#ifdef _EXE
     ResetOverlaySupp();
+#endif
     ResetComdef();
+#ifdef _NOVELL
     ResetLoadNov();
+#endif
+#ifdef _OS2
     ResetLoadPE();
+#endif
     ResetObj2Supp();
     ResetObjIO();
     ResetObjOMF();
@@ -343,22 +343,12 @@ static void SetSegments( void )
 
 static void set_signal( void )
 {
-#if defined( __OSI__ )
-#elif defined( __ZDOS__ )
-    signal( SIGBREAK, &TrapBreak ); /* so we can clean up */
-#else
     signal( SIGINT, &TrapBreak );   /* so we can clean up */
-#endif
 }
 
 static void ignore_signal( void )
 {
-#if defined( __OSI__ )
-#elif defined( __ZDOS__ )
-    signal( SIGBREAK, SIG_IGN );  /* we're going to clean up anyway */
-#else
     signal( SIGINT, SIG_IGN );    /* we're going to clean up anyway */
-#endif
 }
 
 static void DoLink( const char *cmdline )

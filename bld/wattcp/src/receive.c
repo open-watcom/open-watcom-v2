@@ -14,13 +14,13 @@
 #if defined(USE_BSD_FUNC)
 
 static int tcp_receive (Socket *sock, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen);
+                        struct sockaddr *from, socklen_t *fromlen);
 
 static int udp_receive (Socket *sock, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen);
+                        struct sockaddr *from, socklen_t *fromlen);
 
 static int raw_receive (Socket *sock, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen);
+                        struct sockaddr *from, socklen_t *fromlen);
 
 /*
  * receive() flags:
@@ -36,7 +36,7 @@ static int raw_receive (Socket *sock, void *buf, int len, int flags,
  */
 
 static int receive (const char *func, int s, void *buf, int len, int flags,
-                    struct sockaddr *from, int *fromlen)
+                    struct sockaddr *from, socklen_t *fromlen)
 {
   Socket *socket = _socklist_find (s);
   int     ret    = 0;
@@ -89,7 +89,7 @@ static int receive (const char *func, int s, void *buf, int len, int flags,
     return (-1);
   }
 
-  /* If application installs the same signal handlers we do, we must 
+  /* If application installs the same signal handlers we do, we must
    * exit cracefully from below loops.
    */
   if (_sock_sig_setup() < 0)
@@ -110,7 +110,7 @@ static int receive (const char *func, int s, void *buf, int len, int flags,
          ret = udp_receive (socket, buf, len, flags, from, fromlen);
          SOCK_DEBUGF ((socket, ", len=%d", ret));
          break;
-               
+
     case SOCK_RAW:
          ret = raw_receive (socket, buf, len, flags, from, fromlen);
          SOCK_DEBUGF ((socket, ", len=%d", ret));
@@ -140,7 +140,7 @@ recv_exit:
  * recvfrom(): receive from socket 's'. Address (src-ip/port) is put
  *             in 'from' (if non-NULL)
  */
-int recvfrom (int s, void *buf, int len, int flags, struct sockaddr *from, int *fromlen)
+int recvfrom (int s, void *buf, int len, int flags, struct sockaddr *from, socklen_t *fromlen)
 {
   return receive ("recvfrom", s, buf, len, flags, from, fromlen);
 }
@@ -167,7 +167,7 @@ int read_s (int s, char *buf, int len)
  * Fill in packet's address in 'from' and length in 'fromlen'.
  * Only used for UDP & Raw-IP. TCP have peer info in 'socket->remote_addr'.
  */
-static void udp_raw_fill_from (struct sockaddr *from, int *fromlen,
+static void udp_raw_fill_from (struct sockaddr *from, socklen_t *fromlen,
                                struct in_addr  *peer, WORD port)
 {
   struct sockaddr_in *sa = (struct sockaddr_in*) from;
@@ -188,25 +188,23 @@ static void udp_raw_fill_from (struct sockaddr *from, int *fromlen,
  *  TCP receiver
  */
 static int tcp_receive (Socket *socket, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen)
+                        struct sockaddr *from, socklen_t *fromlen)
 {
   int        ret   = 0;
   int        fin   = 0;    /* got FIN from peer */
   DWORD      timer = 0UL;
-  sock_type *sk    = (sock_type*) socket->tcp_sock;
+  sock_type *sk    = socket->proto_sock;
 
-  if (!from && !socket->local_addr)
-  {
+  if (!from && !socket->local_addr) {
     SOCK_DEBUGF ((socket, ", no local_addr"));
     SOCK_ERR (ENOTCONN);
     return (-1);
-  }   
+  }
 
   if (socket->timeout && sock_inactive)
      timer = set_timeout (1000 * socket->timeout);
 
-  while (1)
-  {
+  for ( ;; ) {
     int ok = (tcp_tick(sk) != 0);
 
     tcp_Retransmitter (1);
@@ -215,8 +213,7 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
        goto read_it;
 
 #if 0  /* !to-do */
-    if ((socket-so_options & SO_OOBINLINE) && urgent_data(sk))
-    {
+    if ((socket-so_options & SO_OOBINLINE) && urgent_data(sk)) {
       ret = urgent_data_read (sk, (BYTE*)buf, len);
       break;
     }
@@ -224,10 +221,8 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
 
     /* Don't do this for a listening socket
      */
-    if (!(socket->so_options & SO_ACCEPTCONN))
-    {
-      if (sk->tcp.locflags & LF_GOT_FIN)         /* got FIN, no unACK data */
-      {
+    if (!(socket->so_options & SO_ACCEPTCONN)) {
+      if (sk->tcp.locflags & LF_GOT_FIN) {       /* got FIN, no unACK data */
         socket->so_state |=  SS_ISDISCONNECTING; /* We may receive more */
         socket->so_state &= ~SS_ISCONNECTED;     /* no longer ESTAB state */
         fin = 1;
@@ -235,8 +230,7 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
         goto read_it;
       }
 
-      if (!ok)
-      {
+      if (!ok) {
         socket->so_state |= (SS_CANTRCVMORE | SS_ISDISCONNECTING);
         socket->so_state &= ~SS_ISCONNECTED;
         SOCK_DEBUGF ((socket, ", ENOTCONN"));
@@ -245,33 +239,31 @@ static int tcp_receive (Socket *socket, void *buf, int len, int flags,
       }
     }
 
-    if (sock_rbused(sk) > socket->recv_lowat)
-    {
+    if (sock_rbused(sk) > socket->rx_lowat) {
 read_it:
-      if (flags & MSG_PEEK)
-           ret = sock_preread (sk, (BYTE*)buf, len);
-      else if (flags & MSG_WAITALL)
-           ret = sock_read    (sk, (BYTE*)buf, len);
-      else ret = sock_fastread(sk, (BYTE*)buf, len);
+      if (flags & MSG_PEEK) {
+          ret = sock_preread (sk, (BYTE*)buf, len);
+      } else if (flags & MSG_WAITALL) {
+          ret = sock_read (sk, (BYTE*)buf, len);
+      } else {
+          ret = sock_fastread (sk, (BYTE*)buf, len);
+      }
       break;
     }
 
-    if (socket->so_state & SS_CONN_REFUSED)
-    {
+    if (socket->so_state & SS_CONN_REFUSED) {
       SOCK_DEBUGF ((socket, ", ECONNREFUSED (2)"));
       SOCK_ERR (ECONNREFUSED);
       return (-1);
     }
 
-    if (socket->so_state & SS_NBIO)
-    {
+    if (socket->so_state & SS_NBIO) {
       SOCK_DEBUGF ((socket, ", EWOULDBLOCK"));
       SOCK_ERR (EWOULDBLOCK);
       return (-1);
     }
 
-    if (chk_timeout(timer))
-    {
+    if (chk_timeout(timer)) {
       SOCK_DEBUGF ((socket, ", ETIMEDOUT"));
       SOCK_ERR (ETIMEDOUT);
       return (-1);
@@ -280,19 +272,16 @@ read_it:
     SOCK_YIELD();
   }
 
-  if (ret > 0)
-  {
+  if (ret > 0) {
     if (from)
        memcpy (from, socket->remote_addr, sizeof(*from));
-    if (fromlen)
+    if (fromlen) {
        *fromlen = sizeof (*from);
-  }
-  else if (ret < 0)    
-  {
-    if (fin)     /* A FIN and -1 from sock_xread() maps to 0 */
+    }
+  } else if (ret < 0) {
+    if (fin) {   /* A FIN and -1 from sock_xread() maps to 0 */
        ret = 0;
-    else         /* else some buffer/socket error */
-    {
+    } else {       /* else some buffer/socket error */
       SOCK_DEBUGF ((socket, ", EIO"));
       SOCK_ERR (EIO);
     }
@@ -305,10 +294,11 @@ read_it:
  *  UDP receiver
  */
 static int udp_receive (Socket *socket, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen)
-{ 
+                        struct sockaddr *from, socklen_t *fromlen)
+{
   int   ret   = 0;
   DWORD timer = 0UL;
+  sock_type *sk;
 
   if (socket->timeout)
      timer = set_timeout (1000 * socket->timeout);
@@ -329,14 +319,11 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
   }
 #endif
 
-  while (1)
-  {
-    sock_type *sk = (sock_type*) socket->udp_sock;
-
+  sk = socket->proto_sock;
+  for ( ;; ) {
     SOCK_YIELD();
 
-    if (!tcp_tick(sk))
-    {
+    if (!tcp_tick(sk)) {
       socket->so_state |= SS_CANTRCVMORE;
       SOCK_DEBUGF ((socket, ", ENOTCONN"));
       SOCK_ERR (ENOTCONN);
@@ -349,17 +336,14 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
      * queue setup by sock_recv_init() (in _UDP_listen).
      * Note: it is possible to receive 0-byte probe packets.
      */
-    if (socket->so_state & SS_PRIV)
-    {
+    if (socket->so_state & SS_PRIV) {
       struct in_addr peer;
-      udp_Socket *udp  = socket->udp_sock;
-      WORD        port = ntohs (socket->local_addr->sin_port);
+      WORD           port = ntohs (socket->local_addr->sin_port);
 
-      ret = sock_recv_from (udp, &peer.s_addr, &port, buf, len,
+      ret = sock_recv_from (sk, &peer.s_addr, &port, buf, len,
                             (flags & MSG_PEEK) ? 1 : 0);
 
-      if (ret != 0 && peer.s_addr)
-      {
+      if (ret != 0 && peer.s_addr) {
         udp_raw_fill_from (from, fromlen, &peer, port);
         SOCK_DEBUGF ((socket, ", remote: %s (%d)",
                       inet_ntoa(peer), ntohs(port)));
@@ -367,52 +351,46 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
            return (0);
         return (ret);
       }
-    }
-
-    else if (sock_rbused(sk) > socket->recv_lowat)
-    {
-      if (flags & MSG_PEEK)
-           ret = sock_preread  (sk, (BYTE*)buf, len);
-      else if (flags & MSG_WAITALL)
-           ret = sock_read     (sk, (BYTE*)buf, len);
-      else ret = sock_fastread (sk, (BYTE*)buf, len);
+    } else if (sock_rbused(sk) > socket->rx_lowat) {
+      if (flags & MSG_PEEK) {
+          ret = sock_preread (sk, (BYTE*)buf, len);
+      } else if (flags & MSG_WAITALL) {
+          ret = sock_read (sk, (BYTE*)buf, len);
+      } else {
+          ret = sock_fastread (sk, (BYTE*)buf, len);
+      }
       break;
     }
 
-    if (socket->so_state & SS_CONN_REFUSED)
-    {
+    if (socket->so_state & SS_CONN_REFUSED) {
       SOCK_DEBUGF ((socket, ", ECONNREFUSED (2)"));
       SOCK_ERR (ECONNREFUSED);
       return (-1);
     }
 
-    if (socket->so_state & SS_NBIO)
-    {
+    if (socket->so_state & SS_NBIO) {
       SOCK_DEBUGF ((socket, ", EWOULDBLOCK"));
       SOCK_ERR (EWOULDBLOCK);
       return (-1);
     }
 
-    if (chk_timeout(timer))
-    {
+    if (chk_timeout(timer)) {
       SOCK_DEBUGF ((socket, ", ETIMEDOUT"));
       SOCK_ERR (ETIMEDOUT);
       return (-1);
     }
   }
 
-  if (ret > 0)
-  {
+  if (ret > 0) {
     struct in_addr peer;
     WORD   port;
 
-    port = htons (socket->udp_sock->hisport);
-    peer.s_addr = htonl (socket->udp_sock->hisaddr);
+    port = htons (sk->udp.hisport);
+    peer.s_addr = htonl (sk->udp.hisaddr);
 
     udp_raw_fill_from (from, fromlen, &peer, port);
 
-    if (socket->remote_addr)
-    {
+    if (socket->remote_addr) {
       socket->remote_addr->sin_family = AF_INET;
       socket->remote_addr->sin_addr   = peer;
       socket->remote_addr->sin_port   = port;
@@ -429,24 +407,25 @@ static int udp_receive (Socket *socket, void *buf, int len, int flags,
  * Raw-IP receiver. Doesn't handle IP-options yet.
  */
 static int raw_receive (Socket *socket, void *buf, int len, int flags,
-                        struct sockaddr *from, int *fromlen)
+                        struct sockaddr *from, socklen_t *fromlen)
 {
-  raw_Socket  *raw = socket->raw_sock;
+  sock_type    *sk = socket->proto_sock;
   DWORD        timer;
   static DWORD loop;
 
-  if (!raw || len < sizeof(raw->ip))
-  {
+  if (sk == NULL || len < sizeof(sk->raw.ip)) {
     SOCK_ERR (EINVAL);
     return (-1);
   }
 
-  if (socket->timeout)
-       timer = set_timeout (1000 * socket->timeout);
-  else timer = 0;
+  if (socket->timeout) {
+      timer = set_timeout (1000 * socket->timeout);
+  } else {
+      timer = 0;
+  }
   loop = 1;
 
-  while (1)
+  for ( ;; )
   {
     struct in_addr peer;
     struct ip     *ip;
@@ -461,25 +440,25 @@ static int raw_receive (Socket *socket, void *buf, int len, int flags,
       tcp_Retransmitter (1);
     }
 
-    ip_len = sock_rbused ((sock_type*)raw);  /* includes header length */
-    if (ip_len >= sizeof(*ip) + socket->recv_lowat)
+    ip_len = sock_rbused (sk);  /* includes header length */
+    if (ip_len >= sizeof(*ip) + socket->rx_lowat)
     {
       if (len < sizeof(*ip))
       {
-        raw->used = FALSE;
+        sk->raw.used = FALSE;
         continue;
       }
       ip = (struct ip*) buf;
 
       /* SOCK_RAW shall allway return IP-header and data in 'buf'
        */
-      memcpy (ip, &raw->ip, sizeof(*ip));
+      memcpy (ip, &sk->raw.ip, sizeof(*ip));
       len = min (ip_len-sizeof(*ip), len);
       if (len > 0)
-         memcpy (++ip, &raw->data, len);
+         memcpy (++ip, sk->raw.data, len);
 
-      peer.s_addr = raw->ip.source;
-      raw->used = FALSE;
+      peer.s_addr = sk->raw.ip.source;
+      sk->raw.used = FALSE;
 
       udp_raw_fill_from (from, fromlen, &peer, 0);
       SOCK_DEBUGF ((socket, ", remote: %s", inet_ntoa(peer)));

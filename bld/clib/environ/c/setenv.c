@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#if !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+#if defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
 #ifdef __WIDECHAR__
@@ -55,30 +55,56 @@
 #endif
 #include "liballoc.h"
 #include "_environ.h"
+#include "_cvtstr.h"
 #include "thread.h"
 
+
+#ifdef CLIB_USE_OTHER_ENV
+
+static int __other_env_update( const CHAR_TYPE *in_name, const CHAR_TYPE *in_value, int overwrite )
+/*
+ * it updates counterpart environment data (wide or narrow)
+ *
+ * following definitions have reversed near/wide character pointers
+ * for narrow/wide environment synchronization
+ */
+{
+    __F_NAME(wchar_t,char)  *name;
+    __F_NAME(wchar_t,char)  *value;
+    int                     rc;
+
+  #ifndef __WIDECHAR__
+    if( _RWD_wenviron == NULL ) {
+        return( 0 );    // _wenviron uninitialized
+    }
+  #endif
+    name = __F_NAME(__lib_cvt_mbstowcs_errno,__lib_cvt_wcstombs_errno)( in_name );
+    if( name == NULL ) {
+        return( -1 );
+    }
+    if( in_value != NULL ) {
+        value = __F_NAME(__lib_cvt_mbstowcs_errno,__lib_cvt_wcstombs_errno)( in_value );
+        if( value == NULL ) {
+            lib_free( name );
+            return( -1 );
+        }
+    } else {
+        value = NULL;
+    }
+    rc = __F_NAME(__wsetenv,__setenv)( name, value, overwrite );
+    lib_free( name );
+    lib_free( value );
+    return( rc );
+}
+
+#endif
 
 // _wsetenv and setenv are implemented this way so that each can call the
 // other without having the other call it, which would call the other, and
 // so on, making bad things happen. This inter-calling is necessary to keep
 // the wide and MBCS environments consistent.
-_WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newvalue, int overwrite )
+_WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *value, int overwrite )
 {
-#if !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
-  #ifdef __WIDECHAR__
-    char                *otherName;
-    char                *otherNewval;
-    const size_t        charsize = sizeof( wchar_t );
-    const size_t        fact = MB_CUR_MAX;
-  #else
-    wchar_t             *otherName;
-    wchar_t             *otherNewval;
-    const size_t        charsize = MB_CUR_MAX;
-    const size_t        fact = 1;
-  #endif
-    size_t              otherNameLen;
-    size_t              otherNewvalLen;
-#endif
     int                 rc;
 
     if( name == NULL || *name == NULLCHAR || __F_NAME(strchr,wcschr)( name, STRING( '=' ) ) != NULL ) {
@@ -86,102 +112,37 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
         return( -1 );
     }
 
-    /*** Ensure variable is deleted if newvalue == "" ***/
+    /*** Ensure variable is deleted if value == "" ***/
+
 #ifndef __UNIX__
-    if( (newvalue != NULL) && (*newvalue == NULLCHAR) ) {
+    if( (value != NULL) && (*value == NULLCHAR) ) {
         if( overwrite || (__F_NAME(getenv,_wgetenv)( name ) == NULL) ) {
-            newvalue = NULL;
+            value = NULL;
         }
     }
 #endif
 
-#ifdef __NT__
-    /*** Update the process environment if using Win32 ***/
+    /*** Update the OS process environment ***/
+
+#ifdef CLIB_UPDATE_OS_ENV
     if( overwrite || __F_NAME(getenv,_wgetenv)( name ) == NULL ) {
-        if( __lib_SetEnvironmentVariable( name, newvalue ) == FALSE ) {
+        if( __F_NAME(__os_env_update_narrow,__os_env_update_wide)( name, value ) ) {
             return( -1 );
         }
     }
-#elif defined( __RDOS__ )
-    /*** Update the process environment if using RDOS ***/
-    if( overwrite  ||  __F_NAME(getenv,_wgetenv)( name ) == NULL ) {
-        int handle;
-
-        handle = RdosOpenProcessEnv();
-        RdosDeleteEnvVar( handle, name );
-        if( *newvalue != NULLCHAR )
-            RdosAddEnvVar( handle, name, newvalue );
-        RdosCloseEnv( handle );
-    }
-#elif defined( __RDOSDEV__ )
-    /*** Update the process environment if using RDOSDEV ***/
-    if( overwrite  ||  __F_NAME(getenv,_wgetenv)( name ) == NULL ) {
-        int handle;
-
-        handle = RdosOpenSysEnv();
-        RdosDeleteEnvVar( handle, name );
-        if( *newvalue != NULLCHAR )
-            RdosAddEnvVar( handle, name, newvalue );
-        RdosCloseEnv( handle );
-    }
 #endif
 
-    /*** Update the (__WIDECHAR__ ? wide : MBCS) environment ***/
-#ifdef __WIDECHAR__
-    if( _RWD_wenviron == NULL ) {
-        __create_wide_environment();
-    }
-#endif
-    rc = __F_NAME(__setenv,__wsetenv)( name, newvalue, overwrite );
-    if( rc == -1 ) {
-        return( -1 );
-    }
-#if !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+    /*** Update current environment (wide or MBCS) ***/
+
+    CHECK_WIDE_ENV();
+    rc = __F_NAME(__setenv,__wsetenv)( name, value, overwrite );
+
     /*** Update the other environment ***/
-  #ifndef __WIDECHAR__
-    if( _RWD_wenviron == NULL ) {
-        return( 0 );    // _wenviron uninitialized
-    }
-  #endif
-  #ifdef __WIDECHAR__
-    otherNameLen = wcslen( name ) + 1;
-  #else
-    otherNameLen = _mbslen( (unsigned char *)name ) + 1;
-  #endif
-    otherName = lib_malloc( otherNameLen * charsize );
-    if( otherName == NULL ) {
-        _RWD_errno = ENOMEM;
-        return( -1 );
-    }
-    if( newvalue != NULL ) {
-  #ifdef __WIDECHAR__
-        otherNewvalLen = wcslen( newvalue ) + 1;
-  #else
-        otherNewvalLen = _mbslen( (unsigned char *)newvalue ) + 1;
-  #endif
-        otherNewval = lib_malloc( otherNewvalLen * charsize );
-        if( otherNewval == NULL ) {
-            lib_free( otherName );
-            _RWD_errno = ENOMEM;
-            return( -1 );
-        }
-    } else {
-        otherNewval = NULL;
-    }
-    rc = __F_NAME(mbstowcs,wcstombs)( otherName, name, otherNameLen * fact );
-    if( rc != -1 ) {
-        if( otherNewval != NULL ) {
-            rc = __F_NAME(mbstowcs,wcstombs)( otherNewval, newvalue, otherNewvalLen * fact );
-        }
-        if( rc != -1 ) {
-            rc = __F_NAME(__wsetenv,__setenv)( otherName, otherNewval, overwrite );
-        }
-    }
-    lib_free( otherName );
-    lib_free( otherNewval );
-    if( rc == -1 ) {
-        return( -1 );
+
+#ifdef CLIB_USE_OTHER_ENV
+    if( rc == 0 ) {
+        rc = __other_env_update( name, value, overwrite );
     }
 #endif
-    return( 0 );
+    return( rc );
 }

@@ -14,8 +14,8 @@ exceptions flags are currently set. The
 argument specifies the floating-point exceptions to be queried.
 .np
 For valid exception values see
-.seekw &function. fegetexceptflag
-.ct .li .
+.reffunc fegetexceptflag
+.period
 .desc end
 .*
 .return begin

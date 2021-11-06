@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,198 +35,104 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "bool.h"
 #include "watcom.h"
 #include "pcobj.h"
 #include "hashtab.h"
 #include "misc.h"
 
-#define MAX_LINE_LEN 512
+#define MAX_LINE_LEN    512
 
-typedef unsigned char byte;
-typedef byte *data_ptr;
-
-static symbol      **pubdef_tab;
-static symbol      **extdef_tab;
-static data_ptr    NamePtr;
-static byte        NameLen;
-static unsigned_16 RecLen;
-static data_ptr    RecBuff;
-static data_ptr    RecPtr;
-static unsigned_16 RecMaxLen;
-static int         isMS386;
+static symbol           **pubdef_tab;
+static symbol           **extdef_tab;
+static byte             RecHdr[3];
 
 static void usage( void )
 /***********************/
 {
-    SymbolFini( pubdef_tab );
     printf( "Usage: objfind <options> <list of object or library files>\n" );
     printf( "  <options>   -i=<file with symbols>\n" );
 }
 
-static int EndRec( void )
-/***********************/
-{
-    return( RecPtr >= (RecBuff + RecLen) );
-}
-
-static byte GetByte( void )
-/*************************/
-{
-    byte        ret;
-
-    ret = *RecPtr;
-    RecPtr++;
-    return( ret );
-}
-
-static unsigned_16 GetUInt( void )
-/********************************/
-{
-    unsigned_16 word;
-
-    word = *(unsigned_16 *)RecPtr;
-    CONV_LE_16( word );
-    RecPtr += 2;
-    return( word );
-}
-
-static unsigned_32 GetOffset( void )
-/**********************************/
-{
-    if( isMS386 ) {
-        unsigned_32 dword;
-
-        dword = *(unsigned_32 *)RecPtr;
-        CONV_LE_32( dword );
-        RecPtr += 4;
-        return( dword );
-    } else {
-        unsigned_16 word;
-
-        word = *(unsigned_16 *)RecPtr;
-        CONV_LE_16( word );
-        RecPtr += 2;
-        return( word );
-    }
-}
-
-static unsigned_16 GetIndex( void )
-/*********************************/
-{
-    unsigned_16 index;
-
-    index = GetByte();
-    if( index & 0x80 ) {
-      index = ( (index & 0x7f) << 8 ) + GetByte();
-    }
-    return( index );
-}
-
-static byte *GetName( void )
-/**************************/
-{
-    NameLen = GetByte();
-    NamePtr = RecPtr;
-    RecPtr += NameLen;
-    return( NamePtr );
-}
-
-static void ResizeBuff( unsigned_16 reqd_len )
-/********************************************/
-{
-    if( reqd_len > RecMaxLen ) {
-        RecMaxLen = reqd_len;
-        if( RecBuff != NULL ) {
-            free( RecBuff );
-        }
-        RecBuff = malloc( RecMaxLen );
-        if( RecBuff == NULL ) {
-            printf( "**FATAL** Out of memory!\n" );
-            exit( -1 );
-        }
-    }
-}
-
-static void ProcFileModRef( FILE *fp )
+static bool ProcFileModRef( FILE *fp )
 /************************************/
 {
-    byte        hdr[ 3 ];
     unsigned_16 page_len;
     unsigned_32 offset;
     char        *module_name;
+    bool        ok;
+    int         rc;
 
     page_len = 0;
-    RecBuff = NULL;
-    RecMaxLen = 0;
+    ReadRecInit();
     module_name = NULL;
-    for(;;) {
+    ok = true;
+    while( ok ) {
         offset = ftell( fp );
-        if( fread( hdr, 1, 3, fp ) != 3 )
+        rc = ReadRec( fp, RecHdr );
+        if( rc <= 0 ) {
+            if( rc == 0 )
+                ok = false;
             break;
-        RecLen = hdr[ 1 ] | ( hdr[ 2 ] << 8 );
-        ResizeBuff( RecLen );
-        RecPtr = RecBuff;
-        if( fread( RecBuff, RecLen, 1, fp ) == 0 )
-            break;
-        RecLen--;
-        isMS386 = hdr[ 0 ] & 1;
-        switch( hdr[ 0 ] & ~1 ) {
+        }
+        switch( RecHdr[0] & ~1 ) {
         case CMD_THEADR:
             if( module_name != NULL )
                 free( module_name );
             GetName();
-            *RecPtr = 0;
-            module_name = malloc( strlen( (char *)NamePtr ) + 1 );
-            strcpy( module_name, (char *)NamePtr );
+            NameTerm();
+            module_name = malloc( strlen( NamePtr ) + 1 );
+            strcpy( module_name, NamePtr );
             break;
         case CMD_MODEND:
-            if( module_name != NULL )
-                free( module_name );
-            module_name = NULL;
             if( page_len != 0 ) {
                 offset = ftell( fp );
-                offset = page_len - offset % page_len;
+                offset = page_len - ( offset % page_len );
                 if( offset != page_len ) {
                     fseek( fp, offset, SEEK_CUR );
                 }
             }
             break;
         case CMD_PUBDEF:
+            if( module_name == NULL )
+                break;
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
-            while( ! EndRec() ) {
+            while( IsDataToRead() ) {
                 GetName();
-                *RecPtr = 0;
-                if( SymbolExists( pubdef_tab, (char *)NamePtr ) != 0 ) {
-                    if( SymbolExists( extdef_tab, module_name ) == 0 ) {
-                        AddSymbol( extdef_tab, module_name, NULL );
+                NameTerm();
+                if( SymbolExists( pubdef_tab, NamePtr ) != NULL ) {
+                    if( SymbolExists( extdef_tab, module_name ) == NULL ) {
+                        AddSymbol( extdef_tab, module_name, NULL, 0 );
                         printf( "%s\n", module_name );
                     }
                 }
-                GetOffset();
+                GetOffset( RecHdr[0] & 1 );
                 GetIndex();
             }
             break;
         case LIB_HEADER_REC:
-            if( isMS386 ) {
+            if( RecHdr[0] & 1 ) {
                 fseek( fp, 0L, SEEK_END );
                 page_len = 0;
             } else {
-                page_len = RecLen + 4;
+                page_len = GET_RECLEN( RecHdr ) - 1 + 4;
             }
             break;
         default:
             break;
         }
     }
-    free( RecBuff );
+    free( module_name );
+    ReadRecFini();
+    return( ok );
 }
 
-static void process_except_file( char *filename )
-/***********************************************/
+static void process_except_file( const char *filename )
+/*****************************************************/
 {
     FILE    *fp;
-    char    line[ MAX_LINE_LEN ];
+    char    line[MAX_LINE_LEN];
     char    *p;
 
     if( filename != NULL ) {
@@ -247,25 +153,26 @@ static void process_except_file( char *filename )
                     break;
                 }
             }
-            AddSymbol( pubdef_tab, line, NULL );
+            AddSymbol( pubdef_tab, line, NULL, 0 );
         }
         fclose( fp );
     }
 }
 
-static int process_file_modref( char *filename )
-/**********************************************/
+static bool process_file_modref( const char *filename )
+/*****************************************************/
 {
     FILE    *fp;
+    bool    ok;
 
     fp = fopen( filename, "rb" );
     if( fp == NULL ) {
         printf( "Cannot open input file: %s.\n", filename );
-        return( 0 );
+        return( false );
     }
-    ProcFileModRef( fp );
+    ok = ProcFileModRef( fp );
     fclose( fp );
-    return( 1 );
+    return( ok );
 }
 
 int main( int argc, char *argv[] )
@@ -273,38 +180,41 @@ int main( int argc, char *argv[] )
 {
     int     i;
     char    *fn;
+    char    c;
+    bool    ok;
 
+    ok = true;
     pubdef_tab = SymbolInit();
+    extdef_tab = SymbolInit();
     for( i = 1; i < argc; ++i ) {
         if( argv[i][0] == '-' ) {
-            switch( tolower( argv[i][1] ) ) {
-            case 'i':
-                if( argv[i][2] == '=' ) {
-                    process_except_file( argv[i] + 3 );
-                    break;
-                }
-            default:
-                usage();
-                return( 1 );
+            c = tolower( (unsigned char)argv[i][1] );
+            if( c == 'i' && argv[i][2] == '=' ) {
+                process_except_file( argv[i] + 3 );
+            } else {
+                ok = false;
+                break;
             }
         } else {
             break;
         }
     }
     if( i == argc ) {
-        usage();
-        return( 1 );
+        ok = false;
     }
-    extdef_tab = SymbolInit();
-    for( ; i < argc; ++i ) {
-        fn = DoWildCard( argv[i] );
-        while( fn != NULL ) {
-            process_file_modref( fn );
-            fn = DoWildCard( NULL );
+    if( !ok ) {
+        usage();
+    } else {
+        for( ; i < argc; ++i ) {
+            fn = DoWildCard( argv[i] );
+            while( fn != NULL ) {
+                ok &= process_file_modref( fn );
+                fn = DoWildCard( NULL );
+            }
+            DoWildCardClose();
         }
-        DoWildCardClose();
     }
     SymbolFini( pubdef_tab );
     SymbolFini( extdef_tab );
-    return( 0 );
+    return( ok ? EXIT_SUCCESS : EXIT_FAILURE );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -99,7 +99,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
-                    unsigned long int x( std::wcstoul( value.c_str(), &end, 10 ) );
+                    unsigned long x( std::wcstoul( value.c_str(), &end, 10 ) );
                     _origin.xpos = static_cast< word >( x );
                     if( *end == L'c' ) {
                         _origin.xPosType = ExtTocEntry::ABSOLUTE_CHAR;
@@ -132,7 +132,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
-                    unsigned long int y( std::wcstoul( value.c_str(), &end, 10 ) );
+                    unsigned long y( std::wcstoul( value.c_str(), &end, 10 ) );
                     _origin.ypos = static_cast< word >( y );
                     if( *end == L'c' ) {
                         _origin.yPosType = ExtTocEntry::ABSOLUTE_CHAR;
@@ -160,7 +160,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
-                    unsigned long int width = std::wcstoul( value.c_str(), &end, 10 );
+                    unsigned long width = std::wcstoul( value.c_str(), &end, 10 );
                     _size.width = static_cast< word >( width );
                     if( *end == L'c' ) {
                         _size.widthType = ExtTocEntry::ABSOLUTE_CHAR;
@@ -188,7 +188,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                     _document->printError( ERR2_VALUE );
                 } else {
                     wchar_t *end;
-                    unsigned long int height = std::wcstoul( value.c_str(), &end, 10 );
+                    unsigned long height = std::wcstoul( value.c_str(), &end, 10 );
                     _size.height = static_cast< word >( height );
                     if( *end == L'c' ) {
                         _size.heightType = ExtTocEntry::ABSOLUTE_CHAR;

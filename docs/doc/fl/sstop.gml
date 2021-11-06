@@ -13,7 +13,7 @@ no more than five digits.
 .id n
 to be any unsigned integer constant.
 .xt end
-.endnote
+.esynote
 .np
 Execution of a
 .kw STOP

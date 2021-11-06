@@ -4,7 +4,7 @@
 char *strcat( char *dst, const char *src );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Concats' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrcat( char __far *dst,
                       const char __far *src );
 .ixfunc2 '&String' &ffunc
@@ -45,15 +45,16 @@ by
 (including the terminating null character)
 to the end of the string pointed to by
 .arg dst
-.ct .li .
+.period
 The first character of
 .arg src
 overwrites the null character at the end of
 .arg dst
-.ct .li .
-.im farfunc
-.im widefun1
-.im mbsfunc
+.period
+.farfunc &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
+.mbcsfunc &mfunc. &funcb.
+.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
 The value of

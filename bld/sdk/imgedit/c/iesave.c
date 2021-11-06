@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@
 #include "wricon.h"
 #include "wrselft.h"
 #include "wresdefn.h"
-#include "wclbproc.h"
+#include "wclbhelp.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -101,13 +101,13 @@ static bool writeDataInPieces( BITMAPINFO *bmi, FILE *fp, img_node *node )
 
     buffer = MemAlloc( chunk_size );
     while( scanline_count > num_lines ) {
-        GetDIBits( memdc, node->hxorbitmap, start, num_lines, buffer, bmi, DIB_RGB_COLORS );
+        GetDIBits( memdc, node->xor_hbitmap, start, num_lines, buffer, bmi, DIB_RGB_COLORS );
         fwrite( buffer, sizeof( BYTE ), chunk_size, fp );
         scanline_count -= num_lines;
         start += num_lines;
         byte_count -= chunk_size;
     }
-    GetDIBits( memdc, node->hxorbitmap, start, scanline_count, buffer, bmi, DIB_RGB_COLORS );
+    GetDIBits( memdc, node->xor_hbitmap, start, scanline_count, buffer, bmi, DIB_RGB_COLORS );
     fwrite( buffer, sizeof( BYTE ), one_scanline_size * scanline_count, fp );
     MemFree( buffer );
     DeleteDC( memdc );
@@ -157,13 +157,13 @@ static bool writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, i
     }
 
     while( scanline_count > num_lines ) {
-        GetDIBits( memdc, node->hxorbitmap, start, num_lines, *data + *size, bmi, DIB_RGB_COLORS );
+        GetDIBits( memdc, node->xor_hbitmap, start, num_lines, *data + *size, bmi, DIB_RGB_COLORS );
         *size += chunk_size;
         scanline_count -= num_lines;
         start += num_lines;
         byte_count -= chunk_size;
     }
-    GetDIBits( memdc, node->hxorbitmap, start, scanline_count, *data + *size, bmi, DIB_RGB_COLORS );
+    GetDIBits( memdc, node->xor_hbitmap, start, scanline_count, *data + *size, bmi, DIB_RGB_COLORS );
     *size += scanline_count * one_scanline_size;
     DeleteDC( memdc );
     return( true );
@@ -203,7 +203,7 @@ UINT_PTR CALLBACK SaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 static bool updateSaveFileInfo( const char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     size_t      len;
 
     _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
@@ -299,7 +299,7 @@ static bool saveBitmapFile( img_node *node )
     bitmap_size = DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
 
     hdc = GetDC( NULL );
-    GetDIBits( hdc, node->hxorbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
+    GetDIBits( hdc, node->xor_hbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
     ReleaseDC( NULL, hdc );
     if( bmi->bmiHeader.biSizeImage == 0 ) {
         bmi->bmiHeader.biSizeImage = number_of_bytes;
@@ -374,7 +374,7 @@ bool SaveBitmapToData( img_node *node, BYTE **data, size_t *size )
     bitmap_size = DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
 
     hdc = GetDC( NULL );
-    GetDIBits( hdc, node->hxorbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
+    GetDIBits( hdc, node->xor_hbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
     ReleaseDC( NULL, hdc );
     if( bmi->bmiHeader.biSizeImage == 0 ) {
         bmi->bmiHeader.biSizeImage = number_of_bytes;
@@ -759,7 +759,7 @@ bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
  */
 static bool createNewImageLNODE( img_node *node, uint_16 type )
 {
-    PGROUP2             pg;
+    pgroup2             pg;
     WResID              *tname;
     WResID              *rname;
     WResLangType        lang;
@@ -825,7 +825,7 @@ static bool saveResourceFile( img_node *node )
     bool            was32bit;
     bool            is32bit;
     bool            ok;
-    HELP_CALLBACK   hcb;
+    HELPFUNC        hcb;
 
     info_created = false;
     data = NULL;
@@ -869,9 +869,9 @@ static bool saveResourceFile( img_node *node )
     if( ok ) {
         was32bit = WRIs32Bit( node->wrinfo->file_type );
         for( ;; ) {
-            hcb = (HELP_CALLBACK)_wpi_makeprocinstance( (WPI_PROC)IEHelpCallBack, Instance );
-            save_type = WRSelectFileType( HMainWindow, node->fname, was32bit, TRUE, hcb );
-            _wpi_freeprocinstance( (WPI_PROC)hcb );
+            hcb = MakeProcInstance_HELP( IEHelpCallBack, Instance );
+            save_type = WRSelectFileType( HMainWindow, node->fname, was32bit, true, hcb );
+            FreeProcInstance_HELP( hcb );
             is32bit = WRIs32Bit( save_type );
             if( was32bit ) {
                 if( is32bit ) {
@@ -968,7 +968,7 @@ bool SaveFileFromNode( img_node *node, int how )
 {
     img_node    *rootnode;
     char        new_name[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
     bool        ok;
     image_type  img_type;
 

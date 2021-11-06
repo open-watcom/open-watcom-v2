@@ -2,9 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc.
-*    Portions Copyright (c) 2017 Open Watcom Contributors.
-*    All Rights Reserved.
+* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -49,7 +48,6 @@
 #include "wio.h"
 #include "watcom.h"
 #include "getopt.h"
-//#include "misc.h"
 #include "bool.h"
 #include "swchar.h"
 #include "diskos.h"
@@ -129,7 +127,6 @@ typedef enum {
 
 char *OptEnvVar = WCLENV;                   /* Data interface for GetOpt()        */
 
-static  char        *Word;                  /* one parameter                      */
 static  char        *SystemName;            /* system to link for                 */
 static  list        *Files_List;            /* list of filenames from Cmd         */
 static  char        *CC_Opts[MAX_CC_OPTS];  /* list of compiler options from Cmd  */
@@ -156,7 +153,7 @@ const char *WclMsgs[] = {
 };
 
 static const char *EnglishHelp[] = {
-    #include "owcchelp.gh"
+    #include "usage.gh"
     NULL
 };
 
@@ -231,6 +228,7 @@ static option_mapping mappings[] = {
     { "mthreads",                       "bm" },
     { "mrtdll",                         "br" },
     { "mdefault-windowing",             "bw" },
+    { "mhard-emu-float",                "fpi" },
     { "msoft-float",                    "fpc" },
     { "w",                              "w0" },
     { "Wlevel:",                        "w" },
@@ -666,6 +664,7 @@ static  int  ParseArgs( int argc, char **argv )
     int         i;
     list        *new_item;
     char        pelc[5];
+    char        *Word;
 
     initialize_Flags();
     DebugFlag          = DBG_LINES;
@@ -686,16 +685,14 @@ static  int  ParseArgs( int argc, char **argv )
     while( (i = GetOpt( &argc, argv,
 #if 0
                         "b:Cc::D:Ef:g::"
-                        "HI:i::k:L:l:M::m:"
+                        "HI:i::L:l:M::m:"
                         "O::o:P::QSs::U:vW::wx:yz::",
 #else
                         "b:CcD:Ef:g::"
-                        "HI:i::k:L:l:M::m:"
+                        "HI:i::L:l:M::m:"
                         "O::o:P::QSs::U:vW::wx::yz::",
 #endif
                         EnglishHelp )) != -1 ) {
-
-        char    *Word;
 
         c = (char)i;
         if( find_mapping( c ) )
@@ -762,13 +759,6 @@ static  int  ParseArgs( int argc, char **argv )
                 break;
             }
             /* avoid passing on unknown options */
-            wcc_option = 0;
-            break;
-        case 'k':           /* stack size option */
-            if( Word[0] != '\0' ) {
-                MemFree( StackSize );
-                StackSize = MemStrDup( Word );
-            }
             wcc_option = 0;
             break;
 
@@ -858,6 +848,11 @@ static  int  ParseArgs( int argc, char **argv )
                 wcc_option = 0;
                 break;
             }
+            if( strncmp( "stack-size=", Word, 11) == 0 ) {
+                MemFree( StackSize );
+                StackSize = MemStrDup( Word + 11 );
+                wcc_option = 0;
+            }
             wcc_option = 0;     /* dont' pass on unknown options */
             break;
         case 'z':
@@ -895,13 +890,20 @@ static  int  ParseArgs( int argc, char **argv )
                 strcpy( Word, "2" );
             } else if( !isdigit( Word[0] ) ) {
                 c = 'h';
-                if( strcmp( Word, "w" ) == 0 ) {
-                    DebugFormat = DBG_FMT_WATCOM;
-                } else if( strcmp( Word, "c" ) == 0 ) {
-                    Flags.do_cvpack = 1;
-                    DebugFormat = DBG_FMT_CODEVIEW;
-                } else if( strcmp( Word, "d" ) == 0 ) {
-                    DebugFormat = DBG_FMT_DWARF;
+                if( strcmp( Word, "watcom" ) == 0
+                  || strcmp( Word, "codeview" ) == 0
+                  || strcmp( Word, "dwarf" ) == 0 ) {
+                    Word[1] = '\0';
+                }
+                if( Word[1] == '\0' ) {
+                    if( Word[0] == 'w' ) {
+                        DebugFormat = DBG_FMT_WATCOM;
+                    } else if( Word[0] == 'c' ) {
+                        Flags.do_cvpack = 1;
+                        DebugFormat = DBG_FMT_CODEVIEW;
+                    } else if( Word[0] == 'd' ) {
+                        DebugFormat = DBG_FMT_DWARF;
+                    }
                 }
                 break;
             }
@@ -1429,6 +1431,7 @@ static  int  CompLink( void )
     char        errors_found;
     tool_type   utl;
     int         i;
+    char        *Word;
 
     Word = MemAlloc( MAX_CMD );
     errors_found = 0;

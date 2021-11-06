@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +70,7 @@ grcolor _L1PutDot( short x, short y )
         ( *dev_ptr->setup )( x, y, _CurrColor );
         getdot = dev_ptr->getdot;
         prev_color = ( *getdot )( _Screen.mem, _Screen.bit_pos );
-        putdot = dev_ptr->plot[ _PlotAct ];
+        putdot = dev_ptr->plot[_PlotAct];
         ( *putdot )( _Screen.mem, _Screen.colour, _Screen.mask );
         _ResetDevice();
 #endif

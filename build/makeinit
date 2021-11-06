@@ -12,8 +12,12 @@ patch_level   = 0
 contrib_dir   = $+$(%OWROOT)$-/contrib
 build_dir     = $+$(%OWROOT)$-/build
 src_dir       = $+$(%OWSRCDIR)$-
-bld_dir       = $+$(%OWBINDIR)$-/bld
 docs_dir      = $+$(%OWDOCSDIR)$-
+!if $(__VERSION__) < 1300
+!ifdef __MSDOS__
+__DOS__=
+!endif
+!endif
 
 bin_subdir    = $+$(%OWOBJDIR)$-
 !ifdef %OWDLLOBJDIR
@@ -22,10 +26,12 @@ dll_subdir    = $+$(%OWDLLOBJDIR)$-
 dll_subdir    = dllobjs
 !endif
 
+!ifndef verbose
 !ifdef %OWVERBOSE
 verbose       = $+$(%OWVERBOSE)$-
 !else
 verbose       = 0
+!endif
 !endif
 
 noecho = @
@@ -37,28 +43,35 @@ mif_path      = $(build_dir)/mif
 
 .mif: $(mif_path)
 
-!ifeq %OWTOOLS WATCOM
-__WATCOM_TOOLS__ = $(%OWTOOLSVER)
-!if $(%OWTOOLSVER) >= 1300
-bldnewowtools = 1
-!endif
-!else ifeq %OWTOOLS VISUALC
-__MSVC_TOOLS__ = $(%OWTOOLSVER)
+# setup non-WATCOM tools macros
+!ifeq %OWTOOLS VISUALC
+__MSVC_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else ifeq %OWTOOLS GCC
-__GCC_TOOLS__ = $(%OWTOOLSVER)
+__GCC_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else ifeq %OWTOOLS CLANG
-__CLANG_TOOLS__ = $(%OWTOOLSVER)
+__CLANG_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else ifeq %OWTOOLS INTEL
-__INTEL_TOOLS__ = $(%OWTOOLSVER)
+__INTEL_TOOLS__ = $+$(%OWTOOLSVER)$-
 !else
-# if not defined or unknow value, default to WATCOM
+# if WATCOM or not defined or unknow value, default to WATCOM
 __WATCOM_TOOLS__ = 0
+!endif
+
+# setup WATCOM tools version
+bld_watcom_ver = 0
+!ifndef bootstrap
+# if it is not bootstrap then use current build version
+__WATCOM_TOOLS__ = $(bld_ver_tool)
+!else ifeq %OWTOOLS WATCOM
+# if bootstrap and WATCOM tools then use tools version
+bld_watcom_ver = $+$(%OWTOOLSVER)$-
+__WATCOM_TOOLS__ = $(bld_watcom_ver)
 !endif
 
 !ifdef %BOOTSTRAP_CPU
 bld_cpu = $+$(%BOOTSTRAP_CPU)$-
 bld_os = $+$(%BOOTSTRAP_OS)$-
-!else ifdef __MSDOS__
+!else ifdef __DOS__
 bld_cpu = 386
 bld_os = dos
 !else ifdef __OS2__
@@ -71,7 +84,6 @@ bld_os = nt
 bld_cpu = x64
 bld_os = nt
 bld64host_nt = 1
-bld64host_osi = 1
 !else ifdef __NTAXP__
 bld_cpu = axp
 bld_os = nt
@@ -82,7 +94,6 @@ bld_os = linux
 bld_cpu = x64
 bld_os = linux
 bld64host_linux = 1
-bld64host_osi = 1
 !else ifdef __LINUXMIPS__
 bld_cpu = mps
 bld_os = linux
@@ -99,7 +110,6 @@ bld_os = bsd
 bld_cpu = x64
 bld_os = bsd
 bld64host_bsd = 1
-bld64host_osi = 1
 !else ifdef __BSDPPC__
 bld_cpu = ppc
 bld_os = bsd
@@ -110,7 +120,6 @@ bld_os = haiku
 bld_cpu = x64
 bld_os = haiku
 bld64host_haiku = 1
-bld64host_osi = 1
 !else ifdef __HAIKUPPC__
 bld_cpu = ppc
 bld_os = haiku
@@ -121,7 +130,6 @@ bld_os = osx
 bld_cpu = x64
 bld_os = osx
 bld64host_osx = 1
-bld64host_osi = 1
 !else ifdef __OSXPPC__
 bld_cpu = ppc
 bld_os = osx
@@ -130,8 +138,10 @@ bld_cpu = arm
 bld_os = osx
 !endif
 
-watcom_common_cflags   =-wce=310
-watcom_common_cxxflags =-wce=579
+nested_wmake = wmake
+
+watcom_common_cflags   =-wx-wce=310
+watcom_common_cxxflags =-w8-wce=579
 
 bld_dft_oflags = -ox
 dft_oflags     = -oaxt

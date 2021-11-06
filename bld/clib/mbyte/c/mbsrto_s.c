@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,9 @@ _WCRTLINK errno_t _NEARFAR(mbsrtowcs_s,_fmbsrtowcs_s)( size_t _FFAR * __restrict
                            mbstate_t _FFAR * __restrict ps )
 {
     wchar_t             wc;
-    int                 charsConverted = 0;
+    size_t              charsConverted = 0;
     const char _FFAR *  mbcPtr;
-    int                 ret = 0;
+    size_t              ret = 0;
 
     errno_t             rc = -1;
     const char          *msg = NULL;
@@ -71,22 +72,22 @@ _WCRTLINK errno_t _NEARFAR(mbsrtowcs_s,_fmbsrtowcs_s)( size_t _FFAR * __restrict
                 for( ;; ) {
                     if( *mbcPtr != '\0' ) {
                         ret = _NEARFAR(mbrtowc,_fmbrtowc)( &wc, mbcPtr, MB_LEN_MAX, ps );
-                        if( ret > 0 ) {
-                            mbcPtr += ret;
-                            charsConverted++;
+                        if( ret == (size_t)-1 || ret == (size_t)-2 ) {
+                            *retval = (size_t)-1;
+                            break;               // encoding error
                         } else if( ret == 0) {
                             break;
                         } else {
-                            *retval = -1;
-                            break;               //encoding error
+                            mbcPtr += ret;
+                            charsConverted++;
                         }
                     } else {
                         break;
                     }
                 }
-                if( ret >= 0 ) {                          //no encoding error
-                  *retval = charsConverted;
-                  rc = 0;
+                if( ret != (size_t)-1 && ret != (size_t)-2 ) {  // no encoding error
+                    *retval = charsConverted;
+                    rc = 0;
                 }
             }
         } else {
@@ -101,17 +102,18 @@ _WCRTLINK errno_t _NEARFAR(mbsrtowcs_s,_fmbsrtowcs_s)( size_t _FFAR * __restrict
                 /*** Process the characters, one by one ***/
                 for( maxlen = min(len, dstmax); maxlen > 0; maxlen-- ) {
                     if( *mbcPtr != '\0' ) {
-                        if(srcend < mbcPtr) break;            //no null found
+                        if(srcend < mbcPtr)
+                            break;              //no null found
                         ret = _NEARFAR(mbrtowc,_fmbrtowc)( &wc, mbcPtr, MB_LEN_MAX, ps );
-                        if( ret > 0 ) {
+                        if( ret == (size_t)-1 || ret == (size_t)-2 ) {
+                            *retval = (size_t)-1;
+                            break;              //encoding error
+                        } else if( ret == 0 ) {
+                            break;
+                        } else {
                             *dst++ = wc;
                             mbcPtr += ret;
                             charsConverted++;
-                        } else if( ret == 0) {
-                            break;
-                        } else {
-                            *retval = -1;
-                            break;               //encoding error
                         }
                     } else {
                         break;
@@ -122,7 +124,7 @@ _WCRTLINK errno_t _NEARFAR(mbsrtowcs_s,_fmbsrtowcs_s)( size_t _FFAR * __restrict
                     *dst = L'\0';            // terminate string
                 }
                 if( (msg == NULL) && __check_constraint_a_gt_b_msg( msg, mbcPtr, srcend )) {
-                    if( ret >= 0 ) {                      //no encoding error
+                    if( ret != (size_t)-1 && ret != (size_t)-2 ) {  // no encoding error
                       *retval = charsConverted;
                       rc = 0;
                       if( ret == 0 ) {
@@ -141,7 +143,7 @@ _WCRTLINK errno_t _NEARFAR(mbsrtowcs_s,_fmbsrtowcs_s)( size_t _FFAR * __restrict
         if((dst != NULL) && (dstmax > 0) && __lte_rsizmax( dstmax ))
             *dststart = L'\0';
         if(retval != NULL)
-            *retval = -1;
+            *retval = (size_t)-1;
         // Now call the handler
         __rtct_fail( __func__, msg, NULL );
     }

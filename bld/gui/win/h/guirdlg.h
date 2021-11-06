@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,6 @@ extern WPI_INST             GUIResHInst;
 extern gui_control_class    GUIGetControlClassFromHWND( HWND cntl );
 extern gui_control_styles   GUIGetControlStylesFromHWND( HWND cntl, gui_control_class class );
 extern bool                 GUIInsertResDialogControls( gui_window *wnd );
-extern bool                 GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *gui_call_back, void *extra );
+extern bool                 GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUICALLBACK *gui_call_back, void *extra );
 
 #endif

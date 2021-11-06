@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@ int NumPrinters()
 {
     equip_list __far *equip;
 
-    equip = MK_FP( 0x60, BIOS_SEG*16 + EQUIPMENT );
+    equip = _MK_FP( 0x60, BIOS_SEG * 16 + EQUIPMENT );
     return( equip->num_printers );
 }
 
@@ -47,7 +48,7 @@ unsigned PrnAddress( int printer )
 {
     unsigned short __far *addr;
 
-    addr = MK_FP( 0x60, BIOS_SEG*16 + 2*printer + PRINTER_BASE );
+    addr = _MK_FP( 0x60, BIOS_SEG * 16 + 2 * printer + PRINTER_BASE );
     return( *addr );
 }
 

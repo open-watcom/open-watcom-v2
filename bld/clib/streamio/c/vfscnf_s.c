@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ static void uncget_file( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 
 
 _WCRTLINK int __F_NAME(vfscanf_s,vfwscanf_s)( FILE * __restrict stream,
-                                   const CHAR_TYPE * __restrict format, va_list arg )
+                                   const CHAR_TYPE * __restrict format, va_list args )
 {
     SCNF_SPECS      specs;
     const char      *msg;
@@ -81,7 +81,7 @@ _WCRTLINK int __F_NAME(vfscanf_s,vfwscanf_s)( FILE * __restrict stream,
         specs.uncget_rtn = uncget_file;
         msg = NULL;
 
-        rc = __F_NAME(__scnf_s,__wscnf_s)( (PTR_SCNF_SPECS)&specs, format, &msg, arg );
+        rc = __F_NAME(__scnf_s,__wscnf_s)( (PTR_SCNF_SPECS)&specs, format, &msg, args );
 
         _ReleaseFile( stream );
 

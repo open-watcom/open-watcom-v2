@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -274,7 +275,7 @@ a_window W2Open( void )
 
     w2 = WndMustAlloc( WORD_SIZE * sizeof( char * ) + sizeof( *w2 ) );
     WndInitCreateStruct( &info );
-    info.scroll &= ~GUI_VDRAG;
+    info.scroll_style &= ~GUI_VDRAG;
     info.title = "window with a title";
     info.info = &W2Info;
     info.wndclass = CLASS_W2;

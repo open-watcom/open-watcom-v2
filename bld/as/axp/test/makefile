@@ -36,7 +36,6 @@ ctrl.exe: $(objs_ctrl)
 
 clean: .symbolic .explicit
         if exist *.exe del *.exe
-        if exist *.o del *.o
         if exist *.obj del *.obj
         if exist *.err del *.err
 

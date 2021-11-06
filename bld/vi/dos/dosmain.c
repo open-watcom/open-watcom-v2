@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@ void main( int argc, char *argv[] )
     argc = argc;
     EXEName = argv[0];
     InitialStack();
-    VarAddGlobalStr( "OS", "dos" );
+    GlobVarAddStr( GLOBVAR_OS, "dos" );
     Comspec = getenv( "COMSPEC" );
     InitializeEditor();
     FinalStack();

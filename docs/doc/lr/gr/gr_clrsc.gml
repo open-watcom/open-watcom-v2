@@ -1,5 +1,5 @@
-.gfunc clearscreen
-.gsynop begin 
+.gfunc _clearscreen
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _clearscreen( short area );
 .do end
@@ -18,11 +18,11 @@ The
 .arg area
 argument must be one of the following values:
 .begterm 15
-.uterm GCLEARSCREEN
+.uterm _GCLEARSCREEN
 area is entire screen
-.uterm GVIEWPORT
+.uterm _GVIEWPORT
 area is current viewport or clip region
-.uterm GWINDOW
+.uterm _GWINDOW
 area is current text window
 .endterm
 .desc end

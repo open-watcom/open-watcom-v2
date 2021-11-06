@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,9 +177,7 @@ WModuleHandle WEXPORT WSystemService::loadLibrary( const char *lib_name ) {
     WModuleHandle      lib_handle;
 
     WFileName fn( lib_name );
-    if( *fn.ext() == NULLCHAR ) {
-        fn.setExt( "dll" );
-    }
+    fn.setExtIfNone( "dll" );
 
     UINT old_err_mode = SetErrorMode( SEM_NOOPENFILEERRORBOX );
     lib_handle = LoadLibrary( (LPSTR)(const char *)fn );

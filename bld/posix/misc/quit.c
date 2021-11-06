@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +37,12 @@
 void Quit( const char *usage_msg[], const char *str, ... )
 {
     int         i;
-    va_list     al;
+    va_list     args;
 
     if( str != NULL ) {
-        va_start( al, str );
-        vfprintf( stderr, str, al );
-        va_end( al );
+        va_start( args, str );
+        vfprintf( stderr, str, args );
+        va_end( args );
     }
     if( usage_msg == NULL ) {
         fprintf( stderr, "The Weenie That Wrote This Didn't Give A Usage String\n" );

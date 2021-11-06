@@ -1,5 +1,5 @@
 .chap Project Overview
-
+.*
 This document serves as an introduction and a guide for developers of
 the Open Watcom compilers and tools. It is not particularly useful for
 the users (who are also developers) of Open Watcom compilers &mdash
@@ -9,7 +9,7 @@ C Language Reference and other user oriented books.
 It should not be assumed that this book is in any way final or the
 ultimate reference. Readers are encouraged to add, change and modify this
 document to better reflect evolution of the Open Watcom project.
-
+.*
 .section History
 .*
 .np
@@ -85,8 +85,7 @@ The process of opening the source was longer than originally anticipated
 (all software related projects tend to work out this way for some
 inexplicable reason) but in the first half of 2002, the source was finally
 made available under the Sybase Open Watcom Public License version 1.0.
-
-
+.*
 .section Guided Tour
 .*
 .np
@@ -101,7 +100,8 @@ out and unified, although there still may be some warts.
 The root of the Open Watcom directory tree can be in the root of
 any drive (if your OS uses drive letters) or in any directory, for
 instance
-.id e:\ow.
+.id e:\ow
+.period
 Long filenames are not recommended if compatibility with DOS tools is
 desired. Directory names which include spaces are highly discouraged in
 any case.
@@ -116,14 +116,14 @@ This file controls the operation of wmake and is the key to understanding
 of the build process. Since wmake looks for
 .us makeinit
 along the
-.id PATH,
-the
+.id PATH
+.ct , the
 .us build
 directory should be placed at or near the start of your
 .id PATH
 environment variable.
 .note build/bin
-contains binaries created during first build phase (bootstrap) and used during 
+contains binaries created during first build phase (bootstrap) and used during
 main building process (second build phase).
 .note build/mif
 contains all main make files (global).
@@ -145,8 +145,7 @@ mirrors the
 .us WATCOM
 directory of a typical Open Watcom installation.
 .endnote
-
-
+.*
 .section The bld directory
 .*
 .np
@@ -305,8 +304,6 @@ Open Watcom vi editor, clone of the popular (or not) Unix editor.
 headers and libraries for the Windows 3.x API.
 .note w32api
 headers and libraries for the Win32 API.
-.note w32loadr
-loaders for OS independent (OSI) binaries.
 .note wasm
 the x86 assembler. Large parts of the source are shared between standalone
 wasm and inline assembler support for compilers targeting x86 platforms.
@@ -358,14 +355,13 @@ contain specific documentation pertaining to them, usually located
 in a directory called 'doc' or somesuch. For the most
 part, the truly uptodate and comprehensive documentation is the
 source code.
-
-
+.*
 .chap First Steps
-
+.*
 This chapter briefly describes the prerequisite steps necessary
 to build and/or contribute to the Open Watcom project &mdash how
 to get the source code and how to set up the build environment.
-
+.*
 .section Connecting up
 .*
 .np
@@ -394,7 +390,7 @@ information can be found on the Open Watcom web site. If you followed
 the instructions correctly, no servers are down and no other unpredictable
 (or maybe predictable) things happened, you will have brought your source
 tree to the latest revision (aka tip or head revision).
-
+.*
 .section Gearing up for Building
 .*
 .np
@@ -421,7 +417,8 @@ If you set up everything correctly, you will end up with working binaries
 that were automatically copied into the right subdirectory of the
 .us build
 directory, and that directory is already on the
-.id PATH.
+.id PATH
+.period
 If not, it's back to square one &mdash the most likely source of problems
 is incorrectly set up
 .us setvars

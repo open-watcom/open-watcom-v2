@@ -3,13 +3,26 @@ proj_name = emu386
 emu386_autodepends = .AUTODEPEND
 emu386_distrib_lib = 1
 
-additional_cleanup = usage.u
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
+#
+# cflags
+#
 .c : ../c;../../c
+
+extra_cpp_flags_qnx = -DQNX
+
+extra_c_flags = -fpc
+extra_c_flags_dos = -zl -zls
+extra_c_flags_qnx = -oais-w3 -I"$(new_qnx_h)"
+extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
+extra_c_flags_fpeqnx = -I"$(clib_dir)/h"
+
+#
+# aflags
+#
 .asm : ../asm
 
 extra_a_flags = -fpc
@@ -20,31 +33,28 @@ extra_a_flags_386inite = -I"$(comp_cfg_dir)/h"
 extra_a_flags_386stub = -ms -I"$(comp_cfg_dir)/h"
 extra_a_flags_emu387 = -I"../inc" -I"../../inc" -I"$(mathlib_dir)/h"
 
-extra_cpp_flags_qnx = -DQNX
-
-extra_c_flags = -fpc
-extra_c_flags_dos = -zl -zls
-extra_c_flags_qnx = -oais-w3 -I"$(new_qnx_h)"
-extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
-extra_c_flags_fpeqnx = -I"$(clib_dir)/h"
-
-extra_link_res_qnx = usage.u
+# explicit rules
+#################
 
 !ifeq host_os dos
 
-objs = emu387.obj 386inite.obj
-
-emu387.lib: $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) $(objs)
+#
+# LIB
+#
+libtarg_objs = emu387.obj 386inite.obj
+libtarg_name = emu387
+!include libtarg.mif
 
 !else ifeq host_os qnx
 
-objs = qnxemu87.obj emu387.obj fpeqnx.obj
-
-emu387.exe: $(extra_link_res_qnx) $(objs) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $^@ $(lflags) opt priv=0,map,long,quiet,res=$(extra_link_res_qnx) file {$(objs)}
+#
+# EXE
+#
+exetarg_objs     = qnxemu87.obj emu387.obj fpeqnx.obj
+exetarg_qnx_res  = usage.u
+exetarg_opts     = opt priv=0, long
+exetarg_name     = emu387
+!include exetarg.mif
 
 usage.u : ../../usage.sp
     @%make echo_wsplice
@@ -54,11 +64,17 @@ usage.u : ../../usage.sp
 
 !else
 
-objs = 386stub.obj
+all : emu387.lib noemu387.lib .SYMBOLIC
 
-emu387.lib noemu387.lib: $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) $(objs)
+#
+# LIB's
+#
+libtarg_objs = 386stub.obj
+libtarg_name = emu387
+!include libtarg.mif
+
+libtarg_name = noemu387
+!include libtarg.mif
 
 !endif
 

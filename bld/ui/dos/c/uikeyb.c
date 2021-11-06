@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +37,9 @@
 #include <conio.h>
 #endif
 #include "uidef.h"
-#include "uidos.h"
 #include "uishift.h"
-#include "biosui.h"
+#include "int16.h"
+
 
 #define NRM_KEY_READ            0x00
 #define NRM_KEY_STAT            0x01
@@ -49,7 +50,7 @@
 #define EXT_KEY_STAT            0x11
 #define EXT_KEY_SHFT            0x12
 
-static unsigned char    ReadReq;      /* this will be 0x00 or 0x10 */
+static unsigned char    ReadReq = KEYB_STD;     /* this will be KEYB_STD or KEYB_EXT */
 
 static shiftkey_event   ShiftkeyEvents[] = {
     EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
@@ -65,21 +66,21 @@ static shiftkey_event   ShiftkeyEvents[] = {
 bool UIAPI uiextkeyboard( void )
 /******************************/
 {
-    return( ReadReq != NRM_KEY_READ );
+    return( ReadReq == KEYB_EXT );
 }
 
 
 unsigned intern getkey( void )
 /****************************/
 {
-    return( BIOSGetKeyboard( ReadReq ) );
+    return( _BIOSKeyboardGet( ReadReq ) );
 }
 
 
 int intern checkkey( void )
 /*************************/
 {
-    return( BIOSKeyboardHit( ReadReq + 1 ) );
+    return( _BIOSKeyboardHit( ReadReq ) );
 }
 
 
@@ -95,7 +96,7 @@ void intern flushkey( void )
 unsigned char intern checkshift( void )
 /*************************************/
 {
-    return( BIOSGetKeyboard( ReadReq + 2 ) );
+    return( _BIOSKeyboardTest( ReadReq ) );
 }
 
 
@@ -121,15 +122,15 @@ bool intern initkeyboard( void )
 {
     unsigned x;
 
-    ReadReq = NRM_KEY_READ;
-    x = BIOSTestKeyboard();
+    ReadReq = KEYB_STD;
+    x = _BIOSKeyboardTest( KEYB_STD );
     if( (x & 0xff) == 0xff )
         return( true ); /* too many damn keys pressed! */
     if( AL( x ) != ( RAL( x ) || LAL( x ) ) )
         return( true );
     if( CT( x ) != ( RCT( x ) || LCT( x ) ) )
         return( true );
-    ReadReq = EXT_KEY_READ;
+    ReadReq = KEYB_EXT;
     return( true );
 }
 

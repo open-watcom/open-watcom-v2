@@ -115,7 +115,7 @@
 typedef SHANDLE HKBD;
 typedef HKBD    *PHKBD;
 
-#pragma pack(2)
+:include pshpack2.sp
 
 typedef struct _KBDKEYINFO {
     UCHAR  chChar;
@@ -139,7 +139,7 @@ typedef struct _KBDTRANS {
     USHORT sZero;
 } KBDTRANS, *PKBDTRANS;
 
-#pragma pack()
+:include poppack.sp
 
 typedef struct _KBDHWID {
     USHORT length;

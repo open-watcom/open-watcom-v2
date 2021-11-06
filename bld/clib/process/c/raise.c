@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +47,9 @@ _WCRTLINK int (raise)( int sig )
     return( kill( me, sig ) );
 }
 
-_WCRTLINK void _WCI86FAR __sigfpe_handler( int sig )
+_WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
 {
-    /* unused parameters */ (void)sig;
+    /* unused parameters */ (void)fpe_type;
 
     raise( SIGFPE );
 }

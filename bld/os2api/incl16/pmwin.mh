@@ -465,12 +465,16 @@ HWND   APIENTRY WinWindowFromDC(HDC);
 
 typedef LHANDLE HMQ;
 
+:include pshpack1.sp
+
 typedef struct _COMMANDMSG {
     USHORT source;
     BOOL   fMouse;
     USHORT cmd;
     USHORT unused;
 } CMDMSG;
+
+:include poppack.sp
 
 typedef struct _MQINFO {
     USHORT cb;
@@ -637,12 +641,16 @@ BOOL   APIENTRY WinWaitMsg(HAB,USHORT,USHORT);
 #define FF_SELECTED      0x0040
 #define FF_NOACTIVATESWP 0x0080
 
+:include pshpack2.sp
+
 typedef struct _FRAMECDATA {
     USHORT  cb;
     ULONG   flCreateFlags;
     HMODULE hmodResources;
     USHORT  idResources;
 } FRAMECDATA, FAR *PFRAMECDATA;
+
+:include poppack.sp
 
 HWND  APIENTRY WinCreateStdWindow(HWND,ULONG,PULONG,PSZ,PSZ,ULONG,HMODULE,USHORT,PHWND);
 
@@ -863,6 +871,8 @@ BOOL    APIENTRY WinSetDlgItemText(HWND,USHORT,PSZ);
 #define EDI_NEXTGROUPITEM  6
 #define EDI_PREVGROUPITEM  7
 
+:include pshpack2.sp
+
 typedef struct _DLGTITEM {
     USHORT fsItemStatus;
     USHORT cChildren;
@@ -890,6 +900,8 @@ typedef struct _DLGTEMPLATE {
     USHORT   coffPresParams;
     DLGTITEM adlgti[1];
 } DLGTEMPLATE, FAR *PDLGTEMPLATE;
+
+:include poppack.sp
 
 HWND    APIENTRY WinCreateDlg(HWND,HWND,PFNWP,PDLGTEMPLATE,PVOID);
 HWND    APIENTRY WinEnumDlgItem(HWND,HWND,USHORT,BOOL);
@@ -1027,6 +1039,8 @@ BOOL  APIENTRY WinSetFocus(HWND,HWND);
 #define CHARMSG(pmsg)  ((struct _CHARMSG FAR *)((PBYTE)pmsg - sizeof(MPARAM) * 2))
 #define MOUSEMSG(pmsg) ((struct _MOUSEMSG FAR *)((PBYTE)pmsg - sizeof(MPARAM) * 2))
 
+:include pshpack1.sp
+
 typedef struct _CHARMSG {
     USHORT chr;
     USHORT vkey;
@@ -1041,6 +1055,8 @@ typedef struct _MOUSEMSG {
     SHORT  x;
     SHORT  y;
 } MSEMSG;
+
+:include poppack.sp
 
 BOOL  APIENTRY WinIsPhysInputEnabled(HWND);
 SHORT APIENTRY WinGetKeyState(HWND,SHORT);
@@ -1205,6 +1221,8 @@ HLIB  APIENTRY WinLoadLibrary(HAB,PSZ);
 #define MM_SETITEMATTR         0x0192
 #define MM_ISITEMVALID         0x0193
 
+:include pshpack2.sp
+
 typedef struct _MENUITEM {
     SHORT  iPosition;
     USHORT afStyle;
@@ -1213,6 +1231,8 @@ typedef struct _MENUITEM {
     HWND   hwndSubMenu;
     ULONG  hItem;
 } MENUITEM, FAR *PMENUITEM;
+
+:include poppack.sp
 
 typedef struct _OWNERITEM {
     HWND   hwnd;
@@ -1397,11 +1417,15 @@ typedef struct _ACCEL {
     USHORT cmd;
 } ACCEL, FAR *PACCEL;
 
+:include pshpack2.sp
+
 typedef struct _ACCELTABLE {
     USHORT cAccel;
     USHORT codepage;
     ACCEL  aaccel[1];
 } ACCELTABLE, FAR *PACCELTABLE;
+
+:include poppack.sp
 
 USHORT APIENTRY WinCopyAccelTable(HACCEL,PACCELTABLE,USHORT);
 HACCEL APIENTRY WinCreateAccelTable(HAB,PACCELTABLE);
@@ -1449,11 +1473,15 @@ BOOL   APIENTRY WinTranslateAccel(HAB,HWND,HACCEL,PQMSG);
 
 #define WC_BUTTON       ((PSZ)0xffff0003L)
 
+:include pshpack2.sp
+
 typedef struct _BTNCDATA {
     USHORT  cb;
     USHORT  fsCheckState;
     USHORT  fsHiliteState;
 } BTNCDATA, FAR *PBTNCDATA;
+
+:include poppack.sp
 
 typedef struct _USERBUTTON {
     HWND   hwnd;
@@ -1525,12 +1553,16 @@ typedef struct _USERBUTTON {
 #define WC_COMBOBOX   ((PSZ)0xffff0002L)
 #define WC_ENTRYFIELD ((PSZ)0xffff0006L)
 
+:include pshpack2.sp
+
 typedef struct _ENTRYFDATA {
     USHORT cb;
     USHORT cchEditLimit;
     USHORT ichMinSel;
     USHORT ichMaxSel;
 } ENTRYFDATA, FAR *PENTRYFDATA;
+
+:include poppack.sp
 
 #endif
 
@@ -1584,6 +1616,8 @@ typedef struct _ENTRYFDATA {
 
 #define WC_SCROLLBAR ((PSZ)0xffff0008L)
 
+:include pshpack2.sp
+
 typedef struct _SBCDATA {
     USHORT cb;
     USHORT sHilite;
@@ -1593,6 +1627,8 @@ typedef struct _SBCDATA {
     SHORT  cVisible;
     SHORT  cTotal;
 } SBCDATA, FAR *PSBCDATA;
+
+:include poppack.sp
 
 #endif
 

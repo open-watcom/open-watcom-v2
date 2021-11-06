@@ -1,0 +1,54 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  ISO C I/O support for seeking files
+*
+****************************************************************************/
+
+
+#include "ftnstd.h"
+#include "fileio.h"
+#include "fileseek.h"
+#include "fileerr.h"
+
+
+void    FRewind( b_file *io )
+//===========================
+// Rewind a file.
+{
+    if( io->attrs & BUFFERED ) {
+        io->b_curs = 0;
+        io->read_len = 0;
+        io->high_water = 0;
+        io->attrs &= ~READ_AHEAD;
+    }
+    io->phys_offset = 0;
+    FSetIOOk( io );
+    if( fseek( io->fp, 0, SEEK_SET ) ) {
+        FSetSysErr( io );
+    }
+}

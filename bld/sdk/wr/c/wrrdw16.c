@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,13 +75,13 @@ static bool         WRLoadWResDirFromWin16EXE( FILE *, WResDir * );
 static bool         WRWin16HeaderHasResourceTable( os2_exe_header * );
 static WResTypeNode *WRReadWResTypeNodeFromExe( FILE *, uint_16 );
 static WResResNode  *WRReadWResResNodeFromExe( FILE *, uint_16 );
-static int          WRReadResourceNames( WResDir, FILE *, uint_32 );
-static int          WRSetResName( WResDir, uint_32, const char * );
+static bool         WRReadResourceNames( WResDir, FILE *, uint_32 );
+static bool         WRSetResName( WResDir, uint_32, const char * );
 static WResTypeNode *WRRenameWResTypeNode( WResDir, WResTypeNode *, const char * );
 static WResResNode  *WRRenameWResResNode( WResTypeNode *, WResResNode *, const char * );
 static uint_32      WRReadNameTable( WResDir, FILE *, uint_8 **, uint_32, uint_8 * );
 static uint_32      WRUseNameTable( WResDir, uint_8 *, uint_32, uint_8 ** );
-static int          WRSetResNameFromNameTable( WResDir, WRNameTableEntry * );
+static bool         WRSetResNameFromNameTable( WResDir, WRNameTableEntry * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -104,7 +105,7 @@ bool WRLoadResourceFromWin16EXE( WRInfo *info )
     return( ok );
 }
 
-long int WRReadWin16ExeHeader( FILE *fp, os2_exe_header *header )
+long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *header )
 {
     bool        old_pos;
     uint_16     offset;
@@ -179,7 +180,7 @@ bool WRWin16HeaderHasResourceTable( os2_exe_header *header )
 bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
 {
     os2_exe_header  win_header;
-    long int        offset;
+    long            offset;
     uint_16         align_shift;
     uint_32         name_offset;
     WResTypeNode    *type_node;
@@ -351,7 +352,7 @@ WResResNode *WRReadWResResNodeFromExe( FILE *fp, uint_16 align )
     return( rnode );
 }
 
-int WRReadResourceNames( WResDir dir, FILE *fp, uint_32 name_offset )
+bool WRReadResourceNames( WResDir dir, FILE *fp, uint_32 name_offset )
 {
     uint_8      name_len;
     char        *name;
@@ -372,7 +373,7 @@ int WRReadResourceNames( WResDir dir, FILE *fp, uint_32 name_offset )
         } else {
             name = (char *)MemAlloc( name_len + 1 );
             if( RESREAD( fp, name, name_len ) != name_len ) {
-                return( FALSE );
+                return( false );
             }
             name[name_len] = 0;
             WRSetResName( dir, name_offset, name );
@@ -382,10 +383,10 @@ int WRReadResourceNames( WResDir dir, FILE *fp, uint_32 name_offset )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-int WRSetResName( WResDir dir, uint_32 offset, const char *name )
+bool WRSetResName( WResDir dir, uint_32 offset, const char *name )
 {
     WResTypeNode *type_node;
     WResResNode  *res_node;
@@ -396,7 +397,7 @@ int WRSetResName( WResDir dir, uint_32 offset, const char *name )
         if( type_node->Info.TypeName.IsName && type_node->Info.TypeName.ID.Num == offset ) {
             type_node = WRRenameWResTypeNode( dir, type_node, name );
             if( type_node == NULL ) {
-                return( FALSE );
+                return( false );
             } else {
                 found_one = true;
             }
@@ -405,7 +406,7 @@ int WRSetResName( WResDir dir, uint_32 offset, const char *name )
             if( res_node->Info.ResName.IsName && res_node->Info.ResName.ID.Num == offset ) {
                 res_node = WRRenameWResResNode( type_node, res_node, name );
                 if( res_node == NULL ) {
-                    return( FALSE );
+                    return( false );
                 } else {
                     found_one = true;
                 }
@@ -512,7 +513,7 @@ uint_32 WRReadNameTable( WResDir dir, FILE *fp, uint_8 **name_table,
             res_len = res_node->Head->Info.Length;
             res_offset = res_node->Head->Info.Offset;
             if( RESSEEK( fp, res_offset, SEEK_SET ) ) {
-                return( FALSE );
+                return( 0 );
             }
         } else {
             res_len = 0;
@@ -550,7 +551,7 @@ uint_32 WRReadNameTable( WResDir dir, FILE *fp, uint_8 **name_table,
 
     *name_table = (uint_8 *)MemAlloc( len + num_leftover );
     if( *name_table == NULL ) {
-        return( FALSE );
+        return( 0 );
     }
 
     if( num_leftover != 0 ) {
@@ -592,7 +593,7 @@ uint_32 WRUseNameTable( WResDir dir, uint_8 *name_table, uint_32 len, uint_8 **l
     return( num_leftover );
 }
 
-int WRSetResNameFromNameTable( WResDir dir, WRNameTableEntry *entry )
+bool WRSetResNameFromNameTable( WResDir dir, WRNameTableEntry *entry )
 {
     WResTypeNode *type_node;
     WResResNode  *res_node;
@@ -602,9 +603,9 @@ int WRSetResNameFromNameTable( WResDir dir, WRNameTableEntry *entry )
             for( res_node = type_node->Head; res_node != NULL; res_node = res_node->Next ) {
                 if( !res_node->Info.ResName.IsName && res_node->Info.ResName.ID.Num == (entry->id & 0x7fff) ) {
                     if( WRRenameWResResNode( type_node, res_node, entry->name ) == NULL ) {
-                        return( FALSE );
+                        return( false );
                     } else {
-                        return( TRUE );
+                        return( true );
                     }
                 }
                 if( res_node == type_node->Tail ) {
@@ -617,5 +618,5 @@ int WRSetResNameFromNameTable( WResDir dir, WRNameTableEntry *entry )
         }
     }
 
-    return( FALSE );
+    return( false );
 }

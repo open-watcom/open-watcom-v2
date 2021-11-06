@@ -48,7 +48,7 @@ The
 macro returns the value of the number classification macro
 appropriate to the value of its argument
 .arg x
-.ct .li .
+.period
 .return end
 .*
 .see begin
@@ -62,8 +62,8 @@ appropriate to the value of its argument
 void main( void )
 {
     printf( "infinity %s a normal number\n",
-        fpclassify( INFINITY ) == FP_NORMAL ? 
-	"is" : "is not" );
+        fpclassify( INFINITY ) == FP_NORMAL ?
+        "is" : "is not" );
 }
 .exmp output
 infinity is not a normal number

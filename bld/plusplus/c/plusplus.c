@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,6 @@
 #include "fname.h"
 #include "yydriver.h"
 #include "cmdline.h"
-#include "dbg.h"
 #include "cgfront.h"
 #include "context.h"
 #include "srcfile.h"
@@ -63,8 +62,10 @@
 #include "ideentry.h"
 #include "pathgrp2.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
-#include "enterdb.h"
+    #include "dbg.h"
+    #include "pragdefn.h"
+    #include "enterdb.h"
+    #include "togglesd.h"
 #endif
 
 #include "clibext.h"
@@ -119,7 +120,7 @@ static void resetHandlers( void )
 static void MakePgmName(        // MAKE CANONICAL FILE NAME
     char *argv )                // - input name
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( argv, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     SrcFName = FNameAdd( pg.fname );
@@ -147,36 +148,13 @@ bool OpenSrcFile(               // OPEN A SOURCE FILE
     src_file_type typ )         // - source file type
                                 // return: true ==> opened ok
 {
-    bool        save;           // - saved pre-proc status
-    bool        is_lib;
-
-    is_lib = ( typ == FT_LIBRARY );
-
     if( IoSuppOpenSrc( filename, typ ) ) {
         PpStartFile();
         return( true );
     }
-    save = CompFlags.cpp_output;
-    if( CompFlags.cpp_output ) {
-        PrtChar( PreProcChar );
-        PrtString( "include ");
-        if( is_lib ) {
-            PrtChar( '<' );
-        } else {
-            PrtChar( '"' );
-        }
-        PrtString( filename );
-        if( is_lib ) {
-            PrtChar( '>' );
-        } else {
-            PrtChar( '"' );
-        }
-        CompFlags.cpp_output = false;
-    }
     if( !CompFlags.ignore_fnf ) {
         CErr2p( ERR_CANT_OPEN_FILE, filename );
     }
-    CompFlags.cpp_output = save;
     return( false );
 }
 
@@ -332,7 +310,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 }
                 CompFlags.cpp_output = true;
                 if( ForceInclude != NULL ) {
-                    EmitLine( 1, WholeFName );
+                    CppEmitPoundLine( 1, WholeFName, EL_NULL );
                     CtxSetCurrContext( CTX_FORCED_INCS );
                     if( openForceIncludeFile() ) {
                         PpParse();
@@ -376,10 +354,10 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 ModuleInitFini();
                 ScopeEndFileScope();
 #ifndef NDEBUG
-                if( PragDbgToggle.dump_scopes ) {
+                if( TOGGLEDBG( dump_scopes ) ) {
                     DumpScopes();
                 }
-                if( PragDbgToggle.dump_hash ) {
+                if( TOGGLEDBG( dump_hash ) ) {
                     DumpHashStats();
                 }
 #endif
@@ -601,7 +579,9 @@ int WppCompile(                 // MAIN-LINE (DLL)
     stackZap();
     InitFiniStartup( &exitPointStart );
     ExitPointAcquire( mem_management );
+#ifndef NDEBUG
     DbgHeapInit();
+#endif
     if( dll_data->cmd_line != NULL ) {
         char* vect[4];
         unsigned i = 1;
@@ -651,7 +631,9 @@ int WppCompile(                 // MAIN-LINE (DLL)
             exit_status = WPP_FATAL;
         }
     }
+#ifndef NDEBUG
     DbgHeapFini();
+#endif
     ExitPointRelease( mem_management );
     return( exit_status );
 }

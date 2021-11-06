@@ -15,7 +15,7 @@ argument with the states stored in the object pointed by
 argument. The value pointed by the
 .arg flagp
 argument shall have been set by a previous call to
-.kw fegetexceptflag
+.reffunc fegetexceptflag
 whose second argument represented at least those floating-point exceptions
 represented by the
 .arg excepts
@@ -23,8 +23,8 @@ argument. This function does not raise
 floating-point exceptions, but only sets the state of the flags.
 .np
 For valid exception values see
-.seekw &function. fegetexceptflag
-.ct .li .
+.reffunc fegetexceptflag
+.period
 .desc end
 .*
 .return begin
@@ -37,7 +37,7 @@ the appropriate state. Otherwise, it returns a nonzero value.
 .return end
 .*
 .see begin
-.seelist feclearexcept fegetexceptflag feraisexcept fetestexcept
+.seelist feclearexcept fegetexceptflag feraiseexcept fetestexcept
 .see end
 .*
 .exmp begin

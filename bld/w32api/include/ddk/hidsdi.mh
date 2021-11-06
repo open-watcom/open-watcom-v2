@@ -15,7 +15,7 @@
 :include cpluspro.sp
 
 /* All structures in this file get four-byte packing. */
-#include <pshpack4.h>
+:include pshpack4.sp
 
 /* HID configuration */
 typedef struct _HIDD_CONFIGURATION {
@@ -35,7 +35,7 @@ typedef struct _HIDD_ATTRIBUTES {
 typedef HIDD_ATTRIBUTES *PHIDD_ATTRIBUTES;
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 /* Functions in HID.DLL */
 BOOLEAN __stdcall   HidD_FlushQueue( HANDLE );

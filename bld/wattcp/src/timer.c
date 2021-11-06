@@ -298,9 +298,10 @@ const char *time_str (DWORD val)
 {
   static char buf[30];
 
-  if (has_8254 || has_rdtsc)
-       sprintf (buf, "%.3f", (double)val/1000.0);
-  else sprintf (buf, "%.2f", (double)val/18.2);
+  if (!has_8254 && !has_rdtsc) {
+      val *= 55;    /* one tick is 55 ms */
+  }
+  sprintf (buf, "%d.%3d", val / 1000, val % 1000 );
   return (buf);
 }
 #endif /* USE_DEBUG */

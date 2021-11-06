@@ -1,4 +1,4 @@
-.func begin bessel Functions
+.func begin Bessel Functions
 .func2 j0
 .func2 j1
 .func2 jn
@@ -22,49 +22,46 @@ double yn( int n, double x );
 .ixfunc2 '&Math' yn
 .synop end
 .desc begin
-.ix '&Math' 'bessel Functions'
+.ix '&Math' 'Bessel Functions'
 Functions
-.kw j0
-.ct,
-.kw j1
-.ct,
-and
-.kw jn
-return Bessel functions of the first kind.
+.reffunc j0
+.ct ,
+.reffunc j1
+.ct , and
+.reffunc jn
+return Bessel Functions of the first kind.
 .pp
 Functions
-.kw y0
-.ct,
-.kw y1
-.ct,
-and
-.kw yn
-return Bessel functions of the second kind.
+.reffunc y0
+.ct ,
+.reffunc y1
+.ct , and
+.reffunc yn
+return Bessel Functions of the second kind.
 The argument
 .arg x
 must be positive.
 If
 .arg x
 is negative,
-.kw _matherr
+.reffunc _matherr
 will be called to print a DOMAIN error message to
 .kw stderr
-.ct,
-set
+.ct , set
 .kw errno
 to
 .kw EDOM
-.ct,
-and return the value
-.id -HUGE_VAL.
+.ct , and return the value
+.id -HUGE_VAL
+.period
 This error handling can be modified by using the
-.kw matherr
+.reffunc matherr
 routine.
 .desc end
 .return begin
-These functions return the result of the desired Bessel function of
+These functions return the result of the desired Bessel Function of
 .arg x
-.ct .li .
+.period
 .return end
 .see begin
 .seelist matherr

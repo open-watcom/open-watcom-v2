@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,20 +105,6 @@
 
 #define altCodeSegId    codeSegId
 
-typedef enum {
-    OFC_LOBYTE              = 0,    /* not used */
-    OFC_OFFSET              = 1,
-    OFC_BASE                = 2,
-    OFC_PTR                 = 3,
-    OFC_HIBYTE              = 4,    /* not used */
-    OFC_PHAR_OFFSET         = 5,
-    OFC_LDR_OFFSET          = 5,
-    OFC_PHAR_PTR            = 6,
-    OFC_MS_OFFSET_32        = 9,
-    OFC_MS_PTR              = 11,
-    OFC_MS_LDR_OFFSET_32    = 13,
-} omf_fix_class;
-
 #include "pushpck1.h"
 typedef struct line_num_entry {
     unsigned_16     line;
@@ -139,8 +125,8 @@ typedef struct virt_func_ref_list {
 
 typedef struct dbg_seg_info {
     segment_id  *segid;
-    char        *seg_name;
-    char        *class_name;
+    const char  *seg_name;
+    const char  *class_name;
 } dbg_seg_info;
 
 
@@ -185,13 +171,13 @@ static  omf_idx         NameIndex;
 static  lname_cache     *NameCache;
 static  lname_cache     *NameCacheDumped;
 
-static char *FPPatchName[] = {
+static const char *FPPatchName[] = {
     #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) name,
     #include "fppatche.h"
     #undef pick_fp
 };
 
-static char *FPPatchAltName[] = {
+static const char *FPPatchAltName[] = {
     #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) alt_name,
     #include "fppatche.h"
     #undef pick_fp
@@ -508,7 +494,7 @@ static  void    OutBuffer( const void *name, unsigned len, array_control *dest )
     dest->used = need;
 }
 
-static  cmd_omf    PickOMF( cmd_omf cmd )
+static  omf_cmd    PickOMF( omf_cmd cmd )
 /***************************************/
 {
 #ifdef _OMF_32
@@ -522,7 +508,7 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
 /******************************************************/
 {
     object      *obj;
-    cmd_omf     cmd;
+    omf_cmd     cmd;
 
     /* unused parameters */ (void)use_16;
 
@@ -1283,7 +1269,7 @@ segment_id  AskCode16Seg( void )
 static  void    EjectImports( void )
 /**********************************/
 {
-    cmd_omf     cmd;
+    omf_cmd     cmd;
 
     if( Imports != NULL && Imports->used > 0 ) {
         if( GenStaticImports ) {
@@ -1342,7 +1328,7 @@ static void     EjectLEData( void )
 /*********************************/
 {
     object      *obj;
-    cmd_omf     cmd;
+    omf_cmd     cmd;
 
     EjectImports();
     if( CurrSeg->obj->data.used > CurrSeg->data_prefix_size ) {
@@ -1552,7 +1538,7 @@ static  void    GenComdef( void )
     unsigned_8          ind;
     unsigned            size;
     cg_sym_handle       sym;
-    cmd_omf             cmd;
+    omf_cmd             cmd;
 
     if( CurrSeg->comdat_label != NULL &&
         CurrSeg->max_written < CurrSeg->comdat_size ) {
@@ -1617,7 +1603,7 @@ static  void    EjectExports( void )
 /**********************************/
 {
     object      *obj;
-    cmd_omf     cmd;
+    omf_cmd     cmd;
 
     obj = CurrSeg->obj;
     if( obj->exports != NULL && obj->exports->used > 0 ) {
@@ -1635,7 +1621,7 @@ static  void    EjectExports( void )
 static  void    FlushLineNum( object *obj )
 /*****************************************/
 {
-    cmd_omf     cmd;
+    omf_cmd     cmd;
 
     if( obj->line_info ) {
         if( CurrSeg->comdat_label != NULL ) {
@@ -1687,7 +1673,7 @@ static  index_rec       *AskIndexRec( unsigned_16 sidx )
     return( rec );
 }
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 #define _TargetInt _TargetShort
 #else
 #define _TargetInt _TargetBigInt
@@ -2222,7 +2208,7 @@ void    OutDLLExport( uint words, cg_sym_handle sym )
     obj->data.used = 0;
     OutShort( EXPORT_COMMENT, &obj->data );
     OutByte( 2, &obj->data );
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     OutByte( words, &obj->data );
 #else
     // this should be 0 for everything except callgates to
@@ -2358,46 +2344,46 @@ void    *InitPatch( void )
 }
 
 
-static omf_fix_class getOMFFixClass( fix_class class )
-/****************************************************/
+static omf_fix_loc getOMFFixLoc( fix_class class )
+/************************************************/
 {
 #if _TARGET & _TARG_80386
     if( class & F_FAR16 ) {
         /* want a 16:16 fixup for a __far16 call */
-        return( OFC_PTR );
+        return( LOC_BASE_OFFSET );
     }
 #endif
     switch( F_CLASS( class ) ) {
     case F_BASE:
-        return( OFC_BASE );
-#if _TARGET & _TARG_IAPX86
+        return( LOC_BASE );
+#if _TARGET & _TARG_8086
     case F_OFFSET:
-        return( OFC_OFFSET );
+        return( LOC_OFFSET );
     case F_BIG_OFFSET:
-        return( OFC_MS_OFFSET_32 );
+        return( LOC_OFFSET_32 );
     case F_LDR_OFFSET:
-        return( OFC_LDR_OFFSET );
+        return( LOC_OFFSET_LOADER );
     case F_PTR:
-        return( OFC_PTR );
+        return( LOC_BASE_OFFSET );
 #else
     case F_OFFSET:
     case F_BIG_OFFSET:
         if( _IsTargetModel( EZ_OMF ) ) {
-            return( OFC_PHAR_OFFSET );
+            return( LOC_PHARLAP_OFFSET_32 );
         } else {
-            return( OFC_MS_OFFSET_32 );
+            return( LOC_OFFSET_32 );
         }
     case F_LDR_OFFSET:
         if( _IsTargetModel( EZ_OMF ) ) {
-            return( OFC_PHAR_OFFSET );
+            return( LOC_PHARLAP_OFFSET_32 );
         } else {
-            return( OFC_MS_LDR_OFFSET_32 );
+            return( LOC_OFFSET_32_LOADER );
         }
     case F_PTR:
         if( _IsTargetModel( EZ_OMF ) ) {
-            return( OFC_PHAR_PTR );
+            return( LOC_PHARLAP_BASE_OFFSET_32 );
         } else {
-            return( OFC_MS_PTR );
+            return( LOC_BASE_OFFSET_32 );
         }
 #endif
     default:
@@ -2430,7 +2416,7 @@ static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_i
     cursor = &_ARRAY( &obj->fixes, fixup );
     obj->fixes.used = need;
     where = CurrSeg->location - obj->start;
-    cursor->locatof = b + ( getOMFFixClass( class ) << S_LOCAT_LOC ) + ( where >> 8 );
+    cursor->locatof = b + ( getOMFFixLoc( class ) << S_LOCAT_LOC ) + ( where >> 8 );
     cursor->fset = where;
     if( base != BASE_IMP ) {
         rec = AskIndexRec( sidx );
@@ -2640,7 +2626,7 @@ static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
                  DFLineNum( &info, lc );
             }
         } else if( _IsModel( DBG_CV ) ) {
-            char *fname;
+            const char  *fname;
 
             if( info.fno != CurrFNo ) {
                 fname = SrcFNoFind( info.fno );
@@ -3089,7 +3075,7 @@ void    OutDBytes( unsigned len, const byte *src )
 void    OutIBytes( byte pat, offset len )
 /***************************************/
 {
-    cmd_omf     cmd;
+    omf_cmd     cmd;
     object      *obj;
 
     SetPendingLine();

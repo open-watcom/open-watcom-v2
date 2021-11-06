@@ -11,23 +11,23 @@ The
 function writes output directly to the console under control
 of the argument
 .arg format
-.ct .li .
+.period
 The
-.kw putch
+.reffunc putch
 function is used to output characters to the console.
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
 The
 .id &funcb.
 function is equivalent to the
-.kw cprintf
+.reffunc cprintf
 function, with the variable argument list replaced with
 .arg arg
 .ct , which has been initialized by the
-.kw va_start
+.reffunc va_start
 macro.
 .desc end
 .return begin

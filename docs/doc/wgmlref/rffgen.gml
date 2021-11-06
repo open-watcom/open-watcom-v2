@@ -22,10 +22,10 @@ limited, special purpose uses.
 :P.
 The general format of a file specification is as
 :I1 id='filespe'.file specification
-follows (items enclosed in brackets(\(\)) are
+follows (items enclosed in brackets([]) are
 optional):
 :XMP.
-\((attribute\(:attribute...\))\)file-designation
+[(attribute[:attribute...])]file-designation
 :eXMP.
 :PC.
 There are two components of a file specification.

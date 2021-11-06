@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of strrev() and _wcsrev().
+* Description:  Implementation of _strrev() and _wcsrev().
 *
 ****************************************************************************/
 
@@ -33,11 +34,8 @@
 #include "widechar.h"
 #include <ctype.h>
 #include <string.h>
+#include "libwchar.h"
 
-
-#if defined(__WIDECHAR__)
-extern size_t wcslen( const CHAR_TYPE * );
-#endif
 
 #if defined( _M_I86 ) && !defined(__WIDECHAR__)
 
@@ -136,7 +134,7 @@ extern void fast_rev( char *, char _WCFAR * );
 #endif
 
 
-_WCRTLINK CHAR_TYPE *__F_NAME(strrev,_wcsrev)( CHAR_TYPE *str ) /* reverse characters in string */
+_WCRTLINK CHAR_TYPE *__F_NAME(_strrev,_wcsrev)( CHAR_TYPE *str ) /* reverse characters in string */
 {
 #if  defined( _M_I86 ) && !defined(__WIDECHAR__)
     fast_rev( str, (char _WCFAR *)str );

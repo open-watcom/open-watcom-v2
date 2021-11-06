@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +36,6 @@
     #include <process.h>
 #endif
 #include <stdlib.h>
-#include "guix.h"
-#include "guiscale.h"
 #include "guixloop.h"
 #include "guixutil.h"
 #include "guicolor.h"
@@ -120,7 +118,7 @@ static void MessageLoop( void )
     uipoplist( /* GUIAllEvents */ );
 }
 
-void GUICleanup( void )
+void GUIAPI GUICleanup( void )
 {
     GUIDeath();                 /* user replaceable stub function */
     uirefresh();
@@ -202,7 +200,7 @@ void GUIXSetupWnd( gui_window *wnd )
     wnd->background = ' ';
 }
 
-bool GUISetBackgroundChar( gui_window *wnd, char background )
+bool GUIAPI GUISetBackgroundChar( gui_window *wnd, char background )
 {
     wnd->background = background;
     return( true );
@@ -212,12 +210,12 @@ bool GUISetBackgroundChar( gui_window *wnd, char background )
  * GUIXCreateWindow - create a UI window
  */
 
-bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *parent )
+bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *parent_wnd )
 {
-    if( parent != NULL ) {
-        wnd->sibling = parent->child;
-        parent->child = wnd;
-        wnd->parent = parent;
+    if( parent_wnd != NULL ) {
+        wnd->sibling = parent_wnd->child;
+        parent_wnd->child = wnd;
+        wnd->parent = parent_wnd;
     } else {
         if( (dlg_info->style & GUI_POPUP) == 0 ) {
             wnd->flags |= IS_ROOT;
@@ -247,7 +245,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
             return( false );
         }
         GUIBringToFront( wnd );
-        GUIWholeWndDirty( wnd );
+        GUIDirtyWhole( wnd );
         uisetmouse( wnd->vs.area.row, wnd->vs.area.col );
         return( true );
     } else {
@@ -255,17 +253,17 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     }
 }
 
-void GUIShowWindow( gui_window *wnd )
+void GUIAPI GUIShowWindow( gui_window *wnd )
 {
     uivshow( &wnd->vs );
 }
 
-void GUIShowWindowNA( gui_window *wnd )
+void GUIAPI GUIShowWindowNA( gui_window *wnd )
 {
     GUIShowWindow( wnd );
 }
 
-bool GUIIsFirstInstance( void )
+bool GUIAPI GUIIsFirstInstance( void )
 {
     return( true );
 }

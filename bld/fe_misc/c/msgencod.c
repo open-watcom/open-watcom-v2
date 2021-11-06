@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,11 +48,13 @@
 #include "watcom.h"
 #include "lsspec.h"
 #include "encodlng.h"
+#include "cvttable.h"
 
 #include "clibext.h"
 
 
 #define ALL_TAGS \
+def_tag( cmt ) \
 def_tag( msggrp ) \
 def_tag( emsggrp ) \
 def_tag( msggrptxt ) \
@@ -62,6 +64,7 @@ def_tag( msggrpstr ) \
 def_tag( msgsym ) \
 def_tag( msgtxt ) \
 def_tag( msgjtxt ) \
+def_tag( msgattr ) \
 def_tag( ansi ) \
 def_tag( ansierr ) \
 def_tag( ansiwarn ) \
@@ -76,19 +79,11 @@ def_tag( errbreak ) \
 def_tag( style ) \
 def_tag( jck ) \
 
-typedef enum {
-#define def_tag( e ) TAG_##e,
-    ALL_TAGS
-#undef def_tag
-    TAG_MAX
-} tag_id;
+#define NEXT_ARG() \
+        --argc1; ++argv1
 
-static const char *tagNames[] = {
-#define def_tag( e ) #e "." ,
-    ALL_TAGS
-#undef def_tag
-    NULL
-};
+#define NEXT_ARG_CHECK() \
+        --argc1; ++argv1; if( argc1 < NUM_FILES ) { return( 1 ); }
 
 #define ALL_MSG_TYPES \
 def_msg_type( ERROR, "ERR_" ) \
@@ -100,12 +95,104 @@ def_msg_type( ANSIWARN, "ANSIWARN_" ) \
 def_msg_type( STYLE, "WARN_" ) \
 def_msg_type( JCK, "JCK_" ) \
 
+// encoding
+#define MAX_MSGWORD_LEN 31
+#define ENC_BIT         0x80
+#define LARGE_BIT       0x40
+#define USE_SMALL_ENC   0x3f
+
+#define NO_INDEX        (unsigned)(-1)
+
+#define IS_ASCII(c)     (c < 0x80)
+
+#define LINE_SIZE       (512)
+
+#define SKIP_SPACES(s)  while( isspace( *s ) ) s++
+
+typedef enum {
+#define def_tag( e ) TAG_##e,
+    ALL_TAGS
+#undef def_tag
+    TAG_MAX
+} tag_id;
+
 typedef enum {
 #define def_msg_type( e, p )    MSG_TYPE_##e,
     ALL_MSG_TYPES
     def_msg_type( END, "" )
 #undef def_msg_type
 } msg_type;
+
+typedef enum {
+    EK_NULL,
+    EK_BAD,
+    EK_GOOD,
+} err_type;
+
+typedef struct msggroup {
+    struct msggroup *next;
+    char        *prefix;
+    unsigned    msgIndex;    //first msg in group
+    unsigned    emsgIndex;   //last message + 1
+    unsigned    num;
+    char        name[1];
+} msggroup, MSGGROUP;
+
+typedef struct msgword {
+    struct msgword *sortedByName[2];
+    struct msgword *sortedByRef[2];
+    struct msgword *all;
+    unsigned    len;
+    unsigned    index;
+    unsigned    references;
+    char        name[1];
+} msgword, MSGWORD;
+
+typedef struct msgwordref {
+    struct msgwordref *next;
+    MSGWORD     *word;
+} msgwordref, MSGWORDREF;
+
+typedef struct msgsym {
+    struct msgsym *next;
+    struct msgsym *sortedByName[2];
+    char        *lang_txt[LANG_MAX];
+    char        *fname;
+    char        *attr;
+    unsigned    line;
+    unsigned    index;
+    unsigned    grpIndex;  //msg index in group
+    msg_type    mtype;
+    unsigned    level;
+    unsigned    style : 1;
+    MSGGROUP    *grp;
+    MSGWORDREF  *words;
+    char        name[1];
+} msgsym, MSGSYM;
+
+typedef struct data_word_tables {
+    unsigned    current_base;
+    unsigned    *word_base;
+    MSGWORD     **keep_base;
+    unsigned    current_text;
+} data_word_tables;
+
+typedef int (*comp_fn)(const void *,const void *);
+
+const char *langName[] = {
+    #define LANG_DEF( id, dbcs )        #id ,
+    LANG_DEFS
+    #undef LANG_DEF
+};
+
+unsigned langTextCount[LANG_MAX];
+
+static const char *tagNames[] = {
+#define def_tag( e ) #e,
+    ALL_TAGS
+#undef def_tag
+    NULL
+};
 
 static const char *msgTypeNames[] = {
 #define def_msg_type( e, p )    "MSG_TYPE_" #e ,
@@ -119,61 +206,6 @@ static const char *msgTypeNamesGP[] = {
 #undef def_msg_type
 };
 
-const char *langName[] = {
-    #define LANG_DEF( id, dbcs )        #id ,
-    LANG_DEFS
-    #undef LANG_DEF
-};
-
-unsigned langTextCount[LANG_MAX];
-
-typedef struct msggroup MSGGROUP;
-typedef struct msgsym MSGSYM;
-typedef struct word MSGWORD;
-typedef struct wordref MSGWORDREF;
-
-struct msggroup {
-    MSGGROUP    *next;
-    char        prefix[3];
-    unsigned    msgIndex;    //first msg in group
-    unsigned    emsgIndex;   //last message + 1
-    unsigned    num;
-    char        name[1];
-};
-
-struct msgsym {
-    MSGSYM      *next;
-    MSGSYM      *sortedByName[2];
-    char        *lang_txt[LANG_MAX];
-    char        *fname;
-    unsigned    line;
-    unsigned    index;
-    unsigned    grpIndex;  //msg index in group
-    msg_type    mtype;
-    unsigned    level;
-    unsigned    style : 1;
-    MSGGROUP    *grp;
-    MSGWORDREF  *words;
-    char        name[1];
-};
-
-struct word {
-    MSGWORD     *sortedByName[2];
-    MSGWORD     *sortedByRef[2];
-    MSGWORD     *all;
-    unsigned    len;
-    unsigned    index;
-    unsigned    references;
-    char        name[1];
-};
-
-struct wordref {
-    MSGWORDREF  *next;
-    MSGWORD     *word;
-};
-
-#define LINE_SIZE       (512)
-
 static struct {
     boolbit     international           : 1;    // - dump internationalized data
     boolbit     quiet                   : 1;    // - quiet mode
@@ -181,16 +213,13 @@ static struct {
     boolbit     grouped                 : 1;    // - groups detected
     boolbit     have_msg                : 1;    // - have first message
     boolbit     gen_gpick               : 1;    // - generate generalized pick macros and tables
+    boolbit     rc                      : 1;    // - generate files for resource compiler
     boolbit     ignore_prefix           : 1;    // - ignore matching XXX_ prefix with message type
-    boolbit     warnings_always_rebuild : 1;    // - warnings gen files with old dates to constantly force rebuilds
     boolbit     no_warn                 : 1;    // - don't print warning messages
+    boolbit     out_utf8                : 1;    // - output texts uses UTF-8 encoding
+    unsigned    max_len;                        //...max length of message
+    char        rc_macro[80];                   //...macro used for resource compiler files
 } flags;
-
-typedef enum {
-    EK_NULL,
-    EK_BAD,
-    EK_GOOD,
-} err_type;
 
 static struct {
     unsigned    line;
@@ -198,11 +227,12 @@ static struct {
     boolbit     active : 1;
 } examples;
 
-static char *ifname;
+static char ifname[PATH_MAX] = {0};
 static FILE *i_gml;
 static FILE *o_msgc;
 static FILE *o_msgh;
 static FILE *o_levh;
+static FILE *o_attrh;
 
 static MSGWORD *allWords;
 static MSGWORD *nameWords;
@@ -220,9 +250,8 @@ static unsigned messageCounter;
 static unsigned line;
 static unsigned errors;
 static unsigned warnings;
-static unsigned nextOutputFName;
 
-static const char *outputFNames[10];
+static int  fno = 0;
 
 static char *entireGML;
 static char *currGML;
@@ -242,16 +271,30 @@ static size_t maxMsgLen;
 static size_t totalMsgLen;
 static size_t totalBytes;
 
-// some local functions which need predefining
-static void outputNum (FILE *fp, unsigned n);
+/*
+ * Shift-JIS (CP932) lead byte ranges
+ * 0x81-0x9F
+ * 0xE0-0xFC
+ */
+static cvt_chr cvt_table_932[] = {
+    #define pickb(s,u) {s, u},
+    #define picki(s,u)
+    #include "cp932uni.h"
+    #undef picki
+    #undef pickb
+};
 
-// encoding
-#define MAX_MSGWORD_LEN 31
-#define ENC_BIT         0x80
-#define LARGE_BIT       0x40
-#define USE_SMALL_ENC   0x3f
+#if 0
+static int compare_enc( const cvt_chr *p1, const cvt_chr *p2 )
+{
+    return( p1->s - p2->s );
+}
+#endif
 
-#define NO_INDEX        (unsigned)(-1)
+static int compare_utf8( const cvt_chr *p1, const cvt_chr *p2 )
+{
+    return( p1->u - p2->u );
+}
 
 static void error( const char *f, ... )
 {
@@ -300,102 +343,66 @@ static void fatal( const char *m )
     exit( EXIT_FAILURE );
 }
 
-static void initFILE( FILE **f, const char *n, const char *m )
+static void fatal1( const char *m, const char *p )
 {
-    *f = fopen( n, m );
-    if( *f == NULL ) {
-        fatal( "cannot open file" );
-    }
-    if( m[0] == 'r' ) {
-    } else {
-        // write access
-        outputFNames[nextOutputFName++] = n;
-    }
+    error( "fatal: %s (%s)\n", m, p );
+    exit( EXIT_FAILURE );
 }
 
-static void processOptions( char **argv )
+static FILE *initFILE( const char *fnam, const char *fmod )
 {
-    if( strcmp( *argv, "-w" ) == 0 ) {
-        flags.warnings_always_rebuild = true;
-        ++argv;
-    }
-    if( strcmp( *argv, "-s" ) == 0 ) {
-        flags.no_warn = true;
-        ++argv;
-    }
-    if( strcmp( *argv, "-i" ) == 0 ) {
-        flags.international = true;
-        ++argv;
-    }
-    if( strcmp( *argv, "-ip" ) == 0 ) {
-        flags.ignore_prefix = true;
-        ++argv;
-    }
-    if( strcmp( *argv, "-q" ) == 0 ) {
-        flags.quiet = true;
-        ++argv;
-    }
-    if( strcmp( *argv, "-p" ) == 0 ) {
-        flags.gen_pick = true;
-        ++argv;
-    }
-    if( strcmp( *argv, "-g" ) == 0 ) {
-        flags.gen_gpick = true;
-        ++argv;
-    }
-    ifname = *argv;
-    initFILE( &i_gml, *argv, "rb" );
-    ++argv;
-    initFILE( &o_msgc, *argv, "w" );
-    ++argv;
-    initFILE( &o_msgh, *argv, "w" );
-    ++argv;
-    initFILE( &o_levh, *argv, "w" );
-    ++argv;
-    if( *argv ) {
-        fatal( "invalid argument" );
-    }
-}
+    FILE        *fp;
+    bool        open_read;
 
-static size_t skipSpace( const char *start )
-{
-    const char  *p;
-
-    for( p = start; *p != '\0'; ++p ) {
-        if( !isspace( *p ) ) {
-            break;
+    fp = NULL;
+    open_read = ( strchr( fmod, 'r' ) != NULL );
+    if( open_read || fnam[0] != '.' || fnam[1] != '\0' ) {
+        fp = fopen( fnam, fmod );
+        if( fp == NULL ) {
+            printf( "fatal: cannot open '%s' for %s\n", fnam, ( open_read ) ? "input" : "output" );
+            exit( EXIT_FAILURE );
         }
     }
-    return( p - start );
+    return( fp );
 }
 
-static size_t skipNonSpace( char *t, const char *start )
+static const char *nextWord( char *t, const char *s )
 {
-    const char  *p;
-
-    for( p = start; *p != '\0'; ++p ) {
-        if( isspace( *p ) ) {
+    while( *s != '\0' ) {
+        if( isspace( *s ) ) {
             break;
         }
-        *t++ = *p;
+        *t++ = *s++;
     }
     *t = '\0';
-    return( p - start );
+    return( s );
+}
+
+static const char *nextTag( char *t, const char *s )
+{
+    while( *s != '\0' ) {
+        if( isspace( *s ) ) {
+            break;
+        }
+        if( *s == '.' ) {
+            s++;
+            break;
+        }
+        *t++ = *s++;
+    }
+    *t = '\0';
+    SKIP_SPACES( s );
+    return( s );
 }
 
 static tag_id getId( const char *p, const char **update_p )
 {
     const char  **tc;
 
-    p += skipNonSpace( tag, p );
-    if( p[-1] != '.' ) {
-        error( "tag missing '.': %s\n", tag );
-        return( TAG_MAX );
-    }
-    p += skipSpace( p );
-    *update_p = p;
+    p = nextTag( tag, p );
     for( tc = tagNames; *tc != NULL; ++tc ) {
         if( stricmp( tag, *tc ) == 0 ) {
+            *update_p = p;
             return( tc - tagNames );
         }
     }
@@ -413,24 +420,19 @@ static MSGSYM *mustBeProceededByMSGSYM( void )
     return( (MSGSYM*)currMSGSYM );
 }
 
-static unsigned pickUpNum( const char *p )
+static unsigned long pickUpNum( const char *p )
 {
-    unsigned num;
+    unsigned long   num;
+    char            *end;
 
-    num = 0;
-    for( p += skipSpace( p ); *p != '\0'; ++p ) {
-        if( !isdigit( *p ) )
-            break;
-        num *= 10;
-        num += *p - '0';
-    }
+    num = strtoul( p, &end, 0 );
     return( num );
 }
 
 
 static unsigned pickUpLevel( const char *p )
 {
-    unsigned level;
+    unsigned long   level;
 
     level = pickUpNum( p );
     if( level == 0 || level > 15 ) {
@@ -469,6 +471,7 @@ static MSGSYM *addToSorted( MSGSYM *m )
 #define do_msgjgrptxt   NULL
 #define do_ansicomp     NULL
 #define do_errbreak     NULL
+#define do_cmt          NULL
 
 static void noActive( err_type kind )
 {
@@ -528,24 +531,20 @@ static void do_msggrptxt( const char *p )
 static void do_msggrpstr( const char *p )
 {
     MSGGROUP *grp;
-    size_t len;
 
     grp = currGroup;
-    p += skipNonSpace( group, p );
-    len = strlen( group );
-    if( len > 2 ) {
-        error( ":msggrpstr value '%s' is too long\n", group );
-        len = 2;
-    }
+    nextWord( group, p );
     if( grp != NULL ) {
-        strncpy( grp->prefix, group, len ); //default
-        grp->prefix[len] = '\0';
+        if( grp->prefix != grp->name )
+            free( grp->prefix );
+        grp->prefix = strdup( group );  //default
     }
 }
 
 static void do_msggrpnum( const char *p )
 {
     MSGGROUP *grp;
+
     grp = currGroup;
     groupIndex = pickUpNum( p );
     if( grp != NULL ) {
@@ -588,9 +587,9 @@ static void do_msggrp( const char *p )
         }
     }
     flags.grouped = true;
-    p += skipNonSpace( group, p );
+    nextWord( group, p );
     len = strlen( group );
-    if( !flags.gen_gpick && len != 2 ) {
+    if( !flags.rc && !flags.gen_gpick && len != 2 ) {
         error( ":msggroup code '%s' not two characters\n", group );
         switch( len ) {
         case 0 :
@@ -609,9 +608,8 @@ static void do_msggrp( const char *p )
     strcpy( grp->name, group );
     messageIndex = 0;
     grp->msgIndex = messageCounter;
-    grp->num = groupIndex; //set with default
-    strncpy( grp->prefix, group, 2 ); //default
-    grp->prefix[2] = '\0';
+    grp->num = groupIndex;      //set with default
+    grp->prefix = grp->name;    //default
     currGroup = grp;
     end = &allGroups;
     saw_dup = false;
@@ -633,36 +631,29 @@ static void do_msggrp( const char *p )
 static void do_msgsym( const char *p )
 {
     MSGSYM  *msg;
-    int     i;
     size_t  len;
 
     ++messageCounter;
     flags.have_msg = true;
-    p += skipNonSpace( sym, p );
-    len = strlen( sym );
-    msg = malloc( sizeof( *msg ) + len );
-    msg->next = *currMSGSYM;
-    *currMSGSYM = msg;
-    currMSGSYM = &(msg->next);
-    msg->sortedByName[0] = NULL;
-    msg->sortedByName[1] = NULL;
-    msg->fname = ifname;
-    msg->line = line;
-    msg->grpIndex =  messageIndex;
-    msg->index = groupIndex + messageIndex;
+    nextWord( sym, p );
+    if( strcmp( sym, "UNUSED" ) != 0 ) {
+        len = strlen( sym );
+        msg = calloc( 1, sizeof( *msg ) + len );
+        msg->next = *currMSGSYM;
+        *currMSGSYM = msg;
+        currMSGSYM = &(msg->next);
+        msg->fname = ifname;
+        msg->line = line;
+        msg->grpIndex = messageIndex;
+        msg->index = groupIndex + messageIndex;
+        msg->mtype = MSG_TYPE_ERROR;
+        strcpy( msg->name, sym );
+        if( addToSorted( msg ) != NULL ) {
+            error( "message name has been used before '%s'\n", sym );
+        }
+        msg->grp = currGroup;
+    }
     ++messageIndex;
-    msg->level = 0;
-    msg->style = 0;
-    msg->mtype = MSG_TYPE_ERROR;
-    for( i = LANG_MIN; i < LANG_MAX; ++i ) {
-        msg->lang_txt[i] = NULL;
-    }
-    msg->words = NULL;
-    strcpy( msg->name, sym );
-    if( addToSorted( msg ) != NULL ) {
-        error( "message name has been used before '%s'\n", sym );
-    }
-    msg->grp = currGroup;
 }
 
 static size_t commonTxt( const char *p )
@@ -693,6 +684,13 @@ static void do_msgjtxt( const char *p )
     if( p[0] ) {
         langTextCount[LANG_Japanese]++;
     }
+}
+
+static void do_msgattr( const char *p )
+{
+    MSGSYM *m = mustBeProceededByMSGSYM();
+
+    m->attr = strdup( p );
 }
 
 static void do_info( const char *p )
@@ -807,8 +805,7 @@ static char *inputIO( void )
         if( c == '\n' )
             break;
         if( c == '\r' && p[1] == '\n' ) {
-            *p = '\0';
-            ++p;
+            *p++ = '\0';
             break;
         }
         ++p;
@@ -851,9 +848,11 @@ static int percentPresent( char c, const char *p )
         return( 1 );
     }
     for( ; *p != '\0'; ++p ) {
-        if( *p != '%' ) continue;
+        if( *p != '%' )
+            continue;
         f = *++p;
-        if( f == '\0' ) break;
+        if( f == '\0' )
+            break;
         if( f == c ) {
             return( 1 );
         }
@@ -877,12 +876,15 @@ static void checkReplacements( MSGSYM *m, int start_lang, int end_lang )
             continue;
         }
         c = *++p;
-        if( c == '\0' ) break;
+        if( c == '\0' )
+            break;
         for( i = start_lang; i < end_lang; ++i ) {
             char *intl_text;
-            if( i == LANG_English ) continue;
+            if( i == LANG_English )
+                continue;
             intl_text = m->lang_txt[i];
-            if( intl_text == NULL ) continue;
+            if( intl_text == NULL )
+                continue;
             if( ! percentPresent( c, intl_text ) ) {
                 errorLocn( m->fname, m->line, "MSGSYM %s's %s text has format mismatch for %%%c\n", m->name,
                 langName[i], c );
@@ -900,7 +902,7 @@ static void checkMessages( void )
 
     for( m = messageSyms; m != NULL; m = m->next ) {
         if( flags.international ) {
-            start_lang = LANG_MIN;
+            start_lang = 0;
             end_lang = LANG_MAX;
         } else {
             start_lang = LANG_English;
@@ -929,7 +931,6 @@ static void readGML( void )
 {
     tag_id      tag_id;
     const char  *p;
-    void        (*process)( const char * );
 
     suckInFile();
     line = 0;
@@ -941,21 +942,15 @@ static void readGML( void )
         if( ibuff[0] != ':' ) {
             continue;
         }
-        if( tolower( ibuff[1] ) == 'c'
-          && tolower( ibuff[2] ) == 'm'
-          && tolower( ibuff[3] ) == 't' ) {
-            continue;
-        }
         tag_id = getId( ibuff + 1, &p );
         if( tag_id == TAG_MAX ) {
             continue;
         }
-        process = processLine[tag_id];
-        if( process != NULL ) {
-            process( p );
+        if( processLine[tag_id] != NULL ) {
+            processLine[tag_id]( p );
         }
     }
-    messageIndex=0;
+    messageIndex = 0;
     checkMessages();
     if( errors > 0 ) {
         fatal( "cannot continue due to errors" );
@@ -975,7 +970,8 @@ static MSGWORD *addWord( MSGSYM *m )
     h = &nameWords;
     for( ;; ) {
         c = *h;
-        if( c == NULL ) break;
+        if( c == NULL )
+            break;
         s = strcmp( c->name, word );
         if( s < 0 ) {
             h = &(c->sortedByName[0]);
@@ -1041,7 +1037,8 @@ static void addRef( MSGWORD *w )
     h = &refWords;
     for( ;; ) {
         c = *h;
-        if( c == NULL ) break;
+        if( c == NULL )
+            break;
         s = cmpRef( w, c );
         if( s < 0 ) {
             h = &(c->sortedByRef[0]);
@@ -1087,19 +1084,19 @@ static void splitIntoWords( void )
     MSGWORD *w;
     MSGWORDREF *r;
     MSGWORDREF **a;
-    char *p;
+    const char *p;
 
     for( m = messageSyms; m != NULL; m = m->next ) {
         p = m->lang_txt[LANG_English];
         a = &(m->words);
         for( ;; ) {
-            if( p[0] && isspace( p[0] ) && isspace( p[1] ) ) {
+            if( isspace( p[0] ) && isspace( p[1] ) ) {
                 errorLocn( m->fname, m->line, "MSGSYM %s text has too many blanks '%s'\n", m->name, p );
             }
-            p += skipSpace( p );
+            SKIP_SPACES( p );
             if( *p == '\0' )
                 break;
-            p += skipNonSpace( word, p );
+            p = nextWord( word, p );
             w = addWord( m );
             r = malloc( sizeof( *r ) );
             r->word = w;
@@ -1127,181 +1124,92 @@ static void compressMsgs( void )
 
 static void writeExtraDefs( FILE *fp )
 {
-    fputc( '\n', fp );
-    fputs(
+    fprintf( fp,
+        "\n"
         "#define ENC_BIT 0x80\n"
         "#define LARGE_BIT 0x40\n"
-        "#define MAX_MSG ", fp );
-    outputNum( fp, (unsigned)maxMsgLen );
-    fputc( '\n', fp );
-    fputc( '\n', fp );
+        "#define MAX_MSG %u\n"
+        "\n",
+        (unsigned)maxMsgLen
+    );
 }
 
 static void writeMsgH( void )
 {
     MSGSYM *m;
 
-    if( !flags.gen_pick ) {
-        for( m = messageSyms; m != NULL; m = m->next ) {
-            fputs( "#define ", o_msgh );
-            fputs( m->name, o_msgh );
-            fputc( ' ', o_msgh );
-            outputNum( o_msgh, m->index );
-            fputc( '\n', o_msgh );
+    if( o_msgh != NULL ) {
+        if( flags.rc ) {
+            fputs( "\n", o_msgh );
+            for( m = messageSyms; m != NULL; m = m->next ) {
+                fprintf( o_msgh, "#define %s (%s+%u)\n",
+                    m->name, flags.rc_macro, m->grp->num + m->grpIndex  );
+            }
+            fputs( "\n", o_msgh );
+        } else if( flags.gen_gpick ) {
+            fputs(  "//MSG_DEF( name, group, kind, level, group_index )\n"
+                    "\n"
+                    "#define MSG_DEFS \\\n", o_msgh );
+            for( m = messageSyms; m != NULL; m = m->next ) {
+                if( m->grp != NULL ) {
+                    fprintf( o_msgh, "MSG_DEF( %s, %s, %s, %u, %u ) \\\n",
+                        m->name, m->grp->name, msgTypeNamesGP[m->mtype], m->level, m->grpIndex );
+                } else {
+                    fprintf( o_msgh, "MSG_DEF( %s, %s, %u, %u ) \\\n",
+                        m->name, msgTypeNamesGP[m->mtype], m->level, m->grpIndex );
+                }
+            }
+            fputs( "\n\n", o_msgh );
+        } else {
+            if( flags.gen_pick ) {
+                fputs( "#define MSG_DEFS \\\n", o_msgh );
+                for( m = messageSyms; m != NULL; m = m->next ) {
+                    fprintf( o_msgh, "MSG_DEF( %s, %u ) \\\n", m->name, m->index );
+                }
+                fputs( "\n\n", o_msgh );
+            } else {
+                for( m = messageSyms; m != NULL; m = m->next ) {
+                    fprintf( o_msgh, "#define %s %u\n", m->name, m->index );
+                }
+                fputs( "\n"
+                       "typedef struct msg_level_info {\n"
+                       "  unsigned    type : 4;\n"
+                       "  unsigned    level : 4;\n"
+                       "  unsigned    enabled : 1;\n"
+                       "} msg_level_info;\n", o_msgh );
+            }
+            writeExtraDefs( o_msgh );
         }
-        fputs(
-            "\ntypedef struct msg_level_info {\n"
-            "    unsigned    type : 4;\n"
-            "    unsigned    level : 4;\n"
-            "    unsigned    enabled : 1;\n"
-            "} msg_level_info;\n", o_msgh );
-    } else {
-        fputs( "#define MSG_DEFS \\\n", o_msgh );
-        for( m = messageSyms; m != NULL; m = m->next ) {
-            fputs( "MSG_DEF( ", o_msgh );
-            fputs( m->name, o_msgh );
-            fputs( " , ", o_msgh );
-            outputNum( o_msgh, m->index );
-            fputs( " )\\\n", o_msgh );
-        }
-        fputs( "\n\n", o_msgh );
     }
-    writeExtraDefs( o_msgh );
-}
-
-static void writeMsgHGP( void )
-{
-    MSGSYM *m;
-    MSGGROUP *grp;
-    int     index;
-
-    fputs( "//MSG_DEF( name, group, kind, level, group_index )\n",o_msgh );
-    fputs( "\n\n", o_msgh );
-    fputs( "#define MSG_DEFS \\\n", o_msgh );
-    index = 0;
-    for( m = messageSyms; m != NULL; m = m->next,++index ) {
-        fputs( "MSG_DEF( ", o_msgh );
-        fputs( m->name, o_msgh );
-        fputs( " , ", o_msgh );
-        grp = m->grp;
-        if( grp != NULL ) {
-            fputs( grp->name, o_msgh );
-            fputs( " , ", o_msgh );
-        }
-        fputs( msgTypeNamesGP[m->mtype], o_msgh );
-        fputs( " , ", o_msgh );
-        outputNum( o_msgh, m->level );
-        fputs( " , ", o_msgh );
-        outputNum( o_msgh, m->grpIndex );
-        fputs( " )\\\n", o_msgh );
-    }
-    fputs( "\n\n", o_msgh );
-}
-
-static void writeMsgCGP( void )
-{
-    MSGSYM *m;
-    for( m = messageSyms; m != NULL; m = m->next ) {
-        fputs( "\"", o_msgc );
-        fputs( m->lang_txt[LANG_English], o_msgc );
-        fputs( "\",\n", o_msgc );
-    }
-}
-
-static void writeLevHGP( void )
-{
-    MSGGROUP *grp;
-    int     index;
-
-    fputs( "\n\n", o_levh );
-    fputs( "#define MSGTYPES_DEFS \\\n", o_levh );
-    for( index = 0; index < MSG_TYPE_END; ++index ) {
-        fputs( "MSGTYPES_DEF( ", o_levh );
-        fputs( msgTypeNamesGP[index], o_levh );
-        fputs( " )\\\n", o_levh );
-    }
-    fputs( "\n\n", o_levh );
-    fputs( "//define GRP_DEF( name,prefix,num,index,eindex )\n", o_levh );
-    fputs( "#define GRP_DEFS \\\n", o_levh );
-    for( grp = allGroups; grp != NULL; grp = grp->next ) {
-        fputs( "GRP_DEF( ", o_levh );
-        fputs( grp->name, o_levh );
-        fputc( ',', o_levh );
-        fputs( grp->prefix, o_levh );
-        fputc( ',', o_levh );
-        outputNum( o_levh, grp->num );
-        fputc( ',', o_levh );
-        outputNum( o_levh, grp->msgIndex );
-        fputc( ',', o_levh );
-        outputNum( o_levh, grp->emsgIndex );
-        fputs( " )\\\n", o_levh );
-    }
-    fputs( "\n\n", o_levh );
-}
-
-static void outputNum( FILE *fp, unsigned n )
-{
-    char buff[16];
-
-    sprintf( buff, "%u", n );
-    fputs( buff, fp );
-}
-
-static void outputNumJ( FILE *fp, unsigned n, int width )
-{
-    char buff[16];
-    char *p;
-
-    sprintf( buff, "%u", n );
-    for( p = buff; *p; ++p ) {
-        --width;
-    }
-    while( width > 0 ) {
-        --width;
-        fputc( ' ', fp );
-    }
-    fputs( buff, fp );
 }
 
 static void outputChar( FILE *fp, char c )
 {
-    fputc( '\'', fp );
-    switch( c ) {
-    case '\'':
-        fputc( '\\', fp );
-        fputc( '\'', fp );
-        break;
-    case '\\':
-        fputc( '\\', fp );
-        fputc( '\\', fp );
-        break;
-    default:
-        if( isprint( c ) ) {
-            fputc( c, fp );
-        } else {
-            char buff[16];
-
-            fputc( '\\', fp );
-            fputc( 'x', fp );
-            sprintf( buff, "%x", c );
-            fputs( buff, fp );
-        }
+    if( c == '\'' ) {
+        fprintf( fp, "'\\''," );
+    } else if( c == '\\' ) {
+        fprintf( fp, "'\\\\'," );
+    } else if( isprint( c ) ) {
+        fprintf( fp, "'%c',", c );
+    } else {
+        fprintf( fp, "'\\x%x',", (unsigned char)c );
     }
-    fputc( '\'', fp );
-    fputc( ',', fp );
 }
 
-static void outputTableName( FILE *fp, const char *type, const char *name )
+static void outputTableStart1( FILE *fp, const char *type, const char *name, int dim )
+{
+    fprintf( fp, "MSG_SCOPE %s MSG_MEM %s[][%d] = {\n", type, name, dim );
+}
+
+static void outputTableStart( FILE *fp, const char *type, const char *name )
 {
     fprintf( fp, "MSG_SCOPE %s MSG_MEM %s[] = {\n", type, name );
 }
 
-typedef struct {
-    unsigned    current_base;
-    unsigned    *word_base;
-    MSGWORD     **keep_base;
-    unsigned    current_text;
-} data_word_tables;
+static void outputTableEnd( FILE *fp )
+{
+    fputs( "};\n", fp );
+}
 
 static void doEncodeWORD( MSGWORD *w, void *d )
 {
@@ -1325,39 +1233,31 @@ static void writeWordTable( void )
 {
     MSGWORD *w;
     unsigned i;
-    auto data_word_tables data_w;
+    data_word_tables data_w;
 
     data_w.current_base = 0;
     data_w.word_base = malloc( ( multiRefWords + 1 ) * sizeof( unsigned ) );
     data_w.keep_base = malloc( ( multiRefWords + 1 ) * sizeof( MSGWORD * ) );
     data_w.current_text = 0;
-    outputTableName( o_msgc, "char const", "word_text" );
+    outputTableStart( o_msgc, "char const", "word_text" );
     traverseHiToLoRefs( refWords, doEncodeWORD, &data_w );
-    fputs( "};\n", o_msgc );
+    outputTableEnd( o_msgc );
     totalBytes += data_w.current_text;
     data_w.word_base[data_w.current_base] = data_w.current_text;
     data_w.keep_base[data_w.current_base] = NULL;
     data_w.current_base++;
     totalBytes += data_w.current_base * sizeof( short );
-    outputTableName( o_msgc, "unsigned short const", "word_base" );
+    outputTableStart( o_msgc, "unsigned short const", "word_base" );
     for( i = 0; i < data_w.current_base; ++i ) {
         w = data_w.keep_base[i];
-        outputNumJ( o_msgc, data_w.word_base[i], 6 );
-        fputc( ',', o_msgc );
         if( w != NULL ) {
-            fputs( " /* ", o_msgc );
-            outputNumJ( o_msgc, w->references, 6 );
-            fputc( ' ', o_msgc );
-            fputc( '(', o_msgc );
-            outputNum( o_msgc, i );
-            fputc( ')', o_msgc );
-            fputc( ' ', o_msgc );
-            fputs( w->name, o_msgc );
-            fputs( " */", o_msgc );
+            fprintf( o_msgc, "%6u, /* %6u (%u) %s */\n",
+                data_w.word_base[i], w->references, i, w->name );
+        } else {
+            fprintf( o_msgc, "%6u,\n", data_w.word_base[i] );
         }
-        fputc( '\n', o_msgc );
     }
-    fputs( "};\n", o_msgc );
+    outputTableEnd( o_msgc );
     free( data_w.word_base );
     free( data_w.keep_base );
 }
@@ -1376,81 +1276,53 @@ static void writeMsgTable( void )
     current_text = 0;
     current_base = 0;
     msg_base = malloc( ( messageCounter + 1 ) * sizeof( unsigned ) );
-    outputTableName( o_msgc, "uint_8 const", "msg_text" );
+    outputTableStart( o_msgc, "uint_8 const", "msg_text" );
     for( m = messageSyms; m != NULL; m = m->next ) {
         msg_base[current_base++] = current_text;
-        fputs( "\n/* ", o_msgc );
-        outputNumJ( o_msgc, m->index, 4 );
-        fputc( ' ', o_msgc );
-        fputs( m->lang_txt[LANG_English], o_msgc );
-        fputs( " */\n", o_msgc );
+        fprintf( o_msgc, "\n/* %4u %s */\n", m->index, m->lang_txt[LANG_English] );
         for( r = m->words; r != NULL; r = r->next ) {
             w = r->word;
             if( w->index == NO_INDEX ) {
-                outputNum( o_msgc, w->len );
-                fputs( ", ", o_msgc );
-                for( p = w->name; *p; ++p ) {
+                fprintf( o_msgc, "%u,", w->len );
+                for( p = w->name; *p != '\0'; ++p ) {
                     outputChar( o_msgc, *p );
                 }
                 fputc( '\n', o_msgc );
                 current_text += 1 + w->len;
+            } else if( w->index <= USE_SMALL_ENC ) {
+                fprintf( o_msgc, "ENC_BIT | %u, /* %s */\n", w->index, w->name );
+                ++current_text;
             } else {
-                if( w->index <= USE_SMALL_ENC ) {
-                    fputs( "ENC_BIT | ", o_msgc );
-                    outputNum( o_msgc, w->index );
-                    ++current_text;
-                } else {
-                    fputs( "ENC_BIT | LARGE_BIT | ", o_msgc );
-                    outputNum( o_msgc, ( w->index >> 8 ) );
-                    fputs( ", ", o_msgc );
-                    outputNum( o_msgc, ( w->index & 0x0ff ) );
-                    current_text += 2;
-                }
-                fputs( ", /* ", o_msgc );
-                fputs( w->name, o_msgc );
-                fputs( " */\n", o_msgc );
+                fprintf( o_msgc, "ENC_BIT | LARGE_BIT | %u, %u, /* %s */\n", w->index >> 8, w->index & 0x0ff, w->name );
+                current_text += 2;
             }
         }
     }
-    fputs( "};\n", o_msgc );
+    outputTableEnd( o_msgc );
     totalBytes += current_text;
     msg_base[current_base++] = current_text;
     totalBytes += current_base * sizeof( short );
-    outputTableName( o_msgc, "unsigned short const", "msg_base" );
+    outputTableStart( o_msgc, "unsigned short const", "msg_base" );
     for( i = 0; i < current_base; ++i ) {
-        outputNum( o_msgc, msg_base[i] );
-        fputc( ',', o_msgc );
-        fputc( '\n', o_msgc );
+        fprintf( o_msgc, "%u,\n", msg_base[i] );
     }
-    fputs( "};\n", o_msgc );
+    outputTableEnd( o_msgc );
     if( allGroups != NULL ) {
         MSGGROUP *g;
-        outputTableName( o_msgc, "unsigned short const", "msg_group_base" );
-        for( g = allGroups; g != NULL; g = g->next ) {
-            outputNum( o_msgc, g->msgIndex );
-            fputc( ',', o_msgc );
-            fputc( '\n', o_msgc );
-        }
+
         assert( messageIndex == 0 );
-        outputNum( o_msgc, messageCounter );
-        fputs( ",\n};\n", o_msgc );
-        fputs( "MSG_SCOPE char const MSG_MEM msg_group_name[][2] = {\n"
-             , o_msgc );
+
+        outputTableStart( o_msgc, "unsigned short const", "msg_group_base" );
         for( g = allGroups; g != NULL; g = g->next ) {
-            char buf[10];
-            buf[0] = '\'';
-            buf[1] = g->name[0];
-            buf[2] = '\'';
-            buf[3] = ',';
-            buf[4] = '\'';
-            buf[5] = g->name[1];
-            buf[6] = '\'';
-            buf[7] = ',';
-            buf[8] = '\n';
-            buf[9] = '\0';
-            fputs( buf, o_msgc );
+            fprintf( o_msgc, "%u,\n", g->msgIndex );
         }
-        fputs( "};\n", o_msgc );
+        fprintf( o_msgc, "%u,\n", messageCounter );
+        outputTableEnd( o_msgc );
+        outputTableStart1( o_msgc, "char const", "msg_group_name", 2 );
+        for( g = allGroups; g != NULL; g = g->next ) {
+            fprintf( o_msgc, "'%c','%c',\n", g->name[0], g->name[1] );
+        }
+        outputTableEnd( o_msgc );
         fputs( "#define MSGS_GROUPED\n", o_msgc );
     }
     free( msg_base );
@@ -1458,58 +1330,125 @@ static void writeMsgTable( void )
 
 static void writeMSGIfndefs( void )
 {
-    fputs(
-        "#ifndef MSG_SCOPE\n"
-        "#define MSG_SCOPE\n"
-        "#endif\n"
-        "#ifndef MSG_MEM\n"
-        "#define MSG_MEM\n"
-        "#endif\n", o_msgc );
+    fputs(  "#ifndef MSG_SCOPE\n"
+            "#define MSG_SCOPE\n"
+            "#endif\n"
+            "#ifndef MSG_MEM\n"
+            "#define MSG_MEM\n"
+            "#endif\n", o_msgc );
 }
 
 static void writeMsgC( void )
 {
-    writeMSGIfndefs();
-    writeExtraDefs( o_msgc );
-    writeWordTable();
-    writeMsgTable();
+    MSGSYM *m;
+
+    if( o_msgc != NULL ) {
+        if( flags.rc ) {
+            fputs( "\n", o_msgc );
+            for( m = messageSyms; m != NULL; m = m->next ) {
+                fprintf( o_msgc, "pick( %s, \"%s\", \"%s\" )\n",
+                    m->name, m->lang_txt[LANG_English], m->lang_txt[LANG_Japanese] );
+            }
+            fputs( "\n", o_msgc );
+        } else if( flags.gen_gpick ) {
+            for( m = messageSyms; m != NULL; m = m->next ) {
+                fprintf( o_msgc, "\"%s\",\n", m->lang_txt[LANG_English] );
+            }
+        } else {
+            writeMSGIfndefs();
+            writeExtraDefs( o_msgc );
+            writeWordTable();
+            writeMsgTable();
+        }
+    }
 }
 
 static void writeLevH( void )
 {
-    MSGSYM *m;
+    MSGSYM      *m;
+    MSGGROUP    *grp;
+    int         index;
 
-    fputs( "#ifndef MSG_CONST\n", o_levh );
-    fputs( "#define MSG_CONST const\n", o_levh );
-    fputs( "#endif\n", o_levh );
-    fprintf( o_levh, "typedef enum {\n" );
-#define def_msg_type( e,p )     fprintf( o_levh, "   MSG_TYPE_" #e ",\n" );
-    ALL_MSG_TYPES
-#undef def_msg_type
-    fprintf( o_levh, "} MSG_TYPE;\n" );
-    outputTableName( o_levh, "msg_level_info MSG_CONST", "msg_level" );
-    for( m = messageSyms; m != NULL; m = m->next ) {
-        fputc( '{', o_levh );
-        fputc( ' ', o_levh );
-        fputs( msgTypeNames[m->mtype], o_levh );
-        if( m->level == 0 ) {
-            fputs( ", 0, true }, /* ", o_levh );
+    if( o_levh != NULL ) {
+        if( flags.rc ) {
+            fputs( "\n\n"
+                "//define GRP_DEF( name,prefix,num,index,eindex )\n"
+                "#define GRP_DEFS \\\n", o_levh );
+            for( grp = allGroups; grp != NULL; grp = grp->next ) {
+                fprintf( o_levh, "GRP_DEF( %s, \"%s\", %u, %u, %u ) \\\n",
+                    grp->name, grp->prefix, grp->num, grp->msgIndex, grp->emsgIndex );
+            }
+            fputs( "\n\n", o_levh );
+        } else if( flags.gen_gpick ) {
+            fputs( "\n\n"
+                "#define MSGTYPES_DEFS \\\n", o_levh );
+            for( index = 0; index < MSG_TYPE_END; ++index ) {
+                fprintf( o_levh, "MSGTYPES_DEF( %s ) \\\n", msgTypeNamesGP[index] );
+            }
+            fputs( "\n\n"
+                "//define GRP_DEF( name,prefix,num,index,eindex )\n"
+                "#define GRP_DEFS \\\n", o_levh );
+            for( grp = allGroups; grp != NULL; grp = grp->next ) {
+                fprintf( o_levh, "GRP_DEF( %s, %s, %u, %u, %u ) \\\n",
+                    grp->name, grp->prefix, grp->num, grp->msgIndex, grp->emsgIndex );
+            }
+            fputs( "\n\n", o_levh );
         } else {
-            fputs( ", ", o_levh );
-            outputNum( o_levh, m->level );
-            fputs( ", true }, /* ", o_levh );
+            fputs(  "#ifndef MSG_CONST\n"
+                    "#define MSG_CONST const\n"
+                    "#endif\n"
+                    "typedef enum {\n"
+                    #define def_msg_type( e,p ) "  MSG_TYPE_" #e ",\n"
+                        ALL_MSG_TYPES
+                    #undef def_msg_type
+                    "} MSG_TYPE;\n", o_levh );
+            outputTableStart( o_levh, "msg_level_info MSG_CONST", "msg_level" );
+            for( m = messageSyms; m != NULL; m = m->next ) {
+                fprintf( o_levh, "  { %s, %u, true }, /* %s */\n",
+                    msgTypeNames[m->mtype], m->level, m->name );
+            }
+            outputTableEnd( o_levh );
+            totalBytes += messageIndex;
         }
-        fputs( m->name, o_levh );
-        fputs( " */\n", o_levh );
     }
-    totalBytes += messageIndex;
-    fputs( "};\n", o_levh );
+}
+
+static void writeAttrH( void )
+{
+    MSGSYM      *m;
+    MSGGROUP    *grp;
+    unsigned    grp_index;
+
+    if( o_attrh != NULL ) {
+        fputs( "\n\n"
+            "//define MSGATTR_DEF( attr )\n"
+            "#define MSGATTR_DEFS \\\n", o_attrh );
+        grp_index = 0;
+        grp = NULL;
+        for( m = messageSyms; m != NULL; m = m->next ) {
+            if( grp != m->grp ) {
+                grp_index = 0;
+                grp = m->grp;
+            }
+            while( grp_index < m->grpIndex ) {
+                grp_index++;
+                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2u */ \\\n", grp->prefix, grp_index );
+            }
+            grp_index++;
+            if( m->attr == NULL ) {
+                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2u */ \\\n", grp->prefix, grp_index );
+            } else {
+                fprintf( o_attrh, "MSGATTR_DEF( %s ) /* %s%2.2u */ \\\n", m->attr, grp->prefix, grp_index );
+            }
+        }
+        fputs( "\n\n", o_attrh );
+    }
 }
 
 static void dumpStats( void )
 {
     if( allGroups != NULL ) {
-    printf( "# of groups                          %u\n", groupCounter );
+        printf( "# of groups                          %u\n", groupCounter );
     }
     printf( "# of messages                        %u\n", messageCounter );
     printf( "# of unique words                    %u\n", uniqueWords );
@@ -1524,10 +1463,66 @@ static void dumpStats( void )
 static void closeFiles( void )
 {
     fclose( i_gml );
-    fclose( o_msgh );
-    fclose( o_msgc );
-    fclose( o_levh );
+    if( o_msgh != NULL )
+        fclose( o_msgh );
+    if( o_msgc != NULL )
+        fclose( o_msgc );
+    if( o_levh != NULL )
+        fclose( o_levh );
+    if( o_attrh != NULL ) {
+        fclose( o_attrh );
+    }
 }
+
+static size_t utf8_to_cp932( const char *src, char *dst )
+{
+    size_t      i;
+    size_t      o;
+    size_t      src_len;
+    cvt_chr     x;
+    cvt_chr     *p;
+
+    src_len = strlen( src );
+    o = 0;
+    for( i = 0; i < src_len && o < LINE_SIZE - 6; i++ ) {
+        x.u = (unsigned char)src[i];
+        if( IS_ASCII( x.u ) ) {
+            /*
+             * ASCII (0x00-0x7F), no conversion
+             */
+            dst[o++] = (char)x.u;
+        } else {
+            /*
+             * UTF-8 to UNICODE conversion
+             */
+            if( (x.u & 0xF0) == 0xE0 ) {
+                x.u &= 0x0F;
+                x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            } else {
+                x.u &= 0x1F;
+            }
+            x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            /*
+             * UNICODE to CP932 encoding conversion
+             */
+            p = bsearch( &x, cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+            if( p == NULL ) {
+                printf( "unknown unicode character: 0x%4.4X\n", x.u );
+                x.s = '?';
+            } else {
+                x.s = p->s;
+            }
+            if( x.s > 0xFF ) {
+                /* write lead byte first */
+                dst[o++] = (char)(x.s >> 8);
+            }
+            dst[o++] = (char)x.s;
+        }
+    }
+    dst[o] = '\0';
+    return( o );
+}
+
 
 static void dumpInternational( void )
 {
@@ -1537,8 +1532,9 @@ static void dumpInternational( void )
     unsigned lang;
     unsigned len;
     bool dump_warning;
-    auto char err_fname[16];
-    auto LocaleErrors errors_header;
+    char err_fname[16];
+    LocaleErrors errors_header;
+    char tmp[512];
 
     for( lang = LANG_FIRST_INTERNATIONAL; lang < LANG_MAX; ++lang ) {
         sprintf( err_fname, "errors%02u." LOCALE_DATA_EXT, lang );
@@ -1565,9 +1561,16 @@ static void dumpInternational( void )
                 }
                 text = m->lang_txt[LANG_English];
             }
+            if( lang == LANG_Japanese ) {
+                if( !flags.out_utf8 ) {
+                    utf8_to_cp932( text, tmp );
+                    tmp[sizeof( tmp ) - 1] = '\0';
+                    text = tmp;
+                }
+            }
             len = (unsigned)strlen( text );
-            if( len > 127 ) {
-                fatal( "length of a international message is too long" );
+            if( len > flags.max_len ) {
+                fatal1( "length of a international message is too long", text );
             }
             fputc( len, fp );
             fwrite( text, len, 1, fp );
@@ -1577,56 +1580,241 @@ static void dumpInternational( void )
     }
 }
 
-void forceRebuild( void )
+#define ISSEP(c)    (isspace( c ) || c == '\0')
+
+static char *ProcessOption( char *p, char *option_start )
+/*******************************************************/
 {
-    unsigned i;
+    switch( *p++ ) {
+    case 's':
+        if( !ISSEP( p[0] ) )
+            break;
+        flags.no_warn = true;
+        return( p );
+    case 'i':
+        if( ISSEP( p[0] ) ) { // 'i'
+            flags.international = true;
+            return( p );
+        }
+        if( *p++ == 'p' && ISSEP( p[0] ) ) { // 'ip'
+            flags.ignore_prefix = true;
+            return( p );
+        }
+        break;
+    case 'q':
+        if( !ISSEP( p[0] ) )
+            break;
+        flags.quiet = true;
+        return( p );
+    case 'p':
+        if( !ISSEP( p[0] ) )
+            break;
+        flags.gen_pick = true;
+        return( p );
+    case 'g':
+        if( !ISSEP( p[0] ) )
+            break;
+        flags.gen_gpick = true;
+        return( p );
+    case 'u':   // 'utf8'
+        if( *p++ == 't' && *p++ == 'f' && *p++ == '8' && ISSEP( p[0] ) ) {
+            flags.out_utf8 = true;
+            return( p );
+        }
+        break;
+    case 'r':   // 'rc='
+        if( *p++ == 'c' && *p++ == '=' ) {
+            int i;
 
-    for( i = 0; i < nextOutputFName; ++i ) {
-        struct stat info;
-        struct utimbuf uinfo;
+            i = 0;
+            while( *p != '\0' && !isspace( *p ) ) {
+                if( i < sizeof( flags.rc_macro ) - 1 ) {
+                    flags.rc_macro[i++] = *p;
+                }
+                p++;
+            }
+            flags.rc_macro[i] = '\0';
+            flags.rc = true;
+            return( p );
+        }
+        break;
+    case 'l':   // 'len='
+        if( *p++ == 'e' && *p++ == 'n' && *p++ == '=' ) {
+            long    val;
+            char    *end;
 
-        if( stat( outputFNames[i], &info ) != -1 ) {
-            unsigned three_years_ago = 60 * 60 * 24 * 366 * 3;
-            memset( &uinfo, 0, sizeof(uinfo) );
-            uinfo.actime = info.st_mtime - three_years_ago;
-            uinfo.modtime = info.st_mtime - three_years_ago;
-            utime( outputFNames[i], &uinfo );
+            val = strtol( p, &end, 10 );
+            if( val > 0 ) {
+                flags.max_len = (unsigned)val;
+            }
+            return( end );
+        }
+        break;
+    }
+    printf( "Unknown option: %s\n", option_start );
+    return( NULL );
+}
+
+static char *getFileName( char *str, char *name )
+/***********************************************/
+{
+    char        ch;
+
+    while( isspace( *str ) )
+        ++str;
+    if( *str == '\"' ) {
+        str++;
+        while( (ch = *str) != '\0' ) {
+            str++;
+            if( ch == '"' ) {
+                break;
+            }
+            if( ch == '\\' && *str == '"' ) {
+                ch = *str++;
+            }
+            *name++ = ch;
+        }
+    } else {
+        while( *str != '\0' && !isspace( *str ) ) {
+            *name++ = *str++;
         }
     }
+    *name = '\0';
+    return( str );
+}
+
+static char *ReadIndirectFile( char *name )
+/*****************************************/
+{
+    char        *str;
+    FILE        *fp;
+    int         len;
+    char        ch;
+
+    str = NULL;
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        fseek( fp, 0, SEEK_END );
+        len = ftell( fp );
+        fseek( fp, 0, SEEK_SET );
+        str = malloc( len + 1 );
+        fread( str, 1, len, fp );
+        str[len] = '\0';
+        fclose( fp );
+        // go through characters changing \r, \n etc into ' '
+        for( ; (ch = *str) != '\0'; str++ ) {
+            if( ch == 0x1A ) {      // if end of file
+                *str = '\0';        // - mark end of str
+                break;
+            }
+            if( ch != ' ' && isspace( ch ) ) {
+                *str = ' ';
+            }
+        }
+    }
+    return( str );
+}
+
+static bool ProcessOptions( char *str )
+/*************************************/
+{
+    char        name[PATH_MAX];
+    char        *fstr;
+    bool        rc;
+
+    rc = 0;
+    fstr = NULL;
+    name[0] = '\0';
+    while( *str != '\0' ) {
+        while( isspace( *str ) )
+            ++str;
+        if( *str == '@' ) {
+            str = getFileName( str + 1, name );
+            str = getenv( name );
+            if( str == NULL ) {
+                str = fstr = ReadIndirectFile( name );
+            }
+        }
+        if( *str == '\0' ) {
+            continue;
+        }
+        if( *str == '-' ) {
+            str = ProcessOption( str + 1, str );
+            if( str == NULL ) {
+                rc = true;
+                break;
+            }
+        } else {  /* collect file name */
+            str = getFileName( str, name );
+            switch( fno++ ) {
+            case 0:
+                strcpy( ifname, name );
+                i_gml = initFILE( name, "rb" );
+                break;
+            case 1:
+                o_msgc = initFILE( name, "w" );
+                break;
+            case 2:
+                o_msgh = initFILE( name, "w" );
+                break;
+            case 3:
+                o_levh = initFILE( name, "w" );
+                break;
+            case 4:
+                o_attrh = initFILE( name, "w" );
+                break;
+            }
+        }
+    }
+    free( fstr );
+    return( rc );
 }
 
 int main( int argc, char **argv )
 {
     bool    langs_ok;
+    int     i;
 
+    flags.max_len = 127;
     langs_ok = _LANG_DEFS_OK();
     if( !langs_ok )
         fatal( "language index mismatch\n" );
 
-    if( argc < 5 || argc > 10 ) {
-        fatal( "usage: msgencod [-w] [-s] [-i] [-ip] [-q] [-p] <gml> <msgc> <msgh> <levh>" );
+    for( i = 1; i < argc; i++ ) {
+        if( ProcessOptions( argv[i] ) ) {
+            closeFiles();
+            error( "fatal: invalid argument\n\n" );
+            fatal( "usage: msgencod [options] <gml> <msgc> <msgh> <levh>\n"
+                   "\n"
+                   "Options: (must appear in following order)\n"
+                   "  -s no warnings\n"
+                   "  -i create international file with non-english data\n"
+                   "  -ip ignore matching XXX_ prefix with message type\n"
+                   "  -q quiet operation\n"
+                   "  -rc <macro_name> generate files for resource compiler\n"
+                   "  -p generate pick macros instead of #defines\n"
+                   "  -g generate generalized pick macros and tables\n"
+                   "  -utf8 output texts use UTF-8 encoding"
+                 );
+        }
     }
-    processOptions( argv + 1 );
+    if( !flags.out_utf8 ) {
+        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+    }
     readGML();
-    if( flags.gen_gpick ) {
-        writeMsgHGP();
-        writeMsgCGP();
-        writeLevHGP();
-    } else {
+    if( !flags.rc && !flags.gen_gpick ) {
         compressMsgs();
-        writeMsgH();
-        writeMsgC();
-        writeLevH();
     }
+    writeMsgH();
+    writeMsgC();
+    writeLevH();
+    writeAttrH();
     closeFiles();
     if( flags.international ) {
         dumpInternational();
     }
     if( !flags.quiet ) {
         dumpStats();
-    }
-    if( warnings > 0 && flags.warnings_always_rebuild ) {
-        forceRebuild();
     }
     return( ( errors > 0 ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }

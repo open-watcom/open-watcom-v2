@@ -32,7 +32,7 @@ other applications.
 .el .do begin
 This prevents other processes from reading or writing into the locked
 region until an
-.kw unlock
+.reffunc unlock
 has been done for this locked region of the file.
 .do end
 .np
@@ -60,7 +60,7 @@ occurs.
 .im errnoref
 .return end
 .see begin
-.seelist lock fcntl locking open sopen unlock
+.seelist lock fcntl locking open _sopen unlock
 .see end
 .exmp begin
 #include <stdio.h>

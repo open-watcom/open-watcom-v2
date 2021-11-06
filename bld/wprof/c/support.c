@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -981,8 +981,8 @@ STATIC bool LoadOverlayInfo( void )
     char                    buffer2[_MAX_PATH2];
     int                     count;
     size_t                  len;
-    PGROUP2                 pg1;
-    PGROUP2                 pg2;
+    pgroup2                 pg1;
+    pgroup2                 pg2;
 
     image = CurrSIOData->curr_image;
     fp = ExeOpen( image->name );

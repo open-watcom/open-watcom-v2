@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "linkstd.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "wlnkmsg.h"
 #include "fileio.h"
 #include "ideentry.h"
@@ -45,6 +45,7 @@
 #include "msg.h"
 
 #include "clibext.h"
+
 
 const char *MsgStrings[] = {
     #define pick( name, string ) string,
@@ -109,7 +110,7 @@ static size_t MakeExeTypeString( char *buff, size_t max )
     } else {
         format = FmtData.type;
         for( ;; ) {
-            num = blog_32( format );
+            num = log2_32( format );
             format &= ~( 1 << num );
             if( format == 0 ) {
                 break;
@@ -152,28 +153,64 @@ size_t FmtStr( char *buff, size_t len, const char *fmt, ... )
     size_t  size;
 
     va_start( args, fmt );
-    size = DoFmtStr( buff, len, fmt, &args );
+    size = DoFmtStr( buff, len, fmt, args );
     va_end( args );
     return( size );
 }
 
-size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
-/***********************************************************************/
-/* quick vsprintf routine                                           */
-/* assumptions - format string does not end in '%'                  */
-/*             - only use of '%' is as follows                      */
-/*                  %s  : string                                    */
-/*                  %tn : n character string (%ns)                  */
-/*                  %c  : character                                 */
-/*                  %x  : 4 digit hex number (%4x)                  */
-/*                  %h  : 8 digit hex number (%8x)                  */
-/*                  %d  : decimal                                   */
-/*                  %l  : long decimal                              */
-/*                  %a  : address   ( %x:%x or 32 bit, depends on format) */
-/*                  %A  : address   ( %x:%h or 32 bit, depends on format) */
-/*                  %S  : symbol name                               */
-/*                  %f  : an executable format name                 */
-/********************************************************************/
+static size_t fmtAddr( char *dest, size_t len, targ_addr *addr, bool offs_32 )
+/****************************************************************************/
+{
+#if defined( _PHARLAP ) || defined( _ZDOS ) || defined( _RAW )
+    /* only flat offset */
+    if( FmtData.type & MK_FLAT_OFFS ) {
+        return( FmtStr( dest, len, "%h", addr->off ) );
+    }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX_FLAT) {
+        return( FmtStr( dest, len, "%h", FindLinearAddr( addr ) ) );
+    }
+#endif
+#if defined( _ELF ) || defined( _OS2 )
+    if( FmtData.type & (MK_ELF | MK_PE) ) {
+        return( FmtStr( dest, len, "%h", FindLinearAddr2( addr ) ) );
+    }
+#endif
+#ifdef _NOVELL
+    if( FmtData.type & MK_ID_SPLIT ) {
+        if( addr->seg == CODE_SEGMENT ) {
+            return( FmtStr( dest, len, "CODE:%h", addr->off ) );
+        } else {
+            return( FmtStr( dest, len, "DATA:%h", addr->off ) );
+        }
+    }
+#endif
+    /* segmented formats 16:16 or 16:32 */
+    if( !offs_32 && (FmtData.type & (MK_DOS | MK_OS2_16BIT | MK_DOS16M | MK_QNX_16 | MK_RDOS_16)) ) {
+        return( FmtStr( dest, len, "%x:%x", addr->seg, (unsigned short)addr->off ) );
+    } else {
+        return( FmtStr( dest, len, "%x:%h", addr->seg, addr->off ) );
+    }
+}
+
+size_t DoFmtStr( char *buff, size_t len, const char *src, va_list args )
+/***********************************************************************
+ * quick vsprintf routine
+ * assumptions - format string does not end in '%'
+ *             - only use of '%' is as follows
+ *                  %s  : string
+ *                  %tn : n character string (%ns)
+ *                  %c  : character
+ *                  %x  : 4 digit hex number (%4x)
+ *                  %h  : 8 digit hex number (%8x)
+ *                  %d  : decimal
+ *                  %l  : long decimal
+ *                  %a  : address ( %x:%x or 32 bit, depends on format)
+ *                  %A  : address ( %x:%h or 32 bit, depends on format)
+ *                  %S  : symbol name
+ *                  %f  : an executable format name
+ ************************************************************************/
 {
     char            ch;
     char            *dest;
@@ -202,7 +239,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                     str = MsgArgInfo.arg[MsgArgInfo.index].symb->name.u.ptr;
                     IncremIndex();
                 } else {
-                    str = va_arg( *args, symbol * )->name.u.ptr;
+                    str = va_arg( args, symbol * )->name.u.ptr;
                 }
                 if( (LinkFlags & LF_DONT_UNMANGLE) == 0 ) {
                     size = __demangle_l( str, 0, dest, len );
@@ -224,7 +261,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                     str = MsgArgInfo.arg[MsgArgInfo.index].string;
                     IncremIndex();
                 } else {
-                    str = va_arg( *args, char * );
+                    str = va_arg( args, char * );
                 }
                 size = strlen( str );
                 if( size > len )
@@ -234,7 +271,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                 dest += size;
                 break;
             case 't' :
-                str = va_arg( *args, char * );
+                str = va_arg( args, char * );
                 num = *src++ - '0';
                 num = num * 10 + *src++ - '0';
                 if( num > len )
@@ -248,7 +285,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                 len -= num;
                 break;
             case 'c' :
-                *dest++ = va_arg( *args, int );
+                *dest++ = va_arg( args, int );
                 len--;
                 break;
             case 'x' :
@@ -256,7 +293,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                     num = MsgArgInfo.arg[MsgArgInfo.index].int_16;
                     IncremIndex();
                 } else {
-                    num = va_arg( *args, unsigned int );
+                    num = va_arg( args, unsigned int );
                 }
                 if( len < 4 )
                     return( dest - buff );    //NOTE: premature return
@@ -269,7 +306,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                 }
                 break;
             case 'h' :
-                num2 = va_arg( *args, unsigned_32 );
+                num2 = va_arg( args, unsigned_32 );
                 if( len < 8 )
                     return( dest - buff );     //NOTE: premature return
                 dest += 8;
@@ -287,7 +324,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                     num = MsgArgInfo.arg[MsgArgInfo.index].int_16;
                     IncremIndex();
                 } else {
-                    num = va_arg( *args, unsigned int );
+                    num = va_arg( args, unsigned int );
                 }
                 ultoa( num, dest, 10 );
                 size = strlen( dest );
@@ -301,7 +338,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                     num2 = MsgArgInfo.arg[MsgArgInfo.index].int_32;
                     IncremIndex();
                 } else {
-                    num2 = va_arg( *args, unsigned_32 );
+                    num2 = va_arg( args, unsigned_32 );
                 }
                 ultoa( num2, dest, 10 );
                 size = strlen( dest );
@@ -314,27 +351,11 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                     addr = MsgArgInfo.arg[MsgArgInfo.index].address;
                     IncremIndex();
                 } else {
-                    addr = va_arg( *args, targ_addr * );
+                    addr = va_arg( args, targ_addr * );
                 }
                 temp = MsgArgInfo.index;
                 MsgArgInfo.index = -1;
-                if( FmtData.type & MK_FLAT ) {
-                    size = FmtStr( dest, len, "%h", addr->off );
-                } else if( FmtData.type & MK_QNX_FLAT) {
-                    size = FmtStr( dest, len, "%h", FindLinearAddr( addr ) );
-                } else if( FmtData.type & (MK_ELF | MK_PE) ) {
-                    size = FmtStr( dest, len, "%h", FindLinearAddr2( addr ) );
-                } else if( FmtData.type & MK_ID_SPLIT ) {
-                    if( addr->seg == CODE_SEGMENT ) {
-                        size = FmtStr( dest, len, "CODE:%h", addr->off );
-                    } else {
-                        size = FmtStr( dest, len, "DATA:%h", addr->off );
-                    }
-                } else if( (FmtData.type & MK_32BIT) || ch == 'A' ) {
-                    size = FmtStr( dest, len, "%x:%h", addr->seg, addr->off );
-                } else {
-                    size = FmtStr( dest, len, "%x:%x", addr->seg, (unsigned short)addr->off );
-                }
+                size = fmtAddr( dest, len, addr, ( ch == 'A' ) );
                 dest += size;
                 len -= size;
                 MsgArgInfo.index = temp;
@@ -539,14 +560,15 @@ void LnkMsg(
 
     Msg_Get( num & NUM_MSK, rc_buff );
     va_start( args, types );
-    Msg_Put_Args( rc_buff, &MsgArgInfo, types, &args );
+    Msg_Put_Args( rc_buff, &MsgArgInfo, types, args );
     va_end( args );
     len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
     MessageFini( num, buff, len );
 }
 
-static void HandleRcMsg( unsigned num, va_list *args )
-/****************************************************/
+#ifdef _OS2
+static void HandleRcMsg( unsigned num, va_list args )
+/***************************************************/
 /* getting an error message from resource compiler code */
 {
     size_t      len;
@@ -567,7 +589,7 @@ void RcWarning( unsigned num, ... )
     va_list args;
 
     va_start( args, num );
-    HandleRcMsg( num, &args );
+    HandleRcMsg( num, args );
     va_end( args );
 }
 
@@ -577,16 +599,20 @@ void RcError( unsigned num, ... )
     va_list args;
 
     va_start( args, num );
-    HandleRcMsg( num, &args );
+    HandleRcMsg( num, args );
     va_end( args );
 }
+#endif
 
-void WLPrtBanner( void )
-/*****************************/
-// print the banner, if it hasn't already been printed.
+int WLPrtBanner( void )
+/**********************
+ * print the banner, if it hasn't already been printed
+ */
 {
     const char  *msg;
+    int         count;
 
+    count = 0;
     if( !BannerPrinted ) {
         msg = MsgStrings[PRODUCT];
         WriteStdOutInfo( msg, BANNER, NULL );
@@ -599,7 +625,9 @@ void WLPrtBanner( void )
         msg = MsgStrings[TRADEMARK2];
         WriteStdOutInfo( msg, BANNER, NULL );
         BannerPrinted = true;
+        count = 5;
     }
+    return( count );
 }
 
 bool SkipSymbol( symbol * sym )
@@ -636,12 +664,12 @@ int SymAlphaCompare( const void *a, const void *b )
         rightsize = strlen( rightname );
     }
     if( leftsize < rightsize ) {
-        result = memicmp( leftname, rightname, leftsize );
+        result = strnicmp( leftname, rightname, leftsize );
         if( result == 0 ) {
             result = -1;  // since leftsize < rightsize;
         }
     } else {
-        result = memicmp( leftname, rightname, rightsize );
+        result = strnicmp( leftname, rightname, rightsize );
         if( result == 0 ) {
             if( leftsize > rightsize ) {
                 result = 1;

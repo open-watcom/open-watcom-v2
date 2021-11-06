@@ -1,6 +1,14 @@
-name = wclaxp
+!ifdef bootstrap
+proj_name = bwclaxp
+bwclaxp_autodepends = .AUTODEPEND
+!else
+proj_name = wclaxp
+wclaxp_autodepends = .AUTODEPEND
+!endif
 
 target_cpu = axp
+
+wclaxp_trmem = 1
 
 extra_cpp_flags = -DWCLAXP
 

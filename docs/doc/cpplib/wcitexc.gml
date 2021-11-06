@@ -14,14 +14,14 @@ if the trap for the specific error has not been enabled by your program.
 :P.
 By default, no exception traps are enabled and no exceptions will be thrown.
 Exception traps are enabled by setting the exception state with the
-.MONO exceptions
+:MONO.exceptions
 member function.
 :P.
 The
-.MONO wcexcept.h
+:MONO.wcexcept.h
 header file is included by the header files for each of the iterator classes.
 There is normally no need to explicitly include the
-.MONO wcexcept.h
+:MONO.wcexcept.h
 header file, but no errors will result if it is included.
 This class is inherited as part of the base construction for each
 of the iterators.
@@ -49,7 +49,8 @@ The following public member functions are declared:
 :SNPCD cd_idx='c'.WCIterExcept();
 :eSNPL.
 :SMTICS.
-This form of the &fn. creates an &obj.:PERIOD.
+This form of the &fn. creates an &obj.
+:PERIOD.
 :P.
 The &fn. is used implicitly by the compiler
 when it generates a constructor for a derived class.
@@ -72,11 +73,11 @@ The &fn. produces an initialized &obj. with no exception traps enabled.
 The &fn. does not do anything explicit.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the object derived from
-.MONO &cl_name.
+:MONO.&cl_name.
 goes out of scope.
 :RSLTS.
 The object derived from
-.MONO &cl_name.
+:MONO.&cl_name.
 is destroyed.
 :SALSO.
 :SAL typ='ctor'.
@@ -97,7 +98,8 @@ Each bit corresponds to an exception, and is set if the exception is enabled.
 The first form of the &fn. returns the current settings of the
 exception bits.
 The second form of the function sets the exception bits to those
-specified by :HP1.set_flags:eHP1.:PERIOD.
+specified by :HP1.set_flags:eHP1.
+:PERIOD.
 :RSLTS.
 The current exception bits are returned.
 If a new set of bits are being set, the returned value is the old
@@ -127,7 +129,8 @@ The &fn. represents the same set of bits, but uses an
 :MONO.int
 to represent the values, thereby avoiding problems made possible by the
 compiler's ability to use smaller types for enumerations.
-All uses of these bits should use the &fn.:PERIOD.
+All uses of these bits should use the &fn.
+:PERIOD.
 :P.
 The bit values defined by the &fn. can be read and set by the
 member function
@@ -137,7 +140,7 @@ member function
 which is used to control exception handling.
 :P.
 The
-.MONO WCIterExcept::undef_iter
+:MONO.WCIterExcept::undef_iter
 .ix 'undef_iter' 'exception'
 bit setting traps the use of the iterator when the position within
 the container object is undefined.
@@ -147,31 +150,31 @@ or decrement an iterator positioned before the first element
 is an undefined operation.
 :P.
 The
-.MONO WCIterExcept::undef_item
+:MONO.WCIterExcept::undef_item
 .ix 'undef_item' 'exception'
 bit setting traps an attempt to obtain the current element of the iterator
 when the iterator has no associated container object, or is positioned either
 before or after the container elements.  The
-.MONO undef_item
+:MONO.undef_item
 exception can be thrown only by the
-.MONO key
+:MONO.key
 and
-.MONO value
+:MONO.value
 dictionary iterator member functions, and the
-.MONO current
+:MONO.current
 member function for non-dictionary iterators.
 .MONO
 :P.
 The
-.MONO WCIterExcept::iter_range
+:MONO.WCIterExcept::iter_range
 .ix 'iter_range' 'exception'
 bit setting traps an attempt to use a iteration count value that would
 place the iterator more than one element past the end or before the
 beginning of the container elements.  The
-.MONO iter_range
+:MONO.iter_range
 exception can be thrown only by the
-.MONO operator +=
+:MONO.operator +=
 and
-.MONO operator -=
+:MONO.operator -=
 operators.
 :eLIBF.

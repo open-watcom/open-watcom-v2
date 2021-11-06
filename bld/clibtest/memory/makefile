@@ -1,4 +1,4 @@
 clibtest_name = memory
 
-srcfile = $(clib_dir)/memory/c/memtest.c
+srcfile = c/memtest.c
 !include ../master.mif

@@ -17,14 +17,14 @@ The
 .id &funcb.
 function tests for the following blank characters:
 .begpoint $compact $setptnt 12
-.termhd1 Constant
-.termhd2 Character
+.pointhd1 Constant
+.pointhd2 Character
 .point ' '
 space
 .point '\t'
 horizontal tab
 .endpoint
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The
@@ -37,7 +37,7 @@ The
 function returns a non-zero value when the argument is a
 wide character that corresponds to a standard blank character or
 is one of an implementation-defined set of wide characters for which
-.kw iswalnum
+.reffunc iswalnum
 is false.
 .do end
 Otherwise, zero is returned.

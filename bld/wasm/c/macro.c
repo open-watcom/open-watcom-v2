@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +67,8 @@ static asmlines *asmline_insert( asmlines **head, void *data )
     asmlines **ptr;
 
     /* get a pointer to the last next ptr ( or Head if empty ) */
-    for( ptr = head; *ptr; ptr = &((*ptr)->next) );
+    for( ptr = head; *ptr != NULL; ptr = &((*ptr)->next) )
+        ;
 
     entry = AsmAlloc( sizeof( asmlines ) );
     entry->next = NULL;
@@ -316,7 +318,9 @@ static bool macro_exam( token_idx i )
                 info->parmlist = paranode;
             } else {
                 for( paracurr = info->parmlist;; paracurr = paracurr->next ) {
-                    if( paracurr->next == NULL ) break;
+                    if( paracurr->next == NULL ) {
+                        break;
+                    }
                 }
                 paracurr->next = paranode;
             }

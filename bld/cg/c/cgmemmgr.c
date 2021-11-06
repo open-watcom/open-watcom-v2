@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,9 +65,6 @@ essentially no worst case performance scenario.
 #include <stdio.h>
 #if defined( __NT__ )
     #include <windows.h>
-#elif defined( __OSI__ )
-    #define __CALL21__
-    #include "tinyio.h"
 #elif defined( __DOS__ )
     #include <i86.h>
     #include "extender.h"
@@ -238,7 +235,7 @@ static  void    CalcMemSize( void )
                     }
                 }
             } else {
-                memory_available = *(char * __far *)MK_FP( __psp, 0x60 ) - sbrk( 0 );
+                memory_available = *(char * __far *)_MK_FP( __psp, 0x60 ) - sbrk( 0 );
             }
             if( memory_available < _1M ) {
                 memory_available = _1M;
@@ -265,7 +262,7 @@ static  void    CalcMemSize( void )
             MemorySize = memory_available;
         }
     }
-#elif defined( __OS2__ ) || defined( __OSI__ )
+#elif defined( __OS2__ )
     if( size_requested != 0 ) {
         MemorySize = size_requested;
     } else {

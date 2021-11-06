@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,8 @@
 
 void SameDate( const char *file, const char *as )
 {
-    auto struct stat            statblk;
-    auto struct utimbuf         utimebuf;
+    struct stat         statblk;
+    struct utimbuf      utimebuf;
 
     if( stat( as, &statblk ) == 0 ) {
         utimebuf.actime = statblk.st_atime;

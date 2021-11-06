@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,8 +45,8 @@ static bool             fShowScreenClr = false;
 static HWND             hScreenTxt;
 static HWND             hInverseTxt;
 static short            numberOfColors;
-static HBITMAP          hColorBitmap;
-static HBITMAP          hMonoBitmap;
+static WPI_HBITMAP      Color_hbitmap;
+static WPI_HBITMAP      Mono_hbitmap;
 static bool             prevRestoreState = false;
 
 /*
@@ -58,27 +58,27 @@ static void paintColors( HWND hwnd )
     WPI_PRES    mempres;
     HDC         hdc;
     PAINTSTRUCT ps;
-    HBITMAP     bitmap;
-    HBITMAP     oldbitmap;
+    WPI_HBITMAP hbitmap;
+    WPI_HBITMAP old_hbitmap;
 
     pres = _wpi_beginpaint( hwnd, NULL, &ps );
 #ifdef __OS2_PM__
-   WinFillRect( pres, &ps, CLR_PALEGRAY );
+    WinFillRect( pres, &ps, CLR_PALEGRAY );
 #endif
 
     _wpi_torgbmode( pres );
     if( numberOfColors == 2 ) {
-        bitmap = hMonoBitmap;
+        hbitmap = Mono_hbitmap;
     } else {
-        bitmap = hColorBitmap;
+        hbitmap = Color_hbitmap;
     }
 
     mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
     _wpi_torgbmode( mempres );
-    oldbitmap = _wpi_selectbitmap( mempres, bitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, hbitmap );
 
     _wpi_bitblt( pres, 0, 0, CUR_BMP_WIDTH, CUR_BMP_HEIGHT, mempres, 0, 0, SRCCOPY );
-    _wpi_getoldbitmap( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
     _wpi_deletecompatiblepres( mempres, hdc );
 
     _wpi_endpaint( hwnd, pres, &ps );
@@ -255,7 +255,7 @@ WPI_MRESULT CALLBACK ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     case WM_CREATE:
         numberOfColors = 16;
         initPaletteBoxes( TRUE );
-        InitPaletteBitmaps( hwnd, &hColorBitmap, &hMonoBitmap );
+        InitPaletteBitmaps( hwnd, &Color_hbitmap, &Mono_hbitmap );
         break;
 
     case WM_PAINT:
@@ -278,8 +278,8 @@ WPI_MRESULT CALLBACK ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         break;
 
     case WM_DESTROY:
-        _wpi_deletebitmap( hColorBitmap );
-        _wpi_deletebitmap( hMonoBitmap );
+        _wpi_deletebitmap( Color_hbitmap );
+        _wpi_deletebitmap( Mono_hbitmap );
         break;
 
     default:
@@ -477,7 +477,7 @@ void ShowNewColor( int index, COLORREF newcolor, bool repaint )
     WPI_PRES    pres;
     WPI_PRES    mempres;
     HDC         hdc;
-    HBITMAP     oldbitmap;
+    WPI_HBITMAP old_hbitmap;
     HBRUSH      brush;
     HBRUSH      oldbrush;
     HPEN        blackpen;
@@ -508,7 +508,7 @@ void ShowNewColor( int index, COLORREF newcolor, bool repaint )
         oldbrush = _wpi_selectbrush( mempres, brush );
         blackpen = _wpi_createpen( PS_SOLID, 0, BLACK );
         oldpen = _wpi_selectpen( mempres, blackpen );
-        oldbitmap = _wpi_selectbitmap( mempres, hColorBitmap );
+        old_hbitmap = _wpi_selectbitmap( mempres, Color_hbitmap );
 
         _wpi_cvth_pt( &topleft, colorsHeight );
         _wpi_cvth_pt( &bottomright, colorsHeight );
@@ -518,7 +518,7 @@ void ShowNewColor( int index, COLORREF newcolor, bool repaint )
         _wpi_getoldbrush( mempres, oldbrush );
         _wpi_deletepen( blackpen );
         _wpi_deletebrush( brush );
-        _wpi_getoldbitmap( mempres, oldbitmap );
+        _wpi_getoldbitmap( mempres, old_hbitmap );
         _wpi_deletecompatiblepres( mempres, hdc );
     }
 

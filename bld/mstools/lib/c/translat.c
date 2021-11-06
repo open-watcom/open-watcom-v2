@@ -333,7 +333,7 @@ static void init_fuzzy( void )
     unsigned            count;
     char *              filename;
     char *              newstr;
-    PGROUP2             pg;
+    pgroup2             pg;
     char **             objsvector;
 
     /*** Get the object file names into an array ***/
@@ -391,7 +391,7 @@ static void CreateExp( OPT_STORAGE *cmdOpts, char * name )
     char *              p;
     char *              tmp;
     char                expname[_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
 
     /*** Replace the '.lib' extension with '.exp' ***/
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
@@ -613,7 +613,7 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     char *              p;
     OPT_STRING *        optStr;
     char                dllfilename[_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
 
     if( cmdOpts->def ) {
         if( cmdOpts->out ) {

@@ -140,6 +140,12 @@ using std::time;
 :keep DECLARE_STRUCT
 :include tm.sp
 :remove DECLARE_STRUCT
+:segment DOS | LINUX | QNX
+
+:include extc99po.sp
+:include timespec.sp
+:include extepi.sp
+:endsegment
 
 ::
 :: Begin of extension section
@@ -153,8 +159,6 @@ using std::time;
 /* 1003.4/D12 Clocks and Timers */
 #ifndef __POSIX_TIMERS
 #define __POSIX_TIMERS
-
-:include timespec.sp
 
 struct itimerspec {
     struct timespec it_interval;

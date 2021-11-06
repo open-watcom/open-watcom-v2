@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +55,7 @@ typedef struct a_pm_image_file {
     pm_image_info resources[1];
 } a_pm_image_file;
 
-#define PMFILE_HEADER_SIZE      2*sizeof(SHORT)+4*(sizeof(USHORT)+sizeof(ULONG))
+#define PMFILE_HEADER_SIZE      (2*sizeof(SHORT)+4*(sizeof(USHORT)+sizeof(ULONG)))
 #define NON_OS2_FILE            -1
 #define PMBITMAP_FILETYPE       1
 #define PMICON_FILETYPE         2
@@ -64,7 +65,7 @@ extern a_pm_image_file *OpenPMImage( FILE *, int , int *);
 extern void ClosePMImage( a_pm_image_file *);
 extern a_pm_image *GetPMImageBits( a_pm_image_file *, FILE *, int );
 extern void FiniPMImage( a_pm_image *);
-extern HBITMAP PMImageToAndBitmap( a_pm_image *, a_pm_image_file *, int );
-extern HBITMAP PMImageToClrBitmap( a_pm_image *, a_pm_image_file *, int );
-extern HBITMAP PMImageToXorBitmap( a_pm_image *, a_pm_image_file *, int );
-extern HBITMAP PMImageToWinXorBitmap( a_pm_image *, a_pm_image_file *, int , WPI_INST );
+extern WPI_HBITMAP PMImageToAndBitmap( a_pm_image *, a_pm_image_file *, int );
+extern WPI_HBITMAP PMImageToClrBitmap( a_pm_image *, a_pm_image_file *, int );
+extern WPI_HBITMAP PMImageToXorBitmap( a_pm_image *, a_pm_image_file *, int );
+extern WPI_HBITMAP PMImageToWinXorBitmap( a_pm_image *, a_pm_image_file *, int , WPI_INST );

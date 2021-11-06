@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,15 +52,15 @@
 #if defined( __UNIX__ )
     #define SETENV          "export "
     #define SETENV_LEN      7
-    #define ENV_NAME        "$%s"
-    #define ENV_NAME1       "$"
-    #define ENV_NAME2       ""
+    #define NAME_PREFIX     "$"
+    #define NAME_SUFFIX     ""
+    #define IS_SETENVCMD(s) (strncmp(s, SETENV, SETENV_LEN) == 0)
 #else
     #define SETENV          "SET "
     #define SETENV_LEN      4
-    #define ENV_NAME        "%%%s%%"
-    #define ENV_NAME1       "%%"
-    #define ENV_NAME2       "%%"
+    #define NAME_PREFIX     "%"
+    #define NAME_SUFFIX     "%"
+    #define IS_SETENVCMD(s) (strnicmp(s, SETENV, SETENV_LEN) == 0)
 #endif
 
 typedef enum {
@@ -282,12 +282,10 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
     // NAME = VALUE
     // NAME VALUE
     VbufRewind( name );
-    while( isspace( *line ) )
-        ++line;
-    if( strnicmp( line, SETENV, SETENV_LEN ) == 0 ) {
+    SKIP_SPACES( line );
+    if( IS_SETENVCMD( line ) ) {
         line += SETENV_LEN;
-        while( isspace( *line ) )
-            ++line;
+        SKIP_SPACES( line );
         if( vt_setenv == VAR_ASSIGN_SETENV ) {
             VbufConcStr( name, SETENV );
         }
@@ -296,20 +294,20 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
         vt = VAR_ASSIGN;
     }
     s = line;
-    for( c = *line; c != '\0' && !isspace( c ) && c != '='; c = *(++line) )
-        ;
+    for( ; (c = *line) != '\0'; line++ ) {
+        if( isspace( c ) || c == '=' ) {
+            break;
+        }
+    }
     VbufConcBuffer( name, s, line - s );
     VbufRewind( value );
-    while( isspace( *line ) )
-        ++line;
     if( *line == '=' ) {
-        ++line;
-        while( isspace( *line ) )
-            ++line;
+        SKIP_CHAR_SPACES( line );
         VbufConcStr( value, line );
     } else if( vt == vt_setenv ) {
         vt = VAR_ERROR;
     } else {
+        SKIP_SPACES( line );
         VbufConcStr( value, line );
         vt = VAR_CMD;
     }
@@ -447,14 +445,14 @@ static void FinishEnvironmentLines( FILE *fp, int num_env, bool *found_env, bool
                 }
             } else if( append == AM_AFTER ) {
                 VbufPrepChr( &cur_val, PATH_LIST_SEP );
-                VbufPrepStr( &cur_val, ENV_NAME2 );
+                VbufPrepStr( &cur_val, NAME_SUFFIX );
                 VbufPrepVbuf( &cur_val, &cur_var );
-                VbufPrepStr( &cur_val, ENV_NAME1 );
+                VbufPrepStr( &cur_val, NAME_PREFIX );
             } else if( append == AM_BEFORE ) {
                 VbufConcChr( &cur_val, PATH_LIST_SEP );
-                VbufConcStr( &cur_val, ENV_NAME1 );
+                VbufConcStr( &cur_val, NAME_PREFIX );
                 VbufConcVbuf( &cur_val, &cur_var );
-                VbufConcStr( &cur_val, ENV_NAME2 );
+                VbufConcStr( &cur_val, NAME_SUFFIX );
 //            } else {
 //                strcpy( value, cur_val );
             }
@@ -558,7 +556,8 @@ static bool ModFile( const VBUF *orig, const VBUF *new,
             *line = '\0';
         }
         // don't process empty lines but keep them in new file
-        for( line = envbuf; isspace( *line ); ++line );
+        line = envbuf;
+        SKIP_SPACES( line );
         if( line[0] != '\0' ) {
             func_xxx( line, num_xxx, found_xxx, uninstall );
             if( num_env > 0 ) {
@@ -602,7 +601,7 @@ static var_type getAutoVarType( const VBUF *auto_var )
 {
     var_type        vt;
 
-    if( VbufCompBuffer( auto_var, SETENV, SETENV_LEN, true ) == 0 ) {
+    if( IS_SETENVCMD( auto_var->buf ) ) {
         vt = VAR_ASSIGN_SETENV;
     } else {
         vt = VAR_CMD;
@@ -759,7 +758,7 @@ static var_type getConfigVarType( const VBUF *cfg_var )
 {
     var_type        vt;
 
-    if( VbufCompBuffer( cfg_var, SETENV, SETENV_LEN, true ) == 0 ) {
+    if( IS_SETENVCMD( cfg_var->buf ) ) {
         vt = VAR_ASSIGN_SETENV;
     } else {
         vt = VAR_ASSIGN;
@@ -1140,8 +1139,12 @@ void ReplaceVars( VBUF *dst, const char *src )
     char                *colon;
     const char          *varval;
     VBUF                tmp;
+    VBUF                var1;
+    VBUF                var2;
 
     VbufInit( &tmp );
+    VbufInit( &var1 );
+    VbufInit( &var2 );
     if( src != NULL ) {
         VbufSetStr( dst, src );
     }
@@ -1164,23 +1167,23 @@ void ReplaceVars( VBUF *dst, const char *src )
         varname = VbufString( &tmp );
         for( ;; ) {     // loop for multiple '?' operators
             quest = strchr( varname, '?' );
-            if( quest != NULL ) {
-                *quest++ = '\0';
-            }
-            if( stricmp( varname, "root" ) == 0 ) { // kludge?
-                varval = GetVariableStrVal( "DstDir" );
-            } else if( varname[0] == '@' ) {
-                varval = getenv( varname + 1 );
-            } else {
-                varval = GetVariableStrVal( varname );
-            }
             if( quest == NULL ) {
+                if( stricmp( varname, "root" ) == 0 ) { // kludge?
+                    varval = GetVariableStrVal( "DstDir" );
+                } else if( varname[0] == '@' ) {
+                    varval = getenv( varname + 1 );
+                } else {
+                    varval = GetVariableStrVal( varname );
+                }
                 break;  // no '?' operator
             }
+            VbufSetBuffer( &var1, varname, quest - varname );
+            quest++;    // skip '?'
             colon = strchr( quest, ':' );
-            *colon++ = '\0';
-            if( GetOptionVarValue( GetVariableByName( varname ), false ) ) {
-                varval = GetVariableStrVal( quest );
+            VbufSetBuffer( &var2, quest, colon - quest );
+            colon++;    // skip ':'
+            if( GetOptionVarValue( GetVariableByName( VbufString( &var1 ) ) ) ) {
+                varval = GetVariableStrVal( VbufString( &var2 ) );
                 break;
             }
             varname = colon;
@@ -1193,6 +1196,8 @@ void ReplaceVars( VBUF *dst, const char *src )
         VbufSetVbufAt( dst, &tmp, len );
         p = VbufString( dst ) + len;
     }
+    VbufFree( &var2 );
+    VbufFree( &var1 );
     VbufFree( &tmp );
 }
 
@@ -1268,7 +1273,7 @@ static void VersionStr( int fp, char *ver, int verlen, char *verbuf, size_t verb
         }
         if( len < sizeof( Buffer ) )
             break;    // eof
-        if( lseek( fp, -256L, SEEK_CUR ) == -1 ) {
+        if( lseek( fp, -256L, SEEK_CUR ) == -1L ) {
             break;
         }
     }
@@ -1746,7 +1751,7 @@ bool ModifyRegAssoc( bool uninstall )
             /* process program definition */
             SimGetAssociationProgram( i, &temp );
             if( VbufLen( &temp ) > 0 ) {
-                VbufConcStr( &temp, " %%1" );
+                VbufConcStr( &temp, " %1" );
                 ReplaceVars1( &temp );
                 RegSetValue( hkey, "shell\\open\\command", REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
             }
@@ -1876,6 +1881,9 @@ bool GenerateBatchFile( bool uninstall )
             SetBoolVariableByName( "IsOS2DosBox", isOS2DosBox );
 #endif
             fclose( fp );
+#ifdef __UNIX__
+            chmod_vbuf( &batch_file, PMODE_RX_USR_W );
+#endif
         }
     }
     VbufInit( &ext );

@@ -1,9 +1,10 @@
 .chap *refid=wdisasm The Object File Disassembler
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'disassembler'
 This chapter describes the &disname..
@@ -24,9 +25,9 @@ The &disname command line syntax is the following.
 .np
 The square brackets [ ] denote items which are optional.
 .begnote
-.mnote &discmd
+.note &discmd
 is the name of the &disname..
-.mnote filespec
+.note filespec
 is the filename specification of the object file to be
 disassembled.
 A default filename extension of ".o" is assumed when no extension is
@@ -40,7 +41,7 @@ File Specification              Extension
 /home/john.doe/foo.bar          .bar
 /home/john.doe/foo.goo.bar      .bar
 .exam end
-.mnote options
+.note options
 is a list of valid &disname options, each preceded by a dash
 ("&minus.").
 Options may be specified in any order.
@@ -53,22 +54,22 @@ Options may be specified in any order.
 .np
 The square brackets [ ] denote items which are optional.
 .begnote
-.mnote &discmdup
+.note &discmdup
 is the name of the &disname..
-.mnote d:
+.note d:
 is an optional drive specification such as "A:", "B:", etc.
 If not specified, the default drive is assumed.
-.mnote path
+.note path
 is an optional path specification such as "\PROGRAMS\OBJ\".
 If not specified, the current directory is assumed.
-.mnote filename
+.note filename
 is the file name of the object file to disassemble.
-.mnote ext
+.note ext
 is the file extension of the object file to disassemble.
 If omitted, a file extension of "&obj" is assumed.
 If the period "." is specified but not the extension, the file is
 assumed to have no file extension.
-.mnote options
+.note options
 is a list of valid options, each preceded by a slash
 ("/") or a dash ("&minus.").
 Options may be specified in any order.
@@ -84,7 +85,7 @@ using object file source line information, imbed original source
 lines into the output file
 .note c=<code_name>
 name of additional segments that contain executable code
-.if &version gt 90 .do begin
+.if &vermacro gt 900 .do begin
 .note i=<char>
 redefine the initial character of internal labels (default: L)
 .do end
@@ -104,7 +105,7 @@ include list of public names
 display register names in upper case
 .note u
 display instruction opcode mnemonics in upper case
-.if &version gt 90 .do begin
+.if &vermacro gt 900 .do begin
 .note m
 leave C++ names mangled
 .do end
@@ -245,7 +246,7 @@ It is not possible to instruct the &disname to interpret segments
 whose name ends in "CODE" or "TEXT" as data.
 .eremark
 .*
-.if &version gt 90 .do begin
+.if &vermacro gt 900 .do begin
 .*
 .section Changing the Internal Label Character - "i=<char>"
 .*
@@ -505,7 +506,7 @@ The "u" option instructs the &disname to display instruction opcode
 mnemonics in uppercase.
 The default is to display instruction opcode mnemonics in lowercase.
 .*
-.if &version gt 90 .do begin
+.if &vermacro gt 900 .do begin
 .*
 .section Retain C++ Mangled Names  - "m"
 .*

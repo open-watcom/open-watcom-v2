@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,10 +136,7 @@ static void adjust_by_delta(    // COMPUTE DELTA ADJUSTMENT
     if( delta == 0 ) {
         *a_expr = NodeConvert( base, *a_expr );
     } else {
-        offset = NodeOffset( delta );
-        if( ! positive ) {
-            offset->u.int_constant = - delta;
-        }
+        offset = NodeOffset( ( positive ) ? delta : -(int)delta );
         *a_expr = adjust_base_ptr( *a_expr, offset, base );
     }
 }
@@ -183,11 +181,12 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
         if( NodeGetIbpSymbol( node, &ibp, &offset ) ) {
             PTREE expr;         // - expression under construction
             unsigned vb_exact;  // - exact offset for conversion
-            vb_exact = result->exact_delta;
-            if( ! positive ) {
-                vb_exact = - vb_exact;
+
+            if( positive ) {
+                vb_exact = offset + result->exact_delta;
+            } else {
+                vb_exact = offset - result->exact_delta;
             }
-            vb_exact += offset;
             if( NULL == ibp ) {
                 expr = NULL;
             } else {
@@ -715,13 +714,13 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                 info->pted_tgt = ptr_tgt;
                 info->flags_src = flags_src;
                 info->flags_tgt = flags_tgt;
-                cl_src = StructType( ptr_src );
+                cl_src = ClassType( ptr_src );
                 if( ptr_tgt->id == TYP_VOID ) {
                     info->to_void = true;
 //                  ok = (ptr_src == TYP_VOID);
 //                  break;
                 } else if( NULL != cl_src ) {
-                    cl_tgt = StructType( ptr_tgt );
+                    cl_tgt = ClassType( ptr_tgt );
                     if( NULL != cl_tgt
                      && cl_tgt != cl_src ) {
                         if( TypeDerived( ptr_src, ptr_tgt ) ) {

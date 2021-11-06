@@ -12,11 +12,11 @@ The
 function causes the computer's central processor (CPU) to be
 interrupted with an interrupt whose number is given by
 .arg inter_no
-.ct .li .
+.period
 Before the interrupt, the CPU registers are loaded from the structure
 located by
 .arg in_regs
-.ct .li .
+.period
 Following the interrupt, the structure located by
 .arg out_regs
 is filled with the contents of the CPU registers.

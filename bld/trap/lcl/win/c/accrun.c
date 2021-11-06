@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,7 @@
 #include "trpimp.h"
 #include "trpld.h"
 #include "trpsys.h"
+#include "dbgrmsg.h"
 
 
 /*
@@ -72,7 +73,7 @@ static trap_elen runProg( bool single_step )
     BOOL                watch386;
     BOOL                dowatch;
     BOOL                ton;
-    restart_opts        restart_option;
+    appl_action         appl_act;
     prog_go_ret         *ret;
 
     ret = GetOutPtr( 0 );
@@ -96,13 +97,13 @@ static trap_elen runProg( bool single_step )
     }
 
     ret->conditions = 0;
-    restart_option = RESTART_APP;
+    appl_act = RESTART_APP;
     while( DebugeeTask != NULL ) {
         if( dowatch && !watch386 ) {
             SingleStepMode();
         }
         ton = TraceOn;
-        pmsg = DebuggerWaitForMessage( RUNNING_DEBUGEE, TaskAtFault, restart_option );
+        pmsg = DebuggerWaitForMessage( RUNNING_DEBUGEE, TaskAtFault, appl_act );
         TraceOn = FALSE;
 
         if( pmsg == FAULT_HIT ) {
@@ -114,7 +115,7 @@ static trap_elen runProg( bool single_step )
                         ret->conditions = COND_WATCH;
                         if( DebugDebugeeOnly ) {
                             if( !CheckWatchPoints() ) {
-                                restart_option = CHAIN;
+                                appl_act = CHAIN;
                                 continue;
                             }
                         }
@@ -122,14 +123,14 @@ static trap_elen runProg( bool single_step )
                     break;
                 }
                 if( !ton && DebugDebugeeOnly ) {
-                    restart_option = CHAIN;
+                    appl_act = CHAIN;
                     continue;
                 }
                 if( dowatch ) {
                     if( CheckWatchPoints() ) {
                         ret->conditions = COND_WATCH;
                     } else {
-                        restart_option = RESTART_APP;
+                        appl_act = RESTART_APP;
                         continue;
                     }
                 }
@@ -138,7 +139,7 @@ static trap_elen runProg( bool single_step )
                 if( DebugDebugeeOnly ) {
                     if( !IsOurBreakpoint( IntResult.CS, IntResult.EIP ) ) {
                         IntResult.EIP++;
-                        restart_option = CHAIN;
+                        appl_act = CHAIN;
                         continue;
                     }
                 }
@@ -147,7 +148,7 @@ static trap_elen runProg( bool single_step )
             default:
                 if( DebugDebugeeOnly ) {
                     if( TaskAtFault != DebugeeTask ) {
-                        restart_option = CHAIN;
+                        appl_act = CHAIN;
                         continue;
                     }
                 }
@@ -190,13 +191,13 @@ static trap_elen runProg( bool single_step )
     return( sizeof( *ret ) );
 } /* runProg */
 
-trap_retval ReqProg_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     Out(( OUT_RUN, "ReqProg_go" ));
     return( runProg( FALSE ) );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
     Out(( OUT_RUN, "ReqProg_step" ));
     return( runProg( TRUE ) );

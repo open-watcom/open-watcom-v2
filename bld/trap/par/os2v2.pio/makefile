@@ -25,6 +25,9 @@ sys_dll = 1
 
 inc_dirs = -I"../h"
 
-wdio.dll: wdio.obj $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ sys os2 dll op map,protmode file {$[@} $(extra_linker)
+extra_l_flags = op protmode
+
+dlltarg_objs    = wdio.obj
+dlltarg_name    = wdio
+dlltarg_opts    = $(extra_linker)
+!include dlltarg.mif

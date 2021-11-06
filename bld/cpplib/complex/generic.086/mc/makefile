@@ -1,4 +1,4 @@
-#pmake: build compact cpu_i86 os_osi
+#pmake: build compact cpu_i86 os_dos os_os2 os_win os_qnx
 #
 # cplxc.lib -- compact memory-model COMPLEX library fpc
 #

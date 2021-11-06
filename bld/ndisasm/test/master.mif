@@ -3,8 +3,6 @@ proj_name = wdistest
 host_cpu = $(bld_cpu)
 host_os  = $(bld_os)
 
-name = dis
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -14,14 +12,13 @@ name = dis
 extra_cpp_flags = -DNDIS_$(target_cpu)
 
 .c: $(dis_srcs);../c
-.h: $(dis_hdirs)
 
 inc_dirs = $(dis_includes)
 
-test_objs = main.obj $(dis_objs)
+exetarg_prebuild_objs = $(dis_prereq)
+exetarg_objs          = main.obj $(dis_objs)
 
-$(name).exe : $(dis_prereq) $(test_objs)
-        $(bld_link) debug all name $@ option quiet, map file { $(test_objs) }
+!include exetarg.mif
 
 distbls.gh : ./disbuild.exe
     @%make echo_execute

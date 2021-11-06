@@ -4,9 +4,8 @@
 JSTRING jstrtok( JCHAR *s1, const JCHAR *s2 );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
-.if &farfnc eq 1 .do begin
-FJSTRING __far _fjstrtok( JCHAR __far *s1,
-                          const JCHAR __far *s2 );
+.if &farfnc ne 0 .do begin
+FJSTRING _fjstrtok( JCHAR __far *s1, const JCHAR __far *s2 );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jsearch' &ffunc
 .do end
@@ -26,16 +25,17 @@ functions are
 .do end
 used to break the Kanji string pointed to by
 .arg s1
-into a sequence of tokens, each of which is delimited by a single- or
-double-byte character from the string pointed to by
+into a sequence of tokens, each of which is delimited by
+a single-byte or double-byte character from the string
+pointed to by
 .arg s2
-.ct .li .
+.period
 The first call to
 .id &funcb.
 will return a pointer to the first token in
 the Kanji string pointed to by
 .arg s1
-.ct .li .
+.period
 Subsequent calls to
 .id &funcb.
 must pass a NULL pointer as the first
@@ -47,10 +47,10 @@ different from one call to the next.
 .np
 The first call in the sequence searches
 .arg s1
-for the first single- or double-byte character that is not contained
-in the current delimiter string
+for the first single-byte or double-byte character that is
+not contained in the current delimiter string
 .arg s2
-.ct .li .
+.period
 If no such character is found, then there are no tokens in
 .arg s1
 and the
@@ -60,12 +60,12 @@ If such a character is found, it is the start of the first token.
 .np
 The
 .id &funcb.
-function then searches from there for a single- or
+function then searches from there for a single-byte or
 double-byte character that is contained in the current delimiter
 If no such character is found, the current token extends to the end of
 the string pointed to by
 .arg s1
-.ct .li .
+.period
 If such a character is found, it is overwritten by a null character,
 which terminates the current token.
 The
@@ -78,7 +78,7 @@ Because
 .id &funcb.
 may modify the original string, that string should be
 duplicated if the string is to be re-used.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

@@ -70,7 +70,7 @@ bool WRAPI WRIs32Bit( WRFileType ftype )
 WRFileType WRAPI WRIdentifyFile( const char *fname )
 {
     WRFileType  ftype;
-    PGROUP2     pg;
+    pgroup2     pg;
     bool        ok;
 
     ok = ( fname != NULL );

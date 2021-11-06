@@ -1,5 +1,5 @@
-.gfuncwxy polygon
-.gsynop begin 
+.gfuncwxy _polygon
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _polygon( short fill, short numpts,
                      struct xycoord _FAR *points );
@@ -44,7 +44,7 @@ The polygon is defined as containing
 .arg numpts
 points whose coordinates are given in the array
 .arg points
-.ct .li .
+.period
 .im gr_fgfil fill polygon
 .* .pp
 .* When the coordinates

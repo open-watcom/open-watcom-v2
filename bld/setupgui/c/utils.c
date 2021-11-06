@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,6 +64,7 @@
 #include "setupio.h"
 #include "iopath.h"
 #include "guistats.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -91,8 +92,7 @@ DEF_VAR         *ExtraVariables;
 bool            Invisible;
 bool            ProgramGroups;
 bool            StartupChange;
-
-static enum { SRC_UNKNOWN, SRC_CD, SRC_DISK } SrcInstState;
+char            InstallerFile[_MAX_PATH] = { 0 };
 
 void ConcatDirSep( char *dir )
 /****************************/
@@ -684,7 +684,7 @@ static int GetDriveInfo( char drive, bool removable )
             } else {
                 info->fixed = false;
             }
-            if( _dos_getdiskfree( drive_num, &FreeSpace ) == 0 ) {
+            if( _getdiskfree( drive_num, &FreeSpace ) == 0 ) {
                 info->cluster_size = (unsigned long)FreeSpace.sectors_per_cluster *
                                      FreeSpace.bytes_per_sector;
                 info->free_space = FreeSpace.avail_clusters *
@@ -982,26 +982,26 @@ static void RemoveDstDir( int dir_index, VBUF *buff )
 }
 
 
-static void MakeParentDir( const VBUF *dir, char *drive, char *path )
-/*******************************************************************/
+static void MakeParentDir( const VBUF *dir, pgroup2 *pg )
+/*******************************************************/
 {
     char                *end;
-    size_t              path_len;
+    size_t              dir_len;
     VBUF                parent;
 
-    _splitpath( VbufString( dir ), drive, path, NULL, NULL );
-    if( *path == '\0' )
+    _splitpath2( VbufString( dir ), pg->buffer, &pg->drive, &pg->dir, NULL, NULL );
+    if( pg->dir[0] == '\0' )
         return;
-    path_len = strlen( path );
-    end = path + path_len - 1;
+    dir_len = strlen( pg->dir );
+    end = pg->dir + dir_len - 1;
     if( IS_DIR_SEP( *end ) )
         *end = '\0';
-    if( *path == '\0' )
+    if( pg->dir[0] == '\0' )
         return;
     VbufInit( &parent );
-    VbufConcStr( &parent, drive );
-    VbufConcStr( &parent, path );
-    MakeParentDir( &parent, drive, path );
+    VbufConcStr( &parent, pg->drive );
+    VbufConcStr( &parent, pg->dir );
+    MakeParentDir( &parent, pg );
 #if defined( __UNIX__ )
     mkdir_vbuf( &parent, PMODE_RWX );
 #else
@@ -1018,8 +1018,7 @@ static bool CreateDstDir( int i, VBUF *buff )
 {
     bool                ok;
     int                 parent;
-    char                drive[_MAX_DRIVE];
-    char                path[_MAX_PATH];
+    pgroup2             pg;
 
     parent = SimDirParent( i );
     if( parent != -1 ) {
@@ -1031,7 +1030,7 @@ static bool CreateDstDir( int i, VBUF *buff )
     SimDirNoEndSlash( i, buff );
     if( access_vbuf( buff, F_OK ) == 0 )          // check for existance
         return( true );
-    MakeParentDir( buff, drive, path );
+    MakeParentDir( buff, &pg );
 #if defined( __UNIX__ )
     if( mkdir_vbuf( buff, PMODE_RWX ) == 0 )
 #else
@@ -1932,7 +1931,7 @@ static bool DoCopyFiles( void )
                 VbufSetLen( &src_path, src_path_pos1 );     // nuke sub-dir and name from end of src_path
                 dst_dir = GetVariableStrVal( "DstDir" );
                 len = strlen( dst_dir );
-                if( VbufCompBuffer( &dir, dst_dir, len, false ) == 0 ) {
+                if( strncmp( dir.buf, dst_dir, len ) == 0 ) {
                     if( VbufString( &dir )[len] == DIR_SEP ) {      // if 1st char to concat is a backslash, skip it
                         len++;
                     }
@@ -2085,30 +2084,6 @@ static void RemoveExtraFiles( void )
     }
 }
 
-static void DetermineSrcState( const VBUF *src_dir )
-/**************************************************/
-{
-    VBUF        dir;
-
-//  if( SrcInstState != SRC_UNKNOWN ) return;
-
-    VbufInit( &dir );
-    // if installing from CD or hard disk, add DISK# to source path
-    VbufConcVbuf( &dir, src_dir );
-#if defined( __UNIX__ )
-    VbufConcStr( &dir, "/diskimgs/disk01" );
-#else
-    VbufConcStr( &dir, "\\cd_source" );
-#endif
-    if( access_vbuf( &dir, F_OK ) == 0 ) {
-        SetBoolVariableByName( "SrcIsCD", true );
-        SrcInstState = SRC_CD;
-    } else {
-        SetBoolVariableByName( "SrcIsCD", false );
-        SrcInstState = SRC_DISK;
-    }
-    VbufFree( &dir );
-}
 
 bool CopyAllFiles( void )
 /***********************/
@@ -2252,8 +2227,6 @@ void DeleteObsoleteFiles( void )
 void GetInstallName( VBUF *name )
 /*******************************/
 {
-    int         argc;
-    char        **argv;
     VBUF        argv0;
 
     if( GetVariableByName( "InstallerName" ) != NO_VAR ) {
@@ -2261,8 +2234,7 @@ void GetInstallName( VBUF *name )
     } else {
         VbufInit( &argv0 );
 
-        GUIGetArgs( &argv, &argc );
-        VbufSetStr( &argv0, argv[0] );
+        VbufSetStr( &argv0, InstallerFile );
         VbufSplitpath( &argv0, NULL, NULL, name, NULL );
 //        strupr( name );
 
@@ -2331,7 +2303,7 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
     gui_message_return  result;
     char                msg_buf[1024];
     const char          *errormessage;
-    va_list             arglist;
+    va_list             args;
     VBUF                msg_text;
     VBUF                inst_name;
 
@@ -2348,9 +2320,9 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
         if( errormessage == NULL ) {
             VbufConcStr( &msg_text, GetVariableStrVal( "IDS_UNKNOWNERROR" ) );
         } else {
-            va_start( arglist, wType );
-            vsprintf( msg_buf, errormessage, arglist );
-            va_end( arglist );
+            va_start( args, wType );
+            vsprintf( msg_buf, errormessage, args );
+            va_end( args );
             VbufConcStr( &msg_text, msg_buf );
         }
     }
@@ -2471,31 +2443,6 @@ static void FreeDefinedVars( void )
     }
 }
 
-static void GetSelfWithPath( VBUF *vbuf, const VBUF *argv0 )
-/**********************************************************/
-{
-#if defined( __UNIX__ )
-    int     result;
-    char    buff[_MAX_PATH];
-
-    // code stolen from watcom/c/clibext.c
-
-    result = readlink( "/proc/self/exe", buff, sizeof( buff ) );
-    if( result == -1 ) {
-        // try another way for BSD
-        result = readlink( "/proc/curproc/file", buff, sizeof( buff ) );
-    }
-    if( result != -1 && result != sizeof( buff ) ) {
-        // readlink does not add a NUL so we need to do it ourselves
-        buff[result] = '\0';
-        VbufSetStr( vbuf, buff );
-        return;
-    }
-    // fall back to argv[0] if readlink doesn't work
-#endif
-    VbufSetVbuf( vbuf, argv0 );
-}
-
 #if defined( __NT__ ) && !defined( _M_X64 )
 static bool CheckWow64( void )
 {
@@ -2538,13 +2485,20 @@ static void dispUsage( void )
     MsgBox( NULL, "IDS_USAGE", GUI_OK, msg );
 }
 
+static void setInstallerFile( const char *arg )
+{
+    if( _cmdname( InstallerFile ) == NULL ) {
+        strncpy( InstallerFile, arg, sizeof( InstallerFile ) - 1);
+    }
+    InstallerFile[sizeof( InstallerFile ) - 1] = '\0';
+}
+
 bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *arc_name )
 /****************************************************************************************/
 {
     VBUF                dir;
     VBUF                drive;
     int                 i;
-    VBUF                argv0;
 
 #if defined( __NT__ ) && !defined( _M_X64 )
     if( CheckWow64() ) {
@@ -2606,12 +2560,13 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
             break;
         }
     }
-    VbufInit( &argv0 );
-    VbufConcStr( &argv0, argv[0] );
+
+    setInstallerFile( argv[0] );
+
     if( i < argc ) {
         VbufSetStr( arc_name, argv[i++] );
     } else {
-        GetSelfWithPath( arc_name, &argv0 );
+        VbufSetStr( arc_name, InstallerFile );
     }
 
     VbufInit( &drive );
@@ -2628,7 +2583,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
 
             VbufInit( &temp );
 
-            GetSelfWithPath( inf_name, &argv0 );
+            VbufSetStr( inf_name, InstallerFile );
             VbufSplitpath( inf_name, &drive, &dir, NULL, NULL );
             VbufSetStr( inf_name, "setup.inf" );
             VbufMakepath( &temp, &drive, &dir, inf_name, NULL );
@@ -2659,6 +2614,17 @@ bool FreeDirParams( void )
     return( true );
 }
 
+static void removeTrailingSpaces( char *s )
+/*****************************************/
+{
+    size_t  len;
+
+    len = strlen( s );
+    while( len-- > 0 && isspace( s[len] ) ) {
+        s[len] = '\0';
+    }
+}
+
 void ReadVariablesFile( const char *name )
 /****************************************/
 {
@@ -2673,29 +2639,18 @@ void ReadVariablesFile( const char *name )
         return;
     }
 
-    while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
-        line = buf;
-        while( isspace( *line ) != 0 ) {
-            line++;
-        }
-        if( *line == '#' ) {
+    while( (line = fgets( buf, sizeof( buf ), fp )) != NULL ) {
+        SKIP_SPACES( line );
+        if( *line == '#' || *line == '\0' ) {
             continue;
         }
-        while( strlen( line ) > 0 && isspace( line[strlen( line ) - 1] ) ) {
-            line[strlen( line ) - 1] = '\0';
-        }
+        removeTrailingSpaces( line );
         variable = strtok( line, " =\t" );
-        value = strtok( NULL, "=\t\0" );
-        if( value != NULL ) {
-            while( isspace( *value ) ) {
-                value++;
-            }
-
-            while( strlen( value ) > 0 &&
-                   isspace( value[strlen( value ) - 1] ) ) {
-                value[strlen( value ) - 1] = '\0';
-            }
-            if( variable != NULL ) {
+        if( variable != NULL ) {
+            value = strtok( NULL, "=\t\0" );
+            if( value != NULL ) {
+                SKIP_SPACES( value );
+                removeTrailingSpaces( value );
                 if( name == NULL || stricmp( name, variable ) == 0 ) {
                     if( stricmp( value, "true" ) == 0 ) {
                         SetBoolVariableByName( variable, true );
@@ -2720,7 +2675,6 @@ bool InitInfo( const VBUF *inf_name, const VBUF *src_path )
     int                 ret;
 
     SetVariableByName_vbuf( "SrcDir", src_path );
-    DetermineSrcState( src_path );
     SetVariableByName_vbuf( "SrcDir2", src_path );
 //    VbufSplitpath( inf_name, drive, dir, NULL, NULL );
 
@@ -2807,11 +2761,10 @@ char *stristr( const char *str, const char *substr, size_t substr_len )
     size_t  str_len;
 
     str_len = strlen( str );
-    while( str_len >= substr_len ) {
+    while( str_len-- >= substr_len ) {
         if( strnicmp( str, substr, substr_len ) == 0 )
             return( (char *)str );
         ++str;
-        --str_len;
     }
     return( NULL );
 }

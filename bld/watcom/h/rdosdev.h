@@ -117,7 +117,7 @@ typedef void __far (__rdos_handle_delete_callback)(int handle);
                     __value __struct __routine [__eax] \
                     __modify [__eax __ebx __ecx __edx __esi __edi]
 
-typedef void __far (__rdos_net_prot_callback)(int size, short int packet_type, void *ads, int selector);
+typedef void __far (__rdos_net_prot_callback)(int size, short packet_type, void *ads, int selector);
 
 #pragma aux __rdos_net_prot_callback "*" \
                     __parm __caller [__ecx] [__dx] [__ds __esi] [__es] \
@@ -152,7 +152,7 @@ typedef char* __far (__rdos_net_get_buf_callback)(int size);
                     __value __struct __routine [__es __edi] \
                     __modify [__eax __ebx __ecx __edx __esi __edi]
 
-typedef void __far (__rdos_net_send_callback)(int size, short int packet_type, void *dest_ads, int buf_sel);
+typedef void __far (__rdos_net_send_callback)(int size, short packet_type, void *dest_ads, int buf_sel);
 
 #pragma aux __rdos_net_send_callback "*" \
                     __parm __caller [__ecx] [__dx] [__ds __esi] [__es] \
@@ -180,7 +180,7 @@ typedef void __far (__rdos_net_broadcast_callback)(int class_sel, int driver_han
                     __value __struct __routine [__eax] \
                     __modify [__eax __ebx __ecx __edx __esi __edi]
 
-typedef void __far (__rdos_ip_callback)(short int opt_size, int data_size, long source_ip, char *opt_data, char *ip_data);
+typedef void __far (__rdos_ip_callback)(short opt_size, int data_size, long source_ip, char *opt_data, char *ip_data);
 
 #pragma aux __rdos_ip_callback "*" \
                     __parm __caller [__ax] [__ecx] [__edx] [__ds __esi] [__es __edi] \
@@ -408,14 +408,14 @@ typedef void __far (__rdos_usb_state_callback)(int controller, char device);
 
 struct TSpinlock
 {
-    short int value;
+    short value;
 };
 
 struct TKernelSection
 {
-    short int value;
-    short int list;
-    short int lock;
+    short value;
+    short list;
+    short lock;
 };
 
 struct TWaitHeader
@@ -428,8 +428,8 @@ struct TWaitHeader
 
 struct THandleHeader
 {
-    short int sign;
-    short int handle;
+    short sign;
+    short handle;
 };
 
 struct TNetDriverTable
@@ -607,8 +607,8 @@ int RdosAddWait(int space_needed, int wait_handle, struct TWaitHeader *wait_tabl
 void RdosSignalWait(int wait_obj);
 
 void RdosInitSpinlock(struct TSpinlock *spinlock);
-short int RdosRequestSpinlock(struct TSpinlock *spinlock);
-void RdosReleaseSpinlock(struct TSpinlock *spinlock, short int flags);
+short RdosRequestSpinlock(struct TSpinlock *spinlock);
+void RdosReleaseSpinlock(struct TSpinlock *spinlock, short flags);
 
 void RdosInitKernelSection(struct TKernelSection *section);
 void RdosEnterKernelSection(struct TKernelSection *section);
@@ -653,10 +653,10 @@ void RdosForceLevelIrq(int irq);
 void RdosSetupIrqDetect();
 int RdosPollIrqDetect();
 
-struct THandleHeader *RdosAllocateHandle(short int signature, int size);
+struct THandleHeader *RdosAllocateHandle(short signature, int size);
 void RdosFreeHandle(struct THandleHeader *handle_data);
-struct THandleHeader *RdosDerefHandle(short int signature, int handle);
-void RdosRegisterHandle(short int signature, __rdos_handle_delete_callback *delete_proc);
+struct THandleHeader *RdosDerefHandle(short signature, int handle);
+void RdosRegisterHandle(short signature, __rdos_handle_delete_callback *delete_proc);
 
 int RdosLockSysEnv(void);
 void RdosUnlockSysEnv(void);
@@ -666,7 +666,7 @@ void RdosUnlockProcEnv(void);
 int RdosGetFocusThread(void);
 
 void RdosRegisterNetClass(char class_id, int ads_size, void *broadcast_ads);
-int RdosRegisterNetProtocol(int ads_size, short int packet_type, void *my_ads, __rdos_net_prot_callback *packet_callb);
+int RdosRegisterNetProtocol(int ads_size, short packet_type, void *my_ads, __rdos_net_prot_callback *packet_callb);
 int RdosRegisterNetDriver(char class_id, int max_size, struct TNetDriverTable *table, const char *name);
 
 void RdosNetBroadcast(__rdos_net_broadcast_callback *callb_proc);
@@ -686,9 +686,9 @@ char *RdosGetIpCacheHostName(long ip);
 long RdosGetHostTimeout(int cache_sel);
 void RdosUpdateRoundTripTime(int cache_sel, long time);
 
-int RdosQueryUdp(long timeout_ms, short int dest_port, long ip, char *buf, int size, char **answer_buf);
-void RdosBroadcastDriverUdp(short int source, short int dest, int driver_sel, char *buf, int size);
-void RdosSendDriverUdp(short int source, short int dest, long ip, int driver_sel, void *driver_dest, char *buf, int size);
+int RdosQueryUdp(long timeout_ms, short dest_port, long ip, char *buf, int size, char **answer_buf);
+void RdosBroadcastDriverUdp(short source, short dest, int driver_sel, char *buf, int size);
+void RdosSendDriverUdp(short source, short dest, long ip, int driver_sel, void *driver_dest, char *buf, int size);
 
 void RdosHookInitDisc(struct TDiscSystemHeader *disc_table);
 int RdosInstallDisc(int disc_handle, int read_ahead, int *disc_nr);
@@ -764,11 +764,11 @@ void RdosLockFile(int file_sel);
 void RdosUnlockFile(int file_sel);
 
 char RdosReadPciByte(char bus, char dev, char func, char reg);
-short int RdosReadPciWord(char bus, char dev, char func, char reg);
+short RdosReadPciWord(char bus, char dev, char func, char reg);
 long RdosReadPciDword(char bus, char dev, char func, char reg);
 
 void RdosWritePciByte(char bus, char dev, char func, char reg, char val);
-void RdosWritePciWord(char bus, char dev, char func, char reg, short int val);
+void RdosWritePciWord(char bus, char dev, char func, char reg, short val);
 void RdosWritePciDword(char bus, char dev, char func, char reg, long val);
 
 void RdosInitMouse();
@@ -804,15 +804,15 @@ int RdosIsUsbReqReady(int req_handle);
 int RdosGetUsbReqData(int req_handle);
 void RdosCloseUsbReq(int req_handle);
 
-short int RdosReadCodec(int reg);
-void RdosWriteCodec(int reg, short int val);
+short RdosReadCodec(int reg);
+void RdosWriteCodec(int reg, short val);
 
-short int RdosGetAudioDacRate();
-void RdosSetAudioDacRate(short int rate);
-short int RdosGetAudioAdcRate();
-void RdosSetAudioAdcRate(short int rate);
+short RdosGetAudioDacRate();
+void RdosSetAudioDacRate(short rate);
+short RdosGetAudioAdcRate();
+void RdosSetAudioAdcRate(short rate);
 
-void RdosOpenAudioOut(short int rate);
+void RdosOpenAudioOut(short rate);
 void RdosCloseAudioOut();
 void RdosSendAudioOut(int left_sel, int right_sel, int samples);
 

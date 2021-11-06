@@ -48,8 +48,8 @@ The
 string shall be as described for fopen, with the addition that modes starting
 with the character 'w' or 'a' may be preceded by the character 'u', see below:
 .begnote
-.termhd1 Mode
-.termhd2 Meaning
+.notehd1 Mode
+.notehd2 Meaning
 .note "uw"
 truncate to zero length or create text file for writing, default permissions
 .note "ua"
@@ -99,7 +99,7 @@ The letter "t" may be added to any of the above sequences in the
 second or later position to indicate that the file is (or must be) a
 text file.
 .if '&machsys' ne 'QNX' .do begin
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 .ix 'BINMODE.OBJ'
 It also overrides the global translation mode flag if you link your
 program with
@@ -114,7 +114,7 @@ variable
 .kw _fmode
 establishes whether the file is to treated as a binary or a text file.
 Unless this value is changed by the
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 program or you have linked your program with
 .filename BINMODE.OBJ,
 .do end
@@ -133,7 +133,7 @@ a distinction between text and binary files).
 .np
 Under QNX, there is no difference between text files and binary files.
 .do end
-.if &version ge 110 .do begin
+.if &vermacro ge 1100 .do begin
 .np
 You can also include one of the following characters to enable
 or disable the "commit" flag for the associated file.
@@ -143,9 +143,9 @@ The letter "c" may be added to any of the above sequences in the
 second or later position to indicate that any output is committed by
 the operating system whenever a flush (
 .ct
-.kw fflush
+.reffunc fflush
 or
-.kw flushall
+.reffunc flushall
 .ct )
 is done.
 .np
@@ -184,7 +184,7 @@ as the first character in the
 .arg mode
 argument) causes all subsequent writes to the file to be forced to the
 current end-of-file, regardless of previous calls to the
-.kw fseek
+.reffunc fseek
 function.
 .ix '&StrIo' 'fseek'
 When a file is opened with update mode (
@@ -198,18 +198,18 @@ When a stream is opened in update mode, both reading and writing
 may be performed.
 However, writing may not be followed by reading without an
 intervening call to the
-.kw fflush
+.reffunc fflush
 function or to a file positioning function (
-.ct .kw fseek
+.ct .reffunc fseek
 .ct ,
-.kw fsetpos
+.reffunc fsetpos
 .ct ,
-.kw rewind
+.reffunc rewind
 .ct ).
 Similarly, reading may not be followed by writing without an
 intervening call to a file positioning function, unless the read
 resulted in end-of-file.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The
@@ -222,7 +222,7 @@ returns a non-zero value.
 .see begin
 .seelist fopen_s _dos_open fclose fcloseall fdopen fopen freopen freopen_s
 .seelist fopen_s _fsopen _grow_handles _hdopen open _open_osfhandle
-.seelist fopen_s _popen sopen
+.seelist fopen_s _popen _sopen
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__ 1

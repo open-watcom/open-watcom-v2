@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,7 +158,7 @@ const char *WclMsgs[] = {
 };
 
 static const char *EnglishHelp[] = {
-    #include "wclhelp.h"
+    #include "usage.gh"
     NULL
 };
 
@@ -321,7 +321,7 @@ static void  Usage( void )
     char const  *p;
     int         lines_printed;
     size_t      i, n;
-    auto        char buf[82];
+    char        buf[82];
     int const   paging = isatty( fileno( stdout ) );
     int const   height = 24; /* Number of lines assumed on screen */
 
@@ -909,7 +909,7 @@ static int tool_exec( tool_type utl, const char *p1, const char *p2 )
 static tool_type SrcName( char *name )
 /************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     tool_type   utl;
 
     _splitpath2( name, pg.buffer, NULL, NULL, NULL, &pg.ext );

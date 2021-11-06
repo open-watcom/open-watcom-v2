@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#define DEBUG_TRAP
+//#define DEBUG_TRAP
 
 #include <setjmp.h>
 #include <stdio.h>
@@ -102,19 +103,16 @@
   #endif
 
   #ifdef USE_FILENAME_VERSION
-    #define QUOTED(x)       # x
-    #define STRX(x)         QUOTED(x)
-
     #if defined(ACAD)
       #define HELPNAME      ""
     #elif defined(PHARLAP)
-      #define HELPNAME      "PLSHEL" STRX( USE_FILENAME_VERSION ) ".EXP"
-      #define HELPNAME_DS   "PEDHEL" STRX( USE_FILENAME_VERSION ) ".EXP"
-      #define HELPNAME_NS   "PENHEL" STRX( USE_FILENAME_VERSION ) ".EXP"   /* not supported yet */
+      #define HELPNAME      "PLSHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
+      #define HELPNAME_DS   "PEDHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
+      #define HELPNAME_NS   "PENHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"   /* not supported yet */
     #elif defined(DOS4G)
-      #define HELPNAME      "RSIHEL" STRX( USE_FILENAME_VERSION ) ".EXP"
+      #define HELPNAME      "RSIHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
     #elif defined(CAUSEWAY)
-      #define HELPNAME      "CWHEL" STRX( USE_FILENAME_VERSION ) ".EXE"
+      #define HELPNAME      "CWHEL" QUOTED( USE_FILENAME_VERSION ) ".EXE"
     #endif
   #else
     #if defined(ACAD)
@@ -130,7 +128,7 @@
     #endif
   #endif
 
-    #define MK_LINEAR(p)    ( ( (long)FP_SEG( (void __far *)(p) ) << 4 ) + FP_OFF( (void __far *)(p) ) )
+    #define MK_LINEAR(p)    ( ( (long)_FP_SEG( (void __far *)(p) ) << 4 ) + _FP_OFF( (void __far *)(p) ) )
 
     #define LINK(i)             link[i]
 
@@ -244,13 +242,13 @@ trap_retval RemotePut( void *data, trap_elen len )
 char __far *GetScreenPointer( void )
 {
 #if defined( ACAD )
-    return( MK_FP( Meg1, 0xB0000 ) );
+    return( _MK_FP( Meg1, 0xB0000 ) );
 #elif defined(CAUSEWAY)
-    return( MK_FP( Meg1, 0xB0000 ) );
+    return( _MK_FP( Meg1, 0xB0000 ) );
 #elif defined(PHARLAP)
-    return( MK_FP( 0x1C, 0 ) );
+    return( _MK_FP( 0x1C, 0 ) );
 #elif defined( DOS4G )
-    return( MK_FP( 0x50, 0 ) );
+    return( _MK_FP( 0x50, 0 ) );
 #endif
 }
 #endif
@@ -477,7 +475,7 @@ const char *RemoteLink( const char *parms, bool server )
     BackFromFork = 0;
     link_ptr = (void __far *)(LINK_VECTOR * 4);
     LINK( 3 ) = *link_ptr;
-    LINK( 2 ) = MK_FP( GetCS(), (unsigned )BackFromProtMode );
+    LINK( 2 ) = _MK_FP( GetCS(), (unsigned )BackFromProtMode );
     LINK( 1 ) = (void __far *)MK_LINEAR( &Buff );
     LINK( 0 ) = (void __far *)LINK_SIGNATURE;
     *link_ptr = (void __far *)MK_LINEAR( &link );

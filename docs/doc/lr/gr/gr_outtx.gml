@@ -1,5 +1,5 @@
-.gfunc outtext
-.gsynop begin 
+.gfunc _outtext
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _outtext( char _FAR *text );
 .do end
@@ -13,7 +13,7 @@ The
 .id &funcb.
 &routine displays the character string indicated by the argument
 .arg text
-.ct .li .
+.period
 The string must be terminated by a null character
 .if '&lang' eq 'C' .do begin
 ('\0').
@@ -31,11 +31,11 @@ When a line-feed character
 is encountered in the string, the characters following will be
 displayed on the next row of the screen.
 .np
-The text is displayed using the current text color (see the
-.kw _settextcolor
-&routine), starting at the current text position (see the
-.kw _settextposition
-&routine).
+The text is displayed using the current text color
+.seeref _settextcolor
+.ct , starting at the current text position
+.seeref _settextposition
+.period
 The text position is updated to follow the end of the displayed text.
 .im gr_text
 .desc end

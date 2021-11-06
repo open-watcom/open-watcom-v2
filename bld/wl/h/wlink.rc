@@ -12,7 +12,7 @@ BEGIN
 
     #include "lnkerror.msg"
     #include "wlink.msg"
-    #include "wrcmsg.gh"
+    #include "rc.msg"
 
     #undef pick
 
@@ -20,7 +20,7 @@ BEGIN
 
     #include "lnkerror.msg"
     #include "wlink.msg"
-    #include "wrcmsg.gh"
+    #include "rc.msg"
 
     #undef pick
 END

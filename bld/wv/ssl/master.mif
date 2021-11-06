@@ -37,16 +37,16 @@ all : $(prs_list) .SYMBOLIC
 common_ssl = ../dbgintr.ssl ../dbgrules.ssl
 
 $(fortran_prs) : ../fortran.ssl $(common_ssl)
-    ssl $(ssl_options) $[@ $^@
+    ssl $(ssl_options) $[@ $@
 
 $(cpp_prs) : ../cpp.ssl ../pp_c.ssl $(common_ssl)
-    ssl $(ssl_options) $[@ $^@
+    ssl $(ssl_options) $[@ $@
 
 $(c_prs) : ../c.ssl ../pp_c.ssl $(common_ssl)
-    ssl $(ssl_options) $[@ $^@
+    ssl $(ssl_options) $[@ $@
 
 $(java_prs) : ../java.ssl ../pp_c.ssl $(common_ssl)
-    ssl $(ssl_options) $[@ $^@
+    ssl $(ssl_options) $[@ $@
 
 clean: .SYMBOLIC
     rm -f *.prs *.tbl

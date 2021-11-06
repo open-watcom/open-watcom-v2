@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,8 @@
 ****************************************************************************/
 
 
+#ifdef _DOS16M
+
 // these are the values used in the struct fmt_d16m_data flags field.
 
 enum {
@@ -40,8 +43,10 @@ enum {
 
 #define TRANS_SPECD (TRANS_DATA | TRANS_STACK)
 
-extern void     Fini16MLoadFile( void );
-extern unsigned ToD16MSel( unsigned );
-extern segment  Find16MSeg( segment );
-extern void     CalcGrpSegs( void );
-extern void     MakeDos16PM( void );
+extern void         Fini16MLoadFile( void );
+extern unsigned     ToD16MSel( unsigned );
+extern segment      Find16MSeg( segment );
+extern void         CalcGrpSegs( void );
+extern void         MakeDos16PM( void );
+
+#endif

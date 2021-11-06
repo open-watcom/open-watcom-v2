@@ -1,15 +1,15 @@
 # Library naming. The basic convention is libname_(model), with optional
-# suffixes and/or infixes. 
+# suffixes and/or infixes.
 # Ideally all libraries should be built with final names used for distribution.
 # That avoids having builder.ctl to control the renaming and allows us to
 # point the linker directly at the build directories.
 
 # General naming convention
-clib_suffix_ms 	     = s
-clib_suffix_mm 	     = m
-clib_suffix_mc 	     = c
-clib_suffix_ml 	     = l
-clib_suffix_mh 	     = h
+clib_suffix_ms       = s
+clib_suffix_mm       = m
+clib_suffix_mc       = c
+clib_suffix_ml       = l
+clib_suffix_mh       = h
 clib_suffix_register = 3r
 clib_suffix_stack    = 3s
 libname_086 = $(clib_suffix_$(model))

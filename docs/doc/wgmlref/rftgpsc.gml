@@ -1,6 +1,6 @@
 :H2.PSC
 :xmp
-Format&gml. &gml.PSC \(proc='character string'\).
+Format&gml. &gml.PSC [proc='character string'].
 :exmp
 :I1.process specific control
 :I2 refid='gtpsc' pg=major.gtpsc

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,12 +135,12 @@ static  void    DoLoop( TYPE do_type ) {
 // Generate code for DO statement or implied-DO.
 
     do_entry    *doptr;
-    uint        do_size;
+    size_t      do_size;
     intstar4    incr;
     intstar4    limit;
     sym_id      loop_ctrl;
     TYPE        e1_type;
-    uint        e1_size;
+    size_t      e1_size;
     itnode      *e2_node;
     itnode      *e3_node;
     bool        e2_const;

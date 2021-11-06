@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,12 +56,9 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
 //  HANDLE              osHandle;               // removed by JBS
     BOOL                rc;
     SECURITY_ATTRIBUTES sa;
-#elif defined(__OS2__) && defined(__386__)
+#elif defined(__OS2__)
     HFILE               hRead, hWrite;
     APIRET              rc;
-#elif defined(__OS2__) && !defined(__386__)
-    HFILE               hRead, hWrite;
-    USHORT              rc;
 #endif
     int                 hReadPosix, hWritePosix;
 
@@ -72,26 +69,27 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
 //  }
 
     /*** Create the pipes (note that psize==0 ==> use default size) ***/
-    #if defined(__NT__)
-        sa.nLength = sizeof( SECURITY_ATTRIBUTES );
-        sa.lpSecurityDescriptor = NULL;
-        sa.bInheritHandle = (((textmode & O_NOINHERIT)==O_NOINHERIT)?FALSE:TRUE);
-        rc = CreatePipe( &hRead, &hWrite, &sa, psize );
-        if( rc == FALSE ) {
-            return( __set_errno_nt() );
-        }
-    #elif defined(__OS2__)
-        if( psize == 0 )  psize = 4096;
-        #ifdef __386__
-            rc = DosCreatePipe( &hRead, &hWrite, psize );
-        #else
-            rc = DosMakePipe( &hRead, &hWrite, psize );
-        #endif
-        if( rc != NO_ERROR ) {
-            _RWD_errno = ENOMEM;
-            return( -1 );
-        }
-    #endif
+#if defined(__NT__)
+    sa.nLength = sizeof( SECURITY_ATTRIBUTES );
+    sa.lpSecurityDescriptor = NULL;
+    sa.bInheritHandle = (((textmode & O_NOINHERIT)==O_NOINHERIT)?FALSE:TRUE);
+    rc = CreatePipe( &hRead, &hWrite, &sa, psize );
+    if( rc == FALSE ) {
+        return( __set_errno_nt() );
+    }
+#elif defined(__OS2__)
+    if( psize == 0 )
+        psize = 4096;
+  #ifdef _M_I86
+    rc = DosMakePipe( &hRead, &hWrite, psize );
+  #else
+    rc = DosCreatePipe( &hRead, &hWrite, psize );
+  #endif
+    if( rc != NO_ERROR ) {
+        _RWD_errno = ENOMEM;
+        return( -1 );
+    }
+#endif
 
 // removed by JBS - used sa struct instead
 //    /*** Make read handle inheritable ***/
@@ -131,20 +129,20 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
         if( hReadPosix != -1 ) {
             close( hReadPosix );
         } else {
-            #if defined(__NT__)
-                CloseHandle( hRead );
-            #elif defined(__OS2__)
-                DosClose( hRead );
-            #endif
+#if defined(__NT__)
+            CloseHandle( hRead );
+#elif defined(__OS2__)
+            DosClose( hRead );
+#endif
         }
         if( hWritePosix != -1 ) {
             close( hWritePosix );
         } else {
-            #if defined(__NT__)
-                CloseHandle( hWrite );
-            #elif defined(__OS2__)
-                DosClose( hWrite );
-            #endif
+#if defined(__NT__)
+            CloseHandle( hWrite );
+#elif defined(__OS2__)
+            DosClose( hWrite );
+#endif
         }
         return( -1 );
     }

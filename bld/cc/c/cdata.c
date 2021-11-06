@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #define global
 #include "cvars.h"
+#include "cmacadd.h"
 
 
 void InitGlobalVars( void )
@@ -46,13 +47,16 @@ void InitGlobalVars( void )
     PCH_MaxSymHandle        = 0;        /* number of symbols in PCH_SymArray */
     DebugFlag               = 0;
     CurToken                = T_NULL;
-    BadTokenInfo            = 0;
+    BadTokenInfo            = ERR_NONE;
     TokenLen                = 0;
     TokenLoc.line           = 0;
+    TokenLoc.column         = 0;
     TokenLoc.fno            = 0;
     SrcFileLoc.line         = 0;
+    SrcFileLoc.column       = 0;
     SrcFileLoc.fno          = 0;
     CommentLoc.line         = 0;
+    CommentLoc.column       = 0;
     CommentLoc.fno          = 0;
     CurrChar                = 0;
     ConstType               = 0;
@@ -74,6 +78,7 @@ void InitGlobalVars( void )
     CppStack                = NULL;     /* #if structure control stack */
     IncPathList             = NULL;     /* list of path names to try for include files */
     SrcLoc.line             = 0;
+    SrcLoc.column           = 0;
     SrcLoc.fno              = 0;
     SrcLineCount            = 0;        /* # of lines in primary source file */
     IncLineCount            = 0;        /* # of lines in all included files  */
@@ -91,8 +96,9 @@ void InitGlobalVars( void )
     SavedId                 = NULL;     /* saved id when doing look ahead */
     SavedHash               = 0;        /* hash value for saved id */
     SavedTokenLoc.line      = 0;        /* value of TokenLine when id saved */
+    SavedTokenLoc.column    = 0;        /* value of TokenColumn when id saved */
     SavedTokenLoc.fno       = 0;        /* value of TokenFno when id saved */
-    LAToken                 = 0;        /* look ahead token */
+    LAToken                 = T_NULL;   /* look ahead token */
     LabelHead               = NULL;     /* list of all labels defined in function */
     TagHead                 = NULL;     /* list of all struct, union, enum tags */
     DeadTags                = NULL;     /* list of all tags that are out of scope */
@@ -142,7 +148,6 @@ void InitGlobalVars( void )
     ProcRevision            = 0;        /* processor revision for c.g. */
     GenCodeGroup            = NULL;     /* pointer to code group name */
     ProEpiDataSize          = 0;        /* data to be alloc'd for pro/epi hook */
-    Toggles                 = 0;        /* global toggle flags */
     ErrLimit                = 0;
 
     DataThreshold           = 0;        /* sizeof(obj) > this ==> separate segment */
@@ -183,7 +188,6 @@ void InitGlobalVars( void )
     B_Bool                  = 0;
 
     OptSize                 = 0;        /* 100 => make pgm small as possible */
-    MacSegList              = NULL;     /* pointer to list of macro segments */
     LoopDepth               = 0;        /* current nesting of loop constructs */
     HeadLibs                = NULL;     /* list of library search records */
     AliasHead               = NULL;     /* list of symbol alias records */
@@ -225,6 +229,8 @@ void InitGlobalVars( void )
     Check_global_prototype  = 0;
 
     memset( &CompFlags, 0, sizeof( CompFlags ) );
+
+    InitMacroSegments();                /* initialize pointer to list of macro segments */
     InitStmt();
     InitErrLoc();
 }

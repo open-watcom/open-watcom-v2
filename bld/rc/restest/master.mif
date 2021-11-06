@@ -6,46 +6,43 @@ restest_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-.suffixes : .rc .res
+#
+# cflags
+#
+.c: ..
 
 inc_dirs = -I..
 
-.c: ..
-.rc: ..
-
-ntobjs = msgtbl.nbj
-                          
-objs =              &
-        restest.obj &
-        resproc.obj &
-        verinfo.obj &
-        string.obj  &
-        menu.obj    &
-        dialog.obj  &
-        data.obj    &
-        cursor.obj  &
-        icon.obj    &
-        accel.obj   &
-        bitmap.obj
-
-!ifeq host_os nt
-objs += msgtbl.obj
-win_libs = version.lib
-!else
-win_libs = ver.lib
-!endif
-
 extra_l_flags = opt map
+extra_l_flags_nt = lib version.lib
+extra_l_flags_win = lib ver.lib
 
-$(proj_name).exe : $(objs) $(proj_name).res $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(win_libs) $(ldflags)
-!else
-    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(win_libs)}
-!endif
-    @%make bind_res
+# explicit rules
+#################
 
-$(proj_name).res : $(proj_name).rc $(__MAKEFILES__)
+#
+# EXE
+#
+exetarg_objs_nt = msgtbl.obj
+exetarg_objs = &
+    restest.obj &
+    resproc.obj &
+    verinfo.obj &
+    string.obj  &
+    menu.obj    &
+    dialog.obj  &
+    data.obj    &
+    cursor.obj  &
+    icon.obj    &
+    accel.obj   &
+    bitmap.obj  &
+    $(exetarg_objs_$(host_os))
+exetarg_res = $(proj_name).res
+!include exetarg.mif
+
+#
+# rc and others
+#
+$(proj_name).res : ../restest.rc $(__MAKEFILES__)
     @%make echo_rc
     $(rc) $(inc_dirs) $(inc_dirs_sys) -bt=$(host_os) -r $[@ -fo=$@

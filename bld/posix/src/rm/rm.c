@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,9 @@
 #include <dos.h>
 #include <direct.h>
 #include <conio.h>
+#ifdef __NT__
+#include <windows.h>
+#endif
 #include "bool.h"
 #include "wio.h"
 #include "watcom.h"
@@ -303,14 +306,26 @@ void DoRM( const char *f )
 /* DoRMdir - perform RM on a specified directory */
 static void DoRMdir( const char *dir )
 {
-    unsigned    attribute;
     int         rc;
 
     if( ( rc = rmdir( dir ) ) == -1 ) {
+#ifdef __NT__
+        DWORD       attribute;
+
+        attribute = GetFileAttributes( dir );
+        if( attribute != INVALID_FILE_ATTRIBUTES && (attribute & FILE_ATTRIBUTE_READONLY) ) {
+#else
+        unsigned    attribute;
+
         _dos_getfileattr( dir, &attribute );
         if( attribute & _A_RDONLY ) {
+#endif
             if( fflag ) {
-                _dos_setfileattr( dir, _A_NORMAL );
+#ifdef __NT__
+                SetFileAttributes( dir, attribute & ~FILE_ATTRIBUTE_READONLY );
+#else
+                _dos_setfileattr( dir, attribute & ~_A_RDONLY );
+#endif
                 rc = rmdir( dir );
             } else {
                 PrintALineThenDrop( "Directory %s is read-only, use -f", dir );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +110,7 @@ void WriteOvl( unsigned req_ovl, char is_return, unsigned offset, unsigned seg )
         if( !OvlHandler( OVLDBG_GET_MOVED_SECTION, &xlat_addr ) )
             break;
         remap_blk.remap.data[0].section = xlat_addr.sect;
-        remap_blk.remap.data[0].segment = FP_SEG( xlat_addr.addr );
+        remap_blk.remap.data[0].segment = _FP_SEG( xlat_addr.addr );
         Info.d.count[SAMP_REMAP_SECTION].size += remap_blk.pref.length;
         Info.d.count[SAMP_REMAP_SECTION].number += 1;
         SampWrite( &remap_blk, remap_blk.pref.length );
@@ -123,7 +124,7 @@ void StopProg( void )
     RemoveDOSIntercepts();
 }
 
-void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
     struct  SREGS       segs;
     seg_offset          ovl_tbl;
@@ -151,9 +152,9 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     ovl_tbl.segment = 0;
     ovl_tbl.offset  = 0;
 
-    ovl = MK_FP( parms.startcsip.segment, parms.startcsip.offset );
+    ovl = _MK_FP( parms.startcsip.segment, parms.startcsip.offset );
     if( ovl->signature == OVL_SIGNATURE ) {
-        OvlHandler = MK_FP( parms.startcsip.segment, ovl->handler_offset );
+        OvlHandler = _MK_FP( parms.startcsip.segment, ovl->handler_offset );
         OvlSize = OvlHandler( OVLDBG_GET_STATE_SIZE, NULL );
         ovl_struct = alloca( ( sizeof( overlay_record_t ) - 1 ) + OvlSize );
         if( ovl_struct == NULL ) {
@@ -252,7 +253,7 @@ void SysDefaultOptions( void )
 }
 
 
-static void SetInterruptWatch( char **cmd )
+static void SetInterruptWatch( const char **cmd )
 {
     unsigned intr_num;
 
@@ -270,7 +271,7 @@ static void SetInterruptWatch( char **cmd )
 }
 
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     switch( c ) {
     case 'r':

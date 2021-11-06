@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,9 @@
 #include "cguimem.h"
 #include "loadcc.h"
 #include "wclbproc.h"
+#ifdef __NT__
+    #include <commctrl.h>
+#endif
 
 
 /* Window callback functions prototypes */
@@ -597,7 +600,7 @@ static void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UIN
     WPI_RECT    ir;
     WPI_RECT    draw_rect;
     size_t      len;
-    int         ext;
+    WPI_RECTDIM ext;
     int         width;
     WPI_RECTDIM ir_left;
     WPI_RECTDIM ir_right;
@@ -609,7 +612,7 @@ static void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UIN
     WPI_RECTDIM r_bottom;
     UINT        pmflags;
 #ifndef __NT__
-    int         height;
+    WPI_RECTDIM height;
 #else
     SIZE        sz;
 #endif

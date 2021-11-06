@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,41 +33,42 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "wio.h"
-#include "watcom.h"
 #include "bool.h"
-#include "sorthelp.h"
+#include "hcdos.h"
+#include "helpidx.h"
 #include "index.h"
 
+
 #define STR_CNT 2
-static int      dataPageCnt;
-static int      indexPageCnt;
-static int      topicCnt;
+
+#define PAGE_UNDEFINED  ((unsigned)-1)
+
+static unsigned dataPageCnt;
+static unsigned indexPageCnt;
+static unsigned topicCnt;
 
 
 static unsigned markDataPages( void )
 {
-    unsigned            page;
+    unsigned            pagenum;
     a_helpnode          *curnode;
     unsigned            size;
     unsigned            nodesize;
 
     size = sizeof( HelpPageHeader );
-    curnode = HelpNodes;
-    page = 0;
+    pagenum = 0;
     topicCnt = 0;
-    while( curnode != NULL ) {
+    for( curnode = HelpNodes; curnode != NULL; curnode = curnode->next ) {
         topicCnt++;
         nodesize = sizeof( PageIndexEntry ) + strlen( curnode->name ) + 1;
         if( nodesize + size > HLP_PAGE_SIZE ) {
-            page++;
+            pagenum++;
             size = sizeof( HelpPageHeader );
         }
         size += nodesize;
-        curnode->data_page = page;
-        curnode = curnode->next;
+        curnode->data_page = pagenum;
     }
-    return( page + 1 );
+    return( pagenum + 1 );
 }
 
 
@@ -91,74 +93,70 @@ static unsigned calcIndexPages( unsigned pagecnt )
         next_level = pagesInNextLevel( pagecnt );
         pagecnt = next_level;
         numpages += next_level;
-        if( pagecnt == 1 ) break;
+        if( pagecnt == 1 ) {
+            break;
+        }
     }
     return( numpages );
 }
 
 
-static unsigned calcStringBlockSize( char **str )
+static unsigned calcStringBlockSize( const char **helpstr )
 {
     unsigned    blocksize;
     unsigned    i;
 
-    blocksize = ( STR_CNT + 1 ) * sizeof( uint_16 );
-    for( i = 0; i < STR_CNT; i++ ) {
-        if( str[i] != NULL ) {
-            blocksize += strlen( str[i] ) + 1;
+    blocksize = 0;
+    if( helpstr != NULL ) {
+        blocksize = ( STR_CNT + 1 ) * sizeof( uint_16 );
+        for( i = 0; i < STR_CNT; i++ ) {
+            if( helpstr[i] != NULL ) {
+                blocksize += strlen( helpstr[i] ) + 1;
+            }
         }
     }
     return( blocksize );
 }
 
 
-unsigned long CalcIndexSize( char **str, bool gen_str )
+unsigned long CalcIndexSize( const char **helpstr )
 {
     unsigned long       ret;
 
     dataPageCnt = markDataPages();
     indexPageCnt = calcIndexPages( dataPageCnt );
-    ret = ( dataPageCnt + indexPageCnt ) * HLP_PAGE_SIZE + dataPageCnt * sizeof( uint_16 );
-    if( gen_str ) {
-        ret += sizeof( HelpHeader ) + calcStringBlockSize( str );
-    } else {
-        ret += sizeof( OldHeader );
-    }
-    return( ret );
+    ret = calcStringBlockSize( helpstr ) + ( dataPageCnt + indexPageCnt ) * HLP_PAGE_SIZE + dataPageCnt * sizeof( uint_16 );
+    if( helpstr != NULL )
+        return( ret + HELP_HEADER_SIZE );
+    return( ret + HELP_HEADER_V1_SIZE );
 }
 
 
-static a_helpnode *findFirstPage( unsigned page )
+static a_helpnode *findFirstPage( unsigned pagenum )
 {
     a_helpnode          *curnode;
 
-    curnode = HelpNodes;
-    while( curnode != NULL && curnode->data_page + indexPageCnt != page ) {
-        curnode = curnode->next;
-    }
+    for( curnode = HelpNodes; curnode != NULL && curnode->data_page + indexPageCnt != pagenum; curnode = curnode->next )
+        ;
     return( curnode );
 }
 
 
-static unsigned countPageEntries( unsigned page )
+static unsigned countPageEntries( unsigned pagenum )
 {
     unsigned            cnt;
     a_helpnode          *curnode;
 
-    curnode = HelpNodes;
     cnt = 0;
-    curnode = findFirstPage( page );
-    while( curnode != NULL && curnode->data_page + indexPageCnt == page ) {
-        cnt ++;
-        curnode = curnode->next;
-    }
+    for( curnode = findFirstPage( pagenum ); curnode != NULL && curnode->data_page + indexPageCnt == pagenum; curnode = curnode->next )
+        cnt++;
     return( cnt );
 }
 
 
-static int writeOneDataPage( int fout, unsigned pagenum )
+static int writeOneDataPage( FILE *fout, unsigned pagenum )
 {
-    char                *page;
+    char                *pagedata;
     HelpPageHeader      *pagehdr;
     PageIndexEntry      *index;
     char                *strings;
@@ -166,67 +164,62 @@ static int writeOneDataPage( int fout, unsigned pagenum )
     unsigned            len;
     a_helpnode          *curnode;
 
-    page = malloc( HLP_PAGE_SIZE );
-    memset( page, 0, HLP_PAGE_SIZE );
-    pagehdr = (HelpPageHeader *)page;
-    index = (PageIndexEntry *)( page + sizeof( HelpPageHeader ) );
+    pagedata = malloc( HLP_PAGE_SIZE );
+    memset( pagedata, 0, HLP_PAGE_SIZE );
+    pagehdr = (HelpPageHeader *)pagedata;
+    index = (PageIndexEntry *)( pagehdr + 1 );
     pagehdr->type = PAGE_DATA;
     pagehdr->num_entries = countPageEntries( pagenum );
     pagehdr->page_num = pagenum;
-    strings = (char *)index + pagehdr->num_entries * sizeof( PageIndexEntry );
+    strings = (char *)( index + pagehdr->num_entries );
     stroff = 0;
-    curnode = findFirstPage( pagenum );
-    while( curnode != NULL && curnode->data_page + indexPageCnt == pagenum ) {
+    for( curnode = findFirstPage( pagenum ); curnode != NULL && curnode->data_page + indexPageCnt == pagenum; curnode = curnode->next ) {
         index->name_offset = stroff;
         index->entry_offset = curnode->fpos;
         strcpy( strings, curnode->name );
         len = strlen( curnode->name ) + 1;
         stroff += len;
         strings += len;
-        curnode = curnode->next;
         index++;
     }
-    write( fout, page, HLP_PAGE_SIZE );
-    free( page );
+    fwrite( pagedata, HLP_PAGE_SIZE, 1, fout );
+    free( pagedata );
     return( 0 );
 }
 
 
-static int writeDataPages( int fout )
+static int writeDataPages( FILE *fout )
 {
     unsigned            i;
 
-    for( i=0; i < dataPageCnt; i++ ) {
+    for( i = 0; i < dataPageCnt; i++ ) {
         writeOneDataPage( fout, i + indexPageCnt );
     }
     return( 1 );
 }
 
 
-static char *getIndexString( void **pages, unsigned base, int datalevel )
+static char *getIndexString( void **pages, unsigned pagenum, bool datalevel )
 {
     HelpIndexEntry      *entry;
     HelpPageHeader      *header;
-    a_helpnode          *node;
+    a_helpnode          *curnode;
+    char                *name;
 
     if( datalevel ) {
-        node = findFirstPage( base );
-        while( node->next != NULL &&
-               node->next->data_page + indexPageCnt == base ) {
-            node = node->next;
-        }
-        return( node->name );
+        name = NULL;
+        for( curnode = findFirstPage( pagenum ); curnode != NULL && curnode->data_page + indexPageCnt == pagenum; curnode = curnode->next )
+            name = curnode->name;
+        return( name );
     } else {
-        header = pages[ base ];
-        entry = (HelpIndexEntry *) ( (char *)header
-                + sizeof( HelpPageHeader ) );
-        return( entry[ header->num_entries - 1].start );
+        header = pages[pagenum];
+        entry = (HelpIndexEntry *)( header + 1 );
+        return( entry[header->num_entries - 1].start );
     }
 }
 
 
-static void fillIndexPage( void **pages, unsigned curpage, unsigned base,
-                    int datalevel )
+static void fillIndexPage( void **pages, unsigned curpage, unsigned pagenum, bool datalevel )
 {
     HelpIndexEntry      *entry;
     HelpPageHeader      *header;
@@ -234,13 +227,13 @@ static void fillIndexPage( void **pages, unsigned curpage, unsigned base,
     char                *src;
 
     header = pages[curpage];
-    entry = (HelpIndexEntry *) ( (char *)header + sizeof( HelpPageHeader ) );
+    entry = (HelpIndexEntry *)( header + 1 );
     for( i = 0; i < header-> num_entries; i++ ) {
-        entry->nextpage = base;
-        src = getIndexString( pages, base, datalevel );
+        entry->nextpage = pagenum;
+        src = getIndexString( pages, pagenum, datalevel );
         strncpy( entry->start, src, INDEX_LEN );
-        entry->start[ INDEX_LEN -1 ] = '\0';
-        base++;
+        entry->start[INDEX_LEN - 1] = '\0';
+        pagenum++;
         entry++;
     }
 }
@@ -252,7 +245,7 @@ static void generateIndexLevel( void **pages, unsigned curbase,
     unsigned            entries_per_page;
     unsigned            entries_last_page;
     unsigned            i;
-    unsigned            base;
+    unsigned            pagenum;
     HelpPageHeader      *header;
 
     entries_per_page = prev_level / cur_level;
@@ -260,10 +253,10 @@ static void generateIndexLevel( void **pages, unsigned curbase,
         entries_per_page ++;
     }
     entries_last_page = prev_level - entries_per_page * ( cur_level - 1 );
-    if( prevbase == -1 ) {
-        base = indexPageCnt;
+    if( prevbase == PAGE_UNDEFINED ) {
+        pagenum = indexPageCnt;
     } else {
-        base = prevbase;
+        pagenum = prevbase;
     }
     for( i = curbase; i < curbase + cur_level; i++ ) {
         pages[i] = malloc( HLP_PAGE_SIZE );
@@ -281,13 +274,13 @@ static void generateIndexLevel( void **pages, unsigned curbase,
             header->num_entries = entries_per_page;
         }
         header->page_num = i;
-        fillIndexPage( pages, i, base, prevbase == -1 );
-        base += entries_per_page;
+        fillIndexPage( pages, i, pagenum, prevbase == PAGE_UNDEFINED );
+        pagenum += entries_per_page;
     }
 }
 
 
-static int writeIndexPages( int fout )
+static int writeIndexPages( FILE *fout )
 {
     unsigned            prev_level;
     unsigned            cur_level;
@@ -297,7 +290,7 @@ static int writeIndexPages( int fout )
     unsigned            i;
 
     prev_level = dataPageCnt;
-    prevbase = -1;
+    prevbase = PAGE_UNDEFINED;
     pages = malloc( indexPageCnt * sizeof( void * ) );
     memset( pages, 0, indexPageCnt * sizeof( void * ) );
     curbase = indexPageCnt;
@@ -309,20 +302,23 @@ static int writeIndexPages( int fout )
          cur_level = pagesInNextLevel( prev_level );
          curbase -= cur_level;
          generateIndexLevel( pages, curbase, cur_level, prevbase, prev_level );
-         if( cur_level == 1 ) break;
+         if( cur_level == 1 )
+            break;
          prev_level = cur_level;
          prevbase = curbase;
      }
      for( i = 0; i < indexPageCnt; i++ ) {
-         write( fout, pages[i], HLP_PAGE_SIZE );
-         if( pages[i] != NULL ) free( pages[i] );
+         fwrite( pages[i], HLP_PAGE_SIZE, 1, fout );
+         if( pages[i] != NULL ) {
+             free( pages[i] );
+         }
      }
      free( pages );
      return( 0 );
 }
 
 
-static int writePageItemNumIndex( int fout )
+static int writePageItemNumIndex( FILE *fout )
 {
     uint_16     *index;
     uint_16     indexsize;
@@ -332,81 +328,77 @@ static int writePageItemNumIndex( int fout )
     index = malloc( indexsize );
     index[0] = 0; //countPageEntries( indexPageCnt );
     for( i=1; i < dataPageCnt; i++ ) {
-        index[i] = index[ i-1 ] + countPageEntries( indexPageCnt + i - 1 );
+        index[i] = index[i - 1] + countPageEntries( indexPageCnt + i - 1 );
     }
-    write( fout, index, indexsize );
+    fwrite( index, indexsize, 1, fout );
     free( index );
     return( 0 );
 }
 
 
-static int writeHeader( int fout, int blocksize )
+static int writeHeader( FILE *fout, const char **helpstr )
 {
-    HelpHeader          header;
+    uint_32     u32;
+    uint_16     u16;
 
-    memset( &header, 0, sizeof( HelpHeader ) );
-    header.sig[0] = HELP_SIG_1;
-    header.sig[1] = HELP_SIG_2;
-    header.ver_maj = HELP_MAJ_VER;
-    header.ver_min = HELP_MIN_VER;
-    header.indexpagecnt = indexPageCnt;
-    header.datapagecnt = dataPageCnt;
-    header.topiccnt = topicCnt;
-    header.str_size = blocksize;
-    write( fout, &header, sizeof( HelpHeader ) );
+    u32 = HELP_SIG_1;
+    fwrite( &u32, sizeof( u32 ), 1, fout );
+    u32 = HELP_SIG_2;
+    fwrite( &u32, sizeof( u32 ), 1, fout );
+    if( helpstr != NULL ) {
+        u16 = HELP_MAJ_VER;
+    } else {
+        u16 = HELP_MAJ_V1;
+    }
+    fwrite( &u16, sizeof( u16 ), 1, fout );
+    u16 = HELP_MIN_VER;
+    fwrite( &u16, sizeof( u16 ), 1, fout );
+    u16 = indexPageCnt;
+    fwrite( &u16, sizeof( u16 ), 1, fout );
+    u16 = dataPageCnt;
+    fwrite( &u16, sizeof( u16 ), 1, fout );
+    u32 = topicCnt;
+    fwrite( &u32, sizeof( u32 ), 1, fout );
+    if( helpstr != NULL ) {
+        u16 = calcStringBlockSize( helpstr );
+        fwrite( &u16, sizeof( u16 ), 1, fout );
+    }
+    u16 = 3;
+    u32 = 0;
+    while( u16-- > 0 ) {
+        fwrite( &u32, sizeof( u32 ), 1, fout );
+    }
     return( 0 );
 }
 
-
-static int writeOldHeader( int fout )
-{
-    OldHeader           header;
-
-    memset( &header, 0, sizeof( OldHeader ) );
-    header.sig[0] = HELP_SIG_1;
-    header.sig[1] = HELP_SIG_2;
-    header.ver_maj = 1;
-    header.ver_min = HELP_MIN_VER;
-    header.indexpagecnt = indexPageCnt;
-    header.datapagecnt = dataPageCnt;
-    header.topiccnt = topicCnt;
-    write( fout, &header, sizeof( OldHeader ) );
-    return( 0 );
-}
-
-static void writeStrings( int fout, char **str )
+static void writeStrings( FILE *fout, const char **helpstr )
 {
     unsigned    i;
     uint_16     tmp[STR_CNT + 1];
 
-    tmp[0] = STR_CNT;
-    for( i = 0; i < STR_CNT; i++ ) {
-        if( str[i] != NULL ) {
-            tmp[i + 1] = strlen( str[i] ) + 1;
-        } else {
-            tmp[i + 1] = 0;
+    if( helpstr != NULL ) {
+        tmp[0] = STR_CNT;
+        for( i = 0; i < STR_CNT; i++ ) {
+            if( helpstr[i] != NULL ) {
+                tmp[i + 1] = strlen( helpstr[i] ) + 1;
+            } else {
+                tmp[i + 1] = 0;
+            }
         }
-    }
-    write( fout, &tmp, sizeof( uint_16 ) * ( STR_CNT + 1 ) );
-    for( i = 0; i < STR_CNT; i++ ) {
-        if( str[i] != NULL ) {
-            write( fout, str[i], tmp[i + 1] );
+        fwrite( &tmp, sizeof( uint_16 ) * ( STR_CNT + 1 ), 1, fout );
+        for( i = 0; i < STR_CNT; i++ ) {
+            if( helpstr[i] != NULL ) {
+                fwrite( helpstr[i], tmp[i + 1], 1, fout );
+            }
         }
     }
 }
 
-int WriteIndex( int fout, char **str, bool gen_str )
+int WriteIndex( FILE *fout, const char **helpstr )
 {
-    int         blocksize;
-
-    lseek( fout, 0, SEEK_SET );
-    if( gen_str ) {
-        blocksize = calcStringBlockSize( str );
-        writeHeader( fout, blocksize );
-        writeStrings( fout, str );
-    } else {
-        writeOldHeader( fout );
-    }
+    fseek( fout, 0, SEEK_SET );
+    writeHeader( fout, helpstr );
+    writeStrings( fout, helpstr );
     writePageItemNumIndex( fout );
     writeIndexPages( fout );
     writeDataPages( fout );

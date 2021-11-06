@@ -40,6 +40,8 @@
 #include "rxsupp.h"
 
 
+#define IS_WS( x )  ((x) == ' ' || (x) == '\t')
+
 static bool     currLineRepUndo;
 static bool     overStrike;
 static bool     needNewUndoForLine;
@@ -76,8 +78,6 @@ static void doneWithCurrentLine( void )
 
 } /* doneWithCurrentLine */
 
-#define WHITE_SPACE( x ) ((x) == ' ' || (x) == '\t')
-
 /*
  * trimWorkLine - remove trailing whitespace from work line
  */
@@ -89,7 +89,7 @@ static int trimWorkLine( void )
     len = 0;
     if( EditFlags.CMode || EditFlags.RemoveSpaceTrailing ) {
         for( i = WorkLine->len; i > 0; --i ) {
-            if( !WHITE_SPACE( WorkLine->data[i - 1] ) ) {
+            if( !IS_WS( WorkLine->data[i - 1] ) ) {
                 break;
             }
         }

@@ -21,21 +21,21 @@ functions convert the calendar time pointed to by
 .arg timer
 into a structure of type
 .kw tm
-.ct, of time information, expressed as local time.
+.ct , of time information, expressed as local time.
 Whenever
 .id &funcb.
 is called, the
-.kw tzset
+.reffunc tzset
 function is also called.
 .np
 The calendar time is usually obtained by using the
-.kw time
+.reffunc time
 function.
 That time is Coordinated Universal Time (UTC) (formerly known as
 Greenwich Mean Time (GMT)).
 .np
 The
-.kw _localtime
+.reffunc _localtime
 function places the converted time in the
 .kw tm
 structure pointed to by

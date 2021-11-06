@@ -1,6 +1,6 @@
 #
 # Open Watcom DIP Dumper makefile.
-# 
+#
 proj_name = dipdump
 
 !ifndef dipdump_autodepends
@@ -14,15 +14,23 @@ dipdump_autodepends = .AUTODEPEND
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
 
-inc_dirs = -I"../h" -I"$(dig_dir)/h"
-
+#
+# cflags
+#
 .c: ../c;$(dig_srcs);$(mad_srcs)
 
-objs = &
+inc_dirs = -I"../h" -I"$(dig_dir)/h"
+
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = &
     dipdump.obj &
     digcli.obj  &
     dipcli.obj  &
     pathlist.obj &
     $(dip_objs) $(dig_objs)
-
 !include exetarg.mif

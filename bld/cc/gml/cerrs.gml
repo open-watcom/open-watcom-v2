@@ -2,6 +2,7 @@
 :cmt *
 :cmt *                            Open Watcom Project
 :cmt *
+:cmt * Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 :cmt *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt *
 :cmt *  ========================================================================
@@ -26,6 +27,8 @@
 :cmt *
 :cmt * Description:  C compiler diagnostic messages.
 :cmt *
+:cmt *     UTF-8 encoding, Â¥
+:cmt *
 :cmt *****************************************************************************
 :cmt
 
@@ -42,8 +45,9 @@
 :cmt        :warning <n>    message is a warning with a specific level
 :cmt        :info       informational message
 :cmt
-:cmt        :msgsym <sym>   internal symbolic name for message
-:cmt        :msgtxt <text>  text for message
+:cmt        :msgsym <sym>    internal symbolic name for message
+:cmt        :msgtxt <text>   text for message
+:cmt        :msgattr <value> attribute value for message
 :cmt
 :cmt        :msglvl     start of header title for a group of messages
 :cmt        :emsglvl    end of header title for a group of messages
@@ -82,7 +86,7 @@
 :cmt -------------------------------------------------------------------
 :MSGSYM. ERR_PARM_INCONSISTENT_INDIRECTION_LEVEL
 :MSGTXT. Parameter %d contains inconsistent levels of indirection
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^%d‚Í–µ‚‚µ‚½ƒŒƒxƒ‹‚ÌŠÔÚQÆ‚ğŠÜ‚ñ‚Å‚¢‚Ü‚·
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿%dã¯çŸ›ç›¾ã—ãŸãƒ¬ãƒ™ãƒ«ã®é–“æ¥å‚ç…§ã‚’å«ã‚“ã§ã„ã¾ã™
 :WARNING. 1
 .np
 The function is expecting something like
@@ -92,20 +96,20 @@ and it is being passed a
 for instance.
 :MSGSYM. ERR_NONPORTABLE_PTR_CONV
 :MSGTXT. Non-portable pointer conversion
-:MSGJTXT. ˆÚA«‚Ì‚È‚¢ƒ|ƒCƒ“ƒ^•ÏŠ·‚Å‚·
+:MSGJTXT. ç§»æ¤æ€§ã®ãªã„ãƒã‚¤ãƒ³ã‚¿å¤‰æ›ã§ã™
 :WARNING. 1
 .np
 This message is issued whenever you convert a non-zero constant to a pointer.
 :MSGSYM. ERR_PCTYPE_MISMATCH
 :MSGTXT. Type mismatch (warning)
-:MSGJTXT. Œ^‚ªˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. å‹ãŒä¸€è‡´ã—ã¾ã›ã‚“
 :WARNING. 1
 .np
 This message is issued for a function return value, an assignment or operators
 where one type is pointer and second one is non-pointer type.
 :MSGSYM. ERR_PARM_COUNT_WARNING
 :MSGTXT. Parameter count does not agree with previous definition (warning)
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^[”‚ªC‘O‚Ì’è‹`‚Æˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼æ•°ãŒï¼Œå‰ã®å®šç¾©ã¨ä¸€è‡´ã—ã¾ã›ã‚“
 :WARNING. 1
 .np
 You have either not enough parameters or too many parameters in a call
@@ -116,7 +120,7 @@ and prototypes to use the ",..." to indicate that the function indeed
 takes a variable number of parameters.
 :MSGSYM. ERR_INCONSISTENT_INDIRECTION_LEVEL
 :MSGTXT. Inconsistent levels of indirection
-:MSGJTXT. ŠÔÚQÆ‚ÌƒŒƒxƒ‹‚ª–µ‚‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. é–“æ¥å‚ç…§ã®ãƒ¬ãƒ™ãƒ«ãŒçŸ›ç›¾ã—ã¦ã„ã¾ã™
 :WARNING. 1
 .np
 This occurs in an assignment or return statement when one of the operands
@@ -130,7 +134,7 @@ Solution: Correct the levels of indirection or use a
 .id void *.
 :MSGSYM. ERR_ASSIGNMENT_IN_BOOL_EXPR
 :MSGTXT. Assignment found in boolean expression
-:MSGJTXT. ˜_—®‚Ì’†‚É‘ã“ü‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. è«–ç†å¼ã®ä¸­ã«ä»£å…¥ãŒã‚ã‚Šã¾ã™
 :WARNING. 1
 .np
 An assignment of a constant has been detected in a boolean expression.
@@ -138,7 +142,7 @@ For example: "if( var = 0 )".
 It is most likely that you want to use "==" for testing for equality.
 :MSGSYM. ERR_CONSTANT_TOO_BIG
 :MSGTXT. Constant out of range - truncated
-:MSGJTXT. ”ÍˆÍŠO‚Ì’è”‚Å‚· - Ø‚è‹l‚ß‚ç‚ê‚Ü‚µ‚½
+:MSGJTXT. ç¯„å›²å¤–ã®å®šæ•°ã§ã™ - åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã—ãŸ
 :WARNING. 1
 .np
 This message is issued if a constant cannot be represented in 32 bits
@@ -146,7 +150,7 @@ or if a constant is outside the range of valid values
 that can be assigned to a variable.
 :MSGSYM. ERR_MISSING_RETURN_VALUE
 :MSGTXT. Missing return value for function '%s'
-:MSGJTXT. ŠÖ”'%s'‚Ì‚½‚ß‚Ì–ß‚è’l‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°'%s'ã®ãŸã‚ã®æˆ»ã‚Šå€¤ãŒã‚ã‚Šã¾ã›ã‚“
 :WARNING. 1
 .np
 A function has been declared with a function return type, but no
@@ -157,7 +161,7 @@ statement or change the function return type to
 .kw void.
 :MSGSYM. ERR_DUPLICATE_TYPEDEF_ALREADY_DEFINED
 :MSGTXT. Duplicate typedef already defined
-:MSGJTXT. ‚·‚Å‚É’è‹`‚³‚ê‚½typedef‚ğÄ’è‹`‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã™ã§ã«å®šç¾©ã•ã‚ŒãŸtypedefã‚’å†å®šç¾©ã—ã¦ã„ã¾ã™
 :WARNING. 1
 .np
 A duplicate typedef is not allowed in ISO C.
@@ -165,12 +169,12 @@ This warning is issued when compiling with extensions enabled.
 You should delete the duplicate typedef definition.
 :MSGSYM. ERR_UNUSED_1
 :MSGTXT. not used
-:MSGJTXT. ‚±‚ÌƒƒbƒZ[ƒW‚Íg—p‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¯ä½¿ç”¨ã•ã‚Œã¾ã›ã‚“
 :WARNING. 1
 unused message
 :MSGSYM. ERR_FORTRAN_PRAGMA_NOT_DEFINED
 :MSGTXT. 'fortran' pragma not defined
-:MSGJTXT. 'fortran'‚Í’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. 'fortran'ã¯å®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“
 :WARNING. 1
 .np
 You have used the
@@ -179,35 +183,35 @@ keyword in your program, but have not defined a #pragma for
 .kw fortran.
 :MSGSYM. ERR_MEANINGLESS
 :MSGTXT. Meaningless use of an expression
-:MSGJTXT. ‚±‚Ì®‚Ìg—p‚Í–³ˆÓ–¡‚Å‚·
+:MSGJTXT. ã“ã®å¼ã®ä½¿ç”¨ã¯ç„¡æ„å‘³ã§ã™
 :WARNING. 1
 .np
 The line contains an expression that does nothing useful.
 In the example "i = (1,5);", the expression "1," is meaningless.
 :MSGSYM. ERR_POINTER_TRUNCATION
 :MSGTXT. Pointer truncated
-:MSGJTXT. ƒ|ƒCƒ“ƒ^‚ÍØ‚è‹l‚ß‚ç‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒã‚¤ãƒ³ã‚¿ã¯åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã—ãŸ
 :WARNING. 1
 .np
 A far pointer is being passed to a function that is expecting a near
 pointer, or a far pointer is being assigned to a near pointer.
 :MSGSYM. ERR_POINTER_TYPE_MISMATCH
 :MSGTXT. Pointer type mismatch
-:MSGJTXT. ƒ|ƒCƒ“ƒ^[Œ^‚ª•sˆê’v‚Å‚·
+:MSGJTXT. ãƒã‚¤ãƒ³ã‚¿ãƒ¼å‹ãŒä¸ä¸€è‡´ã§ã™
 :WARNING. 1
 .np
 You have two pointers that either point to different objects, or the
 pointers are of different size, or they have different modifiers.
 :MSGSYM. ERR_MISSING_LAST_SEMICOLON
 :MSGTXT. Missing semicolon
-:MSGJTXT. ƒZƒ~ƒRƒƒ“‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚»ãƒŸã‚³ãƒ­ãƒ³ãŒã‚ã‚Šã¾ã›ã‚“
 :WARNING. 1
 .np
 You are missing the semicolon ";" on the field definition just before
 the right curly brace "}".
 :MSGSYM. ERR_ADDR_OF_ARRAY
 :MSGTXT. &array may not produce intended result
-:MSGJTXT. ”z—ñ–¼‚Ö‚Ì&‰‰Zq‚Ìg—pCˆÓ}‚³‚ê‚½Œ‹‰Ê‚ğ¶‚¶‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñ
+:MSGJTXT. é…åˆ—åã¸ã®&æ¼”ç®—å­ã®ä½¿ç”¨ï¼Œæ„å›³ã•ã‚ŒãŸçµæœã‚’ç”Ÿã˜ãªã„ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“
 :WARNING. 1
 .np
 The type of the expression "&array" is different from the type of the
@@ -227,7 +231,7 @@ The address of operator "&" is not required for getting the address of an
 array.
 :MSGSYM. ERR_RET_ADDR_OF_AUTO
 :MSGTXT. Attempt to return address of auto variable
-:MSGJTXT. ©“®•Ï”‚ÌƒAƒhƒŒƒX‚ğ•Ô‚»‚¤‚Æ‚µ‚Ü‚·
+:MSGJTXT. è‡ªå‹•å¤‰æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’è¿”ãã†ã¨ã—ã¾ã™
 :WARNING. 1
 .np
 This warning usually indicates a serious programming error.
@@ -239,14 +243,14 @@ Therefore, the data pointed to by the return value may be destroyed
 before your program has a chance to reference it or make a copy of it.
 :MSGSYM. ERR_PASTE_TOKEN_DISCARDED
 :MSGTXT. '##' tokens did not generate a single token (rest discarded)
-:MSGJTXT. '##'ƒg[ƒNƒ“‚ªC’Pˆêƒg[ƒNƒ“‚ğ¶¬‚µ‚Ü‚¹‚ñ‚Å‚µ‚½ic‚è‚ÍÌ‚Ä‚ç‚ê‚Ü‚µ‚½j
+:MSGJTXT. '##'ãƒˆãƒ¼ã‚¯ãƒ³ãŒï¼Œå˜ä¸€ãƒˆãƒ¼ã‚¯ãƒ³ã‚’ç”Ÿæˆã—ã¾ã›ã‚“ã§ã—ãŸï¼ˆæ®‹ã‚Šã¯æ¨ã¦ã‚‰ã‚Œã¾ã—ãŸï¼‰
 :WARNING. 1
 .np
 When two tokens are pasted together using ##, they must form a string
 that can be parsed as a single token.
 :MSGSYM. ERR_UNREFERENCED_LABEL
 :MSGTXT. Label '%s' has been defined but not referenced
-:MSGJTXT. ƒ‰ƒxƒ‹'%s'‚ª’è‹`‚³‚ê‚Ü‚µ‚½‚ªCQÆ‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. ãƒ©ãƒ™ãƒ«'%s'ãŒå®šç¾©ã•ã‚Œã¾ã—ãŸãŒï¼Œå‚ç…§ã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ
 :WARNING. 1
 .np
 You have defined a label that is not referenced in a
@@ -260,13 +264,13 @@ statement.
 If not, then the label can be deleted.
 :MSGSYM. ERR_ADDR_OF_STATIC_FUNC_TAKEN
 :MSGTXT. Address of static function '%s' has been taken
-:MSGJTXT. ƒXƒ^ƒeƒBƒbƒNŠÖ”'%s'‚ÌƒAƒhƒŒƒX‚ª‚Æ‚ç‚ê‚Ü‚µ‚½
+:MSGJTXT. ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯é–¢æ•°'%s'ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ãŒã¨ã‚‰ã‚Œã¾ã—ãŸ
 :WARNING. 1
 .np
 This warning may indicate a potential problem when the program is overlayed.
 :MSGSYM. ERR_LVALUE_CAST
 :MSGTXT. lvalue cast is not standard C
-:MSGJTXT. ¶•Ó’l‚ÌƒLƒƒƒXƒg‚ÍC•W€‚ÌC‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦è¾ºå€¤ã®ã‚­ãƒ£ã‚¹ãƒˆã¯ï¼Œæ¨™æº–ã®Cã§ã¯ã‚ã‚Šã¾ã›ã‚“
 :WARNING. 1
 .np
 A cast operation does not yield an lvalue in ISO C.
@@ -276,14 +280,14 @@ cast operation, and the cast operation does not cause any conversions, the
 compiler treats the result as an lvalue and issues this warning.
 :MSGSYM. ERR_JUNK_FOLLOWS_DIRECTIVE
 :MSGTXT. Text following pre-processor directives is not standard C
-:MSGJTXT. ƒvƒŠƒvƒƒZƒbƒT‹[—–½—ß‚É‘±‚¢‚Ä‚¢‚éƒeƒLƒXƒg‚ªC•W€‚ÌC‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µæ“¬ä¼¼å‘½ä»¤ã«ç¶šã„ã¦ã„ã‚‹ãƒ†ã‚­ã‚¹ãƒˆãŒï¼Œæ¨™æº–ã®Cã§ã¯ã‚ã‚Šã¾ã›ã‚“
 :WARNING. 1
 .np
 Arbitrary text is not allowed following a pre-processor directive.
 Only comments are allowed following a pre-processor directive.
 :MSGSYM. ERR_LIT_TOO_LONG
 :MSGTXT. Literal string too long for array - truncated
-:MSGJTXT. ƒŠƒeƒ‰ƒ‹•¶š—ñ‚ª”z—ñ‚É‘Î‚µ‚Ä’·‚·‚¬‚Ü‚· - Ø‚è‹l‚ß‚ç‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒªãƒ†ãƒ©ãƒ«æ–‡å­—åˆ—ãŒé…åˆ—ã«å¯¾ã—ã¦é•·ã™ãã¾ã™ - åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã—ãŸ
 :WARNING. 1
 .np
 The supplied literal string contains more characters than the specified
@@ -292,7 +296,7 @@ Either shorten the literal string, or increase the dimension of the array
 to hold all of the characters from the literal string.
 :MSGSYM. ERR_SPLICE_IN_CPP_COMMENT
 :MSGTXT. '//' style comment continues on next line
-:MSGJTXT. '//'Œ`®‚ÌƒRƒƒ“ƒg‚ªŸs‚É‘±‚¢‚Ä‚¢‚Ü‚·
+:MSGJTXT. '//'å½¢å¼ã®ã‚³ãƒ¡ãƒ³ãƒˆãŒæ¬¡è¡Œã«ç¶šã„ã¦ã„ã¾ã™
 :WARNING. 1
 .np
 The compiler has detected a line continuation during the processing
@@ -310,7 +314,7 @@ comment end
 .eerrbad
 :MSGSYM. ERR_COMPARE_ALWAYS
 :MSGTXT. Comparison result always %d
-:MSGJTXT. ”äŠr‚ÌŒ‹‰Ê‚Íí‚É%d‚Å‚·
+:MSGJTXT. æ¯”è¼ƒã®çµæœã¯å¸¸ã«%dã§ã™
 :WARNING. 1
 .np
 The line contains a comparison that is always true (1) or false (0).
@@ -319,20 +323,20 @@ is redundant.
 Check to see if the expression should be signed instead of unsigned.
 :MSGSYM. ERR_INCDEPTH
 :MSGTXT. Nested include depth of %d exceeded
-:MSGJTXT. ƒlƒXƒg‚µ‚½ƒCƒ“ƒNƒ‹[ƒh‚Ì[‚³‚ª%d‚ğ’´‚¦‚Ü‚µ‚½
+:MSGJTXT. ãƒã‚¹ãƒˆã—ãŸã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã®æ·±ã•ãŒ%dã‚’è¶…ãˆã¾ã—ãŸ
 :WARNING. 1
 .np
 The number of nested include files has reached a  preset limit,
 check for recursive include statements.
 :MSGSYM. ERR_NON_ZERO_CONST
 :MSGTXT. Constant must be zero for pointer compare
-:MSGJTXT. ƒ|ƒCƒ“ƒ^‚Æ”äŠr‚·‚é’è”‚Íƒ[ƒ‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒã‚¤ãƒ³ã‚¿ã¨æ¯”è¼ƒã™ã‚‹å®šæ•°ã¯ã‚¼ãƒ­ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 :WARNING. 1
 .np
 A pointer is being compared using == or != to a non-zero constant.
 :MSGSYM. ERR_EXPANDED_TRIGRAPH
 :MSGTXT. trigraph found in string
-:MSGJTXT. –â‘è‚Æ‚È‚éOd•¶šiƒgƒ‰ƒCƒOƒ‰ƒtj‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. å•é¡Œã¨ãªã‚‹ä¸‰é‡æ–‡å­—ï¼ˆãƒˆãƒ©ã‚¤ã‚°ãƒ©ãƒ•ï¼‰ãŒã‚ã‚Šã¾ã™
 :WARNING. 1
 .np
 Trigraph expansion occurs inside a  string literal.
@@ -349,14 +353,14 @@ char *g = "(\?\?\?)\?\?\?-\?\?\?\?";
 .exam end
 :MSGSYM. ERR_SLACK_ADDED
 :MSGTXT. %d padding byte(s) added
-:MSGJTXT. %dƒoƒCƒg‚ÌƒpƒfƒBƒ“ƒO‚ª‰Á‚¦‚ç‚ê‚Ü‚µ‚½
+:MSGJTXT. %dãƒã‚¤ãƒˆã®ãƒ‘ãƒ‡ã‚£ãƒ³ã‚°ãŒåŠ ãˆã‚‰ã‚Œã¾ã—ãŸ
 :WARNING. 1
 .np
 The compiler has added slack bytes to align a member to
 the correct offset.
 :MSGSYM. ERR_WEIRD_ENDIF_ENCOUNTER
 :MSGTXT. #endif matches #if in different source file '%s'
-:MSGJTXT. #endif‚ª‘¼‚Ìƒ\[ƒXƒtƒ@ƒCƒ‹'%s'‚Ì#if‚Æ‘Î‰‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. #endifãŒä»–ã®ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«'%s'ã®#ifã¨å¯¾å¿œã—ã¦ã„ã¾ã™
 :WARNING. 1
 This warning may indicate a
 .kw #endif
@@ -368,7 +372,7 @@ and it is hoped will provide information to
 solve a preprocessing directive problem.
 :MSGSYM. ERR_LOSE_PRECISION
 :MSGTXT. Possible loss of precision
-:MSGJTXT. ¸“x‚ª—‚¿‚Ä‚¢‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+:MSGJTXT. ç²¾åº¦ãŒè½ã¡ã¦ã„ã‚‹å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™ã€‚
 :WARNING. 1
 .np
 This warning indicates that you may be converting a argument
@@ -381,7 +385,7 @@ or option "-wce=130". It can be disabled later by using
 .us #pragma disable_message(130).
 :MSGSYM. ERR_ASSUMED_IMPORT
 :MSGTXT. No prototype found for function '%s'
-:MSGJTXT. '%s'‚Ìƒvƒƒgƒ^ƒCƒv‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%s'ã®ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—ãŒã‚ã‚Šã¾ã›ã‚“
 :WARNING. 1
 .np
 A reference for a function appears in your program, but you do not
@@ -390,7 +394,7 @@ be used, but this will cause problems if the assumed prototype does
 not match actual function definition.
 :MSGSYM. ERR_NO_STG_OR_TYPE
 :MSGTXT. No storage class or type specified
-:MSGJTXT. ‹L‰¯ƒNƒ‰ƒX‚Ü‚½‚ÍŒ^‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. è¨˜æ†¶ã‚¯ãƒ©ã‚¹ã¾ãŸã¯å‹ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“
 :WARNING. 1
 .np
 When declaring a data object, either storage class or data type must be
@@ -414,7 +418,7 @@ i;
 is not a correctly formed declaration.
 :MSGSYM. ERR_SYMBOL_NAME_TOO_LONG
 :MSGTXT. Symbol name truncated for '%s'
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹–¼‚ª'%s'‚ÉØÌ‚Ä‚ç‚ê‚Ü‚µ‚½
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«åãŒ'%s'ã«åˆ‡æ¨ã¦ã‚‰ã‚Œã¾ã—ãŸ
 :WARNING. 1
 .np
 Symbol is longer than the object file format allows and has been truncated
@@ -422,7 +426,7 @@ to fit. Maximum length is 255 characters for OMF and 1024 characters for
 COFF or ELF object files.
 :MSGSYM. ERR_SHIFT_AMOUNT_NEGATIVE
 :MSGTXT. Shift amount negative
-:MSGJTXT. ƒVƒtƒg—Ê‚ª•‰‚Å‚·
+:MSGJTXT. ã‚·ãƒ•ãƒˆé‡ãŒè² ã§ã™
 :WARNING. 1
 .np
 The right operand of a left or right shift operator is a negative value.
@@ -433,7 +437,7 @@ int a = 1 << -2;
 The value of 'a' in the above example is undefined.
 :MSGSYM. ERR_SHIFT_AMOUNT_TOO_BIG
 :MSGTXT. Shift amount too large
-:MSGJTXT. ƒVƒtƒg—Ê‚ª‘å‚«‰ß‚¬‚Ü‚·
+:MSGJTXT. ã‚·ãƒ•ãƒˆé‡ãŒå¤§ãéãã¾ã™
 :WARNING. 1
 .np
 The right operand of a left or right shift operator is a value greater than
@@ -445,7 +449,7 @@ int a = 1 >> 123;
 The value of 'a' in the above example is undefined.
 :MSGSYM. ERR_COMPARE_UNSIGNED_VS_ZERO
 :MSGTXT. Comparison equivalent to 'unsigned == 0'
-:MSGJTXT. ”äŠr‚ÌŒ‹‰Ê‚Íí‚É%d‚Å‚·
+:MSGJTXT. æ¯”è¼ƒã®çµæœã¯å¸¸ã«%dã§ã™
 :WARNING. 1
 .np
 Comparing an unsigned expression to see whether it is <= 0 is equivalent to
@@ -453,7 +457,7 @@ testing for == 0.
 Check to see if the expression should be signed instead of unsigned.
 :MSGSYM. ERR_FUNCTION_STG_CLASS_REDECLARED
 :MSGTXT. Extern function '%s' redeclared as static
-:MSGJTXT. ŠO•”ŠÖ”'%s'‚Ístatic‚Æ‚µ‚ÄÄéŒ¾‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. å¤–éƒ¨é–¢æ•°'%s'ã¯staticã¨ã—ã¦å†å®£è¨€ã•ã‚Œã¾ã—ãŸ
 :WARNING. 1
 .np
 The specified function was either explicitly or implicitly declared as
@@ -477,7 +481,7 @@ static int bar( void )
 :eerrbad.
 :MSGSYM. ERR_NO_EOL_BEFORE_EOF
 :MSGTXT. No newline at end of file
-:MSGJTXT. ƒtƒ@ƒCƒ‹‚ÌÅŒã‚É‰üs•¶š‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ•ã‚¡ã‚¤ãƒ«ã®æœ€å¾Œã«æ”¹è¡Œæ–‡å­—ãŒã‚ã‚Šã¾ã›ã‚“
 :WARNING. 1
 ISO C requires that a non-empty source file must include a newline character
 at the end of the last line. If no newline was found, it will be automatically
@@ -498,13 +502,30 @@ int foo( void )
 :eerrbad.
 :MSGSYM. ERR_MACRO_DEFN_NOT_IDENTICAL
 :MSGTXT. Definition of macro '%s' not identical to previous definition
-:MSGJTXT. ƒ}ƒNƒ'%s'‚Ì’è‹`‚ª‘O‚Ì’è‹`‚Æˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. ãƒã‚¯ãƒ­'%s'ã®å®šç¾©ãŒå‰ã®å®šç¾©ã¨ä¸€è‡´ã—ã¾ã›ã‚“
 :WARNING. 1
 .np
 If a macro is defined more than once, the definitions must be identical.
 If you want to redefine a macro to have a different definition, you must
 .id #undef
 it before you can define it with a new definition.
+:MSGSYM. ERR_PRAG_WARNING_BAD_MESSAGE
+:MSGTXT. message number '%d' is invalid
+:MSGJTXT. ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç•ªå·'%d'ã¯ä¸é©åˆ‡ã§ã™
+:WARNING. 1
+The message number used in the #pragma does not match the message number
+for any warning message.  This message can also indicate that a number
+or '*' (meaning all warnings) was not found when it was expected.
+:MSGSYM. ERR_PRAG_WARNING_BAD_LEVEL
+:MSGTXT. warning level must be an integer in range 0 to 5
+:MSGJTXT. è­¦å‘Šãƒ¬ãƒ™ãƒ«ã¯ï¼Œ0ï½5ã®ç¯„å›²ã®æ•´æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
+:WARNING. 1
+The new warning level that can be used for the warning can be in the range
+0 to 5.  The level 0 means that the warning will be treated as an error
+(compilation will not succeed).  Levels 1 up to 5 are used to classify
+warnings.  The -w option sets an upper limit on the level for warnings.
+By setting the level above the command line limit, you effectively
+ignore all cases where the warning shows up.
 :eMSGGRP. Warn1
 :cmt -------------------------------------------------------------------
 :MSGGRP. Warn2
@@ -514,21 +535,21 @@ it before you can define it with a new definition.
 :cmt -------------------------------------------------------------------
 :MSGSYM. ERR_SYM_NOT_ASSIGNED
 :MSGTXT. '%s' has been referenced but never assigned a value
-:MSGJTXT. '%s'‚ÍQÆ‚³‚ê‚Ü‚µ‚½‚ªC’l‚ª‘ã“ü‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. '%s'ã¯å‚ç…§ã•ã‚Œã¾ã—ãŸãŒï¼Œå€¤ãŒä»£å…¥ã•ã‚Œã¦ã„ã¾ã›ã‚“
 :WARNING. 2
 .np
 You have used the variable in an expression without previously assigning
 a value to that variable.
 :MSGSYM. ERR_DEAD_CODE
 :MSGTXT. Unreachable code
-:MSGJTXT. Às‚³‚ê‚È‚¢ƒR[ƒh‚Å‚·
+:MSGJTXT. å®Ÿè¡Œã•ã‚Œãªã„ã‚³ãƒ¼ãƒ‰ã§ã™
 :WARNING. 2
 .np
 The statement will never be executed, because there is no path through
 the program that causes control to reach this statement.
 :MSGSYM. ERR_SYM_NOT_REFERENCED
 :MSGTXT. Symbol '%s' has been defined, but not referenced
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹'%s'‚ª’è‹`‚³‚ê‚Ü‚µ‚½‚ªCQÆ‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«'%s'ãŒå®šç¾©ã•ã‚Œã¾ã—ãŸãŒï¼Œå‚ç…§ã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ
 :WARNING. 2
 .np
 There are no references to the declared variable.
@@ -539,7 +560,7 @@ You can prevent the message from being issued through use of
 .us #pragma off(unreferenced).
 :MSGSYM. ERR_UNDECLARED_PP_SYM
 :MSGTXT. Preprocessing symbol '%s' has not been declared
-:MSGJTXT. ‘Oˆ—ƒVƒ“ƒ{ƒ‹'%s'‚ªCéŒ¾‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. å‰å‡¦ç†ã‚·ãƒ³ãƒœãƒ«'%s'ãŒï¼Œå®£è¨€ã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ
 :WARNING. 2
 .np
 The symbol has been used in a preprocessor expression.
@@ -559,7 +580,7 @@ for the symbol.
 :cmt -------------------------------------------------------------------
 :MSGSYM. ERR_NESTED_COMMENT
 :MSGTXT. Nested comment found in comment started on line %u
-:MSGJTXT. %us‚©‚çn‚Ü‚éƒRƒƒ“ƒg‚Ì’†‚ÉCƒlƒXƒg‚É‚³‚ê‚½ƒRƒƒ“ƒg‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. %uè¡Œã‹ã‚‰å§‹ã¾ã‚‹ã‚³ãƒ¡ãƒ³ãƒˆã®ä¸­ã«ï¼Œãƒã‚¹ãƒˆã«ã•ã‚ŒãŸã‚³ãƒ¡ãƒ³ãƒˆãŒã‚ã‚Šã¾ã™
 :WARNING. 3
 .np
 While scanning a comment for its end, the compiler detected
@@ -571,12 +592,12 @@ You may be missing the
 for the previous comment.
 :MSGSYM. ERR_UNUSED_2
 :MSGTXT. not used
-:MSGJTXT. ‚±‚ÌƒƒbƒZ[ƒW‚Íg—p‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¯ä½¿ç”¨ã•ã‚Œã¾ã›ã‚“
 :WARNING. 3
 unused message
 :MSGSYM. ERR_USEFUL_SIDE_EFFECT
 :MSGTXT. Expression is only useful for its side effects
-:MSGJTXT. ‚±‚Ì®‚Í•›ì—p‚Ì‚İ‚ğ‹N‚±‚µ‚Ü‚·
+:MSGJTXT. ã“ã®å¼ã¯å‰¯ä½œç”¨ã®ã¿ã‚’èµ·ã“ã—ã¾ã™
 :WARNING. 3
 .np
 You have an expression that would have generated the warning
@@ -584,7 +605,7 @@ You have an expression that would have generated the warning
 a side-effect, such as ++, &minus.&minus., or a function call.
 :MSGSYM. ERR_PARM_NOT_REFERENCED
 :MSGTXT. Parameter '%s' has been defined, but not referenced
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^'%s'‚Í’è‹`‚³‚ê‚Ü‚µ‚½‚ªCQÆ‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿'%s'ã¯å®šç¾©ã•ã‚Œã¾ã—ãŸãŒï¼Œå‚ç…§ã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ
 :WARNING. 3
 .np
 There are no references to the declared parameter.
@@ -602,7 +623,7 @@ or option "-wce=303". It can be disabled later by using
 .us #pragma disable_message(303).
 :MSGSYM. ERR_NO_RET_TYPE_GIVEN
 :MSGTXT. Return type 'int' assumed for function '%s'
-:MSGJTXT. ŠÖ”'%s'‚Ì–ß‚èŒ^‚Íint‚Æ‚İ‚È‚µ‚Ü‚·
+:MSGJTXT. é–¢æ•°'%s'ã®æˆ»ã‚Šå‹ã¯intã¨ã¿ãªã—ã¾ã™
 :WARNING. 3
 .np
 If a function is declared without specifying return type, such as
@@ -614,7 +635,7 @@ then its return type will be assumed to be
 .
 :MSGSYM. ERR_NO_DATA_TYPE_GIVEN
 :MSGTXT. Type 'int' assumed in declaration of '%s'
-:MSGJTXT. '%s'‚ÌéŒ¾‚É‚¨‚¯‚éŒ^‚Íint‚Æ‚İ‚È‚µ‚Ü‚·
+:MSGJTXT. '%s'ã®å®£è¨€ã«ãŠã‘ã‚‹å‹ã¯intã¨ã¿ãªã—ã¾ã™
 :WARNING. 3
 .np
 If an object is declared without specifying its type, such as
@@ -626,14 +647,14 @@ then its type will be assumed to be
 .
 :MSGSYM. ERR_ASSEMBLER_WARNING
 :MSGTXT. Assembler warning: '%s'
-:MSGJTXT. ƒAƒZƒ“ƒuƒ‰Œx: '%s'
+:MSGJTXT. ã‚¢ã‚»ãƒ³ãƒ–ãƒ©è­¦å‘Š: '%s'
 :WARNING. 3
 .np
 A problem has been detected by the in-line assembler.
 The message indicates the problem detected.
 :MSGSYM. ERR_OBSOLETE_FUNC_DECL
 :MSGTXT. Obsolete non-prototype declarator
-:MSGJTXT. ”p~‚³‚ê‚½”ñƒvƒƒgƒ^ƒCƒvéŒ¾q‚Å‚·
+:MSGJTXT. å»ƒæ­¢ã•ã‚ŒãŸéãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€å­ã§ã™
 :WARNING. 3
 .np
 Function parameter declarations containing only empty parentheses,
@@ -644,7 +665,7 @@ int func();
 .eerrbad
 :MSGSYM. ERR_NONPROTO_FUNC_CALLED
 :MSGTXT. The function '%s' without prototyped parameters called
-:MSGJTXT. ”ñƒvƒƒgƒ^ƒCƒv‚ÌŠÖ”'%s'‚ªŒÄ‚Î‚ê‚Ü‚µ‚½
+:MSGJTXT. éãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—ã®é–¢æ•°'%s'ãŒå‘¼ã°ã‚Œã¾ã—ãŸ
 :WARNING. 3
 .np
 A call to an unprototyped function was made, preventing the compiler
@@ -660,7 +681,7 @@ void bar( void )
 .eerrbad
 :MSGSYM. ERR_NONPROTO_FUNC_CALLED_INDIRECT
 :MSGTXT. The function without prototyped parameters indirectly called
-:MSGJTXT. ”ñƒvƒƒgƒ^ƒCƒv‚ÌŠÖ”‚ªŠÔÚ“I‚ÉŒÄ‚Î‚ê‚Ü‚µ‚½
+:MSGJTXT. éãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—ã®é–¢æ•°ãŒé–“æ¥çš„ã«å‘¼ã°ã‚Œã¾ã—ãŸ
 :WARNING. 3
 .np
 An indirect call to an unprototyped function was made, preventing the
@@ -676,7 +697,7 @@ void bar( void )
 .eerrbad
 :MSGSYM. ERR_CAST_POINTER_TRUNCATION
 :MSGTXT. Pointer truncated during cast
-:MSGJTXT. ƒ|ƒCƒ“ƒ^‚ÍØ‚è‹l‚ß‚ç‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒã‚¤ãƒ³ã‚¿ã¯åˆ‡ã‚Šè©°ã‚ã‚‰ã‚Œã¾ã—ãŸ
 :WARNING. 3
 .np
 A far pointer is being cast to a near pointer, losing segment information
@@ -712,6 +733,28 @@ int foo( int arr[], char c )
 .eerrbad
 :eMSGGRP. Warn4
 :cmt -------------------------------------------------------------------
+:MSGGRP. Warn5
+:MSGGRPSTR. W
+:MSGGRPNUM. 500
+:MSGGRPTXT. Warning Level 5 Messages
+:cmt -------------------------------------------------------------------
+:MSGSYM. ERR_UNDEFD_MACRO_IS_ZERO
+:MSGTXT. undefined macro '%s' evaluates to 0
+:MSGJTXT. æœªå®šç¾©ãƒã‚¯ãƒ­ '%s' ã‚’0ã¨ã¿ãªã—ã¾ã™
+:WARNING. 5
+The ISO C/C++ standard requires that undefined
+macros evaluate to zero during preprocessor
+expression evaluation.
+This default behaviour can often mask incorrectly
+spelled macro references.
+The warning is useful when used in critical
+environments where all macros will be defined.
+:errbad.
+#if _PRODUCTI0N // should be _PRODUCTION
+#endif
+:eerrbad.
+:eMSGGRP. Warn5
+:cmt -------------------------------------------------------------------
 :MSGGRP. Errs
 :MSGGRPSTR. E
 :MSGGRPNUM. 1000
@@ -719,7 +762,7 @@ int foo( int arr[], char c )
 :cmt -------------------------------------------------------------------
 :MSGSYM. ERR_MISPLACED_BREAK
 :MSGTXT. BREAK must appear in while, do, for or switch statement
-:MSGJTXT. BREAK‚Íwhile, do, for, switch•¶‚Ì’†‚É‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. BREAKã¯while, do, for, switchæ–‡ã®ä¸­ã«ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 A
 .kw break
@@ -735,7 +778,7 @@ or
 statement.
 :MSGSYM. ERR_MISPLACED_CASE
 :MSGTXT. CASE must appear in switch statement
-:MSGJTXT. CASE‚Íswitch•¶‚Ì’†‚É‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. CASEã¯switchæ–‡ã®ä¸­ã«ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 A
 .kw case
@@ -744,7 +787,7 @@ label has been found that is not inside a
 statement.
 :MSGSYM. ERR_MISPLACED_CONTINUE
 :MSGTXT. CONTINUE must appear in while, do or for statement
-:MSGJTXT. CONTINUE‚Íwhile, do, for•¶‚Ì’†‚É‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. CONTINUEã¯while, do, foræ–‡ã®ä¸­ã«ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 The
 .kw continue
@@ -766,7 +809,7 @@ statement and the
 statement.
 :MSGSYM. ERR_MISPLACED_DEFAULT
 :MSGTXT. DEFAULT must appear in switch statement
-:MSGJTXT. DEFAULT‚Íswitch•¶‚Ì’†‚É‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. DEFAULTã¯switchæ–‡ã®ä¸­ã«ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 A
 .kw default
@@ -782,7 +825,7 @@ and the
 label.
 :MSGSYM. ERR_MISPLACED_RIGHT_BRACE
 :MSGTXT. Misplaced '}' or missing earlier '{'
-:MSGJTXT. ŠÔˆá‚Á‚½ˆÊ’u‚É'}'‚ª‚ ‚é‚©C‚à‚Á‚Æ‘O‚É‚ ‚é‚×‚«'{'‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. é–“é•ã£ãŸä½ç½®ã«'}'ãŒã‚ã‚‹ã‹ï¼Œã‚‚ã£ã¨å‰ã«ã‚ã‚‹ã¹ã'{'ãŒã‚ã‚Šã¾ã›ã‚“
 .np
 An extra
 .id }
@@ -790,7 +833,7 @@ has been found which cannot be matched up with an earlier
 .id {.
 :MSGSYM. ERR_MISPLACED_ELIF
 :MSGTXT. Misplaced #elif directive
-:MSGJTXT. #elif‹[—–½—ß‚ÌˆÊ’u‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·
+:MSGJTXT. #elifæ“¬ä¼¼å‘½ä»¤ã®ä½ç½®ãŒé–“é•ã£ã¦ã„ã¾ã™
 .np
 The
 .id #elif
@@ -801,7 +844,7 @@ preprocessing group and before the
 directive if present.
 :MSGSYM. ERR_MISPLACED_ELSE
 :MSGTXT. Misplaced #else directive
-:MSGJTXT. #else‹[—–½—ß‚ÌˆÊ’u‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·
+:MSGJTXT. #elseæ“¬ä¼¼å‘½ä»¤ã®ä½ç½®ãŒé–“é•ã£ã¦ã„ã¾ã™
 .np
 The
 .id #else
@@ -812,7 +855,7 @@ preprocessing group and follow all
 directives if present.
 :MSGSYM. ERR_MISPLACED_ENDIF
 :MSGTXT. Misplaced #endif directive
-:MSGJTXT. #endif‹[—–½—ß‚ÌˆÊ’u‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·
+:MSGJTXT. #endifæ“¬ä¼¼å‘½ä»¤ã®ä½ç½®ãŒé–“é•ã£ã¦ã„ã¾ã™
 .np
 A
 preprocessing directive has been found without a matching
@@ -824,7 +867,7 @@ or you are missing an
 directive earlier in the file.
 :MSGSYM. ERR_ONLY_1_DEFAULT
 :MSGTXT. Only 1 DEFAULT per switch allowed
-:MSGJTXT. 1‚Â‚Ìswitch•¶‚É‚Í1‚Â‚ÌDEFAULT‚¾‚¯‚ª”F‚ß‚ç‚ê‚Ü‚·
+:MSGJTXT. 1ã¤ã®switchæ–‡ã«ã¯1ã¤ã®DEFAULTã ã‘ãŒèªã‚ã‚‰ã‚Œã¾ã™
 .np
 You cannot have more than one
 .kw default
@@ -833,19 +876,19 @@ label in a
 statement.
 :MSGSYM. ERR_EXPECTING_BUT_FOUND
 :MSGTXT. Expecting '%s' but found '%s'
-:MSGJTXT. '%s'‚ª‚ ‚é‚Í‚¸‚Å‚·‚ªC'%s'‚ª‚ ‚è‚Ü‚µ‚½
+:MSGJTXT. '%s'ãŒã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œ'%s'ãŒã‚ã‚Šã¾ã—ãŸ
 .np
 A syntax error has been detected.
 The tokens displayed in the message should help you to determine the problem.
 :MSGSYM. ERR_TYPE_MISMATCH
 :MSGTXT. Type mismatch
-:MSGJTXT. Œ^‚ªˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. å‹ãŒä¸€è‡´ã—ã¾ã›ã‚“
 .np
 For pointer subtraction, both pointers must point to the same type.
 For other operators, both expressions must be assignment compatible.
 :MSGSYM. ERR_UNDECLARED_SYM
 :MSGTXT. Symbol '%s' has not been declared
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹'%s'‚ªéŒ¾‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«'%s'ãŒå®£è¨€ã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ
 .np
 The compiler has found a symbol which has not been previously declared.
 The symbol may be spelled differently than the declaration, or you may
@@ -854,13 +897,13 @@ need to
 a header file that contains the declaration.
 :MSGSYM. ERR_NOT_A_FUNCTION
 :MSGTXT. Expression is not a function
-:MSGJTXT. ®‚ªŠÖ”‚Å‚Í‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ãŒé–¢æ•°ã§ã¯ã‚ã‚Šã¾ã›ã‚“
 .np
 The compiler has found an expression that looks like a function call, but
 it is not defined as a function.
 :MSGSYM. ERR_CANNOT_MODIFY_CONST
 :MSGTXT. Constant variable cannot be modified
-:MSGJTXT. ’è”•Ï”‚Í•ÏX‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å®šæ•°å¤‰æ•°ã¯å¤‰æ›´ã§ãã¾ã›ã‚“
 .np
 An expression or statement has been found which modifies a variable which
 has been declared with the
@@ -868,31 +911,31 @@ has been declared with the
 keyword.
 :MSGSYM. ERR_MUST_BE_LVALUE
 :MSGTXT. Left operand must be an 'lvalue'
-:MSGJTXT. ¶•Ó‚Í'¶•Ó’l'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å·¦è¾ºã¯'å·¦è¾ºå€¤'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 The operand on the left side of an "=" sign must be a variable or memory
 location which can have a value assigned to it.
 :MSGSYM. ERR_SYM_ALREADY_DEFINED_AS_VAR
 :MSGTXT. '%s' is already defined as a variable
-:MSGJTXT. '%s'‚ÍŠù‚É•Ï”‚Æ‚µ‚Ä’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. '%s'ã¯æ—¢ã«å¤‰æ•°ã¨ã—ã¦å®šç¾©ã•ã‚Œã¦ã„ã¾ã™
 .np
 You are trying to declare a function with the same name as a previously
 declared variable.
 :MSGSYM. ERR_EXPECTING_ID
 :MSGTXT. Expecting identifier
-:MSGJTXT. ¯•Êq‚ª‚ ‚é‚×‚«‚Å‚·
+:MSGJTXT. è­˜åˆ¥å­ãŒã‚ã‚‹ã¹ãã§ã™
 .np
 The token following "->" and "." operators must be the name of an
 identifier which appears in the struct or union identified by the
 operand preceding the "->" and "." operators.
 :MSGSYM. ERR_LABEL_ALREADY_DEFINED
 :MSGTXT. Label '%s' already defined
-:MSGJTXT. ƒ‰ƒxƒ‹'%s'‚ÍŠù‚É’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ©ãƒ™ãƒ«'%s'ã¯æ—¢ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™
 .np
 All labels within a function must be unique.
 :MSGSYM. ERR_UNDEFINED_LABEL
 :MSGTXT. Label '%s' not defined in function
-:MSGJTXT. ƒ‰ƒxƒ‹'%s'‚ÍŠÖ”‚Ì’†‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ©ãƒ™ãƒ«'%s'ã¯é–¢æ•°ã®ä¸­ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“
 .np
 A
 .kw goto
@@ -900,7 +943,7 @@ statement has referenced a label that is not defined in the function.
 Add the necessary label or check the spelling of the label(s) in the function.
 :MSGSYM. ERR_DUPLICATE_TAG
 :MSGTXT. Tag '%s' already defined
-:MSGJTXT. ƒ^ƒO'%s'‚ÍŠù‚É’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚¿ã‚°'%s'ã¯æ—¢ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™
 .np
 All
 .kw struct,
@@ -910,48 +953,48 @@ and
 tag names must be unique.
 :MSGSYM. ERR_INVALID_DIMENSION
 :MSGTXT. Dimension cannot be 0 or negative
-:MSGJTXT. ŸŒ³‚ª0‚Ü‚½‚Í•‰‚Å‚ ‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ¬¡å…ƒãŒ0ã¾ãŸã¯è² ã§ã‚ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 .np
 The dimension of an array must be positive and non-zero.
 :MSGSYM. ERR_DIMENSION_REQUIRED
 :MSGTXT. Dimensions of multi-dimension array must be specified
-:MSGJTXT. ‘½ŸŒ³”z—ñ‚ÌŸŒ³‚Íw’è‚³‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¤šæ¬¡å…ƒé…åˆ—ã®æ¬¡å…ƒã¯æŒ‡å®šã•ã‚Œãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 All dimensions of a multiple dimension array must be specified.
 The only exception is the first dimension which can declared as "[]".
 :MSGSYM. ERR_MISSING_DATA_TYPE
 :MSGTXT. Missing or misspelled data type near '%s'
-:MSGJTXT. '%s'‚Ì‹ß‚­‚Ìƒf[ƒ^Œ^‚ª‚È‚¢‚©C‚Â‚Ã‚è‚ªŠÔˆá‚Á‚Ä‚Ä‚¢‚Ü‚·
+:MSGJTXT. '%s'ã®è¿‘ãã®ãƒ‡ãƒ¼ã‚¿å‹ãŒãªã„ã‹ï¼Œã¤ã¥ã‚ŠãŒé–“é•ã£ã¦ã¦ã„ã¾ã™
 .np
 The compiler has found an identifier that is not a predefined type or the
 name of a "typedef".
 Check the identifier for a spelling mistake.
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_PARM
 :MSGTXT. Storage class of parameter must be register or unspecified
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^[‚Ì‹L‰¯ƒNƒ‰ƒX‚ÍCƒŒƒWƒXƒ^‚©–³w’è‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã®è¨˜æ†¶ã‚¯ãƒ©ã‚¹ã¯ï¼Œãƒ¬ã‚¸ã‚¹ã‚¿ã‹ç„¡æŒ‡å®šã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 The only storage class allowed for a parameter declaration is
 .kw register.
 :MSGSYM. ERR_SYM_NOT_IN_PARM_LIST
 :MSGTXT. Declared symbol '%s' is not in parameter list
-:MSGJTXT. éŒ¾‚³‚ê‚½ƒVƒ“ƒ{ƒ‹'%s'‚Íƒpƒ‰ƒ[ƒ^[ƒŠƒXƒg‚É‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å®£è¨€ã•ã‚ŒãŸã‚·ãƒ³ãƒœãƒ«'%s'ã¯ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ãƒªã‚¹ãƒˆã«ã‚ã‚Šã¾ã›ã‚“
 .np
 Make sure that all the identifiers in the parameter list match those
 provided in the declarations between the start of the function and the
 opening brace "{".
 :MSGSYM. ERR_PARM_ALREADY_DECLARED
 :MSGTXT. Parameter '%s' already declared
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^['%s'‚ÍŠù‚ÉéŒ¾‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼'%s'ã¯æ—¢ã«å®£è¨€ã•ã‚Œã¦ã„ã¾ã™
 .np
 A declaration for the specified parameter has already been processed.
 :MSGSYM. ERR_INVALID_DECLARATOR
 :MSGTXT. Invalid declarator
-:MSGJTXT. •s“KØ‚ÈéŒ¾q‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªå®£è¨€å­ã§ã™
 .np
 A syntax error has occurred while parsing a declaration.
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_FUNC
 :MSGTXT. Invalid storage class for function
-:MSGJTXT. ŠÖ”‚É‘Î‚µ‚Ä•s“KØ‚È‹L‰¯ƒNƒ‰ƒX‚Å‚·
+:MSGJTXT. é–¢æ•°ã«å¯¾ã—ã¦ä¸é©åˆ‡ãªè¨˜æ†¶ã‚¯ãƒ©ã‚¹ã§ã™
 .np
 If a storage class is given for a function, it must be
 .kw static
@@ -959,25 +1002,25 @@ or
 .kw extern.
 :MSGSYM. ERR_VAR_CANT_BE_VOID
 :MSGTXT. Variable '%s' cannot be void
-:MSGJTXT. •Ï”'%s'‚ÍvoidŒ^‚Å‚ ‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å¤‰æ•°'%s'ã¯voidå‹ã§ã‚ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 .np
 You cannot declare a
 .kw void
 variable.
 :MSGSYM. ERR_EXPR_MUST_BE_POINTER_TO
 :MSGTXT. Expression must be 'pointer to ...'
-:MSGJTXT. ®‚Í'...‚Ö‚Ìƒ|ƒCƒ“ƒ^'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯'...ã¸ã®ãƒã‚¤ãƒ³ã‚¿'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 An attempt has been made to de-reference (*) a variable or expression which
 is not declared to be a pointer.
 :MSGSYM. ERR_CANT_TAKE_ADDR_OF_RVALUE
 :MSGTXT. Cannot take the address of an rvalue
-:MSGJTXT. ‰E•Ó’l(”’l’è”“™)‚ÌƒAƒhƒŒƒX‚ğ‚Æ‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. å³è¾ºå€¤(æ•°å€¤å®šæ•°ç­‰)ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã¨ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 .np
 You can only take the address of a variable or memory location.
 :MSGSYM. ERR_NAME_NOT_FOUND_IN_STRUCT
 :MSGTXT. Name '%s' not found in struct/union %s
-:MSGJTXT. –¼‘O%s‚Ístruct/union %s ‚Ì’†‚É‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. åå‰%sã¯struct/union %s ã®ä¸­ã«ã‚ã‚Šã¾ã›ã‚“
 .np
 The specified identifier is not one of the fields declared in the
 .kw struct
@@ -990,7 +1033,7 @@ or
 .kw union.
 :MSGSYM. ERR_MUST_BE_STRUCT_OR_UNION
 :MSGTXT. Expression for '.' must be a 'structure' or 'union'
-:MSGJTXT. .‚É‘Î‚·‚é®‚ÍC'\‘¢‘Ì'‚©'‹¤—p‘Ì'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. .ã«å¯¾ã™ã‚‹å¼ã¯ï¼Œ'æ§‹é€ ä½“'ã‹'å…±ç”¨ä½“'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 The compiler has encountered the pattern "expression" "." "field_name"
 where the expression is not a
@@ -1000,7 +1043,7 @@ or
 type.
 :MSGSYM. ERR_MUST_BE_PTR_TO_STRUCT_OR_UNION
 :MSGTXT. Expression for '->' must be 'pointer to struct or union'
-:MSGJTXT. '->'‚É‘Î‚·‚é®‚ÍC'struct‚©union‚Ö‚Ìƒ|ƒCƒ“ƒ^'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. '->'ã«å¯¾ã™ã‚‹å¼ã¯ï¼Œ'structã‹unionã¸ã®ãƒã‚¤ãƒ³ã‚¿'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 The compiler has encountered the pattern "expression" "->" "field_name"
 where the expression is not a pointer to
@@ -1010,12 +1053,12 @@ or
 type.
 :MSGSYM. ERR_SYM_ALREADY_DEFINED
 :MSGTXT. Symbol '%s' already defined
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹'%s'‚ÍŠù‚É’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«'%s'ã¯æ—¢ã«å®šç¾©ã•ã‚Œã¦ã„ã¾ã™
 .np
 The specified symbol has already been defined.
 :MSGSYM. ERR_FUNCTION_NOT_DEFINED
 :MSGTXT. static function '%s' has not been defined
-:MSGJTXT. ƒXƒ^ƒeƒBƒbƒNŠÖ”'%s'‚ª’è‹`‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯é–¢æ•°'%s'ãŒå®šç¾©ã•ã‚Œã¦ã„ã¾ã›ã‚“
 .np
 A prototype has been found for a
 .kw static
@@ -1024,14 +1067,14 @@ function, but a definition for the
 function has not been found in the file.
 :MSGSYM. ERR_RIGHT_OPERAND_IS_A_POINTER
 :MSGTXT. Right operand of '%s' is a pointer
-:MSGJTXT. '%s'‚Ì‰EƒIƒyƒ‰ƒ“ƒh‚ªƒ|ƒCƒ“ƒ^‚Å‚·
+:MSGJTXT. '%s'ã®å³ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒãƒã‚¤ãƒ³ã‚¿ã§ã™
 .np
 The right operand of "+=" and "&minus.=" cannot be a pointer.
 The right operand of "&minus." cannot be a pointer unless the left
 operand is also a pointer.
 :MSGSYM. ERR_MUST_BE_SCALAR_TYPE
 :MSGTXT. Type cast must be a scalar type
-:MSGJTXT. Œ^ƒLƒƒƒXƒg‚ÍCƒXƒJƒ‰[Œ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å‹ã‚­ãƒ£ã‚¹ãƒˆã¯ï¼Œã‚¹ã‚«ãƒ©ãƒ¼å‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 You cannot type cast an expression to be a
 .kw struct,
@@ -1039,36 +1082,36 @@ You cannot type cast an expression to be a
 array or function.
 :MSGSYM. ERR_EXPECTING_LABEL
 :MSGTXT. Expecting label for goto statement
-:MSGJTXT. goto•¶‚É‘Î‚·‚éƒ‰ƒxƒ‹‚ª‚ ‚é‚×‚«‚Å‚·
+:MSGJTXT. gotoæ–‡ã«å¯¾ã™ã‚‹ãƒ©ãƒ™ãƒ«ãŒã‚ã‚‹ã¹ãã§ã™
 .np
 The
 .kw goto
 statement requires the name of a label.
 :MSGSYM. ERR_DUPLICATE_CASE_VALUE
 :MSGTXT. Duplicate case value '%s' found
-:MSGJTXT. case‚Ì’l'%s'‚ª2‚Â‚ ‚è‚Ü‚·
+:MSGJTXT. caseã®å€¤'%s'ãŒ2ã¤ã‚ã‚Šã¾ã™
 .np
 Every case value in a
 .kw switch
 statement must be unique.
 :MSGSYM. ERR_FIELD_TOO_WIDE
 :MSGTXT. Field width too large
-:MSGJTXT. ƒtƒB[ƒ‹ƒh‚Ì•‚ª‘å‚«‚·‚¬‚Ü‚·
+:MSGJTXT. ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®å¹…ãŒå¤§ãã™ãã¾ã™
 .np
 The maximum field width allowed is 16 bits.
 :MSGSYM. ERR_WIDTH_0
 :MSGTXT. Field width of 0 with symbol not allowed
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹‚ğ‚à‚Â•0‚ÌƒtƒB[ƒ‹ƒh‚Í‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«ã‚’ã‚‚ã¤å¹…0ã®ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã¯è¨±ã•ã‚Œã¾ã›ã‚“
 .np
 A bit field must be at least one bit in size.
 :MSGSYM. ERR_WIDTH_NEGATIVE
 :MSGTXT. Field width must be positive
-:MSGJTXT. ƒtƒB[ƒ‹ƒh‚Ì•‚Í³‚Ì”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®å¹…ã¯æ­£ã®æ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 You cannot have a negative field width.
 :MSGSYM. ERR_INVALID_TYPE_FOR_FIELD
 :MSGTXT. Invalid type specified for bit field
-:MSGJTXT. ƒrƒbƒgƒtƒB[ƒ‹ƒh‚É•s“KØ‚ÈŒ^‚ªw’è‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã«ä¸é©åˆ‡ãªå‹ãŒæŒ‡å®šã•ã‚Œã¾ã—ãŸ
 .np
 The types allowed for bit fields are
 .kw signed
@@ -1078,10 +1121,11 @@ varieties of
 .kw char,
 .kw short
 and
-.kw int.
+.kw int
+.
 :MSGSYM. ERR_INCOMPLETE_TYPE
 :MSGTXT. Variable '%s' has incomplete type
-:MSGJTXT. •Ï”'%s'‚ÌŒ^‚Í•sŠ®‘S‚Å‚·
+:MSGJTXT. å¤‰æ•°'%s'ã®å‹ã¯ä¸å®Œå…¨ã§ã™
 .np
 A full definition of a
 .kw struct
@@ -1090,7 +1134,7 @@ or
 has not been given.
 :MSGSYM. ERR_EXPR_MUST_BE_ARRAY
 :MSGTXT. Subscript on non-array
-:MSGJTXT. ”ñ”z—ñ‚Ö‚Ì“Y‚¦š‚Å‚·
+:MSGJTXT. éé…åˆ—ã¸ã®æ·»ãˆå­—ã§ã™
 .np
 One of the operands of "[]" must be an array.
 :MSGSYM. ERR_INCOMPLETE_COMMENT
@@ -1102,30 +1146,30 @@ The compiler did not find
 to mark the end of a comment.
 :MSGSYM. ERR_MUST_BE_MACRO_PARM
 :MSGTXT. Argument for # must be a macro parm
-:MSGJTXT. #‚Ö‚Ìˆø”‚ÍCƒ}ƒNƒEƒpƒ‰ƒ[ƒ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. #ã¸ã®å¼•æ•°ã¯ï¼Œãƒã‚¯ãƒ­ãƒ»ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 The argument for the stringize operator "#" must be a macro parameter.
 :MSGSYM. ERR_UNKNOWN_DIRECTIVE
 :MSGTXT. Unknown preprocessing directive '#%s'
-:MSGJTXT. ‘Oˆ—‹[—–½—ß'#%s'‚ÌˆÓ–¡‚ª•s–¾‚Å‚·
+:MSGJTXT. å‰å‡¦ç†æ“¬ä¼¼å‘½ä»¤'#%s'ã®æ„å‘³ãŒä¸æ˜ã§ã™
 .np
 An unrecognized preprocessing directive has been encountered.
 Check for correct spelling.
 :MSGSYM. ERR_INVALID_INCLUDE
 :MSGTXT. Invalid #include directive
-:MSGJTXT. •s“KØ‚È#include‹[—–½—ß‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãª#includeæ“¬ä¼¼å‘½ä»¤ã§ã™
 .np
 A syntax error has been encountered in a
 .id #include
 directive.
 :MSGSYM. ERR_TOO_FEW_MACRO_PARMS
 :MSGTXT. Not enough parameters given for macro '%s'
-:MSGJTXT. ƒ}ƒNƒ'%s'‚É—^‚¦‚ç‚ê‚½ƒpƒ‰ƒ[ƒ^‚ª•s\•ª‚Å‚·
+:MSGJTXT. ãƒã‚¯ãƒ­'%s'ã«ä¸ãˆã‚‰ã‚ŒãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒä¸ååˆ†ã§ã™
 .np
 You have not supplied enough parameters to the specified macro.
 :MSGSYM. ERR_NOT_EXPECTING_RETURN_VALUE
 :MSGTXT. Not expecting a return value for function '%s'
-:MSGJTXT. ŠÖ”'%s'‚É‘Î‚µ‚Ä–ß‚è’l‚Í‚È‚¢‚Í‚¸‚Å‚·
+:MSGJTXT. é–¢æ•°'%s'ã«å¯¾ã—ã¦æˆ»ã‚Šå€¤ã¯ãªã„ã¯ãšã§ã™
 .np
 The specified function is declared as a
 .kw void
@@ -1135,27 +1179,27 @@ Delete the
 statement, or change the type of the function.
 :MSGSYM. ERR_EXPR_HAS_VOID_TYPE
 :MSGTXT. Expression has void type
-:MSGJTXT. ®‚ÍvoidŒ^‚Å‚·
+:MSGJTXT. å¼ã¯voidå‹ã§ã™
 .np
 You tried to use the value of a
 .kw void
 expression inside another expression.
 :MSGSYM. ERR_CANT_TAKE_ADDR_OF_BIT_FIELD
 :MSGTXT. Cannot take the address of a bit field
-:MSGJTXT. ƒrƒbƒgƒtƒB[ƒ‹ƒh‚ÌƒAƒhƒŒƒX‚Íæ‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã¯å–ã‚Œã¾ã›ã‚“
 .np
 The smallest addressable unit is a byte.
 You cannot take the address of a bit field.
 :MSGSYM. ERR_NOT_A_CONSTANT_EXPR
 :MSGTXT. Expression must be constant
-:MSGJTXT. ®‚Í’è”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯å®šæ•°ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 The compiler expects a constant expression.
 This message can occur during static initialization if you are
 trying to initialize a non-pointer type with an address expression.
 :MSGSYM. ERR_CANT_OPEN_FILE
 :MSGTXT. Unable to open '%s'
-:MSGJTXT. '%s'‚ğƒI[ƒvƒ“‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%s'ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 .np
 The file specified in an
 .id #include
@@ -1167,33 +1211,34 @@ specified in the
 environment variable or the "-I" option on the command line.
 :MSGSYM. ERR_TOO_MANY_MACRO_PARMS
 :MSGTXT. Too many parameters given for macro '%s'
-:MSGJTXT. ƒ}ƒNƒ'%s'‚É—^‚¦‚ç‚ê‚½ƒpƒ‰ƒ[ƒ^‚ª‘½‚·‚¬‚Ü‚·
+:MSGJTXT. ãƒã‚¯ãƒ­'%s'ã«ä¸ãˆã‚‰ã‚ŒãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒå¤šã™ãã¾ã™
 .np
 You have supplied too many parameters for the specified macro.
 :MSGSYM. ERR_MODIFIERS_DISAGREE
 :MSGTXT. Modifiers disagree with previous definition of '%s'
-:MSGJTXT. Cüq‚ª'%s'‚Ì‘O‚Ì’è‹`‚Æˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. ä¿®é£¾å­ãŒ'%s'ã®å‰ã®å®šç¾©ã¨ä¸€è‡´ã—ã¾ã›ã‚“
 .np
 You have more than one definition or prototype for the variable or
 function which have different type modifiers.
 :MSGSYM. ERR_CANT_USE_TYPEDEF_AS_VAR
 :MSGTXT. Cannot use typedef '%s' as a variable
-:MSGJTXT. typedef'%s'‚Í•Ï”‚Æ‚µ‚Äg‚¦‚Ü‚¹‚ñ
+:MSGJTXT. typedef'%s'ã¯å¤‰æ•°ã¨ã—ã¦ä½¿ãˆã¾ã›ã‚“
 .np
 The name of a typedef has been found when an operand or operator is expected.
 If you are trying to use a type cast, make sure there are parentheses
 around the type, otherwise check for a spelling mistake.
 :MSGSYM. ERR_INV_STG_CLASS_FOR_GLOBAL
 :MSGTXT. Invalid storage class for non-local variable
-:MSGJTXT. ”ñ‹ÇŠ•Ï”‚É‘Î‚·‚é•s“KØ‚È‹L‰¯ƒNƒ‰ƒX‚Å‚·
+:MSGJTXT. éå±€æ‰€å¤‰æ•°ã«å¯¾ã™ã‚‹ä¸é©åˆ‡ãªè¨˜æ†¶ã‚¯ãƒ©ã‚¹ã§ã™
 .np
 A variable with module scope cannot be defined with the storage class of
 .kw auto
 or
-.kw register.
+.kw register
+.
 :MSGSYM. ERR_INV_TYPE
 :MSGTXT. Invalid type
-:MSGJTXT. •s“KØ‚ÈŒ^‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªå‹ã§ã™
 .np
 An invalid combination of the following keywords has been specified in a
 type declaration:
@@ -1207,27 +1252,28 @@ type declaration:
 .kw long,
 .kw float
 and
-.kw double.
+.kw double
+.
 :MSGSYM. ERR_EXPECTING_DECL_BUT_FOUND
 :MSGTXT. Expecting data or function declaration, but found '%s'
-:MSGJTXT. ƒf[ƒ^‚Ü‚½‚ÍŠÖ”‚ÌéŒ¾‚ª‚ ‚é‚Í‚¸‚Å‚·‚ªC'%s'‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. ãƒ‡ãƒ¼ã‚¿ã¾ãŸã¯é–¢æ•°ã®å®£è¨€ãŒã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œ'%s'ãŒã‚ã‚Šã¾ã™
 .np
 The compiler is expecting the start of a data or function declaration.
 If you are only part way through a function, then you have too many
 closing braces "}".
 :MSGSYM. ERR_INCONSISTENT_TYPE
 :MSGTXT. Inconsistent return type for function '%s'
-:MSGJTXT. ŠÖ”'%s'‚É‘Î‚·‚é–µ‚‚µ‚½–ß‚èŒ^‚Å‚·
+:MSGJTXT. é–¢æ•°'%s'ã«å¯¾ã™ã‚‹çŸ›ç›¾ã—ãŸæˆ»ã‚Šå‹ã§ã™
 .np
 Two prototypes for the same function disagree.
 :MSGSYM. ERR_MISSING_OPERAND
 :MSGTXT. Missing operand
-:MSGJTXT. ƒIƒyƒ‰ƒ“ƒh‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
 .np
 An operand is required in the expression being parsed.
 :MSGSYM. ERR_OUT_OF_MEMORY
 :MSGTXT. Out of memory
-:MSGJTXT. ƒƒ‚ƒŠ•s‘«‚Å‚·
+:MSGJTXT. ãƒ¡ãƒ¢ãƒªä¸è¶³ã§ã™
 .np
 The compiler has run out of memory to store information about the file
 being compiled.
@@ -1242,32 +1288,33 @@ the "-d2" option causes the compiler to use more memory.
 Try compiling with the "-d1" option instead.
 :MSGSYM. ERR_INV_CHAR_CONSTANT
 :MSGTXT. Invalid character constant
-:MSGJTXT. •s“KØ‚È•¶š’è”‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªæ–‡å­—å®šæ•°ã§ã™
 .np
 This message is issued for an improperly formed character constant.
 :MSGSYM. ERR_CANT_USE_VOID
 :MSGTXT. Cannot perform operation with pointer to void
-:MSGJTXT. void‚Ö‚Ìƒ|ƒCƒ“ƒ^‚Å‰‰Z‚ğÀs‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. voidã¸ã®ãƒã‚¤ãƒ³ã‚¿ã§æ¼”ç®—ã‚’å®Ÿè¡Œã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 .np
 You cannot use a "pointer to void" with the operators +, &minus., ++,
 &minus.&minus., += and &minus.=.
 :MSGSYM. ERR_CANT_TAKE_ADDR_OF_REGISTER
 :MSGTXT. Cannot take address of variable with storage class 'register'
-:MSGJTXT. ‹L‰¯ƒNƒ‰ƒX'register'‚Ì•Ï”‚ÌƒAƒhƒŒƒX‚ğæ‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. è¨˜æ†¶ã‚¯ãƒ©ã‚¹'register'ã®å¤‰æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 .np
 If you want to take the address of a local variable, change the storage
 class from
 .kw register
 to
-.kw auto.
+.kw auto
+.
 :MSGSYM. ERR_VAR_ALREADY_INITIALIZED
 :MSGTXT. Variable '%s' already initialized
-:MSGJTXT. •Ï”'%s'‚ÍŠù‚É‰Šú‰»‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. å¤‰æ•°'%s'ã¯æ—¢ã«åˆæœŸåŒ–ã•ã‚Œã¾ã—ãŸ
 .np
 The specified variable has already been statically initialized.
 :MSGSYM. ERR_MISSING_QUOTE
 :MSGTXT. String literal not terminated before end of line
-:MSGJTXT. •¶š—ñ’è”‚ÌÅŒã‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ–‡å­—åˆ—å®šæ•°ã®æœ€å¾ŒãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“
 .np
 A string literal is enclosed by double quote " characters.
 .np
@@ -1276,13 +1323,13 @@ continuation character \ before the end of a line or before
 the end of the source file.
 :MSGSYM. ERR_NEED_BRACES
 :MSGTXT. Data for aggregate type must be enclosed in curly braces
-:MSGJTXT. W‡‘ÌŒ^‚Ìƒf[ƒ^‚ÍC”gŠ‡ŒÊ‚É“ü‚ê‚ç‚ê‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. é›†åˆä½“å‹ã®ãƒ‡ãƒ¼ã‚¿ã¯ï¼Œæ³¢æ‹¬å¼§ã«å…¥ã‚Œã‚‰ã‚Œãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 When an array, struct or union is statically initialized, the data
 must be enclosed in curly braces {}.
 :MSGSYM. ERR_PARM_TYPE_MISMATCH
 :MSGTXT. Type of parameter %d does not agree with previous definition
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^%d‚ÌŒ^‚ª‘O‚Ì’è‹`‚Æˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿%dã®å‹ãŒå‰ã®å®šç¾©ã¨ä¸€è‡´ã—ã¾ã›ã‚“
 .np
 The type of the specified parameter is incompatible with the prototype
 for that function.
@@ -1314,78 +1361,92 @@ This will assure that the first instance of structure
 is defined at the proper outer scope.
 :MSGSYM. ERR_STG_CLASS_DISAGREES
 :MSGTXT. Storage class disagrees with previous definition of '%s'
-:MSGJTXT. ‹L‰¯ƒNƒ‰ƒX‚ª'%s'‚Ì‘O‚Ì’è‹`‚Æˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. è¨˜æ†¶ã‚¯ãƒ©ã‚¹ãŒ'%s'ã®å‰ã®å®šç¾©ã¨ä¸€è‡´ã—ã¾ã›ã‚“
 .np
 The previous definition of the specified variable has a storage class of
 .kw static.
 The current definition must have a storage class of
 .kw static
 or
-.kw extern.
+.kw extern
+.
 .np
 Alternatively, a variable was previously declared as
 .kw extern
 and later defined as
-.kw static.
+.kw static
+.
 :MSGSYM. ERR_INVALID_OPTION
 :MSGTXT. Invalid option '%s'
-:MSGJTXT. ƒIƒvƒVƒ‡ƒ“'%s'‚Í•s“KØ‚Å‚·
+:MSGJTXT. ã‚ªãƒ—ã‚·ãƒ§ãƒ³'%s'ã¯ä¸é©åˆ‡ã§ã™
 .np
 The specified option is not recognized by the compiler.
 :MSGSYM. ERR_INVALID_OPTIMIZATION
 :MSGTXT. Invalid optimization option '%s'
-:MSGJTXT. •s“KØ‚ÈÅ“K‰»ƒIƒvƒVƒ‡ƒ“'%s'‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªæœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³'%s'ã§ã™
 .np
 The specified option is an unrecognized optimization option.
 :MSGSYM. ERR_INVALID_MEMORY_MODEL
 :MSGTXT. Invalid memory model '%s'
-:MSGJTXT. •s“KØ‚Èƒƒ‚ƒŠ[ƒ‚ƒfƒ‹'%s'‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªãƒ¡ãƒ¢ãƒªãƒ¼ãƒ¢ãƒ‡ãƒ«'%s'ã§ã™
 .np
 Memory model option must be one of "ms", "mm", "mc", "ml", "mh" or
 "mf" which selects the Small, Medium, Compact, Large, Huge or Flat
 memory model.
 :MSGSYM. ERR_MISSING_SEMICOLON
 :MSGTXT. Missing semicolon at end of declaration
-:MSGJTXT. ‹XŒ¾‚ÌI‚í‚è‚ÉƒZƒ~ƒRƒƒ“‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å®œè¨€ã®çµ‚ã‚ã‚Šã«ã‚»ãƒŸã‚³ãƒ­ãƒ³ãŒã‚ã‚Šã¾ã›ã‚“
 .np
 You are missing a semicolon ";" on the declaration just before the left
 curly brace "{".
 :MSGSYM. ERR_MISSING_RIGHT_BRACE
 :MSGTXT. Missing '}'
-:MSGJTXT. '}'‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. '}'ãŒã‚ã‚Šã¾ã›ã‚“
 .np
 The compiler detected end of file before finding a right curly brace "}" to
 end the current function.
 :MSGSYM. ERR_INVALID_TYPE_FOR_SWITCH
 :MSGTXT. Invalid type for switch expression
-:MSGJTXT. switch®‚É‘Î‚·‚é•s“KØ‚ÈŒ^‚Å‚·
+:MSGJTXT. switchå¼ã«å¯¾ã™ã‚‹ä¸é©åˆ‡ãªå‹ã§ã™
 .np
 The type of a switch expression must be integral.
 :MSGSYM. ERR_EXPR_MUST_BE_INTEGRAL
 :MSGTXT. Expression must be integral
-:MSGJTXT. ®‚Í®”Œ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
-.np
+:MSGJTXT. å¼ã¯æ•´æ•°å‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 An integral expression is required.
+:errbad.
+int foo( int a, float b, int *p )
+{
+  switch( a ) {
+    case 1.3:       // must be integral
+      return p[b];  // index not integer
+    case 2:
+      b <<= 2;      // can only shift integers
+    default:
+      return b;
+  }
+}
+:eerrbad.
 :MSGSYM. ERR_EXPR_MUST_BE_ARITHMETIC
 :MSGTXT. Expression must be arithmetic
-:MSGJTXT. ®‚ÍZp®‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯ç®—è¡“å¼ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 Both operands of the "*", "/" and "%" operators must be arithmetic.
 The operand of the unary minus must also be arithmetic.
 :MSGSYM. ERR_EXPR_MUST_BE_SCALAR
 :MSGTXT. Expression must be scalar type
-:MSGJTXT. ®‚ÍƒXƒJƒ‰[Œ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¼ã¯ã‚¹ã‚«ãƒ©ãƒ¼å‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 A scalar expression is required.
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_LABEL
 :MSGTXT. Statement required after label
-:MSGJTXT. ƒ‰ƒxƒ‹‚ÌŒã‚É‚Í•¶‚ª•K—v‚Å‚·
+:MSGJTXT. ãƒ©ãƒ™ãƒ«ã®å¾Œã«ã¯æ–‡ãŒå¿…è¦ã§ã™
 .np
 The C language definition requires a statement following a label.
 You can use a null statement which consists of just a semicolon (";").
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_DO
 :MSGTXT. Statement required after 'do'
-:MSGJTXT. 'do'‚ÌŒã‚É‚Í•¶‚ª•K—v‚Å‚·
+:MSGJTXT. 'do'ã®å¾Œã«ã¯æ–‡ãŒå¿…è¦ã§ã™
 .np
 A statement is required between the
 .kw do
@@ -1394,7 +1455,7 @@ and
 keywords.
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_CASE
 :MSGTXT. Statement required after 'case'
-:MSGJTXT. 'case'‚ÌŒã‚É•¶‚ª•K—v‚Å‚·
+:MSGJTXT. 'case'ã®å¾Œã«æ–‡ãŒå¿…è¦ã§ã™
 .np
 The C language definition requires a statement following a
 .kw case
@@ -1402,7 +1463,7 @@ label.
 You can use a null statement which consists of just a semicolon (";").
 :MSGSYM. ERR_STMT_REQUIRED_AFTER_DEFAULT
 :MSGTXT. Statement required after 'default'
-:MSGJTXT. 'default'‚ÌŒã‚É•¶‚ª•K—v‚Å‚·
+:MSGJTXT. 'default'ã®å¾Œã«æ–‡ãŒå¿…è¦ã§ã™
 .np
 The C language definition requires a statement following a
 .kw default
@@ -1410,13 +1471,13 @@ label.
 You can use a null statement which consists of just a semicolon (";").
 :MSGSYM. ERR_EXPR_TOO_COMPLICATED
 :MSGTXT. Expression too complicated, split it up and try again
-:MSGJTXT. ®‚ª‚ ‚Ü‚è‚É•¡G‚Å‚·‚Ì‚ÅC•ªŠ„‚µ‚ÄÄ“x‚µ‚Ä‚­‚¾‚³‚¢
+:MSGJTXT. å¼ãŒã‚ã¾ã‚Šã«è¤‡é›‘ã§ã™ã®ã§ï¼Œåˆ†å‰²ã—ã¦å†åº¦è©¦ã—ã¦ãã ã•ã„
 .np
 The expression contains too many levels of nested parentheses.
 Divide the expression up into two or more sub-expressions.
 :MSGSYM. ERR_MISSING_CENDIF
 :MSGTXT. Missing matching #endif directive
-:MSGJTXT. ‘Î‰‚·‚é#endif‹[—–½—ß‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¯¾å¿œã™ã‚‹#endifæ“¬ä¼¼å‘½ä»¤ãŒã‚ã‚Šã¾ã›ã‚“
 .np
 You are missing a
 to terminate a
@@ -1426,12 +1487,12 @@ or
 preprocessing directive.
 :MSGSYM. ERR_INVALID_MACRO_DEFN
 :MSGTXT. Invalid macro definition, missing )
-:MSGJTXT. •s“KØ‚Èƒ}ƒNƒ’è‹`‚Å‚·Cj‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. ä¸é©åˆ‡ãªãƒã‚¯ãƒ­å®šç¾©ã§ã™ï¼Œï¼‰ãŒã‚ã‚Šã¾ã›ã‚“
 .np
 The right parenthesis ")" is required for a function-like macro definition.
 :MSGSYM. ERR_INCOMPLETE_MACRO
 :MSGTXT. Missing ) for expansion of '%s' macro
-:MSGJTXT. '%s'ƒ}ƒNƒ‚Ì“WŠJ‚É‘Î‚·‚éj‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. '%s'ãƒã‚¯ãƒ­ã®å±•é–‹ã«å¯¾ã™ã‚‹ï¼‰ãŒã‚ã‚Šã¾ã›ã‚“
 .np
 The compiler encountered end-of-file while collecting up the argument for a
 function-like macro.
@@ -1439,7 +1500,7 @@ A right parenthesis ")" is required to mark the end of the argument(s) for
 a function-like macro.
 :MSGSYM. ERR_INVALID_CONVERSION
 :MSGTXT. Invalid conversion
-:MSGJTXT. •s“KØ‚È•ÏŠ·‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªå¤‰æ›ã§ã™
 .np
 A
 .kw struct
@@ -1453,7 +1514,8 @@ or
 cannot be converted to a pointer and a pointer cannot be converted to a
 .kw float
 or
-.kw double.
+.kw double
+.
 :MSGSYM. ERR_USER_ERROR_MSG
 :MSGTXT. %s
 :MSGJTXT. %s
@@ -1463,32 +1525,32 @@ This is a user message generated with the
 preprocessing directive.
 :MSGSYM. ERR_CANT_HAVE_AN_ARRAY_OF_FUNCTIONS
 :MSGTXT. Cannot define an array of functions
-:MSGJTXT. ŠÖ”‚Ì”z—ñ‚Í’è‹`‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ã®é…åˆ—ã¯å®šç¾©ã§ãã¾ã›ã‚“
 .np
 You can have an array of pointers to functions, but not an array
 of functions.
 :MSGSYM. ERR_FUNCTION_CANT_RETURN_AN_ARRAY
 :MSGTXT. Function cannot return an array
-:MSGJTXT. ŠÖ”‚Í”z—ñ‚ğ•Ô‚¹‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ã¯é…åˆ—ã‚’è¿”ã›ã¾ã›ã‚“
 .np
 A function cannot return an array.
 You can return a pointer to an array.
 :MSGSYM. ERR_FUNCTION_CANT_RETURN_A_FUNCTION
 :MSGTXT. Function cannot return a function
-:MSGJTXT. ŠÖ”‚ÍŠÖ”‚ğ•Ô‚¹‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°ã¯é–¢æ•°ã‚’è¿”ã›ã¾ã›ã‚“
 .np
 You cannot return a function.
 You can return a pointer to a function.
 :MSGSYM. ERR_CANT_TAKE_ADDR_OF_LOCAL_VAR
 :MSGTXT. Cannot take address of local variable in static initialization
-:MSGJTXT. ƒXƒ^ƒeƒBƒbƒN‚È‰Šú‰»‚Ì’†‚Å‹ÇŠ•Ï”‚ÌƒAƒhƒŒƒX‚ğæ‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãªåˆæœŸåŒ–ã®ä¸­ã§å±€æ‰€å¤‰æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 .np
 You cannot take the address of an
 .kw auto
 variable at compile time.
 :MSGSYM. ERR_INCONSISTENT_USE_OF_RETURN
 :MSGTXT. Inconsistent use of return statements
-:MSGJTXT. return•¶‚Ìg—p‚ª–µ‚‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. returnæ–‡ã®ä½¿ç”¨ãŒçŸ›ç›¾ã—ã¦ã„ã¾ã™
 .np
 The compiler has found a
 .kw return
@@ -1503,7 +1565,7 @@ value specified to be consistent with the other
 statement in the function.
 :MSGSYM. ERR_MISSING_QUESTION_OR_MISPLACED_COLON
 :MSGTXT. Missing ? or misplaced :
-:MSGJTXT. ?‚ª‚È‚¢‚©C:‚ÌˆÊ’u‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·
+:MSGJTXT. ?ãŒãªã„ã‹ï¼Œ:ã®ä½ç½®ãŒé–“é•ã£ã¦ã„ã¾ã™
 .np
 The compiler has detected a syntax error related to the "?" and ":"
 operators.
@@ -1511,7 +1573,7 @@ You may need parenthesis around the expressions involved so that it can
 be parsed correctly.
 :MSGSYM. ERR_MAX_STRUCT_SIZE_IS_64K
 :MSGTXT. Maximum struct or union size is 64K
-:MSGJTXT. struct‚¨‚æ‚Ñunion‚Ì‘å‚«‚³‚ÍÅ‘å64 K‚Å‚·
+:MSGJTXT. structãŠã‚ˆã³unionã®å¤§ãã•ã¯æœ€å¤§64 Kã§ã™
 .np
 The size of a
 .kw struct
@@ -1521,7 +1583,7 @@ is limited to 64K so that the compiler
 can represent the offset of a member in a 16-bit register.
 :MSGSYM. ERR_STMT_MUST_BE_INSIDE_FUNCTION
 :MSGTXT. Statement must be inside function. Probable cause: missing {
-:MSGJTXT. •¶‚ÍŠÖ”‚Ì“à•”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñBl‚¦‚ç‚ê‚éŒ´ˆöF{‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ–‡ã¯é–¢æ•°ã®å†…éƒ¨ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“ã€‚è€ƒãˆã‚‰ã‚Œã‚‹åŸå› ï¼š{ãŒã‚ã‚Šã¾ã›ã‚“
 .np
 The compiler has detected a statement such as
 .kw for,
@@ -1532,11 +1594,11 @@ You either have too many closing braces "}" or you are missing an
 opening brace "{" earlier in the function.
 :MSGSYM. ERR_UNUSED_3
 :MSGTXT. not used
-:MSGJTXT. ‚±‚ÌƒƒbƒZ[ƒW‚Íg—p‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¯ä½¿ç”¨ã•ã‚Œã¾ã›ã‚“
 unused message
 :MSGSYM. ERR_CANT_UNDEF_THESE_NAMES
 :MSGTXT. Cannot #undef '%s'
-:MSGJTXT. '%s'‚Í#undef‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. '%s'ã¯#undefã§ãã¾ã›ã‚“
 .np
 The special macros
 .id __LINE__, __FILE__, __DATE__, __TIME__, __STDC__, __FUNCTION__
@@ -1548,30 +1610,31 @@ cannot be deleted by the
 directive.
 :MSGSYM. ERR_CANT_DEFINE_DEFINED
 :MSGTXT. Cannot #define the name 'defined'
-:MSGJTXT. –¼‘O'defined'‚Í#define‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åå‰'defined'ã¯#defineã§ãã¾ã›ã‚“
 .np
 You cannot define a macro called
-.id defined.
+.id defined
+.
 :MSGSYM. ERR_MISPLACED_SHARP_SHARP
 :MSGTXT. ## must not be at start or end of replacement tokens
-:MSGJTXT. ##‚Í’u‚«Š·‚¦ƒg[ƒNƒ“‚Ìæ“ª‚Ü‚½‚ÍÅŒã‚É‚ ‚Á‚Ä‚Í‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ##ã¯ç½®ãæ›ãˆãƒˆãƒ¼ã‚¯ãƒ³ã®å…ˆé ­ã¾ãŸã¯æœ€å¾Œã«ã‚ã£ã¦ã¯ãªã‚Šã¾ã›ã‚“
 .np
 There must be a token on each side of the "##" (token pasting) operator.
 :MSGSYM. ERR_NO_CAST_DURING_PP
 :MSGTXT. Type cast not allowed in #if or #elif expression
-:MSGJTXT. Œ^ƒLƒƒƒXƒg‚Í#if‚ ‚é‚¢‚Í#elif®‚Ì’†‚Å‚Í‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. å‹ã‚­ãƒ£ã‚¹ãƒˆã¯#ifã‚ã‚‹ã„ã¯#elifå¼ã®ä¸­ã§ã¯è¨±ã•ã‚Œã¾ã›ã‚“
 .np
 A type cast is not allowed in a preprocessor expression.
 :MSGSYM. ERR_NO_SIZEOF_DURING_PP
 :MSGTXT. 'sizeof' not allowed in #if or #elif expression
-:MSGJTXT. 'sizeof'‚Í#if‚©#elif®‚Ì’†‚Å‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. 'sizeof'ã¯#ifã‹#elifå¼ã®ä¸­ã§è¨±ã•ã‚Œã¾ã›ã‚“
 .np
 The
 .kw sizeof
 operator is not allowed in a preprocessor expression.
 :MSGSYM. ERR_INVALID_RELOP_FOR_STRUCT_OR_UNION
 :MSGTXT. Cannot compare a struct or union
-:MSGJTXT. struct‚ ‚é‚¢‚Íunion‚Í”äŠr‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. structã‚ã‚‹ã„ã¯unionã¯æ¯”è¼ƒã§ãã¾ã›ã‚“
 .np
 A
 .kw struct
@@ -1589,27 +1652,28 @@ or
 .kw union
 is packed (has no holes in it for alignment purposes)
 then you can compare two structs using
-.id memcmp.
+.id memcmp
+.
 :MSGSYM. ERR_EMPTY_ENUM_LIST
 :MSGTXT. Enumerator list cannot be empty
-:MSGJTXT. —ñ‹“qƒŠƒXƒg‚Í‹ó‚Å‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åˆ—æŒ™å­ãƒªã‚¹ãƒˆã¯ç©ºã§ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 .np
 You must have at least one identifier in an
 .kw enum
 list.
 :MSGSYM. ERR_INVALID_FLOATING_POINT_CONSTANT
 :MSGTXT. Invalid floating-point constant
-:MSGJTXT. •s“KØ‚È•‚“®¬”“_’è”‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªæµ®å‹•å°æ•°ç‚¹å®šæ•°ã§ã™
 .np
 The exponent part of the floating-point constant is not formed correctly.
 :MSGSYM. ERR_CANT_TAKE_SIZEOF_FIELD
 :MSGTXT. Cannot take sizeof a bit field
-:MSGJTXT. ƒrƒbƒgƒtƒB[ƒ‹ƒh‚Ìsizeof‚ğŒvZ‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®sizeofã‚’è¨ˆç®—ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 .np
 The smallest object that you can ask for the size of is a char.
 :MSGSYM. ERR_CANT_INITIALIZE_EXTERN_VAR
 :MSGTXT. Cannot initialize variable with storage class of extern
-:MSGJTXT. extern‚Ì‹L‰¯ƒNƒ‰ƒX‚Ì•Ï”‚Í‰Šú‰»‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. externã®è¨˜æ†¶ã‚¯ãƒ©ã‚¹ã®å¤‰æ•°ã¯åˆæœŸåŒ–ã§ãã¾ã›ã‚“
 .np
 A storage class of
 .kw extern
@@ -1617,24 +1681,25 @@ is used to associate the variable with its actual definition somewhere
 else in the program.
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_PARM_PROTO
 :MSGTXT. Invalid storage class for parameter
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^‚É‘Î‚µ‚Ä•s“KØ‚È‹L‰¯ƒNƒ‰ƒX‚Å‚·
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã«å¯¾ã—ã¦ä¸é©åˆ‡ãªè¨˜æ†¶ã‚¯ãƒ©ã‚¹ã§ã™
 .np
 The only storage class allowed for a parameter is
-.kw register.
+.kw register
+.
 :MSGSYM. ERR_EMPTY_INITIALIZER_LIST
 :MSGTXT. Initializer list cannot be empty
-:MSGJTXT. ‰Šú‰»ƒŠƒXƒg‚Í‹ó‚Å‚ ‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. åˆæœŸåŒ–ãƒªã‚¹ãƒˆã¯ç©ºã§ã‚ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“
 .np
 An initializer list must have at least one item specified.
 :MSGSYM. ERR_INCOMPLETE_EXPR_TYPE
 :MSGTXT. Expression has incomplete type
-:MSGJTXT. ®‚ÌŒ^‚ª•sŠ®‘S‚Å‚·
+:MSGJTXT. å¼ã®å‹ãŒä¸å®Œå…¨ã§ã™
 .np
 An attempt has been made to access a struct or union whose definition is
 not known, or an array whose dimensions are not known.
 :MSGSYM. ERR_STRUCT_OR_UNION_INSIDE_ITSELF
 :MSGTXT. Struct or union cannot contain itself
-:MSGJTXT. Struct‚ ‚é‚¢‚Íunion‚ª‚»‚ê©g‚ğŠÜ‚Ş‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. Structã‚ã‚‹ã„ã¯unionãŒãã‚Œè‡ªèº«ã‚’å«ã‚€ã“ã¨ã¯ã§ãã¾ã›ã‚“
 .np
 You cannot have a
 .kw struct
@@ -1647,17 +1712,17 @@ which points to an instance of itself.
 Check for a missing "*" in the declaration.
 :MSGSYM. ERR_INCOMPLETE_ENUM_DECL
 :MSGTXT. Incomplete enum declaration
-:MSGJTXT. •sŠ®‘S‚ÈenuméŒ¾‚Å‚·
+:MSGJTXT. ä¸å®Œå…¨ãªenumå®£è¨€ã§ã™
 .np
 The enumeration tag has not been previously defined.
 :MSGSYM. ERR_ID_LIST_SHOULD_BE_EMPTY
 :MSGTXT. An id list not allowed except for function definition
-:MSGJTXT. ŠÖ”’è‹`‚ğœ‚¢‚ÄCIDƒŠƒXƒg‚Í‹–‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. é–¢æ•°å®šç¾©ã‚’é™¤ã„ã¦ï¼ŒIDãƒªã‚¹ãƒˆã¯è¨±ã•ã‚Œã¾ã›ã‚“
 .np
 A function prototype must contain type information.
 :MSGSYM. ERR_MUST_BE_VAR_PARM_FUNC
 :MSGTXT. Must use 'va_start' macro inside function with variable parameters
-:MSGJTXT. 'va_start'ƒ}ƒNƒ‚Í‰Â•Ïƒpƒ‰ƒ[ƒ^‚ğ‚à‚ÂŠÖ”‚Ì“à‘¤‚Åg—p‚µ‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. 'va_start'ãƒã‚¯ãƒ­ã¯å¯å¤‰ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚‚ã¤é–¢æ•°ã®å†…å´ã§ä½¿ç”¨ã—ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 The
 .id va_start
@@ -1667,13 +1732,13 @@ A function is defined with a variable number of parameters by declaring
 the last parameter in the function as "...".
 :MSGSYM. ERR_FATAL_ERROR
 :MSGTXT. ***FATAL*** %s
-:MSGJTXT. ***’v–½“I*** %s
+:MSGJTXT. ***è‡´å‘½çš„*** %s
 .np
 A fatal error has been detected during code generation time.
 The type of error is displayed in the message.
 :MSGSYM. ERR_BACK_END_ERROR
 :MSGTXT. Internal compiler error %d
-:MSGJTXT. ƒRƒ“ƒpƒCƒ‰“à•”ƒGƒ‰[%d
+:MSGJTXT. ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©å†…éƒ¨ã‚¨ãƒ©ãƒ¼%d
 .np
 A bug has been encountered in the C compiler.
 Please report the specified internal compiler error number and any other
@@ -1681,18 +1746,18 @@ helpful details about the program being compiled to compiler developers
 so that we can fix the problem.
 :MSGSYM. ERR_BAD_PARM_REGISTER
 :MSGTXT. Parameter number %d - invalid register in #pragma
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^”Ô† %d - #pragma‚Ì’†‚Ì•s“KØ‚ÈƒŒƒWƒXƒ^
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ç•ªå· %d - #pragmaã®ä¸­ã®ä¸é©åˆ‡ãªãƒ¬ã‚¸ã‚¹ã‚¿
 .np
 The designated registers cannot hold the value for the parameter.
 :MSGSYM. ERR_BAD_RETURN_REGISTER
 :MSGTXT. Procedure '%s' has invalid return register in #pragma
-:MSGJTXT. ƒvƒƒV[ƒWƒƒ'%s'‚Í#pragma‚Ì’†‚Å•s“KØ‚ÈƒŠƒ^[ƒ“EƒŒƒWƒXƒ^‚ğ‚Á‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£'%s'ã¯#pragmaã®ä¸­ã§ä¸é©åˆ‡ãªãƒªã‚¿ãƒ¼ãƒ³ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’æŒã£ã¦ã„ã¾ã™
 .np
 The size of the return register does not match the size of the result
 returned by the function.
 :MSGSYM. ERR_BAD_SAVE
 :MSGTXT. Illegal register modified by '%s' #pragma
-:MSGJTXT. ˆá–@‚ÈƒŒƒWƒXƒ^‚ª'%s'#pragma‚É‚æ‚Á‚ÄC³‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. é•æ³•ãªãƒ¬ã‚¸ã‚¹ã‚¿ãŒ'%s'#pragmaã«ã‚ˆã£ã¦ä¿®æ­£ã•ã‚Œã¾ã—ãŸ
 .np
 .us For the 16-bit C compiler:
 The BP, CS, DS, and SS registers cannot be modified in small data models.
@@ -1706,48 +1771,48 @@ models.
 The EBP, CS, and SS registers cannot be modified in large data models.
 :MSGSYM. ERR_NO_EXTERNAL_DEFNS_FOUND
 :MSGTXT. File must contain at least one external definition
-:MSGJTXT. ƒtƒ@ƒCƒ‹‚Í­‚­‚Æ‚à1‚Â‚ÌŠO•”’è‹`‚ğŠÜ‚Ü‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ•ã‚¡ã‚¤ãƒ«ã¯å°‘ãã¨ã‚‚1ã¤ã®å¤–éƒ¨å®šç¾©ã‚’å«ã¾ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 Every file must contain at least one global object, (either a data variable
 or a function).
 This message is only issued in strict ANSI mode (-za).
 :MSGSYM. ERR_OUT_OF_MACRO_MEMORY
 :MSGTXT. Out of macro space
-:MSGJTXT. ƒ}ƒNƒ‹óŠÔ‚ª•s‘«‚Å‚·
+:MSGJTXT. ãƒã‚¯ãƒ­ç©ºé–“ãŒä¸è¶³ã§ã™
 .np
 The compiler ran out of memory for storing macro definitions.
 :MSGSYM. ERR_BREAK_KEY_HIT
 :MSGTXT. Keyboard interrupt detected
-:MSGJTXT. ƒL[ƒ{[ƒhŠ„‚è‚İ‚ªŒŸo‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å‰²ã‚Šè¾¼ã¿ãŒæ¤œå‡ºã•ã‚Œã¾ã—ãŸ
 .np
 The compile has been aborted with Ctrl/C or Ctrl/Break.
 :MSGSYM. ERR_INV_DATA_TYPE_FOR_REGISTER
 :MSGTXT. Array, struct or union cannot be placed in a register
-:MSGJTXT. ”z—ñCstructC‚ ‚é‚¢‚Íunion‚ğƒŒƒWƒXƒ^‚É’u‚­‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. é…åˆ—ï¼Œstructï¼Œã‚ã‚‹ã„ã¯unionã‚’ãƒ¬ã‚¸ã‚¹ã‚¿ã«ç½®ãã“ã¨ã¯ã§ãã¾ã›ã‚“
 .np
 Only scalar objects can be specified with the
 .kw register
 class.
 :MSGSYM. ERR_TYPE_REQUIRED_IN_PARM_LIST
 :MSGTXT. Type required in parameter list
-:MSGJTXT. Œ^‚ªƒpƒ‰ƒ[ƒ^EƒŠƒXƒg‚Ì’†‚É•K—v‚Å‚·
+:MSGJTXT. å‹ãŒãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ»ãƒªã‚¹ãƒˆã®ä¸­ã«å¿…è¦ã§ã™
 .np
 If the first parameter in a function definition or prototype is defined
 with a type, then all of the parameters must have a type specified.
 :MSGSYM. ERR_ENUM_CONSTANT_OUT_OF_RANGE
 :MSGTXT. Enum constant is out of range %s
-:MSGJTXT. enum’è”‚ª%s‚Ì”ÍˆÍŠO‚Å‚·
+:MSGJTXT. enumå®šæ•°ãŒ%sã®ç¯„å›²å¤–ã§ã™
 .np
 All of the constants must fit into appropriate value range.
 :MSGSYM. ERR_TYPE_DOES_NOT_AGREE
 :MSGTXT. Type does not agree with previous definition of '%s'
-:MSGJTXT. Œ^‚ª'%s'‚Ì‘O‚Ì’è‹`‚Æˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. å‹ãŒ'%s'ã®å‰ã®å®šç¾©ã¨ä¸€è‡´ã—ã¾ã›ã‚“
 .np
 You have more than one definition of a variable or function that do not
 agree.
 :MSGSYM. ERR_DUPLICATE_FIELD_NAME
 :MSGTXT. Duplicate name '%s' not allowed in struct or union
-:MSGJTXT. struct‚ ‚é‚¢‚Íunion‚Ì’†‚ÅC“¯‚¶–¼‘O'%s'‚ğ“ñ“xg‚¤‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. structã‚ã‚‹ã„ã¯unionã®ä¸­ã§ï¼ŒåŒã˜åå‰'%s'ã‚’äºŒåº¦ä½¿ã†ã“ã¨ã¯ã§ãã¾ã›ã‚“
 .np
 All the field names in a
 .kw struct
@@ -1756,39 +1821,39 @@ or
 must be unique.
 :MSGSYM. ERR_DUPLICATE_MACRO_PARM
 :MSGTXT. Duplicate macro parameter '%s'
-:MSGJTXT. ƒ}ƒNƒEƒpƒ‰ƒ[ƒ^'%s'‚Ì’è‹`‚ª“ñ“xs‚í‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ãƒã‚¯ãƒ­ãƒ»ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿'%s'ã®å®šç¾©ãŒäºŒåº¦è¡Œã‚ã‚Œã¦ã„ã¾ã™
 .np
 The parameters specified in a macro definition must be unique.
 :MSGSYM. ERR_UNABLE_TO_OPEN_WORK_FILE
 :MSGTXT. Unable to open work file: error code = %d
-:MSGJTXT. ƒ[ƒNEƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñFƒGƒ‰[ƒR[ƒh = %d
+:MSGJTXT. ãƒ¯ãƒ¼ã‚¯ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“ï¼šã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰ = %d
 .np
 The compiler tries to open a new work file by the name "__wrkN__.tmp" where
 N is the digit 0 to 9.
 This message will be issued if all of those files already exist.
 :MSGSYM. ERR_WORK_FILE_WRITE_ERROR
 :MSGTXT. Write error on work file: error code = %d
-:MSGJTXT. ƒ[ƒNEƒtƒ@ƒCƒ‹‚Ì‘‚İƒGƒ‰[FƒGƒ‰[ƒR[ƒh = %d
+:MSGJTXT. ãƒ¯ãƒ¼ã‚¯ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã®æ›¸è¾¼ã¿ã‚¨ãƒ©ãƒ¼ï¼šã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰ = %d
 .np
 An error was encountered trying to write information to the work file.
 The disk could be full.
 :MSGSYM. ERR_WORK_FILE_READ_ERROR
 :MSGTXT. Read error on work file: error code = %d
-:MSGJTXT. ƒ[ƒNEƒtƒ@ƒCƒ‹‚Ì“Çæ‚èƒGƒ‰[FƒGƒ‰[ƒR[ƒh = %d
+:MSGJTXT. ãƒ¯ãƒ¼ã‚¯ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­å–ã‚Šã‚¨ãƒ©ãƒ¼ï¼šã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰ = %d
 .np
 An error was encountered trying to read information from the work file.
 :MSGSYM. ERR_WORK_FILE_SEEK_ERROR
 :MSGTXT. Seek error on work file: error code = %d
-:MSGJTXT. ƒ[ƒNEƒtƒ@ƒCƒ‹‚ÌƒV[ƒNEƒGƒ‰[FƒGƒ‰[ƒR[ƒh = %d
+:MSGJTXT. ãƒ¯ãƒ¼ã‚¯ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚·ãƒ¼ã‚¯ãƒ»ã‚¨ãƒ©ãƒ¼ï¼šã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰ = %d
 .np
 An error was encountered trying to seek to a position in the work file.
 :MSGSYM. ERR_UNUSED_4
 :MSGTXT. not used
-:MSGJTXT. ‚±‚ÌƒƒbƒZ[ƒW‚Íg—p‚³‚ê‚Ü‚¹‚ñ
+:MSGJTXT. ã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¯ä½¿ç”¨ã•ã‚Œã¾ã›ã‚“
 unused message
 :MSGSYM. ERR_OUT_OF_ENUM_MEMORY
 :MSGTXT. Out of enum space
-:MSGJTXT. enum‹óŠÔ‚ª•s‘«‚Å‚·
+:MSGJTXT. enumç©ºé–“ãŒä¸è¶³ã§ã™
 .np
 The compiler has run out of space allocated to store information on all
 of the
@@ -1796,12 +1861,12 @@ of the
 constants defined in your program.
 :MSGSYM. ERR_FILENAME_REQUIRED
 :MSGTXT. Filename required on command line
-:MSGJTXT. ƒRƒ}ƒ“ƒhEƒ‰ƒCƒ“ã‚Éƒtƒ@ƒCƒ‹–¼‚ª•K—v‚Å‚·
+:MSGJTXT. ã‚³ãƒãƒ³ãƒ‰ãƒ»ãƒ©ã‚¤ãƒ³ä¸Šã«ãƒ•ã‚¡ã‚¤ãƒ«åãŒå¿…è¦ã§ã™
 .np
 The name of a file to be compiled must be specified on the command line.
 :MSGSYM. ERR_CAN_ONLY_COMPILE_ONE_FILE
 :MSGTXT. Command line contains more than one file to compile
-:MSGJTXT. ƒRƒ}ƒ“ƒhEƒ‰ƒCƒ“‚ÉƒRƒ“ƒpƒCƒ‹‚·‚éƒtƒ@ƒCƒ‹‚ª2‚ÂˆÈãw’è‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ã‚³ãƒãƒ³ãƒ‰ãƒ»ãƒ©ã‚¤ãƒ³ã«ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ãŒ2ã¤ä»¥ä¸ŠæŒ‡å®šã•ã‚Œã¦ã„ã¾ã™
 .np
 You have more than one file name specified on the command line to be
 compiled.
@@ -1810,7 +1875,7 @@ You can use the &wclname. utility to compile multiple files with a
 single command.
 :MSGSYM. ERR_MISPLACED_LEAVE
 :MSGTXT. _leave must appear in a _try statement
-:MSGJTXT. _leave‚Í_try•¶‚Ì’†‚É‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. _leaveã¯_tryæ–‡ã®ä¸­ã«ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 The
 .kw _leave
@@ -1824,27 +1889,27 @@ keyword causes the program to jump to the start of the
 block.
 :MSGSYM. ERR_EXPECTING_END_OF_LINE_BUT_FOUND
 :MSGTXT. Expecting end of line but found '%s'
-:MSGJTXT. s––‚Å‚ ‚é‚Í‚¸‚Å‚·‚ªC'%s'‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. è¡Œæœ«ã§ã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œ'%s'ãŒã‚ã‚Šã¾ã™
 .np
 A syntax error has been detected.
 The token displayed in the message should help you determine the problem.
 :MSGSYM. ERR_TOO_MANY_BYTES_IN_PRAGMA
 :MSGTXT. Too many bytes specified in #pragma
-:MSGJTXT. #pragma‚Ì’†‚Åw’è‚³‚ê‚½ƒoƒCƒgEƒR[ƒh‚ª‘½‚·‚¬‚Ü‚·
+:MSGJTXT. #pragmaã®ä¸­ã§æŒ‡å®šã•ã‚ŒãŸãƒã‚¤ãƒˆãƒ»ã‚³ãƒ¼ãƒ‰ãŒå¤šã™ãã¾ã™
 .np
 There is an internal limit on the number of bytes for in-line code
 that can be specified with a pragma.
 Try splitting the function into two or more smaller functions.
 :MSGSYM. ERR_BAD_LINKAGE
 :MSGTXT. Cannot resolve linkage conventions for routine '%s' #pragma
-:MSGJTXT. ƒ‹[ƒ`ƒ“'%s'#pragma‚É‘Î‚µ‚ÄƒŠƒ“ƒP[ƒW‹K–ñ‚ğ‰ğŒˆ‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ«ãƒ¼ãƒãƒ³'%s'#pragmaã«å¯¾ã—ã¦ãƒªãƒ³ã‚±ãƒ¼ã‚¸è¦ç´„ã‚’è§£æ±ºã§ãã¾ã›ã‚“
 .np
 The compiler cannot generate correct code for the specified routine
 because of register conflicts.
 Change the registers used by the parameters of the pragma.
 :MSGSYM. ERR_SYM_MUST_BE_GLOBAL
 :MSGTXT. Symbol '%s' in pragma must be global
-:MSGJTXT. ƒvƒ‰ƒOƒ}‚Ì’†‚ÌƒVƒ“ƒ{ƒ‹'%s'‚ÍƒOƒ[ƒoƒ‹‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ—ãƒ©ã‚°ãƒã®ä¸­ã®ã‚·ãƒ³ãƒœãƒ«'%s'ã¯ã‚°ãƒ­ãƒ¼ãƒãƒ«ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 The in-line code for a pragma can only reference a global variable or
 function.
@@ -1852,7 +1917,7 @@ You can only reference a parameter or local variable by passing it as
 a parameter to the in-line code pragma.
 :MSGSYM. ERR_INTERNAL_LIMIT_EXCEEDED
 :MSGTXT. Internal compiler limit exceeded, break module into smaller pieces
-:MSGJTXT. ƒRƒ“ƒpƒCƒ‰‚Ì“à•”§ŒÀ‚ğ‰z‚¦‚Ü‚µ‚½Bƒ‚ƒWƒ…[ƒ‹‚ğ‚æ‚è¬‚³‚¢•”•ª‚É•ªŠ„‚µ‚Ä‚­‚¾‚³‚¢
+:MSGJTXT. ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ã®å†…éƒ¨åˆ¶é™ã‚’è¶Šãˆã¾ã—ãŸã€‚ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’ã‚ˆã‚Šå°ã•ã„éƒ¨åˆ†ã«åˆ†å‰²ã—ã¦ãã ã•ã„
 .np
 The compiler can handle 65535 quadruples, 65535 leaves, and 65535 symbol
 table entries and literal strings.
@@ -1860,14 +1925,14 @@ If you exceed one of these limits, the program must be broken into smaller
 pieces until it is capable of being processed by the compiler.
 :MSGSYM. ERR_INVALID_INITIALIZER
 :MSGTXT. Invalid initializer for integer data type
-:MSGJTXT. ®”ƒf[ƒ^Œ^‚É‘Î‚µ‚Ä•s“KØ‚È‰Šú‰»‚Å‚·
+:MSGJTXT. æ•´æ•°ãƒ‡ãƒ¼ã‚¿å‹ã«å¯¾ã—ã¦ä¸é©åˆ‡ãªåˆæœŸåŒ–ã§ã™
 .np
 Integer data types (int and long) can be initialized with
 numeric expressions or address expressions that are the same size
 as the integer data type being initialized.
 :MSGSYM. ERR_TOO_MANY_ERRORS
 :MSGTXT. Too many errors: compilation aborted
-:MSGJTXT. ƒGƒ‰[‚ª‘½‚·‚¬‚Ü‚·FƒRƒ“ƒpƒCƒ‹‚ğ’†~‚µ‚Ü‚·
+:MSGJTXT. ã‚¨ãƒ©ãƒ¼ãŒå¤šã™ãã¾ã™ï¼šã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚’ä¸­æ­¢ã—ã¾ã™
 .np
 The compiler stops compiling when the number of errors generated
 exceeds the error limit.
@@ -1875,25 +1940,25 @@ The error limit can be set with the "-e" option.
 The default error limit is 20.
 :MSGSYM. ERR_EXPECTING_IDENTIFIER_BUT_FOUND
 :MSGTXT. Expecting identifier but found '%s'
-:MSGJTXT. ¯•Êq‚ª‚ ‚é‚Í‚¸‚Å‚·‚ªC'%s'‚ª‚ ‚è‚Ü‚µ‚½
+:MSGJTXT. è­˜åˆ¥å­ãŒã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œ'%s'ãŒã‚ã‚Šã¾ã—ãŸ
 .np
 A syntax error has been detected.
 The token displayed in the message should help you determine the problem.
 :MSGSYM. ERR_EXPECTING_CONSTANT_BUT_FOUND
 :MSGTXT. Expecting constant but found '%s'
-:MSGJTXT. ’è”‚ª‚ ‚é‚Í‚¸‚Å‚·‚ªC'%s'‚ª‚ ‚è‚Ü‚µ‚½
+:MSGJTXT. å®šæ•°ãŒã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œ'%s'ãŒã‚ã‚Šã¾ã—ãŸ
 .np
 The #line directive must be followed by a constant indicating the
 desired line number.
 :MSGSYM. ERR_EXPECTING_STRING_BUT_FOUND
 :MSGTXT. Expecting \"filename\" but found '%s'
-:MSGJTXT. \"ƒtƒ@ƒCƒ‹–¼\"‚ª‚ ‚é‚Í‚¸‚Å‚·‚ªC'%s'‚ª‚ ‚è‚Ü‚µ‚½
+:MSGJTXT. \"ãƒ•ã‚¡ã‚¤ãƒ«å\"ãŒã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œ'%s'ãŒã‚ã‚Šã¾ã—ãŸ
 .np
 The second argument of the #line directive must be a filename
 enclosed in quotes.
 :MSGSYM. ERR_PARM_COUNT_MISMATCH
 :MSGTXT. Parameter count does not agree with previous definition
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^”‚ª‘O‚Ì’è‹`‚Æˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ•°ãŒå‰ã®å®šç¾©ã¨ä¸€è‡´ã—ã¾ã›ã‚“
 .np
 You have either not enough parameters or too many parameters in a call
 to a function.
@@ -1901,13 +1966,13 @@ If the function is supposed to have a variable number of parameters, then
 you are missing the ", ..." in the function prototype.
 :MSGSYM. ERR_SEGMENT_NAME_REQUIRED
 :MSGTXT. Segment name required
-:MSGJTXT. ƒZƒOƒƒ“ƒg–¼‚ª•K—v‚Å‚·
+:MSGJTXT. ã‚»ã‚°ãƒ¡ãƒ³ãƒˆåãŒå¿…è¦ã§ã™
 .np
 A segment name must be supplied in the form of a literal string
 to the __segname() directive.
 :MSGSYM. ERR_INVALID_BASED_DECLARATOR
 :MSGTXT. Invalid __based declaration
-:MSGJTXT. •s“KØ‚È__basedéŒ¾‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãª__basedå®£è¨€ã§ã™
 .np
 The compiler could not recognize one of the allowable forms of __based
 declarations.
@@ -1916,91 +1981,91 @@ See the
 document for description of all the allowable forms of __based declarations.
 :MSGSYM. ERR_SYM_MUST_BE_TYPE_SEGMENT
 :MSGTXT. Variable for __based declaration must be of type __segment or pointer
-:MSGJTXT. __basedéŒ¾‚É‘Î‚·‚é•Ï”‚ÍŒ^__segment‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. __basedå®£è¨€ã«å¯¾ã™ã‚‹å¤‰æ•°ã¯å‹__segmentã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 A based pointer declaration must be based on a simple variable of type
 __segment or pointer.
 :MSGSYM. ERR_DUPLICATE_ID
 :MSGTXT. Duplicate external symbol %s
-:MSGJTXT. ŠO•”ƒVƒ“ƒ{ƒ‹%s‚ª2‚Â‚ ‚è‚Ü‚·
+:MSGJTXT. å¤–éƒ¨ã‚·ãƒ³ãƒœãƒ«%sãŒ2ã¤ã‚ã‚Šã¾ã™
 .np
 Duplicate external symbols will exist when the specified symbol name is
 truncated to 8 characters.
 :MSGSYM. ERR_ASSEMBLER_ERROR
 :MSGTXT. Assembler error: '%s'
-:MSGJTXT. ƒAƒZƒ“ƒuƒ‰EƒGƒ‰[F'%s'
+:MSGJTXT. ã‚¢ã‚»ãƒ³ãƒ–ãƒ©ãƒ»ã‚¨ãƒ©ãƒ¼ï¼š'%s'
 .np
 An error has been detected by the in-line assembler.
 The message indicates the error detected.
 :MSGSYM. ERR_VAR_TOO_LARGE
 :MSGTXT. Variable must be 'huge'
-:MSGJTXT. •Ï”‚Í'huge'‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. å¤‰æ•°ã¯'huge'ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 A variable or an array that requires more than 64K of storage in the 16-bit
 compiler must be declared as
 .kw huge.
 :MSGSYM. ERR_TOO_MANY_PARM_SETS
 :MSGTXT. Too many parm sets
-:MSGJTXT. parm‚Ìw’è‚ª‘½‚·‚¬‚Ü‚·
+:MSGJTXT. parmã®æŒ‡å®šãŒå¤šã™ãã¾ã™
 .np
 Too many parameter register sets have been specified in the pragma.
 :MSGSYM. ERR_IO_ERR
 :MSGTXT. I/O error reading '%s': %s
-:MSGJTXT. '%s'“Ç‚İ‚İ’†‚Ì‚h^‚nƒGƒ‰[F%s
+:MSGJTXT. '%s'èª­ã¿è¾¼ã¿ä¸­ã®ï¼©ï¼ï¼¯ã‚¨ãƒ©ãƒ¼ï¼š%s
 .np
 An I/O error has been detected by the compiler while reading the source file.
 The system dependent reason is also displayed in the message.
 :MSGSYM. ERR_NO_SEG_REGS
 :MSGTXT. Attempt to access far memory with all segment registers disabled in '%s'
-:MSGJTXT. '%s'‚Ì’†‚Åg—p‹Ö~‚É‚³‚ê‚½‚·‚×‚Ä‚ÌƒZƒOƒƒ“ƒgEƒŒƒWƒXƒ^‚Åfarƒƒ‚ƒŠ‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·
+:MSGJTXT. '%s'ã®ä¸­ã§ä½¿ç”¨ç¦æ­¢ã«ã•ã‚ŒãŸã™ã¹ã¦ã®ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ã§farãƒ¡ãƒ¢ãƒªã«ã‚¢ã‚¯ã‚»ã‚¹ã—ã‚ˆã†ã¨ã—ã¦ã„ã¾ã™
 .np
 The compiler does not have any segment registers available to access the
 desired far memory location.
 :MSGSYM. ERR_NO_MACRO_ID_COMMAND_LINE
 :MSGTXT. No identifier provided for '-D' option
-:MSGJTXT. /DƒIƒvƒVƒ‡ƒ“‚É‘Î‚·‚é¯•Êq‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. /Dã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«å¯¾ã™ã‚‹è­˜åˆ¥å­ãŒã‚ã‚Šã¾ã›ã‚“
 .np
 The command line option "-D" must be followed by the name of the macro
 to be defined.
 :MSGSYM. ERR_BAD_PEG_REG
 :MSGTXT. Invalid register pegged to a segment in '%s'
-:MSGJTXT. •s“KØ‚ÈƒŒƒWƒXƒ^‚ª'%s'‚Ì’†‚ÅƒZƒOƒƒ“ƒg‚ÉŒÅ’è‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ä¸é©åˆ‡ãªãƒ¬ã‚¸ã‚¹ã‚¿ãŒ'%s'ã®ä¸­ã§ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã«å›ºå®šã•ã‚Œã¦ã„ã¾ã™
 .np
 The register specified in a #pragma data_seg, or a
 .kw __segname
 expression must be a valid segment register.
 :MSGSYM. ERR_INVALID_OCTAL_CONSTANT
 :MSGTXT. Invalid octal constant
-:MSGJTXT. •s“KØ‚È‚Wi’è”‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªï¼˜é€²å®šæ•°ã§ã™
 .np
 An octal constant cannot contain the digits 8 or 9.
 :MSGSYM. ERR_INVALID_HEX_CONSTANT
 :MSGTXT. Invalid hexadecimal constant
-:MSGJTXT. •s“KØ‚È‚P‚Ui’è”‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªï¼‘ï¼–é€²å®šæ•°ã§ã™
 .np
 The token sequence "0x" must be followed by a hexadecimal character
 (0-9, a-f, or A-F).
 :MSGSYM. ERR_UNEXPECTED_RIGHT_PAREN
 :MSGTXT. Unexpected ')'. Probable cause: missing '('
-:MSGJTXT. ŠÔˆá‚Á‚½êŠ‚É')'‚ª‚ ‚è‚Ü‚·Bl‚¦‚ç‚ê‚éŒ´ˆöF'('‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. é–“é•ã£ãŸå ´æ‰€ã«')'ãŒã‚ã‚Šã¾ã™ã€‚è€ƒãˆã‚‰ã‚Œã‚‹åŸå› ï¼š'('ãŒã‚ã‚Šã¾ã›ã‚“
 .np
 A closing parenthesis was found in an expression without a corresponding
 opening parenthesis.
 :MSGSYM. ERR_UNREACHABLE_SYM
 :MSGTXT. Symbol '%s' is unreachable from #pragma
-:MSGJTXT. ƒVƒ“ƒ{ƒ‹'%s'‚Í#pragma‚©‚ç“Í‚«‚Ü‚¹‚ñ
+:MSGJTXT. ã‚·ãƒ³ãƒœãƒ«'%s'ã¯#pragmaã‹ã‚‰å±Šãã¾ã›ã‚“
 .np
 The in-line assembler found a jump instruction to a label that is
 too far away.
 :MSGSYM. ERR_CONST_DIV_ZERO
 :MSGTXT. Division or remainder by zero in a constant expression
-:MSGJTXT. ’è”®‚Ì’†‚Éƒ[ƒ‚É‚æ‚éœZ‚©è—]‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. å®šæ•°å¼ã®ä¸­ã«ã‚¼ãƒ­ã«ã‚ˆã‚‹é™¤ç®—ã‹å‰°ä½™ãŒã‚ã‚Šã¾ã™
 .np
 The compiler found a constant expression containing a division or
 remainder by zero.
 :MSGSYM. ERR_INVALID_STRING_LITERAL
 :MSGTXT. Cannot end string literal with backslash
-:MSGJTXT. •¶š—ñ’è”‚ÍƒoƒbƒNƒXƒ‰ƒbƒVƒ…‚ÅI—¹‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñ
+:MSGJTXT. æ–‡å­—åˆ—å®šæ•°ã¯ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã§çµ‚äº†ã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“
 .np
 The argument to a macro that uses the stringize operator '#'
 on that argument must not end in a backslash character.
@@ -2010,26 +2075,26 @@ str(@#\)
 .eerrbad
 :MSGSYM. ERR_INVALID_DECLSPEC
 :MSGTXT. Invalid __declspec declaration
-:MSGJTXT. •s“KØ‚È__declspecéŒ¾‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãª__declspecå®£è¨€ã§ã™
 .np
 The only valid __declspec declarations are "__declspec(thread)",
 "__declspec(dllexport)",
 and "__declspec(dllimport)".
 :MSGSYM. ERR_TOO_MANY_STORAGE_CLASS_SPECIFIERS
 :MSGTXT. Too many storage class specifiers
-:MSGJTXT. ‹L‰¯ƒNƒ‰ƒXw’èq‚ª‘½‚·‚¬‚Ü‚·
+:MSGJTXT. è¨˜æ†¶ã‚¯ãƒ©ã‚¹æŒ‡å®šå­ãŒå¤šã™ãã¾ã™
 .np
 You can only specify one storage class specifier in a declaration.
 :MSGSYM. ERR_EXPECTING_BUT_FOUND_END_OF_FILE
 :MSGTXT. Expecting '%s' but found end of file
-:MSGJTXT. '%s'‚ª‚ ‚é‚Í‚¸‚Å‚·‚ªCƒtƒ@ƒCƒ‹‚ªI—¹‚µ‚Ä‚µ‚Ü‚¢‚Ü‚µ‚½
+:MSGJTXT. '%s'ãŒã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œãƒ•ã‚¡ã‚¤ãƒ«ãŒçµ‚äº†ã—ã¦ã—ã¾ã„ã¾ã—ãŸ
 .np
 A syntax error has been detected.
 The compiler is still expecting more input when it reached the
 end of the source program.
 :MSGSYM. ERR_EXPECTING_STRUCT_UNION_TAG_BUT_FOUND
 :MSGTXT. Expecting struct/union tag but found '%s'
-:MSGJTXT. \‘¢‘Ì/‹¤—p‘Ìƒ^ƒO‚ª‚ ‚é‚Í‚¸‚Å‚·‚ªC'%s'‚ª‚ ‚è‚Ü‚µ‚½
+:MSGJTXT. æ§‹é€ ä½“/å…±ç”¨ä½“ã‚¿ã‚°ãŒã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œ'%s'ãŒã‚ã‚Šã¾ã—ãŸ
 .np
 The compiler expected to find an identifier following the
 .kw struct
@@ -2038,92 +2103,93 @@ or
 keyword.
 :MSGSYM. ERR_OPND_OF_BUILTIN_ISFLOAT_MUST_BE_TYPE
 :MSGTXT. Operand of __builtin_isfloat() must be a type
-:MSGJTXT. __builtin_isfloat()‚ÌƒIƒyƒ‰ƒ“ƒh‚ÍŒ^‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. __builtin_isfloat()ã®ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯å‹ã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 The __builtin_isfloat() function is used by the
 .kw va_arg
 macro to determine if a type is a floating-point type.
 :MSGSYM. ERR_INVALID_CONSTANT
 :MSGTXT. Invalid constant
-:MSGJTXT. •s“KØ‚È’è”‚Å‚·
+:MSGJTXT. ä¸é©åˆ‡ãªå®šæ•°ã§ã™
 .np
 The token sequence does not represent a valid numeric constant.
 :MSGSYM. ERR_TOO_MANY_INITS
 :MSGTXT. Too many initializers
-:MSGJTXT. ‰Šú‰»w’èq‚ª‘½‚·‚¬‚Ü‚·
+:MSGJTXT. åˆæœŸåŒ–æŒ‡å®šå­ãŒå¤šã™ãã¾ã™
 .np
 There are more initializers than objects to initialize.
 For example  int X[2] = { 0, 1, 2 };
 The variable "X" requires two initializers not three.
 :MSGSYM. ERR_PARM_POINTER_TYPE_MISMATCH
 :MSGTXT. Parameter %d, pointer type mismatch
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^%d, ƒ|ƒCƒ“ƒ^‚ÌŒ^‚ªˆá‚¢‚Ü‚·
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿%d, ãƒã‚¤ãƒ³ã‚¿ã®å‹ãŒé•ã„ã¾ã™
 .np
 You have two pointers that either point to different objects, or the
 pointers are of different size, or they have different modifiers.
 :MSGSYM. ERR_REPEATED_MODIFIER
 :MSGTXT. Modifier repeated in declaration
-:MSGJTXT. Cüq‚ªéŒ¾‚Ì’†‚ÅŒJ‚è•Ô‚µg—p‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. ä¿®é£¾å­ãŒå®£è¨€ã®ä¸­ã§ç¹°ã‚Šè¿”ã—ä½¿ç”¨ã•ã‚Œã¦ã„ã¾ã™
 .np
 You have repeated the use of a modifier like "const" (an error)
 or "far" (a warning) in a declaration.
 :MSGSYM. ERR_QUALIFIER_MISMATCH
 :MSGTXT. Type qualifier mismatch
-:MSGJTXT. Œ^Cüq‚ªˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. å‹ä¿®é£¾å­ãŒä¸€è‡´ã—ã¾ã›ã‚“
 .np
 You have two pointers that have different "const" or "volatile" qualifiers.
 :MSGSYM. ERR_PARM_QUALIFIER_MISMATCH
 :MSGTXT. Parameter %d, type qualifier mismatch
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^%d, Œ^Cüq‚ªˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿%d, å‹ä¿®é£¾å­ãŒä¸€è‡´ã—ã¾ã›ã‚“
 .np
 You have two pointers that have different const or "volatile" qualifiers.
 :MSGSYM. ERR_SIGN_MISMATCH
 :MSGTXT. Sign specifier mismatch
-:MSGJTXT. •„†w’èq‚ªˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. ç¬¦å·æŒ‡å®šå­ãŒä¸€è‡´ã—ã¾ã›ã‚“
 .np
 You have two pointers that point to types that have different sign specifiers.
 :MSGSYM. ERR_PARM_SIGN_MISMATCH
 :MSGTXT. Parameter %d, sign specifier mismatch
-:MSGJTXT. ƒpƒ‰ƒ[ƒ^%d, •„†w’èq‚ªˆê’v‚µ‚Ü‚¹‚ñ
+:MSGJTXT. ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿%d, ç¬¦å·æŒ‡å®šå­ãŒä¸€è‡´ã—ã¾ã›ã‚“
 .np
 You have two pointers that point to types that have different sign specifiers.
 :MSGSYM. ERR_MISSING_LINE_CONTINUE
 :cmt This message not currently used.  25-June-2006
 :MSGTXT. Missing \\ for string literal
-:MSGJTXT. •¶š—ñ’è”‚É‘Î‚µ‚Ä \\ ‚ª‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. æ–‡å­—åˆ—å®šæ•°ã«å¯¾ã—ã¦ \\ ãŒã‚ã‚Šã¾ã›ã‚“
 .np
 You need a '\' to continue a string literal across a line.
 :MSGSYM. ERR_EXPECTING_AFTER_BUT_FOUND
 :MSGTXT. Expecting '%s' after '%s' but found '%s'
-:MSGJTXT. '%s'‚ª'%s'‚ÌŒã‚É‚ ‚é‚Í‚¸‚Å‚·‚ªC'%s'‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. '%s'ãŒ'%s'ã®å¾Œã«ã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œ'%s'ãŒã‚ã‚Šã¾ã™
 .np
 A syntax error has been detected.
 The tokens displayed in the message should help you to determine the problem.
 :MSGSYM. ERR_EXPECTING_AFTER_BUT_FOUND_END_OF_FILE
 :MSGTXT. Expecting '%s' after '%s' but found end of file
-:MSGJTXT. '%s'‚ª'%s'‚ÌŒã‚É‚ ‚é‚Í‚¸‚Å‚·‚ªCƒtƒ@ƒCƒ‹‚ªI—¹‚µ‚Ä‚µ‚Ü‚¢‚Ü‚µ‚½
+:MSGJTXT. '%s'ãŒ'%s'ã®å¾Œã«ã‚ã‚‹ã¯ãšã§ã™ãŒï¼Œãƒ•ã‚¡ã‚¤ãƒ«ãŒçµ‚äº†ã—ã¦ã—ã¾ã„ã¾ã—ãŸ
 .np
 A syntax error has been detected.
 The compiler is still expecting more input when it reached the
 end of the source program.
 :MSGSYM. ERR_BAD_REGISTER_NAME
 :MSGTXT. Invalid register name '%s' in #pragma
-:MSGJTXT. #pragma‚Ì’†‚É–³Œø‚ÈƒŒƒWƒXƒ^–¼'%s'‚ª‚ ‚è‚Ü‚·
+:MSGJTXT. #pragmaã®ä¸­ã«ç„¡åŠ¹ãªãƒ¬ã‚¸ã‚¹ã‚¿å'%s'ãŒã‚ã‚Šã¾ã™
 .np
 The register name is invalid/unknown.
 :MSGSYM. ERR_INVALID_STG_CLASS_FOR_LOOP_DECL
 :MSGTXT. Storage class of 'for' statement declaration not register or auto
-:MSGJTXT. 'for'ƒXƒe[ƒgƒƒ“ƒg‹L‰¯ƒNƒ‰ƒX‚ªƒŒƒWƒXƒ^‚Ü‚½‚Íauto‚Å‚ ‚è‚Ü‚¹‚ñ
+:MSGJTXT. 'for'ã‚¹ãƒ†ãƒ¼ãƒˆãƒ¡ãƒ³ãƒˆè¨˜æ†¶ã‚¯ãƒ©ã‚¹ãŒãƒ¬ã‚¸ã‚¹ã‚¿ã¾ãŸã¯autoã§ã‚ã‚Šã¾ã›ã‚“
 .np
 The only storage class allowed for the optional declaration part of a
 .kw for
 statement is
 .kw auto
 or
-.kw register.
+.kw register
+.
 :MSGSYM. ERR_NO_TYPE_IN_DECL
 :MSGTXT. No type specified in declaration
-:MSGJTXT. éŒ¾“à‚ÅŒ^‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
+:MSGJTXT. å®£è¨€å†…ã§å‹ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“
 .np
 A declaration specifier must include a type specifier.
 .errbad
@@ -2131,7 +2197,7 @@ auto i;
 .eerrbad
 :MSGSYM. ERR_DECL_IN_LOOP_NOT_OBJECT
 :MSGTXT. Symbol '%s' declared in 'for' statement must be object
-:MSGJTXT. 'for'ƒXƒe[ƒgƒƒ“ƒg“à‚ÅéŒ¾‚³‚ê‚½ƒVƒ“ƒ{ƒ‹'%s'‚ÍƒIƒuƒWƒFƒNƒg‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
+:MSGJTXT. 'for'ã‚¹ãƒ†ãƒ¼ãƒˆãƒ¡ãƒ³ãƒˆå†…ã§å®£è¨€ã•ã‚ŒãŸã‚·ãƒ³ãƒœãƒ«'%s'ã¯ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§ãªã‘ã‚Œã°ãªã‚Šã¾ã›ã‚“
 .np
 Any identifier declared in the optional declaration part of a
 .kw for
@@ -2144,7 +2210,7 @@ for( int i = 0, j( void ); i < 5; ++i ) {
 .eerrbad
 :MSGSYM. ERR_UNEXPECTED_DECLARATION
 :MSGTXT. Unexpected declaration
-:MSGJTXT. —\Šú‚µ‚È‚¢éŒ¾‚Å‚·
+:MSGJTXT. äºˆæœŸã—ãªã„å®£è¨€ã§ã™
 .np
 Within a function body, in C99 mode a declaration is only allowed in
 a compound statement and in the opening clause of a
@@ -2173,23 +2239,89 @@ void foo( int a )
     int j = 3;
 }
 .eerrbad
-:MSGSYM. ERR_PRAG_WARNING_BAD_MESSAGE
-:MSGTXT. message number '%d' is invalid
-:MSGJTXT. ƒƒbƒZ[ƒW”Ô†'%d'‚Í•s“KØ‚Å‚·
-The message number used in the #pragma does not match the message number
-for any warning message.  This message can also indicate that a number
-or '*' (meaning all warnings) was not found when it was expected.
+:MSGSYM. ERR_ELSE_WITHOUT_IF
+:MSGTXT. 'else' without 'if'
+:MSGJTXT. ã€Œelseã€ã«ã€Œifã€ãŒã‚ã‚Šã¾ã›ã‚“
+.np
+The
+.kw else
+must follow
+.kw if
 .
-:MSGSYM. ERR_PRAG_WARNING_BAD_LEVEL
-:MSGTXT. warning level must be an integer in range 0 to 5
-:MSGJTXT. ŒxƒŒƒxƒ‹‚ÍC0`5‚Ì”ÍˆÍ‚Ì®”‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
-The new warning level that can be used for the warning can be in the range
-0 to 5.  The level 0 means that the warning will be treated as an error
-(compilation will not succeed).  Levels 1 up to 5 are used to classify
-warnings.  The -w option sets an upper limit on the level for warnings.
-By setting the level above the command line limit, you effectively
-ignore all cases where the warning shows up.
-.
+:MSGSYM. ERR_CONSECUTIVE_OPERANDS
+:MSGTXT. expression contains consecutive operand(s)
+:MSGJTXT. å¼ã«é€£ç¶šã—ãŸã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã™
+More than one operand found in a row.
+:MSGSYM. ERR_UNEXPECTED_IN_CONSTANT_EXPRESSION
+:MSGTXT. '%s' unexpected in constant expression
+:MSGJTXT. æ¡ä»¶å¼ã®ä¸­ã«'%s'ãŒã‚ã‚Šã¾ã™
+'%s' not allowed in constant expression.
+:MSGSYM. ERR_FLOATING_CONSTANT_UNDERFLOW
+:MSGTXT. floating-point constant too small to represent
+:MSGJTXT. æµ®å‹•å°æ•°ç‚¹å®šæ•°ãŒå°ã•ã™ãã¾ã™
+The Open Watcom C compiler cannot represent the floating-point
+constant because the magnitude of the negative exponent is too large.
+:errbad.
+float f = 1.2e-78965;
+:eerrbad.
+:MSGSYM. ERR_FLOATING_CONSTANT_OVERFLOW
+:MSGTXT. floating-point constant too large to represent
+:MSGJTXT. æµ®å‹•å°æ•°ç‚¹å®šæ•°ãŒå¤§ãã™ãã¾ã™
+The Open Watcom C compiler cannot represent the floating-point
+constant because the magnitude of the positive exponent is too large.
+:errbad.
+float f = 1.2e78965;
+:eerrbad.
+:MSGSYM. ERR_UNMATCHED_LEFT_PAREN
+:MSGTXT. unmatched left parenthesis '('
+:MSGJTXT. å·¦æ‹¬å¼§"("ãŒä¸€è‡´ã—ã¾ã›ã‚“
+The expression contains a left parenthesis "(" without a matching right
+parenthesis.
+:MSGSYM. ERR_EXTRA_OPERAND
+:MSGTXT. expression contains extra operand(s)
+:MSGJTXT. å¼ã«ä½™åˆ†ãªã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã™
+The expression contains operand(s) without an operator.
+:MSGSYM. ERR_UNMATCHED_RIGHT_PAREN
+:MSGTXT. unmatched right parenthesis ')'
+:MSGJTXT. å³æ‹¬å¼§")"ãŒä¸€è‡´ã—ã¾ã›ã‚“
+The expression contains a right parenthesis ")" without a matching left
+parenthesis.
+:MSGSYM. ERR_EMPTY_PAREN
+:MSGTXT. no expression between parentheses '( )'
+:MSGJTXT. æ‹¬å¼§"()"ã®ä¸­ã«å¼ãŒã‚ã‚Šã¾ã›ã‚“
+There is a matching set of parenthesis "()" which do not contain an expression.
+:MSGSYM. ERR_CONDITIONAL_MISSING_COLON
+:MSGTXT. expecting ':' operator in conditional expression
+:MSGJTXT. æ¡ä»¶å¼ã®':'æ¼”ç®—å­ãŒã‚ã‚Šã¾ã›ã‚“
+A conditional expression exists without the ':' operator.
+:MSGSYM. ERR_CONDITIONAL_MISSING_QUESTION
+:MSGTXT. expecting '?' operator in conditional expression
+:MSGJTXT. æ¡ä»¶å¼ã®'?'æ¼”ç®—å­ãŒã‚ã‚Šã¾ã›ã‚“
+A conditional expression exists without the '?' operator.
+:MSGSYM. ERR_CONDITIONAL_MISSING_FIRST_OPERAND
+:MSGTXT. expecting first operand in conditional expression
+:MSGJTXT. æ¡ä»¶å¼ã®ç¬¬1ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
+A conditional expression exists without the first operand.
+:MSGSYM. ERR_CONDITIONAL_MISSING_SECOND_OPERAND
+:MSGTXT. expecting second operand in conditional expression
+:MSGJTXT. æ¡ä»¶å¼ã®ç¬¬2ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
+A conditional expression exists without the second operand.
+:MSGSYM. ERR_CONDITIONAL_MISSING_THIRD_OPERAND
+:MSGTXT. expecting third operand in conditional expression
+:MSGJTXT. æ¡ä»¶å¼ã®ç¬¬3ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
+A conditional expression exists without the third operand.
+:MSGSYM. ERR_BINARY_MISSING_RIGHT_OPERAND
+:MSGTXT. binary operator '%s' missing right operand
+:MSGJTXT. 2é …æ¼”ç®—å­'%s'ã«å³ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
+There is no expression to the right of the indicated binary operator.
+:MSGSYM. ERR_BINARY_MISSING_LEFT_OPERAND
+:MSGTXT. binary operator '%s' missing left operand
+:MSGJTXT. 2é …æ¼”ç®—å­'%s'ã«å·¦ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
+There is no expression to the left of the indicated binary operator.
+:MSGSYM. ERR_UNARY_OPERATOR_MISSING_OPERAND
+:MSGTXT. expecting operand after unary operator '%s'
+:MSGJTXT. å˜é …æ¼”ç®—å­'%s'ã®å¾Œã®ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒã‚ã‚Šã¾ã›ã‚“
+A unary operator without being followed by an operand.
 :eMSGGRP. Errs
 :cmt -------------------------------------------------------------------
 :MSGGRP. Info
@@ -2199,7 +2331,7 @@ ignore all cases where the warning shows up.
 :cmt -------------------------------------------------------------------
 :MSGSYM. INFO_NOT_ENOUGH_MEMORY_TO_FULLY_OPTIMIZE
 :MSGTXT. Not enough memory to fully optimize procedure '%s'
-:MSGJTXT. ƒvƒƒV[ƒWƒƒ'%s'‚ğÅ“K‰»‚·‚é‚Ì‚ÉCƒƒ‚ƒŠ‚ª•s\•ª‚Å‚·
+:MSGJTXT. ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£'%s'ã‚’æœ€é©åŒ–ã™ã‚‹ã®ã«ï¼Œãƒ¡ãƒ¢ãƒªãŒä¸ååˆ†ã§ã™
 :INFO.
 .np
 The compiler did not have enough memory to fully optimize the
@@ -2208,7 +2340,7 @@ The code generated will still be correct and execute properly.
 This message is purely informational.
 :MSGSYM. INFO_NOT_ENOUGH_MEMORY_TO_MAINTAIN_PEEPHOLE
 :MSGTXT. Not enough memory to maintain full peephole
-:MSGJTXT. Š®‘S‚Èƒs[ƒvƒz[ƒ‹‚ğˆÛ‚·‚é‚Ì‚ÉCƒƒ‚ƒŠ‚ª•s\•ª‚Å‚·
+:MSGJTXT. å®Œå…¨ãªãƒ”ãƒ¼ãƒ—ãƒ›ãƒ¼ãƒ«ã‚’ç¶­æŒã™ã‚‹ã®ã«ï¼Œãƒ¡ãƒ¢ãƒªãŒä¸ååˆ†ã§ã™
 :INFO.
 .np
 Certain optimizations benefit from being able to store the entire module
@@ -2226,7 +2358,7 @@ You may not be able to reproduce the exact same object code from one
 compile to the next unless the available memory is exactly the same.
 :MSGSYM. INFO_SYMBOL_DECLARATION
 :MSGTXT. '%s' defined in: %s(%u)
-:MSGJTXT. '%s' ‚Í%s(%u)‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+:MSGJTXT. '%s' ã¯%s(%u)ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™
 :INFO.
 This informational message indicates where the symbol in question was defined.
 The message is displayed following an error or warning diagnostic for the
@@ -2241,19 +2373,19 @@ Following the warning, the informational message indicates the line at
 which 'a' was declared.
 :MSGSYM. INFO_SRC_CNV_TYPE
 :MSGTXT. source conversion type is '%s'
-:MSGJTXT. •ÏŠ·ƒ\[ƒX‚ÌŒ^‚Í'%s'‚Å‚·
+:MSGJTXT. å¤‰æ›ã‚½ãƒ¼ã‚¹ã®å‹ã¯'%s'ã§ã™
 :INFO.
 This informational message indicates the type of the source operand, for the
 preceding conversion diagnostic.
 :MSGSYM. INFO_TGT_CNV_TYPE
 :MSGTXT. target conversion type is '%s'
-:MSGJTXT. •ÏŠ·ƒ^[ƒQƒbƒg‚ÌŒ^‚Í'%s'‚Å‚·
+:MSGJTXT. å¤‰æ›ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å‹ã¯'%s'ã§ã™
 :INFO.
 This informational message indicates the target type of the conversion,
 for the preceding conversion diagnostic.
 :MSGSYM. INFO_INCLUDING_FILE
 :MSGTXT. Including file '%s'
-:MSGJTXT. ƒtƒ@ƒCƒ‹'%s'‚ğƒCƒ“ƒNƒ‹[ƒh‚µ‚Ü‚·
+:MSGJTXT. ãƒ•ã‚¡ã‚¤ãƒ«'%s'ã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã—ã¾ã™
 :INFO.
 This informational message indicates that the specified file was opened
 as a result of
@@ -2286,20 +2418,20 @@ preceding diagnostic.
 :cmt -------------------------------------------------------------------
 :MSGSYM. PCHDR_READ_ERROR
 :MSGTXT. Error reading PCH file
-:MSGJTXT. PCHƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İƒGƒ‰[
+:MSGJTXT. PCHãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ã‚¨ãƒ©ãƒ¼
 :INFO.
 .np
 The pre-compiled header file does not follow the correct format.
 :MSGSYM. PCHDR_INVALID_HEADER
 :MSGTXT. PCH file header is out of date
-:MSGJTXT. PCHƒtƒ@ƒCƒ‹‚Ìƒo[ƒWƒ‡ƒ“‚ªˆá‚¢‚Ü‚·
+:MSGJTXT. PCHãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ãŒé•ã„ã¾ã™
 :INFO.
 .np
 The pre-compiled header file is out of date with the compiler.
 The current version of the compiler is expecting a different format.
 :MSGSYM. PCHDR_DIFFERENT_OPTIONS
 :MSGTXT. Compile options differ with PCH file
-:MSGJTXT. ƒRƒ“ƒpƒCƒ‰ƒIƒvƒVƒ‡ƒ“‚ªPCHƒtƒ@ƒCƒ‹‚Ì“à—e‚ÆˆÙ‚È‚è‚Ü‚·
+:MSGJTXT. ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒPCHãƒ•ã‚¡ã‚¤ãƒ«ã®å†…å®¹ã¨ç•°ãªã‚Šã¾ã™
 :INFO.
 .np
 The command line options are not the same as used when
@@ -2307,38 +2439,38 @@ making the pre-compiled header file.
 This can effect the values of the pre-compiled information.
 :MSGSYM. PCHDR_DIFFERENT_CWD
 :MSGTXT. Current working directory differs with PCH file
-:MSGJTXT. Œ»İ‚Ìì‹ÆƒfƒBƒŒƒNƒgƒŠ‚ªPCH‚Ì“à—e‚ÆˆÙ‚È‚è‚Ü‚·
+:MSGJTXT. ç¾åœ¨ã®ä½œæ¥­ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒPCHã®å†…å®¹ã¨ç•°ãªã‚Šã¾ã™
 :INFO.
 .np
 The pre-compiled header file was compiled in a different directory.
 :MSGSYM. PCHDR_INCFILE_CHANGED
 :MSGTXT. Include file '%s' has been modified since PCH file was made
-:MSGJTXT. PCHƒtƒ@ƒCƒ‹‚ªì‚ç‚ê‚Ä‚©‚çCƒCƒ“ƒNƒ‹[ƒhƒtƒ@ƒCƒ‹'%s'‚ªC³‚³‚ê‚Ü‚µ‚½
+:MSGJTXT. PCHãƒ•ã‚¡ã‚¤ãƒ«ãŒä½œã‚‰ã‚Œã¦ã‹ã‚‰ï¼Œã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«'%s'ãŒä¿®æ­£ã•ã‚Œã¾ã—ãŸ
 :INFO.
 .np
 The include files have been modified since the pre-compiled header
 file was made.
 :MSGSYM. PCHDR_INCFILE_DIFFERENT
 :MSGTXT. PCH file was made from a different include file
-:MSGJTXT. PCHƒtƒ@ƒCƒ‹‚ªˆÙ‚È‚éƒCƒ“ƒNƒ‹[ƒhƒtƒ@ƒCƒ‹‚©‚çì‚ç‚ê‚Ü‚µ‚½
+:MSGJTXT. PCHãƒ•ã‚¡ã‚¤ãƒ«ãŒç•°ãªã‚‹ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ä½œã‚‰ã‚Œã¾ã—ãŸ
 :INFO.
 .np
 The pre-compiled header file was made using a different include file.
 :MSGSYM. PCHDR_INCPATH_CHANGED
 :MSGTXT. Include path differs with PCH file
-:MSGJTXT. ƒCƒ“ƒNƒ‹[ƒhƒpƒX‚ªPCH‚Ì“à—e‚Æˆá‚¢‚Ü‚·
+:MSGJTXT. ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ‘ã‚¹ãŒPCHã®å†…å®¹ã¨é•ã„ã¾ã™
 :INFO.
 .np
 The include paths have changed.
 :MSGSYM. PCHDR_MACRO_CHANGED
 :MSGTXT. Preprocessor macro definition differs with PCH file
-:MSGJTXT. ƒvƒŠƒvƒƒZƒbƒTƒ}ƒNƒ‚Ì’è‹`‚ªPCHƒtƒ@ƒCƒ‹‚ÆˆÙ‚È‚è‚Ü‚·
+:MSGJTXT. ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µãƒã‚¯ãƒ­ã®å®šç¾©ãŒPCHãƒ•ã‚¡ã‚¤ãƒ«ã¨ç•°ãªã‚Šã¾ã™
 :INFO.
 .np
 The definition of a preprocessor macro has changed.
 :MSGSYM. PCHDR_NO_OBJECT
 :MSGTXT. PCH cannot have data or code definitions.
-:MSGJTXT. PCH‚Íƒf[ƒ^‚Ü‚½‚ÍƒR[ƒh‚Ì’è‹`‚ğŠÜ‚ß‚Ü‚¹‚ñ
+:MSGJTXT. PCHã¯ãƒ‡ãƒ¼ã‚¿ã¾ãŸã¯ã‚³ãƒ¼ãƒ‰ã®å®šç¾©ã‚’å«ã‚ã¾ã›ã‚“
 :INFO.
 .np
 The include files used to build the pre-compiled header
@@ -2353,25 +2485,25 @@ This is not currently supported.
 :cmt -------------------------------------------------------------------
 :MSGSYM. PHRASE_CODE_SIZE
 :MSGTXT. Code size
-:MSGJTXT. ƒR[ƒhƒTƒCƒY
+:MSGJTXT. ã‚³ãƒ¼ãƒ‰ã‚µã‚¤ã‚º
 :INFO.
 .np
 String used in message construction.
 :MSGSYM. PHRASE_ERROR
 :MSGTXT. Error!
-:MSGJTXT. ƒGƒ‰[I
+:MSGJTXT. ã‚¨ãƒ©ãƒ¼ï¼
 :INFO.
 .np
 String used in message construction.
 :MSGSYM. PHRASE_WARNING
 :MSGTXT. Warning!
-:MSGJTXT. ŒxI
+:MSGJTXT. è­¦å‘Šï¼
 :INFO.
 .np
 String used in message construction.
 :MSGSYM. PHRASE_NOTE
 :MSGTXT. Note!
-:MSGJTXT. î•ñ
+:MSGJTXT. æƒ…å ±
 :INFO.
 .np
 String used in message construction.

@@ -57,7 +57,7 @@ vi_rc MyGetFileSize( const char *name, long *size )
 /*
  * IsDirectory - check if a specified path is a directory
  */
-bool IsDirectory( char *name )
+bool IsDirectory( const char *name )
 {
     struct _finddata_t  fdt;
     unsigned            rc;

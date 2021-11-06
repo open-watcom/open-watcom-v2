@@ -25,7 +25,7 @@ function converts the floating-point number
 .arg value
 into a character string and stores the result in
 .arg buffer
-.ct .li .
+.period
 The parameter
 .arg ndigits
 specifies the number of significant digits desired.
@@ -36,7 +36,7 @@ or equal to the number of significant digits wanted, then the number
 is converted into E-format, otherwise the number is formatted using
 F-format.
 .im ansiconf
-.im widefun3
+.widefunc &wfunc. &funcb. <ret>
 .desc end
 .return begin
 The

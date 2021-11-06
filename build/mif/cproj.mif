@@ -29,24 +29,9 @@ skip_build: .SYMBOLIC
 !else ifndef bootstrap
 !undef __WATCOM_TOOLS__
 !endif
-# supported architectures
-# set __WATCOM_TOOLS__ for OW build
-!else
-!ifndef bootstrap
-__WATCOM_TOOLS__ = $(%OWBLDVERTOOL)
 !endif
-!endif
+
 ###################################
-
-#
-# define newowtools macro to use new OW features
-#
-!ifdef __WATCOM_TOOLS__
-!ifeq __WATCOM_TOOLS__ $(%OWBLDVERTOOL)
-newowtools = 1
-!endif
-!endif
-
 # define OW build windows version for Win32 platform
 # Now it is setup to 0x400
 # to be OK for Windows 95 and Windows NT
@@ -145,12 +130,14 @@ as_mps          = *bwasmps
 
 !endif
 
+!ifndef release
 !ifdef $(proj_name)_release
 release = $($(proj_name)_release)
 !else ifeq %OWDEBUGBUILD 1
 release = 0
 !else
 release = 1
+!endif
 !endif
 
 !ifdef $(proj_name)_rtdll
@@ -203,14 +190,16 @@ ldebug_fmt  = debug dwarf
 cldebug_fmt = -hd
 !endif
 
+!ifndef $(proj_name)_nooptimization
+mode_optimization = $(dft_oflags)
+!endif
+!ifndef $(proj_name)_checkstack
+mode_nocheckstack = -s
+!endif
 mode_libflags =
 !ifeq release 1
 mode_cppflags = -DNDEBUG
-!ifdef $(proj_name)_checkstack
-mode_cflags   = $(dft_oflags) -d1 $(cdebug_fmt)
-!else
-mode_cflags   = -s$(dft_oflags) -d1 $(cdebug_fmt)
-!endif
+mode_cflags   = $(mode_nocheckstack)$(mode_optimization) -d1 $(cdebug_fmt)
 mode_aflags   = -d1 -DNDEBUG
 mode_lflags   = $(ldebug_fmt)
 mode_clflags  = $(cldebug_fmt) -d1
@@ -219,11 +208,7 @@ mode_libflags = -s-t-zld
 !endif
 !else
 mode_cppflags =
-!ifdef $(proj_name)_nocheckstack
-mode_cflags   = -s-od -d2 $(cdebug_fmt)
-!else
 mode_cflags   = -od -d2 $(cdebug_fmt)
-!endif
 mode_aflags   = -d2
 mode_lflags   = $(ldebug_fmt) all
 mode_clflags  = $(cldebug_fmt) -d2
@@ -238,9 +223,11 @@ mode_clflags   += -"op nored"
 mode_cflags  += -x-wpx
 mode_clflags += -x-wpx
 !endif
-!ifdef newowtools
+!ifdef __WATCOM_TOOLS__
+!if $(__WATCOM_TOOLS__) >= 1300
 mode_cflags  += -xx -zam
 mode_clflags += -xx -zam
+!endif
 !endif
 
 !ifndef $(proj_name)_nosymfile
@@ -260,16 +247,17 @@ mode_clflags   += -fm
 ########################
 # MEMORY MODELS SETINGS
 ######
+!ifndef model_switch_i86
 !ifndef memory_model_i86
 memory_model_i86 = l
 !endif
 model_switch_i86 = -m$(memory_model_i86)
+!endif
 
 default_memory_model_386_dos     = s
 default_memory_model_386_zdos    = s
 default_memory_model_386_qnx     = s
 default_memory_model_386_nov     = s
-default_memory_model_386_osi     = s
 default_memory_model_386_rdosdev = c
 default_memory_model_386_win     = f
 default_memory_model_386_os2     = f
@@ -279,12 +267,12 @@ default_memory_model_386_nto     = f
 default_memory_model_386_rdos    = f
 default_memory_model_386_        = f
 
+!ifndef model_switch_386
 !ifndef memory_model_386
 memory_model_386 = $(default_memory_model_386_$(host_os))
 !endif
 model_switch_386 = -m$(memory_model_386)
-
-cl_model_switch  = $(model_switch_$(host_cpu))
+!endif
 
 ######################
 # FPU SETINGS
@@ -326,11 +314,6 @@ def_fpu_flags_linux_386 = -fpi
   # NOVELL ?????
 def_fpu_flags_nov_386   = -fpc
   ######
-  # should be compatible with all 386 platforms
-  # I ignore Novell seting
-  # I think Novell doesn't use any OSI objects
-def_fpu_flags_osi_386   = -fpi
-  ######
   # ZDOS doesn't have emulator support
 def_fpu_flags_zdos_386  = -fpc
   ######
@@ -339,7 +322,12 @@ def_fpu_flags_nto_386   = -fpi
 def_fpu_flags_rdos_386    = -fpi
 def_fpu_flags_rdosdev_386 = -fpi
 
-!ifdef fpu_flags_$(host_os)_$(host_cpu)
+nofpu_flags_i86 = -fpc
+nofpu_flags_386 = -fpc
+
+!ifdef $(proj_name)_nofpu
+fpu_flags = $(nofpu_flags_$(host_cpu))
+!else ifdef fpu_flags_$(host_os)_$(host_cpu)
 fpu_flags = $(fpu_flags_$(host_os)_$(host_cpu))
 !else
 fpu_flags = $(def_fpu_flags_$(host_os)_$(host_cpu))
@@ -364,7 +352,7 @@ cppflags_dos    = -D__WATCOM_LFN__
 ##########################
 # C/C++ COMPILERS SETINGS
 ######
-cflags_all      =-w8-j-we $(mode_cflags) -fo=$@
+cflags_all      =-j-we $(mode_cflags) -fo=$@
 
 cflags_386      = $(model_switch_$(host_cpu))
 cflags_i86      = $(model_switch_$(host_cpu))
@@ -380,7 +368,6 @@ cflags_nt       = -bt=nt $(win32ver)
 cflags_win      = -bt=windows
 cflags_os2      = -bt=os2
 cflags_qnx      = -bt=qnx
-cflags_osi      = -bt=osi
 cflags_dos      = -bt=dos
 cflags_zdos     = -bt=zdos
 cflags_rdos     = -bt=rdos -bm
@@ -410,10 +397,11 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
-!ifdef newowtools
-c_flags          =$(watcom_common_cflags)-za99
-!else
 c_flags          =$(watcom_common_cflags)
+!ifdef __WATCOM_TOOLS__
+!if $(__WATCOM_TOOLS__) >= 1300
+c_flags          +=-za99
+!endif
 !endif
 
 cxx_flags        = $(watcom_common_cxxflags)-fzh -fzs $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
@@ -432,7 +420,7 @@ cflags_wind      = $(cflags_gen_all) $(cflags_wind_$(host_os)) $(proj_c_flags)
 ###################################
 # COMPILE AND LINK UTILITY SETINGS
 ######
-clflags_all  = $(mode_clflags) $(cl_model_switch) -j
+clflags_all  = $(mode_clflags) $(model_switch_$(host_cpu)) -j
 
 cl_fpu_flags = $(fpu_flags)
 
@@ -445,7 +433,6 @@ clflags_os2_i86     = -l=os2
 clflags_os2_386     = -l=os2v2
 clflags_qnx_i86     = -l=qnx
 clflags_qnx_386     = -l=qnx
-clflags_osi_386     = -l=osi
 !ifdef __UNIX__
 clflags_dos_i86     = -l=dos -\"lib doslfn$(memory_model_i86).lib\"
 clflags_dos_386     = -l=$(dos_extender) -\"lib doslfn3r.lib\"
@@ -480,12 +467,7 @@ clflags_dll_os2_i86  = -l=os2_dll
 clflags_dll_rdos_386 = -l=rdos_dll
 clflags_dll_win_i86  = -l=windows_dll
 
-clflags_exe_osi_386 = -fe=$^&.rex
-!ifdef clflags_exe_$(host_os)_$(host_cpu)
-clflags_exe = $(clflags_exe_$(host_os)_$(host_cpu))
-!else
-clflags_exe = -fe=$@
-!endif
+clflags_exe      = -fe=$@
 
 proj_cl_flags    = $(extra_cl_flags)
 clflags_gen_all  = $(clflags_all) $(cl_fpu_flags) $(cflags_$(host_os)) $(clflags_exe)
@@ -519,7 +501,6 @@ aflags_nt       = -bt=nt
 aflags_win      = -bt=windows
 aflags_os2      = -bt=os2
 aflags_qnx      = -bt=qnx
-aflags_osi      = -bt=osi
 aflags_dos      = -bt=dos
 aflags_zdos     = -bt=zdos
 aflags_rdos     = -bt=rdos
@@ -544,7 +525,6 @@ lflags_nt_386       = sys nt
 lflags_nt_axp       = sys ntaxp
 lflags_os2_386      = sys os2v2
 lflags_os2_i86      = sys os2 pmc
-lflags_osi_386      = sys osi
 lflags_qnx_386      = sys qnx386 flat
 lflags_qnx_i86      = sys qnx
 lflags_rdos_386     = sys rdos
@@ -570,7 +550,6 @@ lflags_dll_nt_386      = sys nt_dll
 lflags_dll_nt_axp      = sys ntaxp_dll
 lflags_dll_os2_386     = sys os2v2_dll
 lflags_dll_os2_i86     = sys os2_dll
-lflags_dll_osi_386     = $(lflags_osi_386)
 lflags_dll_qnx_386     = $(lflags_qnx_386)
 lflags_dll_qnx_i86     = $(lflags_qnx_i86)
 lflags_dll_rdos_386    = sys rdos_dll
@@ -620,7 +599,82 @@ libflags_zdos      = -io
 proj_lib_flags  = $(extra_lib_flags) $(extra_lib_flags_$(host_cpu))
 
 libflags_all    = -b-n-pa $(mode_libflags)
-libflags        =  $(libflags_all) $(libflags_$(host_cpu)) $(libflags_$(host_os)) $(libflags_$(host_os)_$(host_cpu)) $(proj_lib_flags) $^@
+libflags        =  $(libflags_all) $(libflags_$(host_cpu)) $(libflags_$(host_os)) $(libflags_$(host_os)_$(host_cpu)) $(proj_lib_flags) $@
+
+##############################
+# INCLUDE DIRECTORIES SETINGS
+######
+# For bootstrap builds, include path configuration is compiler specific
+!ifdef bootstrap
+
+inc_dirs_sys_nt    =
+inc_dirs_sys_win   =
+inc_dirs_sys_os2   =
+inc_dirs_sys_dos   =
+inc_dirs_sys_nov   =
+inc_dirs_sys_qnx   =
+inc_dirs_sys_linux =
+inc_dirs_sys_nto   =
+inc_dirs_sys_rdos  =
+inc_dirs_sys_rdosdev =
+inc_dirs_sys_zdos  =
+
+inc_dirs_lang_dos  =
+
+!else
+
+inc_dirs_sys_os2_386 = -I"$(os2api_dir)/os2386/h"
+inc_dirs_sys_os2_i86 = -I"$(os2api_dir)/os2286/h"
+inc_dirs_sys_os2_ppc = -I"$(%WATCOM)/h/os2ppc"
+inc_dirs_sys_os2     = $(inc_dirs_sys_os2_$(host_cpu))
+inc_dirs_sys_nt      = -I"$(w32api_dir)/nt/h"
+inc_dirs_sys_win     = -I"$(w16api_dir)/wini86/h"
+inc_dirs_sys_dos     =
+inc_dirs_sys_nov     =
+inc_dirs_sys_qnx     =
+inc_dirs_sys_linux   =
+inc_dirs_sys_nto     =
+inc_dirs_sys_rdos    =
+inc_dirs_sys_rdosdev =
+inc_dirs_sys_zdos    = -I"$(hdr_dir)/dos/zdos"
+
+inc_dirs_lang_dos     = -I"$(hdr_dir)/dos/h"
+inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx/h"
+inc_dirs_lang_linux   = -I"$(hdr_dir)/linux/h"
+inc_dirs_lang_nto     = -I"$(hdr_dir)/nto"
+inc_dirs_lang_rdos    = -I"$(hdr_dir)/rdos/h"
+inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
+
+!endif
+
+# Include path macros:
+#
+# $(inc_dirs_sys_$(host_os)) contains OS specific headers typically
+# delivered by OS vendor. This is used for OS/2 and Windows
+#
+# $(inc_dirs_lang) contains headers delivered with the compiler.
+#
+# $(inc_dirs_sys) combines the above two macros.
+#
+# $(inc_path) is used in actual build rules. It adds path to the
+# src/watcom/h directory plus macros $(inc_dirs) and $(inc_dirs_$(host_os))
+# which individual projects are free to define as needed.
+
+inc_dirs_all    = $(inc_dirs_trmem) -I"$(watcom_dir)/h"
+
+!ifdef inc_dirs_lang_$(host_os)
+inc_dirs_lang   = $(inc_dirs_lang_$(host_os))
+!else
+inc_dirs_lang   = $(inc_dirs_lang_dos)
+!endif
+
+inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
+
+!ifdef __WATCOM_TOOLS__
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) $(inc_dirs_all)
+!else
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_all)
+!endif
 
 ############################
 # RESOURCE COMPILER SETINGS
@@ -631,7 +685,6 @@ rc_cpp_linux    = -D__UNIX__ -D__LINUX__
 rc_cpp_nov      = -D__NETWARE__
 rc_cpp_nt       = -D__NT__ -D_WIN32
 rc_cpp_os2      = -D__OS2__
-rc_cpp_osi      = -D__OSI__
 rc_cpp_osx      = -D__UNIX__ -D__OSX__
 rc_cpp_qnx      = -D__UNIX__ -D__QNX__
 rc_cpp_win      = -D__WINDOWS__
@@ -655,79 +708,52 @@ proj_rc_flags   = $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
 rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(proj_rc_flags)
 
-##############################
-# INCLUDE DIRECTORIES SETINGS
-######
-# For bootstrap builds, include path configuration is compiler specific
-!ifdef bootstrap
+rc_ui_encoding  = -zk0
 
-inc_dirs_sys_nt    =
-inc_dirs_sys_win   =
-inc_dirs_sys_os2   =
-inc_dirs_sys_dos   =
-inc_dirs_sys_nov   =
-inc_dirs_sys_qnx   =
-inc_dirs_sys_linux =
-inc_dirs_sys_nto   =
-inc_dirs_sys_rdos  =
-inc_dirs_sys_rdosdev =
-inc_dirs_sys_zdos  =
-
-inc_dirs_lang_osi  =
-
+!ifdef rcui8_utf8_$(host_os)
+rc_ui8_encoding = -zku8
 !else
-
-inc_dirs_sys_os2_386 = -I"$(os2api_dir)/os2386/h"
-inc_dirs_sys_os2_i86 = -I"$(os2api_dir)/os2286/h"
-inc_dirs_sys_nt      = -I"$(w32api_dir)/nt"
-inc_dirs_sys_win     = -I"$(w16api_dir)/wini86"
-inc_dirs_sys_os2     = $(inc_dirs_sys_os2_$(host_cpu))
-inc_dirs_sys_dos     =
-inc_dirs_sys_nov     =
-inc_dirs_sys_qnx     =
-inc_dirs_sys_linux   =
-inc_dirs_sys_nto     =
-inc_dirs_sys_zdos    = -I"$(hdr_dir)/dos/zdos"
-inc_dirs_sys_rdos    =
-inc_dirs_sys_rdosdev =
-
-inc_dirs_lang_osi     = -I"$(hdr_dir)/dos"
-inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx"
-inc_dirs_lang_linux   = -I"$(hdr_dir)/linux"
-inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
-inc_dirs_lang_nto     = -I"$(hdr_dir)/nto"
-inc_dirs_lang_rdos    = -I"$(hdr_dir)/rdos"
-
+rc_ui8_encoding = -zku0
 !endif
 
+rc_ui_flags     = $(rc_ui_encoding) $(rc_cppflags)
+rc_ui8_flags    = $(rc_ui8_encoding) $(rc_cppflags)
+
+#
 # Include path macros:
 #
-# $(inc_dirs_sys_$(host_os)) contains OS specific headers typically
-# delivered by OS vendor. This is used for OS/2 and Windows
-#
-# $(inc_dirs_lang) contains headers delivered with the compiler.
-#
-# $(inc_dirs_sys) combines the above two macros.
-#
-# $(inc_path) is used in actual build rules. It adds path to the
-# src/watcom/h directory plus macros $(inc_dirs) and $(inc_dirs_$(host_os))
-# which individual projects are free to define as needed.
 
-!ifdef inc_dirs_lang_$(host_os)
-inc_dirs_lang   = $(inc_dirs_lang_$(host_os))
-!else
-inc_dirs_lang   = $(inc_dirs_lang_osi)
-!endif
-
-inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
+rc_inc_dirs_all = -I"$(watcom_dir)/h"
 
 !ifdef __WATCOM_TOOLS__
-inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
+rc_inc_path     = $(rc_inc_dirs) $(rc_inc_dirs_$(host_os)) $(inc_dirs_sys) $(rc_inc_dirs_all)
 !else
-inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) -I"$(watcom_dir)/h"
+rc_inc_path     = $(rc_inc_dirs) $(rc_inc_dirs_$(host_os)) $(rc_inc_dirs_all)
 !endif
 
-rc_inc_path     = $(rc_inc_dirs) $(inc_dirs_sys) -I"$(watcom_dir)/h"
+rc_ui_inc_path  = $(rcui_inc_dirs) $(rcui_inc_dirs_$(host_os)) $(inc_dirs_sys_win) $(rc_inc_dirs_all)
+
+#
+# special RC invoke macros:
+#
+
+!ifdef bootstrap
+rcui            = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!else ifndef __WATCOM_TOOLS__
+rcui            = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!else
+rcui            = $(rc_ui) $(rc_flags_all) -x -bt=windows $(rc_ui_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!endif
+
+!ifdef bootstrap
+rcui8           = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!else ifndef __WATCOM_TOOLS__
+rcui8           = $(rc_ui) $(rc_flags_all) -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!else
+rcui8           = $(rc_ui) $(rc_flags_all) -x -bt=windows $(rc_ui8_flags) $[@ -fo=$@ $(rc_ui_inc_path)
+!endif
+
+rcbnd           = $(rc_bnd) -k
 
 #####################################
 # GLOBAL MACROS SETINGS FOR OW TOOLS
@@ -740,19 +766,8 @@ librarian       = $(noecho)$(librarian_$(host_cpu)) -q
 as              = $(noecho)$(as_$(host_cpu)) -q $(bldver_cppflags)
 
 rc              = $(noecho)*bwrc -q $(bldver_cppflags)
-rcaui           = $(noecho)*bwrc -q $(bldver_cppflags)
-rcbnd           = $(noecho)*bwrc -q
-
-rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
-!ifdef bootstrap
-rc_aui          = $(rcaui) $(rc_flags_all) -bt=windows $(rc_aui_flags)
-!else ifndef __WATCOM_TOOLS__
-rc_aui          = $(rcaui) $(rc_flags_all) -bt=windows $(rc_aui_flags)
-!else
-rc_aui          = $(rcaui) $(rc_flags_all) -x -bt=windows $(rc_aui_flags)
-!endif
-
-rc_bnd          = $(rcbnd) -k
+rc_ui           = $(noecho)*bwrc -q $(bldver_cppflags)
+rc_bnd          = $(noecho)*bwrc -q
 
 # current project setup
 !ifeq sys_dll 1
@@ -771,13 +786,6 @@ lflags  = $(lflags_gen)
 
 # options for include source code file
 incl_file_opts  = -fi
-
-# executable file extensions
-!ifeq host_os nov
-exe_ext = nlm
-!else
-exe_ext = exe
-!endif
 
 !include bhost.mif
 !include local.mif

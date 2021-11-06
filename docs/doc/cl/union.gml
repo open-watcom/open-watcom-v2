@@ -51,8 +51,7 @@ A pointer to an object that is a union points to each of the members
 of the union. If one or more of the members of the union is a
 .ix 'bit-field'
 .us bit-field
-..ct ,
-then a pointer to the object also points to the storage unit in which
+.ct , then a pointer to the object also points to the storage unit in which
 the bit-field resides.
 .pp
 Storing a value in one member of a union, and then referring to it via
@@ -88,8 +87,7 @@ is a union defining two members
 .mono val1
 and
 .mono val2
-..ct ,
-which are two different forms of a record, namely the structures
+.ct , which are two different forms of a record, namely the structures
 .mono rec1
 and
 .mono rec2

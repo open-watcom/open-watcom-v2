@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,8 @@
 #include "scan.h"
 #include <stddef.h>
 #include "cgmisc.h"
-#include "cmacsupp.h"
+#include "cmacadd.h"
+#include "ppexpn.h"
 
 
 #define HasVarArgs(m)      (((m) & MFLAG_HAS_VAR_ARGS) != 0)
@@ -61,8 +62,8 @@ static mac_parm_count FormalParm( MPPTR formal_parms );
 
 struct preproc {
     char  *directive;
-    void  (*samelevel)( void ); /* func to call when NestLevel == SkipLevel */
-    void  (*skipfunc)( void );  /* func to call when NestLevel != SkipLevel */
+    void  (*samelevel)( void ); /* func to call when SkipLevel == NestLevel */
+    void  (*skipfunc)( void );  /* func to call when SkipLevel != NestLevel */
 };
 
 static unsigned char PreProcWeights[] = {
@@ -108,6 +109,9 @@ static void PPFlush2EOL( void )
 {
     while( CurToken != T_NULL && CurToken != T_EOF ) {
         PPNextToken();
+        if( CurToken == T_BAD_TOKEN && BadTokenInfo == ERR_MISSING_QUOTE ) {
+            CErr1( BadTokenInfo );
+        }
     }
 }
 
@@ -124,7 +128,7 @@ static void WantEOL( void )
 {
     if( CompFlags.extensions_enabled ) {
         if( CurToken != T_NULL && CurToken != T_EOF ) {
-            if( NestLevel == SkipLevel ) {
+            if( SkipLevel == NestLevel ) {
                 CWarn1( WARN_JUNK_FOLLOWS_DIRECTIVE, ERR_JUNK_FOLLOWS_DIRECTIVE );
             }
         }
@@ -145,7 +149,7 @@ static void IncLevel( bool value )
     cpp->cpp_type = PRE_IF;
     cpp->processing = false;
     CppStack = cpp;
-    if( NestLevel == SkipLevel ) {
+    if( SkipLevel == NestLevel ) {
         if( value ) {
             ++SkipLevel;
             cpp->processing = true;
@@ -157,7 +161,7 @@ static void IncLevel( bool value )
 
 static void CUnknown( void )
 {
-    if( NestLevel == SkipLevel ) {
+    if( SkipLevel == NestLevel ) {
         CErr2p( ERR_UNKNOWN_DIRECTIVE, Buffer );
     }
 }
@@ -175,7 +179,7 @@ static void PreProcStmt( void )
                  + PreProcWeights[Buffer[TokenLen - 1] - 'a']) & 15;
         pp = &PreProcTable[hash];
         if( memcmp( pp->directive, Buffer, TokenLen + 1 ) == 0 ) {
-            if( NestLevel == SkipLevel ) {
+            if( SkipLevel == NestLevel ) {
                 pp->samelevel();
             } else {
                 pp->skipfunc();
@@ -192,9 +196,10 @@ TOKEN ChkControl( void )
 {
     bool        lines_skipped;
     ppctl_t     old_ppctl;
+    TOKEN       token;
 
     if( !CompFlags.doing_macro_expansion ) {
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             PrintWhiteSpace = false;
         }
     }
@@ -204,48 +209,50 @@ TOKEN ChkControl( void )
             CSuicide();
         }
         lines_skipped = false;
-        old_ppctl = Pre_processing;
-        for( ; CurrChar != EOF_CHAR; ) {
-            if( CompFlags.cpp_output ) {
+        old_ppctl = PPControl;
+        for( ; CurrChar != LCHR_EOF; ) {
+            if( CompFlags.cpp_mode ) {
                 CppPrtChar( '\n' );
             }
             NextChar();
             if( CurrChar != PreProcChar ) {
                 SkipAhead();
             }
-            if( CurrChar == EOF_CHAR )
+            if( CurrChar == LCHR_EOF )
                 break;
             if( CurrChar == PreProcChar ) { /* start of comp control line */
                 PPCTL_ENABLE_EOL();
                 PPCTL_DISABLE_MACROS();
+                PPCTL_DISABLE_LEX_ERRORS();
                 PreProcStmt();
                 PPFlush2EOL();
-                Pre_processing = old_ppctl;
-            } else if( NestLevel != SkipLevel ) {
+                PPControl = old_ppctl;
+            } else if( SkipLevel != NestLevel ) {
                 PPCTL_ENABLE_EOL();
                 PPCTL_DISABLE_MACROS();
+                PPCTL_DISABLE_LEX_ERRORS();
                 PPNextToken();              /* get into token mode */
                 PPFlush2EOL();
-                Pre_processing = old_ppctl;
+                PPControl = old_ppctl;
             }
-            if( NestLevel == SkipLevel )
+            if( SkipLevel == NestLevel )
                 break;
             if( CurrChar == '\n' ) {
                 lines_skipped = true;
             }
         }
-        if( CompFlags.cpp_output ) {
+        if( CompFlags.cpp_mode ) {
             if( lines_skipped ) {
                 if( SrcFile != NULL ) {
-                    EmitLine( SrcFile->src_loc.line, SrcFile->src_name );
+                    CppEmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, false );
                 }
             }
         }
     }
     // we have already skipped past all white space at the start of the line
-    CurToken = T_WHITE_SPACE;
-//  CurToken = ScanToken();
-    return( T_WHITE_SPACE );
+    token = T_WHITE_SPACE;
+//  token = ScanToken();
+    return( token );
 }
 
 
@@ -271,9 +278,9 @@ static void CIdent( void )
 void CInclude( void )
 {
     bool        in_macro;
-    auto char   buf[82];
+    char        buf[82];
 
-    if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
+    if( PCH_FileName != NULL && !CompFlags.make_precompiled_header ) {
         if( CompFlags.ok_to_use_precompiled_hdr ) {
             CompFlags.use_precompiled_header = true;
         }
@@ -288,7 +295,7 @@ void CInclude( void )
     PPCTL_DISABLE_MACROS();
     if( CurToken == T_STRING ) {
         if( !OpenSrcFile( Buffer, FT_HEADER ) ) {
-            CppPrtfFilenameErr( Buffer, FT_HEADER, true );
+            PrtfFilenameErr( Buffer, FT_HEADER, true );
         }
 #if _CPU == 370
         if( !CompFlags.use_precompiled_header ) {
@@ -305,7 +312,7 @@ void CInclude( void )
             PPNextToken();
             if( CurToken == T_GT ) {
                 if( !OpenSrcFile( buf, FT_LIBRARY ) ) {
-                    CppPrtfFilenameErr( buf, FT_LIBRARY, true );
+                    PrtfFilenameErr( buf, FT_LIBRARY, true );
                 }
                 break;
             }
@@ -345,7 +352,7 @@ MEPTR MacroScan( void )
         ExpectIdentifier();
         return( NULL );
     }
-    if( CMPLIT( Buffer, "defined" ) == 0 ) {
+    if( IS_PPOPERATOR_DEFINED( Buffer ) ) {
         CErr1( ERR_CANT_DEFINE_DEFINED );
         return( NULL );
     }
@@ -595,37 +602,18 @@ static void CIfNDef( void )
 }
 
 
-static bool GetConstExpr( void )
-{
-    bool        value;
-    bool        useful_side_effect;
-    bool        meaningless_stmt;
-
-/* This solves the following weird condition.   */
-/*      while( f() == 1 )                       */
-/* The expression for the #if destroys the flags saved for the while expr */
-/*   #if 1                                      */
-/*              ;                               */
-/*   #endif                                     */
-
-    useful_side_effect = CompFlags.useful_side_effect;
-    meaningless_stmt = CompFlags.meaningless_stmt;
-    value = BoolConstExpr();
-    CompFlags.useful_side_effect = useful_side_effect;
-    CompFlags.meaningless_stmt = meaningless_stmt;
-    return( value );
-}
-
 static void CIf( void )
 {
     bool    value;
 
+    PPCTL_ENABLE_LEX_ERRORS();
     PPCTL_ENABLE_MACROS();
     PPNextToken();
-    value = GetConstExpr();
+    value = PpConstExpr();
     IncLevel( value );
     ChkEOL();
     PPCTL_DISABLE_MACROS();
+    PPCTL_DISABLE_LEX_ERRORS();
 }
 
 
@@ -633,19 +621,20 @@ static void CElif( void )
 {
     bool    value;
 
+    PPCTL_ENABLE_LEX_ERRORS();
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ( NestLevel == 0 ) || ( CppStack->cpp_type == PRE_ELSE ) ) {
         CErr1( ERR_MISPLACED_ELIF );
     } else {
-        if( NestLevel == SkipLevel ) {
+        if( SkipLevel == NestLevel ) {
             --SkipLevel;                /* start skipping else part */
             CppStack->processing = false;
             CppStack->cpp_type = PRE_ELIF;
-        } else if( NestLevel == SkipLevel + 1 ) {
+        } else if( SkipLevel + 1 == NestLevel ) {
             /* only evaluate the expression when required */
             if( CppStack->cpp_type == PRE_IF ) {
-                value = GetConstExpr();
+                value = PpConstExpr();
                 ChkEOL();
                 if( value ) {
                     SkipLevel = NestLevel; /* start including else part */
@@ -656,6 +645,7 @@ static void CElif( void )
         }
     }
     PPCTL_DISABLE_MACROS();
+    PPCTL_DISABLE_LEX_ERRORS();
 }
 
 
@@ -664,10 +654,10 @@ static void CElse( void )
     if( ( NestLevel == 0 ) || ( CppStack->cpp_type == PRE_ELSE ) ) {
         CErr1( ERR_MISPLACED_ELSE );
     } else {
-        if( NestLevel == SkipLevel ) {
+        if( SkipLevel == NestLevel ) {
             --SkipLevel;                /* start skipping else part */
             CppStack->processing = false;
-        } else if( NestLevel == SkipLevel + 1 ) {
+        } else if( SkipLevel + 1 == NestLevel ) {
             /* cpp_type will be PRE_ELIF if an elif was true */
             if( CppStack->cpp_type == PRE_IF ) {
                 SkipLevel = NestLevel;  /* start including else part */
@@ -690,13 +680,13 @@ static void CEndif( void )
 
         --NestLevel;
         cpp = CppStack;
-        if( cpp->flist != SrcFile->src_flist ) {
+        if( SrcFile != NULL && cpp->flist != SrcFile->src_flist ) {
              CWarn2p( WARN_LEVEL_1, ERR_WEIRD_ENDIF_ENCOUNTER, FileIndexToCorrectName( cpp->src_loc.fno ) );
         }
         CppStack = cpp->prev_cpp;
         CMemFree( cpp );
     }
-    if( NestLevel < SkipLevel ) {
+    if( SkipLevel > NestLevel ) {
         SkipLevel = NestLevel;
     }
     PPNextToken();
@@ -712,7 +702,7 @@ bool MacroDel( const char *name )
     bool        ret;
 
     ret = false;
-    if( CMPLIT( name, "defined" ) == 0 ) {
+    if( IS_PPOPERATOR_DEFINED( name ) ) {
         CErr2p( ERR_CANT_UNDEF_THESE_NAMES, name  );
         return( ret );
     }
@@ -767,15 +757,15 @@ static void CLine( void )
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingConstant() ) {
-        if( CompFlags.cpp_ignore_line == 0 ) {
+        if( !CompFlags.cpp_ignore_line ) {
             src_line = Constant; // stash in case of side effects
             SrcFile->src_loc.line = src_line - 1; /* don't count this line */
         }
         PPNextToken();
         if( CurToken == T_NULL ) {
-            if( CompFlags.cpp_ignore_line == 0 ) {
-                if( CompFlags.cpp_output ) {
-                    EmitLine( src_line, SrcFile->src_name );
+            if( !CompFlags.cpp_ignore_line ) {
+                if( CompFlags.cpp_mode ) {
+                    CppEmitPoundLine( src_line, SrcFile->src_name, false );
                 }
             }
         } else {
@@ -784,14 +774,14 @@ static void CLine( void )
                     /* wide char string not allowed */
                     ExpectString();
                 } else {
-                    if( CompFlags.cpp_ignore_line == 0 ) {
+                    if( !CompFlags.cpp_ignore_line ) {
                         // RemoveEscapes( Buffer );
                         flist = AddFlist( Buffer );
                         flist->rwflag = false;  // not a real file so no autodep
                         SrcFile->src_name = flist->name;
                         SrcFile->src_loc.fno = flist->index;
-                        if( CompFlags.cpp_output ) {
-                            EmitLine( src_line, SrcFile->src_name );
+                        if( CompFlags.cpp_mode ) {
+                            CppEmitPoundLine( src_line, SrcFile->src_name, false );
                         }
                     }
                 }
@@ -807,10 +797,9 @@ static void CLine( void )
 static void CError( void )
 {
     size_t      len;
-    bool        save;
 
     len = 0;
-    while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != EOF_CHAR ) {
+    while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != LCHR_EOF ) {
         if( len != 0 || CurrChar != ' ' ) {
             Buffer[len++] = CurrChar;
         }
@@ -818,10 +807,7 @@ static void CError( void )
     }
     Buffer[len] = '\0';
     /* Force #error output to be reported, even with preprocessor */
-    save = CompFlags.cpp_output;
-    CompFlags.cpp_output = false;
     CErr2p( ERR_USER_ERROR_MSG, Buffer );
-    CompFlags.cpp_output = save;
 }
 
 
@@ -879,10 +865,10 @@ TOKEN Process_Pragma( void )
                 stringize( token_buf );
                 InsertReScanPragmaTokens( token_buf );
                 // call CPragma()
-                old_ppctl = Pre_processing;
+                old_ppctl = PPControl;
                 PPCTL_ENABLE_EOL();
                 CPragma();
-                Pre_processing = old_ppctl;
+                PPControl = old_ppctl;
             } else {
                 /* error, incorrect syntax of the operator _Pragma() */
             }
@@ -893,8 +879,8 @@ TOKEN Process_Pragma( void )
         }
     } else {
         InsertToken( CurToken, Buffer );
-        strcpy( Buffer, "_Pragma" );
-        TokenLen = strlen( Buffer );
+        CPYLIT( Buffer, PPOPERATOR_PRAGMA );
+        TokenLen = LENLIT( PPOPERATOR_PRAGMA );
         CurToken = T_ID;
     }
     return( CurToken );

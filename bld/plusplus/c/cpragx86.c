@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,25 +65,25 @@ static void pragmasInit(        // INITIALIZATION FOR PRAGMAS
 {
     /* unused parameters */ (void)defn;
 
-    PragInit();
+    PragmaAuxInit();
 
-    PragmaAuxInfoInit( CompFlags.use_stdcall_at_number );
+    AuxInfoInit( CompFlags.use_stdcall_at_number );
 
-#if _CPU == 386
+#if _CPU == 8086
+    HW_CTurnOff( asmRegsSaved, HW_ABCD );
+    HW_CTurnOff( asmRegsSaved, HW_SI );
+    HW_CTurnOff( asmRegsSaved, HW_DI );
+    HW_CTurnOff( asmRegsSaved, HW_ES );
+#else
     HW_CTurnOff( asmRegsSaved, HW_EAX );
     HW_CTurnOff( asmRegsSaved, HW_EBX );
     HW_CTurnOff( asmRegsSaved, HW_ECX );
     HW_CTurnOff( asmRegsSaved, HW_EDX );
     HW_CTurnOff( asmRegsSaved, HW_ESI );
     HW_CTurnOff( asmRegsSaved, HW_EDI );
-#else
-    HW_CTurnOff( asmRegsSaved, HW_ABCD );
-    HW_CTurnOff( asmRegsSaved, HW_SI );
-    HW_CTurnOff( asmRegsSaved, HW_DI );
-    HW_CTurnOff( asmRegsSaved, HW_ES );
 #endif
 
-    SetAuxDefaultInfo();
+    SetDefaultAuxInfo();
 }
 
 
@@ -215,12 +216,12 @@ static void AuxCopy(           // COPY AUX STRUCTURE
     to->code = AuxCodeDup( from->code );
 }
 
-void GetPragAuxAlias( void )
+void GetPragmaAuxAlias( void )
 {
     bool    isfar16;
 
     isfar16 = PragRecogId( "far16" );
-    PragCurrAlias();
+    CurrAlias = PragmaAuxAlias( Buffer );
     NextToken();
     if( CurToken == T_RIGHT_PAREN ) {
         AuxCopy( CurrInfo, CurrAlias );
@@ -402,10 +403,10 @@ void PragAux(                   // #PRAGMA AUX ...
 
     PPCTL_ENABLE_MACROS();
     NextToken();
-    if( GetPragAuxAliasInfo() ) {
+    if( GetPragmaAuxAliasInfo() ) {
         CurrEntry = NULL;
         if( IS_ID_OR_KEYWORD( CurToken ) ) {
-            SetCurrInfo();
+            SetCurrInfo( Buffer );
             NextToken();
             AuxCopy( CurrInfo, CurrAlias );
             PragObjNameInfo();
@@ -459,7 +460,7 @@ void PragAux(                   // #PRAGMA AUX ...
             if( have.uses_auto ) {
                 AsmSysUsesAuto();
             }
-            PragEnding( true );
+            PragmaAuxEnding( true );
         }
     }
     PPCTL_DISABLE_MACROS();
@@ -900,7 +901,11 @@ void AsmSysUsesAuto( void )
        for the use of this pragma. This is done by saying the pragma
        modifies the [E]SP register. A kludge, but it works.
     */
+#if _CPU == 8086
     HW_CTurnOff( CurrInfo->save, HW_SP );
+#else
+    HW_CTurnOff( CurrInfo->save, HW_ESP );
+#endif
     ScopeASMUsesAuto();
 }
 
@@ -913,7 +918,7 @@ char const *AsmSysDefineByte( void )
 void AsmSysDone( void )
 /*********************/
 {
-    PragEnding( false );
+    PragmaAuxEnding( false );
 }
 
 void AsmSysInit( void )

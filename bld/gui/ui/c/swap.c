@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,24 +37,14 @@
 #include "dpmi.h"
 #include "swapline.h"
 #include "swap.h"
+#include "realmod.h"
+#include "int10.h"
 
-
-enum {
-    BD_SEG          = 0x40,
-    BD_EQUIP_LIST   = 0x10,
-    BD_CURR_MODE    = 0x49,
-    BD_REGEN_LEN    = 0x4c,
-    BD_CURPOS       = 0x50,
-    BD_MODE_CTRL    = 0x65,
-    BD_VID_CTRL1    = 0x87
-};
 
 #define GetBIOSData( offset, var ) \
-    MyMoveData( BD_SEG, offset, FP_SEG( &var ), FP_OFF( &var ), sizeof( var ) );
+    MyMoveData( BDATA_SEG, offset, _FP_SEG( &var ), _FP_OFF( &var ), sizeof( var ) );
 #define SetBIOSData( offset, var ) \
-    MyMoveData( FP_SEG( &var ), FP_OFF( &var ), BD_SEG, offset, sizeof( var ) );
-
-#define VIDCOLRINDXREG  0x03D4
+    MyMoveData( _FP_SEG( &var ), _FP_OFF( &var ), BDATA_SEG, offset, sizeof( var ) );
 
 typedef enum {
     DISP_NONE,
@@ -77,43 +67,6 @@ typedef struct {
     hw_display_type active;
     hw_display_type alt;
 } display_configuration;
-
-extern display_configuration BIOSDevCombCode( void );
-#pragma aux BIOSDevCombCode = \
-        "push bp"       \
-        "mov  ax,1a00h" \
-        "int 10h"       \
-        "cmp  al,1ah"   \
-        "jz short L1"   \
-        "sub  bx,bx"    \
-    "L1: pop  bp"       \
-    __parm              [] \
-    __value             [__bx] \
-    __modify __exact    [__ax __bx]
-
-extern char BIOSGetMode( void );
-#pragma aux BIOSGetMode = \
-        "push bp"       \
-        "mov  ah,0fh"   \
-        "int 10h"       \
-        "pop  bp"       \
-    __parm              [] \
-    __value             [__al] \
-    __modify __exact    [__ax __bh]
-
-extern signed long BIOSEGAInfo( void );
-#pragma aux BIOSEGAInfo = \
-        "push bp"       \
-        "mov  ah,12h"   \
-        "mov  bl,10h"   \
-        "mov  bh,0ffh"  \
-        "int 10h"       \
-        "mov  ax,bx"    \
-        "mov  dx,cx"    \
-        "pop  bp"       \
-    __parm              [] \
-    __value             [__dx __ax] \
-    __modify __exact    [__ax __bx __cx __dx]
 
 enum ega_seqencer {
     SEQ_PORT        = 0x3c4,
@@ -278,7 +231,10 @@ enum vid_state_info {
     VID_STATE_ALL           = 0x7
 };
 
-
+/*
+ * Internal Windows 3.x symbols
+ * not part of standard API
+ */
 extern char _A000h[];
 extern void FAR PASCAL Death( HDC );
 extern void FAR PASCAL Resurrection( HDC, WORD w1, WORD w2, WORD w3, WORD w4, WORD w5, WORD w6 );
@@ -310,7 +266,7 @@ static WORD             fontType;
 static rm_call_struct   rmRegs;
 static int              screenX;
 static int              screenY;
-static HBITMAP          screenBitmap;
+static HBITMAP          screen_hbitmap;
 static HDC              screenDC;
 static HDC              screenMemDC;
 
@@ -329,15 +285,15 @@ static void doAnInt10( void )
  */
 static void toGraphicalW( void )
 {
-    HBITMAP     old;
+    HBITMAP     old_hbitmap;
 
     Resurrection( screenDC, 0, 0, 0, 0, 0, 0 );
 
-    old = SelectObject( screenMemDC, screenBitmap );
+    old_hbitmap = SelectObject( screenMemDC, screen_hbitmap );
     BitBlt( screenDC, 0, 0, screenX, screenY, screenMemDC, 0, 0, SRCCOPY );
-    SelectObject( screenMemDC, old );
+    SelectObject( screenMemDC, old_hbitmap );
 
-    DeleteObject( screenBitmap );
+    DeleteObject( screen_hbitmap );
     DeleteDC( screenMemDC );
     ReleaseDC( NULL, screenDC );
 
@@ -348,16 +304,16 @@ static void toGraphicalW( void )
  */
 static void toCharacterW( void )
 {
-    HBITMAP     old;
+    HBITMAP     old_hbitmap;
 
 
     screenDC = GetDC( NULL );
     screenMemDC = CreateCompatibleDC( NULL );
-    screenBitmap = CreateCompatibleBitmap( screenDC, screenX, screenY );
+    screen_hbitmap = CreateCompatibleBitmap( screenDC, screenX, screenY );
 
-    old = SelectObject( screenMemDC, screenBitmap );
+    old_hbitmap = SelectObject( screenMemDC, screen_hbitmap );
     BitBlt( screenMemDC, 0, 0, screenX, screenY, screenDC, 0, 0, SRCCOPY );
-    SelectObject( screenMemDC, old );
+    SelectObject( screenMemDC, old_hbitmap );
 
     Death( screenDC );
 
@@ -387,10 +343,10 @@ static void setRegenClear( void )
 {
     unsigned char regen;
 
-    GetBIOSData( BD_VID_CTRL1, regen );
+    GetBIOSData( BDATA_VID_CTRL1, regen );
     regen &= 0x7f;
     regen |= saveMode & 0x80;
-    SetBIOSData( BD_VID_CTRL1, regen );
+    SetBIOSData( BDATA_VID_CTRL1, regen );
 
 } /* setREgenClear */
 
@@ -399,7 +355,7 @@ static void setRegenClear( void )
  */
 static void setupEGA( void )
 {
-    _disable_video( VIDCOLRINDXREG + 6 );
+    _disable_video( VIDCOLORINDXREG + 6 );
     _seq_write( SEQ_MEM_MODE, MEM_NOT_ODD_EVEN );
     _graph_write( GRA_MISC, MIS_A000_64 | MIS_GRAPH_MODE );
     _graph_write( GRA_ENABLE_SR, 0 );
@@ -530,7 +486,7 @@ static void initSwapperFast( void )
     size = pageSize * 2 + FONT_SIZE;
     swapHandle = GlobalAlloc( GMEM_FIXED, size );
     tmp = GlobalLock( swapHandle );
-    swapSeg = FP_SEG( tmp );
+    swapSeg = _FP_SEG( tmp );
 
     fontType = 0x1114;
     scanLines = 0x1202;
@@ -570,13 +526,9 @@ void ToGraphical( void )
     restoreCursor();
 }
 
-#define DOUBLE_DOT_CHR_SET      0x12
-#define COMPRESSED_CHR_SET      0x11
-#define USER_CHR_SET            0x00
-
-static void SetCharSet( unsigned char c )
+static void SetCharPattSet( unsigned char pattset )
 {
-    rmRegs.eax = 0x1100 + c;
+    rmRegs.eax = 0x1100 + pattset;
     rmRegs.ebx = 0;
     doAnInt10();
 }
@@ -594,9 +546,9 @@ void ToCharacter( void )
     }
     isGraphical = false;
     if( SwapScrnLines() >=43 ) {
-        SetCharSet( DOUBLE_DOT_CHR_SET );
+        SetCharPattSet( DOUBLE_DOT_CHAR_PATTSET );
     } else if( SwapScrnLines() >= 28 ) {
-        SetCharSet( COMPRESSED_CHR_SET );
+        SetCharPattSet( COMPRESSED_CHAR_PATTSET );
     }
 }
 

@@ -9,7 +9,7 @@ is the name of a user-defined structure type.
 .mnote name
 is a variable name, array name, array declarator, function name
 or dummy procedure name.
-.endnote
+.esynote
 .np
 The
 .kw RECORD

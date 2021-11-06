@@ -1,4 +1,5 @@
 proj_name = ssl
+
 ssl_autodepends = .autodepend
 
 !include cproj.mif
@@ -7,11 +8,20 @@ ssl_autodepends = .autodepend
 
 !include $(cpp_dir)/client.mif
 
-inc_dirs = -I"../h" $(cpp_inc_dirs)
-
+#
+# cflags
+#
 .c: ../c;$(cpp_c_dirs);$(watcom_dir)/c
 
-objs =              &
+inc_dirs = -I"../h" $(cpp_inc_dirs)
+
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = &
     ssl.obj         &
     ssldecl.obj     &
     sslrule.obj     &
@@ -23,15 +33,4 @@ objs =              &
     ppmem.obj       &
     ppenv.obj       &
     pathlist.obj
-
-$(proj_name).exe : $(objs) $(__MAKEFILES__)
-    @%make echo_link
-!ifndef __WATCOM_TOOLS__
-! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $(objs) $(bld_ldflags)
-! else
-    $(cl) $(clflags) $(objs) $(ldflags)
-! endif
-!else
-    $(linker) name $@ $(lflags) file {$(objs)}
-!endif
+!include exetarg.mif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,12 +96,12 @@ static bool exit_field( a_dialog *ui_dlg_info, VFIELD *field )
             break;
         case FLD_LISTBOX :
             list = field->u.list;
-            list->box->attr = ATTR_EDIT;
+            list->box->uiattr = ATTR_EDIT;
             uipaintlistbox( list );
             break;
         case FLD_EDIT_MLE :
             list = field->u.list;
-            list->box->attr = ATTR_NORMAL;
+            list->box->uiattr = ATTR_NORMAL;
             uipaintlistbox( list );
             break;
         }
@@ -144,7 +144,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     ATTR                attr;
     ATTR                hotattr;
     char                ctrlbuf[CTRL_BUF_LEN + 1];
-    unsigned            ctrlbuf_len;
+    size_t              ctrlbuf_len;
     a_check             *check = NULL;
     a_radio             *radio = NULL;
     a_list              *list;
@@ -177,9 +177,11 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     case FLD_TEXT :
     case FLD_LABEL :
         attr = UIData->attrs[ATTR_NORMAL];
-        strncpy( ctrlbuf, field->u.str, CTRL_BUF_LEN );
-        ctrlbuf[CTRL_BUF_LEN] = '\0';
-        ctrlbuf_len = strlen( ctrlbuf );
+        if( field->u.str != NULL ) {
+            strncpy( ctrlbuf, field->u.str, CTRL_BUF_LEN );
+            ctrlbuf[CTRL_BUF_LEN] = '\0';
+            ctrlbuf_len = strlen( ctrlbuf );
+        }
         if( field->typ == FLD_LABEL ) {
             if( ctrlbuf_len < CTRL_BUF_LEN ) {
                 ctrlbuf[ctrlbuf_len++] = ':';
@@ -459,12 +461,12 @@ static void enter_field( a_dialog *ui_dlg_info, VFIELD *field )
         break;
     case FLD_LISTBOX :
         list = field->u.list;
-        list->box->attr = ATTR_CURR_EDIT;
+        list->box->uiattr = ATTR_CURR_EDIT;
         uipaintlistbox( list );
         break;
     case FLD_EDIT_MLE :
         list = field->u.list;
-        list->box->attr = ATTR_NORMAL;
+        list->box->uiattr = ATTR_NORMAL;
         uipaintlistbox( list );
         break;
     }
@@ -924,7 +926,7 @@ static ui_event uitabkey( ui_event ui_ev, a_dialog *ui_dlg_info )
     ui_event        new_ui_ev;
 
     if( ui_dlg_info->first == NULL )
-        return( false );
+        return( ui_ev );
     curr = ui_dlg_info->curr;
     new_ui_ev = ui_ev;
     switch( ui_ev ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#define INCLUDE_TOOL_H
 #include "drwatcom.h"
 #include <i86.h>
 #include "watcom.h"
@@ -38,10 +39,15 @@
 #include "jdlg.h"
 #include "memwnd.h"
 #include "drwatmem.h"
+#include "wclbtool.h"
 
+
+/* commonui/asm/inth.asm */
+void FAR PASCAL IntHandler( void );
 
 static char     className[] = "drwatcom";
-static FARPROC  faultFN, notifyFN;
+static LPFNINTHCALLBACK     fault_fn;
+static LPFNNOTIFYCALLBACK   notify_fn;
 
 extern WORD     _STACKLOW;
 
@@ -74,7 +80,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     /*
      * don't let two of us run!
      */
-    GlobalPageLock( (HGLOBAL)FP_SEG( IntHandler ) );
+    GlobalPageLock( (HGLOBAL)_FP_SEG( IntHandler ) );
     _STACKLOW = 0;
     SetInstance( currinst );
     if( previnst ) {
@@ -152,13 +158,12 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
         /*
          * set up handlers
          */
-        faultFN = MakeProcInstance( (FARPROC)IntHandler, Instance );
-        notifyFN = MakeProcInstance( (FARPROC)NotifyHandler, Instance );
-        if( !InterruptRegister( NULL, faultFN ) ) {
+        fault_fn = MakeProcInstance_INTH( IntHandler, Instance );
+        if( !InterruptRegister( NULL, fault_fn ) ) {
             Death( STR_CANT_HOOK_INTER );
         }
-        if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notifyFN, NF_NORMAL | NF_RIP ) ) {
-            InterruptUnRegister( NULL );
+        notify_fn = MakeProcInstance_NOTIFY( NotifyHandler, Instance );
+        if( !NotifyRegister( NULL, notify_fn, NF_NORMAL | NF_RIP ) ) {
             Death( STR_CANT_HOOK_NOTIF );
         }
 
@@ -187,25 +192,25 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
 void Death( msg_id msgid, ... )
 {
     char        tmp[128];
-    va_list     al;
+    va_list     args;
     const char  *str;
 
 
     InterruptUnRegister( NULL );
-    if( faultFN != NULL ) {
-        FreeProcInstance( faultFN );
+    if( fault_fn != NULL ) {
+        FreeProcInstance_INTH( fault_fn );
     }
     NotifyUnRegister( NULL );
-    if( notifyFN != NULL ) {
-        FreeProcInstance( notifyFN );
+    if( notify_fn != NULL ) {
+        FreeProcInstance_NOTIFY( notify_fn );
     }
     Done386Debug();
 
     if( msgid != STR_DEATH_NO_MSG ) {
-        va_start( al, msgid );
+        va_start( args, msgid );
         str = GetRCString( msgid );
-        vsprintf( tmp, str, al );
-        va_end( al );
+        vsprintf( tmp, str, args );
+        va_end( args );
         if( AppName == NULL ) {
             AppName = AllocRCString( STR_APP_NAME );
         }
@@ -214,7 +219,7 @@ void Death( msg_id msgid, ... )
     JDialogFini();
     FiniSymbols();
     FreeRCString( AppName );
-    GlobalPageUnlock( (HGLOBAL)FP_SEG( IntHandler ) );
+    GlobalPageUnlock( (HGLOBAL)_FP_SEG( IntHandler ) );
     exit( 1 );
 
 } /* Death */

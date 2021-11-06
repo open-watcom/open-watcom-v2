@@ -6,7 +6,7 @@
 .desc begin
 The
 .id &funcb.
-macro is the size of an array of char big enough to hold a string 
+macro is the size of an array of char big enough to hold a string
 naming any file that the implementation expects to open;
 If there is no practical file name length limit,
 .id &funcb.

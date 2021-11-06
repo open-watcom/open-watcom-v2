@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "liballoc.h"
 #include "libwin32.h"
 #include "osver.h"
+#include "cvtwc2mb.h"
+
 
 BOOL __lib_RemoveDirectoryW( LPCWSTR lpPathName )
 /***********************************************/
@@ -46,20 +49,10 @@ BOOL __lib_RemoveDirectoryW( LPCWSTR lpPathName )
     } else {                                            /* Win95 or Win32s */
         char *          mbPathName;
         BOOL            osrc;
-        size_t          cvt;
-        size_t          len;
-
-        /*** Allocate some memory ***/
-        len = wcslen( lpPathName ) * MB_CUR_MAX + 1;
-        mbPathName = lib_malloc( len );
-        if( mbPathName == NULL ) {
-            return( FALSE );
-        }
 
         /*** Prepare to call the OS ***/
-        cvt = wcstombs( mbPathName, lpPathName, len );
-        if( cvt == (size_t)-1 ) {
-            lib_free( mbPathName );
+        mbPathName = __lib_cvt_wcstombs( lpPathName );
+        if( mbPathName == NULL ) {
             return( FALSE );
         }
 

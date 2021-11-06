@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,9 @@
 #include "cfeinfo.h"
 #ifdef __SEH__
 #include "tryblock.h"
+#endif
+#ifndef NDEBUG
+#include "togglesd.h"
 #endif
 
 #define PushCGName(name)        ValueStack[index++] = (TREEPTR)name
@@ -286,7 +289,7 @@ static cg_type DataPointerType( OPNODE *node )
 static cg_name ForceVolatileFloat( cg_name name, TYPEPTR typ )
 {
     if( CompFlags.op_switch_used ) {
-        if( typ->decl_type == TYPE_FLOAT || typ->decl_type == TYPE_DOUBLE ) {
+        if( typ->decl_type == TYP_FLOAT || typ->decl_type == TYP_DOUBLE || typ->decl_type == TYP_LONG_DOUBLE ) {
             name = CGVolatile( name );
         }
     }
@@ -551,7 +554,7 @@ static cg_name DotOperator( cg_name op1, OPNODE *node, cg_name op2 )
     // for the O_PLUS we want a pointer type
     name = CGBinary( O_PLUS, op1, op2, DataPointerType( node ) );
     typ = node->u2.result_type;
-    if( typ->decl_type == TYPE_FIELD || typ->decl_type == TYPE_UFIELD ) {
+    if( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
         name = CGBitMask( name, typ->u.f.field_start,
                     typ->u.f.field_width, CGenType( typ ) );
     }
@@ -617,7 +620,7 @@ static cg_name DoAddSub( cg_name op1, OPNODE *node, cg_name op2 )
     typ = node->u2.result_type;
     SKIP_TYPEDEFS( typ );
     name = CGBinary( CGOperator[node->opr], op1, op2, CGenType( typ ) );
-//  if( typ->decl_type == TYPE_POINTER ) {
+//  if( typ->decl_type == TYP_POINTER ) {
 //      if( typ->u.p.decl_flags & FLAG_VOLATILE ) {
 //          name = CGVolatile( name );
 //      }
@@ -633,29 +636,29 @@ static cg_name PushConstant( OPNODE *node )
 
     dtype = CGDataType[node->u1.const_type];
     switch( node->u1.const_type ) {
-    case TYPE_CHAR:
-    case TYPE_UCHAR:
-    case TYPE_SHORT:
-    case TYPE_USHORT:
-    case TYPE_INT:
-    case TYPE_UINT:
-    case TYPE_LONG:
-    case TYPE_ULONG:
+    case TYP_CHAR:
+    case TYP_UCHAR:
+    case TYP_SHORT:
+    case TYP_USHORT:
+    case TYP_INT:
+    case TYP_UINT:
+    case TYP_LONG:
+    case TYP_ULONG:
         name = CGInteger( node->u2.ulong_value, dtype );
         break;
-    case TYPE_POINTER:
+    case TYP_POINTER:
         name = CGInteger( node->u2.ulong_value, DataPointerType( node ) );
         break;
-    case TYPE_LONG64:
-    case TYPE_ULONG64:
+    case TYP_LONG64:
+    case TYP_ULONG64:
         name = CGInt64( node->u2.ulong64_value, dtype );
         break;
-    case TYPE_FLOAT:
-    case TYPE_DOUBLE:
-    case TYPE_LONG_DOUBLE:
-    case TYPE_FIMAGINARY:
-    case TYPE_DIMAGINARY:
-    case TYPE_LDIMAGINARY:
+    case TYP_FLOAT:
+    case TYP_DOUBLE:
+    case TYP_LONG_DOUBLE:
+    case TYP_FIMAGINARY:
+    case TYP_DIMAGINARY:
+    case TYP_LDIMAGINARY:
         flt = node->u2.float_value;
         if( flt->len != 0 ) {                   // if still in string form
             flt_string = flt->string;
@@ -691,7 +694,7 @@ static cg_name DoIndirection( OPNODE *node, cg_name name )
     if( Far16Pointer( node->flags ) ) {
         // Do NOT convert __far16 function pointers to flat because the
         // thunk routine expects 16:16 pointers!
-        if( ( typ->object != NULL ) && ( typ->object->decl_type != TYPE_FUNCTION ) ) {
+        if( ( typ->object != NULL ) && ( typ->object->decl_type != TYP_FUNCTION ) ) {
             name = CGUnary( O_PTR_TO_NATIVE, name, TY_POINTER );
         }
     }
@@ -711,9 +714,9 @@ static cg_name DoIndirection( OPNODE *node, cg_name name )
 static cg_name ConvertPointer( OPNODE *node, cg_name name )
 {
 #if _CPU == 386
-    if( FAR16_PTRCLASS( node->u2.sp.oldptr_class ) ) {
+    if( FAR16_PTRCLASS( node->u2.sp.old_ptrclass ) ) {
         name = CGUnary( O_PTR_TO_NATIVE, name, TY_POINTER );
-    } else if( FAR16_PTRCLASS( node->u2.sp.newptr_class ) ) {
+    } else if( FAR16_PTRCLASS( node->u2.sp.new_ptrclass ) ) {
         name = CGUnary( O_PTR_TO_FOREIGN, name, TY_POINTER );
     }
 #else
@@ -768,11 +771,11 @@ static bool IsStruct( TYPEPTR typ )
 /*********************************/
 {
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type == TYPE_STRUCT
-      || typ->decl_type == TYPE_FCOMPLEX
-      || typ->decl_type == TYPE_DCOMPLEX
-      || typ->decl_type == TYPE_LDCOMPLEX
-      || typ->decl_type == TYPE_UNION ) {
+    if( typ->decl_type == TYP_STRUCT
+      || typ->decl_type == TYP_FCOMPLEX
+      || typ->decl_type == TYP_DCOMPLEX
+      || typ->decl_type == TYP_LDCOMPLEX
+      || typ->decl_type == TYP_UNION ) {
         return( true );
     }
     return( false );
@@ -962,7 +965,7 @@ static void EmitNodes( TREEPTR tree )
             PushCGName( CGUnary( O_POINTS, name, TY_LONG_POINTER ) );
           } break;
         case OPR_CONVERT:
-            if( node->u2.result_type->decl_type != TYPE_VOID ) {
+            if( node->u2.result_type->decl_type != TYP_VOID ) {
                 op1 = PopCGName();      // - get expression
                 PushCGName( CGUnary( O_CONVERT, op1, CGenType( node->u2.result_type )) );
             }
@@ -1373,9 +1376,11 @@ void DoCompile( void )
             if( ! CompFlags.zu_switch_used ) {
                 TargetSwitches &= ~ FLOATING_SS;
             }
-            if( Toggles & TOGGLE_DUMP_CG ) {
+#ifndef NDEBUG
+            if( TOGGLEDBG( dump_cg ) ) {
                 GenSwitches |= ECHO_API_CALLS;
             }
+#endif
 #ifdef POSITION_INDEPENDANT
             if( CompFlags.rent ) {
                 GenSwitches |= POSITION_INDEPENDANT;
@@ -1396,6 +1401,7 @@ void DoCompile( void )
                 EmitSyms();
                 EmitCS_Strings();
                 SrcLoc.line = 0;
+                SrcLoc.column = 0;
                 SrcLoc.fno = 0;
                 EmitDataQuads();
                 FreeDataQuads();
@@ -1439,7 +1445,7 @@ static void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
 
     typ = sym->sym_type;
     if( (GenSwitches & DBG_TYPES) && (sym->attribs.stg_class == SC_TYPEDEF) ) {
-        if( typ->decl_type != TYPE_TYPEDEF ) {
+        if( typ->decl_type != TYP_TYPEDEF ) {
             DBEndName( DBBegName( sym->name, DBG_NIL_TYPE ), DBType( typ ) );
         }
     }
@@ -1490,7 +1496,7 @@ static void EmitSyms( void )
         SymGet( &sym, sym_handle );
         EmitSym( &sym, sym_handle );
         if( ( GenSwitches & DBG_LOCALS )
-          && ( sym.sym_type->decl_type != TYPE_FUNCTION )
+          && ( sym.sym_type->decl_type != TYP_FUNCTION )
           && ( (sym.flags & SYM_TEMP) == 0 )
           && ( sym.attribs.stg_class != SC_TYPEDEF ) ) {
 #if _CPU == 370
@@ -1566,7 +1572,7 @@ static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
 
             for( sym_handle = CurFunc->u.func.parms; sym_handle != SYM_NULL; sym_handle = sym->handle ) {
                 sym = SymGetPtr( sym_handle );
-                if( sym->sym_type->decl_type == TYPE_DOT_DOT_DOT )
+                if( sym->sym_type->decl_type == TYP_DOT_DOT_DOT )
                     break;
                 CDoParmDecl( sym, sym_handle );
             }
@@ -1633,7 +1639,7 @@ static void CDoAutoDecl( SYM_HANDLE sym_handle )
         if( sym.attribs.stg_class == SC_STATIC ) {
             emit_debug_info = false;
             if( (sym.flags & SYM_EMITTED) == 0 ) {
-                if( sym.sym_type->decl_type != TYPE_VOID ) {
+                if( sym.sym_type->decl_type != TYP_VOID ) {
                     EmitSym( &sym, sym_handle );
                     emit_debug_info = true;
                     SymGet( &sym, sym_handle );
@@ -1649,12 +1655,12 @@ static void CDoAutoDecl( SYM_HANDLE sym_handle )
             typ = sym.sym_type;
             SKIP_TYPEDEFS( typ );
             switch( typ->decl_type ) {
-            case TYPE_UNION:
-            case TYPE_STRUCT:
-            case TYPE_ARRAY:
-            case TYPE_FCOMPLEX:
-            case TYPE_DCOMPLEX:
-            case TYPE_LDCOMPLEX:
+            case TYP_UNION:
+            case TYP_STRUCT:
+            case TYP_ARRAY:
+            case TYP_FCOMPLEX:
+            case TYP_DCOMPLEX:
+            case TYP_LDCOMPLEX:
                 emit_extra_info = true;
                 break;
             default:
@@ -1725,7 +1731,7 @@ static void FreeLocalVars( SYM_HANDLE sym_list )
         SymGet( &sym, sym_handle );
         if( sym.attribs.stg_class != SC_EXTERN ) {
             if( (sym.flags & SYM_FUNC_RETURN_VAR) == 0 ) {
-                if( sym.sym_type->decl_type != TYPE_VOID ) {
+                if( sym.sym_type->decl_type != TYP_VOID ) {
                     FreeSymBackInfo( &sym, sym_handle );
                 }
             }
@@ -1756,7 +1762,7 @@ static void RelExtVars( SYM_HANDLE sym_handle )
         if( (sym->flags & SYM_FUNC_RETURN_VAR) == 0 ) {
             if( sym->attribs.stg_class == SC_EXTERN
               || sym->attribs.stg_class == SC_STATIC
-              || sym->sym_type->decl_type == TYPE_VOID ) {
+              || sym->sym_type->decl_type == TYP_VOID ) {
                 if( sym->info.backinfo != NULL ) {
                     BEFreeBack( sym->info.backinfo );
                 }
@@ -1786,11 +1792,11 @@ cg_type CGenType( TYPEPTR typ )
     SKIP_TYPEDEFS( typ );
     switch( typ->decl_type ) {
 
-    case TYPE_FCOMPLEX:
-    case TYPE_DCOMPLEX:
-    case TYPE_LDCOMPLEX:
-    case TYPE_STRUCT:
-    case TYPE_UNION:
+    case TYP_FCOMPLEX:
+    case TYP_DCOMPLEX:
+    case TYP_LDCOMPLEX:
+    case TYP_STRUCT:
+    case TYP_UNION:
         if( typ->object != NULL ) {
             /* structure has a zero length array as last field */
             dtype = NewRefno();
@@ -1805,7 +1811,7 @@ cg_type CGenType( TYPEPTR typ )
             dtype = typ->u.tag->refno;
         }
         break;
-    case TYPE_ARRAY:
+    case TYP_ARRAY:
         if( typ->u.array->refno == 0 ) {
             dtype = NewRefno();
             align = GetTypeAlignment( typ );
@@ -1814,18 +1820,18 @@ cg_type CGenType( TYPEPTR typ )
         }
         dtype = typ->u.array->refno;
         break;
-    case TYPE_FIELD:
-    case TYPE_UFIELD:
+    case TYP_FIELD:
+    case TYP_UFIELD:
         dtype = CGDataType[typ->u.f.field_type];
         break;
-    case TYPE_FUNCTION:
+    case TYP_FUNCTION:
         dtype = CodePtrType( FLAG_NONE );
         break;
-    case TYPE_POINTER:
+    case TYP_POINTER:
         flags = typ->u.p.decl_flags;
         dtype = PtrType( typ->object, flags );
         break;
-    case TYPE_ENUM:
+    case TYP_ENUM:
         typ = typ->object;
         /* fall through */
     default:
@@ -1861,7 +1867,7 @@ extern cg_type PtrType( TYPEPTR typ, type_modifiers flags )
     cg_type     dtype;
 
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type == TYPE_FUNCTION ) {
+    if( typ->decl_type == TYP_FUNCTION ) {
         dtype = CodePtrType( flags );
     } else {
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
@@ -1992,7 +1998,7 @@ static void GenerateTryBlock( TREEPTR tree )
         switch( stmt->op.opr ) {
         case OPR_TRY:
             try_index = stmt->op.u2.st.u.try_index;
-            if( try_index > max_try_index )
+            if( max_try_index < try_index )
                 max_try_index = try_index;
             break;
         case OPR_EXCEPT:

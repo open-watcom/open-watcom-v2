@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#define INCLUDE_TOOL_H
 #include "commonui.h"
 #include "sample.h"
 #include "smpstuff.h"
@@ -48,9 +50,14 @@
 #include "sampwin.h"
 #include "exeos2.h"
 #include "exedos.h"
+#include "wclbtool.h"
+#include "di386cli.h"
 
 
 #define BUFF_SIZE 512
+
+/* commonui/asm/inth.asm */
+void FAR PASCAL IntHandler( void );
 
 unsigned short win386sig[] = { 0xDEAD,0xBEEF };
 unsigned short win386sig2[] = { 0xBEEF,0xDEAD };
@@ -112,8 +119,8 @@ void ResetCommArea( void )
     if( CommonAddr.offset != 0 ) {      /* reset common variables */
         Comm.pop_no = 0;
         Comm.push_no = 0;
-        ReadMem( FP_SEG( &Comm.pop_no ), FP_OFF( &Comm.pop_no ),
-                        MK_FP( CommonAddr.segment, CommonAddr.offset + 9 ),
+        ReadMem( _FP_SEG( &Comm.pop_no ), _FP_OFF( &Comm.pop_no ),
+                        _MK_FP( CommonAddr.segment, CommonAddr.offset + 9 ),
                         4 );
     }
 }
@@ -130,7 +137,7 @@ void GetNextAddr( void )
         CGraphOff = 0;
         CGraphSeg = 0;
     } else {
-        ReadMem( FP_SEG( Comm.cgraph_top ), FP_OFF( Comm.cgraph_top ),
+        ReadMem( _FP_SEG( Comm.cgraph_top ), _FP_OFF( Comm.cgraph_top ),
                         &stack_entry, sizeof( stack_entry ) );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
@@ -160,7 +167,7 @@ void InitTimerRate( void )
     SleepTime = 55;
 }
 
-void SetTimerRate( char **cmd )
+void SetTimerRate( const char **cmd )
 {
     SleepTime = GetNumber( 1, 1000, cmd, 10 );
 }
@@ -184,7 +191,7 @@ void StopProg( void )
 void CloseShop( void )
 {
     if( SampSave != NULL ) {
-        GlobalFree( (HGLOBAL)FP_SEG( SampSave ) );
+        GlobalFree( (HGLOBAL)_FP_SEG( SampSave ) );
     }
     if( SharedMemory != NULL ) {        /* JBS 93/03/17 */
         SharedMemory->ShopClosed = TRUE;
@@ -225,7 +232,7 @@ static void internalErrorMsg( int msg )
 /*
  * StartProg - start and execute sampled program
  */
-void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
     WORD                timer;
     WORD                mod_count;
@@ -233,8 +240,8 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     command_data        cdata;
     MODULEENTRY         me;
     int                 rc;
-    FARPROC             notify_fn;
-    FARPROC             fault_fn;
+    LPFNNOTIFYCALLBACK  notify_fn;
+    LPFNINTHCALLBACK    fault_fn;
     char                buffer[10];
 
     /* unused parameters */ (void)cmd; (void)dos_args;
@@ -274,13 +281,22 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     /*
      * register as interrupt and notify handler
      */
-    fault_fn = MakeProcInstance( (FARPROC)IntHandler, InstanceHandle );
-    notify_fn = MakeProcInstance( (FARPROC)NotifyHandler, InstanceHandle );
+    fault_fn = MakeProcInstance_INTH( IntHandler, InstanceHandle );
     if( !InterruptRegister( NULL, fault_fn ) ) {
+        if( fault_fn != NULL ) {
+            FreeProcInstance_INTH( fault_fn );
+        }
         internalErrorMsg( MSG_SAMPLE_2 );
     }
-    if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notify_fn, NF_NORMAL | NF_TASKSWITCH ) ) {
+    notify_fn = MakeProcInstance_NOTIFY( NotifyHandler, InstanceHandle );
+    if( !NotifyRegister( NULL, notify_fn, NF_NORMAL | NF_TASKSWITCH ) ) {
         InterruptUnRegister( NULL );
+        if( fault_fn != NULL ) {
+            FreeProcInstance_INTH( fault_fn );
+        }
+        if( notify_fn != NULL ) {
+            FreeProcInstance_NOTIFY( notify_fn );
+        }
         internalErrorMsg( MSG_SAMPLE_3 );
     }
     Start386Debug();
@@ -293,6 +309,12 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     if( rc ) {
         InterruptUnRegister( NULL );
         NotifyUnRegister( NULL );
+        if( fault_fn != NULL ) {
+            FreeProcInstance_INTH( fault_fn );
+        }
+        if( notify_fn != NULL ) {
+            FreeProcInstance_NOTIFY( notify_fn );
+        }
         DebuggerIsExecuting( -1 );
         Done386Debug();
         internalErrorMsg( MSG_SAMPLE_4 );
@@ -308,7 +330,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     pdata.wEnvSeg = 0;
     pdata.lpCmdLine = (char __far *)full_args;   /* Must be < 120 chars according to SDK */
     pdata.lpCmdShow = (void __far *)&cdata;
-    pdata.dwReserved = 0;
+    pdata.lpReserved = NULL;
 
     SampledProg = LoadModule( prog, (LPVOID)&pdata );
     while( !SharedMemory->TaskEnded ) {
@@ -318,6 +340,12 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     Done386Debug();
     InterruptUnRegister( NULL );
     NotifyUnRegister( NULL );
+    if( fault_fn != NULL ) {
+        FreeProcInstance_INTH( fault_fn );
+    }
+    if( notify_fn != NULL ) {
+        FreeProcInstance_NOTIFY( notify_fn );
+    }
     OutputMsg( MSG_SAMPLE_13 );
     Output( itoa( TotalTime/1000, buffer, 10 ) );
     Output( "." );
@@ -334,7 +362,7 @@ void SysDefaultOptions( void )
 {
 }
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     if( c != 'r' ) {
         OutputMsgCharNL( MSG_INVALID_OPTION, c );

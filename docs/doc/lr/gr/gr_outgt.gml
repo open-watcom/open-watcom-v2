@@ -1,5 +1,5 @@
-.gfunc outgtext
-.gsynop begin 
+.gfunc _outgtext
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _outgtext( char _FAR *text );
 .do end
@@ -13,7 +13,7 @@ The
 .id &funcb.
 &routine displays the character string indicated by the argument
 .arg text
-.ct .li .
+.period
 The string must be terminated by a null character
 .if '&lang' eq 'C' .do begin
 ('\0').
@@ -22,15 +22,15 @@ The string must be terminated by a null character
 (char(0)).
 .do end
 .pp
-The string is displayed starting at the current position (see the
-.kw _moveto
-&routine) in the current color and in the currently selected font (see the
-.kw _setfont
-&routine).
+The string is displayed starting at the current position 
+.seeref _moveto
+in the current color and in the currently selected font
+.seeref _setfont
+.period
 The current position is updated to follow the displayed text.
 .pp
 When no font has been previously selected with
-.kw _setfont
+.reffunc _setfont
 .ct , a default font will be used.
 The default font is an 8-by-8 bit-mapped font.
 .im gr_text

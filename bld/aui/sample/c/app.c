@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,9 +170,9 @@ static gui_colour_set   WndDlgColours[] = {
     { GUI_WHITE,        GUI_BLUE },     // GUI_DLG_SCROLL_ICON
     { GUI_WHITE,        GUI_BLUE },     // GUI_DLG_SCROLL_BAR
     { GUI_BLUE,         GUI_WHITE },    // GUI_DLG_BUTTON_PLAIN
-    { GUI_BRIGHT_WHITE, GUI_WHITE },    // GUI_DLG_BUTTON_STANDOUT
+    { GUI_BR_WHITE,     GUI_WHITE },    // GUI_DLG_BUTTON_STANDOUT
     { GUI_BLUE,         GUI_CYAN },     // GUI_DLG_BUTTON_ACTIVE
-    { GUI_BRIGHT_WHITE, GUI_CYAN },     // GUI_DLG_BUTTON_ACTIVE_STANDOUT
+    { GUI_BR_WHITE,     GUI_CYAN },     // GUI_DLG_BUTTON_ACTIVE_STANDOUT
 };
 
 gui_resource MainIcon = { ICON_MAIN, "main_icon" };
@@ -192,9 +192,9 @@ void GUImain( void )
     }
     while( *p == ' ' ) ++p;
     if( p[0] == '-' && p[1] == '1' ) {
-        #ifdef __DOS__
-            BIOSSetPage( 1 ); // just make sure it works for the debugger
-        #endif
+#ifdef __DOS__
+        BIOSSetPage( 1 ); // just make sure it works for the debugger
+#endif
         p += 2;
     }
     WndGadgetInit();

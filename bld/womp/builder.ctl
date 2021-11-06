@@ -23,7 +23,7 @@ cdsay .
 
 [ BLOCK <BLDRULE> clean ]
 #========================
-#     rm -f h/wmpmsg.gh
+#     rm -f h/wompmsg.gh
 #    sweep killobjs
 
 [ BLOCK . . ]

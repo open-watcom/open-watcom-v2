@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "errcod.h"
 #include "global.h"
 #include "fmemmgr.h"
@@ -80,7 +80,7 @@ act_dim_list    *STSubsList( act_dim_list *subs_ptr ) {
 
 // Allocate a dimension extension.
 
-    uint            size;
+    size_t          size;
     act_dim_list    *ste_ptr;
 
     size = sizeof( dim_list ) + ( 2 * sizeof( intstar4 ) ) * _DimCount( subs_ptr->dim_flags );
@@ -200,10 +200,10 @@ sym_id        STFreeName( sym_id sym_ptr ) {
 
 // Free a symbol name.
 
-    if( ( sym_ptr->u.ns.flags & SY_CLASS ) == SY_COMMON ) {
+    if( (sym_ptr->u.ns.flags & SY_CLASS) == SY_COMMON ) {
         sym_ptr = FreeLink( (void **)sym_ptr );
     } else {
-        if( ( sym_ptr->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
+        if( (sym_ptr->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
             if( sym_ptr->u.ns.flags & SY_SUBSCRIPTED ) {
                 if( sym_ptr->u.ns.si.va.u.dim_ext != NULL ) {
                     FMemFree( sym_ptr->u.ns.si.va.u.dim_ext );
@@ -214,8 +214,8 @@ sym_id        STFreeName( sym_id sym_ptr ) {
                     FMemFree( sym_ptr->u.ns.si.va.vi.ec_ext );
                 }
             }
-        } else if( ( sym_ptr->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-            if( ( sym_ptr->u.ns.flags & SY_SUBPROG_TYPE ) == SY_STMT_FUNC ) {
+        } else if( (sym_ptr->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
+            if( (sym_ptr->u.ns.flags & SY_SUBPROG_TYPE) == SY_STMT_FUNC ) {
                 FreeSFHeader( sym_ptr );
             }
         }

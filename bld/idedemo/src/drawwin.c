@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -409,7 +410,7 @@ BOOL init_app( HANDLE inst )
     /* main window.                                                           */
 
     wc.style = 0;
-    wc.lpfnWndProc = (WNDPROC) MakeProcInstance( (FARPROC) main_proc, inst );
+    wc.lpfnWndProc = main_proc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = inst;

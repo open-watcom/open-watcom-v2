@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,8 @@
 #include "vibios.h"
 #include "pragmas.h"
 #include "osidle.h"
+#include "int16.h"
+#include "int10.h"
 
 
 extern void UpdateDOSClock( void );
@@ -50,21 +53,56 @@ int FileSysNeedsCR( int handle )
     return( true );
 }
 
+void BIOSSetBlinkAttr( unsigned char on )
+{
+    _BIOSVideoSetBlinkAttr( on );
+}
+
+void BIOSGetColorPalette( void _FAR *palette )
+{
+    _BIOSVideoGetColorPalette( palette );
+}
+
+void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
+{
+    _BIOSVideoSetColorRegister( reg, r, g, b );
+}
+
+uint_32 BIOSGetColorRegister( unsigned short reg )
+{
+    return( _BIOSVideoGetColorRegister( reg ) );
+}
+
+unsigned short BIOSGetCursorPos( unsigned char page )
+{
+    return( _BIOSVideoGetCursorPos( page ).value );
+}
+
+void BIOSSetCursorPos( unsigned char page, unsigned char row, unsigned char col )
+{
+    int10_cursor_pos    pos;
+
+    pos.s.row = row;
+    pos.s.col = col;
+    _BIOSVideoSetCursorPos( page, pos );
+}
+
+
 /*
  * NewCursor - change cursor to insert mode type
  */
 void NewCursor( window_id wid, cursor_type ct )
 {
-    unsigned char   base, nbase;
+    int10_cursor_typ    int10ct;
 
     wid = wid;
     if( EditFlags.Monocolor ) {
-        base = 14;
+        int10ct.s.bot_line = 14 - 1;
     } else {
-        base = 16;
+        int10ct.s.bot_line = 16 - 1;
     }
-    nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
-    BIOSNewCursor( nbase, base - 1 );
+    int10ct.s.top_line = ( ( int10ct.s.bot_line + 1 ) * ( 100 - ct.height ) ) / 100;
+    _BIOSVideoSetCursorTyp( int10ct );
 
 } /* NewCursor */
 
@@ -138,13 +176,10 @@ void MyBeep( void )
 
 static void getExitAttr( void )
 {
-    unsigned short  cursor;
-    unsigned short  x, y;
+    int10_cursor_pos    pos;
 
-    cursor = BIOSGetCursor( VideoPage );
-    x = cursor >> 8;
-    y = cursor & 0xff;
-    EditVars.ExitAttr = Scrn[y * EditVars.WindMaxWidth + x].cinfo_attr;
+    pos = _BIOSVideoGetCursorPos( VideoPage );
+    EditVars.ExitAttr = Scrn[pos.s.row * EditVars.WindMaxWidth + pos.s.col].cinfo_attr;
 }
 
 /*
@@ -152,16 +187,16 @@ static void getExitAttr( void )
  */
 void ScreenInit( void )
 {
-    uint_32     mode;
+    int10_mode_info mode_info;
 
-    mode = BIOSGetVideoMode();
-    EditVars.WindMaxWidth = (mode >> 8) & 0xFF;
-    VideoPage = mode >> 24;
+    mode_info = _BIOSVideoGetModeInfo();
+    EditVars.WindMaxWidth = mode_info.columns;
+    VideoPage = mode_info.page;
 
     /*
      * mode _ get apropos screen ptr
      */
-    switch( (unsigned char)mode ) {
+    switch( mode_info.mode ) {
     case 0x00:
     case 0x02:
         EditFlags.BlackAndWhite = true;
@@ -174,7 +209,7 @@ void ScreenInit( void )
         break;
     }
     ScreenPage( 0 );
-    EditVars.WindMaxHeight = BIOSGetRowCount() + 1;
+    EditVars.WindMaxHeight = _BIOSVideoGetRowCount();
     getExitAttr();
 
 } /* ScreenInit */
@@ -202,9 +237,9 @@ void ChkExtendedKbd( void )
 
     unsigned    x;
 
-    EditVars.ExtendedKeyboard = 0;
+    EditFlags.ExtendedKeyboard = false;
 
-    x = BIOSTestKeyboard();
+    x = _BIOSKeyboardTest( KEYB_STD );
     if( (x & 0xff) == 0xff ) {
         return; /* too many damn keys pressed! */
     }
@@ -215,7 +250,7 @@ void ChkExtendedKbd( void )
     if( CT( x ) != (RCT( x ) || LCT( x )) ) {
         return;
     }
-    EditVars.ExtendedKeyboard = 0x10;
+    EditFlags.ExtendedKeyboard = true;
 
 } /* ChkExtendedKbd */
 
@@ -249,7 +284,7 @@ void ScreenPage( int page )
     } else {
         Scrn = (char_info _FAR *)0xb0000000;
     }
-    a = *(unsigned short _FAR *)MK_FP( 0x40, 0x4e ) / sizeof( char_info );
+    a = *(unsigned short _FAR *)_MK_FP( 0x40, 0x4e ) / sizeof( char_info );
     Scrn += a;
     PageCnt += page;
     if( PageCnt > 0 ) {
@@ -292,7 +327,7 @@ void ScreenPage( int page )
     } else {
         c = 0xb0000;
     }
-    a = *(unsigned short _FAR *)MK_FP( PHAR_SCRN_SEL, 0x44e );
+    a = *(unsigned short _FAR *)_MK_FP( PHAR_SCRN_SEL, 0x44e );
     c += a;
     PageCnt += page;
     if( PageCnt > 0 ) {
@@ -304,7 +339,7 @@ void ScreenPage( int page )
     } else {
         EditFlags.NoSetCursor = false;
     } /* if */
-    Scrn = MK_FP( PHAR_SCRN_SEL, c );
+    Scrn = _MK_FP( PHAR_SCRN_SEL, c );
 #endif
 
 } /* ScreenPage */
@@ -314,7 +349,7 @@ void ScreenPage( int page )
 #elif defined( __4G__ )
     #define KEY_PTR (char _FAR *)0x00000417;
 #else
-    #define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
+    #define KEY_PTR _MK_FP( PHAR_SCRN_SEL, 0x417 );
 #endif
 
 /*
@@ -351,20 +386,6 @@ void TurnOffCapsLock( void )
     }
 
 } /* TurnOffCapsLock */
-
-extern unsigned short CheckRemovable( unsigned char );
-#pragma aux CheckRemovable = \
-        "mov  ax,4408h"     \
-        "int 21h"           \
-        "cmp  ax,0fh"       \
-        "jne short ok"      \
-        "xor  ax,ax"        \
-        "jmp short done"    \
-    "ok: inc  ax"           \
-    "done:"                 \
-    __parm      [__bl] \
-    __value     [__ax] \
-    __modify    []
 
 /*
  * DoGetDriveType - get the type of drive A-Z
@@ -405,12 +426,12 @@ bool KeyboardHit( void )
 {
     bool        rc;
 
-    rc = _BIOSKeyboardHit( EditVars.ExtendedKeyboard + 1 );
+    rc = _BIOSKeyboardHit( ( EditFlags.ExtendedKeyboard ) ? KEYB_EXT : KEYB_STD );
     if( !rc ) {
 #if !( defined( _M_I86 ) || defined( __4G__ ) )
         UpdateDOSClock();
 #endif
-        DOSIdle();
+        ReleaseVMTimeSlice();
     }
     return( rc );
 
@@ -425,7 +446,7 @@ vi_key GetKeyboard( void )
     unsigned    scan;
     bool        shift;
 
-    code = _BIOSGetKeyboard( EditVars.ExtendedKeyboard );
+    code = _BIOSKeyboardGet( ( EditFlags.ExtendedKeyboard ) ? KEYB_EXT : KEYB_STD );
     shift = ShiftDown();
     scan = code >> 8;
     code &= 0xff;

@@ -37,7 +37,7 @@
 #include "exeos2.h"
 #include "msg.h"
 #include "alloc.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "wlnkmsg.h"
 #include "cmdall.h"
 #include "cmdos2.h"
@@ -62,75 +62,10 @@
 #include "dbgall.h"
 #include "loadfile.h"
 #include "pathlist.h"
+#include "cmdhelp.h"
+#include "library.h"
+#include "sysblock.h"
 
-#ifdef _INT_DEBUG
-unsigned int            Debug;
-#endif
-
-static void             Crash( bool );
-static void             Help( void );
-static void             DoCmdParse( void );
-static void             DisplayOptions( void );
-
-static bool             ProcDosHelp( void );
-static bool             ProcOS2Help( void );
-static bool             ProcPharHelp( void );
-static bool             ProcNovellHelp( void );
-static bool             Proc16MHelp( void );
-static bool             ProcQNXHelp( void );
-static bool             ProcELFHelp( void );
-static bool             ProcWindowsHelp( void );
-static bool             ProcWinVxdHelp( void );
-static bool             ProcNTHelp( void );
-static bool             ProcZdosHelp( void );
-static bool             ProcRdosHelp( void );
-static bool             ProcRawHelp( void );
-static void             WriteHelp( int first_msg, int last_msg, bool prompt );
-
-static  parse_entry   FormatHelp[] = {
-    "Dos",          ProcDosHelp,            MK_ALL,     0,
-#ifdef _OS2
-    "OS2",          ProcOS2Help,            MK_ALL,     0,
-    "WINdows",      ProcWindowsHelp,        MK_ALL,     0,
-    "VXD",          ProcWinVxdHelp,         MK_ALL,     0,
-    "NT",           ProcNTHelp,             MK_ALL,     0,
-#endif
-#ifdef _PHARLAP
-    "PHARlap",      ProcPharHelp,           MK_ALL,     0,
-#endif
-#ifdef _NOVELL
-    "NOVell",       ProcNovellHelp,         MK_ALL,     0,
-#endif
-#ifdef _DOS16M
-    "DOS16M",       Proc16MHelp,            MK_ALL,     0,
-#endif
-#ifdef _QNX
-    "QNX",          ProcQNXHelp,            MK_ALL,     0,
-#endif
-#ifdef _ELF
-    "ELF",          ProcELFHelp,            MK_ALL,     0,
-#endif
-#ifdef _ZDOS
-    "ZDos",         ProcZdosHelp,           MK_ALL,     0,
-#endif
-#ifdef _RDOS
-    "RDos",         ProcRdosHelp,           MK_ALL,     0,
-#endif
-#ifdef _RAW
-    "Raw",          ProcRawHelp,            MK_ALL,     0,
-#endif
-    NULL
-};
-
-file_defext     Extension;
-file_list       **CurrFList;
-tok             Token;
-commandflag     CmdFlags;
-char            *Name;
-sysblock        *SysBlocks;
-sysblock        *LinkCommands;
-
-static sysblock         *PrevCommand;
 
 #ifdef BOOTSTRAP
 #define INIT_FILE_NAME  "bwlink.lnk"
@@ -141,22 +76,76 @@ static sysblock         *PrevCommand;
 
 #define HELP_FILE_NAME  "wlink.hlp"
 
+typedef struct {
+    exe_format      bits;
+    char            *lib_var_name;
+    void            (*set_func)(void);
+    void            (*free_func)(void);
+} select_format;
+
+file_defext             Extension;
+file_list               **CurrFList;
+tok                     Token;
+commandflag             CmdFlags;
+char                    *Name;
+sysblock                *SysBlocks;
+sysblock                *LinkCommands;
+
+static sysblock         *PrevCommand;
+
+static const select_format PossibleFmt[] = {
+#ifdef _EXE
+    MK_DOS,         "LIBDOS",       SetDosFmt,      FreeDosFmt,
+#endif
+#ifdef _DOS16M
+    MK_DOS16M,      "LIBDOS16M",    SetD16MFmt,     FreeD16MFmt,
+#endif
+#ifdef _QNX
+    MK_QNX,         "LIBQNX",       SetQNXFmt,      FreeQNXFmt,
+#endif
+#ifdef _ELF
+    MK_ELF,         "LIBELF",       SetELFFmt,      FreeELFFmt,
+#endif
+#ifdef _OS2
+    MK_WINDOWS,     "LIBWIN",       SetOS2Fmt,      FreeOS2Fmt,
+    MK_OS2_NE,      "LIBOS2",       SetOS2Fmt,      FreeOS2Fmt,
+    MK_OS2_LE,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
+    MK_OS2_LX,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
+    MK_PE,          "LIBPE",        SetOS2Fmt,      FreeOS2Fmt,
+    MK_WIN_VXD,     "LIBVXD",       SetOS2Fmt,      FreeOS2Fmt,
+#endif
+#ifdef _PHARLAP
+    MK_PHAR_LAP,    "LIBPHAR",      SetPharFmt,     FreePharFmt,
+#endif
+#ifdef _NOVELL
+    MK_NOVELL,      "LIBNOV",       SetNovFmt,      FreeNovFmt,
+#endif
+#ifdef _RDOS
+    MK_RDOS,        "LIBRDOS",      SetRdosFmt,     FreeRdosFmt,
+#endif
+#ifdef _ZDOS
+    MK_ZDOS,        "LIBZDOS",      SetZdosFmt,     FreeZdosFmt,
+#endif
+    0,              NULL,           NULL,           NULL
+};
+
 void InitCmdFile( void )
-/******************************/
+/**********************/
 {
     PrevCommand = NULL;
 }
 
 void SetSegMask(void)
-/***************************/
+/*******************/
 {
    FmtData.SegShift = 16 - FmtData.Hshift;
    FmtData.SegMask = (1 << FmtData.SegShift) - 1;
 }
 
 static void ResetCmdFile( void )
-/******************************/
-/* do all the initialization necessary for parsing a command file */
+/*******************************
+ * do all the initialization necessary for parsing a command file
+ */
 {
     SysBlocks = NULL;
     Extension = E_LOAD;
@@ -168,17 +157,16 @@ static void ResetCmdFile( void )
     FmtData.objalign = NO_BASE_SPEC;
     FmtData.type = MK_ALL;
     FmtData.def_seg_flags = SEG_LEVEL_3;
-    FmtData.output_raw = false;
-    FmtData.output_hex = false;
-    FmtData.Hshift = 12;   // May want different value for some 32 bit segmented modes
-    FmtData.FillChar = 0;  // Default fillchar for segment alignment
+    FmtData.Hshift = 12;    /* May want different value for some 32 bit segmented modes */
+    FmtData.FillChar = 0;   /* Default fillchar for segment alignment */
     SetSegMask();
     CurrSect = Root;
     CurrFList = &Root->files;
-    DBIFlag = 0;        /*  default is only global information */
+    DBIFlag = 0;            /*  default is only global information */
 }
 
 static bool sysHelp( void )
+/*************************/
 {
     const char  *p;
     bool        help;
@@ -203,9 +191,154 @@ static bool sysHelp( void )
     return( help );
 }
 
+char *GetNextLink( void )
+/***********************/
+{
+    char        *cmd;
+
+    cmd = NULL;
+    if( PrevCommand != NULL )
+        _LnkFree( PrevCommand );
+    if( LinkCommands != NULL ) {
+        PrevCommand = LinkCommands;
+        LinkCommands = LinkCommands->next;
+        cmd = PrevCommand->commands;
+    }
+    return( cmd );
+}
+
+void Syntax( void )
+/*****************/
+{
+    if( Token.this == NULL ) {
+        LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR_BEGINNING, NULL );
+    } else {
+        ((char *)Token.this)[Token.len] = '\0';
+        LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR, "s", Token.this );
+    }
+}
+
+void PressKey( void )
+/*******************/
+{
+    char        msg_buffer[RESOURCE_MAX_SIZE];
+    int         result;
+
+    Msg_Get( MSG_PRESS_KEY, msg_buffer );
+    WriteStdOut( msg_buffer );
+    result = WaitForKey();
+    WriteStdOutNL();
+    if( result == 'q' || result == 'Q' ) {
+        Ignite();
+        Suicide();
+    }
+}
+
+#define HELPLINE_SIZE   80
+
+static void Crash( bool check_file )
+/**********************************/
+{
+    char        buff[HELPLINE_SIZE + 1];
+    size_t      len;
+    f_handle    fp;
+
+    if( check_file ) {
+        fp = FindPath( HELP_FILE_NAME, NULL );
+        if( fp != NIL_FHANDLE ) {
+            WLPrtBanner();
+            len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
+            for( ; len != 0 && len != IOERROR; ) {
+                buff[len] = '\0';
+                WriteStdOut( buff );
+                len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
+            }
+            QClose( fp, HELP_FILE_NAME );
+            Ignite();
+            Suicide();
+        }
+    }
+    DisplayOptions();
+    Ignite();
+    Suicide();
+}
+
+static void DoCmdParse( void )
+/****************************/
+{
+    while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
+        if( !DoParseDirectiveSuicide() ) {
+            Syntax();
+        }
+        RestoreParser();
+    }
+}
+
+int DoBuffCmdParse( const char *cmd )
+/***********************************/
+{
+    NewCommandSource( NULL, cmd, COMMANDLINE );
+    return( Spawn( DoCmdParse ) );
+}
+
+void FreePaths( void )
+/*********************
+ * Free paths & filenames.
+ */
+{
+    FreeList( ObjPath );
+    ObjPath = NULL;
+    if( Name != NULL ) {
+        _LnkFree( Name );
+        Name = NULL;
+    }
+}
+
+void Burn( void )
+/****************
+ * necessary to split this out from Ignite() for the workframe options
+ * processor.
+ */
+{
+    FreePaths();
+    if( MapFName != NULL ) {
+        _LnkFree( MapFName );
+        MapFName = NULL;
+    }
+    FreeOutFiles();
+    BurnUtils();
+}
+
+void Ignite( void )
+/******************
+ * free local structures
+ */
+{
+    BurnSystemList();
+    Burn();
+}
+
+static void Help( void )
+/***********************
+ * display help, optionally allowing the user to specifiy the format he/she
+ * wants the help for.
+ */
+{
+    EatWhite();
+    if( *Token.next == '?' ) {
+        Crash( false );
+    } else if( *Token.next == '\0' || !DoHelp() ) {
+        Crash( true );
+    } else {
+        Ignite();
+        Suicide();
+    }
+}
+
 void DoCmdFile( const char *fname )
-/*********************************/
-/* start parsing the command */
+/**********************************
+ * start parsing the command
+ */
 {
     exe_format  possible;
     f_handle    file;
@@ -280,6 +413,11 @@ void DoCmdFile( const char *fname )
         CmdNovFini();
     }
 #endif
+#ifdef _DOS16M
+    if( FmtData.type & MK_DOS16M ) {
+        CmdD16MFini();
+    }
+#endif
 #ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
         CmdOvlFini();
@@ -321,363 +459,23 @@ void DoCmdFile( const char *fname )
     DBIInit();
 }
 
-char *GetNextLink( void )
-/***********************/
-{
-    char        *cmd;
-
-    cmd = NULL;
-    if( PrevCommand != NULL )
-        _LnkFree( PrevCommand );
-    if( LinkCommands != NULL ) {
-        PrevCommand = LinkCommands;
-        LinkCommands = LinkCommands->next;
-        cmd = PrevCommand->commands;
-    }
-    return( cmd );
-}
-
-void Syntax( void )
-/************************/
-{
-    if( Token.this == NULL ) {
-        LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR_BEGINNING, NULL );
-    } else {
-        ((char *)Token.this)[Token.len] = '\0';
-        LnkMsg( LOC+LINE+FTL+MSG_DIRECTIVE_ERR, "s", Token.this );
-    }
-}
-
-#define HELPLINE_SIZE   80
-
-static void Crash( bool check_file )
-/**********************************/
-{
-    char        buff[HELPLINE_SIZE + 1];
-    size_t      len;
-    f_handle    fp;
-
-    if( check_file ) {
-        fp = FindPath( HELP_FILE_NAME, NULL );
-        if( fp != NIL_FHANDLE ) {
-            WLPrtBanner();
-            len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
-            for( ; len != 0 && len != IOERROR; ) {
-                buff[len] = '\0';
-                WriteStdOut( buff );
-                len = QRead( fp, buff, HELPLINE_SIZE, HELP_FILE_NAME );
-            }
-            QClose( fp, HELP_FILE_NAME );
-            Ignite();
-            Suicide();
-        }
-    }
-    DisplayOptions();
-    Ignite();
-    Suicide();
-}
-
-static void Help( void )
-/**********************/
-// display help, optionally allowing the user to specifiy the format he/she
-// wants the help for.
-{
-    EatWhite();
-    if( *Token.next == '?' ) {
-        Crash( false );
-    } else if( *Token.next == '\0' || !ProcOne( FormatHelp, SEP_NO, false ) ) {
-        Crash( true );
-    } else {
-        Ignite();
-        Suicide();
-    }
-}
-
-static void DoCmdParse( void )
-/****************************/
-{
-    while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
-        if( !ProcOne( Directives, SEP_NO, true ) ) {
-            Syntax();
-        }
-        RestoreParser();
-    }
-}
-
-int DoBuffCmdParse( const char *cmd )
-/***********************************/
-{
-    NewCommandSource( NULL, cmd, COMMANDLINE );
-    return( Spawn( DoCmdParse ) );
-}
-
-static void WriteGenHelp( void )
-/******************************/
-{
-    WLPrtBanner();
-    WriteHelp( MSG_GENERAL_HELP_0, MSG_GENERAL_HELP_51, false );
-}
-
-static void DisplayOptions( void )
-/********************************/
-{
-    bool    isout;
-
-    isout = false;
-    if( CmdFlags & CF_TO_STDOUT ) {
-        isout = true;
-    }
-    WriteGenHelp();
-#if defined( _QNX ) && defined( __QNX__ )
-    WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, isout );
-#endif
-#ifdef _EXE
-    WriteHelp( MSG_DOS_HELP_0, MSG_DOS_HELP_15, isout );
-#endif
-#ifdef _OS2
-    WriteHelp( MSG_OS2_HELP_0, MSG_OS2_HELP_31, isout );
-    WriteHelp( MSG_WINDOWS_HELP_0, MSG_WINDOWS_HELP_31, isout );
-    WriteHelp( MSG_WIN_VXD_HELP_0, MSG_WIN_VXD_HELP_31, isout );
-    WriteHelp( MSG_NT_HELP_0, MSG_NT_HELP_31, isout );
-#endif
-#ifdef _PHARLAP
-    WriteHelp( MSG_PHAR_HELP_0, MSG_PHAR_HELP_15, isout );
-#endif
-#ifdef _NOVELL
-    WriteHelp( MSG_NOVELL_HELP_0, MSG_NOVELL_HELP_31, isout );
-#endif
-#ifdef _DOS16M
-    WriteHelp( MSG_DOS16_HELP_0, MSG_DOS16_HELP_15, isout );
-#endif
-#if defined( _QNX ) && !defined( __QNX__ )
-    WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, isout );
-#endif
-#ifdef _ELF
-    WriteHelp( MSG_ELF_HELP_0, MSG_ELF_HELP_15, isout );
-#endif
-#ifdef _ZDOS
-    WriteHelp( MSG_ZDOS_HELP_0, MSG_ZDOS_HELP_15, isout );
-#endif
-#ifdef _RDOS
-    WriteHelp( MSG_RDOS_HELP_0, MSG_RDOS_HELP_15, isout );
-#endif
-#ifdef _RAW
-    WriteHelp( MSG_RAW_HELP_0, MSG_RAW_HELP_15, isout );
-#endif
-}
-
-#ifdef _EXE
-static bool ProcDosHelp( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_DOS_HELP_0, MSG_DOS_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-#ifdef _OS2
-static bool ProcOS2Help( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_OS2_HELP_0, MSG_OS2_HELP_31, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-
-static bool ProcWindowsHelp( void )
-/*********************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_WINDOWS_HELP_0, MSG_WINDOWS_HELP_31, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-
-static bool ProcWinVxdHelp( void )
-/*********************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_WIN_VXD_HELP_0, MSG_WIN_VXD_HELP_31, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-
-static bool ProcNTHelp( void )
-/****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_NT_HELP_0, MSG_NT_HELP_31, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-#ifdef _PHARLAP
-static bool ProcPharHelp( void )
-/******************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_PHAR_HELP_0, MSG_PHAR_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-#ifdef _NOVELL
-static bool ProcNovellHelp( void )
-/********************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_NOVELL_HELP_0, MSG_NOVELL_HELP_31,
-                                                CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-#ifdef _DOS16M
-static bool Proc16MHelp( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_DOS16_HELP_0, MSG_DOS16_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-#ifdef _QNX
-static bool ProcQNXHelp( void )
-/*******************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-
-#ifdef _ELF
-static bool ProcELFHelp( void )
-/*******************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_ELF_HELP_0, MSG_ELF_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-
-#ifdef _ZDOS
-static bool ProcZdosHelp( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_ZDOS_HELP_0, MSG_ZDOS_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-
-#ifdef _RDOS
-static bool ProcRdosHelp( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_RDOS_HELP_0, MSG_RDOS_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-
-#ifdef _RAW
-static bool ProcRawHelp( void )
-/*****************************/
-{
-    WriteGenHelp();
-    WriteHelp( MSG_RAW_HELP_0, MSG_RAW_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( true );
-}
-#endif
-
-static void PressKey( void )
-/**************************/
-{
-    char        msg_buffer[RESOURCE_MAX_SIZE];
-    int         result;
-
-    Msg_Get( MSG_PRESS_KEY, msg_buffer );
-    WriteStdOut( msg_buffer );
-    result = WaitForKey();
-    WriteStdOutNL();
-    if( result == 'q' || result == 'Q' ) {
-        Ignite();
-        Suicide();
-    }
-}
-
-static void WriteHelp( int first_msg, int last_msg, bool prompt )
-/***************************************************************/
-{
-    char        msg_buffer[RESOURCE_MAX_SIZE];
-    bool        previous_null;
-    int         msg;
-
-    if( prompt ) {
-        PressKey();
-    }
-    previous_null = false;
-    for( msg = first_msg; msg <= last_msg; msg++ ) {
-        Msg_Get( msg, msg_buffer );
-        if( msg_buffer[0] == '\0' ) {
-            if( previous_null ) {
-                break;
-            }
-            previous_null = true;
-        } else if( previous_null ) {
-            PressKey();
-            WriteStdOutWithNL( msg_buffer );
-            previous_null = false;
-        } else {
-            WriteStdOutWithNL( msg_buffer );
-        }
-    }
-}
-
-void FreePaths( void )
-/***************************/
-// Free paths & filenames.
-{
-    FreeList( ObjPath );
-    ObjPath = NULL;
-    if( Name != NULL ) {
-        _LnkFree( Name );
-        Name = NULL;
-    }
-}
-
-void Burn( void )
-/**********************/
-// necessary to split this out from Ignite() for the workframe options
-// processor.
-{
-    FreePaths();
-    if( MapFName != NULL ) {
-        _LnkFree( MapFName );
-        MapFName = NULL;
-    }
-    FreeOutFiles();
-    BurnUtils();
-}
-
-void Ignite( void )
-/************************/
-/* free local structures */
-{
-    BurnSystemList();
-    Burn();
-}
-
 void SetFormat( void )
-/***************************/
-// do final processing now that the executable format has been decided.
+/*********************
+ * do final processing now that the executable format has been decided.
+ */
 {
     char        *fname;
 
     if( CmdFlags & CF_NO_EXTENSION ) {
         fname = Name;
     } else {
+#ifdef _RAW
         if( FmtData.output_hex ) {  // override default extension if hex or raw (bin)
-            Extension = E_HEX;       //   has been specified
+            Extension = E_HEX;      //   has been specified
         } else if( FmtData.output_raw ) {
             Extension = E_BIN;
         }
+#endif
         fname = FileName( Name, strlen( Name ), Extension, CmdFlags & CF_UNNAMED );
         _LnkFree( Name );
     }
@@ -685,7 +483,7 @@ void SetFormat( void )
     Name = NULL;
 #ifdef _EXE
     if( FmtData.type & MK_OVERLAYS ) {
-        OvlFillOutFilePtrs();   // fill in all unspecified outfile pointers.
+        OvlFillOutFilePtrs();       // fill in all unspecified outfile pointers.
     }
 #endif
     if( MapFlags & MAP_FLAG ) {
@@ -700,47 +498,8 @@ void SetFormat( void )
     SetRelocSize();
 }
 
-typedef struct {
-    exe_format      bits;
-    char            *lib_var_name;
-    void            (*set_func)(void);
-    void            (*free_func)(void);
-} select_format;
-
-static const select_format PossibleFmt[] = {
-    MK_DOS,         "LIBDOS",       NULL,           NULL,
-#ifdef _DOS16M
-    MK_DOS16M,      "LIBDOS16M",    SetD16MFmt,     FreeD16MFmt,
-#endif
-#ifdef _QNX
-    MK_QNX,         "LIBQNX",       SetQNXFmt,      FreeQNXFmt,
-#endif
-#ifdef _ELF
-    MK_ELF,         "LIBELF",       SetELFFmt,      FreeELFFmt,
-#endif
-#ifdef _OS2
-    MK_WINDOWS,     "LIBWIN",       SetOS2Fmt,      FreeOS2Fmt,
-    MK_OS2_NE,      "LIBOS2",       SetOS2Fmt,      FreeOS2Fmt,
-    MK_OS2_LE,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
-    MK_OS2_LX,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
-    MK_PE,          "LIBPE",        SetOS2Fmt,      FreeOS2Fmt,
-    MK_WIN_VXD,     "LIBVXD",       SetOS2Fmt,      FreeOS2Fmt,
-#endif
-#ifdef _PHARLAP
-    MK_PHAR_LAP,    "LIBPHAR",      SetPharFmt,     FreePharFmt,
-#endif
-#ifdef _NOVELL
-    MK_NOVELL,      "LIBNOV",       SetNovFmt,      FreeNovFmt,
-#endif
-#ifdef _RDOS
-    MK_RDOS,        "LIBRDOS",      SetRdosFmt,     FreeRdosFmt,
-#endif
-    0,              NULL,           NULL,           NULL
-};
-
-
 void AddFmtLibPaths( void )
-/********************************/
+/*************************/
 {
     const select_format     *check;
     exe_format              possible;
@@ -768,7 +527,7 @@ static void InitFmt( void (*set)(void) )
 }
 
 bool HintFormat( exe_format hint )
-/***************************************/
+/********************************/
 {
     const select_format     *check;
     exe_format              possible;
@@ -802,7 +561,7 @@ bool HintFormat( exe_format hint )
 }
 
 void DecideFormat( void )
-/******************************/
+/***********************/
 {
     exe_format  possible;
     exe_format  allowed;
@@ -824,7 +583,7 @@ void DecideFormat( void )
 }
 
 void FreeFormatStuff( void )
-/***************************/
+/**************************/
 {
     const select_format     *check;
     exe_format              possible;
@@ -842,8 +601,9 @@ void FreeFormatStuff( void )
 }
 
 void AddCommentLib( const char *comment, size_t len, lib_priority priority )
-/**************************************************************************/
-//  Add a library from a comment record.
+/***************************************************************************
+ * Add a library from a comment record.
+ */
 {
     file_list   *result;
     char        *ptr;
@@ -915,9 +675,10 @@ void AddLibPathsToEndList( const char *path_list )
 }
 
 void ExecSystem( const char *name )
-/*********************************/
-/* run a system block with the given name (only called once!)
- * (this is called after the parser has already been stopped */
+/**********************************
+ * run a system block with the given name (only called once!)
+ * (this is called after the parser has already been stopped
+ */
 {
     sysblock    *sys;
 
@@ -929,7 +690,7 @@ void ExecSystem( const char *name )
         _LnkFree( sys->name );
         sys->name = NULL;
         while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
-            if( !ProcOne( SysDirectives, SEP_NO, false ) ) {
+            if( !DoParseDirectiveSubset() ) {
                 LnkMsg( LOC+LINE+WRN+MSG_ERROR_IN_SYSTEM_BLOCK, NULL );
                 RestoreCmdLine();
                 break;
@@ -941,8 +702,9 @@ void ExecSystem( const char *name )
 }
 
 static void CleanSystemList( bool burn )
-/**************************************/
-/* clean up the list of system blocks */
+/***************************************
+ * clean up the list of system blocks
+ */
 {
     sysblock    **sysown;
     sysblock    *sys;
@@ -963,201 +725,17 @@ static void CleanSystemList( bool burn )
 }
 
 void PruneSystemList( void )
-/*********************************/
-/* delete all system blocks except for the "286" and "386" records */
+/***************************
+ * delete all system blocks except for the "286" and "386" records
+ */
 {
     CleanSystemList( false );
 }
 
 void BurnSystemList( void )
-/********************************/
-/* delete everything in the system list */
+/**************************
+ * delete everything in the system list
+ */
 {
     CleanSystemList( true );
 }
-
-bool ProcImport( void )
-/****************************/
-{
-#if defined( _OS2) || defined( _ELF ) || defined( _NOVELL )
-    if( HintFormat( MK_OS2 | MK_PE ) ) {
-        return( ProcOS2Import() );
-    } else if( HintFormat( MK_WIN_VXD ) ) {
-        return( false );
-    } else if( HintFormat( MK_ELF ) ) {
-        return( ProcELFImport() );
-    } else {
-        return( ProcNovImport() );
-    }
-#else
-    return( false );
-#endif
-}
-
-#if defined( _OS2 ) || defined( _NOVELL )
-bool ProcExport( void )
-/****************************/
-{
-#ifdef _OS2
-    if( HintFormat( ( MK_OS2 | MK_PE | MK_WIN_VXD ) ) ) {
-        return( ProcOS2Export() );
-    } else
-#endif
-#ifdef _NOVELL
-            {
-        return( ProcNovExport() );
-    }
-#endif
-}
-#endif
-
-#if defined( _DOS16M ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF )
-bool ProcNoRelocs( void )
-/******************************/
-{
-#if defined( _QNX )
-    if( HintFormat( MK_QNX ) ) {
-        return( ProcQNXNoRelocs() );
-    }
-#endif
-#if defined( _OS2 )
-    if( HintFormat( MK_PE ) ) {
-        return( ProcPENoRelocs() );
-    }
-#endif
-#ifdef _DOS16M
-    if( HintFormat( MK_DOS16M ) ) {
-        return( Proc16MNoRelocs() );
-    }
-#endif
-#if defined( _ELF )
-    if( HintFormat( MK_ELF ) ) {
-        return( ProcELFNoRelocs() );
-    }
-#endif
-    return( true );
-}
-#endif
-
-#if defined( _OS2 ) || defined( _QNX )
-bool ProcSegment( void )
-/*****************************/
-{
-#ifdef _OS2
-    if( HintFormat( MK_OS2 | MK_PE | MK_WIN_VXD ) ) {
-        return( ProcOS2Segment() );
-    }
-#endif
-#ifdef _QNX
-    if( HintFormat( MK_QNX ) ) {
-        return( ProcQNXSegment() );
-    }
-#endif
-    return( true );
-}
-#endif
-
-bool ProcAlignment( void )
-/*******************************/
-{
-#if defined( _OS2 ) || defined( _ELF )
-    if( HintFormat( MK_OS2_16BIT | MK_OS2_LX | MK_PE ) ) {
-        return( ProcOS2Alignment() );
-    } else if( HintFormat( MK_ELF ) ) {
-        return( ProcELFAlignment() );
-    }
-#endif
-    return( true );
-}
-
-bool ProcHeapSize( void )
-/******************************/
-{
-#if defined( __QNX__ )
-    if( HintFormat( MK_QNX ) ) {
-        return( ProcQNXHeapSize() );
-    }
-#endif
-#ifdef _OS2
-    if( HintFormat( MK_OS2 | MK_PE ) ) {
-        return( ProcOS2HeapSize() );
-    }
-#endif
-#if defined( _QNX ) && !defined( __QNX__ )
-    if( HintFormat( MK_QNX ) ) {
-        return( ProcQNXHeapSize() );
-    }
-#endif
-    return( true );
-}
-
-#if defined( _PHARLAP ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF ) || defined( _RAW )
-bool ProcOffset( void )
-/****************************/
-{
-    if( !GetLong( &FmtData.base ) )
-        return( false );
-#ifdef _PHARLAP
-    if( FmtData.type & MK_PHAR_LAP ) {
-        ChkBase( _4KB );
-        return( true );
-    }
-#endif
-#ifdef _QNX
-    if( FmtData.type & MK_QNX_FLAT ) {
-        ChkBase( _4KB );
-        return( true );
-    }
-#endif
-#ifdef _RAW
-    if( FmtData.type & MK_RAW ) {
-        ChkBase( _4KB );
-        return( true );
-    }
-#endif
-//#ifdef _OS2
-//    if( FmtData.type & (MK_OS2 | MK_PE) ) {
-//        ChkBase( _64KB );
-//        return( true );
-//    }
-//#endif
-//#ifdef _ELF
-//    if( FmtData.type & MK_ELF ) {
-//        ChkBase( _4KB );
-//        return( true );
-//    }
-//#endif
-    ChkBase( _64KB );
-    return( true );
-}
-#endif
-
-#ifdef _INT_DEBUG
-bool ProcXDbg( void )
-/**************************/
-/* process DEBUG command */
-{
-    char        value[7];
-
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
-        if( Token.len > 6 ) {
-            return( false );
-        } else {
-            memcpy( value, Token.this, Token.len );
-            value[Token.len] = '\0';
-            Debug = strtoul( value, NULL, 0 );
-            DEBUG(( DBG_BASE, "debugging info type = %x", Debug ));
-        }
-        return( true );
-    } else {
-        return( false );
-    }
-}
-
-bool ProcIntDbg( void )
-/****************************/
-{
-    LinkState |= LS_INTERNAL_DEBUG;
-    return( true );
-}
-#endif

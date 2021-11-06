@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +73,6 @@
 #endif
 
 #ifdef __OS2_PM__
-    #define GUI_RECTDIM WPI_RECTDIM
     #define _wpi_cvth_y_plus1( y, h ) ((h) - (y))
     #define _wpi_cvth_y_size( y, h, size ) ((h) - (y) - 1 - (size))
     #define _wpi_cvth_y_size_plus1( y, h, size ) ((h) - (y) - (size))
@@ -98,7 +98,6 @@
         (prect)->yBottom = 0;
     #define _wpi_dlgreturn( flag )              return( MRFROMSHORT( flag ) )
 #else
-    #define GUI_RECTDIM WPI_RECTDIM
     #define _wpi_cvth_y_plus1( y, h ) (y)
     #define _wpi_cvth_y_size( y, h, size ) (y)
     #define _wpi_cvth_y_size_plus1( y, h, size ) (y)

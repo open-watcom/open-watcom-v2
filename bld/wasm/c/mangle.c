@@ -200,25 +200,25 @@ char *Mangle( struct asm_sym *sym, char *buffer )
     mangle_func mangler;
 
     switch( sym->langtype ) {
-    case LANG_SYSCALL:
+    case WASM_LANG_SYSCALL:
         mangler = AsmMangler;
         break;
-    case LANG_STDCALL:
+    case WASM_LANG_STDCALL:
         mangler = StdUScoreMangler;
         break;
-    case LANG_BASIC:
-    case LANG_FORTRAN:
-    case LANG_PASCAL:
+    case WASM_LANG_BASIC:
+    case WASM_LANG_FORTRAN:
+    case WASM_LANG_PASCAL:
         mangler = UCaseMangler;
         break;
-    case LANG_WATCOM_C:
+    case WASM_LANG_WATCOM_C:
         mangler = WatcomCMangler;
         break;
-    case LANG_C:
+    case WASM_LANG_C:
         mangler = CMangler;
         break;
     default:
-    case LANG_NONE:
+    case WASM_LANG_NONE:
         mangler = sym->mangler;
         if( mangler == NULL )
             mangler = GetMangler( Options.default_name_mangler );
@@ -235,7 +235,7 @@ void SetMangler( struct asm_sym *sym, char *mangle_type, int langtype )
 {
     mangle_func mangler;
 
-    if( langtype != LANG_NONE )
+    if( langtype != WASM_LANG_NONE )
         sym->langtype = langtype;
     mangler = GetMangler( mangle_type );
     if( mangler == NULL ) {

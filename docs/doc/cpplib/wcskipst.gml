@@ -12,7 +12,7 @@ while the skip list set allows only one copy.
 The equality operator of the element's type is used to locate the value.
 :P.
 In the description of each member function, the text
-.MONO Type
+:MONO.Type
 is used to indicate the template parameter defining
 .if &lpref. eq Val .do begin
 the type of the data to be stored in the list.
@@ -47,29 +47,29 @@ See the chapter on hash iterators for more information.
 :HDG.Requirements of Type
 
 The &cls requires
-.MONO Type
+:MONO.Type
 to have:
 .if &lpref. eq Val .do begin
 :P.
 A default constructor (
-.MONO Type::Type()
+:MONO.Type::Type()
 ).
 :P.
 A well defined copy constructor (
-.MONO Type::Type( const Type & )
+:MONO.Type::Type( const Type & )
 ).
 .do end
 :P.
 A well defined equivalence operator
 .br
 (
-.MONO int operator ==( const Type & ) const
+:MONO.int operator ==( const Type & ) const
 ).
 :P.
 A well defined less than operator
 .br
 (
-.MONO int operator <( const Type & ) const
+:MONO.int operator <( const Type & ) const
 ).
 
 :HDG.Public Member Functions
@@ -107,7 +107,7 @@ The following member functions are declared in the public interface:
 .do end
 :eMFNL.
 The following public member functions are available for the
-.MONO WC&lpref.SkipList
+:MONO.WC&lpref.SkipList
 class only:
 :MFNL.
 .if &lpref eq Val .do begin
@@ -143,32 +143,32 @@ The following member operators are declared in the public interface:
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.SkipListSet<Type>
+:MONO.WC&lpref.SkipListSet<Type>
 constructor creates a
-.MONO WC&lpref.SkipListSet
+:MONO.WC&lpref.SkipListSet
 object with no entries.
 The first optional parameter, which defaults to the constant
-.MONO WCSKIPLIST_PROB_QUARTER,
-determines the probability of having a certain number of pointers in each
+:MONO.WCSKIPLIST_PROB_QUARTER
+:CONT., determines the probability of having a certain number of pointers in each
 skip list node.
 The second optional parameter, which defaults to the constant
-.MONO WCDEFAULT_SKIPLIST_MAX_PTRS,
-determines the maximum number of pointers that are allowed in any
+:MONO.WCDEFAULT_SKIPLIST_MAX_PTRS
+:CONT., determines the maximum number of pointers that are allowed in any
 skip list node.
-.MONO WCDEFAULT_SKIPLIST_MAX_PTRS
+:MONO.WCDEFAULT_SKIPLIST_MAX_PTRS
 is the maximum effective value of the second parameter.
 If an allocation failure occurs while creating the skip list, the
-.MONO out_of_memory
+:MONO.out_of_memory
 exception is thrown if the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is enabled.
 
 :RSLTS.
 The
-.MONO WC&lpref.SkipListSet<Type>
+:MONO.WC&lpref.SkipListSet<Type>
 constructor creates an initialized
-.MONO WC&lpref.SkipListSet
+:MONO.WC&lpref.SkipListSet
 object.
 :SALSO.
 :SAL typ='dtor'.
@@ -202,12 +202,12 @@ To determine the size of
 the objects that the memory management functions will be
 required to allocate and free, the following macro may be used:
 .br
-.MONO WC&lpref.SkipListSetItemSize( Type, num_of_pointers )
+:MONO.WC&lpref.SkipListSetItemSize( Type, num_of_pointers )
 :RSLTS.
 The
-.MONO WC&lpref.SkipListSet<Type>
+:MONO.WC&lpref.SkipListSet<Type>
 constructor creates an initialized
-.MONO WC&lpref.SkipListSet
+:MONO.WC&lpref.SkipListSet
 object.
 :SALSO.
 :SAL typ='dtor'.
@@ -223,9 +223,9 @@ object.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.SkipListSet<Type>
+:MONO.WC&lpref.SkipListSet<Type>
 constructor is the copy constructor for the
-.MONO WC&lpref.SkipListSet
+:MONO.WC&lpref.SkipListSet
 class.
 The new skip list is created with the same probability and maximum pointers,
 all values or pointers stored in the list, and the exception trap states.
@@ -233,14 +233,14 @@ If there is not enough memory to copy all of
 the values, then only some will be copied,
 and the number of entries will correctly reflect the number copied.
 If all of the elements cannot be copied, then the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 :RSLTS.
 The
-.MONO WC&lpref.SkipListSet<Type>
+:MONO.WC&lpref.SkipListSet<Type>
 constructor creates a
-.MONO WC&lpref.SkipListSet
+:MONO.WC&lpref.SkipListSet
 object which is a copy of the passed list.
 :SALSO.
 :SAL typ='fun'.operator~b=
@@ -256,33 +256,33 @@ object which is a copy of the passed list.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.SkipListSet<Type>
+:MONO.WC&lpref.SkipListSet<Type>
 destructor is the destructor for the
-.MONO WC&lpref.SkipListSet
+:MONO.WC&lpref.SkipListSet
 class.
 If the number of elements is not zero and the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled, the exception is thrown.
 Otherwise, the list elements are cleared using the
-.MONO clear
+:MONO.clear
 member function.
 .if &lpref. eq Ptr .do begin
 The objects which the list elements point to are not deleted unless the
-.MONO clearAndDestroy
+:MONO.clearAndDestroy
 member function is explicitly called before the destructor is called.
 .do end
 The call to the
-.MONO WC&lpref.SkipListSet<Type>
+:MONO.WC&lpref.SkipListSet<Type>
 destructor is inserted implicitly by the compiler
 at the point where the
-.MONO WC&lpref.SkipListSet
+:MONO.WC&lpref.SkipListSet
 object goes out of scope.
 :RSLTS.
 The call to the
-.MONO WC&lpref.SkipListSet<Type>
+:MONO.WC&lpref.SkipListSet<Type>
 destructor destroys a
-.MONO WC&lpref.SkipListSet
+:MONO.WC&lpref.SkipListSet
 object.
 :SALSO.
 :SAL typ='fun'.clear
@@ -302,32 +302,32 @@ object.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.SkipList<Type>
+:MONO.WC&lpref.SkipList<Type>
 constructor creates a
-.MONO WC&lpref.SkipList
+:MONO.WC&lpref.SkipList
 object with no entries.
 The first optional parameter, which defaults to the constant
-.MONO WCSKIPLIST_PROB_QUARTER,
-determines the probability of having a certain number of pointers in each
+:MONO.WCSKIPLIST_PROB_QUARTER
+:CONT., determines the probability of having a certain number of pointers in each
 skip list node.
 The second optional parameter, which defaults to the constant
-.MONO WCDEFAULT_SKIPLIST_MAX_PTRS,
-determines the maximum number of pointers that are allowed in any
+:MONO.WCDEFAULT_SKIPLIST_MAX_PTRS
+:CONT., determines the maximum number of pointers that are allowed in any
 skip list node.
-.MONO WCDEFAULT_SKIPLIST_MAX_PTRS
+:MONO.WCDEFAULT_SKIPLIST_MAX_PTRS
 is the maximum effective value of the second parameter.
 If an allocation failure occurs while creating the skip list, the
-.MONO out_of_memory
+:MONO.out_of_memory
 exception is thrown if the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is enabled.
 
 :RSLTS.
 The
-.MONO WC&lpref.SkipList<Type>
+:MONO.WC&lpref.SkipList<Type>
 constructor creates an initialized
-.MONO WC&lpref.SkipList
+:MONO.WC&lpref.SkipList
 object.
 :SALSO.
 :SAL typ='dtor'.
@@ -361,12 +361,12 @@ To determine the size of
 the objects that the memory management functions will be
 required to allocate and free, the following macro may be used:
 .br
-.MONO WC&lpref.SkipListItemSize( Type, num_of_pointers )
+:MONO.WC&lpref.SkipListItemSize( Type, num_of_pointers )
 :RSLTS.
 The
-.MONO WC&lpref.SkipList<Type>
+:MONO.WC&lpref.SkipList<Type>
 constructor creates an initialized
-.MONO WC&lpref.SkipList
+:MONO.WC&lpref.SkipList
 object.
 :SALSO.
 :SAL typ='dtor'.
@@ -382,9 +382,9 @@ object.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.SkipList<Type>
+:MONO.WC&lpref.SkipList<Type>
 constructor is the copy constructor for the
-.MONO WC&lpref.SkipList
+:MONO.WC&lpref.SkipList
 class.
 The new skip list is created with the same probability and maximum pointers,
 all values or pointers stored in the list, and the exception trap states.
@@ -392,14 +392,14 @@ If there is not enough memory to copy all of
 the values, then only some will be copied,
 and the number of entries will correctly reflect the number copied.
 If all of the elements cannot be copied, then the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 :RSLTS.
 The
-.MONO WC&lpref.SkipList<Type>
+:MONO.WC&lpref.SkipList<Type>
 constructor creates a
-.MONO WC&lpref.SkipList
+:MONO.WC&lpref.SkipList
 object which is a copy of the passed list.
 :SALSO.
 :SAL typ='fun'.operator~b=
@@ -415,33 +415,33 @@ object which is a copy of the passed list.
 :eSNPL.
 :SMTICS.
 The
-.MONO WC&lpref.SkipList<Type>
+:MONO.WC&lpref.SkipList<Type>
 destructor is the destructor for the
-.MONO WC&lpref.SkipList
+:MONO.WC&lpref.SkipList
 class.
 If the number of elements is not zero and the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled, the exception is thrown.
 Otherwise, the list elements are cleared using the
-.MONO clear
+:MONO.clear
 member function.
 .if &lpref. eq Ptr .do begin
 The objects which the list elements point to are not deleted unless the
-.MONO clearAndDestroy
+:MONO.clearAndDestroy
 member function is explicitly called before the destructor is called.
 .do end
 The call to the
-.MONO WC&lpref.SkipList<Type>
+:MONO.WC&lpref.SkipList<Type>
 destructor is inserted implicitly by the compiler
 at the point where the
-.MONO WC&lpref.SkipList
+:MONO.WC&lpref.SkipList
 object goes out of scope.
 :RSLTS.
 The call to the
-.MONO WC&lpref.SkipList<Type>
+:MONO.WC&lpref.SkipList<Type>
 destructor destroys a
-.MONO WC&lpref.SkipList
+:MONO.WC&lpref.SkipList
 object.
 :SALSO.
 :SAL typ='fun'.clear
@@ -464,7 +464,8 @@ The &fn. is used to clear the list so that it has no entries.
 .if &lpref. eq Val .do begin
 Elements stored in the list are destroyed using
 the destructors of
-.MONO Type.
+:MONO.Type
+:PERIOD.
 .do end
 .el .do begin
 Objects pointed to by the list elements are not deleted.
@@ -606,7 +607,7 @@ void user_func( Type * value, void * data );
 As the elements are visited, the user function is invoked with the
 element passed as the first.
 The second parameter of the
-.MONO forAll
+:MONO.forAll
 function is passed as the second parameter to the user function.
 This value can be used to pass any appropriate data from the main code to the
 user function.
@@ -634,17 +635,17 @@ The &fn. inserts
 a value into the list.
 If allocation of the
 node to store the value fails, then the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 If the exception is not enabled, the insert will not be completed.
 :P.
 With a
-.MONO WC&lpref.SkipListSet,
-there must be only one equivalent element in the set.
+:MONO.WC&lpref.SkipListSet
+:CONT., there must be only one equivalent element in the set.
 If an element equivalent to the inserted element is already
 in the list set, the list set will remain unchanged, and the
-.MONO not_unique
+:MONO.not_unique
 .ix 'not_unique' 'exception'
 exception is thrown if it is enabled.
 If the exception is not enabled, the insert will not be completed.
@@ -708,15 +709,16 @@ equivalent to the passed value.
 :SNPF index='operator ='   .WC&lpref.SkipListSet & operator =( const WC&lpref.SkipListSet & );
 :eSNPL.
 :SMTICS.
-The &fn. is the assignment operator for the &cls.:PERIOD.
+The &fn. is the assignment operator for the &cls.
+:PERIOD.
 The left hand side list is first cleared using the
-.MONO clear
+:MONO.clear
 member function, and then the right hand side list is copied.
 The list function, exception trap states, and all of the list
 elements are copied.
 If there is not enough memory to copy all of
 the values or pointers in the list, then only some will be copied, and the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception is thrown if it is enabled.
 The number of entries will correctly reflect the number copied.
@@ -737,7 +739,8 @@ right hand side.
 :SNPF index='operator =='.int operator ==( const WC&lpref.SkipListSet & ) const;
 :eSNPL.
 :SMTICS.
-The &fn. is the equivalence operator for the &cls.:PERIOD.
+The &fn. is the equivalence operator for the &cls.
+:PERIOD.
 Two list objects are equivalent if they are the same object and share the
 same address.
 :RSLTS.
@@ -769,10 +772,10 @@ the pointer
 value is returned.
 Zero is returned if the element is not found.
 If the list is a
-.MONO WC&lpref.SkipList
+:MONO.WC&lpref.SkipList
 and there is more than one element equivalent to the specified
 element, then the last equivalent element added to the
-.MONO WC&lpref.SkipList
+:MONO.WC&lpref.SkipList
 is removed.
 :INCLUDE file='_valequ.gml'
 :RSLTS.

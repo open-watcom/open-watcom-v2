@@ -16,7 +16,7 @@ use as a Windows callback function.
 This callback function will invoke the 32-bit far procedure specified
 by
 .arg fcn
-.ct .li .
+.period
 The types of callback functions that may be allocated are:
 .begterm 8
 .term GETPROC_CALLBACK
@@ -206,7 +206,7 @@ pointer to a function within the 32-bit program.
 Note that the callback function within the 32-bit program must be
 declared as
 .kw FAR
-.ct .li .
+.period
 .return end
 .see begin
 .seelist ReleaseProc16

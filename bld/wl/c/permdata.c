@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,6 @@
 #include "dbgall.h"
 #include "carve.h"
 #include "alloc.h"
-#include "command.h"
 #include "reloc.h"
 #include "fileio.h"
 #include "virtmem.h"
@@ -551,8 +550,8 @@ void WritePermData( void )
     hdr.numuserlibs = WriteLibList( &info, true );
     hdr.numdeflibs = WriteLibList( &info, false );
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
-        PrepNameTable( FmtData.u.os2.mod_ref_list, &info );
-        PrepNameTable( FmtData.u.os2.imp_tab_list, &info );
+        PrepNameTable( FmtData.u.os2fam.mod_ref_list, &info );
+        PrepNameTable( FmtData.u.os2fam.imp_tab_list, &info );
         hdr.numdllsyms = WriteSmallCarve( CarveDLLInfo, MarkDLLInfo, WriteDLLInfo, &info );
         hdr.numexports = WriteSmallCarve( CarveExportInfo, MarkExportInfo, WriteExportInfo, &info );
     }
@@ -625,7 +624,7 @@ static void ReadGroupsList( unsigned count, perm_read_info *info )
 {
     incgroupdef         *def;
     unsigned_32         size;
-    char                **p;
+    const char          **p;
 
     while( count-- ) {
         size = BufReadU32( info );

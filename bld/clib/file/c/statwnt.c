@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,14 +48,16 @@
 #include <mbstring.h>
 #include <windows.h>
 #include "rterrno.h"
-#include "int64.h"
 #include "libwin32.h"
 #include "ntext.h"
 #include "osver.h"
 #include "seterrno.h"
 #include "thread.h"
 #include "pathmac.h"
+#include "i64.h"
 
+
+#define MAKE_SIZE64(__x,__hi,__lo)    ((unsigned_64 *)&__x)->u._32[I64LO32] = __lo; ((unsigned_64 *)&__x)->u._32[I64HI32] = __hi
 
 static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 {
@@ -88,7 +90,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
         /*
          * NT likes to refer to CON as CONIN$ or CONOUT$.
          */
-        if( !__F_NAME(stricmp,_wcsicmp)( fname, STRING( "con" ) ) ) {
+        if( !__F_NAME(_stricmp,_wcsicmp)( fname, STRING( "con" ) ) ) {
             tmp = STRING( "conin$" );
         } else {
             tmp = orig_path;  /* Need full name with path for CreateFile */
@@ -130,7 +132,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
         /* determine if file is executable, very PC specific */
         if( (ext = __F_NAME(strchr,wcschr)( fname, EXT_SEP )) != NULL ) {
             ++ext;
-            if( __F_NAME(stricmp,_wcsicmp)( ext, STRING( "exe" ) ) == 0 ) {
+            if( __F_NAME(_stricmp,_wcsicmp)( ext, STRING( "exe" ) ) == 0 ) {
                 mode |= S_IXUSR | S_IXGRP | S_IXOTH;
             }
         }
@@ -216,12 +218,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     buf->st_rdev = buf->st_dev;
 
 #ifdef __INT64__
-    {
-        INT_TYPE        tmp;
-
-        MAKE_INT64( tmp, ffd.nFileSizeHigh, ffd.nFileSizeLow );
-        buf->st_size = GET_REALINT64(tmp);
-    }
+    MAKE_SIZE64( buf->st_size, ffd.nFileSizeHigh, ffd.nFileSizeLow );
 #else
     buf->st_size = ffd.nFileSizeLow;
 #endif

@@ -6,4 +6,3 @@ linkage=static
 convention=register
 
 !include $(clib_dir)/mklib.mif
-!include ../../../deps.mif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,12 +64,15 @@
 #include "rtti.h"
 #include "cgcli.h"
 #include "fold.h"
-
-
 #ifndef NDEBUG
     #include "pragdefn.h"
     #include "dbg.h"
-    #define dump_label( ins ) if( PragDbgToggle.dump_labels ) ins
+    #include "togglesd.h"
+#endif
+
+
+#ifndef NDEBUG
+    #define dump_label( ins ) if( TOGGLEDBG( dump_labels ) ) ins
 #else
     #define dump_label( ins )
 #endif
@@ -709,7 +712,7 @@ static SE* buildObjectSe        // BUILD SUBOBJ STATE ENTRY
     type = CDoptIterType( iter );
     array_type = ArrayType( type );
     if( NULL == array_type ) {
-        se->subobj.type = StructType( type );
+        se->subobj.type = ClassType( type );
         se->subobj.dtor = CDoptIterFunction( iter );
     } else {
         se->subobj.type = array_type;
@@ -729,7 +732,7 @@ static STAB_OBJ* buildObjectStateTable( // BUILD STATE TABLE FOR OBJECT
     TITER comp_type;            // - type of component
     SE* se;                     // - current state entry
 
-    type = StructType( type );
+    type = ClassType( type );
     if( ! TypeRequiresDtoring( type ) ) {
         obj = NULL;
     } else {
@@ -759,7 +762,7 @@ static STAB_OBJ* buildObjectStateTable( // BUILD STATE TABLE FOR OBJECT
                 obj->state_virtual = 0;
                 obj->defn = StabDefnAllocate( DTRG_OBJECT );
 #ifndef NDEBUG
-                if( PragDbgToggle.dump_stab ) {
+                if( TOGGLEDBG( dump_stab ) ) {
                     printf( "State Table for static object: %p\n"
                           , &obj->defn->state_table );
                 }
@@ -821,7 +824,7 @@ static STAB_OBJ* buildObjectStateTable( // BUILD STATE TABLE FOR OBJECT
                 obj->state_direct = SeStateOptimal( se_dir );
                 obj->state_virtual = SeStateOptimal( se_virt );
 #ifndef NDEBUG
-                if( PragDbgToggle.dump_stab ) {
+                if( TOGGLEDBG( dump_stab ) ) {
                     DbgDumpStateTableDefn( obj->defn );
                 }
 #endif
@@ -1336,7 +1339,7 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
     CGFILE *file_ctl,               // - current file
     call_handle call )              // - handle for call when gen'ing inline fun.
 {
-    register CGVALUE ins_value;     // - value on intermediate-code instruction
+    CGVALUE         ins_value;      // - value on intermediate-code instruction
     FN_CTL          *fctl;          // - file control pointer
     CGINTER         *ins;           // - next intermediate-code instruction
     unsigned        ctr;            // - used as counter
@@ -2965,10 +2968,10 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
 //          DEBUGGING -- internal (not in production version)
 //
         case IC_TRACE_BEG :                 // TURN IC TRACE ON
-            PragDbgToggle.dump_exec_ic = true;
+            TOGGLEDBG( dump_exec_ic ) = true;
             break;
         case IC_TRACE_END :                 // TURN IC TRACE OFF
-            PragDbgToggle.dump_exec_ic = false;
+            TOGGLEDBG( dump_exec_ic ) = false;
             break;
 #endif
         }
@@ -3002,7 +3005,7 @@ static void writeVirtualFile(   // EMIT AND FREE A VIRTUAL FILE
     FstabInit();
 #ifndef NDEBUG
     func = file_ctl->symbol;
-    if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab || PragDbgToggle.dump_exec_ic ) {
+    if( TOGGLEDBG( callgraph ) || TOGGLEDBG( dump_stab ) || TOGGLEDBG( dump_exec_ic ) ) {
         if( func == NULL ) {
             printf( "generating module data\n" );
         } else {
@@ -3011,14 +3014,14 @@ static void writeVirtualFile(   // EMIT AND FREE A VIRTUAL FILE
             VbufFree( &vbuf );
         }
     }
-    if( PragDbgToggle.genned ) {
+    if( TOGGLEDBG( genned ) ) {
         DbgGenned( func );
     }
 #endif
 //    fctl = emit_virtual_file( file_ctl, NULL );
     emit_virtual_file( file_ctl, NULL );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         FstabDump();
     }
 #endif
@@ -3127,8 +3130,8 @@ void CgBackEnd(                 // BACK-END CONTROLLER
     CDoptBackEnd();
     MarkFuncsToGen( max_inline_depth );
 #ifndef NDEBUG
-    PragDbgToggle.callgraph_scan = false;
-    if( PragDbgToggle.dump_cg ) {
+    TOGGLEDBG( callgraph_scan ) = false;
+    if( TOGGLEDBG( dump_cg ) ) {
         GenSwitches |= ECHO_API_CALLS;
     }
 #endif
@@ -3225,17 +3228,17 @@ void FEGenProc(                 // INLINE SUPPORT
     ExtraRptIncrementCtr( ctr_inlines );
 #ifndef NDEBUG
     curr = CallStabStateTablePosn( call );
-    if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab ) {
+    if( TOGGLEDBG( callgraph ) || TOGGLEDBG( dump_stab ) ) {
         VBUF vbuf;
-        if( PragDbgToggle.dump_exec_ic )
+        if( TOGGLEDBG( dump_exec_ic ) )
             printf( "\n" );
         printf( "start of inline function: %s\n", DbgSymNameFull( sym, &vbuf ) );
-        if( PragDbgToggle.dump_stab ) {
+        if( TOGGLEDBG( dump_stab ) ) {
             printf( "   positions: state-table(%p) call(%p)\n"
                   , FstabCurrPosn()
                   , curr );
         }
-        if( PragDbgToggle.dump_exec_ic ) {
+        if( TOGGLEDBG( dump_exec_ic ) ) {
             printf( "\n" );
         }
         VbufFree( &vbuf );
@@ -3250,17 +3253,17 @@ void FEGenProc(                 // INLINE SUPPORT
     cursor = file_ctl->cursor;
     emit_virtual_file( file_ctl, call );
 #ifndef NDEBUG
-    if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab ) {
+    if( TOGGLEDBG( callgraph ) || TOGGLEDBG( dump_stab ) ) {
         VBUF vbuf;
-        if( PragDbgToggle.dump_exec_ic )
+        if( TOGGLEDBG( dump_exec_ic ) )
             printf( "\n" );
         printf( "end of inline function: %s\n", DbgSymNameFull( sym, &vbuf ) );
-        if( PragDbgToggle.dump_stab ) {
+        if( TOGGLEDBG( dump_stab ) ) {
             printf( "   positions: state-table(%p) marked_posn(%p)\n"
                   , FstabCurrPosn()
                   , FstabMarkedPosn() );
         }
-        if( PragDbgToggle.dump_exec_ic ) {
+        if( TOGGLEDBG( dump_exec_ic ) ) {
             printf( "\n" );
         }
         VbufFree( &vbuf );

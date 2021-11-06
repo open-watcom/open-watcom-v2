@@ -20,15 +20,15 @@ The parameters
 and
 .arg argv
 are the argument count and argument array as passed to
-.kw main
-.ct .li .
+.reffunc main
+.period
 The argument
 .arg optstring
 is a string of recognised option characters; if a character is followed by a
 colon, the option takes an argument. All option characters allowed by Utility
 Syntax Guideline 3 are allowed in
 .arg optstring
-.ct .li .
+.period
 .np
 The global variable
 .kw optind
@@ -37,7 +37,7 @@ is the index of the next element of the
 vector to be processed. It is initialised to 1 by the system, and &funcb
 updates it when it finishes with each element of
 .arg argv[]
-.ct .li .
+.period
 When an element of
 .arg argv[]
 contains multiple option characters,
@@ -51,7 +51,7 @@ function returns the next option character (if one is found) from
 .arg argv
 that matches a character in
 .arg optstring
-.ct, if there is one that matches. If the option takes an argument,
+.ct , if there is one that matches. If the option takes an argument,
 .id &funcb.
 sets
 the variable
@@ -60,17 +60,17 @@ to point to the option-argument as follows:
 .np
 If the option was the last character in the string pointed to by an element of
 .arg argv
-.ct, then
+.ct , then
 .kw optarg
 contains the next element of
 .arg argv
-.ct, and
+.ct , and
 .kw optind
 is incremented by 2. If the resulting value of
 .kw optind
 is not less than
 .arg argc
-.ct, this indicates a missing option-argument, and
+.ct , this indicates a missing option-argument, and
 .id &funcb.
 returns an error
 indication.
@@ -79,7 +79,7 @@ Otherwise,
 .kw optarg
 points to the string following the option character in that element of
 .arg argv
-.ct, and
+.ct , and
 .kw optind
 is incremented by 1.
 .np
@@ -102,20 +102,20 @@ points to the string "-"
 .id &funcb.
 returns -1 without changing
 .kw optind
-.ct .li .
+.period
 If
 .arg argv[optind]
 points to the string "--",
 .id &funcb.
 returns -1 after incrementing
 .kw optind
-.ct .li .
+.period
 .np
 If
 .id &funcb.
 encounters an option character that is not contained in
 .arg optstring
-.ct, it returns the question-mark (?) character. If it detects a missing
+.ct , it returns the question-mark (?) character. If it detects a missing
 option-argument, it returns the colon character (:) if the first character of
 .arg optstring
 was a colon, or a question-mark character (?) otherwise. In either case, &funcb
@@ -130,7 +130,7 @@ is not a colon,
 .id &funcb.
 also prints a diagnostic message to
 .kw stderr
-.ct .li .
+.period
 .np
 The
 .id &funcb.
@@ -211,5 +211,5 @@ when the program is executed with the command
 <program name> -afin -o out
 .blkcode end
 .exmp end
-.class POSIX
+.class POSIX 1003.1
 .system

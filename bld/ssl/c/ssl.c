@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,12 @@
 #include "preproc.h"
 #include "ssl.h"
 #include "sslint.h"
+#if defined( __UNIX__ ) && defined( __WATCOMC__ )
+  #if ( __WATCOMC__ < 1300 )
+    // fix for OW 1.9
+    #include <limits.h>
+  #endif
+#endif
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -55,6 +61,7 @@ int             SavedChar;
 
 
 void OutByte( unsigned char byte )
+/********************************/
 {
     static char Digs[] = "0123456789abcdef";
 
@@ -74,6 +81,7 @@ void OutByte( unsigned char byte )
 }
 
 void OutWord( unsigned short word )
+/*********************************/
 {
 
     OutByte( word & 0xff );
@@ -81,6 +89,7 @@ void OutWord( unsigned short word )
 }
 
 void OutStartSect( char *name, unsigned short len )
+/*************************************************/
 {
     if( Language ) {
         fputs( "char ", PrsFile );
@@ -93,6 +102,7 @@ void OutStartSect( char *name, unsigned short len )
 }
 
 void OutEndSect( void )
+/*********************/
 {
     if( Language ) {
         fputs( "\n};\n", PrsFile );
@@ -101,43 +111,48 @@ void OutEndSect( void )
 
 
 void Dump( char *fmt, ... )
+/*************************/
 {
-    va_list     arglist;
+    va_list     args;
 
     if( TblFile == NULL )
         return;
-    va_start( arglist, fmt );
-    vfprintf( TblFile, fmt, arglist );
-    va_end( arglist );
+    va_start( args, fmt );
+    vfprintf( TblFile, fmt, args );
+    va_end( args );
 }
 
 
 void Error( char *fmt, ... )
+/**************************/
 {
-    va_list     arglist;
+    va_list     args;
 
     if( CurrFile[0] != '\0' ) {
         fprintf( stderr, "%s(%u) Error! ", CurrFile, LineNum );
     }
-    va_start( arglist, fmt );
-    vfprintf( stderr, fmt, arglist );
+    va_start( args, fmt );
+    vfprintf( stderr, fmt, args );
     putc( '\n', stderr );
-    va_end( arglist );
+    va_end( args );
     exit( 1 );
 }
 
 
 static void Usage( void )
+/***********************/
 {
     Error( "Usage: ssl {-(v|c)} filename[.ssl] [out_file]" );
 }
 
 static void UngetChar( int c )
+/****************************/
 {
     SavedChar = c;
 }
 
 static int NextChar( void )
+/*************************/
 {
     int next;
 
@@ -151,14 +166,23 @@ static int NextChar( void )
 }
 
 unsigned short SrcLine( void )
+/****************************/
 {
     return( LineNum );
 }
 
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
 
 static void OpenFiles( bool verbose, char *path, char *out_file )
+/***************************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        file_name[_MAX_PATH];
     bool        given;
 
@@ -197,6 +221,7 @@ static void OpenFiles( bool verbose, char *path, char *out_file )
 
 
 static void CloseFiles( void )
+/****************************/
 {
     fclose( PrsFile );
     if( TblFile != NULL ) {
@@ -207,6 +232,7 @@ static void CloseFiles( void )
 
 
 unsigned short GetNum( void )
+/***************************/
 {
     char        *end;
     unsigned    value;
@@ -221,6 +247,7 @@ unsigned short GetNum( void )
 
 
 void Scan( void )
+/***************/
 {
     static char Delims[] =
     {';',':','?','.','#','{','}','[',']','(',')','>','|','*','@',',','=','\0'};
@@ -323,6 +350,7 @@ void Scan( void )
 
 
 void WantColon( void )
+/********************/
 {
     if( CurrToken != T_COLON )
         Error( "expecting ':'" );
@@ -331,6 +359,7 @@ void WantColon( void )
 
 
 static void Parse( void )
+/***********************/
 {
     Decls();
     if( CurrToken != T_RULES )
@@ -341,6 +370,7 @@ static void Parse( void )
 
 
 int main( int argc, char *argv[] )
+/********************************/
 {
     char        *file;
     bool        verbose;

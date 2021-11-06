@@ -1,5 +1,5 @@
-.gfunc getgtextextent
-.gsynop begin 
+.gfunc _getgtextextent
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _getgtextextent( char _FAR *text );
 .do end
@@ -14,8 +14,8 @@ The
 &routine returns the length in pixels of the argument
 .arg text
 as it would be displayed in the current font by the &routine
-.kw _outgtext
-.ct .li .
+.reffunc _outgtext
+.period
 Note that the text is not displayed on the screen, only its length
 is determined.
 .desc end

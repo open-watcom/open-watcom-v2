@@ -17,11 +17,13 @@ nor
 .arg size
 shall be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 If
 .arg nmemb
 is not equal to zero, then none of
-.arg key, base
+.arg key
+.ct ,
+.arg base
 .ct , or
 .arg compar
 shall be a null pointer.
@@ -42,10 +44,10 @@ which is pointed to by
 .arg base
 .ct , for an element that matches the object pointed to by
 .arg key
-.ct .li .
+.period
 The size of each element of the array is specified by
 .arg size
-.ct .li .
+.period
 The comparison function pointed to by
 .arg compar
 is called with three arguments. The first

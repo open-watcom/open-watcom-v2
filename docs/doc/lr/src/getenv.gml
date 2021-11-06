@@ -18,7 +18,7 @@ The
 function searches the environment list for an entry matching
 the string pointed to by
 .arg name
-.ct .li .
+.period
 .if '&machsys' eq 'QNX' .do begin
 The matching is case-sensitive; all lowercase letters are treated
 as different from uppercase letters.
@@ -33,18 +33,18 @@ Entries can be added to the environment list
 with the
 .qnxcmd export
 or with the
-.kw putenv
+.reffunc putenv
 or
-.kw setenv
+.reffunc setenv
 functions.
 .do end
 .el .do begin
 with the
 .doscmd set
 or with the
-.kw putenv
+.reffunc putenv
 or
-.kw setenv
+.reffunc setenv
 functions.
 .do end
 .ix 'environment'
@@ -95,27 +95,27 @@ assignments:
     INCLUDE=C:\WATCOM\H
 .millust end
 .do end
-.im widefun1
+.widefunc &wfunc. &funcb.
 :CMT. .if &'length(&wfunc.) ne 0 .do begin
 :CMT. The
 :CMT. .kw _wenviron
-:CMT. global variable is a wide-character version of
+:CMT. global variable is a wide character version of
 :CMT. .kw _environ
-:CMT. .ct .li .
+:CMT. .period
 :CMT. .np
 :CMT. In an MBCS program (for example, in an SBCS ASCII program),
 :CMT. .kw _wenviron
 :CMT. is initially NULL because the environment is composed of
-:CMT. multibyte-character strings.
+:CMT. multi-byte character strings.
 :CMT. Then, on the first call to
-:CMT. .kw _wputenv
+:CMT. .reffunc _wputenv
 :CMT. .ct , or on the first call to
-:CMT. .kw _wgetenv
+:CMT. .reffunc _wgetenv
 :CMT. if an (MBCS) environment already exists, a corresponding
-:CMT. wide-character string environment is created and is then
+:CMT. wide character string environment is created and is then
 :CMT. pointed to by
 :CMT. .kw _wenviron
-:CMT. .ct .li .
+:CMT. .period
 :CMT. .do end
 .desc end
 .*

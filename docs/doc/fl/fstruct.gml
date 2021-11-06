@@ -1,9 +1,10 @@
 .chap *refid=fstruct Program Structure Control Statements
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 The use of structured programming statements has been found to
 encourage better programming and design practices among beginners, and
@@ -160,6 +161,7 @@ will be printed and control will pass to the statement following the
 statement.
 .*
 .keep 19
+.*
 .section ELSE IF
 .*
 .np
@@ -323,8 +325,8 @@ statement.
 If the value of variable
 .id A
 is less than the value of variable
-.id B,
-the string
+.id B
+.ct , the string
 .mono A LESS THAN B
 will be printed and variable
 .id A
@@ -350,6 +352,7 @@ Control will pass to the statement following the
 statement.
 .*
 .keep 10
+.*
 .section DO - END DO
 .*
 .mext begin
@@ -396,7 +399,7 @@ statement is treated in the same manner as if the word
 .kw CONTINUE
 had been used instead of
 .kw END DO
-.ct .li .
+.period
 .np
 Some examples follow.
 .keep 10
@@ -459,6 +462,7 @@ the intent is much clearer.
 .exam end
 .*
 .keep 10
+.*
 .section DO WHILE - END DO
 .*
 .mext begin
@@ -569,6 +573,7 @@ the intent is much clearer.
 .exam end
 .*
 .keep 10
+.*
 .section LOOP - END LOOP
 .*
 .mext begin
@@ -620,6 +625,7 @@ The
 statement is discussed in more detail in a later section.
 .*
 .keep 10
+.*
 .section WHILE - END WHILE
 .*
 .mext begin
@@ -683,14 +689,15 @@ becomes equal to zero.
 The effect of this loop will be to assign values to elements of array
 .id A
 from array
-.id B,
-starting with the element of
+.id B
+.ct , starting with the element of
 .id A
 corresponding to the initial value of variable
 .id J
 and working backwards down the array to element 1.
 .*
 .keep 10
+.*
 .section WHILE - Executable-statement
 .*
 .mext begin
@@ -703,7 +710,7 @@ Only certain executable statements are are allowed.
 See the section entitled :HDREF refid='stmtcls'. in the chapter
 entitled :HDREF refid='fstats' page=no. for a list of allowable
 statements.
-.endnote
+.esynote
 .np
 This control statement is another form of the WHILE construct.
 .keep 5
@@ -721,6 +728,7 @@ This is repeated until the logical expression, when evaluated, is
 false; control then passes to the next statement.
 .*
 .keep 10
+.*
 .section UNTIL
 .*
 .mext begin
@@ -776,6 +784,7 @@ is greater than 10.0.
 .exam end
 .*
 .keep 17
+.*
 .section SELECT - END SELECT
 .*
 .mext begin
@@ -810,7 +819,7 @@ integers or characters greater than or equal to the value of the
 expression preceding the colon and less than or equal to the value of
 the expression following the colon.
 .endpoint
-.endnote
+.esynote
 .np
 The
 .kw SELECT
@@ -931,7 +940,8 @@ statement and none of the CASE-blocks is executed.
 .pc
 This example will execute in the manner described below for each of
 the possible values of variable
-.id I.
+.id I
+.period
 .begpoint
 .point (i)
 .id I
@@ -964,7 +974,9 @@ will be assigned the value of the expression
 .mono Y**2 + X
 .br
 - the values of
-.id X, Y
+.id X
+.ct ,
+.id Y
 and
 .id Z
 will be printed
@@ -991,7 +1003,9 @@ statement
 .id I = 4:
 .br
 -
-.id Z, Y
+.id Z
+.ct ,
+.id Y
 and
 .id X
 will be assigned new values
@@ -999,7 +1013,9 @@ will be assigned new values
 - the string
 .mono CASE 4,
 followed by the values of
-.id X, Y
+.id X
+.ct ,
+.id Y
 and
 .id Z
 will be printed
@@ -1172,6 +1188,7 @@ will be printed
 .endpoint
 .*
 .keep 10
+.*
 .section EXECUTE and REMOTE BLOCK
 .*
 .mext begin
@@ -1186,7 +1203,7 @@ will be printed
 .synote 5
 .mnote name
 is a valid FORTRAN symbolic name.
-.endnote
+.esynote
 .np
 The
 .kw EXECUTE
@@ -1294,6 +1311,7 @@ Attempts to execute REMOTE-blocks recursively are detected as errors
 at execution time.
 .*
 .keep 18
+.*
 .section GUESS-ADMIT-END GUESS
 .*
 .mext begin
@@ -1450,6 +1468,7 @@ construct wherein the data values are known beforehand (as could be
 illustrated using the previous example).
 .*
 .keep 10
+.*
 .section QUIT
 .*
 .mext begin
@@ -1579,6 +1598,7 @@ statement after the
 statement.
 .*
 .keep 10
+.*
 .section EXIT
 .*
 .mext begin
@@ -1698,6 +1718,7 @@ statement after the
 statement.
 .*
 .keep 10
+.*
 .section CYCLE
 .*
 .mext begin
@@ -1797,6 +1818,7 @@ statement that follows the
 statement.
 .*
 .keep 10
+.*
 .section AT END
 .*
 .mext begin
@@ -1947,7 +1969,7 @@ control statement such as
 .kw GO TO
 or the arithmetic
 .kw IF
-.ct .li .
+.period
 .np
 Consider the following example.
 .keep 10

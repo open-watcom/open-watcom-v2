@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -317,48 +318,54 @@ static if_state get_cond_state( token_idx i )
         break;
     case T_IF1:
     case T_ELSEIF1:
-        cond_state = Parse_Pass == PASS_1 ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = ( Parse_Pass == PASS_1 ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IF2:
     case T_ELSEIF2:
-        cond_state = Parse_Pass == PASS_1 ? LOOKING_FOR_TRUE_COND : ACTIVE;
+        cond_state = ( Parse_Pass == PASS_1 ) ? LOOKING_FOR_TRUE_COND : ACTIVE;
         break;
     case T_IFB:
     case T_ELSEIFB:
-        cond_state = check_blank( AsmBuffer[i+1].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = ( check_blank( AsmBuffer[i+1].string_ptr ) ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFDEF:
     case T_ELSEIFDEF:
-        cond_state = check_defd( AsmBuffer[i+1].string_ptr )  ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = ( check_defd( AsmBuffer[i+1].string_ptr ) ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFE:
     case T_ELSEIFE:
         cond_state = ( AsmBuffer[i+1].class == TC_NUM && !AsmBuffer[i+1].u.value )
-                   ? ACTIVE : LOOKING_FOR_TRUE_COND;
+                    ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFDIF:
     case T_ELSEIFDIF:
-        cond_state = check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = ( check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) )
+                    ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFDIFI:
     case T_ELSEIFDIFI:
-        cond_state = check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = ( check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) )
+                    ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFIDN:
     case T_ELSEIFIDN:
-        cond_state = !check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = ( !check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) )
+                    ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFIDNI:
     case T_ELSEIFIDNI:
-        cond_state = !check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = ( !check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) )
+                    ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFNB:
     case T_ELSEIFNB:
-        cond_state = !check_blank( AsmBuffer[i+1].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = ( !check_blank( AsmBuffer[i+1].string_ptr ) )
+                    ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFNDEF:
     case T_ELSEIFNDEF:
-        cond_state = !check_defd( AsmBuffer[i+1].string_ptr )  ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = ( !check_defd( AsmBuffer[i+1].string_ptr ) )
+                    ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     default:
         cond_state = DONE;

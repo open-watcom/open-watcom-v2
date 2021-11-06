@@ -1410,7 +1410,7 @@ floating-point model that you selected.
 There are a couple of "undefined references" that require some
 explanation.
 .begnote
-.mnote _cstart_
+.note _cstart_
 The unresolved reference for
 .ix 'undefined references' '_cstart_'
 .ix '_cstart_'
@@ -1437,7 +1437,7 @@ environment variable is set to the directory that &cmpname
 was installed in.
 .ix 'undefined references' '_fltused_'
 .ix '_fltused_'
-.mnote _fltused_
+.note _fltused_
 The
 .id _fltused_
 undefined reference indicates that floating-point arithmetic has
@@ -1459,7 +1459,7 @@ environment variable is set to the directory that &cmpname
 was installed in.
 .ix 'undefined references' '_small_code_'
 .ix '_small_code_'
-.mnote _small_code_
+.note _small_code_
 If this undefined reference occurs when you are trying to create a
 16-bit application, we have saved you many hours of debugging!
 The reason for this undefined reference is that the "main" entry
@@ -1502,7 +1502,7 @@ or
 depending on the memory model it was compiled in.
 .ix 'undefined references' '_big_code_'
 .ix '_big_code_'
-.mnote _big_code_
+.note _big_code_
 Your module that contains the "main" entry point has been compiled
 with a 16-bit small code model (small or compact).
 The modules that have this undefined reference have been compiled in
@@ -1514,7 +1514,7 @@ See the explanation for
 for more details.
 .ix 'undefined references' 'main_'
 .ix 'main_'
-.mnote main_
+.note main_
 All C programs
 .if '&target' ne 'QNX' .do begin
 .ct , except applications developed specifically for Microsoft Windows,
@@ -1524,7 +1524,7 @@ The name "main" must be in lower case for the compiler to generate
 the appropriate information in the "main" module.
 .*
 .if '&target' ne 'QNX' .do begin
-.mnote WINMAIN
+.note WINMAIN
 .ix 'undefined references' 'WinMain'
 .ix 'WinMain'
 All Windows programs must have a function called "WinMain".
@@ -2161,7 +2161,8 @@ in your application.
 .endnote
 .np
 The following example illustrates the use of
-.id &growhndl..
+.id &growhndl.
+.period
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .exam begin
 /*

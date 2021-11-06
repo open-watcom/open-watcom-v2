@@ -3,19 +3,19 @@
 #include <mbstring.h>
 unsigned char *_mbputchar( unsigned char *mbstr,
                            unsigned int dbch );
-unsigned char far *_fmbputchar( unsigned char far *mbstr,
-                                unsigned int dbch );
+unsigned char __far *_fmbputchar( unsigned char __far *mbstr,
+                                  unsigned int dbch );
 .synop end
 .desc begin
 The
 .id &funcb.
-function places the next single- or double-byte character
+function places the next single-byte or double-byte character
 specified by
 .arg dbch
 at the start of the buffer specified by
 .arg mbstr
-.ct .li .
-.im ffarfunc
+.period
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The

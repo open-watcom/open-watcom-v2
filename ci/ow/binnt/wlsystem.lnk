@@ -1,0 +1,485 @@
+# example linker initialization file.
+system begin dos
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/dos
+    format dos ^
+end
+system begin dos4g
+    option osname='DOS/4G'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    op stub=wstub.exe
+    format os2 le
+end
+system begin dos4gnz
+    option osname='DOS/4G non-zero base'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    disable 123     # non-64k offset option OK here.
+    op internalrelocs
+    op togglerelocs
+    op stub=wstub.exe
+    format os2 lx
+end
+system begin pharlap
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    format phar ^
+end
+system begin x32r
+    option osname='FlashTek (register calling convention)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libfile cstrtx3r.obj
+    option stack=4k,align=4k,internalrelocs
+    library x32b.lib
+    format os2 lx ^
+end
+system begin x32rv
+    option osname='FlashTek Virtual Memory (register calling convention)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libfile cstrtx3r.obj
+    option stack=4k,align=4k,internalrelocs
+    library x32vb.lib
+    format os2 lx ^
+end
+system begin x32s
+    option osname='FlashTek (stack calling convention)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libfile cstrtx3s.obj
+    option stack=4k,align=4k,internalrelocs
+    library x32b.lib
+    format os2 lx ^
+end
+system begin x32sv
+    option osname='FlashTek Virtual Memory (stack calling convention)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libfile cstrtx3s.obj
+    option stack=4k,align=4k,internalrelocs
+    library x32vb.lib
+    format os2 lx ^
+end
+system begin win386
+    option osname='Windows 32-bit'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/win
+    format phar rex
+end
+system begin os2
+    option osname='OS/2 16-bit'
+    library os2.lib
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/os2
+    format os2 ^
+end
+system begin os2_pm
+    option osname='OS/2 16-bit Presentation Manager'
+    library os2.lib
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/os2
+    format os2 pm ^
+end
+system begin os2_dll
+    option osname='OS/2 16-bit'
+    library os2.lib
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/os2
+    format os2 dll ^
+end
+system begin windows
+    option osname='Windows 16-bit'
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/win
+    library windows
+    option nocaseexact
+    option stack=8k, heapsize=1k
+    format windows ^
+end
+system begin windows_dll
+    option osname='Windows 16-bit'
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/win
+    library windows
+    option nocaseexact
+    option stack=8k, heapsize=1k
+    libfile libentry.obj
+    format windows dll ^
+end
+system begin win_vxd
+    option osname='Windows VxD'
+    format windows vxd ^
+end
+system begin os2v2
+    option osname='OS/2 32-bit'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/os2
+    format os2 lx ^
+end
+system begin os2v2_pm
+    option osname='OS/2 32-bit Presentation Manager'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/os2
+    format os2 lx pm ^
+end
+system begin os2v2_dll
+    option osname='OS/2 32-bit'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/os2
+    format os2 lx dll ^
+end
+system begin novell
+    option osname='Novell NLM'
+    format novell ^
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/netware
+    module clib
+    import @%WATCOM%/novi/clib.imp
+end
+system begin netware
+    option osname='Novell NLM'
+    format novell ^
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/netware
+    module clib
+    import @%WATCOM%/novi/clib.imp
+end
+system begin netware_libc
+    option osname='NetWare LibC NLM (Full-RTL)'
+    format novell ^
+    option nodefault
+    option start=_LibCPrelude
+    option exit=_LibCPostlude
+    option pseudopreemption
+    import CurrentProcess
+    file %NOVELLNDK%/../libc/imports/libcpre.obj
+    library %NOVELLNDK%/../libc/imports/libcaux.wcc
+    library %WATCOM%/lib386/netware/libc3s.lib
+    import @%NOVELLNDK%/../libc/imports/libc.imp
+    import @%NOVELLNDK%/../libc/imports/netware.imp
+end
+system begin netware_libc_lite
+    option osname='NetWare LibC NLM (Lite-RTL)'
+    format novell ^
+    option nodefault
+    option start=_LibCPrelude
+    option exit=_LibCPostlude
+    option pseudopreemption
+    import CurrentProcess
+    file %NOVELLNDK%/../libc/imports/libcpre.obj
+    library %NOVELLNDK%/../libc/imports/libcaux.wcc
+    library %WATCOM%/lib386/netware/libc3sl.lib
+    import @%NOVELLNDK%/../libc/imports/libc.imp
+    import @%NOVELLNDK%/../libc/imports/netware.imp
+end
+system begin netware_clib
+    option osname='NetWare CLIB NLM (Full-RTL)'
+    format novell ^
+    option nodefault
+    option start=_Prelude
+    option exit=_Stop
+    library %WATCOM%/lib386/netware/clib3s.lib
+    import @%NOVELLNDK%/imports/clib.imp
+end
+system begin netware_clib_lite
+    option osname='NetWare CLIB NLM (Lite-RTL)'
+    format novell ^
+    option nodefault
+    option start=_Prelude
+    option exit=_Stop
+    file %NOVELLNDK%/imports/clibpre.obj
+    library %WATCOM%/lib386/netware/clib3sl.lib
+    import @%NOVELLNDK%/imports/clib.imp
+end
+system begin ads
+    option osname='AutoCAD Development System'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libfile adsstart.obj
+    format phar ext ^
+end
+system begin eadi
+    option osname='emulation AutoCAD Device Interface'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libfile adiestrt.obj
+    format phar ext ^
+end
+system begin fadi
+    option osname='floating point AutoCAD Device Interface'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libfile adifstrt.obj
+    format phar ext ^
+end
+system begin com
+    option osname='DOS .COM'
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/dos
+    libfile cstart_t.obj
+    format dos com
+end
+system begin qnx
+    option osname='QNX 16-bit'
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/qnx
+    format qnx
+end
+system begin qnx386
+    option osname='QNX 32-bit'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/qnx
+    format qnx ^
+end
+system begin linux
+    option osname='Linux x86'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/linux
+    format elf
+    runtime linux
+    op exportall
+    op norelocs
+end
+system begin linuxmips
+    option osname='Linux MIPS'
+    libpath %WATCOM%/libmps
+    libpath %WATCOM%/libmps/linux
+    format elf
+    runtime linux
+    op exportall
+    op norelocs
+end
+system begin nt
+    option osname='Windows NT character-mode'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime console=4.0
+end
+system begin nt_win
+    option osname='Windows NT windowed'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime windows=4.0
+end
+system begin nt_dll
+    option osname='Windows NT'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt dll ^
+    runtime windows=4.0
+end
+system begin win95
+    option osname='Windows 95'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime windows=4.0
+end
+system begin win32
+    option osname='Win32'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime windows=4.0
+end
+system begin win32s
+    option osname='Win32s (Windows 3.x)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/nt
+    library kernel32,user32,gdi32,advapi32,comdlg32,winspool,shell32,version,ole32
+    library netapi32,dlcapi,mpr,rpcns4,rpcrt4,vdmdbg,winmm,winstrm,wsock32,lz32,win32spl
+    format windows nt ^
+    runtime windows
+end
+system begin tnt
+    option osname='Phar Lap TNT DOS style'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    format windows nt tnt ^
+    runtime dosstyle
+end
+system begin ntaxp
+    option osname='Windows NT(AXP) character-mode'
+    libpath %WATCOM%/libaxp
+    libpath %WATCOM%/libaxp/nt
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime console=4.0
+end
+system begin ntaxp_win
+    option osname='Windows NT(AXP) windowed'
+    libpath %WATCOM%/libaxp
+    libpath %WATCOM%/libaxp/nt
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime windows=4.0
+end
+system begin ntaxp_dll
+    option osname='Windows NT(AXP)'
+    libpath %WATCOM%/libaxp
+    libpath %WATCOM%/libaxp/nt
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt dll ^
+    runtime windows=4.0
+end
+system begin causeway
+    option osname='CauseWay'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    op stub=cwstub.exe
+    format os2 le ^
+end
+system begin cwdlls
+    option osname='CauseWay (stack calling convention)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    format os2 le dll ^
+    libfile dllstrts.obj
+end
+system begin cwdllr
+    option osname='CauseWay (register calling convention)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    format os2 le dll ^
+    libfile dllstrtr.obj
+end
+system begin dos32a
+    option osname='DOS/32 Advanced DOS Extender (LE-style)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libpath %WATCOM%/lib386/l32
+    op stub=dos32a.exe
+    format os2 le
+end
+system begin dos32x
+    option osname='DOS/32 Advanced DOS Extender (LX-style)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libpath %WATCOM%/lib386/l32
+#   debug watcom all
+#   op symfile
+    op stub=dos32a.exe
+    op internalrelocs
+    op align=16
+    format os2 lx
+end
+system begin stub32a
+    option osname='DOS/32A DOS Extender w/ Standard stub (LE-style)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libpath %WATCOM%/lib386/l32
+    op stub=stub32a.exe
+    format os2 le
+end
+system begin stub32x
+    option osname='DOS/32A DOS Extender w/ Standard stub (LX-style)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libpath %WATCOM%/lib386/l32
+#   debug watcom all
+#   op symfile
+    op stub=stub32a.exe
+    op internalrelocs
+    op align=16
+    format os2 lx
+end
+system begin stub32ac
+    option osname='DOS/32A DOS Extender w/ Configurable stub (LE-style)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libpath %WATCOM%/lib386/l32
+    op stub=stub32c.exe
+    format os2 le
+end
+system begin stub32xc
+    option osname='DOS/32A DOS Extender w/ Configurable stub (LX-style)'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    libpath %WATCOM%/lib386/l32
+#   debug watcom all
+#   op symfile
+    op stub=stub32c.exe
+    op internalrelocs
+    op align=16
+    format os2 lx
+end
+system begin pmodew
+    option osname='PMODE/W'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    op stub=pmodew.exe
+    format os2 le
+end
+system begin zrdx
+    option osname='Zurenava'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    op stub= zrdx.exe
+    format os2 le
+end
+system begin dos16m
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/dos
+    libfile dos16m.obj
+    libfile d16msels.obj
+    format dos16m runtime auto ^
+end
+system begin zdos
+    option osname='ZDOS User Application'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdos
+    libfile appstart.obj
+    format zdos
+end
+system begin zdosfsd
+    option osname='ZDOS File System Driver'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdosdrv
+    libfile fsdstart.obj
+    format zdos fsd
+end
+system begin zdoshwd
+    option osname='ZDOS Hardware Driver'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdosdrv
+    libfile hwdstart.obj
+    format zdos hwd
+end
+system begin zdosdev
+    option osname='ZDOS Device Driver'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdosdrv
+    libfile devstart.obj
+    format zdos sys
+end
+system begin rdos
+    option osname='RDOS'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/rdos
+    format windows pe rdos ^
+end
+system begin rdos_dll
+    option osname='RDOS'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/rdos
+    format windows pe rdos dll ^
+end

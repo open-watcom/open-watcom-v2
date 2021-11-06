@@ -1,7 +1,7 @@
 .func sem_init
 .synop begin
 #include <semaphore.h>
-int sem_init(sem_t *semaphore, int flags, int value);    
+int sem_init(sem_t *semaphore, int flags, int value);
 .synop end
 .desc begin
 The
@@ -26,7 +26,7 @@ is set appropriately.
 .termhd1 Constant
 .termhd2 Meaning
 .term EINVAL
-The value of the 
+The value of the
 .arg value
 argument exceeds
 .kw SEM_VALUE_MAX
@@ -39,5 +39,5 @@ was non-zero or semaphores are not supported on this CPU.
 .see begin
 .seelist sem_destroy sem_getvalue sem_post sem_trywait sem_wait
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,10 @@
 #include "caux.h"
 #include "cfeinfo.h"
 #include "asmstmt.h"
+#include "toggles.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+#endif
 
 #include "clibext.h"
 
@@ -44,32 +48,110 @@
 #define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
 #define pragmaIdRecog(what)     (stricmp(what, SkipUnderscorePrefix(Buffer, NULL, true)) == 0)
 
-struct  pack_info {
-    struct pack_info    *next;
-    align_type          pack_amount;
-} *PackInfo;
+typedef enum {
+    #define pick(a,b,c,d)   a,
+    #include "auxinfo.h"
+    #undef pick
+    M_SIZE
+} magic_words;
 
-struct enums_info {
-    struct enums_info *next;
-    bool   make_enums;
-} *EnumInfo;
+typedef struct prag_stack {
+    struct prag_stack   *next;
+    unsigned            value;
+} prag_stack;
 
+pragma_toggles          PragmaToggles;
+#ifndef NDEBUG
+pragma_dbg_toggles      PragmaDbgToggles;
+#endif
 
-/* local variables */
-static struct toggle ToggleNames[] = {
-    #define TOGDEF( a, b ) {  #a, b },
-    #include "togdef.h"
-    #undef TOGDEF
-    { NULL, 0 }
+#define pick( x ) static prag_stack *TOGGLE_STK( x );
+#include "togdef.h"
+#undef pick
+static prag_stack       *TOGGLE_STK( pack );
+static prag_stack       *TOGGLE_STK( enum );
+static prag_stack       *FreePrags;
+
+static struct magic_words_data {
+    const char      *name;
+    aux_info        *info;
+} magicWords[] = {
+    #define pick(a,b,c,d) { b, d },
+    #include "auxinfo.h"
+    #undef pick
 };
 
+static prag_stack *stackPush( prag_stack **header, prag_stack *element )
+/**********************************************************************/
+{
+    element->next = *header;
+    *header = element;
+    return( element );
+}
+
+static prag_stack *stackPop( prag_stack **header )
+/************************************************/
+{
+    prag_stack  *element;
+
+    element = *header;
+    if( element != NULL ) {
+        *header = element->next;
+    }
+    return( element );
+}
+
+static void freeStack( prag_stack **header )
+/******************************************/
+{
+    prag_stack  *element;
+
+    while( (element = *header) != NULL ) {
+        *header = element->next;
+        CMemFree( element );
+    }
+}
+
+static void pushPrag( prag_stack **header, unsigned value )
+/*********************************************************/
+{
+    prag_stack *stack_entry;
+
+    stack_entry = stackPop( &FreePrags );
+    if( stack_entry == NULL ) {
+        stack_entry = CMemAlloc( sizeof( *stack_entry ) );
+    }
+    stack_entry->value = value;
+    stackPush( header, stack_entry );
+}
+
+static bool popPrag( prag_stack **header, unsigned *pvalue )
+/**********************************************************/
+{
+    prag_stack *stack_entry;
+
+    stack_entry = stackPop( header );
+    if( stack_entry != NULL ) {
+        if( pvalue != NULL ) {
+            *pvalue = stack_entry->value;
+        }
+        stackPush( &FreePrags, stack_entry );
+        return( true );
+    }
+    return( false );
+}
 
 void CPragmaInit( void )
 /**********************/
 {
+    #define pick( x ) TOGGLE_STK( x ) = NULL;
+    #include "togdef.h"
+    #undef pick
+    TOGGLE_STK( pack ) = NULL;
+    TOGGLE_STK( enum ) = NULL;
+    FreePrags = NULL;
+
     TextSegList = NULL;
-    PackInfo = NULL;
-    EnumInfo = NULL;
     AliasHead = NULL;
     HeadLibs = NULL;
     ExtrefInfo = NULL;
@@ -88,38 +170,29 @@ void CPragmaFini( void )
 
     PragmaAuxFini();
 
-    while( TextSegList != NULL ) {
-        junk = TextSegList;
+    #define pick( x )   freeStack( &TOGGLE_STK( x ) );
+    #include "togdef.h"
+    #undef pick
+    freeStack( &TOGGLE_STK( pack ) );
+    freeStack( &TOGGLE_STK( enum ) );
+    freeStack( &FreePrags );
+
+    while( (junk = TextSegList) != NULL ) {
         TextSegList = TextSegList->next;
         CMemFree( junk );
     }
 
-    while( PackInfo != NULL ) {
-        junk = PackInfo;
-        PackInfo = PackInfo->next;
-        CMemFree( junk );
-    }
-
-    while( EnumInfo != NULL ) {
-        junk = EnumInfo;
-        EnumInfo = EnumInfo->next;
-        CMemFree( junk );
-    }
-
-    while( HeadLibs != NULL ) {
-        junk = HeadLibs;
+    while( (junk = HeadLibs) != NULL ) {
         HeadLibs = HeadLibs->next;
         CMemFree( junk );
     }
 
-    while( AliasHead != NULL ) {
-        junk = AliasHead;
+    while( (junk = AliasHead) != NULL ) {
         AliasHead = AliasHead->next;
         CMemFree( junk );
     }
 
-    while( ExtrefInfo != NULL ) {
-        junk = ExtrefInfo;
+    while( (junk = ExtrefInfo) != NULL ) {
         ExtrefInfo = ExtrefInfo->next;
         CMemFree( junk );
     }
@@ -207,8 +280,8 @@ static void advanceToken( void )
     CurToken = LAToken;
 }
 
-bool GetPragAuxAliasInfo( void )
-/******************************/
+bool GetPragmaAuxAliasInfo( void )
+/********************************/
 {
     if( CurToken != T_LEFT_PAREN )          /* #pragma aux symbol ..... */
         return( IS_ID_OR_KEYWORD( CurToken ) );
@@ -217,7 +290,7 @@ bool GetPragAuxAliasInfo( void )
         return( false );
     LookAhead();
     if( LAToken == T_RIGHT_PAREN ) {        /* #pragma aux (alias) symbol ..... */
-        CurrAlias = SearchPragAuxAlias( SavedId );
+        CurrAlias = PragmaAuxAlias( SavedId );
         advanceToken();
         PPNextToken();
         return( IS_ID_OR_KEYWORD( CurToken ) );
@@ -228,8 +301,7 @@ bool GetPragAuxAliasInfo( void )
         PPNextToken();
         if( !IS_ID_OR_KEYWORD( CurToken ) )
             return( false );                /* error */
-        GetPragAuxAlias();
-        PragEnding();
+        GetPragmaAuxAlias();
         return( false );                    /* process no more! */
     } else {                                /* error */
         advanceToken();
@@ -264,26 +336,18 @@ enum sym_state AsmQueryState( void *handle )
     return( SYM_EXTERNAL );
 }
 
-struct magic_words {
-    const char      *name;
-    aux_info        *info;
-} MagicWords[] = {
-    #define pick(a,b,c) { b, c },
-    #include "auxinfo.h"
-    #undef pick
-};
-
-static aux_info *MagicKeyword( const char *name )
+static aux_info *lookupMagicKeyword( const char *name )
+/*****************************************************/
 {
-    int         i;
+    magic_words     mword;
 
     name = SkipUnderscorePrefix( name, NULL, true );
-    for( i = 0; MagicWords[i].name != NULL; ++i ) {
-        if( strcmp( name, MagicWords[i].name + 2 ) == 0 ) {
-            break;
+    for( mword = 0; mword < M_SIZE; mword++ ) {
+        if( strcmp( name, magicWords[mword].name + 2 ) == 0 ) {
+            return( magicWords[mword].info );
         }
     }
-    return( MagicWords[i].info );
+    return( NULL );
 }
 
 
@@ -308,7 +372,7 @@ void SetCurrInfo( const char *name )
     SYM_ENTRY       sym;
     type_modifiers  sym_attrib = FLAG_NONE;
 
-    CurrInfo = MagicKeyword( name );
+    CurrInfo = lookupMagicKeyword( name );
     if( CurrInfo == NULL ) {
         if( CurrAlias == NULL ) {
             sym_handle = SymLook( HashValue, name );
@@ -319,26 +383,28 @@ void SetCurrInfo( const char *name )
             CurrAlias = GetLangInfo( sym_attrib );
         }
         CreateAux( name );
-    } else if( CurrAlias == NULL ) {
-        CurrAlias = CurrInfo;
+    } else {
+        if( CurrAlias == NULL ) {
+            CurrAlias = CurrInfo;
+        }
     }
 }
 
 
-aux_info *SearchPragAuxAlias( const char *name )
-/**********************************************/
+aux_info *PragmaAuxAlias( const char *name )
+/******************************************/
 {
-    aux_entry   *search_entry;
-    aux_info    *search_info;
+    aux_entry   *aux;
+    aux_info    *info;
 
-    search_info = MagicKeyword( name );
-    if( search_info == NULL ) {
-        search_entry = AuxLookup( name );
-        if( search_entry != NULL ) {
-            search_info = search_entry->info;
+    info = lookupMagicKeyword( name );
+    if( info == NULL ) {
+        aux = AuxLookup( name );
+        if( aux != NULL ) {
+            info = aux->info;
         }
     }
-    return( search_info );
+    return( info );
 }
 
 
@@ -437,8 +503,8 @@ static void CopyExceptRtn( void )
 }
 #endif
 
-void PragEnding( void )
-/*********************/
+void PragmaAuxEnding( void )
+/**************************/
 {
     if( CurrEntry == NULL )
         return;
@@ -610,43 +676,54 @@ hw_reg_set *PragManyRegSets( void )
  *
  *******************************************************/
 
-bool SetToggleFlag( char const *name, int const value )
-/*****************************************************/
+void SetToggleFlag( char const *name, int func, bool push )
+/*********************************************************/
 {
-    int     i;
-    char    *pnt;
-    bool    ret;
-    size_t  len;
-
-    len = strlen( name ) + 1;
-    ret = false;
-    for( i = 0; (pnt = ToggleNames[i].name) != NULL; ++i ) {
-        if( memcmp( pnt, name, len ) == 0 ) {
-            if( value == 0 ) {
-                Toggles &= ~ToggleNames[i].flag;
-            } else {
-                Toggles |= ToggleNames[i].flag;
-            }
-            ret = true;
-            break;
+#ifndef NDEBUG
+    #define pick( x ) \
+        if( strcmp( name, #x ) == 0 ) { \
+            if( func == -1 ) { \
+            } else { \
+                TOGGLEDBG( x ) = ( func != 0 ); \
+            } \
+            return; \
         }
-    }
-    return( ret );
+    #include "togdefd.h"
+    #undef pick
+#endif
+    #define pick( x ) \
+        if( strcmp( name, #x ) == 0 ) { \
+            if( func == -1 ) { \
+                unsigned    value; \
+                if( popPrag( &TOGGLE_STK( x ), &value ) ) { \
+                    TOGGLE( x ) = ( value != 0 ); \
+                } \
+            } else { \
+                if( push ) { \
+                    pushPrag( &TOGGLE_STK( x ), TOGGLE( x ) ); \
+                } \
+                TOGGLE( x ) = ( func != 0 ); \
+            } \
+            return; \
+        }
+    #include "togdef.h"
+    #undef pick
 }
 
 /* forms:
  *
  *      #pragma on (<toggle name>)
  *      #pragma off (<toggle name>)
+ *      #pragma pop (<toggle name>)
  */
-static void pragFlag( int value )
-/*******************************/
+static void pragOptions( int func )
+/**********************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         for( PPNextToken(); IS_ID_OR_KEYWORD( CurToken ); PPNextToken() ) {
-            SetToggleFlag( Buffer, value );
+            SetToggleFlag( Buffer, func, true );
         }
         MustRecog( T_RIGHT_PAREN );
     }
@@ -756,14 +833,9 @@ void SetPackAmount( unsigned amount )
 static void getPackArgs( void )
 /****************************/
 {
-    struct pack_info    *pi;
-
     /* check to make sure it is a numeric token */
     if( PragRecogId( "push" ) ) {
-        pi = (struct pack_info *)CMemAlloc( sizeof( struct pack_info ) );
-        pi->next = PackInfo;
-        pi->pack_amount = PackAmount;
-        PackInfo = pi;
+        pushPrag( &TOGGLE_STK( pack ), (unsigned)PackAmount );
         if( CurToken == T_COMMA ) {
             PPNextToken();
             if( ExpectingConstant() ) {
@@ -772,11 +844,10 @@ static void getPackArgs( void )
             PPNextToken();
         }
     } else if( PragRecogId( "pop" ) ) {
-        pi = PackInfo;
-        if( pi != NULL ) {
-            PackAmount = pi->pack_amount;
-            PackInfo = pi->next;
-            CMemFree( pi );
+        unsigned    value;
+
+        if( popPrag( &TOGGLE_STK( pack ), &value ) ) {
+            PackAmount = (align_type)value;
         }
     } else {
         CErr1( ERR_NOT_A_CONSTANT_EXPR );
@@ -785,6 +856,7 @@ static void getPackArgs( void )
 
 /* forms:
  *
+ *      #pragma pack ()
  *      #pragma pack ( n )
  *      #pragma pack ( push )
  *      #pragma pack ( pop )
@@ -859,7 +931,7 @@ static void pragAllocText( void )
 {
     struct textsegment  *tseg;
     SYM_HANDLE          sym_handle;
-    auto SYM_ENTRY      sym;
+    SYM_ENTRY           sym;
 
     PPCTL_ENABLE_MACROS();
     PPNextToken();
@@ -900,34 +972,20 @@ static void pragAllocText( void )
     PPCTL_DISABLE_MACROS();
 }
 
-static bool warnLevelValidate( unsigned level )
-/*********************************************/
-/* VALIDATE WARNING LEVEL, returns true ==> good level */
-{
-    bool ok;
-
-    ok = true;
-    if( level > WLEVEL_MAX ) {
-        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        ok = false;
-    }
-    return( ok );
-}
-
 static void changeLevel( unsigned level, int msg_index )
 /******************************************************/
 {
     if( msg_level[msg_index].level != level ) {
         msg_level[msg_index].level = level;
-        if( level < WLEVEL_MAX ) {
-            if( !msg_level[msg_index].enabled ) {
-                /* enable message */
-                msg_level[msg_index].enabled = true;
+        if( level == WLEVEL_DISABLED ) {
+            /* disable message */
+            if( msg_level[msg_index].enabled ) {
+                msg_level[msg_index].enabled = false;
             }
         } else {
-            if( msg_level[msg_index].enabled ) {
-                /* disable message */
-                msg_level[msg_index].enabled = false;
+            /* enable message */
+            if( !msg_level[msg_index].enabled ) {
+                msg_level[msg_index].enabled = true;
             }
         }
     }
@@ -949,14 +1007,14 @@ static void warnChangeLevel( unsigned level, msg_codes msgnum )
 
     msg_index = GetMsgIndex( msgnum );
     if( msg_index < 0 ) {
-        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
     switch( msg_level[msg_index].type ) {
     case MSG_TYPE_ERROR :
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
-        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
     case MSG_TYPE_WARNING :
     case MSG_TYPE_ANSI :
@@ -990,14 +1048,14 @@ void WarnEnableDisable( bool enabled, msg_codes msgnum )
 
     msg_index = GetMsgIndex( msgnum );
     if( msg_index < 0 ) {
-        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
     switch( msg_level[msg_index].type ) {
     case MSG_TYPE_ERROR :
     case MSG_TYPE_INFO :
     case MSG_TYPE_ANSIERR :
-        CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
+        CWarn2( WARN_PRAG_WARNING_BAD_MESSAGE, ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
     case MSG_TYPE_WARNING :
     case MSG_TYPE_ANSI :
@@ -1041,15 +1099,13 @@ static bool pragWarning( void )
         if( CurToken == T_CONSTANT ) {
             level = Constant;
             NextToken();
-            if( warnLevelValidate( level ) ) {
-                if( change_all ) {
-                    warnChangeLevels( level );
-                } else {
-                    warnChangeLevel( level, msgnum );
-                }
+            if( change_all ) {
+                warnChangeLevels( level );
+            } else {
+                warnChangeLevel( level, msgnum );
             }
         } else {
-            CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
+            CWarn1( WARN_PRAG_WARNING_BAD_LEVEL, ERR_PRAG_WARNING_BAD_LEVEL );
             NextToken();
         }
     }
@@ -1083,6 +1139,21 @@ static void pragEnableDisableMessage( bool enabled )
     PPCTL_DISABLE_MACROS();
 }
 
+static char *collectStrings( char *message )
+{
+    size_t  len;
+    size_t  new_len;
+
+    len = 0;
+    while( CurToken == T_STRING ) {
+        new_len = len + strlen( Buffer );
+        message = CMemRealloc( message, new_len + 1 );
+        strcpy( message + len, Buffer );
+        len = new_len;
+        PPNextToken();
+    }
+    return( message );
+}
 
 /* form:
  *
@@ -1095,40 +1166,22 @@ static void pragEnableDisableMessage( bool enabled )
 static void pragMessage( void )
 /*****************************/
 {
+    char    *message;
+
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        while( PPNextToken() == T_STRING ) {
-            printf( "%s", Buffer );
+        PPNextToken();
+        if( CurToken == T_STRING ) {
+            message = CMemAlloc( 1 );
+            message[0] = '\0';
+            message = collectStrings( message );
+            BannerMsg( message );
+            CMemFree( message );
         }
-        printf( "\n" );
         MustRecog( T_RIGHT_PAREN );
     }
     PPCTL_DISABLE_MACROS();
-}
-
-static void PushEnum( void )
-/**************************/
-{
-    struct enums_info *ei;
-
-    ei = CMemAlloc( sizeof( struct enums_info ) );
-    ei->make_enums = CompFlags.make_enums_an_int;
-    ei->next = EnumInfo;
-    EnumInfo = ei;
-}
-
-static void PopEnum( void )
-/*************************/
-{
-    struct enums_info *ei;
-
-    ei = EnumInfo;
-    if( EnumInfo != NULL ) {
-        CompFlags.make_enums_an_int = ei->make_enums;
-        EnumInfo =  ei->next;
-        CMemFree( ei );
-    }
 }
 
 /* forms:
@@ -1154,16 +1207,20 @@ static void pragEnum( void )
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( PragRecogId( "int" ) ) {
-        PushEnum();
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = true;
     } else if( PragRecogId( "minimum" ) ) {
-        PushEnum();
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = false;
     } else if( PragRecogId( "original" ) ) {
-        PushEnum();
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = CompFlags.original_enum_setting;
     } else if( PragRecogId( "pop" ) ) {
-        PopEnum();
+        unsigned    value;
+
+        if( popPrag( &TOGGLE_STK( enum ), &value ) ) {
+            CompFlags.make_enums_an_int = ( value != 0 );
+        }
     }
     PPCTL_DISABLE_MACROS();
 }
@@ -1609,21 +1666,25 @@ void CPragma( void )
     PPNextToken();
     if( IS_ID_OR_KEYWORD( CurToken ) && pragmaNameRecog( "include_alias" ) ) {
         pragIncludeAlias();
-    } else if( CompFlags.cpp_output ) {
-        CppPrtf( "#pragma " );
+    } else if( CompFlags.cpp_mode ) {
+        if( CompFlags.cpp_output ) {
+            CppPuts( "#pragma " );
+        }
         if( CurToken != T_NULL ) {
-            CppPrtToken();
+            CppPrtToken( CurToken );
             PPCTL_ENABLE_MACROS();
-            for( GetNextToken(); CurToken != T_NULL && CurToken != T_PRAGMA_END; GetNextToken() ) {
-                CppPrtToken();
+            for( CurToken = GetNextToken(); CurToken != T_NULL && CurToken != T_PRAGMA_END; CurToken = GetNextToken() ) {
+                CppPrtToken( CurToken );
             }
             PPCTL_DISABLE_MACROS();
         }
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
         if( pragmaNameRecog( "on" ) ) {
-            pragFlag( 1 );
+            pragOptions( 1 );
         } else if( pragmaNameRecog( "off" ) ) {
-            pragFlag( 0 );
+            pragOptions( 0 );
+        } else if( pragmaNameRecog( "pop" ) ) {
+            pragOptions( -1 );
         } else if( pragmaNameRecog( "aux" ) || pragmaNameRecog( "linkage" ) ) {
             PragAux();
         } else if( pragmaNameRecog( "library" ) ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +43,9 @@
 //
 #define MYFILE_H
 
-#include <watcom.h>
 #include <stdio.h>
+#include <string.h>
+#include "watcom.h"
 #include "hcmem.h"
 
 
@@ -54,17 +56,17 @@
 class File
 {
     static const uint_8 _isOpen;
-    uint_8      _flags;
+    uint_8          _flags;
 
     // Assignment of File's is not allowed.
-    File( File const & ) {};
+    File( File const & ) : _shortName( 0 ) {};
     File &  operator=( File const & ) { return *this; };
 
 protected:
-    FILE    *_fp;
-    bool    _badFile;
-    char    *_fullName;     // Path + name
-    char    *_shortName;        // Name as passed to the object.
+    FILE            *_fp;
+    bool            _badFile;
+    char            *_fullName;     // Path + name
+    Buffer<char>    _shortName;     // Name as passed to the object.
 
     File( char const filename[], uint_8 type=0x09 );
     File();
@@ -77,7 +79,7 @@ public:
 
     // Access functions.
     bool    bad() const { return _badFile; };
-    char const *name() const { return (char const*) _shortName; };
+    char const *name() { return (char const*)_shortName; };
 
     bool    open( char const filename[], uint_8 type=READ|BIN );
     bool    open();         // Re-open the previous file.
@@ -111,6 +113,10 @@ public:
 
     size_t write( const void *buf, size_t nelems, size_t el_size=1 )
         { return fwrite( buf, el_size, nelems, _fp ); };
+
+    size_t write( const char *d )
+        { return fwrite( d, strlen( d ) + 1, 1, _fp ); };
+
 };
 
 

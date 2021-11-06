@@ -7,7 +7,7 @@ double scalbn( double x, int y );
 .desc begin
 The
 .id &funcb.
-function computes 
+function computes
 .arg x
 *(2**
 .arg y
@@ -19,9 +19,9 @@ fmax( x - y, 0.0 );
 .return begin
 The value of
 .arg x
-times two raised to 
+times two raised to
 .arg y
-.ct .li .
+.period
 .return end
 .exmp begin
 #include <stdio.h>

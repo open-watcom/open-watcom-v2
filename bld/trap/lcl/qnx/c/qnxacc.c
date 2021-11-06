@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -262,7 +262,7 @@ static pid_t next_thread(pid_t last, int state) {
 }
 
 
-trap_retval ReqGet_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     struct  _osinfo     info;
     get_sys_config_ret  *ret;
@@ -379,7 +379,7 @@ static addr48_ptr GetSLibTable( bool is_32 )
 }
 
 
-trap_retval ReqMap_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -432,7 +432,7 @@ trap_retval ReqMap_addr( void )
 }
 
 
-trap_retval ReqChecksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     addr_off            offv;
     USHORT              length;
@@ -467,7 +467,7 @@ trap_retval ReqChecksum_mem( void )
 }
 
 
-trap_retval ReqRead_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
     unsigned            len;
@@ -479,7 +479,7 @@ trap_retval ReqRead_mem( void )
 }
 
 
-trap_retval ReqWrite_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
@@ -496,7 +496,7 @@ trap_retval ReqWrite_mem( void )
 }
 
 
-trap_retval ReqRead_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     union _port_struct  port;
     read_io_req         *acc;
@@ -526,7 +526,7 @@ trap_retval ReqRead_io( void )
 }
 
 
-trap_retval ReqWrite_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     union _port_struct  port;
     write_io_req        *acc;
@@ -602,7 +602,7 @@ static void ReadFPU( struct x86_fpu *r )
     }
 }
 
-trap_retval ReqRead_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
@@ -657,7 +657,7 @@ static void WriteFPU( struct x86_fpu *r )
     }
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     mad_registers       *mr;
 
@@ -780,7 +780,7 @@ static int net_kill( pid_t proc, pid_t pid, int signum )
     return( 0 );
 }
 
-trap_retval ReqProg_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     char                        **args;
     char                        *parms;
@@ -955,7 +955,7 @@ fail:
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
     pid_t               pid;
@@ -987,7 +987,7 @@ trap_retval ReqProg_kill( void )
 }
 
 
-trap_retval ReqSet_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     long             opcode;
     set_break_req       *acc;
@@ -1002,7 +1002,7 @@ trap_retval ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     long                 opcode;
     clear_break_req     *acc;
@@ -1014,7 +1014,7 @@ trap_retval ReqClear_break( void )
     return( 0 );
 }
 
-trap_retval ReqSet_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     unsigned      size;
     set_watch_req       *acc;
@@ -1037,7 +1037,7 @@ trap_retval ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     WatchCount = 0; /* assume all are cleared at the same time */
     return( 0 );
@@ -1248,12 +1248,12 @@ static unsigned ProgRun( bool step )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
     return( ProgRun( true ) );
 }
 
-trap_retval ReqProg_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     return( ProgRun( false ) );
 }
@@ -1408,7 +1408,7 @@ static unsigned Redir16( bool input )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRedirect_stdin( void )
+trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
     if( ProcInfo.dbg32 ) {
         return( Redir32( true ) );
@@ -1417,7 +1417,7 @@ trap_retval ReqRedirect_stdin( void )
     }
 }
 
-trap_retval ReqRedirect_stdout( void )
+trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
     if( ProcInfo.dbg32 ) {
         return( Redir32( false ) );
@@ -1426,7 +1426,7 @@ trap_retval ReqRedirect_stdout( void )
     }
 }
 
-trap_retval ReqFile_string_to_fullpath( void )
+trap_retval TRAP_FILE( string_to_fullpath )( void )
 {
     struct _psinfo     proc;
     pid_t              pid;
@@ -1463,7 +1463,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     return( sizeof( *ret ) + len + 1 );
 }
 
-trap_retval ReqGet_message_text( void )
+trap_retval TRAP_CORE( Get_message_text )( void )
 {
     static const char *const ExceptionMsgs[] = {
         "",
@@ -1520,7 +1520,7 @@ trap_retval ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_retval ReqMachine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -1543,7 +1543,7 @@ trap_retval ReqMachine_data( void )
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-trap_retval ReqGet_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -1651,7 +1651,7 @@ trap_retval ReqGet_lib_name( void )
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
-trap_retval ReqThread_get_next( void )
+trap_retval TRAP_THREAD( get_next )( void )
 {
     thread_get_next_req *req;
     thread_get_next_ret *ret;
@@ -1668,7 +1668,7 @@ trap_retval ReqThread_get_next( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_set( void )
+trap_retval TRAP_THREAD( set )( void )
 {
     thread_set_req      *req;
     thread_set_ret      *ret;
@@ -1693,7 +1693,7 @@ trap_retval ReqThread_set( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_freeze( void )
+trap_retval TRAP_THREAD( freeze )( void )
 {
     thread_freeze_req   *req;
     thread_freeze_ret   *ret;
@@ -1710,7 +1710,7 @@ trap_retval ReqThread_freeze( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_thaw( void )
+trap_retval TRAP_THREAD( thaw )( void )
 {
     thread_thaw_req     *req;
     thread_thaw_ret     *ret;
@@ -1727,7 +1727,7 @@ trap_retval ReqThread_thaw( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_get_extra( void )
+trap_retval TRAP_THREAD( get_extra )( void )
 {
     thread_get_extra_req    *req;
     char                    *ret;

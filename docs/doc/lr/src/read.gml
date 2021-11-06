@@ -1,12 +1,16 @@
-.func read _read
+.func read _read readv
 .synop begin
 #include <&iohdr>
 int read( int &fd, void *buffer, unsigned len );
-.ixfunc2 '&OsIo' &funcb
+.ixfunc2 '&OsIo' read
 .if &'length(&_func.) ne 0 .do begin
 int _read( int &fd, void *buffer, unsigned len );
-.ixfunc2 '&OsIo' &_func
+.ixfunc2 '&OsIo' _read
 .do end
+int readv( int &fd,
+           const struct iovec *iov,
+           int iovcnt );
+.ixfunc2 '&OsIo' readv
 .synop end
 .desc begin
 The
@@ -16,26 +20,33 @@ The number of bytes transmitted is given by
 .arg len
 and the data is transmitted starting at the address specified by
 .arg buffer
-.ct .li .
+.period
+.np
+The 
+.id readv
+function performs the same action as 
+.id read
+.ct , but places the data into the iovcnt buffers specified by 
+the members of the iov array: iov[0], iov[1], ..., iov[iovcnt-1].
 .np
 The
 .arg &fd
 value is returned by the
-.kw open
+.reffunc open
 function.
 The access mode must have included either
 .kw O_RDONLY
 or
 .kw O_RDWR
 when the
-.kw open
+.reffunc open
 function was invoked.
 The data is read starting at the
 current file position for the file in question.
 This file position can be determined with the
-.kw tell
+.reffunc _tell
 function and can be set with the
-.kw lseek
+.reffunc lseek
 function.
 .np
 When

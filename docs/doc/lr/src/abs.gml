@@ -9,7 +9,7 @@ The
 .id &funcb.
 function returns the absolute value of its integer argument
 .arg j
-.ct .li .
+.period
 .desc end
 .*
 .return begin

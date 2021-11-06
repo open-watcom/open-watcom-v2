@@ -11,7 +11,7 @@ low-order data elements of
 .arg m1
 and
 .arg m2
-.ct .li .
+.period
 It ignores the high-order bytes.
 When unpacking from a memory operand, 32 bits are accessed and all are
 utilized by the instruction.

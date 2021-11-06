@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     state->used = state->modify;     /* anything not saved is used*/
     tmp = state->used;
     HW_TurnOff( tmp, StackReg() );
-    HW_CTurnOff( tmp, HW_BP );  // should be able to call routine which modifies BP
+    HW_CTurnOff( tmp, HW_xBP ); /* should be able to call routine which modifies [E]BP */
     if( HW_Ovlap( state->unalterable, tmp ) ) {
         FEMessage( MSG_BAD_SAVE, aux );
     }
@@ -152,7 +152,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
             CurrProc->prolog_state |= GENERATE_RDOSDEV_PROLOG;
         }
     }
-    type_class = ReturnClass( tipe, state->attr );
+    type_class = ReturnTypeClass( tipe, state->attr );
     i = 0;
     parm_dst = &parms[0];
     for( parm_src = FEAuxInfo( aux, PARM_REGS ); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
@@ -297,7 +297,7 @@ hw_reg_set      MustSaveRegs( void )
 hw_reg_set      SaveRegs( void )
 /******************************/
 {
-   hw_reg_set   save;
+    hw_reg_set  save;
     save = MustSaveRegs();
     HW_OnlyOn( save, CurrProc->state.used );
     return( save );

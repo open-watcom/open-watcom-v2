@@ -39,7 +39,7 @@
 *                   is_dev_file()
 *                   parse_device()
 *
-* Note:         The field names are intended to correspond to the field names 
+* Note:         The field names are intended to correspond to the field names
 *               shown in the Wiki. The Wiki structs are named when the structs
 *               defined here are defined; they are not identical.
 *
@@ -79,20 +79,26 @@ typedef uint8_t     font_number;
 
 /* To hold the data from the BoxBlock struct. */
 
+typedef struct box_chars {
+    char                horizontal_line;
+    char                vertical_line;
+    char                top_left;
+    char                top_right;
+    char                bottom_left;
+    char                bottom_right;
+    char                top_join;
+    char                bottom_join;
+    char                left_join;
+    char                right_join;
+    char                inside_join;
+} box_chars;
+
+/* To hold the data from the BoxBlock struct. */
+
 typedef struct {
-    char *          font_name;
-    font_number     font;
-    char            horizontal_line;
-    char            vertical_line;
-    char            top_left;
-    char            top_right;
-    char            bottom_left;
-    char            bottom_right;
-    char            top_join;
-    char            bottom_join;
-    char            left_join;
-    char            right_join;
-    char            inside_join;
+    char                *font_name;
+    font_number         font;
+    box_chars           chars;
 } box_block;
 
 /* To hold the data from the UnderscoreBlock struct. */
@@ -110,7 +116,7 @@ typedef struct {
     char *          font_name;
     char *          font_style;
     uint16_t        font_height;
-    uint16_t        font_space;    
+    uint16_t        font_space;
 } default_font;
 
 /* To hold the data from the DefaultfontBlock struct. */
@@ -145,7 +151,7 @@ typedef struct {
     device_font *   fonts;
 } devicefont_block;
 
-/* This struct embodies the binary form of the :DEVICE block. 
+/* This struct embodies the binary form of the :DEVICE block.
  *
  * Note that the FunctionsBlock is not mentioned. The various CodeBlocks
  * are instead provided as part of PauseBlock and DevicefontBlock.

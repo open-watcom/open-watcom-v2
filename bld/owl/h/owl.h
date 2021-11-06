@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +151,7 @@ typedef void *owl_client_file;
 typedef struct {
     int                 (*write)( owl_client_file, const char *, size_t );
     long                (*tell)( owl_client_file );
-    int                 (*seek)( owl_client_file, long int, int );
+    int                 (*seek)( owl_client_file, long, int );
     void *              (*alloc)( size_t );
     void                (*free)( void * );
 } owl_client_funcs;

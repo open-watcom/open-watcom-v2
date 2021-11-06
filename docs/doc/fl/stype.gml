@@ -41,7 +41,7 @@ The following sections describe them.
 .mnote name
 is a variable name, array name, array declarator, symbolic name of a
 constant, function name or dummy procedure name.
-.endnote
+.esynote
 .np
 .if '&typstmt' eq 'DOUBLE COMPLEX' .do begin
 The

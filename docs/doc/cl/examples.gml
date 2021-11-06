@@ -21,32 +21,30 @@ if an object is being declared, it is called
 .mono x
 or
 .mono X
-..ct ,
+.ct ,
 .note
 if a function is being declared, it is called
 .mono F
-..ct ,
+.ct ,
 .note
 if an object is being declared, it usually has type
 .kw int
-..ct ,
-although any other type may be substituted,
+.ct , although any other type may be substituted,
 .note
 if a function is being declared, it usually returns type
 .kw int
-..ct ,
-although any other type may be substituted.
+.ct , although any other type may be substituted.
 .endnote
 .pp
 Storage class specifiers (
-..ct .kw extern
-..ct ,
+.ct .kw extern
+.ct ,
 .kw static
-..ct ,
+.ct ,
 .kw auto
 or
 .kw register
-..ct ) have purposely been omitted.
+.ct ) have purposely been omitted.
 .*
 .section Object Declarations
 .*
@@ -60,9 +58,8 @@ int x;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is an
-&SUPER2.integer.
+.ct .mono x
+is an &SUPER2.integer.
 .discuss end
 .keep break
 .millust begin
@@ -71,9 +68,8 @@ int * x;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a
-&SUPER2.pointer to an &SUPER3.integer.
+.ct .mono x
+is a &SUPER2.pointer to an &SUPER3.integer.
 .discuss end
 .keep break
 .millust begin
@@ -82,9 +78,8 @@ int ** x;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a
-&SUPER2.pointer to a &SUPER3.pointer to an &SUPER4.integer.
+.ct .mono x
+is a &SUPER2.pointer to a &SUPER3.pointer to an &SUPER4.integer.
 .discuss end
 .keep break
 .millust begin
@@ -93,9 +88,8 @@ const int x;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a &SUPER2.constant
-&SUPER3.integer.
+.ct .mono x
+is a &SUPER2.constant &SUPER3.integer.
 .discuss end
 .keep break
 .millust begin
@@ -104,9 +98,8 @@ int const x;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a &SUPER2.constant
-&SUPER3.integer (same as above).
+.ct .mono x
+is a &SUPER2.constant &SUPER3.integer (same as above).
 .discuss end
 .keep break
 .millust begin
@@ -115,9 +108,8 @@ const int * x;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a &SUPER2.pointer to a &SUPER3.constant
-&SUPER4.integer.
+.ct .mono x
+is a &SUPER2.pointer to a &SUPER3.constant &SUPER4.integer.
 The value of
 .mono x
 may change, but the integer that it points to may not be changed.
@@ -132,7 +124,7 @@ int * const x;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
+.ct .mono x
 is a &SUPER2.constant &SUPER3.pointer to an &SUPER4.integer.
 The value of
 .mono x
@@ -149,7 +141,7 @@ const int * const x;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
+.ct .mono x
 is a &SUPER2.constant &SUPER3.pointer to a &SUPER4.constant &SUPER5.integer.
 The value of
 .mono x
@@ -166,7 +158,7 @@ int x[];
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
+.ct .mono x
 is an &SUPER2.array of &SUPER3.integers.
 .discuss end
 .keep break
@@ -176,7 +168,7 @@ int x[53];
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
+.ct .mono x
 is an &SUPER2.array of &SUPER3.53 &SUPER4.integers.
 .discuss end
 .keep break
@@ -186,7 +178,7 @@ int * x[];
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
+.ct .mono x
 is an &SUPER2.array of &SUPER3.pointers to &SUPER4.integer.
 .discuss end
 .keep break
@@ -196,7 +188,7 @@ int (*x)[];
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
+.ct .mono x
 is a &SUPER2.pointer to an &SUPER3.array of &SUPER4.integers.
 .discuss end
 .keep break
@@ -206,9 +198,8 @@ int * (*x)[];
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a &SUPER2.pointer to an &SUPER3.array of &SUPER4.pointers to
-&SUPER5.integer.
+.ct .mono x
+is a &SUPER2.pointer to an &SUPER3.array of &SUPER4.pointers to &SUPER5.integer.
 .discuss end
 .keep break
 .millust begin
@@ -217,8 +208,9 @@ int (*x)();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a &SUPER2.pointer to a &SUPER3.function returning an &SUPER4.integer.
+.ct .mono x
+is a &SUPER2.pointer to a &SUPER3.function
+returning an &SUPER4.integer.
 .discuss end
 .keep break
 .millust begin
@@ -227,9 +219,9 @@ int (*x[25])();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is an &SUPER2.array of &SUPER3.25 &SUPER4.pointers to
-&SUPER5.functions returning an &SUPER6.integer.
+.ct .mono x
+is an &SUPER2.array of &SUPER3.25 &SUPER4.pointers to &SUPER5.functions
+returning an &SUPER6.integer.
 .discuss end
 .keep end
 .*
@@ -244,7 +236,7 @@ int F();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono F
+.ct .mono F
 is a &SUPER2.function returning an &SUPER3.integer.
 .discuss end
 .keep break
@@ -254,7 +246,7 @@ int * F();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono F
+.ct .mono F
 is a &SUPER2.function returning a &SUPER3.pointer to an &SUPER4.integer.
 .discuss end
 .* .keep break
@@ -264,10 +256,10 @@ is a &SUPER2.function returning a &SUPER3.pointer to an &SUPER4.integer.
 .* .millust end
 .* .discuss begin
 .* &SUPER1.
-.* ..ct .mono F
+.* .ct .mono F
 .* is a &SUPER2.function returning a (pointer to a) &SUPER3.function returning &SUPER4.
-.* ..ct .kw int
-.* ..ct ..li .
+.* .ct .kw int
+.* .period
 .* .discuss end
 .keep break
 .millust begin
@@ -277,9 +269,9 @@ int (*F())();
 .discuss begin
 .* The same as above,
 &SUPER1.
-..ct .mono F
-is a &SUPER2.function returning a &SUPER3.pointer to a
-&SUPER4.function returning an &SUPER5.integer.
+.ct .mono F
+is a &SUPER2.function returning a &SUPER3.pointer to a &SUPER4.function
+returning an &SUPER5.integer.
 .discuss end
 .* .keep break
 .* .millust begin
@@ -288,11 +280,11 @@ is a &SUPER2.function returning a &SUPER3.pointer to a
 .* .millust end
 .* .discuss begin
 .* &SUPER1.
-.* ..ct .mono F
+.* .ct .mono F
 .* is a &SUPER2.function returning a (pointer to a) &SUPER3.function returning
 .* a &SUPER4.pointer to an &SUPER5.
-.* ..ct .kw int
-.* ..ct ..li .
+.* .ct .kw int
+.* .period
 .* .discuss end
 .keep break
 .millust begin
@@ -302,10 +294,9 @@ int * (*F())();
 .discuss begin
 .* The same as above,
 &SUPER1.
-..ct .mono F
-is a &SUPER2.function returning a &SUPER3.pointer to a
-&SUPER4.function returning
-a &SUPER5.pointer to an &SUPER6.integer.
+.ct .mono F
+is a &SUPER2.function returning a &SUPER3.pointer to a &SUPER4.function
+returning a &SUPER5.pointer to an &SUPER6.integer.
 .discuss end
 .keep break
 .millust begin
@@ -314,9 +305,9 @@ int (*F())[];
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono F
-is a &SUPER2.function returning a &SUPER3.pointer to an
-&SUPER4.array of &SUPER5.integers.
+.ct .mono F
+is a &SUPER2.function
+returning a &SUPER3.pointer to an &SUPER4.array of &SUPER5.integers.
 .discuss end
 .* .keep break
 .* .millust begin
@@ -325,11 +316,11 @@ is a &SUPER2.function returning a &SUPER3.pointer to an
 .* .millust end
 .* .discuss begin
 .* &SUPER1.
-.* ..ct .mono F
+.* .ct .mono F
 .* is a &SUPER2.function returning a &SUPER3.pointer to an &SUPER4.array of
 .* (pointers to) &SUPER5.functions returning &SUPER6.
-.* ..ct .kw int
-.* ..ct ..li .
+.* .ct .kw int
+.* .period
 .* .discuss end
 .keep break
 .millust begin
@@ -339,9 +330,10 @@ int (*(*F())[])();
 .discuss begin
 .* The same as above,
 &SUPER1.
-..ct .mono F
-is a &SUPER2.function returning a &SUPER3.pointer to an &SUPER4.array of
-&SUPER5.pointers to &SUPER6.functions returning an &SUPER7.integer.
+.ct .mono F
+is a &SUPER2.function
+returning a &SUPER3.pointer to an &SUPER4.array of &SUPER5.pointers to &SUPER6.functions
+returning an &SUPER7.integer.
 .discuss end
 .keep break
 .millust begin
@@ -350,10 +342,10 @@ int * (*(*F())[])();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono F
-is a &SUPER2.function returning a &SUPER3.pointer to an &SUPER4.array of
-&SUPER5.pointers to &SUPER6.functions returning a &SUPER7.pointer to an
-&SUPER8.integer.
+.ct .mono F
+is a &SUPER2.function
+returning a &SUPER3.pointer to an &SUPER4.array of &SUPER5.pointers to &SUPER6.functions
+returning a &SUPER7.pointer to an &SUPER8.integer.
 .discuss end
 .keep end
 .*
@@ -361,7 +353,7 @@ is a &SUPER2.function returning a &SUPER3.pointer to an &SUPER4.array of
 .*
 ..if '&target' eq 'PC' or '&target' eq 'PC 370' ..th ..do begin
 .*
-.section &kwfar_sp., &kwnear_sp. and &kwhuge_sp. Declarations
+.section &kwfar., &kwnear. and &kwhuge. Declarations
 .*
 ..if '&target' eq 'PC 370' ..th ..do begin
 .shade begin
@@ -370,11 +362,9 @@ These examples apply only to the &wcboth. compilers.
 ..do end
 .pp
 The following examples illustrate the use of the
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 and
-.kwix &kwhuge_sp.
-.kwfont &kwhuge.
+.kw &kwhuge.
 keywords.
 .* The examples assume that the
 .* .ix 'small code'
@@ -387,12 +377,10 @@ keywords.
 .* is being used.
 .* .pp
 .* No examples of the
-.* .kwix &kwnear_sp.
-.* .kwfont &kwnear.
+.* .kw &kwnear.
 .* keyword have been given since its use is
 .* symmetrical with the use of the
-.* .kwix &kwfar_sp.
-.* .kwfont &kwfar.
+.* .kw &kwfar.
 .* keyword (when the
 .* .ix 'big code'
 .* big code and/or
@@ -401,14 +389,11 @@ keywords.
 .* is being used).
 .pp
 The use of the
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 keyword is symmetrical with the use of the
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 keyword, so no examples of
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 are shown.
 .keep begin
 .millust begin
@@ -417,10 +402,8 @@ int __far X;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono X
-is a
-&SUPER2.far
-&SUPER3.integer.
+.ct .mono X
+is a &SUPER2.far &SUPER3.integer.
 .discuss end
 .keep break
 .millust begin
@@ -429,11 +412,10 @@ int * __far x;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
+.ct .mono x
 is
 &SUPER2.far,
-and is a
-&SUPER3.pointer to an &SUPER4.integer.
+and is a &SUPER3.pointer to an &SUPER4.integer.
 .discuss end
 .keep break
 .millust begin
@@ -442,9 +424,8 @@ int __far * x;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a &SUPER2.far
-&SUPER3.pointer to an &SUPER4.integer.
+.ct .mono x
+is a &SUPER2.far &SUPER3.pointer to an &SUPER4.integer.
 .discuss end
 .keep break
 .millust begin
@@ -453,11 +434,9 @@ int __far * __far x;
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
+.ct .mono x
 is &SUPER2.far,
-and is a &SUPER3.far
-&SUPER4.pointer to an
-&SUPER5.integer.
+and is a &SUPER3.far &SUPER4.pointer to an &SUPER5.integer.
 .discuss end
 .keep break
 .millust begin
@@ -466,9 +445,8 @@ int __far X[];
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono X
-is a &SUPER2.far
-&SUPER3.array of &SUPER4.integers.
+.ct .mono X
+is a &SUPER2.far &SUPER3.array of &SUPER4.integers.
 .discuss end
 .keep break
 .millust begin
@@ -477,11 +455,9 @@ int __huge X[];
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a &SUPER2.huge
-&SUPER3.array of &SUPER4.integers
-(
-..ct .mono X
+.ct .mono x
+is a &SUPER2.huge &SUPER3.array of &SUPER4.integers (
+.ct .mono X
 is an array that can exceed 64K in size.)
 .discuss end
 .keep break
@@ -491,9 +467,8 @@ int * __far X[];
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono X
-is a &SUPER2.far
-&SUPER3.array of &SUPER4.pointers to &SUPER5.integers.
+.ct .mono X
+is a &SUPER2.far &SUPER3.array of &SUPER4.pointers to &SUPER5.integers.
 .discuss end
 .keep break
 .millust begin
@@ -502,9 +477,8 @@ int __far * X[];
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono X
-is an &SUPER2.array of &SUPER3.far
-&SUPER4.pointers to &SUPER5.integers.
+.ct .mono X
+is an &SUPER2.array of &SUPER3.far &SUPER4.pointers to &SUPER5.integers.
 .discuss end
 .keep break
 .millust begin
@@ -513,11 +487,8 @@ int __far * __far X[];
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono X
-is a &SUPER2.far
-&SUPER3.array of &SUPER4.far
-&SUPER5.pointers to
-&SUPER6.integers.
+.ct .mono X
+is a &SUPER2.far &SUPER3.array of &SUPER4.far &SUPER5.pointers to &SUPER6.integers.
 .discuss end
 .keep break
 .millust begin
@@ -526,9 +497,9 @@ int __far F();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono F
-is a &SUPER2.far
-&SUPER3.function returning an &SUPER4.integer.
+.ct .mono F
+is a &SUPER2.far &SUPER3.function
+returning an &SUPER4.integer.
 .discuss end
 .keep break
 .millust begin
@@ -537,9 +508,9 @@ int * __far F();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono F
-is a &SUPER2.far
-&SUPER3.function returning a &SUPER4.pointer to an &SUPER5.integer.
+.ct .mono F
+is a &SUPER2.far &SUPER3.function
+returning a &SUPER4.pointer to an &SUPER5.integer.
 .discuss end
 .keep break
 .millust begin
@@ -548,11 +519,9 @@ int __far * F();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono F
-is a
-&SUPER2.function returning a &SUPER3.far
-&SUPER4.pointer to an
-&SUPER5.integer.
+.ct .mono F
+is a &SUPER2.function
+returning a &SUPER3.far &SUPER4.pointer to an &SUPER5.integer.
 .discuss end
 .keep break
 .millust begin
@@ -561,11 +530,9 @@ int __far * __far F();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono F
-is a &SUPER2.far
-&SUPER3.function returning a &SUPER4.far
-&SUPER5.pointer to an
-&SUPER6.integer.
+.ct .mono F
+is a &SUPER2.far &SUPER3.function
+returning a &SUPER4.far &SUPER5.pointer to an &SUPER6.integer.
 .discuss end
 .keep break
 .millust begin
@@ -574,10 +541,9 @@ int (__far * x)();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a &SUPER2.far
-&SUPER3.pointer to a
-&SUPER4.function returning an &SUPER5.integer.
+.ct .mono x
+is a &SUPER2.far &SUPER3.pointer to a &SUPER4.function
+returning an &SUPER5.integer.
 .discuss end
 .keep break
 .millust begin
@@ -586,11 +552,9 @@ int __far * (* x)();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a &SUPER2.pointer to a
-&SUPER3.function returning a &SUPER4.far
-&SUPER5.pointer to an
-&SUPER6.integer.
+.ct .mono x
+is a &SUPER2.pointer to a &SUPER3.function
+returning a &SUPER4.far &SUPER5.pointer to an &SUPER6.integer.
 .discuss end
 .keep break
 .millust begin
@@ -599,16 +563,13 @@ int __far * (__far * x)();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono x
-is a &SUPER2.far
-&SUPER3.pointer to a
-&SUPER4.function returning a &SUPER5.far
-&SUPER6.pointer to an
-&SUPER7.integer.
+.ct .mono x
+is a &SUPER2.far &SUPER3.pointer to a &SUPER4.function
+returning a &SUPER5.far &SUPER6.pointer to an &SUPER7.integer.
 .discuss end
 .keep end
 .*
-.section &kwintr_sp. Declarations
+.section &kwintrpt. Declarations
 .*
 ..if '&target' eq 'PC 370' ..th ..do begin
 .shade begin
@@ -617,8 +578,7 @@ This example applies only to the &wcboth. compilers.
 ..do end
 .pp
 The following example illustrates the use of the
-.kwix &kwintr_sp.
-.kwfont &kwintrpt.
+.kw &kwintrpt.
 keyword.
 .keep begin
 .millust begin
@@ -627,10 +587,9 @@ void __interrupt __far F();
 .millust end
 .discuss begin
 &SUPER1.
-..ct .mono F
-is a &SUPER2.far
-&SUPER3.interrupt
-&SUPER4.function returning &SUPER5.nothing.
+.ct .mono F
+is a &SUPER2.far &SUPER3.interrupt &SUPER4.function
+returning &SUPER5.nothing.
 .discuss end
 .keep end
 ..do end

@@ -59,7 +59,7 @@ static unsigned NumCacheBlocks( unsigned long len )
     unsigned    numblocks;
 
     numblocks = len / CACHE_PAGE_SIZE;
-    if( len % CACHE_PAGE_SIZE != 0 ) {
+    if( (len % CACHE_PAGE_SIZE) != 0 ) {
         numblocks++;
     }
     return( numblocks );
@@ -163,7 +163,8 @@ void CacheClose( file_list *list, unsigned pass )
     if( list == NULL )
         return;
     infile = list->infile;
-//    if( infile->handle == NIL_FHANDLE ) return;
+//    if( infile->handle == NIL_FHANDLE )
+//        return;
     infile->status &= ~INSTAT_IN_USE;
     switch( pass ) {
     case 1: /* first pass */

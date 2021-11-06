@@ -8,7 +8,7 @@
 is an include specification.
 You should refer to the compiler's User's Guide for a detailed
 description of an include specification and include file processing.
-.endnote
+.esynote
 .exam begin
       INCLUDE 'GBLDEFS'
           .

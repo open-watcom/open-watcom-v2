@@ -56,16 +56,16 @@ expands to
 .section Diagnostic Printed by the assert Function
 .bigterm
 The diagnostic printed by and the termination behavior of the
-.kw assert
+.reffunc assert
 function (7.2).
 .bigdesc
 .np
 The
-.kw assert
+.reffunc assert
 function prints a diagnostic message to
 .kw stderr
 and calls the
-.kw abort
+.reffunc abort
 routine if the expression is false.
 The diagnostic message has the following form:
 .millust begin
@@ -75,18 +75,17 @@ Assertion failed: [expression], file [name], line [number]
 .section Character Testing
 .bigterm
 The sets of characters tested for by the
-.kw isalnum
-.ct,
-.kw isalpha
-.ct,
-.kw iscntrl
-.ct,
-.kw islower
-.ct,
-.kw isprint
-.ct,
-and
-.kw isupper
+.reffunc isalnum
+.ct ,
+.reffunc isalpha
+.ct ,
+.reffunc iscntrl
+.ct ,
+.reffunc islower
+.ct ,
+.reffunc isprint
+.ct , and
+.reffunc isupper
 functions (7.3.1).
 .bigdesc
 .np
@@ -167,23 +166,23 @@ on underflow range errors in the mathematics functions.
 .section The fmod Function
 .bigterm
 Whether a domain error occurs or zero is returned when the
-.kw fmod
+.reffunc fmod
 function has a second argument of zero (7.5.6.4).
 .bigdesc
 .np
 Zero is returned when the second argument to
-.kw fmod
+.reffunc fmod
 is zero.
 .*-------------------------
 .section The signal Function
 .bigterm
 The set of signals for the
-.kw signal
+.reffunc signal
 function (7.7.1.1).
 .bigdesc
 .np
 See the description of the
-.kw signal
+.reffunc signal
 function presented earlier in this book.
 .if '&machsys' eq 'QNX' .do begin
 Also see the
@@ -193,12 +192,12 @@ manual.
 .*-------------------------
 .bigterm
 The semantics for each signal recognized by the
-.kw signal
+.reffunc signal
 function (7.7.1.1).
 .bigdesc
 .np
 See the description of the
-.kw signal
+.reffunc signal
 function presented earlier in this book.
 .if '&machsys' eq 'QNX' .do begin
 Also see the
@@ -209,12 +208,12 @@ manual.
 .bigterm
 The default handling and the handling at program startup for each
 signal recognized by the
-.kw signal
+.reffunc signal
 function (7.7.1.1).
 .bigdesc
 .np
 See the description of the
-.kw signal
+.reffunc signal
 function presented earlier in this book.
 .if '&machsys' eq 'QNX' .do begin
 Also see the
@@ -226,7 +225,7 @@ manual.
 .bigterm
 If the equivalent of
 .ix 'SIG_DFL'
-.kw signal
+.reffunc signal
 .ct ( sig, SIG_DFL );
 is not executed prior to the call of a signal handler,
 the blocking of the signal that is performed (7.7.1.1).
@@ -244,7 +243,7 @@ is executed prior to the call of a signal handler.
 Whether the default handling is reset if the
 .kw SIGILL
 signal is received by a handler specified to the
-.kw signal
+.reffunc signal
 function (7.7.1.1).
 .bigdesc
 .np
@@ -372,23 +371,23 @@ It is possible to open a file multiple times.
 .section Deleting Open Files
 .bigterm
 The effect of the
-.kw remove
+.reffunc remove
 function on an open file (7.9.4.1).
 .bigdesc
 .np
 The
-.kw remove
+.reffunc remove
 function deletes a file, even if the file is open.
 .*-------------------------
 .section Renaming with a Name that Exists
 .bigterm
 The effect if a file with the new name exists prior to a call to the
-.kw rename
+.reffunc rename
 function (7.9.4.2).
 .bigdesc
 .np
 The
-.kw rename
+.reffunc rename
 function
 .if '&machsys' eq 'QNX' .do begin
 will succeed if you attempt to rename a file using a name that exists.
@@ -402,7 +401,7 @@ will fail if you attempt to rename a file using a name that exists.
 The output for
 .mono %p
 conversion in the
-.kw fprintf
+.reffunc fprintf
 function (7.9.6.1).
 .bigdesc
 .np
@@ -411,13 +410,13 @@ far pointers (%lp).
 The output for %p depends on the memory model being used.
 .np
 In 16-bit mode, the
-.kw fprintf
+.reffunc fprintf
 function produces hexadecimal values of the form XXXX for 16-bit near
 pointers, and XXXX:XXXX (segment and offset separated by a colon) for
 32-bit far pointers.
 .np
 In 32-bit mode, the
-.kw fprintf
+.reffunc fprintf
 function produces hexadecimal values of the form XXXXXXXX for 32-bit near
 pointers, and XXXX:XXXXXXXX (segment and offset separated by a colon) for
 48-bit far pointers.
@@ -427,12 +426,12 @@ pointers, and XXXX:XXXXXXXX (segment and offset separated by a colon) for
 The input for
 .mono %p
 conversion in the
-.kw fscanf
+.reffunc fscanf
 function (7.9.6.2).
 .bigdesc
 .np
 The
-.kw fscanf
+.reffunc fscanf
 function converts hexadecimal values into the correct address when the %p
 format specifier is used.
 .*-------------------------
@@ -444,7 +443,7 @@ character that is neither the first nor the last character in the
 scanlist for
 .mono %[
 conversion in the
-.kw fscanf
+.reffunc fscanf
 function (7.9.6.2).
 .bigdesc
 .np
@@ -457,16 +456,16 @@ The character following the "&minus" is the last character in the range.
 The value to which the macro
 .kw errno
 is set by the
-.kw fgetpos
+.reffunc fgetpos
 or
-.kw ftell
+.reffunc ftell
 function on failure (7.9.9.1, 7.9.9.4).
 .bigdesc
 .np
 When the function
-.kw fgetpos
+.reffunc fgetpos
 or
-.kw ftell
+.reffunc ftell
 fails, they set
 .kw errno
 to
@@ -479,12 +478,12 @@ header file.
 .section Messages Generated by the perror Function
 .bigterm
 The messages generated by the
-.kw perror
+.reffunc perror
 function (7.9.10.4).
 .bigdesc
 .np
 The
-.kw perror
+.reffunc perror
 function generates the following messages.
 .if '&machsys' eq 'QNX' .do begin
 .im strerror.qnx
@@ -496,46 +495,44 @@ function generates the following messages.
 .section Allocating Zero Memory
 .bigterm
 The behavior of the
-.kw calloc
-.ct,
-.kw malloc
-.ct,
-or
-.kw realloc
+.reffunc calloc
+.ct ,
+.reffunc malloc
+.ct , or
+.reffunc realloc
 function if the size requested is zero (7.10.3).
 .bigdesc
 .np
 The value returned will be
 .kw NULL
-.ct .li .
+.period
 No actual memory is allocated.
 .*-------------------------
 .section The abort Function
 .bigterm
 The behavior of the
-.kw abort
+.reffunc abort
 function with regard to open and temporary files (7.10.4.1).
 .bigdesc
 .np
 The
-.kw abort
+.reffunc abort
 function does not close any files that are open or temporary, nor
 does it flush any output buffers.
 .*-------------------------
 .section The atexit Function
 .bigterm
 The status returned by the
-.kw exit
+.reffunc exit
 function if the value of the argument is other than zero,
 .kw EXIT_SUCCESS
-.ct,
-or
+.ct , or
 .kw EXIT_FAILURE
 (7.10.4.3).
 .bigdesc
 .np
 The
-.kw exit
+.reffunc exit
 function returns the value of its argument to the operating system
 regardless of its value.
 .*-------------------------
@@ -543,7 +540,7 @@ regardless of its value.
 .bigterm
 The set of environment names and the method for altering the environment
 list used by the
-.kw getenv
+.reffunc getenv
 function (7.10.4.4).
 .bigdesc
 .np
@@ -552,7 +549,7 @@ The set of environment names is unlimited.
 Environment variables can be set from the QNX command line using the
 EXPORT or SET commands.
 A program can modify its environment variables with the
-.kw putenv
+.reffunc putenv
 function.
 Such modifications last only until the program terminates.
 .do end
@@ -561,7 +558,7 @@ The set of environment names is unlimited.
 Environment variables can be set from the DOS command line using the
 SET command.
 A program can modify its environment variables with the
-.kw putenv
+.reffunc putenv
 function.
 Such modifications last only until the program terminates.
 .do end
@@ -569,12 +566,12 @@ Such modifications last only until the program terminates.
 .section The system Function
 .bigterm
 The contents and mode of execution of the string by the
-.kw system
+.reffunc system
 function (7.10.4.5).
 .bigdesc
 .np
 The
-.kw system
+.reffunc system
 function
 .if '&machsys' eq 'QNX' .do begin
 always executes an executable binary or a shell file, using
@@ -585,7 +582,7 @@ executes an internal DOS, Windows, or OS/2 command, or an EXE, COM,
 BAT or CMD file from within a C program rather than from the command
 line.
 The
-.kw system
+.reffunc system
 function
 examines the
 .kw COMSPEC
@@ -596,12 +593,12 @@ argument string to the command interpreter.
 .section The strerror Function
 .bigterm
 The contents of the error message strings returned by the
-.kw strerror
+.reffunc strerror
 function (7.11.6.2).
 .bigdesc
 .np
 The
-.kw strerror
+.reffunc strerror
 function generates the following messages.
 .if '&machsys' eq 'QNX' .do begin
 .im strerror.qnx
@@ -631,11 +628,11 @@ corresponding daylight saving time zone is "Eastern Daylight Saving Time"
 .section The clock Function
 .bigterm
 The era for the
-.kw clock
+.reffunc clock
 function (7.12.2.1).
 .bigdesc
 .np
 The
-.kw clock
+.reffunc clock
 function's era begins with a value of 0 when the program starts to execute.
 .endbigterms

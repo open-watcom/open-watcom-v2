@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include <stdlib.h>
 #include "stdnt.h"
 
-trap_retval ReqRedirect_stdin( void )
+trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
     redirect_stdin_ret  *ret;
 
@@ -42,7 +43,7 @@ trap_retval ReqRedirect_stdin( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRedirect_stdout( void )
+trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
     redirect_stdout_ret *ret;
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,13 +33,13 @@
 #include "ctokens.h"
 
 const char      *Tokens[] = {
-    #define pick(token,string,class,oper) string,
+    #define pick(token,string,class,oper,prec) string,
     #include "_ctokens.h"
     #undef  pick
 };
 
 token_class     TokenClass[] = {
-    #define pick(token,string,class,oper) class,
+    #define pick(token,string,class,oper,prec) class,
     #include "_ctokens.h"
     #undef pick
 };

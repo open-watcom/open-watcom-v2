@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -383,7 +383,7 @@ extern  dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
     case DB_OP_POINTS:
         VerTipe( other, NULL );
         switch( TypeAddress( other )->refno ) {
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         case TY_NEAR_POINTER:
         case TY_NEAR_CODE_PTR:
 #endif
@@ -391,7 +391,7 @@ extern  dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
         case TY_INT_2:
             stkop = LOP_IND_2;
             break;
-#if ( _TARGET & _TARG_IAPX86 ) == 0
+#if ( _TARGET & _TARG_8086 ) == 0
         case TY_NEAR_POINTER:
         case TY_NEAR_CODE_PTR:
 #endif
@@ -402,7 +402,7 @@ extern  dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
         case TY_LONG_POINTER:
         case TY_HUGE_POINTER:
         case TY_LONG_CODE_PTR:
-    #if _TARGET & _TARG_IAPX86
+    #if _TARGET & _TARG_8086
             stkop = LOP_IND_ADDR_16;
     #else
             stkop = LOP_IND_ADDR_32;

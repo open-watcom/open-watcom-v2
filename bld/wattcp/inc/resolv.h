@@ -261,6 +261,9 @@ int     res_isourserver (const struct sockaddr_in *);
 int     res_nameinquery (const char *, int, int, const u_char *, const u_char *);
 int     res_queriesmatch(const u_char *, const u_char *, const u_char *, const u_char *);
 
+void    res_send_setqhook (res_send_qhook hook);
+void    res_send_setrhook (res_send_rhook hook);
+
 __END_DECLS
 
 #endif /* !_RESOLV_H_ */

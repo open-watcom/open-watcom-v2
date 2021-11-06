@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,33 +30,18 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <fcntl.h>
-#include <io.h>
-#include <sys/stat.h>
-#if defined( __UNIX__ ) || defined( __WATCOMC__ )
-  #include <utime.h>
-#else
-  #include <sys/utime.h>
-#endif
-#include <dos.h>
-#if defined( __OS2__ ) && defined( __386__ )
-#define  INCL_DOSFILEMGR
-#define  INCL_DOSERRORS
-#define  INCL_DOSMISC
-#include <os2.h>
-#endif
-#include "bool.h"
 #include "cp.h"
+#if defined( __WATCOMC__ )
+    #include <utime.h>
+#else
+    #include <sys/utime.h>
+#endif
+#include "wio.h"
 
 #include "clibext.h"
 
 
-#if !defined( __WATCOMC__ ) && defined( __NT__ )
-#else
+#if !defined( __NT__ )
 #define INVALID_HANDLE_VALUE -1
 #endif
 
@@ -66,18 +52,14 @@ static void freeCB( ctrl_block *cb, int freecb );
 /*
  * GrabFile - read in a specified file, dump it to destination
  */
-int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
+int GrabFile( char *src, struct stat *stat_s, char *dest, fattrs srcattr )
 {
 #if defined( __OS2__ ) && defined( __386__ )
     int                 result;
 #else
     ctrl_block          *cb;
 #endif
-#if !defined(__WATCOMC__) && ( defined( __NT__ ) )
-    HANDLE              handle;
-#else
-    int                 handle;
-#endif
+    fhandle             handle;
     int                 okay=true;
     timedate            td;
     unsigned            t = 0;
@@ -86,7 +68,12 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
     /*
      * file handle
      */
+#ifdef __NT__
+    handle = CreateFile( src, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL );
+    if( handle == INVALID_HANDLE_VALUE ) {
+#else
     if( _dos_open( src, O_RDONLY, &handle ) ) {
+#endif
         DropPrintALine( "Error opening file %s",src );
         IOError( errno );
     }
@@ -95,7 +82,18 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
      * get time/date stamp of file
      */
     if( npflag || todflag ) {
+#ifdef __NT__
+        FILETIME    local_ft;
+        fdt         fd;
+        fdt         ft;
+
+        GetFileTime( handle, NULL, NULL, &local_ft );
+        FileTimeToDosDateTime( &local_ft, &fd, &ft );
+        d = fd;
+        t = ft;
+#else
         _dos_getftime( handle, &d, &t );
+#endif
         if( todflag ) {
             td.yy = (((d & 0xFE00) >> 9) + 1980);
             td.mm = ((d & 0x01E0 ) >> 5);
@@ -170,10 +168,12 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
     }
 
 #if defined( __OS2__ ) && defined( __386__ )
+
+    /* unused parameters */ (void)srcattr;
+
     if( !sflag ) {
         PrintALineThenDrop( "Copying file %s to %s", src, dest );
     }
-    srcattr = srcattr;
     _dos_close( handle );
     /*
      * perform the copy - OS/2 preserves attributes and time stamp
@@ -250,7 +250,11 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
             break;
         }
     }
+  #ifdef __NT__
+    CloseHandle( cb->inhandle );
+  #else
     _dos_close( cb->inhandle );
+  #endif
 #endif
     if( okay ) {
         FileCnt++;
@@ -259,17 +263,22 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
 
 } /* GrabFile */
 
-#if !( defined( __OS2__ ) && defined( __386__ ) )
+#if defined( __OS2__ ) && defined( __386__ )
+
+// copy by OS
+
+#else
+
 /*
  * readABuffer - read a data buffer
  */
 static int readABuffer( void )
 {
     char        __FAR *buff;
-    unsigned    buffsize;
     mem_block   *mb;
     int         flushed = false;
-    unsigned    bytes;
+    fsize       buffsize;
+    fsize       bytes;
 
     /*
      * get buffer size
@@ -297,11 +306,15 @@ static int readABuffer( void )
     /*
      * read data
      */
+#ifdef __NT__
+    if( ReadFile( CBTail->inhandle, buff, buffsize, &bytes, NULL ) == 0 || bytes != buffsize ) {
+#else
     if( _dos_read( CBTail->inhandle, buff, buffsize, &bytes ) || bytes != buffsize ) {
+#endif
         DropPrintALine( "Read error on file %s", CBTail->inname );
         IOError( errno );
     }
-    CBTail->bytes_pending -= (long) buffsize;
+    CBTail->bytes_pending -= (long)buffsize;
 
     /*
      * allocate memory block
@@ -321,6 +334,7 @@ static int readABuffer( void )
     return( true );
 
 } /* readABuffer */
+
 #endif
 
 /*
@@ -377,7 +391,7 @@ void FlushMemoryBlocks()
     char                __FAR *buff = NULL;
     mem_block           *mb;
     long                total=0;
-    unsigned            bytes;
+    fsize               bytes;
     unsigned long       timetaken;
     unsigned long       secs, hunds;
 
@@ -390,7 +404,12 @@ void FlushMemoryBlocks()
          * open file if we have to
          */
         if( curr->outhandle == INVALID_HANDLE_VALUE ) {
+#ifdef __NT__
+            curr->outhandle = CreateFile( curr->outname, GENERIC_READ | GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+            if( curr->outhandle == INVALID_HANDLE_VALUE ) {
+#else
             if( _dos_creat( curr->outname, _A_NORMAL, &curr->outhandle ) ) {
+#endif
                 DropPrintALine( "Error opening destination file %s",curr->outname );
                 IOError( errno );
             }
@@ -412,13 +431,29 @@ void FlushMemoryBlocks()
                 buff = mb->where.buffer;
             }
             total += (long) mb->buffsize;
+#ifdef __NT__
+            if( WriteFile( curr->outhandle, buff, mb->buffsize, &bytes, NULL ) == 0 || bytes != mb->buffsize ) {
+#else
             if( _dos_write( curr->outhandle, buff, mb->buffsize, &bytes ) || bytes != mb->buffsize ) {
+#endif
                 DropPrintALine( "Error writing destination file %s",curr->outname );
                 IOError( errno );
             }
             mb = mb->next;
         }
         if( curr->bytes_pending == 0 ) {
+#ifdef __NT__
+            if( npflag ) {
+                FILETIME    local_ft;
+
+                DosDateTimeToFileTime( curr->d, curr->t, &local_ft);
+                SetFileTime( curr->outhandle, NULL, NULL, &local_ft );
+            }
+            CloseHandle( curr->outhandle );
+            if( pattrflag ) {
+                SetFileAttributes( curr->outname, curr->srcattr );
+            }
+#else
             if( npflag ) {
                 _dos_setftime( curr->outhandle, curr->d, curr->t  );
             }
@@ -426,6 +461,7 @@ void FlushMemoryBlocks()
             if( pattrflag ) {
                 _dos_setfileattr( curr->outname, curr->srcattr );
             }
+#endif
         }
 
         /*
@@ -446,10 +482,10 @@ void FlushMemoryBlocks()
         hunds = timetaken - secs * CLOCKS_PER_SEC;
 
         if( rflag ) {
-            PrintALineThenDrop( "%ld bytes, %u files written, %u dirs created in %lu.%lu seconds (dump %u)",
+            PrintALineThenDrop( " (%ld bytes), %u files written, %u dirs created in %lu.%lu seconds (dump %u)",
                             total, FileCnt, DirCnt, secs, hunds, DumpCnt );
         } else {
-            PrintALineThenDrop( "%ld bytes, %u files written in %lu.%02lu seconds (dump %u)",
+            PrintALineThenDrop( " (%ld bytes), %u files written in %lu.%02lu seconds (dump %u)",
                             total, FileCnt, secs, hunds, DumpCnt );
         }
         TotalBytes += total;

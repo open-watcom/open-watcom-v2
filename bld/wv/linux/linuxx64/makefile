@@ -6,6 +6,6 @@
 host_os  = linux
 host_cpu = x64
 
-syshdir =
+extra_ldflags = -ldl
 
 !include ../../master.mif

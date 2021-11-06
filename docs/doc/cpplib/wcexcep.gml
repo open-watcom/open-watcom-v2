@@ -17,34 +17,34 @@ if the trap for the specific error has not been enabled by your program.
 :P.
 By default, no exception traps are enabled and no exceptions will be thrown.
 Exception traps are enabled by setting the exception state with the
-.MONO exceptions
+:MONO.exceptions
 member function.
 :P.
 The
-.MONO wcexcept.h
+:MONO.wcexcept.h
 header file is included by the header files for each of the container classes.
 There is normally no need to explicitly include the
-.MONO wcexcept.h
+:MONO.wcexcept.h
 header file, but no errors will result if it is included.
 This class is inherited as a base class for each
 of the containers.
 You do not need to derive from it directly.
 :P.
 The
-.MONO WCListExcept
+:MONO.WCListExcept
 .ix 'WCListExcept' 'class'
 class (formally used by the list container classes) has been replaced by
 the
-.MONO WCExcept
+:MONO.WCExcept
 class.
 A typedef of the
-.MONO WCListExcept
+:MONO.WCListExcept
 class to the
-.MONO WCExcept
+:MONO.WCExcept
 class and the
-.MONO wclist_state
+:MONO.wclist_state
 type to the
-.MONO wc_state
+:MONO.wc_state
 type provide backward compatability with previous
 versions of the list containers.
 :HDG.Public Enumerations
@@ -70,7 +70,8 @@ The following public member functions are declared:
 :SNPCD cd_idx='c'.WCExcept();
 :eSNPL.
 :SMTICS.
-This form of the &fn. creates an &obj.:PERIOD.
+This form of the &fn. creates an &obj.
+:PERIOD.
 :P.
 The &fn. is used implicitly by the compiler
 when it generates a constructor for a derived class.
@@ -93,11 +94,11 @@ The &fn. produces an initialized &obj. with no exception traps enabled.
 The &fn. does not do anything explicit.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the object derived from
-.MONO &cl_name.
+:MONO.&cl_name.
 goes out of scope.
 :RSLTS.
 The object derived from
-.MONO &cl_name.
+:MONO.&cl_name.
 is destroyed.
 :SALSO.
 :SAL typ='ctor'.
@@ -118,7 +119,8 @@ Each bit corresponds to an exception, and is set if the exception is enabled.
 The first form of the &fn. returns the current settings of the
 exception bits.
 The second form of the function sets the exception bits to those
-specified by :HP1.set_flags:eHP1.:PERIOD.
+specified by :HP1.set_flags:eHP1.
+:PERIOD.
 :RSLTS.
 The current exception bits are returned.
 If a new set of bits are being set, the returned value is the old
@@ -154,7 +156,8 @@ The &fn. represents the same set of bits, but uses an
 :MONO.int
 to represent the values, thereby avoiding problems made possible by the
 compiler's ability to use smaller types for enumerations.
-All uses of these bits should use the &fn.:PERIOD.
+All uses of these bits should use the &fn.
+:PERIOD.
 :P.
 The bit values defined by the &fn. can be read and set by the
 :MONO.exceptions
@@ -163,7 +166,7 @@ member function,
 which is also used to control exception handling.
 :P.
 The
-.MONO WCExcept::not_empty
+:MONO.WCExcept::not_empty
 .ix 'not_empty' 'exception'
 bit setting traps the destruction of a container when the container
 has at one or more entries.
@@ -171,20 +174,20 @@ If this error is not trapped, memory may not be properly released back to the
 system.
 :P.
 The
-.MONO WCExcept::index_range
+:MONO.WCExcept::index_range
 .ix 'index_range' 'exception'
 state setting traps an attempt to access a container item by an index value
 that is either not positive or is larger than the index of the last
 item in the container.
 :P.
 The
-.MONO WCExcept::empty_container
+:MONO.WCExcept::empty_container
 .ix 'empty_container' 'exception'
 bit setting traps an attempt to perform and invalid operation on a
 container with no entries.
 :P.
 The
-.MONO WCExcept::out_of_memory
+:MONO.WCExcept::out_of_memory
 .ix 'out_of_memory' 'exception'
 bit setting traps any container class allocation failures.
 If this exception is not enabled, the operation in which the allocation
@@ -193,7 +196,7 @@ and assignment operators can also throw this exception, and if not enabled
 incomplete copies may result.
 :P.
 The
-.MONO WCExcept::resize_required
+:MONO.WCExcept::resize_required
 .ix 'resize_required' 'exception'
 bit setting traps any vector operations which cannot be performed unless the
 vector is resized to a larger size.  If this exception is not enabled, the
@@ -201,14 +204,14 @@ vector class will attempt an appropriate resize when necessary for
 an operation.
 :P.
 The
-.MONO WCExcept::not_unique
+:MONO.WCExcept::not_unique
 .ix 'not_unique' 'exception'
 bit setting traps an attempt to add a duplicate value to a set container, or
 a duplicate key to a dictionary container.  The duplicate value is not
 added to the container object regardless of the exception trap state.
 :P.
 The
-.MONO WCExcept::zero_buckets
+:MONO.WCExcept::zero_buckets
 .ix 'zero_buckets' 'exception'
 bit setting traps an attempt to resize of hash container to have zero buckets.
 No resize is performed whether or not the exception is enabled.

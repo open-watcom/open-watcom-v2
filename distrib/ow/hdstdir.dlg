@@ -1,27 +1,28 @@
+# UTF-8 encoding, Â¥
 name=Help_DstDir
 dynamic_text=hdd_1,\
         //1"Choose the directory to install %AppName% in."\
-        //2"%AppName% ‚ğƒCƒ“ƒXƒg[ƒ‹‚·‚éƒfƒBƒŒƒNƒgƒŠ‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢."\
+        //2"%AppName% ã‚’ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã™ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’é¸æŠã—ã¦ãã ã•ã„."\
         //0
 dynamic_text=hdd_2,\
         //1"If you have previously installed %AppName%,"\
-        //2"ˆÈ‘O‚É %AppName% ‚ğƒCƒ“ƒXƒg[ƒ‹‚µ‚Ä‚¢‚½ê‡,"\
+        //2"ä»¥å‰ã« %AppName% ã‚’ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã—ã¦ã„ãŸå ´åˆ,"\
         //0
 static_text=\
         //1"@ will use the WATCOM environment variable to decide"\
-        //2"@ ‚ÍŠÂ‹«•Ï” WATCOM ‚ğg‚Á‚Ä, ƒRƒ“ƒpƒCƒ‰‚ğ"\
+        //2"@ ã¯ç’°å¢ƒå¤‰æ•° WATCOM ã‚’ä½¿ã£ã¦, ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ã‚’"\
         //0
 static_text=\
         //1"where to install the compiler.  If you do not"\
-        //2"ƒCƒ“ƒXƒg[ƒ‹‚·‚éƒfƒBƒŒƒNƒgƒŠ‚ğŒˆ‚ß‚Ü‚·. ‚à‚µ"\
+        //2"ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã™ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æ±ºã‚ã¾ã™. ã‚‚ã—"\
         //0
 static_text=\
         //1"want to upgrade a previous installation, choose"\
-        //2"ˆÈ‘O‚ÉƒCƒ“ƒXƒg[ƒ‹‚µ‚½‚à‚Ì‚ğƒAƒbƒvƒOƒŒ[ƒh‚µ‚½‚­"\
+        //2"ä»¥å‰ã«ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã—ãŸã‚‚ã®ã‚’ã‚¢ãƒƒãƒ—ã‚°ãƒ¬ãƒ¼ãƒ‰ã—ãŸã"\
         //0
 static_text=\
         //1"a different directory."\
-        //2"‚È‚¢ê‡, ˆÙ‚È‚éƒfƒBƒŒƒNƒgƒŠ‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢."\
+        //2"ãªã„å ´åˆ, ç•°ãªã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’é¸æŠã—ã¦ãã ã•ã„."\
         //0
 static_text=
 include=ok.dlg

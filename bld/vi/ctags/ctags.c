@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -136,13 +136,13 @@ static void displayBanner( void )
 
 void ErrorMsgExit( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 //    int         len;
 
-    va_start( al, str );
-//    len = vfprintf( stderr, str, al );
-    vfprintf( stderr, str, al );
-    va_end( al );
+    va_start( args, str );
+//    len = vfprintf( stderr, str, args );
+    vfprintf( stderr, str, args );
+    va_end( args );
     exit( 1 );
 }
 
@@ -151,16 +151,16 @@ void ErrorMsgExit( const char *str, ... )
  */
 static void Quit( const char **usage_msg, const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     int         i;
     int         cnt;
 
     /* unused parameters */ (void)usage_msg;
 
     if( str != NULL ) {
-        va_start( al, str );
-        vfprintf( stderr, str, al );
-        va_end( al );
+        va_start( args, str );
+        vfprintf( stderr, str, args );
+        va_end( args );
         cnt = 1;
     } else {
         cnt = sizeof( usageMsg ) / sizeof( char * );
@@ -245,7 +245,7 @@ static void doOption( int ch )
  */
 static void processFile( const char *arg )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     file_type   ftype;
     unsigned    tag_count;
 
@@ -309,8 +309,8 @@ static void processFileList( const char *fullmask )
     char                fullname[_MAX_PATH];
     char                path[_MAX_PATH];
     char                mask[_MAX_PATH];
-    PGROUP2             pg1;
-    PGROUP2             pg2;
+    pgroup2             pg1;
+    pgroup2             pg2;
 
     has_wild = false;
     for( tmp = fullmask; *tmp != '\0'; tmp++ ) {
@@ -371,8 +371,7 @@ static void processOptionFile( const char *fname )
                 continue;
             }
             *ptr = '\0';
-            ptr++;
-            SKIP_SPACES( ptr );
+            SKIP_CHAR_SPACES( ptr );
             if( *ptr == '\0' ) {
                 continue;
             }
@@ -399,8 +398,7 @@ static void processOptionFile( const char *fname )
                 WantUSE = false;
                 for( ; *ptr != '\0'; ptr++ ) {
                     if( *ptr == 'f' ) {
-                        ptr++;
-                        SKIP_SPACES( ptr );
+                        SKIP_CHAR_SPACES( ptr );
                         if( *ptr != '\0' ) {
                             strcpy( tmpFileName, ptr );
                             ptr = tmpFileName;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 /*****************************************************************************
 *                                                                            *
-*       If you add an option, don't forget to change ../usage.sp             *
+*       If you add an option, don't forget to change bld/cc/gml/options.gml  *
 *       Also, don't forget to add a case in MacroDefs                        *
 *       to predefine a __SW_xx macro                                         *
 *                                                                            *
@@ -46,9 +46,7 @@
 #include "cgswitch.h"
 #include "iopath.h"
 #include "pathlist.h"
-#ifdef __OSI__
- #include "ostype.h"
-#endif
+#include "toggles.h"
 #include "feprotos.h"
 
 #include "clibext.h"
@@ -137,6 +135,7 @@ static struct
 } SwData;
 
 // local variables
+static bool     debug_optimization_change = false;
 static int      character_encoding = 0;
 static unsigned unicode_CP = 0;
 
@@ -177,7 +176,7 @@ static void SetCharacterEncoding( void )
         break;
     case ENC_ZKL:
         CompFlags.use_unicode = false;
-        SetDBChar( -1 );                    /* set double-byte char type to defualt */
+        SetDBChar( -1 );                    /* set double-byte char type to default */
         break;
     }
 }
@@ -260,20 +259,7 @@ static void SetTargSystem( void )
     PreDefine_Macro( "_INTEGRAL_MAX_BITS=64" );
     if( SwData.sys_name == NULL ) {
 #if _CPU == 386 || _CPU == 8086
-    #if defined( __OSI__ )
-        switch( __OS ) {
-        case OS_DOS:
-        case OS_WIN:
-            _SetConstTarg( "dos" );
-            break;
-        case OS_OS2:
-            _SetConstTarg( "os2" );
-            break;
-        case OS_NT:
-            _SetConstTarg( "nt" );
-            break;
-        }
-    #elif defined( __NOVELL__ )
+    #if defined( __NOVELL__ )
         _SetConstTarg( "netware" );
     #elif defined( __QNX__ )
         _SetConstTarg( "qnx" );
@@ -515,11 +501,11 @@ static void SetGenSwitches( void )
         break;
     case SW_DF_DWARF_A:
         GenSwitches |= DBG_DF | DBG_PREDEF;
-        SymDFAbbr = SpcSymbol( "__DFABBREV", GetType( TYPE_USHORT ), SC_EXTERN );
+        SymDFAbbr = SpcSymbol( "__DFABBREV", GetType( TYP_USHORT ), SC_EXTERN );
         break;
     case SW_DF_DWARF_G:
         GenSwitches |= DBG_DF | DBG_PREDEF;
-        SymDFAbbr = SpcSymbol( "__DFABBREV", GetType( TYPE_USHORT ), SC_NONE );
+        SymDFAbbr = SpcSymbol( "__DFABBREV", GetType( TYP_USHORT ), SC_NONE );
         break;
     }
 }
@@ -817,7 +803,7 @@ static void MacroDefs( void )
         Define_Macro( "__SW_OP" );
     }
 #endif
-    if( (Toggles & TOGGLE_CHECK_STACK) == 0 ) {
+    if( !TOGGLE( check_stack ) ) {
         Define_Macro( "__SW_S" );
     }
 }
@@ -965,7 +951,8 @@ static void Set_AI( void )          { CompFlags.no_check_inits = true; }
 static void Set_AQ( void )          { CompFlags.no_check_qualifiers = true; }
 static void Set_D0( void )
 {
-    GenSwitches &= ~(DBG_NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION);
+    debug_optimization_change = false;
+    GenSwitches &= ~(DBG_NUMBERS | DBG_TYPES | DBG_LOCALS);
     CompFlags.debug_info_some = false;
     CompFlags.no_debug_type_names = false;
     EnsureEndOfSwitch();
@@ -982,8 +969,8 @@ static void Set_D1( void )
 }
 static void Set_D2( void )
 {
-    GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION;
-    CompFlags.inline_functions = false;
+    debug_optimization_change = true;
+    GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
     if( *OptScanPtr == '~' ) {
         ++OptScanPtr;
         CompFlags.no_debug_type_names = true;
@@ -1245,14 +1232,14 @@ static void Set_ST( void )          { CompFlags.st_switch_used = true; }
 #if _CPU == _AXP || _CPU == _MIPS
 static void Set_SI( void )          { TargetSwitches |= STACK_INIT; }
 #endif
-static void Set_S( void )           { Toggles &= ~TOGGLE_CHECK_STACK; }
+static void Set_S( void )           { TOGGLE( check_stack ) = false; }
 
 static void Set_TP( void )
 {
     char    *togname;
 
     togname = CopyOfParm();
-    SetToggleFlag( togname, true );
+    SetToggleFlag( togname, 1, false );
     CMemFree( togname );
 }
 
@@ -1372,9 +1359,7 @@ static void Set_ZRO( void )
     GenSwitches |= FPU_ROUNDING_OMIT;
     GenSwitches &= ~FPU_ROUNDING_INLINE;
 }
-#endif
 
-#if _CPU == 386
 static void Set_ZRI( void )
 {
     GenSwitches |= FPU_ROUNDING_INLINE;
@@ -1481,8 +1466,7 @@ static void Set_PIL( void )         { CompFlags.cpp_ignore_line = true; }
 static void Set_PL( void )          { CompFlags.cpp_line_wanted = true; }
 static void Set_PC( void )
 {
-    CompFlags.keep_comments = true;
-    CompFlags.comments_wanted = true;
+    CompFlags.cpp_keep_comments = true;
 }
 static void Set_PW( void )
 {
@@ -1500,7 +1484,7 @@ static void Set_OD( void )          { GenSwitches |= NO_OPTIMIZATION; }
 static void Set_OE( void )
 {
     Inline_Threshold = OptValue;
-    Toggles |= TOGGLE_INLINE;
+    TOGGLE( inline ) = true;
 }
 
 #if _CPU == 8086 || _CPU == 386
@@ -1528,7 +1512,7 @@ static void Set_OT( void )          { GenSwitches &= ~NO_OPTIMIZATION; OptSize =
 static void Set_OU( void )          { CompFlags.unique_functions = true; }
 static void Set_OX( void )
 {
-    Toggles &= ~TOGGLE_CHECK_STACK;
+    TOGGLE( check_stack ) = false;
     GenSwitches &= ~NO_OPTIMIZATION;
     GenSwitches |= LOOP_OPTIMIZATION | INS_SCHEDULING | BRANCH_PREDICTION;
     CompFlags.inline_functions = true;
@@ -1814,8 +1798,6 @@ static struct option const CFE_Options[] = {
 #endif
 #if _CPU == 8086 || _CPU == 386
     { "zro",    0,              Set_ZRO },
-#endif
-#if _CPU == 386
     { "zri",    0,              Set_ZRI },
 #endif
     { "zs",     0,              Set_ZS },
@@ -1956,7 +1938,7 @@ static void SetOptimization( void )
 
 static void SetPreprocessOptions( void )
 {
-    CompFlags.cpp_output_requested = true;
+    CompFlags.cpp_mode = true;
     if( !OptionDelimiter( *OptScanPtr ) ) {
         ProcessSubOption( Preprocess_Options );
     }
@@ -2003,7 +1985,7 @@ static char *ReadIndirectFile( void )
         len = (size_t)ftell( fp );
         env = CMemAlloc( len + 1 );
         rewind( fp );
-        fread( env, len, 1, fp );
+        len = fread( env, 1, len, fp );
         env[len] = '\0';
         fclose( fp );
         // zip through characters changing \r, \n etc into ' '
@@ -2266,6 +2248,14 @@ static void Define_Memory_Model( void )
 #endif
 }
 
+static void SetDebug( void )
+{
+    if( debug_optimization_change ) {
+        GenSwitches |= NO_OPTIMIZATION;
+        CompFlags.inline_functions = false;
+    }
+}
+
 void GenCOptions( char **cmdline )
 {
     memset( &SwData,0, sizeof( SwData ) ); //re-useable
@@ -2300,12 +2290,13 @@ void GenCOptions( char **cmdline )
     for( ;*cmdline != NULL; ++cmdline ) {
         ProcOptions( *cmdline );
     }
-    if( CompFlags.cpp_output_requested )
+    if( CompFlags.cpp_mode ) {
         CompFlags.cpp_output = true;
-    if( CompFlags.cpp_output )
         CompFlags.quiet_mode = true;
+    }
     CBanner();          /* print banner if -zq not specified */
     GblPackAmount = PackAmount;
+    SetDebug();
     SetTargSystem();
     SetGenSwitches();
     SetCharacterEncoding();

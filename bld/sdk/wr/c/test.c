@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,7 +106,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
 #endif
     } else {
         for( i = 1; i < _argc; i++ ) {
-            WRSelectFileType( HWND_DESKTOP, _argv[i], FALSE, i % 2, NULL );
+            WRSelectFileType( HWND_DESKTOP, _argv[i], false, (i % 2) != 0, NULL );
             ftype = WRIdentifyFile( _argv[i] );
         }
         ret = TRUE;

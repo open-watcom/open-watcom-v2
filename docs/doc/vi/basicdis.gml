@@ -35,7 +35,7 @@
 You have now made a number of significant modifications to your file.
 To discard the file without saving your changes,
 activate the individual file menu (at the top-left corner of the
-edit window) either by clicking on the gadget with the mouse or by
+edit window) either by clicking on the gadget character with the mouse or by
 pressing
 .param ALT_G.
 When the menu is up, try selecting the

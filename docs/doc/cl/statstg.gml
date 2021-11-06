@@ -66,7 +66,6 @@ extern void Fn( int x )
 .pc
 The first two types are defined with the keyword
 .kw static
-..ct ,
-while the third is defined with the (optional) keyword
+.ct , while the third is defined with the (optional) keyword
 .kw extern
-..ct ..li .
+.period

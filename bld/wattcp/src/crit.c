@@ -68,29 +68,11 @@
 
 /*---------------------------------------------------------------------*/
 
-#elif (DOSX & DOS4GW)    /* Watcom prot-mode target */
-  #pragma argused
-  static int int24_isr (unsigned dev_err, unsigned err_code,
-                        unsigned *devhdr)
+#elif (DOSX & DOS4GW) || (defined (__WATCOMC__) && (DOSX == 0))
+  /* Watcom protected and real-mode target */
+  static int __far int24_isr (unsigned dev_err, unsigned err_code, unsigned __far *devhdr)
   {
-    return (_HARDERR_FAIL);
-  }
-
-  void int24_init (void)
-  {
-  #if 0  /* doesn't compile/work */
-    if (_osmajor >= 3)
-      _harderr (int24_isr);
-  #endif
-  }
-
-/*---------------------------------------------------------------------*/
-
-#elif defined (__WATCOMC__) && (DOSX == 0)  /* Watcom real-mode target */
-  #pragma argsused
-  static int _far int24_isr (unsigned dev_err, unsigned err_code, unsigned _far *devhdr)
-  {
-    /* unused parameters */ (void)dev_err; (void)err_code; (void)devhdr;
+    ARGSUSED (dev_err); ARGSUSED (err_code); ARGSUSED (devhdr);
 
     return (_HARDERR_FAIL);
   }

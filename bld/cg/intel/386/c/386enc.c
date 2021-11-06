@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,10 +67,6 @@
 #define RMR_MOD_IND     0x80
 #define RMR_MOD_DIR     5
 #define RMR_MOD_SIB     4
-
-#define D0      (0 << S_RMR_MOD)
-#define D8      (1 << S_RMR_MOD)
-#define D32     (2 << S_RMR_MOD)
 
 
 static void OpndSizeIf( bool if_32 )
@@ -139,14 +135,12 @@ void    DoRepOp( instruction *ins )
 
 
 static  hw_reg_set IndexTab[] = {
-#define INDICES 8
-#define BP_INDEX 5
         HW_D( HW_EAX ),
         HW_D( HW_ECX ),
         HW_D( HW_EDX ),
         HW_D( HW_EBX ),
-        HW_D( HW_SP ),
-        HW_D( HW_BP ),
+        HW_D( HW_ESP ),
+        HW_D( HW_EBP ),
         HW_D( HW_ESI ),
         HW_D( HW_EDI )
 };
@@ -161,36 +155,33 @@ static  void    Add32Displacement( signed_32 val )
     AddByte( val >> 24 );
 }
 
-static  byte    Displacement( signed_32 val, hw_reg_set regs )
-/************************************************************/
+byte    Displacement( signed_32 val, hw_reg_set regs )
+/****************************************************/
 {
-    if( val == 0 && !HW_COvlap( regs, HW_BP ) )
-        return( D0 );
+    if( val == 0 && !HW_COvlap( regs, HW_EBP ) )
+        return( DISP0 );
     if( val <= 127 && val >= -128 ) {
         AddByte( val & 0xff );
-        return( D8 );
+        return( DISP8 );
     } else {
         Add32Displacement( val );
-        return( D32 );
+        return( DISPW );
     }
 }
 
 
-static  byte    DoIndex( hw_reg_set regs )
-/****************************************/
+byte    DoIndex( hw_reg_set regs )
+/********************************/
 {
     byte i;
 
-    for( i = 0; i < INDICES; ++i ) {
+    for( i = 0; i < sizeof( IndexTab ) / sizeof( IndexTab[0] ); i++ ) {
         if( HW_Equal( regs, IndexTab[i] ) ) {
-            break;
+            return( i << S_RMR_RM );
         }
     }
-    if( i >= INDICES ) {
-        _Zoiks( ZOIKS_033 );
-    }
-    i <<= S_RMR_RM;
-    return( i );
+    _Zoiks( ZOIKS_033 );
+    return( 0 );
 }
 
 
@@ -230,15 +221,15 @@ static  byte    DoDisp( type_length val, hw_reg_set base_reg, name *op )
         val += TmpLoc( base, op );
         return( Displacement( val, base_reg ) );
     } else if( op->n.class == N_MEMORY ) {
-        ILen += 4;
+        ILen += WORD_SIZE;
         DoSymRef( op, val, false );
-        return( D32 );
+        return( DISPW );
     } else if( op->n.class == N_CONSTANT ) {
         DoRelocConst( op, U4 );
-        return( D32 );
+        return( DISPW );
     } else {
         _Zoiks( ZOIKS_126 );
-        return( 0 );
+        return( DISP0 );
     }
 }
 
@@ -262,18 +253,20 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
                          signed_32 val, name *mem_loc, bool lea )
 /***************************************************************/
 {
-    if( HW_CEqual( index, HW_SP ) ) _Zoiks( ZOIKS_079 );
+    if( HW_CEqual( index, HW_ESP ) )
+        _Zoiks( ZOIKS_079 );
     if( HW_CEqual( base, HW_EMPTY ) ) {
         if( HW_CEqual( index, HW_EMPTY ) ) {
-            // [d32]
-            if( scale != 0 || val != 0 ) _Zoiks( ZOIKS_079 );
+            // [disp32]
+            if( scale != 0 || val != 0 )
+                _Zoiks( ZOIKS_079 );
             Inst[RMR] |= DoMDisp( mem_loc, true );
 
         } else {
             if( scale != 0 ) {
-                // [d32+scale_index]
-                Inst[RMR] |= DoScaleIndex( HW_BP, index, scale );
-                Inst[RMR] |= D0;
+                // [disp32+scale_index]
+                Inst[RMR] |= DoScaleIndex( HW_EBP, index, scale );
+                Inst[RMR] |= DISP0;
                 if( mem_loc != NULL ) {
                     ILen += 4;
                     DoSymRef( mem_loc, val, false );
@@ -281,31 +274,29 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
                     Add32Displacement( val );
                 }
             } else {
-                // [(d0|d8|d32)+index]
+                // [(disp0|disp8|disp32)+index]
                 Inst[RMR] |= DoIndex( index );
                 Inst[RMR] |= DoDisp( val, index, mem_loc );
             }
         }
     } else {
-        // [(d0|d8|d32)+base+scale_index]
+        // [(disp0|disp8|disp32)+base+scale_index]
         if( HW_CEqual( index, HW_EMPTY ) ) {
-            if( scale == 0 && !HW_CEqual( base, HW_SP ) ) {
+            if( scale == 0 && !HW_CEqual( base, HW_ESP ) ) {
                 Inst[RMR] |= DoIndex( base );
             } else {
-                Inst[RMR] |= DoScaleIndex( base, HW_SP, scale );
+                Inst[RMR] |= DoScaleIndex( base, HW_ESP, scale );
             }
         } else {
-            if( scale == 0 && HW_CEqual( base, HW_BP )
-                && (lea || (_IsntTargetModel(FLOATING_DS)&&_IsntTargetModel(FLOATING_SS)))
-              ) {
+            if( scale == 0 && HW_CEqual( base, HW_EBP )
+              && ( lea || _IsntTargetModel( FLOATING_DS ) && _IsntTargetModel( FLOATING_SS ) ) ) {
                 /*
-                   flip base & index registers so that we might avoid
-                   having to output a byte displacement (can't have a
-                   zero sized displacement with [E]BP as the base
-                   register)
+                   flip base & index registers so that we might avoid having
+                   to output a byte displacement (can't have a zero sized
+                   displacement with EBP as the base register)
                 */
                 base = index;
-                HW_CAsgn( index, HW_BP );
+                HW_CAsgn( index, HW_EBP );
             }
             Inst[RMR] |= DoScaleIndex( base, index, scale );
         }
@@ -446,9 +437,9 @@ static  void    LayIdxModRM( name *op )
     if( HasTrueBase( op ) ) {
         if( op->i.base->n.class == N_TEMP ) {
             if( BaseIsSP( op->i.base ) ) {
-                HW_CAsgn( base_reg, HW_SP );
+                HW_CAsgn( base_reg, HW_ESP );
             } else {
-                HW_CAsgn( base_reg, HW_BP );
+                HW_CAsgn( base_reg, HW_EBP );
             }
         } else if( op->i.base->n.class == N_MEMORY ) {
             GenSeg( CalcSegment( op->i.base->v.symbol,
@@ -466,8 +457,8 @@ static  void    LayIdxModRM( name *op )
         }
     }
     HW_TurnOff( idx_reg, base_reg );
-    if( HW_CEqual( idx_reg, HW_SP ) && HW_CEqual( base_reg, HW_EMPTY ) ) {
-        HW_CAsgn( base_reg, HW_SP );
+    if( HW_CEqual( idx_reg, HW_ESP ) && HW_CEqual( base_reg, HW_EMPTY ) ) {
+        HW_CAsgn( base_reg, HW_ESP );
         HW_CAsgn( idx_reg, HW_EMPTY );
     }
     EA( base_reg, idx_reg, op->i.scale, op->i.constant, mem_loc, false );
@@ -491,9 +482,9 @@ void    LayModRM( name *op )
             _Zoiks( ZOIKS_030 );
         }
         if( BaseIsSP( base ) ) {
-            EA( HW_SP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
+            EA( HW_ESP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
         } else {
-            EA( HW_BP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
+            EA( HW_EBP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
         }
         break;
     case N_INDEXED:
@@ -564,31 +555,6 @@ void    GenPushC( signed_32 value )
 }
 
 
-void    GenUnkLea( pointer value )
-/********************************/
-{
-    LayOpword( M_LEA );
-    OpndSize( HW_SP );
-    LayReg( HW_SP );
-    Inst[RMR] |= D32;
-    ILen += 4;
-    DoAbsPatch( value, 4 );
-    Inst[RMR] |= DoIndex( HW_BP );
-}
-
-void    GenLeaSP( int offset )
-/*****************************
-    LEA         sp,offset[bp]
-*/
-{
-    _Code;
-    LayOpword( M_LEA );
-    OpndSize( HW_SP );
-    LayReg( HW_SP );
-    EA( HW_EMPTY, HW_BP, 0, offset, NULL, false );
-    _Emit;
-}
-
 pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remove_parms )
 /*******************************************************************************/
 {
@@ -657,53 +623,53 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
         TellKeepLabel( data_lbl );
         _Code;
         if( prolog ) {
-            LayOpword( 0x05ff );
+            LayOpword( 0x05ff );                        /* inc L1+count */
             ILen += 4;
             DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, count ), OFST);
             _Next;
         }
-        LayOpword( prolog ? 0x05ff : 0x0dff );          // inc L1 / dec L1
+        LayOpword( prolog ? 0x05ff : 0x0dff );          /* inc/dec L1+semaphore */
         ILen += 4;
         DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, semaphore ), OFST );
         _Next;
         if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
-            LayOpword( prolog ? 0x1675 : 0x167d );              // jne skip / jge skip
+            LayOpword( prolog ? 0x1675 : 0x167d );      /* jne/jge skip */
             _Next;
-            LayOpbyte( 0x51 );                                  // push ecx
-            _Next;
-        } else {
-            LayOpword( prolog ? 0x1275 : 0x127d );              // jne skip / jge skip
-            _Next;
-        }
-        LayOpbyte( 0x52 );                                      // push edx
-        _Next;
-        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
-            LayOpword( 0xc931 );                                // xor ecx,ecx
-            _Next;
-        }
-        LayOpbyte( 0x50 );                                      // push eax
-        _Next;
-        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
-            LayOpword( 0x330f );                                // rdpmc
+            LayOpbyte( 0x51 );                          /* push ecx */
             _Next;
         } else {
-            LayOpword( 0x310f );                                // rdtsc
+            LayOpword( prolog ? 0x1275 : 0x127d );      /* jne/jge skip */
             _Next;
         }
-        LayOpword( prolog ? 0x0529 : 0x0501 );          // sub L1+4,eax / add L1+4,eax
+        LayOpbyte( 0x52 );                              /* push edx */
+        _Next;
+        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
+            LayOpword( 0xc931 );                        /* xor ecx,ecx */
+            _Next;
+        }
+        LayOpbyte( 0x50 );                              /* push eax */
+        _Next;
+        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
+            LayOpword( 0x330f );                        /* rdpmc */
+            _Next;
+        } else {
+            LayOpword( 0x310f );                        /* rdtsc */
+            _Next;
+        }
+        LayOpword( prolog ? 0x0529 : 0x0501 );          /* sub/add L1+lo_cycle,eax */
         ILen += 4;
         DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, lo_cycle ), OFST );
         _Next;
-        LayOpbyte( 0x58 );                                      // pop eax
+        LayOpbyte( 0x58 );                              /* pop eax */
         _Next;
-        LayOpword( prolog ? 0x1519 : 0x1511 );          // sbb L1+8,edx / adc L1+8,edx
+        LayOpword( prolog ? 0x1519 : 0x1511 );          /* sbb/adc L1+hi_cycle,edx */
         ILen += 4;
         DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, hi_cycle ), OFST );
         _Next;
-        LayOpbyte( 0x5a );                                      // pop edx
+        LayOpbyte( 0x5a );                              /* pop edx */
         _Next;
         if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
-            LayOpbyte( 0x59 );                                  // pop ecx
+            LayOpbyte( 0x59 );                          /* pop ecx */
             _Next;
         }
         _Emit;
@@ -782,7 +748,7 @@ void    GFstp10( type_length where )
     GCondFwait();
     CheckSize();
     LayOpword( 0x3ddb );
-    EA( HW_EMPTY, HW_BP, 0, -where, NULL, false );
+    EA( HW_EMPTY, HW_EBP, 0, -where, NULL, false );
     _Emit;
 }
 
@@ -793,7 +759,7 @@ void    GFld10( type_length where )
     GCondFwait();
     CheckSize();
     LayOpword( 0x2ddb );
-    EA( HW_EMPTY, HW_BP, 0, -where, NULL, false );
+    EA( HW_EMPTY, HW_EBP, 0, -where, NULL, false );
     _Emit;
 }
 
@@ -939,12 +905,12 @@ void StartBlockProfiling( block *blk )
     TellByPassOver();
     SetOP( old_segid );
     _Code;
-    LayOpword( 0x0583 );                // sub L1+4,eax / add L1+4,eax
+    LayOpword( 0x0583 );                /* add L1+lo_count,1 */
     ILen += 4;
     DoLblRef( data, data_segid, offsetof( block_count_info, lo_count ), OFST );
     AddByte( 1 );
     _Next;
-    LayOpword( 0x1583 );                // sub L1+4,eax / add L1+4,eax
+    LayOpword( 0x1583 );                /* adc L1+hi_count,0 */
     ILen += 4;
     DoLblRef( data, data_segid, offsetof( block_count_info, hi_count ), OFST );
     AddByte( 0 );

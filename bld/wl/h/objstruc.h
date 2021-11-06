@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,6 @@ typedef struct infilelist       INFILELIST;
 typedef struct member_list      MEMBER_LIST;
 typedef struct segdata          SEGDATA;
 typedef struct pubdeflist       PUBDEFLIST;
-typedef struct trace_info       TRACE_INFO;
 typedef struct ovl_area {
     OVL_AREA    *next_area;
     SECTION     *sections;
@@ -186,16 +185,6 @@ typedef struct file_list {
     overlay_ref         ovlref;     /* for fixed libraries */
     unsigned                     : 0;
 } file_list;
-
-typedef struct trace_info {
-    TRACE_INFO          *next;
-    union {
-        char            *name;
-        file_list       *lib;
-    } u;
-    char                *member;
-    bool                found;
-} trace_info;
 
 typedef enum {
     /* bits 0..4 reserved for DBI_xxxx symbols are also stored here */

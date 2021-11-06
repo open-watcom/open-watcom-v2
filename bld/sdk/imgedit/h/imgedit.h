@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,8 +118,8 @@ typedef struct list_element {
     char                        fname[_MAX_PATH];
     bool                        issaved;
     WPI_POINT                   hotspot;
-    HBITMAP                     hxorbitmap;
-    HBITMAP                     handbitmap;
+    WPI_HBITMAP                 xor_hbitmap;
+    WPI_HBITMAP                 and_hbitmap;
     short                       num_of_images;
     struct list_element         *next;
     struct list_element         *nexticon;
@@ -244,10 +244,10 @@ void            ShowViewWindows( HWND hwnd );
 bool            IsOneViewWindow( void );
 
 /* ieutil.c */
-HBITMAP         CreateViewBitmap( img_node *node );
-HBITMAP         DuplicateBitmap( HBITMAP hbitmap);
-HBITMAP         EnlargeImage( HWND hwnd );
-//void            ConvertToDIBitmap( HBITMAP hbitmap );
+WPI_HBITMAP     CreateViewBitmap( img_node *node );
+WPI_HBITMAP     DuplicateBitmap( WPI_HBITMAP hbitmap );
+WPI_HBITMAP     EnlargeImage( HWND hwnd );
+//void            ConvertToDIBitmap( WPI_HBITMAP hbitmap );
 void            SetIsSaved( HWND hwnd, bool issaved );
 void            OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT *newrc );
 void            GetFnameFromPath( const char *fullpath, char *fname );
@@ -387,7 +387,7 @@ void        InitFromColorPalette( palette_box *screen, palette_box *inverse, pal
 bool        GetPaletteFile( a_pal_file *pal_file );
 void        SetNewPalette( a_pal_file *pal_file );
 void        RestoreColorPalette( void );
-void        InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobitmap );
+void        InitPaletteBitmaps( HWND hwnd, WPI_HBITMAP *color_hbitmap, WPI_HBITMAP *mono_hbitmap );
 
 /* iconinfo.c */
 void    FiniIconInfo( void );
@@ -481,10 +481,10 @@ void    CloseCurrentImage( HWND hwnd );
 void    SaveAllImages( void );
 
 /* bits.c */
-bitmap_bits *GetTheBits( HBITMAP bitmap );
+bitmap_bits *GetTheBits( WPI_HBITMAP hbitmap );
 COLORREF    MyGetPixel( bitmap_bits *bits, int x, int y );
 void        MySetPixel( bitmap_bits *bits, int x, int y, COLORREF color );
-void        FreeTheBits( bitmap_bits *bits, HBITMAP bitmap, bool setbits );
+void        FreeTheBits( bitmap_bits *bits, WPI_HBITMAP hbitmap, bool setbits );
 
 /* iectl3d.c */
 bool    IECtl3dInit( HINSTANCE );
@@ -510,8 +510,8 @@ void    InitXorAndBitmaps( img_node *node );
 
 /* icon.c */
 void        ImageFini( an_img * );
-HBITMAP     ImgToXorBitmap( HDC, an_img * );
-HBITMAP     ImgToAndBitmap( HDC, an_img * );
+WPI_HBITMAP ImgToXorBitmap( HDC, an_img * );
+WPI_HBITMAP ImgToAndBitmap( HDC, an_img * );
 void        ImageClose( an_img_file * );
 an_img_file *ImageOpen( FILE * );
 an_img_file *ImageOpenData( BYTE *, unsigned * );
@@ -549,9 +549,8 @@ HWND    PMCreateViewWin( HWND hviewwnd, bool foneview, int *showstate, int width
 
 /* pmutils.c */
 void        InitXorAndBitmaps( img_node *node );
-HBITMAP     CreateInverseBitmap( HBITMAP andbitmap, HBITMAP xorbitmap );
-HBITMAP     CreateColorBitmap( HBITMAP andbitmap, HBITMAP xorbitmap );
-WPI_HANDLE  MakeWPIBitmap( HBITMAP hbitmap );
+WPI_HBITMAP CreateInverseBitmap( WPI_HBITMAP and_hbitmap, WPI_HBITMAP xor_hbitmap );
+WPI_HBITMAP CreateColorBitmap( WPI_HBITMAP and_hbitmap, WPI_HBITMAP xor_hbitmap );
 
 /* getdata.c */
 void        GetBitmapInfoHeader( WPI_BITMAPINFOHEADER *bmih, img_node *node );

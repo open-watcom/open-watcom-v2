@@ -52,26 +52,25 @@ The full pathname
 .do end
 is placed in the buffer pointed to by the argument
 .arg path
-.ct .li .
-.im widefun1
+.period
+.widefunc &wfunc. &funcb.
 .np
 The maximum size required for each buffer is specified by the manifest
 constants
 .kw _MAX_PATH
-.ct,
+.ct ,
 .if '&machsys' eq 'QNX' .do begin
 .kw _MAX_NODE
-.ct,
+.ct ,
 .do end
 .el .do begin
 .kw _MAX_DRIVE
-.ct,
+.ct ,
 .do end
 .kw _MAX_DIR
-.ct,
+.ct ,
 .kw _MAX_FNAME
-.ct,
-and
+.ct , and
 .kw _MAX_EXT
 which are defined in
 .mono <stdlib.h>.

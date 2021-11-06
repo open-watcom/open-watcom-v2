@@ -34,6 +34,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#ifdef __QNX__
+    #include <limits.h>
+#endif
 #include "bool.h"
 #include "misc.h"
 #include "getopt.h"
@@ -56,7 +59,7 @@ static const char *usageMsg[] = {
 
 int main( int argc, char **argv )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     argv = ExpandEnv( &argc, argv );
     GetOpt( &argc, argv, "", usageMsg );

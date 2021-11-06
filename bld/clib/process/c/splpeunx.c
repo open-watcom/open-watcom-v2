@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,18 +35,20 @@
 #include <sys/types.h>
 #include <process.h>
 #include <stdarg.h>
+#include "_process.h"
+#include "_environ.h"
 
 
 _WCRTLINK int (spawnlpe)( int mode, const char *file, const char *arg, ... )
 {
-    va_list     ap;
-    const char  **env;
-    char        *p;
+    va_list         args1;
+    ENVP_TYPE_ARR   env;
 
-    for( va_start( ap, file ); (p = va_arg( ap, char * )) != NULL;  )
+    va_start( args1, file );
+    while( ARGS_NEXT_VA( args1 ) != NULL )
         ;
-    env = (const char **)va_arg( ap, char * );
-    va_end( ap );
+    env = ENVP_ARRAY_VA( args1 );
+    va_end( args1 );
 
     return( spawnvpe( mode, file, &arg, env ) );
 }

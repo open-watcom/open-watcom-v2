@@ -21,12 +21,11 @@ The
 functions return the size of the memory block pointed to by
 .arg buffer
 that was allocated by a call to the appropriate version of the
-.kw calloc
-.ct,
-.kw malloc
-.ct,
-or
-.kw realloc
+.reffunc calloc
+.ct ,
+.reffunc malloc
+.ct , or
+.reffunc realloc
 functions.
 .np
 You must use the correct
@@ -51,31 +50,31 @@ Near heap (inside the default data segment)
 In small data models (small and medium memory models),
 .id &funcb.
 maps to
-.kw _nmsize
-.ct .li .
+.reffunc _nmsize
+.period
 In large data models (compact, large and huge memory models), &funcb
 maps to
-.kw _fmsize
-.ct .li .
+.reffunc _fmsize
+.period
 :cmt. .pp
 :cmt. The
-:cmt. .kw _nmsize
+:cmt. .reffunc _nmsize
 :cmt. function returns the size of the memory block allocated by a call to
-:cmt. .kw _nmalloc
-:cmt. .ct .li .
+:cmt. .reffunc _nmalloc
+:cmt. .period
 :cmt. .pp
 :cmt. The
-:cmt. .kw _fmsize
+:cmt. .reffunc _fmsize
 :cmt. function returns the size of the memory block allocated by a call to
-:cmt. .kw _fmalloc
-:cmt. .ct .li .
+:cmt. .reffunc _fmalloc
+:cmt. .period
 .desc end
 .return begin
 The
 .id &funcb.
 functions return the size of the memory block pointed to by
 .arg buffer
-.ct .li .
+.period
 .return end
 .see begin
 .im seealloc

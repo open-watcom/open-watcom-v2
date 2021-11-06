@@ -1,4 +1,4 @@
-.gfuncms pg_analyzechart
+.gfuncms _pg_analyzechart
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_analyzechart( chartenv _FAR *env,
@@ -49,7 +49,7 @@ and
 .arg values
 arguments.
 The arguments are the same as for the
-.kw _pg_chart
+.reffunc _pg_chart
 &routine..
 .pp
 The
@@ -66,7 +66,7 @@ and
 .arg labels
 arguments.
 The arguments are the same as for the
-.kw _pg_chartms
+.reffunc _pg_chartms
 &routine..
 .desc end
 .return begin

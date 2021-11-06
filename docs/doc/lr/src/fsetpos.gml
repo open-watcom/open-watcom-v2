@@ -12,7 +12,7 @@ function positions the file
 according to the value of the object pointed to by
 .arg pos
 .ct , which shall be a value returned by an earlier call to the
-.kw fgetpos
+.reffunc fgetpos
 function on the same file.
 .desc end
 .return begin

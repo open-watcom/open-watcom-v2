@@ -4,39 +4,30 @@
 int _mbcicmp( const unsigned char *s1,
               const unsigned char *s2 );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmbcicmp( const unsigned char __far *s1,
                const unsigned char __far *s2 );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
 .synop end
 .desc begin
-The
-.id &funcb.
-function compares one multibyte character from
+The function compares one multibyte character from
 .arg s1
 to one multibyte character from
 .arg s2
 using a case-insensitive comparison.
-.im farparm
+Uppercase character from
+.arg s1
+and
+.arg s2
+are mapped to lowercase for the purposes of doing the comparison.
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
-.if &farfnc eq 0 .do begin
-The
-.id &funcb.
-function returns
-.do end
-.el .do begin
-The
-.id &funcb.
-and
-.id &ffunc.
-functions return
-.do end
-the following values.
+The function returns the following values.
 .begnote
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note < 0
 multibyte character at
 .arg s1

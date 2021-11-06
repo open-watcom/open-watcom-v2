@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,17 +42,19 @@
 #include "cgbackut.h"
 #include "ring.h"
 #include "initdefs.h"
-#include "dbg.h"
 #include "rtfuns.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+    #include "togglesd.h"
+    #include "pragdefn.h"
+#endif
+
 
 static STAB_CTL fstab;          // function state table instance
 static STAB_DEFN fStabDefn;     // function state table definition
 static target_offset_t rw_offset_fun; // offset of R/W var. in function
 
 #ifndef NDEBUG
-    #include "toggle.h"
-    #include "pragdefn.h"
-
 
 void FstabDump()                // DEBUG ONLY: DUMP FUNCTION STATE TABLE
 {
@@ -63,7 +66,7 @@ void DbgSetState(               // DEBUG ONLY: PRINT STATE VALUE SET, IF REQ'D
     void* se_ent )              // - state entry
 {
 
-    if( PragDbgToggle.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         SE* se = (SE*)se_ent;   // - state entry
         printf( "***** set state %d [%s]\n"
               , SeStateVar( se )
@@ -171,7 +174,7 @@ bool FstabSetup(                // SETUP FUNCTION STATE TABLE
         flag_bytes = ( file_ctl->cond_flags + 7 ) / 8;
         if( file_ctl->u.s.state_table && file_ctl->u.s.stab_gen ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 printf( "State Table for Function: %p\n"
                       , &fStabDefn.state_table );
             }
@@ -211,7 +214,9 @@ static target_offset_t offsetStateVar( // GET OFFSET OF STATE VAR. IN R/W BLOCK
 static cg_name assignStateVar(  // EMIT CODE TO ASSIGN STATE VARIABLE
     SE* se )                    // - NULL or state entry to be set
 {
+#ifndef NDEBUG
     DbgSetState( "direct", se );
+#endif
     return( CgAssignStateVar( fstab.rw, se, offsetStateVar() ) );
 }
 
@@ -390,7 +395,7 @@ SE* FstabMarkedPosnSet(         // SET MARKED POSITION
     SE* se )                    // - new position
 {
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         printf( "--- update marked position = %p\n", se );
     }
 #endif

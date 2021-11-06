@@ -146,7 +146,7 @@ void print_usage( void )
 
 /* Function main().
  * Given a valid defined name for a device, loads the binary device library
- * and prints out the resulting information for verification. 
+ * and prints out the resulting information for verification.
  *
  * Returns:
  *      EXIT_FAILURE or EXIT_SUCCESS, as appropriate.
@@ -262,7 +262,7 @@ int main()
     tgt_path = NULL;
 
     free_some_mem();            // wgml globals
- 
+
     return( EXIT_SUCCESS );
 }
 

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 void ignore_handler_s(
         const char * restrict msg,
-        void * restrict ptr, 
+        void * restrict ptr,
         errno_t error );
 .ixfunc2 '&Process' &funcb
 .synop end
@@ -39,7 +39,7 @@ void main( void )
 {
     constraint_handler_t    old_handler;
 .exmp break
-    old_handler = 
+    old_handler =
         set_constraint_handler_s( ignore_handler_s );
     if( getenv_s( NULL, NULL, 0, NULL ) ) {
         printf( "getenv_s failed\n" );

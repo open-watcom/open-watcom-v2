@@ -1,6 +1,14 @@
-name = wcl
+!ifdef bootstrap
+proj_name = bwcl
+bwcl_autodepends = .AUTODEPEND
+!else
+proj_name = wcl
+wcl_autodepends = .AUTODEPEND
+!endif
 
 target_cpu = i86
+
+wcl_trmem = 1
 
 extra_cpp_flags = -DWCLI86
 

@@ -10,17 +10,17 @@ The
 function scans input from the console
 under control of the argument
 .arg format
-.ct .li .
+.period
 Following the format string is a list of addresses to receive values.
 The
 .id &funcb.
 function uses the function
-.kw getche
+.reffunc getche
 to read characters from the console.
 The
 .arg format
 string is described under the description of the
-.kw scanf
+.reffunc scanf
 function.
 .desc end
 .return begin

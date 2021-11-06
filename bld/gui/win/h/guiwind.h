@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,16 +45,14 @@
 #else
     #define INCLUDE_COMMDLG_H
     #define NOCOMM
-    #define WIN32_LEAN_AND_MEAN
     #include <wwindows.h>   /* NULL value */
-    #include <commdlg.h>
 #endif
 
 #include "gui.h"
-#include "commonui.h"
 #include "wpi.h"
 #include "guiwpi.h"
 #include "guitypes.h"
+#include "commonui.h"
 #include "toolbr.h"
 #include "guihint.h"
 
@@ -95,10 +93,10 @@ typedef struct wnd_colour {
 typedef struct toolbarinfo {
     toolbar             *hdl;
     TOOLDISPLAYINFO     info;
-    WPI_RECT            floatrect;
-    WPI_RECT            fixedrect;
+    WPI_RECT            float_wpi_rect;
+    WPI_RECT            fixed_wpi_rect;
     int                 num_items;
-    HBITMAP             *bitmaps;
+    WPI_HBITMAP         *hbitmaps;
 } toolbarinfo;
 
 #define NUMBER_OF_FORCED_REPAINTS 3
@@ -145,15 +143,15 @@ struct gui_window {
     PAINTSTRUCT         *ps;
     toolbarinfo         *tbar;
     gui_create_styles   style;
-    gui_scroll_styles   scroll;
+    gui_scroll_styles   scroll_style;
     gui_flags           flags;
     int                 num_attrs;
     gui_colour_set      *attrs;
-    gui_ord             num_rows;
-    gui_ord             old_rows;
-    gui_ord             num_cols;
-    unsigned int        hscroll_range;
-    unsigned int        vscroll_range;
+    gui_text_ord        num_rows;
+    gui_text_ord        old_rows;
+    gui_text_ord        num_cols;
+    unsigned            hscroll_range;
+    unsigned            vscroll_range;
     GUICALLBACK         *gui_call_back;
     void                *extra;
     HWND                status;
@@ -175,14 +173,14 @@ struct gui_window {
     gui_paint_info      hwnd_pinfo;
 };
 
-#define GUI_DO_HSCROLL( wnd )   ( ( (wnd->scroll & GUI_HSCROLL) != 0 ) && \
+#define GUI_DO_HSCROLL( wnd )   ( ( (wnd->scroll_style & GUI_HSCROLL) != 0 ) && \
                                   ( (wnd->style & GUI_HSCROLL_EVENTS) == 0 ) )
-#define GUI_DO_VSCROLL( wnd )   ( ( (wnd->scroll & GUI_VSCROLL) != 0 ) && \
+#define GUI_DO_VSCROLL( wnd )   ( ( (wnd->scroll_style & GUI_VSCROLL) != 0 ) && \
                                   ( (wnd->style & GUI_VSCROLL_EVENTS) == 0 ) )
-#define GUI_VSCROLL_ON( wnd )   ( (wnd->scroll & GUI_VSCROLL) != 0 )
-#define GUI_HSCROLL_ON( wnd )   ( (wnd->scroll & GUI_HSCROLL) != 0 )
-#define GUI_HSCROLL_COLS( wnd ) ( (wnd->scroll & GUI_HCOLS) != 0 )
-#define GUI_VSCROLL_ROWS( wnd ) ( (wnd->scroll & GUI_VROWS) != 0 )
+#define GUI_VSCROLL_ON( wnd )   ( (wnd->scroll_style & GUI_VSCROLL) != 0 )
+#define GUI_HSCROLL_ON( wnd )   ( (wnd->scroll_style & GUI_HSCROLL) != 0 )
+#define GUI_HSCROLL_COLS( wnd ) ( (wnd->scroll_style & GUI_HCOLS) != 0 )
+#define GUI_VSCROLL_ROWS( wnd ) ( (wnd->scroll_style & GUI_VROWS) != 0 )
 
 #define AVGXCHAR( tm ) ( _wpi_metricavecharwidth(tm) + _wpi_metricoverhang( tm ) )
 #define AVGYCHAR( tm ) ( _wpi_metricheight(tm) + _wpi_metricexleading(tm) )

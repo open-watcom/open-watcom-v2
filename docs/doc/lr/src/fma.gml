@@ -14,7 +14,7 @@ and
 .arg y
 summed with
 .arg z
-.ct .li .
+.period
 .desc end
 .return begin
 The x*y+z

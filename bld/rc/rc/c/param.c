@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +36,7 @@
 #include "rcmem.h"
 #include "swchar.h"
 #include "dbtable.h"
-#ifdef __OSI__
- #include "ostype.h"
-#endif
+#include "unitable.h"
 #include "leadbyte.h"
 #include "rccore.h"
 #include "pathgrp2.h"
@@ -195,6 +193,19 @@ static bool ScanMultiOptArg( const char * arg )
     return( contok );
 } /* ScanMultiOptArg */
 
+static void setCodePageFile( const char *fname )
+/**********************************************/
+{
+    if( CmdLineParms.CodePageFile != NULL ) {
+        RcMemFree( CmdLineParms.CodePageFile );
+        CmdLineParms.CodePageFile = NULL;
+    }
+    if( fname != NULL ) {
+        CmdLineParms.CodePageFile = RcMemMalloc( strlen( fname ) + 1 );
+        strcpy( CmdLineParms.CodePageFile, fname );
+    }
+}
+
 static bool ScanOptionsArg( const char *arg )
 /*******************************************/
 {
@@ -277,7 +288,9 @@ static bool ScanOptionsArg( const char *arg )
         if( scanStringCheck( arg, &len ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
-        CmdLineParms.CodePageFile = scanString( RcMemMalloc( len + 1 ), arg, len  );
+        p = scanString( RcMemMalloc( len + 1 ), arg, len  );
+        setCodePageFile( p );
+        RcMemFree( p );
         break;
     case 'd':
         /* temporary until preprocessing done inline */
@@ -395,25 +408,33 @@ static bool ScanOptionsArg( const char *arg )
     case 'v':
         arg++;
         switch( tolower( *arg ) ) {
-    #if defined( YYDEBUG )
+    #if defined( SCANDEBUG )
         case '1':
+            CmdLineParms.DebugScanner = 1;
+            break;
+    #endif
+    #if defined( YYDEBUG )
+        case '2':
             CmdLineParms.DebugParser = 1;
             break;
     #endif
     #if defined( YYDEBUG ) && defined( SCANDEBUG )
-        case '2':
+        case '3':
             CmdLineParms.DebugParser = 1;
             CmdLineParms.DebugScanner = 1;
             break;
-        case '3':
+        case '4':
             CmdLineParms.DebugScanner = 1;
             break;
     #endif
+        case '\0':
     #if defined( SCANDEBUG )
-        default:
             CmdLineParms.DebugScanner = 1;
-            break;
     #endif
+    #if defined( YYDEBUG )
+            CmdLineParms.DebugParser = 1;
+    #endif
+            break;
         }
         break;
 #endif
@@ -436,68 +457,31 @@ static bool ScanOptionsArg( const char *arg )
         case 'n':
             CmdLineParms.NoPreprocess = true;
             break;
-        /*
-            Lead-byte and trail-byte ranges for code pages used in Far East
-            editions of Windows 95.
-
-                        Character           Code    Lead-Byte   Trail-Byte
-        Language        Set Name            Page    Ranges      Ranges
-
-        Chinese
-        (Simplified)    GB 2312-80          CP 936  0xA1-0xFE   0xA1-0xFE
-
-        Chinese
-        (Traditional)   Big-5               CP 950  0x81-0xFE   0x40-0x7E
-                                                                0xA1-0xFE
-
-        Japanese        Shift-JIS (Japan
-                        Industry Standard)  CP 932  0x81-0x9F   0x40-0xFC
-                                                    0xE0-0xFC   (except 0x7F)
-
-        Korean
-        (Wansung)       KS C-5601-1987      CP 949  0x81-0xFE   0x41-0x5A
-                                                                0x61-0x7A
-                                                                0x81-0xFE
-
-        Korean
-        (Johab)         KS C-5601-1992      CP 1361 0x84-0xD3   0x41-0x7E
-                                                    0xD8        0x81-0xFE
-                                                    0xD9-0xDE   (Government
-                                                    0xE0-0xF9   standard:
-                                                                0x31-0x7E
-                                                                0x41-0xFE)
-        */
         case 'k':
             arg++;
             switch( tolower( *arg ) ) {
             case '1':
-                SetMBRange( 0x81, 0xfe, 1 );
                 CmdLineParms.MBCharSupport = DB_TRADITIONAL_CHINESE;
                 break;
             case '2':
-                SetMBRange( 0x81, 0xfe, 1 );
                 CmdLineParms.MBCharSupport = DB_WANSUNG_KOREAN;
                 break;
             case '3':
-                SetMBRange( 0xA1, 0xfe, 1 );
                 CmdLineParms.MBCharSupport = DB_SIMPLIFIED_CHINESE;
                 break;
             case '0':
             case ' ':
             case '\0':
-                SetMBRange( 0x81, 0x9f, 1 );
-                SetMBRange( 0xe0, 0xfc, 1 );
                 CmdLineParms.MBCharSupport = DB_KANJI;
                 break;
             case 'u':
                 if( arg[1] == '8' ) {
                     arg++;
-                    SetMBRange( 0xc0, 0xdf, 1 );
-                    SetMBRange( 0xe0, 0xef, 2 );
-                    SetMBRange( 0xf0, 0xf7, 3 );
-                    SetMBRange( 0xf8, 0xfb, 4 );
-                    SetMBRange( 0xfc, 0xfd, 5 );
                     CmdLineParms.MBCharSupport = MB_UTF8;
+                    break;
+                } else if( arg[1] == '0' ) {
+                    arg++;
+                    CmdLineParms.MBCharSupport = MB_UTF8_KANJI;
                     break;
                 }
                 // fall down
@@ -523,7 +507,7 @@ static bool ScanOptionsArg( const char *arg )
 static char *MakeFileName( const char *infilename, const char *ext )
 /******************************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     size_t      len;
     char        *out;
 
@@ -542,7 +526,7 @@ static char *MakeFileName( const char *infilename, const char *ext )
 static void CheckExtension( char **filename, const char *defext )
 /***************************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     size_t      len;
 
     _splitpath2( *filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
@@ -567,7 +551,7 @@ static const char *ExeExt[] =   {
 static void CheckPass2Only( void )
 /********************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        **check_ext;
 
     _splitpath2( CmdLineParms.InFileName, pg.buffer, NULL, NULL, NULL, &pg.ext );
@@ -639,30 +623,6 @@ static void CheckParms( void )
     if( CmdLineParms.GenAutoDep && CmdLineParms.MSResFormat ) {
         RcFatalError( ERR_OPT_NOT_VALID_TOGETHER, "-ad", "-zm" );
     }
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-#define UNICODE_SIMPLIFIED_CHINESE_FILE     "936.uni"
-#define UNICODE_TRADITIONAL_CHINESE_FILE    "950.uni"
-#define UNICODE_KANJI_FILE                  "kanji.uni"
-#define UNICODE_WANSUNG_KOREAN_FILE         "949.uni"
-        switch( CmdLineParms.MBCharSupport ) {
-        case DB_SIMPLIFIED_CHINESE:
-            CmdLineParms.CodePageFile = RcMemMalloc( sizeof( UNICODE_SIMPLIFIED_CHINESE_FILE ) );
-            strcpy( CmdLineParms.CodePageFile, UNICODE_SIMPLIFIED_CHINESE_FILE );
-            break;
-        case DB_TRADITIONAL_CHINESE:
-            CmdLineParms.CodePageFile = RcMemMalloc( sizeof( UNICODE_TRADITIONAL_CHINESE_FILE ) );
-            strcpy( CmdLineParms.CodePageFile, UNICODE_TRADITIONAL_CHINESE_FILE );
-            break;
-        case DB_KANJI:
-            CmdLineParms.CodePageFile = RcMemMalloc( sizeof( UNICODE_KANJI_FILE ) );
-            strcpy( CmdLineParms.CodePageFile, UNICODE_KANJI_FILE );
-            break;
-        case DB_WANSUNG_KOREAN:
-            CmdLineParms.CodePageFile = RcMemMalloc( sizeof( UNICODE_WANSUNG_KOREAN_FILE ) );
-            strcpy( CmdLineParms.CodePageFile, UNICODE_WANSUNG_KOREAN_FILE );
-            break;
-        }
-    }
     if( CmdLineParms.PreprocessOnly && CmdLineParms.NoPreprocess ) {
         RcFatalError( ERR_OPT_NOT_VALID_TOGETHER, "-o", "-zn" );
     }
@@ -711,13 +671,7 @@ static void defaultParms( void )
     CmdLineParms.PreprocessOnly = false;
     CmdLineParms.ExtraResFiles = NULL;
     CmdLineParms.FindReplaceStrings = NULL;
-#ifdef __OSI__
-    if( __OS == OS_NT ) {
-        CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
-    } else {
-        CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
-    }
-#elif defined( __NT__ )
+#if defined( __NT__ )
     CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
 #elif defined( __OS2__ )
     CmdLineParms.TargetOS = RC_TARGET_OS_OS2;
@@ -727,72 +681,88 @@ static void defaultParms( void )
 } /* defaultParms */
 
 
-static int getcharUTF8( const char **p, uint_32 *c )
-{
-    int     len;
-    int     i;
-    uint_32 value;
-
-    value = *c;
-    len = CharSetLen[value];
-    if( len == 1 ) {
-        value &= 0x1F;
-    } else if( len == 2 ) {
-        value &= 0x0F;
-    } else if( len == 3 ) {
-        value &= 0x07;
-    } else if( len == 4 ) {
-        value &= 0x03;
-    } else if( len == 5 ) {
-        value &= 0x01;
-    } else {
-        return( 0 );
-    }
-    for( i = 0; i < len; ++i ) {
-        value = ( value << 6 ) + ( **p & 0x3F );
-        (*p)++;
-    }
-    *c = value;
-    return( len );
-}
-
-
-static size_t UTF8StringToUnicode( size_t len, const char *str, char *buf )
-/*************************************************************************/
-{
-    size_t          ret;
-    size_t          outlen;
-    uint_32         unicode;
-    size_t          i;
-
-    ret = 0;
-    if( len > 0 ) {
-        if( buf == NULL ) {
-            outlen = 0;
-        } else {
-            outlen = len;
-        }
-        for( i = 0; i < len; i++ ) {
-            unicode = (unsigned char)*str++;
-            i += getcharUTF8( &str, &unicode );
-            if( ret < outlen ) {
-                *buf++ = (char)unicode;
-                *buf++ = (char)( unicode >> 8 );
-                ret++;
-            }
-        }
-    }
-    return( ret * 2 );
-}
-
-static void getCodePage( void ) {
+static void initMBCodePage( void )
 /********************************/
-
+{
     RcStatus            ret;
     char                path[_MAX_PATH];
 
+    /*
+        Lead-byte and trail-byte ranges for code pages used in Far East
+        editions of Windows 95.
+
+                    Character           Code    Lead-Byte   Trail-Byte
+    Language        Set Name            Page    Ranges      Ranges
+
+    Chinese
+    (Simplified)    GB 2312-80          CP 936  0xA1-0xFE   0xA1-0xFE
+
+    Chinese
+    (Traditional)   Big-5               CP 950  0x81-0xFE   0x40-0x7E
+                                                            0xA1-0xFE
+
+    Japanese        Shift-JIS (Japan
+                    Industry Standard)  CP 932  0x81-0x9F   0x40-0xFC
+                                                0xE0-0xFC   (except 0x7F)
+
+    Korean
+    (Wansung)       KS C-5601-1987      CP 949  0x81-0xFE   0x41-0x5A
+                                                            0x61-0x7A
+                                                            0x81-0xFE
+
+    Korean
+    (Johab)         KS C-5601-1992      CP 1361 0x84-0xD3   0x41-0x7E
+                                                0xD8        0x81-0xFE
+                                                0xD9-0xDE   (Government
+                                                0xE0-0xF9   standard:
+                                                            0x31-0x7E
+                                                            0x41-0xFE)
+    */
+    switch( CmdLineParms.MBCharSupport ) {
+    case DB_TRADITIONAL_CHINESE:
+        SetMBRange( 0x81, 0xfe, 1 );
+        break;
+    case DB_WANSUNG_KOREAN:
+        SetMBRange( 0x81, 0xfe, 1 );
+        break;
+    case DB_SIMPLIFIED_CHINESE:
+        SetMBRange( 0xA1, 0xfe, 1 );
+        break;
+    case DB_KANJI:
+        SetMBRange( 0x81, 0x9f, 1 );
+        SetMBRange( 0xe0, 0xfc, 1 );
+        break;
+    case MB_UTF8:
+    case MB_UTF8_KANJI:
+        SetMBRange( 0xc0, 0xdf, 1 );
+        SetMBRange( 0xe0, 0xef, 2 );
+        SetMBRange( 0xf0, 0xf7, 3 );
+        SetMBRange( 0xf8, 0xfb, 4 );
+        SetMBRange( 0xfc, 0xfd, 5 );
+        break;
+    }
+    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        switch( CmdLineParms.MBCharSupport ) {
+        case DB_SIMPLIFIED_CHINESE:
+            setCodePageFile( "936.uni" );
+            break;
+        case DB_TRADITIONAL_CHINESE:
+            setCodePageFile( "950.uni" );
+            break;
+        case DB_KANJI:
+            setCodePageFile( "kanji.uni" );
+            break;
+        case DB_WANSUNG_KOREAN:
+            setCodePageFile( "949.uni" );
+            break;
+        }
+    }
     if( CmdLineParms.MBCharSupport == MB_UTF8 ) {
-        ConvToUnicode = UTF8StringToUnicode;
+        SetUTF8toUnicode();
+        SetUTF8toUTF8();
+    } else if( CmdLineParms.MBCharSupport == MB_UTF8_KANJI ) {
+        SetUTF8toUnicode();
+        SetUTF8toCP932();
     } else if( CmdLineParms.CodePageFile != NULL ) {
         ret = LoadCharTable( CmdLineParms.CodePageFile, path );
         switch( ret ) {
@@ -812,8 +782,9 @@ static void getCodePage( void ) {
         case RS_OPEN_ERROR:
             RcFatalError( ERR_CANT_OPEN_CHAR_FILE, path, strerror( errno ) );
             break;
-        default:
+        case RS_OK:
             SetMBChars( GetLeadBytes() );
+            ConvToUnicode = DBStringToUnicode;
             break;
         }
 #ifdef __NT__
@@ -1009,7 +980,7 @@ bool ScanParams( int argc, char * argv[] )
             contok = false;
         } else {
             CheckParms();
-            getCodePage();
+            initMBCodePage();
         }
     }
     return( contok );

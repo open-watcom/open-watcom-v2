@@ -5082,7 +5082,7 @@ typedef NMLVDISPINFOW   LV_DISPINFOW;
 typedef NMLVDISPINFO    LV_DISPINFO;
 
 /* LVN_KEYDOWN parameters */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct tagLVKEYDOWN {
     NMHDR   hdr;
     WORD    wVKey;
@@ -5090,7 +5090,7 @@ typedef struct tagLVKEYDOWN {
 } NMLVKEYDOWN;
 typedef NMLVKEYDOWN *LPNMLVKEYDOWN;
 typedef NMLVKEYDOWN LV_KEYDOWN;
-#include <poppack.h>
+:include poppack.sp
 
 /* LVN_LINKCLICK parameters */
 #if (_WIN32_WINNT >= 0x0600)
@@ -5418,7 +5418,7 @@ typedef NMTVDISPINFOEX      TV_DISPINFOEX;
 #endif
 
 /* TVN_KEYDOWN parameters */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct tagTVKEYDOWN {
     NMHDR   hdr;
     WORD    wVKey;
@@ -5426,7 +5426,7 @@ typedef struct tagTVKEYDOWN {
 } NMTVKEYDOWN;
 typedef NMTVKEYDOWN     *LPNMTVKEYDOWN;
 typedef NMTVKEYDOWN     TV_KEYDOWN;
-#include <poppack.h>
+:include poppack.sp
 
 /* NM_CUSTOMDRAW parameters for tree view controls */
 #if (_WIN32_IE >= 0x0300)
@@ -5699,14 +5699,14 @@ typedef TCHITTESTINFO   TC_HITTESTINFO;
 typedef LPTCHITTESTINFO LPTC_HITTESTINFO;
 
 /* TCN_KEYDOWN parameters */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct tagTCKEYDOWN {
     NMHDR   hdr;
     WORD    wVKey;
     UINT    flags;
 } NMTCKEYDOWN;
 typedef NMTCKEYDOWN TC_KEYDOWN;
-#include <poppack.h>
+:include poppack.sp
 
 /* MCM_HITTEST parameters */
 #if (_WIN32_IE >= 0x0300)
@@ -5914,7 +5914,7 @@ typedef NMIPADDRESS *LPNMIPADDRESS;
 
 /* PGN_SCROLL parameters */
 #if (_WIN32_IE >= 0x0400)
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct {
     NMHDR   hdr;
     WORD    fwKeys;
@@ -5925,7 +5925,7 @@ typedef struct {
     int     iScroll;
 } NMPGSCROLL;
 typedef NMPGSCROLL  *LPNMPGSCROLL;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* PGN_CALCSIZE parameters */
@@ -6001,7 +6001,7 @@ typedef EDITBALLOONTIP  *PEDITBALLOONTIP;
 #endif
 
 /* All task dialog structures get one-byte packing. */
-#include <pshpack1.h>
+:include pshpack1.sp
 
 /* Task dialog callback */
 #if (_WIN32_IE >= 0x0400)
@@ -6145,7 +6145,7 @@ typedef struct _TASKDIALOGCONFIG {
 #endif
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 /* Dynamic array callbacks */
 #if (_WIN32_IE >= 0x0300)
@@ -6949,7 +6949,7 @@ WINCOMMCTRLAPI HRESULT WINAPI       LoadIconWithScaleDown( HINSTANCE, PCWSTR, in
 #define Animate_Open( x, p ) \
     (BOOL)SNDMSG( x, ACM_OPEN, 0, (LPARAM)(LPTSTR)(p) )
 #define Animate_OpenEx( x, p1, p2 ) \
-    (BOOL)SNDMSG( x, ACM_OPEN, (WPARAM)(p1), (LPARAM)(LPTSTR)(p) )
+    (BOOL)SNDMSG( x, ACM_OPEN, (WPARAM)(p1), (LPARAM)(LPTSTR)(p2) )
 #define Animate_Play( x, p1, p2, p3 ) \
     (BOOL)SNDMSG( x, ACM_PLAY, (WPARAM)(p3), (LPARAM)MAKELONG( p1, p2 ) )
 #define Animate_Stop( x ) \

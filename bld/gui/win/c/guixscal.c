@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,79 +32,55 @@
 
 
 #include "guiwind.h"
-#include "guisdef.h"
 #include "guiscale.h"
 #include "guixutil.h"
 
+
 WPI_TEXTMETRIC GUItm;
 
-void GUIScaleToScreenRect( gui_rect * rect )
+void GUIClientToScaleRect( const guix_rect *client, gui_rect *rect )
 {
-    GUIConvertRect( SCALE, SCREEN, rect, false );
-}
-
-void GUIScreenToScaleRect( gui_rect * rect )
-{
-    GUIConvertRect( SCREEN, SCALE, rect, false );
-}
-
-void GUIClientToScaleRect( gui_rect * rect )
-{
-    GUIScreenToScaleRect( rect );
+    GUIScreenToScaleRect( client, rect );
 }
 
 /*
- *  GUIToText -- divide by character width, height
+ *  GUIToTextX -- divide by character width, height
  */
 
-void GUIToText( gui_coord *coord , gui_window *wnd )
+gui_text_ord GUIToTextX( guix_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
-    coord->y = GUIMulDiv( coord->y, 1, AVGYCHAR( GUItm ) );
-    coord->x = GUIMulDiv( coord->x, 1, AVGXCHAR( GUItm ) );
-}
-
-gui_ord GUIToTextX( gui_ord ord, gui_window *wnd )
-{
-    GUIGetMetrics( wnd );
-    return( GUIMulDiv( ord, 1, AVGXCHAR( GUItm ) ) );
-}
-
-gui_ord GUIToTextY( gui_ord ord, gui_window *wnd )
-{
-    GUIGetMetrics( wnd );
-    return( GUIMulDiv( ord, 1, AVGYCHAR( GUItm ) ) );
+    return( GUIMulDiv( gui_text_ord, ord, 1, AVGXCHAR( GUItm ) ) );
 }
 
 /*
- *  GUIFromText -- multiply by character widht, height
+ *  GUIToTextY -- divide by character width, height
  */
 
-void GUIFromText( gui_coord *coord, gui_window *wnd )
+gui_text_ord GUIToTextY( guix_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
-    coord->y = GUIMulDiv( coord->y, AVGYCHAR( GUItm ), 1 );
-    coord->x = GUIMulDiv( coord->x, AVGXCHAR( GUItm ), 1 );
+    return( GUIMulDiv( gui_text_ord, ord, 1, AVGYCHAR( GUItm ) ) );
 }
 
 /*
  *  GUIFromTextX -- multiply by character width, height
  */
 
-gui_ord GUIFromTextX( gui_ord ord, gui_window *wnd )
+guix_ord GUIFromTextX( gui_text_ord text_ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
-    return( ord *= AVGXCHAR( GUItm ) );
+    return( GUIMulDiv( gui_ord, text_ord, AVGXCHAR( GUItm ), 1 ) );
 }
 
 /*
  *  GUIFromTextY -- multiply by character widht, height
  */
 
-gui_ord GUIFromTextY( gui_ord ord, gui_window *wnd )
+guix_ord GUIFromTextY( gui_text_ord text_ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
-    return( GUIMulDiv( ord, AVGYCHAR( GUItm ), 1 ) );
+    return( GUIMulDiv( gui_ord, text_ord, AVGYCHAR( GUItm ), 1 ) );
 }
 
 /*
@@ -124,7 +101,7 @@ bool GUIGetTheDC( gui_window *wnd )
     return( false );
 }
 
-void GUIReleaseTheDC( gui_window * wnd )
+void GUIReleaseTheDC( gui_window *wnd )
 {
 #ifdef __OS2_PM__
     wnd=wnd;
@@ -140,10 +117,10 @@ void GUIReleaseTheDC( gui_window * wnd )
 }
 
 /*
- * GUIGetMetrics - Initialize the tm structure with infor for the given window
+ * GUIGetMetrics - Initialize the tm structure with info for the given window
  */
 
-void GUIGetMetrics( gui_window * wnd )
+void GUIGetMetrics( gui_window *wnd )
 {
     bool got_new;
 
@@ -165,27 +142,24 @@ void GUIGetMetrics( gui_window * wnd )
  * GUIEndPaint, so the wnd->hdc is valid and wnd->font is selected
  */
 
-void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_ord *start, int *num )
+void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_text_ord *start, gui_text_ord *num )
 {
-    WPI_RECT    rect;
+    WPI_RECT    wpi_rect;
     int         avgy;
-    GUI_RECTDIM left;
-    GUI_RECTDIM top;
-    GUI_RECTDIM right;
-    GUI_RECTDIM bottom;
+    WPI_RECTDIM left, top, right, bottom;
 
     hwnd = hwnd;
 
     _wpi_gettextmetrics( wnd->hdc, &GUItm );
     avgy = AVGYCHAR( GUItm );
-    _wpi_getpaintrect( wnd->ps, &rect );
-    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
+    _wpi_getpaintrect( wnd->ps, &wpi_rect );
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
 
     top    = _wpi_cvtc_y_plus1( hwnd, top );
     bottom = _wpi_cvtc_y_plus1( hwnd, bottom );
 
-    *start = ( gui_ord )( top / avgy );
-    *num = ( bottom + avgy - 1 ) / avgy - *start;
+    *start = (gui_text_ord)( top / avgy );
+    *num = (gui_text_ord)( ( bottom + avgy - 1 ) / avgy ) - *start;
     if( ( *start + *num ) > wnd->num_rows ) {
         *num = wnd->num_rows - *start;
     }
@@ -200,4 +174,3 @@ void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_ord *start, int *num )
         }
     }
 }
-

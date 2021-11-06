@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
-#include "rcdefs.rh"
+#include "ide.rh"
 #ifdef __WINDOWS__
     #include "common.h"
     #include "link.h"
@@ -67,7 +68,12 @@
 extern char _viperError[];
 
 static WString lastCD;
-static char sFilter[] = { "Listing Files(*.txt)\0*.txt\0All files(*.*)\0*.*\0\0" };
+
+static char sFilter[] = {
+    "Listing Files(*.txt)\0*.txt\0"
+    "All files(*.*)\0*.*\0"
+    "\0"
+};
 
 static int _connectionTries = 0;
 
@@ -230,7 +236,11 @@ WEXPORT VMsgLog::~VMsgLog()
             if( _serverConnected ) {
                 VxDPut( TERMINATE_CLIENT_STR, sizeof( TERMINATE_CLIENT_STR )+1 );
             }
-            for( int i=0; i<100 && VxDUnLink()!=0; i++ );
+            for( int i = 0; i < 100; i++ ) {
+                if( VxDUnLink() == 0 ) {
+                    break;
+                }
+            }
         }
 #endif
     } else {
@@ -283,7 +293,7 @@ bool VMsgLog::saveLogAs()
     if( project ) {
         project->filename().noPath( fn );
     }
-    fn.setExt( ".txt" );
+    fn.setExt( "txt" );
     WFileDialog fd( this, sFilter );
     fn = fd.getOpenFileName( fn, "Save Log as", WFSaveDefault );
     if( fn.legal() ) {
@@ -293,7 +303,7 @@ bool VMsgLog::saveLogAs()
             WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Unable to save log file '%s'", (const char*)fn );
         } else {
             int icount  = _data.count();
-            for( int i=0; i<icount; i++ ) {
+            for( int i = 0; i < icount; i++ ) {
                 f.puts( *(WString*)_data[i] );
                 f.puts( "\n" );
             }
@@ -438,7 +448,7 @@ static char buffer[MAX_BUFF+1];
 
 void VMsgLog::scanLine( const char* buff, int len )
 {
-    for( int i=0; i<len; i++ ) {
+    for( int i = 0; i < len; i++ ) {
         if( buff[i] == 10 ) {
         } else if( buff[i] == 13 ) {
             addLine( buffer );
@@ -465,7 +475,7 @@ static char buff[MAX_BUFF+1];
     if( !_batserv ) {
 #ifdef __WINDOWS__
         VxDPut( cmd.gets(), cmd.size() + 1 );
-        for(;;) {
+        for( ;; ) {
             int len = VxDGet( buff, MAX_BUFF );
             buff[len] = '\0';
             if( streq( buff, TERMINATE_COMMAND_STR ) ) {
@@ -563,10 +573,11 @@ bool VMsgLog::matchPattern( const char* p, int index, char* file, int& line, int
         i++;
     }
     i++;
-    for(;;) {
+    for( ;; ) {
         if( p[i] == '\0' )
             return( false );
-        if( p[i] == '>' ) break;
+        if( p[i] == '>' )
+            break;
         if( strncmp( &p[i], "%f", 2 ) == 0 ) {
             i += 2;
             k = 0;
@@ -576,7 +587,8 @@ bool VMsgLog::matchPattern( const char* p, int index, char* file, int& line, int
             }
             for( kk = -1; kk != k ; ) {
                 kk = k;
-                if( str[j] == '\\' || str[j] == '/' ) file[k++] = str[j++];
+                if( str[j] == '\\' || str[j] == '/' )
+                    file[k++] = str[j++];
                 while( isalnum( str[j] ) || str[j] == '.'
                         || str[j] == '_' || str[j] == '-' ) {
                     file[k++] = str[j++];
@@ -586,15 +598,17 @@ bool VMsgLog::matchPattern( const char* p, int index, char* file, int& line, int
         } else if( strncmp( &p[i], "%l", 2 ) == 0 ) {
             i += 2;
             line = 0;
-            for(;;) {
-                if( !isdigit( str[j] ) ) break;
+            for( ;; ) {
+                if( !isdigit( str[j] ) )
+                    break;
                 line = line*10 + (str[j++]-'0');
             }
         } else if( strncmp( &p[i], "%o", 2 ) == 0 ) {
             i += 2;
             offset = 0;
-            for(;;) {
-                if( !isdigit( str[j] ) ) break;
+            for( ;; ) {
+                if( !isdigit( str[j] ) )
+                    break;
                 offset = offset*10 + (str[j++]-'0');
             }
         } else if( strncmp( &p[i], "%h", 2 ) == 0 ) {
@@ -610,12 +624,16 @@ bool VMsgLog::matchPattern( const char* p, int index, char* file, int& line, int
         // this is a kludge to get fortran help working
         } else if( strncmp( &p[i], "%i", 2 ) == 0 ) {
             i += 2;
-            if( !parseFortranId( str, j, help ) ) break;
+            if( !parseFortranId( str, j, help ) ) {
+                break;
+            }
         } else if( strncmp( &p[i], "%*", 2 ) == 0 ) {
             i += 2;
-            for(;;) {
-                if( p[i] != '>' && str[j] == p[i] ) break;
-                if( str[j] == '\0' ) break;
+            for( ;; ) {
+                if( p[i] != '>' && str[j] == p[i] )
+                    break;
+                if( str[j] == '\0' )
+                    break;
                 j++;
             }
         } else if( p[i] == str[j] ) {
@@ -758,10 +776,7 @@ void VMsgLog::editRequest( WMenuItem* )
                 msg.printf( "EditFileAtPos -f%s %d %d 0 %d",
                             file, line, offset, resId );
             }
-            msg.concat( " \"" );
-            msg.concat( text ); // error message
-            msg.concat( "\" " );
-            msg.concat( hf ); // help file
+            msg.concatf( " \"%s\" %s", text, hf );  // error message, helpfile
             _parent->executeCommand( msg, EXECUTE_EDITOR, "LogEdit" );
         } else {
             WMessageDialog::info( this, "Can't find a filename in '%s'", text );

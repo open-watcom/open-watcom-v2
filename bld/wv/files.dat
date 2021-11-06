@@ -5,6 +5,8 @@
 usr="wd.exe"            cond="doshost"   descr="Character mode debugger"    old="bin"
 usr="wdc.exe"           cond="winhost"   descr="Character-mode debugger"
 usr="wdw.exe"           cond="winhost"   descr="GUI debugger"
+[ DEFAULT type="s" dir="binw" where="c jc f77 jf77" ]
+usr="wd.pif"            cond="winhost"   descr="Character-mode debugger"
 [ DEFAULT type="e" dir="binw" cond="doshost winhost |" where="c jc f77 jf77" old="binb" ]
 usr="rfx.exe"           descr="Remote File Exchange utility (RFX)"
 [ DEFAULT type="s" dir="binw" cond="doshost winhost |" where="c jc f77 jf77" old="binb" ]

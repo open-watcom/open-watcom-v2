@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,3 +40,10 @@ extern const opcode_entry   Move87S[];
 extern const opcode_entry   Move87D[];
 extern const opcode_entry   Push87S[];
 extern const opcode_entry   Push87D[];
+
+/* TODO! 80-bit FP
+ * must be implemented for long double
+ * now mapped to double type
+ */
+#define Move87L     Move87D
+#define Push87L     Push87D

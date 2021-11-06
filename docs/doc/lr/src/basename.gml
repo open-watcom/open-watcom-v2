@@ -1,4 +1,4 @@
-.func basename 
+.func basename
 .synop begin
 #include <libgen.h>
 char *basename( char *path );
@@ -41,7 +41,7 @@ The
 .id &funcb.
 function returns a pointer to the final component of
 .arg path
-.ct .li .
+.period
 .return end
 .*
 .see begin
@@ -71,5 +71,5 @@ foo
 .blkcode end
 .exmp end
 .*
-.class POSIX
+.class POSIX 1003.1
 .system

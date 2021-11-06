@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +38,11 @@
 #include "dipwv.h"
 
 
-typedef unsigned_8 inspect_type; enum {
+typedef enum inspect_type {
     INSP_CODE,
     INSP_DATA,
     INSP_RAW_DATA,
-};
+} inspect_type;
 
 enum ll_flags {
     LLF_CONST = 0x01,

@@ -6,6 +6,4 @@
 host_os  = dos
 host_cpu = 386
 
-syshdir = ../h;../../dos/h
-
 !include ../../master.mif

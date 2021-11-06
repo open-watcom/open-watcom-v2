@@ -5,21 +5,17 @@ int clock_nanosleep(clockid_t clockid, int flags,
                     const struct timespec *request,
                     struct timespec *remains);
 
-struct timespec {
-    time_t tv_sec;
-    long tv_nsec;
-};
-    
+.im structms
 .synop end
 .desc begin
 The
 .id &funcb.
 function causes the current thread to be suspended until
-the time period specified by 
+the time period specified by
 .arg request
 has elapsed according to the clock specified by
 .arg clockid
-if the 
+if the
 .arg flags
  do not contain the value TIMER_ABSTIME.
 .np
@@ -58,9 +54,9 @@ The sleep was interrupted by a signal.
 .term EINVAL
 The value of
 .arg clockid
-,
+.ct ,
 .arg request
-, or
+.ct , or
 .arg flags
 is invalid.
 .term ENOTSUP
@@ -70,5 +66,5 @@ The specified clock does not support this function.
 .see begin
 .seelist clock_gettime clock_getres clock_settime
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

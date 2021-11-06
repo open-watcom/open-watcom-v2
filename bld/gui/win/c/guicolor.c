@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 #endif
 #include "guicolor.h"
 #include "guiwnclr.h"
-#include "guix.h"
 #include "guixwind.h"
 
 
@@ -52,13 +52,13 @@ WPI_COLOUR GUIColours[] = {
     0x00808000, /* GUI_BROWN           */
     0x00cccccc, /* GUI_WHITE           */
     0x00808080, /* GUI_GREY            */
-    0x000000ff, /* GUI_BRIGHT_BLUE     */
-    0x0000ff00, /* GUI_BRIGHT_GREEN    */
-    0x0000ffff, /* GUI_BRIGHT_CYAN     */
-    0x00ff0000, /* GUI_BRIGHT_RED      */
-    0x00ff00ff, /* GUI_BRIGHT_MAGENTA  */
-    0x00ffff00, /* GUI_BRIGHT_YELLOW   */
-    0x00ffffff, /* GUI_BRIGHT_WHITE    */
+    0x000000ff, /* GUI_BR_BLUE         */
+    0x0000ff00, /* GUI_BR_GREEN        */
+    0x0000ffff, /* GUI_BR_CYAN         */
+    0x00ff0000, /* GUI_BR_RED          */
+    0x00ff00ff, /* GUI_BR_MAGENTA      */
+    0x00ffff00, /* GUI_BR_YELLOW       */
+    0x00ffffff, /* GUI_BR_WHITE        */
     0x00808080, /* GUIEX_DLG_BKGRND    */
     0x00FFFFFF, /* GUIEX_WND_BKGRND    */
     0x00000080, /* GUIEX_HIGHLIGHT     */
@@ -74,13 +74,13 @@ WPI_COLOUR GUIColours[] = {
     0x00008080, /* GUI_BROWN           */
     0x00c0c0c0, /* GUI_WHITE           */
     0x00808080, /* GUI_GREY            */
-    0x00ff0000, /* GUI_BRIGHT_BLUE     */
-    0x0000ff00, /* GUI_BRIGHT_GREEN    */
-    0x00ffff00, /* GUI_BRIGHT_CYAN     */
-    0x000000ff, /* GUI_BRIGHT_RED      */
-    0x00ff00ff, /* GUI_BRIGHT_MAGENTA  */
-    0x0000ffff, /* GUI_BRIGHT_YELLOW   */
-    0x00ffffff, /* GUI_BRIGHT_WHITE    */
+    0x00ff0000, /* GUI_BR_BLUE         */
+    0x0000ff00, /* GUI_BR_GREEN        */
+    0x00ffff00, /* GUI_BR_CYAN         */
+    0x000000ff, /* GUI_BR_RED          */
+    0x00ff00ff, /* GUI_BR_MAGENTA      */
+    0x0000ffff, /* GUI_BR_YELLOW       */
+    0x00ffffff, /* GUI_BR_WHITE        */
     0x00808080, /* GUIEX_DLG_BKGRND    */
     0x00FFFFFF, /* GUIEX_WND_BKGRND    */
     0x00800000, /* GUIEX_HIGHLIGHT     */
@@ -102,7 +102,7 @@ static void InitSystemRGB( void )
 }
 
 
-bool GUISetRGB( gui_colour colour, gui_rgb rgb )
+bool GUIAPI GUISetRGB( gui_colour colour, gui_rgb rgb )
 {
     if( colour < GUI_NUM_COLOURS  ) {
         GUIColours[colour] = GETRGB( rgb );
@@ -123,7 +123,7 @@ static void FillInRGB( WPI_COLOUR colour, gui_rgb *rgb )
     *rgb = GUIRGB( r, g, b );
 }
 
-bool GUIGetRGB( gui_colour colour, gui_rgb *rgb )
+bool GUIAPI GUIGetRGB( gui_colour colour, gui_rgb *rgb )
 {
     if( ( colour < GUI_NUM_COLOURS ) && ( rgb != NULL ) ) {
         FillInRGB( GUIColours[colour], rgb );
@@ -132,7 +132,7 @@ bool GUIGetRGB( gui_colour colour, gui_rgb *rgb )
     return( false );
 }
 
-bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
+bool GUIAPI GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
         return( false );
@@ -190,7 +190,7 @@ void GUICheckBKBrush( gui_window *wnd )
 }
 #endif
 
-bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
+bool GUIAPI GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
         return( false );
@@ -206,7 +206,7 @@ bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
     return( false );
 }
 
-bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
+bool GUIAPI GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
 {
 #ifdef __OS2_PM__
     /* unused parameters */ (void)init_rgb; (void)new_rgb;
@@ -274,7 +274,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
 }
 
 /*
- * GUISetColours -- record the colours selected by the application
+ * GUIXSetColours -- record the colours selected by the application
  */
 
 bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
@@ -303,9 +303,9 @@ void GUIXGetWindowColours( gui_window *wnd, gui_colour_set *colours )
 
 HBRUSH GUIFreeBKBrush( gui_window * wnd )
 {
-    HBRUSH brush = NULLHANDLE;
+    HBRUSH brush = WPI_NULL;
 
-    if( wnd->bk_brush != NULLHANDLE ) {
+    if( wnd->bk_brush != WPI_NULL ) {
         /* make sure bk_brush is not the currently the background brush
          * and, therefore, a system resource */
 #ifndef __OS2_PM__
@@ -314,12 +314,12 @@ HBRUSH GUIFreeBKBrush( gui_window * wnd )
         }
 #endif
         _wpi_deletebrush( wnd->bk_brush );
-        wnd->bk_brush = NULLHANDLE;
+        wnd->bk_brush = WPI_NULL;
     }
     return( brush );
 }
 
-void GUISetWindowColours( gui_window *wnd, int num_colours,
+void GUIAPI GUISetWindowColours( gui_window *wnd, int num_colours,
                           gui_colour_set *colours )
 {
     GUIFreeColours( wnd );

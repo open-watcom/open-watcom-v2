@@ -32,7 +32,7 @@ character) which can be be used to store this name.
 An error occurs if the length of the path (including the terminating
 null character) exceeds
 .arg maxlen
-.ct .li .
+.period
 .np
 The maximum size that might be required for
 .arg buffer
@@ -46,16 +46,16 @@ When
 has a value of
 .mono NULL,
 a string is allocated using
-.kw malloc
+.reffunc malloc
 to contain the name of the current working directory.
 This string may be freed using the
-.kw free
+.reffunc free
 function.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .arg maxlen
-is the length in wide-characters (wchar_t).
+is the length in wide characters (wchar_t).
 .do end
 .desc end
 .return begin

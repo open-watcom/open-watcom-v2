@@ -31,7 +31,7 @@ nor
 .arg n
 shall be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 .arg s1max
 shall not equal zero. If
 .arg n
@@ -41,7 +41,7 @@ is not less than
 .arg s1max
 shall be greater than
 .arg strnlen_s(s2, s1max)
-.ct .li .
+.period
 .np
 Copying shall not take place between
 objects that overlap.
@@ -53,7 +53,7 @@ is not a null pointer and
 is greater than zero and not greater than
 .kw RSIZE_MAX
 .ct , then
-.kw strncpy_s
+.reffunc strncpy_s
 sets
 .arg s1[0]
 to the null character.
@@ -69,7 +69,7 @@ copied) from the array pointed to by
 .arg s2
 to the array pointed to by
 .arg s1
-.ct .li .
+.period
 If no null character was copied from
 .arg s2
 .ct , then
@@ -78,15 +78,15 @@ is set to
 a null character.
 .np
 All elements following the terminating null character (if any) written by
-.kw strncpy_s
+.reffunc strncpy_s
 in the array of
 .arg s1max
 characters pointed to by
 .arg s1
 take unspecified values when
-.kw strncpy_s
+.reffunc strncpy_s
 returns.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

@@ -17,15 +17,15 @@ objs = &
 .c : ../c;$(builder_dir)/c;$(watcom_dir)/c
 
 !ifdef __UNIX__
-$(%OWBINDIR)/wmake : wmk.exe
+$(%OWBINDIR)/$(%OWOBJDIR)/wmake : wmk.exe
     cp wmk.exe $@
 !else
-$(%OWBINDIR)\wmake.exe : wmk.exe
+$(%OWBINDIR)\$(%OWOBJDIR)\wmake.exe : wmk.exe
     copy wmk.exe $@
 !endif
 
 .c.obj : .AUTODEPEND
-    *wcc386 -zq -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) -DBOOTSTRAP -w8-we-s-oaxt-j-fpc-zc -bt=$(bld_os) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo=$@ $<
+    *wcc386 -zq -D_BLDVER=$(bld_ver_tool) -D_CYEAR=$(curr_year) -DBOOTSTRAP -w8-we-s-oaxt-j-fpc-zc -d2 -bt=$(bld_os) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo=$@ $<
 
 ./wsplice.exe : wsplice.obj
     *wlink name $@ op q, map sys $(link_sys) file {$<}
@@ -34,15 +34,14 @@ $(%OWBINDIR)\wmake.exe : wmk.exe
     *wlink name $@ op q, map sys $(link_sys) file {$<}
 
 # Use inline files for wsplice as a way to sidestep the metacharacter hell.
-usage.gh : ../h/usage.sp ./wsplice.exe
-    %write usage.tmp -kIS_RC -kENGLISH -f "{MSG_USAGE_BASE+%$#%+, \"%s\"}," $[@ $@
-    $]@ @usage.tmp
+usage.gh : ./wsplice.exe ../h/usage.sp
+    $[@ -kENGLISH -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $]@ $@
 
 isarray.gh : ./cretype.exe
     $]@ $@
 
 wmk.exe: usage.gh isarray.gh $(objs)
-    *wlink name $@ op q, map sys $(link_sys) file {$(objs)}
+    *wlink debug all name $@ op q, map sys $(link_sys) file {$(objs)}
 
 clean:  .symbolic
     rm -f *.obj *.gh *.exe *.err

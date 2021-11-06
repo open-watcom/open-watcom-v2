@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,27 +35,27 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#if defined(__WATCOMC__)
-extern unsigned int __rotl( unsigned int value, unsigned int shift );
 
-#if defined(__386__)
-#pragma aux __rotl = \
-        "rol eax,cl" \
-    __parm      [__eax] [__ecx] \
-    __value     [__eax] \
-    __modify    [__ecx]
-#elif defined( _M_I86 )
+#if defined( _M_IX86 )
+extern unsigned int __rotl( unsigned int value, unsigned int shift );
+#if defined(_M_I86)
 #pragma aux __rotl = \
         "rol ax,cl" \
     __parm      [__ax] [__cx] \
     __value     [__ax] \
     __modify    [__cx]
+#else
+#pragma aux __rotl = \
+        "rol eax,cl" \
+    __parm      [__eax] [__ecx] \
+    __value     [__eax] \
+    __modify    [__ecx]
 #endif
-#endif /* __WATCOMC__ */
+#endif
 
 _WCRTLINK unsigned int _rotl( unsigned int value, unsigned int shift )
 {
-#if defined( _M_IX86 ) && defined(__WATCOMC__)
+#if defined( _M_IX86 )
     return( __rotl( value, shift ) );
 #else
     unsigned int    tmp;

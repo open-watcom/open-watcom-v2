@@ -240,9 +240,9 @@ noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
         icu/common/ucnv_imp.h icu/common/ucnvmbcs.h icu/common/udatamem.h \
         icu/common/udataswp.h icu/common/umapfile.h icu/common/uset_imp.h \
         icu/common/ustr_imp.h icu/common/ustrfmt.h icu/common/utracimp.h \
-        icu/common/unicode/localpointer.h icu/common/unicode/platform.h \
+        icu/common/unicode/localpoi.h icu/common/unicode/platform.h \
         icu/common/unicode/ptypes.h icu/common/unicode/putil.h \
-        icu/common/unicode/stringoptions.h icu/common/unicode/uclean.h \
+        icu/common/unicode/stringop.h icu/common/unicode/uclean.h \
         icu/common/unicode/ucnv.h icu/common/unicode/ucnv_cb.h \
         icu/common/unicode/ucnv_err.h icu/common/unicode/uconfig.h \
         icu/common/unicode/udata.h icu/common/unicode/uenum.h \

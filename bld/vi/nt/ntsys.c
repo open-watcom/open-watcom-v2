@@ -129,7 +129,7 @@ void ScreenFini( void )
  */
 void ChkExtendedKbd( void )
 {
-    EditVars.ExtendedKeyboard = 0x10;
+    EditFlags.ExtendedKeyboard = true;
 
 } /* ChkExtendedKbd */
 

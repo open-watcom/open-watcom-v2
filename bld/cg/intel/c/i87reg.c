@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,34 +45,49 @@
 #include "inssegs.h"
 #include "fixindex.h"
 #include "conflict.h"
+#include "escape.h"
+#include "pcencode.h"
 #include "liveinfo.h"
 
+
+static hw_reg_set FPRegs[] = {
+    HW_D( HW_ST0 ),
+    HW_D( HW_ST1 ),
+    HW_D( HW_ST2 ),
+    HW_D( HW_ST3 ),
+    HW_D( HW_ST4 ),
+    HW_D( HW_ST5 ),
+    HW_D( HW_ST6 ),
+    HW_D( HW_ST7 )
+};
+
+static fp_patches   FPPatchType;
 
 static byte StackReq8087[LAST_IFUNC - FIRST_IFUNC + 1] = {
 /*********************************************************
     how much stack over and above the parm
     does the operation require? NB: this number + number parms must be <= 4
 */
-        2,        /* OP_POW */
-        2,        /* OP_P5DIV */
-        0,        /* OP_ATAN2 */
-        0,        /* OP_FMOD */
-        0,        /* OP_NEGATE */
-        0,        /* OP_COMPLEMENT */
-        1,        /* OP_LOG */
-        3,        /* OP_COS */
-        3,        /* OP_SIN */
-        2,        /* OP_TAN */
-        0,        /* OP_SQRT */
-        0,        /* OP_FABS */
-        2,        /* OP_ACOS */
-        2,        /* OP_ASIN */
-        1,        /* OP_ATAN */
-        2,        /* OP_COSH */
-        2,        /* OP_EXP */
-        1,        /* OP_LOG10 */
-        2,        /* OP_SINH */
-        2         /* OP_TANH */
+    2,        /* OP_POW */
+    2,        /* OP_P5DIV */
+    0,        /* OP_ATAN2 */
+    0,        /* OP_FMOD */
+    0,        /* OP_NEGATE */
+    0,        /* OP_COMPLEMENT */
+    1,        /* OP_LOG */
+    3,        /* OP_COS */
+    3,        /* OP_SIN */
+    2,        /* OP_TAN */
+    0,        /* OP_SQRT */
+    0,        /* OP_FABS */
+    2,        /* OP_ACOS */
+    2,        /* OP_ASIN */
+    1,        /* OP_ATAN */
+    2,        /* OP_COSH */
+    2,        /* OP_EXP */
+    1,        /* OP_LOG10 */
+    2,        /* OP_SINH */
+    2         /* OP_TANH */
 };
 
 static byte StackReq387[LAST_IFUNC - FIRST_IFUNC + 1] = {
@@ -80,26 +95,111 @@ static byte StackReq387[LAST_IFUNC - FIRST_IFUNC + 1] = {
     how much stack over and above the parm
     does the operation require? NB: this number + number parms must be <= 4
 */
-        2,        /* OP_POW */
-        0,        /* OP_ATAN2 */
-        0,        /* OP_FMOD */
-        0,        /* OP_NEGATE */
-        0,        /* OP_COMPLEMENT */
-        1,        /* OP_LOG */
-        1,        /* OP_COS */
-        1,        /* OP_SIN */
-        1,        /* OP_TAN */
-        0,        /* OP_SQRT */
-        0,        /* OP_FABS */
-        2,        /* OP_ACOS */
-        2,        /* OP_ASIN */
-        1,        /* OP_ATAN */
-        2,        /* OP_COSH */
-        2,        /* OP_EXP */
-        1,        /* OP_LOG10 */
-        2,        /* OP_SINH */
-        2         /* OP_TANH */
+    2,        /* OP_POW */
+    0,        /* OP_ATAN2 */
+    0,        /* OP_FMOD */
+    0,        /* OP_NEGATE */
+    0,        /* OP_COMPLEMENT */
+    1,        /* OP_LOG */
+    1,        /* OP_COS */
+    1,        /* OP_SIN */
+    1,        /* OP_TAN */
+    0,        /* OP_SQRT */
+    0,        /* OP_FABS */
+    2,        /* OP_ACOS */
+    2,        /* OP_ASIN */
+    1,        /* OP_ATAN */
+    2,        /* OP_COSH */
+    2,        /* OP_EXP */
+    1,        /* OP_LOG10 */
+    2,        /* OP_SINH */
+    2         /* OP_TANH */
 };
+
+static  fp_patches SegPatchTab[] = {
+    #define _SR_(h,f)   f,
+    #include "x86sregs.h"
+    #undef _SR_
+};
+
+
+void SetFPPatchSegm( int i )
+/**************************/
+{
+    if( FPPatchType != FPP_NONE ) {
+        FPPatchType = SegPatchTab[i];
+    }
+}
+
+void SetFPPatchType( fp_patches type )
+/************************************/
+{
+    FPPatchType = type;
+}
+
+void FPPatchTypeRef( void )
+/*************************/
+{
+    int         i;
+
+    if( FPPatchType != FPP_NONE ) {
+        for( i = Temp.hdr.reclen - offsetof( template, data ) + 2; i > 2; i-- ) {
+            Temp.data[i] = Temp.data[i - 3];
+        }
+        Temp.data[0] = ESC;
+        Temp.data[1] = FUN;
+        Temp.data[2] = FPPatchType;
+        Temp.hdr.reclen += 3;
+        FPPatchType = FPP_NONE;
+    }
+}
+
+int FPRegTrans( hw_reg_set reg )
+/******************************/
+{
+    int         i;
+
+    for( i = 0; i < 8; i++ ) {
+        if( HW_Equal( reg, FPRegs[i] ) ) {
+            return( i );
+        }
+    }
+    return( -1 );
+}
+
+int     Count87Regs( hw_reg_set regs )
+/***********************************************
+    Count the number of 8087 registers named in hw_reg_set "regs".
+*/
+{
+    int         count;
+    int         i;
+
+    count = 0;
+    for( i = 0; i < 8; i++ ) {
+        if( HW_Ovlap( FPRegs[i], regs ) ) {
+            ++count;
+        }
+    }
+    return( count );
+}
+
+void SetFPParmsUsed( call_state *state, int parms )
+/*************************************************/
+{
+    HW_CTurnOff( state->parm.used, HW_FLTS );
+    while( parms-- > 0 ) {
+        HW_TurnOn( state->parm.used, FPRegs[parms] );
+    }
+}
+
+name    *ST( int num )
+/*******************************
+    return an N_REGISTER for ST(num)
+*/
+{
+    return( AllocRegName( FPRegs[num] ) );
+}
 
 
 static  bool    MathOpsBlowStack( conflict_node *conf, int stk_level ) {
@@ -660,28 +760,6 @@ int     FPStkReq( instruction *ins )
     } else {
         return( StackReq8087[ins->head.opcode - FIRST_IFUNC] );
     }
-}
-
-
-int     Count87Regs( hw_reg_set regs )
-/***********************************************
-    Count the number of 8087 registers named in hw_reg_set "regs".
-*/
-{
-    int         count;
-    int         i;
-
-    i = 0;
-    count = 0;
-    for(;;) {
-        if( HW_Ovlap( FPRegs[i], regs ) ) {
-            ++count;
-        }
-        if( i == 7 )
-            break;
-        ++i;
-    }
-    return( count );
 }
 
 

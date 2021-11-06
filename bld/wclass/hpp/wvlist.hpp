@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ WCLASS WVList : public WVCollection
         WEXPORT WVList( WVList& );
         WEXPORT ~WVList();
         int WEXPORT count() const { return( _free ); }
-        WObject* operator[]( long int index ) { return( _set[index] ); }
+        WObject* operator[]( int index ) { return( _set[index] ); }
         WObject* WEXPORT find( WObject *obj );
         virtual WObject* WEXPORT add( WObject* obj );
         int WEXPORT indexOfSame( WObject *obj );

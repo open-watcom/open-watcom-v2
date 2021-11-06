@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,13 +67,13 @@ WRFileType WdeSelectFileType( char *name, bool is32bit )
     WRFileType      file_type;
     HWND            parent;
     bool            use_wres;
-    HELP_CALLBACK   hcb;
+    HELPFUNC        hcb;
 
-    hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)WdeHelpRoutine, WdeGetAppInstance() );
+    hcb = MakeProcInstance_HELP( WdeHelpRoutine, WdeGetAppInstance() );
     use_wres = WdeGetOption( WdeOptIsWResFmt );
     parent  = WdeGetMainWindowHandle();
     file_type = WRSelectFileType( parent, name, is32bit, use_wres, hcb );
-    FreeProcInstance( (FARPROC)hcb );
+    FreeProcInstance_HELP( hcb );
 
     return( file_type );
 }

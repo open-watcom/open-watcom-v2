@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,12 +42,12 @@
 #include "vbuf.h"
 #include "ring.h"
 #include "fmtsym.h"
-#include "toggle.h"
 #include "template.h"
 #include "initdefs.h"
-#include "dbg.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
+    #include "dbg.h"
+    #include "pragdefn.h"
+    #include "togglesd.h"
 #endif
 
 
@@ -1491,7 +1492,7 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
     addr_func_t         retn;
     SYMBOL              curr;
     SYM_REGION          *region;
-    auto FNOV_RANK      curr_rank[1];
+    FNOV_RANK           curr_rank[1];
     SEARCH_RESULT       *result;
 
     initRankVector( FNC_DEFAULT, curr_rank, 1 );
@@ -1728,7 +1729,7 @@ static FNOV_RESULT doOverload( FNOV_INFO* info )
     }
 
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_rank ) {
+    if( TOGGLEDBG( dump_rank ) ) {
         printf( "\nOverloaded Symbol Resolution" );
         PrintFnovResolution( result
                            , info->alist
@@ -1991,7 +1992,7 @@ static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control, SYMBOL *pold_s
     FNOV_RESULT     overload_result = FNOV_NO_MATCH;
     FNOV_LIST       *candidates = NULL; // list of symbols to resolve
     FNOV_LIST       *match = NULL;
-    auto arg_list   alist;
+    arg_list        alist;
     FNOV_INFO       info;
 
     *pold_sym = NULL;
@@ -2046,7 +2047,7 @@ static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control, SYMBOL *pold_s
     }
 
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_rank ) {
+    if( TOGGLEDBG( dump_rank ) ) {
         printf( "Overloaded Symbol Distinct Check" );
         PrintFnovResolution( result
                            , info.alist
@@ -2109,7 +2110,7 @@ bool IsOverloadedFunc( SYMBOL sym )
     }
 
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_rank ) {
+    if( TOGGLEDBG( dump_rank ) ) {
         VBUF name;
         printf( "Function '%s' is%soverloaded\n", FormatSym( sym, &name ), ok ? " " : " not " );
         VbufFree( &name );
@@ -2199,7 +2200,7 @@ bool IsActualOverloadedFunc(            // TEST IF ACTUAL (IGNORE SYMC_DEFAULT) 
 
     ok = ( NULL == ActualNonOverloadedFunc( sym, result ) );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_rank ) {
+    if( TOGGLEDBG( dump_rank ) ) {
         VBUF name;
         printf( "Function '%s' is%soverloaded (ignoring default arguments)\n",
             FormatSym( sym, &name ), ok ? " " : " not " );

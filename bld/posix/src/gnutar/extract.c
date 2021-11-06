@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +89,7 @@ static int make_dirs( char *pathname )
     if( errno != ENOENT )
         return 0;                   /* Not our problem */
 
-    for( p = index( pathname, '/' ); p != NULL; p = index( p + 1, '/' ) ) {
+    for( p = strchr( pathname, '/' ); p != NULL; p = strchr( p + 1, '/' ) ) {
         /* Avoid mkdir of empty string, if leading or double '/' */
         if( p == pathname || p[-1] == '/' )
             continue;

@@ -506,7 +506,7 @@ typedef struct _MODEMSTATUS {
 } MODEMSTATUS, *PMODEMSTATUS;
 
 /* NOINC */
-#pragma pack(1)
+:include pshpack1.sp
 /* INC */
 
 typedef _Packed struct _TRACKFORMAT {

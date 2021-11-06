@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #ifndef RESUTIL_H_INCLUDED
 #define RESUTIL_H_INCLUDED
 
-#define RES_PADDING( size, bound ) (((bound) - ((size) % (bound))) % (bound))
+#define RES_PADDING_DWORD( size )   ((4 - ((size) % 4)) % 4)
 
 #define DEF_LANG                0x00    /* LANG_NEUTRAL */
 #define DEF_SUBLANG             0x00    /* SUBLANG_NEUTRAL */

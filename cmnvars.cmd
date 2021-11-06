@@ -22,7 +22,7 @@ REM Subdirectory to be used for building OW build tools
 if "%OWOBJDIR%" == "" set OWOBJDIR=binbuild
 
 REM Subdirectory to be used for build binaries
-set OWBINDIR=%OWROOT%\build\%OWOBJDIR%
+set OWBINDIR=%OWROOT%\build
 
 REM Subdirectory containing OW sources
 set OWSRCDIR=%OWROOT%\bld
@@ -34,7 +34,7 @@ REM Subdirectory containing distribution sources
 set OWDISTRDIR=%OWROOT%\distrib
 
 REM Set environment variables
-set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%;%OWGHOSTSCRIPTPATH%
+set PATH=%OWBINDIR%\%OWOBJDIR%;%OWBINDIR%;%OWDEFPATH%;%OWGHOSTSCRIPTPATH%
 set INCLUDE=%OWDEFINCLUDE%
 set WATCOM=%OWDEFWATCOM%
 set BEGINLIBPATH=%OWDEFBEGINLIBPATH%
@@ -43,12 +43,12 @@ REM Set the toolchain version to OWTOOLSVER variable
 set OWTOOLSVER=0
 if not '%OWTOOLS%' == 'WATCOM' goto no_watcom
 echo set OWTOOLSVER=__WATCOMC__>getversi.gc
-wcc386 -p getversi.gc >getversi.bat
+wcc386 -p getversi.gc >getversi.cmd
 goto toolsver
 :no_watcom
 :toolsver
-if not exist getversi.bat goto no_toolsver
-call getversi.bat
+if not exist getversi.cmd goto no_toolsver
+call getversi.cmd
 del getversi.*
 :no_toolsver
 

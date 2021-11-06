@@ -61,9 +61,3 @@ extern long         LibTell( libfile io );
 extern void         LibReadError( libfile io );
 extern void         LibWriteError( libfile io );
 extern void         BadLibrary( const char *name );
-
-#ifdef __UNIX__
-#define FNCMP strcmp
-#else
-#define FNCMP stricmp
-#endif

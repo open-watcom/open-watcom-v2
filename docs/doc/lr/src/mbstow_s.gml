@@ -8,13 +8,13 @@ errno_t mbstowcs_s( size_t * restrict retval,
                     wchar_t * restrict dst,
                     rsize_t dstmax,
                     const char * restrict src, rsize_t len);
-.ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&Multibyte' mbstowcs_s
+.if &farfnc ne 0 .do begin
 errno_t _fmbstowcs_s( size_t __far * restrict retval,
                     wchar_t __far * restrict dst,
                     rsize_t dstmax,
                     const char __far * restrict src, rsize_t len);
+.ixfunc2 '&Multibyte' _fmbstowcs_s
 .do end
 .synop end
 .*
@@ -31,7 +31,7 @@ nor
 .arg dstmax
 shall be greater than
 .kw RSIZE_MAX
-.ct .li .
+.period
 If
 .arg dst
 is a null pointer, then
@@ -51,17 +51,13 @@ is not less than
 .arg dstmax
 multibyte characters of the array pointed to by
 .arg src
-.ct .li .
+.period
 .np
 If there is a runtime-constraint violation, then
 .id &funcb.
-does the following. If
-.arg retval
-is not a null pointer, then
-.id &funcb.
-sets
-.arg *retval
-to (size_t)(-1). If
+does the following.
+.im _mbsret6
+If
 .arg dst
 is not a null pointer and
 .arg dstmax
@@ -85,7 +81,7 @@ into a sequence of corresponding wide characters. If
 is not a null pointer, the converted characters are stored into the
 array pointed to by
 .arg dst
-.ct .li .
+.period
 .np
 Conversion continues up to and including a terminating null
 character, which is also stored. Conversion stops earlier in two cases: when a sequence of
@@ -95,7 +91,7 @@ is not a null pointer) when
 .arg len
 wide characters have been stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 If
 .arg dst
 is not a null pointer and no null wide character was stored into the array
@@ -105,18 +101,15 @@ pointed to by
 .arg dst[len]
 is set to the null wide character. Each conversion
 takes place as if by a call to the
-.kw mbrtowc
+.reffunc mbrtowc
 function.
 .np
 Regardless of whether
 .arg dst
 is or is not a null pointer, if the input conversion encounters a
-sequence of bytes that do not form a valid multibyte character, an encoding error occurs:
-the
-.id &funcb.
-function stores the value (size_t)(-1) into
-.arg *retval
-.ct .li .
+sequence of bytes that do not form
+.im _mbsret4
+.period
 Otherwise, the
 .id &funcb.
 function stores into
@@ -136,7 +129,7 @@ returns.
 .np
 If copying takes place between objects that overlap, the objects take on unspecified
 values.
-.im safefarm
+.farfuncp &ffunc. &funcb.
 .desc end
 .*
 .return begin

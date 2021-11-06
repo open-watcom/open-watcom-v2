@@ -15,8 +15,8 @@ The components of the
 .kw struct lconv
 and their meanings are as follows:
 .begnote $setptnt 12
-.termhd1 Component
-.termhd2 Meaning
+.notehd1 Component
+.notehd2 Meaning
 .note char *decimal_point
 The decimal-point character used to format non-monetary quantities.
 .note char *thousands_sep
@@ -98,8 +98,8 @@ and
 .kw mon_grouping
 are interpreted according to the following:
 .begnote $setptnt 12
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note CHAR_MAX
 .ix 'CHAR_MAX'
 No further grouping is to be performed.
@@ -118,28 +118,28 @@ and
 .kw n_sign_posn
 is interpreted as follows:
 .begnote
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 0
 Parentheses surround the quantity and
 .kw currency_symbol
-.ct .li .
+.period
 .note 1
 The sign string precedes the quantity and
 .kw currency_symbol
-.ct .li .
+.period
 .note 2
 The sign string follows the quantity and
 .kw currency_symbol
-.ct .li .
+.period
 .note 3
 The sign string immediately precedes the quantity and
 .kw currency_symbol
-.ct .li .
+.period
 .note 4
 The sign string immediately follows the quantity and
 .kw currency_symbol
-.ct .li .
+.period
 .endnote
 .desc end
 .return begin

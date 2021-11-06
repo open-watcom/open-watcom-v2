@@ -67,7 +67,7 @@ int __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size )
     if( new_size < FRL_SIZE ) {
         new_size = FRL_SIZE;
     }
-    p1 = (FRLPTR( seg ))CPTR2BLK( cstg );
+    p1 = (FRLPTR( seg ))CSTG2BLK( cstg );
     old_size = GET_BLK_SIZE( p1 );
     if( new_size > old_size ) {
         /* enlarging the current allocation */
@@ -142,10 +142,10 @@ int __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size )
         /* ...free functions will decrement 'numalloc' */
         heap->numalloc++;
 #if defined( _M_I86 )
-        _bfree( seg, (void_bptr)BLK2CPTR( p2 ) );
+        _bfree( seg, (void_bptr)BLK2CSTG( p2 ) );
         /* free the top portion */
 #else
-        _nfree( (void_nptr)BLK2CPTR( p2 ) );
+        _nfree( (void_nptr)BLK2CSTG( p2 ) );
 #endif
     }
     return( __HM_SUCCESS );

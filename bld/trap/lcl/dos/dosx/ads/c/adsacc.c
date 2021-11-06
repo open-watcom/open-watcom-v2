@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,6 +56,7 @@
 #include "cpuglob.h"
 #include "adsintr.h"
 #include "adsacc.h"
+#include "int16.h"
 
 
 typedef struct watch_point {
@@ -122,7 +123,7 @@ static char __far *GetScreenPointer( void )
 {
     extern      short           Meg1;
     InitMeg1();
-    return( MK_FP( Meg1, 0xB0000 ) );
+    return( _MK_FP( Meg1, 0xB0000 ) );
 }
 
 void MyClearScreen()
@@ -166,12 +167,13 @@ void RawOut( char *str )
 
 void MyOut( char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        tmpbuff[128];
 
     sprintf( tmpbuff,"%03d) ",++_cnt );
-    va_start( al, str );
-    vsprintf( &tmpbuff[5],str, al );
+    va_start( args, str );
+    vsprintf( &tmpbuff[5],str, args );
+    va_end( args );
 
     RawOut( tmpbuff );
 }
@@ -284,7 +286,7 @@ static int WriteMemory( addr48_ptr *addr, byte *data, int len )
     return( ReadWrite( DoWriteMem, addr, (char *)data, len ) );
 }
 
-trap_retval ReqGet_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
@@ -301,7 +303,7 @@ trap_retval ReqGet_sys_config( void )
 }
 
 
-trap_retval ReqMap_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -319,7 +321,7 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqMachine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -333,7 +335,7 @@ trap_retval ReqMachine_data( void )
 }
 
 
-trap_retval ReqChecksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     unsigned       len;
     int            i;
@@ -368,7 +370,7 @@ trap_retval ReqChecksum_mem( void )
 }
 
 
-trap_retval ReqRead_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
     void                *ret;
@@ -380,7 +382,7 @@ trap_retval ReqRead_mem( void )
     return( len );
 }
 
-trap_retval ReqWrite_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
@@ -392,7 +394,7 @@ trap_retval ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRead_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     read_io_req *acc;
     void        *ret;
@@ -410,7 +412,7 @@ trap_retval ReqRead_io( void )
 }
 
 
-trap_retval ReqWrite_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     int              len;
     write_io_req        *acc;
@@ -432,7 +434,7 @@ trap_retval ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRead_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
@@ -442,7 +444,7 @@ trap_retval ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     mad_registers       *mr;
 
@@ -489,7 +491,7 @@ static void ADSLoop()
 }
 
 
-trap_retval ReqProg_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     prog_load_ret       *ret;
 
@@ -540,7 +542,7 @@ static void MyRunProg()
     DumpDbgRegs();
 }
 
-trap_retval ReqProg_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
                                                                           _DBG1(( "AccKillProg" ));
@@ -557,7 +559,7 @@ trap_retval ReqProg_kill( void )
 }
 
 
-trap_retval ReqSet_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     watch_point     *wp;
     set_watch_req   *acc;
@@ -590,7 +592,7 @@ trap_retval ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     _DBG0(( "AccRestoreWatch" ));
     /* assume all watches removed at same time */
@@ -598,7 +600,7 @@ trap_retval ReqClear_watch( void )
     return( 0 );
 }
 
-trap_retval ReqSet_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     set_break_req       *acc;
     set_break_ret       *ret;
@@ -617,7 +619,7 @@ _DBG1(( "AccSetBreak" ));
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req     *acc;
     opcode_type         brk_opcode;
@@ -736,12 +738,12 @@ leave:
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     return( ProgRun( false ) );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
     return( ProgRun( true ) );
 }
@@ -760,7 +762,7 @@ static void DOSEnvLkup( char *src, char *dst )
 }
 #endif
 
-trap_retval ReqGet_next_alias( void )
+trap_retval TRAP_CORE( Get_next_alias )( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;
@@ -781,26 +783,17 @@ trap_retval ReqGet_next_alias( void )
 }
 
 #if 0
-extern int GtKey( void );
-#pragma aux GtKey = \
-        "xor  ah,ah"    \
-        "int 16h"       \
-    __parm      [] \
-    __value     [__ax] \
-    __modify    [__ax]
-
-
 static unsigned_16 AccReadUserKey()
 {
     rd_key_return FAR *retblk;
 
     retblk = GetOutPtr( 0 );
-    retblk->key = GtKey();
+    retblk->key = _BIOSKeyboardGet( KEYB_STD );
     return( sizeof( rd_key_return ) );
 }
 #endif
 
-trap_retval ReqGet_err_text( void )
+trap_retval TRAP_CORE( Get_err_text )( void )
 {
     static char *DosErrMsgs[] = {
         #define pick(a,b)   b,
@@ -822,7 +815,7 @@ trap_retval ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-trap_retval ReqGet_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     get_lib_name_ret    *ret;
 
@@ -832,7 +825,7 @@ trap_retval ReqGet_lib_name( void )
 }
 
 
-trap_retval ReqGet_message_text( void )
+trap_retval TRAP_CORE( Get_message_text )( void )
 {
     static const char * const ExceptionMsgs[] = {
         #define pick(a,b) b,

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +38,23 @@
 //       included before any of the runtime header files.
 //
 
+#if !defined( __UNIX__ ) && !defined(__RDOS__) && !defined(__RDOSDEV__) && !defined( __NETWARE__ )
+    #define CLIB_USE_MBCS_TRANSLATION
+#endif
+#if !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+    #define CLIB_USE_OTHER_ENV
+#endif
+#if defined( __NT__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    #define CLIB_UPDATE_OS_ENV
+#endif
+
 #ifndef __WATCOMC__
     // when building with other tools, only include clibext.h
     #include "clibext.h"
 #else
 
 #ifndef __COMDEF_H_INCLUDED
-     #include <_comdef.h>
+    #include <_comdef.h>
 #endif
 
 // specialized data reference macro
@@ -102,11 +113,9 @@
     #elif defined( _M_IX86 )
         #define __PROTECT_MODE__
         #define __OS2_386__
-        #define __WARP__
     #elif defined(__PPC__)
         #define __PROTECT_MODE__
         #define __OS2_PPC__
-        #define __WARP__
     #else
         #error unrecognized processor for OS2
     #endif
@@ -142,13 +151,6 @@
         #define __DOS_386__
     #else
         #error unrecognized processor for DOS
-    #endif
-#elif defined(__OSI__)
-    #if defined( _M_IX86 ) && !defined( _M_I86 )
-        #define __PROTECT_MODE__
-        #define __OSI_386__
-    #else
-        #error unrecognized processor for OSI
     #endif
 #elif defined(__QNX__)
     #define __PROTECT_MODE__
@@ -198,7 +200,7 @@
 #endif
 
 // handle building dll's with appropriate linkage
-#if !defined(__SW_BR) && (defined(__WARP__) || defined(__NT__))
+#if !defined(__SW_BR) && (defined(__OS2__) && !defined(_M_I86) || defined(__NT__))
     #if defined(__MAKE_DLL_WRTLIB)
         #define _RTDLL
         #undef _WCRTLINK
@@ -220,7 +222,7 @@
             #define _WPRTLINK  __declspec(dllexport) _WRTLFCONV
             #define _WPIRTLINK __declspec(dllexport) _WRTLFCONV
             #define _WPRTDATA  __declspec(dllexport) _WRTLDCONV
-        #elif defined(__WARP__)
+        #elif defined(__OS2__)
             #define _WCRTLINK  __declspec(dllexport) _WRTLFCONV
             #define _WCIRTLINK __declspec(dllexport) _WRTLFCONV
             #define _WCRTDATA  __declspec(dllexport) _WRTLDCONV
@@ -251,7 +253,7 @@
             #define _WPRTLINK  __declspec(dllimport) _WRTLFCONV
             #define _WPIRTLINK __declspec(dllimport) _WRTLFCONV
             #define _WPRTDATA  __declspec(dllimport) _WRTLDCONV
-        #elif defined(__WARP__)
+        #elif defined(__OS2__)
             #define _WCRTLINK  __declspec(dllexport) _WRTLFCONV
             #define _WCIRTLINK __declspec(dllexport) _WRTLFCONV
             #define _WCRTDATA  __declspec(dllexport) _WRTLDCONV
@@ -283,7 +285,7 @@
             #define _WPRTLINK  __declspec(dllimport) _WRTLFCONV
             #define _WPIRTLINK __declspec(dllimport) _WRTLFCONV
             #define _WPRTDATA  __declspec(dllimport) _WRTLDCONV
-        #elif defined(__WARP__)
+        #elif defined(__OS2__)
             #define _WCRTLINK  _WRTLFCONV
             #define _WCIRTLINK _WRTLFCONV
             #define _WCRTDATA  _WRTLDCONV
@@ -315,7 +317,7 @@
             #define _WPRTLINK  __declspec(dllexport) _WRTLFCONV
             #define _WPIRTLINK __declspec(dllexport) _WRTLFCONV
             #define _WPRTDATA  __declspec(dllexport) _WRTLDCONV
-        #elif defined(__WARP__)
+        #elif defined(__OS2__)
             #define _WCRTLINK  _WRTLFCONV
             #define _WCIRTLINK _WRTLFCONV
             #define _WCRTDATA  _WRTLDCONV

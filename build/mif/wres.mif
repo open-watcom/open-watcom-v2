@@ -7,59 +7,57 @@
 # 5. For large memory model windows version, define 'windows'
 #
 
+name_model_i86 = m$(memory_model_i86)
+
 !ifeq host_os nov
-name_model_conv = m$(memory_model_386)_s/wres.lib
+name_model_386 = m$(memory_model_386)_s
 !else ifdef stack
-name_model_conv = m$(memory_model_386)_s/wres.lib
+name_model_386 = m$(memory_model_386)_s
 !else
-name_model_conv = m$(memory_model_386)_r/wres.lib
+name_model_386 = m$(memory_model_386)_r
 !endif
 
-!ifeq host_os qnx
-wres_i86_dir = qnxi86
-!else ifeq host_os win
-wres_i86_dir = wini86
-!else ifeq host_os os2
-wres_i86_dir = os2i86
-!else ifdef pegged
-wres_i86_dir = os2i86
+name_model_arm = _s
+name_model_axp = _s
+name_model_ppc = _s
+name_model_mps = _s
+name_model_x64 = _s
+
+wres_dir_qnxi86     = qnxi86/$(name_model_i86)
+wres_dir_wini86     = wini86/$(name_model_i86)
+wres_dir_os2i86     = os2i86/$(name_model_i86)
+!ifdef pegged
+wres_dir_dosi86     = os2i86/$(name_model_i86)
 !else
-wres_i86_dir = dosi86
+wres_dir_dosi86     = dosi86/$(name_model_i86)
 !endif
 
-name_i86_s = $(wres_dir)/$(wres_i86_dir)/ms/wres.lib
-name_i86_m = $(wres_dir)/$(wres_i86_dir)/mm/wres.lib
-name_i86_c = $(wres_dir)/$(wres_i86_dir)/mc/wres.lib
-name_i86_l = $(wres_dir)/$(wres_i86_dir)/ml/wres.lib
-name_i86_h = $(wres_dir)/$(wres_i86_dir)/mh/wres.lib
-
-name_386_dos      = $(wres_dir)/dos386/$(name_model_conv)
-name_386_zdos     = $(wres_dir)/osi386/$(name_model_conv)
-name_386_osi      = $(wres_dir)/osi386/$(name_model_conv)
-name_386_nov      = $(wres_dir)/osi386/$(name_model_conv)
-name_386_qnx      = $(wres_dir)/qnx386/$(name_model_conv)
-name_386_linux    = $(wres_dir)/linux386/$(name_model_conv)
-name_386_rdos     = $(wres_dir)/flat386/$(name_model_conv)
-name_386_os2      = $(wres_dir)/flat386/$(name_model_conv)
-name_386_win      = $(wres_dir)/flat386/$(name_model_conv)
+wres_dir_dos386     = dos386/$(name_model_386)
+wres_dir_nov386     = nov386/$(name_model_386)
+wres_dir_qnx386     = qnx386/$(name_model_386)
+wres_dir_linux386   = linux386/$(name_model_386)
+wres_dir_rdos386    = rdos386/$(name_model_386)
+wres_dir_os2386     = os2386/$(name_model_386)
+wres_dir_win386     = win386/$(name_model_386)
 !ifeq $(proj_name)_rtdll 1
-name_386_nt       = $(wres_dir)/nt386.dll/$(name_model_conv)
+wres_dir_nt386      = nt386.dll/$(name_model_386)
 !else
-name_386_nt       = $(wres_dir)/flat386/$(name_model_conv)
+wres_dir_nt386      = nt386/$(name_model_386)
 !endif
 
-name_i86 = $(name_i86_$(memory_model_i86))
-name_386 = $(name_386_$(host_os))
-name_arm = $(wres_dir)/$(host_os)arm/_s/wres.lib
-name_axp = $(wres_dir)/$(host_os)axp/_s/wres.lib
-name_ppc = $(wres_dir)/$(host_os)ppc/_s/wres.lib
-name_mps = $(wres_dir)/$(host_os)mps/_s/wres.lib
-name_x64 = $(wres_dir)/$(host_os)x64/_s/wres.lib
+wres_dir_ntaxp      = ntaxp/$(name_model_axp)
+
+wres_dir_linuxarm   = linuxarm/$(name_model_arm)
+wres_dir_linuxmps   = linuxmps/$(name_model_mps)
+wres_dir_linuxppc   = linuxppc/$(name_model_ppc)
+wres_dir_linuxx64   = linuxx64/$(name_model_x64)
+wres_dir_ntx64      = ntx64/$(name_model_x64)
+wres_dir_osxx64     = osxx64/$(name_model_x64)
 
 !ifdef bootstrap
 wres_lib = $(wres_dir)/$(objs_subdir)/wres.lib
 !else
-wres_lib = $(name_$(host_cpu))
+wres_lib = $(wres_dir)/$(wres_dir_$(objs_subdir))/wres.lib
 !endif
 
 wres_inc_dirs = -I"$(wres_dir)/h"

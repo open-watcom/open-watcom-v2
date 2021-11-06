@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,16 @@
 bool Weof( void )
 /***************/
 {
-    return( eof( Handle ) != 0 );
+    long    cur_posn;
+    long    eof_posn;
+
+    cur_posn = lseek( Handle, 0, SEEK_CUR );
+    if( cur_posn == -1L )
+        return( true );
+    eof_posn = lseek( Handle, 0, SEEK_END );
+    if( lseek( Handle, cur_posn, SEEK_SET ) == -1L || eof_posn == -1L )
+        return( true );
+    return( cur_posn == eof_posn );
 }
 
 /*
@@ -125,11 +135,15 @@ void Wlseek( unsigned long offset )
 unsigned long WFileSize( void )
 /*****************************/
 {
+    long    cur_posn;
     long    size;
 
-    size = filelength( Handle );
-    if( size == -1L )
-        size = 0;
+    size = 0;
+    cur_posn = lseek( Handle, 0, SEEK_CUR );
+    if( cur_posn != -1L ) {
+        size = lseek( Handle, 0, SEEK_END );
+        lseek( Handle, cur_posn, SEEK_SET );
+    }
     return( size );
 }
 
@@ -334,21 +348,23 @@ void Dump_asciiz( unsigned long offset )
 
 
     Wlseek( offset );
-    fsize = WFileSize();
-    memset( buf, 0, sizeof( buf ) );
+    fsize = WFileSize() - offset;
 
     /* We must handle both arbitrarily long strings and strings that
      * are stored right at the end of the image.
      */
+    amount = sizeof( buf ) - 1;
     do {
-        amount = min_len( sizeof( buf ) - 1, fsize - offset );
+        if( amount > fsize )
+            amount = fsize;
         Wread( buf, amount );
+        buf[amount] = '\0';
         Wdputs( buf );
         /* Check if we read in a null terminator. */
-        if( strlen( buf ) < sizeof( buf ) - 1 )
+        if( strlen( buf ) < amount )
             break;
-        offset += amount;
-    } while( offset < fsize );
+        fsize -= amount;
+    } while( fsize > 0 );
 }
 
 /*

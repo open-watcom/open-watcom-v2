@@ -79,7 +79,7 @@ You may find it easier to use
 .kw _Call16
 rather than &funcb followed by a call to
 .kw InvokeIndirectFunction
-.ct .li .
+.period
 .desc end
 .return begin
 The &funcb function returns a handle to the indirect function, or NULL

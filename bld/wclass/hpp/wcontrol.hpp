@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,16 +71,13 @@ WCLASS WControl : public WWindow {
         virtual bool WEXPORT isHidden( void );
         virtual bool WEXPORT setFocus( void );
         virtual int WEXPORT getTextExtentX( const char *text, size_t len ) {
-            return( GUIGetControlExtentX( parent()->handle(), controlId(),
-                                          (char *)text, len ) );
+            return( GUIGetControlExtentX( parent()->handle(), controlId(), text, len ) );
         }
         virtual int WEXPORT getTextExtentX( const char *text ) {
-            return( GUIGetControlExtentX( parent()->handle(), controlId(),
-                                          (char *)text, strlen( text ) ) );
+            return( GUIGetControlExtentX( parent()->handle(), controlId(), text, strlen( text ) ) );
         }
         virtual int WEXPORT getTextExtentY( const char *text ) {
-            return( GUIGetControlExtentY( parent()->handle(), controlId(),
-                                          (char *)text ) );
+            return( GUIGetControlExtentY( parent()->handle(), controlId(), text ) );
         }
         virtual void WEXPORT textMetrics( WPoint &, WPoint & );
 

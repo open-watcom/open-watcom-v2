@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +103,7 @@ static void PutNumber( const char *src, char *dst, unsigned num )
 
 static void BackupLog( const char *log_name, unsigned copies )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        old_name[_MAX_PATH];
     char        new_name[_MAX_PATH];
     char        temp_ext[5];
@@ -314,7 +314,7 @@ static bool ProcessEnv( bool opt_end )
 static void PushInclude( const char *name )
 {
     include_entry   *new;
-    PGROUP2         pg;
+    pgroup2         pg;
     char            dir_name[_MAX_PATH];
 
     new = MAlloc( sizeof( *new ) );
@@ -355,13 +355,12 @@ static bool PopInclude( void )
 static bool GetALine( char *line, int max_len )
 {
     for( ;; ) {
-        (void)fgets( line, max_len, includeStk->fp );
-        if( ferror( includeStk->fp ) ) {
-            Fatal( "Error reading '%s' line %d: %s\n", includeStk->name, includeStk->lineno + 1, strerror( errno ) );
-        }
-        if( !feof( includeStk->fp ) ) {
+        if( fgets( line, max_len, includeStk->fp ) != NULL ) {
             includeStk->lineno++;
             break;
+        }
+        if( ferror( includeStk->fp ) ) {
+            Fatal( "Error reading '%s' line %d: %s\n", includeStk->name, includeStk->lineno + 1, strerror( errno ) );
         }
         if( !PopInclude() ) {
             return( false );
@@ -654,7 +653,7 @@ static int ProcessCtlFile( const char *name )
 
 static bool SearchUpDirs( const char *name, char *result, size_t max_len )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *end;
     FILE        *fp;
 
@@ -733,7 +732,9 @@ const char *GetIncludeCWD( void )
 
 void SetIncludeCWD( void )
 {
-    getcwd( includeStk->cwd, sizeof( includeStk->cwd ) );
+    if( getcwd( includeStk->cwd, sizeof( includeStk->cwd ) ) == NULL ) {
+        includeStk->cwd[0] = '\0';
+    }
 }
 
 void SetArchive( copy_entry entry )

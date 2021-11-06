@@ -6,7 +6,7 @@ size_t wcsrtombs( char *dst,
          size_t n, mbstate_t *ps );
 .ixfunc2 '&Wide' &funcb
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 #include <wchar.h>
 size_t _fwcsrtombs( char __far *dst,
         const wchar_t __far * __far *src,
@@ -31,7 +31,7 @@ in the shift state described by
 .arg dst
 is not a null pointer, are then stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Conversion continues up to and including a terminating null wide
 character, but the terminating null character (byte) will not be
 stored.
@@ -43,9 +43,9 @@ the limit of
 .arg len
 total bytes to be stored into the array pointed to by
 .arg dst
-.ct .li .
+.period
 Each conversion takes place as if by a call to the
-.kw wcrtomb
+.reffunc wcrtomb
 function.
 .np
 If
@@ -60,20 +60,13 @@ and if
 .arg dst
 is not a null pointer, the resulting state described will be the
 initial conversion state.
-.im farparm
+.farfuncp &ffunc. &funcb.
 .im mbsrstrt
 .desc end
 .return begin
 If the first code is not a valid wide character, an encoding error
-occurs: The
-.id &funcb.
-function stores the value of the macro
-.kw EILSEQ
-in
-.kw errno
-and returns
-.mono (size_t)&minus.1,
-but the conversion state will be unchanged.
+occurs:
+.im _mbsret1
 Otherwise, it returns the number of bytes in the resulting multibyte
 characters sequence, which is the same as the number of array elements
 modified when

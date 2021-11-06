@@ -33,6 +33,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
 #include <mbstring.h>
 #include <direct.h>
 #include <dos.h>
@@ -89,23 +90,25 @@ static int is_directory( const CHAR_TYPE *name )
     return( -1 );
 }
 
-
-#ifdef __WIDECHAR__
-static void filenameToWide( DIR_TYPE *dir )
-/*****************************************/
+static void copy_find_data( DIR_TYPE *dirp, struct find_t *findp )
+/****************************************************************/
 {
-    wchar_t             wcs[ _MAX_PATH ];
-
-    /* convert string */
-    mbstowcs( wcs, (char*)dir->d_name, sizeof( wcs ) / sizeof( wcs[0] ) );
-    /* copy string */
-    wcscpy( dir->d_name, wcs );
-}
+    memcpy( dirp->d_dta, findp, sizeof( dirp->d_dta ) );
+    dirp->d_attr = findp->attrib;
+    dirp->d_time = findp->wr_time;
+    dirp->d_date = findp->wr_date;
+    dirp->d_size = findp->size;
+#ifdef __WIDECHAR__
+    mbstowcs( dirp->d_name, findp->name, sizeof( findp->name ) );
+#else
+    strcpy( dirp->d_name, findp->name );
 #endif
+}
 
 static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR_TYPE *dirp )
 /*******************************************************************************************/
 {
+    struct find_t   fdta;
 #ifdef __WIDECHAR__
     char            mbcsName[MB_CUR_MAX * _MAX_PATH];
 #endif
@@ -120,9 +123,10 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
         return( NULL );
     }
 #endif
-    if( _dos_findfirst( __F_NAME(dirname,mbcsName), SEEK_ATTRIB, (struct _find_t *)dirp->d_dta ) ) {
+    if( _dos_findfirst( __F_NAME(dirname,mbcsName), SEEK_ATTRIB, &fdta ) ) {
         return( NULL );
     }
+    copy_find_data( dirp, &fdta );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
 }
@@ -179,18 +183,19 @@ _WCRTLINK DIR_TYPE *__F_NAME(opendir,_wopendir)( const CHAR_TYPE *dirname )
 
 _WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
 {
+    struct find_t   fdta;
+
     if( dirp == NULL || dirp->d_first == _DIR_CLOSED )
         return( NULL );
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
     } else {
-        if( _dos_findnext( (struct _find_t *)dirp->d_dta ) ) {
+        memcpy( &fdta, dirp->d_dta, sizeof( fdta.reserved ) );
+        if( _dos_findnext( &fdta ) ) {
             return( NULL );
         }
+        copy_find_data( dirp, &fdta );
     }
-#ifdef __WIDECHAR__
-    filenameToWide( dirp );
-#endif
     return( dirp );
 }
 

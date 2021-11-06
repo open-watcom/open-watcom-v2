@@ -8,9 +8,12 @@ jobs:
     variables:
       ${{ if eq(parameters.arch, 'lnx') }}:
         owtools:        $(owtools_lnx)
+        owtoolsv:       $(owtoolsv_lnx)
       ${{ if eq(parameters.arch, 'nt') }}:
         owtools:        $(owtools_nt)
+        owtoolsv:       $(owtoolsv_nt)
       owtag:            Current-build
+      owsubtag:         Build
     pool:
       ${{ if eq(parameters.arch, 'lnx') }}:
         vmImage: $(owimage_lnx)
@@ -22,27 +25,15 @@ jobs:
       persistCredentials: true
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     build\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     build/$(owobjdir)
+        path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     distrib\ow\bin
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     distrib/ow/bin
+        path:       distrib/ow/bin
         artifname:  distrib-nt
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     distrib\ow\bin
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     distrib/ow/bin
+        path:       distrib/ow/bin
         artifname:  distrib-lnx
     - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
       displayName: "Get current timestamp"
@@ -58,35 +49,34 @@ jobs:
           echo "##vso[task.setvariable variable=owtagstamp;]`git tag -l --format='%(contents)' $OWTAG`"
         fi
       displayName: "Recreate 'Current-build' tag"
-    - task: GitHubRelease@0
-      name: releasedel
-      displayName: "Delete Release"
-      continueOnError: true
-      inputs:
-        gitHubConnection: 'open-watcom-v2-releases'
-        action: 'delete'
-        tag: '$(owtag)'
-    - task: GitHubRelease@0
-      name: releaseadd
-      displayName: "Add Release"
-      condition: succeededOrFailed()
-      inputs:
-        gitHubConnection: 'open-watcom-v2-releases'
-        repositoryName: '$(Build.Repository.Name)'
-        action: 'create'
-        target: '$(Build.SourceVersion)'
-        tagSource: 'manual'
-        tag: '$(owtag)'
-        title: '$(owtag)'
-        releaseNotesSource: 'input'
-        releaseNotes: 'Last updated $(owtagstamp)'
-        ${{ if eq(parameters.arch, 'nt') }}:
-          assets: |
-            distrib\ow\bin\open-watcom-*
-            distrib\ow\bin\ow-snapshot.tar.gz
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          assets: |
-            distrib/ow/bin/open-watcom-*
-            distrib/ow/bin/ow-snapshot.tar.gz
-        isPreRelease: true
-        addChangeLog: false
+    - template: doreleas.yml
+      parameters:
+        arch:      ${{ parameters.arch }}
+        update:    'true'
+        fullset:   'true'
+        disp:      'Update daily Release'
+        title:     '$(owtag)'
+        tag:       '$(owtag)'
+        timestamp: '$(owtagstamp)'
+    - bash: echo "##vso[task.setvariable variable=owmtagmonth;]`date +'%Y-%m-'`"
+      displayName: "Get current month stamp"
+    - bash: echo "##vso[task.setvariable variable=owreleasecommit;]`git ls-remote --tags . | sed -n -e \"s:\([0-9a-z]*\) *refs/tags/$OWMTAGMONTH.*$(owsubtag)$:\1:p\"`"
+      displayName: "Get current month build tag commit"
+    - bash: echo "##vso[task.setvariable variable=owmtagstamp;]`date +'%Y-%m-%d'`"
+      displayName: "Get current date"
+    - bash: echo "##vso[task.setvariable variable=owmtag;]$(owmtagstamp)-$(owsubtag)"
+      displayName: "Get current tag"
+    - script: |
+        if [ -z "$OWRELEASECOMMIT" ]; then
+          git tag -a -m "$OWMTAGSTAMP $OWSUBTAG" $OWMTAG $BUILD_SOURCEVERSION
+          git push $(owgitverbose) origin $OWMTAG
+        fi
+      displayName: "Create new permanent build tag"
+    - template: doreleas.yml
+      parameters:
+        arch:      ${{ parameters.arch }}
+        fullset:   'true'
+        disp:      'Add monthly Release'
+        title:     '$(owmtagstamp) $(owsubtag)'
+        tag:       '$(owmtag)'
+        timestamp: '$(owtagstamp)'

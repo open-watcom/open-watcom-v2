@@ -43,10 +43,6 @@
 #include "trperr.h"
 #include "packet.h"
 
-#if defined( __WATCOMC__ ) && defined( __NT__ )
-#pragma library("wsock32")
-#endif
-
 
 #ifdef SERVER
 static HANDLE                   ResponderThreadHandle;

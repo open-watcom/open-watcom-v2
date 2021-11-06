@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #ifdef __WIN__
 #include "wclbproc.h"
 #endif
+#include "oswincls.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -72,7 +74,7 @@ WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM
         wid = (window_id)wparam;
         len = GetClassName( wid, className, sizeof( className ) );
         className[len] = '\0';
-        if( strcmp( className, "#32770" ) == 0 ) {
+        if( strcmp( className, WC_SYS_DIALOGBOX ) == 0 ) {
             if( ncode == HCBT_MOVESIZE ) {
                 LPRECT  pos = (LPRECT)lparam;
 
@@ -224,12 +226,11 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
         return( ERR_INVALID_SUBS_CMD );
     }
     data = GetNextWord( data, rstr, SingleSlash );
-    if( *rstr == '\0' ) {
+    if( *data != '/' ) {
         return( ERR_INVALID_SUBS_CMD );
     }
-    if( *data == '/' )
-        ++data;
-    for( data = SkipLeadingSpaces( data ); (c = *data) != '\0'; data++ ) {
+    SKIP_CHAR_SPACES( data );
+    for( ; (c = *data) != '\0'; data++ ) {
         if( c == 'g' ) {
             gflag = true;
         } else if( c == 'i' || c == 'c' ) {

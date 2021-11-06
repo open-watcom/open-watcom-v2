@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,21 +34,49 @@
 #include <stdio.h>
 
 #if defined( BY_C_FRONT_END )
-    #define AUX_MEMALLOC    CMemAlloc
-    #define AUX_STRALLOC    CStrSave
-    #define AUX_MEMFREE     CMemFree
+    #define AUX_MEMALLOC        CMemAlloc
+    #define AUX_STRALLOC        CStrSave
+    #define AUX_MEMFREE         CMemFree
+    #define DEFAULT_CALLINFO    WatcallInfo
 #elif defined( BY_CPP_FRONT_END )
-    #define AUX_MEMALLOC    CMemAlloc
-    #define AUX_STRALLOC    strsave
-    #define AUX_MEMFREE     CMemFree
+    #define AUX_MEMALLOC        CMemAlloc
+    #define AUX_STRALLOC        strsave
+    #define AUX_MEMFREE         CMemFree
+    #define DEFAULT_CALLINFO    WatcallInfo
 #elif defined( BY_FORTRAN_FRONT_END )
-    #define AUX_MEMALLOC    FMemAlloc
-    #define AUX_STRALLOC    FMemAlloc
-    #define AUX_MEMFREE     FMemFree
+    #define AUX_MEMALLOC        FMemAlloc
+    #define AUX_STRALLOC        FStrDup
+    #define AUX_MEMFREE         FMemFree
+    #define DEFAULT_CALLINFO    FortranInfo
 #else
     #error "Unknown front end"
 #endif
 
+
+aux_info    *DftCallConv;
+aux_info    BuiltinAuxInfo[MAX_BUILTIN_AUXINFO];
+
+#if _CPU == 8086
+
+static hw_reg_set WatcallParms[] = {
+    HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ) /*+HW_ST1+HW_ST2+HW_ST3+HW_ST4*/,
+    HW_D( HW_EMPTY )
+};
+
+#elif _CPU == 386
+
+static hw_reg_set WatcallParms[] = {
+    HW_D_4( HW_EAX,HW_EBX,HW_ECX,HW_EDX ) /*+HW_ST1+HW_ST2+HW_ST3+HW_ST4*/,
+    HW_D( HW_EMPTY )
+};
+
+#else
+
+static hw_reg_set WatcallParms[] = {
+    HW_D( HW_EMPTY )
+};
+
+#endif
 
 #if _INTEL_CPU
 
@@ -56,7 +85,7 @@ static  hw_reg_set  StackParms[] = {
 };
 
 #if _CPU == 386
-static  hw_reg_set  metaWareParms[] = {
+static  hw_reg_set  MetaWareParms[] = {
     HW_D( HW_EMPTY )
 };
 static  hw_reg_set  OptlinkParms[] = {
@@ -74,8 +103,8 @@ static  hw_reg_set  FastcallParms[] = {
 };
 #endif
 
-void PragmaAuxInfoInit( int flag_stdatnum )
-/*****************************************/
+void AuxInfoInit( int flag_stdatnum )
+/***********************************/
 {
     hw_reg_set  full_no_segs;
     call_class  call_type;
@@ -346,7 +375,7 @@ void SetAuxStackConventions( void )
 {
     WatcallInfo.cclass &= ( GENERATE_STACK_FRAME | FAR_CALL );
     WatcallInfo.cclass |= CALLER_POPS | NO_8087_RETURNS;
-    WatcallInfo.parms = metaWareParms;
+    WatcallInfo.parms = MetaWareParms;
     HW_CTurnOff( WatcallInfo.save, HW_EAX );
     HW_CTurnOff( WatcallInfo.save, HW_EDX );
     HW_CTurnOff( WatcallInfo.save, HW_ECX );
@@ -360,7 +389,7 @@ void SetAuxStackConventions( void )
 int IsAuxParmsBuiltIn( hw_reg_set *parms )
 /***************************************/
 {
-    if( parms == DefaultParms ) {
+    if( parms == WatcallParms ) {
         return( true );
 #if _INTEL_CPU
     } else if( parms == StackParms ) {
@@ -370,7 +399,7 @@ int IsAuxParmsBuiltIn( hw_reg_set *parms )
 #if _CPU == 386
     } else if( parms == OptlinkParms ) {
         return( true );
-    } else if( parms == metaWareParms ) {
+    } else if( parms == MetaWareParms ) {
         return( true );
 #endif
 #endif
@@ -384,11 +413,11 @@ int IsAuxParmsBuiltIn( hw_reg_set *parms )
 void SetAuxWatcallInfo( void )
 /****************************/
 {
-    DftCallConv         = &WatcallInfo;
+    DftCallConv         = &DEFAULT_CALLINFO;
 
     WatcallInfo.cclass  = 0;
     WatcallInfo.code    = NULL;
-    WatcallInfo.parms   = DefaultParms;
+    WatcallInfo.parms   = WatcallParms;
 #if _CPU == 370
     WatcallInfo.linkage = &DefaultLinkage;
 #endif
@@ -399,7 +428,7 @@ void SetAuxWatcallInfo( void )
     WatcallInfo.objname = NULL;
 }
 
-void SetAuxDefaultInfo( void )
+void SetDefaultAuxInfo( void )
 /****************************/
 {
     DefaultInfo = *DftCallConv;

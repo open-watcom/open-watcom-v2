@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -552,7 +553,7 @@ void writeerr( void )
     perror ( ofname );
     if (!zcat_flg && !keep_error){
         fclose(stdout);
-        unlink ( ofname );
+        remove( ofname );
     }
     exit ( 1 );
 }
@@ -577,9 +578,9 @@ int foreground( void )
 }
 #endif
 
-void prratio(FILE *stream, long int num, long int den)
+void prratio(FILE *stream, long num, long den)
 {
-    register int q;         /* Doesn't need to be long */
+    int q;                  /* Doesn't need to be long */
 
     if(num > 214748L) {     /* 2147483647/10000 */
         q = (int) (num / (den / 10000L));
@@ -641,7 +642,7 @@ int check_error( void )     /* returning OK continues with processing next file 
     }
     if (!zcat_flg && !keep_error){
         fclose(stdout);         /* won't get here without an error */
-        unlink ( ofname );
+        remove( ofname );
     }
     return(exit_stat);
 }

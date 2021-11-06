@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,50 +41,50 @@
  *                       the AND and XOR bitmaps here refer to the
  *                       windows bitmaps, not the PM ones.
  */
-HBITMAP CreateInverseBitmap( HBITMAP andbitmap, HBITMAP xorbitmap )
+WPI_HBITMAP CreateInverseBitmap( WPI_HBITMAP and_hbitmap, WPI_HBITMAP xor_hbitmap )
 {
     WPI_PRES    pres;
     WPI_PRES    srcpres;
     HDC         srcdc;
-    WPI_PRES    destpres;
-    HDC         destdc;
-    HBITMAP     new_bitmap;
+    WPI_PRES    dstpres;
+    HDC         dstdc;
+    WPI_HBITMAP new_hbitmap;
     IMAGEBUNDLE p;
     int         width;
     int         height;
-    HBITMAP     oldsrc;
-    HBITMAP     olddest;
+    WPI_HBITMAP oldsrc_hbitmap;
+    WPI_HBITMAP olddst_hbitmap;
 
     pres = _wpi_getpres( HWND_DESKTOP );
     srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );
-    destpres = _wpi_createcompatiblepres( pres, Instance, &destdc );
+    dstpres = _wpi_createcompatiblepres( pres, Instance, &dstdc );
     _wpi_releasepres( HWND_DESKTOP, pres );
     _wpi_torgbmode( srcpres );
-    _wpi_torgbmode( destpres );
+    _wpi_torgbmode( dstpres );
 
     p.lBackColor = WHITE;
     p.lColor = BLACK;
     GpiSetAttrs(srcpres, PRIM_IMAGE, IBB_COLOR | IBB_BACK_COLOR, 0, &p);
-    GpiSetAttrs(destpres, PRIM_IMAGE, IBB_COLOR | IBB_BACK_COLOR, 0, &p);
+    GpiSetAttrs(dstpres, PRIM_IMAGE, IBB_COLOR | IBB_BACK_COLOR, 0, &p);
 
-    _wpi_getbitmapdim( xorbitmap, &width, &height );
-    new_bitmap = _wpi_createbitmap( width, height, 1, 1, NULL );
+    _wpi_getbitmapdim( xor_hbitmap, &width, &height );
+    new_hbitmap = _wpi_createbitmap( width, height, 1, 1, NULL );
 
-    oldsrc = _wpi_selectbitmap( srcpres, xorbitmap );
-    olddest = _wpi_selectbitmap( destpres, new_bitmap );
+    oldsrc_hbitmap = _wpi_selectbitmap( srcpres, xor_hbitmap );
+    olddst_hbitmap = _wpi_selectbitmap( dstpres, new_hbitmap );
 
-    _wpi_bitblt( destpres, 0, 0, width, height, srcpres, 0, 0, SRCCOPY );
-    _wpi_selectbitmap( srcpres, oldsrc );
-    oldsrc = _wpi_selectbitmap( srcpres, andbitmap );
+    _wpi_bitblt( dstpres, 0, 0, width, height, srcpres, 0, 0, SRCCOPY );
+    _wpi_selectbitmap( srcpres, oldsrc_hbitmap );
+    oldsrc_hbitmap = _wpi_selectbitmap( srcpres, and_hbitmap );
 
-    _wpi_bitblt( destpres, 0, 0, width, height, srcpres, 0, 0, SRCAND );
-    _wpi_selectbitmap( srcpres, oldsrc );
-    _wpi_selectbitmap( destpres, olddest );
+    _wpi_bitblt( dstpres, 0, 0, width, height, srcpres, 0, 0, SRCAND );
+    _wpi_selectbitmap( srcpres, oldsrc_hbitmap );
+    _wpi_selectbitmap( dstpres, olddst_hbitmap );
 
     _wpi_deletecompatiblepres( srcpres, srcdc );
-    _wpi_deletecompatiblepres( destpres, destdc );
+    _wpi_deletecompatiblepres( dstpres, dstdc );
 
-    return( new_bitmap );
+    return( new_hbitmap );
 } /* CreateInverseBitmap */
 
 /*
@@ -92,22 +93,22 @@ HBITMAP CreateInverseBitmap( HBITMAP andbitmap, HBITMAP xorbitmap )
  *                      than the xor mask that i store since it has 0's
  *                      anywhere where the AND bitmap has 1's.
  */
-HBITMAP CreateColourBitmap( HBITMAP andbitmap, HBITMAP xorbitmap )
+HBITMAP CreateColourBitmap( WPI_HBITMAP and_hbitmap, WPI_HBITMAP xor_hbitmap )
 {
     WPI_PRES    pres;
     WPI_PRES    srcpres;
     HDC         srcdc;
-    WPI_PRES    destpres;
-    HDC         destdc;
-    HBITMAP     new_bitmap;
+    WPI_PRES    dstpres;
+    HDC         dstdc;
+    WPI_HBITMAP new_hbitmap;
     IMAGEBUNDLE p;
     int         width;
     int         height;
     int         planes;
     int         bitspixel;
     int         notused;
-    HBITMAP     oldsrc;
-    HBITMAP     olddest;
+    WPI_HBITMAP oldsrc_hbitmap;
+    WPI_HBITMAP olddst_hbitmap;
 
 #if __OS2_PM__
     notused = 0;
@@ -115,32 +116,32 @@ HBITMAP CreateColourBitmap( HBITMAP andbitmap, HBITMAP xorbitmap )
 
     pres = _wpi_getpres( HWND_DESKTOP );
     srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );
-    destpres = _wpi_createcompatiblepres( pres, Instance, &destdc );
+    dstpres = _wpi_createcompatiblepres( pres, Instance, &dstdc );
     _wpi_releasepres( HWND_DESKTOP, pres );
     _wpi_torgbmode( srcpres );
-    _wpi_torgbmode( destpres );
+    _wpi_torgbmode( dstpres );
 
     p.lBackColor = RGB_WHITE;
     p.lColor = RGB_BLACK;
-    GpiSetAttrs(destpres, PRIM_IMAGE, IBB_COLOR | IBB_BACK_COLOR, 0, &p);
+    GpiSetAttrs(dstpres, PRIM_IMAGE, IBB_COLOR | IBB_BACK_COLOR, 0, &p);
 
-    _wpi_getbitmapparms(xorbitmap, &width, &height, &planes, NULL, &bitspixel);
-    new_bitmap = _wpi_createbitmap( width, height, planes, bitspixel, NULL );
-    oldsrc = _wpi_selectbitmap( srcpres, andbitmap );
-    olddest = _wpi_selectbitmap( destpres, new_bitmap );
+    _wpi_getbitmapparms( xor_hbitmap, &width, &height, &planes, NULL, &bitspixel);
+    new_hbitmap = _wpi_createbitmap( width, height, planes, bitspixel, NULL );
+    oldsrc_hbitmap = _wpi_selectbitmap( srcpres, and_hbitmap );
+    olddst_hbitmap = _wpi_selectbitmap( dstpres, new_hbitmap );
 
-    _wpi_bitblt( destpres, 0, 0, width, height, srcpres, 0, 0, SRCCOPY );
-    _wpi_selectbitmap( srcpres, oldsrc );
-    oldsrc = _wpi_selectbitmap( srcpres, xorbitmap );
+    _wpi_bitblt( dstpres, 0, 0, width, height, srcpres, 0, 0, SRCCOPY );
+    _wpi_selectbitmap( srcpres, oldsrc_hbitmap );
+    oldsrc_hbitmap = _wpi_selectbitmap( srcpres, xor_hbitmap );
 
-    _wpi_bitblt( destpres, 0, 0, width, height, srcpres, 0, 0, SRCAND );
-    _wpi_selectbitmap( srcpres, oldsrc );
-    _wpi_selectbitmap( destpres, olddest );
+    _wpi_bitblt( dstpres, 0, 0, width, height, srcpres, 0, 0, SRCAND );
+    _wpi_selectbitmap( srcpres, oldsrc_hbitmap );
+    _wpi_selectbitmap( dstpres, olddst_hbitmap );
 
     _wpi_deletecompatiblepres( srcpres, srcdc );
-    _wpi_deletecompatiblepres( destpres, destdc );
+    _wpi_deletecompatiblepres( dstpres, dstdc );
 
-    return( new_bitmap );
+    return( new_hbitmap );
 } /* CreateColourBitmap */
 
 /*
@@ -151,7 +152,7 @@ void InitXorAndBitmaps( img_node *node )
     WPI_PRES            pres;
     WPI_PRES            mempres;
     HDC                 hdc;
-    HBITMAP             oldbitmap;
+    WPI_HBITMAP         old_hbitmap;
     BITMAPINFOHEADER2   bmih;
 
     memset( &bmih, 0, sizeof(BITMAPINFOHEADER2) );
@@ -162,37 +163,22 @@ void InitXorAndBitmaps( img_node *node )
     bmih.cBitCount = (USHORT)node->bitcount;
 
     pres = _wpi_getpres( HWND_DESKTOP );
-    node->hxorbitmap = _wpi_createbitmap( node->width, node->height, 1,
-                                        node->bitcount, NULL );
+    node->xor_hbitmap = _wpi_createbitmap( node->width, node->height, 1, node->bitcount, NULL );
     mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
 
     _wpi_torgbmode( mempres );
 
-    oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, node->xor_hbitmap );
     _wpi_patblt( mempres, 0, 0, node->width, node->height, WHITENESS );
-    _wpi_selectbitmap( mempres, oldbitmap );
+    _wpi_selectbitmap( mempres, old_hbitmap );
 
     bmih.cBitCount = (USHORT)1;
-    node->handbitmap = _wpi_createbitmap( node->width, node->height, 1, 1, NULL );
+    node->and_hbitmap = _wpi_createbitmap( node->width, node->height, 1, 1, NULL );
     _wpi_releasepres( HWND_DESKTOP, pres );
 
-    oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, node->and_hbitmap );
     _wpi_patblt( mempres, 0, 0, node->width, node->height, BLACKNESS );
-    _wpi_selectbitmap( mempres, oldbitmap );
+    _wpi_selectbitmap( mempres, old_hbitmap );
 
     _wpi_deletecompatiblepres( mempres, hdc );
 } /* InitXorAndBitmaps */
-
-/*
- * MakeWPIBitmap - Converts an HBITMAP to a WPI_HANDLE
- */
-WPI_HANDLE MakeWPIBitmap( HBITMAP hbitmap )
-{
-    WPI_OBJECT      *obj;
-
-    obj = MemAlloc( sizeof(WPI_OBJECT) );
-    obj->type = WPI_BITMAP_OBJ;
-    obj->bitmap = hbitmap;
-
-    return( (WPI_HANDLE)obj );
-} /* MakeWPIBitmap */

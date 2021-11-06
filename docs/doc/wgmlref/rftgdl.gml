@@ -1,10 +1,10 @@
 :H2.DL
 :XMP.
-Format&gml. &gml.DL \(compact\)
-            \(break\)
-            \(headhi=head-highlight\)
-            \(termhi=term-highlight\)
-            \(tsize='hor-space-unit'\).
+Format&gml. &gml.DL [compact]
+            [break]
+            [headhi=head-highlight]
+            [termhi=term-highlight]
+            [tsize='hor-space-unit'].
 :eXMP.
 :I1.definition list
 :I2 refid='gtdl' pg=major.gtdl

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +36,7 @@
 //
 
 #include "ftnstd.h"
-#include <string.h>
-#include <stdio.h>
 #include "global.h"
-#include "omodes.h"
 #include "inout.h"
 #include "iopath.h"
 #include "mkname.h"
@@ -57,8 +54,8 @@ static  file_handle FindSrcFile( char *fname ) {
 
     file_handle  fp;
 
-    MakeName( fname, SDSrcExtn( fname ), fname );
-    fp = SDOpen( fname, READ_FILE );
+    MakeName( fname, SDSplitSrcExtn( fname ), fname );
+    fp = SDOpenText( fname, "rt" );
     if( fp != NULL ) {
         SrcInclude( fname );
     }
@@ -75,14 +72,14 @@ static file_handle doSearchPath( char *path_list, const char *name )
     char        c;
 
     fp = NULL;
-    while( (c = *path_list) != '\0' ) {
+    while( (c = *path_list) != NULLCHAR ) {
         p = buff;
         do {
             ++path_list;
             if( IS_PATH_LIST_SEP( c ) )
                 break;
             *p++ = c;
-        } while( (c = *path_list) != '\0' );
+        } while( (c = *path_list) != NULLCHAR );
         c = p[-1];
         if( !IS_PATH_SEP( c ) ) {
             *p++ = DIR_SEP;
@@ -110,39 +107,4 @@ file_handle IncSearch( const char *name )
         fp = doSearchPath( FIncludePath, name );
     }
     return( fp );
-}
-
-
-int     LibRead( file_handle fp ) {
-//================================
-
-// Read a record from a library member (source only).
-
-    return( SDRead( fp, SrcBuff, SRCLEN ) );
-}
-
-
-bool    LibEof( file_handle fp )
-//===============================
-// Check for EOF on library read (source only).
-{
-    return( SDEof( fp ) );
-}
-
-
-bool    LibError( file_handle fp, char *buff ) {
-//=============================================
-
-// Check for error on library read (source only).
-
-    return( SDError( fp, buff ) );
-}
-
-
-void    IncMemClose( file_handle fp ) {
-//====================================
-
-// Close a library member that was included (source only).
-
-    SDClose( fp );
 }

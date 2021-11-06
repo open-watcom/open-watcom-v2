@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ static gui_ord Width = 0;
 #define NUM_TEXT 5
 
 static char Text[][NUM_TEXT] = { {"0%"}, {"25%"}, {"50%"}, {"75%"}, {"100%"} };
-static int Strlen[NUM_TEXT] = { 2, 3, 3, 3, 4 };
+static gui_ord Strlen[NUM_TEXT] = { 2, 3, 3, 3, 4 };
 
 static GUICALLBACK GetNewGUIEventProc;
 static GUICALLBACK StatusGUIEventProc;
@@ -82,25 +82,25 @@ static gui_create_info DialogWnd = {
     GUI_NO_MENU,                    // Menu array
     GUI_NO_COLOUR,                  // Colour attribute array
     &GetNewGUIEventProc,            // GUI Event Callback function
-    NULL,
-    NULL,
+    NULL,                           // Extra
+    NULL,                           // Icon
     NULL                            // Menu Resource
 };
 
 static gui_rect Rect;
-static int Row;
+static gui_text_ord Row;
 static int NumEnters = 0;
 
 static gui_colour_set StatusColours[GUI_NUM_ATTRS + 1] = {
-    /* Fore              Back        */
-    GUI_BLUE,          GUI_WHITE,   /* GUI_MENU_PLAIN     */
-    GUI_BLUE,          GUI_WHITE,   /* GUI_MENU_STANDOUT  */
-    GUI_BLUE,          GUI_WHITE,   /* GUI_BACKGROUND     */
-    GUI_BLUE,          GUI_WHITE,   /* GUI_TITLE_ACTIVE   */
-    GUI_GREY,          GUI_WHITE,   /* GUI_TITLE_INACTIVE */
-    GUI_BLUE,          GUI_WHITE,   /* GUI_FRAME_ACTIVE   */
-    GUI_GREY,          GUI_WHITE,   /* GUI_FRAME_INACTIVE */
-    GUI_BRIGHT_WHITE,  GUI_MAGENTA  /* GUI_FIRST_UNUSED   */
+    /* Fore          Back        */
+    GUI_BLUE,      GUI_WHITE,   /* GUI_MENU_PLAIN     */
+    GUI_BLUE,      GUI_WHITE,   /* GUI_MENU_STANDOUT  */
+    GUI_BLUE,      GUI_WHITE,   /* GUI_BACKGROUND     */
+    GUI_BLUE,      GUI_WHITE,   /* GUI_TITLE_ACTIVE   */
+    GUI_GREY,      GUI_WHITE,   /* GUI_TITLE_INACTIVE */
+    GUI_BLUE,      GUI_WHITE,   /* GUI_FRAME_ACTIVE   */
+    GUI_GREY,      GUI_WHITE,   /* GUI_FRAME_INACTIVE */
+    GUI_BR_WHITE,  GUI_MAGENTA  /* GUI_FIRST_UNUSED   */
 };
 
 static gui_create_info StatusWnd = {
@@ -112,14 +112,14 @@ static gui_create_info StatusWnd = {
     GUI_NO_MENU,                            // Menu array
     { GUI_NUM_ATTRS + 1, StatusColours },   // Colour attribute array
     &StatusGUIEventProc,                    // GUI Event Callback function
-    NULL,
-    NULL,
+    NULL,                                   // Extra
+    NULL,                                   // Icon
     NULL                                    // Menu Resource
 };
 
 static gui_colour_set Colours[GUI_NUM_INIT_COLOURS] = {
-    { GUI_BRIGHT_WHITE, GUI_BLUE },
-    { GUI_BRIGHT_WHITE, GUI_BLUE }
+    { GUI_BR_WHITE, GUI_BLUE },
+    { GUI_BR_WHITE, GUI_BLUE }
 };
 
 static char * text = NULL;
@@ -131,35 +131,35 @@ static gui_window * Status = NULL;
  * GetNewGUIEventProc - call back routine for the GetNewVal dialog
  */
 
-static bool GetNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GetNewGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
 
     switch( gui_ev ) {
-    case GUI_INIT_DIALOG :
+    case GUI_INIT_DIALOG:
         ret_val = GUI_RET_CANCEL;
         return( true );
-    case GUI_DESTROY :
+    case GUI_DESTROY:
         if( Status != NULL ) {
             GUIDestroyWnd( Status );
         }
         return( true );
-    case GUI_CLICKED :
+    case GUI_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_CANCEL:
-            GUICloseDialog( gui );
+            GUICloseDialog( wnd );
             ret_val = GUI_RET_CANCEL;
             break;
         case CTL_OK:
-            text = GUIGetText( gui, CTL_EDIT );
+            text = GUIGetText( wnd, CTL_EDIT );
             if( Status == NULL ) {
                 Status = GUICreateWindow( &StatusWnd );
             } else {
-                NumEnters ++;
+                NumEnters++;
                 Rect.width = ( NumEnters * Width ) / 4;
                 if( NumEnters > 4 ) {
-                    GUICloseDialog( gui );
+                    GUICloseDialog( wnd );
                 } else {
                     GUIWndDirty( Status );
                 }
@@ -176,19 +176,19 @@ static bool GetNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
  * StatusGUIEventProc - call back routine for the status window
  */
 
-static bool StatusGUIEventProc( gui_window * gui, gui_event gui_ev, void * param )
+static bool StatusGUIEventProc( gui_window * wnd, gui_event gui_ev, void * param )
 {
     int              i;
-    int              pos;
+    gui_ord          pos;
     gui_text_metrics metrics;
 
     param = param;
 
     switch( gui_ev ) {
-    case GUI_INIT_WINDOW :
-        Row = GUIGetNumRows( gui ) / 2;
-        GUIGetTextMetrics( gui, &metrics );
-        GUIGetClientRect( gui, &Rect );
+    case GUI_INIT_WINDOW:
+        Row = GUIGetNumRows( wnd ) / 2;
+        GUIGetTextMetrics( wnd, &metrics );
+        GUIGetClientRect( wnd, &Rect );
 #if 1
         Rect.x = 1;
         Rect.y = 1;
@@ -204,19 +204,19 @@ static bool StatusGUIEventProc( gui_window * gui, gui_event gui_ev, void * param
             Strlen[i] *= metrics.max.x;
         }
         return( true );
-    case GUI_DESTROY :
+    case GUI_DESTROY:
         return( true );
-    case GUI_PAINT :
-        GUIDrawRect( gui, &Rect, GUI_FIRST_UNUSED );
+    case GUI_PAINT:
+        GUIDrawRect( wnd, &Rect, GUI_FIRST_UNUSED );
         for( i = 0; i < NUM_TEXT; i++ ) {
             pos = ( i * Width / 4 ) - Strlen[i] + Rect.x;
-            if( pos < (int)Rect.x ) {
+            if( pos < Rect.x ) {
                 pos = Rect.x;
             }
             if( ( i > NumEnters ) || ( i == 0 ) && ( NumEnters == 0 ) ) {
-                GUIDrawText( gui, &Text[i], Strlen[i], Row, pos, GUI_TITLE_ACTIVE );
+                GUIDrawText( wnd, &Text[i], Strlen[i], Row, pos, GUI_TITLE_ACTIVE );
             } else {
-                GUIDrawText( gui, &Text[i], Strlen[i], Row, pos, GUI_FIRST_UNUSED );
+                GUIDrawText( wnd, &Text[i], Strlen[i], Row, pos, GUI_FIRST_UNUSED );
             }
         }
         return( true );
@@ -224,7 +224,7 @@ static bool StatusGUIEventProc( gui_window * gui, gui_event gui_ev, void * param
     return( false );
 }
 
-void GUImain( void )
+void GUIAPI GUImain( void )
 {
     GUIWndInit( 250 /* ms */, GUI_GMOUSE );
     GUISetScale( &Scale );

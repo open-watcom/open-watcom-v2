@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ int main( int argc, char *argv[] )
         in = fopen( argv[ idx ], "r" );
         if( in == NULL ) {
             printf( "Unable to open '%s'\n", argv[ idx ] );
-            exit( 1 );
+            exit( EXIT_FAILURE );
         }
         for( ; fgets( buf, sizeof( buf ), in ) != NULL; ) {
             count++;
@@ -69,7 +69,7 @@ int main( int argc, char *argv[] )
     Words = malloc( (count+1) * sizeof( sword ) );
     if( Words == NULL ) {
         printf( "Unable to allocate Words array\n" );
-        exit( 1 );
+        exit( EXIT_FAILURE );
     }
     Words[ count ].word = NULL;
     index = 0;
@@ -77,7 +77,7 @@ int main( int argc, char *argv[] )
         in = fopen( argv[ idx ], "r" );
         if( in == NULL ) {
             printf( "Unable to open '%s'\n", argv[ idx ] );
-            exit( 1 );
+            exit( EXIT_FAILURE );
         }
         for( ; fgets( buf, sizeof( buf ), in ) != NULL; ) {
             for( i = 0; buf[ i ] && !isspace( buf[ i ] ); i++ )
@@ -86,7 +86,7 @@ int main( int argc, char *argv[] )
             Words[ index ].word = strdup( buf );
             if( Words[ index ].word == NULL ) {
                 printf( "Out of memory\n" );
-                exit( 1 );
+                exit( EXIT_FAILURE );
             }
             ++index;
         }
@@ -97,7 +97,7 @@ int main( int argc, char *argv[] )
     out = fopen( out_name, "w" );
     if( out == NULL ) {
         printf( "Unable to open '%s'\n", out_name );
-        exit( 1 );
+        exit( EXIT_FAILURE );
     }
     fprintf( out, "typedef enum asm_token {\n" );
     max_len = 0;
@@ -118,5 +118,5 @@ int main( int argc, char *argv[] )
     fprintf( out, "\n" );
     fprintf( out, "#define MAX_KEYWORD_LEN %u\n", (unsigned)max_len );
     fclose( out );
-    return( 0 );
+    return( EXIT_SUCCESS );
 }

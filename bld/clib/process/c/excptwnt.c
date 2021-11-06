@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,7 @@
 #include "thread.h"
 #include "_xtoa.h"
 #include "rtexcpt.h"
+#include "rtexcpfl.h"
 
 
 LONG WINAPI __ReportException( EXCEPTION_POINTERS *rec );
@@ -64,7 +65,8 @@ unsigned char   __ReportInvoked;
 __EXCEPTION_RECORD  *__XCPTHANDLER;
 #endif
 
-static int _my_GetActiveWindow( void ) {
+static int _my_GetActiveWindow( void )
+{
     HANDLE hdl;
     typedef HWND (__stdcall *gaw_type)( void );
     gaw_type gaw;
@@ -327,7 +329,7 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
                                LPVOID dispatch_context )
 {
     int          sig;
-    int          fpe;
+    int          fpe_type;
 #if defined( _M_IX86 )
     char        *eip;
     status_word  fp_sw;
@@ -351,9 +353,9 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
 #if defined( _M_IX86 )
     case STATUS_FLOAT_STACK_CHECK:
         if( context->FloatSave.StatusWord & SW_C1 ) {
-            fpe = FPE_STACKOVERFLOW;
+            fpe_type = FPE_STACKOVERFLOW;
         } else {
-            fpe = FPE_STACKUNDERFLOW;
+            fpe_type = FPE_STACKUNDERFLOW;
         }
         break;
 #elif defined( __AXP__ )
@@ -365,37 +367,37 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
 #endif
 
     case STATUS_FLOAT_DENORMAL_OPERAND:
-        fpe = FPE_DENORMAL;
+        fpe_type = FPE_DENORMAL;
         break;
     case STATUS_FLOAT_DIVIDE_BY_ZERO:
-        fpe = FPE_ZERODIVIDE;
+        fpe_type = FPE_ZERODIVIDE;
         break;
     case STATUS_FLOAT_INEXACT_RESULT:
-        fpe = FPE_INEXACT;
+        fpe_type = FPE_INEXACT;
         break;
     case STATUS_FLOAT_OVERFLOW:
-        fpe = FPE_OVERFLOW;
+        fpe_type = FPE_OVERFLOW;
         break;
     case STATUS_FLOAT_UNDERFLOW:
-        fpe = FPE_UNDERFLOW;
+        fpe_type = FPE_UNDERFLOW;
         break;
     case STATUS_FLOAT_INVALID_OPERATION:
-        fpe = FPE_INVALID;
+        fpe_type = FPE_INVALID;
 #if defined( _M_IX86 )
         eip = (char *)context->FloatSave.ErrorOffset;
 
         if( *(unsigned short *)eip == 0xfad9 ) {        // caused by "fsqrt"
-            fpe = FPE_SQRTNEG;
+            fpe_type = FPE_SQRTNEG;
         } else if( *(unsigned short *)eip == 0xf1d9 ) { // caused by "fyl2x"
-            fpe = FPE_LOGERR;
+            fpe_type = FPE_LOGERR;
         } else if( *(unsigned short *)eip == 0xf8d9 ) { // caused by "fprem"
-            fpe = FPE_MODERR;
+            fpe_type = FPE_MODERR;
         } else if( *(unsigned short *)eip == 0xf5d9 ) { // caused by "fprem1"
-            fpe = FPE_MODERR;
+            fpe_type = FPE_MODERR;
         } else {
             if(( eip[0] == (char)0xdb ) || ( eip[0] == (char)0xdf )) {
                 if(( eip[1] & 0x30 ) == 0x10 ) {        // caused by "fist(p)"
-                    fpe = FPE_IOVERFLOW;
+                    fpe_type = FPE_IOVERFLOW;
                 }
             }
             if( !( eip[0] & 0x01 ) ) {
@@ -404,7 +406,7 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
                     fp_sw.sw = context->FloatSave.StatusWord & 0x0000ffff;
 
                     if((( fp_tw >> (fp_sw.b.st << 1) ) & 0x01 ) == 0x01 ) {
-                        fpe = FPE_ZERODIVIDE;
+                        fpe_type = FPE_ZERODIVIDE;
                     }
                 }
             }
@@ -412,19 +414,19 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
 #endif
         break;
     default:
-        fpe = -1;
+        fpe_type = -1;
         break;
     }
 
     /*
-     * If fpe != -1 then we have an identified floating point exception.
+     * If fpe_type != -1 then we have an identified floating point exception.
      * If there is a handler, invoke it.
      */
-    if( fpe != -1 ) {
+    if( fpe_type != -1 ) {
         __ExceptionHandled = 1;
         _ClearFPE();
 
-        if( __sigfpe_handler( fpe ) != -1 ) {
+        if( __sigfpe_handler( fpe_type ) != -1 ) {
             if( __ExceptionHandled ) {
 #if defined( _M_IX86 )
                 context->FloatSave.StatusWord &=
@@ -440,7 +442,7 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
                 return( ExceptionContinueExecution );
             }
         }
-    } else if( __raise_func ) {
+    } else if( __raise_func != NULL ) {
         /*
          * If the signal handling code is linked in then we need to see if the
          * user has installed a signal handler.

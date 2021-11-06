@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,27 +45,30 @@ extern  HMENU           GUIHFloatingPopup;
 static  gui_ctl_id      CurrId = 0;
 static  bool            InitComplete = false;
 
-bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
+bool GUIAPI GUITrackFloatingPopup( gui_window *wnd, const gui_point *location,
                             gui_mouse_track track, gui_ctl_id *curr_id )
 {
-    WPI_POINT   pt;
+    WPI_POINT   wpi_point;
     ULONG       flags;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
     HMENU       hpopup;
+    guix_ord    scr_x;
+    guix_ord    scr_y;
 
     if( ( hpopup = GUIHFloatingPopup ) == NULLHANDLE ) {
         return( false );
     }
 
-    GUIScaleToScreenRPt( location );
+    scr_x = GUIScaleToScreenH( location->x );
+    scr_y = GUIScaleToScreenV( location->y );
     _wpi_getrectvalues( wnd->hwnd_client_rect, &left, &top, &right, &bottom );
-    location->x += left;
-    location->y += top;
+    scr_x += left;
+    scr_y += top;
     if( GUI_DO_HSCROLL( wnd ) ) {
-        location->x -= GUIGetScrollPos( wnd, SB_HORZ );
+        scr_x -= GUIGetScrollPos( wnd, SB_HORZ );
     }
     if( GUI_DO_VSCROLL( wnd ) ) {
-        location->y -= GUIGetScrollPos( wnd, SB_VERT );
+        scr_y -= GUIGetScrollPos( wnd, SB_VERT );
     }
 
     CurrId = 0;
@@ -72,12 +76,12 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
         CurrId = *curr_id;
     }
 
-    location->y = _wpi_cvth_y( location->y, (bottom - top) );
+    scr_y = _wpi_cvth_y( scr_y, (bottom - top) );
 
-    pt.x = location->x;
-    pt.y = location->y;
+    wpi_point.x = scr_x;
+    wpi_point.y = scr_y;
 
-    _wpi_mapwindowpoints( wnd->hwnd, HWND_DESKTOP, &pt, 1 );
+    _wpi_mapwindowpoints( wnd->hwnd, HWND_DESKTOP, &wpi_point, 1 );
 
     flags = TPM_LEFTALIGN;
     if( track & GUI_TRACK_LEFT ) {
@@ -90,7 +94,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
 
     GUIFlushKeys();
 
-    _wpi_trackpopupmenu( hpopup, flags, pt.x, pt.y, wnd->hwnd_frame );
+    _wpi_trackpopupmenu( hpopup, flags, wpi_point.x, wpi_point.y, wnd->hwnd_frame );
 
     _wpi_destroymenu( hpopup );
 
@@ -100,6 +104,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
         *curr_id = CurrId;
     }
     CurrId = 0;
+
     GUIDeleteFloatingPopups( wnd );
     return( true );
 }
@@ -108,7 +113,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
  * GUIXCreateFloatingPopup -- create a floating popup menu
  */
 
-bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
+bool GUIXCreateFloatingPopup( gui_window *wnd, const gui_point *location,
                              const gui_menu_items *menus,
                              gui_mouse_track track, gui_ctl_id *curr_id )
 {

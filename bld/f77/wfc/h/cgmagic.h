@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +31,5 @@
 
 
 extern label_id     NextLabel( void );
-extern sym_id       TmpVar( TYPE typ, uint size );
-extern sym_id       StaticAlloc( uint size, TYPE typ );
+extern sym_id       TmpVar( TYPE typ, size_t size );
+extern sym_id       StaticAlloc( size_t size, TYPE typ );

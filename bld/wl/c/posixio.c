@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -272,11 +272,11 @@ long QLSeek( f_handle file, long position, int start, const char *name )
 /**********************************************************************/
 /* do a seek from a particular point */
 {
-    long int    h;
+    long    h;
 
     CheckBreak();
     h = lseek( file, position, start );
-    if( h == -1 && name != NULL ) {
+    if( h == -1L && name != NULL ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     }
     return( h );
@@ -394,7 +394,7 @@ bool QModTime( const char *name, time_t *time )
 
     result = stat( name, &buf );
     *time = buf.st_mtime;
-    return result != 0;
+    return( result != 0 );
 }
 
 time_t QFModTime( int handle )
@@ -403,7 +403,7 @@ time_t QFModTime( int handle )
     struct stat buf;
 
     fstat( handle, &buf );
-    return buf.st_mtime;
+    return( buf.st_mtime );
 }
 
 int WaitForKey( void )

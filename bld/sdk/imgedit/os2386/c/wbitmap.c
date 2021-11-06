@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,7 +149,7 @@ static HBITMAP readBitmap(HWND hwnd, FILE *fp, ULONG off_bits, ULONG offset,
                                 bool is_bmp2, BITMAPINFOHEADER2 *bmih2 )
 {
     ULONG               size;
-    HBITMAP             hbitmap;
+    HBITMAP             real_hbitmap;
     BYTE                *bits;
     HPS                 hps;
     BITMAPINFO2         *info;
@@ -157,10 +157,11 @@ static HBITMAP readBitmap(HWND hwnd, FILE *fp, ULONG off_bits, ULONG offset,
     HPAL                oldpalette;
     ULONG               num;
 
-    hbitmap = (HBITMAP)0;
+    real_hbitmap = (HBITMAP)0;
 
     info = readBitmapInfo( fp, bmih2, is_bmp2, offset );
-    if (!info) return(hbitmap);
+    if( !info )
+        return( real_hbitmap );
 
     size = BITS_TO_BYTES( info->cx * info->cBitCount, info->cy );
     fseek( fp, off_bits, SEEK_SET );
@@ -173,7 +174,7 @@ static HBITMAP readBitmap(HWND hwnd, FILE *fp, ULONG off_bits, ULONG offset,
             GpiCreateLogColorTable(hps, 0, LCOLF_RGB, 0, 0, NULL);
             oldpalette = GpiSelectPalette( hps, newpalette );
             WinRealizePalette( hwnd, hps, &num );
-            hbitmap = GpiCreateBitmap( hps, bmih2, CBM_INIT, bits, info );
+            real_hbitmap = GpiCreateBitmap( hps, bmih2, CBM_INIT, bits, info );
             GpiSelectPalette( hps, oldpalette );
             WinReleasePS( hps );
             GpiDeletePalette( newpalette );
@@ -181,7 +182,7 @@ static HBITMAP readBitmap(HWND hwnd, FILE *fp, ULONG off_bits, ULONG offset,
         MemFree( bits );
     }
     MemFree( info );
-    return( hbitmap );
+    return( real_hbitmap );
 } /* readBitmap */
 
 /*
@@ -260,15 +261,16 @@ static BITMAPFILEHEADER2 *readFileHeader( FILE *fp, ULONG offset, bool *is_bmp2 
 HBITMAP ReadPMBitmapFile( HWND hwnd, char *fname, BITMAPINFOHEADER2 *info )
 {
     FILE                *fp;
-    HBITMAP             hbitmap;
+    HBITMAP             real_hbitmap;
     BITMAPFILEHEADER2   *file_header2;
     bool                is_bmp2;
     USHORT              filetype;
     ULONG               offset;
 
-    hbitmap = (HBITMAP)0;
+    real_hbitmap = (HBITMAP)0;
     fp = fopen( fname, "rb" );
-    if( fp == NULL ) return( hbitmap );
+    if( fp == NULL )
+        return( real_hbitmap );
 
     fread( &filetype, sizeof(USHORT), 1, fp );
     switch( filetype ) {
@@ -279,7 +281,7 @@ HBITMAP ReadPMBitmapFile( HWND hwnd, char *fname, BITMAPINFOHEADER2 *info )
         } else {
             offset = sizeof( BITMAPFILEHEADER );
         }
-        hbitmap = readBitmap( hwnd, fp, file_header2->offBits, offset,
+        real_hbitmap = readBitmap( hwnd, fp, file_header2->offBits, offset,
                                         is_bmp2, &(file_header2->bmp2) );
         break;
 
@@ -294,18 +296,18 @@ HBITMAP ReadPMBitmapFile( HWND hwnd, char *fname, BITMAPINFOHEADER2 *info )
         } else {
             offset = sizeof( BITMAPARRAYFILEHEADER );
         }
-        hbitmap = readBitmap( hwnd, fp, file_header2->offBits, offset,
+        real_hbitmap = readBitmap( hwnd, fp, file_header2->offBits, offset,
                                         is_bmp2, &(file_header2->bmp2) );
         break;
 
     default:
         fclose( fp );
-        return( hbitmap );
+        return( real_hbitmap );
     }
 
     memcpy( info, &(file_header2->bmp2), sizeof(BITMAPINFOHEADER2) );
 
     fclose( fp );
     MemFree( file_header2 );
-    return( hbitmap );
+    return( real_hbitmap );
 } /* ReadPMBitmapFile */

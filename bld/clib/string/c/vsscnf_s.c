@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ static void uncget_string( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 }
 
 
-_WCRTLINK int __F_NAME(vsscanf_s,vswscanf_s)( const CHAR_TYPE *s, const CHAR_TYPE *format, va_list arg )
+_WCRTLINK int __F_NAME(vsscanf_s,vswscanf_s)( const CHAR_TYPE *s, const CHAR_TYPE *format, va_list args )
 {
     SCNF_SPECS      specs;
     const char      *msg;
@@ -75,7 +75,7 @@ _WCRTLINK int __F_NAME(vsscanf_s,vswscanf_s)( const CHAR_TYPE *s, const CHAR_TYP
         specs.cget_rtn   = cget_string;
         specs.uncget_rtn = uncget_string;
         msg = NULL;
-        rc = __F_NAME(__scnf_s,__wscnf_s)( (PTR_SCNF_SPECS)&specs, format, &msg, arg );
+        rc = __F_NAME(__scnf_s,__wscnf_s)( (PTR_SCNF_SPECS)&specs, format, &msg, args );
         if( msg == NULL ) {
             /* no rt-constraint violation inside worker routine */
             return( rc );

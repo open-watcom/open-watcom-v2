@@ -22,10 +22,11 @@ set PROJDIR=<CWD>
     <CCCMD> wini86/emu87.lib     <OWRELROOT>/lib286/win/
     <CCCMD> os2i86/emu87.lib     <OWRELROOT>/lib286/os2/
 
-# QNX emulator setup programs
-    <CCCMD> qnxi86/emu86         <OWRELROOT>/qnx/binq/emu86
-    <CCCMD> qnxi86/emu86_16      <OWRELROOT>/qnx/binq/emu86_16
-    <CCCMD> qnxi86/emu86_32      <OWRELROOT>/qnx/binq/emu86_32
+# QNX emulators setup program
+    <CCCMD> qnxi86/emu87         <OWRELROOT>/qnx/binq/emu86
+# QNX 8087 emulators
+    <CCCMD> qnxi86/emu87_16      <OWRELROOT>/qnx/binq/emu86_16
+    <CCCMD> qnxi86/emu87_32      <OWRELROOT>/qnx/binq/emu86_32
 
 [ BLOCK . . ]
 

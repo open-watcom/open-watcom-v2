@@ -9,7 +9,7 @@ is the name, enclosed in slashes, of a group of variables.
 It may not be the same as a variable or array name.
 .mnote vlist
 is a list of variable names and array names separated by commas.
-.endnote
+.esynote
 .np
 The
 .kw NAMELIST

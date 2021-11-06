@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,6 @@
 #include "wdismsg.h"
 
 
-#ifdef __OSI__
- extern char    *_Copyright;
-#endif
-
 void  SysHelp()
 /*************/
 
@@ -52,12 +49,6 @@ void  SysHelp()
         banner3a "\n",
         stdout
     );
-    #ifdef __OSI__
-        if( _Copyright != NULL ) {
-            fputs( _Copyright, stdout );
-            fputs( "\n", stdout );
-        }
-    #endif
     MsgPutUsage();
     MsgFini();
     exit( 1 );
@@ -91,7 +82,7 @@ bool  IsData( segment *seg )
     }
     name_len = strlen( name );
     if( name_len == 4 ) {
-        if( memicmp( name, "CODE", 4 ) == 0 ) {
+        if( strnicmp( name, "CODE", 4 ) == 0 ) {
             return( false );
         }
     }
@@ -102,23 +93,23 @@ bool  IsData( segment *seg )
         return( false );
     }
     name_len = strlen( name );
-    if( memicmp( &name[ name_len - 4 ], "CODE", 4 ) == 0 ) {
+    if( strnicmp( &name[ name_len - 4 ], "CODE", 4 ) == 0 ) {
         return( false );
     }
-    if( memicmp( &name[ name_len - 4 ], "TEXT", 4 )  == 0 ) {
+    if( strnicmp( &name[ name_len - 4 ], "TEXT", 4 )  == 0 ) {
         return( false );
     }
     if( CodeName != NULL ) {            /* alternate code name supplied */
         code_len = strlen( CodeName );
-        if( memicmp( name, CodeName, name_len ) == 0 ) {      /* exact match */
+        if( strnicmp( name, CodeName, name_len ) == 0 ) {      /* exact match */
             return( false );
         }
         if( CodeName[ 0 ] == '*' ) {
-            if( memicmp( CodeName+1, &name[ name_len-(code_len-1) ], code_len - 1 ) == 0 ) {
+            if( strnicmp( CodeName+1, &name[ name_len-(code_len-1) ], code_len - 1 ) == 0 ) {
                 return( false );
             }
         } else if( CodeName[ code_len - 1 ] == '*' ) {
-            if( memicmp( CodeName, name, code_len - 1 ) == 0 ) {
+            if( strnicmp( CodeName, name, code_len - 1 ) == 0 ) {
                 return( false );
             }
         }

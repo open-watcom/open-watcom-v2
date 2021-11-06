@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,15 +59,15 @@ typedef struct {
     UINT16  dos_time;
     UINT16  dos_date;
     UINT8   name_len;
-} obj_comment;
+} omf_comment;
 #include "poppck.h"
 
 static bool verifyObjFile( FILE *fp )
 /***********************************/
 {
     struct {
-        obj_record  header;
-        obj_name    name;
+        omf_record  header;
+        omf_name    name;
     }   theadr;
 
     if( fseek( fp, 0, SEEK_SET ) < 0 ) {
@@ -111,8 +112,8 @@ STATIC handle OMFInitFile( const char *name )
 static bool getOMFCommentRecord( omf_info *info )
 /***********************************************/
 {
-    obj_record  header;
-    obj_comment comment;
+    omf_record  header;
+    omf_comment comment;
     FILE        *fp;
     size_t      len;
 

@@ -11,13 +11,13 @@
 .if &e'&startyear eq 0 .do begin
 :set symbol="startyear" value="1984".
 .do end
+.if &e'&vermacro eq 0 .do begin
+:set symbol="vermacro"  value="1300".
+.do end
+.if &e'&verrev eq 0 .do begin
+:set symbol="verrev"    value="2.0".
+.do end
 .*
-:set symbol="ver"       value="2".
-:set symbol="rev"       value="0".
-:set symbol="pver"      value="10".
-:set symbol="prev"      value="6".
-:set symbol="version"   value="200".
-:set symbol="vermacro"  value="2000".
 :set symbol="minram"    value="8 MB".
 :set symbol="mfc16"     value="MFC 2.52b".
 :set symbol="mfc32"     value="MFC 4.1".
@@ -31,10 +31,10 @@
 .if '&target' eq 'QNX' .do begin
 :set symbol="pathnam"   value="/usr".
 :set symbol="pathnamup" value="/usr".
-:set symbol="sw"         value="-".
-:set symbol="pc"         value="/".
-:set symbol="ps"         value=":".
-:set symbol="psword"     value="colon".
+:set symbol="sw"        value="-".
+:set symbol="pc"        value="/".
+:set symbol="ps"        value=":".
+:set symbol="psword"    value="colon".
 .do end
 .el .do begin
 :set symbol="pathnam"   value="\watcom".

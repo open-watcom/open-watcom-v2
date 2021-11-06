@@ -5,6 +5,5 @@
 !inject select.obj   rdu
 !inject sockioct.obj rdu
 !inject waitpid.obj  rdu
-!inject timeday.obj  rdu
 
 !include ../../../../objlist.mif

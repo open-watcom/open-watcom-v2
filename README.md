@@ -1,12 +1,21 @@
+[![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-CI?branchName=master&stageName=Last%20CI%20build) - CI Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=11&branchName=master)
+
+[![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Release?branchName=master&stageName=GitHub%20Release) - Release Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=14&branchName=master)
+
+[![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Coverity%20Scan?branchName=master) - Coverity Scan](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=16&branchName=master)
+
+[![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg)](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AWikiDocs)
+ 
+[![Mirror](https://github.com/open-watcom/open-watcom-v2/workflows/Mirror/badge.svg)](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AMirror)
 
 Open Watcom v2 Fork
 ===================
 
-Welcome to the Open Watom v2 Project! 
+Welcome to the Open Watcom v2 Project! 
 
 For more information about the project and build instructions see the GitHub wiki.
 
-Discuss the Project on Discord, Reddit, GitHub, SourceForge or News Groups.
+Discuss the Project on Discord, Reddit or GitHub.
 ----------------------------------------------------------------------------
 
 We now have an Official Discord server!
@@ -14,11 +23,9 @@ Join the discussion [`here`](https://discord.gg/5WexPNn)!
 
 Reddit Server, join the discussion [`Open Watcom on Reddit`](https://www.reddit.com/r/OpenWatcom/)
 
-SourceForge, join the discussion [`Open Watcom on SourceForge`](https://sourceforge.net/p/openwatcom/discussion/)
-
 GitHub, join the discussion [`Open Watcom on GitHub`](https://github.com/open-watcom/open-watcom-v2/issues)
 
-Open Watcom News Groups, join the discussion [`Open Watcom News Groups`](news.openwatcom.org)
+[`Oficial OpenWatcom site`](https://openwatcom.org) is down for long time, it looks like it is dead.
 
 Source Tree Layout
 ------------------
@@ -70,3 +77,11 @@ The directory layout is as follows:
         Note: the rel directory structure is created on the fly. The
         location of rel tree can be changed by `OWRELROOT` environment
         variable.
+
+OpenWatcom Installation
+-----------------------
+[Installer installation instruction](https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html#Installation) in Documentation (OW Wiki).
+
+OpenWatcom Building
+-------------------
+[Building instruction](https://github.com/open-watcom/open-watcom-v2/wiki/Build) in OW Wiki.

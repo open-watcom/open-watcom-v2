@@ -12,17 +12,16 @@ test_flags_i86 = -s -os -wx -we
 alt_error = 00
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 !include inline.mif
 
 .src: $(wasmtest_dir)/inline
 .asm: $(wasmtest_dir)/inline
 
-test : .symbolic start clean start_test $($(arch)_inline_objs) ./chk_exec.exe common_set_result
-    @%make clean
+test : .symbolic start start_test $($(arch)_inline_objs) ./chk_exec.exe
+    $(noecho)%make common_set_result
 
 start_test : .symbolic
-    @%make common_start_test
 !ifndef $(arch)_inline_objs
     @%append $(%ERROR_FILE) PASS decoding $(arch)
 !endif

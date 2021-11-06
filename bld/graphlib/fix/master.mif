@@ -11,32 +11,46 @@ clibdir = $(clib_dir)/library/msdos.386/ms_r/clib3r.lib
 !include cproj.mif
 !include deftarg.mif
 
-!ifeq host_os dos
-
-all: graph.lib graph2.lib
+graph_path = ../../$(objs_subdir)
+pgchart_path = ../../pgchart/$(objs_subdir)
 
 !ifeq host_cpu i86
 
-tmp.lib : ../../dosi86/graphi.lib ../../pgchart/dosi86/chart.lib ../../dosi86/dummy.obj ../../dosi86/fsmath.obj $(__MAKEFILES__)
-    @%write  tmp.lbc  +../../dosi86/graphi.lib
-    @%append tmp.lbc  +../../dosi86/dummy.obj
-    @%append tmp.lbc  +../../dosi86/fsmath.obj
-    @%append tmp.lbc  +../../pgchart/dosi86/chart.lib
+all: graph.lib graph2.lib
+
+!else ifeq host_os dos
+
+all: graph.lib graph2.lib
+
+!else ifeq host_os qnx
+
+all: graph3r.lib graph3s.lib graph23r.lib graph23s.lib
+
+!else
+!endif
+
+!ifeq host_cpu i86
+
+tmp.lib : $(graph_path)/graphi.lib $(pgchart_path)/chart.lib $(graph_path)/dummy.obj $(graph_path)/fsmath.obj $(__MAKEFILES__)
+    @%write  tmp.lbc  +$(graph_path)/graphi.lib
+    @%append tmp.lbc  +$(graph_path)/dummy.obj
+    @%append tmp.lbc  +$(graph_path)/fsmath.obj
+    @%append tmp.lbc  +$(pgchart_path)/chart.lib
     @%make echo_lib
     $(librarian) $(libflags) @tmp.lbc
 
-tmp2.lib : ../../dosi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../dosi86/dummy.obj ../../dosi86/fsmath.obj $(__MAKEFILES__)
-    @%write  tmp2.lbc  +../../dosi86/graphi2.lib
-    @%append tmp2.lbc  +../../dosi86/dummy.obj
-    @%append tmp2.lbc  +../../dosi86/fsmath.obj
-    @%append tmp2.lbc  +../../pgchart/dosi86/chart2.lib
+tmp2.lib : $(graph_path)/graphi2.lib $(pgchart_path)/chart2.lib $(graph_path)/dummy.obj $(graph_path)/fsmath.obj $(__MAKEFILES__)
+    @%write  tmp2.lbc  +$(graph_path)/graphi2.lib
+    @%append tmp2.lbc  +$(graph_path)/dummy.obj
+    @%append tmp2.lbc  +$(graph_path)/fsmath.obj
+    @%append tmp2.lbc  +$(pgchart_path)/chart2.lib
     @%make echo_lib
     $(librarian) $(libflags) @tmp2.lbc
 
 !else
 
-tmp.lib : ../../dos386s/graphi.lib ../../dos386r/graphi.lib ../../pgchart/dos386r/chart.lib ../../pgchart/dos386s/chart.lib ../../dos386r/dummy.obj ../../dos386r/fsmath.obj $(__MAKEFILES__)
-    @%write  tmp.lbc  +../../dos386s/graphi.lib
+tmp.lib : $(graph_path)s/graphi.lib $(graph_path)r/graphi.lib $(pgchart_path)r/chart.lib $(pgchart_path)s/chart.lib $(graph_path)r/dummy.obj $(graph_path)r/fsmath.obj $(__MAKEFILES__)
+    @%write  tmp.lbc  +$(graph_path)s/graphi.lib
     @%append tmp.lbc  -globals
     @%append tmp.lbc  -bit
     @%append tmp.lbc  -sqrtf
@@ -48,16 +62,16 @@ tmp.lib : ../../dos386s/graphi.lib ../../dos386r/graphi.lib ../../pgchart/dos386
     @%append tmp.lbc  -hgcutils
     @%append tmp.lbc  -svgautil
     @%append tmp.lbc  -font8x8
-    @%append tmp.lbc  +../../dos386r/graphi.lib
-    @%append tmp.lbc  +../../dos386r/dummy.obj
-    @%append tmp.lbc  +../../dos386r/fsmath.obj
-    @%append tmp.lbc  +../../pgchart/dos386r/chart.lib
-    @%append tmp.lbc  +../../pgchart/dos386s/chart.lib
+    @%append tmp.lbc  +$(graph_path)r/graphi.lib
+    @%append tmp.lbc  +$(graph_path)r/dummy.obj
+    @%append tmp.lbc  +$(graph_path)r/fsmath.obj
+    @%append tmp.lbc  +$(pgchart_path)r/chart.lib
+    @%append tmp.lbc  +$(pgchart_path)s/chart.lib
     @%make echo_lib
     $(librarian) $(libflags) @tmp.lbc
 
-tmp2.lib : ../../dos386s/graphi2.lib ../../dos386r/graphi2.lib ../../pgchart/dos386r/chart2.lib ../../pgchart/dos386s/chart2.lib ../../dos386r/dummy.obj ../../dos386r/fsmath.obj $(__MAKEFILES__)
-    @%write  tmp2.lbc  +../../dos386s/graphi2.lib
+tmp2.lib : $(graph_path)s/graphi2.lib $(graph_path)r/graphi2.lib $(pgchart_path)r/chart2.lib $(pgchart_path)s/chart2.lib $(graph_path)r/dummy.obj $(graph_path)r/fsmath.obj $(__MAKEFILES__)
+    @%write  tmp2.lbc  +$(graph_path)s/graphi2.lib
     @%append tmp2.lbc  -globals
     @%append tmp2.lbc  -bit
     @%append tmp2.lbc  -sqrtf
@@ -69,61 +83,31 @@ tmp2.lib : ../../dos386s/graphi2.lib ../../dos386r/graphi2.lib ../../pgchart/dos
     @%append tmp2.lbc  -hgcutils
     @%append tmp2.lbc  -svgautil
     @%append tmp2.lbc  -font8x8
-    @%append tmp2.lbc  +../../dos386r/graphi2.lib
-    @%append tmp2.lbc  +../../dos386r/dummy.obj
-    @%append tmp2.lbc  +../../dos386r/fsmath.obj
-    @%append tmp2.lbc  +../../pgchart/dos386r/chart2.lib
-    @%append tmp2.lbc  +../../pgchart/dos386s/chart2.lib
+    @%append tmp2.lbc  +$(graph_path)r/graphi2.lib
+    @%append tmp2.lbc  +$(graph_path)r/dummy.obj
+    @%append tmp2.lbc  +$(graph_path)r/fsmath.obj
+    @%append tmp2.lbc  +$(pgchart_path)r/chart2.lib
+    @%append tmp2.lbc  +$(pgchart_path)s/chart2.lib
     @%make echo_lib
     $(librarian) $(libflags) @tmp2.lbc
 
 !endif
 
-!else ifeq host_os qnx
-
-!ifeq host_cpu i86
-
-all: graph.lib graph2.lib
-
-tmp.lib : ../../qnxi86/graphi.lib ../../pgchart/dosi86/chart.lib ../../qnxi86/dummy.obj ../../qnxi86/fsmath.obj $(__MAKEFILES__)
-    @%write  tmp.lbc  +../../qnxi86/graphi.lib
-    @%append tmp.lbc  +../../qnxi86/dummy.obj
-    @%append tmp.lbc  +../../qnxi86/fsmath.obj
-    @%append tmp.lbc  +../../pgchart/dosi86/chart.lib
+graph3r.lib : $(graph_path)r/graphi.lib $(pgchart_path)r/chart.lib $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @tmp.lbc
+    $(librarian) $(libflags) +$(graph_path)r/graphi.lib +$(pgchart_path)r/chart.lib
 
-tmp2.lib : ../../qnxi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../qnxi86/dummy.obj ../../qnxi86/fsmath.obj $(__MAKEFILES__)
-    @%write  tmp2.lbc  +../../qnxi86/graphi2.lib
-    @%append tmp2.lbc  +../../qnxi86/dummy.obj
-    @%append tmp2.lbc  +../../qnxi86/fsmath.obj
-    @%append tmp2.lbc  +../../pgchart/dosi86/chart2.lib
+graph3s.lib : $(graph_path)r/graphi.lib $(pgchart_path)s/chart.lib $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @tmp2.lbc
+    $(librarian) $(libflags) +$(graph_path)s/graphi.lib +$(pgchart_path)s/chart.lib
 
-!else
-
-all: graph3r.lib graph3s.lib graph23r.lib graph23s.lib
-
-graph3r.lib : ../../qnx386r/graphi.lib ../../pgchart/dos386r/chart.lib $(__MAKEFILES__)
+graph23r.lib : $(graph_path)r/graphi2.lib $(pgchart_path)r/chart2.lib $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) +../../qnx386r/graphi.lib +../../pgchart/dos386r/chart.lib
+    $(librarian) $(libflags) +$(graph_path)r/graphi2.lib +$(pgchart_path)r/chart2.lib
 
-graph3s.lib : ../../qnx386r/graphi.lib ../../pgchart/dos386s/chart.lib $(__MAKEFILES__)
+graph23s.lib : $(graph_path)r/graphi2.lib $(pgchart_path)s/chart2.lib $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) +../../qnx386s/graphi.lib +../../pgchart/dos386s/chart.lib
-
-graph23r.lib : ../../qnx386r/graphi2.lib ../../pgchart/dos386r/chart2.lib $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) +../../qnx386r/graphi2.lib +../../pgchart/dos386r/chart2.lib
-
-graph23s.lib : ../../qnx386r/graphi2.lib ../../pgchart/dos386s/chart2.lib $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) +../../qnx386s/graphi2.lib +../../pgchart/dos386s/chart2.lib
-
-!endif
-
-!endif
+    $(librarian) $(libflags) +$(graph_path)s/graphi2.lib +$(pgchart_path)s/chart2.lib
 
 graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
     @rm -f *.obj
@@ -143,12 +127,10 @@ graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
     $(librarian) -b $(clibdir) @clibget.lbc
   # get all public symbols in extracted modules from clib, fsmath and dummy
   # they will be renamed later to don't conflict with public symbols in clib
-!ifeq host_os qnx
-    $(noecho)objxdef *.obj ../../qnxi86/fsmath.obj ../../qnxi86/dummy.obj >stb.tmp
-!else ifeq host_cpu i86
-    $(noecho)objxdef *.obj ../../dosi86/fsmath.obj ../../dosi86/dummy.obj >stb.tmp
+!ifeq host_cpu i86
+    $(noecho)objxdef *.obj $(graph_path)/fsmath.obj $(graph_path)/dummy.obj >stb.tmp
 !else
-    $(noecho)objxdef *.obj ../../dos386r/dummy.obj ../../dos386r/fsmath.obj >stb.tmp
+    $(noecho)objxdef *.obj $(graph_path)r/dummy.obj $(graph_path)r/fsmath.obj >stb.tmp
 !endif
 !ifeq host_cpu i86
   # extract all modules from graph.lib library
@@ -194,12 +176,10 @@ graph2.lib : $(clibdir) tmp2.lib
     $(librarian) -b $(clibdir) @clibget2.lbc
   # get all public symbols in extracted modules from clib, fsmath and dummy
   # they will be renamed later to don't conflict with public symbols in clib
-!ifeq host_os qnx
-    $(noecho)objxdef *.obj ../../qnxi86/fsmath.obj ../../qnxi86/dummy.obj >stb2.tmp
-!else ifeq host_cpu i86
-    $(noecho)objxdef *.obj ../../dosi86/fsmath.obj ../../dosi86/dummy.obj >stb2.tmp
+!ifeq host_cpu i86
+    $(noecho)objxdef *.obj $(graph_path)/fsmath.obj $(graph_path)/dummy.obj >stb2.tmp
 !else
-    $(noecho)objxdef *.obj ../../dos386r/dummy.obj ../../dos386r/fsmath.obj >stb2.tmp
+    $(noecho)objxdef *.obj $(graph_path)r/dummy.obj $(graph_path)r/fsmath.obj >stb2.tmp
 !endif
 !ifeq host_cpu i86
   # extract all modules from graph.lib library

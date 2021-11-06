@@ -242,7 +242,7 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
 #endif
         p_mode = PMODE;
     }
-    fp->_handle = __F_NAME(sopen,_wsopen)( name, open_mode, shflag, p_mode );
+    fp->_handle = __F_NAME(_sopen,_wsopen)( name, open_mode, shflag, p_mode );
     if( fp->_handle == -1 ) {
         // since we couldn't open the file, release the FILE struct
         __freefp( fp );

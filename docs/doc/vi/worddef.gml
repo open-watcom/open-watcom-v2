@@ -37,11 +37,11 @@ using the
 .keyref word
 setting. The default is that any characters in the set (
 .var _
-:cont.,
+.ct ,
 .var a-z
-:cont.,
+.ct ,
 .var A-Z
-:cont.,
+.ct ,
 .var 0-9
 ) are considered part of a word,
 and all other characters (except for whitespace) are delimiters.  Groups

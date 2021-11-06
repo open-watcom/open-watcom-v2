@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,19 +173,19 @@ typedef struct remote_block {
 
 // Manipulation macros
 #define _MgcIsMagic( sym ) \
-        ( sym->u.ns.u2.magic_flags & MAGIC_BIT )
+        (sym->u.ns.u2.magic_flags & MAGIC_BIT)
 
 #define _MgcClass( sym ) \
-        ( sym->u.ns.u2.magic_flags & MAGIC_CLASSMASK )
+        (sym->u.ns.u2.magic_flags & MAGIC_CLASSMASK)
 
 #define _MgcSetClass( sym, class ) \
-        sym->u.ns.u2.magic_flags = ( MAGIC_BIT | class )
+        sym->u.ns.u2.magic_flags = (MAGIC_BIT | class)
 
 #define _MgcSetLocalTemp( sym ) \
-        sym->u.ns.u2.magic_flags |= ( MAGIC_BIT | MAGIC_LOCALIZED )
+        sym->u.ns.u2.magic_flags |= (MAGIC_BIT | MAGIC_LOCALIZED)
 
 #define _MgcIsLocalTemp( sym ) \
-        ( _MgcIsMagic( sym ) && ( sym->u.ns.u2.magic_flags & MAGIC_LOCALIZED ) )
+        (_MgcIsMagic( sym ) && (sym->u.ns.u2.magic_flags & MAGIC_LOCALIZED))
 
 
 typedef union tmp_info {
@@ -207,7 +208,7 @@ typedef struct constant {
     sym_id              link;           // pointer to next constant in chain
     void                *address;       // back handle
     TYPE                typ;            // type of constant
-    byte                size;           // size of constant
+    size_t              size;           // size of constant
     ftn_type            value;          // value of constant
 } constant;
 
@@ -217,7 +218,7 @@ typedef struct constant {
 typedef struct literal {
     sym_id              link;           // pointer to next literal in chain
     void                *address;       // back handle
-    uint                length;         // length of literal
+    size_t              length;         // length of literal
     unsigned_8          flags;          // constant appeared in DATA statement
     byte                value;          // value of literal
 } literal;
@@ -261,10 +262,9 @@ typedef struct named_symbol {
         TYPE            typ;            // symbol type
         byte            xflags;         // extra symbol flags
       } s;
-      unsigned_16       xsize;          // extra size information for common
     } u1;                               // blocks
     union {
-        byte            name_len;       // length of symbol name
+        size_t          name_len;       // length of symbol name
         byte            magic_flags;    // information about the magic symbol
     } u2;
     union {
@@ -282,7 +282,7 @@ typedef struct named_symbol {
         struct p_constant   pc;         // information for parameter constants
         struct m_sym        ms;         // information for magic symbols
     } si;
-    char        name[STD_SYMLEN];       // symbol name
+    char        name[1];                // symbol name
 } named_symbol;
 
 typedef struct symbol {

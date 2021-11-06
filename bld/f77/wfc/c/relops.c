@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,9 @@
 #include "gtypes.h"
 
 
-static  uint    CharLength( itnode *op ) {
-//========================================
-
+static size_t   CharLength( itnode *op )
+//======================================
+{
     USOPN       opn;
 
     if( op->typ != FT_CHAR )
@@ -53,11 +54,11 @@ static  uint    CharLength( itnode *op ) {
     opn = op->opn.us;
     if( opn & USOPN_SS1 )
         return( op->value.st.ss_size );
-    if( ( opn & USOPN_WHERE ) == USOPN_SAFE )
+    if( (opn & USOPN_WHERE) == USOPN_SAFE )
         return( 0 );
-    if( ( opn & USOPN_WHAT ) == USOPN_NNL )
+    if( (opn & USOPN_WHAT) == USOPN_NNL )
         return( op->sym_ptr->u.ns.xt.size );
-    if( ( opn & USOPN_WHAT ) == USOPN_CON )
+    if( (opn & USOPN_WHAT) == USOPN_CON )
         return( op->sym_ptr->u.lt.length );
     return( 0 );
 }
@@ -66,7 +67,7 @@ static  uint    CharLength( itnode *op ) {
 void    GenChar1Op( itnode *op ) {
 //================================
 
-    if( ( ( op->opn.us & USOPN_WHAT ) == USOPN_CON ) ) {
+    if( ( (op->opn.us & USOPN_WHAT) == USOPN_CON ) ) {
         OutPtr( op->sym_ptr );
         SetOpn( op, USOPN_SAFE );
     } else {
@@ -84,8 +85,8 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
     bool        flip;
     bool        associative;
     bool        char_1_cmp;
-    uint        i;
-    uint        j;
+    size_t      i;
+    size_t      j;
     OPR         opr_code;
     FCODE       op_code;
 
@@ -94,8 +95,8 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
     // must check for "flip" before we call "CharLength" since they may
     // call "PushOpn"
     flip = false;
-    if( ( ( CITNode->opn.us & USOPN_WHERE ) == USOPN_SAFE ) &&
-        ( ( CITNode->link->opn.us & USOPN_WHERE ) != USOPN_SAFE ) ) {
+    if( ( (CITNode->opn.us & USOPN_WHERE) == USOPN_SAFE ) &&
+        ( (CITNode->link->opn.us & USOPN_WHERE) != USOPN_SAFE ) ) {
         flip = true;
     }
     // must do "CITNode->link" first to get operands in the right order

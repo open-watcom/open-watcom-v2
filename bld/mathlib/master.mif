@@ -22,7 +22,6 @@ host_cpu = $(mlib_host_cpu_$(mlib_$(processor)))
 mlib_host_os_msdos   = dos
 mlib_host_os_netware = nov
 mlib_host_os_os2     = os2
-mlib_host_os_osi     = osi
 mlib_host_os_qnx     = qnx
 mlib_host_os_windows = win
 mlib_host_os_winnt   = nt

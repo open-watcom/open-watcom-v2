@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -224,12 +225,14 @@ pOUnit createOUnitDclrName(char *name, pTokPos typePos, char *postfix) {
 }
 /*--------------------------------------------------------------------------*/
 
-static void fprintfCheckNULL(FILE *fp, const char *format, ...) {
-    if (fp != NULL) {
-        va_list arglist;
-        va_start(arglist, format);
-        vfprintf(fp, format, arglist);
-        va_end(arglist);
+static void fprintfCheckNULL( FILE *fp, const char *format, ... )
+{
+    if( fp != NULL ) {
+        va_list args;
+
+        va_start( args, format );
+        vfprintf( fp, format, args );
+        va_end( args );
     }
 }
 
@@ -705,15 +708,15 @@ static void _convertConstant(pTokData t, TargetLangType lang, char *s,
                              int spaceLeft) {
     ConstType type = t->repr.constant.type;
     RadixType radix = t->repr.constant.radix;
-    long int longInt = t->repr.constant.repr.lIntConst;
-    long int longDouble = t->repr.constant.repr.lDoubleConst;
+    long longInt = t->repr.constant.repr.lIntConst;
+    long longDouble = t->repr.constant.repr.lDoubleConst;
     char *format;
 
     switch  (type) {
     case CONSTT_CHAR_CONST:
         switch (lang) {
         case TLT_C:
-            if ((unsigned long int) longInt < 255 && isprint((char)longInt)) {
+            if ((unsigned long)longInt < 255 && isprint((char)longInt)) {
                 sprintf(s, "'%c'", (char) longInt);
             } else {
                 sprintf(s, "'(0x%lx)'",  longInt);
@@ -723,7 +726,7 @@ static void _convertConstant(pTokData t, TargetLangType lang, char *s,
             sprintf(s, "%ld",  longInt);
             break;
         case TLT_ASM:
-            if ((unsigned long int) longInt < 255 && isprint((char)longInt)) {
+            if ((unsigned long)longInt < 255 && isprint((char)longInt)) {
                 sprintf(s, "'%c'", (char) longInt);
             } else {
                 sprintf(s, "0%lXH",  longInt);

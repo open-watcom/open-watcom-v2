@@ -6,6 +6,6 @@ model      = mf
 system     = winnt
 convention = register
 
-rtdll_release = 0
+lib_debug = 1
 
 !include $(rtdll_dir)/master.mif

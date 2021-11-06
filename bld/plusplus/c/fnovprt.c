@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +31,6 @@
 ****************************************************************************/
 
 
-#ifndef NDEBUG
-
 #include "plusplus.h"
 
 #include "vbuf.h"
@@ -40,6 +39,7 @@
 #include "fmttype.h"
 #include "fnovload.h"
 #include "dbg.h"
+
 
 static const char *rankNames[] = {
 #include "fnovrank.h"
@@ -245,5 +245,3 @@ void PrintFnovResolution( FNOV_RESULT result, arg_list *args,
         PrintFnovList( reject );
     }
 }
-
-#endif

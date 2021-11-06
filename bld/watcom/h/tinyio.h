@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #include "dosfuncx.h"
 #include "watcom.h"
 
-#pragma pack( 1 )
+#pragma pack( __push, 1 )
 
 /*
  * miscellaneous definitions
@@ -795,6 +795,8 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #define _ADD_SP         0x83 0xc4
 
+#define _XCHG_AX_DX     0x92
+#define _XCHG_AX_SI     0x96
 #define _XCHG_SI_DI     0x87 0xf7
 #define _XCHG_BX_CX     0x87 0xd9
 
@@ -820,7 +822,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #define _INT            0xcd
 
-#if defined( __WINDOWS_386__ ) || defined( __OSI__ ) || defined( __CALL21__ )
+#if defined( __WINDOWS_386__ ) || defined( __CALL21__ )
  extern  void   __Int21( void );
  #pragma aux __Int21 "*"
  #define _INT_21        "call __Int21"
@@ -831,13 +833,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #define _INT_25         _INT 0x25
 #define _INT_26         _INT 0x26
 
-#if defined( __OSI__ ) && defined( __CALL31__ )
- extern  void   __Int31( void );
- #pragma aux __Int31 "*"
- #define _INT_31        "call __Int31"
-#else
- #define _INT_31        _INT 0x31
-#endif
+#define _INT_31         _INT 0x31
 
 #define _GET_           0x00
 #define _SET_           0x01
@@ -854,6 +850,12 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
  #define _MOV_AX_W      _USE16 _MOV_AX
 
+ #define _SET_DSDX
+ #define _SET_DSSI
+ #define _SET_ES
+ #define _RST_DS
+ #define _RST_ES
+
  #define _SET_DS_DGROUP
  #define _SET_DS_DGROUP_SAFE
  #define _RST_DS_DGROUP
@@ -865,6 +867,20 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 #elif defined( _M_I86 )
 
  #define _MOV_AX_W      _MOV_AX
+
+ #ifdef __BIG_DATA__
+  #define _SET_DSDX     _PUSH_DS _XCHG_AX_DX _MOV_DS_AX
+  #define _SET_DSSI     _PUSH_DS _XCHG_AX_SI _MOV_DS_AX
+  #define _SET_ES
+  #define _RST_DS       _POP_DS
+  #define _RST_ES
+ #else
+  #define _SET_DSDX
+  #define _SET_DSSI
+  #define _SET_ES       _PUSH_ES _PUSH_DS _POP_ES
+  #define _RST_DS
+  #define _RST_ES       _POP_ES
+ #endif
 
  #if defined( _M_I86SM ) || defined( _M_I86MM ) || defined( ZDP ) || defined( __WINDOWS__ )
   #define _SET_DS_DGROUP
@@ -2885,6 +2901,6 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #endif
 
-#pragma pack()
+#pragma pack( __pop )
 
 #endif

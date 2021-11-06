@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,7 +161,7 @@ static void setup_sel( uint_16 cs, uint_16 ds, uint_16 *pmcs, uint_16 *pmds )
     if( !*pmcs || !*pmds ) {
         _debug( "error creating selectors" );
     }
-    if( TinyDPMIGetDescriptor( FP_SEG( &setup_sel ), &d ) ) {
+    if( TinyDPMIGetDescriptor( _FP_SEG( &setup_sel ), &d ) ) {
         _debug( "error obtaining descriptor for new cs selector" );
     }
     d.xtype.use32 = 0;
@@ -175,7 +176,7 @@ static void setup_sel( uint_16 cs, uint_16 ds, uint_16 *pmcs, uint_16 *pmds )
     if( TinyDPMISetLimit( *pmcs, 0xffff ) ) {
         _debug( "error setting segment limit for new cs selector" );
     }
-    if( TinyDPMIGetDescriptor( FP_SEG( &SavePMVTable ), &d ) ) {
+    if( TinyDPMIGetDescriptor( _FP_SEG( &SavePMVTable ), &d ) ) {
         _debug( "error obtaining descriptor for new ds selector" );
     }
     d.xtype.use32 = 0;
@@ -209,11 +210,11 @@ static void set_new_vects( unsigned *rmvtable, unsigned *pmvtable,
                                  (uint_16)rmvtable[intnb] );
         #endif
         if( intnb == 0x66 ) {
-            TinyDPMISetProtectVect( intnb, MK_FP( pmcs,
+            TinyDPMISetProtectVect( intnb, _MK_FP( pmcs,
                                            (uint_16)pmvtable[intnb] ) );
         } else {
             TinyDPMISetProtectVect( intnb,
-                                MK_FP( ( (uint_16 *)&pmvtable[intnb] )[1],
+                                _MK_FP( ( (uint_16 *)&pmvtable[intnb] )[1],
                                        (uint_16)pmvtable[intnb] ) );
         }
     }

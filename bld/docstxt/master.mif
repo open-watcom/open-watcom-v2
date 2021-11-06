@@ -1,12 +1,8 @@
 proj_name = docstxt
 
-name = txt
-
 objs = readme.txt freadme.txt areadme.txt
 
-.EXTENSIONS: .txt
-
-all: $(objs) .SYMBOLIC 
+all: $(objs) .SYMBOLIC
     @%null
 
 readme.txt : ../readme.sp

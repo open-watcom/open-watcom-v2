@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@ static bool getXorBits( BITMAPINFO *bmi, BYTE *bits, img_node *node )
     memdc = CreateCompatibleDC( hdc );
     ReleaseDC( node->viewhwnd, hdc );
 
-    GetDIBits( memdc, node->hxorbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
+    GetDIBits( memdc, node->xor_hbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
     if( bmi->bmiHeader.biSizeImage == 0 ) {
 #if 0
         if( node->width > 32 ) {
@@ -60,7 +60,7 @@ static bool getXorBits( BITMAPINFO *bmi, BYTE *bits, img_node *node )
         bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( node->width*node->bitcount, node->height );
 #endif
     }
-    GetDIBits( memdc, node->hxorbitmap, 0, node->height, bits, bmi, DIB_RGB_COLORS );
+    GetDIBits( memdc, node->xor_hbitmap, 0, node->height, bits, bmi, DIB_RGB_COLORS );
     DeleteDC( memdc );
     return( true );
 
@@ -94,7 +94,7 @@ static void getAndBits( BYTE *bits, img_node *node )
 {
     HDC                 hdc;
     HDC                 memdc;
-    HBITMAP             oldbitmap;
+    HBITMAP             old_hbitmap;
     BITMAPINFO          *bmi;
     RGBQUAD             *rgbq;
     BITMAPINFOHEADER    *h;
@@ -124,9 +124,9 @@ static void getAndBits( BYTE *bits, img_node *node )
     h->biClrUsed = 0;
     h->biClrImportant = 0;
 
-    oldbitmap = SelectObject( memdc, node->handbitmap );
-    GetDIBits( memdc, node->handbitmap, 0, node->height, bits, bmi, DIB_RGB_COLORS );
-    SelectObject( memdc, oldbitmap );
+    old_hbitmap = SelectObject( memdc, node->and_hbitmap );
+    GetDIBits( memdc, node->and_hbitmap, 0, node->height, bits, bmi, DIB_RGB_COLORS );
+    SelectObject( memdc, old_hbitmap );
     DeleteDC( memdc );
 
 } /* getAndBits */

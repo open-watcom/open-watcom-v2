@@ -12,7 +12,7 @@ The
 function computes the principal value of the
 arctangent of
 .arg x
-.ct .li .
+.period
 .desc end
 .return begin
 The

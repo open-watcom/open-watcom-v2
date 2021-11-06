@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,10 @@
 #include "cmdlnprs.h"
 #include "cmdlnsys.h"
 #include "compinfo.h"
+#include "toggles.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+#endif
 
 #include "clibext.h"
 
@@ -639,55 +643,55 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.quiet_mode = true;
     }
     switch( data->char_set ) {
-    case OPT_char_set_zku:
+    case OPT_ENUM_char_set_zku:
         CompFlags.use_unicode = true;
         loadUnicodeTable( data->zku_value );
         break;
-    case OPT_char_set_zk0u:
+    case OPT_ENUM_char_set_zk0u:
         CompFlags.jis_to_unicode = true;
         /* fall through */
-    case OPT_char_set_zk0:
+    case OPT_ENUM_char_set_zk0:
         SetDBChar( 0 );
         break;
-    case OPT_char_set_zk1:
+    case OPT_ENUM_char_set_zk1:
         SetDBChar( 1 );
         break;
-    case OPT_char_set_zk2:
+    case OPT_ENUM_char_set_zk2:
         SetDBChar( 2 );
         break;
-    case OPT_char_set_zkl:
+    case OPT_ENUM_char_set_zkl:
         SetDBChar( -1 );
         break;
     }
     switch( data->exc_level ) {
-    case OPT_exc_level_xs:
+    case OPT_ENUM_exc_level_xs:
         CompFlags.excs_enabled = true;
         CompInfo.dt_method_speced = DTM_TABLE;
         break;
-    case OPT_exc_level_xst:
+    case OPT_ENUM_exc_level_xst:
         CompFlags.excs_enabled = true;
         CompInfo.dt_method_speced = DTM_DIRECT_TABLE;
         break;
-    case OPT_exc_level_xss:
+    case OPT_ENUM_exc_level_xss:
         CompFlags.excs_enabled = true;
         CompInfo.dt_method_speced = DTM_TABLE_SMALL;
         break;
-    case OPT_exc_level_xds:
+    case OPT_ENUM_exc_level_xds:
         CompFlags.excs_enabled = false;
         CompInfo.dt_method_speced = DTM_DIRECT_SMALL;
         break;
-    case OPT_exc_level_xd:
-    case OPT_exc_level_xdt:
+    case OPT_ENUM_exc_level_xd:
+    case OPT_ENUM_exc_level_xdt:
     default:
         CompFlags.excs_enabled = false;
         CompInfo.dt_method_speced = DTM_DIRECT;
         break;
     }
     switch( data->warn_level ) {
-    case OPT_warn_level_w:
+    case OPT_ENUM_warn_level_w:
         WngLevel = data->w_value;
         break;
-    case OPT_warn_level_wx:
+    case OPT_ENUM_warn_level_wx:
         WngLevel = WLEVEL_WX;
         break;
     default:
@@ -695,16 +699,16 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         break;
     }
     switch( data->file_83 ) {
-    case OPT_file_83_fx:
+    case OPT_ENUM_file_83_fx:
         CompFlags.check_truncated_fnames = false;
         break;
-    case OPT_file_83_ft:
+    case OPT_ENUM_file_83_ft:
     default:
         CompFlags.check_truncated_fnames = true;
         break;
     }
     switch( data->opt_level ) {
-    case OPT_opt_level_ox:  /* -ox => -obmiler -s */
+    case OPT_ENUM_opt_level_ox:  /* -ox => -obmiler -s */
         GenSwitches &= ~ NO_OPTIMIZATION;
         GenSwitches |= BRANCH_PREDICTION;       // -ob
         GenSwitches |= LOOP_OPTIMIZATION;       // -ol
@@ -718,18 +722,18 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
             data->oe_value = 100;
         }
 #endif
-        PragToggle.check_stack = false;         // -s
+        TOGGLE( check_stack ) = false;         // -s
         break;
-    case OPT_opt_level_od:
+    case OPT_ENUM_opt_level_od:
         GenSwitches |= NO_OPTIMIZATION;
         break;
     }
     switch( data->opt_size_time ) {
-    case OPT_opt_size_time_ot:
+    case OPT_ENUM_opt_size_time_ot:
         OptSize = 0;
         GenSwitches &= ~ NO_OPTIMIZATION;
         break;
-    case OPT_opt_size_time_os:
+    case OPT_ENUM_opt_size_time_os:
         OptSize = 100;
         GenSwitches &= ~ NO_OPTIMIZATION;
         break;
@@ -738,12 +742,12 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         break;
     }
     switch( data->iso ) {
-    case OPT_iso_za:
+    case OPT_ENUM_iso_za:
         CompFlags.extensions_enabled = false;
         CompFlags.non_iso_compliant_names_enabled = false;
         CompFlags.unique_functions = true;
         break;
-    case OPT_iso_ze:
+    case OPT_ENUM_iso_ze:
     default:
         CompFlags.extensions_enabled = true;
         CompFlags.non_iso_compliant_names_enabled = true;
@@ -754,13 +758,13 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     // following must precede processing of data->oe
     switch( data->debug_info ) {
-    case OPT_debug_info_d3s:
+    case OPT_ENUM_debug_info_d3s:
         CompFlags.static_inline_fns = true;
         /* fall through */
-    case OPT_debug_info_d3i:
+    case OPT_ENUM_debug_info_d3i:
         CompFlags.inline_functions = false;
         /* fall through */
-    case OPT_debug_info_d3:
+    case OPT_ENUM_debug_info_d3:
         // this flag may be turned on when PCHs are written if we will be
         // optimizing the writing of the debugging info by referring back
         // to the info in another module
@@ -771,20 +775,20 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         }
         data->oe = 0;
         break;
-    case OPT_debug_info_d2s:
+    case OPT_ENUM_debug_info_d2s:
         CompFlags.static_inline_fns = true;
         /* fall through */
-    case OPT_debug_info_d2i:
+    case OPT_ENUM_debug_info_d2i:
         CompFlags.inline_functions = false;
         /* fall through */
-    case OPT_debug_info_d2:
+    case OPT_ENUM_debug_info_d2:
         GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
             GenSwitches |= NO_OPTIMIZATION;
         }
         data->oe = 0;
         break;
-    case OPT_debug_info_d2t:
+    case OPT_ENUM_debug_info_d2t:
         CompFlags.no_debug_type_names = true;
         GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
@@ -792,18 +796,18 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         }
         data->oe = 0;
         break;
-    case OPT_debug_info_d1:
+    case OPT_ENUM_debug_info_d1:
         GenSwitches |= DBG_NUMBERS;
         break;
-    case OPT_debug_info_d0:
+    case OPT_ENUM_debug_info_d0:
         break;
     }
     switch( data->enum_size ) {
-    case OPT_enum_size_ei:
+    case OPT_ENUM_enum_size_ei:
         CompFlags.make_enums_an_int = true;
         CompFlags.original_enum_setting = true;
         break;
-    case OPT_enum_size_em:
+    case OPT_ENUM_enum_size_em:
         CompFlags.make_enums_an_int = false;
         CompFlags.original_enum_setting = false;
         break;
@@ -1010,27 +1014,26 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.cpp_ignore_line = true;
     }
     if( data->p ) {
-        CompFlags.cpp_output_requested = true;
+        CompFlags.cpp_mode = true;
     }
     if( data->pc ) {
-        CompFlags.cpp_output_requested = true;
-        CompFlags.keep_comments = true;
-        CompFlags.comments_wanted = true;
+        CompFlags.cpp_mode = true;
+        CompFlags.cpp_keep_comments = true;
     }
     if( data->pe ) {
-        CompFlags.cpp_output_requested = true;
+        CompFlags.cpp_mode = true;
         CompFlags.encrypt_preproc_output = true;
     }
     if( data->pj ) {
         data->pl = true;
-        CompFlags.line_comments = true;
+        CompFlags.cpp_line_comments = true;
     }
     if( data->pl ) {
-        CompFlags.cpp_output_requested = true;
+        CompFlags.cpp_mode = true;
         CompFlags.cpp_line_wanted = true;
     }
     if( data->pw ) {
-        CompFlags.cpp_output_requested = true;
+        CompFlags.cpp_mode = true;
         PpSetWidth( data->pw_value );
     } else {
         // #line directives get screwed by wrapped lines but we don't want
@@ -1039,7 +1042,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
             PpSetWidth( 0 );
         }
     }
-    if( CompFlags.cpp_output_requested ) {
+    if( CompFlags.cpp_mode ) {
         CompFlags.cpp_output = true;
         CompFlags.quiet_mode = true;
     }
@@ -1053,7 +1056,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         }
     }
     if( data->s ) {
-        PragToggle.check_stack = false;
+        TOGGLE( check_stack ) = false;
     }
     if( data->t ) {
         SrcFileSetTab( data->t_value );
@@ -1152,20 +1155,17 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
 #ifndef NDEBUG
     if( data->tp ) {
-        for(;;) {
-            OPT_STRING* str = data->tp_value;
-            if( NULL == str )
-                break;
+        OPT_STRING *str;
+        while( (str = data->tp_value) != NULL ) {
             data->tp_value = str->next;
-            strcpy( Buffer, str->data );
+            PragmaSetToggle( str->data, 1, false );
             CMemFree( str );
-            PragmaSetToggle( true );
         }
     }
     if( data->zi ) {
         CompFlags.extra_stats_wanted = true;
         // try to prevent distortions caused by debug stuff
-        PragDbgToggle.no_mem_cleanup = true;
+        TOGGLEDBG( no_mem_cleanup ) = true;
     }
 #endif
     CBanner();
@@ -1199,7 +1199,7 @@ static void postOptions( void )
 void GenCOptions(               // PROCESS ALL OPTIONS
     char **argv )               // - command line vector
 {
-    auto OPT_STORAGE data;
+    OPT_STORAGE data;
     char* env_var;              // - environment var for compiler
 
     indirectionLevel = 0;

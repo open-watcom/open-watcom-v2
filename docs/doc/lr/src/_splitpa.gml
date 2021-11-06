@@ -49,15 +49,15 @@ file name extension.
 The argument
 .arg path
 points to a buffer containing the full pathname to be split up.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .np
 The maximum size required for each buffer is specified by the manifest
 constants
 .kw _MAX_PATH
-.ct,
+.ct ,
 .if '&machsys' eq 'QNX' .do begin
 .kw _MAX_NODE
-.ct,
+.ct ,
 .do end
 .el .do begin
 .kw _MAX_DRIVE
@@ -66,10 +66,9 @@ constants
 for Netware applications),
 .do end
 .kw _MAX_DIR
-.ct,
+.ct ,
 .kw _MAX_FNAME
-.ct,
-and
+.ct , and
 .kw _MAX_EXT
 which are defined in
 .mono <stdlib.h>.

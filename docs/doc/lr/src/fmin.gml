@@ -11,14 +11,14 @@ function returns the smaller of
 .arg x
 and
 .arg y
-.ct .li .
+.period
 .desc end
 .return begin
 The routine will return the smaller of
 .arg x
 or
 .arg y
-.ct .li .
+.period
 .return end
 .see begin
 .seelist fdim fmax

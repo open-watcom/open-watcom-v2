@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,8 +96,8 @@ void GetADescriptor( WORD seg, descriptor *desc )
         memset( &r, 0, sizeof( r ) );
         r.w.ax = 0x0b;
         r.w.bx = seg;
-        r.w.es = FP_SEG( desc );
-        r.w.di = FP_OFF( desc );
+        r.w.es = _FP_SEG( desc );
+        r.w.di = _FP_OFF( desc );
         intr( 0x31, &r );
     }
 
@@ -122,7 +123,7 @@ DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
     DWORD       rc;
 
     if( WDebug386 ) {
-        return( CopyMemory386( FP_SEG( buff ), FP_OFF( buff ), sel, off, size  ) );
+        return( CopyMemory386( _FP_SEG( buff ), _FP_OFF( buff ), sel, off, size  ) );
     } else {
         PushAll();
         rc = MemoryRead( sel, off, buff, size );
@@ -139,7 +140,7 @@ DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
 {
     DWORD       rc;
     if( WDebug386 ) {
-        return( CopyMemory386( sel, off, FP_SEG( buff ), FP_OFF( buff ), size ) );
+        return( CopyMemory386( sel, off, _FP_SEG( buff ), _FP_OFF( buff ), size ) );
     } else {
         PushAll();
         rc = MemoryWrite( sel, off, buff, size );

@@ -1,37 +1,38 @@
+# UTF-8 encoding, Â¥
 name=16Bit
 any_check=tools16
 static_text=\
         //1"Select the 16-bit memory models you wish to use:"\
-        //2"g—p‚µ‚½‚¢16ƒrƒbƒgEƒƒ‚ƒŠƒ‚ƒfƒ‹‚Ì‘I‘ğ:"\
+        //2"ä½¿ç”¨ã—ãŸã„16ãƒ“ãƒƒãƒˆãƒ»ãƒ¡ãƒ¢ãƒªãƒ¢ãƒ‡ãƒ«ã®é¸æŠ:"\
         //0
 static_text=
 check_box=ms,,\
         //1"&Small"\
-        //2"ƒXƒ‚[ƒ‹(&S)"\
+        //2"ã‚¹ãƒ¢ãƒ¼ãƒ«(&S)"\
         //0,IsFortranInstall !
 check_box_continue=mm,,\
         //1"&Medium"\
-        //2"ƒ~ƒfƒBƒAƒ€(&M)"\
+        //2"ãƒŸãƒ‡ã‚£ã‚¢ãƒ (&M)"\
         //0,IsFortranInstall !
 check_box=mc,,\
         //1"C&ompact"\
-        //2"ƒRƒ“ƒpƒNƒg(&o)"\
+        //2"ã‚³ãƒ³ãƒ‘ã‚¯ãƒˆ(&o)"\
         //0,IsFortranInstall !
 check_box_continue=ml,,\
         //1"&Large"\
-        //2"ƒ‰[ƒW(&L)"\
+        //2"ãƒ©ãƒ¼ã‚¸(&L)"\
         //0,IsFortranInstall !
 check_box=mh,,\
         //1"H&uge"\
-        //2"ƒqƒ…[ƒW(&u)"\
+        //2"ãƒ’ãƒ¥ãƒ¼ã‚¸(&u)"\
         //0,IsFortranInstall !
 check_box=mm,,\
         //1"&Medium"\
-        //2"ƒ~ƒfƒBƒAƒ€(&M)"\
+        //2"ãƒŸãƒ‡ã‚£ã‚¢ãƒ (&M)"\
         //0,IsFortranInstall
 check_box=ml,,\
         //1"&Large"\
-        //2"ƒ‰[ƒW(&L)"\
+        //2"ãƒ©ãƒ¼ã‚¸(&L)"\
         //0,IsFortranInstall
 static_text=
 include=space.dlg

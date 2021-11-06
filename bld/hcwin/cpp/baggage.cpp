@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,12 @@ BAGGAGE:  Baggage file handling.
 #include <stdlib.h>
 #include <string.h>
 #include "baggage.h"
+#if defined( __UNIX__ ) && defined( __WATCOMC__ )
+  #if ( __WATCOMC__ < 1300 )
+    // fix for OW 1.9
+    #include <limits.h>
+  #endif
+#endif
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -48,7 +54,7 @@ Baggage::Baggage( HFSDirectory *d_file, char const filename[] )
     : File( filename )
 {
     char        fname[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( !_badFile ) {
         reset( 0, SEEK_END );

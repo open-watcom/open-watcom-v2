@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +33,8 @@
 #include "guiwind.h"
 #include "guidraw.h"
 #include "guixdraw.h"
-#include "guix.h"
 #include "guixutil.h"
 #include "guicontr.h"
-#include "guiscale.h"
 #include "uiattrs.h"
 #include "guigadgt.h"
 #include "guiicon.h"
@@ -48,141 +46,79 @@
 #include "guixwind.h"
 
 
-static unsigned char DrawIndex[] =
-{
-    DRAW_BLANK,                 // GUI_FRAME_TOP
-    DRAW_BLANK,                 // GUI_FRAME_UL_CORNER
-    DRAW_BLANK,                 // GUI_FRAME_LEFT
-    DRAW_BLANK,                 // GUI_FRAME_LL_CORNER
-    DRAW_BLANK,                 // GUI_FRAME_BOTTOM
-    DRAW_BLANK,                 // GUI_FRAME_LR_CORNER
-    DRAW_BLANK,                 // GUI_FRAME_RIGHT
-    DRAW_BLANK,                 // GUI_FRAME_UR_CORNER
-    DRAW_VERT_LINE,             // GUI_LR_VERT_BAR,
-    DRAW_HOR_LINE,              // GUI_LR_HORZ_BAR,
-    DRAW_BLANK,                 // GUI_LEFT_TITLE_MARK
-    DRAW_BLANK,                 // GUI_RIGHT_TITLE_MARK
-    DRAW_VERT_LINE,             // GUI_LEFT_GADGET_MARK
-    DRAW_VERT_LINE,             // GUI_RIGHT_GADGET_MARK
-    DRAW_BLANK,                 // GUI_TITLE_SPACE
-    DRAW_CLOSER,                // GUI_CLOSER
-    DRAW_MAXIMIZE,              // GUI_MAXIMIZE_GADGET
-    DRAW_MINIMIZE,              // GUI_MINIMIZE_GADGET
-    DRAW_RESIZE,                // GUI_RESIZE_GADGET
-    DRAW_BLANK,                 // GUI_HOR_SCROLL
-    DRAW_BLANK,                 // GUI_VERT_SCROLL
-    DRAW_LEFT_POINT,            // GUI_LEFT_SCROLL_ARROW
-    DRAW_RIGHT_POINT,           // GUI_RIGHT_SCROLL_ARROW
-    DRAW_UP_POINT,              // GUI_UP_SCROLL_ARROW
-    DRAW_DOWN_POINT,            // GUI_DOWN_SCROLL_ARROW
-    DRAW_SLIDER,                // GUI_SCROLL_SLIDER
-
-    DRAW_HOR_FRAME,             // GUI_INACT_FRAME_TOP
-    DRAW_UL_CORNER,             // GUI_INACT_FRAME_UL_CORNER
-    DRAW_VERT_FRAME,            // GUI_INACT_FRAME_LEFT
-    DRAW_LL_CORNER,             // GUI_INACT_FRAME_LL_CORNER
-    DRAW_HOR_FRAME,             // GUI_INACT_FRAME_BOTTOM
-    DRAW_LR_CORNER,             // GUI_INACT_FRAME_LR_CORNER
-    DRAW_VERT_FRAME,            // GUI_INACT_FRAME_RIGHT
-    DRAW_UR_CORNER,             // GUI_INACT_FRAME_UR_CORNER
-    DRAW_RIGHT_TITLE_MARK,      // GUI_INACT_LR_VERT_BAR,
-    DRAW_C2,                    // GUI_INACT_LR_HORZ_BAR,
-    DRAW_LEFT_TITLE_MARK,       // GUI_INACT_LEFT_TITLE_MARK
-    DRAW_RIGHT_TITLE_MARK,      // GUI_INACT_RIGHT_TITLE_MARK
-    DRAW_LEFT_TITLE_MARK,       // GUI_INACT_LEFT_GADGET_MARK
-    DRAW_RIGHT_TITLE_MARK,      // GUI_INACT_RIGHT_GADGET_MARK
-    DRAW_BLANK,                 // GUI_INACT_TITLE_SPACE
-    DRAW_CLOSER,                // GUI_INACT_CLOSER
-    DRAW_MAXIMIZE,              // GUI_INACT_MAXIMIZE_GADGET
-    DRAW_MINIMIZE,              // GUI_INACT_MINIMIZE_GADGET
-    DRAW_RESIZE,                // GUI_INACT_RESIZE_GADGET
-    DRAW_HOR_FRAME_DBL,         // GUI_INACT_HOR_SCROLL
-    DRAW_VERT_FRAME_DBL,        // GUI_INACT_VERT_SCROLL
-    DRAW_LEFT_POINT,            // GUI_INACT_LEFT_SCROLL_ARROW
-    DRAW_RIGHT_POINT,           // GUI_INACT_RIGHT_SCROLL_ARROW
-    DRAW_UP_POINT,              // GUI_INACT_UP_SCROLL_ARROW
-    DRAW_DOWN_POINT,            // GUI_INACT_DOWN_SCROLL_ARROW
-    DRAW_BLOCK,                 // GUI_INACT_SCROLL_SLIDER
-
-    DRAW_BLOCK_SLIDER,          // GUI_DIAL_VERT_SCROLL
-    DRAW_UP_POINT,              // GUI_DIAL_UP_SCROLL_ARROW,
-    DRAW_DOWN_POINT,            // GUI_DIAL_DOWN_SCROLL_ARROW,
-    DRAW_BLOCK,                 // GUI_DIAL_SCROLL_SLIDER
-};
-
-char DrawingChars[DRAW_LAST];
-
-#define GET_CHAR( val, inact ) ( DrawingChars[DrawIndex[val+ GUI_INACTIVE_OFFSET * inact]] )
-
-#define TOP( inact )            GET_CHAR( GUI_FRAME_TOP, inact )
-#define UL_CORNER( inact )      GET_CHAR( GUI_FRAME_UL_CORNER, inact )
-#define LEFT( inact )           GET_CHAR( GUI_FRAME_LEFT, inact )
-#define LL_CORNER( inact )      GET_CHAR( GUI_FRAME_LL_CORNER, inact )
-#define BOTTOM( inact )         GET_CHAR( GUI_FRAME_BOTTOM, inact )
-#define LR_CORNER( inact )      GET_CHAR( GUI_FRAME_LR_CORNER, inact )
-#define RIGHT( inact )          GET_CHAR( GUI_FRAME_RIGHT, inact )
-#define UR_CORNER( inact )      GET_CHAR( GUI_FRAME_UR_CORNER, inact )
-#define LT_MARK( inact )        GET_CHAR( GUI_LEFT_TITLE_MARK, inact )
-#define RT_MARK( inact )        GET_CHAR( GUI_RIGHT_TITLE_MARK, inact )
-#define LG_MARK( inact )        GET_CHAR( GUI_LEFT_GADGET_MARK, inact )
-#define RG_MARK( inact )        GET_CHAR( GUI_RIGHT_GADGET_MARK, inact )
-#define TITLE_SP( inact )       GET_CHAR( GUI_TITLE_SPACE, inact )
-#define CLOSER( inact )         GET_CHAR( GUI_CLOSER, inact )
-#define MIN_GAD( inact )        GET_CHAR( GUI_MINIMIZE_GADGET, inact )
-#define MAX_GAD( inact )        GET_CHAR( GUI_MAXIMIZE_GADGET, inact )
-#define RESIZE_GAD( inact )     GET_CHAR( GUI_RESIZE_GADGET, inact )
-#define LRV_BAR( inact )        GET_CHAR( GUI_LR_VERT_BAR, inact )
-#define LRH_BAR( inact )        GET_CHAR( GUI_LR_HORZ_BAR, inact )
+char DrawingChars[GUI_NUM_DRAW_CHARS];
 
 #define TITLE_EXTRA_AMOUNT      4
 #define GADGET_WIDTH            3
+
 
 void GUIInitDrawingChars( bool dbcs )
 {
 #ifdef __LINUX__
     /* unused parameters */ (void)dbcs;
 
-    #define pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = e;
-    #include "_guidraw.h"
-    #undef pick
+    enum {
+        #define pick( a,b,c,d,e ) DRAW_##a = e,
+        #include "_guidraw.h"
+        #undef pick
+    };
+    static const char drawcharmap[GUI_NUM_DRAW_CHARS] = {
+        #define pick(a) DRAW_##a,
+        #include "_drawmap.h"
+        #undef pick
+    };
+    memcpy( DrawingChars, drawcharmap, GUI_NUM_DRAW_CHARS );
 #else
     if( dbcs ) {
-        #define pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = c;
-        #include "_guidraw.h"
-        #undef pick
+        enum {
+            #define pick( a,b,c,d,e ) DRAW_##a = c,
+            #include "_guidraw.h"
+            #undef pick
+        };
+        static const char drawcharmap[GUI_NUM_DRAW_CHARS] = {
+            #define pick(a) DRAW_##a,
+            #include "_drawmap.h"
+            #undef pick
+        };
+        memcpy( DrawingChars, drawcharmap, GUI_NUM_DRAW_CHARS );
     } else {
-        #define pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = b;
-        #include "_guidraw.h"
-        #undef pick
+        enum {
+            #define pick( a,b,c,d,e ) DRAW_##a = b,
+            #include "_guidraw.h"
+            #undef pick
+        };
+        static const char drawcharmap[GUI_NUM_DRAW_CHARS] = {
+            #define pick(a) DRAW_##a,
+            #include "_drawmap.h"
+            #undef pick
+        };
+        memcpy( DrawingChars, drawcharmap, GUI_NUM_DRAW_CHARS );
     }
 #endif
 }
 
 
-int GUIGetCharacter( gui_draw_char draw_char )
+int GUIAPI GUIGetCharacter( gui_draw_char draw_char )
 {
     if( draw_char < GUI_NUM_DRAW_CHARS ) {
-        return( UCHAR_VALUE( DrawingChars[DrawIndex[draw_char]] ) );
+        return( (unsigned char)DrawingChars[draw_char] );
     }
     return( 0 );
 }
 
-void GUISetCharacter( gui_draw_char draw_char, int ch )
+void GUIAPI GUISetCharacter( gui_draw_char draw_char, int ch )
 {
-    /* unused parameters */ (void)ch; (void)draw_char;
-
-    // not implemented in this revision
-    // some apps do a
-    // if an app calls GUISetCharacter( GUI_SCROLL_SLIDER, 177 );
-    // just delete the call since that is the default now.
+    if( draw_char < GUI_NUM_DRAW_CHARS ) {
+        DrawingChars[draw_char] = ch;
+    }
 }
 
-static void DrawChar( gui_window *wnd, int row, int col, ATTR attr, char chr )
+static void DrawChar( gui_window *wnd, ORD row, ORD col, ATTR attr, char chr )
 {
     uivtextput( &wnd->vs, row, col, attr, &chr, 1 );
 }
 
-static void DrawText( gui_window *wnd, int row, int col, ATTR attr, char *buff, int length )
+static void DrawText( gui_window *wnd, ORD row, ORD col, ATTR attr, const char *buff, size_t length )
 {
     if( length > 0 ) {
         uivtextput( &wnd->vs, row, col, attr, buff, length );
@@ -199,16 +135,17 @@ static void DrawFrame( gui_window *wnd )
     ATTR        attr, title_attr;
     char        *buffer;
     char        *buff;
-    int         width;
-    int         str_length;
-    int         indent;
-    int         title_extra, closer_amount;
+    size_t      width;
+    size_t      str_length;
+    size_t      indent;
+    size_t      title_extra;
+    int         closer_amount;
     char        lgadget;
     char        mgadget;
     char        rgadget;
     int         inact;
     bool        inact_gadgets;
-    int         len;
+    size_t      len;
 
     if( (wnd->style & GUI_NOFRAME) || !( (wnd->flags & FRAME_INVALID) || (wnd->flags & TITLE_INVALID) ) ) {
         return;
@@ -226,36 +163,36 @@ static void DrawFrame( gui_window *wnd )
     }
     inact_gadgets = GUIGetWindowStyles() & GUI_INACT_GADGETS;
     if( wnd->flags & FRAME_INVALID ) {
-        DrawChar( wnd, wnd->vs.area.height - 1, 0, attr, LL_CORNER( inact ) );
-        DrawChar( wnd, 0, 0, attr, UL_CORNER( inact ) );
-        DrawChar( wnd, 0, wnd->vs.area.width - 1, attr, UR_CORNER( inact ) );
-        DrawChar( wnd, wnd->vs.area.height - 1, wnd->vs.area.width - 1, attr, LR_CORNER( inact ) );
+        DrawChar( wnd, wnd->vs.area.height - 1, 0, attr, DRAWC( FRAME_LL_CORNER, inact ) );
+        DrawChar( wnd, 0, 0, attr, DRAWC( FRAME_UL_CORNER, inact ) );
+        DrawChar( wnd, 0, wnd->vs.area.width - 1, attr, DRAWC( FRAME_UR_CORNER, inact ) );
+        DrawChar( wnd, wnd->vs.area.height - 1, wnd->vs.area.width - 1, attr, DRAWC( FRAME_LR_CORNER, inact ) );
         /* bottom border */
         if( GUIUseGadget( wnd, wnd->hgadget ) ) {
             if( GUIDrawGadgetLine( wnd->hgadget ) ) {
                 DrawChar( wnd, wnd->vs.area.height - 1,
                             wnd->vs.area.width - 1 - GUIGetScrollOffset(),
-                            attr, LRV_BAR( inact ) );
+                            attr, DRAWC( LR_VERT_BAR, inact ) );
             }
         } else {
             area.col = 1;
             area.row = wnd->vs.area.height - 1;
             area.height = 1;
             area.width = wnd->vs.area.width - 2;
-            uivfill( &wnd->vs, area, attr, BOTTOM( inact ) );
+            uivfill( &wnd->vs, area, attr, DRAWC( FRAME_BOTTOM, inact ) );
         }
         /* right border */
         if( GUIUseGadget( wnd, wnd->vgadget ) ) {
             if( GUIDrawGadgetLine( wnd->vgadget ) ) {
                 DrawChar( wnd, wnd->vs.area.height - 1 - GUIGetScrollOffset(),
-                            wnd->vs.area.width - 1, attr, LRH_BAR( inact ) );
+                            wnd->vs.area.width - 1, attr, DRAWC( LR_HORZ_BAR, inact ) );
             }
         } else {
             area.row = 1;
             area.height = wnd->vs.area.height - 2;
             area.col = wnd->vs.area.width - 1;
             area.width = 1;
-            uivfill( &wnd->vs, area, attr, RIGHT( inact ) );
+            uivfill( &wnd->vs, area, attr, DRAWC( FRAME_RIGHT, inact ) );
         }
 
         /* left border */
@@ -263,7 +200,7 @@ static void DrawFrame( gui_window *wnd )
         area.col = 0;
         area.height = wnd->vs.area.height - 2;
         area.width = 1;
-        uivfill( &wnd->vs, area, attr, LEFT( inact ) );
+        uivfill( &wnd->vs, area, attr, DRAWC( FRAME_LEFT, inact ) );
 
         wnd->flags &= ~FRAME_INVALID;
     }
@@ -279,30 +216,30 @@ static void DrawFrame( gui_window *wnd )
         if( GUI_HAS_CLOSER( wnd ) ) {
             closer_amount = 3;
             width -= closer_amount;
-            lgadget = LG_MARK( inact );
+            lgadget = DRAWC( LEFT_GADGET_MARK, inact );
             if( wnd->flags & MAXIMIZED ) {
-                mgadget = RESIZE_GAD( inact );
+                mgadget = DRAWC( RESIZE_GADGET, inact );
             } else {
-                mgadget = MAX_GAD( inact );
+                mgadget = DRAWC( MAXIMIZE_GADGET, inact );
             }
-            rgadget = RG_MARK( inact );
-            DrawChar( wnd, 0, CLOSER_COL - 1, attr, LG_MARK( inact ) );
-            DrawChar( wnd, 0, CLOSER_COL,   attr, CLOSER( inact ) );
-            DrawChar( wnd, 0, CLOSER_COL + 1, attr, RG_MARK( inact ) );
+            rgadget = DRAWC( RIGHT_GADGET_MARK, inact );
+            DrawChar( wnd, 0, CLOSER_COL - 1, attr, DRAWC( LEFT_GADGET_MARK, inact ) );
+            DrawChar( wnd, 0, CLOSER_COL,   attr, DRAWC( CLOSER, inact ) );
+            DrawChar( wnd, 0, CLOSER_COL + 1, attr, DRAWC( RIGHT_GADGET_MARK, inact ) );
         }
         if( GUI_RESIZE_GADGETS_USEABLE( wnd ) ) {
             width -= 2 * GADGET_WIDTH;
             indent = wnd->vs.area.width - GADGET_WIDTH - 1;
             if( wnd->style & GUI_MAXIMIZE ) {
-                lgadget = LG_MARK( inact );
+                lgadget = DRAWC( LEFT_GADGET_MARK, inact );
                 if( wnd->flags & MAXIMIZED ) {
-                    mgadget = RESIZE_GAD( inact );
+                    mgadget = DRAWC( RESIZE_GADGET, inact );
                 } else {
-                    mgadget = MAX_GAD( inact );
+                    mgadget = DRAWC( MAXIMIZE_GADGET, inact );
                 }
-                rgadget = RG_MARK( inact );
+                rgadget = DRAWC( RIGHT_GADGET_MARK, inact );
             } else {
-                lgadget = mgadget = rgadget = TOP( inact );
+                lgadget = mgadget = rgadget = DRAWC( FRAME_TOP, inact );
             }
             DrawChar( wnd, 0, indent, attr, lgadget );
             DrawChar( wnd, 0, indent + 1, attr, mgadget );
@@ -310,15 +247,15 @@ static void DrawFrame( gui_window *wnd )
 
             indent = wnd->vs.area.width - 2 * GADGET_WIDTH - 1;
             if( wnd->style & GUI_MINIMIZE ) {
-                lgadget = LG_MARK( inact );
+                lgadget = DRAWC( LEFT_GADGET_MARK, inact );
                 if( GUI_WND_MINIMIZED( wnd ) ) {
-                    mgadget = RESIZE_GAD( inact );
+                    mgadget = DRAWC( RESIZE_GADGET, inact );
                 } else {
-                    mgadget = MIN_GAD( inact );
+                    mgadget = DRAWC( MINIMIZE_GADGET, inact );
                 }
-                rgadget = RG_MARK( inact );
+                rgadget = DRAWC( RIGHT_GADGET_MARK, inact );
             } else {
-                lgadget = mgadget = rgadget = TOP( inact );
+                lgadget = mgadget = rgadget = DRAWC( FRAME_TOP, inact );
             }
             DrawChar( wnd, 0, indent, attr, lgadget );
             DrawChar( wnd, 0, indent + 1, attr, mgadget );
@@ -328,7 +265,7 @@ static void DrawFrame( gui_window *wnd )
 
     buffer = alloca( wnd->vs.area.width + 1 );
     buff = buffer;
-    memset( buff, TOP( inact ), width ); /* width at least 1 */
+    memset( buff, DRAWC( FRAME_TOP, inact ), width ); /* width at least 1 */
     if( wnd->vs.title != NULL && *wnd->vs.title != '\0' ) {
         str_length = strlen( wnd->vs.title );
         if( ( str_length + TITLE_EXTRA_AMOUNT ) > width ) {
@@ -341,8 +278,7 @@ static void DrawFrame( gui_window *wnd )
         }
         len = ( width - str_length - title_extra ) / 2;
         if( title_extra != 0 ) {
-            buff[len] = LT_MARK( inact );
-            len++;
+            buff[len++] = DRAWC( LEFT_TITLE_MARK, inact );
         }
         if( len > 0 ) {
             DrawText( wnd, 0, wnd->use.col + closer_amount, attr, buffer, len );
@@ -351,24 +287,21 @@ static void DrawFrame( gui_window *wnd )
         buff += len;
         len = 0;
         if( title_extra != 0 ) {
-            buff[len] = TITLE_SP( inact );
-            len++;
+            buff[len++] = DRAWC( TITLE_SPACE, inact );
         }
         memcpy( buff + len, wnd->vs.title, str_length );
         len += str_length;
         if( title_extra != 0 ) {
-            buff[len] = TITLE_SP( inact );
-            len++;
+            buff[len++] = DRAWC( TITLE_SPACE, inact );
         }
         if( len > 0 ) {
-            DrawText( wnd, 0, wnd->use.col + closer_amount + indent, title_attr, buff, len) ;
+            DrawText( wnd, 0, wnd->use.col + closer_amount + indent, title_attr, buff, len ) ;
         }
         indent += len;
         buff += len;
         len = 0;
         if( title_extra != 0 ) {
-            buff[len] = RT_MARK( inact );
-            len++;
+            buff[len++] = DRAWC( RIGHT_TITLE_MARK, inact );
         }
         if( width - indent > 0 ) {
             DrawText( wnd, 0, wnd->use.col + closer_amount + indent, attr, buff, width - indent );
@@ -395,7 +328,7 @@ static void WndClean( gui_window *wnd )
 void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
 {
     gui_control *control;
-    gui_row_num rownum;
+    gui_row_num row_num;
     int         hscroll;
     int         vscroll;
     int         frame_adjust;
@@ -417,13 +350,13 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
         hscroll = 0;
         vscroll = 0;
         if( GUI_WND_VISIBLE( wnd ) ) {
-            if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
-                hscroll += wnd->hgadget->pos;
+            if( GUI_DO_HSCROLL( wnd ) ) {
+                hscroll = wnd->hgadget->pos;
             }
-            if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
-                vscroll += wnd->vgadget->pos;
+            if( GUI_DO_VSCROLL( wnd ) ) {
+                vscroll = wnd->vgadget->pos;
             }
-            COPYAREA( *area, wnd->dirty );
+            COPYRECTX( *area, wnd->dirty );
             if( ( wnd->dirty.col + wnd->dirty.width ) >
                 ( wnd->vs.area.col + wnd->vs.area.width ) ) {
                 wnd->dirty.width = wnd->vs.area.col + wnd->vs.area.width -
@@ -439,9 +372,9 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
                     wnd->background );
 
         if( GUI_WND_VISIBLE( wnd ) && (wnd->flags & DONT_SEND_PAINT) == 0 ) {
-            rownum.start = vscroll + area->row - frame_adjust;
-            rownum.num = area->height;
-            GUIEVENT( wnd, GUI_PAINT, &rownum );
+            row_num.start = vscroll + area->row - frame_adjust;
+            row_num.num = area->height;
+            GUIEVENT( wnd, GUI_PAINT, &row_num );
         }
         for( control = wnd->controls; control != NULL; control = control->sibling ) {
             GUIRefreshControl( control->parent, control->id );
@@ -462,7 +395,7 @@ static void DrawGadget( gui_window *wnd, p_gadget gadget, gui_flags flag )
  * GUIWndUpdate -- refresh the portions of the given window which require it
  */
 
-void GUIWndUpdate( gui_window *wnd )
+void GUIAPI GUIWndUpdate( gui_window *wnd )
 {
     if( !GUIIsOpen( wnd ) ) {
         return;

@@ -19,7 +19,7 @@
 :cmt. .*
 :cmt. :OPTLIST.
 .*
-.if &e'&$SWmf eq 1 .do begin
+.if &e'&$SWmf ne 0 .do begin
 :OPT refid='SWmf' name='mf'.
 .ix 'options' 'mf'
 (32-bit only)
@@ -31,14 +31,14 @@ the target system is Netware in which case "small" is selected.
 .ix 'macros' '__SW_MF'
 .ix 'macros' '__FLAT__'
 The following macros will be predefined.
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .ix 'macros' 'M_386FM'
 .ix 'macros' '_M_386FM'
 .do end
 .illust begin
 .kwm __SW_MF
 .kwm __FLAT__
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .kwm M_386FM
 .kwm _M_386FM
 .do end
@@ -65,22 +65,22 @@ The following macros will be predefined.
 .illust end
 additional for 16-bit compiler
 .ix 'macros' 'M_I86SM'
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .ix 'macros' '_M_I86SM'
 .do end
 .illust begin
 .kwm M_I86SM
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .kwm _M_I86SM
 .do end
 .illust end
 additional for 32-bit compiler
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .ix 'macros' 'M_386SM'
 .ix 'macros' '_M_386SM'
 .do end
 .illust begin
-.if &version ge 107 .do begin
+.if &vermacro ge 1070 .do begin
 .kwm M_386SM
 .kwm _M_386SM
 .do end

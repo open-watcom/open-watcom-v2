@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@ _WCRTDATA FILE _WCDATA __iob[_NFILES] = {
     { NULL, 0, NULL, _READ,         STDIN_FILENO,  0, 0  }  /* stdin */
    ,{ NULL, 0, NULL, _WRITE,        STDOUT_FILENO, 0, 0  }  /* stdout */
    ,{ NULL, 0, NULL, _WRITE,        STDERR_FILENO, 0, 0  }  /* stderr */
-#if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OSI__ )
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
    ,{ NULL, 0, NULL, _READ|_WRITE,  STDAUX_FILENO, 0, 0  }  /* stdaux */
    ,{ NULL, 0, NULL, _WRITE,        STDPRN_FILENO, 0, 0  }  /* stdprn */
 #endif

@@ -1,0 +1,6 @@
+#define MSG_LANG_SPACING    13000
+
+#define MSG_LANG_BASE       10
+#define MSG_USAGE_BASE      50
+
+#include "wflmsgs.grh"

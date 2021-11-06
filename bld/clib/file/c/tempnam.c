@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,15 +34,18 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdlib.h>
-#include <io.h>
-#include <mbstring.h>
+#include <unistd.h>
+#if defined( CLIB_USE_MBCS_TRANSLATION )
+    #include <mbstring.h>
+#endif
 #include <process.h>
 #include <stdio.h>
 #include <string.h>
 #include "pathmac.h"
+#include "_tcsstr.h"
+
 
 #define UNIQUE                  5
-
 
 static CHAR_TYPE *try_dir( const CHAR_TYPE *dir, const CHAR_TYPE *prefix )
 {
@@ -60,17 +63,9 @@ static CHAR_TYPE *try_dir( const CHAR_TYPE *dir, const CHAR_TYPE *prefix )
     }
 
     /*** Initialize addslash ***/
-#ifdef __WIDECHAR__
-    numchars = wcslen( dir );
-#else
-    numchars = _mbslen( (unsigned char *)dir );
-#endif
+    numchars = _TCSLEN( dir );
     if( numchars > 0 && prefix[0] != DIR_SEP ) {
-#ifdef __WIDECHAR__
-        if( dir[numchars - 1] != DIR_SEP ) {
-#else
-        if( _mbccmp( (unsigned char *)_mbsninc( (unsigned char *)dir, numchars - 1 ), (unsigned char *)"\\" ) ) {
-#endif
+        if( _TCSCMP( _TCSNINC( dir, numchars - 1 ), DIR_SEP_STR ) ) {
             addslash = 1;
         }
     }
@@ -86,7 +81,7 @@ static CHAR_TYPE *try_dir( const CHAR_TYPE *dir, const CHAR_TYPE *prefix )
     for( number=1,alive=1; alive; number++ ) {
         __F_NAME(strcpy,wcscpy)( buf, dir );
         if( addslash ) {
-            __F_NAME(strcat,wcscat)( buf, STRING( "\\" ) );
+            __F_NAME(strcat,wcscat)( buf, DIR_SEP_STR );
         }
         __F_NAME(strcat,wcscat)( buf, prefix );
         __F_NAME(utoa,_utow)( number, buf + __F_NAME(strlen,wcslen)(buf), 10 );
@@ -101,7 +96,7 @@ static CHAR_TYPE *try_dir( const CHAR_TYPE *dir, const CHAR_TYPE *prefix )
 }
 
 
-_WCRTLINK CHAR_TYPE *__F_NAME(_tempnam,_wtempnam)( const CHAR_TYPE *dir, const CHAR_TYPE *prefix )
+_WCRTLINK CHAR_TYPE *__F_NAME(tempnam,_wtempnam)( const CHAR_TYPE *dir, const CHAR_TYPE *prefix )
 {
     CHAR_TYPE *         p;
     const CHAR_TYPE *   envp;
@@ -119,8 +114,8 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_tempnam,_wtempnam)( const CHAR_TYPE *dir, const C
         if( p != NULL )  return( p );
     }
 
-    /*** Try the _P_tmpdir directory (#defined in stdio.h) ***/
-    p = try_dir( __F_NAME(_P_tmpdir,_wP_tmpdir), prefix );
+    /*** Try the P_tmpdir directory (#defined in stdio.h) ***/
+    p = try_dir( __F_NAME(P_tmpdir,wP_tmpdir), prefix );
     if( p != NULL )  return( p );
 
     /*** Try the current directory ***/

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
     UINT        msecs, start;
     UINT_PTR    timer;
     HDC         dc, tdc;
-    HBITMAP     old;
+    HBITMAP     old_hbitmap;
     HWND        w666;
     RECT        rect, arect;
     PAINTSTRUCT ps;
@@ -68,10 +68,10 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
 #endif
     bool        ret;
 
-    static BITMAP    bm;
-    static HBITMAP   logo;
-    static HBRUSH    brush;
-    static COLORREF  color;
+    static BITMAP   bm;
+    static HBITMAP  logo_hbitmap;
+    static HBRUSH   brush;
+    static COLORREF color;
 
     ret = false;
 
@@ -90,11 +90,11 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
         hInstUser = GetModuleHandle( "USER32.DLL" );
         pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
         if( pfnLoadImage != NULL ) {
-            logo = pfnLoadImage( wMainInst, "APPLBITMAP", IMAGE_BITMAP, 0, 0,
+            logo_hbitmap = pfnLoadImage( wMainInst, "APPLBITMAP", IMAGE_BITMAP, 0, 0,
                                  LR_LOADMAP3DCOLORS );
         } else {
 #endif
-            logo = LoadBitmap( wMainInst, "APPLBITMAP" );
+            logo_hbitmap = LoadBitmap( wMainInst, "APPLBITMAP" );
 #ifdef __NT__
         }
 #endif
@@ -102,7 +102,7 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
         color = GetSysColor( COLOR_BTNFACE );
         brush = CreateSolidBrush( color );
 
-        GetObject( logo, sizeof( BITMAP ), &bm );
+        GetObject( logo_hbitmap, sizeof( BITMAP ), &bm );
         ret = true;
         break;
 
@@ -144,9 +144,9 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
             start = (arect.right - arect.left - bm.bmWidth) / 2;
             MapWindowPoints( w666, hwnd, (POINT *)&rect, 2 );
             tdc = CreateCompatibleDC( dc );
-            old = SelectObject( tdc, logo );
+            old_hbitmap = SelectObject( tdc, logo_hbitmap );
             BitBlt( dc, start, rect.top + 5, bm.bmWidth, bm.bmHeight, tdc, 0, 0, SRCCOPY );
-            SelectObject( tdc, old );
+            SelectObject( tdc, old_hbitmap );
             DeleteDC( tdc );
             EndPaint( hwnd, &ps );
         }
@@ -162,8 +162,8 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
         break;
 
     case WM_DESTROY:
-        if( logo != NULL ) {
-            DeleteObject( logo );
+        if( logo_hbitmap != NULL ) {
+            DeleteObject( logo_hbitmap );
         }
         if( brush != NULL ) {
             DeleteObject( brush );

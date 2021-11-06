@@ -26,8 +26,8 @@ object_files =
 object_files +=  setimpl.obj
 
 ppact.wlb : makefile
-    @%write $^@
-    @for %i in ($(object_files)) do @%append $^@ + %i
+    @%write $@
+    @for %i in ($(object_files)) do @%append $@ + %i
 
 ppact.lib : $(object_files) ppact.wlb
     @rm -f ppact.lib
@@ -35,10 +35,10 @@ ppact.lib : $(object_files) ppact.wlb
 !endif
 
 ppact.lnk : makefile
-    @%create  $^@
-    @%append $^@ SYSTEM  os2v2
-    @%append $^@ OPTION  quiet, eliminate, map, show, caseexact
-    @%append $^@ DEBUG   dwarf
+    @%create  $@
+    @%append $@ SYSTEM  os2v2
+    @%append $@ OPTION  quiet, eliminate, map, show, caseexact
+    @%append $@ DEBUG   dwarf
 
 !ifdef TRPRTDLL
 ppact.exe : makefile ppact.lnk ppact.obj

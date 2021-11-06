@@ -14,7 +14,7 @@ test_flags_386 =
 test_flags_i86 = -mm -zm
 test_flags_axp =
 
-!include testenv1.mif
+!include testenv.mif
 
 objs = &
     compmat.obj &
@@ -32,11 +32,8 @@ opt_link = LIBRARY matrix.lib
 
 exes = test.$(exe) tmatrix.$(exe)
 
-test : .symbolic start clean start_test matrix.lib test.lnk $(exes) common_set_result
-    @%make clean
-
-start_test : .symbolic
-    @%make common_start_test
+test : .symbolic start matrix.lib test.lnk $(exes)
+    $(noecho)%make common_set_result
 
 matrix.lib : $(objs) matrix.lbc
     @%make set_path_wlib

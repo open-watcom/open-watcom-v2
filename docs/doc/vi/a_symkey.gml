@@ -43,13 +43,14 @@ command, and unmapping keys using the
 .keyref unmap
 command, it is useful to be able to specify the key that you are
 mapping symbolically, especially if it is a function key, a cursor key
-or other special key.  There are a number of pre-defined keys
-symbols that are recognized when specifying which key is being mapped/unmapped.
+or other special key.
+There are a number of pre-defined keys symbols that are recognized when
+specifying which key is being mapped/unmapped.
 .np
 The next section describes the symbol used to represent the key, and
-what the key actually is.  These symbols are also used throughout
-this guide to represent a special key.
+what the key actually is.
+These symbols are also used throughout this guide to represent a special key.
 .* ******************************************************************
 .section 'Symbols and Meaning'
 .* ******************************************************************
-:INCLUDE file='symkey'
+:INCLUDE file='symkey'.

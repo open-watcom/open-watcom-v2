@@ -6,10 +6,11 @@ stacking of any data type.
 :P.
 A second template parameter specifies the storage class used to implement the
 stack.  The
-.MONO WCValSList,
-.MONO WCIsvSList
+:MONO.WCValSList
+:CONT.,
+:MONO.WCIsvSList
 and
-.MONO WCPtrSList
+:MONO.WCPtrSList
 classes are appropriate storage classes.
 .*
 :CLFNM.WCStack<Type,FType>
@@ -21,38 +22,38 @@ The &cls. is a templated class used to create objects which
 maintain data in a stack.
 :P.
 In the description of each member function, the text
-.MONO Type
+:MONO.Type
 is used to indicate the template parameter defining the type of the
 elements stored in the stack.
 The text
-.MONO FType
+:MONO.FType
 is used to indicate the template parameter defining the storage class
 used to maintain the stack.
 :P.
 For example, to create a stack of integers, the
-.MONO WCStack<int,WCValSList<int> >
+:MONO.WCStack<int,WCValSList<int> >
 class can be used.
 The
-.MONO WCStack<int *,WCPtrSList<int> >
+:MONO.WCStack<int *,WCPtrSList<int> >
 class will create a stack of pointers to integers.
 To create an intrusive stack of objects of type
 :HP1.isv_link:eHP1.
 (derived from the
-.MONO WCSLink
+:MONO.WCSLink
 class), the
-.MONO WCStack<
+:MONO.WCStack<
 :HP1.isv_link:eHP1.
-.MONO *,WCIsvSList<
+:MONO.*,WCIsvSList<
 :HP1.isv_link:eHP1.
-.MONO > >
+:MONO.> >
 class can be used.
 :P.
 :CMT. state WCExcept is base class
 :INCLUDE file='_EXPT_BC'.
 :HDG.Requirements of Type
-.MONO Type
+:MONO.Type
 must provide any constructors and/or operators required by the
-.MONO FType
+:MONO.FType
 class.
 :HDG.Public Member Functions
 The following member functions are declared in the public interface:
@@ -81,12 +82,14 @@ The following member functions are declared in the public interface:
 :SNPCD cd_idx='c'.WCStack();
 :eSNPL.
 :SMTICS.
-The &fn. creates an empty &obj.:PERIOD.
+The &fn. creates an empty &obj.
+:PERIOD.
 The
-.MONO FType
+:MONO.FType
 storage class constructor performs the initialization.
 :RSLTS.
-The &fn. creates an initialized &obj.:PERIOD.
+The &fn. creates an initialized &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -102,21 +105,22 @@ The &fn. creates an initialized &obj.:PERIOD.
 :SNPFLF          .         void (*deallocator)( void *, size_t ) );
 :eSNPL.
 :SMTICS.
-The &fn. creates an empty &obj.:PERIOD.
+The &fn. creates an empty &obj.
+:PERIOD.
 If
-.MONO FType
+:MONO.FType
 is either the
-.MONO WCValSList
+:MONO.WCValSList
 or
-.MONO WCPtrSList
+:MONO.WCPtrSList
 class, then the :HP1.allocator:eHP1.
 function is registered to perform all memory allocations of the stack
 elements, and the :HP1.deallocator:eHP1.
 function to perform all freeing of the stack elements' memory.
 The :HP1.allocator:eHP1. and :HP1.deallocator:eHP1. functions are ignored if
-.MONO FType
+:MONO.FType
 is the
-.MONO WCIsvSList
+:MONO.WCIsvSList
 class.
 :INCLUDE file='_ALOCFNS'.
 :P.
@@ -124,21 +128,21 @@ The :HP1.allocator:eHP1. and :HP1.deallocator:eHP1. functions may assume that
 for a list object instance, the
 :HP1.allocator:eHP1. is always called with the same first argument
 (the size of the memory to be allocated).  If
-.MONO FType
+:MONO.FType
 is the
-.MONO WCValSList<Type>
+:MONO.WCValSList<Type>
 class, then the
-.MONO WCValSListItemSize(Type)
+:MONO.WCValSListItemSize(Type)
 .ix 'WCValSListItemSize' 'macro'
 macro returns the size of the elements which are allocated by the
 :HP1.allocator:eHP1. function.  Similarly, the
-.MONO WCPtrSListItemSize( Type )
+:MONO.WCPtrSListItemSize( Type )
 .ix 'WCPtrSListItemSize' 'macro'
 macro returns the size of
-.MONO WCPtrSList<Type>
+:MONO.WCPtrSList<Type>
 elements.
 :P.The
-.MONO FType
+:MONO.FType
 storage class constructor performs the initialization of the stack.
 :RSLTS.
 The &fn. creates an initialized &obj. and registers the :HP1.allocator:eHP1.
@@ -158,12 +162,12 @@ and :HP1.deallocator:eHP1. functions.
 :SMTICS.
 The &fn. destroys the &obj.:PERIOD
 The
-.MONO FType
+:MONO.FType
 storage class destructor performs the destruction.
 :INCLUDE file='_DTOR'.
 :P.
 If the
-.MONO not_empty
+:MONO.not_empty
 .ix 'not_empty' 'exception'
 exception is enabled,
 the exception is thrown if the stack is not empty of stack elements.
@@ -189,9 +193,9 @@ The stack object is not destroyed and re-created by this operator, so
 the object destructor is not invoked.
 The stack elements are not cleared by the stack class.
 However, the class used to maintain the stack,
-.MONO FType,
-may clear the items as part of the
-.MONO clear
+:MONO.FType
+:CONT., may clear the items as part of the
+:MONO.clear
 member function for that class.
 If it does not clear the items,
 any stack items still in the list are lost unless pointed to by some
@@ -253,19 +257,19 @@ The stack element is also removed from the stack.
 :P.
 If the stack is empty, one of two exceptions can be thrown.
 If the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, then it will be thrown.
 Otherwise, the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception will be thrown, if enabled.
 :RSLTS.
 The top stack element is removed and returned.
 The return value is determined by the
-.MONO get
+:MONO.get
 member function of the
-.MONO FType
+:MONO.FType
 class if there are no elements on the stack.
 :SALSO.
 :SAL typ='fun'.isEmpty
@@ -288,7 +292,7 @@ The &fn. is used to push the data onto the top of the stack.
 It will be the first element on the stack to be popped.
 :P.
 If the push fails, the
-.MONO out_of_memory
+:MONO.out_of_memory
 .ix 'out_of_memory' 'exception'
 exception will be thrown, if enabled, and the stack will remain unchanged.
 :RSLTS.
@@ -314,19 +318,19 @@ The stack element is not removed from the stack.
 :P.
 If the stack is empty, one of two exceptions can be thrown.
 If the
-.MONO empty_container
+:MONO.empty_container
 .ix 'empty_container' 'exception'
 exception is enabled, then it will be thrown.
 Otherwise, the
-.MONO index_range
+:MONO.index_range
 .ix 'index_range' 'exception'
 exception will be thrown, if enabled.
 :RSLTS.
 The top stack element is returned.
 The return value is determined by the
-.MONO find
+:MONO.find
 member function of the
-.MONO FType
+:MONO.FType
 class if there are no elements on the stack.
 :SALSO.
 :SAL typ='fun'.isEmpty

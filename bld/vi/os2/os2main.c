@@ -40,7 +40,7 @@
  */
 static void getEXEName( char *name )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[_MAX_PATH];
     char        tmppath[_MAX_PATH];
 
@@ -61,10 +61,10 @@ void main( int argc, char *argv[] )
 
     argc = argc;
     getEXEName( argv[0] );
-#ifdef __OS2V2__
-    VarAddGlobalStr( "OS", "os2v2" );
+#if defined(_M_I86)
+    GlobVarAddStr( GLOBVAR_OS, "os2" );
 #else
-    VarAddGlobalStr( "OS", "os2" );
+    GlobVarAddStr( GLOBVAR_OS, "os2v2" );
 #endif
     InitialStack();
     Comspec = getenv( "COMSPEC" );

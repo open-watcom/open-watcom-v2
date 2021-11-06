@@ -1,4 +1,4 @@
-.func fstat _fstat _fstati64 _wfstat _wfstati64
+.func fstat _fstat _fstati64
 .synop begin
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -10,12 +10,6 @@ int _fstat( int &fd, struct stat *buf );
 .do end
 int _fstati64( int handle, struct _stati64 *buf );
 .ixfunc2 '&OsIo' &func64
-int _wfstat( int handle, struct _stat *buf );
-.ixfunc2 '&OsIo' &wfunc
-.ixfunc2 '&Wide' &wfunc
-int _wfstati64( int handle, struct _stati64 *buf );
-.ixfunc2 '&OsIo' &wfunc64
-.ixfunc2 '&Wide' &wfunc64
 .synop end
 .desc begin
 The
@@ -23,29 +17,20 @@ The
 functions obtain information about an open file whose file
 &handle is
 .arg &fd
-.ct .li .
+.period
 This information is placed in the structure located at the address
 indicated by
 .arg buf
-.ct .li .
+.period
 .im statdesc
 .im ansiconf
 .np
 The
-.kw _fstati64
-.ct ,
-.kw _wfstat
-.ct , and
-.kw _wfstati64
-functions differ from
+.reffunc _fstati64
+function differ from
 .id &funcb.
 in the type of structure that they are
 asked to fill in.
-The
-.kw _wfstat
-and
-.kw _wfstati64
-functions deal with wide character strings.
 The differences in the structures are described above.
 .desc end
 .im statrtn
@@ -60,8 +45,11 @@ argument is not a valid file &handle..
 .endterm
 .error end
 .see begin
-.seelist fstat creat dup dup2 fcntl fsys_stat fsys_fstat
-.seelist fstat open sopen stat pipe
+.seelist fstat creat dup dup2 fcntl
+.if '&machsys' eq 'QNX' .do begin
+.seelist fsys_stat fsys_fstat
+.do end
+.seelist fstat open _sopen stat pipe
 .see end
 .exmp begin
 #include <stdio.h>
@@ -84,5 +72,5 @@ void main()
     }
 }
 .exmp end
-.class POSIX
+.class POSIX 1003.1
 .system

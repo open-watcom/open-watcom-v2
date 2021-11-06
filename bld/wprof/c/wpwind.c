@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,8 +78,7 @@ void WPAdjustRowHeight( a_window wnd, bool initial_set )
     GUIGetClientRect( WndGui( wnd ), &rect );
     old_height = full_rect.height;
     full_rect.height -= rect.height;
-    full_rect.height += (WndTitleSize( wnd ) + WndRows( wnd ))
-                        * WndMaxCharY( wnd );
+    full_rect.height += ( WndTitleRows( wnd ) + WndRows( wnd ) ) * WndMaxCharY( wnd );
     if( old_height != full_rect.height ) {
         if( old_height > full_rect.height ) {
             new_height = full_rect.height + WndMaxCharY( wnd );

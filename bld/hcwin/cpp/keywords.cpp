@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,8 +119,7 @@ inline KWoffset::KWoffset( uint_32 off )
 
 KWKey::KWKey( char const kword[] )
 {
-    size_t len = strlen( kword ) + 1;
-    _keyword = new char[len];
+    _keyword = new char[strlen( kword ) + 1];
     strcpy( _keyword, kword );
 }
 
@@ -176,7 +176,7 @@ bool KWKey::lessThan( BtreeData * other )
 
 uint_32 KWKey::size()
 {
-    return (uint_32) strlen( _keyword )+1;
+    return (uint_32)( strlen( _keyword ) + 1 );
 }
 
 
@@ -184,7 +184,7 @@ uint_32 KWKey::size()
 
 int KWKey::dump( OutFile * dest )
 {
-    dest->write( _keyword, strlen( _keyword ) + 1 );
+    dest->write( _keyword );
     return 1;
 }
 
@@ -225,8 +225,7 @@ uint_32 KWRec::size()
 
 int KWRec::dump( OutFile * dest )
 {
-    size_t len = strlen( _keyword ) + 1;
-    dest->write( _keyword, len );
+    dest->write( _keyword );
     dest->write( _count );
     dest->write( _dataOffset );
     return 1;
@@ -265,20 +264,11 @@ void KWRec::addOffset( uint_32 new_off )
 }
 
 
-char const HFKwbtree::_keyMagic[Btree::_magNumSize] = {
-    0x3B, 0x29, 0x02, 0x00, 0x00,
-    0x08, 0x69, 0x32, 0x34, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00
-};
-
-
 //  HFKwbtree::HFKwbtree
 
 HFKwbtree::HFKwbtree( HFSDirectory * d_file )
 {
-    _words = new Btree( _keyMagic );
+    _words = new Btree( false, "i24" );
     _dataFile = new HFKwdata( d_file, this );
     _mapFile = new HFKwmap( d_file, this );
     _haveSetOffsets = false;

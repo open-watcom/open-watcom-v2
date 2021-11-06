@@ -1,80 +1,84 @@
-.func strnicmp _strnicmp _fstrnicmp _wcsnicmp _mbsnicmp _fmbsnicmp
+.func _strnicmp _fstrnicmp _wcsnicmp _mbsnicmp _fmbsnicmp strnicmp
+.ansiname _strnicmp
 .synop begin
 #include <string.h>
-int strnicmp( const char *s1,
-              const char *s2,
-              size_t len );
-.ixfunc2 '&String' &funcb
-.ixfunc2 '&Compare' &funcb
-.if &'length(&_func.) ne 0 .do begin
 int _strnicmp( const char *s1,
                const char *s2,
                size_t len );
-.ixfunc2 '&String' &_func
-.ixfunc2 '&Compare' &_func
-.do end
-.if &farfnc eq 1 .do begin
+.ixfunc2 '&String' _strnicmp
+.ixfunc2 '&Compare' _strnicmp
+.if &farfnc ne 0 .do begin
 int _fstrnicmp( const char __far *s1,
                 const char __far *s2,
                 size_t len );
-.ixfunc2 '&String' &ffunc
-.ixfunc2 '&Compare' &ffunc
+.ixfunc2 '&String' _fstrnicmp
+.ixfunc2 '&Compare' _fstrnicmp
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int _wcsnicmp( const wchar_t *s1,
                const wchar_t *s2,
                size_t len );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Compare' &wfunc
-.ixfunc2 '&Wide' &wfunc
+.ixfunc2 '&String' _wcsnicmp
+.ixfunc2 '&Compare' _wcsnicmp
+.ixfunc2 '&Wide' _wcsnicmp
 .do end
 .if &'length(&mfunc.) ne 0 .do begin
 #include <mbstring.h>
 int _mbsnicmp( const unsigned char *s1,
                const unsigned char *s2,
                size_t n );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Compare' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
+.ixfunc2 '&String' _mbsnicmp
+.ixfunc2 '&Compare' _mbsnicmp
+.ixfunc2 '&Multibyte' _mbsnicmp
 .do end
 .if &'length(&fmfunc.) ne 0 .do begin
 int _fmbsnicmp( const unsigned char __far *s1,
                 const unsigned char __far *s2,
                 size_t n );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Compare' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&String' _fmbsnicmp
+.ixfunc2 '&Compare' _fmbsnicmp
+.ixfunc2 '&Multibyte' _fmbsnicmp
 .do end
+
+.deprec
+int strnicmp( const char *s1,
+              const char *s2,
+              size_t len );
+.ixfunc2 '&String' strnicmp
+.ixfunc2 '&Compare' strnicmp
 .synop end
 .desc begin
-The
-.id &funcb.
-function compares, without case sensitivity, the string
-pointed to by
+The function compares, without case sensitivity,
+the string pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
 .ct , for at most
 .arg len
 characters.
-.im ansiconf
-.im farparm
-.im widefun1
-.im mbsffunc
+All uppercase characters from
+.arg s1
+and
+.arg s2
+are mapped to lowercase for the purposes of doing the comparison.
+.farfuncp &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
+.mbcsfunc &mfunc. &funcb.
+.farfuncp &fmfunc. &mfunc.
+.np
+.deprfunc strnicmp _strnicmp
 .desc end
 .return begin
-The
-.id &funcb.
-function returns an integer less than, equal to, or greater
-than zero, indicating that the string pointed to by
+The function returns an integer less than, equal to,
+or greater than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by
 .arg s2
-.ct .li .
+.period
 .return end
 .see begin
-.seelist strnicmp strcmp stricmp strncmp
+.seelist strcmp _stricmp strncmp strcasecmp strncasecmp
 .see end
 .exmp begin
 #include <stdio.h>
@@ -82,10 +86,10 @@ is less than, equal to, or greater than the string pointed to by
 
 void main()
   {
-    printf( "%d\n", strnicmp( "abcdef", "ABCXXX", 10 ) );
-    printf( "%d\n", strnicmp( "abcdef", "ABCXXX",  6 ) );
-    printf( "%d\n", strnicmp( "abcdef", "ABCXXX",  3 ) );
-    printf( "%d\n", strnicmp( "abcdef", "ABCXXX",  0 ) );
+    printf( "%d\n", _strnicmp( "abcdef", "ABCXXX", 10 ) );
+    printf( "%d\n", _strnicmp( "abcdef", "ABCXXX",  6 ) );
+    printf( "%d\n", _strnicmp( "abcdef", "ABCXXX",  3 ) );
+    printf( "%d\n", _strnicmp( "abcdef", "ABCXXX",  0 ) );
   }
 .exmp output
 -20

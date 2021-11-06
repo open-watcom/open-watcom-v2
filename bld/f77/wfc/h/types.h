@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +33,10 @@
 #include "itdefn.h"
 
 
-#define SIZE_UNDEF  ((uint)-1)
+#define SIZE_UNDEF  ((size_t)-1)
 
 extern uint         TypeSize( TYPE typ );
 extern uint         StorageSize( TYPE typ );
 extern intstar4     ITIntValue( itnode *it );
 extern char         *TypeKW( TYPE typ );
-extern PTYPE        ParmType( TYPE typ, uint size );
+extern PTYPE        ParmType( TYPE typ, size_t size );

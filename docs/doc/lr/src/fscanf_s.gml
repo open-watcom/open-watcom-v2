@@ -8,7 +8,7 @@ int fscanf_s( FILE * restrict stream,
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdio.h>
 #include <wchar.h>
-int fwscanf_s( FILE * restrict stream, 
+int fwscanf_s( FILE * restrict stream,
       const wchar_t * restrict format, ... );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
@@ -36,7 +36,7 @@ performed input before discovering the runtime-constraint violation.
 The
 .id &funcb.
 function is equivalent to
-.kw fscanf
+.reffunc fscanf
 except that the
 .mono c,
 .mono s,
@@ -47,8 +47,8 @@ suppression is indicated by a
 .mono *
 .ct ).
 The first of these arguments is the same as for
-.kw fscanf
-.ct .li .
+.reffunc fscanf
+.period
 That argument is immediately followed in the argument list by the second
 argument, which has type
 .kw size_t
@@ -66,9 +66,9 @@ The
 function is identical to
 .id &funcb.
 except that it accepts a
-wide-character string argument for
+wide character string argument for
 .arg format
-.ct .li .
+.period
 .do end
 .desc end
 .*
@@ -111,8 +111,8 @@ void main( void )
     if( in_data != NULL ) {
         fscanf_s( in_data, "%s %s %d %d",
                 weekday, sizeof( weekday ),
-		month, sizeof( month ),
-		&day, &year );
+                month, sizeof( month ),
+                &day, &year );
         printf_s( "Weekday=%s Month=%s Day=%d Year=%d\n",
                 weekday, month, day, year );
         fclose( in_data );

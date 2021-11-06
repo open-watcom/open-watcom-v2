@@ -12,7 +12,7 @@ function loads the float pointed to by
 in Microsoft binary format and converts it to IEEE format, storing the
 result &into the float pointed to by
 .arg dest
-.ct .li .
+.period
 .np
 The range of Microsoft binary format floats is 2.938736e-39 to
 1.701412e+38.

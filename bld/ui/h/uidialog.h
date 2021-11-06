@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ typedef bool (UIPICKGETTEXT)( const void *data_handle, unsigned item, char *buff
 
 typedef struct an_edit_control {
     char            *buffer;
-    unsigned        length;
+    size_t          length;
 } an_edit_control;
 
 typedef struct a_list_info {
@@ -77,7 +77,7 @@ typedef struct a_list_info {
     a_gadget        gadget;
     unsigned        line;
     unsigned        row;
-    ATTR            attr;       // attribute for highlighted item
+    UIATTR          uiattr;         // attribute for highlighted item
 } a_list_info;
 
 typedef struct a_choice {
@@ -176,9 +176,9 @@ extern void             uiprinthotspots( VSCREEN *, VFIELD * );
 extern void             uioffhotspots( VSCREEN *, VFIELD * );
 extern ui_event         uihotkeyfilter( a_dialog *, ui_event );
 extern ui_event         uihotspotfilter( VSCREEN *, VFIELD *, ui_event );
-extern char             uihotspot( VSCREEN *, char *str, SAREA *parea, a_hot_spot_flags flags );
+extern char             uihotspot( VSCREEN *, const char *str, SAREA *parea, a_hot_spot_flags flags );
 extern void             uidisplayhotspot( VSCREEN *w, VFIELD *vfield );
-extern char             uidrawhottext( VSCREEN *, char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
+extern char             uidrawhottext( VSCREEN *, const char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
 
 extern unsigned         ui_split_line( char **, char *, unsigned );
 extern VSCREEN          *uiinitdialog( const char *title, ATTR, char **, uisize, uisize, int, int );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,122 +88,111 @@ void GUIScroll( int change, p_gadget gadget )
     }
 }
 
-static void InitScroll( p_gadget gadget, int pos )
+static void InitScroll( p_gadget gadget, guix_ord scr_pos )
 {
-    if( pos < 0 ) {
-        return;
+    if( scr_pos > ( gadget->total_size - gadget->page_size ) ) {
+        scr_pos = gadget->total_size - gadget->page_size;
     }
-    if( pos > ( gadget->total_size - gadget->page_size ) ) {
-        pos = gadget->total_size - gadget->page_size;
-    }
-    if( pos < 0 ) {
-        pos = 0;
-    }
-    GUISetShowGadget( gadget, true, true, pos );
+    GUISetShowGadget( gadget, true, true, scr_pos );
 }
 
-
-static void Scrl( p_gadget gadget, gui_ord scroll_pos, bool scale,
-                  void (*fn)( p_gadget, int ) )
+static void SetScroll( p_gadget gadget, guix_ord scr_pos )
 {
-    gui_coord coord;
-    gui_ord   pos;
+   GUIScroll( (int)scr_pos - gadget->pos, gadget );
+}
+
+static void Scrl( p_gadget gadget, gui_ord scroll_pos, void (*fn)( p_gadget, guix_ord ) )
+{
+    guix_ord    scr_pos;
 
     if( gadget != NULL ) {
-        if( scale ) {
-            if( gadget->dir == VERTICAL ) {
-                coord.y  = scroll_pos;
-            } else {
-                coord.x = scroll_pos;
-            }
-            GUIScaleToScreenR( &coord );
-            if( gadget->dir == VERTICAL ) {
-                pos  = coord.y;
-            } else {
-                pos = coord.x;
-            }
-            if( ( pos == 0 ) && ( scroll_pos != 0 ) ) {
-                pos++;
-            }
-            scroll_pos = pos;
+        if( gadget->dir == VERTICAL ) {
+            scr_pos = GUIScaleToScreenV( scroll_pos );
+        } else {
+            scr_pos = GUIScaleToScreenH( scroll_pos );
         }
-        (*fn)( gadget, scroll_pos );
+        if( ( scr_pos == 0 ) && ( scroll_pos != 0 ) ) {
+            scr_pos++;
+        }
+        (*fn)( gadget, scr_pos );
     }
 }
 
-static void SetScroll( p_gadget gadget, gui_ord pos )
+static void ScrlText( p_gadget gadget, guix_ord scroll_pos, void (*fn)( p_gadget, guix_ord ) )
 {
-   GUIScroll( (int)pos - gadget->pos, gadget );
+    if( gadget != NULL ) {
+        (*fn)( gadget, scroll_pos );
+    }
 }
 
 /*
  * GUIInitHScroll - init the horizontal scroll position
  */
 
-void GUIInitHScroll( gui_window * wnd, gui_ord hscroll_pos )
+void GUIAPI GUIInitHScroll( gui_window * wnd, gui_ord hscroll_pos )
 {
-    Scrl( wnd->hgadget, hscroll_pos, true, &InitScroll );
+    Scrl( wnd->hgadget, hscroll_pos, &InitScroll );
 }
 
 /*
  * GUIInitHScrollCol - init the horizontal scroll position
  */
 
-void GUIInitHScrollCol( gui_window * wnd, int hscroll_pos )
+void GUIAPI GUIInitHScrollCol( gui_window * wnd, gui_text_ord hscroll_pos )
 {
-    Scrl( wnd->hgadget, hscroll_pos, false, &InitScroll );
+    ScrlText( wnd->hgadget, hscroll_pos, &InitScroll );
 }
 
 /*
  * GUIInitVScroll - init the vertical scroll position
  */
 
-void GUIInitVScroll( gui_window * wnd, gui_ord vscroll_pos )
+void GUIAPI GUIInitVScroll( gui_window * wnd, gui_ord vscroll_pos )
 {
-    Scrl( wnd->vgadget, vscroll_pos, true, &InitScroll );
+    Scrl( wnd->vgadget, vscroll_pos, &InitScroll );
 }
 
 /*
  * GUIInitVScrollRow - init the vertical scroll position
  */
 
-void GUIInitVScrollRow( gui_window * wnd, int vscroll_pos )
+void GUIAPI GUIInitVScrollRow( gui_window * wnd, gui_text_ord vscroll_pos )
 {
-    Scrl( wnd->vgadget, vscroll_pos, false, &InitScroll );
+    ScrlText( wnd->vgadget, vscroll_pos, &InitScroll );
 }
 
 /*
  * GUISetHScroll - set the horizontal scroll position
  */
 
-void GUISetHScroll( gui_window * wnd, gui_ord hscroll_pos )
+void GUIAPI GUISetHScroll( gui_window * wnd, gui_ord hscroll_pos )
 {
-    Scrl( wnd->hgadget, hscroll_pos, true, &SetScroll );
+    Scrl( wnd->hgadget, hscroll_pos, &SetScroll );
 }
 
 /*
  * GUISetHScrollCol - set the horizontal scroll position
  */
 
-void GUISetHScrollCol( gui_window * wnd, int hscroll_pos )
+void GUIAPI GUISetHScrollCol( gui_window * wnd, gui_text_ord hscroll_pos )
 {
-    Scrl( wnd->hgadget, hscroll_pos, false, &SetScroll );
+    ScrlText( wnd->hgadget, hscroll_pos, &SetScroll );
 }
 
 /*
  * GUISetVScroll - set the vertical scroll position
  */
 
-void GUISetVScroll( gui_window * wnd, gui_ord vscroll_pos )
+void GUIAPI GUISetVScroll( gui_window * wnd, gui_ord vscroll_pos )
 {
-    Scrl( wnd->vgadget, vscroll_pos, true, &SetScroll );
+    Scrl( wnd->vgadget, vscroll_pos, &SetScroll );
 }
 
 /*
  * GUISetVScrollRow - set the vertical scroll position
  */
 
-void GUISetVScrollRow( gui_window * wnd, int vscroll_pos )
+void GUIAPI GUISetVScrollRow( gui_window * wnd, gui_text_ord vscroll_pos )
 {
-    Scrl( wnd->vgadget, vscroll_pos, false, &SetScroll );
+    ScrlText( wnd->vgadget, vscroll_pos, &SetScroll );
 }

@@ -12,7 +12,7 @@ function sets interrupt vector number
 .arg intnum
 to point to the interrupt handling function pointed to by
 .arg handler
-.ct .li .
+.period
 .desc end
 .return begin
 The
@@ -20,7 +20,7 @@ The
 function does not return a value.
 .return end
 .see begin
-.seelist setvect _chain_intr _dos_getvect _dos_keep
+.seelist _dos_setvect _chain_intr _dos_getvect _dos_keep
 .see end
 .exmp begin
 #include <stdio.h>

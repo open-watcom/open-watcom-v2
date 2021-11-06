@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,14 +39,14 @@
 
 /****
 ***** Compare two strings, without case sensitivity, up to a specified
-***** Maximum number of characters.  Equivalent to strnicmp().
+***** Maximum number of characters.  Equivalent to _strnicmp().
 ****/
 
 _WCRTLINK int _NEARFAR(_mbsnicmp,_fmbsnicmp)( const unsigned char _FFAR *s1, const unsigned char _FFAR *s2, size_t n )
 {
     int                 status = 0;
 
-//    if( !__IsDBCS )  return( strnicmp( s1, s2, n ) );
+//    if( !__IsDBCS )  return( _strnicmp( s1, s2, n ) );
 
     /*** Compare characters, one by one ***/
     while( n>0 && !_NEARFAR(_mbterm,_fmbterm)(s1) && !_NEARFAR(_mbterm,_fmbterm)(s2) ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,8 @@
 #include "unicode.h"
 
 
+#define STRING_CHARSIZE(s)  ((s->flags & STRLIT_WIDE) ? TARGET_WIDE_CHAR : TARGET_CHAR)
+
 static STRING_CONSTANT  uniqueStrings;
 static STRING_CONSTANT  trashedStrings;
 
@@ -58,9 +61,8 @@ static void walk_strings(       // WALK STRINGS IN A LIST
     void (*walker)              // - walking routine
         ( STRING_CONSTANT ) )   // - - current string
 {
-    while( str != NULL ) {
+    for( ; str != NULL; str = str->next ) {
         (*walker)( str );
-        str = str->next;
     }
 }
 
@@ -91,45 +93,56 @@ static void stringInit(         // INITIALIZATION
 
 INITDEFN( strings, stringInit, InitFiniStub )
 
-static STRING_CONSTANT initLiteral( STRING_CONSTANT literal )
+static STRING_CONSTANT initLiteral( STRING_CONSTANT literal, target_size_t len, string_literal_flags flags )
 {
     literal->next = NULL;
     literal->cg_handle = NULL;
     literal->segid = SEG_NULL;
-    literal->concat = false;
-    literal->multi_line = false;
-    literal->wide_string = false;
+    literal->len = len;
+    literal->flags = flags;
     return( literal );
 }
 
-static STRING_CONSTANT findLiteral( size_t len )
+static STRING_CONSTANT allocLiteral( target_size_t len, string_literal_flags flags )
 {
     STRING_CONSTANT literal;
     STRING_CONSTANT prev;
 
     prev = NULL;
-    literal = trashedStrings;
-    while( literal != NULL ) {
-        if( len <= literal->len ) {
+    for( literal = trashedStrings; literal != NULL; literal = literal->next ) {
+        if( len <= literal->alloc_len ) {
             /* try to use more than 1/2 of the trashed string */
-            if( len >= literal->len / 2 ) {
+            if( len >= literal->alloc_len / 2 ) {
                 if( prev != NULL ) {
                     prev->next = literal->next;
                 } else {
                     trashedStrings = literal->next;
                 }
-                return( initLiteral( literal ) );
+                return( initLiteral( literal, len, flags ) );
             }
         }
         prev = literal;
-        literal = literal->next;
     }
-    literal = CPermAlloc( offsetof( STRING_LITERAL, string ) + len + 1 );
-    return( initLiteral( literal ) );
+    literal = CPermAlloc( offsetof( STRING_LITERAL, string ) + len );
+    literal->alloc_len = len;
+    return( initLiteral( literal, len, flags ) );
 }
 
-static size_t compressLiteral( char *tgt, char *s, size_t len )
-/*************************************************************/
+static char *store_wchar( char *tgt, int c )
+/******************************************/
+{
+    int i;
+
+    i = TARGET_WIDE_CHAR;
+    while( i-- > 0 ) {
+        *tgt++ = c;
+        c >>= 8;
+    }
+    return( tgt );
+}
+
+static size_t compressLiteral( char *tgt, const char *s, size_t len, bool wide )
+/******************************************************************************/
 {
     unsigned char   *str = (unsigned char *)s;
     int             chr;               // - current character
@@ -137,29 +150,23 @@ static size_t compressLiteral( char *tgt, char *s, size_t len )
     int             classification;    // - escape classification
     int             max_digs;          // - max digits remaining
     size_t          new_len;           // - length after escapes processed
-    struct {
-        unsigned wide_string : 1;
-    } flags;
 
-#define store_chr(tgt,chr)  if(tgt) *tgt++ = (chr)
+#define STORE_CHAR(tgt,c,tlen)  if(tgt) *tgt++ = (c); tlen += TARGET_CHAR
+#define STORE_WCHAR(tgt,c,tlen) if(tgt) tgt = store_wchar(tgt, (c)); tlen += TARGET_WIDE_CHAR
 
-    flags.wide_string = false;
-    if( CurToken == T_LSTRING ) {
-        flags.wide_string = true;
-    }
     new_len = 0;
     for( ; len > 0; ) {
         chr = *str++;
         --len;
         if( ( len > 0 ) && ( chr == '\\' ) ) {
             chr = *str++;
-            -- len;
+            --len;
             classification = classify_escape_char( chr );
             if( classification == ESCAPE_OCTAL ) {
                 chr_1 = octal_dig( chr );
                 chr = 0;
                 max_digs = 3;
-                for( ; ; ) {
+                for( ;; ) {
                     chr = ( chr << 3 ) | chr_1;
                     if( len == 0 )
                         break;
@@ -172,10 +179,10 @@ static size_t compressLiteral( char *tgt, char *s, size_t len )
                     ++str;
                 }
             } else if( classification == ESCAPE_HEX ) {
+                chr = 0;
                 if( ( len > 1 ) && ( 16 != hex_dig( *str ) ) ) {
-                    chr = 0;
                     max_digs = 8;
-                    for( ; ; ) {
+                    for( ;; ) {
                         if( len == 0 )
                             break;
                         if( max_digs == 0 )
@@ -192,61 +199,53 @@ static size_t compressLiteral( char *tgt, char *s, size_t len )
             } else if( classification != ESCAPE_NONE ) {
                 chr = classification;
             }
-            if( flags.wide_string ) {
-                store_chr( tgt, chr );
-                ++ new_len;
-                chr = chr >> 8;
+            if( wide ) {
+                STORE_WCHAR( tgt, chr, new_len );
+            } else {
+                STORE_CHAR( tgt, chr, new_len );
             }
         } else {
-            if( CharSet[chr] & C_DB ) {       /* if double-byte character */
-                if( CompFlags.jis_to_unicode && flags.wide_string ) {
-                    chr = (chr << 8) + *str;
+            if( ( len > 0 ) && (CharSet[chr] & C_DB) ) {    /* if double-byte character */
+                if( CompFlags.jis_to_unicode && wide ) {
+                    chr = (chr << 8) + *str++;
                     chr = JIS2Unicode( chr );
-                    store_chr( tgt, chr );
-                    chr = chr >> 8;
+                    STORE_WCHAR( tgt, chr, new_len );
                 } else {
-                    store_chr( tgt, chr );
-                    chr = *str;
+                    STORE_CHAR( tgt, chr, new_len );
+                    chr = *str++;
+                    STORE_CHAR( tgt, chr, new_len );
                 }
-                ++ new_len;
-                ++ str;
-                -- len;
-            } else if( flags.wide_string ) {
+                --len;
+            } else if( wide ) {
                 if( CompFlags.use_unicode ) {
                     chr = UniCode[chr];
                 } else if( CompFlags.jis_to_unicode ) {
                     chr = JIS2Unicode( chr );
                 }
-                store_chr( tgt, chr );
-                ++ new_len;
-                chr = chr >> 8;
-//          } else {
+                STORE_WCHAR( tgt, chr, new_len );
+            } else {
 //              _ASCIIOUT( chr );
+                STORE_CHAR( tgt, chr, new_len );
             }
         }
-        store_chr( tgt, chr );
-        ++new_len;
     }
-    --new_len;  /* take one of the '\0' from the end */
+
+#undef STORE_CHAR
+#undef STORE_WCHAR
+
     return( new_len );
 }
 
 
-static STRING_CONSTANT makeLiteral( char *s, size_t len )
-/*******************************************************/
+static STRING_CONSTANT makeLiteral( const char *s, target_size_t len, bool wide )
+/*******************************************************************************/
 {
     STRING_CONSTANT literal;
-    size_t          new_len;
+    target_size_t   new_len;
 
-    new_len = len;
-    if( CurToken == T_LSTRING ) {
-        new_len = compressLiteral( NULL, s, len + 1 );
-    }
-    literal = findLiteral( new_len );
-    literal->len = compressLiteral( literal->string, s, len + 1 );
-    if( CurToken == T_LSTRING ) {
-        literal->wide_string = true;
-    }
+    new_len = compressLiteral( NULL, s, len + 1, wide );
+    literal = allocLiteral( new_len, ( wide ) ? STRLIT_WIDE : STRLIT_NONE );
+    compressLiteral( literal->string, s, len + 1, wide );
     return( literal );
 }
 
@@ -280,43 +279,34 @@ static STRING_CONSTANT stringAdd(// ADD LITERAL TO STRING
 }
 
 
-STRING_CONSTANT StringCreate( char *s, size_t len )
-/*************************************************/
+STRING_CONSTANT StringCreate( const char *s, size_t len, bool wide )
+/******************************************************************/
 {
     ++stringCount;
-    return( stringAdd( makeLiteral( s, len ), &uniqueStrings ) );
+    return( stringAdd( makeLiteral( s, len, wide ), &uniqueStrings ) );
 }
 
 void StringConcatDifferentLines( STRING_CONSTANT v )
 /**************************************************/
 {
-    v->multi_line = true;
+    v->flags |= STRLIT_MLINE;
 }
 
 STRING_CONSTANT StringConcat( STRING_CONSTANT v1, STRING_CONSTANT v2 )
 /********************************************************************/
 {
     STRING_CONSTANT literal;
-    size_t          len;        // - length
+    target_size_t   v1_len;
 
-    if( v1->wide_string != v2->wide_string ) {
+    if( (v1->flags & STRLIT_WIDE) != (v2->flags & STRLIT_WIDE) ) {
         // an error has already been diagnosed
         StringTrash( v2 );
         return( v1 );
     }
-    literal = findLiteral( v1->len + v2->len );
-    literal->concat = true;
-    memcpy( literal->string, v1->string, v1->len );
-    len = v1->len;
-    if( v1->wide_string ) {
-        --len;
-        literal->wide_string = true;
-    }
-    if( v1->multi_line ) {
-        literal->multi_line = true;
-    }
-    literal->len = len + v2->len;
-    memcpy( &(literal->string[len]), v2->string, v2->len + 1 );
+    v1_len = StringLength( v1 );
+    literal = allocLiteral( v1_len + v2->len, v1->flags | STRLIT_CONCAT );
+    memcpy( literal->string, v1->string, v1_len );
+    memcpy( &(literal->string[v1_len]), v2->string, v2->len );
     StringTrash( v1 );
     StringTrash( v2 );
     ++stringCount;
@@ -329,35 +319,46 @@ bool StringSame( STRING_CONSTANT v1, STRING_CONSTANT v2 )
     if( v1->len != v2->len ) {
         return( false );
     }
-    return( memcmp( v1->string, v2->string, v1->len + 1 ) == 0 );
+    return( memcmp( v1->string, v2->string, v1->len ) == 0 );
 }
 
-size_t StringByteLength( STRING_CONSTANT s )
-/******************************************/
+target_size_t StringLength( STRING_CONSTANT s )
+/**********************************************
+ * length doesn't include '\0' character
+ */
 {
-    // byte length should include '\0' character
-    return( s->len + TARGET_CHAR );
+    return( s->len - STRING_CHARSIZE( s ) );
 }
 
-size_t StringAWStrLen( STRING_CONSTANT s )
-/****************************************/
+target_size_t StringAWStrLen( STRING_CONSTANT s )
+/***********************************************/
 {
-    size_t len;
+    return( s->len / STRING_CHARSIZE( s ) );
+}
 
-    // string length should include '\0' character
-    if( s->wide_string ) {
-        DbgAssert( s->len & 1 );
-        len = ( s->len + 1 ) / TARGET_WIDE_CHAR;
+target_size_t StringAlign( STRING_CONSTANT s )
+/********************************************/
+{
+    target_size_t len;
+
+#if _CPU == _AXP
+    (void)s;
+
+    len = TARGET_INT;
+#else
+    if( s->flags & STRLIT_WIDE ) {
+        len = TARGET_WIDE_CHAR;
     } else {
-        len = ( s->len + 1 ) / TARGET_CHAR;
+        len = TARGET_CHAR;
     }
+#endif
     return( len );
 }
 
-char *StringBytes( STRING_CONSTANT s )
-/************************************/
+target_size_t StringCharSize( STRING_CONSTANT s )
+/***********************************************/
 {
-    return( s->string );
+    return( STRING_CHARSIZE( s ) );
 }
 
 static int cmpString( const void *lp, const void *rp )
@@ -413,7 +414,7 @@ pch_status PCHReadStringPool( void )
 {
     STRING_CONSTANT *p;
     STRING_CONSTANT str;
-    size_t str_len;
+    target_size_t str_len;
 
     while( uniqueStrings != NULL ) {
         StringTrash( uniqueStrings );
@@ -422,19 +423,16 @@ pch_status PCHReadStringPool( void )
     stringTranslateTable = CMemAlloc( stringCount * sizeof( STRING_CONSTANT ) );
     p = stringTranslateTable;
     for( ; (str_len = PCHReadUInt()) != 0; ) {
-        str = findLiteral( str_len );
-        str->len = str_len - 1;
+        str = allocLiteral( str_len, PCHReadUInt() );
         PCHRead( str->string, str_len );
         stringAdd( str, &uniqueStrings );
-        *p = str;
-        ++p;
+        *p++ = str;
     }
     return( PCHCB_OK );
 }
 
 pch_status PCHWriteStringPool( void )
 {
-    size_t len;
     unsigned i;
     STRING_CONSTANT str;
     STRING_CONSTANT *p;
@@ -443,9 +441,9 @@ pch_status PCHWriteStringPool( void )
     p = stringTranslateTable;
     for( i = 0; i < stringCount; ++i ) {
         str = p[i];
-        len = StringByteLength( str );
-        PCHWriteUInt( len );
-        PCHWrite( StringBytes( str ), len );
+        PCHWriteUInt( str->len );
+        PCHWriteUInt( str->flags );
+        PCHWrite( str->string, str->len );
     }
     PCHWriteUInt( 0 );
     return( PCHCB_OK );

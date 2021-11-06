@@ -1,151 +1,151 @@
 pick( MSG_UNS_MEMORY_MODEL,	"Unsupported memory model" ,
-				"┐T┐|│[┐g┌Ё┌Й┌д┌╒┌х┌╒┐│┐┌┐┼┐┌┐f┐▀┌е┌╥" )				
+				"Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│∙Ц┌▄Ц│╕Ц│└Ц│╙Ц│└Ц┐║Ц┐╒Ц┐╙Ц┐╒Ц┐┤Ц┐╚Ц│╖Ц│≥" )				
 pick( MSG_UNS_FLOAT_OPTION,	"Unsupported floating-point option" ,
-				"┐T┐|│[┐g┌Ё┌Й┌д┌╒┌х┌╒∙┌⌠╝▐╛░■⌠_┐I┐v┐V┐┤┐⌠┌е┌╥" )
+				"Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│∙Ц┌▄Ц│╕Ц│└Ц│╙Ц│└Ф╣╝Е▀∙Е╟▐Ф∙╟Г┌╧Ц┌╙Ц┐≈Ц┌╥Ц┐╖Ц┐ЁЦ│╖Ц│≥" )
 pick( MSG_UNS_SCOPE,		"Unknown SCOPE (%s)" ,
-				"√╒▓m┌лSCOPE (%s)┌╙▄÷▐o┌Ё┌Й┌э┌╣┌╫" )				
+				"Ф°╙Г÷╔Ц│╝SCOPE (%s)Ц│▄Ф╓°Е┤╨Ц│∙Ц┌▄Ц│╬Ц│≈Ц│÷" )				
 pick( MSG_UNS_ARRAY_DESC,	"ARRAY_DESC types not supported" ,
-				"ARRAY_DESC┐^┐C┐v┌м┐T┐|│[┐g┌Ё┌Й┌д┌╒┌э┌╧┌Я" )				
+				"ARRAY_DESCЦ┌©Ц┌╓Ц┐≈Ц│╞Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│∙Ц┌▄Ц│╕Ц│└Ц│╬Ц│⌡Ц┌⌠" )				
 pick( MSG_UNS_CHARBLOCK_IND,	"CHARBLOCK_IND types not supported" ,
-				"CHARBLOCK_IND┐^┐C┐v┌м┐T┐|│[┐g┌Ё┌Й┌д┌╒┌э┌╧┌Я" )				
+				"CHARBLOCK_INDЦ┌©Ц┌╓Ц┐≈Ц│╞Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│∙Ц┌▄Ц│╕Ц│└Ц│╬Ц│⌡Ц┌⌠" )				
 pick( MSG_NAME_TOO_LONG,	"Name (%s) too long, truncated." ,
-				"√╪▒O(%s)┌╙▓╥┌╥┌╛┌И┌л┌е░ь┌Х▌л┌д┌э┌╣┌╫" )				
+				"Е░█Е┴█(%s)Ц│▄И∙╥Ц│≥Ц│▌Ц┌▀Ц│╝Ц│╖Е┬┤Ц┌┼Ф█╗Ц│╕Ц│╬Ц│≈Ц│÷" )				
 pick( MSG_CHANGE_SEG_IN_BLOCK,	"Unable to CHANGE_SEG inside code block" ,
-				"┐R│[┐h┐u┐█┐b┐N⌠Ю┌е┌мCHANGE_SEG┌м▌ю█s┌е┌╚┌э┌╧┌Я" )
+				"Ц┌ЁЦ┐╪Ц┐┴Ц┐√Ц┐╜Ц┐┐Ц┌╞Е├┘Ц│╖Ц│╞CHANGE_SEGЦ│╞Е╝÷Х║▄Ц│╖Ц│█Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_UNK_REGISTER,		"Unknown register type, assuming AX" ,
-				"√╒▓m┌л┐▄┐W┐X┐^▄^┌╙▄÷▐o┌Ё┌Й┌э┌╣┌╫. AX┌ф┴╪▓Х┌╣┌э┌╥" )
+				"Ф°╙Г÷╔Ц│╝Ц┐╛Ц┌╦Ц┌╧Ц┌©Е·▀Ц│▄Ф╓°Е┤╨Ц│∙Ц┌▄Ц│╬Ц│≈Ц│÷. AXЦ│╗Д╩╝Е╝ Ц│≈Ц│╬Ц│≥" )
 pick( MSG_NO_MULTI_REG,		"No support for multi-register symbols" ,
-				"multi-register┐V┐⌠┐{┐▀┌м┐T┐|│[┐g┌Ё┌Й┌д┌╒┌э┌╧┌Я" )
+				"multi-registerЦ┌╥Ц┐ЁЦ┐°Ц┐╚Ц│╞Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│∙Ц┌▄Ц│╕Ц│└Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_ARRAY_TOO_LARGE,	"Array too large (%1X elements of size %2X)" ,
-				"■z≈Я┌╙▒Е┌╚┌╥┌╛┌э┌╥(┐T┐C┐Y%2X ┌л≈v▒f %1X)" )				
+				"И┘█Е┬≈Ц│▄Е╓╖Ц│█Ц│≥Ц│▌Ц│╬Ц│≥(Ц┌╣Ц┌╓Ц┌╨%2X Ц│╝Х╕│Г╢═ %1X)" )				
 pick( MSG_UNABLE_TO_OPEN_FILE,	"Unable to open file %s: %Z" ,
-				"┐t┐@┐C┐▀ %s ┌П┐I│[┐v┐⌠▐o≈┬┌э┌╧┌Я: %Z" )
+				"Ц┐∙Ц┌║Ц┌╓Ц┐╚ %s Ц┌▓Ц┌╙Ц┐╪Ц┐≈Ц┐ЁЕ┤╨Ф²╔Ц│╬Ц│⌡Ц┌⌠: %Z" )
 pick( MSG_OUT_OF_MEMORY,	"Out of memory" ,
-				"┐│┐┌┐┼∙s▒╚┌е┌╥" )
+				"Ц┐║Ц┐╒Ц┐╙Д╦█Х╤ЁЦ│╖Ц│≥" )
 pick( MSG_DISK_ERROR,		"Disk error during %s: %Z" ,
-				"%s: %Z┌л┼т┌и┐f┐B┐X┐N┐G┐┴│[┌╙░╤┌╤┌э┌╣┌╫" )
+				"%s: %ZЦ│╝И√⌠Ц│╚Ц┐┤Ц┌ёЦ┌╧Ц┌╞Ц┌╗Ц┐╘Ц┐╪Ц│▄Г■÷Ц│≤Ц│╬Ц│≈Ц│÷" )
 pick( MSG_PREMATURE_EOF,	"Premature end of file encountered" ,
-				"⌠r▓├┌еEOF┌╙▄÷▐o┌Ё┌Й┌э┌╣┌╫" )
+				"И─■Д╦╜Ц│╖EOFЦ│▄Ф╓°Е┤╨Ц│∙Ц┌▄Ц│╬Ц│≈Ц│÷" )
 pick( MSG_TOO_MANY_REGS,	"Too many registers in aggregate" ,
-				"▒S▒л┌е┐▄┐W┐X┐^┌╙▒╫┌╥┌╛┌э┌╥" )
+				"Е┘╗Д╫⌠Ц│╖Ц┐╛Ц┌╦Ц┌╧Ц┌©Ц│▄Е╓ Ц│≥Ц│▌Ц│╬Ц│≥" )
 pick( MSG_UNS_IND_REG,		"IND_REG not supported; probable cause: function returning a union/struct" ,
-				"IND_REG┌м┐T┐|│[┐g┌Ё┌Й┌д┌╒┌э┌╧┌Я; ┼ж░■┌л√ъ┌Х▓l┌╙█\▒╒▒л│^▀╓≈p▒л┌е┌═┌И┌╠┌ф┌╙▄╢┬Ж┌ф┌╣┌д█l┌╕┌Г┌Й┌э┌╥" )
+				"IND_REGЦ│╞Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│∙Ц┌▄Ц│╕Ц│└Ц│╬Ц│⌡Ц┌⌠; И√╒Ф∙╟Ц│╝Ф┬╩Ц┌┼Е─╓Ц│▄Ф╖▀И─═Д╫⌠О╪▐Е┘╠Г■╗Д╫⌠Ц│╖Ц│┌Ц┌▀Ц│⌠Ц│╗Ц│▄Е▌÷Е⌡═Ц│╗Ц│≈Ц│╕Х─┐Ц│┬Ц┌┴Ц┌▄Ц│╬Ц│≥" )
 pick( MSG_ADD_PREV_SEG,		"ADD_PREV_SEG no longer supported; probable cause: old version of WATCOM C used" ,
-				"ADD_PREV_SEG┌м▄╩█щ┐T┐|│[┐g┌Ё┌Й┌д┌╒┌э┌╧┌Я; ▄ц┌╒┐o│[┐W┐┤┐⌠┌лWATCOM C┌П▌g≈p┌╣┌╫┌╠┌ф┌╙▄╢┬Ж┌ф┌╣┌д█l┌╕┌Г┌Й┌э┌╥" )
+				"ADD_PREV_SEGЦ│╞Г▐╬Е°╗Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│∙Ц┌▄Ц│╕Ц│└Ц│╬Ц│⌡Ц┌⌠; Е▐╓Ц│└Ц┐░Ц┐╪Ц┌╦Ц┐╖Ц┐ЁЦ│╝WATCOM CЦ┌▓Д╫©Г■╗Ц│≈Ц│÷Ц│⌠Ц│╗Ц│▄Е▌÷Е⌡═Ц│╗Ц│≈Ц│╕Х─┐Ц│┬Ц┌┴Ц┌▄Ц│╬Ц│≥" )
 pick( MSG_DEBUG_VERSION,	"Incompatible version of the debugging information" ,
-				"┐f┐o┐b┐O▐Н∙Я┌л┐o│[┐W┐┤┐⌠┌и▄щ┼╥░╚┌╙┌═┌Х┌э┌╧┌Я" )
+				"Ц┐┤Ц┐░Ц┐┐Ц┌╟Ф┐┘Е═╠Ц│╝Ц┐░Ц┐╪Ц┌╦Ц┐╖Ц┐ЁЦ│╚Д╨▓Ф▐⌡Ф─╖Ц│▄Ц│┌Ц┌┼Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_INVALID_FIXUP,	"Invalid fixup" ,
-				"√Ё▄Ь┌х┐t┐B┐b┐N┐X┐A┐b┐v┌е┌╥" )
+				"Г└║Е┼╧Ц│╙Ц┐∙Ц┌ёЦ┐┐Ц┌╞Ц┌╧Ц┌╒Ц┐┐Ц┐≈Ц│╖Ц│≥" )
 pick( MSG_THEADR_MISSING,	"THEADR record missing" ,
-				"THEADR ┐▄┐R│[┐h┌╙▄╘┌═┌╫┌Х┌э┌╧┌Я" )
+				"THEADR Ц┐╛Ц┌ЁЦ┐╪Ц┐┴Ц│▄Х╕▀Ц│┌Ц│÷Ц┌┼Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_UNK_SEGDEF_ALIGN,	"Unknown SEGDEF align value (%t)" ,
-				"√╒▓m┌лSEGDEF░╝≈Я▓l (%t)┌╙▄÷▐o┌Ё┌Й┌э┌╣┌╫" )
+				"Ф°╙Г÷╔Ц│╝SEGDEFФ∙╢Е┬≈Е─╓ (%t)Ц│▄Ф╓°Е┤╨Ц│∙Ц┌▄Ц│╬Ц│≈Ц│÷" )
 pick( MSG_NO_SUPPORT_BIG_32,	"No support for BIG 32-bit SEGDEFs" ,
-				"BIG32┐r┐b┐gSEGDEF┌м┐T┐|│[┐g┌Ё┌Й┌д┌╒┌э┌╧┌Я" )
+				"BIG32Ц┐⌠Ц┐┐Ц┐┬SEGDEFЦ│╞Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│∙Ц┌▄Ц│╕Ц│└Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_UNK_COMDEF_LEAF,	"Unknown COMDEF LEAF type (%t)" ,
-				"√╒▓m┌лCOMDEF LEAF┐^┐C┐v (%t)┌╙▄÷▐o┌Ё┌Й┌э┌╣┌╫" )
+				"Ф°╙Г÷╔Ц│╝COMDEF LEAFЦ┌©Ц┌╓Ц┐≈ (%t)Ц│▄Ф╓°Е┤╨Ц│∙Ц┌▄Ц│╬Ц│≈Ц│÷" )
 pick( MSG_INV_WAT_PROC_MODEL,	"Invalid processor/model COMENT record" ,
-				"┐v┐█┐Z┐b┐T│^┐┌┐f┐▀ COMENT┐▄┐R│[┐h┌╙√Ё▄Ь┌е┌╥" )
+				"Ц┐≈Ц┐╜Ц┌╩Ц┐┐Ц┌╣О╪▐Ц┐╒Ц┐┤Ц┐╚ COMENTЦ┐╛Ц┌ЁЦ┐╪Ц┐┴Ц│▄Г└║Е┼╧Ц│╖Ц│≥" )
 pick( MSG_NO_LIDATA_WAT,	"No LIDATAs allowed for WATCOM debug info" ,
-				"LIDATA┌мWATCOM┐f┐o┐b┐O▐Н∙Я┌ф┌╣┌д▀√┴б┌Ё┌Й┌э┌╧┌Я" )
+				"LIDATAЦ│╞WATCOMЦ┐┤Ц┐░Ц┐┐Ц┌╟Ф┐┘Е═╠Ц│╗Ц│≈Ц│╕Х╗╠Е▐╞Ц│∙Ц┌▄Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_TOO_MUCH_SEG_DATA,	"More data in LEDATAs than defined in SEGDEF for seg %x" ,
-				"LEDATA┌л┐f│[┐^┌╙SEGDEF┌еseg %x┌и┼ж┌╣┌д▓Х▀`┌╣┌╫▓l┌Ф┌Х┌Ю▒╫┌╜┌х┌а┌д┌╒┌э┌╥" )
+				"LEDATAЦ│╝Ц┐┤Ц┐╪Ц┌©Ц│▄SEGDEFЦ│╖seg %xЦ│╚И√╒Ц│≈Ц│╕Е╝ Г╬╘Ц│≈Ц│÷Е─╓Ц┌┬Ц┌┼Ц┌┌Е╓ Ц│▐Ц│╙Ц│ёЦ│╕Ц│└Ц│╬Ц│≥" )
 pick( MSG_MAX_REC_EXCEEDED,	"Maximum object record size (%u byte) exceeded" ,
-                                "┐I┐u┐W┐F┐N┐g│E┐▄┐R│[┐h┌л█е▒Е┐T┐C┐Y(%u йч╡д)┌П┴z┌╕┌д┌╒┌э┌╥" )
+                                "Ц┌╙Ц┐√Ц┌╦Ц┌╖Ц┌╞Ц┐┬Ц┐╩Ц┐╛Ц┌ЁЦ┐╪Ц┐┴Ц│╝Ф°─Е╓╖Ц┌╣Ц┌╓Ц┌╨(%u О╬┼О╬·О╫╡О╬└)Ц┌▓Х╤┼Ц│┬Ц│╕Ц│└Ц│╬Ц│≥" )
 pick( MSG_NO_SUPPORT_LTL,	"No support for LTL segments" ,
-				"LTL┐Z┐O┐│┐⌠┐g┌м┐T┐|│[┐g┌Ё┌Й┌д┌╒┌э┌╧┌Я" )
+				"LTLЦ┌╩Ц┌╟Ц┐║Ц┐ЁЦ┐┬Ц│╞Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│∙Ц┌▄Ц│╕Ц│└Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_NO_LRO_PHARLAP,	"No loader resolved fixups allowed in EASY OMF" ,
-                                "EASY OMF┌е┌м┐█│[┐_┌е┴П▄┬┌╥┌И┐t┐B┐b┐N┐X┐A┐b┐v┌м▀√┌Ё┌Й┌д┌╒┌э┌╧┌Я" )
+                                "EASY OMFЦ│╖Ц│╞Ц┐╜Ц┐╪Ц┐─Ц│╖Х╖ёФ╠╨Ц│≥Ц┌▀Ц┐∙Ц┌ёЦ┐┐Ц┌╞Ц┌╧Ц┌╒Ц┐┐Ц┐≈Ц│╞Х╗╠Ц│∙Ц┌▄Ц│╕Ц│└Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_MS386_NO_4KPAGE,	"No 4k Page-aligned segments in MS386 OMF" ,
-				"MS386 OMF┌и┌м4K┐y│[┐W░╝≈Я┐Z┐O┐│┐⌠┐g┌╙┌═┌Х┌э┌╧┌Я" )
+				"MS386 OMFЦ│╚Ц│╞4KЦ┐ Ц┐╪Ц┌╦Ф∙╢Е┬≈Ц┌╩Ц┌╟Ц┐║Ц┐ЁЦ┐┬Ц│▄Ц│┌Ц┌┼Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_MS386_NO_ACCESS,	"Access classes (RW, EO, RO, ER) not supported in MS386 OMF" ,
-                                "MS386 OMF┌е┌м┐A┐N┐Z┐X┐N┐┴┐X(RW,EO,RO,ER)┌м┐T┐|│[┐g┌Ё┌Й┌д┌╒┌э┌╧┌Я" )
+                                "MS386 OMFЦ│╖Ц│╞Ц┌╒Ц┌╞Ц┌╩Ц┌╧Ц┌╞Ц┐╘Ц┌╧(RW,EO,RO,ER)Ц│╞Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│∙Ц┌▄Ц│╕Ц│└Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_32BIT_RPT_COUNT,	"Unable to process 32-bit repeat count in LIDATA" ,
-                                "LIDATA┌е┌м32┐r┐b┐g┌л┐┼┐s│[┐g░■┌м▐┬≈²┌е┌╚┌э┌╧┌Я" )
+                                "LIDATAЦ│╖Ц│╞32Ц┐⌠Ц┐┐Ц┐┬Ц│╝Ц┐╙Ц┐■Ц┐╪Ц┐┬Ф∙╟Ц│╞Е┤╕Г░├Ц│╖Ц│█Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_UNS_SCALAR_SIZE,	"Unsupported scalar size" ,
-				"┐T┐|│[┐g┌Ё┌Й┌д┌╒┌х┌╒┐X┐J┐┴│[│E┐T┐C┐Y┌╙▄÷▐o┌Ё┌Й┌э┌╣┌╫" )
+				"Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│∙Ц┌▄Ц│╕Ц│└Ц│╙Ц│└Ц┌╧Ц┌╚Ц┐╘Ц┐╪Ц┐╩Ц┌╣Ц┌╓Ц┌╨Ц│▄Ф╓°Е┤╨Ц│∙Ц┌▄Ц│╬Ц│≈Ц│÷" )
 pick( MSG_INCLUDE_TOO_LARGE,	"@Include file is too large (max 64k)" ,
-				"@┐C┐⌠┐N┐▀│[┐h┐t┐@┐C┐▀┌╙▒Е┌╚┌╥┌╛┌э┌╥(█е▒Е64K)" )
+				"@Ц┌╓Ц┐ЁЦ┌╞Ц┐╚Ц┐╪Ц┐┴Ц┐∙Ц┌║Ц┌╓Ц┐╚Ц│▄Е╓╖Ц│█Ц│≥Ц│▌Ц│╬Ц│≥(Ф°─Е╓╖64K)" )
 pick( MSG_SUBR_TOO_LARGE,	"Subrange too large to represent" ,
-				"∙■∙╙■м┬м┌╙▒Е┌╚┌╥┌╛┌д∙\▌╕┌е┌╚┌э┌╧┌Я" )
+				"И┐╗Е┬├Г╞└Е⌡╡Ц│▄Е╓╖Ц│█Ц│≥Ц│▌Ц│╕Х║╗Г╓╨Ц│╖Ц│█Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_ENUM_TOO_LARGE,	"Enumerated type too large to represent" ,
-				"≈Я▀⌠┌Ё┌Й┌╫▄^┌╙▒Е┌╚┌╥┌╛┌д∙\▌╕┌е┌╚┌э┌╧┌Я" )
+				"Е┬≈Ф▄≥Ц│∙Ц┌▄Ц│÷Е·▀Ц│▄Е╓╖Ц│█Ц│≥Ц│▌Ц│╕Х║╗Г╓╨Ц│╖Ц│█Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_IMPOSSIBLE_REG,	"Impossible to translate register variable" ,
-				"┐▄┐W┐X┐^∙о░■┌ж┌л∙о┼╥┌╙∙s┴б■\┌е┌╥" )
+				"Ц┐╛Ц┌╦Ц┌╧Ц┌©Е╓┴Ф∙╟Ц│╦Ц│╝Е╓┴Ф▐⌡Ц│▄Д╦█Е▐╞Х┐╫Ц│╖Ц│≥" )
 pick( MSG_TOO_MANY_TYPES,	"Too many types to continue conversion" ,
-				"▄^┌╙▒╫┌╥┌╛┌д∙о┼╥┌П▒╠█s┌е┌╚┌э┌╧┌Я" )
+				"Е·▀Ц│▄Е╓ Ц│≥Ц│▌Ц│╕Е╓┴Ф▐⌡Ц┌▓Г╤ Х║▄Ц│╖Ц│█Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_INVALID_OBJECT,	"Object file contains invalid data" ,
-				"┐I┐u┐W┐F┐N┐g│E┐t┐@┐C┐▀┌и√Ё▄Ь┌х┐f│[┐^┌╙┼э┌э┌Й┌д┌╒┌э┌╥" )
+				"Ц┌╙Ц┐√Ц┌╦Ц┌╖Ц┌╞Ц┐┬Ц┐╩Ц┐∙Ц┌║Ц┌╓Ц┐╚Ц│╚Г└║Е┼╧Ц│╙Ц┐┤Ц┐╪Ц┌©Ц│▄Е░╚Ц│╬Ц┌▄Ц│╕Ц│└Ц│╬Ц│≥" )
 pick( MSG_SEGMENT_TOO_LARGE,	"Debugging segment too large (max is 64k)" ,
-				"┐f┐o┐b┐O│E┐Z┐O┐│┐⌠┐g┌╙▒Е┌╚┌╥┌╛┌э┌╥(█е▒Е64K)" )
+				"Ц┐┤Ц┐░Ц┐┐Ц┌╟Ц┐╩Ц┌╩Ц┌╟Ц┐║Ц┐ЁЦ┐┬Ц│▄Е╓╖Ц│█Ц│≥Ц│▌Ц│╬Ц│≥(Ф°─Е╓╖64K)" )
 pick( MSG_WLIB_ERROR,		"WLIB return code non-zero" ,
-				"WLIB┐┼┐^│[┐⌠│E┐R│[┐h┌╙┌O┬х┼O┌е┌╥" )
+				"WLIBЦ┐╙Ц┌©Ц┐╪Ц┐ЁЦ┐╩Ц┌ЁЦ┐╪Ц┐┴Ц│▄О╪░Д╩╔Е╓√Ц│╖Ц│≥" )
 pick( MSG_SYNTAX_ERR_IN_OPT,	"Syntax error in '%c' option" ,
-				"'%c'┐I┐v┐V┐┤┐⌠┌л∙╤√@┐G┐┴│[┌е┌╥" )
+				"'%c'Ц┌╙Ц┐≈Ц┌╥Ц┐╖Ц┐ЁЦ│╝Ф√┤ФЁ∙Ц┌╗Ц┐╘Ц┐╪Ц│╖Ц│≥" )
 pick( MSG_WARNING,		"Warning! " ,
-				"▄x█░!" )
+				"Х╜╕Е▒┼!" )
 pick( MSG_CONVERTING,		"Converting %s" ,
-				"%s ┌П∙о┼╥┌╣┌э┌╥" )
+				"%s Ц┌▓Е╓┴Ф▐⌡Ц│≈Ц│╬Ц│≥" )
 pick( MSG_PRESS_KEY,		"Press any key ..." ,
-				"┌г┌Й┌╘┐L│[┌П┴÷┌╣┌д┴╨┌Ё┌╒..." )
+				"Ц│╘Ц┌▄Ц│▀Ц┌╜Ц┐╪Ц┌▓Ф┼╪Ц│≈Ц│╕Д╦▀Ц│∙Ц│└..." )
 pick( MSG_NO_16BIT_BAKPAT,	"EASY OMF has no support for 16-bit BAKPAT" ,
-				"EASY OMF┌м16┐r┐b┐g┌лBAKPAT┌П┐T┐|│[┐g┌╣┌д┌╒┌э┌╧┌Я" )
+				"EASY OMFЦ│╞16Ц┐⌠Ц┐┐Ц┐┬Ц│╝BAKPATЦ┌▓Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│≈Ц│╕Ц│└Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_CPP_EXTENSION,	"C++ debugging extensions not supported" ,
-				"C++ ┐f┐o┐b┐O┼g▓ё▐Н∙Я┌м┌э┌╬┐T┐|│[┐g┌╣┌д┌╒┌э┌╧┌Я" ) 
+				"C++ Ц┐┤Ц┐░Ц┐┐Ц┌╟Ф▀║Е╪╣Ф┐┘Е═╠Ц│╞Ц│╬Ц│═Ц┌╣Ц┐²Ц┐╪Ц┐┬Ц│≈Ц│╕Ц│└Ц│╬Ц│⌡Ц┌⌠" ) 
 pick( MSG_TXT_MISC_INFO,	"Miscellaneous Information" ,
-				"▒╫∙Ш√й┌л▐Н∙Я" )
+				"Е╓ Ф√╧И²╒Ц│╝Ф┐┘Е═╠" )
 pick( MSG_TXT_TYPE_INFO,	"Type Information" ,
-				"┐^┐C┐v▐Н∙Я" )
+				"Ц┌©Ц┌╓Ц┐≈Ф┐┘Е═╠" )
 pick( MSG_TXT_SYMB_INFO,	"Symbol Information" ,
-				"┐V┐⌠┐{┐▀▐Н∙Я" )
+				"Ц┌╥Ц┐ЁЦ┐°Ц┐╚Ф┐┘Е═╠" )
 pick( MSG_TXT_COMPILER,		"Compiler        : \"%s\"" ,
-				"┐R┐⌠┐p┐C┐┴      : \"%s\"" )
+				"Ц┌ЁЦ┐ЁЦ┐▒Ц┌╓Ц┐╘      : \"%s\"" )
 pick( MSG_TXT_8086_PRCSR,	"Processor       : 8086" ,
-				"┐v┐█┐Z┐b┐T      : 8086" )
+				"Ц┐≈Ц┐╜Ц┌╩Ц┐┐Ц┌╣      : 8086" )
 pick( MSG_TXT_80X86_PRCSR,	"Processor       : 80%u86" ,
-				"┐v┐█┐Z┐b┐T      : 80%u86" )
+				"Ц┐≈Ц┐╜Ц┌╩Ц┐┐Ц┌╣      : 80%u86" )
 pick( MSG_TXT_MEM_MODEL,	"Memory Model    : %M" ,
-				"┐│┐┌┐┼┐┌┐f┐▀    : %M" )
+				"Ц┐║Ц┐╒Ц┐╙Ц┐╒Ц┐┤Ц┐╚    : %M" )
 pick( MSG_TXT_MODEL_0,		"Small" ,
-				"┐X┐┌│[┐▀" )
+				"Ц┌╧Ц┐╒Ц┐╪Ц┐╚" )
 pick( MSG_TXT_MODEL_1,		"Medium" ,
-				"┐~┐f┐B┐A┐─" )
+				"Ц┐÷Ц┐┤Ц┌ёЦ┌╒Ц┐═" )
 pick( MSG_TXT_MODEL_2,		"Compact" ,
-				"┐R┐⌠┐p┐N┐g" )
+				"Ц┌ЁЦ┐ЁЦ┐▒Ц┌╞Ц┐┬" )
 pick( MSG_TXT_MODEL_3,		"Large" ,
-				"┐┴│[┐W" )
+				"Ц┐╘Ц┐╪Ц┌╦" )
 pick( MSG_TXT_MODEL_4,		"Huge" ,
-				"┐q┐┘│[┐W" )
+				"Ц┐▓Ц┐╔Ц┐╪Ц┌╦" )
 pick( MSG_TXT_MODEL_5,		"Flat" ,
-				"┐t┐┴┐b┐g" )
+				"Ц┐∙Ц┐╘Ц┐┐Ц┐┬" )
 pick( MSG_TXT_MODEL_6,		"Tiny" ,
-				"┐^┐C┐j" )
+				"Ц┌©Ц┌╓Ц┐▀" )
 pick( MSG_TXT_FLOAT_PT,		"Floating-point  : %M" ,
-				"∙┌⌠╝▐╛░■⌠_      : %M" )
+				"Ф╣╝Е▀∙Е╟▐Ф∙╟Г┌╧      : %M" )
 pick( MSG_TXT_FP_0,		"Inline Emulation" ,
-				"┐C┐⌠┐┴┐C┐⌠│E┐G┐~┐┘┐▄│[┐V┐┤┐⌠" )
+				"Ц┌╓Ц┐ЁЦ┐╘Ц┌╓Ц┐ЁЦ┐╩Ц┌╗Ц┐÷Ц┐╔Ц┐╛Ц┐╪Ц┌╥Ц┐╖Ц┐Ё" )
 pick( MSG_TXT_FP_1,		"Emulation Calls" ,
-				"┐G┐~┐┘┐▄│[┐V┐┤┐⌠│E┐R│[┐▀" )
+				"Ц┌╗Ц┐÷Ц┐╔Ц┐╛Ц┐╪Ц┌╥Ц┐╖Ц┐ЁЦ┐╩Ц┌ЁЦ┐╪Ц┐╚" )
 pick( MSG_TXT_FP_2,		"80x87 Inline Code" ,
-				"80X87┐C┐⌠┐┴┐C┐⌠│E┐R│[┐h" )
+				"80X87Ц┌╓Ц┐ЁЦ┐╘Ц┌╓Ц┐ЁЦ┐╩Ц┌ЁЦ┐╪Ц┐┴" )
 pick( MSG_TXT_FP_3,		"Alternate Math" ,
-				"▒Ц▒ж┴┴▌Z" )
+				"Д╩ёФ⌡©Ф╪■Г╝≈" )
 pick( MSG_TXT_OPTIMIZED,	"Optimized       : %M" ,
-				"┐I┐v┐e┐B┐}┐C┐Y  : %M" )
+				"Ц┌╙Ц┐≈Ц┐├Ц┌ёЦ┐·Ц┌╓Ц┌╨  : %M" )
 pick( MSG_TXT_LINES_PRST,	"Lines Present   : %M" ,
-				"┐┴┐C┐⌠∙\▌╕      : %M" )
+				"Ц┐╘Ц┌╓Ц┐ЁХ║╗Г╓╨      : %M" )
 pick( MSG_TXT_TYPES_PRST,	"Types Present   : %M" ,
-				"┐^┐C┐v∙\▌╕      : %M" )
+				"Ц┌©Ц┌╓Ц┐≈Х║╗Г╓╨      : %M" )
 pick( MSG_TXT_SYMBS_PRST,	"Symbs Present   : %M" ,
-				"┐V┐⌠┐{┐▀∙\▌╕    : %M" )
+				"Ц┌╥Ц┐ЁЦ┐°Ц┐╚Х║╗Г╓╨    : %M" )
 pick( MSG_TXT_YES,		"Yes" ,
-				"┌м┌╒" )
+				"Ц│╞Ц│└" )
 pick( MSG_TXT_NO,		"No" ,
-				"┌╒┌╒┌╕" )
+				"Ц│└Ц│└Ц│┬" )
 pick( MSG_TXT_SOURCE_LANG,	"Source Language : %M" ,
-				"┐\│[┐X▄╬▄Й      : %M" )
+				"Ц┌╫Ц┐╪Ц┌╧Х╗─Х╙·      : %M" )
 pick( MSG_TXT_LANG_0,		"Assembly" ,
-				"┐A┐Z┐⌠┐u┐┼▄╬▄Й" )
+				"Ц┌╒Ц┌╩Ц┐ЁЦ┐√Ц┐╙Х╗─Х╙·" )
 pick( MSG_TXT_LANG_1,		"C" ,
 				"C" )
 pick( MSG_TXT_LANG_2,		"Fortran" ,
@@ -155,36 +155,36 @@ pick( MSG_TXT_LANG_3,		"Pascal" ,
 pick( MSG_TXT_LANG_4,		"Basic" ,
 				"Basic" )
 pick( MSG_TXT_NO_ADDR,		"No address info" ,
-				"┐A┐h┐▄┐X▐Н∙Я┌╙┌═┌Х┌э┌╧┌Я" )
+				"Ц┌╒Ц┐┴Ц┐╛Ц┌╧Ф┐┘Е═╠Ц│▄Ц│┌Ц┌┼Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_SYS_ERR_0,		"Error 0" ,
-				"┐G┐┴│[ 0" )
+				"Ц┌╗Ц┐╘Ц┐╪ 0" )
 pick( MSG_SYS_ERR_1,		"No such file or directory" ,
-				"▌w▓Х┌Ё┌Й┌╫┐t┐@┐C┐▀√■┌м┐f┐B┐▄┐N┐g┐┼┌╙┌═┌Х┌э┌╧┌Я" )
+				"Ф▄┤Е╝ Ц│∙Ц┌▄Ц│÷Ц┐∙Ц┌║Ц┌╓Ц┐╚Е▐┬Ц│╞Ц┐┤Ц┌ёЦ┐╛Ц┌╞Ц┐┬Ц┐╙Ц│▄Ц│┌Ц┌┼Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_SYS_ERR_2,		"Argument list too big" ,
-				"┬Ь░■┐┼┐X┐g┌╙▒Е┌╚┌╥┌╛┌э┌╥" )
+				"Е╪∙Ф∙╟Ц┐╙Ц┌╧Ц┐┬Ц│▄Е╓╖Ц│█Ц│≥Ц│▌Ц│╬Ц│≥" )
 pick( MSG_SYS_ERR_3,		"Exec format error" ,
-				"▌ю█s┐t┐H│[┐}┐b┐g│E┐G┐┴│[" )
+				"Е╝÷Х║▄Ц┐∙Ц┌╘Ц┐╪Ц┐·Ц┐┐Ц┐┬Ц┐╩Ц┌╗Ц┐╘Ц┐╪" )
 pick( MSG_SYS_ERR_4,		"Bad file number" ,
-				"∙s░Ё┌х┐t┐@┐C┐▀■т█├" )
+				"Д╦█Ф╜ёЦ│╙Ц┐∙Ц┌║Ц┌╓Ц┐╚Г∙╙Е▐╥" )
 pick( MSG_SYS_ERR_5,		"Not enough memory" ,
-				"┐│┐┌┐┼┌╙▒╚┌Х┌э┌╧┌Я" )
+				"Ц┐║Ц┐╒Ц┐╙Ц│▄Х╤ЁЦ┌┼Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_SYS_ERR_6,		"Permission denied" ,
-				"┐p│[┐~┐b┐V┐┤┐⌠▀▒■ш" )
+				"Ц┐▒Ц┐╪Ц┐÷Ц┐┐Ц┌╥Ц┐╖Ц┐ЁФ▀▓Е░╕" )
 pick( MSG_SYS_ERR_7,		"File exists" ,
-				"┐t┐@┐C┐▀┌╙▒╤█щ┌╣┌э┌╥" )
+				"Ц┐∙Ц┌║Ц┌╓Ц┐╚Ц│▄Е╜≤Е°╗Ц│≈Ц│╬Ц│≥" )
 pick( MSG_SYS_ERR_8,		"Cross-device link" ,
-				"┐f┐o┐C┐X┌П∙о█X┌╣┌э┌╣┌╫" )
+				"Ц┐┤Ц┐░Ц┌╓Ц┌╧Ц┌▓Е╓┴Ф⌡╢Ц│≈Ц│╬Ц│≈Ц│÷" )
 pick( MSG_SYS_ERR_9,		"Invalid argument" ,
-				"√Ё▄Ь┌х┬Ь░■" )
+				"Г└║Е┼╧Ц│╙Е╪∙Ф∙╟" )
 pick( MSG_SYS_ERR_10,		"File table overflow" ,
-				"┐t┐@┐C┐▀│E┐e│[┐u┐▀┌л┐I│[┐o┐t┐█│[" )
+				"Ц┐∙Ц┌║Ц┌╓Ц┐╚Ц┐╩Ц┐├Ц┐╪Ц┐√Ц┐╚Ц│╝Ц┌╙Ц┐╪Ц┐░Ц┐∙Ц┐╜Ц┐╪" )
 pick( MSG_SYS_ERR_11,		"Too many open files" ,
-				"┐I│[┐v┐⌠│E┐t┐@┐C┐▀┌╙▒╫┌╥┌╛┌э┌╥" )
+				"Ц┌╙Ц┐╪Ц┐≈Ц┐ЁЦ┐╩Ц┐∙Ц┌║Ц┌╓Ц┐╚Ц│▄Е╓ Ц│≥Ц│▌Ц│╬Ц│≥" )
 pick( MSG_SYS_ERR_12,		"No space left on device" ,
-				"┐f┐o┐C┐X┌и▀С┌╚┌╙┌═┌Х┌э┌╧┌Я" )
+				"Ц┐┤Ц┐░Ц┌╓Ц┌╧Ц│╚Г╘╨Ц│█Ц│▄Ц│┌Ц┌┼Ц│╬Ц│⌡Ц┌⌠" )
 pick( MSG_SYS_ERR_13,		"Argument too large" ,
-				"┬Ь░■┌╙▒Е┌╚┌╥┌╛┌э┌╥" )
+				"Е╪∙Ф∙╟Ц│▄Е╓╖Ц│█Ц│≥Ц│▌Ц│╬Ц│≥" )
 pick( MSG_SYS_ERR_14,		"Result too large" ,
-				"▄▀┴й┌╙▒Е┌╚┌╥┌╛┌э┌╥" )
+				"Г╣░Ф·°Ц│▄Е╓╖Ц│█Ц│≥Ц│▌Ц│╬Ц│≥" )
 pick( MSG_SYS_ERR_15,		"Resource deadlock would occur" ,
-				"┐┼┐\│[┐X│E┐f┐b┐h┐█┐b┐N┌╙■╜░╤┌╣┌э┌╥" )
+				"Ц┐╙Ц┌╫Ц┐╪Ц┌╧Ц┐╩Ц┐┤Ц┐┐Ц┐┴Ц┐╜Ц┐┐Ц┌╞Ц│▄Г≥╨Г■÷Ц│≈Ц│╬Ц│≥" )

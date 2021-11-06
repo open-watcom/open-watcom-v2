@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 
 #include "guiwind.h"
 #include "guisetup.h"
-#include "guix.h"
+
 
 /*
  * GUICreateDlg
@@ -53,17 +54,17 @@ static bool CreateDlg( gui_create_info *dlg_info, int num_controls,
     return( false );
 }
 
-bool GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info )
+bool GUIAPI GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info )
 {
     return( CreateDlg( dlg_info, num_controls, controls_info, false, NULL ) );
 }
 
-bool GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id )
+bool GUIAPI GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id )
 {
     return( CreateDlg( dlg_info, 0, NULL, false, dlg_id ) );
 }
 
-bool GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info )
+bool GUIAPI GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info )
 {
     return( CreateDlg( dlg_info, num_controls, controls_info, true, NULL ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,11 @@
 #include "memmgr.h"
 #include "callinfo.h"
 
+
+#define MAX_POSSIBLE_REG        8
+
+#define MAXIMUM_PARMSETS        32
+
 typedef struct aux_entry AUX_ENTRY;
 typedef struct aux_info AUX_INFO;
 
@@ -65,19 +70,6 @@ global AUX_ENTRY        *AuxList;
 global AUX_ENTRY        *CurrEntry;
 global AUX_INFO         *CurrAlias;
 global AUX_INFO         *CurrInfo;
-global AUX_INFO         *DftCallConv;
-
-struct pragma_dbg_toggles  {
-    #define toggle_pick( id )   boolbit     id : 1;
-    #include "dbgtogg.h"
-    #undef toggle_pick
-};
-global struct pragma_dbg_toggles  PragDbgToggle;
-
-
-#define MAX_POSSIBLE_REG        8
-
-#define MAXIMUM_PARMSETS        32
 
 // PROTOTYPES FOR PRAGMA PROCESSING
 
@@ -123,11 +115,11 @@ struct textsegment *LkSegName(  // LOOKUP SEGMENT NAME
 void PragAux(                   // #PRAGMA AUX ...
     void )
 ;
-void PragCurrAlias(             // LOCATE ALIAS FOR PRAGMA
-    void )
+AUX_INFO *PragmaAuxAlias(       // LOCATE ALIAS FOR PRAGMA
+    const char *name )
 ;
-void PragEnding(                // PROCESS END OF PRAGMA
-    bool set_sym )           // - true ==> set SYMBOL's aux_info
+void PragmaAuxEnding(           // PROCESS END OF PRAGMA
+    bool set_sym )              // - true ==> set SYMBOL's aux_info
 ;
 void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
     ( void )
@@ -135,16 +127,13 @@ void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
 void PragmaExtrefsValidate      // VALIDATE EXTREFS FOR PRAGMAS
     ( void )
 ;
-void PragInit(
-    void )
-;
-void PragInitDefaultInfo(
+void PragmaAuxInit(
     void )
 ;
 void PragManyRegSets(           // GET PRAGMA REGISTER SETS
     void )
 ;
-bool PragmaChangeConsistent( // TEST IF PRAGMA CHANGE IS CONSISTENT
+bool PragmaChangeConsistent(    // TEST IF PRAGMA CHANGE IS CONSISTENT
     AUX_INFO *oldp,             // - pragma, old
     AUX_INFO *newp )            // - pragma, new
 ;
@@ -159,7 +148,9 @@ bool PragmaOKForInlines(        // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     AUX_INFO *fnp )             // - pragma
 ;
 void PragmaSetToggle(           // SET TOGGLE
-    bool set_flag )             // - true ==> set flag
+    const char *name,           // - toggle name
+    int func,                   // - -1/0/1 ==> func pop/off/on
+    bool push )                 // - true ==> push current value on stack
 ;
 void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
     void )
@@ -196,7 +187,7 @@ bool ReverseParms(              // ASK IF PRAGMA REQUIRES REVERSED PARMS
     AUX_INFO * pragma )         // - pragma
 ;
 void SetCurrInfo(               // SET CURRENT INFO. STRUCTURE
-    void )
+    const char *name )
 ;
 
 void AsmSysPCHWriteCode(        // write code sequence to PCH
@@ -210,11 +201,10 @@ const char *SkipUnderscorePrefix(
     size_t *len,
     bool iso_compliant_names )
 ;
-
-bool GetPragAuxAliasInfo(
+bool GetPragmaAuxAliasInfo(
     void )
 ;
-void GetPragAuxAlias(
+void GetPragmaAuxAlias(
     void )
 ;
 #endif

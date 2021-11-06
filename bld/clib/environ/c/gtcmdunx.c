@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +36,7 @@
 #include <limits.h>
 #include <string.h>
 #include "initarg.h"
-#ifdef __WATCOMC__  // Needs to be built with other tools for clibext
-    #include <process.h>
-#endif
+#include <process.h>
 
 
 _WCRTLINK int (_bgetcmd)( char *buffer, int len )

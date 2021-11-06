@@ -6,7 +6,6 @@ int sched_getparam(pid_t pid, struct sched_param *sp);
 struct sched_param {
     int sched_priority;
 };
-    
 .synop end
 .desc begin
 The
@@ -26,7 +25,7 @@ argument.
 .desc end
 .return begin
 If successful, the function will return zero. If the call fails, the
-return value is -1 and 
+return value is -1 and
 .kw errno
 is appropriately set.
 .return end
@@ -49,5 +48,5 @@ could not be written successfully
 .see begin
 .seelist sched_setparam
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #include <stdlib.h>
 #include "driver.h"
 #include "pbide.h"
+#include "wclbproc.h"
 
 static char     sruName[ _MAX_PATH ];
 static char     dllName[ _MAX_PATH ];
@@ -124,9 +126,9 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     if( ver != WAT_IDE_DLL_CUR_VER ) {
         MessageBox( NULL, "Wrong DLL version", "Error", MB_OK );
     } else {
-        dlgproc = (DLGPROC)MakeProcInstance( (FARPROC)DriverDlgProc, currinst );
+        dlgproc = MakeProcInstance_DLG( DriverDlgProc, currinst );
         DialogBox( currinst, "DRIVER_DLG", NULL, dlgproc );
-        FreeProcInstance( (FARPROC)dlgproc );
+        FreeProcInstance_DLG( dlgproc );
     }
     return( 0 );
 }

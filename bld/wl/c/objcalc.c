@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,7 +145,7 @@ bool IsCodeClass( const char *name, size_t namelen )
 /**************************************************/
 {
     return( ( namelen >= CODECL_SIZE )
-        && ( memicmp( name + namelen - CODECL_SIZE, CodeClassName, CODECL_SIZE ) == 0 ) );
+        && ( strnicmp( name + namelen - CODECL_SIZE, CodeClassName, CODECL_SIZE ) == 0 ) );
 }
 
 #define CONSTCL_SIZE ( sizeof( ConstClassName ) - 1 )
@@ -154,7 +154,7 @@ bool IsConstClass( const char *name, size_t namelen )
 /***************************************************/
 {
     return( ( namelen >= CONSTCL_SIZE )
-        && ( memicmp( name + namelen - CONSTCL_SIZE, ConstClassName, CONSTCL_SIZE ) == 0 ) );
+        && ( strnicmp( name + namelen - CONSTCL_SIZE, ConstClassName, CONSTCL_SIZE ) == 0 ) );
 }
 
 #define STACKCL_SIZE ( sizeof( StackClassName ) - 1 )
@@ -228,6 +228,50 @@ static void CalcInitSize( seg_leader *seg )
     }
 }
 
+static bool setGroupSeg( group_entry *currgrp, unsigned seg_num )
+/****************************************************************
+ * return false if segment number is fixed
+ * return true if segment number should be incremented
+ */
+{
+#ifdef _DOS16M
+    if( FmtData.type & MK_DOS16M ) {
+        currgrp->grp_addr.seg = ToD16MSel( seg_num );
+        return( true );
+    }
+#endif
+#ifdef _NOVELL
+    if( FmtData.type & MK_ID_SPLIT ) {
+        if( currgrp->segflags & SEG_DATA ) {
+            currgrp->grp_addr.seg = DATA_SEGMENT;
+        } else {
+            currgrp->grp_addr.seg = CODE_SEGMENT;
+        }
+        return( false );
+    }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX ) {
+        currgrp->grp_addr.seg = ToQNXSel( seg_num );
+        return( true );
+    }
+#endif
+#if defined( _PHARLAP ) || defined( _ZDOS ) || defined( _RAW )
+    if( FmtData.type & MK_FLAT_OFFS ) {
+        currgrp->grp_addr.seg = seg_num;    // only segment 1 in flat mem. model
+        return( false );
+    }
+#endif
+#ifdef _PHARLAP
+    if( FmtData.type & MK_PHAR_MULTISEG ) {
+        currgrp->grp_addr.seg = ( seg_num << 3 ) | 4;
+        return( true );
+    }
+#endif
+    currgrp->grp_addr.seg = seg_num;
+    return( true );
+}
+
 static void AllocFileSegs( void )
 /*******************************/
 {
@@ -236,27 +280,10 @@ static void AllocFileSegs( void )
 
     seg_num = 1;
     for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ){
-        if( FmtData.type & MK_FLAT ) {
-            currgrp->grp_addr.seg = 1;   // only segment 1 in flat mem.model
-#ifdef _DOS16M
-        } else if( FmtData.type & MK_DOS16M ) {
-            currgrp->grp_addr.seg = ToD16MSel( seg_num++ );
-#endif
-        } else if( FmtData.type & MK_ID_SPLIT ) {
-            if( currgrp->segflags & SEG_DATA ) {
-                currgrp->grp_addr.seg = DATA_SEGMENT;
-            } else {
-                currgrp->grp_addr.seg = CODE_SEGMENT;
-            }
-        } else if( FmtData.type & MK_QNX ) {
-            currgrp->grp_addr.seg = ToQNXSel( seg_num++ );
-        } else if( FmtData.type & MK_PHAR_MULTISEG ) {
-            currgrp->grp_addr.seg = ( seg_num << 3 ) | 4;
-            seg_num++;
-        } else {
-            currgrp->grp_addr.seg = seg_num++;
-        }
         currgrp->grp_addr.off = 0;
+        if( setGroupSeg( currgrp, seg_num ) ) {
+            seg_num++;
+        }
     }
 }
 
@@ -288,15 +315,14 @@ static void ReallocFileSegs( void )
          * segments in map file sorted properly even if they are not emited
          * into load file
          */
-        if( FmtData.type & MK_QNX ) {
-            currgrp->grp_addr.seg = ToQNXSel( seg_num );
-        } else {
-            currgrp->grp_addr.seg = seg_num;
+        if( setGroupSeg( currgrp, seg_num ) ) {
+            // increment segment if possible for target and group is not zero length
+            if( currgrp->totalsize != 0 ) {
+                seg_num++;
+            }
         }
-        if( currgrp->totalsize != 0 ) {
-            seg_num++;
-        } else {
-            /* to make life easier in loadxxx */
+        if( currgrp->totalsize == 0 ) {
+            /* to make life easier in loadxxx remove zero length group from groups count */
             NumGroups--;
         }
     }
@@ -704,34 +730,34 @@ void FinishMapSort( void )
 static bool DefPubSym( void *_pub, void *_info )
 /**********************************************/
 {
-    symbol      *pub = _pub;
+    symbol      *sym = _pub;
     pubdefinfo  *info = _info;
     segdata     *seg;
     seg_leader  *leader;
     offset      temp;
 
-    if( pub->info & (SYM_DEAD | SYM_IS_ALTDEF) )
+    if( sym->info & (SYM_DEAD | SYM_IS_ALTDEF) )
         return( false );
-    if( IS_SYM_ALIAS( pub ) )
+    if( IS_SYM_ALIAS( sym ) )
         return( false );
-    if( IS_SYM_IMPORTED( pub ) )
+    if( IS_SYM_IMPORTED( sym ) )
         return( false );
-    seg = pub->p.seg;
+    seg = sym->p.seg;
     if( seg != NULL ) {
         leader = seg->u.leader;
         /* address in symbol table is actually signed_32 offset
            from segdata zero */
         if( seg->isabs || IS_DBG_INFO( leader ) ) {
-            SET_SYM_ADDR( pub, pub->addr.off + seg->a.delta + leader->seg_addr.off, leader->seg_addr.seg );
+            SET_SYM_ADDR( sym, sym->addr.off + seg->a.delta + leader->seg_addr.off, leader->seg_addr.seg );
         } else {
-            temp = pub->addr.off;
+            temp = sym->addr.off;
             temp += seg->a.delta;
             temp += SEG_GROUP_DELTA( leader );
-            SET_SYM_ADDR( pub, temp + leader->group->grp_addr.off, leader->group->grp_addr.seg );
-            DBIGenGlobal( pub, info->sect );
+            SET_SYM_ADDR( sym, temp + leader->group->grp_addr.off, leader->group->grp_addr.seg );
+            DBIGenGlobal( sym, info->sect );
         }
     }
-    if( (MapFlags & MAP_FLAG) && !SkipSymbol( pub ) ) {
+    if( (MapFlags & MAP_FLAG) && !SkipSymbol( sym ) ) {
         if( info->first && (MapFlags & MAP_GLOBAL) == 0 ) {
             WritePubModHead();
             info->first = false;
@@ -739,13 +765,13 @@ static bool DefPubSym( void *_pub, void *_info )
         if( MapFlags & MAP_SORT ) {
             if( MapFlags & MAP_GLOBAL ) {
                 NumMapSyms++;
-                pub->info |= SYM_MAP_GLOBAL;
+                sym->info |= SYM_MAP_GLOBAL;
             } else {
-                info->symarray[info->num] = pub;
+                info->symarray[info->num] = sym;
                 info->num++;
             }
         } else {
-            XReportSymAddr( pub );
+            XReportSymAddr( sym );
         }
     }
     return( false );
@@ -790,6 +816,112 @@ static void SetReadOnly( void *_seg )
     }
 }
 
+static void setDefBase( void )
+/****************************/
+{
+#ifdef _OS2
+    if( FmtData.type & MK_PE ) {
+        FmtData.base = PE_DEFAULT_BASE;
+        return;
+    }
+    if( FmtData.type & MK_OS2_FLAT ) {
+        FmtData.base = FLAT_GRANULARITY;
+        return;
+    }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX_FLAT ) {
+        FmtData.base = ROUND_UP( StackSize + QNX_DEFAULT_BASE, _4KB );
+        return;
+    }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        if( LinkState & LS_HAVE_PPC_CODE ) {
+            FmtData.base = 0x10000000;
+        } else if( LinkState & LS_HAVE_MIPS_CODE ) {
+            FmtData.base = 0x00400000;
+        } else if( LinkState & LS_HAVE_X64_CODE ) {
+            // TODO
+            FmtData.base = 0x08048000;
+        } else {
+            FmtData.base = 0x08048000;
+        }
+        return;
+    }
+#endif
+    FmtData.base = 0;
+}
+
+static void setDefObjAlign( void )
+/********************************/
+{
+#ifdef _OS2
+    if( FmtData.type & MK_PE ) {
+        if( (LinkState & LS_HAVE_I86_CODE) ) {
+            FmtData.objalign = _4KB;
+        } else if( (LinkState & LS_HAVE_X64_CODE) ) {
+            // TODO
+            FmtData.objalign = _64KB;
+        } else {
+            FmtData.objalign = _64KB;
+        }
+        return;
+    } else if( FmtData.type & MK_WIN_VXD ) {
+        FmtData.objalign = _4KB;
+        return;
+    } else if( FmtData.type & MK_OS2 ) {
+#if 0
+        if( (LinkState & LS_HAVE_PPC_CODE) ) {
+            // Development temporarly on hold:
+            FmtData.objalign = _1KB;
+            return;
+        }
+#endif
+        FmtData.objalign = FLAT_GRANULARITY;
+        return;
+    }
+#endif
+#ifdef _QNX
+    if( FmtData.type & MK_QNX ) {
+        FmtData.objalign = QNX_GROUP_ALIGN;
+        return;
+    }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        FmtData.objalign = _4KB;
+        return;
+    }
+#endif
+    FmtData.objalign = _64KB;
+}
+
+static offset getFlatOffset( void )
+/*********************************/
+{
+    /****************************************************
+     * this must be always first to override target value
+     */
+#ifdef _RAW
+    if( FmtData.output_raw || FmtData.output_hex ) {
+        return( 0 );
+    }
+#endif
+    /****************************************************/
+#ifdef _OS2
+    if( FmtData.type & MK_PE ) {
+        return( GetPEHeaderSize() );
+    }
+#endif
+#ifdef _ELF
+    if( FmtData.type & MK_ELF ) {
+        return( GetElfHeaderSize() );
+    }
+#endif
+    return( FmtData.base );
+}
+
 void CalcAddresses( void )
 /*******************************/
 /* Calculate the starting address in the file of each segment. */
@@ -800,57 +932,14 @@ void CalcAddresses( void )
 
     DEBUG(( DBG_OLD, "CalcAddresses()" ));
     if( FmtData.base == NO_BASE_SPEC ) {
-        if( FmtData.type & MK_PE ) {
-            FmtData.base = PE_DEFAULT_BASE;
-        } else if( FmtData.type & MK_QNX_FLAT ) {
-            FmtData.base = ROUND_UP( StackSize + QNX_DEFAULT_BASE, _4KB );
-        } else if( FmtData.type & MK_WIN_VXD ) {
-            FmtData.base = 0;
-        } else if( FmtData.type & MK_OS2_FLAT ) {
-            FmtData.base = FLAT_GRANULARITY;
-        } else if( FmtData.type & MK_ELF ) {
-            if( LinkState & LS_HAVE_PPC_CODE ) {
-                FmtData.base = 0x10000000;
-            } else if( LinkState & LS_HAVE_MIPS_CODE ) {
-                FmtData.base = 0x00400000;
-            } else if( LinkState & LS_HAVE_X64_CODE ) {
-                // TODO
-                FmtData.base = 0x08048000;
-            } else {
-                FmtData.base = 0x08048000;
-            }
-        } else {
-            FmtData.base = 0;
-        }
+        setDefBase();
     }
     DBIPreAddrCalc();
     CurrSect = Root;
     if( FmtData.type & MK_PROT_MODE ) {
         AllocFileSegs();
         if( FmtData.objalign == NO_BASE_SPEC ) {
-            if( FmtData.type & MK_PE ) {
-                if( (LinkState & LS_HAVE_I86_CODE) ) {
-                    FmtData.objalign = _4KB;
-                } else if( (LinkState & LS_HAVE_X64_CODE) ) {
-                    // TODO
-                    FmtData.objalign = _64KB;
-                } else {
-                    FmtData.objalign = _64KB;
-                }
-            } else if( FmtData.type & MK_QNX ) {
-                FmtData.objalign = QNX_GROUP_ALIGN;
-#if 0
-            } else if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
-                // Development temporarly on hold:
-                // FmtData.objalign = _1KB;
-#endif
-            } else if( FmtData.type & MK_ELF ) {
-                FmtData.objalign = _4KB;
-            } else if( FmtData.type & MK_WIN_VXD ) {
-                FmtData.objalign = _4KB;
-            } else {
-                FmtData.objalign = FLAT_GRANULARITY;
-            }
+            setDefObjAlign();
         }
         if( FmtData.type & MK_SPLIT_DATA ) {
             FindUninitDataStart();
@@ -858,7 +947,7 @@ void CalcAddresses( void )
     }
     StartMemMap();
     AllocClasses( Root );
-    if( FmtData.type & (MK_REAL_MODE | MK_FLAT | MK_ID_SPLIT) ) {
+    if( FmtData.type & (MK_REAL_MODE | MK_FLAT_OFFS | MK_ID_SPLIT) ) {
 #ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
             OvlCalc();
@@ -871,19 +960,7 @@ void CalcAddresses( void )
         CalcGrpSegs();
 #endif
     } else if( FmtData.type & (MK_PE | MK_OS2_FLAT | MK_QNX_FLAT | MK_ELF) ) {
-        if( FmtData.output_raw || FmtData.output_hex ) {
-            flat = 0;
-#ifdef _OS2
-        } else if( FmtData.type & MK_PE ) {
-            flat = GetPEHeaderSize();
-#endif
-#ifdef _ELF
-        } else if( FmtData.type & MK_ELF ) {
-            flat = GetElfHeaderSize();
-#endif
-        } else {
-            flat = FmtData.base;
-        }
+        flat = getFlatOffset();
         for( grp = Groups; grp != NULL; grp = grp->next_group ) {
             size = grp->totalsize;
             if( grp->grp_addr.off > flat + FmtData.base) {
@@ -901,7 +978,7 @@ void CalcAddresses( void )
             flat = ROUND_UP( flat + size, FmtData.objalign );
         }
         ReallocFileSegs();
-    } else if( FmtData.type & (MK_QNX | MK_OS2_16BIT) ) {
+    } else if( FmtData.type & (MK_QNX_16 | MK_OS2_16BIT) ) {
         ReallocFileSegs();
     }
     DBIAddrStart();
@@ -927,7 +1004,7 @@ static void FillClassFlags( char *name, unsigned_16 flags )
             return;
         }
     }
-// if it has made it our here, no class has been found.
+    // if it has made it our here, no class has been found.
     LnkMsg( WRN + MSG_CLASS_NAME_NOT_FOUND, "s", name );
 }
 

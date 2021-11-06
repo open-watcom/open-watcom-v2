@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include "guiscale.h"
 #include "guixutil.h"
 
-void GUIGetClientRect( gui_window *wnd, gui_rect *rect )
+void GUIAPI GUIGetClientRect( gui_window *wnd, gui_rect *rect )
 {
     SAREA       use;
 
@@ -42,12 +43,11 @@ void GUIGetClientRect( gui_window *wnd, gui_rect *rect )
     GUIScreenToScaleRect( &use, rect );
 }
 
-bool GUIGetPaintRect( gui_window *wnd, gui_rect *paint )
+bool GUIAPI GUIGetPaintRect( gui_window *wnd, gui_rect *rect )
 {
     SAREA       area;
 
-    COPYAREA( wnd->dirty, area );
-    GUIScreenToScaleRect( &area, paint );
+    COPYRECTX( wnd->dirty, area );
+    GUIScreenToScaleRect( &area, rect );
     return( true );
 }
-

@@ -19,7 +19,7 @@ A block of memory allocated using the
 .id &funcb.
 function should be freed
 using the
-.kw free
+.reffunc free
 function.
 .desc end
 .return begin
@@ -100,17 +100,17 @@ Near heap (inside the default data segment)
 In a small data memory model, the
 .idbold &funcb.
 function is equivalent to the
-.kw _ncalloc
+.reffunc _ncalloc
 function; in a large data memory model, the
 .idbold &funcb.
 function is
 equivalent to the
-.kw _fcalloc
+.reffunc _fcalloc
 function.
 .np
 A block of memory allocated should be freed
 using the appropriate
-.kw free
+.reffunc free
 function.
 .desc end
 .return begin
@@ -123,7 +123,7 @@ The return value is
 (
 .ct .kw _NULLOFF
 for
-.kw _bcalloc
+.reffunc _bcalloc
 .ct )
 if there is insufficient memory available or if the value of the
 .arg size

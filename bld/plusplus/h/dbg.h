@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -185,15 +186,5 @@ void DumpTemplateInfo(          // DUMP A TEMPLATE INFO
 void DumpTemplateSpecialization(// DUMP A TEMPLATE SPECIALIZATION
     TEMPLATE_SPECIALIZATION *tspec )// - template specialization
 ;
-
-#else
-//
-// Nullify debugging calls
-//
-#define DbgHeapFini()
-#define DbgHeapInit()
-#define DumpMacPush( a, b )
-#define DumpMacToken()
-#define DbgSetState( a, b )
 
 #endif

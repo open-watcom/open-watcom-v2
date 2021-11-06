@@ -1,12 +1,12 @@
 .func _mbsnbset _fmbsnbset
 .synop begin
 #include <mbstring.h>
-unsigned char *_mbsnbset( unsigned char *str,
+unsigned char *_mbsnbset( unsigned char *s,
                           unsigned int fill,
                           size_t count );
 .ixfunc2 '&String' &funcb
-.if &farfnc eq 1 .do begin
-unsigned char __far *_fmbsnbset( unsigned char __far *str,
+.if &farfnc ne 0 .do begin
+unsigned char __far *_fmbsnbset( unsigned char __far *s,
                                  unsigned int fill,
                                  size_t count );
 .ixfunc2 '&String' &ffunc
@@ -16,10 +16,10 @@ unsigned char __far *_fmbsnbset( unsigned char __far *str,
 The
 .id &funcb.
 function fills the string
-.arg str
+.arg s
 with the value of the argument
 .arg fill
-.ct .li .
+.period
 When the value of
 .arg len
 is greater than the length of the string, the entire string is filled.
@@ -28,7 +28,7 @@ to the fill character.
 .np
 .id &funcb.
 is similar to
-.kw _mbsnset
+.reffunc _mbsnset
 .ct , except that it fills in
 .arg count
 bytes rather than
@@ -38,15 +38,15 @@ If the number of bytes to be filled is odd and
 .arg fill
 is a double-byte character, the partial byte at the end is filled with
 an ASCII space character.
-.im farfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The address of the original string
-.arg str
+.arg s
 is returned.
 .return end
 .see begin
-.seelist _mbsnbset strnset strset
+.seelist _mbsnbset _strnset _strset
 .see end
 .exmp begin
 #include <stdio.h>

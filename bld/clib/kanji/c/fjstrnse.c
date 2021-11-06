@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +90,7 @@
 *  Returns:     The jstrnset function returns the same value of "str".          *
 **/
 
-_WCRTLINK FJSTRING _WCI86FAR _fjstrnset( JCHAR _WCFAR *str, JMOJI c, size_t n )
+_WCRTLINK FJSTRING _fjstrnset( JCHAR _WCFAR *str, JMOJI c, size_t n )
 {
     JCHAR _WCFAR *dest, _WCFAR *keep = str;
     JMOJI c2;

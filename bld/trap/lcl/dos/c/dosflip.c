@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,27 +33,11 @@
 #include <i86.h>
 #include "trpimp.h"
 #include "trpcomm.h"
-
-extern unsigned short GtKey( void );
-#pragma aux GtKey = \
-        "xor  ah,ah"    \
-        "int 16h"       \
-    __parm __caller [] \
-    __value         [__ax] \
-    __modify        []
-
-extern unsigned char KeyWaiting( void );
-#pragma aux KeyWaiting = \
-        "mov  ah,1"     \
-        "int 16h"       \
-        "lahf"          \
-        "and  ah,40h"   \
-    __parm __caller [] \
-    __value         [__ah] \
-    __modify        [__al]
+#include "int16.h"
+#include "realmod.h"
 
 
-trap_retval ReqRead_user_keyboard( void )
+trap_retval TRAP_CORE( Read_user_keyboard )( void )
 {
     read_user_keyboard_req      *acc;
     read_user_keyboard_ret      *ret;
@@ -62,26 +47,26 @@ trap_retval ReqRead_user_keyboard( void )
     ret->key = 0;
     if( acc->wait != 0 ) {
         unsigned long   end_time;
-        unsigned long   *cur_time;
+        unsigned long   __far *cur_time;
 
-        cur_time = MK_FP( 0x40, 0x6c ); /* set up pointer to the BIOS clock */
+        cur_time = RealModeDataPtr( BDATA_SEG, BDATA_SYSTEM_CLOCK ); /* set up pointer to the BIOS clock */
         end_time = *cur_time + ( acc->wait * 18 );
-        while( KeyWaiting() ) {
+        while( !_BIOSKeyboardHit( KEYB_STD ) ) {
             if( end_time <= *cur_time ) {
                 return( sizeof( *ret ) );
             }
         }
     }
-    ret->key = GtKey();
+    ret->key = _BIOSKeyboardGet( KEYB_STD );
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqSet_user_screen( void )
+trap_retval TRAP_CORE( Set_user_screen )( void )
 {
     return( 0 );
 }
 
-trap_retval ReqSet_debug_screen( void )
+trap_retval TRAP_CORE( Set_debug_screen )( void )
 {
     return( 0 );
 }

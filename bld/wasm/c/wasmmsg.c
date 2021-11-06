@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,17 +36,24 @@
   #include <process.h>
 #endif
 #include "banner.h"
+//#include "wasmmsg.h"
 
 #include "clibext.h"
 
 
-#if defined( USE_TEXT_MSGS )
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(num,etext,jtext) + 1
+    #include "usage.gh"
+    #undef pick
+};
+
+#if defined( INCL_MSGTEXT )
 
 static const char *txtmsgs[] = {
     #define pick(num,etext,jtext) {etext},
-    #include "../h/asmshare.msg"
-    #include "../h/womp.msg"
-    #include "../h/wasm.msg"
+    #include "wasmc.msg"
+    #include "wasms.msg"
     #include "usage.gh"
     #undef pick
 };
@@ -60,10 +67,6 @@ static const char *txtmsgs[] = {
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
-#endif
-
-#ifdef __OSI__
-extern char             *_Copyright;
 #endif
 
 static const char *FingerMsg[] = {
@@ -111,27 +114,27 @@ void PrintfUsage( void )
     char        msg_buff[MAX_MESSAGE_SIZE];
     unsigned    count;
     char        page_text[MAX_MESSAGE_SIZE];
-    unsigned    first_ln;
+    unsigned    line_id;
 
     count = PrintBanner();
-#ifdef __OSI__
-    if( _Copyright != NULL ) {
-        puts( _Copyright );
-        count += 1;
-    }
+    printf( "\n" );
+    line_id = MSG_USAGE_BASE;
+    MsgGet( line_id++, page_text );
+    MsgGet( line_id++, msg_buff );
+#ifdef BOOTSTRAP
+    printf( msg_buff, "bwasm" );
+#else
+    printf( msg_buff, "wasm" );
 #endif
-    first_ln = MSG_USAGE_BASE;
-    MsgGet( first_ln++, page_text );
-    for( ; ; first_ln++ ) {
+    printf( "\n" );
+    while( line_id < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
         if( ++count >= 23 ) {
             if( Wait_for_return( page_text ) ) {
                 break;
             }
             count = 0;
         }
-        MsgGet( first_ln, msg_buff );
-        if( ( msg_buff[ 0 ] == '.' ) && ( msg_buff[ 1 ] == 0 ) )
-            break;
+        MsgGet( line_id++, msg_buff );
         puts( msg_buff );
     }
 }
@@ -156,7 +159,7 @@ void MsgPrintf1( unsigned resourceid, const char *token )
 
 bool MsgInit( void )
 {
-#if !defined( USE_TEXT_MSGS )
+#if !defined( INCL_MSGTEXT )
     char        name[_MAX_PATH];
 
     hInstance.status = 0;
@@ -176,34 +179,15 @@ bool MsgInit( void )
 
 void MsgFini( void )
 {
-#if !defined( USE_TEXT_MSGS )
+#if !defined( INCL_MSGTEXT )
     CloseResFile( &hInstance );
 #endif
 }
 
-#define TXT_SHARE_BASE  0
-#define TXT_WOMP_BASE   (TXT_SHARE_BASE + MSG_SHARE_LAST - MSG_SHARE_BASE)
-#define TXT_WASM_BASE   (TXT_WOMP_BASE + MSG_WOMP_LAST - MSG_WOMP_BASE)
-#define TXT_USAGE_BASE  (TXT_WASM_BASE + MSG_WASM_LAST - MSG_WASM_BASE)
-
 bool MsgGet( unsigned id, char *buffer )
 {
-#if defined( USE_TEXT_MSGS )
-    unsigned    index;
-
-    if( id >= MSG_SHARE_BASE && id < MSG_SHARE_LAST ) {
-        index = id - MSG_SHARE_BASE + TXT_SHARE_BASE;
-    } else if( id >= MSG_WOMP_BASE && id < MSG_WOMP_LAST ) {
-        index = id - MSG_WOMP_BASE + TXT_WOMP_BASE;
-    } else if( id >= MSG_WASM_BASE && id < MSG_WASM_LAST ) {
-        index = id - MSG_WASM_BASE + TXT_WASM_BASE;
-    } else if( id >= MSG_USAGE_BASE ) {
-        index = id - MSG_USAGE_BASE + TXT_USAGE_BASE;
-    } else {
-        buffer[0] = '\0';
-        return( false );
-    }
-    strncpy( buffer, txtmsgs[index], MAX_MESSAGE_SIZE - 1 );
+#if defined( INCL_MSGTEXT )
+    strncpy( buffer, txtmsgs[id], MAX_MESSAGE_SIZE - 1 );
     buffer[MAX_MESSAGE_SIZE - 1] = '\0';
 #else
     if( hInstance.status == 0 || WResLoadString( &hInstance, id + MsgShift, (lpstr)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {

@@ -1,7 +1,7 @@
 !ifdef manifest_$(host_os)_$(host_cpu)
 $(manifest_$(host_os)_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
     @%make echo_rc
-    $(rc) $(rc_flags) -I.. $(inc_dirs_sys) -I"$(watcom_dir)/h" $< -fo=$^@
+    $(rc) $(rc_flags) -I.. $(inc_dirs_sys) -I"$(watcom_dir)/h" $< -fo=$@
 !endif
 
 bind_res_manifest: .PROCEDURE .EXPLICIT
@@ -9,6 +9,6 @@ bind_res_manifest: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rc_bnd) $(manifest_$(host_os)_$(host_cpu)) $^@
+    $(rcbnd) $(manifest_$(host_os)_$(host_cpu)) $@
 !endif
 

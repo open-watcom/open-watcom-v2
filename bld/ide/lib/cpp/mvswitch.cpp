@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +132,8 @@ void MVSwitch::addValues( WString& str, WStringList& values, bool& first )
 {
     int count = values.count();
     for( int i=0; i<count; i++ ) {
-        if( !first ) str.concat( ' ' );
+        if( !first )
+            str.concat( ' ' );
         first = false;
         str.concat( _on );
 #if 1
@@ -167,7 +169,8 @@ void MVSwitch::addone( WString& str, bool state, WString* value, bool& first )
             if( count > 0 ) {
                 addValues( str, values, first );
             } else {
-                if( !first ) str.concat( ' ' );
+                if( !first )
+                    str.concat( ' ' );
                 first = false;
                 str.concat( _on );
             }

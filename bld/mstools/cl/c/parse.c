@@ -527,32 +527,32 @@ static void handle_arch_i86( OPT_STORAGE *cmdOpts, int x )
     if( hasBeenCalled ) {
         if( prevValue != cmdOpts->arch_i86 ) {
             switch( prevValue ) {           /* what is the old CPU? */
-              case OPT_arch_i86_G3:
+              case OPT_ENUM_arch_i86_G3:
                 oldCpu = '3';
                 break;
-              case OPT_arch_i86_G4:
+              case OPT_ENUM_arch_i86_G4:
                 oldCpu = '4';
                 break;
-              case OPT_arch_i86_G5:
+              case OPT_ENUM_arch_i86_G5:
                 oldCpu = '5';
                 break;
-              case OPT_arch_i86_GB:
+              case OPT_ENUM_arch_i86_GB:
                 oldCpu = 'B';
                 break;
               default:
                 Zoinks();
             }
             switch( cmdOpts->arch_i86 ) {   /* what is the new CPU? */
-              case OPT_arch_i86_G3:
+              case OPT_ENUM_arch_i86_G3:
                 newCpu = '3';
                 break;
-              case OPT_arch_i86_G4:
+              case OPT_ENUM_arch_i86_G4:
                 newCpu = '4';
                 break;
-              case OPT_arch_i86_G5:
+              case OPT_ENUM_arch_i86_G5:
                 newCpu = '5';
                 break;
-              case OPT_arch_i86_GB:
+              case OPT_ENUM_arch_i86_GB:
                 newCpu = 'B';
                 break;
               default:
@@ -579,17 +579,17 @@ static void handle_debug_info( OPT_STORAGE *cmdOpts, int x )
 
     /* unused parammeters */ (void)x;
 
-    if( cmdOpts->debug_info == OPT_debug_info_Zi ) {
+    if( cmdOpts->debug_info == OPT_ENUM_debug_info_Zi ) {
         Warning( "Replacing unsupported /Zi with /Z7" );
-        cmdOpts->debug_info = OPT_debug_info_Z7;
+        cmdOpts->debug_info = OPT_ENUM_debug_info_Z7;
     }
     if( hasBeenCalled ) {
-        if( prevValue == OPT_debug_info_Z7 ) {
-            if( cmdOpts->debug_info == OPT_debug_info_Zd ) {
+        if( prevValue == OPT_ENUM_debug_info_Z7 ) {
+            if( cmdOpts->debug_info == OPT_ENUM_debug_info_Zd ) {
                 Warning( "Overriding /Z7 with /Zd" );
             }
-        } else if( prevValue == OPT_debug_info_Zd ) {
-            if( cmdOpts->debug_info == OPT_debug_info_Z7 ) {
+        } else if( prevValue == OPT_ENUM_debug_info_Zd ) {
+            if( cmdOpts->debug_info == OPT_ENUM_debug_info_Z7 ) {
                 Warning( "Overriding /Zd with /Z7" );
             }
         }
@@ -744,26 +744,26 @@ static void handle_opt_level( OPT_STORAGE *cmdOpts, int x )
     /* unused parammeters */ (void)x;
 
     if( hasBeenCalled ) {
-        if( prevValue == OPT_opt_level_O1 ) {
-            if( cmdOpts->opt_level == OPT_opt_level_O2 ) {
+        if( prevValue == OPT_ENUM_opt_level_O1 ) {
+            if( cmdOpts->opt_level == OPT_ENUM_opt_level_O2 ) {
                 Warning( "Overriding /O1 with /O2" );
-            } else if( cmdOpts->opt_level == OPT_opt_level_Ox ) {
+            } else if( cmdOpts->opt_level == OPT_ENUM_opt_level_Ox ) {
                 Warning( "Overriding /O1 with /Ox" );
             }
-        } else if( prevValue == OPT_opt_level_O2 ) {
-            if( cmdOpts->opt_level == OPT_opt_level_O1 ) {
+        } else if( prevValue == OPT_ENUM_opt_level_O2 ) {
+            if( cmdOpts->opt_level == OPT_ENUM_opt_level_O1 ) {
                 Warning( "Overriding /O2 with /O1" );
             }
-        } else if( prevValue == OPT_opt_level_Ox ) {
-            if( cmdOpts->opt_level == OPT_opt_level_O1 ) {
+        } else if( prevValue == OPT_ENUM_opt_level_Ox ) {
+            if( cmdOpts->opt_level == OPT_ENUM_opt_level_O1 ) {
                 Warning( "Overriding /Ox with /O1" );
             }
-        } else if( prevValue == OPT_opt_level_Od ) {
-            if( cmdOpts->opt_level == OPT_opt_level_O1 ) {
+        } else if( prevValue == OPT_ENUM_opt_level_Od ) {
+            if( cmdOpts->opt_level == OPT_ENUM_opt_level_O1 ) {
                 Warning( "Overriding /Od with /O1" );
-            } else if( cmdOpts->opt_level == OPT_opt_level_O2 ) {
+            } else if( cmdOpts->opt_level == OPT_ENUM_opt_level_O2 ) {
                 Warning( "Overriding /Od with /O2" );
-            } else if( cmdOpts->opt_level == OPT_opt_level_Ox ) {
+            } else if( cmdOpts->opt_level == OPT_ENUM_opt_level_Ox ) {
                 Warning( "Overriding /Od with /Ox" );
             }
         }
@@ -786,12 +786,12 @@ static void handle_opt_size_time( OPT_STORAGE *cmdOpts, int x )
     /* unused parammeters */ (void)x;
 
     if( hasBeenCalled ) {
-        if( prevValue == OPT_opt_size_time_Os ) {
-            if( cmdOpts->opt_size_time == OPT_opt_size_time_Ot ) {
+        if( prevValue == OPT_ENUM_opt_size_time_Os ) {
+            if( cmdOpts->opt_size_time == OPT_ENUM_opt_size_time_Ot ) {
                 Warning( "Overriding /Os with /Ot" );
             }
-        } else if( prevValue == OPT_opt_size_time_Ot ) {
-            if( cmdOpts->opt_size_time == OPT_opt_size_time_Os ) {
+        } else if( prevValue == OPT_ENUM_opt_size_time_Ot ) {
+            if( cmdOpts->opt_size_time == OPT_ENUM_opt_size_time_Os ) {
                 Warning( "Overriding /Ot with /Os" );
             }
         }
@@ -820,12 +820,12 @@ static void handle_stack_probes( OPT_STORAGE *cmdOpts, int x )
     }
 
     if( hasBeenCalled ) {
-        if( prevValue == OPT_stack_probes_Ge ) {
-            if( cmdOpts->stack_probes == OPT_stack_probes_Gs ) {
+        if( prevValue == OPT_ENUM_stack_probes_Ge ) {
+            if( cmdOpts->stack_probes == OPT_ENUM_stack_probes_Gs ) {
                 Warning( "Overriding /Ge with /Gs" );
             }
-        } else if( prevValue == OPT_stack_probes_Gs ) {
-            if( cmdOpts->stack_probes == OPT_stack_probes_Ge ) {
+        } else if( prevValue == OPT_ENUM_stack_probes_Gs ) {
+            if( cmdOpts->stack_probes == OPT_ENUM_stack_probes_Ge ) {
                 Warning( "Overriding /Gs with /Ge" );
             }
         }
@@ -853,26 +853,26 @@ static void handle_threads_linking( OPT_STORAGE *cmdOpts, int x )
     if( hasBeenCalled ) {
         if( prevValue != cmdOpts->threads_linking ) {
             switch( prevValue ) {                   /* what's the old type? */
-              case OPT_threads_linking_MD:
+              case OPT_ENUM_threads_linking_MD:
                 oldType = 'D';
                 break;
-              case OPT_threads_linking_ML:
+              case OPT_ENUM_threads_linking_ML:
                 oldType = 'L';
                 break;
-              case OPT_threads_linking_MT:
+              case OPT_ENUM_threads_linking_MT:
                 oldType = 'T';
                 break;
               default:
                 Zoinks();
             }
             switch( cmdOpts->threads_linking ) {    /* what's the new type? */
-              case OPT_threads_linking_MD:
+              case OPT_ENUM_threads_linking_MD:
                 newType = 'D';
                 break;
-              case OPT_threads_linking_ML:
+              case OPT_ENUM_threads_linking_ML:
                 newType = 'L';
                 break;
-              case OPT_threads_linking_MT:
+              case OPT_ENUM_threads_linking_MT:
                 newType = 'T';
                 break;
               default:
@@ -900,18 +900,18 @@ static void handle_warn_level( OPT_STORAGE *cmdOpts, int x )
     /* unused parammeters */ (void)x;
 
     if( hasBeenCalled ) {
-        if( prevType == OPT_warn_level_w ) {
-            if( cmdOpts->warn_level == OPT_warn_level_W ) {
+        if( prevType == OPT_ENUM_warn_level_w ) {
+            if( cmdOpts->warn_level == OPT_ENUM_warn_level_W ) {
                 if( cmdOpts->W_value != 0 ) {
                     Warning( "Overriding /w with /W%d", cmdOpts->W_value );
                 }
             }
-        } else if( prevType == OPT_warn_level_W ) {
-            if( cmdOpts->warn_level == OPT_warn_level_w ) {
+        } else if( prevType == OPT_ENUM_warn_level_W ) {
+            if( cmdOpts->warn_level == OPT_ENUM_warn_level_w ) {
                 if( prevLevel != 0 ) {
                     Warning( "Overriding /W%d with /w", prevLevel );
                 }
-            } else if( cmdOpts->warn_level == OPT_warn_level_W ) {
+            } else if( cmdOpts->warn_level == OPT_ENUM_warn_level_W ) {
                 if( cmdOpts->W_value != prevLevel ) {
                     Warning( "Overriding /W%d with /W%d", prevLevel,
                              cmdOpts->W_value );
@@ -923,7 +923,7 @@ static void handle_warn_level( OPT_STORAGE *cmdOpts, int x )
     }
 
     prevType = cmdOpts->warn_level;
-    if( prevType == OPT_warn_level_W ) {
+    if( prevType == OPT_ENUM_warn_level_W ) {
         prevLevel = cmdOpts->W_value;
     } else {
         prevLevel = 0;
@@ -939,19 +939,19 @@ static void handle_precomp_headers( OPT_STORAGE *cmdOpts, int x )
 {
     /* unused parammeters */ (void)x;
 
-    if( cmdOpts->precomp_headers == OPT_precomp_headers_Yc ) {
+    if( cmdOpts->precomp_headers == OPT_ENUM_precomp_headers_Yc ) {
         if( cmdOpts->Yc_value != NULL ) {
             Warning( "Ignoring unsupported parameter '%s' to /Yc",
                      cmdOpts->Yc_value->data );
             OPT_CLEAN_STRING( &(cmdOpts->Yc_value) );
         }
-    } else if( cmdOpts->precomp_headers == OPT_precomp_headers_Yu ) {
+    } else if( cmdOpts->precomp_headers == OPT_ENUM_precomp_headers_Yu ) {
         if( cmdOpts->Yu_value != NULL ) {
             Warning( "Ignoring unsupported parameter '%s' to /Yu",
                      cmdOpts->Yu_value->data );
             OPT_CLEAN_STRING( &(cmdOpts->Yu_value) );
         }
-    } else if( cmdOpts->precomp_headers == OPT_precomp_headers_YX ) {
+    } else if( cmdOpts->precomp_headers == OPT_ENUM_precomp_headers_YX ) {
         if( cmdOpts->YX_value != NULL ) {
             Warning( "Ignoring unsupported parameter '%s' to /YX",
                      cmdOpts->YX_value->data );

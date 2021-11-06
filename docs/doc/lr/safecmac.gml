@@ -40,13 +40,20 @@ See xxx for a list of available functions.
 .dm safehint end
 .*
 .dm safealt begin
+.if &'length(&*.) ne 0 .do begin
+.   .sr funcsafe=&*
+.do end
+.el .do begin
+.   .sr funcsafe=&functiong._s
+.do end
 .newtext Safer C:
 The Safer C Library extension provides the
-.seekw &function &function._s
+.reffunc &funcsafe.
 function which is a safer alternative to
 .id &funcb.
-. This newer
-.id &function._s
+.period
+This newer
+.id &funcsafe.
 function is recommended to be used instead of the traditional "unsafe"
 .id &funcb.
 function.

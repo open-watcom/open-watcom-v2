@@ -31,9 +31,10 @@
 .chap The &makname Utility
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix '&makname' '&makcmdup'
 .ix 'make' '&makcmdup'
@@ -384,19 +385,8 @@ __MAKEOPTS__ = <options passed to &makcmdup>
 __MAKEFILES__ = <list of makefiles>
 __VERSION__ = <version number>
 __LOADDLL__= defined if DLL loading supported
-__MSDOS__ =  defined if MS/DOS version
-__NT__ = defined if Windows NT version
-__NT386__ = defined if x86 Windows NT version
-.*__NTAXP__ = defined if Alpha AXP Windows NT version
-__OS2__ = defined if OS/2 version
-__QNX__ = defined if QNX version
-__LINUX__ = defined if Linux version
-__LINUX386__ = defined if x86 Linux version
-.*__LINUXPPC__ = defined if PowerPC Linux version
-.*__LINUXMIPS__ = defined if MIPS Linux version
-__UNIX__ = defined if QNX or Linux version
 MAKE = <name of file containing &makcmdup>
-#endif
+
 # clear &sysper.EXTENSIONS list
 &sysper.EXTENSIONS:
 
@@ -407,6 +397,24 @@ MAKE = <name of file containing &makcmdup>
             .i &
             .asm .c .cpp .cxx .cc .for .pas .cob &
             .h .hpp .hxx .hh .fi .mif .inc
+.millust end
+The conditional definitions are:
+.millust begin
+__DOS__=       for DOS host version
+__MSDOS__=     ...
+__OS2__=       for OS/2 host version
+__RDOS__=      for RDOS host version
+__NT__=        for any Windows NT host version
+__NT386__=     for x86 Windows NT host version
+__NTX64__=     for x64 Windows NT host version
+__NTAXP__=     for Alpha AXP Windows NT host version
+__QNX__=       for QNX host version
+__LINUX__=     for any Linux host version
+__LINUX386__=  for x86 Linux host version
+__LINUXX64__=  for x64 Linux host version
+__LINUXPPC__=  for PowerPC Linux host version
+__LINUXMIPS__= for MIPS Linux host version
+__UNIX__=      for any QNX or Linux host version
 .millust end
 .np
 For Microsoft NMAKE compatibility (when you use the "ms" option), the
@@ -470,15 +478,6 @@ RC=rc
     $(RC) $(RFLAGS) /r $*
 .millust end
 .pc
-For OS/2, the
-.id __MSDOS__
-macro will be replaced by
-.id __OS2__
-and for Windows NT, the
-.id __MSDOS__
-macro will be replaced by
-.id __NT__.
-.np
 For UNIX make compatibility (when you use the "u" option), the
 following default definition is established.
 .millust begin
@@ -521,6 +520,62 @@ FC=fl
     move lex.yy.c $@
 
 .millust end
+For POSIX make compatibility (when you use the "ux" option), the
+following default definition is established.
+.millust begin
+&sysper.EXTENSIONS: .o .obj .c .y .l .a .sh .f
+
+AR=ar
+ARFLAGS=-rv
+YACC=yacc
+YFLAGS=
+LEX=lex
+LFLAGS=
+LDFLAGS=
+.* SUSv3 says 'CC=c99'
+CC=owcc
+CFLAGS=-O
+FC=fort77
+FFLAGS=-O 1
+.* Single suffix rules
+.*&sysper.c:
+.*    "    $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
+.*&sysper.f:
+.*    "    $(FC) $(FFLAGS) $(LDFLAGS) -o $@ $<
+.*&sysper.sh:
+.*    cp $< $@
+.*    chmod a+x $@
+.* Double suffix rules
+&sysper.c.o:
+    $(CC) $(CFLAGS) -c $<
+&sysper.f.o:
+    $(FC) $(FFLAGS) -c $<
+&sysper.y.o:
+    $(YACC) $(YFLAGS) $<
+    $(CC) $(CFLAGS) -c y.tab.c
+    rm -f y.tab.c
+    mv y.tab.o $@
+&sysper.l.o:
+    $(LEX) $(LFLAGS) $<
+    $(CC) $(CFLAGS) -c lex.yy.c
+    rm -f lex.yy.c
+    mv lex.yy.o $@
+&sysper.y.c:
+    $(YACC) $(YFLAGS) $<
+    mv y.tab.c $@
+&sysper.l.c:
+    $(LEX) $(LFLAGS) $<
+    mv lex.yy.c $@
+&sysper.c.a:
+    $(CC) -c $(CFLAGS) $<
+    $(AR) $(ARFLAGS) $@ $*.o
+    rm -f $*.o
+&sysper.f.a:
+    $(FC) -c $(FFLAGS) $<
+    $(AR) $(ARFLAGS) $@ $*.o
+    rm -f $*.o
+.millust end
+.np
 The "r" option will disable these definitions before processing any
 makefiles.
 :OPT name='s'
@@ -588,8 +643,8 @@ directive in a makefile has the same effect as the "z" option.
 &makname has many different special macros.
 Here are some of the simpler ones.
 .begpoint $compact $break
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
 .point $$
 .ix '&makcmdup special macros' '$$'
 represents the character "$"
@@ -612,10 +667,14 @@ list of dependents that are younger than the target
 .pc
 The following macros are for more sophisticated makefiles.
 .begpoint $break $setptnt 14
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
+.point __DOS__
+This macro is defined in the DOS environment.
 .point __MSDOS__
-This macro is defined in the MS/DOS environment.
+This macro is defined in the DOS environment.
+.point __RDOS__
+This macro is defined in the RDOS environment.
 .point __NT__
 This macro is defined in the Windows NT environment.
 .point __OS2__
@@ -647,8 +706,8 @@ The expansion is presented for the following example:
 a:\dir\target.ext : b:\dir1\dep1.ex1 c:\dir2\dep2.ex2
 .exam end
 .begpoint $compact $break
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
 .point $^@
 .ix '&makcmdup special macros' '$^ form'
 .ix '&makcmdup special macros' '$^@'
@@ -667,8 +726,8 @@ target.ext
 a:\dir\
 .endpoint
 .begpoint $compact $break
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
 .point $[@
 .ix '&makcmdup special macros' '$[ form'
 .ix '&makcmdup special macros' '$[@'
@@ -687,8 +746,8 @@ dep1.ex1
 b:\dir1\
 .endpoint
 .begpoint $compact $break
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
 .point $]@
 .ix '&makcmdup special macros' '$] form'
 .ix '&makcmdup special macros' '$]@'
@@ -1014,6 +1073,7 @@ The update sequence is similar to the previous example.
 .*
 .section Command Lists
 .*
+.np
 A command list is a sequence of one or more commands.
 Each command is preceded by one or more spaces or tabs.
 Command lists may also be used to construct inline files "on the fly".
@@ -1063,6 +1123,7 @@ with the file after usage. The default is "nokeep" which zaps it.
 .*
 .section Final Commands (.AFTER)
 .*
+.np
 .ix '&makcmdup directives' '.AFTER'
 .ix 'AFTER' '&makcmdup directive'
 The
@@ -1074,6 +1135,7 @@ for a full description of its use.
 .*
 .section Ignoring Dependent Timestamps (.ALWAYS)
 .*
+.np
 .ix '&makcmdup directives' '.ALWAYS'
 .ix 'ALWAYS' '&makcmdup directive'
 The
@@ -1131,6 +1193,7 @@ information into a resource file that can be used by &maksname..
 .*
 .section Initial Commands (.BEFORE)
 .*
+.np
 .ix '&makcmdup directives' '.BEFORE'
 .ix 'BEFORE' '&makcmdup directive'
 The
@@ -1142,6 +1205,7 @@ for a full description of its use.
 .*
 .section Disable Implicit Rules (.BLOCK)
 .*
+.np
 .ix '&makcmdup directives' '.BLOCK'
 .ix 'BLOCK' '&makcmdup directive'
 The
@@ -1154,6 +1218,7 @@ for a full description of its use.
 .*
 .section Ignoring Errors (.CONTINUE)
 .*
+.np
 .ix '&makcmdup directives' '.CONTINUE'
 .ix 'CONTINUE' '&makcmdup directive'
 The
@@ -1185,6 +1250,7 @@ Without the directive, good is not built.
 .*
 .section Default Command List (.DEFAULT)
 .*
+.np
 .ix '&makcmdup directives' '.DEFAULT'
 .ix 'DEFAULT' '&makcmdup directive'
 The
@@ -1247,6 +1313,7 @@ then &maksname will attempt to delete "BALANCE.LST".
 .*
 .section Error Action (.ERROR)
 .*
+.np
 .ix '&makcmdup directives' '.ERROR'
 .ix 'ERROR' '&makcmdup directive'
 The
@@ -1269,6 +1336,7 @@ all : .symbolic
 .*
 .section Ignoring Target Timestamp (.EXISTSONLY)
 .*
+.np
 .ix '&makcmdup directives' '.EXISTSONLY'
 .ix 'EXISTSONLY' '&makcmdup directive'
 The
@@ -1288,6 +1356,7 @@ If absent, this file creates foo; if present, this file does nothing.
 .*
 .section Specifying Explicitly Updated Targets (.EXPLICIT)
 .*
+.np
 .ix '&makcmdup directives' '.EXPLICIT'
 .ix 'EXPLICIT' '&makcmdup directive'
 The
@@ -1314,6 +1383,7 @@ despite the fact that it is the first one listed.
 .*
 .section *refid=extensions Defining Recognized File Extensions (.EXTENSIONS)
 .*
+.np
 .ix '&makcmdup directives' '.EXTENSIONS'
 .ix 'EXTENSIONS' '&makcmdup directive'
 The
@@ -1400,6 +1470,7 @@ Note the implicit connection beween the two files.
 .*
 .section Approximate Timestamp Matching (.FUZZY)
 .*
+.np
 .ix '&makcmdup directives' '.FUZZY'
 .ix 'FUZZY' '&makcmdup directive'
 The
@@ -1530,6 +1601,7 @@ directive.
 .*
 .section Minimising Target Timestamp (.JUST_ENOUGH)
 .*
+.np
 .ix '&makcmdup directives' '.JUST_ENOUGH'
 .ix 'JUST_ENOUGH' '&makcmdup directive'
 The
@@ -1555,6 +1627,7 @@ corresponding to when hello.exe was built.
 .*
 .section Updating Targets Multiple Times (.MULTIPLE)
 .*
+.np
 .ix '&makcmdup directives' '.MULTIPLE'
 .ix 'MULTIPLE' '&makcmdup directive'
 The
@@ -1612,6 +1685,7 @@ discover that "target" doesn't exist, and recreate it.
 .*
 .section Ignoring Target Timestamp (.NOCHECK)
 .*
+.np
 .ix '&makcmdup directives' '.NOCHECK'
 .ix 'NOCHECK' '&makcmdup directive'
 The
@@ -1623,6 +1697,7 @@ for a full description of its use.
 .*
 .section Cache Search Path (.OPTIMIZE)
 .*
+.np
 .ix '&makcmdup directives' '.OPTIMIZE'
 .ix 'OPTIMIZE' '&makcmdup directive'
 The
@@ -1686,6 +1761,7 @@ the program "DOREPORT" is executing.
 .*
 .section Name Command Sequence (.PROCEDURE)
 .*
+.np
 .ix '&makcmdup directives' '.PROCEDURE'
 .ix 'PROCEDURE' '&makcmdup directive'
 The
@@ -1705,6 +1781,7 @@ proc: .procedure
 .*
 .section Re-Checking Target Timestamp (.RECHECK)
 .*
+.np
 .ix '&makcmdup directives' '.RECHECK'
 .ix 'RECHECK' '&makcmdup directive'
 Make will re-check the target's timestamp, rather than assuming it was updated
@@ -1785,6 +1862,7 @@ Methods for making makefiles more succinct will be discussed.
 .*
 .section Defining Recognized File Extensions (.SUFFIXES)
 .*
+.np
 .ix '&makcmdup directives' '.SUFFIXES'
 .ix 'SUFFIXES' '&makcmdup directive'
 The
@@ -1914,8 +1992,8 @@ identifier represents an environment variable.
 For instance, the macro identifier "%path" represents the environment
 variable "path".
 .begpoint $compact $setptnt 16
-:DTHD.Macro identifiers
-:DDHD.Valid?
+.notehd1 Macro identifiers
+.notehd2 Valid?
 .point 2morrow
 yes
 .point stitch_in_9
@@ -2426,8 +2504,8 @@ If the file "D:\DIR1\DIR2\NAME.EXT" is the current target being
 updated then the following example will show how the form qualifiers
 are used.
 .begpoint
-:DTHD.Macro
-:DDHD.Expansion for D:\DIR1\DIR2\NAME.EXT
+.notehd1 Macro
+.notehd2 Expansion for D:\DIR1\DIR2\NAME.EXT
 .point $^@
 .fi D:\DIR1\DIR2\NAME.EXT
 .point $^*
@@ -2746,8 +2824,8 @@ sub-directories.
 :set symbol='srcup'     value='SRC'
 .do end
 .begpoint
-:DTHD.Files
-:DDHD.Sub-directory
+.notehd1 Files
+.notehd2 Sub-directory
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .point *.&hdrsuffup
 .fi \EXAMPLE\&hdrsuffup
@@ -2945,8 +3023,8 @@ If the application requires many source files in different directories
 specifications.
 For instance, if the current example files were setup as follows:
 .begpoint $break
-:DTHD.Sub-directory
-:DDHD.Contents
+.notehd1 Sub-directory
+.notehd2 Contents
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .point \EXAMPLE\&hdrsuffup
 .fi DEFS.&hdrsuffup,
@@ -3419,8 +3497,8 @@ use of the
 .id !include
 preprocessing directive.
 .begpoint $break
-:DTHD.Sub-directory
-:DDHD.Contents
+.notehd1 Sub-directory
+.notehd2 Contents
 .point \WINDOW
 .fi WINDOW.CMD,
 .fi WINDOW.MIF
@@ -3866,8 +3944,10 @@ These definitions are both readable and useful.
 .ix '&makcmdup' 'checking macro values'
 .ix 'checking macro values'
 A makefile can handle differences between compilers with the
-.id !ifeq,
-.id !ifneq,
+.id !ifeq
+.ct ,
+.id !ifneq
+.ct ,
 .id !ifeqi
 and
 .id !ifneqi
@@ -4254,9 +4334,10 @@ The
 command list will be executed only if there were no errors detected
 during the updating of the targets.
 The
-.id &sysper.BEFORE,
-.id &sysper.DEFAULT,
-and
+.id &sysper.BEFORE
+.ct ,
+.id &sysper.DEFAULT
+.ct , and
 .id &sysper.AFTER
 command list directives provide the capability to execute commands
 before, during, and after the makefile processing.
@@ -4415,9 +4496,9 @@ internal shell command from the following list:
 check for Ctrl+Break
 .point call
 nest batch files
-.point chdir
-change current directory
 .point cd
+change current directory
+.point chdir
 change current directory
 .point cls
 clear the screen
@@ -4426,7 +4507,7 @@ start NT or OS/2 command processor
 .point command
 start DOS command processor
 .point copy
-copy or combine files
+copy or combine files, intercepted by &makcmdup
 .point ctty
 DOS redirect input/output to COM port
 .point d:
@@ -4508,7 +4589,7 @@ It uses following syntax:
 echo [<value>]
 
 .millust end
-The "echo" command may be used to output any string to standard 
+The "echo" command may be used to output any string to standard
 output without length limitation.
 .*
 .section set command
@@ -4703,15 +4784,15 @@ rm [-frv] <files/directories>
 
 .millust end
 The "rm" command may be used to delete files or directories.
-&maksname "rm" command is simplified implementation of the POSIX rm command. 
+&maksname "rm" command is simplified implementation of the POSIX rm command.
 It handles file/directory names consistently with other &maksname commands.
 Following options are support.
 .begpoint $compact
-.point -f 
+.point -f
 force deletion of read-only files, no diagnostics messages about missing items
 .point -r
 deletion of directories
-.point -v 
+.point -v
 verbose operation
 .endpoint
 .*
@@ -4727,11 +4808,11 @@ mkdir [-p] <directory>
 
 .millust end
 The "mkdir" command may be used to create a directory.
-&maksname "mkdir" command is simplified implementation of the POSIX "mkdir" command. 
+&maksname "mkdir" command is simplified implementation of the POSIX "mkdir" command.
 It handles directory names consistently with other &maksname commands.
 Following options are support.
 .begpoint $compact
-.point -p 
+.point -p
 force creation of all parent directories
 .endpoint
 .*
@@ -4747,8 +4828,23 @@ rmdir <directory>
 
 .millust end
 The "rmdir" command may be used to delete a directory.
-&maksname "rmdir" command is is simplified implementation of the POSIX "rmdir" command. 
+&maksname "rmdir" command is is simplified implementation of the POSIX "rmdir" command.
 It handles directory names consistently with other &maksname commands.
+.*
+.section copy command
+.*
+.np
+.ix 'copy' 'using &makname'
+The commands "copy" is intercepted by &maksname..
+It uses following syntax:
+.millust begin
+
+copy <source file> <destination file>
+
+.millust end
+The "copy" command may be used to copy a file.
+&maksname "copy" command is simplified implementation of DOS "copy" command.
+It handles file names consistently with other &maksname commands.
 .*
 .section &maksname internal commands
 .*
@@ -4777,6 +4873,9 @@ It handles directory names consistently with other &maksname commands.
 .point
 .ix '&makcmdup internal commands' '%quit'
 .id %quit
+.point
+.ix '&makcmdup internal commands' '%ren'
+.id %ren
 .point
 .ix '&makcmdup internal commands' '%stop'
 .id %stop
@@ -4809,10 +4908,12 @@ suicide :
 .millust end
 .np
 The
-.id %append,
-.id %create,
-.id %erase,
-and
+.id %append
+.ct ,
+.id %create
+.ct ,
+.id %erase
+.ct , and
 .id %write
 internal commands allow &makcmdup to generate files under makefile
 control.
@@ -4839,6 +4940,20 @@ where
 is a file specification and
 .id <text>
 is arbitrary text.
+.np
+The
+.id %ren
+internal command will rename a file.
+The command has the form:
+.millust begin
+%ren <from file> <to file>
+.millust end
+.pc
+where
+.id <from file>
+and
+.id <to file>
+are a file specification.
 .np
 The
 .id %create
@@ -5053,8 +5168,8 @@ extensions, only the concept of a file suffix.
 for compatibility with UNIX makefiles.
 The UNIX compatible special macros supported are:
 .begpoint $compact
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
 .ix '&makcmdup special macros' '$@'
 .point $@
 full name of the target

@@ -1,4 +1,4 @@
-proj_name = res2c
+proj_name   = res2c
 
 res2c_autodepends = .AUTODEPEND
 
@@ -6,14 +6,21 @@ res2c_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = -I..
-
+#
+# cflags
+#
 .c: ..
 
-objs =  resdump.obj  &
-        loadchar.obj &
-        loadtype.obj
+inc_dirs = -I..
 
-$(proj_name).exe : $(objs) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $^@ $(lflags) file {$(objs)}
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = &
+    resdump.obj  &
+    loadchar.obj &
+    loadtype.obj
+!include exetarg.mif

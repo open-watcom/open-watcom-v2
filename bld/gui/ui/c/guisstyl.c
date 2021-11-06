@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,16 +37,16 @@
  * GUIGetScrollStyle --
  */
 
-gui_scroll_styles GUIGetScrollStyle( gui_window * wnd )
+gui_scroll_styles GUIAPI GUIGetScrollStyle( gui_window * wnd )
 {
-    gui_scroll_styles style;
+    gui_scroll_styles scroll_style;
 
-    style = GUI_NOSCROLL;
+    scroll_style = GUI_NOSCROLL;
     if( wnd->hgadget != NULL ) {
-        style |= GUI_HSCROLL;
+        scroll_style |= GUI_HSCROLL;
     }
     if( wnd->vgadget != NULL ) {
-        style |= GUI_VSCROLL;
+        scroll_style |= GUI_VSCROLL;
     }
-    return( style );
+    return( scroll_style );
 }

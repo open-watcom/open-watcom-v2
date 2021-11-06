@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -269,7 +269,7 @@ static  bool    LoadStoreIns( instruction *ins )
     return( true );
 }
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 static  bool    FixMem16Moves( void ) { return( false ); }
 static  void    CompressMem16Moves( void ) {}
 #else
@@ -579,7 +579,7 @@ static void     CompressIns( instruction *ins )
         if( prev->head.opcode == OP_XOR
             && prev_op0 == prev->operands[1]
             && ( TypeClassSize[prev->type_class] == 1
-#if _TARGET & _TARG_IAPX86  /* Does not work right on 386 - temps becomes 32-bit much later. Todo. */
+#if _TARGET & _TARG_8086  /* Does not work right on 386 - temps becomes 32-bit much later. Todo. */
                 || ( TypeClassSize[prev->type_class] == 2 && ins->result && ins->result->n.class == N_TEMP )
 #endif
             ) ) {

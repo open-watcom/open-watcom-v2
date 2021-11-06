@@ -18,8 +18,7 @@ and the declaration does not contain either of the keywords
 .kw static
 or
 .kw extern
-..ct ,
-then the
+.ct , then the
 .ix 'external object' 'creating'
 .ix 'creating an external object'
 space for the object is created at this point.
@@ -106,8 +105,7 @@ This declaration allocates space for and declares the object
 .mono ListTop
 to be a pointer to a structure
 .mono list_el
-..ct ,
-with external linkage.
+.ct , with external linkage.
 Another module with the declaration,
 .millust begin
 extern struct list_el * ListTop;
@@ -116,8 +114,7 @@ extern struct list_el * ListTop;
 refers to the same
 object
 .mono ListTop
-..ct ,
-and states that it is found outside of the module.
+.ct , and states that it is found outside of the module.
 .pp
 Within a program, possibly consisting of more than one
 module, each object or function with external linkage must be defined

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -198,7 +198,7 @@ void EMSInit( void )
 
     EMSCtrl.exhausted = false;
     vect = DosGetVect( EMS_INTERRUPT );
-    check = MK_FP( FP_SEG( vect ), EMS_INTERRUPT_OFFSET );
+    check = _MK_FP( _FP_SEG( vect ), EMS_INTERRUPT_OFFSET );
     for( i = 0; i <= 7; i++ ) {
         if( check[i] != emsStr[i] ) {
             return;
@@ -311,7 +311,7 @@ static void *emsAccess( ems_addr x )
     }
     offset = x.internal.offset;
     offset += physical * EMS_MAX_PAGE_SIZE;
-    return( MK_FP( EMSCtrl.seg, offset ) );
+    return( _MK_FP( EMSCtrl.seg, offset ) );
 
 } /* emsAccess */
 

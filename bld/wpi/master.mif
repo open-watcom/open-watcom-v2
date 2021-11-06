@@ -4,11 +4,19 @@ proj_name = wpi
 wpi_autodepends = .AUTODEPEND
 !endif
 
+wpi_nofpu = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-#-------- CFLAGS
+#
+# cflags
+#
+.c : ../c
+
+inc_dirs = -I"../h"
+
 !ifeq wpitest yes
 extra_cpp_flags_os2 = -D_WPI_TEST_
 extra_cpp_flags_win = -D_WPI_TEST_
@@ -21,33 +29,22 @@ extra_c_flags_os2_386 = -3r
 extra_c_flags_win = -zw
 extra_c_flags_win_i86 = -zc-zW
 
-#-------- INCLUDES
+# explicit rules
+#################
 
-.c : $(wpi_dir)/c
-.h : $(wpi_dir)/h
-
-#-------- OBJECTS
-objs_win = wpi_win.obj wpi_wfnf.obj
-objs_os2 = wpi_os2.obj wpi_arc.obj wpi_fntf.obj wpi_line.obj wpi_dbcs.obj &
-           wpi_ffnt.obj wpi_libs.obj wpi_inif.obj wpi_file.obj
-objs_nt = wpi_win.obj
-
+#
+# LIB
+#
+libtarg_objs_win = wpi_win.obj wpi_wfnf.obj
+libtarg_objs_os2 = wpi_os2.obj wpi_arc.obj wpi_fntf.obj wpi_line.obj &
+    wpi_dbcs.obj wpi_ffnt.obj wpi_libs.obj wpi_inif.obj wpi_file.obj
+libtarg_objs_nt = wpi_win.obj
 !ifeq wpitest yes
-extra_objs_win = new_win.obj
-extra_objs_os2 = new_os2.obj
+libtarg_objs_win += new_win.obj
+libtarg_objs_os2 += new_os2.obj
 !endif
+libtarg_objs = $(libtarg_objs_$(host_os))
+!include libtarg.mif
 
-inc_dirs = -I"../h"
-
-objs = $(objs_$(host_os)) $(extra_objs_$(host_os))
-
-wpi.lib: $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
-!endif
-
-wpi_win.obj : wpi_win.c wpi_win.h wpitypes.h wpi.h
-wpi_os2.obj : wpi_os2.c wpi_os2.h wpitypes.h wpi.h
+wpi_win.obj : wpi_win.c ../h/wpi_win.h ../h/wpitypes.h ../h/wpi.h
+wpi_os2.obj : wpi_os2.c ../h/wpi_os2.h ../h/wpitypes.h ../h/wpi.h

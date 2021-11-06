@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -326,10 +327,11 @@ static const_string_table OpName[] = {
 #include "dwlocinf.h"
 #undef DW_LOC_OP
 };
+
 static const_string_table RegName[] = {
-#define DW_REG( __n )    #__n,
-#include "dwreginf.h"
-#undef DW_REG
+    #define DW_REG(name,ci,start,len) #name,
+    #include "dwregx86.h"
+    #undef DW_REG
 };
 
 static unsigned_8 const *GetInt( unsigned_8 const *p, unsigned_32 *ret, unsigned_16 size )

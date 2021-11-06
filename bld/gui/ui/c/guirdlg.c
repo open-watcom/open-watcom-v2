@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 #include <stdlib.h>
 #include "watcom.h"
 #include "guiutil.h"
-#include "guixscal.h"
+#include "guiscale.h"
 #include "wressetr.h"
 #include "filefmt.h"
 #include "resdiag.h"
@@ -220,7 +221,7 @@ static gui_control_styles GetControlStyles( DialogBoxControl *ctl, gui_control_c
             styles |= GUI_STYLE_CONTROL_WANTRETURN;
         }
         break;
-    default :
+    default:
         break;
     }
 
@@ -309,12 +310,12 @@ static bool DialogBoxControl2GUI( DialogBoxControl *ctl, gui_control_info *ctl_i
         ctl_info->id = ctl->ID;
 
         // set the scroll styles
-        ctl_info->scroll = GUI_NOSCROLL;
+        ctl_info->scroll_style = GUI_NOSCROLL;
         if( ctl->Style & WS_HSCROLL ) {
-            ctl_info->scroll = GUI_HSCROLL;
+            ctl_info->scroll_style |= GUI_HSCROLL;
         }
         if( ctl->Style & WS_VSCROLL ) {
-            ctl_info->scroll = GUI_VSCROLL;
+            ctl_info->scroll_style |= GUI_VSCROLL;
         }
 
         // set the control postion
@@ -373,12 +374,12 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
 
     if( ok ) {
         // set the scroll styles
-        dlg_info->scroll = GUI_NOSCROLL;
+        dlg_info->scroll_style = GUI_NOSCROLL;
         if( hdr->Style & WS_HSCROLL ) {
-            dlg_info->scroll = GUI_HSCROLL;
+            dlg_info->scroll_style |= GUI_HSCROLL;
         }
         if( hdr->Style & WS_VSCROLL ) {
-            dlg_info->scroll = GUI_VSCROLL;
+            dlg_info->scroll_style |= GUI_VSCROLL;
         }
         // set the window styles
         dlg_info->style = GUI_NONE;
@@ -412,7 +413,7 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
     return( dlg_info );
 }
 
-bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *gui_call_back, void *extra )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUICALLBACK *gui_call_back, void *extra )
 {
     DialogBoxHeader     *hdr;
     DialogBoxControl    *cntls;
@@ -469,7 +470,7 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     }
 
     if( ok ) {
-        dlg_info->parent = parent;
+        dlg_info->parent = parent_wnd;
         dlg_info->gui_call_back = gui_call_back;
         dlg_info->extra = extra;
         ok = GUICreateDialog( dlg_info, hdr->NumOfItems, controls_info );

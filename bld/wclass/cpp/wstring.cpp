@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,9 +41,9 @@
 
 #define DEF_BUFFER 500
 
-#define MALLOC(s) (char*)malloc(s)
-#define REALLOC(p,s) (char*)realloc(p,s)
-#define FREE(p) if( p != NULL ) free(p)
+#define MALLOC(s)       (char*)malloc(s)
+#define REALLOC(p,s)    (char*)realloc(p,s)
+#define FREE(p)         free((void*)(p))
 
 Define( WString )
 
@@ -81,7 +82,7 @@ WString& WEXPORT WString::operator =( const WString& x )
 
 WEXPORT WString::WString( const char* str )
 {
-    if( (str != NULL) && strlen( str ) > 0 ) {
+    if( ( str != NULL ) && strlen( str ) > 0 ) {
         _value = MALLOC( strlen( str ) + 1 );
         if( _value != NULL ) {
             strcpy( _value, str );
@@ -108,8 +109,10 @@ WString* WEXPORT WString::createSelf( WObjectFile& )
 void WEXPORT WString::readSelf( WObjectFile& p )
 {
     WObject::readSelf( p );
-    FREE( _value );
-    _value = NULL;
+    if( _value != NULL ) {
+        FREE( _value );
+        _value = NULL;
+    }
     size_t len;
     p.readObject( &len );
     if( len > 0 ) {
@@ -125,8 +128,9 @@ void WEXPORT WString::readSelf( WObjectFile& p )
 void WEXPORT WString::writeSelf( WObjectFile& p )
 {
     WObject::writeSelf( p );
-    p.writeObject( size() );
-    if( size() > 0 ) {
+    size_t len = size();
+    p.writeObject( len );
+    if( len > 0 ) {
         p.writeObject( _value );
     }
 }
@@ -159,7 +163,7 @@ bool WEXPORT WString::operator==( const char* cstring ) const
 int WEXPORT WString::compare( const WObject* str ) const
 {
     // assumes str points to a String
-    if( (_value != NULL) && (str != NULL) && (((WString*)str)->_value != NULL) ) {
+    if( ( _value != NULL ) && ( str != NULL ) && ( ((WString*)str)->_value != NULL ) ) {
         return( strcmp( _value, ((WString*)str)->_value ) );
     }
     return( 0 );
@@ -171,7 +175,7 @@ void WEXPORT WString::deleteChar( size_t index, size_t count )
     if( _value != NULL ) {
         size_t len = strlen( _value );
         if( index < len ) {
-            if( (index + count) > len ) {
+            if( ( index + count ) > len ) {
                 count = len - index;
             }
             memmove( &_value[index], &_value[index + count], len - ( index + count ) + 1 );
@@ -205,56 +209,81 @@ WEXPORT WString::operator long() const
 
 void WEXPORT WString::puts( const char* str )
 {
-    *this = str;
+    if( _value != NULL ) {
+        FREE( _value );
+        _value = NULL;
+    }
+    if( str != NULL ) {
+        size_t len = strlen( str );
+        if( len > 0 ) {
+            _value = MALLOC( len + 1 );
+            if( _value != NULL ) {
+                strcpy( _value, str );
+            }
+        }
+    }
 }
 
 void WEXPORT WString::printf( const char* parms... )
 {
     char*   buffer;
     va_list args;
-    int     bufsize = DEF_BUFFER;
+    int     bufsize;
 
+    va_start( args, parms );
+    bufsize = vsnprintf( NULL, 0, parms, args ) + 1;
+    va_end( args );
     buffer = MALLOC( bufsize );
     if( buffer != NULL ) {
         va_start( args, parms );
-        while( _vbprintf( buffer, bufsize, parms, args ) == bufsize - 1) {
-            bufsize *= 2;
-            FREE( buffer );
-            buffer = MALLOC( bufsize );
-            if( buffer == NULL ) {
-                va_end( args );
-                return;
-            }
-            va_start( args, parms );
+        if( vsnprintf( buffer, bufsize, parms, args ) >= 0 ) {
+            (*this) = buffer;
         }
         va_end( args );
-        (*this) = buffer;
         FREE( buffer );
     }
 }
 
 void WEXPORT WString::concat( char chr )
 {
-    char temp[2];
-    temp[0] = chr;
-    temp[1] = '\0';
-    concat( temp );
+    if( chr != '\0' ) {
+        if( _value == NULL ) {
+            char* value = MALLOC( 2 );
+            if( value != NULL ) {
+                _value = value;
+                value[0] = chr;
+                value[1] = '\0';
+            }
+        } else {
+            size_t len = size();
+            char* value = REALLOC( _value, len + 2 );
+            if( value != NULL ) {
+                _value = value;
+                value[len++] = chr;
+                value[len] = '\0';
+            }
+        }
+    }
 }
 
 void WEXPORT WString::concat( const char* str )
 {
-    if( (str != NULL) && strlen( str ) > 0 ) {
-        if( _value != NULL) {
-            size_t len = size();
-            char* value = REALLOC( _value, len + strlen( str ) + 1 );
-            if( value != NULL ) {
-                _value = value;
-                strcpy( &_value[len], str );
-            }
-        } else {
-            _value = MALLOC( strlen( str ) + 1 );
-            if( _value != NULL ) {
-                strcpy( _value, str );
+    if( str != NULL ) {
+        size_t str_len = strlen( str );
+        if( str_len > 0 ) {
+            if( _value == NULL ) {
+                char* value = MALLOC( str_len + 1 );
+                if( value != NULL ) {
+                    _value = value;
+                    strcpy( value, str );
+                }
+            } else {
+                size_t len = size();
+                char* value = REALLOC( _value, len + str_len + 1 );
+                if( value != NULL ) {
+                    _value = value;
+                    strcpy( &value[len], str );
+                }
             }
         }
     }
@@ -264,23 +293,18 @@ void WEXPORT WString::concatf( const char* parms... )
 {
     char*   buffer;
     va_list args;
-    int     bufsize = DEF_BUFFER;
+    int     bufsize;
 
+    va_start( args, parms );
+    bufsize = vsnprintf( NULL, 0, parms, args ) + 1;
+    va_end( args );
     buffer = MALLOC( bufsize );
     if( buffer != NULL ) {
         va_start( args, parms );
-        while( _vbprintf( buffer, bufsize, parms, args ) == bufsize - 1) {
-            bufsize *= 2;
-            FREE( buffer );
-            buffer = MALLOC( bufsize );
-            if( buffer == NULL ) {
-                va_end( args );
-                return;
-            }
-            va_start( args, parms );
+        if( vsnprintf( buffer, bufsize, parms, args ) >= 0 ) {
+            concat( buffer );
         }
         va_end( args );
-        concat( buffer );
         FREE( buffer );
     }
 }
@@ -302,7 +326,7 @@ void WEXPORT WString::chop( size_t count )
         size_t len = strlen( _value );
         if( count > 0 ) {
             if( count <= len ) {
-                memmove( _value, &_value[count], len-count+1 );
+                memmove( _value, &_value[count], len - count + 1 );
             }
         }
         fixup();
@@ -317,15 +341,15 @@ bool WEXPORT WString::match( const char* mask ) const
         mask = "";
     if( value == NULL )
         value = "";
-    int     i = 0;
-    int     j = 0;
+    size_t  i = 0;
+    size_t  j = 0;
     for( ;; ) {
         if( mask[i] == '\0' && value[j] == '\0' ) {
             ok = true;
             break;
         } else if( mask[i] == '*' ) {
             i++;
-            while( value[j] != '\0' && toupper(mask[i]) != toupper(value[j]) ) {
+            while( value[j] != '\0' && toupper( mask[i] ) != toupper( value[j] ) ) {
                 j++;
             }
         } else if( mask[i] == '?' ) {
@@ -336,7 +360,7 @@ bool WEXPORT WString::match( const char* mask ) const
         } else if( value[j] == '?' && mask[i] != '\0' ) {
             i++;
             j++;
-        } else if( value[j] == '?' || toupper(mask[i]) == toupper(value[j]) ) {
+        } else if( value[j] == '?' || toupper( mask[i] ) == toupper( value[j] ) ) {
             i++;
             j++;
         } else {
@@ -349,7 +373,7 @@ bool WEXPORT WString::match( const char* mask ) const
 bool WEXPORT WString::isMask() const
 {
     if( _value != NULL ) {
-        for( int i=0; _value[i] != '\0'; i++ ) {
+        for( size_t i = 0; _value[i] != '\0'; i++ ) {
             if( _value[i] == '?' || _value[i] == '*' ) {
                 return( true );
             }
@@ -362,7 +386,7 @@ void WEXPORT WString::toLower()
 {
     if( _value != NULL ) {
         size_t icount = strlen( _value );
-        for( size_t i=0; i<icount; i++ ) {
+        for( size_t i = 0; i < icount; i++ ) {
             _value[i] = (char)tolower( (unsigned char)_value[i] );
         }
     }
@@ -370,7 +394,7 @@ void WEXPORT WString::toLower()
 
 void WString::fixup()
 {
-    if( strlen( _value ) == 0 ) {
+    if( _value != NULL && strlen( _value ) == 0 ) {
         FREE( _value );
         _value = NULL;
     }
@@ -379,11 +403,13 @@ void WString::fixup()
 
 size_t WEXPORT WString::trim( bool beg, bool end )
 {
+    size_t len;
+    size_t i;
+
     if( beg ) {
         if( _value != NULL ) {
-            size_t len = strlen( _value );
-            size_t i;
-            for( i=0; i<len; i++ ) {
+            len = strlen( _value );
+            for( i = 0; i < len; i++ ) {
                 if( _value[i] != ' ' ) {
                     break;
                 }
@@ -395,15 +421,14 @@ size_t WEXPORT WString::trim( bool beg, bool end )
     }
     if( end ) {
         if( _value != NULL ) {
-            size_t len = strlen( _value );
-            size_t i;
-            for( i=len; i>0; i-- ) {
+            len = strlen( _value );
+            for( i = len; i > 0; i-- ) {
                 if( _value[i - 1] != ' ' ) {
                     break;
                 }
             }
-            if( i-len ) {
-                chop( i-len );
+            if( i - len ) {
+                chop( i - len );
             }
         }
     }

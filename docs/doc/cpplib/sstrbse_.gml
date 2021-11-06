@@ -54,15 +54,18 @@ The following member function is declared in the public interface:
 :SMTICS.
 The &fn. creates a pointer to the
 :MONO.strstreambuf
-associated with the &obj.:PERIOD.
+associated with the &obj.
+:PERIOD.
 Since the
 :MONO.strstreambuf
 object is embedded within the &obj.,
-this function never returns &null.:PERIOD.
+this function never returns &null.
+:PERIOD.
 :RSLTS.
 The &fn. returns a pointer to the
 :MONO.strstreambuf
-associated with the &obj.:PERIOD.
+associated with the &obj.
+:PERIOD.
 :eLIBF.
 :CMT.========================================================================
 :LIBF fmt='ctor' prot='protected'.strstreambase
@@ -74,12 +77,14 @@ associated with the &obj.:PERIOD.
 :SMTICS.
 This form of the &fn. creates a &obj. that is initialized, but empty. Dynamic
 allocation is used to store characters. No buffer is allocated. A buffer is
-be allocated when data is first written to the &obj.:PERIOD.
+be allocated when data is first written to the &obj.
+:PERIOD.
 :P.
 This form of the &fn. is only used implicitly by the compiler
 when it generates a constructor for a derived class.
 :RSLTS.
-The &fn. creates an initialized &obj.:PERIOD.
+The &fn. creates an initialized &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.
@@ -99,7 +104,7 @@ buffer specified by the
 :ARG.str
 and
 :ARG.len
-parameters as its &rsvarea. within the associated
+parameters as its &resvarea. within the associated
 :MONO.strstreambuf
 object. Dynamic allocation is not used.
 :P.
@@ -107,7 +112,8 @@ This form of the &fn. is unlikely to be explicitly used, except in the
 member initializer list for the constructor of a derived class.
 :INCLUDE file='str_b'.
 :RSLTS.
-The &fn. creates an initialized &obj.:PERIOD.
+The &fn. creates an initialized &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.

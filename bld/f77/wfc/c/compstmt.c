@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include <ctype.h>
 #include "progsw.h"
 #include "stmtsw.h"
@@ -258,16 +257,16 @@ void Recurse( void )
 }
 
 
-static bool CharSubStrung( void )
+static bool CharSubString( void )
 {
-    bool        substrung;
+    bool        substring;
     itnode      *cit;
 
     cit = CITNode;
     AdvanceITPtr();                     // step up to the OPR_LBR
-    substrung = SubStrung();
+    substring = SubString();
     CITNode = cit;
-    return( substrung );
+    return( substring );
 }
 
 static void GetStmtType( void )
@@ -305,7 +304,7 @@ static void GetStmtType( void )
                     } else {
                         LkSym();
                         if( !BitOn( SY_USAGE | SY_SUB_PARM ) &&
-                            !CharSubStrung() ) {
+                            !CharSubString() ) {
                             StmtProc = PR_STMTFUNC;
                         }
                     }
@@ -431,16 +430,19 @@ static void CheckDoEnd( void )
 
     for(;;) {
         if( CSHead->typ == CS_DO ) {
-            if( CSHead->cs_info.do_parms->do_term != StmtNo ) break;
+            if( CSHead->cs_info.do_parms->do_term != StmtNo ) {
+                break;
+            }
         } else if( CSHead->typ == CS_DO_WHILE ) {
-            if( CSHead->cs_info.do_term != StmtNo ) break;
+            if( CSHead->cs_info.do_term != StmtNo ) {
+                break;
+            }
         } else {
             break;
         }
         FiniDo();
     }
-    cs_node = CSHead;
-    while( cs_node != NULL ) {
+    for( cs_node = CSHead; cs_node != NULL; cs_node = cs_node->link ) {
         if( cs_node->typ == CS_DO ) {
             if( cs_node->cs_info.do_parms->do_term == StmtNo ) {
                 Error( DO_NESTING_BAD );
@@ -450,7 +452,6 @@ static void CheckDoEnd( void )
                 Error( DO_NESTING_BAD );
             }
         }
-        cs_node = cs_node->link;
     }
 }
 
@@ -467,11 +468,11 @@ static void FiniDo( void )
     }
 }
 
-void RemKeyword( itnode *itptr, uint remove_len )
+void RemKeyword( itnode *itptr, size_t remove_len )
 {
     char        *curr_char;
     itnode      *new_it_node;
-    uint        curr_size;
+    size_t      curr_size;
 
     itptr->oprpos += remove_len;
     itptr->opnpos = itptr->oprpos;
@@ -494,17 +495,19 @@ void RemKeyword( itnode *itptr, uint remove_len )
         curr_char = itptr->opnd;
         curr_size = itptr->opnd_size;
         for(;;) {
-            if( curr_char == itptr->opnd + curr_size ) break;
-            if( isdigit( *curr_char ) == 0 ) break;
+            if( curr_char == itptr->opnd + curr_size )
+                break;
+            if( isdigit( *curr_char ) == 0 )
+                break;
             curr_char++;
         }
         if( curr_char != itptr->opnd ) {
             itptr->opn.ds = DSOPN_INT;
-            if( (uint)( curr_char - itptr->opnd ) != curr_size ) {
-                remove_len = curr_size - (uint)( curr_char - itptr->opnd );
-                itptr->opnd_size = (uint)( curr_char - itptr->opnd );
+            remove_len = curr_char - itptr->opnd;
+            if( remove_len != curr_size ) {
+                itptr->opnd_size = remove_len;
                 new_it_node = FrlAlloc( &ITPool, sizeof( itnode ) );
-                new_it_node->opnd_size = remove_len;
+                new_it_node->opnd_size = curr_size - remove_len;
                 new_it_node->opnd = itptr->opnd + itptr->opnd_size;
                 new_it_node->opn.ds = DSOPN_NAM;
                 new_it_node->opr = OPR_PHI;

@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  DOS implementation of open() and sopen() (LFN-enabled).
+* Description:  DOS implementation of open() and _sopen() (LFN-enabled).
 *
 ****************************************************************************/
 

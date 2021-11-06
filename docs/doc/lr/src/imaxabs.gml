@@ -10,7 +10,7 @@ The
 function returns the absolute value
 of its maximum-size integer argument
 .arg j
-.ct .li .
+.period
 .desc end
 .return begin
 The

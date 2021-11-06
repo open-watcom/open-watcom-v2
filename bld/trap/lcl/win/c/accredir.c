@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,8 @@
 #include <dos.h>
 #include "tinyio.h"
 #include "stdwin.h"
+#include "dbgrmsg.h"
+
 
 static redirect_stdin_ret       *rdRet;
 static BOOL                     isInput;
@@ -101,12 +104,12 @@ static trap_elen doRedirect( BOOL isin )
     return( sizeof( redirect_stdin_ret ) );
 } /* doRedirect */
 
-trap_retval ReqRedirect_stdin( void  )
+trap_retval TRAP_CORE( Redirect_stdin )( void  )
 {
     return( doRedirect( TRUE ) );
 }
 
-trap_retval ReqRedirect_stdout( void )
+trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
     return( doRedirect( FALSE ) );
 }

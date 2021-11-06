@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,24 +77,24 @@ static void __near AllocSeg( unsigned seg, unsigned amount, unsigned area_seg )
     free_block_ptr      nextptr;
     free_block_ptr      prevptr;
 
-    area = MK_FP( area_seg, 0 );
+    area = _MK_FP( area_seg, 0 );
     area->free_paras -= amount;
-    memptr = MK_FP( seg - 1, 0x10 );
+    memptr = _MK_FP( seg - 1, 0x10 );
     if( memptr->num_paras == amount ) {     /* took up entire free block */
-        nextptr = MK_FP( memptr->next, 0 ); /* unlink from ring */
+        nextptr = _MK_FP( memptr->next, 0 ); /* unlink from ring */
         nextptr->prev = memptr->prev;
-        prevptr = MK_FP( memptr->prev, 0 );
+        prevptr = _MK_FP( memptr->prev, 0 );
         prevptr->next = memptr->next;
     } else { /* make new free block with remaining paras from this block */
-        newptr = MK_FP( FP_SEG( memptr ) + amount, 0x10 );
+        newptr = _MK_FP( _FP_SEG( memptr ) + amount, 0x10 );
         newptr->next = memptr->next;
         newptr->prev = memptr->prev;
         newptr->num_paras = memptr->num_paras - amount;
         *((desc_ptr)newptr - 1) = BLOCK_IS_FREE;
-        nextptr = MK_FP( newptr->next, 0 );
-        nextptr->prev = FP_SEG( newptr ) + 1;
-        prevptr = MK_FP( newptr->prev, 0 );
-        prevptr->next = FP_SEG( newptr ) + 1;
+        nextptr = _MK_FP( newptr->next, 0 );
+        nextptr->prev = _FP_SEG( newptr ) + 1;
+        prevptr = _MK_FP( newptr->prev, 0 );
+        prevptr->next = _FP_SEG( newptr ) + 1;
     }
 }
 
@@ -107,14 +107,14 @@ static unsigned __near AllocFromArea( unsigned amount, unsigned area_seg )
     unsigned            seg;
     area_list_ptr       area;
 
-    area = MK_FP( area_seg, 0 );
-    for( memptr = MK_FP( area->fblk.next, 0 ); memptr->num_paras != 0 && memptr->num_paras < amount; ) {
-        memptr = MK_FP( memptr->next, 0 );
+    area = _MK_FP( area_seg, 0 );
+    for( memptr = _MK_FP( area->fblk.next, 0 ); memptr->num_paras != 0 && memptr->num_paras < amount; ) {
+        memptr = _MK_FP( memptr->next, 0 );
     }
     seg = NULL_SEG;
     if( memptr->num_paras != 0 ) {
-        seg = FP_SEG( memptr );
-        AllocSeg( seg, amount, FP_SEG( area ) );
+        seg = _FP_SEG( memptr );
+        AllocSeg( seg, amount, _FP_SEG( area ) );
     }
     return( seg );
 }
@@ -127,9 +127,9 @@ static unsigned __near Allocate( unsigned amount )
     unsigned            seg;
     area_list_ptr       area;
 
-    for( area = MK_FP( __OVLAREALIST__, 0 ); area != NULL; area = MK_FP( area->next, 0 ) ) {
+    for( area = _MK_FP( __OVLAREALIST__, 0 ); area != NULL; area = _MK_FP( area->next, 0 ) ) {
         if( area->free_paras >= amount ) {
-            seg = AllocFromArea( amount, FP_SEG( area ) );
+            seg = AllocFromArea( amount, _FP_SEG( area ) );
             if( seg != NULL_SEG ) {
                 return( seg );
             }
@@ -151,35 +151,35 @@ static void __near FreeWithNext( unsigned seg, unsigned num_paras,
     free_block_ptr      memptr;
 
     /* add block to area */
-    area = MK_FP( area_seg, 0 );
+    area = _MK_FP( area_seg, 0 );
     area->free_paras += num_paras;
-    memptr = MK_FP( seg, 0 );
+    memptr = _MK_FP( seg, 0 );
     memptr->num_paras = num_paras;
     memptr->next = next_seg;
-    nextptr = MK_FP( next_seg, 0 );
+    nextptr = _MK_FP( next_seg, 0 );
     memptr->prev = nextptr->prev;
-    nextptr->prev = FP_SEG( memptr );
-    prevptr = MK_FP( memptr->prev, 0 );
-    prevptr->next = FP_SEG( memptr );
+    nextptr->prev = _FP_SEG( memptr );
+    prevptr = _MK_FP( memptr->prev, 0 );
+    prevptr->next = _FP_SEG( memptr );
     /* try to coalesce forward */
     if( nextptr->num_paras != 0 &&
-                FP_SEG( memptr ) + memptr->num_paras == FP_SEG( nextptr ) ) {
+                _FP_SEG( memptr ) + memptr->num_paras == _FP_SEG( nextptr ) ) {
         memptr->num_paras += nextptr->num_paras;
         memptr->next = nextptr->next;
-        nextptr = MK_FP( nextptr->next, 0 ); /* advance nextptr */
-        nextptr->prev = FP_SEG( memptr );
+        nextptr = _MK_FP( nextptr->next, 0 ); /* advance nextptr */
+        nextptr->prev = _FP_SEG( memptr );
     }
     /* try to coalesce backward */
     if( prevptr->num_paras != 0 &&
-                FP_SEG( prevptr ) + prevptr->num_paras == FP_SEG( memptr ) ) {
+                _FP_SEG( prevptr ) + prevptr->num_paras == _FP_SEG( memptr ) ) {
         /* coalesce backward */
         prevptr->next = memptr->next;
-        nextptr->prev = FP_SEG( prevptr );
+        nextptr->prev = _FP_SEG( prevptr );
         prevptr->num_paras += memptr->num_paras;
         memptr = prevptr;
     }
     /* set up the descriptor */
-    *(desc_ptr)MK_FP( FP_SEG( memptr ) - 1, 0xE ) = BLOCK_IS_FREE;
+    *(desc_ptr)_MK_FP( _FP_SEG( memptr ) - 1, 0xE ) = BLOCK_IS_FREE;
 }
 
 
@@ -191,14 +191,14 @@ static void __near FreeSeg( unsigned seg, unsigned num_paras, unsigned area_seg 
     free_block_ptr      nextptr;
     free_block_ptr      memptr;
 
-    area = MK_FP( area_seg, 0 );
-    memptr = MK_FP( seg, 0 );
+    area = _MK_FP( area_seg, 0 );
+    memptr = _MK_FP( seg, 0 );
     /* Note: Since there is a dummy block at end of list, we don't have to
      * explicitly test for it here. */
-    for( nextptr = MK_FP( area->fblk.next, 0 ); FP_SEG( nextptr ) < FP_SEG( memptr ); ) {
-        nextptr = MK_FP( nextptr->next, 0 );
+    for( nextptr = _MK_FP( area->fblk.next, 0 ); _FP_SEG( nextptr ) < _FP_SEG( memptr ); ) {
+        nextptr = _MK_FP( nextptr->next, 0 );
     }
-    FreeWithNext( seg, num_paras, area_seg, FP_SEG( nextptr ) );
+    FreeWithNext( seg, num_paras, area_seg, _FP_SEG( nextptr ) );
 }
 
 
@@ -212,7 +212,7 @@ static void __near DeMungeVectors( unsigned tab_off, unsigned sec_num,
     lvector_ptr vect;
     unsigned    loader;
 
-    loader = FP_OFF( __NOVLLDR__ ) - FP_OFF( &__OVLSTARTVEC__->u.v.ldr_addr ) - sizeof( __OVLSTARTVEC__->u.v.ldr_addr );
+    loader = _FP_OFF( __NOVLLDR__ ) - _FP_OFF( &__OVLSTARTVEC__->u.v.ldr_addr ) - sizeof( __OVLSTARTVEC__->u.v.ldr_addr );
     WALK_ALL_VECT( vect ) {
         if(( vect->u.i.cs_over == OVV_CS_OVERRIDE ) && ( vect->u.i.tab_addr == tab_off )) {
             vect->u.v.call_op = CALL_INSTRUCTION;
@@ -237,7 +237,7 @@ static unsigned __near UnloadSection( ovltab_entry_ptr ovl, unsigned ovl_num )
     FreeSeg( ovl->code_handle, ovl->num_paras, area_seg );
     ovl->flags_anc |= FLAG_CHANGED;
     ovl->flags_anc &= ~FLAG_INMEM;
-    DeMungeVectors( FP_OFF( ovl ), ovl_num, ovl->code_handle );
+    DeMungeVectors( _FP_OFF( ovl ), ovl_num, ovl->code_handle );
     if( ovl->start_para != 0 ) {
         /* was in call chain - build a ret trap */
 #ifdef OVL_MULTITHREAD
@@ -248,7 +248,7 @@ static unsigned __near UnloadSection( ovltab_entry_ptr ovl, unsigned ovl_num )
         __OVLBUILDRETTRAP__( ovl->code_handle, rt_seg );
         ovl->code_handle = rt_seg;
         ovl->flags_anc |= FLAG_RET_TRAP;
-        *(desc_ptr)MK_FP( rt_seg - 1, 0xE ) = ovl_num;
+        *(desc_ptr)_MK_FP( rt_seg - 1, 0xE ) = ovl_num;
 #ifdef OVL_DEBUG
         __OvlMsg__( OVL_SECTION );
         __OvlNum__( ovl_num );
@@ -288,10 +288,10 @@ static unsigned __near UnloadNonChained( unsigned amount, unsigned start_ovl )
                 OVL_ACCESSES( ovl ) = 0;
 #endif
             } else {
-                area = MK_FP( UnloadSection( ovl, OVLNUM( ovl ) ), 0 );
+                area = _MK_FP( UnloadSection( ovl, OVLNUM( ovl ) ), 0 );
                 if( area->free_paras >= amount ) {
                     __OVLROVER__ = OVLNUM( ovl );
-                    return( FP_SEG( area ) );
+                    return( _FP_SEG( area ) );
                 }
             }
         }
@@ -324,10 +324,10 @@ static int __near UnloadChained( unsigned amount, unsigned_16 __far *call_chain 
         } else {
             *call_chain = ovl->start_para;      /* unlink from call chain */
             if( ( ovl->flags_anc & FLAG_RET_TRAP ) == 0 ) {
-                area = MK_FP( UnloadSection( ovl, ovl_num ), 0 );
+                area = _MK_FP( UnloadSection( ovl, ovl_num ), 0 );
                 ovl->start_para = 0;
                 if( area->free_paras >= amount ) {
-                    return( FP_SEG( area ) );
+                    return( _FP_SEG( area ) );
                 }
             }
             ovl->start_para = 0;
@@ -379,7 +379,7 @@ static void __near MoveSection( unsigned destseg, ovltab_entry_ptr ovl )
     ovl->flags_anc |= FLAG_CHANGED;
     startseg = ovl->code_handle;
     ovl->code_handle = destseg;
-    *(desc_ptr)MK_FP( destseg - 1, 0xE ) = *(desc_ptr)MK_FP( startseg-1, 0xE );
+    *(desc_ptr)_MK_FP( destseg - 1, 0xE ) = *(desc_ptr)_MK_FP( startseg-1, 0xE );
     __OVLFIXCALLCHAIN__( startseg, destseg );
     /* copy the code */
     DoFastCopyPara( destseg, startseg, ovl->num_paras );
@@ -389,7 +389,7 @@ static void __near MoveSection( unsigned destseg, ovltab_entry_ptr ovl )
     }
     /* modify the vectors */
     WALK_ALL_VECT( vect ) {
-        if( vect->u.i.cs_over == OVV_CS_OVERRIDE && vect->u.i.tab_addr == FP_OFF( ovl ) ) {
+        if( vect->u.i.cs_over == OVV_CS_OVERRIDE && vect->u.i.tab_addr == _FP_OFF( ovl ) ) {
             vect->target.seg = destseg;
         }
     }
@@ -406,12 +406,12 @@ static void __near MoveRetTrap( unsigned to_seg, ovltab_entry_ptr ovl )
     unsigned                    i;
 #endif
 
-    rt = MK_FP( ovl->code_handle - 1, 0x10 );
-    rt_new = MK_FP( to_seg - 1, 0x10 );
+    rt = _MK_FP( ovl->code_handle - 1, 0x10 );
+    rt_new = _MK_FP( to_seg - 1, 0x10 );
     *((desc_ptr)rt_new - 1) = *((desc_ptr)rt - 1);      /* copy ovl_num */
     rt_new->call_far = CALL_FAR_INSTRUCTION;            /* standard stuff */
-    rt_new->rt_entry.off = FP_OFF( __OVLRETTRAP__ );
-    rt_new->rt_entry.seg = FP_SEG( __OVLRETTRAP__ );
+    rt_new->rt_entry.off = _FP_OFF( __OVLRETTRAP__ );
+    rt_new->rt_entry.seg = _FP_SEG( __OVLRETTRAP__ );
 #ifdef OVL_MULTITHREAD
     rt_new->old_code_handle = rt->old_code_handle;
     for( i = 0; rt->traps[i].stack_trap != 0; ++i ) {
@@ -420,7 +420,7 @@ static void __near MoveRetTrap( unsigned to_seg, ovltab_entry_ptr ovl )
         rt_new->traps[i].stack_trap = rt->traps[i].stack_trap;
         rt_new->traps[i].context = rt->traps[i].context;
         if( (ovl->flags_anc & FLAG_ACTIVE_TRAP) == 0 ) {
-            stkptr = MK_FP( FP_SEG( &stkptr ), rt->traps[i].stack_trap + 4 );
+            stkptr = _MK_FP( _FP_SEG( &stkptr ), rt->traps[i].stack_trap + 4 );
             /* fix the stack up */
             *stkptr = to_seg;
         }
@@ -430,7 +430,7 @@ static void __near MoveRetTrap( unsigned to_seg, ovltab_entry_ptr ovl )
     rt_new->ret_offset = rt->ret_offset;                /* copy the trap */
     rt_new->ret_list = rt->ret_list;
     rt_new->stack_trap = rt->stack_trap;
-    stkptr = MK_FP( FP_SEG( &stkptr ), rt->stack_trap + 4 );/* fix the stack up */
+    stkptr = _MK_FP( _FP_SEG( &stkptr ), rt->stack_trap + 4 );/* fix the stack up */
     *stkptr = to_seg;
 #endif
     ovl->code_handle = to_seg;
@@ -458,27 +458,27 @@ static unsigned __near DefragmentMem( unsigned amount, unsigned area_seg )
     if( to_seg != NULL_SEG ) {
         return( to_seg );
     }
-    area = MK_FP( area_seg, 0 );
+    area = _MK_FP( area_seg, 0 );
     /* there is enough room, so we move used blocks until we get a
      * free block large enough */
     to_seg = area->fblk.next;
     for( ;; ) {
-        to_block = MK_FP( to_seg, 0 );
+        to_block = _MK_FP( to_seg, 0 );
         to_block_paras = to_block->num_paras;
         to_block_next = to_block->next;
-        AllocSeg( to_seg, to_block_paras, FP_SEG( area ) );
+        AllocSeg( to_seg, to_block_paras, _FP_SEG( area ) );
         if( to_block_paras >= amount ) { /* can quit early */
             if( to_block_paras != amount ) {
                     /* put back what we don't need */
                 FreeWithNext( to_seg + amount, to_block_paras - amount,
-                        FP_SEG( area ), to_block_next );
+                        _FP_SEG( area ), to_block_next );
             }
             return( to_seg );
         }
         /* note we cannot be at last free block since we know there is
          * enough free space in this area, and we abort before now when
          * we collect a large enough free block. */
-        descptr = MK_FP( to_seg - 1 + to_block_paras, 0xE );
+        descptr = _MK_FP( to_seg - 1 + to_block_paras, 0xE );
 #ifdef OVL_DEBUG
         __OvlMsg__( OVL_SECTION );
         __OvlNum__( *descptr );
@@ -497,7 +497,7 @@ static unsigned __near DefragmentMem( unsigned amount, unsigned area_seg )
             num_paras = ovl->num_paras;
         }
         to_seg += num_paras;
-        FreeWithNext( to_seg, to_block_paras, FP_SEG( area ), to_block_next );
+        FreeWithNext( to_seg, to_block_paras, _FP_SEG( area ), to_block_next );
         /* next free block is the one we have just added */
     }
 /*  return( NULL_SEG ); unreachable */
@@ -568,7 +568,7 @@ void __near __LoadSectionCode__( ovltab_entry_ptr ovl )
     fp = TINY_INFO( status );
     if( TINY_ERROR( __OvlSeek__( fp, ovl->disk_addr ) ) )
         __OvlExit__( OVL_IO_ERR );
-    descptr = MK_FP( ovl->code_handle + ovl->num_paras - 1, 0xE );
+    descptr = _MK_FP( ovl->code_handle + ovl->num_paras - 1, 0xE );
     tmp = *descptr;             /* save the descriptor across call */
     __OvlCodeLoad__( ovl, fp );
     *descptr = tmp;
@@ -601,11 +601,11 @@ unsigned __near __LoadNewOverlay__( unsigned ovl_num )
             // Prevent fixups of the return trap for this overlay
             ovl->flags_anc |= FLAG_ACTIVE_TRAP;
 #else
-            rt = MK_FP( ovl->code_handle, 0 );
+            rt = _MK_FP( ovl->code_handle, 0 );
             stack_trap = rt->stack_trap;
             ret_offset = rt->ret_offset;
             ret_list = rt->ret_list;
-            FreeSeg( FP_SEG( rt ), 1, __WhichArea__( FP_SEG( rt ) ) );
+            FreeSeg( _FP_SEG( rt ), 1, __WhichArea__( _FP_SEG( rt ) ) );
             /* Since we have left the FLAG_RET_TRAP set we don't have to
                worry about ForceAllocate trying to remove this section
                from memory.  i.e., we still may have the trap on the
@@ -632,7 +632,7 @@ unsigned __near __LoadNewOverlay__( unsigned ovl_num )
         }
 #endif
         ovl->code_handle = segment;
-        *(desc_ptr)MK_FP( segment - 1, 0xE ) = ovl_num;
+        *(desc_ptr)_MK_FP( segment - 1, 0xE ) = ovl_num;
         ovl->flags_anc |= FLAG_CHANGED;
         ovl->start_para = __OVLSTARTPARA__; /* restore start_para */
         __LoadSectionCode__( ovl );
@@ -665,7 +665,7 @@ unsigned __near __WOVLLDR__( lvector_ptr vect )
     ovl_num = vect->u.v.sec_num;            // get the overlay number
     retval = __LoadNewOverlay__( ovl_num );     // load the overlay
     vect->target.seg += retval;                 // now munge the vector.
-    vect->u.i.tab_addr = FP_OFF( __OVLTAB__.entries + ovl_num - 1 );
+    vect->u.i.tab_addr = _FP_OFF( __OVLTAB__.entries + ovl_num - 1 );
     vect->u.i.cs_over = OVV_CS_OVERRIDE;
     vect->u.i.inc_op = OVV_INC_OPCODE;
     __NDBG_HOOK__( ovl_num, 0, __OVLCAUSE__ );
@@ -680,7 +680,7 @@ void __near __OVLINITAREA__( unsigned start, unsigned size )
     area_list_ptr       area;
     free_block_ptr      freelist;
 
-    area = MK_FP( start, 0 );
+    area = _MK_FP( start, 0 );
     area->fblk.next = start + 1;
     area->fblk.prev = start + size - 1;
     area->fblk.num_paras = 0;
@@ -688,12 +688,12 @@ void __near __OVLINITAREA__( unsigned start, unsigned size )
     area->size = size;
     area->free_paras = size - 2;
     /* construct initial free list */
-    freelist = MK_FP( start + 1, 0 );
+    freelist = _MK_FP( start + 1, 0 );
     freelist->prev = start;
     freelist->next = start + size - 1;
     freelist->num_paras = size - 2;
     /* construct dummy blk at end of list */
-    freelist = MK_FP( start + size - 1, 0 );
+    freelist = _MK_FP( start + size - 1, 0 );
     freelist->prev = start + 1;
     freelist->next = start;
     freelist->num_paras = 0;
@@ -753,7 +753,7 @@ unsigned long __far __FINDOVLADDR__( unsigned unused, unsigned segment )
     if( segment < __OVLTAB__.prolog.delta + __OVLSTARTPARA__ ) {
         ovl_num = 0;  /* in the root */
     } else {
-        ovl_num = *(desc_ptr)MK_FP( segment - 1, 0xE ); /* in overlay */
+        ovl_num = *(desc_ptr)_MK_FP( segment - 1, 0xE ); /* in overlay */
     }
     return( ( (unsigned_32)segment << 16 ) | ovl_num );
 }
@@ -784,12 +784,12 @@ unsigned_32 __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment,
 #ifdef OVL_MULTITHREAD
         rt_seg = ovl->code_handle;
 #else
-        rt = MK_FP( ovl->code_handle, 0 );
+        rt = _MK_FP( ovl->code_handle, 0 );
         if( rt->stack_trap >= bp_chain )
             continue; /* trap safe */
         if( rt->ret_list < bp_chain ) {
             ovl->flags_anc &= ~FLAG_RET_TRAP;
-            FreeSeg( FP_SEG( rt ), 1, __WhichArea__( FP_SEG( rt ) ) );
+            FreeSeg( _FP_SEG( rt ), 1, __WhichArea__( _FP_SEG( rt ) ) );
             continue;  /* trap removed */
         }
 #endif
@@ -808,8 +808,8 @@ unsigned_32 __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment,
             __OVLBUILDRETTRAP__( rt_seg, rt_seg );
         }
 #else
-        __OVLUNDORETTRAP__( rt->stack_trap, 0, rt->ret_list, FP_SEG( rt ) );
-        __OVLBUILDRETTRAP__( FP_SEG( rt ), FP_SEG( rt ) );
+        __OVLUNDORETTRAP__( rt->stack_trap, 0, rt->ret_list, _FP_SEG( rt ) );
+        __OVLBUILDRETTRAP__( _FP_SEG( rt ), _FP_SEG( rt ) );
 #endif
     }
     if( ovl_num )
@@ -867,7 +867,7 @@ void __far __NOVLDUMP__( void )
             int                 i;
 #endif
 
-            rt = MK_FP( ovl->code_handle, 0 );
+            rt = _MK_FP( ovl->code_handle, 0 );
             cprintf( "  return trap:" CRLF );
 #ifdef OVL_MULTITHREAD
             for( i = 0; rt->traps[i].stack_trap != 0; ++i ) {
@@ -876,7 +876,7 @@ void __far __NOVLDUMP__( void )
                     rt->traps[i].ret_offset, rt->traps[i].stack_trap );
                 cprintf( "    ret_list=%04xh", rt->traps[i].ret_list );
                 for( ret = rt->traps[i].ret_list; ret != 0; ret = *stk_ptr ) {
-                    stk_ptr = MK_FP( FP_SEG( &stk_ptr ), ret + 4 );
+                    stk_ptr = _MK_FP( _FP_SEG( &stk_ptr ), ret + 4 );
                     cprintf( ", %04xh", *stk_ptr );
                 }
             }
@@ -885,7 +885,7 @@ void __far __NOVLDUMP__( void )
                 rt->ret_offset, rt->stack_trap );
             cprintf( "    ret_list=%04xh", rt->ret_list );
             for( ret = rt->ret_list; ret != 0; ret = *stk_ptr ) {
-                stk_ptr = MK_FP( FP_SEG( &stk_ptr ), ret + 4 );
+                stk_ptr = _MK_FP( _FP_SEG( &stk_ptr ), ret + 4 );
                 cprintf( ", %04xh", *stk_ptr );
             }
 #endif

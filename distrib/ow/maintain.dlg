@@ -1,17 +1,16 @@
+# UTF-8 encoding, Â¥
 name=Maintain
 condition=PreviousInstall
 dynamic_text=maint_1,\
         //1"%AppName% was found in '%DstDir%'"\
-        //2"%AppName% ‚ª '%DstDir%' ‚É‚ ‚è‚Ü‚·"\
+        //2"%AppName% ãŒ '%DstDir%' ã«ã‚ã‚Šã¾ã™"\
         //0
 static_text=
 include=full.dlg
-include=fullcd.dlg
 include=sel.dlg
-include=mini.dlg
 radio_button=UnInstall,false,\
         //1"&Un-install all components"\
-        //2"‘SƒRƒ“ƒ|[ƒlƒ“ƒg‚ğƒAƒ“ƒCƒ“ƒXƒg[ƒ‹‚µ‚Ü‚·(&U)"\
+        //2"å…¨ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’ã‚¢ãƒ³ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã—ã¾ã™(&U)"\
         //0
 static_text=
 include=space.dlg

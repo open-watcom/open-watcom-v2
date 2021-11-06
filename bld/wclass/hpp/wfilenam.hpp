@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,13 +58,14 @@ WCLASS WFileName : public WString {
         void WEXPORT touch( time_t tm=0 ) const;
 
         void WEXPORT setDrive( const char* drive );
-        const char* WEXPORT drive() const;
+        const char* WEXPORT drive();
         void WEXPORT setDir( const char* dir );
-        const char* WEXPORT dir( bool slash=true ) const;
+        const char* WEXPORT dir( bool slash=true );
         void WEXPORT setFName( const char* fName );
-        const char* WEXPORT fName() const;
+        const char* WEXPORT fName();
         void WEXPORT setExt( const char* ext );
-        const char* WEXPORT ext() const;
+        const char* WEXPORT ext();
+        void WEXPORT setExtIfNone( const char* ext );
         bool WEXPORT legal() const;
         bool WEXPORT needQuotes( char ch='\"' ) const;
         void WEXPORT addQuotes( char ch='\"' );
@@ -80,7 +82,7 @@ WCLASS WFileName : public WString {
         void WEXPORT fullName( WFileName& f ) const;
         void WEXPORT noExt( WFileName& f ) const;
         void WEXPORT noPath( WFileName& f ) const;
-        void WEXPORT noPathNoExt( WFileName& f ) const { f = fName(); }
+        void WEXPORT noPathNoExt( WFileName& f ) const;
         void WEXPORT path( WFileName& f, bool slash=true ) const;
         bool WEXPORT removeFile() const;
         bool WEXPORT renameFile( const char* newname ) const;
@@ -90,6 +92,10 @@ WCLASS WFileName : public WString {
         bool WEXPORT addPath( const char *path );
     private:
         char _pathsep[4];
+        WString _drive;
+        WString _dir;
+        WString _fname;
+        WString _ext;
 };
 
 #endif

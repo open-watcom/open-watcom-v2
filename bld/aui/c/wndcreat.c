@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +42,9 @@ gui_menu_struct         *WndPopupMenuPtr;
 
 static int              NumWindows;
 
-void    WndSetTitleSize( a_window wnd, int size )
+void    WndSetTitleRows( a_window wnd, int title_rows )
 {
-    wnd->title_size = size;
+    wnd->title_rows = title_rows;
     WndSetRepaint( wnd );
 }
 
@@ -84,7 +85,7 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
     wnd->info = info->info;
     wnd->wndclass = info->wndclass;
     wnd->extra = info->extra;
-    wnd->title_size = info->title_size;
+    wnd->title_rows = info->title_rows;
     wnd->rows = 1;      // just so it's not zero in init code
     WndNoSelect( wnd );
     WndNoCurrent( wnd );
@@ -110,10 +111,8 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
         init->rect.width = info->rect.width;
         init->rect.height = info->rect.height;
     }
-    init->scroll = info->scroll;
-    init->style = info->style;
-    init->style |= GUI_VSCROLL_EVENTS;
-    init->style &= ~GUI_HSCROLL_EVENTS;
+    init->scroll_style = info->scroll_style;
+    init->style = (info->style & ~GUI_HSCROLL_EVENTS) | GUI_VSCROLL_EVENTS;
     init->title = ( info->title == NULL ) ? NULL : "";
     if( WndMain != NULL ) {
         init->style |= GUI_VISIBLE;
@@ -121,7 +120,7 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
         init->menus = NoMenu;
     } else {
         init->style &= ~GUI_VISIBLE;
-        init->scroll = GUI_NOSCROLL;
+        init->scroll_style = GUI_NOSCROLL;
         init->menus = *WndMainMenuPtr;
         init->parent = NULL;
     }
@@ -141,10 +140,10 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
         WndFree( wnd );
         WndNoMemory();
         return( NULL );
-    } else {
-        if( buff[0] != '\0' ) {
-            WndSetTitle( wnd, buff );
-        }
+    }
+    wnd->gui = gui;
+    if( buff[0] != '\0' ) {
+        WndSetTitle( wnd, buff );
     }
     ++NumWindows;
     return( wnd );
@@ -171,9 +170,7 @@ void WndInitCreateStruct( wnd_create_struct *info )
     info->title = "";
     info->wndclass = WND_NO_CLASS;
     info->style = ( GUI_GADGETS & ~GUI_CURSOR ) | GUI_CHANGEABLE_FONT;
-    info->scroll = GUI_HSCROLL+GUI_VSCROLL+
-                   GUI_HDRAG+GUI_VDRAG+
-                   GUI_VROWS+GUI_HCOLS;
+    info->scroll_style = GUI_SCROLL_BOTH | GUI_HDRAG | GUI_VDRAG;
     info->colour = WndColours;
 }
 

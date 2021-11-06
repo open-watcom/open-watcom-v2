@@ -79,7 +79,8 @@ The &fn. connects the &obj. to the file specified by the
 :ARG.hdl
 parameter.
 :RSLTS.
-If the &fn. fails, &failbit. bit is set in the &errstate.:PERIOD.
+If the &fn. fails, &failbit. bit is set in the &errstate.
+:PERIOD.
 The &errstate. is cleared on success.
 :SALSO.
 :SAL typ='mfun'.fd
@@ -98,7 +99,8 @@ The &errstate. is cleared on success.
 The &fn. disconnects the &obj. from the file with which it is associated.
 If the &obj. is not associated with a file, the &fn. fails.
 :RSLTS.
-If the &fn. fails, &failbit. is set in the &errstate.:PERIOD.
+If the &fn. fails, &failbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='mfun'.fd
 :SAL typ='mfun'.is_open
@@ -120,7 +122,8 @@ or
 :MONO.attach
 member function should be used to connect the &obj. to a file.
 :RSLTS.
-The &fn. produces an &obj.:PERIOD.
+The &fn. produces an &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.attach
@@ -149,10 +152,12 @@ The &obj. is connected to the specified file via the
 :MONO.open
 C library function.
 :RSLTS.
-The &fn. produces an &obj.:PERIOD.
+The &fn. produces an &obj.
+:PERIOD.
 If the call to
 :MONO.open
-for the file fails, &failbit. and &badbit. are set in the &errstate.:PERIOD.
+for the file fails, &failbit. and &badbit. are set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.open
@@ -173,9 +178,11 @@ specified by the
 :ARG.hdl
 parameter.
 :RSLTS.
-The &fn. produces an &obj.:PERIOD.
+The &fn. produces an &obj.
+:PERIOD.
 If the attach to the file fails,
-&failbit. and &badbit. are set in the &errstate.:PERIOD.
+&failbit. and &badbit. are set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.attach
@@ -198,13 +205,16 @@ and
 :ARG.len
 parameters, is offered via the
 :MONO.setbuf
-virtual member function to be used as the &rsvarea. for the
+virtual member function to be used as the &resvarea. for the
 :MONO.filebuf
-associated with the &obj.:PERIOD.
+associated with the &obj.
+:PERIOD.
 :RSLTS.
-The &fn. produces an &obj.:PERIOD.
+The &fn. produces an &obj.
+:PERIOD.
 If the attach to the file fails,
-&failbit. and &badbit. are set in the &errstate.:PERIOD.
+&failbit. and &badbit. are set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :SAL typ='mfun'.attach
@@ -226,7 +236,8 @@ object associated with the &obj. is embedded within the &obj., so the
 :MONO.filebuf
 destructor is called. The
 :MONO.ios
-destructor is called for that portion of the &obj.:PERIOD.
+destructor is called for that portion of the &obj.
+:PERIOD.
 The call to the &fn. is inserted implicitly by the compiler
 at the point where the &obj. goes out of scope.
 :RSLTS.
@@ -244,10 +255,12 @@ The &obj. is destroyed.
 :SNPF index='is_open'.int fstreambase::is_open() const;
 :eSNPL.
 :SMTICS.
-The &fn. queries the current state of the file associated with the &obj.:PERIOD.
+The &fn. queries the current state of the file associated with the &obj.
+:PERIOD.
 Calling the &fn. is equivalent to calling the
 :MONO.fd
-member function and testing for &eof.:PERIOD.
+member function and testing for &eof.
+:PERIOD.
 :RSLTS.
 The &fn. returns a non-zero value if the &obj. is currently
 connected to a file, otherwise zero is returned.
@@ -298,7 +311,8 @@ The connection is made via the C library
 :MONO.open
 function.
 :RSLTS.
-If the open fails, &failbit. is set in the &errstate.:PERIOD.
+If the open fails, &failbit. is set in the &errstate.
+:PERIOD.
 The &errstate. is cleared on success.
 :SALSO.
 :SAL typ='mfun'.attach
@@ -319,7 +333,8 @@ The &errstate. is cleared on success.
 :SMTICS.
 The &fn. returns the address of the
 :MONO.filebuf
-object currently associated with the &obj.:PERIOD.
+object currently associated with the &obj.
+:PERIOD.
 :RSLTS.
 The &fn. returns a pointer to the
 :MONO.filebuf
@@ -340,12 +355,14 @@ object currently associated with the &obj. If there is no associated
 :SMTICS.
 The &fn. offers the specified buffer to the
 :MONO.filebuf
-object associated with the &obj.:PERIOD.
+object associated with the &obj.
+:PERIOD.
 The
 :MONO.filebuf
 may or may not reject the offer, depending upon its state.
 :RSLTS.
-If the offer is rejected, &failbit. is set in the &errstate.:PERIOD.
+If the offer is rejected, &failbit. is set in the &errstate.
+:PERIOD.
 :SALSO.
 :SAL typ='ofun' ocls='filebuf'.setbuf
 :eSALSO.

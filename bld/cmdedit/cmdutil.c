@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -161,7 +162,7 @@ char __far *GetEnv( char __far *name, int len )
 
     if( DosGetEnv( &envseg, &envoff ) != 0 )
         return( 0 );
-    for( environ = MK_FP( envseg, 0 ); !_null( *environ ); environ++ ) {
+    for( environ = _MK_FP( envseg, 0 ); !_null( *environ ); environ++ ) {
         if( Equal( environ, name, len ) )
             return( environ + len );
         while( !_null( *environ ) ) {

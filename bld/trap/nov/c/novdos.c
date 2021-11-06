@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -541,7 +542,7 @@ const char *RemoteLink( const char *parms, bool server )
         HINSTANCE       netapi;
         HMODULE         netware;
 
-        GlobalPageLock( (HGLOBAL)FP_SEG( &SAPECB ) );
+        GlobalPageLock( (HGLOBAL)_FP_SEG( &SAPECB ) );
         netware = GetModuleHandle( "NETWARE.DRV" );
         ipxspx = LoadLibrary( "NWIPXSPX.DLL" );
         netapi = LoadLibrary( "NWCALLS.DLL" );
@@ -636,6 +637,6 @@ void RemoteUnLink( void )
 #endif
     IPXSPXDeinit();
 #ifdef __WINDOWS__
-    GlobalPageUnlock( (HGLOBAL)FP_SEG( &SAPECB ) );
+    GlobalPageUnlock( (HGLOBAL)_FP_SEG( &SAPECB ) );
 #endif
 }

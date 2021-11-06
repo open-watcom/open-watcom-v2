@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #if defined( __OS2__ ) && defined( __386__ )
@@ -38,8 +40,8 @@
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
   #include <windows.h>
 #endif
+#include "wio.h"
 #include "fapptype.h"
-#include "posio.h"
 #include "rstdio.h"
 
 
@@ -50,8 +52,6 @@ static  char            NLSequence[] = { "\r\n" };
 #endif
 
 #if defined( __IS_WINDOWED__ )
-  extern        char            __FAppType;
-
   #define       BUFFLEN         1024
   static        char            *BuffCursor = { NULL };
   static        char            Buffer[BUFFLEN] = { NULLCHAR };

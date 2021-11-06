@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 #define THD_RUN         6
 #define THD_DEBUG       7
 
-trap_retval ReqRunThread_info( void )
+trap_retval TRAP_RUN_THREAD( info )( void )
 {
     run_thread_info_req *acc;
     run_thread_info_ret *ret;
@@ -88,7 +89,7 @@ trap_retval ReqRunThread_info( void )
     return( sizeof( *ret ) + strlen( header_txt ) + 1 );
 }
 
-trap_retval ReqRunThread_get_next( void )
+trap_retval TRAP_RUN_THREAD( get_next )( void )
 {
     run_thread_get_next_req *acc;
     run_thread_get_next_ret *ret;
@@ -105,7 +106,7 @@ trap_retval ReqRunThread_get_next( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRunThread_get_runtime( void )
+trap_retval TRAP_RUN_THREAD( get_runtime )( void )
 {
     run_thread_get_runtime_req *acc;
     run_thread_get_runtime_ret *ret;
@@ -147,10 +148,10 @@ trap_retval ReqRunThread_get_runtime( void )
 
         if( strstr( state.List, "Run" ) )
             ret->state = THD_RUN;
-                
+
         if( strstr( state.List, "Debug" ) )
             ret->state = THD_DEBUG;
-                
+
         if( strstr( state.List, "Wait" ) )
             ret->state = THD_WAIT;
 
@@ -221,14 +222,14 @@ trap_retval ReqRunThread_get_runtime( void )
 
         if( started )
             sprintf( tempstr, "%03d", micro );
-        else 
+        else
             sprintf( tempstr, "%3d", micro );
         strcat( time_txt, tempstr );
     }
     return( sizeof( *ret ) + strlen( time_txt ) + 1 );
 }
 
-trap_retval ReqRunThread_poll( void )
+trap_retval TRAP_RUN_THREAD( poll )( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread;
@@ -261,7 +262,7 @@ trap_retval ReqRunThread_poll( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRunThread_set( void )
+trap_retval TRAP_RUN_THREAD( set )( void )
 {
     run_thread_set_req      *acc;
     run_thread_set_ret      *ret;
@@ -289,7 +290,7 @@ trap_retval ReqRunThread_set( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRunThread_get_name( void )
+trap_retval TRAP_RUN_THREAD( get_name )( void )
 {
     run_thread_get_name_req *acc;
     char                    *name;
@@ -317,7 +318,7 @@ trap_retval ReqRunThread_get_name( void )
     return( strlen( name ) + 1 );
 }
 
-trap_retval ReqRunThread_stop( void )
+trap_retval TRAP_RUN_THREAD( stop )( void )
 {
     run_thread_stop_req     *acc;
 
@@ -327,7 +328,7 @@ trap_retval ReqRunThread_stop( void )
     return( 0 );
 }
 
-trap_retval ReqRunThread_signal_stop( void )
+trap_retval TRAP_RUN_THREAD( signal_stop )( void )
 {
     run_thread_signal_stop_req     *acc;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,9 @@
 #include <ctype.h>
 #include <dos.h>
 #include <io.h>
+#ifdef __NT__
+    #include <windows.h>
+#endif
 #include "bool.h"
 #include "misc.h"
 #include "getopt.h"
@@ -45,6 +48,12 @@
 
 #include "clibext.h"
 
+
+#ifdef __NT__
+typedef DWORD       fattrs;
+#else
+typedef unsigned    fattrs;
+#endif
 
 char *OptEnvVar = "chmod";
 
@@ -65,14 +74,14 @@ static const char *usageMsg[] = {
     NULL
 };
 
-static unsigned attrToAdd;
-static unsigned attrToRemove;
+static fattrs   attrToAdd;
+static fattrs   attrToRemove;
 
 int main( int argc, char *argv[] )
 {
     int         ch;
     int         i;
-    unsigned    attr;
+    fattrs      attr;
     bool        rxflag;
 
     AltOptChar = '+';
@@ -83,6 +92,20 @@ int main( int argc, char *argv[] )
     while( (ch = GetOpt( &argc, argv, "Xarhs", usageMsg )) != -1 ) {
         attr = 0;
         switch( ch ) {
+#ifdef __NT__
+        case 'a':
+            attr = FILE_ATTRIBUTE_ARCHIVE;
+            break;
+        case 'h':
+            attr = FILE_ATTRIBUTE_HIDDEN;
+            break;
+        case 'r':
+            attr = FILE_ATTRIBUTE_READONLY;
+            break;
+        case 's':
+            attr = FILE_ATTRIBUTE_SYSTEM;
+            break;
+#else
         case 'a':
             attr = _A_ARCH;
             break;
@@ -95,6 +118,7 @@ int main( int argc, char *argv[] )
         case 's':
             attr = _A_SYSTEM;
             break;
+#endif
         case 'X':
             rxflag = true;
             break;
@@ -111,10 +135,18 @@ int main( int argc, char *argv[] )
         Quit( usageMsg, "No filename specified\n" );
     }
     for( i = 1; i < argc; i++ ) {
+#ifdef __NT__
+        attr = GetFileAttributes( argv[i] );
+        if( attr == INVALID_FILE_ATTRIBUTES )
+            continue;
+#else
         _dos_getfileattr( argv[i], &attr );
-        attr |= attrToAdd;
-        attr &= ~attrToRemove;
-        _dos_setfileattr( argv[i], attr );
+#endif
+#ifdef __NT__
+        SetFileAttributes( argv[i], (attr | attrToAdd) & ~attrToRemove );
+#else
+        _dos_setfileattr( argv[i], (attr | attrToAdd) & ~attrToRemove );
+#endif
     }
     return( 0 );
 }

@@ -85,78 +85,16 @@ int handle_REQ_MACHINE_DATA_REPLY( unsigned char * pkt, unsigned short len );
 typedef int ( *RQ_HANDLER )( unsigned char * pkt, unsigned short len );
 
 RQ_HANDLER MyHandlers[] = {
-    handle_REQ_CONNECT,
-    handle_REQ_DISCONNECT,
-    handle_REQ_SUSPEND,
-    handle_REQ_RESUME,
-    handle_REQ_GET_SUPPLEMENTARY_SERVICE,
-    handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE,
-    handle_REQ_GET_SYS_CONFIG,
-    handle_REQ_MAP_ADDR,
-    handle_REQ_CHECKSUM_MEM,
-    handle_REQ_READ_MEM,
-    handle_REQ_WRITE_MEM,
-    handle_REQ_READ_IO,
-    handle_REQ_WRITE_IO,
-    handle_REQ_PROG_GO,
-    handle_REQ_PROG_STEP,
-    handle_REQ_PROG_LOAD,
-    handle_REQ_PROG_KILL,
-    handle_REQ_SET_WATCH,
-    handle_REQ_CLEAR_WATCH,
-    handle_REQ_SET_BREAK,
-    handle_REQ_CLEAR_BREAK,
-    handle_REQ_GET_NEXT_ALIAS,
-    handle_REQ_SET_USER_SCREEN,
-    handle_REQ_SET_DEBUG_SCREEN,
-    handle_REQ_READ_USER_KEYBOARD,
-    handle_REQ_GET_LIB_NAME,
-    handle_REQ_GET_ERR_TEXT,
-    handle_REQ_GET_MESSAGE_TEXT,
-    handle_REQ_REDIRECT_STDIN,
-    handle_REQ_REDIRECT_STDOUT,
-    handle_REQ_SPLIT_CMD,
-    handle_REQ_READ_REGS,
-    handle_REQ_WRITE_REGS,
-    handle_REQ_MACHINE_DATA,
+    #define pick(sym,dumbfunc,stdfunc)  handle_REQ_ ## sym,
+    #include "_trpreq.h"
+    #undef pick
     NULL
 };
 
 RQ_HANDLER MyReplyHandlers[] = {
-    handle_REQ_CONNECT_REPLY,
-    handle_REQ_DISCONNECT_REPLY,
-    handle_REQ_SUSPEND_REPLY,
-    handle_REQ_RESUME_REPLY,
-    handle_REQ_GET_SUPPLEMENTARY_SERVICE_REPLY,
-    handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE_REPLY,
-    handle_REQ_GET_SYS_CONFIG_REPLY,
-    handle_REQ_MAP_ADDR_REPLY,
-    handle_REQ_CHECKSUM_MEM_REPLY,
-    handle_REQ_READ_MEM_REPLY,
-    handle_REQ_WRITE_MEM_REPLY,
-    handle_REQ_READ_IO_REPLY,
-    handle_REQ_WRITE_IO_REPLY,
-    handle_REQ_PROG_GO_REPLY,
-    handle_REQ_PROG_STEP_REPLY,
-    handle_REQ_PROG_LOAD_REPLY,
-    handle_REQ_PROG_KILL_REPLY,
-    handle_REQ_SET_WATCH_REPLY,
-    handle_REQ_CLEAR_WATCH_REPLY,
-    handle_REQ_SET_BREAK_REPLY,
-    handle_REQ_CLEAR_BREAK_REPLY,
-    handle_REQ_GET_NEXT_ALIAS_REPLY,
-    handle_REQ_SET_USER_SCREEN_REPLY,
-    handle_REQ_SET_DEBUG_SCREEN_REPLY,
-    handle_REQ_READ_USER_KEYBOARD_REPLY,
-    handle_REQ_GET_LIB_NAME_REPLY,
-    handle_REQ_GET_ERR_TEXT_REPLY,
-    handle_REQ_GET_MESSAGE_TEXT_REPLY,
-    handle_REQ_REDIRECT_STDIN_REPLY,
-    handle_REQ_REDIRECT_STDOUT_REPLY,
-    handle_REQ_SPLIT_CMD_REPLY,
-    handle_REQ_READ_REGS_REPLY,
-    handle_REQ_WRITE_REGS_REPLY,
-    handle_REQ_MACHINE_DATA_REPLY,
+    #define pick(sym,dumbfunc,stdfunc)  handle_REQ_ ## sym ## _REPLY,
+    #include "_trpreq.h"
+    #undef pick
     NULL
 };
 
@@ -414,7 +352,7 @@ int handle_REQ_CONNECT_REPLY( unsigned char * pkt, unsigned short len )
 {
     connect_ret * pr = ( connect_ret * ) pkt;
     char * err = ( char * ) &pr[1];
-    unsigned short errlen = ( len - ( unsigned short ) sizeof( connect_ret ) );
+    unsigned short errlen = (unsigned short)( len - sizeof( connect_ret ) );
 
     printf( "Trap Reply: REQ_CONNECT\n" );
     printf( "    Maximum message size:   %u\n", pr->max_msg_size );
@@ -495,7 +433,7 @@ int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned shor
 {
     perform_supplementary_service_req * prq = ( perform_supplementary_service_req * ) pkt;
     unsigned char * ssd = ( unsigned char * ) &prq[1];
-    unsigned short ssd_len = ( len - ( unsigned short ) sizeof( perform_supplementary_service_req ) );
+    unsigned short ssd_len = (unsigned short)( len - sizeof( perform_supplementary_service_req ) );
 
     printf( "Debugger request: REQ_PERFORM_SUPPLEMENTARY_SERVICE\n" );
     printf( "    ID: 0x%.08x", prq->id );
@@ -649,7 +587,7 @@ int handle_REQ_READ_MEM_REPLY( unsigned char * pkt, unsigned short len )
 int handle_REQ_WRITE_MEM( unsigned char * pkt, unsigned short len )
 {
     write_mem_req * prq = ( write_mem_req * ) pkt;
-    unsigned short to_write = ( len - ( unsigned short ) sizeof( write_mem_req ) );
+    unsigned short to_write = (unsigned short)( len - sizeof( write_mem_req ) );
     unsigned char * data = ( unsigned char * ) &prq[1];
 
     printf( "Debugger request: REQ_WRITE_MEM\n" );
@@ -695,8 +633,8 @@ int handle_REQ_READ_IO_REPLY( unsigned char * pkt, unsigned short len )
 int handle_REQ_WRITE_IO( unsigned char * pkt, unsigned short len )
 {
     write_io_req * prq = ( write_io_req * ) pkt;
-    unsigned short to_write = ( len - ( unsigned short ) sizeof( write_io_req ) );
-    unsigned char * data = ( unsigned char * ) &prq[1];
+    unsigned short to_write = (unsigned short)( len - sizeof( write_io_req ) );
+    unsigned char * data = (unsigned char *)&prq[1];
 
     printf( "Debugger request: REQ_WRITE_IO\n" );
     printf( "    Address:    %.08x\n", prq->IO_offset );
@@ -1204,7 +1142,7 @@ int handle_REQ_MACHINE_DATA( unsigned char * pkt, unsigned short len )
 {
     machine_data_req *  prq = ( machine_data_req * ) pkt;
     unsigned char *     msd = ( unsigned char * ) &prq[1];
-    unsigned short      msd_len = ( len - ( unsigned short ) sizeof( machine_data_req ) );
+    unsigned short      msd_len = (unsigned short)( len - sizeof( machine_data_req ) );
 
     printf( "Debugger request: REQ_MACHINE_DATA\n" );
     printf( "    Type:       %u\n", prq->info_type );
@@ -1221,7 +1159,7 @@ int handle_REQ_MACHINE_DATA_REPLY( unsigned char * pkt, unsigned short len )
 {
     machine_data_ret * pr = (machine_data_ret * ) pkt;
     unsigned char * msd = ( unsigned char * ) &pr[1];
-    unsigned short  msd_len = ( len - ( unsigned short ) sizeof( machine_data_ret ) );
+    unsigned short  msd_len = (unsigned short)( len - sizeof( machine_data_ret ) );
 
     printf( "Trap reply: REQ_MACHINE_DATA\n" );
     printf( "    Start:  %.08x\n", pr->cache_start );

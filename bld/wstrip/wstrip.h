@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +32,10 @@
 
 
 #include "bool.h"
-#include "wstripms.rh"
+#include "wstrip.rh"
 
 extern void    Fatal( int, const char * );
 extern void    Usage( void );
 extern void    Banner( void );
-#if !defined( INCL_MSGTEXT )
 extern bool    Msg_Init( void );
 extern bool    Msg_Fini( void );
-#endif

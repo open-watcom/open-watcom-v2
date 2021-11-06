@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,18 +50,18 @@ void Error( char *heading, char *msg )
 void LBPrintf( HWND lb, char *str, ... )
 {
     char        tmp[256];
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    vsprintf( tmp, str, al );
+    va_start( args, str );
+    vsprintf( tmp, str, args );
     SendMessage( lb, LB_ADDSTRING, 0, (LONG)(LPSTR)tmp );
-    va_end( al );
+    va_end( args );
 } /* LBPrintf */
 
 static char mkHexDigit( char ch )
 {
     if( (ch &= 0xF) < 0xA )
-    	return( '0' + ch );
+        return( '0' + ch );
     return( 'A' + ch - 0xA );
 }
 

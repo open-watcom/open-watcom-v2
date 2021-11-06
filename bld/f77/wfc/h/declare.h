@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,6 @@
 extern bool    IsFunctionDefn( void );
 extern sym_id  VarDecl( TYPE typ );
 extern sym_id  FieldDecl( void );
-extern TYPE    MapTypes( TYPE typ, uint size );
+extern TYPE    MapTypes( TYPE typ, size_t size );
 extern void    MustBeTypeDecl( void );
 extern void    ArrayDecl( sym_id sym );

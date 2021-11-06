@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,26 +34,15 @@
 #include "uidef.h"
 #include "uiattrs.h"
 
-#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+#if defined( __DOS__ ) && defined( _M_IX86 )
    #define PROGRAM_VGA
 #endif
 
 #if defined( PROGRAM_VGA )
-extern void SetColourRegister( unsigned, char, char, char );
-#pragma aux SetColourRegister = \
-        "mov  ax,1010h" \
-        "int 10h"       \
-    __parm __caller [__bx] [__dh] [__ch] [__cl] \
-    __modify        [__ax]
 
-extern void SetBlinkAttr( char );
-#pragma aux SetBlinkAttr =              \
-        "mov  ax,1030h" \
-        "int 10h"       \
-    __parm __caller [__bl] \
-    __modify        [__ax]
+#include "int10.h"
 
-static char     BlinkAttr = 1;
+static bool     BlinkAttr = true;
 
 a_colour    VGAcolours[16] = {
 //      RED   GREEN    BLUE
@@ -77,44 +67,10 @@ a_colour    VGAcolours[16] = {
 #define VGA_MENU    VGA_SILVER
 #define VGA_CMENU   VGA_BLUE
 
-ATTR ui_vga_colour_attrs[] =
-{       _bg( VGA_MENU  ) |  _fg( VGA_BLACK )   // MENU
-,       _bg( VGA_MENU  ) |  _fg( VGA_BLACK )   // ACTIVE
-,       _bg( VGA_CMENU ) |  _fg( VGA_AQUA  )   // CURR_ACTIVE
-,       _bg( VGA_MENU  ) |  _fg( VGA_GRAY  )   // INACTIVE
-,       _bg( VGA_CMENU ) |  _fg( VGA_GRAY  )   // CURR_INACTIVE
-,       _bg( VGA_BLACK ) |  _fg( VGA_WHITE )   // SHADOW
-,       _bg( VGA_MENU  ) |  _fg( VGA_BLUE  )   // DEFAULT_HOTSPOT
-,       _bg( VGA_WHITE ) |  _fg( VGA_BLACK )   // NORMAL
-,       _bg( VGA_WHITE ) |  _fg( VGA_GRAY  )   // BRIGHT
-,       _bg( VGA_SILVER) |  _fg( VGA_BLACK )   // EDIT
-,       _bg( VGA_BLACK ) |  _fg( VGA_WHITE )   // REVERSE
-,       _bg( VGA_WHITE ) |  _fg( VGA_BLACK )   // EDIT2
-,       _bg( VGA_SILVER) |  _fg( VGA_BLACK )   // HOTSPOT
-,       _bg( VGA_BLACK ) |  _fg( VGA_WHITE )   // HELP
-,       _bg( VGA_MENU  ) |  _fg( VGA_BLUE  )   // HOT
-,       _bg( VGA_CMENU ) |  _fg( VGA_WHITE )   // HOT_CURR
-,       _bg( VGA_MENU  ) |  _fg( VGA_BLUE  )   // HOT_QUIET
-,       _bg( VGA_GRAY  ) |  _fg( VGA_WHITE )   // CURR_EDIT
-,       _bg( VGA_FUCHSIA)|  _fg( VGA_BLACK )   // CURR_MARK_EDIT
-,       _bg( VGA_TEAL  ) |  _fg( VGA_BLACK )   // MARK_NORMAL
-,       _bg( VGA_OLIVE ) |  _fg( VGA_BLACK )   // MARK_EDIT
-,       _bg( VGA_GRAY  ) |  _fg( VGA_BLUE  )   // CURR_HOTSPOT_KEY
-,       _bg( VGA_BLACK ) |  _fg( VGA_AQUA  )   // EDIT_DIAL
-,       0                                      // SELECT_DIAL
-,       0                                      // CURR_EDIT_DIAL
-,       _bg( VGA_NAVY )  |  _fg( VGA_WHITE )   // CURR_SELECT_DIAL
-,       _bg( VGA_WHITE ) |  _fg( VGA_SILVER)   // FRAME
-,       _bg( VGA_SILVER) |  _fg( VGA_BLACK )   // SCROLL_ICON
-,       _bg( VGA_SILVER) |  _fg( VGA_BLACK )   // SCROLL_BAR
-,       _bg( VGA_WHITE)  |  _fg( VGA_SILVER)   // DIAL_FRAME
-,       _bg( VGA_BLACK ) |  _fg( VGA_WHITE )   // BROWSE
-,       _bg( VGA_GRAY  ) |  _fg( VGA_WHITE )   // CURR_HOTSPOT
-,       _bg( VGA_BLACK ) |  _fg( VGA_RED   )   // ERROR
-,       _bg( VGA_GREEN ) |  _fg( VGA_WHITE )   // HINT
-,       _bg( VGA_BLACK ) |  _fg( VGA_RED   )   // WARNING
-,       _bg( VGA_WHITE ) |  _fg( VGA_WHITE )   // OFF_HOTSPOT
-,       _bg( VGA_WHITE ) |  _fg( VGA_BLUE  )   // RADIO_HOTSPOT
+ATTR ui_vga_colour_attrs[] = {
+    #define pick(id,vga,col,bw,mono,local) vga,
+    #include "_uiattrs.h"
+    #undef pick
 };
 #endif
 
@@ -122,173 +78,31 @@ ATTR ui_vga_colour_attrs[] =
 #define C_CMENU     C_BLACK
 #define C_BACK      C_BLUE
 
-#ifdef __UNIX__
-    #define C_BRIGHT_WHITE_ON_WHITE C_BROWN
-#else
-    #define C_BRIGHT_WHITE_ON_WHITE (BRIGHT | C_WHITE)
-#endif
-
-ATTR ui_colour_attrs[] =
-{       _bg( C_MENU  ) |  _fg(          C_BLUE  )   // MENU
-,       _bg( C_MENU  ) |  _fg(          C_BLUE  )   // ACTIVE
-,       _bg( C_CMENU ) |  _fg(          C_WHITE )   // CURR_ACTIVE
-,       _bg( C_MENU  ) |  _fg( BRIGHT | C_BLACK )   // INACTIVE
-,       _bg( C_CMENU ) |  _fg(          C_WHITE )   // CURR_INACTIVE
-,       _bg( C_BACK  ) |  _fg(          C_BLACK )   // SHADOW
-,       _bg( C_WHITE ) |  _fg( C_BRIGHT_WHITE_ON_WHITE )    // DEFAULT_HOTSPOT
-,       _bg( C_BACK  ) |  _fg(          C_WHITE )   // NORMAL
-,       _bg( C_BACK  ) |  _fg( BRIGHT | C_WHITE )   // BRIGHT
-,       _bg( C_WHITE ) |  _fg(          C_BLACK )   // EDIT
-,       _bg( C_CYAN  ) |  _fg(          C_BLACK )   // REVERSE
-,       _bg( C_WHITE ) |  _fg(          C_BLACK )   // EDIT2
-,       _bg( C_WHITE ) |  _fg(          C_BLUE  )   // HOTSPOT
-,       _bg( C_BLACK ) |  _fg( BRIGHT | C_WHITE )   // HELP
-,       _bg( C_MENU  ) |  _fg( C_BRIGHT_WHITE_ON_WHITE )    // HOT
-,       _bg( C_CMENU ) |  _fg( BRIGHT | C_WHITE )   // HOT_CURR
-,       _bg( C_MENU  ) |  _fg( C_BRIGHT_WHITE_ON_WHITE )    // HOT_QUIET
-,       _bg( C_BLACK ) |  _fg( BRIGHT | C_WHITE )   // CURR_EDIT
-,       _bg( C_MAGENTA)|  _fg(          C_BLACK )   // CURR_MARK_EDIT
-,       _bg( C_CYAN  ) |  _fg(          C_BLACK )   // MARK_NORMAL
-,       _bg( C_BROWN ) |  _fg(          C_BLACK )   // MARK_EDIT
-,       _bg( C_CYAN  ) |  _fg( BRIGHT | C_WHITE )   // CURR_HOTSPOT_KEY
-,       _bg( C_BLACK ) |  _fg(          C_CYAN  )   // EDIT_DIAL
-,       0                                           // SELECT_DIAL
-,       0                                           // CURR_EDIT_DIAL
-,       _bg( C_BLUE  ) |  _fg(          C_WHITE )   // CURR_SELECT_DIAL
-,       _bg( C_BACK  ) |  _fg(          C_WHITE )   // FRAME
-,       _bg( C_WHITE ) |  _fg(          C_BLACK )   // SCROLL_ICON
-,       _bg( C_BROWN ) |  _fg( BRIGHT | C_WHITE )   // SCROLL_BAR
-,       _bg( C_BACK  ) |  _fg(          C_CYAN  )   // DIAL_FRAME
-,       _bg( C_BLACK ) |  _fg(          C_WHITE )   // BROWSE
-,       _bg( C_CYAN  ) |  _fg(          C_BLUE  )   // CURR_HOTSPOT
-,       _bg( C_BACK  ) |  _fg( BRIGHT | C_RED   )   // ERROR
-,       _bg( C_CYAN  ) |  _fg( BRIGHT | C_WHITE )   // HINT
-,       _bg( C_BACK  ) |  _fg( BRIGHT | C_RED   )   // WARNING
-,       _bg( C_WHITE ) |  _fg( BRIGHT | C_BLUE  )   // OFF_HOTSPOT
-,       _bg( C_BACK  ) |  _fg( BRIGHT | C_WHITE )   // RADIO_HOTSPOT
+ATTR ui_colour_attrs[] = {
+    #define pick(id,vga,col,bw,mono,local) col,
+    #include "_uiattrs.h"
+    #undef pick
 };
 
-ATTR ui_bw_attrs[] =
-{       _bg( BG_WHITE ) | _fg( FG_BLACK  )          // MENU
-,       _bg( BG_WHITE ) | _fg( FG_BLACK  )          // ACTIVE
-,       _bg( BG_GREY5 ) | _fg( FG_WHITE  )          // CURR_ACTIVE
-,       _bg( BG_WHITE ) | _fg( FG_GREY10 )          // INACTIVE
-,       _bg( BG_GREY5 ) | _fg( FG_GREY10 )          // CURR_INACTIVE
-,       _bg( BG_BLACK ) | _fg( FG_WHITE  )          // DIALOGUE
-,       _bg( BG_WHITE ) | _fg( FG_GREY14 )          // DEFAULT_HOTSPOT
-,       _bg( BG_BLACK ) | _fg( FG_GREY10 )          // NORMAL
-,       _bg( BG_BLACK ) | _fg( FG_WHITE  )          // BRIGHT
-,       _bg( BG_GREY5 ) | _fg( FG_GREY10 )          // EDIT
-,       _bg( BG_WHITE ) | _fg( FG_BLACK  )          // REVERSE
-,       _bg( BG_GREY5 ) | _fg( FG_GREY13 )          // EDIT2
-,       _bg( BG_WHITE ) | _fg( FG_BLACK  )          // HOTSPOT
-,       _bg( BG_BLACK ) | _fg( FG_WHITE  )          // HELP
-,       _bg( BG_WHITE ) | _fg( FG_GREY14 )          // HOT
-,       _bg( BG_GREY5 ) | _fg( FG_GREY14 )          // HOT_CURR
-,       _bg( BG_WHITE ) | _fg( FG_GREY14 )          // HOT_QUIET
-,       _bg( BG_GREY3 ) | _fg( FG_GREY14 )          // CURR_EDIT
-,       0                                           // CURR_MARK_EDIT
-,       _bg( BG_WHITE ) | _fg( FG_BLACK  )          // MARK_NORMAL
-,       0                                           // MARK_EDIT
-,       _bg( BG_WHITE ) | _fg( FG_GREY14 )          // CURR_HOTSPOT_KEY
-,       _bg( BG_BLACK ) | _fg( FG_GREY14 )          // EDIT_DIAL
-,       0                                           // SELECT_DIAL
-,       0                                           // CURR_EDIT_DIAL
-,       0                                           // CURR_SELECT_DIAL
-,       _bg( BG_BLACK ) | _fg( FG_GREY13 )          // FRAME
-,       _bg( BG_GREY5 ) | _fg( FG_GREY14 )          // SCROLL_ICON
-,       _bg( BG_BLACK ) | _fg( FG_GREY12 )          // SCROLL_BAR
-,       _bg( BG_BLACK ) | _fg( FG_GREY14 )          // DIAL_FRAME
-,       _bg( BG_BLACK ) | _fg( FG_GREY12 )          // BROWSE
-,       _bg( BG_WHITE ) | _fg( FG_GREY14 )          // CURR_HOTSPOT
-,       _bg( BG_BLACK ) | _fg( FG_WHITE  )          // ERROR
-,       _bg( BG_WHITE ) | _fg( FG_BLACK  )          // HINT
-,       _bg( BG_BLACK ) | _fg( FG_WHITE  )          // WARNING
-,       _bg( BG_BLACK ) | _fg( FG_WHITE  )          // OFF_HOTSPOT
-,       _bg( BG_BLACK ) | _fg( FG_GREY14 )          // RADIO_HOTSPOT
+ATTR ui_bw_attrs[] = {
+    #define pick(id,vga,col,bw,mono,local) bw,
+    #include "_uiattrs.h"
+    #undef pick
 };
 
-ATTR ui_mono_attrs[] =
-{       _bg( WHITE )    | _fg( BLACK )              // MENU
-,       _bg( WHITE )    | _fg( BLACK )              // ACTIVE
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // CURR_ACTIVE
-,       _bg( WHITE )    | _fg( BRIGHT | WHITE )     // INACTIVE
-,       _bg( BLACK )    | _fg( WHITE )              // CURR_INACTIVE
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // DIALOGUE
-,       _bg( WHITE )    | _fg( BRIGHT | WHITE )     // DEFAULT_HOTSPOT
-,       _bg( BLACK )    | _fg( WHITE )              // NORMAL
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // BRIGHT
-,       _bg( BLACK )    | _fg( UNDERLINE )          // EDIT
-,       _bg( WHITE )    | _fg( BLACK )              // REVERSE
-,       _bg( BLACK )    | _fg( WHITE )              // EDIT2
-,       _bg( WHITE )    | _fg( BLACK )              // HOTSPOT
-,       _bg( BLACK )    | _fg( WHITE )              // HELP
-,       _bg( WHITE )    | _fg( BRIGHT | WHITE )     // HOT
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // HOT_CURR
-,       _bg( WHITE )    | _fg( BRIGHT | WHITE )     // HOT_QUIET
-,       _bg( BLACK )    | _fg( BRIGHT | UNDERLINE ) // CURR_EDIT
-,       0                                           // CURR_MARK_EDIT
-,       _bg( WHITE )    | _fg( BLACK )              // MARK_NORMAL
-,       0                                           // MARK_EDIT
-,       _bg( WHITE )    | _fg( BRIGHT | WHITE )     // CURR_HOTSPOT_KEY
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // EDIT_DIAL
-,       0                                           // SELECT_DIAL
-,       0                                           // CURR_EDIT_DIAL
-,       0                                           // CURR_SELECT_DIAL
-,       _bg( BLACK )    | _fg( WHITE )              // FRAME
-,       _bg( WHITE )    | _fg( BLACK )              // SCROLL_ICON
-,       _bg( BLACK )    | _fg( WHITE )              // SCROLL_BAR
-,       _bg( BLACK )    | _fg( WHITE )              // DIAL_FRAME
-,       _bg( BLACK )    | _fg( WHITE )              // BROWSE
-,       _bg( WHITE )    | _fg( BRIGHT | WHITE )     // CURR_HOTSPOT
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // ERROR
-,       _bg( WHITE )    | _fg( BLACK )              // HINT
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // WARNING
-,       _bg( BLACK )    | _fg( WHITE )              // OFF_HOTSPOT
-,       _bg( BLACK )    | _fg( BRIGHT | UNDERLINE ) // RADIO_HOTSPOT
+ATTR ui_mono_attrs[] = {
+    #define pick(id,vga,col,bw,mono,local) mono,
+    #include "_uiattrs.h"
+    #undef pick
 };
 
-static ATTR local_attrs[] =
-{       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // MENU
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // ACTIVE
-,       _bg( WHITE )    | _fg( BLACK )              // CURR_ACTIVE
-,       _bg( BLACK )    | _fg( WHITE )              // INACTIVE
-,       _bg( WHITE )    | _fg( BLACK )              // CURR_INACTIVE
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // DIALOGUE
-,       _bg( BLACK )    | _fg( BRIGHT | UNDERLINE ) // DEFAULT_HOTSPOT
-,       _bg( BLACK )    | _fg( WHITE )              // NORMAL
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // BRIGHT
-,       _bg( BLACK )    | _fg( UNDERLINE )          // EDIT
-,       _bg( WHITE )    | _fg( BLACK )              // REVERSE
-,       _bg( BLACK )    | _fg( WHITE )              // EDIT2
-,       _bg( WHITE )    | _fg( BLACK )              // HOTSPOT
-,       _bg( BLACK )    | _fg( WHITE )              // HELP
-,       _bg( BLACK )    | _fg( BRIGHT | UNDERLINE ) // HOT
-,       _bg( WHITE )    | _fg( UNDERLINE )          // HOT_CURR
-,       _bg( BLACK )    | _fg( UNDERLINE )          // HOT_QUIET
-,       _bg( BLACK )    | _fg( BRIGHT | UNDERLINE ) // CURR_EDIT
-,       0                                           // CURR_MARK_EDIT
-,       _bg( WHITE )    | _fg( BLACK )              // MARK_NORMAL
-,       0                                           // MARK_EDIT
-,       _bg( BLACK )    | _fg( BRIGHT | UNDERLINE ) // CURR_HOTSPOT_KEY
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // EDIT_DIAL
-,       0                                           // SELECT_DIAL
-,       0                                           // CURR_EDIT_DIAL
-,       0                                           // CURR_SELECT_DIAL
-,       _bg( BLACK )    | _fg( WHITE )              // FRAME
-,       _bg( WHITE )    | _fg( BLACK )              // SCROLL_ICON
-,       _bg( BLACK )    | _fg( WHITE )              // SCROLL_BAR
-,       _bg( BLACK )    | _fg( WHITE )              // DIAL_FRAME
-,       _bg( BLACK )    | _fg( WHITE )              // BROWSE
-,       _bg( BLACK )    | _fg( BRIGHT | UNDERLINE ) // CURR_HOTSPOT
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // ERROR
-,       _bg( WHITE )    | _fg( BLACK )              // HINT
-,       _bg( BLACK )    | _fg( BRIGHT | WHITE )     // WARNING
-,       _bg( BLACK )    | _fg( WHITE )              // OFF_HOTSPOT
-,       _bg( BLACK )    | _fg( BRIGHT | UNDERLINE ) // RADIO_HOTSPOT
+static ATTR local_attrs[] = {
+    #define pick(id,vga,col,bw,mono,local) local,
+    #include "_uiattrs.h"
+    #undef pick
 };
 
-bool uiattrs( void )
+bool UIAPI uiattrs( void )
 {
     ATTR    *from;
 
@@ -308,6 +122,7 @@ bool uiattrs( void )
 
 
 #if defined( PROGRAM_VGA )
+
 static void setvgacolours( void )
 {
     int             i;
@@ -315,12 +130,12 @@ static void setvgacolours( void )
 
     for( i = 0; i < 16; i++ ) {
         col = VGAcolours[i];
-        SetColourRegister( i, col.red, col.green, col.blue );
+        _BIOSVideoSetColorRegister( i, col.red, col.green, col.blue );
     }
-    uisetblinkattr( 0 );
+    uisetblinkattr( false );
 }
 
-bool uivgaattrs( void )
+bool UIAPI uivgaattrs( void )
 {
     if( UIData->colour == M_VGA || UIData->colour == M_EGA ) {
         setvgacolours();
@@ -330,23 +145,50 @@ bool uivgaattrs( void )
     return( false );
 }
 
-void uisetblinkattr( int on )
+void UIAPI uisetblinkattr( bool on )
 {
     if( on ) {
-        if( BlinkAttr != 1 ) {
-            SetBlinkAttr( 1 );
+        if( !BlinkAttr ) {
+            _BIOSVideoSetBlinkAttr( true );
         }
-        BlinkAttr = 1;
+        BlinkAttr = true;
     } else {
-        if( BlinkAttr != 0 ) {
-            SetBlinkAttr( 0 );
-            BlinkAttr = 0;
+        if( BlinkAttr ) {
+            _BIOSVideoSetBlinkAttr( false );
+            BlinkAttr = false;
         }
     }
 }
 
-char uigetblinkattr( void )
+bool UIAPI uigetblinkattr( void )
 {
     return( BlinkAttr );
 }
+
+#else
+
+bool UIAPI uivgaattrs( void )
+{
+    return( false );
+}
+
+void UIAPI uisetblinkattr( bool on )
+{
+    /* unused parameters */ (void)on;
+}
+
+bool UIAPI uigetblinkattr( void )
+{
+    return( false );
+}
+
 #endif
+
+ATTR UIAPI uisetattr( UIATTR uiattr, ATTR new_attr )
+{
+    ATTR    old_attr;
+
+    old_attr = UIData->attrs[uiattr];
+    UIData->attrs[uiattr] = new_attr;
+    return( old_attr );
+}

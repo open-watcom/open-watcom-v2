@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 * =========================================================================
 *
@@ -17,8 +17,8 @@ long rsi_abs_address( void FarPtr p )
 {
     descriptor   g;
 
-    if( rsi_get_descriptor( FP_SEG( p ), &g ) ) {
-        return( GDT32BASE( g ) + FP_OFF( p ) );
+    if( rsi_get_descriptor( _FP_SEG( p ), &g ) ) {
+        return( GDT32BASE( g ) + _FP_OFF( p ) );
     }
     return( -1 );
 }

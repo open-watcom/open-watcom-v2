@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,12 +60,12 @@
 #define SEGDEF_ATTR     0       /*  offset of attr in segdef */
 #define SEGDEF_SIZE     1       /*  offset of seg size in segdef */
 
-//TODO: these should be dependent \whatcom\h\pcobj.h
+//TODO: these should be dependent bld/watcom/h/pcobj.h
 #define LOCAT_ABS       0xc0    /*  locat-byte, absolute field */
 #define LOCAT_REL       0x80
 #define S_LOCAT_LOC     2       /*  shift count, LOC field in locat-byte */
 
-#define FIXDAT  0x04            /*  background for fixdat byte */
+#define FIXDAT                  0x04    /*  background for fixdat byte */
 #define FIXDAT_FRAME_IMPLIED    0x50    /*  frame implied by target */
 #define FIXDAT_FRAME_GROUP      0x10    /*  frame is a group */
 #define FIXDAT_FRAME_SEG        0       /*  frame is segment */

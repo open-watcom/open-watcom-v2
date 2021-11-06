@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,9 @@
 #include "fingmsg.h"
 
 
-#define TOP_BLANK( wnd ) ( GUIIsGUI() ? 2 : ( ( WndRows(wnd) - FingMessageSize ) / 2 ) )
+#define AboutSize       GetAboutSizeFull()
+
+#define TOP_BLANK( wnd ) ( GUIIsGUI() ? 2 : ( ( WndRows(wnd) - AboutSize ) / 2 ) )
 
 extern int          WndNumColours;
 
@@ -66,7 +69,7 @@ static wnd_row FingNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
-    return( TOP_BLANK( wnd ) + FingMessageSize + GUIIsGUI() );
+    return( TOP_BLANK( wnd ) + AboutSize + GUIIsGUI() );
 }
 
 
@@ -79,10 +82,10 @@ static  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
         line->text = " ";
         return( true );
     }
-    if( row >= FingMessageSize ) {
+    if( row >= AboutSize ) {
         if( !GUIIsGUI() || piece != 0 )
             return( false );
-        row -= FingMessageSize;
+        row -= AboutSize;
         if( row == 0 ) {
             line->text = " ";
             return( true );
@@ -94,7 +97,7 @@ static  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
             return( false );
         }
     }
-    line->text = AboutMessage[row];
+    line->text = GetAboutMessage( row );
     line->indent = ( Width - WndExtentX( wnd, line->text ) ) / 2;
     return( true );
 }
@@ -109,10 +112,10 @@ static bool FingWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     case GUI_INIT_WINDOW:
         if( GUIIsGUI() ) {
             colours = GUIGetWindowColours( WndGui( wnd ) );
-            colours[GUI_BACKGROUND].fore = GUI_BRIGHT_CYAN;
-            colours[GUI_BACKGROUND].back = GUI_BRIGHT_CYAN;
+            colours[GUI_BACKGROUND].fore = GUI_BR_CYAN;
+            colours[GUI_BACKGROUND].back = GUI_BR_CYAN;
             colours[WND_PLAIN].fore = GUI_BLACK;
-            colours[WND_PLAIN].back = GUI_BRIGHT_CYAN;
+            colours[WND_PLAIN].back = GUI_BR_CYAN;
             GUISetWindowColours( WndGui( wnd ), WndNumColours, colours );
             GUIMemFree( colours );
         }
@@ -126,7 +129,7 @@ static wnd_info FingInfo = {
     NoRefresh,
     FingGetLine,
     NoMenuItem,
-    NoScroll,
+    NoVScroll,
     NoBegPaint,
     NoEndPaint,
     NoModify,
@@ -150,8 +153,8 @@ void FingOpen( void )
     if( GUIIsGUI() ) {
         WndGetGadgetSize( GADGET_SPLASH, &BitmapSize );
         Width = Height = 0;
-        for( i = 0; i < FingMessageSize; ++i ) {
-            extent = WndExtentX( WndMain, AboutMessage[i] );
+        for( i = 0; i < AboutSize; ++i ) {
+            extent = WndExtentX( WndMain, GetAboutMessage( i ) );
             if( extent > Width ) {
                 Width = extent;
             }
@@ -159,7 +162,7 @@ void FingOpen( void )
         if( BitmapSize.x >= Width )
             Width = BitmapSize.x;
         Width += 4*WndMaxCharX( WndMain );
-        Height = ( FingMessageSize + 5 ) * WndMaxCharY( WndMain );
+        Height = ( AboutSize + 5 ) * WndMaxCharY( WndMain );
         Height += BitmapSize.y;
     } else {
         Width = Height = WND_APPROX_SIZE;
@@ -169,7 +172,7 @@ void FingOpen( void )
     info.rect.width = Width;
     info.rect.height = Height;
     info.style |= GUI_POPUP | GUI_NOFRAME;
-    info.scroll = GUI_NOSCROLL;
+    info.scroll_style = GUI_NOSCROLL;
     WndFing = WndCreateWithStruct( &info );
     if( WndFing != NULL ) {
         WndSetRepaint( WndFing );

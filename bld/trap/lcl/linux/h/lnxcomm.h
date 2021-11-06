@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -183,7 +184,7 @@ typedef struct user {
     unsigned long   start_code;     /* text starting address */
     unsigned long   start_data;     /* data starting address */
     unsigned long   start_stack;    /* stack starting address */
-    long int        signal;         /* signal causing core dump */
+    long            signal;         /* signal causing core dump */
     struct regs *   u_ar0;          /* help gdb find registers */
     unsigned long   magic;          /* identifies a core file */
     char            u_comm[32];     /* user command name */
@@ -217,7 +218,7 @@ typedef struct user {
     unsigned long   start_code;             /* text starting address */
     unsigned long   start_data;             /* data starting address */
     unsigned long   start_stack;            /* stack starting address */
-    long int        signal;                 /* signal causing core dump */
+    long            signal;                 /* signal causing core dump */
 #if 0
     struct regs *   u_ar0;                  /* help gdb find registers */
 #else

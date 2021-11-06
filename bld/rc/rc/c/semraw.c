@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -137,6 +138,8 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
         }
     }
 
+    loc.start = 0;
+    loc.len = 0;
     if( !error ) {
         loc.start = SemStartResource();
         pos = RESTELL( fp );

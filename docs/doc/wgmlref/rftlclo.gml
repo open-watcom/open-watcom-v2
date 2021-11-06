@@ -1,6 +1,6 @@
 :H2.CLOSE
 :XMP.
-Format&gml. &gml.CLOSE \(depth='vert-space-unit'\).<text line>
+Format&gml. &gml.CLOSE [depth='vert-space-unit'].<text line>
          <author lines>
 :eXMP.
 :I2 refid='gtclose'.gtclose

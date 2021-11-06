@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -209,8 +210,8 @@ static void resetIntVect( int vect, int_vect_32 *vinfo )
 
     inregs.w.ax = 0x2507;   /* set prot. and real mode vect */
     inregs.h.cl = vect;
-    segregs.ds = FP_SEG( vinfo->prot );
-    inregs.x.edx = FP_OFF( vinfo->prot );
+    segregs.ds = _FP_SEG( vinfo->prot );
+    inregs.x.edx = _FP_OFF( vinfo->prot );
     inregs.x.ebx = (unsigned long) vinfo->real;
     intdosx( &inregs, &outregs, &segregs );
 
@@ -229,7 +230,7 @@ static void getIntVect( int vect, int_vect_32 *vinfo )
     inregs.w.ax = 0x2502;   /* get prot. mode vect */
     inregs.h.cl = vect;
     intdosx( &inregs, &outregs, &segregs );
-    vinfo->prot = MK_FP( segregs.es, outregs.x.ebx );
+    vinfo->prot = _MK_FP( segregs.es, outregs.x.ebx );
 
     inregs.w.ax = 0x2503;   /* get real mode vect */
     inregs.h.cl = vect;
@@ -250,25 +251,11 @@ static void newIntVect( int vect, void __far *rtn )
 
     inregs.w.ax = 0x2506;  /* always gain control in prot. mode */
     inregs.h.cl = vect;
-    segregs.ds = FP_SEG( rtn );
-    inregs.x.edx = FP_OFF( rtn );
+    segregs.ds = _FP_SEG( rtn );
+    inregs.x.edx = _FP_OFF( rtn );
     intdosx( &inregs, &outregs, &segregs );
 
 } /* newIntVect */
-
-extern void LockMemory( void __far *, long size );
-#pragma aux LockMemory = \
-        "push es"       \
-        "mov  ax,gs"    \
-        "mov  es,ax"    \
-        "mov  ax,252bh" \
-        "mov  bh,5"     \
-        "mov  bl,1"     \
-        "int 21h"       \
-        "pop  es"       \
-    __parm      [__gs __ecx] [__edx] \
-    __value     \
-    __modify    [__bx]
 
 /*
  * setStupid1c - don't set timer tick interrupt in DOS boxes!!?!?!

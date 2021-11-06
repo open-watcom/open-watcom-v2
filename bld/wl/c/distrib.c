@@ -46,6 +46,10 @@
 #include "load16m.h"
 
 
+#ifdef _EXE
+
+#define LowestAncestorMap(o,i)  LowestAncestor( o, SectOvlTab[i] )
+
 #define INITIAL_MOD_ALLOC   32
 #define INITIAL_ARC_ALLOC   32
 #define MAX_NUM_MODULES     _8KB
@@ -100,14 +104,15 @@ void DistribInitMods( void )
     ResetPass1Blocks();
 }
 
-void DistribAddMod( mod_entry * lp, overlay_ref ovlref )
-/******************************************************/
-/* add this module to the table, and make the arclist field point to a
- * scratch buffer */
-// NYI: segdata changes have completely broken distributing libraries.
-// fix this!
+void DistribAddMod( mod_entry *lp, overlay_ref ovlref )
+/******************************************************
+ * add this module to the table, and make the arclist field point to a
+ * scratch buffer
+ * NYI: segdata changes have completely broken distributing libraries.
+ * fix this!
+ */
 {
-    mod_entry **    new;
+    mod_entry   **new;
 
     CurrModHandle++;
     if( CurrModHandle == ModTableMaxLen ) {
@@ -130,11 +135,13 @@ void DistribAddMod( mod_entry * lp, overlay_ref ovlref )
     }
 }
 
-void InitArcList( mod_entry * mod )
-/*********************************/
-/* set up the mod_entry arcdata field for dead code elimination */
+void InitArcList( mod_entry *mod )
+/*********************************
+ * set up the mod_entry arcdata field for dead code elimination
+ */
 {
-    if( !( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) ) {
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) {
+    } else {
         _PermAlloc( mod->x.arclist, offsetof( arcdata, arcs ) );
     }
 }
@@ -142,7 +149,7 @@ void InitArcList( mod_entry * mod )
 static void MarkDead( void *_seg )
 /********************************/
 {
-    segdata *seg = _seg;
+    segdata     *seg = _seg;
 
     if( seg->isrefd )
         return;
@@ -165,12 +172,11 @@ static void MarkDead( void *_seg )
 static void KillUnrefedSyms( void *_sym )
 /***************************************/
 {
-    symbol  *sym = _sym;
-    segdata *seg;
+    symbol      *sym = _sym;
+    segdata     *seg;
 
     seg = sym->p.seg;
-    if( ( seg != NULL ) && !IS_SYM_IMPORTED(sym) && !IS_SYM_ALIAS(sym)
-        && seg->isdead ) {
+    if( ( seg != NULL ) && !IS_SYM_IMPORTED( sym ) && !IS_SYM_ALIAS( sym ) && seg->isdead ) {
         if( seg->u.leader->combine == COMBINE_COMMON ) {
             seg = RingFirst( seg->u.leader->pieces );
             if( !seg->isdead ) {
@@ -189,17 +195,19 @@ static void KillUnrefedSyms( void *_sym )
 }
 
 static void DefineOvlSegments( mod_entry *mod )
-/*********************************************/
-/* figure out which of the segments are live */
+/**********************************************
+ * figure out which of the segments are live
+ */
 {
     Ring2Walk( mod->segs, MarkDead );
     Ring2Walk( mod->publist, KillUnrefedSyms );
 }
 
 void DistribSetSegments( void )
-/*****************************/
-// now that we know where everything is, do all the processing that has been
-// postponed until now.
+/******************************
+ * now that we know where everything is, do all the processing that has been
+ * postponed until now.
+ */
 {
     if( (LinkFlags & LF_STRIP_CODE) == 0 )
         return;
@@ -214,9 +222,9 @@ void DistribSetSegments( void )
     }
 #if 0           // NYI: distributing libraries completely broken.
     unsigned        index;
-    mod_entry *     mod;
+    mod_entry       *mod;
     overlay_ref     ovlref;
-    mod_entry **    currmod;
+    mod_entry       **currmod;
     unsigned        num_segdefs;
 
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
@@ -270,7 +278,7 @@ void DistribProcMods( void )
 /**************************/
 {
     unsigned_16 index;
-    mod_entry * mod;
+    mod_entry   *mod;
 
     for( index = 1; index <= CurrModHandle; index++ ) {
         mod = ModTable[index];
@@ -279,11 +287,12 @@ void DistribProcMods( void )
     }
 }
 
-overlay_ref LowestAncestor( overlay_ref ovlref, section * sect )
-/**************************************************************/
-/* find the lowest common ancestor of the two overlay values by marking all of
+overlay_ref LowestAncestor( overlay_ref ovlref, section *sect )
+/**************************************************************
+ * find the lowest common ancestor of the two overlay values by marking all of
  * the ancestors of the first overlay, and then looking for marked ancestors
- * of the other overlay */
+ * of the other overlay
+ */
 {
     section     *list;
 
@@ -305,31 +314,32 @@ overlay_ref LowestAncestor( overlay_ref ovlref, section * sect )
 }
 
 static bool NewRefVector( symbol *sym, overlay_ref ovlref, overlay_ref sym_ovlref )
-/*********************************************************************************/
-/* sometimes there can be an overlay vector generated to a routine specified
+/**********************************************************************************
+ * sometimes there can be an overlay vector generated to a routine specified
  * in an .OBJ file caused by a call from a library routine. this checks for
- * this case.*/
+ * this case.
+ */
 {
-    if( ( sym->p.seg == NULL )
-        || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
+    if( ( sym->p.seg == NULL ) || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
         return( true );
     }
     /*
      * at this point, we know it has already been defined, but does not have an
      * overlay vector, and is not data
      */
-    if( LowestAncestor( sym_ovlref, SectOvlTab[ovlref] ) != sym_ovlref ) {
+    if( LowestAncestorMap( sym_ovlref, ovlref ) != sym_ovlref ) {
         OvlVectorize( sym );
         return( true );
     }
     return( false );
 }
 
-void DefDistribSym( symbol * sym )
-/***************************************/
-/* move current module based on where this symbol has been referenced from,
+void DefDistribSym( symbol *sym )
+/********************************
+ * move current module based on where this symbol has been referenced from,
  * and make the symbol point to the current module. All symbols which get
- * passed to this routine are in an overlay class. */
+ * passed to this routine are in an overlay class.
+ */
 {
     arcdata     *arclist;
     segdata     *seg;
@@ -348,7 +358,7 @@ void DefDistribSym( symbol * sym )
             if( arclist->ovlref == NO_ARCS_YET ) {
                 arclist->ovlref = sym->u.d.ovlref;
             } else {
-                arclist->ovlref = LowestAncestor( arclist->ovlref, SectOvlTab[sym->u.d.ovlref] );
+                arclist->ovlref = LowestAncestorMap( arclist->ovlref, sym->u.d.ovlref );
             }
         }
     }
@@ -356,8 +366,9 @@ void DefDistribSym( symbol * sym )
 }
 
 static void AddArc( dist_arc arc )
-/********************************/
-/* add an arc to the arclist for the current module */
+/*********************************
+ * add an arc to the arclist for the current module
+ */
 {
     arcdata     *arclist;
 
@@ -375,8 +386,9 @@ static void AddArc( dist_arc arc )
 }
 
 static bool NotAnArc( dist_arc arc )
-/**********************************/
-/* return true if this is not an arc in the current module */
+/***********************************
+ * return true if this is not an arc in the current module
+ */
 {
     unsigned    index;
     arcdata     *arclist;
@@ -390,12 +402,13 @@ static bool NotAnArc( dist_arc arc )
     return( true );
 }
 
-void RefDistribSym( symbol * sym )
-/********************************/
-/* add an arc to the reference graph if it is not already in the graph */
+void RefDistribSym( symbol *sym )
+/********************************
+ * add an arc to the reference graph if it is not already in the graph
+ */
 {
-    mod_entry * mod;
-    segdata *   seg;
+    mod_entry   *mod;
+    segdata     *seg;
     dist_arc    arc;
 
     arc.sym = sym;
@@ -423,10 +436,11 @@ void RefDistribSym( symbol * sym )
     }
 }
 
-static void DoRefGraph( overlay_ref ovlref, mod_entry * mod )
-/***********************************************************/
-/* checks to see if the mod has changed position, and if it has, check all
- * of the routines that mod references */
+static void DoRefGraph( overlay_ref ovlref, mod_entry *mod )
+/***********************************************************
+ * checks to see if the mod has changed position, and if it has, check all
+ * of the routines that mod references
+ */
 {
     arcdata     *arclist;
     overlay_ref anc_ovlref;
@@ -442,7 +456,7 @@ static void DoRefGraph( overlay_ref ovlref, mod_entry * mod )
         anc_ovlref = 0;
         ScanArcs( mod );
     } else {
-        anc_ovlref = LowestAncestor( ovlref, SectOvlTab[arclist->ovlref] );
+        anc_ovlref = LowestAncestorMap( ovlref, arclist->ovlref );
         if( anc_ovlref != arclist->ovlref ) {
             arclist->ovlref = anc_ovlref;
             ScanArcs( mod );
@@ -454,8 +468,9 @@ static void DoRefGraph( overlay_ref ovlref, mod_entry * mod )
 }
 
 static void DeleteArc( arcdata *arclist, unsigned_16 index )
-/**********************************************************/
-/* delete an arc from the specified arc list */
+/***********************************************************
+ * delete an arc from the specified arc list
+ */
 {
     arclist->numarcs--;
     if( arclist->numarcs > 0 ) {
@@ -464,9 +479,10 @@ static void DeleteArc( arcdata *arclist, unsigned_16 index )
 }
 
 static void ScanArcs( mod_entry *mod )
-/************************************/
-/* go through all modules referenced by mod, and see if they need to change
- * position because of the position of mod */
+/*************************************
+ * go through all modules referenced by mod, and see if they need to change
+ * position because of the position of mod
+ */
 {
     arcdata     *arclist;
     symbol      *sym;
@@ -512,7 +528,7 @@ static void ScanArcs( mod_entry *mod )
                         sym->u.d.ovlref = ovlref;
                         sym->u.d.ovlstate |= OVL_REF;
                     } else {
-                        sym->u.d.ovlref = LowestAncestor( ovlref, SectOvlTab[sym->u.d.ovlref] );
+                        sym->u.d.ovlref = LowestAncestorMap( ovlref, sym->u.d.ovlref );
                     }
                 }
             } /* if( a module ) */
@@ -522,9 +538,10 @@ static void ScanArcs( mod_entry *mod )
 }
 
 void DistribFinishMod( mod_entry *mod )
-/*************************************/
-/* check the position of the modules referenced by mod, and then make a
- * more permanent copy of the arclist for this module. */
+/**************************************
+ * check the position of the modules referenced by mod, and then make a
+ * more permanent copy of the arclist for this module.
+ */
 {
     arcdata     *arclist;
     unsigned    allocsize;
@@ -540,15 +557,16 @@ void DistribFinishMod( mod_entry *mod )
 }
 
 void DistribIndirectCall( symbol *sym )
-/*************************************/
-// handle indirect calls and their effect on distributed libs.
+/**************************************
+ * handle indirect calls and their effect on distributed libs.
+ */
 {
     arcdata         *arclist;
     overlay_ref     save_ovlref;
 
     arclist = CurrMod->x.arclist;
     save_ovlref = arclist->ovlref;
-    arclist->ovlref = 0;                   // make sure current module isn't
+    arclist->ovlref = 0;                // make sure current module isn't
     CurrMod->modinfo |= MOD_VISITED;    // visited
     DoRefGraph( 0, ModTable[sym->u.d.modnum] );
     CurrMod->modinfo &= ~MOD_VISITED;
@@ -556,3 +574,5 @@ void DistribIndirectCall( symbol *sym )
     sym->u.d.ovlstate |= OVL_REF;
     sym->u.d.ovlref = 0;                // make sure current symbol put in root.
 }
+
+#endif

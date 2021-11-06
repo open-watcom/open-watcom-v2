@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,26 +72,26 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
             }
             break;
 
-        case FLD_TEXT :
+        case FLD_TEXT:
             text = GUIStrDup( field->u.str, &ok );
             if( ok ) {
                 return( text );
             }
             break;
-        case FLD_EDIT :
-        case FLD_INVISIBLE_EDIT :
+        case FLD_EDIT:
+        case FLD_INVISIBLE_EDIT:
             edit_control = field->u.edit;
             return( GUIMakeEditCopy( edit_control->buffer, edit_control->length ) );
-        case FLD_COMBOBOX :
+        case FLD_COMBOBOX:
             if( get_curr ) {
                 combo_box = field->u.combo;
                 edit_control = &combo_box->edit;
                 return( GUIMakeEditCopy( edit_control->buffer, edit_control->length ) );
             }
             /* fall through */
-        case FLD_PULLDOWN :
-        case FLD_LISTBOX :
-        case FLD_EDIT_MLE :
+        case FLD_PULLDOWN:
+        case FLD_LISTBOX:
+        case FLD_EDIT_MLE:
             list = GUIGetList( field );
             if( list != NULL ) {
                 return( GUIGetListBoxText( list, choice, get_curr ) );
@@ -101,12 +102,12 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
     return( NULL );
 }
 
-char *GUIGetText( gui_window *wnd, gui_ctl_id id )
+char * GUIAPI GUIGetText( gui_window *wnd, gui_ctl_id id )
 {
     return( GetText( wnd, id, 0, true ) );
 }
 
-char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice )
+char * GUIAPI GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice )
 {
     return( GetText( wnd, id, choice, false ) );
 }

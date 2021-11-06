@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +35,12 @@
 #include <string.h>
 #include "extender.h"
 #include "uidef.h"
-#include "uidos.h"
-#include "biosui.h"
 #include "dpmi.h"
 #include "uigchar.h"
 #include "getltdos.h"
-#include "osidle.h"
 #include "uicurshk.h"
+#include "realmod.h"
+#include "int10.h"
 
 
 typedef struct {
@@ -54,7 +53,7 @@ typedef struct {
     long            real_edx;
 } PHARLAP_block;
 
-unsigned    BIOSVidPage;
+static unsigned     BIOSVidPage;
 
 static MONITOR ui_data = {
     25,
@@ -68,26 +67,6 @@ static MONITOR ui_data = {
     1
 };
 
-void IdleInterrupt( void )
-{
-#ifdef _M_I86
-    DOSIdle();
-#elif defined( __OSI__ )
-    /* Can't do anything */
-#else
-    if( _IsRational() ) {
-        ReleaseVMTimeSlice(); /* Assume DPMI if Rational; else dunno */
-    }
-#endif
-}
-
-void intern setvideomode( unsigned char mode )
-/********************************************/
-{
-    BIOSSetMode( mode );
-}
-
-
 bool UIAPI uiset80col( void )
 /****************************/
 
@@ -97,11 +76,11 @@ bool UIAPI uiset80col( void )
     status = false;
     if( UIData->width != 80 ) {
         if( UIData->colour == M_MONO ) {
-            setvideomode( 7 );
+            _BIOSVideoSetMode( 7 );
         } else if( UIData->colour == M_BW ) {
-            setvideomode( 2 );
+            _BIOSVideoSetMode( 2 );
         } else {
-            setvideomode( 3 );
+            _BIOSVideoSetMode( 3 );
         }
         status = true;
     }
@@ -113,21 +92,11 @@ bool UIAPI uiset80col( void )
     (Get Video Buffer: int 10h, AH=FEh)
 */
 
-#ifdef _M_I86
-extern LP_PIXEL desqview_shadow_buffer( LP_PIXEL );
-#pragma aux desqview_shadow_buffer = \
-        "mov ah,0feh"   \
-        _INT_10         \
-    __parm      [__es __di] \
-    __value     [__es __di] \
-    __modify    [__ah]
-#endif
-
 LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
 /*************************************************/
 {
 #ifdef _M_I86
-    return( desqview_shadow_buffer( vbuff ) );
+    return( _BIOSVideo_desqview_shadow_buffer( vbuff ) );
 #else
     if( _IsPharLap() ) {
         union REGPACK   regs;
@@ -136,7 +105,7 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
         regs.h.ah = 0xfe;
         regs.x.edi = _FP_OFF( vbuff );
         regs.w.es = _FP_SEG( vbuff );
-        intr( BIOS_VIDEO, &regs );
+        intr( VECTOR_VIDEO, &regs );
         if( _FP_OFF( vbuff ) != regs.x.edi ) {
             /* we use _FP_OFF since old_selector==0x34 and new_selector==0x37 */
             vbuff = _MK_FP( regs.w.es, regs.x.edi );
@@ -148,7 +117,7 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
         dblock.eax = 0xfe00;                /* get video buffer addr */
         dblock.es = _FP_OFF( vbuff ) >> 4;
         dblock.edi = (_FP_OFF( vbuff ) & 0x0f);
-        DPMISimulateRealModeInterrupt( BIOS_VIDEO, 0, 0, &dblock );
+        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dblock );
         vbuff = RealModeDataPtr( dblock.es, dblock.edi );
     }
     return( vbuff );
@@ -185,54 +154,48 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
 #define DELL_43X132    84           // Text Mode
 #define DELL_25X132    85           // Text Mode
 
-typedef struct {
-    union {
-        PIXEL           pixel;
-        unsigned short  value;
-    } u;
-} pixel_value;
 
 static int IsTextMode( void )
 {
-    unsigned char       mode;
-    unsigned char       page;
-    struct cursor_pos   cursor_position;
+    int10_mode_info     info;
+    int10_cursor_pos    pos;
     LP_PIXEL            video_mem;
-    pixel_value         pixel_bios;
-    pixel_value         pixel_vmem;
+    int10_pixel_data    pixel_bios;
+    int10_pixel_data    pixel_vmem;
     unsigned char       text_mode = 0;
 
-    /* get current video mode */
-    mode = BIOSGetMode();
-    /* get current video page */
-    page = BIOSGetPage();
+    /* get current video mode info */
+    info = _BIOSVideoGetModeInfo();
     /* get cursor position for current page */
-    cursor_position = BIOSGetCurPos( page );
-    if( mode < GR_MED_4COL || mode == MONOCHROME || mode > VGA_256COL ) {
+    pos = _BIOSVideoGetCursorPos( info.page );
+    if( info.mode < GR_MED_4COL || info.mode == MONOCHROME || info.mode > VGA_256COL ) {
         video_mem = UIData->screen.origin;
         /* set cursor position to top left corner of screen */
-        BIOSSetCurPos( 0, 0, page );
+        _BIOSVideoSetCursorPosZero( info.page );
         /* get character/attribute at that location */
-        pixel_bios.u.pixel = BIOSGetCharPixel( page );
+        pixel_bios = _BIOSVideoGetCharPixel( info.page );
         /* get character/attribute from screen memory */
-        pixel_vmem.u.pixel = *video_mem;
-        if( pixel_bios.u.value == pixel_vmem.u.value ) {
+        pixel_vmem.s.ch = video_mem->ch;
+        pixel_vmem.s.attr = video_mem->attr;
+        if( pixel_bios.value == pixel_vmem.value ) {
             /* change the character we read through BIOS call */
-            pixel_bios.u.pixel.ch ^= 1;
+            pixel_bios.s.ch ^= 1;
             /* write out character using BIOS */
-            BIOSSetCharPixel( pixel_bios.u.pixel, page );
+            _BIOSVideoSetCharPixel( info.page, pixel_bios );
             /* get character/attribute from screen memory */
-            pixel_vmem.u.pixel = *video_mem;
-            if( pixel_bios.u.value == pixel_vmem.u.value ) {
+            pixel_vmem.s.ch = video_mem->ch;
+            pixel_vmem.s.attr = video_mem->attr;
+            if( pixel_bios.value == pixel_vmem.value ) {
                 /* restore character that was there */
-                pixel_bios.u.pixel.ch ^= 1;
-                *video_mem = pixel_bios.u.pixel;
+                pixel_bios.s.ch ^= 1;
+                video_mem->ch = pixel_bios.s.ch;
+                video_mem->attr = pixel_bios.s.attr;
                 text_mode = 1;
             }
         }
     }
     /* restore cursor position for current page */
-    BIOSSetCurPos( cursor_position.row, cursor_position.col, page );
+    _BIOSVideoSetCursorPos( info.page, pos );
     return( text_mode );
 }
 
@@ -240,35 +203,35 @@ static bool initmonitor( void )
 /*****************************/
 {
     bool                ega;
-    unsigned char       mode;
-    struct ega_info     info;
+    int10_mode_info     info;
+    int10_ega_info      info_ega;
 
     if( UIData == NULL ) {
         UIData = &ui_data;
     }
-
-    BIOSVidPage = BIOSGetPage();
-    mode = BIOSGetMode();
-    UIData->width = BIOSGetColumns();
+    /* get current video mode info */
+    info = _BIOSVideoGetModeInfo();
+    BIOSVidPage = info.page;
+    UIData->width = info.columns;
     UIData->height = 25;
-    info = BIOSEGAInfo();
-    if( info.switches < 0x0C && info.mono <= 0x01 && info.mem <= 0x03 ) {
-        UIData->height = BIOSGetRows();
+    info_ega = _BIOSVideoEGAInfo();
+    if( info_ega.switches < 0x0C && info_ega.mono <= 0x01 && info_ega.mem <= 0x03 ) {
+        UIData->height = _BIOSVideoGetRowCount();
         ega = true;
     } else {
         ega = false;
     }
-    if( ( mode == MONOCHROME ) || ( mode == EGA_HIGH_MONO ) ) {
+    if( ( info.mode == MONOCHROME ) || ( info.mode == EGA_HIGH_MONO ) ) {
         UIData->colour = M_MONO;
-    } else if( ( mode == ALPHA_SMALL_COL ) || ( mode == ALPHA_LARGE_COL ) ) {
+    } else if( ( info.mode == ALPHA_SMALL_COL ) || ( info.mode == ALPHA_LARGE_COL ) ) {
         if( ega ) {
             UIData->colour = M_EGA;
         } else {
             UIData->colour = M_CGA;
         }
-    } else if( ( mode == ALPHA_SMALL_BW ) || ( mode == ALPHA_LARGE_BW ) ) {
+    } else if( ( info.mode == ALPHA_SMALL_BW ) || ( info.mode == ALPHA_LARGE_BW ) ) {
         UIData->colour = M_BW;
-    } else if( mode > VGA_256COL ) {
+    } else if( info.mode > VGA_256COL ) {
         /*
             if mode is out of known range then assume it's a VGA/SVGA mode
         */
@@ -285,7 +248,7 @@ extern bool desqview_present( void );
         "mov  ax,2b01h"     \
         "mov  cx,4445h"     \
         "mov  dx,5351h"     \
-        _INT_21             \
+        "int 21h"           \
         "cmp  al,0ffh"      \
         "jz L1"             \
         "xor  al,al"        \
@@ -305,7 +268,7 @@ bool intern initbios( void )
         UIData->desqview = desqview_present();
         UIData->f10menus = true;
         UIData->screen.origin = RealModeDataPtr( ( UIData->colour == M_MONO ) ? 0xb000 : 0xb800,
-                                        BIOSData( BIOS_SCREEN_OFFSET, unsigned short ) );
+                                        BIOSData( BDATA_SCREEN_OFFSET, unsigned short ) );
         if( UIData->desqview ) {
             UIData->screen.origin = dos_uishadowbuffer( UIData->screen.origin );
         }
@@ -344,20 +307,10 @@ void intern finibios( void )
     (Update Video Display: int 10h, AH=FFh, CX=count, ES:DI=buffer)
 */
 
-#ifdef _M_I86
-extern void _desqview_update( LP_PIXEL, unsigned );
-#pragma aux _desqview_update = \
-        "mov  ah,0ffh"      \
-        _INT_10             \
-    __parm      [__es __di] [__cx] \
-    __value     \
-    __modify    [__ah]
-#endif
-
 static void desqview_update( unsigned short offset, unsigned short count )
 {
 #ifdef _M_I86
-    _desqview_update( UIData->screen.origin + offset, count );
+    _BIOSVideo_desqview_update( UIData->screen.origin + offset, count );
 #else
     if( _IsPharLap() ) {
         PHARLAP_block   pblock;
@@ -365,7 +318,7 @@ static void desqview_update( unsigned short offset, unsigned short count )
 
         memset( &pblock, 0, sizeof( pblock ) );
         memset( &regs, 0, sizeof( regs ) );
-        pblock.int_num = BIOS_VIDEO;        /* VIDEO call */
+        pblock.int_num = VECTOR_VIDEO;      /* VIDEO call */
         pblock.real_eax = 0xff00;           /* update from v-screen */
         pblock.real_es = _FP_OFF( UIData->screen.origin ) >> 4;
         regs.x.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
@@ -382,7 +335,7 @@ static void desqview_update( unsigned short offset, unsigned short count )
         dblock.es = _FP_OFF( UIData->screen.origin ) >> 4;
         dblock.edi = (_FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
         dblock.ecx = count;
-        DPMISimulateRealModeInterrupt( BIOS_VIDEO, 0, 0, &dblock );
+        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dblock );
     }
 #endif
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -267,7 +267,7 @@ void    DumpRegName( hw_reg_set regname )
             if( Check(&name,HW_LR) ) { DumpLiteral( "LR" ); continue; }
 #endif
 #endif
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
             if( Check(&name,HW_EAX)) { DumpLiteral("EAX"); continue; }
             if( Check(&name,HW_AX) ) { DumpLiteral( "AX"); continue; }
             if( Check(&name,HW_AL) ) { DumpLiteral( "AL"); continue; }
@@ -288,8 +288,10 @@ void    DumpRegName( hw_reg_set regname )
             if( Check(&name,HW_DI) ) { DumpLiteral( "DI"); continue; }
             if( Check(&name,HW_ESI)) { DumpLiteral("ESI"); continue; }
             if( Check(&name,HW_SI) ) { DumpLiteral( "SI"); continue; }
-            if( Check(&name,HW_BP))  { DumpLiteral("EBP"); continue; }
-            if( Check(&name,HW_SP))  { DumpLiteral("ESP"); continue; }
+            if( Check(&name,HW_EBP)) { DumpLiteral("EBP"); continue; }
+            if( Check(&name,HW_BP))  { DumpLiteral( "BP"); continue; }
+            if( Check(&name,HW_ESP)) { DumpLiteral("ESP"); continue; }
+            if( Check(&name,HW_SP))  { DumpLiteral( "SP"); continue; }
             if( Check(&name,HW_GS) ) { DumpLiteral( "GS"); continue; }
             if( Check(&name,HW_FS) ) { DumpLiteral( "FS"); continue; }
             if( Check(&name,HW_ES) ) { DumpLiteral( "ES"); continue; }

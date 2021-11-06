@@ -1,19 +1,20 @@
+# UTF-8 encoding, 楼
 static_text=\
         //1"Select other options:"\
-        //2"偦偺懠偺僆僾僔儑儞傪慖戰偟偰偔偩偝偄:"\
+        //2"銇濄伄浠栥伄銈儣銈枫儳銉炽倰閬告姙銇椼仸銇忋仩銇曘亜:"\
         //0
 static_text=
 check_box=cplusplus,,\
         //1"&Include C++ compiler components"\
-        //2"C++僐儞僷僀儔丒僐儞億乕僱儞僩傪娷傒傑偡 (&I)"\
+        //2"C++銈炽兂銉戙偆銉┿兓銈炽兂銉濄兗銉嶃兂銉堛倰鍚伩銇俱仚 (&I)"\
         //0,IsFortranInstall !
 check_box=samples,,\
         //1"Sample &programs"\
-        //2"僒儞僾儖丒僾儘僌儔儉 (&p)"\
+        //2"銈点兂銉椼儷銉汇儣銉偘銉┿儬 (&p)"\
         //0
 check_box=rtsource,,\
         //1"&Run-time startup source code"\
-        //2"儔儞僞僀儉丒僗僞乕僩傾僢僾丒僜乕僗僐乕僪 (&R)"\
+        //2"銉┿兂銈裤偆銉犮兓銈广偪銉笺儓銈€儍銉椼兓銈姐兗銈广偝銉笺儔 (&R)"\
         //0
 static_text=
 other_button=\

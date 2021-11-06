@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -201,11 +201,11 @@ void ProcComdef( bool isstatic )
     unsigned_32         size;
     symbol *            sym;
     extnode *           ext;
-    sym_flags           flags;
+    sym_flags           symop;
 
-    flags = ST_CREATE | ST_REFERENCE;
+    symop = ST_CREATE_REFERENCE;
     if( isstatic ) {
-        flags |= ST_STATIC;
+        symop |= ST_STATIC;
     }
     while( ObjBuff < EOObjRec ) {
         sym_len = *ObjBuff++;
@@ -217,7 +217,7 @@ void ProcComdef( bool isstatic )
         if( kind == COMDEF_FAR ) {
             size *= GetLeaf();
         }
-        sym = SymOp( flags, sym_name, sym_len );
+        sym = SymOp( symop, sym_name, sym_len );
         sym = MakeCommunalSym( sym, size, kind == COMDEF_FAR, is32bit );
         ext = AllocNode( ExtNodes );
         ext->entry = sym;
@@ -290,7 +290,7 @@ static char * GetNewName( void )
 {
     CDatSegNum++;
     ultoa( CDatSegNum, CDatSegName + CDAT_SEG_NUM_OFF, 36 );
-    return CDatSegName;
+    return( CDatSegName );
 }
 
 static void AddToLinkerComdat( symbol *sym )
@@ -313,11 +313,12 @@ static void AddToLinkerComdat( symbol *sym )
     if( leader == NULL ) {
         sdata->u.name = GetNewName();
         sym->addr.off = 0;
-        if( (FmtData.type & MK_OVERLAYS) == 0 || (alloc & 1) == 0 ) {
-            sect = Root;
-        } else {
+        sect = Root;
+#ifdef _EXE
+        if( (FmtData.type & MK_OVERLAYS) && (alloc & 1) != 0 ) {
             sect = NonSect;             /* data in an overlaid app */
         }
+#endif
         class = FindClass( sect, CDatClassNames[alloc], alloc > 1, alloc & 1 );
     } else {
         class = leader->class;
@@ -388,7 +389,7 @@ static offset CalcLIDataLength( void )
 static bool CompInfoSym( void *info, void *sym )
 /**********************************************/
 {
-    return ((comdat_info *)info)->sym == (symbol *)sym;
+    return( ((comdat_info *)info)->sym == (symbol *)sym );
 }
 
 #ifdef _INT_DEBUG
@@ -399,11 +400,11 @@ static bool CheckSameComdat( void *info, void *sym )
         LnkMsg( LOC_REC+ERR+MSG_INTERNAL, "s", "duplicate comdat found" );
         LnkMsg( ERR+MSG_INTERNAL, "s", ((symbol *)sym)->name );
     }
-    return false;
+    return( false );
 }
 #endif
 
-#define ST_COMDAT (ST_CREATE | ST_NOALIAS | ST_REFERENCE)
+#define ST_COMDAT (ST_CREATE_REFERENCE | ST_NOALIAS)
 
 void ProcComdat( void )
 /****************************/
@@ -423,6 +424,7 @@ void ProcComdat( void )
     unsigned            alloc;
     unsigned            segidx;
     bool                usealign;
+    sym_flags           symop;
 
     flags = *ObjBuff++;
     attr = *ObjBuff++;
@@ -461,11 +463,11 @@ void ProcComdat( void )
     piece = AllocCDatPiece();
     symname = FindName( GetIdx() );
     namelen = strlen( symname->name );
+    symop = ST_COMDAT;
     if( flags & CDAT_STATIC ) {
-        sym = SymOp( ST_COMDAT | ST_STATIC, symname->name, namelen );
-    } else {
-        sym = SymOp( ST_COMDAT, symname->name, namelen );
+        symop |= ST_STATIC;
     }
+    sym = SymOp( symop, symname->name, namelen );
     if( flags & CDAT_ITERATED ) {
         piece->length = CalcLIDataLength();
     } else {
@@ -504,9 +506,9 @@ void ProcComdat( void )
         RingLookup( CDatList, CheckSameComdat, sym );
 #endif
         RingAppend( &CDatList, info );
-        if( IS_SYM_COMDAT(sym) ) {
+        if( IS_SYM_COMDAT( sym ) ) {
             CheckComdatSym( sym, info->flags & ~SYM_DEAD );
-        } else if( !(IS_SYM_REGULAR(sym) && (sym->info & SYM_DEFINED)) ) {
+        } else if( !(IS_SYM_REGULAR( sym ) && (sym->info & SYM_DEFINED)) ) {
             if( sym->info & SYM_DEFINED ) {
                 sym = HashReplace( sym );
             }

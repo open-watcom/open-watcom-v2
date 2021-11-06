@@ -309,9 +309,10 @@ static void AddInfo( void )
     /* add header (trailer), if required */
     if( res ) {
         if( fseek( finfo.fp, SEEK_POSBACK( sizeof( header ) ), SEEK_END ) )
-                Fatal( MSG_SEEK_ERROR, finfo.name );
+            Fatal( MSG_SEEK_ERROR, finfo.name );
         info.len = ftell( finfo.fp ) + sizeof( header );
-        fread( (void *)&header, 1, sizeof( header ), finfo.fp );
+        if( fread( (void *)&header, 1, sizeof( header ), finfo.fp ) != sizeof( header ) )
+            Fatal( MSG_READ_ERROR, finfo.name );
         if( header.signature != WAT_RES_SIG || header.debug_size != info.len ) {
             header.signature = WAT_RES_SIG;
             header.debug_size = info.len + sizeof( header );
@@ -335,11 +336,6 @@ static void StripInfo( void )
     }
     finfo.fp = NULL;
     if( finfo.name[0] != '\0' && info.type != WRAP_NONE ) {
-#ifdef __UNIX__
-        if( strcmp( finfo.name, fout.name ) == 0 ) {
-            strcat( finfo.name, (res ? ResExt : SymExt) );
-        }
-#endif
         finfo.fp = fopen( finfo.name, "wb" );
         if( finfo.fp == NULL ) {
             FatalDelTmp( ( res ) ? MSG_CANT_CREATE_1 : MSG_CANT_CREATE_0, finfo.name );
@@ -363,31 +359,6 @@ static void StripInfo( void )
     CopyData( &fin, &ftmp );
 }
 
-static bool Suffix( char *fname, const char *suff )
-{
-    char *scan;
-    char *end;
-
-    end = fname + strlen( fname );
-    scan = end;
-    for( ;; ) {
-        --scan;
-        if( scan <= fname )
-            break;
-        if( *scan == '/' )
-            break;
-#if !defined( __UNIX__ )
-        if( *scan == '\\' )
-            break;
-#endif
-        if( *scan == '.' ) {
-            return( false ); /* already has an extension */
-        }
-    }
-    strcpy( end, suff );
-    return( true );
-}
-
 int main( int argc, char *argv[] )
 {
     size_t              size;
@@ -395,23 +366,24 @@ int main( int argc, char *argv[] )
     int                 j;
     size_t              k;
     size_t              argvlen;
-    PGROUP2             pg;
+    pgroup2             *pg;
+    pgroup2             *pg_tmp;
     int                 add_file;
-    struct stat         other_stat;
+    struct stat         statx;
     struct utimbuf      uptime;
-    bool                has_ext;
     time_t              mtime;
+    const char          *in_ext;
+
+#define IS_DIR(x,st)    (stat(x, &(st)) == 0 && S_ISDIR( (st).st_mode ))
 
 #ifndef __WATCOMC__
     _argv = argv;
     _argc = argc;
 #endif
 
-#if !defined( INCL_MSGTEXT )
     if( !Msg_Init() ) {
         return( EXIT_FAILURE );
     }
-#endif
     add_file = 0;
     j = argc - 1;
     while( j > 0 ) {
@@ -423,6 +395,10 @@ int main( int argc, char *argv[] )
             argvlen = strlen( argv[j] );
             for( k = 1; k < argvlen; k++ ) {
                 switch( argv[j][k] ) {
+                case '?':
+                case 'h':
+                    Usage();
+                    break;
                 case 'q': quiet = true; break;
                 case 'n': nodebug_ok = true; break;
                 case 'a': add_file = true; break;
@@ -453,45 +429,56 @@ int main( int argc, char *argv[] )
             Fatal( MSG_LOW_MEM, NULL );
         }
     }
-    finfo.name[0] = '\0';
+    pg = malloc( sizeof( pgroup2 ) );
+    if( pg == NULL ) {
+        Fatal( MSG_LOW_MEM, NULL );
+    }
+    _splitpath2( argv[1], pg->buffer, &pg->drive, &pg->dir, &pg->fname, &pg->ext );
+    in_ext = pg->ext;
     mtime = 0;
-    for( i = 0; i < ARRAYSIZE( ExtLst ); ++i ) {
-        struct stat     in_stat;
-
-        strcpy( fin.name, argv[1] );
-        has_ext = Suffix( fin.name, ExtLst[i] );
-        if( stat( fin.name, &in_stat ) == 0 ) {
-            mtime = in_stat.st_mtime;
-            break;
-        }
-        if( has_ext ) {
-            break;
-        }
-    }
-    if( i == ARRAYSIZE( ExtLst ) ) {
-        Fatal( MSG_CANT_FIND, argv[1] );
-    }
-    if( argc >= 3 && strcmp( argv[2], "." ) != 0 ) {
-        if( stat( argv[2], &other_stat ) == 0 && S_ISDIR( other_stat.st_mode ) ) {
-            _splitpath2( fin.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-            _makepath( fout.name, NULL, argv[2], pg.fname, pg.ext );
-        } else {
-            strcpy( fout.name, argv[2] );
-            _splitpath2( fin.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-            Suffix( fout.name, pg.ext );
+    if( in_ext[0] == '\0' ) {
+        for( i = 0; i < ARRAYSIZE( ExtLst ); ++i ) {
+            in_ext = ExtLst[i];
+            _makepath( fin.name, pg->drive, pg->dir, pg->fname, in_ext );
+            if( stat( fin.name, &statx ) == 0 ) {
+                mtime = statx.st_mtime;
+                break;
+            }
         }
     } else {
-        strcpy( fout.name, fin.name );
-    }
-    if( argc >= 4 ) {
-        if( stat( argv[3], &other_stat ) == 0 && S_ISDIR( other_stat.st_mode ) ) {
-            _splitpath2( fout.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-            _makepath( finfo.name, NULL, argv[3], pg.fname, NULL );
-        } else {
-            strcpy( finfo.name, argv[3] );
+        _makepath( fin.name, pg->drive, pg->dir, pg->fname, in_ext );
+        if( stat( fin.name, &statx ) == 0 ) {
+            mtime = statx.st_mtime;
         }
-        Suffix( finfo.name, (res ? ResExt : SymExt) );
     }
+    if( mtime == 0 ) {
+        free( pg );
+        Fatal( MSG_CANT_FIND, argv[1] );
+    }
+    pg_tmp = malloc( sizeof( pgroup2 ) );
+    if( pg_tmp == NULL ) {
+        free( pg );
+        Fatal( MSG_LOW_MEM, NULL );
+    }
+    if( argc >= 3 && strcmp( argv[2], "." ) != 0 ) {
+        _splitpath2( argv[2], pg_tmp->buffer, &pg->drive, &pg->dir, &pg_tmp->fname, &pg_tmp->ext );
+        _makepath( ftmp.name, pg->drive, pg->dir, pg_tmp->fname, pg_tmp->ext );
+        if( !IS_DIR( ftmp.name, statx ) ) {
+            pg->fname = pg_tmp->fname;
+        }
+    }
+    _makepath( fout.name, pg->drive, pg->dir, pg->fname, in_ext );
+    finfo.name[0] = '\0';
+    if( argc >= 4 ) {
+        _splitpath2( argv[3], pg_tmp->buffer, &pg_tmp->drive, &pg_tmp->dir, &pg_tmp->fname, &pg_tmp->ext );
+        _makepath( ftmp.name, pg_tmp->drive, pg_tmp->dir, pg_tmp->fname, pg_tmp->ext );
+        if( IS_DIR( ftmp.name, statx ) ) {
+            pg_tmp->fname = pg->fname;
+        }
+        _makepath( finfo.name, pg_tmp->drive, pg_tmp->dir, pg_tmp->fname, (res ? ResExt : SymExt) );
+    }
+    free( pg_tmp );
+    free( pg );
 
     /* initialize temporary file */
     strcpy( ftmp.name, "temporary file" );
@@ -526,8 +513,6 @@ int main( int argc, char *argv[] )
     uptime.modtime = mtime;
     utime( fout.name, &uptime );
 
-#if !defined( INCL_MSGTEXT )
     Msg_Fini();
-#endif
     return( EXIT_SUCCESS );
 }

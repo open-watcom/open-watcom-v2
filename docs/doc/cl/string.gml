@@ -12,7 +12,7 @@ a character with the value zero, represented as
 .mono \0
 within a string, or as the character constant
 .mono '\0'
-..ct ..li .
+.period
 Because string processing is such a common task in programming,
 C provides a set of
 library functions
@@ -30,10 +30,10 @@ null character.
 An array can be initialized to be a string using the following form:
 .cillust begin
 type identifier
-..ct .mono [] = { "
-..ct string value
+.ct .mono [] = { "
+.ct string value
 .monoon
-..'ct " };
+.'ct " };
 .monooff
 .cillust end
 .pc
@@ -60,8 +60,7 @@ String literals are described in the "Constants" chapter.
 .pp
 A string may be used anywhere in a program where a "pointer to
 .kw char
-..ct "
-may be used. For example, if the declaration,
+.ct " may be used. For example, if the declaration,
 .millust begin
 char * ident;
 .millust end

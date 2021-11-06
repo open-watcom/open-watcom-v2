@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 
 #include "stdrdos.h"
 
-trap_retval ReqFileInfo_getdate( void )
+trap_retval TRAP_FILE_INFO( get_date )( void )
 {
     file_info_get_date_req  *req;
     file_info_get_date_ret  *ret;
@@ -44,11 +45,11 @@ trap_retval ReqFileInfo_getdate( void )
 
     ret->err = MSG_FILE_NOT_FOUND;
     ret->date = 0;
-    
+
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFileInfo_setdate( void )
+trap_retval TRAP_FILE_INFO( set_date )( void )
 {
     file_info_set_date_req  *req;
     file_info_set_date_ret  *ret;
@@ -57,7 +58,7 @@ trap_retval ReqFileInfo_setdate( void )
     req = GetInPtr( 0 );
     name = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
-    
+
 /* not yet implemented */
 
     ret->err = MSG_FILE_NOT_FOUND;

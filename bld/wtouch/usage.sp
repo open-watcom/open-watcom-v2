@@ -1,3 +1,5 @@
+:: UTF-8 encoding, ¥
+::
 :segment ENGLISH
 Usage:   wtouch [<options>] <file_names>
 Options: ('/' may be used instead of '-' to specify options)
@@ -12,18 +14,15 @@ Options: ('/' may be used instead of '-' to specify options)
          -q         suppress informational messages
          -?         display this help screen
 :elsesegment JAPANESE
-�g�p���@: wtouch [<��߼��>] <̧�ٖ�>
-��߼��: ('/'�̓I�v�V�����w��̍ۂ�'-'�̑ւ��Ƃ��Ďg�p���܂�)
-         -c         ���݂��Ȃ��t�@�C���͍쐬����܂���
-         -i         <̧�ٖ�>���^�b�`����O�Ƀ^�C���X�^���v���C���N�������g���܂�
-         -r         �ǂݍ��ݐ�p�t�@�C���ł����Ă��A��ѽ���߂����������܂��B
-         -d <���t>  �^�C���E�X�^���v�̓��t�����𖾎��w�肵�܂�
-         -f <̧��>  <̧��>����̓��t���Ԃ��g�p���܂�
-         -t <����>  �^�C���E�X�^���v�̎��ԕ����𖾎��w�肵�܂�
-         -u         USA�̓��t���ԃt�H�[�}�b�g���g�p���܂�
-         -q         ��񃁃b�Z�[�W��}�����܂�
-         -?         ���̃w���v��ʂ�\�����܂�
-:endsegment
-:segment IS_RC
-.
+使用方法: wtouch [<ｵﾌﾟｼｮﾝ>] <ﾌｧｲﾙ名>
+ｵﾌﾟｼｮﾝ: ('/'はオプション指定の際の'-'の替わりとして使用します)
+         -c         存在しないファイルは作成されません
+         -i         <ﾌｧｲﾙ名>をタッチする前にタイムスタンプをインクリメントします
+         -r         読み込み専用ファイルであっても、ﾀｲﾑｽﾀﾝﾌﾟを書き換えます。
+         -d <日付>  タイム・スタンプの日付部分を明示指定します
+         -f <ﾌｧｲﾙ>  <ﾌｧｲﾙ>からの日付時間を使用します
+         -t <時間>  タイム・スタンプの時間部分を明示指定します
+         -u         USAの日付時間フォーマットを使用します
+         -q         情報メッセージを抑制します
+         -?         このヘルプ画面を表示します
 :endsegment

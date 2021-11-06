@@ -24,7 +24,7 @@ is an integer, real, or double precision variable, called the
 DO-variable.
 .mnote e1, e2, e3
 are each an integer, real, or double precision expression.
-.endnote
+.esynote
 .*
 .section Extended DO Statement
 .*
@@ -46,7 +46,7 @@ DO-variable.
 are each an integer, real, or double precision expression.
 .mnote block-label
 is an optional block label.
-.endnote
+.esynote
 .np
 This form of the
 .kw DO

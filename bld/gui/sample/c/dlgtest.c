@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +59,7 @@ static gui_create_info DialogControl = {
  * TestDialogWndGUIEventProc
  */
 
-static bool TestDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool TestDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     char        *new;
@@ -66,60 +67,60 @@ static bool TestDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *
     int         num;
 
     switch( gui_ev ) {
-    case GUI_INIT_DIALOG :
+    case GUI_INIT_DIALOG:
         return( true );
-    case GUI_CONTROL_NOT_ACTIVE :
+    case GUI_CONTROL_NOT_ACTIVE:
         GUI_GETID( param, id );
         switch( id ) {
-        case LISTBOX_CONTROL :
+        case LISTBOX_CONTROL:
             num = -1;
-            GUIGetCurrSelect( gui, LISTBOX_CONTROL, &num );
-            text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
+            GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
+            text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
             GUIMemFree( text );
-            GUISetListItemData( gui, LISTBOX_CONTROL, num, (void *)num );
-            num = (int)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
+            GUISetListItemData( wnd, LISTBOX_CONTROL, num, (void *)num );
+            num = (int)GUIGetListItemData( wnd, LISTBOX_CONTROL, num );
             break;
-        case EDIT_CONTROL :
-            new = GUIGetText( gui, EDIT_CONTROL );
+        case EDIT_CONTROL:
+            new = GUIGetText( wnd, EDIT_CONTROL );
             GUIMemFree( new );
             break;
         }
         return( true );
-    case GUI_CONTROL_RCLICKED :
+    case GUI_CONTROL_RCLICKED:
         GUI_GETID( param, id );
-        text = GUIGetText( gui, id );
-        GUIDisplayMessage( gui, text, text, GUI_ABORT_RETRY_IGNORE );
+        text = GUIGetText( wnd, id );
+        GUIDisplayMessage( wnd, text, text, GUI_ABORT_RETRY_IGNORE );
         GUIMemFree( text );
         return( true );
-    case GUI_CONTROL_DCLICKED :
+    case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
         switch( id ) {
-        case LISTBOX_CONTROL :
+        case LISTBOX_CONTROL:
             num = -1;
-            GUIGetCurrSelect( gui, LISTBOX_CONTROL, &num );
-            text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
+            GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
+            text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             return( true );
         }
         break;
-    case GUI_CONTROL_CLICKED :
-        GUIGetFocus( gui, &id );
+    case GUI_CONTROL_CLICKED:
+        GUIGetFocus( wnd, &id );
         GUI_GETID( param, id );
         switch( id ) {
-        case LISTBOX_CONTROL :
-            text = GUIGetText( gui, LISTBOX_CONTROL );
+        case LISTBOX_CONTROL:
+            text = GUIGetText( wnd, LISTBOX_CONTROL );
             GUIMemFree( text );
             num = -1;
-            GUIGetCurrSelect( gui, LISTBOX_CONTROL, &num );
-            text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
+            GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
+            text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             return( true );
-        case OKBUTTON_CONTROL :
+        case OKBUTTON_CONTROL:
             num = CHECKBOX_CONTROL2;
-            if( gui == DialogWindow ) {
-                GUIDestroyWnd( gui );
+            if( wnd == DialogWindow ) {
+                GUIDestroyWnd( wnd );
             } else {
-                GUIDisplayMessage( gui, "OK Button", "Got dialog item : ",
+                GUIDisplayMessage( wnd, "OK Button", "Got dialog item : ",
                                    GUI_ABORT_RETRY_IGNORE );
                 GUIGetNewVal( "Enter New Value", "wesley", &text );
                 if( text != NULL ) {
@@ -127,22 +128,22 @@ static bool TestDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *
                 }
             }
             return( true );
-        case CANCELBUTTON_CONTROL :
-            GUICloseDialog( gui );
+        case CANCELBUTTON_CONTROL:
+            GUICloseDialog( wnd );
             return( true );
-        case EDIT_CONTROL :
-            GUIDisplayMessage( gui, "Edit Control", "Got dialog item : ", GUI_QUESTION );
+        case EDIT_CONTROL:
+            GUIDisplayMessage( wnd, "Edit Control", "Got dialog item : ", GUI_QUESTION );
             return( true );
-        case STATIC_CONTROL :
-            GUIDisplayMessage( gui, "Static Control", "Got dialog item : ", GUI_STOP );
+        case STATIC_CONTROL:
+            GUIDisplayMessage( wnd, "Static Control", "Got dialog item : ", GUI_STOP );
             return( true );
-        case ADDBUTTON_CONTROL :
+        case ADDBUTTON_CONTROL:
             return( true );
-        case CLEARBUTTON_CONTROL :
+        case CLEARBUTTON_CONTROL:
             return( true );
         }
         break;
-    default :
+    default:
         break;
     }
     return( false );
@@ -158,13 +159,13 @@ static void TestDialogInit( void )
 }
 #endif
 
-void TestDialogCreate( gui_window *parent )
+void TestDialogCreate( gui_window *parent_wnd )
 {
     int         i;
     char        *text;
     char        *ep;
 
-    DialogControl.parent = parent;
+    DialogControl.parent = parent_wnd;
 
     if( !DialogScaled ) {
         SetWidthHeight( &DialogControl.rect, DialogControl.parent != NULL );
@@ -210,9 +211,9 @@ void TestDialogCreate( gui_window *parent )
     }
 }
 
-static bool DummyWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool DummyWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
-    /* unused parameters */ (void)gui; (void)gui_ev; (void)param;
+    /* unused parameters */ (void)wnd; (void)gui_ev; (void)param;
 
     return( false );
 }
@@ -231,7 +232,7 @@ static gui_create_info ResDialog = {
     NULL                            // Menu Resource
 };
 
-void ResDialogCreate( gui_window *parent )
+void ResDialogCreate( gui_window *parent_wnd )
 {
     res_name_or_id  dlg_id;
     char            *text;
@@ -252,6 +253,6 @@ void ResDialogCreate( gui_window *parent )
         }
     }
 
-    ResDialog.parent = parent;
+    ResDialog.parent = parent_wnd;
     GUICreateResDialog( &ResDialog, dlg_id );
 }

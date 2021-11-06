@@ -52,7 +52,7 @@
 .gt chapter add @chap att
 .ga * id any
 .dm @chap begin
-.if '&*id.' ne '' .do begin
+.if &'length(&*id.) ne 0 .do begin
 .chap *refid=&*id. &*
 .do end
 .el .do begin
@@ -64,7 +64,7 @@
 .gt section add @section att
 .ga * id any
 .dm @section begin
-.if '&*id.' ne '' .do begin
+.if &'length(&*id.) ne 0 .do begin
 .section *refid=&*id. &*
 .do end
 .el .do begin
@@ -87,16 +87,6 @@
 .dm mno begin
 :SF font=4.&*:eSF.
 .dm mno end
-
-.gt cont add cont
-.dm cont begin
-.ct &*.
-.dm cont end
-
-.gt period add @period cont
-.dm @period begin
-.ct .li .;
-.dm @period end
 
 .gt blankline add blankline
 .dm blankline begin
@@ -124,7 +114,7 @@
 .'se null=';.mno NULL;.ct '
 .'se putarea=';.i put area;.ct '
 .'se putptr=';.i put pointer;.ct '
-.'se rsvarea=';.i reserve area;.ct '
+.'se resvarea=';.i reserve area;.ct '
 .'se fmtwidth=';.i format width;.ct '
 .'se fmtprec=';.i format precision;.ct '
 .'se fillchar=';.i fill character;.ct '
@@ -154,11 +144,11 @@
 .dm topsect end
 
 .dm topsect1 begin
-.'if '&cl_type.' ne '' .th .do begin
+.'if &'length(&cl_type.) ne 0 .th .do begin
 .' .'se headtxt0$=&cl_type.::&*.
 .' .'se headtxt1$=&cl_type.::&*.
 .do end
-.el .'if '&cl2_name.' ne '' .th .do begin
+.el .'if &'length(&cl2_name.) ne 0 .th .do begin
 .  .'if '&cl_long.' eq 'yes' .th .do begin
 .' .' .'se *tmp=&cl_name.,&cl2_name.::&*.
 .  .do end
@@ -168,7 +158,7 @@
 .' .'se headtxt0$=&*tmp.
 .' .'se headtxt1$=&*tmp.
 .do end
-.el .'if '&cl3_name.' ne '' .th .do begin
+.el .'if &'length(&cl3_name.) ne 0 .th .do begin
 .' .'se headtxt0$=&*.
 .' .'se headtxt1$=&*.
 .do end
@@ -181,12 +171,12 @@
 
 .dm topsect2 begin
 .'se *cl_tmp=&cl_name.
-.'if '&cl_type.' ne '' .th .do begin
+.'if &'length(&cl_type.) ne 0 .th .do begin
 .' .'se headtxt0$=&cl_type.::&*.
 .' .'se headtxt1$=&cl_type.::&*.
 .' .'se *cl_tmp=&cl_type.
 .do end
-.el .'if '&cl2_name.' ne '' .th .do begin
+.el .'if &'length(&cl2_name.) ne 0 .th .do begin
 .  .'if '&cl_long.' eq 'yes' .th .do begin
 .' .' .'se *tmp=&cl_name.,&cl2_name.::&*.
 .  .do end
@@ -197,7 +187,7 @@
 .' .'se headtxt1$=&*tmp.
 .' .'se *cl_tmp=&cl_name.,&cl2_name.
 .do end
-.el .'if '&cl3_name.' ne '' .th .do begin
+.el .'if &'length(&cl3_name.) ne 0 .th .do begin
 .' .'se headtxt0$=&*.
 .' .'se headtxt1$=&*.
 .do end
@@ -211,7 +201,7 @@
 .do end
 .el .do begin
 :ZH2 ctx='&*tag.'.&* [&*cl_tmp.]
-.' .'if &e'&dohelp eq 1 .do begin
+.' .'if &e'&dohelp ne 0 .do begin
 .' .' .'pu 1 .ixsect &* [&*cl_tmp.]
 .' .' .'pu 1 .ixsectid &*tag.
 .' .' .'se SCTlvl=2
@@ -249,7 +239,7 @@
 .dm clfnm begin
 .'se cl_name='&*.'
 .'se cl2_name='&*cl2.'
-.'if '&*cl2.' ne '' .th .do begin
+.'if &'length(&*cl2.) ne 0 .th .do begin
 .' .'se obj=';. ;.mno &*.;. and ;.mno &*cl2.;. objects;.ct '
 .' .'se cls=';. ;.mno &*.;. and ;.mno &*cl2.;. classes;.ct '
 .do end
@@ -271,7 +261,7 @@
 .gt HDG add hdg
 .dm hdg begin
 .sk 1
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .cp &WDWlvl
 .do end
 :HILITE.&*.
@@ -673,7 +663,7 @@
 :IH1.&*., member function
 :I2.&cl_name.
 .pu 1 .ixline 'member function' '&*'
-.if '&cl2_name' ne '' .do begin
+.if &'length(&cl2_name) ne 0 .do begin
 :ZI1.&cl2_name.::&*.
 :IH1.&*., member function
 :I2.&cl2_name.

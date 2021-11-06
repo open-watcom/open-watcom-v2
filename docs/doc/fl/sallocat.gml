@@ -39,7 +39,7 @@ The
 specifier may not be used with the
 .kw LOCATION=
 specifier.
-.endnote
+.esynote
 .np
 Allocatable arrays and character variables may be dynamically
 allocated and deallocated at execution time.

@@ -13,22 +13,21 @@ structure pointed to by
 .arg timeptr
 into a calendar time (Coordinated Universal Time) with the same
 encoding used by the
-.kw time
+.reffunc time
 function.
 The original values of the fields
 .kw tm_sec
-.ct,
+.ct ,
 .kw tm_min
-.ct,
+.ct ,
 .kw tm_hour
-.ct,
+.ct ,
 .kw tm_mday
-.ct,
-and
+.ct , and
 .kw tm_mon
 are not restricted to ranges described for
 .kw struct tm
-.ct .li .
+.period
 If these fields are not in their proper ranges, they are adjusted
 so that they are in the proper ranges.
 Values for the fields
@@ -47,7 +46,7 @@ in effect".
 Whenever
 .id &funcb.
 is called, the
-.kw tzset
+.reffunc tzset
 function is also called.
 .desc end
 .return begin

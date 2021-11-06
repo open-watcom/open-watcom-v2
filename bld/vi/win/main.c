@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,9 +141,9 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
 
     Comspec = getenv( "COMSPEC" );
 #ifdef __WINDOWS__
-    VarAddGlobalStr( "OS", "win" );
+    GlobVarAddStr( GLOBVAR_OS, "win" );
 #else
-    VarAddGlobalStr( "OS", "winnt" );
+    GlobVarAddStr( GLOBVAR_OS, "winnt" );
 #endif
     SetConfigFileName( CFG_NAME );
     ReadProfile();

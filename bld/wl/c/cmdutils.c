@@ -44,7 +44,7 @@
 #include "walloca.h"
 #include "linkstd.h"
 #include "loadfile.h"
-#include "command.h"
+#include "cmdutils.h"
 #include "alloc.h"
 #include "msg.h"
 #include "wlnkmsg.h"
@@ -62,18 +62,10 @@
 
 cmdfilelist     *CmdFile = NULL;
 
-/* Default File Extension array, see ldefext.h */
-
-static  char    *DefExt[] = {
-    #define pick1(enum,text) text,
-    #include "ldefext.h"
-    #undef pick1
-};
-
 static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
 /**********************************************************/
 {
-#if defined( __UNIX__ ) || defined( __ZDOS__ )
+#if defined( __UNIX__ )
     /* unused parameters */ (void)ctrl;
 
     //opendir - readdir wildcarding not supported here.
@@ -83,7 +75,7 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
     char                *start;
     DIR                 *dirp;
     struct dirent       *dire;
-    PGROUP2             pg;
+    pgroup2             pg;
     char                pathin[_MAX_PATH];
     bool                wildcrd;
     bool                retval;
@@ -189,8 +181,8 @@ bool ProcArgList( bool (*rtn)( void ), tokcontrol ctrl )
     return( ProcArgListEx( rtn, ctrl ,NULL ) );
 }
 
-bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
-/************************************************************/
+static bool procOne( parse_entry *entry, sep_type req, bool suicide, bool subset )
+/********************************************************************************/
 /* recognize token out of parse table, with required separator            */
 /* return false if no separator, Suicide if not recognized (if suicide is */
 /* true) otherwise use return code from action routine in matching entry  */
@@ -205,6 +197,9 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
         return( false );
     ret = true;
     for( ; entry->keyword != NULL; ++entry ) {
+        if( subset && (entry->flags & CF_SUBSET) == 0 ) {
+            continue;
+        }
         key = entry->keyword;
         ptr = Token.this;
         len = Token.len;
@@ -212,7 +207,7 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
             if( len == 0 && !isupper( *key ) ) {
                 if( HintFormat( entry->format ) ) {
                     ret = (*entry->rtn)();
-                    CmdFlags |= entry->flags;
+                    CmdFlags |= entry->flags & ~CF_SUBSET;
                 } else {
                     strcpy( keybuff, entry->keyword );
                     strlwr( keybuff );
@@ -236,6 +231,24 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
         ret = false;
     }
     return( ret );
+}
+
+bool ProcOne( parse_entry *entry, sep_type req )
+/**********************************************/
+{
+    return( procOne( entry, req, false, false ) );
+}
+
+bool ProcOneSubset( parse_entry *entry, sep_type req )
+/****************************************************/
+{
+    return( procOne( entry, req, false, true ) );
+}
+
+bool ProcOneSuicide( parse_entry *entry, sep_type req )
+/*****************************************************/
+{
+    return( procOne( entry, req, true, false ) );
 }
 
 bool MatchOne( parse_entry *entry, sep_type req, const char *match, size_t match_len )
@@ -712,6 +725,7 @@ static void StartNewFile( void )
         envstring = GetEnvString( fname );
         if( envstring != NULL ) {
             NewCommandSource( fname, envstring, ENVIRONMENT );
+            _LnkFree( fname );
         } else {
             LnkMsg( LOC+LINE+ERR+MSG_CANT_OPEN_NO_REASON, "s", fname );
             _LnkFree( fname );
@@ -720,8 +734,8 @@ static void StartNewFile( void )
     } else {
         SetCommandFile( file, fname );
         DEBUG(( DBG_OLD, "processing command file %s", fname ));
+        _LnkFree( fname );
     }
-    _LnkFree( fname );
 }
 
 static void BackupParser( void )
@@ -943,6 +957,7 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
 }
 
 bool GetToken( sep_type req, tokcontrol ctrl )
+/********************************************/
 {
     return( GetTokenEx( req, ctrl, NULL, NULL ) );
 }
@@ -1052,52 +1067,8 @@ void EatWhite( void )
     }
 }
 
-char *FileName( const char *buff, size_t len, file_defext etype, bool force )
-/***************************************************************************/
-{
-    const char  *namptr;
-    const char  *namstart;
-    char        *ptr;
-    size_t      cnt;
-    size_t      namelen;
-    char        c;
-
-
-    for( namptr = buff + len; namptr != buff; --namptr ) {
-        c = namptr[-1];
-        if( IS_PATH_SEP( c ) ) {
-            break;
-        }
-    }
-    namstart = namptr;
-    cnt = len - ( namptr - buff );
-    if( cnt == 0 ) {
-        DUPSTR_STACK( ptr, buff, len );
-        LnkMsg( LOC+LINE+FTL+MSG_INV_FILENAME, "s", ptr );
-    }
-    namelen = cnt;
-    namptr = buff + len - 1;
-    while( --cnt != 0 && *namptr != '.' ) {
-        namptr--;
-    }
-    if( force || *namptr != '.' ) {
-        if( force && etype == E_MAP ) {         // op map goes in current dir.
-            buff = namstart;
-            len = namelen;
-        }
-        if( cnt != 0 ) {
-            len = namptr - buff;
-        }
-        _ChkAlloc( ptr, len + strlen( DefExt[etype] ) + 1 );
-        memcpy( ptr, buff, len );
-        strcpy( ptr + len, DefExt[etype] );
-    } else {
-        ptr = ChkToString( buff, len );
-    }
-    return( ptr );
-}
-
 static void deleteCmdFile( cmdfilelist *cmdfile )
+/***********************************************/
 {
     f_handle    file;
 
@@ -1193,36 +1164,6 @@ outfilelist *NewOutFile( char *filename )
     return( fnode );
 }
 
-static int stricmp_wrapper( const void *s1, const void *s2 )
-{
-    return( stricmp( s1, s2 ) );
-}
-
-section *NewSection( void )
-/*************************/
-{
-    section             *sect;
-
-    _ChkAlloc( sect, sizeof( section ) );
-    sect->next_sect = NULL;
-    sect->classlist = NULL;
-    sect->orderlist = NULL;
-    sect->areas = NULL;
-    sect->files = NULL;
-    sect->modFilesHashed = CreateHTable( 256, StringiHashFunc, stricmp_wrapper, ChkLAlloc, LFree );
-    sect->mods = NULL;
-    sect->reloclist = NULL;
-    SET_ADDR_UNDEFINED( sect->sect_addr );
-    sect->ovlref = 0;
-    sect->parent = NULL;
-    sect->relocs = 0;
-    sect->size = 0;
-    sect->outfile = NULL;
-    sect->u.dist_mods = NULL;
-    sect->dbg_info = NULL;
-    return( sect );
-}
-
 char *GetFileName( char **membname, bool setname )
 /************************************************/
 {
@@ -1246,4 +1187,102 @@ char *GetFileName( char **membname, bool setname )
         ptr = FileName( objname, namelen, E_OBJECT, false );
     }
     return( ptr );
+}
+
+version_state GetGenVersion( version_block *vb, version_state enq, bool novell_revision )
+/***************************************************************************************/
+{
+    version_state   state;
+    ord_state       retval;
+    unsigned_32     value;
+    unsigned_32     major_limit;
+    unsigned_32     minor_limit;
+    unsigned_32     revision_limit;
+
+    state = GENVER_ERROR;
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
+        return( state );
+    }
+    /* finish if no value is required */
+    if( (enq & (GENVER_MAJOR | GENVER_MINOR | GENVER_REVISION)) == 0 ) {
+        return( state );
+    }
+    /* process major value */
+    retval = getatol( &value );
+    if( retval != ST_IS_ORDINAL ) {
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+        return( state );
+    }
+    /* setup component limits */
+    major_limit = vb->major;
+    minor_limit = vb->minor;
+    revision_limit = vb->revision;
+    /* reset output values */
+    vb->major = 0;
+    vb->minor = 0;
+    vb->revision = 0;
+    /*
+     *  From now on, all results are valid despite warnings
+     */
+    state = GENVER_MAJOR;
+    if( enq & GENVER_MAJOR ) {
+        if( ( major_limit ) && ( value > major_limit ) ) {
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            return( state );
+        }
+        vb->major = value;
+    }
+    /* finish if no value is required */
+    if( (enq & (GENVER_MINOR | GENVER_REVISION)) == 0 ) {
+        return( state );
+    }
+    /* process minor value */
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) { /* if we don't get a minor number */
+        return( state );                        /* that's OK */
+    }
+    retval = getatol( &value );
+    if( retval != ST_IS_ORDINAL ) {
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+        return( state );
+    }
+    state |= GENVER_MINOR;
+    if( enq & GENVER_MINOR ) {
+        if( ( minor_limit ) && ( value > minor_limit ) ) {
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            return( state );
+        }
+        vb->minor = value;
+    }
+    /* finish if no value is required */
+    if( (enq & GENVER_REVISION) == 0 ) {
+        return( state );
+    }
+    /* process revision value */
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) { /* if we don't get a revision */
+        return( state );                        /* that's all right */
+    }
+    retval = getatol( &value );
+    if( novell_revision ) {
+        /*
+         * Netware supports a revision field 0-26 (null or a-z(A-Z))
+         */
+        if( retval == ST_NOT_ORDINAL && Token.len == 1 ) {
+            value  = tolower( *(unsigned char *)Token.this ) - 'a' + 1;
+        } else if( retval == ST_NOT_ORDINAL ) {
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            return( state );
+        }
+    } else {
+        if( retval != ST_IS_ORDINAL ) {
+            LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+            return( state );
+        }
+    }
+    state |= GENVER_REVISION;
+    if( ( revision_limit ) && ( value > revision_limit ) ) {
+        LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", vb->message );
+        return( state );
+    }
+    vb->revision = value;
+    return( state );
 }

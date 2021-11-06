@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,7 +176,7 @@ static const char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want
                 break;
             case SETVAR_T_LANGUAGE:
                 if( CurrentInfo == NULL ) {
-                    j = LANG_NONE;
+                    j = VI_LANG_NONE;
                 } else {
                     j = CurrentInfo->fsi.Language;
                 }
@@ -599,15 +599,14 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             value = new;
         }
 #endif /* VICOMP */
-        value = SkipLeadingSpaces( value );
+        SKIP_SPACES( value );
         if( *value == '"' ) {
-            value = GetNextWord( value, fn, SingleQuote );
+            value = GetNextWord( value, fn, SingleDQuote );
             if( *value == '"' ) {
-                ++value;
+                SKIP_CHAR_SPACES( value );
             }
-            value = SkipLeadingSpaces( value );
             if( *value == ',' ) {
-                ++value;
+                SKIP_CHAR_SPACES( value );
             }
         } else {
             value = GetNextWord2( value, fn, ',' );
@@ -624,7 +623,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 case SETVAR_T_HISTORYFILE:
                 case SETVAR_T_TMPDIR:
                 case SETVAR_T_TAGFILENAME:
-                    StrMerge( 4, WorkLine->data, SingleBlank, SingleQuote, fn, SingleQuote );
+                    StrMerge( 4, WorkLine->data, SingleBlank, SingleDQuote, fn, SingleDQuote );
                     break;
                 case SETVAR_T_COMMANDCURSORTYPE:
                 case SETVAR_T_OVERSTRIKECURSORTYPE:
@@ -897,7 +896,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 SetNextAutoSaveTime();
                 break;
             case SETVAR_T_LANGUAGE:
-                if( lval < LANG_MIN || lval >= LANG_MAX ) {
+                if( lval < 0 || lval >= VI_LANG_MAX ) {
                     return( ERR_INVALID_SET_COMMAND );
                 }
                 if( CurrentInfo != NULL ) {
@@ -1110,11 +1109,11 @@ static int compareString( void const *p1, void const *p2 )
 /*
  * getSetInfo - build string of values
  */
-static list_linenum getSetInfo( char ***vals, char ***list, int *longest )
+static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
 {
     list_linenum    i;
-    int             i1;
-    int             i2;
+    size_t          i1;
+    size_t          i2;
     char            settokstr[TOK_MAX_LEN + 1];
     char            tmpstr[MAX_STR];
     set_data        **sdata;
@@ -1177,7 +1176,7 @@ vi_rc Set( const char *name )
     list_linenum    i;
     char            **vals = NULL;
     char            **list;
-    int             longest;
+    size_t          longest;
 #endif
 #endif
 
@@ -1302,7 +1301,7 @@ char *ExpandTokenSet( char *token_no, char *buff )
     if( tok >= SETVAR_T_ ) {
         sprintf( buff, "%s%s", GET_BOOL_PREFIX( val ), GetTokenStringCVT( SetFlagTokens, tok - SETVAR_T_, settokstr, true ) );
     } else {
-        sprintf( buff, "%s", GetTokenStringCVT( SetVarTokens, tok, settokstr, true ) );
+        sprintf( buff, "%s" CFG_SET_SEPARATOR, GetTokenStringCVT( SetVarTokens, tok, settokstr, true ) );
     }
     return( buff );
 }

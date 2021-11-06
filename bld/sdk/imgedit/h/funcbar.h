@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,21 +32,19 @@
 
 
 #ifndef __OS2_PM__
-
 #include "ldstr.h"
+#endif
 
-typedef struct {
-    char        *name;
-    ctl_id      id;
-    bool        sticky;
-    char        *downname;
-    HBITMAP     hbmp;
-    HBITMAP     downbmp;
-    msg_id      tip_id;
-} button;
-
+#ifdef __OS2_PM__
+#define NONE                    0
+#else
 #define NONE                    NULL
-#ifdef __NT__
+#endif
+
+#if defined( __OS2_PM__ )
+    #define FUNC_BUTTON_WIDTH   26
+    #define FUNC_BUTTON_HEIGHT  22
+#elif defined( __NT__ )
     #define FUNC_BUTTON_WIDTH   26      // add 4 because it's the magic number
     #define FUNC_BUTTON_HEIGHT  22      // ditto
 #else
@@ -54,25 +52,23 @@ typedef struct {
     #define FUNC_BUTTON_HEIGHT  21      // ditto
 #endif
 
-#else
-
-typedef struct {
-    int         name;
-    ctl_id      id;
-    bool        sticky;
-    int         downname;
-    HBITMAP     hbmp;
-    HBITMAP     downbmp;
-    msg_id      tip_id;
-} button;
-
-#define NONE                    0
-#define FUNC_BUTTON_WIDTH       26
-#define FUNC_BUTTON_HEIGHT      22
-
-#endif
-
 #define NUMBER_OF_FUNCTIONS     20
 #define FUNC_BORDER_X           2
 #define FUNC_BORDER_Y           1
 #define MIN_WIDTH               (35 + NUMBER_OF_FUNCTIONS * FUNC_BUTTON_WIDTH)
+
+#ifdef __OS2_PM__
+typedef int     res_id;
+#else
+typedef char    *res_id;
+#endif
+
+typedef struct {
+    res_id      name;
+    ctl_id      id;
+    bool        sticky;
+    res_id      downname;
+    WPI_HBITMAP hbitmap;
+    WPI_HBITMAP down_hbitmap;
+    msg_id      tip_id;
+} button;

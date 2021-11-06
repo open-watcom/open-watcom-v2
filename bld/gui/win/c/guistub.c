@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,77 +33,77 @@
 
 #include "guiwind.h"
 
-void GUISetBetweenTitles( int between_titles )
+void GUIAPI GUISetBetweenTitles( int between_titles )
 {
-    between_titles = between_titles;
+    (void)between_titles;
 }
 
-bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
+bool GUIAPI GUIGetCursorPos( gui_window *wnd, gui_point *point )
 {
-    wnd = wnd;
-    point = point;
+    (void)wnd;
+    (void)point;
     return( false );
 }
 
-bool GUISetCursorPos( gui_window *wnd, gui_point *point )
+bool GUIAPI GUISetCursorPos( gui_window *wnd, const gui_point *point )
 {
-    wnd = wnd;
-    point = point;
+    (void)wnd;
+    (void)point;
     return( false );
 }
 
-bool GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor )
+bool GUIAPI GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor )
 {
-    wnd = wnd;
-    cursor = cursor;
+    (void)wnd;
+    (void)cursor;
     return( false );
 }
 
-bool GUISetCursorType( gui_window *wnd, gui_cursor_type cursor )
+bool GUIAPI GUISetCursorType( gui_window *wnd, gui_cursor_type cursor )
 {
-    wnd = wnd;
-    cursor = cursor;
+    (void)wnd;
+    (void)cursor;
     return( false );
 }
 
-bool GUISetBackgroundChar( gui_window *wnd, char background )
+bool GUIAPI GUISetBackgroundChar( gui_window *wnd, char background )
 {
-    wnd = wnd;
-    background = background;
+    (void)wnd;
+    (void)background;
     return( false );
 }
 
-void GUIGMouseOn( void )
+void GUIAPI GUIGMouseOn( void )
 {
 }
 
-void GUIGMouseOff( void )
+void GUIAPI GUIGMouseOff( void )
 {
 }
 
-void GUISetBackgroundColour( gui_colour_set *colour )
+void GUIAPI GUISetBackgroundColour( gui_colour_set *colour )
 {
-    colour = colour;
+    (void)colour;
 }
 
-void GUISetDialogColours( gui_colour_set *colours )
+void GUIAPI GUISetDialogColours( gui_colour_set *colours )
 {
-    colours = colours;
+    (void)colours;
 }
 
-void GUIGetDialogColours( gui_colour_set *colours )
+void GUIAPI GUIGetDialogColours( gui_colour_set *colours )
 {
-    colours = colours;
+    (void)colours;
 }
 
-void GUISetCharacter( gui_draw_char draw_char, int new )
+void GUIAPI GUISetCharacter( gui_draw_char draw_char, int new )
 {
-    draw_char = draw_char;
-    new = new;
+    (void)draw_char;
+    (void)new;
 }
 
-int GUIGetCharacter( gui_draw_char draw_char )
+int GUIAPI GUIGetCharacter( gui_draw_char draw_char )
 {
-    draw_char = draw_char;
+    (void)draw_char;
     return( ' ');
 }

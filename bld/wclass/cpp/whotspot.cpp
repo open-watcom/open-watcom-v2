@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,11 +54,11 @@ WEXPORT WHotSpots::~WHotSpots() {
 }
 
 
-void WEXPORT WHotSpots::addHotSpot( WResource bitmap, char *ch_mode ) {
-/*********************************************************************/
-
+void WEXPORT WHotSpots::addHotSpot( WResourceId bitmap_id, char *ch_mode )
+/************************************************************************/
+{
     if( _hotSpotIndex < _numHotSpots ) {
-        _hotSpotItems[_hotSpotIndex].res = bitmap;
+        _hotSpotItems[_hotSpotIndex].res_id = bitmap_id;
         _hotSpotItems[_hotSpotIndex].chars = ch_mode;
         ++_hotSpotIndex;
     }

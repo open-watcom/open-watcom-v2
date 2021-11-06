@@ -18,7 +18,7 @@ bytes each from the file specified by
 .arg fp
 into the buffer specified by
 .arg buf
-.ct .li .
+.period
 .desc end
 .return begin
 The
@@ -28,9 +28,9 @@ successfully read.
 This value may be less than the requested number of elements.
 .pp
 The
-.kw feof
+.reffunc feof
 and
-.kw ferror
+.reffunc ferror
 functions can be used to determine whether the end of the file was
 encountered or if an input/output error has occurred.
 .im errnoref
@@ -50,8 +50,8 @@ declaration.
 #include <stdio.h>
 
 struct student_data {
-    int  student_id;
-    unsigned char marks[10];
+    int             student_id;
+    unsigned char   marks[10];
 };
 .exmp break
 size_t read_data( FILE *fp, struct student_data *p )

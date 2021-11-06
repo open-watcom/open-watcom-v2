@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 #include "dbgio.h"
 #include "dbgmem.h"
 #include "dui.h"
-#include "wdmsg.h"
+#include "wdmsgdef.h"
 #include "dbgscrn.h"
 #include "trpld.h"
 #include "strutil.h"
@@ -47,80 +48,34 @@
 #include "dbgerr.h"
 
 
+#define MIN_MEM_SIZE    (500UL*1024)
+
+enum {
+    #define pick(t,e)   e,
+    #include "_dbgopts.h"
+    #undef pick
+};
+
+#ifndef GUI_IS_GUI
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(num,eng,jap)   + 1
+    #include "usage.gh"
+    #undef pick
+};
+#endif
+
+bool                    DownLoadTask = false;
+
 static char             *(*GetArg)( int );
 static int              CurrArgc;
 static char             *CurrArgp;
 static char             CurrChar;
 
-bool                    DownLoadTask = false;
-
-#define MIN_MEM_SIZE    (500UL*1024)
-
-
 static const char OptNameTab[] = {
-    "Invoke\0"
-    "NOInvoke\0"
-    "NOSYmbols\0"
-    "NOMouse\0"
-    "DIp\0"
-    "DYnamic\0"
-    "TRap\0"
-    "REMotefiles\0"
-#ifdef BACKWARDS
-    "NOFpu\0"
-#endif
-    "LInes\0"
-    "COlumns\0"
-#ifdef BACKWARDS
-    "NOAltsym\0"
-    "REGisters\0"
-#endif
-    "INItcmd\0"
-    "POWerbuilder\0"
-    "LOcalinfo\0"
-    "NOExports\0"
-    "DOwnload\0"
-    "DEfersymbols\0"
-    "NOSOurcecheck\0"
-    "CONtinueunexpectedbreak\0"
-    "Help\0"
-#ifdef ENABLE_TRAP_LOGGING
-    "TDebug\0"
-    "TFDebug\0"
-#endif
-};
-
-enum {
-    OPT_INVOKE,
-    OPT_NOINVOKE,
-    OPT_NOSYMBOLS,
-    OPT_NOMOUSE,
-    OPT_DIP,
-    OPT_DYNAMIC,
-    OPT_TRAP,
-    OPT_REMOTE_FILES,
-#ifdef BACKWARDS
-    OPT_NO_FPU,
-#endif
-    OPT_LINES,
-    OPT_COLUMNS,
-#ifdef BACKWARDS
-    OPT_NO_ALTSYM,
-    OPT_REGISTERS,
-#endif
-    OPT_INITCMD,
-    OPT_POWERBUILDER,
-    OPT_LOCALINFO,
-    OPT_NOEXPORTS,
-    OPT_DOWNLOAD,
-    OPT_DEFERSYM,
-    OPT_NOSOURCECHECK,
-    OPT_CONTINUE_UNEXPECTED_BREAK,
-    OPT_HELP,
-#ifdef ENABLE_TRAP_LOGGING
-    OPT_TRAP_DEBUG,
-    OPT_TRAP_DEBUG_FLUSH,
-#endif
+    #define pick(t,e)   t "\0"
+    #include "_dbgopts.h"
+    #undef pick
 };
 
 
@@ -338,16 +293,13 @@ static void GetInitCmd( int pass )
 }
 
 #ifndef GUI_IS_GUI
-static void PrintUsage( dui_res_id first_ln )
+static void PrintUsage( void )
 {
     char        *msg_buff;
+    dui_res_id  line_id;
 
-    for( ;; ) {
-        msg_buff = DUILoadString( first_ln++ );
-        if( ( msg_buff[0] == '.' ) && ( msg_buff[1] == 0 ) ) {
-            DUIFreeString( msg_buff );
-            break;
-        }
+    for( line_id = MSG_USAGE_BASE; line_id < MSG_USAGE_BASE + MSG_USAGE_COUNT; line_id++ ) {
+        msg_buff = DUILoadString( line_id );
         puts( msg_buff );
         DUIFreeString( msg_buff );
     }
@@ -374,7 +326,7 @@ static void ProcOptList( int pass )
         curr = buff;
 #ifndef GUI_IS_GUI
         if( CurrChar == '?' ) {
-            PrintUsage( MSG_USAGE_BASE );
+            PrintUsage();
             StartupErr( "" );
         }
 #endif
@@ -497,7 +449,7 @@ static void ProcOptList( int pass )
             break;
         case OPT_HELP:
 #ifndef GUI_IS_GUI
-            PrintUsage( MSG_USAGE_BASE );
+            PrintUsage();
             StartupErr( "" );
 #endif
             break;

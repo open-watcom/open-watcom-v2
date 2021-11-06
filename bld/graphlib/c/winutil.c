@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "gdefn.h"
 
 
-WPI_COLOUR              _RGB_COLOR[ 256 ];
+WPI_COLOUR              _RGB_COLOR[256];
 HRGN                    _ClipRgn;
 HFONT                   _CurFnt;
 static HFONT            _SysMonoFnt;
@@ -41,8 +42,8 @@ static long             _Pres_h;
 static WPI_INST         _Inst;
 
 
-int _MapPlotAct()
-//===============
+int _MapPlotAct( void )
+//=====================
 
 /*  This function maps the WATCOM plot action modes to Windows' drawing
     modes.  Returns the drawing mode for Windows */
@@ -63,8 +64,8 @@ int _MapPlotAct()
 
 #if defined( __WINDOWS__ )
 
-HBITMAP _Mask2Bitmap( HDC dc, char *mask )
-/****************************************/
+HBITMAP _Mask2Bitmap( HDC dc, unsigned char *mask )
+/*************************************************/
 
 /* This function maps the WATCOM fillmask to a Windows' bitmap */
 {
@@ -72,7 +73,7 @@ HBITMAP _Mask2Bitmap( HDC dc, char *mask )
         BITMAPINFOHEADER        Head;
         RGBQUAD                 Colors[2];
     } bminfo;
-    BYTE                pad_mask[ 4 * MASK_LEN ];
+    BYTE                pad_mask[4 * MASK_LEN];
     int                 i;      /* counters */
     long                color, bkcolor;
 
@@ -113,15 +114,15 @@ HBITMAP _Mask2Bitmap( HDC dc, char *mask )
 
 #else
 
-HBITMAP _Mask2Bitmap( HDC dc, char *mask )
-/****************************************/
+WPI_HBITMAP _Mask2Bitmap( HDC dc, unsigned char *mask )
+/*****************************************************/
 
 /* This function maps the WATCOM fillmask to a Windows' bitmap */
 {
     unsigned            bmsize;
     BITMAPINFO2*        bminfo;
-    BYTE                pad_mask[ 4 * MASK_LEN ];
-    HBITMAP             bmp;
+    BYTE                pad_mask[4 * MASK_LEN];
+    WPI_HBITMAP         bmp;
     int                 i;      /* counters */
 
     bmsize = sizeof( BITMAPINFO2 ) + sizeof( WPI_RGBQUAD ) * 2;
@@ -203,9 +204,9 @@ WPI_COLOUR _Col2RGB( short color )
 
     color %= _CurrState->vc.numcolors;
     rgb = _wpi_palettergb( _Mem_dc,
-                           _wpi_getrvalue ( _RGB_COLOR[ color ] ),
-                           _wpi_getgvalue ( _RGB_COLOR[ color ] ),
-                           _wpi_getbvalue ( _RGB_COLOR[ color ] ) );
+                           _wpi_getrvalue ( _RGB_COLOR[color] ),
+                           _wpi_getgvalue ( _RGB_COLOR[color] ),
+                           _wpi_getbvalue ( _RGB_COLOR[color] ) );
     return( rgb );
 }
 
@@ -216,11 +217,11 @@ short _RGB2Col( WPI_COLOUR color )
     int         i;
     WPI_COLOUR  rgb;
 
-    for( i = 0; i < _CurrState->vc.numcolors; ++i ){
+    for( i = 0; i < _CurrState->vc.numcolors; ++i ) {
         rgb = _wpi_palettergb( _Mem_dc,
-                               _wpi_getrvalue ( _RGB_COLOR[ i ] ),
-                               _wpi_getgvalue ( _RGB_COLOR[ i ] ),
-                               _wpi_getbvalue ( _RGB_COLOR[ i ] ) );
+                               _wpi_getrvalue ( _RGB_COLOR[i] ),
+                               _wpi_getgvalue ( _RGB_COLOR[i] ),
+                               _wpi_getbvalue ( _RGB_COLOR[i] ) );
         if( ( rgb & 0x00ffffff ) == color ) {
             return i;
         }
@@ -310,8 +311,8 @@ short _CreateSysMonoFnt( WPI_PRES dc )
 }
 
 
-HFONT _GetSysMonoFnt()
-/*====================
+HFONT _GetSysMonoFnt( void )
+/*==========================
   This function returns the system monospaced font handle. */
 {
 #if defined( __WINDOWS__ )
@@ -330,8 +331,8 @@ void _SetPresHeight( long h )
 }
 
 
-long _GetPresHeight()
-/*===================
+long _GetPresHeight( void )
+/*=========================
   This function get the height of the memory presentation space. */
 {
     return( _Pres_h );
@@ -346,8 +347,8 @@ void _SetInst( WPI_INST *inst )
 }
 
 
-WPI_INST _GetInst()
-/*=================
+WPI_INST _GetInst( void )
+/*=======================
   This function return the current instant. */
 {
     return _Inst;
@@ -358,7 +359,7 @@ void _wpi_free( void * ptr )
 /*==========================
   What we use to free memory. */
 {
-    _MyFree( ptr );
+    free( ptr );
 }
 
 
@@ -366,7 +367,7 @@ void * _wpi_malloc( size_t size )
 /*===============================
   What we use to allocate memory. */
 {
-    return _MyAlloc( size );
+    return malloc( size );
 }
 
 HFONT _MySelectFont( WPI_PRES pres, HFONT f)
@@ -399,12 +400,12 @@ void _Set_RGB_COLOR( short i, WPI_COLOUR color )
 /*===========================================
 */
 {
-    _RGB_COLOR[ i ] = color;
+    _RGB_COLOR[i] = color;
 }
 
 WPI_COLOUR _Get_RGB_COLOR( short i )
 /*===========================================
 */
 {
-    return _RGB_COLOR[ i ];
+    return _RGB_COLOR[i];
 }

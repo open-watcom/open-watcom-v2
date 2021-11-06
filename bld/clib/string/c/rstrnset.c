@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of strnset() for RISC architectures.
+* Description:  Implementation of _strnset() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -35,8 +36,8 @@
 #include "riscstr.h"
 
 
-CHAR_TYPE *__F_NAME(strnset,_wcsnset)( CHAR_TYPE *s, int c, size_t n )
-/********************************************************************/
+CHAR_TYPE *__F_NAME(_strnset,_wcsnset)( CHAR_TYPE *s, int c, size_t n )
+/*********************************************************************/
 {
     RISC_DATA_LOCALREF;
     UINT                *dw = ROUND(s); /* round down to dword */

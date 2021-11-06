@@ -30,7 +30,7 @@
 
 
 #include "variety.h"
-#include <unistd.h>
+#include <sys/wait.h>
 #include "rdos.h"
 #include "_rdos.h"
 

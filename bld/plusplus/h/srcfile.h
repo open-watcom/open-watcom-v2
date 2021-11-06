@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,14 +52,11 @@ typedef struct dir_list DIR_LIST;
 
 // PROTOTYPES:
 
-void SrcFileScanName(           // SCAN AN IDENTIFIER
+int SrcFileScanName(            // SCAN AN IDENTIFIER
     int c )                     // - first character to check
 ;
 void SrcFileScanWhiteSpace(     // SCAN WHITESPACE
     bool expanding )            // - expanding a macro
-;
-void SrcFileScanCppComment(      // SCAN C++ COMMENT
-    void )
 ;
 bool IsSrcFileCmdLine(          // DETERMINE IF SOURCE FILE IS FOR CMD-LINE
     SRCFILE sf )                // - a source file

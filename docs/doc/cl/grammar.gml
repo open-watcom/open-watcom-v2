@@ -30,16 +30,17 @@ is optional, with only one occurrence being allowed if present.
 .discuss begin
 Choose one of
 .mono A
-..ct ,
+.ct ,
 .mono B
 or
 .mono C.
 .discuss end
 .*
 .************************************************************************
-.*
 ..sk 1 c
+.*
 .section Lexical Grammar
+.*
 .pp
 The following topics are discussed:
 .begbull
@@ -68,10 +69,14 @@ Punctuators
 .beglevel
 .keep begin
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Tokens
+.*
 .do end
 .el .do begin
+.*
 .section Definition of a Token
+.*
 .do end
 .pp
 :ITAL.token:eITAL.
@@ -84,12 +89,15 @@ $or$punctuator
 .keep break
 .*
 .************************************************************************
-.*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Keywords
+.*
 .do end
 .el .do begin
+.*
 .section Definition of a Keyword
+.*
 .do end
 .pp
 :ITAL.keyword:eITAL.
@@ -117,12 +125,15 @@ $or$&company.-extended-keyword
 ..tb &firsttab. +5 +5 +5 +5 +5 +5 +5 +5 +5 +5
 .*
 .************************************************************************
-.*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Identifiers
+.*
 .do end
 .el .do begin
+.*
 .section Definition of an Identifier
+.*
 .do end
 .pp
 :ITAL.identifier:eITAL.
@@ -138,12 +149,15 @@ $$:MONO.0 | 1 | ... | 9:eMONO.
 .keep break
 .*
 .************************************************************************
-.*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Constants
+.*
 .do end
 .el .do begin
+.*
 .section Definition of a Constant
+.*
 .do end
 .pp
 :ITAL.constant:eITAL.
@@ -230,9 +244,9 @@ $or$:MONO.L':eMONO.{c-char}&SUPER1.:MONO.':eMONO.
 $$any character in the source character set except
 $$the single-quote
 .mono '
-..ct , backslash
+.ct , backslash
 .mono \
-..ct , or new-line character
+.ct , or new-line character
 $or$escape-sequence
 .keep break
 ..sk
@@ -245,12 +259,15 @@ $$:MONO.\a   \b   \f   \n   \r   \t   \v:eMONO.
 .keep break
 .*
 .************************************************************************
-.*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section String Literals
+.*
 .do end
 .el .do begin
+.*
 .section Definition of a String Literal
+.*
 .do end
 .pp
 :ITAL.string-literal:eITAL.
@@ -262,19 +279,22 @@ $or$:MONO.L":eMONO.{s-char}&SUPER0.:MONO.":eMONO.
 $$any character in the source character set except
 $$the double-quote
 .mono "
-..ct , backslash
+.ct , backslash
 .mono \
-..ct , or new-line character
+.ct , or new-line character
 $or$escape-sequence
 .keep break
 .*
 .************************************************************************
-.*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Operators
+.*
 .do end
 .el .do begin
+.*
 .section Definition of an Operator
+.*
 .do end
 .*
 .pp
@@ -298,12 +318,15 @@ $:MONO.:> :HP0.(&wcboth.):eHP0.:eMONO.
 .keep break
 .*
 .************************************************************************
-.*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Punctuators
+.*
 .do end
 .el .do begin
+.*
 .section Definition of a Punctuator
+.*
 .do end
 .pp
 :ITAL.punctuator:eITAL.
@@ -317,6 +340,7 @@ $$:MONO.[  ]  (  )  {  }  *  ,  :  = ; ... #:eMONO.
 .************************************************************************
 .*
 .section Phrase Structure Grammar
+.*
 .pp
 The following topics are discussed:
 .begbull
@@ -331,13 +355,16 @@ External Definitions
 .endbull
 .*
 .************************************************************************
-.*
 .beglevel
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Expressions
+.*
 .do end
 .el .do begin
+.*
 .section Definition of Expressions
+.*
 .do end
 .pp
 :ITAL.constant-expression:eITAL.
@@ -347,7 +374,7 @@ $$conditional-expression
 :ITAL.expression:eITAL.
 $$assignment-expression{
 .monoon
-..ct ,
+.ct ,
 .monooff
 assignment-expression}&SUPER0.
 .keep break
@@ -479,12 +506,15 @@ $or$:MONO.(:eMONO. expression :MONO.):eMONO.
 .keep break
 .*
 .************************************************************************
-.*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Declarations
+.*
 .do end
 .el .do begin
+.*
 .section Definition of a Declaration
+.*
 .do end
 .pp
 :ITAL.declaration:eITAL.
@@ -607,7 +637,7 @@ $$&LANGLE.pointer&RANGLE. direct-declarator
 :ITAL.direct-declarator:eITAL.
 $$identifier
 $or$
-..ct .mono (
+.ct .mono (
 declarator
 .mono )
 $or$direct-declarator
@@ -687,12 +717,15 @@ initializer}&SUPER0.
 .keep break
 .*
 .************************************************************************
-.*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Statements
+.*
 .do end
 .el .do begin
+.*
 .section Definition of a Statement
+.*
 .do end
 .pp
 :ITAL.statement:eITAL.
@@ -801,6 +834,7 @@ $$$compound-statement
 .************************************************************************
 .*
 .section Preprocessing Directives Grammar
+.*
 .beglevel
 .pp
 :ITAL.preprocessing-file:eITAL.
@@ -887,7 +921,7 @@ $or$each non-white-space character that cannot be one of the above
 :ITAL.header-name:eITAL.
 $$:MONO.<:eMONO.
 ..ct {h-char}&SUPER0.
-..ct .mono >
+.ct .mono >
 .keep break
 ..sk 1 c
 :ITAL.h-char:eITAL.

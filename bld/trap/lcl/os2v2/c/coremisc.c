@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@
 
 static const ULONG      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
-trap_retval ReqFile_get_config( void )
+trap_retval TRAP_FILE( get_config )( void )
 {
     file_get_config_ret *ret;
 
@@ -144,7 +144,7 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
     return rc;
 }
 
-trap_retval ReqSplit_cmd( void )
+trap_retval TRAP_CORE( Split_cmd )( void )
 {
     char                *cmd;
     char                *start;
@@ -194,20 +194,20 @@ static long OpenFile( char *name, USHORT mode, int flags )
     APIRET      rc;
 
     if( flags & OPEN_CREATE ) {
-        openflags = 0x12;
-        openmode = 0x2042;
+        openflags = OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_REPLACE_IF_EXISTS;
+        openmode = OPEN_FLAGS_FAIL_ON_ERROR | OPEN_SHARE_DENYNONE | OPEN_ACCESS_READWRITE;
     } else {
-        openflags = 0x01;
-        openmode = mode | 0x2040;
+        openflags = OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS;
+        openmode = OPEN_FLAGS_FAIL_ON_ERROR | OPEN_SHARE_DENYNONE | mode;
     }
     if( flags & OPEN_PRIVATE ) {
-        openmode |= 0x80;
+        openmode |= OPEN_FLAGS_NOINHERIT;
     }
     rc = DosOpen( name,         /* name */
                 &hdl,           /* handle to be filled in */
                 &action,        /* action taken */
                 0,              /* initial allocation */
-                0,              /* normal file */
+                FILE_NORMAL,    /* normal file */
                 openflags,      /* open the file */
                 openmode,       /* deny-none, inheritance */
                 0 );            /* reserved */
@@ -220,7 +220,7 @@ static long OpenFile( char *name, USHORT mode, int flags )
 #define WRITEONLY   1
 #define READWRITE   2
 
-trap_retval ReqFile_open( void )
+trap_retval TRAP_FILE( open )( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -248,7 +248,7 @@ trap_retval ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_seek( void )
+trap_retval TRAP_FILE( seek )( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -260,7 +260,7 @@ trap_retval ReqFile_seek( void )
 }
 
 
-trap_retval ReqFile_read( void )
+trap_retval TRAP_FILE( read )( void )
 {
     ULONG               read_len;
     file_read_req       *acc;
@@ -274,7 +274,7 @@ trap_retval ReqFile_read( void )
     return( sizeof( *ret ) + read_len );
 }
 
-trap_retval ReqFile_write( void )
+trap_retval TRAP_FILE( write )( void )
 {
     ULONG               len;
     ULONG               written_len;
@@ -291,7 +291,7 @@ trap_retval ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_close( void )
+trap_retval TRAP_FILE( close )( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -302,7 +302,7 @@ trap_retval ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_erase( void )
+trap_retval TRAP_FILE( erase )( void )
 {
     file_erase_ret      *ret;
 
@@ -311,17 +311,17 @@ trap_retval ReqFile_erase( void )
     return( sizeof(*ret) );
 }
 
-trap_retval ReqSet_user_screen( void )
+trap_retval TRAP_CORE( Set_user_screen )( void )
 {
     return( 0 );
 }
 
-trap_retval ReqSet_debug_screen( void )
+trap_retval TRAP_CORE( Set_debug_screen )( void )
 {
     return( 0 );
 }
 
-trap_retval ReqRead_user_keyboard( void )
+trap_retval TRAP_CORE( Read_user_keyboard )( void )
 {
     read_user_keyboard_req      *acc;
     read_user_keyboard_ret      *ret;
@@ -332,7 +332,7 @@ trap_retval ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_write_console( void )
+trap_retval TRAP_FILE( write_console )( void )
 {
     ULONG        len;
     ULONG        written_len;
@@ -347,7 +347,7 @@ trap_retval ReqFile_write_console( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_next_alias( void )
+trap_retval TRAP_CORE( Get_next_alias )( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;
@@ -359,7 +359,7 @@ trap_retval ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_run_cmd( void )
+trap_retval TRAP_FILE( run_cmd )( void )
 {
     char                *src;
     file_run_cmd_ret    *ret;
@@ -369,7 +369,7 @@ trap_retval ReqFile_run_cmd( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_err_text( void )
+trap_retval TRAP_CORE( Get_err_text )( void )
 {
     get_err_text_req    *acc;
     char                *err_txt;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,11 +58,6 @@
 
 #define LODWORD(x) (((unsigned_64 *)&x)->u._32[I64LO32])
 #define HIDWORD(x) (((unsigned_64 *)&x)->u._32[I64HI32])
-
-#if defined( __LINUX__ )
-_WCRTLINK extern int _llseek( unsigned int, unsigned long, unsigned long, long long *, unsigned int );
-#endif
-
 
 #ifdef __INT64__
 

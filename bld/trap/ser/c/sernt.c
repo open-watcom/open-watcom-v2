@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,13 +38,11 @@
 #include "serlink.h"
 
 
-#define BREAK_TIME      4       // In DOS timer ticks, I think (55ms)
-
 int ErrorFlag;
 int BreakFlag;
 
 static int currentBaudRateIndex;
-static DWORD lastTickReset;
+static DWORD resetTickCount;
 
 static HANDLE hSerial = INVALID_HANDLE_VALUE;
 static int comPortNumber = 1;
@@ -65,26 +63,26 @@ static DWORD readCacheLevel;
 
 static void Trace(const char* fmt, ...)
 {
-    va_list         va;
+    va_list         args;
     static char     traceBuffer[1000];
 
-    va_start( va, fmt );
+    va_start( args, fmt );
 
-    vsprintf( traceBuffer, fmt, va );
+    vsprintf( traceBuffer, fmt, args );
     OutputDebugString( traceBuffer );
 
-    va_end( va );
+    va_end( args );
 }
 
-void ZeroWaitCount( void )
+void ResetTimerTicks( void )
 {
-    lastTickReset = GetTickCount();
+    resetTickCount = GetTickCount();
 }
 
 
-unsigned WaitCount( void )
+unsigned GetTimerTicks( void )
 {
-    return( (GetTickCount() - lastTickReset) / 55 );
+    return( (GetTickCount() - resetTickCount) / MILLISEC_PER_TICK );
 }
 
 
@@ -104,7 +102,7 @@ char *InitSys( void )
 
     currentBaudRateIndex = -1;
 
-    ZeroWaitCount();
+    ResetTimerTicks();
 
     hSerial = CreateFile( deviceFileName,
         GENERIC_READ | GENERIC_WRITE,
@@ -240,7 +238,7 @@ void ClearCom( void )
 void SendABreak( void )
 {
     EscapeCommFunction( hSerial, SETBREAK );
-    Sleep( BREAK_TIME * 55 );
+    Sleep( BREAK_TIME_MS );
     EscapeCommFunction( hSerial, CLRBREAK );
 }
 
@@ -258,7 +256,7 @@ bool TestForBreak( void )
 }
 #endif
 
-int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
+static int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
 
 bool Baud( int index )
 {

@@ -1,5 +1,5 @@
-.gfuncwxy imagesize
-.gsynop begin 
+.gfuncwxy _imagesize
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 long _FAR _imagesize( short x1, short y1,
                       short x2, short y2 );
@@ -42,7 +42,7 @@ The screen image is the rectangular area defined by the points
 and
 .coord x2 y2 .
 The storage area used by the
-.kw _getimage
+.reffunc _getimage
 &routines must be at least this large (in bytes).
 .desc end
 .return begin

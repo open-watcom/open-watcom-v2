@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,5 +42,5 @@
 #define MSG_FILE_MODE_ERROR     4
 #define MSG_NOT_FOUND           5
 
-#define WORD  unsigned short int
+#define WORD  unsigned short
 #define DWORD unsigned int

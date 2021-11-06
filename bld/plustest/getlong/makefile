@@ -8,7 +8,7 @@ test_flags = -ox-d1
 alt_error=00
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 
 stack_386=opt stack=8k
 stack_i86=opt stack=4k
@@ -18,8 +18,10 @@ objs = &
     getlongo.obj &
     readme.obj
 
-test : .symbolic start clean start_test ./opt.$(exe) common_set_result
-    @%make clean
+exes = ./opt.$(exe)
+
+test : .symbolic start $(exes)
+    $(noecho)%make common_set_result
 
 ./opt.$(exe) : $(objs) test.lnk
     @set ERROR_MSG=failure to link $^*
@@ -27,7 +29,7 @@ test : .symbolic start clean start_test ./opt.$(exe) common_set_result
     @%make echo_link
     $(noecho)$(linker) @$]@ NAME $@ file {$(objs)}
     @set ERROR_MSG=failure to run $^*
-    @%make set_path_rtdll
+    @%make set_run_path
     $(run) $@ >>$(%ERROR_FILE)
     $(run) $@ -h >>$(%ERROR_FILE)
     -$(run) $@ -hopeless >>$(%ERROR_FILE)
@@ -35,10 +37,7 @@ test : .symbolic start clean start_test ./opt.$(exe) common_set_result
     $(run) $@ -v >>$(%ERROR_FILE)
     -$(run) $@ -o >>$(%ERROR_FILE)
     -$(run) $@ -v=1 >>$(%ERROR_FILE)
-    @%make set_old_path
-
-start_test : .symbolic
-    @%make common_start_test
+    @%make set_old_run_path
 
 clean : .procedure
     @%make echo_clean

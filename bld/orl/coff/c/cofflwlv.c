@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -549,15 +550,15 @@ orl_return CoffParseDrectve( const char *contents, size_t len, orl_note_callback
         if( contents == NULL )
             break;
         contents++; len--;
-        if( memicmp( cmd, "export", 6 ) == 0 ) {
+        if( strnicmp( cmd, "export", 6 ) == 0 ) {
             if( ParseExport( &contents, &len, cbs, cookie ) != ORL_OKAY ) {
                 break;
             }
-        } else if( memicmp( cmd, "defaultlib", 10 ) == 0 ) {
+        } else if( strnicmp( cmd, "defaultlib", 10 ) == 0 ) {
             if( ParseDefLibEntry( &contents, &len, cbs->deflib_fn, cookie ) != ORL_OKAY ) {
                 break;
             }
-        } else if( memicmp( cmd, "entry", 5 ) == 0 ) {
+        } else if( strnicmp( cmd, "entry", 5 ) == 0 ) {
             if( ParseDefLibEntry( &contents, &len, cbs->entry_fn, cookie ) != ORL_OKAY ) {
                 break;
             }

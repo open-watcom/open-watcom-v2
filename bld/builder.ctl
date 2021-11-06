@@ -1,7 +1,7 @@
 # Master Open Watcom Builder Control file
 # =======================================
 
-set PROJDIR=<OWBINDIR>
+set PROJDIR=<OWBINDIR>/<OWOBJDIR>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 
@@ -23,6 +23,8 @@ cdsay .
 [ IFDEF <BLD_HOST> OS2 NT DOS ]
 [ INCLUDE <OWSRCDIR>/posix/builder.ctl ]
 [ ENDIF ]
+# Build wsplice and genverrc
+[ INCLUDE <OWSRCDIR>/builder/builder.ctl ]
 # Build our version of yacc
 [ INCLUDE <OWSRCDIR>/yacc/builder.ctl ]
 [ IFDEF <BLD_HOST> OS2 NT DOS ]
@@ -35,8 +37,6 @@ cdsay .
 # Start with the ORL and librarian - boot build has no other dependencies
 [ INCLUDE <OWSRCDIR>/orl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/nwlib/builder.ctl ]
-# Build wsplice and genverrc
-[ INCLUDE <OWSRCDIR>/builder/builder.ctl ]
 # Next build wres and the resource compiler
 [ INCLUDE <OWSRCDIR>/wres/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rc/rc/builder.ctl ]
@@ -81,7 +81,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/wbind/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/w32loadr/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/browser/dlgprs/builder.ctl ]
 # Build help compilers and tools
 [ INCLUDE <OWSRCDIR>/hcdos/builder.ctl ]
@@ -128,10 +127,9 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
 #[ ENDIF ]
 
-[ BLOCK <1> clean build rel cprel clean1 build1 rel1 cprel1 passclean pass ]
-#===========================================================================
+[ BLOCK <1> clean build rel cprel passclean pass ]
+#=================================================
 # Build all of Open Watcom using freshly built tools.
-# part 1
 #
 # NB: Again, the order is significant.
 # At the beginning, assume to have compilers/assemblers/librarian/linker
@@ -148,11 +146,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
-
-[ BLOCK <1> clean build rel cprel clean2 build2 rel2 cprel2 passclean pass ]
-#===========================================================================
-# Build all of Open Watcom using freshly built tools.
-# part 2
 #
 [ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/fpuemu/builder.ctl ]
@@ -164,8 +157,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/causeway/builder.ctl ]
 # Continue with WIN386 extender.
 [ INCLUDE <OWSRCDIR>/win386/builder.ctl ]
-# Continue with OSI extenders stubs.
-[ INCLUDE <OWSRCDIR>/w32loadr/builder.ctl ]
 # Now we have enough to start cross building everything else
 # Start with the libs used by various tools
 [ INCLUDE <OWSRCDIR>/wres/builder.ctl ]
@@ -187,12 +178,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/f77/wfc/builder.ctl ]
 # Resource tools, first Resource compiler
 [ INCLUDE <OWSRCDIR>/rc/builder.ctl ]
-
-[ BLOCK <1> clean build rel cprel clean3 build3 rel3 cprel3 passclean pass ]
-#===========================================================================
-# Build all of Open Watcom using freshly built tools.
-# part 3
-#
 # Continue with SDK tools
 [ INCLUDE <OWSRCDIR>/wpi/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/commonui/builder.ctl ]

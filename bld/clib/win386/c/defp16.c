@@ -41,15 +41,15 @@
  */
 int DefineUserProc16( int entnum, PROCPTR routine, ... )
 {
-    va_list     al;
+    va_list     args;
 
     if( entnum > GETPROC_USERDEFINED_32 ) {
         return( -1 );
     }
     entnum -= GETPROC_USERDEFINED_1;
-    va_start( al, routine );
-    UserProcs[entnum] = vGetCallbackRoutine( routine, al );
-    va_end( al );
+    va_start( args, routine );
+    UserProcs[entnum] = vGetCallbackRoutine( routine, args );
+    va_end( args );
     return( 0 );
 
 } /* DefineUserProc16 */

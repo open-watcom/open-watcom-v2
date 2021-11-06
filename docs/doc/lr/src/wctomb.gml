@@ -4,7 +4,7 @@
 int wctomb( char *s, wchar_t wc );
 .ixfunc2 '&Wide' &funcb
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 #include <mbstring.h>
 int _fwctomb( char __far *s, wchar_t wc );
 .ixfunc2 '&Wide' &ffunc
@@ -21,17 +21,17 @@ function determines the number of bytes required to
 represent the multibyte character corresponding to the wide character
 contained in
 .arg wc
-.ct .li .
+.period
 If
 .arg s
 is not a NULL pointer, the multibyte character representation is
 stored in the array pointed to by
 .arg s
-.ct .li .
+.period
 At most
 .kw MB_CUR_MAX
 characters will be stored.
-.im farparm
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 If
@@ -46,8 +46,8 @@ is not a NULL pointer, the
 .id &funcb.
 function returns:
 .begnote $setptnt 6
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note &minus.1
 if the value of
 .arg wc
@@ -56,7 +56,7 @@ does not correspond to a valid multibyte character
 the number of bytes that comprise the multibyte character
 corresponding to the value of
 .arg wc
-.ct .li .
+.period
 .endnote
 .return end
 .see begin

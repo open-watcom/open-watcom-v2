@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,18 +34,18 @@
 #include "watcom.h"
 
 
-gui_mcursor_handle GUISetMouseCursor( gui_mcursor_type type )
+gui_mcursor_handle GUIAPI GUISetMouseCursor( gui_mcursor_type type )
 {
     HCURSOR     cursor;
 
     switch( type ) {
-    case GUI_ARROW_CURSOR :
+    case GUI_ARROW_CURSOR:
         cursor = _wpi_getsyscursor( IDC_ARROW );
         break;
-    case GUI_HOURGLASS_CURSOR :
+    case GUI_HOURGLASS_CURSOR:
         cursor = _wpi_getsyscursor( IDC_WAIT );
         break;
-    case GUI_CROSS_CURSOR :
+    case GUI_CROSS_CURSOR:
         cursor = _wpi_getsyscursor( IDC_CROSS );
         break;
     default:
@@ -55,7 +56,7 @@ gui_mcursor_handle GUISetMouseCursor( gui_mcursor_type type )
     return( NULL );
 }
 
-void GUIResetMouseCursor( gui_mcursor_handle old )
+void GUIAPI GUIResetMouseCursor( gui_mcursor_handle old )
 {
     if( old != NULL ) {
         _wpi_setcursor( (HCURSOR)(pointer_uint)old );

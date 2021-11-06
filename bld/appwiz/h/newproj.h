@@ -36,3 +36,4 @@
 #define CTL_NEWPROJ_PROJDIR     103
 #define CTL_NEWPROJ_PROJNAME    104
 
+extern bool NewProjGUIEventProc( gui_window *wnd, gui_event gui_ev, void *extra );

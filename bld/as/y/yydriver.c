@@ -1,3 +1,7 @@
+#ifndef NDEBUG
+    #define YYDEBUG
+#endif
+
 #ifndef YYTABTYPE
 #define YYTABTYPE       short
 #endif

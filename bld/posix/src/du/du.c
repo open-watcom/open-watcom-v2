@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,14 +43,13 @@
 #include "getopt.h"
 #include "fnutils.h"
 #include "argvenv.h"
-#include "pathgrp.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
 
 char *OptEnvVar = "du";
 
-char    filename[_MAX_PATH];
 char    numbuff[14];
 long    clsize;
 int     filecnt, linecnt;
@@ -169,43 +168,55 @@ void fmtPrint( unsigned long val )
     printf( "%s ", numbuff );
 }
 
+static int skip_entry( struct dirent *dire )
+{
+    return( (dire->d_attr & _A_SUBDIR) && IsDotOrDotDot( dire->d_name ) );
+}
+
 /*
  * DoDU - perform DU on a specified directory
  */
 void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
 {
-    dfs                 *head=NULL,*tail=NULL,*temp,*tmp;
-    long                ii,jj,kk;
-    unsigned long       csum,ssum;
+    dfs                 *head;
+    dfs                 *tail;
+    dfs                 *temp;
+    dfs                 *next;
+    long                ii;
+    long                jj;
+    long                kk;
+    unsigned long       csum;
+    unsigned long       ssum;
     char                fname[_MAX_PATH];
+    char                filename[_MAX_PATH];
+    char                path[_MAX_PATH];
+    size_t              path_len;
     DIR                 *dirp;
     struct dirent       *dire;
     size_t              len;
     struct stat         sb;
-    PGROUP              pg;
+    pgroup2             pg;
 
     /*
      * initialize for file scan
      */
-    _splitpath( dir, pg.drive, pg.dir, pg.fname, pg.ext );
-    if( stat( dir, &sb ) != -1 ) {
-        if( S_ISDIR( sb.st_mode ) ) {
-            strcat( pg.dir, pg.fname );
-            strcat( pg.dir, pg.ext );
-            pg.fname[0] = 0;
-            pg.ext[0] = 0;
-        }
+    _splitpath2( dir, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( stat( dir, &sb ) != -1 && S_ISDIR( sb.st_mode ) ) {
+        _makepath( path, NULL, pg.dir, pg.fname, pg.ext );
+        pg.fname = pg.ext = "";
+    } else {
+        _makepath( path, NULL, pg.dir, NULL, NULL );
     }
 
     if( pg.fname[0] == 0 ) {
-        strcpy( pg.fname, "*" );
+        pg.fname = "*";
     }
     if( pg.ext[0] == 0 ) {
-        strcpy( pg.ext, ".*" );
+        pg.ext = ".*";
     } else if( pg.ext[0] == '.' && pg.ext[1] == 0 ) {
-        strcpy( pg.ext, ".*" );
+        pg.ext = ".*";
     }
-    _makepath( filename, pg.drive, pg.dir, pg.fname, pg.ext );
+    _makepath( filename, pg.drive, path, pg.fname, pg.ext );
 
     dirp = opendir( filename );
     if( dirp == NULL )
@@ -214,8 +225,9 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
     /*
      * run until carry is set (no more matches)
      */
+    tail = head = NULL;
     while( (dire = readdir( dirp )) != NULL ) {
-        if( (dire->d_attr & _A_SUBDIR) && IsDotOrDotDot( dire->d_name ) )
+        if( skip_entry( dire ) )
             continue;               // skip special directory entries
         if( (temp = malloc( sizeof( dfs ) )) == NULL )
             break;
@@ -231,27 +243,26 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
     }
     closedir( dirp );
 
+    path_len = strlen( path );
+    if( path[path_len - 1] != '\\' ) {
+        path[path_len++] = '\\';
+        path[path_len] = '\0';
+    }
+    if( strcmp( pg.fname, "*" ) == 0 && strcmp( pg.ext, ".*" ) == 0 ) {
+        pg.fname = NULL;
+        pg.ext = NULL;
+    }
     /*
      * descend the subdirectories
      */
-    temp = head;
-    while( temp != NULL ) {
+    for( temp = head; temp != NULL; temp = temp->next ) {
         if( temp->df.d_attr & _A_SUBDIR ) {
-            strcpy( filename, pg.dir );
-            len = strlen( filename );
-            if( filename[len - 1] != '\\' ) {
-                filename[len++] = '\\';
-                filename[len] = '\0';
-            }
-            strcpy( filename + len, temp->df.d_name );
-            if( strcmp( pg.fname, "*" ) == 0 && strcmp( pg.ext, ".*" ) == 0 ) {
-                _makepath( fname, pg.drive, filename, NULL, NULL );
-                len = strlen( fname ) - 1;
-                if( fname[len] == '\\' ) {
-                    fname[len] = 0;
-                }
-            } else {
-                _makepath( fname, pg.drive, filename, pg.fname, pg.ext );
+            strcpy( filename, path );
+            strcpy( filename + path_len, temp->df.d_name );
+            _makepath( fname, pg.drive, filename, pg.fname, pg.ext );
+            len = strlen( fname ) - 1;
+            if( fname[len] == '\\' ) {
+                fname[len] = 0;
             }
             csum = 0;
             ssum = 0;
@@ -264,17 +275,17 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
             fmtPrint( csum );
             printf( " %s\n", fname );
         }
-        temp = temp->next;
     }
 
     /*
      * get the total for this directory
      */
-    temp = head;
-    while( temp != NULL ) {
-        ii = (long) temp->df.d_size;
+    for( temp = head; temp != NULL; temp = next ) {
+        next = temp->next;
+        ii = (long)temp->df.d_size;
         jj = ii / clsize;
-        if( temp->df.d_size % clsize != 0 ) jj++;
+        if( temp->df.d_size % clsize != 0 )
+            jj++;
         kk = jj * clsize;
         if( !bflag ) {
             ii = (ii + 1023) / 1024;
@@ -289,9 +300,7 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
             fmtPrint( kk );
             printf( " %s\\%s\n", dir, temp->df.d_name );
         }
-        tmp = temp;
-        temp = temp->next;
-        free( tmp );
+        free( temp );
     }
 
 } /* DoDU */

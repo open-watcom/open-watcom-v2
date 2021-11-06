@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "guidraw.h"
 #include "guixutil.h"
 
-static bool GUIIntersectRect( SAREA *area, SAREA *bound )
+static bool IntersectRect( SAREA *area, SAREA *bound )
 {
     if( ( ( area->row + area->height ) < bound->row ) ||
         ( area->row > ( bound->row + bound->height ) ) ) {
@@ -73,7 +73,7 @@ static bool GUIIntersectRect( SAREA *area, SAREA *bound )
 
 static bool AdjustRect( gui_window *wnd, SAREA *area )
 {
-    if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_HSCROLL( wnd ) ) {
         if( ( area->col + area->width ) < wnd->hgadget->pos ) {
             return( false );
         } else {
@@ -85,7 +85,7 @@ static bool AdjustRect( gui_window *wnd, SAREA *area )
             }
         }
     }
-    if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_VSCROLL( wnd ) ) {
         if( ( area->row + area->height ) < wnd->vgadget->pos ) {
             return( false );
         } else {
@@ -99,28 +99,18 @@ static bool AdjustRect( gui_window *wnd, SAREA *area )
     }
     area->col += wnd->use.col;
     area->row += wnd->use.row;
-    return( GUIIntersectRect( area, &wnd->dirty ) );
+    return( IntersectRect( area, &wnd->dirty ) );
 }
 
-static bool DrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr,
+static bool DrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr,
                       bool fill, bool outline, char draw_char )
 {
     SAREA       area;
-    gui_coord   coord;
 
     if( ( rect->width == 0 ) || ( rect->height == 0 ) || ( (wnd->flags & CONTENTS_INVALID) == 0 ) ) {
         return( false );
     }
-    coord.x = rect->x;
-    coord.y = rect->y;
-    GUIScaleToScreenR( &coord );
-    area.col = coord.x;
-    area.row = coord.y;
-    coord.x = rect->width;
-    coord.y = rect->height;
-    GUIScaleToScreenR( &coord );
-    area.width = coord.x;
-    area.height = coord.y;
+    GUIScaleToScreenRectR( rect, &area );
     if( AdjustRect( wnd, &area ) ) {
         if( fill ) {
             uivfill( &wnd->vs, area, WNDATTR( wnd, attr ), draw_char );
@@ -132,46 +122,48 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr,
     return( true );
 }
 
-bool GUIDrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr )
+bool GUIAPI GUIDrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
-    return( DrawRect( wnd, rect, attr, false, true, DRAW( BLOCK ) ) );
+    return( DrawRect( wnd, rect, attr, false, true, DRAWC1( RECT_AREA ) ) );
 }
 
-bool GUIFillRect( gui_window *wnd, gui_rect *rect, gui_attr attr )
+bool GUIAPI GUIFillRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
-    return( DrawRect( wnd, rect, attr, true, false, DRAW( BLOCK ) ) );
+    return( DrawRect( wnd, rect, attr, true, false, DRAWC1( RECT_AREA ) ) );
 }
 
-bool GUIFillBar( gui_window *wnd, gui_rect *rect, gui_attr attr )
+bool GUIAPI GUIFillBar( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
-    return( DrawRect( wnd, rect, attr, true, false, DRAW( TOP_HALF ) ) );
+    return( DrawRect( wnd, rect, attr, true, false, DRAWC1( BAR_AREA ) ) );
 }
 
-bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
+bool GUIAPI GUIDrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
                   gui_line_styles style, gui_ord thickness, gui_attr attr )
 {
-    gui_point   my_start;
-    gui_point   my_end;
+    guix_ord    scr_start_x;
+    guix_ord    scr_start_y;
+    guix_ord    scr_end_x;
+    guix_ord    scr_end_y;
     SAREA       area;
     char        to_use;
 
     /* unused parameters */ (void)style; (void)thickness;
 
-    my_start = *start;
-    my_end = *end;
-    GUIScaleToScreenRPt( &my_start );
-    GUIScaleToScreenRPt( &my_end );
+    scr_start_x = GUIScaleToScreenH( start->x );
+    scr_start_y = GUIScaleToScreenV( start->y );
+    scr_end_x = GUIScaleToScreenH( end->x );
+    scr_end_y = GUIScaleToScreenV( end->y );
 
-    area.row = my_start.y;
-    area.height = my_end.y - my_start.y + 1;
-    area.col = my_start.x;
-    area.width = my_end.x - my_start.x + 1;
+    area.row = scr_start_y;
+    area.height = scr_end_y - scr_start_y + 1;
+    area.col = scr_start_x;
+    area.width = scr_end_x - scr_start_x + 1;
 
-    if( my_start.x == my_end.x ) {
-        to_use = DRAW( VERT_FRAME );
+    if( scr_start_x == scr_end_x ) {
+        to_use = DRAWC1( LINE_VERT );
     } else {
-        if( my_start.y == my_end.y ) {
-            to_use = DRAW( HOR_FRAME );
+        if( scr_start_y == scr_end_y ) {
+            to_use = DRAWC1( LINE_HOR );
         } else {
             return( false );
         }
@@ -182,21 +174,21 @@ bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
     return( true );
 }
 
-bool GUIFillRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
+bool GUIAPI GUIFillRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
 {
     /* unused parameters */ (void)wnd; (void)rect; (void)rgb;
 
     return( false );
 }
 
-bool GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
+bool GUIAPI GUIDrawRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
 {
     /* unused parameters */ (void)wnd; (void)rect; (void)rgb;
 
     return( false );
 }
 
-bool GUIDrawLineRGB( gui_window *wnd, gui_point *start, gui_point *end,
+bool GUIAPI GUIDrawLineRGB( gui_window *wnd, const gui_point *start, const gui_point *end,
                      gui_line_styles style, gui_ord thickness, gui_rgb rgb )
 {
     /* unused parameters */ (void)wnd; (void)start; (void)end; (void)style; (void)thickness; (void)rgb;

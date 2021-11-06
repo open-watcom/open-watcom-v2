@@ -59,7 +59,7 @@ It contains valuable, up-to-date information concerning this product.
 The installation program in this version has been completely
 redesigned with several new "smart" features.
 If you have installed a previous version of &product then you should
-install &product &ver..&rev into the same path (except for the reason
+install &product &verrev into the same path (except for the reason
 described in the following paragraph).
 It will examine a previous installation to determine what features
 were previously installed.
@@ -89,7 +89,7 @@ and
 .fi SYSTEM.INI
 must be modified and/or corrected.
 .np
-If you are installing both &watc &ver..&rev and &watf &ver..&rev, we
+If you are installing both &watc &verrev and &watf &verrev, we
 recommend that you install both products under the same directory.
 This will eliminate duplication of files and, as a result, reduce
 the total required disk space.
@@ -106,9 +106,9 @@ The problem is that &watc and &watf don't know about the installation
 options you have selected for each other's product.
 .np
 If you wish to create a backup of your previous version, please do so
-before installing &product &ver..&rev..
+before installing &product &verrev..
 .np
-If you decide to install &product &ver..&rev into a different
+If you decide to install &product &verrev into a different
 directory than the previously installed version, you will have to
 manually edit system files (e.g., CONFIG.SYS, AUTOEXEC.BAT,
 SYSTEM.INI) after the installation process is complete to remove the

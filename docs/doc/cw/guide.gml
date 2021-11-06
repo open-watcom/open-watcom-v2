@@ -31,16 +31,16 @@ automatic handling of near-specific API functions.
 .np
 .ix 'DLL'
 It is recommended that you understand and familiarize yourself with the
-basic operation of DLLs (Dynamic Link Libraries) under Windows or OS/2 
-before using them with CauseWay under DOS. No attempt is made here to 
+basic operation of DLLs (Dynamic Link Libraries) under Windows or OS/2
+before using them with CauseWay under DOS. No attempt is made here to
 explain the fundamentals of DLL architecture and operation.
 You should also study the provided DLL example code.
 .np
 DLL code should be compiled with the &sw.s option to disable stack checking
 and the &sw.bd option to generate DLL-suitable code.  Specify a system
-type of 
-.mono CWDLLR 
-for register-based parameter passing or 
+type of
+.mono CWDLLR
+for register-based parameter passing or
 .mono CWDLLS
 for stack-based parameter passing.
 .np
@@ -58,17 +58,17 @@ display an error message, CauseWay will simply report a load error.  The
 entry address is a FAR call, so the initialization code should use a
 RETF to return control to the calling program.
 .np
-A minimal DLL startup system is provided in the 
+A minimal DLL startup system is provided in the
 .fi DLLSTRTR.OBJ
-(register-based) and the 
+(register-based) and the
 .fi DLLSTRTS.OBJ
-(stack-based) files. 
+(stack-based) files.
 .np
 CauseWay loads DLLs when the program being loaded has references to
 external modules in the DLL.  CauseWay searches the execution path for
 any DLL or EXE file (in that order) which has the proper internal module
 name.  The module name is not used when searching.  For example, a file
-named 
+named
 .mono USEME.DLL
 contains a module named Spelling_Checker.  The name of
 the module (Spelling_Checker) is set by the NAME option in your link
@@ -98,11 +98,11 @@ IMPORT [local_name] module_name.ordinal
 .mnote local_name
 is an optional parameter.  It is the symbol which the
 importing program references the function by, i.e. the symbol declared
-as external.  If no local name is specified, then 
-.sy function_name 
+as external.  If no local name is specified, then
+.sy function_name
 is used.
 .np
-.mnote module_name 
+.mnote module_name
 is the name of the module that contains the function.  It
 is not the file name.  IMPORT module names are resolved by searching DLL
 and EXE files for the correct module name.
@@ -115,14 +115,14 @@ EXPORTing module, i.e. the symbol that is declared as public.
 functions can also be imported by number.  This is the
 entry number in decimal, starting at 1, in the EXPORTing module's export
 table to link to.
-.sy local_name 
+.sy local_name
 must be specified when using ordinals,
 otherwise there is no symbolic reference to internally resolve.
 .np
-In the DLL calling code, 
+In the DLL calling code,
 .sy local_name
 and
-.sy function_name 
+.sy function_name
 need to be declared as external.
 .esynote
 .*
@@ -138,7 +138,7 @@ IMPORTed module names can contain a partial path.  For example,
 DLL\spelling_checker would instruct the loader to look in <execution
 path>\DLL for a module with a name of spelling_checker.
 .np
-Notes: 
+Notes:
 .np
 You must take the responsibility to make sure that the IMPORTed function
 or module calling conventions match the calling code.  For example, the
@@ -168,8 +168,8 @@ CauseWay applications.
 Almost without exception, the best way to increase runtime performance
 of all CauseWay applications is to ensure that physical memory is large
 enough to meet all of the program's needs.  Performance suffers considerably
-when CauseWay creates a temporary file for virtual memory, swapping 4KB 
-blocks of the program's code and data to and from disk.  Naturally this may 
+when CauseWay creates a temporary file for virtual memory, swapping 4KB
+blocks of the program's code and data to and from disk.  Naturally this may
 not be possible in all cases, but it is a worthy goal.  Generally the more
 physical memory, even when virtual memory is being used, the better an
 application's performance.
@@ -178,8 +178,8 @@ When using a disk cache program, be sure not to use too much extended
 memory.  Although a disk cache program is beneficial, allocating it too
 much memory can deprive CauseWay of required extended memory and can
 degrade application performance. However completely disabling disk cache
-will usually noticeably decrease performance as well. The optimal cache size 
-depends on the particular application and computer system (amount of physical 
+will usually noticeably decrease performance as well. The optimal cache size
+depends on the particular application and computer system (amount of physical
 memory, disk I/O speed etc.) and there are no generally
 applicable "best" settings.
 .np
@@ -187,18 +187,18 @@ applicable "best" settings.
 If your program uses virtual memory, CauseWay's VMM creates a temporary
 swap file.  If you have more than one disk drive, then you may wish to
 direct creation of the swap file to the faster disk drive on your system
-using the 
+using the
 .ev CAUSEWAY=SWAP
 ,
 .ev TEMP
-or 
+or
 .ev TMP
 environment variables.  Do not
 create a RAM disk if this will lower your physical memory because this
 is less efficient than allowing CauseWay to use physical memory itself.
 .np
 Remember that virtual memory is part of total memory when using
-CauseWay. If your default drive, or the drive pointed to by the 
+CauseWay. If your default drive, or the drive pointed to by the
 .ev TEMP
 or
 .ev TMP
@@ -227,7 +227,7 @@ Be aware that linking in the kbhitr or kbhits module means that the INT
 28h idle call will not be made on kbhit() as normally occurs with the
 standard runtime library kbhit().  This may impact background processing
 in applications which depend on INT 28h idle calls, such as the DOS
-PRINT utility which performs printing in the background, as well as 
+PRINT utility which performs printing in the background, as well as
 operation under multitatsking environments.
 .*
 .section DOS API Buffer Size
@@ -389,7 +389,7 @@ continue our example, if you have the following four symbols of address
 and the EIP value is 00000953, the closest routine name that does not
 exceed the EIP value in the second half of the address line is
 .mono __DBFGOCOLD.
-Therefore, the exception occurred in the 
+Therefore, the exception occurred in the
 .mono __DBFGOCOLD
 routine.
 .np

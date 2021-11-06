@@ -102,7 +102,7 @@
 #define CODEC_COMP_REALTIME 0x00020000
 #define CODEC_DECOMP_REALTIME 0x00040000
 
-#define MMIO_SET_EXTENDEDINFO 0X0001
+#define MMIO_SET_EXTENDEDINFO 0x0001
 #define MMIO_QUERY_EXTENDEDINFO_BASE 0x0002
 #define MMIO_QUERY_EXTENDEDINFO_ALL  0x0004
 
@@ -392,7 +392,7 @@
 #define MMIO_LC_BAHASA 33
 #define MMIO_DC_BAHASA  1
 
-#pragma pack(4)
+:include pshpack4.sp
 
 #ifndef __OS2MEDEF_H__
 typedef ULONG HMMIO;
@@ -693,7 +693,7 @@ USHORT APIENTRY mmioGetData(HMMIO,PMMIOINFO,USHORT);
 
 #endif
 
-#pragma pack()
+:include poppack.sp
 
 :include cplusepi.sp
 

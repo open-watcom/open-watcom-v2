@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,21 +47,21 @@
 #include "fmtemit.h"
 
 
-void    GFEmEnd( void ) {
-//=================
-
+void    GFEmEnd( void )
+//=====================
+{
     OutByte( END_FORMAT );
     OutInt( ObjOffset( Fmt_revert.cp ) );
     AlignEven();
 }
 
 
-void    GFEmCode( int int_code ) {
-//=============================
-
+void    GFEmCode( int int_code )
+//==============================
+{
     byte code = int_code;           // needed to match signature
 
-    if( ( code & REV_CODE ) == REV_CODE ) {
+    if( (code & REV_CODE) == REV_CODE ) {
         code &= ~REV_CODE;
         Fmt_revert.cp = ObjTell();
     }
@@ -71,23 +72,23 @@ void    GFEmCode( int int_code ) {
 }
 
 
-void    GFEmChar( char PGM *ch ) {
-//================================
-
+void    GFEmChar( char *ch )
+//==========================
+{
     OutByte( *ch );
 }
 
 
-void    GFEmNum( int num ) {
-//==========================
-
+void    GFEmNum( int num )
+//========================
+{
     OutInt( num );
 }
 
 
-void    GFEmByte( int num ) {
-//===========================
-
+void    GFEmByte( int num )
+//=========================
+{
     if( ( num < 0 ) || ( num > 255 ) ) {
         FmtError( FM_SPEC_256 );
     } else {

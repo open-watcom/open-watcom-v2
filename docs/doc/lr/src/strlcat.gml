@@ -27,13 +27,13 @@ The first character of
 .arg src
 overwrites the null character at the end of
 .arg dst
-.ct .li .
+.period
 A terminating null character is always appended to the result, unless
 .arg n
 characters of
 .arg dst
 are scanned and no null character is found.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

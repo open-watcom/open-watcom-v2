@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,8 +74,7 @@ static offset BumpUp( offset ptr, offset size )
 {
     ptr += size;
     if( CurrentSeg != NULL && (CurrentSeg->info & USE_32) == 0 && (FmtData.type & MK_RAW) == 0 && ptr > 0x10000 ) {
-        LnkMsg( ERR+MSG_SEG_TOO_BIG, "sl", CurrentSeg->segname,
-                (unsigned long)(ptr-0x10000) );
+        LnkMsg( ERR+MSG_SEG_TOO_BIG, "sl", CurrentSeg->segname, (unsigned long)( ptr - 0x10000 ) );
     }
     return( ptr );
 }
@@ -128,11 +127,8 @@ void StartMemMap( void )
         DataLoc.seg = DATA_SEGMENT;
         DataLoc.off = 0;
     } else {
-        CurrLoc.seg = (FmtData.type & MK_PROT_MODE) ? 1 : 0;
-        CurrLoc.off = 0;
-        if( FmtData.type & MK_FLAT ) {
-            CurrLoc.off = FmtData.base;
-        }
+        CurrLoc.seg = ( FmtData.type & MK_PROT_MODE ) ? 1 : 0;
+        CurrLoc.off = ( FmtData.type & MK_FLAT_OFFS ) ? FmtData.base : 0;
     }
 }
 
@@ -147,7 +143,7 @@ static targ_addr *GetIDLoc( group_entry *group )
     } else {
         retval = &CodeLoc;
     }
-    return retval;
+    return( retval );
 }
 
 void ChkLocated( targ_addr *segadr, bool fixed)
@@ -200,7 +196,7 @@ void NewSegment( seg_leader *seg )
         ChkLocated( &(seg->seg_addr), ( (seg->segflags & SEG_FIXED) != 0 ) );
         AddSize( seg->size );
         group->totalsize += seg->size;
-    } else if( FmtData.type & (MK_FLAT | MK_ID_SPLIT) ) {
+    } else if( FmtData.type & (MK_FLAT_OFFS | MK_ID_SPLIT) ) {
         if( FmtData.type & MK_ID_SPLIT ) {
             loc = GetIDLoc( group );
             CurrLoc = *loc;

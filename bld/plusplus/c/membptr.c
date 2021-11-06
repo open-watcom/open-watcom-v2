@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +39,12 @@
 #include "fold.h"
 #include "vfun.h"
 #include "initdefs.h"
-
 #ifndef NDEBUG
     #include "dbg.h"
     #include "pragdefn.h"
+    #include "togglesd.h"
 #endif
+
 
 typedef enum                    // CLASSIFICATION OF MEMBER-PTR EXPRESSIONS
 {   MP_ZERO                     // - zero
@@ -631,7 +633,7 @@ static bool analyseMembPtr(     // ANALYSE MEMBER-PTR OPERANDS
     if( CNV_OK == ConversionDiagnose( cnv, expr, &diagMembPtrOps ) ) {
         ScopeMemberPtrCastAction( inf );
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_mptr ) {
+        if( TOGGLEDBG( dump_mptr ) ) {
             DumpMemberPtrInfo( inf );
         }
 #endif

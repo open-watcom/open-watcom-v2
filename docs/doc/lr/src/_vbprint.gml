@@ -19,7 +19,7 @@ function formats data under control of the
 .arg format
 control string and writes the result to
 .arg buf
-.ct .li .
+.period
 The argument
 .arg bufsize
 specifies the size of the character array
@@ -28,18 +28,18 @@ into which the generated output is placed.
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
 The
 .id &funcb.
 function is equivalent to the
-.kw _bprintf
+.reffunc _bprintf
 function, with the variable argument list replaced with
 .arg arg
 .ct , which has been initialized by the
-.kw va_start
+.reffunc va_start
 macro.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .desc end
 .return begin
 The

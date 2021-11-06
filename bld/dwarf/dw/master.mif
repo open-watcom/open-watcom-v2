@@ -8,39 +8,45 @@ dwarfw_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-objs = &
-dwabbrev.obj &
-dwarange.obj &
-dwcarve.obj &
-dwcliuti.obj &
-dwdie.obj &
-dwdecl.obj &
-dwgen.obj &
-dwhandle.obj &
-dwinfo.obj &
-dwline.obj &
-dwlngen.obj &
-dwloc.obj &
-dwmac.obj &
-dwmem.obj &
-dwname.obj &
-dwrefer.obj &
-dwsym.obj &
-dwtype.obj &
-dwutils.obj
-
+#
+# cflags
+#
 .c : $(dwarfw_dir)/c
 
 inc_dirs = -I. -I"../h"
 
-dwarfw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
-    @%make echo_lib
-!ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $(objs)
-!else
-    $(librarian) $(libflags) $(objs)
-!endif
+# explicit rules
+#################
 
+#
+# LIB
+#
+libtarg_prebuild_objs = dwabenum.gh
+libtarg_objs = &
+    dwabbrev.obj &
+    dwarange.obj &
+    dwcarve.obj &
+    dwcliuti.obj &
+    dwdie.obj &
+    dwdecl.obj &
+    dwgen.obj &
+    dwhandle.obj &
+    dwinfo.obj &
+    dwline.obj &
+    dwlngen.obj &
+    dwloc.obj &
+    dwmac.obj &
+    dwmem.obj &
+    dwname.obj &
+    dwrefer.obj &
+    dwsym.obj &
+    dwtype.obj &
+    dwutils.obj
+!include libtarg.mif
+
+#
+# rc and others
+#
 ./dwmakeab.exe : dwmakeab.c
     @%make echo_bldcl
     $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)

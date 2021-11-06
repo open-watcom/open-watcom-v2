@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ typedef struct memdata {
     int             width;
     ctl_id          disp_type;              /* BYTE, WORD, DWORD or CODE (menu item value) */
     uint_32         ins_cnt;
-    AsmInfo         *asm;
+    AsmInfo         *asm_info;
     uint_32         offset;
     HWND            scrlbar;                /* handle of scroll bar */
     HWND            parent;                 /* parent of this window */

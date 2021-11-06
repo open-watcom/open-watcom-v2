@@ -40,12 +40,6 @@
 #include "clibint.h"
 
 
-#ifdef __WATCOMC__
-#ifdef __NT__
-    #pragma library( "shell32.lib" )
-#endif
-#endif
-
 #define DDE_OPT     "-DDE"
 #define NEW_OPT     "/n"
 #define NOTITLE_OPT "/notitle"

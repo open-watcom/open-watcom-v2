@@ -9,10 +9,10 @@ The
 .id &funcb.
 function turns on the PC's speaker at the specified
 .arg frequency
-.ct .li .
+.period
 The frequency is in Hertz (cycles per second).
 The speaker can be turned off by calling the
-.kw nosound
+.reffunc nosound
 function after an appropriate amount of time.
 .im privity
 .if '&machsys' eq 'QNX' .do begin
@@ -22,9 +22,10 @@ The
 function only works if either the program is owned by
 .id root
 and is
-.id setuid,
-or if the invoking user is
-.id root.
+.id setuid
+.ct , or if the invoking user is
+.id root
+.period
 .do end
 .desc end
 .return begin

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +35,14 @@
 #include <stdarg.h>
 #include "srcfile.h"
 #include "vbuf.h"
-#include "dbg.h"
 #include "fmttype.h"
 #include "fmtsym.h"
 #include "fmtmsg.h"
 #include "template.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
+
 
 static void leading( VBUF *pbuf, char lead, int len )
 /***************************************************/
@@ -67,10 +71,11 @@ static bool formatClassForSym( SYMBOL sym, VBUF *buf )
     return( ok );
 }
 
-SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
-/****************************************************/
-// this function assumes that pbuf is initialized
-// all information is concatenated to the end of pbuf
+SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list args )
+/******************************************************
+ * this function assumes that pbuf is initialized
+ * all information is concatenated to the end of pbuf
+ */
 {
     VBUF    prefix, suffix;
     char    cfmt;
@@ -94,25 +99,25 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
             case '7':   /* %07d */
             case '8':   /* %08d */
             case '9':   /* %09d */
-                len = stxicpy( local_buf, va_arg( arg, int ) ) - local_buf;
+                len = stxicpy( local_buf, va_arg( args, int ) ) - local_buf;
                 leading( pbuf, '0', ( cfmt - '0' ) - len );
                 VbufConcStr( pbuf, local_buf );
                 break;
             case 'c':   /* %c */
-                VbufConcChr( pbuf, va_arg( arg, int ) );
+                VbufConcChr( pbuf, va_arg( args, int ) );
                 break;
             case 's':   /* %s */
-                VbufConcStr( pbuf, va_arg( arg, char * ) );
+                VbufConcStr( pbuf, va_arg( args, char * ) );
                 break;
             case 'u':   /* %u */
-                VbufConcDecimal( pbuf, va_arg( arg, unsigned int ) );
+                VbufConcDecimal( pbuf, va_arg( args, unsigned int ) );
                 break;
             case 'd':   /* %d */
-                VbufConcInteger( pbuf, va_arg( arg, int ) );
+                VbufConcInteger( pbuf, va_arg( args, int ) );
                 break;
             case 'L':   /* token location */
             {   TOKEN_LOCN *locn;
-                locn = va_arg( arg, TOKEN_LOCN * );
+                locn = va_arg( args, TOKEN_LOCN * );
                 if( locn == NULL ) {
                     VbufConcStr( pbuf, "by compiler" );
                 } else {
@@ -143,13 +148,13 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                 }
             }   break;
             case 'N':   /* name */
-                FormatName( va_arg( arg, NAME ), &prefix );
+                FormatName( va_arg( args, NAME ), &prefix );
                 VbufConcVbuf( pbuf, &prefix );
                 VbufFree( &prefix );
                 break;
             case 'F':   /* symbol name (decorated) */
             {   SYMBOL      sym;
-                sym = va_arg( arg, SYMBOL );
+                sym = va_arg( args, SYMBOL );
                 FormatSym( sym, &prefix );
                 VbufConcVbuf( pbuf, &prefix );
                 VbufFree( &prefix );
@@ -158,7 +163,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
             {   SYMBOL      sym;
                 SYMBOL_NAME sn;
                 NAME        name;
-                sym = va_arg( arg, SYMBOL );
+                sym = va_arg( args, SYMBOL );
                 if( sym == NULL ) {
                     VbufConcStr( pbuf, "module data" );
                 } else {
@@ -202,7 +207,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                 }
             }   break;
             case 'T':   /* type name */
-            {   TYPE type = va_arg( arg, TYPE );
+            {   TYPE type = va_arg( args, TYPE );
                 TYPE refed = TypeReference( type );
                 if( NULL != refed ) {
                     type = refed;
@@ -218,21 +223,21 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                 }
             }   break;
             case 'P':   /* PTREE list */
-            {   const PTREE p = va_arg( arg, PTREE );
+            {   const PTREE p = va_arg( args, PTREE );
 
                 FormatPTreeList( p, &prefix );
                 VbufConcVbuf( pbuf, &prefix );
                 VbufFree( &prefix );
             }   break;
             case 'I':   /* PTREE id */
-            {   const PTREE p = va_arg( arg, PTREE );
+            {   const PTREE p = va_arg( args, PTREE );
 
                 FormatPTreeId( p, &prefix );
                 VbufConcVbuf( pbuf, &prefix );
                 VbufFree( &prefix );
             }   break;
             case 'M':   /* template info */
-            {   TEMPLATE_INFO * const tinfo = va_arg( arg, TEMPLATE_INFO * );
+            {   TEMPLATE_INFO * const tinfo = va_arg( args, TEMPLATE_INFO * );
                 const SYMBOL sym = tinfo->sym;
 
                 FormatTemplateInfo( tinfo, &prefix );
@@ -245,7 +250,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
             }   break;
             case 'C':   /* template specialization */
             {   TEMPLATE_SPECIALIZATION * const tspec =
-                    va_arg( arg, TEMPLATE_SPECIALIZATION * );
+                    va_arg( args, TEMPLATE_SPECIALIZATION * );
 
                 FormatTemplateSpecialization( tspec, &prefix );
                 VbufConcVbuf( pbuf, &prefix );

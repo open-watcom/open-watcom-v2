@@ -8,7 +8,7 @@
 :CLSS.
 The &cls. is the building block for all of the double linked list classes.
 It is implemented in terms of the
-.MONO WCSLink
+:MONO.WCSLink
 base class.
 Since no user data is stored directly with it,
 the &cls. should only be used as a base class to derive a user defined class.
@@ -17,14 +17,14 @@ When creating a double linked intrusive list, the &cls. is used to derive the
 user defined class that holds the data to be inserted into the list.
 :P.
 The
-.MONO wclcom.h
+:MONO.wclcom.h
 header file is included by the
-.MONO wclist.h
+:MONO.wclist.h
 header file.
 There is no need to explicitly include the
-.MONO wclcom.h
+:MONO.wclcom.h
 header file unless the
-.MONO wclist.h
+:MONO.wclist.h
 header file is not included.
 No errors will result if it is included.
 :P.
@@ -36,7 +36,8 @@ typed as a &obj. will not invoke the destructor of the derived class.
 :CMT.:MONO.WCIsvDList
 :CMT.and
 :CMT.:MONO.WCValDList
-:CMT.are examples of classes derived from the &cls.:PERIOD.
+:CMT.are examples of classes derived from the &cls.
+:PERIOD.
 :HDG.Public Member Functions
 The following public member functions are declared:
 :MFNL.
@@ -56,11 +57,13 @@ The following public member functions are declared:
 :SNPCD cd_idx='c'.WCDLink();
 :eSNPL.
 :SMTICS.
-The &fn. creates an &obj.:PERIOD.
+The &fn. creates an &obj.
+:PERIOD.
 The &fn. is used implicitly by the compiler
 when it generates a constructor for a derived class.
 :RSLTS.
-The &fn. produces an initialized &obj.:PERIOD.
+The &fn. produces an initialized &obj.
+:PERIOD.
 :SALSO.
 :SAL typ='dtor'.
 :eSALSO.

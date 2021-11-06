@@ -7,17 +7,17 @@ double fdim( double x, double y );
 .desc begin
 The
 .id &funcb.
-function computes the positive difference of 
+function computes the positive difference of
 .arg x
 and
 .arg y
-.ct .li .  The function is equivalent to:
+.period  The function is equivalent to:
 .blkcode begin
 fmax( x - y, 0.0 );
 .blkcode end
 .desc end
 .return begin
-The routine will either return 
+The routine will either return
 .arg x
 -
 .arg y

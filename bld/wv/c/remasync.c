@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +56,7 @@ static trap_shandle     SuppAsyncId = 0;
 
 bool InitAsyncSupp( void )
 {
-    SuppAsyncId = GetSuppId( ASYNC_SUPP_NAME );
+    SuppAsyncId = GETSUPPID( ASYNC_SUPP_NAME );
     if( SuppAsyncId != 0 )
         return( true );
     return( false );

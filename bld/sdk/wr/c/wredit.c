@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,7 +105,7 @@ void WRSetEditWithULONG( unsigned long val, int base, HWND hDlg, int id )
     WRSetEditWithStr( temp, hDlg, id );
 }
 
-void WRSetEditWithSLONG( signed long val, int base, HWND hDlg, int id )
+void WRSetEditWithSLONG( long val, int base, HWND hDlg, int id )
 {
     char        temp[35];
     ltoa( val, temp, base );
@@ -142,9 +143,9 @@ char *WRGetStrFromListBox( HWND hDlg, int id, int index )
     return( cp );
 }
 
-bool WRGetSLONGFromEdit( HWND hDlg, int id, bool *mod, signed long *value )
+bool WRGetSLONGFromEdit( HWND hDlg, int id, bool *mod, long *value )
 {
-    signed long val;
+    long        val;
     char        *cp;
     char        *ep;
     bool        ret;
@@ -159,7 +160,7 @@ bool WRGetSLONGFromEdit( HWND hDlg, int id, bool *mod, signed long *value )
         if( cp == NULL ) {
             return( false );
         }
-        val = (signed long)strtol( cp, &ep, 0 );
+        val = strtol( cp, &ep, 0 );
         if( *ep != '\0' ) {
             if( mod != NULL ) {
                 *mod = false;

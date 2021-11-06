@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,5 +37,6 @@ extern bool FindLibTrace( mod_entry * );
 extern void PrintBadTraces( void );
 extern void CleanTraces( void );
 extern void ResetSymTrace( void );
-
-extern trace_info *     TraceList;
+extern void AddTraceListMod( char *, char * );
+extern void AddTraceListSym( char * );
+extern bool FindSymTrace( const char * );

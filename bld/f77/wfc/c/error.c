@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "errcod.h"
 #include "cpopt.h"
 #include "progsw.h"
@@ -43,9 +42,58 @@
 #include "inout.h"
 #include "cmsgproc.h"
 #include "rstutils.h"
-#include "errrtns.h"
 #include "errutil.h"
+#include "wfcgrps.gh"
+#include "wfcattrs.gh"
 
+
+#define MSGATTR_NULL    0   /* NO_CARET */
+
+typedef enum caret_type {
+    NO_CARET,   /* 0 */
+    OPR_CARET,  /* 1 */
+    OPN_CARET   /* 2 */
+} caret_type;
+
+static const char *GroupPrefix[] = {
+#define GRP_DEF(name,prefix,num,index,eindex) prefix,
+    GRP_DEFS
+#undef GRP_DEF
+};
+
+static const int GroupOffset[] = {
+#define GRP_DEF(name,prefix,num,index,eindex) index,
+    GRP_DEFS
+#undef GRP_DEF
+};
+
+static caret_type  CaretTable[] = {
+#define MSGATTR_DEF(attr)   attr,
+    MSGATTR_DEFS
+#undef MSGATTR_DEF
+};
+
+static void    BldErrCode( unsigned int error_num, char *buffer )
+// Build error code.
+{
+    unsigned    num;
+    unsigned    grp;
+
+    grp = error_num / 256;
+    num = ( error_num % 256 ) + 1;
+    sprintf( buffer, " %s%2.2d", GroupPrefix[grp], num );
+}
+
+static caret_type CaretType( uint error_num )
+// Return the type of caret.
+{
+    unsigned    num;
+    unsigned    grp;
+
+    grp = error_num / 256;
+    num = error_num % 256;
+    return( CaretTable[GroupOffset[grp] + num] );
+}
 
 static  void    ExtIssued( void )
 // An extension message has just been issued.
@@ -75,7 +123,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
 {
     int         column;
     int         contline;
-    byte        caret;
+    caret_type  caret;
     bool        was_listed;
     bool        save_list;
     char        buffer[ERR_BUFF_SIZE+1];
@@ -84,7 +132,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
     ChkErrFile();
     save_list = SetLst( true );
     was_listed = WasStmtListed();
-    caret = CarrotType( error );
+    caret = CaretType( error );
     column = 0;
     contline = 0;
     if( (SrcRecNum != 0) && // consider error opening source file
@@ -105,17 +153,17 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
             // c$notime=10       "oprpos/opnpos" fields are meaningless
             //      & + 4.2
             //       end
-            if( ( caret != NO_CARROT ) && ( CITNode->link != NULL ) ) {
-                if( caret == OPR_CARROT ) {
-                    column = CITNode->oprpos & 0xff;
+            if( ( caret != NO_CARET ) && ( CITNode->link != NULL ) ) {
+                if( caret == OPR_CARET ) {
+                    column = (CITNode->oprpos & 0xff);
                     contline = CITNode->oprpos >> 8;
                 } else {
-                    column = CITNode->opnpos & 0xff;
+                    column = (CITNode->opnpos & 0xff);
                     contline = CITNode->opnpos >> 8;
                 }
             }
         }
-        if( was_listed && ( caret != NO_CARROT ) && ( column != 0 ) ) {
+        if( was_listed && ( caret != NO_CARET ) && ( column != 0 ) ) {
             memset( buffer, ' ', column + 7 );
             buffer[ column + 7 ] = '$';
             buffer[ column + 8 ] = NULLCHAR;
@@ -148,7 +196,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
                     MsgPrintErr( MS_IN, buff );
                 }
             }
-        } else if( caret != NO_CARROT ) {
+        } else if( caret != NO_CARET ) {
             if( column == 0 ) {
                 // regardless of whether statement was listed or not we want
                 // to display "at end of statement"
@@ -162,7 +210,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
             }
         }
     }
-    __BldErrMsg( error, buffer, args );
+    BldErrMsg( error, buffer, args );
     PrintErr( buffer );
     PrtErrNL();
     SetLst( save_list );
@@ -184,7 +232,8 @@ void    Warning( int code, ... )
 {
     va_list     args;
 
-    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 )
+        return;
     if( Options & OPT_WARN ) {
         va_start( args, code );
         ErrHandler( "*WRN*", code, args );
@@ -198,7 +247,8 @@ void    Extension( int code, ... )
 {
     va_list     args;
 
-    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 )
+        return;
     if( Options & OPT_EXT ) {
         va_start( args, code );
         ErrHandler( "*EXT*", code, args );

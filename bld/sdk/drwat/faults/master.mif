@@ -19,4 +19,4 @@ all: $(targets)  .SYMBOLIC
 
 .obj.exe : $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) file { $[@ }
+    $(linker) name $@ $(lflags) file { $[@ }

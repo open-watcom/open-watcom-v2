@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,9 +49,6 @@
 /* P_NOWAIT     = 1 resume execution immediately after spawning task          */
 /* P_OVERLAY    = 2 replace current task with new task, equivalent to exec... */
 /* P_NOWAITO    = 3 resume execution immediately, no result code              */
-
-int __p_overlay = 2; /* defined here because of a trick in DOS version  */
-
 
 _WCRTLINK int (spawnve)( mode, path, argv, envp )
     int             mode;       /* wait, nowait or overlay(==exec) */

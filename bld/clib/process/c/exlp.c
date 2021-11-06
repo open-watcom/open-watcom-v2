@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,19 +35,20 @@
 #include "widechar.h"
 #include <stdarg.h>
 #include <process.h>
+#include "_process.h"
+#include "_environ.h"
 
 
 _WCRTLINK int __F_NAME(execlp,_wexeclp)( const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
-    {
-        va_list ap;
+{
+    va_list         args1;
+    ARGS_TYPE_ARR   args;
 
-        arg0 = arg0;
-        va_start( ap, path );
-        #if defined(__AXP__) || defined(__MIPS__)
-            return( __F_NAME(execvp,_wexecvp)( path,
-                (const CHAR_TYPE**)ap.__base ) );
-        #else
-            return( __F_NAME(execvp,_wexecvp)( path,
-                (const CHAR_TYPE**)ap[0] ) );
-        #endif
-    }
+    /* unused parameters */ (void)arg0;
+
+    va_start( args1, path );
+    args = ARGS_ARRAY_VA( args1 );
+    va_end( args1 );
+
+    return( __F_NAME(execvp,_wexecvp)( path, args ) );
+}

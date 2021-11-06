@@ -13,11 +13,11 @@ The
 .arg stayopen
 argument, if non-zero, will cause the database to remain open after
 subsequent calls to the
-.kw gethostent
+.reffunc gethostent
 function.
 .desc end
 .see begin
 .seelist gethostent endhostent
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

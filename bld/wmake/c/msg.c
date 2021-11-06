@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,9 +51,6 @@ typedef union msg_arg {
 STATIC const char   *logName = NULL;
 STATIC FILE         *logFP = NULL;
 
-STATIC MSG_ARG  ArgValue[2];
-STATIC bool     USEARGVALUE = false;    /* set to non_zero if ArgValue is used */
-
 #define pick( num, string ) static const char FAR __literal_ ## num [] = { string };
 #include "_msg.h"
 #undef pick
@@ -63,53 +60,6 @@ STATIC const char FAR * const msgText[] = {
     #include "_msg.h"
     #undef pick
 };
-
-STATIC void reOrder( va_list args, char *paratype )
-/*************************************************/
-{
-    int         i;
-
-    for( i = 1; i >= 0 && *paratype != NULLCHAR; --i ) {
-        switch( *paratype++ ) {
-        case 'D':
-        case 'd':
-        case 'x':
-            ArgValue[i].ui16 = (UINT16)va_arg( args, unsigned );
-            break;
-        case 'C':
-        case 'c':
-        case 'M':
-            ArgValue[i].i = (UINT16)va_arg( args, unsigned );
-            break;
-        case 'E':
-        case 's':
-        case '1':
-        case '2':
-            ArgValue[i].cp = va_arg( args, char * );
-            break;
-        case 'F':
-            ArgValue[i].cfp = va_arg( args, char FAR * );
-            break;
-        case 'l':
-            ArgValue[i].ui32 = va_arg( args, UINT32 );
-            break;
-        }
-    }
-}
-
-
-STATIC void positnArg( va_list args, UINT16 size )
-/*************************************************
- * the reordered parameter are passed to FmtStr as a union of 4 bytes.
- * so we have to take two more bytes out for int, char *, etc, when we use
- * va_arg().
- */
-{
-    if( USEARGVALUE && ( size < (UINT16)sizeof( MSG_ARG ) ) ) {
-        size = (UINT16)va_arg( args, unsigned );    // used for side efect
-    }
-}
-
 
 /*
  *  These str routines are support routines for doFmtStr.  They return a
@@ -297,11 +247,9 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 /* case statements are sorted in ascii order */
             case 'D' :
                 dest = strDec2( dest, (UINT16)va_arg( args, unsigned ) );
-                positnArg( args, (UINT16)sizeof( UINT16 ) );
                 break;
             case 'C' :
                 ch = (char)va_arg( args, int );
-                positnArg( args, (UINT16)sizeof( int ) );
                 if( cisprint( ch ) ) {
                     *dest++ = ch;
                 } else {
@@ -311,12 +259,10 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
             case 'E' :
                 *dest++ = '(';
                 dest = strApp( dest, va_arg( args, char * ) );
-                positnArg( args, (UINT16)sizeof( char * ) );
                 *dest++ = ')';
                 break;
             case 'F' :
                 dest = farStrApp( dest, va_arg( args, char FAR * ) );
-                positnArg( args, (UINT16)sizeof( char FAR * ) );
                 break;
             case 'L' :
                 *dest = NULLCHAR;
@@ -324,7 +270,6 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 break;
             case 'M' :
                 MsgGet( va_arg( args, int ), msgbuff );
-                positnArg( args, (UINT16)sizeof( int ) );
                 dest = strApp( dest, msgbuff );
                 break;
             case 'Z' :
@@ -332,31 +277,25 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 break;
             case 'c' :
                 *dest++ = (char)va_arg( args, int );
-                positnArg( args, (UINT16)sizeof( int ) );
                 break;
             case 'd' :
                 dest = strDec( dest, (UINT16)va_arg( args, unsigned ) );
-                positnArg( args, (UINT16)sizeof( UINT16 ) );
                 break;
 #ifdef CACHE_STATS
             case 'l' :
                 dest = strDecL( dest, va_arg( args, UINT32 ) );
-                positnArg( args, (UINT16)sizeof( UINT32 ) );
                 break;
 #endif
             case 's' :
             case '1' :
             case '2' :
                 dest = strApp( dest, va_arg( args, char * ) );
-                positnArg( args, (UINT16)sizeof( char * ) );
                 break;
             case 'u' :
                 dest = strDec5( dest, (UINT16)va_arg( args, unsigned ) );
-                positnArg( args, (UINT16)sizeof( UINT16 ) );
                 break;
             case 'x' :
                 dest = strHex( dest, (UINT16)va_arg( args, unsigned ) );
-                positnArg( args, (UINT16)sizeof( UINT16 ) );
                 break;
             default :
                 *dest++ = ch;
@@ -369,7 +308,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
 }
 
 
-size_t FmtStr( char *buff, const char *fmt, ... )
+size_t FmtStr( char *buff, const char FAR *fmt, ... )
 /*******************************************************
  * quick sprintf routine... see doFmtStr
  */
@@ -396,6 +335,26 @@ static void writeOutput( unsigned class, FILE *fp, const char *buff, size_t len 
     fwrite( buff, 1, len, fp );
 }
 
+static void printBanner( char *buff )
+/***********************************/
+{
+    size_t  len;
+
+    Glob.headerout = true;      /* so we don't print more than once */
+    len = FmtStr( buff, msgText[BANNER - MSG_SPECIAL_BASE] );
+    buff[len++] = '\n';
+    fwrite( buff, 1, len, stdout );
+    fflush( stdout );
+}
+
+void PrintBanner( void )
+/**********************/
+{
+    char        buff[1024];
+
+    printBanner( buff );
+}
+
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
@@ -415,10 +374,13 @@ void PrtMsg( enum MsgClass num, ... )
     char            wefchar = 'F';    /* W, E, or F */
     char            *str;
     char            msgbuff[MAX_RESOURCE_SIZE];
-    char            *paratype;
 
     if( !Glob.debug && (num & DBG) ) {
         return;
+    }
+
+    if( !Glob.noheader && !Glob.headerout ) {
+        printBanner( buff );
     }
 
     len = 0;
@@ -461,8 +423,6 @@ void PrtMsg( enum MsgClass num, ... )
         }
     }
 
-    Header();
-
     /*
      * print the leader to our message, if any... do this now because it
      * may contain a long filename, and we don't want to overwrite the stack
@@ -477,17 +437,11 @@ void PrtMsg( enum MsgClass num, ... )
         str = va_arg( args, char * );
         writeOutput( class, fp, str, strlen( str ) );
         len = 0;
-    } else {                    /* print a formatted string */
-        if( (num & NUM_MSK) >= MSG_SPECIAL_BASE ) {
-            len = doFmtStr( buff, msgText[(num & NUM_MSK) - MSG_SPECIAL_BASE], args );
-        } else if( MsgReOrder( num & NUM_MSK, msgbuff, &paratype ) ) {
-            USEARGVALUE = true;
-            reOrder( args, paratype ); /* reposition the parameters */
-            len = FmtStr( buff, msgbuff, ArgValue[0], ArgValue[1] );
-            USEARGVALUE = false;
-        } else {
-            len = doFmtStr( buff, msgbuff, args );
-        }
+    } else if( (num & NUM_MSK) >= MSG_SPECIAL_BASE ) {  /* print a formatted string */
+        len = doFmtStr( buff, msgText[(num & NUM_MSK) - MSG_SPECIAL_BASE], args );
+    } else {
+        MsgGet( num & NUM_MSK, msgbuff );
+        len = doFmtStr( buff, msgbuff, args );
     }
     va_end( args );
     if( (num & NEOL) == 0 ) {
@@ -509,17 +463,21 @@ void massert( const char *expr, const char *file, int line )
 }
 #endif
 
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(num,eng,jap)   + 1
+    #include "usage.gh"
+    #undef pick
+};
+
 void Usage( void )
 /****************/
 {
     char        msgbuff[MAX_RESOURCE_SIZE];
     int         i;
 
-    for( i = MSG_USAGE_BASE;; i++ ) {
+    for( i = MSG_USAGE_BASE; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         MsgGet( i, msgbuff );
-        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == NULLCHAR ) ) {
-            break;
-        }
         PrtMsg( INF | PRNTSTR, msgbuff );
     }
     ExitOK();

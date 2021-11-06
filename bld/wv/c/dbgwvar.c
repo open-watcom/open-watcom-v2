@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,7 +138,7 @@ static void     VarSetWidth( a_window wnd )
 
     var->last_width = WndWidth( wnd );
     if( VarRowTotal( &var->i ) <= WndRows( wnd ) ) {
-        var->last_width -= WndVScrollWidth( wnd );
+        var->last_width -= WndScrollBarWidth( wnd );
     }
     var->last_width -= WndAvgCharX( wnd ) / 2;
 
@@ -752,10 +752,10 @@ static void VarRestoreWndFromScope( a_window wnd )
 
     wnd_data = var->i.s->wnd_data;
     if( wnd_data == NULL || wnd_data->row == WND_NO_ROW ) {
-        WndScrollAbs( wnd, 0 );
+        WndVScrollAbs( wnd, 0 );
         WndFirstCurrent( wnd );
     } else {
-        WndScrollAbs( wnd, wnd_data->scroll );
+        WndVScrollAbs( wnd, wnd_data->scroll );
         WndNewCurrent( wnd, wnd_data->row, wnd_data->piece );
     }
 }
@@ -1055,7 +1055,7 @@ wnd_info VarInfo = {
     VarRefresh,
     VarGetLine,
     VarMenuItem,
-    NoScroll,
+    NoVScroll,
     VarBegPaint,
     VarEndPaint,
     VarModify,

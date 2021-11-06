@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-pick( TRACE_INTO, "Into\0" )
-pick( TRACE_OVER, "Over\0" )
-pick( TRACE_NEXT, "Next\0" )
-pick( TRACE_NONE, "\0" )
+pick( "Into", TRACE_INTO )
+pick( "Over", TRACE_OVER )
+pick( "Next", TRACE_NEXT )
+pick( "",     TRACE_NONE )

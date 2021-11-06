@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -310,7 +310,7 @@ void GatherSetAll( sio_data * curr_sio, bool gather_active )
 {
     image_info          *curr_image;
     mod_info            *curr_mod;
-    unsigned long int   count;
+    unsigned long       count;
     int                 count2;
     int                 count3;
 
@@ -336,7 +336,7 @@ void AbsSetAll( sio_data *curr_sio, bool abs_bar )
     image_info          *curr_image;
     mod_info            *curr_mod;
     file_info           *curr_file;
-    unsigned long int   count;
+    unsigned long       count;
     int                 count2;
     int                 count3;
     int                 count4;
@@ -368,7 +368,7 @@ void RelSetAll( sio_data *curr_sio, bool rel_bar )
     image_info          *curr_image;
     mod_info            *curr_mod;
     file_info           *curr_file;
-    unsigned long int   count;
+    unsigned long       count;
     int                 count2;
     int                 count3;
     int                 count4;
@@ -400,7 +400,7 @@ void StretchSetAll( sio_data *curr_sio, bool bar_max )
     image_info          *curr_image;
     mod_info            *curr_mod;
     file_info           *curr_file;
-    unsigned long int   count;
+    unsigned long       count;
     int                 count2;
     int                 count3;
     int                 count4;
@@ -432,7 +432,7 @@ void SortSetAll( sio_data *curr_sio, int sort_type )
     image_info          *curr_image;
     mod_info            *curr_mod;
     file_info           *curr_file;
-    unsigned long int   count;
+    unsigned long       count;
     int                 count2;
     int                 count3;
 
@@ -469,7 +469,7 @@ STATIC void resolveImageSamples( void )
     sample_index_t      tick_index;
     mod_handle          mh;
     sym_handle          *sh;
-    unsigned long int   count;
+    unsigned long       count;
     int                 count2;
     int                 count3;
     int                 count4;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,8 +180,8 @@ static void InitAuxInfo( void )
 ;
 }
 
-static void CopyAuxInfo( void )
-/*****************************/
+static void PragmaAuxEnd( void )
+/******************************/
 {
     if( CurrEntry == NULL ) {
         // Redefining a built-in calling convention
@@ -206,16 +206,17 @@ static void CopyAuxInfo( void )
     if( !HW_CEqual( AuxInfo.save, HW_EMPTY ) ) {
         HW_TurnOff( CurrInfo->save, AuxInfo.save );
     }
+    PragmaAuxEnding();
 }
 
-bool GetPragAuxAlias( void )
-/**************************/
+bool GetPragmaAuxAlias( void )
+/****************************/
 {
-    CurrAlias = SearchPragAuxAlias( Buffer );
+    CurrAlias = PragmaAuxAlias( Buffer );
     NextToken();
     if( CurToken == T_RIGHT_PAREN )
         NextToken();
-    CopyAuxInfo();
+    PragmaAuxEnd();
     return( true );
 }
 
@@ -277,7 +278,7 @@ void PragAux( void )
     InitAuxInfo();
     PPCTL_ENABLE_MACROS();
     NextToken();
-    if( GetPragAuxAliasInfo() ) {
+    if( GetPragmaAuxAliasInfo() ) {
         SetCurrInfo( Buffer );
         NextToken();
         PragObjNameInfo( &AuxInfo.objname );
@@ -322,10 +323,9 @@ void PragAux( void )
                 for the use of this pragma. This is done by saying the pragma
                 modifies the [E]SP register. A kludge, but it works.
             */
-//                HW_CTurnOn( AuxInfo.save, HW_SP );
+//                HW_CTurnOff( AuxInfo.save, HW_SP );
         }
-        CopyAuxInfo();
-        PragEnding();
+        PragmaAuxEnd();
     }
     PPCTL_DISABLE_MACROS();
 }
@@ -414,7 +414,7 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
     bool                uses_auto;
-    auto char           name[8];
+    char                name[8];
 
     AsmFini();
     uses_auto = false;
@@ -450,11 +450,11 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
         CurrEntry->next = AuxList;
         AuxList = CurrEntry;
         CurrEntry = NULL;
-        sym_handle = MakeFunction( name, FuncNode( GetType( TYPE_VOID ), FLAG_NONE, NULL ) );
+        sym_handle = MakeFunction( name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
         tree = LeafNode( OPR_FUNCNAME );
         tree->op.u2.sym_handle = sym_handle;
         tree = ExprNode( tree, OPR_CALL, NULL );
-        tree->u.expr_type = GetType( TYPE_VOID );
+        tree->u.expr_type = GetType( TYP_VOID );
         AddStmt( tree );
     }
     AsmFiniRelocs();

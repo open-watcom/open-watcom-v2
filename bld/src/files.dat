@@ -7,16 +7,7 @@
 [ INCLUDE <OWSRCDIR>/src/ftnexamp.dat ]
 [ INCLUDE <OWSRCDIR>/src/goodies.dat ]
 [ INCLUDE <OWSRCDIR>/src/win.dat ]
-[ INCLUDE <OWSRCDIR>/src/startup.dat ]
 [ INCLUDE <OWSRCDIR>/src/misc.dat ]
 [ INCLUDE <OWSRCDIR>/src/os2.dat ]
 [ INCLUDE <OWSRCDIR>/src/directx.dat ]
-
-# CPPLIB/CONTAIN source code
-[ DEFAULT type="s" dir="src/cpplib/contain" cond="rtsource" where="c f77 jc jf77 ac" ]
-usr="wchash.cpp"
-usr="wclist.cpp"
-usr="wcskip.cpp"
-usr="wcexcept.cpp"
-
 #[ INCLUDE <OWSRCDIR>/src/p16/files.dat ]

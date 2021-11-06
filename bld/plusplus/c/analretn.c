@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,7 +123,7 @@ static void checkAutoReturn(    // CHECK IF AUTOMATIC BEING RETURNED
                         PTreeErrorExpr( expr, ERR_RET_AUTO_REF );
                     } else {
                         func_ret = SymFuncReturnType( func );
-                        if( NULL != StructType( func_ret ) ) {
+                        if( NULL != ClassType( func_ret ) ) {
                             PTreeErrorExpr( expr, ERR_RET_AUTO_REF );
                         }
                     }
@@ -131,7 +132,7 @@ static void checkAutoReturn(    // CHECK IF AUTOMATIC BEING RETURNED
             } else if( NodeIsBinaryOp( node, CO_CALL_EXEC_IND ) ) {
                 func_ret = TypeFunctionCalled( NodeFuncForCall( node )->type );
                 func_ret = func_ret->of;
-                if( NULL != StructType( func_ret ) ) {
+                if( NULL != ClassType( func_ret ) ) {
                     PTreeErrorExpr( expr, ERR_RET_AUTO_REF );
                 }
                 break;
@@ -154,7 +155,7 @@ PTREE AnalyseReturnClassVal     // RETURN CLASS VALUE
     CNV_DIAG* diag;             // - diagnosis
 
     retn_type = expr->u.subtree[0]->type;
-    retn_class = StructType( retn_type );
+    retn_class = ClassType( retn_type );
     DbgVerify( retn_class != NULL, "AnalyseReturnClassVal -- not class" );
     if( ClassCorrupted( retn_class ) ) {
         PTreeErrorNode( expr );

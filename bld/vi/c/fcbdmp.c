@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,7 @@ vi_rc HeapCheck( void )
     }
     hinfo._pentry = NULL;
     for( ;; ) {
-#if defined(__NT__) || defined(__OS2V2__)
+#if defined(__NT__) || defined(__OS2__) && !defined(_M_I86)
         i = _nheapwalk( &hinfo );
 #else
         i = _heapwalk( &hinfo );

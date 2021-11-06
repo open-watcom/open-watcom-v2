@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,12 +76,12 @@ scrtype         Screen;
 
 static const ULONG      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
-trap_retval ReqRead_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     return( 0 );
 }
 
-trap_retval ReqWrite_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
@@ -90,7 +90,7 @@ trap_retval ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_get_config( void )
+trap_retval TRAP_FILE( get_config )( void )
 {
     file_get_config_ret *ret;
 
@@ -114,20 +114,20 @@ long OpenFile( char *name, USHORT mode, int flags )
     APIRET      rc;
 
     if( flags & OPEN_CREATE ) {
-        openflags = 0x12;
-        openmode = 0x2042;
+        openflags = OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_REPLACE_IF_EXISTS;
+        openmode = OPEN_FLAGS_FAIL_ON_ERROR | OPEN_SHARE_DENYNONE | OPEN_ACCESS_READWRITE;
     } else {
-        openflags = 0x01;
-        openmode = mode | 0x2040;
+        openflags = OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS;
+        openmode = OPEN_FLAGS_FAIL_ON_ERROR | OPEN_SHARE_DENYNONE | mode;
     }
     if( flags & OPEN_PRIVATE ) {
-        openmode |= 0x80;
+        openmode |= OPEN_FLAGS_NOINHERIT;
     }
     rc = DosOpen( name,         /* name */
                 &hdl,           /* handle to be filled in */
                 &action,        /* action taken */
                 0,              /* initial allocation */
-                0,              /* normal file */
+                FILE_NORMAL,    /* normal file */
                 openflags,      /* open the file */
                 openmode,       /* deny-none, inheritance */
                 0 );            /* reserved */
@@ -140,7 +140,7 @@ long OpenFile( char *name, USHORT mode, int flags )
 #define WRITEONLY   1
 #define READWRITE   2
 
-trap_retval ReqFile_open( void )
+trap_retval TRAP_FILE( open )( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -167,7 +167,7 @@ trap_retval ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_seek( void )
+trap_retval TRAP_FILE( seek )( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -181,7 +181,7 @@ trap_retval ReqFile_seek( void )
 }
 
 
-trap_retval ReqFile_read( void )
+trap_retval TRAP_FILE( read )( void )
 {
     ULONG               read_len;
     file_read_req       *acc;
@@ -195,7 +195,7 @@ trap_retval ReqFile_read( void )
     return( sizeof( *ret ) + read_len );
 }
 
-trap_retval ReqFile_write( void )
+trap_retval TRAP_FILE( write )( void )
 {
     ULONG               len;
     ULONG               written_len;
@@ -212,7 +212,7 @@ trap_retval ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_close( void )
+trap_retval TRAP_FILE( close )( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -223,7 +223,7 @@ trap_retval ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_erase( void )
+trap_retval TRAP_FILE( erase )( void )
 {
     file_erase_ret      *ret;
 
@@ -232,7 +232,7 @@ trap_retval ReqFile_erase( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_get_extra( void )
+trap_retval TRAP_THREAD( get_extra )( void )
 {
     char *ch;
 
@@ -241,14 +241,14 @@ trap_retval ReqThread_get_extra( void )
     return( 1 );
 }
 
-trap_retval ReqSet_user_screen( void )
+trap_retval TRAP_CORE( Set_user_screen )( void )
 {
     AppSession();
     Screen = USER_SCREEN;
     return( 0 );
 }
 
-trap_retval ReqSet_debug_screen( void )
+trap_retval TRAP_CORE( Set_debug_screen )( void )
 {
     DebugSession();
     Screen = DEBUG_SCREEN;
@@ -258,13 +258,13 @@ trap_retval ReqSet_debug_screen( void )
 void RestoreScreen( void )
 {
     if( Screen == USER_SCREEN ) {
-        ReqSet_user_screen();
+        TRAP_CORE( Set_user_screen )();
     } else {
-        ReqSet_debug_screen();
+        TRAP_CORE( Set_debug_screen )();
     }
 }
 
-trap_retval ReqRead_user_keyboard( void )
+trap_retval TRAP_CORE( Read_user_keyboard )( void )
 {
     HMONITOR    mon;
     struct {
@@ -334,7 +334,7 @@ trap_retval ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_err_text( void )
+trap_retval TRAP_CORE( Get_err_text )( void )
 {
     static char *DosErrMsgs[] = {
         #define pick(a,b)   b,
@@ -445,12 +445,12 @@ static trap_elen Redirect( bool input )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRedirect_stdin( void )
+trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
     return( Redirect( TRUE ) );
 }
 
-trap_retval ReqRedirect_stdout( void )
+trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
     return( Redirect( FALSE ) );
 }
@@ -483,7 +483,7 @@ char *StrCopy( const char *src, char *dst )
     return( strlen( dst ) + dst );
 }
 
-trap_retval ReqFile_run_cmd( void )
+trap_retval TRAP_FILE( run_cmd )( void )
 {
     char                *dst;
     char                *src;
@@ -528,7 +528,11 @@ trap_retval ReqFile_run_cmd( void )
     savestdout = 0xffff;
     DosDupHandle( 0, &savestdin );
     DosDupHandle( 1, &savestdout );
-    if( DosOpen( "CON", &console, &act, 0, 0, 0x11, 0x42, 0 ) == 0 ) {
+    if( DosOpen( "CON", &console, &act, 0,
+            FILE_NORMAL,
+            OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
+            OPEN_SHARE_DENYNONE | OPEN_ACCESS_READWRITE,
+            0 ) == 0 ) {
         new = 0;
         DosDupHandle( console, &new );
         new = 1;
@@ -634,7 +638,7 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
     return( rc );
 }
 
-trap_retval ReqFile_string_to_fullpath( void )
+trap_retval TRAP_FILE( string_to_fullpath )( void )
 {
     const char                  *ext_list;
     char                        *name;
@@ -658,7 +662,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     return( sizeof( *ret ) + strlen( fullname ) + 1 );
 }
 
-trap_retval ReqSplit_cmd( void )
+trap_retval TRAP_CORE( Split_cmd )( void )
 {
     char            *cmd;
     char            *start;

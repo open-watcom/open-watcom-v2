@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -378,7 +379,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                     }
                     break;
                 case 6:
-                    // fixme -- this needs work .... check USE_32, etc
+                    // fixme -- this needs work .... check USE32, etc
                     fixup_type = FIX_PTR32;
                     Code->info.opnd_type[OPND1] = OP_J48;
                     break;

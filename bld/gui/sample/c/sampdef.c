@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,7 @@ gui_resource HotSpots[NUM_HOT_SPOTS] = {
 #if !default_colours
 
 gui_colour_set BackgroundColours = {
-    GUI_BLACK, GUI_BLACK   /* GUI_BACKGROUND_COLOUR */
+    GUI_BLACK, GUI_BLACK    /* GUI_BACKGROUND_COLOUR */
 };
 
 gui_colour_set DialColours = {
@@ -173,67 +173,67 @@ gui_menu_struct ChildMenu[] = {
 
 #if !default_colours
 static gui_colour_set ChildColours[GUI_NUM_ATTRS + 1] = {
-    /* Fore              Back        */
-    GUI_BRIGHT_BLUE,  GUI_BRIGHT_WHITE,   /* GUI_MENU_PLAIN           */
-    GUI_BRIGHT_WHITE, GUI_WHITE,          /* GUI_MENU_STANDOUT        */
-    GUI_GREY,         GUI_WHITE,          /* GUI_MENU_GRAYED          */
-    GUI_BRIGHT_CYAN,  GUI_BLACK,          /* GUI_MENU_ACTIVE          */
-    GUI_BRIGHT_WHITE, GUI_BLACK,          /* GUI_MENU_ACTIVE_STANDOUT */
-    GUI_WHITE,        GUI_BRIGHT_WHITE,   /* GUI_BACKGROUND           */
-    GUI_BLUE,         GUI_WHITE,          /* GUI_MENU_FRAME           */
-    GUI_GREY,         GUI_WHITE,          /* GUI_TITLE_INACTIVE       */
-    GUI_WHITE,        GUI_BLUE,           /* GUI_FRAME_ACTIVE         */
-    GUI_GREY,         GUI_WHITE,          /* GUI_FRAME_INACTIVE       */
-    GUI_BRIGHT_WHITE, GUI_BLUE,           /* GUI_ICON                 */
-    GUI_GREY,         GUI_BLACK,          /* GUI_MENU_GRAYED_ACTIVE   */
-    GUI_GREY,         GUI_WHITE,          /* GUI_FRAME_RESIZE         */
-    GUI_BRIGHT_CYAN,  GUI_CYAN            /* GUI_FIRST_UNUSED         */
+    /* Fore          Back        */
+    GUI_BR_BLUE,    GUI_BR_WHITE,   /* GUI_MENU_PLAIN           */
+    GUI_BR_WHITE,   GUI_WHITE,      /* GUI_MENU_STANDOUT        */
+    GUI_GREY,       GUI_WHITE,      /* GUI_MENU_GRAYED          */
+    GUI_BR_CYAN,    GUI_BLACK,      /* GUI_MENU_ACTIVE          */
+    GUI_BR_WHITE,   GUI_BLACK,      /* GUI_MENU_ACTIVE_STANDOUT */
+    GUI_WHITE,      GUI_BR_WHITE,   /* GUI_BACKGROUND           */
+    GUI_BLUE,       GUI_WHITE,      /* GUI_MENU_FRAME           */
+    GUI_GREY,       GUI_WHITE,      /* GUI_TITLE_INACTIVE       */
+    GUI_WHITE,      GUI_BLUE,       /* GUI_FRAME_ACTIVE         */
+    GUI_GREY,       GUI_WHITE,      /* GUI_FRAME_INACTIVE       */
+    GUI_BR_WHITE,   GUI_BLUE,       /* GUI_ICON                 */
+    GUI_GREY,       GUI_BLACK,      /* GUI_MENU_GRAYED_ACTIVE   */
+    GUI_GREY,       GUI_WHITE,      /* GUI_FRAME_RESIZE         */
+    GUI_BR_CYAN,    GUI_CYAN        /* GUI_FIRST_UNUSED         */
 };
 #endif
 
 #if !default_colours
 static gui_colour_set DialogColours[GUI_NUM_ATTRS] = {
-    /* Fore              Back        */
-    GUI_BRIGHT_WHITE, GUI_BLUE,          /* GUI_MENU_PLAIN           */
-    GUI_BRIGHT_WHITE, GUI_BLUE,          /* GUI_MENU_STANDOUT        */
-    GUI_GREY,         GUI_BLUE,          /* GUI_MENU_GRAYED          */
-    GUI_CYAN,         GUI_BLACK,         /* GUI_MENU_ACTIVE          */
-    GUI_BRIGHT_WHITE, GUI_BLACK,         /* GUI_MENU_ACTIVE_STANDOUT */
-    GUI_BRIGHT_WHITE, GUI_BLUE,          /* GUI_BACKGROUND           */
-    GUI_CYAN,         GUI_BLUE,          /* GUI_MENU_FRAME           */
-    GUI_GREY,         GUI_BLUE,          /* GUI_TITLE_INACTIVE       */
-    GUI_BRIGHT_BLUE,  GUI_CYAN,          /* GUI_FRAME_ACTIVE         */
-    GUI_BRIGHT_BLUE,  GUI_CYAN,          /* GUI_FRAME_INACTIVE       */
-    GUI_BRIGHT_WHITE, GUI_BLUE,          /* GUI_ICON                 */
-    GUI_GREY,         GUI_BLACK,         /* GUI_MENU_GRAYED_ACTIVE   */
-    GUI_GREY,         GUI_CYAN           /* GUI_FRAME_RESIZE         */
+    /* Fore          Back        */
+    GUI_BR_WHITE,   GUI_BLUE,       /* GUI_MENU_PLAIN           */
+    GUI_BR_WHITE,   GUI_BLUE,       /* GUI_MENU_STANDOUT        */
+    GUI_GREY,       GUI_BLUE,       /* GUI_MENU_GRAYED          */
+    GUI_CYAN,       GUI_BLACK,      /* GUI_MENU_ACTIVE          */
+    GUI_BR_WHITE,   GUI_BLACK,      /* GUI_MENU_ACTIVE_STANDOUT */
+    GUI_BR_WHITE,   GUI_BLUE,       /* GUI_BACKGROUND           */
+    GUI_CYAN,       GUI_BLUE,       /* GUI_MENU_FRAME           */
+    GUI_GREY,       GUI_BLUE,       /* GUI_TITLE_INACTIVE       */
+    GUI_BR_BLUE,    GUI_CYAN,       /* GUI_FRAME_ACTIVE         */
+    GUI_BR_BLUE,    GUI_CYAN,       /* GUI_FRAME_INACTIVE       */
+    GUI_BR_WHITE,   GUI_BLUE,       /* GUI_ICON                 */
+    GUI_GREY,       GUI_BLACK,      /* GUI_MENU_GRAYED_ACTIVE   */
+    GUI_GREY,       GUI_CYAN        /* GUI_FRAME_RESIZE         */
 };
 #endif
 
 gui_colour_set ToolPlain = {
-    GUI_BLACK,          GUI_BLUE,        /* GUI_HOTSPOT         */
+    GUI_BLACK,      GUI_BLUE,       /* GUI_HOTSPOT              */
 };
 
 gui_colour_set ToolStandout = {
-    GUI_BRIGHT_WHITE,   GUI_BLUE,           /* GUI_HOTSPOT_STANDOUT     */
+    GUI_BR_WHITE,   GUI_BLUE,       /* GUI_HOTSPOT_STANDOUT     */
 };
 
 #if !default_colours
 gui_colour_set ParentColours[GUI_NUM_ATTRS] = {
-    /* Fore              Back        */
-    GUI_BLUE,           GUI_WHITE,          /* GUI_MENU_PLAIN           */
-    GUI_BRIGHT_WHITE,   GUI_WHITE,          /* GUI_MENU_STANDOUT        */
-    GUI_GREY,           GUI_WHITE,          /* GUI_MENU_GRAYED          */
-    GUI_BLUE,           GUI_BLACK,          /* GUI_MENU_ACTIVE          */
-    GUI_BRIGHT_WHITE,   GUI_BLACK,          /* GUI_MENU_ACTIVE_STANDOUT */
-    GUI_BRIGHT_BLUE,    GUI_BRIGHT_WHITE,   /* GUI_BACKGROUND           */
-    GUI_BLUE,           GUI_WHITE,          /* GUI_MENU_FRAME           */
-    GUI_GREY,           GUI_WHITE,          /* GUI_TITLE_INACTIVE       */
-    GUI_WHITE,          GUI_BLUE,           /* GUI_FRAME_ACTIVE         */
-    GUI_GREY,           GUI_WHITE,          /* GUI_FRAME_INACTIVE       */
-    GUI_BRIGHT_WHITE,   GUI_BLUE,           /* GUI_ICON                 */
-    GUI_GREY,           GUI_BLACK,          /* GUI_MENU_GRAYED_ACTIVE   */
-    GUI_GREY,           GUI_WHITE           /* GUI_FRAME_RESIZE       */
+    /* Fore          Back        */
+    GUI_BLUE,       GUI_WHITE,      /* GUI_MENU_PLAIN           */
+    GUI_BR_WHITE,   GUI_WHITE,      /* GUI_MENU_STANDOUT        */
+    GUI_GREY,       GUI_WHITE,      /* GUI_MENU_GRAYED          */
+    GUI_BLUE,       GUI_BLACK,      /* GUI_MENU_ACTIVE          */
+    GUI_BR_WHITE,   GUI_BLACK,      /* GUI_MENU_ACTIVE_STANDOUT */
+    GUI_BR_BLUE,    GUI_BR_WHITE,   /* GUI_BACKGROUND           */
+    GUI_BLUE,       GUI_WHITE,      /* GUI_MENU_FRAME           */
+    GUI_GREY,       GUI_WHITE,      /* GUI_TITLE_INACTIVE       */
+    GUI_WHITE,      GUI_BLUE,       /* GUI_FRAME_ACTIVE         */
+    GUI_GREY,       GUI_WHITE,      /* GUI_FRAME_INACTIVE       */
+    GUI_BR_WHITE,   GUI_BLUE,       /* GUI_ICON                 */
+    GUI_GREY,       GUI_BLACK,      /* GUI_MENU_GRAYED_ACTIVE   */
+    GUI_GREY,       GUI_WHITE       /* GUI_FRAME_RESIZE         */
 };
 #endif
 
@@ -305,8 +305,8 @@ gui_create_info Parent = {
     GUI_COLOUR_ARRAY( ParentColours ),  // Colour attribute array
 #endif
     &MainWndGUIEventProc,               // GUI Event Callback function
-    NULL,
-    &MainIcon,
+    NULL,                               // Extra
+    &MainIcon,                          // Icon
     NULL                                // Menu Resource
 };
 
@@ -323,8 +323,8 @@ gui_create_info Child1 = {
     GUI_COLOUR_ARRAY( ChildColours ),   // Colour attribute array
 #endif
     &Child1WndGUIEventProc,             // GUI Event Callback function
-    &Child1_Out,
-    &Win1Icon,
+    &Child1_Out,                        // Extra
+    &Win1Icon,                          // Icon
     NULL                                // Menu Resource
 };
 
@@ -347,8 +347,8 @@ gui_create_info Child2 = {
     GUI_COLOUR_ARRAY( ChildColours ),   // Colour attribute array
 #endif
     &Child2WndGUIEventProc,             // GUI Event Callback function
-    &Child2_Out,
-    &Win2Icon,
+    &Child2_Out,                        // Extra
+    &Win2Icon,                          // Icon
     NULL                                // Menu Resource
 };
 
@@ -365,8 +365,8 @@ gui_create_info Child3 = {
     GUI_COLOUR_ARRAY( ChildColours ),   // Colour attribute array
 #endif
     Child3WndGUIEventProc,              // GUI Event Callback function
-    NULL,
-    &Win3Icon,
+    NULL,                               // Extra
+    &Win3Icon,                          // Icon
     NULL                                // Menu Resource
 };
 
@@ -379,8 +379,8 @@ gui_create_info Child4 = {
     GUI_NO_MENU,                        // Menu array
     GUI_NO_COLOUR,                      // Colour attribute array
     &Child1WndGUIEventProc,             // GUI Event Callback function
-    &Child1_Out,
-    &Win1Icon,
+    &Child1_Out,                        // Extra
+    &Win1Icon,                          // Icon
     NULL                                // Menu Resource
 };
 
@@ -448,8 +448,8 @@ gui_create_info DialogWndControl = {
     GUI_COLOUR_ARRAY( DialogColours ),  // Colour attribute array
 #endif
     &ControlWndGUIEventProc,            // GUI Event Callback function
-    NULL,
-    &DlgIcon,
+    NULL,                               // Extra
+    &DlgIcon,                           // Icon
     NULL                                // Menu Resource
 };
 

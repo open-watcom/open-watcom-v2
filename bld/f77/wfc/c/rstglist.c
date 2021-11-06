@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "ecflags.h"
 #include "errcod.h"
 #include "undef.h"
@@ -61,9 +61,9 @@ static  sym_id  LnkNewGlobal( sym_id local ) {
 // Allocate a global symbol and link it into the global list.
 
     sym_id      global;
-    uint        len;
+    size_t      len;
 
-    len = sizeof( symbol ) + AllocName( local->u.ns.u2.name_len );
+    len = sizeof( named_symbol ) + local->u.ns.u2.name_len;
     global = FMemAlloc( len );
     memcpy( global, local, len );
     HashInsert( GHashTable, HashValue, &GList, global );
@@ -79,14 +79,14 @@ sym_id        SearchGList( sym_id local ) {
 
     sym_id      head;
     sym_id      tail;
-    uint        name_len;
+    size_t      name_len;
 
     name_len = local->u.ns.u2.name_len;
     HashValue = CalcHash( local->u.ns.name, name_len );
-    head = GHashTable[ HashValue ].h_head;
+    head = GHashTable[HashValue].h_head;
     if( head == NULL )
         return( NULL );
-    tail = GHashTable[ HashValue ].h_tail;
+    tail = GHashTable[HashValue].h_tail;
     for(;;) {
         if( ( head->u.ns.u2.name_len == name_len ) &&
             ( memcmp( &local->u.ns.name, &head->u.ns.name, name_len ) == 0 ) &&
@@ -111,16 +111,16 @@ sym_id      AddSP2GList( sym_id ste_ptr ) {
     unsigned_16 gsubprog;
 
     flags = ste_ptr->u.ns.flags;
-    subprog = flags & SY_SUBPROG_TYPE;
+    subprog = (flags & SY_SUBPROG_TYPE);
     gbl = SearchGList( ste_ptr );
     if( gbl == NULL ) {
         gbl = LnkNewGlobal( ste_ptr );
         gbl->u.ns.flags &= ~SY_REFERENCED;
-    } else if( ( gbl->u.ns.flags & SY_CLASS ) != SY_SUBPROGRAM ) {
+    } else if( (gbl->u.ns.flags & SY_CLASS) != SY_SUBPROGRAM ) {
         PrevDef( gbl );
         return( gbl );
     } else {
-        gsubprog = gbl->u.ns.flags & SY_SUBPROG_TYPE;
+        gsubprog = (gbl->u.ns.flags & SY_SUBPROG_TYPE);
         if( gsubprog == SY_FN_OR_SUB ) {
             // We don't know what global symbol is - it could be a
             // function, subroutine or block data subprogram.
@@ -133,10 +133,10 @@ sym_id      AddSP2GList( sym_id ste_ptr ) {
             return( gbl );
         }
     }
-    if( ( flags & SY_PS_ENTRY ) || ( subprog == SY_BLOCK_DATA ) ) {
+    if( (flags & SY_PS_ENTRY) || ( subprog == SY_BLOCK_DATA ) ) {
         if( gbl->u.ns.flags & SY_ADDR_ASSIGNED ) {
             if( ( ( subprog != SY_PROGRAM ) && ( subprog != SY_BLOCK_DATA ) ) ||
-                ( ( flags & SY_UNNAMED ) == 0 ) ) {
+                ( (flags & SY_UNNAMED) == 0 ) ) {
                 PrevDef( gbl );
             } else {
                 ClassErr( SR_TWO_UNNAMED, gbl );
@@ -162,7 +162,7 @@ void    CkComSize( sym_id sym_ptr, unsigned_32 size ) {
         if( size > com_size ) {
             SetComBlkSize( sym_ptr, size );
         }
-        if( ( sym_ptr->u.ns.flags & SY_COMSIZE_WARN ) == 0 ) {
+        if( (sym_ptr->u.ns.flags & SY_COMSIZE_WARN) == 0 ) {
             // It's nice to give a warning message when the blank common
             // block appears as different sizes even though the standard
             // permits it.
@@ -189,12 +189,12 @@ sym_id  AddCB2GList( sym_id ste_ptr ) {
     gbl = SearchGList( ste_ptr );
     if( gbl == NULL ) {
         gbl = LnkNewGlobal( ste_ptr );
-    } else if( ( gbl->u.ns.flags & SY_CLASS ) != SY_COMMON ) {
+    } else if( (gbl->u.ns.flags & SY_CLASS) != SY_COMMON ) {
         PrevDef( gbl );
     } else {
-        if( ( gbl->u.ns.flags & SY_SAVED ) != ( flags & SY_SAVED ) ) {
+        if( (gbl->u.ns.flags & SY_SAVED) != (flags & SY_SAVED) ) {
             gbl->u.ns.flags |= SY_SAVED;
-            if( ( flags & SY_COMMON_LOAD ) == 0 ) {
+            if( (flags & SY_COMMON_LOAD) == 0 ) {
                 NameWarn( SA_COMMON_NOT_SAVED, ste_ptr );
             }
         }
@@ -202,7 +202,7 @@ sym_id  AddCB2GList( sym_id ste_ptr ) {
         if( flags & gbl->u.ns.flags & SY_IN_BLOCK_DATA ) {
             NameErr( CM_BLKDATA_ALREADY, gbl );
         }
-        gbl->u.ns.flags |= flags & ( SY_COMMON_INIT | SY_EQUIVED_NAME );
+        gbl->u.ns.flags |= (flags & (SY_COMMON_INIT | SY_EQUIVED_NAME));
     }
     return( gbl );
 }

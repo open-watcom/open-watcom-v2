@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1110,7 +1111,7 @@ static unsigned long CalcHash( const char *name, size_t len )
 typedef search_result   SEARCH_CREATOR( imp_image_handle *, s_all *, imp_sym_handle *, void * );
 
 static search_result TableSearchForName( imp_image_handle *iih,
-                bool case_sense, const char *name, unsigned name_len,
+                bool case_sensitive, const char *name, unsigned name_len,
                 unsigned long hash, imp_sym_handle *ish,
                 SEARCH_CREATOR *create, void *d, unsigned tbl_type )
 {
@@ -1127,6 +1128,7 @@ static search_result TableSearchForName( imp_image_handle *iih,
     size_t                      curr_len;
     s_all                       *sp;
     search_result               sr;
+    strcompn_fn                 *scompn;
 
     cde = hllFindDirEntry( iih, IMH_GBL, tbl_type );
     if( cde == NULL )
@@ -1152,6 +1154,7 @@ static search_result TableSearchForName( imp_image_handle *iih,
         if( p == NULL )
             return( SR_FAIL );
         sym_base += base + hash_buckets * sizeof( unsigned_32 );
+        scompn = ( case_sensitive ) ? strncmp : strnicmp;
         sr = SR_NONE;
         for( count = *(unsigned_32 *)p; count != 0; sym_base += 2*sizeof(unsigned_32), --count ) {
             p = VMBlock( iih, sym_base, 2 * sizeof( unsigned_32 ) );
@@ -1167,14 +1170,8 @@ static search_result TableSearchForName( imp_image_handle *iih,
             }
             if( curr_len != name_len )
                 continue;
-            if( case_sense ) {
-                if( memcmp( name, curr, curr_len ) != 0 ) {
-                    continue;
-                }
-            } else {
-                if( memicmp( name, curr, curr_len ) != 0 ) {
-                    continue;
-                }
+            if( scompn( name, curr, curr_len ) != 0 ) {
+                continue;
             }
             /* Got one! */
             switch( create( iih, sp, ish, d ) ) {
@@ -2272,6 +2269,7 @@ static walk_result SymFind( imp_image_handle *iih, sym_walk_info swi,
     size_t              len;
     imp_sym_handle      *new;
     s_all               *p;
+    strcompn_fn         *scompn;
 
     if( swi != SWI_SYMBOL )
         return( WR_CONTINUE );
@@ -2291,14 +2289,9 @@ static walk_result SymFind( imp_image_handle *iih, sym_walk_info swi,
     }
     if( len != li->name.len )
         return( WR_CONTINUE );
-    if( li->case_sensitive ) {
-        if( memcmp( li->name.start, name, len ) != 0 ) {
-            return( WR_CONTINUE );
-        }
-    } else {
-        if( memicmp( li->name.start, name, len ) != 0 ) {
-            return( WR_CONTINUE );
-        }
+    scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
+    if( scompn( li->name.start, name, len ) != 0 ) {
+        return( WR_CONTINUE );
     }
     /* Got one! */
     new = DCSymCreate( iih, sd->d );

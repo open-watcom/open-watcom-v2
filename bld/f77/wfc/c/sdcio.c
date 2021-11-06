@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,64 +31,45 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
-#include "omodes.h"
 #include "cpopt.h"
 #include "global.h"
-#include "posio.h"
 #include "blips.h"
-#include "posopen.h"
-#include "posget.h"
-#include "posput.h"
-#include "posseek.h"
-#include "posrew.h"
-#include "poserr.h"
+#include "fileopen.h"
+#include "fileget.h"
+#include "fileput.h"
+#include "fileseek.h"
+#include "fileerr.h"
 #include "sdcio.h"
-#include "posdel.h"
-#include "posdat.h"
+#include "setcc.h"
 
 
-static  f_attrs         Modes[] = { RDONLY,
-                                    WRONLY,
-                                    APPEND,
-                                    RDWR };
-
-static  f_attrs         CurrAttrs = { REC_TEXT };
-
-
-void    SDInitIO(void) {
-//==================
-
-    InitStd();
-    SetIOBufferSize( 0 ); // minimum buffer size
-}
-
-
-void    SDInitAttr(void) {
+void    SDInitIO(void)
 //====================
-
-    CurrAttrs = REC_TEXT;
-}
-
-
-void    SDSetAttr( f_attrs attr ) {
-//===================================
-
-    CurrAttrs = attr;
+{
+    InitFileIO( 0 );    // minimum buffer size
 }
 
 
 void    SDScratch( const char *name )
 //===================================
 {
-    Scratchf( name );
+    if( remove( name ) != 0 ) {
+        FSetSysErr( NULL );
+    }
 }
 
 
-file_handle SDOpen( const char *name, int mode )
-//==============================================
+file_handle SDOpen( const char *name, const char *mode )
+//======================================================
 {
-    return( Openf( name, Modes[ mode ] | CurrAttrs ) );
+    return( Openf( name, mode, REC_FIXED | SEEK ) );
+}
+
+
+file_handle SDOpenText( const char *name, const char *mode )
+//==========================================================
+{
+    return( Openf( name, mode, REC_TEXT ) );
 }
 
 
@@ -99,10 +80,10 @@ void    SDClose( file_handle fp )
 }
 
 
-size_t    SDRead( file_handle fp, void *buff, size_t len )
-//========================================================
+size_t  SDReadText( file_handle fp, char *buff, size_t len )
+//==========================================================
 {
-    return( FGetRec( fp, buff, len ) );
+    return( FGetRecText( fp, buff, len ) );
 }
 
 
@@ -112,14 +93,29 @@ void    SDWrite( file_handle fp, const void *buff, size_t len )
     if( fp == FStdOut ) {
         CheckBlips();
     }
-    FPutRec( fp, buff, len );
+    FPutRecFixed( fp, buff, len );
 }
 
 
-void    SDSeek( file_handle fp, unsigned_32 rec_num, size_t rec_size )
+void    SDWriteTextNL( file_handle fp, const char *buff, size_t len )
 //===================================================================
 {
-    FSeekRec( fp, rec_num, rec_size );
+    if( fp == FStdOut ) {
+        CheckBlips();
+    }
+    FPutRecFixed( fp, buff, len );
+    FPutRecFixed( fp, "\n", 1 );
+}
+
+
+void    SDWriteCCChar( file_handle fp, char asa, bool nolf )
+//==========================================================
+{
+    const char  *cc;
+    uint        cc_len;
+
+    cc_len = FSetCC( asa, &cc, nolf );
+    FPutRecFixed( fp, cc, cc_len );
 }
 
 
@@ -137,14 +133,13 @@ bool    SDEof( file_handle fp )
 }
 
 
-bool    SDError( file_handle fp, char *buff )
-//===========================================
+bool    SDError( file_handle fp, char *buff, size_t max_len )
+//===========================================================
 {
-    int         err;
-
-    err = Errorf( fp );
-    if( err != IO_OK ) {
-        strcpy( buff, ErrorMsg( fp ) );
+    if( !IOOk( fp ) ) {
+        if( buff != NULL && max_len > 0 )
+            ErrorMsg( fp, buff, max_len );
+        return( true );
     }
-    return( err != IO_OK );
+    return( false );
 }

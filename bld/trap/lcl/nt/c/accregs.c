@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,7 +179,7 @@ static void WriteCPU( struct x86_cpu *r, MYCONTEXT *con )
 #endif
 #endif
 
-trap_retval ReqRead_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     MYCONTEXT       con;
     mad_registers   _WCUNALIGNED *mr;
@@ -196,7 +197,7 @@ trap_retval ReqRead_regs( void )
 #elif defined( MD_ppc )
     memset( mr, 0, sizeof( mr->ppc ) );
 #else
-    #error ReqRead_regs not configured
+    #error TRAP_CORE( Read_regs ) not configured
 #endif
     if( DebugeePid ) {
         ti = FindThread( DebugeeTid );
@@ -256,7 +257,7 @@ trap_retval ReqRead_regs( void )
         mr->ppc.xer = con.Xer;
         mr->ppc.fpscr = *( unsigned_32 * ) & con.Fpscr; //NYI: is this right?
 #else
-        #error ReqRead_regs not configured
+        #error TRAP_CORE( Read_regs ) not configured
 #endif
     }
 #if defined( MD_x86 )
@@ -269,11 +270,11 @@ trap_retval ReqRead_regs( void )
 #elif defined( MD_ppc )
     return( sizeof( mr->ppc ) );
 #else
-    #error ReqRead_regs not configured
+    #error TRAP_CORE( Read_regs ) not configured
 #endif
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     MYCONTEXT       con;
     thread_info     *ti;
@@ -339,7 +340,7 @@ trap_retval ReqWrite_regs( void )
     con.Xer = mr->ppc.xer;
     *( unsigned_32 * ) & con.Fpscr = mr->ppc.fpscr; //NYI: is this right?
 #else
-    #error ReqWrite_regs not configured
+    #error TRAP_CORE( Write_regs ) not configured
 #endif
     MySetThreadContext( ti, &con );
     return( 0 );

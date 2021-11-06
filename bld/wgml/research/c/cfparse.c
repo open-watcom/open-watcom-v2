@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Parses .COP files based on the filename. 
+* Description:  Parses .COP files based on the filename.
 *
 ****************************************************************************/
 
@@ -83,7 +83,7 @@ int main( void )
 
     initialize_globals();
     res_initialize_globals();
-    
+
     /* Parse the command line: allocates and sets tgt_path. */
 
     retval = parse_cmdline( cmdline );

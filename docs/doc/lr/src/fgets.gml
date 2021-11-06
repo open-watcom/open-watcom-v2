@@ -19,7 +19,7 @@ designated by
 .arg fp
 and stores them in the array pointed to by
 .arg buf
-.ct .li .
+.period
 The
 .id &funcb.
 function stops reading characters when end-of-file is
@@ -40,9 +40,9 @@ of multibyte characters (if present) from the input stream pointed to
 by
 .arg fp
 .ct , converts them to wide characters, and stores them in the
-wide-character array pointed to by
+wide character array pointed to by
 .arg buf
-.ct .li .
+.period
 In this case,
 .arg n
 specifies the number of wide characters, less one, to be read.
@@ -57,7 +57,7 @@ Also, a new-line character may not appear as the last character in a
 file, just before end-of-file.
 .np
 The
-.kw gets
+.reffunc gets
 function is similar to
 .id &funcb.
 except that it operates with

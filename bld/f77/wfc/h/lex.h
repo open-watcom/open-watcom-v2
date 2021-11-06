@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "opr.h"
 #include "opn.h"
 
-typedef struct lex {
+typedef struct lex_info {
     OPR         opr;
     union {
         DSOPN           ds;
@@ -42,8 +43,8 @@ typedef struct lex {
     unsigned_16 oprpos;
     unsigned_16 opnpos;
     char        *ptr;
-    unsigned_16 len;
-} lex;
+    size_t      len;
+} lex_info;
 
 
 extern void    MakeITList( void );

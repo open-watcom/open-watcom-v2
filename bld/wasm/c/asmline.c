@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -365,7 +365,7 @@ bool InputQueueFile( const char *path )
     FILE        *file;
     file_list   *new;
     char        fullpath[ _MAX_PATH ];
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( fullpath, pg.drive, pg.dir, pg.fname, pg.ext );
@@ -491,7 +491,7 @@ bool    ScanLine( char *string, size_t max_len )
     char        buffer[MAX_LINE_LEN];
     size_t      len;
 
-    line = ( max_len < MAX_LINE_LEN ? buffer : string );
+    line = ( max_len < MAX_LINE_LEN ) ? buffer : string;
     line = ReadTextLine( line );
     if( line != NULL ) {
         prep_line_for_conditional_assembly( line );

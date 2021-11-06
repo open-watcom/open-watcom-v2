@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -54,7 +54,7 @@ Lexer::Token Rm::parse( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"margin" ) {
-                long int tmp( std::wcstol( value.c_str(), 0, 10 ) );
+                long tmp( std::wcstol( value.c_str(), 0, 10 ) );
                 if( tmp < 1 )
                     tmp = 1;
                 if( tmp > 255 )

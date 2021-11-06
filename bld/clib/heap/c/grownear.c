@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@
   #include "tinyio.h"
 #endif
 #include "rtdata.h"
-#if defined( __WARP__ )
+#if defined(__OS2__) && !defined(_M_I86)
   #include "rtinit.h"
 #endif
 #include "heapacc.h"
@@ -165,7 +166,7 @@ void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
                 SET_BLK_SIZE_INUSE( frl2, size );
                 heap->numalloc++;
                 heap->largest_blk = 0;
-                _nfree( (void_nptr)BLK2CPTR( frl2 ) );
+                _nfree( (void_nptr)BLK2CSTG( frl2 ) );
             } else {
                 SET_BLK_INUSE( frl_new );   // set allocated bit
             }
@@ -176,7 +177,7 @@ void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
 }
 #endif
 
-#if !( defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) )
+#if !( defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) )
 size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 {
     freelist_nptr   frl_last;
@@ -186,7 +187,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
         return( 0 );
     }
     frl_last = __nheapbeg->freehead.prev.nptr; /* point to last free block */
-    brk_value = BLK2CPTR( NEXT_BLK( frl_last ) );
+    brk_value = BLK2CSTG( NEXT_BLK( frl_last ) );
   #if defined( __DOS_EXT__ )
     if( _IsPharLap() && !_IsFlashTek() )
         _curbrk = SegmentLimit();
@@ -248,7 +249,7 @@ static int __AdjustAmount( unsigned *amount )
 {
     unsigned old_amount;
     unsigned amt;
-#if !( defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) )
+#if !( defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) )
     unsigned last_free_amt;
 #endif
 
@@ -257,7 +258,7 @@ static int __AdjustAmount( unsigned *amount )
     if( amt < old_amount ) {
         return( 0 );
     }
-#if !( defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) )
+#if !( defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) )
   #if defined( __DOS_EXT__ )
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
         // Allocating extra to identify the dpmi block
@@ -299,7 +300,7 @@ static int __AdjustAmount( unsigned *amount )
         */
         amt = __ROUND_DOWN_SIZE( _RWD_amblksiz, 2 );
     }
-#if defined( __WARP__ )
+#if defined(__OS2__) && !defined(_M_I86)
     /* make sure amount is a multiple of 64k */
     old_amount = amt;
     amt = __ROUND_UP_SIZE_64K( amt );
@@ -317,7 +318,7 @@ static int __AdjustAmount( unsigned *amount )
     return( amt != 0 );
 }
 
-#if defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) \
+#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
   || defined( __CALL21__ ) || defined( __DOS_EXT__ ) || defined( __RDOS__ )
 
 static heapblk_nptr __GetMemFromSystem( unsigned *amount )
@@ -328,7 +329,7 @@ static heapblk_nptr __GetMemFromSystem( unsigned *amount )
     brk_value = (unsigned)LocalAlloc( LMEM_FIXED, *amount );
   #elif defined( __WINDOWS_386__ )
     brk_value = (unsigned)DPMIAlloc( *amount );
-  #elif defined( __WARP__ )
+  #elif defined(__OS2__) && !defined(_M_I86)
     {
         PBYTE           p;
         ULONG           os2_alloc_flags;
@@ -385,7 +386,7 @@ static int __CreateNewNHeap( unsigned amount )
     }
     /* we've got a new heap block */
     heap->len = amount - TAG_SIZE;
-  #if defined( __WARP__ )
+  #if defined(__OS2__) && !defined(_M_I86)
     // Remeber if block was allocated with OBJ_ANY - may be in high memory
     heap->used_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
   #endif
@@ -395,14 +396,14 @@ static int __CreateNewNHeap( unsigned amount )
     SET_BLK_INUSE( frl );
     heap->numalloc++;
     heap->largest_blk = 0;
-    _nfree( (void_nptr)BLK2CPTR( frl ) );
+    _nfree( (void_nptr)BLK2CSTG( frl ) );
     return( 1 );
 }
 #endif
 
 int __ExpandDGROUP( unsigned amount )
 {
-#if defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) \
+#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
   || defined( __CALL21__ ) || defined( __RDOS__ )
 #else
     heapblk_nptr    heap;
@@ -417,7 +418,7 @@ int __ExpandDGROUP( unsigned amount )
         return( 0 );
     if( __AdjustAmount( &amount ) == 0 )
         return( 0 );
-#if defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) \
+#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
   || defined( __CALL21__ ) || defined( __RDOS__ )
     return( __CreateNewNHeap( amount ) );
 #else
@@ -452,18 +453,18 @@ int __ExpandDGROUP( unsigned amount )
     for( heap = __nheapbeg; heap != NULL; heap = heap->next.nptr ) {
         if( heap->next.nptr == NULL )
             break;
-        if( (unsigned)heap <= brk_value && BLK2CPTR( NEXT_BLK( heap ) ) >= brk_value ) {
+        if( (unsigned)heap <= brk_value && BLK2CSTG( NEXT_BLK( heap ) ) >= brk_value ) {
             break;
         }
     }
-    if( ( heap != NULL ) && CPTR2BLK( brk_value ) == NEXT_BLK( heap ) ) {
+    if( ( heap != NULL ) && CSTG2BLK( brk_value ) == NEXT_BLK( heap ) ) {
         /* we are extending the previous heap block (slicing) */
         /* nb. account for the end-of-heap tag */
         amount += TAG_SIZE;
         /* adjust current entry in heap list */
         heap->len += amount;
         /* fix up end of heap links */
-        frl = (freelist_nptr)CPTR2BLK( brk_value );
+        frl = (freelist_nptr)CSTG2BLK( brk_value );
         frl->len = amount;
         SET_BLK_END( (freelist_nptr)NEXT_BLK( frl ) );
     } else {
@@ -482,24 +483,24 @@ int __ExpandDGROUP( unsigned amount )
     SET_BLK_INUSE( frl );
     heap->numalloc++;
     heap->largest_blk = /*0x....ffff*/ ~0U;     /* set to largest value to be safe */
-    _nfree( (void_nptr)BLK2CPTR( frl ) );
+    _nfree( (void_nptr)BLK2CSTG( frl ) );
     return( 1 );
 #endif
 }
 
-#if defined( __WARP__ )
+#if defined(__OS2__) && !defined(_M_I86)
 unsigned char _os2_obj_any_supported = FALSE;
 
 static void _check_os2_obj_any_support( void )
 {
     PBYTE           p;
-    APIRET          apiret;
+    APIRET          rc;
 
     _os2_obj_any_supported = TRUE;
-    apiret = DosAllocMem( (PPVOID)&p, 1, PAG_COMMIT | PAG_READ | OBJ_ANY );
-    if( apiret == ERROR_INVALID_PARAMETER ) {
+    rc = DosAllocMem( (PPVOID)&p, 1, PAG_COMMIT | PAG_READ | OBJ_ANY );
+    if( rc == ERROR_INVALID_PARAMETER ) {
         _os2_obj_any_supported = FALSE;
-    } else if( apiret == 0 ) {
+    } else if( rc == 0 ) {
         DosFreeMem( p );
     }
 }

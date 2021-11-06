@@ -1,5 +1,5 @@
-.gfunc settextpath
-.gsynop begin 
+.gfunc _settextpath
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _settextpath( short path );
 .do end
@@ -16,17 +16,17 @@ The
 argument.
 The text path specifies the writing direction of the text displayed
 by the
-.kw _grtext
+.reffunc _grtext
 &routine..
 The argument can have one of the following values:
 .begterm 15
-.uterm PATH_RIGHT
+.uterm _PATH_RIGHT
 subsequent characters are drawn to the right of the previous character
-.uterm PATH_LEFT
+.uterm _PATH_LEFT
 subsequent characters are drawn to the left of the previous character
-.uterm PATH_UP
+.uterm _PATH_UP
 subsequent characters are drawn above the previous character
-.uterm PATH_DOWN
+.uterm _PATH_DOWN
 subsequent characters are drawn below the previous character
 .endterm
 .pp

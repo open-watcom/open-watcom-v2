@@ -25,15 +25,14 @@
 :include pshpackl.sp
 
 :endsegment
-/* 
+/*
  *  ISO C types
  */
 :include time_t.sp
 :keep EXTWCHART
 :include wchar_t.sp
 :remove EXTWCHART
-
-/* 
+/*
  *  POSIX 1003.1 types
  */
 :include off_t.sp
@@ -81,7 +80,7 @@ struct stat {
     unsigned char   st_originatingNameSpace;
 };
 
-:: ISO names + Extensions MS/Open Watcom
+:: Extensions MS/Open Watcom
 :include ext.sp
 struct _stat {
     dev_t           st_dev;         /* disk drive file resides on */
@@ -105,6 +104,7 @@ struct _stat {
     unsigned short  st_inheritedRightsMask;
     unsigned char   st_originatingNameSpace;
 };
+:segment DOS
 
 struct _stati64 {
     dev_t           st_dev;         /* disk drive file resides on */
@@ -128,6 +128,7 @@ struct _stati64 {
     unsigned short  st_inheritedRightsMask;
     unsigned char   st_originatingNameSpace;
 };
+:endsegment
 :include extepi.sp
 
 :endsegment
@@ -145,40 +146,31 @@ struct _stati64 {
 /*
  *  POSIX 1003.1 Prototypes.
  */
-_WCRTLINK extern int     chmod( const char *__path, mode_t __mode );
-_WCRTLINK extern int     stat( const char *__path, struct stat *__buf );
-_WCRTLINK extern int     lstat( const char *__path, struct stat *__buf );
-_WCRTLINK extern int     fstat( int __fildes, struct stat *__buf );
-_WCRTLINK extern mode_t  umask( mode_t __cmask );
+:include chmod.sp
+:include umask.sp
+:include mkdir.sp
 :segment LINUX
-_WCRTLINK extern int     fchmod( int __fildes, mode_t __mode );
-_WCRTLINK extern int     mkdir( const char *__path, mode_t __mode );
-_WCRTLINK extern int     mkfifo( const char *__path, mode_t __mode );
-_WCRTLINK extern int     mknod( const char *__path, mode_t __mode, int __dev );
-:segment LINUX
-_WCRTLINK extern int     fstat64( int __fildes, struct stat64 *__buf );
-_WCRTLINK extern int     lstat64( const char *__path, struct stat64 *__buf );
-_WCRTLINK extern int     stat64( const char *__path, struct stat64 *__buf );
+_WCRTLINK extern int        fchmod( int __fildes, mode_t __mode );
+_WCRTLINK extern int        mkfifo( const char *__path, mode_t __mode );
+_WCRTLINK extern int        mknod( const char *__path, mode_t __mode, int __dev );
 :endsegment
-:endsegment
+:include stat.sp
 ::
-:: ISO names + Extensions MS/Open Watcom
-:include ext.sp
+:: Extensions MS/Open Watcom
 :segment DOS | LINUX | RDOS
-_WCRTLINK extern int     _fstat( int __fildes, struct stat *__buf );
-_WCRTLINK extern int     _stat( const char *__path, struct stat *__buf );
+:include ext.sp
+:keep ANSINAME
+:include mkdir.sp
+:include stat.sp
+:remove ANSINAME
+:keep WIDE
+:segment DOS
+:include mkdir.sp
+:include stat.sp
 :endsegment
-:segment DOS | RDOS
-
-_WCRTLINK extern int     _wstat( const wchar_t *__path, struct stat *__buf );
-_WCRTLINK extern int     _wfstat( int __fildes, struct stat *__buf );
-
-_WCRTLINK extern int     _fstati64( int __fildes, struct _stati64 *__buf );
-_WCRTLINK extern int     _wfstati64( int __fildes, struct _stati64 *__buf );
-_WCRTLINK extern int     _stati64( const char *__path, struct _stati64 *__buf );
-_WCRTLINK extern int     _wstati64( const wchar_t *__path, struct _stati64 *__buf );
-:endsegment
+:remove WIDE
 :include extepi.sp
+:endsegment
 
 :include poppack.sp
 

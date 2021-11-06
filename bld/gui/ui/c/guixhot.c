@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +33,9 @@
 
 #include "guiwind.h"
 #include "guiutil.h"
-#include "guixhot.h"
 #include "guihot.h"
 #include <string.h>
 
-extern  int             GUINumHotSpots;
-        hotspot_info    *GUIHotSpots    = NULL;
 
 bool GUIXInitHotSpots( int num, gui_resource *hot )
 {
@@ -63,12 +61,12 @@ bool GUIXInitHotSpots( int num, gui_resource *hot )
 }
 
 
-void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_ord row,
+void GUIAPI GUIDrawHotSpot( gui_window *wnd, int hotspot_no, gui_text_ord row,
                      gui_ord indent, gui_attr attr )
 {
-    if( ( hot_spot > 0 ) && ( hot_spot <= GUINumHotSpots ) ) {
-        GUIDrawText( wnd, GUIHotSpots[hot_spot-1].text,
-                     GUIHotSpots[hot_spot-1].size.x, row, indent, attr );
+    if( ( hotspot_no > 0 ) && ( hotspot_no <= GUINumHotSpots ) ) {
+        GUIDrawText( wnd, GUIHotSpots[hotspot_no - 1].text,
+                     GUIHotSpots[hotspot_no - 1].size.x, row, indent, attr );
     }
 }
 

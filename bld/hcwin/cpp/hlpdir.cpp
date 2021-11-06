@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@ HLPDIR:  directory for the WinHelp "file system"
 #include "hlpdir.h"
 
 
-#define HFSKEY_SIZE         13
+#define HFSKEY_SIZE         12
 #define HFSPAGE_SIZE        1024
 #define FILE_HEADER_SIZE    9
 
@@ -50,7 +51,7 @@ HLPDIR:  directory for the WinHelp "file system"
 class HFSkey : public BtreeData
 {
 protected:
-    char        _name[HFSKEY_SIZE];
+    char            _name[HFSKEY_SIZE + 1];
 
     // Overrides of the BtreeData virtual functions.
     virtual uint_32 size() { return( (uint_32)( strlen( _name ) + 1 ) ); };
@@ -59,7 +60,8 @@ protected:
     bool            lessThan( BtreeData *other );
 
 public:
-    HFSkey( char const n[] ) { strcpy( _name, n ); };
+    HFSkey( char const n[] )
+        { strncpy( _name, n, HFSKEY_SIZE ); _name[HFSKEY_SIZE] = '\0'; };
 };
 
 
@@ -87,7 +89,7 @@ public:
 
 int HFSkey::dump( OutFile *dest )
 {
-    dest->write( _name, strlen( _name ) + 1 );
+    dest->write( _name );
     return 1;
 }
 
@@ -113,25 +115,16 @@ bool HFSkey::lessThan( BtreeData *other )
 
 int HFSnode::dump( OutFile * dest )
 {
-    dest->write( _name, strlen( _name ) + 1 );
+    dest->write( _name );
     dest->write( _offset );
     return 1;
 }
 
 
-char const HFSDirectory::_dirMagic[Btree::_magNumSize] = {
-    0x3B, 0x29, 0x02, 0x04, 0x00,
-    0x04, 0x7A, 0x34, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00
-};
-
-
 //  HFSDirectory::HFSDirectory
 
 HFSDirectory::HFSDirectory( char const filename[] )
-    : _output( filename ), _files( _dirMagic, HFSPAGE_SIZE )
+    : _output( filename ), _files( true, "z4" )
 {
     // empty
 }

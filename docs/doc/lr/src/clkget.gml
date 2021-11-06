@@ -3,11 +3,7 @@
 #include <time.h>
 int clock_gettime(clockid_t clockid, struct timespec *ts);
 
-struct timespec {
-    time_t tv_sec;
-    long tv_nsec;
-};
-    
+.im structms
 .synop end
 .desc begin
 The
@@ -39,5 +35,5 @@ is invalid.
 .see begin
 .seelist clock_settime clock_getres clock_nanosleep
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

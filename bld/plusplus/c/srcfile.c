@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,15 +43,16 @@
 #include "sysdep.h"
 #include "name.h"
 #include "cmdline.h"
-#include "toggle.h"
 #include "pcheader.h"
 #include "initdefs.h"
 #include "iosupp.h"
 #include "pathlist.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
+    #include "pragdefn.h"
+    #include "togglesd.h"
 #endif
 #include "brinfo.h"
+#include "cscanbuf.h"
 
 #include "clibext.h"
 
@@ -264,7 +266,7 @@ static void setGuardState(      // SET GUARD STATE FOR CURRENT FILE
     actual = srcFile;
     _FIND_ACTUAL( actual );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_tokens ) {
+    if( TOGGLEDBG( dump_tokens ) ) {
         if( actual->guard_state != new_state ) {
             printf( "New Guard State[%s]: %s\n"
                   , actual->name
@@ -381,7 +383,7 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
 
 static void setJustOpenedGuardState( void )
 {
-    if( CompFlags.cpp_output_requested ) {
+    if( CompFlags.cpp_mode ) {
         setGuardState( GUARD_INCLUDE );
     } else {
         setGuardState( GUARD_TOP );
@@ -390,7 +392,7 @@ static void setJustOpenedGuardState( void )
 
 static void setReOpenedGuardState( unsigned guard_state )
 {
-    if( CompFlags.cpp_output_requested ) {
+    if( CompFlags.cpp_mode ) {
         guard_state = GUARD_INCLUDE;
     } else if( guard_state == GUARD_IFNDEF ) {
         // seen this #include before with #ifndef MACRO but MACRO is not defined
@@ -423,7 +425,7 @@ SRCFILE SrcFileOpen(            // OPEN NEW SOURCE FILE
 
     new_src = srcFileAlloc( fp, FNameAdd( name ), ftime );
     if( CompFlags.cpp_output ) {
-        EmitLine( 1, new_src->name );
+        CppEmitPoundLine( 1, new_src->name, EL_NULL );
     }
     set_srcFile( new_src );
     new_act = activeSrc();
@@ -459,7 +461,7 @@ void SrcFileAlias(              // SET UP ALIAS FOR SOURCE FILE
 
     name = FNameAdd( name );
     if( CompFlags.cpp_output ) {
-        EmitLine( line, name );
+        CppEmitPoundLine( line, name, EL_NULL );
     }
     line += adjust;
     alias = NULL;
@@ -558,7 +560,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
                     PpStartFile();
                     act->line = 0;
                 }
-                EmitLineNL( old_src->parent_locn, srcFile->name );
+                CppEmitPoundLine( old_src->parent_locn, srcFile->name, EL_NEW_LINE );
             }
             ok = true;
         }
@@ -599,7 +601,7 @@ char *SrcFileFullName(          // GET FULL PATH NAME OF SOURCE FILE
     SRCFILE sf )                // - source file
 {
     char *p;
-    auto char buff[_MAX_PATH];
+    char buff[_MAX_PATH];
 
     if( sf->full_name != NULL ) {
         return( sf->full_name );
@@ -628,7 +630,7 @@ void SrcFileSetErrLoc(          // SET TEMPORARY ERROR LOCATION TO CURRENT POS
     void )
 {
     OPEN_FILE *act;
-    auto TOKEN_LOCN tmp_locn;
+    TOKEN_LOCN tmp_locn;
 
     act = activeSrc();
     tmp_locn.src_file = srcFile;
@@ -868,7 +870,7 @@ static void outputTrigraphWarning( char c )
         // probably know about trigraphs if they are using -za
         return;
     }
-    if( NestLevel != SkipLevel ) {
+    if( SkipLevel != NestLevel ) {
         // we are in an excluded #if region
         return;
     }
@@ -948,7 +950,7 @@ static int tryBackSlashNewLine( OPEN_FILE *act )
             CErr1( WARN_WHITE_AFTER_SPLICE );
         }
         if( CompFlags.scanning_cpp_comment ) {
-            if( NestLevel == SkipLevel ) {
+            if( SkipLevel == NestLevel ) {
                 SrcFileCurrentLocation();
                 CErr1( WARN_SPLICE_IN_CPP_COMMENT );
             }
@@ -1195,103 +1197,39 @@ int GetNextChar( void )
     return( getCharCheck( act, c ) );
 }
 
-void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
+int SrcFileScanName( int c )    // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
 {
-    size_t              len;
     const unsigned char *p;
     OPEN_FILE           *act;
-    int                 c;
 
-    len = TokenLen - 1;
-    if( CharSet[e] & (C_AL|C_DI) ) {
-        ++len;
-        if( NextChar == GetNextChar ) {
-            for( ;; ) {
-                // codegen can't do this optimization so we have to
-                c = '\0';
-                act = activeSrc();
-                p = act->nextc;
-                for(;;) {
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    if( len > BUF_SIZE ) {
-                        len = BUF_SIZE;
-                    }
-                }
-                act->column += p - act->nextc;
-                act->nextc = p;
-                if(( CharSet[c] & C_EX ) == 0 )
-                    break;
-                // act->column is one too many at this point
-                --act->column;
-                c = getCharCheck( act, c );
-                if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                    break;
-                Buffer[len] = c;
-                ++len;
+    if( NextChar == GetNextChar ) {
+        while( CharSet[c] & (C_AL | C_DI) ) {
+            // codegen can't do this optimization so we have to
+            act = activeSrc();
+            p = act->nextc;
+            while( CharSet[c] & (C_AL | C_DI) ) {
+                WriteBufferChar( c );
+                c = *p++;
             }
-            CurrChar = c;
-        } else {
-            // it should be impossible to get here
-            // but we'll just be safe rather than sorry...
-            for(;;) {
-                c = NextChar();
-                if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                    break;
-                Buffer[len] = c;
-                ++len;
-                if( len > BUF_SIZE ) {
-                    len = BUF_SIZE;
-                }
-            }
+            act->column += p - act->nextc;
+            act->nextc = p;
+            if(( CharSet[c] & C_EX ) == 0 )
+                break;
+            // act->column is one too many at this point
+            --act->column;
+            c = getCharCheck( act, c );
+        }
+        CurrChar = c;
+    } else {
+        // it should be impossible to get here
+        // but we'll just be safe rather than sorry...
+        while( CharSet[c] & (C_AL | C_DI) ) {
+            WriteBufferChar( c );
+            c = NextChar();
         }
     }
-    if( len >= BUF_SIZE - 2 ) {
-        if( NestLevel == SkipLevel ) {
-            CErr1( ERR_TOKEN_TRUNCATED );
-        }
-        len = BUF_SIZE - 2;
-    }
-    Buffer[len] = '\0';
-    TokenLen = len;
+    WriteBufferNullChar();
+    return( c );
 }
 
 void SrcFileScanWhiteSpace( bool expanding )
@@ -1369,71 +1307,6 @@ void SrcFileScanWhiteSpace( bool expanding )
     }
 }
 
-void SrcFileScanCppComment( void )
-{
-    const unsigned char *p;
-    OPEN_FILE           *act;
-    int                 c;
-
-    if( NextChar == GetNextChar ) {
-        for( ;; ) {
-            // codegen can't do this optimization so we have to
-            c = '\0';
-            act = activeSrc();
-            p = act->nextc;
-            for( ;; ) {
-                c = *p++;
-                if( CharSet[c] & C_EX )
-                    break;
-                c = *p++;
-                if( CharSet[c] & C_EX )
-                    break;
-                c = *p++;
-                if( CharSet[c] & C_EX )
-                    break;
-                c = *p++;
-                if( CharSet[c] & C_EX ) {
-                    break;
-                }
-            }
-            // we don't have to keep the column up to date, because once
-            // we get to the end of the line, we will be starting the
-            // next line at column 0.
-            // act->column += p - act->nextc;
-            act->nextc = p;
-            if( c == '\n' ) {
-                act->line++;
-                act->column = 0;
-                break;
-            }
-            if( c != '\t' && c != '\r' ) {
-                c = getCharCheck( act, c );
-                if( c == '\n' || c == LCHR_EOF ) {
-                    return;
-                }
-                // might be a '?' in which case, NextChar has been changed
-                // to a special routine. In that case, keep calling it
-                // until we get back to scanning normal characters
-                while( NextChar != GetNextChar ) {
-                    c = NextChar();
-                    if( c == '\n' || c == LCHR_EOF ) {
-                        return;
-                    }
-                }
-            }
-        }
-        CurrChar = c;
-    } else {
-        for( ;; ) {
-            c = NextChar();
-            if( c == LCHR_EOF )
-                break;
-            if( c == '\n' ) {
-                break;
-            }
-        }
-    }
-}
 
 bool IsSrcFilePrimary(          // DETERMINE IF PRIMARY SOURCE FILE
     SRCFILE sf )                // - a source file
@@ -1614,8 +1487,8 @@ void SrcFileReadOnlyDir(        // SPECIFY DIRECTORY AS READ-ONLY
     char const *path_list )     // - the directory
 {
     char *full;                 // - full path
-    auto char path[_MAX_PATH];  // - used to extract directory
-    auto char buff[_MAX_PATH];  // - expanded path for directory
+    char path[_MAX_PATH];       // - used to extract directory
+    char buff[_MAX_PATH];       // - expanded path for directory
     DIR_LIST* curr;             // - current R/O entry
     DIR_LIST* srch;             // - search R/O entry
 
@@ -2036,7 +1909,7 @@ static void writeRoDirs( void )
 
 pch_status PCHWriteSrcFiles( void )
 {
-    auto carve_walk_base dsrc;
+    carve_walk_base dsrc;
 
     SrcFilePCHWrite( srcFilesUnique );
     CarveWalkAllFree( carveSrcFile, markFreeSrcFile );
@@ -2049,7 +1922,7 @@ pch_status PCHWriteSrcFiles( void )
 static void readRoDirs( void )
 {
     unsigned len;
-    auto char buff[_MAX_PATH];
+    char buff[_MAX_PATH];
 
     for( ; (len = PCHReadUInt()) != 0; ) {
         PCHRead( buff, len );
@@ -2066,7 +1939,7 @@ pch_status PCHReadSrcFiles( void )
     SRCFILE n;
     size_t name_len;
     size_t ifndef_len;
-    auto cvinit_t data;
+    cvinit_t data;
 
     // primarySrcFile will already be set properly so it is unaffected by PCH
     unique_srcfiles = SrcFilePCHRead();

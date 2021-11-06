@@ -25,13 +25,13 @@ static BOOL   dbg_active  = FALSE;
 static char  *dbg_fname   = "WATTCP.SK";
 static char   dbg_mode[5] = "w+";
 
-void _sock_debugf (const Socket *sock, const char *fmt, ...)
+void _sock_debugf (const Socket *socket, const char *fmt, ...)
 {
 #if 0  /* for now, print debug for all sockets */
-  if (sock && !(sock->so_options & SO_DEBUG))
+  if (socket != NULL && !(socket->so_options & SO_DEBUG))
      return;
 #else
-  ARGSUSED (sock);
+  ARGSUSED (socket);
 #endif
 
   if (dbg_file && dbg_active)
@@ -112,7 +112,7 @@ void _sock_dbug_init (void)
 static void print_local_ports_inuse (void)
 {
   WORD port, num = 0;
-  
+
   fprintf (dbg_file, "\nLocal ports still in use:\n");
   for (port = 1025; port < USHRT_MAX; port++)
   {

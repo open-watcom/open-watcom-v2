@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -15,7 +15,7 @@
 *    provided with the Original Code and Modifications, and is also
 *    available at www.sybase.com/developer/opensource.
 *
-*    The Original Code and all software distributed under the License areø
+*    The Original Code and all software distributed under the License are
 *    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
 *    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
 *    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
@@ -36,18 +36,17 @@
 //
 
 #include "ftnstd.h"
-#include "rtconst.h"
-#include "symbol.h"
+#include "global.h"
 #include "wf77cg.h"
-#include "wf77auxd.h"
 #include "wf77defs.h"
+#include "wf77aux.h"
+#include "fio.h"
 #include "cgflags.h"
 #include "falloc.h"
 #include "fcjmptab.h"
 #include "fcstruct.h"
 #include "fcsubscr.h"
 #include "fcgmain.h"
-#include "fcrtns.h"
 #include "fcstack.h"
 #include "emitobj.h"
 #include "cgswitch.h"

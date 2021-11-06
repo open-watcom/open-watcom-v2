@@ -5,7 +5,7 @@
 #include <string.h>
 void *memset( void *dst, int c, size_t length );
 .ixfunc2 '&String' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 void __far *_fmemset( void __far *dst, int c,
                       size_t length );
 .ixfunc2 '&String' &ffunc
@@ -26,9 +26,9 @@ characters of the object pointed to by
 .arg dst
 with the value
 .arg c
-.ct .li .
-.im farfunc
-.im widefun1
+.period
+.farfunc &ffunc. &funcb.
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The argument
 .arg length
@@ -40,10 +40,10 @@ The
 .id &funcb.
 function returns the pointer
 .arg dst
-.ct .li .
+.period
 .return end
 .see begin
-.seelist memchr memcmp memcpy memicmp memmove memset
+.seelist memchr memcmp memcpy _memicmp memmove memset
 .see end
 .exmp begin
 #include <string.h>

@@ -20,9 +20,9 @@ Value lists should not be used to store objects of a base class if any
 derived types of different sizes would be stored in the list, or if the
 destructor for the derived class must be called.
 The
-.MONO WCValSList<Type>
+:MONO.WCValSList<Type>
 container class implements single linked value lists, and the
-.MONO WCValDList<Type>
+:MONO.WCValDList<Type>
 class double linked value lists.
 :P.
 Pointer list elements store pointers to objects.  No creating, copying or
@@ -30,16 +30,16 @@ Pointer list elements store pointers to objects.  No creating, copying or
 destroying of objects stored in the list occurs.
 The only requirement of the type pointed to is that an
 equivalence operator is provided so that lookups can be performed.  The
-.MONO WCPtrSList<Type>
+:MONO.WCPtrSList<Type>
 class implements single linked pointer lists, and the
-.MONO WCPtrDList<Type>
+:MONO.WCPtrDList<Type>
 class double linked pointer lists.
 :P.
 Intrusive lists require that the list elements are objects derived from
 the
-.MONO WCSLink
+:MONO.WCSLink
 or
-.MONO WCDLink
+:MONO.WCDLink
 class, depending on whether a single or double linked list is used.
 The list classes require nothing else from the list elements.
 No creating, destroying or copying of any object is performed by the
@@ -48,9 +48,9 @@ by the user of the class.  One advantage of an intrusive list is a
 list element can be removed from one list and inserted into another list
 without creating new list element objects or deleting old objects.
 The
-.MONO WCIsvSList<Type>
+:MONO.WCIsvSList<Type>
 class implements single linked intrusive lists, and the
-.MONO WCIsvDList<Type>
+:MONO.WCIsvDList<Type>
 class double linked intrusive lists.
 :P.
 A list may be traversed using the corresponding list iterator class.
@@ -62,9 +62,9 @@ must be used.
 :P.
 The classes are presented in alphabetical order.
 The
-.MONO WCSLink
+:MONO.WCSLink
 and
-.MONO WCDLink
+:MONO.WCDLink
 class provide a common control interface for the list elements for the
 intrusive classes.
 :P.

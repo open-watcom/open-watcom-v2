@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,7 +172,7 @@ static IntlData *getData( int fh )
 static char *imageName( char *buff )
 {
 #if defined( __SW_BD )
-#if defined(__NT__) || ( defined(__OS2__) && ! defined(__OSI__) )
+#if defined(__NT__) || defined(__OS2__)
     {
         extern _crtn char *_LpDllName;
         if( _LpDllName != NULL ) {
@@ -191,7 +191,7 @@ IntlData *LoadInternationalData(
     int fh;
     res_language_enumeration language;
     size_t len;
-    PGROUP2 pg;
+    pgroup2 pg;
     char cmd_name[_MAX_PATH];
     char base[16];
 
@@ -212,7 +212,7 @@ IntlData *LoadInternationalData(
     base[len++] = '0' + language;
     base[len] = '\0';
     _makepath( cmd_name, pg.drive, pg.dir, base, LOCALE_DATA_EXT );
-    fh = sopen3( cmd_name, O_RDONLY | O_BINARY, SH_DENYWR );
+    fh = _sopen3( cmd_name, O_RDONLY | O_BINARY, SH_DENYWR );
     if( fh == -1 ) {
         return( NULL );
     }

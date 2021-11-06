@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,9 +118,8 @@ int TTLKey::dump( OutFile * dest )
 TTLRec::TTLRec( uint_32 off, char const string[] )
     : TTLKey( off )
 {
-    size_t len = strlen( string ) + 1;
-    _title = new char[len];
-    memcpy( _title, string, len );
+    _title = new char[strlen( string ) + 1];
+    strcpy( _title, string );
 }
 
 
@@ -144,25 +144,16 @@ uint_32 TTLRec::size()
 int TTLRec::dump( OutFile * dest )
 {
     dest->write( _offset );
-    dest->write( _title, strlen( _title ) + 1 );
+    dest->write( _title );
     return 1;
 }
-
-
-char const HFTtlbtree::_titleMagic[Btree::_magNumSize] = {
-    0x3B, 0x29, 0x02, 0x00, 0x00,
-    0x08, 0x4C, 0x7A, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00
-};
 
 
 //  HFTtlbtree::HFTtlbtree
 
 HFTtlbtree::HFTtlbtree( HFSDirectory * d_file )
 {
-    _titles = new Btree( _titleMagic );
+    _titles = new Btree( false, "Lz" );
     d_file->addFile( this, "|TTLBTREE" );
 }
 

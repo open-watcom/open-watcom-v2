@@ -37,9 +37,9 @@
 #include "clibext.h"
 
 
-static void Usage( const char *name )
+static void Usage( void )
 {
-    printf( "Usage: %s <executable> <patch_file>\n", name );
+    printf( "Usage: bplevel <executable> <patch_file>\n" );
     printf( "       Set the executable's patch level to that indicated\n" );
     printf( "       by the patch file.\n" );
     exit( EXIT_FAILURE );
@@ -53,10 +53,10 @@ void main( int argc, char **argv )
     static char     LevelBuff[] = PATCH_LEVEL;
     struct stat     info;
     struct utimbuf  uinfo;
-    PGROUP2         pg;
+    pgroup2         pg;
 
     if( argc != 3 )
-        Usage( argv[0] );
+        Usage();
 
     stat( argv[1], &info );
     fd = fopen( argv[1], "wb" );

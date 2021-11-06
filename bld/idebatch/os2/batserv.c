@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,7 @@ static void RunCmd( char *cmd_name )
     //DOS programs can be handled by quoting the redirection
     //operators:
     //          prog 1^>out 2^>&1
-    sprintf( cmd, "%s%c/C %s 0<NUL 1>%s 2>&1%c", CmdProc, 0, cmd_name, RedirName, 0 );
+    snprintf( cmd, sizeof( cmd ), "%s%c/C %s 0<NUL 1>%s 2>&1%c", CmdProc, '\0', cmd_name, RedirName, '\0' );
     rc = DosExecPgm( NULL, 0,           /* don't care about fail name */
                 EXEC_ASYNCRESULT,       /* execflags */
                 cmd,                    /* args */
@@ -176,8 +177,11 @@ void main( int argc, char *argv[] )
     char        done;
 
     if( argc > 1 && (argv[1][0] == 'q' || argv[1][0] == 'Q') ) {
-        rc = DosOpen( PREFIX DEFAULT_NAME, &h, &actiontaken, 0ul,
-                        0, 0x01, 0x41, 0ul );
+        rc = DosOpen( PREFIX DEFAULT_NAME, &h, &actiontaken, 0,
+                        FILE_NORMAL,
+                        OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
+                        OPEN_SHARE_DENYNONE | OPEN_ACCESS_WRITEONLY,
+                        0 );
         if( rc == 0 ) {
             done = LNK_SHUTDOWN;
             DosWrite( h, &done, sizeof( done ), &sent );

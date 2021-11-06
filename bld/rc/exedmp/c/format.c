@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -404,8 +405,8 @@ void printResObject( ExeFile *exeFile, Parameters *param )
 }
 
 void printTableContents( ResTableEntry *table, ExeFile *exeFile,
-                         Parameters *param, long int addr, int depth )
-/*********************************************************************/
+                         Parameters *param, long addr, int depth )
+/****************************************************************/
 {
     int         i;
     int         entriesCount;
@@ -453,8 +454,8 @@ void printTableContents( ResTableEntry *table, ExeFile *exeFile,
 }
 
 void printDirContents( ResDirEntry *dir, ExeFile *exeFile,
-                       Parameters  *param, long int addr, int depth )
-/********************************************************************/
+                       Parameters  *param, long addr, int depth )
+/***************************************************************/
 {
     int i;
 
@@ -505,7 +506,7 @@ void printDirContents( ResDirEntry *dir, ExeFile *exeFile,
 }
 
 void printDataContents( ResDataEntry *data, ExeFile *exeFile,
-                        Parameters   *param, long int addr )
+                        Parameters   *param, long addr )
 /***********************************************************/
 {
     printIndent( false, param );
@@ -541,7 +542,7 @@ void printDataContents( ResDataEntry *data, ExeFile *exeFile,
 void printHexBytes( unsigned long addr, unsigned long length, ExeFile *exeFile )
 /********************************************************************/
 {
-    long int        prevPos;
+    long            prevPos;
     unsigned_8      *buffer;
     unsigned long   count;
     unsigned long   i;
@@ -590,7 +591,7 @@ static void printHexLine( unsigned long lower, unsigned long upper, ExeFile *exe
                    bool splitAtEight )
 /********************************************************************/
 {
-    long int        prevPos;
+    long            prevPos;
     unsigned_8      buffer;
     unsigned long   i;
 

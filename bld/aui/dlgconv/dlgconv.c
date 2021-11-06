@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,7 +136,7 @@ typedef struct gui_control_info
 
 #include "toconv.h"
 
-void PrintDlg(char *sym, gui_ctl_id id, char*name,gui_control_info*ctl,int num_controls,int rows,int cols)
+void PrintDlg(char *sym, gui_ctl_id id, char*name,gui_control_info*ctl,int num_controls,gui_text_ord rows,gui_text_ord cols)
 {
     int i;
     FILE *hfile, *dlgfile;

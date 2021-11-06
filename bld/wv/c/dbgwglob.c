@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ static  void    GlobInit( a_window wnd )
 {
     glob_window *glob = WndGlob( wnd );
 
-    WndScrollAbs( wnd, 0 );
+    WndVScrollAbs( wnd, 0 );
     NameListFree( NameList( glob ) );
     WndZapped( wnd );
     NameListAddModules( NameList( glob ), glob->mod, glob->d2_only, true );
@@ -193,7 +193,7 @@ wnd_info GlobInfo = {
     GlobRefresh,
     GlobGetLine,
     GlobMenuItem,
-    NoScroll,
+    NoVScroll,
     NoBegPaint,
     NoEndPaint,
     WndFirstMenuItem,

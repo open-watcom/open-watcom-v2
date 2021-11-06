@@ -4,9 +4,11 @@
 ..if &e'&dohelp eq 0 ..do begin
 .  ..im wnohelp
 ..do end
+..el .do begin
+.  ..im whelp
+..do end
 ..im fmtmacro
 ..im gmlmacs
-:CMT. ..im htmlmacs
 ..im xdefs
 ..im cmac
 ..im boxmac
@@ -48,7 +50,7 @@
 :SET symbol='basedptr'  value="Based Pointers for &wcboth.".
 :SET symbol='ptr86'     value="Special Pointer Types for &wc286.".
 :SET symbol='ptr386'    value="Special Pointer Types for &wc386.".
-:SET symbol='hugekw'    value="The &kwhuge_sp. Keyword".
+:SET symbol='hugekw'    value="The &kwhuge. Keyword".
 :SET symbol='appkw'     value="Compiler Keywords".
 :SET symbol='struct'    value="Structures".
 :SET symbol='inttoflt'  value="Integer to Floating-Point Conversion".
@@ -80,7 +82,7 @@
 .   .pa odd
 .   ..do end
 .   :BODY.
-.   .   ..if &e'&dohelp eq 1 ..do begin
+.   .   ..if &e'&dohelp ne 0 ..do begin
 .   .   :exhelp
 .   .   :INCLUDE file='&book..idx'.
 .   .   :INCLUDE file='&book..tbl'.
@@ -229,11 +231,9 @@
 .       .chap Glossary
 .           :INCLUDE file='glossary'.
 .   ..if &e'&dohelp eq 0 ..do begin
-.   :BACKM.
-.       ..cd set 2
+.       :BACKM.
 .       :INDEX.
 .   ..do end
-.   ..cd set 1
 .   .cntents end_of_book
 :eGDOC.
 .*

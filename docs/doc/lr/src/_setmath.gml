@@ -7,7 +7,7 @@ void _set_matherr( int (*rtn)( struct _exception *err_info ) )
 .synop end
 .desc begin
 The default
-.kw matherr
+.reffunc matherr
 function supplied in the library can be replaced so that the
 application can handle mathematical errors.
 To do this, the
@@ -18,11 +18,11 @@ new mathematical error handling routine.
 .bi Note:
 Under some systems, the default math error handler can be replaced by
 providing a user-written function of the same name,
-.kw matherr
+.reffunc matherr
 .ct , and using linking strategies to replace the default handler.
 .pp
 A program may contain a user-written version of
-.kw matherr
+.reffunc matherr
 to take any appropriate action when an error is detected.
 When zero is returned by the user-written routine, an error message
 will be printed upon

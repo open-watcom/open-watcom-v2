@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,13 +90,13 @@ bool WDeleteStringData( WStringEditInfo *einfo, WStringBlock *block,
     ok = (einfo != NULL && einfo->tbl != NULL && block != NULL && bdel != NULL);
 
     if( ok ) {
-        *bdel = FALSE;
+        *bdel = false;
         if( block->block.String[id & 0xf] != NULL ) {
             WRMemFree( block->block.String[id & 0xf] );
             block->block.String[id & 0xf] = NULL;
             if( WIsBlockEmpty( block ) ) {
                 ok = WRemoveStringBlock( einfo->tbl, block );
-                *bdel = TRUE;
+                *bdel = true;
             }
         }
     }

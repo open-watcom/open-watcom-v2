@@ -9,7 +9,7 @@ The
 .id &funcb.
 function closes the file
 .arg fp
-.ct .li .
+.period
 If there was any unwritten buffered data for the file, it is written out
 before the file is closed.
 Any unread buffered data is discarded.

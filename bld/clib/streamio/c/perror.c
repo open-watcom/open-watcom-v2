@@ -53,6 +53,6 @@ _WCRTLINK void __F_NAME(perror,_wperror)( const CHAR_TYPE *s )
         __F_NAME(fputs,fputws)( s, stderr );
         __F_NAME(fputs,fputws)( STRING( ": " ), stderr );
     }
-    __F_NAME(fputs,fputws)( __F_NAME(strerror,wcserror)( _RWD_errno ), stderr );
+    __F_NAME(fputs,fputws)( __F_NAME(strerror,_wcserror)( _RWD_errno ), stderr );
     __F_NAME(fputc,fputwc)( STRING( '\n' ), stderr );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,7 +90,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
     AddCallIns( call_ins, call );
     if( use_return ) {
         if( call_ins->type_class != XX ) {
-            conv_ins = MakeConvert( call_ins->result, result, TypeClass( call->tipe ), ReturnClass( call->tipe, call->state->attr ) );
+            conv_ins = MakeConvert( call_ins->result, result, TypeClass( call->tipe ), ReturnTypeClass( call->tipe, call->state->attr ) );
             AddIns( conv_ins );
         } else {
             // conv_ins = MakeMove( call_result, result, XX );

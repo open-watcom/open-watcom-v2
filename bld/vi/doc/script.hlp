@@ -29,23 +29,23 @@ variable. Global variables are valid for the life of the editing
 session.  There are a number of variables that take on values as the 
 editor runs, use these at your own risk:
  
-%C   	 - current column
-%D   	 - drive of current file (actual path)
-%(D1)  	 - drive of current file (as typed by user)
-%E   	 - file name extension of current file
-%F   	 - current file name (as typed by the user)
-%H   	 - home directory of a file (directory where edit command was issued)
-%N   	 - name of current file (without extension)
-%M   	 - modified status - contains 1 if current file is modified, 
-	   0 otherwise
+%C       - current column
+%D       - drive of current file (actual path)
+%(D1)    - drive of current file (as typed by user)
+%E       - file name extension of current file
+%F       - current file name (as typed by the user)
+%H       - home directory of a file (directory where edit command was issued)
+%N       - name of current file (without extension)
+%M       - modified status - contains 1 if current file is modified, 
+           0 otherwise
 %(OS)    - what operating system the editor is hosted on
-	   (possible values are: nt, unix, os2, os2v2, dos)
+           (possible values are: nt, unix, os2, os2v2, dos)
 %(OS386) - is 1 if the host operating system is 386 (or higher) based
-%P   	 - path of current file (actual path)
-%(P1)	 - path of current file (as typed by user)
-%R   	 - current row (line number)
-%(SH)	 - height of screen in characters
-%(SW)	 - width of screen in characters
+%P       - path of current file (actual path)
+%(P1)    - path of current file (as typed by user)
+%R       - current row (line number)
+%(SH)    - height of screen in characters
+%(SW)    - width of screen in characters
 %(Sysrc) - return code from last system command
 
 The full command line command set (see cmd.hlp) is supported, along with
@@ -56,7 +56,7 @@ Useful Commands
 Command line commands (see cmd.hlp) useful for scripts are:
  
 compile - compile a script
-load	- make a script resident in memory
+load    - make a script resident in memory
 
 Hook Scripts
 ------------
@@ -65,44 +65,44 @@ If a hook returns a non-zero value, the operation being hooked
 is cancelled.
  
 Read Hook    - this hook script is called just after a new file as been
-	       read into the editor.  The script invoked is whatever
-	       file specified by the global variable %(Rdhook).
+               read into the editor.  The script invoked is whatever
+               file specified by the global variable %(Rdhook).
  
 Write Hook   - this hook script is called just before a modified file 
-	       is to be saved and exited. The script invoked is whatever
-	       file specified by the global variable %(Wrhook).
+               is to be saved and exited. The script invoked is whatever
+               file specified by the global variable %(Wrhook).
  
 Command Hook - this hook script is called after the return is pressed
-	       from the command line.  The global variable %(Com) 
-	       contains the current command line, and may be modified.
-	       The script invoked is whatever file specified by 
-	       the global variable %(Cmdhook).
+               from the command line.  The global variable %(Com) 
+               contains the current command line, and may be modified.
+               The script invoked is whatever file specified by 
+               the global variable %(Cmdhook).
 
 Mod Hook     - Modified hook. This hook script is called whenever
-	       a command is about to modify an unmodified file
-	       (if it already modifed, the hook is not called). The script 
-	       invoked is whatever file specified by the global variable 
-	       %(Modhook).
+               a command is about to modify an unmodified file
+               (if it already modifed, the hook is not called). The script 
+               invoked is whatever file specified by the global variable 
+               %(Modhook).
 
 Mouse Columns- this hook script is called whenever a selected column range
  Sel Hook      has been right clicked.  The script is invoked with the
                following parameters:
-	         %1 - string selected
-		 %2 - line on screen of selected string
-		 %3 - column on screen of start of string
-		 %4 - column on screen of end of string
-	       The script invoked is whatever file is specified by the global
-	       variable %(MCselhook)
+                 %1 - string selected
+                 %2 - line on screen of selected string
+                 %3 - column on screen of start of string
+                 %4 - column on screen of end of string
+               The script invoked is whatever file is specified by the global
+               variable %(MCselhook)
 
 Mouse Lines - this hook script is called whenever a selected line range
  Sel Hook      has been right clicked.  The script is invoked with the
                following parameters:
-		 %1 - line on screen where mouse was clicked
-		 %2 - column on screen where mouse was clicked
-		 %3 - starting line
-		 %4 - ending line
-	       The script invoked is whatever file is specified by the global
-	       variable %(MLselhook)
+                 %1 - line on screen where mouse was clicked
+                 %2 - column on screen where mouse was clicked
+                 %3 - starting line
+                 %4 - ending line
+               The script invoked is whatever file is specified by the global
+               variable %(MLselhook)
 
 Control Constructs
 ------------------
@@ -135,74 +135,74 @@ Expressions
 Where (expr) is specified, an expression may be used.
  
     expression
-	: conditional-exp
+        : conditional-exp
     
     conditional-exp
-	: log-or-exp
-	| log-or-exp ? expression : conditional-exp
+        : log-or-exp
+        | log-or-exp ? expression : conditional-exp
     
     log-or-exp
-	: log-and-exp
-	| log-or-exp || log-and-exp
+        : log-and-exp
+        | log-or-exp || log-and-exp
     
     log-and-exp
-	: bit-or-exp
-	| log-and-exp && bit-or-exp
+        : bit-or-exp
+        | log-and-exp && bit-or-exp
     
     bit-or-exp
-	: bit-xor-exp
-	| bit-or-exp | bit-xor-exp
-	
+        : bit-xor-exp
+        | bit-or-exp | bit-xor-exp
+        
     bit-xor-exp
-	: bit-and-exp
-	| bit-xor-exp ^ bit-and-exp
+        : bit-and-exp
+        | bit-xor-exp ^ bit-and-exp
     
     bit-and-exp
-	: equality-exp
-	| bit-and-exp & equality-exp
+        : equality-exp
+        | bit-and-exp & equality-exp
     
     equality-exp
-	: relational-exp
-	| equality-exp == relational-exp
-	| equality-exp != relational-exp
+        : relational-exp
+        | equality-exp == relational-exp
+        | equality-exp != relational-exp
     
     relational-exp
-	: shift-exp
-	| relational-exp > shift-exp
-	| relational-exp < shift-exp
-	| relational-exp >= shift-exp
-	| relational-exp <= shift-exp
+        : shift-exp
+        | relational-exp > shift-exp
+        | relational-exp < shift-exp
+        | relational-exp >= shift-exp
+        | relational-exp <= shift-exp
     
     shift-exp
-	: additive-exp
-	| shift-exp << additive-exp
-	| shift-exp >> additive-exp
+        : additive-exp
+        | shift-exp << additive-exp
+        | shift-exp >> additive-exp
     
     additive-exp
-	: multiplicative-exp
-	| additive-exp + multiplicative-exp
-	| additive-exp - multiplicative-exp
-	
+        : multiplicative-exp
+        | additive-exp + multiplicative-exp
+        | additive-exp - multiplicative-exp
+        
     multiplicative-exp
-	: exponent-exp
-	| multiplicative-exp * exponent-exp
-	| multiplicative-exp / exponent-exp
-	| multiplicative-exp % exponent-exp
+        : exponent-exp
+        | multiplicative-exp * exponent-exp
+        | multiplicative-exp / exponent-exp
+        | multiplicative-exp % exponent-exp
 
     exponent-exp
         : unary-exp
-	| exponent-exp ** unary-exp
+        | exponent-exp ** unary-exp
     
     unary-exp
-	: primary-exp
-	| - unary-exp
-	| ~ unary-exp
-	| ! unary-exp
+        : primary-exp
+        | - unary-exp
+        | ~ unary-exp
+        | ! unary-exp
     
     primary-exp
-	: INTEGER
-	: STRING
-	| ( expression )
+        : INTEGER
+        : STRING
+        | ( expression )
 
       A string is indicated by using quotes.
       
@@ -224,9 +224,9 @@ Where (expr) is specified, an expression may be used.
 
       Example expressions:
 
-      	if ("%(str)" == "foo") || ("%(str)" == "bar")
-	if (5+%i*3 == 15)
-	if rdonly == 1
+        if ("%(str)" == "foo") || ("%(str)" == "bar")
+        if (5+%i*3 == 15)
+        if rdonly == 1
 
 Summary
 -------
@@ -243,21 +243,21 @@ Summary
       defined below.
       
       <val> may be coded as a string, or as a special operator:
-	    strlen <v>		 - compute the length of string in 
-	    			   variable <v>
-	    strchr <v> <c>       - compute first occurance of character <c> 
-	    			   in in variable <v>.
-	    substr <v> <n1> <n2> - compute substring of variable v, using
-	    			   character <n1> through <n2> of the
-				   variable.
-	    Locations in strings are based from 1 (not 0, like in C).
-	    Note that additional parameters <c>, <n1>, <n2> may be
-	    variables as well.
-	    
-	    eg: assign foobar to %a        - puts "foobar" into variable %a
-		assign strlen %a to %b     - puts "6" into variable %b
-		assign strchr %a b to %c   - puts "4" into variable %c
-		assign substr %a 2 4 to %d - puts "oob" into variable %d
+            strlen <v>           - compute the length of string in 
+                                   variable <v>
+            strchr <v> <c>       - compute first occurance of character <c> 
+                                   in in variable <v>.
+            substr <v> <n1> <n2> - compute substring of variable v, using
+                                   character <n1> through <n2> of the
+                                   variable.
+            Locations in strings are based from 1 (not 0, like in C).
+            Note that additional parameters <c>, <n1>, <n2> may be
+            variables as well.
+            
+            eg: assign foobar to %a        - puts "foobar" into variable %a
+                assign strlen %a to %b     - puts "6" into variable %b
+                assign strchr %a b to %c   - puts "4" into variable %c
+                assign substr %a 2 4 to %d - puts "oob" into variable %d
       
       Special flags
       'r' - if used, <val> may contain regular expression replacement 
@@ -344,7 +344,7 @@ Summary
 
   [return] (rc)
     - exit the source script. The option return code may be any value
-      found in errmsg.dat
+      found in error.dat
 
   [until] <expr>
     - end a loop block if <expr> is true

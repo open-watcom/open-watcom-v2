@@ -1,12 +1,12 @@
 .chap Introduction to &product
 .*
 .np
-Welcome to the &product &ver..&rev development system. &product
+Welcome to the &product &verrev development system. &product
 is an Open Source successor to commercial compilers previously
 marketed by Sybase, Powersoft and originally WATCOM International
 Corp.
 .np
-Version &ver..&rev of &product is a professional, optimizing,
+Version &verrev of &product is a professional, optimizing,
 multi-platform
 .if '&lang' eq 'C/C++' .do begin
 C and C++
@@ -38,10 +38,10 @@ since the previous release.
 .bd to determine if you need to recompile your application.
 .abox end
 .*
-.section What is in version &ver..&rev of &product?
+.section What is in version &verrev of &product?
 .*
 .np
-Version &ver..&rev incorporates the features professional developers have
+Version &verrev incorporates the features professional developers have
 been demanding:
 .begpoint $break $setptnt 5
 .ix 'product overview'

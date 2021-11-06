@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +44,11 @@
 #include "context.h"
 #include "stats.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
+    #include "pragdefn.h"
+    #include "dbg.h"
+    #include "togglesd.h"
 #endif
+
 
 #define TIS_DEFS                /* types in input stack     */ \
   TIS_DEF( DT_INPUT )           /* - dtor, unprocessed      */ \
@@ -204,10 +208,6 @@ ExtraRptCtr( ctr_caches );      // # caches
 
 #ifndef NDEBUG
 
-#include "dbg.h"
-#include "toggle.h"
-
-
 static const char *tob_names[] = {
     #define TOB_DEF(a) # a
     TOB_DEFS
@@ -265,7 +265,7 @@ static void DumpCdoptIter(      // DUMP ITERATOR
     const char* text1,          // - and some text
     const char* text2 )         // - and some text
 {
-    if( PragDbgToggle.cdopt ) {
+    if( TOGGLEDBG( cdopt ) ) {
         printf( "CDOPT_ITER[%p] info(%p) orig_otype(%s) %s %s\n"
                 "    offsets: comp(%x) elem(%x) vbase(%p) gened_comp(%x) at_end(%x)\n"
               , iter
@@ -317,7 +317,7 @@ static void DumpCdoptInfo(      // DUMP CD_DESCR
     CL_ELEM* elem;              // - current element
     ACC_FUN* af;                // - current function access
 
-    if( PragDbgToggle.cdopt ) {
+    if( TOGGLEDBG( cdopt ) ) {
         VBUF vbuf;
 
         printf( "CD_DESCR[%p]: type(%p) opt(%s) elements(%p)\n"
@@ -345,7 +345,7 @@ static void DumpCdoptIn(        // DUMP INPUT STACK ENTRY
     STKIN *inp,                 // - input stack
     const char* text )          // - descriptive text
 {
-    if( PragDbgToggle.cdopt ) {
+    if( TOGGLEDBG( cdopt ) ) {
         printf( "STKIN[%p]: info(%p) elem(%p) %s\n"
               , inp
               , inp->info
@@ -360,7 +360,7 @@ static void DumpClIter(         // DUMP STACK ENTRY
     CL_ITER* exp,               // - stack entry
     const char* text )          // - and some text
 {
-    if( PragDbgToggle.cdopt ) {
+    if( TOGGLEDBG( cdopt ) ) {
         printf( "CL_ITER[%p]: info(%p) elem(%p) comp_otype(%s) %s\n"
               , exp
               , exp->info
@@ -389,12 +389,12 @@ static void DumpCdoptCaches(    // DUMP CDOPT CACHES
 {
     bool saved;
 
-    saved = PragDbgToggle.cdopt;
-    PragDbgToggle.cdopt = true;
+    saved = TOGGLEDBG( cdopt );
+    TOGGLEDBG( cdopt ) = true;
     dumpRing( allDescriptors.cdopt_ctor );
     dumpRing( allDescriptors.cdopt_dtor );
     dumpRing( allDescriptors.cdopt_opeq );
-    PragDbgToggle.cdopt = saved;
+    TOGGLEDBG( cdopt ) = saved;
 }
 
 #else
@@ -1015,7 +1015,7 @@ static bool dtorOptimizable(    // CAN DTOR BE OPTIMIZED UNDER ANY CONDITIONS?
 static SYMBOL dtorLocate(       // FIND DTOR FOR TYPE
     TYPE cltype )               // - class type
 {
-    cltype = StructType( cltype );
+    cltype = ClassType( cltype );
     return( ( NULL == cltype ) ? NULL : RoDtorFindType( cltype ) );
 }
 
@@ -1025,7 +1025,7 @@ static SYMBOL dtorFind(         // FIND DTOR FOR CLASS ELEMENT
 {
     TYPE cltype;                // - type for class
 
-    cltype = StructType( elem->cltype );
+    cltype = ClassType( elem->cltype );
     return( ( NULL == cltype ) ? NULL : RoDtorFindType( cltype ) );
 }
 
@@ -1172,7 +1172,7 @@ static SYMBOL getDefedCtor(     // FIND DEFINED DEFAULT CTOR
     arg_list arglist;           // - dummy arguments list
 
     InitArgList( &arglist );
-    cltype = StructType( cltype );
+    cltype = ClassType( cltype );
     if( cltype == NULL ) {
         return( NULL );
     }
@@ -1214,7 +1214,7 @@ static SYMBOL defCtorFind(      // FIND DEF.CTOR FOR TYPE
     SYMBOL ctor;                // - default CTOR
     TYPE cltype;                // - class type for CTOR
 
-    cltype = StructType( elem->cltype );
+    cltype = ClassType( elem->cltype );
     ctor = defCtorLocate( cltype );
     if( NULL == ctor && NULL != cltype ) {
         elem->cannot_define = true;
@@ -1347,7 +1347,7 @@ static SYMBOL defAssFind(       // GET DEFAULT OP= (OR NULL IF SCALAR )
     TYPE type;                  // - type
     SYMBOL opeq;                // - default operator= or NULL
 
-    type = StructType( elem->cltype );
+    type = ClassType( elem->cltype );
     if( type == NULL ) {
         opeq = NULL;
     } else {
@@ -1398,7 +1398,7 @@ static SYMBOL defAssArrayAcc(   // GET ARRAY-ACCESS SYMBOL
 {
     SYMBOL opeq;                // - symbol to be used
 
-    if( NULL == StructType( type ) ) {
+    if( NULL == ClassType( type ) ) {
         opeq = NULL;
     } else {
         opeq = ClassDefaultOpEq( type, type );
@@ -1470,7 +1470,7 @@ static void addInfoElement(     // ADD ELEMENT TO CD_DESCR
     CL_ELEM* elem )             // - the element
 {
 #ifndef NDEBUG
-    if( PragDbgToggle.cdopt ) {
+    if( TOGGLEDBG( cdopt ) ) {
         printf( "-- ADDED %p TO %p\n", elem, info );
     }
 #endif
@@ -1627,7 +1627,7 @@ static CD_DESCR* cdoptBuildOrig(// BUILD FOR ORIGINATING FUNCTION
     CL_ELEM* elem;              // - current element
     const MEMB_VFUNS* mfuns;    // - member functions
 
-    cltype = StructType( cltype );
+    cltype = ClassType( cltype );
     info = cacheFind( cltype, defn );
     if( info == NULL ) {
         info = cdoptExpandClass( cltype, defn );
@@ -1645,7 +1645,7 @@ static CD_DESCR* cdoptBuildOrig(// BUILD FOR ORIGINATING FUNCTION
                 VstkPop( &stackSTKIN );
             } else {
                 TYPE elem_type;
-                elem_type = StructType( elem->cltype );
+                elem_type = ClassType( elem->cltype );
                 descr = elem->descr;
                 if( descr == NULL ) {
 #ifdef XTRA_RPT
@@ -1822,7 +1822,7 @@ static bool typeDtorable(       // TEST IF TYPE REALLY NEEDS DTOR'ING
         if( base_type != NULL ) {
             type = ArrayBaseType( base_type );
         }
-        type = StructType( type );
+        type = ClassType( type );
         if( type == NULL ) {
             ok = false;
         } else if( TypeRequiresDtoring( type ) ) {
@@ -1895,7 +1895,7 @@ void CDoptBackEnd(              // START OF BACK-END PROCESSING
     void )
 {
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_cdopt ) {
+    if( TOGGLEDBG( dump_cdopt ) ) {
         DumpCdoptCaches();
     }
 #endif

@@ -29,26 +29,26 @@ bld_cc_sys      = $(cflags_$(bld_os))
 bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-!ifdef bldnewowtools
+!if $(bld_watcom_ver) >= 1300
 bld_new_cflags  = -xx-zam
 !endif
 
 !ifeq release 0
-bld_gen_cflags  = $(watcom_common_cflags)-w8-j-za99-d2$(bld_new_cflags)-fo=.obj
+bld_gen_cflags  = $(watcom_common_cflags)-j-za99-d2$(bld_new_cflags)-fo=.obj
 !else
-bld_gen_cflags  = $(watcom_common_cflags)-w8-j-za99-s$(bld_dft_oflags)$(bld_new_cflags)-fo=.obj
+bld_gen_cflags  = $(watcom_common_cflags)-j-za99-s$(bld_dft_oflags)$(bld_new_cflags)-fo=.obj
 !endif
 
 # options for source compilations
 bld_cflags      = $(bld_gen_cflags)
 
 # options for single source utility compilations
-bld_clflags     = $(bld_gen_cflags) -fe=$^@
+bld_clflags     = $(bld_gen_cflags) -fe=$@
 
 # options for linking
 bld_ldflags     =
 
-bld_libflags    = -b-n-pa $^@
+bld_libflags    = -b-n-pa $@
 
 bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
 bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
@@ -61,7 +61,6 @@ edbind          = $(noecho)bedbind
 ide2make        = bide2mak
 re2c            = $(noecho)re2c
 sed             = $(noecho)sed
-w32bind         = $(noecho)w32bind
 wbind           = $(noecho)bwbind
 wsplice         = $(noecho)*wsplice
 wstrip          = $(noecho)bwstrip
@@ -153,4 +152,4 @@ bind_res : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bind res $@
 !endif
-    $(rc_bnd) $^&.res $^@
+    $(rcbnd) $^&.res $@

@@ -32,8 +32,8 @@
 
 
 #include <stdui.h>
-#include "biosui.h"
 #include "uicurshk.h"
+#include "int10.h"
 
 
 #define NoCur   0x2000      /* outside screen */
@@ -93,8 +93,8 @@ extern unsigned VIDGetCurTyp( unsigned );
 
 unsigned        VIDPort = VIDMONOINDXREG;
 
-static unsigned RegCur;
-static unsigned InsCur;
+static int10_cursor_typ RegCur;
+static int10_cursor_typ InsCur;
 
 static CURSORORD    OldCursorRow;
 static CURSORORD    OldCursorCol;
@@ -104,11 +104,12 @@ void UIHOOK uiinitcursor( void )
 {
     OldCursorTyp = C_OFF;
     if( UIData->height == 25 ) {
-        RegCur = 0x0b0c;
+        RegCur.value = MONO_CURSOR_ON;
     } else {
-        RegCur = 0x0607;
+        RegCur.value = CGA_CURSOR_ON;
     }
-    InsCur = ( ((RegCur + 0x100) >> 1 & 0xFF00) + 0x100 ) | ( RegCur & 0x00FF );
+    InsCur.s.bot_line = RegCur.s.bot_line;
+    InsCur.s.top_line = ( RegCur.s.bot_line + 1 ) / 2;
 }
 
 void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATTR cattr )
@@ -124,7 +125,7 @@ void UIHOOK uisetcursor( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, CATT
         OldCursorRow = crow;
         OldCursorCol = ccol;
         VIDSetPos( VIDPort, crow * UIData->width + ccol );
-        VIDSetCurTyp( VIDPort, ( ctype == C_INSERT ) ? InsCur : RegCur );
+        VIDSetCurTyp( VIDPort, ( ctype == C_INSERT ) ? InsCur.value : RegCur.value );
     }
 }
 

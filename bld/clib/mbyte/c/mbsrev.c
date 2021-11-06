@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 
 
 /****
-***** Reverse the order of characters in a string.  Equivalent to strrev().
+***** Reverse the order of characters in a string.  Equivalent to _strrev().
 ****/
 
 _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsrev,_fmbsrev)( unsigned char _FFAR *string )
@@ -51,7 +52,7 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsrev,_fmbsrev)( unsigned char _FFAR *
     unsigned char _FFAR *   endMarker;
     unsigned char           mbc[MB_LEN_MAX+1];
 
-//    if( !__IsDBCS )  return( strrev( string ) );
+//    if( !__IsDBCS )  return( _strrev( string ) );
 
     /*** Handle the empty string case ***/
     if( _NEARFAR(_mbterm,_fmbterm)(string) )  return( string );

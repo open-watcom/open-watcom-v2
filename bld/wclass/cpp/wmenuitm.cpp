@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +88,7 @@ void WMenuItem::attachMenu( WWindow *win, int position )
     gui_menu_struct     menu_item;
     gui_menu_styles     menu_style;
 
-    menu_item.label = (char *)text();
+    menu_item.label = text();
     menu_item.id = menuId();
     menu_style = GUI_STYLE_MENU_ENABLED;
     if( checked() ) {
@@ -98,8 +98,7 @@ void WMenuItem::attachMenu( WWindow *win, int position )
         menu_style = (gui_menu_styles)( menu_style | GUI_STYLE_MENU_GRAYED );
     }
     menu_item.style = menu_style;
-    const char *c_hinttext = _hintText;
-    menu_item.hinttext = (char *)c_hinttext;
+    menu_item.hinttext = (const char *)_hintText;
     menu_item.child = NoMenu;
     if( parent()->isFloatingMain() ) {
         // appending menu item to top level floating popup menu

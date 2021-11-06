@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,6 +99,7 @@ typedef struct {
 } shared_data;
 
 #include "wdebug.h"
+#include "winintrf.h"
 
 #endif
 
@@ -112,12 +114,13 @@ extern void             OutputMsg( int msg );
 extern void             OutputMsgNL( int msg );
 extern void             OutputMsgParmNL( int msg, const char FAR_PTR *str );
 extern void             OutputMsgCharNL( int msg, char chr );
-extern unsigned         GetNumber( unsigned, unsigned, char **, unsigned );
+extern unsigned         GetNumber( unsigned, unsigned, const char **, unsigned );
 extern void             StopAndSave( void );
 extern void             WriteCodeLoad( seg_offset, const char *, samp_block_kinds );
 extern void             WriteAddrMap( seg, seg, off );
 extern void             AllocSamples( unsigned );
 extern void             RecordCGraph( void );
+extern int              sample_main( char * );
 
 extern int              SampCreate( const char * );
 extern int              SampWrite( const void FAR_PTR *, size_t );
@@ -125,9 +128,9 @@ extern int              SampSeek( unsigned long );
 extern int              SampClose( void );
 extern void             SaveSamples( void );
 
-extern void             StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args );
+extern void             StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args );
 extern void             StopProg( void );
-extern void             GetProg( char *, char * );
+extern void             GetProg( const char *cmd, size_t len );
 #if defined( __DOS__ ) && !defined( _PLS ) && !defined( _RSI )
 extern bool             __near VersionCheck( void );
 extern void             __near WriteMark( const char FAR_PTR *str, seg_offset where );
@@ -141,7 +144,7 @@ extern void             FAR_PTR *my_alloc( size_t size );
 extern void             my_free( void FAR_PTR *chunk );
 
 extern void             InitTimerRate( void );
-extern void             SetTimerRate( char ** );
+extern void             SetTimerRate( const char ** );
 extern unsigned long    TimerRate( void );
 extern unsigned         SafeMargin( void );
 extern unsigned         NextThread( unsigned );
@@ -151,7 +154,7 @@ extern void             SysInit( void );
 extern void             SysOptions( void );
 extern void             SysExplain( void );
 extern void             SysDefaultOptions( void );
-extern void             SysParseOptions( char, char ** );
+extern void             SysParseOptions( char, const char ** );
 
 extern void             GetCommArea( void );
 extern void             GetNextAddr( void );

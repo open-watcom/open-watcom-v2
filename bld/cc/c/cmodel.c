@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,11 @@
 #include "scan.h"
 #include "pdefn2.h"
 #include <ctype.h>
-#include "cmacsupp.h"
+#include "cmacadd.h"
+#include "toggles.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+#endif
 
 
 extern  char    CompilerID[];
@@ -65,7 +69,7 @@ static size_t get_namelen( const char *start )
 char *BadCmdLine( int error_code, const char *str )
 {
     char        *p;
-    auto char   buffer[128];
+    char        buffer[128];
 
     p = buffer;
     for( ; *str != '\0'; ) {
@@ -89,6 +93,8 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
 {
     size_t      mlen;
     MEPTR       mentry;
+    bool        ppscan_mode;
+    TOKEN       token;
 
     mlen = get_namelen( str );
     if( mlen == 0 ) {
@@ -104,20 +110,18 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
         MacroSegmentAddChar( &mlen, '1' );
         MacroSegmentAddChar( &mlen, '\0' );
     } else {
-        bool ppscan_mode;
-
         ppscan_mode = InitPPScan();
         ReScanInit( ++str );
         for( ; *str != '\0'; ) {
-            ReScanToken();
+            token = ReScanToken();
             if( ReScanPos() == str )
                 break;
-            if( CurToken == T_WHITE_SPACE )
+            if( token == T_WHITE_SPACE )
                 break;
-            if( CurToken == T_BAD_CHAR && !multiple_tokens )
+            if( token == T_BAD_CHAR && !multiple_tokens )
                 break;
-            MacroSegmentAddToken( &mlen, CurToken );
-            switch( CurToken ) {
+            MacroSegmentAddToken( &mlen, token );
+            switch( token ) {
             case T_BAD_CHAR:
                 MacroSegmentAddChar( &mlen, Buffer[0] );
                 break;
@@ -139,10 +143,10 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
         FiniPPScan( ppscan_mode );
     }
     MacroSegmentAddToken( &mlen, T_NULL );
-    if( CMPLIT( mentry->macro_name, "defined" ) != 0 ) {
-        MacroDefine( mlen, mflags );
-    } else {
+    if( IS_PPOPERATOR_DEFINED( mentry->macro_name ) ) {
         CErr1( ERR_CANT_DEFINE_DEFINED );
+    } else {
+        MacroDefine( mlen, mflags );
     }
     return( (char *)str );
 }
@@ -284,6 +288,7 @@ void MiscMacroDefs( void )
         Define_Macro( "__RENT__" );
     }
     PreDefine_Macro( "_PUSHPOP_SUPPORTED" );
+    PreDefine_Macro( "__STDC_NO_VLA__" );
     PreDefine_Macro( CompilerID );
     FreeUndefNames();
 }
@@ -292,9 +297,6 @@ void InitModInfo( void )
 {
     GenSwitches = 0;
     TargetSwitches = 0;
-    Toggles = TOGGLE_CHECK_STACK
-            | TOGGLE_UNREFERENCED
-            | TOGGLE_REUSE_DUPLICATE_STRINGS;
     DataThreshold = 32767;
     OptSize = 50;
     UndefNames = NULL;
@@ -345,6 +347,14 @@ void InitModInfo( void )
     CompFlags.use_stdcall_at_number             = true;
     CompFlags.rent                              = false;
     CompFlags.check_truncated_fnames            = true;
+
+    memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );
+#ifndef NDEBUG
+    memset( &PragmaDbgToggles, 0, sizeof( PragmaDbgToggles ) );
+#endif
+    TOGGLE( check_stack ) = true;
+    TOGGLE( unreferenced ) = true;
+    TOGGLE( reuse_duplicate_strings ) = true;
 
     SetAuxWatcallInfo();
 }

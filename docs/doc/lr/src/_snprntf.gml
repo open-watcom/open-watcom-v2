@@ -2,14 +2,14 @@
 .synop begin
 #include <stdio.h>
 int _snprintf( char *buf,
-	       size_t count,
-	       const char *format, ... );
+               size_t count,
+               const char *format, ... );
 .ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int _snwprintf( wchar_t *buf,
-		size_t count,
-		const wchar_t *format, ... );
+                size_t count,
+                const wchar_t *format, ... );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide &wfunc
 .do end
@@ -18,14 +18,14 @@ int _snwprintf( wchar_t *buf,
 The
 .id &funcb.
 function is equivalent to the
-.kw fprintf
+.reffunc fprintf
 function, except that the argument
 .arg buf
 specifies a character array into which the generated output is placed,
 rather than to a file.
 The maximum number of characters to store is specified by
 .arg count
-.ct .li .
+.period
 A null character is placed at the end of the generated character
 string if fewer than
 .arg count
@@ -33,9 +33,9 @@ characters were stored.
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .if &'length(&wfunc.) ne 0 .do begin
 The argument
 .arg buf
@@ -44,7 +44,7 @@ is to be written, rather than converted to multibyte characters and
 written to a stream.
 The maximum number of wide characters to store is specified by
 .arg count
-.ct .li .
+.period
 A null wide character is placed at the end of the generated wide
 character string if fewer than
 .arg count

@@ -1,37 +1,36 @@
+# UTF-8 encoding, Â¥
 name=Help_Maintain
 dynamic_text=hmaint_1,\
         //1"%AppName% has been found in %DstDir%."\
-        //2"%AppName% ‚ª %DstDir% ‚ÉŒ©‚Â‚©‚è‚Ü‚µ‚½."\
+        //2"%AppName% ãŒ %DstDir% ã«è¦‹ã¤ã‹ã‚Šã¾ã—ãŸ."\
         //0
 static_text=\
         //1"Files will be upgraded to the latest version."\
-        //2"ƒtƒ@ƒCƒ‹‚ÍÅVƒo[ƒWƒ‡ƒ“‚ÉƒAƒbƒvƒOƒŒ[ƒh‚³‚ê‚Ü‚·."\
+        //2"ãƒ•ã‚¡ã‚¤ãƒ«ã¯æœ€æ–°ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã«ã‚¢ãƒƒãƒ—ã‚°ãƒ¬ãƒ¼ãƒ‰ã•ã‚Œã¾ã™."\
         //0
 static_text=
 static_text=\
         //1"You may choose the following options:"\
-        //2"ˆÈ‰º‚ÌƒIƒvƒVƒ‡ƒ“‚ğ‘I‘ğ‚Å‚«‚Ü‚·:"\
+        //2"ä»¥ä¸‹ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’é¸æŠã§ãã¾ã™:"\
         //0
 static_text=
 include=hfull.dlg
-include=hfullcd.dlg
 include=hsel.dlg
 static_text=\
-        //1"	- Any component you do not choose will be removed."\
-        //2"	- ‘I‘ğ‚µ‚È‚©‚Á‚½ƒRƒ“ƒ|[ƒlƒ“ƒg‚Ííœ‚µ‚Ü‚·."\
+        //1"    - Any component you do not choose will be removed."\
+        //2"    - é¸æŠã—ãªã‹ã£ãŸã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã¯å‰Šé™¤ã—ã¾ã™."\
         //0
-include=hmini.dlg
 static_text=\
         //1"Un-Install All Components"\
-        //2"‚·‚×‚Ä‚ÌƒRƒ“ƒ|[ƒlƒ“ƒg‚ğƒAƒ“ƒCƒ“ƒXƒg[ƒ‹‚µ‚Ü‚·"\
+        //2"ã™ã¹ã¦ã®ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’ã‚¢ãƒ³ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã—ã¾ã™"\
         //0
 static_text=\
         //1"   - All components will be removed from the hard disk."\
-        //2"   - ‚·‚×‚Ä‚ÌƒRƒ“ƒ|[ƒlƒ“ƒg‚Íƒn[ƒhƒfƒBƒXƒN‚©‚çíœ‚³‚ê‚Ü‚·."\
+        //2"   - ã™ã¹ã¦ã®ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã¯ãƒãƒ¼ãƒ‰ãƒ‡ã‚£ã‚¹ã‚¯ã‹ã‚‰å‰Šé™¤ã•ã‚Œã¾ã™."\
         //0
 dynamic_text=hmaint_2,\
         //1"   - Application settings will be removed from configuration files."\
-        //2"   - %AppName% ‚ğ‘S‚Ä‚ÌƒRƒ“ƒtƒBƒMƒ…ƒŒ[ƒVƒ‡ƒ“‚©‚çíœ‚µ‚Ü‚·."\
+        //2"   - %AppName% ã‚’å…¨ã¦ã®ã‚³ãƒ³ãƒ•ã‚£ã‚®ãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‹ã‚‰å‰Šé™¤ã—ã¾ã™."\
         //0
 static_text=
 include=ok.dlg

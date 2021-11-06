@@ -1,11 +1,12 @@
 .func mtob _fmtob
 .synop begin
+.deprec
 #include <jstring.h>
-size_t mtob( const unsigned char *str, size_t nm );
-.ixfunc2 '&Jstring' &funcb
-.if &farfnc eq 1 .do begin
-size_t far _fmtob( const unsigned char far *str, size_t nm );
-.ixfunc2 '&Jstring' &ffunc
+size_t mtob( const unsigned char *s, size_t nm );
+.ixfunc2 '&Jstring' mtob
+.if &farfnc ne 0 .do begin
+size_t _fmtob( const unsigned char far *s, size_t nm );
+.ixfunc2 '&Jstring' _fmtob
 .do end
 .synop end
 .desc begin
@@ -22,17 +23,17 @@ and
 functions return
 .do end
 the number of bytes between the start of the Kanji string specified by
-.arg str
+.arg s
 and
 .arg nm
 characters from
-.arg str
-.ct .li .
+.arg s
+.period
 A double-byte Kanji character is treated as one character.
 Processing stops when either
 .arg nm
 characters have been processed or a null character is encountered.
-.im ffarparm
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

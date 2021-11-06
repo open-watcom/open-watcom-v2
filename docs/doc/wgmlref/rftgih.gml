@@ -1,10 +1,10 @@
 :H2.IH1, IH2, IH3
 :XMP.
-Format&gml. &gml.IH:HP1.n:eHP1. \(id='id-name'\)
-             \(ix=:HP1.x:eHP1.\)
-             \(print='character string'\)
-             \(see='character string'\)
-             \(seeid='id-name'\).<text line>
+Format&gml. &gml.IH:HP1.n:eHP1. [id='id-name']
+             [ix=:HP1.x:eHP1.]
+             [print='character string']
+             [see='character string']
+             [seeid='id-name'].<text line>
         (:HP1.n:eHP1.=1,2,3)
         (:HP1.x:eHP1.=0 -> 8)
 :eXMP.

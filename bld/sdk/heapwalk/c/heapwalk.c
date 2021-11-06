@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +72,7 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
         /* main window */
         wc.style = 0L;
-        wc.lpfnWndProc = (WNDPROC)HeapWalkProc;
+        wc.lpfnWndProc = HeapWalkProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 4;
         wc.hInstance = Instance;
@@ -85,7 +85,7 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
         /* window for bitmaps, icons, etc. */
         wc.style = 0L;
-        wc.lpfnWndProc = (WNDPROC)ItemDisplayProc;
+        wc.lpfnWndProc = ItemDisplayProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 6;
         wc.hInstance = Instance;
@@ -98,7 +98,7 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
         /* window for local heap */
         wc.style = 0L;
-        wc.lpfnWndProc = (WNDPROC)LocalHeapProc;
+        wc.lpfnWndProc = LocalHeapProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 4;
         wc.hInstance = Instance;
@@ -111,7 +111,7 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
         /* window for local heap monitoring */
         wc.style = 0L;
-        wc.lpfnWndProc = (WNDPROC)LocalMonitorProc;
+        wc.lpfnWndProc = LocalMonitorProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 4;
         wc.hInstance = Instance;

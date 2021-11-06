@@ -31,8 +31,10 @@
 
 #include <stddef.h>
 #include "bool.h"
+#include "aui.h"
 
 #define ALLOC       WndAlloc
+#define FREE        WndFree
 #define CASEIGNORE  SrchIgnoreCase
 #define MAGICFLAG   false
 #define MAGICSTR    SrchIgnoreMagic
@@ -51,5 +53,3 @@ extern char SrchMetaChars[];
 extern bool SrchIgnoreCase;
 extern char SrchMagicChars[];
 extern bool SrchRX;
-
-extern void *WndAlloc( size_t );

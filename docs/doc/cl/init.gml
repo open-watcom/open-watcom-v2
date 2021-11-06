@@ -48,9 +48,9 @@ register int   y          = x * MaxRecLen;
 .millust end
 .*
 .section Initialization of Arrays
+.*
 .ix 'array' 'initialization'
 .ix 'initialization' 'array'
-.*
 .pp
 For arrays of
 characters
@@ -121,12 +121,11 @@ The object
 .mono Numbers
 is an array of 10 integers, the first three of which are initialized to
 .mono 100
-..ct ,
+.ct ,
 .mono 10
 and
 .mono 1
-..ct ,
-and the remaining seven are set to zero.
+.ct , and the remaining seven are set to zero.
 The object
 .mono Blort
 is an array of 5 floating-point numbers.
@@ -135,8 +134,7 @@ initialized to
 .mono 5.6
 and
 .mono -2.2
-..ct ,
-and the remaining three are set to zero.
+.ct , and the remaining three are set to zero.
 .keep begin
 .pp
 If an array of more than one dimension is initialized, then each
@@ -162,14 +160,12 @@ In other words, the first list of values
 is assigned
 to the first row of
 .mono Box
-..ct ,
-the second list of values
+.ct , the second list of values
 .mono {&SYSRB.21, 22, 23, 24&SYSRB.}
 is assigned to the
 second row of
 .mono Box
-..ct ,
-and the third list of values
+.ct , and the third list of values
 .mono {&SYSRB.31, 32, 33, 34&SYSRB.}
 is assigned to the
 third row of
@@ -212,9 +208,9 @@ int Identity[3][3] = { 1, 0, 0,
 .millust end
 .*
 .section Initialization of Structures
+.*
 .ix 'initialization' 'struct'
 .ix 'struct' 'initialization'
-.*
 .pp
 Structures
 may be initialized in a manner similar to arrays.
@@ -256,9 +252,9 @@ initializes a sub-member, until no more sub-members are found, in which
 case the next member of the outer structure is initialized.
 .*
 .section Initialization of Unions
+.*
 .ix 'initialization' 'union'
 .ix 'union' 'initialization'
-.*
 .pp
 Initializations of unions is the same as for structures, except that
 only the first member of the union may be initialized,
@@ -364,8 +360,8 @@ then the initialization could only set the first three characters.
 :CMT. list could have been omitted, but were included for clarity.
 .*
 .section Uninitialized Objects
-.ix 'uninitialized objects'
 .*
+.ix 'uninitialized objects'
 .pp
 An object with
 .us static

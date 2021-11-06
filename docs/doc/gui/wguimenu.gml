@@ -702,7 +702,7 @@ you specify the resource file to which you want to save the current menu.
 :CMT. .figure *depth='2.78' *scale=150 *file='mnu6' On the Save Menu dialog, specify the resource file to which you want to save the menu.
 .figure *depth='2.24' *scale=65 *file='mnu8' On the Save Menu dialog, specify the resource file to which you want to save the menu.
 .begnote
-.mnote Important:
+.note Important:
 If the resource file to which you are saving the menu already contains
 resources, the existing resources will be discarded and replaced with
 the menu you are saving.

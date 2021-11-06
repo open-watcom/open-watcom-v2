@@ -1,10 +1,148 @@
-$(proj_name).exe : $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-    @%make echo_cl
-!ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $(objs) $(libs) $(bld_ldflags)
-!else
-    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+# Makefile to link EXE
+#
+# input macros:
+#
+# exetarg_name                  name of executable, default is $(proj_name)
+# exetarg_ext                   extension of executable, default is .exe (for Novell it is .nlm)
+# exetarg_prebuild_objs         files which must be available, but not directly added to EXE
+# exetarg_objs                  object files which are linked to EXE
+# exetarg_libs                  libraries which are linked to EXE
+# exetarg_opts                  extra OW wlink directive or options used to link EXE
+# exetarg_res                   native resource file added to EXE
+# exetarg_res_version_nt_<cpu>  native version info resource file added to EXE
+# exetarg_res_wresui            string resource file (Windows 3.x format) added to EXE
+# exetarg_nt_manif_<cpu>        special NT resource file for manifest XML file
+# exetarg_qnx_res               special QNX resource file for usage text
+#
+# All resource macros are include in dependant list
+#
+!ifndef exetarg_name
+exetarg_name = $(proj_name)
 !endif
-    @%make bind_res_version_exe
-
-!include verrc.mif
+!ifndef exetarg_ext
+!ifeq host_os nov
+exetarg_ext = .nlm
+additional_clean_sys = *.nlm
+!else
+exetarg_ext = .exe
+!endif
+!endif
+!ifdef exetarg_qnx_res
+additional_clean_qnx = $(exetarg_qnx_res)
+!ifdef __WATCOM_TOOLS__
+!ifeq host_os qnx
+exetarg_qnx_res_obj = $(exetarg_qnx_res)
+exetarg_qnx_res_opt = opt resource=$(exetarg_qnx_res)
+!endif
+!endif
+!else
+!undef exetarg_qnx_res_obj
+!undef exetarg_qnx_res_opt
+!endif
+$(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj) &
+        $(exetarg_objs) $(exetarg_libs)$- $(exetarg_res_version_$(host_os)_$(host_cpu)) &
+        $(exetarg_$(host_os)_manif_$(host_cpu)) $+$(exetarg_res_wresui) $(exetarg_res)$- &
+        $(__MAKEFILES__)
+    @%make echo_cl
+!ifndef __WATCOM_TOOLS__
+!ifdef bootstrap
+    $(bld_cl) $(bld_clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(bld_ldflags)
+!else
+    $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(ldflags)
+!endif
+!else
+    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_opt)$-
+    @for %f in ($+$(exetarg_objs)$-) do @%append $^&.lnk file %f
+    @for %l in ($+$(exetarg_libs)$-) do $(noecho)%append $^&.lnk library %l
+!ifdef win386
+    $(linker) name $(lname) @$^&.lnk
+!else
+    $(linker) name $@ @$^&.lnk
+!endif
+!endif
+###############################
+# bind to EXE
+###############################
+# add WIN386 extender and .res
+###############################
+!ifdef win386
+!ifdef exetarg_res
+# extender + application .res
+!ifeq verbose 0
+    @echo wbind $(win386ldr) $@
+!endif
+    $(wbind) $(lname) $(wbind_quiet) -s $(win386ldr) -R $(wbind_quiet) -k $+$(exetarg_res)$- $@
+!else
+# extender, no .res
+    $(wbind) $(lname) -n $(wbind_quiet) -s $(win386ldr)
+!endif
+###############################
+# add native resources
+###############################
+!else ifdef exetarg_$(host_os)_manif_$(host_cpu)
+#
+# with NT manifest file
+#
+!ifdef exetarg_res_version_$(host_os)_$(host_cpu)
+!ifdef exetarg_res
+# manifest + version + application
+!ifeq verbose 0
+    @echo bind res $@ manif+ver+appl
+!endif
+    $(rcbnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu)) &
+        -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
+!else
+# manifest + version only
+!ifeq verbose 0
+    @echo bind res $@ manif+ver
+!endif
+    $(rcbnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@ &
+        -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
+!endif
+!else ifdef exetarg_res
+# manifest + application
+!ifeq verbose 0
+    @echo bind res $@ manif+appl
+!endif
+    $(rcbnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
+!else
+# manifest only
+!ifeq verbose 0
+    @echo bind res $@ manif
+!endif
+    $(rcbnd) $(exetarg_$(host_os)_manif_$(host_cpu)) $@
+!endif
+!else ifdef exetarg_res_version_$(host_os)_$(host_cpu)
+#
+# without NT manifest file
+#
+!ifdef exetarg_res
+# version + application
+!ifeq verbose 0
+    @echo bind res $@ ver+appl
+!endif
+    $(rcbnd) $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu))
+!else
+# version only
+!ifeq verbose 0
+    @echo bind res $@ ver
+!endif
+    $(rcbnd) $(exetarg_res_version_$(host_os)_$(host_cpu)) $@
+!endif
+!else ifdef exetarg_res
+# application only
+!ifeq verbose 0
+    @echo bind res $@ appl
+!endif
+    $(rcbnd) $+$(exetarg_res)$- $@
+!endif
+###############################
+# add Windows 3.x resources
+###############################
+!ifdef exetarg_res_wresui
+# string resource only
+!ifeq verbose 0
+    @echo bind wresui $@
+!endif
+    $(wstrip) -q -a -r $@ . $+$(exetarg_res_wresui)$-
+!endif

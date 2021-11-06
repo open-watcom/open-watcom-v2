@@ -13,13 +13,13 @@ Most 16-bit machines can handle integers in the range
 .mono -32768
 to
 .mono 32767
-..ct ..li .
+.period
 Larger machines
 typically handle integers in the range
 .mono -2147483648
 to
 .mono 2147483647
-..ct ..li .
+.period
 .pp
 The general integer type includes a selection of types,
 specifying whether
@@ -41,8 +41,7 @@ is
 .mono -32767
 to
 .mono 32767
-..ct ,
-although a compiler may provide a greater range.
+.ct , although a compiler may provide a greater range.
 .*
 .************************************************************************
 .*
@@ -54,7 +53,7 @@ has a range of
 .mono -32768
 to
 .mono 32767
-..ct ..li .
+.period
 .pp
 With &wc386.,
 .kw int
@@ -62,7 +61,7 @@ has a range of
 .mono -2147483648
 to
 .mono 2147483647
-..ct ..li .
+.period
 .shade end
 ..do end
 ..if '&target' eq 'PC 370' ..th ..do begin
@@ -73,7 +72,7 @@ has a range of
 .mono -2147483648
 to
 .mono 2147483647
-..ct ..li .
+.period
 .shade end
 ..do end
 .*
@@ -91,10 +90,8 @@ source character set
 (see "&charset.")
 is stored in an object of type
 .kw char
-..ct ,
-then the value is guaranteed to be positive.
-Whether or not other
-characters are positive is implementation-defined.
+.ct , then the value is guaranteed to be positive.
+Whether or not other characters are positive is implementation-defined.
 (In other words, whether
 .kw char
 is signed or unsigned is implementation-defined. If it is necessary for
@@ -112,17 +109,16 @@ The &wcboth. compilers define
 .kw char
 to be
 .kw unsigned
-..ct ,
-allowing objects of that type to store values in the range
+.ct , allowing objects of that type to store values in the range
 .mono 0
 to
 .mono 255
-..ct ..li .
+.period
 A command line switch may be specified to cause
 .kw char
 to be treated as
 .kw signed
-..ct ..li .
+.period
 This switch should only be used when porting a C program from a system
 where
 .kw char
@@ -135,12 +131,11 @@ The &wlooc. compiler for the IBM 370 defines
 .kw char
 to be
 .kw unsigned
-..ct ,
-allowing objects of that type to store values in the range
+.ct , allowing objects of that type to store values in the range
 .mono 0
 to
 .mono 255
-..ct ..li .
+.period
 .shade end
 ..do end
 .*
@@ -155,7 +150,7 @@ keyword may be specified with the keywords
 or
 .ix 'type' 'long'
 .kw long
-..ct ..li .
+.period
 These keywords provide additional information about the range of values
 to be stored in an object of this type.
 According to the C language standard, a signed short integer has a
@@ -163,7 +158,7 @@ minimum range of
 .mono -32767
 to
 .mono 32767
-..ct ..li .
+.period
 .* (as defined by
 .* .mono SHRT_MIN
 .* and
@@ -176,7 +171,7 @@ A signed long integer has a minimum range of
 .mono -2147483647
 to
 .mono 2147483647
-..ct ..li .
+.period
 .* (as defined by
 .* .mono LONG_MIN
 .* and
@@ -189,7 +184,7 @@ A signed long long integer has a minimum range of
 .mono -9223372036854775807
 to
 .mono 9223372036854775807
-..ct ..li .
+.period
 .* (as defined by
 .* .mono LLONG_MIN
 .* and
@@ -209,23 +204,21 @@ has a range of
 .mono -32768
 to
 .mono 32767
-..ct ,
-while
+.ct , while
 .ix 'type' 'long'
 .kw long int
 has a range of
 .mono -2147483648
 to
 .mono 2147483647
-..ct ,
-and
+.ct , and
 .ix 'type' 'long long'
 .kw long long int
 has a range of
 .mono -9223372036854775808
 to
 .mono 9223372036854775807
-..ct ..li .
+.period
 .shade end
 ..do end
 ..if '&target' eq 'PC 370' ..th ..do begin
@@ -237,15 +230,14 @@ has a range of
 .mono -32768
 to
 .mono 32767
-..ct ,
-while
+.ct , while
 .ix 'type' 'long'
 .kw long int
 has a range of
 .mono -2147483648
 to
 .mono 2147483647
-..ct ..li .
+.period
 .shade end
 ..do end
 .*
@@ -262,7 +254,7 @@ types may be specified with the keywords
 or
 .ix 'type' 'long'
 .kw unsigned
-..ct ..li .
+.period
 These keywords explicitly indicate whether the type represents
 a signed or unsigned (non-negative) quantity.
 .pp
@@ -270,9 +262,9 @@ The keyword
 .kw int
 may be omitted from the declaration if one (or more) of the keywords
 .kw signed
-..ct ,
+.ct ,
 .kw unsigned
-..ct ,
+.ct ,
 .kw short
 or
 .kw long
@@ -284,7 +276,7 @@ and
 .kw unsigned long
 is equivalent to
 .kw unsigned long int
-..ct ..li .
+.period
 .pp
 The appendix "&numlimit."
 discusses a set of macro definitions
@@ -292,9 +284,7 @@ describing the range and other characteristics
 of the various numeric types.
 The macros from the header
 .hdr <limits.h>
-..ct ,
-which describe the integer types,
-are discussed.
+.ct , which describe the integer types, are discussed.
 .pp
 .*
 .************************************************************************
@@ -415,13 +405,13 @@ With &wc286., an object of type
 .kw int
 has the same range as an object of type
 .kw short int
-..ct ..li .
+.period
 .pp
 With &wc386., an object of type
 .kw int
 has the same range as an object of type
 .kw long int
-..ct ..li .
+.period
 .shade end
 ..do end
 ..if '&target' eq 'PC 370' ..th ..do begin
@@ -490,9 +480,8 @@ an object of type
 .kw int
 has the same range as an object of type
 .kw long int
-..ct ..li .
-.* ..ct ,
-.* but they are still considered to be different types.
+.period
+.* .ct , but they are still considered to be different types.
 .shade end
 ..do end
 .*

@@ -1,4 +1,6 @@
 *.$$$
+*.__c
+*.__f
 *.cop
 *.COP
 *.core
@@ -36,6 +38,10 @@
 *.gpp
 # generated .rc source file
 *.grc
+# generated .rh source file
+*.grh
+# generated .sp source file (wsplice)
+*.gsp
 *.i
 *.i0
 *.i1
@@ -46,6 +52,9 @@
 *.lib
 !*.lib/
 *.lk1
+# generated linker file (DLL)
+*.lnd
+# generated linker file (EXE)
 *.lnk
 *.lo[1-9]
 *.log
@@ -87,6 +96,7 @@
 !/ci/
 !/ci/nt386/*
 !/ci/ntx64/*
+!/ci/ow/**
 !/contrib/
 !/distrib/
 !/docs/
@@ -114,9 +124,16 @@
 /docs/win/*
 
 ###
+/bld/afxapi/nt/*.h
+/bld/afxapi/nt/*.inl
+/bld/afxapi/nt/*.rc
+#
 /bld/as/*/*/*_in.y
 /bld/as/*/*/*_in.re
 /bld/as/*/*/*lexyy.c
+#
+/bld/aui/os2386.pm/*.dlg
+/bld/aui/os2i86.pm/*.dlg
 #
 /bld/awk/*/proctab.c
 !/bld/awk/c/proctab.c
@@ -168,6 +185,7 @@
 /bld/vi/*/*.ini
 /bld/vi/*/*.vi
 !/bld/vi/dat/*
+/bld/vi/dat/error.dat
 #
 /bld/w16api/wini86/*
 #
@@ -197,11 +215,18 @@
 /bld/wmake/regress/cmds/*
 #
 /bld/wv/dbg/*/*.dbg
+/bld/wv/os2/os2386.gui/*.dlg
+/bld/wv/os2/os2i86.gui/*.dlg
 ###
 
+# DOSBOX files to ignore
 stderr.txt
 stdout.txt
-failures
+gendevb.bat
+wgmlb.bat
+
+# regresion tests files to ignore
+failures.log
 
 !makefile
 !afile

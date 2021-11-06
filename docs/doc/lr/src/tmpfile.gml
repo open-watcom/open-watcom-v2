@@ -27,7 +27,7 @@ They are listed in the order examined:
 .kw TMPDIR
 .ct , and
 .kw TEMPDIR
-.ct .li .
+.period
 .do end
 .desc end
 .return begin

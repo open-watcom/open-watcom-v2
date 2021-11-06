@@ -13,8 +13,7 @@ cannot be directly added. Instead, the
 .kw short int
 must first be converted to a
 .kw long int
-..ct ,
-then the two values can be added.
+.ct , then the two values can be added.
 .pp
 Fortunately, C provides most conversions as
 .us implicit
@@ -34,27 +33,27 @@ The rules of type conversions are fully discussed in
 the following sections.
 .*
 .section Integral Promotion
+.*
 .ix 'integral promotion'
 .ix 'promotion' 'integer'
-.*
 .begnote
 .note Rule:
 A
 .kw char
-..ct ,
+.ct ,
 .kw short int
 or
 .kw int
 bit-field in either of their signed or unsigned forms, or an object
 that has an enumerated type, is always converted to an
 .kw int
-..ct ..li .
+.period
 If the type
 .kw int
 cannot contain the entire range of the object being converted, then
 the object will be converted to an
 .kw unsigned int
-..ct ..li .
+.period
 .endnote
 .pp
 A
@@ -73,18 +72,15 @@ With &wc286., a
 .kw short int
 has the same range as
 .kw int
-..ct ,
-therefore a
+.ct , therefore a
 .kw signed short int
 is converted to a
 .kw signed int
-..ct ,
-and an
+.ct , and an
 .kw unsigned short int
 is converted to an
 .kw unsigned int
-..ct ,
-without changing the value.
+.ct , without changing the value.
 .pp
 With &wc386., a
 .kw signed
@@ -118,10 +114,10 @@ These promotions are called the
 .us integral promotions.
 .*
 .section Signed and Unsigned Integer Conversion
+.*
 .ix 'conversion' 'signed integer'
 .ix 'conversion' 'unsigned integer'
 .ix 'integer' 'conversion'
-.*
 .begnote
 .note Rule:
 .ix 'conversion' 'unsigned integer'
@@ -139,8 +135,7 @@ remain unchanged. If the value cannot be represented, then if
 the result type is signed, the result is implementation-defined.
 If the result type is
 .kw unsigned
-..ct ,
-the result is the integer modulo (1+the largest unsigned number that
+.ct , the result is the integer modulo (1+the largest unsigned number that
 can be stored in the shorter type).
 .shade begin
 With
@@ -160,14 +155,12 @@ discarding the high-order portion of the larger type.
 .shade end
 .pp
 Consider the following examples of 32-bit quantities (
-..ct .kw unsigned long int
-..ct )
-being converted
-to 16-bit quantities (
-..ct .kw signed short int
+.ct .kw unsigned long int
+.ct ) being converted to 16-bit quantities (
+.ct .kw signed short int
 or
 .kw unsigned short int
-..ct ):
+.ct ):
 ..sk 1 c
 .if &e'&nobox eq 0 .do begin
 .boxdef
@@ -240,13 +233,12 @@ is then treated as an unsigned value.
 .shade end
 .pp
 Consider the following examples of 16-bit signed quantities (
-..ct .kw signed short int
-..ct ) being
-converted to 32-bit quantities (
-..ct .kw signed long int
+.ct .kw signed short int
+.ct ) being converted to 32-bit quantities (
+.ct .kw signed long int
 and
 .kw unsigned long int
-..ct ):
+.ct ):
 ..sk 1 c
 .if &e'&nobox eq 0 .do begin
 .boxdef
@@ -311,9 +303,9 @@ portion of the larger type.
 .shade end
 .*
 .section Floating-Point to Integer Conversion
+.*
 .ix 'conversion' 'float to integer'
 .ix 'float' 'conversion to integer'
-.*
 .begnote
 .note Rule:
 When a floating-point type is converted to integer, the fractional
@@ -328,9 +320,9 @@ Refer to
 the section "Integer Types" for details on the range of integers.
 .*
 .section &inttoflt.
+.*
 .ix 'integer' 'conversion to float'
 .ix 'conversion' 'integer to float'
-.*
 .begnote
 .note Rule:
 When the value of an integer type is converted to a floating-point type,
@@ -347,7 +339,7 @@ macro
 .mkw FLT_ROUNDS
 found in the header
 .hdr <float.h>
-..ct ..li .
+.period
 The following table describes the meaning of the various values:
 ..sk 1 c
 .im fltround
@@ -377,18 +369,18 @@ is 0.)
 .note Rule:
 When a floating-point value is converted to a larger floating-point
 type (
-..ct .kw float
+.ct .kw float
 to
 .kw double
-..ct ,
+.ct ,
 .kw float
 to
 .kw long double
-..ct , or
+.ct , or
 .kw double
 to
 .kw long double
-..ct ), the value remains unchanged.
+.ct ), the value remains unchanged.
 .note Rule:
 When any floating-point type is demoted to a
 floating-point type with a smaller range,
@@ -448,7 +440,7 @@ have
 .us integral promotions
 performed on them to promote them to
 .kw int
-..ct ..li .
+.period
 .keep begin
 .pp
 The following table illustrates the result type of performing
@@ -523,7 +515,7 @@ all arguments of type
 .kw float
 are promoted to
 .kw double
-..ct ..li .
+.period
 .endbull
 .pp
 If the definition of the function does not have parameters with types that

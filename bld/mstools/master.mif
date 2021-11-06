@@ -1,14 +1,16 @@
 #
 # Standard project stuff.
 #
-proj_name = mstools
-
-!ifndef mstools_autodepends
-mstools_autodepends = .AUTODEPEND
-!endif
 
 # Extra files to delete on clean
-additional_cleanup = *.gc
+additional_clean = *.gc
+
+additional_clean_subdirs = $(bin_subdir)
+
+$(bin_subdir) : .EXPLICIT
+    mkdir $@
+
+exetarg_name = $(bin_subdir)/$(proj_name)
 
 !ifeq target_cpu axp
 extra_cpp_flags = -D__TARGET_AXP__
@@ -44,31 +46,25 @@ mstools_objs        = cmdline.obj cmdscan.obj context.obj error.obj file.obj mem
 
 .c :  ../../c;../../../c
 
-inc_dirs = -I. -I"../../h" -I"../../../h" -I"$(fe_misc_dir)/h"
+inc_dirs = -I. -I"../../h" -I"../../../h" -I"$(fe_misc_dir)/h" $(extra_inc_dirs)
 
-# systems where version resources must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-ver386_res_exe_nt_386 = ver386.res
-ver386_res_exe_nt_x64 = ver386.res
-veraxp_res_exe_nt_386 = veraxp.res
-veraxp_res_exe_nt_x64 = veraxp.res
-verppc_res_exe_nt_386 = verppc.res
-verppc_res_exe_nt_x64 = verppc.res
+all: $(bin_subdir) $(exetarg_name).exe .symbolic
 
-verrc_exe = $(name)
-verrc386_exe = $(name)386
-verrcaxp_exe = $(name)axp
-verrcppc_exe = $(name)ppc
+exetarg_res_version_nt_386 = exever.res
+exetarg_res_version_nt_x64 = exever.res
+
+!include exetarg.mif
 !include verrc.mif
 
-optencod_opts_    = i86
-optencod_opts_386 = i86
-optencod_opts_axp = axp
-optencod_opts_ppc = ppc
+!ifdef target_cpu
+optencod_target_cpu = $(target_cpu)
+!else
+optencod_target_cpu = any
+!endif
+#optencod_enc_linux = -utf8
 
-cmdlnprs.gc cmdlnprs.gh : ../../gml/ms.gml .EXPLICIT
+cmdlnprs.gc cmdlnprs.gh : ../../gml/options.gml .EXPLICIT
 !ifeq verbose 0
     @echo optencod $@
 !endif
-    $(noecho)optencod -n -q $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_opts_$(target_cpu))
+    $(noecho)optencod -n -q $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_target_cpu) $(host_os)

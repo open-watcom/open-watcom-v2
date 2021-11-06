@@ -1,9 +1,9 @@
 .func _mbptov _fmbptov
 .synop begin
 #include <mbstring.h>
-unsigned int _mbptov( const unsigned char *string );
-.if &farfnc eq 1 .do begin
-unsigned int _fmbptov( const unsigned char __far *string );
+unsigned int _mbptov( const unsigned char *s );
+.if &farfnc ne 0 .do begin
+unsigned int _fmbptov( const unsigned char __far *s );
 .do end
 .synop end
 .desc begin
@@ -11,15 +11,15 @@ The
 .id &funcb.
 function returns the multibyte character at the position in
 the string pointed to by
-.arg string
-.ct .li .
-.im farparm
+.arg s
+.period
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 The
 .id &funcb.
 function returns a multibyte character or null if
-.arg string
+.arg s
 points at a null character.
 .return end
 .see begin

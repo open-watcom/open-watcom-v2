@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -247,13 +247,13 @@ static bool checkVDISK( flat_address *start )
 
     *start = XMEM_MEMORY_START;
     value = DosGetVect( VDISK_INTERRUPT );
-    name = MK_FP( FP_SEG( value ), VDISK_NAME_OFFSET );
+    name = _MK_FP( _FP_SEG( value ), VDISK_NAME_OFFSET );
     for( i = 0; i <= 7; i++ ) {
         if( name[i] != _vdisk[i] ) {
             return( false );
         }
     }
-    avail = MK_FP( FP_SEG( value ), VDISK_AVAIL_OFFSET );
+    avail = _MK_FP( _FP_SEG( value ), VDISK_AVAIL_OFFSET );
     *start = *avail & GDT_ADDR;
     return( true );
 

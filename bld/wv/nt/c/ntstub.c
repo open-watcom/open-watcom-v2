@@ -36,9 +36,6 @@
 #include "ntdbgpb.h"
 
 #if 0
-#pragma library( "nt" )
-#pragma library("kernel32")
-#pragma library("user32")
 int __stdcall LibMain( int hdll, int reason, void *reserved )
 {
     return( 1 );

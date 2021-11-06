@@ -1,4 +1,5 @@
 .section *refid='dl' dl
+.*
 .ix 'dl'
 .ix 'Definition list'
 .ix 'Lists' 'definition'
@@ -14,11 +15,12 @@ Omit inserting a blank line between each term-description pair.
 Sets the width of the "term " column (the default is 10).
 .tattr break=none | fit | all
 Controls how a description follows a term. If break is set to "none", descriptions are on the same line as
-the term, even if the length of the term exceeds "tsize" characters. If break is set to "fit", descriptions 
-are placed on the next line only if the length of the term exceeds "tsize" characters. If break is set to "all" 
+the term, even if the length of the term exceeds "tsize" characters. If break is set to "fit", descriptions
+are placed on the next line only if the length of the term exceeds "tsize" characters. If break is set to "all"
 descriptions are always placed on the next line.
+.tattrend
 .tno Conditions:
-The dthd and ddhd tags must occur before any dt and dd tags. Multiple consecutive dt tags are allowed (synonyms), 
+The dthd and ddhd tags must occur before any dt and dd tags. Multiple consecutive dt tags are allowed (synonyms),
 but only one dd tag is allowed for each set of dt tags.
 .tclass List-block
 .tcont :HDREF refid='dthd'., :HDREF refid='ddhd'., :HDREF refid='dt'., :HDREF refid='dd'., Block, List-block
@@ -29,6 +31,7 @@ but only one dd tag is allowed for each set of dt tags.
 .beglevel
 .*
 .section *refid='dthd' dthd
+.*
 .ix 'dthd'
 .ix 'Lists' 'term header'
 .ix 'Definition list' 'term header'
@@ -45,6 +48,7 @@ Must appear before the first ddhd, dt, or dd tag.
 .tag end
 .*
 .section *refid='ddhd' ddhd
+.*
 .ix 'ddhd'
 .ix 'Lists' 'definition header'
 .ix 'Definition list' 'definition header'
@@ -61,6 +65,7 @@ Must appear after a dthd tag and before the first dt or dd tag.
 .tag end
 .*
 .section *refid='dt' dt
+.*
 .ix 'dt'
 .ix 'Lists' 'term'
 .ix 'Definition list' 'term'
@@ -75,6 +80,7 @@ A term to be defined.
 .tag end
 .*
 .section *refid='dd' dd
+.*
 .ix 'dd'
 .ix 'Lists' 'definition'
 .ix 'Definition list' 'definition'

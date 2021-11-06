@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 /*
  * SrcOpen - open a file
  */
-vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, const char *data )
+vi_rc SrcOpen( sfile *curr, files *fi, const char *data, vars_list *vl )
 {
     int         i;
     char        name[MAX_SRC_LINE], id[MAX_SRC_LINE], type[MAX_SRC_LINE], t;
@@ -123,7 +123,7 @@ vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, const char *data )
 /*
  * SrcRead - read file
  */
-vi_rc SrcRead( sfile *curr, files *fi, const char *data, vlist *vl )
+vi_rc SrcRead( sfile *curr, files *fi, const char *data, vars_list *vl )
 {
     int         i;
     size_t      j;
@@ -189,7 +189,7 @@ vi_rc SrcRead( sfile *curr, files *fi, const char *data, vlist *vl )
 /*
  * SrcWrite - write file
  */
-vi_rc SrcWrite( sfile *curr, files *fi, const char *data, vlist *vl )
+vi_rc SrcWrite( sfile *curr, files *fi, const char *data, vars_list *vl )
 {
     int         i;
     char        id[MAX_SRC_LINE], v1[MAX_SRC_LINE];
@@ -202,7 +202,7 @@ vi_rc SrcWrite( sfile *curr, files *fi, const char *data, vlist *vl )
     if( *id == '\0' ) {
         return( ERR_SRC_INVALID_WRITE );
     }
-    if( GetStringWithPossibleQuote( &data, v1 ) != ERR_NO_ERR ) {
+    if( GetNextWordOrString( &data, v1 ) != ERR_NO_ERR ) {
         return( ERR_SRC_INVALID_WRITE );
     }
     if( curr->hasvar ) {
@@ -228,7 +228,7 @@ vi_rc SrcWrite( sfile *curr, files *fi, const char *data, vlist *vl )
 /*
  * SrcClose - close a work file
  */
-vi_rc SrcClose( sfile *curr, vlist *vl, files *fi, const char *data )
+vi_rc SrcClose( sfile *curr, files *fi, const char *data, vars_list *vl )
 {
     int         i;
     char        id[MAX_SRC_LINE];

@@ -1,4 +1,4 @@
-.section The &kwfar16_sp. and &kwisg16_sp. Keywords
+.section The &kwfar16. and &kwiseg16. Keywords
 .*
 .pp
 With the 80386 processor, a far pointer consists of a 16-bit
@@ -22,8 +22,7 @@ A far16 pointer consists of a 16-bit selector referring to one of the
 64K byte areas, and a 16-bit offset into that area.
 .pp
 For compatibility with Microsoft C, &wc386. provides the
-.kwix &kwfar16_sp.
-.kwfont &kwfar16.
+.kw &kwfar16.
 keyword.
 A pointer declared as,
 .cillust begin
@@ -44,7 +43,7 @@ declares the object
 .mono bufptr
 to be a far16 pointer to
 .kw char
-..ct ..li .
+.period
 .pp
 A function declared as,
 .cillust begin
@@ -72,7 +71,7 @@ char * &kwfar16. Scan( char * buffer, int buflen, short err );
 .pc
 declares the 16-bit function
 .mono Scan
-..ct ..li .
+.period
 When this function is called from the 32-bit environment,
 the
 .mono buffer
@@ -80,7 +79,7 @@ parameter will be converted from a flat 32-bit pointer to a far16
 pointer
 (which, in the 16-bit environment, would be declared as
 .mono char&SYSRB.&kwfar.&SYSRB.*
-..ct ).
+.ct ).
 The
 .mono buflen
 parameter will be converted from a 32-bit integer to a 16-bit integer.
@@ -93,18 +92,15 @@ equivalent location in the 32-bit address space.
 .pp
 For compatibility with IBM C Set/2,
 &wc386. provides the
-.kwix &kwisg16_sp.
-.kwfont &kwiseg16.
+.kw &kwiseg16.
 keyword.
 Note that
-.kwix &kwisg16_sp.
-.kwfont &kwiseg16.
+.kw &kwiseg16.
 is
 .bd not
 interchangeable with
-.kwix &kwfar16_sp.
-.kwfont &kwfar16.
-..ct ..li .
+.kw &kwfar16.
+.period
 .pp
 A pointer declared as,
 .cillust begin
@@ -113,13 +109,11 @@ type :MONO. * &kwiseg16. :eMONO. name:MSEMI.
 .pc
 defines an object that is a far16 pointer.
 Note that the
-.kwix &kwisg16_sp.
-.kwfont &kwiseg16.
+.kw &kwiseg16.
 appears on the opposite side of the
 .mono *
 than the
-.kwix &kwfar16_sp.
-.kwfont &kwfar16.
+.kw &kwfar16.
 keyword described above.
 .pp
 For example,
@@ -134,8 +128,7 @@ to be a far16 pointer to
 (the same as above).
 .pp
 The
-.kwix &kwisg16_sp.
-.kwfont &kwiseg16.
+.kw &kwiseg16.
 keyword may not be used to describe a 16-bit function.
 A
 .kwpp #pragma
@@ -155,6 +148,6 @@ char * &kwiseg16. Scan( char * buffer, int buflen, short err );
 .pc
 declares the 32-bit function
 .mono Scan
-..ct ..li .
+.period
 No conversion of the parameter list will take place.
 The return value is a far16 pointer.

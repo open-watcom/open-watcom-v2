@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,26 +97,26 @@ char *fgets( char *b, int n, FILE *fp )
 
 int fprintf( FILE *fp, const char *fmt, ... )
 {
-    va_list     arg;
+    va_list     args;
     char        buff[128];
     int         len;
 
-    va_start( arg, fmt );
-    len = vsprintf( buff, fmt, arg );
-    va_end( arg );
+    va_start( args, fmt );
+    len = vsprintf( buff, fmt, args );
+    va_end( args );
     write( File2Hdl( fp ), buff, len );
     return( len );
 }
 
 int printf( const char *fmt, ... )
 {
-    va_list     arg;
+    va_list     args;
     char        buff[128];
     int         len;
 
-    va_start( arg, fmt );
-    len = vsprintf( buff, fmt, arg );
-    va_end( arg );
+    va_start( args, fmt );
+    len = vsprintf( buff, fmt, args );
+    va_end( args );
     write( 1, buff, len );
     return( len );
 }

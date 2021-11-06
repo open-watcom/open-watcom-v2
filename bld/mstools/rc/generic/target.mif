@@ -1,1 +1,7 @@
+proj_name = rc
+
+!ifndef rc_autodepends
+rc_autodepends = .AUTODEPEND
+!endif
+
 !include ../../rc.mif

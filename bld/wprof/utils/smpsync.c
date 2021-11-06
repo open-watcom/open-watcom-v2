@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,8 +62,8 @@ static char sample_file[_MAX_PATH];
 static char exe_file[_MAX_PATH];
 static char new_file[_MAX_PATH];
 
-static PGROUP2     pg1;
-static PGROUP2     pg2;
+static pgroup2     pg1;
+static pgroup2     pg2;
 
 static void quit( char *msg )
 {

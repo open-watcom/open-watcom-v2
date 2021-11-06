@@ -1,5 +1,5 @@
-.gfunc setlinestyle
-.gsynop begin 
+.gfunc _setlinestyle
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _setlinestyle( unsigned short style );
 .do end

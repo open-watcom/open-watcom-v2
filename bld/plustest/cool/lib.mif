@@ -15,5 +15,5 @@ lib_objs = &
     @%make set_old_path
 
 cool.lbc : makefile .EXPLICIT
-    $(noecho)%create $^@
-    @for %i in ($(lib_objs)) do @%append $^@ +%i
+    $(noecho)%create $@
+    @for %i in ($(lib_objs)) do @%append $@ +%i

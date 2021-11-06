@@ -12,8 +12,8 @@ function frees a based-heap segment.
 The argument
 .arg seg
 indicates the segment returned by an earlier call to
-.kw _bheapseg
-.ct .li .
+.reffunc _bheapseg
+.period
 .desc end
 .return begin
 The
@@ -35,7 +35,7 @@ function returns 0 if successful and -1 if an error occurred.
 
 struct list {
     struct list __based(__self) *next;
-    int         value;
+    int                         value;
 };
 .exmp break
 void main()

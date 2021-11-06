@@ -238,7 +238,8 @@ void    MulToShiftAdd( void )
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( ins->head.opcode != OP_MUL ) continue;
+            if( ins->head.opcode != OP_MUL )
+                continue;
             if( ins->operands[0]->n.class == N_CONSTANT ) {
                 op = ins->operands[0];
                 if( op->c.const_type == CONS_ABSOLUTE ) {
@@ -249,14 +250,18 @@ void    MulToShiftAdd( void )
             op = ins->operands[1];
             switch( op->n.class ) {
             case N_TEMP:
-                if( (op->t.temp_flags & CONST_TEMP) == 0 ) continue;
+                if( (op->t.temp_flags & CONST_TEMP) == 0 )
+                    continue;
                 ins->operands[1] = op->v.symbol;
                 /* fall through */
             case N_CONSTANT:
-                if( ins->type_class != WD && ins->type_class != SW ) continue;
-                if( op->c.const_type != CONS_ABSOLUTE ) continue;
+                if( ins->type_class != WD && ins->type_class != SW )
+                    continue;
+                if( op->c.const_type != CONS_ABSOLUTE )
+                    continue;
                 next = CheckMul( ins );
-                if( next == ins ) ins->operands[1] = op; /*nothing happened*/
+                if( next == ins )
+                    ins->operands[1] = op; /*nothing happened*/
                 ins = next;
             }
         }

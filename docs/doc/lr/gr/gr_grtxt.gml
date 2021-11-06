@@ -1,5 +1,5 @@
-.gfuncw grtext
-.gsynop begin 
+.gfuncw _grtext
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _grtext( short x, short y,
                     char _FAR *text );

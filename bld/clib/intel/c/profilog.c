@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
 #include <unistd.h>
 #include "rtinit.h"
 #include "p5prof.h"
@@ -361,17 +363,17 @@ _WCRTLINK void __ProfEpilog( info *block )
 #if 0 // not currently in use
 #ifdef __NT__
 #define VXDNAME "P5PROF"
-#define VXDEXT  ".VXD"
+#define VXDEXT  "VXD"
 static int findVXD( char *buff )
 {
-    PGROUP2 pg;
+    pgroup2 pg;
 
     _splitpath2( _LpPgmName, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     _makepath( buff, pg.drive, pg.dir, VXDNAME, VXDEXT );
     if( access( buff, R_OK ) == 0 )
         return( TRUE );
 
-    strcpy( buff, ".\\" VXDNAME VXDEXT );
+    strcpy( buff, ".\\" VXDNAME "." VXDEXT );
     if( access( buff, R_OK ) == 0 )
         return( TRUE );
 

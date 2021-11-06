@@ -222,7 +222,7 @@ for details.
 .*
 .np
 .ix 'interrupts' 'using DOS/4GW'
-The &cmpname library files contain the FINTR and the FINTRF subroutines 
+The &cmpname library files contain the FINTR and the FINTRF subroutines
 which allows the user to perform interrupt calls within a &lang program.
 This subroutine is described in the Subprogram Library section of the
 .book &product User's Guide.
@@ -1024,7 +1024,7 @@ unsigned short cursor[] = {
 
 .code break
     /* 16 words of cursor mask */
-    0x0000,  /*0000000000000000*/ 
+    0x0000,  /*0000000000000000*/
     0x4000,  /*0100000000000000*/
     0x6000,  /*0110000000000000*/
     0x7000,  /*0111000000000000*/
@@ -1057,7 +1057,7 @@ int lock_region( void *address, unsigned length )
     /* DPMI Lock Linear Region */
     regs.w.ax = 0x600;
     /* Linear address in BX:CX */
-    regs.w.bx = (unsigned short)(linear >> 16); 
+    regs.w.bx = (unsigned short)(linear >> 16);
     regs.w.cx = (unsigned short)(linear & 0xFFFF);
     /* Length in SI:DI */
     regs.w.si = (unsigned short)(length >> 16);
@@ -1091,7 +1091,7 @@ void _loadds far click_handler( int max, int mbx,
 /* Dummy function so we can calculate size of
   code to lock (cbc_end - click_handler).
 */
-void cbc_end( void )    
+void cbc_end( void )
 {
 }
 #pragma on( check_stack )

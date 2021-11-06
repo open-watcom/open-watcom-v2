@@ -20,7 +20,7 @@ located by
 and the segment registers DS and ES are loaded from the structure
 located by
 .arg seg_regs
-.ct .li .
+.period
 The AH register contains a number indicating the function requested.
 .im segregs
 .np
@@ -51,7 +51,7 @@ register after the interrupt has completed.
 The CARRY flag (when set, an error has occurred) is copied into the
 structure located by
 .arg out_regs
-.ct .li .
+.period
 .im errnoref
 .return end
 .see begin

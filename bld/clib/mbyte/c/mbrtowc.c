@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,24 +45,26 @@
 #include "thread.h"
 
 
-_WCRTLINK int _NEARFAR(mbrtowc,_fmbrtowc)( wchar_t _FFAR *pwc, const char _FFAR *s, size_t n, mbstate_t _FFAR *ps )
+_WCRTLINK size_t _NEARFAR(mbrtowc,_fmbrtowc)( wchar_t _FFAR *pwc, const char _FFAR *s, size_t n, mbstate_t _FFAR *ps )
 {
     int                 rc;
 
     /* unused parameters */ (void)ps;
 
     /*** Check the simple cases ***/
-    if( s == NULL )  return( 0 );           /* always in initial state */
-    if( n == 0 )  return( -2 );             /* can't process nothing */
+    if( s == NULL )
+        return( 0 );            /* always in initial state */
+    if( n == 0 )
+        return( (size_t)-2 );   /* can't process nothing */
 
     /*** Check for a valid multibyte character ***/
     rc = _NEARFAR(mbtowc,_fmbtowc)( pwc, s, n );
     if( rc != -1 ) {
         return( rc );
     } else if( n < MB_LEN_MAX && _ismbblead( (unsigned char)*s ) ) {
-        return( -2 );                       /* incomplete, possibly valid */
+        return( (size_t)-2 );               /* incomplete, possibly valid */
     } else {
         _RWD_errno = EILSEQ;                /* encoding error */
-        return( -1 );
+        return( (size_t)-1 );
     }
 }

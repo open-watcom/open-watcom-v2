@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #include <string.h>
 #include <process.h>
 #include "bool.h"
-#include "wio.h"
 #include "iopath.h"
 #include "digtypes.h"
 #include "digcli.h"
@@ -126,13 +126,16 @@ void DIGCLIENTRY( Remove )( char const *name, dig_open mode )
 {
     /* unused parameters */ (void)mode;
 
-    unlink( name );
+    remove( name );
 }
 
 unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
                         dig_elen in_size,  const void *in,
                         dig_elen out_size, void *out )
 {
+    /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in;
+    /* unused parameters */ (void)out_size; (void)out;
+
     return( 0 ); /// @todo check this out out.
 }
 

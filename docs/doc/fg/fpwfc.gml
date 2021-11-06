@@ -35,25 +35,25 @@ The formal &product command line syntax is shown below.
 .np
 The square brackets [ ] denote items which are optional.
 .begnote
-.mnote &ccmdup16
+.note &ccmdup16
 is the name of the 16-bit &cmpname compiler.
-.mnote &ccmdup32
+.note &ccmdup32
 is the name of the 32-bit &cmpname compiler.
-.mnote d:
+.note d:
 is an optional drive specification such as "A:", "B:", etc.
 If not specified, the default drive is assumed.
-.mnote path
+.note path
 is an optional path specification such as
 .fi \PROGRAMS\SRC\.
 If not specified, the current directory is assumed.
-.mnote filename
+.note filename
 is the file name of the file to be compiled.
-.mnote ext
+.note ext
 is the file extension of the file to be compiled.
 If omitted, a file extension of "&langsuffup" is assumed.
 If the period "." is specified but not the extension, the file is
 assumed to have no file extension.
-.mnote options
+.note options
 is a list of valid &cmpname options, each preceded by a slash ("/") or
 a dash ("&minus.").
 Certain options can include a "no" prefix to disable an option.
@@ -206,7 +206,8 @@ C>&ccmd16 ..\source\modabs
 .exam end
 .pc
 The options
-.id /short,
+.id /short
+.ct ,
 .id /d2
 and
 .id /fo=*.dbj
@@ -277,7 +278,7 @@ If we compile this program with the "extensions" option, the following
 output appears on the screen.
 .code begin
 C>&ccmd16 demo1 /exten
-WATCOM FORTRAN 77/16 Optimizing Compiler Version &ver..&rev &cdate
+WATCOM FORTRAN 77/16 Optimizing Compiler Version &verrev &cdate
 .cpyrit 1984
 .trdmrk
 demo1.for(14): *EXT* DO-05 this DO loop form is not FORTRAN 77 standard
@@ -307,7 +308,7 @@ C>&ccmd32 demo1 /exten/list
 .np
 The contents of the listing file are:
 .code begin
-WATCOM FORTRAN 77/16 Optimizing Compiler Version &ver..&rev &cdate
+WATCOM FORTRAN 77/16 Optimizing Compiler Version &verrev &cdate
 .cpyrit 1984
 .trdmrk
 

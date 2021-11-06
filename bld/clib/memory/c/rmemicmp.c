@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  RISC style memicmp().
+* Description:  RISC style _memicmp().
 *
 ****************************************************************************/
 
@@ -35,8 +35,8 @@
 #include "riscstr.h"
 
 
-int memicmp( const void *s1, const void *s2, size_t n )
-/*****************************************************/
+int _memicmp( const void *s1, const void *s2, size_t n )
+/******************************************************/
 {
     UINT *              dw1 = ROUND(s1);        /* round down to dword */
     UINT *              dw2 = ROUND(s2);        /* round down to dword */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +37,7 @@
     #include <windows.h>
     #include <dos.h>
 #elif defined( __NT__ )
-    #include <windows.h>
-  #ifdef INCLUDE_COMMDLG_H
-    #include <commdlg.h>
-  #endif
-  #ifdef INCLUDE_DDEML_H
-    #include <ddeml.h>
-  #endif
+    #include <wwindows.h>
 #elif defined( __OS2__ )
     #define  INCL_DOSMISC
     // For WPI
@@ -59,7 +53,6 @@
     #define INCL_WINERRORS
     #define INCL_GPIBITMAPS
     #define INCL_GPIPRIMITIVES
-    #define INCL_GPIBITMAPS
     #define INCL_WINTRACKRECT
     #define INCL_DOSPROCESS
     #define INCL_ERRORS
@@ -67,7 +60,6 @@
 #endif
 #include "bool.h"
 #include "vhandle.h"
-#include "guitypes.h"
 #include "gui.h"
 #include "strvbuf.h"
 
@@ -101,6 +93,9 @@
 #endif
 
 #define IS_VALID_DIR(p)     ((p)->d_name[0] != '.' || (p)->d_name[1] != '\0' && ((p)->d_name[1] != '.' || (p)->d_name[2] != '\0'))
+
+#define SKIP_SPACES(s)      while(isspace(*s)) s++
+#define SKIP_CHAR_SPACES(s) while(isspace(*++s))
 
 typedef enum {
     CFE_NOERROR,
@@ -151,6 +146,7 @@ extern gui_coord        GUIScale;
 extern char             *VariablesFile;
 extern bool             VisibilityCondition;
 extern gui_ord          BitMapBottom;
+extern char             InstallerFile[];
 
 extern void             ReplaceVars( VBUF *dst, const char *src );
 #define ReplaceVars1(d) ReplaceVars(d, NULL)

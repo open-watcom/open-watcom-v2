@@ -63,7 +63,7 @@ void    IOErr( int errcode, ... ) {
     va_start( args, errcode );
         if( ( IOCB->set_flags & (SET_IOSPTR|SET_ERRSTMT) ) == 0 ) {
             if( errcode == IO_FILE_PROBLEM ) {
-                GetIOErrMsg( IOCB->fileinfo, errbuff );
+                GetIOErrMsg( IOCB->fileinfo, errbuff, sizeof( errbuff ) );
                 SysIOErr( errcode, errbuff );
             } else {
                 RTErrHandler( errcode, args );

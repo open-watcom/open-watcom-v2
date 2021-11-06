@@ -71,11 +71,11 @@ void __FiniRtns() {}
 #endif
 
 //void __Null_Argv() {} /* to satisfy main_entry */
-__declspec(aborts) void __exit_with_msg( char __FAR *msg, unsigned rc )
+__declspec(aborts) void __exit_with_msg( char __FAR *msg, int rc )
 {
     /* unused parameters */ (void)msg; (void)rc;
 }
-__declspec(aborts) void __fatal_runtime_error( char __FAR *msg, unsigned rc )
+__declspec(aborts) void __fatal_runtime_error( char __FAR *msg, int rc )
 {
     /* unused parameters */ (void)msg; (void)rc;
 }
@@ -99,8 +99,8 @@ int main( void )
     }
 
     msg.s.type    = _PROC_EMUL87;
-    msg.s.segment = FP_SEG( __int7 );
-    msg.s.offset  = FP_OFF( __int7 );
+    msg.s.segment = _FP_SEG( __int7 );
+    msg.s.offset  = _FP_OFF( __int7 );
     msg.s.nbytes  = 128;    /* size of emulator save area */
     Send( PROC_PID, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
     if( msg.r.status != EOK ) {

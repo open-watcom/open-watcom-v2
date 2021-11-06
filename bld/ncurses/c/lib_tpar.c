@@ -350,7 +350,7 @@ tparam_internal(const char *string, va_list ap)
     int x, y;
     int i;
     size_t len2;
-    register const char *cp;
+    const char *cp;
     static size_t len_fmt;
     static char dummy[] = "";
     static char *format;
@@ -495,7 +495,7 @@ tparam_internal(const char *string, va_list ap)
         if (p_is_s[i] != 0) {
             p_is_s[i] = va_arg(ap, char *);
         } else {
-            param[i] = va_arg(ap, long int);
+            param[i] = va_arg(ap, long);
         }
     }
 

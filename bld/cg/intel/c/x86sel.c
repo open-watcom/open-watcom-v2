@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -155,7 +155,7 @@ cost_val JumpCost( sel_handle s_node )
 }
 
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     #define LONG_JUMP 5
     #define SHORT_JUMP 2
     static byte CmpSize[] = { 0, 2, 3, 0, 9 };

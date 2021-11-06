@@ -152,9 +152,9 @@ typedef int                     HFILE;
 
 #ifndef RC_INVOKED
 
-#pragma pack( __push, 1 )
+:include pshpack1.sp
 
-typedef signed short int SHORT;
+typedef signed short SHORT;
 
 /* Fixed file information */
 typedef struct tagVS_FIXEDFILEINFO {
@@ -185,7 +185,7 @@ DWORD WINAPI    VerInstallFile( UINT, LPCSTR, LPCSTR, LPCSTR, LPCSTR, LPCSTR, LP
 UINT WINAPI     VerLanguageName( UINT, LPSTR, UINT );
 BOOL WINAPI     VerQueryValue( const void FAR *, LPCSTR, void FAR * FAR *, UINT FAR * );
 
-#pragma pack( __pop )
+:include poppack.sp
 
 #endif
 

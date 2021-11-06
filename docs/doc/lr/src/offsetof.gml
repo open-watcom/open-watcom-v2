@@ -13,7 +13,7 @@ within the
 or
 .kw union
 .arg composite
-.ct .li .
+.period
 This provides a portable method to determine the offset.
 .desc end
 .return begin
@@ -21,7 +21,7 @@ The
 .id &funcb.
 function returns the offset of
 .arg name
-.ct .li .
+.period
 .return end
 .exmp begin
 #include <stdio.h>

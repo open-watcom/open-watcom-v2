@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +63,7 @@ void    WndResetScroll( a_window wnd )
     wnd->max_row = 0;
 }
 
-gui_ord  WndVScrollWidth( a_window wnd )
+gui_ord  WndScrollBarWidth( a_window wnd )
 {
     gui_system_metrics metrics;
 
@@ -94,7 +95,7 @@ void WndSetThumb( a_window wnd )
             if( WndHasCurrent( wnd ) ) {
                 WndDirtyCurr( wnd );
             }
-            scrolled = WndScroll( wnd, -bottom_blank );
+            scrolled = WndVScroll( wnd, -bottom_blank );
             if( WndHasCurrent( wnd ) ) {
                 wnd->current.row += bottom_blank;
                 WndDirtyCurr( wnd );
@@ -115,7 +116,7 @@ void WndSetThumb( a_window wnd )
     }
 }
 
-int WndScroll( a_window wnd, int lines )
+int WndVScroll( a_window wnd, int lines )
 {
     wnd_row         new_top;
     wnd_row         total_rows;
@@ -129,11 +130,11 @@ int WndScroll( a_window wnd, int lines )
     WndDirtyCurr( wnd );
     if( !WndHasNumRows( wnd ) ) {
         WndKillCacheLines( wnd );
-        lines = wnd->info->scroll( wnd, lines );
+        lines = wnd->info->vscroll( wnd, lines );
         if( lines != 0 ) {
             if( WndSwitchOff( wnd, WSW_REPAINT ) ) {
                 WndAdjustDirty( wnd, -lines );
-                GUIDoVScrollClip( wnd->gui, lines, wnd->title_size, wnd->rows - 1 );
+                GUIDoVScrollClip( wnd->gui, lines, wnd->title_rows, wnd->rows - 1 );
             }
         }
     } else {
@@ -160,9 +161,9 @@ int WndScroll( a_window wnd, int lines )
     return( lines );
 }
 
-int WndScrollAbs( a_window wnd, int line )
+int WndVScrollAbs( a_window wnd, int line )
 {
-    return( WndScroll( wnd, WndScreenRow( wnd, line ) ) );
+    return( WndVScroll( wnd, WndScreenRow( wnd, line ) ) );
 }
 
 void    WndSetHScroll( a_window wnd, gui_ord indent )

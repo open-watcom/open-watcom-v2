@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,8 +49,7 @@
 #include "cgformat.h"
 #include "cgmagic.h"
 #include "tdinit.h"
-#include "wf77auxd.h"
-#include "wf77aux.h"
+#include "wf77prag.h"
 #include "fcgmain.h"
 
 
@@ -78,7 +77,7 @@ void            TDProgFini( void ) {
         }
         DefaultLibInfo();
     }
-    if( ( Options & OPT_SYNTAX ) || ( ( ProgSw & PS_DONT_GENERATE ) == 0 ) ) {
+    if( (Options & OPT_SYNTAX) || ( (ProgSw & PS_DONT_GENERATE) == 0 ) ) {
         FreeNameList( GList );
         GList = NULL;
     }
@@ -98,7 +97,7 @@ void            TDSubInit( void ) {
     EPValue = NULL;
     EpilogLabel = 0;
     InitFormatList();
-    SubAuxInit();
+    SubPragmaInit();
     if( ProgSw & PS_DONT_GENERATE ) {
         ++NumSubProgs; // count # of subprograms on first pass
     } else {
@@ -112,8 +111,8 @@ void            TDSubFini( void ) {
 
 // Finish off compilation of a subprogram.
 
-    SubAuxFini();
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) {
+    SubPragmaFini();
+    if( (ProgSw & PS_DONT_GENERATE) == 0 ) {
         EmitOp( FC_END_OF_SEQUENCE );
         CGGenSub();
     }
@@ -156,9 +155,9 @@ void            TDPurge( void ) {
 // Free all allocated structures.
 
     FiniFormatList();
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) {
+    if( (ProgSw & PS_DONT_GENERATE) == 0 ) {
         CGPurge();
     }
     FiniObj();
-    FiniAuxInfo();
+    FiniPragma();
 }

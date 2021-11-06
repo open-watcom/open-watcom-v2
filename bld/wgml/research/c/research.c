@@ -49,11 +49,21 @@
 #define global
 #include "research.h"
 
-/* Local data definition. */ 
+/* Local data definition. */
 
 static char     hexchar[] = "0123456789ABCDEF";
 
 /*  Function definitions. */
+
+static bool is_ws( char ch )
+{
+    return( isspace( ch ) != 0 );
+}
+
+static bool is_quote( char ch )
+{
+    return( ch == '\"' );
+}
 
 /*  Function display_char().
  *  If isgraph() indicates that in_char is displayable, returns a space in
@@ -63,7 +73,7 @@ static char     hexchar[] = "0123456789ABCDEF";
  *  hexadecimal.
  *
  *  Parameters:
- *      out_chars points to a two-char array 
+ *      out_chars points to a two-char array
  *      in_char contains the value to be output
  *
  *  Value Returned:
@@ -79,7 +89,7 @@ void display_char( char * out_chars, char in_char )
         out_chars[0] = hexchar[ ( in_char >> 4 ) & 0x0f ];
         out_chars[1] = hexchar[ in_char & 0x0f ];
     }
-    
+
     return;
 }
 
@@ -114,7 +124,7 @@ void display_hex_block( uint8_t * in_data, uint16_t in_count )
 
 /*  Function display_hex_char().
  *  Returns values in out_chars which, when output as a null-terminated string,
- *  provide a hexadecimal representation of in_char. 
+ *  provide a hexadecimal representation of in_char.
  *
  *  Parameters:
  *      out_chars points to a three-char array.
@@ -123,14 +133,14 @@ void display_hex_block( uint8_t * in_data, uint16_t in_count )
  *  Value Returned:
  *      out_chars contains a string representing the char in hex.
  */
- 
+
 void display_hex_char( char * out_chars, char in_char )
 {
     out_chars[0] = hexchar[ ( in_char >> 4 ) & 0x0f ];
     out_chars[1] = hexchar[ in_char & 0x0f ];
     out_chars[2] = '\0';
-    
-    return;    
+
+    return;
 }
 
 /*  Function display_hex_line().
@@ -149,7 +159,7 @@ void display_hex_char( char * out_chars, char in_char )
  *      out_chars must point to an array of at least 69 bytes.
  *      in_chars must point to an array of 16 bytes.
  */
- 
+
 void display_hex_line( char * out_chars, char * in_chars )
 {
     uint8_t i;
@@ -167,7 +177,7 @@ void display_hex_line( char * out_chars, char * in_chars )
     out_chars[24] = ' ';
 
     /* Process the second eight input values. */
-    
+
     for( i = 8; i < 16; i++) {
         out_chars[3*i + 1] = hexchar[ ( in_chars[i] >> 4 ) & 0x0f ];
         out_chars[3*i + 2] = hexchar[ in_chars[i] & 0x0f ];
@@ -192,7 +202,7 @@ void display_hex_line( char * out_chars, char * in_chars )
 
     /* Make out_chars a character string. */
 
-    out_chars[68] = '\0';    
+    out_chars[68] = '\0';
 
     return;
 }
@@ -220,18 +230,18 @@ int parse_cmdline( char * cmdline )
     ptrdiff_t   len;
 
     /* Find the parameter -- there should only be one. */
-        
+
     cmdline = skip_spaces( cmdline );
 
     /* In case someone finds a way to enter an all-whitespace command line. */
-    
+
     if( *cmdline == '\0' ) {
         print_usage();
         return ( FAILURE );
     }
 
     /* Verify that parameter is not adorned. */
- 
+
     opt = *cmdline;
     if( opt == '-'  ||  opt == dos_switch_char  ||  opt == '@' ) {
         print_usage();
@@ -241,11 +251,11 @@ int parse_cmdline( char * cmdline )
     /* Find the length of the parameter. */
 
     end = cmdline;
-    end = FindNextWS( end );
+    end = FindNextSep( end, is_ws );
     len = end - cmdline;
 
     /* In case someone managed to enter a zero-length path. */
-        
+
     if( len <= 0)
     {
         print_usage();
@@ -257,7 +267,7 @@ int parse_cmdline( char * cmdline )
     len++;
 
     /* Allocate memory for the global pointer tgt_path. */
-        
+
     tgt_path = malloc( len );
     if( tgt_path == NULL ) return( FAILURE );
 
@@ -268,7 +278,7 @@ int parse_cmdline( char * cmdline )
 
     /* Remove doublequotes, if present. */
 
-    if(opt == '\"') UnquoteFName( tgt_path, len, tgt_path );
+    if(opt == '\"') UnquoteItem( tgt_path, len, tgt_path, is_quote );
 
     /* We are done. */
 

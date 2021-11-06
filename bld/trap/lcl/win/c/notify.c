@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,8 @@
 #include <dos.h>
 #include "wdebug.h"
 #include "stdwin.h"
+#include "dbgrmsg.h"
+
 
 #ifdef DEBUG
 char *notify_msgs[] = {
@@ -221,7 +224,7 @@ static BOOL doExitTask( DWORD data )
 /*
  * NotifyHandler - recieves notifications from toolhelp and processes them
  */
-BOOL __far __pascal NotifyHandler( WORD id, DWORD data )
+BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data )
 {
     BOOL        rc;
 

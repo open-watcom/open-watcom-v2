@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,8 @@
     #include "asminput.h"
 #endif
 
+#include "wasmmsg.h"
+
 #ifdef DEBUG_OUT
     extern void DoDebugMsg( const char *format, ... );
     #define DebugMsg( x ) DoDebugMsg x
@@ -45,65 +47,44 @@
 #endif
 // use DebugMsg((....)) to call it
 
-#define AsmWarning( errno )     AsmWarn( 0,errno )
-
-extern void             AsmErr( unsigned msgnum, ... );
-extern void             AsmWarn( int level, unsigned msgnum, ... );
-extern void             AsmNote( int level, unsigned msgnum, ... );
-extern void             _AsmNote( int level, unsigned msgnum, ... );
-
-#if !defined( _STANDALONE_ )
-    #define DebugCurrLine()
-    #define AsmIntErr( x )
-#elif DEBUG_OUT
+#if defined( _STANDALONE_ )
+    extern int InternalError( const char *file, unsigned line );
+  #if defined( __WATCOMC__ )
+    #pragma aux InternalError __aborts
+  #endif
+  #if DEBUG_OUT
     #define DebugCurrLine() printf( "%s\n", CurrString );
     #define AsmIntErr( x ) DebugCurrLine(); printf( "Internal error = %u\n", x )
-#else
+  #else
     #define DebugCurrLine()
     #define AsmIntErr( x ) printf( "Internal error = %u\n", x )
-#endif
-
-#if defined( _STANDALONE_ )
-
-#include "asmrcmsg.h"
-
-    extern bool MsgInit( void );
-    extern bool MsgGet( unsigned, char * );
-    extern void MsgFini( void );
-    extern void OpenLstFile( void );
-    extern void LstMsg( const char *format, ... );
-    extern void PrintfUsage( void );
-    extern void MsgPrintf( unsigned resourceid );
-    extern void MsgPrintf1( unsigned resourceid, const char *token );
-    extern int  PrintBanner( void );
-
-
-#if !defined( USE_TEXT_MSGS )
-
-    extern void MsgPutUsage( void );
-    extern void MsgSubStr( char *, char *, char );
-    extern void MsgChgeSpec( char *strptr, char specifier );
-
-#endif
-
-#elif defined( _USE_RESOURCES_ )
-
-    #define MSG_RC_BASE         15000
-    #include "msg.gh"
-
-#else
-    /* set up the enum for error messages */
-
-    #define pick(c,e,j)         asmerr(c,e),
-  #ifndef asmerr
-    #define asmerr(code,emsg)   code
-    enum    asmerr_codes {
-  #else
-    static char const ASMFAR * const ASMFAR AsmErrMsgs[] = {
   #endif
-        #include "asmshare.msg"
-    };
-    #undef pick
+#else
+    #define DebugCurrLine()
+    #define AsmIntErr( x )
 #endif
 
+#ifdef _STANDALONE_
+
+extern bool MsgInit( void );
+extern bool MsgGet( unsigned, char * );
+extern void MsgFini( void );
+extern void OpenLstFile( void );
+extern void LstMsg( const char *format, ... );
+extern void PrintfUsage( void );
+extern void MsgPrintf( unsigned resourceid );
+extern void MsgPrintf1( unsigned resourceid, const char *token );
+extern int  PrintBanner( void );
+extern void AsmErr( unsigned msgnum, ... );
+extern void AsmWarn( int level, unsigned msgnum, ... );
+extern void AsmNote( int level, unsigned msgnum, ... );
+extern void _AsmNote( int level, unsigned msgnum, ... );
+#if !defined( INCL_MSGTEXT )
+extern void MsgPutUsage( void );
+extern void MsgSubStr( char *, char *, char );
+extern void MsgChgeSpec( char *strptr, char specifier );
 #endif
+
+#endif  /* _STANDALONE_ */
+
+#endif  /* _ASMERR_H_INCLUDED */

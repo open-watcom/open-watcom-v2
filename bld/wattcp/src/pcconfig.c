@@ -18,7 +18,7 @@
 #include "language.h"
 #include "udp_dom.h"
 #include "udp_nds.h"
-#include "bsdname.h"
+#include "hostname.h"
 #include "pcqueue.h"
 #include "pcsed.h"
 #include "pcpkt.h"
@@ -208,7 +208,7 @@ int parse_config_table (const struct config_table *tab,
                         const char *name,
                         const char *value)
 {
-  for ( ; tab && tab->keyword; tab++)
+  for ( ; tab != NULL && tab->keyword != NULL; tab++)
   {
     char keyword[MAX_STRING];
 
@@ -395,7 +395,7 @@ static void do_include_file (const char *value, int len)
 
 static void do_profile (const char *value)
 {
-#if defined(__DJGPP__) || defined(__WATCOM386__)
+#if defined(__DJGPP__) || defined(WATCOM386)
   if (*value == '1')
      profile_init();
 #else

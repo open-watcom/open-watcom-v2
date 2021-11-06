@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -190,7 +191,7 @@ static int Word::word_compare   // COMPARE TWO WORDS
     Ring const **a2 = (Ring const **)op2;
     Word const *w1 = (Word const *)*a1;
     Word const *w2 = (Word const *)*a2;
-    long int diff = (long int)w2->_count - (long int)w1->_count;
+    long diff = (long)w2->_count - (long)w1->_count;
     int retn;
     if( diff == 0 ) {
         retn = 0;
