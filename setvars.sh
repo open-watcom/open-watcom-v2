@@ -73,4 +73,7 @@ export OWOBJDIR=binbuild
 # Invoke the script for the common environment
 . $OWROOT/cmnvars.sh
 
+# "c99", what the fuck?
+PATH=$OWROOT/tool.bin:$PATH
+
 cd $OWROOT
