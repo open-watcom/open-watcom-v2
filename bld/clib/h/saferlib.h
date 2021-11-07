@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,8 @@
 #define __STDC_WANT_LIB_EXT1__  1
 #include <stdlib.h>
 #include <stdint.h>
+
+#define SAFER_CLIB
 
 // Maximum length of runtime-constraint error message
 #define RTCT_MSG_MAX            128

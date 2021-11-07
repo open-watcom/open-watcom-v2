@@ -83,7 +83,7 @@
 #if defined( __QNX__ ) && defined( _M_I86 ) && !defined( IN_SLIB ) && !defined( __WIDECHAR__ )
 #else
 
-static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, SPECS __SLIB *specs )
+static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, PTR_SPECS specs )
 {
     specs->_flags = 0;
     for( ; ; ctl++ ) {
@@ -112,7 +112,7 @@ static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, SPECS __SLIB *specs )
 
 static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
                                         MY_VA_LIST *pargs,
-                                        SPECS __SLIB *specs )
+                                        PTR_SPECS specs )
 {
     specs->_pad_char = STRING( ' ' );
     ctl = evalflags( ctl, specs );
@@ -288,7 +288,7 @@ static void fmt4hex( unsigned value, CHAR_TYPE *buf, int maxlen )
 }
 
 
-static void FixedPoint_Format( CHAR_TYPE *buf, long value, SPECS __SLIB *specs )
+static void FixedPoint_Format( CHAR_TYPE *buf, long value, PTR_SPECS specs )
 {
     T32         at;
     int         i;
@@ -347,7 +347,7 @@ static void FixedPoint_Format( CHAR_TYPE *buf, long value, SPECS __SLIB *specs )
     }
 }
 
-static void float_format( CHAR_TYPE *buffer, MY_VA_LIST *pargs, SPECS __SLIB *specs )
+static void float_format( CHAR_TYPE *buffer, MY_VA_LIST *pargs, PTR_SPECS specs )
 {
 #ifdef __WIDECHAR__
     unsigned char       mbBuffer[BUF_SIZE*MB_CUR_MAX];
@@ -416,7 +416,7 @@ static void float_format( CHAR_TYPE *buffer, MY_VA_LIST *pargs, SPECS __SLIB *sp
 #endif
 }
 
-static void SetZeroPad( SPECS __SLIB *specs )
+static void SetZeroPad( PTR_SPECS specs )
 {
     int         n;
 
@@ -433,8 +433,7 @@ static void SetZeroPad( SPECS __SLIB *specs )
 
 
 #if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
-static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs,
-                               slib_callback_t *out_putc )
+static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs, prtf_callback_t *out_putc )
 {
     int     bytes;
     char    mbBuf[MB_CUR_MAX];
@@ -460,7 +459,7 @@ static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs,
 
 #if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
 static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
-                                 slib_callback_t *out_putc )
+                                 prtf_callback_t *out_putc )
 {
     int                 bytes;
     wchar_t             wc;
@@ -487,7 +486,7 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
 
 
 static FAR_STRING formstring( CHAR_TYPE *buffer, MY_VA_LIST *pargs,
-                              SPECS __SLIB *specs, CHAR_TYPE *null_string )
+                              PTR_SPECS specs, CHAR_TYPE *null_string )
 {
     FAR_STRING              arg;
     int                     length;
@@ -855,12 +854,12 @@ processNumericTypes:
 }
 
 
-#ifdef SAFE_PRINTF
-int __F_NAME(__prtf_s,__wprtf_s)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, const char **msg, slib_callback_t *out_putc )
+#ifdef SAFER_CLIB
+int __F_NAME(__prtf_s,__wprtf_s)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, const char **msg, prtf_callback_t *out_putc )
 #elif defined( IN_SLIB )
-int __F_NAME(__prtf_slib,__wprtf_slib)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc, int ptr_size )
+int __F_NAME(__prtf_slib,__wprtf_slib)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, prtf_callback_t *out_putc, int ptr_size )
 #else
-int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc )
+int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, prtf_callback_t *out_putc )
 #endif
 /* dest         parm for use by out_putc    */
 /* format       pointer to format string    */
@@ -875,7 +874,7 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
     const CHAR_TYPE     *ctl;
     SPECS               specs;
 
-#if !defined( SAFE_PRINTF ) && defined( IN_SLIB )
+#if !defined( SAFER_CLIB ) && defined( IN_SLIB )
 
     /* unused parameters */ (void)ptr_size;
 
@@ -903,7 +902,7 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
                 break;
 
             if( specs._character == STRING( 'n' ) ) {
-#ifdef SAFE_PRINTF
+#ifdef SAFER_CLIB
                 /* The %n specifier is not allowed - too dangerous. */
                 *msg = "%n";
                 break;
@@ -936,9 +935,9 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
                 } else {
                     *iptr = specs._output_count;
                 }
-#endif  /* SAFE_PRINTF */
+#endif  /* SAFER_CLIB */
             } else {
-#ifdef SAFE_PRINTF
+#ifdef SAFER_CLIB
                 if( specs._character == STRING( 's' ) || specs._character == STRING( 'S' ) ) {
                     FAR_STRING  str;
                     va_list     args_copy;
@@ -979,7 +978,7 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
                         break;  /* bail out */
                     }
                 }
-#endif  /* SAFE_PRINTF */
+#endif  /* SAFER_CLIB */
 
                 {
                     MY_VA_LIST  margs;

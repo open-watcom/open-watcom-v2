@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,61 +38,61 @@
 #include "slibqnx.h"
 
 
-#if defined(__QNX__)
-    #define OUTC_PARM       int
-#elif defined( __WIDECHAR__ )
-    #define OUTC_PARM       wchar_t
-#else
-    #define OUTC_PARM       char
+#if defined( SAFER_CLIB ) || !defined( __QNX__ )
+    #define PRTF_CHAR_TYPE  CHAR_TYPE
+#else   /* !SAFER_CLIB && __QNX__ */
+    #define PRTF_CHAR_TYPE  int
 #endif
 
-#if defined(__QNX__)
-    #if !defined(_M_I86)
-        #pragma aux slib_callback_t __far __parm [__eax] [__edx] __modify [__eax __edx]
+#if defined( SAFER_CLIB ) || !defined( __QNX__ )
+    #define PRTF_CALLBACK
+    typedef void prtf_callback_t( PTR_SPECS, CHAR_TYPE );
+  #if defined( __WINDOWS_386__ )
+    #ifdef __SW_3S
+        #pragma aux prtf_callback_t __modify [__eax __edx __ecx __fs __gs]
+    #else
+        #pragma aux prtf_callback_t __modify [__fs __gs]
     #endif
-#else
-    #if defined( __WINDOWS_386__ )
-        #ifdef __SW_3S
-            #pragma aux slib_callback_t __modify [__eax __edx __ecx __fs __gs]
-        #else
-            #pragma aux slib_callback_t __modify [__fs __gs]
-        #endif
-    #endif
+  #endif
+#else   /* !SAFER_CLIB && __QNX__ */
+    #define PRTF_CALLBACK   __SLIB_CALLBACK
+    typedef void (__SLIB_CALLBACK prtf_callback_t)( PTR_SPECS, int );
+  #if !defined(_M_I86)
+    #pragma aux prtf_callback_t __far __parm [__eax] [__edx] __modify [__eax __edx]
+  #endif
 #endif
 
-typedef void (__SLIB_CALLBACK slib_callback_t)( SPECS __SLIB *, OUTC_PARM );
-
-#if defined( __STDC_WANT_LIB_EXT1__ ) && __STDC_WANT_LIB_EXT1__ == 1
+#if defined( SAFER_CLIB )
 
 extern int __F_NAME(__prtf_s,__wprtf_s)(
-    void __SLIB     *dest,                  /* parm for use by out_putc    */
-    const CHAR_TYPE * __restrict format,    /* pointer to format string    */
-    va_list         args,                   /* pointer to pointer to args  */
-    const char      **errmsg,               /* constraint violation msg    */
-    slib_callback_t *out_putc );            /* character output routine    */
+    void   PTR_PRTF_FAR dest,                   /* parm for use by out_putc    */
+    const CHAR_TYPE     * __restrict format,    /* pointer to format string    */
+    va_list             args,                   /* pointer to pointer to args  */
+    const char          **errmsg,               /* constraint violation msg    */
+    prtf_callback_t     *out_putc );            /* character output routine    */
 
-#else
+#else  /* !Safer C */
 
 extern int __F_NAME(__prtf,__wprtf)(
-    void __SLIB     *dest,          /* parm for use by out_putc    */
-    const CHAR_TYPE *format,        /* pointer to format string    */
-    va_list         args,           /* pointer to pointer to args  */
-    slib_callback_t *out_putc );    /* character output routine    */
+    void   PTR_PRTF_FAR dest,           /* parm for use by out_putc    */
+    const CHAR_TYPE     *format,        /* pointer to format string    */
+    va_list             args,           /* pointer to pointer to args  */
+    prtf_callback_t     *out_putc );    /* character output routine    */
 
 #ifdef __QNX__
   #if defined(IN_SLIB)
 extern int __F_NAME(__prtf_slib,__wprtf_slib)(
-    void __SLIB     *dest,          /* parm for use by out_putc    */
-    const CHAR_TYPE *format,        /* pointer to format string    */
-    char            **args,         /* pointer to pointer to args  */
-    slib_callback_t *out_putc,      /* character output routine    */
-    int             ptr_size );     /* size of pointer in bytes    */
+    void   PTR_PRTF_FAR dest,           /* parm for use by out_putc    */
+    const CHAR_TYPE     *format,        /* pointer to format string    */
+    va_list             *args,          /* pointer to pointer to args  */
+    prtf_callback_t     *out_putc,      /* character output routine    */
+    int                 ptr_size );     /* size of pointer in bytes    */
 
   #elif defined(_M_I86)
 
     extern int ( __far * ( __far *__f)) ();
     #define __prtf(a,b,c,d) __prtf_slib(a,b,c,d,sizeof(void *))
-    #define __prtf_slib(a,b,c,d,e) ((int(__far *) (void __far *,const char __far *,char * __far *args,slib_callback_t *__out,int)) __f[24])(a,b,c,d,e)
+    #define __prtf_slib(a,b,c,d,e) ((int(__far *) (void __far *,const char __far *,va_list __far *args,prtf_callback_t *__out,int)) __f[24])(a,b,c,d,e)
 
   #endif
 #endif

@@ -41,7 +41,7 @@
 
 /* NB: This code assumes ASCII character encoding. Probably not unreasonable. */
 
-FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, MY_VA_LIST *pargs, _mbcs_SPECS __SLIB *specs )
+FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, MY_VA_LIST *pargs, PTR_NEAROW_SPECS specs )
 {
     int         digits;
     int         fmt;

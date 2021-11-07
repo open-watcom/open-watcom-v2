@@ -50,7 +50,7 @@ extern "C" {
 // all
     typedef void        _type_EFG_cnvs2d( char *buf, double *value );
 // CLIB
-    typedef FAR_STRING  _type_EFG_Format( char *buffer, MY_VA_LIST *pargs, _mbcs_SPECS __SLIB *specs );
+    typedef FAR_STRING  _type_EFG_Format( char *buffer, MY_VA_LIST *pargs, PTR_NEAROW_SPECS specs );
 // CPPLIB
   #ifdef _LONG_DOUBLE_
     typedef void        _type_EFG_cnvd2ld( dbl_stk_ptr, ld_stk_ptr );

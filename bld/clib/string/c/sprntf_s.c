@@ -49,8 +49,8 @@ typedef struct vsprtf_s_buf {
     rsize_t     max_chars;
 } vsprtf_s_buf;
 
-static slib_callback_t mem_putc; // set up calling convention
-static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
+static prtf_callback_t mem_putc; // set up calling convention
+static void PRTF_CALLBACK mem_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     vsprtf_s_buf    *info;
 
