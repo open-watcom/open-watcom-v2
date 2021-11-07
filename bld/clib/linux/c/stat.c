@@ -34,18 +34,8 @@
 #include <sys/stat.h>
 #include "linuxsys.h"
 
-#define DEFER_TO_STAT64
-
-#ifdef DEFER_TO_STAT64
-# define _BSD_SOURCE
-# include <sys/types.h>
-
-# define linuxkernel_old_dev_valid(x) (major(x) <= 0xFF && minor(x) <= 0xFF)
-#endif
-
 _WCRTLINK int stat( const char *filename, struct stat * __buf )
 {
-#ifdef DEFER_TO_STAT64
     /* Even on 64-bit Linux, Open Watcom compiles itself as 32-bit. The problem with stat()
      * for 32-bit processes is that some device nodes are higher than 255 which are normally
      * returned in st_dev, but the Linux kernel will fail the call with EOVERFLOW if the
@@ -57,30 +47,24 @@ _WCRTLINK int stat( const char *filename, struct stat * __buf )
     struct stat64 s64;
     syscall_res res = sys_call2( SYS_stat64, (u_long)filename, (u_long)(&s64) );
     if (!__syscall_iserror(res)) {
-	if ((S_ISCHR(s64.st_mode) || S_ISBLK(s64.st_mode)) && (!linuxkernel_old_dev_valid(s64.st_dev) || !linuxkernel_old_dev_valid(s64.st_rdev))) {
-		res = (syscall_res)(-EOVERFLOW);
-	}
-	else if (s64.st_size <= 0x7FFFFFFFu/*2GB - 1*/) {
-		__buf->st_dev = linuxkernel_old_dev_valid(s64.st_dev) ? s64.st_dev : 0;
-		__buf->st_ino = s64.st_ino;
-		__buf->st_mode = s64.st_mode;
-		__buf->st_nlink = s64.st_nlink;
-		__buf->st_uid = s64.st_uid;
-		__buf->st_gid = s64.st_gid;
-		__buf->st_rdev = linuxkernel_old_dev_valid(s64.st_rdev) ? s64.st_rdev : 0;
-		__buf->st_size = s64.st_size;
-		__buf->st_blksize = s64.st_blksize;
-		__buf->st_blocks = s64.st_blocks;
-		__buf->st_atime = s64.st_atime;
-		__buf->st_mtime = s64.st_mtime;
-		__buf->st_ctime = s64.st_ctime;
-	}
-	else {
-		res = (syscall_res)(-EOVERFLOW);
-	}
+        if (s64.st_size <= 0x7FFFFFFFu/*2GB - 1*/) {
+            __buf->st_dev = s64.st_dev;
+            __buf->st_ino = s64.st_ino;
+            __buf->st_mode = s64.st_mode;
+            __buf->st_nlink = s64.st_nlink;
+            __buf->st_uid = s64.st_uid;
+            __buf->st_gid = s64.st_gid;
+            __buf->st_rdev = s64.st_rdev;
+            __buf->st_size = s64.st_size;
+            __buf->st_blksize = s64.st_blksize;
+            __buf->st_blocks = s64.st_blocks;
+            __buf->st_atime = s64.st_atime;
+            __buf->st_mtime = s64.st_mtime;
+            __buf->st_ctime = s64.st_ctime;
+        }
+        else {
+            res = (syscall_res)(-EOVERFLOW);
+        }
     }
-#else
-    syscall_res res = sys_call2( SYS_stat, (u_long)filename, (u_long)__buf );
-#endif
     __syscall_return( int, res );
 }
