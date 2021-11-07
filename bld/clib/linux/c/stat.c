@@ -35,10 +35,13 @@
 #include "linuxsys.h"
 
 #define DEFER_TO_STAT64
+
+#ifdef DEFER_TO_STAT64
 # define _BSD_SOURCE
 # include <sys/types.h>
 
-#define linuxkernel_old_dev_valid(x) (major(x) <= 0xFF && minor(x) <= 0xFF)
+# define linuxkernel_old_dev_valid(x) (major(x) <= 0xFF && minor(x) <= 0xFF)
+#endif
 
 _WCRTLINK int stat( const char *filename, struct stat * __buf )
 {
