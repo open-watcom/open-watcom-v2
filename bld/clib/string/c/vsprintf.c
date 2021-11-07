@@ -54,7 +54,7 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
     vswprtf_buf     *info;
 
-    info = GET_SPEC_DEST( vswprtf_buf, specs );
+    info = GET_SPECS_DEST( vswprtf_buf, specs );
     if( info->chars_output + 1 <= info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         specs->_output_count++;

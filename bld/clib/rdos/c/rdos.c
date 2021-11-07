@@ -562,7 +562,7 @@ int RdosAttachDebugger( int pid )
 static slib_callback_t mem_putc;
 static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    TRdosPrintfCallback  *callback = GET_SPEC_DEST( TRdosPrintfCallback, specs );
+    TRdosPrintfCallback  *callback = GET_SPECS_DEST( TRdosPrintfCallback, specs );
 
     specs->_output_count++;
     callback->outproc( callback->param, op_char );

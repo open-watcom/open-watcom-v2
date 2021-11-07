@@ -54,7 +54,7 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
     vsprtf_s_buf    *info;
 
-    info = GET_SPEC_DEST( vsprtf_s_buf, specs );
+    info = GET_SPECS_DEST( vsprtf_s_buf, specs );
     if( info->chars_output <= info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         specs->_output_count++;

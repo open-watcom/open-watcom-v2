@@ -45,9 +45,9 @@
 #endif
 
 #if defined(__QNX__)
-    #define GET_SPEC_DEST(t,s)  (SLIB2CLIB(t,(s)->_dest))
+    #define GET_SPECS_DEST(t,s) (SLIB2CLIB(t,(s)->_dest))
 #else
-    #define GET_SPEC_DEST(t,s)  ((t *)(s)->_dest)
+    #define GET_SPECS_DEST(t,s) ((t *)(s)->_dest)
 #endif
 
 /*

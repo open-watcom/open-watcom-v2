@@ -53,7 +53,7 @@ static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
     buf_limit   *info;
 
-    info = GET_SPEC_DEST( buf_limit, specs );
+    info = GET_SPECS_DEST( buf_limit, specs );
     if( specs->_output_count < info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         info->chars_output++;

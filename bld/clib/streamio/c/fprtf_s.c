@@ -52,7 +52,7 @@ extern  void    __ioalloc( FILE * );
 static slib_callback_t file_putc; // setup calling convention
 static void __SLIB_CALLBACK file_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    __F_NAME(fputc,fputwc)( (UCHAR_TYPE)op_char, GET_SPEC_DEST( FILE, specs ) );
+    __F_NAME(fputc,fputwc)( (UCHAR_TYPE)op_char, GET_SPECS_DEST( FILE, specs ) );
     specs->_output_count++;
 }
 
