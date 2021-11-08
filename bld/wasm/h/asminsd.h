@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -494,8 +495,8 @@ ins (T_FDIVR,           OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,     
 ins (T_FDIVR,           OP_ST,       0,      OP_STI,        OP3_NONE,0,  0,      0,  0xD8,     0xF8,                     P_87,        0)
 ins (T_FDIVR,           OP_M_DW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xD8,     0x38,                     P_87,        0)
 ins (T_FDIVR,           OP_M_QW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDC,     0x38,                     P_87,        0)
-ins (T_FDIVR,           OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xF1,                     P_87,        0)
 ins (T_FDIVRP,          OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,      0,  0xDE,     0xF0,                     P_87,        0)
+ins (T_FDIVRP,          OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xF1,                     P_87,        0)
 ins (T_FEMMS,           OP_NONE,     F_0F,   OP_NONE,       OP3_NONE,0,  no_RM,  0,  0x0E,     0x00,                     P_586|P_K3D, 0)
 ins (T_FENI,            OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDB,     0xE0,                     P_87,        FWAIT)
 ins (T_FFREE,           OP_STI,      0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDD,     0xC0,                     P_87,        0)
