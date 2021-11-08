@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #include "fprtf_s.h"
 
 
-_WCRTLINK int __F_NAME(vprintf_s,vwprintf_s)( const CHAR_TYPE * __restrict format, va_list arg )
+_WCRTLINK int __F_NAME(vprintf_s,vwprintf_s)( const CHAR_TYPE * __restrict format, va_list args )
 {
-    return( __F_NAME(__fprtf_s,__fwprtf_s)( stdout, format, arg ) );
+    return( __F_NAME(__fprtf_s,__fwprtf_s)( stdout, format, args ) );
 }

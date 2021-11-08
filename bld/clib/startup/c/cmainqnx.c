@@ -213,10 +213,10 @@ static char __far * __SLIB_CALLBACK _s_getenv( const char __far *p )
 
 static char __far * __SLIB_CALLBACK _s_EFG_printf(
     char __far      *buffer,
-    char __far *    __far *pargs,
+    va_list __far   *pargs,
     void __far      *specs )
 {
-    return( (*__EFG_printf)( SLIB2CLIB( char, buffer ), SLIB2CLIB( MY_VA_LIST, pargs ), SLIB2CLIB( void, specs ) ) );
+    return( (*__EFG_printf)( SLIB2CLIB( char, buffer ), SLIB2CLIB( va_list, pargs ), SLIB2CLIB( void, specs ) ) );
 }
 
 static void setup_slib( void )
@@ -275,10 +275,10 @@ void _CMain( free, n, cmd, stk_bot, pid )
 #pragma aux _s_EFG_printf __far __parm [__eax] [__edx] [__ebx]
 static char *_s_EFG_printf(
     char    *buffer,
-    char    **pargs,
+    va_list *pargs,
     void    *specs )
 {
-    return (*__EFG_printf)( buffer, (MY_VA_LIST *)pargs, specs );
+    return (*__EFG_printf)( buffer, pargs, specs );
 }
 
 extern unsigned short   _cs( void );

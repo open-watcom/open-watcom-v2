@@ -43,14 +43,14 @@
 
 _WCRTLINK int __F_NAME((execl),_wexecl)( const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
-    va_list         args1;
-    ARGS_TYPE_ARR   args;
+    va_list         args;
+    ARGS_TYPE_ARR   argv;
 
     /* unused parameters */ (void)arg0;
 
-    va_start( args1, path );
-    args = ARGS_ARRAY_VA( args1 );
-    va_end( args1 );
+    va_start( args, path );
+    argv = ARGS_ARRAY_VA( args );
+    va_end( args );
 
-    return( __F_NAME(execve,_wexecve)( path, args, (ENVP_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
+    return( __F_NAME(execve,_wexecve)( path, argv, (ENVP_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
 }

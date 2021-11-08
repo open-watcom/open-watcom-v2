@@ -51,8 +51,8 @@
 
 _WCRTLINK int __F_NAME(spawnlpe,_wspawnlpe)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
-    va_list             args1;
-    ARGS_TYPE_ARR       args;
+    va_list             args;
+    ARGS_TYPE_ARR       argv;
     ENVP_TYPE_ARR       env;
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     ARGS_TYPE           *tmp;
@@ -64,33 +64,33 @@ _WCRTLINK int __F_NAME(spawnlpe,_wspawnlpe)( int mode, const CHAR_TYPE *path, co
     /*
      * Scan until NULL in parm list
      */
-    va_start( args1, path );
+    va_start( args, path );
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     num = 1;
-    while( ARGS_NEXT_VA( args1 ) != NULL ) {
+    while( ARGS_NEXT_VA( args ) != NULL ) {
         num++;
     }
-    va_end( args1 );
+    va_end( args );
 
-    args = tmp = alloca( num * sizeof( ARGS_TYPE ) );
-    if( args == NULL ) {
+    argv = tmp = alloca( num * sizeof( ARGS_TYPE ) );
+    if( argv == NULL ) {
         _RWD_errno = ENOMEM;
         return( -1 );
     }
 
-    va_start( args1, path );
+    va_start( args, path );
     while( num-- > 0 )
-        *tmp++ = ARGS_NEXT_VA( args1 );
+        *tmp++ = ARGS_NEXT_VA( args );
 #else
-    args = ARGS_ARRAY_VA( args1 );
-    while( ARGS_NEXT_VA( args1 ) != NULL ) {
+    argv = ARGS_ARRAY_VA( args );
+    while( ARGS_NEXT_VA( args ) != NULL ) {
         ;
     }
 #endif
     /*
      * Point to environment parameter.
      */
-    env = ENVP_ARRAY_VA( args1 );
-    va_end( args1 );
-    return( __F_NAME(spawnvpe,_wspawnvpe)( mode, path, args, env ) );
+    env = ENVP_ARRAY_VA( args );
+    va_end( args );
+    return( __F_NAME(spawnvpe,_wspawnvpe)( mode, path, argv, env ) );
 }
