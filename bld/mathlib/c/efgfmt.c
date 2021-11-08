@@ -41,7 +41,7 @@
 
 /* NB: This code assumes ASCII character encoding. Probably not unreasonable. */
 
-FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, MY_VA_LIST *pargs, _mbcs_SPECS __SLIB *specs )
+FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_NEAROW_SPECS specs )
 {
     int         digits;
     int         fmt;
@@ -71,10 +71,10 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, MY_VA_LIST *pargs, _mbcs_SPECS
         cvt.flags |= F_DOT;
     }
     if( (specs->_flags & SPF_LONG_DOUBLE) && !_LDisDouble() ) {
-        ld = va_arg( VA_LIST_DATA( pargs ), long_double );
+        ld = va_arg( *pargs, long_double );
         cvt.flags |= LONG_DOUBLE;
     } else {
-        double_value = va_arg( VA_LIST_DATA( pargs ), double );
+        double_value = va_arg( *pargs, double );
 
 #ifdef _LONG_DOUBLE_
         /* convert this double into a long double */

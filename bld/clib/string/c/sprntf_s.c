@@ -49,12 +49,12 @@ typedef struct vsprtf_s_buf {
     rsize_t     max_chars;
 } vsprtf_s_buf;
 
-static slib_callback_t mem_putc; // set up calling convention
-static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
+static prtf_callback_t mem_putc; // set up calling convention
+static void PRTF_CALLBACK mem_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     vsprtf_s_buf    *info;
 
-    info = GET_SPEC_DEST( vsprtf_s_buf, specs );
+    info = GET_SPECS_DEST( vsprtf_s_buf, specs );
     if( info->chars_output <= info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         specs->_output_count++;

@@ -48,12 +48,12 @@ typedef struct buf_limit {
 /*
  * buf_putc -- append a character to a string in memory
  */
-static slib_callback_t buf_putc; // setup calling convention
-static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
+static prtf_callback_t buf_putc; // setup calling convention
+static void PRTF_CALLBACK buf_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     buf_limit       *info;
 
-    info = GET_SPEC_DEST( buf_limit, specs );
+    info = GET_SPECS_DEST( buf_limit, specs );
     if( specs->_output_count < info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         info->chars_output++;

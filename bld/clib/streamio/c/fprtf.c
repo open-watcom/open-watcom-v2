@@ -47,10 +47,10 @@
 /*
  * file_putc -- write a character to a file
  */
-static slib_callback_t file_putc; // setup calling convention
-static void __SLIB_CALLBACK file_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
+static prtf_callback_t file_putc; // setup calling convention
+static void PRTF_CALLBACK file_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
-    __F_NAME(fputc,fputwc)( (UCHAR_TYPE)op_char, GET_SPEC_DEST( FILE, specs ) );
+    __F_NAME(fputc,fputwc)( (UCHAR_TYPE)op_char, GET_SPECS_DEST( FILE, specs ) );
     specs->_output_count++;
 }
 

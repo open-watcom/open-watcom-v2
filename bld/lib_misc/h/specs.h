@@ -36,18 +36,20 @@
 
 #define SPECS_VERSION       200
 
-#if defined(__QNX__)
-    #define __SLIB          _WCI86FAR
-#elif defined( __HUGE__ )
-    #define __SLIB          _WCI86FAR
-#else
-    #define __SLIB
+#if defined( SAFER_CLIB ) || !defined( __QNX__ )
+  #if defined( __HUGE__ )
+    #define PTR_PRTF_FAR    _WCI86FAR *
+  #else
+    #define PTR_PRTF_FAR    *
+  #endif
+#else   /* !SAFER_CLIB && __QNX__ */
+    #define PTR_PRTF_FAR    __SLIB *
 #endif
 
-#if defined(__QNX__)
-    #define GET_SPEC_DEST(t,s)  (SLIB2CLIB(t,(s)->_dest))
-#else
-    #define GET_SPEC_DEST(t,s)  ((t *)(s)->_dest)
+#if defined( SAFER_CLIB ) || !defined( __QNX__ )
+    #define GET_SPECS_DEST(t,s) ((t *)(s)->_dest)
+#else   /* !SAFER_CLIB && __QNX__ */
+    #define GET_SPECS_DEST(t,s) (SLIB2CLIB(t,(s)->_dest))
 #endif
 
 /*
@@ -59,40 +61,45 @@
 
 typedef struct
 {
-    char    __SLIB *_dest;
-    short           _flags;         // flags (see below)
-    short           _version;       // structure version # (2.0 --> 200)
-    int             _fld_width;     // field width
-    int             _prec;          // precision
-    int             _output_count;  // # of characters outputted for %n
-    int             _n0;            // number of chars to deliver first
-    int             _nz0;           // number of zeros to deliver next
-    int             _n1;            // number of chars to deliver next
-    int             _nz1;           // number of zeros to deliver next
-    int             _n2;            // number of chars to deliver next
-    int             _nz2;           // number of zeros to deliver next
-    char            _character;     // format character
-    char            _pad_char;
-    char            _padding[2];    // to keep struct aligned
+    char       PTR_PRTF_FAR _dest;
+    short                   _flags;         // flags (see below)
+    short                   _version;       // structure version # (2.0 --> 200)
+    int                     _fld_width;     // field width
+    int                     _prec;          // precision
+    int                     _output_count;  // # of characters outputted for %n
+    int                     _n0;            // number of chars to deliver first
+    int                     _nz0;           // number of zeros to deliver next
+    int                     _n1;            // number of chars to deliver next
+    int                     _nz1;           // number of zeros to deliver next
+    int                     _n2;            // number of chars to deliver next
+    int                     _nz2;           // number of zeros to deliver next
+    char                    _character;     // format character
+    char                    _pad_char;
+    char                    _padding[2];    // to keep struct aligned
 } _mbcs_SPECS;
+
+#define NEAROW_SPECS        _mbcs_SPECS
+#define PTR_NEAROW_SPECS    _mbcs_SPECS PTR_PRTF_FAR
 
 typedef struct
 {
-    wchar_t __SLIB *_dest;
-    short           _flags;         // flags (see below)
-    short           _version;       // structure version # (2.0 --> 200)
-    int             _fld_width;     // field width
-    int             _prec;          // precision
-    int             _output_count;  // # of characters outputted for %n
-    int             _n0;            // number of chars to deliver first
-    int             _nz0;           // number of zeros to deliver next
-    int             _n1;            // number of chars to deliver next
-    int             _nz1;           // number of zeros to deliver next
-    int             _n2;            // number of chars to deliver next
-    int             _nz2;           // number of zeros to deliver next
-    wchar_t         _character;     // format character
-    wchar_t         _pad_char;
+    wchar_t    PTR_PRTF_FAR _dest;
+    short                   _flags;         // flags (see below)
+    short                   _version;       // structure version # (2.0 --> 200)
+    int                     _fld_width;     // field width
+    int                     _prec;          // precision
+    int                     _output_count;  // # of characters outputted for %n
+    int                     _n0;            // number of chars to deliver first
+    int                     _nz0;           // number of zeros to deliver next
+    int                     _n1;            // number of chars to deliver next
+    int                     _nz1;           // number of zeros to deliver next
+    int                     _n2;            // number of chars to deliver next
+    int                     _nz2;           // number of zeros to deliver next
+    wchar_t                 _character;     // format character
+    wchar_t                 _pad_char;
 } _wide_SPECS;
+
+#define WIDE_SPECS          _wide_SPECS
 
 /* specification flags... (values for _flags field above) */
 
@@ -114,9 +121,11 @@ typedef struct
 #endif
 
 #ifdef __WIDECHAR__
-    #define SPECS       _wide_SPECS
+    #define SPECS       WIDE_SPECS
 #else
-    #define SPECS       _mbcs_SPECS
+    #define SPECS       NEAROW_SPECS
 #endif
+
+#define PTR_SPECS       SPECS PTR_PRTF_FAR
 
 #endif

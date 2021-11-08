@@ -49,12 +49,12 @@ typedef struct vswprtf_buf {
     int         max_chars;
 } vswprtf_buf;
 
-static slib_callback_t mem_putc; // setup calling convention
-static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
+static prtf_callback_t mem_putc; // setup calling convention
+static void PRTF_CALLBACK mem_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     vswprtf_buf     *info;
 
-    info = GET_SPEC_DEST( vswprtf_buf, specs );
+    info = GET_SPECS_DEST( vswprtf_buf, specs );
     if( info->chars_output + 1 <= info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         specs->_output_count++;
@@ -64,8 +64,8 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 
 #else
 
-static slib_callback_t mem_putc; // setup calling convention
-static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
+static prtf_callback_t mem_putc; // setup calling convention
+static void PRTF_CALLBACK mem_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     *( specs->_dest++ ) = op_char;
     specs->_output_count++;
