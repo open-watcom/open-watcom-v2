@@ -221,6 +221,7 @@
 !inject h/arch/i386/sys/resource.h            hlnx
 !inject h/arch/i386/sys/socket.h              hlnx
 !inject h/arch/i386/sys/stat.h                hlnx
+!inject h/arch/i386/sys/sysmacro.h            hlnx
 !inject h/arch/i386/sys/types.h               hlnx
 !inject h/arch/mips/err_no.h                  hlnx
 !inject h/arch/mips/fcntl.h                   hlnx
@@ -231,6 +232,7 @@
 !inject h/arch/mips/sys/resource.h            hlnx
 !inject h/arch/mips/sys/socket.h              hlnx
 !inject h/arch/mips/sys/stat.h                hlnx
+!inject h/arch/mips/sys/sysmacro.h            hlnx
 !inject h/arch/mips/sys/types.h               hlnx
 !inject h/arpa/inet.h                         hlnx      hrdos
 !inject h/netinet/in.h                        hlnx      hrdos
@@ -295,6 +297,7 @@
 !inject h/sys/sys_msg.h                            hqnx
 !inject h/sys/sysi86.h                             hqnx
 !inject h/sys/sysinfo.h                       hlnx
+!inject h/sys/sysmacro.h                      hlnx
 !inject h/sys/sysmips.h                       hlnx
 !inject h/sys/term.h                               hqnx
 !inject h/sys/termio.h                             hqnx

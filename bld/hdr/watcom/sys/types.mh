@@ -46,6 +46,7 @@
 :include incdir.sp
 
 #include _ARCH_INCLUDE(sys/types.h)
+#include _ARCH_INCLUDE(sys/sysmacros.h)
 
 :elsesegment DOS | QNX | RDOS
 :include dev_t.sp

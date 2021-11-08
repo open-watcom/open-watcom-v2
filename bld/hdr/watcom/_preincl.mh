@@ -35,6 +35,10 @@
 
 #pragma include_alias( <stdnoreturn.h>,      <stdnoret.h> )
 
+#ifdef __LINUX__
+#pragma include_alias( <sysmacros.h>,        <sysmacro.h> )
+#endif
+
 #define __STDC_LIB_EXT1__     200509L
 
 #endif /* __PREINCL_H_INCLUDED */

@@ -17,9 +17,5 @@
 :include blkcnt_t.sp
 :include id_t.sp
 
-#define major(__device)             ((int)(((__device) >> 8) & 0x0FFF))
-#define minor(__device)             ((int)((__device) & 0x00FF))
-#define makedev(__major,__minor)    ((dev_t)(((__major) << 8) | (__minor)))
-
 typedef char            *caddr_t;
 typedef long            daddr_t;
