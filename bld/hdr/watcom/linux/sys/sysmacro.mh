@@ -1,0 +1,25 @@
+/*
+ *  sys/sysmacros.h     Definitions of macros to access dev_t values.
+ *
+:include crwat.sp
+ */
+#ifndef _SYS_SYSMACROS_H_INCLUDED
+#define _SYS_SYSMACROS_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
+
+:include lnxkpack.sp
+
+:include incdir.sp
+
+#include _ARCH_INCLUDE(sys/sysmacros.h)
+
+:include poppack.sp
+
+:include cplusepi.sp
+
+#endif
