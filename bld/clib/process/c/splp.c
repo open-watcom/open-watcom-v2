@@ -76,7 +76,7 @@ _WCRTLINK int __F_NAME(spawnlp,_wspawnlp)( int mode, const CHAR_TYPE *path, cons
     while( num-- > 0 )
         *tmp++ = ARGS_NEXT_VA( args );
 #else
-    args = ARGS_ARRAY_VA( args );
+    argv = ARGS_ARRAY_VA( args );
 #endif
     va_end( args );
     return( __F_NAME(spawnvp,_wspawnvp)( mode, path, argv ) );
