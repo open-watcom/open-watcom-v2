@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ namespace std {
     if( __unlimited ) {
         // adjust end pointer
         setg( eback(), gptr(), egptr() + DEFAULT_MAINBUF_SIZE );
-        return( *gptr() );
+        return( *(unsigned char *)gptr() );
     }
     if( pptr() > egptr() ) {
         if( gptr() == NULL ) {              // currently no get area?
@@ -54,7 +55,7 @@ namespace std {
         } else {
             setg( eback(), gptr(), pptr() );
         }
-        return( *gptr() );
+        return( *(unsigned char *)gptr() );
     }
     return( EOF );
   }
