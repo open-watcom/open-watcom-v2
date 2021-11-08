@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +99,7 @@ namespace std {
 
     // Now write the output:
     if( (c != EOF) && (pptr() < epptr()) ) {
-        *(pptr()) = (char)c;
+        *pptr() = (char)c;
         pbump( 1 );
         c = EOF;
     }
@@ -121,7 +122,7 @@ namespace std {
     }
     if( c != EOF ) {
         if( pptr() < epptr() ) {
-            *(pptr()) = (char)c;
+            *pptr() = (char)c;
             pbump( 1 );
         } else {
             return( EOF );

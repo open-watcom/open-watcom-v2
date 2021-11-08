@@ -80,7 +80,7 @@ int stdiobuf::underflow() {
                 *egptr() = (char)ch;
             }
             setg( eback(), gptr(), egptr() + 1 );
-            return( *(unsigned char *)gptr() );
+            return( __char_to_int( *gptr() ) );
         } else {
             ptr = base() + DEFAULT_PUTBACK_SIZE;
             setg( base(), ptr, ptr );
@@ -104,5 +104,5 @@ int stdiobuf::underflow() {
         len = 0;
     }
     setg( eback(), gptr(), egptr() + len );
-    return( gptr() < egptr() ? *(unsigned char *)gptr() : EOF );
+    return( gptr() < egptr() ? __char_to_int( *gptr() ) : EOF );
 }

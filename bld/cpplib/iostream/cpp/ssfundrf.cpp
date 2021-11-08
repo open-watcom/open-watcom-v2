@@ -47,7 +47,7 @@ namespace std {
     if( __unlimited ) {
         // adjust end pointer
         setg( eback(), gptr(), egptr() + DEFAULT_MAINBUF_SIZE );
-        return( *(unsigned char *)gptr() );
+        return( __char_to_int( *gptr() ) );
     }
     if( pptr() > egptr() ) {
         if( gptr() == NULL ) {              // currently no get area?
@@ -55,7 +55,7 @@ namespace std {
         } else {
             setg( eback(), gptr(), pptr() );
         }
-        return( *(unsigned char *)gptr() );
+        return( __char_to_int( *gptr() ) );
     }
     return( EOF );
   }

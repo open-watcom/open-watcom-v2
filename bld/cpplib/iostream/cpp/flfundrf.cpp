@@ -75,7 +75,7 @@ namespace std {
                 return( EOF );
             }
             setg( eback(), gptr(), egptr() + len );
-            return( *(unsigned char *)gptr() );
+            return( __char_to_int( *gptr() ) );
         } else {
             ptr = base() + DEFAULT_PUTBACK_SIZE;
             setg( base(), ptr, ptr );
@@ -97,7 +97,7 @@ namespace std {
         len = 0;
     }
     setg( eback(), gptr(), egptr() + len );
-    return( gptr() < egptr() ? *(unsigned char *)gptr() : EOF );
+    return( gptr() < egptr() ? __char_to_int( *gptr() ) : EOF );
   }
 
 }
