@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +63,7 @@ void _dadd( void *, void *, void * );
         SET_CW_ROUND_TO_NEAREST \
         "fld qword ptr [edx]" \
         "fld qword ptr [ebx]" \
-        "fadd" \
+        "faddp st(1),st" \
         "fstp qword ptr [eax]" \
         parm caller [eax] [edx] [ebx] \
         modify exact [];
@@ -192,7 +193,7 @@ void _fmul( void *, void *, void * );
         SET_CW_ROUND_TO_NEAREST \
         "fld dword ptr [edx]" \
         "fld dword ptr [ebx]" \
-        "fmul" \
+        "fmulp st(1),st" \
         "fstp dword ptr [eax]" \
         parm caller [eax] [edx] [ebx] \
         modify exact [];
@@ -205,7 +206,7 @@ void _fdiv( void *, void *, void * );
         SET_CW_ROUND_TO_NEAREST \
         "fld dword ptr [edx]" \
         "fld dword ptr [ebx]" \
-        "fdiv" \
+        "fdivp st(1),st" \
         "fstp dword ptr [eax]" \
         parm caller [eax] [edx] [ebx] \
         modify exact [];
@@ -249,7 +250,7 @@ void _eadd( void *, void *, void * );
         SET_CW_ROUND_TO_NEAREST \
         "fld tbyte ptr [edx]" \
         "fld tbyte ptr [ebx]" \
-        "fadd" \
+        "faddp st(1),st" \
         "fstp tbyte ptr [eax]" \
         parm caller [eax] [edx] [ebx] \
         modify exact [];
@@ -262,7 +263,7 @@ void _esub( void *, void *, void * );
         SET_CW_ROUND_TO_NEAREST \
         "fld tbyte ptr [edx]" \
         "fld tbyte ptr [edx]" \
-        "fsub" \
+        "fsubp st(1),st" \
         "fstp tbyte ptr [eax]" \
         parm caller [eax] [edx] [ebx] \
         modify exact [];
@@ -276,7 +277,7 @@ void _emul( void *, void *, void * );
         "finit" \
         "fld tbyte ptr [edx]" \
         "fld tbyte ptr [ebx]" \
-        "fmul" \
+        "fmulp st(1),st" \
         "fstp tbyte ptr [eax]" \
         parm caller [eax] [edx] [ebx] \
         modify exact [];
@@ -289,7 +290,7 @@ void _ediv( void *, void *, void * );
         SET_CW_ROUND_TO_NEAREST \
         "fld tbyte ptr [edx]" \
         "fld tbyte ptr [ebx]" \
-        "fdiv" \
+        "fdivp st(1),st" \
         "fstp tbyte ptr [eax]" \
         parm caller [eax] [edx] [ebx] \
         modify exact [];
@@ -303,7 +304,7 @@ void _erem( void *, void *, void * );
         "fld tbyte ptr [ebx]" \
         "fld tbyte ptr [edx]" \
         "mov ecx,eax" \
-        "remloop:" \
+    "remloop:" \
         "fprem" \
         "fstsw ax" \
         "test ax,0400H" \

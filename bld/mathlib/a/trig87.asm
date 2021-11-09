@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -427,9 +428,9 @@ ifdef __386__
         fptan                   ; st(1)/st(0) = tangent, st(0) = X, st(1) = Y
         cmp     BH,0            ; if result is inverted
         _if     ne              ; then
-          fdivr                 ; - 1/tangent = st(0)/st(1)
+          fdivrp st(1),st       ; - 1/tangent = st(0)/st(1)
         _else                   ; else
-          fdiv                  ; - tangent = st(1)/st(0)
+          fdivp st(1),st        ; - tangent = st(1)/st(0)
         _endif                  ; endif
         cmp     BL,0            ; if result to be negated
         _if     ne              ; then
@@ -490,9 +491,9 @@ else
         fptan                   ; st(1)/st(0) = tangent, st(0) = X, st(1) = Y
         or      BX,BX           ; if result is inverted
         _if     ne              ; then
-          fdivr                 ; - 1/tangent = st(0)/st(1)
+          fdivrp st(1),st       ; - 1/tangent = st(0)/st(1)
         _else                   ; else
-          fdiv                  ; - tangent = st(1)/st(0)
+          fdivp st(1),st        ; - tangent = st(1)/st(0)
         _endif                  ; endif
         or      CX,CX           ; if result to be negated
         _if     ne              ; then

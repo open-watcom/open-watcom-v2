@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -202,25 +203,25 @@ extern  int     __FLDC( ld_stk_ptr, ld_stk_ptr );
   #pragma aux   __FLDA = \
         float_fixup "fld tbyte ptr [eax]" \
         float_fixup "fld tbyte ptr [edx]" \
-        float_fixup "fadd" \
+        float_fixup "faddp st(1),st" \
         float_fixup "fstp tbyte ptr [ebx]" \
         __parm __caller [__eax] [__edx] [__ebx]
   #pragma aux   __FLDS = \
         float_fixup "fld tbyte ptr [eax]" \
         float_fixup "fld tbyte ptr [edx]" \
-        float_fixup "fsub" \
+        float_fixup "fsubp st(1),st" \
         float_fixup "fstp tbyte ptr [ebx]" \
         __parm __caller [__eax] [__edx] [__ebx]
   #pragma aux   __FLDM = \
         float_fixup "fld tbyte ptr [eax]" \
         float_fixup "fld tbyte ptr [edx]" \
-        float_fixup "fmul" \
+        float_fixup "fmulp st(1),st" \
         float_fixup "fstp tbyte ptr [ebx]" \
         __parm __caller [__eax] [__edx] [__ebx]
   #pragma aux   __FLDD = \
         float_fixup "fld tbyte ptr [eax]" \
         float_fixup "fld tbyte ptr [edx]" \
-        float_fixup "fdiv" \
+        float_fixup "fdivp st(1),st" \
         float_fixup "fstp tbyte ptr [ebx]" \
         __parm __caller [__eax] [__edx] [__ebx]
   #pragma aux   __FLDC = \
@@ -365,7 +366,7 @@ extern  int     __FLDC( ld_stk_ptr, ld_stk_ptr );
         float_fixup "fld  tbyte ptr [bp]" \
                     "mov  bp,dx" \
         float_fixup "fld  tbyte ptr [bp]" \
-        float_fixup "fadd" \
+        float_fixup "faddp st(1),st" \
                     "mov  bp,bx" \
         float_fixup "fstp tbyte ptr [bp]" \
                     "pop  bp" \
@@ -376,7 +377,7 @@ extern  int     __FLDC( ld_stk_ptr, ld_stk_ptr );
         float_fixup "fld  tbyte ptr [bp]" \
                     "mov  bp,dx" \
         float_fixup "fld  tbyte ptr [bp]" \
-        float_fixup "fsub" \
+        float_fixup "fsubp st(1),st" \
                     "mov  bp,bx" \
         float_fixup "fstp tbyte ptr [bp]" \
                     "pop  bp" \
@@ -387,7 +388,7 @@ extern  int     __FLDC( ld_stk_ptr, ld_stk_ptr );
         float_fixup "fld  tbyte ptr [bp]" \
                     "mov  bp,dx" \
         float_fixup "fld  tbyte ptr [bp]" \
-        float_fixup "fmul" \
+        float_fixup "fmulp st(1),st" \
                     "mov  bp,bx" \
         float_fixup "fstp tbyte ptr [bp]" \
                     "pop  bp" \
@@ -398,7 +399,7 @@ extern  int     __FLDC( ld_stk_ptr, ld_stk_ptr );
         float_fixup "fld  tbyte ptr [bp]" \
                     "mov  bp,dx" \
         float_fixup "fld  tbyte ptr [bp]" \
-        float_fixup "fdiv" \
+        float_fixup "fdivp st(1),st" \
                     "mov  bp,bx" \
         float_fixup "fstp tbyte ptr [bp]" \
                     "pop  bp" \

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -50,7 +51,7 @@ __x87id proc
         push    EAX                     ; allocate space for status word
         fld1                            ; generate infinity by
         fldz                            ;   dividing 1 by 0
-        fdiv                            ; ...
+        fdivp   st(1),st                ; ...
         fld     st                      ; form negative infinity
         fchs                            ; ...
         fcompp                          ; compare +/- infinity
