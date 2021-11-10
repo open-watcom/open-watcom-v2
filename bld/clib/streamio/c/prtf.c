@@ -456,8 +456,7 @@ static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs, prtf_callback_
 
 
 #if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
-static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
-                                 prtf_callback_t *out_putc )
+static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs, prtf_callback_t *out_putc )
 {
     int                 bytes;
     wchar_t             wc;
@@ -483,8 +482,7 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
 #endif
 
 
-static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs,
-                              PTR_SPECS specs, CHAR_TYPE *null_string )
+static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_SPECS specs, CHAR_TYPE *null_string )
 {
     FAR_STRING              arg;
     int                     length;
