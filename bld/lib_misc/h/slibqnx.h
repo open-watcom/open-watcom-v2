@@ -33,8 +33,9 @@
 #ifndef _SLIBQNX_H_INCLUDED
 #define _SLIBQNX_H_INCLUDED
 
-
-#if defined(__QNX__)
+#if defined( __QNX__ ) && !defined( SAFE_PRINTF ) && !defined( __WIDECHAR__ )
+    #define CLIB_USE_QNX_SLIB
+    #define __SLIB      _WCI86FAR
     #if defined(_M_I86)
       #if defined( __SMALL_DATA__ )
         #define __SLIB_CALLBACK _WCFAR __loadds
@@ -47,8 +48,6 @@
         #define __SLIB_CALLBACK _WCFAR
         #define SLIB2CLIB(t,f)  ((t *)(f))
     #endif
-#else
-    #define __SLIB_CALLBACK
 #endif
 
 #endif

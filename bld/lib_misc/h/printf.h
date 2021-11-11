@@ -35,16 +35,16 @@
 #define _PRINTF_H_INCLUDED
 
 #include "specs.h"
-#include "slibqnx.h"
 
-
-#if defined( SAFER_CLIB ) || !defined( __QNX__ )
-    #define PRTF_CHAR_TYPE  CHAR_TYPE
-#else   /* !SAFER_CLIB && __QNX__ */
+#if defined( CLIB_USE_QNX_SLIB )
     #define PRTF_CHAR_TYPE  int
-#endif
-
-#if defined( SAFER_CLIB ) || !defined( __QNX__ )
+    #define PRTF_CALLBACK   __SLIB_CALLBACK
+    typedef void (__SLIB_CALLBACK prtf_callback_t)( PTR_SPECS, int );
+  #if !defined(_M_I86)
+    #pragma aux prtf_callback_t __far __parm [__eax] [__edx] __modify [__eax __edx]
+  #endif
+#else
+    #define PRTF_CHAR_TYPE  CHAR_TYPE
     #define PRTF_CALLBACK
     typedef void prtf_callback_t( PTR_SPECS, CHAR_TYPE );
   #if defined( __WINDOWS_386__ )
@@ -54,49 +54,33 @@
         #pragma aux prtf_callback_t __modify [__fs __gs]
     #endif
   #endif
-#else   /* !SAFER_CLIB && __QNX__ */
-    #define PRTF_CALLBACK   __SLIB_CALLBACK
-    typedef void (__SLIB_CALLBACK prtf_callback_t)( PTR_SPECS, int );
-  #if !defined(_M_I86)
-    #pragma aux prtf_callback_t __far __parm [__eax] [__edx] __modify [__eax __edx]
-  #endif
 #endif
 
 #if defined( SAFER_CLIB )
-
-extern int __F_NAME(__prtf_s,__wprtf_s)(
-    void   PTR_PRTF_FAR dest,                   /* parm for use by out_putc    */
-    const CHAR_TYPE     * __restrict format,    /* pointer to format string    */
-    va_list             args,                   /* pointer to pointer to args  */
-    const char          **errmsg,               /* constraint violation msg    */
-    prtf_callback_t     *out_putc );            /* character output routine    */
-
-#else  /* !Safer C */
-
-extern int __F_NAME(__prtf,__wprtf)(
-    void   PTR_PRTF_FAR dest,           /* parm for use by out_putc    */
-    const CHAR_TYPE     *format,        /* pointer to format string    */
-    va_list             args,           /* pointer to pointer to args  */
-    prtf_callback_t     *out_putc );    /* character output routine    */
-
-#ifdef __QNX__
-  #if defined(IN_SLIB)
-extern int __F_NAME(__prtf_slib,__wprtf_slib)(
-    void   PTR_PRTF_FAR dest,           /* parm for use by out_putc    */
-    const CHAR_TYPE     *format,        /* pointer to format string    */
-    va_list             *args,          /* pointer to pointer to args  */
-    prtf_callback_t     *out_putc,      /* character output routine    */
-    int                 ptr_size );     /* size of pointer in bytes    */
-
-  #elif defined(_M_I86)
-
+    extern int __F_NAME(__prtf_s,__wprtf_s)(
+        void   PTR_PRTF_FAR dest,                   /* parm for use by out_putc    */
+        const CHAR_TYPE     * __restrict format,    /* pointer to format string    */
+        va_list             args,                   /* pointer to pointer to args  */
+        const char          **errmsg,               /* constraint violation msg    */
+        prtf_callback_t     *out_putc );            /* character output routine    */
+#elif defined( CLIB_USE_QNX_SLIB ) && defined( _M_I86 ) && !defined( IN_SLIB )
     extern int ( __far * ( __far *__f)) ();
-    #define __prtf(a,b,c,d) __prtf_slib(a,b,c,d,sizeof(void *))
-    #define __prtf_slib(a,b,c,d,e) ((int(__far *) (void __far *,const char __far *,va_list __far *args,prtf_callback_t *__out,int)) __f[24])(a,b,c,d,e)
-
+    #define __prtf(a,b,c,d) __prtf_slib(a,b,&c,d,sizeof(void *))
+    #define __prtf_slib(a,b,c,d,e) ((int(__far *) (void __far *,const char __far *,va_list __far *pargs,prtf_callback_t *__out,int)) __f[24])(a,b,c,d,e)
+#else
+  #if defined( CLIB_USE_QNX_SLIB ) && defined( IN_SLIB )
+    extern int __F_NAME(__prtf_slib,__wprtf_slib)(
+        void   PTR_PRTF_FAR dest,           /* parm for use by out_putc    */
+        const CHAR_TYPE     *format,        /* pointer to format string    */
+        va_list             *args,          /* pointer to pointer to args  */
+        prtf_callback_t     *out_putc,      /* character output routine    */
+        int                 ptr_size );     /* size of pointer in bytes    */
   #endif
+    extern int __F_NAME(__prtf,__wprtf)(
+        void   PTR_PRTF_FAR dest,           /* parm for use by out_putc    */
+        const CHAR_TYPE     *format,        /* pointer to format string    */
+        va_list             args,           /* pointer to pointer to args  */
+        prtf_callback_t     *out_putc );    /* character output routine    */
 #endif
-
-#endif  /* Safer C */
 
 #endif

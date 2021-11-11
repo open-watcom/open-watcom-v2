@@ -43,6 +43,7 @@
 #if defined( __WIDECHAR__ ) || defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
+#include "slibqnx.h"
 #include "prtscncf.h"
 #include "fixpoint.h"
 #include "fltsupp.h"
@@ -80,7 +81,10 @@
 #endif
 
 
-#if defined( __QNX__ ) && defined( _M_I86 ) && !defined( IN_SLIB ) && !defined( __WIDECHAR__ )
+#if defined( CLIB_USE_QNX_SLIB ) && defined( _M_I86 ) && !defined( IN_SLIB )
+
+/* 16-bit QNX no code, only in SLIB */
+
 #else
 
 static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, PTR_SPECS specs )
@@ -852,8 +856,6 @@ processNumericTypes:
 
 #ifdef SAFER_CLIB
 int __F_NAME(__prtf_s,__wprtf_s)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, const char **msg, prtf_callback_t *out_putc )
-#elif defined( IN_SLIB )
-int __F_NAME(__prtf_slib,__wprtf_slib)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, prtf_callback_t *out_putc, int ptr_size )
 #else
 int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, prtf_callback_t *out_putc )
 #endif
@@ -869,12 +871,6 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
     FAR_STRING          arg;
     const CHAR_TYPE     *ctl;
     SPECS               specs;
-
-#if !defined( SAFER_CLIB ) && defined( IN_SLIB )
-
-    /* unused parameters */ (void)ptr_size;
-
-#endif
 
     specs._dest = dest;
     specs._flags = 0;
@@ -1050,5 +1046,14 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
     }
     return( specs._output_count );
 }
+
+#if defined( CLIB_USE_QNX_SLIB_RULES ) && defined( IN_SLIB )
+int __F_NAME(__prtf_slib,__wprtf_slib)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list *pargs, prtf_callback_t *out_putc, int ptr_size )
+{
+    /* unused parameters */ (void)ptr_size;
+
+    return( __F_NAME(__prtf,__wprtf)( dest, format, *pargs, out_putc ) );
+}
+#endif
 
 #endif
