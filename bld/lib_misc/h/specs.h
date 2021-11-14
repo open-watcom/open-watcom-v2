@@ -36,7 +36,7 @@
 
 #define SPECS_VERSION       200
 
-#if CLIB_QNX_CAN_USE_SLIB
+#if defined( __QNX__ ) && !defined( SAFER_CLIB ) && !defined( __WIDECHAR__ )
     #define GET_SPECS_DEST(t,s) (SLIB2CLIB(t,(s)->_dest))
     #define PTR_PRTF_FAR    __SLIB *
 #else

@@ -33,7 +33,7 @@
 #ifndef _SLIBQNX_H_INCLUDED
 #define _SLIBQNX_H_INCLUDED
 
-#if CLIB_QNX_CAN_USE_SLIB
+#if defined( __QNX__ ) && !defined( SAFER_CLIB ) && !defined( __WIDECHAR__ )
     #define __SLIB      _WCI86FAR
     #if defined(_M_I86)
       #if defined( __SMALL_DATA__ )

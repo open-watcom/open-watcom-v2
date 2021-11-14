@@ -48,8 +48,6 @@
     #define CLIB_UPDATE_OS_ENV
 #endif
 
-#define CLIB_QNX_CAN_USE_SLIB  (defined( __QNX__ ) && !defined( SAFER_CLIB ) && !defined( __WIDECHAR__ ))
-
 #ifndef __WATCOMC__
     // when building with other tools, only include clibext.h
     #include "clibext.h"

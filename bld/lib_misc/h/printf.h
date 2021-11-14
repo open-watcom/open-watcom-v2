@@ -36,7 +36,7 @@
 
 #include "specs.h"
 
-#if CLIB_QNX_CAN_USE_SLIB
+#if defined( __QNX__ ) && !defined( SAFER_CLIB ) && !defined( __WIDECHAR__ )
     #define PRTF_CHAR_TYPE  int
     #define PRTF_CALLBACK   __SLIB_CALLBACK
     typedef void (__SLIB_CALLBACK prtf_callback_t)( PTR_SPECS, int );
@@ -63,12 +63,12 @@
         va_list             args,                   /* pointer to pointer to args  */
         const char          **errmsg,               /* constraint violation msg    */
         prtf_callback_t     *out_putc );            /* character output routine    */
-#elif CLIB_QNX_CAN_USE_SLIB && defined( _M_I86 ) && !defined( IN_SLIB )
+#elif defined( __QNX__ ) && !defined( SAFER_CLIB ) && !defined( __WIDECHAR__ ) && defined( _M_I86 ) && !defined( IN_SLIB )
     extern int ( __far * ( __far *__f)) ();
     #define __prtf(a,b,c,d) __prtf_slib(a,b,&c,d,sizeof(void *))
     #define __prtf_slib(a,b,c,d,e) ((int(__far *) (void __far *,const char __far *,va_list __far *pargs,prtf_callback_t *__out,int)) __f[24])(a,b,c,d,e)
 #else
-  #if CLIB_QNX_CAN_USE_SLIB && defined( IN_SLIB )
+  #if defined( __QNX__ ) && !defined( SAFER_CLIB ) && !defined( __WIDECHAR__ ) && defined( IN_SLIB )
     extern int __F_NAME(__prtf_slib,__wprtf_slib)(
         void   PTR_PRTF_FAR dest,           /* parm for use by out_putc    */
         const CHAR_TYPE     *format,        /* pointer to format string    */

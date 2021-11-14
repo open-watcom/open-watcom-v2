@@ -81,7 +81,7 @@
 #endif
 
 
-#if CLIB_QNX_CAN_USE_SLIB && defined( _M_I86 ) && !defined( IN_SLIB )
+#if defined( __QNX__ ) && !defined( SAFER_CLIB ) && !defined( __WIDECHAR__ ) && defined( _M_I86 ) && !defined( IN_SLIB )
 
 /* 16-bit QNX no code, only in SLIB */
 
@@ -1047,7 +1047,7 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
     return( specs._output_count );
 }
 
-#if CLIB_QNX_CAN_USE_SLIB && defined( IN_SLIB )
+#if defined( __QNX__ ) && !defined( SAFER_CLIB ) && !defined( __WIDECHAR__ ) && defined( IN_SLIB )
 int __F_NAME(__prtf_slib,__wprtf_slib)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list *pargs, prtf_callback_t *out_putc, int ptr_size )
 {
     /* unused parameters */ (void)ptr_size;
