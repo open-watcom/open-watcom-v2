@@ -81,7 +81,7 @@
 #endif
 
 
-#if defined( __QNX__ ) && !defined( SAFER_CLIB ) && !defined( __WIDECHAR__ ) && defined( _M_I86 ) && !defined( IN_SLIB )
+#if defined( __QNX__ ) && !defined( __STDC_WANT_LIB_EXT1__ ) && !defined( __WIDECHAR__ ) && defined( _M_I86 ) && !defined( IN_SLIB )
 
 /* 16-bit QNX no code, only in SLIB */
 
@@ -854,7 +854,7 @@ processNumericTypes:
 }
 
 
-#ifdef SAFER_CLIB
+#ifdef __STDC_WANT_LIB_EXT1__
 int __F_NAME(__prtf_s,__wprtf_s)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, const char **msg, prtf_callback_t *out_putc )
 #else
 int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, prtf_callback_t *out_putc )
@@ -888,7 +888,7 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
                 break;
 
             if( specs._character == STRING( 'n' ) ) {
-#ifdef SAFER_CLIB
+#ifdef __STDC_WANT_LIB_EXT1__
                 /* The %n specifier is not allowed - too dangerous. */
                 *msg = "%n";
                 break;
@@ -921,9 +921,9 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
                 } else {
                     *iptr = specs._output_count;
                 }
-#endif  /* SAFER_CLIB */
+#endif  /* __STDC_WANT_LIB_EXT1__ */
             } else {
-#ifdef SAFER_CLIB
+#ifdef __STDC_WANT_LIB_EXT1__
                 if( specs._character == STRING( 's' ) || specs._character == STRING( 'S' ) ) {
                     FAR_STRING  str;
                     va_list     args_copy;
@@ -964,7 +964,7 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
                         break;  /* bail out */
                     }
                 }
-#endif  /* SAFER_CLIB */
+#endif  /* __STDC_WANT_LIB_EXT1__ */
 
                 arg = formstring( buffer, &args, &specs, &null_char );
                 specs._fld_width -= specs._n0  +
@@ -1047,7 +1047,7 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
     return( specs._output_count );
 }
 
-#if defined( __QNX__ ) && !defined( SAFER_CLIB ) && !defined( __WIDECHAR__ ) && defined( IN_SLIB )
+#if defined( __QNX__ ) && !defined( __STDC_WANT_LIB_EXT1__ ) && !defined( __WIDECHAR__ ) && defined( IN_SLIB )
 int __F_NAME(__prtf_slib,__wprtf_slib)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list *pargs, prtf_callback_t *out_putc, int ptr_size )
 {
     /* unused parameters */ (void)ptr_size;

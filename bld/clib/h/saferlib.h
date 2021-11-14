@@ -38,7 +38,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define SAFER_CLIB
 
 // Maximum length of runtime-constraint error message
 #define RTCT_MSG_MAX            128
