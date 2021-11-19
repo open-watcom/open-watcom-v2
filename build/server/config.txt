@@ -17,6 +17,7 @@ TOOLS=WATCOM
 
 # CVS system used by OW
 OWCVS=git
+OWCVSARGS=-c http.sslverify=false
 
 # The location of DOSBOX emulator (64-bit Windows build host).
 DOSBOX=dosbox.exe
