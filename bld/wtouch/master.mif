@@ -15,6 +15,11 @@ wtouch_autodepends = .AUTODEPEND
 
 inc_dirs = -I. -I.. -I"$(clib_dir)/h"
 
+#
+# lflags
+#
+extra_l_flags_dos_i86 = opt stack=4k
+
 # explicit rules
 #################
 
