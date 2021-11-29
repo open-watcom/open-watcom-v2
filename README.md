@@ -1,16 +1,13 @@
-[![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-CI?branchName=master&stageName=Last%20CI%20build) - CI Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=11&branchName=master)
-
-[![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Release?branchName=master&stageName=GitHub%20Release) - Release Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=14&branchName=master)
-
-[![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Coverity%20Scan?branchName=master) - Coverity Scan](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=16&branchName=master)
-
-[![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg)](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AWikiDocs)
- 
-[![Mirror](https://github.com/open-watcom/open-watcom-v2/workflows/Mirror/badge.svg)](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AMirror)
-
-Open Watcom v2 Fork
-===================
-
+## Open Watcom v2 Fork
+|Project Build Status|Download|
+|---|---|
+|![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-CI?branchName=master&stageName=Last%20CI%20build)|CI Build [Github Release](https://github.com/open-watcom/open-watcom-v2/releases/tag/Last-CI-build) or [Azure Pipelines Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=11&branchName=master)
+|![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Release?branchName=master&stageName=GitHub%20Release)|Current Release Build [Github Release](https://github.com/open-watcom/open-watcom-v2/releases/tag/Current-build) or [Azure Pipelines Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=14&branchName=master)
+|![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Coverity%20Scan?branchName=master)|Coverity Scan [Analysis Results](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=16&branchName=master)
+|![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg)|[](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AWikiDocs)
+|![Mirror](https://github.com/open-watcom/open-watcom-v2/workflows/Mirror/badge.svg)|[](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AMirror)
+|Month Releases|[**All Github Releases**](https://github.com/open-watcom/open-watcom-v2/releases)
+##
 Welcome to the Open Watcom v2 Project! 
 
 For more information about the project and build instructions see the GitHub wiki.
