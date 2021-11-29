@@ -409,11 +409,17 @@ void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, Fu
 
         loc.len = SemEndResource( loc.start );
 
+/*
+ * MS resource compiler use global Language definition for Version Info resource
+ * it is reason to comment out following code
+ */
+#if 0
         /* version info resources must be language neutral */
 
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         SemWINSetResourceLanguage( &lang, false );
+#endif
         SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_VERSIONINFO ) ), flags, loc );
     } else {
         RESFREE( name );
