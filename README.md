@@ -9,7 +9,7 @@
 ![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg)[](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AWikiDocs)
 ![Mirror](https://github.com/open-watcom/open-watcom-v2/workflows/Mirror/badge.svg)[](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AMirror)
 ###
-Welcome to the Open Watcom v2 Project! 
+## Welcome to the Open Watcom v2 Project! 
 
 For more information about the project and build instructions see the GitHub wiki.
 
