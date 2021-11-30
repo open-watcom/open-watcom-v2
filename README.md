@@ -21,7 +21,7 @@ Join the discussion [`here`](https://discord.gg/5WexPNn)!
 
 Reddit Server, join the discussion [`Open Watcom on Reddit`](https://www.reddit.com/r/OpenWatcom/)
 
-GitHub, join the discussion [`Open Watcom on GitHub`](https://github.com/open-watcom/open-watcom-v2/issues)
+GitHub, join the discussion [`Open Watcom on GitHub`](https://github.com/open-watcom/open-watcom-v2/discussions)
 
 [`Oficial OpenWatcom site`](https://openwatcom.org) is down for long time, it looks like it is dead.
 
