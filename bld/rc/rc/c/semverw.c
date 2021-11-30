@@ -353,7 +353,9 @@ VerFixedInfo *SemWINAddVerFixedInfo( VerFixedInfo *info, VerFixedOption option )
 void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, FullVerBlockNest *nest )
 /****************************************************************************************************/
 {
+#if 0
     WResLangType    lang;
+#endif
     VerBlockHeader  root;
     ResLocation     loc;
     int             padding;
