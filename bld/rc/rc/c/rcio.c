@@ -556,7 +556,7 @@ static bool PreprocessInputFile( void )
     char        *p;
     int         rc;
 
-    ppflags = PPFLAG_EMIT_LINE | PPFLAG_IGNORE_INCLUDE;
+    ppflags = PPFLAG_EMIT_LINE | PPFLAG_IGNORE_INCLUDE | PPFLAG_TRUNCATE_FILE_NAME;
     if( CmdLineParms.IgnoreCWD ) {
         ppflags |= PPFLAG_IGNORE_CWD;
     }

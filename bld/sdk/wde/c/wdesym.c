@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -501,7 +501,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
     WdeSetWaitCursor( true );
 
     if( ok ) {
-        ppflags = PPFLAG_EMIT_LINE;
+        ppflags = PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME;
         if( WdeGetOption( WdeOptIgnoreInc ) ) {
             ppflags |= PPFLAG_IGNORE_INCLUDE;
         }
