@@ -5862,6 +5862,8 @@ typedef struct _RTL_RUN_ONCE {
 } RTL_RUN_ONCE;
 typedef RTL_RUN_ONCE    *PRTL_RUN_ONCE;
 
+#define RTL_RUN_ONCE_INIT { 0 }
+
 /* Message resource entry */
 typedef struct _MESSAGE_RESOURCE_ENTRY {
     WORD    Length;
@@ -5992,11 +5994,15 @@ typedef struct _RTL_SRWLOCK {
 } RTL_SRWLOCK;
 typedef RTL_SRWLOCK *PRTL_SRWLOCK;
 
+#define RTL_SRWLOCK_INIT { 0 }
+
 /* Condition variable */
 typedef struct _RTL_CONDITION_VARIABLE {
     PVOID   Ptr;
 } RTL_CONDITION_VARIABLE;
 typedef RTL_CONDITION_VARIABLE  *PRTL_CONDITION_VARIABLE;
+
+#define RTL_CONDITION_VARIABLE_INIT { 0 }
 
 /* Activation context information classes */
 typedef enum _ACTIVATION_CONTEXT_INFO_CLASS {
