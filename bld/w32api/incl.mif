@@ -241,7 +241,7 @@ headers = &
     h/schnlsp.h            &
     h/scode.h              &
     h/sddl.h               &
-    h/sdkddver.h           &
+    h/sdkddkve.h           &
     h/secext.h             &
     h/security.h           &
     h/servprov.h           &

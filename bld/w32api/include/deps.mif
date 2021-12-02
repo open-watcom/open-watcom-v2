@@ -314,7 +314,7 @@ h/rtutils.h :             $(mh_dir)/rtutils.mh $(owhdr) $(cplus)
 h/sal.h :                 $(mh_dir)/sal.mh $(owhdr)
 h/scode.h :               $(mh_dir)/scode.mh $(owhdr)
 h/sddl.h :                $(mh_dir)/sddl.mh $(owhdr) $(cplus)
-h/sdkddver.h :            $(mh_dir)/sdkddver.mh $(owhdr) $(cplus) $(mh_dir)/winver.sp
+h/sdkddkve.h :            $(mh_dir)/sdkddkve.mh $(owhdr) $(cplus) $(mh_dir)/winver.sp
 h/secext.h :              $(mh_dir)/secext.mh $(owhdr) $(cplus)
 h/security.h :            $(mh_dir)/security.mh $(owhdr) $(cplus)
 h/servprov.h :            $(mh_dir)/servprov.mh $(owhdr) $(cplus)
