@@ -19,5 +19,5 @@
 #pragma include_alias( <structuredquerycondition.h>,    <strqcond.h> )
 #pragma include_alias( <tcpestats.h>,                   <tcpestat.h> )
 #pragma include_alias( <wlantypes.h>,                   <wlantype.h> )
-#pragma include_alias( <winsdkver.h>,                   <wsdkver.h> )
+#pragma include_alias( <winsdkver.h>,                   <winsdkve.h> )
 #pragma include_alias( <compressapi.h>,                 <wcompres.h> )

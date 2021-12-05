@@ -319,6 +319,7 @@ headers = &
     h/winres.h             &
     h/winresrc.h           &
     h/winscard.h           &
+    h/winsdkve.h           &
     h/winsmcrd.h           &
     h/winsnmp.h            &
     h/winsock.h            &
@@ -336,7 +337,6 @@ headers = &
     h/ws2ipdef.h           &
     h/ws2spi.h             &
     h/ws2tcpip.h           &
-    h/wsdkver.h            &
     h/wsipx.h              &
     h/wsnetbs.h            &
     h/wtsapi32.h           &
