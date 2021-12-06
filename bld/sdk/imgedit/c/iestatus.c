@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,23 +142,19 @@ bool InitStatusLine( HWND parent )
 
     sbd[0].separator_width = 5;
     sbd[0].width = 82;
-    sbd[0].width_is_percent = 0;
-    sbd[0].width_is_pixels = 1;
+    sbd[0].width_is_percent = false;
 
     sbd[1].separator_width = 5;
     sbd[1].width = 168;
-    sbd[1].width_is_percent = 0;
-    sbd[1].width_is_pixels = 1;
+    sbd[1].width_is_percent = false;
 
     sbd[2].separator_width = 5;
     sbd[2].width = 255;
-    sbd[2].width_is_percent = 0;
-    sbd[2].width_is_pixels = 1;
+    sbd[2].width_is_percent = false;
 
     sbd[3].separator_width = 5;
     sbd[3].width = 400;
-    sbd[3].width_is_percent = 0;
-    sbd[3].width_is_pixels = 1;
+    sbd[3].width_is_percent = false;
 
     StatusWndSetSeparators( statusBar, 4, sbd );
 

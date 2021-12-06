@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,8 +171,7 @@ WStatBar *WCreateStatusLine( HWND parent, HINSTANCE inst )
 
     sbd.separator_width = STATUS_LINE_PAD;
     sbd.width = STATUS1_WIDTH;
-    sbd.width_is_percent = FALSE;
-    sbd.width_is_pixels = TRUE;
+    sbd.width_is_percent = false;
 
     StatusWndSetSeparators( wsb->stat, 1, &sbd );
 

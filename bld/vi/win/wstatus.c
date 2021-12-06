@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,9 +56,9 @@ void StatusWndSetSeparatorsWithArray( section_size *source, int num )
     assert( num > 0 );
     list = _MemAllocArray( status_block_desc, num );
     for( i = 0; i < num; i++ ) {
-        list[i].separator_width = SEPERATOR_WIDTH;
+        list[i].separator_width = SEPARATOR_WIDTH;
         list[i].width = source[i];
-        list[i].width_is_pixels = true;
+        list[i].width_is_percent = false;
     }
     StatusWndSetSeparators( sw, num, list );
     MemFree( list );

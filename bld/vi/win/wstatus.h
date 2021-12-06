@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +31,8 @@
 ****************************************************************************/
 
 
-#define SEPERATOR_WIDTH     4   // width of seperators in status bar
-#define BOUNDARY_WIDTH      (SEPERATOR_WIDTH + 2) // min width between bars
+#define SEPARATOR_WIDTH     4   // width of separators in status bar
+#define BOUNDARY_WIDTH      (SEPARATOR_WIDTH + 2) // min width between bars
 #define CURSOR_CORRECT      2   // correct for bars drawn slightly to left
 #define MOUSE_ALLOWANCE     3   // how close to center mouse need be to select
 
