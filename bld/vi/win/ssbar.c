@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,6 @@
 #include "vi.h"
 #include "statwnd.h"
 #include "ssbar.rh"
-#include "ssbardef.h"
 #include "utils.h"
 #include "subclass.h"
 #include "wstatus.h"
@@ -173,11 +172,11 @@ static void buildNewItem( char *start, int id )
     char    *new_item = "";
     int     type = 0;
 
-    if( id >= SS_FIRST_CONTENT && id <= SS_LAST_CONTENT ) {
-        new_item = sz_content[id - SS_FIRST_CONTENT];
+    if( id >= SSB_FIRST_CONTENT && id <= SSB_LAST_CONTENT ) {
+        new_item = sz_content[id - SSB_FIRST_CONTENT];
         type = BUTTON_CONTENT;
-    } else if( id >= SS_FIRST_ALIGNMENT && id <= SS_LAST_ALIGNMENT ) {
-        new_item = sz_alignment[id - SS_FIRST_ALIGNMENT];
+    } else if( id >= SSB_FIRST_ALIGNMENT && id <= SSB_LAST_ALIGNMENT ) {
+        new_item = sz_alignment[id - SSB_FIRST_ALIGNMENT];
         type = BUTTON_ALIGNMENT;
     } else {
         assert( 0 );
@@ -233,13 +232,13 @@ static void buildNewStatusString( int block, int id )
     mod = findBlockString( block );
 
     switch( id ) {
-    case SS_SPLIT:
+    case SSB_CMD_SPLIT:
         splitBlock( block, mod );
         break;
-    case SS_DESTROY:
+    case SSB_CMD_DESTROY:
         destroyBlock( block, mod );
         break;
-    case SS_DEFAULTS:
+    case SSB_CMD_DEFAULTS:
         buildDefaults();
         break;
     default:
@@ -345,13 +344,13 @@ WINEXPORT LRESULT CALLBACK StaticSubclassProc( HWND hwnd, UINT msg, WPARAM wpara
 static void addSubclasses( HWND hwnd )
 {
     int     i;
-    for( i = SS_FIRST_CONTENT; i <= SS_LAST_CONTENT; i++ ) {
+    for( i = SSB_FIRST_CONTENT; i <= SSB_LAST_CONTENT; i++ ) {
         SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc, InstanceHandle );
     }
-    for( i = SS_FIRST_ALIGNMENT; i <= SS_LAST_ALIGNMENT; i++ ) {
+    for( i = SSB_FIRST_ALIGNMENT; i <= SSB_LAST_ALIGNMENT; i++ ) {
         SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc, InstanceHandle );
     }
-    for( i = SS_FIRST_COMMAND; i <= SS_LAST_COMMAND; i++ ) {
+    for( i = SSB_FIRST_COMMAND; i <= SSB_LAST_COMMAND; i++ ) {
         SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc, InstanceHandle );
     }
 }
@@ -359,13 +358,13 @@ static void addSubclasses( HWND hwnd )
 static void removeSubclasses( HWND hwnd )
 {
     int     i;
-    for( i = SS_FIRST_CONTENT; i <= SS_LAST_CONTENT; i++ ) {
+    for( i = SSB_FIRST_CONTENT; i <= SSB_LAST_CONTENT; i++ ) {
         SubclassGenericRemove( GetDlgItem( hwnd, i ) );
     }
-    for( i = SS_FIRST_ALIGNMENT; i <= SS_LAST_ALIGNMENT; i++ ) {
+    for( i = SSB_FIRST_ALIGNMENT; i <= SSB_LAST_ALIGNMENT; i++ ) {
         SubclassGenericRemove( GetDlgItem( hwnd, i ) );
     }
-    for( i = SS_FIRST_COMMAND; i <= SS_LAST_COMMAND; i++ ) {
+    for( i = SSB_FIRST_COMMAND; i <= SSB_LAST_COMMAND; i++ ) {
         SubclassGenericRemove( GetDlgItem( hwnd, i ) );
     }
 }
