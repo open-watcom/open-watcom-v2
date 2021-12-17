@@ -158,7 +158,7 @@ static int get_new_rgn_set( void )
         Set_coll.num_sets = COLL_BLOCKS;
         Set_coll.num_used = 0;
         for( set_num = 0; set_num < COLL_BLOCKS; set_num++ ) {
-            Set_coll.coll[ set_num ] = NULL;
+            Set_coll.coll[set_num] = NULL;
         }
     }
 
@@ -171,7 +171,7 @@ static int get_new_rgn_set( void )
         } else {
             for( set_num = Set_coll.num_sets; set_num < Set_coll.num_sets +
                             COLL_BLOCKS; set_num++ ) {
-                Set_coll.coll[ set_num ] = NULL;
+                Set_coll.coll[set_num] = NULL;
             }
             Set_coll.num_sets += COLL_BLOCKS;
         }
@@ -189,15 +189,15 @@ static rgn_set_def * get_rgn_set_ptr( int set_num )
 
     if( set_num < Set_coll.num_used ) {
         coll = Set_coll.coll;
-        if( coll[ set_num ] == NULL ) {
-            coll[ set_num ] = _galloc( sizeof(rgn_set_header_def) +
-                        LIST_BLOCKS * sizeof(rgn_set_list_def) );
-            if( coll[ set_num ] != NULL ) {
-                coll[ set_num ]->info.num_items = LIST_BLOCKS;
-                coll[ set_num ]->info.num_used = 0;
+        if( coll[set_num] == NULL ) {
+            coll[set_num] = _galloc( sizeof( rgn_set_header_def ) +
+                        LIST_BLOCKS * sizeof( rgn_set_list_def ) );
+            if( coll[set_num] != NULL ) {
+                coll[set_num]->info.num_items = LIST_BLOCKS;
+                coll[set_num]->info.num_used = 0;
             }
         }
-        return( coll[ set_num ] );
+        return( coll[set_num] );
     } else {
         return( NULL );
     }
@@ -207,7 +207,7 @@ static void set_rgn_set_ptr( int set_num, rgn_set_def *curr )
 /***********************************************************/
 {
     if( set_num < Set_coll.num_used ) {
-        Set_coll.coll[ set_num ] = curr;
+        Set_coll.coll[set_num] = curr;
     }
 }
 
@@ -226,7 +226,7 @@ static void add_rgn_def( int set_num, rgn_set_list_def *new_def )
             set_rgn_set_ptr( set_num, curr );
             curr->info.num_items += LIST_BLOCKS;
         }
-        curr->list[ curr->info.num_used ] = *new_def;
+        curr->list[curr->info.num_used] = *new_def;
         curr->info.num_used++;
     }
 }
@@ -399,12 +399,12 @@ static long get_set_coll_size( void )
     rgn_set_def **  curr_set;
 
     /* room for the rgn_set_index */
-    size = sizeof(rgn_set_coll_header) + Set_coll.num_used * sizeof(short);
+    size = sizeof( rgn_set_coll_header ) + Set_coll.num_used * sizeof( short );
 
     for( curr_set = Set_coll.coll; curr_set < Set_coll.coll +
             Set_coll.num_used; curr_set++ ) {
-        size += sizeof(rgn_set_header_def) +
-                    (**curr_set).info.num_used * sizeof(rgn_set_list_def);
+        size += sizeof( rgn_set_header_def ) +
+                    (**curr_set).info.num_used * sizeof( rgn_set_list_def );
     }
 
     return( size );
@@ -420,13 +420,13 @@ static char * copy_set_coll( char *ptr )
 
     index = (rgn_set_index *) ptr;
     index->info.num_sets = Set_coll.num_used;
-    ptr += sizeof(rgn_set_coll_header) + Set_coll.num_used * sizeof(short);
+    ptr += sizeof( rgn_set_coll_header ) + Set_coll.num_used * sizeof( short );
 
     for( set_num = 0; set_num < Set_coll.num_used; set_num++ ) {
-        index->offset[ set_num ] = _get_offset( index, ptr );
-        curr_set = Set_coll.coll[ set_num ];
-        set_size = sizeof(rgn_set_header_def) +
-                    curr_set->info.num_used * sizeof(rgn_set_list_def);
+        index->offset[set_num] = _get_offset( index, ptr );
+        curr_set = Set_coll.coll[set_num];
+        set_size = sizeof( rgn_set_header_def ) +
+                    curr_set->info.num_used * sizeof( rgn_set_list_def );
         memcpy( ptr, curr_set, set_size );
         ptr += set_size;
     }
@@ -467,14 +467,14 @@ HANDLE rgn_end( void )
 
     if( Curr_state != RGN_STATE_OFF && Region_list != NULL ) {
         /* allocate the contigous block of memory */
-        size = sizeof(rgn_tag_def) + get_set_coll_size() + Region_used_size;
+        size = sizeof( rgn_tag_def ) + get_set_coll_size() + Region_used_size;
         hld = GlobalAlloc( GMEM_MOVEABLE, size );
 
         /* copy the pieces */
         if( hld ) {
             ptr = (char far *)GlobalLock( hld );
             tag = (rgn_tag_def *) ptr;
-            ptr += sizeof(rgn_tag_def);
+            ptr += sizeof( rgn_tag_def );
             tag->set_coll_offset = _get_offset( tag, ptr );
             ptr = (char far *) copy_set_coll( (char *) ptr );
             tag->rgn_offset = _get_offset( tag, ptr );
@@ -508,7 +508,7 @@ static rgn_def far * get_rgn_list_ptr( int size )
 
     if (Region_list == NULL) {
         Region_size = BLOCK_SIZE;
-        hld = GlobalAlloc( GMEM_MOVEABLE, (Region_size + sizeof(short)) );
+        hld = GlobalAlloc( GMEM_MOVEABLE, (Region_size + sizeof( short )) );
         Region_list = (rgn_def far *)GlobalLock( hld );
     }
 
@@ -520,7 +520,7 @@ static rgn_def far * get_rgn_list_ptr( int size )
         } else {
             Region_size += BLOCK_SIZE;
         }
-        hld = GlobalAlloc( GMEM_MOVEABLE, (Region_size + sizeof(short)) );
+        hld = GlobalAlloc( GMEM_MOVEABLE, (Region_size + sizeof( short )) );
         ptr = (rgn_def far *)GlobalLock( hld );
         dst = (rgn_def far *)((long)ptr + Region_size - Region_used_size);
         _fmemmove( dst, src, Region_used_size );
@@ -591,7 +591,7 @@ void rgn_rectangle( int x1, int y1, int x2, int y2 )
     unsigned short      size;
 
     if( Curr_state == RGN_STATE_ON ) {
-        size =  sizeof(rgn_info_def) + sizeof(rgn_rect_def);
+        size =  sizeof( rgn_info_def ) + sizeof( rgn_rect_def );
         curr = get_rgn_list_ptr( size );
         if (curr != NULL) {
             curr->info.size = size;
@@ -625,7 +625,7 @@ void rgn_ellipse_set( int x1, int y1, int x2, int y2, rgn_type type_ellipse )
     unsigned short      size;
 
     if( Curr_state == RGN_STATE_ON ) {
-        size =  sizeof(rgn_info_def) + sizeof(rgn_ellipse_def);
+        size =  sizeof( rgn_info_def ) + sizeof( rgn_ellipse_def );
         curr = get_rgn_list_ptr( size );
         if (curr != NULL) {
             curr->info.size = size;
@@ -671,7 +671,7 @@ void rgn_line( int x1, int y1, int x2, int y2 )
     unsigned short      size;
 
     if( Curr_state == RGN_STATE_ON ) {
-        size =  sizeof(rgn_info_def) + sizeof(rgn_line_def);
+        size =  sizeof( rgn_info_def ) + sizeof( rgn_line_def );
         curr = get_rgn_list_ptr( size );
         if (curr != NULL) {
             curr->info.size = size;
@@ -704,7 +704,7 @@ void rgn_polygon( WPI_POINT far *pts, int num_pts )
     unsigned short      size;
 
     if( Curr_state == RGN_STATE_ON ) {
-        size = sizeof(rgn_info_def) + sizeof(int) + (sizeof(WPI_POINT) * num_pts);
+        size = sizeof( rgn_info_def ) + sizeof( int ) + (sizeof( WPI_POINT ) * num_pts);
         curr = get_rgn_list_ptr( size );
         if (curr != NULL) {
             curr->info.size = size;
@@ -737,7 +737,7 @@ void rgn_pie( int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4 )
     unsigned short      size;
 
     if( Curr_state == RGN_STATE_ON ) {
-        size = sizeof(rgn_info_def) + sizeof(rgn_pie_def);
+        size = sizeof( rgn_info_def ) + sizeof( rgn_pie_def );
         curr = get_rgn_list_ptr( size );
         if (curr != NULL) {
             curr->info.size = size;
@@ -773,7 +773,7 @@ void rgn_line_boxes( int x1, int y1, int x2, int y2 )
     unsigned short      size;
 
     if( Curr_state == RGN_STATE_ON ) {
-        size =  sizeof(rgn_info_def) + sizeof(rgn_line_def);
+        size =  sizeof( rgn_info_def ) + sizeof( rgn_line_def );
         curr = get_rgn_list_ptr( size );
         if (curr != NULL) {
             curr->info.size = size;
@@ -1095,7 +1095,7 @@ static void remove_mark( WPI_PRES dc, rgn_marker_def *mark )
 /**********************************************************/
 {
     WPI_PRES            mem_dc;
-    WPI_HANDLE          old_bmp;
+    WPI_HBITMAP         old_bmp;
     short               width;
     WPI_INST            inst;
     HDC                 t_dc;
@@ -1120,8 +1120,8 @@ static void mark_point( WPI_PRES dc, int x, int y, rgn_marker_def *slot )
 /*********************/
 {
     WPI_PRES            mem_dc;
-    WPI_HANDLE          old_bmp;
-    HBITMAP             bitmap;
+    WPI_HBITMAP         old_bmp;
+    WPI_HBITMAP         bitmap;
     short               width;
     WPI_INST            inst;
     HDC                 t_dc;
@@ -1378,8 +1378,8 @@ static HANDLE mark_set( rgn_set_def far *set, WPI_PRES dc, BOOL bitmaps )
 
     bmps_hld = NULL;
     if (bitmaps) {
-        bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof(rgn_mark_def)
-                    + (set->info.num_used - 1) * sizeof(rgn_marker_def) );
+        bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof( rgn_mark_def )
+                    + (set->info.num_used - 1) * sizeof( rgn_marker_def ) );
     }
 
     list = (rgn_set_list_def *) set->list;
@@ -1387,13 +1387,13 @@ static HANDLE mark_set( rgn_set_def far *set, WPI_PRES dc, BOOL bitmaps )
         bmps = (rgn_mark_def *)LocalLock( bmps_hld );
         bmps->num_bmps = set->info.num_used;
         for( curr_pt = 0; curr_pt < set->info.num_used; curr_pt++ ) {
-            mark_point( dc, list[ curr_pt ].pt.x, list[ curr_pt ].pt.y,
-                        &bmps->mark[ curr_pt ] );
+            mark_point( dc, list[curr_pt].pt.x, list[curr_pt].pt.y,
+                        &(bmps->mark[curr_pt]) );
         }
         LocalUnlock( bmps_hld );
     } else {
         for( curr_pt = 0; curr_pt < set->info.num_used; curr_pt++ ) {
-            mark_point( dc, list[ curr_pt ].pt.x, list[ curr_pt ].pt.y,
+            mark_point( dc, list[curr_pt].pt.x, list[curr_pt].pt.y,
                         NULL );
         }
     }
@@ -1415,19 +1415,19 @@ static HANDLE mark_group( rgn_tag_def far *list, rgn_set_def far *set, WPI_PRES 
     size = 0;
     num_bmps = 0;
     if (bitmaps) {
-        bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof(rgn_mark_def)
-                                                - sizeof(rgn_marker_def) );
-        size = sizeof(rgn_mark_def) - sizeof(rgn_marker_def);
+        bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof( rgn_mark_def )
+                                                - sizeof( rgn_marker_def ) );
+        size = sizeof( rgn_mark_def ) - sizeof( rgn_marker_def );
     }
     for (count = 0; count < set->info.num_used; count++) {
         rgn = (void *) ((char *)list + list->rgn_offset + list->rgn_size
-                                    - set->list[ count ].offset );
+                                    - set->list[count].offset );
         switch (rgn->info.type) {
         case CGR_RGN_RECT:
             if (bitmaps) {
-                bmps_hld = LocalReAlloc( bmps_hld, 4 * sizeof(rgn_marker_def)
+                bmps_hld = LocalReAlloc( bmps_hld, 4 * sizeof( rgn_marker_def )
                                                     + size, LMEM_MOVEABLE );
-                size += (4 * sizeof(rgn_marker_def));
+                size += (4 * sizeof( rgn_marker_def ));
             }
             mark_rect( dc, &(rgn->data.rect.rect), bmps_hld, num_bmps );
             num_bmps += 4;
@@ -1435,9 +1435,9 @@ static HANDLE mark_group( rgn_tag_def far *list, rgn_set_def far *set, WPI_PRES 
 
         case CGR_RGN_ELLIPSE_BORDER:
             if (bitmaps) {
-                bmps_hld = LocalReAlloc( bmps_hld, 4 * sizeof(rgn_marker_def)
+                bmps_hld = LocalReAlloc( bmps_hld, 4 * sizeof( rgn_marker_def )
                                                     + size, LMEM_MOVEABLE );
-                size += (4 * sizeof(rgn_marker_def));
+                size += (4 * sizeof( rgn_marker_def ));
             }
             mark_ellipse( dc, &(rgn->data.ellipse.rect), bmps_hld, num_bmps );
             num_bmps += 4;
@@ -1445,9 +1445,9 @@ static HANDLE mark_group( rgn_tag_def far *list, rgn_set_def far *set, WPI_PRES 
 
         case CGR_RGN_ELLIPSE:
             if (bitmaps) {
-                bmps_hld = LocalReAlloc( bmps_hld, 4 * sizeof(rgn_marker_def)
+                bmps_hld = LocalReAlloc( bmps_hld, 4 * sizeof( rgn_marker_def )
                                                     + size, LMEM_MOVEABLE );
-                size += (4 * sizeof(rgn_marker_def));
+                size += (4 * sizeof( rgn_marker_def ));
             }
             mark_ellipse( dc, &(rgn->data.ellipse.rect), bmps_hld, num_bmps );
             num_bmps += 4;
@@ -1455,9 +1455,9 @@ static HANDLE mark_group( rgn_tag_def far *list, rgn_set_def far *set, WPI_PRES 
 
         case CGR_RGN_LINE:
             if (bitmaps) {
-                bmps_hld = LocalReAlloc( bmps_hld, 2 * sizeof(rgn_marker_def) \
+                bmps_hld = LocalReAlloc( bmps_hld, 2 * sizeof( rgn_marker_def ) \
                                                     + size, LMEM_MOVEABLE );
-                size += (2 * sizeof(rgn_marker_def));
+                size += (2 * sizeof( rgn_marker_def ));
             }
             mark_line( dc, rgn->data.line.p1, rgn->data.line.p2, bmps_hld,
                                                                 num_bmps );
@@ -1467,8 +1467,8 @@ static HANDLE mark_group( rgn_tag_def far *list, rgn_set_def far *set, WPI_PRES 
         case CGR_RGN_POLY:
             if (bitmaps) {
                 bmps_hld = LocalReAlloc( bmps_hld, rgn->data.poly.num_pts *
-                        sizeof(rgn_marker_def) + size, LMEM_MOVEABLE );
-                size += (rgn->data.poly.num_pts * sizeof(rgn_marker_def));
+                        sizeof( rgn_marker_def ) + size, LMEM_MOVEABLE );
+                size += (rgn->data.poly.num_pts * sizeof( rgn_marker_def ));
             }
             mark_poly( dc, rgn->data.poly.num_pts, &(rgn->data.poly.pts),
                                                         bmps_hld, num_bmps );
@@ -1477,9 +1477,9 @@ static HANDLE mark_group( rgn_tag_def far *list, rgn_set_def far *set, WPI_PRES 
 
         case CGR_RGN_PIE:
             if (bitmaps) {
-                bmps_hld = LocalReAlloc( bmps_hld, 4 * sizeof(rgn_marker_def)
+                bmps_hld = LocalReAlloc( bmps_hld, 4 * sizeof( rgn_marker_def )
                                                     + size, LMEM_MOVEABLE );
-                size += (4 * sizeof(rgn_marker_def));
+                size += (4 * sizeof( rgn_marker_def ));
             }
             mark_pie( dc, &(rgn->data.pie.pie_pts), bmps_hld, num_bmps );
             num_bmps += 4;
@@ -1498,22 +1498,22 @@ static HANDLE mark_group( rgn_tag_def far *list, rgn_set_def far *set, WPI_PRES 
     return( bmps_hld );
 }
 
-void rgn_mark_free( HANDLE bitmaps )
-/**********************************/
+void rgn_mark_free( HANDLE bmps_hld )
+/***********************************/
 /* delete the mark bitmaps and array. */
 {
     short               count;
     rgn_mark_def       *bmps;
 
-    bmps = (rgn_mark_def *)LocalLock( bitmaps );
+    bmps = (rgn_mark_def *)LocalLock( bmps_hld );
     for( count = 0; count < bmps->num_bmps; count++ ) {
-        if( bmps->mark[count].bmp != 0 ) {
+        if( bmps->mark[count].bmp != NULL ) {
             _wpi_deletebitmap( bmps->mark[count].bmp );
             bmps->mark[count].bmp = NULL;
         }
     }
-    LocalUnlock( bitmaps );
-    LocalFree( bitmaps );
+    LocalUnlock( bmps_hld );
+    LocalFree( bmps_hld );
 }
 
 void rgn_unmark( void far *rgn_ptr, WPI_PRES dc, HANDLE bmps_hld )
@@ -1544,7 +1544,7 @@ static HANDLE do_group_set_markers( rgn_tag_def far *list, short num, WPI_PRES d
 
     index = (rgn_set_index *) ((char *)list + list->set_coll_offset);
     if( num < index->info.num_sets ) {
-        set = (rgn_set_def *) ((char *)index + index->offset[ num ]);
+        set = (rgn_set_def *) ((char *)index + index->offset[num]);
         if (set->info.exact) {
             return( mark_set( set, dc, bitmaps ) );
         } else {
@@ -1638,32 +1638,32 @@ HANDLE rgn_mark( void far *list_ptr, void far *rgn_ptr, WPI_PRES dc, BOOL bitmap
             switch (rgn->info.type) {
             case CGR_RGN_RECT:
                 if (bitmaps) {
-                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof(rgn_mark_def)
-                                                + 3 * sizeof(rgn_marker_def) );
+                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof( rgn_mark_def )
+                                                + 3 * sizeof( rgn_marker_def ) );
                 }
                 mark_rect( dc, &(rgn->data.rect.rect), bmps_hld, 0 );
                 break;
 
             case CGR_RGN_ELLIPSE_BORDER:
                 if (bitmaps) {
-                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof(rgn_mark_def)
-                                                + 3 * sizeof(rgn_marker_def) );
+                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof( rgn_mark_def )
+                                                + 3 * sizeof( rgn_marker_def ) );
                 }
                 mark_ellipse( dc, &(rgn->data.ellipse.rect), bmps_hld, 0 );
                 break;
 
             case CGR_RGN_ELLIPSE:
                 if (bitmaps) {
-                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof(rgn_mark_def)
-                                                + 3 * sizeof(rgn_marker_def) );
+                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof( rgn_mark_def )
+                                                + 3 * sizeof( rgn_marker_def ) );
                 }
                 mark_ellipse( dc, &(rgn->data.ellipse.rect), bmps_hld, 0 );
                 break;
 
             case CGR_RGN_LINE:
                 if (bitmaps) {
-                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof(rgn_mark_def)
-                                                    + sizeof(rgn_marker_def) );
+                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof( rgn_mark_def )
+                                                    + sizeof( rgn_marker_def ) );
                 }
                 mark_line( dc, rgn->data.line.p1, rgn->data.line.p2,
                                                                 bmps_hld, 0 );
@@ -1671,8 +1671,8 @@ HANDLE rgn_mark( void far *list_ptr, void far *rgn_ptr, WPI_PRES dc, BOOL bitmap
 
             case CGR_RGN_POLY:
                 if (bitmaps) {
-                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof(rgn_mark_def) +
-                            (rgn->data.poly.num_pts - 1) * sizeof(rgn_marker_def) );
+                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof( rgn_mark_def ) +
+                            (rgn->data.poly.num_pts - 1) * sizeof( rgn_marker_def ) );
                 }
                 mark_poly( dc, rgn->data.poly.num_pts, &(rgn->data.poly.pts),
                                                             bmps_hld, 0 );
@@ -1680,15 +1680,14 @@ HANDLE rgn_mark( void far *list_ptr, void far *rgn_ptr, WPI_PRES dc, BOOL bitmap
 
             case CGR_RGN_PIE:
                 if (bitmaps) {
-                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof(rgn_mark_def)
-                                            + 3 * sizeof(rgn_marker_def) );
+                    bmps_hld = LocalAlloc( LMEM_MOVEABLE, sizeof( rgn_mark_def )
+                                            + 3 * sizeof( rgn_marker_def ) );
                 }
                 mark_pie( dc, &(rgn->data.pie.pie_pts), bmps_hld, 0 );
                 break;
             }
         } else {
-            bmps_hld = do_group_set_markers( list, rgn->info.set_num, dc,
-                                                                    bitmaps );
+            bmps_hld = do_group_set_markers( list, rgn->info.set_num, dc, bitmaps );
         }
 
         _wpi_getoldbrush( dc, old_brush );
