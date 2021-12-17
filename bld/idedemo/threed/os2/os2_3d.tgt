@@ -46,8 +46,8 @@ WString
 0
 12
 WString
-62
-"$(watcom_dir)/lib;$(%relroot)/lib386/os2;$(%relroot)/lib386;"
+19
+"$(watcom_dir)/lib"
 0
 13
 WVList
