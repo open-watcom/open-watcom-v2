@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifdef PLAT_OS2
+#ifdef __OS2__
 #define INCL_PM
 #include <os2.h>
 #include <bsedos.h>

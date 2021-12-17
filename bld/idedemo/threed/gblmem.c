@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 */
 
 #include <stddef.h>
-#ifdef PLAT_OS2
+#ifdef __OS2__
 #define INCL_PM
 #include <os2.h>
 #else
@@ -49,7 +50,7 @@
 void *gmem_alloc( unsigned size )
 /*******************************/
 {
-#ifdef PLAT_OS2
+#ifdef __OS2__
     return( malloc( (size_t) size ) );
 #else
     HANDLE              mem_hld;
@@ -71,7 +72,7 @@ void *gmem_alloc( unsigned size )
 void *gmem_realloc( void *ptr, unsigned size )
 /********************************************/
 {
-#ifdef PLAT_OS2
+#ifdef __OS2__
     return( realloc( ptr, (size_t)size ) );
 #else
     HGLOBAL             hld;
@@ -99,7 +100,7 @@ void *gmem_realloc( void *ptr, unsigned size )
 void gmem_free( void *mem )
 /*************************/
 {
-#ifdef PLAT_OS2
+#ifdef __OS2__
     free( mem );
 #else
     HGLOBAL             hld;

@@ -535,7 +535,7 @@ void _wtextout( char *text, float x, float y, int hor_align, int ver_align, void
         switch( ver_align ) {
 
         case TEXT_V_TOP:
-#ifdef PLAT_OS2
+#ifdef __OS2__
             /* OS/2 has problems with TA_LEFT && TA_TOP aligned text */
             /* This is a messy solution until we actually figure out */
             /* what the problem is.                                  */
@@ -548,7 +548,7 @@ void _wtextout( char *text, float x, float y, int hor_align, int ver_align, void
             break;
 
         case TEXT_V_CENTER:
-#ifdef PLAT_OS2
+#ifdef __OS2__
             vert_flags = TA_HALF;
 #else
             /* OS/2 has a much cleverer way of doing this */

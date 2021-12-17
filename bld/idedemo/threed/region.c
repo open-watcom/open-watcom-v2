@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#ifdef PLAT_OS2
+#ifdef __OS2__
 #define INCL_PM
 #include <os2.h>
 #else
@@ -1101,7 +1102,7 @@ static void remove_mark( WPI_PRES dc, rgn_marker_def *mark )
 
     if (mark != NULL) {
         width = 2 * MARK_SIZE + 1;
-#ifdef PLAT_OS2
+#ifdef __OS2__
         /* Don't ask, it just needs to be here - trust me */
         width += 1;
 #endif
@@ -1127,7 +1128,7 @@ static void mark_point( WPI_PRES dc, int x, int y, rgn_marker_def *slot )
 
     if (slot != NULL) {
         width = 2 * MARK_SIZE + 1;
-#ifdef PLAT_OS2
+#ifdef __OS2__
         /* Don't ask, it just needs to be here - trust me */
         width += 1;
 #endif
@@ -1316,7 +1317,7 @@ static void get_mid_pt( WPI_POINT far *pts, WPI_POINT far *pie, WPI_POINT *mid_p
             x = VECTOR_COEF * sgn( pts[2].y - pts[1].y );
             y = 0;
         }
-#ifdef PLAT_OS2
+#ifdef __OS2__
         mid_pt->x = pts[0].x + x;
         mid_pt->y = pts[0].y - y;
 #else
