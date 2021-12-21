@@ -20,10 +20,10 @@ GitHub, join the discussion [`Open Watcom on GitHub`](https://github.com/open-wa
 
 Reddit Server, join the discussion [`Open Watcom on Reddit`](https://www.reddit.com/r/OpenWatcom/)
 
-Discord Server for Open Watcom 2.0 only (users and development) <iframe src="https://discordapp.com/widget?id=922934435744206908&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
-This server is new because old Discord Server was not supporting Open Watcom 2.0 users anyway.
-New Server will be Managed by Open Watcom 2.0 Github group, to exclude unrelated discussion about personal opinions etc.
-It is dedicated for user support and for development.
+Discord Server for Open Watcom 2.0 [`Open Watcom on Discord`](https://discordapp.com/widget?id=922934435744206908&theme=dark)
+
+This Server is Managed by Open Watcom 2.0 Github group, to exclude unrelated discussion about personal opinions etc.
+It is dedicated for user and development help only.
 
 [`Oficial OpenWatcom site`](https://openwatcom.org) is down for long time, it looks like it is dead.
 
