@@ -1141,30 +1141,29 @@ void FiniPELoadFile( void )
         } else {
             PE64( h ).subsystem = PE_SS_WINDOWS_GUI;
         }
-        PE64( h ).stack_reserve_size.u._32[0] = StackSize;
+        size = StackSize;
+        PE64( h ).stack_reserve_size.u._32[0] = size;
         PE64( h ).stack_reserve_size.u._32[1] = 0;
         if( FmtData.u.pe.stackcommit == DEF_VALUE ) {
-            PE64( h ).stack_commit_size.u._32[0] = StackSize;
-            PE64( h ).stack_commit_size.u._32[1] = 0;
             if( StackSize > PE_DEF_STACK_COMMIT ) {
-                PE64( h ).stack_commit_size.u._32[0] = PE_DEF_STACK_COMMIT;
+                size = PE_DEF_STACK_COMMIT;
             }
-        } else if( FmtData.u.pe.stackcommit > StackSize ) {
-            PE64( h ).stack_commit_size.u._32[0] = StackSize;
-            PE64( h ).stack_commit_size.u._32[1] = 0;
-        } else {
-            PE64( h ).stack_commit_size.u._32[0] = FmtData.u.pe.stackcommit;
-            PE64( h ).stack_commit_size.u._32[1] = 0;
+        } else if( size > FmtData.u.pe.stackcommit ) {
+            size = FmtData.u.pe.stackcommit;
         }
-        PE64( h ).heap_reserve_size.u._32[0] = FmtData.u.os2fam.heapsize;
+        PE64( h ).stack_commit_size.u._32[0] = size;
+        PE64( h ).stack_commit_size.u._32[1] = 0;
+        size = FmtData.u.os2fam.heapsize;
+        if( FmtData.dll ) {
+            size = 0;
+        }        
+        PE64( h ).heap_reserve_size.u._32[0] = size;
         PE64( h ).heap_reserve_size.u._32[1] = 0;
-        if( FmtData.u.pe.heapcommit > FmtData.u.os2fam.heapsize ) {
-            PE64( h ).heap_commit_size.u._32[0] = FmtData.u.os2fam.heapsize;
-            PE64( h ).heap_commit_size.u._32[1] = 0;
-        } else {
-            PE64( h ).heap_commit_size.u._32[0] = FmtData.u.pe.heapcommit;
-            PE64( h ).heap_commit_size.u._32[1] = 0;
+        if( size > FmtData.u.pe.heapcommit ) {
+            size = FmtData.u.pe.heapcommit;
         }
+        PE64( h ).heap_commit_size.u._32[0] = size;
+        PE64( h ).heap_commit_size.u._32[1] = 0;
         PE64( h ).num_tables = PE_TBL_NUMBER;
         CurrSect = Root;
         SeekLoad( 0 );
