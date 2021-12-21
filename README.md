@@ -13,17 +13,16 @@
 
 For more information about the project and build instructions see the GitHub wiki.
 
-Discuss the Project on Discord, Reddit or GitHub.
+Discuss the Project on GitHub, Reddit or on IRC.
 ----------------------------------------------------------------------------
-
-We now have an Official Discord server!
-Join the discussion [`here`](https://discord.gg/5WexPNn)!
-
-Reddit Server, join the discussion [`Open Watcom on Reddit`](https://www.reddit.com/r/OpenWatcom/)
 
 GitHub, join the discussion [`Open Watcom on GitHub`](https://github.com/open-watcom/open-watcom-v2/discussions)
 
+Reddit Server, join the discussion [`Open Watcom on Reddit`](https://www.reddit.com/r/OpenWatcom/)
+
 [`Oficial OpenWatcom site`](https://openwatcom.org) is down for long time, it looks like it is dead.
+
+Discord server [`here`](https://discord.gg/5WexPNn)
 
 Source Tree Layout
 ------------------
