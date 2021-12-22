@@ -20,7 +20,7 @@ GitHub, join the discussion [`Open Watcom on GitHub`](https://github.com/open-wa
 
 Reddit Server, join the discussion [`Open Watcom on Reddit`](https://www.reddit.com/r/OpenWatcom/)
 
-Discord Server for Open Watcom 2.0 [`Open Watcom 2.0 on Discord`](https://discord.gg/KQc6PRjzqB)
+Discord Server for Open Watcom 2.0 [`Open Watcom 2.0 on Discord`](https://discord.gg/39w5wZM89p)
 
 This Discord Server is Moderated by Open Watcom 2.0 Github group, to exclude spam, unrelated discussion about personal opinions etc.
 It is dedicated for user and developer help with Open Watcom 2.0.
