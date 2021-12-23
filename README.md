@@ -22,8 +22,9 @@ Reddit Server, join the discussion [`Open Watcom on Reddit`](https://www.reddit.
 
 Discord Server for Open Watcom 2.0, use following [invite link](https://discord.gg/39w5wZM89p) to setup access to Open Watcom 2.0 Discord server.
 
-This Discord Server is Moderated by Open Watcom 2.0 Github group, to exclude spam, unrelated discussion about personal opinions etc.
-It is dedicated for user and developer help with Open Watcom 2.0.
+This Discord Server is moderated by the Open Watcom 2.0 Github group to remove spam, unrelated discussions about personal opinions, etc. It is intended for user and developer assistance with Open Watcom 2.0. It is possible to ask about an older version of Open Watcom, but it is primarily for Open Watcom V2.
+
+Other general Discord server for "Open Watcom" exists [invite link](https://discord.gg/5WexPNn), it is for older versions of Open Watcom.
 
 [`Oficial OpenWatcom site`](https://openwatcom.org) is down for long time, it looks like it is dead.
 
