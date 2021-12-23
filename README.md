@@ -24,7 +24,7 @@ Discord Server for Open Watcom 2.0, use following [invite link](https://discord.
 
 This Discord Server is moderated by the Open Watcom 2.0 Github group to remove spam, unrelated discussions about personal opinions, etc. It is intended for user and developer assistance with Open Watcom 2.0. It is possible to ask about an older version of Open Watcom, but it is primarily for Open Watcom V2.
 
-Other general Discord server for "Open Watcom" exists [invite link](https://discord.gg/5WexPNn), it is mainly for older versions of Open Watcom.
+Other general Discord server for "Open Watcom" exists [invite link](https://discord.gg/5WexPNn). It is mainly for older versions of Open Watcom.
 
 [`Oficial OpenWatcom site`](https://openwatcom.org) is down for long time, it looks like it is dead.
 
