@@ -2370,7 +2370,12 @@ static void emitUsageH( void )
             fprintf( ufp, "pick((%s+%d), ", optFlag.rc_macro, line_offs++ );
             emitQuotedString( ufp, getLangData( outputdata, LANG_English ), false, false );
             fprintf( ufp, ", " );
-            emitQuotedString( ufp, getLangData( outputdata, LANG_Japanese ), false, false );
+            str = getLangData( outputdata, LANG_Japanese );
+            if( !optFlag.out_utf8 ) {
+                utf8_to_cp932( str, tmpbuff );
+                str = tmpbuff;
+            }
+            emitQuotedString( ufp, str, false, false );
             fprintf( ufp, ")\n" );
         }
     } else {
