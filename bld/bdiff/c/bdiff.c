@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,10 +65,10 @@ static void Usage( void )
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
 
-    i = MSG_USAGE_FIRST;
+    i = MSG_USAGE_BASE;
     GetMsg( msgbuf, i );
     printf( msgbuf, "bdiff" );
-    for( i = i + 1; i < MSG_USAGE_FIRST + MSG_USAGE_COUNT; i++ ) {
+    for( i = i + 1; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         GetMsg( msgbuf, i );
         if( msgbuf[0] == '\0' )
             break;
@@ -141,14 +141,14 @@ static algorithm ParseArgs( int argc, char **argv )
 }
 
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     long        savings;
     foff        buffsize;
     algorithm   alg;
 
     if( !MsgInit() )
-        exit( EXIT_FAILURE );
+        return( EXIT_FAILURE );
     alg = ParseArgs( argc, argv );
 
     EndOld = FileSize( argv[1], &OldCorrection );
@@ -176,7 +176,7 @@ void main( int argc, char **argv )
     if( NumHoles == 0 && DiffSize == 0 && EndOld == EndNew ) {
         printf( "Patch file not created - files are identical\n" );
         MsgFini();
-        exit( EXIT_SUCCESS );
+        return( EXIT_SUCCESS );
     }
     MakeHoleArray();
     SortHoleArray();
@@ -189,6 +189,6 @@ void main( int argc, char **argv )
     print_stats( savings );
 
     MsgFini();
-    exit( EXIT_SUCCESS );
+    return( EXIT_SUCCESS );
 }
 

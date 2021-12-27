@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,9 +40,6 @@
 #define MXFNAME         130
 #define BUFSIZE         0x4000
 
-static void Fatal( char *, char * );
-static void Usage( void );
-
 static char *Buffer;
 static char *Usetext[] = {
     "Usage: bpcmt comment_file patch_file",
@@ -51,7 +48,31 @@ static char *Usetext[] = {
 
 static char TmpExt[] = "A";
 
-void main( int argc, char *argv[] )
+static void Fatal( char *reason, char *insert )
+/* the reason doesn't have to be good */
+{
+    for( ; *reason; ++reason ) {
+        if( *reason == '*' ) {
+            fputs( insert, stdout );
+        } else {
+            fputc( *reason, stdout );
+        }
+    }
+    puts( "\nbpcmt aborted" );
+    exit( EXIT_FAILURE );
+}
+
+static void Usage( void )
+{
+    char **text;
+
+    for( text = Usetext; *text != NULL; ++text ) {
+        puts( *text );
+    }
+    exit( EXIT_FAILURE );
+}
+
+int main( int argc, char *argv[] )
 {
     size_t      size, bufsize;
     char        outfile[_MAX_PATH], infile[_MAX_PATH];
@@ -137,30 +158,5 @@ void main( int argc, char *argv[] )
         Fatal( "Cannot erase file '*'", infile );
     if( rename( outfile, infile ) )
         Fatal( "Cannot rename file '*'", outfile );
-    exit( EXIT_SUCCESS );
-}
-
-static void Fatal( char *reason, char *insert )
-/* the reason doesn't have to be good */
-{
-    for( ; *reason; ++reason ) {
-        if( *reason == '*' ) {
-            fputs( insert, stdout );
-        } else {
-            fputc( *reason, stdout );
-        }
-    }
-    puts( "\nbpcmt aborted" );
-    exit( EXIT_FAILURE );
-}
-
-
-static void Usage( void )
-{
-    char **text;
-
-    for( text = Usetext; *text != NULL; ++text ) {
-        puts( *text );
-    }
-    exit( EXIT_FAILURE );
+    return( EXIT_SUCCESS );
 }

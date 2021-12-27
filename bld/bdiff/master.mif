@@ -137,15 +137,15 @@ rcui_inc_dirs = -I..
 
 pusage.gh : ../usage.sp
     @%make echo_wsplice
-    $(wsplice) -kBPATCH -kENGLISH -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
+    $(wsplice) -kBPATCH -kENGLISH -t8 -f "pick(MSG_USAGE_BASE+%$#%+, \"%s\", \"\")" $[@ $@
 
 pusagej.gh : ../usage.sp
     @%make echo_wsplice
-    $(wsplice) -kBPATCH -kJAPANESE -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"\", \"%s\")" $[@ $@
+    $(wsplice) -kBPATCH -kJAPANESE -t8 -f "pick(MSG_USAGE_BASE+%$#%+, \"\", \"%s\")" $[@ $@
 
 dusage.gh : ../usage.sp
     @%make echo_wsplice
-    $(wsplice) -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
+    $(wsplice) -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(MSG_USAGE_BASE+%$#%+, \"%s\", \"\")" $[@ $@
 
 bpatch.res bdump.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
     @%make echo_rc

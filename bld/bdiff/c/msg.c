@@ -62,7 +62,7 @@ bool MsgInit( void )
     hInstance.status = 0;
     if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
         MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( GetMsg( msgbuf, MSG_USAGE_FIRST ) ) {
+        if( GetMsg( msgbuf, MSG_USAGE_BASE ) ) {
             return( true );
         }
     }

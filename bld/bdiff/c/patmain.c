@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ static void Usage( void )
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
 
-    i = MSG_USAGE_FIRST;
+    i = MSG_USAGE_BASE;
     PrintBanner();
     GetMsg( msgbuf, i );
 #ifdef BPATCH
@@ -74,7 +74,7 @@ static void Usage( void )
     printf( msgbuf, "bdump" );
 #endif
     printf( "\n" );
-    for( i = i + 1; i < MSG_USAGE_FIRST + MSG_USAGE_COUNT; i++ ) {
+    for( i = i + 1; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         GetMsg( msgbuf, i );
         if( msgbuf[0] == 0 )
             break;
@@ -85,7 +85,7 @@ static void Usage( void )
     exit( EXIT_FAILURE );
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     int         i;
     char        *target;
@@ -95,7 +95,7 @@ void main( int argc, char **argv )
     char        *patchname = NULL;
 
     if( !MsgInit() )
-        exit( EXIT_FAILURE );
+        return( EXIT_FAILURE );
     if( argc < 2 )
         Usage();
     for( i = 1; argv[i] != NULL; ++i ) {
@@ -136,5 +136,5 @@ void main( int argc, char **argv )
     }
     DoPatch( patchname, doprompt, dobackup, printlevel, NULL );
     MsgFini();
-    exit( EXIT_SUCCESS );
+    return( EXIT_SUCCESS );
 }

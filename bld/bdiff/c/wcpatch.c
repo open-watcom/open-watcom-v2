@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@ void    DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] );
 void    DirCmpFiles( const char *srcDir, char *srcFiles[], const char *tgtDir, char *tgtFiles[], int Dirflag );
 
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     MsgInit();
     if( argc != 4 ) {
@@ -77,6 +77,7 @@ void main( int argc, char *argv[] )
     glob.origTgtDirLen = strlen( argv[2] );
     WPatchCreate( argv[1], argv[2], argv[3] );
     MsgFini();
+    return( EXIT_SUCCESS );
 }
 
 void WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )
