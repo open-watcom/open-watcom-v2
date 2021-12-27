@@ -86,7 +86,7 @@ exetarg_name        = wpatch
 #
 # BPATCH.
 #
-exetarg_prebuild_objs = $(subdir_bpatch) pusage.gh
+exetarg_prebuild_objs = $(subdir_bpatch) ppusage.gh
 exetarg_objs = &
     $(subdir_bpatch)/bpatch.obj &
     $(subdir_bpatch)/dopatch.obj &
@@ -102,7 +102,7 @@ exetarg_name        = bpatch
 #
 # BDUMP.
 #
-exetarg_prebuild_objs = $(subdir_bdump) pusage.gh
+exetarg_prebuild_objs = $(subdir_bdump) pdusage.gh
 exetarg_objs = &
     $(subdir_bdump)/dopatch.obj &
     $(subdir_bdump)/msg.obj &
@@ -135,21 +135,34 @@ exetarg_name        = bdiff
 #
 rcui_inc_dirs = -I..
 
-pusage.gh : ../usage.sp
+ppusage.gh : ../usage.sp
     @%make echo_wsplice
     $(wsplice) -kBPATCH -kENGLISH -t8 -f "pick(MSG_USAGE_BASE+%$#%+, \"%s\", \"\")" $[@ $@
 
-pusagej.gh : ../usage.sp
+ppusagej.gh : ../usage.sp
     @%make echo_wsplice
     $(wsplice) -kBPATCH -kJAPANESE -t8 -f "pick(MSG_USAGE_BASE+%$#%+, \"\", \"%s\")" $[@ $@
+
+pdusage.gh : ../usage.sp
+    @%make echo_wsplice
+    $(wsplice) -kBDUMP -kENGLISH -t8 -f "pick(MSG_USAGE_BASE+%$#%+, \"%s\", \"\")" $[@ $@
+
+pdusagej.gh : ../usage.sp
+    @%make echo_wsplice
+    $(wsplice) -kBDUMP -kJAPANESE -t8 -f "pick(MSG_USAGE_BASE+%$#%+, \"\", \"%s\")" $[@ $@
+
 
 dusage.gh : ../usage.sp
     @%make echo_wsplice
     $(wsplice) -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(MSG_USAGE_BASE+%$#%+, \"%s\", \"\")" $[@ $@
 
-bpatch.res bdump.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
+bpatch.res : ../bpatch.rc ../h/bpatch.h ppusage.gh ppusagej.gh
     @%make echo_rc
     $(rcui) -DBPATCH
+
+bdump.res : ../bpatch.rc ../h/bpatch.h pdusage.gh pdusagej.gh
+    @%make echo_rc
+    $(rcui) -DBDUMP
 
 bdiff.res : ../bpatch.rc ../h/bpatch.h dusage.gh
     @%make echo_rc

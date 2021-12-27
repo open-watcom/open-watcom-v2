@@ -38,7 +38,11 @@
 enum {
     MSG_USAGE_COUNT = 0
     #define pick(c,e,j) + 1
-    #include "pusage.gh"
+#if defined( BPATCH )
+    #include "ppusage.gh"
+#elif defined( BDUMP )
+    #include "pdusage.gh"
+#endif
     #undef pick
 };
 
@@ -48,9 +52,9 @@ static void PrintBanner( void )
 
     if( !banner_printed ) {
         banner_printed = true;
-#ifdef BPATCH
+#if defined( BPATCH )
         printf( banner1w( "BPATCH", _BPATCH_VERSION_ ) "\n" );
-#else
+#elif defined( BDUMP )
         printf( banner1w( "BDUMP", _BPATCH_VERSION_ ) "\n" );
 #endif
         printf( banner2 "\n" );
@@ -68,9 +72,9 @@ static void Usage( void )
     i = MSG_USAGE_BASE;
     PrintBanner();
     GetMsg( msgbuf, i );
-#ifdef BPATCH
+#if defined( BPATCH )
     printf( msgbuf, "bpatch" );
-#else
+#elif defined( BDUMP )
     printf( msgbuf, "bdump" );
 #endif
     printf( "\n" );

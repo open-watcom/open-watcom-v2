@@ -7,7 +7,9 @@ BEGIN
 
     #include "bpatch.msg"
   #if defined( BPATCH )
-    #include "pusage.gh"
+    #include "ppusage.gh"
+  #elif defined( BDUMP )
+    #include "pdusage.gh"
   #elif defined( BDIFF )
     #include "dusage.gh"
   #else
@@ -20,7 +22,9 @@ BEGIN
 
     #include "bpatch.msg"
   #if defined( BPATCH )
-    #include "pusagej.gh"
+    #include "ppusagej.gh"
+  #elif defined( BDUMP )
+    #include "pdusagej.gh"
   #elif defined( BDIFF )
     #include "dusage.gh"
   #else
