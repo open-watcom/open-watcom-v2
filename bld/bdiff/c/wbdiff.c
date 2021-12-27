@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,7 +100,7 @@ int DoBdiff( const char *srcPath, const char *tgtPath, const char *name )
     FindRegions();
 
     if( NumHoles == 0 && DiffSize == 0 && EndOld == EndNew ) {
-        printf( "Patch file not created - files are identical\n" );
+        puts( "Patch file not created - files are identical" );
         MsgFini();
         exit( EXIT_SUCCESS );
     }

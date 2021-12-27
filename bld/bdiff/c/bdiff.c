@@ -174,7 +174,7 @@ int main( int argc, char **argv )
     }
 
     if( NumHoles == 0 && DiffSize == 0 && EndOld == EndNew ) {
-        printf( "Patch file not created - files are identical\n" );
+        puts( "Patch file not created - files are identical" );
         MsgFini();
         return( EXIT_SUCCESS );
     }

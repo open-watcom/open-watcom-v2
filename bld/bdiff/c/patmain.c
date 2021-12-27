@@ -53,14 +53,14 @@ static void PrintBanner( void )
     if( !banner_printed ) {
         banner_printed = true;
 #if defined( BPATCH )
-        printf( banner1w( "BPATCH", _BPATCH_VERSION_ ) "\n" );
+        puts( banner1w( "BPATCH", _BPATCH_VERSION_ ) );
 #elif defined( BDUMP )
-        printf( banner1w( "BDUMP", _BPATCH_VERSION_ ) "\n" );
+        puts( banner1w( "BDUMP", _BPATCH_VERSION_ ) );
 #endif
-        printf( banner2 "\n" );
-        printf( banner2a( 1990 ) "\n" );
-        printf( banner3 "\n" );
-        printf( banner3a "\n" );
+        puts( banner2 );
+        puts( banner2a( 1990 ) );
+        puts( banner3 );
+        puts( banner3a );
     }
 }
 
@@ -69,24 +69,10 @@ static void Usage( void )
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
 
-    i = MSG_USAGE_BASE;
-    PrintBanner();
-    GetMsg( msgbuf, i );
-#if defined( BPATCH )
-    printf( msgbuf, "bpatch" );
-#elif defined( BDUMP )
-    printf( msgbuf, "bdump" );
-#endif
-    printf( "\n" );
-    for( i = i + 1; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
+    for( i = MSG_USAGE_BASE; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         GetMsg( msgbuf, i );
-        if( msgbuf[0] == 0 )
-            break;
-        printf( "\n" );
-        printf( msgbuf );
+        puts( msgbuf );
     }
-    MsgFini();
-    exit( EXIT_FAILURE );
 }
 
 int main( int argc, char **argv )
@@ -96,49 +82,60 @@ int main( int argc, char **argv )
     bool        doprompt = true;
     bool        dobackup = true;
     bool        printlevel = false;
+    bool        printusage = false;
     char        *patchname = NULL;
+    int         rc;
+    int         err;
 
-    if( !MsgInit() )
-        return( EXIT_FAILURE );
-    if( argc < 2 )
-        Usage();
-    for( i = 1; argv[i] != NULL; ++i ) {
-        if( argv[i][0] == '-' ) {
-            switch( tolower( argv[i][1] ) ) {
-            case 'p':
-                doprompt = false;
-                break;
-            case 'b':
-                dobackup = false;
-                break;
-            case 'f':           /* specify full pathname of file to patch */
-                ++i;
-                target = argv[i];
-                break;
-            case 'q':
-                printlevel = true;
-                break;
-            default:
-                Usage();
-                break;
+    rc = EXIT_FAILURE;
+    if( MsgInit() ) {
+        err = 0;
+        if( argc < 2 ) {
+            printusage = true;
+        } else {
+            for( i = 1; argv[i] != NULL; ++i ) {
+                if( argv[i][0] == '-' ) {
+                    switch( tolower( argv[i][1] ) ) {
+                    case 'p':
+                        doprompt = false;
+                        break;
+                    case 'b':
+                        dobackup = false;
+                        break;
+                    case 'f':           /* specify full pathname of file to patch */
+                        ++i;
+                        target = argv[i];
+                        break;
+                    case 'q':
+                        printlevel = true;
+                        break;
+                    default:
+                        printusage = true;
+                        break;
+                    }
+                } else if( argv[i][0] == '?' ) {
+                    printusage = true;
+                } else {
+                    if( patchname != NULL ) {
+                        err = ERR_TWO_NAMES;
+                    }
+                    patchname = argv[i];
+                }
             }
-        } else if( argv[i][0] == '?' ) {
+            if( patchname == NULL && !printusage ) {
+                err = ERR_NO_NAME;
+            }
+        }
+        PrintBanner();
+        if( err ) {
+            PatchError( err );
+        } else if( printusage ) {
             Usage();
         } else {
-            if( patchname != NULL ) {
-                if( doprompt ) {
-                    PrintBanner();
-                }
-                PatchError( ERR_TWO_NAMES );
-            }
-            patchname = argv[i];
+            DoPatch( patchname, doprompt, dobackup, printlevel, NULL );
+            rc = EXIT_SUCCESS;
         }
+        MsgFini();
     }
-    PrintBanner();
-    if( patchname == NULL ) {
-        PatchError( ERR_NO_NAME );
-    }
-    DoPatch( patchname, doprompt, dobackup, printlevel, NULL );
-    MsgFini();
-    return( EXIT_SUCCESS );
+    return( rc );
 }

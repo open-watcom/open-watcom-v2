@@ -39,9 +39,9 @@
 
 static void Usage( void )
 {
-    printf( "Usage: bplevel <executable> <patch_file>\n" );
-    printf( "       Set the executable's patch level to that indicated\n" );
-    printf( "       by the patch file.\n" );
+    puts( "Usage: bplevel <executable> <patch_file>" );
+    puts( "       Set the executable's patch level to that indicated" );
+    puts( "       by the patch file." );
     exit( EXIT_FAILURE );
 }
 
@@ -61,11 +61,11 @@ int main( int argc, char **argv )
     stat( argv[1], &info );
     fd = fopen( argv[1], "wb" );
     if( fd == NULL ) {
-        printf( "Can not open executable\n" );
+        puts( "Can not open executable" );
         return( EXIT_FAILURE );
     }
     if( fseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != 0  ) {
-        printf( "Error seeking on executable\n" );
+        puts( "Error seeking on executable" );
         return( EXIT_FAILURE );
     }
     pos = ftell( fd );

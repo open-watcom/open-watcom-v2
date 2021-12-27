@@ -60,15 +60,17 @@ int main( int argc, char *argv[] )
 {
     MsgInit();
     if( argc != 3 ) {
-        printf( "Usage: WPATCH patchfile target-dir\n" );
-        printf( "    where target-dir is the directory containing files to be modified,\n" );
-        printf( "    and patchfile contains patch information for modifying target-dir.\n" );
-        printf( "    (as created by WCPATCH)\n\n" );
+        puts( "Usage: WPATCH patchfile target-dir" );
+        puts( "    where target-dir is the directory containing files to be modified" );
+        puts( "    and patchfile contains patch information for modifying target-dir" );
+        puts( "    (as created by WCPATCH)" );
+        puts( "" );
         exit( -2 );
     } else {
-        printf( "Watcom Patch version 11.0\n" );
-        printf( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.\n");
-        printf( "All rights reserved.  Watcom is a trademark of Sybase, Inc.\n\n");
+        puts( "Watcom Patch version 11.0" );
+        puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries." );
+        puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc." );
+        puts( "" );
     }
     WPatchApply( argv[1], argv[2] );
     MsgFini();

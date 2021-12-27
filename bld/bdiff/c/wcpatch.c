@@ -62,15 +62,18 @@ int main( int argc, char *argv[] )
 {
     MsgInit();
     if( argc != 4 ) {
-        printf( "Usage: wcpatch source-dir target-dir patchfile\n" );
-        printf( "    where source-dir is the directory containing the original files,\n" );
-        printf( "    target-dir is the directory containing the modified files,\n" );
-        printf( "    and patchfile is the path to store the resulting patchfile in.\n\n" );
+        puts( "Usage: wcpatch source-dir target-dir patchfile" );
+        puts( "where" );
+        puts( "    source-dir   the directory containing the original files" );
+        puts( "    target-dir   the directory containing the modified files" );
+        puts( "    patchfile    the path to store the resulting patchfile in" );
+        puts( "" );
         exit( -2 );
     } else {
-        printf( "Watcom Create Patch (WCPATCH) version 11.0\n" );
-        printf( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.\n");
-        printf( "All rights reserved.  Watcom is a trademark of Sybase, Inc.\n\n");
+        puts( "Watcom Create Patch (WCPATCH) version 11.0" );
+        puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.");
+        puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc.");
+        puts( "" );
     }
 
     glob.origSrcDirLen = strlen( argv[1] );

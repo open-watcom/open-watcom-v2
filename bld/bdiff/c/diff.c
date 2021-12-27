@@ -1505,21 +1505,21 @@ void dump( void )
 {
     region *reg;
 
-    printf( "        Similarities\n"
-            "        ============\n" );
-    printf( "O Offset  N Offset      Size\n" );
+    puts( "        Similarities" );
+    puts( "        ============" );
+    puts( "O Offset  N Offset      Size" );
     for( reg = SimilarRegions; reg; reg = reg->next ) {
         printf( "%8lx  %8lx  %8lx\n",reg->old_start,reg->new_start,reg->size);
     }
-    printf( "    Differences\n"
-            "    ===========\n" );
-    printf( "N Offset      Size\n" );
+    puts( "    Differences" );
+    puts( "    ===========" );
+    puts( "N Offset      Size" );
     for( reg = DiffRegions; reg; reg = reg->next ) {
         printf( "%8lx  %8lx\n",reg->new_start,reg->size);
     }
-    printf( "           Holes\n"
-            "           =====\n" );
-    printf( "O Offset  N Offset  Difference\n" );
+    puts( "           Holes" );
+    puts( "           =====" );
+    puts( "O Offset  N Offset  Difference" );
     for( reg = HoleRegions; reg; reg = reg->next ) {
         printf( "%8lx  %8lx  %8lx\n",reg->old_start,reg->new_start,reg->diff);
     }
