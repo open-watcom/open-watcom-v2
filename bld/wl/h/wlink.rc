@@ -4,7 +4,6 @@
 
 #include "wlnkmsg.rh"
 #include "wreslang.rh"
-#include "rcmsg.gh"
 
 STRINGTABLE
 BEGIN

@@ -25,7 +25,7 @@ inc_dirs = -I. -I".." $(commonui_inc_dirs)
 #
 # EXE
 #
-exetarg_prebuild_objs = rcstr.gh
+exetarg_prebuild_objs = rcstr.grh
 exetarg_objs          = uninstal.obj
 exetarg_libs          = $(commonui_lib)
 exetarg_res_version_nt_386  = exever.res
@@ -48,7 +48,7 @@ ntmanif.res : ../ntmanif.rc
     @%make echo_rc
     $(rc) $(rc_flags) -I.. $(inc_dirs_sys_nt) $< -fo=$@
 
-rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
+rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 

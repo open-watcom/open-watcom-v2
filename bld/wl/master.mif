@@ -87,7 +87,7 @@ exetarg_prebuild_objs = $(extra_link_res_$(host_os)) $(dlltarg_name).dll
 exetarg_objs          = $(comp_objs_drv)
 exetarg_libs          = $(dlltarg_name).lib
 !else
-exetarg_prebuild_objs = $(extra_link_res_$(host_os)) rcmsg.gh
+exetarg_prebuild_objs = $(extra_link_res_$(host_os)) rcmsg.grh
 exetarg_objs          = $(comp_objs_exe)
 !ifdef no_orl
 exetarg_libs          = $(wres_lib) $(dwarfw_lib)
@@ -104,7 +104,7 @@ exetarg_qnx_res       = usage.u
 #
 # DLL
 #
-dlltarg_prebuild_objs = $(dll_subdir) rcmsg.gh
+dlltarg_prebuild_objs = $(dll_subdir) rcmsg.grh
 dlltarg_objs          = $(comp_objs_dll)
 !ifdef no_orl
 dlltarg_libs          = $(wres_lib) $(dwarfw_lib)
@@ -125,11 +125,11 @@ verrc_dll = $(dlltarg_name)
 
 rcui_inc_dirs = -I. -I"$(wrc_dir)/h" -I"../h"
 
-wresui.res : ../h/wlink.rc rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg $(__MAKEFILES__)
+wresui.res : ../h/wlink.rc rcmsg.grh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8)
 
-rcmsg.gh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
+rcmsg.grh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 

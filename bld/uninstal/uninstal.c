@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,7 +34,7 @@
 #include <shellapi.h>
 #include <shlobj.h>
 #include "ldstr.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 #include "progress.h"
 #include "cguimem.h"
 
