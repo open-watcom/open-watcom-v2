@@ -123,7 +123,7 @@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh : ../../gml/wfcmsgs.gml
     @%make echo_msgencod
     $(noecho)*msgencod -s -ip -q -rc=MSG_LANG_BASE $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh
 
-# optencod options and targets for various hosts
+# .gh options and targets for various hosts
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u $(exetarg_qnx_res)
 !endif
@@ -136,7 +136,7 @@ opt_targets = $(target_cpu) $(host_os) $(optencod_targ_dbg) $(optencod_targ_$(ta
 
 usage.gh $(exetarg_$(host_os)_res) : ../../../gml/wfxopts.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q -rc MSG_USAGE_BASE $(optencod_opt_$(host_os)) $[@ . . $@ $(opt_targets)
+    $(noecho)optencod -q -rc MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(opt_targets)
 
 echo_msgencod : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

@@ -163,7 +163,7 @@ all : $(all_as) .symbolic
 #
 # EXE
 #
-exetarg_prebuild_objs = $(subdir_stand) msg.gh usage.gh
+exetarg_prebuild_objs = $(subdir_stand) msg.grh usage.gh
 exetarg_objs = $(as_objs)
 exetarg_libs = $(owl_lib) $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
@@ -174,7 +174,7 @@ exetarg_res_wresui = wresui.res
 #
 # LIB
 #
-libtarg_prebuild_objs = $(subdir_lib) asi_msg.gh
+libtarg_prebuild_objs = $(subdir_lib) asi_msg.grh
 libtarg_objs = $(asi_objs)
 libtarg_name = asinline
 !include libtarg.mif
@@ -185,17 +185,17 @@ libtarg_name = asinline
 verrc_exe = $(exetarg_name)
 !include verrc.mif
 
-wresui.res : $(as_dir)/h/as.rc msg.gh usage.gh $(__MAKEFILES__)
+wresui.res : $(as_dir)/h/as.rc msg.grh usage.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui) $(cppflags) -D_STANDALONE_
+    $(rcui8) $(cppflags) -D_STANDALONE_
 
-msg.gh : $(as_dir)/h/as.msg $(__MAKEFILES__)
+msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) $(cppflags) -D_STANDALONE_ -omsg.tmp $[@
     @%make echo_awk
     $(awk) -v base=MSG_AS_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. msg.tmp
 
-asi_msg.gh : $(as_dir)/h/as.msg $(__MAKEFILES__)
+asi_msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) $(cppflags) -oasi_msg.tmp $[@
     @%make echo_awk
@@ -251,7 +251,7 @@ optencod_targ_dbg   = dbg
 
 usage.gh $(exetarg_$(host_os)_res) : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q -rc MSG_USAGE_BASE $(optencod_opt_$(host_os)) $[@ . . $@ $(host_os) $(target_cpu) $(optencod_targ_dbg)
+    $(noecho)optencod -q -rc MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(host_os) $(target_cpu) $(optencod_targ_dbg)
 
 echo_optencod : .PROCEDURE .EXPLICIT
 !ifeq verbose 0

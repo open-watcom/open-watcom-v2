@@ -1,3 +1,5 @@
+/* UTF-8 encoding, Y */
+
 #include "msg.rh"
 #include "wreslang.rh"
 
