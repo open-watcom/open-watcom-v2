@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "ctltype.h"
 #include "dyntpl.h"
 #include "fts.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 #include <assert.h>
 #include "wclbproc.h"
 #include "winctl.h"

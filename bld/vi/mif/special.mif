@@ -1,6 +1,6 @@
 !ifeq sys_windowed 1
 
-special = rcstr.gh
+special = rcstr.grh
 
 !endif
 

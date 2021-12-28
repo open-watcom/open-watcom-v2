@@ -36,7 +36,7 @@
 #include "color.h"
 #include "bitmap.h"
 #include "wresdefn.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 
 
 #define BORDER_X( x )           ((x) / 4)

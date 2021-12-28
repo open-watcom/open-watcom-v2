@@ -114,7 +114,7 @@ dll_objs = $+$(wlib_template)$- $(dll_objs_$(host_os))
 _subdir_ =
 exe_objs = $+$(wlib_template)$- $(drv_objs)
 
-prebuild_objs = usagew.gh usagea.gh msg.gh
+prebuild_objs = usagew.gh usagea.gh msg.grh
 
 #
 # EXE
@@ -171,11 +171,11 @@ verrc_exe = $(exetarg_name)
 verrc_dll = $(dlltarg_name)
 !include verrc.mif
 
-wresui.res : ../wlib.rc ../wlib.msg msg.gh $(__MAKEFILES__)
+wresui.res : ../wlib.rc ../wlib.msg msg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8)
 
-msg.gh :  ../wlib.msg $(__MAKEFILES__)
+msg.grh :  ../wlib.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 

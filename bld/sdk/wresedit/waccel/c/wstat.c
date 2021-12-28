@@ -37,7 +37,8 @@
 #include "wmain.h"
 #include "wstat.h"
 #include "ldstr.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */

@@ -43,7 +43,6 @@
 #include "wrestat.h"
 #include "wremsg.h"
 #include "ldstr.h"
-#include "rcstr.gh"
 #include "wreres.h"
 #include "wremain.h"
 #include "wre_wres.h"

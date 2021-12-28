@@ -1,4 +1,4 @@
-special = rcstr.gh
+special = rcstr.grh
 
 objwiny = &
     main.obj mainwnd.obj editwnd.obj dosdir.obj time.obj &

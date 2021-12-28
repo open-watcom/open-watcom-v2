@@ -43,7 +43,7 @@
 #include "wrestrdp.h"
 #include "wrewait.h"
 #include "wrtmpfil.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 #include "preproc.h"
 #include "wresym.h"
 #include "wresdefn.h"

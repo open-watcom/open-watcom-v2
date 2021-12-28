@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,25 +31,60 @@
 ****************************************************************************/
 
 
-#define IDM_MENUEDRNAME         200
-#define IDM_MENUEDBLACKLINE     201
-#define IDM_MENUEDID            202
-#define IDM_MENUEDNUM           203
-#define IDM_MENUEDPOPUP         204
-#define IDM_MENUEDNORMAL        205
-#define IDM_MENUEDCHECKED       206
-#define IDM_MENUEDGRAYED        207
-#define IDM_MENUEDINACTIVE      208
-#define IDM_MENUEDHELP          209
-#define IDM_MENUEDMENU          210
-#define IDM_MENUEDMENUBAR       211
-#define IDM_MENUEDTESTPOS       212
-#define IDM_MENUEDLIST          213
-#define IDM_MENUEDTEXT          214
-#define IDM_MENUEDSEP           215
-#define IDM_MENUEDSETMENU       216
-#define IDM_MENUEDINSERT        217
-#define IDM_MENUEDCHANGE        218
-#define IDM_MENUEDSHIFTLEFT     219
-#define IDM_MENUEDSHIFTRIGHT    220
-#define IDM_MENUEDRESET         221
+/****************************************************************************/
+/* Menu Identifiers                                                         */
+/****************************************************************************/
+#define IDM_MENU_CLEAR          200
+#define IDM_MENU_UPDATE         201
+#define IDM_MENU_OPEN           202
+#define IDM_MENU_SAVE           203
+#define IDM_MENU_SAVEAS         204
+#define IDM_MENU_EXIT           205
+
+#define IDM_MENU_CUT            210
+#define IDM_MENU_COPY           211
+#define IDM_MENU_PASTE          212
+#define IDM_MENU_DELETE         213
+#define IDM_MENU_LOAD_SYMBOLS   214
+#define IDM_MENU_SYMBOLS        215
+#define IDM_MENU_SHOWRIBBON     216
+
+#define IDM_MENU_RENAME         220
+#define IDM_MENU_MEM_FLAGS      221
+#define IDM_MENU_SAVEINTO       222
+
+#define IDM_MENU_NEWITEM        230
+#define IDM_MENU_NEWPOPUP       231
+#define IDM_MENU_NEWSEPARATOR   232
+#define IDM_MENU_INSERTTOGGLE   233
+#define IDM_MENU_INSERTAFTER    234
+#define IDM_MENU_INSERTBEFORE   235
+#define IDM_MENU_INSERTSUBITEMS 236
+
+#define IDM_MENU_ABOUT          240
+
+/****************************************************************************/
+/* Dialog Identifiers                                                       */
+/****************************************************************************/
+#define IDM_MENUEDRNAME         250
+#define IDM_MENUEDBLACKLINE     251
+#define IDM_MENUEDID            252
+#define IDM_MENUEDNUM           253
+#define IDM_MENUEDPOPUP         254
+#define IDM_MENUEDNORMAL        255
+#define IDM_MENUEDCHECKED       256
+#define IDM_MENUEDGRAYED        257
+#define IDM_MENUEDINACTIVE      258
+#define IDM_MENUEDHELP          259
+#define IDM_MENUEDMENU          260
+#define IDM_MENUEDMENUBAR       261
+#define IDM_MENUEDTESTPOS       262
+#define IDM_MENUEDLIST          263
+#define IDM_MENUEDTEXT          264
+#define IDM_MENUEDSEP           265
+#define IDM_MENUEDSETMENU       266
+#define IDM_MENUEDINSERT        267
+#define IDM_MENUEDCHANGE        268
+#define IDM_MENUEDSHIFTLEFT     269
+#define IDM_MENUEDSHIFTRIGHT    270
+#define IDM_MENUEDRESET         271

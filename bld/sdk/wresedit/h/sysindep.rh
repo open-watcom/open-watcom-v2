@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +31,21 @@
 ****************************************************************************/
 
 
-#include "rename.rh"
+#include "rcstr.grh"
+#include "uistr.grh"
+
+#define IDM_NOINPUT         -1
 
 /****************************************************************************/
 /* Misc. Menu & control id's                                                */
 /****************************************************************************/
-#define IDM_HELP            197
-#define IDM_HELP_SEARCH     198
-#define IDM_HELP_ON_HELP    199
-#define IDM_NOINPUT         -1
+#define IDM_HELP            100
+#define IDM_HELP_SEARCH     101
+#define IDM_HELP_ON_HELP    102
+
+/****************************************************************************/
+/* Rename control id's                                                      */
+/****************************************************************************/
+#define IDM_RENOLD          110
+#define IDM_RENNEW          111
+

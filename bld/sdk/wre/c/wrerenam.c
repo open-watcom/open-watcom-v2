@@ -33,7 +33,6 @@
 
 #include "wreglbl.h"
 #include "wremsg.h"
-#include "rcstr.gh"
 #include "wremain.h"
 #include "wrenames.h"
 #include "wregcres.h"

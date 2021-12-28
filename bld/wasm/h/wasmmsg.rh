@@ -60,7 +60,7 @@
     #define MSG_SHARE_BASE      12000
 #endif
 
-#include "wasmcmsg.gh"
+#include "wasmcmsg.grh"
 #if defined( _STANDALONE_ )
-#include "wasmsmsg.gh"
+#include "wasmsmsg.grh"
 #endif

@@ -40,7 +40,7 @@ extra_l_flags_qnx = op off=8k
 #
 # EXE
 #
-exetarg_prebuild_objs = usage.gh msg.gh $(dis_prereq)
+exetarg_prebuild_objs = usage.gh msg.grh $(dis_prereq)
 exetarg_objs = &
     args.obj &
     buffer.obj &
@@ -81,7 +81,7 @@ exetarg_qnx_res       = usage.u
 
 rcui_inc_dirs = -I"../stand/h" -I"../stand"
 
-wresui.res : $(disasm_dir)/stand/h/wdis.rc usage.gh msg.gh $(__MAKEFILES__)
+wresui.res : $(disasm_dir)/stand/h/wdis.rc usage.gh msg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8)
 
@@ -93,7 +93,7 @@ distbls.gh : ./disbuild.exe $(__MAKEFILES__)
     @%make echo_bldcl
     $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
 
-msg.gh : ../stand/wdis.msg $(__MAKEFILES__)
+msg.grh : ../stand/wdis.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 

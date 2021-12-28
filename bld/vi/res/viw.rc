@@ -15,8 +15,8 @@
 #include "ftbar.rh"
 #include "ssbar.rh"
 #include "repdlg.rh"
-#include "rcstr.gh"
-#include "uistr.gh"
+#include "rcstr.grh"
+#include "uistr.grh"
 
 #define FIRST_COPYRIGHT_YEAR 1989
 

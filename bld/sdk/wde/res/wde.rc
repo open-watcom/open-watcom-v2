@@ -2,8 +2,7 @@
 #include "about.rh"
 #include "banner.h"
 #include "wde.rh"
-#include "rcstr.gh"
-#include "uistr.gh"
+
 
 #define FIRST_COPYRIGHT_YEAR 1984
 

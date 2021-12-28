@@ -40,7 +40,7 @@
 #include "wresall.h"
 #include "wmsg.h"
 #include "ldstr.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 #include "wrdll.h"
 #include "w_menu.h"
 

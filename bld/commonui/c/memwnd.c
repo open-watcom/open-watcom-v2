@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@
 #include "memwnd.h"
 #include "deasm.h"
 #include "ldstr.h"
-#include "uistr.gh"
+#include "uistr.grh"
 #include "wclbproc.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"

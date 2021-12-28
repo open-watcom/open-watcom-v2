@@ -36,7 +36,8 @@
 #include "statwnd.h"
 #include "wdemsgbx.h"
 #include "wdestat.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */

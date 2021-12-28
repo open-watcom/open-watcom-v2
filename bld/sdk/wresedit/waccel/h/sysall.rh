@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,36 +43,5 @@
 /* System dependent identifiers                                             */
 /****************************************************************************/
 #include "accedit.rh"
-
-/****************************************************************************/
-/* Menu Identifiers                                                         */
-/****************************************************************************/
-
-/****************************************************************************/
-/* Accelerator Menu ID's                                                    */
-/****************************************************************************/
-#define IDM_ACC_CLEAR           100
-#define IDM_ACC_UPDATE          101
-#define IDM_ACC_OPEN            102
-#define IDM_ACC_SAVE            103
-#define IDM_ACC_SAVEAS          104
-#define IDM_ACC_EXIT            105
-
-#define IDM_ACC_CUT             110
-#define IDM_ACC_COPY            111
-#define IDM_ACC_PASTE           112
-#define IDM_ACC_DELETE          113
-#define IDM_ACC_LOAD_SYMBOLS    114
-#define IDM_ACC_SYMBOLS         115
-#define IDM_ACC_SHOWRIBBON      116
-
-#define IDM_ACC_RENAME          120
-#define IDM_ACC_MEM_FLAGS       121
-#define IDM_ACC_SAVEINTO        122
-
-#define IDM_ACC_NEWITEM         130
-#define IDM_ACC_KEYVALUE        131
-
-#define IDM_ACC_ABOUT           140
 
 #endif

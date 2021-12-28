@@ -40,7 +40,7 @@ extra_l_flags_win = op stack=7k, heapsize=2k lib stress.lib, commdlg.lib
 #
 # EXE
 #
-exetarg_prebuild_objs = rcstr.gh $(dis_prereq)
+exetarg_prebuild_objs = rcstr.grh $(dis_prereq)
 exetarg_objs = &
     heapwalk.obj &
     hwlist.obj &
@@ -80,6 +80,6 @@ rcstrmsg.gh : ../res/heapwalk.msg
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) -o$@ $[@
 
-rcstr.gh : rcstrmsg.gh
+rcstr.grh : rcstrmsg.gh
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@

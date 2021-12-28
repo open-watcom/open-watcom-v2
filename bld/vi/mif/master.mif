@@ -82,7 +82,7 @@ ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
     $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
-rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
+rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 

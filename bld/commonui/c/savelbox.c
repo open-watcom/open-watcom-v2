@@ -44,7 +44,7 @@
     #include "ctl3dcvr.h"
 #endif
 #include "ldstr.h"
-#include "uistr.gh"
+#include "uistr.grh"
 #include "wclbproc.h"
 #include "pathgrp2.h"
 #ifdef __NT__

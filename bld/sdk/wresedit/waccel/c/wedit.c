@@ -46,7 +46,6 @@
 #include "wclip.h"
 #include "sysall.rh"
 #include "ldstr.h"
-#include "rcstr.gh"
 #include "jdlg.h"
 #include "wclbproc.h"
 

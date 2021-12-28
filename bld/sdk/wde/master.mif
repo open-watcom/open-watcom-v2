@@ -59,7 +59,7 @@ extra_l_flags_win  = op stack=32k, rwr library commdlg, ddeml
 #
 # EXE
 #
-exetarg_prebuild_objs = rcstr.gh
+exetarg_prebuild_objs = rcstr.grh
 exetarg_cpp_objs      = preproc.obj ppexpr.obj ppmacro.obj ppenv.obj
 exetarg_objs = &
     wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
@@ -105,7 +105,7 @@ ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
     $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
-rcstr.gh: rcstrmsg.gh $(__MAKEFILES__)
+rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 

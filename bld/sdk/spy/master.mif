@@ -58,7 +58,7 @@ extra_l_flags_dll_nt  = initglobal
 #
 # EXE
 #
-exetarg_prebuild_objs = rcstr.gh $(dllname).dll
+exetarg_prebuild_objs = rcstr.grh $(dllname).dll
 exetarg_objs_nt       = spyzord.obj
 exetarg_objs = &
     spy.obj &
@@ -88,7 +88,7 @@ exetarg_nt_manif_x64  = ntmanif.res
 #
 # DLL
 #
-dlltarg_prebuild_objs = $(dll_subdir) rcstr.gh
+dlltarg_prebuild_objs = $(dll_subdir) rcstr.grh
 dlltarg_objs          = $(dll_subdir)/spydll.obj
 dlltarg_name          = $(dllname)
 !include dlltarg.mif
@@ -108,7 +108,7 @@ ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
     $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
-rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
+rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 

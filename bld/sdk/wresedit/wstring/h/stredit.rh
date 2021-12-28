@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,39 @@
 ****************************************************************************/
 
 
-#define IDM_STREDTEXT           200
-#define IDM_STREDCMDID          201
-#define IDM_STREDCMDNUM         202
-#define IDM_STREDLIST           203
-#define IDM_STREDSETSTR         204
-#define IDM_STREDINSERT         205
-#define IDM_STREDCHANGE         206
-#define IDM_STREDRESET          207
+/****************************************************************************/
+/* Menu Identifiers                                                         */
+/****************************************************************************/
+#define IDM_STR_CLEAR           200
+#define IDM_STR_UPDATE          201
+#define IDM_STR_OPEN            202
+#define IDM_STR_SAVE            203
+#define IDM_STR_SAVEAS          204
+#define IDM_STR_EXIT            205
+
+#define IDM_STR_CUT             210
+#define IDM_STR_COPY            211
+#define IDM_STR_PASTE           212
+#define IDM_STR_DELETE          213
+#define IDM_STR_LOAD_SYMBOLS    214
+#define IDM_STR_SYMBOLS         215
+#define IDM_STR_SHOWRIBBON      216
+
+#define IDM_STR_MEM_FLAGS       220
+#define IDM_STR_SAVEINTO        221
+
+#define IDM_STR_NEWITEM         230
+
+#define IDM_STR_ABOUT           240
+
+/****************************************************************************/
+/* Dialog Identifiers                                                       */
+/****************************************************************************/
+#define IDM_STREDTEXT           250
+#define IDM_STREDCMDID          251
+#define IDM_STREDCMDNUM         252
+#define IDM_STREDLIST           253
+#define IDM_STREDSETSTR         254
+#define IDM_STREDINSERT         255
+#define IDM_STREDCHANGE         256
+#define IDM_STREDRESET          257

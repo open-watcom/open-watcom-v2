@@ -38,7 +38,7 @@
 #include "wgetfn.h"
 #include "wmsg.h"
 #include "ldstr.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "preproc.h"

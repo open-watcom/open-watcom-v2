@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include "wreglbl.h"
 #include <ddeml.h>
 #include "wremsg.h"
-#include "rcstr.gh"
 #include "wrewait.h"
 #include "wrdll.h"
 #include "wrselft.h"
@@ -44,6 +44,7 @@
 #include "wreimage.h"
 #include "wre.rh"
 #include "wresvobj.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */

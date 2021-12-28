@@ -53,7 +53,6 @@
 #include "wsvobj.h"
 #include "wsetedit.h"
 #include "wmain.h"
-#include "rcstr.gh"
 #include "wacc2rc.h"
 #include "weditsym.h"
 #include "wstrdup.h"

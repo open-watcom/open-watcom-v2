@@ -1,7 +1,5 @@
 #include <windows.h>
 #include "sysall.rh"
-#include "rcstr.gh"
-#include "uistr.gh"
 #include "about.rh"
 #include "banner.h"
 

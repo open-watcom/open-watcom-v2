@@ -36,7 +36,7 @@
 #include "wmsg.h"
 #include "winst.h"
 #include "wclip.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 #include "wrdll.h"
 
 /****************************************************************************/

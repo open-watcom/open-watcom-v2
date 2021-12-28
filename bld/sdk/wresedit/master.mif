@@ -51,7 +51,7 @@ extra_l_flags_dll_win = library commdlg op stack=8k,rwr export WEP RESIDENT
 #
 # DLL
 #
-dlltarg_prebuild_objs = rcstr.gh
+dlltarg_prebuild_objs = rcstr.grh
 dlltarg_objs          = $(sys_object) &
     wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
     winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj &
@@ -75,7 +75,7 @@ $(proj_name).res: ../res/$(proj_name).rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$@
 
-rcstr.gh: rcstrmsg.gh $(__MAKEFILES__)
+rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 

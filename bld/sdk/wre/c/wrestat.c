@@ -35,10 +35,11 @@
 #include <mbstring.h>
 #include "wremsg.h"
 #include "ldstr.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 #include "statwnd.h"
 #include "wreribbn.h"
 #include "wrestat.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */

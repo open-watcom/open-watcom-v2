@@ -36,7 +36,7 @@
 #include "wdestat.h"
 #include "wdemain.h"
 #include "wdemsgbx.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 #include "wdehints.h"
 #include "wdelist.h"
 #include "wdetoolb.h"

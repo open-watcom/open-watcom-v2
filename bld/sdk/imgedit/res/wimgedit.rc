@@ -4,8 +4,8 @@
 #include "settings.rh"
 #include "dialogs.rh"
 #include "about.rh"
-#include "rcstr.gh"
-#include "uistr.gh"
+#include "rcstr.grh"
+#include "uistr.grh"
 
 #define FIRST_COPYRIGHT_YEAR 1994
 
