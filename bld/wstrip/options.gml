@@ -43,8 +43,6 @@
 :cmt.                                                	are chained together in usage
 :cmt.	:usagegrp. <num> <usage text>               group of options that have group <num>
 :cmt.                                                	are chained together in usage
-:cmt.	:page. <text>                               English text for paging usage message
-:cmt.	:jpage. <text>                              Japanese text for paging usage message
 :cmt.	:title. <text>                              English title usage text
 :cmt.	:jtitle. <text>                             Japanese title usage text
 :cmt.	:titleu. <text>                             English title usage text for QNX resource file
@@ -87,9 +85,6 @@
 :cmt.	Translations are required for the :jtitle. and :jusage. tags
 :cmt.	if there is no text associated with the tag.
 
-
-:page.   (Press return to continue)
-:jusage. (Press return to continue)
 
 :title.  Usage: %s [options] input_file [output_file] [info_file]
 :jtitle. 使用方法: %s [options] input_file [output_file] [info_file]

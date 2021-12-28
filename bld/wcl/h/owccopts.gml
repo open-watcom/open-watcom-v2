@@ -43,8 +43,6 @@
 :cmt.                                                	are chained together in usage
 :cmt.	:usagegrp. <num> <usage text>               group of options that have group <num>
 :cmt.                                                	are chained together in usage
-:cmt.	:page. <text>                               English text for paging usage message
-:cmt.	:jpage. <text>                              Japanese text for paging usage message
 :cmt.	:title. <text>                              English title usage text
 :cmt.	:jtitle. <text>                             Japanese title usage text
 :cmt.	:titleu. <text>                             English title usage text for QNX resource file
@@ -90,9 +88,6 @@
 
 :chain. mabi= set calling convention
 :chain. mcmodel= memory model
-
-:cmt :page. (Press return to continue)
-:cmt :jusage. (Press return to continue)
 
 :title. Usage:  owcc [options] file ...
 :jtitle.

@@ -43,8 +43,6 @@
 :cmt.                                                   are chained together in usage
 :cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
 :cmt.                                                   are chained together in usage
-:cmt.   :page. <text>                               English text for paging usage message
-:cmt.   :jpage. <text>                              Japanese text for paging usage message
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
 :cmt.   :titleu. <text>                             English title usage text for QNX resource file
@@ -119,9 +117,6 @@
 :jtitle. .         ( /optionも使用できます )
 :target. any
 :ntarget. bsd linux osx qnx haiku
-
-:page. (Press return to continue)
-:jusage. (リターンを押すと，続行します)
 
 :chain. p Preprocess source file
 :jusage. p ソースファイルを前処理します
