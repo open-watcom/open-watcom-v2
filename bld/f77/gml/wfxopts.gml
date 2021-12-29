@@ -86,20 +86,61 @@
 :cmt.	if there is no text associated with the tag.
 
 
-:title. Usage:   %s [options] <file-spec> [options]
-:jtitle. 使用方法: %s [options] <file-spec> [options]
-:target. any
+:title. Usage: wfc [options] <file-spec> [options]
+:jtitle. 使用方法: wfc [options] <file-spec> [options]
+:target. i86
 :ntarget. targ1
 
-:title. Usage:   %s [options] <file>
-:jtitle. 使用方法: %s [options] <file>
+:title. Usage: wfc386 [options] <file-spec> [options]
+:jtitle. 使用方法: wfc386 [options] <file-spec> [options]
+:target. 386
+:ntarget. targ1
+
+:title. Usage: wfcaxp [options] <file-spec> [options]
+:jtitle. 使用方法: wfcaxp [options] <file-spec> [options]
+:target. axp
+:ntarget. targ1
+
+:title. Usage: wfcmps [options] <file-spec> [options]
+:jtitle. 使用方法: wfcmps [options] <file-spec> [options]
+:target. mps
+:ntarget. targ1
+
+:title. Usage: wfcppc [options] <file-spec> [options]
+:jtitle. 使用方法: wfcppc [options] <file-spec> [options]
+:target. ppc
+:ntarget. targ1
+
+:title. Usage: wfl [options] <file-spec> [options]
+:jtitle. 使用方法: wfl [options] <file-spec> [options]
 :target. targ1
+:ntarget. 386 axp mps ppc
+
+:title. Usage: wfl386 [options] <file-spec> [options]
+:jtitle. 使用方法: wfl386 [options] <file-spec> [options]
+:target. targ1
+:ntarget. i86 axp mps ppc
+
+:title. Usage: wflaxp [options] <file-spec> [options]
+:jtitle. 使用方法: wflaxp [options] <file-spec> [options]
+:target. targ1
+:ntarget. i86 386 mps ppc
+
+:title. Usage: wflmps [options] <file-spec> [options]
+:jtitle. 使用方法: wflmps [options] <file-spec> [options]
+:target. targ1
+:ntarget. i86 386 axp ppc
+
+:title. Usage: wflppc [options] <file-spec> [options]
+:jtitle. 使用方法: wflppc [options] <file-spec> [options]
+:target. targ1
+:ntarget. i86 386 axp mps
 
 :title. Options:
 :jtitle. オプション:
 :target. any
 :title.  .         ( /option is also accepted )
-:jtitle. .         ( /optionも使用できます )
+:jtitle. .         ( /option も使用できます )
 :target. any
 :ntarget. bsd linux osx qnx haiku
 

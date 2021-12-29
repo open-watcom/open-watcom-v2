@@ -1340,14 +1340,22 @@ static void writeMSGIfndefs( void )
 
 static void writeMsgC( void )
 {
-    MSGSYM *m;
+    MSGSYM  *m;
+    char    *str;
+    char    tmp[512];
 
     if( o_msgc != NULL ) {
         if( flags.rc ) {
             fputs( "\n", o_msgc );
             for( m = messageSyms; m != NULL; m = m->next ) {
+                str = m->lang_txt[LANG_Japanese];
+                if( !optFlag.out_utf8 ) {
+                    utf8_to_cp932( str, tmp );
+                    tmp[sizeof( tmp ) - 1] = '\0';
+                    str = tmp;
+                }
                 fprintf( o_msgc, "pick( %s, \"%s\", \"%s\" )\n",
-                    m->name, m->lang_txt[LANG_English], m->lang_txt[LANG_Japanese] );
+                    m->name, m->lang_txt[LANG_English], str );
             }
             fputs( "\n", o_msgc );
         } else if( flags.gen_gpick ) {
