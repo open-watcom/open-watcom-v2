@@ -37,7 +37,7 @@
 #include "wmain.h"
 #include "wstat.h"
 #include "ldstr.h"
-#include "rcstr.grh"
+#include "sysall.rh"
 
 
 /****************************************************************************/

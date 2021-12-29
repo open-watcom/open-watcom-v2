@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "bpatch.rh"
 #include "wreslang.rh"
 
@@ -22,9 +24,9 @@ BEGIN
 
     #include "bpatch.msg"
   #if defined( BPATCH )
-    #include "ppusagej.gh"
+    #include "ppusage.gh"
   #elif defined( BDUMP )
-    #include "pdusagej.gh"
+    #include "pdusage.gh"
   #elif defined( BDIFF )
     #include "dusage.gh"
   #else

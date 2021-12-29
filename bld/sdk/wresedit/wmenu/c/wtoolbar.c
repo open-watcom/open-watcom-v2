@@ -40,7 +40,7 @@
 #include "whints.h"
 #include "wlist.h"
 #include "wtoolbar.h"
-#include "rcstr.grh"
+#include "sysall.rh"
 
 
 /****************************************************************************/

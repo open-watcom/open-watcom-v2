@@ -44,6 +44,7 @@
 #include "uistr.grh"
 #include "wclbproc.h"
 
+
 #if defined( _M_I86 ) && defined( __WINDOWS__ )
     #pragma library( "toolhelp.lib" )   /* For SystemHeapInfo */
 #endif

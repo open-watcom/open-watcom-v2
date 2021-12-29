@@ -42,7 +42,7 @@
 #include "weditsym.h"
 #include "wsvobj.h"
 #include "ldstr.h"
-#include "rcstr.grh"
+#include "sysall.rh"
 #include "wacc2rc.h"
 #include "wresdefn.h"
 #include "pathgrp2.h"

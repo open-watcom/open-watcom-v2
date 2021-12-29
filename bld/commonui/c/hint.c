@@ -37,6 +37,7 @@
 #include "cguimem.h"
 #include "font.h"
 
+
 typedef struct {
     const MenuItemHint  *hints;
     msg_id              curmsg;
