@@ -32,16 +32,11 @@
 
 
 #include "plusplus.h"
-#include "wio.h"
 #include "cbanner.h"
 #include "cusage.h"
 
 
 #define ConsoleMessage(text)    MsgDisplayLine( text )
-
-static const char EngUsageText[] = {
-    #include "cmdlnusg.gh"
-};
 
 void CUsage( void )
 /*****************/
@@ -54,10 +49,7 @@ void CUsage( void )
             ConsoleMessage( "" );
         }
     }
-    p = IntlUsageText();
-    if( p == NULL ) {
-        p = EngUsageText;
-    }
+    p = UsageText();
     while( *p != '\0' ) {
         ConsoleMessage( p );
         while( *p++ != '\0' ) ;
