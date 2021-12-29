@@ -923,17 +923,23 @@ static char *pickUpRest( const char *p )
     // replace leading '.' character by space
     // it is used to specify spaces on the beginning of text
     // if only '.' character than it is as blank text
+    // if only two '.' character than it is single space text
     len = strlen( p );
     out = dst = malloc( len + 1 );
-    if( p[0] == '.' ) {
-        len--;
-    }
-    if( len > 0 ) {
+    if( p[0] == '.' && p[1] == '\0' ) {
+        len = 0;
+    } else if( p[0] == '.' && p[1] == '.' && p[2] == '\0' ) {
+        len = 0;
+        *dst++ = ' ';
+    } else {
         if( p[0] == '.' ) {
+            len--;
             *dst++ = ' ';
             p++;
         }
-        memcpy( dst, p, len );
+        if( len > 0 ) {
+            memcpy( dst, p, len );
+        }
     }
     dst[len] = '\0';
     return( out );

@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -93,16 +93,16 @@
 :jtitle.
 :target. any
 
-:title.  .
-:jtitle. .
+:title.  ..
+:jtitle. ..
 :target. any
 
 :title.  Options:
 :jtitle. オプション:
 :target. any
 
-:title.  .
-:jtitle. .
+:title.  ..
+:jtitle. ..
 :target. any
 
 :cmt.*************************************************************************
