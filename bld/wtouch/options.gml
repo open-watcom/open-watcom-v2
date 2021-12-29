@@ -90,6 +90,10 @@
 :jtitle. 使用方法: wtouch [<ｵﾌﾟｼｮﾝ>] <ﾌｧｲﾙ名>
 :target. any
 
+:title. ..
+:jtitle. ..
+:target. any
+
 :title. Options: ('/' may be used instead of '-' to specify options)
 :jtitle. ｵﾌﾟｼｮﾝ: ('/'はオプション指定の際の'-'の替わりとして使用します)
 :target. any
