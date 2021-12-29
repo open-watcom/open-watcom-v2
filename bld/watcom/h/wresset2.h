@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,9 @@
 #ifndef WRESSET2_INCLUDED
 #define WRESSET2_INCLUDED
 
-#define NO_RES_MESSAGE          "Error: could not open message resource file.\n"
+#define NO_RES_MESSAGE          "Error: could not open message resource file."
 #define NO_RES_MESSAGE_PREFIX   "Error: could not open message resource file ("
-#define NO_RES_MESSAGE_SUFFIX   ").\n"
+#define NO_RES_MESSAGE_SUFFIX   ")."
 
 typedef struct handle_info {
     FILE        *fp;

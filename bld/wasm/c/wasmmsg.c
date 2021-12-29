@@ -102,7 +102,7 @@ int PrintBanner( void )
         Options.banner_printed = true;
         if( !Options.quiet ) {
             while( FingerMsg[count] != NULL ) {
-                printf( "%s\n", FingerMsg[count++] );
+                puts( FingerMsg[count++] );
             }
         }
     }
@@ -117,7 +117,7 @@ void PrintfUsage( void )
     unsigned    line_id;
 
     count = PrintBanner();
-    printf( "\n" );
+    puts( "" );
     line_id = MSG_USAGE_BASE;
     MsgGet( line_id++, page_text );
     MsgGet( line_id++, msg_buff );
@@ -126,7 +126,7 @@ void PrintfUsage( void )
 #else
     printf( msg_buff, "wasm" );
 #endif
-    printf( "\n" );
+    puts( "" );
     while( line_id < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
         if( ++count >= 23 ) {
             if( Wait_for_return( page_text ) ) {
@@ -170,7 +170,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    printf( NO_RES_MESSAGE );
+    puts( NO_RES_MESSAGE );
     return( false );
 #else
     return( true );

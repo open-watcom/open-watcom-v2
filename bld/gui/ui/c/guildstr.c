@@ -64,7 +64,7 @@ bool GUIAPI GUILoadStrInit( const char *fname )
         return( true );
     }
     CloseResFile( &hInstance );
-    printf( NO_RES_MESSAGE_PREFIX "%s" NO_RES_MESSAGE_SUFFIX, fname );
+    printf( NO_RES_MESSAGE_PREFIX "%s" NO_RES_MESSAGE_SUFFIX "\n", fname );
     return( false );
 }
 

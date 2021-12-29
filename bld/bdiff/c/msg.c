@@ -67,7 +67,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    printf( NO_RES_MESSAGE );
+    puts( NO_RES_MESSAGE );
     return( false );
 }
 
@@ -130,7 +130,7 @@ void PatchError( int format, ... )
 
     va_start( args, format );
     Err( format, args );
-    printf( "\n" );
+    puts( "" );
     va_end( args );
     MsgFini();
     exit( EXIT_FAILURE );

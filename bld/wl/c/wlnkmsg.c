@@ -86,7 +86,7 @@ bool InitMsg( void )
         }
     }
     CloseResFile( &hInstance );
-    WriteStdOutInfo( NO_RES_MESSAGE, ERR, NULL );
+    WriteStdOutInfo( NO_RES_MESSAGE "\n", ERR, NULL );
     return( false );
 }
 

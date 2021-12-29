@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,7 +94,7 @@ bool Msg_Init( void )
         }
     }
     CloseResFile( &hInstance );
-    printf( NO_RES_MESSAGE );
+    puts( NO_RES_MESSAGE );
     return( false );
 #endif
 }
@@ -111,11 +111,11 @@ bool Msg_Fini( void )
 
 void Banner( void )
 {
-    printf( banner1w( "Executable Strip Utility", _WSTRIP_VERSION_ ) "\n" );
-    printf( banner2 "\n" );
-    printf( banner2a( 1988 ) "\n" );
-    printf( banner3 "\n" );
-    printf( banner3a "\n" );
+    puts( banner1w( "Executable Strip Utility", _WSTRIP_VERSION_ ) );
+    puts( banner2 );
+    puts( banner2a( 1988 ) );
+    puts( banner3 );
+    puts( banner3a );
 }
 
 void Usage( void )
@@ -123,7 +123,7 @@ void Usage( void )
     char        msg_buffer[RESOURCE_MAX_SIZE];
     int         i;
 
-    printf( "\n" );
+    puts( "" );
     i = MSG_USAGE_BASE + 1;
     Msg_Get( i++, msg_buffer );
 #ifdef BOOTSTRAP
@@ -131,10 +131,10 @@ void Usage( void )
 #else
     printf( msg_buffer, "wstrip" );
 #endif
-    printf( "\n" );
+    puts( "" );
     for( ; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         Msg_Get( i, msg_buffer );
-        printf( "%s\n", msg_buffer );
+        puts( msg_buffer );
     }
     Msg_Fini();
     exit( -1 );
