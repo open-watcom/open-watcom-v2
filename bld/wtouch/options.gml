@@ -25,7 +25,7 @@
 :cmt.*
 :cmt.*  ========================================================================
 :cmt.*
-:cmt.* Description:  resource compiler wrc command line options.
+:cmt.* Description:  wtouch command line options.
 :cmt.*
 :cmt.*     UTF-8 encoding, ¥
 :cmt.*
@@ -86,207 +86,64 @@
 :cmt.   if there is no text associated with the tag.
 
 
-:title.  Usage: %s {options} input-filename {options} [output-filename] {options}
-:jtitle. 使用方法: %s {options} input-filename {options} [output-filename] {options}
+:title. Usage:   wtouch [<options>] <file_names>
+:jtitle. 使用方法: wtouch [<ｵﾌﾟｼｮﾝ>] <ﾌｧｲﾙ名>
 :target. any
 
-:title.  Options:
-:jtitle. オプション:
+:title. Options: ('/' may be used instead of '-' to specify options)
+:jtitle. ｵﾌﾟｼｮﾝ: ('/'はオプション指定の際の'-'の替わりとして使用します)
 :target. any
-:title.  .         ( /option is also accepted )
-:jtitle. .         ( /ｵﾌﾟｼｮﾝ でも指定できます )
-:target. any
-:ntarget. bsd linux osx qnx haiku
 
-:chain. s Segment and resource sorting method
-:jusage.
-:chain. v Verbose output
-:jusage.
-:chain. zk Multi-byte characters support
-:jusage.
-
-:option. ? h
-:target. any
-:usage.  print this message
-:jusage. このメッセージを表示します
-
-:option. q
-:target. any
-:usage.  operate quietly
-:jusage.
-
-:option. 30
-:target. any
-:usage.  stamp file as requiring Windows 3.0
-:jusage.
-
-:option. 31
-:target. any
-:usage.  (*) stamp file as requiring Windows 3.1
-:jusage.
-
-:option. d
-:target. any
-:special. scanDefine <name>[=text]
-:usage.  define text macro <name>[=text]
-:jusage. テキストマクロを定義します <name>[=text]
-
-:option. ad
-:target. any
-:usage.  generate auto dependency information for use by wmake
-:jusage.
-
-:option. bt
-:target. any
-:id. . <os>
-:enumerate. x windows nt os2
-:usage.  set the build target to <os> [windows|nt|os2]
-:jusage.
+:argequal.  ..
 
 :option. c
+:usage. do not create files that do not exist
+:jusage. 存在しないファイルは作成されません
 :target. any
-:file.
-:usage.  set code page conversion file
-:jusage.
-
-:option. e
-:target. any
-:usage.  for a DLL, global memory above EMS line
-:jusage.
-
-:option. fo
-:target. any
-:file.
-:usage.  set the output resource file to name
-:jusage.
-
-:option. fe
-:target. any
-:file.
-:usage.  set the output executable file to name
-:jusage.
 
 :option. i
+:usage. increment time stamp before touching <file_names>
+:jusage. <ﾌｧｲﾙ名>をタッチする前にタイムスタンプをインクリメントします
 :target. any
-:path.
-:usage.  look in path for include files
-:jusage.
-
-:option. k
-:target. any
-:usage.  don't sort segments (same as -s0)
-:jusage.
-
-:option. l
-:target. any
-:usage.  program uses LIM 3.2 EMS directly
-:jusage.
-
-:option. m
-:target. any
-:usage.  each instance of program has its own EMS bank
-:jusage.
-
-:option. o
-:target. any
-:usage.  preprocess only
-:jusage.
-
-:option. p
-:target. any
-:usage.  private DLL
-:jusage.
 
 :option. r
+:usage. touch file even if it is marked read only
+:jusage. 読み込み専用ファイルであっても、ﾀｲﾑｽﾀﾝﾌﾟを書き換えます。
 :target. any
-:usage.  only build the resource file
-:jusage.
 
-:option. s0
+:option. s
+:usage. recurse through subdirectories
 :target. any
-:usage.  no sorting, leave segments in the linker order
-:jusage.
 
-:option. s1
+:option. d  
+:usage. specify date part of the time-stamp explicitly
+:jusage. タイム・スタンプの日付部分を明示指定します
+:id. . <date>
 :target. any
-:usage.  move preload segments to front and mark for fast load
-:jusage.
 
-:option. s2
+:option. f
+:usage. use date-time from <file>
+:jusage. <ﾌｧｲﾙ>からの日付時間を使用します
+:file. <file>
 :target. any
-:usage.  (*) move preload, data, non-discard. segments to front
-:jusage.
 
 :option. t
+:usage. specify time part of the time-stamp explicitly
+:jusage. タイム・スタンプの時間部分を明示指定します
+:id. . <time>
 :target. any
-:usage.  protected mode only
-:jusage.
 
-:option. v1
+:option. u
+:usage. use USA date/time format regardless of country
+:jusage. USAの日付時間フォーマットを使用します
 :target. any
-:internal.
-:usage.  print tokens as they are scanned
-:jusage.
 
-:option. v2
+:option. q
+:usage. suppress informational messages
+:jusage. 情報メッセージを抑制します
 :target. any
-:internal.
-:usage.  print grammar rules as they are reduced
-:jusage.
 
-:option. v3
+:option. ?
+:usage. display this help screen
+:jusage. このヘルプ画面を表示します
 :target. any
-:internal.
-:usage.  print both tokens and grammar rules
-:jusage.
-
-:option. v4
-:target. any
-:internal.
-:usage.  print tokens as they are scanned
-:jusage.
-
-:option. x
-:target. any
-:usage.  ignore the INCLUDE environment variable
-:jusage.
-
-:option. zk0
-:target. any
-:usage.  (*) Japanese (Kanji, CP 932)
-:jusage.
-
-:option. zk1
-:target. any
-:usage.  Chinese (Traditional, CP 950)
-:jusage.
-
-:option. zk2
-:target. any
-:usage.  Korean (Wansung, CP 949)
-:jusage.
-
-:option. zk3
-:target. any
-:usage.  Chinese (Simplified, CP 936)
-:jusage.
-
-:option. zku8
-:target. any
-:usage.  Unicode UTF-8
-:jusage.
-
-:option. zku0
-:target. any
-:usage.  Japanese (Kanji, CP 932), UTF-8 source
-:jusage.
-
-:option. zm
-:target. any
-:usage.  output Microsoft/IBM format .res files
-:jusage.
-
-:option. zn
-:target. any
-:usage.  don't preprocess the file
-:jusage.

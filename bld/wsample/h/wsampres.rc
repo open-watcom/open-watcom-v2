@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 resname( WSampMenu )    MENU
 BEGIN
     POPUP pick2( "&Help", "&H ヘルプ" )

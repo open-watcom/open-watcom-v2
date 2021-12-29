@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick(    MSG_INTERNAL,          "** internal ** - %s"  ,
                     "**  内部  ** - %s" )
 pick(    MSG_LOADING_OBJECT,        "loading object files" ,
