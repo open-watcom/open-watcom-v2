@@ -103,7 +103,7 @@ bool WRECreateStatusLine( HWND main, HINSTANCE inst )
     TEXTMETRIC          tm;
     HFONT               old_font;
     HDC                 dc;
-    status_block_desc   sbd;
+    status_block_desc   sbd[1];
     char                *font_facename;
     char                *cp;
     int                 font_pointsize;
@@ -147,11 +147,11 @@ bool WRECreateStatusLine( HWND main, HINSTANCE inst )
     StatusWndInit( inst, WREStatusHookProc, 0, (HCURSOR)NULL );
     WREStatusBar = StatusWndStart();
 
-    sbd.separator_width = STATUS_LINE_PAD;
-    sbd.width = STATUS1_WIDTH;
-    sbd.width_is_percent = false;
+    sbd[0].separator_width = STATUS_LINE_PAD;
+    sbd[0].width = STATUS1_WIDTH;
+    sbd[0].width_is_percent = false;
 
-    StatusWndSetSeparators( WREStatusBar, 1, &sbd );
+    StatusWndSetSeparators( WREStatusBar, 1, sbd );
 
     WREStatusWindow = StatusWndCreate( WREStatusBar, main, &rect, inst, NULL );
 

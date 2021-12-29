@@ -154,7 +154,7 @@ WStatBar *WCreateStatusLine( HWND parent, HINSTANCE inst )
 {
     WStatBar            *wsb;
     RECT                rect;
-    status_block_desc   sbd;
+    status_block_desc   sbd[1];
 
     wsb = (WStatBar *)WRMemAlloc( sizeof( WStatBar ) );
     if( wsb != NULL ) {
@@ -170,11 +170,11 @@ WStatBar *WCreateStatusLine( HWND parent, HINSTANCE inst )
 
     rect.top = rect.bottom - WStatusDepth;
 
-    sbd.separator_width = STATUS_LINE_PAD;
-    sbd.width = STATUS1_WIDTH;
-    sbd.width_is_percent = false;
+    sbd[0].separator_width = STATUS_LINE_PAD;
+    sbd[0].width = STATUS1_WIDTH;
+    sbd[0].width_is_percent = false;
 
-    StatusWndSetSeparators( wsb->stat, 1, &sbd );
+    StatusWndSetSeparators( wsb->stat, 1, sbd );
 
     if( (wsb->win = StatusWndCreate( wsb->stat, parent, &rect, inst, NULL )) == NULL ) {
         WDisplayErrorMsg( W_STATUSNOTCREATED );
