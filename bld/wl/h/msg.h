@@ -64,7 +64,7 @@ extern size_t   FmtStr( char *, size_t, const char *, ... );
 extern size_t   DoFmtStr( char *, size_t, const char *, va_list );
 extern void     LnkMsg( unsigned, const char *, ... );
 extern void     Locator( const char *, const char *, unsigned );
-extern int      WLPrtBanner( void );
+extern void     WLPrtBanner( void );
 extern bool     SkipSymbol( symbol * );
 extern int      SymAlphaCompare( const void *, const void * );
 extern unsigned CalcMsgNum( unsigned );

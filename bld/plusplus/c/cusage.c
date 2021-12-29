@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,6 @@
 #include "cusage.h"
 
 
-#define NUM_ROWS        24
-
 #define ConsoleMessage(text)    MsgDisplayLine( text )
 
 static const char EUsage[] = {
@@ -45,53 +44,23 @@ static const char EUsage[] = {
     "\0"
 };
 
-static char const *nextUsage( char const *p )
-{
-    while( *p != '\0' ) {
-        ++p;
-    }
-    DbgAssert( *p == '\0' );
-    return( p + 1 );
-}
-
-static bool Wait_for_return( char const *page_text )
-/**************************************************/
-// return true if we should stop printing
-{
-    int   c;
-
-    ConsoleMessage( page_text );
-//    fflush( stdout );
-    c = getchar();
-    return( c == 'q' || c == 'Q' );
-}
-
 void CCusage( void )
 /******************/
 {
-    char const  *usage_text;
-    char const  *page_text;
-    int         count;
+    char const  *p;
 
-    count = CBanner();
-    if( CompFlags.ide_console_output && count ) {
+    CBanner();
+    if( CompFlags.ide_console_output && !CompFlags.quiet_mode ) {
         ConsoleMessage( "" );
-        ++count;
     }
-    usage_text = IntlUsageText();
-    if( usage_text == NULL ) {
-        usage_text = EUsage;
+    p = IntlUsageText();
+    if( p == NULL ) {
+        p = EUsage;
     }
-    page_text = usage_text;
-    while( *(usage_text = nextUsage( usage_text )) != '\0' ) {
-        if( CompFlags.ide_console_output ) {
-            if( count == NUM_ROWS - 2 ) {
-                if( Wait_for_return( page_text ) )
-                    break;
-                count = 0;
-            }
-            ++count;
+    while( *p != '\0' ) {
+        ConsoleMessage( p );
+        while( *p++ != '\0' ) {
+            ;
         }
-        ConsoleMessage( usage_text );
     }
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,30 +49,19 @@
 
 char CompilerID[] = { "__WATCOMC__=" _MACROSTR( _BLDVER ) };
 
-int CBanner( void )
+void CBanner( void )
 {
-    int     count;
-
-    count = 0;
     if( !CompFlags.banner_printed && !CompFlags.quiet_mode ) {
 #if defined( _BETAVER )
         BannerMsg( banner1w1( "C " _TARGET_ " Optimizing Compiler" ) );
-        ++count;
         BannerMsg( banner1w2( _WCC_VERSION_ ) );
-        ++count;
 #else
         BannerMsg( banner1w1( "C " _TARGET_ " Optimizing Compiler", _WCC_VERSION_ ) );
-        ++count;
 #endif
         BannerMsg( banner2 );
-        ++count;
         BannerMsg( banner2a( 1984 ) );
-        ++count;
         BannerMsg( banner3 );
-        ++count;
         BannerMsg( banner3a );
-        ++count;
         CompFlags.banner_printed = true;
     }
-    return( count );
 }

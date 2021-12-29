@@ -806,7 +806,7 @@ extern void         BuildPreCompiledHeader( const char * );
 extern void         FreePreCompiledHeader( void );
 
 /* watcom */
-extern int          CBanner( void );
+extern void         CBanner( void );
 
 /* cstmt.c */
 extern SYM_HANDLE   GetBlockSymList( void );

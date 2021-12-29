@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -202,8 +202,6 @@ void Message( char *buff, ... )
     va_end( arglist );
 }
 
-#define NUM_ROWS        24
-
 static void ConsoleMessage( const char *msgfmt, ... )
 {
     va_list             arglist;
@@ -219,62 +217,30 @@ static void ConsoleMessage( const char *msgfmt, ... )
     va_end( arglist );
 }
 
-static bool Wait_for_return( void )
-/*********************************/
-// return true if we should stop printing
-{
-    int         c;
-    char        buff[MAX_ERROR_SIZE];
-
-    MsgGet( MSG_USAGE_WLIB_BASE, buff );
-    ConsoleMessage( buff );
-    c = getchar();
-    return( c == 'q' || c == 'Q' );
-}
-
 void Usage( void )
 /****************/
 {
     char                buff[MAX_ERROR_SIZE];
     int                 str;
     int                 str_last;
-    int                 count;
     bool                console_tty;
 
-    count = Banner();
+    Banner();
     if( IdeCbs != NULL ) {
         console_tty = ( ideInfo != NULL && ideInfo->ver > 2 && ideInfo->console_output );
-        if( console_tty && count ) {
+        if( console_tty && !Options.quiet && !Options.terse_listing ) {
             ConsoleMessage( "" );
-            ++count;
         }
         if( Options.ar ) {
             str = MSG_USAGE_AR_BASE;
-        } else {
-            str = MSG_USAGE_WLIB_BASE + 1;
-        }
-        MsgGet( str++, buff );
-        if( Options.ar ) {
             str_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
+            MsgGet( str++, buff );
             ConsoleMessage( buff, Options.ar_name );
         } else {
+            str = MSG_USAGE_WLIB_BASE;
             str_last = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT;
-#ifdef BOOTSTRAP
-            ConsoleMessage( buff, "bwlib" );
-#else
-            ConsoleMessage( buff, "wlib" );
-#endif
         }
-        ++count;
         for( ; str < str_last; ++str ) {
-            if( console_tty ) {
-                if( count == NUM_ROWS - 2 ) {
-                    if( Wait_for_return() )
-                        break;
-                    count = 0;
-                }
-                ++count;
-            }
             MsgGet( str, buff );
             ConsoleMessage( buff );
         }
@@ -282,35 +248,22 @@ void Usage( void )
     longjmp( Env, 1 );
 }
 
-int Banner( void )
+void Banner( void )
 {
-    static char *bannerText[] = {
-#ifndef NDEBUG
-        banner1w( "Library Manager", _WLIB_VERSION_ ) " [Internal Development]",
-#else
-        banner1w( "Library Manager", _WLIB_VERSION_ ),
-#endif
-        banner2,
-        banner2a( 1984 ),
-        banner3,
-        banner3a,
-        NULL
-    };
     static bool alreadyDone = false;
-    char        **text;
-    int         count;
-    char        *p;
 
-    count = 0;
-    if( !Options.quiet && !alreadyDone && !Options.terse_listing ) {
+    if( !alreadyDone ) {
         alreadyDone = true;
-        if( IdeCbs != NULL ) {
-            text = bannerText;
-            while( (p = *text++) != NULL ) {
-                ConsoleMessage( p );
-                ++count;
-            }
+        if( !Options.quiet && !Options.terse_listing && IdeCbs != NULL ) {
+#ifndef NDEBUG
+            ConsoleMessage( banner1w( "Library Manager", _WLIB_VERSION_ ) " [Internal Development]" );
+#else
+            ConsoleMessage( banner1w( "Library Manager", _WLIB_VERSION_ ) );
+#endif
+            ConsoleMessage( banner2 );
+            ConsoleMessage( banner2a( 1984 ) );
+            ConsoleMessage( banner3 );
+            ConsoleMessage( banner3a );
         }
     }
-    return( count );
 }

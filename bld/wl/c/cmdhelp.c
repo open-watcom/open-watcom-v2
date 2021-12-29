@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,9 +62,6 @@
 #define WRITE_HELP_ONE(x)       WriteHelp( HELP_ARGS(x), false )
 #define WRITE_HELP_FULL(x)      WriteHelp( HELP_ARGS(x), true )
 
-#define NUM_ROWS        24
-
-static int  line_count = 0;
 static bool previous_null = false;
 
 static void doWriteHelp( int first_msg, int last_msg )
@@ -82,19 +79,9 @@ static void doWriteHelp( int first_msg, int last_msg )
             }
             previous_null = true;
         } else if( previous_null ) {
-            if( CmdFlags & CF_TO_STDOUT ) {
-                PressKey();
-                line_count = 0;
-            }
-            line_count++;
             WriteStdOutWithNL( msg_buffer );
             previous_null = false;
         } else {
-            if( ( CmdFlags & CF_TO_STDOUT ) && line_count == ( NUM_ROWS - 2 ) ) {
-                PressKey();
-                line_count = 0;
-            }
-            line_count++;
             WriteStdOutWithNL( msg_buffer );
         }
     }
@@ -104,7 +91,7 @@ static void WriteHelp( int first_msg, int last_msg, bool genhelp )
 /****************************************************************/
 {
     if( genhelp || ( first_msg == MSG_GENERAL_HELP_0 && last_msg == MSG_GENERAL_HELP_51 ) ) {
-        line_count = WLPrtBanner();
+        WLPrtBanner();
         if( genhelp ) {
             doWriteHelp( _GENERAL_HELP );
         }

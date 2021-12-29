@@ -70,7 +70,6 @@ TAG( NOEQUAL ) \
 TAG( NTARGET ) \
 TAG( NUMBER ) \
 TAG( OPTIONAL ) \
-TAG( PAGE ) \
 TAG( PATH ) \
 TAG( SPECIAL ) \
 TAG( TIMESTAMP ) \
@@ -267,7 +266,6 @@ static char         alternateEqual;
 static CHAIN        *lastChain;
 static GROUP        *lastGroup;
 static size_t       maxUsageLen;
-static lang_data    pageUsage;
 static unsigned     targetMask;
 static unsigned     targetAnyMask;
 static unsigned     targetDbgMask;
@@ -1231,13 +1229,6 @@ static void doNOEQUAL( const char *p )
     optFlag.no_equal = true;
 }
 
-// :page. <text>
-static void doPAGE( const char *p )
-{
-    pageUsage[LANG_English] = pickUpRest( p );
-    getsUsage = TAG_PAGE;
-}
-
 // :path. [<usage argid>]
 static void doPATH( const char *p )
 {
@@ -1356,9 +1347,6 @@ static void doJUSAGE( const char *p )
     OPTION *o;
 
     switch( getsUsage ) {
-    case TAG_PAGE:
-        pageUsage[LANG_Japanese] = pickUpRest( p );
-        break;
     case TAG_CHAIN:
         lastChain->Usage[LANG_Japanese] = pickUpRest( p );
         break;
@@ -1376,7 +1364,7 @@ static void doJUSAGE( const char *p )
         }
         break;
     default:
-        fail( ":jusage. must follow :chain., :group., :option., or :page.\n" );
+        fail( ":jusage. must follow :chain., :group., or :option.\n" );
     }
 }
 
@@ -2461,18 +2449,6 @@ static void outputBlockHeader( lang_data langdata, process_line_fn *process_line
     process_output( process_line );
 }
 
-static void outputPageUsage( process_line_fn *process_line )
-{
-    language_id lang;
-
-    if( pageUsage[LANG_English] != NULL ) {
-        for( lang = 0; lang < LANG_MAX; lang++ ) {
-            strcpy( GET_OUTPUT_BUF( lang ), getLangData( pageUsage, lang ) );
-        }
-        process_line();
-    }
-}
-
 static void outputTitle( lang_data langdata, process_line_fn *process_line )
 {
     language_id lang;
@@ -2486,8 +2462,6 @@ static void outputTitle( lang_data langdata, process_line_fn *process_line )
 static void outputUsageHeader( process_line_fn *process_line )
 {
     TITLE       *t;
-
-    outputPageUsage( process_line );
 
     for( t = titleList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {

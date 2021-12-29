@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,32 +189,13 @@ static void ConsoleMessage( const char *str, ... )
     va_end( args );
 }
 
-static int RcIoPrintBanner( void )
-/********************************/
+static void RcIoPrintBanner( void )
+/*********************************/
 {
     if( !CmdLineParms.Quiet ) {
         ConsoleMessage( BannerText );
-#if defined( _BETAVER )
-        return( 6 );
-#else
-        return( 5 );
-#endif
     }
-    return( 0 );
 }
-
-static bool Wait_for_return( void )
-/*********************************/
-// return true if we should stop printing
-{
-    int   c;
-
-    ConsoleMessage( "    (Press Return to continue)\n" );
-    c = getchar();
-    return( c == 'q' || c == 'Q' );
-}
-
-#define NUM_ROWS    24
 
 static bool console_tty = false;
 
@@ -223,32 +204,12 @@ static void RcIoPrintUsage( void )
 {
     int         index;
     char        buf[256];
-    int         count;
 
-    count = RcIoPrintBanner();
-    if( console_tty && count ) {
+    RcIoPrintBanner();
+    if( console_tty && !CmdLineParms.Quiet ) {
         ConsoleMessage( "\n" );
-        ++count;
     }
-    index = MSG_USAGE_BASE;
-    GetRcMsg( index++, buf, sizeof( buf ) );
-    GetRcMsg( index++, buf, sizeof( buf ) );
-#ifdef BOOTSTRAP
-    ConsoleMessage( buf, "bwrc" );
-#else
-    ConsoleMessage( buf, "wrc" );
-#endif
-    ConsoleMessage( "\n" );
-    ++count;
-    for( ; index < MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
-        if( console_tty ) {
-            if( count == NUM_ROWS - 2 ) {
-                if( Wait_for_return() )
-                    break;
-                count = 0;
-            }
-            ++count;
-        }
+    for( index = MSG_USAGE_BASE; index < MSG_USAGE_BASE + MSG_USAGE_COUNT; index++ ) {
         GetRcMsg( index, buf, sizeof( buf ) );
         ConsoleMessage( "%s\n", buf );
     }

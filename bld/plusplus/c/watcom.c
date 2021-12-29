@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,34 +48,22 @@
 
 #define ConsoleMessage(text)    MsgDisplayLine( text )
 
-int CBanner( void )
+void CBanner( void )
 {
-    int     count;
-
-    count = 0;
     if( !CompFlags.banner_printed && !CompFlags.quiet_mode ) {
 #if defined( _BETAVER )
         ConsoleMessage( banner1w1( "C++ " _TARGET_ " Optimizing Compiler" ) );
-        ++count;
         ConsoleMessage( banner1w2( _WPP_VERSION_ ) );
-        ++count;
 #else
         ConsoleMessage( banner1w( "C++ " _TARGET_ " Optimizing Compiler", _WPP_VERSION_ ) );
-        ++count;
 #endif
         ConsoleMessage( banner2 );
-        ++count;
         ConsoleMessage( banner2a( 1989 ) );
-        ++count;
         ConsoleMessage( banner3 );
-        ++count;
         ConsoleMessage( banner3a );
-        ++count;
         if( Token[0] != '$' ) {             /* if finger print present */
             ConsoleMessage( Token );                /* - print it */
-            ++count;
         }
         CompFlags.banner_printed = true;
     }
-    return( count );
 }

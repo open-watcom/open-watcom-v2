@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,6 @@ extern void TrimPathInPlace( char * );
 extern bool IsSameFile( const char *a, const char *b );
 extern char *FormSym( const char * );
 extern char *WlibGetEnv( const char *name );
-extern int  Banner( void );
+extern void Banner( void );
 extern char *LibFormat( void );
 extern char *MakeTmpName( char *buffer );
