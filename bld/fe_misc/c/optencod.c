@@ -951,7 +951,11 @@ static void doARGEQUAL( const char *p )
     if( *p == '\0' ) {
         fail( ":argequal. must have <char> specified\n" );
     } else {
-        alternateEqual = *p;
+        if( p[0] == '.' && p[1] == '.' ) {
+            alternateEqual = ' ';
+        } else {
+            alternateEqual = *p;
+        }
         optFlag.alternate_equal = true;
     }
 }
