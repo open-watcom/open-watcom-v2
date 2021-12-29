@@ -86,8 +86,8 @@
 :cmt.   if there is no text associated with the tag.
 
 
-:title.  Usage: %s {options} input-filename {options} [output-filename] {options}
-:jtitle. 使用方法: %s {options} input-filename {options} [output-filename] {options}
+:title.  Usage: wrc {options} input-filename {options} [output-filename] {options}
+:jtitle. 使用方法: wrc {options} input-filename {options} [output-filename] {options}
 :target. any
 
 :title.  Options:

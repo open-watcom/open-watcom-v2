@@ -124,15 +124,7 @@ void Usage( void )
     int         i;
 
     puts( "" );
-    i = MSG_USAGE_BASE + 1;
-    Msg_Get( i++, msg_buffer );
-#ifdef BOOTSTRAP
-    printf( msg_buffer, "bwstrip" );
-#else
-    printf( msg_buffer, "wstrip" );
-#endif
-    puts( "" );
-    for( ; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
+    for( i = MSG_USAGE_BASE; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         Msg_Get( i, msg_buffer );
         puts( msg_buffer );
     }

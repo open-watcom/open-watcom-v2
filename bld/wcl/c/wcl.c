@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -157,9 +157,8 @@ const char *WclMsgs[] = {
     #undef pick
 };
 
-static const char *EnglishHelp[] = {
+static const char EngUsageText[] = {
     #include "usage.gh"
-    NULL
 };
 
 
@@ -296,94 +295,38 @@ static void killTmpEnv( char *env )
 static void print_banner( void )
 /******************************/
 {
-    static int done;
+    static bool printed = false;
 
-    if( done )
-        return;
+    if( !printed ) {
+        printed = true;
+        if( !Flags.be_quiet ) {
 #if defined( _BETAVER )
-    puts( banner1w1( "C/C++ " _TARGET_ " Compile and Link Utility" ) );
-    puts( banner1w2( _WCL_VERSION_ ) );
+            puts( banner1w1( "C/C++ " _TARGET_ " Compile and Link Utility" ) );
+            puts( banner1w2( _WCL_VERSION_ ) );
 #else
-    puts( banner1w( "C/C++ " _TARGET_ " Compile and Link Utility", _WCL_VERSION_ ) );
+            puts( banner1w( "C/C++ " _TARGET_ " Compile and Link Utility", _WCL_VERSION_ ) );
 #endif
-    puts( banner2 );
-    puts( banner2a( 1988 ) );
-    puts( banner3 );
-    puts( banner3a );
-    done = 1;
+            puts( banner2 );
+            puts( banner2a( 1988 ) );
+            puts( banner3 );
+            puts( banner3a );
+        }
+    }
 }
 
 
 static void  Usage( void )
 /************************/
 {
-    char const  **list;
     char const  *p;
-    int         lines_printed;
-    size_t      i, n;
-    char        buf[82];
-    int const   paging = isatty( fileno( stdout ) );
-    int const   height = 24; /* Number of lines assumed on screen */
 
     print_banner();
-    lines_printed = 4;
-    list = EnglishHelp;
-    while( *list ) {
-        memset( buf, ' ', 80 );
-        if( **list == '[' ) {                   /* title to be centered */
-            i = strlen( *list );
-            strcpy( &buf[38 - i / 2], *list );
-            ++list;
-            for( n = 0; list[n]; ++n ) {        /* count number in list */
-                if( *list[n] == '[' ) {
-                    break;
-                }
-            }
-            n = (n + 1) / 2;                    /* half way through list */
-            if( paging && lines_printed != 0 && lines_printed >= height ) {
-                puts( WclMsgs[PRESS_RETURN_TO_CONTINUE] );
-                fflush( stdout );
-                getchar();
-                lines_printed = 0;
-            }
-            puts( buf );
-            lines_printed++;
-            for( ;; ) {
-                memset( buf, ' ', 80 );
-                p = *list;
-                if( p == NULL )
-                    break;
-                for( i = 0; *p; )
-                    buf[i++] = *p++;
-                p = list[n];
-                if( p != NULL  &&  *p != '[' ) {
-                    for( i = 38; *p; ) {
-                        buf[i++] = *p++;
-                    }
-                }
-                buf[i] = '\0';
-                puts( buf );
-                lines_printed++;
-                if( paging && lines_printed != 0 && lines_printed >= height ) {
-                    puts( WclMsgs[PRESS_RETURN_TO_CONTINUE] );
-                    fflush( stdout );
-                    getchar();
-                    lines_printed = 0;
-                }
-                p = list[n];
-                if( p == NULL )
-                    break;
-                if( *p == '[' )
-                    break;
-                list[n] = NULL; /* indicate already printed */
-                ++list;
-            }
-            list = &list[n];
-        } else {
-            puts( *list );
-            lines_printed++;
-            ++list;
-        }
+    if( !Flags.be_quiet ) {
+        puts( "" );
+    }
+    for( p = EngUsageText; *p != '\0'; ) {
+        puts( p );
+        while( *p++ != '\0' ) ;
     }
 }
 
@@ -1185,9 +1128,7 @@ int  main( int argc, char **argv )
         initialize_Flags();
         rc = Parse( cmd );
         if( rc == 0 ) {
-            if( !Flags.be_quiet ) {
-                print_banner();
-            }
+            print_banner();
             rc = CompLink();
         }
     }

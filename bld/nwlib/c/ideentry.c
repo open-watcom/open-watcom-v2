@@ -236,6 +236,7 @@ void Usage( void )
             str_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
             MsgGet( str++, buff );
             ConsoleMessage( buff, Options.ar_name );
+            str_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
         } else {
             str = MSG_USAGE_WLIB_BASE;
             str_last = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT;

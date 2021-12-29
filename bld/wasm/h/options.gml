@@ -86,7 +86,7 @@
 :cmt.   if there is no text associated with the tag.
 
 
-:title.  Usage: %s [options] asm_file [options] [@env_var]
+:title.  Usage: wasm [options] asm_file [options] [@env_var]
 :jtitle. 使用方法: wasm [options] file [options] [@env_var]
 :titleu.  Usage: %C [options] asm_file [options] [@env_var]
 :jtitleu. 使用方法: %C [options] file [options] [@env_var]

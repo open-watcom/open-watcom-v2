@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,7 +152,7 @@ const char *WclMsgs[] = {
     #undef pick
 };
 
-static const char *EnglishHelp[] = {
+static const char *EngUsageText[] = {
     #include "usage.gh"
     NULL
 };
@@ -310,21 +310,23 @@ static etool tools_f77_arch[TARGET_ARCH_COUNT] = {
 
 static void print_banner( void )
 {
-    static int  done;
+    static bool printed = false;
 
-    if( done )
-        return;
+    if( !printed ) {
+        printed = true;
+        if( !Flags.be_quiet ) {
 #if defined( _BETAVER )
-    puts( banner1w1( "C/C++ " _TARGET_ " Compiler Driver Program" ) );
-    puts( banner1w2( _WCL_VERSION_ ) );
+            puts( banner1w1( "C/C++ " _TARGET_ " Compiler Driver Program" ) );
+            puts( banner1w2( _WCL_VERSION_ ) );
 #else
-    puts( banner1w( "C/C++ " _TARGET_ " Compiler Driver Program", _WCL_VERSION_ ) );
+            puts( banner1w( "C/C++ " _TARGET_ " Compiler Driver Program", _WCL_VERSION_ ) );
 #endif
-    puts( banner2 );
-    puts( banner2a( 1988 ) );
-    puts( banner3 );
-    puts( banner3a );
-    done = 1;
+            puts( banner2 );
+            puts( banner2a( 1988 ) );
+            puts( banner3 );
+            puts( banner3a );
+        }
+    }
 }
 
 static char *xlate_fname( char *name )
@@ -692,7 +694,7 @@ static  int  ParseArgs( int argc, char **argv )
                         "HI:i::L:l:M::m:"
                         "O::o:P::QSs::U:vW::wx::yz::",
 #endif
-                        EnglishHelp )) != -1 ) {
+                        EngUsageText )) != -1 ) {
 
         c = (char)i;
         if( find_mapping( c ) )
@@ -1610,9 +1612,7 @@ int main( int argc, char **argv )
     ProcMemInit();
     rc = Parse( argc, argv );
     if( rc == 0 ) {
-        if( !Flags.be_quiet ) {
-            print_banner();
-        }
+        print_banner();
         rc = CompLink();
     }
     ProcMemFini();

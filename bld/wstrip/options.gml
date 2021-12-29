@@ -86,8 +86,8 @@
 :cmt.   if there is no text associated with the tag.
 
 
-:title.  Usage: %s [options] input_file [output_file] [info_file]
-:jtitle. 使用方法: %s [options] input_file [output_file] [info_file]
+:title.  Usage: wstrip [options] input_file [output_file] [info_file]
+:jtitle. 使用方法: wstrip [options] input_file [output_file] [info_file]
 :target. any
 
 :title.

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,15 +94,11 @@ static void printUsage( int msg )
         Print( *text );
         Print( "\n" );
     }
-    id = MSG_USAGE_BASE;
-    if( MsgGet( id++, buff ) ) {
-        while( id < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
-            if( !MsgGet( id++, buff ) )
-                break;
-            BufferConcat( buff );
-            BufferConcatNL();
-            BufferPrint();
-        }
+    for( id = MSG_USAGE_BASE; id < MSG_USAGE_BASE + MSG_USAGE_COUNT; id++ ) {
+        MsgGet( id, buff );
+        BufferConcat( buff );
+        BufferConcatNL();
+        BufferPrint();
     }
 }
 

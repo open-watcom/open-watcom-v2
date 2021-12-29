@@ -86,8 +86,8 @@
 :cmt.   if there is no text associated with the tag.
 
 
-:title.  Usage: %s { <option> } <library_name> [ <commands> ]
-:jtitle. 使用方法: %s { <option> } <library_name> [ <commands> ]
+:title.  Usage: wlib { <option> } <library_name> [ <commands> ]
+:jtitle. 使用方法: wlib { <option> } <library_name> [ <commands> ]
 :titleu.  Usage: %C { <option> } <library_name> [ <commands> ]
 :jtitleu. 使用方法: %C { <option> } <library_name> [ <commands> ]
 :target. any
