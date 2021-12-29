@@ -50,20 +50,22 @@
 
 void CBanner( void )
 {
-    if( !CompFlags.banner_printed && !CompFlags.quiet_mode ) {
-#if defined( _BETAVER )
-        ConsoleMessage( banner1w1( "C++ " _TARGET_ " Optimizing Compiler" ) );
-        ConsoleMessage( banner1w2( _WPP_VERSION_ ) );
-#else
-        ConsoleMessage( banner1w( "C++ " _TARGET_ " Optimizing Compiler", _WPP_VERSION_ ) );
-#endif
-        ConsoleMessage( banner2 );
-        ConsoleMessage( banner2a( 1989 ) );
-        ConsoleMessage( banner3 );
-        ConsoleMessage( banner3a );
-        if( Token[0] != '$' ) {             /* if finger print present */
-            ConsoleMessage( Token );                /* - print it */
-        }
+    if( !CompFlags.banner_printed ) {
         CompFlags.banner_printed = true;
+        if( !CompFlags.quiet_mode ) {
+#if defined( _BETAVER )
+            ConsoleMessage( banner1w1( "C++ " _TARGET_ " Optimizing Compiler" ) );
+            ConsoleMessage( banner1w2( _WPP_VERSION_ ) );
+#else
+            ConsoleMessage( banner1w( "C++ " _TARGET_ " Optimizing Compiler", _WPP_VERSION_ ) );
+#endif
+            ConsoleMessage( banner2 );
+            ConsoleMessage( banner2a( 1989 ) );
+            ConsoleMessage( banner3 );
+            ConsoleMessage( banner3a );
+            if( Token[0] != '$' ) {             /* if finger print present */
+                ConsoleMessage( Token );                /* - print it */
+            }
+        }
     }
 }

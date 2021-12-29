@@ -33,18 +33,18 @@
 #include "cvars.h"
 
 
-void CCusage( void )
+void CUsage( void )
 {
     char const  *p;
 
     CBanner();
-    if( GlobalCompFlags.ide_console_output && !CompFlags.quiet_mode ) {
-        ConsMsg( "" );
+    if( !CompFlags.quiet_mode ) {
+        if( GlobalCompFlags.ide_console_output ) {
+            ConsMsg( "" );
+        }
     }
     for( p = UsageText(); *p != '\0'; ) {
         ConsMsg( p );
-        while( *p++ != '\0' ) {
-            ;
-        }
+        while( *p++ != '\0' ) ;
     }
 }

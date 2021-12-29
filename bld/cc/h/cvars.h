@@ -775,7 +775,7 @@ extern void         AddPtrTypeHash( TYPEPTR );
 extern void         AdjModsTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYMPTR sym );
 
 /* cusage */
-extern void         CCusage( void );
+extern void         CUsage( void );
 
 /* cutil */
 extern void         CErrSymName( int, SYMPTR,SYM_HANDLE );

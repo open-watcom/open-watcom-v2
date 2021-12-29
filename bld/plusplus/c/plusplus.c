@@ -171,7 +171,7 @@ static bool parseCmdLine(       // PARSE COMMAND LINE
     while( isspace( *p ) )
         ++p;
     if( *p == '?' || *p == '\0' ) {
-        CCusage();
+        CUsage();
         display_only = true;
     } else {
         GenCOptions( argv );

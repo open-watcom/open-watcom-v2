@@ -39,28 +39,27 @@
 
 #define ConsoleMessage(text)    MsgDisplayLine( text )
 
-static const char EUsage[] = {
+static const char EngUsageText[] = {
     #include "cmdlnusg.gh"
-    "\0"
 };
 
-void CCusage( void )
-/******************/
+void CUsage( void )
+/*****************/
 {
     char const  *p;
 
     CBanner();
-    if( CompFlags.ide_console_output && !CompFlags.quiet_mode ) {
-        ConsoleMessage( "" );
+    if( !CompFlags.quiet_mode ) {
+        if( CompFlags.ide_console_output ) {
+            ConsoleMessage( "" );
+        }
     }
     p = IntlUsageText();
     if( p == NULL ) {
-        p = EUsage;
+        p = EngUsageText;
     }
     while( *p != '\0' ) {
         ConsoleMessage( p );
-        while( *p++ != '\0' ) {
-            ;
-        }
+        while( *p++ != '\0' ) ;
     }
 }
