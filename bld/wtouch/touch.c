@@ -96,7 +96,7 @@ static void writeMsg( int msgnum, char *p )
     char        msgbuff[MAX_RESOURCE_SIZE];
 
     MsgSubStr( msgnum, msgbuff, p );
-    printf( "%s\n", msgbuff );
+    puts( msgbuff );
 }
 
 void Error( int msgnum, char *p )
@@ -106,13 +106,13 @@ void Error( int msgnum, char *p )
     writeMsg( msgnum, p );
 }
 
-static void showDateTimeFormat( void )
+static void ShowDateTimeFormat( void )
 /************************************/
 {
     char buff[16];
     char *p;
 
-    printf( "\n" );
+    puts( "" );
     strcpy( buff, dateFormat );
     for( p = buff; *p; ++p ) {
         if( *p == DEFAULT_DATE_SEPARATOR ) {
@@ -133,29 +133,34 @@ static void showDateTimeFormat( void )
     }
 }
 
-static void usage( void )
+static void Banner( void )
+/************************/
+{
+    puts( banner1w( "Touch Utility", _WTOUCH_VERSION_ ) );
+    puts( banner2 );
+    puts( banner2a( 1988 ) );
+    puts( banner3 );
+    puts( banner3a );
+}
+
+static void ShowUsage( void )
 /***********************/
 {
-    static char *useText[] = {
-        banner1w( "Touch Utility", _WTOUCH_VERSION_ ),
-        banner2,
-        banner2a( 1988 ),
-        banner3,
-        banner3a,
-        NULL
-    };
-    char **text;
     char msgbuff[MAX_RESOURCE_SIZE];
     int  i;
 
-    for( text = useText; *text != NULL; text++ ) {
-        printf( "%s\n", *text );
-    }
     for( i = MSG_USAGE_BASE; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         MsgGet( i, msgbuff );
-        printf( "%s\n", msgbuff );
+        puts( msgbuff );
     }
-    showDateTimeFormat();
+}
+
+static void Usage( void )
+/***********************/
+{
+    Banner();
+    ShowUsage();
+    ShowDateTimeFormat();
 }
 
 static void doFOption( char *date_file )
@@ -290,9 +295,8 @@ static int processOptions( int argc, char **argv )
             if( ( isalpha( p[1] ) || p[1] == '?' ) && p[2] == '\0' ) {
                 switch( tolower( p[1] ) ) {
                 case '?':
-                    usage();
+                    Usage();
                     return( 0 );
-                    break;
                 case 'u':
                     TouchFlags.usa_date_time = 1;
                     WhereAmI();
@@ -352,7 +356,7 @@ static int processOptions( int argc, char **argv )
         }
     }
     if( files == 0 ) {
-        usage();
+        Usage();
         return( 0 );
     }
     return( 1 );
