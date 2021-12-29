@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 
 #include <conio.h>
 #include <stdio.h>
+#include <string.h>
 #include "bool.h"
 #include "banner.h"
 #include "error.h"
@@ -41,7 +43,6 @@
 
 static char usageMsg[] = {
     #include "usagemsg.gh"
-    "\0"
 };
 
 static bool             quietMode = false;
@@ -70,55 +71,17 @@ void BannerMessage( void )
 
 
 /*
- * Read a key from the console.
- */
-static int get_key( void )
-/************************/
-{
-    int                 ch;
-
-    ch = getch();
-    if( ch == 0 ) {                     /* handle extended keys */
-        ch = getch();
-    }
-    return( ch );
-}
-
-static char const *NextUsage( char const *p )
-{
-    while( *p ) {
-        ++p;
-    }
-    return( p + 1 );
-}
-
-#define LINE_COUNT      15
-/*
  * Print a help message.
  */
 void PrintHelpMessage( void )
 /***************************/
 {
-    int                 num;
-    int                 ch;
-    char const          *p;
-    char const          *page_text;
+    char const  *p;
 
     BannerMessage();
-    p = page_text = usageMsg;
-    num = 0;
-    while( *(p = NextUsage( p )) != '\0' ) {
-        if( num == LINE_COUNT ) {
-            printf( page_text );
-            fflush( stdout );
-            ch = get_key();
-            printf( "\n" );
-            if( ch == 'q' )
-                break;
-            num = -1;
-        }
-        printf( "%s\n", p );
-        ++num;
+    for( p = usageMsg; *p != '\0'; ) {
+        puts( p );
+        while( *p++ != '\0' ) ;
     }
 }
 
