@@ -70,7 +70,7 @@ static samp_block_prefix    Last = {
 static int              stackSize = 0;
 
 
-#if defined( __DOS__ ) && !defined( _PLS ) && !defined( _RSI )
+#if defined( __DOS__ ) && !defined( __PHARLAP__ ) && !defined( __DOS4G__ )
 void __near WriteMark( const char FAR_PTR *str, seg_offset where )
 #else
 void WriteMark( const char FAR_PTR *str, seg_offset where )

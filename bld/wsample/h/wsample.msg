@@ -1,12 +1,12 @@
-/* UTF-8 encoding, ¥ */
+﻿/* UTF-8 encoding, ¥ */
 
 pick( ERR_DISK_FULL
         , "Fatal Error: Disk full."
         , "重大なエラー:ディスクがいっぱいです"
 )
 pick( ERR_SAMPLES_LOST
-        , "エラー:サンプリング・データの一部が失われました"
         , "Error: some samples have been lost"
+        , "エラー:サンプリング・データの一部が失われました"
 )
 pick( ERR_SAMPLE_TRUNCATE
         , "Error: Out of disk space. Sample file truncated"
@@ -168,7 +168,7 @@ pick( MSG_EXPLAIN_2
 )
 #endif
 
-#if defined(__PLS__) || defined(__NETWARE__)      /* messages in samppls and sampnlm */
+#if defined( __PHARLAP__ ) || defined(__NETWARE__)      /* messages in samppls and sampnlm */
 pick( MSG_EXPLAIN_1
         , "    <rate>    is a number (range 1 to 55) specifying the approximate"
         , "    <rate>    はサンプリング間のおよその時間間隔 (単位:ﾐﾘ秒) を"
@@ -195,7 +195,7 @@ pick( MSG_EXPLAIN_6
 )
 #endif
 
-#if defined(__RSI__)      /* messages in samprsi */
+#if defined( __DOS4G__ )    /* messages in samprsi */
 pick( MSG_EXPLAIN_1
         , "    <rate>    is a number (range 1 to 55) specifying the approximate"
         , "    <rate>    はサンプリング間のおよその時間間隔 (単位:ﾐﾘ秒) を"
@@ -319,7 +319,26 @@ pick( MSG_SAMPLE_10
 )
 #endif
 
-#ifdef __LINUX__      /* messages in samplnx */
+#ifdef __NT__       /* messages in sampnt */
+pick( MSG_SAMPLE_1
+        , "Executing: "
+        , "実行中: "
+)
+pick( MSG_SAMPLE_2
+        , "internal error: "
+        , "内部エラー: "
+)
+pick( MSG_SAMPLE_3
+        , "Cannot execute file"
+        , "ファイルを実行できません"
+)
+pick( MSG_SAMPLE_4
+        , "Unexpected notification"
+        , "記法が間違っています"
+)
+#endif
+
+#ifdef __LINUX__    /* messages in samplnx */
 pick( MSG_SAMPLE_1
         , "Executing: "
         , "実行中: "
@@ -346,7 +365,7 @@ pick( MSG_SAMPLE_6
 )
 #endif
 
-#ifdef __PLS__      /* messages in samppls */
+#ifdef __PHARLAP__  /* messages in samppls */
 pick( MSG_SAMPLE_1
         , "Internal error"
         , "内部エラー"
@@ -372,7 +391,7 @@ pick( MSG_SAMPLE_1
 )
 #endif
 
-#ifdef __RSI__      /* messages in samprsi */
+#ifdef __DOS4G__        /* messages in samprsi */
 pick( MSG_SAMPLE_1
         , "Task Exception: "
         , "タスク例外: "
@@ -450,7 +469,7 @@ pick( MSG_SAMPLE_16
 )
 #endif
 
-#if defined(__RSI__) || defined(__PLS__)
+#if defined( __DOS4G__ ) || defined( __PHARLAP__ )
 pick( MSG_EXCEPT_0
         , ""
         , ""

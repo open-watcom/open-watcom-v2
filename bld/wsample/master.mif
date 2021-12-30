@@ -61,9 +61,9 @@ extra_cpp_flags = $(fardata_$(host_os)_$(target))
 !endif
 
 !ifeq target pls
-extra_cpp_flags_dos =-D_PLS -D_far=__far
+extra_cpp_flags_dos =-D__PHARLAP__ -D_far=__far
 !else ifeq target rsi
-extra_cpp_flags_dos =-D_RSI
+extra_cpp_flags_dos =-D__DOS4G__
 !endif
 
 !ifeq target dos
@@ -165,8 +165,8 @@ exetarg_res_wresui    = wresui.res
 #
 # rc and others
 #
-rc_cpp_dos_rsi_i86 = -D__RSI__
-rc_cpp_dos_pls_386 = -D__PLS__
+rc_cpp_dos_rsi_i86 = -D__DOS4G__
+rc_cpp_dos_pls_386 = -D__PHARLAP__
 !ifdef rc_cpp_dos_$(target)_$(host_cpu)
 rc_cpp_dos = $(rc_cpp_dos_$(target)_$(host_cpu))
 !endif

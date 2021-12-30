@@ -63,9 +63,9 @@ static HANDLE_INFO      hInstance = { 0 };
 #endif
 
 #if defined(__WINDOWS__)
-static bool MsgReadErrArray( HINSTANCE inst )
+static bool MsgReadErrArray( HINSTANCE inst, char FAR_PTR **array, int min, int count )
 #else
-static bool MsgReadErrArray( void )
+static bool MsgReadErrArray( char FAR_PTR **array, int min, int count )
 #endif
 {
     int         i;
@@ -73,23 +73,23 @@ static bool MsgReadErrArray( void )
     unsigned    msg_shift;
 
     msg_shift = _WResLanguage() * MSG_LANG_SPACING;
-    for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
+    for( i = 0; i < count; i++ ) {
 #if defined(__WINDOWS__)
-        if( LoadString( inst, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
+        if( LoadString( inst, min + i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
 #else
-        if( WResLoadString( &hInstance, i + msg_shift, (lpstr)buffer, sizeof( buffer ) ) <= 0 ) {
+        if( WResLoadString( &hInstance, min + i + msg_shift, (lpstr)buffer, sizeof( buffer ) ) <= 0 ) {
 #endif
-            if( i == ERR_FIRST_MESSAGE )
+            if( i == 0 )
                 return( false );
             buffer[0] = '\0';
         }
-        GET_MESSAGE( i ) = my_alloc( strlen( buffer ) + 1 );
-        if( GET_MESSAGE( i ) == NULL )
+        array[i] = my_alloc( strlen( buffer ) + 1 );
+        if( array[i] == NULL )
             return( false );
 #ifdef FARDATA
-        _fstrcpy( GET_MESSAGE( i ), buffer );
+        _fstrcpy( array[i], buffer );
 #else
-        strcpy( GET_MESSAGE( i ), buffer );
+        strcpy( array[i], buffer );
 #endif
     }
     return( true );
@@ -102,7 +102,7 @@ bool MsgInit( void )
 #endif
 {
 #if defined(__WINDOWS__)
-    MsgReadErrArray( inst );
+    MsgReadErrArray( inst, MsgArray, ERR_FIRST_MESSAGE, ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1 );
     return( true );
 #else
     char        buffer[_MAX_PATH];
@@ -111,7 +111,7 @@ bool MsgInit( void )
     hInstance.status = 0;
     if( _cmdname( buffer ) != NULL ) {
         rc = OpenResFile( &hInstance, buffer );
-  #if defined(_PLS)
+  #if defined( __PHARLAP__ )
         if( !rc ) {
             pgroup2     pg;
 
@@ -124,7 +124,7 @@ bool MsgInit( void )
         }
   #endif
         if( rc ) {
-            MsgReadErrArray();
+            MsgReadErrArray( MsgArray, ERR_FIRST_MESSAGE, ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1 );
             CloseResFile( &hInstance );
             return( true );
         }
@@ -139,8 +139,8 @@ void MsgFini( void )
 {
     int          i;
 
-    for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-        my_free( GET_MESSAGE( i ) );
+    for( i = 0; i < ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1; i++ ) {
+        my_free( MsgArray[i] );
     }
 }
 
