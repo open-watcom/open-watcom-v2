@@ -41,9 +41,8 @@
 #define BUFSIZE         0x4000
 
 static char *Buffer;
-static char *Usetext[] = {
-    "Usage: bpcmt comment_file patch_file",
-    NULL
+static char UsageText[] = {
+    "Usage: bpcmt comment_file patch_file\0"
 };
 
 static char TmpExt[] = "A";
@@ -64,10 +63,11 @@ static void Fatal( char *reason, char *insert )
 
 static void Usage( void )
 {
-    char **text;
+    const char *p;
 
-    for( text = Usetext; *text != NULL; ++text ) {
-        puts( *text );
+    for( p = UsageText; *p != '\0'; ) {
+        puts( p );
+        while( *p++ != '\0' ) ;
     }
     exit( EXIT_FAILURE );
 }

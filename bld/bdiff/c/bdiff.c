@@ -65,13 +65,8 @@ static void Usage( void )
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
 
-    i = MSG_USAGE_BASE;
-    GetMsg( msgbuf, i );
-    printf( msgbuf, "bdiff" );
-    for( i = i + 1; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
+    for( i = MSG_USAGE_BASE; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         GetMsg( msgbuf, i );
-        if( msgbuf[0] == '\0' )
-            break;
         puts( msgbuf );
     }
     MsgFini();
