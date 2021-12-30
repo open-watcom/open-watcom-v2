@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,14 +81,13 @@ typedef struct _statement {
 
 typedef void (*fnx)(char*,char**,control_type,int,int,char*,char**,char**,int*);
 
-char *usage[] = {
-    "Usage: parsedlg [options] <in_file> [<out_file>]",
-    "   Options:",
-    "     -hide           : create dialogs as hidden, using -f=filename as input",
-    "     -quiet          : suppress output",
-    "     -f=filename     : a file containing a list of dialogs to be hidden",
-    "     -font=font name : dialog font overwrite",
-    NULL
+static const char   UsageText[] = {
+    "Usage: parsedlg [options] <in_file> [<out_file>]\0"
+    "   Options:\0"
+    "     -hide           : create dialogs as hidden, using -f=filename as input\0"
+    "     -quiet          : suppress output\0"
+    "     -f=filename     : a file containing a list of dialogs to be hidden\0"
+    "     -font=font name : dialog font overwrite\0"
 };
 
 char *options_text[] = {
@@ -130,11 +129,11 @@ char *my_fgets( char *buf, int max_len, FILE *fp )
 void disp_usage( void )
 /*********************/
 {
-    char    **p;
+    const char  *p;
 
-    p = usage;
-    while( *p ) {
-        printf( "%s\n", *p++ );
+    for( p = UsageText; *p != '\0'; ) {
+        puts( p );
+        while( *p++ != '\0' ) ;
     }
 }
 

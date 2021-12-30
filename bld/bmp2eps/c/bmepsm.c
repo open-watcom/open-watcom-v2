@@ -74,72 +74,70 @@ static void print_version(void)
   }
 }
 
-static char *usage_text[] = {
-  "bmp2eps [options] [ <inputfile> [ <outputfile> ] ]",
-  "",
-  "      Options",
-  "      -------",
-  "",
-  "      -p <pslevel>           select one of the following",
-  "         1                   (PS level 1)",
-  "         2                   (PS level 2 = default)",
-  "         3                   (PS level 3)",
-  ""
-  "      -c                     turns color printing on",
-  "      -g                     turns color printing off (default)",
-  "",
-  "      -e <encoding>          combine the following characters to specify",
-  "         8                   ASCII-85-encoding instead of ASCII-Hex",
-  "         r                   run-length encoding",
-//  "         f                   flate encoding",
-  "",
-  "      -t <filetype>          choose one of the following",
-  "         bmp",
+static const char   UsageText[] = {
+  "bmp2eps [options] [ <inputfile> [ <outputfile> ] ]\0"
+  " \0"
+  "      Options\0"
+  "      -------\0"
+  " \0"
+  "      -p <pslevel>           select one of the following\0"
+  "         1                   (PS level 1)\0"
+  "         2                   (PS level 2 = default)\0"
+  "         3                   (PS level 3)\0"
+  " \0"
+  "      -c                     turns color printing on\0"
+  "      -g                     turns color printing off (default)\0"
+  " \0"
+  "      -e <encoding>          combine the following characters to specify\0"
+  "         8                   ASCII-85-encoding instead of ASCII-Hex\0"
+  "         r                   run-length encoding\0"
+//  "         f                   flate encoding\0"
+  " \0"
+  "      -t <filetype>          choose one of the following\0"
+  "         bmp\0"
 #if HAVE_PNG_H
-  "         png",
+  "         png\0"
 #endif
 #if HAVE_JPEGLIB_H
-  "         jpg",
+  "         jpg\0"
 #endif
 #if HAVE_PNM_H
-  "         pnm",
+  "         pnm\0"
 #endif
 #if HAVE_TIFF_H
-  "         tif",
+  "         tif\0"
 #endif
 
-  "",
-  "      -d                     draft mode only",
-  "         Draft mode means the program reads only header information",
-  "         from the bitmap file and prints a dummy image.",
-  "",
-  "      -a <alphaoptions>      ",
-  "         o                   alpha channel is opacity, not transparency",
-  "         t                   alpha channel is transparency, not opacity",
-  "         l                   alternated transparency trigger level",
-  "         m                   mix foreground- and background color",
-  "         sd,d,d              specify background color i.e. s128,128,255",
-  "         PNG supports transparency channels, having values from",
-  "         0 ... 2^n-1. EPS supports simple yes/no decisions to mask",
-  "         pixels, so the alpha channels value must be mapped to",
-  "         \"use pixel\" or \"mask pixel\". The standard behaviour is",
-  "         to mask only pixels which have no opacity at all.",
-  "         The alternated trigger level uses only pixels having full",
-  "         opacity.",
-  "",
-  "      -s                     print DSC comments",
-  "",
-  NULL
+  " \0"
+  "      -d                     draft mode only\0"
+  "         Draft mode means the program reads only header information\0"
+  "         from the bitmap file and prints a dummy image.\0"
+  " \0"
+  "      -a <alphaoptions>      \0"
+  "         o                   alpha channel is opacity, not transparency\0"
+  "         t                   alpha channel is transparency, not opacity\0"
+  "         l                   alternated transparency trigger level\0"
+  "         m                   mix foreground- and background color\0"
+  "         sd,d,d              specify background color i.e. s128,128,255\0"
+  "         PNG supports transparency channels, having values from\0"
+  "         0 ... 2^n-1. EPS supports simple yes/no decisions to mask\0"
+  "         pixels, so the alpha channels value must be mapped to\0"
+  "         \"use pixel\" or \"mask pixel\". The standard behaviour is\0"
+  "         to mask only pixels which have no opacity at all.\0"
+  "         The alternated trigger level uses only pixels having full\0"
+  "         opacity.\0"
+  " \0"
+  "      -s                     print DSC comments\0"
 };
 
 static void print_usage(void)
 {
-  char **ptr;
-  ptr = usage_text;
-  while(*ptr) {
-    fprintf(stdout, "%s\n", *ptr);
-    ptr++;
-  }
+    const char *p;
+
+    for( p = UsageText; *p != '\0'; ) {
+        puts( p );
+        while( *p++ != '\0' ) ;
+    }
 }
 
 static int digit_for_char(char c)
