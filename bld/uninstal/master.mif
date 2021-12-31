@@ -42,7 +42,7 @@ exetarg_nt_manif_x64  = ntmanif.res
 
 $(proj_name).res : ../uninstal.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$@
+    $(rc) $(rc_flags) -ad -zku8 $(inc_path) $[@ -fo=$@
 
 ntmanif.res : ../ntmanif.rc
     @%make echo_rc
@@ -54,4 +54,4 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : $(uninstal_dir)/uninstal.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) $(inc_path) -o$@ $[@
+    $(cpp) -zku8 $(rc_cppflags) $(inc_path) -o$@ $[@

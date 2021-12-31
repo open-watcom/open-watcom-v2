@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick(   UNINS_TITLE,
         "Open Watcom",
         "Open Watcom" )
