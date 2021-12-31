@@ -295,7 +295,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     outp( TIMER0, 0 );
     FixTime();
     if( Mach.msb_event <= 16 ) {
-        OutputMsgParmNL( MSG_SAMPLE_3, GET_MESSAGE( MSG_EXCEPT_0 + Exceptions[Mach.msb_event] ) );
+        OutputMsgParmNL( MSG_SAMPLE_3, MsgExcArray[Exceptions[Mach.msb_event]] );
     } else if( Mach.msb_event != EV_TERM ) {
         char buff[10];
         OutputMsgParmNL( MSG_SAMPLE_4, itoa( Mach.msb_event, buff, 10 ) );

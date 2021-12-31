@@ -134,7 +134,9 @@ additional_clean_sys = *.exp
 # EXE
 #
 exetarg_prebuild_objs_nov = nversion.tmp
-exetarg_prebuild_objs = $(exetarg_prebuild_objs_$(target))
+exetarg_prebuild_objs_pls = except.grh
+exetarg_prebuild_objs_rsi = except.grh
+exetarg_prebuild_objs = $(exetarg_prebuild_objs_$(target)) wsample.grh usage.grh
 exetarg_objs_nt_axp     = sampaxp.obj sysio.obj io.obj sysinit.obj sampexe.obj
 exetarg_objs_nt_386     = sampnt.obj sysio.obj io.obj sysinit.obj sampexe.obj
 exetarg_objs_nt_x64     = sampnt64.obj sysio.obj io.obj sysinit.obj sampexe.obj
@@ -183,6 +185,30 @@ $(proj_name).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsam
 wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8)
+
+wsample.gh : ../h/wsample.msg $(__MAKEFILES__)
+    @%make echo_cpp
+    $(cpp) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
+
+wsample.grh : wsample.gh $(__MAKEFILES__)
+    @%make echo_awk
+    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+
+usage.gh : ../h/usage.msg $(__MAKEFILES__)
+    @%make echo_cpp
+    $(cpp) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
+
+usage.grh : usage.gh $(__MAKEFILES__)
+    @%make echo_awk
+    $(awk) -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+
+except.gh : ../h/except.msg $(__MAKEFILES__)
+    @%make echo_cpp
+    $(cpp) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
+
+except.grh : except.gh $(__MAKEFILES__)
+    @%make echo_awk
+    $(awk) -v base=MSG_EXC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldcl

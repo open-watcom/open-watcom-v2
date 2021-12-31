@@ -32,12 +32,12 @@
 
 #include "wmsg.rh"
 
-#define MSG_USE_E_BASE  (MSG_USAGE_LN_1 + RLE_ENGLISH * MSG_LANG_SPACING)
-#define MSG_USE_J_BASE  (MSG_USAGE_LN_1 + RLE_JAPANESE * MSG_LANG_SPACING)
+#define GET_MESSAGE(m)      MsgArray[(m) - MSG_RC_BASE]
 
-#define GET_MESSAGE(m)  MsgArray[(m) - ERR_FIRST_MESSAGE]
-
-extern char FAR_PTR     *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
+extern char FAR_PTR     *MsgArray[];
+#if defined( __DOS4G__ ) || defined( __PHARLAP__ )
+extern char FAR_PTR     *MsgExcArray[];
+#endif
 
 #ifdef __WINDOWS__
 extern bool     MsgInit( HINSTANCE inst );

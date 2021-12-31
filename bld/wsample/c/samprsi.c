@@ -227,7 +227,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     }
     D32UnHookTimer();
     if( Proc.int_id != 0x21 ) {
-        OutputMsgParmNL( MSG_SAMPLE_1, GET_MESSAGE( MSG_EXCEPT_0 + Exceptions[Proc.int_id] ) );
+        OutputMsgParmNL( MSG_SAMPLE_1, MsgExcArray[Exceptions[Proc.int_id]] );
     }
     D32DebugTerm();
     report();

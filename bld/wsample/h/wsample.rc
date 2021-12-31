@@ -8,12 +8,20 @@ BEGIN
     #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
     #include "wsample.msg"
+    #include "usage.msg"
+#if defined( __DOS4G__ ) || defined( __PHARLAP__ )
+    #include "except.msg"
+#endif
 
     #undef pick
 
     #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
 
     #include "wsample.msg"
+    #include "usage.msg"
+#if defined( __DOS4G__ ) || defined( __PHARLAP__ )
+    #include "except.msg"
+#endif
 
     #undef pick
 END

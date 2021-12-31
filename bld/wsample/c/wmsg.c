@@ -57,7 +57,35 @@
 #include "clibext.h"
 
 
-char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
+enum {
+    MSG_RC_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "wsample.gh"
+    #undef pick
+};
+
+enum {
+    MSG_USAGE_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "usage.gh"
+    #undef pick
+};
+
+#if defined( __DOS4G__ ) || defined( __PHARLAP__ )
+enum {
+    MSG_EXC_COUNT = 0
+    #define pick(c,e,j) + 1
+    #include "except.gh"
+    #undef pick
+};
+#endif
+
+char FAR_PTR            *MsgArray[MSG_RC_COUNT];
+#if defined( __DOS4G__ ) || defined( __PHARLAP__ )
+char FAR_PTR            *MsgExcArray[MSG_EXC_COUNT];
+#endif
+
+static char FAR_PTR     *MsgUsageArray[MSG_USAGE_COUNT];
 
 #if !defined(__WINDOWS__)
 static HANDLE_INFO      hInstance = { 0 };
@@ -103,7 +131,8 @@ bool MsgInit( void )
 #endif
 {
 #if defined(__WINDOWS__)
-    MsgReadErrArray( inst, MsgArray, ERR_FIRST_MESSAGE, ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1 );
+    MsgReadErrArray( inst, MsgArray, MSG_RC_BASE, MSG_RC_COUNT );
+    MsgReadErrArray( inst, MsgUsageArray, MSG_USAGE_BASE, MSG_USAGE_COUNT );
     return( true );
 #else
     char        buffer[_MAX_PATH];
@@ -125,7 +154,11 @@ bool MsgInit( void )
         }
   #endif
         if( rc ) {
-            MsgReadErrArray( MsgArray, ERR_FIRST_MESSAGE, ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1 );
+            MsgReadErrArray( MsgArray, MSG_RC_BASE, MSG_RC_COUNT );
+            MsgReadErrArray( MsgUsageArray, MSG_USAGE_BASE, MSG_USAGE_COUNT );
+#if defined( __DOS4G__ ) || defined( __PHARLAP__ )
+            MsgReadErrArray( MsgExcArray, MSG_EXC_BASE, MSG_EXC_COUNT );
+#endif
             CloseResFile( &hInstance );
             return( true );
         }
@@ -140,9 +173,17 @@ void MsgFini( void )
 {
     int          i;
 
-    for( i = 0; i < ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1; i++ ) {
+    for( i = 0; i < MSG_RC_COUNT; i++ ) {
         my_free( MsgArray[i] );
     }
+    for( i = 0; i < MSG_USAGE_COUNT; i++ ) {
+        my_free( MsgUsageArray[i] );
+    }
+#if defined( __DOS4G__ ) || defined( __PHARLAP__ )
+    for( i = 0; i < MSG_EXC_COUNT; i++ ) {
+        my_free( MsgExcArray[i] );
+    }
+#endif
 }
 
 void Usage( void )
@@ -156,8 +197,8 @@ void Usage( void )
     Output( banner3 ); OutputNL();
     Output( banner3a ); OutputNL();
     OutputNL();
-    for( i = MSG_USAGE_LN_1; i <= MSG_USAGE_LN_9; i++ ) {
-        str = GET_MESSAGE( i );
+    for( i = 0; i < MSG_USAGE_COUNT; i++ ) {
+        str = MsgUsageArray[i];
         if( *str != '\0' ) {
             Output( str );
             OutputNL();
