@@ -138,7 +138,6 @@ extern void             __near WriteMark( const char FAR_PTR *str, seg_offset wh
 extern bool             VersionCheck( void );
 extern void             WriteMark( const char FAR_PTR *str, seg_offset where );
 #endif
-extern void             Usage( void );
 
 extern void             FAR_PTR *my_alloc( size_t size );
 extern void             my_free( void FAR_PTR *chunk );

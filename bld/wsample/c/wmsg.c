@@ -47,6 +47,7 @@
     #include "wressetr.h"
     #include "wresset2.h"
 #endif
+#include "banner.h"
 #include "sample.h"
 #include "smpstuff.h"
 #include "wreslang.h"
@@ -144,12 +145,19 @@ void MsgFini( void )
     }
 }
 
-void MsgPrintfUsage( int first_ln, int last_ln )
+void Usage( void )
 {
+    int     i;
     char    FAR_PTR *str;
 
-    for( ; first_ln <= last_ln; first_ln++ ) {
-        str = GET_MESSAGE( first_ln );
+    Output( banner1w( "Execution Sampler", _WSAMP_VERSION_ ) ); OutputNL();
+    Output( banner2 ); OutputNL();
+    Output( banner2a( 1989 ) ); OutputNL();
+    Output( banner3 ); OutputNL();
+    Output( banner3a ); OutputNL();
+    OutputNL();
+    for( i = MSG_USAGE_LN_1; i <= MSG_USAGE_LN_9; i++ ) {
+        str = GET_MESSAGE( i );
         if( *str != '\0' ) {
             Output( str );
             OutputNL();
