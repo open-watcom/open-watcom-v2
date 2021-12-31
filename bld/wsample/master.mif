@@ -136,7 +136,7 @@ additional_clean_sys = *.exp
 exetarg_prebuild_objs_nov = nversion.tmp
 exetarg_prebuild_objs_pls = except.grh
 exetarg_prebuild_objs_rsi = except.grh
-exetarg_prebuild_objs = $(exetarg_prebuild_objs_$(target)) wsample.grh usage.grh
+exetarg_prebuild_objs = $(exetarg_prebuild_objs_$(target)) wsample.grh usage.gh
 exetarg_objs_nt_axp     = sampaxp.obj sysio.obj io.obj sysinit.obj sampexe.obj
 exetarg_objs_nt_386     = sampnt.obj sysio.obj io.obj sysinit.obj sampexe.obj
 exetarg_objs_nt_x64     = sampnt64.obj sysio.obj io.obj sysinit.obj sampexe.obj
@@ -178,11 +178,11 @@ verrc_exe = $(exetarg_name)
 
 rcui_inc_dirs = -I"../h"
 
-$(proj_name).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
+$(proj_name).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8) -30
 
-wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
+wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8)
 
@@ -193,14 +193,6 @@ wsample.gh : ../h/wsample.msg $(__MAKEFILES__)
 wsample.grh : wsample.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
-
-usage.gh : ../h/usage.msg $(__MAKEFILES__)
-    @%make echo_cpp
-    $(cpp) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
-
-usage.grh : usage.gh $(__MAKEFILES__)
-    @%make echo_awk
-    $(awk) -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 except.gh : ../h/except.msg $(__MAKEFILES__)
     @%make echo_cpp
@@ -217,3 +209,19 @@ except.grh : except.gh $(__MAKEFILES__)
 nversion.tmp: ./mknver.exe $(__MAKEFILES__)
     @%make echo_execute
     $(noecho)$[@ $@
+
+!ifdef exetarg_qnx_res
+optencod_opt_qnx    = -u $(exetarg_qnx_res)
+!endif
+!ifeq release 0
+optencod_targ_dbg   = dbg
+!endif
+
+usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(noecho)optencod -q -rc MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(target) $(optencod_targ_dbg)
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
+!endif

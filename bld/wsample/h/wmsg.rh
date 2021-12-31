@@ -31,7 +31,6 @@
 
 
 #include "wsample.grh"
-#include "usage.grh"
 #if defined( __DOS4G__ ) || defined( __PHARLAP__ )
     #include "except.grh"
 #endif
@@ -39,6 +38,6 @@
 #define MSG_LANG_SPACING    13000
 
 #define MSG_RC_BASE         20
-#define MSG_USAGE_BASE      60
+#define MSG_USAGE_BASE      50
 #define MSG_EXC_BASE        80
 
