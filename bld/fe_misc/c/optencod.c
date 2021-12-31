@@ -130,7 +130,7 @@ TAG( USAGEOGRP )
 #define mytolower(c)            ((c < 'A' || c > 'Z') ? c : c - 'A' + 'a')
 #define myisspace(c)            (c == ' ' || c == '\t')
 
-#define IS_SELECTED(s)          ((s->target & targetMask) && (s->ntarget & targetMask) == 0)
+#define IS_SELECTED(s)          ((s->target_mask & targetMask) && (s->ntarget_mask & targetMask) == 0)
 
 #define IS_ASCII(c)             (c < 0x80)
 
@@ -139,6 +139,8 @@ TAG( USAGEOGRP )
 #define SKIP_SPACES(s)          while( myisspace( *s ) ) s++
 
 typedef const char              *lang_data[LANG_MAX];
+
+typedef unsigned long           targmask;
 
 typedef int (*comp_fn)(const void *,const void *);
 
@@ -165,9 +167,8 @@ typedef enum cvt_name {
 } cvt_name;
 
 typedef struct target {
-    struct target   *next;
-    unsigned        mask;
-    char            name[1];
+    targmask        mask;
+    const char      *name;
 } TARGET;
 
 typedef struct name {
@@ -178,8 +179,8 @@ typedef struct name {
 
 typedef struct title {
     struct title    *next;
-    unsigned        target;
-    unsigned        ntarget;
+    targmask        target_mask;
+    targmask        ntarget_mask;
     boolbit         is_titleu   : 1;
     lang_data       lang_title;
     lang_data       lang_titleu;
@@ -215,8 +216,8 @@ typedef struct option {
     NAME            *enumerate;
     char            *code;
     unsigned        number_default;
-    unsigned        target;
-    unsigned        ntarget;
+    targmask        target_mask;
+    targmask        ntarget_mask;
     boolbit         default_specified : 1;
     boolbit         is_simple         : 1;
     boolbit         is_immediate      : 1;
@@ -270,10 +271,9 @@ static char         alternateEqual;
 static CHAIN        *lastChain;
 static GROUP        *lastGroup;
 static size_t       maxUsageLen;
-static unsigned     targetMask;
-static unsigned     targetAnyMask;
-static unsigned     targetDbgMask;
-static unsigned     nextTargetMask = 1;
+static targmask     targetMask = 0;
+static targmask     targetAnyMask;
+static targmask     targetDbgMask;
 
 static tag_id getsUsage = TAG_NULL;
 
@@ -298,6 +298,7 @@ static void (*processTag[])( const char * ) = {
     NULL
 };
 
+#define TARGETS_COUNT  (sizeof( validTargets ) / sizeof( validTargets[0] ))
 static const char *validTargets[] = {
 /* default targets */
     "any",
@@ -326,8 +327,7 @@ static const char *validTargets[] = {
     "win",
 /* extra targets */
     "targ1",
-    "targ2",
-    NULL
+    "targ2"
 };
 
 static const char * const langName[] = {
@@ -522,13 +522,14 @@ static void fail( const char *msg, ... )
 static void dumpUsage( void )
 {
     const char **p;
+    int        i;
 
     for( p = usageMsg; *p != NULL; ++p ) {
         fprintf( stderr, "%s\n", *p );
     }
     fprintf( stderr, "        " );
-    for( p = validTargets; *p != NULL; ++p ) {
-        fprintf( stderr, "%s ", *p );
+    for( i = 0; i < TARGETS_COUNT; i++ ) {
+        fprintf( stderr, "%s ", validTargets[i] );
     }
     fprintf( stderr, "\n" );
 }
@@ -625,33 +626,50 @@ static bool cmpChainPattern( const char *pattern1, const char *pattern2, size_t 
     return( true );
 }
 
-static void addTarget( const char *t )
+int target_compare_qsort( const void *p1, const void *p2 )
 {
-    size_t len;
-    TARGET *p;
-
-    len = strlen( t );
-    p = malloc( sizeof( *p ) + len );
-    p->mask = nextTargetMask;
-    p->next = targetList;
-    targetList = p;
-    strcpy( p->name, t );
-    nextTargetMask <<= 1;
-    if( nextTargetMask == 0 ) {
-        fail( "too many targets defined\n" );
-    }
+    const TARGET *p1c = (const TARGET *)p1;
+    const TARGET *p2c = (const TARGET *)p2;
+    return( stricmp( p1c->name, p2c->name ) );
 }
 
-static unsigned findTarget( char const *t )
+int target_compare_bsearch( const void *p1, const void *p2 )
 {
-    TARGET *p;
+    const char *p1c = (const char *)p1;
+    const TARGET *p2c = (const TARGET *)p2;
+    return( stricmp( p1c, p2c->name ) );
+}
 
-    for( p = targetList; p != NULL; p = p->next ) {
-        if( strcmp( t, p->name ) == 0 ) {
-            return( p->mask );
+static targmask findTarget( char const *t )
+{
+    const TARGET *key;
+
+    key = (const TARGET *)bsearch( t, targetList, TARGETS_COUNT, sizeof( TARGET ), target_compare_bsearch );
+    if( key == NULL )
+        return( 0 );
+    return( key->mask );
+}
+
+static void initTargets( void )
+{
+    int         i;
+    targmask    next_mask = 1;
+
+    targetList = calloc( TARGETS_COUNT, sizeof( TARGET ) );
+    for( i = 0; i < TARGETS_COUNT; i++ ) {
+        targetList[i].name = validTargets[i];
+        targetList[i].mask = next_mask;
+        next_mask <<= 1;
+        if( next_mask == 0 ) {
+            fail( "too many targets defined\n" );
         }
     }
-    return( 0 );
+    qsort( targetList, TARGETS_COUNT, sizeof( TARGET ), target_compare_qsort );
+}
+
+static void finiTargets( void )
+{
+    free( targetList );
 }
 
 static NAME *addEnumName( NAME **h, const char *n )
@@ -769,8 +787,7 @@ static FILE *initFILE( const char *fnam, const char *fmod )
 
 static bool procCmdLine( int argc1, char **argv1 )
 {
-    const char  **t;
-    unsigned    mask;
+    targmask    mask;
     char const  *p;
 
     if( argc1 < NUM_FILES ) {
@@ -822,9 +839,6 @@ static bool procCmdLine( int argc1, char **argv1 )
     NEXT_ARG();
     ufp = initFILE( *argv1, "w+" );
     NEXT_ARG();
-    for( t = validTargets; *t != NULL; t++ ) {
-        addTarget( *t );
-    }
     p = "any";
     if( (targetAnyMask = findTarget( p )) == 0 ) {
         fail( "invalid target name '%s'\n", p );
@@ -1010,8 +1024,8 @@ static void doOPTION( const char *p )
 // :target. <targ> <targ> ...
 static void doTARGET( const char *p )
 {
-    unsigned mask;
-    OPTION *o;
+    targmask    mask;
+    OPTION      *o;
 
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -1019,12 +1033,12 @@ static void doTARGET( const char *p )
             fail( "invalid target name '%s'\n", tokbuff );
         }
         if( targetTitle != NULL ) {
-            targetTitle->target |= mask;
+            targetTitle->target_mask |= mask;
         } else if( targetFooter != NULL ) {
-            targetFooter->target |= mask;
+            targetFooter->target_mask |= mask;
         } else {
             for( o = optionList; o != NULL; o = o->synonym ) {
-                o->target |= mask;
+                o->target_mask |= mask;
             }
         }
     }
@@ -1033,8 +1047,8 @@ static void doTARGET( const char *p )
 // :ntarget. <targ> <targ> ...
 static void doNTARGET( const char *p )
 {
-    unsigned mask;
-    OPTION *o;
+    targmask    mask;
+    OPTION      *o;
 
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -1042,12 +1056,12 @@ static void doNTARGET( const char *p )
             fail( "invalid target name '%s'\n", tokbuff );
         }
         if( targetTitle != NULL ) {
-            targetTitle->ntarget |= mask;
+            targetTitle->ntarget_mask |= mask;
         } else if( targetFooter != NULL ) {
-            targetFooter->ntarget |= mask;
+            targetFooter->ntarget_mask |= mask;
         } else {
             for( o = optionList; o != NULL; o = o->synonym ) {
-                o->ntarget |= mask;
+                o->ntarget_mask |= mask;
             }
         }
     }
@@ -2824,8 +2838,10 @@ int main( int argc, char **argv )
     langs_ok = _LANG_DEFS_OK();
     if( !langs_ok )
         fail( "language index mismatch\n" );
+    initTargets();
     if( procCmdLine( argc - 1, argv + 1 ) ) {
         dumpUsage();
+        finiTargets();
         return( EXIT_FAILURE );
     }
     readInputFile();
@@ -2845,5 +2861,6 @@ int main( int argc, char **argv )
     outputFini();
 
     closeFiles();
+    finiTargets();
     return( EXIT_SUCCESS );
 }
