@@ -40,4 +40,3 @@
 #define MSG_RC_BASE         20
 #define MSG_USAGE_BASE      50
 #define MSG_EXC_BASE        80
-
