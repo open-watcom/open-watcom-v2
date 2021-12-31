@@ -44,34 +44,38 @@
 
 #include "clibext.h"
 
-
+/* following must be ordered as US ASCII */
 #define OPT_TAGS \
 TAG( ARGEQUAL ) \
-TAG( CMT ) \
-TAG( CODE ) \
-TAG( INTERNAL ) \
-TAG( PREFIX ) \
-TAG( OPTION ) \
-TAG( TARGET ) \
 TAG( CHAIN ) \
 TAG( CHAR ) \
+TAG( CMT ) \
+TAG( CODE ) \
 TAG( ENUMERATE ) \
 TAG( FILE ) \
+TAG( FOOTER ) \
+TAG( FOOTERU ) \
 TAG( GROUP ) \
 TAG( ID ) \
 TAG( IMMEDIATE ) \
-TAG( JUSAGE ) \
+TAG( INTERNAL ) \
+TAG( JFOOTER ) \
+TAG( JFOOTERU ) \
 TAG( JTITLE ) \
 TAG( JTITLEU ) \
+TAG( JUSAGE ) \
 TAG( MULTIPLE ) \
 TAG( NEGATE ) \
 TAG( NOCHAIN ) \
 TAG( NOEQUAL ) \
 TAG( NTARGET ) \
 TAG( NUMBER ) \
+TAG( OPTION ) \
 TAG( OPTIONAL ) \
 TAG( PATH ) \
+TAG( PREFIX ) \
 TAG( SPECIAL ) \
+TAG( TARGET ) \
 TAG( TIMESTAMP ) \
 TAG( TITLE ) \
 TAG( TITLEU ) \
@@ -276,11 +280,11 @@ static tag_id getsUsage = TAG_NULL;
 static char         *outputbuff = NULL;
 static lang_data    outputdata;
 
+#define TAGS_COUNT  (sizeof( tagNames ) / sizeof( tagNames[0] ))
 static const char *tagNames[] = {
     #define TAG( s )        #s ,
     OPT_TAGS
     #undef TAG
-    NULL
 };
 
 #define TAG( s )        static void do##s( const char * );
@@ -310,10 +314,13 @@ static const char *validTargets[] = {
     "bsd",
     "dos",
     "linux",
+    "nov",          /* Netware */
     "nt",
     "os2",
     "osx",
+    "pls",          /* DOS Pharlap extender */
     "qnx",
+    "rsi",          /* DOS DOS4G extender */
     "haiku",
     "rdos",
     "win",
@@ -388,9 +395,11 @@ static NAME     *enumeratorList;
 static OPTION   *optionList;
 static OPTION   *uselessOptionList;
 static TITLE    *titleList;
+static TITLE    *footerList;
 static CHAIN    *chainList;
 static GROUP    *groupList = NULL;
 static TITLE    *targetTitle;
+static TITLE    *targetFooter;
 
 static void emitCode( CODESEQ *h, unsigned depth, flow_control control );
 
@@ -866,16 +875,21 @@ static const char *nextTag( const char *s, char *o )
     return( s );
 }
 
+int tag_compare( const void *p1, const void *p2 )
+{
+    const char *p1c = (const char *)p1;
+    const char **p2c = (const char **)p2;
+    return( mystricmp( p1c, *p2c ) );
+}
+
 static tag_id findTag( char const *t )
 {
-    const char **c;
+    const char **key;
 
-    for( c = tagNames; *c != NULL; ++c ) {
-        if( mystricmp( t, *c ) == 0 ) {
-            return( c - tagNames );
-        }
-    }
-    return( TAG_UNKNOWN );
+    key = (char const **)bsearch( t, tagNames, TAGS_COUNT, sizeof( char * ), tag_compare );
+    if( key == NULL )
+        return( TAG_UNKNOWN );
+    return( key - tagNames );
 }
 
 static tag_id isTag( const char **eot )
@@ -984,6 +998,7 @@ static void doOPTION( const char *p )
     OPTION *synonym;
 
     targetTitle = NULL;
+    targetFooter = NULL;
     synonym = NULL;
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -1005,6 +1020,8 @@ static void doTARGET( const char *p )
         }
         if( targetTitle != NULL ) {
             targetTitle->target |= mask;
+        } else if( targetFooter != NULL ) {
+            targetFooter->target |= mask;
         } else {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->target |= mask;
@@ -1026,6 +1043,8 @@ static void doNTARGET( const char *p )
         }
         if( targetTitle != NULL ) {
             targetTitle->ntarget |= mask;
+        } else if( targetFooter != NULL ) {
+            targetFooter->ntarget |= mask;
         } else {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->ntarget |= mask;
@@ -1393,6 +1412,7 @@ static void doTITLE( const char *p )
     *i = t;
     t->lang_title[LANG_English] = pickUpRest( p );
     targetTitle = t;
+    targetFooter = NULL;
 }
 
 // :titleu. <text>
@@ -1428,6 +1448,62 @@ static void doJTITLEU( const char *p )
     t = targetTitle;
     if( t == NULL ) {
         fail( ":jtitleu. must follow a :title.\n" );
+    }
+    t->lang_titleu[LANG_Japanese] = pickUpRest( p );
+    t->is_titleu = true;
+}
+
+// :footer. <text>
+static void doFOOTER( const char *p )
+{
+    TITLE **i;
+    TITLE *t;
+
+    i = &footerList;
+    for( t = *i; t != NULL; t = *i ) {
+        i = &(t->next);
+    }
+    t = calloc( 1, sizeof( *t ) );
+    t->next = *i;
+    *i = t;
+    t->lang_title[LANG_English] = pickUpRest( p );
+    targetFooter = t;
+    targetTitle = NULL;
+}
+
+// :footeru. <text>
+static void doFOOTERU( const char *p )
+{
+    TITLE *t;
+
+    t = targetFooter;
+    if( t == NULL ) {
+        fail( ":footeru. must follow a :footer.\n" );
+    }
+    t->lang_titleu[LANG_English] = pickUpRest( p );
+    t->is_titleu = true;
+}
+
+// :jfooter. <text>
+static void doJFOOTER( const char *p )
+{
+    TITLE *t;
+
+    t = targetFooter;
+    if( t == NULL ) {
+        fail( ":jfooter. must follow a :footer.\n" );
+    }
+    t->lang_title[LANG_Japanese] = pickUpRest( p );
+}
+
+// :jfooteru. <text>
+static void doJFOOTERU( const char *p )
+{
+    TITLE *t;
+
+    t = targetFooter;
+    if( t == NULL ) {
+        fail( ":jfooteru. must follow a :footer.\n" );
     }
     t->lang_titleu[LANG_Japanese] = pickUpRest( p );
     t->is_titleu = true;
@@ -2483,6 +2559,20 @@ static void outputUsageHeader( process_line_fn *process_line )
     }
 }
 
+static void outputUsageFooter( process_line_fn *process_line )
+{
+    TITLE       *t;
+
+    for( t = footerList; t != NULL; t = t->next ) {
+        if( IS_SELECTED( t ) ) {
+            outputTitle( t->lang_title, process_line );
+            if( process_line == emitUsageH ) {
+                outputTitle( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, emitUsageHQNX );
+            }
+        }
+    }
+}
+
 static void clearChainUsage( void )
 {
     CHAIN   *cn;
@@ -2657,6 +2747,8 @@ static void outputUsage( process_line_fn *process_line )
             processUsage( process_line, gr );
         }
     }
+
+    outputUsageFooter( process_line );
 }
 
 static void outputUsageH( void )
