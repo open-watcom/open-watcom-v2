@@ -37,17 +37,17 @@ memory_model_i86 = c
 !endif
 
 !ifeq target nov
-inc_dirs = -I"../h" -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(nwsrc)" -I"$(dig_dir)/h"
+inc_dirs = -I. -I"../h" -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(nwsrc)" -I"$(dig_dir)/h"
 !else ifeq target win
 inc_dirs = -I. -I"../h" $(windbg_inc_dirs) -I"$(dig_dir)/h"
 !else ifeq target rsi
-inc_dirs = -I"../h" $(rsilib_inc_dirs) -I"$(dig_dir)/h"
+inc_dirs = -I. -I"../h" $(rsilib_inc_dirs) -I"$(dig_dir)/h"
 !else ifeq target pls
-inc_dirs = -I"../h" -I"$(plsdir)" -I"$(dig_dir)/h"
+inc_dirs = -I. -I"../h" -I"$(plsdir)" -I"$(dig_dir)/h"
 !else ifeq target linux
-inc_dirs = -I"../h" -I"$(trap_dir)/lcl/linux/h" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
+inc_dirs = -I. -I"../h" -I"$(trap_dir)/lcl/linux/h" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
 !else
-inc_dirs = -I"../h" -I"$(dig_dir)/h"
+inc_dirs = -I. -I"../h" -I"$(dig_dir)/h"
 !endif
 
 !ifndef bootstrap
