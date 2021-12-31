@@ -1,4 +1,4 @@
-﻿/* UTF-8 encoding, ¥ */
+/* UTF-8 encoding, ¥ */
 
 pick( ERR_DISK_FULL
         , "Fatal Error: Disk full."
