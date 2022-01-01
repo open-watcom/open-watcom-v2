@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,7 +152,7 @@ const char *WclMsgs[] = {
     #undef pick
 };
 
-static const char *EngUsageText[] = {
+static const char *UsageText[] = {
     #include "usage.gh"
     NULL
 };
@@ -694,7 +694,7 @@ static  int  ParseArgs( int argc, char **argv )
                         "HI:i::L:l:M::m:"
                         "O::o:P::QSs::U:vW::wx::yz::",
 #endif
-                        EngUsageText )) != -1 ) {
+                        UsageText )) != -1 ) {
 
         c = (char)i;
         if( find_mapping( c ) )
