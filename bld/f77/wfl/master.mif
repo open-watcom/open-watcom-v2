@@ -58,12 +58,12 @@ wresui.res : ../../h/wfl.rc wflmsgs.gh wflmsgs.grh
 
 wflmsgs.gh wflmsgs.grh : ../../gml/wflmsgs.gml
     @%make echo_msgencod
-    $(noecho)*msgencod -s -ip -q -rc=MSG_LANG_BASE -utf8 $(msgencod_enc_$(host_os)) $[@ wflmsgs.gh wflmsgs.grh . .
+    $(msgencod) -s -ip -rc=MSG_LANG_BASE -utf8 $(msgencod_enc_$(host_os)) $[@ wflmsgs.gh wflmsgs.grh . .
 
 
 # optencod options and targets for various hosts
 !ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u $(exetarg_qnx_res)
+optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 !endif
 #optencod_enc_linux  = -utf8
 optencod_targets_i86 = targ2
@@ -74,4 +74,4 @@ optencod_targets += dbg
 
 usage.gh $(exetarg_$(host_os)_res) : ../../../gml/wfxopts.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q -rc MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)

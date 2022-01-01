@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -280,6 +280,8 @@ static tag_id getsUsage = TAG_NULL;
 static char         *outputbuff = NULL;
 static lang_data    outputdata;
 
+static int          fno = 0;
+
 #define TAGS_COUNT  (sizeof( tagNames ) / sizeof( tagNames[0] ))
 static const char *tagNames[] = {
     #define TAG( s )        #s ,
@@ -358,14 +360,14 @@ static cvt_chr cvt_table_932[] = {
 static const char *usageMsg[] = {
     "optencod [options] <gml-file> <parser-h> <parser-c> <usage-h> <target>*",
     "",
-    "Options: (must appear in following order)",
+    "Options:",
     "  -c comma separated list",
     "  -i create international file with non-english data",
-    "  -l <lang-n> is the language(number) used for output data",
+    "  -l=<lang-n> is the language(number) used for output data",
     "  -n zero terminated items",
     "  -q quiet operation",
-    "  -rc <macro-name> generate files for resource compiler",
-    "  -u <usage-u> is the output file for the QNX usage file",
+    "  -rc=<macro-name> generate files for resource compiler",
+    "  -u=<usage-u> is the output file for the QNX usage file",
     "  -utf8 output text use UTF-8 encoding",
     "",
     "    <gml-file> is the tagged input GML file",
@@ -781,84 +783,6 @@ static FILE *initFILE( const char *fnam, const char *fmod )
         }
     }
     return( fp );
-}
-
-#define NUM_FILES   4
-
-static bool procCmdLine( int argc1, char **argv1 )
-{
-    targmask    mask;
-    char const  *p;
-
-    if( argc1 < NUM_FILES ) {
-        return( true );
-    }
-    if( strcmp( *argv1, "-c" ) == 0 ) {
-        optFlag.comma_list = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-i" ) == 0 ) {
-        optFlag.international = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-l" ) == 0 ) {
-        NEXT_ARG_CHECK();
-        optFlag.lang = atoi( *argv1 );
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-n" ) == 0 ) {
-        optFlag.zero_term = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-q" ) == 0 ) {
-        optFlag.quiet = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-rc" ) == 0 ) {
-        optFlag.rc = true;
-        NEXT_ARG_CHECK();
-        optFlag.rc_macro = *argv1;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-u" ) == 0 ) {
-        NEXT_ARG_CHECK();
-        mfp = fopen( *argv1, "wb" );
-        if( mfp == NULL )
-            fail( "cannot open '%s' for output", *argv1 );
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-utf8" ) == 0 ) {
-        optFlag.out_utf8 = true;
-        NEXT_ARG_CHECK();
-    }
-    gfp = initFILE( *argv1, "r" );
-    NEXT_ARG();
-    ofp = initFILE( *argv1, "w+" );
-    NEXT_ARG();
-    pfp = initFILE( *argv1, "w+" );
-    NEXT_ARG();
-    ufp = initFILE( *argv1, "w+" );
-    NEXT_ARG();
-    p = "any";
-    if( (targetAnyMask = findTarget( p )) == 0 ) {
-        fail( "invalid target name '%s'\n", p );
-    }
-    p = "dbg";
-    if( (targetDbgMask = findTarget( p )) == 0 ) {
-        fail( "invalid target name '%s'\n", p );
-    }
-    targetMask |= targetAnyMask;
-    while( (p = *argv1) != NULL ) {
-        if( (mask = findTarget( p )) == 0 ) {
-            fail( "invalid target name '%s'\n", p );
-        }
-        targetMask |= mask;
-        NEXT_ARG();
-    }
-    if( !optFlag.out_utf8 ) {
-        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
-    }
-    return( false );
 }
 
 static const char *nextWord( const char *s, char *o )
@@ -2830,37 +2754,249 @@ static void closeFiles( void )
     }
 }
 
+static void initUTF8( void )
+{
+    if( !optFlag.out_utf8 ) {
+        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+    }
+}
+
+static char *ReadIndirectFile( char *name )
+/*****************************************/
+{
+    char        *str;
+    FILE        *fp;
+    int         len;
+    char        ch;
+
+    str = NULL;
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        fseek( fp, 0, SEEK_END );
+        len = ftell( fp );
+        fseek( fp, 0, SEEK_SET );
+        str = malloc( len + 1 );
+        fread( str, 1, len, fp );
+        str[len] = '\0';
+        fclose( fp );
+        // go through characters changing \r, \n etc into ' '
+        for( ; (ch = *str) != '\0'; str++ ) {
+            if( ch == 0x1A ) {      // if end of file
+                *str = '\0';        // - mark end of str
+                break;
+            }
+            if( ch != ' ' && myisspace( ch ) ) {
+                *str = ' ';
+            }
+        }
+    }
+    return( str );
+}
+
+static char *getFileName( char *str, char *name )
+/***********************************************/
+{
+    char        ch;
+
+    SKIP_SPACES( str );
+    if( *str == '\"' ) {
+        str++;
+        while( (ch = *str) != '\0' ) {
+            str++;
+            if( ch == '"' ) {
+                break;
+            }
+            if( ch == '\\' && *str == '"' ) {
+                ch = *str++;
+            }
+            *name++ = ch;
+        }
+    } else {
+        while( *str != '\0' && !myisspace( *str ) ) {
+            *name++ = *str++;
+        }
+    }
+    *name = '\0';
+    return( str );
+}
+
+static char *ProcessOption( char *s, char *option_start )
+/*******************************************************/
+{
+    switch( *s++ ) {
+    case 'c':
+        optFlag.comma_list = true;
+        return( s );
+    case 'i':
+        optFlag.international = true;
+        return( s );
+    case 'l':
+        if( *s++ == '=' ) {
+            optFlag.lang = strtol( s, &s, 10 );
+            return( s );
+        }
+        break;
+    case 'n':
+        optFlag.zero_term = true;
+        return( s );
+    case 'q':
+        optFlag.quiet = true;
+        return( s );
+    case 'r':
+        if( *s++ == 'c' && *s++ == '=' ) {
+            optFlag.rc = true;
+            SKIP_SPACES( s );
+            optFlag.rc_macro = option_start;
+            while( *s != '\0' ) {
+                if( myisspace( *s ) ) {
+                    s++;
+                    break;
+                }
+                *option_start++ = *s++;
+            }
+            *option_start = '\0';
+            return( s );
+        }
+        break;
+    case 'u':
+        if( *s == '=' ) {
+            s = getFileName( s + 1, option_start );
+            mfp = fopen( option_start, "wb" );
+            if( mfp == NULL ) {
+                fail( "cannot open '%s' for output", option_start );
+            }
+            return( s );
+        } else if( *s++ == 't' && *s++ == 'f' && *s++ == '8' ) {
+            optFlag.out_utf8 = true;
+            return( s );
+        }
+        break;
+    }
+    printf( "Unknown option: %s\n", option_start );
+    return( NULL );
+}
+
+static bool ProcessOptions( char *str )
+/*************************************/
+{
+    char        name[PATH_MAX];
+    char        *fstr;
+    bool        rc;
+    char        *p;
+    targmask    mask;
+
+    rc = 0;
+    fstr = NULL;
+    name[0] = '\0';
+    while( *str != '\0' ) {
+        SKIP_SPACES( str );
+        if( *str == '@' ) {
+            str = getFileName( str + 1, name );
+            str = getenv( name );
+            if( str == NULL ) {
+                str = fstr = ReadIndirectFile( name );
+            }
+        }
+        if( *str == '\0' ) {
+            continue;
+        }
+        if( *str == '-' ) {
+            str = ProcessOption( str + 1, str );
+            if( str == NULL ) {
+                rc = true;
+                break;
+            }
+        } else {  /* collect file name */
+            switch( fno++ ) {
+            case 0:
+                str = getFileName( str, name );
+                gfp = initFILE( name, "r" );
+                break;
+            case 1:
+                str = getFileName( str, name );
+                ofp = initFILE( name, "w+" );
+                break;
+            case 2:
+                str = getFileName( str, name );
+                pfp = initFILE( name, "w+" );
+                break;
+            case 3:
+                str = getFileName( str, name );
+                ufp = initFILE( name, "w+" );
+                break;
+            case 4:
+                p = "any";
+                if( (targetAnyMask = findTarget( p )) == 0 ) {
+                    fail( "invalid target name '%s'\n", p );
+                }
+                p = "dbg";
+                if( (targetDbgMask = findTarget( p )) == 0 ) {
+                    fail( "invalid target name '%s'\n", p );
+                }
+                targetMask |= targetAnyMask;
+                /* fall through */
+            default:
+                p = name;
+                while( *str != '\0' ) {
+                    if( myisspace( *str ) )
+                        break;
+                    *p++ = *str++;
+                }
+                *p = '\0';
+                if( (mask = findTarget( name )) == 0 ) {
+                    fail( "invalid target name '%s'\n", name );
+                }
+                targetMask |= mask;
+                break;
+            }
+        }
+    }
+    free( fstr );
+    return( rc );
+}
+
+#define NUM_FILES   4
+
 int main( int argc, char **argv )
 {
-    bool    langs_ok;
+    bool    ok;
+    int     i;
 
     setlocale(LC_ALL,"C");
-    langs_ok = _LANG_DEFS_OK();
-    if( !langs_ok )
+    ok = _LANG_DEFS_OK();
+    if( !ok )
         fail( "language index mismatch\n" );
     initTargets();
-    if( procCmdLine( argc - 1, argv + 1 ) ) {
-        dumpUsage();
-        finiTargets();
-        return( EXIT_FAILURE );
+    for( i = 1; i < argc; i++ ) {
+        if( ProcessOptions( argv[i] ) ) {
+            ok = false;
+            break;
+        }
     }
-    readInputFile();
-    assignChainToOptions();
-    checkForMissingUsages();
-    stripUselessOptions();
-    initOptionFields();
+    if( !ok || fno < NUM_FILES ) {
+        ok = false;
+        dumpUsage();
+    } else {
+        initUTF8();
+        readInputFile();
+        assignChainToOptions();
+        checkForMissingUsages();
+        stripUselessOptions();
+        initOptionFields();
 
-    outputInit();
-    startParserH();
-    outputFN_PROCESS();
-    outputFN_INIT();
-    outputFN_FINI();
-    finishParserH();
-    outputUsageH();
-    dumpInternational();
-    outputFini();
-
+        outputInit();
+        startParserH();
+        outputFN_PROCESS();
+        outputFN_INIT();
+        outputFN_FINI();
+        finishParserH();
+        outputUsageH();
+        dumpInternational();
+        outputFini();
+    }
     closeFiles();
     finiTargets();
-    return( EXIT_SUCCESS );
+    if( ok )
+        return( EXIT_SUCCESS );
+    return( EXIT_FAILURE );
 }

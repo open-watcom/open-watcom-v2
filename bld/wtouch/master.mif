@@ -49,7 +49,7 @@ msg.grh : ../wtouch.msg $(__MAKEFILES__)
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 !ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u $(exetarg_qnx_res)
+optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 !endif
 optencod_targets = $(host_os)
 !ifeq release 0
@@ -58,4 +58,4 @@ optencod_targets += dbg
 
 usage.gh $(exetarg_$(host_os)_res) : ../options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q -rc MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
