@@ -62,6 +62,6 @@ optencod_targets = $(target_cpu) $(host_os)
 optencod_targets += dbg
 !endif
 
-cmdlnprs.gc cmdlnprs.gh : ../../gml/options.gml .EXPLICIT
+cmdlnprs.gc cmdlnprs.gh usagemsg.gh : ../../gml/options.gml .EXPLICIT
     @%make echo_optencod
     $(noecho)optencod -n -q $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_targets)
