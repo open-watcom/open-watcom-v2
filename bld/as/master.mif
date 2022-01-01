@@ -253,11 +253,6 @@ usage.gh $(exetarg_$(host_os)_res) : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)optencod -q -rc MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(host_os) $(target_cpu) $(optencod_targ_dbg)
 
-echo_optencod : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo optencod $@
-!endif
-
 # implicit rules
 #################
 
@@ -272,8 +267,3 @@ defrule_key = stand
 !include defrule.mif
 defrule_key = lib
 !include defrule.mif
-
-echo_re2c : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo re2c $@
-!endif

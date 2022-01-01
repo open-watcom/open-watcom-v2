@@ -137,6 +137,32 @@ echo_yacc : .PROCEDURE .EXPLICIT
     @echo yacc $@
 !endif
 
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
+!endif
+
+echo_msgencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo msgencod $@
+!endif
+
+echo_re2c : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo re2c $@
+!endif
+
+echo_findhash : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo findhash $@
+!endif
+
+echo_aslink : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_as $^&.obj
+    @echo bld_link $^&.tmp
+!endif
+
 echo_execute : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo $[@ $@

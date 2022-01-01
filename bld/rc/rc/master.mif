@@ -254,13 +254,3 @@ usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
 
 to932.uni : ./cvttable.exe $(__MAKEFILES__)
     $[@ $@
-
-echo_findhash: .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo findhash $@
-!endif
-
-echo_optencod : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo optencod $@
-!endif

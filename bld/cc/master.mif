@@ -228,23 +228,5 @@ optencod_targ_dbg   = dbg
 opt_targets = $(target_cpu) $(host_os) $(optencod_targ_dbg)
 
 usage.gh usage01.int $(exetarg_$(host_os)_res): ../../gml/options.gml
-!ifeq verbose 0
-    @echo optencod $@
-!endif
+    @%make echo_optencod
     $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ . . usage.gh $(opt_targets)
-
-echo_msgencod : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo msgencod $@
-!endif
-
-echo_findhash : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo findhash $@
-!endif
-
-echo_aslink : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bld_as $[&.obj
-    @echo bld_link $@
-!endif

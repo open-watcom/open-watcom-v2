@@ -48,9 +48,3 @@ decstub.gh : ./mkcode.exe decstub.tmp
 ./mkcode.exe: mkcode.c
     @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
-
-echo_aslink : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bld_as $^&.obj
-    @echo bld_link $^&.tmp
-!endif

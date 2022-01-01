@@ -147,11 +147,6 @@ dusage.gh : ../gml/diffopts.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(noecho)optencod -q -rc MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
 
-echo_optencod : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo optencod $@
-!endif
-
 bpatch.res : ../bpatch.rc ../h/bpatch.h ppusage.gh
     @%make echo_rc
     $(rcui8) -DBPATCH
