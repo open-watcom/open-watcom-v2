@@ -45,6 +45,7 @@
 
 #include "clibext.h"
 
+
 /* following must be ordered as US ASCII */
 #define OPT_TAGS \
 TAG( ARGEQUAL ) \
@@ -2924,8 +2925,6 @@ static bool ProcessOptions( char *str )
             case 3:
                 str = getFileName( str, name );
                 ufp = initFILE( name, "w+" );
-                break;
-            case 4:
                 p = "any";
                 if( (targetAnyMask = findTarget( p )) == 0 ) {
                     fail( "invalid target name '%s'\n", p );
@@ -2935,7 +2934,7 @@ static bool ProcessOptions( char *str )
                     fail( "invalid target name '%s'\n", p );
                 }
                 targetMask |= targetAnyMask;
-                /* fall through */
+                break;
             default:
                 p = name;
                 while( *str != '\0' ) {
@@ -2944,10 +2943,12 @@ static bool ProcessOptions( char *str )
                     *p++ = *str++;
                 }
                 *p = '\0';
-                if( (mask = findTarget( name )) == 0 ) {
-                    fail( "invalid target name '%s'\n", name );
+                if( *name != '\0' ) {
+                    if( (mask = findTarget( name )) == 0 ) {
+                        fail( "invalid target name '%s'\n", name );
+                    }
+                    targetMask |= mask;
                 }
-                targetMask |= mask;
                 break;
             }
         }
