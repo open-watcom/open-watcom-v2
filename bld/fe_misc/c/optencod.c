@@ -37,6 +37,7 @@
 #include <ctype.h>
 #include <stddef.h>
 #include <locale.h>
+#include <limits.h>
 #include "bool.h"
 #include "lsspec.h"
 #include "encodlng.h"
