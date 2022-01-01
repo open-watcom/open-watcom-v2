@@ -66,13 +66,12 @@ wflmsgs.gh wflmsgs.grh : ../../gml/wflmsgs.gml
 optencod_opt_qnx    = -u $(exetarg_qnx_res)
 !endif
 #optencod_enc_linux  = -utf8
+optencod_targets_i86 = targ2
+optencod_targets = $(target_cpu) $(host_os) targ1 $(optencod_targets_$(target_cpu))
 !ifeq release 0
-optencod_targ_dbg   = dbg
+optencod_targets += dbg
 !endif
-optencod_targ_i86   = targ2
-
-opt_targets = $(target_cpu) $(host_os) $(optencod_targ_dbg) targ1 $(optencod_targ_$(target_cpu))
 
 usage.gh $(exetarg_$(host_os)_res) : ../../../gml/wfxopts.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q -rc MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(opt_targets)
+    $(noecho)optencod -q -rc MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)

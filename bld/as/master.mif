@@ -245,13 +245,14 @@ $(asi_lex_out).c : $(asi_lex_in).re $(__MAKEFILES__)
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u $(exetarg_qnx_res)
 !endif
+optencod_targets = $(target_cpu) $(host_os)
 !ifeq release 0
-optencod_targ_dbg   = dbg
+optencod_targets += dbg
 !endif
 
 usage.gh $(exetarg_$(host_os)_res) : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q -rc MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(host_os) $(target_cpu) $(optencod_targ_dbg)
+    $(noecho)optencod -q -rc MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
 
 # implicit rules
 #################

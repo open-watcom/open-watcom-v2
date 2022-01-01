@@ -56,13 +56,12 @@ exetarg_res_version_nt_x64 = exever.res
 !include exetarg.mif
 !include verrc.mif
 
-!ifdef target_cpu
-optencod_target_cpu = $(target_cpu)
-!else
-optencod_target_cpu = any
-!endif
 #optencod_enc_linux = -utf8
+optencod_targets = $(target_cpu) $(host_os)
+!ifeq release 0
+optencod_targets += dbg
+!endif
 
 cmdlnprs.gc cmdlnprs.gh : ../../gml/options.gml .EXPLICIT
     @%make echo_optencod
-    $(noecho)optencod -n -q $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_target_cpu) $(host_os)
+    $(noecho)optencod -n -q $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_targets)
