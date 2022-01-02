@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -218,7 +218,7 @@ static long doExec( const char *std_in, const char *std_out, const char *cmd )
         SetStdHandle( STD_INPUT_HANDLE, new_in );
     }
     if( std_out != NULL ) {
-        old_out = GetStdHandle( STD_INPUT_HANDLE );
+        old_out = GetStdHandle( STD_OUTPUT_HANDLE );
         new_out = CreateFile( std_out, GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING | CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
         if( new_out == INVALID_HANDLE_VALUE ) {
             if( std_in != NULL ) {
