@@ -125,7 +125,7 @@ int FAR PASCAL FooMe( WORD w1, DWORD w2, WORD w3 )
   return( w1 + w2 );
 }
 .exmp break
-int PASCAL WinMain( HANDLE hInstance, HANDLE x1,
+int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE x1,
         LPSTR lpCmdLine, int x2 )
 {
   DefineDLLEntry( 1, (PROCPTR) FooMe, DLL_WORD,

@@ -44,7 +44,7 @@ The following example is the "&demo." program adapted for Windows.
 .if '&bldnam' ne 'nt' .do begin
 #include <windows.h>
 
-int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInst,
+int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInst,
                     LPSTR lpCmdLine, int nCmdShow )
 {
     MessageBox( NULL, "Hello world",

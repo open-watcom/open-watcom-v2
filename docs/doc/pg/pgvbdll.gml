@@ -389,7 +389,7 @@ long FAR PASCAL Add2( long varlong, short var2 )
 
 .code break
 #pragma off (unreferenced);
-int PASCAL WinMain(HANDLE hInstance, HANDLE x1, LPSTR lpCmdLine, int x2)
+int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE x1, LPSTR lpCmdLine, int x2)
 #pragma on (unreferenced);
 {
   DefineDLLEntry( 1, (void *) Add3, DLL_WORD, DLL_DWORD, DLL_WORD,

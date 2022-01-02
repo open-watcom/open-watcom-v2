@@ -331,8 +331,8 @@ A simple way of accomplishing this is as follows:
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
-int PASCAL WinMain( HANDLE hInstance,
-                    HANDLE hPrevInstance;
+int PASCAL WinMain( HINSTANCE hInstance,
+                    HINSTANCE hPrevInstance;
                     LPSTR lpCmdLine,
                     int nCmdShow );
 {
