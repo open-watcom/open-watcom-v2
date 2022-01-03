@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2022-2022 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -109,6 +109,10 @@
 :titleu. Usage: %C [options] file [options]
 :jtitleu. 使用方法: %C [options] file [options]
 :target. i86
+
+:title.  ..
+:jtitle. ..
+:target. any
 
 :title. Options:
 :jtitle. オプション:
