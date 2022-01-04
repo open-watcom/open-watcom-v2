@@ -19,7 +19,7 @@
 
 :include readonly.sp
 
-#ifndef _STDINT_INCLUDED
+#ifndef _STDINT_H_INCLUDED
  #include <stdint.h>
 #endif
 
