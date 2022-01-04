@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -235,7 +235,7 @@ static PATCH_RET_CODE InitPatch( const char **target_given )
 #ifdef BDIFF
     /* unused parameters */ (void)target_given;
 
-    pat = PatchFile;
+    pat = PatchBuffer;
 #else
     ret = OpenPatch();
     if( ret != PATCH_RET_OKAY ) {
