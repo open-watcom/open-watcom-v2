@@ -1,0 +1,7 @@
+#pmake: build small 16bit msdos pc98 ix86 static os_dos cpu_i86
+processor = 086
+model     = ms
+system    = msdos
+linkage   = static
+
+!include ../../dospc98.mif
