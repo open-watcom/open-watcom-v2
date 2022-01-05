@@ -2439,6 +2439,9 @@ typedef const UCSCHAR UNALIGNED *PCUUCSCHAR;
 #define MAX_CLASS_NAME      1024
 #define MAX_PACKAGE_NAME    1024
 
+/* Run once Static initializer */
+#define RTL_RUN_ONCE_INIT {0}
+
 /* Run once flags */
 #define RTL_RUN_ONCE_CHECK_ONLY     0x00000001L
 #define RTL_RUN_ONCE_ASYNC          0x00000002L
@@ -2551,6 +2554,12 @@ typedef const UCSCHAR UNALIGNED *PCUUCSCHAR;
 #define WT_EXECUTEINPERSISTENTIOTHREAD  0x00000040L
 #define WT_EXECUTEINPERSISTENTTHREAD    0x00000080L
 #define WT_TRANSFER_IMPERSONATION       0x00000100L
+
+/* Slim reader/writer Static initializer */
+#define RTL_SRWLOCK_INIT { 0 }
+
+/* Condition variable Static initializer */
+#define RTL_CONDITION_VARIABLE_INIT { 0 }
 
 /* Activation context path types */
 #define ACTIVATION_CONTEXT_PATH_TYPE_NONE           1L
