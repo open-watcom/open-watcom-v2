@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,15 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  Break ínterrupt Ctrl+C handling save/restore
+* Description:  Ctrl-Break interrupt handling support.
+*                   (DOS and Windows 3.x code)
 *
 ****************************************************************************/
 
 
-extern unsigned char    __ctrl_break_int;
+#include "variety.h"
+#include "_ctrlc.h"
 
-#ifndef __WINDOWS_386__
-extern      void    __grab_int_ctrl_break( void );
-extern      void    __restore_int_ctrl_break( void );
-#endif
 
+unsigned char    __ctrl_break_int = 0x1B;

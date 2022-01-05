@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +42,6 @@
 #include "_int23.h"
 #include "_ctrlc.h"
 
-/* Ctrl-Break vector (IBM compatible) */
-#define CTRL_BRK_VEC    0x1B
 
 typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
 
@@ -240,18 +238,18 @@ void __restore_int_ctrl_break( void )
         __int23_exit = __null_int23_exit;
     }
 #if defined(__WINDOWS_386__)
-    TinySetVect( CTRL_BRK_VEC, __old_int_ctrl_break );
+    TinySetVect( __ctrl_break_int, __old_int_ctrl_break );
 #elif defined( _M_I86 )
-    _dos_setvect( CTRL_BRK_VEC, __old_int_ctrl_break );
+    _dos_setvect( __ctrl_break_int, __old_int_ctrl_break );
 #else
     if( _IsPharLap() ) {
-        pharlap_rm_setvect( CTRL_BRK_VEC, __old_int_ctrl_break );
-        pharlap_pm_setvect( CTRL_BRK_VEC, __old_pm_int_ctrl_break );
+        pharlap_rm_setvect( __ctrl_break_int, __old_int_ctrl_break );
+        pharlap_pm_setvect( __ctrl_break_int, __old_pm_int_ctrl_break );
     } else if( __DPMI_hosted() == 1 ) {
-        DPMISetRealModeInterruptVector( CTRL_BRK_VEC, __old_int_ctrl_break );
-        DPMISetPMInterruptVector( CTRL_BRK_VEC, __old_pm_int_ctrl_break );
+        DPMISetRealModeInterruptVector( __ctrl_break_int, __old_int_ctrl_break );
+        DPMISetPMInterruptVector( __ctrl_break_int, __old_pm_int_ctrl_break );
     } else {
-        _dos_setvect( CTRL_BRK_VEC, __old_int_ctrl_break );
+        _dos_setvect( __ctrl_break_int, __old_int_ctrl_break );
     }
 #endif
     __old_int_ctrl_break = 0;
@@ -300,25 +298,25 @@ void __grab_int_ctrl_break( void )
 {
     if( __old_int_ctrl_break == 0 ) {
 #if defined(__WINDOWS_386__)
-        __old_int_ctrl_break = _dos_getvect( CTRL_BRK_VEC );
-        TinySetVect( CTRL_BRK_VEC, (void (_WCNEAR *)(void))__int_ctrl_break_handler );
+        __old_int_ctrl_break = _dos_getvect( __ctrl_break_int );
+        TinySetVect( __ctrl_break_int, (void (_WCNEAR *)(void))__int_ctrl_break_handler );
 #elif defined( _M_I86 )
-        __old_int_ctrl_break = _dos_getvect( CTRL_BRK_VEC );
-        _dos_setvect( CTRL_BRK_VEC, __int_ctrl_break_handler );
+        __old_int_ctrl_break = _dos_getvect( __ctrl_break_int );
+        _dos_setvect( __ctrl_break_int, __int_ctrl_break_handler );
 #else
         if( _IsPharLap() ) {
-            __old_int_ctrl_break = pharlap_rm_getvect( CTRL_BRK_VEC );
-            __old_pm_int_ctrl_break = pharlap_pm_getvect( CTRL_BRK_VEC );
-            pharlap_setvect( CTRL_BRK_VEC, __int_ctrl_break_handler );
+            __old_int_ctrl_break = pharlap_rm_getvect( __ctrl_break_int );
+            __old_pm_int_ctrl_break = pharlap_pm_getvect( __ctrl_break_int );
+            pharlap_setvect( __ctrl_break_int, __int_ctrl_break_handler );
         } else if( __DPMI_hosted() == 1 ) {
             DPMILockLinearRegion((long)__int_ctrl_break_handler,
                 ((long)__restore_int23 - (long)__int_ctrl_break_handler));
-            __old_int_ctrl_break = DPMIGetRealModeInterruptVector( CTRL_BRK_VEC );
-            __old_pm_int_ctrl_break = DPMIGetPMInterruptVector( CTRL_BRK_VEC );
-            DPMISetPMInterruptVector( CTRL_BRK_VEC, __int_ctrl_break_handler );
+            __old_int_ctrl_break = DPMIGetRealModeInterruptVector( __ctrl_break_int );
+            __old_pm_int_ctrl_break = DPMIGetPMInterruptVector( __ctrl_break_int );
+            DPMISetPMInterruptVector( __ctrl_break_int, __int_ctrl_break_handler );
         } else {        /* what it used to do */
-            __old_int_ctrl_break = _dos_getvect( CTRL_BRK_VEC );
-            _dos_setvect( CTRL_BRK_VEC, __int_ctrl_break_handler );
+            __old_int_ctrl_break = _dos_getvect( __ctrl_break_int );
+            _dos_setvect( __ctrl_break_int, __int_ctrl_break_handler );
         }
 #endif
         if( __int23_exit == __null_int23_exit ) {
