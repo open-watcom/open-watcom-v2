@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 #include "variety.h"
 #include "rtinit.h"
+#include "fpeint.h"
 
 /*
  * This file can be used to customize numeric coprocessor interrupt
@@ -106,11 +108,11 @@
  */
 
 
-_WCRTDATA extern unsigned char __FPE_int = 0;    /* Used for Rational Systems and Intel */
+unsigned char _WCNEAR __FPE_int = 0;    /* Used for Rational Systems and Intel */
 #if defined(__386__)
-_WCRTDATA extern unsigned char __IRQ_num = 0;    /* Used for PharLap DOS Extender */
-_WCRTDATA extern unsigned char __MST_pic = 0;    /* Master PIC port number */
-_WCRTDATA extern unsigned char __SLV_pic = 0;    /* Slave PIC port number */
+unsigned char _WCNEAR __IRQ_num = 0;    /* Used for PharLap DOS Extender */
+unsigned char _WCNEAR __MST_pic = 0;    /* Master PIC port number */
+unsigned char _WCNEAR __SLV_pic = 0;    /* Slave PIC port number */
 #endif
 
 

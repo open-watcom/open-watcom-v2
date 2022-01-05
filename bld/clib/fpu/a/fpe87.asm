@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -25,6 +26,7 @@
 ;*  ========================================================================
 ;*
 ;* Description:  80x87 interrupt handler and connect/disconnect routines.
+;*                (16-bit code only, DOS and OS/2)
 ;*
 ;*****************************************************************************
 
