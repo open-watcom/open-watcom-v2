@@ -5,4 +5,4 @@ system     = msdos
 convention = stack
 linkage    = static
 
-!include ../../dospc98.mif
+!include ../../pc98.mif

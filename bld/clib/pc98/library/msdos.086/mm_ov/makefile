@@ -5,4 +5,4 @@ system    = msdos
 linkage   = static
 overlay   = 1
 
-!include ../../dospc98.mif
+!include ../../pc98.mif

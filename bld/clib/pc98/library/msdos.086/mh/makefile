@@ -4,4 +4,4 @@ model     = mh
 system    = msdos
 linkage   = static
 
-!include ../../dospc98.mif
+!include ../../pc98.mif
