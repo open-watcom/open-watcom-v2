@@ -32,7 +32,20 @@
 
 
 #include "variety.h"
+#include "rtinit.h"
 #include "_ctrlc.h"
 
 
-unsigned char    __ctrl_break_int = 0x1B;
+unsigned char    _WCNEAR __ctrl_break_int = 0;
+
+/****
+***** If this module is linked in, the startup code will call this function,
+***** which will initialize some global variables.
+****/
+
+static void init_on_startup( void )
+{
+    __ctrl_break_int = 0x1B;    /* INT 0x1B */
+}
+
+AXI( init_on_startup, INIT_PRIORITY_LIBRARY + 1 )

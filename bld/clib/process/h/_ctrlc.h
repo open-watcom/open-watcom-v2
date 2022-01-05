@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern unsigned char    __ctrl_break_int;
+extern unsigned char    _WCNEAR __ctrl_break_int;
 
 #ifndef __WINDOWS_386__
 extern      void    __grab_int_ctrl_break( void );
