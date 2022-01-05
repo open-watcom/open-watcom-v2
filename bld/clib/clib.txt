@@ -117,6 +117,7 @@ Previously Implemented Changes:
         memory          - memory manipulation functions
         misc            - miscellaneous functions
         mthread         - multi-threading support functions
+        pc98            - PC-98 specific functions
         posix           - POSIX functions (for Linux)
         ppc             - PowerPC specific functions
         process         - process primitive functions
