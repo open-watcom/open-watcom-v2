@@ -2447,6 +2447,8 @@ typedef const UCSCHAR UNALIGNED *PCUUCSCHAR;
 #define RTL_RUN_ONCE_ASYNC          0x00000002L
 #define RTL_RUN_ONCE_INIT_FAILED    0x00000004L
 
+#define RTL_RUN_ONCE_CTX_RESERVED_BITS 2
+
 /* Heap flags */
 #define HEAP_NO_SERIALIZE               0x00000001L
 #define HEAP_GROWABLE                   0x00000002L

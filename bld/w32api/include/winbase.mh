@@ -166,6 +166,8 @@
 
 /* Run once Static initializer */
 #define INIT_ONCE_STATIC_INIT       RTL_RUN_ONCE_INIT
+
+#define INIT_ONCE_CTX_RESERVED_BITS RTL_RUN_ONCE_CTX_RESERVED_BITS
 #endif
 
 /* RaiseFailFastException() flags */
