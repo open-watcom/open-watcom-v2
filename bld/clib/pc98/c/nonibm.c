@@ -63,7 +63,7 @@
     }
 
 
-static int __is_nonIBM( void )
+static int __is_PC98( void )
 {
 #if defined(__WARP__) || defined(__NT__)
     return( 0 );
@@ -97,7 +97,7 @@ static int __is_nonIBM( void )
     p = MK_FP( 0xf000, 0xfff5 );
     CHECK_IT
 #else
-    #error __is_nonIBM not configured for system
+    #error __is_PC98 not configured for system
 #endif
 }
 
@@ -105,15 +105,15 @@ static int __is_nonIBM( void )
 
 /****
 ***** If this module is linked in, the startup code will call this function,
-***** which will initialize the __NonIBM global variable.
+***** which will initialize the __isPC98 global variable.
 ****/
 
-_WCRTLINK int           __NonIBM = -1;  // start at -1 for debugging purposes
+_WCRTLINK int           __isPC98 = -1;  // start at -1 for debugging purposes
                                         // (-1 ==> not yet initialized)
 
 static void init_on_startup( void )
 {
-    __NonIBM = __is_nonIBM();
+    __isPC98 = __is_PC98();
 }
 
 
