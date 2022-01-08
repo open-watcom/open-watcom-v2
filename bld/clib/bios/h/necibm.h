@@ -85,10 +85,6 @@ struct com_t {
 #define _NEC98_DISK_WRITE       0x05
 #define _NEC98_DISK_VERIFY      0x01
 
-#define _KEYBRD_READ            0
-#define _KEYBRD_READY           1
-#define _KEYBRD_SHIFTSTATUS     2
-
 #define _IBM_PRINTER_WRITE      0
 #define _IBM_PRINTER_INIT       1
 #define _IBM_PRINTER_STATUS     2
