@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 
-#ifndef _NONIBM_H_INCLUDED
-#define _NONIBM_H_INCLUDED
+#ifndef _ISPC98_H_INCLUDED
+#define _ISPC98_H_INCLUDED
 
 #include "variety.h"
 

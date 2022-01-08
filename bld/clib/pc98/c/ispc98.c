@@ -38,7 +38,7 @@
     #include <windows.h>
 #endif
 #include "extender.h"
-#include "nonibm.h"
+#include "ispc98.h"
 #include "rtinit.h"
 
 #define is_date_char( c )       (( c >= '0' && c <= '9' ) || c == '/' )
