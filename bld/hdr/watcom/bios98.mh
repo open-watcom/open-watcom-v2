@@ -152,7 +152,7 @@ struct com_t {
 /* MS-C compatible */
 #define _PRN_INIT       _PRINTER_INIT   /* initialize printer */
 #define _PRN_WRITE      _PRINTER_WRITE  /* write character to printer */
-#define _PRN_STRING     0x30            /* write strings to printer */
+#define _PRN_STRING     _PRINTER_WRITE_STRING /* write strings to printer */
 #define _PRN_STATUS     _PRINTER_STATUS /* get printer status */
 
 /* time-of-day services */
