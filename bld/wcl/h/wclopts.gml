@@ -121,7 +121,6 @@
 :usage. treat source files as C++ code
 :target. any
 
-#ifdef WCLAXP
 :option. y
 :usage. ignore the WCLAXP environment variable
 :target. axp
