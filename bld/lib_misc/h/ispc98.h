@@ -36,6 +36,6 @@
 
 #include "variety.h"
 
-extern _WCRTLINK int    __isPC98;       // 0 if IBM, non-zero if NEC
+extern int    _WCNEAR __isPC98;     // 0 if IBM PC, 1 if NEC PC-98
 
 #endif

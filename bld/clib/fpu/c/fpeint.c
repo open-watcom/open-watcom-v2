@@ -33,6 +33,8 @@
 #include "variety.h"
 #include "rtinit.h"
 #include "fpeint.h"
+#include "ispc98.h"
+
 
 /*
  * This file can be used to customize numeric coprocessor interrupt
@@ -115,8 +117,6 @@ unsigned char _WCNEAR __MST_pic = 0;    /* Master PIC port number */
 unsigned char _WCNEAR __SLV_pic = 0;    /* Slave PIC port number */
 #endif
 
-
-
 /****
 ***** If this module is linked in, the startup code will call this function,
 ***** which will initialize some global variables.
@@ -124,13 +124,21 @@ unsigned char _WCNEAR __SLV_pic = 0;    /* Slave PIC port number */
 
 static void init_on_startup( void )
 {
-    __FPE_int = 0x02;           /* INT 0x02 */
+    if( __isPC98 ) {    /* NEC PC-98 */
+        __FPE_int = 0x10;           /* INT 0x10 */
 #ifdef __386__
-    __IRQ_num = 0x0D;           /* IRQ 13 */
-    __MST_pic = 0x20;           /* Master PIC port number */
-    __SLV_pic = 0xA0;           /* Slave PIC port number */
+        __IRQ_num = 0x08;           /* IRQ 8 */
+        __MST_pic = 0x00;           /* Master PIC port number */
+        __SLV_pic = 0x08;           /* Slave PIC port number */
 #endif
+    } else {            /* IBM PC */
+        __FPE_int = 0x02;           /* INT 0x02 */
+#ifdef __386__
+        __IRQ_num = 0x0D;           /* IRQ 13 */
+        __MST_pic = 0x20;           /* Master PIC port number */
+        __SLV_pic = 0xA0;           /* Slave PIC port number */
+#endif
+    }
 }
-
 
 AXI( init_on_startup, INIT_PRIORITY_FPU + 2 )
