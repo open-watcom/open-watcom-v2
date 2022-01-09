@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,6 +26,7 @@
 *  ========================================================================
 *
 * Description:  Non-exhaustive test of _bios functions.
+*                For IBM PC and NEC PC-98
 *
 ****************************************************************************/
 
@@ -41,6 +43,7 @@
 
 #include <bios.h>
 #include <conio.h>
+#include "ispc98.h"
 
 #define VERIFY( exp )   if( !(exp) ) {                                      \
                             printf( "%s: ***FAILURE*** at line %d of %s.\n",\
@@ -90,19 +93,22 @@ void TestDisk( void )
     di.nsectors = 1;
     di.buffer = &Sector;
 
-    /* NB: The return code is in the high byte of 'rc' only. The low byte
-     * contains generally unpredictable data and does not indicate errors.
-     */
-    rc = _bios_disk( _DISK_RESET, &di );
-    VERIFY( HI( rc ) == 0 );
-
     /* BIOS calls which actually access disk are not likely to work in
      * NTVDM. Skip them if reported DOS version is 5.0.
      */
     skip = _osmajor == 5 && _osminor == 0;
     if ( skip ) {
         printf( "Warning: Skipping disk tests!\n" );
+    } else if( __isPC98 ) {
+        rc = _bios_disk( _DISK_VERIFY, &di );
+        VERIFY( rc == 0x01 );
     } else {
+        /* NB: The return code is in the high byte of 'rc' only. The low byte
+         * contains generally unpredictable data and does not indicate errors.
+         */
+        rc = _bios_disk( _DISK_RESET, &di );
+        VERIFY( HI( rc ) == 0 );
+
         rc = _bios_disk( _DISK_STATUS, &di );
         VERIFY( HI( rc ) == 0 );
 
@@ -272,7 +278,8 @@ int main( int argc, char *argv[] )
 #endif
 
     /*** Initialize ***/
-    strcpy( ProgramName, strlwr( argv[0] ) );
+    strcpy( ProgramName, strlwr(argv[0]) );
+    printf( "%s: Machine type is %s.\n", ProgramName, __isPC98 ? "NEC PC-98" : "IBM PC" );
     if( (argc == 2) && (strcmp( argv[1], "-i" ) == 0) )
         Interactive = 1;
 
