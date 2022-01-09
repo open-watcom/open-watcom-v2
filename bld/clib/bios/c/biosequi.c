@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,40 @@
 #include "variety.h"
 #include <bios.h>
 #include "necibm.h"
+#include "ispc98.h"
 
+
+struct EquipBits {
+    unsigned bootsFromDisk      : 1;
+    unsigned hasCoPro           : 1;
+    unsigned ramSize            : 2;
+    unsigned initialVideoMode   : 2;
+    unsigned numDisketteDrives  : 2;
+    unsigned noDma              : 1;
+    unsigned numSerialPorts     : 3;
+    unsigned hasGamePort        : 1;
+    unsigned hasSerialPrinter   : 1;
+    unsigned numParPrinters     : 2;
+};
 
 _WCRTLINK unsigned short _bios_equiplist( void )
 {
+    if( __isPC98 ) {    /* NEC PC-98 */
+        unsigned short          necRc;
+        union {
+            struct EquipBits    bits;
+            unsigned short      val;
+        } equip;
+
+        /*** Obtain as much information as we can from NEC98 info ***/
+        necRc = __nec98_bios_equiplist();
+        equip.val = 0;
+        equip.bits.hasCoPro = ( necRc & 2 ) ? 1 : 0;
+        equip.bits.numDisketteDrives = ( necRc >> 3 ) & 0x0003;
+        equip.bits.numParPrinters = ( necRc & 0x4000 ) ? 1 : 0;
+        equip.bits.numSerialPorts = ( necRc >> 9 );
+        return( equip.val );
+    }
+    /* IBM PC */
     return( __ibm_bios_equiplist() );
 }

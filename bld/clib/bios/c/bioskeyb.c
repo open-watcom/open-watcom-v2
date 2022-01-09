@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,41 @@
 #include <bios.h>
 #include <stddef.h>
 #include "necibm.h"
+#include "ispc98.h"
 
 
 _WCRTLINK unsigned short _bios_keybrd( unsigned cmd )
 {
+    if( __isPC98 ) {    /* NEC PC-98 */
+        unsigned short  necRc;
+        unsigned short  ret;
+
+        /*** Translate IBM commands to NEC98 commands ***/
+        switch( cmd ) {
+        case _KEYBRD_READ:
+            ret = __nec98_bios_keybrd( cmd, NULL );
+            break;
+        case _KEYBRD_READY:
+            ret = __nec98_bios_keybrd( cmd, NULL ) );
+            break;
+        case _KEYBRD_SHIFTSTATUS:
+            necRc = __nec98_bios_keybrd( cmd, NULL );
+            ret = 0;
+            if( necRc & 0x0001 )
+                ret |= 0x02;
+            if( necRc & 0x0002 )
+                ret |= 0x40;
+            if( necRc & 0x0008 )
+                ret |= 0x08;
+            if( necRc & 0x0010 )
+                ret |= 0x04;
+            break;
+        default:
+            ret = 0;        // invalid command for NEC 98
+            break;
+        }
+        return( ret );
+    }
+    /* IBM PC */
     return( __ibm_bios_keybrd( cmd ) );
 }
