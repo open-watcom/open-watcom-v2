@@ -288,9 +288,18 @@ typedef union {
  * call_struct definition for DPMI SimulateRealInt
  */
 typedef struct {
-    uint_32     edi;
-    uint_32     esi;
-    uint_32     ebp;
+    union {
+        uint_32 edi;
+        uint_16 di;
+    };
+    union {
+        uint_32 esi;
+        uint_16 si;
+    };
+    union {
+        uint_32 ebp;
+        uint_16 bp;
+    };
     uint_32     reserved;
     union {
         uint_32 ebx;
