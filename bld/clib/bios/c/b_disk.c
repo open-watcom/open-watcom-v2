@@ -34,7 +34,8 @@
 #include <bios.h>
 #include "clibxw32.h"
 
-_WCRTLINK unsigned short _bios_disk(unsigned __cmd,struct diskinfo_t *__diskinfo)
+
+_WCRTLINK unsigned short _bios_disk( unsigned __cmd, struct diskinfo_t *__diskinfo )
 {
-        return( _clib_bios_disk( __cmd, __diskinfo ) );
+    return( _clib_bios_disk( __cmd, __diskinfo ) );
 }
