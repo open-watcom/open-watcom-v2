@@ -37,7 +37,7 @@
 #ifdef __WINDOWS_386__
     #include <windows.h>
 #endif
-#include "extender.h"
+#include "realmod.h"
 #include "ispc98.h"
 #include "rtinit.h"
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,14 +33,14 @@
 
 #include <dos.h>
 #include "uidef.h"
-#include "extender.h"
+#include "realmod.h"
 #include "charmap.h"
 
 
 #ifdef _M_I86
-#define LOAD_ES_BIOS_SEGMENT    "xor ax,ax" "mov es,ax"
+#define LOAD_ES_RM_SEGMENT      "xor ax,ax" "mov es,ax"
 #else
-#define LOAD_ES_BIOS_SEGMENT    "mov ax,_ExtenderRealModeSelector" "mov es,eax"
+#define LOAD_ES_RM_SEGMENT      "mov ax,_ExtenderRealModeSelector" "mov es,eax"
 #endif
 
 extern void __SetWriteMap( void );
@@ -59,7 +60,7 @@ extern void __SetSequencer( void );
         "mov  ax,402h"      /* write to map 3              */   \
         "out  dx,ax"                                            \
         "push es"                                               \
-        LOAD_ES_BIOS_SEGMENT                                    \
+        LOAD_ES_RM_SEGMENT                                      \
         "mov  al,es:[487h]" /* check VC state              */   \
         "pop  es"                                               \
         "and  al,60h"       /* if it's not 0,              */   \
@@ -89,7 +90,7 @@ extern void __ResetSequencer( void );
         "mov  ax,302h"      /* write to maps 0 and 1     */ \
         "out  dx,ax"                                        \
         "push es"                                           \
-        LOAD_ES_BIOS_SEGMENT                                \
+        LOAD_ES_RM_SEGMENT                                  \
         "mov  al,es:[487h]" /* check VC state            */ \
         "and  al,60h"       /* if it's not 0,            */ \
         "mov  ah,3"                                         \
