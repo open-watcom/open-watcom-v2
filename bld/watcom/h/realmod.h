@@ -46,6 +46,8 @@
 #define BDATA_POINT_HEIGHT      0x85    /* byte */
 #define BDATA_VID_CTRL1         0x87
 
+#define EXTENDER_RM2PM( s, o )  _MK_FP( _ExtenderRealModeSelector, (((unsigned)(s)) << 4) + (o) )
+
 #ifdef _M_I86
 #define RealModeDataPtr( segm, off )    _MK_FP( segm, off )
 #define RealModeSegmPtr( segm )         _MK_FP( segm, 0 )
@@ -57,7 +59,5 @@
 
 #define BIOSData( off, type )           RealModeData( BDATA_SEG, off, type )
 #define VIDEOData( segm, off )          RealModeData( segm, off, unsigned char )
-
-#define EXTENDER_RM2PM( s, o )  _MK_FP( _ExtenderRealModeSelector, (((unsigned)(s)) << 4) + (o) )
 
 extern  unsigned short  _ExtenderRealModeSelector;
