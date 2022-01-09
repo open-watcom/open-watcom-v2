@@ -49,7 +49,7 @@ _WCRTLINK unsigned short _bios_keybrd( unsigned cmd )
             ret = __nec98_bios_keybrd( cmd, NULL );
             break;
         case _KEYBRD_READY:
-            ret = __nec98_bios_keybrd( cmd, NULL ) );
+            ret = __nec98_bios_keybrd( cmd, NULL );
             break;
         case _KEYBRD_SHIFTSTATUS:
             necRc = __nec98_bios_keybrd( cmd, NULL );

@@ -105,13 +105,13 @@ _WCRTLINK unsigned short _bios_timeofday( unsigned cmd, long *timeval )
         /*** Translate IBM commands to NEC98 commands ***/
         switch( cmd ) {
         case _IBM_TIME_GETCLOCK:
-            __nec98_bios_timeofday( _NEC98_TIME_GETCLOCK, necBuf );
+            __nec98_bios_timeofday( _NEC98_TIME_GETCLOCK, (char *)necBuf );
             nec_to_ibm( necBuf, timeval );
             break;
         case _IBM_TIME_SETCLOCK:
-            __nec98_bios_timeofday( _NEC98_TIME_GETCLOCK, necBuf );
+            __nec98_bios_timeofday( _NEC98_TIME_GETCLOCK, (char *)necBuf );
             ibm_to_nec( necBuf, timeval );
-            __nec98_bios_timeofday( _NEC98_TIME_SETCLOCK, necBuf );
+            __nec98_bios_timeofday( _NEC98_TIME_SETCLOCK, (char *)necBuf );
             break;
         default:
             return( -1 );   // invalid command for NEC 98
