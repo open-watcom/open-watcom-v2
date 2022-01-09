@@ -9,7 +9,6 @@
 !inject biosprin.obj    d16 d32                                         w16
 !inject biosseri.obj    d16 d32                                         w16
 !inject biostime.obj    d16 d32                                         w16
-!inject biosfunc.obj                                                        w32
 !inject b_disk.obj                                                          w32
 !inject b_equipl.obj                                                        w32
 !inject b_keybrd.obj                                                        w32
