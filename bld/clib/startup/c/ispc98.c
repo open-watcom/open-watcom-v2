@@ -37,7 +37,10 @@
 #include "tinyio.h"
 #include "ispc98.h"
 #include "rtinit.h"
+#include "realmod.h"
 
+
+#if 0
 
 #ifdef _M_I86
 static unsigned char ispc98( void );
@@ -85,12 +88,69 @@ static int __is_PC98( void )
 #endif
 }
 
+#else
+
+#define is_date_char( c )       (( c >= '0' && c <= '9' ) || c == '/' )
+#define BIOS_DATE_LEN           (2+1+2+1+2) /* yy-mm-dd */
+
+#define CHECK_IT                                                \
+    {                                                           \
+        int i;                                                  \
+        unsigned num_ok;                                        \
+                                                                \
+        /* check for IBM BIOS revsion date in ROM */            \
+        num_ok = 0;                                             \
+        for( i = 0; i < BIOS_DATE_LEN; ++i ) {                  \
+            if( is_date_char( p[i] ) ) {                        \
+                ++num_ok;                                       \
+            }                                                   \
+        }                                                       \
+        /* wishy-washy test for BIOS dates that */              \
+        /* contain some garbage chars. */                       \
+        /* Commodore PC60-40 has BIOS date "02/0(/88"). */      \
+        return( num_ok < (BIOS_DATE_LEN / 2) );                 \
+    }
+
+
+static int __is_PC98( void )
+{
+#if defined(__WINDOWS_386__)
+    extern      unsigned short  __F000;
+    char        _WCFAR *p;
+
+    p = MK_FP( __F000, 0xfff5 );
+    CHECK_IT
+#elif defined(__WINDOWS__)
+    extern char _WCFAR  _F000h[];
+    char _WCFAR *       p;
+
+    p = MK_FP( _F000h, 0xfff5 );
+    CHECK_IT
+#elif defined(__DOS__) && defined(__386__)
+    char _WCFAR *p;
+
+    if( _ExtenderRealModeSelector == 0 )
+        return( 0 );
+    p = MK_FP( _ExtenderRealModeSelector, 0xffff5 );
+    CHECK_IT
+#elif defined(__DOS__)
+    char _WCFAR *p;
+
+    p = MK_FP( 0xf000, 0xfff5 );
+    CHECK_IT
+#else
+    return( 0 );
+#endif
+}
+
+#endif
+
 /****
 ***** If this module is linked in, the startup code will call this function,
 ***** which will initialize the __isPC98 global variable.
 ****/
 
-int     _WCNEAR __isPC98 = -1;  // -1 not yet initialized
+int     _WCNEAR __isPC98 = 0;  // -1 not yet initialized
                                 // 0  IBM PC
                                 // 1  NEC PC-98
 
