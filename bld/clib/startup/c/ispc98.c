@@ -43,23 +43,25 @@
 #include "realmod.h"
 
 
+#define BIOS_CHK_OFFS    0xfff3
+
 static int __is_PC98( void )
 {
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
     unsigned short _WCFAR   *p;
 
   #if defined(__WINDOWS_386__)
-    p = MK_FP( __F000, 0xfff3 );
+    p = MK_FP( __F000, BIOS_CHK_OFFS );
   #elif defined(__WINDOWS__)
     extern char _WCFAR  _F000h[];
 
-    p = MK_FP( _F000h, 0xfff3 );
+    p = MK_FP( _F000h, BIOS_CHK_OFFS );
   #elif defined(__DOS__) && defined(__386__)
     if( _ExtenderRealModeSelector == 0 )
         return( 0 );
-    p = MK_FP( _ExtenderRealModeSelector, 0xffff3 );
+    p = MK_FP( _ExtenderRealModeSelector, ( 0xf000 << 4 ) | BIOS_CHK_OFFS );
   #elif defined(__DOS__)
-    p = MK_FP( 0xf000, 0xfff3 );
+    p = MK_FP( 0xf000, BIOS_CHK_OFFS );
   #endif
     if( *p == 0xFD80 )
         return( 1 );
