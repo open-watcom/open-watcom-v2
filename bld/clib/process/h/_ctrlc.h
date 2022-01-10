@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Break �nterrupt Ctrl+C handling save/restore
+* Description:  Break interrupt Ctrl+C handling save/restore
 *
 ****************************************************************************/
 
