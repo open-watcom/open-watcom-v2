@@ -43,12 +43,12 @@
 #include "realmod.h"
 
 
-#define BIOS_CHK_OFFS    0xfff3
+#define BIOS_CHK_OFFS    0xfff7
 
 static int __is_PC98( void )
 {
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
-    unsigned short _WCFAR   *p;
+    char _WCFAR     *p;
 
   #if defined(__WINDOWS_386__)
     p = MK_FP( __F000, BIOS_CHK_OFFS );
@@ -63,7 +63,7 @@ static int __is_PC98( void )
   #elif defined(__DOS__)
     p = MK_FP( 0xf000, BIOS_CHK_OFFS );
   #endif
-    if( *p == 0xFD80 )
+    if( p[0] != '/' && p[3] != '/' )
         return( 1 );
 #endif
     return( 0 );
