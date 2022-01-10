@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Break ínterrupt Ctrl+C handling save/restore
+* Description:  Break ï¿½nterrupt Ctrl+C handling save/restore
 *
 ****************************************************************************/
 
@@ -35,4 +35,3 @@ extern unsigned char    _WCNEAR __ctrl_break_int;
 extern      void    __grab_int_ctrl_break( void );
 extern      void    __restore_int_ctrl_break( void );
 #endif
-
