@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,13 +84,13 @@ struct wstart_vars {
     DWORD       cmdline;
     WORD        cmdshow;
     WORD        _no87;
-    WORD        _A000H;
-    WORD        _B000H;
-    WORD        _B800H;
-    WORD        _C000H;
-    WORD        _D000H;
-    WORD        _E000H;
-    WORD        _F000H;
+    WORD        __A000;
+    WORD        __B000;
+    WORD        __B800;
+    WORD        __C000;
+    WORD        __D000;
+    WORD        __E000;
+    WORD        __F000;
     addr_48     CodeSelectorBase;
     addr_48     DataSelectorBase;
     addr_48     _32BitCallBackAddr;
@@ -409,13 +409,13 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     /*
      * set hardware selectors for screen memory
      */
-    dataptr->_A000H     = (WORD) &_A000H;
-    dataptr->_B000H     = (WORD) &_B000H;
-    dataptr->_B800H     = (WORD) &_B800H;
-    dataptr->_C000H     = (WORD) &_C000H;
-    dataptr->_D000H     = (WORD) &_D000H;
-    dataptr->_E000H     = (WORD) &_E000H;
-    dataptr->_F000H     = (WORD) &_F000H;
+    dataptr->__A000     = (WORD) &_A000H;
+    dataptr->__B000     = (WORD) &_B000H;
+    dataptr->__B800     = (WORD) &_B800H;
+    dataptr->__C000     = (WORD) &_C000H;
+    dataptr->__D000     = (WORD) &_D000H;
+    dataptr->__E000     = (WORD) &_E000H;
+    dataptr->__F000     = (WORD) &_F000H;
 
     /*
      * ptrs to some data areas
