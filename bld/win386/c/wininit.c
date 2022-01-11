@@ -79,8 +79,8 @@ extern void BreakPoint( void );
 
 #include "pushpck1.h"
 struct wstart_vars {
-    WORD        thishandle;
-    WORD        prevhandle;
+    WORD        thisInstance;
+    WORD        prevInstance;
     DWORD       cmdline;
     WORD        cmdshow;
     WORD        _no87;
@@ -132,7 +132,7 @@ static char _FAR *dwordToStr( DWORD value )
     buff[i] = 0;
     do {
         --i;
-        buff[i] = (value % 10) + '0';
+        buff[i] = ( value % 10 ) + '0';
         value /= 10;
     } while( value != 0 );
     return( &buff[i] );
@@ -142,7 +142,7 @@ static char _FAR *dwordToStr( DWORD value )
 /*
  * Init32BitTask - load and initialize the 32-bit application
  */
-bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, int cmdshow )
+bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdline, int cmdshow )
 {
     WORD                i,amount,bytes_read,j;
     WORD                sel;
@@ -169,7 +169,7 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
      * verify that we are running on a 32-bit DPMI
      */
     _fDPMIGetVersion( &vi );
-    if( !(vi.flags & VERSION_80386) ) {
+    if( (vi.flags & VERSION_80386) == 0 ) {
         MessageBox( NULL, "Not running on a 386 DPMI implementation",MsgTitle,
                         MB_OK | MB_ICONHAND | MB_TASKMODAL );
         return( false );
@@ -178,10 +178,10 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     /*
      * get exe to load
      */
-    GetModuleFileName( thishandle, file, 128 );
+    GetModuleFileName( thisInstance, file, 128 );
     rc = _fTinyOpen( file, TIO_READ );
     if( TINY_ERROR( rc ) ) {
-        return( Fini( 2, (char _FAR *)"Error opening file", (char _FAR *)file) );
+        return( Fini( 2, (char _FAR *)"Error opening file", (char _FAR *)file ) );
     }
     handle = TINY_INFO( rc );
 
@@ -212,9 +212,9 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     _fTinyRead( handle, &exe, sizeof( rex_exe ) );
 //    BreakPoint();
     if( !(exe.sig[0] == 'M' && exe.sig[1] == 'Q') ) {
-        return( Fini( 1,(char _FAR *)"Invalid EXE" ) );
+        return( Fini( 1, (char _FAR *)"Invalid EXE" ) );
     }
-    file_header_size = (DWORD) exe.file_header * 16L;
+    file_header_size = (DWORD)exe.file_header * 16L;
     /*
      * exe.one is supposed to always contain a 1 for a .REX file.
      * However, to allow relocation tables bigger than 64K, the
@@ -231,15 +231,15 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     /*
      * get file size
      */
-    size = (long) exe.file_size2 * 512L;
+    size = (long)exe.file_size2 * 512L;
     if( exe.file_size1 > 0 ) {
-        size += (long) exe.file_size1 - 512L;
+        size += (long)exe.file_size1 - 512L;
     }
 
     /*
      * get stack size
      */
-    StackSize = Align4K( exe.initial_esp - ((exedat.stackstart+15) & ~15ul) );
+    StackSize = Align4K( exe.initial_esp - (( exedat.stackstart + 15 ) & ~15ul) );
     if( StackSize < 0x1000 ) {
         StackSize = 0x1000;
     }
@@ -249,11 +249,11 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
      * to get total area
      */
 //    BreakPoint();
-    minmem = (DWORD) exe.min_data *(DWORD) 4096L;
+    minmem = (DWORD)exe.min_data * (DWORD)4096L;
     if( exe.max_data == (WORD)-1 ) {
         maxmem = 4096L;
     } else {
-        maxmem = (DWORD) exe.max_data*4096L;
+        maxmem = (DWORD)exe.max_data * 4096L;
     }
     minmem = Align4K( minmem + size + 0x10000ul );
     maxmem = Align4K( maxmem + size + 0x10000ul );
@@ -271,7 +271,7 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
             if( tried_global_compact ) {
                 return( Fini( 3,
                   (char _FAR *)"Not enough memory for application\n(minimum ",
-                  dwordToStr( minmem ),(char _FAR *)" required)" ));
+                  dwordToStr( minmem ), (char _FAR *)" required)" ) );
             }
             /*
              * GlobalCompact(-1) causes Windows to unfragment its
@@ -300,7 +300,7 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     BaseAddr = 0L;
     if( i ) {
         DPMIFreeMemoryBlock( DataHandle );
-        return( Fini( 2,(char _FAR *)"Allocation error ", dwordToStr( i ) ) );
+        return( Fini( 2, (char _FAR *)"Allocation error ", dwordToStr( i ) ) );
     }
     SaveSP = BaseAddr + StackSize;
     CodeLoadAddr = SaveSP;
@@ -313,7 +313,7 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
      * allocation
      */
     if( InitSelectorCache() != 0 ) {
-        return( Fini( 1,(char _FAR *)outOfSelectors) );
+        return( Fini( 1, (char _FAR *)outOfSelectors ) );
     }
 
     /*
@@ -323,7 +323,7 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     _TinySeek( handle, exelen + file_header_size, TIO_SEEK_START );
     i = _DPMIGetAliases( CodeLoadAddr, (LPDWORD)&aliasptr, 0 );
     if( i ) {
-        return( Fini( 3,(char _FAR *)"Error ",
+        return( Fini( 3, (char _FAR *)"Error ",
                 dwordToStr( i ),
                 (char _FAR *)" getting alias for read" ) );
     }
@@ -332,18 +332,18 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     curroff = CodeLoadAddr;
     while( currsize != 0 ) {
 
-        if( currsize >= (DWORD) READSIZE ) {
+        if( currsize >= (DWORD)READSIZE ) {
             amount = READSIZE;
         } else {
-            amount = (WORD) currsize;
+            amount = (WORD)currsize;
         }
         rc = _fTinyRead( handle, dataptr, amount );
         bytes_read = TINY_INFO( rc );
         if( bytes_read != amount ) {
-            return( Fini( 1,(char _FAR *)"Read error" ) );
+            return( Fini( 1, (char _FAR *)"Read error" ) );
         }
-        currsize -= (DWORD) amount;
-        curroff += (DWORD) amount;
+        currsize -= (DWORD)amount;
+        curroff += (DWORD)amount;
         DPMISetSegmentBaseAddress( sel, DataSelectorBase + curroff );
     }
     EDataAddr = curroff;                        // 03-jan-95
@@ -353,33 +353,33 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     /*
      * get and apply relocation table
      */
-    relsize = sizeof( DWORD ) * (DWORD) exe.reloc_cnt;
+    relsize = sizeof( DWORD ) * (DWORD)exe.reloc_cnt;
     {
         DWORD   realsize;
         WORD    kcnt;
 
-        realsize = file_header_size - (DWORD) exe.first_reloc;
-        kcnt = realsize / (0x10000L*sizeof(DWORD));
-        relsize += kcnt * (0x10000L*sizeof(DWORD));
+        realsize = file_header_size - (DWORD)exe.first_reloc;
+        kcnt = realsize / ( 0x10000L * sizeof( DWORD ) );
+        relsize += kcnt * ( 0x10000L * sizeof( DWORD ) );
     }
     if( relsize != 0 ) {
         _TinySeek( handle, exelen + (DWORD)exe.first_reloc, TIO_SEEK_START );
-        if( StackSize >= (DWORD) READSIZE ) {
+        if( StackSize >= (DWORD)READSIZE ) {
             amount = READSIZE;
         } else {
-            amount = (WORD) StackSize;
+            amount = (WORD)StackSize;
         }
         while( relsize != 0L ) {
             if( relsize < (DWORD)amount ) {
-                amount = (WORD) relsize;
+                amount = (WORD)relsize;
             }
             rc = _fTinyRead( handle, relptr, amount );
             bytes_read = TINY_INFO( rc );
             if( bytes_read != amount ) {
-                return( Fini( 1,(char _FAR *)"Relocation read error" ) );
+                return( Fini( 1, (char _FAR *)"Relocation read error" ) );
             }
-            CodeRelocate( relptr, amount/sizeof(DWORD) );
-            relsize -= (DWORD) amount;
+            CodeRelocate( relptr, amount / sizeof( DWORD ) );
+            relsize -= (DWORD)amount;
         }
     }
 
@@ -388,7 +388,7 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     /* initialize emulator 8087 save area 20-oct-94 */
 
     fpuptr = (struct fpu_area __far *)((char __far *)aliasptr + FPU_AREA);
-    _fmemset( fpuptr, 0, sizeof(struct fpu_area) );
+    _fmemset( fpuptr, 0, sizeof( struct fpu_area ) );
     fpuptr->control_word = 0x033F;
     fpuptr->tag_word = 0xFFFF;
 
@@ -396,29 +396,30 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
      * set dataptr to special area in data segment of 32-bit app
      */
     curroff = exedat.datastart;
-    if( exe.reloc_cnt != 0 )  curroff += CodeLoadAddr;
+    if( exe.reloc_cnt != 0 )
+        curroff += CodeLoadAddr;
     DPMISetSegmentBaseAddress( sel, DataSelectorBase + curroff );
 
     /*
      * insert command line parms
      */
-    dataptr->thishandle = (WORD)thishandle;
-    dataptr->prevhandle = (WORD)prevhandle;
-    dataptr->cmdline    = (DWORD) cmdline;
-    dataptr->cmdshow    = cmdshow;
-    dataptr->_no87      = _no87;
-    dataptr->__isPC98   = __isPC98;
+    dataptr->thisInstance = (WORD)thisInstance;
+    dataptr->prevInstance = (WORD)prevInstance;
+    dataptr->cmdline      = (DWORD)cmdline;
+    dataptr->cmdshow      = cmdshow;
+    dataptr->_no87        = _no87;
+    dataptr->__isPC98     = __isPC98;
 
     /*
      * set hardware selectors for screen memory
      */
-    dataptr->__A000     = (WORD) &_A000H;
-    dataptr->__B000     = (WORD) &_B000H;
-    dataptr->__B800     = (WORD) &_B800H;
-    dataptr->__C000     = (WORD) &_C000H;
-    dataptr->__D000     = (WORD) &_D000H;
-    dataptr->__E000     = (WORD) &_E000H;
-    dataptr->__F000     = (WORD) &_F000H;
+    dataptr->__A000     = (WORD)&_A000H;
+    dataptr->__B000     = (WORD)&_B000H;
+    dataptr->__B800     = (WORD)&_B800H;
+    dataptr->__C000     = (WORD)&_C000H;
+    dataptr->__D000     = (WORD)&_D000H;
+    dataptr->__E000     = (WORD)&_E000H;
+    dataptr->__F000     = (WORD)&_F000H;
 
     /*
      * ptrs to some data areas
@@ -442,6 +443,10 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
         dataptr->gluertns[j].seg =  (WORD)_FP_SEG( Glue[j].rtn );
         dataptr->gluertns[j].off = (DWORD)_FP_OFF( Glue[j].rtn );
     }
+
+    /*
+     * free alias selector
+     */
     _DPMIFreeAlias( sel );
 
     /*
@@ -496,7 +501,7 @@ static void CodeRelocate( DWORD __far *reloc, WORD cnt )
     WORD        i;
     DWORD       tmp;
 
-    for( i=0;i<cnt;i++) {
+    for( i = 0; i <cnt; i++ ) {
         tmp = reloc[i] & 0x7fffffff;
         tmp += CodeLoadAddr;
         if( reloc[i] & 0x80000000 ) {
