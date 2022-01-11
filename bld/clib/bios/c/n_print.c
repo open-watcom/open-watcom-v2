@@ -37,7 +37,7 @@
 #include <bios98.h>
 #include "tinyio.h"
 #include "realmod.h"
-#include "ispc98.h"
+#include "rtdata.h"
 #ifdef __386__
     #include "extender.h"
 #endif
@@ -68,7 +68,7 @@
 
 _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__data )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short  ret;
 #if defined( _M_I86 )
         union REGS      r;

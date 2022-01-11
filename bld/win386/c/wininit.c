@@ -84,6 +84,7 @@ struct wstart_vars {
     DWORD       cmdline;
     WORD        cmdshow;
     WORD        _no87;
+    WORD        __isPC98;
     WORD        __A000;
     WORD        __B000;
     WORD        __B800;
@@ -111,6 +112,7 @@ extern WORD     _D000H;
 extern WORD     _E000H;
 extern WORD     _F000H;
 extern BYTE     _no87;
+extern BYTE     __isPC98;
 
 extern void     FAR __CallBack( void );
 
@@ -405,6 +407,7 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     dataptr->cmdline    = (DWORD) cmdline;
     dataptr->cmdshow    = cmdshow;
     dataptr->_no87      = _no87;
+    dataptr->__isPC98   = __isPC98;
 
     /*
      * set hardware selectors for screen memory

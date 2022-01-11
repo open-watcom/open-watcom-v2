@@ -34,7 +34,7 @@
 #include "variety.h"
 #include "rtinit.h"
 #include "_ctrlc.h"
-#include "ispc98.h"
+#include "rtdata.h"
 
 
 unsigned char    _WCNEAR __ctrl_break_int = 0;
@@ -46,7 +46,7 @@ unsigned char    _WCNEAR __ctrl_break_int = 0;
 
 static void init_on_startup( void )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         __ctrl_break_int = 0x06;    /* INT 0x06 */
     } else {            /* IBM PC */
         __ctrl_break_int = 0x1B;    /* INT 0x1B */

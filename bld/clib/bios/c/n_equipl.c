@@ -39,11 +39,11 @@
     #include "extender.h"
     #include "realmod.h"
 #endif
-#include "ispc98.h"
+
 
 _WCRTLINK unsigned short __nec98_bios_equiplist( void )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short  ret;
         int             count;
         unsigned short  disk_info;

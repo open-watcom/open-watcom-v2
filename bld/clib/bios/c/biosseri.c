@@ -34,7 +34,7 @@
 #include <stddef.h>
 #include <bios.h>
 #include "necibm.h"
-#include "ispc98.h"
+#include "rtdata.h"
 
 
 /* DOS only, so no multithreading issues with static data */
@@ -46,7 +46,7 @@ static struct {
 
 _WCRTLINK unsigned short _bios_serialcom( unsigned cmd, unsigned port, unsigned data )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         struct com_t        necBuf;
         unsigned short      necRc;
         unsigned short      ret;

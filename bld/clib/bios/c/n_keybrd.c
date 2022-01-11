@@ -34,7 +34,7 @@
 #include "variety.h"
 #include <dos.h>
 #include <bios98.h>
-#include "ispc98.h"
+#include "rtdata.h"
 
 
 /*
@@ -73,7 +73,7 @@
 
 _WCRTLINK unsigned short __nec98_bios_keybrd( unsigned __cmd, unsigned char *__buf )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         union REGS r;
         int i;
 

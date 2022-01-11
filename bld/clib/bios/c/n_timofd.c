@@ -37,10 +37,11 @@
 #include <bios98.h>
 #include "tinyio.h"
 #include "realmod.h"
-#include "ispc98.h"
+#include "rtdata.h"
 #ifdef __386__
     #include "extender.h"
 #endif
+
 
 /*
  * FUNCTION: __nec98_bios_timeofday
@@ -53,7 +54,7 @@
 
 _WCRTLINK unsigned short __nec98_bios_timeofday( unsigned __cmd, char *__timeval )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         switch( __cmd ) {
         case _TIME_GETCLOCK:
         case _TIME_SETCLOCK:

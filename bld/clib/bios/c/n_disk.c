@@ -37,7 +37,7 @@
 #include <string.h>
 #include "tinyio.h"
 #include "realmod.h"
-#include "ispc98.h"
+#include "rtdata.h"
 #ifdef __386__
     #include "extender.h"
 #endif
@@ -80,7 +80,7 @@ void _nec_pass_bp( unsigned srvno, rmi_struct *rmreg, unsigned _ebx, unsigned _e
 
 _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *__diskinfo )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short  ret;
         char _WCI86FAR  *result_p;
         union REGS      rr;

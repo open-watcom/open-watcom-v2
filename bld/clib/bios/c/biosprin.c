@@ -33,12 +33,12 @@
 #include "variety.h"
 #include <bios.h>
 #include "necibm.h"
-#include "ispc98.h"
+#include "rtdata.h"
 
 
 _WCRTLINK unsigned short _bios_printer( unsigned ibmCmd, unsigned port, unsigned data )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned        necCmd;
         unsigned short  necRc;
         unsigned short  ret;

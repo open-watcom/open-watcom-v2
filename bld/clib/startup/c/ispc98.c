@@ -34,51 +34,55 @@
 #include "variety.h"
 #include <i86.h>
 #include <stdlib.h>
-#ifdef __WINDOWS__
-    #include <windows.h>
-#endif
 #include "tinyio.h"
-#include "ispc98.h"
+#include "rtdata.h"
 #include "rtinit.h"
 #include "realmod.h"
 
 
-#define BIOS_CHK_OFFS    0xfff7
-
-static int __is_PC98( void )
-{
-#if defined( __DOS__ ) || defined( __WINDOWS__ )
-    char _WCFAR     *p;
-
-  #if defined(__WINDOWS_386__)
-    p = MK_FP( __F000, BIOS_CHK_OFFS );
-  #elif defined(__WINDOWS__)
-    extern char _WCFAR  _F000h[];
-
-    p = MK_FP( _F000h, BIOS_CHK_OFFS );
-  #elif defined(__DOS__) && defined(__386__)
-    if( _ExtenderRealModeSelector == 0 )
-        return( 0 );
-    p = MK_FP( _ExtenderRealModeSelector, ( 0xf000 << 4 ) | BIOS_CHK_OFFS );
-  #elif defined(__DOS__)
-    p = MK_FP( 0xf000, BIOS_CHK_OFFS );
-  #endif
-    if( p[0] != '/' && p[3] != '/' )
-        return( 1 );
-#endif
-    return( 0 );
-}
+/*
+ * This code identify NEC PC-98 hardware for C run-time library.
+ *
+ * The best way to distinguish between AT compatibles and PC-9800 is to check
+ * the data following the ROM BIOS entry point (FFFF:0000).
+ * The AT BIOS date start at FFFF:0005 after far jump (5 bytes).
+ * The BIOS date is written in ASCII characters, so when the date
+ * separators '/' (2Fh in hexadecimal) are not present, it is PC-9800.
+ * One should check FFFF:0007 and FFFF:000A. This detection method assumes
+ * that machines other than AT compatibles are PC-9800.
+ */
 
 /****
 ***** If this module is linked in, the startup code will call this function,
 ***** which will initialize the __isPC98 global variable.
 ****/
 
-int     _WCNEAR __isPC98 = 0;   // 0  IBM PC, 1  NEC PC-98
+#define BIOS_CHK_OFFS    0xfff7
+
+unsigned char   __isPC98 = 0;   // 0 - IBM PC, 1 - NEC PC-98
+
+#if defined( __DOS__ ) || defined( __WINDOWS__ ) && defined( _M_I86 )
 
 static void init_on_startup( void )
 {
-    __isPC98 = __is_PC98();
+    char _WCFAR     *p;
+
+  #if defined(__WINDOWS__)
+    extern char _WCFAR  _F000H[];
+
+    p = MK_FP( _F000H, BIOS_CHK_OFFS );
+  #elif defined(__DOS__) && defined(__386__)
+    if( _ExtenderRealModeSelector == 0 )
+        return;
+    p = MK_FP( _ExtenderRealModeSelector, ( 0xf000 << 4 ) | BIOS_CHK_OFFS );
+  #elif defined(__DOS__)
+    p = MK_FP( 0xf000, BIOS_CHK_OFFS );
+  #endif
+    if( p[0] != '/' && p[3] != '/' ) {
+        __isPC98 = 1;
+    }
 }
 
 AXI( init_on_startup, INIT_PRIORITY_LIBRARY )
+
+#endif

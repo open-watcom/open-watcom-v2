@@ -33,12 +33,12 @@
 #include "variety.h"
 #include <bios.h>
 #include "necibm.h"
-#include "ispc98.h"
+#include "rtdata.h"
 
 
 _WCRTLINK unsigned short _bios_disk( unsigned ibmCmd, struct diskinfo_t *ibmBuf )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
 
 //        unsigned                  necCmd;
 //        struct _nec98_diskinfo_t  necBuf;

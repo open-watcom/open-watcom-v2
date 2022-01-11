@@ -33,7 +33,7 @@
 #include "variety.h"
 #include <bios.h>
 #include "necibm.h"
-#include "ispc98.h"
+#include "rtdata.h"
 
 
 #define SECONDS_PER_MINUTE      60
@@ -99,7 +99,7 @@ static void ibm_to_nec( unsigned char *necBuf, const long *timeval )
 
 _WCRTLINK unsigned short _bios_timeofday( unsigned cmd, long *timeval )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned char   necBuf[6];
 
         /*** Translate IBM commands to NEC98 commands ***/

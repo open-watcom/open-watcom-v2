@@ -43,7 +43,7 @@
 
 #include <bios.h>
 #include <conio.h>
-#include "ispc98.h"
+#include "rtdata.h"
 
 #define VERIFY( exp )   if( !(exp) ) {                                      \
                             printf( "%s: ***FAILURE*** at line %d of %s.\n",\

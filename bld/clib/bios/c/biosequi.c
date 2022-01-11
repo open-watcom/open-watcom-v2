@@ -33,7 +33,7 @@
 #include "variety.h"
 #include <bios.h>
 #include "necibm.h"
-#include "ispc98.h"
+#include "rtdata.h"
 
 
 struct EquipBits {
@@ -51,7 +51,7 @@ struct EquipBits {
 
 _WCRTLINK unsigned short _bios_equiplist( void )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short          necRc;
         union {
             struct EquipBits    bits;

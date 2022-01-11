@@ -36,15 +36,16 @@
 #include <string.h>
 #include <bios98.h>
 #include "tinyio.h"
-#include "ispc98.h"
+#include "rtdata.h"
 #include "realmod.h"
 #ifdef __386__
     #include "extender.h"
 #endif
 
+
 _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port, struct com_t *__data )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
 #ifdef _M_I86
         union REGS r;
         struct SREGS s;

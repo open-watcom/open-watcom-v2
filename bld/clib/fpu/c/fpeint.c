@@ -33,7 +33,7 @@
 #include "variety.h"
 #include "rtinit.h"
 #include "fpeint.h"
-#include "ispc98.h"
+#include "rtdata.h"
 
 
 /*
@@ -124,7 +124,7 @@ unsigned char _WCNEAR __SLV_pic = 0;    /* Slave PIC port number */
 
 static void init_on_startup( void )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         __FPE_int = 0x10;           /* INT 0x10 */
 #ifdef __386__
         __IRQ_num = 0x08;           /* IRQ 8 */

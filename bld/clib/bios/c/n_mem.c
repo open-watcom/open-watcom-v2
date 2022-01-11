@@ -35,12 +35,12 @@
 #include <bios98.h>
 #include <dos.h>
 #include "realmod.h"
-#include "ispc98.h"
+#include "rtdata.h"
 
 
 _WCRTLINK unsigned short __nec98_bios_memsize( void )
 {
-    if( __isPC98 ) {    /* NEC PC-98 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
         int     __data;
 
 #ifdef _M_I86

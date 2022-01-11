@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,6 +123,12 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
 #if defined( __LINUX__ )
 extern unsigned char            _osrev;     /* revision number of the Linux kernel version */
 #endif
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
+extern unsigned char            __isPC98;   /* is NEC PC-98 hardware */
+  #if defined( __WATCOMC__ ) && defined( _M_IX86 )
+    #pragma aux                 __isPC98 "_*";
+  #endif
+#endif
 
 #define _RWD_ostream            __OpenStreams
 #define _RWD_cstream            __ClosedStreams
@@ -197,6 +203,10 @@ extern unsigned char            _osrev;     /* revision number of the Linux kern
 #define _RWD_randnext           _RANDNEXT
 
 #define _RWD_uselfn             __uselfn
+
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
+#define _RWD_isPC98             __isPC98
+#endif
 
 extern      void    (*__abort)( void );     // Defined in abort.c
 

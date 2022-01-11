@@ -119,6 +119,8 @@ lpCmdLine      dd   0
 cmdShow        dw   0
 public __no87
 __no87         dw   0       ; non-zero => "NO87" environment var present
+public ___isPC98
+___isPC98      dw   0       ; 0 - IBM PC, 1 - NEC PC-98
 ; magical selectors for real memory
 public ___A000,___B000,___B800,___C000,___D000,___E000,___F000
 ___A000        dw   0
