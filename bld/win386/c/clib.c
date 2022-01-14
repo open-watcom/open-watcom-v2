@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,10 @@
 #include <dos.h>
 #include <string.h>
 #include <time.h>
-#include "fints.h"
 #include "clibxw32.h"
+#include "dodoscal.h"
+#include "dosret.h"
+#include "dointr.h"
 
 
 #ifdef DLL32
@@ -52,38 +55,85 @@
  * here lie all interrupt functions
  */
 
-int __far __pascal _clib_intdos( union REGS __far *in_regs,
-                             union REGS __far *out_regs )
+int __far __pascal _clib_intdos( union REGS __far *inregs,
+                             union REGS __far *outregs )
 {
-    return( _fintdos( in_regs, out_regs ) );
+    int         status;
+
+    status = DoDosCall( inregs, outregs );
+    outregs->x.cflag = (status & 1);
+    _dosretax( outregs->x.ax, status );
+    return( outregs->x.ax );
 }
 
-int __far __pascal _clib_intdosx( union REGS __far *in_regs, union REGS __far *out_regs,
-                              struct SREGS __far *seg_regs ) {
-        return( _fintdosx( in_regs, out_regs, seg_regs ) );
+int __far __pascal _clib_intdosx( union REGS __far *inregs, union REGS __far *outregs,
+                              struct SREGS __far *segregs )
+{
+    int         status;
+
+    status = DoDosxCall( inregs, outregs, segregs );
+    outregs->x.cflag = (status & 1);
+    _dosretax( outregs->x.ax, status );
+    return( outregs->x.ax );
 }
 
-int __far __pascal _clib_int86( int inter_no, union REGS __far *in_regs,
-                            union REGS __far *out_regs )
+static int __int86x( int intno, union REGS __far *inr, union REGS __far *outr, struct SREGS __far *sr )
 {
-    return( _fint86( inter_no, in_regs, out_regs ) );
+    union REGPACK r;
+
+    r.x.ax = inr->x.ax;
+    r.x.bx = inr->x.bx;
+    r.x.cx = inr->x.cx;
+    r.x.dx = inr->x.dx;
+    r.x.si = inr->x.si;
+    r.x.di = inr->x.di;
+    r.x.ds = sr->ds;
+    r.x.es = sr->es;
+//    r.x.bp = 0;             /* no bp in REGS union, set to 0 */
+//    r.x.flags = ( inr->x.cflag ) ? INTR_CF : 0;
+
+    _DoINTR( intno, &r, 0 );
+
+    outr->x.ax = r.x.ax;
+    outr->x.bx = r.x.bx;
+    outr->x.cx = r.x.cx;
+    outr->x.dx = r.x.dx;
+    outr->x.si = r.x.si;
+    outr->x.di = r.x.di;
+    outr->x.cflag = ( (r.x.flags & INTR_CF) != 0 );
+    sr->ds = r.x.ds;
+    sr->es = r.x.es;
+    return( r.x.ax );
 }
 
-int __far __pascal _clib_int86x( int inter_no, union REGS __far *in_regs,
-                            union REGS __far *out_regs,
-                            struct SREGS __far *seg_regs )
+int __far __pascal _clib_int86( int intno, union REGS __far *inregs,
+                            union REGS __far *outregs )
 {
-    return( _fint86x( inter_no, in_regs, out_regs, seg_regs ) );
+#ifdef DLL32
+    static struct SREGS sr;
+#else
+    struct SREGS        sr;
+#endif
+
+    segread( &sr );
+    return( __int86x( intno, inregs, outregs, &sr ) );
 }
 
-void __far __pascal _clib_intr( int inter_no, union REGPACK __far *regs )
+int __far __pascal _clib_int86x( int intno, union REGS __far *inregs,
+                            union REGS __far *outregs,
+                            struct SREGS __far *segregs )
 {
-    _fintr( inter_no, regs );
+    return( __int86x( intno, inregs, outregs, segregs ) );
 }
 
-void __far __pascal _clib_intrf( int inter_no, union REGPACK __far *regs )
+void __far __pascal _clib_intr( int intno, union REGPACK __far *regs )
 {
-    _fintrf( inter_no, regs );
+    _DoINTR( intno, regs, 0 );
+}
+
+void __far __pascal _clib_intrf( int intno, union REGPACK __far *regs )
+{
+    _DoINTR( intno, regs, regs->w.flags );
 }
 
 /*
