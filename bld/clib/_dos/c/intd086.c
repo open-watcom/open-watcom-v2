@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,68 +33,9 @@
 
 #include "variety.h"
 #include <dos.h>
+#include "dodoscal.h"
 #include "dosret.h"
 
-extern short    DoDosCall( void *in, void *out );
-#if !defined(__BIG_DATA__)
-#pragma aux DoDosCall = \
-        "push es"           \
-        "push bp"           \
-        "push dx"           \
-        "mov  ax,0[di]"     \
-        "mov  bx,2[di]"     \
-        "mov  cx,4[di]"     \
-        "mov  dx,6[di]"     \
-        "mov  si,8[di]"     \
-        "mov  di,10[di]"    \
-        "clc"               \
-        "int 21h"           \
-        "mov  bp,di"        \
-        "pop  di"           \
-        "mov  0[di],ax"     \
-        "mov  2[di],bx"     \
-        "mov  4[di],cx"     \
-        "mov  6[di],dx"     \
-        "mov  8[di],si"     \
-        "mov  10[di],bp"    \
-        "sbb  ax,ax"        \
-        "pop  bp"           \
-        "pop  es"           \
-    __parm __caller [__di] [__dx] \
-    __value         [__ax] \
-    __modify        [__bx __cx __dx __di __si]
-#else
-#pragma aux DoDosCall = \
-        "push ds"           \
-        "push es"           \
-        "push bp"           \
-        "push cx"           \
-        "mov  ds,dx"        \
-        "mov  bp,bx"        \
-        "mov  ax,0[si]"     \
-        "mov  bx,2[si]"     \
-        "mov  cx,4[si]"     \
-        "mov  dx,6[si]"     \
-        "mov  di,10[si]"    \
-        "mov  si,8[si]"     \
-        "clc"               \
-        "int 21h"           \
-        "xchg si,bp"        \
-        "pop  ds"           \
-        "mov  0[si],ax"     \
-        "mov  2[si],bx"     \
-        "mov  4[si],cx"     \
-        "mov  6[si],dx"     \
-        "mov  8[si],bp"     \
-        "mov  10[si],di"    \
-        "pop  bp"           \
-        "pop  es"           \
-        "pop  ds"           \
-        "sbb  ax,ax"        \
-    __parm __caller [__dx __si] [__cx __bx] \
-    __value         [__ax] \
-    __modify        [__ax __dx __di]
-#endif
 
 _WCRTLINK int intdos( union REGS *inregs, union REGS *outregs )
 {
