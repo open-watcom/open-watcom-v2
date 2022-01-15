@@ -331,7 +331,6 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     sel = ((DWORD)dataptr) >> 16;
     curroff = CodeLoadAddr;
     while( currsize != 0 ) {
-
         if( currsize >= (DWORD)READSIZE ) {
             amount = READSIZE;
         } else {
@@ -560,10 +559,9 @@ int Fini( int strcnt, ... )
 #ifndef DLL32
     va_start( args, strcnt );
     tmp[0] = 0;
-    while( strcnt > 0 ) {
+    for( ; strcnt > 0; strcnt-- ) {
         n = va_arg( args, char _FAR * );
         strcat( tmp, n );
-        strcnt--;
     }
     va_end( args );
     if( tmp[0] != 0 ) {

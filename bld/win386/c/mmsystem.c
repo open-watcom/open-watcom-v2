@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -343,9 +344,8 @@ UINT FAR PASCAL __mmioClose( HMMIO hmmio, UINT flags )
 
     rc = mmsystemmmioClose( hmmio, flags );
 
-    curr = mminfoListHead;
     prev = NULL;
-    while( curr != NULL ) {
+    for( curr = mminfoListHead; curr != NULL; curr = curr->next ) {
         if( curr->handle == hmmio ) {
             _DPMIFreeHugeAlias( curr->alias, curr->size );
             if( prev == NULL ) {
@@ -360,7 +360,6 @@ UINT FAR PASCAL __mmioClose( HMMIO hmmio, UINT flags )
             break;
         }
         prev = curr;
-        curr = curr->next;
     }
     return( rc );
 

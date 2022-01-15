@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -247,16 +247,14 @@ int FAR PASCAL __GetInstanceData( HANDLE a, DWORD offset, int len )
     WORD        sel;
     char        ch;
 
-    got = GetInstanceData( a, (PBYTE) &MyDataSelector, sizeof( WORD ) );
+    got = GetInstanceData( a, (PBYTE)&MyDataSelector, sizeof( WORD ) );
     if( got == 2 ) {
         sel = MyDataSelector;
         MyDataSelector = DataSelector;
-        got = len;
-        while( got > 0 ) {
+        for( got = len; got > 0; got-- ) {
             ch = GetByte( sel, offset );
             PutByte( ch, DataSelector, offset );
             offset++;
-            got--;
         }
     } else {
         return( 0 );

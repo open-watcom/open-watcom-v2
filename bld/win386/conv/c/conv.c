@@ -480,11 +480,9 @@ static void BuildClasses( void )
     CurrClass = Class = Head;
     class_count = 0;
     Class->class = class_count++;
-    tmpf = Head->next;
-    while( tmpf != NULL ) {
+    for( tmpf = Head->next; tmpf != NULL; tmpf = tmpf->next ) {
         j = 0;
-        cl = Class;
-        while( cl != NULL ) {
+        for( cl = Class; cl != NULL; cl = cl->next_class ) {
             /*
              * same number of parameters, and need fpu save?
              */
@@ -495,17 +493,13 @@ static void BuildClasses( void )
                     break;
                 }
             }
-            cl = cl->next_class;
         }
-
         if( j == 0 ) {
             tmpf->class = class_count++;
             CurrClass->next_class = tmpf;
             CurrClass = tmpf;
         }
-        tmpf = tmpf->next;
     }
-
     if( !quiet ) {
         printf( "Total Classes: %d\n", class_count );
     }
@@ -518,14 +512,12 @@ static void ClosingComments( void )
 {
     fcn         *tmpf;
 
-    tmpf = Head;
-    while( tmpf != NULL ) {
+    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->fn[0] == '_' && tmpf->fn[1] == '_' ) {
             if( !quiet ) {
                 printf("stub for '%s' requires intervention\n", tmpf->fn );
             }
         }
-        tmpf = tmpf->next;
     }
 
 } /* ClosingComments */
@@ -734,11 +726,11 @@ static int sizeofSubParms( struct subparm *p )
 {
     int         size;
 
-    if( p == NULL ) return( 0 );
+    if( p == NULL )
+        return( 0 );
     size = 2 + 3;               // for "push count" and "add esp,nnn"
-    while( p != NULL ) {
+    for( ; p != NULL; p = p->nextparm ) {
         size += 5;
-        p = p->nextparm;
     }
     return( size );
 }
@@ -748,14 +740,13 @@ static void emitSubParms( struct subparm *p )
     int         count;
 
     count = 0;
-    while( p != NULL ) {
+    for( ; p != NULL; p = p->nextparm ) {
         count++;
         emitBYTE( 0x6a );               /* push offset */
         emitBYTE( p->offset );
         emitBYTE( 0xff );
         emitBYTE( 0x77 );
         emitBYTE( 0x10 + p->parmnum * 4 );
-        p = p->nextparm;
     }
     if( count != 0 ) {
         emitBYTE( 0x6a );               /* push count */
@@ -768,9 +759,8 @@ static void cleanupSubParms( struct subparm *p )
     int         count;
 
     count = 4;
-    while( p != NULL ) {
+    for( ; p != NULL; p = p->nextparm ) {
         count += 8;
-        p = p->nextparm;
     }
     emitBYTE( 0x83 );   /* add esp,nnn */
     emitBYTE( 0xC4 );
@@ -1071,8 +1061,7 @@ static void GenerateCStubs( void )
     if( !genstubs ) {
         return;
     }
-    tmpf = Head;
-    while( tmpf != NULL ) {
+    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->__special_func ) {
             fn2[0] = '_';
             fn2[1] = '_';
@@ -1090,9 +1079,8 @@ static void GenerateCStubs( void )
             if( tmpf->noregfor_16 ) {
                 index = i++;
             } else {
-                tmpf2 = Head;
                 index = 0;
-                while( tmpf2 != NULL ) {
+                for( tmpf2 = Head; tmpf2 != NULL; tmpf2 = tmpf2->next ) {
                     if( strcmp( &fn2[3], tmpf2->fn ) == 0 ) {
                         break;
                     }
@@ -1106,7 +1094,6 @@ static void GenerateCStubs( void )
                     } else {
                         index++;
                     }
-                    tmpf2 = tmpf2->next;
                 }
             }
         } else {
@@ -1124,7 +1111,6 @@ static void GenerateCStubs( void )
         emitOBJECT( ii, fn2, tmpf, 4*index );
         endOBJECT();
         fclose( objFile );
-        tmpf = tmpf->next;
         ii++;
     }
     if( listfile != NULL ) {
@@ -1145,9 +1131,8 @@ static void GenerateThunkTable( fcn *tmpf )
 {
     fprintf( stubs, "__ThunkTable LABEL WORD\n" );
     fprintf( stubs, "public __ThunkTable\n" );
-    while( tmpf != NULL ) {
+    for( ; tmpf != NULL; tmpf = tmpf->next_class ) {
         fprintf( stubs, "  dw  __Thunk%d\n", tmpf->class );
-        tmpf = tmpf->next_class;
     }
 
 } /* GenerateThunkTable */
@@ -1355,8 +1340,7 @@ static void FunctionHeader( void )
     fprintf( stubs, "\n" );
     fprintf( stubs, "\n" );
     fprintf( stubsinc, "extrn        __DLLPatch:far\n" );
-    tmpf = Head;
-    while( tmpf != NULL ) {
+    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->thunk ) {
             th1 = ";";
             th2 = "(thunked)";
@@ -1376,7 +1360,6 @@ static void FunctionHeader( void )
             fprintf(stubsinc,"%sextrn        PASCAL %s:FAR ; t=%d %s\n",
                     th1, tmpf->fn, tmpf->class, th2 );
         }
-        tmpf = tmpf->next;
     }
     fprintf( stubs, "\n" );
     fprintf( stubs, ";*\n" );
@@ -1390,10 +1373,9 @@ static void FunctionHeader( void )
     fprintf( stubs, "\n" );
     fprintf( stubs, "_DATA segment use16\n" );
 
-    tmpf = Head;
     fprintf( stubs, "_FunctionTable LABEL DWORD\n" );
     fprintf( stubs, "PUBLIC _FunctionTable\n" );
-    while( tmpf != NULL ) {
+    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->thunk ) {
             thunkstr = ThunkStrs[ tmpf->thunkindex ];
         } else {
@@ -1417,7 +1399,6 @@ static void FunctionHeader( void )
                 fprintf( stubs, "  dd %s\n", tmpf->fn );
             }
         }
-        tmpf = tmpf->next;
     }
 
     fprintf( stubs, "_DATA ends\n" );
@@ -1642,23 +1623,17 @@ static void GenerateCode( void )
     /*
      * find out which _16 functions have a regular type
      */
-    tmpf = Head;
-    while( tmpf != NULL ) {
-
+    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->is_16 ) {
-            tmpf2 = Head;
-            while( tmpf2 != NULL ) {
+            for( tmpf2 = Head; tmpf2 != NULL; tmpf2 = tmpf2->next ) {
                 if( strcmp( &tmpf->fn[3], tmpf2->fn ) == 0 ) {
                     break;
                 }
-                tmpf2 = tmpf2->next;
             }
             if( tmpf2 == NULL ) {
                 tmpf->noregfor_16 = 1;
             }
         }
-        tmpf = tmpf->next;
-
     }
 
     stubs = fopen("winglue.asm","w" );
@@ -1671,21 +1646,17 @@ static void GenerateCode( void )
     FunctionHeader();
     DLLThunkHeader();
 
-    tmpf = Class;
-    while( tmpf != NULL ) {
+    for( tmpf = Class; tmpf != NULL; tmpf = tmpf->next_class ) {
         if( !quiet ) {
             printf("Code for class %d\n",tmpf->class );
         }
         GenerateAPICall( tmpf );
-        tmpf = tmpf->next_class;
     }
 #if 0
-    tmpf = Head;
-    while( tmpf != NULL ) {
+    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->thunk ) {
             GenerateDLLThunk( tmpf );
         }
-        tmpf = tmpf->next;
     }
 #endif
     FunctionTrailer();
@@ -1722,7 +1693,7 @@ static void AddCommentTrailer( char *tmp )
 
 static void normalize( char *dir )
 {
-    while( *dir != '\0' ) {
+    for( ; *dir != '\0'; dir++ ) {
 #ifdef __UNIX__
         if( *dir == '\\' ) {
             *dir = '/';
@@ -1732,7 +1703,6 @@ static void normalize( char *dir )
             *dir = '\\';
         }
 #endif
-        dir++;
     }
 }
 
@@ -1745,8 +1715,7 @@ int main( int argc, char *argv[] )
     size_t      i;
     int         j, k;
 
-    j = argc - 1;
-    while( j > 0 ) {
+    for( j = argc - 1; j > 0; j-- ) {
         if( argv[j][0] == '-' ) {
             for( i = 1; i < strlen( argv[j] ); i++ ) {
                 switch( argv[j][i] ) {
@@ -1772,7 +1741,6 @@ int main( int argc, char *argv[] )
             }
             argc--;
         }
-        j--;
     }
 
     if( argc < 2 ) {

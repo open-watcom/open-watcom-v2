@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,35 +73,35 @@ static void normalizeFName( char *dst, size_t maxlen, const char *src )
  */
 {
     char    string_open = 0;
-    size_t  pos = 0;
+    size_t  pos;
     char    c;
 
-    // leave space for NUL terminator
-    maxlen--;
-
-    while( (c = *src++) != '\0' && pos < maxlen ) {
-        if( c == '"' ) {
-            string_open = !string_open;
-            continue;
-        }
-        if( string_open && c == '\\' ) {
-            c = *src++;
-            if( c != '"' ) {
-                *dst++ = '\\';
-                pos++;
-                if( pos >= maxlen ) {
-                    break;
+    if( maxlen ) {
+        // leave space for NUL terminator
+        maxlen--;
+        for( pos = 0; (c = *src++) != '\0' && pos < maxlen; pos++ ) {
+            if( c == '"' ) {
+                string_open = !string_open;
+                continue;
+            }
+            if( c == '\\' && string_open ) {
+                c = *src++;
+                if( c != '"' ) {
+                    dst[pos] = '\\';
+                    pos++;
+                    if( pos >= maxlen ) {
+                        break;
+                    }
                 }
             }
-        }
 #ifndef __UNIX__
-        if( c == '/' )
-            c = '\\';
+            if( c == '/' )
+                c = '\\';
 #endif
-        *dst++ = c;
-        pos++;
+            dst[pos] = c;
+        }
+        dst[pos] = '\0';
     }
-    *dst = '\0';
 }
 
 static bool updateNHStuff( FILE *fp, const char *basename, const char *desc )
@@ -361,9 +361,8 @@ int main( int argc, char *argv[] )
     if( argc < 2 ) {
         doUsage( NULL );
     }
-    currarg = 1;
     wrc_parm = 0;
-    while( currarg < argc ) {
+    for( currarg = 1; currarg < argc; currarg++ ) {
 #ifdef __UNIX__
         if( argv[currarg][0] == '-' ) {
 #else
@@ -414,7 +413,6 @@ int main( int argc, char *argv[] )
             }
             path = argv[currarg];
         }
-        currarg++;
     }
     if( path == NULL ) {
         doUsage( "No executable to bind" );

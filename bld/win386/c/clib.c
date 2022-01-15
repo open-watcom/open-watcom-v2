@@ -269,9 +269,8 @@ clock_t __far __pascal  _clib_clock( void )
 }
 void __far __pascal _clib_delay( unsigned long ms )
 {
-    while( ms > 0xFFFFL ) {
+    for( ; ms > 0xFFFFL; ms -= 0xFFFFL ) {
         delay( 0xFFFFL );
-        ms -= 0xFFFFL;
     }
     delay( ms );
 }
