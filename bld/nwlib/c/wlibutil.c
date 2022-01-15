@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,11 +120,15 @@ bool IsSameFile( const char *a, const char *b )
     return( FNCMP( pg1.buffer, pg2.buffer ) == 0 );
 }
 
-bool IsSameFName( const char *a, const char *b )
+bool IsSameFNameCase( const char *a, const char *b )
 {
     _splitpath2( a, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     _splitpath2( b, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
-    return( FNCMP( pg1.fname, pg2.fname ) == 0 );
+    if( Options.respect_case ) {
+        return( strcmp( pg1.fname, pg2.fname ) == 0 );
+    } else {
+        return( FNCMP( pg1.fname, pg2.fname ) == 0 );
+    }
 }
 
 char *MakeFName( const char *a )
