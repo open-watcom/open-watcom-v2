@@ -342,6 +342,7 @@ EXPORTS
     GETMENUCHECKMARKDIMENSIONS     @417
     SETMENUITEMBITMAPS             @418
     _WSPRINTF                      @420
+    _wsprintf                      @420
     WVSPRINTF                      @421
     DLGDIRSELECTEX                 @422
     DLGDIRSELECTCOMBOBOXEX         @423
