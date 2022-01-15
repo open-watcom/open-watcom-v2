@@ -49,6 +49,9 @@
 #define LINE  ";****************************************************************************\n"
 #define BLANK ";***                                                                      ***\n"
 
+#define STRIP_TRAIL_WS(i,s) for( i = strlen( s ); i-- > 0 && isspace( (s)[i] ); ) (s)[i] = '\0'
+#define SKIP_LEAD_WS(s)     while( isspace( *(s) ) ) s++
+
 char GlueInc[] = "winglue.inc";
 
 int genstubs = 0;
@@ -173,28 +176,13 @@ static int IsWord( char *str )
 } /* IsWord */
 
 /*
- * StripSpaces - remove leading and trailing spaces
- */
-static char *StripSpaces( char *buff )
-{
-    size_t  i;
-
-    i = strlen( buff ) - 1;
-    while( buff[i] == ' ' ) {
-        buff[i--] = '\0';
-    }
-    while( *buff == ' ' )
-        ++buff;
-    return( buff );
-
-} /* StripSpaces */
-
-/*
  * ClassifyParm - decide if a parm is a pointer, word or dword
  */
 static parm_types ClassifyParm( char *buff )
 {
-    buff = StripSpaces( buff );
+    size_t  i;
+
+    STRIP_TRAIL_WS( i, buff );
     if( IsWord( buff ) ) {
         return( PARM_WORD );
     } else if( strchr( buff, '*' ) != NULL ) {
@@ -212,7 +200,9 @@ static parm_types ClassifyParm( char *buff )
  */
 static return_types ClassifyReturnType( char *buff )
 {
-    buff = StripSpaces( buff );
+    size_t  i;
+
+    STRIP_TRAIL_WS( i, buff );
     if( stricmp( buff, "int" ) == 0  ||  stricmp( buff, "short" ) == 0 ) {
         return( RETURN_INT );
     } else if( stricmp( buff, "void" ) == 0 ) {
@@ -242,22 +232,27 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
     k = 0;
     i = 0;
     parmcnt = 0;
-    for(;;) {
+    for( ;; ) {
         c = plist[i];
         if( c == '\0'  ||  c == ',' ) {
+            char *t;
+
             plist[i] = '\0';
-            parmtype = ClassifyParm( &plist[k] );
+            t = &plist[k];
+            SKIP_LEAD_WS( t );
+            parmtype = ClassifyParm( t );
             if( parmtype == PARM_DOUBLE ) {
                 parmtype = PARM_DWORD;
                 parm_list[parmcnt++] = parmtype;
             }
             parm_list[parmcnt++] = parmtype;
-            if( c == '\0' ) break;
+            if( c == '\0' )
+                break;
             k = i + 1;
         } else if( c == '[' ) {
             plist[i] = '\0';
             j = i + 1;
-            for(;;) {
+            for( ;; ) {
                 i++;
                 c = plist[i];
                 if( c == ';'  ||  c == ']' ) {
@@ -268,7 +263,9 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
                     subparm->parmnum = parmcnt;
                     subparm->offset = atoi( &plist[j] );
                     j = i + 1;
-                    if( c == ']' ) break;
+                    if( c == ']' ) {
+                        break;
+                    }
                 }
             }
         }
@@ -280,10 +277,13 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
         tmpf->plist = NULL;
     } else {
         p = ParmList;
-        for(;;) {
-            if( p == NULL ) break;
+        for( ;; ) {
+            if( p == NULL )
+                break;
             if( p->parm_count == parmcnt ) {
-                if( memcmp( p->parm_types, parm_list, parmcnt ) == 0 ) break;
+                if( memcmp( p->parm_types, parm_list, parmcnt ) == 0 ) {
+                    break;
+                }
             }
             p = p->next;
         }
@@ -312,24 +312,22 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
 
 static void ProcessDefFile( FILE *f )
 {
-    char        buff[MAX_BUFF];
+    char        buffer[MAX_BUFF];
+    char        *buff;
     size_t      i,j,k;
     char        *fn;            // function name
     char        *type;          // return type
     char        *plist;         // parameter list
     fcn         *tmpf;
 
-    while( fgets( buff, sizeof( buff ), f ) != NULL ) {
-
-        if( buff[0] == '#' ) {
+    while( (buff = fgets( buffer, sizeof( buffer ), f )) != NULL ) {
+        SKIP_LEAD_WS( buff );
+        if( buff[0] == '#' || buff[0] == '\0' ) {
             continue;
         }
-
-        for( i = strlen( buff ); i && isspace( buff[ --i ] );  )
-            buff[ i ] = '\0';
+        STRIP_TRAIL_WS( i, buff );
         if( buff[0] == '!' ) {
-            ThunkStrs = _fmyrealloc( ThunkStrs, sizeof( char *) *
-                                    (ThunkIndex + 1) );
+            ThunkStrs = _fmyrealloc( ThunkStrs, sizeof( char * ) * ( ThunkIndex + 1 ) );
             ThunkStrs[ThunkIndex] = _fmyalloc( i + 1 );
             strcpy( ThunkStrs[ThunkIndex], &buff[1] );
             ThunkIndex++;
@@ -359,7 +357,9 @@ static void ProcessDefFile( FILE *f )
         for(;;) {
             if( buff[j] == ')' ) {
                 --k;
-                if( k == 0 ) break;
+                if( k == 0 ) {
+                    break;
+                }
             } else if( buff[j] == '(' ) {
                 ++k;
             }
@@ -371,9 +371,12 @@ static void ProcessDefFile( FILE *f )
          */
         k = i;
         for(;;) {
-            if( buff[k] == ' ' ) break;
-            if( buff[k] == '*' ) break;
-            if( k == 0 ) break;
+            if( buff[k] == ' ' )
+                break;
+            if( buff[k] == '*' )
+                break;
+            if( k == 0 )
+                break;
             k--;
         }
         if( k == 0 ) {          /* no function name and/or no type */
@@ -566,7 +569,8 @@ static void writeObj( void *p, int len )
             writeObjBuf();
         }
         len -= n;
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         p = (char *)p + n;
     }
 }
@@ -682,7 +686,8 @@ static char *getThunkName( fcn *tmpf )
 {
     char        *name;
 
-    if( tmpf->thunk == 0 )  return( NULL );
+    if( tmpf->thunk == 0 )
+        return( NULL );
     if( tmpf->is_16 ) {
         name = &tmpf->fn[3];
     } else {
@@ -696,7 +701,8 @@ static size_t sizeofThunkName( fcn *tmpf )
     char        *name;
 
     name = getThunkName( tmpf );
-    if( name == NULL )  return( 0 );
+    if( name == NULL )
+        return( 0 );
     return( strlen( name ) + 1 + 1 );
 }
 
@@ -708,7 +714,8 @@ static void emitThunkName( fcn *tmpf )
     name = getThunkName( tmpf );
     for(;;) {
         emitBYTE( *name );
-        if( *name == '\0' ) break;
+        if( *name == '\0' )
+            break;
         ++name;
     }
 }
@@ -897,13 +904,13 @@ static void emitspecialThunk( char *proc, fcn *tmpf, int index )
     int         offset;
 
     switch( tmpf->pcnt ) {
-    case 0:     segsize = 18+7; break;
-    case 1:     segsize = 24+7; break;
-    case 2:     segsize = 28+7; break;
-    case 3:     segsize = 32+7; break;
-    case 4:     segsize = 36+7; break;
-    case 5:     segsize = 40+7; break;
-    default:    segsize = 0;    break;
+    case 0:     segsize = 18 + 7;   break;
+    case 1:     segsize = 24 + 7;   break;
+    case 2:     segsize = 28 + 7;   break;
+    case 3:     segsize = 32 + 7;   break;
+    case 4:     segsize = 36 + 7;   break;
+    case 5:     segsize = 40 + 7;   break;
+    default:    segsize = 0;        break;
     }
     size = sizeofThunkName( tmpf );
     segsize += size;
@@ -1172,12 +1179,12 @@ static void GenerateDLLData( void )
     fprintf( dllthunk, "public DLLNames\n" );
     fprintf( dllthunk, "DLLNames LABEL WORD\n" );
     for( i = 0; i < ThunkIndex; i++ ) {
-        thunkstr = ThunkStrs[ i ];
+        thunkstr = ThunkStrs[i];
         fprintf( dllthunk, "\tdw    DGROUP:%s\n", thunkstr );
     }
     fprintf( dllthunk, "\n" );
     for( i = 0; i < ThunkIndex; i++ ) {
-        thunkstr = ThunkStrs[ i ];
+        thunkstr = ThunkStrs[i];
         fprintf( dllthunk, "%s\tdb    '%s.dll',0\n", thunkstr, thunkstr );
     }
     fprintf( dllthunk, "_DATA ends\n" );
@@ -1321,7 +1328,7 @@ static void DLLThunkTrailer( void )
 static void FunctionHeader( void )
 {
     fcn         *tmpf;
-    char        *thunkstr;
+    const char  *thunkstr;
     char        *th1,*th2;
 
     fprintf( stubs, LINE );
@@ -1377,24 +1384,21 @@ static void FunctionHeader( void )
     fprintf( stubs, "PUBLIC _FunctionTable\n" );
     for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->thunk ) {
-            thunkstr = ThunkStrs[ tmpf->thunkindex ];
+            thunkstr = ThunkStrs[tmpf->thunkindex];
         } else {
-            thunkstr = (char *) "";
+            thunkstr = "";
         }
         if( tmpf->is_16 ) {
             if( tmpf->noregfor_16 ) {
                 if( tmpf->thunk ) {
-                    fprintf( stubs, "  dd __DLLPatch ; %s%s\n",
-                                thunkstr, &tmpf->fn[3] );
+                    fprintf( stubs, "  dd __DLLPatch ; %s%s\n", thunkstr, &tmpf->fn[3] );
                 } else {
-                    fprintf( stubs, "  dd %s%s\n",
-                                thunkstr, &tmpf->fn[3] );
+                    fprintf( stubs, "  dd %s%s\n", thunkstr, &tmpf->fn[3] );
                 }
             }
         } else {
             if( tmpf->thunk ) {
-                fprintf( stubs, "  dd __DLLPatch ; %s%s\n",
-                                thunkstr, tmpf->fn );
+                fprintf( stubs, "  dd __DLLPatch ; %s%s\n", thunkstr, tmpf->fn );
             } else {
                 fprintf( stubs, "  dd %s\n", tmpf->fn );
             }
@@ -1711,7 +1715,8 @@ int main( int argc, char *argv[] )
     char        *name,*dir;
     FILE        *f,*pf;
     char        defname[80];
-    char        fname[50];
+    char        buffer[50];
+    char        *fname;
     size_t      i;
     int         j, k;
 
@@ -1761,9 +1766,12 @@ int main( int argc, char *argv[] )
         exit( 1 );
     }
 
-    while( fgets( fname, sizeof( fname ), pf ) != NULL ) {
-        for( i = strlen( fname ); i && isspace( fname[ --i ] );  )
-            fname[ i ] = '\0';
+    while( (fname = fgets( buffer, sizeof( buffer ), pf )) != NULL ) {
+        SKIP_LEAD_WS( fname );
+        if( fname[0] == '#' || fname[0] == '\0' ) {
+            continue;
+        }
+        STRIP_TRAIL_WS( i, fname );
 #ifdef __UNIX__
         sprintf( defname, "%s/%s", dir, fname );
 #else

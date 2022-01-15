@@ -3,7 +3,7 @@ proj_name = conv
 conv_autodepends = .AUTODEPEND
 conv_distrib_lib = 1
 
-additional_clean = *.asm *.c *.inc
+additional_clean = dllthk.asm winglue.asm dllthunk.c winglue.inc
 
 !include cproj.mif
 !include defrule.mif

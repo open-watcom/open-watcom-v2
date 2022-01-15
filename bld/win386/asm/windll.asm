@@ -201,6 +201,10 @@ __exit_with_msg_:
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
 
+        public  __STK
+__STK:
+        ret
+
 LibEntry ENDP
 
         assume ds:nothing
