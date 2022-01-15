@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include "wininit.h"
 
 extern DWORD ReturnCode;
-extern int PASCAL StartDLL32( void );
+extern int StartDLL32( void );
 
 #pragma off(unreferenced);
 int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )

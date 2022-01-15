@@ -39,7 +39,7 @@
 
 extern DWORD ReturnCode;
 
-extern void PASCAL InvokeWin32( void );
+extern void InvokeWin32( void );
 
 int PASCAL WinMain( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdline, int cmdshow )
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1366,14 +1366,14 @@ static void FunctionHeader( void )
         }
         if( tmpf->is_16 ) {
             if( tmpf->noregfor_16 ) {
-                fprintf(stubsinc,"%sextrn        %s:FAR ; t=%d %s\n",
+                fprintf(stubsinc,"%sextrn       PASCAL %s:FAR ; t=%d %s\n",
                         th1,&tmpf->fn[3], tmpf->class, th2 );
             } else {
-                fprintf(stubsinc,";               %s ; t=%d %s\n",
+                fprintf(stubsinc,";               PASCAL %s ; t=%d %s\n",
                         tmpf->fn, tmpf->class, th2 );
             }
         } else {
-            fprintf(stubsinc,"%sextrn        %s:FAR ; t=%d %s\n",
+            fprintf(stubsinc,"%sextrn        PASCAL %s:FAR ; t=%d %s\n",
                     th1, tmpf->fn, tmpf->class, th2 );
         }
         tmpf = tmpf->next;
