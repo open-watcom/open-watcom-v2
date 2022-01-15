@@ -54,7 +54,8 @@ void GetAlias( LPLPVOID name )
         *name = (LPVOID)(DWORD)((DWORD)( *name ) & 0xFFFFL);
         return;
     }
-//    if( (DWORD)( *name ) >= DataSelectorSize ) return;
+//    if( (DWORD) (*name) >= DataSelectorSize )
+//        return;
 
     _DPMIGetAlias( (DWORD)*name, &alias );
     *name = (LPSTR)alias;

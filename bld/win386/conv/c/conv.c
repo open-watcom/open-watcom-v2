@@ -219,15 +219,15 @@ static return_types ClassifyReturnType( char *buff )
 
 static void ClassifyParmList( char *plist, fcn *tmpf )
 {
-    int         i;
-    int         j;
-    int         k;
-    int         parmcnt;
+    int             i;
+    int             j;
+    int             k;
+    int             parmcnt;
     struct parmlist *p;
     struct subparm  *subparm;
-    char        parm_list[32];
-    char        c;
-    char        parmtype;
+    char            parm_list[32];
+    char            c;
+    char            parmtype;
 
     k = 0;
     i = 0;
@@ -386,12 +386,12 @@ static void ProcessDefFile( FILE *f )
 
         type = &buff[0];        // return type
         if( buff[k] == '*' ) {
-            buff[k-1] = '*';
+            buff[k - 1] = '*';
         }
         buff[k] = '\0';
-        fn = &buff[k+1];        // function name
+        fn = &buff[k + 1];      // function name
         buff[i] = '\0';
-        plist = &buff[i+1];     // parameter list
+        plist = &buff[i + 1];   // parameter list
         buff[j] = '\0';
 
         /*
@@ -558,7 +558,7 @@ static void writeObj( void *p, int len )
     int         n;
 
     for( ;; ) {
-        n = OBJBUF_SIZE - objBufIndex < len ? OBJBUF_SIZE - objBufIndex : len;
+        n = ( OBJBUF_SIZE - objBufIndex < len ) ? OBJBUF_SIZE - objBufIndex : len;
         memcpy( &objBuf[objBufIndex], p, n );
         objBufIndex += n;
         if( objBufIndex == OBJBUF_SIZE ) {
@@ -636,7 +636,7 @@ static void emitCOMMENT( void )
 static void emitLNAMES( void )
 {
     emitBYTE( 0x96 );
-    emitWORD( (int)( 1 + 1+ strlen( "" ) + 1+ strlen( "_TEXT" ) + 1 + strlen( "CODE" ) ) );
+    emitWORD( (int)( 1 + 1 + strlen( "" ) + 1 + strlen( "_TEXT" ) + 1 + strlen( "CODE" ) ) );
     emitSTRING( "" );
     emitSTRING( "_TEXT" );
     emitSTRING( "CODE" );
@@ -1567,17 +1567,17 @@ static void GenerateAPICall( fcn *tmpf )
         }
     }
     if( tmpf->aliascnt != 0 ) {
-        fprintf( stubs, "\tjmp\tFree16Alias\n");
+        fprintf( stubs, "\tjmp\tFree16Alias\n" );
     } else {
-        fprintf( stubs, "\tcall\tdword ptr ds:[bx]\n");
+        fprintf( stubs, "\tcall\tdword ptr ds:[bx]\n" );
         if( tmpf->pcnt >= 6 ) {
-            fprintf( stubs, "\tpush\tdx\n");
-            fprintf( stubs, "\tpush\tax\n");
-            fprintf( stubs, "\tpop\teax\n");
+            fprintf( stubs, "\tpush\tdx\n" );
+            fprintf( stubs, "\tpush\tax\n" );
+            fprintf( stubs, "\tpop\teax\n" );
         }
         fprintf( stubs, "\tret\n" );
     }
-    fprintf( stubs,"__Thunk%d endp\n\n",tmpf->class );
+    fprintf( stubs, "__Thunk%d endp\n\n", tmpf->class );
 
 } /* GenerateAPICall */
 
@@ -1630,11 +1630,11 @@ static void GenerateCode( void )
         }
     }
 
-    stubs = fopen("winglue.asm","w" );
-    stubsinc = fopen(GlueInc,"w" );
-    dllthunk = fopen("dllthk.asm","w" );
-    if( stubs == NULL || stubsinc == NULL || dllthunk == NULL) {
-        fprintf(stderr,"Error opening glue file\n");
+    stubs = fopen( "winglue.asm", "w" );
+    stubsinc = fopen( GlueInc, "w" );
+    dllthunk = fopen( "dllthk.asm", "w" );
+    if( stubs == NULL || stubsinc == NULL || dllthunk == NULL ) {
+        fprintf( stderr, "Error opening glue file\n" );
         exit(1);
     }
     FunctionHeader();
@@ -1642,7 +1642,7 @@ static void GenerateCode( void )
 
     for( tmpf = Class; tmpf != NULL; tmpf = tmpf->next_class ) {
         if( !quiet ) {
-            printf("Code for class %d\n",tmpf->class );
+            printf( "Code for class %d\n", tmpf->class );
         }
         GenerateAPICall( tmpf );
     }
@@ -1680,7 +1680,7 @@ static void AddCommentTrailer( char *tmp )
         tmp2[j - i] = '\0';
     }
     strcat( tmp, tmp2 );
-    fprintf( stubs,"%s***\n", tmp );
+    fprintf( stubs, "%s***\n", tmp );
 
 } /* AddCommentTrailer */
 #endif
@@ -1702,13 +1702,16 @@ static void normalize( char *dir )
 
 int main( int argc, char *argv[] )
 {
-    char        *name,*dir;
-    FILE        *f,*pf;
+    char        *name;
+    char        *dir;
+    FILE        *f;
+    FILE        *pf;
     char        defname[80];
     char        buffer[50];
     char        *fname;
     size_t      i;
-    int         j, k;
+    int         j;
+    int         k;
 
     for( j = argc; --j > 0; ) {
         if( argv[j][0] == '-' ) {
@@ -1725,18 +1728,18 @@ int main( int argc, char *argv[] )
                     quiet = 1;
                     break;
                 case 's':
-                    genstubs=1;
+                    genstubs = 1;
                     break;
                 case '?':
-                    printf("conv -s (gen stubs)\n");
-                    exit(1);
+                    printf( "conv -s (gen stubs)\n" );
+                    exit( 1 );
                 default:
-                    fprintf(stderr,"Unrecognized switch %c",argv[j][i] );
+                    fprintf( stderr, "Unrecognized switch %c", argv[j][i] );
                     break;
                 }
             }
             for( k = j; k < argc; k++ ) {
-                argv[k]=argv[k + 1];
+                argv[k] = argv[k + 1];
             }
             argc--;
         }

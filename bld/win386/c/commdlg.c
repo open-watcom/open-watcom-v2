@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,16 +39,17 @@
 #include "winstubs.h"
 #include "_commdlg.h"
 
+
 extern LPVOID FAR BackPatch_commdlg( char *str );
 #pragma aux BackPatch_commdlg __parm [__ax]
 
-static BOOL  (FAR PASCAL *commdlgChooseColor)(LPCHOOSECOLOR);
-static HWND  (FAR PASCAL *commdlgReplaceText)(LPFINDREPLACE);
-static HWND  (FAR PASCAL *commdlgFindText)(LPFINDREPLACE);
-static BOOL  (FAR PASCAL *commdlgChooseFont)(LPCHOOSEFONT);
-static BOOL  (FAR PASCAL *commdlgGetOpenFileName)(LPOPENFILENAME);
-static BOOL  (FAR PASCAL *commdlgGetSaveFileName)(LPOPENFILENAME);
-static BOOL  (FAR PASCAL *commdlgPrintDlg)(LPPRINTDLG);
+static BOOL  (FAR PASCAL *commdlgChooseColor)( LPCHOOSECOLOR );
+static HWND  (FAR PASCAL *commdlgReplaceText)( LPFINDREPLACE );
+static HWND  (FAR PASCAL *commdlgFindText)( LPFINDREPLACE );
+static BOOL  (FAR PASCAL *commdlgChooseFont)( LPCHOOSEFONT );
+static BOOL  (FAR PASCAL *commdlgGetOpenFileName)( LPOPENFILENAME );
+static BOOL  (FAR PASCAL *commdlgGetSaveFileName)( LPOPENFILENAME );
+static BOOL  (FAR PASCAL *commdlgPrintDlg)( LPPRINTDLG );
 
 /*
  * __ChooseColor - cover for common dialog ChooseColor
@@ -60,7 +62,9 @@ BOOL  FAR PASCAL __ChooseColor( LPCHOOSECOLOR pcc )
 
     if( commdlgChooseColor == NULL ) {
         commdlgChooseColor = BackPatch_commdlg( "ChooseColor" );
-        if( commdlgChooseColor == NULL ) return( 0 );
+        if( commdlgChooseColor == NULL ) {
+            return( 0 );
+        }
     }
     pnew = psave = pcc->lpCustColors;
     GetAlias( &pnew );
@@ -79,12 +83,18 @@ BOOL  FAR PASCAL __ChooseColor( LPCHOOSECOLOR pcc )
 HWND FAR PASCAL __ReplaceText( LPFINDREPLACE pfr )
 {
     HWND        rc;
-    LPVOID      psave1,psave2,psave3;
-    LPVOID      pnew1,pnew2,pnew3;
+    LPVOID      psave1;
+    LPVOID      psave2;
+    LPVOID      psave3;
+    LPVOID      pnew1;
+    LPVOID      pnew2;
+    LPVOID      pnew3;
 
     if( commdlgReplaceText == NULL ) {
         commdlgReplaceText = BackPatch_commdlg( "ReplaceText" );
-        if( commdlgReplaceText == NULL ) return( 0 );
+        if( commdlgReplaceText == NULL ) {
+            return( 0 );
+        }
     }
     pnew1 = psave1 = (LPVOID)pfr->lpstrFindWhat;
     pnew2 = psave2 = (LPVOID)pfr->lpstrReplaceWith;
@@ -114,13 +124,17 @@ HWND FAR PASCAL __ReplaceText( LPFINDREPLACE pfr )
 HWND FAR PASCAL __FindText( LPFINDREPLACE pfr )
 {
     HWND        rc;
-    LPVOID      psave1,psave2;
-    LPVOID      pnew1,pnew2;
+    LPVOID      psave1;
+    LPVOID      psave2;
+    LPVOID      pnew1;
+    LPVOID      pnew2;
 
 
     if( commdlgFindText == NULL ) {
         commdlgFindText = BackPatch_commdlg( "FindText" );
-        if( commdlgFindText == NULL ) return( 0 );
+        if( commdlgFindText == NULL ) {
+            return( 0 );
+        }
     }
     pnew1 = psave1 = (LPVOID)pfr->lpstrFindWhat;
     pnew2 = psave2 = (LPVOID)pfr->lpTemplateName;
@@ -145,12 +159,18 @@ HWND FAR PASCAL __FindText( LPFINDREPLACE pfr )
 BOOL FAR PASCAL __ChooseFont( LPCHOOSEFONT pcf )
 {
     BOOL        rc;
-    LPVOID      psave1,psave2,psave3;
-    LPVOID      pnew1,pnew2,pnew3;
+    LPVOID      psave1;
+    LPVOID      psave2;
+    LPVOID      psave3;
+    LPVOID      pnew1;
+    LPVOID      pnew2;
+    LPVOID      pnew3;
 
     if( commdlgChooseFont == NULL ) {
         commdlgChooseFont = BackPatch_commdlg( "ChooseFont" );
-        if( commdlgChooseFont == NULL ) return( 0 );
+        if( commdlgChooseFont == NULL ) {
+            return( 0 );
+        }
     }
     pnew1 = psave1 = (LPVOID)pcf->lpLogFont;
     pnew2 = psave2 = (LPVOID)pcf->lpTemplateName;
@@ -179,11 +199,23 @@ BOOL FAR PASCAL __ChooseFont( LPCHOOSEFONT pcf )
  */
 static BOOL GetSaveOrOpenFileName( FARPROC fp, LPOPENFILENAME pofn )
 {
-    BOOL                rc;
-    LPVOID              psave1,psave2,psave3,psave4;
-    LPVOID              psave5,psave6,psave7,psave8;
-    LPVOID              pnew1,pnew2,pnew3,pnew4;
-    LPVOID              pnew5,pnew6,pnew7,pnew8;
+    BOOL        rc;
+    LPVOID      psave1;
+    LPVOID      psave2;
+    LPVOID      psave3;
+    LPVOID      psave4;
+    LPVOID      psave5;
+    LPVOID      psave6;
+    LPVOID      psave7;
+    LPVOID      psave8;
+    LPVOID      pnew1;
+    LPVOID      pnew2;
+    LPVOID      pnew3;
+    LPVOID      pnew4;
+    LPVOID      pnew5;
+    LPVOID      pnew6;
+    LPVOID      pnew7;
+    LPVOID      pnew8;
 
     pnew1 = psave1 = (LPVOID)pofn->lpstrFilter;
     pnew2 = psave2 = (LPVOID)pofn->lpstrCustomFilter;
@@ -236,11 +268,14 @@ static BOOL GetSaveOrOpenFileName( FARPROC fp, LPOPENFILENAME pofn )
 /*
  * __GetOpenFileName - cover for common dialog GetOpenFileName
  */
+
 BOOL FAR PASCAL __GetOpenFileName( LPOPENFILENAME pofn )
 {
     if( commdlgGetOpenFileName == NULL ) {
         commdlgGetOpenFileName = BackPatch_commdlg( "GetOpenFileName" );
-        if( commdlgGetOpenFileName == NULL ) return( 0 );
+        if( commdlgGetOpenFileName == NULL ) {
+            return( 0 );
+        }
     }
     return( GetSaveOrOpenFileName( (FARPROC)commdlgGetOpenFileName, pofn ) );
 } /* __GetOpenFileName */
@@ -252,7 +287,9 @@ BOOL FAR PASCAL __GetSaveFileName( LPOPENFILENAME pofn )
 {
     if( commdlgGetSaveFileName == NULL ) {
         commdlgGetSaveFileName = BackPatch_commdlg( "GetSaveFileName" );
-        if( commdlgGetSaveFileName == NULL ) return( 0 );
+        if( commdlgGetSaveFileName == NULL ) {
+            return( 0 );
+        }
     }
     return( GetSaveOrOpenFileName( (FARPROC)commdlgGetSaveFileName, pofn ) );
 
@@ -264,12 +301,16 @@ BOOL FAR PASCAL __GetSaveFileName( LPOPENFILENAME pofn )
 BOOL FAR PASCAL __PrintDlg( LPPRINTDLG ppd )
 {
     BOOL        rc;
-    LPVOID      psave1,psave2;
-    LPVOID      pnew1,pnew2;
+    LPVOID      psave1;
+    LPVOID      psave2;
+    LPVOID      pnew1;
+    LPVOID      pnew2;
 
     if( commdlgPrintDlg == NULL ) {
         commdlgPrintDlg = BackPatch_commdlg( "PrintDlg" );
-        if( commdlgPrintDlg == NULL ) return( 0 );
+        if( commdlgPrintDlg == NULL ) {
+            return( 0 );
+        }
     }
     pnew1 = psave1 = (LPVOID)ppd->lpPrintTemplateName;
     pnew2 = psave2 = (LPVOID)ppd->lpSetupTemplateName;

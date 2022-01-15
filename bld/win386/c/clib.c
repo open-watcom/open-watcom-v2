@@ -51,12 +51,12 @@
 #define STATIC
 #endif
 
+
 /*
  * here lie all interrupt functions
  */
 
-int __far __pascal _clib_intdos( union REGS __far *inregs,
-                             union REGS __far *outregs )
+int __far __pascal _clib_intdos( union REGS __far *inregs, union REGS __far *outregs )
 {
     int         status;
 
@@ -121,8 +121,7 @@ int __far __pascal _clib_int86( int intno, union REGS __far *inregs,
 }
 
 int __far __pascal _clib_int86x( int intno, union REGS __far *inregs,
-                            union REGS __far *outregs,
-                            struct SREGS __far *segregs )
+              union REGS __far *outregs, struct SREGS __far *segregs )
 {
     return( __int86x( intno, inregs, outregs, segregs ) );
 }
@@ -155,7 +154,8 @@ unsigned __far __pascal _clib_dos_findfirst( char __far *__path, unsigned __attr
     STATIC struct find_t        buf;
 
     path = malloc( _fstrlen( __path ) + 1 );
-    if( path == NULL ) return( -1 );
+    if( path == NULL )
+        return( -1 );
     _fstrcpy( path, __path );
 
     rc = _dos_findfirst( path, __attr, &buf );
@@ -223,7 +223,7 @@ unsigned short __far __pascal _clib_bios_disk( unsigned __cmd, struct diskinfo_t
 
 unsigned short __far __pascal _clib_bios_equiplist(void)
 {
-        return( _bios_equiplist() );
+    return( _bios_equiplist() );
 }
 
 unsigned short __far __pascal _clib_bios_keybrd( unsigned __cmd )
