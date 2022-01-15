@@ -48,7 +48,7 @@ bld_clflags     = $(bld_gen_cflags) -fe=$@
 # options for linking
 bld_ldflags     =
 
-bld_libflags    = -b-n-pa $@
+bld_libflags    = -b-c-n-pa $@
 
 bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
 bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)

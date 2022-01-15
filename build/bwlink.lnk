@@ -67,7 +67,6 @@ system begin windows
     libpath %OWSRCDIR%/cpplib/library/windows.086/ml
     libpath %OWSRCDIR%/w16api/wini86/lib
     library windows
-    option nocaseexact
     option stack=8k, heapsize=1k
     format windows ^
 end
@@ -85,7 +84,6 @@ system begin windows_dll
     libpath %OWSRCDIR%/cpplib/library/windows.086/ml
     libpath %OWSRCDIR%/w16api/wini86/lib
     library windows
-    option nocaseexact
     option stack=8k, heapsize=1k
     libfile %OWSRCDIR%/clib/startup/library/windows.086/ml/libentry.obj
     format windows dll ^

@@ -598,7 +598,7 @@ libflags_zdos      = -io
 
 proj_lib_flags  = $(extra_lib_flags) $(extra_lib_flags_$(host_cpu))
 
-libflags_all    = -b-n-pa $(mode_libflags)
+libflags_all    = -b-c-n-pa $(mode_libflags)
 libflags        =  $(libflags_all) $(libflags_$(host_cpu)) $(libflags_$(host_os)) $(libflags_$(host_os)_$(host_cpu)) $(proj_lib_flags) $@
 
 ##############################
