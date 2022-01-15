@@ -50,7 +50,7 @@
 #define BLANK ";***                                                                      ***\n"
 
 #define STRIP_TRAIL_WS(i,s) for( i = strlen( s ); i-- > 0 && isspace( (s)[i] ); ) (s)[i] = '\0'
-#define SKIP_LEAD_WS(s)     while( isspace( *(s) ) ) s++
+#define SKIP_LEAD_WS(s)     while( isspace( *(s) ) ) (s)++
 
 char GlueInc[] = "winglue.inc";
 
@@ -203,7 +203,7 @@ static return_types ClassifyReturnType( char *buff )
     size_t  i;
 
     STRIP_TRAIL_WS( i, buff );
-    if( stricmp( buff, "int" ) == 0  ||  stricmp( buff, "short" ) == 0 ) {
+    if( stricmp( buff, "int" ) == 0 || stricmp( buff, "short" ) == 0 ) {
         return( RETURN_INT );
     } else if( stricmp( buff, "void" ) == 0 ) {
         return( RETURN_VOID );
@@ -234,7 +234,7 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
     parmcnt = 0;
     for( ;; ) {
         c = plist[i];
-        if( c == '\0'  ||  c == ',' ) {
+        if( c == '\0' || c == ',' ) {
             char *t;
 
             plist[i] = '\0';
@@ -255,7 +255,7 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
             for( ;; ) {
                 i++;
                 c = plist[i];
-                if( c == ';'  ||  c == ']' ) {
+                if( c == ';' || c == ']' ) {
                     plist[i] = '\0';
                     subparm = myalloc( sizeof( struct subparm ) );
                     subparm->nextparm = tmpf->subparms;
@@ -271,24 +271,20 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
         }
         i++;
     }
-    if( parmcnt == 1  &&  parm_list[0] == PARM_VOID ) {
+    if( parmcnt == 1 && parm_list[0] == PARM_VOID ) {
         tmpf->pcnt = 0;
         tmpf->aliascnt = 0;
         tmpf->plist = NULL;
     } else {
-        p = ParmList;
-        for( ;; ) {
-            if( p == NULL )
-                break;
+        for( p = ParmList; p != NULL; p = p->next ) {
             if( p->parm_count == parmcnt ) {
                 if( memcmp( p->parm_types, parm_list, parmcnt ) == 0 ) {
                     break;
                 }
             }
-            p = p->next;
         }
         if( p == NULL ) {
-            p = myalloc( sizeof(struct parmlist) + parmcnt );
+            p = myalloc( sizeof( struct parmlist ) + parmcnt );
             p->next = ParmList;
             ParmList = p;
             p->parm_count = (char)parmcnt;
@@ -354,7 +350,7 @@ static void ProcessDefFile( FILE *f )
          */
         j = i;
         k = 0;                  // keep track of nested ()
-        for(;;) {
+        for( ;; ) {
             if( buff[j] == ')' ) {
                 --k;
                 if( k == 0 ) {
@@ -370,7 +366,7 @@ static void ProcessDefFile( FILE *f )
          * back up away from opening paren to obtain function name
          */
         k = i;
-        for(;;) {
+        for( ;; ) {
             if( buff[k] == ' ' )
                 break;
             if( buff[k] == '*' )
@@ -711,13 +707,10 @@ static void emitThunkName( fcn *tmpf )
     char        *name;
 
     emitBYTE( tmpf->thunkindex );
-    name = getThunkName( tmpf );
-    for(;;) {
+    for( name = getThunkName( tmpf ); *name != '\0'; name++ ) {
         emitBYTE( *name );
-        if( *name == '\0' )
-            break;
-        ++name;
     }
+    emitBYTE( 0 );
 }
 
 static void emitSaveFPU( fcn *tmpf )
@@ -733,12 +726,12 @@ static int sizeofSubParms( struct subparm *p )
 {
     int         size;
 
-    if( p == NULL )
-        return( 0 );
-    size = 2 + 3;               // for "push count" and "add esp,nnn"
+    size = 0;
     for( ; p != NULL; p = p->nextparm ) {
         size += 5;
     }
+    if( size )
+        size += 2 + 3;      // for "push count" and "add esp,nnn"
     return( size );
 }
 
@@ -1035,7 +1028,7 @@ static void emitOBJECT( int modindex, char *proc, fcn *tmpf, int index )
     emitTHEADR( modindex );
     emitCOMMENT();
     emitLNAMES();
-    if( tmpf->aliascnt == 0  &&  tmpf->pcnt < 6 ) {
+    if( tmpf->aliascnt == 0 && tmpf->pcnt < 6 ) {
         emitspecialThunk( proc, tmpf, index );
     } else {
         emitnormalThunk( proc, tmpf, index );
@@ -1132,17 +1125,19 @@ static void GenerateCStubs( void )
 
 
 /*
- * GenerateThunkTable - generate table of thunks
+ * GenerateClassThunkTable - generate table of thunks
  */
-static void GenerateThunkTable( fcn *tmpf )
+static void GenerateClassThunkTable( void )
 {
+    fcn *tmpf;
+
     fprintf( stubs, "__ThunkTable LABEL WORD\n" );
     fprintf( stubs, "public __ThunkTable\n" );
-    for( ; tmpf != NULL; tmpf = tmpf->next_class ) {
+    for( tmpf = Class; tmpf != NULL; tmpf = tmpf->next_class ) {
         fprintf( stubs, "  dw  __Thunk%d\n", tmpf->class );
     }
 
-} /* GenerateThunkTable */
+} /* GenerateClassThunkTable */
 
 
 /*
@@ -1414,7 +1409,7 @@ static void FunctionHeader( void )
     fprintf( stubs, "_TEXT segment use16\n" );
     fprintf( stubs, "assume cs:_TEXT\n" );
     fprintf( stubs, "assume ds:dgroup\n" );
-    GenerateThunkTable( Class );
+    GenerateClassThunkTable();
     fprintf( stubs, "\n" );
 
 } /* FunctionHeader */
@@ -1452,11 +1447,10 @@ static int GenerateStackLocals( fcn *tmpf )
     int         offset;
 
     offset = 0;
-    for( i = tmpf->pcnt - 1; i >= 0; i-- ) {
+    for( i = tmpf->pcnt; i-- > 0; ) {
         if( tmpf->plist[i] == PARM_PTR ) {
             offset += 8;
-//          fprintf( stubs, "Parm%dAlias = dword ptr [bp-%d]\n", i + 1,
-//                   offset );
+//          fprintf( stubs, "Parm%dAlias = dword ptr [bp-%d]\n", i + 1, offset );
         }
     }
     return( offset );
@@ -1476,10 +1470,9 @@ static void Generate16BitAliases( fcn *tmpf )
 
     first = "First";
     offset = STACK_FRAME;
-    for( i = tmpf->pcnt - 1; i >= 0; i-- ) {
+    for( i = tmpf->pcnt; i-- > 0; ) {
         if( tmpf->plist[i] == PARM_PTR ) {
-            fprintf( stubs, "\tmov\teax,es:[edi+%d]\t\t; Parm%d\n",
-                                        offset, i+1 );
+            fprintf( stubs, "\tmov\teax,es:[edi+%d]\t\t; Parm%d\n", offset, i + 1 );
             fprintf( stubs, "\tcall\tGet%s16Alias\n", first );
             first = "";
         }
@@ -1511,7 +1504,7 @@ static void GenerateAPICall( fcn *tmpf )
     alias_offset = GenerateStackLocals( tmpf );
     Generate16BitAliases( tmpf );
 
-    if( tmpf->aliascnt == 0  &&  tmpf->pcnt < 6 ) {
+    if( tmpf->aliascnt == 0 && tmpf->pcnt < 6 ) {
         j = tmpf->pcnt;
         for( i = 0; i < tmpf->pcnt; i++ ) {
             --j;
@@ -1563,15 +1556,12 @@ static void GenerateAPICall( fcn *tmpf )
         offset = Parm1Offset( tmpf );
         for( i = 0; i < tmpf->pcnt; i++ ) {
             if( tmpf->plist[i] == PARM_PTR ) {
-                fprintf(stubs, "\tpush\tdword ptr [bp-%d]\t; Parm%dAlias\n",
-                                        alias_offset, i+1 );
+                fprintf(stubs, "\tpush\tdword ptr [bp-%d]\t; Parm%dAlias\n", alias_offset, i + 1 );
                 alias_offset -= 8;
             } else if( tmpf->plist[i] == PARM_WORD ) {
-                fprintf(stubs, "\tpush\tword ptr es:[edi+%d]\t; Parm%d\n",
-                                        offset, i+1 );
+                fprintf(stubs, "\tpush\tword ptr es:[edi+%d]\t; Parm%d\n", offset, i + 1 );
             } else {
-                fprintf(stubs, "\tpush\tdword ptr es:[edi+%d]\t; Parm%d\n",
-                                        offset, i+1 );
+                fprintf(stubs, "\tpush\tdword ptr es:[edi+%d]\t; Parm%d\n", offset, i + 1 );
             }
             offset -= 4;
         }
@@ -1603,8 +1593,8 @@ void GenerateStackAccessEquates( fcn *tmpf )
     char        tmp[128];
     int         offset=STACK_FRAME;
 
-    for( i = tmpf->pcnt - 1; i >= 0; i-- ) {
-        sprintf( tmp,"Parm%d   =  ",i+1 );
+    for( i = tmpf->pcnt; i-- > 0; ) {
+        sprintf( tmp,"Parm%d   =  ", i + 1 );
         if( tmpf->plist[i] == PARM_WORD ) {
             strcat( tmp, "word" );
         } else {
@@ -1720,7 +1710,7 @@ int main( int argc, char *argv[] )
     size_t      i;
     int         j, k;
 
-    for( j = argc - 1; j > 0; j-- ) {
+    for( j = argc; --j > 0; ) {
         if( argv[j][0] == '-' ) {
             for( i = 1; i < strlen( argv[j] ); i++ ) {
                 switch( argv[j][i] ) {
@@ -1731,8 +1721,12 @@ int main( int argc, char *argv[] )
                         i += strlen( argv[j] + i );
                     }
                     break;
-                case 'q': quiet = 1;    break;
-                case 's': genstubs=1;   break;
+                case 'q':
+                    quiet = 1;
+                    break;
+                case 's':
+                    genstubs=1;
+                    break;
                 case '?':
                     printf("conv -s (gen stubs)\n");
                     exit(1);
