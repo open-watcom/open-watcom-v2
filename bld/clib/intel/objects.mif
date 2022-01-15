@@ -15,7 +15,7 @@
 !inject inpd.obj            d32     nt          nvc     nvl         o32     q32     w32 l32         rdu rdk
 !inject int386.obj          d32                 nvc     nvl                 q32         l32         rdu rdk
 !inject intq16.obj                                                      q16
-!inject intr.obj        d16 d32 dpm             nvc     nvl             q16 q32 w16     l32         rdu rdk
+!inject intr.obj        d16 d32 dpm             nvc     nvl             q16 q32 w16 w32 l32         rdu rdk
 !inject intx086.obj     d16     dpm                                             w16
 !inject intx386.obj         d32                 nvc     nvl                 q32         l32         rdu
 !inject intxa386.obj        d32                 nvc     nvl                 q32         l32         rdu rdk
