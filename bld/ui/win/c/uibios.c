@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +38,8 @@
 #include "int10.h"
 
 
-extern char     _B000h[];
-extern char     _B800h[];
+extern char     _B000H[];
+extern char     _B800H[];
 extern unsigned VIDPort;
 
 static MONITOR ui_data = {
@@ -57,14 +57,14 @@ static MONITOR ui_data = {
 void UIAPI win_uisetmono( void )
 {
     ui_data.colour = M_MONO;
-    ui_data.screen.origin = _MK_FP( _B000h, 0 );
+    ui_data.screen.origin = _MK_FP( _B000H, 0 );
     VIDPort = VIDMONOINDXREG;
 }
 
 void UIAPI win_uisetcolor( int clr )
 {
     ui_data.colour = clr;
-    ui_data.screen.origin = _MK_FP( _B800h, 0 );
+    ui_data.screen.origin = _MK_FP( _B800H, 0 );
     VIDPort = VIDCOLORINDXREG;
 }
 
@@ -87,7 +87,7 @@ bool intern initbios( void )
     if( initmonitor() ) {
         UIData->desqview = false;
         UIData->f10menus = true;
-        UIData->screen.origin = _MK_FP( ( UIData->colour == M_MONO ) ? _B000h : _B800h, 0 );
+        UIData->screen.origin = _MK_FP( ( UIData->colour == M_MONO ) ? _B000H : _B800H, 0 );
         UIData->screen.increment = UIData->width;
         uiinitcursor();
         initkeyboard();
