@@ -118,7 +118,7 @@ fcn     *Class, *CurrClass;      /* class list */
 fcn     *Head, *Curr;            /* list of all prototypes */
 fcn     *VoidHead, *VoidCurr;    /* list of all prototypes */
 
-FILE    *stubs,*stubsinc;
+FILE    *stubs;
 FILE    *dllthunk;
 
 static void *myalloc( size_t size )
@@ -1538,8 +1538,7 @@ static void FunctionHeader( void )
     CloseHeader( stubs );
     fprintf( stubs, ".386p\n" );
     fprintf( stubs, "\n" );
-    fprintf( stubs, "include %s\n", GlueInc );
-    fprintf( stubsinc, "extrn        __DLLPatch:far\n" );
+    fprintf( stubs, "extrn        __DLLPatch:far\n" );
     for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->thunk ) {
             th1 = ";";
@@ -1550,20 +1549,20 @@ static void FunctionHeader( void )
         }
         if( tmpf->is_16 ) {
             if( tmpf->noregfor_16 ) {
-                fprintf(stubsinc,"%sextrn       PASCAL %s:FAR ; t=%d %s\n",
+                fprintf( stubs, "%sextrn       PASCAL %s:FAR ; t=%d %s\n",
                         th1,&tmpf->fn[3], tmpf->class, th2 );
             } else {
-                fprintf(stubsinc,";               PASCAL %s ; t=%d %s\n",
+                fprintf( stubs, ";               PASCAL %s ; t=%d %s\n",
                         tmpf->fn, tmpf->class, th2 );
             }
         } else {
-            fprintf(stubsinc,"%sextrn        PASCAL %s:FAR ; t=%d %s\n",
+            fprintf( stubs, "%sextrn        PASCAL %s:FAR ; t=%d %s\n",
                     th1, tmpf->fn, tmpf->class, th2 );
         }
     }
-    fprintf( stubsinc, "extrn   GetFirst16Alias:near\n" );
-    fprintf( stubsinc, "extrn   Get16Alias:near\n" );
-    fprintf( stubsinc, "extrn   Free16Alias:near\n" );
+    fprintf( stubs, "extrn   GetFirst16Alias:near\n" );
+    fprintf( stubs, "extrn   Get16Alias:near\n" );
+    fprintf( stubs, "extrn   Free16Alias:near\n" );
     fprintf( stubs, "\n" );
     SegmentsDecl( stubs );
 
@@ -1661,8 +1660,7 @@ static void GenerateCode( void )
     }
 
     stubs = fopen( "winglue.asm", "w" );
-    stubsinc = fopen( GlueInc, "w" );
-    if( stubs == NULL || stubsinc == NULL ) {
+    if( stubs == NULL ) {
         fprintf( stderr, "Error opening glue file\n" );
         exit(1);
     }
@@ -1676,7 +1674,6 @@ static void GenerateCode( void )
     fprintf( subst, "\n" );
     FunctionTrailer();
     fclose( stubs );
-    fclose( stubsinc );
 
     dllthunk = fopen( "dllthk.asm", "w" );
     if( dllthunk == NULL ) {
