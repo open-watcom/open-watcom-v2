@@ -200,7 +200,7 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                             psel2 = regs.w.dx;
                             rseg2 = regs.w.ax;
                             dr.es = rseg2;
-                            dr.edi =  0;
+                            dr.edi = 0;
                         }
                         /*** Vecttor set / segment : d000h ***/
                         regs.x.eax = 0x201;
@@ -242,7 +242,7 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                             psel2 = 0x34;
                             rseg2 = regs.w.ax;
                             dr.es = rseg2;
-                            dr.edi =  0;
+                            dr.edi = 0;
                         }
                         /*** Vecttor set / segment : d000h ***/
                         regs.x.eax = 0x2505;

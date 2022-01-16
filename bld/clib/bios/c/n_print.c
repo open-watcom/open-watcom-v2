@@ -133,7 +133,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                     regs.x.edi = (unsigned long)&dr;
                     regs.x.eax = 0x300;
                     regs.x.ebx = 0x001a;
-                    int386( 0x31, &regs, &regs);
+                    int386( 0x31, &regs, &regs );
                     if( dr.eax ) {
                         ret = dr.cx;
                         break;
@@ -177,7 +177,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                     regs.x.edx = (unsigned long)&dp;
                     regs.x.eax = 0x2511;
                     dp.inum = 0x1a;
-                    intdos( &regs, &regs);
+                    intdos( &regs, &regs );
                     if( dr.eax ) {
                         ret = dr.cx;
                         break;

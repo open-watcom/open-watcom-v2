@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,20 +39,20 @@
 
 void *MapAliasToFlat( DWORD alias )
 {
-    union REGPACK       r;
+    union REGPACK       regs;
     DWORD               base_32;
     DWORD               base_16;
     DWORD               res;
 
-    memset( &r, 0, sizeof( r ) );
-    r.x.ax = 0x06;
-    r.x.bx = _FP_SEG( (void __far *)&r );
-    intr( 0x31, &r );
-    base_32 = (r.x.cx << 16L) + (DWORD)r.x.dx;
-    r.x.ax = 0x06;
-    r.x.bx = alias >> 16;
-    intr( 0x31, &r );
-    base_16 = (r.x.cx << 16L) + (DWORD)r.x.dx;
+    memset( &regs, 0, sizeof( regs ) );
+    regs.x.ax = 0x06;
+    regs.x.bx = _FP_SEG( (void __far *)&regs );
+    intr( 0x31, &regs );
+    base_32 = ( regs.x.cx << 16L ) + (DWORD)regs.x.dx;
+    regs.x.ax = 0x06;
+    regs.x.bx = alias >> 16;
+    intr( 0x31, &regs );
+    base_16 = ( regs.x.cx << 16L ) + (DWORD)regs.x.dx;
     res = base_16 - base_32 + (DWORD)((WORD)alias);
     return( (void *)res );
 
