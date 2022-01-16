@@ -1125,19 +1125,14 @@ static void GenerateCStubs( void )
 
 
 /*
- * GenerateClassThunkTable - generate table of thunks
+ * OpenHeader - open on header comments
  */
-static void GenerateClassThunkTable( void )
+static void OpenHeader( FILE *f )
 {
-    fcn *tmpf;
+    fprintf( f, LINE );
+    fprintf( f, BLANK );
 
-    fprintf( stubs, "__ThunkTable LABEL WORD\n" );
-    fprintf( stubs, "public __ThunkTable\n" );
-    for( tmpf = Class; tmpf != NULL; tmpf = tmpf->next_class ) {
-        fprintf( stubs, "  dw  __Thunk%d\n", tmpf->class );
-    }
-
-} /* GenerateClassThunkTable */
+} /* OpenHeader */
 
 
 /*
@@ -1195,8 +1190,7 @@ static void DLLThunkHeader( void )
 {
     int      i;
 
-    fprintf( dllthunk, LINE );
-    fprintf( dllthunk, BLANK );
+    OpenHeader( dllthunk );
     fprintf( dllthunk, ";*** DLLTHK.ASM - thunking layer to Windows 3.1 DLLs                      ***\n" );
     fprintf( dllthunk, ";***              This set of functions makes sure that the proper dll    ***\n" );
     fprintf( dllthunk, ";***              is loaded, and gets the real address of the function    ***\n" );
@@ -1507,8 +1501,7 @@ static void FunctionHeader( void )
     const char  *thunkstr;
     char        *th1,*th2;
 
-    fprintf( stubs, LINE );
-    fprintf( stubs, BLANK );
+    OpenHeader( stubs );
     fprintf( stubs, ";*** WINGLUE.ASM - windows glue functions                                 ***\n" );
     fprintf( stubs, ";***               This set of functions encompasses all possible types   ***\n" );
     fprintf( stubs, ";***               of calls.  Each API call has a little                  ***\n" );
@@ -1590,7 +1583,12 @@ static void FunctionHeader( void )
     fprintf( stubs, "_TEXT segment use16\n" );
     fprintf( stubs, "assume cs:_TEXT\n" );
     fprintf( stubs, "assume ds:dgroup\n" );
-    GenerateClassThunkTable();
+    fprintf( stubs, "\n" );
+    fprintf( stubs, "__ThunkTable LABEL WORD\n" );
+    fprintf( stubs, "public __ThunkTable\n" );
+    for( tmpf = Class; tmpf != NULL; tmpf = tmpf->next_class ) {
+        fprintf( stubs, "  dw  __Thunk%d\n", tmpf->class );
+    }
     fprintf( stubs, "\n" );
 
 } /* FunctionHeader */
