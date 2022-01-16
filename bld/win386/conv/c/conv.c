@@ -1194,31 +1194,10 @@ static void GenerateDLLData( void )
 
 
 /*
- * DLLThunkHeader - generate header for DLL thunking stuff
+ * GenerateDLLCode - generate code for a DLL thunk
  */
-static void DLLThunkHeader( void )
+static void GenerateDLLCode( void )
 {
-    int      i;
-
-    OpenHeader( dllthunk );
-    fprintf( dllthunk, ";*** DLLTHK.ASM - thunking layer to Windows 3.1 DLLs                      ***\n" );
-    fprintf( dllthunk, ";***              This set of functions makes sure that the proper dll    ***\n" );
-    fprintf( dllthunk, ";***              is loaded, and gets the real address of the function    ***\n" );
-    fprintf( dllthunk, ";***              to invoke, which is back-patched into the table.        ***\n" );
-    CloseHeader( dllthunk );
-    fprintf( dllthunk, "\n" );
-    fprintf( dllthunk, "extrn LOADLIBRARY : far\n" );
-    fprintf( dllthunk, "extrn FREELIBRARY : far\n" );
-    fprintf( dllthunk, "extrn GETPROCADDRESS : far\n" );
-    fprintf( dllthunk, "extrn DLLLoadFail_ : near\n" );
-//    fprintf( dllthunk, "extrn _FunctionTable : word\n" );
-    fprintf( dllthunk, "\n" );
-    SegmentsDecl( dllthunk );
-    fprintf( dllthunk, "\n" );
-    fprintf( dllthunk, "\n" );
-    GenerateDLLData();
-    fprintf( dllthunk, "\n" );
-    fprintf( dllthunk, "\n" );
     fprintf( dllthunk, "_TEXT segment word public 'CODE' use16\n" );
     fprintf( dllthunk, "assume cs:_TEXT\n" );
     fprintf( dllthunk, "assume ds:DGROUP\n" );
@@ -1310,8 +1289,42 @@ static void DLLThunkHeader( void )
         fprintf( dllthunk, "BackPatch_%s_ proc far\n", ThunkStrs[i] );
         fprintf( dllthunk, "\tmov    dl,%d\n", i );
         fprintf( dllthunk, "\tjmp    __BackPatch_xxx\n" );
-        fprintf( dllthunk, "BackPatch_%s_ endp\n\n", ThunkStrs[i] );
+        fprintf( dllthunk, "BackPatch_%s_ endp\n", ThunkStrs[i] );
+        fprintf( dllthunk, "\n" );
     }
+#if 0
+    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
+        if( tmpf->thunk ) {
+            GenerateDLLThunk( tmpf );
+        }
+    }
+#endif
+    fprintf( dllthunk, "_TEXT ends\n" );
+
+} /* GenerateDLLCode */
+
+
+/*
+ * DLLThunkHeader - generate header for DLL thunking stuff
+ */
+static void DLLThunkHeader( void )
+{
+    int      i;
+
+    OpenHeader( dllthunk );
+    fprintf( dllthunk, ";*** DLLTHK.ASM - thunking layer to Windows 3.1 DLLs                      ***\n" );
+    fprintf( dllthunk, ";***              This set of functions makes sure that the proper dll    ***\n" );
+    fprintf( dllthunk, ";***              is loaded, and gets the real address of the function    ***\n" );
+    fprintf( dllthunk, ";***              to invoke, which is back-patched into the table.        ***\n" );
+    CloseHeader( dllthunk );
+    fprintf( dllthunk, "\n" );
+    fprintf( dllthunk, "extrn LOADLIBRARY : far\n" );
+    fprintf( dllthunk, "extrn FREELIBRARY : far\n" );
+    fprintf( dllthunk, "extrn GETPROCADDRESS : far\n" );
+    fprintf( dllthunk, "extrn DLLLoadFail_ : near\n" );
+//    fprintf( dllthunk, "extrn _FunctionTable : word\n" );
+    fprintf( dllthunk, "\n" );
+    SegmentsDecl( dllthunk );
 
 } /* DLLThunkHeader */
 
@@ -1321,7 +1334,6 @@ static void DLLThunkHeader( void )
  */
 static void DLLThunkTrailer( void )
 {
-    fprintf( dllthunk, "_TEXT ends\n" );
     fprintf( dllthunk, "end\n" );
 
 } /* DLLThunkTrailer */
@@ -1478,7 +1490,7 @@ static void GenerateAPICall( fcn *tmpf )
         }
         fprintf( stubs, "\tret\n" );
     }
-    fprintf( stubs, "__Thunk%d endp\n\n", tmpf->class );
+    fprintf( stubs, "__Thunk%d endp\n", tmpf->class );
 
 } /* GenerateAPICall */
 
@@ -1508,52 +1520,8 @@ void GenerateStackAccessEquates( fcn *tmpf )
 } /* GenerateStackAccessEquates */
 #endif
 
-/*
- * FunctionHeader - build glue functions header area
- */
-static void FunctionHeader( void )
+static void FunctionData( void )
 {
-    fcn         *tmpf;
-    const char  *thunkstr;
-    char        *th1,*th2;
-
-    OpenHeader( stubs );
-    fprintf( stubs, ";*** WINGLUE.ASM - windows glue functions                                 ***\n" );
-    fprintf( stubs, ";***               This set of functions encompasses all possible types   ***\n" );
-    fprintf( stubs, ";***               of calls.  Each API call has a little                  ***\n" );
-    fprintf( stubs, ";***               stub which generates the appropriate call into these   ***\n" );
-    fprintf( stubs, ";***               functions.                                             ***\n" );
-    CloseHeader( stubs );
-    fprintf( stubs, ".386p\n" );
-    fprintf( stubs, "\n" );
-    fprintf( stubs, "include %s\n", GlueInc );
-
-    fprintf( stubsinc, "extrn        __DLLPatch:far\n" );
-    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
-        if( tmpf->thunk ) {
-            th1 = ";";
-            th2 = "(thunked)";
-        } else {
-            th1 = "";
-            th2 = "";
-        }
-        if( tmpf->is_16 ) {
-            if( tmpf->noregfor_16 ) {
-                fprintf(stubsinc,"%sextrn       PASCAL %s:FAR ; t=%d %s\n",
-                        th1,&tmpf->fn[3], tmpf->class, th2 );
-            } else {
-                fprintf(stubsinc,";               PASCAL %s ; t=%d %s\n",
-                        tmpf->fn, tmpf->class, th2 );
-            }
-        } else {
-            fprintf(stubsinc,"%sextrn        PASCAL %s:FAR ; t=%d %s\n",
-                    th1, tmpf->fn, tmpf->class, th2 );
-        }
-    }
-    fprintf( stubs, "\n" );
-    SegmentsDecl( stubs );
-    fprintf( stubs, "\n" );
-    fprintf( stubs, "\n" );
     fprintf( stubs, "_DATA segment use16\n" );
 
     fprintf( stubs, "_FunctionTable LABEL DWORD\n" );
@@ -1583,10 +1551,11 @@ static void FunctionHeader( void )
 
     fprintf( stubs, "_DATA ends\n" );
     fprintf( stubs, "\n" );
-    fprintf( stubsinc, "extrn   GetFirst16Alias:near\n" );
-    fprintf( stubsinc, "extrn   Get16Alias:near\n" );
-    fprintf( stubsinc, "extrn   Free16Alias:near\n" );
 
+}
+
+static void FunctionCode( void )
+{
     fprintf( stubs, "_TEXT segment use16\n" );
     fprintf( stubs, "assume cs:_TEXT\n" );
     fprintf( stubs, "assume ds:dgroup\n" );
@@ -1597,6 +1566,63 @@ static void FunctionHeader( void )
         fprintf( stubs, "  dw  __Thunk%d\n", tmpf->class );
     }
     fprintf( stubs, "\n" );
+    for( tmpf = Class; tmpf != NULL; tmpf = tmpf->next_class ) {
+        if( !quiet ) {
+            printf( "Code for class %d\n", tmpf->class );
+        }
+        GenerateAPICall( tmpf );
+        fprintf( stubs, "\n" );
+    }
+    fprintf( stubs, "_TEXT   ends\n" );
+
+}
+
+/*
+ * FunctionHeader - build glue functions header area
+ */
+static void FunctionHeader( void )
+{
+    fcn         *tmpf;
+    const char  *thunkstr;
+    char        *th1,*th2;
+
+    OpenHeader( stubs );
+    fprintf( stubs, ";*** WINGLUE.ASM - windows glue functions                                 ***\n" );
+    fprintf( stubs, ";***               This set of functions encompasses all possible types   ***\n" );
+    fprintf( stubs, ";***               of calls.  Each API call has a little                  ***\n" );
+    fprintf( stubs, ";***               stub which generates the appropriate call into these   ***\n" );
+    fprintf( stubs, ";***               functions.                                             ***\n" );
+    CloseHeader( stubs );
+    fprintf( stubs, ".386p\n" );
+    fprintf( stubs, "\n" );
+    fprintf( stubs, "include %s\n", GlueInc );
+    fprintf( stubsinc, "extrn        __DLLPatch:far\n" );
+    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
+        if( tmpf->thunk ) {
+            th1 = ";";
+            th2 = "(thunked)";
+        } else {
+            th1 = "";
+            th2 = "";
+        }
+        if( tmpf->is_16 ) {
+            if( tmpf->noregfor_16 ) {
+                fprintf(stubsinc,"%sextrn       PASCAL %s:FAR ; t=%d %s\n",
+                        th1,&tmpf->fn[3], tmpf->class, th2 );
+            } else {
+                fprintf(stubsinc,";               PASCAL %s ; t=%d %s\n",
+                        tmpf->fn, tmpf->class, th2 );
+            }
+        } else {
+            fprintf(stubsinc,"%sextrn        PASCAL %s:FAR ; t=%d %s\n",
+                    th1, tmpf->fn, tmpf->class, th2 );
+        }
+    }
+    fprintf( stubsinc, "extrn   GetFirst16Alias:near\n" );
+    fprintf( stubsinc, "extrn   Get16Alias:near\n" );
+    fprintf( stubsinc, "extrn   Free16Alias:near\n" );
+    fprintf( stubs, "\n" );
+    SegmentsDecl( stubs );
 
 } /* FunctionHeader */
 
@@ -1606,7 +1632,6 @@ static void FunctionHeader( void )
  */
 static void FunctionTrailer( void )
 {
-    fprintf( stubs, "_TEXT   ends\n" );
     fprintf( stubs, "        end\n" );
 
 } /* FunctionTrailer */
@@ -1637,32 +1662,36 @@ static void GenerateCode( void )
 
     stubs = fopen( "winglue.asm", "w" );
     stubsinc = fopen( GlueInc, "w" );
-    dllthunk = fopen( "dllthk.asm", "w" );
-    if( stubs == NULL || stubsinc == NULL || dllthunk == NULL ) {
+    if( stubs == NULL || stubsinc == NULL ) {
         fprintf( stderr, "Error opening glue file\n" );
         exit(1);
     }
     FunctionHeader();
-    DLLThunkHeader();
-
-    for( tmpf = Class; tmpf != NULL; tmpf = tmpf->next_class ) {
-        if( !quiet ) {
-            printf( "Code for class %d\n", tmpf->class );
-        }
-        GenerateAPICall( tmpf );
-    }
-#if 0
-    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
-        if( tmpf->thunk ) {
-            GenerateDLLThunk( tmpf );
-        }
-    }
-#endif
+    fprintf( subst, "\n" );
+    fprintf( subst, "\n" );
+    FunctionData();
+    fprintf( subst, "\n" );
+    fprintf( subst, "\n" );
+    FunctionCode();
+    fprintf( subst, "\n" );
     FunctionTrailer();
-    DLLThunkTrailer();
-
     fclose( stubs );
     fclose( stubsinc );
+
+    dllthunk = fopen( "dllthk.asm", "w" );
+    if( dllthunk == NULL ) {
+        fprintf( stderr, "Error opening glue file\n" );
+        exit(1);
+    }
+    DLLThunkHeader();
+    fprintf( dllthunk, "\n" );
+    fprintf( dllthunk, "\n" );
+    GenerateDLLData();
+    fprintf( dllthunk, "\n" );
+    fprintf( dllthunk, "\n" );
+    GenerateDLLCode();
+    fprintf( dllthunk, "\n" );
+    DLLThunkTrailer();
     fclose( dllthunk );
 
 } /* GenerateCode */
