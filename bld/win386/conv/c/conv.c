@@ -1150,6 +1150,18 @@ static void CloseHeader( FILE *f )
 } /* CloseHeader */
 
 
+static void SegmentsDecl( FILE *f )
+{
+    fprintf( f, "DGROUP group _DATA\n" );
+    fprintf( f, "\n" );
+    fprintf( f, "_TEXT segment word public 'CODE' USE16\n" );
+    fprintf( f, "_TEXT ends\n" );
+    fprintf( f, "\n" );
+    fprintf( f, "_DATA segment word public 'DATA' USE16\n" );
+    fprintf( f, "_DATA ends\n" );
+}
+
+
 /*
  * GenerateDLLData - generate data for a DLL thunk
  */
@@ -1158,7 +1170,6 @@ static void GenerateDLLData( void )
     int         i;
     char     *thunkstr;
 
-    fprintf( dllthunk, "DGROUP group _DATA\n" );
     fprintf( dllthunk, "_DATA segment word public 'DATA' use16\n" );
     fprintf( dllthunk, "\n" );
     fprintf( dllthunk, "public DLLHandles\n" );
@@ -1178,7 +1189,6 @@ static void GenerateDLLData( void )
         fprintf( dllthunk, "%s\tdb    '%s.dll',0\n", thunkstr, thunkstr );
     }
     fprintf( dllthunk, "_DATA ends\n" );
-    fprintf( dllthunk, "\n" );
 
 } /* GenerateDLLData */
 
@@ -1196,12 +1206,18 @@ static void DLLThunkHeader( void )
     fprintf( dllthunk, ";***              is loaded, and gets the real address of the function    ***\n" );
     fprintf( dllthunk, ";***              to invoke, which is back-patched into the table.        ***\n" );
     CloseHeader( dllthunk );
+    fprintf( dllthunk, "\n" );
     fprintf( dllthunk, "extrn LOADLIBRARY : far\n" );
     fprintf( dllthunk, "extrn FREELIBRARY : far\n" );
     fprintf( dllthunk, "extrn GETPROCADDRESS : far\n" );
     fprintf( dllthunk, "extrn DLLLoadFail_ : near\n" );
 //    fprintf( dllthunk, "extrn _FunctionTable : word\n" );
+    fprintf( dllthunk, "\n" );
+    SegmentsDecl( dllthunk );
+    fprintf( dllthunk, "\n" );
+    fprintf( dllthunk, "\n" );
     GenerateDLLData();
+    fprintf( dllthunk, "\n" );
     fprintf( dllthunk, "\n" );
     fprintf( dllthunk, "_TEXT segment word public 'CODE' use16\n" );
     fprintf( dllthunk, "assume cs:_TEXT\n" );
@@ -1512,9 +1528,6 @@ static void FunctionHeader( void )
     fprintf( stubs, "\n" );
     fprintf( stubs, "include %s\n", GlueInc );
 
-    fprintf( stubs, "DGROUP group _DATA\n" );
-    fprintf( stubs, "\n" );
-    fprintf( stubs, "\n" );
     fprintf( stubsinc, "extrn        __DLLPatch:far\n" );
     for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->thunk ) {
@@ -1538,14 +1551,8 @@ static void FunctionHeader( void )
         }
     }
     fprintf( stubs, "\n" );
-    fprintf( stubs, ";*\n" );
-    fprintf( stubs, ";*** 16-bit segment declarations\n" );
-    fprintf( stubs, ";*\n" );
-    fprintf( stubs, "_TEXT segment word public 'CODE' use16\n" );
-    fprintf( stubs, "_TEXT ends\n" );
+    SegmentsDecl( stubs );
     fprintf( stubs, "\n" );
-    fprintf( stubs, "_DATA segment word public 'DATA' use16\n" );
-    fprintf( stubs, "_DATA ends\n" );
     fprintf( stubs, "\n" );
     fprintf( stubs, "_DATA segment use16\n" );
 
