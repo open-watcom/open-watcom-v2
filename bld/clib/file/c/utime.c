@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,42 +122,42 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
 /***************************************************************/
 {
     unsigned        handle;
-    union REGS      reg_set;
+    union REGS      regs;
 
 #if defined(__386__) && !defined(__WINDOWS_386__)
-    reg_set.x.edx = (unsigned)fname;
-    reg_set.h.ah = DOS_OPEN;
-    reg_set.h.al = 0x01;                /* write access */
-    intdos( &reg_set, &reg_set );
+    regs.x.edx = (unsigned)fname;
+    regs.h.ah = DOS_OPEN;
+    regs.h.al = 0x01;               /* write access */
+    intdos( &regs, &regs );
 #elif defined(__BIG_DATA__) || defined(__386__)
     {
-        struct SREGS    sregs;
+        struct SREGS    segregs;
   #if defined(__386__)
         unsigned long   alias;
 
         alias = AllocAlias16( (void *)fname );
-        reg_set.x.dx = alias & 0xffff;
-        sregs.ds = alias >> 16;
+        regs.x.dx = alias & 0xffff;
+        segregs.ds = alias >> 16;
   #else
-        reg_set.w.dx = _FP_OFF( fname );
-        sregs.ds = _FP_SEG( fname );
+        regs.w.dx = _FP_OFF( fname );
+        segregs.ds = _FP_SEG( fname );
   #endif
-        sregs.es = sregs.ds;                        /* for DOS/16M */
-        reg_set.h.ah = DOS_OPEN;
-        reg_set.h.al = 0x01;        /* write access */
-        intdosx( &reg_set, &reg_set, &sregs );
+        segregs.es = segregs.ds;    /* for DOS/16M */
+        regs.h.ah = DOS_OPEN;
+        regs.h.al = 0x01;        /* write access */
+        intdosx( &regs, &regs, &segregs );
   #if defined(__386__)
         FreeAlias16( alias );
   #endif
     }
 #else
-    reg_set.w.dx = (unsigned)fname;
-    reg_set.h.ah = DOS_OPEN;
-    reg_set.h.al = 0x01;        /* write access */
-    intdos( &reg_set, &reg_set );
+    regs.w.dx = (unsigned)fname;
+    regs.h.ah = DOS_OPEN;
+    regs.h.al = 0x01;        /* write access */
+    intdos( &regs, &regs );
 #endif
-    if( reg_set.x.cflag ) {
-        switch( reg_set.w.ax ) {
+    if( regs.x.cflag ) {
+        switch( regs.w.ax ) {
         case 2:
             _RWD_errno = ENOENT;
             break;
@@ -170,21 +170,21 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
         }
         return( -1 );
     }
-    handle = reg_set.w.ax;
-    reg_set.w.bx = handle;
-    reg_set.w.cx = dostms->wr_time;
-    reg_set.w.dx = dostms->wr_date;
-    reg_set.h.ah = DOS_FILE_DATE;
-    reg_set.h.al = 1;           /* set date & time */
-    intdos( &reg_set, &reg_set );
-    if( reg_set.x.cflag ) {
+    handle = regs.w.ax;
+    regs.w.bx = handle;
+    regs.w.cx = dostms->wr_time;
+    regs.w.dx = dostms->wr_date;
+    regs.h.ah = DOS_FILE_DATE;
+    regs.h.al = 1;           /* set date & time */
+    intdos( &regs, &regs );
+    if( regs.x.cflag ) {
         _RWD_errno = EACCES;
         return( -1 );
     }
-    reg_set.w.bx = handle;
-    reg_set.h.ah = DOS_CLOSE;
-    intdos( &reg_set, &reg_set );
-    if( reg_set.x.cflag ) {
+    regs.w.bx = handle;
+    regs.h.ah = DOS_CLOSE;
+    intdos( &regs, &regs );
+    if( regs.x.cflag ) {
         _RWD_errno = EACCES;
         return( -1 );
     }

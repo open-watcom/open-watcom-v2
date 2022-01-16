@@ -49,11 +49,11 @@ _WCRTLINK unsigned short __nec98_bios_equiplist( void )
         unsigned short  disk_info;
         unsigned char   gpib_info;
         unsigned char   rs232_info;
-        union REGS      r;
+        union REGS      regs;
         unsigned short  mouse_seg;
         unsigned short  mouse_off;
 #if defined( _M_I86 )
-        struct SREGS    s;
+        struct SREGS    segregs;
 #endif
 
 #if defined( _M_I86 )
@@ -76,48 +76,48 @@ _WCRTLINK unsigned short __nec98_bios_equiplist( void )
         ret |= count << 3;
 #if defined( _M_I86 )
         /* Check mouse */
-        r.h.ah = 0x35;
-        r.h.al = 0x33;
-        intdosx( &r, &r, &s );
-        mouse_seg = s.es;
-        mouse_off = r.x.bx;
-        r.h.ah = 0x35;
-        r.h.al = 0x34;
-        intdosx( &r, &r, & s );
-        if( mouse_seg != s.es || mouse_off != r.x.bx ) {
-            r.x.ax = 0;
-            int86( 0x33, &r, &r );
-            if( r.x.ax ) {
+        regs.h.ah = 0x35;
+        regs.h.al = 0x33;
+        intdosx( &regs, &regs, &segregs );
+        mouse_seg = segregs.es;
+        mouse_off = regs.x.bx;
+        regs.h.ah = 0x35;
+        regs.h.al = 0x34;
+        intdosx( &regs, &regs, &segregs );
+        if( mouse_seg != segregs.es || mouse_off != regs.x.bx ) {
+            regs.x.ax = 0;
+            int86( 0x33, &regs, &regs );
+            if( regs.x.ax ) {
                 ret |= 0x100;
             }
         }
 #else
         /* Check mouse */
         if( _IsRational() ) {
-            r.w.ax = 0x200;         /* Get real mode interrupt vector */
-            r.h.bl = 0x33;
-            int386( 0x31, &r, &r );
-            mouse_seg = r.w.cx;
-            mouse_off = r.w.dx;
-            r.w.ax = 0x200;
-            r.h.bl = 0x34;
-            int386( 0x31, &r, &r );
+            regs.w.ax = 0x200;         /* Get real mode interrupt vector */
+            regs.h.bl = 0x33;
+            int386( 0x31, &regs, &regs );
+            mouse_seg = regs.w.cx;
+            mouse_off = regs.w.dx;
+            regs.w.ax = 0x200;
+            regs.h.bl = 0x34;
+            int386( 0x31, &regs, &regs );
          } else if( _IsPharLap() ) {
-            r.w.ax = 0x2503;         /* Get real mode interrupt vector */
-            r.h.cl = 0x33;
-            intdos( &r, &r );
-            mouse_seg = ( r.x.ebx >> 16 ) & 0xffff;
-            mouse_off = r.x.ebx & 0xffff;
-            r.w.ax = 0x2503;
-            r.h.cl = 0x34;
-            intdos( &r, &r );
-            r.w.cx = ( r.x.ebx >> 16 ) & 0xffff;
-            r.w.dx = r.x.ebx & 0xffff;
+            regs.w.ax = 0x2503;         /* Get real mode interrupt vector */
+            regs.h.cl = 0x33;
+            intdos( &regs, &regs );
+            mouse_seg = ( regs.x.ebx >> 16 ) & 0xffff;
+            mouse_off = regs.x.ebx & 0xffff;
+            regs.w.ax = 0x2503;
+            regs.h.cl = 0x34;
+            intdos( &regs, &regs );
+            regs.w.cx = ( regs.x.ebx >> 16 ) & 0xffff;
+            regs.w.dx = regs.x.ebx & 0xffff;
         }
-        if( mouse_seg != r.w.cx || mouse_off != r.w.dx ) {
-            r.x.eax = 0;
-            int386( 0x33, &r, &r );
-            if( r.w.ax ) {
+        if( mouse_seg != regs.w.cx || mouse_off != regs.w.dx ) {
+            regs.x.eax = 0;
+            int386( 0x33, &regs, &regs );
+            if( regs.w.ax ) {
                 ret |= 0x100;
             }
         }

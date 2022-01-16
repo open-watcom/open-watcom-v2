@@ -70,45 +70,44 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
 {
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short  ret;
+        union REGS      regs;
 #if defined( _M_I86 )
-        union REGS      r;
-        struct SREGS    s;
+        struct SREGS    segregs;
 
-        switch( r.h.ah = __cmd ) {
+        switch( regs.h.ah = __cmd ) {
         case _PRINTER_WRITE:
-            r.h.al = *__data;
+            regs.h.al = *__data;
             /* fall through */
         case _PRINTER_INIT:
         case _PRINTER_STATUS:
-            int86x( 0x1a, &r, &r, &s );
-            ret = r.w.ax;
+            int86x( 0x1a, &regs, &regs, &segregs );
+            ret = regs.w.ax;
             break;
         case _PRINTER_WRITE_STRING:
-            r.w.cx = strlen( (char *)__data );
-            r.w.bx = FP_OFF( __data );
-            s.es = FP_SEG( __data );
-            int86x( 0x1a, &r, &r, &s );
-            ret = r.w.cx;
+            regs.w.cx = strlen( (char *)__data );
+            regs.w.bx = FP_OFF( __data );
+            segregs.es = FP_SEG( __data );
+            int86x( 0x1a, &regs, &regs, &segregs );
+            ret = regs.w.cx;
             break;
         default:
             ret = 0;
             break;
         }
 #else
-        union REGS      r;
         call_struct     dr;
         rmi_struct      dp;
 
         memset( &dr, 0, sizeof( dr ) );
 
-        switch( r.h.ah = __cmd ) {
+        switch( regs.h.ah = __cmd ) {
         case _PRINTER_WRITE:
-            r.h.al = *__data;
+            regs.h.al = *__data;
             /* fall through */
         case _PRINTER_INIT:
         case _PRINTER_STATUS:
-            int386( 0x1a, &r, &r );
-            ret = r.h.ah;
+            int386( 0x1a, &regs, &regs );
+            ret = regs.h.ah;
             break;
         case _PRINTER_WRITE_STRING:
             if( _IsRational() ) {
@@ -117,11 +116,11 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                 int             len;
 
                 len = strlen( (char *)__data );
-                r.x.ebx = ( len > 0xffff ) ? 0x1000 : ( len + 15 ) / 16;   /* paragraph */
-                r.x.eax = 0x100; /* DPMI DOS Memory Alloc */
-                int386( 0x31, &r, &r );
-                psel = r.w.dx;
-                rseg = r.w.ax;
+                regs.x.ebx = ( len > 0xffff ) ? 0x1000 : ( len + 15 ) / 16;   /* paragraph */
+                regs.x.eax = 0x100; /* DPMI DOS Memory Alloc */
+                int386( 0x31, &regs, &regs );
+                psel = regs.w.dx;
+                rseg = regs.w.ax;
 
                 for( ; len > 0xffff; len -= 0xffff ) {
                     memmove( (char *)( rseg << 4 ), __data, 0xffff );
@@ -130,11 +129,11 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                     dr.ecx = 0xffff;
                     dr.es = rseg;
                     dr.ebx = 0;
-                    r.x.ecx = 0;  /* no stack for now */
-                    r.x.edi = (unsigned long)&dr;
-                    r.x.eax = 0x300;
-                    r.x.ebx = 0x001a;
-                    int386( 0x31, &r, &r);
+                    regs.x.ecx = 0;  /* no stack for now */
+                    regs.x.edi = (unsigned long)&dr;
+                    regs.x.eax = 0x300;
+                    regs.x.ebx = 0x001a;
+                    int386( 0x31, &regs, &regs);
                     if( dr.eax ) {
                         ret = dr.cx;
                         break;
@@ -145,15 +144,15 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                 dr.ecx = len;
                 dr.es = rseg;
                 dr.ebx = 0;
-                r.x.ecx = 0;  /* no stack for now */
-                r.x.edi = (unsigned long)&dr;
-                r.x.eax = 0x300;
-                r.x.ebx = 0x001a;
-                int386( 0x31, &r, &r );
+                regs.x.ecx = 0;  /* no stack for now */
+                regs.x.edi = (unsigned long)&dr;
+                regs.x.eax = 0x300;
+                regs.x.ebx = 0x001a;
+                int386( 0x31, &regs, &regs );
                 if( psel ){
-                    r.x.edx = psel;
-                    r.x.eax = 0x101; /* DPMI DOS Memory Free */
-                    int386( 0x31, &r, &r );
+                    regs.x.edx = psel;
+                    regs.x.eax = 0x101; /* DPMI DOS Memory Free */
+                    int386( 0x31, &regs, &regs );
                 }
                 ret = dr.cx;
             } else if( _IsPharLap() ) {
@@ -162,23 +161,23 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                 int             len;
 
                 len = strlen( (char *)__data );
-                r.x.ebx = ( len > 0xffff ) ? 0x1000 : ( len + 15 ) / 16;   /* paragraph */
-                r.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
-                intdos( &r, &r );
+                regs.x.ebx = ( len > 0xffff ) ? 0x1000 : ( len + 15 ) / 16;   /* paragraph */
+                regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
+                intdos( &regs, &regs );
                 psel = _ExtenderRealModeSelector;
-                rseg = r.w.ax;
+                rseg = regs.w.ax;
 
                 for( ; len > 0xffff; len -= 0xffff ) {
                     _fmemmove( MK_FP( psel, rseg << 4 ) , __data, 0xffff );
                     __data += 0xffff;
                     dp.eax = 0x3000;
-                    r.x.ecx = 0xffff;
+                    regs.x.ecx = 0xffff;
                     dp.es = rseg;
-                    r.x.ebx = 0;
-                    r.x.edx = (unsigned long)&dp;
-                    r.x.eax = 0x2511;
+                    regs.x.ebx = 0;
+                    regs.x.edx = (unsigned long)&dp;
+                    regs.x.eax = 0x2511;
                     dp.inum = 0x1a;
-                    intdos( &r, &r);
+                    intdos( &regs, &regs);
                     if( dr.eax ) {
                         ret = dr.cx;
                         break;
@@ -186,18 +185,18 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                 }
                 _fmemmove( MK_FP( psel, rseg << 4 ), __data, len );
                 dp.eax = 0x3000;
-                r.x.ecx = len;
+                regs.x.ecx = len;
                 dp.es = rseg;
-                r.x.ebx = 0;
-                r.x.edx = (unsigned long)&dr;
-                r.x.eax = 0x2511;
+                regs.x.ebx = 0;
+                regs.x.edx = (unsigned long)&dr;
+                regs.x.eax = 0x2511;
                 dp.inum = 0x1a;
-                intdos( &r, &r );
-                ret = r.w.cx;
+                intdos( &regs, &regs );
+                ret = regs.w.cx;
                 if( psel ){
-                    r.x.ecx = rseg;
-                    r.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
-                    intdos( &r, &r );
+                    regs.x.ecx = rseg;
+                    regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
+                    intdos( &regs, &regs );
                 }
             } else {
                 ret = 0;

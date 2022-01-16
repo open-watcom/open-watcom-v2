@@ -59,14 +59,14 @@ _WCRTLINK unsigned short __nec98_bios_timeofday( unsigned __cmd, char *__timeval
         case _TIME_GETCLOCK:
         case _TIME_SETCLOCK:
           {
-            union REGS      r;
+            union REGS      regs;
 #ifdef _M_I86
-            struct SREGS    s;
+            struct SREGS    segregs;
 
-            s.es = FP_SEG( __timeval );
-            r.x.bx = FP_OFF( __timeval );
-            r.h.ah = __cmd;
-            int86x( 0x1c, &r, &r, &s );
+            segregs.es = FP_SEG( __timeval );
+            regs.x.bx = FP_OFF( __timeval );
+            regs.h.ah = __cmd;
+            int86x( 0x1c, &regs, &regs, &segregs );
 #else
             unsigned long   psel;
             unsigned long   rseg;
@@ -75,49 +75,49 @@ _WCRTLINK unsigned short __nec98_bios_timeofday( unsigned __cmd, char *__timeval
                 call_struct     dr;
 
                 memset( &dr, 0, sizeof( dr ) );
-                r.x.ebx = 1;  /* paragraph */
-                r.x.eax = 0x100; /* DPMI DOS Memory Alloc */
-                int386( 0x31, &r, &r );
-                psel = r.w.dx;
-                rseg = r.w.ax;
+                regs.x.ebx = 1;     /* paragraph */
+                regs.x.eax = 0x100; /* DPMI DOS Memory Alloc */
+                int386( 0x31, &regs, &regs );
+                psel = regs.w.dx;
+                rseg = regs.w.ax;
                 memmove( (void *)( rseg << 4 ), __timeval, 6 );
 
                 dr.es = rseg;
-                dr.ebx = 0; /* Offset */
+                dr.ebx = 0;         /* Offset */
                 dr.ah = __cmd;
-                r.x.ebx = 0x1c;  /* int no */
-                r.x.ecx = 0;  /* no stack for now */
-                r.x.edi = (unsigned long)&dr;
-                r.x.eax = 0x300;
-                int386( 0x31, &r, &r );
+                regs.x.ebx = 0x1c;  /* interrupt no */
+                regs.x.ecx = 0;     /* no stack for now */
+                regs.x.edi = (unsigned long)&dr;
+                regs.x.eax = 0x300;
+                int386( 0x31, &regs, &regs );
                 memmove( __timeval, (void *)( rseg << 4 ), 6 );
 
-                r.x.edx = psel;
-                r.x.eax = 0x101; /* DPMI DOS Memory Free */
-                int386( 0x31, &r, &r );
+                regs.x.edx = psel;
+                regs.x.eax = 0x101; /* DPMI DOS Memory Free */
+                int386( 0x31, &regs, &regs );
             } else if( _IsPharLap() ) {
                 rmi_struct      dp;
 
                 memset( &dp, 0, sizeof( dp ) );
-                r.x.ebx = 1;
-                r.x.eax = 0x25c0;
-                intdos( &r, &r );
+                regs.x.ebx = 1;
+                regs.x.eax = 0x25c0;
+                intdos( &regs, &regs );
                 psel = _ExtenderRealModeSelector;
-                rseg = r.w.ax;
+                rseg = regs.w.ax;
                 _fmemmove( MK_FP( psel, rseg << 4 ), __timeval, 6 );
 
                 dp.es = rseg;
-                r.x.ebx = 0; /* Offset */
+                regs.x.ebx = 0;     /* Offset */
                 dp.ah = __cmd;
-                dp.inum = 0x1c;  /* int no */
-                r.x.edx = (unsigned long)&dp;
-                r.x.eax = 0x2511;
-                intdos( &r, &r );
+                dp.inum = 0x1c;     /* interrupt no */
+                regs.x.edx = (unsigned long)&dp;
+                regs.x.eax = 0x2511;
+                intdos( &regs, &regs );
                 _fmemmove( __timeval, MK_FP( psel, rseg << 4 ), 6 );
 
-                r.x.ecx = rseg;
-                r.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
-                intdos( &r, &r );
+                regs.x.ecx = rseg;
+                regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
+                intdos( &regs, &regs );
             }
 #endif
             return( 0 );

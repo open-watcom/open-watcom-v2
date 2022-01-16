@@ -74,33 +74,33 @@
 _WCRTLINK unsigned short __nec98_bios_keybrd( unsigned __cmd, unsigned char *__buf )
 {
     if( _RWD_isPC98 ) { /* NEC PC-98 */
-        union REGS r;
+        union REGS regs;
         int i;
 
-        switch( r.h.ah = __cmd ) {
+        switch( regs.h.ah = __cmd ) {
         case _KEYBRD_READ:
-            INTX86( 0x18, &r, &r );
+            INTX86( 0x18, &regs, &regs );
             break;
         case _KEYBRD_READY:
-            INTX86( 0x18, &r, &r );
-            if( !r.h.bh )
-                r.w.ax = 0;
+            INTX86( 0x18, &regs, &regs );
+            if( !regs.h.bh )
+                regs.w.ax = 0;
             break;
         case _KEYBRD_SHIFTSTATUS:
-            INTX86( 0x18, &r, &r );
-            r.h.ah = 0;
+            INTX86( 0x18, &regs, &regs );
+            regs.h.ah = 0;
             break;
         case _KEYBRD_INITIALIZE:
-            INTX86( 0x18, &r, &r );
+            INTX86( 0x18, &regs, &regs );
             break;
         default:
             for( i = 0; i < 16; i++ ){
-                r.h.al = i;
-                INTX86( 0x18, &r, &r );
-                __buf[i] = r.h.ah;
+                regs.h.al = i;
+                INTX86( 0x18, &regs, &regs );
+                __buf[i] = regs.h.ah;
             }
         }
-        return( r.w.ax );
+        return( regs.w.ax );
     }
     /* IBM PC */
     return( 0 );    // fail if not a NEC PC-98 machine

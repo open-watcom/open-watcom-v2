@@ -46,12 +46,12 @@
 _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port, struct com_t *__data )
 {
     if( _RWD_isPC98 ) { /* NEC PC-98 */
+        union REGS              regs;
+        int                     intno;
+        unsigned short _WCFAR   *vect_src;
+        int                     ex_port;
 #ifdef _M_I86
-        union REGS r;
-        struct SREGS s;
-        int int_no;
-        unsigned short _WCFAR *vect_src;
-        int ex_port;
+        struct SREGS            segregs;
 
         ex_port = *(unsigned char _WCI86FAR *)MK_FP( 0xa000, 0x3fee ) & 0x10;
         switch( __cmd ) {
@@ -59,90 +59,89 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
         case _COM_INITX:
             if( __port != _COM_CH1 ) {
                 if( ex_port ) {
-                    int_no = 0xd4;
+                    intno = 0xd4;
                     vect_src = MK_FP( 0xd000, 0x806 );
                     if( __port == _COM_CH3 ) {
                         vect_src += 2; /* Add 4 bytes because of short is 2 bytes*/
-                        int_no++;
+                        intno++;
                     }
                     /*** Vecttor set / segment : d000h ***/
-                    r.h.ah = 0x25;
-                    r.h.al = int_no;
-                    s.ds = 0xd000;
-                    r.x.dx = *vect_src;
-                    intdosx( &r, &r, &s );
+                    regs.h.ah = 0x25;
+                    regs.h.al = intno;
+                    segregs.ds = 0xd000;
+                    regs.x.dx = *vect_src;
+                    intdosx( &regs, &regs, &segregs );
                 } else {
                     return( 0xff00 );
                 }
             }
-            s.es = FP_SEG( __data->buffer );
-            r.x.di = FP_OFF( __data->buffer );
-            r.h.ah = __cmd;
+            segregs.es = FP_SEG( __data->buffer );
+            regs.x.di = FP_OFF( __data->buffer );
+            regs.h.ah = __cmd;
             if( __data->baud == _COM_DEFAULT ) {
-                r.h.al = _COM_1200;
+                regs.h.al = _COM_1200;
             } else {
-                r.h.al = __data->baud;
+                regs.h.al = __data->baud;
             }
-            r.h.bh = __data->tx_time;
-            r.h.bl = __data->rx_time;
+            regs.h.bh = __data->tx_time;
+            regs.h.bl = __data->rx_time;
             if( __data->mode == 0xff ) {
-                r.h.ch = (_COM_STOP1 | _COM_CHR7 | 0x02);
+                regs.h.ch = (_COM_STOP1 | _COM_CHR7 | 0x02);
             } else {
-                r.h.ch = __data->mode | 0x02;
+                regs.h.ch = __data->mode | 0x02;
             }
             if( __data->command == 0xff ) {
-                r.h.cl = (_COM_ER | _COM_RXEN | _COM_TXEN);
+                regs.h.cl = (_COM_ER | _COM_RXEN | _COM_TXEN);
             } else {
-                r.h.cl = __data->command;
+                regs.h.cl = __data->command;
             }
-            r.x.dx = __data->size;
+            regs.x.dx = __data->size;
             break;
         case _COM_SEND:
-            r.h.ah = __cmd;
-            r.h.al = *(unsigned char _WCI86FAR *)(__data->buffer);
+            regs.h.ah = __cmd;
+            regs.h.al = *(unsigned char _WCI86FAR *)(__data->buffer);
             break;
         case _COM_COMMAND:
-            r.h.ah = __cmd;
+            regs.h.ah = __cmd;
             if( __data->command == 0xff ) {
-                r.h.al = (_COM_ER | _COM_RXEN | _COM_TXEN);
+                regs.h.al = (_COM_ER | _COM_RXEN | _COM_TXEN);
             } else {
-                r.h.al = __data->command;
+                regs.h.al = __data->command;
             }
             break;
         default:
-            r.h.ah = __cmd;
-            r.h.al = 0;
+            regs.h.ah = __cmd;
+            regs.h.al = 0;
             break;
         }
         switch( __port ) {
         case _COM_CH1:
-            int_no = 0x19;  /* int no */
+            intno = 0x19;  /* interrupt no */
             break;
         case _COM_CH2:
-            int_no = 0xd4;  /* int no */
+            intno = 0xd4;  /* interrupt no */
             break;
         case _COM_CH3:
-            int_no = 0xd5;  /* int no */
+            intno = 0xd5;  /* interrupt no */
             break;
         }
-        int86x( int_no, &r, &r, &s );
+        int86x( intno, &regs, &regs, &segregs );
 
         switch( __cmd ) {
         case _COM_GETDTL:
             if( __data )
-                __data->size = r.x.cx;
+                __data->size = regs.x.cx;
             break;
         case _COM_RECEIVE:
         case _COM_STATUS:
             if( __data ) {
-                *(unsigned char _WCI86FAR *)__data->buffer = r.h.ch;
-                *((unsigned char _WCI86FAR *)__data->buffer + 1) = r.h.cl;
+                *(unsigned char _WCI86FAR *)__data->buffer = regs.h.ch;
+                *((unsigned char _WCI86FAR *)__data->buffer + 1) = regs.h.cl;
             }
             break;
         }
-        return( r.h.ah );
+        return( regs.h.ah );
 #else
-        union REGS              r;
         call_struct             dr;
         rmi_struct              dp;
         /* Add psel2,psel3 by M/M 30.May.94 */
@@ -153,9 +152,6 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
         static unsigned long    rseg = 0;
         static unsigned long    rseg2 = 0;
         static unsigned long    rseg3 = 0;
-        int int_no;
-        unsigned short _WCFAR   *vect_src;
-        int                     ex_port;
 
         ex_port = 0;
         if( _ExtenderRealModeSelector ) {
@@ -168,91 +164,91 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
         case _COM_INITX:
             if( __port != _COM_CH1 ) {
                 if( ex_port ) {
-                    int_no = 0xd4;
+                    intno = 0xd4;
                     vect_src = MK_FP( _ExtenderRealModeSelector, 0xd0806 );
                     if( _IsRational() ) {
                         if( __port == _COM_CH3 ) {
                             vect_src += 2; /* Add 4 bytes because of short is 2 bytes*/
-                            int_no++;
+                            intno++;
                             if( psel3 ) { /* Allocate BIOS buffer for port 3 by M/M 30.May.94 */
-                                r.x.edx = psel3;
-                                r.x.eax = 0x101; /* DPMI DOS Memory Free */
-                                int386( 0x31, &r, &r );
+                                regs.x.edx = psel3;
+                                regs.x.eax = 0x101; /* DPMI DOS Memory Free */
+                                int386( 0x31, &regs, &regs );
                             }
-                            r.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
+                            regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
                             /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
-                            r.x.eax = 0x100; /* DPMI DOS Memory Alloc */
-                            int386( 0x31, &r, &r );
-                            if ( r.x.cflag )
+                            regs.x.eax = 0x100; /* DPMI DOS Memory Alloc */
+                            int386( 0x31, &regs, &regs );
+                            if ( regs.x.cflag )
                                 return( 0xff00 ); /* by M/M 01.Jun.94 */
-                            psel3 = r.w.dx;
-                            rseg3 = r.w.ax;
+                            psel3 = regs.w.dx;
+                            rseg3 = regs.w.ax;
                             dr.es = rseg3;
                             dr.edi =  0;
                         } else { /* Allocate BIOS buffer for port 2 by M/M 30.May.94 */
                             if( psel2 ) {
-                                r.x.edx = psel2;
-                                r.x.eax = 0x101; /* DPMI DOS Memory Free */
-                                int386( 0x31, &r, &r );
+                                regs.x.edx = psel2;
+                                regs.x.eax = 0x101; /* DPMI DOS Memory Free */
+                                int386( 0x31, &regs, &regs );
                             }
-                            r.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
+                            regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
                             /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
-                            r.x.eax = 0x100; /* DPMI DOS Memory Alloc */
-                            int386( 0x31, &r, &r );
-                            if ( r.x.cflag )
+                            regs.x.eax = 0x100; /* DPMI DOS Memory Alloc */
+                            int386( 0x31, &regs, &regs );
+                            if ( regs.x.cflag )
                                 return( 0xff00 ); /* by M/M 01.Jun.94 */
-                            psel2 = r.w.dx;
-                            rseg2 = r.w.ax;
+                            psel2 = regs.w.dx;
+                            rseg2 = regs.w.ax;
                             dr.es = rseg2;
                             dr.edi =  0;
                         }
                         /*** Vecttor set / segment : d000h ***/
-                        r.x.eax = 0x201;
-                        r.h.bl = int_no;
-                        r.x.ecx = 0xd000;
-                        r.x.edx = *vect_src;
-                        int386( 0x31, &r, &r );
+                        regs.x.eax = 0x201;
+                        regs.h.bl = intno;
+                        regs.x.ecx = 0xd000;
+                        regs.x.edx = *vect_src;
+                        int386( 0x31, &regs, &regs );
                     } else if( _IsPharLap() ) {
                         if( __port == _COM_CH3 ) {
                             vect_src += 2; /* Add 4 bytes because of short is 2 bytes*/
-                            int_no++;
+                            intno++;
                             if( psel3 ) {/* Allocate BIOS buffer for port 3 by M/M 30.May.94 */
-                                r.x.ecx = rseg3;
-                                r.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
-                                intdos( &r, &r );
+                                regs.x.ecx = rseg3;
+                                regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
+                                intdos( &regs, &regs );
                             }
-                            r.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
+                            regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
                             /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
-                            r.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
-                            intdos( &r, &r );
-                            if ( r.x.cflag )
+                            regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
+                            intdos( &regs, &regs );
+                            if ( regs.x.cflag )
                                 return( 0xff00 ); /* by M/M 01.Jun.94 */
                             psel3 = 0x34;
-                            rseg3 = r.w.ax;
+                            rseg3 = regs.w.ax;
                             dr.es = rseg3;
                             dr.edi =  0;
                         } else { /* Allocate BIOS buffer for port 2 by M/M 30.May.94 */
                             if( psel2 ) {
-                                r.x.ecx = rseg2;
-                                r.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
-                                intdos( &r, &r );
+                                regs.x.ecx = rseg2;
+                                regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
+                                intdos( &regs, &regs );
                             }
-                            r.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
+                            regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
                             /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
-                            r.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
-                            intdos( &r, &r );
-                            if ( r.x.cflag )
+                            regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
+                            intdos( &regs, &regs );
+                            if ( regs.x.cflag )
                                 return( 0xff00 ); /* by M/M 01.Jun.94 */
                             psel2 = 0x34;
-                            rseg2 = r.w.ax;
+                            rseg2 = regs.w.ax;
                             dr.es = rseg2;
                             dr.edi =  0;
                         }
                         /*** Vecttor set / segment : d000h ***/
-                        r.x.eax = 0x2505;
-                        r.h.cl = int_no;
-                        r.x.ebx = 0xd0000000 + *vect_src;
-                        intdos( &r, &r );
+                        regs.x.eax = 0x2505;
+                        regs.h.cl = intno;
+                        regs.x.ebx = 0xd0000000 + *vect_src;
+                        intdos( &regs, &regs );
                     }
                 } else {
                     return( 0xff00 );
@@ -261,36 +257,36 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
                 /*** Need realloc ***/ /* Move from the below to here */
                 if( _IsRational() ) {
                     if ( psel ) {
-                        r.x.edx = psel;
-                        r.x.eax = 0x101; /* DPMI DOS Memory Free */
-                        int386( 0x31, &r, &r );
+                        regs.x.edx = psel;
+                        regs.x.eax = 0x101; /* DPMI DOS Memory Free */
+                        int386( 0x31, &regs, &regs );
                     }
 
-                    r.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
+                    regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
                     /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
-                    r.x.eax = 0x100; /* DPMI DOS Memory Alloc */
-                    int386( 0x31, &r, &r );
-                    if ( r.x.cflag )
+                    regs.x.eax = 0x100; /* DPMI DOS Memory Alloc */
+                    int386( 0x31, &regs, &regs );
+                    if ( regs.x.cflag )
                         return( 0xff00 ); /* by M/M 01.Jun.94 */
-                    psel = r.w.dx;
-                    rseg = r.w.ax;
+                    psel = regs.w.dx;
+                    rseg = regs.w.ax;
                     /* memmove( (char *)( rseg << 4 ), __data->buffer, __data->size ); */
                     /* No need to trasfer data by M/M 30.May.94 */
                 } else if( _IsPharLap() ) {
                     if( psel ) {
-                        r.x.ecx = rseg;
-                        r.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
-                        intdos( &r, &r );
+                        regs.x.ecx = rseg;
+                        regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap */
+                        intdos( &regs, &regs );
                     }
 
-                    r.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
+                    regs.x.ebx = ( (long)__data->size + 2 + 18 + 15 ) / 16;  /* paragraph */
                     /* Fix : Add the size of interface are and buffer control block by M/M 01.Jun.94 */
-                    r.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
-                    intdos( &r, &r );
-                    if ( r.x.cflag )
+                    regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
+                    intdos( &regs, &regs );
+                    if ( regs.x.cflag )
                         return( 0xff00 ); /* by M/M 01.Jun.94 */
                     psel = 0x34;
-                    rseg = r.w.ax;
+                    rseg = regs.w.ax;
                     /* _fmemmove( MK_FP( psel, rseg << 4 ), __data->buffer, __data->size ); */
                     /* No need to trasfer data by M/M 30.May.94 */
                 }
@@ -335,20 +331,20 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
         }
         switch( __port ) {
         case _COM_CH1:
-            r.x.ebx = 0x19;  /* int no */
+            regs.x.ebx = 0x19;  /* interrupt no */
             break;
         case _COM_CH2:
-            r.x.ebx = 0xd4;  /* int no */
+            regs.x.ebx = 0xd4;  /* interrupt no */
             break;
         case _COM_CH3:
-            r.x.ebx = 0xd5;  /* int no */
+            regs.x.ebx = 0xd5;  /* interrupt no */
             break;
         }
         if( _IsRational() ) {
-            r.x.ecx = 0;  /* no stack for now */
-            r.x.edi = (unsigned long)&dr;
-            r.x.eax = 0x300;
-            int386( 0x31, &r, &r );
+            regs.x.ecx = 0;  /* no stack for now */
+            regs.x.edi = (unsigned long)&dr;
+            regs.x.eax = 0x300;
+            int386( 0x31, &regs, &regs );
         } else if( _IsPharLap() ) {
             dp.eax = dr.eax;
             dp.edx = dr.edx;
@@ -356,16 +352,16 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
             dp.es = dr.es;
             dp.fs = dr.fs;
             dp.gs = dr.gs;
-            dp.inum = r.x.ebx;
-            r.x.eax = 0x2511;
-            r.x.edx = (unsigned long)&dp;
-            r.x.ebx = dr.ebx;
-            r.x.ecx = dr.ecx;
-            r.x.edi = dr.edi;
-            r.x.esi = dr.esi;
-            intdos( &r, &r );
-            dr.ecx = r.x.ecx;
-            dr.eax = r.x.eax;
+            dp.inum = regs.x.ebx;
+            regs.x.eax = 0x2511;
+            regs.x.edx = (unsigned long)&dp;
+            regs.x.ebx = dr.ebx;
+            regs.x.ecx = dr.ecx;
+            regs.x.edi = dr.edi;
+            regs.x.esi = dr.esi;
+            intdos( &regs, &regs );
+            dr.ecx = regs.x.ecx;
+            dr.eax = regs.x.eax;
         }
         switch( __cmd ) {
         case _COM_GETDTL:

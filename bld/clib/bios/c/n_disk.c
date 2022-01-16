@@ -83,49 +83,48 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
     if( _RWD_isPC98 ) { /* NEC PC-98 */
         unsigned short  ret;
         char _WCI86FAR  *result_p;
-        union REGS      rr;
+        union REGS      rregs;
 #if defined( _M_I86 )
 #else
         call_struct     dr;
         rmi_struct      dp;
-        union REGS      r;
-        struct SREGS    rs;
+        union REGS      regs;
         unsigned long   psel;
         unsigned long   rseg;
 #endif
 
-        memset( &rr, 0, sizeof( rr ) );
+        memset( &rregs, 0, sizeof( rregs ) );
 
-        rr.h.ah = __cmd;
-        rr.h.al = __diskinfo->drive;
-        rr.w.dx = __diskinfo->command;
-        if( rr.h.dl == _CMD_2D && rr.h.ah == _DISK_FORMATDRIVE )
-            rr.h.ah &= 0x7f;
-        rr.w.ax |= rr.w.dx;
-        rr.w.bx = __diskinfo->data_len;
+        rregs.h.ah = __cmd;
+        rregs.h.al = __diskinfo->drive;
+        rregs.w.dx = __diskinfo->command;
+        if( rregs.h.dl == _CMD_2D && rregs.h.ah == _DISK_FORMATDRIVE )
+            rregs.h.ah &= 0x7f;
+        rregs.w.ax |= rregs.w.dx;
+        rregs.w.bx = __diskinfo->data_len;
         if( __diskinfo->command == _CMD_HD ) {
             if( __cmd == _DISK_FORMATDRIVE || __cmd == _DISK_FORMATTRACK )
-                rr.h.bh = rr.h.bl;
-            rr.w.cx = __diskinfo->cylinder;
+                rregs.h.bh = rregs.h.bl;
+            rregs.w.cx = __diskinfo->cylinder;
         } else {
-            rr.h.ch = __diskinfo->sector_len;
-            rr.h.cl = __diskinfo->cylinder;
+            rregs.h.ch = __diskinfo->sector_len;
+            rregs.h.cl = __diskinfo->cylinder;
         }
-        rr.h.dh = __diskinfo->head;
-        rr.h.dl = __diskinfo->sector;
+        rregs.h.dh = __diskinfo->head;
+        rregs.h.dl = __diskinfo->sector;
         if( __cmd == _DISK_ALTERNATE )
-            rr.h.dl = 0;
+            rregs.h.dl = 0;
 
 #if defined( _M_I86 )
-        rr.w.di = FP_SEG( __diskinfo->buffer );
-        rr.w.si = FP_OFF( __diskinfo->buffer );
-        ret = int1b( rr.w.ax, rr.w.dx, rr.w.bx, rr.w.cx, rr.w.si, rr.w.di );
+        rregs.w.di = FP_SEG( __diskinfo->buffer );
+        rregs.w.si = FP_OFF( __diskinfo->buffer );
+        ret = int1b( rregs.w.ax, rregs.w.dx, rregs.w.bx, rregs.w.cx, rregs.w.si, rregs.w.di );
         switch( __cmd ) {
         case _DISK_SEEK:
-            *( (char _WCI86FAR *)__diskinfo->result + 0 ) = rr.h.cl;
-            *( (char _WCI86FAR *)__diskinfo->result + 1 ) = rr.h.dh;
-            *( (char _WCI86FAR *)__diskinfo->result + 2 ) = rr.h.dl;
-            *( (char _WCI86FAR *)__diskinfo->result + 3 ) = rr.h.ch;
+            *( (char _WCI86FAR *)__diskinfo->result + 0 ) = rregs.h.cl;
+            *( (char _WCI86FAR *)__diskinfo->result + 1 ) = rregs.h.dh;
+            *( (char _WCI86FAR *)__diskinfo->result + 2 ) = rregs.h.dl;
+            *( (char _WCI86FAR *)__diskinfo->result + 3 ) = rregs.h.ch;
             break;
         case _DISK_READ:
         case _DISK_WRITE:
@@ -160,53 +159,52 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         case _DISK_WRITEDDAM:
         case _DISK_READDDAM:
             if( _IsRational() ) {
-                r.x.ebx = ( __diskinfo->data_len + 15 ) / 16;  /* paragraph */
-                r.x.eax = 0x100; /* Alloc DOS Memory under DPMI */
-                int386( 0x31, &r, &r );
-                psel = r.w.dx;
-                rseg = r.w.ax;
+                regs.x.ebx = ( __diskinfo->data_len + 15 ) / 16;  /* paragraph */
+                regs.x.eax = 0x100; /* Alloc DOS Memory under DPMI */
+                int386( 0x31, &regs, &regs );
+                psel = regs.w.dx;
+                rseg = regs.w.ax;
                 memmove( (char *)( rseg << 4 ), __diskinfo->buffer, __diskinfo->data_len );
             } else if( _IsPharLap() ) {
-                r.x.ebx = ( __diskinfo->data_len + 15 ) / 16;  /* paragraph */
-                r.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
-                intdos( &r, &r );
+                regs.x.ebx = ( __diskinfo->data_len + 15 ) / 16;  /* paragraph */
+                regs.x.eax = 0x25c0; /* Alloc DOS Memory under Phar Lap */
+                intdos( &regs, &regs );
                 psel = _ExtenderRealModeSelector;
-                rseg = r.w.ax;
+                rseg = regs.w.ax;
                 _fmemmove( MK_FP( psel, rseg << 4 ), __diskinfo->buffer, __diskinfo->data_len );
             }
             break;
         }
-        rs.es = rseg;
         memset( &dr, 0, sizeof( dr ) );
         if( _IsRational() ) {
             dr.ebp = 0;
             /* Set true register structure */
-            dr.eax = rr.x.eax;
-            dr.ebx = rr.x.ebx;
-            dr.ecx = rr.x.ecx;
-            dr.edx = rr.x.edx;
-            dr.es = rs.es;
+            dr.eax = rregs.x.eax;
+            dr.ebx = rregs.x.ebx;
+            dr.ecx = rregs.x.ecx;
+            dr.edx = rregs.x.edx;
+            dr.es = rseg;
             /* int 1BH */
-            r.x.ecx = 0;  /* no stack for now */
-            r.x.edi = (unsigned long)&dr;
-            r.x.eax = 0x300;
-            r.x.ebx = 0x1b;
-            int386( 0x31, &r, &r );
+            regs.x.ecx = 0;  /* no stack for now */
+            regs.x.edi = (unsigned long)&dr;
+            regs.x.eax = 0x300;
+            regs.x.ebx = 0x1b;
+            int386( 0x31, &regs, &regs );
             ret = dr.ah;
-            if( r.x.cflag ) {
+            if( regs.x.cflag ) {
                 ret |= 0xff00;
             }
         } else if( _IsPharLap() ) {
             /* Set true register structure */
-            dp.eax = rr.x.eax;
-            dp.edx = rr.x.edx;
-            dp.es = rs.es;
+            dp.eax = rregs.x.eax;
+            dp.edx = rregs.x.edx;
+            dp.es = rseg;
             /* int 1BH */
             dp.inum = 0x1b;
-            _nec_pass_bp( 0x2511, &dp, rr.x.ebx, rr.x.ecx, 0, &r );
+            _nec_pass_bp( 0x2511, &dp, rregs.x.ebx, rregs.x.ecx, 0, &regs );
 
-            ret = r.h.ah;
-            if( r.x.cflag ) {
+            ret = regs.h.ah;
+            if( regs.x.cflag ) {
                 ret |= 0xff00;
             }
         } else {
@@ -241,14 +239,14 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
         if( psel ) {
             if( _IsRational() ) {
                 memmove( __diskinfo->buffer, (char *)( rseg << 4 ), __diskinfo->data_len);
-                r.x.edx = psel;
-                r.x.eax = 0x101; /* Free DOS Memory under DPMI */
-                int386( 0x31, &r, &r );
+                regs.x.edx = psel;
+                regs.x.eax = 0x101; /* Free DOS Memory under DPMI */
+                int386( 0x31, &regs, &regs );
             } else if( _IsPharLap() ) {
                 _fmemmove( __diskinfo->buffer, MK_FP( psel, rseg << 4 ), __diskinfo->data_len);
-                r.x.ecx = rseg;
-                r.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
-                intdos( &r, &r );
+                regs.x.ecx = rseg;
+                regs.x.eax = 0x25c1; /* Free DOS Memory under Phar Lap*/
+                intdos( &regs, &regs );
             }
         }
 #endif

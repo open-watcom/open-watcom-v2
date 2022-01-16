@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include <i86.h>
 
 
-extern void     __int386x( unsigned char, void _WCNEAR *, void _WCNEAR *, void _WCNEAR * );
+extern void __int386x( unsigned char intno, void _WCNEAR *inregs, void _WCNEAR *outregs, void _WCNEAR *segregs );
 #pragma aux __int386x "*_" \
     __parm __caller [__eax] [__edi] [__edx] [__ebx] \
     __modify        [__ecx __esi]

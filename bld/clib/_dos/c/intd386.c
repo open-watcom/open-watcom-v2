@@ -33,7 +33,6 @@
 
 #include "variety.h"
 #include <dos.h>
-//#include "tinyio.h"
 #include "dodoscal.h"
 #include "dosret.h"
 #if defined( __WINDOWS_386__ )
