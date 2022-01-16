@@ -1318,115 +1318,6 @@ static void DLLThunkTrailer( void )
 
 
 /*
- * FunctionHeader - build glue functions header area
- */
-static void FunctionHeader( void )
-{
-    fcn         *tmpf;
-    const char  *thunkstr;
-    char        *th1,*th2;
-
-    fprintf( stubs, LINE );
-    fprintf( stubs, BLANK );
-    fprintf( stubs, ";*** WINGLUE.ASM - windows glue functions                                 ***\n" );
-    fprintf( stubs, ";***               This set of functions encompasses all possible types   ***\n" );
-    fprintf( stubs, ";***               of calls.  Each API call has a little                  ***\n" );
-    fprintf( stubs, ";***               stub which generates the appropriate call into these   ***\n" );
-    fprintf( stubs, ";***               functions.                                             ***\n" );
-    CloseHeader( stubs );
-    fprintf( stubs, ".386p\n" );
-    fprintf( stubs, "\n" );
-    fprintf( stubs, "include %s\n", GlueInc );
-
-    fprintf( stubs, "DGROUP group _DATA\n" );
-    fprintf( stubs, "\n" );
-    fprintf( stubs, "\n" );
-    fprintf( stubsinc, "extrn        __DLLPatch:far\n" );
-    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
-        if( tmpf->thunk ) {
-            th1 = ";";
-            th2 = "(thunked)";
-        } else {
-            th1 = "";
-            th2 = "";
-        }
-        if( tmpf->is_16 ) {
-            if( tmpf->noregfor_16 ) {
-                fprintf(stubsinc,"%sextrn       PASCAL %s:FAR ; t=%d %s\n",
-                        th1,&tmpf->fn[3], tmpf->class, th2 );
-            } else {
-                fprintf(stubsinc,";               PASCAL %s ; t=%d %s\n",
-                        tmpf->fn, tmpf->class, th2 );
-            }
-        } else {
-            fprintf(stubsinc,"%sextrn        PASCAL %s:FAR ; t=%d %s\n",
-                    th1, tmpf->fn, tmpf->class, th2 );
-        }
-    }
-    fprintf( stubs, "\n" );
-    fprintf( stubs, ";*\n" );
-    fprintf( stubs, ";*** 16-bit segment declarations\n" );
-    fprintf( stubs, ";*\n" );
-    fprintf( stubs, "_TEXT segment word public 'CODE' use16\n" );
-    fprintf( stubs, "_TEXT ends\n" );
-    fprintf( stubs, "\n" );
-    fprintf( stubs, "_DATA segment word public 'DATA' use16\n" );
-    fprintf( stubs, "_DATA ends\n" );
-    fprintf( stubs, "\n" );
-    fprintf( stubs, "_DATA segment use16\n" );
-
-    fprintf( stubs, "_FunctionTable LABEL DWORD\n" );
-    fprintf( stubs, "PUBLIC _FunctionTable\n" );
-    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
-        if( tmpf->thunk ) {
-            thunkstr = ThunkStrs[tmpf->thunkindex];
-        } else {
-            thunkstr = "";
-        }
-        if( tmpf->is_16 ) {
-            if( tmpf->noregfor_16 ) {
-                if( tmpf->thunk ) {
-                    fprintf( stubs, "  dd __DLLPatch ; %s%s\n", thunkstr, &tmpf->fn[3] );
-                } else {
-                    fprintf( stubs, "  dd %s%s\n", thunkstr, &tmpf->fn[3] );
-                }
-            }
-        } else {
-            if( tmpf->thunk ) {
-                fprintf( stubs, "  dd __DLLPatch ; %s%s\n", thunkstr, tmpf->fn );
-            } else {
-                fprintf( stubs, "  dd %s\n", tmpf->fn );
-            }
-        }
-    }
-
-    fprintf( stubs, "_DATA ends\n" );
-    fprintf( stubs, "\n" );
-    fprintf( stubsinc, "extrn   GetFirst16Alias:near\n" );
-    fprintf( stubsinc, "extrn   Get16Alias:near\n" );
-    fprintf( stubsinc, "extrn   Free16Alias:near\n" );
-
-    fprintf( stubs, "_TEXT segment use16\n" );
-    fprintf( stubs, "assume cs:_TEXT\n" );
-    fprintf( stubs, "assume ds:dgroup\n" );
-    GenerateClassThunkTable();
-    fprintf( stubs, "\n" );
-
-} /* FunctionHeader */
-
-
-/*
- * FunctionTrailer - very last crap at end of glue functions
- */
-static void FunctionTrailer( void )
-{
-    fprintf( stubs, "_TEXT   ends\n" );
-    fprintf( stubs, "        end\n" );
-
-} /* FunctionTrailer */
-
-
-/*
  * GenerateStartupCode - init. code for each glue function
  */
 static void GenerateStartupCode( fcn *tmpf )
@@ -1606,6 +1497,115 @@ void GenerateStackAccessEquates( fcn *tmpf )
 
 } /* GenerateStackAccessEquates */
 #endif
+
+/*
+ * FunctionHeader - build glue functions header area
+ */
+static void FunctionHeader( void )
+{
+    fcn         *tmpf;
+    const char  *thunkstr;
+    char        *th1,*th2;
+
+    fprintf( stubs, LINE );
+    fprintf( stubs, BLANK );
+    fprintf( stubs, ";*** WINGLUE.ASM - windows glue functions                                 ***\n" );
+    fprintf( stubs, ";***               This set of functions encompasses all possible types   ***\n" );
+    fprintf( stubs, ";***               of calls.  Each API call has a little                  ***\n" );
+    fprintf( stubs, ";***               stub which generates the appropriate call into these   ***\n" );
+    fprintf( stubs, ";***               functions.                                             ***\n" );
+    CloseHeader( stubs );
+    fprintf( stubs, ".386p\n" );
+    fprintf( stubs, "\n" );
+    fprintf( stubs, "include %s\n", GlueInc );
+
+    fprintf( stubs, "DGROUP group _DATA\n" );
+    fprintf( stubs, "\n" );
+    fprintf( stubs, "\n" );
+    fprintf( stubsinc, "extrn        __DLLPatch:far\n" );
+    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
+        if( tmpf->thunk ) {
+            th1 = ";";
+            th2 = "(thunked)";
+        } else {
+            th1 = "";
+            th2 = "";
+        }
+        if( tmpf->is_16 ) {
+            if( tmpf->noregfor_16 ) {
+                fprintf(stubsinc,"%sextrn       PASCAL %s:FAR ; t=%d %s\n",
+                        th1,&tmpf->fn[3], tmpf->class, th2 );
+            } else {
+                fprintf(stubsinc,";               PASCAL %s ; t=%d %s\n",
+                        tmpf->fn, tmpf->class, th2 );
+            }
+        } else {
+            fprintf(stubsinc,"%sextrn        PASCAL %s:FAR ; t=%d %s\n",
+                    th1, tmpf->fn, tmpf->class, th2 );
+        }
+    }
+    fprintf( stubs, "\n" );
+    fprintf( stubs, ";*\n" );
+    fprintf( stubs, ";*** 16-bit segment declarations\n" );
+    fprintf( stubs, ";*\n" );
+    fprintf( stubs, "_TEXT segment word public 'CODE' use16\n" );
+    fprintf( stubs, "_TEXT ends\n" );
+    fprintf( stubs, "\n" );
+    fprintf( stubs, "_DATA segment word public 'DATA' use16\n" );
+    fprintf( stubs, "_DATA ends\n" );
+    fprintf( stubs, "\n" );
+    fprintf( stubs, "_DATA segment use16\n" );
+
+    fprintf( stubs, "_FunctionTable LABEL DWORD\n" );
+    fprintf( stubs, "PUBLIC _FunctionTable\n" );
+    for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
+        if( tmpf->thunk ) {
+            thunkstr = ThunkStrs[tmpf->thunkindex];
+        } else {
+            thunkstr = "";
+        }
+        if( tmpf->is_16 ) {
+            if( tmpf->noregfor_16 ) {
+                if( tmpf->thunk ) {
+                    fprintf( stubs, "  dd __DLLPatch ; %s%s\n", thunkstr, &tmpf->fn[3] );
+                } else {
+                    fprintf( stubs, "  dd %s%s\n", thunkstr, &tmpf->fn[3] );
+                }
+            }
+        } else {
+            if( tmpf->thunk ) {
+                fprintf( stubs, "  dd __DLLPatch ; %s%s\n", thunkstr, tmpf->fn );
+            } else {
+                fprintf( stubs, "  dd %s\n", tmpf->fn );
+            }
+        }
+    }
+
+    fprintf( stubs, "_DATA ends\n" );
+    fprintf( stubs, "\n" );
+    fprintf( stubsinc, "extrn   GetFirst16Alias:near\n" );
+    fprintf( stubsinc, "extrn   Get16Alias:near\n" );
+    fprintf( stubsinc, "extrn   Free16Alias:near\n" );
+
+    fprintf( stubs, "_TEXT segment use16\n" );
+    fprintf( stubs, "assume cs:_TEXT\n" );
+    fprintf( stubs, "assume ds:dgroup\n" );
+    GenerateClassThunkTable();
+    fprintf( stubs, "\n" );
+
+} /* FunctionHeader */
+
+
+/*
+ * FunctionTrailer - very last crap at end of glue functions
+ */
+static void FunctionTrailer( void )
+{
+    fprintf( stubs, "_TEXT   ends\n" );
+    fprintf( stubs, "        end\n" );
+
+} /* FunctionTrailer */
+
 
 /*
  * GenerateCode - generate code for all glue functions
