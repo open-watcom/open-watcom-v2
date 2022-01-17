@@ -200,7 +200,7 @@ static option_mapping mappings[] = {
     { "finline-intrinsics-max",         "oi+" },
     { "finline-intrinsics",             "oi" },
     { "finline-fp-rounding",            "zri" },
-    { "fomit-fp-rounting",              "zro" },
+    { "fomit-fp-rounding",              "zro" },
     { "fschedule-prologue",             "ok" },
     { "floop-optimize",                 "ol" },
     { "funroll-loops",                  "ol+" },
