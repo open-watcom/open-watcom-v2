@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -30,24 +31,25 @@
 ;*****************************************************************************
 
 
+        extrn   Invoke16BitFunctionAddr : FWORD
+        extrn   _LocalPtr               : WORD
+
 _TEXT   segment use32 word public 'CODE'
         assume cs:_TEXT
-extrn Invoke16BitFunctionAddr : FWORD
-extrn _LocalPtr : WORD
-public Invoke16BitFunction_
 
 ;*
 ;*** Invoke16BitFunction - used to indirect call a 16 bit function
 ;*
-Invoke16BitFunction_ proc near
+        public  "C",Invoke16BitFunction
+Invoke16BitFunction proc near
 
         pop     eax
         push    cs
         push    eax
-        mov     ds,_LocalPtr            ; load ds of entender
+        mov     ds,_LocalPtr            ; load ds of extender
         jmp     es:[Invoke16BitFunctionAddr]
 
-Invoke16BitFunction_ endp
+Invoke16BitFunction endp
 
 _TEXT   ends
         end

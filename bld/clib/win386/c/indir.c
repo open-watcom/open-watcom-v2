@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 #include <windows.h>
 
 extern DWORD Invoke16BitFunction( void );
-#pragma aux Invoke16BitFunction "*_" \
+#pragma aux Invoke16BitFunction \
     __parm      [] \
     __value     [__eax] \
     __modify    [__eax __ebx __ecx __edx]
