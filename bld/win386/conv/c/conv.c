@@ -1301,8 +1301,8 @@ static void GenerateDLLCode( FILE *f )
     fprintf( f, "next:\tmov\tax,DLLHandles[si]\n" );
     fprintf( f, "\tcmp\tax,32\n" );
     fprintf( f, "\tjb\tnextdll\n" );
-    fprintf( f, "\tpush\tax\n" );
-    fprintf( f, "\tcall\tFreeLibrary\n" );
+    fprintf( f, "\t  push\tax\n" );
+    fprintf( f, "\t  call\tFreeLibrary\n" );
     fprintf( f, "nextdll:\tadd\tsi,2\n" );
     fprintf( f, "\tcmp\tsi,%d\n", ThunkIndex * 2 );
     fprintf( f, "\tjne\tnext\n" );
