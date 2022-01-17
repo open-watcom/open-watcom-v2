@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -53,16 +54,17 @@ _DATA segment word public 'DATA' use16
 _DATA ends
 
 _TEXT segment use16
-assume cs:_TEXT
+        assume cs:_TEXT
+        assume ds:DGROUP
+
 ;****************************************************************************
 ;***                                                                      ***
 ;*** Invoke16BitFunction - invoke a specified function                    ***
 ;***                                                                      ***
 ;****************************************************************************
 
-        assume  ds:DGROUP
-PUBLIC  Invoke16BitFunction_
-Invoke16BitFunction_ proc far
+        PUBLIC  "C",Invoke16BitFunction
+Invoke16BitFunction proc far
         Start16BitLand
 PNum    equ  dword ptr es:[ebp+20]
 PProc   equ  dword ptr es:[ebp+24]
@@ -105,7 +107,7 @@ docallx:
         assume  ds:DGROUP
         StubStackRestore
         BackTo32BitLand
-Invoke16BitFunction_ endp
+Invoke16BitFunction endp
 
 _TEXT   ends
         end

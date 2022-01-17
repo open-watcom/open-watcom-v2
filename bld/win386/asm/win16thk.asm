@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -116,8 +117,8 @@ Free16Alias endp
 ;       of the parms is a pointer and requires an alias for it
 ;       edi - points to parms on 32-bit stack
 ;
-        public  __Win16Thunk1_
-__Win16Thunk1_ proc far
+        public  "C",__Win16Thunk1
+__Win16Thunk1 proc far
         mov     ecx,esp                 ; save 32-bit sp
         mov     _SaveSP,ecx             ; ...
         lss     sp,_EntryStackSave      ; switch to 16-bit stack
@@ -135,14 +136,14 @@ __Win16Thunk1_ proc far
         mov     es,bx                   ; and es
         db      66h                     ; far return to 32-bit code
         ret                             ; ...
-__Win16Thunk1_ endp
+__Win16Thunk1 endp
 
 ;
 ; __Win16Thunk2 - there are less than 6 parms and they have been preloaded
 ;       into registers.  No aliases are required.
 ;
-        public  __Win16Thunk2_
-__Win16Thunk2_ proc far
+        public  "C",__Win16Thunk2
+__Win16Thunk2 proc far
         mov     _SaveSP,esp             ; save 32-bit stack pointer
         lss     sp,_EntryStackSave      ; switch to 16-bit stack
         push    _SaveSP                 ; save 32-bit sp
@@ -162,7 +163,7 @@ __Win16Thunk2_ proc far
         mov     es,bx                   ; and es
         db      66h                     ; far return to 32-bit code
         ret                             ; ...
-__Win16Thunk2_ endp
+__Win16Thunk2 endp
 
 ;
 ; __Win16Thunk3 - either there are more than 5 parms, or at least one
@@ -171,8 +172,8 @@ __Win16Thunk2_ endp
 ;       is a pointer.
 ;       edi - points to parms on 32-bit stack
 ;
-        public  __Win16Thunk3_
-__Win16Thunk3_ proc far
+        public  "C",__Win16Thunk3
+__Win16Thunk3 proc far
         mov     ecx,esp                 ; save 32-bit sp
         mov     _SaveSP,ecx             ; ...
         lss     sp,_EntryStackSave      ; switch to 16-bit stack
@@ -206,7 +207,7 @@ mapdone:pop     ecx                     ; restore 32-bit stack pointer
         mov     es,bx                   ; and es
         db      66h                     ; far return to 32-bit code
         ret                             ; ...
-__Win16Thunk3_ endp
+__Win16Thunk3 endp
 
 ;
 ; __Win16Thunk4 - there are less than 6 parms and they have been preloaded
@@ -214,8 +215,8 @@ __Win16Thunk3_ endp
 ;       This thunk is the same as __Win16Thunk2 except the return value
 ;       is a pointer.
 ;
-        public  __Win16Thunk4_
-__Win16Thunk4_ proc far
+        public  "C",__Win16Thunk4
+__Win16Thunk4 proc far
         mov     _SaveSP,esp             ; save 32-bit stack pointer
         lss     sp,_EntryStackSave      ; switch to 16-bit stack
         push    _SaveSP                 ; save 32-bit sp
@@ -225,7 +226,7 @@ __Win16Thunk4_ proc far
         call    cs:__ThunkTable[bp]        ; call appropriate thunk routine
         jmp     map2flat                ; map 16:16 pointer to 32-bit flat
 
-__Win16Thunk4_ endp
+__Win16Thunk4 endp
 
 GetNestedAliases proc near
         push    ebx                     ; save ebx
@@ -292,8 +293,8 @@ FreeNestedAliases endp
 ;               count
 ;               far return address
 ;
-        public  __Win16Thunk5_
-__Win16Thunk5_ proc far
+        public  "C",__Win16Thunk5
+__Win16Thunk5 proc far
         mov     ecx,esp                 ; save 32-bit sp
         mov     _SaveSP,ecx             ; ...
         lss     sp,_EntryStackSave      ; switch to 16-bit stack
@@ -313,7 +314,7 @@ __Win16Thunk5_ proc far
         mov     es,bx                   ; and es
         db      66h                     ; far return to 32-bit code
         ret                             ; ...
-__Win16Thunk5_ endp
+__Win16Thunk5 endp
 
 ;
 ; __Win16Thunk6 - at least one of the parms is a pointer and requires
@@ -323,8 +324,8 @@ __Win16Thunk5_ endp
 ;       is a pointer.
 ;       edi - points to parms on 32-bit stack
 ;
-        public  __Win16Thunk6_
-__Win16Thunk6_ proc far
+        public  "C",__Win16Thunk6
+__Win16Thunk6 proc far
         mov     ecx,esp                 ; save 32-bit sp
         mov     _SaveSP,ecx             ; ...
         lss     sp,_EntryStackSave      ; switch to 16-bit stack
@@ -338,7 +339,7 @@ __Win16Thunk6_ proc far
         pop     dx                      ; ...
         jmp     map2flat                ; map 16:16 pointer to 32-bit flat
 
-__Win16Thunk6_ endp
+__Win16Thunk6 endp
 
 _TEXT   ends
         end
