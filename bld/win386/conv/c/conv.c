@@ -610,7 +610,7 @@ static void emitTHEADR( int modindex )
 {
     char        buff[20];
 
-    sprintf( buff,"win%d", modindex );
+    sprintf( buff, "win%d", modindex );
     emitBYTE( 0x80 );
     emitWORD( (int)( 2 + strlen( buff ) ) );
     emitSTRING( buff );
@@ -1346,7 +1346,7 @@ static void DLLThunkTrailer( FILE *f )
  */
 static void GenerateStartupCode( FILE *f, fcn *tmpf )
 {
-    fprintf( f, "PUBLIC  __Thunk%d\n", tmpf->class );
+    fprintf( f, "public  __Thunk%d\n", tmpf->class );
     fprintf( f, "__Thunk%d proc near\n", tmpf->class );
 
 } /* GenerateStartupCode */
@@ -1469,17 +1469,15 @@ static void GenerateAPICall( FILE *f, fcn *tmpf )
 void GenerateStackAccessEquates( FILE *f, fcn *tmpf )
 {
     int         i;
-    char        tmp[128];
-    int         offset=STACK_FRAME;
+    int         offset;
+    const char  *p;
 
+    offset = STACK_FRAME;
     for( i = tmpf->pcnt; i-- > 0; ) {
-        sprintf( tmp,"Parm%d   =  ", i + 1 );
-        if( tmpf->plist[i] == PARM_WORD ) {
-            strcat( tmp, "word" );
-        } else {
-            strcat( tmp, "dword" );
-        }
-        fprintf( f, "%s ptr es:[edi+%d]\n", tmp, offset );
+        p = "dword";
+        if( tmpf->plist[i] == PARM_WORD )
+            p++;
+        fprintf( f, "Parm%d   = %s ptr es:[edi+%d]\n", i + 1, p, offset );
         offset += 4;
     }
 
@@ -1541,7 +1539,7 @@ static void FunctionData( FILE *f )
 
     fprintf( f, "_DATA segment\n" );
     fprintf( f, "\n" );
-    fprintf( f, "PUBLIC \"C\", FunctionTable\n" );
+    fprintf( f, "public \"C\", FunctionTable\n" );
     fprintf( f, "FunctionTable LABEL DWORD\n" );
     for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->is_16 && tmpf->noregfor_16 ) {
