@@ -1223,6 +1223,8 @@ static void GenerateDLLData( void )
  */
 static void GenerateDLLCode( void )
 {
+    int i;
+
     fprintf( dllthunk, "_TEXT segment word public 'CODE' use16\n" );
     fprintf( dllthunk, "assume cs:_TEXT\n" );
     fprintf( dllthunk, "assume ds:DGROUP\n" );
@@ -1571,6 +1573,9 @@ static void FunctionHeader( void )
 
 static void FunctionData( void )
 {
+    fcn         *tmpf;
+    const char  *thunkstr;
+
     fprintf( stubs, "_DATA segment use16\n" );
 
     fprintf( stubs, "_FunctionTable LABEL DWORD\n" );
@@ -1605,6 +1610,8 @@ static void FunctionData( void )
 
 static void FunctionCode( void )
 {
+    fcn *tmpf;
+
     fprintf( stubs, "_TEXT segment use16\n" );
     fprintf( stubs, "assume cs:_TEXT\n" );
     fprintf( stubs, "assume ds:dgroup\n" );
@@ -1665,13 +1672,13 @@ static void GenerateCode( void )
         exit(1);
     }
     FunctionHeader();
-    fprintf( subst, "\n" );
-    fprintf( subst, "\n" );
+    fprintf( stubs, "\n" );
+    fprintf( stubs, "\n" );
     FunctionData();
-    fprintf( subst, "\n" );
-    fprintf( subst, "\n" );
+    fprintf( stubs, "\n" );
+    fprintf( stubs, "\n" );
     FunctionCode();
-    fprintf( subst, "\n" );
+    fprintf( stubs, "\n" );
     FunctionTrailer();
     fclose( stubs );
 
