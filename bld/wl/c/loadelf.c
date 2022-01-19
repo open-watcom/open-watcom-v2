@@ -363,6 +363,9 @@ void FiniELFLoadFile( void )
 {
     ElfHdr      hdr;
 
+    if( FmtData.dll )
+        NumPhdr = 1;
+
     SetHeaders( &hdr );
 #if 0
     if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
@@ -425,8 +428,15 @@ void ChkElfData( void )
             AddSymElfSymTable( ElfSymTab, group->sym );
         }
     }
+    /* process local symbols */
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        if( IsSymElfImpExp( sym ) ) {
+        if( IsSymElfImpExp( sym ) && (sym->info & SYM_STATIC) ) {
+            AddSymElfSymTable( ElfSymTab, sym );
+        }
+    }
+    /* process global symbols */
+    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+        if( IsSymElfImpExp( sym ) && (sym->info & SYM_STATIC) == 0 ) {
             AddSymElfSymTable( ElfSymTab, sym );
         }
     }
