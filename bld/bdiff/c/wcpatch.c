@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,70 +51,16 @@ struct {
     size_t  origTgtDirLen;
 } glob;
 
-int     cmpStrings( const void *, const void * );
-void    WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name );
-void    DirRecurse( const char *srcDir, const char *tgtDir );
-void    DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] );
-void    DirCmpFiles( const char *srcDir, char *srcFiles[], const char *tgtDir, char *tgtFiles[], int Dirflag );
+static void DirRecurse( const char *srcDir, const char *tgtDir );
 
-
-int main( int argc, char *argv[] )
+static int cmpStrings( const void *op1, const void *op2 )
 {
-    MsgInit();
-    if( argc != 4 ) {
-        puts( "Usage: wcpatch source-dir target-dir patchfile" );
-        puts( "where" );
-        puts( "    source-dir   the directory containing the original files" );
-        puts( "    target-dir   the directory containing the modified files" );
-        puts( "    patchfile    the path to store the resulting patchfile in" );
-        puts( "" );
-        exit( -2 );
-    } else {
-        puts( "Watcom Create Patch (WCPATCH) version 11.0" );
-        puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.");
-        puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc.");
-        puts( "" );
-    }
-
-    glob.origSrcDirLen = strlen( argv[1] );
-    glob.origTgtDirLen = strlen( argv[2] );
-    WPatchCreate( argv[1], argv[2], argv[3] );
-    MsgFini();
-    return( EXIT_SUCCESS );
+    const char **p1 = (const char **) op1;
+    const char **p2 = (const char **) op2;
+    return( strcmp( *p1, *p2 ) );
 }
 
-void WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )
-{
-    PatchWriteOpen( patch_name );
-    DirRecurse( SrcDirName, TgtDirName );
-    PatchWriteClose();
-
-}
-
-void DirRecurse( const char *srcDir, const char *tgtDir )
-{
-    DIR     *srcdirp;
-    DIR     *tgtdirp;
-
-    char **srcFiles = bdiff_malloc( 1000 * sizeof( char * ) );
-    char **srcDirs = bdiff_malloc( 500 * sizeof( char * ) );
-    char **tgtFiles = bdiff_malloc( 1000 * sizeof( char * ) );
-    char **tgtDirs = bdiff_malloc( 500 * sizeof( char * ) );
-
-    srcdirp = opendir( srcDir );
-    tgtdirp = opendir( tgtDir );
-    if( srcdirp == NULL || tgtdirp == NULL ) {
-        perror( "" );
-    }
-    DirGetFiles( srcdirp, srcFiles, srcDirs );
-    DirGetFiles( tgtdirp, tgtFiles, tgtDirs );
-    closedir( srcdirp );
-    closedir( tgtdirp );
-    DirCmpFiles( srcDir, srcFiles, tgtDir, tgtFiles, 0 );
-    DirCmpFiles( srcDir, srcDirs,  tgtDir, tgtDirs,  1 );
-}
-
-void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
+static void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
 {
     struct dirent   *dire;
     int             file = 0;
@@ -145,13 +91,6 @@ void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
     Dirs[dir] = NULL;
     qsort( Files, file, sizeof( char * ), cmpStrings );
     qsort( Dirs, dir, sizeof( char * ), cmpStrings );
-}
-
-int cmpStrings( const void *op1, const void *op2 )
-{
-    const char **p1 = (const char **) op1;
-    const char **p2 = (const char **) op2;
-    return( strcmp( *p1, *p2 ) );
 }
 
 static void FileCmp( const char *SrcPath, const char *TgtPath, const char *name )
@@ -241,7 +180,7 @@ compared, and a patch is made if they do not match.
 
 */
 
-void DirCmpFiles( const char *srcDir, char *srcFiles[],
+static void DirCmpFiles( const char *srcDir, char *srcFiles[],
                   const char *tgtDir, char *tgtFiles[], int Dirflag )
 {
     int     indexSrc = 0;
@@ -294,4 +233,60 @@ void DirCmpFiles( const char *srcDir, char *srcFiles[],
             indexTgt += 1;
         }
     }
+}
+
+static void DirRecurse( const char *srcDir, const char *tgtDir )
+{
+    DIR     *srcdirp;
+    DIR     *tgtdirp;
+
+    char **srcFiles = bdiff_malloc( 1000 * sizeof( char * ) );
+    char **srcDirs = bdiff_malloc( 500 * sizeof( char * ) );
+    char **tgtFiles = bdiff_malloc( 1000 * sizeof( char * ) );
+    char **tgtDirs = bdiff_malloc( 500 * sizeof( char * ) );
+
+    srcdirp = opendir( srcDir );
+    tgtdirp = opendir( tgtDir );
+    if( srcdirp == NULL || tgtdirp == NULL ) {
+        perror( "" );
+    }
+    DirGetFiles( srcdirp, srcFiles, srcDirs );
+    DirGetFiles( tgtdirp, tgtFiles, tgtDirs );
+    closedir( srcdirp );
+    closedir( tgtdirp );
+    DirCmpFiles( srcDir, srcFiles, tgtDir, tgtFiles, 0 );
+    DirCmpFiles( srcDir, srcDirs,  tgtDir, tgtDirs,  1 );
+}
+
+static void WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )
+{
+    PatchWriteOpen( patch_name );
+    DirRecurse( SrcDirName, TgtDirName );
+    PatchWriteClose();
+
+}
+
+int main( int argc, char *argv[] )
+{
+    MsgInit();
+    if( argc != 4 ) {
+        puts( "Usage: wcpatch source-dir target-dir patchfile" );
+        puts( "where" );
+        puts( "    source-dir   the directory containing the original files" );
+        puts( "    target-dir   the directory containing the modified files" );
+        puts( "    patchfile    the path to store the resulting patchfile in" );
+        puts( "" );
+        exit( -2 );
+    } else {
+        puts( "Watcom Create Patch (WCPATCH) version 11.0" );
+        puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.");
+        puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc.");
+        puts( "" );
+    }
+
+    glob.origSrcDirLen = strlen( argv[1] );
+    glob.origTgtDirLen = strlen( argv[2] );
+    WPatchCreate( argv[1], argv[2], argv[3] );
+    MsgFini();
+    return( EXIT_SUCCESS );
 }
