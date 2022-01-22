@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -872,7 +872,7 @@ static unsigned_32 WriteDebugTable( pe_object *object, const char *symfilename,
     strncpy( object->name, ".rdata", PE_OBJ_NAME_LEN );
     object->physical_offset = NullAlign( file_align );
     object->flags = PE_OBJ_INIT_DATA | PE_OBJ_READABLE;
-    object->physical_size = ROUND_UP( size, file_align);
+    object->physical_size = ROUND_UP( size, file_align );
 
     /* write debug dir entry for DEBUG_TYPE_MISC */
     dir.flags = 0;

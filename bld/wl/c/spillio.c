@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,7 @@
 
 static char             *TFileName;
 static virt_mem_size    TmpFSize;
+static f_handle         TempFile;
 
 void InitSpillFile( void )
 /*******************************/
@@ -56,15 +58,15 @@ void InitSpillFile( void )
 #define TEMPFNAME       "WLK02112.xx`"          // "'" will be an "a" when processed.
 #define TEMPFNAME_SIZE  13
 
-static char *MakeTempName( char *name )
+static char *makeTempName( char *name )
 /*************************************/
 {
     memcpy( name, TEMPFNAME, sizeof( TEMPFNAME ) );         // includes nullchar
     return( name + sizeof( TEMPFNAME ) - 2 );   // pointer to "a"
 }
 
-f_handle OpenTempFile( char **fname )
-/***********************************/
+static f_handle openTempFile( char **fname )
+/******************************************/
 {
     const char  *ptr;
     size_t      tlen;
@@ -89,7 +91,7 @@ f_handle OpenTempFile( char **fname )
             *tptr++ = DIR_SEP;
         }
     }
-    tptr = MakeTempName( tptr );
+    tptr = makeTempName( tptr );
     tlen = 0;
     for( ;; ) {
         if( tlen >= 26 ) {
@@ -111,7 +113,7 @@ virt_mem_size SpillAlloc( virt_mem_size amt )
     virt_mem_size           stg;
 
     if( TempFile == NIL_FHANDLE ) {
-        TempFile = OpenTempFile( &TFileName );
+        TempFile = openTempFile( &TFileName );
         LnkMsg( INF+MSG_USING_SPILL, NULL );
     }
     /* round up storage start to a disk sector boundry -- assumed power of 2 */

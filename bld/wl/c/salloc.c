@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ void NormalizeAddr( void )
     DbgAssert( (FmtData.type & MK_PROT_MODE) == 0 );
 
     if( CurrSect == NonSect || !FmtData.u.dos.ovl_short ) {
-        new_seg = (CurrLoc.off >> FmtData.SegShift) + CurrLoc.seg;
+        new_seg = ( CurrLoc.off >> FmtData.SegShift ) + CurrLoc.seg;
         if( new_seg > 0xFFFF ) {
             LnkMsg( ERR+MSG_APP_TOO_BIG_FOR_DOS, NULL );
         }
@@ -153,8 +153,8 @@ void ChkLocated( targ_addr *segadr, bool fixed)
 // This should only be called from real mode
 {
     if( fixed ) {
-        if( (CurrLoc.seg << FmtData.SegShift) + CurrLoc.off >
-            (segadr->seg << FmtData.SegShift) + segadr->off ) {
+        if( ( CurrLoc.seg << FmtData.SegShift ) + CurrLoc.off >
+            ( segadr->seg << FmtData.SegShift ) + segadr->off ) {
             LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", segadr);
         } else {
             CurrLoc = *segadr;
@@ -216,7 +216,7 @@ void NewSegment( seg_leader *seg )
         seg->seg_addr.seg = CurrLoc.seg;
         CurrLoc.off = group->totalsize;
         if( seg == FmtData.dgroupsplitseg ) {
-            FmtData.bsspad = ROUND_UP(CurrLoc.off, FmtData.objalign) - CurrLoc.off;
+            FmtData.bsspad = ROUND_UP( CurrLoc.off, FmtData.objalign ) - CurrLoc.off;
             AddSize( FmtData.bsspad );
         }
         Align( seg->align );

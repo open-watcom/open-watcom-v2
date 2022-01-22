@@ -92,8 +92,8 @@ static int              NumPhdr = 0;    /* just for now untill dynamic objects s
 
 #define INJECT_DEBUG ( SymFileName == NULL && (LinkFlags & LF_DWARF_DBI_FLAG) )
 
-static void InitSections( ElfHdr *hdr)
-/************************************/
+static void InitSections( ElfHdr *hdr )
+/*************************************/
 {
     unsigned    num;
     group_entry *group;

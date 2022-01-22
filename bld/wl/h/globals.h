@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,6 @@ GLOB symbol         *HeadSym;       /* head of symbol table list                
 GLOB dbi_flags      DBIFlag;
 GLOB struct fmt_data FmtData;       /* format specific data                     */
 GLOB obj_format     ObjFormat;
-GLOB f_handle       TempFile;
 GLOB mod_entry      *FakeModule;    /* Module containing all the extra sections */
 GLOB unsigned_32    NumImports;
 GLOB unsigned_32    NumExports;
