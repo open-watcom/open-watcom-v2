@@ -73,11 +73,11 @@ pick(   WR_COPYRESINTO,
         "Copy Resource Into",
         "Copy Resource Into" )
 pick(   WR_NOLOAD32IN16,
-        "Cannot load 32 bit resources with the 16 version of this application.",
-        "Cannot load 32 bit resources with the 16 version of this application." )
+        "Cannot load 32 bit resources with the 16 bit version of this application.",
+        "Cannot load 32 bit resources with the 16 bit version of this application." )
 pick(   WR_NOSAVE32IN16,
-        "Cannot save 32 bit resources with the 16 version of this application.",
-        "Cannot save 32 bit resources with the 16 version of this application." )
+        "Cannot save 32 bit resources with the 16 bit version of this application.",
+        "Cannot save 32 bit resources with the 16 bit version of this application." )
 
 //wrrdw16.c
 pick(   WR_BADEXE,
