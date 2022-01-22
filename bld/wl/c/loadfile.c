@@ -140,7 +140,7 @@ static f_handle openTempFile( char **fname )
     tlen = 0;
     for( ;; ) {
         if( tlen >= 26 ) {
-            LnkMsg( FTL+MSG_CANT_OPEN_SPILL, NULL );
+            LnkMsg( FTL+MSG_TMP_ALREADY_EXISTS, NULL );
         }
         *tptr += 1;                     // change temp file extension
         fhdl = TempFileOpen( *fname );
