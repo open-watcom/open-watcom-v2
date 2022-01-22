@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,10 +43,10 @@
 
 enum fpe        floating_point = DO_FP_EMULATION;
 
-static bool match_phase_3( bool *found, const asm_ins ASMFAR **pins, OPNDTYPE determinant );
+static bool match_phase_3( bool *found, const asm_ins ASMI86FAR **pins, OPNDTYPE determinant );
 
-static bool output_3DNow( const asm_ins ASMFAR *ins )
-/***************************************************/
+static bool output_3DNow( const asm_ins ASMI86FAR *ins )
+/******************************************************/
 {
     if( ins->byte1_info == F_0F0F ) {
         if( !ins->wds ) {
@@ -57,8 +57,8 @@ static bool output_3DNow( const asm_ins ASMFAR *ins )
     return( RC_OK );
 }
 
-static bool output( const asm_ins ASMFAR *ins )
-/*********************************************/
+static bool output( const asm_ins ASMI86FAR *ins )
+/************************************************/
 /*
 - determine what code should be output and their order;
 - output prefix bytes ( ADRSIZ, OPSIZ, LOCK, REPxx, segment override prefix, etc )
@@ -391,14 +391,14 @@ static bool output_data( OPNDTYPE determinant, operand_idx index )
     return( RC_OK );
 }
 
-static bool match_phase_2( bool *found, const asm_ins ASMFAR **pins )
-/********************************************************************
+static bool match_phase_2( bool *found, const asm_ins ASMI86FAR **pins )
+/***********************************************************************
 - a routine used by match_phase_1() to determine whether both operands match
   with that in the assembly instructions table;
 - call by match_phase_1() only;
 */
 {
-    const asm_ins   ASMFAR *ins;
+    const asm_ins   ASMI86FAR *ins;
 
     ins = *pins;
     if( Code->info.opnd_type[OPND2] != OP_NONE ) {
@@ -434,7 +434,7 @@ bool match_phase_1( void )
     OPNDTYPE        cur_opnd;
     OPNDTYPE        asm_op1;
     bool            found = true;
-    const asm_ins   ASMFAR *ins;
+    const asm_ins   ASMI86FAR *ins;
 
     // if nothing inside, no need to output anything
     if( Code->info.token == T_NULL ) {
@@ -599,8 +599,8 @@ bool match_phase_1( void )
     return( RC_ERROR );
 }
 
-static bool check_3rd_operand( const asm_ins ASMFAR *ins )
-/********************************************************/
+static bool check_3rd_operand( const asm_ins ASMI86FAR *ins )
+/***********************************************************/
 {
     OPNDTYPE    cur_opnd;
 
@@ -619,8 +619,8 @@ static bool check_3rd_operand( const asm_ins ASMFAR *ins )
     }
 }
 
-static bool output_3rd_operand( const asm_ins ASMFAR *ins )
-/*********************************************************/
+static bool output_3rd_operand( const asm_ins ASMI86FAR *ins )
+/************************************************************/
 {
     if( ins->opnd_type_3rd == OP3_NONE ) {
         return( RC_OK );
@@ -638,7 +638,7 @@ static bool output_3rd_operand( const asm_ins ASMFAR *ins )
     }
 }
 
-static bool match_phase_3( bool *found, const asm_ins ASMFAR **pins, OPNDTYPE determinant )
+static bool match_phase_3( bool *found, const asm_ins ASMI86FAR **pins, OPNDTYPE determinant )
 /************************************************************************
 - this routine will look up the assembler opcode table and try to match
   the second operand with what we get;
@@ -651,7 +651,7 @@ static bool match_phase_3( bool *found, const asm_ins ASMFAR **pins, OPNDTYPE de
     OPNDTYPE        last_opnd;
     OPNDTYPE        asm_op2;
     asm_token       instruction;
-    const asm_ins   ASMFAR *ins;
+    const asm_ins   ASMI86FAR *ins;
 
     ins = *pins;
     instruction = ins->token;
