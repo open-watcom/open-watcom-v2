@@ -543,7 +543,7 @@ static bool LoadInfo( void *info, spilladdr loc, size_t off, size_t len, bool in
     if( len == 0 )
         return( true );
     if( inmem ) {
-        memcpy( info, (char *)loc.u.addr + off, len );
+        memcpy( info, loc.u.addr + off, len );
     } else {
         SpillRead( loc.u.spill, off, info, len );
     }
@@ -565,7 +565,7 @@ static bool SaveInfo( void *info, spilladdr loc, size_t off, size_t len, bool in
         return( true );
     DEBUG((DBG_VIRTMEM, "saving %d bytes (offset %x) to %d.%h", len, off, inmem, loc.u.spill ));
     if( inmem ) {
-        memcpy( (char *)loc.u.addr + off, info, len );
+        memcpy( loc.u.addr + off, info, len );
     } else {
         SpillWrite( loc.u.spill, off, info, len );
     }
@@ -599,7 +599,7 @@ static bool CompareBlock( void *info, spilladdr loc, size_t off, size_t len, boo
     if( len == 0 )
         return( true );
     if( inmem ) {
-        buf = (char *)loc.u.addr + off;
+        buf = loc.u.addr + off;
     } else {
         buf = alloca( len );
         SpillRead( loc.u.spill, off, buf, len );
@@ -624,7 +624,7 @@ static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool in
         return( true );
     DEBUG((DBG_VIRTMEM, "writing %d bytes (offset %x) to %d.%h", len, off, inmem, loc.u.spill ));
     if( inmem ) {
-        WriteLoad( (char *)loc.u.addr + off, len );
+        WriteLoad( loc.u.addr + off, len );
     } else {
         for( ; len != 0; len -= amt ) {
             amt = len;
@@ -654,7 +654,7 @@ static bool NullInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool i
     if( len == 0 )
         return( true );
     if( inmem ) {
-        memset( (char *)(loc.u.addr) + off, 0, len );
+        memset( loc.u.addr + off, 0, len );
     } else {
         SpillNull( loc.u.spill, off, len );
     }

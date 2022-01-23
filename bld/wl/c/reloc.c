@@ -58,8 +58,6 @@ typedef struct {
 } os2_reloc_header;
 
 #define RELOC_PAGE_SIZE 512
-#define RELOC_SPILLED   0x8000
-#define SIZELEFT_MASK   0x7FFF
 
 unsigned        FmtRelocSize;
 #ifdef _QNX
@@ -77,26 +75,29 @@ void ResetReloc( void )
 }
 
 static reloc_info *AllocRelocInfo( void )
-/****************************************/
-/* allocate a relocation information block */
+/****************************************
+ * allocate a relocation information block
+ */
 {
     reloc_info      *info;
 
     _PermAlloc( info, sizeof( reloc_info ) );       /* allocate more */
     info->sizeleft = RELOC_PAGE_SIZE;
+    info->loc.spilled = false;
     _LnkAlloc( info->loc.u.addr, RELOC_PAGE_SIZE );
     if( info->loc.u.addr == NULL ) {
         info->loc.u.spill = SpillAlloc( RELOC_PAGE_SIZE );
-        info->sizeleft |= RELOC_SPILLED;
+        info->loc.spilled = true;
     }
     return( info );
 }
 
 static void *OS2PagedRelocInit( offset size, int unitsize )
-/***************************************************************/
-/* For some OS/2 formats we have to split up the structure off the grp_relocs
+/**********************************************************
+ * For some OS/2 formats we have to split up the structure off the grp_relocs
  * field up into small bits to ensure that we don't get structure allocations
- * > 64K. This is stored basically as a 2-d array */
+ * > 64K. This is stored basically as a 2-d array
+ */
 {
     void **     mem;
     void **     start;
@@ -125,15 +126,17 @@ static void *OS2PagedRelocInit( offset size, int unitsize )
 }
 
 static void *OS2FlatRelocInit( offset size )
-/*******************************************/
-/* initialize relocations for OS2 flat memory manager. */
+/*******************************************
+ * initialize relocations for OS2 flat memory manager. 
+ */
 {
     return( OS2PagedRelocInit( size, sizeof( os2_reloc_header ) ) );
 }
 
 static void *PERelocInit( offset size )
-/**************************************/
-/* initialize relocations for PE executable format */
+/**************************************
+ * initialize relocations for PE executable format
+ */
 {
     return( OS2PagedRelocInit( size, sizeof( reloc_info * ) ) );
 }
@@ -151,13 +154,13 @@ static void DoWriteReloc( void *lst, const void *reloc, size_t size )
         info->next = NULL;
         *list = info;
     }
-    if( (info->sizeleft & SIZELEFT_MASK) < size ) {     /* if no space */
+    if( info->sizeleft < size ) {     /* if no space */
         info = AllocRelocInfo();
         info->next = *list;
         *list = info;
     }
-    offset = RELOC_PAGE_SIZE - (info->sizeleft & SIZELEFT_MASK);
-    if( info->sizeleft & RELOC_SPILLED ) {
+    offset = RELOC_PAGE_SIZE - info->sizeleft;
+    if( info->loc.spilled ) {
         SpillWrite( info->loc.u.spill, offset, reloc, size );
     } else {
         memcpy( info->loc.u.addr + offset, reloc, size );
@@ -171,9 +174,9 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
  */
 {
 #ifdef _OS2
-    os2_reloc_header ** pagelist;
-    reloc_info ***      reloclist;
-    reloc_info **       header;
+    os2_reloc_header    **pagelist;
+    reloc_info          ***reloclist;
+    reloc_info          **header;
     unsigned_32         idx;
 
     if( FmtData.type & MK_PE ) {
@@ -245,11 +248,12 @@ void WriteQNXLinearReloc( group_entry *group, qnx_linear_item *item )
 #endif
 
 static bool FreeRelocList( reloc_info *list )
-/********************************************/
-/* free any reloc blocks pointed to by list */
+/********************************************
+ * free any reloc blocks pointed to by list
+ */
 {
     for( ; list != NULL; list = list->next ) {
-        if( (list->sizeleft & RELOC_SPILLED) == 0 ) {
+        if( !list->loc.spilled ) {
             _LnkFree( list->loc.u.addr );
         }
     }
@@ -279,13 +283,14 @@ static bool TraverseRelocBlock( reloc_info ** reloclist, unsigned num,
 }
 
 bool TraverseOS2RelocList( group_entry *group, bool (*fn)( reloc_info * ) )
-/******************************************************************************/
-/* traverse all items in one of the big OS2 page relocation lists */
+/**************************************************************************
+ * traverse all items in one of the big OS2 page relocation lists
+ */
 {
     unsigned_32         index;
     unsigned_32         highidx;
     unsigned            lowidx;
-    reloc_info ***      reloclist;
+    reloc_info          ***reloclist;
 
     reloclist = group->g.grp_relocs;
     if( reloclist != NULL ) {
@@ -309,11 +314,11 @@ static void FreeGroupRelocs( group_entry *group )
 #ifdef _OS2
     unsigned_32         highidx;
     unsigned_32         index;
-    reloc_info ***      reloclist;
+    reloc_info          ***reloclist;
 #endif
 
 #if !defined( _OS2 ) && !defined( _ELF ) && !defined( _QNX )
-        /* unused parameters */ (void)group;
+    /* unused parameters */ (void)group;
 #endif
 
     if( (LinkState & LS_MAKE_RELOCS) == 0 ) {
@@ -348,8 +353,9 @@ static void FreeGroupRelocs( group_entry *group )
 }
 
 void FreeRelocInfo( void )
-/*******************************/
-/* free up blocks allocated for relocations */
+/*************************
+ * free up blocks allocated for relocations
+ */
 {
     group_entry         *group;
 
@@ -371,21 +377,23 @@ void FreeRelocInfo( void )
 }
 
 unsigned_32 RelocSize( reloc_info *list )
-/***********************************************/
-/* find the size of all the relocations stored here */
+/****************************************
+ * find the size of all the relocations stored here
+ */
 {
     unsigned_32 size;
 
     size = 0;
     for( ; list != NULL; list = list->next ) {
-        size += RELOC_PAGE_SIZE - (list->sizeleft & SIZELEFT_MASK);
+        size += RELOC_PAGE_SIZE - list->sizeleft;
     }
     return( size );
 }
 
 unsigned_32 DumpMaxRelocList( reloc_info **head, unsigned_32 max )
-/***********************************************************************/
-/* write the given reloc information list to loadfile */
+/*****************************************************************
+ * write the given reloc information list to loadfile
+ */
 {
     unsigned_32         size;
     unsigned_32         total;
@@ -393,11 +401,11 @@ unsigned_32 DumpMaxRelocList( reloc_info **head, unsigned_32 max )
 
     total = 0;
     for( list = *head; list != NULL; list = list->next ) {
-        size = RELOC_PAGE_SIZE - (list->sizeleft & SIZELEFT_MASK);
+        size = RELOC_PAGE_SIZE - list->sizeleft;
         if( ( max != 0 ) && ( total != 0 ) && ( ( total + size ) >= max ) )
             break;
-        if( size != 0 ) {
-            if( list->sizeleft & RELOC_SPILLED ) {
+        if( size ) {
+            if( list->loc.spilled ) {
                 SpillRead( list->loc.u.spill, 0, TokBuff, size );
                 WriteLoad( TokBuff, size );
             } else {
@@ -411,15 +419,16 @@ unsigned_32 DumpMaxRelocList( reloc_info **head, unsigned_32 max )
 }
 
 bool DumpRelocList( reloc_info *list )
-/********************************************/
+/************************************/
 {
     DumpMaxRelocList( &list, 0 );
     return( false );            /* so traverse works */
 }
 
 unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, size_t size, void *ctx ), void *ctx )
-/*********************************************************************************************************/
-/* walk the given reloc information list and call user fn for each reloc */
+/**********************************************************************************************************
+ * walk the given reloc information list and call user fn for each reloc
+ */
 {
     size_t              size;
     unsigned_32         total;
@@ -430,9 +439,9 @@ unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, size_t siz
     for( list = *head; list != NULL; list = list->next ) {
         if( quit )
             break;
-        size = RELOC_PAGE_SIZE - (list->sizeleft & SIZELEFT_MASK);
-        if( size != 0 ) {
-            if( list->sizeleft & RELOC_SPILLED ) {
+        size = RELOC_PAGE_SIZE - list->sizeleft;
+        if( size ) {
+            if( list->loc.spilled ) {
                 SpillRead( list->loc.u.spill, 0, TokBuff, size );
                 quit = fn( TokBuff, size, ctx );
             } else {
@@ -446,7 +455,7 @@ unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, size_t siz
 }
 
 void SetRelocSize( void )
-/******************************/
+/***********************/
 {
 #ifdef _OS2
     if( FmtData.type & ( MK_OS2 | MK_WIN_VXD ) ) {
@@ -482,8 +491,10 @@ void SetRelocSize( void )
 #endif
 #ifdef _ELF
     if( FmtData.type & MK_ELF ) {
-        // elf_reloc_item contains pointer to symbol which gets
-        // converted later on into index into symbol table
+        /*
+         * elf_reloc_item contains pointer to symbol which gets
+         * converted later on into index into symbol table
+         */
         FmtRelocSize = sizeof( elf_reloc_item );
         return;
     }
@@ -505,12 +516,12 @@ static bool SpillRelocList( reloc_info *list )
     virt_mem_size   spill;
 
     for( ; list != NULL; list = list->next ) {
-        if( (list->sizeleft & RELOC_SPILLED) == 0 ) {
+        if( !list->loc.spilled ) {
             spill = SpillAlloc( RELOC_PAGE_SIZE );
             SpillWrite( spill, 0, list->loc.u.addr, RELOC_PAGE_SIZE - list->sizeleft );
             _LnkFree( list->loc.u.addr );
             list->loc.u.spill = spill;
-            list->sizeleft |= RELOC_SPILLED;
+            list->loc.spilled = true;
             return( true );
         }
     }
