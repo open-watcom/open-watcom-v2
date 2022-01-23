@@ -42,7 +42,7 @@
 #include "ideentry.h"
 #include "spillio.h"
 
-- 1 
+
 static virt_mem_size    tmp_filesize;
 static FILE             *tmp_fp;
 
@@ -176,4 +176,3 @@ void CloseSpillFile( void )
         tmp_fp = NULL;
     }
 }
-
