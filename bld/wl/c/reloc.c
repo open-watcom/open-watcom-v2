@@ -66,6 +66,8 @@ unsigned        FmtRelocSize;
 reloc_info      *FloatFixups;
 #endif
 
+static bool     SpillAreas( OVL_AREA *ovl, bool (*rtn)( section * ) );
+
 void ResetReloc( void )
 /****************************/
 {
@@ -496,8 +498,9 @@ void SetRelocSize( void )
 }
 
 static bool SpillRelocList( reloc_info *list )
-/*********************************************/
-/* spill any reloc blocks pointed to by list */
+/*********************************************
+ * spill any reloc blocks pointed to by list
+ */
 {
     virt_mem_size   spill;
 
@@ -514,26 +517,30 @@ static bool SpillRelocList( reloc_info *list )
     return( false );
 }
 
-static bool SpillAreas( OVL_AREA *ovl );
 
-static bool SpillSections( section *sect )
-/****************************************/
+static bool SpillSectRelocList( section *sect )
+{
+    return( SpillRelocList( sect->reloclist ) );
+}
+
+static bool SpillSections( section *sect, bool (*rtn)( section * ) )
+/******************************************************************/
 {
     for( ; sect != NULL; sect = sect->next_sect ) {
-        if( SpillRelocList( sect->reloclist ) )
+        if( rtn( sect ) )
             return( true );
-        if( SpillAreas( sect->areas ) ) {
+        if( SpillAreas( sect->areas, rtn ) ) {
             return( true );
         }
     }
     return( false );
 }
 
-static bool SpillAreas( OVL_AREA *ovl )
-/************************************/
+static bool SpillAreas( OVL_AREA *ovl, bool (*rtn)( section * ) )
+/***************************************************************/
 {
     for( ; ovl != NULL; ovl = ovl->next_area ) {
-        if( SpillSections( ovl->sections ) ) {
+        if( SpillSections( ovl->sections, rtn ) ) {
             return( true );
         }
     }
@@ -559,19 +566,19 @@ bool SwapOutRelocs( void )
                 return( true );
             }
         }
+#ifdef _QNX
+        if( FmtData.type & MK_QNX ) {
+            if( SpillRelocList( FloatFixups ) )
+                return( true );
+            return( SpillSectRelocList( Root ) );
+        }
+#endif
     } else {
-        if( SpillRelocList( Root->reloclist ) )
+        if( SpillSectRelocList( Root ) )
             return( true );
-        if( SpillAreas( Root->areas ) ) {
+        if( SpillAreas( Root->areas, SpillSectRelocList ) ) {
             return( true );
         }
     }
-#ifdef _QNX
-    if( FmtData.type & MK_QNX ) {
-        if( SpillRelocList( FloatFixups ) )
-            return( true );
-        return( SpillRelocList( Root->reloclist ) );
-    }
-#endif
     return( false );
 }
