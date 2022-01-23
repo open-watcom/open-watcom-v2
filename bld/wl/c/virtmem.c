@@ -46,8 +46,8 @@
 
 /* flags used in the virtual memory structure */
 typedef enum {
-    VIRT_INMEM = 0x01,      // virtual memory block is in RAM
-    VIRT_HUGE  = 0x02       // virtual memory block is a huge block
+    VIRT_INMEM = 0x01,      /* virtual memory block is in RAM */
+    VIRT_HUGE  = 0x02       /* virtual memory block is a huge block */
 } virt_flags;
 
 /* this is for allocating very large memory requests (i.e. > 1 megabyte).
@@ -65,7 +65,7 @@ spill addresses, each of which points to a 32K-byte subpage of virtual memory.
 */
 
 typedef struct huge_table {
-    struct huge_table   *next;       // next entry to swap.
+    struct huge_table   *next;          /* next entry to swap. */
     virt_flags          flags;
     unsigned_8          numthere;
     unsigned_8          numswapped;
@@ -79,7 +79,7 @@ typedef struct huge_table {
 #define HUGE_BIT_MASK       0x7FFFFFFFUL
 #define HUGE_PAGE           0x80000000UL
 #define HUGE_INITIAL_ALLOC  2
-#define HUGE_LIMIT          2048       /* max number of huge pages */
+#define HUGE_LIMIT          2048        /* max number of huge pages */
 #define HUGE_SUBPAGE_SHIFT  15
 #define HUGE_SUBPAGE_SIZE   (1 << HUGE_SUBPAGE_SHIFT)
 #define HUGE_SUBPAGE_MASK   (HUGE_SUBPAGE_SIZE - 1)
@@ -93,7 +93,7 @@ typedef struct huge_table {
 /* the following structures are for "normal" virtual memory allocation */
 
 typedef struct seg_table {
-    struct seg_table        *next;       // next entry to swap out.
+    struct seg_table        *next;      /* next entry to swap out. */
     virt_flags              flags;
     unsigned_16             size;
     spilladdr               loc;
@@ -120,15 +120,17 @@ the leaf id chooses which element of the branch is the correct seg_table.
  0 means that the bit is always zero.
 */
 
-// this structure is used for picking the high order word off a long
+/* this structure is used for picking the high order word off a long */
 typedef struct {
     unsigned_16 low;
     unsigned_16 high;
 } wordpick;
 
-// this is used instead of the virt_mem type inside this module, since it is
-// desirable to be able to get the high order word without having to do a
-// 16-bit shift. MAKE SURE THAT VIRT_MEM IS THE SAME SIZE AS THIS STRUCTURE!
+/*
+ * this is used instead of the virt_mem type inside this module, since it is
+ * desirable to be able to get the high order word without having to do a
+ * 16-bit shift. MAKE SURE THAT VIRT_MEM IS THE SAME SIZE AS THIS STRUCTURE!
+ */
 typedef union {
     unsigned_32     l;
     wordpick        w;
@@ -136,8 +138,8 @@ typedef union {
 
 #define OFFSET_SHIFT      12
 #define MAX_NODE_SIZE     (1U << OFFSET_SHIFT)
-#define MAX_LEAFS         16            // maximum # of leafs per branch
-#define SEG_LIMIT         32767     // maximum # of branches (leafs * 16)
+#define MAX_LEAFS         16            /* maximum # of leafs per branch */
+#define SEG_LIMIT         32767         /* maximum # of branches (leafs * 16) */
 
 /* find the node for MEM_ADDR or FILE_ADDR */
 #define NODE( stg )         (&SegTab[stg.w.high][stg.w.low >> OFFSET_SHIFT])
@@ -151,17 +153,18 @@ static unsigned         NumHuge;
 static unsigned         NextHuge;
 static seg_table        **SegTab;
 static unsigned         NumBranches;
-// start with branch # 1 so an address of zero can be illegal.
+/* start with branch # 1 so an address of zero can be illegal. */
 static unsigned         CurrBranch;
-static unsigned         NextLeaf;       // next leaf # to be allocated.
-static seg_table        *NextSwap;      // next entry to swap out.
+static unsigned         NextLeaf;       /* next leaf # to be allocated. */
+static seg_table        *NextSwap;      /* next entry to swap out. */
 static unsigned         TinyLeft;
 static virt_mem         TinyAddr;
 
 
 void VirtMemInit( void )
-/*****************************/
-// Allocate space for the branch pointers.
+/***********************
+ * Allocate space for the branch pointers.
+ */
 {
     NumHuge = HUGE_INITIAL_ALLOC;
     NextHuge = 0;
@@ -179,20 +182,21 @@ void VirtMemInit( void )
 }
 
 static void GetMoreBranches( void )
-/*********************************/
-// make a larger array to hold branch pointers in.
+/**********************************
+ * make a larger array to hold branch pointers in.
+ */
 {
-    seg_table **    branches;
+    seg_table       **branches;
     unsigned        alloc_size;
 
     alloc_size = NumBranches * sizeof( seg_table * );
-    NumBranches = NumBranches * 2;   // double the # of pointers.
+    NumBranches = NumBranches * 2;      /* double the # of pointers. */
     if( NumBranches > SEG_LIMIT ) {
         LnkMsg( FTL+MSG_NO_VIRT_MEM, NULL );
     }
     _ChkAlloc( branches, alloc_size * 2 );
     memcpy( branches, SegTab, alloc_size );
-    memset( (char *)branches + alloc_size, 0, alloc_size ); // null pointers
+    memset( (char *)branches + alloc_size, 0, alloc_size ); /* null pointers */
     _LnkFree( SegTab );
     SegTab = branches;
 }
@@ -212,7 +216,7 @@ static virt_struct GetStg( virt_mem_size amt )
         }
         alloc_size = sizeof( seg_table ) * MAX_LEAFS;
         seg_entry = PermAlloc( alloc_size );
-        memset( seg_entry, 0, alloc_size ); //set all flags false.
+        memset( seg_entry, 0, alloc_size ); /* set all flags false. */
         SegTab[CurrBranch] = seg_entry;
     } else {
         seg_entry = &SegTab[CurrBranch][NextLeaf];
@@ -320,16 +324,18 @@ virt_mem AllocStg( virt_mem_size size )
 }
 
 void ReleaseInfo( virt_mem stg )
-/*************************************/
-// can't prematurely release, but no big deal
+/*******************************
+ * can't prematurely release, but no big deal
+ */
 {
     /* unused parameters */ (void)stg;
 }
 
 bool SwapOutVirt( void )
-/*****************************/
-// NOTE - this routine assumes that once something has been swapped out, it
-// will never be read back in again.
+/***********************
+ * NOTE - this routine assumes that once something has been swapped out, it
+ * will never be read back in again.
+ */
 {
     spilladdr       *spillmem;
     void            *mem;
@@ -640,8 +646,9 @@ void WriteInfoLoad( virt_mem stg, virt_mem_size len )
 }
 
 static bool NullInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool inmem )
-/************************************************************************************/
-// write nulls to the location referenced by node and off.
+/*************************************************************************************
+ * write nulls to the location referenced by node and off.
+ */
 {
     dummy = dummy;   /* to avoid a warning: will be optimized away. */
     if( len == 0 )
