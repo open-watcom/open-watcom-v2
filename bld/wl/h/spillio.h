@@ -31,9 +31,12 @@
 ****************************************************************************/
 
 
-typedef union {
-    virt_mem_size   spill;
-    char            *addr;
+typedef struct spilladdr {
+    unsigned        spilled : 1;
+    union {
+        virt_mem_size   spill;
+        char            *addr;
+    }               u;
 } spilladdr;
 
 extern void             InitSpillFile( void );

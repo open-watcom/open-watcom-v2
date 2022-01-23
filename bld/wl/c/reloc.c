@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,9 +84,9 @@ static reloc_info *AllocRelocInfo( void )
 
     _PermAlloc( info, sizeof( reloc_info ) );       /* allocate more */
     info->sizeleft = RELOC_PAGE_SIZE;
-    _LnkAlloc( info->loc.addr, RELOC_PAGE_SIZE );
-    if( info->loc.addr == NULL ) {
-        info->loc.spill = SpillAlloc( RELOC_PAGE_SIZE );
+    _LnkAlloc( info->loc.u.addr, RELOC_PAGE_SIZE );
+    if( info->loc.u.addr == NULL ) {
+        info->loc.u.spill = SpillAlloc( RELOC_PAGE_SIZE );
         info->sizeleft |= RELOC_SPILLED;
     }
     return( info );
@@ -158,9 +158,9 @@ static void DoWriteReloc( void *lst, const void *reloc, size_t size )
     }
     offset = RELOC_PAGE_SIZE - (info->sizeleft & SIZELEFT_MASK);
     if( info->sizeleft & RELOC_SPILLED ) {
-        SpillWrite( info->loc.spill, offset, reloc, size );
+        SpillWrite( info->loc.u.spill, offset, reloc, size );
     } else {
-        memcpy( info->loc.addr + offset, reloc, size );
+        memcpy( info->loc.u.addr + offset, reloc, size );
     }
     info->sizeleft -= size;
 }
@@ -250,7 +250,7 @@ static bool FreeRelocList( reloc_info *list )
 {
     for( ; list != NULL; list = list->next ) {
         if( (list->sizeleft & RELOC_SPILLED) == 0 ) {
-            _LnkFree( list->loc.addr );
+            _LnkFree( list->loc.u.addr );
         }
     }
     return( false );  /* needed for OS2 generic traversal routines */
@@ -398,10 +398,10 @@ unsigned_32 DumpMaxRelocList( reloc_info **head, unsigned_32 max )
             break;
         if( size != 0 ) {
             if( list->sizeleft & RELOC_SPILLED ) {
-                SpillRead( list->loc.spill, 0, TokBuff, size );
+                SpillRead( list->loc.u.spill, 0, TokBuff, size );
                 WriteLoad( TokBuff, size );
             } else {
-                WriteLoad( list->loc.addr, size );
+                WriteLoad( list->loc.u.addr, size );
             }
         }
         total += size;
@@ -433,10 +433,10 @@ unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, size_t siz
         size = RELOC_PAGE_SIZE - (list->sizeleft & SIZELEFT_MASK);
         if( size != 0 ) {
             if( list->sizeleft & RELOC_SPILLED ) {
-                SpillRead( list->loc.spill, 0, TokBuff, size );
+                SpillRead( list->loc.u.spill, 0, TokBuff, size );
                 quit = fn( TokBuff, size, ctx );
             } else {
-                quit = fn( list->loc.addr, size, ctx );
+                quit = fn( list->loc.u.addr, size, ctx );
             }
         }
         total += (unsigned_32)size;
@@ -507,9 +507,9 @@ static bool SpillRelocList( reloc_info *list )
     for( ; list != NULL; list = list->next ) {
         if( (list->sizeleft & RELOC_SPILLED) == 0 ) {
             spill = SpillAlloc( RELOC_PAGE_SIZE );
-            SpillWrite( spill, 0, list->loc.addr, RELOC_PAGE_SIZE - list->sizeleft );
-            _LnkFree( list->loc.addr );
-            list->loc.spill = spill;
+            SpillWrite( spill, 0, list->loc.u.addr, RELOC_PAGE_SIZE - list->sizeleft );
+            _LnkFree( list->loc.u.addr );
+            list->loc.u.spill = spill;
             list->sizeleft |= RELOC_SPILLED;
             return( true );
         }
