@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,12 +65,12 @@ spill addresses, each of which points to a 32K-byte subpage of virtual memory.
 */
 
 typedef struct huge_table {
-    struct huge_table * next;       // next entry to swap.
+    struct huge_table   *next;       // next entry to swap.
     virt_flags          flags;
     unsigned_8          numthere;
     unsigned_8          numswapped;
     unsigned_16         sizelast;
-    spilladdr *         page;
+    spilladdr           *page;
 } huge_table;
 
 #define HUGE_OFFSET_SHIFT   20
@@ -92,7 +93,7 @@ typedef struct huge_table {
 /* the following structures are for "normal" virtual memory allocation */
 
 typedef struct seg_table {
-    struct seg_table *      next;       // next entry to swap out.
+    struct seg_table        *next;       // next entry to swap out.
     virt_flags              flags;
     unsigned_16             size;
     spilladdr               loc;
@@ -199,7 +200,7 @@ static void GetMoreBranches( void )
 static virt_struct GetStg( virt_mem_size amt )
 /********************************************/
 {
-    seg_table *             seg_entry;
+    seg_table               *seg_entry;
     unsigned                alloc_size;
     virt_struct             vmem;
 
@@ -230,8 +231,8 @@ static virt_struct GetBigStg( virt_mem_size size )
 /************************************************/
 {
     unsigned        alloc_size;
-    huge_table *    newtab;
-    huge_table *    huge_entry;
+    huge_table      *newtab;
+    huge_table      *huge_entry;
     virt_struct     vmem;
 
     if( NextHuge >= NumHuge ) {
@@ -343,7 +344,7 @@ bool SwapOutVirt( void )
             if( seg_entry->flags & VIRT_HUGE ) {
                 huge_entry = (huge_table *)seg_entry;
                 spillmem = &huge_entry->page[huge_entry->numswapped];
-                mem = (*spillmem).addr;
+                mem = spillmem->addr;
                 huge_entry->numswapped++;
                 if( huge_entry->numthere == huge_entry->numswapped ) {
                     seg_entry->flags &= ~VIRT_INMEM;
@@ -351,8 +352,8 @@ bool SwapOutVirt( void )
                 } else {
                     size = HUGE_SUBPAGE_SIZE;
                 }
-                (*spillmem).spill = SpillAlloc( size );
-                SpillWrite( (*spillmem).spill, 0, mem, size );
+                spillmem->spill = SpillAlloc( size );
+                SpillWrite( spillmem->spill, 0, mem, size );
                 _LnkFree( mem );
             } else {
                 seg_entry->flags &= ~VIRT_INMEM;
@@ -375,9 +376,9 @@ void FreeVirtMem( void )
     unsigned        inner;
     unsigned        branch;
     unsigned        leaf;
-    seg_table *     seg_entry;
-    huge_table *    huge_entry;
-    spilladdr *     page;
+    seg_table       *seg_entry;
+    huge_table      *huge_entry;
+    spilladdr       *page;
 
     if( SegTab == NULL )
         return;
@@ -426,9 +427,9 @@ static void AllocHugeVMNode( huge_table *node )
 /*********************************************/
 /* allocate a huge page */
 {
-    void *      mem;
+    void        *mem;
     int         index;
-    spilladdr * page;
+    spilladdr   *page;
     bool        nomem;
 
     node->page = PermAlloc( HUGE_NUM_SUBPAGES * sizeof( spilladdr ) );
@@ -575,7 +576,7 @@ void PutInfo( virt_mem stg, const void *info, virt_mem_size len )
 void CopyInfo( virt_mem a, virt_mem b, size_t len )
 /*************************************************/
 {
-    void *      buf;
+    void        *buf;
 
     _ChkAlloc( buf, len );
     ReadInfo( b, buf, len );
@@ -583,11 +584,11 @@ void CopyInfo( virt_mem a, virt_mem b, size_t len )
     _LnkFree( buf );
 }
 
-static bool CompareBlock( void * info, spilladdr loc, size_t off, size_t len, bool inmem )
-/****************************************************************************************/
+static bool CompareBlock( void *info, spilladdr loc, size_t off, size_t len, bool inmem )
+/***************************************************************************************/
 /* compare data at info to the memory or spillfile referenced by node & off */
 {
-    void *      buf;
+    void        *buf;
 
     if( len == 0 )
         return( true );
