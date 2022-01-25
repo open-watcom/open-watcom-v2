@@ -361,10 +361,9 @@ bool SwapOutVirt( void )
         seg_entry = NextSwap;
         NextSwap = NextSwap->next;
         if( seg_entry->flags & VIRT_HUGE ) {
-            if( seg_entry->flags & VIRT_INMEM ) {
-                huge_entry = (huge_table *)seg_entry;
+            huge_entry = (huge_table *)seg_entry;
+            if( huge_entry->flags & VIRT_INMEM ) {
                 spillmem = &huge_entry->page[huge_entry->numswapped];
-                mem = spillmem->u.addr;
                 huge_entry->numswapped++;
                 if( huge_entry->numthere == huge_entry->numswapped ) {
                     huge_entry->flags &= ~VIRT_INMEM;
@@ -372,17 +371,19 @@ bool SwapOutVirt( void )
                 } else {
                     size = HUGE_SUBPAGE_SIZE;
                 }
+                mem = spillmem->u.addr;
                 spillmem->u.spill = SpillAlloc( size );
+                spillmem->spilled = true;
                 SpillWrite( spillmem->u.spill, 0, mem, size );
                 _LnkFree( mem );
                 DEBUG((DBG_VIRTMEM, "swapping out %h to %h", mem, spillmem->u.spill ));
                 return( true );
             }
         } else {
-            if( seg_entry->flags & VIRT_INMEM ) {
-                seg_entry->flags &= ~VIRT_INMEM;
+            if( !seg_entry->loc.spilled ) {
                 mem = seg_entry->loc.u.addr;
                 seg_entry->loc.u.spill = SpillAlloc( seg_entry->size );
+                seg_entry->loc.spilled = true;
                 SpillWrite( seg_entry->loc.u.spill, 0, mem, seg_entry->size );
                 _LnkFree( mem );
                 DEBUG((DBG_VIRTMEM, "swapping out %h to %h", mem, seg_entry->loc.u.spill ));
@@ -410,7 +411,7 @@ void FreeVirtMem( void )
         seg_entry = SegTab[branch];
         if( seg_entry != NULL ) {
             for( leaf = 0; leaf < MAX_LEAFS; leaf++ ) {
-                if( seg_entry->flags & VIRT_INMEM ) {
+                if( !seg_entry->loc.spilled ) {
                     _LnkFree( seg_entry->loc.u.addr );
                 }
                 seg_entry++;
@@ -440,10 +441,10 @@ static void AllocVMNode( seg_table *node )
     _LnkAlloc( mem, node->size );
     if( mem == NULL ) {
         node->loc.u.spill = SpillAlloc( node->size );
-        node->flags &= ~VIRT_INMEM;
+        node->loc.spilled = true;
     } else {
         node->loc.u.addr = mem;
-        node->flags |= VIRT_INMEM;
+        node->loc.spilled = false;
         LinkList( &NextSwap, node );
     }
 }
@@ -465,14 +466,15 @@ static void AllocHugeVMNode( huge_table *node )
     if( mem == NULL ) {
         nomem = true;
         node->flags &= ~VIRT_INMEM;
-        page[index].u.spill = SpillAlloc( node->sizelast );
         node->numswapped = node->numthere;
+        page[index].u.spill = SpillAlloc( node->sizelast );
     } else {
         nomem = false;
         node->flags |= VIRT_INMEM;
         page[index].u.addr = mem;
         LinkList( &NextSwap, node );
     }
+    page[index].spilled = nomem;
     /*
      * now allocate all of the subpages, starting at the end and working backwards
      * so that they can be swapped from the start forwards.
@@ -490,11 +492,12 @@ static void AllocHugeVMNode( huge_table *node )
                 page[index].u.addr = mem;
             }
         }
+        page[index].spilled = nomem;
     }
 }
 
 static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
-               bool (*rtn)( void *, spilladdr, size_t, size_t, bool))
+               bool (*rtn)( void *, spilladdr, size_t, size_t ) )
 /********************************************************************
  * go through the virtual memory nodes, reading or writing data
  */
@@ -530,26 +533,26 @@ static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
             if( end_off <= currlen )
                 break;
             amt = currlen - off;
-            if( !rtn( info, page[subpage], off, amt, subpage >= bignode->numswapped ) )
+            if( !rtn( info, page[subpage], off, amt ) )
                 return( false );
             len -= amt;
             stg.l += amt;
             info = (char *)info + amt;
             off = 0;
         }
-        retval = rtn( info, page[subpage], off, len, subpage >= bignode->numswapped );
+        retval = rtn( info, page[subpage], off, len );
     } else {
         off = NODE_OFF( stg );
         for( ;; ) {
             node = NODE( stg );
             end_off = off + len;
-            if( node->loc.u.spill == 0 ) {
+            if( !node->loc.spilled && node->loc.u.addr == NULL ) {
                 AllocVMNode( node );
             }
             if( end_off <= node->size )
                 break;
             amt = node->size - off;
-            if( !rtn( info, node->loc, off, amt, node->flags & VIRT_INMEM ) ) {
+            if( !rtn( info, node->loc, off, amt ) ) {
                 return( false );
             }
             len -= amt;
@@ -557,22 +560,22 @@ static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
             info = (char *)info + amt;
             off = 0;
         }
-        retval = rtn( info, node->loc, off, len, node->flags & VIRT_INMEM );
+        retval = rtn( info, node->loc, off, len );
     }
     return( retval );
 }
 
-static bool LoadInfo( void *info, spilladdr loc, size_t off, size_t len, bool inmem )
-/************************************************************************************
+static bool LoadInfo( void *info, spilladdr loc, size_t off, size_t len )
+/************************************************************************
  * copy data to info from the memory or spillfile referenced by node & off
  */
 {
     if( len == 0 )
         return( true );
-    if( inmem ) {
-        memcpy( info, loc.u.addr + off, len );
-    } else {
+    if( loc.spilled ) {
         SpillRead( loc.u.spill, off, info, len );
+    } else {
+        memcpy( info, loc.u.addr + off, len );
     }
     return( true );
 }
@@ -585,18 +588,18 @@ void ReadInfo( virt_mem stg, void *buf, virt_mem_size len )
     ScanNodes( stg, buf, len, LoadInfo );
 }
 
-static bool SaveInfo( void *info, spilladdr loc, size_t off, size_t len, bool inmem )
-/************************************************************************************
+static bool SaveInfo( void *info, spilladdr loc, size_t off, size_t len )
+/************************************************************************
  * copy data at info to the memory or spillfile referenced by node & off
  */
 {
     if( len == 0 )
         return( true );
-    DEBUG((DBG_VIRTMEM, "saving %d bytes (offset %x) to %d.%h", len, off, inmem, loc.u.spill ));
-    if( inmem ) {
-        memcpy( loc.u.addr + off, info, len );
-    } else {
+    DEBUG((DBG_VIRTMEM, "saving %d bytes (offset %x) to %d.%h", len, off, loc.spilled, loc.u.spill ));
+    if( loc.spilled ) {
         SpillWrite( loc.u.spill, off, info, len );
+    } else {
+        memcpy( loc.u.addr + off, info, len );
     }
     return( true );
 }
@@ -620,8 +623,8 @@ void CopyInfo( virt_mem a, virt_mem b, size_t len )
     _LnkFree( buf );
 }
 
-static bool CompareBlock( void *info, spilladdr loc, size_t off, size_t len, bool inmem )
-/****************************************************************************************
+static bool CompareBlock( void *info, spilladdr loc, size_t off, size_t len )
+/****************************************************************************
  * compare data at info to the memory or spillfile referenced by node & off
  */
 {
@@ -629,11 +632,11 @@ static bool CompareBlock( void *info, spilladdr loc, size_t off, size_t len, boo
 
     if( len == 0 )
         return( true );
-    if( inmem ) {
-        buf = loc.u.addr + off;
-    } else {
+    if( loc.spilled ) {
         buf = alloca( len );
         SpillRead( loc.u.spill, off, buf, len );
+    } else {
+        buf = loc.u.addr + off;
     }
     return( memcmp( buf, info, len ) == 0 );
 }
@@ -644,8 +647,8 @@ bool CompareInfo( virt_mem stg, const void *info, virt_mem_size len )
     return( ScanNodes( stg, (void *)info, len, CompareBlock ) );
 }
 
-static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool inmem )
-/************************************************************************************
+static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len )
+/************************************************************************
  * copy data in memory or spillfile referenced by node & off to LoadFile
  */
 {
@@ -654,10 +657,8 @@ static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool in
     dummy = dummy;   /* to avoid a warning: will be optimized away. */
     if( len == 0 )
         return( true );
-    DEBUG((DBG_VIRTMEM, "writing %d bytes (offset %x) to %d.%h", len, off, inmem, loc.u.spill ));
-    if( inmem ) {
-        WriteLoad( loc.u.addr + off, len );
-    } else {
+    DEBUG((DBG_VIRTMEM, "writing %d bytes (offset %x) to %d.%h", len, off, loc.spilled, loc.u.spill ));
+    if( loc.spilled ) {
         for( ; len != 0; len -= amt ) {
             amt = len;
             if( amt > TokSize )
@@ -666,6 +667,8 @@ static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool in
             WriteLoad( TokBuff, amt );
             off += amt;
         }
+    } else {
+        WriteLoad( loc.u.addr + off, len );
     }
     return( true );
 }
@@ -678,18 +681,18 @@ void WriteInfoLoad( virt_mem stg, virt_mem_size len )
     ScanNodes( stg, NULL, len, OutInfo );
 }
 
-static bool NullInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool inmem )
-/*************************************************************************************
+static bool NullInfo( void *dummy, spilladdr loc, size_t off, size_t len )
+/*************************************************************************
  * write nulls to the location referenced by node and off.
  */
 {
     dummy = dummy;   /* to avoid a warning: will be optimized away. */
     if( len == 0 )
         return( true );
-    if( inmem ) {
-        memset( loc.u.addr + off, 0, len );
-    } else {
+    if( loc.spilled ) {
         SpillNull( loc.u.spill, off, len );
+    } else {
+        memset( loc.u.addr + off, 0, len );
     }
     return( true );
 }
