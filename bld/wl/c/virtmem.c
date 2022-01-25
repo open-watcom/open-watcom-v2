@@ -44,6 +44,7 @@
 #include "fileio.h"
 #include "virtmem.h"
 
+
 /* flags used in the virtual memory structure */
 typedef enum {
     VIRT_INMEM = 0x01,      /* virtual memory block is in RAM */
@@ -171,30 +172,6 @@ static unsigned         TinyLeft;
 static virt_mem         TinyAddr;
 
 
-void VirtMemInit( void )
-/***********************
- * Allocate space for the branch pointers.
- */
-{
-    NumHuge = HUGE_INITIAL_ALLOC;
-    NextHuge = 0;
-    NumBranches = 127;
-    /*
-     * start with branch # 1 so an virtual address of zero can be illegal
-     * branch # 0 is not used
-     */
-    CurrBranch = 1;
-    NextLeaf = 0;
-    NextSwap = NULL;
-    TinyLeft = 0;
-    _ChkAlloc( SegTab, NumBranches * sizeof( seg_table * ) );
-    memset( SegTab, 0, NumBranches * sizeof( seg_table * ) );
-    SegTab[1] = PermAlloc( sizeof( seg_table ) * MAX_LEAFS );
-    memset( SegTab[1], 0, sizeof( seg_table ) * MAX_LEAFS );
-    _ChkAlloc( HugeTab, NumHuge * sizeof( huge_table ) );
-    memset( HugeTab, 0, NumHuge * sizeof( huge_table ) );
-}
-
 static void GetMoreBranches( void )
 /**********************************
  * make a larger array to hold branch pointers in.
@@ -315,115 +292,6 @@ static virt_mem AllocTinyStg( unsigned size )
     TinyAddr += size;
     TinyLeft -= size;
     return( retval );
-}
-
-virt_mem AllocStg( virt_mem_size size )
-/*************************************/
-{
-    if( size == 0 )
-        return( 0 );
-    size = MAKE_EVEN( size );
-    if( size <= TINY_BLOCK_CUTOFF ) {
-        return( AllocTinyStg( size ) );
-    } else if( size >= MAX_BIGNODE_SIZE ) {
-        return( DoAllocStg( GetBigStg, size, MAX_BIGNODE_SIZE ) );
-    } else {
-        return( DoAllocStg( GetStg, size, MAX_NODE_SIZE ) );
-    }
-}
-
-void ReleaseInfo( virt_mem stg )
-/*******************************
- * can't prematurely release, but no big deal
- */
-{
-    /* unused parameters */ (void)stg;
-}
-
-bool SwapOutVirt( void )
-/***********************
- * NOTE - this routine assumes that once something has been swapped out, it
- * will never be read back in again.
- */
-{
-    spilladdr       *spillmem;
-    void            *mem;
-    seg_table       *seg_entry;
-    huge_table      *huge_entry;
-    size_t          size;
-
-    while( NextSwap != NULL ) {
-        seg_entry = NextSwap;
-        NextSwap = NextSwap->next;
-        if( seg_entry->flags & VIRT_HUGE ) {
-            huge_entry = (huge_table *)seg_entry;
-            if( huge_entry->flags & VIRT_INMEM ) {
-                spillmem = &huge_entry->page[huge_entry->numswapped];
-                huge_entry->numswapped++;
-                if( huge_entry->numthere == huge_entry->numswapped ) {
-                    huge_entry->flags &= ~VIRT_INMEM;
-                    size = huge_entry->sizelast;
-                } else {
-                    size = HUGE_SUBPAGE_SIZE;
-                }
-                mem = spillmem->u.addr;
-                spillmem->u.spill = SpillAlloc( size );
-                spillmem->spilled = true;
-                SpillWrite( spillmem->u.spill, 0, mem, size );
-                _LnkFree( mem );
-                DEBUG((DBG_VIRTMEM, "swapping out %h to %h", mem, spillmem->u.spill ));
-                return( true );
-            }
-        } else {
-            if( !seg_entry->loc.spilled ) {
-                mem = seg_entry->loc.u.addr;
-                seg_entry->loc.u.spill = SpillAlloc( seg_entry->size );
-                seg_entry->loc.spilled = true;
-                SpillWrite( seg_entry->loc.u.spill, 0, mem, seg_entry->size );
-                _LnkFree( mem );
-                DEBUG((DBG_VIRTMEM, "swapping out %h to %h", mem, seg_entry->loc.u.spill ));
-                return( true );
-            }
-        }
-    }
-    return( false );
-}
-
-void FreeVirtMem( void )
-/**********************/
-{
-    unsigned        index;
-    unsigned        inner;
-    unsigned        branch;
-    unsigned        leaf;
-    seg_table       *seg_entry;
-    huge_table      *huge_entry;
-    spilladdr       *page;
-
-    if( SegTab == NULL )
-        return;
-    for( branch = 0; branch < NumBranches; branch++ ) {
-        seg_entry = SegTab[branch];
-        if( seg_entry != NULL ) {
-            for( leaf = 0; leaf < MAX_LEAFS; leaf++ ) {
-                if( !seg_entry->loc.spilled ) {
-                    _LnkFree( seg_entry->loc.u.addr );
-                }
-                seg_entry++;
-            }
-        }
-    }
-    _LnkFree( SegTab );
-    for( index = 0; index < NumHuge; index++ ) {
-        huge_entry = &HugeTab[index];
-        if( huge_entry->page != NULL ) {
-            page = huge_entry->page;
-            for( inner = huge_entry->numswapped; inner < huge_entry->numthere; inner++ ) {
-                _LnkFree( page[inner].u.addr );
-            }
-        }
-    }
-    _LnkFree( HugeTab );
 }
 
 static void AllocVMNode( seg_table *node )
@@ -700,4 +568,137 @@ void PutInfoNulls( virt_mem stg, virt_mem_size len )
  */
 {
     ScanNodes( stg, NULL, len, NullInfo );
+}
+
+void VirtMemInit( void )
+/***********************
+ * Allocate space for the branch pointers.
+ */
+{
+    NumHuge = HUGE_INITIAL_ALLOC;
+    NextHuge = 0;
+    NumBranches = 127;
+    /*
+     * start with branch # 1 so an virtual address of zero can be illegal
+     * branch # 0 is not used
+     */
+    CurrBranch = 1;
+    NextLeaf = 0;
+    NextSwap = NULL;
+    TinyLeft = 0;
+    _ChkAlloc( SegTab, NumBranches * sizeof( seg_table * ) );
+    memset( SegTab, 0, NumBranches * sizeof( seg_table * ) );
+    SegTab[1] = PermAlloc( sizeof( seg_table ) * MAX_LEAFS );
+    memset( SegTab[1], 0, sizeof( seg_table ) * MAX_LEAFS );
+    _ChkAlloc( HugeTab, NumHuge * sizeof( huge_table ) );
+    memset( HugeTab, 0, NumHuge * sizeof( huge_table ) );
+}
+
+virt_mem AllocStg( virt_mem_size size )
+/*************************************/
+{
+    if( size == 0 )
+        return( 0 );
+    size = MAKE_EVEN( size );
+    if( size <= TINY_BLOCK_CUTOFF ) {
+        return( AllocTinyStg( size ) );
+    } else if( size >= MAX_BIGNODE_SIZE ) {
+        return( DoAllocStg( GetBigStg, size, MAX_BIGNODE_SIZE ) );
+    } else {
+        return( DoAllocStg( GetStg, size, MAX_NODE_SIZE ) );
+    }
+}
+
+void ReleaseInfo( virt_mem stg )
+/*******************************
+ * can't prematurely release, but no big deal
+ */
+{
+    /* unused parameters */ (void)stg;
+}
+
+bool SwapOutVirt( void )
+/***********************
+ * NOTE - this routine assumes that once something has been swapped out, it
+ * will never be read back in again.
+ */
+{
+    spilladdr       *spillmem;
+    void            *mem;
+    seg_table       *seg_entry;
+    huge_table      *huge_entry;
+    size_t          size;
+
+    while( NextSwap != NULL ) {
+        seg_entry = NextSwap;
+        NextSwap = NextSwap->next;
+        if( seg_entry->flags & VIRT_HUGE ) {
+            huge_entry = (huge_table *)seg_entry;
+            if( huge_entry->flags & VIRT_INMEM ) {
+                spillmem = &huge_entry->page[huge_entry->numswapped];
+                huge_entry->numswapped++;
+                if( huge_entry->numthere == huge_entry->numswapped ) {
+                    huge_entry->flags &= ~VIRT_INMEM;
+                    size = huge_entry->sizelast;
+                } else {
+                    size = HUGE_SUBPAGE_SIZE;
+                }
+                mem = spillmem->u.addr;
+                spillmem->u.spill = SpillAlloc( size );
+                spillmem->spilled = true;
+                SpillWrite( spillmem->u.spill, 0, mem, size );
+                _LnkFree( mem );
+                DEBUG((DBG_VIRTMEM, "swapping out %h to %h", mem, spillmem->u.spill ));
+                return( true );
+            }
+        } else {
+            if( !seg_entry->loc.spilled ) {
+                mem = seg_entry->loc.u.addr;
+                seg_entry->loc.u.spill = SpillAlloc( seg_entry->size );
+                seg_entry->loc.spilled = true;
+                SpillWrite( seg_entry->loc.u.spill, 0, mem, seg_entry->size );
+                _LnkFree( mem );
+                DEBUG((DBG_VIRTMEM, "swapping out %h to %h", mem, seg_entry->loc.u.spill ));
+                return( true );
+            }
+        }
+    }
+    return( false );
+}
+
+void FreeVirtMem( void )
+/**********************/
+{
+    unsigned        index;
+    unsigned        inner;
+    unsigned        branch;
+    unsigned        leaf;
+    seg_table       *seg_entry;
+    huge_table      *huge_entry;
+    spilladdr       *page;
+
+    if( SegTab == NULL )
+        return;
+    for( branch = 0; branch < NumBranches; branch++ ) {
+        seg_entry = SegTab[branch];
+        if( seg_entry != NULL ) {
+            for( leaf = 0; leaf < MAX_LEAFS; leaf++ ) {
+                if( !seg_entry->loc.spilled ) {
+                    _LnkFree( seg_entry->loc.u.addr );
+                }
+                seg_entry++;
+            }
+        }
+    }
+    _LnkFree( SegTab );
+    for( index = 0; index < NumHuge; index++ ) {
+        huge_entry = &HugeTab[index];
+        if( huge_entry->page != NULL ) {
+            page = huge_entry->page;
+            for( inner = huge_entry->numswapped; inner < huge_entry->numthere; inner++ ) {
+                _LnkFree( page[inner].u.addr );
+            }
+        }
+    }
+    _LnkFree( HugeTab );
 }
