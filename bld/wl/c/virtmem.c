@@ -64,6 +64,10 @@ each page pointer in the huge_table structure points to an array of 32
 spill addresses, each of which points to a 32K-byte subpage of virtual memory.
 */
 
+/*
+ * the following structure is for "huge" virtual memory allocation
+ * first two fields are shared with seg_table
+ */
 typedef struct huge_table {
     struct huge_table   *next;          /* next entry to swap. */
     virt_flags          flags;
@@ -90,13 +94,15 @@ typedef struct huge_table {
 
 #define BIGNODE_OFF( stg )  (stg & HUGE_SUBPAGE_MASK)
 
-/* the following structures are for "normal" virtual memory allocation */
-
+/*
+ * the following structure is for "normal" virtual memory allocation
+ * first two fields are shared with huge_table
+ */
 typedef struct seg_table {
-    struct seg_table        *next;      /* next entry to swap out. */
-    virt_flags              flags;
-    unsigned_16             size;
-    spilladdr               loc;
+    struct seg_table    *next;          /* next entry to swap out. */
+    virt_flags          flags;
+    unsigned_16         size;
+    spilladdr           loc;
 } seg_table;
 
 /* the seg tables are referenced by an array of pointers, something like
@@ -118,6 +124,10 @@ offset                   leaf id   branch id
  low order word                 high order word.
 the leaf id chooses which element of the branch is the correct seg_table.
  0 means that the bit is always zero.
+
+we start with branch id 1 so an address of zero can be illegal
+branch id 0 is not used
+
 */
 
 /* this structure is used for picking the high order word off a long */
@@ -169,6 +179,10 @@ void VirtMemInit( void )
     NumHuge = HUGE_INITIAL_ALLOC;
     NextHuge = 0;
     NumBranches = 127;
+    /*
+     * start with branch # 1 so an virtual address of zero can be illegal
+     * branch # 0 is not used
+     */
     CurrBranch = 1;
     NextLeaf = 0;
     NextSwap = NULL;
@@ -353,7 +367,7 @@ bool SwapOutVirt( void )
                 mem = spillmem->u.addr;
                 huge_entry->numswapped++;
                 if( huge_entry->numthere == huge_entry->numswapped ) {
-                    seg_entry->flags &= ~VIRT_INMEM;
+                    huge_entry->flags &= ~VIRT_INMEM;
                     size = huge_entry->sizelast;
                 } else {
                     size = HUGE_SUBPAGE_SIZE;
@@ -376,7 +390,7 @@ bool SwapOutVirt( void )
 }
 
 void FreeVirtMem( void )
-/*****************************/
+/**********************/
 {
     unsigned        index;
     unsigned        inner;
@@ -413,8 +427,9 @@ void FreeVirtMem( void )
 }
 
 static void AllocVMNode( seg_table *node )
-/****************************************/
-/* allocate a regular 4K page */
+/*****************************************
+ * allocate a regular 4K page
+ */
 {
     void        *mem;
 
@@ -430,8 +445,9 @@ static void AllocVMNode( seg_table *node )
 }
 
 static void AllocHugeVMNode( huge_table *node )
-/*********************************************/
-/* allocate a huge page */
+/**********************************************
+ * allocate a huge page
+ */
 {
     void        *mem;
     int         index;
@@ -440,23 +456,24 @@ static void AllocHugeVMNode( huge_table *node )
 
     node->page = PermAlloc( HUGE_NUM_SUBPAGES * sizeof( spilladdr ) );
     page = node->page;
-    _LnkAlloc( mem, node->sizelast );   /* first try to allocate the last bit */
-    if( mem == NULL ) {                 /* on the end of the page. */
-        node->flags &= ~VIRT_INMEM;
-        page[node->numthere - 1].u.spill = SpillAlloc( node->sizelast );
+    index = node->numthere - 1;         /* first try to allocate the last bit */
+    _LnkAlloc( mem, node->sizelast );   /* on the end of the page. */
+    if( mem == NULL ) {
         nomem = true;
+        node->flags &= ~VIRT_INMEM;
+        page[index].u.spill = SpillAlloc( node->sizelast );
         node->numswapped = node->numthere;
     } else {
-        node->flags |= VIRT_INMEM;
-        page[node->numthere - 1].u.addr = mem;
         nomem = false;
+        node->flags |= VIRT_INMEM;
+        page[index].u.addr = mem;
     	LinkList( &NextSwap, node );
     }
     /*
      * now allocate all of the subpages, starting at the end and working backwards
      * so that they can be swapped from the start forwards.
      */
-    for( index = node->numthere - 1; index-- > 0; ) {
+    while( index-- > 0 ) {
         if( nomem ) {
             page[index].u.spill = SpillAlloc( HUGE_SUBPAGE_SIZE );
         } else {
@@ -474,8 +491,9 @@ static void AllocHugeVMNode( huge_table *node )
 
 static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
                bool (*rtn)( void *, spilladdr, size_t, size_t, bool))
-/*****************************************************************************/
-/* go through the virtual memory nodes, reading or writing data */
+/********************************************************************
+ * go through the virtual memory nodes, reading or writing data
+ */
 {
     virt_mem_size   end_off;
     size_t          off;
@@ -541,8 +559,9 @@ static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
 }
 
 static bool LoadInfo( void *info, spilladdr loc, size_t off, size_t len, bool inmem )
-/***********************************************************************************/
-/* copy data to info from the memory or spillfile referenced by node & off */
+/************************************************************************************
+ * copy data to info from the memory or spillfile referenced by node & off
+ */
 {
     if( len == 0 )
         return( true );
@@ -555,15 +574,17 @@ static bool LoadInfo( void *info, spilladdr loc, size_t off, size_t len, bool in
 }
 
 void ReadInfo( virt_mem stg, void *buf, virt_mem_size len )
-/*********************************************************/
-/* copy data into info from the memory or spillfile referenced by stg */
+/**********************************************************
+ * copy data into info from the memory or spillfile referenced by stg
+ */
 {
     ScanNodes( stg, buf, len, LoadInfo );
 }
 
 static bool SaveInfo( void *info, spilladdr loc, size_t off, size_t len, bool inmem )
-/***********************************************************************************/
-/* copy data at info to the memory or spillfile referenced by node & off */
+/************************************************************************************
+ * copy data at info to the memory or spillfile referenced by node & off
+ */
 {
     if( len == 0 )
         return( true );
@@ -577,8 +598,9 @@ static bool SaveInfo( void *info, spilladdr loc, size_t off, size_t len, bool in
 }
 
 void PutInfo( virt_mem stg, const void *info, virt_mem_size len )
-/***************************************************************/
-/* copy data at info to the memory or spillfile referenced by stg */
+/****************************************************************
+ * copy data at info to the memory or spillfile referenced by stg
+ */
 {
     ScanNodes( stg, (void *)info, len, SaveInfo );
 }
@@ -595,8 +617,9 @@ void CopyInfo( virt_mem a, virt_mem b, size_t len )
 }
 
 static bool CompareBlock( void *info, spilladdr loc, size_t off, size_t len, bool inmem )
-/***************************************************************************************/
-/* compare data at info to the memory or spillfile referenced by node & off */
+/****************************************************************************************
+ * compare data at info to the memory or spillfile referenced by node & off
+ */
 {
     void        *buf;
 
@@ -618,8 +641,9 @@ bool CompareInfo( virt_mem stg, const void *info, virt_mem_size len )
 }
 
 static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool inmem )
-/***********************************************************************************/
-/* copy data in memory or spillfile referenced by node & off to LoadFile */
+/************************************************************************************
+ * copy data in memory or spillfile referenced by node & off to LoadFile
+ */
 {
     size_t  amt;
 
@@ -643,8 +667,9 @@ static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool in
 }
 
 void WriteInfoLoad( virt_mem stg, virt_mem_size len )
-/******************************************************/
-/* copy data in memory or spillfile referenced by stg to LoadFile */
+/****************************************************
+ * copy data in memory or spillfile referenced by stg to LoadFile
+ */
 {
     ScanNodes( stg, NULL, len, OutInfo );
 }
@@ -666,8 +691,9 @@ static bool NullInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool i
 }
 
 void PutInfoNulls( virt_mem stg, virt_mem_size len )
-/**************************************************/
-/* copy NULLS in memory or spillfile referenced by stg */
+/***************************************************
+ * copy NULLS in memory or spillfile referenced by stg
+ */
 {
     ScanNodes( stg, NULL, len, NullInfo );
 }
