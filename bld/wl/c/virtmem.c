@@ -89,7 +89,7 @@ typedef struct huge_table {
 #define HUGE_SUBPAGE_MASK   (HUGE_SUBPAGE_SIZE - 1)
 #define HUGE_NUM_SUBPAGES   32
 
-#define BIGNODE( stg )  (&HugeTab[(stg & HUGE_BIT_MASK) >> HUGE_OFFSET_SHIFT])
+#define BIGNODE( stg )      (&HugeTab[(stg & HUGE_BIT_MASK) >> HUGE_OFFSET_SHIFT])
 #define SUBPAGENUM(stg)     ((stg & HUGE_OFFSET_MASK) >> HUGE_SUBPAGE_SHIFT)
 
 #define BIGNODE_OFF( stg )  (stg & HUGE_SUBPAGE_MASK)
@@ -360,8 +360,8 @@ bool SwapOutVirt( void )
     while( NextSwap != NULL ) {
         seg_entry = NextSwap;
         NextSwap = NextSwap->next;
-        if( seg_entry->flags & VIRT_INMEM ) {
-            if( seg_entry->flags & VIRT_HUGE ) {
+        if( seg_entry->flags & VIRT_HUGE ) {
+            if( seg_entry->flags & VIRT_INMEM ) {
                 huge_entry = (huge_table *)seg_entry;
                 spillmem = &huge_entry->page[huge_entry->numswapped];
                 mem = spillmem->u.addr;
@@ -375,15 +375,19 @@ bool SwapOutVirt( void )
                 spillmem->u.spill = SpillAlloc( size );
                 SpillWrite( spillmem->u.spill, 0, mem, size );
                 _LnkFree( mem );
-            } else {
+                DEBUG((DBG_VIRTMEM, "swapping out %h to %h", mem, spillmem->u.spill ));
+                return( true );
+            }
+        } else {
+            if( seg_entry->flags & VIRT_INMEM ) {
                 seg_entry->flags &= ~VIRT_INMEM;
                 mem = seg_entry->loc.u.addr;
                 seg_entry->loc.u.spill = SpillAlloc( seg_entry->size );
                 SpillWrite( seg_entry->loc.u.spill, 0, mem, seg_entry->size );
                 _LnkFree( mem );
+                DEBUG((DBG_VIRTMEM, "swapping out %h to %h", mem, seg_entry->loc.u.spill ));
+                return( true );
             }
-            DEBUG((DBG_VIRTMEM, "swapping out %h to %h", mem, seg_entry->loc.u.spill ));
-            return( true );
         }
     }
     return( false );
@@ -440,7 +444,7 @@ static void AllocVMNode( seg_table *node )
     } else {
         node->loc.u.addr = mem;
         node->flags |= VIRT_INMEM;
-    	LinkList( &NextSwap, node );
+        LinkList( &NextSwap, node );
     }
 }
 
@@ -467,7 +471,7 @@ static void AllocHugeVMNode( huge_table *node )
         nomem = false;
         node->flags |= VIRT_INMEM;
         page[index].u.addr = mem;
-    	LinkList( &NextSwap, node );
+        LinkList( &NextSwap, node );
     }
     /*
      * now allocate all of the subpages, starting at the end and working backwards
