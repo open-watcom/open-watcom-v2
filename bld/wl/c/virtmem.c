@@ -154,7 +154,7 @@ typedef union {
 /* find the node for MEM_ADDR or FILE_ADDR */
 #define NODE( stg )         (&SegTab[stg.w.high][stg.w.low >> OFFSET_SHIFT])
 
-#define NODE_OFF( stg )     ( stg.w.low & (MAX_NODE_SIZE-1) )
+#define NODE_OFF( stg )     (stg.w.low & (MAX_NODE_SIZE - 1))
 
 #define TINY_BLOCK_CUTOFF 256
 
@@ -236,8 +236,6 @@ static virt_struct GetStg( virt_mem_size amt )
         seg_entry = &SegTab[CurrBranch][NextLeaf];
     }
     seg_entry->size = amt;
-    seg_entry->loc.u.spill = 0;
-    seg_entry->next = NULL;
     vmem.w.high = CurrBranch;
     vmem.w.low = NextLeaf << OFFSET_SHIFT;
     DEBUG((DBG_VIRTMEM, "virt %h amt %x", vmem.l, amt ));
@@ -268,14 +266,11 @@ static virt_struct GetBigStg( virt_mem_size size )
     huge_entry = &HugeTab[NextHuge];
     vmem.l = ((unsigned long)NextHuge << HUGE_OFFSET_SHIFT) | HUGE_PAGE;
     huge_entry->numthere = (size >> HUGE_SUBPAGE_SHIFT) + 1;
-    huge_entry->numswapped = 0;
     huge_entry->sizelast = size & HUGE_SUBPAGE_MASK;
     if( huge_entry->sizelast == 0 ) {
         huge_entry->numthere--;
         huge_entry->sizelast = HUGE_SUBPAGE_SIZE;
     }
-    huge_entry->page = NULL;
-    huge_entry->next = NULL;
     huge_entry->flags = VIRT_HUGE;
     DEBUG((DBG_VIRTMEM, "huge virt %h amt %h", vmem.l, size ));
     NextHuge++;
