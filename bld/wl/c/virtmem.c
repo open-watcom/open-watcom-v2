@@ -425,8 +425,8 @@ static void AllocVMNode( seg_table *node )
     } else {
         node->loc.u.addr = mem;
         node->flags |= VIRT_INMEM;
+    	LinkList( &NextSwap, node );
     }
-    LinkList( &NextSwap, node );
 }
 
 static void AllocHugeVMNode( huge_table *node )
@@ -440,19 +440,23 @@ static void AllocHugeVMNode( huge_table *node )
 
     node->page = PermAlloc( HUGE_NUM_SUBPAGES * sizeof( spilladdr ) );
     page = node->page;
-    _LnkAlloc( mem, node->sizelast );  /* first try to allocate the last bit*/
+    _LnkAlloc( mem, node->sizelast );   /* first try to allocate the last bit */
     if( mem == NULL ) {                 /* on the end of the page. */
         node->flags &= ~VIRT_INMEM;
         page[node->numthere - 1].u.spill = SpillAlloc( node->sizelast );
         nomem = true;
         node->numswapped = node->numthere;
     } else {
+        node->flags |= VIRT_INMEM;
         page[node->numthere - 1].u.addr = mem;
         nomem = false;
+    	LinkList( &NextSwap, node );
     }
-    /* now allocate all of the subpages, starting at the end and working backwards
-     * so that they can be swapped from the start forwards. */
-    for( index = node->numthere - 2; index >= 0; index-- ) {
+    /*
+     * now allocate all of the subpages, starting at the end and working backwards
+     * so that they can be swapped from the start forwards.
+     */
+    for( index = node->numthere - 1; index-- > 0; ) {
         if( nomem ) {
             page[index].u.spill = SpillAlloc( HUGE_SUBPAGE_SIZE );
         } else {
