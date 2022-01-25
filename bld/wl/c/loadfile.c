@@ -48,7 +48,6 @@
 #include "virtmem.h"
 #include "fileio.h"
 #include "mapio.h"
-#include "spillio.h"
 #include "omfreloc.h"
 #include "objcalc.h"
 #include "dbgall.h"
@@ -1331,8 +1330,8 @@ static void FlushBuffFile( outfilelist *outfile )
 static void *NullBuffFunc( void *dest, const void *dummy, size_t size )
 /*********************************************************************/
 {
-    dummy = dummy;
-    size = size;
+    /* unused parameters */ (void)dummy; (void)size;
+
     return( dest );
 }
 #endif

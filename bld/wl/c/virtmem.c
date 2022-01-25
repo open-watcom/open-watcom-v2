@@ -649,7 +649,8 @@ static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len )
 {
     size_t  amt;
 
-    dummy = dummy;   /* to avoid a warning: will be optimized away. */
+    /* unused parameters */ (void)dummy;
+
     if( len == 0 )
         return( true );
     DEBUG((DBG_VIRTMEM, "writing %d bytes (offset %x) to %d.%h", len, off, loc.spilled, loc.u.spill ));
@@ -681,7 +682,8 @@ static bool NullInfo( void *dummy, spilladdr loc, size_t off, size_t len )
  * write nulls to the location referenced by node and off.
  */
 {
-    dummy = dummy;   /* to avoid a warning: will be optimized away. */
+    /* unused parameters */ (void)dummy;
+
     if( len == 0 )
         return( true );
     if( loc.spilled ) {

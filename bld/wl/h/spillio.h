@@ -32,7 +32,7 @@
 
 
 typedef struct spilladdr {
-    unsigned        spilled : 1;
+    unsigned        spilled : 1;    /* memory block is not in RAM (it is spilled to file) */
     union {
         virt_mem_size   spill;
         char            *addr;
