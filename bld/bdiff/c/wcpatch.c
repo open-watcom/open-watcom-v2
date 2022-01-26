@@ -32,10 +32,11 @@
 
 #include "bdiff.h"
 #ifdef __UNIX__
-#include <dirent.h>
+    #include <dirent.h>
 #else
-#include <direct.h>
+    #include <direct.h>
 #endif
+#include "diff.h"
 #include "wpatchio.h"
 #include "wpatch.h"
 #include "newfile.h"
@@ -51,7 +52,16 @@ struct {
     size_t  origTgtDirLen;
 } glob;
 
-static void DirRecurse( const char *srcDir, const char *tgtDir );
+static region       *SimilarRegions;
+static region       *DiffRegions;
+static region       *HoleRegions;
+static foff         SimilarSize;
+static foff         NumDiffs;
+static foff         HolesInRegion;
+static foff         HoleCount[3];
+static foff         HoleHeaders;
+
+static int DirRecurse( const char *srcDir, const char *tgtDir );
 
 static int cmpStrings( const void *op1, const void *op2 )
 {
@@ -93,7 +103,38 @@ static void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
     qsort( Dirs, dir, sizeof( char * ), cmpStrings );
 }
 
-static void FileCmp( const char *SrcPath, const char *TgtPath, const char *name )
+void FindRegionsAlg( algorithm alg )
+{
+    /* unused parameters */ (void)alg;
+
+    FindRegions();
+}
+
+static int _DoBdiff( const char *srcPath, const char *tgtPath, const char *new_name )
+{
+    int         i;
+
+    /* initialize static variables each time */
+    SimilarRegions = NULL;
+    DiffRegions = NULL;
+    HoleRegions = NULL;
+    SimilarSize = 0;
+    NumHoles = 0;
+    NumDiffs = 0;
+    DiffSize = 0;
+    HolesInRegion = 0;
+    HoleHeaders = 0;
+    for( i = 0; i < 3; i += 1 ) {
+        HoleCount[i] = 0;
+    }
+
+    init_diff();
+
+    return( DoBdiff( srcPath, tgtPath, new_name, "", ALG_NOTHING ) );
+}
+
+
+static int FileCmp( const char *SrcPath, const char *TgtPath, const char *name )
 {
     FILE    *srcF;
     FILE    *tgtF;
@@ -116,8 +157,9 @@ static void FileCmp( const char *SrcPath, const char *TgtPath, const char *name 
     if( different ) {
         printf( "%s is different.  Patching...\n", name );
         PatchWriteFile( PATCH_FILE_PATCHED, &TgtPath[glob.origTgtDirLen + 1] );
-        DoBdiff( SrcPath, TgtPath, name );
+        return( _DoBdiff( SrcPath, TgtPath, name ) );
     }
+    return( 0 );
 }
 
 static void DirMarkDeleted( const char *Path )
@@ -180,7 +222,7 @@ compared, and a patch is made if they do not match.
 
 */
 
-static void DirCmpFiles( const char *srcDir, char *srcFiles[],
+static int DirCmpFiles( const char *srcDir, char *srcFiles[],
                   const char *tgtDir, char *tgtFiles[], int Dirflag )
 {
     int     indexSrc = 0;
@@ -205,9 +247,13 @@ static void DirCmpFiles( const char *srcDir, char *srcFiles[],
             strcat( FullTgtPath, "\\" );
             strcat( FullTgtPath, tgtFiles[indexTgt] );
             if( Dirflag == 1 ) {
-                DirRecurse( FullSrcPath, FullTgtPath );
+                if( DirRecurse( FullSrcPath, FullTgtPath ) ) {
+                    return( 1 );
+                }
             } else {
-                FileCmp( FullSrcPath, FullTgtPath, tgtFiles[indexTgt] );
+                if( FileCmp( FullSrcPath, FullTgtPath, tgtFiles[indexTgt] ) ) {
+                    return( 1 );
+                }
             }
             indexSrc += 1;
             indexTgt += 1;
@@ -233,9 +279,10 @@ static void DirCmpFiles( const char *srcDir, char *srcFiles[],
             indexTgt += 1;
         }
     }
+    return( 0 );
 }
 
-static void DirRecurse( const char *srcDir, const char *tgtDir )
+static int DirRecurse( const char *srcDir, const char *tgtDir )
 {
     DIR     *srcdirp;
     DIR     *tgtdirp;
@@ -254,8 +301,9 @@ static void DirRecurse( const char *srcDir, const char *tgtDir )
     DirGetFiles( tgtdirp, tgtFiles, tgtDirs );
     closedir( srcdirp );
     closedir( tgtdirp );
-    DirCmpFiles( srcDir, srcFiles, tgtDir, tgtFiles, 0 );
-    DirCmpFiles( srcDir, srcDirs,  tgtDir, tgtDirs,  1 );
+    if( DirCmpFiles( srcDir, srcFiles, tgtDir, tgtFiles, 0 ) )
+        return( 1 );
+    return( DirCmpFiles( srcDir, srcDirs,  tgtDir, tgtDirs,  1 ) );
 }
 
 static void WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )
@@ -263,7 +311,6 @@ static void WPatchCreate( const char *SrcDirName, const char *TgtDirName, const 
     PatchWriteOpen( patch_name );
     DirRecurse( SrcDirName, TgtDirName );
     PatchWriteClose();
-
 }
 
 int main( int argc, char *argv[] )

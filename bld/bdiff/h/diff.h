@@ -35,21 +35,6 @@
  * ================
  */
 
-typedef enum {
-    ALG_NOTHING,        /* find differences without extra info */
-    ALG_ONLY_NEW,       /* only the new exe's debugging info is available */
-    ALG_BOTH,           /* both exe's have debugging info available */
-} algorithm;
-
-typedef struct region {
-    struct region       *next;
-    foff                old_start;
-    foff                new_start;
-    foff                size;
-    hole                diff;
-    int                 dependants;
-} region;
-
 extern byte     *PatchBuffer;
 extern byte     *OldFile;
 extern byte     *NewFile;
@@ -74,10 +59,11 @@ extern void     *ReadIn( const char *name, size_t buff_size, size_t read_size );
 extern foff     FileSize( const char *name, int *correction );
 extern void     ScanSyncString( const char *syncString );
 extern void     FindRegions( void );
+extern void     FindRegionsAlg( algorithm alg );
 extern void     MakeHoleArray( void );
 extern void     ProcessHoleArray( int write_holes );
 extern long     HolesToDiffs( void );
-extern void     WritePatchFile( const char *name, const char *newName );
+extern void     WritePatchFile( const char *name, const char *new_name );
 extern void     FreeHoleArray( void );
 extern void     VerifyCorrect( const char *name );
 extern void     SortHoleArray( void );

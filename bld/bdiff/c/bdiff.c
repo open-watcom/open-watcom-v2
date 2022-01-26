@@ -33,6 +33,8 @@
 #include "bdiff.h"
 #include "msg.h"
 #include "diff.h"
+#include "wpatch.h"
+
 
 enum {
     MSG_USAGE_COUNT = 0
@@ -40,21 +42,6 @@ enum {
     #include "dusage.gh"
     #undef pick
 };
-
-char    *OldSymName;
-char    *NewSymName;
-
-bool    AppendPatchLevel;
-bool    Verbose;
-
-byte    *PatchBuffer;
-byte    *OldFile;
-byte    *NewFile;
-
-char    *CommentFile;
-
-int     OldCorrection;
-int     NewCorrection;
 
 static const char   *SyncString = NULL;
 
@@ -136,26 +123,8 @@ static algorithm ParseArgs( int argc, char **argv )
 }
 
 
-int main( int argc, char **argv )
+void FindRegionsAlg( algorithm alg )
 {
-    long        savings;
-    foff        buffsize;
-    algorithm   alg;
-
-    if( !MsgInit() )
-        return( EXIT_FAILURE );
-    alg = ParseArgs( argc, argv );
-
-    EndOld = FileSize( argv[1], &OldCorrection );
-    EndNew = FileSize( argv[2], &NewCorrection );
-
-    buffsize = ( EndOld > EndNew ) ? ( EndOld ) : ( EndNew );
-    buffsize += sizeof( PATCH_LEVEL );
-    OldFile = ReadIn( argv[1], buffsize, EndOld );
-    NewFile = ReadIn( argv[2], buffsize, EndNew );
-
-    ScanSyncString( SyncString );
-
     switch( alg ) {
     case ALG_NOTHING:
         FindRegions();
@@ -167,23 +136,19 @@ int main( int argc, char **argv )
         break;
 #endif
     }
+}
 
-    if( NumHoles == 0 && DiffSize == 0 && EndOld == EndNew ) {
-        puts( "Patch file not created - files are identical" );
-        MsgFini();
-        return( EXIT_SUCCESS );
-    }
-    MakeHoleArray();
-    SortHoleArray();
-    ProcessHoleArray( 0 );
-    savings = HolesToDiffs();
-    WritePatchFile( argv[3], newName );
-    FreeHoleArray();
-    VerifyCorrect( argv[2] );
 
-    print_stats( savings );
+int main( int argc, char **argv )
+{
+    int         rc;
+    algorithm   alg;
 
+    if( !MsgInit() )
+        return( EXIT_FAILURE );
+    alg = ParseArgs( argc, argv );
+    rc = DoBdiff( argv[1], argv[2], newName, argv[3], alg );
     MsgFini();
-    return( EXIT_SUCCESS );
+    return( rc );
 }
 

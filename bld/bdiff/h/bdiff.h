@@ -71,6 +71,21 @@ typedef enum {
         CMD_ITER_HOLES
 } patch_cmd;
 
+typedef enum {
+    ALG_NOTHING,        /* find differences without extra info */
+    ALG_ONLY_NEW,       /* only the new exe's debugging info is available */
+    ALG_BOTH,           /* both exe's have debugging info available */
+} algorithm;
+
+typedef struct region {
+    struct region       *next;
+    foff                old_start;
+    foff                new_start;
+    foff                size;
+    hole                diff;
+    int                 dependants;
+} region;
+
 #define s(x) #x
 
 /*
