@@ -91,7 +91,7 @@ typedef struct huge_table {
 #define HUGE_NUM_SUBPAGES   32
 
 #define BIGNODE( stg )      (&HugeTab[(stg & HUGE_BIT_MASK) >> HUGE_OFFSET_SHIFT])
-#define SUBPAGENUM(stg)     ((stg & HUGE_OFFSET_MASK) >> HUGE_SUBPAGE_SHIFT)
+#define SUBPAGENUM( stg )   ((stg & HUGE_OFFSET_MASK) >> HUGE_SUBPAGE_SHIFT)
 
 #define BIGNODE_OFF( stg )  (stg & HUGE_SUBPAGE_MASK)
 
@@ -433,12 +433,12 @@ static bool LoadInfo( void *info, spilladdr loc, size_t off, size_t len )
  * copy data to info from the memory or spillfile referenced by node & off
  */
 {
-    if( len == 0 )
-        return( true );
-    if( loc.spilled ) {
-        SpillRead( loc.u.spill, off, info, len );
-    } else {
-        memcpy( info, loc.u.addr + off, len );
+    if( len ) {
+        if( loc.spilled ) {
+            SpillRead( loc.u.spill, off, info, len );
+        } else {
+            memcpy( info, loc.u.addr + off, len );
+        }
     }
     return( true );
 }
@@ -456,13 +456,13 @@ static bool SaveInfo( void *info, spilladdr loc, size_t off, size_t len )
  * copy data at info to the memory or spillfile referenced by node & off
  */
 {
-    if( len == 0 )
-        return( true );
-    DEBUG((DBG_VIRTMEM, "saving %d bytes (offset %x) to %d.%h", len, off, loc.spilled, loc.u.spill ));
-    if( loc.spilled ) {
-        SpillWrite( loc.u.spill, off, info, len );
-    } else {
-        memcpy( loc.u.addr + off, info, len );
+    if( len ) {
+        DEBUG((DBG_VIRTMEM, "saving %d bytes (offset %x) to %d.%h", len, off, loc.spilled, loc.u.spill ));
+        if( loc.spilled ) {
+            SpillWrite( loc.u.spill, off, info, len );
+        } else {
+            memcpy( loc.u.addr + off, info, len );
+        }
     }
     return( true );
 }
@@ -519,20 +519,20 @@ static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len )
 
     /* unused parameters */ (void)dummy;
 
-    if( len == 0 )
-        return( true );
-    DEBUG((DBG_VIRTMEM, "writing %d bytes (offset %x) to %d.%h", len, off, loc.spilled, loc.u.spill ));
-    if( loc.spilled ) {
-        for( ; len != 0; len -= amt ) {
-            amt = len;
-            if( amt > TokSize )
-                amt = TokSize;
-            SpillRead( loc.u.spill, off, TokBuff, amt );
-            WriteLoad( TokBuff, amt );
-            off += amt;
+    if( len ) {
+        DEBUG((DBG_VIRTMEM, "writing %d bytes (offset %x) to %d.%h", len, off, loc.spilled, loc.u.spill ));
+        if( loc.spilled ) {
+            for( ; len != 0; len -= amt ) {
+                amt = len;
+                if( amt > TokSize )
+                    amt = TokSize;
+                SpillRead( loc.u.spill, off, TokBuff, amt );
+                WriteLoad( TokBuff, amt );
+                off += amt;
+            }
+        } else {
+            WriteLoad( loc.u.addr + off, len );
         }
-    } else {
-        WriteLoad( loc.u.addr + off, len );
     }
     return( true );
 }
@@ -552,12 +552,12 @@ static bool NullInfo( void *dummy, spilladdr loc, size_t off, size_t len )
 {
     /* unused parameters */ (void)dummy;
 
-    if( len == 0 )
-        return( true );
-    if( loc.spilled ) {
-        SpillNull( loc.u.spill, off, len );
-    } else {
-        memset( loc.u.addr + off, 0, len );
+    if( len ) {
+        if( loc.spilled ) {
+            SpillNull( loc.u.spill, off, len );
+        } else {
+            memset( loc.u.addr + off, 0, len );
+        }
     }
     return( true );
 }
@@ -677,28 +677,30 @@ void FreeVirtMem( void )
     huge_table      *huge_entry;
     spilladdr       *page;
 
-    if( SegTab == NULL )
-        return;
-    for( branch = 0; branch < NumBranches; branch++ ) {
-        seg_entry = SegTab[branch];
-        if( seg_entry != NULL ) {
-            for( leaf = 0; leaf < MAX_LEAFS; leaf++ ) {
-                if( !seg_entry->loc.spilled ) {
-                    _LnkFree( seg_entry->loc.u.addr );
+    if( SegTab != NULL ) {
+        for( branch = 0; branch < NumBranches; branch++ ) {
+            seg_entry = SegTab[branch];
+            if( seg_entry != NULL ) {
+                for( leaf = 0; leaf < MAX_LEAFS; leaf++ ) {
+                    if( !seg_entry->loc.spilled ) {
+                        _LnkFree( seg_entry->loc.u.addr );
+                    }
+                    seg_entry++;
                 }
-                seg_entry++;
             }
         }
+        _LnkFree( SegTab );
     }
-    _LnkFree( SegTab );
-    for( index = 0; index < NumHuge; index++ ) {
-        huge_entry = &HugeTab[index];
-        if( huge_entry->page != NULL ) {
-            page = huge_entry->page;
-            for( inner = huge_entry->numswapped; inner < huge_entry->numthere; inner++ ) {
-                _LnkFree( page[inner].u.addr );
+    if( HugeTab != NULL ) {
+        for( index = 0; index < NumHuge; index++ ) {
+            huge_entry = &HugeTab[index];
+            if( huge_entry->page != NULL ) {
+                page = huge_entry->page;
+                for( inner = huge_entry->numswapped; inner < huge_entry->numthere; inner++ ) {
+                    _LnkFree( page[inner].u.addr );
+                }
             }
         }
+        _LnkFree( HugeTab );
     }
-    _LnkFree( HugeTab );
 }
