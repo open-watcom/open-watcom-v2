@@ -151,4 +151,3 @@ int main( int argc, char **argv )
     MsgFini();
     return( rc );
 }
-

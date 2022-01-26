@@ -85,7 +85,5 @@ int DoBdiff( const char *srcPath, const char *tgtPath, const char *new_name, con
 
     print_stats( savings );
 
-    return ( 0 );
+    return( 0 );
 }
-
-
