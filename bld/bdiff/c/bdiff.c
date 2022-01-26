@@ -47,6 +47,9 @@ static const char   *SyncString = NULL;
 
 static char         *newName;
 
+static char         *SrcPath;
+static char         *TgtPath;
+
 static void Usage( void )
 {
     char msgbuf[MAX_RESOURCE_SIZE];
@@ -132,7 +135,7 @@ void FindRegionsAlg( algorithm alg )
 #ifdef USE_DBGINFO
     case ALG_ONLY_NEW:
     case ALG_BOTH:
-        SymbolicDiff( alg, argv[1], argv[2] );
+        SymbolicDiff( alg, SrcPath, TgtPath );
         break;
 #endif
     }
@@ -147,7 +150,9 @@ int main( int argc, char **argv )
     if( !MsgInit() )
         return( EXIT_FAILURE );
     alg = ParseArgs( argc, argv );
-    rc = DoBdiff( argv[1], argv[2], newName, argv[3], alg );
+    SrcPath = argv[1];
+    TgtPath = argv[2];
+    rc = DoBdiff( SrcPath, TgtPath, newName, argv[3], alg );
     MsgFini();
     return( rc );
 }
