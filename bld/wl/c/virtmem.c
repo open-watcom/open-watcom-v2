@@ -652,7 +652,7 @@ bool SwapOutVirt( void )
                 return( true );
             }
         } else {
-            if( !seg_entry->loc.spilled ) {
+            if( !seg_entry->loc.spilled && seg_entry->loc.u.addr != NULL ) {
                 mem = seg_entry->loc.u.addr;
                 seg_entry->loc.u.spill = SpillAlloc( seg_entry->size );
                 seg_entry->loc.spilled = true;
