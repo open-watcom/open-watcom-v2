@@ -67,7 +67,7 @@ reloc_info      *FloatFixups;
 static bool     SpillAreas( OVL_AREA *ovl, bool (*rtn)( section * ) );
 
 void ResetReloc( void )
-/****************************/
+/*********************/
 {
 #ifdef _QNX
     FloatFixups = NULL;
@@ -530,6 +530,7 @@ static bool SpillRelocList( reloc_info *list )
 
 
 static bool SpillSectRelocList( section *sect )
+/*********************************************/
 {
     return( SpillRelocList( sect->reloclist ) );
 }
