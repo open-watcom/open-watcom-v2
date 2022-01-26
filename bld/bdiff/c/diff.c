@@ -1363,7 +1363,7 @@ static void CopyComment( void )
     }
 }
 
-void WritePatchFile( const char *name, const char *newName )
+void WritePatchFile( const char *name, const char *new_name )
 {
     foff        len;
     size_t      size;
@@ -1381,7 +1381,7 @@ void WritePatchFile( const char *name, const char *newName )
     CopyComment();
 
     OutPatch( EOF_CHAR, byte );
-    OutStr( newName );
+    OutStr( new_name );
     OutPatch( '\0', char );
     OutPatch( EndOld + OldCorrection, foff );
     len = EndNew;
