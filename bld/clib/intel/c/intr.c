@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +34,25 @@
 #include "variety.h"
 #include <i86.h>
 #include "dointr.h"
+#if defined( __WINDOWS_386__ )
+    #include "clibxw32.h"
+#endif
 
 
 _WCRTLINK void intr( int intno, union REGPACK *regs )
 {
+#if defined( __WINDOWS_386__ )
+    _clib_intr( intno, regs );
+#else
     _DoINTR( intno, regs, 0 );
+#endif
 }
 
 _WCRTLINK void intrf( int intno, union REGPACK *regs )
 {
+#if defined( __WINDOWS_386__ )
+    _clib_intrf( intno, regs );
+#else
     _DoINTR( intno, regs, regs->w.flags );
+#endif
 }

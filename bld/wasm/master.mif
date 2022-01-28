@@ -50,7 +50,7 @@ extra_l_flags_linux = option stack=12k
 #
 # EXE
 #
-exetarg_prebuild_objs = asmops.gh asmopsd.gh usage.gh wasmsmsg.gh wasmcmsg.gh
+exetarg_prebuild_objs = asmops.gh asmopsd.gh usage.gh wasmsmsg.grh wasmcmsg.grh
 exetarg_objs = &
     $(extra_objs_$(host_os)_$(host_cpu)) &
     main.obj &
@@ -112,26 +112,22 @@ exetarg_name       = wasm
 
 rcui_inc_dirs  = -I. -I"../h"
 
-wresui.res : ../h/wasm.rc usage.gh wasmcmsg.gh wasmsmsg.gh $(__MAKEFILES__)
+wresui.res : ../h/wasm.rc usage.gh wasmcmsg.grh wasmsmsg.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8) -D_STANDALONE_
 
-wasmsmsg.gh : ../h/wasms.msg $(__MAKEFILES__)
+wasmsmsg.grh : ../h/wasms.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 !ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u $(exetarg_qnx_res)
+optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 !endif
+optencod_targets = $(host_os)
 !ifeq release 0
-optencod_targ_dbg   = dbg
+optencod_targets += dbg
 !endif
 
 usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q -rc MSG_USAGE_BASE $(optencod_opt_$(host_os)) $[@ . . $@ $(host_os) $(optencod_targ_dbg)
-
-echo_optencod : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo optencod $@
-!endif
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +70,7 @@ namespace std {
             memcpy( pptr(), buf, waiting );
             pbump( waiting );
         } else {
-            if( overflow( *buf ) == EOF ) {
+            if( overflow( __char_to_int( *buf ) ) == EOF ) {
                 return( written );
             }
             waiting = 1;

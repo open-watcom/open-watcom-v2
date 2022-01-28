@@ -3,7 +3,7 @@ proj_name = conv
 conv_autodepends = .AUTODEPEND
 conv_distrib_lib = 1
 
-additional_clean = *.asm *.c *.inc
+additional_clean = dllthk.asm winglue.asm dllthunk.c winglue.inc
 
 !include cproj.mif
 !include defrule.mif
@@ -26,7 +26,7 @@ additional_clean = *.asm *.c *.inc
 # LIB
 #
 libtarg_prebuild_objs = winobjs.lbc ../def/win386
-libtarg_objs          = fldenv.obj _call16.obj
+libtarg_objs          = fldenv.obj
 libtarg_opts          = @winobjs.lbc
 libtarg_name          = win386
 !include libtarg.mif

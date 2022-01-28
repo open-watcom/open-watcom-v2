@@ -283,8 +283,8 @@ long FAR PASCAL __export FooMe2( DWORD w1, WORD w2 )
 }
 .exam break
 #if defined(__386__)/* if we are doing a 32-bit DLL */
-long PASCAL WinMain( HANDLE hInstance,
-                     HANDLE hPrevInstance,
+long PASCAL WinMain( HINSTANCE hInstance,
+                     HINSTANCE hPrevInstance,
                      LPSTR  lpszCmdLine,
                      int    nCmdShow )
 {
@@ -384,8 +384,8 @@ typedef long (FAR PASCAL *FARPROC2)(DWORD, WORD, int);
 long FAR PASCAL FooMe1( WORD, DWORD, WORD );
 long FAR PASCAL FooMe2( DWORD, WORD );
 .exam break
-int PASCAL WinMain( HANDLE hInstance,
-                    HANDLE hPrevInstance,
+int PASCAL WinMain( HINSTANCE hInstance,
+                    HINSTANCE hPrevInstance,
                     LPSTR  lpszCmdLine,
                     int    nCmdShow )
 {
@@ -1249,8 +1249,8 @@ DLL.
 extern void BreakPoint( void );
 #pragma aux BreakPoint = 0xcc;
 
-int PASCAL WinMain( HANDLE hInstance,
-                    HANDLE x1,
+int PASCAL WinMain( HINSTANCE hInstance,
+                    HINSTANCE x1,
                     LPSTR lpCmdLine,
                     int x2 )
 {

@@ -160,10 +160,10 @@ objs_exe = $+$(rc_template)$- $(objs_drv)
 # EXE
 #
 !ifdef bootstrap
-prebuild_objs = usage.gh rcmsg.gh $(os2_yacc_file).c $(win_yacc_file).c &
+prebuild_objs = usage.gh rcmsg.grh $(os2_yacc_file).c $(win_yacc_file).c &
     keyword2.gh keywordw.gh to932.uni
 !else
-prebuild_objs = usage.gh rcmsg.gh $(os2_yacc_file).c &
+prebuild_objs = usage.gh rcmsg.grh $(os2_yacc_file).c &
     $(win_yacc_file).c keyword2.gh keywordw.gh to932.uni
 !endif
 !ifdef wrc_dll
@@ -207,7 +207,7 @@ verrc_dll = $(dlltarg_name)
 
 rc_defines    = -D_STANDALONE_ $(parser_defines)
 
-wresui.res : ../rc.rc rcmsg.gh .AUTODEPEND
+wresui.res : ../rc.rc rcmsg.grh .AUTODEPEND
     @%make echo_rc
     $(rcui8) -ad $(rc_defines)
 
@@ -230,7 +230,7 @@ keyword2.gh : ../hash/rcos2.key
     @%make echo_findhash
     $(noecho)findhash -q -s 2 -m $<
 
-rcmsg.gh : ../h/rc.msg
+rcmsg.grh : ../h/rc.msg
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
@@ -238,15 +238,16 @@ $(misc_objs):
     cat ../$@ >$@
 
 !ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u $(exetarg_qnx_res)
+optencod_opt_qnx = -u=$(exetarg_qnx_res)
 !endif
+optencod_targets = $(host_os)
 !ifeq release 0
-optencod_targ_dbg   = dbg
+optencod_targets += dbg
 !endif
 
 usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q -rc MSG_USAGE_BASE $(optencod_opt_$(host_os)) $[@ . . $@ $(host_os) $(optencod_targ_dbg)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
 
 ./cvttable.exe: ../c/cvttable.c $(watcom_dir)/h/cp932uni.h $(__MAKEFILES__)
     @%make echo_bldcl
@@ -254,13 +255,3 @@ usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
 
 to932.uni : ./cvttable.exe $(__MAKEFILES__)
     $[@ $@
-
-echo_findhash: .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo findhash $@
-!endif
-
-echo_optencod : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo optencod $@
-!endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +39,11 @@
 
 extern DWORD ReturnCode;
 
-extern void PASCAL InvokeWin32( void );
+extern void InvokeWin32( void );
 
-int PASCAL WinMain( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, int cmdshow )
+int PASCAL WinMain( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdline, int cmdshow )
 {
-    if( !Init32BitTask( thishandle, prevhandle, cmdline, cmdshow ) )
+    if( !Init32BitTask( thisInstance, prevInstance, cmdline, cmdshow ) )
         return( 0 );
 
     InvokeWin32();

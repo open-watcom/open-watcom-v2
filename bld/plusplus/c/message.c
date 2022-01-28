@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,6 +96,10 @@ static SUICIDE_CALLBACK *suicideCallbacks;
 #error missing _CPU check
 #endif
 
+static const char EngUsageText[] = {
+    #include "cmdlnusg.gh"
+};
+
 static char *fileName(          // get name of SRCFILE
     SRCFILE src )               // - source file
 {
@@ -173,15 +177,17 @@ static void fmt_inf_hdr_sym     // FORMAT THE INFORMATION HDR, WITH SYMBOL
     CompFlags.log_note_msgs = false;
 }
 
-char const *IntlUsageText(      // GET INTERNATIONAL USAGE TEXT
+char const *UsageText(          // GET USAGE TEXT
     void )
 {
-    IntlData *data = internationalData;
+    const char  *usage_text;
 
-    if( data != NULL ) {
-        return( data->usage_text );
+    if( internationalData != NULL ) {
+        usage_text = internationalData->usage_text;
+    } else {
+        usage_text = EngUsageText;
     }
-    return( NULL );
+    return( usage_text );
 }
 
 static void doDecodeMessage(            // extract message from tables

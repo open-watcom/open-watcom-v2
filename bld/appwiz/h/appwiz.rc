@@ -1,6 +1,6 @@
 #include <windows.h>
 #include "newproj.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 
 STRINGTABLE
 BEGIN

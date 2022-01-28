@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #include "wgetfn.h"
 #include "wmsg.h"
 #include "ldstr.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "preproc.h"
@@ -149,7 +149,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
     WSetWaitCursor( parent, true );
 
     if( ok ) {
-        ppflags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
+        ppflags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME;
         inc_path = NULL;
         ret = setjmp( SymEnv ) != 0;
         if( ret ) {

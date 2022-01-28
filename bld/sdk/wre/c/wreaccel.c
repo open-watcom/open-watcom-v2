@@ -41,7 +41,6 @@
 #include "wrenew.h"
 #include "wremsg.h"
 #include "ldstr.h"
-#include "rcstr.gh"
 #include "wredel.h"
 #include "wrestat.h"
 #include "wreres.h"

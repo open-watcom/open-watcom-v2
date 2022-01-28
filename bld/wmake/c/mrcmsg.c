@@ -83,7 +83,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    printf( NO_RES_MESSAGE );
+    puts( NO_RES_MESSAGE );
     return( false );
 #else
     return( true );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,7 +140,7 @@ typedef struct asm_code {
    OP_R ( without extension ) should follow OP_Rx
    OP_I ( without extension ) should follow OP_Ix  */
 
-extern const asm_ins                ASMFAR  AsmOpTable[];
+extern const asm_ins                ASMI86FAR AsmOpTable[];
 extern const struct AsmCodeName     AsmOpcode[];
 extern const char                   AsmChars[];
 

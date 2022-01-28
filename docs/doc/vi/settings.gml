@@ -821,11 +821,11 @@ $6L  will cause the line number to always occupy at least 6 spaces.
 The string may be surrounded by quotes if spaces are being used.
 The default status string setting for character mode editors is:
 .millust begin
-set statusstring="L:$6L$nC:$6C"
+set statusstring = "L:$6L C:$6C"
 .millust end
 For GUI editors, the default status string setting is:
 .millust begin
-set statusstring = "Ln:$5L$[Col:$3C$[Mode: $M$[$|$T$[$H"
+set statusstring = "Line:$5L$[Col:$3C$[Mode: $M$[$|$T$[$H"
 .millust end
 .enddescr
 

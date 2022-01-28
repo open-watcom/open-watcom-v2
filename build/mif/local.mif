@@ -19,6 +19,7 @@ lflags_dos_386  = sys causeway
 !loaddll wpp    wppdi86.dll
 !loaddll wpp386 wppd386.dll
 !loaddll wppaxp wppdaxp.dll
+!loaddll wrc    wrcd.dll
 !endif
 
 !endif

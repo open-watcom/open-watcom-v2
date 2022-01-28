@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,9 +87,8 @@ static char const *MsgPrefix[grp_index_max] = {
     #undef GRP_DEF
 };
 
-static char const EUsage[] = {
+static char const EngUsageText[] = {
     #include "usage.gh"
-    "\0"
 };
 
 #ifndef __msg_file_prefix
@@ -118,7 +117,7 @@ char const *UsageText(void)      // GET INTERNATIONAL USAGE TEXT
     if( internationalData != NULL ) {
         usage_text = internationalData->usage_text;
     } else {
-        usage_text = EUsage;
+        usage_text = EngUsageText;
     }
     return( usage_text );
 }

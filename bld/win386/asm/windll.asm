@@ -1,7 +1,8 @@
-;*****************************************************************************
+﻿;*****************************************************************************
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -149,8 +150,8 @@ _small_code_    equ 0
 ;***                                                                      ***
 ;****************************************************************************
 
-extrn LibMain:FAR
-extrn LOCALINIT:FAR
+extrn PASCAL LibMain:FAR
+extrn PASCAL LocalInit:FAR
 
 PUBLIC LibEntry
 LibEntry PROC FAR
@@ -174,7 +175,7 @@ __DLLstart_:
         push    ds
         push    ax
         push    cx
-        call    LOCALINIT
+        call    LocalInit
         or      ax,ax           ; did it do it ok ?
         jz      error1           ; quit if it failed
 
@@ -199,6 +200,10 @@ exit:
 __exit_with_msg_:
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
+
+        public  __STK
+__STK:
+        ret
 
 LibEntry ENDP
 
@@ -549,10 +554,10 @@ __CommonLibEntry endp
 ;***                                                                      ***
 ;***            0 -> send          Stack                                  ***
 ;***            send+1 -> cend     Code                                   ***
-;***            cend+1 -> �        Data                                   ***
+;***            cend+1 -> ∞        Data                                   ***
 ;***                                                                      ***
 ;****************************************************************************
-public StartDLL32
+public "C",StartDLL32
 StartDLL32 proc near
         push    bp                      ; save bp
         mov     bp,sp                   ; get access to stack

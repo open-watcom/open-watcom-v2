@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -103,17 +103,24 @@ TMPSTACK        equ     _STACKLOW ; location on stack to copy command line
 ;
 _LocalPtr   dw  0
 public _LocalPtr
+
 ;
 ; This must correspond with structure definition wstart_vars in wininit.c
 ;
+
+wstart_vars label byte
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Begin of wstart_vars structure
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-hInstance      dw   0
+hThisInstance  dw   0
 hPrevInstance  dw   0
 lpCmdLine      dd   0
 cmdShow        dw   0
+public __no87
 __no87         dw   0       ; non-zero => "NO87" environment var present
+public ___isPC98
+___isPC98      dw   0       ; 0 - IBM PC, 1 - NEC PC-98
 ; magical selectors for real memory
 public ___A000,___B000,___B800,___C000,___D000,___E000,___F000
 ___A000        dw   0
@@ -184,7 +191,6 @@ __FPE_handler dd __null_FPE_rtn ; FPE handler
         public  "C",_cbyte
         public  "C",_osmajor
         public  "C",_osminor
-        public  __no87
         public  "C",__FPE_handler
         public  __init_387_emulator
 
@@ -223,7 +229,7 @@ _cstart_ proc  far
 _wstart_ proc  far
 _wstart2_ proc  far
 __DLLstart_ proc  far
-        dd      offset  hInstance ; loader starts execution 8 bytes past here
+        dd      offset wstart_vars      ; loader starts execution 8 bytes past here
         dd      _end
         mov     _LocalPtr,gs            ; save selector of extender's data
         mov     __inDLL,bl              ; save DLL indicator flag
@@ -290,9 +296,9 @@ again:  mov     al,byte ptr es:[esi]
 
 donecpy:
         pop     es
-        movzx   eax,hInstance
+        movzx   eax,hThisInstance
         push    eax
-        mov     edi, offset filename
+        mov     edi,offset filename
         mov     _LpPgmName,edi
         push    edi
         push    MAX_FILE_NAME
@@ -315,7 +321,7 @@ not_dll:
         sub     esp,__ASTACKSIZ         ; - allocate alternate stack for F77
 not_dll2:                               ; endif
         ; push parms for WINMAIN
-        mov     ax,hInstance
+        mov     ax,hThisInstance
         mov     _pid,ax                 ; save for use by getpid()
         movzx   eax,ax
         push    eax

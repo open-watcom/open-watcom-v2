@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,23 +32,27 @@
 
 
 #include "variety.h"
-#undef  __INLINE_FUNCTIONS__
-#include <bios.h>
-#include "clibxw32.h"
+#include <bios98.h>
+#include <dos.h>
+#include "realmod.h"
+#include "rtdata.h"
 
 
-_WCRTLINK unsigned short _bios_equiplist(void) {
-        return( _clib_bios_equiplist() );
-}
-_WCRTLINK unsigned short _bios_keybrd(unsigned __cmd) {
-        return( _clib_bios_keybrd( __cmd ) );
-}
-_WCRTLINK unsigned short _bios_memsize(void) {
-        return( _clib_bios_memsize() );
-}
-_WCRTLINK unsigned short _bios_printer(unsigned __cmd,unsigned __port,unsigned __data) {
-        return( _clib_bios_printer( __cmd, __port, __data ) );
-}
-_WCRTLINK unsigned short _bios_serialcom(unsigned __cmd,unsigned __port,unsigned __data) {
-        return( _clib_bios_serialcom( __cmd, __port, __data ) );
+_WCRTLINK unsigned short __nec98_bios_memsize( void )
+{
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
+        int     __data;
+
+#ifdef _M_I86
+        __data = *(unsigned char _WCFAR *)MK_FP( 0xa000, 0x3fea );
+#else
+        __data = 0;
+        if( _ExtenderRealModeSelector ) {
+            __data = *(unsigned char _WCFAR *)MK_FP( _ExtenderRealModeSelector, 0xa3fea );
+        }
+#endif
+        return( ( (__data & 0x07) + 1 ) * 0x80 );
+    }
+    /* IBM PC */
+    return( 0 );    // fail if not a NEC PC-98 machine
 }

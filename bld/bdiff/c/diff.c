@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1003,12 +1003,12 @@ static void CheckPatch( int size )
 {
     byte *oldpatch;
 
-    if( CurrPatch - PatchFile + size >= PatchSize ) {
-        oldpatch = PatchFile;
+    if( CurrPatch - PatchBuffer + size >= PatchSize ) {
+        oldpatch = PatchBuffer;
         PatchSize += 10 * 1024;
-        PatchFile = bdiff_realloc( PatchFile, PatchSize );
-        NotNull( PatchFile, "patch file" );
-        CurrPatch = PatchFile + ( CurrPatch - oldpatch );
+        PatchBuffer = bdiff_realloc( PatchBuffer, PatchSize );
+        NotNull( PatchBuffer, "patch file" );
+        CurrPatch = PatchBuffer + ( CurrPatch - oldpatch );
     }
 }
 
@@ -1363,16 +1363,16 @@ static void CopyComment( void )
     }
 }
 
-void WritePatchFile( const char *name, const char *newName )
+void WritePatchFile( const char *name, const char *new_name )
 {
     foff        len;
     size_t      size;
     FILE        *fd;
 
     PatchSize = EndNew;
-    PatchFile = bdiff_malloc( PatchSize );
-    NotNull( PatchFile, "patch file" );
-    CurrPatch = PatchFile;
+    PatchBuffer = bdiff_malloc( PatchSize );
+    NotNull( PatchBuffer, "patch file" );
+    CurrPatch = PatchBuffer;
 
     if( AppendPatchLevel )
         AddLevel( name );
@@ -1381,7 +1381,7 @@ void WritePatchFile( const char *name, const char *newName )
     CopyComment();
 
     OutPatch( EOF_CHAR, byte );
-    OutStr( newName );
+    OutStr( new_name );
     OutPatch( '\0', char );
     OutPatch( EndOld + OldCorrection, foff );
     len = EndNew;
@@ -1400,8 +1400,8 @@ void WritePatchFile( const char *name, const char *newName )
 
     fd = fopen( name, "wb" );
     FileCheck( fd, name );
-    size = CurrPatch - PatchFile;
-    if( fwrite( PatchFile, 1, size, fd ) != size ) {
+    size = CurrPatch - PatchBuffer;
+    if( fwrite( PatchBuffer, 1, size, fd ) != size ) {
         FilePatchError( ERR_CANT_WRITE, name );
     }
     fclose( fd );
@@ -1494,7 +1494,7 @@ void print_stats( long savings )
         best_from_new = EndNew - EndOld;
     }
     stats( "%lu%% of new executable output to patch file (least amount is %lu%%)\n", (DiffSize*100) / EndNew, (best_from_new*100) / EndNew );
-    stats( "%lu total patch file size (%lu%%)\n", CurrPatch - PatchFile, ( ( CurrPatch - PatchFile ) * 100 ) / EndNew );
+    stats( "%lu total patch file size (%lu%%)\n", CurrPatch - PatchBuffer, ( ( CurrPatch - PatchBuffer ) * 100 ) / EndNew );
 }
 
 /*
@@ -1505,21 +1505,21 @@ void dump( void )
 {
     region *reg;
 
-    printf( "        Similarities\n"
-            "        ============\n" );
-    printf( "O Offset  N Offset      Size\n" );
+    puts( "        Similarities" );
+    puts( "        ============" );
+    puts( "O Offset  N Offset      Size" );
     for( reg = SimilarRegions; reg; reg = reg->next ) {
         printf( "%8lx  %8lx  %8lx\n",reg->old_start,reg->new_start,reg->size);
     }
-    printf( "    Differences\n"
-            "    ===========\n" );
-    printf( "N Offset      Size\n" );
+    puts( "    Differences" );
+    puts( "    ===========" );
+    puts( "N Offset      Size" );
     for( reg = DiffRegions; reg; reg = reg->next ) {
         printf( "%8lx  %8lx\n",reg->new_start,reg->size);
     }
-    printf( "           Holes\n"
-            "           =====\n" );
-    printf( "O Offset  N Offset  Difference\n" );
+    puts( "           Holes" );
+    puts( "           =====" );
+    puts( "O Offset  N Offset  Difference" );
     for( reg = HoleRegions; reg; reg = reg->next ) {
         printf( "%8lx  %8lx  %8lx\n",reg->old_start,reg->new_start,reg->diff);
     }

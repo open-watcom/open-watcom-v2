@@ -45,7 +45,7 @@ extra_c_flags_win_386 = -zw
 #
 # LIB
 #
-libtarg_prebuild_objs = uistr.gh
+libtarg_prebuild_objs = uistr.grh
 #                     nt win os2 win...
 #======================================
 !inject about.obj     nt win
@@ -102,7 +102,7 @@ libtarg_name = $(name)
 #
 # rc and others
 #
-uistr.gh : uistrmsg.gh
+uistr.grh : uistrmsg.gh
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_CUI_BASE -v OUTFILE=$^. $[@
 

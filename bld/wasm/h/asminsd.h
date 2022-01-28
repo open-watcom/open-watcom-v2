@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +54,7 @@ const unsigned short AsmOpTable[] = {
     #define insa(tok,op1,byte1_info,op2,op3,op_dir,rm_info,wds,opcode,rm_byte,cpu,prefix)
 #endif
 
-const struct asm_ins ASMFAR AsmOpTable[] = {
+const struct asm_ins ASMI86FAR AsmOpTable[] = {
 
 #endif
 
@@ -454,8 +455,10 @@ ins (T_FADD,            OP_ST,       0,      OP_STI,        OP3_NONE,0,  0,     
 ins (T_FADD,            OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,      0,  0xDC,     0xC0,                     P_87,        0)
 ins (T_FADD,            OP_M_DW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xD8,     0x00,                     P_87,        0)
 ins (T_FADD,            OP_M_QW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDC,     0x00,                     P_87,        0)
+/* this is old format for FADDP without operand */
 ins (T_FADD,            OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xC1,                     P_87,        0)
 ins (T_FADDP,           OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,      0,  0xDE,     0xC0,                     P_87,        0)
+ins (T_FADDP,           OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xC1,                     P_87,        0)
 ins (T_FAR,             OP_SPECIAL,  0,      0,             0,       0,  0,      0,  0,        OP_RES_ID,                0,           0)
 insa(T_FARDATA,         OP_SPECIAL,  0,      OP_NONE,       0,       0,  0,      0,  0,        OP_DIRECTIVE,             0,           0)
 ins (T_FBLD,            OP_M_TB,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDF,     0x20,                     P_87,        0)
@@ -488,14 +491,18 @@ ins (T_FDIV,            OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,     
 ins (T_FDIV,            OP_ST,       0,      OP_STI,        OP3_NONE,0,  0,      0,  0xD8,     0xF0,                     P_87,        0)
 ins (T_FDIV,            OP_M_DW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xD8,     0x30,                     P_87,        0)
 ins (T_FDIV,            OP_M_QW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDC,     0x30,                     P_87,        0)
+/* this is old format for FDIVP without operand */
 ins (T_FDIV,            OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xF9,                     P_87,        0)
 ins (T_FDIVP,           OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,      0,  0xDE,     0xF8,                     P_87,        0)
+ins (T_FDIVP,           OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xF9,                     P_87,        0)
 ins (T_FDIVR,           OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,      0,  0xDC,     0xF0,                     P_87,        0)
 ins (T_FDIVR,           OP_ST,       0,      OP_STI,        OP3_NONE,0,  0,      0,  0xD8,     0xF8,                     P_87,        0)
 ins (T_FDIVR,           OP_M_DW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xD8,     0x38,                     P_87,        0)
 ins (T_FDIVR,           OP_M_QW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDC,     0x38,                     P_87,        0)
+/* this is old format for FDIVRP without operand */
 ins (T_FDIVR,           OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xF1,                     P_87,        0)
 ins (T_FDIVRP,          OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,      0,  0xDE,     0xF0,                     P_87,        0)
+ins (T_FDIVRP,          OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xF1,                     P_87,        0)
 ins (T_FEMMS,           OP_NONE,     F_0F,   OP_NONE,       OP3_NONE,0,  no_RM,  0,  0x0E,     0x00,                     P_586|P_K3D, 0)
 ins (T_FENI,            OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDB,     0xE0,                     P_87,        FWAIT)
 ins (T_FFREE,           OP_STI,      0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDD,     0xC0,                     P_87,        0)
@@ -549,8 +556,10 @@ ins (T_FMUL,            OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,     
 ins (T_FMUL,            OP_ST,       0,      OP_STI,        OP3_NONE,0,  0,      0,  0xD8,     0xC8,                     P_87,        0)
 ins (T_FMUL,            OP_M_DW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xD8,     0x08,                     P_87,        0)
 ins (T_FMUL,            OP_M_QW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDC,     0x08,                     P_87,        0)
+/* this is old format for FMULP without operand */
 ins (T_FMUL,            OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xC9,                     P_87,        0)
 ins (T_FMULP,           OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,      0,  0xDE,     0xC8,                     P_87,        0)
+ins (T_FMULP,           OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xC9,                     P_87,        0)
 ins (T_FNCLEX,          OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDB,     0xE2,                     P_87,        NO_FWAIT)
 ins (T_FNDISI,          OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDB,     0xE1,                     P_87,        NO_FWAIT)
 ins (T_FNENI,           OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDB,     0xE0,                     P_87,        NO_FWAIT)
@@ -601,14 +610,18 @@ ins (T_FSUB,            OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,     
 ins (T_FSUB,            OP_ST,       0,      OP_STI,        OP3_NONE,0,  0,      0,  0xD8,     0xE0,                     P_87,        0)
 ins (T_FSUB,            OP_M_DW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xD8,     0x20,                     P_87,        0)
 ins (T_FSUB,            OP_M_QW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDC,     0x20,                     P_87,        0)
+/* this is old format for FSUBP without operand */
 ins (T_FSUB,            OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xE9,                     P_87,        0)
 ins (T_FSUBP,           OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,      0,  0xDE,     0xE8,                     P_87,        0)
+ins (T_FSUBP,           OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xE9,                     P_87,        0)
 ins (T_FSUBR,           OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,      0,  0xDC,     0xE0,                     P_87,        0)
 ins (T_FSUBR,           OP_ST,       0,      OP_STI,        OP3_NONE,0,  0,      0,  0xD8,     0xE8,                     P_87,        0)
 ins (T_FSUBR,           OP_M_DW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xD8,     0x28,                     P_87,        0)
 ins (T_FSUBR,           OP_M_QW,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDC,     0x28,                     P_87,        0)
+/* this is old format for FSUBRP without operand */
 ins (T_FSUBR,           OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xE1,                     P_87,        0)
 ins (T_FSUBRP,          OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,      0,  0xDE,     0xE0,                     P_87,        0)
+ins (T_FSUBRP,          OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDE,     0xE1,                     P_87,        0)
 ins (T_FTST,            OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xD9,     0xE4,                     P_87,        0)
 ins (T_FUCOM,           OP_STI,      0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDD,     0xE0,                     P_387,       0)
 ins (T_FUCOM,           OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0,  0xDD,     0xE1,                     P_387,       0)

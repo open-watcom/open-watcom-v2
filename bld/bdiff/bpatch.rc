@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "bpatch.rh"
 #include "wreslang.rh"
 
@@ -7,11 +9,13 @@ BEGIN
 
     #include "bpatch.msg"
   #if defined( BPATCH )
-    #include "pusage.gh"
+    #include "ppusage.gh"
+  #elif defined( BDUMP )
+    #include "pdusage.gh"
   #elif defined( BDIFF )
     #include "dusage.gh"
   #else
-    (MSG_USAGE_FIRST + RLE_ENGLISH * MSG_LANG_SPACING), [ " " ]
+    (MSG_USAGE_BASE + RLE_ENGLISH * MSG_LANG_SPACING), [ " " ]
   #endif
 
     #undef pick
@@ -20,11 +24,13 @@ BEGIN
 
     #include "bpatch.msg"
   #if defined( BPATCH )
-    #include "pusagej.gh"
+    #include "ppusage.gh"
+  #elif defined( BDUMP )
+    #include "pdusage.gh"
   #elif defined( BDIFF )
     #include "dusage.gh"
   #else
-    (MSG_USAGE_FIRST + RLE_JAPANESE * MSG_LANG_SPACING), [ " " ]
+    (MSG_USAGE_BASE + RLE_JAPANESE * MSG_LANG_SPACING), [ " " ]
   #endif
 
     #undef pick

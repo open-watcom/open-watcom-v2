@@ -52,7 +52,7 @@ extra_c_flags_guimem = $(trmem_cover_cflags)
 #
 # LIB
 #
-libtarg_prebuild_objs = guimsgs.gh
+libtarg_prebuild_objs = guimsgs.grh
 common_objs = &
     guicreat.obj   &
     guihint.obj    &
@@ -102,6 +102,6 @@ libtarg_libs = $(wpi_lib) $(commonui_lib)
 #
 # rc and others
 #
-guimsgs.gh : ../../h/gui.msg
+guimsgs.grh : ../../h/gui.msg
     @%make echo_awk
     $(awk) -v prefix=GUI_LITERAL_ -v base=GUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

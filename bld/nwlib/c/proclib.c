@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +86,7 @@ static void ProcessOneObject( arch_header *arch, libfile io )
     }
     deleted = false;
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
-        if( IsSameFName( arch->name, cmd->name ) ) {
+        if( IsSameFNameCase( arch->name, cmd->name ) ) {
             if( !Options.explode ) {
                 if( (cmd->ops & OP_EXTRACT) && (cmd->ops & OP_EXTRACTED) == 0 ) {
                     if( cmd->fname != NULL ) {

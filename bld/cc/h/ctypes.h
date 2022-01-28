@@ -124,26 +124,26 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
 #define MASK_FUNC           (MASK_LANGUAGES|FLAG_INLINE|FLAG_LOADDS|FLAG_EXPORT|FLAG_SAVEREGS|FLAG_ABORTS|FLAG_NORETURN|FLAG_FARSS)
 
 typedef enum sym_flags {
-    SYM_NONE                = 0x00,     /* no symbol */
-    SYM_FUNCTION            = 0x01,     /* ON => function, OFF => variable */
-    SYM_REFERENCED          = 0x02,     /* symbol was referenced in program */
-    SYM_TYPE_GIVEN          = 0x04,     /* a ret type was specified for this func */
-    SYM_EMITTED             = 0x04,     /* symbol has been emitted to cgen */
-    SYM_DEFINED             = 0x08,     /* symbol has been defined */
-    SYM_INITIALIZED         = 0x10,     /* variable has been initialized */
-    SYM_OLD_STYLE_FUNC      = 0x10,     /* function defined with old-style defn */
-    SYM_TEMP                = 0x20,     /* this is a temp created by MakeNewSym */
-    SYM_CHECK_STACK         = 0x40,     /* function requires stack checking code */
-    SYM_ASSIGNED            = 0x40,     /* variable has been assigned to */
-    SYM_ADDR_TAKEN          = 0x80,     /* variable/func has had its address taken */
-    SYM_IGNORE_UNREFERENCE  = 0x0100,   /* don't print msg if unreferenced */
-    SYM_OK_TO_RECURSE       = 0x0200,   /* OK to do tail recursion */
-    SYM_FUNC_RETURN_VAR     = 0x0400,   /* this is function return variable */
-    SYM_FUNC_NEEDS_THUNK    = 0x0800,   /* need a thunk prolog? */
-    SYM_BASED_STACK_VARS    = 0x1000,   /* _based(_segname("_STACK")) vars */
-    SYM_USED_IN_PRAGMA      = 0x2000,   /* symbol referenced in a pragma */
-    SYM_INTRINSIC           = 0x4000,   /* #pragma intrinsic(name) */
-    SYM_TRY_VOLATILE        = 0x8000,   /* volatile because try is used */
+    SYM_NONE                = 0x00000000,   /* no symbol */
+    SYM_FUNCTION            = 0x00000001,   /* ON => function, OFF => variable */
+    SYM_REFERENCED          = 0x00000002,   /* symbol was referenced in program */
+    SYM_EMITTED             = 0x00000004,   /* symbol has been emitted to cgen */
+    SYM_DEFINED             = 0x00000008,   /* symbol has been defined */
+    SYM_INITIALIZED         = 0x00000010,   /* variable has been initialized */
+    SYM_TEMP                = 0x00000020,   /* this is a temp created by MakeNewSym */
+    SYM_ASSIGNED            = 0x00000040,   /* variable has been assigned to */
+    SYM_ADDR_TAKEN          = 0x00000080,   /* variable/func has had its address taken */
+    SYM_IGNORE_UNREFERENCE  = 0x00000100,   /* don't print msg if unreferenced */
+    SYM_OK_TO_RECURSE       = 0x00000200,   /* OK to do tail recursion */
+    SYM_FUNC_RETURN_VAR     = 0x00000400,   /* this is function return variable */
+    SYM_FUNC_NEEDS_THUNK    = 0x00000800,   /* need a thunk prolog? */
+    SYM_BASED_STACK_VARS    = 0x00001000,   /* _based(_segname("_STACK")) vars */
+    SYM_USED_IN_PRAGMA      = 0x00002000,   /* symbol referenced in a pragma */
+    SYM_INTRINSIC           = 0x00004000,   /* #pragma intrinsic(name) */
+    SYM_TRY_VOLATILE        = 0x00008000,   /* volatile because try is used */
+    SYM_TYPE_GIVEN          = 0x00010000,   /* a ret type was specified for this func */
+    SYM_OLD_STYLE_FUNC      = 0x00020000,   /* function defined with old-style defn */
+    SYM_CHECK_STACK         = 0x00040000,   /* function requires stack checking code */
 } sym_flags;
 
 typedef enum stg_classes {  // used in sym.stg_class

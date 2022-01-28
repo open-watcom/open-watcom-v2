@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,7 +117,9 @@ UINT FAR PASCAL __EnumSymbols(LPSYG lpsyg, WORD max, ENUMPROC proc, LPVOID d)
 
     if( penwinEnumSymbols == NULL ) {
         penwinEnumSymbols = BackPatch_penwin( "EnumSymbols" );
-        if( penwinEnumSymbols == NULL ) return( 0 );
+        if( penwinEnumSymbols == NULL ) {
+            return( 0 );
+        }
     }
 
     GetSYGAlias( lpsyg, &syg );
@@ -137,7 +140,9 @@ BOOL FAR PASCAL __ExecuteGesture(HWND hwnd, SYV syv, LPRCRESULT lprcresult )
 
     if( penwinExecuteGesture == NULL ) {
         penwinExecuteGesture = BackPatch_penwin( "ExecuteGesture" );
-        if( penwinExecuteGesture == NULL ) return( 0 );
+        if( penwinExecuteGesture == NULL ) {
+            return( 0 );
+        }
     }
 
     GetRCRESULTAlias( lprcresult, &rcr );
@@ -158,7 +163,9 @@ VOID FAR PASCAL __FirstSymbolFromGraph(LPSYG lpsyg, LPSYV lpsyv, int max,
 
     if( penwinFirstSymbolFromGraph == NULL ) {
         penwinFirstSymbolFromGraph = BackPatch_penwin( "FirstSymbolFromGraph" );
-        if( penwinFirstSymbolFromGraph == NULL ) return;
+        if( penwinFirstSymbolFromGraph == NULL ) {
+            return;
+        }
     }
 
     GetSYGAlias( lpsyg, &syg );
@@ -177,7 +184,9 @@ int FAR PASCAL __GetSymbolCount( LPSYG lpsyg )
 
     if( penwinGetSymbolCount == NULL ) {
         penwinGetSymbolCount = BackPatch_penwin( "GetSymbolCount" );
-        if( penwinGetSymbolCount == NULL ) return( 0 );
+        if( penwinGetSymbolCount == NULL ) {
+            return( 0 );
+        }
     }
 
     GetSYGAlias( lpsyg, &syg );
@@ -198,7 +207,9 @@ int FAR PASCAL __GetSymbolMaxLength( LPSYG lpsyg )
 
     if( penwinGetSymbolMaxLength == NULL ) {
         penwinGetSymbolMaxLength = BackPatch_penwin( "GetSymbolMaxLength" );
-        if( penwinGetSymbolMaxLength == NULL ) return( 0 );
+        if( penwinGetSymbolMaxLength == NULL ) {
+            return( 0 );
+        }
     }
 
     GetSYGAlias( lpsyg, &syg );
@@ -220,7 +231,9 @@ BOOL FAR PASCAL __TrainContext( LPRCRESULT lprcresult, LPSYE lpsye, int csye,
 
     if( penwinTrainContext == NULL ) {
         penwinTrainContext = BackPatch_penwin( "TrainContext" );
-        if( penwinTrainContext == NULL ) return( 0 );
+        if( penwinTrainContext == NULL ) {
+            return( 0 );
+        }
     }
 
     GetRCRESULTAlias( lprcresult, &rcr );

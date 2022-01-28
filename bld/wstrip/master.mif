@@ -31,7 +31,7 @@ exename = wstrip
 #
 # EXE
 #
-exetarg_prebuild_objs = msg.gh usage.gh
+exetarg_prebuild_objs = msg.grh usage.gh
 exetarg_objs = strip.obj output.obj
 !ifndef bootstrap
 exetarg_libs = $(wres_lib)
@@ -52,26 +52,22 @@ rcui_inc_dirs = -I. -I..
 verrc_exe = $(exename)
 !include verrc.mif
 
-wresui.res : ../wstrip.rc msg.gh $(__MAKEFILES__)
+wresui.res : ../wstrip.rc msg.grh usage.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8) -ad
 
-msg.gh : ../wstrip.msg $(__MAKEFILES__)
+msg.grh : ../wstrip.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 !ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u $(exetarg_qnx_res)
+optencod_opt_qnx    = -u=$(exetarg_qnx_res)
 !endif
+optencod_targets = $(host_os)
 !ifeq release 0
-optencod_targ_dbg   = dbg
+optencod_targets += dbg
 !endif
 
 usage.gh $(exetarg_$(host_os)_res) : ../options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -q -rc MSG_USAGE_BASE $(optencod_opt_$(host_os)) $[@ . . $@ $(host_os) $(optencod_targ_dbg)
-
-echo_optencod : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo optencod $@
-!endif
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)

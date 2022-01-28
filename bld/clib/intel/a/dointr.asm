@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -53,8 +54,8 @@ RP_DS   equ     14
 RP_ES   equ     16
 RP_F    equ     18
 
-;void _DoINTR( unsigned char intnum, struct REGPACK __far *regs, unsigned char flags )
-;/************* AX ****************** CX:BX ********************* DX ****************/
+;void _DoINTR( unsigned char intno, struct REGPACK __far *regs, unsigned char flags )
+;/************ AX ***************** CX:BX ********************* DX *****************/
 
         xdefp   _DoINTR_
 

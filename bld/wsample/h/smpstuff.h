@@ -48,7 +48,7 @@
 #define INT_CTRL        0x20    /* interrupt controler port */
 #define EOI             0x20    /* End-Of-Interrupt */
 
-#if defined( __DOS__ ) && !defined( _RSI ) && !defined( _PLS )
+#if defined( __DOS__ ) && !defined( __DOS4G__ ) && !defined( __PHARLAP__ )
 #define REPORT_TYPE __interrupt
 #else
 #define REPORT_TYPE
@@ -131,14 +131,13 @@ extern void             SaveSamples( void );
 extern void             StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args );
 extern void             StopProg( void );
 extern void             GetProg( const char *cmd, size_t len );
-#if defined( __DOS__ ) && !defined( _PLS ) && !defined( _RSI )
+#if defined( __DOS__ ) && !defined( __PHARLAP__ ) && !defined( __DOS4G__ )
 extern bool             __near VersionCheck( void );
 extern void             __near WriteMark( const char FAR_PTR *str, seg_offset where );
 #else
 extern bool             VersionCheck( void );
 extern void             WriteMark( const char FAR_PTR *str, seg_offset where );
 #endif
-extern void             Usage( void );
 
 extern void             FAR_PTR *my_alloc( size_t size );
 extern void             my_free( void FAR_PTR *chunk );

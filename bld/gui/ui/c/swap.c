@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -235,7 +235,7 @@ enum vid_state_info {
  * Internal Windows 3.x symbols
  * not part of standard API
  */
-extern char _A000h[];
+extern char _A000H[];
 extern void FAR PASCAL Death( HDC );
 extern void FAR PASCAL Resurrection( HDC, WORD w1, WORD w2, WORD w3, WORD w4, WORD w5, WORD w6 );
 
@@ -376,11 +376,11 @@ static void toGraphicalFast( void )
     setupEGA();
 
     _seq_write( SEQ_MAP_MASK, MSK_MAP_0 );
-    MyMoveData( swapSeg, 0, (WORD)_A000h, 0, pageSize );
+    MyMoveData( swapSeg, 0, (WORD)_A000H, 0, pageSize );
     _seq_write( SEQ_MAP_MASK, MSK_MAP_1 );
-    MyMoveData( swapSeg, pageSize, (WORD)_A000h, 0, pageSize );
+    MyMoveData( swapSeg, pageSize, (WORD)_A000H, 0, pageSize );
     _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
-    MyMoveData( swapSeg, pageSize * 2, (WORD)_A000h, 0, FONT_SIZE );
+    MyMoveData( swapSeg, pageSize * 2, (WORD)_A000H, 0, FONT_SIZE );
 
     rmRegs.eax = saveMode | 0x80;
     doAnInt10();
@@ -420,18 +420,18 @@ static void toCharacterFast( void )
 
     setupEGA();
     _graph_write( GRA_READ_MAP, RMS_MAP_0 );
-    MyMoveData( (WORD)_A000h, 0, swapSeg, 0, pageSize );
+    MyMoveData( (WORD)_A000H, 0, swapSeg, 0, pageSize );
     _graph_write( GRA_READ_MAP, RMS_MAP_1 );
-    MyMoveData( (WORD)_A000h, 0, swapSeg, pageSize, pageSize );
+    MyMoveData( (WORD)_A000H, 0, swapSeg, pageSize, pageSize );
     _graph_write( GRA_READ_MAP, RMS_MAP_2 );
-    MyMoveData( (WORD)_A000h, 0, swapSeg, pageSize * 2, FONT_SIZE );
+    MyMoveData( (WORD)_A000H, 0, swapSeg, pageSize * 2, FONT_SIZE );
     _graph_write( GRA_READ_MAP, RMS_MAP_0 );
 
     /*
      * blank regen area (attributes)
      */
     _seq_write( SEQ_MAP_MASK, MSK_MAP_1 );
-    Fillb( (WORD)_A000h, 0, 0, pageSize );
+    Fillb( (WORD)_A000H, 0, 0, pageSize );
 
     rmRegs.eax = scanLines;
     rmRegs.ebx= 0x30;

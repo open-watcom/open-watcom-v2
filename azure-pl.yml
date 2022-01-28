@@ -4,6 +4,17 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+# specific files excluded
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - relea-pl.yml
+    - covsc-pl.yml
+    - README.md
+
 variables:
   owroot:           $(Build.SourcesDirectory)
   owobjdir:         binbuild

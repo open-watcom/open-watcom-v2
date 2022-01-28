@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,8 +86,7 @@ typedef bool (*statushook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 typedef struct {
     section_size    separator_width;            /* in pixels */
     section_size    width;                      /* width of block area */
-    boolbit         width_is_percent    : 1;
-    boolbit         width_is_pixels     : 1;
+    bool            width_is_percent;
 } status_block_desc;
 
 typedef struct statwnd statwnd;

@@ -1,10 +1,11 @@
+/* UTF-8 encoding, ¥ */
+
 /*************************************************************************/
 /*                          WLINK RESOURCE FILE                          */
 /*************************************************************************/
 
 #include "wlnkmsg.rh"
 #include "wreslang.rh"
-#include "rcmsg.gh"
 
 STRINGTABLE
 BEGIN

@@ -18,8 +18,8 @@
 #endif
 #include "memwnd.rh"
 #include "memdmp.rh"
-#include "rcstr.gh"
-#include "uistr.gh"
+#include "rcstr.grh"
+#include "uistr.grh"
 #include "dipload.rh"
 #include "banner.h"
 #include "selinfo.rh"

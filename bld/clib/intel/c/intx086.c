@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,39 +36,39 @@
 #include "dointr.h"
 
 
-_WCRTLINK int int86x( int intno, union REGS *inr, union REGS *outr, struct SREGS *sr )
+_WCRTLINK int int86x( int intno, union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
 {
-    union REGPACK r;
+    union REGPACK regs;
 
-    r.x.ax = inr->x.ax;
-    r.x.bx = inr->x.bx;
-    r.x.cx = inr->x.cx;
-    r.x.dx = inr->x.dx;
-    r.x.si = inr->x.si;
-    r.x.di = inr->x.di;
-    r.x.ds = sr->ds;
-    r.x.es = sr->es;
-//    r.x.bp = 0;             /* no bp in REGS union, set to 0 */
-//    r.x.flags = ( inr->w.cflag ) ? INTR_CF : 0;
+    regs.x.ax = inregs->x.ax;
+    regs.x.bx = inregs->x.bx;
+    regs.x.cx = inregs->x.cx;
+    regs.x.dx = inregs->x.dx;
+    regs.x.si = inregs->x.si;
+    regs.x.di = inregs->x.di;
+    regs.x.ds = segregs->ds;
+    regs.x.es = segregs->es;
+//    regs.x.bp = 0;             /* no bp in REGS union, set to 0 */
+//    regs.x.flags = ( inregs->w.cflag ) ? INTR_CF : 0;
 
-    _DoINTR( intno, &r, 0 );
+    _DoINTR( intno, &regs, 0 );
 
-    outr->x.ax = r.x.ax;
-    outr->x.bx = r.x.bx;
-    outr->x.cx = r.x.cx;
-    outr->x.dx = r.x.dx;
-    outr->x.si = r.x.si;
-    outr->x.di = r.x.di;
-    outr->x.cflag = ( (r.x.flags & INTR_CF) != 0 );
-    sr->ds = r.x.ds;
-    sr->es = r.x.es;
-    return( r.x.ax );
+    outregs->x.ax = regs.x.ax;
+    outregs->x.bx = regs.x.bx;
+    outregs->x.cx = regs.x.cx;
+    outregs->x.dx = regs.x.dx;
+    outregs->x.si = regs.x.si;
+    outregs->x.di = regs.x.di;
+    outregs->x.cflag = ( (regs.x.flags & INTR_CF) != 0 );
+    segregs->ds = regs.x.ds;
+    segregs->es = regs.x.es;
+    return( regs.x.ax );
 }
 
-_WCRTLINK int int86( int intno, union REGS *inr, union REGS *outr )
+_WCRTLINK int int86( int intno, union REGS *inregs, union REGS *outregs )
 {
-    struct SREGS sr;
+    struct SREGS segregs;
 
-    segread( &sr );
-    return( int86x( intno, inr, outr, &sr ) );
+    segread( &segregs );
+    return( int86x( intno, inregs, outregs, &segregs ) );
 }

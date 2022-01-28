@@ -1589,6 +1589,7 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
         /* check for { before checking for array, struct or union  */
         if( CurToken != T_LEFT_BRACE && typ->decl_type != TYP_ARRAY ) {
             AddStmt( AsgnOp( VarLeaf( sym, sym_handle ), T_ASSIGN_LAST, CommaExpr() ) );
+            sym->flags |= SYM_ASSIGNED;
         } else if( typ->decl_type == TYP_ARRAY ) {
             if( CurToken == T_LEFT_BRACE && CompFlags.auto_agg_inits ) {
                 InitArrayVar( sym, sym_handle, typ );
@@ -1606,6 +1607,7 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
         } else {
             NextToken();
             AddStmt( AsgnOp( VarLeaf( sym, sym_handle ), T_ASSIGN_LAST, CommaExpr() ) );
+            sym->flags |= SYM_ASSIGNED;
             MustRecog( T_RIGHT_BRACE );
         }
     }

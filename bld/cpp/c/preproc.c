@@ -338,6 +338,41 @@ static FILE *PP_OpenInclude( const char *filename, size_t len, incl_type incltyp
     return( NULL );
 }
 
+static FILE *PP_OpenIncludeAlias( const char *filename, size_t len, incl_type incltype )
+{
+    /* unused parameters */ (void)filename; (void)len; (void)incltype;
+
+    /* not yet implemented */
+
+    return( NULL );
+}
+
+static FILE *PP_OpenIncludeTruncated( const char *filename, size_t len, incl_type incltype )
+{
+    pgroup2     pg1;
+    pgroup2     pg2;
+    bool        truncated;
+
+    truncated = false;
+    memcpy( pg1.buffer, filename, len );
+    pg1.buffer[len] = '\0';
+    _splitpath2( pg1.buffer, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
+    if( strlen( pg2.fname ) > 8 ) {
+        pg2.fname[8] = '\0';
+        truncated = true;
+    }
+    if( strlen( pg2.ext ) > 4 ) {
+        pg2.ext[4] = '\0';
+        truncated = true;
+    }
+    if( truncated ) {
+        // try to open truncated name if necessary
+        _makepath( pg1.buffer, pg2.drive, pg2.dir, pg2.fname, pg2.ext );
+        return( PP_OpenInclude( pg1.buffer, strlen( pg1.buffer ), incltype ) );
+    }
+    return( NULL );
+}
+
 static void PP_GenLine( void )
 {
     char        *p;
@@ -598,9 +633,21 @@ static void open_include_file( const char *filename, const char *end, incl_type 
 {
     size_t      len;
     char        *buffer;
+    bool        ok;
 
     len = end - filename;
-    if( PP_OpenInclude( filename, len, incltype ) == NULL ) {
+    ok = ( PP_OpenInclude( filename, len, incltype ) != NULL );
+    if( !ok ) {
+        /* check open alias file name */
+        ok = ( PP_OpenIncludeAlias( filename, len, incltype ) != NULL );
+        if( !ok && (PPFlags & PPFLAG_TRUNCATE_FILE_NAME) ) {
+            /* check truncated file name */
+            ok = ( PP_OpenIncludeTruncated( filename, len, incltype ) != NULL );
+        }
+    }
+    if( ok ) {
+        PP_GenLine();
+    } else {
         /* filename is located in preprocessor buffer
          * temporary copy is necessary, because buffer is
          * overwriten by sprintf function
@@ -613,8 +660,6 @@ static void open_include_file( const char *filename, const char *end, incl_type 
         PP_Free( buffer );
         PPNextTokenPtr = PPLineBuf + 1;
         PPErrorCount++;
-    } else {
-        PP_GenLine();
     }
 }
 

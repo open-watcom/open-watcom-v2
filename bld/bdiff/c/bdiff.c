@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,8 @@
 #include "bdiff.h"
 #include "msg.h"
 #include "diff.h"
+#include "wpatch.h"
+
 
 enum {
     MSG_USAGE_COUNT = 0
@@ -41,37 +43,20 @@ enum {
     #undef pick
 };
 
-char    *OldSymName;
-char    *NewSymName;
-
-bool    AppendPatchLevel;
-bool    Verbose;
-
-byte    *PatchFile;
-byte    *OldFile;
-byte    *NewFile;
-
-char    *CommentFile;
-
-int     OldCorrection;
-int     NewCorrection;
-
 static const char   *SyncString = NULL;
 
 static char         *newName;
+
+static char         *SrcPath;
+static char         *TgtPath;
 
 static void Usage( void )
 {
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
 
-    i = MSG_USAGE_FIRST;
-    GetMsg( msgbuf, i );
-    printf( msgbuf, "bdiff" );
-    for( i = i + 1; i < MSG_USAGE_FIRST + MSG_USAGE_COUNT; i++ ) {
+    for( i = MSG_USAGE_BASE; i < MSG_USAGE_BASE + MSG_USAGE_COUNT; i++ ) {
         GetMsg( msgbuf, i );
-        if( msgbuf[0] == '\0' )
-            break;
         puts( msgbuf );
     }
     MsgFini();
@@ -141,26 +126,8 @@ static algorithm ParseArgs( int argc, char **argv )
 }
 
 
-void main( int argc, char **argv )
+void FindRegionsAlg( algorithm alg )
 {
-    long        savings;
-    foff        buffsize;
-    algorithm   alg;
-
-    if( !MsgInit() )
-        exit( EXIT_FAILURE );
-    alg = ParseArgs( argc, argv );
-
-    EndOld = FileSize( argv[1], &OldCorrection );
-    EndNew = FileSize( argv[2], &NewCorrection );
-
-    buffsize = ( EndOld > EndNew ) ? ( EndOld ) : ( EndNew );
-    buffsize += sizeof( PATCH_LEVEL );
-    OldFile = ReadIn( argv[1], buffsize, EndOld );
-    NewFile = ReadIn( argv[2], buffsize, EndNew );
-
-    ScanSyncString( SyncString );
-
     switch( alg ) {
     case ALG_NOTHING:
         FindRegions();
@@ -168,27 +135,24 @@ void main( int argc, char **argv )
 #ifdef USE_DBGINFO
     case ALG_ONLY_NEW:
     case ALG_BOTH:
-        SymbolicDiff( alg, argv[1], argv[2] );
+        SymbolicDiff( alg, SrcPath, TgtPath );
         break;
 #endif
     }
-
-    if( NumHoles == 0 && DiffSize == 0 && EndOld == EndNew ) {
-        printf( "Patch file not created - files are identical\n" );
-        MsgFini();
-        exit( EXIT_SUCCESS );
-    }
-    MakeHoleArray();
-    SortHoleArray();
-    ProcessHoleArray( 0 );
-    savings = HolesToDiffs();
-    WritePatchFile( argv[3], newName );
-    FreeHoleArray();
-    VerifyCorrect( argv[2] );
-
-    print_stats( savings );
-
-    MsgFini();
-    exit( EXIT_SUCCESS );
 }
 
+
+int main( int argc, char **argv )
+{
+    int         rc;
+    algorithm   alg;
+
+    if( !MsgInit() )
+        return( EXIT_FAILURE );
+    alg = ParseArgs( argc, argv );
+    SrcPath = argv[1];
+    TgtPath = argv[2];
+    rc = DoBdiff( SrcPath, TgtPath, newName, argv[3], alg );
+    MsgFini();
+    return( rc );
+}

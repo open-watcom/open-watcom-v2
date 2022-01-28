@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,22 @@
 ****************************************************************************/
 
 
-#define SS_SPLIT                    500
-#define SS_DESTROY                  501
-#define SS_DEFAULTS                 502
+#define SSB_TIME                    300
+#define SSB_DATE                    301
+#define SSB_MODE                    302
+#define SSB_LINE                    303
+#define SSB_COLUMN                  304
+#define SSB_MESSAGE                 305
+#define SSB_ALIGN_LEFT              400
+#define SSB_ALIGN_CENTER            401
+#define SSB_ALIGN_RIGHT             402
+#define SSB_CMD_SPLIT               500
+#define SSB_CMD_DESTROY             501
+#define SSB_CMD_DEFAULTS            502
+
+#define SSB_FIRST_CONTENT           SSB_TIME
+#define SSB_LAST_CONTENT            SSB_MESSAGE
+#define SSB_FIRST_ALIGNMENT         SSB_ALIGN_LEFT
+#define SSB_LAST_ALIGNMENT          SSB_ALIGN_RIGHT
+#define SSB_FIRST_COMMAND           SSB_CMD_SPLIT
+#define SSB_LAST_COMMAND            SSB_CMD_DEFAULTS

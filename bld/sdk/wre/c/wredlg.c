@@ -37,7 +37,6 @@
 #include "wre_wres.h"
 #include "wremsg.h"
 #include "ldstr.h"
-#include "rcstr.gh"
 #include "wreres.h"
 #include "wrestrdp.h"
 #include "wregcres.h"

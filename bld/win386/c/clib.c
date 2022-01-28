@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,10 @@
 #include <dos.h>
 #include <string.h>
 #include <time.h>
-#include "fints.h"
 #include "clibxw32.h"
+#include "dodoscal.h"
+#include "dosret.h"
+#include "dointr.h"
 
 
 #ifdef DLL32
@@ -48,42 +51,89 @@
 #define STATIC
 #endif
 
+
 /*
  * here lie all interrupt functions
  */
 
-int __far __pascal _clib_intdos( union REGS __far *in_regs,
-                             union REGS __far *out_regs )
+int __far __pascal _clib_intdos( union REGS __far *inregs, union REGS __far *outregs )
 {
-    return( _fintdos( in_regs, out_regs ) );
+    int         status;
+
+    status = DoDosCall( inregs, outregs );
+    outregs->x.cflag = (status & 1);
+    _dosretax( outregs->x.ax, status );
+    return( outregs->x.ax );
 }
 
-int __far __pascal _clib_intdosx( union REGS __far *in_regs, union REGS __far *out_regs,
-                              struct SREGS __far *seg_regs ) {
-        return( _fintdosx( in_regs, out_regs, seg_regs ) );
+int __far __pascal _clib_intdosx( union REGS __far *inregs, union REGS __far *outregs,
+                              struct SREGS __far *segregs )
+{
+    int         status;
+
+    status = DoDosxCall( inregs, outregs, segregs );
+    outregs->x.cflag = (status & 1);
+    _dosretax( outregs->x.ax, status );
+    return( outregs->x.ax );
 }
 
-int __far __pascal _clib_int86( int inter_no, union REGS __far *in_regs,
-                            union REGS __far *out_regs )
+static int __int86x( int intno, union REGS __far *inregs, union REGS __far *outregs,
+                                                       struct SREGS __far *segregs )
 {
-    return( _fint86( inter_no, in_regs, out_regs ) );
+    union REGPACK regs;
+
+    regs.x.ax = inregs->x.ax;
+    regs.x.bx = inregs->x.bx;
+    regs.x.cx = inregs->x.cx;
+    regs.x.dx = inregs->x.dx;
+    regs.x.si = inregs->x.si;
+    regs.x.di = inregs->x.di;
+    regs.x.ds = segregs->ds;
+    regs.x.es = segregs->es;
+//    regs.x.bp = 0;             /* no bp in REGS union, set to 0 */
+//    regs.x.flags = ( inregs->x.cflag ) ? INTR_CF : 0;
+
+    _DoINTR( intno, &regs, 0 );
+
+    outregs->x.ax = regs.x.ax;
+    outregs->x.bx = regs.x.bx;
+    outregs->x.cx = regs.x.cx;
+    outregs->x.dx = regs.x.dx;
+    outregs->x.si = regs.x.si;
+    outregs->x.di = regs.x.di;
+    outregs->x.cflag = ( (regs.x.flags & INTR_CF) != 0 );
+    segregs->ds = regs.x.ds;
+    segregs->es = regs.x.es;
+    return( regs.x.ax );
 }
 
-int __far __pascal _clib_int86x( int inter_no, union REGS __far *in_regs,
-                            union REGS __far *out_regs,
-                            struct SREGS __far *seg_regs )
+int __far __pascal _clib_int86( int intno, union REGS __far *inregs,
+                            union REGS __far *outregs )
 {
-    return( _fint86x( inter_no, in_regs, out_regs, seg_regs ) );
+#ifdef DLL32
+    static struct SREGS segregs;
+#else
+    struct SREGS        segregs;
+#endif
+
+    segread( &segregs );
+    return( __int86x( intno, inregs, outregs, &segregs ) );
 }
 
-void __far __pascal _clib_intr( int inter_no, union REGPACK __far *regs )
+int __far __pascal _clib_int86x( int intno, union REGS __far *inregs,
+              union REGS __far *outregs, struct SREGS __far *segregs )
 {
-    _fintr( inter_no, regs );
+    return( __int86x( intno, inregs, outregs, segregs ) );
 }
 
-void __far __pascal _clib_intrf( int inter_no, union REGPACK __far *regs )
+void __far __pascal _clib_intr( int intno, union REGPACK __far *regs )
 {
-    _fintrf( inter_no, regs );
+    _DoINTR( intno, regs, 0 );
+}
+
+void __far __pascal _clib_intrf( int intno, union REGPACK __far *regs )
+{
+    _DoINTR( intno, regs, regs->w.flags );
 }
 
 /*
@@ -104,7 +154,8 @@ unsigned __far __pascal _clib_dos_findfirst( char __far *__path, unsigned __attr
     STATIC struct find_t        buf;
 
     path = malloc( _fstrlen( __path ) + 1 );
-    if( path == NULL ) return( -1 );
+    if( path == NULL )
+        return( -1 );
     _fstrcpy( path, __path );
 
     rc = _dos_findfirst( path, __attr, &buf );
@@ -172,7 +223,7 @@ unsigned short __far __pascal _clib_bios_disk( unsigned __cmd, struct diskinfo_t
 
 unsigned short __far __pascal _clib_bios_equiplist(void)
 {
-        return( _bios_equiplist() );
+    return( _bios_equiplist() );
 }
 
 unsigned short __far __pascal _clib_bios_keybrd( unsigned __cmd )
@@ -219,9 +270,8 @@ clock_t __far __pascal  _clib_clock( void )
 }
 void __far __pascal _clib_delay( unsigned long ms )
 {
-    while( ms > 0xFFFFL ) {
+    for( ; ms > 0xFFFFL; ms -= 0xFFFFL ) {
         delay( 0xFFFFL );
-        ms -= 0xFFFFL;
     }
     delay( ms );
 }

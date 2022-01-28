@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -25,7 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  Windows 16-bit (Win16, Windows 3.x) DLL startup code.
+;* Description:  Windows 16-bit DLL (Win16, Windows 3.x) startup code.
 ;*
 ;*****************************************************************************
 

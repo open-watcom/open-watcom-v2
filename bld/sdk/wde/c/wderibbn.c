@@ -39,10 +39,9 @@
 #include "wdemain.h"
 #include "wdehints.h"
 #include "wdemsgbx.h"
-#include "rcstr.gh"
 #include "wde.rh"
 #include "wderibbn.h"
-#include "wde.rh"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */

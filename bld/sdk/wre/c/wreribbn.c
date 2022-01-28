@@ -38,9 +38,9 @@
 #include "wrehints.h"
 #include "wremsg.h"
 #include "ldstr.h"
-#include "rcstr.gh"
 #include "wre.rh"
 #include "wreribbn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */

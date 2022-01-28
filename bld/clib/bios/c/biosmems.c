@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,14 @@
 #include "variety.h"
 #include <bios.h>
 #include "necibm.h"
+#include "rtdata.h"
 
 
 _WCRTLINK unsigned short _bios_memsize( void )
 {
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
+        return( __nec98_bios_memsize() );
+    }
+    /* IBM PC */
     return( __ibm_bios_memsize() );
 }

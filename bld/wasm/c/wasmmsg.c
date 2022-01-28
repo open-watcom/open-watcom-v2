@@ -84,16 +84,6 @@ static const char *FingerMsg[] = {
     0
 };
 
-static bool Wait_for_return( const char *page_text )
-{
-    int c;
-
-    puts( page_text );
-    fflush( stdout );
-    c = getchar();
-    return( c == 'q' || c == 'Q' );
-}
-
 int PrintBanner( void )
 {
     int     count = 0;
@@ -102,7 +92,7 @@ int PrintBanner( void )
         Options.banner_printed = true;
         if( !Options.quiet ) {
             while( FingerMsg[count] != NULL ) {
-                printf( "%s\n", FingerMsg[count++] );
+                puts( FingerMsg[count++] );
             }
         }
     }
@@ -112,29 +102,14 @@ int PrintBanner( void )
 void PrintfUsage( void )
 {
     char        msg_buff[MAX_MESSAGE_SIZE];
-    unsigned    count;
-    char        page_text[MAX_MESSAGE_SIZE];
-    unsigned    line_id;
+    int         msg;
 
-    count = PrintBanner();
-    printf( "\n" );
-    line_id = MSG_USAGE_BASE;
-    MsgGet( line_id++, page_text );
-    MsgGet( line_id++, msg_buff );
-#ifdef BOOTSTRAP
-    printf( msg_buff, "bwasm" );
-#else
-    printf( msg_buff, "wasm" );
-#endif
-    printf( "\n" );
-    while( line_id < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
-        if( ++count >= 23 ) {
-            if( Wait_for_return( page_text ) ) {
-                break;
-            }
-            count = 0;
-        }
-        MsgGet( line_id++, msg_buff );
+    PrintBanner();
+    if( !Options.quiet ) {
+        puts( "" );
+    }
+    for( msg = MSG_USAGE_BASE; msg < MSG_USAGE_BASE + MSG_USAGE_COUNT; msg++ ) {
+        MsgGet( msg, msg_buff );
         puts( msg_buff );
     }
 }
@@ -170,7 +145,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    printf( NO_RES_MESSAGE );
+    puts( NO_RES_MESSAGE );
     return( false );
 #else
     return( true );

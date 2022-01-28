@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@ void prep_line_for_conditional_assembly( char *line )
     char            *ptr;
     char            *end;
     char            fix;
-    const asm_ins   ASMFAR *ins;
+    const asm_ins   ASMI86FAR *ins;
 
     if( Comment( QUERY_COMMENT, 0, NULL ) ) {
         if( Comment( QUERY_COMMENT_DELIM, 0, line ) ) {

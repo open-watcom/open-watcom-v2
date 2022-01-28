@@ -68,7 +68,7 @@ namespace std {
             if( isspace( c ) || c == 0 ) {
                 break;
             }
-            buf[offset++] = (unsigned char)c;
+            buf[offset++] = (char)c;
             rdbuf()->sbumpc();
         }
         isfx();

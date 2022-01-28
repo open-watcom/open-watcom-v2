@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stddef.h>
+#include <limits.h>
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <sys/types.h>
     #include <utime.h>
@@ -1338,16 +1339,74 @@ static void writeMSGIfndefs( void )
             "#endif\n", o_msgc );
 }
 
+static size_t utf8_to_cp932( const char *src, char *dst )
+{
+    size_t      i;
+    size_t      o;
+    size_t      src_len;
+    cvt_chr     x;
+    cvt_chr     *p;
+
+    src_len = strlen( src );
+    o = 0;
+    for( i = 0; i < src_len && o < LINE_SIZE - 6; i++ ) {
+        x.u = (unsigned char)src[i];
+        if( IS_ASCII( x.u ) ) {
+            /*
+             * ASCII (0x00-0x7F), no conversion
+             */
+            dst[o++] = (char)x.u;
+        } else {
+            /*
+             * UTF-8 to UNICODE conversion
+             */
+            if( (x.u & 0xF0) == 0xE0 ) {
+                x.u &= 0x0F;
+                x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            } else {
+                x.u &= 0x1F;
+            }
+            x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            /*
+             * UNICODE to CP932 encoding conversion
+             */
+            p = bsearch( &x, cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+            if( p == NULL ) {
+                printf( "unknown unicode character: 0x%4.4X\n", x.u );
+                x.s = '?';
+            } else {
+                x.s = p->s;
+            }
+            if( x.s > 0xFF ) {
+                /* write lead byte first */
+                dst[o++] = (char)(x.s >> 8);
+            }
+            dst[o++] = (char)x.s;
+        }
+    }
+    dst[o] = '\0';
+    return( o );
+}
+
+
 static void writeMsgC( void )
 {
-    MSGSYM *m;
+    MSGSYM  *m;
+    char    *str;
+    char    tmp[512];
 
     if( o_msgc != NULL ) {
         if( flags.rc ) {
             fputs( "\n", o_msgc );
             for( m = messageSyms; m != NULL; m = m->next ) {
+                str = m->lang_txt[LANG_Japanese];
+                if( !flags.out_utf8 ) {
+                    utf8_to_cp932( str, tmp );
+                    tmp[sizeof( tmp ) - 1] = '\0';
+                    str = tmp;
+                }
                 fprintf( o_msgc, "pick( %s, \"%s\", \"%s\" )\n",
-                    m->name, m->lang_txt[LANG_English], m->lang_txt[LANG_Japanese] );
+                    m->name, m->lang_txt[LANG_English], str );
             }
             fputs( "\n", o_msgc );
         } else if( flags.gen_gpick ) {
@@ -1473,56 +1532,6 @@ static void closeFiles( void )
         fclose( o_attrh );
     }
 }
-
-static size_t utf8_to_cp932( const char *src, char *dst )
-{
-    size_t      i;
-    size_t      o;
-    size_t      src_len;
-    cvt_chr     x;
-    cvt_chr     *p;
-
-    src_len = strlen( src );
-    o = 0;
-    for( i = 0; i < src_len && o < LINE_SIZE - 6; i++ ) {
-        x.u = (unsigned char)src[i];
-        if( IS_ASCII( x.u ) ) {
-            /*
-             * ASCII (0x00-0x7F), no conversion
-             */
-            dst[o++] = (char)x.u;
-        } else {
-            /*
-             * UTF-8 to UNICODE conversion
-             */
-            if( (x.u & 0xF0) == 0xE0 ) {
-                x.u &= 0x0F;
-                x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
-            } else {
-                x.u &= 0x1F;
-            }
-            x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
-            /*
-             * UNICODE to CP932 encoding conversion
-             */
-            p = bsearch( &x, cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
-            if( p == NULL ) {
-                printf( "unknown unicode character: 0x%4.4X\n", x.u );
-                x.s = '?';
-            } else {
-                x.s = p->s;
-            }
-            if( x.s > 0xFF ) {
-                /* write lead byte first */
-                dst[o++] = (char)(x.s >> 8);
-            }
-            dst[o++] = (char)x.s;
-        }
-    }
-    dst[o] = '\0';
-    return( o );
-}
-
 
 static void dumpInternational( void )
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #include <ctype.h>
 #include <stddef.h>
 #include <locale.h>
+#include <limits.h>
 #include "bool.h"
 #include "lsspec.h"
 #include "encodlng.h"
@@ -45,34 +46,38 @@
 #include "clibext.h"
 
 
+/* following must be ordered as US ASCII */
 #define OPT_TAGS \
 TAG( ARGEQUAL ) \
-TAG( CMT ) \
-TAG( CODE ) \
-TAG( INTERNAL ) \
-TAG( PREFIX ) \
-TAG( OPTION ) \
-TAG( TARGET ) \
 TAG( CHAIN ) \
 TAG( CHAR ) \
+TAG( CMT ) \
+TAG( CODE ) \
 TAG( ENUMERATE ) \
 TAG( FILE ) \
+TAG( FOOTER ) \
+TAG( FOOTERU ) \
 TAG( GROUP ) \
 TAG( ID ) \
 TAG( IMMEDIATE ) \
-TAG( JUSAGE ) \
+TAG( INTERNAL ) \
+TAG( JFOOTER ) \
+TAG( JFOOTERU ) \
 TAG( JTITLE ) \
 TAG( JTITLEU ) \
+TAG( JUSAGE ) \
 TAG( MULTIPLE ) \
 TAG( NEGATE ) \
 TAG( NOCHAIN ) \
 TAG( NOEQUAL ) \
 TAG( NTARGET ) \
 TAG( NUMBER ) \
+TAG( OPTION ) \
 TAG( OPTIONAL ) \
-TAG( PAGE ) \
 TAG( PATH ) \
+TAG( PREFIX ) \
 TAG( SPECIAL ) \
+TAG( TARGET ) \
 TAG( TIMESTAMP ) \
 TAG( TITLE ) \
 TAG( TITLEU ) \
@@ -127,7 +132,7 @@ TAG( USAGEOGRP )
 #define mytolower(c)            ((c < 'A' || c > 'Z') ? c : c - 'A' + 'a')
 #define myisspace(c)            (c == ' ' || c == '\t')
 
-#define IS_SELECTED(s)          ((s->target & targetMask) && (s->ntarget & targetMask) == 0)
+#define IS_SELECTED(s)          ((s->target_mask & targetMask) && (s->ntarget_mask & targetMask) == 0)
 
 #define IS_ASCII(c)             (c < 0x80)
 
@@ -136,6 +141,8 @@ TAG( USAGEOGRP )
 #define SKIP_SPACES(s)          while( myisspace( *s ) ) s++
 
 typedef const char              *lang_data[LANG_MAX];
+
+typedef unsigned long           targmask;
 
 typedef int (*comp_fn)(const void *,const void *);
 
@@ -162,9 +169,8 @@ typedef enum cvt_name {
 } cvt_name;
 
 typedef struct target {
-    struct target   *next;
-    unsigned        mask;
-    char            name[1];
+    targmask        mask;
+    const char      *name;
 } TARGET;
 
 typedef struct name {
@@ -175,8 +181,8 @@ typedef struct name {
 
 typedef struct title {
     struct title    *next;
-    unsigned        target;
-    unsigned        ntarget;
+    targmask        target_mask;
+    targmask        ntarget_mask;
     boolbit         is_titleu   : 1;
     lang_data       lang_title;
     lang_data       lang_titleu;
@@ -212,8 +218,8 @@ typedef struct option {
     NAME            *enumerate;
     char            *code;
     unsigned        number_default;
-    unsigned        target;
-    unsigned        ntarget;
+    targmask        target_mask;
+    targmask        ntarget_mask;
     boolbit         default_specified : 1;
     boolbit         is_simple         : 1;
     boolbit         is_immediate      : 1;
@@ -267,22 +273,22 @@ static char         alternateEqual;
 static CHAIN        *lastChain;
 static GROUP        *lastGroup;
 static size_t       maxUsageLen;
-static lang_data    pageUsage;
-static unsigned     targetMask;
-static unsigned     targetAnyMask;
-static unsigned     targetDbgMask;
-static unsigned     nextTargetMask = 1;
+static targmask     targetMask = 0;
+static targmask     targetAnyMask;
+static targmask     targetDbgMask;
 
 static tag_id getsUsage = TAG_NULL;
 
 static char         *outputbuff = NULL;
 static lang_data    outputdata;
 
+static int          fno = 0;
+
+#define TAGS_COUNT  (sizeof( tagNames ) / sizeof( tagNames[0] ))
 static const char *tagNames[] = {
     #define TAG( s )        #s ,
     OPT_TAGS
     #undef TAG
-    NULL
 };
 
 #define TAG( s )        static void do##s( const char * );
@@ -296,6 +302,7 @@ static void (*processTag[])( const char * ) = {
     NULL
 };
 
+#define TARGETS_COUNT  (sizeof( validTargets ) / sizeof( validTargets[0] ))
 static const char *validTargets[] = {
 /* default targets */
     "any",
@@ -312,17 +319,19 @@ static const char *validTargets[] = {
     "bsd",
     "dos",
     "linux",
+    "nov",          /* Netware */
     "nt",
     "os2",
     "osx",
+    "pls",          /* DOS Pharlap extender */
     "qnx",
+    "rsi",          /* DOS DOS4G extender */
     "haiku",
     "rdos",
     "win",
 /* extra targets */
     "targ1",
-    "targ2",
-    NULL
+    "targ2"
 };
 
 static const char * const langName[] = {
@@ -353,14 +362,14 @@ static cvt_chr cvt_table_932[] = {
 static const char *usageMsg[] = {
     "optencod [options] <gml-file> <parser-h> <parser-c> <usage-h> <target>*",
     "",
-    "Options: (must appear in following order)",
+    "Options:",
     "  -c comma separated list",
     "  -i create international file with non-english data",
-    "  -l <lang-n> is the language(number) used for output data",
+    "  -l=<lang-n> is the language(number) used for output data",
     "  -n zero terminated items",
     "  -q quiet operation",
-    "  -rc <macro-name> generate files for resource compiler",
-    "  -u <usage-u> is the output file for the QNX usage file",
+    "  -rc=<macro-name> generate files for resource compiler",
+    "  -u=<usage-u> is the output file for the QNX usage file",
     "  -utf8 output text use UTF-8 encoding",
     "",
     "    <gml-file> is the tagged input GML file",
@@ -390,9 +399,11 @@ static NAME     *enumeratorList;
 static OPTION   *optionList;
 static OPTION   *uselessOptionList;
 static TITLE    *titleList;
+static TITLE    *footerList;
 static CHAIN    *chainList;
 static GROUP    *groupList = NULL;
 static TITLE    *targetTitle;
+static TITLE    *targetFooter;
 
 static void emitCode( CODESEQ *h, unsigned depth, flow_control control );
 
@@ -515,13 +526,14 @@ static void fail( const char *msg, ... )
 static void dumpUsage( void )
 {
     const char **p;
+    int        i;
 
     for( p = usageMsg; *p != NULL; ++p ) {
         fprintf( stderr, "%s\n", *p );
     }
     fprintf( stderr, "        " );
-    for( p = validTargets; *p != NULL; ++p ) {
-        fprintf( stderr, "%s ", *p );
+    for( i = 0; i < TARGETS_COUNT; i++ ) {
+        fprintf( stderr, "%s ", validTargets[i] );
     }
     fprintf( stderr, "\n" );
 }
@@ -618,33 +630,50 @@ static bool cmpChainPattern( const char *pattern1, const char *pattern2, size_t 
     return( true );
 }
 
-static void addTarget( const char *t )
+int target_compare_qsort( const void *p1, const void *p2 )
 {
-    size_t len;
-    TARGET *p;
-
-    len = strlen( t );
-    p = malloc( sizeof( *p ) + len );
-    p->mask = nextTargetMask;
-    p->next = targetList;
-    targetList = p;
-    strcpy( p->name, t );
-    nextTargetMask <<= 1;
-    if( nextTargetMask == 0 ) {
-        fail( "too many targets defined\n" );
-    }
+    const TARGET *p1c = (const TARGET *)p1;
+    const TARGET *p2c = (const TARGET *)p2;
+    return( stricmp( p1c->name, p2c->name ) );
 }
 
-static unsigned findTarget( char const *t )
+int target_compare_bsearch( const void *p1, const void *p2 )
 {
-    TARGET *p;
+    const char *p1c = (const char *)p1;
+    const TARGET *p2c = (const TARGET *)p2;
+    return( stricmp( p1c, p2c->name ) );
+}
 
-    for( p = targetList; p != NULL; p = p->next ) {
-        if( strcmp( t, p->name ) == 0 ) {
-            return( p->mask );
+static targmask findTarget( char const *t )
+{
+    const TARGET *key;
+
+    key = (const TARGET *)bsearch( t, targetList, TARGETS_COUNT, sizeof( TARGET ), target_compare_bsearch );
+    if( key == NULL )
+        return( 0 );
+    return( key->mask );
+}
+
+static void initTargets( void )
+{
+    int         i;
+    targmask    next_mask = 1;
+
+    targetList = calloc( TARGETS_COUNT, sizeof( TARGET ) );
+    for( i = 0; i < TARGETS_COUNT; i++ ) {
+        targetList[i].name = validTargets[i];
+        targetList[i].mask = next_mask;
+        next_mask <<= 1;
+        if( next_mask == 0 ) {
+            fail( "too many targets defined\n" );
         }
     }
-    return( 0 );
+    qsort( targetList, TARGETS_COUNT, sizeof( TARGET ), target_compare_qsort );
+}
+
+static void finiTargets( void )
+{
+    free( targetList );
 }
 
 static NAME *addEnumName( NAME **h, const char *n )
@@ -758,88 +787,6 @@ static FILE *initFILE( const char *fnam, const char *fmod )
     return( fp );
 }
 
-#define NUM_FILES   4
-
-static bool procCmdLine( int argc1, char **argv1 )
-{
-    const char  **t;
-    unsigned    mask;
-    char const  *p;
-
-    if( argc1 < NUM_FILES ) {
-        return( true );
-    }
-    if( strcmp( *argv1, "-c" ) == 0 ) {
-        optFlag.comma_list = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-i" ) == 0 ) {
-        optFlag.international = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-l" ) == 0 ) {
-        NEXT_ARG_CHECK();
-        optFlag.lang = atoi( *argv1 );
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-n" ) == 0 ) {
-        optFlag.zero_term = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-q" ) == 0 ) {
-        optFlag.quiet = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-rc" ) == 0 ) {
-        optFlag.rc = true;
-        NEXT_ARG_CHECK();
-        optFlag.rc_macro = *argv1;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-u" ) == 0 ) {
-        NEXT_ARG_CHECK();
-        mfp = fopen( *argv1, "wb" );
-        if( mfp == NULL )
-            fail( "cannot open '%s' for output", *argv1 );
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-utf8" ) == 0 ) {
-        optFlag.out_utf8 = true;
-        NEXT_ARG_CHECK();
-    }
-    gfp = initFILE( *argv1, "r" );
-    NEXT_ARG();
-    ofp = initFILE( *argv1, "w+" );
-    NEXT_ARG();
-    pfp = initFILE( *argv1, "w+" );
-    NEXT_ARG();
-    ufp = initFILE( *argv1, "w+" );
-    NEXT_ARG();
-    for( t = validTargets; *t != NULL; t++ ) {
-        addTarget( *t );
-    }
-    p = "any";
-    if( (targetAnyMask = findTarget( p )) == 0 ) {
-        fail( "invalid target name '%s'\n", p );
-    }
-    p = "dbg";
-    if( (targetDbgMask = findTarget( p )) == 0 ) {
-        fail( "invalid target name '%s'\n", p );
-    }
-    targetMask |= targetAnyMask;
-    while( (p = *argv1) != NULL ) {
-        if( (mask = findTarget( p )) == 0 ) {
-            fail( "invalid target name '%s'\n", p );
-        }
-        targetMask |= mask;
-        NEXT_ARG();
-    }
-    if( !optFlag.out_utf8 ) {
-        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
-    }
-    return( false );
-}
-
 static const char *nextWord( const char *s, char *o )
 {
     while( *s != '\0' ) {
@@ -868,16 +815,21 @@ static const char *nextTag( const char *s, char *o )
     return( s );
 }
 
+int tag_compare( const void *p1, const void *p2 )
+{
+    const char *p1c = (const char *)p1;
+    const char **p2c = (const char **)p2;
+    return( mystricmp( p1c, *p2c ) );
+}
+
 static tag_id findTag( char const *t )
 {
-    const char **c;
+    const char **key;
 
-    for( c = tagNames; *c != NULL; ++c ) {
-        if( mystricmp( t, *c ) == 0 ) {
-            return( c - tagNames );
-        }
-    }
-    return( TAG_UNKNOWN );
+    key = (char const **)bsearch( t, tagNames, TAGS_COUNT, sizeof( char * ), tag_compare );
+    if( key == NULL )
+        return( TAG_UNKNOWN );
+    return( key - tagNames );
 }
 
 static tag_id isTag( const char **eot )
@@ -925,17 +877,23 @@ static char *pickUpRest( const char *p )
     // replace leading '.' character by space
     // it is used to specify spaces on the beginning of text
     // if only '.' character than it is as blank text
+    // if only two '.' character than it is single space text
     len = strlen( p );
     out = dst = malloc( len + 1 );
-    if( p[0] == '.' ) {
-        len--;
-    }
-    if( len > 0 ) {
+    if( p[0] == '.' && p[1] == '\0' ) {
+        len = 0;
+    } else if( p[0] == '.' && p[1] == '.' && p[2] == '\0' ) {
+        len = 0;
+        *dst++ = ' ';
+    } else {
         if( p[0] == '.' ) {
+            len--;
             *dst++ = ' ';
             p++;
         }
-        memcpy( dst, p, len );
+        if( len > 0 ) {
+            memcpy( dst, p, len );
+        }
     }
     dst[len] = '\0';
     return( out );
@@ -947,7 +905,11 @@ static void doARGEQUAL( const char *p )
     if( *p == '\0' ) {
         fail( ":argequal. must have <char> specified\n" );
     } else {
-        alternateEqual = *p;
+        if( p[0] == '.' && p[1] == '.' ) {
+            alternateEqual = ' ';
+        } else {
+            alternateEqual = *p;
+        }
         optFlag.alternate_equal = true;
     }
 }
@@ -976,6 +938,7 @@ static void doOPTION( const char *p )
     OPTION *synonym;
 
     targetTitle = NULL;
+    targetFooter = NULL;
     synonym = NULL;
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -987,8 +950,8 @@ static void doOPTION( const char *p )
 // :target. <targ> <targ> ...
 static void doTARGET( const char *p )
 {
-    unsigned mask;
-    OPTION *o;
+    targmask    mask;
+    OPTION      *o;
 
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -996,10 +959,12 @@ static void doTARGET( const char *p )
             fail( "invalid target name '%s'\n", tokbuff );
         }
         if( targetTitle != NULL ) {
-            targetTitle->target |= mask;
+            targetTitle->target_mask |= mask;
+        } else if( targetFooter != NULL ) {
+            targetFooter->target_mask |= mask;
         } else {
             for( o = optionList; o != NULL; o = o->synonym ) {
-                o->target |= mask;
+                o->target_mask |= mask;
             }
         }
     }
@@ -1008,8 +973,8 @@ static void doTARGET( const char *p )
 // :ntarget. <targ> <targ> ...
 static void doNTARGET( const char *p )
 {
-    unsigned mask;
-    OPTION *o;
+    targmask    mask;
+    OPTION      *o;
 
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -1017,10 +982,12 @@ static void doNTARGET( const char *p )
             fail( "invalid target name '%s'\n", tokbuff );
         }
         if( targetTitle != NULL ) {
-            targetTitle->ntarget |= mask;
+            targetTitle->ntarget_mask |= mask;
+        } else if( targetFooter != NULL ) {
+            targetFooter->ntarget_mask |= mask;
         } else {
             for( o = optionList; o != NULL; o = o->synonym ) {
-                o->ntarget |= mask;
+                o->ntarget_mask |= mask;
             }
         }
     }
@@ -1231,13 +1198,6 @@ static void doNOEQUAL( const char *p )
     optFlag.no_equal = true;
 }
 
-// :page. <text>
-static void doPAGE( const char *p )
-{
-    pageUsage[LANG_English] = pickUpRest( p );
-    getsUsage = TAG_PAGE;
-}
-
 // :path. [<usage argid>]
 static void doPATH( const char *p )
 {
@@ -1356,9 +1316,6 @@ static void doJUSAGE( const char *p )
     OPTION *o;
 
     switch( getsUsage ) {
-    case TAG_PAGE:
-        pageUsage[LANG_Japanese] = pickUpRest( p );
-        break;
     case TAG_CHAIN:
         lastChain->Usage[LANG_Japanese] = pickUpRest( p );
         break;
@@ -1376,7 +1333,7 @@ static void doJUSAGE( const char *p )
         }
         break;
     default:
-        fail( ":jusage. must follow :chain., :group., :option., or :page.\n" );
+        fail( ":jusage. must follow :chain., :group., or :option.\n" );
     }
 }
 
@@ -1395,6 +1352,7 @@ static void doTITLE( const char *p )
     *i = t;
     t->lang_title[LANG_English] = pickUpRest( p );
     targetTitle = t;
+    targetFooter = NULL;
 }
 
 // :titleu. <text>
@@ -1430,6 +1388,62 @@ static void doJTITLEU( const char *p )
     t = targetTitle;
     if( t == NULL ) {
         fail( ":jtitleu. must follow a :title.\n" );
+    }
+    t->lang_titleu[LANG_Japanese] = pickUpRest( p );
+    t->is_titleu = true;
+}
+
+// :footer. <text>
+static void doFOOTER( const char *p )
+{
+    TITLE **i;
+    TITLE *t;
+
+    i = &footerList;
+    for( t = *i; t != NULL; t = *i ) {
+        i = &(t->next);
+    }
+    t = calloc( 1, sizeof( *t ) );
+    t->next = *i;
+    *i = t;
+    t->lang_title[LANG_English] = pickUpRest( p );
+    targetFooter = t;
+    targetTitle = NULL;
+}
+
+// :footeru. <text>
+static void doFOOTERU( const char *p )
+{
+    TITLE *t;
+
+    t = targetFooter;
+    if( t == NULL ) {
+        fail( ":footeru. must follow a :footer.\n" );
+    }
+    t->lang_titleu[LANG_English] = pickUpRest( p );
+    t->is_titleu = true;
+}
+
+// :jfooter. <text>
+static void doJFOOTER( const char *p )
+{
+    TITLE *t;
+
+    t = targetFooter;
+    if( t == NULL ) {
+        fail( ":jfooter. must follow a :footer.\n" );
+    }
+    t->lang_title[LANG_Japanese] = pickUpRest( p );
+}
+
+// :jfooteru. <text>
+static void doJFOOTERU( const char *p )
+{
+    TITLE *t;
+
+    t = targetFooter;
+    if( t == NULL ) {
+        fail( ":jfooteru. must follow a :footer.\n" );
     }
     t->lang_titleu[LANG_Japanese] = pickUpRest( p );
     t->is_titleu = true;
@@ -2370,7 +2384,12 @@ static void emitUsageH( void )
             fprintf( ufp, "pick((%s+%d), ", optFlag.rc_macro, line_offs++ );
             emitQuotedString( ufp, getLangData( outputdata, LANG_English ), false, false );
             fprintf( ufp, ", " );
-            emitQuotedString( ufp, getLangData( outputdata, LANG_Japanese ), false, false );
+            str = getLangData( outputdata, LANG_Japanese );
+            if( !optFlag.out_utf8 ) {
+                utf8_to_cp932( str, tmpbuff );
+                str = tmpbuff;
+            }
+            emitQuotedString( ufp, str, false, false );
             fprintf( ufp, ")\n" );
         }
     } else {
@@ -2456,18 +2475,6 @@ static void outputBlockHeader( lang_data langdata, process_line_fn *process_line
     process_output( process_line );
 }
 
-static void outputPageUsage( process_line_fn *process_line )
-{
-    language_id lang;
-
-    if( pageUsage[LANG_English] != NULL ) {
-        for( lang = 0; lang < LANG_MAX; lang++ ) {
-            strcpy( GET_OUTPUT_BUF( lang ), getLangData( pageUsage, lang ) );
-        }
-        process_line();
-    }
-}
-
 static void outputTitle( lang_data langdata, process_line_fn *process_line )
 {
     language_id lang;
@@ -2482,9 +2489,21 @@ static void outputUsageHeader( process_line_fn *process_line )
 {
     TITLE       *t;
 
-    outputPageUsage( process_line );
-
     for( t = titleList; t != NULL; t = t->next ) {
+        if( IS_SELECTED( t ) ) {
+            outputTitle( t->lang_title, process_line );
+            if( process_line == emitUsageH ) {
+                outputTitle( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, emitUsageHQNX );
+            }
+        }
+    }
+}
+
+static void outputUsageFooter( process_line_fn *process_line )
+{
+    TITLE       *t;
+
+    for( t = footerList; t != NULL; t = t->next ) {
         if( IS_SELECTED( t ) ) {
             outputTitle( t->lang_title, process_line );
             if( process_line == emitUsageH ) {
@@ -2668,6 +2687,8 @@ static void outputUsage( process_line_fn *process_line )
             processUsage( process_line, gr );
         }
     }
+
+    outputUsageFooter( process_line );
 }
 
 static void outputUsageH( void )
@@ -2735,34 +2756,249 @@ static void closeFiles( void )
     }
 }
 
+static void initUTF8( void )
+{
+    if( !optFlag.out_utf8 ) {
+        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
+    }
+}
+
+static char *ReadIndirectFile( char *name )
+/*****************************************/
+{
+    char        *str;
+    FILE        *fp;
+    int         len;
+    char        ch;
+
+    str = NULL;
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        fseek( fp, 0, SEEK_END );
+        len = ftell( fp );
+        fseek( fp, 0, SEEK_SET );
+        str = malloc( len + 1 );
+        fread( str, 1, len, fp );
+        str[len] = '\0';
+        fclose( fp );
+        // go through characters changing \r, \n etc into ' '
+        for( ; (ch = *str) != '\0'; str++ ) {
+            if( ch == 0x1A ) {      // if end of file
+                *str = '\0';        // - mark end of str
+                break;
+            }
+            if( ch != ' ' && myisspace( ch ) ) {
+                *str = ' ';
+            }
+        }
+    }
+    return( str );
+}
+
+static char *getFileName( char *str, char *name )
+/***********************************************/
+{
+    char        ch;
+
+    SKIP_SPACES( str );
+    if( *str == '\"' ) {
+        str++;
+        while( (ch = *str) != '\0' ) {
+            str++;
+            if( ch == '"' ) {
+                break;
+            }
+            if( ch == '\\' && *str == '"' ) {
+                ch = *str++;
+            }
+            *name++ = ch;
+        }
+    } else {
+        while( *str != '\0' && !myisspace( *str ) ) {
+            *name++ = *str++;
+        }
+    }
+    *name = '\0';
+    return( str );
+}
+
+static char *ProcessOption( char *s, char *option_start )
+/*******************************************************/
+{
+    switch( *s++ ) {
+    case 'c':
+        optFlag.comma_list = true;
+        return( s );
+    case 'i':
+        optFlag.international = true;
+        return( s );
+    case 'l':
+        if( *s++ == '=' ) {
+            optFlag.lang = strtol( s, &s, 10 );
+            return( s );
+        }
+        break;
+    case 'n':
+        optFlag.zero_term = true;
+        return( s );
+    case 'q':
+        optFlag.quiet = true;
+        return( s );
+    case 'r':
+        if( *s++ == 'c' && *s++ == '=' ) {
+            optFlag.rc = true;
+            SKIP_SPACES( s );
+            optFlag.rc_macro = option_start;
+            while( *s != '\0' ) {
+                if( myisspace( *s ) ) {
+                    s++;
+                    break;
+                }
+                *option_start++ = *s++;
+            }
+            *option_start = '\0';
+            return( s );
+        }
+        break;
+    case 'u':
+        if( *s == '=' ) {
+            s = getFileName( s + 1, option_start );
+            mfp = fopen( option_start, "wb" );
+            if( mfp == NULL ) {
+                fail( "cannot open '%s' for output", option_start );
+            }
+            return( s );
+        } else if( *s++ == 't' && *s++ == 'f' && *s++ == '8' ) {
+            optFlag.out_utf8 = true;
+            return( s );
+        }
+        break;
+    }
+    printf( "Unknown option: %s\n", option_start );
+    return( NULL );
+}
+
+static bool ProcessOptions( char *str )
+/*************************************/
+{
+    char        name[PATH_MAX];
+    char        *fstr;
+    bool        rc;
+    char        *p;
+    targmask    mask;
+
+    rc = 0;
+    fstr = NULL;
+    name[0] = '\0';
+    while( *str != '\0' ) {
+        SKIP_SPACES( str );
+        if( *str == '@' ) {
+            str = getFileName( str + 1, name );
+            str = getenv( name );
+            if( str == NULL ) {
+                str = fstr = ReadIndirectFile( name );
+            }
+        }
+        if( *str == '\0' ) {
+            continue;
+        }
+        if( *str == '-' ) {
+            str = ProcessOption( str + 1, str );
+            if( str == NULL ) {
+                rc = true;
+                break;
+            }
+        } else {  /* collect file name */
+            switch( fno++ ) {
+            case 0:
+                str = getFileName( str, name );
+                gfp = initFILE( name, "r" );
+                break;
+            case 1:
+                str = getFileName( str, name );
+                ofp = initFILE( name, "w+" );
+                break;
+            case 2:
+                str = getFileName( str, name );
+                pfp = initFILE( name, "w+" );
+                break;
+            case 3:
+                str = getFileName( str, name );
+                ufp = initFILE( name, "w+" );
+                p = "any";
+                if( (targetAnyMask = findTarget( p )) == 0 ) {
+                    fail( "invalid target name '%s'\n", p );
+                }
+                p = "dbg";
+                if( (targetDbgMask = findTarget( p )) == 0 ) {
+                    fail( "invalid target name '%s'\n", p );
+                }
+                targetMask |= targetAnyMask;
+                break;
+            default:
+                p = name;
+                while( *str != '\0' ) {
+                    if( myisspace( *str ) )
+                        break;
+                    *p++ = *str++;
+                }
+                *p = '\0';
+                if( *name != '\0' ) {
+                    if( (mask = findTarget( name )) == 0 ) {
+                        fail( "invalid target name '%s'\n", name );
+                    }
+                    targetMask |= mask;
+                }
+                break;
+            }
+        }
+    }
+    free( fstr );
+    return( rc );
+}
+
+#define NUM_FILES   4
+
 int main( int argc, char **argv )
 {
-    bool    langs_ok;
+    bool    ok;
+    int     i;
 
     setlocale(LC_ALL,"C");
-    langs_ok = _LANG_DEFS_OK();
-    if( !langs_ok )
+    ok = _LANG_DEFS_OK();
+    if( !ok )
         fail( "language index mismatch\n" );
-    if( procCmdLine( argc - 1, argv + 1 ) ) {
-        dumpUsage();
-        return( EXIT_FAILURE );
+    initTargets();
+    for( i = 1; i < argc; i++ ) {
+        if( ProcessOptions( argv[i] ) ) {
+            ok = false;
+            break;
+        }
     }
-    readInputFile();
-    assignChainToOptions();
-    checkForMissingUsages();
-    stripUselessOptions();
-    initOptionFields();
+    if( !ok || fno < NUM_FILES ) {
+        ok = false;
+        dumpUsage();
+    } else {
+        initUTF8();
+        readInputFile();
+        assignChainToOptions();
+        checkForMissingUsages();
+        stripUselessOptions();
+        initOptionFields();
 
-    outputInit();
-    startParserH();
-    outputFN_PROCESS();
-    outputFN_INIT();
-    outputFN_FINI();
-    finishParserH();
-    outputUsageH();
-    dumpInternational();
-    outputFini();
-
+        outputInit();
+        startParserH();
+        outputFN_PROCESS();
+        outputFN_INIT();
+        outputFN_FINI();
+        finishParserH();
+        outputUsageH();
+        dumpInternational();
+        outputFini();
+    }
     closeFiles();
-    return( EXIT_SUCCESS );
+    finiTargets();
+    if( ok )
+        return( EXIT_SUCCESS );
+    return( EXIT_FAILURE );
 }

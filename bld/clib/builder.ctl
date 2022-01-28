@@ -29,6 +29,13 @@ set PROJDIR=<CWD>
     <CCCMD> doslfn/library/msdos.086/mm/doslfnm.lib         <OWRELROOT>/lib286/dos/doslfnm.lib
     <CCCMD> doslfn/library/msdos.086/mm_ov/doslfnm.lib      <OWRELROOT>/lib286/dos/doslfnom.lib
     <CCCMD> doslfn/library/msdos.086/ms/doslfns.lib         <OWRELROOT>/lib286/dos/doslfns.lib
+    <CCCMD> pc98/library/msdos.086/mc/pc98c.lib             <OWRELROOT>/lib286/dos/pc98c.lib
+    <CCCMD> pc98/library/msdos.086/mh/pc98h.lib             <OWRELROOT>/lib286/dos/pc98h.lib
+    <CCCMD> pc98/library/msdos.086/ml/pc98l.lib             <OWRELROOT>/lib286/dos/pc98l.lib
+    <CCCMD> pc98/library/msdos.086/ml_ov/pc98l.lib          <OWRELROOT>/lib286/dos/pc98ol.lib
+    <CCCMD> pc98/library/msdos.086/mm/pc98m.lib             <OWRELROOT>/lib286/dos/pc98m.lib
+    <CCCMD> pc98/library/msdos.086/mm_ov/pc98m.lib          <OWRELROOT>/lib286/dos/pc98om.lib
+    <CCCMD> pc98/library/msdos.086/ms/pc98s.lib             <OWRELROOT>/lib286/dos/pc98s.lib
     <CCCMD> handleio/library/msdos.086/ms/binmode.obj       <OWRELROOT>/lib286/dos/binmode.obj
     <CCCMD> startup/library/msdos.086/ml/d16msels.obj       <OWRELROOT>/lib286/dos/d16msels.obj
     <CCCMD> startup/library/msdos.086/ml/dos16m.obj         <OWRELROOT>/lib286/dos/dos16m.obj
@@ -39,6 +46,8 @@ set PROJDIR=<CWD>
     <CCCMD> library/msdos.386/ms_s/clib3s.lib               <OWRELROOT>/lib386/dos/clib3s.lib
     <CCCMD> doslfn/library/msdos.386/ms_r/doslfn3r.lib      <OWRELROOT>/lib386/dos/doslfn3r.lib
     <CCCMD> doslfn/library/msdos.386/ms_s/doslfn3s.lib      <OWRELROOT>/lib386/dos/doslfn3s.lib
+    <CCCMD> pc98/library/msdos.386/ms_r/pc983r.lib          <OWRELROOT>/lib386/dos/pc983r.lib
+    <CCCMD> pc98/library/msdos.386/ms_s/pc983s.lib          <OWRELROOT>/lib386/dos/pc983s.lib
     <CCCMD> handleio/library/msdos.386/ms_r/binmode.obj     <OWRELROOT>/lib386/dos/binmode.obj
     <CCCMD> startup/library/msdos.386/ms_r/commode.obj      <OWRELROOT>/lib386/dos/commode.obj
     <CCCMD> startup/library/msdos.386/ms_r/cstrtx32.obj     <OWRELROOT>/lib386/dos/cstrtx3r.obj
@@ -85,12 +94,18 @@ set PROJDIR=<CWD>
     <CCCMD> library/windows.086/ml/clibl.lib                <OWRELROOT>/lib286/win/clibl.lib
     <CCCMD> library/windows.086/mm/clibm.lib                <OWRELROOT>/lib286/win/clibm.lib
     <CCCMD> library/windows.086/ms/clibs.lib                <OWRELROOT>/lib286/win/clibs.lib
+    <CCCMD> pc98/library/windows.086/mc/pc98c.lib           <OWRELROOT>/lib286/win/pc98c.lib
+    <CCCMD> pc98/library/windows.086/ml/pc98l.lib           <OWRELROOT>/lib286/win/pc98l.lib
+    <CCCMD> pc98/library/windows.086/mm/pc98m.lib           <OWRELROOT>/lib286/win/pc98m.lib
+    <CCCMD> pc98/library/windows.086/ms/pc98s.lib           <OWRELROOT>/lib286/win/pc98s.lib
     <CCCMD> handleio/library/windows.086/ms/binmode.obj     <OWRELROOT>/lib286/win/binmode.obj
     <CCCMD> startup/library/windows.086/ml/libentry.obj     <OWRELROOT>/lib286/win/libentry.obj
     <CCCMD> startup/library/windows.086/ms/commode.obj      <OWRELROOT>/lib286/win/commode.obj
 
     <CCCMD> library/windows.386/mf_r/clib3r.lib             <OWRELROOT>/lib386/win/clib3r.lib
     <CCCMD> library/windows.386/mf_s/clib3s.lib             <OWRELROOT>/lib386/win/clib3s.lib
+    <CCCMD> pc98/library/windows.386/mf_r/pc983r.lib        <OWRELROOT>/lib386/win/pc983r.lib
+    <CCCMD> pc98/library/windows.386/mf_s/pc983s.lib        <OWRELROOT>/lib386/win/pc983s.lib
     <CCCMD> handleio/library/windows.386/mf_r/binmode.obj   <OWRELROOT>/lib386/win/binmode.obj
     <CCCMD> startup/library/windows.386/mf_r/commode.obj    <OWRELROOT>/lib386/win/commode.obj
 

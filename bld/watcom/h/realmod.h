@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +31,6 @@
 ****************************************************************************/
 
 
-#include "extender.h"
-
 #define BDATA_SEG               0x40
 /*
  *  BIOS data area
@@ -48,6 +46,8 @@
 #define BDATA_POINT_HEIGHT      0x85    /* byte */
 #define BDATA_VID_CTRL1         0x87
 
+#define EXTENDER_RM2PM( s, o )  _MK_FP( _ExtenderRealModeSelector, (((unsigned)(s)) << 4) + (o) )
+
 #ifdef _M_I86
 #define RealModeDataPtr( segm, off )    _MK_FP( segm, off )
 #define RealModeSegmPtr( segm )         _MK_FP( segm, 0 )
@@ -59,3 +59,5 @@
 
 #define BIOSData( off, type )           RealModeData( BDATA_SEG, off, type )
 #define VIDEOData( segm, off )          RealModeData( segm, off, unsigned char )
+
+extern  unsigned short  _ExtenderRealModeSelector;

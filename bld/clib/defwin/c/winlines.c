@@ -42,7 +42,7 @@
 #endif
 #include "win.h"
 
-#if defined(__WINDOWS__) && !defined(__386__)
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
 #pragma library("commdlg");
 #endif
 

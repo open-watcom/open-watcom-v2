@@ -79,7 +79,7 @@
 #endif
 
 /* Macros to reduce the already large number of ifdefs in the code */
-#ifdef SAFE_SCANF
+#ifdef __STDC_WANT_LIB_EXT1__
 
     #define GET_MAXELEM(p,x)    x = va_arg( *p, size_t )
     #define DEFINE_VARS(x,y)    size_t x, y = 0
@@ -910,7 +910,7 @@ done:
 }
 
 
-#ifdef SAFE_SCANF
+#ifdef __STDC_WANT_LIB_EXT1__
 
 /*
  * null_arg -- check for a null pointer passed in arguments
@@ -964,7 +964,7 @@ static int null_arg( PTR_SCNF_SPECS specs, va_list *pargs )
 #endif
 
 
-#ifdef SAFE_SCANF
+#ifdef __STDC_WANT_LIB_EXT1__
 int __F_NAME(__scnf_s,__wscnf_s)( PTR_SCNF_SPECS specs, const CHAR_TYPE *format, const char **msg, va_list args )
 #else
 int __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *format, va_list args )
@@ -996,7 +996,7 @@ int __F_NAME(__scnf,__wscnf)( PTR_SCNF_SPECS specs, const CHAR_TYPE *format, va_
             fmt_chr = *format;
             if( fmt_chr != NULLCHAR )
                 ++format;
-#ifdef SAFE_SCANF
+#ifdef __STDC_WANT_LIB_EXT1__
             if( fmt_chr != STRING( '%' ) ) {
                 /* The '%' specifier is the only one not expecting pointer arg */
                 if( specs->assign && null_arg( specs, &args ) ) {
@@ -1062,7 +1062,7 @@ check_match:
                         ++items_assigned;
                     }
                 } else {
-#ifdef SAFE_SCANF
+#ifdef __STDC_WANT_LIB_EXT1__
                     if( match_len < 0 ) {
                         /* Matching failure caused by insufficient space in output
                          * is not input failure, hence we won't return EOF regardless
@@ -1095,7 +1095,7 @@ check_match:
                 format = get_opt( format, specs );
                 if( *format == STRING( 'n' ) ) {
                     ++format;
-#ifdef SAFE_SCANF
+#ifdef __STDC_WANT_LIB_EXT1__
                     if( specs->assign && null_arg( specs, &args ) ) {
                         *msg = "%ptr -> NULL";
                         return( EOF );

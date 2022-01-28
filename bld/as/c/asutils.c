@@ -90,31 +90,36 @@ void Banner( void )
 {
     static bool printed = false;
 
-    if( _IsOption( BE_QUIET ) || printed )
-        return;
+    if( !printed ) {
+        printed = true;
+        if( _IsOption( BE_QUIET ) )
+            return;
 #if defined( AS_ALPHA )
-    puts( banner1w( "Alpha AXP Assembler", _WASAXP_VERSION_ ) );
+        puts( banner1w( "Alpha AXP Assembler", _WASAXP_VERSION_ ) );
 #elif defined( AS_PPC )
-    puts( banner1w( "PowerPC Assembler", _WASPPC_VERSION_ ) );
+        puts( banner1w( "PowerPC Assembler", _WASPPC_VERSION_ ) );
 #elif defined( AS_MIPS )
-    puts( banner1w( "MIPS Assembler", _WASMIPS_VERSION_ ) );
+        puts( banner1w( "MIPS Assembler", _WASMIPS_VERSION_ ) );
 #else
     #error unknown AS_CPU
 #endif
-    puts( banner2 );
-    puts( banner2a( 1984 ) );
-    puts( banner3 );
-    puts( banner3a );
-    printed = true;
+        puts( banner2 );
+        puts( banner2a( 1984 ) );
+        puts( banner3 );
+        puts( banner3a );
+    }
 }
 
 void Usage( void )
 //****************
 {
-    int         ctr;
+    int         msg;
 
-    for( ctr = MSG_USAGE_BASE + 1; ctr < MSG_USAGE_BASE + MSG_USAGE_COUNT; ++ctr ) {
-        AsMsgGet( ctr, AsResBuffer );
+    if( !_IsOption( BE_QUIET ) ) {
+        puts( "" );
+    }
+    for( msg = MSG_USAGE_BASE; msg < MSG_USAGE_BASE + MSG_USAGE_COUNT; msg++ ) {
+        AsMsgGet( msg, AsResBuffer );
         puts( AsResBuffer );
     }
 }

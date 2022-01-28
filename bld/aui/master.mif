@@ -59,7 +59,7 @@ aui_dialogs = &
 #
 # LIB
 #
-libtarg_prebuild_objs = auistr.gh $(aui_dialogs)
+libtarg_prebuild_objs = auistr.grh $(aui_dialogs)
 libtarg_objs = &
     guimain.obj &
     wndgadgt.obj &
@@ -147,6 +147,6 @@ japsrcha.dlg : ../res/dlgs/japsrcha.dlg
 
 !endif
 
-auistr.gh : ../res/aui.msg
+auistr.grh : ../res/aui.msg
     @%make echo_awk
     $(awk) -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

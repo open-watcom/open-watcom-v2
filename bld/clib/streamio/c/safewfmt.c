@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,34 +88,34 @@ void my_constraint_handler( const char *msg, void *ptr, errno_t error )
 
 static int my_wscanf_s( const wchar_t *fmt, ... )
 {
-    va_list     arg;
+    va_list     args;
     int         rc;
 
-    va_start( arg, fmt );
-    rc = vwscanf_s( fmt, arg );
-    va_end( arg );
+    va_start( args, fmt );
+    rc = vwscanf_s( fmt, args );
+    va_end( args );
     return( rc );
 }
 
 static int my_fwscanf_s( FILE * stream, const wchar_t *fmt, ... )
 {
-    va_list     arg;
+    va_list     args;
     int         rc;
 
-    va_start( arg, fmt );
-    rc = vfwscanf_s( stream, fmt, arg );
-    va_end( arg );
+    va_start( args, fmt );
+    rc = vfwscanf_s( stream, fmt, args );
+    va_end( args );
     return( rc );
 }
 
 static int my_swscanf_s( const wchar_t *s, const wchar_t *fmt, ... )
 {
-    va_list     arg;
+    va_list     args;
     int         rc;
 
-    va_start( arg, fmt );
-    rc = vswscanf_s( s, fmt, arg );
-    va_end( arg );
+    va_start( args, fmt );
+    rc = vswscanf_s( s, fmt, args );
+    va_end( args );
     return( rc );
 }
 
@@ -238,46 +239,46 @@ int Test_scan_wide( void )
 
 static int my_wprintf_s( const wchar_t *fmt, ... )
 {
-    va_list     arg;
+    va_list     args;
     int         rc;
 
-    va_start( arg, fmt );
-    rc = vwprintf_s( fmt, arg );
-    va_end( arg );
+    va_start( args, fmt );
+    rc = vwprintf_s( fmt, args );
+    va_end( args );
     return( rc );
 }
 
 static int my_fwprintf_s( FILE *fp, const wchar_t *fmt, ... )
 {
-    va_list     arg;
+    va_list     args;
     int         rc;
 
-    va_start( arg, fmt );
-    rc = vfwprintf_s( fp, fmt, arg );
-    va_end( arg );
+    va_start( args, fmt );
+    rc = vfwprintf_s( fp, fmt, args );
+    va_end( args );
     return( rc );
 }
 
 
 static int my_swprintf_s( wchar_t *buf, rsize_t n, const wchar_t *fmt, ... )
 {
-    va_list     arg;
+    va_list     args;
     int         rc;
 
-    va_start( arg, fmt );
-    rc = vswprintf_s( buf, n, fmt, arg );
-    va_end( arg );
+    va_start( args, fmt );
+    rc = vswprintf_s( buf, n, fmt, args );
+    va_end( args );
     return( rc );
 }
 
 static int my_snwprintf_s( wchar_t *buf, rsize_t n, const wchar_t *fmt, ... )
 {
-    va_list     arg;
+    va_list     args;
     int         rc;
 
-    va_start( arg, fmt );
-    rc = vsnwprintf_s( buf, n, fmt, arg );
-    va_end( arg );
+    va_start( args, fmt );
+    rc = vsnwprintf_s( buf, n, fmt, args );
+    va_end( args );
     return( rc );
 }
 

@@ -183,6 +183,8 @@ short           _FAR *newsize;
         CurrFont->sizes[ CurrFont->size_count ] = farfont->lfHeight;
         CurrFont->size_count++;
         return( CurrFont->size_count );
+    default:
+        return( 0 );
     }
 
 } /* EnumFontsProc */

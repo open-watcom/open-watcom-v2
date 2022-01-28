@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,47 +33,16 @@
 #include "cvars.h"
 
 
-#define NUM_ROWS    24
-
-static char const *nextUsage( char const *p )
+void CUsage( void )
 {
-    while( *p != '\0' ) {
-        ++p;
-    }
-    return( p + 1 );
-}
-
-static bool Wait_for_return( char const *press )
-{
-    int     c;
-
-    ConsMsg( press );
-    c = getchar();
-    return( c == 'q' || c == 'Q' );
-}
-
-void CCusage( void )
-{
-    char const  *page_text;
     char const  *p;
-    int         count;
 
-    count = CBanner();
-    if( GlobalCompFlags.ide_console_output && count ) {
-        ConsMsg( "" );
-        ++count;
+    CBanner();
+    if( !CompFlags.quiet_mode ) {
+        NoteMsg( "" );
     }
-    p = UsageText();
-    page_text = p;
-    while( *(p = nextUsage( p )) != '\0' ) {
-        if( GlobalCompFlags.ide_console_output ) {
-            if( count == NUM_ROWS - 2 ) {
-                if( Wait_for_return( page_text ) )
-                    break;
-                count = 0;
-            }
-            ++count;
-        }
-        ConsMsg( p );
+    for( p = UsageText(); *p != '\0'; ) {
+        NoteMsg( p );
+        while( *p++ != '\0' ) ;
     }
 }

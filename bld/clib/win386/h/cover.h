@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,7 @@ extern void         *SetProc( FARPROC fp, int type );
 extern BOOL         TryAlias( HWND hwnd, WORD msg, LONG *lparam );
 extern void         *RealProcAddr( FARPROC fp );
 extern DWORD _WCFAR *_DataSelectorSizeAddr;
-extern CALLBACKPTR  vGetCallbackRoutine( PROCPTR fn, va_list vl );
+extern CALLBACKPTR  vGetCallbackRoutine( PROCPTR fn, va_list args );
 
 /* NOAUTOPROCS, copy of prototypes from _win386.h */
 extern FARPROC  PASCAL _Cover_MakeProcInstance( REALFARPROC proc, HINSTANCE inst );

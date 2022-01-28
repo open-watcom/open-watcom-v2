@@ -36,20 +36,16 @@
 
 #define SPECS_VERSION       200
 
-#if defined( SAFER_CLIB ) || !defined( __QNX__ )
+#if defined( __QNX__ ) && !defined( __STDC_WANT_LIB_EXT1__ ) && !defined( __WIDECHAR__ )
+    #define GET_SPECS_DEST(t,s) (SLIB2CLIB(t,(s)->_dest))
+    #define PTR_PRTF_FAR    __SLIB *
+#else
+    #define GET_SPECS_DEST(t,s) ((t *)(s)->_dest)
   #if defined( __HUGE__ )
     #define PTR_PRTF_FAR    _WCI86FAR *
   #else
     #define PTR_PRTF_FAR    *
   #endif
-#else   /* !SAFER_CLIB && __QNX__ */
-    #define PTR_PRTF_FAR    __SLIB *
-#endif
-
-#if defined( SAFER_CLIB ) || !defined( __QNX__ )
-    #define GET_SPECS_DEST(t,s) ((t *)(s)->_dest)
-#else   /* !SAFER_CLIB && __QNX__ */
-    #define GET_SPECS_DEST(t,s) (SLIB2CLIB(t,(s)->_dest))
 #endif
 
 /*

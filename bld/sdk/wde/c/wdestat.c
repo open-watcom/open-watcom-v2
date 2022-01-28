@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,8 @@
 #include "statwnd.h"
 #include "wdemsgbx.h"
 #include "wdestat.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -99,7 +101,7 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
     TEXTMETRIC          tm;
     HFONT               old_font;
     HDC                 dc;
-    status_block_desc   sbd;
+    status_block_desc   sbd[1];
     char                *font_facename;
     char                *cp;
     int                 font_pointsize;
@@ -145,12 +147,11 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
     }
     WdeStatusBar = StatusWndStart();
 
-    sbd.separator_width = STATUS_LINE_PAD;
-    sbd.width = STATUS1_WIDTH;
-    sbd.width_is_percent = false;
-    sbd.width_is_pixels = true;
+    sbd[0].separator_width = STATUS_LINE_PAD;
+    sbd[0].width = STATUS1_WIDTH;
+    sbd[0].width_is_percent = false;
 
-    StatusWndSetSeparators( WdeStatusBar, 1, &sbd );
+    StatusWndSetSeparators( WdeStatusBar, 1, sbd );
 
     WdeStatusWindow = StatusWndCreate( WdeStatusBar, main, &rect, inst, NULL );
 

@@ -222,5 +222,3 @@ ntmanif.res : ../res/nt/ntmanif.rc .EXPLICIT
 
 dosstub.exe : dosstub.c $(__MAKEFILES__)
     $(cl_i86) -zq -bcl=dos -s-os -d0 $(inc_dirs_lang_dos) -I"$(watcom_dir)/h" $[@
-
-nonibm.obj : $(clib_dir)/startup/c/nonibm.c $(__MAKEFILES__)

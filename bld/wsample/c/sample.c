@@ -42,7 +42,6 @@
 #ifdef __WINDOWS__
     #include "commonui.h"
 #endif
-#include "banner.h"
 #include "sample.h"
 #include "wmsg.h"
 #include "smpstuff.h"
@@ -70,7 +69,7 @@ static samp_block_prefix    Last = {
 static int              stackSize = 0;
 
 
-#if defined( __DOS__ ) && !defined( _PLS ) && !defined( _RSI )
+#if defined( __DOS__ ) && !defined( __PHARLAP__ ) && !defined( __DOS4G__ )
 void __near WriteMark( const char FAR_PTR *str, seg_offset where )
 #else
 void WriteMark( const char FAR_PTR *str, seg_offset where )
@@ -329,21 +328,6 @@ void REPORT_TYPE report( void )
     MsgFini();
     _exit( 0 );
 #endif
-}
-
-
-void Usage( void )
-{
-    Output( banner1w( "Execution Sampler", _WSAMP_VERSION_ ) ); OutputNL();
-    Output( banner2 ); OutputNL();
-    Output( banner2a( 1989 ) ); OutputNL();
-    Output( banner3 ); OutputNL();
-    Output( banner3a ); OutputNL();
-    OutputNL();
-    MsgPrintfUsage( MSG_USAGE_LN_1, MSG_USAGE_LN_3 );
-//  MSG_USAGE_4 is the option for call graph support
-//  (undocumented for now)
-    MsgPrintfUsage( MSG_USAGE_LN_5, MSG_USAGE_LN_9 );
 }
 
 

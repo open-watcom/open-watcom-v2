@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,6 @@
 #include "virtmem.h"
 #include "fileio.h"
 #include "mapio.h"
-#include "spillio.h"
 #include "omfreloc.h"
 #include "objcalc.h"
 #include "dbgall.h"
@@ -102,6 +101,56 @@ startinfo       StartInfo;
 
 static implibinfo       ImpLib;
 
+#define TEMPFNAME       "IMP02112.xx`"          // "'" will be an "a" when processed.
+#define TEMPFNAME_SIZE  13
+
+static char *makeTempName( char *name )
+/*************************************/
+{
+    memcpy( name, TEMPFNAME, sizeof( TEMPFNAME ) ); // includes nullchar
+    return( name + sizeof( TEMPFNAME ) - 2 );       // pointer to "a"
+}
+
+static f_handle openTempFile( char **fname )
+/******************************************/
+{
+    const char  *ptr;
+    size_t      tlen;
+    char        *tptr;
+    f_handle    fhdl;
+
+    ptr = GetEnvString( "TMP" );
+    if( ptr == NULL )
+        ptr = GetEnvString( "TMPDIR" );
+    if( ptr == NULL ) {
+        _ChkAlloc( tptr, TEMPFNAME_SIZE );
+        *fname = tptr;
+    } else {
+        tlen = strlen( ptr );
+        _ChkAlloc( tptr, tlen + 1 + TEMPFNAME_SIZE );
+        memcpy( tptr, ptr, tlen );
+        *fname = tptr;
+        tptr += tlen;
+        if( !IS_PATH_SEP( tptr[-1] ) ) {
+            *tptr++ = DIR_SEP;
+        }
+    }
+    tptr = makeTempName( tptr );
+    tlen = 0;
+    for( ;; ) {
+        if( tlen >= 26 ) {
+            LnkMsg( FTL+MSG_TMP_ALREADY_EXISTS, NULL );
+        }
+        *tptr += 1;                     // change temp file extension
+        fhdl = TempFileOpen( *fname );
+        if( fhdl == NIL_FHANDLE )
+            break;
+        QClose( fhdl, *fname );
+        ++tlen;
+    }
+    return( QOpenRW( *fname ) );
+}
+
 static void SetupImpLib( void )
 /*****************************/
 {
@@ -119,7 +168,7 @@ static void SetupImpLib( void )
             ImpLib.fname = ChkStrDup( FmtData.implibname );
             ImpLib.handle = QOpenRW( ImpLib.fname );
         } else {
-            ImpLib.handle = OpenTempFile( &ImpLib.fname );
+            ImpLib.handle = openTempFile( &ImpLib.fname );
         }
         /* GetBaseName results in the filename only   *
          * it trims both the path, and the extension */
@@ -1281,8 +1330,8 @@ static void FlushBuffFile( outfilelist *outfile )
 static void *NullBuffFunc( void *dest, const void *dummy, size_t size )
 /*********************************************************************/
 {
-    dummy = dummy;
-    size = size;
+    /* unused parameters */ (void)dummy; (void)size;
+
     return( dest );
 }
 #endif

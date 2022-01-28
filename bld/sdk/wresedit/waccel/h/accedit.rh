@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,19 +31,49 @@
 ****************************************************************************/
 
 
-#define IDM_ACCEDRNAME      200
-#define IDM_ACCEDKEY        201
-#define IDM_ACCEDCMDID      202
-#define IDM_ACCEDCMDNUM     203
-#define IDM_ACCEDASCII      204
-#define IDM_ACCEDVIRT       205
-#define IDM_ACCEDALT        207
-#define IDM_ACCEDCNTL       208
-#define IDM_ACCEDSHFT       209
-#define IDM_ACCEDFLASH      210
-#define IDM_ACCEDLIST       211
-#define IDM_ACCEDBLACKLINE  212
-#define IDM_ACCEDSETACC     213
-#define IDM_ACCEDINSERT     214
-#define IDM_ACCEDCHANGE     215
-#define IDM_ACCEDRESET      216
+/****************************************************************************/
+/* Menu Identifiers                                                         */
+/****************************************************************************/
+#define IDM_ACC_CLEAR           200
+#define IDM_ACC_UPDATE          201
+#define IDM_ACC_OPEN            202
+#define IDM_ACC_SAVE            203
+#define IDM_ACC_SAVEAS          204
+#define IDM_ACC_EXIT            205
+
+#define IDM_ACC_CUT             210
+#define IDM_ACC_COPY            211
+#define IDM_ACC_PASTE           212
+#define IDM_ACC_DELETE          213
+#define IDM_ACC_LOAD_SYMBOLS    214
+#define IDM_ACC_SYMBOLS         215
+#define IDM_ACC_SHOWRIBBON      216
+
+#define IDM_ACC_RENAME          220
+#define IDM_ACC_MEM_FLAGS       221
+#define IDM_ACC_SAVEINTO        222
+
+#define IDM_ACC_NEWITEM         230
+#define IDM_ACC_KEYVALUE        231
+
+#define IDM_ACC_ABOUT           240
+
+/****************************************************************************/
+/* Dialog Identifiers                                                       */
+/****************************************************************************/
+#define IDM_ACCEDRNAME      	250
+#define IDM_ACCEDKEY        	251
+#define IDM_ACCEDCMDID      	252
+#define IDM_ACCEDCMDNUM     	253
+#define IDM_ACCEDASCII      	254
+#define IDM_ACCEDVIRT       	255
+#define IDM_ACCEDALT        	257
+#define IDM_ACCEDCNTL       	258
+#define IDM_ACCEDSHFT       	259
+#define IDM_ACCEDFLASH      	260
+#define IDM_ACCEDLIST       	261
+#define IDM_ACCEDBLACKLINE  	262
+#define IDM_ACCEDSETACC     	263
+#define IDM_ACCEDINSERT     	264
+#define IDM_ACCEDCHANGE     	265
+#define IDM_ACCEDRESET      	266

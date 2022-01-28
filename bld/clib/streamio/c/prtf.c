@@ -43,6 +43,7 @@
 #if defined( __WIDECHAR__ ) || defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
+#include "slibqnx.h"
 #include "prtscncf.h"
 #include "fixpoint.h"
 #include "fltsupp.h"
@@ -80,7 +81,10 @@
 #endif
 
 
-#if defined( __QNX__ ) && defined( _M_I86 ) && !defined( IN_SLIB ) && !defined( __WIDECHAR__ )
+#if defined( __QNX__ ) && !defined( __STDC_WANT_LIB_EXT1__ ) && !defined( __WIDECHAR__ ) && defined( _M_I86 ) && !defined( IN_SLIB )
+
+/* 16-bit QNX no code, only in SLIB */
+
 #else
 
 static const CHAR_TYPE *evalflags( const CHAR_TYPE *ctl, PTR_SPECS specs )
@@ -456,8 +460,7 @@ static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs, prtf_callback_
 
 
 #if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
-static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
-                                 prtf_callback_t *out_putc )
+static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs, prtf_callback_t *out_putc )
 {
     int                 bytes;
     wchar_t             wc;
@@ -483,8 +486,7 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
 #endif
 
 
-static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs,
-                              PTR_SPECS specs, CHAR_TYPE *null_string )
+static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_SPECS specs, CHAR_TYPE *null_string )
 {
     FAR_STRING              arg;
     int                     length;
@@ -852,10 +854,8 @@ processNumericTypes:
 }
 
 
-#ifdef SAFER_CLIB
+#ifdef __STDC_WANT_LIB_EXT1__
 int __F_NAME(__prtf_s,__wprtf_s)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, const char **msg, prtf_callback_t *out_putc )
-#elif defined( IN_SLIB )
-int __F_NAME(__prtf_slib,__wprtf_slib)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, prtf_callback_t *out_putc, int ptr_size )
 #else
 int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list args, prtf_callback_t *out_putc )
 #endif
@@ -871,12 +871,6 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
     FAR_STRING          arg;
     const CHAR_TYPE     *ctl;
     SPECS               specs;
-
-#if !defined( SAFER_CLIB ) && defined( IN_SLIB )
-
-    /* unused parameters */ (void)ptr_size;
-
-#endif
 
     specs._dest = dest;
     specs._flags = 0;
@@ -894,7 +888,7 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
                 break;
 
             if( specs._character == STRING( 'n' ) ) {
-#ifdef SAFER_CLIB
+#ifdef __STDC_WANT_LIB_EXT1__
                 /* The %n specifier is not allowed - too dangerous. */
                 *msg = "%n";
                 break;
@@ -927,9 +921,9 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
                 } else {
                     *iptr = specs._output_count;
                 }
-#endif  /* SAFER_CLIB */
+#endif  /* __STDC_WANT_LIB_EXT1__ */
             } else {
-#ifdef SAFER_CLIB
+#ifdef __STDC_WANT_LIB_EXT1__
                 if( specs._character == STRING( 's' ) || specs._character == STRING( 'S' ) ) {
                     FAR_STRING  str;
                     va_list     args_copy;
@@ -970,7 +964,7 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
                         break;  /* bail out */
                     }
                 }
-#endif  /* SAFER_CLIB */
+#endif  /* __STDC_WANT_LIB_EXT1__ */
 
                 arg = formstring( buffer, &args, &specs, &null_char );
                 specs._fld_width -= specs._n0  +
@@ -1052,5 +1046,14 @@ int __F_NAME(__prtf,__wprtf)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, v
     }
     return( specs._output_count );
 }
+
+#if defined( __QNX__ ) && !defined( __STDC_WANT_LIB_EXT1__ ) && !defined( __WIDECHAR__ ) && defined( IN_SLIB )
+int __F_NAME(__prtf_slib,__wprtf_slib)( void PTR_PRTF_FAR dest, const CHAR_TYPE *format, va_list *pargs, prtf_callback_t *out_putc, int ptr_size )
+{
+    /* unused parameters */ (void)ptr_size;
+
+    return( __F_NAME(__prtf,__wprtf)( dest, format, *pargs, out_putc ) );
+}
+#endif
 
 #endif

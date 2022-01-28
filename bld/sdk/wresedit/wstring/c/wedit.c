@@ -42,7 +42,6 @@
 #include "wsetedit.h"
 #include "wmsg.h"
 #include "ldstr.h"
-#include "rcstr.gh"
 #include "wstrdup.h"
 #include "widn2str.h"
 #include "wclip.h"

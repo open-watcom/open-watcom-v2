@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,7 +140,9 @@ UINT FAR PASCAL __midiInAddBuffer( HMIDIIN hMidiIn, LPMIDIHDR lpMidiInHdr,
 
     if( mmsystemmidiInAddBuffer == NULL ) {
         mmsystemmidiInAddBuffer = BackPatch_mmsystem( "midiInAddBuffer" );
-        if( mmsystemmidiInAddBuffer == NULL ) return( 0 );
+        if( mmsystemmidiInAddBuffer == NULL ) {
+            return( 0 );
+        }
     }
     GetMIDIHDRAlias( &odata, lpMidiInHdr );
     rc = mmsystemmidiInAddBuffer( hMidiIn, lpMidiInHdr, uSize );
@@ -159,7 +162,9 @@ UINT FAR PASCAL __midiInPrepareHeader( HMIDIIN hMidiIn, LPMIDIHDR lpMidiInHdr,
 
     if( mmsystemmidiInPrepareHeader == NULL ) {
         mmsystemmidiInPrepareHeader = BackPatch_mmsystem( "midiInPrepareHeader" );
-        if( mmsystemmidiInPrepareHeader == NULL ) return( 0 );
+        if( mmsystemmidiInPrepareHeader == NULL ) {
+            return( 0 );
+        }
     }
     GetMIDIHDRAlias( &odata, lpMidiInHdr );
     rc = mmsystemmidiInPrepareHeader( hMidiIn, lpMidiInHdr, uSize );
@@ -179,7 +184,9 @@ UINT FAR PASCAL __midiInUnprepareHeader( HMIDIIN hMidiIn,
 
     if( mmsystemmidiInUnprepareHeader == NULL ) {
         mmsystemmidiInUnprepareHeader = BackPatch_mmsystem( "midiInUnprepareHeader" );
-        if( mmsystemmidiInUnprepareHeader == NULL ) return( 0 );
+        if( mmsystemmidiInUnprepareHeader == NULL ) {
+            return( 0 );
+        }
     }
     GetMIDIHDRAlias( &odata, lpMidiInHdr );
     rc = mmsystemmidiInUnprepareHeader( hMidiIn, lpMidiInHdr, uSize );
@@ -199,7 +206,9 @@ UINT FAR PASCAL __midiOutLongMsg( HMIDIOUT hMidiOut, LPMIDIHDR lpMidiOutHdr,
 
     if( mmsystemmidiOutLongMsg == NULL ) {
         mmsystemmidiOutLongMsg = BackPatch_mmsystem( "midiOutLongMsg" );
-        if( mmsystemmidiOutLongMsg == NULL ) return( 0 );
+        if( mmsystemmidiOutLongMsg == NULL ) {
+            return( 0 );
+        }
     }
     GetMIDIHDRAlias( &odata, lpMidiOutHdr );
     rc = mmsystemmidiOutLongMsg( hMidiOut, lpMidiOutHdr, uSize );
@@ -219,7 +228,9 @@ UINT FAR PASCAL __midiOutPrepareHeader( HMIDIOUT hMidiOut,
 
     if( mmsystemmidiOutPrepareHeader == NULL ) {
         mmsystemmidiOutPrepareHeader = BackPatch_mmsystem( "midiOutPrepareHeader" );
-        if( mmsystemmidiOutPrepareHeader == NULL ) return( 0 );
+        if( mmsystemmidiOutPrepareHeader == NULL ) {
+            return( 0 );
+        }
     }
     GetMIDIHDRAlias( &odata, lpMidiOutHdr );
     rc = mmsystemmidiOutPrepareHeader( hMidiOut, lpMidiOutHdr, uSize );
@@ -239,7 +250,9 @@ UINT FAR PASCAL __midiOutUnprepareHeader( HMIDIOUT hMidiOut,
 
     if( mmsystemmidiOutUnprepareHeader == NULL ) {
         mmsystemmidiOutUnprepareHeader = BackPatch_mmsystem( "midiOutUnprepareHeader" );
-        if( mmsystemmidiOutUnprepareHeader == NULL ) return( 0 );
+        if( mmsystemmidiOutUnprepareHeader == NULL ) {
+            return( 0 );
+        }
     }
     GetMIDIHDRAlias( &odata, lpMidiOutHdr );
     rc = mmsystemmidiOutUnprepareHeader( hMidiOut, lpMidiOutHdr, uSize );
@@ -257,7 +270,9 @@ UINT FAR PASCAL __mmioAdvance( HMMIO hmmio, LPMMIOINFO lpmmioinfo, UINT uFlags )
 
     if( mmsystemmmioAdvance == NULL ) {
         mmsystemmmioAdvance = BackPatch_mmsystem( "mmioAdvance" );
-        if( mmsystemmmioAdvance == NULL ) return( 0 );
+        if( mmsystemmmioAdvance == NULL ) {
+            return( 0 );
+        }
     }
     rc = mmsystemmmioAdvance( hmmio, lpmmioinfo, uFlags );
     return( rc );
@@ -273,7 +288,9 @@ UINT FAR PASCAL __mmioGetInfo( HMMIO hmmio, LPMMIOINFO lpmmioinfo, UINT uFlags )
 
     if( mmsystemmmioGetInfo == NULL ) {
         mmsystemmmioGetInfo = BackPatch_mmsystem( "mmioGetInfo" );
-        if( mmsystemmmioGetInfo == NULL ) return( 0 );
+        if( mmsystemmmioGetInfo == NULL ) {
+            return( 0 );
+        }
     }
     rc = mmsystemmmioGetInfo( hmmio, lpmmioinfo, uFlags );
     return( rc );
@@ -292,16 +309,16 @@ HMMIO FAR PASCAL __mmioOpen( LPSTR szFileName, LPMMIOINFO lpmmioinfo,
 
     if( mmsystemmmioOpen == NULL ) {
         mmsystemmmioOpen = BackPatch_mmsystem( "mmioOpen" );
-        if( mmsystemmmioOpen == NULL ) return( 0 );
+        if( mmsystemmmioOpen == NULL ) {
+            return( 0 );
+        }
     }
 
     alias = NULL;
-    if( !(dwOpenFlags & (MMIO_ALLOCBUF | MMIO_DELETE | MMIO_PARSE | MMIO_EXIST
-                                | MMIO_GETTEMP) ) ) {
+    if( !(dwOpenFlags & (MMIO_ALLOCBUF | MMIO_DELETE | MMIO_PARSE | MMIO_EXIST | MMIO_GETTEMP)) ) {
         if( lpmmioinfo->cchBuffer != 0 && lpmmioinfo->pchBuffer != NULL ) {
-            _DPMIGetHugeAlias( (DWORD) lpmmioinfo->pchBuffer, &alias,
-                                lpmmioinfo->cchBuffer );
-            lpmmioinfo->pchBuffer = (LPVOID) alias;
+            _DPMIGetHugeAlias( (DWORD)lpmmioinfo->pchBuffer, &alias, lpmmioinfo->cchBuffer );
+            lpmmioinfo->pchBuffer = (LPVOID)alias;
         }
     }
 
@@ -343,9 +360,8 @@ UINT FAR PASCAL __mmioClose( HMMIO hmmio, UINT flags )
 
     rc = mmsystemmmioClose( hmmio, flags );
 
-    curr = mminfoListHead;
     prev = NULL;
-    while( curr != NULL ) {
+    for( curr = mminfoListHead; curr != NULL; curr = curr->next ) {
         if( curr->handle == hmmio ) {
             _DPMIFreeHugeAlias( curr->alias, curr->size );
             if( prev == NULL ) {
@@ -360,7 +376,6 @@ UINT FAR PASCAL __mmioClose( HMMIO hmmio, UINT flags )
             break;
         }
         prev = curr;
-        curr = curr->next;
     }
     return( rc );
 
@@ -375,7 +390,9 @@ UINT FAR PASCAL __mmioRename( LPCSTR szFileName, LPCSTR szNewFileName,
     UINT        rc;
     if( mmsystemmmioRename == NULL ) {
         mmsystemmmioRename = BackPatch_mmsystem( "mmioRename" );
-        if( mmsystemmmioRename == NULL ) return( 0 );
+        if( mmsystemmmioRename == NULL ) {
+            return( 0 );
+        }
     }
     rc = mmsystemmmioRename( szFileName, szNewFileName, lpmmioinfo, dwRenameFlags );
     return( rc );
@@ -390,7 +407,9 @@ UINT FAR PASCAL __mmioSetInfo( HMMIO hmmio, LPMMIOINFO lpmmioinfo, UINT uFlags )
     UINT        rc;
     if( mmsystemmmioSetInfo == NULL ) {
         mmsystemmmioSetInfo = BackPatch_mmsystem( "mmioSetInfo" );
-        if( mmsystemmmioSetInfo == NULL ) return( 0 );
+        if( mmsystemmmioSetInfo == NULL ) {
+            return( 0 );
+        }
     }
     rc = mmsystemmmioSetInfo( hmmio, lpmmioinfo, uFlags );
     return( rc );
@@ -407,7 +426,9 @@ LONG FAR PASCAL __mmioRead( HMMIO hmmio, HPSTR pch, LONG cch )
 
     if( mmsystemmmioRead == NULL ) {
         mmsystemmmioRead = BackPatch_mmsystem( "mmioRead" );
-        if( mmsystemmmioRead == NULL ) return( 0 );
+        if( mmsystemmmioRead == NULL ) {
+            return( 0 );
+        }
     }
     _DPMIGetHugeAlias( (DWORD) pch, &alias, cch );
     rc = mmsystemmmioRead( hmmio, (HPSTR) alias, cch );
@@ -426,7 +447,9 @@ LONG FAR PASCAL __mmioWrite( HMMIO hmmio, HPSTR pch, LONG cch )
 
     if( mmsystemmmioWrite == NULL ) {
         mmsystemmmioWrite = BackPatch_mmsystem( "mmioWrite" );
-        if( mmsystemmmioWrite == NULL ) return( 0 );
+        if( mmsystemmmioWrite == NULL ) {
+            return( 0 );
+        }
     }
     _DPMIGetHugeAlias( (DWORD) pch, &alias, cch );
     rc = mmsystemmmioWrite( hmmio, (HPSTR) alias, cch );
@@ -446,7 +469,9 @@ UINT FAR PASCAL __waveInAddBuffer( HWAVEIN hWaveIn, LPWAVEHDR lpWaveInHdr,
 
     if( mmsystemwaveInAddBuffer == NULL ) {
         mmsystemwaveInAddBuffer = BackPatch_mmsystem( "waveInAddBuffer" );
-        if( mmsystemwaveInAddBuffer == NULL ) return( 0 );
+        if( mmsystemwaveInAddBuffer == NULL ) {
+            return( 0 );
+        }
     }
     GetWAVEHDRAlias( &odata, lpWaveInHdr );
     rc = mmsystemwaveInAddBuffer( hWaveIn, lpWaveInHdr, uSize );
@@ -466,7 +491,9 @@ UINT FAR PASCAL __waveInPrepareHeader( HWAVEIN hWaveIn, LPWAVEHDR lpWaveInHdr,
 
     if( mmsystemwaveInPrepareHeader == NULL ) {
         mmsystemwaveInPrepareHeader = BackPatch_mmsystem( "waveInPrepareHeader" );
-        if( mmsystemwaveInPrepareHeader == NULL ) return( 0 );
+        if( mmsystemwaveInPrepareHeader == NULL ) {
+            return( 0 );
+        }
     }
     GetWAVEHDRAlias( &odata, lpWaveInHdr );
     rc = mmsystemwaveInPrepareHeader( hWaveIn, lpWaveInHdr, uSize );
@@ -486,7 +513,9 @@ UINT FAR PASCAL __waveInUnprepareHeader( HWAVEIN hWaveIn, LPWAVEHDR lpWaveInHdr,
 
     if( mmsystemwaveInUnprepareHeader == NULL ) {
         mmsystemwaveInUnprepareHeader = BackPatch_mmsystem( "waveInUnprepareHeader" );
-        if( mmsystemwaveInUnprepareHeader == NULL ) return( 0 );
+        if( mmsystemwaveInUnprepareHeader == NULL ) {
+            return( 0 );
+        }
     }
     GetWAVEHDRAlias( &odata, lpWaveInHdr );
     rc = mmsystemwaveInUnprepareHeader( hWaveIn, lpWaveInHdr, uSize );
@@ -506,7 +535,9 @@ UINT FAR PASCAL __waveOutPrepareHeader( HWAVEOUT hWaveOut,
 
     if( mmsystemwaveOutPrepareHeader == NULL ) {
         mmsystemwaveOutPrepareHeader = BackPatch_mmsystem( "waveOutPrepareHeader" );
-        if( mmsystemwaveOutPrepareHeader == NULL ) return( 0 );
+        if( mmsystemwaveOutPrepareHeader == NULL ) {
+            return( 0 );
+        }
     }
     GetWAVEHDRAlias( &odata, lpWaveOutHdr );
     rc = mmsystemwaveOutPrepareHeader( hWaveOut, lpWaveOutHdr, uSize );
@@ -526,7 +557,9 @@ UINT FAR PASCAL __waveOutUnprepareHeader( HWAVEOUT hWaveOut,
 
     if( mmsystemwaveOutUnprepareHeader == NULL ) {
         mmsystemwaveOutUnprepareHeader = BackPatch_mmsystem( "waveOutUnprepareHeader" );
-        if( mmsystemwaveOutUnprepareHeader == NULL ) return( 0 );
+        if( mmsystemwaveOutUnprepareHeader == NULL ) {
+            return( 0 );
+        }
     }
     GetWAVEHDRAlias( &odata, lpWaveOutHdr );
     rc = mmsystemwaveOutUnprepareHeader( hWaveOut, lpWaveOutHdr, uSize );
@@ -546,7 +579,9 @@ UINT FAR PASCAL __waveOutWrite( HWAVEOUT hWaveOut, LPWAVEHDR lpWaveOutHdr,
 
     if( mmsystemwaveOutWrite == NULL ) {
         mmsystemwaveOutWrite = BackPatch_mmsystem( "waveOutWrite" );
-        if( mmsystemwaveOutWrite == NULL ) return( 0 );
+        if( mmsystemwaveOutWrite == NULL ) {
+            return( 0 );
+        }
     }
     GetWAVEHDRAlias( &odata, lpWaveOutHdr );
     rc = mmsystemwaveOutWrite( hWaveOut, lpWaveOutHdr, uSize );

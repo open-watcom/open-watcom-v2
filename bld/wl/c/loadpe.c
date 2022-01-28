@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -872,7 +872,7 @@ static unsigned_32 WriteDebugTable( pe_object *object, const char *symfilename,
     strncpy( object->name, ".rdata", PE_OBJ_NAME_LEN );
     object->physical_offset = NullAlign( file_align );
     object->flags = PE_OBJ_INIT_DATA | PE_OBJ_READABLE;
-    object->physical_size = ROUND_UP( size, file_align);
+    object->physical_size = ROUND_UP( size, file_align );
 
     /* write debug dir entry for DEBUG_TYPE_MISC */
     dir.flags = 0;
@@ -1141,30 +1141,38 @@ void FiniPELoadFile( void )
         } else {
             PE64( h ).subsystem = PE_SS_WINDOWS_GUI;
         }
-        PE64( h ).stack_reserve_size.u._32[0] = StackSize;
+        /*
+         * set stack reserved and committed size for executable
+         * zero for DLL (StackSize is already set to zero)
+         */
+        size = StackSize;
+        PE64( h ).stack_reserve_size.u._32[0] = size;
         PE64( h ).stack_reserve_size.u._32[1] = 0;
         if( FmtData.u.pe.stackcommit == DEF_VALUE ) {
-            PE64( h ).stack_commit_size.u._32[0] = StackSize;
-            PE64( h ).stack_commit_size.u._32[1] = 0;
-            if( StackSize > PE_DEF_STACK_COMMIT ) {
-                PE64( h ).stack_commit_size.u._32[0] = PE_DEF_STACK_COMMIT;
+            if( size > PE_DEF_STACK_COMMIT ) {
+                size = PE_DEF_STACK_COMMIT;
             }
-        } else if( FmtData.u.pe.stackcommit > StackSize ) {
-            PE64( h ).stack_commit_size.u._32[0] = StackSize;
-            PE64( h ).stack_commit_size.u._32[1] = 0;
-        } else {
-            PE64( h ).stack_commit_size.u._32[0] = FmtData.u.pe.stackcommit;
-            PE64( h ).stack_commit_size.u._32[1] = 0;
+        } else if( size > FmtData.u.pe.stackcommit ) {
+            size = FmtData.u.pe.stackcommit;
         }
-        PE64( h ).heap_reserve_size.u._32[0] = FmtData.u.os2fam.heapsize;
+        PE64( h ).stack_commit_size.u._32[0] = size;
+        PE64( h ).stack_commit_size.u._32[1] = 0;
+        /*
+         * set heap reserved and committed size for executable
+         * zero for DLL
+         */
+        size = FmtData.u.os2fam.heapsize;
+        if( FmtData.dll ) {
+            size = 0;
+        }
+        PE64( h ).heap_reserve_size.u._32[0] = size;
         PE64( h ).heap_reserve_size.u._32[1] = 0;
-        if( FmtData.u.pe.heapcommit > FmtData.u.os2fam.heapsize ) {
-            PE64( h ).heap_commit_size.u._32[0] = FmtData.u.os2fam.heapsize;
-            PE64( h ).heap_commit_size.u._32[1] = 0;
-        } else {
-            PE64( h ).heap_commit_size.u._32[0] = FmtData.u.pe.heapcommit;
-            PE64( h ).heap_commit_size.u._32[1] = 0;
+        if( size > FmtData.u.pe.heapcommit ) {
+            size = FmtData.u.pe.heapcommit;
         }
+        PE64( h ).heap_commit_size.u._32[0] = size;
+        PE64( h ).heap_commit_size.u._32[1] = 0;
+
         PE64( h ).num_tables = PE_TBL_NUMBER;
         CurrSect = Root;
         SeekLoad( 0 );
@@ -1305,23 +1313,33 @@ void FiniPELoadFile( void )
         } else {
             PE32( h ).subsystem = PE_SS_WINDOWS_GUI;
         }
-        PE32( h ).stack_reserve_size = StackSize;
+        /*
+         * set stack reserved and committed size for executable
+         * zero for DLL (StackSize is already set to zero)
+         */
+        size = StackSize;
+        PE32( h ).stack_reserve_size = size;
         if( FmtData.u.pe.stackcommit == DEF_VALUE ) {
-            PE32( h ).stack_commit_size = StackSize;
-            if( StackSize > PE_DEF_STACK_COMMIT ) {
-                PE32( h ).stack_commit_size = PE_DEF_STACK_COMMIT;
+            if( size > PE_DEF_STACK_COMMIT ) {
+                size = PE_DEF_STACK_COMMIT;
             }
-        } else if( FmtData.u.pe.stackcommit > StackSize ) {
-            PE32( h ).stack_commit_size = StackSize;
-        } else {
-            PE32( h ).stack_commit_size = FmtData.u.pe.stackcommit;
+        } else if( size > FmtData.u.pe.stackcommit ) {
+            size = FmtData.u.pe.stackcommit;
         }
-        PE32( h ).heap_reserve_size = FmtData.u.os2fam.heapsize;
-        if( FmtData.u.pe.heapcommit > FmtData.u.os2fam.heapsize ) {
-            PE32( h ).heap_commit_size = FmtData.u.os2fam.heapsize;
-        } else {
-            PE32( h ).heap_commit_size = FmtData.u.pe.heapcommit;
+        PE32( h ).stack_commit_size = size;
+        /*
+         * set heap reserved and committed size for executable
+         * zero for DLL
+         */
+        size = FmtData.u.os2fam.heapsize;
+        if( FmtData.dll ) {
+            size = 0;
         }
+        if( size > FmtData.u.pe.heapcommit ) {
+            size = FmtData.u.pe.heapcommit;
+        }
+        PE32( h ).heap_commit_size = size;
+
         PE32( h ).num_tables = PE_TBL_NUMBER;
         CurrSect = Root;
         SeekLoad( 0 );

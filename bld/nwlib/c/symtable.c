@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1167,7 +1167,7 @@ void ListContents( void )
                 if( cmd->ops & OP_FOUND ) {
                     if( Options.verbose ) {
                         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                            if( IsSameFName( sfile->arch.name, cmd->name ) ) {
+                            if( IsSameFNameCase( sfile->arch.name, cmd->name ) ) {
                                 if( Options.terse_listing ) {
                                     Message( sfile->arch.name );
                                 } else {

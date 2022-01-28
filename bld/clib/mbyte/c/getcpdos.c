@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ unsigned short dos_get_code_page( void )
 /**************************************/
 {
     union REGS          regs;
-    struct SREGS        sregs;
+    struct SREGS        segregs;
     unsigned char       buf[7];
 
     regs.w.ax = 0x6501;                         /* get international info */
@@ -104,9 +104,9 @@ unsigned short dos_get_code_page( void )
     regs.w.cx = 7;                              /* buffer size */
     regs.w.dx = 0xFFFF;                         /* current country */
     regs.w.di = _FP_OFF( (void __far *)buf );   /* buffer offset */
-    sregs.es = _FP_SEG( (void __far *)buf );    /* buffer segment */
-    sregs.ds = 0;                               /* in protected mode (dos16m) DS must be initialized */
-    intdosx( &regs, &regs, &sregs );            /* call DOS */
+    segregs.es = _FP_SEG( (void __far *)buf );  /* buffer segment */
+    segregs.ds = 0;                             /* in protected mode (dos16m) DS must be initialized */
+    intdosx( &regs, &regs, &segregs );          /* call DOS */
     if( regs.w.cflag )
         return( 0 );                            /* ensure function succeeded */
     return( *(unsigned short *)( buf + 5 ) );   /* return code page */
@@ -163,39 +163,39 @@ unsigned short dos_get_code_page( void )
 
     /*** Get the code page ***/
     if( _IsPharLap() ) {
-        union REGS      r;
-        struct SREGS    sregs;
+        union REGS      regs;
+        struct SREGS    segregs;
         PHARLAP_block   pblock;
-        unsigned short  real_seg;
+        unsigned short  real_segm;
 
         /*** Alloc DOS Memory under Phar Lap ***/
-        memset( &r, 0, sizeof( r ) );
-        memset( &sregs, 0, sizeof( sregs ) );
-        r.x.ebx = 1;
-        r.x.eax = 0x25c0;
-        intdosx( &r, &r, &sregs );
-        real_seg = r.w.ax;
+        memset( &regs, 0, sizeof( regs ) );
+        memset( &segregs, 0, sizeof( segregs ) );
+        regs.x.ebx = 1;
+        regs.x.eax = 0x25c0;
+        intdosx( &regs, &regs, &segregs );
+        real_segm = regs.w.ax;
 
         memset( &pblock, 0, sizeof( pblock ) );
         pblock.real_eax = 0x6501;           /* get international info */
         pblock.real_edx = 0xFFFF;           /* current country */
-        pblock.real_es = real_seg;          /* buffer segment */
-        r.x.ebx = 0xFFFF;                   /* global code page */
-        r.x.ecx = 7;                        /* buffer size */
-        r.x.edi = 0;                        /* buffer offset */
+        pblock.real_es = real_segm;         /* buffer segment */
+        regs.x.ebx = 0xFFFF;                /* global code page */
+        regs.x.ecx = 7;                     /* buffer size */
+        regs.x.edi = 0;                     /* buffer offset */
         pblock.int_num = 0x21;              /* DOS call */
-        r.x.eax = 0x2511;                   /* issue real-mode interrupt */
-        r.x.edx = _FP_OFF( &pblock );       /* DS:EDX -> parameter block */
-        sregs.ds = _FP_SEG( &pblock );
-        intdosx( &r, &r, &sregs );
+        regs.x.eax = 0x2511;                /* issue real-mode interrupt */
+        regs.x.edx = _FP_OFF( &pblock );    /* DS:EDX -> parameter block */
+        segregs.ds = _FP_SEG( &pblock );
+        intdosx( &regs, &regs, &segregs );
         if( pblock.real_ds != 0xFFFF ) {    /* weird OS/2 value */
-            codepage = *(unsigned short __far *)EXTENDER_RM2PM( real_seg, 5 );
+            codepage = *(unsigned short __far *)EXTENDER_RM2PM( real_segm, 5 );
         }
 
         /*** Free DOS Memory under Phar Lap ***/
-        r.x.ecx = real_seg;
-        r.x.eax = 0x25c1;
-        intdosx( &r, &r, &sregs );
+        regs.x.ecx = real_segm;
+        regs.x.eax = 0x25c1;
+        intdosx( &regs, &regs, &segregs );
     } else if( _IsRational() ) {
         dpmi_dos_block      dos_block;
         rm_call_struct      dblock;

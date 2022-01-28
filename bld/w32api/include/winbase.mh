@@ -158,17 +158,30 @@
 #define SECURITY_SQOS_PRESENT       0x00100000L
 #define SECURITY_VALID_SQOS_FLAGS   0x001F0000L
 
+#if (_WIN32_WINNT >= 0x0600)
 /* Run once flags */
-#define INIT_ONCE_CHECK_ONLY    RTL_RUN_ONCE_CHECK_ONLY
-#define INIT_ONCE_ASYNC         RTL_RUN_ONCE_ASYNC
-#define INIT_ONCE_INIT_FAILED   RTL_RUN_ONCE_INIT_FAILED
+#define INIT_ONCE_CHECK_ONLY        RTL_RUN_ONCE_CHECK_ONLY
+#define INIT_ONCE_ASYNC             RTL_RUN_ONCE_ASYNC
+#define INIT_ONCE_INIT_FAILED       RTL_RUN_ONCE_INIT_FAILED
+
+/* Run once Static initializer */
+#define INIT_ONCE_STATIC_INIT       RTL_RUN_ONCE_INIT
+
+#define INIT_ONCE_CTX_RESERVED_BITS RTL_RUN_ONCE_CTX_RESERVED_BITS
+#endif
 
 /* RaiseFailFastException() flags */
 #define FAIL_FAST_GENERATE_EXCEPTION_ADDRESS    0x00000001L
 #define FAIL_FAST_NO_HARD_ERROR_DLG             0x00000002L
 
+/* Slim reader/writer Static initializer */
+#define SRWLOCK_INIT                RTL_SRWLOCK_INIT
+
 /* Condition variable flags */
 #define CONDITION_VARIABLE_LOCKMODE_SHARED  RTL_CONDITION_VARIABLE_LOCKMODE_SHARED
+
+/* Condition variable Static initializer */
+#define CONDITION_VARIABLE_INIT     RTL_CONDITION_VARIABLE_INIT
 
 /* Mutex access rights */
 #define MUTEX_MODIFY_STATE  MUTANT_QUERY_STATE

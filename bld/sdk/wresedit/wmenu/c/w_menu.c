@@ -40,9 +40,10 @@
 #include "wresall.h"
 #include "wmsg.h"
 #include "ldstr.h"
-#include "rcstr.gh"
+#include "sysall.rh"
 #include "wrdll.h"
 #include "w_menu.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */

@@ -15,6 +15,8 @@ all_vxd = wdebug.386 wemu387.386
 all_dll = w386dll.ext
 all_exe = win386.ext
 
+additional_clean = $(all_$(fmt))
+
 all : $(all_$(fmt))
 
 objs_common = &
@@ -26,7 +28,6 @@ objs_common = &
     windpmi.obj &
     call16.obj &
     clib.obj &
-    fints.obj &
     windata.obj &
     winstubs.obj &
     dllpatch.obj &
@@ -59,12 +60,13 @@ inc_dirs = -I"../h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/_dos/h" -I"$(clib_dir)/
 extra_cpp_flags_wininit  = -DDLL32
 extra_cpp_flags_libmain  = -DDLL32
 extra_cpp_flags_windpmi  = -DDLL32
-extra_cpp_flags_clib     = -DDLL32
-extra_cpp_flags_fints    = -DDLL32
+extra_cpp_flags_clib     = -DDLL32 -DWIN386
 extra_cpp_flags_windata  = -DDLL32
 extra_cpp_flags_winstubs = -DDLL32
 extra_cpp_flags_bitmap   = -DDLL32
 extra_cpp_flags_toolhelp = -DDLL32
+!else
+extra_cpp_flags_clib     = -DWIN386
 !endif
 
 extra_c_flags_i86 = -3
@@ -73,7 +75,6 @@ extra_c_flags_wininit  = -zu
 extra_c_flags_libmain  = -zu
 extra_c_flags_windpmi  = -zu
 extra_c_flags_clib     = -zu
-extra_c_flags_fints    = -zu
 extra_c_flags_windata  = -zu
 extra_c_flags_winstubs = -zu
 extra_c_flags_bitmap   = -zu

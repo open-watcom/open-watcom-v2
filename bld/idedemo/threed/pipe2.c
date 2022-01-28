@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -986,7 +987,7 @@ static void split_marked_object( rend_list *list, rend_obj *obj1, rend_obj *obj2
         // criterion this case is considered a fatal error.
         WPI_INST                inst;
         inst = inst;
-#ifdef PLAT_OS2
+#ifdef __OS2__
         _wpi_setanchorblock( HWND_DESKTOP, inst );
 #endif
         _wpi_fatalappexit( inst, 0, "Internal wcgr error." );

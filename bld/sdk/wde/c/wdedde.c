@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 #include "wclbdde.h"
 #include "wrdll.h"
 #include "wdemsgbx.h"
-#include "rcstr.gh"
+#include "rcstr.grh"
 #include "wderes.h"
 #include "wdefdiag.h"
 #include "wdei2mem.h"
@@ -45,6 +45,7 @@
 #include "wdemain.h"
 #include "wderesin.h"
 #include "wdedde.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */

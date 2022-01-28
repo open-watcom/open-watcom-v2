@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@ extern char *MakeObjOutputName( const char *src, const char *new );
 extern char *MakeListName( void );
 extern char *MakeFName( const char *a );
 extern char *MakeBakName( void );
-extern bool IsSameFName( const char *a, const char *b );
+extern bool IsSameFNameCase( const char *a, const char *b );
 extern int  SymbolNameCmp( const char *s1, const char *s2);
 extern bool IsExt( const char *a, const char *b );
 extern void NewArchHeader( arch_header *arch, char *name );
@@ -45,6 +46,6 @@ extern void TrimPathInPlace( char * );
 extern bool IsSameFile( const char *a, const char *b );
 extern char *FormSym( const char * );
 extern char *WlibGetEnv( const char *name );
-extern int  Banner( void );
+extern void Banner( void );
 extern char *LibFormat( void );
 extern char *MakeTmpName( char *buffer );

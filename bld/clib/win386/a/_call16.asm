@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -35,23 +36,15 @@
 ;***    DWORD _Call16( FARPROC lpFunc, char *fmt, ... );                  ***
 ;***                                                                      ***
 ;****************************************************************************
-.386p
 
         extrn   _LocalPtr       : word
         extrn   __Call16Addr    : fword
 
-_DATA   segment use32 word public 'DATA'
-_DATA   ends
-DGROUP  group   _DATA
-
 _TEXT   segment use32 word public 'CODE'
-        assume  cs:_TEXT,ds:DGROUP
+        assume  cs:_TEXT
 
-        public  _Call16
-        public  _Call16_
-
-_Call16_ proc   near
-_Call16:
+        public  "C",_Call16
+_Call16 proc   near
         push    ebp                     ; save registers
         push    edi                     ; ...
         push    esi                     ; ...
@@ -68,7 +61,7 @@ _Call16:
         pop     edi                     ; ...
         pop     ebp                     ; ...
         ret                             ; return
-_Call16_ endp
+_Call16 endp
 
 _TEXT   ends
         end

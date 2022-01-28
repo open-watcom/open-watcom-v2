@@ -54,7 +54,6 @@
 #include "wmen2rc.h"
 #include "wsetedit.h"
 #include "wmain.h"
-#include "rcstr.gh"
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "wrdll.h"

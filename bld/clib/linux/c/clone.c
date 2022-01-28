@@ -73,7 +73,7 @@ static void __callfn( int (*__fn)(void *), void *args, void *tls )
     // never return
 }
 
-_WCRTLINK pid_t clone( int (*__fn)(void *), void *__child_stack, int __flags, void *args, ... )
+_WCRTLINK pid_t clone( int (*__fn)(void *), void *__child_stack, int __flags, void *arg, ... )
 {
     syscall_res res;
 
@@ -84,7 +84,7 @@ _WCRTLINK pid_t clone( int (*__fn)(void *), void *__child_stack, int __flags, vo
 
     /* The number of optional args expected */
     int n;
-    va_list args1;
+    va_list args;
 
     ppid = NULL;
     ctid = NULL;
@@ -102,21 +102,21 @@ _WCRTLINK pid_t clone( int (*__fn)(void *), void *__child_stack, int __flags, vo
         n = 1;
 
     /* Process optional arguments, if any */
-    va_start(args1, args);
+    va_start(args, arg);
     if(n > 0)
-        ppid = va_arg(args1, pid_t *);
+        ppid = va_arg(args, pid_t *);
     if(n > 1)
-        tls = va_arg(args1, struct user_desc *);
+        tls = va_arg(args, struct user_desc *);
     if(n > 2)
-        ctid = va_arg(args1, pid_t *);
-    va_end(args1);
+        ctid = va_arg(args, pid_t *);
+    va_end(args);
 
     /* Store what we need in our stack space.  Once clone occurs, our
      * stack should be positioned just beyond these three arguments.
      */
     __child_stack = STACK_PTR( __child_stack, -3 );
     *STACK_PTR( __child_stack, 0 ) = __fn;
-    *STACK_PTR( __child_stack, 1 ) = args;
+    *STACK_PTR( __child_stack, 1 ) = arg;
     *STACK_PTR( __child_stack, 2 ) = tls;
 
     /* Call the actual clone operation */

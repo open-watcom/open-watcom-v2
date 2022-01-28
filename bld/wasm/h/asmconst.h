@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +31,9 @@
 
 
 #ifdef _M_I86
-#define ASMFAR __far
+#define ASMI86FAR   __far
 #else
-#define ASMFAR
+#define ASMI86FAR
 #endif
 
 #define RC_ERROR                true

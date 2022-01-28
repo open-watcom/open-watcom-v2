@@ -71,7 +71,7 @@ void GetProg( const char *cmd, size_t len )
 #ifdef __NETWARE__
     if( pg1.ext[0] == '\0' )
         pg1.ext = "nlm";
-#elif defined( __DOS__ ) && defined( _PLS )
+#elif defined( __DOS__ ) && defined( __PHARLAP__ )
     if( pg1.ext[0] == '\0' )
         pg1.ext = "exp";
 #elif !defined( __UNIX__ )

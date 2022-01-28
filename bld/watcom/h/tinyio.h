@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -288,25 +288,54 @@ typedef union {
  * call_struct definition for DPMI SimulateRealInt
  */
 typedef struct {
-    uint_32     edi;
-    uint_32     esi;
-    uint_32     ebp;
+    union {
+        uint_32 edi;
+        uint_16 di;
+    };
+    union {
+        uint_32 esi;
+        uint_16 si;
+    };
+    union {
+        uint_32 ebp;
+        uint_16 bp;
+    };
     uint_32     reserved;
     union {
         uint_32 ebx;
         uint_16 bx;
+        uint_8  bl;
+        struct {
+            uint_8  :8;
+            uint_8  bh;
+        };
     };
     union {
         uint_32 edx;
         uint_16 dx;
+        uint_8  dl;
+        struct {
+            uint_8  :8;
+            uint_8  dh;
+        };
     };
     union {
         uint_32 ecx;
         uint_16 cx;
+        uint_8  cl;
+        struct {
+            uint_8  :8;
+            uint_8  ch;
+        };
     };
     union {
         uint_32 eax;
         uint_16 ax;
+        uint_8  al;
+        struct {
+            uint_8  :8;
+            uint_8  ah;
+        };
     };
     uint_16     flags;
     uint_16     es;
@@ -318,6 +347,35 @@ typedef struct {
     uint_16     sp;
     uint_16     ss;
 } call_struct;
+
+/*
+ * rmi_struct definition for Pharlap SimulateRealInt
+ */
+typedef struct {
+    uint_16 inum;       /* Interrupt number */
+    uint_16 ds;         /* DS register */
+    uint_16 es;         /* ES register */
+    uint_16 fs;         /* FS register */
+    uint_16 gs;         /* GS register */
+    union {             /* EAX register */
+        uint_32 eax;
+        uint_16 ax;
+        uint_8  al;
+        struct {
+            uint_8  :8;
+            uint_8  ah;
+        };
+    };
+    union {             /* EDX register */
+        uint_32 edx;
+        uint_16 dx;
+        uint_8  dl;
+        struct {
+            uint_8  :8;
+            uint_8  dh;
+        };
+    };
+} rmi_struct;
 
 /* Definitions for manipulating protected mode descriptors ... used
  * with TinyDPMIGetDescriptor, TinyDPMISetDescriptor, TinyDPMISetRights, etc.

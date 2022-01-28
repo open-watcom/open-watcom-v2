@@ -80,29 +80,17 @@ static char     CmdBuff[2*128];
     unsigned char   _real87 = 0;
 #endif
 
-static void printfMsg( unsigned msg, ... )
-{
-    va_list     args;
-    char        buff[ERR_BUFF_SIZE];
-
-    va_start( args, msg );
-    vsprintf( buff, GetMsg( msg ), args );
-    va_end( args );
-    TOutNL( buff );
-}
-
 void    ShowUsage( void ) {
 //===================
 
     unsigned    msg;
+    const char  *str;
 
     TOutBanner();
     TOutNL( "" );
-    msg = MSG_USAGE_BASE + 1;
-    printfMsg( msg++, WFC_NAME );
-    TOutNL( "" );
-    while( msg < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
-        printfMsg( msg++ );
+    for( msg = MSG_USAGE_BASE; msg < MSG_USAGE_BASE + MSG_USAGE_COUNT; msg++ ) {
+        str = GetMsg( msg );
+        TOutNL( str );
     }
 }
 

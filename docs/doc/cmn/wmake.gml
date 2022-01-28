@@ -4173,6 +4173,7 @@ LINK    = wlink  $(LFLAGS)
 !  loaddll wpp386   wppd386
 !  loaddll wlink    wlinkd
 !  loaddll wlib     wlibd
+!  loaddll wrc      wrcd
 !endif
 
 &sysper.c.obj:

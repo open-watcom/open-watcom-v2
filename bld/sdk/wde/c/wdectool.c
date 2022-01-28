@@ -44,7 +44,6 @@
 #include "wdedebug.h"
 #include "wdetoolb.h"
 #include "wdemsgbx.h"
-#include "rcstr.gh"
 #include "wdecust.h"
 #include "wdefordr.h"
 #include "wdecctl.h"

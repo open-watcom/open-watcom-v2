@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -75,13 +76,14 @@ assume cs:_TEXT
 ;***                                                                      ***
 ;***            0 -> send          Stack                                  ***
 ;***            send+1 -> cend     Code                                   ***
-;***            cend+1 -> ì        Data                                   ***
+;***            cend+1 -> âˆž        Data                                   ***
 ;***                                                                      ***
 ;****************************************************************************
 assume ds:DGROUP
 assume ss:DGROUP
 assume es:nothing
-public InvokeWin32
+
+public "C",InvokeWin32
 InvokeWin32 proc near
         push    bp                      ; save bp
         mov     bp,sp                   ; point to stack

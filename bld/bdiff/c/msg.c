@@ -62,12 +62,12 @@ bool MsgInit( void )
     hInstance.status = 0;
     if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
         MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( GetMsg( msgbuf, MSG_USAGE_FIRST ) ) {
+        if( GetMsg( msgbuf, MSG_USAGE_BASE ) ) {
             return( true );
         }
     }
     CloseResFile( &hInstance );
-    printf( NO_RES_MESSAGE );
+    puts( NO_RES_MESSAGE );
     return( false );
 }
 
@@ -130,7 +130,7 @@ void PatchError( int format, ... )
 
     va_start( args, format );
     Err( format, args );
-    printf( "\n" );
+    puts( "" );
     va_end( args );
     MsgFini();
     exit( EXIT_FAILURE );

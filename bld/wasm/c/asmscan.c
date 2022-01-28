@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -360,7 +360,7 @@ static bool get_id( token_idx idx, const char **input, char **output )
 /* get_id could change buf_index, if a COMMENT directive is found */
 {
     char            cur_char;
-    const asm_ins   ASMFAR *ins;
+    const asm_ins   ASMI86FAR *ins;
 
     AsmBuffer[idx].string_ptr = *output;
     if( **input != '\\' ) {

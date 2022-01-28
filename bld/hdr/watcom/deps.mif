@@ -335,10 +335,11 @@ h/sys/ioctl.h     : $(mh_dir)/linux/sys/ioctl.mh $(owhdr) $(cplus) $(packlnxk) .
 h/sys/mman.h      : $(mh_dir)/linux/sys/mman.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
 h/sys/mount.h     : $(mh_dir)/linux/sys/mount.mh $(owhdr) $(cplus) $(packlnxk)
 h/sys/ptrace.h    : $(mh_dir)/linux/sys/ptrace.mh $(owhdr) $(cplus) $(packlnxk)
-h/sys/resource.h  : $(mh_dir)/linux/sys/resource.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/resource.h  : $(mh_dir)/linux/sys/resource.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp
 h/sys/sendfile.h  : $(mh_dir)/linux/sys/sendfile.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
 h/sys/stat.h      : $(mh_dir)/sys/stat.mh $(sys_stat_deps)
-h/sys/sysinfo.h   : $(mh_dir)/linux/sys/sysinfo.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/sysinfo.h   : $(mh_dir)/linux/sys/sysinfo.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp
+h/sys/sysmacro.h  : $(mh_dir)/linux/sys/sysmacro.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp
 h/sys/sysmips.h   : $(mh_dir)/linux/sys/sysmips.mh $(owhdr) $(cplus)
 h/sys/time.h      : $(mh_dir)/sys/time.mh $(sys_time_deps)
 h/sys/times.h     : $(mh_dir)/linux/sys/times.mh $(owhdr) $(cplus) $(packlnxk)
@@ -356,6 +357,7 @@ h/arch/i386/sys/ioctl.h    : $(mh_dir)/linux/arch/i386/sys/ioctl.mh $(crwatcnt_s
 h/arch/i386/sys/resource.h : $(mh_dir)/linux/arch/i386/sys/resource.mh $(crwatcnt_sp)
 h/arch/i386/sys/socket.h   : $(mh_dir)/linux/arch/i386/sys/socket.mh $(crwatcnt_sp)
 h/arch/i386/sys/stat.h     : $(mh_dir)/linux/arch/i386/sys/stat.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp
+h/arch/i386/sys/sysmacro.h : $(mh_dir)/linux/arch/i386/sys/sysmacro.mh $(crwatcnt_sp)
 h/arch/i386/sys/types.h    : $(mh_dir)/linux/arch/i386/sys/types.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp ../id_t.sp
 h/arch/mips/err_no.h       : $(mh_dir)/linux/arch/mips/err_no.mh $(crwatcnt_sp)
 h/arch/mips/fcntl.h        : $(mh_dir)/linux/arch/mips/fcntl.mh $(crwatcnt_sp) ../mode_t.sp
@@ -366,6 +368,7 @@ h/arch/mips/sys/ioctl.h    : $(mh_dir)/linux/arch/mips/sys/ioctl.mh $(crwatcnt_s
 h/arch/mips/sys/resource.h : $(mh_dir)/linux/arch/mips/sys/resource.mh $(crwatcnt_sp)
 h/arch/mips/sys/socket.h   : $(mh_dir)/linux/arch/mips/sys/socket.mh $(crwatcnt_sp)
 h/arch/mips/sys/stat.h     : $(mh_dir)/linux/arch/mips/sys/stat.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp
+h/arch/mips/sys/sysmacro.h : $(mh_dir)/linux/arch/mips/sys/sysmacro.mh $(crwatcnt_sp)
 h/arch/mips/sys/types.h    : $(mh_dir)/linux/arch/mips/sys/types.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp ../id_t.sp
 
 !else ifeq system qnx

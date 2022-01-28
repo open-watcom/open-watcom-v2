@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -141,8 +142,8 @@ RP_FS   equ     32
 RP_GS   equ     34
 RP_F    equ     36
 
-;void _DoINTR( unsigned char intnum, struct REGPACK *regs, unsigned char flags )
-;/************* EAX ***************** EBX ***************** EDX ***************/
+;void _DoINTR( unsigned char intno, struct REGPACK *regs, unsigned char flags )
+;/************ EAX **************** EBX ***************** EDX ****************/
 
         defp    _DoINTR_
         pushfd                          ; save CPU flags

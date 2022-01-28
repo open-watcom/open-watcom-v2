@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,10 @@
 
 
 #if defined( _M_IX86 )
-#if defined( _M_I86 )
 extern void _DoINTR( unsigned char intno, union REGPACK _WCI86FAR *regs, unsigned char flags );
+#if defined( _M_I86 )
 #pragma aux _DoINTR __parm [__ax] [__cx __bx] [__dx] __modify [__si __di __es]
 #else
-extern void _DoINTR( unsigned char intno, union REGPACK *regs, unsigned char flags );
 #pragma aux _DoINTR "*_" __parm [__eax] [__ebx] [__edx]
 #endif
 #endif

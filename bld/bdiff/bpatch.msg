@@ -1,33 +1,35 @@
+/* UTF-8 encoding, Â¥ */
+
 #if defined(BPATCH)     /* messages used by bpatch, bpatchp, bdump */
 pick( MSG_NOT_PATCHED,      "File '%s' has not been patched\n",
-                            "ƒtƒ@ƒCƒ‹ %s ‚ðƒpƒbƒ`‚µ‚Ä‚¢‚Ü‚¹‚ñ" )
+                            "ãƒ•ã‚¡ã‚¤ãƒ« %s ã‚’ãƒ‘ãƒƒãƒã—ã¦ã„ã¾ã›ã‚“" )
 pick( MSG_PATCHED_TO_LEVEL, "File '%1s' has been patched to level '%2s'\n",
-                            "ƒtƒ@ƒCƒ‹ '%1s' ‚ðƒŒƒxƒ‹ '%2s'‚Éƒpƒbƒ`‚µ‚Ü‚µ‚½" )
+                            "ãƒ•ã‚¡ã‚¤ãƒ« '%1s' ã‚’ãƒ¬ãƒ™ãƒ« '%2s'ã«ãƒ‘ãƒƒãƒã—ã¾ã—ãŸ" )
 pick( MSG_ALREADY_PATCHED,  "File '%1s' has already been patched to level '%2s' - skipping\n",
-                            "ƒtƒ@ƒCƒ‹ '%1s' ‚ÍŠù‚ÉƒŒƒxƒ‹ '%2s' ‚Éƒpƒbƒ`‚³‚ê‚Ä‚¢‚Ü‚·‚Ì‚Å”ò‚Î‚µ‚Ü‚·" )
+                            "ãƒ•ã‚¡ã‚¤ãƒ« '%1s' ã¯æ—¢ã«ãƒ¬ãƒ™ãƒ« '%2s' ã«ãƒ‘ãƒƒãƒã•ã‚Œã¦ã„ã¾ã™ã®ã§é£›ã°ã—ã¾ã™" )
 pick( MSG_MODIFY,           "\r\nOk to modify '%s'? [y|n]",
-                            "\r\n'%s' ‚ðC³‚µ‚Ü‚·‚©H [y|n]" )
+                            "\r\n'%s' ã‚’ä¿®æ­£ã—ã¾ã™ã‹ï¼Ÿ [y|n]" )
 pick( ERR_TWO_NAMES,        "Command line may only contain one file name",
-                            "ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Éƒtƒ@ƒCƒ‹–¼‚ð‚P‚Â‚¾‚¯Žw’è‚µ‚Ü‚·" )
+                            "ã‚³ãƒžãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã«ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ï¼‘ã¤ã ã‘æŒ‡å®šã—ã¾ã™" )
 pick( ERR_NO_NAME,          "Command line must specify a file name",
-                            "ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Éƒtƒ@ƒCƒ‹–¼‚ðŽw’è‚µ‚Ä‰º‚³‚¢" )
+                            "ã‚³ãƒžãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã«ãƒ•ã‚¡ã‚¤ãƒ«åã‚’æŒ‡å®šã—ã¦ä¸‹ã•ã„" )
 pick( ERR_WRONG_SIZE,       "'%1s' is the wrong size (%2lu) - should be (%3lu)",
-                            "'%1s' ‚ÌƒTƒCƒY (%2lu) ‚Í•s³‚Å‚· - ³‚µ‚¢ƒTƒCƒY‚Í (%3lu) ‚Å‚·" )
+                            "'%1s' ã®ã‚µã‚¤ã‚º (%2lu) ã¯ä¸æ­£ã§ã™ - æ­£ã—ã„ã‚µã‚¤ã‚ºã¯ (%3lu) ã§ã™" )
 pick( ERR_CANT_RENAME,      "Cannot rename '%1s' to '%2s'",
-                            "'%1s' ‚©‚ç '%2s' ‚Ö‚Ìƒtƒ@ƒCƒ‹–¼‚Ì•ÏX‚ªo—ˆ‚Ü‚¹‚ñ" )
+                            "'%1s' ã‹ã‚‰ '%2s' ã¸ã®ãƒ•ã‚¡ã‚¤ãƒ«åã®å¤‰æ›´ãŒå‡ºæ¥ã¾ã›ã‚“" )
 pick( ERR_PATCH_ABORTED,    "Patch program aborted!",
-                            "ƒpƒbƒ`EƒvƒƒOƒ‰ƒ€‚ªƒAƒ{[ƒg‚µ‚Ü‚µ‚½" )
+                            "ãƒ‘ãƒƒãƒãƒ»ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãŒã‚¢ãƒœãƒ¼ãƒˆã—ã¾ã—ãŸ" )
 pick( ERR_WRONG_CHECKSUM,   "Resulting file has wrong checksum (%1lu) - should be (%2lu)",
-                            "ƒpƒbƒ`Œã‚Ìƒ`ƒFƒbƒNƒTƒ€ (%1lu) ‚ª•s³‚Å‚· - ³‚µ‚¢’l‚Í (%2lu) ‚Å‚·" )
+                            "ãƒ‘ãƒƒãƒå¾Œã®ãƒã‚§ãƒƒã‚¯ã‚µãƒ  (%1lu) ãŒä¸æ­£ã§ã™ - æ­£ã—ã„å€¤ã¯ (%2lu) ã§ã™" )
 pick( MSG_SUCCESSFULLY_PATCHED,  "File '%1s' successfully patched to level '%2s'\n",
 /* TRANSLATE ME!!*/         "File '%1s' successfully patched to level '%2s'\n" )
 /* bpatchp only */
 pick( ERR_USE_REAL,         "Not enough memory -  Use real mode version",
-                            "ƒƒ‚ƒŠ‚ª‘«‚è‚Ü‚¹‚ñ - ƒŠƒAƒ‹ƒ‚[ƒh”Å‚ðŽg—p‚µ‚Ä‰º‚³‚¢" )
+                            "ãƒ¡ãƒ¢ãƒªãŒè¶³ã‚Šã¾ã›ã‚“ - ãƒªã‚¢ãƒ«ãƒ¢ãƒ¼ãƒ‰ç‰ˆã‚’ä½¿ç”¨ã—ã¦ä¸‹ã•ã„" )
 #endif
 
 pick( ERR_CANT_GET_ATTRIBUTES, "Can't get attributes for '%1s'",
-                               "%1s ‚Ì‘®«‚ª“¾‚ç‚ê‚Ü‚¹‚ñ" )
+                               "%1s ã®å±žæ€§ãŒå¾—ã‚‰ã‚Œã¾ã›ã‚“" )
 
 /*
         BDIFF is an internal WATCOM tool.
@@ -47,21 +49,21 @@ pick( ERR_PATCH_BUNGLED,   "Patch file bungled at %1lx ('%2x' != '%3x')", "" )
         These messages must be translated.
 */
 pick( ERR_NOT_PATCHFILE,    "'%s' is not a WATCOM patch file",
-                            "'%s' ‚Í‚v‚`‚s‚b‚n‚lƒpƒbƒ`ƒtƒ@ƒCƒ‹‚Å‚Í‚ ‚è‚Ü‚¹‚ñ" )
+                            "'%s' ã¯ï¼·ï¼¡ï¼´ï¼£ï¼¯ï¼­ãƒ‘ãƒƒãƒãƒ•ã‚¡ã‚¤ãƒ«ã§ã¯ã‚ã‚Šã¾ã›ã‚“" )
 pick( ERR_BAD_PATCHFILE,    "'%s' is not a valid WATCOM patch file",
-                            "'%s' ‚Í³‚µ‚¢‚v‚`‚s‚b‚n‚lƒpƒbƒ`ƒtƒ@ƒCƒ‹‚Å‚Í‚ ‚è‚Ü‚¹‚ñ" )
+                            "'%s' ã¯æ­£ã—ã„ï¼·ï¼¡ï¼´ï¼£ï¼¯ï¼­ãƒ‘ãƒƒãƒãƒ•ã‚¡ã‚¤ãƒ«ã§ã¯ã‚ã‚Šã¾ã›ã‚“" )
 pick( ERR_CANT_FIND,        "Cannot find '%s'",
-                            "'%s' ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ" )
+                            "'%s' ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“" )
 pick( ERR_CANT_OPEN,        "Cannot open '%s'",
-                            "'%s' ‚ðƒI[ƒvƒ“o—ˆ‚Ü‚¹‚ñ" )
+                            "'%s' ã‚’ã‚ªãƒ¼ãƒ—ãƒ³å‡ºæ¥ã¾ã›ã‚“" )
 pick( ERR_CANT_READ,        "Cannot read '%s'",
-                            "'%s' ‚ð“Ç‚Ýž‚ß‚Ü‚¹‚ñ" )
+                            "'%s' ã‚’èª­ã¿è¾¼ã‚ã¾ã›ã‚“" )
 pick( ERR_CANT_WRITE,       "Cannot write to '%s'",
-                            "'%s' ‚Ö‚Ì‘‚«ž‚Ý‚ªo—ˆ‚Ü‚¹‚ñ" )
+                            "'%s' ã¸ã®æ›¸ãè¾¼ã¿ãŒå‡ºæ¥ã¾ã›ã‚“" )
 pick( ERR_IO_ERROR,         "I/O error processing file '%s'",
-                            "'%s' ƒtƒ@ƒCƒ‹ˆ—’†‚É‚h^‚nƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½" )
+                            "'%s' ãƒ•ã‚¡ã‚¤ãƒ«å‡¦ç†ä¸­ã«ï¼©ï¼ï¼¯ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ" )
 pick( ERR_MEMORY_OUT,       "Out of memory",
-                            "ƒƒ‚ƒŠ•s‘«‚Å‚·" )
+                            "ãƒ¡ãƒ¢ãƒªä¸è¶³ã§ã™" )
 pick( ERR_NO_SYNCSTRING,    "Cannot locate Sync String",
                             "Cannot locate Sync String" )
 pick( ERR_CANT_DELETE,      "Cannot delete '%s'",
@@ -74,4 +76,4 @@ pick( ERR_CANT_CREATE_TMP,  "Cannot create temporary file",
 /* Error message prefix */
 
 pick( MSG_ERROR,            "Error! ",
-                            "ƒGƒ‰[I" )
+                            "ã‚¨ãƒ©ãƒ¼ï¼" )

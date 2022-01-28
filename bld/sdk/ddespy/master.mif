@@ -39,7 +39,7 @@ extra_l_flags_win = option stack=7k option heapsize=2k lib ddeml.lib, commdlg.li
 #
 # EXE
 #
-exetarg_prebuild_objs = rcstr.gh
+exetarg_prebuild_objs = rcstr.grh
 exetarg_objs          = dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj &
     ddetrack.obj ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj ddemem.obj
 exetarg_libs          = $(wpi_lib) $(commonui_lib)
@@ -73,7 +73,7 @@ ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
     $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
-rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
+rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 

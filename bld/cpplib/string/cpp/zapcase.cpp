@@ -74,7 +74,7 @@ String String::__ZapCase( __zapcase_t zapfn ) const
         src  = __srep->__value + __offset;
         dest = result.__srep->__value;
         for( len = __slength; len > 0; --len ) {
-            *dest = (char)((*zapfn)( *src ));
+            *dest = (char)((*zapfn)( __char_to_int( *src ) ));
             ++src;
             ++dest;
         }

@@ -2,6 +2,7 @@
 #===================================================================================================
 !inject alloc16.obj                                                         w32
 !inject alloch16.obj                                                        w32
+!inject _call16.obj                                                         w32
 !inject cb.obj                                                              w32
 !inject cdchclr.obj                                                         w32
 !inject cdchfnt.obj                                                         w32

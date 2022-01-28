@@ -23,3 +23,7 @@ this time specifying a larger stack size using the "STACK" option.
 .exam begin
 option stack=8192
 .exam end
+.begnote
+.note Note:
+This parameter is ignored for DLL (zero is used).
+.endnote

@@ -43,20 +43,20 @@
 
 _WCRTLINK int __F_NAME(execlpe,_wexeclpe)( const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
-    va_list         args1;
-    ARGS_TYPE_ARR   args;
+    va_list         args;
+    ARGS_TYPE_ARR   argv;
     ENVP_TYPE_ARR   env;
 
     /* unused parameters */ (void)arg0;
 
-    va_start( args1, path );
-    args = ARGS_ARRAY_VA( args1 );
+    va_start( args, path );
+    argv = ARGS_ARRAY_VA( args );
     /* scan until NULL in parm list */
-    while( ARGS_NEXT_VA( args1 ) != NULL )
+    while( ARGS_NEXT_VA( args ) != NULL )
         ;
     /* point to environ parm */
-    env = ENVP_ARRAY_VA( args1 );
-    va_end( args1 );
+    env = ENVP_ARRAY_VA( args );
+    va_end( args );
 
-    return( __F_NAME(execvpe,_wexecvpe)( path, args, env ) );
+    return( __F_NAME(execvpe,_wexecvpe)( path, argv, env ) );
 }

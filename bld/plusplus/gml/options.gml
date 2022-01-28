@@ -43,8 +43,6 @@
 :cmt.                                                   are chained together in usage
 :cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
 :cmt.                                                   are chained together in usage
-:cmt.   :page. <text>                               English text for paging usage message
-:cmt.   :jpage. <text>                              Japanese text for paging usage message
 :cmt.   :title. <text>                              English title usage text
 :cmt.   :jtitle. <text>                             Japanese title usage text
 :cmt.   :titleu. <text>                             English title usage text for QNX resource file
@@ -115,9 +113,6 @@
 :title.  .         ( '=' is always optional, i.e., -w4 -zp4 )
 :jtitle. .         ( '='は常に省略可能です。つまり -w4 -zp4 )
 :target. any
-
-:page.   (Press return to continue)
-:jusage. (続行するために何かキーを押して下さい)
 
 :chain. fh Precompiled Header Files (PCH)
 :jusage. プリコンパイル済みヘッダーファイル（PCH）

@@ -1,31 +1,32 @@
-[![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-CI?branchName=master&stageName=Last%20CI%20build) - CI Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=11&branchName=master)
-
-[![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Release?branchName=master&stageName=GitHub%20Release) - Release Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=14&branchName=master)
-
-[![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Coverity%20Scan?branchName=master) - Coverity Scan](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=16&branchName=master)
-
-[![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg)](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AWikiDocs)
- 
-[![Mirror](https://github.com/open-watcom/open-watcom-v2/workflows/Mirror/badge.svg)](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AMirror)
-
-Open Watcom v2 Fork
-===================
-
-Welcome to the Open Watcom v2 Project! 
+## Open Watcom v2 Fork
+|Project Build Status||Download|
+|---|---|---|
+|![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-CI?branchName=master&stageName=Last%20CI%20build)|CI Build|[Github Release](https://github.com/open-watcom/open-watcom-v2/releases/tag/Last-CI-build) , [Azure Pipelines Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=11&branchName=master)|
+|![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Release?branchName=master&stageName=GitHub%20Release)|Current Release Build|[Github Release](https://github.com/open-watcom/open-watcom-v2/releases/tag/Current-build) , [Azure Pipelines Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=14&branchName=master)|
+|![Build Status](https://dev.azure.com/open-watcom/open-watcom-v2/_apis/build/status/open-watcom-v2-Coverity%20Scan?branchName=master)|Coverity Scan|[Analysis Results](https://scan.coverity.com/projects/open-watcom-open-watcom-v2) , [Azure Pipelines Build](https://dev.azure.com/open-watcom/open-watcom-v2/_build/latest?definitionId=16&branchName=master)|
+||Releases Archive|[**All Github Releases**](https://github.com/open-watcom/open-watcom-v2/releases)
+###
+![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg)[](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AWikiDocs)
+![Mirror](https://github.com/open-watcom/open-watcom-v2/workflows/Mirror/badge.svg)[](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AMirror)
+###
+## Welcome to the Open Watcom v2 Project! 
 
 For more information about the project and build instructions see the GitHub wiki.
 
-Discuss the Project on Discord, Reddit or GitHub.
+Discuss the Project on GitHub, Reddit or Discord.
 ----------------------------------------------------------------------------
 
-We now have an Official Discord server!
-Join the discussion [`here`](https://discord.gg/5WexPNn)!
+GitHub, join the discussion [`Open Watcom on GitHub`](https://github.com/open-watcom/open-watcom-v2/discussions)
 
 Reddit Server, join the discussion [`Open Watcom on Reddit`](https://www.reddit.com/r/OpenWatcom/)
 
-GitHub, join the discussion [`Open Watcom on GitHub`](https://github.com/open-watcom/open-watcom-v2/issues)
+Discord Server for Open Watcom 2.0, use following [invite link](https://discord.gg/39w5wZM89p) to setup access to Open Watcom 2.0 Discord server.
 
-[`Oficial OpenWatcom site`](https://openwatcom.org) is down for long time, it looks like it is dead.
+This Discord Server is moderated by the Open Watcom 2.0 Github group to remove spam, unrelated discussions about personal opinions, etc. It is intended for user and developer assistance with Open Watcom 2.0. It is possible to ask about an older versions of Open Watcom, but it is primarily for Open Watcom V2.
+
+Other general Discord server for "Open Watcom" exists [invite link](https://discord.gg/5WexPNn). It is mainly for older versions of Open Watcom.
+
+[`Oficial OpenWatcom site`](http://openwatcom.org) only WEB site is up, all other services (bugzilla, Wiki, News server, Perforce) is down for long time, it looks like it is dead.
 
 Source Tree Layout
 ------------------

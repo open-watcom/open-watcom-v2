@@ -41,6 +41,7 @@ sub read_config
     my(@fields);
 
     $Common::config{'OWCVS'} = '';
+    $Common::config{'OWCVSARGS'} = '';
     $Common::config{'TOOLS'} = '';
     $Common::config{'RELROOT'} = '';
     $Common::config{'WIN95HC'} = '';
@@ -54,7 +55,7 @@ sub read_config
         chomp;
         s/#.*//;
         if (/^\s*$/) { next; }
-        @fields = split /=/;
+        @fields = split /=/, $_, 2;
         $Common::config{$fields[0]} = $fields[1];
     }
     close(CONFIG_FILE);

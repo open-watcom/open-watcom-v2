@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,8 +105,8 @@ typedef struct {
 } rgn_tag_def;
 
 typedef struct {
-    HBITMAP                 bmp;
-    WPI_POINT               pt;
+    WPI_HBITMAP         bmp;
+    WPI_POINT           pt;
 } rgn_marker_def;
 
 typedef struct {
@@ -114,8 +115,8 @@ typedef struct {
 } rgn_mark_def;
 
 typedef union {
-    unsigned short          offset;
-    WPI_POINT               pt;
+    unsigned short      offset;
+    WPI_POINT           pt;
 } rgn_set_list_def;
 
 typedef struct {

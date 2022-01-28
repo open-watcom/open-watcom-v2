@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -59,7 +60,7 @@ __x87id proc near
         fnstcw  word ptr [BP-2]         ; save control word
         mov     AX,[BP-2]               ; delay CPU to sync with FPU if present
         xor     AL,AL                   ; assume no coprocessor present
-        mov     AH,3                    ; upper byte is 03h if 
+        mov     AH,3                    ; upper byte is 03h if
         cmp     byte ptr [BP-1],AH      ;   coprocessor is present
         jnz     nox87                   ; exit if no coprocessor present
         ; now we can use FWAIT if necessary because FPU is present
@@ -74,7 +75,7 @@ __x87id proc near
         finit                           ; use default infinity mode
         fld1                            ; generate infinity by
         fldz                            ;   dividing 1 by 0
-        fdiv                            ; ...
+        fdivp   st(1),st                ; ...
         fld     st                      ; form negative infinity
         fchs                            ; ...
         fcompp                          ; compare +/- infinity

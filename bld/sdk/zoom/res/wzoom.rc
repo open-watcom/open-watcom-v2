@@ -2,8 +2,8 @@
 #include "config.rh"
 #include "wzoom.rh"
 #include "about.rh"
-#include "rcstr.gh"
-#include "uistr.gh"
+#include "rcstr.grh"
+#include "uistr.grh"
 #include "banner.h"
 
 #define FIRST_COPYRIGHT_YEAR 1994

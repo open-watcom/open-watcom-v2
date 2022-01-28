@@ -38,4 +38,4 @@
 #define MSG_RC_BASE         10
 #endif
 
-#include "msg.gh"
+#include "msg.grh"

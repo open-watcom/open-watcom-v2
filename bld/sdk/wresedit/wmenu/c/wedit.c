@@ -43,7 +43,6 @@
 #include "wprev.h"
 #include "wclip.h"
 #include "ldstr.h"
-#include "rcstr.gh"
 #include "wmsg.h"
 #include "sysall.rh"
 #include "jdlg.h"

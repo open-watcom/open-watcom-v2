@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,6 +195,6 @@ extern global_vars Globals;
 
 #endif
 
-extern const asm_ins    ASMFAR *get_instruction( char *string );
+extern const asm_ins    ASMI86FAR *get_instruction( char *string );
 
 #endif

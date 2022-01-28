@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +32,11 @@
 
 #include "bdiff.h"
 #ifdef __UNIX__
-#include <dirent.h>
+    #include <dirent.h>
 #else
-#include <direct.h>
+    #include <direct.h>
 #endif
+#include "diff.h"
 #include "wpatchio.h"
 #include "wpatch.h"
 #include "newfile.h"
@@ -51,66 +52,25 @@ struct {
     size_t  origTgtDirLen;
 } glob;
 
-int     cmpStrings( const void *, const void * );
-void    WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name );
-void    DirRecurse( const char *srcDir, const char *tgtDir );
-void    DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] );
-void    DirCmpFiles( const char *srcDir, char *srcFiles[], const char *tgtDir, char *tgtFiles[], int Dirflag );
+static region       *SimilarRegions;
+static region       *DiffRegions;
+static region       *HoleRegions;
+static foff         SimilarSize;
+static foff         NumDiffs;
+static foff         HolesInRegion;
+static foff         HoleCount[3];
+static foff         HoleHeaders;
 
+static int DirRecurse( const char *srcDir, const char *tgtDir );
 
-void main( int argc, char *argv[] )
+static int cmpStrings( const void *op1, const void *op2 )
 {
-    MsgInit();
-    if( argc != 4 ) {
-        printf( "Usage: wcpatch source-dir target-dir patchfile\n" );
-        printf( "    where source-dir is the directory containing the original files,\n" );
-        printf( "    target-dir is the directory containing the modified files,\n" );
-        printf( "    and patchfile is the path to store the resulting patchfile in.\n\n" );
-        exit( -2 );
-    } else {
-        printf( "Watcom Create Patch (WCPATCH) version 11.0\n" );
-        printf( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.\n");
-        printf( "All rights reserved.  Watcom is a trademark of Sybase, Inc.\n\n");
-    }
-
-    glob.origSrcDirLen = strlen( argv[1] );
-    glob.origTgtDirLen = strlen( argv[2] );
-    WPatchCreate( argv[1], argv[2], argv[3] );
-    MsgFini();
+    const char **p1 = (const char **) op1;
+    const char **p2 = (const char **) op2;
+    return( strcmp( *p1, *p2 ) );
 }
 
-void WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )
-{
-    PatchWriteOpen( patch_name );
-    DirRecurse( SrcDirName, TgtDirName );
-    PatchWriteClose();
-
-}
-
-void DirRecurse( const char *srcDir, const char *tgtDir )
-{
-    DIR     *srcdirp;
-    DIR     *tgtdirp;
-
-    char **srcFiles = bdiff_malloc( 1000 * sizeof( char * ) );
-    char **srcDirs = bdiff_malloc( 500 * sizeof( char * ) );
-    char **tgtFiles = bdiff_malloc( 1000 * sizeof( char * ) );
-    char **tgtDirs = bdiff_malloc( 500 * sizeof( char * ) );
-
-    srcdirp = opendir( srcDir );
-    tgtdirp = opendir( tgtDir );
-    if( srcdirp == NULL || tgtdirp == NULL ) {
-        perror( "" );
-    }
-    DirGetFiles( srcdirp, srcFiles, srcDirs );
-    DirGetFiles( tgtdirp, tgtFiles, tgtDirs );
-    closedir( srcdirp );
-    closedir( tgtdirp );
-    DirCmpFiles( srcDir, srcFiles, tgtDir, tgtFiles, 0 );
-    DirCmpFiles( srcDir, srcDirs,  tgtDir, tgtDirs,  1 );
-}
-
-void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
+static void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
 {
     struct dirent   *dire;
     int             file = 0;
@@ -143,14 +103,38 @@ void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
     qsort( Dirs, dir, sizeof( char * ), cmpStrings );
 }
 
-int cmpStrings( const void *op1, const void *op2 )
+void FindRegionsAlg( algorithm alg )
 {
-    const char **p1 = (const char **) op1;
-    const char **p2 = (const char **) op2;
-    return( strcmp( *p1, *p2 ) );
+    /* unused parameters */ (void)alg;
+
+    FindRegions();
 }
 
-static void FileCmp( const char *SrcPath, const char *TgtPath, const char *name )
+static int _DoBdiff( const char *srcPath, const char *tgtPath, const char *new_name )
+{
+    int         i;
+
+    /* initialize static variables each time */
+    SimilarRegions = NULL;
+    DiffRegions = NULL;
+    HoleRegions = NULL;
+    SimilarSize = 0;
+    NumHoles = 0;
+    NumDiffs = 0;
+    DiffSize = 0;
+    HolesInRegion = 0;
+    HoleHeaders = 0;
+    for( i = 0; i < 3; i += 1 ) {
+        HoleCount[i] = 0;
+    }
+
+    init_diff();
+
+    return( DoBdiff( srcPath, tgtPath, new_name, "", ALG_NOTHING ) );
+}
+
+
+static int FileCmp( const char *SrcPath, const char *TgtPath, const char *name )
 {
     FILE    *srcF;
     FILE    *tgtF;
@@ -173,8 +157,9 @@ static void FileCmp( const char *SrcPath, const char *TgtPath, const char *name 
     if( different ) {
         printf( "%s is different.  Patching...\n", name );
         PatchWriteFile( PATCH_FILE_PATCHED, &TgtPath[glob.origTgtDirLen + 1] );
-        DoBdiff( SrcPath, TgtPath, name );
+        return( _DoBdiff( SrcPath, TgtPath, name ) );
     }
+    return( 0 );
 }
 
 static void DirMarkDeleted( const char *Path )
@@ -237,7 +222,7 @@ compared, and a patch is made if they do not match.
 
 */
 
-void DirCmpFiles( const char *srcDir, char *srcFiles[],
+static int DirCmpFiles( const char *srcDir, char *srcFiles[],
                   const char *tgtDir, char *tgtFiles[], int Dirflag )
 {
     int     indexSrc = 0;
@@ -262,9 +247,13 @@ void DirCmpFiles( const char *srcDir, char *srcFiles[],
             strcat( FullTgtPath, "\\" );
             strcat( FullTgtPath, tgtFiles[indexTgt] );
             if( Dirflag == 1 ) {
-                DirRecurse( FullSrcPath, FullTgtPath );
+                if( DirRecurse( FullSrcPath, FullTgtPath ) ) {
+                    return( 1 );
+                }
             } else {
-                FileCmp( FullSrcPath, FullTgtPath, tgtFiles[indexTgt] );
+                if( FileCmp( FullSrcPath, FullTgtPath, tgtFiles[indexTgt] ) ) {
+                    return( 1 );
+                }
             }
             indexSrc += 1;
             indexTgt += 1;
@@ -290,4 +279,61 @@ void DirCmpFiles( const char *srcDir, char *srcFiles[],
             indexTgt += 1;
         }
     }
+    return( 0 );
+}
+
+static int DirRecurse( const char *srcDir, const char *tgtDir )
+{
+    DIR     *srcdirp;
+    DIR     *tgtdirp;
+
+    char **srcFiles = bdiff_malloc( 1000 * sizeof( char * ) );
+    char **srcDirs = bdiff_malloc( 500 * sizeof( char * ) );
+    char **tgtFiles = bdiff_malloc( 1000 * sizeof( char * ) );
+    char **tgtDirs = bdiff_malloc( 500 * sizeof( char * ) );
+
+    srcdirp = opendir( srcDir );
+    tgtdirp = opendir( tgtDir );
+    if( srcdirp == NULL || tgtdirp == NULL ) {
+        perror( "" );
+    }
+    DirGetFiles( srcdirp, srcFiles, srcDirs );
+    DirGetFiles( tgtdirp, tgtFiles, tgtDirs );
+    closedir( srcdirp );
+    closedir( tgtdirp );
+    if( DirCmpFiles( srcDir, srcFiles, tgtDir, tgtFiles, 0 ) )
+        return( 1 );
+    return( DirCmpFiles( srcDir, srcDirs,  tgtDir, tgtDirs,  1 ) );
+}
+
+static void WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )
+{
+    PatchWriteOpen( patch_name );
+    DirRecurse( SrcDirName, TgtDirName );
+    PatchWriteClose();
+}
+
+int main( int argc, char *argv[] )
+{
+    MsgInit();
+    if( argc != 4 ) {
+        puts( "Usage: wcpatch source-dir target-dir patchfile" );
+        puts( "where" );
+        puts( "    source-dir   the directory containing the original files" );
+        puts( "    target-dir   the directory containing the modified files" );
+        puts( "    patchfile    the path to store the resulting patchfile in" );
+        puts( "" );
+        exit( -2 );
+    } else {
+        puts( "Watcom Create Patch (WCPATCH) version 11.0" );
+        puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.");
+        puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc.");
+        puts( "" );
+    }
+
+    glob.origSrcDirLen = strlen( argv[1] );
+    glob.origTgtDirLen = strlen( argv[2] );
+    WPatchCreate( argv[1], argv[2], argv[3] );
+    MsgFini();
+    return( EXIT_SUCCESS );
 }

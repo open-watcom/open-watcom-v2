@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2020-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2020-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -259,11 +259,12 @@ static size_t utf8_to_enc( encoding enc, const char *src, char *dst )
 
 static void usage( void )
 {
-    printf( "Usage: sjisutf8 -[sjis|utf8] <input file> <output file>\n" );
-    printf( "    -to      convert utf-8 to selected encoding\n" );
-    printf( "    -from    convert selected encoding to utf-8\n" );
-    printf( "    -cp1252  use Latin-1 CP1252\n" );
-    printf( "    -cp932   use Shift-JIS CP932\n" );
+    puts( "Usage: cvtutf8 [options] <input file> <output file>" );
+    puts( "  options:" );
+    puts( "    -to      convert utf-8 to selected encoding" );
+    puts( "    -from    convert selected encoding to utf-8" );
+    puts( "    -cp1252  use Latin-1 CP1252" );
+    puts( "    -cp932   use Shift-JIS CP932" );
 }
 
 int main( int argc, char *argv[] )

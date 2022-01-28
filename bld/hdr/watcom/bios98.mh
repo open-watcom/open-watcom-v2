@@ -1,5 +1,5 @@
 /*
- *  bios98.h    NEC BIOS functions
+ *  bios98.h    BIOS functions (NEC PC-98)
  *
 :include crwat.sp
  */
@@ -97,10 +97,10 @@ struct  _nec98_diskinfo_t {     /* disk parameters */
 
 /*  parity initializers */
 
-#define _COM_NOPARITY   0       /* no parity */
-#define _COM_ODDPARITY  0x10    /* odd parity */
+#define _COM_NOPARITY   0               /* no parity */
+#define _COM_ODDPARITY  0x10            /* odd parity */
 #define _COM_ODD        _COM_ODDPARITY  /* odd parity */
-#define _COM_EVENPARITY 0x30    /* even parity */
+#define _COM_EVENPARITY 0x30            /* even parity */
 #define _COM_EVEN       _COM_EVENPARITY /* even parity */
 
 /*  baud rate initializers */
@@ -145,15 +145,15 @@ struct com_t {
 
 /* printer services */
 
-#define _PRINTER_WRITE        0x11      /* write character to printer */
 #define _PRINTER_INIT         0x10      /* initialize printer */
+#define _PRINTER_WRITE        0x11      /* write character to printer */
 #define _PRINTER_STATUS       0x12      /* get printer status */
 #define _PRINTER_WRITE_STRING 0x30      /* write string to printer */
 /* MS-C compatible */
-#define _PRN_INIT       _PRINTER_INIT   /* initialize printer */
-#define _PRN_WRITE      _PRINTER_WRITE  /* write character to printer */
-#define _PRN_STRING     0x30            /* write strings to printer */
-#define _PRN_STATUS     _PRINTER_STATUS /* get printer status */
+#define _PRN_INIT   _PRINTER_INIT           /* initialize printer */
+#define _PRN_WRITE  _PRINTER_WRITE          /* write character to printer */
+#define _PRN_STATUS _PRINTER_STATUS         /* get printer status */
+#define _PRN_STRING _PRINTER_WRITE_STRING   /* write strings to printer */
 
 /* time-of-day services */
 

@@ -46,8 +46,8 @@ WString
 0
 12
 WString
-61
-"$(watcom_dir)/lib;$(%relroot)/lib386/nt;$(%relroot)/lib386;"
+19
+"$(watcom_dir)/lib"
 0
 13
 MVState

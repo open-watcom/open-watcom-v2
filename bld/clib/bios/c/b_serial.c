@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,21 +25,19 @@
 *
 *  ========================================================================
 *
-* Description:  Machine type determination.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "mtype.h"
+#undef  __INLINE_FUNCTIONS__
+#include <bios.h>
+#include "clibxw32.h"
 
-_machine_type __MachineType( void )
+
+_WCRTLINK unsigned short _bios_serialcom( unsigned __cmd, unsigned __port, unsigned __data )
 {
-#if defined(__AXP__)
-    return( _MT_UNKNOWN_AXP );
-#elif defined(__PPC__)
-    return( _MT_UNKNOWN_PPC );
-#else
-    return( _MT_AT );
-#endif
+    return( _clib_bios_serialcom( __cmd, __port, __data ) );
 }

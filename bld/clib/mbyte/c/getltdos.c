@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #ifndef _M_I86
     #include "dpmi.h"
     #include "extender.h"
+    #include "realmod.h"
 #endif
 #include "getltdos.h"
 
@@ -104,17 +105,17 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
     if( _IsPharLap() ) {
         PHARLAP_block   pblock;
         union REGS      regs;
-        struct SREGS    sregs;
+        struct SREGS    segregs;
 
         memset( &pblock, 0, sizeof( pblock ) );
         memset( &regs, 0, sizeof( regs ) );
-        memset( &sregs, 0, sizeof( sregs ) );
+        memset( &segregs, 0, sizeof( segregs ) );
         pblock.real_eax.x = 0x6300;             /* get DBCS vector table */
         pblock.int_num = 0x21;                  /* DOS call */
         regs.x.eax = 0x2511;                    /* issue real-mode interrupt */
         regs.x.edx = _FP_OFF( &pblock );        /* DS:EDX -> parameter block */
-        sregs.ds = _FP_SEG( &pblock );
-        intdosx( &regs, &regs, &sregs );
+        segregs.ds = _FP_SEG( &pblock );
+        intdosx( &regs, &regs, &segregs );
         if( regs.x.cflag == 0 && pblock.real_eax.b.l == 0 ) {
             if( pblock.real_ds != 0xFFFF ) {    /* weird OS/2 value */
                 return( EXTENDER_RM2PM( pblock.real_ds, regs.w.si ) );

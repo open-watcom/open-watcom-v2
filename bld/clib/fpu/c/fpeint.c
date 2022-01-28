@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,9 @@
 
 #include "variety.h"
 #include "rtinit.h"
+#include "fpeint.h"
+#include "rtdata.h"
+
 
 /*
  * This file can be used to customize numeric coprocessor interrupt
@@ -106,14 +110,12 @@
  */
 
 
-_WCRTDATA extern unsigned char __FPE_int = 0;    /* Used for Rational Systems and Intel */
+unsigned char _WCNEAR __FPE_int = 0;    /* Used for Rational Systems and Intel */
 #if defined(__386__)
-_WCRTDATA extern unsigned char __IRQ_num = 0;    /* Used for PharLap DOS Extender */
-_WCRTDATA extern unsigned char __MST_pic = 0;    /* Master PIC port number */
-_WCRTDATA extern unsigned char __SLV_pic = 0;    /* Slave PIC port number */
+unsigned char _WCNEAR __IRQ_num = 0;    /* Used for PharLap DOS Extender */
+unsigned char _WCNEAR __MST_pic = 0;    /* Master PIC port number */
+unsigned char _WCNEAR __SLV_pic = 0;    /* Slave PIC port number */
 #endif
-
-
 
 /****
 ***** If this module is linked in, the startup code will call this function,
@@ -122,13 +124,21 @@ _WCRTDATA extern unsigned char __SLV_pic = 0;    /* Slave PIC port number */
 
 static void init_on_startup( void )
 {
-    __FPE_int = 0x02;           /* INT 0x02 */
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
+        __FPE_int = 0x10;           /* INT 0x10 */
 #ifdef __386__
-    __IRQ_num = 0x0D;           /* IRQ 13 */
-    __MST_pic = 0x20;           /* Master PIC port number */
-    __SLV_pic = 0xA0;           /* Slave PIC port number */
+        __IRQ_num = 0x08;           /* IRQ 8 */
+        __MST_pic = 0x00;           /* Master PIC port number */
+        __SLV_pic = 0x08;           /* Slave PIC port number */
 #endif
+    } else {            /* IBM PC */
+        __FPE_int = 0x02;           /* INT 0x02 */
+#ifdef __386__
+        __IRQ_num = 0x0D;           /* IRQ 13 */
+        __MST_pic = 0x20;           /* Master PIC port number */
+        __SLV_pic = 0xA0;           /* Slave PIC port number */
+#endif
+    }
 }
-
 
 AXI( init_on_startup, INIT_PRIORITY_FPU + 2 )

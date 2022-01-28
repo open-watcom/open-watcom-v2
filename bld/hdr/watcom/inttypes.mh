@@ -19,6 +19,10 @@
 
 :include readonly.sp
 
+#ifndef _STDINT_H_INCLUDED
+ #include <stdint.h>
+#endif
+
 :: In C++ .h header version import names into standard namespace
 #ifdef __cplusplus
 
@@ -45,12 +49,8 @@ using std::wcstoumax;
 #ifndef _CSTDINT_INCLUDED
  #include <cstdint>
 #endif
-:elsesegment
-#ifndef _STDINT_H_INCLUDED
- #include <stdint.h>
-#endif
-:endsegment
 
+:endsegment
 /* Format macros */
 
 :: According to C99 these are only visible in C++ programs

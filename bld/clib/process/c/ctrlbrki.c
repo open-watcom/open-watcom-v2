@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,23 +25,32 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Ctrl-Break interrupt handling support.
+*                   (DOS and Windows 3.x code)
 *
 ****************************************************************************/
 
 
-#ifndef _MTYPE_H_INCLUDED
-#define _MTYPE_H_INCLUDED
+#include "variety.h"
+#include "rtinit.h"
+#include "_ctrlc.h"
+#include "rtdata.h"
 
-typedef enum _machine_type {
-    _MT_UNKNOWN = 1,
-    _MT_AT = 2,
-    _MT_NEC98 = 3,
-    _MT_UNKNOWN_AXP = 4,
-    _MT_UNKNOWN_PPC = 5
-} _machine_type;
 
-extern _WCRTLINK _machine_type __MachineType( void );
+unsigned char    _WCNEAR __ctrl_break_int = 0;
 
-#endif
+/****
+***** If this module is linked in, the startup code will call this function,
+***** which will initialize some global variables.
+****/
+
+static void init_on_startup( void )
+{
+    if( _RWD_isPC98 ) { /* NEC PC-98 */
+        __ctrl_break_int = 0x06;    /* INT 0x06 */
+    } else {            /* IBM PC */
+        __ctrl_break_int = 0x1B;    /* INT 0x1B */
+    }
+}
+
+AXI( init_on_startup, INIT_PRIORITY_LIBRARY + 1 )

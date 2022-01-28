@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick( MSG_FILE_REC_NAME_0,      "file %s: " ,
                                 "ファイル %s: " )
 pick( MSG_FILE_REC_NAME_1,      "(%s): " ,

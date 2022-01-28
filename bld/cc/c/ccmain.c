@@ -131,7 +131,7 @@ static bool ParseCmdLine( char **cmdline )
     while( *cmd == ' ' )
         ++cmd;
     if( *cmd == '?' || *cmd == '\0' ) {
-        CCusage();
+        CUsage();
         return( false );
     }
     GenCOptions( cmdline );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +77,7 @@ typedef void (FUNC_FAR line_fn)( char __far *, grcolor, int, int, int, int );
 #pragma aux (LINE_FUNC) line_fn;
 
 #define OutByte( p )    *stack++ = p
-#define OutInt( p )     *(unsigned int COMP_FAR *)stack = p; p += sizeof( int )
+#define OutInt( p )     *(unsigned int COMP_FAR *)stack = p; stack += sizeof( int )
 
 void _L0DrawLine( char __far *screen_ptr, grcolor color, unsigned short style,
                   short bit_mask, short majordif, short minordif,

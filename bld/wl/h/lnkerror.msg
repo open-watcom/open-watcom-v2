@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick(    MSG_INTERNAL,          "** internal ** - %s"  ,
                     "**  内部  ** - %s" )
 pick(    MSG_LOADING_OBJECT,        "loading object files" ,
@@ -259,8 +261,8 @@ pick(    MSG_ADDR_INFO_TOO_LARGE,   "address information too large" ,
                     "アドレス情報が大きすぎます" )
 pick(    MSG_INV_SHARED_NLM_FILE,   "%s is an invalid shared NLM file" ,
                     "%s は無効な共有ＮＬＭファイルです" )
-pick(    MSG_CANT_OPEN_SPILL,       "cannot open temporary file: file already exists" ,
-                    "スピル・ファイルをオープンできません: 既に存在しています" )
+pick(    MSG_CANT_OPEN_SPILL,       "cannot open temporary file" ,
+                    "スピル・ファイルをオープンできません" )
 pick(    MSG_BAD_CURLY_LIST,        "curly brace delimited list incorrect" ,
                     "大括弧で閉じられたリストが不正確です" )
 pick(    MSG_NO_REALBREAK_WITH_16BIT,   "no realbreak specified for 16-bit code" ,
@@ -343,7 +345,9 @@ pick(    MSG_DEFDATA_TOO_BIG,       "default data segment exceeds maximum size b
                     "default data segment exceeds maximum size by %l bytes" )
 pick(    MSG_IOPL_BYTES_ODD,        "IOPL bytes in EXPORT directive odd, ignoring low bit" ,
                     "IOPL bytes in EXPORT directive odd, ignoring low bit" )
-pick(    MSG_FIXUP_MISSING_THREAD,      "Missing thread definition for type %d relocation for %A" ,
+pick(    MSG_FIXUP_MISSING_THREAD,  "Missing thread definition for type %d relocation for %A" ,
                     "Missing thread definition for type %d relocation for %A" )
-pick(    MSG_TRACE_SYM_NOT_FOUND,       "symbol %s not found for tracing" ,
+pick(    MSG_TRACE_SYM_NOT_FOUND,   "symbol %s not found for tracing" ,
                     "symbol %s not found for tracing" )
+pick(    MSG_TMP_ALREADY_EXISTS,    "cannot open temporary file: file already exists" ,
+                    "スピル・ファイルをオープンできません: 既に存在しています" )

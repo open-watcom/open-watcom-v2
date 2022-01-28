@@ -40,7 +40,7 @@
 #include "sysall.rh"
 #include "wribbon.h"
 #include "ldstr.h"
-#include "rcstr.gh"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */

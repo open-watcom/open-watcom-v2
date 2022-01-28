@@ -63,7 +63,7 @@ extra_l_flags_dll_win = op rwr, stack=16k export WEP RESIDENT &
 #
 # DLL
 #
-dlltarg_prebuild_objs = $(win_yacc_file).h rcmsg.gh wrmsg.gh
+dlltarg_prebuild_objs = $(win_yacc_file).h rcmsg.grh wrmsg.grh
 dlltarg_objs_cpp      = preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
 dlltarg_objs_rc = &
     pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
@@ -106,11 +106,11 @@ $(proj_name).res: ../res/wr.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(rc_flags) -zku0 -ad $(rc_inc_path) $[@ -fo=$@
 
-rcmsg.gh :  $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
+rcmsg.grh :  $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-wrmsg.gh: ../res/wr.msg $(__MAKEFILES__)
+wrmsg.grh: ../res/wr.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(awk) -v base=MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 

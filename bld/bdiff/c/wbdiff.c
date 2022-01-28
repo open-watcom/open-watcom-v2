@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include "msg.h"
 
 
-byte    *PatchFile;
+byte    *PatchBuffer;
 byte    *OldFile;
 byte    *NewFile;
 
@@ -52,40 +53,12 @@ int     OldCorrection;
 int     NewCorrection;
 
 static const char   *SyncString = NULL;
-static region       *SimilarRegions;
-static region       *DiffRegions;
-static region       *HoleRegions;
-static foff         SimilarSize;
-static foff         NumDiffs;
-static foff         HolesInRegion;
-static foff         HoleCount[3];
-static foff         HoleHeaders;
 
-static const char   *newName;
-
-int DoBdiff( const char *srcPath, const char *tgtPath, const char *name )
+int DoBdiff( const char *srcPath, const char *tgtPath, const char *new_name, const char *name, algorithm alg )
 {
     long        savings;
     foff        buffsize;
-    int         i;
-//    if( !MsgInit() ) exit( EXIT_FAILURE );
-    /* initialize static variables each time */
-    SimilarRegions = NULL;
-    DiffRegions = NULL;
-    HoleRegions = NULL;
-    SimilarSize = 0;
-    NumHoles = 0;
-    NumDiffs = 0;
-    DiffSize = 0;
-    HolesInRegion = 0;
-    HoleHeaders = 0;
-    for( i = 0; i < 3; i += 1 ) {
-        HoleCount[i] = 0;
-    }
 
-    init_diff();
-
-    newName = name;
     EndOld = FileSize( srcPath, &OldCorrection );
     EndNew = FileSize( tgtPath, &NewCorrection );
 
@@ -96,25 +69,21 @@ int DoBdiff( const char *srcPath, const char *tgtPath, const char *name )
 
     ScanSyncString( SyncString );
 
-    FindRegions();
+    FindRegionsAlg( alg );
 
     if( NumHoles == 0 && DiffSize == 0 && EndOld == EndNew ) {
-        printf( "Patch file not created - files are identical\n" );
-        MsgFini();
-        exit( EXIT_SUCCESS );
+        puts( "Patch file not created - files are identical" );
+        return( 1 );
     }
     MakeHoleArray();
     SortHoleArray();
     ProcessHoleArray( 0 );
     savings = HolesToDiffs();
-    WritePatchFile( "", newName );
+    WritePatchFile( name, new_name );
     FreeHoleArray();
     VerifyCorrect( tgtPath );
 
     print_stats( savings );
 
-    MsgFini();
-    return ( EXIT_SUCCESS );
+    return( 0 );
 }
-
-

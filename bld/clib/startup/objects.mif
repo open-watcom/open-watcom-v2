@@ -78,6 +78,7 @@
 !inject initerrn.obj                                                        q32
 !inject initwarg.obj                nt  nta ntp                     o32
 !inject ioexit.obj      d16 d32 dpm nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject ispc98.obj      d16 d32                                                 w16
 !inject itsto32.obj                                                 o32
 !inject kererr.obj                                                          q32
 !inject lgjmpaxp.obj                    nta
@@ -104,7 +105,6 @@
 !inject mainrdk.obj                                                                                     rdk
 !inject mainwnt.obj                 nt  nta ntp
 !inject mainrdu.obj                                                                                 rdu
-!inject mtype.obj       d16 d32     nt  nta ntp                 o16 o32         w16 w32             rdu rdk
 !inject nullargv.obj    d16 d32     nt  nta ntp nvc     nvl     o16 o32         w16 w32             rdu rdk
 !inject onexit.obj      d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject os2fil64.obj                                                o32

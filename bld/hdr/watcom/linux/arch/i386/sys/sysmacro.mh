@@ -1,0 +1,12 @@
+/*
+ *  arch/386/sys/sysmacros.h
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _SYSMACROS_DEV_T
+#define _SYSMACROS_DEV_T
+  #define major(__device)           ((int)(((__device) >> 8) & 0x0FFF))
+  #define minor(__device)           ((int)((__device) & 0x00FF))
+  #define makedev(__major,__minor)  ((dev_t)(((__major) << 8) | (__minor)))
+#endif

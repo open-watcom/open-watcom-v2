@@ -2,7 +2,7 @@
 :cmt *
 :cmt *                            Open Watcom Project
 :cmt *
-:cmt * Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+:cmt * Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 :cmt *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt *
 :cmt *  ========================================================================
@@ -25,7 +25,7 @@
 :cmt *
 :cmt *  ========================================================================
 :cmt *
-:cmt * Description:  C compiler diagnostic messages.
+:cmt * Description:  FORTRAN compile and link utility diagnostic messages.
 :cmt *
 :cmt *     UTF-8 encoding, ¥
 :cmt *

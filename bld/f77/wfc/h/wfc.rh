@@ -8,6 +8,6 @@
 #include "wfcmsgs.grh"
 
 #if _CPU == 8086 || _CPU == 386
-#include "wasmcmsg.gh"
+#include "wasmcmsg.grh"
 #endif
 

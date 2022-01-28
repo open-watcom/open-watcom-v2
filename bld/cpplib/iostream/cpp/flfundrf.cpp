@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,7 @@ namespace std {
                 return( EOF );
             }
             setg( eback(), gptr(), egptr() + len );
-            return( *gptr() );
+            return( __char_to_int( *gptr() ) );
         } else {
             ptr = base() + DEFAULT_PUTBACK_SIZE;
             setg( base(), ptr, ptr );
@@ -96,7 +97,7 @@ namespace std {
         len = 0;
     }
     setg( eback(), gptr(), egptr() + len );
-    return( gptr() < egptr() ? *gptr() : EOF );
+    return( gptr() < egptr() ? __char_to_int( *gptr() ) : EOF );
   }
 
 }

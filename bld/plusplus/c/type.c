@@ -3670,6 +3670,18 @@ static msg_status_t errWithSymLoc( MSG_NUM msg, SYMBOL sym )
     return( CErr1( msg ) );
 }
 
+static TYPE DeclTypedefModifierRemoveOnly( TYPE typ )
+/***************************************************/
+{
+#define MASK_DECL_REMOVE_ONLY \
+    ( 1 << TYP_ARRAY ) | \
+    ( 1 << TYP_MODIFIER ) | \
+    ( 1 << TYP_TYPEDEF )
+
+    TypeStrip( typ, MASK_DECL_REMOVE_ONLY );
+    return( typ );
+}
+
 DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
 /***************************************************************/
 {
@@ -4022,8 +4034,8 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
 
                 prev_sym = dspec->prev_sym;
                 if( prev_sym != NULL ) {
-                    TYPE typ1 = TypedefModifierRemoveOnly( prev_sym->sym_type );
-                    TYPE typ2 = TypedefModifierRemoveOnly( prev_type );
+                    TYPE typ1 = DeclTypedefModifierRemoveOnly( prev_sym->sym_type );
+                    TYPE typ2 = DeclTypedefModifierRemoveOnly( prev_type );
                     if( ! TypesIdentical( typ1, typ2 ) ) {
                         if( errWithSymLoc( WARN_DECL_NOT_SAME_TYPE, sym ) & MS_PRINTED ) {
                             CErr2p( INF_OTHER_DEFN, prev_sym );

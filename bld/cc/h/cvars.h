@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -557,7 +557,6 @@ extern void         ImportSegIdInit( void );
 /* cintmain.c */
 extern void         ConsErrMsg( cmsg_info  *info );
 extern void         ConsErrMsgVerbatim( char const  *line );
-extern void         ConsMsg( char const  *line );
 extern void         BannerMsg( char const  *line );
 extern void         DebugMsg( char const  *line );
 extern void         NoteMsg( char const  *line );
@@ -775,7 +774,7 @@ extern void         AddPtrTypeHash( TYPEPTR );
 extern void         AdjModsTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYMPTR sym );
 
 /* cusage */
-extern void         CCusage( void );
+extern void         CUsage( void );
 
 /* cutil */
 extern void         CErrSymName( int, SYMPTR,SYM_HANDLE );
@@ -806,7 +805,7 @@ extern void         BuildPreCompiledHeader( const char * );
 extern void         FreePreCompiledHeader( void );
 
 /* watcom */
-extern int          CBanner( void );
+extern void         CBanner( void );
 
 /* cstmt.c */
 extern SYM_HANDLE   GetBlockSymList( void );

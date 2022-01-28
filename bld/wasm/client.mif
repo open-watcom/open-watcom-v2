@@ -14,14 +14,14 @@ asminline_objs = &
     $(_subdir_)asmexpnd.obj &
     $(_subdir_)asmeval.obj
 asminline_lib =
-asminline_deps = asmops.gh asmopsd.gh wasmcmsg.gh
+asminline_deps = asmops.gh asmopsd.gh wasmcmsg.grh
 
 !ifeq proj_name wasm
 wasm_client_extra_files = $(wasm_dir)/fullops.tok
 wasm_client_extra_defines = -D_STANDALONE_
 !endif
 
-wasmcmsg.gh : $(wasm_dir)/h/wasmc.msg $(__MAKEFILES__) .EXPLICIT
+wasmcmsg.grh : $(wasm_dir)/h/wasmc.msg $(__MAKEFILES__) .EXPLICIT
     @%make echo_awk
     $(awk) -v base=MSG_SHARE_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 

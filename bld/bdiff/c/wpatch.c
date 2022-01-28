@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,31 +50,83 @@ struct {
     size_t origTgtDirLen;
 } glob;
 
-int     cmpStrings( const void *, const void * );
-void    WPatchApply( const char *patch_name, const char *TgtPath );
-void    DirDelete( char *tgtDir );
-void    DirDelFiles( char *tgtDir, char *tgtFiles[], int Dirflag );
-void    DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] );
+static void DirDelete( char *tgtDir );
 
-void main( int argc, char *argv[] )
+static void DirDelFiles( char *tgtDir, char *tgtFiles[], int Dirflag )
 {
-    MsgInit();
-    if( argc != 3 ) {
-        printf( "Usage: WPATCH patchfile target-dir\n" );
-        printf( "    where target-dir is the directory containing files to be modified,\n" );
-        printf( "    and patchfile contains patch information for modifying target-dir.\n" );
-        printf( "    (as created by WCPATCH)\n\n" );
-        exit( -2 );
-    } else {
-        printf( "Watcom Patch version 11.0\n" );
-        printf( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.\n");
-        printf( "All rights reserved.  Watcom is a trademark of Sybase, Inc.\n\n");
+    int     indexTgt;
+    char    FullTgtPath[PATCH_MAX_PATH_SIZE];
+
+    for( indexTgt = 0; tgtFiles[indexTgt] != NULL; ++indexTgt ){
+        strcpy( FullTgtPath, tgtDir );
+        strcat( FullTgtPath, "\\" );
+        strcat( FullTgtPath, tgtFiles[indexTgt] );
+        if( Dirflag == 1 ) {
+            DirDelete( FullTgtPath );
+        } else {
+            remove( FullTgtPath );
+        }
     }
-    WPatchApply( argv[1], argv[2] );
-    MsgFini();
 }
 
-void WPatchApply( const char *patch_name, const char *TgtPath )
+static int cmpStrings( const void *op1, const void *op2 )
+{
+    const char **p1 = (const char **) op1;
+    const char **p2 = (const char **) op2;
+    return( strcmp( *p1, *p2 ) );
+}
+
+static void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
+{
+    struct dirent   *dire;
+    int             file = 0;
+    int             dir  = 0;
+    char            *diritem;
+
+    for( ; (dire = readdir( dirp )) != NULL; ) {
+        if( SKIP_ENTRY( dire ) )
+            continue;
+        diritem = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
+        strcpy( diritem, dire->d_name );
+        if(( dire->d_attr & _A_SUBDIR ) == 0 ) {
+            /* must be a file */
+            Files[file++] = diritem;
+            if( file >= 1000 ) {
+                perror( "File limit in directory is 1000." );
+            }
+        } else {
+            /* must be a directory */
+            Dirs[dir++] = diritem;
+            if( dir >= 500 ) {
+                perror( "Subdirectory limit is 500." );
+            }
+        }
+    }
+    Files[file] = NULL;
+    Dirs[dir] = NULL;
+    qsort( Files, file, sizeof( char * ), cmpStrings );
+    qsort( Dirs, dir, sizeof( char * ), cmpStrings );
+}
+
+static void DirDelete( char *tgtDir )
+{
+    DIR     *tgtdirp;
+
+    char **tgtFiles = bdiff_malloc( 1000 * sizeof( char * ) );
+    char **tgtDirs = bdiff_malloc( 500 * sizeof( char * ) );
+
+    tgtdirp = opendir( tgtDir );
+    if( tgtdirp == NULL ) {
+        perror( "" );
+    }
+    DirGetFiles( tgtdirp, tgtFiles, tgtDirs );
+    closedir( tgtdirp );
+    DirDelFiles( tgtDir, tgtFiles, 0 );
+    DirDelFiles( tgtDir, tgtDirs,  1 );
+    remove( tgtDir );
+}
+
+static void WPatchApply( const char *patch_name, const char *TgtPath )
 {
     short   flag;
     char    RelPath[PATCH_MAX_PATH_SIZE];
@@ -114,76 +166,23 @@ void WPatchApply( const char *patch_name, const char *TgtPath )
     PatchReadClose();
 }
 
-void DirDelete( char *tgtDir )
+int main( int argc, char *argv[] )
 {
-    DIR     *tgtdirp;
-
-    char **tgtFiles = bdiff_malloc( 1000 * sizeof( char * ) );
-    char **tgtDirs = bdiff_malloc( 500 * sizeof( char * ) );
-
-    tgtdirp = opendir( tgtDir );
-    if( tgtdirp == NULL ) {
-        perror( "" );
+    MsgInit();
+    if( argc != 3 ) {
+        puts( "Usage: WPATCH patchfile target-dir" );
+        puts( "    where target-dir is the directory containing files to be modified" );
+        puts( "    and patchfile contains patch information for modifying target-dir" );
+        puts( "    (as created by WCPATCH)" );
+        puts( "" );
+        exit( -2 );
+    } else {
+        puts( "Watcom Patch version 11.0" );
+        puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries." );
+        puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc." );
+        puts( "" );
     }
-    DirGetFiles( tgtdirp, tgtFiles, tgtDirs );
-    closedir( tgtdirp );
-    DirDelFiles( tgtDir, tgtFiles, 0 );
-    DirDelFiles( tgtDir, tgtDirs,  1 );
-    remove( tgtDir );
-}
-
-void DirDelFiles( char *tgtDir, char *tgtFiles[], int Dirflag )
-{
-    int     indexTgt;
-    char    FullTgtPath[PATCH_MAX_PATH_SIZE];
-
-    for( indexTgt = 0; tgtFiles[indexTgt] != NULL; ++indexTgt ){
-        strcpy( FullTgtPath, tgtDir );
-        strcat( FullTgtPath, "\\" );
-        strcat( FullTgtPath, tgtFiles[indexTgt] );
-        if( Dirflag == 1 ) {
-            DirDelete( FullTgtPath );
-        } else {
-            remove( FullTgtPath );
-        }
-    }
-}
-
-void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
-{
-    struct dirent   *dire;
-    int             file = 0;
-    int             dir  = 0;
-    char            *diritem;
-
-    for( ; (dire = readdir( dirp )) != NULL; ) {
-        if( SKIP_ENTRY( dire ) )
-            continue;
-        diritem = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
-        strcpy( diritem, dire->d_name );
-        if(( dire->d_attr & _A_SUBDIR ) == 0 ) {
-            /* must be a file */
-            Files[file++] = diritem;
-            if( file >= 1000 ) {
-                perror( "File limit in directory is 1000." );
-            }
-        } else {
-            /* must be a directory */
-            Dirs[dir++] = diritem;
-            if( dir >= 500 ) {
-                perror( "Subdirectory limit is 500." );
-            }
-        }
-    }
-    Files[file] = NULL;
-    Dirs[dir] = NULL;
-    qsort( Files, file, sizeof( char * ), cmpStrings );
-    qsort( Dirs, dir, sizeof( char * ), cmpStrings );
-}
-
-int cmpStrings( const void *op1, const void *op2 )
-{
-    const char **p1 = (const char **) op1;
-    const char **p2 = (const char **) op2;
-    return( strcmp( *p1, *p2 ) );
+    WPatchApply( argv[1], argv[2] );
+    MsgFini();
+    return( EXIT_SUCCESS );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,8 +150,8 @@ int GetInsString( asm_token token, char *string )
 }
 #endif
 
-const asm_ins ASMFAR *get_instruction( char *string )
-/***************************************************/
+const asm_ins ASMI86FAR *get_instruction( char *string )
+/******************************************************/
 {
     asm_token   token;
 
@@ -2201,7 +2201,7 @@ static bool process_reg( expr_list *opndx, int *jmp_flags )
 {
     unsigned char       st_reg;
     unsigned char       reg;
-    const asm_ins       ASMFAR *ins;
+    const asm_ins       ASMI86FAR *ins;
 
     if( opndx->indirect )  // simple register indirect operand ... [EBX]
         return( process_address( opndx, jmp_flags ) );

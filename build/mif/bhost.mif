@@ -48,7 +48,7 @@ bld_clflags     = $(bld_gen_cflags) -fe=$@
 # options for linking
 bld_ldflags     =
 
-bld_libflags    = -b-n-pa $@
+bld_libflags    = -b-c-n-pa $@
 
 bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
 bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
@@ -59,6 +59,8 @@ cpp             = $(noecho)*wcpp $(bldver_cppflags)
 cwc             = bcwc
 edbind          = $(noecho)bedbind
 ide2make        = bide2mak
+msgencod        = $(noecho)*msgencod -q
+optencod        = $(noecho)*optencod -q
 re2c            = $(noecho)re2c
 sed             = $(noecho)sed
 wbind           = $(noecho)bwbind
@@ -135,6 +137,32 @@ echo_wsplice : .PROCEDURE .EXPLICIT
 echo_yacc : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo yacc $@
+!endif
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
+!endif
+
+echo_msgencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo msgencod $@
+!endif
+
+echo_re2c : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo re2c $@
+!endif
+
+echo_findhash : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo findhash $@
+!endif
+
+echo_aslink : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_as $^&.obj
+    @echo bld_link $^&.tmp
 !endif
 
 echo_execute : .PROCEDURE .EXPLICIT

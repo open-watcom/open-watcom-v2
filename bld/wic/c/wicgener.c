@@ -77,7 +77,7 @@ void initWicResources( char * fname )
         return;
     }
     CloseResFile( &hInstance );
-    printf( NO_RES_MESSAGE );
+    puts( NO_RES_MESSAGE );
     wicExit( -1 );
 }
 
@@ -143,7 +143,7 @@ void reportError(WicErrors err, ...)
     } else if( WITHIN_RANGE( err, FATAL_MIN, FATAL_MAX ) ) {
         errType = FATAL;
     } else {
-        printf("Internal error inside ReportError, exiting...\n");
+        puts("Internal error inside ReportError, exiting...");
         exit(1);
     }
     switch( g_opt.supressLevel ) {
@@ -179,7 +179,7 @@ void reportError(WicErrors err, ...)
     errStrLen += sprintf(errStr+errStrLen, "%s: ", errPrefix[errType]);
 
     if( !getResStr( err, resStr ) ) {
-        printf("Internal error inside ReportError, can't get resource, exiting...\n");
+        puts("Internal error inside ReportError, can't get resource, exiting...");
         exit(1);
     }
     va_start( args, err );
@@ -221,10 +221,10 @@ static void _printLine( void *parm, const char *buf, size_t len )
         debugOut( "%s\n", buf );
         NumMessages++;
         if( strstr( buf, "overrun" ) != NULL ) {
-            printf( "%s\n", buf );
+            puts( buf );
         }
     } else {
-        printf( "%s\n", buf );
+        puts( buf );
     }
 }
 
@@ -274,7 +274,7 @@ static void *BasicAlloc(size_t size)
         printf("Enter _debugVar (in hex): "); scanf("%x", &_debugVar);
     }
     if (temp == _debugVar) {
-        printf("temp = _debugVar!\n");
+        puts( "temp = _debugVar!" );
     }
 #endif
     return temp;
@@ -324,7 +324,7 @@ void zapMemory(void)
     _trmem_prt_list( TrHdl );
     _trmem_close( TrHdl );
     if( NumMessages > 1 ) {
-        printf( "Memory Problems detected!\n" );
+        puts( "Memory Problems detected!" );
     }
     check = FMEM_CHECK;
 #endif
@@ -361,7 +361,7 @@ void initMemory(void)
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
     if (TrHdl == NULL) {
-        printf("Memory initialization failed.\n");
+        puts( "Memory initialization failed." );
         exit(1);
     }
 #endif
@@ -400,10 +400,10 @@ void printUsageAndExit( void )
     }
 
     while( FingerMsg[j] )
-        printf( "%s\n", FingerMsg[j++] );
+        puts( FingerMsg[j++] );
 
     while( strcmp( resStr, "END" ) != 0 ) {
-        printf( "%s\n", resStr );
+        puts( resStr );
         ++i;
         if( !getResStr( i, resStr ) ) {
             reportError( FATAL_INTERNAL, "Can't get usage resource" );
@@ -569,7 +569,7 @@ void wicPrintMessage(char *s)
     if( len < 0 )
         len = 0;
     cprintf("%*s", len, "");
-    printf("\n");
+    puts( "" );
     lineLen = 0;
 }
 

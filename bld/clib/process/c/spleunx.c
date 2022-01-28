@@ -42,14 +42,14 @@
 
 _WCRTLINK int (spawnle)( int mode, const char *path, const char *arg, ... )
 {
-    va_list         args1;
+    va_list         args;
     ENVP_TYPE_ARR   env;
 
-    va_start( args1, path );
-    while( ARGS_NEXT_VA( args1 ) != NULL )
+    va_start( args, path );
+    while( ARGS_NEXT_VA( args ) != NULL )
         ;
-    env = ENVP_ARRAY_VA( args1 );
-    va_end( args1 );
+    env = ENVP_ARRAY_VA( args );
+    va_end( args );
 
     return( spawnve( mode, path, &arg, env ) );
 }

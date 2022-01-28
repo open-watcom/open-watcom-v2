@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,13 +39,13 @@
 
 static void Usage( void )
 {
-    printf( "Usage: bplevel <executable> <patch_file>\n" );
-    printf( "       Set the executable's patch level to that indicated\n" );
-    printf( "       by the patch file.\n" );
+    puts( "Usage: bplevel <executable> <patch_file>" );
+    puts( "       Set the executable's patch level to that indicated" );
+    puts( "       by the patch file." );
     exit( EXIT_FAILURE );
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     FILE            *fd;
     unsigned long   pos;
@@ -61,12 +61,12 @@ void main( int argc, char **argv )
     stat( argv[1], &info );
     fd = fopen( argv[1], "wb" );
     if( fd == NULL ) {
-        printf( "Can not open executable\n" );
-        exit( EXIT_FAILURE );
+        puts( "Can not open executable" );
+        return( EXIT_FAILURE );
     }
     if( fseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != 0  ) {
-        printf( "Error seeking on executable\n" );
-        exit( EXIT_FAILURE );
+        puts( "Error seeking on executable" );
+        return( EXIT_FAILURE );
     }
     pos = ftell( fd );
     if( fread( buffer, 1, sizeof( PATCH_LEVEL ), fd ) != sizeof( PATCH_LEVEL )
@@ -82,5 +82,5 @@ void main( int argc, char **argv )
     uinfo.modtime = info.st_mtime;
     utime( argv[1], &uinfo );
 
-    exit( EXIT_SUCCESS );
+    return( EXIT_SUCCESS );
 }

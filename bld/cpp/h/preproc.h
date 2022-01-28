@@ -40,18 +40,19 @@ typedef enum {
 } incl_type;
 
 typedef enum {
-    PPFLAG_NONE             = 0,
-    PPFLAG_PREPROCESSING    = 0x0001,
-    PPFLAG_EMIT_LINE        = 0x0002,
-    PPFLAG_SKIP_COMMENT     = 0x0004,
-    PPFLAG_KEEP_COMMENTS    = 0x0008,
-    PPFLAG_IGNORE_INCLUDE   = 0x0010,
-    PPFLAG_DEPENDENCIES     = 0x0020,
-    PPFLAG_ASM_COMMENT      = 0x0040,
-    PPFLAG_IGNORE_CWD       = 0x0080,
-    PPFLAG_IGNORE_DEFDIRS   = 0x0100,
-    PPFLAG_DONT_READ        = 0x0200,
-    PPFLAG_UNDEFINED_VAR    = 0x0400
+    PPFLAG_NONE                 = 0,
+    PPFLAG_PREPROCESSING        = 0x0001,
+    PPFLAG_EMIT_LINE            = 0x0002,
+    PPFLAG_SKIP_COMMENT         = 0x0004,
+    PPFLAG_KEEP_COMMENTS        = 0x0008,
+    PPFLAG_IGNORE_INCLUDE       = 0x0010,
+    PPFLAG_DEPENDENCIES         = 0x0020,
+    PPFLAG_ASM_COMMENT          = 0x0040,
+    PPFLAG_IGNORE_CWD           = 0x0080,
+    PPFLAG_IGNORE_DEFDIRS       = 0x0100,
+    PPFLAG_DONT_READ            = 0x0200,
+    PPFLAG_UNDEFINED_VAR        = 0x0400,
+    PPFLAG_TRUNCATE_FILE_NAME   = 0x0800
 } pp_flags;
 
 #define PP_SPECIAL_MACRO    255

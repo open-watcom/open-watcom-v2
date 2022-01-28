@@ -47,10 +47,10 @@ The following program would print out each line in a text file "test.txt" .
 .blkcode begin
 #include <stdio.h>
 
-void main()
+int main( void )
   {
-    char *line;
-    size_t n;
+    char *line = NULL;
+    size_t n = 0;
     FILE *fp;
 
     fp = fopen("test.txt", "r");
@@ -58,6 +58,7 @@ void main()
         printf("> %s", line);
     }
     fclose(fp);
+    return( 0 );
   }
 .blkcode end
 .exmp end

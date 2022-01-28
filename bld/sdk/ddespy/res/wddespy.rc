@@ -1,7 +1,7 @@
 #include <windows.h>
 #include "ddemenu.rh"
-#include "rcstr.gh"
-#include "uistr.gh"
+#include "rcstr.grh"
+#include "uistr.grh"
 #include "cbfilt.rh"
 #include "msgfilt.rh"
 #include "about.rh"

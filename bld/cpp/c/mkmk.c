@@ -65,7 +65,7 @@ int main( int argc, char *argv[] )
         exit( 1 );
     }
     PP_Init( ( argv[2] != NULL ) ? argv[2][0] : '#' );
-    if( PP_FileInit( argv[1], PPFLAG_DEPENDENCIES, NULL ) != 0 ) {
+    if( PP_FileInit( argv[1], PPFLAG_DEPENDENCIES | PPFLAG_TRUNCATE_FILE_NAME, NULL ) != 0 ) {
         PP_Fini();
         printf( "Unable to open '%s'\n", argv[1] );
         exit( 1 );

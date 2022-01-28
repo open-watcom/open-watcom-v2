@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -204,8 +205,8 @@ Int21Class db   _NONE           ; 00 - terminate process
 
 IOctlClass db   0,0,1,1,1,1,0,0,0,0,0,0,1,1,0,0
 
-        public  __Int21_
-__Int21_ proc   far
+        public  "C",__Int21
+__Int21 proc    far
         mov     _SaveSP,esp             ; save 32-bit stack pointer
         lss     sp,_EntryStackSave      ; switch to 16-bit stack
         push    bx                      ; save bx
@@ -469,7 +470,7 @@ esi_not_null:
         pop     ds                      ; restore ds
         jmp     done_int21              ; and exit
 
-__Int21_ endp
+__Int21 endp
 
 docopy  proc    near
         _loop                           ; loop

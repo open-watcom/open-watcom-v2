@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +32,12 @@
 
 #include "wmsg.rh"
 
-#define MSG_USE_E_BASE  (MSG_USAGE_LN_1 + RLE_ENGLISH * MSG_LANG_SPACING)
-#define MSG_USE_J_BASE  (MSG_USAGE_LN_1 + RLE_JAPANESE * MSG_LANG_SPACING)
+#define GET_MESSAGE(m)      MsgArray[(m) - MSG_RC_BASE]
 
-#define GET_MESSAGE(m)  MsgArray[(m) - ERR_FIRST_MESSAGE]
-
-extern char FAR_PTR     *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
+extern char FAR_PTR     *MsgArray[];
+#if defined( __DOS4G__ ) || defined( __PHARLAP__ )
+extern char FAR_PTR     *MsgExcArray[];
+#endif
 
 #ifdef __WINDOWS__
 extern bool     MsgInit( HINSTANCE inst );
@@ -45,4 +45,4 @@ extern bool     MsgInit( HINSTANCE inst );
 extern bool     MsgInit( void );
 #endif
 extern void     MsgFini( void );
-extern void     MsgPrintfUsage( int first_ln, int last_ln );
+extern void     Usage( void );

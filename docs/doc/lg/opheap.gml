@@ -23,3 +23,7 @@ which is the maximum size of a physical segment.
 Actually, for a particular application, the maximum value of
 .sy n
 is 64K or 4G less the size of group "DGROUP".
+.begnote
+.note Win32:
+This parameter is ignored for DLL (zero is used).
+.endnote

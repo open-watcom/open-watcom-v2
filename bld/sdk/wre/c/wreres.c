@@ -43,7 +43,6 @@
 #include "wrewait.h"
 #include "wremsg.h"
 #include "ldstr.h"
-#include "rcstr.gh"
 #include "wreselft.h"
 #include "wrenames.h"
 #include "wrectl3d.h"

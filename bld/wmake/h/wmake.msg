@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick( OUT_OF_MEMORY,            "Out of memory",
                                 "メモリが足りません" )
 pick( MAKE_ABORT,               "Make execution terminated",

@@ -60,7 +60,7 @@ extra_l_flags_win = op stack=32k,rwr library commdlg,ddeml
 #
 # EXE
 #
-exetarg_prebuild_objs = rcstr.gh
+exetarg_prebuild_objs = rcstr.grh
 exetarg_objs = &
     wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
     wregetfn.obj wrestrdp.obj wreselft.obj wreres.obj wrehints.obj &
@@ -101,6 +101,6 @@ rcstrmsg.gh : ../res/wre.msg $(__MAKEFILES__)
     @%make echo_cpp
     $(cpp) $(rc_ui_flags) -o$@ $[@
 
-rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
+rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@

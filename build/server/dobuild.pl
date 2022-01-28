@@ -494,16 +494,16 @@ sub get_datetime
 sub display_CVS_messages
 {
     my($message);
-    my($cvs_cmd) = $_[0];
+    my($cvs_pgm) = $_[0];
 
-    print REPORT $cvs_cmd, ' Messages';
+    print REPORT $cvs_pgm, ' Messages';
     print REPORT '-----------';
     print REPORT '';
 
     foreach $message (@CVS_messages) {
         print REPORT "$message";
     }
-    print REPORT $cvs_cmd, ' Messages end';
+    print REPORT $cvs_pgm, ' Messages end';
 }
 
 sub run_tests
@@ -608,11 +608,11 @@ sub run_docs_build
 
 sub CVS_sync
 {
-    my($cvs_cmd) = $_[0];
+    my($cvs_pgm) = $_[0];
+    my($cvs_args) = $_[1];
 
-    if ($cvs_cmd eq 'git') {
-#        system("git --git-dir=$OW/.git --work-tree=$OW checkout master");
-        open(SYNC, "git --git-dir=$OW/.git --work-tree=$OW pull --no-rebase --ff-only |");
+    if ($cvs_pgm =~ /git/) {
+        open(SYNC, "$cvs_pgm $cvs_args --git-dir=$OW/.git --work-tree=$OW pull --no-rebase --ff-only |");
         while (<SYNC>) {
             push(@CVS_messages, sprintf('%s', $_));
         }
@@ -620,8 +620,8 @@ sub CVS_sync
             print REPORT 'Git failed!';
             return 'fail';
         }
-    } elsif ($cvs_cmd eq 'p4') {
-        open(SYNC, 'p4 sync |');           # this does...
+    } elsif ($cvs_pgm =~ /p4/) {
+        open(SYNC, '$cvs_pgm $cvs_args sync |');           # this does...
         while (<SYNC>) {
             my @fields = split;
             my $loc = Common::remove_OWloc($fields[-1]);
@@ -641,10 +641,11 @@ sub CVS_sync
 
 sub CVS_check_sync
 {
-    my($cvs_cmd) = $_[0];
+    my($cvs_pgm) = $_[0];
+    my($cvs_args) = $_[1] . '';
 
-    if (CVS_sync($cvs_cmd) eq 'fail') {
-        display_CVS_messages($cvs_cmd);
+    if (CVS_sync($cvs_pgm, $cvs_args) eq 'fail') {
+        display_CVS_messages($cvs_pgm);
         return 'fail';
     }
     get_prev_changeno;
@@ -654,8 +655,8 @@ sub CVS_check_sync
     } else {
         $prev_changeno = '';
     }
-    if ($cvs_cmd eq 'git') {
-        open(LEVEL, "git --git-dir=$OW/.git rev-parse HEAD|");
+    if ($cvs_pgm =~ /git/) {
+        open(LEVEL, "$cvs_pgm $cvs_args --git-dir=$OW/.git rev-parse HEAD|");
         while (<LEVEL>) {
             if (/^(.*)/) {
                 if ($prev_changeno eq $1) {
@@ -668,8 +669,8 @@ sub CVS_check_sync
             }
         }
         close(LEVEL);
-    } elsif ($cvs_cmd eq 'p4') {
-        open(LEVEL, 'p4 counters|');
+    } elsif ($cvs_pgm =~ /p4/) {
+        open(LEVEL, '$cvs_pgm $cvs_args counters |');
         while (<LEVEL>) {
             if (/^change = (.*)/) {
                 if ($prev_changeno eq $1) {
@@ -727,7 +728,7 @@ make_installer_batch();
 ##########################################
 
 if (($Common::config{'OWCVS'} || '') ne '') {
-    $CVS_result = CVS_check_sync($Common::config{'OWCVS'});
+    $CVS_result = CVS_check_sync($Common::config{'OWCVS'}, $Common::config{'OWCVSARGS'});
 } else {
     $CVS_result = 'success';
 }

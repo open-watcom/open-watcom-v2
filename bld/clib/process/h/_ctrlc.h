@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,13 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Break ínterrupt Ctrl+C handling save/restore
+* Description:  Break interrupt Ctrl+C handling save/restore
 *
 ****************************************************************************/
 
+
+extern unsigned char    _WCNEAR __ctrl_break_int;
 
 #ifndef __WINDOWS_386__
 extern      void    __grab_int_ctrl_break( void );
 extern      void    __restore_int_ctrl_break( void );
 #endif
-

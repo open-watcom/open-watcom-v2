@@ -48,8 +48,8 @@
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
-#include "rcstr.gh"
-#include "uistr.gh"
+#include "rcstr.grh"
+#include "uistr.grh"
 #include "ldstr.h"
 #include "hint.h"
 #include "ddemenu.rh"

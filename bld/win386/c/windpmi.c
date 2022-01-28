@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +113,7 @@ WORD _DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt)
      * 32-bit segment).
      */
     if( cnt == 1 ) {
-        if( offset < StackBase_64K  &&  offset >= StackBase ) {
+        if( offset < StackBase_64K && offset >= StackBase ) {
             *res = (((DWORD)StackCacheSel) << 16) + offset - StackBase;
             return( 0 );
         }

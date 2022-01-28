@@ -33,14 +33,11 @@ owcc_specs = b$(owcc_specs)
 #
 # EXE
 #
-!ifndef target_cpu
-exetarg_prebuild_objs = usage.gh $(owcc_specs)
-!else
-exetarg_prebuild_objs = usage.gh
-!endif
 !ifdef target_cpu
+exetarg_prebuild_objs = usage.gh
 exetarg_objs          = clcommon.obj $(trmem_objs) wcl.obj
 !else
+exetarg_prebuild_objs = usage.gh $(owcc_specs)
 exetarg_objs          = clcommon.obj $(trmem_objs) owcc.obj getopt.obj quit.obj
 !endif
 exetarg_res_version_nt_386 = exever.res
@@ -63,25 +60,22 @@ $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
 !endif
 
 # optencod options and targets for various hosts
+!ifdef target_cpu
+optencod_src = ../../h/wclopts.gml
+optencod_opt = -n
+!else
+optencod_src = ../../h/owccopts.gml
+optencod_opt = -c
+!endif
 !ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u $(exetarg_qnx_res)
+optencod_opt_qnx = -u=$(exetarg_qnx_res)
 !endif
 #optencod_enc_linux  = -utf8
+optencod_targets = $(target_cpu) $(host_os)
 !ifeq release 0
-optencod_targ_dbg   = dbg
+optencod_targets += dbg
 !endif
 
-opt_targets = $(target_cpu) $(host_os) $(optencod_targ_dbg) $(optencod_targ_$(target_cpu))
-
-!ifdef target_cpu
-usage.gh $(exetarg_$(host_os)_res) : ../../h/wclopts.gml $(__MAKEFILES__)
-!else
-usage.gh $(exetarg_$(host_os)_res) : ../../h/owccopts.gml $(__MAKEFILES__)
-!endif
+usage.gh $(exetarg_$(host_os)_res) : $(optencod_src) $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)optencod -c -q $(optencod_opt_$(host_os)) $[@ . . $@ $(opt_targets)
-
-echo_optencod : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo optencod $@
-!endif
+    $(optencod) $(optencod_opt) $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)

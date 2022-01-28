@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,13 +85,15 @@ String table for sections
 static stringtable      SymStrTab;
 static ElfSymTable *    ElfSymTab;
 
+static int              NumPhdr = 0;    /* just for now untill dynamic objects supported */
+
 /* Put debugging info into section WITHIN the file instead of appending a
  * separate elf file at the end */
 
 #define INJECT_DEBUG ( SymFileName == NULL && (LinkFlags & LF_DWARF_DBI_FLAG) )
 
-static void InitSections( ElfHdr *hdr)
-/************************************/
+static void InitSections( ElfHdr *hdr )
+/*************************************/
 {
     unsigned    num;
     group_entry *group;
@@ -166,18 +168,20 @@ static void SetHeaders( ElfHdr *hdr )
     hdr->eh.e_ehsize = sizeof( Elf32_Ehdr );
     hdr->eh.e_phentsize = sizeof( Elf32_Phdr );
     hdr->eh.e_shentsize = sizeof( Elf32_Shdr );
-    hdr->eh.e_phnum = NumGroups + 1;
+    hdr->eh.e_phnum = NumGroups + NumPhdr;
     hdr->eh.e_phoff = sizeof( Elf32_Ehdr );
     hdr->ph_size = sizeof( Elf32_Phdr ) * hdr->eh.e_phnum;
     _ChkAlloc( hdr->ph, hdr->ph_size );
-    hdr->ph->p_type = PT_PHDR;
-    hdr->ph->p_offset = sizeof( Elf32_Ehdr );
-    hdr->ph->p_vaddr = sizeof( Elf32_Ehdr ) + FmtData.base;
-    hdr->ph->p_paddr = 0;
-    hdr->ph->p_filesz = hdr->ph_size;
-    hdr->ph->p_memsz = hdr->ph_size;
-    hdr->ph->p_flags = PF_R | PF_X;
-    hdr->ph->p_align = 0;
+    if( NumPhdr ) {
+        hdr->ph->p_type = PT_PHDR;
+        hdr->ph->p_offset = sizeof( Elf32_Ehdr );
+        hdr->ph->p_vaddr = sizeof( Elf32_Ehdr ) + FmtData.base;
+        hdr->ph->p_paddr = 0;
+        hdr->ph->p_filesz = hdr->ph_size;
+        hdr->ph->p_memsz = hdr->ph_size;
+        hdr->ph->p_flags = PF_R | PF_X;
+        hdr->ph->p_align = 0;
+    }
     InitStringTable( &hdr->secstrtab, false );
     AddCharStringTable( &hdr->secstrtab, '\0' );
     InitSections( hdr );
@@ -191,7 +195,7 @@ unsigned GetElfHeaderSize( void )
 {
     unsigned    size;
 
-    size = sizeof( Elf32_Ehdr ) + sizeof( Elf32_Phdr ) * ( NumGroups + 1 );
+    size = sizeof( Elf32_Ehdr ) + sizeof( Elf32_Phdr ) * ( NumGroups + NumPhdr );
     return( ROUND_UP( size, 0x100 ) );
 }
 
@@ -280,7 +284,7 @@ static void WriteELFGroups( ElfHdr *hdr )
     offset      linear;
 
     sh = hdr->sh + hdr->i.grpbase;
-    ph = hdr->ph + 1;
+    ph = hdr->ph + NumPhdr;
     off = hdr->curr_off;
     for( group = Groups; group != NULL; group = group->next_group ) {
         if( group->totalsize == 0 )
@@ -359,6 +363,9 @@ void FiniELFLoadFile( void )
 {
     ElfHdr      hdr;
 
+    if( FmtData.dll )
+        NumPhdr = 1;
+
     SetHeaders( &hdr );
 #if 0
     if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
@@ -421,8 +428,15 @@ void ChkElfData( void )
             AddSymElfSymTable( ElfSymTab, group->sym );
         }
     }
+    /* process local symbols */
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        if( IsSymElfImpExp( sym ) ) {
+        if( IsSymElfImpExp( sym ) && (sym->info & SYM_STATIC) ) {
+            AddSymElfSymTable( ElfSymTab, sym );
+        }
+    }
+    /* process global symbols */
+    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+        if( IsSymElfImpExp( sym ) && (sym->info & SYM_STATIC) == 0 ) {
             AddSymElfSymTable( ElfSymTab, sym );
         }
     }

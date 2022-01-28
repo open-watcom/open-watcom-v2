@@ -190,7 +190,7 @@ static void OpenFiles( bool verbose, char *path, char *out_file )
     if( pg.ext[0] == '\0' )
         pg.ext = "ssl";
     _makepath( file_name, pg.drive, pg.dir, pg.fname, pg.ext );
-    if( PP_FileInit( file_name, PPFLAG_EMIT_LINE, NULL ) != 0 ) {
+    if( PP_FileInit( file_name, PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME, NULL ) != 0 ) {
         Error( "Unable to open '%s'", file_name );
     }
     given = true;

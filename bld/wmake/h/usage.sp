@@ -1,3 +1,4 @@
+:: UTF-8 encoding, ¥
 ::
 :: wmake help page
 ::

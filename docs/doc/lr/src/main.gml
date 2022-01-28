@@ -286,7 +286,7 @@ mypgm hhhhh  "another arg"
 A sample Windows main program is shown below.
 .blktext end
 .blkcode begin
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst,
                     LPSTR cmdline, int cmdshow )
 {
     MSG         msg;

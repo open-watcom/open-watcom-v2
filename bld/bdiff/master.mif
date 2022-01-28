@@ -86,7 +86,7 @@ exetarg_name        = wpatch
 #
 # BPATCH.
 #
-exetarg_prebuild_objs = $(subdir_bpatch) pusage.gh
+exetarg_prebuild_objs = $(subdir_bpatch) ppusage.gh
 exetarg_objs = &
     $(subdir_bpatch)/bpatch.obj &
     $(subdir_bpatch)/dopatch.obj &
@@ -102,7 +102,7 @@ exetarg_name        = bpatch
 #
 # BDUMP.
 #
-exetarg_prebuild_objs = $(subdir_bdump) pusage.gh
+exetarg_prebuild_objs = $(subdir_bdump) pdusage.gh
 exetarg_objs = &
     $(subdir_bdump)/dopatch.obj &
     $(subdir_bdump)/msg.obj &
@@ -125,6 +125,7 @@ exetarg_objs = &
     $(subdir_bdiff)/bdiff.obj &
     $(subdir_bdiff)/diff.obj &
     $(subdir_bdiff)/dopatch.obj &
+    $(subdir_bdiff)/wbdiff.obj &
     $(subdir_bdiff)/msg.obj $(exetarg_objs_debug)
 exetarg_res_wresui  = bdiff.res
 exetarg_name        = bdiff
@@ -135,29 +136,33 @@ exetarg_name        = bdiff
 #
 rcui_inc_dirs = -I..
 
-pusage.gh : ../usage.sp
-    @%make echo_wsplice
-    $(wsplice) -kBPATCH -kENGLISH -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
+ppusage.gh : ../gml/patcopts.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
 
-pusagej.gh : ../usage.sp
-    @%make echo_wsplice
-    $(wsplice) -kBPATCH -kJAPANESE -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"\", \"%s\")" $[@ $@
+pdusage.gh : ../gml/dumpopts.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
 
-dusage.gh : ../usage.sp
-    @%make echo_wsplice
-    $(wsplice) -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
+dusage.gh : ../gml/diffopts.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
 
-bpatch.res bdump.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
+bpatch.res : ../bpatch.rc ../h/bpatch.h ppusage.gh
     @%make echo_rc
-    $(rcui) -DBPATCH
+    $(rcui8) -DBPATCH
+
+bdump.res : ../bpatch.rc ../h/bpatch.h pdusage.gh
+    @%make echo_rc
+    $(rcui8) -DBDUMP
 
 bdiff.res : ../bpatch.rc ../h/bpatch.h dusage.gh
     @%make echo_rc
-    $(rcui) -DBDIFF
+    $(rcui8) -DBDIFF
 
 wpatch.res wcpatch.res : ../bpatch.rc ../h/bpatch.h
     @%make echo_rc
-    $(rcui)
+    $(rcui8)
 
 !ifdef exetarg_$(host_os)_manif_$(host_cpu)
 $(exetarg_$(host_os)_manif_$(host_cpu)) : ../ntmanif.rc .EXPLICIT

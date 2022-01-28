@@ -33,7 +33,7 @@ extra_l_flags_win = op stack=7k, heapsize=2k
 #
 # EXE's
 #
-exetarg_prebuild_objs = rcstr.gh
+exetarg_prebuild_objs = rcstr.grh
 exetarg_objs = &
     zoom.obj &
     zmglob.obj &
@@ -76,7 +76,7 @@ ntmanif.res : ../res/ntmanif.rc
     @%make echo_rc
     $(rc) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
 
-rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
+rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 

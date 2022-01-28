@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,18 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  FPU interrupt handling support.
 *
 ****************************************************************************/
 
 
-// definitions for purposes of ssbar.c. (could place these in ssbar.h,
-// but would get an annoying warning message from Microsoft dialog
-// editor that duplicate symbols exist)
-#define SS_FIRST_CONTENT    300
-#define SS_LAST_CONTENT     305
-#define SS_FIRST_ALIGNMENT  400
-#define SS_LAST_ALIGNMENT   402
-#define SS_FIRST_COMMAND    500
-#define SS_LAST_COMMAND     502
+extern unsigned char _WCNEAR __FPE_int;    /* Used for Rational Systems and Intel */
+#if defined(__386__)
+extern unsigned char _WCNEAR __IRQ_num;    /* Used for PharLap DOS Extender */
+extern unsigned char _WCNEAR __MST_pic;    /* Master PIC port number */
+extern unsigned char _WCNEAR __SLV_pic;    /* Slave PIC port number */
+#endif

@@ -275,14 +275,13 @@ static  void    Usage( void )
 /***************************/
 {
     unsigned    msg;
+    char        *str;
 
     PrtBanner();
     puts( "" );
-    msg = MSG_USAGE_BASE + 1;
-    printfMsg( msg++, WFL_NAME );
-    puts( "" );
-    while( msg < MSG_USAGE_BASE + MSG_USAGE_COUNT ) {
-        printfMsg( msg++ );
+    for( msg = MSG_USAGE_BASE; msg < MSG_USAGE_BASE + MSG_USAGE_COUNT; msg++ ) {
+        str = GetMsg( msg );
+        puts( str );
     }
 }
 
@@ -921,11 +920,11 @@ int     main( int argc, char *argv[] )
     char        *cmd;
 
 #if !defined( __WATCOMC__ )
-    _argc = argc;                                                                                                           
-    _argv = argv;                                                                                                       
-#else                                                                                                                       
+    _argc = argc;
+    _argv = argv;
+#else
     /* unused parameters */ (void)argc;
-#endif 
+#endif
 
     ErrorInit( argv[0] );
 

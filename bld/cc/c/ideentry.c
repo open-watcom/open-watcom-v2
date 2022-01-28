@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,13 +53,6 @@
 static   IDECBHdl       IdeHdl;      // - handle for this instantiation
 static   IDECallBacks   *IdeCbs;       // - call backs into IDE
 //static   IDEInitInfo   Info;
-
-void ConsMsg( char const  *line )
-// C compiler call back to do a  console print to stdout
-{
-    IDEFN( PrintMessage )( IdeHdl, line );
-    // we are ignoring return for now
-}
 
 void ConBlip( void )
 // C compiler do a blip to console

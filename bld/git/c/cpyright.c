@@ -36,13 +36,23 @@
 #include "bool.h"
 
 
+#define PROJECT_TITLE   "Open Watcom Project"
+#define SYBASE_CPYRIGHT "-2002 Sybase, Inc. All Rights Reserved."
+#define CPYRIGHT1   	"* Copyright (c) 2002-"
+#define CPYRIGHT2   	"xxxx"
+#define CPYRIGHT3   	" The Open Watcom Contributors. All Rights Reserved."
+
+#define CPYRIGHT1_LEN   (sizeof( CPYRIGHT1 ) - 1)
+#define CPYRIGHT2_LEN   (sizeof( CPYRIGHT2 ) - 1)
+#define CPYRIGHT3_LEN   (sizeof( CPYRIGHT3 ) - 1)
+
 #define GML2        ":cmt"
 
 #define IS_ASM(p)   (p[0] == ';' && p[1] == '*')
 #define IS_GML1(p)  (p[0] == '.' && p[1] == '*')
 #define IS_GML2(p)  (p[0] == GML2[0] && p[1] == GML2[1] && p[2] == GML2[2] && p[3] == GML2[3])
 
-static char     cpyright[] = ";* Copyright (c) 2002-xxxx The Open Watcom Contributors. All Rights Reserved.\n";
+static char     cpyright[] = CPYRIGHT1 CPYRIGHT2 CPYRIGHT3 "\n";
 static size_t   line = 1;
 static size_t   start_line = 0;
 static size_t   size = 0;
@@ -53,40 +63,42 @@ static FILE     *fo = NULL;
 
 static void output_buffer( void )
 {
+    char    *start;
+
     if( status < 2 && line < 30 ) {
         if( strstr( buffer, "****************************************************************************" ) != NULL ) {
             start_line = line;
             status = 1;
         } else if( status == 1 && line == start_line + 2 ) {
-            if( strstr( buffer, "Open Watcom Project" ) != NULL ) {
+            if( strstr( buffer, PROJECT_TITLE ) != NULL ) {
                 status = 2;
             }
         }
     } else if( line == start_line + 4 ) {
         if( status == 2 ) {
-            if( strstr( buffer, "-2002 Sybase, Inc. All Rights Reserved." ) != NULL ) {
+            if( strstr( buffer, SYBASE_CPYRIGHT ) != NULL ) {
                 if( IS_ASM( buffer ) ) {
-                    cpyright[0] = ';';
-                    fputs( cpyright, fo );
+                    fputc( ';', fo );
                 } else if( IS_GML1( buffer ) ) {
-                    cpyright[0] = '.';
-                    fputs( cpyright, fo );
+                    fputc( '.', fo );
                 } else if( IS_GML2( buffer ) ) {
-                    cpyright[0] = ' ';
                     fputs( GML2, fo );
-                    fputs( cpyright, fo );
+                    fputc( ' ', fo );
                 } else {
-                    fputs( cpyright + 1, fo );
                 }
+                fputs( cpyright, fo );
                 status = 3;
-            } else if( strstr( buffer, cpyright + 26 ) != NULL ) {
+            } else if( strstr( buffer, CPYRIGHT3 ) != NULL ) {
                 if( IS_ASM( buffer ) || IS_GML1( buffer ) ) {
-                    memcpy( buffer + 22, cpyright + 22, 4 );
+                    start = buffer + 1;
+                } else if( IS_GML1( buffer ) ) {
+                    start = buffer + 1;
                 } else if( IS_GML2( buffer ) ) {
-                    memcpy( buffer + 22 + sizeof( GML2 ) - 1, cpyright + 22, 4 );
+                    start = buffer + sizeof( GML2 ) - 1 + 1;
                 } else {
-                    memcpy( buffer + 21, cpyright + 22, 4 );
+                    start = buffer;
                 }
+                memcpy( start + CPYRIGHT1_LEN, cpyright + CPYRIGHT1_LEN, 4 );
                 status = 3;
             }
         }
@@ -127,7 +139,7 @@ int main( int argc, char *argv[] )
     time( &ltime );
     t = localtime( &ltime );
     sprintf( cyear, "%4.4d", 1900 + t->tm_year );
-    memcpy( cpyright + 22, cyear, 4 );
+    memcpy( cpyright + CPYRIGHT1_LEN, cyear, 4 );
     if( argc > 1 ) {
         fi = fopen( argv[1], "rt" );
     } else {

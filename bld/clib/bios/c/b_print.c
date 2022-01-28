@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +31,13 @@
 ****************************************************************************/
 
 
-#define IDM_RENOLD         200
-#define IDM_RENNEW         201
+#include "variety.h"
+#undef  __INLINE_FUNCTIONS__
+#include <bios.h>
+#include "clibxw32.h"
+
+
+_WCRTLINK unsigned short _bios_printer( unsigned __cmd, unsigned __port, unsigned __data )
+{
+    return( _clib_bios_printer( __cmd, __port, __data ) );
+}
