@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,11 @@
 
 
 #include "import.h"
+
+#define OUTPUT_OBJECT_NAME(s,f,d,k) DoOutObjectName( s, (outputter_fn *)(f), (outputter_data)(d), k )
+
+typedef void        *outputter_data;
+typedef void        outputter_fn( const char *, outputter_data );
 
 extern void         ObjInit( void );
 extern void         ObjFini( void );

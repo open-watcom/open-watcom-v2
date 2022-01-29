@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -786,11 +786,10 @@ static  void    FPInitPatches( void )
     }
 }
 
-static  void    OutName( const char *name, void *dst )
-/****************************************************/
+static  void    OutName( const char *name, array_control *dest )
+/**************************************************************/
 {
     uint            len;
-    array_control   *dest = dst;
 
     len = Length( name );
     if( len >= 256 ) {
@@ -803,9 +802,9 @@ static  void    OutName( const char *name, void *dst )
 }
 
 static  void    OutObjectName( cg_sym_handle sym, array_control *dest )
-/******************************************************************/
+/*********************************************************************/
 {
-    DoOutObjectName( sym, OutName, dest, NORMAL );
+    OUTPUT_OBJECT_NAME( sym, OutName, dest, NORMAL );
 }
 
 static  void    OutString( const char *name, array_control *dest )
@@ -1366,17 +1365,17 @@ static void     EjectLEData( void )
 }
 
 
-static void GetSymLName( const char *name, void *nidx )
-/*****************************************************/
+static void GetSymLName( const char *name, omf_idx *nidx )
+/********************************************************/
 {
-    *(omf_idx *)nidx = GetNameIdx( name, "", true );
+    *nidx = GetNameIdx( name, "", true );
 }
 
 static omf_idx NeedComdatNidx( import_type kind )
 /***********************************************/
 {
     if( CurrSeg->comdat_nidx == 0 ) {
-        DoOutObjectName( CurrSeg->comdat_symbol, GetSymLName, &CurrSeg->comdat_nidx, kind );
+        OUTPUT_OBJECT_NAME( CurrSeg->comdat_symbol, GetSymLName, &CurrSeg->comdat_nidx, kind );
         FlushNames();
     }
     return( CurrSeg->comdat_nidx );
@@ -2127,7 +2126,7 @@ static  omf_idx     GenImport( cg_sym_handle sym, bool alt_dllimp )
                 kind = PIC_RW;
             }
         }
-        DoOutObjectName( sym, OutName, Imports, kind );
+        OUTPUT_OBJECT_NAME( sym, OutName, Imports, kind );
         OutIdx( 0, Imports );           /* type index*/
         DumpImportResolve( sym, imp_idx );
     }
@@ -2141,7 +2140,7 @@ static  omf_idx     GenImportComdat( void )
         Imports = InitArray( sizeof( byte ), MODEST_IMP, INCREMENT_IMP );
     }
     CheckImportSwitch( (FEAttr( CurrSeg->comdat_symbol ) & FE_GLOBAL) == 0 );
-    DoOutObjectName( CurrSeg->comdat_symbol, OutName, Imports, SPECIAL );
+    OUTPUT_OBJECT_NAME( CurrSeg->comdat_symbol, OutName, Imports, SPECIAL );
     OutIdx( 0, Imports );           /* type index*/
     return( ImportHdl++ );
 }
@@ -2833,7 +2832,7 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
             OutIdx( def_idx, cmt );
             for( cond = FEAuxInfo( sym, CONDITIONAL_IMPORT ); cond != NULL; cond = FEAuxInfo( cond, NEXT_CONDITIONAL ) ) {
                 sym = FEAuxInfo( cond, CONDITIONAL_SYMBOL );
-                DoOutObjectName( sym, GetSymLName, &nidx, NORMAL );
+                OUTPUT_OBJECT_NAME( sym, GetSymLName, &nidx, NORMAL );
                 OutIdx( nidx, cmt );
             }
             FlushNames();
