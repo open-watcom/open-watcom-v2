@@ -1004,9 +1004,9 @@ void    ObjInit( void )
     names = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
     OutName( FEAuxInfo( NULL, SOURCE_NAME ), names );
     PutObjOMFRec( CMD_THEADR, names->array, names->used );
+    names->used = 0;
 #ifdef _OMF_32
     if( _IsTargetModel( EZ_OMF ) || _IsTargetModel( FLAT_MODEL ) ) {
-        names->used = 0;
         OutShort( PHARLAP_OMF_COMMENT, names );
         if( _IsntTargetModel( EZ_OMF ) ) {
             OutString( "OS220", names );
@@ -1014,24 +1014,24 @@ void    ObjInit( void )
             OutString( "80386", names );
         }
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
+        names->used = 0;
     }
 #else
-    names->used = 0;
     OutShort( MS_OMF_COMMENT, names );
     PutObjOMFRec( CMD_COMENT, names->array, names->used );
-#endif
     names->used = 0;
+#endif
     OutShort( MODEL_COMMENT, names );
     OutModel( names );
     PutObjOMFRec( CMD_COMENT, names->array, names->used );
+    names->used = 0;
     if( _IsTargetModel( FLAT_MODEL ) && _IsModel( DBG_DF ) ) {
-        names->used = 0;
         OutShort( LINKER_COMMENT, names );
         OutByte( LDIR_FLAT_ADDRS, names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
+        names->used = 0;
     }
     if( _IsntModel( DBG_DF | DBG_CV ) ) {
-        names->used = 0;
         OutShort( LINKER_COMMENT, names );
         OutByte( LDIR_SOURCE_LANGUAGE, names );
         OutByte( DEBUG_MAJOR_VERSION, names );
@@ -1042,17 +1042,17 @@ void    ObjInit( void )
         }
         OutString( FEAuxInfo( NULL, SOURCE_LANGUAGE ), names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
+        names->used = 0;
     }
     for( depend = NULL; (depend = FEAuxInfo( depend, NEXT_DEPENDENCY )) != NULL; ) {
-        names->used = 0;
         OutShort( DEPENDENCY_COMMENT, names );
         // OMF use dos time/date format
         OutLongInt( _timet2dos( *(time_t *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP ) ), names );
         OutName( FEAuxInfo( depend, DEPENDENCY_NAME ), names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
+        names->used = 0;
     }
     /* mark end of dependancy list */
-    names->used = 0;
     OutShort( DEPENDENCY_COMMENT, names );
     PutObjOMFRec( CMD_COMENT, names->array, names->used );
     KillArray( names );
@@ -2612,6 +2612,19 @@ static  void    InitLineInfo( object *obj )
 }
 
 
+static  void    ChangeObjSrc( short fno )
+/***************************************/
+{
+    array_control       *names;
+    const char          *fname;
+
+    fname = SrcFNoFind( fno );
+    CurrFNo = fno;
+    names = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
+    OutName( fname, names );
+    PutObjOMFRec( CMD_THEADR, names->array, names->used );
+    KillArray( names );
+}
 
 static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
 /********************************************************************/
@@ -2625,16 +2638,10 @@ static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
                  DFLineNum( &info, lc );
             }
         } else if( _IsModel( DBG_CV ) ) {
-            const char  *fname;
-
             if( info.fno != CurrFNo ) {
-                fname = SrcFNoFind( info.fno );
-                CurrFNo = info.fno;
                 FlushLineNum( obj );
-                OutName( fname, obj->lines );
-                PutObjOMFRec( CMD_THEADR, obj->lines->array, obj->lines->used );
-                obj->lines->used = 0;
                 InitLineInfo( obj );
+                ChangeObjSrc( info.fno );
             }
         }
         line = info.line;
