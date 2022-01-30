@@ -105,13 +105,6 @@
 
 #define altCodeSegId    codeSegId
 
-#include "pushpck1.h"
-typedef struct line_num_entry {
-    unsigned_16     line;
-    offset          off;
-} line_num_entry;
-#include "poppck.h"
-
 typedef struct lname_cache {
     struct lname_cache  *next;
     omf_idx             idx;
@@ -527,7 +520,8 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
         obj->exports = NULL;
     }
     obj->lines = NULL;
-    obj->line_info = false;
+    obj->last_line = 0;
+    obj->last_offset = 0;
     OutByte( rec->attr, &obj->data );
 #ifdef _OMF_32
     OutOffset( 0, &obj->data );         /* segment size (for now) */
@@ -1622,7 +1616,9 @@ static  void    FlushLineNum( object *obj )
 {
     omf_cmd     cmd;
 
-    if( obj->line_info ) {
+    if( obj->last_line ) {
+        OutShort( obj->last_line, obj->lines );
+        OutOffset( obj->last_offset, obj->lines );
         if( CurrSeg->comdat_label != NULL ) {
             cmd = CMD_LINSYM;
         } else {
@@ -1631,7 +1627,8 @@ static  void    FlushLineNum( object *obj )
         PutObjOMFRec( PickOMF( cmd ), obj->lines->array, obj->lines->used );
         obj->lines->used = 0;
         obj->lines_generated = true;
-        obj->line_info = false;
+        obj->last_line = 0;
+        obj->last_offset = 0;
     }
 }
 
@@ -2597,7 +2594,7 @@ abspatch        *NewAbsPatch( void )
 static  void    InitLineInfo( object *obj )
 /*****************************************/
 {
-    obj->line_info = false;
+    obj->lines->used = 0;
     if( CurrSeg->comdat_label != NULL ) {
         OutByte( obj->lines_generated, obj->lines );
         OutIdx( NeedComdatNidx( NORMAL ), obj->lines );
@@ -2609,6 +2606,8 @@ static  void    InitLineInfo( object *obj )
         }
         OutIdx( obj->index, obj->lines );
     }
+    obj->last_line = 0;
+    obj->last_offset = 0;
 }
 
 
@@ -2626,8 +2625,8 @@ static  void    ChangeObjSrc( short fno )
     KillArray( names );
 }
 
-static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
-/********************************************************************/
+static  void    AddLineInfo( object *obj, cg_linenum line, offset offs )
+/**********************************************************************/
 {
     cue_state           info;
 
@@ -2635,7 +2634,7 @@ static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
         CueFind( line, &info );
         if( _IsModel( DBG_DF ) ) {
             if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
-                 DFLineNum( &info, lc );
+                 DFLineNum( &info, offs );
             }
         } else if( _IsModel( DBG_CV ) ) {
             if( info.fno != CurrFNo ) {
@@ -2650,22 +2649,26 @@ static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
         FlushLineNum( obj );
         InitLineInfo( obj );
     }
-    obj->line_info = true;
-    OutShort( line, obj->lines );
-    OutOffset( lc, obj->lines );
+    if( obj->last_line ) {
+        OutShort( obj->last_line, obj->lines );
+        OutOffset( obj->last_offset, obj->lines );
+    }
+    obj->last_line = line;
+    obj->last_offset = offs;
 }
 
 static  void    SetPendingLine( void )
 /************************************/
 {
-    line_num_entry      *old_line;
     object              *obj;
     cg_linenum          line;
+    offset              offs;
 
     obj = CurrSeg->obj;
     line = obj->pending_line_number;
     if( line == 0 )
         return;
+    offs = CurrSeg->location;
     obj->pending_line_number = 0;
     obj->pending_label_line = false;
     if( obj->lines == NULL ) {
@@ -2673,16 +2676,15 @@ static  void    SetPendingLine( void )
     }
     if( obj->lines->used == 0 ) {
         InitLineInfo( obj );
-    } else {
-        old_line = &_ARRAY( obj->lines, line_num_entry ) - 1;
-        if( line == _HostShort( old_line->line ) )
+    } else if( obj->last_line ) {
+        if( line == obj->last_line )
             return;
-        if( (offset)CurrSeg->location <= _HostOffset( old_line->off ) ) {
-            old_line->line = _TargetShort( line );
+        if( offs <= obj->last_offset ) {
+            obj->last_line = line;
             return;
         }
     }
-    AddLineInfo( line, obj, (offset)CurrSeg->location );
+    AddLineInfo( obj, line, offs );
 }
 
 

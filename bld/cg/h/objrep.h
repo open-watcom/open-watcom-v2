@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,8 @@ typedef struct object {
         unsigned_16             sofar;
         unsigned                gen_static_exports      : 1;
         unsigned                lines_generated         : 1;
-        unsigned                line_info               : 1;
         unsigned                pending_label_line      : 1;
         cg_linenum              pending_line_number;
+        cg_linenum              last_line;
+        offset                  last_offset;
 } object;
