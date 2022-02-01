@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -953,12 +953,8 @@ void PragAux( void )
                for the use of this pragma. This is done by saying the pragma
                modifies the [E]SP register. A kludge, but it works.
             */
-            AuxInfo.cclass |= GENERATE_STACK_FRAME;
-#if _CPU == 8086
-//            HW_CTurnOff( AuxInfo.save, HW_SP );
-#else
-//            HW_CTurnOff( AuxInfo.save, HW_ESP );
-#endif
+//            AuxInfo.cclass |= GENERATE_STACK_FRAME;
+            HW_CTurnOff( AuxInfo.save, HW_xSP );
         }
         PragmaAuxEnd();
     }
@@ -1008,12 +1004,8 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
                for the use of this pragma. This is done by saying the pragma
                modifies the [E]SP register. A kludge, but it works.
             */
-            CurrInfo->cclass |= GENERATE_STACK_FRAME;
-#if _CPU == 8086
-//            HW_CTurnOff( CurrInfo->save, HW_SP );
-#else
-//            HW_CTurnOff( CurrInfo->save, HW_ESP );
-#endif
+//            CurrInfo->cclass |= GENERATE_STACK_FRAME;
+            HW_CTurnOff( CurrInfo->save, HW_xSP );
         }
         CurrEntry->info = CurrInfo;
         CurrEntry->next = AuxList;

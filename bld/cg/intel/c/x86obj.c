@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,13 +104,6 @@
 #define _CHGTYPE( what, type )  (*(type *)&(what))
 
 #define altCodeSegId    codeSegId
-
-#include "pushpck1.h"
-typedef struct line_num_entry {
-    unsigned_16     line;
-    offset          off;
-} line_num_entry;
-#include "poppck.h"
 
 typedef struct lname_cache {
     struct lname_cache  *next;
@@ -527,7 +520,8 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
         obj->exports = NULL;
     }
     obj->lines = NULL;
-    obj->line_info = false;
+    obj->last_line = 0;
+    obj->last_offset = 0;
     OutByte( rec->attr, &obj->data );
 #ifdef _OMF_32
     OutOffset( 0, &obj->data );         /* segment size (for now) */
@@ -786,11 +780,10 @@ static  void    FPInitPatches( void )
     }
 }
 
-static  void    OutName( const char *name, void *dst )
-/****************************************************/
+static  void    OutName( const char *name, array_control *dest )
+/**************************************************************/
 {
     uint            len;
-    array_control   *dest = dst;
 
     len = Length( name );
     if( len >= 256 ) {
@@ -803,9 +796,9 @@ static  void    OutName( const char *name, void *dst )
 }
 
 static  void    OutObjectName( cg_sym_handle sym, array_control *dest )
-/******************************************************************/
+/*********************************************************************/
 {
-    DoOutObjectName( sym, OutName, dest, NORMAL );
+    OUTPUT_OBJECT_NAME( sym, OutName, dest, NORMAL );
 }
 
 static  void    OutString( const char *name, array_control *dest )
@@ -1005,9 +998,9 @@ void    ObjInit( void )
     names = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
     OutName( FEAuxInfo( NULL, SOURCE_NAME ), names );
     PutObjOMFRec( CMD_THEADR, names->array, names->used );
+    names->used = 0;
 #ifdef _OMF_32
     if( _IsTargetModel( EZ_OMF ) || _IsTargetModel( FLAT_MODEL ) ) {
-        names->used = 0;
         OutShort( PHARLAP_OMF_COMMENT, names );
         if( _IsntTargetModel( EZ_OMF ) ) {
             OutString( "OS220", names );
@@ -1015,24 +1008,24 @@ void    ObjInit( void )
             OutString( "80386", names );
         }
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
+        names->used = 0;
     }
 #else
-    names->used = 0;
     OutShort( MS_OMF_COMMENT, names );
     PutObjOMFRec( CMD_COMENT, names->array, names->used );
-#endif
     names->used = 0;
+#endif
     OutShort( MODEL_COMMENT, names );
     OutModel( names );
     PutObjOMFRec( CMD_COMENT, names->array, names->used );
+    names->used = 0;
     if( _IsTargetModel( FLAT_MODEL ) && _IsModel( DBG_DF ) ) {
-        names->used = 0;
         OutShort( LINKER_COMMENT, names );
         OutByte( LDIR_FLAT_ADDRS, names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
+        names->used = 0;
     }
     if( _IsntModel( DBG_DF | DBG_CV ) ) {
-        names->used = 0;
         OutShort( LINKER_COMMENT, names );
         OutByte( LDIR_SOURCE_LANGUAGE, names );
         OutByte( DEBUG_MAJOR_VERSION, names );
@@ -1043,17 +1036,17 @@ void    ObjInit( void )
         }
         OutString( FEAuxInfo( NULL, SOURCE_LANGUAGE ), names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
+        names->used = 0;
     }
     for( depend = NULL; (depend = FEAuxInfo( depend, NEXT_DEPENDENCY )) != NULL; ) {
-        names->used = 0;
         OutShort( DEPENDENCY_COMMENT, names );
         // OMF use dos time/date format
         OutLongInt( _timet2dos( *(time_t *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP ) ), names );
         OutName( FEAuxInfo( depend, DEPENDENCY_NAME ), names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
+        names->used = 0;
     }
     /* mark end of dependancy list */
-    names->used = 0;
     OutShort( DEPENDENCY_COMMENT, names );
     PutObjOMFRec( CMD_COMENT, names->array, names->used );
     KillArray( names );
@@ -1366,17 +1359,17 @@ static void     EjectLEData( void )
 }
 
 
-static void GetSymLName( const char *name, void *nidx )
-/*****************************************************/
+static void GetSymLName( const char *name, omf_idx *nidx )
+/********************************************************/
 {
-    *(omf_idx *)nidx = GetNameIdx( name, "", true );
+    *nidx = GetNameIdx( name, "", true );
 }
 
 static omf_idx NeedComdatNidx( import_type kind )
 /***********************************************/
 {
     if( CurrSeg->comdat_nidx == 0 ) {
-        DoOutObjectName( CurrSeg->comdat_symbol, GetSymLName, &CurrSeg->comdat_nidx, kind );
+        OUTPUT_OBJECT_NAME( CurrSeg->comdat_symbol, GetSymLName, &CurrSeg->comdat_nidx, kind );
         FlushNames();
     }
     return( CurrSeg->comdat_nidx );
@@ -1623,7 +1616,9 @@ static  void    FlushLineNum( object *obj )
 {
     omf_cmd     cmd;
 
-    if( obj->line_info ) {
+    if( obj->last_line ) {
+        OutShort( obj->last_line, obj->lines );
+        OutOffset( obj->last_offset, obj->lines );
         if( CurrSeg->comdat_label != NULL ) {
             cmd = CMD_LINSYM;
         } else {
@@ -1632,7 +1627,8 @@ static  void    FlushLineNum( object *obj )
         PutObjOMFRec( PickOMF( cmd ), obj->lines->array, obj->lines->used );
         obj->lines->used = 0;
         obj->lines_generated = true;
-        obj->line_info = false;
+        obj->last_line = 0;
+        obj->last_offset = 0;
     }
 }
 
@@ -2127,7 +2123,7 @@ static  omf_idx     GenImport( cg_sym_handle sym, bool alt_dllimp )
                 kind = PIC_RW;
             }
         }
-        DoOutObjectName( sym, OutName, Imports, kind );
+        OUTPUT_OBJECT_NAME( sym, OutName, Imports, kind );
         OutIdx( 0, Imports );           /* type index*/
         DumpImportResolve( sym, imp_idx );
     }
@@ -2141,7 +2137,7 @@ static  omf_idx     GenImportComdat( void )
         Imports = InitArray( sizeof( byte ), MODEST_IMP, INCREMENT_IMP );
     }
     CheckImportSwitch( (FEAttr( CurrSeg->comdat_symbol ) & FE_GLOBAL) == 0 );
-    DoOutObjectName( CurrSeg->comdat_symbol, OutName, Imports, SPECIAL );
+    OUTPUT_OBJECT_NAME( CurrSeg->comdat_symbol, OutName, Imports, SPECIAL );
     OutIdx( 0, Imports );           /* type index*/
     return( ImportHdl++ );
 }
@@ -2598,7 +2594,7 @@ abspatch        *NewAbsPatch( void )
 static  void    InitLineInfo( object *obj )
 /*****************************************/
 {
-    obj->line_info = false;
+    obj->lines->used = 0;
     if( CurrSeg->comdat_label != NULL ) {
         OutByte( obj->lines_generated, obj->lines );
         OutIdx( NeedComdatNidx( NORMAL ), obj->lines );
@@ -2610,12 +2606,27 @@ static  void    InitLineInfo( object *obj )
         }
         OutIdx( obj->index, obj->lines );
     }
+    obj->last_line = 0;
+    obj->last_offset = 0;
 }
 
 
+static  void    ChangeObjSrc( short fno )
+/***************************************/
+{
+    array_control       *names;
+    const char          *fname;
 
-static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
-/********************************************************************/
+    fname = SrcFNoFind( fno );
+    CurrFNo = fno;
+    names = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
+    OutName( fname, names );
+    PutObjOMFRec( CMD_THEADR, names->array, names->used );
+    KillArray( names );
+}
+
+static  void    AddLineInfo( object *obj, cg_linenum line, offset offs )
+/**********************************************************************/
 {
     cue_state           info;
 
@@ -2623,19 +2634,13 @@ static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
         CueFind( line, &info );
         if( _IsModel( DBG_DF ) ) {
             if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
-                 DFLineNum( &info, lc );
+                 DFLineNum( &info, offs );
             }
         } else if( _IsModel( DBG_CV ) ) {
-            const char  *fname;
-
             if( info.fno != CurrFNo ) {
-                fname = SrcFNoFind( info.fno );
-                CurrFNo = info.fno;
                 FlushLineNum( obj );
-                OutName( fname, obj->lines );
-                PutObjOMFRec( CMD_THEADR, obj->lines->array, obj->lines->used );
-                obj->lines->used = 0;
                 InitLineInfo( obj );
+                ChangeObjSrc( info.fno );
             }
         }
         line = info.line;
@@ -2644,22 +2649,26 @@ static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
         FlushLineNum( obj );
         InitLineInfo( obj );
     }
-    obj->line_info = true;
-    OutShort( line, obj->lines );
-    OutOffset( lc, obj->lines );
+    if( obj->last_line ) {
+        OutShort( obj->last_line, obj->lines );
+        OutOffset( obj->last_offset, obj->lines );
+    }
+    obj->last_line = line;
+    obj->last_offset = offs;
 }
 
 static  void    SetPendingLine( void )
 /************************************/
 {
-    line_num_entry      *old_line;
     object              *obj;
     cg_linenum          line;
+    offset              offs;
 
     obj = CurrSeg->obj;
     line = obj->pending_line_number;
     if( line == 0 )
         return;
+    offs = CurrSeg->location;
     obj->pending_line_number = 0;
     obj->pending_label_line = false;
     if( obj->lines == NULL ) {
@@ -2667,16 +2676,15 @@ static  void    SetPendingLine( void )
     }
     if( obj->lines->used == 0 ) {
         InitLineInfo( obj );
-    } else {
-        old_line = &_ARRAY( obj->lines, line_num_entry ) - 1;
-        if( line == _HostShort( old_line->line ) )
+    } else if( obj->last_line ) {
+        if( line == obj->last_line )
             return;
-        if( (offset)CurrSeg->location <= _HostOffset( old_line->off ) ) {
-            old_line->line = _TargetShort( line );
+        if( offs <= obj->last_offset ) {
+            obj->last_line = line;
             return;
         }
     }
-    AddLineInfo( line, obj, (offset)CurrSeg->location );
+    AddLineInfo( obj, line, offs );
 }
 
 
@@ -2833,7 +2841,7 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
             OutIdx( def_idx, cmt );
             for( cond = FEAuxInfo( sym, CONDITIONAL_IMPORT ); cond != NULL; cond = FEAuxInfo( cond, NEXT_CONDITIONAL ) ) {
                 sym = FEAuxInfo( cond, CONDITIONAL_SYMBOL );
-                DoOutObjectName( sym, GetSymLName, &nidx, NORMAL );
+                OUTPUT_OBJECT_NAME( sym, GetSymLName, &nidx, NORMAL );
                 OutIdx( nidx, cmt );
             }
             FlushNames();

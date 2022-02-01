@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,11 @@
 
 
 #include "import.h"
+
+#define OUTPUT_OBJECT_NAME(s,f,d,k) DoOutObjectName( s, (outputter_fn *)(f), (outputter_data)(d), k )
+
+typedef void        *outputter_data;
+typedef void        outputter_fn( const char *, outputter_data );
 
 extern void         ObjInit( void );
 extern void         ObjFini( void );
@@ -64,7 +69,7 @@ extern bool         FreeObjCache( void );
 extern char         GetMemModel( void );
 extern void         ChkDbgSegSize( offset max, bool typing );
 extern bool         AskSegIsNear( segment_id segid );
-extern void         DoOutObjectName( cg_sym_handle sym, void (*outputter)( const char *, void * ), void *data, import_type kind );
+extern void         DoOutObjectName( cg_sym_handle sym, outputter_fn *outputter, outputter_data data, import_type kind );
 extern bool         SymIsExported( cg_sym_handle sym );
 extern void         DoEmptyQueue( void );
 extern void         DoAlignment( int len );

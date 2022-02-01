@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -197,18 +197,18 @@ static  void    DefaultLibs( void )
     }
 }
 
-static void stringOut( const char *name, void *data )
-/***************************************************/
+static void stringOut( const char *name, const char **data )
+/**********************************************************/
 {
-    *(const char **)data = name;
+    *data = name;
 }
 
 static  void    AliasNames( void )
 /*********************************/
 {
     pointer             alias;
-    char                *alias_name;
-    char                *subst_name;
+    const char          *alias_name;
+    const char          *subst_name;
     owl_symbol_handle   owl_alias;
     owl_symbol_handle   owl_subst;
 
@@ -219,13 +219,13 @@ static  void    AliasNames( void )
             break;
         alias_name = FEAuxInfo( alias, ALIAS_NAME );
         if( alias_name == NULL ) {
-            DoOutObjectName( FEAuxInfo( alias, ALIAS_SYMBOL ),
+            OUTPUT_OBJECT_NAME( FEAuxInfo( alias, ALIAS_SYMBOL ),
                              stringOut, &alias_name, NORMAL );
         }
         subst_name = FEAuxInfo( alias, ALIAS_SUBST_NAME );
         owl_alias = OWLSymbolInit( owlFile, alias_name );
         if( subst_name == NULL ) {
-            DoOutObjectName( FEAuxInfo( alias, ALIAS_SUBST_SYMBOL ),
+            OUTPUT_OBJECT_NAME( FEAuxInfo( alias, ALIAS_SUBST_SYMBOL ),
                              stringOut, &subst_name, NORMAL );
         }
         owl_subst = OWLSymbolInit( owlFile, subst_name );
@@ -237,7 +237,7 @@ static  void    EmitImports( void )
 /*********************************/
 {
     void        *auto_import;
-    char        *name;
+    const char  *name;
 
     auto_import = NULL;
     for( ;; ) {
@@ -251,7 +251,7 @@ static  void    EmitImports( void )
         auto_import = FEAuxInfo( auto_import, NEXT_IMPORT_S );
         if( auto_import == NULL )
             break;
-        DoOutObjectName( FEAuxInfo( auto_import, IMPORT_NAME_S ),
+        OUTPUT_OBJECT_NAME( FEAuxInfo( auto_import, IMPORT_NAME_S ),
                          stringOut, &name, NORMAL );
         OWLEmitImport( owlFile, name );
     }
@@ -385,10 +385,10 @@ static  int PutBytes( owl_client_file f, const char *buffer, size_t len )
 
 static  char            objName[MAX_OBJ_NAME];
 
-static  void            NameGatherer( const char *name, void *data )
+static  void            NameGatherer( const char *name, char *data )
 /******************************************************************/
 {
-    CopyStr( name, (char *)data );
+    CopyStr( name, data );
 }
 
 static const char   *LabelName( label_handle label )
@@ -429,7 +429,7 @@ static const char   *LabelName( label_handle label )
                 }
 #endif
             }
-            DoOutObjectName( sym, NameGatherer, buff, kind );
+            OUTPUT_OBJECT_NAME( sym, NameGatherer, buff, kind );
             return( objName );
         }
     }
