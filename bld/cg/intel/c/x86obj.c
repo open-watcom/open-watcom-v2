@@ -557,14 +557,14 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     }
 #endif
     PutObjOMFRec( cmd, obj->data.array, obj->data.used );
+    obj->data.used = 0;
     if( rec->exec ) {
-        obj->data.used = 0;
         OutShort( LINKER_COMMENT, &obj->data );
         OutByte( LDIR_OPT_FAR_CALLS, &obj->data );
         OutIdx( rec->sidx, &obj->data );
         PutObjOMFRec( CMD_COMENT, obj->data.array, obj->data.used );
+        obj->data.used = 0;
     }
-    obj->data.used = 0;
     rec->location = 0;
 }
 
@@ -1066,8 +1066,8 @@ void    ObjInit( void )
     KillArray( tgroup_def );
 #ifdef _OMF_32
     if( _IsTargetModel( FLAT_MODEL ) && _IsntTargetModel( EZ_OMF ) ) {
-        FlatGIndex = ++GroupIndex;
         dgroup_def->used = 0;
+        FlatGIndex = ++GroupIndex;
         OutIdx( FlatNIndex, dgroup_def );
         FlushNames();
         PutObjOMFRec( CMD_GRPDEF, dgroup_def->array, dgroup_def->used );
@@ -1342,12 +1342,13 @@ static void     EjectLEData( void )
 #endif
         }
         PutObjOMFRec( cmd, obj->data.array, obj->data.used );
+        obj->data.used = 0;
         if( obj->fixes.used > 0 ) {
             if( CurrSeg->data_ptr_in_code ) {
-                obj->data.used = 0;
                 OutShort( LINKER_COMMENT, &obj->data );
                 OutByte( LDIR_OPT_UNSAFE, &obj->data );
                 PutObjOMFRec( CMD_COMENT, obj->data.array, obj->data.used );
+                obj->data.used = 0;
             }
             PutObjOMFRec( PickOMF( CMD_FIXUPP ), obj->fixes.array, obj->fixes.used );
             obj->fixes.used = 0;
