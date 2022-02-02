@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -576,8 +576,7 @@ static AUX_INFO *IntrinsicAuxLookup(
     inf->code = ifunc->code;
     inf->parms = ifunc->parms;
     inf->returns = ifunc->returns;
-    if( !HW_CEqual( inf->returns, HW_AX )
-     && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
+    if( !HW_CEqual( inf->returns, HW_xAX ) && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
         inf->cclass |= SPECIAL_RETURN;
     }
     HW_CAsgn( inf->streturn, HW_EMPTY );
