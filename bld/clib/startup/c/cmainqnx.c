@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,7 @@
 #include <sys/proc_msg.h>
 #include <sys/kernel.h>
 #include <sys/utsname.h>
+#include "slibqnx.h"
 #include "rtstack.h"
 #include "rtfpehdl.h"
 #include "exitwmsg.h"
@@ -51,7 +52,6 @@
 #include "cinit.h"
 #include "rtdata.h"
 #include "fltsupp.h"
-#include "slibqnx.h"
 #include "_environ.h"
 
 
