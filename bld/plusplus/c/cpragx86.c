@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,18 +69,14 @@ static void pragmasInit(        // INITIALIZATION FOR PRAGMAS
 
     AuxInfoInit( CompFlags.use_stdcall_at_number );
 
+    HW_CTurnOff( asmRegsSaved, HW_xAX );
+    HW_CTurnOff( asmRegsSaved, HW_xBX );
+    HW_CTurnOff( asmRegsSaved, HW_xCX );
+    HW_CTurnOff( asmRegsSaved, HW_xDX );
+    HW_CTurnOff( asmRegsSaved, HW_xSI );
+    HW_CTurnOff( asmRegsSaved, HW_xDI );
 #if _CPU == 8086
-    HW_CTurnOff( asmRegsSaved, HW_ABCD );
-    HW_CTurnOff( asmRegsSaved, HW_SI );
-    HW_CTurnOff( asmRegsSaved, HW_DI );
     HW_CTurnOff( asmRegsSaved, HW_ES );
-#else
-    HW_CTurnOff( asmRegsSaved, HW_EAX );
-    HW_CTurnOff( asmRegsSaved, HW_EBX );
-    HW_CTurnOff( asmRegsSaved, HW_ECX );
-    HW_CTurnOff( asmRegsSaved, HW_EDX );
-    HW_CTurnOff( asmRegsSaved, HW_ESI );
-    HW_CTurnOff( asmRegsSaved, HW_EDI );
 #endif
 
     SetDefaultAuxInfo();
@@ -901,11 +897,7 @@ void AsmSysUsesAuto( void )
        for the use of this pragma. This is done by saying the pragma
        modifies the [E]SP register. A kludge, but it works.
     */
-#if _CPU == 8086
-    HW_CTurnOff( CurrInfo->save, HW_SP );
-#else
-    HW_CTurnOff( CurrInfo->save, HW_ESP );
-#endif
+    HW_CTurnOff( CurrInfo->save, HW_xSP );
     ScopeASMUsesAuto();
 }
 

@@ -1144,11 +1144,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 
   #ifdef __SEH__
         if( (SYM_HANDLE)req_handle == SymTryInit ) {
-    #if _CPU == 8086
-            HW_CTurnOff( save_set, HW_SP );
-    #else
-            HW_CTurnOff( save_set, HW_ESP );
-    #endif
+            HW_CTurnOff( save_set, HW_xSP );
         }
   #endif
         return( (CGPOINTER)&save_set );

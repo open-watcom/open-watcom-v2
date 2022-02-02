@@ -57,17 +57,13 @@ static struct {
 static void pragmaAuxInfoInit( void )
 /***********************************/
 {
-#if _CPU == 386
-    HW_CTurnOff( AsmRegsSaved, HW_EAX );
-    HW_CTurnOff( AsmRegsSaved, HW_EBX );
-    HW_CTurnOff( AsmRegsSaved, HW_ECX );
-    HW_CTurnOff( AsmRegsSaved, HW_EDX );
-    HW_CTurnOff( AsmRegsSaved, HW_ESI );
-    HW_CTurnOff( AsmRegsSaved, HW_EDI );
-#else
-    HW_CTurnOff( AsmRegsSaved, HW_ABCD );
-    HW_CTurnOff( AsmRegsSaved, HW_SI );
-    HW_CTurnOff( AsmRegsSaved, HW_DI );
+    HW_CTurnOff( AsmRegsSaved, HW_xAX );
+    HW_CTurnOff( AsmRegsSaved, HW_xBX );
+    HW_CTurnOff( AsmRegsSaved, HW_xCX );
+    HW_CTurnOff( AsmRegsSaved, HW_xDX );
+    HW_CTurnOff( AsmRegsSaved, HW_xSI );
+    HW_CTurnOff( AsmRegsSaved, HW_xDI );
+#if _CPU == 8086
     HW_CTurnOff( AsmRegsSaved, HW_ES );
 #endif
 
