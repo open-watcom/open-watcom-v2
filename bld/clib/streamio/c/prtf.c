@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,9 @@
 #if defined( __WIDECHAR__ ) || defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
-#include "slibqnx.h"
+#ifdef __QNX__
+    #include "slibqnx.h"
+#endif
 #include "prtscncf.h"
 #include "fixpoint.h"
 #include "fltsupp.h"
