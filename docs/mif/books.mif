@@ -1,22 +1,22 @@
 # help type         dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
 # distributed       yes  yes  yes       yes yes  yes  no  no    no        no
 #================================================================================
-!inject c_readme    dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject c_readme    dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject cbooks                          nt
 !inject cgdoc                                                   wikihtml  wikipdf
-!inject cguide      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject cguide      dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject cguideq
 !inject clbtst
-!inject clib        dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject clib        dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject clib_fox
 !inject clib_nec
 !inject clibnt
 !inject clibqnx
-!inject clr         dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject clr         dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject clslib
-!inject cpplib      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
-!inject ctools      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
-!inject cw          dos       htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject cpplib      dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject ctools      dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject cw          dos       htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject ddespy           win  htmlhelp  nt                html
 !inject devguide                                                wikihtml  wikipdf
 !inject drnt             win  htmlhelp  nt                html
@@ -24,20 +24,20 @@
 !inject dwdoc                                                   wikihtml  wikipdf
 !inject ebooks                          nt
 !inject editor           win  htmlhelp  nt                html
-!inject f77graph    dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
-!inject f77lr       dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
-!inject f_readme    dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject f77graph    dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject f77lr       dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject f_readme    dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject fbooks                          nt
 !inject fmedidoc
-!inject fpguide     dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
-!inject ftools      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
-!inject fuguide     dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
-!inject guitool                                  pdf      html  wikihtml  wikipdf
+!inject fpguide     dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject ftools      dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject fuguide     dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject guitool                                  pdf  ps  html  wikihtml  wikipdf
 !inject heapwalk         win  htmlhelp  nt                html
 !inject ide              win  htmlhelp  nt  os2           html
-!inject lguide      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject lguide      dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject owstl                                                   wikihtml  wikipdf
-!inject pguide      dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject pguide      dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject resacc           win  htmlhelp  nt                html
 !inject rescomp     dos  win  htmlhelp  nt  os2           html
 !inject resdlg           win  htmlhelp  nt                html
@@ -46,24 +46,24 @@
 !inject resmnu           win  htmlhelp  nt                html
 !inject resstr           win  htmlhelp  nt                html
 !inject spy              win  htmlhelp  nt                html
-!inject vi          dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject vi          dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
 !inject wasaxp
 !inject wbrw             win  htmlhelp  nt  os2           html
 !inject wccerrs     dos  win  htmlhelp  nt  os2           html  wikihtml  wikipdf
-!inject wd          dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
-!inject wddoc                                    pdf            wikihtml  wikipdf
+!inject wd          dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
+!inject wddoc                                    pdf  ps        wikihtml  wikipdf
 !inject wfcerrs     dos  win  htmlhelp  nt  os2           html  wikihtml  wikipdf
 !inject wjcerrs
 !inject wlnkerrs         win  htmlhelp  nt                html
-!inject wpidoc                                   pdf            wikihtml  wikipdf
+!inject wpidoc                                   pdf  ps        wikihtml  wikipdf
 !inject wpperrs     dos  win  htmlhelp  nt  os2           html  wikihtml  wikipdf
 !inject wprof       dos  win  htmlhelp  nt  os2           html
 !inject wrcerrs          win  htmlhelp  nt                html
 !inject zoom             win  htmlhelp  nt                html
 !inject cmix        dos  win                os2           html                     # depends on zoom, etc.
 !inject fmix        dos  win                os2           html                     # depends on zoom, etc.
-!inject wgmlref                                  pdf            wikihtml  wikipdf
-!inject wipfc       dos  win  htmlhelp  nt  os2  pdf      html  wikihtml  wikipdf
+!inject wgmlref                                  pdf  ps        wikihtml  wikipdf
+!inject wipfc       dos  win  htmlhelp  nt  os2  pdf  ps  html  wikihtml  wikipdf
 
 #
 # check configuration macros
@@ -100,16 +100,16 @@ books=$($(docset))
 #
 #############################################################
 
-!ifeq hbook foo
+!ifeq hbook clean
+
+# special definition for clean operation
+
+!else ifeq hbook foo
 # foo
 book_title=foo
 book_objs=$(objs_cmn)
 book_incs=$(incs_cmn)
 book_src=foo
-
-!else ifeq hbook clean
-
-# special definition for clean operation
 
 !else ifeq hbook c_readme
 # c_readme
