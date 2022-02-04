@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "exitwmsg.h"
 #include "enterdb.h"
 
-_WCRTDATA char volatile __WD_Present = 0;
+_WCRTDATA char volatile DEBUG_PRESENT_NAME = 0;
 
 _WCRTLINK int __EnterWVIDEO( char _WCFAR *string ) // this really needs to be far
 {
@@ -41,7 +42,7 @@ _WCRTLINK int __EnterWVIDEO( char _WCFAR *string ) // this really needs to be fa
     /* unused parameters */ (void)string;
 #endif
 
-    if( __WD_Present ) {
+    if( DebuggerPresent() ) {
         EnterDebuggerWithSignature( string );
         return( 1 );
     }

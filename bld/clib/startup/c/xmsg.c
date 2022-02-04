@@ -191,13 +191,9 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, int retcode )
 
 _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *msg, int retcode )
 {
-#if defined( __RDOS__ )
-#elif defined( __RDOSDEV__ )
-#else
     if( __EnterWVIDEO( msg ) )
         EXIT( retcode );
         // never return
-#endif
     __exit_with_msg( msg, retcode );
     // never return
 }
