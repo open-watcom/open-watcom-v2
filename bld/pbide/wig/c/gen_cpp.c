@@ -118,7 +118,7 @@ static void generateCodeFile( sru_file *sru );
 "                    \"jmp short L1\" \\\n"\
 "                    'W' 'V' 'I' 'D' 'E' 'O' \\\n"\
 "                    \"L1:\"\n"\
-"           Int3WithSignature( \"DLL Loaded\" );\n"\
+"            Int3WithSignature( \"DLL Loaded\" );\n"\
 "        }\n"\
 "    }\n"\
 "    return( 1 );\n"\

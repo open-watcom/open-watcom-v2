@@ -64,7 +64,6 @@
 #ifndef NDEBUG
     #include "dbg.h"
     #include "pragdefn.h"
-    #include "enterdb.h"
     #include "togglesd.h"
 #endif
 
@@ -471,9 +470,10 @@ static int front_end(           // FRONT-END PROCESSING
     } else {
         exit_status = makeExitStatus( WPP_FATAL );
     }
-#if defined( __WATCOMC__ )
-    DbgStmt( if( DebuggerPresent() ) \
-                 __trap() );
+#ifndef NDEBUG
+  #if defined( __WATCOMC__ )
+    CheckEnterDebugger();
+  #endif
 #endif
     return( exit_status );
 }

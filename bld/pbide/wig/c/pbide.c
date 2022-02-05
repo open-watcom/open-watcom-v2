@@ -89,15 +89,7 @@ int __stdcall DllMain( HINSTANCE hdll, DWORD reason, LPVOID reserved )
     say( "DLLMain", NULL );
 #if 0
     if( reason == DLL_PROCESS_ATTACH ) {
-        if( DebuggerPresent() ) {
-            extern void Int3WithSignature( char __far * );
-            #pragma aux Int3WithSignature parm caller [] = \
-                    "int 3" \
-                    "jmp short L1" \
-                    'W' 'V' 'I' 'D' 'E' 'O' \
-                    "L1:"
-            Int3WithSignature( "DLL Loaded" );
-        }
+        CheckEnterDebuggerWithMessage( "DLL Loaded" );
     }
 #endif
     hdll = hdll;

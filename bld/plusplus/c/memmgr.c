@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -314,7 +314,7 @@ static void cmemFini(           // COMPLETION
     if( _trmem_close( trackerHdl ) != 0 && !CompFlags.compile_failed ) {
         // we can't print an error message since we have no more memory
   #if defined( __WWATCOMC__ )
-        __trap();
+        EnterDebugger();
   #endif
     }
  #endif

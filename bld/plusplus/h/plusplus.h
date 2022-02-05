@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,9 +50,7 @@
 #include "wcpp.h"
 #include "target.h"
 #ifndef NDEBUG
-  #if defined( __WATCOMC__ )
-    #include "wtrap.h"
-  #endif
+    #include "enterdb.h"
 #endif
 #include "dbgzap.h"
 
