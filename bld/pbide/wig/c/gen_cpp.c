@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,7 @@
 #include "ytab.h"
 #include "list.h"
 #include "filelist.h"
+#include "enterdb.h"
 #include "gen_cpp.h"
 #include "pathgrp2.h"
 
@@ -106,8 +107,8 @@ static void generateCodeFile( sru_file *sru );
 "int __stdcall DLLMain( DWORD, DWORD reason, DWORD )\n"\
 "{\n"\
 "    if( reason == DLL_PROCESS_ATTACH ) {\n"\
-"        extern char __WD_Present;\n"\
-"        if( __WD_Present ) { // this is a hook for the Watcom debugger.\n"\
+"        extern char " DEBUG_SYM_STR( DEBUG_PRESENT_NAME ) ";\n"\
+"        if( " DEBUG_SYM_STR( DEBUG_PRESENT_NAME ) " ) { // this is a hook for the Watcom debugger.\n"\
 "            extern void Int3WithSignature( char __far * );\n"\
 "            #pragma aux Int3WithSignature parm caller [] = \\\n"\
 "                    \"int 3\" \\\n"\

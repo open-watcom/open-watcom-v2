@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ _WCRTLINK void __F_NAME(_assert,_wassert)( char *expr, char *fn, int line_num )
     /* Have to use snprintf() here. The error message can be arbitrarily long */
     __F_NAME(_snprintf,swprintf)( str, STR_SIZE, FMT_STRING, expr, fn, line_num );
 #ifndef __WIDECHAR__
-    if( __WD_Present ) {
+    if( DebuggerPresent() ) {
         char    *buf;
 
         buf = alloca( strlen( str ) + sizeof( TITLE_STRING ) + 1 );
