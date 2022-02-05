@@ -48,14 +48,14 @@ DGROUP group CONST,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
         extrn   WINMAIN         : near
 
 cFarProc MACRO name
-public "C",name
+        public "C",name
 name    label FWORD
               dd 0
               dw 0
 ENDM
 
 FarProc MACRO name
-public name
+        public name
 name    label FWORD
               dd 0
               dw 0
@@ -79,9 +79,11 @@ ENDM
 
 BEGTEXT segment use32 word public 'CODE'
         assume  cs:BEGTEXT
+
 forever label   near
         jmp short forever
         nop
+
         public ___begtext
 ___begtext label byte
         nop
@@ -101,8 +103,8 @@ TMPSTACK        equ     _STACKLOW ; location on stack to copy command line
 ;
 ; these variables must all be kept in order
 ;
+        public _LocalPtr
 _LocalPtr   dw  0
-public _LocalPtr
 
 ;
 ; This must correspond with structure definition wstart_vars in wininit.c
@@ -117,31 +119,37 @@ hThisInstance  dw   0
 hPrevInstance  dw   0
 lpCmdLine      dd   0
 cmdShow        dw   0
-public __no87
+        public __no87
 __no87         dw   0       ; non-zero => "NO87" environment var present
-public ___isPC98
+        public ___isPC98
 ___isPC98      dw   0       ; 0 - IBM PC, 1 - NEC PC-98
-; magical selectors for real memory
-public ___A000,___B000,___B800,___C000,___D000,___E000,___F000
+        ; magical selectors for real memory
+        public ___A000
 ___A000        dw   0
+        public ___B000
 ___B000        dw   0
+        public ___B800
 ___B800        dw   0
+        public ___C000
 ___C000        dw   0
+        public ___D000
 ___D000        dw   0
+        public ___E000
 ___E000        dw   0
+        public ___F000
 ___F000        dw   0
 
-; data ptrs
+        ; data ptrs
 cFarProc    _CodeSelectorBaseAddr
 cFarProc    _DataSelectorBaseAddr
 FarProc     __32BitCallBackAddr
 cFarProc    _DLLEntryAddr
 cFarProc    _WEPAddr
 
-public  __16BitCallBackAddr
+        public  __16BitCallBackAddr
 __16BitCallBackAddr dd 0
 
-; proc lists
+        ; proc lists
 FarProc     Invoke16BitFunctionAddr
 FarProc     __INT21ADDR
 FarProc     __WIN16THUNK1ADDR
@@ -168,14 +176,14 @@ _osminor    db 0          ; minor DOS version number
 __init_387_emulator db 0  ; to prevent emulator from coming in with
                           ;       -fpi
 
-public  "C",_pid
+        public  "C",_pid
 _pid        dw 0
-public  "C",_wincmdptr
+        public  "C",_wincmdptr
 _wincmdptr LABEL FWORD
 cmd_offset  dd 0
 cmd_seg     dw 0
 filename    db MAX_FILE_NAME dup(0)
-public  "C",__Is_DLL
+        public  "C",__Is_DLL
 __Is_DLL    label byte
 __inDLL     db 0               ; 0 => ordinary EXE, non-zero => DLL
 
@@ -203,8 +211,8 @@ STACK   segment para stack 'STACK'
 STACK   ends
 
 
-_BSS          segment word public 'BSS'
-_BSS          ends
+_BSS    segment word public 'BSS'
+_BSS    ends
 
 CONST   segment word public 'DATA'
 CONST   ends
@@ -384,13 +392,13 @@ __WEP   proc    far
         ret                             ; return
 __WEP   endp
 
-public __GETDS
+        public __GETDS
 __GETDS proc near
         mov     ds,cs:__saved_DS
         ret
 __GETDS endp
 
-public  __Int21
+        public  __Int21
 __Int21 proc    near
         push    ebp                     ; save ebp
         mov     ds,_LocalPtr            ; load extenders data segment
