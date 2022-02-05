@@ -46,7 +46,7 @@
  * con_putc -- output character to console
  */
 static prtf_callback_t con_putc; // setup calling convention
-static void PRTF_CALLBACK con_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
+static void PRTF_CALLBACK con_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     if( (UCHAR_TYPE)op_char == putch( (UCHAR_TYPE)op_char ) ) {
         specs->_output_count++;

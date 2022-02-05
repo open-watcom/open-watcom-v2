@@ -51,7 +51,7 @@
  * file_putc -- write a character to a file
  */
 static prtf_callback_t file_putc; // setup calling convention
-static void PRTF_CALLBACK file_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
+static void PRTF_CALLBACK file_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     __F_NAME(fputc,fputwc)( (UCHAR_TYPE)op_char, GET_SPECS_DEST( FILE, specs ) );
     specs->_output_count++;

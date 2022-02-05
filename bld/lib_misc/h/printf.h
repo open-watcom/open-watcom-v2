@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,14 +39,14 @@
 #if defined( __QNX__ ) && !defined( __STDC_WANT_LIB_EXT1__ ) && !defined( __WIDECHAR__ )
     #define PRTF_CHAR_TYPE  int
     #define PRTF_CALLBACK   __SLIB_CALLBACK
-    typedef void (__SLIB_CALLBACK prtf_callback_t)( PTR_SPECS, int );
+    typedef void (__SLIB_CALLBACK prtf_callback_t)( PTR_PRTF_SPECS, int );
   #if !defined(_M_I86)
     #pragma aux prtf_callback_t __far __parm [__eax] [__edx] __modify [__eax __edx]
   #endif
 #else
     #define PRTF_CHAR_TYPE  CHAR_TYPE
     #define PRTF_CALLBACK
-    typedef void prtf_callback_t( PTR_SPECS, CHAR_TYPE );
+    typedef void prtf_callback_t( PTR_PRTF_SPECS, CHAR_TYPE );
   #if defined( __WINDOWS_386__ )
     #ifdef __SW_3S
         #pragma aux prtf_callback_t __modify [__eax __edx __ecx __fs __gs]

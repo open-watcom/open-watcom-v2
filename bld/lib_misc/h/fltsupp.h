@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ extern "C" {
 // all
     typedef void        _type_EFG_cnvs2d( char *buf, double *value );
 // CLIB
-    typedef FAR_STRING  _type_EFG_Format( char *buffer, va_list *pargs, PTR_NEAROW_SPECS specs );
+    typedef FAR_STRING  _type_EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_SPECS specs );
 // CPPLIB
   #ifdef _LONG_DOUBLE_
     typedef void        _type_EFG_cnvd2ld( dbl_stk_ptr, ld_stk_ptr );

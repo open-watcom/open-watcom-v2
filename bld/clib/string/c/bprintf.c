@@ -50,7 +50,7 @@ typedef struct buf_limit {
  * buf_putc -- append a character to a string in memory
  */
 static prtf_callback_t buf_putc; // setup calling convention
-static void PRTF_CALLBACK buf_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
+static void PRTF_CALLBACK buf_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     buf_limit   *bufinfo;
 

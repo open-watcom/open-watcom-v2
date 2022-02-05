@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,8 +74,7 @@ typedef struct
     char                    _padding[2];    // to keep struct aligned
 } _mbcs_SPECS;
 
-#define NEAROW_SPECS        _mbcs_SPECS
-#define PTR_NEAROW_SPECS    _mbcs_SPECS PTR_PRTF_FAR
+#define PTR_MBCS_PRTF_SPECS _mbcs_SPECS PTR_PRTF_FAR
 
 typedef struct
 {
@@ -95,7 +94,11 @@ typedef struct
     wchar_t                 _pad_char;
 } _wide_SPECS;
 
-#define WIDE_SPECS          _wide_SPECS
+#ifdef __WIDECHAR__
+    #define PRTF_SPECS  _wide_SPECS
+#else
+    #define PRTF_SPECS  _mbcs_SPECS
+#endif
 
 /* specification flags... (values for _flags field above) */
 
@@ -116,12 +119,6 @@ typedef struct
 #define SPF_ZERO_PAD    0x8000
 #endif
 
-#ifdef __WIDECHAR__
-    #define SPECS       WIDE_SPECS
-#else
-    #define SPECS       NEAROW_SPECS
-#endif
-
-#define PTR_SPECS       SPECS PTR_PRTF_FAR
+#define PTR_PRTF_SPECS  PRTF_SPECS PTR_PRTF_FAR
 
 #endif

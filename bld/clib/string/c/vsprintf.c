@@ -53,7 +53,7 @@ typedef struct vswprtf_buf {
 } vswprtf_buf;
 
 static prtf_callback_t mem_putc; // setup calling convention
-static void PRTF_CALLBACK mem_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
+static void PRTF_CALLBACK mem_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     vswprtf_buf     *info;
 
@@ -68,7 +68,7 @@ static void PRTF_CALLBACK mem_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
 #else
 
 static prtf_callback_t mem_putc; // setup calling convention
-static void PRTF_CALLBACK mem_putc( PTR_SPECS specs, PRTF_CHAR_TYPE op_char )
+static void PRTF_CALLBACK mem_putc( PTR_PRTF_SPECS specs, PRTF_CHAR_TYPE op_char )
 {
     *( specs->_dest++ ) = op_char;
     specs->_output_count++;
