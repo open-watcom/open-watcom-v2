@@ -105,11 +105,10 @@ _WCRTDATA extern char volatile DEBUG_PRESENT_NAME;
 _WCRTDATA extern char volatile DEBUG_BREAK_ON_THROW_NAME;
 _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 #if defined( __WATCOMC__ ) && defined( _M_IX86 )
-#pragma aux DEBUG_PRESENT_NAME "*"
-#pragma aux DEBUG_BREAK_ON_THROW_NAME "*"
-#pragma aux DEBUG_BREAK_ON_CATCH_NAME "*"
+    #pragma aux DEBUG_PRESENT_NAME "*"
+    #pragma aux DEBUG_BREAK_ON_THROW_NAME "*"
+    #pragma aux DEBUG_BREAK_ON_CATCH_NAME "*"
 #endif
-
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 )
 
