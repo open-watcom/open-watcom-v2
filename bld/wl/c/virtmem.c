@@ -32,17 +32,17 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "walloca.h"
 #include "linkstd.h"
+#include "alloc.h"
+#include "virtmem.h"
+#include "walloca.h"
 #include "newmem.h"
 #include "msg.h"
-#include "alloc.h"
 #include "wlnkmsg.h"
 #include "ostype.h"
 #include "spillio.h"
 #include "loadfile.h"
 #include "fileio.h"
-#include "virtmem.h"
 
 
 /* flags used in the virtual memory structure */
