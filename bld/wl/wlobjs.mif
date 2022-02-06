@@ -98,6 +98,7 @@ common_objs = &
     $(_subdir_)symmem.obj &
     $(_subdir_)symtrace.obj &
     $(_subdir_)toc.obj &
+    $(_subdir_)virtmem.obj &
     $(_subdir_)wlink.obj &
     $(_subdir_)wlmem.obj &
     $(_subdir_)wlnkmsg.obj &
@@ -110,12 +111,6 @@ common_rc_objs = &
     $(_subdir_)mergedir.obj &
     $(_subdir_)sharedio.obj &
     $(_subdir_)rcstr.obj
-
-!ifeq use_virtmem 1
-wlink_virtmem_objs = $(_subdir_)virtmem.obj
-!else
-wlink_virtmem_objs = $(_subdir_)virtpage.obj
-!endif
 
 !ifdef DLLS_IMPLEMENTED
 wlink_ide_objs = $(_subdir_)idedrv.obj
@@ -139,7 +134,7 @@ wlink_objs_rdos  = $(_subdir_)rdosio.obj
 wlink_orl_objs = $(_subdir_)orlstubs.obj
 !endif
 
-wlink_template = $(common_objs) $(common_rc_objs) $(wlink_virtmem_objs) $(wlink_ide_objs) $(wlink_objs_$(host_os)) $(wlink_orl_objs)
+wlink_template = $(common_objs) $(common_rc_objs) $(wlink_ide_objs) $(wlink_objs_$(host_os)) $(wlink_orl_objs)
 
 comp_objs_drv = $(wlink_drv_objs)
 _subdir_ = $(dll_subdir)/
