@@ -168,8 +168,8 @@ typedef union {
 #define TINY_ALLOC_CUTOFF _2KB
 
 typedef struct vmemblock {
-    struct vmemblock *  next;
-    struct vmemblock *  prev;
+    struct vmemblock    *next;
+    struct vmemblock    *prev;
     char                mem[1];
 } vmemblock;
 
@@ -660,7 +660,7 @@ virt_mem AllocStg( virt_mem_size size )
         }
         VMemBlocks = ptr;
     }
-    return( (virt_mem) ptr->mem );
+    return( (virt_mem)ptr->mem );
 #endif
 }
 
