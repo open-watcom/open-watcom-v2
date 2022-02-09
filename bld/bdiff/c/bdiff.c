@@ -63,11 +63,10 @@ static void Usage( void )
     exit( EXIT_FAILURE );
 }
 
-static algorithm ParseArgs( int argc, char **argv )
+static void ParseArgs( int argc, char **argv )
 {
     char        **arg;
     char        *curr;
-    algorithm   alg;
 
     newName = NULL;
     if( argc < 4 ) {
@@ -113,46 +112,19 @@ static algorithm ParseArgs( int argc, char **argv )
             break;
         }
     }
-    alg = ALG_NOTHING;
-#ifdef USE_DBGINFO
-    if( NewSymName && access( NewSymName, R_OK ) != -1 ) {
-        alg = ALG_ONLY_NEW;
-        if( OldSymName && access( OldSymName, R_OK ) != -1 ) {
-            alg = ALG_BOTH;
-        }
-    }
-#endif
-    return( alg );
-}
-
-
-void FindRegionsAlg( algorithm alg )
-{
-    switch( alg ) {
-    case ALG_NOTHING:
-        FindRegions();
-        break;
-#ifdef USE_DBGINFO
-    case ALG_ONLY_NEW:
-    case ALG_BOTH:
-        SymbolicDiff( alg, SrcPath, TgtPath );
-        break;
-#endif
-    }
 }
 
 
 int main( int argc, char **argv )
 {
     int         rc;
-    algorithm   alg;
 
     if( !MsgInit() )
         return( EXIT_FAILURE );
-    alg = ParseArgs( argc, argv );
+    ParseArgs( argc, argv );
     SrcPath = argv[1];
     TgtPath = argv[2];
-    rc = DoBdiff( SrcPath, TgtPath, newName, argv[3], alg );
+    rc = DoBdiff( SrcPath, TgtPath, newName, argv[3], false );
     MsgFini();
     return( rc );
 }

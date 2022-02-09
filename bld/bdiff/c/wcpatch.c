@@ -47,19 +47,10 @@
 
 #define SKIP_ENTRY(e)   ((e->d_attr & _A_SUBDIR) && e->d_name[0] == '.' && (e->d_name[1] == '\0' || dire->d_name[1] == '.' && e->d_name[2] == '\0'))
 
-struct {
+static struct {
     size_t  origSrcDirLen;
     size_t  origTgtDirLen;
 } glob;
-
-static region       *SimilarRegions;
-static region       *DiffRegions;
-static region       *HoleRegions;
-static foff         SimilarSize;
-static foff         NumDiffs;
-static foff         HolesInRegion;
-static foff         HoleCount[3];
-static foff         HoleHeaders;
 
 static int DirRecurse( const char *srcDir, const char *tgtDir );
 
@@ -103,37 +94,6 @@ static void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
     qsort( Dirs, dir, sizeof( char * ), cmpStrings );
 }
 
-void FindRegionsAlg( algorithm alg )
-{
-    /* unused parameters */ (void)alg;
-
-    FindRegions();
-}
-
-static int _DoBdiff( const char *srcPath, const char *tgtPath, const char *new_name )
-{
-    int         i;
-
-    /* initialize static variables each time */
-    SimilarRegions = NULL;
-    DiffRegions = NULL;
-    HoleRegions = NULL;
-    SimilarSize = 0;
-    NumHoles = 0;
-    NumDiffs = 0;
-    DiffSize = 0;
-    HolesInRegion = 0;
-    HoleHeaders = 0;
-    for( i = 0; i < 3; i += 1 ) {
-        HoleCount[i] = 0;
-    }
-
-    init_diff();
-
-    return( DoBdiff( srcPath, tgtPath, new_name, "", ALG_NOTHING ) );
-}
-
-
 static int FileCmp( const char *SrcPath, const char *TgtPath, const char *name )
 {
     FILE    *srcF;
@@ -157,7 +117,7 @@ static int FileCmp( const char *SrcPath, const char *TgtPath, const char *name )
     if( different ) {
         printf( "%s is different.  Patching...\n", name );
         PatchWriteFile( PATCH_FILE_PATCHED, &TgtPath[glob.origTgtDirLen + 1] );
-        return( _DoBdiff( SrcPath, TgtPath, name ) );
+        return( DoBdiff( SrcPath, TgtPath, name, "", true ) );
     }
     return( 0 );
 }

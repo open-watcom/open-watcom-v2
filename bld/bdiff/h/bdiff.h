@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,12 +70,6 @@ typedef enum {
         CMD_HOLES,
         CMD_ITER_HOLES
 } patch_cmd;
-
-typedef enum {
-    ALG_NOTHING,        /* find differences without extra info */
-    ALG_ONLY_NEW,       /* only the new exe's debugging info is available */
-    ALG_BOTH,           /* both exe's have debugging info available */
-} algorithm;
 
 typedef struct region {
     struct region       *next;

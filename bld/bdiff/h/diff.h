@@ -37,7 +37,6 @@
 
 extern byte     *PatchBuffer;
 extern byte     *OldFile;
-extern byte     *NewFile;
 
 extern char     *OldSymName;
 extern char     *NewSymName;
@@ -45,32 +44,6 @@ extern char     *NewSymName;
 extern bool     AppendPatchLevel;
 extern bool     Verbose;
 
-extern foff     DiffSize;
-extern foff     EndOld;
-extern foff     EndNew;
-extern foff     NumHoles;
-
 extern char     *CommentFile;
 
-extern int      OldCorrection;
-extern int      NewCorrection;
-
-extern void     *ReadIn( const char *name, size_t buff_size, size_t read_size );
-extern foff     FileSize( const char *name, int *correction );
-extern void     ScanSyncString( const char *syncString );
-extern void     FindRegions( void );
-extern void     FindRegionsAlg( algorithm alg );
-extern void     MakeHoleArray( void );
-extern void     ProcessHoleArray( int write_holes );
-extern long     HolesToDiffs( void );
-extern void     WritePatchFile( const char *name, const char *new_name );
-extern void     FreeHoleArray( void );
-extern void     VerifyCorrect( const char *name );
-extern void     SortHoleArray( void );
-#ifdef USE_DBGINFO
-extern void     SymbolicDiff( algorithm alg, char *old_exe, char *new_exe );
-#endif
-
-extern void     print_stats( long savings );
-extern void     init_diff( void );
 extern void     dump( void );

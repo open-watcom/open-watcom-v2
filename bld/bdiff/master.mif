@@ -2,8 +2,6 @@ proj_name = bdiff
 
 bdiff_autodepend = .AUTODEPENDS
 
-#debug_bdiff = 1
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -53,15 +51,11 @@ exetarg_libs        = $(wres_lib)
 # WCPATCH. Create patch.
 #
 exetarg_prebuild_objs = $(subdir_wcpatch)
-!ifdef debug_bdiff
-exetarg_objs_debug    = $(subdir_wcpatch)/symtab.obj
-!endif
 exetarg_objs = &
     $(subdir_wcpatch)/dopatch.obj &
     $(subdir_wcpatch)/msg.obj &
     $(subdir_wcpatch)/wcptchio.obj &
     $(subdir_wcpatch)/wcpatch.obj &
-    $(subdir_wcpatch)/wbdiff.obj &
     $(subdir_wcpatch)/diff.obj $(exetarg_objs_debug)
 exetarg_res_wresui  = wcpatch.res
 exetarg_name        = wcpatch
@@ -118,14 +112,10 @@ exetarg_name        = bdump
 # BDIFF.
 #
 exetarg_prebuild_objs = $(subdir_bdiff) dusage.gh
-!ifdef debug_bdiff
-exetarg_objs_debug    = $(subdir_bdiff)/symtab.obj
-!endif
 exetarg_objs = &
     $(subdir_bdiff)/bdiff.obj &
     $(subdir_bdiff)/diff.obj &
     $(subdir_bdiff)/dopatch.obj &
-    $(subdir_bdiff)/wbdiff.obj &
     $(subdir_bdiff)/msg.obj $(exetarg_objs_debug)
 exetarg_res_wresui  = bdiff.res
 exetarg_name        = bdiff
@@ -172,10 +162,6 @@ $(exetarg_$(host_os)_manif_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
 
 # implicit rules
 #################
-
-!ifdef debug_bdiff
-extra_cpp_debug_flags = -DUSE_DBGINFO
-!endif
 
 extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH $(extra_cpp_debug_flags)
 defrule_key = wcpatch

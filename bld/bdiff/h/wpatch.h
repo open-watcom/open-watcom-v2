@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,6 @@
 #define __WPATCH_H_
 
 extern void     PatchAddFile( const char *path );
-extern int      DoBdiff( const char *srcPath, const char *tgtPath, const char *new_name, const char *name, algorithm alg );
+extern int      DoBdiff( const char *srcPath, const char *tgtPath, const char *new_name, const char *name, bool init );
 
 #endif
