@@ -119,12 +119,15 @@ int main( int argc, char **argv )
 {
     int         rc;
 
-    if( !MsgInit() )
-        return( EXIT_FAILURE );
-    ParseArgs( argc, argv );
-    SrcPath = argv[1];
-    TgtPath = argv[2];
-    rc = DoBdiff( SrcPath, TgtPath, newName, argv[3], false );
-    MsgFini();
+    rc = EXIT_FAILURE;
+    if( MsgInit() ) {
+        ParseArgs( argc, argv );
+        SrcPath = argv[1];
+        TgtPath = argv[2];
+        if( DoBdiff( SrcPath, TgtPath, newName, argv[3], false ) == 0 ) {
+            rc = EXIT_SUCCESS;
+        }
+        MsgFini();
+    }
     return( rc );
 }

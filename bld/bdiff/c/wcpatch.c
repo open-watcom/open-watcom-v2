@@ -266,34 +266,38 @@ static int DirRecurse( const char *srcDir, const char *tgtDir )
     return( DirCmpFiles( srcDir, srcDirs,  tgtDir, tgtDirs,  1 ) );
 }
 
-static void WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )
+static int WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )
 {
     PatchWriteOpen( patch_name );
     DirRecurse( SrcDirName, TgtDirName );
     PatchWriteClose();
+    return( EXIT_SUCCESS );
 }
 
 int main( int argc, char *argv[] )
 {
-    MsgInit();
-    if( argc != 4 ) {
-        puts( "Usage: wcpatch source-dir target-dir patchfile" );
-        puts( "where" );
-        puts( "    source-dir   the directory containing the original files" );
-        puts( "    target-dir   the directory containing the modified files" );
-        puts( "    patchfile    the path to store the resulting patchfile in" );
-        puts( "" );
-        exit( -2 );
-    } else {
-        puts( "Watcom Create Patch (WCPATCH) version 11.0" );
-        puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.");
-        puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc.");
-        puts( "" );
-    }
+    int     rc;
 
-    glob.origSrcDirLen = strlen( argv[1] );
-    glob.origTgtDirLen = strlen( argv[2] );
-    WPatchCreate( argv[1], argv[2], argv[3] );
-    MsgFini();
-    return( EXIT_SUCCESS );
+    rc = EXIT_FAILURE;
+    if( MsgInit() ) {
+        if( argc != 4 ) {
+            puts( "Usage: wcpatch source-dir target-dir patchfile" );
+            puts( "where" );
+            puts( "    source-dir   the directory containing the original files" );
+            puts( "    target-dir   the directory containing the modified files" );
+            puts( "    patchfile    the path to store the resulting patchfile in" );
+            puts( "" );
+        } else {
+            puts( "Watcom Create Patch (WCPATCH) version 11.0" );
+            puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.");
+            puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc.");
+            puts( "" );
+
+            glob.origSrcDirLen = strlen( argv[1] );
+            glob.origTgtDirLen = strlen( argv[2] );
+            rc = WPatchCreate( argv[1], argv[2], argv[3] );
+        }
+        MsgFini();
+    }
+    return( rc );
 }

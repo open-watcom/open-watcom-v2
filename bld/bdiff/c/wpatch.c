@@ -126,7 +126,7 @@ static void DirDelete( char *tgtDir )
     remove( tgtDir );
 }
 
-static void WPatchApply( const char *patch_name, const char *TgtPath )
+static int WPatchApply( const char *patch_name, const char *TgtPath )
 {
     short   flag;
     char    RelPath[PATCH_MAX_PATH_SIZE];
@@ -164,25 +164,30 @@ static void WPatchApply( const char *patch_name, const char *TgtPath )
         }
     }
     PatchReadClose();
+    return( EXIT_SUCCESS );
 }
 
 int main( int argc, char *argv[] )
 {
-    MsgInit();
-    if( argc != 3 ) {
-        puts( "Usage: WPATCH patchfile target-dir" );
-        puts( "    where target-dir is the directory containing files to be modified" );
-        puts( "    and patchfile contains patch information for modifying target-dir" );
-        puts( "    (as created by WCPATCH)" );
-        puts( "" );
-        exit( -2 );
-    } else {
-        puts( "Watcom Patch version 11.0" );
-        puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries." );
-        puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc." );
-        puts( "" );
+    int     rc;
+
+    rc = EXIT_FAILURE;
+    if( MsgInit() ) {
+        if( argc != 3 ) {
+            puts( "Usage: WPATCH patchfile target-dir" );
+            puts( "    where target-dir is the directory containing files to be modified" );
+            puts( "    and patchfile contains patch information for modifying target-dir" );
+            puts( "    (as created by WCPATCH)" );
+            puts( "" );
+        } else {
+            puts( "Watcom Patch version 11.0" );
+            puts( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries." );
+            puts( "All rights reserved.  Watcom is a trademark of Sybase, Inc." );
+            puts( "" );
+
+            rc = WPatchApply( argv[1], argv[2] );
+        }
+        MsgFini();
     }
-    WPatchApply( argv[1], argv[2] );
-    MsgFini();
-    return( EXIT_SUCCESS );
+    return( rc );
 }
