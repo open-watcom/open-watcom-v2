@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -805,8 +805,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
                     break;
                 }
             }
-            ret = SendMessage( einfo->info->parent, ACCEL_PLEASE_OPENME, 0,
-                               (LPARAM)einfo->hndl );
+            ret = SendMessage( einfo->info->parent, ACCEL_PLEASE_OPENME, 0, (LPARAM)einfo->hndl );
             ret = FALSE;
             break;
 
@@ -972,8 +971,7 @@ bool WQuerySaveRes( WAccelEditInfo *einfo, bool force_exit )
             if( einfo->info->stand_alone ) {
                 return( WSaveObject( einfo, FALSE, FALSE ) );
             } else {
-                SendMessage( einfo->info->parent, ACCEL_PLEASE_SAVEME, 0,
-                             (LPARAM)einfo->hndl );
+                SendMessage( einfo->info->parent, ACCEL_PLEASE_SAVEME, 0, (LPARAM)einfo->hndl );
             }
         } else if( ret == IDCANCEL ) {
             return( FALSE );

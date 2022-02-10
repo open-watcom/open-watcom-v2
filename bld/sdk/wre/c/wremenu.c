@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -332,7 +332,7 @@ WREMenuSession *WREStartMenuSession( WRECurrentResInfo *curr )
     session->lnode = curr->lang;
     session->rinfo = curr->info;
 
-    session->hndl = WRMenuStartEdit( session->info );
+    session->hndl = WMenuStartEdit( session->info );
 
     if( session->hndl != 0 ) {
         WREInsertObject( &WREMenuSessions, session );

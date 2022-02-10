@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -190,7 +190,7 @@ void WRESEAPI WStringFini( void )
     }
 }
 
-WStringHandle WRESEAPI WRStringStartEdit( WStringInfo *info )
+WStringHandle WRESEAPI WStringStartEdit( WStringInfo *info )
 {
     bool            ok;
     WStringEditInfo *einfo;
@@ -757,8 +757,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             break;
 
         case IDM_STR_UPDATE:
-            SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0,
-                         (LPARAM)einfo->hndl );
+            SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0, (LPARAM)einfo->hndl );
             pass_to_def = false;
             break;
 
@@ -770,8 +769,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
                     break;
                 }
             }
-            ret = SendMessage( einfo->info->parent, STRING_PLEASE_OPENME, 0,
-                               (LPARAM)einfo->hndl );
+            ret = SendMessage( einfo->info->parent, STRING_PLEASE_OPENME, 0, (LPARAM)einfo->hndl );
             ret = FALSE;
             break;
 
@@ -924,8 +922,7 @@ bool WQuerySaveRes( WStringEditInfo *einfo, bool force_exit )
             if( einfo->info->stand_alone ) {
                 ok = WSaveObject( einfo, FALSE, FALSE );
             } else {
-                SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0,
-                             (LPARAM)einfo->hndl );
+                SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0, (LPARAM)einfo->hndl );
             }
         } else if( msg_ret == IDCANCEL ) {
             ok = false;
