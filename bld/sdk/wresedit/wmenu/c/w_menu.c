@@ -157,12 +157,13 @@ void WMakeDataFromMenu( WMenu *menu, void **data, size_t *size )
 
 bool WMakeMenuItemFromData( void **data, size_t *size, MenuItem **new, bool is32bit )
 {
-    MenuItemNormal      *normal;
-    char                *text;
+    char                *pdata;
     char                *itext;
-    size_t              msize;
     size_t              tlen;
     size_t              itlen;
+    MenuFlags           item_flags;
+    unsigned            item_id;
+    
 
     if( data == NULL || *data == NULL || size == NULL || *size == 0 || new == NULL ) {
         return( false );
@@ -173,34 +174,31 @@ bool WMakeMenuItemFromData( void **data, size_t *size, MenuItem **new, bool is32
         return( false );
     }
 
-    normal = (MenuItemNormal *)*data;
-    (*new)->Item.Normal.ItemFlags = normal->ItemFlags;
-    (*new)->IsPopup = ((normal->ItemFlags & MENU_POPUP) != 0);
-    msize = sizeof( MenuFlags );
-    if( (*new)->IsPopup ) {
-        text = (char *)(*data);
-        text += msize;
-    } else {
-        if( (normal->ItemFlags & ~MENU_ENDMENU) == 0 && normal->ItemID == 0 ) {
-            (*new)->Item.Normal.ItemFlags |= MENU_SEPARATOR;
+    pdata = *data;
+    item_flags = *(WORD *)pdata;
+    pdata += sizeof( WORD );
+    if( (item_flags & MENU_POPUP) == 0 ) {
+        item_id = *(WORD *)pdata;
+        pdata += sizeof( WORD );
+        if( (item_flags & ~MENU_ENDMENU) == 0 && item_id == 0 ) {
+            item_flags |= MENU_SEPARATOR;
         }
-        (*new)->Item.Normal.ItemID = normal->ItemID;
-        msize += sizeof( uint_16 );
-        text = (char *)(*data);
-        text += msize;
+        (*new)->Item.Normal.ItemID = item_id;
     }
-    tlen = WRStrlen( text, is32bit ) + 1;
+    (*new)->Item.Normal.ItemFlags = item_flags;
+    (*new)->IsPopup = ((item_flags & MENU_POPUP) != 0);
+    tlen = WRStrlen( pdata, is32bit ) + 1;
     if( is32bit ) {
         tlen++;
     }
 
     if( is32bit ) {
         itext = NULL;
-        WRunicode2mbcs( text, &itext, &itlen );
+        WRunicode2mbcs( pdata, &itext, &itlen );
     } else {
         itext = (char *)WRMemAlloc( tlen );
         if( itext != NULL ) {
-            memcpy( itext, text, tlen );
+            memcpy( itext, pdata, tlen );
         }
     }
 
@@ -214,18 +212,16 @@ bool WMakeMenuItemFromData( void **data, size_t *size, MenuItem **new, bool is32
     } else {
         (*new)->Item.Normal.ItemText = itext;
     }
-    text += tlen;
-    msize += tlen;
-
-    *data = text;
-    if( *size >= msize ) {
-        *size = *size - msize;
-    } else {
-        *size = 0;
-        return( false );
+    pdata += tlen;
+    tlen = pdata - *data;
+    *data = pdata;
+    if( *size >= tlen ) {
+        *size -= tlen;
+        return( true );
     }
+    *size = 0;
+    return( false );
 
-    return( true );
 }
 
 bool WAllocMenuEntryFromData( void **data, size_t *size, WMenuEntry **entry, bool is32bit )
