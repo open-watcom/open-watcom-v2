@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -324,6 +324,7 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     char        *tmp;
     char        *name;
     pgroup2     pg;
+    bool        use_rename;
 
     if( info->save_name == NULL ) {
         return( false );
@@ -406,6 +407,10 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     }
 
     if( tmp != NULL ) {
+        if( backup && WRFileExists( tmp ) ) {
+            use_rename = ( tmp != NULL && stricmp( tmp, info->save_name ) );
+            ok = WRBackupFile( tmp, use_rename );
+        }
         ok = ( ok && WRRenameFile( tmp, info->save_name ) );
         MemFree( info->save_name );
         info->save_name = tmp;
