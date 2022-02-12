@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,56 +66,56 @@ static bool WRGetWinInfo( HWND, WRSelectImageInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-void WRAPI WRFreeSelectImageInfo( WRSelectImageInfo *info )
+void WRAPI WRFreeSelectImageInfo( WRSelectImageInfo *siinfo )
 {
-    if( info != NULL ) {
-        MemFree( info );
+    if( siinfo != NULL ) {
+        MemFree( siinfo );
     }
 }
 
-WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, HELPFUNC help_callback )
+WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *info, HELPFUNC help_callback )
 {
     DLGPROC             dlgproc;
     HINSTANCE           inst;
     INT_PTR             modified;
-    WRSelectImageInfo   *info;
+    WRSelectImageInfo   *siinfo;
 
-    if( rinfo == NULL ) {
-        return( NULL );
-    }
-
-    info = (WRSelectImageInfo *)MemAlloc( sizeof( WRSelectImageInfo ) );
     if( info == NULL ) {
         return( NULL );
     }
-    memset( info, 0, sizeof( WRSelectImageInfo ) );
 
-    info->help_callback = help_callback;
-    info->info = rinfo;
+    siinfo = (WRSelectImageInfo *)MemAlloc( sizeof( WRSelectImageInfo ) );
+    if( siinfo == NULL ) {
+        return( NULL );
+    }
+    memset( siinfo, 0, sizeof( WRSelectImageInfo ) );
+
+    siinfo->help_callback = help_callback;
+    siinfo->info = info;
 
     inst = WRGetInstance();
 
     dlgproc = MakeProcInstance_DLG( WRSelectImageDlgProc, inst );
 
-    modified = JDialogBoxParam( inst, "WRSelectImage", parent, dlgproc, (LPARAM)(LPVOID)info );
+    modified = JDialogBoxParam( inst, "WRSelectImage", parent, dlgproc, (LPARAM)(LPVOID)siinfo );
 
     FreeProcInstance_DLG( dlgproc );
 
     if( modified == -1 || modified == IDCANCEL ) {
-        MemFree( info );
-        info = NULL;
+        MemFree( siinfo );
+        siinfo = NULL;
     }
 
-    return( info );
+    return( siinfo );
 }
 
-void WRSetEntries( HWND hdlg, WRSelectImageInfo *info )
+void WRSetEntries( HWND hdlg, WRSelectImageInfo *siinfo )
 {
     HWND                lbox;
     WResTypeNode        *tnode;
     char                *empty_str;
 
-    if( info == NULL || info->info == NULL || hdlg == (HWND)NULL ) {
+    if( siinfo == NULL || siinfo->info == NULL || hdlg == (HWND)NULL ) {
         return;
     }
 
@@ -125,7 +125,7 @@ void WRSetEntries( HWND hdlg, WRSelectImageInfo *info )
     }
     SendMessage( lbox, LB_RESETCONTENT, 0, 0 );
 
-    tnode = WRFindTypeNode( info->info->dir, info->type, NULL );
+    tnode = WRFindTypeNode( siinfo->info->dir, siinfo->type, NULL );
     if( tnode == NULL ) {
         empty_str = WRAllocRCString( WR_EMPTY );
         if( empty_str != NULL ) {
@@ -139,45 +139,45 @@ void WRSetEntries( HWND hdlg, WRSelectImageInfo *info )
     SendMessage( lbox, LB_SETCURSEL, 0, 0 );
 }
 
-static bool WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
+static bool WRSetWinInfo( HWND hdlg, WRSelectImageInfo *siinfo )
 {
     WResTypeNode        *tnode;
     bool                lbox_set;
 
-    if( info == NULL || hdlg == (HWND)NULL ) {
+    if( siinfo == NULL || hdlg == (HWND)NULL ) {
         return( false );
     }
 
     lbox_set = false;
 
-    tnode = WRFindTypeNode( info->info->dir, RESOURCE2INT( RT_BITMAP ), NULL );
+    tnode = WRFindTypeNode( siinfo->info->dir, RESOURCE2INT( RT_BITMAP ), NULL );
     if( tnode != NULL ) {
         CheckDlgButton( hdlg, IDM_SELIMGBMP, BST_CHECKED );
-        info->type = RESOURCE2INT( RT_BITMAP );
-        WRSetEntries( hdlg, info );
+        siinfo->type = RESOURCE2INT( RT_BITMAP );
+        WRSetEntries( hdlg, siinfo );
         lbox_set = true;
     } else {
         EnableWindow( GetDlgItem( hdlg, IDM_SELIMGBMP ), FALSE );
     }
 
-    tnode = WRFindTypeNode( info->info->dir, RESOURCE2INT( RT_GROUP_CURSOR ), NULL );
+    tnode = WRFindTypeNode( siinfo->info->dir, RESOURCE2INT( RT_GROUP_CURSOR ), NULL );
     if( tnode != NULL ) {
         if( !lbox_set ) {
             CheckDlgButton( hdlg, IDM_SELIMGCUR, BST_CHECKED );
-            info->type = RESOURCE2INT( RT_GROUP_CURSOR );
-            WRSetEntries( hdlg, info );
+            siinfo->type = RESOURCE2INT( RT_GROUP_CURSOR );
+            WRSetEntries( hdlg, siinfo );
             lbox_set = true;
         }
     } else {
         EnableWindow( GetDlgItem( hdlg, IDM_SELIMGCUR ), FALSE );
     }
 
-    tnode = WRFindTypeNode( info->info->dir, RESOURCE2INT( RT_GROUP_ICON ), NULL );
+    tnode = WRFindTypeNode( siinfo->info->dir, RESOURCE2INT( RT_GROUP_ICON ), NULL );
     if( tnode != NULL ) {
         if( !lbox_set ) {
             CheckDlgButton( hdlg, IDM_SELIMGICO, BST_CHECKED );
-            info->type = RESOURCE2INT( RT_GROUP_ICON );
-            WRSetEntries( hdlg, info );
+            siinfo->type = RESOURCE2INT( RT_GROUP_ICON );
+            WRSetEntries( hdlg, siinfo );
             lbox_set = true;
         }
     } else {
@@ -191,12 +191,12 @@ static bool WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     return( lbox_set );
 }
 
-static bool WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
+static bool WRGetWinInfo( HWND hdlg, WRSelectImageInfo *siinfo )
 {
     HWND        lbox;
     int         index;
 
-    if( info == NULL || info->info == NULL || hdlg == (HWND)NULL ) {
+    if( siinfo == NULL || siinfo->info == NULL || hdlg == (HWND)NULL ) {
         return( false );
     }
 
@@ -210,8 +210,8 @@ static bool WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
         return( false );
     }
 
-    info->lnode = (WResLangNode *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
-    if( info->lnode == NULL ) {
+    siinfo->lnode = (WResLangNode *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
+    if( siinfo->lnode == NULL ) {
         return( false );
     }
 
@@ -220,7 +220,7 @@ static bool WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
 
 WINEXPORT INT_PTR CALLBACK WRSelectImageDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    WRSelectImageInfo   *info;
+    WRSelectImageInfo   *siinfo;
     bool                ret;
 
     ret = false;
@@ -231,13 +231,13 @@ WINEXPORT INT_PTR CALLBACK WRSelectImageDlgProc( HWND hDlg, UINT message, WPARAM
         break;
 
     case WM_INITDIALOG:
-        info = (WRSelectImageInfo *)lParam;
-        if( info == NULL ) {
+        siinfo = (WRSelectImageInfo *)lParam;
+        if( siinfo == NULL ) {
             EndDialog( hDlg, FALSE );
         }
-        SET_DLGDATA( hDlg, info );
+        SET_DLGDATA( hDlg, siinfo );
         WRRegisterDialog( hDlg );
-        if( !WRSetWinInfo( hDlg, info ) ) {
+        if( !WRSetWinInfo( hDlg, siinfo ) ) {
             EndDialog( hDlg, FALSE );
         }
         ret = true;
@@ -248,19 +248,19 @@ WINEXPORT INT_PTR CALLBACK WRSelectImageDlgProc( HWND hDlg, UINT message, WPARAM
         break;
 
     case WM_COMMAND:
-        info = (WRSelectImageInfo *)GET_DLGDATA( hDlg );
+        siinfo = (WRSelectImageInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDM_SELIMGHELP:
-            if( info != NULL && info->help_callback != NULL ) {
-                info->help_callback();
+            if( siinfo != NULL && siinfo->help_callback != NULL ) {
+                siinfo->help_callback();
             }
             break;
 
         case IDOK:
-            if( info == NULL ) {
+            if( siinfo == NULL ) {
                 EndDialog( hDlg, FALSE );
                 ret = true;
-            } else if( WRGetWinInfo( hDlg, info ) ) {
+            } else if( WRGetWinInfo( hDlg, siinfo ) ) {
                 EndDialog( hDlg, TRUE );
                 ret = true;
             }
@@ -275,9 +275,9 @@ WINEXPORT INT_PTR CALLBACK WRSelectImageDlgProc( HWND hDlg, UINT message, WPARAM
             if( GET_WM_COMMAND_CMD( wParam, lParam ) != BN_CLICKED ) {
                 break;
             }
-            if( info->type != RESOURCE2INT( RT_BITMAP ) ) {
-                info->type = RESOURCE2INT( RT_BITMAP );
-                WRSetEntries( hDlg, info );
+            if( siinfo->type != RESOURCE2INT( RT_BITMAP ) ) {
+                siinfo->type = RESOURCE2INT( RT_BITMAP );
+                WRSetEntries( hDlg, siinfo );
             }
             break;
 
@@ -285,9 +285,9 @@ WINEXPORT INT_PTR CALLBACK WRSelectImageDlgProc( HWND hDlg, UINT message, WPARAM
             if( GET_WM_COMMAND_CMD( wParam, lParam ) != BN_CLICKED ) {
                 break;
             }
-            if( info->type != RESOURCE2INT( RT_GROUP_CURSOR ) ) {
-                info->type = RESOURCE2INT( RT_GROUP_CURSOR );
-                WRSetEntries( hDlg, info );
+            if( siinfo->type != RESOURCE2INT( RT_GROUP_CURSOR ) ) {
+                siinfo->type = RESOURCE2INT( RT_GROUP_CURSOR );
+                WRSetEntries( hDlg, siinfo );
             }
             break;
 
@@ -295,9 +295,9 @@ WINEXPORT INT_PTR CALLBACK WRSelectImageDlgProc( HWND hDlg, UINT message, WPARAM
             if( GET_WM_COMMAND_CMD( wParam, lParam ) != BN_CLICKED ) {
                 break;
             }
-            if( info->type != RESOURCE2INT( RT_GROUP_ICON ) ) {
-                info->type = RESOURCE2INT( RT_GROUP_ICON );
-                WRSetEntries( hDlg, info );
+            if( siinfo->type != RESOURCE2INT( RT_GROUP_ICON ) ) {
+                siinfo->type = RESOURCE2INT( RT_GROUP_ICON );
+                WRSetEntries( hDlg, siinfo );
             }
             break;
         }
