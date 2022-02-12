@@ -1244,10 +1244,10 @@ void WriteObjModule( void )
         put_private_proc_in_public_table();
     }
 #endif
-    if( Options.module_name != NULL ) {
-        mod_name = Options.module_name;
-    } else {
+    if( Options.debug_info || Options.module_name == NULL ) {
         mod_name = ModuleInfo.srcfile->fullname;
+    } else {
+        mod_name = Options.module_name;
     }
     for( ;; ) {
         if( !write_to_file || Options.error_count > 0 )
