@@ -31,38 +31,53 @@
 ****************************************************************************/
 
 
-#ifndef RESACCEL_INCLUDED
-#define RESACCEL_INCLUDED
+#include "layer0.h"
+#include "filefmt.h"
+#include "read.h"
+#include "resaccel.h"
+#include "reserr.h"
+#include "wresrtns.h"
 
-typedef struct AccelTableEntry32 {
-    uint_16     Flags;
-    uint_16     Ascii;
-    uint_16     Id;
-    uint_16     Unknown;            /* I don't know what this field is for. */
-} AccelTableEntry32;                /* MS makes it 0. (padding?) */
 
-#define ACCELENTRY32_SIZE   (4 * sizeof( uint_16 ))
+bool ResReadAccelEntry( AccelTableEntry *currentry, FILE *fp )
+/************************************************************/
+{
+    bool            error;
+    uint_8          val8;
+    uint_16         val16;
 
-typedef struct AccelTableEntry {
-    uint_8      Flags;
-    uint_16     Ascii;
-    uint_16     Id;
-} _WCUNALIGNED AccelTableEntry;
+    error = ResReadUint8( &val8, fp );
+    currentry->Flags = val8;
+    if( !error ) {
+        error = ResReadUint16( &val16, fp );
+        currentry->Ascii = val16;
+    }
+    if( !error ) {
+        error = ResReadUint16( &val16, fp );
+        currentry->Id = val16;
+    }
+    return( error );
+}
 
-#define ACCELENTRY_SIZE     (1 + 2 * sizeof( uint_16 ))
+bool ResReadAccelEntry32( AccelTableEntry32 *currentry, FILE *fp )
+/****************************************************************/
+{
+    bool            error;
+    uint_16         val16;
 
-typedef uint_8  AccelFlags;
-#define ACCEL_ASCII     0x00        /* last bit is 0 */
-#define ACCEL_VIRTKEY   0x01
-#define ACCEL_NOINVERT  0x02
-#define ACCEL_SHIFT     0x04
-#define ACCEL_CONTROL   0x08
-#define ACCEL_ALT       0x10
-#define ACCEL_LAST      0x80
-
-extern bool ResWriteAccelEntry( AccelTableEntry * currentry, FILE *fp );
-extern bool ResWriteAccelEntry32( AccelTableEntry32 *, FILE *fp );
-extern bool ResReadAccelEntry( AccelTableEntry * currentry, FILE *fp );
-extern bool ResReadAccelEntry32( AccelTableEntry32 *, FILE *fp );
-
-#endif
+    error = ResReadUint16( &val16, fp );
+    currentry->Flags = val16;
+    if( !error ) {
+        error = ResReadUint16( &val16, fp );
+        currentry->Ascii = val16;
+    }
+    if( !error ) {
+        error = ResReadUint16( &val16, fp );
+        currentry->Id = val16;
+    }
+    if( !error ) {
+        error = ResReadUint16( &val16, fp );
+        currentry->Unknown = val16;
+    }
+    return( error );
+}

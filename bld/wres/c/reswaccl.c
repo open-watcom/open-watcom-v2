@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,22 +33,34 @@
 
 #include "layer0.h"
 #include "filefmt.h"
+#include "write.h"
 #include "resaccel.h"
 #include "reserr.h"
 #include "wresrtns.h"
 
+
 bool ResWriteAccelEntry( AccelTableEntry *currentry, FILE *fp )
 /*************************************************************/
 {
-    if( WRESWRITE( fp, currentry, sizeof( AccelTableEntry ) ) != sizeof( AccelTableEntry ) )
-        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    if( ResWriteUint8( currentry->Flags, fp ) )
+        return( true );
+    if( ResWriteUint16( currentry->Ascii, fp ) )
+        return( true );
+    if( ResWriteUint16( currentry->Id, fp ) )
+        return( true );
     return( false );
 }
 
 bool ResWriteAccelEntry32( AccelTableEntry32 *currentry, FILE *fp )
 /*****************************************************************/
 {
-    if( WRESWRITE( fp, currentry, sizeof( AccelTableEntry32 ) ) != sizeof( AccelTableEntry32 ) )
-        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    if( ResWriteUint16( currentry->Flags, fp ) )
+        return( true );
+    if( ResWriteUint16( currentry->Ascii, fp ) )
+        return( true );
+    if( ResWriteUint16( currentry->Id, fp ) )
+        return( true );
+    if( ResWriteUint16( currentry->Unknown, fp ) )
+        return( true );
     return( false );
 }

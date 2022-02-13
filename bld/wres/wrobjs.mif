@@ -50,7 +50,8 @@ wres_more_objs = &
     loadres.obj &
     loadresx.obj &
     rdlli.obj &
-    resaccel.obj &
+    resraccl.obj &
+    reswaccl.obj &
     resbitmp.obj &
     resrdiag.obj &
     reswdiag.obj &
