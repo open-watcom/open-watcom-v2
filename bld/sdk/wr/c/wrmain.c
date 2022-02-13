@@ -324,7 +324,6 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     char        *tmp;
     char        *name;
     pgroup2     pg;
-    bool        use_rename;
 
     if( info->save_name == NULL ) {
         return( false );
@@ -407,11 +406,15 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     }
 
     if( tmp != NULL ) {
-        if( backup && WRFileExists( tmp ) ) {
-            use_rename = ( tmp != NULL && stricmp( tmp, info->save_name ) );
-            ok = WRBackupFile( tmp, use_rename );
+        if( backup ) {
+            ok = WRBackupFile( tmp, false );
         }
-        ok = ( ok && WRRenameFile( tmp, info->save_name ) );
+        if( ok ) {
+            ok = WRCopyFile( tmp, info->save_name );
+        }
+        if( ok ) {
+            ok = WRDeleteFile( info->save_name );
+        }
         MemFree( info->save_name );
         info->save_name = tmp;
     }
