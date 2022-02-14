@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,6 @@ typedef struct {
 static bool WdeResourceViewHash( WdeResInfo * );
 static bool WdeResourceLoadHash( WdeResInfo * );
 static bool WdeResourceWriteHash( WdeResInfo * );
-static void WdeAddSymbols( WdeHashTable * );
 static char *WdeLoadSymbols( WdeHashTable **, char *, bool );
 
 /****************************************************************************/
@@ -126,6 +125,52 @@ void * PPENTRY PP_Malloc( size_t size )
 void PPENTRY PP_Free( void *p )
 {
     WRMemFree( p );
+}
+
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
+
+static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
+{
+    char                busy_str[2];
+    WdeHashValue        value;
+    addsym_data         *data = (addsym_data *)cookie;
+
+    if( val->type == PPTYPE_SIGNED ) {
+        value = (WdeHashValue)val->val.ivalue;
+    } else {
+        value = (WdeHashValue)val->val.uvalue;
+    }
+    WdeAddHashEntry( data->table, me->name, value, &data->dup );
+    data->add_count++;
+    if( data->add_count == MAX_SYM_ADDS ) {
+        data->busy_count++;
+        busy_str[0] = WdeBusyChars[data->busy_count % 4];
+        busy_str[1] = '\0';
+        WdeSetStatusText( NULL, busy_str, true );
+        data->add_count = 0;
+    }
+}
+
+static void Add_PP_Symbols( WdeHashTable *table )
+{
+    addsym_data         data;
+
+    if( table == NULL ) {
+        WdeWriteTrail( "WdeAddSymbols: unexpected NULL hash table.");
+        return;
+    }
+    data.dup = true;
+    data.add_count = 0;
+    data.busy_count = 0;
+    data.table = table;
+
+    PP_MacrosWalk( addsym_func, &data );
 }
 
 static bool WdeViewSymbols( WdeHashTable **table, HWND parent )
@@ -451,14 +496,6 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
 static jmp_buf SymEnv;
 
-int PP_MBCharLen( const char *p )
-/*******************************/
-{
-    /* unused parameters */ (void)p;
-
-    return( 1 );
-}
-
 char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
 {
     char                *name;
@@ -540,7 +577,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
         if( *table == NULL ) {
             *table = WdeInitHashTable();
         }
-        WdeAddSymbols( *table );
+        Add_PP_Symbols( *table );
         WdeMakeHashTableClean( *table );
         WdeSetStatusText( NULL, " ", true );
         PP_FileFini();
@@ -605,42 +642,4 @@ bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
     WdeSetStatusReadyText();
 
     return( true );
-}
-
-static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
-{
-    char                busy_str[2];
-    WdeHashValue        value;
-    addsym_data         *data = (addsym_data *)cookie;
-
-    if( val->type == PPTYPE_SIGNED ) {
-        value = (WdeHashValue)val->val.ivalue;
-    } else {
-        value = (WdeHashValue)val->val.uvalue;
-    }
-    WdeAddHashEntry( data->table, me->name, value, &data->dup );
-    data->add_count++;
-    if( data->add_count == MAX_SYM_ADDS ) {
-        data->busy_count++;
-        busy_str[0] = WdeBusyChars[data->busy_count % 4];
-        busy_str[1] = '\0';
-        WdeSetStatusText( NULL, busy_str, true );
-        data->add_count = 0;
-    }
-}
-
-void WdeAddSymbols( WdeHashTable *table )
-{
-    addsym_data         data;
-
-    if( table == NULL ) {
-        WdeWriteTrail( "WdeAddSymbols: unexpected NULL hash table.");
-        return;
-    }
-    data.dup = true;
-    data.add_count = 0;
-    data.busy_count = 0;
-    data.table = table;
-
-    PP_MacrosWalk( addsym_func, &data );
 }

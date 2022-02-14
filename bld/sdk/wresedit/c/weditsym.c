@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,6 +78,14 @@ void PPENTRY PP_Free( void *p )
     WRMemFree( p );
 }
 
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
+
 static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
 {
     WRHashValue         value;
@@ -90,7 +98,7 @@ static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *
     WRAddHashEntry( ((addsym_data *)cookie)->table, me->name, value, &(((addsym_data *)cookie)->dup), false, false );
 }
 
-static void addSymbols( WRHashTable *table )
+static void Add_PP_Symbols( WRHashTable *table )
 {
     addsym_data         data;
 
@@ -101,14 +109,6 @@ static void addSymbols( WRHashTable *table )
     data.table = table;
 
     PP_MacrosWalk( addsym_func, &data );
-}
-
-int PP_MBCharLen( const char *p )
-/*******************************/
-{
-    /* unused parameters */ (void)p;
-
-    return( 1 );
 }
 
 char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt )
@@ -173,7 +173,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
         if( *table == NULL ) {
             *table = WRInitHashTable();
         }
-        addSymbols( *table );
+        Add_PP_Symbols( *table );
         WRMakeHashTableClean( *table );
         PP_FileFini();
     }

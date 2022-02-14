@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,6 +112,51 @@ void PPENTRY PP_Free( void *p )
     WRMemFree( p );
 }
 
+int PP_MBCharLen( const char *p )
+/*******************************/
+{
+    /* unused parameters */ (void)p;
+
+    return( 1 );
+}
+
+static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
+{
+    char                busy_str[2];
+    WRHashValue         value;
+    addsym_data         *data = (addsym_data *)cookie;
+
+    if( val->type == PPTYPE_SIGNED ) {
+        value = (WRHashValue)val->val.ivalue;
+    } else {
+        value = (WRHashValue)val->val.uvalue;
+    }
+    WRAddHashEntry( data->table, me->name, value, &data->dup, false, false );
+    data->add_count++;
+    if( data->add_count == MAX_SYM_ADDS ) {
+        data->busy_count++;
+        busy_str[0] = WREBusyChars[data->busy_count % 4];
+        busy_str[1] = '\0';
+        WRESetStatusText( NULL, busy_str, true );
+        data->add_count = 0;
+    }
+}
+
+static void Add_PP_Symbols( WRHashTable *table )
+{
+    addsym_data         data;
+
+    if( table == NULL ) {
+        return;
+    }
+    data.dup = true;
+    data.add_count = 0;
+    data.busy_count = 0;
+    data.table = table;
+
+    PP_MacrosWalk( addsym_func, &data );
+}
+
 static char *WREFindDLGInclude( WRInfo *info )
 {
     WResTypeNode        *tnode;
@@ -146,51 +191,6 @@ static char *WREFindDLGInclude( WRInfo *info )
     }
 
     return( include );
-}
-
-static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
-{
-    char                busy_str[2];
-    WRHashValue         value;
-    addsym_data         *data = (addsym_data *)cookie;
-
-    if( val->type == PPTYPE_SIGNED ) {
-        value = (WRHashValue)val->val.ivalue;
-    } else {
-        value = (WRHashValue)val->val.uvalue;
-    }
-    WRAddHashEntry( data->table, me->name, value, &data->dup, false, false );
-    data->add_count++;
-    if( data->add_count == MAX_SYM_ADDS ) {
-        data->busy_count++;
-        busy_str[0] = WREBusyChars[data->busy_count % 4];
-        busy_str[1] = '\0';
-        WRESetStatusText( NULL, busy_str, true );
-        data->add_count = 0;
-    }
-}
-
-static void WREAddSymbols( WRHashTable *table )
-{
-    addsym_data         data;
-
-    if( table == NULL ) {
-        return;
-    }
-    data.dup = true;
-    data.add_count = 0;
-    data.busy_count = 0;
-    data.table = table;
-
-    PP_MacrosWalk( addsym_func, &data );
-}
-
-int PP_MBCharLen( const char *p )
-/*******************************/
-{
-    /* unused parameters */ (void)p;
-
-    return( 1 );
 }
 
 static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
@@ -267,7 +267,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
         if( *table == NULL ) {
             *table = WRInitHashTable();
         }
-        WREAddSymbols( *table );
+        Add_PP_Symbols( *table );
         WRMakeHashTableClean( *table );
         PP_FileFini();
         WRESetStatusText( NULL, " ", TRUE );
