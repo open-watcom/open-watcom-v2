@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -381,7 +381,7 @@ bool IEHData2Mem( HDDEDATA hData, void **mem, uint_32 *size )
 HDDEDATA IECreateResData( img_node *node )
 {
     HDDEDATA    hdata;
-    BYTE        *data;
+    char        *data;
     size_t      size;
     bool        ok;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRReadResData( FILE *fp, BYTE *data, size_t length )
+bool WRReadResData( FILE *fp, char *data, size_t length )
 {
     bool        ok;
     size_t      numread;
@@ -79,7 +79,7 @@ bool WRReadResData( FILE *fp, BYTE *data, size_t length )
     return( ok );
 }
 
-bool WRWriteResData( FILE *fp, BYTE *data, size_t length )
+bool WRWriteResData( FILE *fp, char *data, size_t length )
 {
     bool        ok;
     size_t      numwrite;
@@ -94,9 +94,9 @@ bool WRWriteResData( FILE *fp, BYTE *data, size_t length )
     return( ok );
 }
 
-void *WRCopyExistingData( WResLangNode *lnode )
+char *WRCopyExistingData( WResLangNode *lnode )
 {
-    void       *rdata;
+    char       *rdata;
 
     if( lnode == NULL ) {
         return( NULL );
@@ -110,7 +110,7 @@ void *WRCopyExistingData( WResLangNode *lnode )
     return( rdata );
 }
 
-void * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
+char * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
 {
     void        *rdata;
     bool        ok;
@@ -145,7 +145,7 @@ void * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
     return( rdata );;
 }
 
-void * WRAPI WRLoadResData( const char *fname, uint_32 offset, size_t length )
+char * WRAPI WRLoadResData( const char *fname, uint_32 offset, size_t length )
 {
     char        *data;
     FILE        *fh;
@@ -193,7 +193,7 @@ void * WRAPI WRLoadResData( const char *fname, uint_32 offset, size_t length )
     return( data );
 }
 
-bool WRAPI WRSaveResDataToFile( const char *fname, BYTE *data, size_t length )
+bool WRAPI WRSaveResDataToFile( const char *fname, char *data, size_t length )
 {
     FILE        *fh;
     bool        ok;

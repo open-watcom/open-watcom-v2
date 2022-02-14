@@ -664,7 +664,7 @@ static bool getOpenFName( char *fname )
  */
 static bool readInResourceFile( const char *fullname )
 {
-    BYTE                *data;
+    char                *data;
     size_t              dsize;
     WRInfo              *info;
     WRSelectImageInfo   *siinfo;

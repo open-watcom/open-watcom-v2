@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ uint_32 WRAPI WRSizeOfImage( BITMAPINFOHEADER *bih )
 
 // This function assumes that the data represents icon data WITHOUT
 // an icon directory
-WORD WRAPI WRCountIconImages( BYTE *data, uint_32 size )
+WORD WRAPI WRCountIconImages( char *data, size_t size )
 {
     BITMAPINFOHEADER    *bih;
     WORD                count;
@@ -88,7 +88,7 @@ WORD WRAPI WRCountIconImages( BYTE *data, uint_32 size )
     return( count );
 }
 
-bool WRAPI WRCreateIconHeader( BYTE *data, size_t size, WORD type, ICONHEADER **ih, size_t *ihsize )
+bool WRAPI WRCreateIconHeader( char *data, size_t size, WORD type, ICONHEADER **ih, size_t *ihsize )
 {
     BITMAPINFOHEADER    *bih;
     WORD                count;
@@ -139,7 +139,7 @@ bool WRAPI WRCreateIconHeader( BYTE *data, size_t size, WORD type, ICONHEADER **
     return( true );
 }
 
-bool WRAPI WRCreateCursorResHeader( RESCURSORHEADER **rch, size_t *rchsize, BYTE *data, size_t data_size )
+bool WRAPI WRCreateCursorResHeader( RESCURSORHEADER **rch, size_t *rchsize, char *data, size_t data_size )
 {
     CURSORHEADER        *ch;
     size_t              chsize;
@@ -187,7 +187,7 @@ bool WRAPI WRCreateCursorResHeader( RESCURSORHEADER **rch, size_t *rchsize, BYTE
     return( ok );
 }
 
-bool WRAPI WRCreateIconResHeader( RESICONHEADER **rih, size_t *rihsize, BYTE *data, size_t data_size )
+bool WRAPI WRCreateIconResHeader( RESICONHEADER **rih, size_t *rihsize, char *data, size_t data_size )
 {
     ICONHEADER          *pih;
     size_t              pihsize;
@@ -235,7 +235,7 @@ bool WRAPI WRCreateIconResHeader( RESICONHEADER **rih, size_t *rihsize, BYTE *da
     return( ok );
 }
 
-bool WRAPI WRAddCursorHotspot( BYTE **cursor, size_t *size, CURSORHOTSPOT *hs )
+bool WRAPI WRAddCursorHotspot( char **cursor, size_t *size, CURSORHOTSPOT *hs )
 {
     int hs_size;
 
@@ -256,9 +256,9 @@ bool WRAPI WRAddCursorHotspot( BYTE **cursor, size_t *size, CURSORHOTSPOT *hs )
     return( true );
 }
 
-bool WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, uint_16 ord )
+bool WRAPI WRGetAndAddCursorImage( char *data, WResDir dir, CURSORDIRENTRY *cd, uint_16 ord )
 {
-    BYTE                *cursor;
+    char                *cursor;
     bool                dup;
     size_t              size;
     WResID              *tname;
@@ -276,7 +276,7 @@ bool WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, 
     ok = (data != NULL && dir != NULL && cd != NULL && cd->dwBytesInRes != 0);
 
     if( ok ) {
-        cursor = (BYTE *)MemAlloc( cd->dwBytesInRes );
+        cursor = MemAlloc( cd->dwBytesInRes );
         ok = (cursor != NULL);
     }
 
@@ -323,9 +323,9 @@ bool WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, 
     return( ok );
 }
 
-bool WRAPI WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, uint_16 ord )
+bool WRAPI WRGetAndAddIconImage( char *data, WResDir dir, ICONDIRENTRY *id, uint_16 ord )
 {
-    BYTE                *icon;
+    char                *icon;
     bool                dup;
     WResID              *tname;
     WResID              *rname;
@@ -341,7 +341,7 @@ bool WRAPI WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, uint
     ok = (data != NULL && dir != NULL && id != NULL && id->dwBytesInRes != 0);
 
     if( ok ) {
-        icon = (BYTE *)MemAlloc( id->dwBytesInRes );
+        icon = MemAlloc( id->dwBytesInRes );
         ok = (icon != NULL);
     }
 
@@ -428,7 +428,7 @@ bool WRAPI WRFindImageId( WRInfo *info, WResTypeNode **otnode,
     return( ok );
 }
 
-bool WRAPI WRAppendDataToData( BYTE **d1, size_t *d1size, BYTE *d2, size_t d2size )
+bool WRAPI WRAppendDataToData( char **d1, size_t *d1size, char *d2, size_t d2size )
 {
     if( d1 == NULL || d1size == NULL || d2 == NULL || d2size == 0 ) {
         return( false );
@@ -450,9 +450,9 @@ bool WRAPI WRAppendDataToData( BYTE **d1, size_t *d1size, BYTE *d2, size_t d2siz
 }
 
 bool WRAPI WRAddCursorImageToData( WRInfo *info, WResLangNode *lnode,
-                                      BYTE **data, size_t *size, CURSORHOTSPOT *hotspot )
+                                      char **data, size_t *size, CURSORHOTSPOT *hotspot )
 {
-    BYTE        *ldata;
+    char        *ldata;
     size_t      hs_size; // size of hotspot info
     bool        ok;
 
@@ -478,9 +478,9 @@ bool WRAPI WRAddCursorImageToData( WRInfo *info, WResLangNode *lnode,
     return( ok );
 }
 
-bool WRAPI WRAddIconImageToData( WRInfo *info, WResLangNode *lnode, BYTE **data, size_t *size )
+bool WRAPI WRAddIconImageToData( WRInfo *info, WResLangNode *lnode, char **data, size_t *size )
 {
-    BYTE        *ldata;
+    char        *ldata;
     bool        ok;
 
     ldata = NULL;
@@ -503,10 +503,10 @@ bool WRAPI WRAddIconImageToData( WRInfo *info, WResLangNode *lnode, BYTE **data,
     return( ok );
 }
 
-bool WRAPI WRCreateCursorData( WRInfo *info, WResLangNode *lnode, BYTE **data, size_t *size )
+bool WRAPI WRCreateCursorData( WRInfo *info, WResLangNode *lnode, char **data, size_t *size )
 {
     WResLangNode        *ilnode;
-    BYTE                *ldata;
+    char                *ldata;
     RESCURSORHEADER     *rch;
     CURSORHEADER        *ch;
     CURSORHOTSPOT       hotspot;
@@ -527,7 +527,7 @@ bool WRAPI WRCreateCursorData( WRInfo *info, WResLangNode *lnode, BYTE **data, s
         rch = (RESCURSORHEADER *)ldata;
         *size = sizeof( CURSORHEADER );
         *size += sizeof( CURSORDIRENTRY ) * (rch->cwCount - 1);
-        *data = (BYTE *)MemAlloc( *size );
+        *data = MemAlloc( *size );
         ch = (CURSORHEADER *)*data;
         ok = (*data != NULL);
     }
@@ -562,10 +562,10 @@ bool WRAPI WRCreateCursorData( WRInfo *info, WResLangNode *lnode, BYTE **data, s
     return( ok );
 }
 
-bool WRAPI WRCreateIconData( WRInfo *info, WResLangNode *lnode, BYTE **data, size_t *size )
+bool WRAPI WRCreateIconData( WRInfo *info, WResLangNode *lnode, char **data, size_t *size )
 {
     WResLangNode        *ilnode;
-    BYTE                *ldata;
+    char                *ldata;
     RESICONHEADER       *rih;
     ICONHEADER          *ih;
     WResLangType        lt;
@@ -585,7 +585,7 @@ bool WRAPI WRCreateIconData( WRInfo *info, WResLangNode *lnode, BYTE **data, siz
         rih = (RESICONHEADER *)ldata;
         *size = sizeof( ICONHEADER );
         *size += sizeof( ICONDIRENTRY ) * (rih->cwCount - 1);
-        *data = (BYTE *)MemAlloc( *size );
+        *data = MemAlloc( *size );
         ih = (ICONHEADER *)*data;
         ok = (*data != NULL);
     }
@@ -662,8 +662,7 @@ uint_16 WRAPI WRFindUnusedImageId( WRInfo *info, uint_16 start )
     return( start );
 }
 
-bool WRAPI WRCreateCursorEntries( WRInfo *info, WResLangNode *lnode,
-                                     void *data, size_t size )
+bool WRAPI WRCreateCursorEntries( WRInfo *info, WResLangNode *lnode, char *data, size_t size )
 {
     RESCURSORHEADER     *rch;
     CURSORHEADER        *ch;
@@ -701,7 +700,7 @@ bool WRAPI WRCreateCursorEntries( WRInfo *info, WResLangNode *lnode,
     return( ok );
 }
 
-bool WRAPI WRCreateIconEntries( WRInfo *info, WResLangNode *lnode, void *data, size_t size )
+bool WRAPI WRCreateIconEntries( WRInfo *info, WResLangNode *lnode, char *data, size_t size )
 {
     RESICONHEADER       *rih;
     ICONHEADER          *ih;

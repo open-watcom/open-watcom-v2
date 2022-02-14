@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,9 +75,9 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static BITMAPINFO       *WRReadDIBInfo( BYTE **data );
-static BITMAPCOREINFO   *WRReadCoreInfo( BYTE **data );
-static HBITMAP          WRReadBitmap( BYTE *data, long offset, bool core, bitmap_info *info );
+static BITMAPINFO       *WRReadDIBInfo( char **data );
+static BITMAPCOREINFO   *WRReadCoreInfo( char **data );
+static HBITMAP          WRReadBitmap( char *data, long offset, bool core, bitmap_info *info );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -106,7 +106,7 @@ static void HugeMemCopy( void __far *dst, void __far *src, unsigned bytes )
 #define HugeMemCopy( a, b, c ) memcpy( a, b, c )
 #endif
 
-static BITMAPINFO *WRReadDIBInfo( BYTE **data )
+static BITMAPINFO *WRReadDIBInfo( char **data )
 {
     BITMAPINFO          *bm;
     BITMAPINFOHEADER    *header;
@@ -129,7 +129,7 @@ static BITMAPINFO *WRReadDIBInfo( BYTE **data )
     return( bm );
 }
 
-static BITMAPCOREINFO *WRReadCoreInfo( BYTE **data )
+static BITMAPCOREINFO *WRReadCoreInfo( char **data )
 {
     BITMAPCOREINFO      *bm_core;
     BITMAPCOREHEADER    *header;
@@ -153,9 +153,9 @@ static BITMAPCOREINFO *WRReadCoreInfo( BYTE **data )
     return( bm_core );
 }
 
-static void WRReadInPieces( BYTE _HUGE *dst, BYTE *data, DWORD size )
+static void WRReadInPieces( char _HUGE *dst, char *data, DWORD size )
 {
-    BYTE                *buffer = NULL;
+    char                *buffer = NULL;
     WORD                chunk_size;
 
     chunk_size = CHUNK_SIZE;
@@ -177,10 +177,10 @@ static void WRReadInPieces( BYTE _HUGE *dst, BYTE *data, DWORD size )
     MemFree( buffer );
 }
 
-static HBITMAP WRReadBitmap( BYTE *data, long offset, bool core, bitmap_info *info )
+static HBITMAP WRReadBitmap( char *data, long offset, bool core, bitmap_info *info )
 {
     DWORD               size;           /* generic size - used repeatedly */
-    BYTE _HUGE          *mask_ptr;      /* pointer to bit array in memory */
+    char _HUGE          *mask_ptr;      /* pointer to bit array in memory */
     HDC                 hdc;
     HPALETTE            new_palette, old_palette;
     BITMAPINFO          *bm_info = NULL;
@@ -263,7 +263,7 @@ static HBITMAP WRReadBitmap( BYTE *data, long offset, bool core, bitmap_info *in
  * Creates a device independant bitmap from the data <data> and
  * returns a handle to a newly created BITMAP.
  */
-HBITMAP WRAPI WRBitmapFromData( BYTE *data, bitmap_info *info )
+HBITMAP WRAPI WRBitmapFromData( char *data, bitmap_info *info )
 {
     HBITMAP             bitmap_handle;
     BITMAPFILEHEADER    *file_header;
@@ -395,7 +395,7 @@ static BITMAPINFO *WRGetDIBitmapInfo( HBITMAP hbitmap )
     return( bmi );
 }
 
-static bool WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, HBITMAP hbitmap )
+static bool WRWriteDataInPiecesData( BITMAPINFO *bmi, char **data, size_t *size, HBITMAP hbitmap )
 {
     HDC         hdc;
     HDC         memdc;
@@ -441,7 +441,7 @@ static bool WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size,
     return( true );
 }
 
-bool WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, size_t *size )
+bool WRAPI WRWriteBitmapToData( HBITMAP hbitmap, char **data, size_t *size )
 {
     BITMAPFILEHEADER    bmfh;
     BITMAPINFO          *bmi;
@@ -498,7 +498,7 @@ bool WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, size_t *size )
     return( ok );
 }
 
-bool WRAPI WRAddBitmapFileHeader( BYTE **data, size_t *size )
+bool WRAPI WRAddBitmapFileHeader( char **data, size_t *size )
 {
     BITMAPFILEHEADER    *bmfh;
     BITMAPINFO          *bmi;
@@ -537,7 +537,7 @@ bool WRAPI WRAddBitmapFileHeader( BYTE **data, size_t *size )
     return( true );
 }
 
-bool WRAPI WRStripBitmapFileHeader( BYTE **data, size_t *size )
+bool WRAPI WRStripBitmapFileHeader( char **data, size_t *size )
 {
     int         bfhsize;
 

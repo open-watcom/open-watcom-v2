@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,9 +50,9 @@
 WRDLLENTRY extern void     WRAPI WRForgetBitmapName( void );
 WRDLLENTRY extern void     WRAPI WRRememberBitmapName( WResID *name );
 WRDLLENTRY extern WResID * WRAPI WRRecallBitmapName( void );
-WRDLLENTRY extern bool     WRAPI WRAddBitmapFileHeader( BYTE **data, size_t *size );
-WRDLLENTRY extern bool     WRAPI WRStripBitmapFileHeader( BYTE **data, size_t *size );
-WRDLLENTRY extern HBITMAP  WRAPI WRBitmapFromData( BYTE *data, bitmap_info *info );
-WRDLLENTRY extern bool     WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, size_t *size );
+WRDLLENTRY extern bool     WRAPI WRAddBitmapFileHeader( char **data, size_t *size );
+WRDLLENTRY extern bool     WRAPI WRStripBitmapFileHeader( char **data, size_t *size );
+WRDLLENTRY extern HBITMAP  WRAPI WRBitmapFromData( char *data, bitmap_info *info );
+WRDLLENTRY extern bool     WRAPI WRWriteBitmapToData( HBITMAP hbitmap, char **data, size_t *size );
 
 #endif

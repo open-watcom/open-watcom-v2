@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +113,7 @@ void WRESetPendingService( WRESPT s )
     PendingService = s;
 }
 
-bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
+bool WREHData2Mem( HDDEDATA hData, char **data, size_t *size )
 {
     DWORD   dde_size;
 
@@ -131,7 +131,7 @@ bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
         return( FALSE );
     }
 
-    if( dde_size != DdeGetData( hData, *data, dde_size, 0 ) ) {
+    if( dde_size != DdeGetData( hData, (LPBYTE)*data, dde_size, 0 ) ) {
         WRMemFree( *data );
         return( FALSE );
     }
@@ -270,7 +270,7 @@ void WREDDEEnd( void )
     }
 }
 
-bool WREPokeData( HCONV conv, void *data, DWORD size, bool retry )
+bool WREPokeData( HCONV conv, char *data, DWORD size, bool retry )
 {
     DWORD       result;
     UINT        err;
@@ -312,7 +312,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     HSZPAIR     hszpair[2];
     HSZ         htopic;
     HCONV       htconv;
-    void        *data;
+    char        *data;
     size_t      size;
     bool        ok;
 

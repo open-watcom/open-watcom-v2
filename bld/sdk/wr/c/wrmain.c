@@ -717,7 +717,7 @@ bool WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata )
 bool WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, bool is_icon )
 {
     bool                ok;
-    BYTE                *data;
+    char                *data;
     size_t              size;
     WResLangNode        *lnode;
 
@@ -800,7 +800,7 @@ bool WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, bool *dup )
 
 bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is_icon )
 {
-    BYTE                *data;
+    char                *data;
     size_t              size;
     WResLangNode        *lnode;
     bool                replace_nixed;

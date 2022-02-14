@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +85,7 @@ typedef struct WREClipData {
     uint_16     type_id;
     uint_16     memflags;
     bool        is32bit;
-    BYTE        name[1];
+    char        name[1];
 } WREClipData;
 
 typedef struct WREPasteData {
@@ -593,7 +593,7 @@ static bool WREGetAndPasteDIB( WREClipFormat *fmt )
 static bool WREGetAndPasteHBITMAP( WREClipFormat *fmt )
 {
     HBITMAP             hbitmap;
-    void                *data;
+    char                *data;
     size_t              dsize;
     bool                ok;
 
@@ -607,11 +607,11 @@ static bool WREGetAndPasteHBITMAP( WREClipFormat *fmt )
     }
 
     if( ok ) {
-        ok = WRWriteBitmapToData( hbitmap, (BYTE **)&data, &dsize );
+        ok = WRWriteBitmapToData( hbitmap, &data, &dsize );
     }
 
     if( ok ) {
-        ok = WRStripBitmapFileHeader( (BYTE **)&data, &dsize );
+        ok = WRStripBitmapFileHeader( &data, &dsize );
     }
 
     if( ok ) {
@@ -695,9 +695,9 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
 {
     WREClipData *cdata;
     size_t      cdata_size;
-    BYTE        *rdata;
+    char        *rdata;
     size_t      rdata_size;
-    void        *name;
+    char        *name;
     size_t      name_size;
     uint_16     type_id;
     bool        ok;
@@ -768,7 +768,7 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
 bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
 {
     HBITMAP     hbitmap;
-    BYTE        *data;
+    char        *data;
     size_t      dsize;
     bool        ok;
 
@@ -778,7 +778,7 @@ bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
     ok = (curr != NULL && curr->type != NULL && curr->res != NULL && curr->lang != NULL);
 
     if( ok ) {
-        data = (BYTE *)WREGetCurrentResData( curr );
+        data = WREGetCurrentResData( curr );
         ok = (data != NULL);
     }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -297,7 +297,7 @@ bool WRECommitImageSession( HCONV server, HCONV client )
     return( ok );
 }
 
-bool WREGetImageSessionFileName( HCONV server, void **data, size_t *size )
+bool WREGetImageSessionFileName( HCONV server, char **data, size_t *size )
 {
     WREImageSession *session;
 
@@ -318,7 +318,7 @@ bool WREGetImageSessionFileName( HCONV server, void **data, size_t *size )
     return( TRUE );
 }
 
-bool WREGetImageSessionResName( HCONV server, void **data, size_t *size )
+bool WREGetImageSessionResName( HCONV server, char **data, size_t *size )
 {
     WREImageSession *session;
 
@@ -338,7 +338,7 @@ bool WREGetImageSessionResName( HCONV server, void **data, size_t *size )
     return( TRUE );
 }
 
-bool WREGetImageSessionData( HCONV server, void **data, size_t *size )
+bool WREGetImageSessionData( HCONV server, char **data, size_t *size )
 {
     WREImageSession     *session;
     size_t              tsize;
@@ -367,7 +367,7 @@ bool WREGetImageSessionData( HCONV server, void **data, size_t *size )
     memcpy( *data, session->info.data, tsize );
 
     if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
-        if( !WREAddBitmapFileHeader( (BYTE **)data, size ) ) {
+        if( !WREAddBitmapFileHeader( data, size ) ) {
             if( *data != NULL ) {
                 WRMemFree( *data );
             }
@@ -382,8 +382,8 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
 {
     WREImageSession     *session;
     WResID              *name;
-    void                *data;
-    uint_32             size;
+    char                *data;
+    size_t              size;
     bool                ok;
 
     ok = (server != (HCONV)NULL && hdata != NULL);
@@ -421,14 +421,14 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
     return( ok );
 }
 
-static bool WRESetBitmapSessionResData( WREImageSession *session, void *data, size_t size )
+static bool WRESetBitmapSessionResData( WREImageSession *session, char *data, size_t size )
 {
     bool                ok;
 
     ok = (session != NULL);
 
     if( ok ) {
-        WREStripBitmapFileHeader( (BYTE **)&data, &size );
+        WREStripBitmapFileHeader( &data, &size );
         if( session->lnode->data != NULL ) {
             WRMemFree( session->lnode->data );
         }
@@ -440,7 +440,7 @@ static bool WRESetBitmapSessionResData( WREImageSession *session, void *data, si
     return( ok );
 }
 
-static bool WRESetCursorSessionResData( WREImageSession *session, void *data, uint_32 size )
+static bool WRESetCursorSessionResData( WREImageSession *session, char *data, size_t size )
 {
     WRECurrentResInfo   curr;
     bool                ok;
@@ -465,7 +465,7 @@ static bool WRESetCursorSessionResData( WREImageSession *session, void *data, ui
     return( ok );
 }
 
-static bool WRESetIconSessionResData( WREImageSession *session, void *data, uint_32 size )
+static bool WRESetIconSessionResData( WREImageSession *session, char *data, size_t size )
 {
     WRECurrentResInfo   curr;
     bool                ok;
@@ -493,8 +493,8 @@ static bool WRESetIconSessionResData( WREImageSession *session, void *data, uint
 bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
 {
     WREImageSession     *session;
-    void                *data;
-    uint_32             size;
+    char                *data;
+    size_t              size;
     bool                ok;
 
     ok = (server != (HCONV)NULL && hdata != NULL);
@@ -524,7 +524,7 @@ bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
 WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, bool new )
 {
     WREImageSession     *session;
-    BYTE                *data;
+    char                *data;
     size_t              size;
     bool                ok;
 

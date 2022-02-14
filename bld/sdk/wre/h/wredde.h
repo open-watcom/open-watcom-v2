@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,9 +55,9 @@ typedef enum
 /****************************************************************************/
 extern WRESPT   WREGetPendingService( void );
 extern void     WRESetPendingService( WRESPT s );
-extern bool     WREHData2Mem( HDDEDATA, void **, uint_32 * );
+extern bool     WREHData2Mem( HDDEDATA, char **, size_t * );
 extern bool     WREDDEStart( HINSTANCE inst );
 extern void     WREDDEEnd( void );
-extern bool     WREPokeData( HCONV conv, void *data, DWORD size, bool );
+extern bool     WREPokeData( HCONV conv, char *data, DWORD size, bool );
 
 #endif

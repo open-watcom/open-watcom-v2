@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -279,7 +279,7 @@ bool WRECommitDialogSession( HCONV server, HCONV client )
     return( ok );
 }
 
-bool WREGetDlgSessionFileName( HCONV server, void **data, size_t *size )
+bool WREGetDlgSessionFileName( HCONV server, char **data, size_t *size )
 {
     WREDialogSession *session;
 
@@ -300,7 +300,7 @@ bool WREGetDlgSessionFileName( HCONV server, void **data, size_t *size )
     return( TRUE );
 }
 
-bool WREGetDlgSessionResName( HCONV server, void **data, size_t *size )
+bool WREGetDlgSessionResName( HCONV server, char **data, size_t *size )
 {
     WREDialogSession *session;
 
@@ -320,7 +320,7 @@ bool WREGetDlgSessionResName( HCONV server, void **data, size_t *size )
     return( TRUE );
 }
 
-bool WREGetDlgSessionIs32Bit( HCONV server, void **data, size_t *size )
+bool WREGetDlgSessionIs32Bit( HCONV server, char **data, size_t *size )
 {
     WREDialogSession *session;
 
@@ -347,7 +347,7 @@ bool WREGetDlgSessionIs32Bit( HCONV server, void **data, size_t *size )
     return( TRUE );
 }
 
-bool WREGetDlgSessionData( HCONV server, void **data, size_t *size )
+bool WREGetDlgSessionData( HCONV server, char **data, size_t *size )
 {
     size_t  tsize;
 
@@ -383,8 +383,8 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
 {
     WREDialogSession    *session;
     WResID              *name;
-    void                *data;
-    uint_32             size;
+    char                *data;
+    size_t              size;
     bool                ok;
 
     ok = (server != (HCONV)NULL && hdata != NULL);
@@ -426,8 +426,8 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
 bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata )
 {
     WREDialogSession    *session;
-    void                *data;
-    uint_32             size;
+    char                *data;
+    size_t              size;
     bool                ok;
 
     ok = (server != (HCONV)NULL && hdata != NULL);
