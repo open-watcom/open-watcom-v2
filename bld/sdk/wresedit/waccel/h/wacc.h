@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,13 +97,13 @@ typedef struct WAccelEditInfo {
 /****************************************************************************/
 extern WAccelEditInfo   *WAllocAccelEInfo( void );
 extern void             WFreeAccelEInfo( WAccelEditInfo * );
-extern void             WMakeDataFromAccelTable( WAccelTable *, void **, size_t * );
+extern void             WMakeDataFromAccelTable( WAccelTable *, char **, size_t * );
 extern WAccelTable      *WMakeAccelTableFromInfo( WAccelInfo * );
 extern bool             WInsertAccelTableEntry( WAccelTable *, WAccelEntry *, WAccelEntry * );
 extern bool             WFreeAccelTableEntry( WAccelTable *, WAccelEntry * );
 extern void             WFreeAccelTableEntries( WAccelEntry * );
-extern bool             WMakeEntryClipData( WAccelEntry *entry, void **data, uint_32 *dsize );
-extern bool             WMakeEntryFromClipData( WAccelEntry *entry, void *data, uint_32 dsize );
+extern bool             WMakeEntryClipData( WAccelEntry *entry, char **data, uint_32 *dsize );
+extern bool             WMakeEntryFromClipData( WAccelEntry *entry, char *data, uint_32 dsize );
 extern bool             WResolveEntrySymbol( WAccelEntry *entry, WRHashTable *symbol_table );
 extern bool             WResolveAllEntrySymbols( WAccelEditInfo *einfo );
 extern bool             WResolveAllEntrySymIDs( WAccelEditInfo *einfo );

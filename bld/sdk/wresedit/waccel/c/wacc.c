@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void         WInitDataFromAccelTable( WAccelTable *, void * );
+static void         WInitDataFromAccelTable( WAccelTable *, char * );
 static void         WInitAccelTable( WAccelInfo *, WAccelTable * );
 static size_t       WCalcAccelTableSize( WAccelTable * );
 static size_t       WCalcNumAccelEntries( WAccelInfo * );
@@ -107,10 +108,10 @@ void WFreeAccelEInfo( WAccelEditInfo *einfo )
     }
 }
 
-void WMakeDataFromAccelTable( WAccelTable *tbl, void **pdata, size_t *psize )
+void WMakeDataFromAccelTable( WAccelTable *tbl, char **pdata, size_t *psize )
 {
     size_t  size;
-    void    *data;
+    char    *data;
 
     if( pdata != NULL && psize != NULL ) {
         size = WCalcAccelTableSize( tbl );
@@ -166,7 +167,7 @@ WAccelTable *WMakeAccelTableFromInfo( WAccelInfo *info )
     return( tbl );
 }
 
-void WInitDataFromAccelTable( WAccelTable *tbl, void *tdata )
+void WInitDataFromAccelTable( WAccelTable *tbl, char *tdata )
 {
     WAccelEntry         *entry;
     AccelTableEntry     *data;
@@ -383,7 +384,7 @@ void WFreeAccelTableEntries( WAccelEntry *entry )
     }
 }
 
-bool WMakeEntryClipData( WAccelEntry *entry, void **data, uint_32 *dsize )
+bool WMakeEntryClipData( WAccelEntry *entry, char **data, uint_32 *dsize )
 {
     bool        ok;
 
@@ -408,7 +409,7 @@ bool WMakeEntryClipData( WAccelEntry *entry, void **data, uint_32 *dsize )
     return( ok );
 }
 
-bool WMakeEntryFromClipData( WAccelEntry *entry, void *data, uint_32 dsize )
+bool WMakeEntryFromClipData( WAccelEntry *entry, char *data, uint_32 dsize )
 {
     size_t      len;
     bool        ok;

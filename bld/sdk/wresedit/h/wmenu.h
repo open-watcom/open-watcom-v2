@@ -61,7 +61,7 @@ typedef struct WMenuInfo {
     WResLangType        lang;
     uint_16             MemFlags;
     size_t              data_size;
-    void                *data;
+    char                *data;
     bool                is32bit;
     bool                edit_active;
     bool                modified;

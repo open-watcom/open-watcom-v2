@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,11 +60,11 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void *WInitDataFromMenu( WMenuEntry *, void * );
+static char *WInitDataFromMenu( WMenuEntry *, char * );
 static size_t WCalcMenuSize( WMenuEntry * );
-static bool WMakeMenuEntryFromData( void **, size_t *, WMenuEntry *, WMenuEntry **, bool );
-static bool WAllocMenuEntryFromData( void **, size_t *, WMenuEntry **, bool );
-static bool WMakeMenuItemFromData( void **data, size_t *size, MenuItem **new, bool );
+static bool WMakeMenuEntryFromData( char **, size_t *, WMenuEntry *, WMenuEntry **, bool );
+static bool WAllocMenuEntryFromData( char **, size_t *, WMenuEntry **, bool );
+static bool WMakeMenuItemFromData( char **data, size_t *size, MenuItem **new, bool );
 static bool WInsertEntryIntoPreview( WMenuEditInfo *, WMenuEntry * );
 
 /****************************************************************************/
@@ -135,7 +135,7 @@ void WFreeMenuEInfo( WMenuEditInfo *einfo )
     }
 }
 
-void WMakeDataFromMenu( WMenu *menu, void **data, size_t *size )
+void WMakeDataFromMenu( WMenu *menu, char **data, size_t *size )
 {
     char *tdata;
 
@@ -155,7 +155,7 @@ void WMakeDataFromMenu( WMenu *menu, void **data, size_t *size )
     }
 }
 
-bool WMakeMenuItemFromData( void **data, size_t *size, MenuItem **new, bool is32bit )
+bool WMakeMenuItemFromData( char **data, size_t *size, MenuItem **new, bool is32bit )
 {
     char                *pdata;
     char                *itext;
@@ -224,7 +224,7 @@ bool WMakeMenuItemFromData( void **data, size_t *size, MenuItem **new, bool is32
 
 }
 
-bool WAllocMenuEntryFromData( void **data, size_t *size, WMenuEntry **entry, bool is32bit )
+bool WAllocMenuEntryFromData( char **data, size_t *size, WMenuEntry **entry, bool is32bit )
 {
     bool        ok;
 
@@ -251,7 +251,7 @@ bool WAllocMenuEntryFromData( void **data, size_t *size, WMenuEntry **entry, boo
     return( ok );
 }
 
-bool WMakeMenuEntryFromData( void **data, size_t *size, WMenuEntry *parent,
+bool WMakeMenuEntryFromData( char **data, size_t *size, WMenuEntry *parent,
                             WMenuEntry **entry, bool is32bit )
 {
     bool        ok;
@@ -303,7 +303,7 @@ WMenu *WMakeMenuFromInfo( WMenuInfo *info )
 {
     WMenu       *menu;
     bool        ok;
-    void        *data;
+    char        *data;
     size_t      size;
 
     menu = NULL;
@@ -348,7 +348,7 @@ WMenu *WMakeMenuFromInfo( WMenuInfo *info )
     return( menu );
 }
 
-void *WInitDataFromMenu( WMenuEntry *entry, void *tdata )
+char *WInitDataFromMenu( WMenuEntry *entry, char *tdata )
 {
     uint_16             *word;
     size_t              tlen;
@@ -881,7 +881,7 @@ bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     return( true );
 }
 
-bool WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize )
+bool WMakeClipDataFromMenuEntry( WMenuEntry *entry, char **data, uint_32 *dsize )
 {
     WMenu       menu;
     WMenuEntry  save;
@@ -909,7 +909,7 @@ bool WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize 
     return( ok );
 }
 
-WMenuEntry *WMakeMenuEntryFromClipData( void *data, uint_32 dsize )
+WMenuEntry *WMakeMenuEntryFromClipData( char *data, uint_32 dsize )
 {
     WMenuEntry  *entry;
     size_t      size;
@@ -922,7 +922,7 @@ WMenuEntry *WMakeMenuEntryFromClipData( void *data, uint_32 dsize )
 
     if( ok ) {
         is32bit = ((BYTE *)data)[0];
-        data = ((BYTE *)data) + 2 * sizeof( WORD );
+        data = data + 2 * sizeof( WORD );
         dsize -= 2 * sizeof( WORD );
         size = dsize;
         ok = WMakeMenuEntryFromData( &data, &size, NULL, &entry, is32bit );
