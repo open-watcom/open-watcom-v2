@@ -55,7 +55,7 @@ typedef struct WStringNode {
     WResID              *block_name;
     WResLangType        lang;
     size_t              data_size;
-    void                *data;
+    char                *data;
     uint_16             MemFlags;
     struct WStringNode  *next;
 } WStringNode;

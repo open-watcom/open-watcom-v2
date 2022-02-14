@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -328,8 +328,8 @@ bool WSaveObjectInto( WStringEditInfo *einfo, WRSaveIntoData *idata )
 
 WRSaveIntoData *WMakeSaveData( WStringTable *tbl )
 {
-    WRSaveIntoData      *node;
-    WRSaveIntoData      *new;
+    WRSaveIntoData      *idata;
+    WRSaveIntoData      *idata2;
     WStringBlock        *block;
     WResID              *tname;
     WResLangType        *lang;
@@ -347,55 +347,55 @@ WRSaveIntoData *WMakeSaveData( WStringTable *tbl )
     lang->lang = DEF_LANG;
     lang->sublang = DEF_SUBLANG;
 
-    node = NULL;
+    idata = NULL;
     block = tbl->first_block;
     while( block != NULL ) {
-        new = WInitSaveData( block, tname, lang );
-        if( new == NULL ) {
+        idata2 = WInitSaveData( block, tname, lang );
+        if( idata2 == NULL ) {
             WRMemFree( tname );
-            WFreeSaveIntoData( node );
+            WFreeSaveIntoData( idata );
             return( NULL );
         }
-        if( node != NULL ) {
-            new->next = node;
-            node = new;
+        if( idata != NULL ) {
+            idata2->next = idata;
+            idata = idata2;
         } else {
-            node = new;
+            idata = idata2;
         }
         block = block->next;
     }
 
-    return( node );
+    return( idata );
 }
 
 WRSaveIntoData *WInitSaveData( WStringBlock *block, WResID *type, WResLangType *lang )
 {
     size_t              size;
-    WRSaveIntoData      *new;
+    WRSaveIntoData      *idata;
 
-    new = WAllocSaveIntoData();
-    if( new == NULL ) {
+    idata = WAllocSaveIntoData();
+    if( idata == NULL ) {
         return( NULL );
     }
 
-    new->name = WResIDFromNum( (block->blocknum >> 4) + 1 );
-    if( new->name == NULL ) {
-        WFreeSaveIntoData( new );
+    idata->name = WResIDFromNum( (block->blocknum >> 4) + 1 );
+    if( idata->name == NULL ) {
+        WFreeSaveIntoData( idata );
         return( NULL );
     }
 
-    WRMakeDataFromStringBlock( &block->block, &new->data, &size, block->is32bit );
-    if( new->data == NULL ) {
-        WFreeSaveIntoData( new );
+    WRMakeDataFromStringBlock( &block->block, &idata->data, &size, block->is32bit );
+    if( idata->data == NULL ) {
+        WFreeSaveIntoData( idata );
         return( NULL );
     }
 
-    new->size = (uint_32)size;
-    new->type = type;
-    new->lang = *lang;
-    new->MemFlags = block->MemFlags;
+    idata->size = (uint_32)size;
+    idata->type = type;
+    idata->lang = *lang;
+    idata->MemFlags = block->MemFlags;
 
-    return( new );
+    return( idata );
 }
 
 WRSaveIntoData *WAllocSaveIntoData( void )
@@ -412,7 +412,7 @@ WRSaveIntoData *WAllocSaveIntoData( void )
 
 void WFreeSaveIntoData( WRSaveIntoData *idata )
 {
-    WRSaveIntoData *next;
+    WRSaveIntoData *idata2;
 
     if( idata != NULL ) {
         if( idata->type != NULL ) {
@@ -421,7 +421,7 @@ void WFreeSaveIntoData( WRSaveIntoData *idata )
     }
 
     while( idata != NULL ) {
-        next = idata->next;
+        idata2 = idata->next;
         if( idata->name != NULL ) {
             WRMemFree( idata->name );
         }
@@ -429,7 +429,7 @@ void WFreeSaveIntoData( WRSaveIntoData *idata )
             WRMemFree( idata->data );
         }
         WRMemFree( idata );
-        idata = next;
+        idata = idata2;
     }
 }
 

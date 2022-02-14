@@ -932,7 +932,7 @@ bool WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
     WResResNode     *rnode;
     WResLangNode    *lnode;
     long            type;
-    void            *data;
+    char            *data;
     uint_32         size;
     bool            strings;
 

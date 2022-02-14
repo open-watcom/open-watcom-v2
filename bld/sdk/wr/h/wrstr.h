@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,9 +46,9 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WRDLLENTRY extern bool WRAPI WRIsBlockEmpty( StringTableBlock *block );
-WRDLLENTRY extern bool WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **data, size_t *size, bool is32bit );
-WRDLLENTRY extern bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data, size_t size, bool is32bit );
+WRDLLENTRY extern bool WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, char **data, size_t *size, bool is32bit );
+WRDLLENTRY extern bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, char *data, size_t size, bool is32bit );
 WRDLLENTRY extern bool WRAPI WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, bool replace );
-WRDLLENTRY extern bool WRAPI WRMergeStringData( void **s1, uint_32 *sz1, void *s2, uint_32 sz2, bool is32bit, bool replace );
+WRDLLENTRY extern bool WRAPI WRMergeStringData( char **s1, uint_32 *sz1, char *s2, uint_32 sz2, bool is32bit, bool replace );
 
 #endif

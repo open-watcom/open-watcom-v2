@@ -41,7 +41,7 @@ typedef struct WRSaveIntoData {
     WRInfo                      *info;
     WResID                      *type;
     WResID                      *name;
-    void                        *data;
+    char                        *data;
     WResLangType                lang;
     uint_32                     size;
     uint_16                     MemFlags;
