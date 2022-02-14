@@ -92,11 +92,13 @@ static char WREBusyChars[] = "-\\|/";
 static jmp_buf SymEnv;
 
 void PPENTRY PP_OutOfMemory( void )
+/*********************************/
 {
     longjmp( SymEnv, 1 );
 }
 
 void * PPENTRY PP_Malloc( size_t size )
+/*************************************/
 {
     void        *p;
 
@@ -108,6 +110,7 @@ void * PPENTRY PP_Malloc( size_t size )
 }
 
 void PPENTRY PP_Free( void *p )
+/*****************************/
 {
     WRMemFree( p );
 }

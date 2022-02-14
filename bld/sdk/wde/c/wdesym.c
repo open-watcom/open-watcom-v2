@@ -102,6 +102,7 @@ static jmp_buf Env;
 
 
 void PPENTRY PP_OutOfMemory( void )
+/*********************************/
 {
     if( WdePopEnv( &Env ) ) {
         longjmp( Env, 1 );
@@ -112,6 +113,7 @@ void PPENTRY PP_OutOfMemory( void )
 }
 
 void * PPENTRY PP_Malloc( size_t size )
+/*************************************/
 {
     void        *p;
 
@@ -123,6 +125,7 @@ void * PPENTRY PP_Malloc( size_t size )
 }
 
 void PPENTRY PP_Free( void *p )
+/*****************************/
 {
     WRMemFree( p );
 }
@@ -292,7 +295,7 @@ bool WdeResourceLoadHash( WdeResInfo *info )
 
 bool WdeResourceWriteHash( WdeResInfo *info )
 {
-    return( WdeWriteSymbols( info->hash_table, &info->sym_name, true ) );
+    return( WdeSaveSymbols( info->hash_table, &info->sym_name, true ) );
 }
 
 bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
@@ -603,7 +606,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
     return( name );
 }
 
-bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
+bool WdeSaveSymbols( WdeHashTable *table, char **file_name, bool prompt )
 {
     char                *name;
     WdeGetFileStruct    gf;

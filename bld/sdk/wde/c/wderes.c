@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -706,7 +706,7 @@ bool WdeQuerySaveSymOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
             if( res_info->sym_name == NULL ) {
                 res_info->sym_name = WdeCreateSymName( file );
             }
-            if( !WdeWriteSymbols( res_info->hash_table, &res_info->sym_name, FALSE ) ) {
+            if( !WdeSaveSymbols( res_info->hash_table, &res_info->sym_name, FALSE ) ) {
                 return( false );
             }
         } else if( ret == IDCANCEL ) {
@@ -942,7 +942,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
     if( ok ) {
         if( WdeIsHashTableDirty( res_info->hash_table ) &&
             !WdeIsHashSaveRejectedSet( res_info->hash_table ) ) {
-            WdeWriteSymbols( res_info->hash_table, &res_info->sym_name, get_name );
+            WdeSaveSymbols( res_info->hash_table, &res_info->sym_name, get_name );
         }
     }
 
