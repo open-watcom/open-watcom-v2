@@ -99,8 +99,7 @@ void SetupMenuAfterOpen( void )
 /*
  * doReadInBitmapFile
  */
-static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *fullname,
-                                WRInfo *info, WResLangNode *lnode )
+static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *fullname, WRInfo *info, WResLangNode *lnode )
 {
     HBITMAP             old_hbitmap1;
     HBITMAP             old_hbitmap2;
@@ -451,8 +450,7 @@ bool ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode
 /*
  * doReadCursor
  */
-static bool doReadCursor( const char *fname, an_img_file *cursorfile, an_img *cursor,
-                   WRInfo *info, WResLangNode *lnode )
+static bool doReadCursor( const char *fname, an_img_file *cursorfile, an_img *cursor, WRInfo *info, WResLangNode *lnode )
 {
     img_node            node;
     HDC                 hdc;
@@ -528,8 +526,7 @@ static bool readInCursorFile( const char *fname )
 /*
  * ReadCursorFromData - read the cursor data and set up structures
  */
-bool ReadCursorFromData( void *data, const char *fname, WRInfo *info,
-                         WResLangNode *lnode )
+bool ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode )
 {
     unsigned            pos;
     an_img_file         *cursorfile;

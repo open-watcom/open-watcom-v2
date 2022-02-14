@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -399,15 +399,15 @@ bool WRHandleWinNTNameDir( FILE *fp, WResDir *dir, WResID *type, uint_32 rva )
 bool WRHandleWinNTNameEntry( FILE *fp, WResDir *dir, WResID *type,
                             resource_dir_entry *rd_entry, bool is_name )
 {
-    WResLangType    def_lang;
+    WResLangType    lang;
     resource_entry  res_entry;
     uint_32         offset;
     WResID          *name;
     bool            add_now;
     bool            ok;
 
-    def_lang.lang = DEF_LANG;
-    def_lang.sublang = DEF_SUBLANG;
+    lang.lang = DEF_LANG;
+    lang.sublang = DEF_SUBLANG;
 
     /* verify the id_name */
     if( ( (rd_entry->id_name & PE_RESOURCE_MASK_ON) != 0 ) ^ is_name ) {
@@ -440,7 +440,7 @@ bool WRHandleWinNTNameEntry( FILE *fp, WResDir *dir, WResID *type,
         if( add_now ) {
             offset = WR_MAP_RES_RVA( res_entry.data_rva );
             ok = !WResAddResource( type, name, 0, offset, res_entry.size,
-                                   *dir, &def_lang, NULL );
+                                   *dir, &lang, NULL );
         }
     }
 

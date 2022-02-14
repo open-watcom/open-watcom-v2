@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,15 +149,15 @@ bool WdeInfoToData( WdeResInfo *info )
     WdeResDlgItem       *ditem;
     void                *data;
     size_t              size;
-    WResLangType        def_lang;
+    WResLangType        lang;
 
 
     if( info == NULL ) {
         return( false );
     }
 
-    def_lang.lang = DEF_SUBLANG;
-    def_lang.sublang = DEF_SUBLANG;
+    lang.lang = DEF_SUBLANG;
+    lang.sublang = DEF_SUBLANG;
     dnode = info->dlg_entry;
     for( dlist = info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
         ditem = (WdeResDlgItem *)ListElement( dlist );
@@ -185,7 +185,7 @@ bool WdeInfoToData( WdeResInfo *info )
                 ditem->lnode->Info.MemoryFlags = ditem->dialog_info->MemoryFlags;
             }
         } else {
-            rnode = WdeCreateWResResNode( 1, ditem->dialog_name, &def_lang,
+            rnode = WdeCreateWResResNode( 1, ditem->dialog_name, &lang,
                                           ditem->dialog_info->MemoryFlags, 0,
                                           size, data );
             if( rnode != NULL ) {
@@ -429,23 +429,23 @@ WResLangNode *WdeAllocWResLangNode( WResLangType *lang, uint_16 memflags,
                                     uint_32 offset, uint_32 size,
                                     void *data )
 {
-    WResLangNode *new_lnode;
+    WResLangNode *lnode;
 
     if( lang == NULL ) {
         return( NULL );
     }
 
-    new_lnode = (WResLangNode *)WRMemAlloc( sizeof( WResLangNode ) );
+    lnode = (WResLangNode *)WRMemAlloc( sizeof( WResLangNode ) );
 
-    if( new_lnode != NULL ) {
-        new_lnode->Next = NULL;
-        new_lnode->Prev = NULL;
-        new_lnode->data = data;
-        new_lnode->Info.lang = *lang;
-        new_lnode->Info.MemoryFlags = memflags;
-        new_lnode->Info.Offset = offset;
-        new_lnode->Info.Length = size;
+    if( lnode != NULL ) {
+        lnode->Next = NULL;
+        lnode->Prev = NULL;
+        lnode->data = data;
+        lnode->Info.lang = *lang;
+        lnode->Info.MemoryFlags = memflags;
+        lnode->Info.Offset = offset;
+        lnode->Info.Length = size;
     }
 
-    return( new_lnode );
+    return( lnode );
 }

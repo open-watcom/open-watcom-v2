@@ -75,7 +75,7 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
                                   WResDir new_dir, FILE *src_fp,
                                   FILE *dst_fp, bool is32bit )
 {
-    WResLangType    lt;
+    WResLangType    lang;
     WResLangNode    *lnode;
     uint_32         offset;
     bool            dup;
@@ -88,11 +88,11 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
 
     offset = RESTELL( dst_fp );
     for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
-        lt = lnode->Info.lang;
+        lang = lnode->Info.lang;
         if( WResAddResource( &tnode->Info.TypeName, &rnode->Info.ResName,
                              lnode->Info.MemoryFlags, offset,
                              lnode->Info.Length, new_dir,
-                             &lt, &dup ) || dup ) {
+                             &lang, &dup ) || dup ) {
             if( dup ) {
                 displayDupMsg( &tnode->Info.TypeName, &rnode->Info.ResName );
             }

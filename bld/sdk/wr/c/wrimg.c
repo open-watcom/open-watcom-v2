@@ -62,11 +62,11 @@ bool WRLoadBitmapFile( WRInfo *info )
     pgroup2             pg;
     WResID              *type;
     WResID              *name;
-    WResLangType        def_lang;
+    WResLangType        lang;
 
     fp = NULL;
-    def_lang.sublang = DEF_LANG;
-    def_lang.lang = DEF_SUBLANG;
+    lang.sublang = DEF_LANG;
+    lang.lang = DEF_SUBLANG;
 
     ok = ( info != NULL );
 
@@ -99,7 +99,7 @@ bool WRLoadBitmapFile( WRInfo *info )
     if( ok ) {
         ok = !WResAddResource( type, name, 0, sizeof( BITMAPFILEHEADER ),
                                file_length - sizeof( BITMAPFILEHEADER ),
-                               info->dir, &def_lang, NULL );
+                               info->dir, &lang, NULL );
     }
 
     if( fp != NULL ) {
