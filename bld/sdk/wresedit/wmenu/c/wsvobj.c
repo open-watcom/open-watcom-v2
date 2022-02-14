@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,7 +132,7 @@ bool WSaveObject( WMenuEditInfo *einfo, bool get_name, bool save_into )
                 }
                 einfo->info->symbol_file = WCreateSymFileName( fname );
             }
-            ok = WSaveSymbols( einfo, einfo->info->symbol_table,
+            ok = WSaveSymbols( einfo->win, einfo->info->symbol_table,
                                &einfo->info->symbol_file, get_name );
         }
     }
@@ -363,13 +363,13 @@ bool WSaveObjectInto( WMenuEditInfo *einfo )
     return( ok );
 }
 
-bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name, bool prompt )
+bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name, bool prompt )
 {
     char                *name;
     WGetFileStruct      gf;
     bool                ok;
 
-    if( einfo == NULL || table == NULL || file_name == NULL ) {
+    if( win == NULL || table == NULL || file_name == NULL ) {
         return( false );
     }
 
@@ -379,14 +379,14 @@ bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name, b
 
     ok = true;
 
-    WSetWaitCursor( einfo->win, true );
+    WSetWaitCursor( win, true );
 
     if( prompt || *file_name == NULL ) {
         gf.file_name = *file_name;
         gf.title = AllocRCString( W_SAVESYMTITLE );
         gf.filter = AllocRCString( W_SYMFILTER );
         WMassageFilter( gf.filter );
-        name = WGetSaveFileName( einfo->win, &gf );
+        name = WGetSaveFileName( win, &gf );
         if( gf.title != NULL ) {
             FreeRCString( gf.title );
         }
@@ -412,7 +412,7 @@ bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name, b
         WRMakeHashTableClean( table );
     }
 
-    WSetWaitCursor( einfo->win, false );
+    WSetWaitCursor( win, false );
 
     return( ok );
 }

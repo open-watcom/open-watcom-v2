@@ -1154,7 +1154,7 @@ bool WQuerySaveSym( WMenuEditInfo *einfo, bool force_exit )
             }
             einfo->info->symbol_file = WCreateSymFileName( fname );
         }
-        return( WSaveSymbols( einfo, einfo->info->symbol_table,
+        return( WSaveSymbols( einfo->win, einfo->info->symbol_table,
                               &einfo->info->symbol_file, FALSE ) );
     } else if( ret == IDCANCEL ) {
         return( FALSE );
