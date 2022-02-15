@@ -384,7 +384,7 @@ void WFreeAccelTableEntries( WAccelEntry *entry )
     }
 }
 
-bool WMakeEntryClipData( WAccelEntry *entry, char **data, uint_32 *dsize )
+bool WMakeClipDataFromAccelEntry( WAccelEntry *entry, char **data, uint_32 *dsize )
 {
     bool        ok;
 
@@ -409,7 +409,7 @@ bool WMakeEntryClipData( WAccelEntry *entry, char **data, uint_32 *dsize )
     return( ok );
 }
 
-bool WMakeEntryFromClipData( WAccelEntry *entry, char *data, uint_32 dsize )
+bool WMakeAccelEntryFromClipData( WAccelEntry *entry, char *data, uint_32 dsize )
 {
     size_t      len;
     bool        ok;

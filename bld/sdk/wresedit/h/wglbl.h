@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,15 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define W_VERSION  0x0100
+#define W_VERSION   0x0100
+
+#define VALU8(p)    *(uint_8 *)(p)
+#define VALU16(p)   *(uint_16 *)(p)
+#define VALU32(p)   *(uint_32 *)(p)
+
+#define INCU8(p)    (p) += sizeof( uint_8 )
+#define INCU16(p)   (p) += sizeof( uint_16 )
+#define INCU32(p)   (p) += sizeof( uint_32 )
 
 /****************************************************************************/
 /* type definitions                                                         */

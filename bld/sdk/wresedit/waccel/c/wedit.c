@@ -628,7 +628,7 @@ bool WPasteAccelItem( WAccelEditInfo *einfo )
     }
 
     if( ok ) {
-        ok = WMakeEntryFromClipData( &entry, data, dsize );
+        ok = WMakeAccelEntryFromClipData( &entry, data, dsize );
     }
 
     if( ok ) {
@@ -679,7 +679,7 @@ bool WClipAccelItem( WAccelEditInfo *einfo, bool cut )
     }
 
     if( ok ) {
-        ok = WMakeEntryClipData( entry, &data, &dsize );
+        ok = WMakeClipDataFromAccelEntry( entry, &data, &dsize );
     }
 
     if( ok ) {
