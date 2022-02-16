@@ -428,7 +428,7 @@ static char *WdeFindDLGInclude( WdeResInfo *rinfo )
     }
 
     if( ok ) {
-        include = (char *)WRCopyResData( rinfo->info, lnode );
+        include = WRCopyResData( rinfo->info, lnode );
     }
 
     return( include );

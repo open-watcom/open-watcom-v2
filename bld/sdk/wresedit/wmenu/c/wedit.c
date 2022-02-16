@@ -730,7 +730,7 @@ bool WClipMenuItem( WMenuEditInfo *einfo, bool cut )
     HWND        lbox;
     LRESULT     pos;
     char        *data;
-    uint_32     dsize;
+    size_t      dsize;
     WMenuEntry  *entry;
     bool        ok;
 

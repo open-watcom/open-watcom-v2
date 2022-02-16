@@ -118,8 +118,8 @@ extern WMenuEntry       *WFindEntryFromPreviewPopup( WMenuEntry *, HMENU );
 extern bool             WFindEntryLBPos( WMenuEntry *, WMenuEntry *, LRESULT * );
 extern bool             WModifyEntryInPreview( WMenuEditInfo *, WMenuEntry * );
 
-extern bool             WMakeClipDataFromMenuEntry( WMenuEntry *entry, char **data, uint_32 *dsize );
-extern WMenuEntry       *WMakeMenuEntryFromClipData( char *data, uint_32 dsize );
+extern bool             WMakeClipDataFromMenuEntry( WMenuEntry *entry, char **data, size_t *dsize );
+extern WMenuEntry       *WMakeMenuEntryFromClipData( char *data, size_t dsize );
 
 extern bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table );
 extern bool WResolveMenuEntries( WMenuEditInfo *einfo );

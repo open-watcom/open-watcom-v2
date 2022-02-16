@@ -434,7 +434,7 @@ bool WRAPI WRAppendDataToData( char **d1, size_t *d1size, char *d2, size_t d2siz
         return( false );
     }
 
-    if( *d1size + d2size > INT_MAX ) {
+    if( (ULONG_PTR)*d1size + (ULONG_PTR)d2size > INT_MAX ) {
         return( false );
     }
 

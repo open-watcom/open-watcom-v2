@@ -87,14 +87,16 @@ bool WGetClipData( HWND hwnd, UINT fmt, char **data, uint_32 *dsize )
     }
 
     if( ok ) {
-        *dsize = (uint_32)GlobalSize( hclipdata );
-        ok = (*dsize != 0);
-    }
+        ULONG_PTR   size;
 
-    if( ok ) {
-        if( *dsize >= INT_MAX ) {
+        size = GlobalSize( hclipdata );
+        if( size == 0 ) {
+            ok = false;
+        } else if( size >= INT_MAX ) {
             WDisplayErrorMsg( W_RESTOOBIGTOPASTE );
             ok = false;
+        } else {
+            *dsize = size;
         }
     }
 
@@ -110,9 +112,9 @@ bool WGetClipData( HWND hwnd, UINT fmt, char **data, uint_32 *dsize )
     if( !ok ) {
         if( *data != NULL ) {
             WRMemFree( *data );
-            *data = NULL;
-            *dsize = 0;
         }
+        *data = NULL;
+        *dsize = 0;
     }
 
     if( mem != NULL ) {

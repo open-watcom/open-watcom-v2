@@ -123,26 +123,36 @@ void WFreeAccelEditInfo( WAccelEditInfo *einfo )
     }
 }
 
-static void WInitDataFromAccelTable( WAccelTable *tbl, char *tdata )
+static void WInitDataFromAccelTable( WAccelTable *tbl, char *data )
 {
     WAccelEntry         *entry;
-    AccelTableEntry     *data;
-    AccelTableEntry32   *data32;
-    int                 i;
+    char                *last;
 
-    i = -1;
+    last = NULL;
     if( tbl->is32bit ) {
-        data32 = (AccelTableEntry32 *)tdata;
         for( entry = tbl->first_entry; entry != NULL; entry = entry->next ) {
-            data32[++i] = entry->u.entry32;
+            last = data;
+            VALU16( data ) = entry->u.entry32.Flags;
+            INCU16( data );
+            VALU16( data ) = entry->u.entry32.Ascii;
+            INCU16( data );
+            VALU16( data ) = entry->u.entry32.Id;
+            INCU16( data );
+            VALU16( data ) = entry->u.entry32.Unknown;
+            INCU16( data );
         }
-        data32[i].Flags |= ACCEL_LAST;
+        VALU16( last ) |= ACCEL_LAST;
     } else {
-        data = (AccelTableEntry *)tdata;
         for( entry = tbl->first_entry; entry != NULL; entry = entry->next ) {
-            data[++i] = entry->u.entry;
+            last = data;
+            VALU8( data ) = entry->u.entry.Flags;
+            INCU8( data );
+            VALU16( data ) = entry->u.entry.Ascii;
+            INCU16( data );
+            VALU16( data ) = entry->u.entry.Id;
+            INCU16( data );
         }
-        data[i].Flags |= ACCEL_LAST;
+        VALU8( last ) |= ACCEL_LAST;
     }
 }
 
@@ -165,12 +175,12 @@ static size_t WCalcAccelTableSize( WAccelTable *tbl )
     return( size );
 }
 
-void WMakeDataFromAccelTable( WAccelTable *tbl, char **pdata, size_t *psize )
+void WMakeDataFromAccelTable( WAccelTable *tbl, char **pdata, size_t *dsize )
 {
     size_t  size;
     char    *data;
 
-    if( pdata != NULL && psize != NULL ) {
+    if( pdata != NULL && dsize != NULL ) {
         size = WCalcAccelTableSize( tbl );
         if( size != 0 ) {
             data = WRMemAlloc( size );
@@ -183,7 +193,7 @@ void WMakeDataFromAccelTable( WAccelTable *tbl, char **pdata, size_t *psize )
             data = NULL;
         }
         *pdata = data;
-        *psize = size;
+        *dsize = size;
     }
 }
 
@@ -227,16 +237,17 @@ static WAccelTable *WAllocAccelTable( size_t num )
 
 static size_t WCalcNumAccelEntries( WAccelInfo *info )
 {
-    size_t  num, size;
+    size_t  num;
+    size_t  size;
 
     if( info == NULL ) {
         return( 0 );
     }
 
     if( info->is32bit ) {
-        size = sizeof( AccelTableEntry32 );
+        size = AccelTableEntry32_SIZE;
     } else {
-        size = sizeof( AccelTableEntry );
+        size = AccelTableEntry_SIZE;
     }
 
     num = info->data_size / size;
@@ -251,34 +262,40 @@ static size_t WCalcNumAccelEntries( WAccelInfo *info )
 static void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
 {
     WAccelEntry         *entry;
-    AccelTableEntry     *data;
-    AccelTableEntry32   *data32;
+    char                *data;
     int                 i;
-    int                 last;
+    unsigned            last;
 
     entry = tbl->first_entry;
     if( entry == NULL ) {
         return;
     }
 
+    data = info->data;
     i = 0;
     last = 0;
     if( info->is32bit ) {
-        data32 = (AccelTableEntry32 *)info->data;
-        for( ; entry != NULL && last == 0; entry = entry->next ) {
+        for( ; entry != NULL && (last & ACCEL_LAST) == 0; entry = entry->next ) {
             entry->is32bit = true;
-            entry->u.entry32 = data32[i];
-            entry->u.entry32.Flags &= ~ACCEL_LAST;
-            last = (data32[i].Flags & ACCEL_LAST);
+            entry->u.entry32.Flags = (last = VALU16( data )) & ~ACCEL_LAST;
+            INCU16( data );
+            entry->u.entry32.Ascii = VALU16( data );
+            INCU16( data );
+            entry->u.entry32.Id = VALU16( data );
+            INCU16( data );
+            entry->u.entry32.Unknown = VALU16( data );
+            INCU16( data );
             i++;
         }
     } else {
-        data = (AccelTableEntry *)info->data;
-        for( ; entry != NULL && last == 0; entry = entry->next ) {
+        for( ; entry != NULL && (last & ACCEL_LAST) == 0; entry = entry->next ) {
             entry->is32bit = false;
-            entry->u.entry = data[i];
-            entry->u.entry.Flags &= ~ACCEL_LAST;
-            last = (data[i].Flags & ACCEL_LAST);
+            entry->u.entry.Flags = (last = VALU8( data )) & ~ACCEL_LAST;
+            INCU8( data );
+            entry->u.entry.Ascii = VALU16( data );
+            INCU16( data );
+            entry->u.entry.Id = VALU16( data );
+            INCU16( data );
             i++;
         }
     }
@@ -378,26 +395,28 @@ bool WFreeAccelTableEntry( WAccelTable *tbl, WAccelEntry *entry )
     return( ok );
 }
 
-bool WMakeClipDataFromAccelEntry( WAccelEntry *entry, char **data, uint_32 *dsize )
+bool WMakeClipDataFromAccelEntry( WAccelEntry *entry, char **pdata, uint_32 *dsize )
 {
     bool        ok;
+    char        *data;
+    size_t      size;
 
-    ok = (entry != NULL && data != NULL && dsize != NULL);
+    ok = (entry != NULL && pdata != NULL && dsize != NULL);
 
     if( ok ) {
         if( entry->is32bit ) {
-            *dsize = sizeof( AccelTableEntry32 );
+            size = sizeof( AccelTableEntry32 ) + 1;
         } else {
-            *dsize = sizeof( AccelTableEntry );
+            size = sizeof( AccelTableEntry ) + 1;
         }
-        *dsize += sizeof( BYTE );
-        *data = WRMemAlloc( *dsize );
-        ok = (*data != NULL);
+        *dsize = size;
+        *pdata = data = WRMemAlloc( size );
+        ok = (data != NULL);
     }
 
     if( ok ) {
-        (*data)[0] = entry->is32bit;
-        memcpy( *data + 1, &entry->u.entry, *dsize );
+        data[0] = entry->is32bit;
+        memcpy( data + 1, &entry->u.entry, size - 1 );
     }
 
     return( ok );
