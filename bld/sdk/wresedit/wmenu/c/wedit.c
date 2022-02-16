@@ -695,7 +695,7 @@ bool WPasteMenuItem( WMenuEditInfo *einfo )
 {
     WMenuEntry  *entry;
     char        *data;
-    uint_32     dsize;
+    size_t      dsize;
     bool        ok;
 
     data = NULL;

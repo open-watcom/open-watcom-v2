@@ -59,7 +59,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WGetClipData( HWND hwnd, UINT fmt, char **data, uint_32 *dsize )
+bool WGetClipData( HWND hwnd, UINT fmt, char **data, size_t *dsize )
 {
     HANDLE      hclipdata;
     void        *mem;
@@ -128,7 +128,7 @@ bool WGetClipData( HWND hwnd, UINT fmt, char **data, uint_32 *dsize )
     return( ok );
 }
 
-bool WCopyClipData( HWND hwnd, UINT fmt, char *data, uint_32 dsize )
+bool WCopyClipData( HWND hwnd, UINT fmt, char *data, size_t dsize )
 {
     HBITMAP     hdsp_bitmap;
     HGLOBAL     hmem;

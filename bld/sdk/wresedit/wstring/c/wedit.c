@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -543,7 +543,7 @@ bool WPasteStringItem( WStringEditInfo *einfo )
     char                *text;
     char                *symbol;
     WRHashValueList     *vlist;
-    uint_32             len;
+    size_t              len;
     uint_16             id;
     bool                ok;
 
@@ -627,7 +627,7 @@ bool WClipStringItem( WStringEditInfo *einfo, bool cut )
 
     if( ok ) {
         len = strlen( text ) + 1;
-        ok = WCopyClipData( einfo->win, CF_TEXT, text, (uint_32)len );
+        ok = WCopyClipData( einfo->win, CF_TEXT, text, len );
     }
 
     if( ok ) {

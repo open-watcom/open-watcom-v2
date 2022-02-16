@@ -41,7 +41,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool WGetClipData( HWND hwnd, UINT fmt, char **data, uint_32 *dsize );
-extern bool WCopyClipData( HWND hwnd, UINT fmt, char *data, uint_32 dsize );
+extern bool WGetClipData( HWND hwnd, UINT fmt, char **data, size_t *dsize );
+extern bool WCopyClipData( HWND hwnd, UINT fmt, char *data, size_t dsize );
 
 #endif

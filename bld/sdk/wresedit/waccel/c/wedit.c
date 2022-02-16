@@ -615,7 +615,7 @@ bool WPasteAccelItem( WAccelEditInfo *einfo )
 {
     WAccelEntry entry;
     char        *data;
-    uint_32     dsize;
+    size_t      dsize;
     bool        ok;
 
     data = NULL;
@@ -657,7 +657,7 @@ bool WClipAccelItem( WAccelEditInfo *einfo, bool cut )
     LRESULT     pos;
     WAccelEntry *entry;
     char        *data;
-    uint_32     dsize;
+    size_t      dsize;
     bool        ok;
 
     data = NULL;

@@ -60,12 +60,6 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static char *WInitDataFromMenu( WMenuEntry *, char * );
-static size_t WCalcMenuSize( WMenuEntry * );
-static bool WMakeMenuEntryFromData( char **, size_t *, WMenuEntry *, WMenuEntry **, bool );
-static bool WAllocMenuEntryFromData( char **, size_t *, WMenuEntry **, bool );
-static bool WMakeMenuItemFromData( char **data, size_t *dsize, MenuItem **pitem, bool );
-static bool WInsertEntryIntoPreview( WMenuEditInfo *, WMenuEntry * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -135,6 +129,133 @@ void WFreeMenuEInfo( WMenuEditInfo *einfo )
     }
 }
 
+static char *WInitDataFromMenu( WMenuEntry *entry, char *data )
+{
+    size_t              tlen;
+    char                *item_text;
+    unsigned            item_flags;
+
+    for( ; entry != NULL; entry = entry->next ) {
+        if( entry->item->IsPopup ) {
+            /* menu item flags */
+            item_flags = entry->item->Item.Popup.ItemFlags & ~MENU_ENDMENU;
+            if( entry->next == NULL ) {
+                item_flags |= MENU_ENDMENU;
+            }
+            VALU16( data ) = item_flags;
+            INCU16( data );
+            item_text = entry->item->Item.Popup.ItemText;
+        } else {
+            /* menu item flags */
+            if( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) {
+                item_flags = 0;
+            } else {
+                item_flags = (entry->item->Item.Normal.ItemFlags & ~MENU_ENDMENU) | MF_STRING;
+            }
+            if( entry->next == NULL ) {
+                item_flags |= MENU_ENDMENU;
+            }
+            VALU16( data ) = item_flags;
+            INCU16( data );
+            /* menu item id */
+            if( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) {
+                VALU16( data ) = 0;
+            } else {
+                VALU16( data ) = entry->item->Item.Normal.ItemID;
+            }
+            INCU16( data );
+            item_text = entry->item->Item.Normal.ItemText;
+        }
+
+        /* menu item text */
+        if( entry->is32bit ) {
+            tlen = 0;
+            if( item_text != NULL ) {
+                if( WRmbcs2unicode( item_text, NULL, &tlen ) ) {
+                    if( !WRmbcs2unicodeBuf( item_text, data, tlen ) ) {
+                        tlen = 0;
+                    }
+                }
+            }
+            if( tlen == 0 ) {
+                tlen = 2;
+                data[0] = '\0';
+                data[1] = '\0';
+            }
+        } else {
+            if( item_text != NULL ) {
+                tlen = strlen( item_text ) + 1;
+                memcpy( data, item_text, tlen );
+            } else {
+                tlen = 1;
+                data[0] = '\0';
+            }
+        }
+        data += tlen;
+
+        /* popup menu childs */
+        if( entry->item->IsPopup ) {
+            if( entry->child != NULL ) {
+                data = WInitDataFromMenu( entry->child, data );
+            } else {
+                WDummyMenuEntry->is32bit = entry->is32bit;
+                data = WInitDataFromMenu( WDummyMenuEntry, data );
+            }
+        }
+    }
+
+    return( data );
+}
+
+static size_t WCalcMenuSize( WMenuEntry *entry )
+{
+    size_t      dsize;
+    size_t      tlen;
+    char        *text;
+
+    if( entry == NULL ) {
+        return( 0 );
+    }
+
+    dsize = 0;
+    for( ; entry != NULL; entry = entry->next ) {
+        if( entry->item->IsPopup ) {
+            dsize += sizeof( MenuFlags ) + 1;
+            text = entry->item->Item.Popup.ItemText;
+            if( entry->child != NULL ) {
+                dsize += WCalcMenuSize( entry->child );
+            } else {
+                WDummyMenuEntry->is32bit = entry->is32bit;
+                dsize += WCalcMenuSize( WDummyMenuEntry );
+            }
+        } else {
+            dsize += sizeof( MenuFlags ) + sizeof( uint_16 ) + 1;
+            text = entry->item->Item.Normal.ItemText;
+        }
+
+        if( entry->is32bit ) {
+            tlen = 0;
+            if( text != NULL ) {
+                if( !WRmbcs2unicode( text, NULL, &tlen ) ) {
+                    tlen = 0;
+                }
+            }
+            if( tlen == 0 ) {
+                tlen = 2;
+            }
+        } else {
+            if( text != NULL ) {
+                tlen = strlen( text ) + 1;
+            } else {
+                tlen = 1;
+            }
+        }
+        dsize += tlen;
+    }
+
+    return( dsize );
+}
+
 void WMakeDataFromMenu( WMenu *menu, char **pdata, size_t *dsize )
 {
     char *data;
@@ -157,7 +278,7 @@ void WMakeDataFromMenu( WMenu *menu, char **pdata, size_t *dsize )
     }
 }
 
-bool WMakeMenuItemFromData( char **pdata, size_t *dsize, MenuItem **pitem, bool is32bit )
+static bool WMakeMenuItemFromData( char **pdata, size_t *dsize, MenuItem **pitem, bool is32bit )
 {
     char                *data;
     char                *itext;
@@ -166,7 +287,6 @@ bool WMakeMenuItemFromData( char **pdata, size_t *dsize, MenuItem **pitem, bool 
     MenuFlags           item_flags;
     unsigned            item_id;
     MenuItem            *item;
-    
 
     if( pdata == NULL || *pdata == NULL || dsize == NULL || *dsize == 0 || pitem == NULL ) {
         return( false );
@@ -227,7 +347,7 @@ bool WMakeMenuItemFromData( char **pdata, size_t *dsize, MenuItem **pitem, bool 
 
 }
 
-bool WAllocMenuEntryFromData( char **data, size_t *dsize, WMenuEntry **entry, bool is32bit )
+static bool WAllocMenuEntryFromData( char **data, size_t *dsize, WMenuEntry **entry, bool is32bit )
 {
     bool        ok;
 
@@ -254,7 +374,7 @@ bool WAllocMenuEntryFromData( char **data, size_t *dsize, WMenuEntry **entry, bo
     return( ok );
 }
 
-bool WMakeMenuEntryFromData( char **data, size_t *dsize, WMenuEntry *parent,
+static bool WMakeMenuEntryFromData( char **data, size_t *dsize, WMenuEntry *parent,
                             WMenuEntry **entry, bool is32bit )
 {
     bool        ok;
@@ -349,133 +469,6 @@ WMenu *WMakeMenuFromInfo( WMenuInfo *info )
     return( menu );
 }
 
-char *WInitDataFromMenu( WMenuEntry *entry, char *data )
-{
-    size_t              tlen;
-    char                *item_text;
-    unsigned            item_flags;
-
-    for( ; entry != NULL; entry = entry->next ) {
-        if( entry->item->IsPopup ) {
-            /* menu item flags */
-            item_flags = entry->item->Item.Popup.ItemFlags & ~MENU_ENDMENU;
-            if( entry->next == NULL ) {
-                item_flags |= MENU_ENDMENU;
-            }
-            VALU16( data ) = item_flags;
-            INCU16( data );
-            item_text = entry->item->Item.Popup.ItemText;
-        } else {
-            /* menu item flags */
-            if( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) {
-                item_flags = 0;
-            } else {
-                item_flags = (entry->item->Item.Normal.ItemFlags & ~MENU_ENDMENU) | MF_STRING;
-            }
-            if( entry->next == NULL ) {
-                item_flags |= MENU_ENDMENU;
-            }
-            VALU16( data ) = item_flags;
-            INCU16( data );
-            /* menu item id */
-            if( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) {
-                VALU16( data ) = 0;
-            } else {
-                VALU16( data ) = entry->item->Item.Normal.ItemID;
-            }
-            INCU16( data );
-            item_text = entry->item->Item.Normal.ItemText;
-        }
-
-        /* menu item text */
-        if( entry->is32bit ) {
-            tlen = 0;
-            if( item_text != NULL ) {
-                if( WRmbcs2unicode( item_text, NULL, &tlen ) ) {
-                    if( !WRmbcs2unicodeBuf( item_text, data, tlen ) ) {
-                        tlen = 0;
-                    }
-                }
-            }
-            if( tlen == 0 ) {
-                tlen = 2;
-                data[0] = '\0';
-                data[1] = '\0';
-            }
-        } else {
-            if( item_text != NULL ) {
-                tlen = strlen( item_text ) + 1;
-                memcpy( data, item_text, tlen );
-            } else {
-                tlen = 1;
-                data[0] = '\0';
-            }
-        }
-        data += tlen;
-
-        /* popup menu childs */
-        if( entry->item->IsPopup ) {
-            if( entry->child != NULL ) {
-                data = WInitDataFromMenu( entry->child, data );
-            } else {
-                WDummyMenuEntry->is32bit = entry->is32bit;
-                data = WInitDataFromMenu( WDummyMenuEntry, data );
-            }
-        }
-    }
-
-    return( data );
-}
-
-size_t WCalcMenuSize( WMenuEntry *entry )
-{
-    size_t      dsize;
-    size_t      tlen;
-    char        *text;
-
-    if( entry == NULL ) {
-        return( 0 );
-    }
-
-    dsize = 0;
-    for( ; entry != NULL; entry = entry->next ) {
-        if( entry->item->IsPopup ) {
-            dsize += sizeof( MenuFlags ) + 1;
-            text = entry->item->Item.Popup.ItemText;
-            if( entry->child != NULL ) {
-                dsize += WCalcMenuSize( entry->child );
-            } else {
-                WDummyMenuEntry->is32bit = entry->is32bit;
-                dsize += WCalcMenuSize( WDummyMenuEntry );
-            }
-        } else {
-            dsize += sizeof( MenuFlags ) + sizeof( uint_16 ) + 1;
-            text = entry->item->Item.Normal.ItemText;
-        }
-
-        if( entry->is32bit ) {
-            tlen = 0;
-            if( text != NULL ) {
-                if( !WRmbcs2unicode( text, NULL, &tlen ) ) {
-                    tlen = 0;
-                }
-            }
-            if( tlen == 0 ) {
-                tlen = 2;
-            }
-        } else {
-            if( text != NULL ) {
-                tlen = strlen( text ) + 1;
-            } else {
-                tlen = 1;
-            }
-        }
-        dsize += tlen;
-    }
-
-    return( dsize );
-}
-
 void WFreeMenu( WMenu *menu )
 {
     if( menu != NULL ) {
@@ -528,6 +521,88 @@ bool WRemoveMenuEntry( WMenu *menu, WMenuEntry *entry )
     }
     if( entry->prev != NULL ) {
         entry->prev->next = entry->next;
+    }
+
+    return( true );
+}
+
+static bool WAddItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
+{
+    MenuFlags   flags;
+    bool        ok;
+
+    ok = (hparent != (HMENU)NULL && entry != NULL);
+
+    if( ok ) {
+        flags = entry->item->Item.Normal.ItemFlags;
+        flags &= ~MENU_ENDMENU;
+        if( flags & MENU_POPUP ) {
+            entry->preview_popup = CreatePopupMenu();
+            if( entry->preview_popup == (HMENU)NULL ) {
+                return( false );
+            }
+            ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
+                             (UINT)(pointer_uint)entry->preview_popup,
+                             entry->item->Item.Popup.ItemText ) != 0;
+        } else if( flags & MENU_SEPARATOR ) {
+            ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
+                             entry->preview_id, NULL ) != 0;
+        } else {
+            ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
+                             entry->preview_id,
+                             entry->item->Item.Normal.ItemText ) != 0;
+        }
+    }
+
+    return( ok );
+}
+
+static bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
+{
+    int         pos;
+    HMENU       hmenu;
+    WMenuEntry  *start;
+
+    if( einfo == NULL || entry == NULL ) {
+        return( false );
+    }
+
+    if( entry->parent != NULL ) {
+        hmenu = entry->parent->preview_popup;
+        start = entry->parent->child;
+    } else {
+        hmenu = GetMenu( einfo->preview_window );
+        start = einfo->menu->first_entry;
+    }
+
+    if( hmenu == (HMENU)NULL ) {
+        return( false );
+    }
+
+    pos = -1;
+    for( ; start != NULL; start = start->next ) {
+        pos++;
+        if( start == entry ) {
+            break;
+        }
+    }
+
+    if( pos == -1 ) {
+        return( false );
+    }
+
+    entry->preview_id = einfo->first_preview_id;
+    einfo->first_preview_id++;
+    if( einfo->first_preview_id == LAST_PREVIEW_ID ) {
+        return( false );
+    }
+
+    if( !WAddItemAtPos( hmenu, pos, entry ) ) {
+        return( false );
+    }
+
+    if( entry->parent == NULL ) {
+        DrawMenuBar( einfo->preview_window );
     }
 
     return( true );
@@ -632,37 +707,6 @@ bool WResetPreviewIDs( WMenuEditInfo *einfo )
     einfo->first_preview_id = FIRST_PREVIEW_ID;
 
     return( WResetPreviewID( einfo, einfo->menu->first_entry ) );
-}
-
-static bool WAddItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
-{
-    MenuFlags   flags;
-    bool        ok;
-
-    ok = (hparent != (HMENU)NULL && entry != NULL);
-
-    if( ok ) {
-        flags = entry->item->Item.Normal.ItemFlags;
-        flags &= ~MENU_ENDMENU;
-        if( flags & MENU_POPUP ) {
-            entry->preview_popup = CreatePopupMenu();
-            if( entry->preview_popup == (HMENU)NULL ) {
-                return( false );
-            }
-            ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
-                             (UINT)(pointer_uint)entry->preview_popup,
-                             entry->item->Item.Popup.ItemText ) != 0;
-        } else if( flags & MENU_SEPARATOR ) {
-            ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
-                             entry->preview_id, NULL ) != 0;
-        } else {
-            ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
-                             entry->preview_id,
-                             entry->item->Item.Normal.ItemText ) != 0;
-        }
-    }
-
-    return( ok );
 }
 
 static bool WModifyItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
@@ -783,57 +827,6 @@ bool WFindEntryLBPos( WMenuEntry *start, WMenuEntry *entry, LRESULT *pos )
     }
 
     return( false );
-}
-
-bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
-{
-    int         pos;
-    HMENU       hmenu;
-    WMenuEntry  *start;
-
-    if( einfo == NULL || entry == NULL ) {
-        return( false );
-    }
-
-    if( entry->parent != NULL ) {
-        hmenu = entry->parent->preview_popup;
-        start = entry->parent->child;
-    } else {
-        hmenu = GetMenu( einfo->preview_window );
-        start = einfo->menu->first_entry;
-    }
-
-    if( hmenu == (HMENU)NULL ) {
-        return( false );
-    }
-
-    pos = -1;
-    for( ; start != NULL; start = start->next ) {
-        pos++;
-        if( start == entry ) {
-            break;
-        }
-    }
-
-    if( pos == -1 ) {
-        return( false );
-    }
-
-    entry->preview_id = einfo->first_preview_id;
-    einfo->first_preview_id++;
-    if( einfo->first_preview_id == LAST_PREVIEW_ID ) {
-        return( false );
-    }
-
-    if( !WAddItemAtPos( hmenu, pos, entry ) ) {
-        return( false );
-    }
-
-    if( entry->parent == NULL ) {
-        DrawMenuBar( einfo->preview_window );
-    }
-
-    return( true );
 }
 
 bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )

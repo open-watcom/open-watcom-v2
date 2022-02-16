@@ -165,9 +165,9 @@ static size_t WCalcAccelTableSize( WAccelTable *tbl )
     }
 
     if( tbl->is32bit ) {
-        size = sizeof( AccelTableEntry32 );
+        size = AccelTableEntry32_SIZE;
     } else {
-        size = sizeof( AccelTableEntry );
+        size = AccelTableEntry_SIZE;
     }
 
     size *= tbl->num;
@@ -395,7 +395,7 @@ bool WFreeAccelTableEntry( WAccelTable *tbl, WAccelEntry *entry )
     return( ok );
 }
 
-bool WMakeClipDataFromAccelEntry( WAccelEntry *entry, char **pdata, uint_32 *dsize )
+bool WMakeClipDataFromAccelEntry( WAccelEntry *entry, char **pdata, size_t *dsize )
 {
     bool        ok;
     char        *data;
@@ -405,9 +405,9 @@ bool WMakeClipDataFromAccelEntry( WAccelEntry *entry, char **pdata, uint_32 *dsi
 
     if( ok ) {
         if( entry->is32bit ) {
-            size = sizeof( AccelTableEntry32 ) + 1;
+            size = 1 + sizeof( AccelTableEntry32 );
         } else {
-            size = sizeof( AccelTableEntry ) + 1;
+            size = 1 + sizeof( AccelTableEntry );
         }
         *dsize = size;
         *pdata = data = WRMemAlloc( size );
@@ -422,7 +422,7 @@ bool WMakeClipDataFromAccelEntry( WAccelEntry *entry, char **pdata, uint_32 *dsi
     return( ok );
 }
 
-bool WMakeAccelEntryFromClipData( WAccelEntry *entry, char *data, uint_32 dsize )
+bool WMakeAccelEntryFromClipData( WAccelEntry *entry, char *data, size_t dsize )
 {
     size_t      len;
     bool        ok;
