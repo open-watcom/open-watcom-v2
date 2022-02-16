@@ -95,8 +95,8 @@ typedef struct WAccelEditInfo {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WAccelEditInfo   *WAllocAccelEInfo( void );
-extern void             WFreeAccelEInfo( WAccelEditInfo * );
+extern WAccelEditInfo   *WAllocAccelEditInfo( void );
+extern void             WFreeAccelEditInfo( WAccelEditInfo * );
 extern void             WMakeDataFromAccelTable( WAccelTable *, char **, size_t * );
 extern WAccelTable      *WMakeAccelTableFromInfo( WAccelInfo * );
 extern bool             WInsertAccelTableEntry( WAccelTable *, WAccelEntry *, WAccelEntry * );

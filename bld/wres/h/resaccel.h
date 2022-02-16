@@ -41,15 +41,15 @@ typedef struct AccelTableEntry32 {
     uint_16     Unknown;            /* I don't know what this field is for. */
 } AccelTableEntry32;                /* MS makes it 0. (padding?) */
 
-#define ACCELENTRY32_SIZE   (4 * sizeof( uint_16 ))
+#define AccelTableEntry32_SIZE  (4 * sizeof( uint_16 ))
 
 typedef struct AccelTableEntry {
     uint_8      Flags;
     uint_16     Ascii;
     uint_16     Id;
-} _WCUNALIGNED AccelTableEntry;
+} AccelTableEntry;
 
-#define ACCELENTRY_SIZE     (1 + 2 * sizeof( uint_16 ))
+#define AccelTableEntry_SIZE    (1 + 2 * sizeof( uint_16 ))
 
 typedef uint_8  AccelFlags;
 #define ACCEL_ASCII     0x00        /* last bit is 0 */
@@ -60,8 +60,13 @@ typedef uint_8  AccelFlags;
 #define ACCEL_ALT       0x10
 #define ACCEL_LAST      0x80
 
+/* reswaccl.c */
+
 extern bool ResWriteAccelEntry( AccelTableEntry * currentry, FILE *fp );
 extern bool ResWriteAccelEntry32( AccelTableEntry32 *, FILE *fp );
+
+/* resraccl.c */
+
 extern bool ResReadAccelEntry( AccelTableEntry * currentry, FILE *fp );
 extern bool ResReadAccelEntry32( AccelTableEntry32 *, FILE *fp );
 

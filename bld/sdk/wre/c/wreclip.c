@@ -98,7 +98,6 @@ typedef struct WREPasteData {
 /* static function prototypes                                               */
 /****************************************************************************/
 static WREClipData  *WRECreateClipData( WRECurrentResInfo *curr );
-static bool         WREGetClipData( WREClipFormat *fmt, char **data, size_t *dsize );
 static bool         WREClipBitmap( WRECurrentResInfo *curr, HWND main );
 static bool         WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt );
 static bool         WREQueryPasteReplace( WResID *name, uint_16 type_id, bool *replace );
@@ -124,7 +123,7 @@ static WREClipFormat WREClipFormats[] = {
 
 static HBITMAP WPrivateFormat       = NULL;
 
-bool WREGetClipData( WREClipFormat *fmt, char **data, size_t *dsize )
+static bool WREGetClipData( WREClipFormat *fmt, char **data, size_t *dsize )
 {
     bool        ok;
     HANDLE      hclipdata;
@@ -492,7 +491,7 @@ static bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     return( ok );
 }
 
-static bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize )
+static bool WREGetAndPasteBitmap( WREClipFormat *fmt, char *data, uint_32 dsize )
 {
     WRECurrentResInfo   curr;
     WResLangType        lang;

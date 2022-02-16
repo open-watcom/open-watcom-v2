@@ -202,7 +202,7 @@ WAccelHandle WRESEAPI WAccelStartEdit( WAccelInfo *info )
         if( appWidth == -1 ) {
             WInitEditDlg( WGetEditInstance(), info->parent );
         }
-        ok = ((einfo = WAllocAccelEInfo()) != NULL);
+        ok = ((einfo = WAllocAccelEditInfo()) != NULL);
     }
 
     if( ok ) {
@@ -237,7 +237,7 @@ WAccelHandle WRESEAPI WAccelStartEdit( WAccelInfo *info )
 
     if( !ok ) {
         if( einfo != NULL ) {
-            WFreeAccelEInfo( einfo );
+            WFreeAccelEditInfo( einfo );
         }
         return( 0 );
     }
@@ -330,7 +330,7 @@ WAccelInfo *WAccelGetEInfo( WAccelHandle hndl, bool keep )
         }
         if( !keep ) {
             WUnRegisterEditSession( hndl );
-            WFreeAccelEInfo( einfo );
+            WFreeAccelEditInfo( einfo );
         }
     }
 
@@ -1158,7 +1158,7 @@ bool WCleanup( WAccelEditInfo *einfo )
         }
         einfo->getting_key = FALSE;
         einfo->win = (HWND)NULL;
-        WFreeAccelEInfo( einfo );
+        WFreeAccelEditInfo( einfo );
         if( owner != (HWND)NULL ) {
             BringWindowToTop( owner );
         }
