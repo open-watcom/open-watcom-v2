@@ -33,7 +33,6 @@
 
 #include "wdeglbl.h"
 #include "wderesin.h"
-#include "wdetfile.h"
 #include "wdegetfn.h"
 #include "wdeopts.h"
 #include "wdemain.h"
@@ -304,7 +303,7 @@ bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
     WResID              *res;
     WResLangType        lang;
     char                *str;
-    int                 len;
+    size_t              len;
     bool                ok;
 
     type = NULL;
@@ -339,8 +338,7 @@ bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         len = strlen( include ) + 1;
-        ok = !WResAddResource( type, res, MEMFLAG_DISCARDABLE,
-                               0, len, rinfo->info->dir, &lang, NULL );
+        ok = !WResAddResource( type, res, MEMFLAG_DISCARDABLE, 0, len, rinfo->info->dir, &lang, NULL );
     }
 
     if( ok ) {
@@ -464,7 +462,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     }
 
     include = WdeFindDLGInclude( rinfo );
-    if( include != NULL && !WdeFileExists( include ) ) {
+    if( include != NULL && !WRFileExists( include ) ) {
         WRMemFree( include );
         include = NULL;
     }
@@ -482,7 +480,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
     ret = true;
 
-    if( WdeFileExists( fn_path ) ) {
+    if( WRFileExists( fn_path ) ) {
         include = WdeLoadSymbols( &rinfo->hash_table, fn_path, prompt );
         ret = (include != NULL);
         if( ret ) {

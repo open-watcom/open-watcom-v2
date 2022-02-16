@@ -50,7 +50,6 @@
 #include "wde_wres.h"
 #include "wdesdup.h"
 #include "wdefdiag.h"
-#include "wdetfile.h"
 #include "wdectool.h"
 #include "wdeselft.h"
 #include "wdefmenu.h"
@@ -466,7 +465,7 @@ bool WdeOpenResource( char *fn )
     got_name = FALSE;
 
     if( fn != NULL ) {
-        if( WdeFileExists( fn ) ) {
+        if( WRFileExists( fn ) ) {
             name = WdeStrDup( fn );
             gf.fn_offset = WRFindFnOffset( name );
         } else {

@@ -72,7 +72,7 @@ exetarg_objs = &
     wderes.obj   wderesin.obj wdesdlg.obj  wdesdup.obj  &
     wdestat.obj  wdestyle.obj &
     wdesym.obj   wdetest.obj  &
-    wdetfile.obj wdetoolb.obj &
+    wdetoolb.obj &
     wdemem.obj wdewait.obj wdedefsz.obj wdetxtsz.obj &
     wdetmenu.obj wdectool.obj wdezordr.obj wderibbn.obj &
     wdeselft.obj wdei2mem.obj wdeldres.obj wdesvres.obj wdesvobj.obj &
