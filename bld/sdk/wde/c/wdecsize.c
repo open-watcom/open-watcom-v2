@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,24 +37,6 @@
 #include "wrdll.h"
 #include "wresall.h"
 
-static size_t WdeCalcStrlen( char *str, bool is32bit )
-{
-    size_t      len;
-
-    if( is32bit ) {
-        if( str == NULL || !WRmbcs2unicode( str, NULL, &len ) ) {
-            len = 2;
-        }
-    } else {
-        len = 1;
-        if( str != NULL ) {
-            len += strlen( str );
-        }
-    }
-
-    return( len );
-}
-
 static size_t WdeCalcSizeOfControlClass( ControlClass *name, bool is32bit )
 {
     size_t size;
@@ -69,13 +52,13 @@ static size_t WdeCalcSizeOfControlClass( ControlClass *name, bool is32bit )
             if( name->Class & 0x80 ) {
                 size = sizeof( uint_16 ) * 2;
             } else {
-                size = WdeCalcStrlen( name->ClassName, is32bit );
+                size = WRCalcStrlen( name->ClassName, is32bit );
             }
         } else {
             if( name->Class & 0x80 ) {
                 size = 1;
             } else {
-                size = WdeCalcStrlen( name->ClassName, is32bit );
+                size = WRCalcStrlen( name->ClassName, is32bit );
             }
         }
     }
@@ -125,7 +108,7 @@ static size_t WdeCalcSizeOfDialogBoxHeader( ResNameOrOrdinal *MenuName, ResNameO
 
     size += WdeCalcSizeOfResNameOrOrdinal( MenuName, is32bit );
     size += WdeCalcSizeOfResNameOrOrdinal( ClassName, is32bit );
-    size += WdeCalcStrlen( Caption, is32bit );
+    size += WRCalcStrlen( Caption, is32bit );
 
     if( FontName != NULL ) {
         size += sizeof( WORD );     /* PointSize */
@@ -134,7 +117,7 @@ static size_t WdeCalcSizeOfDialogBoxHeader( ResNameOrOrdinal *MenuName, ResNameO
             size += sizeof( BYTE ); /* FontItalic */
             size += sizeof( BYTE ); /* FontCharset */
         }
-        size += WdeCalcStrlen( FontName, is32bit );
+        size += WRCalcStrlen( FontName, is32bit );
     }
 
     return( size );
@@ -190,13 +173,13 @@ size_t WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *name, bool is32bit )
             if( name->ord.fFlag == 0xff ) {
                 size = sizeof( uint_16 ) + sizeof( uint_16 );
             } else {
-                size = WdeCalcStrlen( name->name, is32bit );
+                size = WRCalcStrlen( name->name, is32bit );
             }
         } else {
             if( name->ord.fFlag == 0xff ) {
                 size = sizeof( uint_16 ) + sizeof( uint_8 );
             } else {
-                size = WdeCalcStrlen( name->name, is32bit );
+                size = WRCalcStrlen( name->name, is32bit );
             }
         }
     }

@@ -34,6 +34,8 @@
 #include "wrglbl.h"
 #include "wresall.h"
 #include "wrstrdup.h"
+#include "wrutili.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */

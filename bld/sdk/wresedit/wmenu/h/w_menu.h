@@ -119,7 +119,7 @@ extern bool             WFindEntryLBPos( WMenuEntry *, WMenuEntry *, LRESULT * )
 extern bool             WModifyEntryInPreview( WMenuEditInfo *, WMenuEntry * );
 
 extern bool             WMakeClipDataFromMenuEntry( WMenuEntry *entry, char **data, size_t *dsize );
-extern WMenuEntry       *WMakeMenuEntryFromClipData( char *data, size_t dsize );
+extern WMenuEntry       *WMakeMenuEntryFromClipData( const char *data, size_t dsize );
 
 extern bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table );
 extern bool WResolveMenuEntries( WMenuEditInfo *einfo );

@@ -421,7 +421,7 @@ bool WdeStartDDEEditSession( void )
     WdeResDlgItem       *ditem;
     char                *filename;
     HDDEDATA            hData;
-    void                *data;
+    char                *data;
     DWORD               ret;
     uint_32             size;
     OBJPTR              object;
@@ -482,8 +482,7 @@ bool WdeStartDDEEditSession( void )
             size = (int)DdeGetData( hData, NULL, 0, 0 );
             DdeFreeDataHandle( hData );
             if( data != NULL ) {
-                ditem->dialog_info = WdeMem2DBI( (uint_8 *)data, size,
-                                                 ditem->is32bit );
+                ditem->dialog_info = WdeMem2DBI( data, size, ditem->is32bit );
                 ok = (ditem->dialog_info != NULL);
                 WRMemFree( data );
             } else {

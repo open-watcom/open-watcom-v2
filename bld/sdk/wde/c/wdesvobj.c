@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +72,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
                     char **fname, WResID *rname, WResLangType *langtype,
                     bool save_into, bool get_name )
 {
-    void                *rdata;
+    char                *rdata;
     size_t              size;
     bool                ok;
     WResLangType        lang;
@@ -89,7 +89,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
             lang.lang = DEF_LANG;
             lang.sublang = DEF_SUBLANG;
         }
-        ok = WdeDBI2Mem( dbi, (unsigned_8 **)&rdata, &size );
+        ok = WdeDBI2Mem( dbi, &rdata, &size );
     }
 
     if( ok ) {

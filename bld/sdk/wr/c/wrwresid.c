@@ -33,6 +33,8 @@
 
 #include "wrglbl.h"
 #include "wresall.h"
+#include "wrutili.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */

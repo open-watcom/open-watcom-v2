@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool             WdeDBI2Mem( WdeDialogBoxInfo *, uint_8 **, size_t * );
-extern WdeDialogBoxInfo *WdeMem2DBI( const uint_8 *data, size_t size, bool );
+extern bool             WdeDBI2Mem( WdeDialogBoxInfo *, char **, size_t * );
+extern WdeDialogBoxInfo *WdeMem2DBI( const char *data, size_t size, bool );
 
 #endif
