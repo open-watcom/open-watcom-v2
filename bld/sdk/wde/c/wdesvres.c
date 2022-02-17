@@ -145,7 +145,7 @@ bool WdeInfoToData( WdeResInfo *info )
     WResResNode         *rnode;
     LIST                *dlist;
     WdeResDlgItem       *ditem;
-    void                *data;
+    char                *data;
     size_t              dsize;
     WResLangType        lang;
 
@@ -256,7 +256,7 @@ WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem )
     return( dbi );
 }
 
-bool WdeGetItemData( WdeResDlgItem *ditem, void *data, size_t *dsize )
+bool WdeGetItemData( WdeResDlgItem *ditem, char **data, size_t *dsize )
 {
     WdeDialogBoxInfo   *dbi;
 

@@ -279,7 +279,8 @@ static size_t WdeDialogBoxControl2Mem( WdeDialogBoxControl *control,
 bool WdeDBI2Mem( WdeDialogBoxInfo *info, char **pdata, size_t *psize )
 {
     bool                ok;
-    size_t              size, memsize;
+    size_t              size;
+    size_t              memsize;
     LIST                *l;
     WdeDialogBoxControl *ci;
     bool                is32bit;
@@ -297,12 +298,11 @@ bool WdeDBI2Mem( WdeDialogBoxInfo *info, char **pdata, size_t *psize )
     ok = (memsize != 0);
 
     if( ok ) {
-        start = WRMemAlloc( memsize );
-        ok = (start != NULL);
+        *pdata = data = WRMemAlloc( memsize );
+        ok = (data != NULL);
     }
 
     if( ok ) {
-        data = start;
         size = WdeDialogBoxHeader2Mem( info->dialog_header, data );
         data += size;
         ok = (size != 0);
@@ -329,21 +329,23 @@ bool WdeDBI2Mem( WdeDialogBoxInfo *info, char **pdata, size_t *psize )
 
     if( ok ) {
         if( is32bit ) {
-            PADDING_WRITE( data, start );
+            PADDING_WRITE( data, *pdata );
         }
     }
 
-    *psize = 0;
-    *pdata = NULL;
     if( ok ) {
-        ok = (( data - start ) == memsize);
+        ok = (data == *pdata + memsize);
         if( ok ) {
             *psize = memsize;
             *pdata = start;
         }
     }
-    if( !ok && start != NULL ) {
-        WRMemFree( start );
+    if( !ok ) {
+        if( *pdata != NULL ) {
+            WRMemFree( *pdata );
+        }
+        *psize = 0;
+        *pdata = NULL;
     }
     return( ok );
 }

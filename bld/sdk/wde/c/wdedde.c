@@ -339,7 +339,7 @@ HDDEDATA WdeCreateResNameData( WResID *name, bool is32bit )
 HDDEDATA WdeCreateResData( WdeResDlgItem *ditem )
 {
     HDDEDATA    hdata;
-    void        *data;
+    char        *data;
     size_t      size;
 
     hdata = NULL;
