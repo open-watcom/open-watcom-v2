@@ -71,7 +71,7 @@ static  WStringNode     *WMakeStringNodeFromStringBlock( WStringBlock * );
 /* static variables                                                         */
 /****************************************************************************/
 
-WStringEditInfo *WAllocStringEInfo( void )
+WStringEditInfo *WAllocStringEditInfo( void )
 {
     WStringEditInfo *einfo;
 
@@ -85,7 +85,7 @@ WStringEditInfo *WAllocStringEInfo( void )
     return( einfo );
 }
 
-void WFreeStringEInfo( WStringEditInfo *einfo )
+void WFreeStringEditInfo( WStringEditInfo *einfo )
 {
     if( einfo != NULL ) {
         if( einfo->tbl != NULL ) {

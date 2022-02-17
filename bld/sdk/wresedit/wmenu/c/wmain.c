@@ -224,7 +224,7 @@ WMenuHandle WRESEAPI WMenuStartEdit( WMenuInfo *info )
         if( appWidth == -1 ) {
             WInitEditDlg( WGetEditInstance(), info->parent );
         }
-        ok = ((einfo = WAllocMenuEInfo()) != NULL);
+        ok = ((einfo = WAllocMenuEditInfo()) != NULL);
     }
 
     if( ok ) {
@@ -259,7 +259,7 @@ WMenuHandle WRESEAPI WMenuStartEdit( WMenuInfo *info )
 
     if( !ok ) {
         if( einfo != NULL ) {
-            WFreeMenuEInfo( einfo );
+            WFreeMenuEditInfo( einfo );
         }
         return( 0 );
     }
@@ -361,7 +361,7 @@ WMenuInfo *WMenuGetEInfo( WMenuHandle hndl, bool keep )
         }
         if( !keep ) {
             WUnRegisterEditSession( hndl );
-            WFreeMenuEInfo( einfo );
+            WFreeMenuEditInfo( einfo );
         }
     }
 
@@ -1289,7 +1289,7 @@ bool WCleanup( WMenuEditInfo *einfo )
             owner = GetWindow( einfo->win, GW_OWNER );
         }
         einfo->win = (HWND)NULL;
-        WFreeMenuEInfo( einfo );
+        WFreeMenuEditInfo( einfo );
         if( owner != (HWND)NULL ) {
             BringWindowToTop( owner );
         }

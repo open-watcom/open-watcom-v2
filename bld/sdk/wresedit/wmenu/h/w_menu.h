@@ -100,8 +100,8 @@ typedef struct WMenuEditInfo {
 /****************************************************************************/
 extern void             WInitDummyMenuEntry( void );
 extern void             WFiniDummyMenuEntry( void );
-extern WMenuEditInfo    *WAllocMenuEInfo( void );
-extern void             WFreeMenuEInfo( WMenuEditInfo * );
+extern WMenuEditInfo    *WAllocMenuEditInfo( void );
+extern void             WFreeMenuEditInfo( WMenuEditInfo * );
 extern void             WMakeDataFromMenu( WMenu *, char **, size_t * );
 extern void             WFreeMenu( WMenu *menu );
 extern void             WFreeMenuEntries( WMenuEntry *entry );

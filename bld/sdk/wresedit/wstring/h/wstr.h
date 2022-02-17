@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,8 +83,8 @@ typedef struct WStringEditInfo {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WStringEditInfo  *WAllocStringEInfo( void );
-extern void             WFreeStringEInfo( WStringEditInfo *einfo );
+extern WStringEditInfo  *WAllocStringEditInfo( void );
+extern void             WFreeStringEditInfo( WStringEditInfo *einfo );
 extern WStringTable     *WMakeStringTableFromInfo( WStringInfo *info );
 extern void             WFreeStringNodes( WStringInfo *info );
 extern WStringNode      *WMakeStringNodes( WStringTable *tbl );

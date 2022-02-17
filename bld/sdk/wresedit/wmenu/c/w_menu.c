@@ -81,7 +81,7 @@ void WFiniDummyMenuEntry( void )
     WDummyMenuEntry = NULL;
 }
 
-WMenuEditInfo *WAllocMenuEInfo( void )
+WMenuEditInfo *WAllocMenuEditInfo( void )
 {
     WMenuEditInfo *einfo;
 
@@ -95,7 +95,7 @@ WMenuEditInfo *WAllocMenuEInfo( void )
     return( einfo );
 }
 
-void WFreeMenuEInfo( WMenuEditInfo *einfo )
+void WFreeMenuEditInfo( WMenuEditInfo *einfo )
 {
     if( einfo != NULL ) {
         if( einfo->menu != NULL ) {

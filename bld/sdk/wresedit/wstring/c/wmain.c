@@ -203,7 +203,7 @@ WStringHandle WRESEAPI WStringStartEdit( WStringInfo *info )
         if( appWidth == -1 ) {
             WInitEditDlg( WGetEditInstance(), info->parent );
         }
-        ok = ((einfo = WAllocStringEInfo()) != NULL);
+        ok = ((einfo = WAllocStringEditInfo()) != NULL);
     }
 
     if( ok ) {
@@ -238,7 +238,7 @@ WStringHandle WRESEAPI WStringStartEdit( WStringInfo *info )
 
     if( !ok ) {
         if( einfo != NULL ) {
-            WFreeStringEInfo( einfo );
+            WFreeStringEditInfo( einfo );
         }
         return( 0 );
     }
@@ -336,7 +336,7 @@ WStringInfo *WStringGetEInfo( WStringHandle hndl, bool keep )
         }
         if( !keep ) {
             WUnRegisterEditSession( hndl );
-            WFreeStringEInfo( einfo );
+            WFreeStringEditInfo( einfo );
         }
     }
 
@@ -1122,7 +1122,7 @@ bool WCleanup( WStringEditInfo *einfo )
             owner = GetWindow( einfo->win, GW_OWNER );
         }
         einfo->win = (HWND)NULL;
-        WFreeStringEInfo( einfo );
+        WFreeStringEditInfo( einfo );
         if( owner != (HWND)NULL ) {
             BringWindowToTop( owner );
         }
