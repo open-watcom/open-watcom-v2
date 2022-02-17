@@ -195,7 +195,7 @@ static size_t WCalcMenuSize( WMenuEntry *entry )
     dsize = 0;
     for( ; entry != NULL; entry = entry->next ) {
         if( entry->item->IsPopup ) {
-            dsize += sizeof( MenuFlags ) + 1;
+            dsize += SIZEU16 + 1;
             text = entry->item->Item.Popup.ItemText;
             if( entry->child != NULL ) {
                 dsize += WCalcMenuSize( entry->child );
@@ -204,7 +204,7 @@ static size_t WCalcMenuSize( WMenuEntry *entry )
                 dsize += WCalcMenuSize( WDummyMenuEntry );
             }
         } else {
-            dsize += sizeof( MenuFlags ) + sizeof( uint_16 ) + 1;
+            dsize += SIZEU16 + SIZEU16 + 1;
             text = entry->item->Item.Normal.ItemText;
         }
         dsize += WRCalcStrlen( text, entry->is32bit );
@@ -218,7 +218,7 @@ void WMakeDataFromMenu( WMenu *menu, char **pdata, size_t *dsize )
     char *data;
 
     if( pdata != NULL && dsize != NULL ) {
-        *dsize = WCalcMenuSize( menu->first_entry ) + 2 * sizeof( WORD );
+        *dsize = WCalcMenuSize( menu->first_entry ) + SIZEU16 + SIZEU16;
         if( *dsize != 0 ) {
             *pdata = data = WRMemAlloc( *dsize );
             if( data != NULL ) {
@@ -390,8 +390,8 @@ WMenu *WMakeMenuFromInfo( WMenuInfo *info )
     if( ok ) {
         menu->is32bit = info->is32bit;
         if( info->data != NULL ) {
-            data = info->data + 2 * sizeof( WORD );
-            dsize = info->data_size - 2 * sizeof( WORD );
+            data = info->data + SIZEU16 + SIZEU16;
+            dsize = info->data_size - SIZEU16 - SIZEU16;
             ok = WMakeMenuEntryFromData( &data, &dsize, NULL, &menu->first_entry, info->is32bit );
         }
     }
@@ -852,8 +852,8 @@ WMenuEntry *WMakeMenuEntryFromClipData( const char *data, size_t dsize )
 
     if( ok ) {
         is32bit = data[0];
-        data += 2 * sizeof( WORD );
-        dsize -= 2 * sizeof( WORD );
+        data += SIZEU16 + SIZEU16;
+        dsize -= SIZEU16 + SIZEU16;
         ok = WMakeMenuEntryFromData( &data, &dsize, NULL, &entry, is32bit );
     }
 

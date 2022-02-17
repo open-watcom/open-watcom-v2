@@ -170,7 +170,7 @@ void WRESEAPI WAccelInit( void )
 
     inst = WGetEditInstance();
     if( AccelTable == (HACCEL)NULL ) {
-        AccelTable = LoadAccelerators( inst, "WAccelAccelTable");
+        AccelTable = LoadAccelerators( inst, "WAccelAccelTable" );
     }
     if( ref_count == 0 ) {
         WRInit();

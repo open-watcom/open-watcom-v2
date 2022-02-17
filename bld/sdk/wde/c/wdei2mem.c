@@ -42,26 +42,14 @@
 /* macro definitions                                                        */
 /****************************************************************************/
 
-#define U8ToMem(m,v)        *(uint_8 *)(m) = (v);m+=sizeof(uint_8)
-#define U16ToMem(m,v)       *(uint_16 *)(m) = (v);m+=sizeof(uint_16)
-#define U32ToMem(m,v)       *(uint_32 *)(m) = (v);m+=sizeof(uint_32)
-
-#define U8FromMem(m,v)      (v) = *(uint_8 *)(m);m+=sizeof(uint_8)
-#define U16FromMem(m,v)     (v) = *(uint_16 *)(m);m+=sizeof(uint_16)
-#define U32FromMem(m,v)     (v) = *(uint_32 *)(m);m+=sizeof(uint_32)
-
-#define GetU8(m)            *(uint_8 *)(m)
-#define GetU16(m)           *(uint_16 *)(m)
-#define GetU32(m)           *(uint_32 *)(m)
-
 #define PADDING_WRITE(m,s) { \
-    size_t pad = CALC_PAD( (m) - (s), sizeof( uint_32 ) ); \
+    size_t pad = CALC_PAD( (m) - (s), SIZEU32 ); \
     memset( m, 0, pad ); \
     m += pad; \
 }
 
 #define PADDING_SET(m,s) { \
-    size_t pad = CALC_PAD( (m) - (s), sizeof( uint_32 ) ); \
+    size_t pad = CALC_PAD( (m) - (s), SIZEU32 ); \
     m += pad; \
 }
 
@@ -94,12 +82,17 @@ static size_t WdeNameOrOrd2Mem( ResNameOrOrdinal *name, uint_8 use_unicode, char
     } else {
         if( name->ord.fFlag == 0xff ) {
             if( use_unicode ) {
-                U16ToMem( data, (uint_16)-1 );
-                U16ToMem( data, name->ord.wOrdinalID );
-                size = 2 * sizeof( uint_16 );
+                VALU16( data ) = (uint_16)-1;
+                INCU16( data );
+                VALU16( data ) = name->ord.wOrdinalID;
+                INCU16( data );
+                size = SIZEU16 + SIZEU16;
             } else {
-                memcpy( data, &name->ord.fFlag, sizeof( uint_8 ) + sizeof( uint_16 ) );
-                size = sizeof( uint_8 ) + sizeof( uint_16 );
+                VALU8( data ) = name->ord.fFlag;
+                INCU8( data );
+                VALU16( data ) = name->ord.wOrdinalID;
+                INCU16( data );
+                size = SIZEU8 + SIZEU16;
             }
         } else {
             size = WRDataFromString( name->name, use_unicode, data );
@@ -121,26 +114,40 @@ static size_t WdeDialogBoxHeader2Mem( WdeDialogBoxHeader *head, char *data )
         start = data;
         if( head->is32bitEx ) {
             /* copy the miscellaneous two WORDs 0x0001, 0xFFFF */
-            U16ToMem( data, 0x0001 );
-            U16ToMem( data, 0xFFFF );
-            U32ToMem( data, GETHDR_HELPID( head ) );
-            U32ToMem( data, GETHDR_EXSTYLE( head ) );
-            U32ToMem( data, GETHDR_STYLE( head ) );
+            VALU16( data ) = 0x0001;
+            INCU16( data );
+            VALU16( data ) = 0xFFFF;
+            INCU16( data );
+            VALU32( data ) = GETHDR_HELPID( head );
+            INCU32( data );
+            VALU32( data ) = GETHDR_EXSTYLE( head );
+            INCU32( data );
+            VALU32( data ) = GETHDR_STYLE( head );
+            INCU32( data );
         } else if( head->is32bit ) {
-            U32ToMem( data, GETHDR_STYLE( head ) );
-            U32ToMem( data, GETHDR_EXSTYLE( head ) );
+            VALU32( data ) = GETHDR_STYLE( head );
+            INCU32( data );
+            VALU32( data ) = GETHDR_EXSTYLE( head );
+            INCU32( data );
         } else {
-            U32ToMem( data, GETHDR_STYLE( head ) );
+            VALU32( data ) = GETHDR_STYLE( head );
+            INCU32( data );
         }
         if( head->is32bit ) {
-            U16ToMem( data, GETHDR_NUMITEMS( head ) );
+            VALU16( data ) = GETHDR_NUMITEMS( head );
+            INCU16( data );
         } else {
-            U8ToMem( data, GETHDR_NUMITEMS( head ) );
+            VALU8( data ) = GETHDR_NUMITEMS( head );
+            INCU8( data );
         }
-        U16ToMem( data, GETHDR_SIZEX( head ) );
-        U16ToMem( data, GETHDR_SIZEY( head ) );
-        U16ToMem( data, GETHDR_SIZEW( head ) );
-        U16ToMem( data, GETHDR_SIZEH( head ) );
+        VALU16( data ) = GETHDR_SIZEX( head );
+        INCU16( data );
+        VALU16( data ) = GETHDR_SIZEY( head );
+        INCU16( data );
+        VALU16( data ) = GETHDR_SIZEW( head );
+        INCU16( data );
+        VALU16( data ) = GETHDR_SIZEH( head );
+        INCU16( data );
     }
 
     if( ok ) {
@@ -163,11 +170,15 @@ static size_t WdeDialogBoxHeader2Mem( WdeDialogBoxHeader *head, char *data )
 
     if( ok ) {
         if( GETHDR_STYLE( head ) & DS_SETFONT ) {
-            U16ToMem( data, GETHDR_FONTPOINTSIZE( head ) );
+            VALU16( data ) = GETHDR_FONTPOINTSIZE( head );
+            INCU16( data );
             if( head->is32bitEx ) {
-                U16ToMem( data, GETHDR_FONTWEIGHT( head ) );
-                U8ToMem( data, GETHDR_FONTITALIC( head ) );
-                U8ToMem( data, GETHDR_FONTCHARSET( head ) );
+                VALU16( data ) = GETHDR_FONTWEIGHT( head );
+                INCU16( data );
+                VALU8( data ) = GETHDR_FONTITALIC( head );
+                INCU8( data );
+                VALU8( data ) = GETHDR_FONTCHARSET( head );
+                INCU8( data );
             }
             size = WRDataFromString( GETHDR_FONTFACENAME( head ), head->is32bit, data );
             data += size;
@@ -194,32 +205,47 @@ static size_t WdeDialogBoxControl2Mem( WdeDialogBoxControl *control,
     if( ok ) {
         start = data;
         if( is32bitEx ) {
-            U32ToMem( data, GETCTL_HELPID( control ) );
-            U32ToMem( data, GETCTL_EXSTYLE( control ) );
-            U32ToMem( data, GETCTL_STYLE( control ) );
+            VALU32( data ) = GETCTL_HELPID( control );
+            INCU32( data );
+            VALU32( data ) = GETCTL_EXSTYLE( control );
+            INCU32( data );
+            VALU32( data ) = GETCTL_STYLE( control );
+            INCU32( data );
         } else if( is32bit ) {
-            U32ToMem( data, GETCTL_STYLE( control ) );
-            U32ToMem( data, GETCTL_EXSTYLE( control ) );
+            VALU32( data ) = GETCTL_STYLE( control );
+            INCU32( data );
+            VALU32( data ) = GETCTL_EXSTYLE( control );
+            INCU32( data );
         }
-        U16ToMem( data, GETCTL_SIZEX( control ) );
-        U16ToMem( data, GETCTL_SIZEY( control ) );
-        U16ToMem( data, GETCTL_SIZEW( control ) );
-        U16ToMem( data, GETCTL_SIZEH( control ) );
+        VALU16( data ) = GETCTL_SIZEX( control );
+        INCU16( data );
+        VALU16( data ) = GETCTL_SIZEY( control );
+        INCU16( data );
+        VALU16( data ) = GETCTL_SIZEW( control );
+        INCU16( data );
+        VALU16( data ) = GETCTL_SIZEH( control );
+        INCU16( data );
         if( is32bitEx ) {
-            U32ToMem( data, GETCTL_ID( control ) );
+            VALU32( data ) = GETCTL_ID( control );
+            INCU32( data );
         } else {
-            U16ToMem( data, GETCTL_ID( control ) );
+            VALU16( data ) = GETCTL_ID( control );
+            INCU16( data );
         }
         if( !is32bit ) {
-            U32ToMem( data, GETCTL_STYLE( control ) );
+            VALU32( data ) = GETCTL_STYLE( control );
+            INCU32( data );
         }
         cclass = GETCTL_CLASSID( control );
         if( cclass->Class & 0x80 ) {
             if( is32bit ) {
-                U16ToMem( data, (uint_16)-1 );
-                U16ToMem( data, cclass->Class );
+                VALU16( data ) = (uint_16)-1;
+                INCU16( data );
+                VALU16( data ) = cclass->Class;
+                INCU16( data );
             } else {
-                U8ToMem( data, cclass->Class );
+                VALU8( data ) = cclass->Class;
+                INCU8( data );
             }
         } else {
             size = WRDataFromString( cclass->ClassName, is32bit, data );
@@ -236,9 +262,11 @@ static size_t WdeDialogBoxControl2Mem( WdeDialogBoxControl *control,
 
     if( ok ) {
         if( is32bit ) {
-            U16ToMem( data, GETCTL_EXTRABYTES( control ) );
+            VALU16( data ) = GETCTL_EXTRABYTES( control );
+            INCU16( data );
         } else {
-            U8ToMem( data, GETCTL_EXTRABYTES( control ) );
+            VALU8( data ) = GETCTL_EXTRABYTES( control );
+            INCU8( data );
         }
     }
 
@@ -347,8 +375,10 @@ WdeDialogBoxInfo *WdeMem2DBI( const char *data, size_t size, bool is32bit )
         start = data;
 
         /* check if the dialog is extended by testing for the signature */
-        U16FromMem( data, sign0 );
-        U16FromMem( data, sign1 );
+        sign0 = VALU16( data );
+        INCU16( data );
+        sign1 = VALU16( data );
+        INCU16( data );
         is32bitEx = (sign0 == 0x0001 && sign1 == 0xFFFF);
 
         data = start;
@@ -417,25 +447,37 @@ WdeDialogBoxHeader *WdeMem2DialogBoxHeader( const char **pdata, bool is32bit, bo
         dbh->is32bitEx = is32bitEx;
         if( is32bitEx ) {
             /* skip the miscellaneous two WORDs 0x0001, 0xFFFF */
-            data += 2 * sizeof( uint_16 );
-            U32FromMem( data, GETHDR_HELPID( dbh ) );
-            U32FromMem( data, GETHDR_EXSTYLE( dbh ) );
-            U32FromMem( data, GETHDR_STYLE( dbh ) );
+            INCU32( data );
+            GETHDR_HELPID( dbh ) = VALU32( data );
+            INCU32( data );
+            GETHDR_EXSTYLE( dbh ) = VALU32( data );
+            INCU32( data );
+            GETHDR_STYLE( dbh ) = VALU32( data );
+            INCU32( data );
         } else if( is32bit ) {
-            U32FromMem( data, GETHDR_STYLE( dbh ) );
-            U32FromMem( data, GETHDR_EXSTYLE( dbh ) );
+            GETHDR_STYLE( dbh ) = VALU32( data );
+            INCU32( data );
+            GETHDR_EXSTYLE( dbh ) = VALU32( data );
+            INCU32( data );
         } else {
-            U32FromMem( data, GETHDR_STYLE( dbh ) );
+            GETHDR_STYLE( dbh ) = VALU32( data );
+            INCU32( data );
         }
         if( is32bit ) {
-            U16FromMem( data, GETHDR_NUMITEMS( dbh ) );
+            GETHDR_NUMITEMS( dbh ) = VALU16( data );
+            INCU16( data );
         } else {
-            U8FromMem( data, GETHDR_NUMITEMS( dbh ) );
+            GETHDR_NUMITEMS( dbh ) = VALU8( data );
+            INCU8( data );
         }
-        U16FromMem( data, GETHDR_SIZEX( dbh ) );
-        U16FromMem( data, GETHDR_SIZEY( dbh ) );
-        U16FromMem( data, GETHDR_SIZEW( dbh ) );
-        U16FromMem( data, GETHDR_SIZEH( dbh ) );
+        GETHDR_SIZEX( dbh ) = VALU16( data );
+        INCU16( data );
+        GETHDR_SIZEY( dbh ) = VALU16( data );
+        INCU16( data );
+        GETHDR_SIZEW( dbh ) = VALU16( data );
+        INCU16( data );
+        GETHDR_SIZEH( dbh ) = VALU16( data );
+        INCU16( data );
 
         SETHDR_MENUNAME( dbh, WdeMem2NameOrOrdinal( &data, is32bit ) );
         ok = (GETHDR_MENUNAME( dbh ) != NULL);
@@ -453,11 +495,15 @@ WdeDialogBoxHeader *WdeMem2DialogBoxHeader( const char **pdata, bool is32bit, bo
 
     if( ok ) {
         if( GETHDR_STYLE( dbh ) & DS_SETFONT ) {
-            U16FromMem( data, GETHDR_FONTPOINTSIZE( dbh ) );
+            GETHDR_FONTPOINTSIZE( dbh ) = VALU16( data );
+            INCU16( data );
             if( is32bitEx ) {
-                U16FromMem( data, GETHDR_FONTWEIGHT( dbh ) );
-                U8FromMem( data, GETHDR_FONTITALIC( dbh ) );
-                U8FromMem( data, GETHDR_FONTCHARSET( dbh ) );
+                GETHDR_FONTWEIGHT( dbh ) = VALU16( data );
+                INCU16( data );
+                GETHDR_FONTITALIC( dbh ) = VALU8( data );
+                INCU8( data );
+                GETHDR_FONTCHARSET( dbh ) = VALU8( data );
+                INCU8( data );
             }
             SETHDR_FONTFACENAME( dbh, WRStringFromData( &data, is32bit ) );
             ok = (GETHDR_FONTFACENAME( dbh ) != NULL);
@@ -495,24 +541,36 @@ WdeDialogBoxControl *WdeMem2DialogBoxControl( const char **pdata, bool is32bit, 
     if( ok ) {
         data = *pdata;
         if( is32bitEx ) {
-            U32FromMem( data, GETCTL_HELPID( dbc ) );
-            U32FromMem( data, GETCTL_EXSTYLE( dbc ) );
-            U32FromMem( data, GETCTL_STYLE( dbc ) );
+            GETCTL_HELPID( dbc ) = VALU32( data );
+            INCU32( data );
+            GETCTL_EXSTYLE( dbc ) = VALU32( data );
+            INCU32( data );
+            GETCTL_STYLE( dbc ) = VALU32( data );
+            INCU32( data );
         } else if( is32bit ) {
-            U32FromMem( data, GETCTL_STYLE( dbc ) );
-            U32FromMem( data, GETCTL_EXSTYLE( dbc ) );
+            GETCTL_STYLE( dbc ) = VALU32( data );
+            INCU32( data );
+            GETCTL_EXSTYLE( dbc ) = VALU32( data );
+            INCU32( data );
         }
-        U16FromMem( data, GETCTL_SIZEX( dbc ) );
-        U16FromMem( data, GETCTL_SIZEY( dbc ) );
-        U16FromMem( data, GETCTL_SIZEW( dbc ) );
-        U16FromMem( data, GETCTL_SIZEH( dbc ) );
+        GETCTL_SIZEX( dbc ) = VALU16( data );
+        INCU16( data );
+        GETCTL_SIZEY( dbc ) = VALU16( data );
+        INCU16( data );
+        GETCTL_SIZEW( dbc ) = VALU16( data );
+        INCU16( data );
+        GETCTL_SIZEH( dbc ) = VALU16( data );
+        INCU16( data );
         if( is32bitEx ) {
-            U32FromMem( data, GETCTL_ID( dbc ) );
+            GETCTL_ID( dbc ) = VALU32( data );
+            INCU32( data );
         } else {
-            U16FromMem( data, GETCTL_ID( dbc ) );
+            GETCTL_ID( dbc ) = VALU16( data );
+            INCU16( data );
         }
         if( !is32bit ) {
-            U32FromMem( data, GETCTL_STYLE( dbc ) );
+            GETCTL_STYLE( dbc ) = VALU32( data );
+            INCU32( data );
         }
         SETCTL_CLASSID( dbc, WdeMem2ControlClass( &data, is32bit ) );
         ok = (GETCTL_CLASSID( dbc ) != NULL);
@@ -525,9 +583,11 @@ WdeDialogBoxControl *WdeMem2DialogBoxControl( const char **pdata, bool is32bit, 
 
     if( ok ) {
         if( is32bit ) {
-            U16FromMem( data, GETCTL_EXTRABYTES( dbc ) );
+            GETCTL_EXTRABYTES( dbc ) = VALU16( data );
+            INCU16( data );
         } else {
-            U8FromMem( data, GETCTL_EXTRABYTES( dbc ) );
+            GETCTL_EXTRABYTES( dbc ) = VALU8( data );
+            INCU8( data );
         }
     }
 
@@ -568,12 +628,14 @@ ResNameOrOrdinal *WdeMem2NameOrOrdinal( const char **pdata, bool is32bit )
 ControlClass *WdeMem2ControlClass( const char **pdata, bool is32bit )
 {
     ControlClass        *new;
+    const char          *data;
 
     if( pdata == NULL || *pdata == NULL ) {
         return( NULL );
     }
-    if( ( is32bit && GetU16( *pdata ) != 0xffff )
-      || ( !is32bit && (GetU8( *pdata ) & 0x80) == 0 ) ) {
+    data = *pdata;
+    if( ( is32bit && VALU16( data ) != 0xffff )
+      || ( !is32bit && (VALU8( data ) & 0x80) == 0 ) ) {
         return( (ControlClass *)WRStringFromData( pdata, is32bit ) );
     }
 
@@ -583,12 +645,14 @@ ControlClass *WdeMem2ControlClass( const char **pdata, bool is32bit )
     }
 
     if( is32bit ) {
-        new->Class = GetU16( *pdata + sizeof( uint_16 ) ) & 0x00ff;
-        *pdata += 2 * sizeof( uint_16 );
+        INCU16( data );
+        new->Class = VALU16( data ) & 0x00ff;
+        INCU16( data );
     } else {
-        new->Class = GetU8( *pdata );
-        *pdata += 1;
+        new->Class = VALU8( data );
+        INCU8( data );
     }
+    *pdata = data;
 
     return( new );
 }

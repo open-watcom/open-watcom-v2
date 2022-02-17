@@ -97,13 +97,13 @@ typedef struct WAccelEditInfo {
 /****************************************************************************/
 extern WAccelEditInfo   *WAllocAccelEditInfo( void );
 extern void             WFreeAccelEditInfo( WAccelEditInfo * );
-extern void             WMakeDataFromAccelTable( WAccelTable *, char **, size_t * );
+extern void             WMakeDataFromAccelTable( WAccelTable *, char **data, size_t *dsize );
 extern WAccelTable      *WMakeAccelTableFromInfo( WAccelInfo * );
 extern bool             WInsertAccelTableEntry( WAccelTable *, WAccelEntry *, WAccelEntry * );
 extern bool             WFreeAccelTableEntry( WAccelTable *, WAccelEntry * );
 extern void             WFreeAccelTableEntries( WAccelEntry * );
 extern bool             WMakeClipDataFromAccelEntry( WAccelEntry *entry, char **data, size_t *dsize );
-extern bool             WMakeAccelEntryFromClipData( WAccelEntry *entry, char *data, size_t dsize );
+extern bool             WMakeAccelEntryFromClipData( WAccelEntry *entry, const char *data, size_t dsize );
 extern bool             WResolveEntrySymbol( WAccelEntry *entry, WRHashTable *symbol_table );
 extern bool             WResolveAllEntrySymbols( WAccelEditInfo *einfo );
 extern bool             WResolveAllEntrySymIDs( WAccelEditInfo *einfo );

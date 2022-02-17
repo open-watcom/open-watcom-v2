@@ -262,7 +262,7 @@ static size_t WCalcNumAccelEntries( WAccelInfo *info )
 static void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
 {
     WAccelEntry         *entry;
-    char                *data;
+    const char          *data;
     int                 i;
     unsigned            last;
 
@@ -422,7 +422,7 @@ bool WMakeClipDataFromAccelEntry( WAccelEntry *entry, char **pdata, size_t *dsiz
     return( ok );
 }
 
-bool WMakeAccelEntryFromClipData( WAccelEntry *entry, char *data, size_t dsize )
+bool WMakeAccelEntryFromClipData( WAccelEntry *entry, const char *data, size_t dsize )
 {
     size_t      len;
     bool        ok;

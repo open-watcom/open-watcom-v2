@@ -420,7 +420,7 @@ bool  WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
     }
 
     // if len is -1 then dont bother checking the buffer length
-    if( len != WRLEN_AUTO && ( len1 * sizeof( uint_16 ) ) > len ) {
+    if( len != WRLEN_AUTO && ( len1 * SIZEU16 ) > len ) {
         return( false );
     }
 
@@ -482,13 +482,13 @@ bool WRmbcs2unicode( const char *src, char **dest, size_t *len )
         len1 += strlen( src );
     }
 
-    *len = len1 * sizeof( uint_16 );
+    *len = len1 * SIZEU16;
 
     if( dest == NULL ) {
         return( true );
     }
 
-    new = MemAlloc( len1 * sizeof( uint_16 ) );
+    new = MemAlloc( len1 * SIZEU16 );
     if( new == NULL ) {
         return( false );
     }
@@ -634,7 +634,7 @@ WRDLLENTRY size_t WRAPI WRCalcStrlen( const char *str, bool is32bit )
 
     if( is32bit ) {
         if( !WRmbcs2unicode( str, NULL, &len ) ) {
-            len = sizeof( uint_16 );
+            len = SIZEU16;
         }
     } else {
         len = strlen( str ) + 1;
@@ -653,13 +653,13 @@ WRDLLENTRY size_t WRAPI WRDataFromString( const char *str, bool is32bit, char *d
 
     if( is32bit ) {
         if( !WRmbcs2unicode( str, NULL, &size ) ) {
-            size = sizeof( uint_16 );
+            size = SIZEU16;
         } else if( !WRmbcs2unicodeBuf( str, data, size ) ) {
-            size = sizeof( uint_16 );
+            size = SIZEU16;
         }
-        if( size == sizeof( uint_16 ) ) {
-            *(uint_16 *)data = 0;
-            data += sizeof( uint_16 );
+        if( size == SIZEU16 ) {
+            VALU16( data ) = 0;
+            INCU16( data );
         }
     } else {
         size = strlen( str ) + 1;
@@ -693,7 +693,7 @@ WRDLLENTRY char * WRAPI WRStringFromData( const char **pdata, bool is32bit )
 
     if( is32bit ) {
         WRunicode2mbcsBuf( data, new, size );
-        size = WRStrlen32( data ) + sizeof( uint_16 );
+        size = WRStrlen32( data ) + SIZEU16;
     } else {
         memcpy( new, data, size );
     }
