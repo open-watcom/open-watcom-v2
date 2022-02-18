@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -863,7 +864,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control,
         if( control->symbol != NULL ) {
             cid = control->symbol;
         } else if( rinfo->hash_table != NULL ) {
-            cid = WdeResolveValue( rinfo->hash_table, GETCTL_ID( control ) );
+            cid = WRResolveValue( rinfo->hash_table, GETCTL_ID( control ) );
             if( cid != NULL ) {
                 cid_alloc = TRUE;
             }
@@ -995,7 +996,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             name = WdeStrDup( ditem->dialog_info->dialog_header->symbol );
         } else {
             if( rinfo->hash_table != NULL && !ditem->dialog_name->IsName ) {
-                name = WdeResolveValue( rinfo->hash_table, ditem->dialog_name->ID.Num );
+                name = WRResolveValue( rinfo->hash_table, ditem->dialog_name->ID.Num );
             }
         }
         if( name == NULL ) {

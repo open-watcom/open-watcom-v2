@@ -71,7 +71,7 @@ bool WdeFreeResInfo( WdeResInfo *res_info )
             WRFreeWRInfo( res_info->info );
         }
         if( res_info->hash_table != NULL ) {
-            WdeFreeHashTable( res_info->hash_table );
+            WRFreeHashTable( res_info->hash_table );
         }
         if( res_info->sym_name != NULL ) {
             WRMemFree( res_info->sym_name );

@@ -65,7 +65,7 @@
 typedef struct {
     unsigned        add_count;
     unsigned        busy_count;
-    WdeHashTable    *table;
+    WRHashTable     *table;
     bool            dup;
 } addsym_data;
 
@@ -83,7 +83,7 @@ typedef struct {
 static bool WdeResourceViewHash( WdeResInfo * );
 static bool WdeResourceLoadHash( WdeResInfo * );
 static bool WdeResourceWriteHash( WdeResInfo * );
-static char *WdeLoadSymbols( WdeHashTable **, char *, bool );
+static char *WdeLoadSymbols( WRHashTable **, char *, bool );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -140,13 +140,13 @@ int PP_MBCharLen( const char *p )
 static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
 {
     char                busy_str[2];
-    WdeHashValue        value;
+    WRHashValue         value;
     addsym_data         *data = (addsym_data *)cookie;
 
     if( val->type == PPTYPE_SIGNED ) {
-        value = (WdeHashValue)val->val.ivalue;
+        value = (WRHashValue)val->val.ivalue;
     } else {
-        value = (WdeHashValue)val->val.uvalue;
+        value = (WRHashValue)val->val.uvalue;
     }
     WdeAddHashEntry( data->table, me->name, value, &data->dup );
     data->add_count++;
@@ -159,7 +159,7 @@ static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *
     }
 }
 
-static void Add_PP_Symbols( WdeHashTable *table )
+static void Add_PP_Symbols( WRHashTable *table )
 {
     addsym_data         data;
 
@@ -175,7 +175,7 @@ static void Add_PP_Symbols( WdeHashTable *table )
     PP_MacrosWalk( addsym_func, &data );
 }
 
-static bool WdeViewSymbols( WdeHashTable **table, HWND parent )
+static bool WdeViewSymbols( WRHashTable **table, HWND parent )
 {
     WRHashEntryFlags    flags;
     HELPFUNC            hcb;
@@ -232,13 +232,13 @@ bool WdeResourceViewHash( WdeResInfo *info )
     if( info->hash_table == NULL ) {
         InitState( info->forms_win );
         no_hash = true;
-        info->hash_table = WdeInitHashTable();
+        info->hash_table = WRInitHashTable();
     }
 
     ret = WdeViewSymbols( &info->hash_table, info->edit_win );
 
-    if( !WdeNumInHashTable( info->hash_table ) ) {
-        WdeFreeHashTable( info->hash_table );
+    if( !WRNumInHashTable( info->hash_table ) ) {
+        WRFreeHashTable( info->hash_table );
         info->hash_table = NULL;
     }
 
@@ -497,7 +497,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
 static jmp_buf SymEnv;
 
-char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
+char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt )
 {
     char                *name;
     int                 c;
@@ -576,10 +576,10 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
             }
         } while( c != EOF );
         if( *table == NULL ) {
-            *table = WdeInitHashTable();
+            *table = WRInitHashTable();
         }
         Add_PP_Symbols( *table );
-        WdeMakeHashTableClean( *table );
+        WRMakeHashTableClean( *table );
         WdeSetStatusText( NULL, " ", true );
         PP_FileFini();
     }
@@ -604,7 +604,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
     return( name );
 }
 
-bool WdeSaveSymbols( WdeHashTable *table, char **file_name, bool prompt )
+bool WdeSaveSymbols( WRHashTable *table, char **file_name, bool prompt )
 {
     char                *name;
     WdeGetFileStruct    gf;
@@ -636,8 +636,8 @@ bool WdeSaveSymbols( WdeHashTable *table, char **file_name, bool prompt )
         name = *file_name;
     }
 
-    if( WdeWriteSymbolsToFile( table, name ) ) {
-        WdeMakeHashTableClean( table );
+    if( WRWriteSymbolsToFile( table, name ) ) {
+        WRMakeHashTableClean( table );
     }
 
     WdeSetStatusReadyText();

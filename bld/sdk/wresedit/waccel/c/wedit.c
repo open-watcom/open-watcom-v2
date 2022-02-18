@@ -810,8 +810,7 @@ WINEXPORT INT_PTR CALLBACK WAcccelEditDlgProc( HWND hDlg, UINT message, WPARAM w
         einfo = (WAccelEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
         SET_DLGDATA( hDlg, einfo );
-        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
-                                IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
+        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg, IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
         ret = TRUE;
         break;
 

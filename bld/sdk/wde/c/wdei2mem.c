@@ -73,7 +73,7 @@ static ControlClass        *WdeMem2ControlClass( const char **pdata, bool );
 /* static variables                                                         */
 /****************************************************************************/
 
-static size_t WdeNameOrOrd2Mem( ResNameOrOrdinal *name, uint_8 use_unicode, char *data )
+static size_t WdeNameOrOrd2Mem( ResNameOrOrdinal *name, bool use_unicode, char *data )
 {
     size_t      size;
 
@@ -298,7 +298,7 @@ bool WdeDBI2Mem( WdeDialogBoxInfo *info, char **pdata, size_t *psize )
     ok = (memsize != 0);
 
     if( ok ) {
-        *pdata = data = WRMemAlloc( memsize );
+        start = data = WRMemAlloc( memsize );
         ok = (data != NULL);
     }
 
@@ -329,20 +329,20 @@ bool WdeDBI2Mem( WdeDialogBoxInfo *info, char **pdata, size_t *psize )
 
     if( ok ) {
         if( is32bit ) {
-            PADDING_WRITE( data, *pdata );
+            PADDING_WRITE( data, start );
         }
     }
 
     if( ok ) {
-        ok = (data == *pdata + memsize);
+        ok = ( data == start + memsize );
         if( ok ) {
             *psize = memsize;
             *pdata = start;
         }
     }
     if( !ok ) {
-        if( *pdata != NULL ) {
-            WRMemFree( *pdata );
+        if( start != NULL ) {
+            WRMemFree( start );
         }
         *psize = 0;
         *pdata = NULL;
@@ -363,7 +363,7 @@ WdeDialogBoxInfo *WdeMem2DBI( const char *data, size_t size, bool is32bit )
     uint_16             sign1;
 
     dbi = NULL;
-    start = NULL;
+    start = data;
 
     ok = (data != NULL && size != 0);
 
@@ -374,16 +374,11 @@ WdeDialogBoxInfo *WdeMem2DBI( const char *data, size_t size, bool is32bit )
 
 
     if( ok ) {
-        start = data;
-
         /* check if the dialog is extended by testing for the signature */
         sign0 = VALU16( data );
-        INCU16( data );
-        sign1 = VALU16( data );
-        INCU16( data );
+        sign1 = VALU16( data + SIZEU16 );
         is32bitEx = (sign0 == 0x0001 && sign1 == 0xFFFF);
 
-        data = start;
         dbi->control_list = NULL;
         dbi->MemoryFlags = 0;
         dbi->dialog_header = WdeMem2DialogBoxHeader( &data, is32bit, is32bitEx );
@@ -412,7 +407,7 @@ WdeDialogBoxInfo *WdeMem2DBI( const char *data, size_t size, bool is32bit )
     }
 
     if( ok ) {
-        ok = ( size >= data - start );
+        ok = ( start + size >= data );
     }
 
     if( !ok ) {

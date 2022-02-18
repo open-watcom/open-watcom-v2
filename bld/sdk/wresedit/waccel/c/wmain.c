@@ -609,8 +609,7 @@ static void handleSymbols( WAccelEditInfo *einfo )
     WResolveAllEntrySymIDs( einfo );
 
     text = WGetStrFromEdit( GetDlgItem( einfo->edit_dlg, IDM_ACCEDCMDID ), NULL );
-    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg,
-                            IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
+    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg, IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
     if( text != NULL ) {
         WSetEditWithStr( GetDlgItem( einfo->edit_dlg, IDM_ACCEDCMDID ), text );
         WRMemFree( text );
@@ -646,8 +645,7 @@ static void handleLoadSymbols( WAccelEditInfo *einfo )
         SendDlgItemMessage( einfo->edit_dlg, IDM_ACCEDLIST, LB_SETCURSEL, (WPARAM)einfo->current_pos, 0 );
     }
 
-    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg,
-                            IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
+    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg, IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
 
     einfo->info->modified = true;
 

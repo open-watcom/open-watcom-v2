@@ -787,8 +787,7 @@ WINEXPORT INT_PTR CALLBACK WStringEditDlgProc( HWND hDlg, UINT message, WPARAM w
         einfo = (WStringEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
         SET_DLGDATA( hDlg, einfo );
-        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
-                                IDM_STREDCMDID, WR_HASHENTRY_ALL );
+        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg, IDM_STREDCMDID, WR_HASHENTRY_ALL );
         ret = TRUE;
         break;
 

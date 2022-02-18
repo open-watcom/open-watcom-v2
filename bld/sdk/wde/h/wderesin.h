@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,7 +122,7 @@ typedef struct WdeResInfoStruct {
     WResTypeNode        *dlg_entry;         /* type node for dialogs           */
     LIST                *dlg_item_list;     /* list of WdeResDlgItem's         */
     OBJPTR              next_current;
-    WdeHashTable        *hash_table;
+    WRHashTable         *hash_table;
     HWND                res_win;
     HWND                edit_win;
     HWND                forms_win;

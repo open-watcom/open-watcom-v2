@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,101 +69,61 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-uint_32 WdeNumInHashTable( WdeHashTable *table )
-{
-    return( WRNumInHashTable( table ) );
-}
-
-bool WdeIsHashTableDirty( WdeHashTable *table )
-{
-    return( WRIsHashTableDirty( table ) );
-}
-
-void WdeMakeHashTableClean( WdeHashTable *table )
-{
-    WRMakeHashTableClean( table );
-}
-
-bool WdeIsHashTableTouched( WdeHashTable *table )
+bool WdeIsHashTableTouched( WRHashTable *table )
 {
     return( table != NULL && (table->user_flags & HASH_TOUCHED) );
 }
 
-void WdeUntouchHashTable( WdeHashTable *table )
+void WdeUntouchHashTable( WRHashTable *table )
 {
     if( table != NULL ) {
         table->user_flags &= ~HASH_TOUCHED;
     }
 }
 
-void WdeTouchHashTable( WdeHashTable *table )
+void WdeTouchHashTable( WRHashTable *table )
 {
     if( table != NULL ) {
         table->user_flags |= HASH_TOUCHED;
     }
 }
 
-void WdeHashClearSaveRejected( WdeHashTable *table )
+void WdeHashClearSaveRejected( WRHashTable *table )
 {
     if( table != NULL ) {
         table->user_flags &= ~HASH_SAVE_REJECT;
     }
 }
 
-void WdeHashSaveRejected( WdeHashTable *table )
+void WdeHashSaveRejected( WRHashTable *table )
 {
     if( table != NULL ) {
         table->user_flags |= HASH_SAVE_REJECT;
     }
 }
 
-bool WdeIsHashSaveRejectedSet( WdeHashTable *table )
+bool WdeIsHashSaveRejectedSet( WRHashTable *table )
 {
     return( table != NULL && (table->user_flags & HASH_SAVE_REJECT) );
 }
 
-WdeHashTable *WdeInitHashTable( void )
-{
-    return( WRInitHashTable() );
-}
-
-void WdeFreeHashTable( WdeHashTable *table )
-{
-    WRFreeHashTable( table );
-}
-
 #if 0
-bool WdeMergeHashTables( WdeHashTable **dest, WdeHashTable *src )
+bool WdeMergeHashTables( WRHashTable **dest, WRHashTable *src )
 {
     WdeTouchHashTable( *dest );
     return( WRMergeHashTable( dest, src ) != 0 );
 }
 #endif
 
-bool WdeCopyHashTable( WdeHashTable **dest, WdeHashTable *src )
+bool WdeCopyHashTable( WRHashTable **dest, WRHashTable *src )
 {
     WdeTouchHashTable( *dest );
     return( WRCopyHashTable( dest, src ) != 0 );
 }
 
-void WdeAddSymbolsToListBox( WdeHashTable *table, HWND hDlg, int id )
+WRHashEntry *WdeDefAddHashEntry( WRHashTable *table, const char *name, bool *dup )
 {
-    WRAddSymbolsToListBox( table, hDlg, id, WR_HASHENTRY_ALL );
-}
-
-bool WdeWriteSymbolsToFile( WdeHashTable *table, const char *name )
-{
-    return( WRWriteSymbolsToFile( table, name ) != 0 );
-}
-
-void WdeAddSymbolsToComboBox( WdeHashTable *table, HWND hDlg, int id )
-{
-    WRAddSymbolsToComboBox( table, hDlg, id, WR_HASHENTRY_ALL );
-}
-
-WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, const char *name, bool *dup )
-{
-    WdeHashEntry        *entry;
+    WRHashEntry         *entry;
     bool                d;
 
     d = false;
@@ -182,10 +142,10 @@ WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, const char *name, bool *d
     return( entry );
 }
 
-WdeHashEntry *WdeAddHashEntry( WdeHashTable *table, const char *name,
-                               WdeHashValue value, bool *dup )
+WRHashEntry *WdeAddHashEntry( WRHashTable *table, const char *name,
+                               WRHashValue value, bool *dup )
 {
-    WdeHashEntry        *entry;
+    WRHashEntry         *entry;
     bool                d;
 
     d = false;
@@ -204,39 +164,29 @@ WdeHashEntry *WdeAddHashEntry( WdeHashTable *table, const char *name,
     return( entry );
 }
 
-bool WdeRemoveName( WdeHashTable *table, const char *name )
+bool WdeRemoveName( WRHashTable *table, const char *name )
 {
     WdeTouchHashTable( table );
     return( WRRemoveName( table, name ) != 0 );
 }
 
-WdeHashValue WdeLookupName( WdeHashTable *table, const char *name, bool *found )
+WRHashValue WdeLookupName( WRHashTable *table, const char *name, bool *found )
 {
-    WdeHashValue        val;
+    WRHashValue         val;
 
     *found = WRLookupName( table, name, &val ) != 0;
 
     if( !*found ) {
-        return( (WdeHashValue)0 );
+        return( (WRHashValue)0 );
     }
 
     return( val );
 }
 
 #if 0
-bool WdeModifyName( WdeHashTable *table, const char *name, WdeHashValue value )
+bool WdeModifyName( WRHashTable *table, const char *name, WRHashValue value )
 {
     WdeTouchHashTable( table );
     return( WRModifyName( table, name, value, false ) != 0 );
 }
 #endif
-
-char *WdeResolveValue( WdeHashTable *table, WdeHashValue value )
-{
-    return( WRResolveValue( table, value ) );
-}
-
-bool WdeIsValidSymbol( const char *symbol )
-{
-    return( WRIsValidSymbol( symbol ) );
-}

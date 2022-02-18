@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1659,13 +1660,13 @@ bool WdeControlGetObjectHelpInfo( WdeControlObject *obj, void **_info, char **hs
 
 bool WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 {
-    WdeHashValue        val;
+    WRHashValue         val;
     void                *vp;
     bool                found;
 
     if( obj->control_info != NULL && obj->res_info != NULL ) {
         if( from_id != NULL && *from_id ) {
-            vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)GETCTL_ID( obj->control_info ) );
+            vp = WRResolveValue( obj->res_info->hash_table, (WRHashValue)GETCTL_ID( obj->control_info ) );
             if( vp != NULL ) {
                 if( obj->symbol != NULL ) {
                     WRMemFree( obj->symbol );
@@ -1697,13 +1698,13 @@ bool WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 
 bool WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 {
-    WdeHashValue        val;
+    WRHashValue         val;
     void                *vp;
     bool                found;
 
     if( obj->control_info != NULL && obj->res_info != NULL ) {
         if( from_id != NULL && *from_id ) {
-            vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)GETCTL_HELPID( obj->control_info ) );
+            vp = WRResolveValue( obj->res_info->hash_table, (WRHashValue)GETCTL_HELPID( obj->control_info ) );
             if( vp != NULL ) {
                 if( obj->helpsymbol != NULL ) {
                     WRMemFree( obj->helpsymbol );
@@ -1739,7 +1740,7 @@ bool WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id 
 
 bool WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
 {
-    WdeHashEntry        *entry;
+    WRHashEntry         *entry;
     char                *text;
     bool                dup;
 

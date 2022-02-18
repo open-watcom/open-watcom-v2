@@ -972,8 +972,7 @@ WINEXPORT INT_PTR CALLBACK WMenuEditDlgProc( HWND hDlg, UINT message, WPARAM wPa
         einfo = (WMenuEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
         SET_DLGDATA( hDlg, einfo );
-        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
-                                IDM_MENUEDID, WR_HASHENTRY_ALL );
+        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg, IDM_MENUEDID, WR_HASHENTRY_ALL );
         ret = TRUE;
         break;
 

@@ -669,8 +669,7 @@ static void handleSymbols( WMenuEditInfo *einfo )
     WResolveMenuSymIDs( einfo );
 
     text = WGetStrFromEdit( GetDlgItem( einfo->edit_dlg, IDM_MENUEDID ), NULL );
-    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg,
-                            IDM_MENUEDID, WR_HASHENTRY_ALL );
+    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg, IDM_MENUEDID, WR_HASHENTRY_ALL );
     if( text != NULL ) {
         WSetEditWithStr( GetDlgItem( einfo->edit_dlg, IDM_MENUEDID ), text );
         WRMemFree( text );
@@ -700,8 +699,7 @@ static void handleLoadSymbols( WMenuEditInfo *einfo )
     // look for the symbol matching the id for all entries
     WResolveMenuEntries( einfo );
 
-    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg,
-                            IDM_MENUEDID, WR_HASHENTRY_ALL );
+    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg, IDM_MENUEDID, WR_HASHENTRY_ALL );
 
     einfo->info->modified = true;
 

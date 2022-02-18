@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -875,7 +875,7 @@ void WdeDialogFini( void )
 
 bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
 {
-    WdeHashValue        val;
+    WRHashValue         val;
     OBJPTR              child;
     LIST                *olist;
     void                *vp;
@@ -892,7 +892,7 @@ bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
 
     if( !obj->name->IsName ) {
         if( from_id != NULL && *from_id ) {
-            vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)obj->name->ID.Num );
+            vp = WRResolveValue( obj->res_info->hash_table, (WRHashValue)obj->name->ID.Num );
             if( vp != NULL ) {
                 if( obj->symbol != NULL ) {
                     WRMemFree( obj->symbol );
@@ -922,7 +922,7 @@ bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
 
 bool WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
 {
-    WdeHashValue        val;
+    WRHashValue         val;
     OBJPTR              child;
     LIST                *olist;
     void                *vp;
@@ -938,7 +938,7 @@ bool WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
     }
 
     if( from_id != NULL && *from_id ) {
-        vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)GETHDR_HELPID( obj->dialog_info ) );
+        vp = WRResolveValue( obj->res_info->hash_table, (WRHashValue)GETHDR_HELPID( obj->dialog_info ) );
         if( vp != NULL ) {
             if( obj->helpsymbol != NULL ) {
                 WRMemFree( obj->helpsymbol );
@@ -970,7 +970,7 @@ bool WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
 {
     WResID              *old_name;
     char                *old_symbol;
-    WdeHashEntry        *entry;
+    WRHashEntry         *entry;
     bool                dup;
 
     /* touch unused vars to get rid of warning */
@@ -1184,7 +1184,7 @@ bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
 
     ret = false;
 
-    if( WdeIsHashTableDirty( obj->res_info->hash_table ) ) {
+    if( WRIsHashTableDirty( obj->res_info->hash_table ) ) {
         Forward( obj->object_handle, RESOLVE_SYMBOL, NULL, NULL );
         Forward( obj->object_handle, RESOLVE_HELPSYMBOL, NULL, NULL );
     }

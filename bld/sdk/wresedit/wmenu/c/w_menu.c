@@ -218,7 +218,7 @@ void WMakeDataFromMenu( WMenu *menu, char **pdata, size_t *dsize )
     char *data;
 
     if( pdata != NULL && dsize != NULL ) {
-        *dsize = WCalcMenuSize( menu->first_entry ) + SIZEU16 + SIZEU16;
+        *dsize = SIZEU16 + SIZEU16 + WCalcMenuSize( menu->first_entry );
         if( *dsize != 0 ) {
             *pdata = data = WRMemAlloc( *dsize );
             if( data != NULL ) {
@@ -287,27 +287,28 @@ static bool WMakeMenuItemFromData( const char **pdata, size_t *dsize, MenuItem *
 
 }
 
-static bool WAllocMenuEntryFromData( const char **data, size_t *dsize, WMenuEntry **entry, bool is32bit )
+static bool WAllocMenuEntryFromData( const char **data, size_t *dsize, WMenuEntry **pentry, bool is32bit )
 {
     bool        ok;
+    WMenuEntry  *entry;
 
-    ok = (data != NULL && *data != NULL && dsize != NULL && *dsize != 0 && entry != NULL);
+    ok = (data != NULL && *data != NULL && dsize != NULL && *dsize != 0 && pentry != NULL);
 
     if( ok ) {
-        *entry = (WMenuEntry *)WRMemAlloc( sizeof( WMenuEntry ) );
-        ok = (*entry != NULL);
+        *pentry = entry = (WMenuEntry *)WRMemAlloc( sizeof( WMenuEntry ) );
+        ok = (entry != NULL);
     }
 
     if( ok ) {
-        memset( *entry, 0, sizeof( WMenuEntry ) );
-        (*entry)->is32bit = is32bit;
-        ok = WMakeMenuItemFromData( data, dsize, &(*entry)->item, is32bit );
+        memset( entry, 0, sizeof( WMenuEntry ) );
+        entry->is32bit = is32bit;
+        ok = WMakeMenuItemFromData( data, dsize, &entry->item, is32bit );
     }
 
     if( !ok ) {
-        if( *entry != NULL ) {
-            WFreeMenuEntry( *entry );
-            *entry = NULL;
+        if( entry != NULL ) {
+            WFreeMenuEntry( entry );
+            *pentry = NULL;
         }
     }
 

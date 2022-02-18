@@ -688,7 +688,7 @@ bool WdeQuerySaveSymOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
     }
 
     if( res_info != NULL && res_info->hash_table != NULL &&
-        WdeIsHashTableDirty( res_info->hash_table ) ) {
+        WRIsHashTableDirty( res_info->hash_table ) ) {
         WdeCheckIfActiveWindow();
         file = WdeGetQueryName( res_info );
         frame = WdeGetMDIWindowHandle();
@@ -916,7 +916,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
     }
 
     if( ok ) {
-        if( WdeIsHashTableDirty( res_info->hash_table ) &&
+        if( WRIsHashTableDirty( res_info->hash_table ) &&
             !WdeIsHashSaveRejectedSet( res_info->hash_table ) ) {
             if( res_info->sym_name == NULL ) {
                 res_info->sym_name = WdeCreateSymName( fn );
@@ -925,7 +925,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
     }
 
     if( ok ) {
-        if( WdeIsHashTableDirty( res_info->hash_table ) ) {
+        if( WRIsHashTableDirty( res_info->hash_table ) ) {
             if( (main_obj = GetMainObject()) != NULL ) {
                 Forward( main_obj, RESOLVE_HELPSYMBOL, &ok, NULL ); /* JPK */
                 Forward( main_obj, RESOLVE_SYMBOL, &ok, NULL );
@@ -939,7 +939,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
     }
 
     if( ok ) {
-        if( WdeIsHashTableDirty( res_info->hash_table ) &&
+        if( WRIsHashTableDirty( res_info->hash_table ) &&
             !WdeIsHashSaveRejectedSet( res_info->hash_table ) ) {
             WdeSaveSymbols( res_info->hash_table, &res_info->sym_name, get_name );
         }

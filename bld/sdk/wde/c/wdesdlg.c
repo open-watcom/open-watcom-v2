@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -323,7 +323,7 @@ char *WdeResolveDialogName( WdeResInfo *res_info, WResID *id )
     name = NULL;
 
     if( res_info->hash_table != NULL && !id->IsName ) {
-        name = WdeResolveValue( res_info->hash_table, (WdeHashValue)id->ID.Num );
+        name = WRResolveValue( res_info->hash_table, (WRHashValue)id->ID.Num );
     }
 
     if( name == NULL ) {

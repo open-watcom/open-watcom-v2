@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,8 +97,8 @@ static WdeNextIDStruct *WdeFindNextIDStruct( OBJPTR );
 static char *WdeGetDefineProcFromOBJID( Wde_Objects );
 static void  WdeSetDefineControlInfo( WdeDefineObjectInfo *, HWND );
 static void  WdeGetDefineControlInfo( WdeDefineObjectInfo *, HWND );
-static void  WdeDefineObjectLookupComboEntry( HWND, WORD, WdeHashTable * );
-static void  WdeDefineObjectLookupHelpComboEntry( HWND, WORD, WdeHashTable * );
+static void  WdeDefineObjectLookupComboEntry( HWND, WORD, WRHashTable * );
+static void  WdeDefineObjectLookupHelpComboEntry( HWND, WORD, WRHashTable * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -589,9 +589,9 @@ void WdeSetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
 
     if( o_info->res_info->hash_table != NULL ) {
-        WdeAddSymbolsToComboBox( o_info->res_info->hash_table, hDlg, IDB_SYMBOL );
+        WRAddSymbolsToComboBox( o_info->res_info->hash_table, hDlg, IDB_SYMBOL, WR_HASHENTRY_ALL );
         // JPK - add for help id
-        WdeAddSymbolsToComboBox( o_info->res_info->hash_table, hDlg, IDB_HELPSYMBOL );
+        WRAddSymbolsToComboBox( o_info->res_info->hash_table, hDlg, IDB_HELPSYMBOL, WR_HASHENTRY_ALL );
     }
 
     if( o_info->obj_id == DIALOG_OBJ ) {        /* dialog object */
@@ -674,7 +674,7 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     bool                quoted_str;
     bool                str_is_ordinal;
     uint_16             ord;
-    WdeHashEntry        *entry;
+    WRHashEntry         *entry;
 
     if( o_info == NULL ) {
         return;
@@ -765,7 +765,7 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     bool                quoted_str;
     bool                str_is_ordinal;
     uint_32             ord;
-    WdeHashEntry        *entry;
+    WRHashEntry         *entry;
 
     if( o_info == NULL ) {
         return;
@@ -853,13 +853,13 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WRMemFree( str );
 }
 
-void WdeAddSymbolToObjectHashTable( WdeResInfo *res_info, char *symbol, WdeHashValue val )
+void WdeAddSymbolToObjectHashTable( WdeResInfo *res_info, char *symbol, WRHashValue val )
 {
     bool          force;
 
     if( res_info != NULL && symbol != NULL ) {
         if( res_info->hash_table == NULL ) {
-            res_info->hash_table = WdeInitHashTable();
+            res_info->hash_table = WRInitHashTable();
         }
         if( res_info->hash_table != NULL ) {
             force = TRUE;
@@ -1254,7 +1254,7 @@ bool WdeWinStylesHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, Di
 }
 
 bool WdeProcessSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
-                            WdeHashTable *table, uint_16 id,  bool use_id )
+                            WRHashTable *table, uint_16 id,  bool use_id )
 {
     WORD    hw;
     bool    processed;
@@ -1276,11 +1276,11 @@ bool WdeProcessSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     return( processed );
 }
 
-void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
+void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WRHashTable *table )
 {
     char                *str;
     char                *cp;
-    WdeHashValue        value;
+    WRHashValue         value;
     bool                found;
     LRESULT             index;
 
@@ -1331,7 +1331,7 @@ void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
  *       the symbol combo box
 */
 bool WdeProcessHelpSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
-                                WdeHashTable *table, uint_32 id, bool use_id )
+                                WRHashTable *table, uint_32 id, bool use_id )
 {
     WORD    hw;
     bool    processed;
@@ -1353,11 +1353,11 @@ bool WdeProcessHelpSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
     return( processed );
 }
 
-void WdeDefineObjectLookupHelpComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
+void WdeDefineObjectLookupHelpComboEntry( HWND hDlg, WORD hw, WRHashTable *table )
 {
     char                *str;
     char                *cp;
-    WdeHashValue        value;
+    WRHashValue         value;
     bool                found;
     LRESULT             index;
 
