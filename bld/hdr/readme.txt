@@ -44,12 +44,11 @@ maintenence.
 
 Headers for most of the target systems (DOS, Windows, WinNT, OS/2) are
 generated into the 'dos' directory. Headers for Linux are generated into
-the 'linux' directory. Header for RDOS are generated into the 'rdos' directory.
-Headers for QNX are disabled by default. When
-they are activated the QNX headers are generated into the 'qnx'
-directory. As is usual for Open Watcom projects, each of these
-directories contains a makefile that will cause wmake to generate the
-headers for that target system.
+the 'linux' directory. Header for RDOS are generated into the 'rdos'
+directory. Headers for QNX are disabled by default. When they are activated
+the QNX headers are generated into the 'qnx' directory. As is usual for
+Open Watcom projects, each of these directories contains a makefile that
+will cause wmake to generate the headers for that target system.
 
 The makefiles in each target directory include 'master.mif' from the top
 level directory. This master file includes 'hfiles.mif' which contains
@@ -108,19 +107,18 @@ describing the C library. In particular:
 <exception>          <iterator>         <random>       <thread>
 <forward_list>       <limits>           <ratio>        <tuple>
 
-For compatibility with older Open Watcom programs the header project
-generates by a name.h form and a "cname form" (extensionless) for the
-headers that support IOstreams and for certain other headers that
-existed in Open Watcom v1.2 or before (new.h, exceptio.h, stdexcep.h,
-and typeinfo.h). However, the newer C++ headers are generated only in
-their extensionless form. Note, however, that the files complex.mh,
-limits.mh, locale.mh, memory.mh, and string.mh are more complicatd. In
-some cases (complex.mh, memory.mh) an unrelated .h header is generated
-in addition to the C++ standard extensionless header. In other cases
-(limits.mh, locale.mh, and string.mh) three files are generated: the C
-library .h header, the C++ library "cname" header, and another C++
-library header that is extensionless. This adds complications to the
-control files.
+For compatibility with older Open Watcom programs, the header project
+generates a name.h form and a "cname form" (extensionless) for the headers
+that support IOStreams and for certain other headers that existed in Open
+Watcom v1.2 or before (new.h, exceptio.h, stdexcep.h, and typeinfo.h).
+However, the newer C++ headers are generated only in their extensionless
+form. Note, however, that the files complex.mh, limits.mh, locale.mh,
+memory.mh, and string.mh are more complicatd. In some cases (complex.mh,
+memory.mh) an unrelated .h header is generated in addition to the C++
+standard extensionless header. In other cases (limits.mh, locale.mh, and
+string.mh) three files are generated: the C library .h header, the C++
+library "cname" header, and another C++ library header that is
+extensionless. This adds complications to the control files.
 
 Notice that several of the official header names in the C++ library are
 longer than eight characters. To support the DOS host, Open Watcom
