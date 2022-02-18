@@ -54,7 +54,7 @@ enum {
 /****************************************************************************/
 extern bool WdeResourceHashTableAction( WdeResInfo *, int );
 extern bool WdeFindAndLoadSymbols( WdeResInfo * );
-extern bool WdeSaveSymbols( WRHashTable *, char **, bool );
+extern bool WdeSaveSymbols( WRHashTable *, char **, bool prompt_name );
 extern bool WdeDeleteDLGInclude( WdeResInfo *rinfo );
 extern bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include );
 extern char *WdeCreateSymName( const char *fname );

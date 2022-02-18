@@ -114,7 +114,7 @@ static void Add_PP_Symbols( WRHashTable *table )
     PP_MacrosWalk( addsym_func, &data );
 }
 
-char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt )
+char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt_name )
 {
     char                *name;
     int                 c;
@@ -131,7 +131,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
     ok = (table != NULL);
 
     if( ok ) {
-        if( file_name == NULL || prompt ) {
+        if( file_name == NULL || prompt_name ) {
             gf.file_name = file_name;
             gf.title = AllocRCString( W_LOADSYMTITLE );
             gf.filter = AllocRCString( W_SYMFILTER );

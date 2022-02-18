@@ -65,7 +65,7 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool WSaveObjectAs( bool, WMenuEditInfo * );
+static bool WSaveObjectAs( bool prompt_name, WMenuEditInfo * );
 static bool WSaveObjectInto( WMenuEditInfo * );
 
 /****************************************************************************/
@@ -100,7 +100,7 @@ static bool WSaveObjectToRC( WMenuEditInfo *einfo, const char *filename,
     return( true );
 }
 
-bool WSaveObject( WMenuEditInfo *einfo, bool get_name, bool save_into )
+bool WSaveObject( WMenuEditInfo *einfo, bool prompt_name, bool save_into )
 {
     bool    ok;
     bool    data_saved;
@@ -122,7 +122,7 @@ bool WSaveObject( WMenuEditInfo *einfo, bool get_name, bool save_into )
 
     if( ok ) {
         if( !WRIsDefaultHashTable( einfo->info->symbol_table ) &&
-            (get_name || WRIsHashTableDirty( einfo->info->symbol_table )) ) {
+            (prompt_name || WRIsHashTableDirty( einfo->info->symbol_table )) ) {
             if( einfo->info->symbol_file == NULL ) {
                 char    *fname;
                 if( einfo->file_name == NULL ) {
@@ -132,8 +132,7 @@ bool WSaveObject( WMenuEditInfo *einfo, bool get_name, bool save_into )
                 }
                 einfo->info->symbol_file = WCreateSymFileName( fname );
             }
-            ok = WSaveSymbols( einfo->win, einfo->info->symbol_table,
-                               &einfo->info->symbol_file, get_name );
+            ok = WSaveSymbols( einfo->win, einfo->info->symbol_table, &einfo->info->symbol_file, prompt_name );
         }
     }
 
@@ -149,7 +148,7 @@ bool WSaveObject( WMenuEditInfo *einfo, bool get_name, bool save_into )
         if( save_into ) {
             ok = WSaveObjectInto( einfo );
         } else {
-            ok = WSaveObjectAs( get_name, einfo );
+            ok = WSaveObjectAs( prompt_name, einfo );
         }
         if( einfo->info->data ) {
             WRMemFree( einfo->info->data );
@@ -172,7 +171,7 @@ bool WSaveObject( WMenuEditInfo *einfo, bool get_name, bool save_into )
     return( ok );
 }
 
-bool WSaveObjectAs( bool get_name, WMenuEditInfo *einfo )
+bool WSaveObjectAs( bool prompt_name, WMenuEditInfo *einfo )
 {
     char                resfile[_MAX_PATH];
     char                *fname;
@@ -212,7 +211,7 @@ bool WSaveObjectAs( bool get_name, WMenuEditInfo *einfo )
     }
 
     if( ok ) {
-        if( einfo->file_name == NULL || get_name ) {
+        if( einfo->file_name == NULL || prompt_name ) {
             gf.file_name = NULL;
             gf.title = AllocRCString( W_SAVERESAS );
             gf.filter = AllocRCString( W_SAVERESFILTER );
@@ -363,7 +362,7 @@ bool WSaveObjectInto( WMenuEditInfo *einfo )
     return( ok );
 }
 
-bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name, bool prompt )
+bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name, bool prompt_name )
 {
     char                *name;
     WGetFileStruct      gf;
@@ -381,7 +380,7 @@ bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name, bool prompt )
 
     WSetWaitCursor( win, true );
 
-    if( prompt || *file_name == NULL ) {
+    if( prompt_name || *file_name == NULL ) {
         gf.file_name = *file_name;
         gf.title = AllocRCString( W_SAVESYMTITLE );
         gf.filter = AllocRCString( W_SYMFILTER );

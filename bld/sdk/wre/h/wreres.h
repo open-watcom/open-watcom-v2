@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ extern WREResInfo   *WREResInfoFromWin( HWND );
 extern bool         WRERegisterResClass( HINSTANCE );
 extern WREResInfo   *WRECreateNewResource( char * );
 extern bool         WREOpenResource( char * );
-extern bool         WRESaveResource( WREResInfo *, bool );
+extern bool         WRESaveResource( WREResInfo *, bool prompt_name );
 extern bool         WREQueryKillApp( bool );
 extern void         WREFreeResList( void );
 extern bool         WREInitResources( HINSTANCE );

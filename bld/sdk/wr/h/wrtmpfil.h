@@ -45,7 +45,7 @@ WRDLLENTRY extern bool     WRAPI WRReadEntireFile( const char *fname, char **dat
 WRDLLENTRY extern bool     WRAPI WRDeleteFile( const char * );
 WRDLLENTRY extern bool     WRAPI WRFileExists( const char * );
 WRDLLENTRY extern bool     WRAPI WRRenameFile( const char *, const char * );
-WRDLLENTRY extern bool     WRAPI WRBackupFile( const char *, bool  );
+WRDLLENTRY extern bool     WRAPI WRBackupFile( const char *, bool use_rename );
 WRDLLENTRY extern void     WRAPI WRFreeTempFileName( char * );
 WRDLLENTRY extern char *   WRAPI WRGetTempFileName( const char * );
 WRDLLENTRY extern bool     WRAPI WRCopyFile( const char *, const char *);

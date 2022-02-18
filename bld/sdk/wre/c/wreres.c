@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -833,7 +833,7 @@ bool WREQuerySaveSymOnDeleteRes( WREResInfo *res_info, bool fatal_exit )
             if( res_info->symbol_file == NULL ) {
                 res_info->symbol_file = WRECreateSymFileName( file );
             }
-            if( !WRESaveSymbols( res_info->symbol_table, &res_info->symbol_file, FALSE ) ) {
+            if( !WRESaveSymbols( res_info->symbol_table, &res_info->symbol_file, false ) ) {
                 return( FALSE );
             }
         } else if( ret == IDCANCEL ) {
@@ -871,7 +871,7 @@ bool WREQuerySaveResOnDeleteRes( WREResInfo *res_info, bool fatal_exit )
             FreeRCString( text );
         }
         if( ret == IDYES ) {
-            return( WRESaveResource( res_info, FALSE ) );
+            return( WRESaveResource( res_info, false ) );
         } else if( ret == IDCANCEL ) {
             return( FALSE );
         }
@@ -880,7 +880,7 @@ bool WREQuerySaveResOnDeleteRes( WREResInfo *res_info, bool fatal_exit )
     return( TRUE );
 }
 
-bool WRESaveResource( WREResInfo *res_info, bool get_name )
+bool WRESaveResource( WREResInfo *res_info, bool prompt_name )
 {
     char                *fn;
     WREGetFileStruct    gf;
@@ -909,7 +909,7 @@ bool WRESaveResource( WREResInfo *res_info, bool get_name )
             got_name = TRUE;
         }
 
-        if( get_name || fn == NULL || *fn == '\0' ) {
+        if( prompt_name || fn == NULL || *fn == '\0' ) {
             gf.file_name = fn;
             gf.title = WREResSaveTitle;
             gf.filter = WREResFilter;
@@ -950,8 +950,8 @@ bool WRESaveResource( WREResInfo *res_info, bool get_name )
     }
 
     if( ok ) {
-        if( get_name || WRIsHashTableDirty( res_info->symbol_table ) ) {
-            ok = WRESaveSymbols( res_info->symbol_table, &res_info->symbol_file, get_name );
+        if( prompt_name || WRIsHashTableDirty( res_info->symbol_table ) ) {
+            ok = WRESaveSymbols( res_info->symbol_table, &res_info->symbol_file, prompt_name );
         }
     }
 

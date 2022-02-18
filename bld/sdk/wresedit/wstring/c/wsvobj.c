@@ -65,7 +65,7 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool             WSaveObjectAs( bool, WStringEditInfo *, WRSaveIntoData * );
+static bool             WSaveObjectAs( bool prompt_name, WStringEditInfo *, WRSaveIntoData * );
 static bool             WSaveObjectInto( WStringEditInfo *, WRSaveIntoData * );
 static WRSaveIntoData   *WMakeSaveData( WStringTable *tbl );
 static void             WFreeSaveIntoData( WRSaveIntoData *idata );
@@ -104,7 +104,7 @@ static bool WSaveObjectToRC( WStringEditInfo *einfo, const char *filename,
     return( true );
 }
 
-bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
+bool WSaveObject( WStringEditInfo *einfo, bool prompt_name, bool save_into )
 {
     WRSaveIntoData      *idata;
     bool                ok;
@@ -117,7 +117,7 @@ bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
 
     if( ok ) {
         if( !WRIsDefaultHashTable( einfo->info->symbol_table ) &&
-            (get_name || WRIsHashTableDirty( einfo->info->symbol_table )) ) {
+            (prompt_name || WRIsHashTableDirty( einfo->info->symbol_table )) ) {
             if( einfo->info->symbol_file == NULL ) {
                 char    *fname;
                 if( einfo->file_name == NULL ) {
@@ -127,8 +127,7 @@ bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
                 }
                 einfo->info->symbol_file = WCreateSymFileName( fname );
             }
-            ok = WSaveSymbols( einfo->win, einfo->info->symbol_table,
-                               &einfo->info->symbol_file, get_name );
+            ok = WSaveSymbols( einfo->win, einfo->info->symbol_table, &einfo->info->symbol_file, prompt_name );
         }
     }
 
@@ -144,7 +143,7 @@ bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
         if( save_into ) {
             ok = WSaveObjectInto( einfo, idata );
         } else {
-            ok = WSaveObjectAs( get_name, einfo, idata );
+            ok = WSaveObjectAs( prompt_name, einfo, idata );
         }
     }
 
@@ -161,7 +160,7 @@ bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
     return( ok );
 }
 
-bool WSaveObjectAs( bool get_name, WStringEditInfo *einfo, WRSaveIntoData *idata )
+bool WSaveObjectAs( bool prompt_name, WStringEditInfo *einfo, WRSaveIntoData *idata )
 {
     char                resfile[_MAX_PATH];
     char                *fname;
@@ -195,7 +194,7 @@ bool WSaveObjectAs( bool get_name, WStringEditInfo *einfo, WRSaveIntoData *idata
     }
 
     if( ok ) {
-        if( einfo->file_name == NULL || get_name ) {
+        if( einfo->file_name == NULL || prompt_name ) {
             gf.file_name = NULL;
             gf.title = AllocRCString( W_SAVERESAS );
             gf.filter = AllocRCString( W_SAVERESFILTER );
@@ -433,8 +432,7 @@ void WFreeSaveIntoData( WRSaveIntoData *idata )
     }
 }
 
-bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name,
-                   bool prompt )
+bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name, bool prompt_name )
 {
     char                *name;
     WGetFileStruct      gf;
@@ -452,7 +450,7 @@ bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name,
 
     WSetWaitCursor( win, true );
 
-    if( prompt || *file_name == NULL ) {
+    if( prompt_name || *file_name == NULL ) {
         gf.file_name = *file_name;
         gf.title = AllocRCString( W_SAVESYMTITLE );
         gf.filter = AllocRCString( W_SYMFILTER );

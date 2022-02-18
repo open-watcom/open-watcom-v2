@@ -47,7 +47,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool WSaveObject( WAccelEditInfo *, bool, bool );
-extern bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name, bool prompt );
+extern bool WSaveObject( WAccelEditInfo *, bool prompt_name, bool );
+extern bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name, bool prompt_name );
 
 #endif

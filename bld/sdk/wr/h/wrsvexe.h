@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern void WRInitRcGlobal( HINSTANCE );
-extern bool WRSaveResourceToWin16EXE( WRInfo *, bool );
-extern bool WRSaveResourceToWinNTEXE( WRInfo *, bool );
+extern bool WRSaveResourceToWin16EXE( WRInfo *, bool backup );
+extern bool WRSaveResourceToWinNTEXE( WRInfo *, bool backup );
 
 #endif

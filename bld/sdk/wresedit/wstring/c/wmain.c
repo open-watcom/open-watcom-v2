@@ -620,9 +620,7 @@ static void handleLoadSymbols( WStringEditInfo *einfo )
     char        *file;
     LRESULT     pos;
 
-    file = WLoadSymbols( &einfo->info->symbol_table,
-                         einfo->info->symbol_file,
-                         einfo->win, TRUE );
+    file = WLoadSymbols( &einfo->info->symbol_table, einfo->info->symbol_file, einfo->win, true );
     if( file == NULL ) {
         return;
     }
@@ -774,17 +772,17 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             break;
 
         case IDM_STR_SAVE:
-            WSaveObject( einfo, FALSE, FALSE );
+            WSaveObject( einfo, false, false );
             pass_to_def = false;
             break;
 
         case IDM_STR_SAVEAS:
-            WSaveObject( einfo, TRUE, FALSE );
+            WSaveObject( einfo, true, false );
             pass_to_def = false;
             break;
 
         case IDM_STR_SAVEINTO:
-            WSaveObject( einfo, TRUE, TRUE );
+            WSaveObject( einfo, true, true );
             pass_to_def = false;
             break;
 
@@ -920,7 +918,7 @@ bool WQuerySaveRes( WStringEditInfo *einfo, bool force_exit )
         }
         if( msg_ret == IDYES ) {
             if( einfo->info->stand_alone ) {
-                ok = WSaveObject( einfo, FALSE, FALSE );
+                ok = WSaveObject( einfo, false, false );
             } else {
                 SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0, (LPARAM)einfo->hndl );
             }
@@ -973,8 +971,7 @@ bool WQuerySaveSym( WStringEditInfo *einfo, bool force_exit )
             }
             einfo->info->symbol_file = WCreateSymFileName( fname );
         }
-        return( WSaveSymbols( einfo->win, einfo->info->symbol_table,
-                              &einfo->info->symbol_file, FALSE ) );
+        return( WSaveSymbols( einfo->win, einfo->info->symbol_table, &einfo->info->symbol_file, false ) );
     } else if( ret == IDCANCEL ) {
         return( false );
     }

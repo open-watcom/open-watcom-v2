@@ -663,7 +663,7 @@ bool WdeQuerySaveResOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
             if( WdeIsDDE() ) {
                 return( WdeUpdateDDEEditSession() );
             } else {
-                return( WdeSaveResource( res_info, FALSE ) );
+                return( WdeSaveResource( res_info, false ) );
             }
         } else if( ret == IDCANCEL ) {
             return( false );
@@ -705,7 +705,7 @@ bool WdeQuerySaveSymOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
             if( res_info->sym_name == NULL ) {
                 res_info->sym_name = WdeCreateSymName( file );
             }
-            if( !WdeSaveSymbols( res_info->hash_table, &res_info->sym_name, FALSE ) ) {
+            if( !WdeSaveSymbols( res_info->hash_table, &res_info->sym_name, false ) ) {
                 return( false );
             }
         } else if( ret == IDCANCEL ) {
@@ -867,7 +867,7 @@ char *WdeSelectSaveFilter( WRFileType ftype )
     return( filter );
 }
 
-bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
+bool WdeSaveResource( WdeResInfo *res_info, bool prompt_name )
 {
     WdeGetFileStruct    gf;
     char                *filter;
@@ -891,7 +891,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
             got_name = TRUE;
         }
 
-        if( get_name || fn == NULL || *fn == '\0' ) {
+        if( prompt_name || fn == NULL || *fn == '\0' ) {
             filter = WdeSelectSaveFilter( res_info->info->file_type );
             gf.file_name = fn;
             gf.title = WdeResSaveTitle;
@@ -941,7 +941,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
     if( ok ) {
         if( WRIsHashTableDirty( res_info->hash_table ) &&
             !WdeIsHashSaveRejectedSet( res_info->hash_table ) ) {
-            WdeSaveSymbols( res_info->hash_table, &res_info->sym_name, get_name );
+            WdeSaveSymbols( res_info->hash_table, &res_info->sym_name, prompt_name );
         }
     }
 

@@ -83,7 +83,7 @@ typedef struct {
 static bool WdeResourceViewHash( WdeResInfo * );
 static bool WdeResourceLoadHash( WdeResInfo * );
 static bool WdeResourceWriteHash( WdeResInfo * );
-static char *WdeLoadSymbols( WRHashTable **, char *, bool );
+static char *WdeLoadSymbols( WRHashTable **, char *, bool prompt_name );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -452,7 +452,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     pgroup2     pg;
     char        fn_path[_MAX_PATH];
     char        *include;
-    bool        prompt;
+    bool        prompt_name;
     bool        ret;
 
     include = NULL;
@@ -470,18 +470,18 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     if( include == NULL ) {
         _splitpath2( rinfo->info->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
-        prompt = true;
+        prompt_name = true;
     } else {
         strcpy( fn_path, include );
         WRMemFree( include );
         include = NULL;
-        prompt = false;
+        prompt_name = false;
     }
 
     ret = true;
 
     if( WRFileExists( fn_path ) ) {
-        include = WdeLoadSymbols( &rinfo->hash_table, fn_path, prompt );
+        include = WdeLoadSymbols( &rinfo->hash_table, fn_path, prompt_name );
         ret = (include != NULL);
         if( ret ) {
             if( rinfo->sym_name != NULL ) {
@@ -497,7 +497,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
 static jmp_buf SymEnv;
 
-char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt )
+char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
 {
     char                *name;
     int                 c;
@@ -524,7 +524,7 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt )
     }
 
     if( ok ) {
-        if( file_name == NULL || prompt ) {
+        if( file_name == NULL || prompt_name ) {
             gf.file_name = file_name;
             gf.title = WdeLoadHeaderTitle;
             gf.filter = WdeSymSaveFilter;
@@ -604,7 +604,7 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt )
     return( name );
 }
 
-bool WdeSaveSymbols( WRHashTable *table, char **file_name, bool prompt )
+bool WdeSaveSymbols( WRHashTable *table, char **file_name, bool prompt_name )
 {
     char                *name;
     WdeGetFileStruct    gf;
@@ -620,7 +620,7 @@ bool WdeSaveSymbols( WRHashTable *table, char **file_name, bool prompt )
     WdeSetStatusText( NULL, "", false );
     WdeSetStatusByID( WDE_WRITINGSYMBOLS, 0 );
 
-    if( prompt || *file_name == '\0' ) {
+    if( prompt_name || *file_name == '\0' ) {
         gf.file_name = *file_name;
         gf.title = WdeWriteHeaderTitle;
         gf.filter = WdeSymSaveFilter;

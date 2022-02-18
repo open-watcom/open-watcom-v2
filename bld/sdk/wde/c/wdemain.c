@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -766,12 +766,12 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             break;
 
         case IDM_SAVE_RES:
-            WdeSaveResource( res_info, FALSE );
+            WdeSaveResource( res_info, false );
             pass_to_def = false;
             break;
 
         case IDM_SAVEAS_RES:
-            WdeSaveResource( res_info, TRUE );
+            WdeSaveResource( res_info, true );
             pass_to_def = false;
             break;
 

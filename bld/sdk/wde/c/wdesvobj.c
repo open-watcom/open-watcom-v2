@@ -68,9 +68,8 @@ extern char     *WdeResSaveFilter;
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
-                    char **fname, WResID *rname, WResLangType *langtype,
-                    bool save_into, bool get_name )
+bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi, char **fname, WResID *rname,
+                                WResLangType *langtype, bool save_into, bool prompt_name )
 {
     char                *rdata;
     size_t              size;
@@ -96,7 +95,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
         if( save_into ) {
             ok = WdeSaveObjectInto( rinfo, dbi, rname, rdata, size, &lang );
         } else {
-            ok = WdeSaveObjectAs( rinfo, dbi, fname, rname, rdata, size, &lang, get_name );
+            ok = WdeSaveObjectAs( rinfo, dbi, fname, rname, rdata, size, &lang, prompt_name );
         }
     }
 
@@ -111,7 +110,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
 
 bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
                       char **file_name, WResID *name, void *rdata, uint_32 size,
-                      WResLangType *lang, bool get_name )
+                      WResLangType *lang, bool prompt_name )
 {
     char                *fname;
     WRFileType          ftype;
@@ -128,10 +127,10 @@ bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
           name != NULL && rdata != NULL);
 
     if( ok ) {
-        if( get_name || *file_name == NULL ) {
+        if( prompt_name || *file_name == NULL ) {
             gf.file_name = *file_name;
             gf.title = WdeDlgSaveTitle;
-            if( get_name ) {
+            if( prompt_name ) {
                 gf.title = WdeDlgSaveAsTitle;
             }
             gf.filter = WdeResSaveFilter;

@@ -196,7 +196,7 @@ static char *WREFindDLGInclude( WRInfo *info )
     return( include );
 }
 
-static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
+static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
 {
     char                *name;
     int                 c;
@@ -221,7 +221,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
     }
 
     if( ok ) {
-        if( file_name == NULL || prompt ) {
+        if( file_name == NULL || prompt_name ) {
             gf.file_name = file_name;
             gf.title = WRESymLoadTitle;
             gf.filter = WRESymSaveFilter;
@@ -292,7 +292,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
     return( name );
 }
 
-bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
+bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt_name )
 {
     char                *name;
     WREGetFileStruct    gf;
@@ -310,7 +310,7 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
     WRESetStatusText( NULL, "", FALSE );
     WRESetStatusByID( WRE_SAVEINGSYMBOLS, 0 );
 
-    if( prompt || *file_name == NULL ) {
+    if( prompt_name || *file_name == NULL ) {
         gf.file_name = *file_name;
         gf.title = WRESymSaveTitle;
         gf.filter = WRESymSaveFilter;
@@ -432,7 +432,7 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
     char        fn_path[_MAX_PATH];
     pgroup2     pg;
     char        *symbol_file;
-    bool        prompt;
+    bool        prompt_name;
     bool        ret;
 
     if( rinfo == NULL || rinfo->info == NULL
@@ -450,18 +450,18 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
         _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
         _makepath( inc_path, pg.drive, pg.dir, NULL, NULL );
         WRESetInitialDir( inc_path );
-        prompt = true;
+        prompt_name = true;
     } else {
         strcpy( fn_path, symbol_file );
         WRMemFree( symbol_file );
         symbol_file = NULL;
-        prompt = false;
+        prompt_name = false;
     }
 
     ret = true;
 
     if( WRFileExists( fn_path ) ) {
-        symbol_file = WRELoadSymbols( &rinfo->symbol_table, fn_path, prompt );
+        symbol_file = WRELoadSymbols( &rinfo->symbol_table, fn_path, prompt_name );
         ret = (symbol_file != NULL);
         if( ret ) {
             if( rinfo->symbol_file != NULL ) {

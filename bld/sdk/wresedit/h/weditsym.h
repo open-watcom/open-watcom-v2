@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #ifndef WEDITSYM_INCLUDED
 #define WEDITSYM_INCLUDED
 
-extern char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt );
+extern char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt_name );
 extern bool WEditSymbols( HWND parent, WRHashTable **symbol_table, HINSTANCE inst, HELPFUNC help_callback );
 extern char *WCreateSymFileName( const char *fname );
 
