@@ -176,7 +176,7 @@ static DISPATCH_ITEM WdeControlActions[] = {
 static void WdeControlModified ( WdeControlObject *obj )
 {
     if( obj != NULL && obj->parent != NULL && obj->parent != obj->base_obj ) {
-        WdeDialogModified( obj->parent );
+        WdeSetDialogModified( obj->parent );
     }
 }
 

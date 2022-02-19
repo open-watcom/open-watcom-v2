@@ -268,7 +268,7 @@ bool WdeRemoveObject( WdeResInfo *res_info, OBJPTR object )
     return( true );
 }
 
-void WdeDialogModified( void *_obj )
+void WdeSetDialogModified( void *_obj )
 {
     WdeDialogObject *obj = _obj;
 
@@ -898,14 +898,14 @@ bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
                     WRMemFree( obj->symbol );
                 }
                 obj->symbol = vp;
-                WdeDialogModified( obj );
+                WdeSetDialogModified( obj );
             }
         } else {
             if( obj->symbol != NULL ) {
                 val = WdeLookupName( obj->res_info->hash_table, obj->symbol, &found );
                 if( found ) {
                     obj->name->ID.Num = (uint_16)val;
-                    WdeDialogModified( obj );
+                    WdeSetDialogModified( obj );
                 } else {
                     WRMemFree( obj->symbol );
                     obj->symbol = NULL;
@@ -945,14 +945,14 @@ bool WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
             }
             obj->helpsymbol = vp;
             obj->dialog_info->helpsymbol = WdeStrDup( obj->helpsymbol );
-            WdeDialogModified( obj );
+            WdeSetDialogModified( obj );
         }
     } else {
         if( obj->helpsymbol ) {
             val = WdeLookupName( obj->res_info->hash_table, obj->helpsymbol, &found );
             if( found ) {
                 SETHDR_HELPID( obj->dialog_info, val );
-                WdeDialogModified( obj );
+                WdeSetDialogModified( obj );
             } else {
                 WRMemFree( obj->helpsymbol );
                 obj->helpsymbol = NULL;
@@ -1016,7 +1016,7 @@ bool WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
         WResIDFree( old_name );
     }
 
-    WdeDialogModified( obj );
+    WdeSetDialogModified( obj );
 
     return( true );
 }
@@ -1352,7 +1352,7 @@ bool WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
         obj->helpsymbol = o_info.helpsymbol;
         obj->name = o_info.info.d.name;
         WdeWriteDialogToInfo( obj );
-        WdeDialogModified( obj );
+        WdeSetDialogModified( obj );
     }
 
     WdeSetStatusReadyText();
@@ -1728,7 +1728,7 @@ bool WdeDialogRemoveSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
         return( false );
     }
 
-    WdeDialogModified( dialog );
+    WdeSetDialogModified( dialog );
 
     return( true );
 }
@@ -2072,7 +2072,7 @@ bool WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
     }
 
     if( *flag ) {
-        WdeDialogModified( obj );
+        WdeSetDialogModified( obj );
         WdeUpdateDialogUnits( obj, new_pos, &obj->nc_size );
         if( !WdeKludgeDialogSize( obj, TRUE, FALSE ) ) {
             WdeWriteTrail( "WdeDialogResize: Couldn't kludge size!" );
@@ -2242,7 +2242,7 @@ bool WdeDialogMove( WdeDialogObject *obj, POINT *off, bool *forms_called )
             WdeWriteTrail( "WdeDialogMove: O_ITEM RESIZE undo failed!" );
         }
     } else if( ok && *forms_called )  {
-        WdeDialogModified( obj );
+        WdeSetDialogModified( obj );
         WdeCheckBaseScrollbars( false );
     }
 
