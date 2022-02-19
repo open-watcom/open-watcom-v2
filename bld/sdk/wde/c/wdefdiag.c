@@ -146,32 +146,6 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    DISPATCH_FN         *dispatcher;
-    HWND                window_handle;
-    HWND                parent_handle;
-    OBJ_ID              object_id;
-    OBJPTR              object_handle;
-    OBJPTR              parent;
-    OBJPTR              o_item;
-    uint_16             num_children; // was uint_8 ==> not big enough for NT
-    LIST                *children;
-    LIST                *ochildren;
-    HFONT               font;
-    RECT                nc_size;
-    uint_16             mem_flags;
-    WdeDialogBoxHeader  *dialog_info;
-    WdeResInfo          *res_info;
-    WdeResDlgItem       *dlg_item;
-    WdeResizeRatio      resizer;
-    WResID              *name;
-//  WResHelpID          *helpname;
-    char                *file_name;
-    char                *symbol;
-    char                *helpsymbol;
-    WdeOrderMode        mode;
-} WdeDialogObject;
-
-typedef struct {
    uint_32      style;
    uint_8       items;
    uint_16      x;
@@ -268,18 +242,15 @@ bool WdeRemoveObject( WdeResInfo *res_info, OBJPTR object )
     return( true );
 }
 
-void WdeSetDialogModified( void *_obj )
+void WdeSetDialogModified( WdeDialogObject *obj )
 {
-    WdeDialogObject *obj = _obj;
-
     if( obj != NULL && obj->dlg_item != NULL ) {
         obj->dlg_item->modified = true;
     }
 }
 
-bool WdePreserveDialogWithDBI( void *_obj )
+bool WdePreserveDialogWithDBI( WdeDialogObject *obj )
 {
-    WdeDialogObject *obj = _obj;
     void            *vp;
 
     vp = WdeDBIFromObject( obj );
@@ -298,9 +269,8 @@ bool WdePreserveDialogWithDBI( void *_obj )
     return( true );
 }
 
-WdeDialogBoxInfo *WdeDBIFromObject( void *_obj )
+WdeDialogBoxInfo *WdeDBIFromObject( WdeDialogObject *obj )
 {
-    WdeDialogObject     *obj = _obj;
     WdeDialogBoxInfo    *info;
     LIST                *clist;
     LIST                *end;
@@ -1160,10 +1130,8 @@ bool WdeDialogRestore( WdeDialogObject *obj, void *p1, void *p2 )
     return( true );
 }
 
-bool WdeIsDialogRestorable( void *_obj )
+bool WdeIsDialogRestorable( WdeDialogObject *obj )
 {
-    WdeDialogObject *obj = _obj;
-
     return( obj != NULL && obj->res_info != NULL && obj->dlg_item != NULL &&
             obj->dlg_item->dialog_info != NULL );
 }

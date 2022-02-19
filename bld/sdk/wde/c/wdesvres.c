@@ -242,7 +242,7 @@ WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem )
                 ditem->dialog_name = name;
             }
         }
-        dbi = WdeDBIFromObject( ditem->object );
+        dbi = WdeDBIFromObject( (WdeDialogObject *)ditem->object );
         if( dbi != NULL ) {
             if( ditem->dialog_info != NULL ) {
                 WdeFreeDialogBoxInfo( ditem->dialog_info );

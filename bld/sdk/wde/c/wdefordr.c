@@ -476,7 +476,7 @@ void WdeTagPressed( WdeSetOrderStruct *o )
         }
         parent = NULL;
         if( GetObjectParent( o->old_oe->obj, &parent ) && parent != NULL ) {
-            WdeSetDialogModified( parent );
+            WdeSetDialogModified( (WdeDialogObject *)parent );
         }
     }
 }

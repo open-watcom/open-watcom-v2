@@ -176,7 +176,7 @@ static DISPATCH_ITEM WdeControlActions[] = {
 static void WdeControlModified ( WdeControlObject *obj )
 {
     if( obj != NULL && obj->parent != NULL && obj->parent != obj->base_obj ) {
-        WdeSetDialogModified( obj->parent );
+        WdeSetDialogModified( (WdeDialogObject *)obj->parent );
     }
 }
 
@@ -485,7 +485,7 @@ bool WdeControlDestroy( WdeControlObject *obj, bool *flag, bool *p2 )
 
     if( !Forward( obj->o_item, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeControlDestroy: Failed to destroy OITEM!" );
-        if( obj->parent ) {
+        if( obj->parent != NULL ) {
             AddObject( obj->parent, obj->object_handle );
         }
         return( false );
@@ -1186,9 +1186,8 @@ bool WdeControlNotify( WdeControlObject *obj, NOTE_ID *noteid, void *p2 )
         if( obj->parent == obj->base_obj ) {
             WdeSetControlObjectMenu( FALSE, FALSE, FALSE, obj->mode );
         } else {
-            WdeSetControlObjectMenu( TRUE, WdeIsDialogRestorable( obj->parent ),
-                                     obj->res_info && obj->res_info->hash_table,
-                                     obj->mode );
+            WdeSetControlObjectMenu( TRUE, WdeIsDialogRestorable( (WdeDialogObject *)obj->parent ),
+                                     obj->res_info && obj->res_info->hash_table, obj->mode );
         }
 
         WdeWriteControlToInfo( obj );
