@@ -486,7 +486,7 @@ bool WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     BOOL    flag;
     WORD    wp;
 
-    /* unused parameters */ (void)mask ); (void)lParam );
+    /* unused parameters */ (void)mask; (void)lParam;
 
     processed = false;
 

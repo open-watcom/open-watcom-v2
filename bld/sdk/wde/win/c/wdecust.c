@@ -838,7 +838,7 @@ BOOL CALLBACK WdeCustEDITRES( LPCSTR type_name, LPCSTR res_name )
 {
     char      out[160];
 
-    /* unused parameters */ (void)type_name ); (void)res_name );
+    /* unused parameters */ (void)type_name; (void)res_name;
 
     sprintf( out, "Request to edit type:%lu res:%lu",
              (unsigned long)(uint_32)type_name, (unsigned long)(uint_32)res_name );

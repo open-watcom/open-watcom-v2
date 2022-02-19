@@ -562,7 +562,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     HDDEDATA            ret;
     WdeResDlgItem       *ditem;
 
-    /* unused parameters */ (void)wFmt ); (void)hData ); (void)lData1 ); (void)lData2 );
+    /* unused parameters */ (void)wFmt; (void)hData; (void)lData1; (void)lData2;
 
     ret = NULL;
 
