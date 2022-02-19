@@ -256,7 +256,7 @@ void WdeSetRibbonItemState( UINT item, int state )
 
 static void wdeRibbonHelpHook( HWND hwnd, ctl_id id, bool pressed )
 {
-    _wde_touch( hwnd );
+    /* unused parameters */ (void)hwnd;
 
     WdeHandleToolHint( id, pressed );
 }
@@ -265,9 +265,7 @@ static bool wdeRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     bool         ret;
 
-    _wde_touch( hwnd );
-    _wde_touch( wParam );
-    _wde_touch( lParam );
+    /* unused parameters */ (void)hwnd; (void)wParam; (void)lParam;
 
     if( WdeRibbon == NULL ) {
         return( false );

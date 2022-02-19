@@ -158,12 +158,11 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
 #endif
 #endif
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( lpszCmdLine );
-    _wde_touch( nCmdShow );
+    /* unused parameters */ (void)lpszCmdLine; (void)nCmdShow;
 #ifdef __NT__
-    _wde_touch( hinstPrevious );
+    /* unused parameters */ (void)hinstPrevious;
 #endif
+
 #if defined( __NT__ ) && !defined( __WATCOMC__ )
     _argc = __argc;
     _argv = __argv;

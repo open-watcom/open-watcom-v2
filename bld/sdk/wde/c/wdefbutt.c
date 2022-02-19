@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -304,8 +305,7 @@ void WdeButtonFini( void )
 
 bool WdeButtonDestroy( WdeButtonObject *obj, bool *flag, bool *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeButtonDestroy: Control DESTROY failed" );
@@ -415,8 +415,7 @@ bool WdeButtonCopyObject( WdeButtonObject *obj, WdeButtonObject **new, OBJPTR ha
 
 bool WdeButtonIdentify( WdeButtonObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -425,9 +424,7 @@ bool WdeButtonIdentify( WdeButtonObject *obj, OBJ_ID *id, void *p2 )
 
 bool WdeButtonGetWndProc( WdeButtonObject *obj, WNDPROC *proc, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     *proc = WdeButtonSuperClassProc;
 
@@ -436,9 +433,7 @@ bool WdeButtonGetWndProc( WdeButtonObject *obj, WNDPROC *proc, void *p2 )
 
 bool WdeButtonGetWindowClass( WdeButtonObject *obj, char **class, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     //*class = "wdebutton";
     *class = "button";
@@ -450,9 +445,7 @@ bool WdeButtonDefine( WdeButtonObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     o_info.obj = obj->object_handle;
     o_info.obj_id = obj->object_id;

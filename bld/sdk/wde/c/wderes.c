@@ -558,7 +558,7 @@ static void WdeActivateResourceWindow( WdeResInfo *res_info, WPARAM wParam, LPAR
     HWND        hwndDeact;
     int         id;
 
-    _wde_touch( wParam );
+    /* unused parameters */ (void)wParam;
 
     if( res_info == NULL ) {
         return;
@@ -749,7 +749,7 @@ bool WdeCreateResourceWindow( WdeResInfo *res_info, size_t fn_offset, char *titl
     char                *win_title;
     int                 win_title_len;
 
-    _wde_touch( fn_offset );
+    /* unused parameters */ (void)fn_offset;
 
     WdeIncNumRes();
 

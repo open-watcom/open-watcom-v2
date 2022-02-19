@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -163,8 +163,7 @@ bool WdeSetTestControlDefaults( HWND dialog )
 
 BOOL CALLBACK WdeSetControlEnumProc( HWND win, LPARAM ret )
 {
-    /* touch unused var to get rid of warning */
-    _wde_touch( ret );
+    /* unused parameters */ (void)ret;
 
     WdeSetDefaultTestControlEntries( win );
 
@@ -221,9 +220,7 @@ INT_PTR CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 {
     bool ret;
 
-    /* touch unused var to get rid of warning */
-    _wde_touch( wParam );
-    _wde_touch( lParam );
+    /* unused parameters */ (void)wParam; (void)lParam;
 
     ret = false;
 

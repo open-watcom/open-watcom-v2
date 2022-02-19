@@ -393,7 +393,8 @@ void WdeHandleShowToolsMenu( void )
 
 static void wdeCToolHelpHook( HWND hwnd, ctl_id id, bool pressed )
 {
-    _wde_touch( hwnd );
+    /* unused parameters */ (void)hwnd;
+
     WdeHandleToolHint( id, pressed );
 }
 

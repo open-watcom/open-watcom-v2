@@ -1118,7 +1118,7 @@ bool WdeWinStylesHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, Di
     bool         ret;
     bool         overlapped;
 
-    _wde_touch( lParam );
+    /* unused parameters */ (void)lParam;
 
     ret = false;
 
@@ -1259,9 +1259,7 @@ bool WdeProcessSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     WORD    hw;
     bool    processed;
 
-    _wde_touch( lParam );
-    _wde_touch( id );
-    _wde_touch( use_id );
+    /* unused parameters */ (void)lParam; (void)id; (void)use_id;
 
     processed = false;
 
@@ -1336,9 +1334,7 @@ bool WdeProcessHelpSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
     WORD    hw;
     bool    processed;
 
-    _wde_touch( lParam );
-    _wde_touch( id );
-    _wde_touch( use_id );
+    /* unused parameters */ (void)lParam; (void)id; (void)use_id;
 
     processed = false;
 
@@ -1412,7 +1408,7 @@ void WdeEXSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
     DialogStyle mask;
 
-    _wde_touch( o_info );
+    /* unused parameters */ (void)o_info;
 
     mask = 0;
 
@@ -1482,7 +1478,8 @@ void WdeEXGetDefineInfo ( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
     SETCTL_EXSTYLE( o_info->info.c.info, mask );
 #else
-    _wde_touch( o_info );
-    _wde_touch( hDlg );
+
+    /* unused parameters */ (void)o_info; (void)hDlg;
+
 #endif
 }

@@ -109,7 +109,7 @@ bool WdeDDEStart( HINSTANCE inst )
     WORD        ret;
     DWORD       flags;
 
-    _wde_touch( inst ); /* MakeProcInstance vanishes in NT */
+    /* unused parameters */ (void)inst; /* MakeProcInstance vanishes in NT */
 
     if( IdInst != 0 ) {
         return( false );
@@ -562,10 +562,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     HDDEDATA            ret;
     WdeResDlgItem       *ditem;
 
-    _wde_touch( wFmt );
-    _wde_touch( hData );
-    _wde_touch( lData1 );
-    _wde_touch( lData2 );
+    /* unused parameters */ (void)wFmt ); (void)hData ); (void)lData1 ); (void)lData2 );
 
     ret = NULL;
 

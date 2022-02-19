@@ -808,7 +808,7 @@ bool WdeDialogInit( bool first )
     WORD        font_pointsize;
 #endif
 
-    _wde_touch( first );
+    /* unused parameters */ (void)first;
 
     WdeAppInst = WdeGetAppInstance();
 
@@ -973,8 +973,7 @@ bool WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
     WRHashEntry         *entry;
     bool                dup;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( in->u.dlg.caption ) {
         if( GETHDR_CAPTION( obj->dialog_info ) ) {
@@ -1034,9 +1033,7 @@ bool WdeDialogTest( WdeDialogObject *obj, TEMPLATE_HANDLE *p1, size_t *p2 )
     ACTION_ID       act;
     size_t          templatelen;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p1 );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p1; (void)p2;
 
     templatelen = 0;
     SETHDR_NUMITEMS( obj->dialog_info, obj->num_children );
@@ -1145,9 +1142,7 @@ bool WdeDialogTest( WdeDialogObject *obj, TEMPLATE_HANDLE *p1, size_t *p2 )
 
 bool WdeDialogRestore( WdeDialogObject *obj, void *p1, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p1 );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p1; (void)p2;
 
     if( WdeIsDialogRestorable( obj ) ) {
         ShowWindow( obj->window_handle, SW_HIDE );
@@ -1179,8 +1174,7 @@ bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
     bool                ret;
     WResLangType        lang;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     ret = false;
 
@@ -1226,8 +1220,7 @@ bool WdeDialogGetResizeInc( WdeDialogObject *obj, POINT *p, void *p2 )
     WdeDialogSizeInfo   sizeinfo;
     RECT                r;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     p->x = 1;
     p->y = 1;
@@ -1269,8 +1262,7 @@ bool WdeDialogGetResizer( WdeDialogObject *obj, WdeResizeRatio *resizer, OBJPTR 
 
 bool WdeDialogGetFont( WdeDialogObject *obj, HFONT *font, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *font = obj->font;
 
@@ -1279,8 +1271,7 @@ bool WdeDialogGetFont( WdeDialogObject *obj, HFONT *font, void *p2 )
 
 bool WdeDialogIdentify( WdeDialogObject *obj, OBJ_ID *id, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *id = obj->object_id;
 
@@ -1294,9 +1285,7 @@ bool WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
     bool                 quick;
     bool                 destroy_children;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( pnt );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)pnt; (void)p2;
 
     if( obj->mode != WdeSelect ) {
         return( true );
@@ -1362,8 +1351,7 @@ bool WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
 
 bool WdeDialogIsMarkValid( WdeDialogObject *obj, bool *flag, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( obj->mode == WdeSelect ) {
         *flag = ( obj->window_handle != NULL && IsWindowVisible( obj->window_handle ) );
@@ -1383,8 +1371,7 @@ bool WdeDialogDestroy( WdeDialogObject *obj, bool *flag, bool *hide )
     bool        quick, b;
     bool        destroy_children;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( flag );
+    /* unused parameters */ (void)flag;
 
     parent = obj->parent;
 
@@ -1500,8 +1487,7 @@ bool WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
     OBJPTR          child;
     size_t          templatelen;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     templatelen = 0;
     //SETHDR_STYLE( obj->dialog_info, GETHDR_STYLE( obj->dialog_info ) & ~WS_VISIBLE );
@@ -1585,9 +1571,7 @@ bool WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
 
 bool WdeDialogOnTop( WdeDialogObject *obj, void *p1, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p1 );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p1; (void)p2;
 
     WdeBringWindowToTop( obj->window_handle );
 #ifdef __NT__
@@ -1605,8 +1589,7 @@ bool WdeDialogAddSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
     POINT       pnt;
     int         fudge;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     /* make sure the object is not another dialog object */
     Forward( obj, IDENTIFY, &id, NULL );
@@ -1680,8 +1663,7 @@ bool WdeCalcDialogNCSize( WdeDialogObject *obj, RECT *size )
 
 bool WdeDialogGetNCSize( WdeDialogObject *obj, RECT *size, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *size = obj->nc_size;
 
@@ -1714,8 +1696,7 @@ bool WdeDialogGetNextChild( WdeDialogObject *obj, OBJPTR *o, bool *up )
 
 bool WdeDialogRemoveSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( dialog->num_children != 0 && ListFindElt( dialog->children, obj ) ) {
         ListRemoveElt( &dialog->children, obj );
@@ -1735,8 +1716,7 @@ bool WdeDialogRemoveSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
 
 bool WdeDialogGetSubObjectList( WdeDialogObject *obj, LIST **l, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *l = obj->children;
 
@@ -1843,8 +1823,7 @@ bool WdeDialogDestroyWindow( WdeDialogObject *obj, bool *quick, bool *destroy_ch
 
 bool WdeDialogShowWindow( WdeDialogObject *obj, bool *flag, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( flag == NULL ) {
         return( false );
@@ -1857,9 +1836,7 @@ bool WdeDialogShowWindow( WdeDialogObject *obj, bool *flag, void *p2 )
 
 bool WdeDialogGetResizeInfo( WdeDialogObject *obj, RESIZE_ID *info, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( obj );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)obj; (void)p2;
 
     if( obj->mode == WdeSelect ) {
         *info = R_ALL;
@@ -1925,8 +1902,7 @@ bool WdeDialogValidateAction( WdeDialogObject *obj, ACTION_ID *act, void *p2 )
 
 bool WdeDialogGetWindowHandle( WdeDialogObject *obj, HWND *hwin, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *hwin = obj->window_handle;
 
@@ -1935,9 +1911,7 @@ bool WdeDialogGetWindowHandle( WdeDialogObject *obj, HWND *hwin, void *p2 )
 
 bool WdeDialogFirstChild( WdeDialogObject *obj, void *p1, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p1 );
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p1; (void)p2;
 
     if( obj->parent == NULL ) {
         return( true );
@@ -1953,8 +1927,7 @@ bool WdeDialogFirstChild( WdeDialogObject *obj, void *p1, void *p2 )
 
 bool WdeDialogPutChildFirst( WdeDialogObject *obj, OBJPTR child, void *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( obj->num_children != 0) {
         if( !WdePutObjFirst( child, &obj->children ) ) {
@@ -1995,8 +1968,7 @@ bool WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *noteid, void *p2 )
 {
     HWND        handle;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     switch( *noteid ) {
     case MOVE_START:
@@ -2283,7 +2255,7 @@ bool WdeDialogGetObjectInfo( WdeDialogObject *obj, void **_info, void **name )
 {
     WdeDialogBoxHeader **info = (WdeDialogBoxHeader **)_info;
 //    WResID **name = _name;
-    _wde_touch( name );
+    /* unused parameters */ (void)name;
 
     if( info != NULL ) {
         *info = obj->dialog_info;
@@ -2302,8 +2274,7 @@ bool WdeDialogSetObjectInfo( WdeDialogObject *obj, void *_info, void *name )
 //    WResID *name = _name;
     void *vp;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( name );
+    /* unused parameters */ (void)name;
 
     if( info == NULL ) {
         return( false );
@@ -2328,7 +2299,7 @@ bool WdeDialogSetObjectInfo( WdeDialogObject *obj, void *_info, void *name )
 bool WdeDialogGetObjectHelpInfo( WdeDialogObject *obj, void **info, char **helpsymbol )
 {
 //    WdeDialogBoxHeader **info = (WdeDialogBoxHeader **)_info;
-    _wde_touch( info );
+    /* unused parameters */ (void)info;
 
     if( helpsymbol != NULL ) {
         *helpsymbol = obj->helpsymbol;
@@ -2473,8 +2444,7 @@ bool WdeDialogCutObject( WdeDialogObject *obj, OBJPTR *new, void *p2 )
     bool      quick;
     bool      destroy_children;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     if( new == NULL ) {
         return( false );
@@ -2517,8 +2487,7 @@ bool WdeDialogCutObject( WdeDialogObject *obj, OBJPTR *new, void *p2 )
 
 bool WdeDialogGetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, WdeSetOrderLists *p2 )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     *mode = obj->mode;
 
@@ -2534,8 +2503,7 @@ bool WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, WdeSetOrde
     RECT                rect;
     POINT               origin;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    /* unused parameters */ (void)p2;
 
     sol = NULL;
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,8 +47,6 @@
 /* macro definitions                                                        */
 /****************************************************************************/
 #define WDE_VERSION  0x0100
-
-#define _wde_touch( unused_var )    (unused_var = unused_var)
 
 #define MAXFILENAME (_MAX_PATH * 2)
 #define MAX_NAME    MAXFILENAME

@@ -686,7 +686,7 @@ INT_PTR CALLBACK WdeInfoWndDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPAR
     RECT    r;
     HDC     dc;
 
-    _wde_touch( lParam );
+    /* unused parameters */ (void)lParam;
 
     switch( message ) {
 #if defined( __NT__ )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -402,11 +403,7 @@ bool WdeGetResizerFromFont( WdeResizeRatio *r, char *facename, int pointsize )
 
 INT_PTR CALLBACK WdeDummyDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    /* touch unused vars to get rid of warning */
-    _wde_touch( hDlg );
-    _wde_touch( message );
-    _wde_touch( wParam );
-    _wde_touch( lParam );
+    /* unused parameters */ (void)hDlg; (void)message; (void)wParam; (void)lParam;
 
     return( false );
 }

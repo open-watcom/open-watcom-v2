@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,9 @@ static bool     CorrectVersion = false;
 bool WdeCtl3DInit( HINSTANCE inst )
 {
 #if !defined( WDE_USE_3D )
-    _wde_touch( inst );
+
+    /* unused parameters */ (void)inst;
+
     return ( true );
 #else
     WORD        ver;
@@ -89,7 +91,9 @@ bool WdeCtl3DInit( HINSTANCE inst )
 void WdeCtl3DFini( HINSTANCE inst )
 {
 #if !defined( WDE_USE_3D )
-    _wde_touch( inst );
+
+    /* unused parameters */ (void)inst;
+
 #else
     WRCtl3dUnregister( inst );
 #endif
@@ -105,8 +109,9 @@ void WdeCtl3dColorChange( void )
 void WdeCtl3dSubclassDlg( HWND win, WORD w )
 {
 #if !defined( WDE_USE_3D )
-    _wde_touch( win );
-    _wde_touch( w );
+
+    /* unused parameters */ (void)win; (void)w;
+
 #else
     if( CorrectVersion ) {
         WRCtl3dSubclassDlgEx( win, w );
@@ -119,7 +124,9 @@ void WdeCtl3dSubclassDlg( HWND win, WORD w )
 void WdeCtl3dSubclassDlgAll( HWND win )
 {
 #if !defined( WDE_USE_3D )
-    _wde_touch( win );
+
+    /* unused parameters */ (void)win;
+
 #else
     if( CorrectVersion ) {
         WRCtl3dSubclassDlgExAll( win );
@@ -132,7 +139,9 @@ void WdeCtl3dSubclassDlgAll( HWND win )
 void WdeCtl3dSubclassCtl( HWND win )
 {
 #if !defined( WDE_USE_3D )
-    _wde_touch( win );
+
+    /* unused parameters */ (void)win;
+
 #else
     WRCtl3dSubclassCtl( win );
 #endif
@@ -141,10 +150,9 @@ void WdeCtl3dSubclassCtl( HWND win )
 LONG WdeCtl3dDlgFramePaint( HWND win, UINT msg, WPARAM wp, LPARAM lp )
 {
 #if !defined( WDE_USE_3D )
-    _wde_touch( win );
-    _wde_touch( msg );
-    _wde_touch( wp );
-    _wde_touch( lp );
+
+    /* unused parameters */ (void)win; (void)msg ); (void)wp ); (void)lp );
+
     return( 0 );
 #else
     return( WRCtl3dDlgFramePaint( win, msg, wp, lp ) );
@@ -154,9 +162,9 @@ LONG WdeCtl3dDlgFramePaint( HWND win, UINT msg, WPARAM wp, LPARAM lp )
 HBRUSH WdeCtl3dCtlColorEx( UINT msg, WPARAM wp, LPARAM lp )
 {
 #if !defined( WDE_USE_3D )
-    _wde_touch( msg );
-    _wde_touch( wp );
-    _wde_touch( lp );
+
+    /* unused parameters */ (void)msg ); (void)wp ); (void)lp );
+
     return( (HBRUSH)NULL );
 #else
     return( WRCtl3dCtlColorEx( msg, wp, lp ) );
