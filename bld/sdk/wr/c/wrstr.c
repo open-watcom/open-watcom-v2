@@ -100,11 +100,11 @@ static size_t WRCalcStringBlockSize( StringTableBlock *block, bool is32bit )
 static char *copyNULLWResIDNameToData( char *data, bool is32bit )
 {
     if( is32bit ) {
-        *(uint_16 *)data = (uint_16)0;
-        data += sizeof( uint_16 );
+        VALU16( data ) = 0;
+        INCU16( data );
     } else {
-        *(uint_8 *)data = (uint_8)0;
-        data += sizeof( uint_8 );
+        VALU8( data ) = 0;
+        INCU8( data );
     }
 
     return( data );
@@ -134,8 +134,8 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
         }
 
         // write the length of the string
-        *(uint_16 *)data = (uint_16)(len / 2 - 1);
-        data += sizeof( uint_16 );
+        VALU16( data ) = (uint_16)(len / 2 - 1);
+        INCU16( data );
 
         // write the string
         data = WRCopyString( data, new_str, len - 2 );
@@ -143,8 +143,8 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
         MemFree( new_str );
     } else {
         // write the length of the string
-        *(uint_8 *)data = name->NumChars;
-        data += sizeof( uint_8 );
+        VALU8( data ) = name->NumChars;
+        INCU8( data );
 
         // write the string
         data = WRCopyString( data, &name->Name[0], name->NumChars );
@@ -230,14 +230,13 @@ bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, char *data, size_
     while( i < STRTABLE_STRS_PER_BLOCK && dsize > 0 ) {
         text = (char *)data;
         if( is32bit ) {
-            tlen = *(uint_16 *)text;
-            tlen *= 2;
-            text += sizeof( uint_16 );
-            dsize -= tlen + sizeof( uint_16 );
+            tlen = 2 * VALU16( text );
+            INCU16( text );
+            dsize -= tlen + SIZEU16;
         } else {
-            tlen = *(uint_8 *)text;
-            text += sizeof( uint_8 );
-            dsize -= tlen + sizeof( uint_8 );
+            tlen = VALU8( text );
+            INCU8( text );
+            dsize -= tlen + SIZEU8;
         }
         if( tlen != 0 ) {
             if( is32bit ) {

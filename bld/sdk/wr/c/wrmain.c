@@ -966,8 +966,7 @@ bool WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         }
         data = WRLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
         size = lnode->Info.Length;
-        if( !WRMergeStringData( &data, &size, idata->data, idata->size,
-                                WRIs32Bit( info->save_type ), true ) ) {
+        if( !WRMergeStringData( &data, &size, idata->data, idata->size, WRIs32Bit( info->save_type ), true ) ) {
             if( data != NULL ) {
                 MemFree( data );
             }

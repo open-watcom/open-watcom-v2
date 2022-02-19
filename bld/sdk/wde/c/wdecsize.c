@@ -43,20 +43,20 @@ static size_t WdeCalcSizeOfControlClass( ControlClass *name, bool is32bit )
 
     if( name == NULL ) {
         if( is32bit ) {
-            size = sizeof( uint_16 );
+            size = SIZEU16;
         } else {
-            size = sizeof( uint_8 );
+            size = SIZEU8;
         }
     } else {
         if( is32bit ) {
             if( name->Class & 0x80 ) {
-                size = sizeof( uint_16 ) * 2;
+                size = SIZEU16 + SIZEU16;
             } else {
                 size = WRCalcStrlen( name->ClassName, is32bit );
             }
         } else {
             if( name->Class & 0x80 ) {
-                size = 1;
+                size = SIZEU8;
             } else {
                 size = WRCalcStrlen( name->ClassName, is32bit );
             }
@@ -72,16 +72,13 @@ static size_t WdeCalcSizeOfDialogBoxControl( ControlClass *ClassID, ResNameOrOrd
 
     if( is32bitEx ) {
         // fix part of DialogBoxExControl32 (up to ClassID)
-        size = 4 * sizeof( uint_16 ) + 4 * sizeof( uint_32 );
-        size += sizeof( uint_16 );  /* Extra bytes */
+        size = 4 * SIZEU16 + 4 * SIZEU32 + /* Extra bytes */ SIZEU16; 
     } else if( is32bit ) {
         // fix part of DialogBoxControl32 (up to ClassID)
-        size = 5 * sizeof( uint_16 ) + 2 * sizeof( uint_32 );
-        size += sizeof( uint_16 );  /* Extra bytes */
+        size = 5 * SIZEU16 + 2 * SIZEU32 + /* Extra bytes */ SIZEU16;
     } else {
         // fix part of DialogBoxControl (up to ClassID)
-        size = 5 * sizeof( uint_16 ) + 1 * sizeof( uint_32 );
-        size += sizeof( uint_8 );   /* Extra bytes */
+        size = 5 * SIZEU16 + 1 * SIZEU32 + /* Extra bytes */ SIZEU8;
     }
 
     size += WdeCalcSizeOfControlClass( ClassID, is32bit );
@@ -97,13 +94,13 @@ static size_t WdeCalcSizeOfDialogBoxHeader( ResNameOrOrdinal *MenuName, ResNameO
 
     if( is32bitEx ) {
         // fix part of DialogBoxExHeader32 (up to MenuName)
-        size = 7 * sizeof( uint_16 ) + 3 * sizeof( uint_32 );
+        size = 7 * SIZEU16 + 3 * SIZEU32;
     } else if( is32bit ) {
         // fix part of DialogBoxHeader32 (up to MenuName)
-        size = 5 * sizeof( uint_16 ) + 2 * sizeof( uint_32 );
+        size = 5 * SIZEU16 + 2 * SIZEU32;
     } else {
         // fix part of DialogBoxHeader (up to MenuName)
-        size = 1 * sizeof( uint_8 ) + 4 * sizeof( uint_16 ) + 1 * sizeof( uint_32 );
+        size = 1 * SIZEU8 + 4 * SIZEU16 + 1 * SIZEU32;
     }
 
     size += WdeCalcSizeOfResNameOrOrdinal( MenuName, is32bit );
@@ -111,11 +108,11 @@ static size_t WdeCalcSizeOfDialogBoxHeader( ResNameOrOrdinal *MenuName, ResNameO
     size += WRCalcStrlen( Caption, is32bit );
 
     if( FontName != NULL ) {
-        size += sizeof( WORD );     /* PointSize */
+        /* PointSize */
+        size += SIZEU16;
         if( is32bitEx ) {
-            size += sizeof( WORD ); /* FontWeight */
-            size += sizeof( BYTE ); /* FontItalic */
-            size += sizeof( BYTE ); /* FontCharset */
+            /* FontWeight + FontItalic + FontCharset */
+            size += SIZEU16 + SIZEU8 + SIZEU8;
         }
         size += WRCalcStrlen( FontName, is32bit );
     }
@@ -147,12 +144,12 @@ size_t WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
             return( 0 );
         }
         if( is32bit ) {
-            size = size + CALC_PAD( size, sizeof( uint_32 ) );
+            size = size + CALC_PAD( size, SIZEU32 );
         }
         size = size + csize;
     }
     if( is32bit ) {
-        size = size + CALC_PAD( size, sizeof( uint_32 ) );
+        size = size + CALC_PAD( size, SIZEU32 );
     }
 
     return( size );
@@ -164,20 +161,20 @@ size_t WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *name, bool is32bit )
 
     if( name == NULL ) {
         if( is32bit ) {
-            size = sizeof( uint_16 );
+            size = SIZEU16;
         } else {
-            size = sizeof( uint_8 );
+            size = SIZEU8;
         }
     } else {
         if( is32bit ) {
             if( name->ord.fFlag == 0xff ) {
-                size = sizeof( uint_16 ) + sizeof( uint_16 );
+                size = SIZEU16 + SIZEU16;
             } else {
                 size = WRCalcStrlen( name->name, is32bit );
             }
         } else {
             if( name->ord.fFlag == 0xff ) {
-                size = sizeof( uint_16 ) + sizeof( uint_8 );
+                size = SIZEU8 + SIZEU16;
             } else {
                 size = WRCalcStrlen( name->name, is32bit );
             }
