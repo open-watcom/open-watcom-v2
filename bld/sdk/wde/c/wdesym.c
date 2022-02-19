@@ -164,7 +164,7 @@ static void Add_PP_Symbols( WRHashTable *table )
     addsym_data         data;
 
     if( table == NULL ) {
-        WdeWriteTrail( "WdeAddSymbols: unexpected NULL hash table.");
+        WdeWriteTrail( "WdeLoadSymbols: unexpected NULL hash table.");
         return;
     }
     data.dup = true;
