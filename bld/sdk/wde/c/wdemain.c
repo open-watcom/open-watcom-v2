@@ -87,7 +87,7 @@
 #define ABOUT_TIMER     666
 #define ABOUT_TIMEOUT   2000
 #define DDE_OPT         "-DDE"
-#define CREATE_NEW_FLAG "/n"
+#define CREATE_NEW_FLAG "n"
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -1291,7 +1291,7 @@ bool WdeProcessArgs( char **argv, int argc )
     ok = true;
 
     for( i = 1; i < argc; i++ ) {
-        if( stricmp( argv[i], CREATE_NEW_FLAG ) == 0 ) {
+        if( ( argv[i][0] == '/' || argv[i][0] == '-' ) && stricmp( argv[i] + 1, CREATE_NEW_FLAG ) == 0 ) {
             WdeCreateNewFiles = TRUE;
         } else if( stricmp( argv[i], DDE_OPT ) ) {
             if( WRFileExists( argv[i] ) ) {

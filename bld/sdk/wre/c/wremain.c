@@ -83,8 +83,8 @@
 /****************************************************************************/
 #define ABOUT_TIMER     666
 #define ABOUT_TIMEOUT   2000
-#define CREATE_NEW_FLAG "/n"
-#define NO_IFACE_FLAG   "/nointerface"
+#define CREATE_NEW_FLAG "n"
+#define NO_IFACE_FLAG   "nointerface"
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -138,9 +138,9 @@ static void peekArgs( char **argv, int argc )
     int  i;
 
     for( i = 1; i < argc; i++ ) {
-        if( stricmp( argv[i], CREATE_NEW_FLAG ) == 0 ) {
+        if( ( argv[i][0] == '/' || argv[i][0] == '-' ) && stricmp( argv[i] + 1, CREATE_NEW_FLAG ) == 0 ) {
             //WRECreateNewFiles = TRUE;
-        } else if( stricmp( argv[i], NO_IFACE_FLAG ) == 0 ) {
+        } else if( ( argv[i][0] == '/' || argv[i][0] == '-' ) && stricmp( argv[i] + 1, NO_IFACE_FLAG ) == 0 ) {
             WRENoInterface = true;
         }
     }
@@ -1003,9 +1003,9 @@ bool WREProcessArgs( char **argv, int argc )
     ok = true;
 
     for( i = 1; i < argc; i++ ) {
-        if( stricmp( argv[i], CREATE_NEW_FLAG ) == 0 ) {
+        if( ( argv[i][0] == '/' || argv[i][0] == '-' ) && stricmp( argv[i] + 1, CREATE_NEW_FLAG ) == 0 ) {
             WRECreateNewFiles = TRUE;
-        } else if( stricmp( argv[i], NO_IFACE_FLAG ) == 0 ) {
+        } else if( ( argv[i][0] == '/' || argv[i][0] == '-' ) && stricmp( argv[i] + 1, NO_IFACE_FLAG ) == 0 ) {
             WRENoInterface = true;
         } else {
             if( WRFileExists( argv[i] ) ) {

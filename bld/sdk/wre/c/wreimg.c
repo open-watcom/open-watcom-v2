@@ -58,6 +58,8 @@
 /****************************************************************************/
 #define MAX_RETRIES 99
 
+#define DDE_OPT     "-DDE"
+
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
@@ -595,7 +597,7 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
 
     PendingSession = session;
 
-    if( WinExec( "wimgedit.exe -dde", SW_SHOW ) < 32 ) {
+    if( WinExec( "wimgedit.exe " DDE_OPT, SW_SHOW ) < 32 ) {
         WREDisplayErrorMsg( WRE_IMGEDITNOTSPAWNED );
         WREFreeEditSession( session );
         PendingSession = NULL;
