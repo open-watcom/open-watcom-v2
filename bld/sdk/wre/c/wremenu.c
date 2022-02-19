@@ -227,7 +227,7 @@ bool WREEditMenuResource( WRECurrentResInfo *curr )
     WREMenuSession      *session;
 
     rdata = NULL;
-    rdata_alloc = FALSE;
+    rdata_alloc = false;
 
     ok = (curr != NULL && curr->lang != NULL);
 
@@ -235,7 +235,7 @@ bool WREEditMenuResource( WRECurrentResInfo *curr )
         session = WREFindLangMenuSession( curr->lang );
         if( session != NULL ) {
             WMenuBringToFront( session->hndl );
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -245,7 +245,7 @@ bool WREEditMenuResource( WRECurrentResInfo *curr )
         } else if( curr->lang->Info.Length != 0 ) {
             ok = ((rdata = WREGetCurrentResData( curr )) != NULL);
             if( ok ) {
-                rdata_alloc = TRUE;
+                rdata_alloc = true;
             }
         }
     }
@@ -270,12 +270,12 @@ bool WREEndEditMenuResource( WMenuHandle hndl )
     WREMenuSession      *session;
     bool                ret;
 
-    ret = FALSE;
+    ret = false;
 
     session = WREFindMenuSession( hndl );
 
     if( session != NULL ) {
-        ret = TRUE;
+        ret = true;
         DumpEmptyResource( session );
         WRERemoveMenuEditSession( session );
     }
@@ -289,10 +289,10 @@ bool WRESaveEditMenuResource( WMenuHandle hndl )
 
     session = WREFindMenuSession( hndl );
     if( session == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( WREGetMenuSessionData( session, FALSE ) );
+    return( WREGetMenuSessionData( session, false ) );
 }
 
 WREMenuSession *WREStartMenuSession( WRECurrentResInfo *curr )

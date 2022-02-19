@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,23 +114,23 @@ bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WRes
     WResResNode *rn, *r;
 
     if( type_node == NULL || res_node == NULL || *res_node == NULL || name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     // check if the names are already the same
     if( WResIDCmp( &(*res_node)->Info.ResName, name ) ) {
-        return( TRUE );
+        return( true );
     }
 
     if( (rn = WREAllocResNodeFromWResID( name )) == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     r = WREFindResNodeFromWResID( type_node, &rn->Info.ResName );
     if( r != NULL && r != *res_node ) {
         WREDisplayErrorMsg( WRE_DUPRESNAME );
         WRMemFree( rn );
-        return( FALSE );
+        return( false );
     }
 
     if( type_node->Head == *res_node ) {
@@ -158,7 +158,7 @@ bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WRes
 
     *res_node = rn;
 
-    return( TRUE );
+    return( true );
 }
 
 WResResNode *WREAllocResNodeFromWResID( WResID *id )

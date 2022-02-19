@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -228,7 +228,7 @@ bool WREEditAccelResource( WRECurrentResInfo *curr )
     WREAccelSession     *session;
 
     rdata = NULL;
-    rdata_alloc = FALSE;
+    rdata_alloc = false;
 
     ok = (curr != NULL && curr->lang != NULL);
 
@@ -236,7 +236,7 @@ bool WREEditAccelResource( WRECurrentResInfo *curr )
         session = WREFindLangAccelSession( curr->lang );
         if( session != NULL ) {
             WAccelBringToFront( session->hndl );
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -246,7 +246,7 @@ bool WREEditAccelResource( WRECurrentResInfo *curr )
         } else if( curr->lang->Info.Length != 0) {
             ok = ((rdata = WREGetCurrentResData( curr )) != NULL);
             if( ok ) {
-                rdata_alloc = TRUE;
+                rdata_alloc = true;
             }
         }
     }
@@ -271,12 +271,12 @@ bool WREEndEditAccelResource( WAccelHandle hndl )
     WREAccelSession     *session;
     bool                ret;
 
-    ret = FALSE;
+    ret = false;
 
     session = WREFindAccelSession( hndl );
 
     if( session != NULL ) {
-        ret = TRUE;
+        ret = true;
         DumpEmptyResource( session );
         WRERemoveAccelEditSession( session );
     }
@@ -290,10 +290,10 @@ bool WRESaveEditAccelResource( WAccelHandle hndl )
 
     session = WREFindAccelSession( hndl );
     if( session == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( WREGetAccelSessionData( session, FALSE ) );
+    return( WREGetAccelSessionData( session, false ) );
 }
 
 WREAccelSession *WREStartAccelSession( WRECurrentResInfo *curr )

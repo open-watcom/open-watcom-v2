@@ -118,25 +118,25 @@ bool WREHData2Mem( HDDEDATA hData, char **data, size_t *size )
     DWORD   dde_size;
 
     if( data == NULL || size == NULL || hData == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *size = dde_size = DdeGetData( hData, NULL, 0, 0 );
     if( dde_size == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     *data = WRMemAlloc( dde_size );
     if( *data == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( dde_size != DdeGetData( hData, (LPBYTE)*data, dde_size, 0 ) ) {
         WRMemFree( *data );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WREDDEStart( HINSTANCE inst )
@@ -145,15 +145,15 @@ bool WREDDEStart( HINSTANCE inst )
     DWORD       flags;
     int         i;
 
-    _wre_touch( inst ); /* MakeProcInstance vanishes in NT */
+    /* unused parameters */ (void)inst; /* MakeProcInstance vanishes in NT */
 
     if( IdInst != 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     DdeProcInst = MakeProcInstance_DDE( DdeCallBack, inst );
     if( DdeProcInst == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     flags = APPCLASS_STANDARD | APPCMD_FILTERINITS |
@@ -162,65 +162,65 @@ bool WREDDEStart( HINSTANCE inst )
 
     ret = DdeInitialize( &IdInst, DdeProcInst, flags, 0 );
     if( ret != DMLERR_NO_ERROR ) {
-        return( FALSE );
+        return( false );
     }
 
     for( i = 0; i < NUM_SERVERS; i++ ) {
         EditServers[i].htopic = DdeCreateStringHandle( IdInst, EditServers[i].topic, CP_WINANSI );
         if( EditServers[i].htopic == (HSZ)NULL ) {
-            return( FALSE );
+            return( false );
         }
         EditServers[i].hservice = DdeCreateStringHandle( IdInst, EditServers[i].service, CP_WINANSI );
         if( EditServers[i].hservice == (HSZ)NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     for( i = 0; i < NUM_TOPICS; i++ ) {
         Topics[i].htopic = DdeCreateStringHandle( IdInst, Topics[i].topic, CP_WINANSI );
         if( Topics[i].htopic == (HSZ)NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     hDialogDump = DdeCreateStringHandle( IdInst, WRE_DIALOG_DUMP, CP_WINANSI );
     if( hDialogDump == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hImageDump = DdeCreateStringHandle( IdInst, WRE_IMAGE_DUMP, CP_WINANSI );
     if( hImageDump == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hServiceName = DdeCreateStringHandle( IdInst, WRE_SERVICE_NAME, CP_WINANSI );
     if( hServiceName == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hFileItem = DdeCreateStringHandle( IdInst, WRE_FILE_ITEM, CP_WINANSI );
     if( hFileItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hIs32BitItem = DdeCreateStringHandle( IdInst, WRE_32BIT_ITEM, CP_WINANSI );
     if( hIs32BitItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hDataItem = DdeCreateStringHandle( IdInst, WRE_DATA_ITEM, CP_WINANSI );
     if( hDataItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hNameItem = DdeCreateStringHandle( IdInst, WRE_NAME_ITEM, CP_WINANSI );
     if( hNameItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     DdeNameService( IdInst, hServiceName, (HSZ)NULL, DNS_REGISTER );
 
-    return( TRUE );
+    return( true );
 }
 
 void WREDDEEnd( void )
@@ -279,7 +279,7 @@ bool WREPokeData( HCONV conv, char *data, DWORD size, bool retry )
     UINT        tries;
 
     if( conv == (HCONV)NULL || data == NULL || size == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     if( retry ) {
@@ -316,9 +316,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     size_t      size;
     bool        ok;
 
-    _wre_touch( hdata );
-    _wre_touch( lData1 );
-    _wre_touch( lData2 );
+    /* unused parameters */ (void)hdata; (void)lData1; (void)lData2;
 
     ret = NULL;
 

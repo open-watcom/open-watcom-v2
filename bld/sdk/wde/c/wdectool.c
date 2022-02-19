@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -557,7 +557,7 @@ bool WdeInitControls( HINSTANCE inst )
     WdeControlsInfo->dinfo.helphook = wdeCToolHelpHook;
     WdeControlsInfo->dinfo.foreground = NULL;
     WdeControlsInfo->dinfo.background = LoadBitmap( inst, "WdeToolBk" );
-    WdeControlsInfo->dinfo.is_fixed = FALSE;
+    WdeControlsInfo->dinfo.is_fixed = false;
 
     return( true );
 }

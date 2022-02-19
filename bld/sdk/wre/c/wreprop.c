@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +72,7 @@ static bool WREGetPropName( HWND hDlg, WREProperyInfo *info )
     WRHashEntry *entry;
 
     if( info == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     combo = GetDlgItem( hDlg, IDM_PROP_NAME );
@@ -79,7 +80,7 @@ static bool WREGetPropName( HWND hDlg, WREProperyInfo *info )
     name = WREGetStrFromCombo( combo );
 
     if( name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     WRStripSymbol( name );
@@ -96,7 +97,7 @@ static bool WREGetPropName( HWND hDlg, WREProperyInfo *info )
         WRMemFree( name );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 static void WRESetPropName( HWND hDlg, WREProperyInfo *info )

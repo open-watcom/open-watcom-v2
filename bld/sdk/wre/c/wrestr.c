@@ -205,7 +205,7 @@ bool WREEditStringResource( WRECurrentResInfo *curr )
         session = WREFindResStringSession( curr->info );
         if( session != NULL ) {
             WStringBringToFront( session->hndl );
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -232,13 +232,13 @@ bool WREEndEditStringResource( WStringHandle hndl )
     session = WREFindStringSession( hndl );
 
     if( session != NULL ) {
-        ret = TRUE;
+        ret = true;
         if( session->tnode == NULL || session->tnode->Head->Head->Info.Length == 0 ) {
             curr.info = session->rinfo;
             curr.type = session->tnode;
             curr.res = NULL;
             curr.lang = NULL;
-            ret = WREDeleteStringResources( &curr, TRUE );
+            ret = WREDeleteStringResources( &curr, true );
             WRESetStatusByID( 0, WRE_EMPTYREMOVED );
         }
         WRERemoveStringEditSession( session );

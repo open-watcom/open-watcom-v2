@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -324,8 +324,8 @@ bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
     WdeRibbonInfo->dinfo.helphook = wdeRibbonHelpHook;
     WdeRibbonInfo->dinfo.foreground = NULL;
     WdeRibbonInfo->dinfo.background = NULL;
-    WdeRibbonInfo->dinfo.is_fixed = TRUE;
-    WdeRibbonInfo->dinfo.use_tips = TRUE;
+    WdeRibbonInfo->dinfo.is_fixed = true;
+    WdeRibbonInfo->dinfo.use_tips = true;
 
     return( true );
 }

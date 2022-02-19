@@ -216,7 +216,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt_n
     ok = (table != NULL);
 
     if( ok ) {
-        WRESetStatusText( NULL, "", FALSE );
+        WRESetStatusText( NULL, "", false );
         WRESetStatusByID( WRE_LOADINGSYMBOLS, 0 );
     }
 
@@ -225,7 +225,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt_n
             gf.file_name = file_name;
             gf.title = WRESymLoadTitle;
             gf.filter = WRESymSaveFilter;
-            gf.save_ext = FALSE;
+            gf.save_ext = false;
             name = WREGetOpenFileName( &gf );
         } else {
             name = WREStrDup( file_name );
@@ -233,7 +233,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt_n
         ok = (name != NULL);
     }
 
-    WRESetWaitCursor( TRUE );
+    WRESetWaitCursor( true );
 
     if( ok ) {
         ppflags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME;
@@ -263,7 +263,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt_n
             if( pp_count == MAX_PP_CHARS ) {
                 busy_count++;
                 busy_str[0] = WREBusyChars[busy_count % 4];
-                WRESetStatusText( NULL, busy_str, TRUE );
+                WRESetStatusText( NULL, busy_str, true );
                 pp_count = 0;
             }
         } while( c != EOF );
@@ -273,7 +273,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt_n
         Add_PP_Symbols( *table );
         WRMakeHashTableClean( *table );
         PP_FileFini();
-        WRESetStatusText( NULL, " ", TRUE );
+        WRESetStatusText( NULL, " ", true );
     }
 
     if( !ok ) {
@@ -285,7 +285,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt_n
 
     PP_Fini();
 
-    WRESetWaitCursor( FALSE );
+    WRESetWaitCursor( false );
 
     WRESetStatusReadyText();
 
@@ -307,14 +307,14 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt_name )
     }
 
     ok = true;
-    WRESetStatusText( NULL, "", FALSE );
+    WRESetStatusText( NULL, "", false );
     WRESetStatusByID( WRE_SAVEINGSYMBOLS, 0 );
 
     if( prompt_name || *file_name == NULL ) {
         gf.file_name = *file_name;
         gf.title = WRESymSaveTitle;
         gf.filter = WRESymSaveFilter;
-        gf.save_ext = FALSE;
+        gf.save_ext = false;
         name = WREGetSaveFileName( &gf );
         ok = (name != NULL);
         if( ok ) {
@@ -386,7 +386,7 @@ bool WRELoadResourceSymbols( WREResInfo *info )
     }
     info->symbol_file = symbol_file;
 
-    WRESetResModified( info, TRUE );
+    WRESetResModified( info, true );
 
     // ***** call routine to update the edit sessions *****
 

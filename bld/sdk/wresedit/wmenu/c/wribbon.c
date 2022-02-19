@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -345,8 +345,8 @@ bool WInitRibbons( HINSTANCE inst )
     WRibbonInfo->dinfo.helphook = wRibbonHelpHook;
     WRibbonInfo->dinfo.foreground = NULL;
     WRibbonInfo->dinfo.background = NULL;
-    WRibbonInfo->dinfo.is_fixed = TRUE;
-    WRibbonInfo->dinfo.use_tips = TRUE;
+    WRibbonInfo->dinfo.is_fixed = true;
+    WRibbonInfo->dinfo.use_tips = true;
 
     WSORibbonInfo->dinfo.button_size.x = BUTTONX + BUTTON_PAD;
     WSORibbonInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
@@ -357,8 +357,8 @@ bool WInitRibbons( HINSTANCE inst )
     WSORibbonInfo->dinfo.helphook = wRibbonHelpHook;
     WSORibbonInfo->dinfo.foreground = NULL;
     WSORibbonInfo->dinfo.background = NULL;
-    WSORibbonInfo->dinfo.is_fixed = TRUE;
-    WSORibbonInfo->dinfo.use_tips = TRUE;
+    WSORibbonInfo->dinfo.is_fixed = true;
+    WSORibbonInfo->dinfo.use_tips = true;
 
     WRibbonHeight = 2 * WRibbonInfo->dinfo.border_size.y +
                     WRibbonInfo->dinfo.button_size.y +

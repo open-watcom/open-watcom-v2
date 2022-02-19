@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +66,7 @@ bool WREListConcat( LIST **dest, LIST *src, uint_32 size )
     void    *elt;
 
     if( dest == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     WREListLastElt( *dest, &end );
@@ -76,7 +77,7 @@ bool WREListConcat( LIST **dest, LIST *src, uint_32 size )
         } else {
             elt = WRMemAlloc( size );
             if( elt == NULL ) {
-                return( FALSE );
+                return( false );
             }
             memcpy( elt, ListElement( olist ), size );
         }
@@ -89,7 +90,7 @@ bool WREListConcat( LIST **dest, LIST *src, uint_32 size )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 LIST *WREListCopy( LIST *src )

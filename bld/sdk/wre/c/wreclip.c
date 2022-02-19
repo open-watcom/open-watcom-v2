@@ -254,7 +254,7 @@ static bool WREHandleClipDataNames( WREResInfo *info, WResID *type,
                 curr.type = WREFindTypeNodeFromWResID( info->info->dir, type );
                 curr.res = WREFindResNodeFromWResID( curr.type, *name );
                 curr.lang = WREFindLangNodeFromLangType( curr.res, &lang );
-                ok = WREDeleteResource( &curr, TRUE );
+                ok = WREDeleteResource( &curr, true );
                 if( !ok ) {
                     break;
                 }
@@ -296,7 +296,7 @@ static bool WREGetAndPasteResource( WREClipFormat *fmt )
     cdata = NULL;
     cname = NULL;
     ctype = NULL;
-    new_type = TRUE;
+    new_type = true;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
 
@@ -358,7 +358,7 @@ static bool WREGetAndPasteResource( WREClipFormat *fmt )
 
     if( ok ) {
         curr.lang->data = data;
-        WRESetResModified( curr.info, TRUE );
+        WRESetResModified( curr.info, true );
     }
 
     if( cdata != NULL ) {
@@ -399,7 +399,7 @@ static bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     cdata = NULL;
     cname = NULL;
     ctype = NULL;
-    new_type = TRUE;
+    new_type = true;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
 
@@ -465,7 +465,7 @@ static bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     }
 
     if( ok ) {
-        WRESetResModified( curr.info, TRUE );
+        WRESetResModified( curr.info, true );
     }
 
     if( data != NULL ) {
@@ -506,7 +506,7 @@ static bool WREGetAndPasteBitmap( WREClipFormat *fmt, char *data, uint_32 dsize 
 
     cname = NULL;
     ctype = NULL;
-    new_type = TRUE;
+    new_type = true;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
 
@@ -550,7 +550,7 @@ static bool WREGetAndPasteBitmap( WREClipFormat *fmt, char *data, uint_32 dsize 
 
     if( ok ) {
         curr.lang->data = data;
-        WRESetResModified( curr.info, TRUE );
+        WRESetResModified( curr.info, true );
     }
 
     if( cname != NULL ) {
@@ -910,7 +910,7 @@ bool WREClipCurrentResource( HWND main, bool cut )
 
     if( ok ) {
         if( cut ) {
-            ok = WREDeleteCurrResource( TRUE );
+            ok = WREDeleteCurrResource( true );
         }
     }
 
@@ -923,11 +923,11 @@ bool WREPasteResource( HWND main )
     bool                clipbd_open;
     bool                ok;
 
-    clipbd_open = FALSE;
+    clipbd_open = false;
     ok = OpenClipboard( main ) != 0;
 
     if( ok ) {
-        clipbd_open = TRUE;
+        clipbd_open = true;
         fmt = WREGetClipFormat();
         ok = (fmt != NULL);
     }
@@ -962,13 +962,13 @@ bool WREQueryPasteReplace( WResID *name, uint_16 type_id, bool *replace )
     INT_PTR             ret;
 
     if( name == NULL || type_id == 0 || replace == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     pdata.ret = 0;
     pdata.type_id = type_id;
     pdata.name = name;
-    *replace = FALSE;
+    *replace = false;
     dialog_owner  = WREGetMainWindowHandle();
     inst = WREGetAppInstance();
     dlgproc = MakeProcInstance_DLG( WREResPasteDlgProc, inst );
@@ -978,14 +978,14 @@ bool WREQueryPasteReplace( WResID *name, uint_16 type_id, bool *replace )
     FreeProcInstance_DLG( dlgproc );
 
     if( ret == -1 || ret == IDCANCEL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( ret == IDM_PASTE_REPLACE ) {
-        *replace = TRUE;
+        *replace = true;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 static void WRESetPasteInfo( HWND hDlg, WREPasteData *pdata )

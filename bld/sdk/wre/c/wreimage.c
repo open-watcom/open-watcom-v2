@@ -81,20 +81,20 @@ uint_16 WREFindUnusedImageId( WREResInfo *info, uint_16 start )
     bool                found;
     bool                rollover;
 
-    found = FALSE;
-    rollover = FALSE;
+    found = false;
+    rollover = false;
     image.info = info;
     if( start == 0 ) {
         start = 1;
     }
     if( start == 1 ) {
-        rollover = TRUE;
+        rollover = true;
     }
 
     for( ;; ) {
         if( start > 0x7fff ) {
             if( !rollover ) {
-                rollover = TRUE;
+                rollover = true;
                 start = 1;
             } else {
                 break;
@@ -102,7 +102,7 @@ uint_16 WREFindUnusedImageId( WREResInfo *info, uint_16 start )
         }
         if( !WREFindImageId( &image, RESOURCE2INT( RT_ICON ), start, NULL ) ) {
             if( !WREFindImageId( &image, RESOURCE2INT( RT_CURSOR ), start, NULL ) ) {
-                found = TRUE;
+                found = true;
                 break;
             }
         }
@@ -191,18 +191,18 @@ bool WREDeleteGroupImages( WRECurrentResInfo *group, uint_16 type )
 static bool WREAppendDataToData( char **d1, size_t *d1size, char *d2, size_t d2size )
 {
     if( d1 == NULL || d1size == NULL || d2 == NULL || d2size == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     *d1 = WRMemRealloc( *d1, *d1size + d2size );
     if( *d1 == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     memcpy( *d1 + *d1size, d2, d2size );
     *d1size += d2size;
 
-    return( TRUE );
+    return( true );
 }
 
 static bool WREAddCursorImageToData( WRECurrentResInfo *image, char **data, size_t *size, CURSORHOTSPOT *hotspot )
@@ -658,11 +658,11 @@ bool WREStripIconDirectory( char **icon, size_t *size )
             ihsize += sizeof( ICONDIRENTRY ) * (ih->idCount - 1);
             memmove( *icon, *icon + ihsize, *size - ihsize );
             *size -= ihsize;
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool WREAddCursorHotspot( char **cursor, size_t *size, CURSORHOTSPOT *hs )
@@ -672,18 +672,18 @@ bool WREAddCursorHotspot( char **cursor, size_t *size, CURSORHOTSPOT *hs )
     hs_size = sizeof( CURSORHOTSPOT );
 
     if( cursor == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *cursor = WRMemRealloc( *cursor, *size + hs_size );
     if( *cursor == NULL ) {
-        return( FALSE );
+        return( false );
     }
     memmove( *cursor + hs_size, *cursor, *size );
     memcpy( *cursor, hs, hs_size );
     *size += hs_size;
 
-    return( TRUE );
+    return( true );
 }
 
 #if 0
@@ -695,10 +695,10 @@ bool WREStripCursorHotspot( char **cursor, uint_32 *size )
     if( cursor == NULL && size == NULL && *size > hs_size ) {
         memmove( *cursor, *cursor + hs_size, *size - hs_size );
         *size -= hs_size;
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool WREStripCursorDirectory( char **cursor, uint_32 *size )
@@ -707,7 +707,7 @@ bool WREStripCursorDirectory( char **cursor, uint_32 *size )
     uint_32             cd_size;
 
     if( cursor != NULL && *cursor != NULL && size != NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     ch = (CURSORHEADER *)*cursor;
@@ -716,7 +716,7 @@ bool WREStripCursorDirectory( char **cursor, uint_32 *size )
     memmove( *cursor, *cursor + cd_size, *size - cd_size );
     *size -= cd_size;
 
-    return( TRUE );
+    return( true );
 }
 #endif
 

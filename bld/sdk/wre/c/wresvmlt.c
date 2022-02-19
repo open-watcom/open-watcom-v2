@@ -69,7 +69,7 @@ bool SaveMultObjects( bool save_into )
     WRSaveIntoData      *idata;
     bool                ok;
 
-    WRESetWaitCursor( TRUE );
+    WRESetWaitCursor( true );
 
     curr.info = NULL;
     curr.type = NULL;
@@ -99,7 +99,7 @@ bool SaveMultObjects( bool save_into )
         WREFreeSaveIntoData( idata );
     }
 
-    WRESetWaitCursor( FALSE );
+    WRESetWaitCursor( false );
 
     return( ok );
 }
@@ -119,7 +119,7 @@ bool SaveObjectsAs( WRECurrentResInfo *curr, WRSaveIntoData *idata )
         gf.file_name = NULL;
         gf.title = WREResSaveAsTitle;
         gf.filter = WREResSaveMltFilter;
-        gf.save_ext = TRUE;
+        gf.save_ext = true;
         fname = WREGetSaveFileName( &gf );
         ok = (fname != NULL && *fname != '\0');
     }
@@ -156,7 +156,7 @@ bool SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata )
         gf.file_name = NULL;
         gf.title = WREResSaveIntoTitle;
         gf.filter = WREResSaveMltFilter;
-        gf.save_ext = TRUE;
+        gf.save_ext = true;
         fname = WREGetOpenFileName( &gf );
         ok = (fname != NULL && *fname != '\0');
     }

@@ -80,14 +80,14 @@ bool WREResNodeContainsLangNode( WResResNode *rnode, WResLangNode *lnode )
     WResLangNode *lnode2;
 
     if( rnode == NULL || lnode == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( lnode2 = rnode->Head; lnode2 != NULL; lnode2 = lnode2->Next ) {
         if( lnode2 == lnode ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }

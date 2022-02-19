@@ -53,7 +53,7 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool WdeSaveObjectAs ( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, void *, uint_32, WResLangType *, bool );
+static bool WdeSaveObjectAs ( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, void *, uint_32, WResLangType *, bool prompt_name );
 static bool WdeSaveObjectInto( WdeResInfo *, WdeDialogBoxInfo *, WResID *, void *, uint_32, WResLangType * );
 
 /****************************************************************************/

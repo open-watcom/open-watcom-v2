@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern int  WREGetStatusDepth( void );
-extern bool WRESetStatusText( const char *, const char *, int );
+extern bool WRESetStatusText( const char *, const char *, bool redisplay );
 extern void WREDestroyStatusLine( void );
 extern bool WRECreateStatusLine( HWND, HINSTANCE );
 extern void WREResizeStatusWindows( RECT * );

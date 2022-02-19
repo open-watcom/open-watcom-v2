@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -183,7 +183,7 @@ void WREResizeStatusWindows( RECT *rect )
 
 bool WRESetStatusReadyText( void )
 {
-    WRESetStatusText( NULL, "", FALSE );
+    WRESetStatusText( NULL, "", false );
     return( WRESetStatusByID( WRE_READYMSG, 0 ) );
 }
 
@@ -205,7 +205,7 @@ bool WRESetStatusByID( msg_id id1, msg_id id2 )
         str2 = AllocRCString( id2 );
     }
 
-    ret = WRESetStatusText( str1, str2, TRUE );
+    ret = WRESetStatusText( str1, str2, true );
 
     if( str1 != NULL ) {
         FreeRCString( str1 );
@@ -218,13 +218,12 @@ bool WRESetStatusByID( msg_id id1, msg_id id2 )
     return( ret );
 }
 
-bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
+bool WRESetStatusText( const char *status1, const char *status2, bool redisplay )
 {
     int len;
     int pos;
 
-    /* touch unused vars to get rid of warning */
-    _wre_touch( redisplay );
+    /* unused parameters */ (void)redisplay ;
 
     if( WREStatusWindow == NULL ) {
         return( true );
@@ -290,10 +289,7 @@ bool WREDisplayStatusText( char *str )
 
 bool WREStatusHookProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    /* touch unused vars to get rid of warning */
-    _wre_touch( hWnd );
-    _wre_touch( wParam );
-    _wre_touch( lParam );
+    /* unused parameters */ (void)hWnd; (void)wParam; (void)lParam;
 
     if( msg == WM_DESTROY ) {
         WREStatusWindow = NULL;
