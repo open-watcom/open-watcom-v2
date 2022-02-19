@@ -25,14 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Allocate and read DDE data.
 *
 ****************************************************************************/
 
 
-#ifndef WREDDE_INCLUDED
-#define WREDDE_INCLUDED
+#include "wrglbl.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -41,22 +39,52 @@
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
-typedef enum
-{
-    DialogService,
-    BitmapService,
-    CursorService,
-    IconService,
-    NoServicePending
-} WRESPT;
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern WRESPT   WREGetPendingService( void );
-extern void     WRESetPendingService( WRESPT s );
-extern bool     WREDDEStart( HINSTANCE inst );
-extern void     WREDDEEnd( void );
-extern bool     WREPokeData( HCONV conv, char *data, DWORD size, bool );
 
-#endif
+/****************************************************************************/
+/* static function prototypes                                               */
+/*****************************************************************************/
+
+/****************************************************************************/
+/* external variables                                                       */
+/****************************************************************************/
+
+/****************************************************************************/
+/* static variables                                                         */
+/****************************************************************************/
+
+
+bool    WRAPI WRAllocDataFromDDE( HDDEDATA hData, char **pdata, size_t *dsize )
+{
+    char        *data;
+    size_t      size;
+    bool        ok;
+
+    ok = ( hData != NULL && pdata != NULL && dsize != NULL );
+    if( ok ) {
+        *dsize = size = (size_t)DdeGetData( hData, NULL, 0, 0 );
+        if( size == 0 ) {
+            ok = false;
+        } else {
+            *pdata = data = WRMemAlloc( size );
+            if( data == NULL ) {
+                ok = false;
+            } else {
+                if( (DWORD)size != DdeGetData( hData, (LPBYTE)data, (DWORD)size, 0 ) ) {
+                    ok = false;
+                }
+            }
+        }
+        if( !ok ) {
+            if( data != NULL ) {
+                WRMemFree( data );
+            }
+            *pdata = NULL;
+            *dsize = 0;
+        }
+    }
+    return( ok );
+}

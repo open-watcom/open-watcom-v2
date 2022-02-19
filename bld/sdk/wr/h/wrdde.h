@@ -25,38 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Allocate and read DDE data.
 *
 ****************************************************************************/
 
 
-#ifndef WREDDE_INCLUDED
-#define WREDDE_INCLUDED
+#include <ddeml.h>
 
-/****************************************************************************/
-/* macro definitions                                                        */
-/****************************************************************************/
 
-/****************************************************************************/
-/* type definitions                                                         */
-/****************************************************************************/
-typedef enum
-{
-    DialogService,
-    BitmapService,
-    CursorService,
-    IconService,
-    NoServicePending
-} WRESPT;
-
-/****************************************************************************/
-/* external function prototypes                                             */
-/****************************************************************************/
-extern WRESPT   WREGetPendingService( void );
-extern void     WRESetPendingService( WRESPT s );
-extern bool     WREDDEStart( HINSTANCE inst );
-extern void     WREDDEEnd( void );
-extern bool     WREPokeData( HCONV conv, char *data, DWORD size, bool );
-
-#endif
+WRDLLENTRY extern bool  WRAPI WRAllocDataFromDDE( HDDEDATA hData, char **pdata, size_t *dsize );

@@ -52,7 +52,7 @@ extra_l_flags = debug all option quiet, map, elim, v, static
 
 extra_l_flags_dll = op implib $(wr_dllbase_$(host_os)_$(host_cpu))
 extra_l_flags_dll_nt = op heap=16k commit heap=8k
-extra_l_flags_dll_win = op rwr, stack=16k export WEP RESIDENT &
+extra_l_flags_dll_win = op rwr, stack=16k export WEP RESIDENT lib ddeml.lib &
 #    segment  _TEXT PRELOAD FIXED &
 #    segment  CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE &
 #    segment  CLASS 'CODE' PRELOAD
@@ -73,7 +73,7 @@ dlltarg_objs_rc = &
     dbtable.obj sharedio.obj mergedir.obj rcspawn.obj
 dlltarg_objs          = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrrdw16.obj wrrdwnt.obj wrrdres.obj wrimg.obj &
-    wrsvexe.obj wrsvres.obj &
+    wrsvexe.obj wrsvres.obj wrdde.obj &
     wridfile.obj wrinfo.obj wrstrdup.obj &
     wrlist.obj wrdel.obj wrstr.obj wrclean.obj &
     wrdata.obj wrnamoor.obj wrwresid.obj &

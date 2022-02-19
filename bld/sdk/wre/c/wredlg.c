@@ -397,7 +397,7 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hData )
     }
 
     if( ok ) {
-        ok = WREHData2Mem( hData, &data, &size );
+        ok = WRAllocDataFromDDE( hData, &data, &size );
     }
 
     if( ok ) {
@@ -440,7 +440,7 @@ bool WRESetDlgSessionResData( HCONV server, HDDEDATA hData )
     }
 
     if( ok ) {
-        ok = WREHData2Mem( hData, &data, &size );
+        ok = WRAllocDataFromDDE( hData, &data, &size );
     }
 
     if( ok ) {

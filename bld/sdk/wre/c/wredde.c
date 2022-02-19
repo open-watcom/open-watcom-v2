@@ -113,32 +113,6 @@ void WRESetPendingService( WRESPT s )
     PendingService = s;
 }
 
-bool WREHData2Mem( HDDEDATA hData, char **data, size_t *size )
-{
-    DWORD   dde_size;
-
-    if( data == NULL || size == NULL || hData == NULL ) {
-        return( false );
-    }
-
-    *size = dde_size = DdeGetData( hData, NULL, 0, 0 );
-    if( dde_size == 0 ) {
-        return( false );
-    }
-
-    *data = WRMemAlloc( dde_size );
-    if( *data == NULL ) {
-        return( false );
-    }
-
-    if( dde_size != DdeGetData( hData, (LPBYTE)*data, dde_size, 0 ) ) {
-        WRMemFree( *data );
-        return( false );
-    }
-
-    return( true );
-}
-
 bool WREDDEStart( HINSTANCE inst )
 {
     UINT        ret;

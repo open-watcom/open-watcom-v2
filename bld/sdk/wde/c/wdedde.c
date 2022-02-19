@@ -78,7 +78,6 @@ WINEXPORT FNCALLBACK DdeCallBack;
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void     *WdeHData2Mem( HDDEDATA hData );
 static bool     WdeStartDDEEditSession( void );
 static HDDEDATA WdeCreateResNameData( WResID *name, bool is32bit );
 static HDDEDATA WdeCreateResData( WdeResDlgItem *ditem );
@@ -293,33 +292,6 @@ void WdeDDEEndConversation( void )
     }
 }
 
-void *WdeHData2Mem( HDDEDATA hData )
-{
-    void        *mem;
-    uint_32     size;
-
-    if( hData == NULL ) {
-        return( NULL );
-    }
-
-    size = (uint_32)DdeGetData( hData, NULL, 0, 0 );
-    if( size == 0 ) {
-        return( NULL );
-    }
-
-    mem = WRMemAlloc( size );
-    if( mem == NULL ) {
-        return( NULL );
-    }
-
-    if( (DWORD)size != DdeGetData( hData, mem, (DWORD)size, 0 ) ) {
-        WRMemFree( mem );
-        return( NULL );
-    }
-
-    return( mem );
-}
-
 HDDEDATA WdeCreateResNameData( WResID *name, bool is32bit )
 {
     HDDEDATA    hData;
@@ -423,7 +395,7 @@ bool WdeStartDDEEditSession( void )
     HDDEDATA            hData;
     char                *data;
     DWORD               ret;
-    uint_32             size;
+    size_t              size;
     OBJPTR              object;
     bool                ok;
 
@@ -439,9 +411,8 @@ bool WdeStartDDEEditSession( void )
     }
 
     if( ok ) {
-        filename = (char *)WdeHData2Mem( hData );
+        ok = WRAllocDataFromDDE( hData, &filename, &size );
         DdeFreeDataHandle( hData );
-        ok = (filename != NULL);
     }
 
     if( ok ) {
@@ -462,9 +433,8 @@ bool WdeStartDDEEditSession( void )
     }
 
     if( ok ) {
-        data = WdeHData2Mem( hData );
+        ok = WRAllocDataFromDDE( hData, &data, &size );
         DdeFreeDataHandle( hData );
-        ok = (data != NULL);
     }
 
     if( ok ) {
@@ -478,10 +448,9 @@ bool WdeStartDDEEditSession( void )
                                       hDataItem, WdeDataClipbdFormat,
                                       XTYP_REQUEST, TIME_OUT, &ret );
         if( hData != NULL ) {
-            data = WdeHData2Mem( hData );
-            size = (int)DdeGetData( hData, NULL, 0, 0 );
+            ok = WRAllocDataFromDDE( hData, &data, &size );
             DdeFreeDataHandle( hData );
-            if( data != NULL ) {
+            if( ok ) {
                 ditem->dialog_info = WdeMem2DBI( data, size, ditem->is32bit );
                 ok = (ditem->dialog_info != NULL);
                 WRMemFree( data );
@@ -539,14 +508,16 @@ void WdeHandlePokedData( HDDEDATA hData )
 {
     HWND        main;
     char        *cmd;
+    size_t      size;
     WdeResInfo  *rinfo;
+    bool        ok;
 
     if( hData == NULL ) {
         return;
     }
 
-    cmd = (char *)WdeHData2Mem( hData );
-    if( cmd == NULL ) {
+    ok = WRAllocDataFromDDE( hData, &cmd, &size );
+    if( !ok ) {
         return;
     }
 

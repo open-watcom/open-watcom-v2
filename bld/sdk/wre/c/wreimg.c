@@ -396,7 +396,7 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hData )
     }
 
     if( ok ) {
-        ok = WREHData2Mem( hData, &data, &size );
+        ok = WRAllocDataFromDDE( hData, &data, &size );
     }
 
     if( ok ) {
@@ -507,7 +507,7 @@ bool WRESetImageSessionResData( HCONV server, HDDEDATA hData )
     }
 
     if( ok ) {
-        ok = WREHData2Mem( hData, &data, &size );
+        ok = WRAllocDataFromDDE( hData, &data, &size );
     }
 
     if( ok ) {

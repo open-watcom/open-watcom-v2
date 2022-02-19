@@ -100,7 +100,6 @@ WINEXPORT FNCALLBACK DdeCallBack;
 /* static function prototypes                                               */
 /****************************************************************************/
 
-static bool     IEHData2Mem( HDDEDATA hData, char **data, uint_32 *dsize );
 static bool     IEStartDDEEditSession( void );
 static HDDEDATA IECreateResData( img_node *node );
 
@@ -348,34 +347,6 @@ void IEDDEEndConversation( void )
 } /* IEDDEEndConversation */
 
 /*
- * IEHData2Mem
- */
-bool IEHData2Mem( HDDEDATA hData, char **mem, uint_32 *size )
-{
-    bool    ok;
-
-    ok = ( hData != NULL && mem != NULL && size != NULL );
-
-    if( ok ) {
-        *size = (uint_32)DdeGetData( hData, NULL, 0, 0 );
-        ok = ( *size != 0 );
-
-        if( ok ) {
-            *mem = MemAlloc( *size );
-            ok = ( *mem != NULL );
-        }
-
-        if( ok && (DWORD)*size != DdeGetData( hData, (LPBYTE)*mem, (DWORD)*size, 0 ) ) {
-            MemFree( *mem );
-            *mem = NULL;
-            ok = false;
-        }
-    }
-    return( ok );
-
-} /* IEHData2Mem */
-
-/*
  * IECreateResData
  */
 HDDEDATA IECreateResData( img_node *node )
@@ -483,7 +454,7 @@ bool IEStartDDEEditSession( void )
     HDDEDATA            hData;
     char                *data;
     DWORD               ret;
-    uint_32             size;
+    size_t              size;
     bool                ok;
 
     data = NULL;
@@ -498,7 +469,7 @@ bool IEStartDDEEditSession( void )
     }
 
     if( ok ) {
-        ok = IEHData2Mem( hData, &filename, &size );
+        ok = WRAllocDataFromDDE( hData, &filename, &size );
         DdeFreeDataHandle( hData );
     }
 
@@ -510,7 +481,7 @@ bool IEStartDDEEditSession( void )
 
     if( ok ) {
         if( hData != NULL ) {
-            ok = IEHData2Mem( hData, &data, &size );
+            ok = WRAllocDataFromDDE( hData, &data, &size );
             DdeFreeDataHandle( hData );
         }
     }
@@ -562,14 +533,14 @@ bool IEStartDDEEditSession( void )
 static void IEHandlePokedData( HDDEDATA hData )
 {
     char        *cmd;
-    uint_32     size;
+    size_t      size;
 
     if( hData == NULL ) {
         return;
     }
 
     cmd = NULL;
-    if( !IEHData2Mem( hData, &cmd, &size ) || cmd == NULL ) {
+    if( !WRAllocDataFromDDE( hData, &cmd, &size ) || cmd == NULL ) {
         return;
     }
 
