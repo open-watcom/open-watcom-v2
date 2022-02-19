@@ -57,8 +57,8 @@ extern void     WREEndResImageSessions( WREResInfo *rinfo );
 extern bool     WREGetImageSessionFileName( HCONV server, char **data, size_t *size );
 extern bool     WREGetImageSessionResName( HCONV server, char **data, size_t *size );
 extern bool     WREGetImageSessionData( HCONV server, char **data, size_t *size );
-extern bool     WRESetImageSessionResName( HCONV server, HDDEDATA hdata );
-extern bool     WRESetImageSessionResData( HCONV server, HDDEDATA hdata );
+extern bool     WRESetImageSessionResName( HCONV server, HDDEDATA hData );
+extern bool     WRESetImageSessionResData( HCONV server, HDDEDATA hData );
 
 extern void     WREShowAllImageSessions( bool show );
 

@@ -57,8 +57,8 @@ extern bool WREGetDlgSessionFileName( HCONV server, char **data, size_t *size );
 extern bool WREGetDlgSessionResName( HCONV server, char **data, size_t *size );
 extern bool WREGetDlgSessionData( HCONV server, char **data, size_t *size );
 extern bool WREGetDlgSessionIs32Bit( HCONV server, char **data, size_t *size );
-extern bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata );
-extern bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata );
+extern bool WRESetDlgSessionResName( HCONV server, HDDEDATA hData );
+extern bool WRESetDlgSessionResData( HCONV server, HDDEDATA hData );
 extern void WREShowAllDialogSessions( bool show );
 
 #endif

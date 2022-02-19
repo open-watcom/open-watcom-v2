@@ -381,7 +381,7 @@ bool WREGetDlgSessionData( HCONV server, char **data, size_t *size )
     return( true );
 }
 
-bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
+bool WRESetDlgSessionResName( HCONV server, HDDEDATA hData )
 {
     WREDialogSession    *session;
     WResID              *name;
@@ -389,7 +389,7 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
     size_t              size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != NULL);
+    ok = (server != (HCONV)NULL && hData != NULL);
 
     if( ok ) {
         session = WREFindDialogSession( server );
@@ -397,7 +397,7 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
     }
 
     if( ok ) {
-        ok = WREHData2Mem( hdata, &data, &size );
+        ok = WREHData2Mem( hData, &data, &size );
     }
 
     if( ok ) {
@@ -425,14 +425,14 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
     return( ok );
 }
 
-bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata )
+bool WRESetDlgSessionResData( HCONV server, HDDEDATA hData )
 {
     WREDialogSession    *session;
     char                *data;
     size_t              size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != NULL);
+    ok = (server != (HCONV)NULL && hData != NULL);
 
     if( ok ) {
         session = WREFindDialogSession( server );
@@ -440,7 +440,7 @@ bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata )
     }
 
     if( ok ) {
-        ok = WREHData2Mem( hdata, &data, &size );
+        ok = WREHData2Mem( hData, &data, &size );
     }
 
     if( ok ) {

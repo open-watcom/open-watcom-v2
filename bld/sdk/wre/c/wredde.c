@@ -305,7 +305,7 @@ bool WREPokeData( HCONV conv, char *data, DWORD size, bool retry )
 }
 
 HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
-                                HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
+                                HSZ hsz1, HSZ hsz2, HDDEDATA hData,
                                 ULONG_PTR lData1, ULONG_PTR lData2 )
 {
     HDDEDATA    ret;
@@ -316,7 +316,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     size_t      size;
     bool        ok;
 
-    /* unused parameters */ (void)hdata; (void)lData1; (void)lData2;
+    /* unused parameters */ (void)hData; (void)lData1; (void)lData2;
 
     ret = NULL;
 
@@ -423,17 +423,17 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
         ret = (HDDEDATA)DDE_FNOTPROCESSED;
         if( hsz1 == Topics[DialogService].htopic ) {
             if( hsz2 == hDataItem ) {
-                ok = WRESetDlgSessionResData( hConv, hdata );
+                ok = WRESetDlgSessionResData( hConv, hData );
             } else if( hsz2 == hNameItem ) {
-                ok = WRESetDlgSessionResName( hConv, hdata );
+                ok = WRESetDlgSessionResName( hConv, hData );
             }
         } else if( hsz1 == Topics[BitmapService].htopic ||
                    hsz1 == Topics[CursorService].htopic ||
                    hsz1 == Topics[IconService].htopic ) {
             if( hsz2 == hDataItem ) {
-                ok = WRESetImageSessionResData( hConv, hdata );
+                ok = WRESetImageSessionResData( hConv, hData );
             } else if( hsz2 == hNameItem ) {
-                ok = WRESetImageSessionResName( hConv, hdata );
+                ok = WRESetImageSessionResName( hConv, hData );
             }
         }
         ret = (HDDEDATA)DDE_FACK;

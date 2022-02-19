@@ -380,7 +380,7 @@ bool WREGetImageSessionData( HCONV server, char **data, size_t *size )
     return( true );
 }
 
-bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
+bool WRESetImageSessionResName( HCONV server, HDDEDATA hData )
 {
     WREImageSession     *session;
     WResID              *name;
@@ -388,7 +388,7 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
     size_t              size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != NULL);
+    ok = (server != (HCONV)NULL && hData != NULL);
 
     if( ok ) {
         session = WREFindImageSession( server );
@@ -396,7 +396,7 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
     }
 
     if( ok ) {
-        ok = WREHData2Mem( hdata, &data, &size );
+        ok = WREHData2Mem( hData, &data, &size );
     }
 
     if( ok ) {
@@ -492,14 +492,14 @@ static bool WRESetIconSessionResData( WREImageSession *session, char *data, size
     return( ok );
 }
 
-bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
+bool WRESetImageSessionResData( HCONV server, HDDEDATA hData )
 {
     WREImageSession     *session;
     char                *data;
     size_t              size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != NULL);
+    ok = (server != (HCONV)NULL && hData != NULL);
 
     if( ok ) {
         session = WREFindImageSession( server );
@@ -507,7 +507,7 @@ bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
     }
 
     if( ok ) {
-        ok = WREHData2Mem( hdata, &data, &size );
+        ok = WREHData2Mem( hData, &data, &size );
     }
 
     if( ok ) {
