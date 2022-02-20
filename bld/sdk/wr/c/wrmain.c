@@ -69,11 +69,11 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool WREDoSaveObjectInto( WRInfo *, WRSaveIntoData *, bool * );
+static bool WREDoSaveObjectInto( WRInfo *, WRSaveIntoData *idata, bool * );
 static bool WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata );
 static bool WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, bool is_icon );
 static bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is_icon );
-static bool WRTestReplace( WRInfo *, WRSaveIntoData * );
+static bool WRTestReplace( WRInfo *, WRSaveIntoData *idata );
 static bool WQueryMergeStrings( WResID * );
 static bool WQueryReplaceObject( void );
 

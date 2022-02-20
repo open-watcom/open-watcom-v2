@@ -375,11 +375,10 @@ HDDEDATA IECreateResData( img_node *node )
         }
     }
 
-    if( ok ) {
-        hData = DdeCreateDataHandle( IdInst, (LPBYTE)data, (DWORD)size, 0, hDataItem, IEClipFormats[EditFormat].format, 0 );
-    }
-
     if( data != NULL ) {
+        if( ok ) {
+            hData = DdeCreateDataHandle( IdInst, (LPBYTE)data, (DWORD)size, 0, hDataItem, IEClipFormats[EditFormat].format, 0 );
+        }
         MemFree( data );
     }
 

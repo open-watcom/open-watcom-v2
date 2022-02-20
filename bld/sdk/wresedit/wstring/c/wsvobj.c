@@ -65,8 +65,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool             WSaveObjectAs( bool prompt_name, WStringEditInfo *, WRSaveIntoData * );
-static bool             WSaveObjectInto( WStringEditInfo *, WRSaveIntoData * );
+static bool             WSaveObjectAs( bool prompt_name, WStringEditInfo *, WRSaveIntoData *idata );
+static bool             WSaveObjectInto( WStringEditInfo *, WRSaveIntoData *idata );
 static WRSaveIntoData   *WMakeSaveData( WStringTable *tbl );
 static void             WFreeSaveIntoData( WRSaveIntoData *idata );
 static WRSaveIntoData   *WAllocSaveIntoData( void );
