@@ -351,32 +351,26 @@ bool WdeUpdateDDEEditSession( void )
 
     if( ok ) {
         hData = WdeCreateResData( ditem );
-        ok = (hData != NULL);
-    }
-
-    if( ok ) {
-        ok = DdeClientTransaction( (LPBYTE)hData, (DWORD)-1L, WdeClientConv,
+        if( hData == NULL ) {
+            ok = false;
+        } else {
+            ok = DdeClientTransaction( (LPBYTE)hData, (DWORD)-1L, WdeClientConv,
                                          hDataItem, WdeDataClipbdFormat,
-                                         XTYP_POKE, TIME_OUT, NULL ) != 0;
-    }
-
-    if( hData != NULL ) {
-        DdeFreeDataHandle( hData );
+                                             XTYP_POKE, TIME_OUT, NULL ) != 0;
+            DdeFreeDataHandle( hData );
+        }
     }
 
     if( ok ) {
         hData = WdeCreateResNameData( ditem->dialog_name, ditem->is32bit );
-        ok = (hData != NULL);
-    }
-
-    if( ok ) {
-        ok = DdeClientTransaction( (LPBYTE)hData, (DWORD)-1L, WdeClientConv,
+        if( hData == NULL ) {
+            ok = false;
+        } else {
+            ok = DdeClientTransaction( (LPBYTE)hData, (DWORD)-1L, WdeClientConv,
                                          hNameItem, WdeDataClipbdFormat,
                                          XTYP_POKE, TIME_OUT, NULL ) != 0;
-    }
-
-    if( hData != NULL ) {
-        DdeFreeDataHandle( hData );
+            DdeFreeDataHandle( hData );
+        }
     }
 
     if( ok ) {
@@ -407,19 +401,21 @@ bool WdeStartDDEEditSession( void )
         hData = DdeClientTransaction( NULL, 0, WdeClientConv,
                                       hFileItem, WdeDataClipbdFormat,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        ok = (hData != NULL);
-    }
-
-    if( ok ) {
-        ok = WRAllocDataFromDDE( hData, &filename, &size );
-        DdeFreeDataHandle( hData );
+        if( hData == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &filename, &size );
+            DdeFreeDataHandle( hData );
+        }
     }
 
     if( ok ) {
         hData = DdeClientTransaction( NULL, 0, WdeClientConv,
                                       hIs32BitItem, WdeDataClipbdFormat,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        if( hData != NULL ) {
+        if( hData == NULL ) {
+            ok = false;
+        } else {
             ditem->is32bit = true;
             DdeFreeDataHandle( hData );
         }
@@ -429,17 +425,19 @@ bool WdeStartDDEEditSession( void )
         hData = DdeClientTransaction( NULL, 0, WdeClientConv,
                                       hNameItem, WdeDataClipbdFormat,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        ok = (hData != NULL);
-    }
-
-    if( ok ) {
-        ok = WRAllocDataFromDDE( hData, &data, &size );
-        DdeFreeDataHandle( hData );
+        if( hData == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &data, &size );
+            DdeFreeDataHandle( hData );
+        }
     }
 
     if( ok ) {
         ditem->dialog_name = WRMem2WResID( data, ditem->is32bit );
-        ok = (ditem->dialog_name != NULL);
+        if( ditem->dialog_name == NULL ) {
+            ok = false;
+        }
         WRMemFree( data );
     }
 
@@ -447,15 +445,17 @@ bool WdeStartDDEEditSession( void )
         hData = DdeClientTransaction( NULL, 0, WdeClientConv,
                                       hDataItem, WdeDataClipbdFormat,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        if( hData != NULL ) {
+        if( hData == NULL ) {
+            ok = false;
+        } else {
             ok = WRAllocDataFromDDE( hData, &data, &size );
             DdeFreeDataHandle( hData );
             if( ok ) {
                 ditem->dialog_info = WdeMem2DBI( data, size, ditem->is32bit );
-                ok = (ditem->dialog_info != NULL);
+                if( ditem->dialog_info == NULL ) {
+                    ok = false;
+                }
                 WRMemFree( data );
-            } else {
-                ok = false;
             }
         }
     }

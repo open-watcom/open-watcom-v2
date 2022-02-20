@@ -290,7 +290,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     size_t      size;
     bool        ok;
 
-    /* unused parameters */ (void)hData; (void)lData1; (void)lData2;
+    /* unused parameters */ (void)lData1; (void)lData2;
 
     ret = NULL;
 

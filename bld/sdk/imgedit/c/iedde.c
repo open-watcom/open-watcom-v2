@@ -155,7 +155,7 @@ bool IEDDEStart( HINSTANCE inst )
     int         i;
     bool        ok;
 
-    _imged_touch( inst ); /* MakeProcInstance vanishes in NT */
+    /* unused parameters */ (void)inst; /* MakeProcInstance vanishes in NT */
 
     ok = ( IdInst == 0 );
 
@@ -417,27 +417,22 @@ bool IEUpdateDDEEditSession( void )
     HDDEDATA            hData;
     bool                ok;
 
-    hData = NULL;
     node = IEGetCurrentImageNode();
     ok = (IEClientConv != (HCONV)NULL && node != NULL && EditFormat != DDENone);
 
     if( ok ) {
         hData = IECreateResData( node );
-        ok = (hData != NULL);
-    }
-
-    if( ok ) {
-        ok = DdeClientTransaction( (LPBYTE)hData, (DWORD)-1L, IEClientConv, hDataItem,
+        if( hData == NULL ) {
+            ok = false;
+        } else {
+            ok = DdeClientTransaction( (LPBYTE)hData, (DWORD)-1L, IEClientConv, hDataItem,
                                          IEClipFormats[EditFormat].format,
                                          XTYP_POKE, TIME_OUT, NULL ) != 0;
-    }
-
-    if( hData != NULL ) {
-        DdeFreeDataHandle( hData );
-    }
-
-    if( ok ) {
-        SetIsSaved( node->hwnd, true );
+            DdeFreeDataHandle( hData );
+            if( ok ) {
+                SetIsSaved( node->hwnd, true );
+            }
+        }
     }
 
     return( ok );
@@ -464,22 +459,21 @@ bool IEStartDDEEditSession( void )
         hData = DdeClientTransaction( NULL, 0, IEClientConv, hFileItem,
                                       IEClipFormats[EditFormat].format,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        ok = (hData != NULL);
-    }
-
-    if( ok ) {
-        ok = WRAllocDataFromDDE( hData, &filename, &size );
-        DdeFreeDataHandle( hData );
+        if( hData == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &filename, &size );
+            DdeFreeDataHandle( hData );
+        }
     }
 
     if( ok ) {
         hData = DdeClientTransaction( NULL, 0, IEClientConv, hDataItem,
                                       IEClipFormats[EditFormat].format,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-    }
-
-    if( ok ) {
-        if( hData != NULL ) {
+        if( hData == NULL ) {
+            ok = false;
+        } else {
             ok = WRAllocDataFromDDE( hData, &data, &size );
             DdeFreeDataHandle( hData );
         }
@@ -538,8 +532,7 @@ static void IEHandlePokedData( HDDEDATA hData )
         return;
     }
 
-    cmd = NULL;
-    if( !WRAllocDataFromDDE( hData, &cmd, &size ) || cmd == NULL ) {
+    if( !WRAllocDataFromDDE( hData, &cmd, &size ) ) {
         return;
     }
 
@@ -584,10 +577,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv, HSZ hsz1, HSZ
     HDDEDATA            ret;
     int                 i;
 
-    _imged_touch( wFmt );
-    _imged_touch( hData );
-    _imged_touch( lData1 );
-    _imged_touch( lData2 );
+    /* unused parameters */ (void)wFmt; (void)lData1; (void)lData2;
 
     ret = NULL;
 
