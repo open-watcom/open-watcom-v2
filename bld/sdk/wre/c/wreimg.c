@@ -617,33 +617,38 @@ bool WREEditImageResource( WRECurrentResInfo *curr )
 
     if( ok ) {
         session = WREFindLangImageSession( curr->lang );
-        if( session != NULL ) {
-            WREBringSessionToFront( session );
-            return( true );
-        }
-    }
+        if( session == NULL ) {
+            if( ok ) {
+                if( curr->info->current_type == RESOURCE2INT( RT_BITMAP ) ) {
+                    service = BitmapService;
+                } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
+                    service = CursorService;
+                } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_ICON ) ) {
+                    service = IconService;
+                } else {
+                    ok = false;
+                }
+            }
 
-    if( ok ) {
-        if( curr->info->current_type == RESOURCE2INT( RT_BITMAP ) ) {
-            service = BitmapService;
-        } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
-            service = CursorService;
-        } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_ICON ) ) {
-            service = IconService;
+            if( ok ) {
+                if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
+                    curr->lang->data = WREGetCopyResData( curr );
+                    if( curr->lang->data == NULL ) {
+                        ok = false;
+                    } else {
+                        if( WREStartImageSession( service, curr, false ) == NULL ) {
+                            ok = false;
+                        }
+                    }
+                } else {
+                    if( WREStartImageSession( service, curr, false ) == NULL ) {
+                        ok = false;
+                    }
+                }
+            }
         } else {
-            ok = false;
+            WREBringSessionToFront( session );
         }
-    }
-
-    if( ok ) {
-        if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
-            curr->lang->data = WREGetCurrentResData( curr );
-            ok = (curr->lang->data != NULL);
-        }
-    }
-
-    if( ok ) {
-        ok = (WREStartImageSession( service, curr, false ) != NULL);
     }
 
     return( ok );

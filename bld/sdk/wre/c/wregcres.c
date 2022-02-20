@@ -63,7 +63,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-char *WREGetCurrentResData( WRECurrentResInfo *curr )
+char *WREGetCopyResData( WRECurrentResInfo *curr )
 {
     char       *rdata;
 

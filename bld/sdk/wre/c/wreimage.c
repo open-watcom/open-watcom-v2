@@ -130,7 +130,7 @@ bool WREIsCorrectImageGroup( WRECurrentResInfo *group, uint_16 type, uint_16 id 
 
     if( ok ) {
         if( group->lang->data == NULL ) {
-            group->lang->data = WREGetCurrentResData( group );
+            group->lang->data = WREGetCopyResData( group );
             ok = (group->lang->data != NULL);
         }
     }
@@ -215,7 +215,7 @@ static bool WREAddCursorImageToData( WRECurrentResInfo *image, char **data, size
 
     if( ok ) {
         if( image->lang->data == NULL ) {
-            image->lang->data = WREGetCurrentResData( image );
+            image->lang->data = WREGetCopyResData( image );
             ok = (image->lang->data != NULL);
         }
     }
@@ -238,7 +238,7 @@ static bool WREAddIconImageToData( WRECurrentResInfo *image, char **data, size_t
 
     if( ok ) {
         if( image->lang->data == NULL ) {
-            image->lang->data = WREGetCurrentResData( image );
+            image->lang->data = WREGetCopyResData( image );
             ok = (image->lang->data != NULL);
         }
     }
@@ -267,7 +267,7 @@ bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, char **data, size_t
 
     if( ok ) {
         if( group->lang->data == NULL ) {
-            group->lang->data = WREGetCurrentResData( group );
+            group->lang->data = WREGetCopyResData( group );
             ok = (group->lang->data != NULL);
         }
     }
@@ -328,7 +328,7 @@ bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, char **data, size_t *
 
     if( ok ) {
         if( group->lang->data == NULL ) {
-            group->lang->data = WREGetCurrentResData( group );
+            group->lang->data = WREGetCopyResData( group );
             ok = (group->lang->data != NULL);
         }
     }

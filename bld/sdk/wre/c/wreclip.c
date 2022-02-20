@@ -727,7 +727,7 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
         } else if( type_id == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             ok = WRECreateCursorDataFromGroup( curr, &rdata, &rdata_size );
         } else {
-            rdata = WREGetCurrentResData( curr );
+            rdata = WREGetCopyResData( curr );
             rdata_size = curr->lang->Info.Length;
             ok = (rdata != NULL && rdata_size != 0);
         }
@@ -779,7 +779,7 @@ bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
     ok = (curr != NULL && curr->type != NULL && curr->res != NULL && curr->lang != NULL);
 
     if( ok ) {
-        data = WREGetCurrentResData( curr );
+        data = WREGetCopyResData( curr );
         ok = (data != NULL);
     }
 

@@ -233,33 +233,26 @@ bool WREEditMenuResource( WRECurrentResInfo *curr )
 
     if( ok ) {
         session = WREFindLangMenuSession( curr->lang );
-        if( session != NULL ) {
-            WMenuBringToFront( session->hndl );
-            return( true );
-        }
-    }
-
-    if( ok ) {
-        if( curr->lang->data != NULL ) {
-            rdata = curr->lang->data;
-        } else if( curr->lang->Info.Length != 0 ) {
-            ok = ((rdata = WREGetCurrentResData( curr )) != NULL);
-            if( ok ) {
-                rdata_alloc = true;
+        if( session == NULL ) {
+            if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
+                curr->lang->data = WREGetCopyResData( curr );
+                if( curr->lang->data == NULL ) {
+                    ok = false;
+                } else {
+                    if( WREStartMenuSession( curr ) == NULL ) {
+                        ok = false;
+                    }
+                    WRMemFree( curr->lang->data );
+                    curr->lang->data = NULL;
+                }
+            } else {
+                if( WREStartMenuSession( curr ) == NULL ) {
+                    ok = false;
+                }
             }
+        } else {
+            WMenuBringToFront( session->hndl );
         }
-    }
-
-    if( ok ) {
-        if( rdata_alloc ) {
-            curr->lang->data = rdata;
-        }
-        ok = (WREStartMenuSession( curr ) != NULL);
-    }
-
-    if( rdata_alloc ) {
-        WRMemFree( rdata );
-        curr->lang->data = NULL;
     }
 
     return( ok );

@@ -232,7 +232,7 @@ WRSaveIntoData *WREMakeSaveIntoNode( WRECurrentResInfo *curr )
     idata->lang = curr->lang->Info.lang;
     idata->size = curr->lang->Info.Length;
     idata->MemFlags = curr->lang->Info.MemoryFlags;
-    idata->data = WREGetCurrentResData( curr );
+    idata->data = WREGetCopyResData( curr );
 
     if( idata->data == NULL ) {
         WRMemFree( idata );

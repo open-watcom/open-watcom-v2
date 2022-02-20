@@ -223,44 +223,33 @@ bool WRENewAccelResource( void )
 
 bool WREEditAccelResource( WRECurrentResInfo *curr )
 {
-    void                *rdata;
-    bool                ok, rdata_alloc;
+    bool                ok;
     WREAccelSession     *session;
-
-    rdata = NULL;
-    rdata_alloc = false;
 
     ok = (curr != NULL && curr->lang != NULL);
 
     if( ok ) {
         session = WREFindLangAccelSession( curr->lang );
-        if( session != NULL ) {
-            WAccelBringToFront( session->hndl );
-            return( true );
-        }
-    }
-
-    if( ok ) {
-        if( curr->lang->data ) {
-            rdata = curr->lang->data;
-        } else if( curr->lang->Info.Length != 0) {
-            ok = ((rdata = WREGetCurrentResData( curr )) != NULL);
-            if( ok ) {
-                rdata_alloc = true;
+        if( session == NULL ) {
+            if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
+                curr->lang->data = WREGetCopyResData( curr );
+                if( curr->lang->data == NULL ) {
+                    ok = false;
+                } else {
+                    if( WREStartAccelSession( curr ) == NULL ) {
+                        ok = false;
+                    }
+                    WRMemFree( curr->lang->data );
+                    curr->lang->data = NULL;
+                }
+            } else {
+                if( WREStartAccelSession( curr ) == NULL ) {
+                    ok = false;
+                }
             }
+        } else {
+            WAccelBringToFront( session->hndl );
         }
-    }
-
-    if( ok ) {
-        if( rdata_alloc ) {
-            curr->lang->data = rdata;
-        }
-        ok = (WREStartAccelSession( curr ) != NULL);
-    }
-
-    if( rdata_alloc ) {
-        WRMemFree( rdata );
-        curr->lang->data = NULL;
     }
 
     return( ok );

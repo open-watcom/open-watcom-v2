@@ -203,19 +203,18 @@ bool WREEditStringResource( WRECurrentResInfo *curr )
 
     if( ok ) {
         session = WREFindResStringSession( curr->info );
-        if( session != NULL ) {
+        if( session == NULL ) {
+            nodes = WRECreateStringNodes( curr );
+            if( nodes == NULL ) {
+                ok = false;
+            } else {
+                if( WREStartStringSession( curr, nodes ) == NULL ) {
+                    ok = false;
+                }
+            }
+        } else {
             WStringBringToFront( session->hndl );
-            return( true );
         }
-    }
-
-    if( ok ) {
-        nodes = WRECreateStringNodes( curr );
-        ok = (nodes != NULL);
-    }
-
-    if( ok ) {
-        ok = (WREStartStringSession( curr, nodes ) != NULL);
     }
 
     return( ok );
@@ -446,7 +445,7 @@ WStringNode *WREMakeNode( WRECurrentResInfo *curr )
     node->MemFlags = curr->lang->Info.MemoryFlags;
     node->block_name = WRECopyWResID( &curr->res->Info.ResName );
     node->data_size = curr->lang->Info.Length;
-    node->data = WREGetCurrentResData( curr );
+    node->data = WREGetCopyResData( curr );
 
     if( node->data == NULL ) {
         WREFreeStringNode( node );

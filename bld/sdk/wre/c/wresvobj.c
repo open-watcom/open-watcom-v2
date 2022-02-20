@@ -87,7 +87,7 @@ bool SaveObject( bool save_into )
     }
 
     if( ok ) {
-        ok = ((rdata = WREGetCurrentResData( &curr )) != NULL);
+        ok = ((rdata = WREGetCopyResData( &curr )) != NULL);
     }
 
     if( ok ) {

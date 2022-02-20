@@ -879,7 +879,6 @@ bool WREHandleResEdit( void )
     }
 
     if( ok ) {
-        ok = false;
         if( curr.info->current_type == RESOURCE2INT( RT_ACCELERATOR ) ) {
             ok = WREEditAccelResource( &curr );
         } else if( curr.info->current_type == RESOURCE2INT( RT_MENU ) ) {
@@ -894,6 +893,8 @@ bool WREHandleResEdit( void )
             ok = WREEditImageResource( &curr );
         } else if( curr.info->current_type == RESOURCE2INT( RT_BITMAP ) ) {
             ok = WREEditImageResource( &curr );
+        } else {
+            ok = false;
         }
     }
 

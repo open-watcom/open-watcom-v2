@@ -507,21 +507,24 @@ bool WREEditDialogResource( WRECurrentResInfo *curr )
 
     if( ok ) {
         session = WREFindLangDialogSession( curr->lang );
-        if( session != NULL ) {
+        if( session == NULL ) {
+            if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
+                curr->lang->data = WREGetCopyResData( curr );
+                if( curr->lang->data == NULL ) {
+                    ok = false;
+                } else {
+                    if( WREStartDialogSession( curr ) == NULL ) {
+                        ok = false;
+                    }
+                }
+            } else {
+                if( WREStartDialogSession( curr ) == NULL ) {
+                    ok = false;
+                }
+            }
+        } else {
             WREBringSessionToFront( session );
-            return( true );
         }
-    }
-
-    if( ok ) {
-        if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
-            curr->lang->data = WREGetCurrentResData( curr );
-            ok = (curr->lang->data != NULL);
-        }
-    }
-
-    if( ok ) {
-        ok = (WREStartDialogSession( curr ) != NULL);
     }
 
     return( ok );
