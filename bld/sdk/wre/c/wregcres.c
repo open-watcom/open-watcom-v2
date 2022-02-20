@@ -69,7 +69,7 @@ char *WREGetCurrentResData( WRECurrentResInfo *curr )
 
     rdata = NULL;
     if( curr != NULL && curr->info != NULL && curr->lang != NULL ) {
-        rdata = WRCopyResData( curr->info->info, curr->lang );
+        rdata = WRAllocCopyResData( curr->info->info, curr->lang );
     }
 
     return( rdata );

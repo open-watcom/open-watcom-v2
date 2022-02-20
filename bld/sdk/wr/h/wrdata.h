@@ -45,8 +45,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern char   * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode );
-WRDLLENTRY extern char   * WRAPI WRLoadResData( const char *file, uint_32 offset, size_t length );
+WRDLLENTRY extern char   * WRAPI WRAllocCopyResData( WRInfo *info, WResLangNode *lnode );
+WRDLLENTRY extern char   * WRAPI WRAllocLoadResData( const char *file, uint_32 offset, size_t length );
 WRDLLENTRY extern bool     WRAPI WRSaveResDataToFile( const char *file_name, char *data, size_t length );
 
 #endif

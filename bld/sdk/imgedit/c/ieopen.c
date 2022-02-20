@@ -688,7 +688,7 @@ static bool readInResourceFile( const char *fullname )
     if( ok ) {
         if( siinfo->type == RESOURCE2INT( RT_BITMAP ) ) {
             imgType = BITMAP_IMG;
-            data = WRCopyResData( info, siinfo->lnode );
+            data = WRAllocCopyResData( info, siinfo->lnode );
             dsize = siinfo->lnode->Info.Length;
             ok = (data != NULL);
             if( ok ) {

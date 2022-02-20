@@ -393,7 +393,7 @@ bool WRSaveBitmapResource( WRInfo *info, bool backup )
 
     if( ok ) {
         if( lnode->data == NULL ) {
-            lnode->data = WRLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
+            lnode->data = WRAllocLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
         }
         ok = ( lnode->data != NULL && lnode->Info.Length != 0 );
     }

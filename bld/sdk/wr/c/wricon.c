@@ -461,7 +461,7 @@ bool WRAPI WRAddCursorImageToData( WRInfo *info, WResLangNode *lnode,
     ok = (info != NULL && lnode != NULL && data != NULL && size != NULL && hotspot != NULL);
 
     if( ok ) {
-        ldata = WRCopyResData( info, lnode );
+        ldata = WRAllocCopyResData( info, lnode );
         ok = (ldata != NULL);
     }
 
@@ -488,7 +488,7 @@ bool WRAPI WRAddIconImageToData( WRInfo *info, WResLangNode *lnode, char **data,
     ok = (info != NULL && lnode != NULL && data != NULL && size != NULL);
 
     if( ok ) {
-        ldata = WRCopyResData( info, lnode );
+        ldata = WRAllocCopyResData( info, lnode );
         ok = (ldata != NULL);
     }
 
@@ -519,7 +519,7 @@ bool WRAPI WRCreateCursorData( WRInfo *info, WResLangNode *lnode, char **data, s
     ok = (info != NULL && lnode != NULL && data != NULL && size != NULL);
 
     if( ok ) {
-        ldata = WRCopyResData( info, lnode );
+        ldata = WRAllocCopyResData( info, lnode );
         ok = (ldata != NULL);
     }
 
@@ -577,7 +577,7 @@ bool WRAPI WRCreateIconData( WRInfo *info, WResLangNode *lnode, char **data, siz
     ok = (info != NULL && lnode != NULL && data != NULL && size != NULL);
 
     if( ok ) {
-        ldata = WRCopyResData( info, lnode );
+        ldata = WRAllocCopyResData( info, lnode );
         ok = (ldata != NULL);
     }
 
@@ -756,7 +756,7 @@ bool WRAPI WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type 
            && (type == RESOURCE2INT( RT_GROUP_ICON ) || type == RESOURCE2INT( RT_GROUP_CURSOR )) );
 
     if( ok ) {
-        data = WRCopyResData( info, lnode );
+        data = WRAllocCopyResData( info, lnode );
         ok = (data != NULL);
     }
 

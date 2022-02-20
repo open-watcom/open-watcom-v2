@@ -190,7 +190,7 @@ static char *WREFindDLGInclude( WRInfo *info )
     }
 
     if( ok ) {
-        include = WRCopyResData( info, lnode );
+        include = WRAllocCopyResData( info, lnode );
     }
 
     return( include );

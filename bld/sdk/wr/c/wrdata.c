@@ -110,7 +110,7 @@ char *WRCopyExistingData( WResLangNode *lnode )
     return( rdata );
 }
 
-char * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
+char * WRAPI WRAllocCopyResData( WRInfo *info, WResLangNode *lnode )
 {
     void        *rdata;
     bool        ok;
@@ -131,7 +131,7 @@ char * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
     }
 
     if( ok ) {
-        rdata = WRLoadResData( info->tmp_file, lnode->Info.Offset, lnode->Info.Length );
+        rdata = WRAllocLoadResData( info->tmp_file, lnode->Info.Offset, lnode->Info.Length );
         ok = ( rdata != NULL );
     }
 
@@ -145,7 +145,7 @@ char * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
     return( rdata );;
 }
 
-char * WRAPI WRLoadResData( const char *fname, uint_32 offset, size_t length )
+char * WRAPI WRAllocLoadResData( const char *fname, uint_32 offset, size_t length )
 {
     char        *data;
     FILE        *fh;

@@ -964,7 +964,7 @@ bool WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         if( !WQueryMergeStrings( idata->name ) ) {
             return( false );
         }
-        data = WRLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
+        data = WRAllocLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
         size = lnode->Info.Length;
         if( !WRMergeStringData( &data, &size, idata->data, idata->size, WRIs32Bit( info->save_type ), true ) ) {
             if( data != NULL ) {
