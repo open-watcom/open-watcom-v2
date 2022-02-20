@@ -785,7 +785,7 @@ bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
 
     if( ok ) {
         dsize = curr->lang->Info.Length;
-        ok = WREAddBitmapFileHeader( &data, &dsize );
+        ok = WRAddBitmapFileHeader( &data, &dsize );
     }
 
     if( ok ) {

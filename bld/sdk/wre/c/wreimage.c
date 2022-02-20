@@ -720,16 +720,6 @@ bool WREStripCursorDirectory( char **cursor, uint_32 *size )
 }
 #endif
 
-bool WREAddBitmapFileHeader( char **data, size_t *size )
-{
-    return( WRAddBitmapFileHeader( data, size ) );
-}
-
-bool WREStripBitmapFileHeader( char **data, size_t *size )
-{
-    return( WRStripBitmapFileHeader( data, size ) );
-}
-
 bool WRECreateCursorEntries( WRECurrentResInfo *curr, char *data, size_t size )
 {
     RESCURSORHEADER     *rch;

@@ -48,8 +48,6 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern bool WREDeleteGroupImages( WRECurrentResInfo *group, uint_16 type );
-extern bool WREAddBitmapFileHeader( char **data, size_t *size );
-extern bool WREStripBitmapFileHeader( char **data, size_t *size );
 extern bool WRECalcAndAddIconDirectory( char **data, size_t *size, WORD type );
 extern bool WREStripIconDirectory( char **data, size_t *size );
 extern bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, char **data, size_t *size );

@@ -369,7 +369,7 @@ bool WREGetImageSessionData( HCONV server, char **data, size_t *size )
     memcpy( *data, session->info.data, tsize );
 
     if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
-        if( !WREAddBitmapFileHeader( data, size ) ) {
+        if( !WRAddBitmapFileHeader( data, size ) ) {
             if( *data != NULL ) {
                 WRMemFree( *data );
             }
@@ -430,7 +430,7 @@ static bool WRESetBitmapSessionResData( WREImageSession *session, char *data, si
     ok = (session != NULL);
 
     if( ok ) {
-        WREStripBitmapFileHeader( &data, &size );
+        WRStripBitmapFileHeader( &data, &size );
         if( session->lnode->data != NULL ) {
             WRMemFree( session->lnode->data );
         }
