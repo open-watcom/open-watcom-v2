@@ -417,8 +417,7 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hData )
     return( ok );
 }
 
-bool WRESetDlg
-ResData( HCONV server, HDDEDATA hData )
+bool WRESetDlgSessionResData( HCONV server, HDDEDATA hData )
 {
     WREDialogSession    *session;
     char                *data;
@@ -429,20 +428,19 @@ ResData( HCONV server, HDDEDATA hData )
 
     if( ok ) {
         session = WREFindDialogSession( server );
-        ok = (session != NULL);
-    }
-
-    if( ok ) {
-        ok = WRAllocDataFromDDE( hData, &data, &size );
-    }
-
-    if( ok ) {
-        if( session->lnode->data != NULL ) {
-            WRMemFree( session->lnode->data );
+        if( session == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &data, &size );
+            if( ok ) {
+                if( session->lnode->data != NULL ) {
+                    WRMemFree( session->lnode->data );
+                }
+                session->lnode->data = data;
+                session->lnode->Info.Length = size;
+                session->rinfo->modified = true;
+            }
         }
-        session->lnode->data = data;
-        session->lnode->Info.Length = size;
-        session->rinfo->modified = true;
     }
 
     return( ok );
@@ -509,6 +507,8 @@ bool WREEditDialogResource( WRECurrentResInfo *curr )
                     if( WREStartDialogSession( curr ) == NULL ) {
                         ok = false;
                     }
+//                    WRMemFree( curr->lang->data );
+//                    curr->lang->data = NULL;
                 }
             } else {
                 if( WREStartDialogSession( curr ) == NULL ) {
