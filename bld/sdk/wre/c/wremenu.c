@@ -222,12 +222,8 @@ bool WRENewMenuResource( void )
 
 bool WREEditMenuResource( WRECurrentResInfo *curr )
 {
-    void                *rdata;
-    bool                ok, rdata_alloc;
+    bool                ok;
     WREMenuSession      *session;
-
-    rdata = NULL;
-    rdata_alloc = false;
 
     ok = (curr != NULL && curr->lang != NULL);
 

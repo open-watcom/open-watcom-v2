@@ -690,8 +690,9 @@ static bool readInResourceFile( const char *fullname )
             imgType = BITMAP_IMG;
             data = WRAllocCopyResData( info, siinfo->lnode );
             dsize = siinfo->lnode->Info.Length;
-            ok = (data != NULL);
-            if( ok ) {
+            if( data == NULL ) {
+                ok = false;
+            } else {
                 ok = WRAddBitmapFileHeader( &data, &dsize );
             }
         } else if( siinfo->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {

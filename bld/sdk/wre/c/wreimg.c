@@ -495,20 +495,24 @@ bool WRESetImageSessionResData( HCONV server, HDDEDATA hData )
 
     if( ok ) {
         session = WREFindImageSession( server );
-        ok = (session != NULL);
-    }
-
-    if( ok ) {
-        ok = WRAllocDataFromDDE( hData, &data, &size );
-    }
-
-    if( ok ) {
-        if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
-            ok = WRESetBitmapSessionResData( session, data, size );
-        } else if( session->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
-            ok = WRESetCursorSessionResData( session, data, size );
-        } else if( session->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
-            ok = WRESetIconSessionResData( session, data, size );
+        if( session == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &data, &size );
+            if( ok ) {
+                if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
+                    ok = WRESetBitmapSessionResData( session, data, size );
+                } else if( session->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
+                    ok = WRESetCursorSessionResData( session, data, size );
+                } else if( session->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
+                    ok = WRESetIconSessionResData( session, data, size );
+                } else {
+                    ok = false;
+                }
+                if( !ok ) {
+                    WRMemFree( data );
+                }
+            }
         }
     }
 
@@ -619,7 +623,6 @@ bool WREEditImageResource( WRECurrentResInfo *curr )
             } else {
                 ok = false;
             }
-
             if( ok ) {
                 if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
                     curr->lang->data = WREGetCopyResData( curr );
@@ -629,6 +632,8 @@ bool WREEditImageResource( WRECurrentResInfo *curr )
                         if( WREStartImageSession( service, curr, false ) == NULL ) {
                             ok = false;
                         }
+//                        curr->lang->data = NULL;
+//                        WRMemFree( curr->lang->data );
                     }
                 } else {
                     if( WREStartImageSession( service, curr, false ) == NULL ) {

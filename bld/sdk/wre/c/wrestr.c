@@ -197,8 +197,6 @@ bool WREEditStringResource( WRECurrentResInfo *curr )
     bool                ok;
     WREStringSession    *session;
 
-    nodes = NULL;
-
     ok = (curr != NULL && curr->info != NULL && curr->type != NULL);
 
     if( ok ) {

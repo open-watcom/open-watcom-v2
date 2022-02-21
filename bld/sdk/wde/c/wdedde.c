@@ -394,6 +394,8 @@ bool WdeStartDDEEditSession( void )
     bool                ok;
 
     object = NULL;
+    filename = NULL;
+
     ditem = WdeAllocResDlgItem();
     ok = (ditem != NULL);
 
@@ -462,7 +464,9 @@ bool WdeStartDDEEditSession( void )
 
     if( ok ) {
         rinfo = WdeCreateNewResource( filename );
-        ok = (rinfo != NULL);
+        if( rinfo == NULL ) {
+            ok = false;
+        }
     }
 
     if( ok ) {
@@ -479,11 +483,13 @@ bool WdeStartDDEEditSession( void )
             }
             ditem = NULL;
         }
-        ok = ok && (object != NULL);
-    }
-
-    if( ok ) {
-        MakeObjectCurrent( object );
+        if( ok ) {
+            if( object == NULL ) {
+                ok = false;
+            } else {
+                MakeObjectCurrent( object );
+            }
+        }
     }
 
     if( !ok ) {
@@ -510,14 +516,11 @@ void WdeHandlePokedData( HDDEDATA hData )
     char        *cmd;
     size_t      size;
     WdeResInfo  *rinfo;
-    bool        ok;
 
     if( hData == NULL ) {
         return;
     }
-
-    ok = WRAllocDataFromDDE( hData, &cmd, &size );
-    if( !ok ) {
+    if( !WRAllocDataFromDDE( hData, &cmd, &size ) ) {
         return;
     }
 
