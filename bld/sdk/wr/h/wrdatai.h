@@ -47,6 +47,5 @@
 /****************************************************************************/
 extern bool WRReadResData( FILE *fp, char *data, size_t length );
 extern bool WRWriteResData( FILE *fp, char *data, size_t length );
-extern char *WRCopyExistingData( WResLangNode *lnode );
 
 #endif

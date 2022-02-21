@@ -252,7 +252,7 @@ bool WREEndEditDialogResource( HCONV conv )
 
     session = WREFindDialogSession( conv );
 
-    if( session ) {
+    if( session != NULL ) {
         ret = true;
         DumpEmptyResource( session );
         WRERemoveDialogEditSession( session );
@@ -393,39 +393,32 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hData )
 
     if( ok ) {
         session = WREFindDialogSession( server );
-        ok = (session != NULL);
-    }
-
-    if( ok ) {
-        ok = WRAllocDataFromDDE( hData, &data, &size );
-    }
-
-    if( ok ) {
-        name = WRMem2WResID( data, session->info.is32bit );
-        ok = (name != NULL);
-    }
-
-    if( ok ) {
-        ok = WRERenameWResResNode( session->tnode, &session->rnode, name );
-    }
-
-    if( ok ) {
-        session->rinfo->modified = true;
-        WRESetResNamesFromType( session->rinfo, RESOURCE2INT( RT_DIALOG ), true, name, 0 );
-    }
-
-    if( data != NULL ) {
-        WRMemFree( data );
-    }
-
-    if( name != NULL ) {
-        WRMemFree( name );
+        if( session == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &data, &size );
+            if( ok ) {
+                name = WRMem2WResID( data, session->info.is32bit );
+                if( name == NULL ) {
+                    ok = false;
+                } else {
+                    ok = WRERenameWResResNode( session->tnode, &session->rnode, name );
+                    if( ok ) {
+                        session->rinfo->modified = true;
+                        WRESetResNamesFromType( session->rinfo, RESOURCE2INT( RT_DIALOG ), true, name, 0 );
+                    }
+                    WRMemFree( name );
+                }
+                WRMemFree( data );
+            }
+        }
     }
 
     return( ok );
 }
 
-bool WRESetDlgSessionResData( HCONV server, HDDEDATA hData )
+bool WRESetDlg
+ResData( HCONV server, HDDEDATA hData )
 {
     WREDialogSession    *session;
     char                *data;

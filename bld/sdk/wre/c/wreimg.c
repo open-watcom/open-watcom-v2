@@ -392,32 +392,24 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hData )
 
     if( ok ) {
         session = WREFindImageSession( server );
-        ok = (session != NULL);
-    }
-
-    if( ok ) {
-        ok = WRAllocDataFromDDE( hData, &data, &size );
-    }
-
-    if( ok ) {
-        name = WRMem2WResID( data, false );
-        ok = (name != NULL);
-    }
-
-    if( ok ) {
-        ok = WRERenameWResResNode( session->tnode, &session->rnode, name );
-    }
-
-    if( ok ) {
-        WRESetResNamesFromType( session->rinfo, session->type, true, name, 0 );
-    }
-
-    if( data != NULL ) {
-        WRMemFree( data );
-    }
-
-    if( name != NULL ) {
-        WRMemFree( name );
+        if( session == NULL ) {
+            ok = false;
+        } else {
+            ok = WRAllocDataFromDDE( hData, &data, &size );
+            if( ok ) {
+                name = WRMem2WResID( data, false );
+                if( name == NULL ) {
+                    ok = false;
+                } else {
+                    ok = WRERenameWResResNode( session->tnode, &session->rnode, name );
+                    if( ok ) {
+                        WRESetResNamesFromType( session->rinfo, session->type, true, name, 0 );
+                    }
+                    WRMemFree( name );
+                }
+                WRMemFree( data );
+            }
+        }
     }
 
     return( ok );
@@ -618,16 +610,14 @@ bool WREEditImageResource( WRECurrentResInfo *curr )
     if( ok ) {
         session = WREFindLangImageSession( curr->lang );
         if( session == NULL ) {
-            if( ok ) {
-                if( curr->info->current_type == RESOURCE2INT( RT_BITMAP ) ) {
-                    service = BitmapService;
-                } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
-                    service = CursorService;
-                } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_ICON ) ) {
-                    service = IconService;
-                } else {
-                    ok = false;
-                }
+            if( curr->info->current_type == RESOURCE2INT( RT_BITMAP ) ) {
+                service = BitmapService;
+            } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
+                service = CursorService;
+            } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_ICON ) ) {
+                service = IconService;
+            } else {
+                ok = false;
             }
 
             if( ok ) {

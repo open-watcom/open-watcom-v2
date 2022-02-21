@@ -94,7 +94,7 @@ bool WRWriteResData( FILE *fp, char *data, size_t length )
     return( ok );
 }
 
-char *WRCopyExistingData( WResLangNode *lnode )
+static char *WRAllocCopyExistingData( WResLangNode *lnode )
 {
     char       *rdata;
 
@@ -120,7 +120,7 @@ char * WRAPI WRAllocCopyResData( WRInfo *info, WResLangNode *lnode )
     ok = ( info != NULL && lnode != NULL );
 
     if( ok && lnode->data != NULL ) {
-        return( WRCopyExistingData( lnode ) );
+        return( WRAllocCopyExistingData( lnode ) );
     }
 
     if( ok ) {
