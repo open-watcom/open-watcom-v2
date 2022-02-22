@@ -56,7 +56,7 @@ dlltarg_objs          = $(sys_object) &
     wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
     winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj &
     wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj &
-    widn2str.obj wclip.obj wisedit.obj weditsym.obj &
+    wclip.obj wisedit.obj weditsym.obj &
     preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
 dlltarg_libs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
 dlltarg_res_version_nt_386 = version.res

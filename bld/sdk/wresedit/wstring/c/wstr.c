@@ -38,7 +38,6 @@
 #include "wstrdup.h"
 #include "wstr.h"
 #include "wcopystr.h"
-#include "widn2str.h"
 #include "wnewitem.h"
 #include "sysall.rh"
 
@@ -561,7 +560,7 @@ static bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo, WStringBlock
             continue;
         }
 
-        text = WResIDNameToStr( block->block.String[i] );
+        text = WRWResIDNameToStr( block->block.String[i] );
         if( text == NULL ) {
             continue;
         }
