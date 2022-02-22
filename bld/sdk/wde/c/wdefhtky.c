@@ -127,7 +127,7 @@ OBJPTR WdeMakeHtKy( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultHtKy, style );
-    SETCTL_TEXT( WdeDefaultHtKy, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultHtKy, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultHtKy, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

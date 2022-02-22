@@ -124,7 +124,7 @@ OBJPTR WdeMakeEdit( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultEdit, style );
-    SETCTL_TEXT( WdeDefaultEdit, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultEdit, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultEdit, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

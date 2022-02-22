@@ -127,7 +127,7 @@ OBJPTR WdeMakeLView( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle s
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultLView, style );
-    SETCTL_TEXT( WdeDefaultLView, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultLView, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultLView, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

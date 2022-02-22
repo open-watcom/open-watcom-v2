@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ typedef union ResNameOrOrdinal {
 } _WCUNALIGNED ResNameOrOrdinal;
 #include "poppck.h"
 
-extern ResNameOrOrdinal *ResNumToNameOrOrd( uint_16 num );
-extern ResNameOrOrdinal *ResStrToNameOrOrd( const char *string );
+extern ResNameOrOrdinal *ResNumToNameOrOrdinal( uint_16 num );
+extern ResNameOrOrdinal *ResStrToNameOrOrdinal( const char *string );
 
 #endif

@@ -127,7 +127,7 @@ OBJPTR WdeMakeTabC( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultTabC, style );
-    SETCTL_TEXT( WdeDefaultTabC, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultTabC, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultTabC, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

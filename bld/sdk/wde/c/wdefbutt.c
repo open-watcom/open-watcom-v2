@@ -156,7 +156,7 @@ OBJPTR WdeMakeButton( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle 
         style |= WS_TABSTOP;
     }
     SETCTL_STYLE( WdeDefaultButton, style );
-    SETCTL_TEXT( WdeDefaultButton, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultButton, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultButton, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

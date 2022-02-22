@@ -128,7 +128,7 @@ OBJPTR WdeMakeCBox( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     style |= WS_VISIBLE | WS_TABSTOP | WS_CHILD;
     SETCTL_STYLE( WdeDefaultCBox, style );
-    SETCTL_TEXT( WdeDefaultCBox, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultCBox, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultCBox, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

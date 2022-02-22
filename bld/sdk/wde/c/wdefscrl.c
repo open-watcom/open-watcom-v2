@@ -143,7 +143,7 @@ OBJPTR WdeMakeScroll( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle 
 
     style |= WS_VISIBLE | WS_CHILD;
     SETCTL_STYLE( WdeDefaultScroll, style );
-    SETCTL_TEXT( WdeDefaultScroll, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultScroll, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultScroll, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

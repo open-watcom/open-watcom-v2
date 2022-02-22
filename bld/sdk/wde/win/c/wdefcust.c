@@ -290,14 +290,11 @@ OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
 
         if( cust_info->ms_lib ) {
             style = cust_info->control_info.ms.Type[cust_type].dwStyle;
-            SETCTL_TEXT( WdeDefaultCustom,
-                         ResStrToNameOrOrd( cust_info->control_info.ms.szTitle ) );
-            SETCTL_CLASSID( WdeDefaultCustom,
-                            WdeStrToControlClass( cust_info->control_info.ms.szClass ) );
+            SETCTL_TEXT( WdeDefaultCustom, ResStrToNameOrOrdinal( cust_info->control_info.ms.szTitle ) );
+            SETCTL_CLASSID( WdeDefaultCustom, WdeStrToControlClass( cust_info->control_info.ms.szClass ) );
         } else {
             style = cust_info->control_info.bor.Type[cust_type].dwStyle;
-            SETCTL_TEXT( WdeDefaultCustom,
-                         ResStrToNameOrOrd( cust_info->control_info.bor.szTitle ) );
+            SETCTL_TEXT( WdeDefaultCustom, ResStrToNameOrOrdinal( cust_info->control_info.bor.szTitle ) );
             SETCTL_CLASSID( WdeDefaultCustom,
                             WdeStrToControlClass( cust_info->control_info.bor.szClass ) );
         }
@@ -832,7 +829,7 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
 
         WRMemFree( GETCTL_TEXT( info ) );
         WRMemFree( GETCTL_CLASSID( info ) );
-        SETCTL_TEXT( info, ResStrToNameOrOrd( ctl_data->szTitle ) );
+        SETCTL_TEXT( info, ResStrToNameOrOrdinal( ctl_data->szTitle ) );
         SETCTL_CLASSID( info, WdeStrToControlClass( ctl_data->szClass ) );
 
         GlobalUnlock( ctl_style );

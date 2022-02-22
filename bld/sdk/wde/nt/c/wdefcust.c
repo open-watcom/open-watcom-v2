@@ -265,10 +265,8 @@ OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
         style &= ~WS_POPUP;
         style |= (WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_GROUP);
         SETCTL_STYLE( WdeDefaultCustom, style );
-        SETCTL_TEXT( WdeDefaultCustom,
-                     ResStrToNameOrOrd( cust_lib->lpcci[cust_index].szTextDefault ) );
-        SETCTL_CLASSID( WdeDefaultCustom,
-                        WdeStrToControlClass( cust_lib->lpcci[cust_index].szClass ) );
+        SETCTL_TEXT( WdeDefaultCustom, ResStrToNameOrOrdinal( cust_lib->lpcci[cust_index].szTextDefault ) );
+        SETCTL_CLASSID( WdeDefaultCustom, WdeStrToControlClass( cust_lib->lpcci[cust_index].szClass ) );
 
         SETCTL_ID( WdeDefaultCustom, WdeGetNextControlID() );
 

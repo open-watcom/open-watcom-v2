@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -780,9 +781,9 @@ FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
     if( control->Win32 ) {
         control->u.ctrl32.ID = cntlid;
         control->u.ctrl32.SizeInfo = sizeinfo;
-        control->u.ctrl32.Text = WResIDToNameOrOrd( cntltext );
+        control->u.ctrl32.Text = WResIDToNameOrOrdinal( cntltext );
         RESFREE( cntltext );
-        control->u.ctrl32.ClassID = ResNameOrOrdToControlClass( ctlclassname );
+        control->u.ctrl32.ClassID = ResNameOrOrdinalToControlClass( ctlclassname );
         control->u.ctrl32.Style = style;
 
         /* ExtraBytes and ExtendStyle are 0 for all controls */
@@ -802,9 +803,9 @@ FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
     } else {
         control->u.ctrl.ID = cntlid;
         control->u.ctrl.SizeInfo = sizeinfo;
-        control->u.ctrl.Text = WResIDToNameOrOrd( cntltext );
+        control->u.ctrl.Text = WResIDToNameOrOrdinal( cntltext );
         RESFREE( cntltext );
-        control->u.ctrl.ClassID = ResNameOrOrdToControlClass( ctlclassname );
+        control->u.ctrl.ClassID = ResNameOrOrdinalToControlClass( ctlclassname );
         control->u.ctrl.Style = style;
         /* ExtraBytes is 0 for all controls that RC understands */
         control->u.ctrl.ExtraBytes = 0;

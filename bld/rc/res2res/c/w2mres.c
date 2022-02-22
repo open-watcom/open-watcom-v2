@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +38,8 @@
 #include "trmemcvr.h"
 
 
-static ResNameOrOrdinal * ConvertIDToNameOrOrd( WResID * inid )
-/*************************************************************/
+static ResNameOrOrdinal *ConvertIDToNameOrOrdinal( WResID * inid )
+/****************************************************************/
 {
     ResNameOrOrdinal *  newname;
 
@@ -73,8 +74,8 @@ static bool ConvertOneWResource( FILE *in_fp, FILE *out_fp, WResDirWindow wind )
     typeinfo = WResGetTypeInfo( wind );
     resinfo = WResGetResInfo( wind );
     langinfo = WResGetLangInfo( wind );
-    outhead.Type = ConvertIDToNameOrOrd( &(typeinfo->TypeName) );
-    outhead.Name = ConvertIDToNameOrOrd( &(resinfo->ResName) );
+    outhead.Type = ConvertIDToNameOrOrdinal( &(typeinfo->TypeName) );
+    outhead.Name = ConvertIDToNameOrOrdinal( &(resinfo->ResName) );
     outhead.MemoryFlags = langinfo->MemoryFlags;
     outhead.Size = langinfo->Length;
 

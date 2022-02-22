@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1339,7 +1340,7 @@ menu-stmt
     : Y_MENU name-id
         {
             $$.token = Y_MENU;
-            $$.Opt.Name = WResIDToNameOrOrd( $2 );
+            $$.Opt.Name = WResIDToNameOrOrdinal( $2 );
             RcMemFree( $2 );
         }
     ;
@@ -1351,28 +1352,28 @@ class-stmt
 
 class-name
     : string-constant
-        { $$ = ResStrToNameOrOrd( $1.string ); RcMemFree( $1.string ); }
+        { $$ = ResStrToNameOrOrdinal( $1.string ); RcMemFree( $1.string ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrd( (uint_16)$1.Value ); }
+        { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value ); }
     ;
 
 ctl-class-name
     : string-constant
-        { $$ = ResStrToNameOrOrd( $1.string ); RcMemFree( $1.string ); }
+        { $$ = ResStrToNameOrOrdinal( $1.string ); RcMemFree( $1.string ); }
     | Y_BUTTON
-        { $$ = ResStrToNameOrOrd( "BUTTON" ); }
+        { $$ = ResStrToNameOrOrdinal( "BUTTON" ); }
     | Y_COMBOBOX
-        { $$ = ResStrToNameOrOrd( "COMBOBOX" ); }
+        { $$ = ResStrToNameOrOrdinal( "COMBOBOX" ); }
     | Y_EDIT
-        { $$ = ResStrToNameOrOrd( "EDIT" ); }
+        { $$ = ResStrToNameOrOrdinal( "EDIT" ); }
     | Y_LISTBOX
-        { $$ = ResStrToNameOrOrd( "LISTBOX" ); }
+        { $$ = ResStrToNameOrOrdinal( "LISTBOX" ); }
     | Y_SCROLLBAR
-        { $$ = ResStrToNameOrOrd( "SCROLLBAR" ); }
+        { $$ = ResStrToNameOrOrdinal( "SCROLLBAR" ); }
     | Y_STATIC
-        { $$ = ResStrToNameOrOrd( "STATIC" ); }
+        { $$ = ResStrToNameOrOrdinal( "STATIC" ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrd( (uint_16)$1.Value ); }
+        { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value ); }
     ;
 
 font-stmt
@@ -1504,7 +1505,7 @@ diag-control-stmt
 cntl-text-options
     : string-constant cntl-options
         {
-            $2.Text = ResStrToNameOrOrd( $1.string );
+            $2.Text = ResStrToNameOrOrdinal( $1.string );
             RcMemFree( $1.string );
             $$ = $2;
         }
@@ -1641,7 +1642,7 @@ state3-stmt
 
 icon-name
     : name-id
-        { $$ = WResIDToNameOrOrd( $1 ); RcMemFree( $1 ); }
+        { $$ = WResIDToNameOrOrdinal( $1 ); RcMemFree( $1 ); }
     ;
 
 icon-parms

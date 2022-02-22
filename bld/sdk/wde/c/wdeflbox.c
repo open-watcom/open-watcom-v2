@@ -124,7 +124,7 @@ OBJPTR WdeMakeLBox( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     style |= WS_VISIBLE | WS_TABSTOP | WS_CHILD;
     SETCTL_STYLE( WdeDefaultLBox, style );
-    SETCTL_TEXT( WdeDefaultLBox, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultLBox, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultLBox, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

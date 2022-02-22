@@ -126,7 +126,7 @@ OBJPTR WdeMakeAniC( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultAniC, style );
-    SETCTL_TEXT( WdeDefaultAniC, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultAniC, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultAniC, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

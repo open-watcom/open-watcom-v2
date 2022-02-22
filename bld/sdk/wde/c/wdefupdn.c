@@ -129,7 +129,7 @@ OBJPTR WdeMakeUpDn( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultUpDn, style );
-    SETCTL_TEXT( WdeDefaultUpDn, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultUpDn, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultUpDn, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

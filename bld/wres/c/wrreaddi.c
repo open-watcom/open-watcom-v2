@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -285,8 +285,8 @@ static bool readMResDir( FILE *fp, WResDir currdir, bool *dup_discarded,
     /* assume that a NULL head is the EOF which is the only way of detecting */
     /* the end of a MS .RES file */
     while( head != NULL && !( iswin32 && head32 == NULL ) && !error ) {
-        name = WResIDFromNameOrOrd( head->Name );
-        type = WResIDFromNameOrOrd( head->Type );
+        name = WResIDFromNameOrOrdinal( head->Name );
+        type = WResIDFromNameOrOrdinal( head->Type );
         error = (name == NULL || type == NULL);
 
         /* MResReadResourceHeader leaves the file at the start of the resource*/

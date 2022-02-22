@@ -693,7 +693,7 @@ presparam-stmt
 
 presparam-name
     : name-id
-        { $$ = WResIDToNameOrOrd( $1 ); RcMemFree( $1 ); }
+        { $$ = WResIDToNameOrOrdinal( $1 ); RcMemFree( $1 ); }
     ;
 
 string-table-resource
@@ -1120,24 +1120,24 @@ menu-stmt
     : Y_MENU name-id
         {
             $$.token = Y_MENU;
-            $$.Opt.Name = WResIDToNameOrOrd( $2 );
+            $$.Opt.Name = WResIDToNameOrOrdinal( $2 );
             RcMemFree( $2 );
         }
     ;
 
 ctl-class-name
     : string-constant
-        { $$ = ResStrToNameOrOrd( $1.string ); RcMemFree( $1.string ); }
+        { $$ = ResStrToNameOrOrdinal( $1.string ); RcMemFree( $1.string ); }
     | Y_PUSHBUTTON
-        { $$ = ResStrToNameOrOrd( "PUSHBUTTON" ); }
+        { $$ = ResStrToNameOrOrdinal( "PUSHBUTTON" ); }
     | Y_COMBOBOX
-        { $$ = ResStrToNameOrOrd( "COMBOBOX" ); }
+        { $$ = ResStrToNameOrOrdinal( "COMBOBOX" ); }
     | Y_ENTRYFIELD
-        { $$ = ResStrToNameOrOrd( "ENTRYFIELD" ); }
+        { $$ = ResStrToNameOrOrdinal( "ENTRYFIELD" ); }
     | Y_LISTBOX
-        { $$ = ResStrToNameOrOrd( "LISTBOX" ); }
+        { $$ = ResStrToNameOrOrdinal( "LISTBOX" ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrd( (uint_16)$1.Value | 0x80 ); }
+        { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value | 0x80 ); }
     /* A little hack - OS/2 standard window classes are defined like this:
        #define WC_BUTTON ((PSZ)0xffff0003L)
        Since PSZ doesn't mean anything to wrc, it won't recognize the
@@ -1145,7 +1145,7 @@ ctl-class-name
        clean but does the job.
      */
     | Y_LPAREN Y_LPAREN Y_PSZ Y_RPAREN constant-expression Y_RPAREN
-        { $$ = ResNumToNameOrOrd( (uint_16)$5.Value | 0x80 ); }
+        { $$ = ResNumToNameOrOrdinal( (uint_16)$5.Value | 0x80 ); }
     ;
 
 font-stmt
@@ -1209,7 +1209,7 @@ diag-control-stmt
 cntl-text-options
     : string-constant cntl-options
         {
-            $2.Text = ResStrToNameOrOrd( $1.string );
+            $2.Text = ResStrToNameOrOrdinal( $1.string );
             RcMemFree( $1.string );
             $$ = $2;
         }
@@ -1372,7 +1372,7 @@ icon-parms
 
 control-name
     : name-id
-        { $$ = WResIDToNameOrOrd( $1 ); RcMemFree( $1 ); }
+        { $$ = WResIDToNameOrOrdinal( $1 ); RcMemFree( $1 ); }
     ;
 
 /* OS/2 accepts only numbers or strings for control statement text field */
@@ -1392,12 +1392,12 @@ control-stmt
 
 cntl-text
     : string-constant
-        { $$ = ResStrToNameOrOrd( $1.string ); RcMemFree( $1.string ); }
+        { $$ = ResStrToNameOrOrdinal( $1.string ); RcMemFree( $1.string ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrd( (uint_16)$1.Value ); }
+        { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value ); }
     | Y_NAME
         {
-            $$ = ResNumToNameOrOrd( 0 );
+            $$ = ResNumToNameOrOrdinal( 0 );
             RcError( ERR_SYMBOL_NOT_DEFINED, $1.string );
             ErrorHasOccured = true;
         }

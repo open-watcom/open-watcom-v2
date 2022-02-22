@@ -168,7 +168,7 @@ OBJPTR WdeMakeSBar( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultSBar, style );
-    SETCTL_TEXT( WdeDefaultSBar, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultSBar, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultSBar, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

@@ -128,7 +128,7 @@ static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *
     }
 
     if( !lnode->Info.lang.lang && !lnode->Info.lang.sublang ) {
-        name = WResIDToNameOrOrd( &rnode->Info.ResName );
+        name = WResIDToNameOrOrdinal( &rnode->Info.ResName );
     } else {
         if( rnode->Info.ResName.IsName ) {
             len = rnode->Info.ResName.ID.Name.NumChars;
@@ -147,7 +147,7 @@ static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *
             sprintf( str, "%u_%u_%u", rnode->Info.ResName.ID.Num,
                         lnode->Info.lang.lang, lnode->Info.lang.sublang );
         }
-        name = ResStrToNameOrOrd( str );
+        name = ResStrToNameOrOrdinal( str );
         MemFree( str );
     }
 
@@ -165,7 +165,7 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
     for( lnode = rnode->Head; lnode != NULL && ok; lnode = lnode->Next ) {
         mheader.Size = lnode->Info.Length;
         mheader.MemoryFlags = lnode->Info.MemoryFlags;
-        mheader.Type = WResIDToNameOrOrd( &tnode->Info.TypeName );
+        mheader.Type = WResIDToNameOrOrdinal( &tnode->Info.TypeName );
         mheader.Name = WRCreateMRESResName( rnode, lnode );
         ok = (mheader.Type != NULL && mheader.Name != NULL);
         if( ok ) {

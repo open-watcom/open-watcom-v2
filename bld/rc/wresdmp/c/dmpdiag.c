@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,8 +89,8 @@ static void PrintControlClass( ControlClass * class )
     }
 }
 
-static void PrintResNameOrOrd( ResNameOrOrdinal * name )
-/******************************************************/
+static void PrintResNameOrOrdinal( ResNameOrOrdinal * name )
+/**********************************************************/
 {
     if (name->ord.fFlag == 0xff) {
         printf( "%5d\n", name->ord.wOrdinalID );
@@ -108,7 +109,7 @@ static void PrintDialogBoxControl( DialogBoxControl * control )
     PrintControlClass( control->ClassID );
     printf( "Extra bytes: %d\n", control->ExtraBytes );
     fputs( "\tText: ", stdout );
-    PrintResNameOrOrd( control->Text );
+    PrintResNameOrOrdinal( control->Text );
 }
 
 bool DumpDialog( uint_32 offset, uint_32 length, FILE *fp )

@@ -147,7 +147,7 @@ OBJPTR WdeMakeStatic( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     style |= WS_VISIBLE | WS_CHILD;
     SETCTL_STYLE( WdeDefaultStatic, style );
-    SETCTL_TEXT( WdeDefaultStatic, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultStatic, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultStatic, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );

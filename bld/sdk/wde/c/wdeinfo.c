@@ -560,7 +560,7 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     }
 
     if( str != NULL ) {
-        c_is.u.ctl.text = ResStrToNameOrOrd( str );
+        c_is.u.ctl.text = ResStrToNameOrOrdinal( str );
         WRMemFree( str );
     } else {
         c_is.u.ctl.text = NULL;

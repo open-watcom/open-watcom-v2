@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,8 +108,8 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
     bool                error;
 
     /* fill in and output a MS format resource header */
-    ms_head.Type = WResIDToNameOrOrd( type );
-    ms_head.Name = WResIDToNameOrOrd( name );
+    ms_head.Type = WResIDToNameOrOrdinal( type );
+    ms_head.Name = WResIDToNameOrOrdinal( name );
     ms_head.MemoryFlags = flags;
     ms_head.Size = loc.len;
     ms_head.LanguageId = MAKELANGID( lang->lang, lang->sublang );

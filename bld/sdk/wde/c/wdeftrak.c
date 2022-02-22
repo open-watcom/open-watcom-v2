@@ -129,7 +129,7 @@ OBJPTR WdeMakeTrak( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     style |= WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_CHILD;
 
     SETCTL_STYLE( WdeDefaultTrak, style );
-    SETCTL_TEXT( WdeDefaultTrak, ResStrToNameOrOrd( text ) );
+    SETCTL_TEXT( WdeDefaultTrak, ResStrToNameOrOrdinal( text ) );
     SETCTL_ID( WdeDefaultTrak, WdeGetNextControlID() );
 
     WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
