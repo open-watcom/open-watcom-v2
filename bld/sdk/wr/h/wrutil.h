@@ -43,7 +43,7 @@ WRDLLENTRY extern void      WRAPI WRMassageFilter( char *filter );
 WRDLLENTRY extern size_t    WRAPI WRStrlen( const char *str, bool is32Bit );
 WRDLLENTRY extern size_t    WRAPI WRStrlen32( const char *str );
 
-WRDLLENTRY extern char      *WRAPI WRWResIDNameToStr( WResIDName *name );
+WRDLLENTRY extern char      *WRAPI WRStringFromWResIDName( WResIDName *name );
 
 WRDLLENTRY extern size_t    WRAPI WRFindFnOffset( const char *name );
 

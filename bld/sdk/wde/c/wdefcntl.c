@@ -1865,7 +1865,7 @@ bool WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     }
 
     if( ok ) {
-        ok = WdeGetNameOrOrdSize( obj->parent, GETCTL_TEXT( obj->control_info ), &size );
+        ok = WdeGetNameOrOrdinalSize( obj->parent, GETCTL_TEXT( obj->control_info ), &size );
     }
 
     if( ok ) {

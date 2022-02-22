@@ -38,7 +38,7 @@
 #include "rcstr.grh"
 #include "wderes.h"
 #include "wdefdiag.h"
-#include "wdei2mem.h"
+#include "wde2data.h"
 #include "wdemsgbx.h"
 #include "wdesdlg.h"
 #include "wdesvres.h"
@@ -300,7 +300,7 @@ HDDEDATA WdeCreateResNameData( WResID *name, bool is32bit )
 
     hData = NULL;
 
-    if( WRWResID2Mem( name, &data, &size, is32bit ) ) {
+    if( WRDataFromWResID( name, &data, &size, is32bit ) ) {
         hData = DdeCreateDataHandle( IdInst, (LPBYTE)data, (DWORD)size, 0, hNameItem, WdeDataClipbdFormat, 0 );
         WRMemFree( data );
     }
@@ -436,7 +436,7 @@ bool WdeStartDDEEditSession( void )
     }
 
     if( ok ) {
-        ditem->dialog_name = WRMem2WResID( data, ditem->is32bit );
+        ditem->dialog_name = WRWResIDFromData( data, ditem->is32bit );
         if( ditem->dialog_name == NULL ) {
             ok = false;
         }
@@ -453,7 +453,7 @@ bool WdeStartDDEEditSession( void )
             ok = WRAllocDataFromDDE( hData, &data, &size );
             DdeFreeDataHandle( hData );
             if( ok ) {
-                ditem->dialog_info = WdeMem2DBI( data, size, ditem->is32bit );
+                ditem->dialog_info = WdeDBIFromData( data, size, ditem->is32bit );
                 if( ditem->dialog_info == NULL ) {
                     ok = false;
                 }

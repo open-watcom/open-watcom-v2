@@ -182,7 +182,7 @@ bool WSetEditWindowStringData( WStringEditInfo *einfo, WStringBlock *block,
     ok = (einfo != NULL && einfo->edit_dlg != NULL && block != NULL);
 
     if( ok ) {
-        text = WRWResIDNameToStr( block->block.String[string_id & 0xf] );
+        text = WRStringFromWResIDName( block->block.String[string_id & 0xf] );
         ok = (text != NULL);
     }
 
@@ -270,7 +270,7 @@ bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
     if( ok ) {
         ok = true;
         if( block == new_block && id == string_id ) {
-            oldtext = WRWResIDNameToStr( block->block.String[string_id & 0xf] );
+            oldtext = WRStringFromWResIDName( block->block.String[string_id & 0xf] );
             if( text != NULL && oldtext != NULL ) {
                 ok = ( strcmp( text, oldtext ) != 0 );
             }
@@ -505,8 +505,7 @@ bool WIsCurrentModified( WStringEditInfo *einfo, char *text, uint_16 id, char *s
     mod = ( einfo != NULL && einfo->current_block != NULL && text != NULL );
 
     if( mod ) {
-        current_text = WRWResIDNameToStr(
-            einfo->current_block->block.String[einfo->current_string & 0xf] );
+        current_text = WRStringFromWResIDName( einfo->current_block->block.String[einfo->current_string & 0xf] );
     }
 
     if( mod ) {
@@ -620,7 +619,7 @@ bool WClipStringItem( WStringEditInfo *einfo, bool cut )
     }
 
     if( ok ) {
-        text = WRWResIDNameToStr( block->block.String[id & 0xf] );
+        text = WRStringFromWResIDName( block->block.String[id & 0xf] );
         ok = ( text != NULL );
     }
 

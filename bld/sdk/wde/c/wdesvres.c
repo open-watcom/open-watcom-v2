@@ -36,7 +36,7 @@
 #include "wresall.h"
 #include "wderesin.h"
 #include "wdeactn.h"
-#include "wdei2mem.h"
+#include "wde2data.h"
 #include "wdecsize.h"
 #include "wdefdiag.h"
 #include "wdeselft.h"
@@ -242,7 +242,7 @@ WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem )
                 ditem->dialog_name = name;
             }
         }
-        dbi = WdeDBIFromObject( (WdeDialogObject *)ditem->object );
+        dbi = WdeAllocDBIFromObject( (WdeDialogObject *)ditem->object );
         if( dbi != NULL ) {
             if( ditem->dialog_info != NULL ) {
                 WdeFreeDialogBoxInfo( ditem->dialog_info );
@@ -269,7 +269,7 @@ bool WdeGetItemData( WdeResDlgItem *ditem, char **data, size_t *dsize )
         return( FALSE );
     }
 
-    return( WdeDBI2Mem( dbi, data, dsize ) );
+    return( WdeDataFromDBI( dbi, data, dsize ) );
 }
 
 WResResNode *WdeRenameWResResNode( WResTypeNode *tnode, WResResNode *rnode, WResID *name )

@@ -49,7 +49,7 @@
 #include "wdectl3d.h"
 #include "wde.rh"
 #include "wde_wres.h"
-#include "wdei2mem.h"
+#include "wde2data.h"
 #include "wdesdlg.h"
 #include "jdlg.h"
 #include "wclbproc.h"

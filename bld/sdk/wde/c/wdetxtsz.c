@@ -109,7 +109,7 @@ static bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
     return( ok );
 }
 
-bool WdeGetNameOrOrdSize( OBJPTR parent, ResNameOrOrdinal *name, SIZE *size )
+bool WdeGetNameOrOrdinalSize( OBJPTR parent, ResNameOrOrdinal *name, SIZE *size )
 {
     char        *text;
     HWND        win;

@@ -75,7 +75,7 @@ typedef struct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WdeDialogBoxInfo *WdeDBIFromObject( WdeDialogObject * );
+extern WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject * );
 extern OBJPTR           WdeCreateNewDialog( WResID *, bool is32bit );
 extern OBJPTR           WdeCreateDialogFromRes( WdeResInfo *, WdeResDlgItem * );
 WINEXPORT extern CREATE_RTN WdeDialogCreate;

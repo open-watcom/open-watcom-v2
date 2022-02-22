@@ -315,7 +315,7 @@ bool WREGetDlgSessionResName( HCONV server, char **data, size_t *size )
         return( false );
     }
 
-    if( !WRWResID2Mem( session->info.res_name, data, size, session->info.is32bit ) ) {
+    if( !WRDataFromWResID( session->info.res_name, data, size, session->info.is32bit ) ) {
         return( false );
     }
 
@@ -398,7 +398,7 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hData )
         } else {
             ok = WRAllocDataFromDDE( hData, &data, &size );
             if( ok ) {
-                name = WRMem2WResID( data, session->info.is32bit );
+                name = WRWResIDFromData( data, session->info.is32bit );
                 if( name == NULL ) {
                     ok = false;
                 } else {

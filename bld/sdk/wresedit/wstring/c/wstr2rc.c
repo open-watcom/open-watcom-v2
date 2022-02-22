@@ -45,7 +45,7 @@ static bool WWriteStringEntry( WStringBlock *block, uint_16 string_id, FILE *fp 
 
     strtext = NULL;
 
-    text = WRWResIDNameToStr( block->block.String[string_id & 0xf] );
+    text = WRStringFromWResIDName( block->block.String[string_id & 0xf] );
     ok = (text != NULL);
 
     if( ok ) {

@@ -336,7 +336,7 @@ static bool WdeValidateGroupBoxMove( WdeButtonObject *obj, POINT *pnt )
 
     if( Forward( obj->control, GET_OBJECT_INFO, &info, NULL ) && parent != NULL &&
         Forward( parent, GET_RESIZER, &resizer, NULL ) ) {
-        if( WdeGetNameOrOrdSize( parent, GETCTL_TEXT( info ), &size ) ) {
+        if( WdeGetNameOrOrdinalSize( parent, GETCTL_TEXT( info ), &size ) ) {
             text_rect.left = obj_rect.left + 8;
             text_rect.top = obj_rect.top + (resizer.xmap * 3) / 4;
             text_rect.right = text_rect.left + size.cx;

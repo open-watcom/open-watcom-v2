@@ -34,7 +34,7 @@
 #include "wdeglbl.h"
 #include "wdemsgbx.h"
 #include "rcstr.grh"
-#include "wdei2mem.h"
+#include "wde2data.h"
 #include "wdewait.h"
 #include "wrdll.h"
 #include "wdeselft.h"
@@ -88,7 +88,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi, char **fname, WRes
             lang.lang = DEF_LANG;
             lang.sublang = DEF_SUBLANG;
         }
-        ok = WdeDBI2Mem( dbi, &rdata, &size );
+        ok = WdeDataFromDBI( dbi, &rdata, &size );
     }
 
     if( ok ) {

@@ -47,7 +47,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool             WdeDBI2Mem( WdeDialogBoxInfo *, char **, size_t * );
-extern WdeDialogBoxInfo *WdeMem2DBI( const char *data, size_t size, bool );
+extern bool             WdeDataFromDBI( WdeDialogBoxInfo *, char **, size_t * );
+extern WdeDialogBoxInfo *WdeDBIFromData( const char *data, size_t size, bool );
 
 #endif

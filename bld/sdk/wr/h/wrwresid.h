@@ -37,7 +37,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern WResID * WRAPI WRMem2WResID( char *data, bool is32bit );
-WRDLLENTRY extern bool     WRAPI WRWResID2Mem( WResID *name, char **data, size_t *size, bool is32bit );
+WRDLLENTRY extern WResID * WRAPI WRWResIDFromData( char *data, bool is32bit );
+WRDLLENTRY extern bool     WRAPI WRDataFromWResID( WResID *name, char **data, size_t *size, bool is32bit );
 
 #endif

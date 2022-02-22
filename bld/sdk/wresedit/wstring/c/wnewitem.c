@@ -254,7 +254,7 @@ bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block, uint_16 
     }
 
     if( ok ) {
-        text = WRWResIDNameToStr( block->block.String[string_id & 0xf] );
+        text = WRStringFromWResIDName( block->block.String[string_id & 0xf] );
         ok = (text != NULL);
     }
 

@@ -92,7 +92,7 @@
 
 #define DEFAULT_FONTFACENAME    "Helv"
 #define DEFAULT_FONTPOINTSIZE   8
-/* following is DBCS text in Japanese "‚l‚r –¾’©" */
+/* following is DBCS text in Japanese "ï¿½lï¿½r ï¿½ï¿½ï¿½ï¿½" */
 #define DEFAULT_JFONTFACENAME   "\x82\x6C\x82\x72\x20\x96\xBE\x92\xA9"
 #define DEFAULT_JFONTPOINTSIZE  10
 #define DEFAULT_MEMFLAGS        (MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_MOVEABLE)
@@ -253,7 +253,7 @@ bool WdePreserveDialogWithDBI( WdeDialogObject *obj )
 {
     void            *vp;
 
-    vp = WdeDBIFromObject( obj );
+    vp = WdeAllocDBIFromObject( obj );
 
     if( vp == NULL ) {
         return( false );
@@ -269,7 +269,7 @@ bool WdePreserveDialogWithDBI( WdeDialogObject *obj )
     return( true );
 }
 
-WdeDialogBoxInfo *WdeDBIFromObject( WdeDialogObject *obj )
+WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
 {
     WdeDialogBoxInfo    *info;
     LIST                *clist;
@@ -285,7 +285,7 @@ WdeDialogBoxInfo *WdeDBIFromObject( WdeDialogObject *obj )
     info = (WdeDialogBoxInfo *)WRMemAlloc( sizeof( WdeDialogBoxInfo ) );
 
     if( info == NULL ) {
-        WdeWriteTrail( "WdeDBIFromObject: WdeResInfo alloc failed!" );
+        WdeWriteTrail( "WdeAllocDBIFromObject: WdeResInfo alloc failed!" );
         return( NULL );
     }
 
@@ -294,7 +294,7 @@ WdeDialogBoxInfo *WdeDBIFromObject( WdeDialogObject *obj )
     info->dialog_header = WdeCopyDialogBoxHeader( obj->dialog_info );
 
     if( info->dialog_header == NULL ) {
-        WdeWriteTrail( "WdeDBIFromObject: CopyDBH failed!" );
+        WdeWriteTrail( "WdeAllocDBIFromObject: CopyDBH failed!" );
         WRMemFree( info );
         return( NULL );
     }
@@ -313,13 +313,13 @@ WdeDialogBoxInfo *WdeDBIFromObject( WdeDialogObject *obj )
     for( clist = obj->ochildren; clist; clist = ListNext( clist ) ) {
         oentry = (WdeOrderedEntry *)ListElement( clist );
         if( !Forward( oentry->obj, GET_OBJECT_INFO, &control, &symbol ) ) {
-            WdeWriteTrail( "WdeDBIFromObject: GET_OBJECT_INFO failed!" );
+            WdeWriteTrail( "WdeAllocDBIFromObject: GET_OBJECT_INFO failed!" );
             WdeFreeDialogBoxInfo( info );
             return( NULL );
         }
         /* JPK - do it again for the help symbol */
         if( !Forward( oentry->obj, GET_OBJECT_HELPINFO, &control, &helpsymbol ) ) {
-            WdeWriteTrail( "WdeDBIFromObject: GET_OBJECT_HELPINFO failed!" );
+            WdeWriteTrail( "WdeAllocDBIFromObject: GET_OBJECT_HELPINFO failed!" );
             WdeFreeDialogBoxInfo( info );
             return( NULL );
         }
@@ -1132,8 +1132,7 @@ bool WdeDialogRestore( WdeDialogObject *obj, void *p1, void *p2 )
 
 bool WdeIsDialogRestorable( WdeDialogObject *obj )
 {
-    return( obj != NULL && obj->res_info != NULL && obj->dlg_item != NULL &&
-            obj->dlg_item->dialog_info != NULL );
+    return( obj != NULL && obj->res_info != NULL && obj->dlg_item != NULL && obj->dlg_item->dialog_info != NULL );
 }
 
 bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
@@ -1151,7 +1150,7 @@ bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
         Forward( obj->object_handle, RESOLVE_HELPSYMBOL, NULL, NULL );
     }
 
-    dbi = WdeDBIFromObject( obj );
+    dbi = WdeAllocDBIFromObject( obj );
     if( dbi != NULL ) {
         if( obj->dlg_item->dialog_info != NULL ) {
             WdeFreeDialogBoxInfo( obj->dlg_item->dialog_info );
@@ -1957,8 +1956,7 @@ bool WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *noteid, void *p2 )
 
         WdeDialogOnTop( obj, NULL, NULL );
 
-        WdeSetDialogObjectMenu( WdeIsDialogRestorable( obj ),
-                                obj->res_info && obj->res_info->hash_table, obj->mode );
+        WdeSetDialogObjectMenu( WdeIsDialogRestorable( obj ), obj->res_info && obj->res_info->hash_table, obj->mode );
 
         WdeWriteDialogToInfo( obj );
 

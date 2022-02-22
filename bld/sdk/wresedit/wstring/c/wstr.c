@@ -560,7 +560,7 @@ static bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo, WStringBlock
             continue;
         }
 
-        text = WRWResIDNameToStr( block->block.String[i] );
+        text = WRStringFromWResIDName( block->block.String[i] );
         if( text == NULL ) {
             continue;
         }

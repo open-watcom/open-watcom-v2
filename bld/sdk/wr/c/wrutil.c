@@ -548,7 +548,7 @@ bool WRunicode2mbcs( const char *src, char **dest, size_t *len )
 
 #endif
 
-char * WRAPI WRWResIDNameToStr( WResIDName *name )
+char * WRAPI WRStringFromWResIDName( WResIDName *name )
 {
     char        *string;
 

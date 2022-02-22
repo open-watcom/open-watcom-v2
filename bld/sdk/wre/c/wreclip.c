@@ -214,7 +214,7 @@ static WResID *WREGetClipDataName( WREClipData *clip_data )
 
     name = NULL;
     if( clip_data != NULL ) {
-        name = WRMem2WResID( &clip_data->name[0], clip_data->is32bit );
+        name = WRWResIDFromData( &clip_data->name[0], clip_data->is32bit );
     }
     return( name );
 }
@@ -718,7 +718,7 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
     }
 
     if( ok ) {
-        ok = WRWResID2Mem( &curr->res->Info.ResName, &name, &name_size, curr->info->is32bit );
+        ok = WRDataFromWResID( &curr->res->Info.ResName, &name, &name_size, curr->info->is32bit );
     }
 
     if( ok ) {

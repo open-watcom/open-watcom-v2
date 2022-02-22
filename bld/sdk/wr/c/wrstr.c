@@ -63,7 +63,7 @@ static size_t getUniStringLength( WResIDName *id, bool is32bit )
     size_t      len;
 
     if( is32bit ) {
-        str = WRWResIDNameToStr( id );
+        str = WRStringFromWResIDName( id );
         if( str != NULL ) {
             len = 0;
             WRmbcs2unicode( str, NULL, &len );
@@ -123,7 +123,7 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
     if( is32bit ) {
         new_str = NULL;
         len = 0;
-        str = WRWResIDNameToStr( name );
+        str = WRStringFromWResIDName( name );
         if( str != NULL ) {
             WRmbcs2unicode( str, &new_str, &len );
             MemFree( str );
