@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,7 @@ void WdeListLastElt( LIST *list, LIST **last )
     *last = end;
 }
 
-bool WdeListConcat( LIST **dest, LIST *src, uint_32 size )
+bool WdeListConcat( LIST **dest, LIST *src, size_t size )
 {
     LIST    *end;
     LIST    *olist;

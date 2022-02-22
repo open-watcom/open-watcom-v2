@@ -375,7 +375,7 @@ void WdeDisplayDialogInfo( WdeInfoStruct *is )
     name = is->u.dlg.name;
     if( name->IsName ) {
         char    *str1, *str2;
-        int     len;
+        size_t  len;
         bool    ok;
 
         ok = false;

@@ -322,11 +322,11 @@ bool WREGetDlgSessionResName( HCONV server, char **data, size_t *size )
     return( true );
 }
 
-bool WREGetDlgSessionIs32Bit( HCONV server, char **data, size_t *size )
+bool WREGetDlgSessionIs32Bit( HCONV server, char **pdata, size_t *dsize )
 {
     WREDialogSession *session;
 
-    if( data == NULL || size == NULL ) {
+    if( pdata == NULL || dsize == NULL ) {
         return( false );
     }
 
@@ -339,23 +339,23 @@ bool WREGetDlgSessionIs32Bit( HCONV server, char **data, size_t *size )
         return( false );
     }
 
-    *size = sizeof( bool );
-    *data = WRMemAlloc( *size );
-    if( *data == NULL ) {
+    *dsize = sizeof( bool );
+    *pdata = WRMemAlloc( *dsize );
+    if( *pdata == NULL ) {
         return( false );
     }
-    memcpy( *data, &session->info.is32bit, *size );
+    memcpy( *pdata, &session->info.is32bit, *dsize );
 
     return( true );
 }
 
-bool WREGetDlgSessionData( HCONV server, char **data, size_t *size )
+bool WREGetDlgSessionData( HCONV server, char **pdata, size_t *dsize )
 {
-    size_t  tsize;
+    size_t  size;
 
     WREDialogSession *session;
 
-    if( data == NULL || size == NULL ) {
+    if( pdata == NULL || dsize == NULL ) {
         return( false );
     }
 
@@ -365,18 +365,18 @@ bool WREGetDlgSessionData( HCONV server, char **data, size_t *size )
     }
 
     if( session->info.data == NULL  ) {
-        *data = NULL;
-        *size = 0;
+        *pdata = NULL;
+        *dsize = 0;
         return( true );
     }
 
-    tsize = session->info.data_size;
-    *size = tsize;
-    *data = WRMemAlloc( tsize );
-    if( *data == NULL ) {
+    size = session->info.data_size;
+    *dsize = size;
+    *pdata = WRMemAlloc( size );
+    if( *pdata == NULL ) {
         return( false );
     }
-    memcpy( *data, session->info.data, tsize );
+    memcpy( *pdata, session->info.data, size );
 
     return( true );
 }

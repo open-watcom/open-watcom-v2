@@ -340,12 +340,12 @@ bool WREGetImageSessionResName( HCONV server, char **data, size_t *size )
     return( true );
 }
 
-bool WREGetImageSessionData( HCONV server, char **data, size_t *size )
+bool WREGetImageSessionData( HCONV server, char **pdata, size_t *dsize )
 {
     WREImageSession     *session;
-    size_t              tsize;
+    size_t              size;
 
-    if( data == NULL || size == NULL ) {
+    if( pdata == NULL || dsize == NULL ) {
         return( false );
     }
 
@@ -355,23 +355,23 @@ bool WREGetImageSessionData( HCONV server, char **data, size_t *size )
     }
 
     if( session->info.data == NULL || session->info.data_size == 0 ) {
-        *data = NULL;
-        *size = 0;
+        *pdata = NULL;
+        *dsize = 0;
         return( true );
     }
 
-    tsize = session->info.data_size;
-    *size = tsize;
-    *data = WRMemAlloc( tsize );
-    if( *data == NULL ) {
+    size = session->info.data_size;
+    *dsize = size;
+    *pdata = WRMemAlloc( size );
+    if( *pdata == NULL ) {
         return( false );
     }
-    memcpy( *data, session->info.data, tsize );
+    memcpy( *pdata, session->info.data, size );
 
     if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
-        if( !WRAddBitmapFileHeader( data, size ) ) {
-            if( *data != NULL ) {
-                WRMemFree( *data );
+        if( !WRAddBitmapFileHeader( pdata, dsize ) ) {
+            if( *pdata != NULL ) {
+                WRMemFree( *pdata );
             }
             return( false );
         }

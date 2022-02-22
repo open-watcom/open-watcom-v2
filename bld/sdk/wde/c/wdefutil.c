@@ -598,7 +598,7 @@ void WdeSetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
         if( o_info->info.d.name != NULL && o_info->info.d.name->IsName ) {
             char *str1, *str2;
-            int len;
+            size_t len;
             str1 = WResIDToStr( o_info->info.d.name );
             if( str1 != NULL ) {
                 len = strlen( str1 ) + 3;

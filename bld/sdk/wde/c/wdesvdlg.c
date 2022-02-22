@@ -425,14 +425,14 @@ flag_map HotkeyMap[] = {
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool is32bitEx, FILE *fp, uint_16 );
+static bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool is32bitEx, FILE *fp, size_t );
 static bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp );
 static bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp );
 static bool WdeCreateItemDBI( WdeResInfo *rinfo, WdeResDlgItem *ditem );
 
 static bool WdeSetMemFlagsText( uint_16 flags, char **text )
 {
-    int         tlen;
+    size_t  tlen;
 
     if( text == NULL ) {
         return( false );
@@ -485,9 +485,9 @@ static bool WdeSetMemFlagsText( uint_16 flags, char **text )
 
 static bool WdeSetFlagText( flag_map *map, flag_style fs, unsigned long flags, char **text )
 {
-    int         tlen;
-    int         new_tlen;
-    int         slen;
+    size_t      tlen;
+    size_t      new_tlen;
+    size_t      slen;
     int         not_first;
 
     if( map == NULL || text == NULL ) {
@@ -501,7 +501,7 @@ static bool WdeSetFlagText( flag_map *map, flag_style fs, unsigned long flags, c
         not_first = 1;
     }
 
-    while( map->text ) {
+    while( map->text != NULL ) {
         if( (flags & map->check_mask) == map->flag && (fs & map->style) ) {
             slen = strlen( map->text );
             new_tlen = tlen + 3 * not_first + slen + 1;
@@ -545,8 +545,8 @@ bool WdeSetWindowFlagText( unsigned long flags, char **text )
 
 static bool WdeAddStyleString( char **text, char *str )
 {
-    int slen;
-    int tlen;
+    size_t  slen;
+    size_t  tlen;
 
     if( text == NULL || str == NULL ) {
         return( FALSE );
@@ -792,8 +792,7 @@ static bool WdeSetCommControlFlagText( char *control_class, unsigned long flags,
     return( ok );
 }
 
-bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control,
-                         bool is32bitEx, FILE *fp, uint_16 nlength )
+bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool is32bitEx, FILE *fp, size_t nlength )
 {
     char                *ctext;
     char                *n;
@@ -805,9 +804,9 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control,
     char                *ExStyle;
     ControlClass        *control_class;
     uint_8              class_type;
-    uint_16             nlen;
+    size_t              nlen;
     char                *ControlStr;
-    int                 len;
+    size_t              len;
     bool                ok;
 
     cid = NULL;
@@ -1117,7 +1116,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 char *WdeConstructDLGInclude( WdeResInfo *rinfo )
 {
     char        *include;
-    int         len;
+    size_t      len;
 
     if( rinfo == NULL || rinfo->sym_name == NULL ) {
         return( NULL );
@@ -1165,7 +1164,7 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     bool                wrote_begin;
     LIST                *clist;
     WdeDialogBoxControl *control;
-    uint_16             nlen;
+    size_t              nlen;
     char                *ctext;
 
     wrote_begin = FALSE;
@@ -1184,7 +1183,7 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             if( GETCTL_TEXT( control ) != NULL ) {
                 ctext = WdeResNameOrOrdinalToStr( GETCTL_TEXT( control ), 10 );
                 if( ctext != NULL ) {
-                    if( strlen( ctext ) > nlen ) {
+                    if( nlen < strlen( ctext ) ) {
                         nlen = strlen( ctext );
                     }
                     WRMemFree( ctext );

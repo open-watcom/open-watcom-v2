@@ -206,7 +206,7 @@ bool WdeSetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
 
 bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
 {
-    int             count;
+    size_t          count;
     LRESULT         selitms;
     int             *sel;
     bool            ok;

@@ -59,7 +59,7 @@ void WREListLastElt( LIST *list, LIST **last )
     }
 }
 
-bool WREListConcat( LIST **dest, LIST *src, uint_32 size )
+bool WREListConcat( LIST **dest, LIST *src, size_t size )
 {
     LIST    *end;
     LIST    *olist;

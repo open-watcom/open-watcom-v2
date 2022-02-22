@@ -747,7 +747,7 @@ bool WdeCreateResourceWindow( WdeResInfo *res_info, size_t fn_offset, char *titl
     RECT                r;
     HMENU               hsysmenu;
     char                *win_title;
-    int                 win_title_len;
+    size_t              win_title_len;
 
     /* unused parameters */ (void)fn_offset;
 

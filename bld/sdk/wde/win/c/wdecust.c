@@ -330,7 +330,7 @@ bool WdeLoadBorCustomControls( WdeCustLib *lib )
     uint_8              *list_locked;
     uint_16             num_classes;
     WdeBorlandClassList *class_list;
-    uint_32             class_list_size;
+    size_t              class_list_size;
 
     /* unused parameters */ (void)lib;
 

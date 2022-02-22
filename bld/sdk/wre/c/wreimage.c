@@ -250,7 +250,7 @@ static bool WREAddIconImageToData( WRECurrentResInfo *image, char **data, size_t
     return( ok );
 }
 
-bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, char **data, size_t *size )
+bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, char **pdata, size_t *dsize )
 {
     WRECurrentResInfo   image;
     WResLangType        lang;
@@ -263,7 +263,7 @@ bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, char **data, size_t
     bool                ok;
 
     ok = (group != NULL && group->info != NULL && group->info->info != NULL &&
-          group->lang != NULL && data != NULL && size != NULL);
+          group->lang != NULL && pdata != NULL && dsize != NULL);
 
     if( ok ) {
         if( group->lang->data == NULL ) {
@@ -275,11 +275,11 @@ bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, char **data, size_t
     if( ok ) {
         image.info = group->info;
         rch = (RESCURSORHEADER *)group->lang->data;
-        *size = sizeof( CURSORHEADER );
-        *size += sizeof( CURSORDIRENTRY ) * (rch->cwCount - 1);
-        *data = WRMemAlloc( *size );
-        ch = (CURSORHEADER *)*data;
-        ok = (*data != NULL);
+        *dsize = sizeof( CURSORHEADER );
+        *dsize += sizeof( CURSORDIRENTRY ) * (rch->cwCount - 1);
+        *pdata = WRMemAlloc( *dsize );
+        ch = (CURSORHEADER *)*pdata;
+        ok = (*pdata != NULL);
     }
 
     if( ok ) {
@@ -292,17 +292,17 @@ bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, char **data, size_t
             lang = group->lang->Info.lang;
             ok = WREFindImageId( &image, RESOURCE2INT( RT_CURSOR ), ord, &lang );
             if( ok ) {
-                osize = *size;
-                ok = WREAddCursorImageToData( &image, data, size, &hotspot );
+                osize = *dsize;
+                ok = WREAddCursorImageToData( &image, pdata, dsize, &hotspot );
                 if( ok ) {
-                    ch = (CURSORHEADER *)*data;
+                    ch = (CURSORHEADER *)*pdata;
                     ch->cdEntries[i].bWidth = rch->cdEntries[i].bWidth;
                     ch->cdEntries[i].bHeight = rch->cdEntries[i].bHeight / 2;
                     ch->cdEntries[i].bColorCount = 0;
                     ch->cdEntries[i].bReserved = 0;
                     ch->cdEntries[i].wXHotspot = hotspot.xHotspot;
                     ch->cdEntries[i].wYHotspot = hotspot.yHotspot;
-                    ch->cdEntries[i].dwBytesInRes = *size - osize;
+                    ch->cdEntries[i].dwBytesInRes = *dsize - osize;
                     ch->cdEntries[i].dwImageOffset = osize;
                 }
             }
@@ -312,7 +312,7 @@ bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, char **data, size_t
     return( ok );
 }
 
-bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, char **data, size_t *size )
+bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, char **pdata, size_t *dsize )
 {
     WResLangType        lang;
     WRECurrentResInfo   image;
@@ -324,7 +324,7 @@ bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, char **data, size_t *
     bool                ok;
 
     ok = (group != NULL && group->info != NULL && group->info->info != NULL &&
-          group->lang != NULL && data != NULL && size != NULL);
+          group->lang != NULL && pdata != NULL && dsize != NULL);
 
     if( ok ) {
         if( group->lang->data == NULL ) {
@@ -336,11 +336,11 @@ bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, char **data, size_t *
     if( ok ) {
         image.info = group->info;
         rih = (RESICONHEADER *)group->lang->data;
-        *size = sizeof( ICONHEADER );
-        *size += sizeof( ICONDIRENTRY ) * (rih->cwCount - 1);
-        *data = WRMemAlloc( *size );
-        ih = (ICONHEADER *)*data;
-        ok = (*data != NULL);
+        *dsize = sizeof( ICONHEADER );
+        *dsize += sizeof( ICONDIRENTRY ) * (rih->cwCount - 1);
+        *pdata = WRMemAlloc( *dsize );
+        ih = (ICONHEADER *)*pdata;
+        ok = (*pdata != NULL);
     }
 
     if( ok ) {
@@ -353,10 +353,10 @@ bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, char **data, size_t *
             lang = group->lang->Info.lang;
             ok = WREFindImageId( &image, RESOURCE2INT( RT_ICON ), ord, &lang );
             if( ok ) {
-                osize = *size;
-                ok = WREAddIconImageToData( &image, data, size );
+                osize = *dsize;
+                ok = WREAddIconImageToData( &image, pdata, dsize );
                 if( ok ) {
-                    ih = (ICONHEADER *)*data;
+                    ih = (ICONHEADER *)*pdata;
                     ih->idEntries[i].bWidth = rih->idEntries[i].bWidth;
                     ih->idEntries[i].bHeight = rih->idEntries[i].bHeight;
                     ih->idEntries[i].bColorCount = rih->idEntries[i].bColorCount;
@@ -365,7 +365,7 @@ bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, char **data, size_t *
                     ih->idEntries[i].wPlanes = 0;
                     ih->idEntries[i].wBitCount = 0;
                     ih->idEntries[i].bReserved = 0;
-                    ih->idEntries[i].dwBytesInRes = *size - osize;
+                    ih->idEntries[i].dwBytesInRes = *dsize - osize;
                     ih->idEntries[i].dwImageOffset = osize;
                 }
             }
