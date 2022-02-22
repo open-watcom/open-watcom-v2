@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 
-#ifndef WDEI2MEM_INCLUDED
-#define WDEI2MEM_INCLUDED
+#ifndef WDE2DATA_INCLUDED
+#define WDE2DATA_INCLUDED
 
 #include "wderesin.h"
 
@@ -47,7 +47,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool             WdeDataFromDBI( WdeDialogBoxInfo *, char **, size_t * );
-extern WdeDialogBoxInfo *WdeDBIFromData( const char *data, size_t size, bool );
+extern bool             WdeAllocDataFromDBI( WdeDialogBoxInfo *, char **pdata, size_t *dsize );
+extern WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool );
 
 #endif

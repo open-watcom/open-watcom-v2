@@ -453,7 +453,7 @@ bool WdeStartDDEEditSession( void )
             ok = WRAllocDataFromDDE( hData, &data, &size );
             DdeFreeDataHandle( hData );
             if( ok ) {
-                ditem->dialog_info = WdeDBIFromData( data, size, ditem->is32bit );
+                ditem->dialog_info = WdeAllocDBIFromData( data, size, ditem->is32bit );
                 if( ditem->dialog_info == NULL ) {
                     ok = false;
                 }

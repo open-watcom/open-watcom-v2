@@ -269,7 +269,7 @@ bool WdeGetItemData( WdeResDlgItem *ditem, char **data, size_t *dsize )
         return( FALSE );
     }
 
-    return( WdeDataFromDBI( dbi, data, dsize ) );
+    return( WdeAllocDataFromDBI( dbi, data, dsize ) );
 }
 
 WResResNode *WdeRenameWResResNode( WResTypeNode *tnode, WResResNode *rnode, WResID *name )

@@ -75,15 +75,15 @@ typedef struct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject * );
+extern WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj );
 extern OBJPTR           WdeCreateNewDialog( WResID *, bool is32bit );
 extern OBJPTR           WdeCreateDialogFromRes( WdeResInfo *, WdeResDlgItem * );
 WINEXPORT extern CREATE_RTN WdeDialogCreate;
 extern bool             WdeDialogInit( bool );
 extern void             WdeDialogFini( void );
-extern bool             WdeIsDialogRestorable( WdeDialogObject * );
-extern bool             WdePreserveDialogWithDBI( WdeDialogObject * );
-extern void             WdeSetDialogModified( WdeDialogObject * );
+extern bool             WdeIsDialogRestorable( WdeDialogObject *obj );
+extern bool             WdePreserveDialogWithDBI( WdeDialogObject *obj );
+extern void             WdeSetDialogModified( WdeDialogObject *obj );
 extern RECT             *WdeGetDefaultDialogNCSize( void );
 
 #endif

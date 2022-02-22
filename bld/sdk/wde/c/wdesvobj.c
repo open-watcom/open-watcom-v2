@@ -88,7 +88,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi, char **fname, WRes
             lang.lang = DEF_LANG;
             lang.sublang = DEF_SUBLANG;
         }
-        ok = WdeDataFromDBI( dbi, &rdata, &size );
+        ok = WdeAllocDataFromDBI( dbi, &rdata, &size );
     }
 
     if( ok ) {

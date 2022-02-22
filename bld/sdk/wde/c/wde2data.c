@@ -276,7 +276,7 @@ static size_t WdeDataFromDialogBoxControl( WdeDialogBoxControl *control,
 }
 
 
-bool WdeDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *psize )
+bool WdeAllocDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *dsize )
 {
     bool                ok;
     size_t              size;
@@ -288,7 +288,7 @@ bool WdeDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *psize )
     char                *data;
     char                *start;
 
-    if( info == NULL || pdata == NULL || psize == NULL )
+    if( info == NULL || pdata == NULL || dsize == NULL )
         return( false );
 
     start = NULL;
@@ -336,7 +336,7 @@ bool WdeDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *psize )
     if( ok ) {
         ok = ( data == start + memsize );
         if( ok ) {
-            *psize = memsize;
+            *dsize = memsize;
             *pdata = start;
         }
     }
@@ -344,13 +344,13 @@ bool WdeDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *psize )
         if( start != NULL ) {
             WRMemFree( start );
         }
-        *psize = 0;
+        *dsize = 0;
         *pdata = NULL;
     }
     return( ok );
 }
 
-WdeDialogBoxInfo *WdeDBIFromData( const char *data, size_t size, bool is32bit )
+WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool is32bit )
 {
     WdeDialogBoxInfo    *dbi;
     WdeDialogBoxControl *control;
