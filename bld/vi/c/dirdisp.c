@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -133,7 +133,7 @@ static vi_rc doFileComplete( char *data, size_t start, size_t max, bool getnew, 
 #ifdef __UNIX__
         if( c == FILE_SEP ) {
 #else
-        if( c = DRV_SEP || c == ALT_FILE_SEP || c == FILE_SEP ) {
+        if( c == DRV_SEP || c == ALT_FILE_SEP || c == FILE_SEP ) {
 #endif
             newstartdef = true;
             newstart = i;
