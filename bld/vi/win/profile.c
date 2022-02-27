@@ -39,7 +39,6 @@
 #include "posix.h"
 
 
-#define CONFIG_INI "weditor.ini"
 #define CONFIG_DIR "Open Watcom"
 #define INI_FILE   "watcom.ini"
 
@@ -218,7 +217,7 @@ static void getConfigFilePaths( void )
     strcat( path, "\\" INI_FILE );
     ReplaceString( &iniFile, path);
     strcpy( path, iniPath );
-    strcat( path, "\\" CONFIG_INI );
+    strcat( path, "\\" CFG_NAME );
     ReplaceString( &cfgFile, path);
 
 } /* getConfigFilePaths */
