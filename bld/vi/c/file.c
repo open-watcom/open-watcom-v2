@@ -425,7 +425,7 @@ bool CFileReadOnly( void )
         } else {
             ConditionalChangeDirectory( CurrentFile->home );
             attr = access( CurrentFile->name, W_OK );
-            if( stricmp( CurrentFile->home, CurrentDirectory ) ) {
+            if( FILE_CMP( CurrentFile->home, CurrentDirectory ) ) {
                 ChangeDirectory( CurrentDirectory );
             }
 

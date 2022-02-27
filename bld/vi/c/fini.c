@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,7 +132,9 @@ void Quit( const char **usage_msg, const char *str, ... )
     // can't do an ExitEditor because we will not have initialized anything
     // yet (this is always called from checkFlags)
     // ExitEditor( 0 );
-    ChangeDirectory( HomeDirectory );
+    ChangeDirectory( StartDirectory );
+    MemFree( StartDirectory );
+    MemFree( CurrentDirectory );
     FiniMem();
     exit( 0 );
 
@@ -214,13 +216,13 @@ void ExitEditor( int rc )
     AutoSaveFini();
     FiniConfigFileName();
     miscGlobalsFini();
-    ChangeDirectory( HomeDirectory );
+    ChangeDirectory( StartDirectory );
 #if defined( __NT__ ) && !defined( __WIN__ )
     {
         SetConsoleActiveScreenBuffer( GetStdHandle( STD_OUTPUT_HANDLE ) );
     }
 #endif
-    MemFree( HomeDirectory );
+    MemFree( StartDirectory );
     MemFree( CurrentDirectory );
 #if defined( VI_RCS )
     ViRCSFini();

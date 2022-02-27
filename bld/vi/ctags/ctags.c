@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,11 @@
 #include "clibext.h"
 
 
-#define CMPFEXT(e,c)    (e[0] == '.' && stricmp(e + 1, c) == 0)
+#ifdef __UNIX__
+  #define CMPFEXT(e,c)  (e[0] == '.' && strcmp(e + 1, c) == 0)
+#else
+  #define CMPFEXT(e,c)  (e[0] == '.' && stricmp(e + 1, c) == 0)
+#endif
 
 static const char       *usageMsg[] = {
     "Usage: ctags [-?adempstqvxy] [-z[a,c,f]] [-f<fname>] [files] [@optfile]",

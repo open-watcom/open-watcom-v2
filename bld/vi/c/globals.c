@@ -189,7 +189,7 @@ window_info activegreyedmenu_info = { WHITE, BLACK, DEF_TEXT_STYLE, DEF_HILIGHT_
  */
 char            *CommandBuffer = NULL;
 char            *CurrentDirectory = NULL;
-char            *HomeDirectory = NULL;
+char            *StartDirectory = NULL;
 char            *ReadBuffer = NULL;
 char            *WriteBuffer = NULL;
 unsigned char   *SwapBlocks = NULL;

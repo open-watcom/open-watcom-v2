@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -279,9 +279,9 @@ static void doInitializeEditor( int argc, char *argv[] )
     ChkExtendedKbd();
     SSInitBeforeConfig();
 
-    GetCWD1( &HomeDirectory );
+    GetCWD1( &StartDirectory );
     GetCWD1( &CurrentDirectory );
-    SetCWD( HomeDirectory );
+    SetCWD( StartDirectory );
     if( cfgFN == NULL ) {
         cfgFN = DupString( CFG_NAME );
     }
