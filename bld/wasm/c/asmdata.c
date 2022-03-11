@@ -665,6 +665,8 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
                 return( INVALID_IDX );
             }
             count = AsmBuffer[cur_pos].u.value;
+            if( sym != NULL )
+                sym->count = 0;
             cur_pos += 2;
             if( AsmBuffer[cur_pos].class != TC_OP_BRACKET ) {
                 AsmError( SYNTAX_ERROR );
