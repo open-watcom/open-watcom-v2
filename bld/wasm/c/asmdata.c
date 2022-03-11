@@ -265,7 +265,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                     return( INVALID_IDX );
                     /********SHOULD WE DO IT THIS WAY?*********
                     for( count = 0; count < no_of_bytes; count++ ) {
-                    AsmDataByte( 0x00 );
+                        AsmDataByte( 0x00 );
                     }
                     ******************************************/
                 }
@@ -842,8 +842,8 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
     } else if( sym_loc != INVALID_IDX ) {
 #if defined( _STANDALONE_ )
         /* defining a field in a structure */
-        if( Definition.struct_depth != 0 ) {
-            if( Parse_Pass == PASS_1 ) {
+        if( Parse_Pass == PASS_1 ) {
+            if( Definition.struct_depth != 0 ) {
                 sym->offset = AddFieldToStruct( sym, initializer_loc );
                 struct_field = true;
                 sym->state = SYM_STRUCT_FIELD;
@@ -851,12 +851,8 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
                 if( dup_array( sym, NULL, initializer_loc + 1, no_of_bytes ) == INVALID_IDX ) {
                     return( RC_ERROR );
                 }
-            }
-            return( RC_OK );
-        }
-
-        if( Parse_Pass == PASS_1 ) {
-            if( sym->state == SYM_EXTERNAL && ((dir_node *)sym)->e.extinfo->global ) {
+                return( RC_OK );
+            } else if( sym->state == SYM_EXTERNAL && ((dir_node *)sym)->e.extinfo->global ) {
                 dir_to_sym( (dir_node *)sym );
                 if( !sym->public ) {
                     AddPublicData( (dir_node *)sym );
@@ -869,9 +865,12 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
                 AsmError( SYMBOL_ALREADY_DEFINED );
                 return( RC_ERROR );
             }
+        } else if( Definition.struct_depth != 0 ) {
+            return( RC_OK );
         } else {
             old_offset = sym->offset;
         }
+
         GetSymInfo( sym );
         if( Parse_Pass != PASS_1 && sym->offset != old_offset ) {
             PhaseError = true;
