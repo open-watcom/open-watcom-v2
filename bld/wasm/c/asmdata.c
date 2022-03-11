@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +179,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                 the_struct->first_length++;
             }
 
-            if( sym && Parse_Pass == PASS_1 ) {
+            if( sym != NULL && Parse_Pass == PASS_1 ) {
                 update_sizes( sym, first_init, no_of_bytes );
             }
 #else
@@ -225,6 +225,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                         break;
                     if( cur_pos - 1 == start_pos )
                         break;
+                    /* fall through */
                 default:
                     AsmError( EXPECTING_COMMA );
                     return( INVALID_IDX );
@@ -237,7 +238,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             }
             char_ptr = (char *)AsmBuffer[cur_pos].u.bytes;
 #if defined( _STANDALONE_ )
-            if( sym && Parse_Pass == PASS_1 ) {
+            if( sym != NULL && Parse_Pass == PASS_1 ) {
                 update_sizes( sym, first_init, no_of_bytes );
             }
             if( !struct_field ) {
@@ -299,7 +300,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             if( no_of_bytes == 1 && struct_field ) {
                 no_of_bytes = AsmBuffer[cur_pos].u.value;
             }
-            if( sym && Parse_Pass == PASS_1 ) {
+            if( sym != NULL && Parse_Pass == PASS_1 ) {
                 update_sizes( sym, first_init, no_of_bytes );
             }
             if( !struct_field ) {
@@ -320,7 +321,8 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             }
 #endif
             break;
-        case TC_ID: {
+        case TC_ID:
+          {
             token_idx           i;
             enum fixup_types    fixup_type = 0;
             asm_sym             *init_sym;
@@ -433,7 +435,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             /* now actually output the data */
             ptr = (char *)&data;
 #if defined( _STANDALONE_ )
-            if( sym && Parse_Pass == PASS_1 ) {
+            if( sym != NULL && Parse_Pass == PASS_1 ) {
                 update_sizes( sym, first_init, no_of_bytes );
             }
             if( !struct_field ) {
@@ -457,8 +459,9 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             // set position back to main loop worked correctly
             cur_pos--;
             break;
-            }
-        case TC_UNARY_OPERATOR: {
+          }
+        case TC_UNARY_OPERATOR:
+          {
             token_idx           i;
             enum fixup_types    fixup_type = 0;
             token_idx           seg_off_operator_loc = 0;
@@ -603,7 +606,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                     /* now actually output the data */
                     ptr = (char *)&data;
 #if defined( _STANDALONE_ )
-                    if( sym && Parse_Pass == PASS_1 ) {
+                    if( sym != NULL && Parse_Pass == PASS_1 ) {
                         update_sizes( sym, first_init, no_of_bytes );
                     }
                     if( !struct_field ) {
@@ -629,7 +632,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             cur_pos--;
             // AsmError( NOT_IMPLEMENTED );
             break;
-            }
+          }
         case TC_CL_BRACKET:
             return( cur_pos );
         default:
@@ -656,7 +659,7 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
     ExpandTheWorld( start_pos, false, true );
     for( cur_pos = start_pos; cur_pos + 2 < Token_Count; ) {
         if(( AsmBuffer[cur_pos + 1].class == TC_RES_ID )
-            && ( AsmBuffer[cur_pos + 1].u.token == T_DUP )) {
+          && ( AsmBuffer[cur_pos + 1].u.token == T_DUP )) {
             if( AsmBuffer[cur_pos].class != TC_NUM ) {
                 AsmError( SYNTAX_ERROR );
                 return( INVALID_IDX );
@@ -676,12 +679,14 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
                 int     level;
                 /* zero count is valid, needs special processing */
                 for( level = 0; AsmBuffer[cur_pos].class != TC_FINAL; cur_pos++ ) {
-                    if( AsmBuffer[cur_pos].class == TC_OP_BRACKET )
+                    if( AsmBuffer[cur_pos].class == TC_OP_BRACKET ) {
                         level++;
-                    else if( AsmBuffer[cur_pos].class == TC_CL_BRACKET )
+                    } else if( AsmBuffer[cur_pos].class == TC_CL_BRACKET ) {
                         level--;
-                    if( level < 0 )
+                    }
+                    if( level < 0 ) {
                         break;
+                    }
                 }
                 returned_pos = cur_pos;
             }
@@ -806,13 +811,13 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
         AsmError( INVALID_LABEL_DEFINITION );
         return( RC_ERROR );
     }
-    if( AsmBuffer[ initializer_loc + 1 ].class == TC_FINAL ) {
+    if( AsmBuffer[initializer_loc + 1].class == TC_FINAL ) {
         AsmError( SYNTAX_ERROR );
         return( RC_ERROR );
     }
 
 #if defined( _STANDALONE_ )
-    if( sym_loc != INVALID_IDX && AsmBuffer[ sym_loc ].u.token == T_LABEL ) {
+    if( sym_loc != INVALID_IDX && AsmBuffer[sym_loc].u.token == T_LABEL ) {
         label_dir = true;
         if( sym_loc > 0 ) {
             sym_loc--;
