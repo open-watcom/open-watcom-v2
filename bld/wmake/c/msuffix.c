@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,7 +149,11 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
 
     FixName( sufname );
 
+#ifdef __UNIX__
+    return( (SUFFIX *)FindHashNode( sufTab, sufname, CASESENSITIVE ) );
+#else
     return( (SUFFIX *)FindHashNode( sufTab, sufname, NOCASESENSITIVE ) );
+#endif
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);
