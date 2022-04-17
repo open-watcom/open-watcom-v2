@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,8 +140,8 @@ mad_status MADIMPENTRY( AddrInterrupt )( const addr_ptr *a, unsigned size, const
 
 unsigned AddrCharacteristics( address a )
 {
-    unsigned_8  characteristics;
+    x86_addrflags   x86_addr_flags;
 
-    MCMachineData( a, X86MD_ADDR_CHARACTERISTICS, 0, NULL, sizeof( characteristics ), &characteristics );
-    return( characteristics );
+    MCMachineData( a, X86MD_ADDR_CHARACTERISTICS, 0, NULL, sizeof( x86_addr_flags ), &x86_addr_flags );
+    return( x86_addr_flags );
 }

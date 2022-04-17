@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -396,12 +397,12 @@ mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_register
             if( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) {
                 next->mach.offset = GetDataLong();
                 if( dd->ins.op[OP_1].ref_type == DRT_X86_FARPTR48 ) {
-                    next->mach.segment = (unsigned_16)GetDataWord();
+                    next->mach.segment = GetDataWord();
                 }
             } else {
                 next->mach.offset = (unsigned_16)GetDataWord();
                 if( dd->ins.op[OP_1].ref_type == DRT_X86_FARPTR32 ) {
-                    next->mach.segment = (unsigned_16)GetDataWord();
+                    next->mach.segment = GetDataWord();
                 }
             }
             break;
@@ -418,7 +419,7 @@ mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_register
         switch( dd->ins.type ) {
         case DI_X86_retf:
         case DI_X86_retf2:
-            next->mach.segment = (unsigned_16)GetDataWord();
+            next->mach.segment = GetDataWord();
             break;
         default:
             break;

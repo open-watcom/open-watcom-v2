@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -826,6 +827,7 @@ static mad_status FPUGetPiece(
     unsigned            column;
     char                *p;
     unsigned            tag;
+    unsigned            characteristics;
 
     /* in case we haven't got an FPU */
     *reg_p = &XXX_dummy.info;
@@ -944,16 +946,13 @@ static mad_status FPUGetPiece(
             strcpy( p, (*reg_p)->name );
             if( MCSystemConfig()->fpu == X86_NO )
                 break;
-            switch( AddrCharacteristics( GetRegIP( mr ) ) ) {
-            case X86AC_REAL:
+            characteristics = AddrCharacteristics( GetRegIP( mr ) );
+            if( characteristics & X86AC_REAL ) {
                 *disp_type_p = X86T_FPPTR_REAL;
-                break;
-            case X86AC_BIG:
+            } else if( characteristics & X86AC_BIG ) {
                 *disp_type_p = X86T_FPPTR_32;
-                break;
-            case 0: /* 16-bit protect mode */
+            } else {    /* 16-bit protect mode */
                 *disp_type_p = X86T_FPPTR_16;
-                break;
             }
             break;
         case 7:

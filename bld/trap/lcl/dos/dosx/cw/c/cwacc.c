@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -1021,9 +1021,7 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    union {
-        unsigned_8      charact;
-    } *data;
+    machine_data_spec   *data;
     trap_elen           len;
 
     _DBG( "AccMachineData\r\n" );
@@ -1035,13 +1033,10 @@ trap_retval TRAP_CORE( Machine_data )( void )
     if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
         ret->cache_end = ~(addr_off)0;
         data = GetOutPtr( sizeof( *ret ) );
-        len = sizeof( data->charact );
-        data->charact = 0;
-        if( IsSel32bit( acc->addr.segment ) ) {
-            data->charact = X86AC_BIG;
-        }
+        len = sizeof( data->x86_addr_flags );
+        data->x86_addr_flags = ( IsSel32bit( acc->addr.segment ) ) ? X86AC_BIG : 0;
     }
-    _DBG( "address %x:%x is %s\r\n", acc->addr.segment, acc->addr.offset, data->charact ? "32-bit" : "16-bit" );
+    _DBG( "address %x:%x is %s\r\n", acc->addr.segment, acc->addr.offset, data->x86_addr_flags ? "32-bit" : "16-bit" );
     return( sizeof( *ret ) + len );
 }
 

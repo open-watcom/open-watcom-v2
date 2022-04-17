@@ -117,33 +117,21 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    union {
-        unsigned_8          u8;
-#if defined( MD_axp )
-        axp_pdata_struct    axp_pdata;
-#endif
-    }                   *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     data = GetOutPtr( sizeof( *ret ) );
 #if defined( MD_x86 )
     ret->cache_start = 0;
-    ret->cache_end = ~( addr_off ) 0;
-    data->u8 = 0;
-    if( IsBigSel( acc->addr.segment ) ) {
-        data->u8 |= X86AC_BIG;
-    }
-    return( sizeof( *ret ) + sizeof( data->u8 ) );
+    ret->cache_end = ~(addr_off)0;
+    data->x86_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X86AC_BIG : (( IsDOS ) ? X86AC_REAL : 0);
+    return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
 #elif defined( MD_x64 )
     ret->cache_start = 0;
-    ret->cache_end = ~( addr_off ) 0;
-    data->u8 = 0;
-    if( IsBigSel( acc->addr.segment ) ) {
-        data->u8 |= X86AC_BIG;
-//        data->u8 |= X64AC_BIG;
-    }
-    return( sizeof( *ret ) + sizeof( data->u8 ) );
+    ret->cache_end = ~(addr_off)0;
+    data->x64_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X6AC_BIG : 0;
+    return( sizeof( *ret ) + sizeof( data->x64_addr_flags ) );
 #elif defined( MD_axp )
     memset( &data->axp_pdata, 0, sizeof( data->axp_pdata ) );
     if( FindPData( acc->addr.offset, &data->axp_pdata ) ) {

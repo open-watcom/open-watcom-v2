@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,31 +47,24 @@ trap_retval TRAP_CORE( Machine_data )( void )
     int                 bitness;
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    union {
-        unsigned_8      u8;
-    }                   *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     data = GetOutPtr( sizeof( *ret ) );
-
     sel = acc->addr.segment;
-
     if( RdosGetSelectorInfo( sel, &size, &bitness ) ) {
-        if( size > 0xFFFF )
+        if( size > 0xFFFF ) {
             bitness = 32;
-        ret->cache_start = 0;
-        ret->cache_end = size;
-        if( bitness == 16 )
-            data->u8 = 0;
-        else
-            data->u8 = 1;
+        }
     } else {
-        ret->cache_start = 0;
-        ret->cache_end = 0xFFFFFFFF;
-        data->u8 = 1;
+        size = -1;
+        bitness = 32;
     }
-    return( sizeof( *ret ) + sizeof( data->u8 ) );
+    ret->cache_start = 0;
+    ret->cache_end = size;
+    data->x86_addr_flags = ( bitness == 32 ) ? X86AC_BIG : 0;
+    return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
 }
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
@@ -79,7 +72,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
     int                 major, minor, release;
 
-        RdosGetVersion(&major, &minor, &release);
+    RdosGetVersion(&major, &minor, &release);
 
     ret = GetOutPtr( 0 );
 

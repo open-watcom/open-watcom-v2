@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -572,9 +572,9 @@ trap_retval TRAP_CORE( Machine_data )( void )
 /*******************************************/
 // NYI: what the hell does this do?
 {
-    machine_data_req *  acc;
-    machine_data_ret *  ret;
-    unsigned_8 *        data;
+    machine_data_req    *acc;
+    machine_data_ret    *ret;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #include "stdwin.h"
 #include "wdebug.h"
 #include "trperr.h"
-#include "madx86.h"
+#include "madregs.h"
 #include "x86cpu.h"
 #include "di386cli.h"
 
@@ -62,18 +62,15 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = 0;
-    if( IsSegSize32( acc->addr.segment ) ) {
-        *data |= X86AC_BIG;
-    }
-    return( sizeof( *ret ) + sizeof( *data ) );
+    data->x86_addr_flags = ( IsSegSize32( acc->addr.segment ) ) ? X86AC_BIG : 0;
+    return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
 }
 
 trap_retval TRAP_CORE( Get_sys_config )( void )

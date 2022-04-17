@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -286,14 +286,14 @@ trap_retval TRAP_CORE( Map_addr )( void )
 trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     ret = GetOutPtr( 0 );
     data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = 0;
-    return( sizeof( *ret ) + sizeof( *data ) );
+    data->x86_addr_flags = X86AC_REAL;
+    return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
 }
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
