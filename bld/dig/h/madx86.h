@@ -69,7 +69,7 @@ enum x86_addr_characteristics {
     X86AC_REAL  = 0x02
 };
 
-typedef unsigned_8      x64_addrflags;
+typedef unsigned_8      x86_addrflags;
 
 struct x86_cpu {
     unsigned_32 eax;
