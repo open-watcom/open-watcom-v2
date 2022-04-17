@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +121,7 @@ extern mad_status               DisasmInit( void );
 extern void                     DisasmFini( void );
 extern mad_disasm_control       DisasmControl( mad_disasm_data *, const mad_registers * );
 extern mad_status               DisasmOne( mad_disasm_data *dd, address *a, int adj );
-extern mad_status               GetPData( addr_off, axp_pdata * );
+extern mad_status               GetPData( addr_off, axp_pdata_struct *axp_pdata );
 extern int                      VariableFrame( addr_off );
 
 extern mad_status               RegInit( void );

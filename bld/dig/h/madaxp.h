@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ typedef struct {
     unsigned_64         except_handler;
     unsigned_64         handler_data;
     unsigned_64         pro_end_addr;
-} axp_pdata;
+} axp_pdata_struct;
 
 typedef lreal   gfloat; //NYI: dummy definition
 typedef lreal   dfloat; //NYI: dummy definition

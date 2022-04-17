@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,14 +69,14 @@ typedef struct {
     unsigned_32 except_handler;
     unsigned_32 handler_data;
     unsigned_32 pro_end_addr;
-} nt_pdata;
+} nt_pdata_struct;
 
-bool FindPData( addr_off off, axp_pdata *pdata )
+bool FindPData( addr_off off, axp_pdata_struct *axp_pdata )
 {
-    nt_pdata    pd;
-    LPVOID      tbl;
-    addr_off    size;
-    DWORD       bytes;
+    nt_pdata_struct nt_pdata;
+    LPVOID          tbl;
+    addr_off        size;
+    DWORD           bytes;
 
     if( !FindExceptInfo( off, &tbl, &size ) ) {
         return( FALSE );
@@ -85,31 +85,30 @@ bool FindPData( addr_off off, axp_pdata *pdata )
         if( size == 0 ) {
             return( FALSE );
         }
-        ReadProcessMemory( ProcessInfo.process_handle, tbl, ( LPVOID )&pd,
-                    sizeof( pd ), &bytes );
-        if( bytes != sizeof( pd ) ) {
+        ReadProcessMemory( ProcessInfo.process_handle, tbl, (LPVOID)&nt_pdata, sizeof( nt_pdata ), &bytes );
+        if( bytes != sizeof( nt_pdata ) ) {
             return( FALSE );
         }
-        if( off >= pd.beg_addr && off < pd.end_addr ) {
+        if( off >= nt_pdata.beg_addr && off < nt_pdata.end_addr ) {
             /*
              *  This is an optimization - if the prologue end addr is not
              *  in the exception start/end range, this is not the entry
              *  for the start of the procedure and the MAD isn't interested.
              *  Keep looking for real one.
              */
-            if( pd.pro_end_addr >= pd.beg_addr &&
-                    pd.pro_end_addr < pd.end_addr ) {
+            if( nt_pdata.pro_end_addr >= nt_pdata.beg_addr &&
+                    nt_pdata.pro_end_addr < nt_pdata.end_addr ) {
                 break;
             }
         }
-        tbl = ( LPVOID ) ( ( DWORD ) tbl + sizeof( pd ) );
-        size -= sizeof( pd );
+        tbl = (LPVOID)( (DWORD)tbl + sizeof( nt_pdata ) );
+        size -= sizeof( nt_pdata );
     }
-    pdata->beg_addr.u._32[0] = pd.beg_addr;
-    pdata->end_addr.u._32[0] = pd.end_addr;
-    pdata->except_handler.u._32[0] = pd.except_handler;
-    pdata->handler_data.u._32[0] = pd.handler_data;
-    pdata->pro_end_addr.u._32[0] = pd.pro_end_addr;
+    axp_pdata->beg_addr.u._32[0] = nt_pdata.beg_addr;
+    axp_pdata->end_addr.u._32[0] = nt_pdata.end_addr;
+    axp_pdata->except_handler.u._32[0] = nt_pdata.except_handler;
+    axp_pdata->handler_data.u._32[0] = nt_pdata.handler_data;
+    axp_pdata->pro_end_addr.u._32[0] = nt_pdata.pro_end_addr;
     return( TRUE );
 }
 #endif
@@ -119,9 +118,9 @@ trap_retval TRAP_CORE( Machine_data )( void )
     machine_data_req    *acc;
     machine_data_ret    *ret;
     union {
-        unsigned_8      u8;
+        unsigned_8          u8;
 #if defined( MD_axp )
-        axp_pdata       pd;
+        axp_pdata_struct    axp_pdata;
 #endif
     }                   *data;
 
@@ -146,15 +145,15 @@ trap_retval TRAP_CORE( Machine_data )( void )
     }
     return( sizeof( *ret ) + sizeof( data->u8 ) );
 #elif defined( MD_axp )
-    memset( &data->pd, 0, sizeof( data->pd ) );
-    if( FindPData( acc->addr.offset, &data->pd ) ) {
-        ret->cache_start = data->pd.beg_addr.u._32[0];
-        ret->cache_end = data->pd.end_addr.u._32[0];
+    memset( &data->axp_pdata, 0, sizeof( data->axp_pdata ) );
+    if( FindPData( acc->addr.offset, &data->axp_pdata ) ) {
+        ret->cache_start = data->axp_pdata.beg_addr.u._32[0];
+        ret->cache_end = data->axp_pdata.end_addr.u._32[0];
     } else {
         ret->cache_start = 0;
         ret->cache_end = 0;
     }
-    return( sizeof( *ret ) + sizeof( data->pd ) );
+    return( sizeof( *ret ) + sizeof( data->axp_pdata ) );
 #elif defined( MD_ppc )
     return( sizeof( *ret ) );
 #else
