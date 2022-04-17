@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +49,8 @@ enum x64_machine_data {
 enum x64_addr_characteristics {
     X64AC_BIG   = 0x01
 };
+
+typedef unsigned_8      x64_addrflags;
 
 typedef struct {
     union {

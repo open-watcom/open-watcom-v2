@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,6 +68,8 @@ enum x86_addr_characteristics {
     X86AC_BIG   = 0x01,
     X86AC_REAL  = 0x02
 };
+
+typedef unsigned_8      x64_addrflags;
 
 struct x86_cpu {
     unsigned_32 eax;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,6 +84,28 @@ union mad_registers {
     struct jvm_mad_registers    jvm;
 #endif
 };
+
+typedef union machine_data_spec {
+    unsigned_8                  nul;
+#ifdef MD_x86
+    x86_addrflags               x86_addr_flags;
+#endif
+#ifdef MD_x64
+    x64_addrflags               x64_addr_flags;
+#endif
+#ifdef MD_axp
+    axp_pdata_struct            axp_pdata;
+#endif
+#ifdef MD_ppc
+//    ppc_pdata_struct            ppc_pdata;
+#endif
+#ifdef MD_mps
+//    mips_pdata_struct           mips_pdata;
+#endif
+#ifdef MD_jvm
+//    jvm_pdata_struct            jvm_pdata;
+#endif
+} machine_data_spec;
 
 #include "digunpck.h"
 
