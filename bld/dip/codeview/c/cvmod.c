@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,11 +146,10 @@ char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 
 dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )
 {
-    static const unsigned DmndType[MAX_HK] = {
-        0,
-        0, //sstGlobalTypes,
-        sstSrcModule,
-        sstAlignSym
+    static const unsigned DmndType[] = {
+        #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   cvdmndtype,
+        #include "diphndls.h"
+        #undef pick
     };
     unsigned            type;
     cv_directory_entry  *cde;

@@ -130,10 +130,9 @@ void DIGCLIENTRY( Remove )( const char *name, dig_open mode )
     remove( name );
 }
 
-unsigned DIGCLIENTRY( MachineData )( address addr, unsigned info_type,
-                        dig_elen in_size,  const void *in,
-                        dig_elen out_size, void *out )
-/********************************************************************/
+unsigned DIGCLIENTRY( MachineData )( address addr, unsigned info_type, dig_elen in_size,
+                                        const void *in, dig_elen out_size, void *out )
+/**************************************************************************************/
 {
     /* unused parameters */ (void)in_size; (void)in; (void)out_size;
 

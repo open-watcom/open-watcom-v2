@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -390,14 +390,14 @@ typedef unsigned_8  dig_open; enum {
 
 enum archtypes {
     DIG_ARCH_NIL,
-    #define pick(enum,file,desc) DIG_ ## enum,
+    #define pick(enum,file,desc) enum,
     #include "digarch.h"
     #undef pick
     DIG_ARCH_MAX
 };
 
 enum ostypes {                  //NYI: redo these for PIL
-    #define pick(enum,desc) DIG_ ## enum,
+    #define pick(enum,desc) enum,
     #include "digos.h"
     #undef pick
     DIG_OS_MAX

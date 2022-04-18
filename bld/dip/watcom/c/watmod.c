@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -431,11 +431,10 @@ char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )
 {
     mod_dbg_info    *mod;
-    static unsigned DmndType[MAX_HK] = {
-        0,
-        DMND_TYPES,
-        DMND_LINES,
-        DMND_LOCALS
+    static unsigned DmndType[] = {
+        #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   wdmndtype,
+        #include "diphndls.h"
+        #undef pick
     };
 
     if( hk == HK_IMAGE )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,10 +71,10 @@ typedef unsigned_32             mod_handle;
 typedef unsigned_32             cue_fileid;
 
 typedef enum {
-    #define pick(e,hdl,imphdl,wvimphdl) e,
+    #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   enum,
     #include "diphndls.h"
     #undef pick
-    MAX_HK
+    HK_MAX
 } handle_kind;
 
 typedef enum {

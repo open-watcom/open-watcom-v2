@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,13 +122,13 @@ static struct {
 }                       LoadedDIPs[MAX_DIPS];
 
 static unsigned         MaxHdlSize[] = {
-    #define pick(e,hdl,imphdl,wvimphdl) 0,
+    #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   0,
     #include "diphndls.h"
     #undef pick
 };
 
 static const unsigned_8 MgrHdlSize[] = {
-    #define pick(e,hdl,imphdl,wvimphdl) hdl,
+    #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   hsize,
     #include "diphndls.h"
     #undef pick
 };
@@ -195,7 +195,7 @@ static void SetHdlSizes( dip_imp_routines *rtns )
     handle_kind hk;
     unsigned    size;
 
-    for( hk = 0; hk < MAX_HK; ++hk ) {
+    for( hk = 0; hk < HK_MAX; ++hk ) {
         size = rtns->HandleSize( hk ) + MgrHdlSize[hk];
         if( MaxHdlSize[hk] < size ) {
             MaxHdlSize[hk] = size;

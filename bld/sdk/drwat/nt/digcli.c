@@ -173,9 +173,8 @@ void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
     DeleteFile( path );
 }
 
-unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
-                        dig_elen in_size,  const void *in,
-                        dig_elen out_size, void *out )
+unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_elen in_size,
+                                        const void *in, dig_elen out_size, void *out )
 {
 #if defined( _M_IX86 )
     /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in; (void)out_size;

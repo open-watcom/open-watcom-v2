@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -261,9 +261,8 @@ dig_arch DCCurrArch( void )
     return( DIPClient->CurrArch() );
 }
 
-unsigned DCMachineData( address a, dig_info_type info_type,
-                                dig_elen in_size,  const void *in,
-                                dig_elen out_size, void *out )
+unsigned DCMachineData( address a, dig_info_type info_type, dig_elen in_size,
+                            const void *in, dig_elen out_size, void *out )
 {
     if( DIPClient->sizeof_struct < offsetof(dip_client_routines,MachineData) )
         return( 0 );

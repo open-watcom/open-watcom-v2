@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -277,7 +277,7 @@ static char     WVImp( Name )[] = "Debugger Internal";
 static unsigned WVIMPENTRY( HandleSize )( handle_kind hk )
 {
     static const unsigned_8 Sizes[] = {
-        #define pick(e,hdl,imphdl,wvimphdl) wvimphdl,
+        #define pick(enum,hsize,ihsize,wvihsize,cvdmndtype,wdmndtype)   wvihsize,
         #include "diphndls.h"
         #undef pick
     };

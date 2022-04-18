@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,11 @@
 ****************************************************************************/
 
 
-//    enum       mad file        desc
-pick( ARCH_X86,  "madx86",       "Intel Architecture [80(x)86]" )
-pick( ARCH_X64,  "madx64",       "Intel Architecture [x64]" )
-pick( ARCH_AXP,  "madaxp",       "Alpha Architecture" )
-pick( ARCH_PPC,  "madppc",       "PowerPC Architecture" )
-pick( ARCH_MIPS, "madmps",       "MIPS Architecture" )
-pick( ARCH_MSJ,  "msj",          "Java Virtual Machine (Microsoft)" )
-pick( ARCH_JVM,  "jvm",          "Java Virtual Machine (Sun)" )
+//    enum              mad file        desc
+pick( DIG_ARCH_X86,     "madx86",       "Intel Architecture [80(x)86]" )
+pick( DIG_ARCH_X64,     "madx64",       "Intel Architecture [x64]" )
+pick( DIG_ARCH_AXP,     "madaxp",       "Alpha Architecture" )
+pick( DIG_ARCH_PPC,     "madppc",       "PowerPC Architecture" )
+pick( DIG_ARCH_MIPS,    "madmps",       "MIPS Architecture" )
+pick( DIG_ARCH_MSJ,     "msj",          "Java Virtual Machine (Microsoft)" )
+pick( DIG_ARCH_JVM,     "jvm",          "Java Virtual Machine (Sun)" )

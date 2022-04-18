@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -198,9 +198,9 @@ mad_status      MADInit( void )
         const char      *desc;
     } list[] = {
 #ifdef USE_FILENAME_VERSION
-        #define pick(enum,file,desc) {DIG_ ## enum,file QUOTED(USE_FILENAME_VERSION),desc},
+        #define pick(enum,file,desc) {enum,file QUOTED(USE_FILENAME_VERSION),desc},
 #else
-        #define pick(enum,file,desc) {DIG_ ## enum,file,desc},
+        #define pick(enum,file,desc) {enum,file,desc},
 #endif
         #include "digarch.h"
         #undef pick

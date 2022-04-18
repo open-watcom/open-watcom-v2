@@ -546,9 +546,8 @@ unsigned RemoteGetMsgText( char *buff, trap_elen buff_len )
     return( ret.flags );
 }
 
-unsigned RemoteMachineData( address addr, dig_info_type info_type,
-                        dig_elen in_size,  const void *inp,
-                        dig_elen out_size, void *outp )
+unsigned RemoteMachineData( address addr, dig_info_type info_type, dig_elen in_size,
+                                const void *inp, dig_elen out_size, void *outp )
 {
     in_mx_entry                 in[2];
     mx_entry                    out[2];

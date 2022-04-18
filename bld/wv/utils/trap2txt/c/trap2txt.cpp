@@ -123,15 +123,15 @@ extern int SSD_Capabilities( int, unsigned char * , unsigned short );
 
 static char *dig_arch_desc[] = {
     "Unknown",
-#define pick(enum,file,desc) desc,
-#include "digarch.h"
-#undef pick
+    #define pick(enum,file,desc) desc,
+    #include "digarch.h"
+    #undef pick
 };
 
 static char *dig_os_desc[] = {
-#define pick(enum,desc) desc,
-#include "digos.h"
-#undef pick
+    #define pick(enum,desc) desc,
+    #include "digos.h"
+    #undef pick
 };
 
 SVC_DECODE * get_supp_service_decoder( const char * service_name )

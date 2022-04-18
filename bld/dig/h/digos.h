@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,20 +33,20 @@
 // debugger internal variable dbg$os relate to this definition
 // don't change existing items value, only add new one after last
 
-//    enum          desc
-pick( OS_IDUNNO,    "Unknown" )
-pick( OS_DOS,       "DOS" )
-pick( OS_OS2,       "OS/2" )
-pick( OS_PHARLAP,   "Phar Lap 386 DOS Extender" )
-pick( OS_ECLIPSE,   "Eclipse 386 DOS Extender" )
-pick( OS_NW386,     "NetWare 386" )
-pick( OS_QNX,       "QNX 4.x" )
-pick( OS_RATIONAL,  "DOS/4G or compatible" )
-pick( OS_WINDOWS,   "Windows 3.x" )
-pick( OS_PENPOINT,  "PenPoint" )
-pick( OS_NT,        "Win32" )
-pick( OS_AUTOCAD,   "Autocad" )
-pick( OS_NEUTRINO,  "QNX 6.x Neutrino" )
-pick( OS_LINUX,     "Linux" )
-pick( OS_FREEBSD,   "FreeBSD" )
-pick( OS_NT64,      "Windows 64-bit" )
+//    enum              desc
+pick( DIG_OS_IDUNNO,    "Unknown" )
+pick( DIG_OS_DOS,       "DOS" )
+pick( DIG_OS_OS2,       "OS/2" )
+pick( DIG_OS_PHARLAP,   "Phar Lap 386 DOS Extender" )
+pick( DIG_OS_ECLIPSE,   "Eclipse 386 DOS Extender" )
+pick( DIG_OS_NW386,     "NetWare 386" )
+pick( DIG_OS_QNX,       "QNX 4.x" )
+pick( DIG_OS_RATIONAL,  "DOS/4G or compatible" )
+pick( DIG_OS_WINDOWS,   "Windows 3.x" )
+pick( DIG_OS_PENPOINT,  "PenPoint" )
+pick( DIG_OS_NT,        "Win32" )
+pick( DIG_OS_AUTOCAD,   "Autocad" )
+pick( DIG_OS_NEUTRINO,  "QNX 6.x Neutrino" )
+pick( DIG_OS_LINUX,     "Linux" )
+pick( DIG_OS_FREEBSD,   "FreeBSD" )
+pick( DIG_OS_NT64,      "Windows 64-bit" )
