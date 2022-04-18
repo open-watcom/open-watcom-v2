@@ -171,16 +171,16 @@ extern unsigned char            __isPC98;   /* is NEC PC-98 hardware */
 #if !defined( __NETWARE__ )
     #define _RWD_osmajor        _osmajor
     #define _RWD_osminor        _osminor
-    #if defined( __NT__ )
-        #define _RWD_osbuild    _osbuild
-        #define _RWD_osver      _osver
-        #define _RWD_winmajor   _winmajor
-        #define _RWD_winminor   _winminor
-        #define _RWD_winver     _winver
-    #endif
-    #if defined( __LINUX__ )
-        #define _RWD_osrev      _osrev
-    #endif
+#endif
+#if defined( __NT__ )
+    #define _RWD_osbuild        _osbuild
+    #define _RWD_osver          _osver
+    #define _RWD_winmajor       _winmajor
+    #define _RWD_winminor       _winminor
+    #define _RWD_winver         _winver
+#endif
+#if defined( __LINUX__ )
+    #define _RWD_osrev          _osrev
 #endif
 #define _RWD_tmpfnext           __tmpfnext
 #define _RWD_nexttok            _NEXTTOK
