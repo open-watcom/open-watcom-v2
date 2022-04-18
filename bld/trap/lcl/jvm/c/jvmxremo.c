@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     if( !TaskLoaded ) {
-        ret = GetOutPtr(0);
+        ret = GetOutPtr( 0 );
         ret->sys.os = DIG_OS_IDUNNO;
         ret->sys.osmajor = 0;
         ret->sys.osminor = 0;
@@ -157,8 +157,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     map_addr_ret        *ret;
 
     if( !TaskLoaded ) {
-        acc = GetInPtr(0);
-        ret = GetOutPtr(0);
+        acc = GetInPtr( 0 );
+        ret = GetOutPtr( 0 );
         ret->out_addr = acc->in_addr;
         ret->lo_bound = 0;
         ret->hi_bound = ~(addr48_off)0;
@@ -180,7 +180,7 @@ trap_retval TRAP_CORE( Write_io )( void )
     write_io_ret        *ret;
 
     if( !TaskLoaded ) {
-        ret = GetOutPtr(0);
+        ret = GetOutPtr( 0 );
         ret->len = 0;
         return( sizeof( *ret ) );
     }
@@ -192,7 +192,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
 
     if( !TaskLoaded ) {
         mad_registers *mr;
-        mr = GetOutPtr(0);
+        mr = GetOutPtr( 0 );
         memset( mr, 0, sizeof( mr->jvm ) );
         return( sizeof( mr->jvm ) );
     }

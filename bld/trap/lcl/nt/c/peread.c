@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -215,7 +216,7 @@ int CpFile( HANDLE in )
     DWORD   old;
     int     rc;
 
-    out = CreateFile( (LPTSTR)"CP.OUT", GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+    out = CreateFile( "CP.OUT", GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
     if( out == INVALID_HANDLE_VALUE ) {
         return( 1 );
     }

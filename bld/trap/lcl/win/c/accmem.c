@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,8 +77,8 @@ trap_retval TRAP_CORE( Read_mem )( void )
     LPVOID              data;
     trap_elen           len;
 
-    acc = GetInPtr(0);
-    data = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    data = GetOutPtr( 0 );
 
     len = ReadMem( acc->mem_addr.segment, acc->mem_addr.offset, data, acc->len );
     return( len );
@@ -91,9 +91,9 @@ trap_retval TRAP_CORE( Write_mem )( void )
     write_mem_req       *acc;
     write_mem_ret       *ret;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     len = GetTotalSizeIn() - sizeof( *acc );
 
     ret->len = WriteMem( acc->mem_addr.segment, acc->mem_addr.offset, data, len );
@@ -109,8 +109,8 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
 
     length = acc->len;
     sum = 0;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,32 +88,32 @@ TRPGLOBAL HANDLE
 
 TRPGLOBAL DWORD
 (WINAPI *pQueryDosDevice)(
-    LPCTSTR         lpDeviceName,
-    LPTSTR          lpTargetPath,
+    LPCSTR          lpDeviceName,
+    LPSTR           lpTargetPath,
     DWORD           ucchMax
 );
 
-TRPGLOBAL DWORD 
+TRPGLOBAL DWORD
 (WINAPI *pGetMappedFileName)(
     HANDLE          hProcess,
     LPVOID          lpv,
-    LPTSTR          lpFilename,
+    LPSTR           lpFilename,
     DWORD           nSize
 );
 
-TRPGLOBAL HANDLE 
+TRPGLOBAL HANDLE
 (WINAPI *pCreateToolhelp32Snapshot)(
     DWORD           dwFlags,
     DWORD           th32ProcessID
 );
 
-TRPGLOBAL BOOL 
+TRPGLOBAL BOOL
 (WINAPI *pModule32First)(
     HANDLE          hSnapshot,
     LPMODULEENTRY32 lpme
 );
 
-TRPGLOBAL BOOL 
+TRPGLOBAL BOOL
 (WINAPI *pModule32Next)(
     HANDLE          hSnapshot,
     LPMODULEENTRY32 lpme

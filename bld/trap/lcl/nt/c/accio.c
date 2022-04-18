@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,7 +90,7 @@ trap_retval TRAP_FILE( open )( void )
     HANDLE                  h;
     file_open_req           *acc;
     file_open_ret           *ret;
-    void                    *buff;
+    char                    *buff;
     unsigned                mode;
     static unsigned const   mapAcc[] = { 0, 1, 2 };
 
@@ -122,7 +122,7 @@ trap_retval TRAP_FILE( open )( void )
         } else {
             create_disp = OPEN_EXISTING;
         }
-        h = CreateFile( (LPTSTR)buff, desired_access, share_mode, 0, create_disp, FILE_ATTRIBUTE_NORMAL, NULL );
+        h = CreateFile( buff, desired_access, share_mode, 0, create_disp, FILE_ATTRIBUTE_NORMAL, NULL );
         if( h == INVALID_HANDLE_VALUE ) {
             ret->err = GetLastError();
             h = 0;

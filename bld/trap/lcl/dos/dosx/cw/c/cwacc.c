@@ -531,8 +531,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     int             i;
 
     _DBG1( "AccMapAddr\r\n" );
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->out_addr.offset = 0;
     ret->out_addr.segment = 0;
     ret->lo_bound = 0;
@@ -644,8 +644,8 @@ trap_retval TRAP_CORE( Read_io )( void )
     read_io_req         *acc;
     void                *data;
 
-    acc = GetInPtr(0);
-    data = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    data = GetOutPtr( 0 );
     if( acc->len == 1 ) {
         *(byte *)data = In_b( acc->IO_offset );
     } else if( acc->len == 2 ) {
@@ -664,10 +664,10 @@ trap_retval TRAP_CORE( Write_io )( void )
     write_io_ret        *ret;
     void                *data;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     if( len == 1 ) {
         Out_b( acc->IO_offset, *(byte *)data );
     } else if( len == 2 ) {
@@ -783,7 +783,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
     _DBG( "AccKillProg\r\n" );
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     RedirectFini();
     FreeModsInfo();

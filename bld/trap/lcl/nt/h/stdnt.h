@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -198,7 +198,7 @@ extern DWORD            ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD si
 /* accmisc.c */
 extern BOOL             IsBigSel( WORD sel );
 extern unsigned long    FindProgFile( const char *pgm, char *buffer, const char *ext_list );
-extern void             AddMessagePrefix( char *buff, int len );
+extern void             AddMessagePrefix( char *buff, size_t len );
 
 /* accrun.c */
 extern myconditions     DebugExecute( DWORD state, int *tsc, bool );

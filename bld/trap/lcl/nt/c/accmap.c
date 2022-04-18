@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -369,15 +369,15 @@ static BOOL NameFromHandle( HANDLE hFile, char *name )
             *szDrive = *p;
             // Look up each device name
             if( pQueryDosDevice( szDrive, szName, BUFSIZE ) ) {
-                UINT    uNameLen = (UINT)strlen( szName );
-                if( uNameLen < MAX_PATH ) {
-                    bFound = ( strnicmp( pszFilename, szName, uNameLen ) == 0
-                               && pszFilename[ uNameLen ] == '\\' );
+                size_t  len = strlen( szName );
+                if( len < MAX_PATH ) {
+                    bFound = ( strnicmp( pszFilename, szName, len ) == 0
+                               && pszFilename[len] == '\\' );
                     if( bFound ) {
                         // Reconstruct pszFilename using szTemp
                         // Replace device path with DOS path
                         strcpy( name, szDrive );
-                        strcat( name, pszFilename + uNameLen );
+                        strcat( name, pszFilename + len );
                         bSuccess = TRUE;
                         break;
                     }
@@ -385,9 +385,9 @@ static BOOL NameFromHandle( HANDLE hFile, char *name )
             }
 
             // Go to the next NULL character.
-            while( *p++ )
+            while( *p++ != '\0' )
                 ;
-        } while( !bFound && *p ); // end of string
+        } while( *p != '\0' ); // end of string
     }
 
 error_exit:

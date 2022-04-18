@@ -129,7 +129,6 @@ trap_retval TRAP_CORE( Machine_data )( void )
         data->x86_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X86AC_BIG : (( IsDOS ) ? X86AC_REAL : 0);
         return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
-    return( sizeof( *ret ) );
 #elif defined( MD_x64 )
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
@@ -138,7 +137,6 @@ trap_retval TRAP_CORE( Machine_data )( void )
         data->x64_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X64AC_BIG : 0;
         return( sizeof( *ret ) + sizeof( data->x64_addr_flags ) );
     }
-    return( sizeof( *ret ) );
 #elif defined( MD_axp )
     if( acc->info_type == AXPMD_PDATA ) {
         data = GetOutPtr( sizeof( *ret ) );
@@ -154,14 +152,13 @@ trap_retval TRAP_CORE( Machine_data )( void )
     }
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    return( sizeof( *ret ) );
 #elif defined( MD_ppc )
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    return( sizeof( *ret ) );
 #else
     #error TRAP_CORE( Machine_data ) not configured
 #endif
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
@@ -359,7 +356,7 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
     return( sizeof( *ret ) );
 }
 
-static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
+static DWORD DoFmtMsg( char **p, DWORD err, ... )
 {
     va_list args;
     DWORD   len;
@@ -369,7 +366,7 @@ static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
     va_start( args, err );
     options = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
     len = FormatMessage( options, NULL, err,
-        MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), ( LPSTR )p, 0, &args );
+        MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), (char *)p, 0, &args );
     while( ( q = strchr( *p, '\r' ) ) != NULL ) {
         *q = ' ';
     }
@@ -380,8 +377,8 @@ static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
     return( len );
 }
 
-void AddMessagePrefix( char *buff, int len )
-/******************************************/
+void AddMessagePrefix( char *buff, size_t len )
+/*********************************************/
 {
     if( len == 0 ) {
         len = strlen( buff ) + 1;
@@ -397,7 +394,7 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 {
     get_err_text_req    *acc;
     char                *err_txt;
-    LPTSTR              lpMessageBuffer;
+    char                *lpMessageBuffer;
     DWORD               len;
     char                buff[20];
 

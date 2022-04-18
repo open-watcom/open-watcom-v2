@@ -267,7 +267,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     struct  _osinfo     info;
     get_sys_config_ret  *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     if( ProcInfo.pid == 0 )  {
         qnx_osinfo( 0, &info );
     } else {
@@ -386,8 +386,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     addr48_ptr          slib;
     unsigned            seg;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
     ret->out_addr.offset = acc->in_addr.offset;
@@ -443,8 +443,8 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     sum = 0;
     if( ProcInfo.pid != 0 ) {
         length = acc->len;
@@ -472,9 +472,9 @@ trap_retval TRAP_CORE( Read_mem )( void )
     read_mem_req        *acc;
     unsigned            len;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
 
-    len = ReadBuffer(GetOutPtr(0),acc->mem_addr.segment,acc->mem_addr.offset,acc->len);
+    len = ReadBuffer( GetOutPtr( 0 ), acc->mem_addr.segment, acc->mem_addr.offset, acc->len );
     return( len );
 }
 
@@ -485,8 +485,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
     write_mem_ret       *ret;
     unsigned            len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
 
     len = GetTotalSizeIn() - sizeof(*acc);
 
@@ -503,8 +503,8 @@ trap_retval TRAP_CORE( Read_io )( void )
     void                *ret;
     unsigned            len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_IO_RD, &port, acc->len,
             acc->IO_offset, 0 ) == 0 ) {
         len = acc->len;
@@ -534,10 +534,10 @@ trap_retval TRAP_CORE( Write_io )( void )
     void                *data;
     unsigned            len;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     switch( len ) {
     case 1:
         port.byte = *( (unsigned_8 *)data );
@@ -1554,7 +1554,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     size_t              max_len;
 
 #if 0
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     switch( acc->mod_handle ) {
     case MH_NONE:
@@ -1586,7 +1586,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     pid_t               pid, vid, proc;
     struct _psinfo      info;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     p = NULL;
     switch( acc->mod_handle ) {

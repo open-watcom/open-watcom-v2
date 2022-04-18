@@ -219,7 +219,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->sys.arch = DIG_ARCH_X86;
     ret->sys.os  = DIG_OS_LINUX;
     ret->sys.osmajor = 1;
@@ -237,8 +237,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     unsigned            index;
     unsigned            seg;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)9;
 
@@ -285,7 +285,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     checksum_mem_ret    *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->result = 0;
     return( sizeof( *ret ) );
 }
@@ -298,8 +298,8 @@ trap_retval TRAP_CORE( Read_mem )( void )
     unsigned            len;
     Elf32_Phdr          *e_phdr;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     if( !core_info.loaded ) {
         return( 0 );
     }
@@ -348,7 +348,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_ret       *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
@@ -364,7 +364,7 @@ trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
@@ -651,7 +651,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     size_t              max_len;
 
     // TODO: we could probably figure out what shared libs were loaded
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     switch( acc->mod_handle ) {
     case MH_NONE:

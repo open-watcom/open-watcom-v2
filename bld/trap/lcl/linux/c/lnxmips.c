@@ -182,11 +182,11 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
-    machine_data_req    *acc;
+//    machine_data_req    *acc;
     machine_data_ret    *ret;
 //    machine_data_spec   *data;
 
-    acc = GetInPtr( 0 );
+//    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 //    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;

@@ -180,7 +180,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     _DBG(("AccGetConfig\r\n"));
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->sys.os = DIG_OS_PHARLAP;
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
@@ -207,8 +207,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     unsigned            object;
 
     _DBG(("AccMapAddr\r\n"));
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     object = acc->in_addr.segment;
     switch( object ) {
     case MAP_FLAT_DATA_SELECTOR:
@@ -429,8 +429,8 @@ trap_retval TRAP_CORE( Read_io )( void )
     unsigned            len;
 
     _DBG(("ReadPort\r\n"));
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     switch( acc->len ) {
     case 1:
         err = dbg_iport( acc->IO_offset, ret, 1 );
@@ -462,10 +462,10 @@ trap_retval TRAP_CORE( Write_io )( void )
     void            *data;
 
     _DBG(("WritePort\r\n"));
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     switch( len ) {
     case 1:
         err = dbg_oport( acc->IO_offset, *(byte *)data, 1 );
@@ -555,7 +555,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
-    mr = GetOutPtr(0);
+    mr = GetOutPtr( 0 );
     ReadCPU( &mr->x86.cpu );
     TaskFPExec( (ULONG)&Read387, &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );

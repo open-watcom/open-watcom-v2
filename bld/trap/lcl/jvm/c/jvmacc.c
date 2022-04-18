@@ -332,11 +332,11 @@ trap_retval TRAP_CORE( Map_addr )( void )
 trap_retval TRAP_CORE( Machine_data )( void )
 /*******************************************/
 {
-    machine_data_req    *acc;
+//    machine_data_req    *acc;
     machine_data_ret    *ret;
 //    machine_data_spec   *data;
 
-    acc = GetInPtr( 0 );
+//    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 //    data = GetOutPtr( sizeof( *ret ) );
     return( sizeof( *ret ) );
@@ -352,8 +352,8 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
 
     length = acc->len;
     sum = 0;
@@ -480,7 +480,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
     ClassClass          *cb;
     char                buff[512], *p;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetOutPtr( 0 );
     length = acc->len;
     switch( acc->mem_addr.segment ) {
@@ -517,8 +517,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
     write_mem_req       *acc;
     write_mem_ret       *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
 
     ret->len = 0;
     offset = acc->mem_addr.offset;
@@ -553,7 +553,7 @@ trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
@@ -1023,8 +1023,8 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     ClassClass          **binclasses = get_binclasses();
     size_t              max_len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
 
     ret->mod_handle = 0;
     // first is 0 based, LastClassGiven is 1 based, so no increment is required

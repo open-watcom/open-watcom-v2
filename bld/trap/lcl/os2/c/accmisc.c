@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +88,7 @@ trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
@@ -237,7 +237,7 @@ trap_retval TRAP_THREAD( get_extra )( void )
 {
     char *ch;
 
-    ch = GetOutPtr(0);
+    ch = GetOutPtr( 0 );
     *ch = '\0';
     return( 1 );
 }

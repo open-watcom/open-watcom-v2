@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -579,7 +579,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     char          tmp[DBG_CO_SIZE];
     get_sys_config_ret  *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->sys.os = DIG_OS_OS2;
     DosGetVersion( &version );
     ret->sys.osminor = version & 0xff;
@@ -615,8 +615,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     unsigned            i;
     addr_off            off;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
     if( Pid == 0 ) {
@@ -668,16 +668,18 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    unsigned_8          *data;
+    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    *data = 0;
-    if( Is32BitSeg( acc->addr.segment ) ) *data |= X86AC_BIG;
-    return( sizeof( *ret ) + sizeof( *data ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = ( Is32BitSeg( acc->addr.segment ) ) ? X86AC_BIG : 0;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
@@ -688,8 +690,8 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     length = acc->len;
     sum = 0;
     if( Pid != 0 ) {
@@ -722,8 +724,8 @@ trap_retval TRAP_CORE( Read_mem )( void )
     void                *ret;
     unsigned            len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     len = ReadBuffer( ret, acc->mem_addr.segment, acc->mem_addr.offset, acc->len );
     return( len );
 }
@@ -735,8 +737,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
     write_mem_ret       *ret;
     unsigned            len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
 
     len = GetTotalSizeIn() - sizeof( *acc );
 
@@ -799,7 +801,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
-    mr = GetOutPtr(0);
+    mr = GetOutPtr( 0 );
     memset( mr, 0, sizeof( mr->x86 ) );
     if( Pid != 0 ) {
         ReadRegs( &Buff );

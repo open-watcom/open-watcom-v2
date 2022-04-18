@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -325,7 +325,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         /*
          * Get type of application
          */
-        handle = CreateFile( (LPTSTR)exe_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
+        handle = CreateFile( exe_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
         if( handle == INVALID_HANDLE_VALUE ) {
             ret->err = GetLastError();
             goto error_exit;

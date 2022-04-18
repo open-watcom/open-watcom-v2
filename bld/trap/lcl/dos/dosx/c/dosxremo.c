@@ -107,7 +107,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     get_sys_config_ret  *ret;
 
     if( !TaskLoaded ) {
-        ret = GetOutPtr(0);
+        ret = GetOutPtr( 0 );
         ret->sys.os = DIG_OS_IDUNNO;
         ret->sys.osmajor = 0;
         ret->sys.osminor = 0;
@@ -153,8 +153,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     map_addr_ret        *ret;
 
     if( !TaskLoaded ) {
-        acc = GetInPtr(0);
-        ret = GetOutPtr(0);
+        acc = GetInPtr( 0 );
+        ret = GetOutPtr( 0 );
         ret->out_addr = acc->in_addr;
         ret->lo_bound = 0;
         ret->hi_bound = ~(addr48_off)0;
@@ -176,7 +176,7 @@ trap_retval TRAP_CORE( Write_io )( void )
     write_io_ret        *ret;
 
     if( !TaskLoaded ) {
-        ret = GetOutPtr(0);
+        ret = GetOutPtr( 0 );
         ret->len = 0;
         return( sizeof( *ret ) );
     }
@@ -188,7 +188,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
     mad_registers       *mr;
 
     if( !TaskLoaded ) {
-        mr = GetOutPtr(0);
+        mr = GetOutPtr( 0 );
         memset( mr, 0, sizeof( mr->x86 ) );
         return( sizeof( mr->x86 ) );
     }
@@ -240,16 +240,21 @@ trap_retval TRAP_CORE( Prog_go )( void )
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
+    machine_data_req    *acc;
     machine_data_ret    *ret;
     machine_data_spec   *data;
 
     if( !TaskLoaded ) {
+        acc = GetInPtr( 0 );
         ret = GetOutPtr( 0 );
-        data = GetOutPtr( sizeof( *ret ) );
         ret->cache_start = 0;
         ret->cache_end = ~(addr_off)0;
-        data->x86_addr_flags = X86AC_BIG;
-        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+        if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+            data = GetOutPtr( sizeof( *ret ) );
+            data->x86_addr_flags = X86AC_BIG;
+            return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+        }
+        return( sizeof( *ret ) );
     }
     return( DoAccess() );
 }

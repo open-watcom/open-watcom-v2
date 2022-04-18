@@ -185,7 +185,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
     _DBG_Writeln( "AccGetConfig" );
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->sys.os = DIG_OS_RATIONAL;
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
@@ -210,8 +210,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
 
     _DBG_Writeln( "AccMapAddr" );
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
     fp.off = acc->in_addr.offset;
@@ -331,8 +331,8 @@ trap_retval TRAP_CORE( Read_io )( void )
     read_io_req         *acc;
     void                *data;
 
-    acc = GetInPtr(0);
-    data = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    data = GetOutPtr( 0 );
     if( acc->len == 1 ) {
         *(byte *)data = In_b( acc->IO_offset );
     } else if( acc->len == 2 ) {
@@ -350,10 +350,10 @@ trap_retval TRAP_CORE( Write_io )( void )
     write_io_ret        *ret;
     void                *data;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     if( len == 1 ) {
         Out_b( acc->IO_offset, *(byte *)data );
     } else if( len == 2 ) {
@@ -444,7 +444,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
-    mr = GetOutPtr(0);
+    mr = GetOutPtr( 0 );
     ReadCPU( &mr->x86.cpu );
     ReadFPU( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );

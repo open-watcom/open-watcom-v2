@@ -323,15 +323,20 @@ trap_retval TRAP_CORE( Map_addr )( void )
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
+    machine_data_req    *acc;
     machine_data_ret    *ret;
     machine_data_spec   *data;
 
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    data->x86_addr_flags = X86AC_BIG;
-    return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = X86AC_BIG;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 

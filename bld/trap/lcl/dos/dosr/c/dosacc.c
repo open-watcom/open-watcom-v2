@@ -226,7 +226,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->sys.os = DIG_OS_DOS;
     ret->sys.osmajor = DOS_major;
     ret->sys.osminor = DOS_minor;
@@ -256,8 +256,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     map_addr_req    *acc;
     map_addr_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     seg = acc->in_addr.segment;
     switch( seg ) {
     case MAP_FLAT_CODE_SELECTOR:
@@ -285,15 +285,20 @@ trap_retval TRAP_CORE( Map_addr )( void )
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
+    machine_data_req    *acc;
     machine_data_ret    *ret;
     machine_data_spec   *data;
 
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    data->x86_addr_flags = X86AC_REAL;
-    return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = X86AC_REAL;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
@@ -304,8 +309,8 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ptr = _MK_FP( acc->in_addr.segment, acc->in_addr.offset );
     for( len = acc->len; len != 0; --len ) {
         sum += *ptr++;
@@ -332,7 +337,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
     void            *data;
     trap_elen       len;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetOutPtr( 0 );
     acc->mem_addr.offset &= 0xffff;
     int_tbl = IsInterrupt( acc->mem_addr, acc->len );
@@ -385,8 +390,8 @@ trap_retval TRAP_CORE( Read_io )( void )
     void            *data;
     trap_elen       len;
 
-    acc = GetInPtr(0);
-    data = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    data = GetOutPtr( 0 );
     if( acc->len == 1 ) {
        *(byte __far *)data = In_b( acc->IO_offset );
        len = 1;
@@ -410,10 +415,10 @@ trap_retval TRAP_CORE( Write_io )( void )
     void                *data;
     trap_elen           len;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     if( len == 1 ) {
         Out_b( acc->IO_offset, *(byte __far *)data );
         ret->len = 1;
@@ -433,7 +438,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
-    mr = GetOutPtr(0);
+    mr = GetOutPtr( 0 );
     mr->x86.cpu = *(struct x86_cpu *)&TaskRegs;
     if( Have87Emu() ) {
         Read87EmuState( &mr->x86.u.fpu );

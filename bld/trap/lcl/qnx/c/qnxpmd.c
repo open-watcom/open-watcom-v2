@@ -125,7 +125,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     struct  _osinfo     info;
     get_sys_config_ret  *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     if( PmdInfo.loaded )  {
         info = PmdInfo.hdr.osdata;
     } else {
@@ -252,8 +252,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     addr48_ptr          slib;
     unsigned            seg;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)9;
 
@@ -298,7 +298,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     checksum_mem_ret    *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->result = 0;
     return( sizeof( *ret ) );
 }
@@ -341,8 +341,8 @@ trap_retval TRAP_CORE( Read_mem )( void )
     unsigned            i;
     unsigned            len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     if( !PmdInfo.loaded ) {
         return( 0 );
     }
@@ -371,7 +371,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_ret       *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
@@ -387,7 +387,7 @@ trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
@@ -749,7 +749,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     const char          *p;
     size_t              max_len;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->mod_handle = 0;
     if( PmdInfo.read_gdts == 0 )

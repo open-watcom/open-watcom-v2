@@ -79,7 +79,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->sys.cpu = 0;
     ret->sys.fpu = 0;
     ret->sys.arch = DIG_ARCH_MSJ;
@@ -102,8 +102,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     map_addr_req *      acc;
     map_addr_ret *      ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->out_addr = acc->in_addr;
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
@@ -122,7 +122,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     ret = GetOutPtr( 0 );
     ret->result = 0;
     if( TaskLoaded ) {
-        acc = GetInPtr(0);
+        acc = GetInPtr( 0 );
         buffer = (unsigned_8 *) alloca( acc->len );
         if( buffer != NULL ) {
             sum = 0;
@@ -154,24 +154,24 @@ trap_retval TRAP_CORE( Read_mem )( void )
     read_mem_req *acc;
 
     if( !TaskLoaded ) return 0;
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     switch( acc->mem_addr.segment ) {
     case JVM_DIP_GETCUE_SELECTOR:
-        return( DipCue( acc->mem_addr.offset, GetOutPtr(0) ) );
+        return( DipCue( acc->mem_addr.offset, GetOutPtr( 0 ) ) );
     case JVM_DIP_GETFILE_SELECTOR:
-        return( DipFileName( acc->mem_addr.offset, GetOutPtr(0) ) );
+        return( DipFileName( acc->mem_addr.offset, GetOutPtr( 0 ) ) );
     case JVM_DIP_GETMODNAME_SELECTOR:
-        return( DipModName( acc->mem_addr.offset, GetOutPtr(0) ) );
+        return( DipModName( acc->mem_addr.offset, GetOutPtr( 0 ) ) );
     case JVM_DIP_GETMODBASE_SELECTOR:
-        return( DipModBase( acc->mem_addr.offset, GetOutPtr(0) ) );
+        return( DipModBase( acc->mem_addr.offset, GetOutPtr( 0 ) ) );
     case JVM_DIP_GETMODEND_SELECTOR:
-        return( DipModEnd( acc->mem_addr.offset, GetOutPtr(0) ) );
+        return( DipModEnd( acc->mem_addr.offset, GetOutPtr( 0 ) ) );
     case JVM_MAD_UPSTACK_SELECTOR:
-        return( MadUpStack( &acc->mem_addr, GetOutPtr(0) ) );
+        return( MadUpStack( &acc->mem_addr, GetOutPtr( 0 ) ) );
     case JVM_DIP_READMEM_SELECTOR:
-        return( DoRead( acc->mem_addr.offset, GetOutPtr(0), acc->len ) );
+        return( DoRead( acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
     default:
-        return( ReadMemory( &acc->mem_addr, GetOutPtr(0), acc->len ) );
+        return( ReadMemory( &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
     }
 }
 
@@ -196,12 +196,12 @@ trap_retval TRAP_CORE( Write_mem )( void )
     ret = GetOutPtr( 0 );
     ret->len = 0;
     if( TaskLoaded ) {
-        acc = GetInPtr(0);
+        acc = GetInPtr( 0 );
         length = GetTotalSizeIn() - sizeof(*acc);
         data = GetInPtr( sizeof(*acc) );
         switch( acc->mem_addr.segment ) {
         case JVM_DIP_READMEM_SELECTOR:
-            ret->len = DoRead( acc->mem_addr.offset, GetOutPtr(0), length );
+            ret->len = DoRead( acc->mem_addr.offset, GetOutPtr( 0 ), length );
             break;
         default:
             ret->len = WriteMemory( &acc->mem_addr, data, length );
@@ -223,7 +223,7 @@ trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return sizeof( *ret );
 }
@@ -572,11 +572,11 @@ trap_retval TRAP_CORE( Machine_data )( void )
 /*******************************************/
 // NYI: what the hell does this do?
 {
-    machine_data_req    *acc;
+//    machine_data_req    *acc;
     machine_data_ret    *ret;
 //    machine_data_spec   *data;
 
-    acc = GetInPtr( 0 );
+//    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 //    data = GetOutPtr( sizeof( *ret ) );
     return sizeof( *ret );

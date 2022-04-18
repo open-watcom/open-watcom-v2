@@ -151,7 +151,7 @@ trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }

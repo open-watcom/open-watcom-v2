@@ -640,8 +640,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     unsigned            i;
     addr_off            off;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
     if( Pid == 0 ) {
@@ -1069,7 +1069,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
     LastMTE    = 0;
     ExceptNum  = -1;
-    ret        = GetOutPtr(0);
+    ret        = GetOutPtr( 0 );
     AtEnd      = FALSE;
     TaskFS     = 0;
     attach_pid = -1;

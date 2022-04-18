@@ -820,7 +820,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->sys.cpu = X86CPUType();
     ret->sys.fpu = NPX();
     ret->sys.osmajor = FileServerMajorVersionNumber;
@@ -838,8 +838,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
     struct LoadDefinitionStructure *ld;
 
     //NYI: needs work for DWARF flat mode
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     ret->out_addr.segment = acc->in_addr.segment;
     ret->out_addr.offset = acc->in_addr.offset;
     ret->lo_bound = 0;
@@ -889,15 +889,20 @@ trap_retval TRAP_CORE( Map_addr )( void )
 
 trap_retval TRAP_CORE( Machine_data )( void )
 {
+    machine_data_req    *acc;
     machine_data_ret    *ret;
     machine_data_spec   *data;
 
+    acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    data->x86_addr_flags = X86AC_BIG;
-    return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = X86AC_BIG;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 static int ReadMemory( addr48_ptr *addr, unsigned long req, void *buf )
@@ -956,8 +961,8 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     trap_elen           want;
     trap_elen           got;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     len = acc->len;
     addr.offset = acc->in_addr.offset;
     addr.segment = acc->in_addr.segment;
@@ -984,11 +989,11 @@ trap_retval TRAP_CORE( Read_mem )( void )
     read_mem_req        *acc;
     trap_elen           len;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
 
     addr.offset = acc->mem_addr.offset;
     addr.segment = acc->mem_addr.segment;
-    len = ReadWrite( ReadMemory, &addr, GetOutPtr(0), acc->len );
+    len = ReadWrite( ReadMemory, &addr, GetOutPtr( 0 ), acc->len );
     return( len );
 }
 
@@ -999,8 +1004,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
     write_mem_ret       *ret;
     trap_elen           len;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
 
     len = GetTotalSizeIn() - sizeof(*acc);
 
@@ -1016,7 +1021,7 @@ trap_retval TRAP_CORE( Read_io )( void )
     read_io_req     *acc;
     void            *data;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetOutPtr( 0 );
     if( acc->len == 1 ) {
         *( (byte *)data ) = in_b( acc->IO_offset );
@@ -1055,7 +1060,7 @@ trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
-    mr = GetOutPtr(0);
+    mr = GetOutPtr( 0 );
     memset( mr, 0, sizeof( mr->x86 ) );
     if( MSB != NULL ) {
         mr->x86.cpu = *(struct x86_cpu *)&MSB->cpu;
