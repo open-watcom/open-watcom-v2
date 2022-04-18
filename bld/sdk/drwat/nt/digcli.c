@@ -169,7 +169,8 @@ void DIGCLIENTRY( Close )( FILE *fp )
  */
 void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
 {
-    mode = mode;
+    /* unused params */ (void)mode;
+
     DeleteFile( path );
 }
 
