@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +38,8 @@
 #include "dis.h"
 
 
-#define BIG_SEG( a )    ((AddrCharacteristics(a)&X86AC_BIG)!=0)
-#define REAL_SEG( a )   ((AddrCharacteristics(a)&X86AC_REAL)!=0)
+#define BIG_SEG( a )    ((AddrCharacteristics(a) & X86AC_BIG)!=0)
+#define REAL_SEG( a )   ((AddrCharacteristics(a) & X86AC_REAL)!=0)
 
 typedef enum { LN, L1, L2, L3, L5, L6, LX } processor_level;
 
@@ -100,7 +101,7 @@ struct mad_disasm_data {
     address             addr;
     mad_radix           radix;
     dis_dec_ins         ins;
-    unsigned            characteristics;
+    unsigned            addr_characteristics;
 };
 
 struct mad_trace_data {

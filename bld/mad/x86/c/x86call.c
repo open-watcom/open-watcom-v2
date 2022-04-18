@@ -519,7 +519,7 @@ static int HeuristicTraceBack(
 
 
 
-static void SymbolicTraceBack( address *start, unsigned characteristics, long bp_disp, address *execution, address *frame, address *stack )
+static void SymbolicTraceBack( address *start, unsigned rtn_characteristics, long bp_disp, address *execution, address *frame, address *stack )
 {
     address     where;
 
@@ -532,7 +532,7 @@ static void SymbolicTraceBack( address *start, unsigned characteristics, long bp
         where.mach.offset += bp_disp;
     }
     execution->mach.offset = GetAnOffset( &where );
-    if( characteristics ) {
+    if( rtn_characteristics ) {
         execution->mach.segment = GetDataWord();
     }
     *stack = DbgAddr;

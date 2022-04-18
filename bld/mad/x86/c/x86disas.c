@@ -124,7 +124,7 @@ mad_status MADIMPENTRY( Disasm )( mad_disasm_data *dd, address *a, int adj )
 {
     mad_status  ms;
 
-    dd->characteristics = AddrCharacteristics( *a );
+    dd->addr_characteristics = AddrCharacteristics( *a );
     while( adj < 0 ) {
         ms = GetDisasmPrev( a );
         if( ms != MS_OK )
@@ -132,7 +132,7 @@ mad_status MADIMPENTRY( Disasm )( mad_disasm_data *dd, address *a, int adj )
         ++adj;
     }
     while( adj >= 0 ) {
-        DecodeIns( a, dd, dd->characteristics & X86AC_BIG );
+        DecodeIns( a, dd, dd->addr_characteristics & X86AC_BIG );
         --adj;
     }
     return( MS_OK );

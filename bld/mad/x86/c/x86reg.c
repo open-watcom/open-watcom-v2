@@ -827,7 +827,7 @@ static mad_status FPUGetPiece(
     unsigned            column;
     char                *p;
     unsigned            tag;
-    unsigned            characteristics;
+    unsigned            addr_characteristics;
 
     /* in case we haven't got an FPU */
     *reg_p = &XXX_dummy.info;
@@ -946,11 +946,11 @@ static mad_status FPUGetPiece(
             strcpy( p, (*reg_p)->name );
             if( MCSystemConfig()->fpu == X86_NO )
                 break;
-            characteristics = AddrCharacteristics( GetRegIP( mr ) );
-            if( characteristics & X86AC_REAL ) {
-                *disp_type_p = X86T_FPPTR_REAL;
-            } else if( characteristics & X86AC_BIG ) {
+            addr_characteristics = AddrCharacteristics( GetRegIP( mr ) );
+            if( addr_characteristics & X86AC_BIG ) {
                 *disp_type_p = X86T_FPPTR_32;
+            } else if( addr_characteristics & X86AC_REAL ) {
+                *disp_type_p = X86T_FPPTR_REAL;
             } else {    /* 16-bit protect mode */
                 *disp_type_p = X86T_FPPTR_16;
             }

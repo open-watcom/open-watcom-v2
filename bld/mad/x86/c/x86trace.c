@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,7 +87,7 @@ static void BreakRet( mad_trace_data *td, mad_disasm_data *dd, const mad_registe
         sp.mach.offset += sizeof( td->brk.mach.segment );
         break;
     default:
-        if( dd->characteristics & X86AC_BIG ) {
+        if( dd->addr_characteristics & X86AC_BIG ) {
             MCReadMem( sp, sizeof( off.off48 ), &off.off48 );
             sp.mach.offset += sizeof( off.off48 );
             td->brk.mach.offset = off.off48;
@@ -205,9 +206,9 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
             break;
         /* fall through */
     case DI_X86_into:
-        if( (dd->characteristics & X86AC_REAL) == 0 )
-            break;
-        return( MTRH_SIMULATE );
+        if( dd->addr_characteristics & X86AC_REAL )
+            return( MTRH_SIMULATE );
+        break;
     case DI_X86_iret:
     case DI_X86_iretd:
        BreakRet( td, dd, mr );
@@ -348,20 +349,21 @@ mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd
         /* fall through */
     case DI_X86_int:
         /* only in real mode */
-        if( (dd->characteristics & X86AC_REAL) == 0 )
-            break;
-        out->x86 = in->x86;
-        sp = GetRegSP( out );
-        sp.mach.offset -= sizeof( word );
-        value = (word)out->x86.cpu.efl;
-        MCWriteMem( sp, sizeof( value ), &value );
-        out->x86.cpu.efl &= ~FLG_I;
-        value = out->x86.cpu.cs;
-        MCWriteMem( sp, sizeof( value ), &value );
-        value = (word)out->x86.cpu.eip;
-        MCWriteMem( sp, sizeof( value ), &value );
-        out->x86.cpu.esp = sp.mach.offset;
-        return( MS_OK );
+        if( dd->addr_characteristics & X86AC_REAL ) {
+            out->x86 = in->x86;
+            sp = GetRegSP( out );
+            sp.mach.offset -= sizeof( word );
+            value = (word)out->x86.cpu.efl;
+            MCWriteMem( sp, sizeof( value ), &value );
+            out->x86.cpu.efl &= ~FLG_I;
+            value = out->x86.cpu.cs;
+            MCWriteMem( sp, sizeof( value ), &value );
+            value = (word)out->x86.cpu.eip;
+            MCWriteMem( sp, sizeof( value ), &value );
+            out->x86.cpu.esp = sp.mach.offset;
+            return( MS_OK );
+        }
+        break;
     default:
         break;
     }
