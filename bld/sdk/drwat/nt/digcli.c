@@ -190,6 +190,14 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type, dig_
             return( sizeof( x86_addrflags ) );
         }
         break;
+#elif defined( _M_X64 )
+    case DIG_ARCH_X86:
+    case DIG_ARCH_X64:
+        if( info_type == X64MD_ADDR_CHARACTERISTICS ) {
+            *(x64_addrflags *)out = ( SysConfig.arch == DIG_ARCH_X64 ) ? X64AC_BIG : 0;
+            return( sizeof( x64_addrflags ) );
+        }
+        break;
 #elif defined( __AXP__ )
   #if 0
     case DIG_ARCH_AXP:

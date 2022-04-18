@@ -133,9 +133,9 @@ trap_retval TRAP_CORE( Machine_data )( void )
 #elif defined( MD_x64 )
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+    if( acc->info_type == X64MD_ADDR_CHARACTERISTICS ) {
         data = GetOutPtr( sizeof( *ret ) );
-        data->x64_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X6AC_BIG : 0;
+        data->x64_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X64AC_BIG : 0;
         return( sizeof( *ret ) + sizeof( data->x64_addr_flags ) );
     }
     return( sizeof( *ret ) );
