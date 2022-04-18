@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -182,23 +183,26 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
     /* unused parameters */ (void)addr; (void)info_type; (void)in_size; (void)in; (void)out_size; (void)out;
 #endif
 
-#if defined( _M_IX86 )
-    enum x86_addr_characteristics   *a_char;
-
     switch( SysConfig.arch ) {
+#if defined( _M_IX86 )
     case DIG_ARCH_X86:
-        a_char = out;
-        *a_char = X86AC_BIG;
-        return( sizeof( *a_char ) );
-    }
+        if( info_type == X86MD_ADDR_CHARACTERISTICS ) {
+            *(x86_addrflags *)out = X86AC_BIG;
+            return( sizeof( x86_addrflags ) );
+        }
+        break;
 #elif defined( __AXP__ )
   #if 0
-    switch( SysConfig.arch ) {
     case DIG_ARCH_AXP:
-        memcpy( out, in, sizeof( axp_data ) );
-        return( sizeof( axp_data ) );
-    }
+        if( info_type == AXPMD_PDATA ) {
+            memcpy( out, in, sizeof( axp_data ) );
+            return( sizeof( axp_data ) );
+        }
+        break;
   #endif
 #endif
+    default:
+        break;
+    }
     return( 0 );
 }

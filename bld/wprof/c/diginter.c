@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,21 +135,28 @@ unsigned DIGCLIENTRY( MachineData )( address addr, unsigned info_type,
                         dig_elen out_size, void *out )
 /********************************************************************/
 {
-    enum x86_addr_characteristics       *d;
-
-    /* unused parameters */ (void)info_type; (void)in_size; (void)in; (void)out_size;
+    /* unused parameters */ (void)in_size; (void)in; (void)out_size;
 
     switch( CurrSIOData->config.arch ) {
     case DIG_ARCH_X86:
-        d = out;
-        *d = 0;
-        if( IsX86BigAddr( addr ) ) {
-            *d |= X86AC_BIG;
+        if( info_type == X86MD_ADDR_CHARACTERISTICS ) {
+            *(x86_addrflags *)out = 0;
+            if( IsX86BigAddr( addr ) ) {
+                *(x86_addrflags *)out = X86AC_BIG;
+            } else if( IsX86RealAddr( addr ) ) {
+                *(x86_addrflags *)out = X86AC_REAL;
+            }
+            return( sizeof( x86_addrflags ) );
         }
-        if( IsX86RealAddr( addr ) ) {
-            *d |= X86AC_REAL;
+        break;
+#if 0
+    case DIG_ARCH_AXP:
+        if( acc->info_type == AXPMD_PDATA ) {
+            memcpy( out, in, sizeof( axp_data ) );
+            return( sizeof( axp_data ) );
         }
-        return( sizeof( *d ) );
+        break;
+#endif
     /* add other machines here */
     }
     return( 0 );

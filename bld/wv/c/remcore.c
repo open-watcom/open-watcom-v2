@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,17 +59,17 @@ extern trap_elen        CurrRegSize;
 #define MAX_ERR_MSG_SIZE        80
 
 typedef struct{
-    address     addr;
-    size_t      len;
-    char        *data;
+    address         addr;
+    size_t          len;
+    char            *data;
 } cache_block;
 
 typedef struct {
-    address     addr;
-    addr48_off  end;
-    unsigned    info;
-    size_t      len;
-    unsigned_8  data[1];        /* variable sized */
+    address         addr;
+    addr48_off      end;
+    dig_info_type   info_type;
+    size_t          len;
+    unsigned_8      data[1];    /* variable sized */
 } machine_data_cache;
 
 static cache_block              Cache;
@@ -545,7 +546,7 @@ unsigned RemoteGetMsgText( char *buff, trap_elen buff_len )
     return( ret.flags );
 }
 
-unsigned RemoteMachineData( address addr, uint_8 info_type,
+unsigned RemoteMachineData( address addr, dig_info_type info_type,
                         dig_elen in_size,  const void *inp,
                         dig_elen out_size, void *outp )
 {
@@ -556,7 +557,7 @@ unsigned RemoteMachineData( address addr, uint_8 info_type,
     unsigned                    len;
     machine_data_cache          *new;
 
-    if( info_type == MData->info
+    if( info_type == MData->info_type
       && addr.mach.offset >= MData->addr.mach.offset
       && addr.mach.offset <  MData->end
       && SameAddrSpace( addr, MData->addr ) ) {
@@ -564,7 +565,7 @@ unsigned RemoteMachineData( address addr, uint_8 info_type,
         return( out_size );
     }
     acc.req = REQ_MACHINE_DATA;
-    acc.info_type = info_type;
+    acc.info_type = (unsigned_8)info_type;
     acc.addr = addr.mach;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
@@ -589,7 +590,7 @@ unsigned RemoteMachineData( address addr, uint_8 info_type,
     MData->addr = addr;
     MData->addr.mach.offset = ret.cache_start;
     MData->end = ret.cache_end;
-    MData->info = info_type;
+    MData->info_type = info_type;
     MData->len = len;
     return( len );
 }

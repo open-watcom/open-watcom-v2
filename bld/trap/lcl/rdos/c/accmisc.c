@@ -51,7 +51,6 @@ trap_retval TRAP_CORE( Machine_data )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
     sel = acc->addr.segment;
     if( RdosGetSelectorInfo( sel, &size, &bitness ) ) {
         if( size > 0xFFFF ) {
@@ -63,8 +62,12 @@ trap_retval TRAP_CORE( Machine_data )( void )
     }
     ret->cache_start = 0;
     ret->cache_end = size;
-    data->x86_addr_flags = ( bitness == 32 ) ? X86AC_BIG : 0;
-    return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = ( bitness == 32 ) ? X86AC_BIG : 0;
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Get_sys_config )( void )

@@ -1022,22 +1022,20 @@ trap_retval TRAP_CORE( Machine_data )( void )
     machine_data_req    *acc;
     machine_data_ret    *ret;
     machine_data_spec   *data;
-    trap_elen           len;
 
     _DBG( "AccMachineData\r\n" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->cache_start = 0;
-    ret->cache_end = 0;
-    len = 0;
+    ret->cache_end = ~(addr_off)0;
     if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
-        ret->cache_end = ~(addr_off)0;
         data = GetOutPtr( sizeof( *ret ) );
-        len = sizeof( data->x86_addr_flags );
         data->x86_addr_flags = ( IsSel32bit( acc->addr.segment ) ) ? X86AC_BIG : 0;
+        _DBG( "address %x:%x is %s\r\n", acc->addr.segment, acc->addr.offset, data->x86_addr_flags ? "32-bit" : "16-bit" );
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
-    _DBG( "address %x:%x is %s\r\n", acc->addr.segment, acc->addr.offset, data->x86_addr_flags ? "32-bit" : "16-bit" );
-    return( sizeof( *ret ) + len );
+    _DBG( "address %x:%x\r\n", acc->addr.segment, acc->addr.offset );
+    return( sizeof( *ret ) );
 }
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )

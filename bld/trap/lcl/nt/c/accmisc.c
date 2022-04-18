@@ -121,28 +121,43 @@ trap_retval TRAP_CORE( Machine_data )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
 #if defined( MD_x86 )
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    data->x86_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X86AC_BIG : (( IsDOS ) ? X86AC_REAL : 0);
-    return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x86_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X86AC_BIG : (( IsDOS ) ? X86AC_REAL : 0);
+        return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
+    }
+    return( sizeof( *ret ) );
 #elif defined( MD_x64 )
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
-    data->x64_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X6AC_BIG : 0;
-    return( sizeof( *ret ) + sizeof( data->x64_addr_flags ) );
-#elif defined( MD_axp )
-    memset( &data->axp_pdata, 0, sizeof( data->axp_pdata ) );
-    if( FindPData( acc->addr.offset, &data->axp_pdata ) ) {
-        ret->cache_start = data->axp_pdata.beg_addr.u._32[0];
-        ret->cache_end = data->axp_pdata.end_addr.u._32[0];
-    } else {
-        ret->cache_start = 0;
-        ret->cache_end = 0;
+    if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        data->x64_addr_flags = ( IsBigSel( acc->addr.segment ) ) ? X6AC_BIG : 0;
+        return( sizeof( *ret ) + sizeof( data->x64_addr_flags ) );
     }
-    return( sizeof( *ret ) + sizeof( data->axp_pdata ) );
+    return( sizeof( *ret ) );
+#elif defined( MD_axp )
+    if( acc->info_type == AXPMD_PDATA ) {
+        data = GetOutPtr( sizeof( *ret ) );
+        memset( &data->axp_pdata, 0, sizeof( data->axp_pdata ) );
+        if( FindPData( acc->addr.offset, &data->axp_pdata ) ) {
+            ret->cache_start = data->axp_pdata.beg_addr.u._32[0];
+            ret->cache_end = data->axp_pdata.end_addr.u._32[0];
+        } else {
+            ret->cache_start = 0;
+            ret->cache_end = 0;
+        }
+        return( sizeof( *ret ) + sizeof( data->axp_pdata ) );
+    }
+    ret->cache_start = 0;
+    ret->cache_end = ~(addr_off)0;
+    return( sizeof( *ret ) );
 #elif defined( MD_ppc )
+    ret->cache_start = 0;
+    ret->cache_end = ~(addr_off)0;
     return( sizeof( *ret ) );
 #else
     #error TRAP_CORE( Machine_data ) not configured

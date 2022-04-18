@@ -184,11 +184,11 @@ trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
-    machine_data_spec   *data;
+//    machine_data_spec   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    data = GetOutPtr( sizeof( *ret ) );
+//    data = GetOutPtr( sizeof( *ret ) );
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
     return( sizeof( *ret ) );
