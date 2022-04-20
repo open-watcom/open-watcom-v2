@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ static void usage( void )
 
     Output( "Usage: dmpobj [options] objfile[." OBJSUFFIX "]..." CRLF );
     Output( "Options:" CRLF );
-    Output( "-l\t\tProduce listing file" CRLF );
+    Output( "-l[=file]\tProduce listing file" CRLF );
     Output( "-d\t\tPrint descriptive titles for some output" CRLF );
     Output( "-t\t\tPrint names for some index values and list at end" CRLF );
     Output( "-c\t\tDump COMENT records without interpretation" CRLF );
@@ -103,7 +103,7 @@ int main( int argc, char **argv )
     char        file[_MAX_PATH];
     char        *fn;
     int         i;
-    bool        list_file;
+    char        *list_file;
     FILE        *fh;
     bool        is_intel;
 
@@ -113,14 +113,17 @@ int main( int argc, char **argv )
     Descriptions = false;
     InterpretComent = true;
     TranslateIndex = false;
-    list_file = false;
+    list_file = NULL;
     is_intel = false;
     quiet = false;
     for( i = 1; i < argc; ++i ) {
         if( argv[i][0] == '-' ) {
             switch( tolower( argv[i][1] ) ) {
             case 'l':
-                list_file = true;
+                list_file = argv[i] + 2;
+                if( *list_file == '=' ) {
+                    list_file++;
+                }
                 break;
             case 'd':
                 Descriptions = true;
@@ -183,11 +186,13 @@ int main( int argc, char **argv )
             leave( 20 );
             // never return
         }
-        if( list_file ) {
-            _makepath( file, pg.drive, pg.dir, pg.fname, LSTSUFFIX );
-            fh = fopen( file, "w" );
+        if( list_file != NULL ) {
+            if( *list_file == '\0' ) {
+                _makepath( file, pg.drive, pg.dir, pg.fname, LSTSUFFIX );
+            }
+            fh = fopen( list_file, "w" );
             if( fh == NULL ) {
-                Output( "Cannot open '%s' for writing" CRLF, file );
+                Output( "Cannot open '%s' for writing" CRLF, list_file );
                 leave( 20 );
                 // never return
             }
