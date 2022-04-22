@@ -74,9 +74,9 @@ typedef struct recognized_struct recognized_struct;
 
 char    *CommentString  = CPP_COMMENT_STRING;
 
-orl_machine_type     MachineType = 0;
-orl_file_format      FileFormat = ORL_UNRECOGNIZED_FORMAT;
-bool                 IsIntelx86 = false;
+orl_machine_type     MachineType;
+orl_file_format      FileFormat;
+bool                 IsIntelx86;
 
 // sections that require name-checking should be inserted in this array
 recognized_struct RecognizedName[] = {
@@ -629,6 +629,7 @@ static return_val initORL( void )
 #endif
 
             // check intended machine type
+            IsIntelx86 = false;
             MachineType = ORLFileGetMachineType( ObjFileHnd );
             switch( MachineType ) {
             // If there's no machine specific code, the CPU we choose shouldn't

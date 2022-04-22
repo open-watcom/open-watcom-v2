@@ -118,7 +118,6 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
     ref_entry                           r_entry;
     dis_inst_flags                      flags;
     dis_sec_offset                      op_pos;
-    bool                                is_intel;
     int                                 adjusted;
     sa_disasm_struct                    sds;
     const char                          *FPU_fixup;
@@ -136,13 +135,8 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
         if( ( FileFormat != ORL_OMF ) || (ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_32) ) {
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
-        is_intel = true;
-    } else if( MachineType == ORL_MACHINE_TYPE_AMD64 ) {
-        is_intel = true;
-    } else {
-        is_intel = IsIntelx86;
     }
-    if( is_intel ) {
+    if( IsIntelx86 ) {
         flags.u.x86 |= DIF_X86_FPU_EMU;
     }
 
@@ -155,7 +149,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
         }
         if( stl != NULL && ( loop >= stl->start ) ) {
             decoded.size = 0;
-            if( is_intel ) {
+            if( IsIntelx86 ) {
                 r_entry = DoPass1Relocs( contents, r_entry, loop, stl->end );
             }
             loop = stl->end;
@@ -172,7 +166,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
         }
         r_entry = ProcessFpuEmulatorFixup( r_entry, loop, &FPU_fixup );
         if( r_entry != NULL && ( r_entry->offset == loop ) ) {
-            if( is_intel || IsDataReloc( r_entry ) ) {
+            if( IsIntelx86 || IsDataReloc( r_entry ) ) {
                 // we just skip the data
                 op_pos = loop;
                 decoded.size = 0;
@@ -198,7 +192,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
             op_pos = loop + decoded.op[i].op_position;
             switch( decoded.op[i].type & DO_MASK ) {
             case DO_IMMED:
-                if( !is_intel )
+                if( !IsIntelx86 )
                     break;
                 /* fall through */
             case DO_RELATIVE:
@@ -217,7 +211,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                     }
                 }
                 if( r_entry != NULL && ( r_entry->offset == op_pos ) ) {
-                    if( is_intel && r_entry->label->shnd != ORL_NULL_HANDLE
+                    if( IsIntelx86 && r_entry->label->shnd != ORL_NULL_HANDLE
                         && ( r_entry->type != ORL_RELOC_TYPE_SEGMENT )
                         && ( r_entry->label->type == LTYP_SECTION ) ) {
                         /* For section offsets under intel we MUST generate a

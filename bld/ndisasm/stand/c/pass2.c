@@ -591,7 +591,6 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
     char                ops[ MAX_OBJ_NAME + 24 ];       // at most 1 label/relocation per instruction, plus room for registers, brackets and other crap
     dis_inst_flags      flags;
     scantab_ptr         st;
-    bool                is_intel;
     sa_disasm_struct    sds;
     const char          *FPU_fixup;
     int                 pos_tabs;
@@ -632,13 +631,8 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         if( ( FileFormat != ORL_OMF ) || (ORLSecGetFlags( section->shnd ) & ORL_SEC_FLAG_USE_32) ) {
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
-        is_intel = true;
-    } else if( MachineType == ORL_MACHINE_TYPE_AMD64 ) {
-        is_intel = true;
-    } else {
-        is_intel = IsIntelx86;
     }
-    if( is_intel ) {
+    if( IsIntelx86 ) {
         flags.u.x86 |= DIF_X86_FPU_EMU;
     }
     is32bit = ( size >= 0x10000 );
@@ -665,7 +659,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         }
         data.r_entry = ProcessFpuEmulatorFixup( data.r_entry, data.loop, &FPU_fixup );
         if( data.r_entry != NULL && ( data.r_entry->offset == data.loop ) ) {
-            if( is_intel || IsDataReloc( data.r_entry ) ) {
+            if( IsIntelx86 || IsDataReloc( data.r_entry ) ) {
                 // we just skip the data
                 decoded.size = 0;
                 processDataInCode( section, contents, &data, RelocSize( data.r_entry ), &l_entry );
