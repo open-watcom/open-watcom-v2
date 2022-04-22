@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry, dis_sec_offset
     dis_sec_addend                      addend;
     unnamed_label_return_struct         rs;
 
-    if( !IsIntelx86() )
+    if( !IsIntelx86 )
         return( r_entry );
 
     for( ; r_entry != NULL; r_entry = r_entry->next ) {
@@ -132,15 +132,15 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
     }
 
     flags.u.all = DIF_NONE;
-    if( GetMachineType() == ORL_MACHINE_TYPE_I386 ) {
-        if( ( GetFormat() != ORL_OMF ) || (ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_32) ) {
+    if( MachineType == ORL_MACHINE_TYPE_I386 ) {
+        if( ( FileFormat != ORL_OMF ) || (ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_32) ) {
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
         is_intel = true;
-    } else if( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) {
+    } else if( MachineType == ORL_MACHINE_TYPE_AMD64 ) {
         is_intel = true;
     } else {
-        is_intel = IsIntelx86();
+        is_intel = IsIntelx86;
     }
     if( is_intel ) {
         flags.u.x86 |= DIF_X86_FPU_EMU;
@@ -269,7 +269,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                             // completely fetched and decoded.
                             // relocations in pass2 are not applied because they break
                             // relative memory references if no relocation is present!
-                            if( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) {
+                            if( MachineType == ORL_MACHINE_TYPE_AMD64 ) {
                                 decoded.op[i].value.u._32[I64LO32] += decoded.size;
 
                                 // I don't know if this is neccessary, but it will generate

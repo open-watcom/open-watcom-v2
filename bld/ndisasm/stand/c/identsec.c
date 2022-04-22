@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +26,7 @@
 *  ========================================================================
 *
 * Description:  Identify ORL section type.
-*               
+*
 ****************************************************************************/
 
 
@@ -69,12 +70,12 @@ section_type IdentifySec( orl_sec_handle shnd )
     case ORL_SEC_TYPE_RELOCS:
         // Under OMF the reloc section is virtual and does not contain
         // what would normally be considered data
-        if( GetFormat() == ORL_OMF ) {
+        if( FileFormat == ORL_OMF ) {
             return( SECTION_TYPE_RELOCS );
         }
         return( SECTION_TYPE_UNKNOWN );
     case ORL_SEC_TYPE_NOTE:
-        if( GetFormat() == ORL_OMF ) {
+        if( FileFormat == ORL_OMF ) {
             return( SECTION_TYPE_DRECTVE );
         }
         h_key.u.string = ORLSecGetName( shnd );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -951,7 +951,7 @@ static orl_return       groupWalker( orl_group_handle grp )
 void UseFlatModel( void )
 {
     if( !flatModel ) {
-        switch( GetMachineType() ) {
+        switch( MachineType ) {
         case ORL_MACHINE_TYPE_I386:
         case ORL_MACHINE_TYPE_AMD64:
             flatModel = 1;
@@ -969,7 +969,7 @@ static void doPrologue( void )
     /* output the listing */
     if( masm_output ) {
         if( DFormat & DFF_ASM ) {
-            switch( GetMachineType() ) {
+            switch( MachineType ) {
             case ORL_MACHINE_TYPE_I8086:
                 BufferConcat( ".387" );
                 BufferConcatNL();

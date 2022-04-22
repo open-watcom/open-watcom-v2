@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -294,7 +294,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             }
             break;
         case ORL_RELOC_TYPE_REL_16:
-            if( IsIntelx86() && r_entry->has_val ) {
+            if( IsIntelx86 && r_entry->has_val ) {
                 nvalue -= ins_size;
             }
             if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput() ) {
@@ -345,7 +345,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             // relative addresses without relocate
             //
             // in amd64 code the instruction size will be added in pass1.c!
-            if( r_entry->has_val && !( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) ) {
+            if( r_entry->has_val && !( MachineType == ORL_MACHINE_TYPE_AMD64 ) ) {
                 nvalue -= ins_size;
             }
             referenceString( r_entry, sec_size, "", "", "", buff, flags );
@@ -519,7 +519,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
         if( pd->r_entry != NULL ) {
             /* if there is an override we must avoid the frame
              */
-            if( (ins->flags.u.x86 & DIS_X86_SEG_OR) && IsIntelx86() ) {
+            if( (ins->flags.u.x86 & DIS_X86_SEG_OR) && IsIntelx86 ) {
                 rf |= RFLAG_NO_FRAME;
             }
             len = HandleAReference( op->value, ins->size, rf,
@@ -628,15 +628,15 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
     if( size && sec_label_list )
         PrintAssumeHeader( section );
     flags.u.all = DIF_NONE;
-    if( GetMachineType() == ORL_MACHINE_TYPE_I386 ) {
-        if( ( GetFormat() != ORL_OMF ) || (ORLSecGetFlags( section->shnd ) & ORL_SEC_FLAG_USE_32) ) {
+    if( MachineType == ORL_MACHINE_TYPE_I386 ) {
+        if( ( FileFormat != ORL_OMF ) || (ORLSecGetFlags( section->shnd ) & ORL_SEC_FLAG_USE_32) ) {
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
         is_intel = true;
-    } else if( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) {
+    } else if( MachineType == ORL_MACHINE_TYPE_AMD64 ) {
         is_intel = true;
     } else {
-        is_intel = IsIntelx86();
+        is_intel = IsIntelx86;
     }
     if( is_intel ) {
         flags.u.x86 |= DIF_X86_FPU_EMU;

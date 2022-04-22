@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,6 +74,10 @@ typedef struct recognized_struct recognized_struct;
 
 char    *CommentString  = CPP_COMMENT_STRING;
 
+orl_machine_type     MachineType = 0;
+orl_file_format      FileFormat = ORL_UNRECOGNIZED_FORMAT;
+bool                 IsIntelx86 = false;
+
 // sections that require name-checking should be inserted in this array
 recognized_struct RecognizedName[] = {
     {".pdata",      SECTION_TYPE_PDATA},
@@ -102,23 +106,6 @@ static char                     *objFileBuf = NULL;
 static long                     objFilePos;
 static unsigned long            objFileLen;
 
-
-bool IsIntelx86( void )
-{
-    switch( GetMachineType() ) {
-    case ORL_MACHINE_TYPE_I386:
-    case ORL_MACHINE_TYPE_I8086:
-    case ORL_MACHINE_TYPE_AMD64:
-        return( true );
-    default:
-        return( false );
-    }
-}
-
-orl_file_format GetFormat( void )
-{
-    return( ORLFileGetFormat( ObjFileHnd ) );
-}
 
 static orl_return nopCallBack( const char *str, void *cookie  )
 {
@@ -228,7 +215,7 @@ static return_val addRelocSection( orl_sec_handle shnd )
 {
     section_ptr     section;
 
-    if( relocSections.first != NULL && ( GetFormat() == ORL_OMF ) )
+    if( relocSections.first != NULL && ( FileFormat == ORL_OMF ) )
         return( RC_OKAY );
 
     section = MemAlloc( sizeof( section_struct ) );
@@ -396,7 +383,7 @@ static orl_return sectionInit( orl_sec_handle shnd )
         }
         break;
     case SECTION_TYPE_DRECTVE:
-        if( GetFormat() == ORL_OMF ) {
+        if( FileFormat == ORL_OMF ) {
             drectveSection = shnd;
             break;
         } // else fall through
@@ -572,11 +559,6 @@ static return_val initHashTables( void )
     return( error );
 }
 
-orl_machine_type GetMachineType( void )
-{
-    return( ORLFileGetMachineType( ObjFileHnd ) );
-}
-
 /*
  *  Functions to convert data from the file format to the host format where the data may be byte swapped.
  *  If the ORL file is not marked as the opposite endianness as that of the host, then the data will
@@ -620,20 +602,18 @@ unsigned_64 FileU64toHostU64(unsigned_64 value)
 static return_val initORL( void )
 {
     orl_file_flags      flags;
-    orl_machine_type    machine_type;
     orl_return          o_error = ORL_OKAY;
-    orl_file_format     type;
     bool                byte_swap;
     ORLSetFuncs( orl_cli_funcs, objRead, objSeek, MemAlloc, MemFree );
 
     ORLHnd = ORLInit( &orl_cli_funcs );
     if( ORLHnd != ORL_NULL_HANDLE ) {
-        type = ORLFileIdentify( ORLHnd, NULL );
-        if( type == ORL_UNRECOGNIZED_FORMAT ) {
+        FileFormat = ORLFileIdentify( ORLHnd, NULL );
+        if( FileFormat == ORL_UNRECOGNIZED_FORMAT ) {
             PrintErrorMsg( RC_OKAY, WHERE_NOT_COFF_ELF );
             return( RC_ERROR );
         }
-        ObjFileHnd = ORLFileInit( ORLHnd, NULL, type );
+        ObjFileHnd = ORLFileInit( ORLHnd, NULL, FileFormat );
         if( ObjFileHnd != ORL_NULL_HANDLE ) {
             // check byte order
             flags = ORLFileGetFlags( ObjFileHnd );
@@ -649,8 +629,8 @@ static return_val initORL( void )
 #endif
 
             // check intended machine type
-            machine_type = GetMachineType();
-            switch( machine_type ) {
+            MachineType = ORLFileGetMachineType( ObjFileHnd );
+            switch( MachineType ) {
             // If there's no machine specific code, the CPU we choose shouldn't
             // matter; there are some object files like this.
             case ORL_MACHINE_TYPE_NONE:
@@ -687,6 +667,7 @@ static return_val initORL( void )
                     PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
                     return( RC_ERROR );
                 }
+                IsIntelx86 = true;
                 break;
             case ORL_MACHINE_TYPE_AMD64:
                 if( DisInit( DISCPU_x64, &DHnd, byte_swap ) != DR_OK ) {
@@ -694,6 +675,7 @@ static return_val initORL( void )
                     PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
                     return( RC_ERROR );
                 }
+                IsIntelx86 = true;
                 break;
             case ORL_MACHINE_TYPE_SPARC:
             case ORL_MACHINE_TYPE_SPARCPLUS:
@@ -840,7 +822,7 @@ return_val Init( void )
     if( IsMasmOutput() ) {
         CommentString = MASM_COMMENT_STRING;
     }
-    if( IsIntelx86() ) {
+    if( IsIntelx86 ) {
         SkipRefTable = HashTableCreate( RECOGNITION_TABLE_SIZE, HASH_STRING_IGNORECASE );
         if( SkipRefTable != NULL ) {
             for( i = 0; i < NUM_ELEMENTS( intelSkipRefList ); i++ ) {
