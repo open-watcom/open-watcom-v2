@@ -172,7 +172,7 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
     memset( ref, 0, sizeof( ref_entry_struct ) );
     ref->offset = loc;
     ref->label = entry;
-    ref->type = ORL_RELOC_TYPE_JUMP;
+    ref->type = ORL_RELOC_TYPE_WDIS_JUMP;
     ref->addend = 0;
     h_key.u.sec_handle = shnd;
     h_data = HashTableQuery( HandleToRefListTable, h_key );
@@ -201,7 +201,7 @@ return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_s
     memset( ref, 0, sizeof( ref_entry_struct ) );
     ref->offset = loc;
     ref->label = entry;
-    ref->type = ORL_RELOC_TYPE_MAX + 1;
+    ref->type = ORL_RELOC_TYPE_WDIS_ABS;
     h_key.u.sec_handle = shnd;
     h_data = HashTableQuery( HandleToRefListTable, h_key );
     if( h_data != NULL ) {

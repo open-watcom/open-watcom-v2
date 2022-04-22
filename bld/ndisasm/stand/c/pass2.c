@@ -244,7 +244,8 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             nvalue = 0;
         }
         switch( r_entry->type ) {
-        case ORL_RELOC_TYPE_MAX + 1:
+        case ORL_RELOC_TYPE_WDIS_ABS:
+        case ORL_RELOC_TYPE_WDIS_JUMP:
         case ORL_RELOC_TYPE_JUMP:
         case ORL_RELOC_TYPE_REL_21_SH:
         case ORL_RELOC_TYPE_WORD_26:

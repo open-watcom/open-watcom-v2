@@ -118,6 +118,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
     ref_entry                           r_entry;
     dis_inst_flags                      flags;
     dis_sec_offset                      op_pos;
+    dis_operand_type                    op_type;
     int                                 adjusted;
     sa_disasm_struct                    sds;
     const char                          *FPU_fixup;
@@ -190,14 +191,15 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
         for( i = 0; i < decoded.num_ops; ++i ) {
             adjusted = 0;
             op_pos = loop + decoded.op[i].op_position;
-            switch( decoded.op[i].type & DO_MASK ) {
+            op_type = decoded.op[i].type & DO_MASK;
+            switch( op_type ) {
             case DO_IMMED:
                 if( !IsIntelx86 )
                     break;
                 /* fall through */
             case DO_RELATIVE:
             case DO_MEMORY_REL:
-                if( (decoded.op[i].type & DO_MASK) != DO_IMMED ) {
+                if( op_type != DO_IMMED ) {
                     decoded.op[i].value.u._32[I64LO32] += loop;
                     adjusted = 1;
                 }
@@ -253,9 +255,9 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                     } else {
                         // fixme: got to handle other types of relocs here
                     }
-                } else if( (decoded.op[i].type & DO_MASK) != DO_IMMED ) {
+                } else if( op_type != DO_IMMED ) {
                     if( decoded.op[i].base == DR_NONE && decoded.op[i].index == DR_NONE ) {
-                        switch( decoded.op[i].type & DO_MASK ) {
+                        switch( op_type ) {
                         case DO_MEMORY_REL:
                         case DO_MEMORY_ABS:
                             // use decoded instruction size for absolute memory on amd64.
