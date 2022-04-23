@@ -433,13 +433,8 @@ clflags_os2_i86     = -l=os2
 clflags_os2_386     = -l=os2v2
 clflags_qnx_i86     = -l=qnx
 clflags_qnx_386     = -l=qnx
-!ifdef __UNIX__
-clflags_dos_i86     = -l=dos -\"lib doslfn$(memory_model_i86).lib\"
-clflags_dos_386     = -l=$(dos_extender) -\"lib doslfn3r.lib\"
-!else
-clflags_dos_i86     = -l=dos -"lib doslfn$(memory_model_i86).lib"
-clflags_dos_386     = -l=$(dos_extender) -"lib doslfn3r.lib"
-!endif
+clflags_dos_i86     = -l=dos $(clflags_doslfn_i86)
+clflags_dos_386     = -l=$(dos_extender) $(clflags_doslfn_386)
 clflags_zdos_386    = -l=zdos
 clflags_rdos_386    = -l=rdos
 clflags_rdosdev_386 = -l=rdosdev
@@ -456,9 +451,9 @@ clflags_wind_os2_i86 = -l=os2_pm
 
 # DLL application macros
 !ifdef __UNIX__
-clflags_dll_dos_386  = -l=causeway_dll -\"lib doslfn3r.lib\"
+clflags_dll_dos_386  = -l=causeway_dll $(clflags_doslfn_386)
 !else
-clflags_dll_dos_386  = -l=causeway_dll -"lib doslfn3r.lib"
+clflags_dll_dos_386  = -l=causeway_dll $(clflags_doslfn_386)
 !endif
 clflags_dll_nt_386   = -l=nt_dll
 clflags_dll_nt_axp   = -l=ntaxp_dll
@@ -514,9 +509,15 @@ aflags           = $(aflags_all) $(aflags_$(host_cpu)) $(aflags_$(host_os)) $(pr
 #####################
 # LINKER SETINGS
 ######
+
+!ifndef $(proj_name)_nodoslfn
+lflags_doslfn_i86   = lib doslfn$(memory_model_i86).lib
+lflags_doslfn_386   = lib doslfn3r.lib
+!endif
+
 # generic application macros
-lflags_dos_386      = sys $(dos_extender) lib doslfn3r.lib
-lflags_dos_i86      = sys dos lib doslfn$(memory_model_i86).lib
+lflags_dos_386      = sys $(dos_extender) $(lflags_doslfn_386)
+lflags_dos_i86      = sys dos $(lflags_doslfn_i86)
 lflags_linux_386    = sys linux
 lflags_linux_mps    = sys linuxmips
 lflags_linux_ppc    = sys linuxppc
@@ -540,7 +541,7 @@ lflags_wind_os2_386  = sys os2v2_pm
 lflags_wind_os2_i86  = sys os2_pm
 
 # DLL application macros
-lflags_dll_dos_386     = sys causeway_dll lib doslfn3r.lib
+lflags_dll_dos_386     = sys causeway_dll $(lflags_doslfn_386)
 lflags_dll_dos_i86     = $(lflags_dos_i86)
 lflags_dll_linux_386   = $(lflags_linux_386)
 lflags_dll_linux_mps   = $(lflags_linux_mps)
