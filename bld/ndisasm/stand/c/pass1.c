@@ -274,13 +274,13 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                                 CreateUnnamedLabel( shnd, decoded.op[i].value.u._32[I64LO32], &rs );
                                 if( rs.error != RC_OKAY )
                                     return( rs.error );
-                                error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos );
+                                error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos, ORL_RELOC_TYPE_WDIS_JUMP );
                             } else {
                                 // create an LTYP_ABSOLUTE label
                                 CreateAbsoluteLabel( shnd, decoded.op[i].value.u._32[I64LO32], &rs );
                                 if( rs.error != RC_OKAY )
                                     return( rs.error );
-                                error = CreateAbsoluteLabelRef( shnd, rs.entry, op_pos );
+                                error = CreateAbsoluteLabelRef( shnd, rs.entry, op_pos, ORL_RELOC_TYPE_WDIS_ABS );
                             }
                             break;
                         default:
@@ -288,7 +288,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                             CreateUnnamedLabel( shnd, decoded.op[i].value.u._32[I64LO32], &rs );
                             if( rs.error != RC_OKAY )
                                 return( rs.error );
-                            error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos );
+                            error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos, ORL_RELOC_TYPE_WDIS_JUMP );
                             break;
                         }
                         if( error != RC_OKAY ) {

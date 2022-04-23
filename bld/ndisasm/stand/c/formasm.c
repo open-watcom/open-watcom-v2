@@ -414,6 +414,7 @@ unsigned RelocSize( ref_entry r_entry )
     case ORL_RELOC_TYPE_WORD_16_SEG:
     case ORL_RELOC_TYPE_REL_16_SEG:
         return( 4 );
+    case ORL_RELOC_TYPE_WDIS_JUMP16:
     case ORL_RELOC_TYPE_WORD_16:
     case ORL_RELOC_TYPE_HALF_HI:
     case ORL_RELOC_TYPE_HALF_LO:

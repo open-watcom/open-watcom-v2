@@ -158,7 +158,7 @@ orl_return DealWithRelocSection( orl_sec_handle shnd )
     return( error );
 }
 
-return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc )
+return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc, orl_reloc_type reltype )
 {
     ref_entry           ref;
     hash_data           *h_data;
@@ -172,7 +172,7 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
     memset( ref, 0, sizeof( ref_entry_struct ) );
     ref->offset = loc;
     ref->label = entry;
-    ref->type = ORL_RELOC_TYPE_WDIS_JUMP;
+    ref->type = reltype;
     ref->addend = 0;
     h_key.u.sec_handle = shnd;
     h_data = HashTableQuery( HandleToRefListTable, h_key );
@@ -187,7 +187,7 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
     return( RC_ERROR );
 }
 
-return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc )
+return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc, orl_reloc_type reltype )
 {
     ref_entry           ref;
     hash_data           *h_data;
@@ -201,7 +201,7 @@ return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_s
     memset( ref, 0, sizeof( ref_entry_struct ) );
     ref->offset = loc;
     ref->label = entry;
-    ref->type = ORL_RELOC_TYPE_WDIS_ABS;
+    ref->type = reltype;
     h_key.u.sec_handle = shnd;
     h_data = HashTableQuery( HandleToRefListTable, h_key );
     if( h_data != NULL ) {
