@@ -5,5 +5,4 @@ host_cpu = 386
 
 wasm_release = 0
 
-proj_path = ..
-!include $(proj_path)/master.mif
+!include ../master.mif
