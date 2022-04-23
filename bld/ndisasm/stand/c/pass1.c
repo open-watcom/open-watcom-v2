@@ -122,6 +122,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
     int                                 adjusted;
     sa_disasm_struct                    sds;
     const char                          *FPU_fixup;
+    orl_reloc_type                      reltype;
 
     sds.data = contents;
     sds.last = size - 1;
@@ -131,6 +132,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
         r_entry = NULL;
     }
 
+    reltype = ORL_RELOC_TYPE_WDIS_JUMP;
     flags.u.all = DIF_NONE;
     if( MachineType == ORL_MACHINE_TYPE_I386 ) {
         if( ( FileFormat != ORL_OMF ) || (ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_32) ) {
@@ -139,6 +141,9 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
     }
     if( IsIntelx86 ) {
         flags.u.x86 |= DIF_X86_FPU_EMU;
+        if( ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_16 ) {
+            reltype = ORL_RELOC_TYPE_WDIS_JUMP16;
+        }
     }
 
     for( loop = 0; loop < size; loop += decoded.size ) {
@@ -288,7 +293,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                             CreateUnnamedLabel( shnd, decoded.op[i].value.u._32[I64LO32], &rs );
                             if( rs.error != RC_OKAY )
                                 return( rs.error );
-                            error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos, ORL_RELOC_TYPE_WDIS_JUMP );
+                            error = CreateUnnamedLabelRef( shnd, rs.entry, op_pos, reltype );
                             break;
                         }
                         if( error != RC_OKAY ) {
