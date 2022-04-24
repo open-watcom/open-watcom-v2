@@ -445,7 +445,7 @@ char *DoQuoted( char *buffer, const char *name, char quote_char )
 
     p = buffer;
     if( name != NULL ) {
-        quotes = ( strchr( name, ' ' ) != NULL );
+        quotes = ( strpbrk( name, " @" ) != NULL );
         if( quotes )
             *p++ = quote_char;
         while( (*p = *name) != '\0' ) {
