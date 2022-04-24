@@ -817,7 +817,7 @@ void TestAddendum( void )
 
     state = 0;
     status = mbsinit( &state );
-    VERIFY( status == 0 );
+    VERIFY( status != 0 );
 
     state = 123;
     status = mbsinit( &state );
