@@ -587,13 +587,17 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
                 quit = true;
             }
             break;
+        case '@':
+            if( ctrl & TOK_IS_FILENAME ) {
+                break;
+            }
+            /* fall through */
         case '{':
         case '}':
         case '(':
         case ',':
         case '=':
         case '#':
-        case '@':
             if( keepspecial ) {
                 break;
             }
