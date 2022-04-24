@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ char *FmtHexNum( char *buff, unsigned prec, dis_value value )
     int         len;
     bool        masm_src;
 
-    masm_src = ( (DFormat & DFF_ASM) && IsMasmOutput() );
+    masm_src = ( (DFormat & DFF_ASM) && IsMasmOutput );
     if( ( value.u._32[I64LO32] == 0 ) && ( value.u._32[I64HI32] == 0 ) && ( prec == 0 ) ) {
         strcpy( buff, ( masm_src ) ? "0" : "0x0" );
     } else {

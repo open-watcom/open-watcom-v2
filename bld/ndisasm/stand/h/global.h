@@ -76,5 +76,6 @@ extern FILE                 *OutputDest;
 extern orl_machine_type     MachineType;
 extern orl_file_format      FileFormat;
 extern bool                 IsIntelx86;
+extern bool                 IsMasmOutput;
 
 #endif

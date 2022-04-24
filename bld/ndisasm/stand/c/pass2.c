@@ -289,7 +289,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
         case ORL_RELOC_TYPE_WORD_32:
         case ORL_RELOC_TYPE_WORD_32_NB:
         case ORL_RELOC_TYPE_WORD_64:
-            if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput() ) {
+            if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput ) {
                 referenceString( r_entry, sec_size, "offset ", "offset ", "", buff, flags );
             } else {
                 referenceString( r_entry, sec_size, "", "", "", buff, flags );
@@ -299,7 +299,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             if( IsIntelx86 && r_entry->has_val ) {
                 nvalue -= ins_size;
             }
-            if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput() ) {
+            if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput ) {
                 referenceString( r_entry, sec_size, "offset ", "offset ", "", buff, flags );
             } else {
                 referenceString( r_entry, sec_size, "", "", "", buff, flags  );
@@ -316,7 +316,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             if( ( r_entry->label->type != LTYP_GROUP )
                 && ( r_entry->label->type != LTYP_SECTION )
                 && (flags & RFLAG_IS_IMMED)
-                && IsMasmOutput() ) {
+                && IsMasmOutput ) {
                 referenceString( r_entry, sec_size, "seg ", "seg ", "", buff, flags );
             } else {
                 referenceString( r_entry, sec_size, "", "", "", buff, flags );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +90,7 @@ static label_entry resolveTwoLabelsAtLocation( label_list sec_label_list, label_
             } else if( old_entry->type == LTYP_ABSOLUTE ) {
             } else if( old_entry->type == LTYP_FUNC_INFO ) {
             } else if( old_entry->type == LTYP_SECTION ) {
-                if( !IsMasmOutput() ) {
+                if( !IsMasmOutput ) {
                     FreeLabel( entry );
                     return( old_entry );
                 }
@@ -185,7 +186,7 @@ bool NeedsQuoting( const char *name )
     for( ; *name != '\0'; ++name ) {
         if( isalnum( *name ) || *name == '_' || *name == '?' || *name == '$' ) {
             /* OK character */
-        } else if( *name == '.' && !IsMasmOutput() ) {
+        } else if( *name == '.' && !IsMasmOutput ) {
             /* OK character */
         } else {
             /* character needs quoting */

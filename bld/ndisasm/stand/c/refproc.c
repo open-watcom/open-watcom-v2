@@ -129,7 +129,7 @@ orl_return CreateNamedLabelRef( orl_reloc rel )
     ref->offset = rel->offset;
     ref->type = rel->type;
     ref->addend = rel->addend;
-    if( IsMasmOutput() && rel->frame ) {
+    if( IsMasmOutput && rel->frame ) {
         ref->frame = getFrameModifier( rel );
     }
     h_key.u.sym_handle = rel->symbol;

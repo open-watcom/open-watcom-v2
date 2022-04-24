@@ -74,9 +74,10 @@ typedef struct recognized_struct recognized_struct;
 
 char    *CommentString  = CPP_COMMENT_STRING;
 
-orl_machine_type     MachineType;
-orl_file_format      FileFormat;
-bool                 IsIntelx86;
+orl_machine_type    MachineType;
+orl_file_format     FileFormat;
+bool                IsIntelx86;
+bool                IsMasmOutput;
 
 // sections that require name-checking should be inserted in this array
 recognized_struct RecognizedName[] = {
@@ -500,6 +501,7 @@ static void initGlobals( void )
     Publics.label_lists = NULL;
     Publics.public_symbols = NULL;
     Publics.number = 0;
+    IsMasmOutput = ( (DFormat & DFF_UNIX) == 0 );
 }
 
 static return_val createHashTables( void )
@@ -820,7 +822,7 @@ return_val Init( void )
     if( Options & PRINT_PUBLICS ) {
         CreatePublicsArray();
     }
-    if( IsMasmOutput() ) {
+    if( IsMasmOutput ) {
         CommentString = MASM_COMMENT_STRING;
     }
     if( IsIntelx86 ) {
@@ -839,7 +841,7 @@ return_val Init( void )
         }
     }
     if( LabelChar == 0 ) {
-        if( IsMasmOutput() ) {
+        if( IsMasmOutput ) {
             LabelChar = 'L';
         } else {
             LabelChar = 'X';

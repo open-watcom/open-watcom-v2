@@ -393,7 +393,7 @@ void PrintAssumeHeader( section_ptr section )
     orl_group_handle    grp;
     const char          *name;
 
-    if( (DFormat & DFF_ASM) && IsMasmOutput() ) {
+    if( (DFormat & DFF_ASM) && IsMasmOutput ) {
         grp = ORLSecGetGroup( section->shnd );
         if( grp != ORL_NULL_HANDLE ) {
             name = ORLGroupName( grp );
@@ -411,7 +411,7 @@ void PrintAssumeHeader( section_ptr section )
 
 void PrintHeader( section_ptr section )
 {
-    if( IsMasmOutput() ) {
+    if( IsMasmOutput ) {
         printMasmHeader( section );
     } else {
         printUnixHeader( section );
@@ -423,7 +423,7 @@ void PrintTail( section_ptr section )
 {
     const char      *name;
 
-    if( (DFormat & DFF_ASM) && IsMasmOutput() ) {
+    if( (DFormat & DFF_ASM) && IsMasmOutput ) {
         name = section->name;
         if( name == NULL ) {
             name = "";
@@ -809,7 +809,7 @@ static hash_table emitGlobls( void )
     if( hash == NULL )
         return( NULL );
 
-    if( IsMasmOutput() ) {
+    if( IsMasmOutput ) {
         globl = "\t\tPUBLIC\t";
     } else {
         globl = ".globl\t\t";
@@ -850,14 +850,12 @@ static void emitExtrns( hash_table hash )
     char                *extrn;
     char                *name;
     hash_entry_data     key_entry;
-    bool                masm_output;
 
     if( hash == NULL ) {
         hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING );
     }
 
-    masm_output = IsMasmOutput();
-    if( masm_output ) {
+    if( IsMasmOutput ) {
         extrn = "\t\tEXTRN\t";
     } else {
         extrn = ".extern\t\t";
@@ -882,7 +880,7 @@ static void emitExtrns( hash_table hash )
                             if( ( r_entry->label->type != LTYP_GROUP ) && (r_entry->label->binding != ORL_SYM_BINDING_LOCAL) ) {
                                 BufferConcat( extrn );
                                 BufferQuoteName( name );
-                                if( masm_output ) {
+                                if( IsMasmOutput ) {
                                     BufferConcat( ":BYTE" );
                                 }
                                 BufferConcatNL();
@@ -913,7 +911,7 @@ static void emitExtrns( hash_table hash )
                         ( l_entry->type == LTYP_EXTERNAL_NAMED ) ) {
                         BufferConcat( extrn );
                         BufferQuoteName( name );
-                        if( masm_output ) {
+                        if( IsMasmOutput ) {
                             BufferConcat( ":BYTE" );
                         }
                         BufferConcatNL();
@@ -962,12 +960,8 @@ void UseFlatModel( void )
 
 static void doPrologue( void )
 {
-    int                 masm_output;
-
-    masm_output = IsMasmOutput();
-
     /* output the listing */
-    if( masm_output ) {
+    if( IsMasmOutput ) {
         if( DFormat & DFF_ASM ) {
             switch( MachineType ) {
             case ORL_MACHINE_TYPE_I8086:
@@ -1003,7 +997,7 @@ static void doPrologue( void )
         emitExtrns( emitGlobls() );
     }
 
-    if( masm_output ) {
+    if( IsMasmOutput ) {
         ORLGroupsScan( ObjFileHnd, groupWalker );
         if( (DFormat & DFF_ASM) == 0 ) {
             BufferConcatNL();
@@ -1013,7 +1007,7 @@ static void doPrologue( void )
 
 static void    doEpilogue( void )
 {
-    if( (DFormat & DFF_ASM) && IsMasmOutput() ) {
+    if( (DFormat & DFF_ASM) && IsMasmOutput ) {
         BufferConcat( "\t\tEND" );
         BufferConcatNL();
         BufferPrint();
