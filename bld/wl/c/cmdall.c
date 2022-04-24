@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +100,7 @@ static bool ProcDosSeg( void )
 static bool ProcName( void )
 /**************************/
 {
-    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) )
+    if( !GetToken( SEP_NO, TOK_IS_FILENAME ) )
         return( false );
     CmdFlags &= ~CF_UNNAMED;
     if( Name != NULL ) {
@@ -271,7 +271,7 @@ static bool ProcMaxErrors( void )
 static bool ProcSymFile( void )
 /*****************************/
 {
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         if( SymFileName != NULL ) {
             _LnkFree( SymFileName );
         }
@@ -356,7 +356,7 @@ static bool ProcLibFile( void )
     if( LastLibFile == NULL ) {
         LastLibFile = &Root->files;
     }
-    return( ProcArgList( AddLibFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddLibFile, TOK_IS_FILENAME ) );
 }
 
 static bool AddModFile( void )
@@ -415,13 +415,13 @@ static bool ProcFiles( void )
     if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0 ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
-    return( ProcArgList( AddFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddFile, TOK_IS_FILENAME ) );
 }
 
 static bool ProcModFiles( void )
 /******************************/
 {
-    return( ProcArgList( AddModFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddModFile, TOK_IS_FILENAME ) );
 }
 
 
@@ -457,7 +457,7 @@ bool ProcLibrary( void )
         && !IsSystemBlock() ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
-    return( ProcArgList( AddLib, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddLib, TOK_IS_FILENAME ) );
 }
 
 static bool ProcOptLib( void )
@@ -476,7 +476,7 @@ static bool ProcLibPath( void )
  * process libpath command
  */
 {
-    if( !GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_NO, TOK_IS_FILENAME ) ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "LIBPATH" );
         return( true );
     }
@@ -493,7 +493,7 @@ static bool ProcPath( void )
     char            *p;
     const char      *end;
 
-    if( GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_NO, TOK_IS_FILENAME ) ) {
         _ChkAlloc( new_path, sizeof( path_entry ) + Token.len );
         end = Token.this + Token.len;
         p = new_path->name;
@@ -517,7 +517,7 @@ static bool ProcMap( void )
  */
 {
     MapFlags |= MAP_FLAG;
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         if( MapFName != NULL ) {
             _LnkFree( MapFName );
         }
@@ -702,7 +702,7 @@ static bool ProcIncremental( void )
         LnkMsg( LOC+LINE+ERR+MSG_INC_NEAR_START, NULL );
     }
     LinkFlags |= LF_INC_LINK_FLAG;
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         IncFileName = FileName( Token.this, Token.len, E_ILK, false );
     } else if( Name != NULL ) {
         IncFileName = FileName( Name, strlen( Name ), E_ILK, true );
@@ -731,7 +731,7 @@ static bool ProcMangledNames( void )
 static bool ProcOpResource( void )
 /********************************/
 {
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         FmtData.res_name_only = true;
         FmtData.resource = tostring();
     } else if( GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
@@ -1005,7 +1005,7 @@ static bool ProcStub( void )
     char        **nameptr;
 
     nameptr = getStubNamePtr();
-    if( !HaveEquals( TOK_INCLUDE_DOT | TOK_IS_FILENAME ) || nameptr == NULL )
+    if( !HaveEquals( TOK_IS_FILENAME ) || nameptr == NULL )
         return( false );
     name = FileName( Token.this, Token.len, E_LOAD, false );
     if( *nameptr == NULL ) {
@@ -1047,7 +1047,7 @@ static bool ProcImplib( void )
     FmtData.make_implib = true;
     FmtData.make_impfile = false;
     _LnkFree( FmtData.implibname );
-    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME|TOK_INCLUDE_DOT ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         FmtData.implibname = tostring();
     }
     return( true );
@@ -1059,7 +1059,7 @@ static bool ProcImpFile( void )
     FmtData.make_implib = true;
     FmtData.make_impfile = true;
     _LnkFree( FmtData.implibname );
-    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME|TOK_INCLUDE_DOT ) ) {
+    if( GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         FmtData.implibname = tostring();
     }
     return( true );
@@ -1094,7 +1094,7 @@ static bool ProcModTrace( void )
 /******************************/
 {
     LinkFlags |= LF_TRACE_FLAG;
-    return( ProcArgList( AddModTrace, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddModTrace, TOK_IS_FILENAME ) );
 }
 
 static bool ProcFarCalls( void )

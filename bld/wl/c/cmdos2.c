@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -224,7 +224,7 @@ static bool ProcNone( void )
 static bool ProcOldLibrary( void )
 /********************************/
 {
-    if( !HaveEquals(TOK_INCLUDE_DOT | TOK_IS_FILENAME) )
+    if( !HaveEquals( TOK_IS_FILENAME ) )
         return( false );
     FmtData.u.os2fam.old_lib_name = FileName( Token.this, Token.len, E_DLL, false );
     return( true );
@@ -461,7 +461,7 @@ static bool AddResource( void )
 bool ProcResource( void )
 /***********************/
 {
-    return( ProcArgList( AddResource, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
+    return( ProcArgList( AddResource, TOK_IS_FILENAME ) );
 }
 
 

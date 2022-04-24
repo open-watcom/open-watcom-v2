@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -259,8 +259,8 @@ void SetNovImportSymbol( symbol *sym )
     sym->p.import = DUMMY_IMPORT_PTR;
 }
 
-static bool GetSymbolImportExport( bool import )
-/**********************************************/
+static bool GetNovSymbolImportExport( bool import )
+/*************************************************/
 {
     symbol      *sym;
     const char  *name;
@@ -401,7 +401,7 @@ static bool ProcNLMFlags( void )
 static bool ProcCustom( void )
 /****************************/
 {
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
     FmtData.u.nov.customdata = tostring();         // no default extension.
@@ -411,7 +411,7 @@ static bool ProcCustom( void )
 static bool ProcMessages( void )
 /******************************/
 {
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
     FmtData.u.nov.messages = tostring();           // no default extension.
@@ -421,7 +421,7 @@ static bool ProcMessages( void )
 static bool ProcHelp( void )
 /**************************/
 {
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
     FmtData.u.nov.help = tostring();       // no default extension.
@@ -431,7 +431,7 @@ static bool ProcHelp( void )
 static bool ProcXDCData( void )
 /*****************************/
 {
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
     FmtData.u.nov.rpcdata = tostring();    // no default extension.
@@ -441,7 +441,7 @@ static bool ProcXDCData( void )
 static bool ProcSharelib( void )
 /******************************/
 {
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_IS_FILENAME ) ) {
         return( false );
     }
     FmtData.u.nov.sharednlm = FileName( Token.this, Token.len, E_NLM, false );
@@ -552,7 +552,7 @@ bool ProcNovOptions( void )
 static bool GetNovImport( void )
 /******************************/
 {
-    return( GetSymbolImportExport( true ) );
+    return( GetNovSymbolImportExport( true ) );
 }
 
 bool ProcNovImport( void )
@@ -570,7 +570,7 @@ bool ProcNovImport( void )
 static bool GetNovExport( void )
 /******************************/
 {
-    return( GetSymbolImportExport( false ) );
+    return( GetNovSymbolImportExport( false ) );
 }
 
 bool ProcNovExport( void )

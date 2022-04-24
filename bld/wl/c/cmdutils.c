@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -580,7 +580,10 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
             }
             break;
         case '.':
-            if( (ctrl & TOK_INCLUDE_DOT) == 0 && !forcematch ) {
+            if( ctrl & (TOK_INCLUDE_DOT | TOK_IS_FILENAME) ) {
+                break;
+            }
+            if( !forcematch ) {
                 quit = true;
             }
             break;
@@ -602,7 +605,10 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
             }
             break;
         case '\\':
-            if( separator == SEP_QUOTE && (ctrl & TOK_IS_FILENAME) == 0 ) {
+            if( ctrl & TOK_IS_FILENAME ) {
+                break;
+            }
+            if( separator == SEP_QUOTE ) {
                 MapEscapeChar();
             }
             break;
@@ -834,7 +840,7 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
             case '@':
                 if( req != SEP_SPACE ) {
                     Token.next++;
-                    GetToken( SEP_NO, TOK_INCLUDE_DOT|TOK_IS_FILENAME );
+                    GetToken( SEP_NO, TOK_IS_FILENAME );
                     StartNewFile();
                     break;
                 }

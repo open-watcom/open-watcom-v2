@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -168,7 +168,7 @@ static bool ProcExtended( void )
 static bool ProcExpName( void )
 /*****************************/
 {
-    if( !HaveEquals( TOK_INCLUDE_DOT | TOK_IS_FILENAME ) )
+    if( !HaveEquals( TOK_IS_FILENAME ) )
         return( false );
     if( FmtData.u.d16m.exp_name != NULL ) {
         _LnkFree( FmtData.u.d16m.exp_name );
