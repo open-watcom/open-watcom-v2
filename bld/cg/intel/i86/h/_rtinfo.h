@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +146,6 @@ PICK( RT_CHOP,        "__CHP",       OP_CALL,    0,    RL_,      RL_,      RL_ )
 PICK( RT_SCAN1,       "__SCN1",      OP_SELECT,  0,    RL_AL,    RL_,      RL_ )
 PICK( RT_SCAN2,       "__SCN2",      OP_SELECT,  0,    RL_AX,    RL_,      RL_ )
 PICK( RT_SCAN4,       "__SCN4",      OP_SELECT,  0,    RL_DX_AX, RL_,      RL_ )
-PICK( RT_GETDS,       "__GETDS",     OP_CALL,    0,    RL_,      RL_,      RL_ )
 PICK( RT_EPIHOOK,     "__EPI",       OP_CALL,    0,    RL_,      RL_,      RL_ )
 PICK( RT_PROHOOK,     "__PRO",       OP_CALL,    0,    RL_,      RL_,      RL_ )
 
