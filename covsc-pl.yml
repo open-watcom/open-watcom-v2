@@ -44,7 +44,9 @@ stages:
         parameters:
           arch:     lnx
           title:    Coverity Scan Linux
+          owimage:  $(owimage_lnx)
       #- template: ci/coverity.yml
       #  parameters:
       #    arch:     nt
       #    title:    Coverity Scan Windows
+      #    owimage:  $(owimage_nt)

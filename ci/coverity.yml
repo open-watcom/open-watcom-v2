@@ -1,6 +1,7 @@
 parameters:
   arch:     ''
   title:    ''
+  owimage:  ''
 
 jobs:
   - job: scan${{ parameters.arch }}
@@ -9,7 +10,6 @@ jobs:
     variables:
       ${{ if eq(parameters.arch, 'lnx') }}:
         owtools:        $(owtools_lnx)
-        owtoolsv:       $(owtoolsv_lnx)
         owscript:       $(owciroot_lnx)/coverity.sh
         owcoverity.tool.src: linux64
         owcoverity.tool.archive: /tmp/cov-analysis-linux.tgz
@@ -18,7 +18,6 @@ jobs:
         owcoverity.results.archive: open-watcom-v2.tgz
       ${{ if eq(parameters.arch, 'nt') }}:
         owtools:        $(owtools_nt)
-        owtoolsv:       $(owtoolsv_nt)
         owscript:       $(owciroot_nt)\coverity.cmd
         owcoverity.tool.src: win64
         owcoverity.tool.archive: $(TEMP)\cov-analysis-windows.zip
@@ -27,11 +26,9 @@ jobs:
         owcoverity.results.archive: open-watcom-v2.zip
       owcoverity.project:  open-watcom/open-watcom-v2
       owcoverity.tool.cmd: ''
+      owimage:          ${{ parameters.owimage }}
     pool:
-      ${{ if eq(parameters.arch, 'lnx') }}:
-        vmImage: $(owimage_lnx)
-      ${{ if eq(parameters.arch, 'nt') }}:
-        vmImage: $(owimage_nt)
+      vmImage: ${{ parameters.owimage }}
     steps:
       - template: dosbox.yml
         parameters:
