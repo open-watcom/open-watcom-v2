@@ -2,6 +2,7 @@ parameters:
   arch:     ''
   title:    ''
   owimage:  ''
+  owtools:  ''
 
 jobs:
   - job: scan${{ parameters.arch }}
@@ -9,7 +10,6 @@ jobs:
     timeoutInMinutes: 90
     variables:
       ${{ if eq(parameters.arch, 'lnx') }}:
-        owtools:        $(owtools_lnx)
         owscript:       $(owciroot_lnx)/coverity.sh
         owcoverity.tool.src: linux64
         owcoverity.tool.archive: /tmp/cov-analysis-linux.tgz
@@ -17,7 +17,6 @@ jobs:
         owcoverity.script: $(owciroot_lnx)/covbuild.sh
         owcoverity.results.archive: open-watcom-v2.tgz
       ${{ if eq(parameters.arch, 'nt') }}:
-        owtools:        $(owtools_nt)
         owscript:       $(owciroot_nt)\coverity.cmd
         owcoverity.tool.src: win64
         owcoverity.tool.archive: $(TEMP)\cov-analysis-windows.zip
@@ -26,7 +25,6 @@ jobs:
         owcoverity.results.archive: open-watcom-v2.zip
       owcoverity.project:  open-watcom/open-watcom-v2
       owcoverity.tool.cmd: ''
-      owimage:          ${{ parameters.owimage }}
     pool:
       vmImage: ${{ parameters.owimage }}
     steps:
@@ -51,6 +49,9 @@ jobs:
           displayName: "Restore Coverity Tools"
       - script: $(owscript)
         displayName: "Build Coverity data"
+        env:
+          owimage:  ${{ parameters.owimage }}
+          owtools:  ${{ parameters.owtools }}
       - bash: echo "##vso[task.setvariable variable=owsha;]`git rev-parse --short HEAD`"
         displayName: "Get commit SHA"
       - ${{ if eq(parameters.arch, 'lnx') }}:

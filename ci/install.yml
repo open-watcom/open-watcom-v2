@@ -1,25 +1,16 @@
 parameters:
   arch:     ''
   title:    ''
+  owimage:  ''
+  owtools:  ''
+  owscript: ''
 
 jobs:
   - job: instal${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
     variables:
-      ${{ if eq(parameters.arch, 'lnx') }}:
-        owtools:        $(owtools_lnx)
-        owtoolsv:       $(owtoolsv_lnx)
-        owscript:       $(owscript_lnx)
-      ${{ if eq(parameters.arch, 'nt') }}:
-        owtools:        $(owtools_nt)
-        owtoolsv:       $(owtoolsv_nt)
-        owscript:       $(owscript_nt)
-      owbuild.stage:    inst
     pool:
-      ${{ if eq(parameters.arch, 'lnx') }}:
-        vmImage: $(owimage_lnx)
-      ${{ if eq(parameters.arch, 'nt') }}:
-        vmImage: $(owimage_nt)
+      vmImage: ${{ parameters.owimage }}
     steps:
     - template: artfload.yml
       parameters:
@@ -68,8 +59,12 @@ jobs:
         path:       rel
         artifname:  rel-docwin
     # run build script
-    - script: $(owscript)
+    - script: ${{ parameters.owscript }}
       displayName: "Build Installers"
+      env:
+        owbuild_stage:  inst
+        owimage:    ${{ parameters.owimage }}
+        owtools:    ${{ parameters.owtools }}
     # create full binary archive
     - ${{ if eq(parameters.arch, 'lnx') }}:
       - task: ArchiveFiles@2

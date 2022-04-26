@@ -26,12 +26,6 @@ variables:
   owimage_lnx:      'ubuntu-20.04'
   owimage_nt:       'windows-2019'
   owimage_osx:      'macOS-11'
-  owtools_lnx:      GCC
-  owtools_nt:       VISUALC
-  owtools_osx:      CLANG
-  owtoolsv_lnx:     U20
-  owtoolsv_nt:      VS2019
-  owtoolsv_osx:     OSX11
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh
@@ -60,6 +54,9 @@ stages:
         parameters:
           arch:     osx
           title:    Bootstrap OSX
+          owimage:  $(owimage_osx)
+          owtools:  CLANG
+          owscript: $(owscript_osx)
   - stage: buildosx
     displayName: "Build OSX"
     dependsOn:
@@ -69,6 +66,9 @@ stages:
         parameters:
           arch:     osx
           title:    Build OSX
+          owimage:  $(owimage_osx)
+          owtools:  CLANG
+          owscript: $(owscript_osx)
   - stage: bootlnxow
     displayName: "Bootstrap Linux OW"
     dependsOn:
@@ -78,6 +78,9 @@ stages:
         parameters:
           arch:     lnx
           title:    Bootstrap Linux OW
+          owscript: $(owscript_lnx)
+          owtools:  WATCOM
+          owimage:  $(owimage_lnx)
   - stage: bootlnx
     displayName: "Bootstrap Linux"
     dependsOn:
@@ -87,6 +90,9 @@ stages:
         parameters:
           arch:     lnx
           title:    Bootstrap Linux
+          owimage:  $(owimage_lnx)
+          owtools:  GCC
+          owscript: $(owscript_lnx)
   - stage: buildlnx
     displayName: "Build Linux"
     dependsOn:
@@ -96,6 +102,9 @@ stages:
         parameters:
           arch:     lnx
           title:    Build Linux
+          owimage:  $(owimage_lnx)
+          owtools:  GCC
+          owscript: $(owscript_lnx)
   - stage: bootntow
     displayName: "Bootstrap Windows OW"
     dependsOn:
@@ -105,6 +114,9 @@ stages:
         parameters:
           arch:     nt
           title:    Bootstrap Windows OW
+          owscript: $(owscript_nt)
+          owtools:  WATCOM
+          owimage:  $(owimage_nt)
   - stage: bootnt
     displayName: "Bootstrap Windows"
     dependsOn:
@@ -114,6 +126,9 @@ stages:
         parameters:
           arch:     nt
           title:    Bootstrap Windows
+          owimage:  $(owimage_nt)
+          owtools:  VISUALC
+          owscript: $(owscript_nt)
   - stage: buildnt
     displayName: "Build Windows"
     dependsOn:
@@ -123,6 +138,9 @@ stages:
         parameters:
           arch:     nt
           title:    Build Windows
+          owimage:  $(owimage_nt)
+          owtools:  VISUALC
+          owscript: $(owscript_nt)
   - stage: docsnt
     displayName: "Docs Build Windows"
     dependsOn:
@@ -133,31 +151,49 @@ stages:
           arch:     nt
           title:    Documentation Build DOS
           doctype:  docdos
+          owimage:  $(owimage_nt)
+          owtools:  VISUALC
+          owscript: $(owscript_nt)
       - template: ci/docs.yml
         parameters:
           arch:     nt
           title:    Documentation Build Html
           doctype:  dochtml
+          owimage:  $(owimage_nt)
+          owtools:  VISUALC
+          owscript: $(owscript_nt)
       - template: ci/docs.yml
         parameters:
           arch:     nt
           title:    Documentation Build NT
           doctype:  docnt
+          owimage:  $(owimage_nt)
+          owtools:  VISUALC
+          owscript: $(owscript_nt)
       - template: ci/docs.yml
         parameters:
           arch:     nt
           title:    Documentation Build OS2
           doctype:  docos2
+          owimage:  $(owimage_nt)
+          owtools:  VISUALC
+          owscript: $(owscript_nt)
       - template: ci/docs.yml
         parameters:
           arch:     nt
           title:    Documentation Build PDF
           doctype:  docpdf
+          owimage:  $(owimage_nt)
+          owtools:  VISUALC
+          owscript: $(owscript_nt)
       - template: ci/docs.yml
         parameters:
           arch:     nt
           title:    Documentation Build WIN
           doctype:  docwin
+          owimage:  $(owimage_nt)
+          owtools:  VISUALC
+          owscript: $(owscript_nt)
   - stage: testslnx
     displayName: "Tests Linux"
     dependsOn:
@@ -167,6 +203,9 @@ stages:
         parameters:
           arch:     lnx
           title:    Tests Linux
+          owimage:  $(owimage_lnx)
+          owtools:  GCC
+          owscript: $(owscript_lnx)
   - stage: testbootlnxow
     displayName: "Test Bootstrap Linux OW"
     dependsOn:
@@ -176,6 +215,9 @@ stages:
         parameters:
           arch:     lnx
           title:    Test Bootstrap Linux OW
+          owimage:  $(owimage_lnx)
+          owtools:  WATCOM
+          owscript: $(owscript_lnx)
   - stage: testsnt
     displayName: "Tests Windows"
     dependsOn:
@@ -185,6 +227,9 @@ stages:
         parameters:
           arch:     nt
           title:    Tests Windows
+          owimage:  $(owimage_nt)
+          owtools:  VISUALC
+          owscript: $(owscript_nt)
   - stage: testbootntow
     displayName: "Test Bootstrap Windows OW"
     dependsOn:
@@ -194,6 +239,9 @@ stages:
         parameters:
           arch:     nt
           title:    Test Bootstrap Windows OW
+          owimage:  $(owimage_nt)
+          owtools:  WATCOM
+          owscript: $(owscript_nt)
   - stage: lastbuild
     displayName: "Last CI build"
     dependsOn:

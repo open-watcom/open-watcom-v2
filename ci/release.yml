@@ -1,24 +1,17 @@
 parameters:
   arch:     ''
   title:    ''
+  owimage:  ''
+  owtools:  ''
 
 jobs:
   - job: release
     displayName: "${{ parameters.title }}"
     variables:
-      ${{ if eq(parameters.arch, 'lnx') }}:
-        owtools:        $(owtools_lnx)
-        owtoolsv:       $(owtoolsv_lnx)
-      ${{ if eq(parameters.arch, 'nt') }}:
-        owtools:        $(owtools_nt)
-        owtoolsv:       $(owtoolsv_nt)
       owtag:            Current-build
       owsubtag:         Build
     pool:
-      ${{ if eq(parameters.arch, 'lnx') }}:
-        vmImage: $(owimage_lnx)
-      ${{ if eq(parameters.arch, 'nt') }}:
-        vmImage: $(owimage_nt)
+      vmImage: ${{ parameters.owimage }}
     steps:
     - template: gituser.yml
     - checkout: self

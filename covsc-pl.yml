@@ -11,12 +11,6 @@ variables:
   owimage_lnx:      'ubuntu-20.04'
   owimage_nt:       'windows-2019'
   owimage_osx:      'macOS-11'
-  owtools_lnx:      GCC
-  owtools_nt:       VISUALC
-  owtools_osx:      CLANG
-  owtoolsv_lnx:     U20
-  owtoolsv_nt:      VS2019
-  owtoolsv_osx:     OSX11
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh

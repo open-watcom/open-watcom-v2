@@ -1,34 +1,22 @@
 parameters:
   arch:     ''
   title:    ''
+  owimage:  ''
+  owtools:  ''
+  owscript: ''
 
 jobs:
   - job: boot${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
-    variables:
-      ${{ if eq(parameters.arch, 'lnx') }}:
-        owtools:      $(owtools_lnx)
-        owtoolsv:     $(owtoolsv_lnx)
-        owscript:     $(owscript_lnx)
-      ${{ if eq(parameters.arch, 'nt') }}:
-        owtools:      $(owtools_nt)
-        owtoolsv:     $(owtoolsv_nt)
-        owscript:     $(owscript_nt)
-      ${{ if eq(parameters.arch, 'osx') }}:
-        owtools:      $(owtools_osx)
-        owtoolsv:     $(owtoolsv_osx)
-        owscript:     $(owscript_osx)
-      owbuild.stage:    boot
     pool:
-      ${{ if eq(parameters.arch, 'lnx') }}:
-        vmImage: $(owimage_lnx)
-      ${{ if eq(parameters.arch, 'nt') }}:
-        vmImage: $(owimage_nt)
-      ${{ if eq(parameters.arch, 'osx') }}:
-        vmImage: $(owimage_osx)
+      vmImage: ${{ parameters.owimage }}
     steps:
-    - script: $(owscript)
-      displayName: "Bootstrap"
+    - script: ${{ parameters.owscript }}
+      displayName:  "Bootstrap"
+      env:
+        owbuild_stage: boot
+        owimage:    ${{ parameters.owimage }}
+        owtools:    ${{ parameters.owtools }}
     - template: artfsave.yml
       parameters:
         path:       build/$(owobjdir)

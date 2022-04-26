@@ -2,20 +2,15 @@ parameters:
   arch:     ''
   title:    ''
   doctype:  ''
+  owimage:  ''
+  owtools:  ''
+  owscript: ''
 
 jobs:
   - job: docs${{ parameters.doctype }}
     displayName: "${{ parameters.title }}"
     timeoutInMinutes: 90
     variables:
-      ${{ if eq(parameters.arch, 'lnx') }}:
-        owtools:        $(owtools_lnx)
-        owtoolsv:       $(owtoolsv_lnx)
-        owscript:       $(owscript_lnx)
-      ${{ if eq(parameters.arch, 'nt') }}:
-        owtools:        $(owtools_nt)
-        owtoolsv:       $(owtoolsv_nt)
-        owscript:       $(owscript_nt)
       ${{ if eq(parameters.doctype, 'docdos') }}:
         owdoctarget:    docdos
       ${{ if eq(parameters.doctype, 'dochtml') }}:
@@ -28,19 +23,19 @@ jobs:
         owdoctarget:    docpdf
       ${{ if eq(parameters.doctype, 'docwin') }}:
         owdoctarget:    docwin
-      owbuild.stage:    docs
     pool:
-      ${{ if eq(parameters.arch, 'lnx') }}:
-        vmImage: $(owimage_lnx)
-      ${{ if eq(parameters.arch, 'nt') }}:
-        vmImage: $(owimage_nt)
+      vmImage: ${{ parameters.owimage }}
     steps:
     - template: artfload.yml
       parameters:
         path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
-    - script: $(owscript)
+    - script: ${{ parameters.owscript }}
       displayName: "Documentation Build"
+      env:
+        owbuild_stage:  docs
+        owimage:    ${{ parameters.owimage }}
+        owtools:    ${{ parameters.owtools }}
     - template: artfsave.yml
       parameters:
         path:       rel

@@ -5,8 +5,8 @@ jobs:
   - job: lastbuild
     displayName: "${{ parameters.title }}"
     variables:
-      owtools:          $(owtools_lnx)
-      owtoolsv:         $(owtoolsv_lnx)
+      owimage:          $(owimage_lnx)
+      owtools:          GCC
       owscript:         $(owscript_lnx)
       owbuild.stage:    inst
       owtag:            Last-CI-build
