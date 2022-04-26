@@ -8,7 +8,7 @@ parameters:
 jobs:
   - job: build${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
-    variables:
+    #variables:
     pool:
       vmImage: ${{ parameters.owimage }}
     timeoutInMinutes: 120
