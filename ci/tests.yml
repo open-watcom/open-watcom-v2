@@ -1,16 +1,17 @@
 parameters:
   arch:     ''
   title:    ''
-  owimage:  ''
-  owtools:  ''
-  owscript: ''
+  image:    ''
+  tools:    ''
+  pscript:  ''
 
 jobs:
   - job: tests${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
-    #variables:
+    variables:
+      owtools:  ${{ parameters.tools }}
     pool:
-      vmImage: ${{ parameters.owimage }}
+      vmImage:  ${{ parameters.image }}
     steps:
     - template: artfload.yml
       parameters:

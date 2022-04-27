@@ -38,11 +38,11 @@ stages:
         parameters:
           arch:     lnx
           title:    Coverity Scan Linux
-          owimage:  $(owimage_lnx)
-          owtools:  GCC
+          image:    $(owimage_lnx)
+          tools:    GCC
 #      - template: ci/coverity.yml
 #        parameters:
 #          arch:     nt
 #          title:    Coverity Scan Windows
-#          owimage:  $(owimage_nt)
-#          owtools:  VISUALC
+#          image:    $(owimage_nt)
+#          tools:    VISUALC

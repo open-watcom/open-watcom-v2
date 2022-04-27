@@ -1,55 +1,55 @@
 parameters:
   arch:     ''
-  owimage:  ''
-  owtools:  ''
-  owscript: ''
+  image:    ''
+  tools:    ''
+  pscript:  ''
 
 jobs:
       - template: docs.yml
         parameters:
           arch:     ${{ parameters.arch }}
           title:    Documentation Build DOS
-          owdoctarget: docdos
-          owimage:  ${{ parameters.owimage }}
-          owtools:  ${{ parameters.owtools }}
-          owscript: ${{ parameters.owscript }}
+          doctarget: docdos
+          image:    ${{ parameters.image }}
+          tools:    ${{ parameters.tools }}
+          pscript:  ${{ parameters.pscript }}
       - template: docs.yml
         parameters:
           arch:     ${{ parameters.arch }}
-          title:    Documentation Build Html
-          owdoctarget: docchm
-          owimage:  ${{ parameters.owimage }}
-          owtools:  ${{ parameters.owtools }}
-          owscript: ${{ parameters.owscript }}
+          title:    Documentation Build CHM
+          doctarget: docchm
+          image:    ${{ parameters.image }}
+          tools:    ${{ parameters.tools }}
+          pscript:  ${{ parameters.pscript }}
       - template: docs.yml
         parameters:
           arch:     ${{ parameters.arch }}
           title:    Documentation Build NT
-          owdoctarget: docnt
-          owimage:  ${{ parameters.owimage }}
-          owtools:  ${{ parameters.owtools }}
-          owscript: ${{ parameters.owscript }}
+          doctarget: docnt
+          image:    ${{ parameters.image }}
+          tools:    ${{ parameters.tools }}
+          pscript:  ${{ parameters.pscript }}
       - template: docs.yml
         parameters:
           arch:     ${{ parameters.arch }}
           title:    Documentation Build OS2
-          owdoctarget: docos2
-          owimage:  ${{ parameters.owimage }}
-          owtools:  ${{ parameters.owtools }}
-          owscript: ${{ parameters.owscript }}
+          doctarget: docos2
+          image:    ${{ parameters.image }}
+          tools:    ${{ parameters.tools }}
+          pscript:  ${{ parameters.pscript }}
       - template: docs.yml
         parameters:
           arch:     ${{ parameters.arch }}
           title:    Documentation Build PDF
-          owdoctarget: docpdf
-          owimage:  ${{ parameters.owimage }}
-          owtools:  ${{ parameters.owtools }}
-          owscript: ${{ parameters.owscript }}
+          doctarget: docpdf
+          image:    ${{ parameters.image }}
+          tools:    ${{ parameters.tools }}
+          pscript:  ${{ parameters.pscript }}
       - template: docs.yml
         parameters:
           arch:     ${{ parameters.arch }}
           title:    Documentation Build WIN
-          owdoctarget: docwin
-          owimage:  ${{ parameters.owimage }}
-          owtools:  ${{ parameters.owtools }}
-          owscript: ${{ parameters.owscript }}
+          doctarget: docwin
+          image:    ${{ parameters.image }}
+          tools:    ${{ parameters.tools }}
+          pscript:  ${{ parameters.pscript }}

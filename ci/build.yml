@@ -1,19 +1,19 @@
 parameters:
   arch:     ''
   title:    ''
-  owimage:  ''
-  owtools:  ''
-  owscript: ''
+  image:    ''
+  tools:    ''
+  pscript:  ''
 
 jobs:
   - job: build${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
     variables:
       owbuild.stage: build
-      owimage:  ${{ parameters.owimage }}
-      owtools:  ${{ parameters.owtools }}
+      owimage:  ${{ parameters.image }}
+      owtools:  ${{ parameters.tools }}
     pool:
-      vmImage: ${{ parameters.owimage }}
+      vmImage: ${{ parameters.image }}
     timeoutInMinutes: 120
     steps:
     - template: dosbox.yml
@@ -27,7 +27,7 @@ jobs:
       parameters:
         path:       bld/watcom/$(owobjdir)
         artifname:  bld-watcom-${{ parameters.arch }}
-    - script: ${{ parameters.owscript }}
+    - script: ${{ parameters.pscript }}
       displayName: "Build"
     - ${{ if in(parameters.arch, 'lnx', 'nt') }}:
       - template: artfsave.yml

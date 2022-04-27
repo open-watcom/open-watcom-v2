@@ -1,8 +1,8 @@
 parameters:
   arch:     ''
   title:    ''
-  owimage:  ''
-  owtools:  ''
+  image:    ''
+  tools:    ''
 
 jobs:
   - job: scan${{ parameters.arch }}
@@ -25,10 +25,10 @@ jobs:
         owcoverity.results.archive: open-watcom-v2.zip
       owcoverity.project:  open-watcom/open-watcom-v2
       owcoverity.tool.cmd: ''
-      owimage:  ${{ parameters.owimage }}
-      owtools:  ${{ parameters.owtools }}
+      owimage:  ${{ parameters.image }}
+      owtools:  ${{ parameters.tools }}
     pool:
-      vmImage: ${{ parameters.owimage }}
+      vmImage: ${{ parameters.image }}
     steps:
       - template: dosbox.yml
         parameters:

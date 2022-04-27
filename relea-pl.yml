@@ -41,9 +41,9 @@ stages:
 #        parameters:
 #          arch:     osx
 #          title:    Bootstrap OSX
-#          owimage:  $(owimage_osx)
-#          owtools:  CLANG
-#          owscript: $(owscript_osx)
+#          image:    $(owimage_osx)
+#          tools:    CLANG
+#          pscript:  $(owscript_osx)
 #  - stage: buildosx
 #    displayName: "Build OSX"
 #    dependsOn:
@@ -53,9 +53,9 @@ stages:
 #        parameters:
 #          arch:     osx
 #          title:    Build OSX
-#          owimage:  $(owimage_osx)
-#          owtools:  CLANG
-#          owscript: $(owscript_osx)
+#          image:    $(owimage_osx)
+#          tools:    CLANG
+#          pscript:  $(owscript_osx)
   - stage: bootlnx
     displayName: "Bootstrap Linux"
     dependsOn:
@@ -65,9 +65,9 @@ stages:
         parameters:
           arch:     lnx
           title:    Bootstrap Linux
-          owimage:  $(owimage_lnx)
-          owtools:  GCC
-          owscript: $(owscript_lnx)
+          image:    $(owimage_lnx)
+          tools:    GCC
+          pscript:  $(owscript_lnx)
   - stage: buildlnx
     displayName: "Build Linux"
     dependsOn:
@@ -77,9 +77,9 @@ stages:
         parameters:
           arch:     lnx
           title:    Build Linux
-          owimage:  $(owimage_lnx)
-          owtools:  GCC
-          owscript: $(owscript_lnx)
+          image:    $(owimage_lnx)
+          tools:    GCC
+          pscript:  $(owscript_lnx)
   - stage: testslnx
     displayName: "Tests Linux"
     dependsOn:
@@ -89,9 +89,9 @@ stages:
         parameters:
           arch:     lnx
           title:    Tests Linux
-          owimage:  $(owimage_lnx)
-          owtools:  GCC
-          owscript: $(owscript_lnx)
+          image:    $(owimage_lnx)
+          tools:    GCC
+          pscript:  $(owscript_lnx)
   - stage: installnx
     displayName: "Installers Build Linux"
     dependsOn:
@@ -103,9 +103,9 @@ stages:
         parameters:
           arch:     lnx
           title:    Installers Build Linux
-          owimage:  $(owimage_lnx)
-          owtools:  GCC
-          owscript: $(owscript_lnx)
+          image:    $(owimage_lnx)
+          tools:    GCC
+          pscript:  $(owscript_lnx)
   - stage: release
     displayName: "GitHub Release"
     dependsOn:
@@ -116,9 +116,9 @@ stages:
         parameters:
           arch:     lnx
           title:    GitHub Release
-          owimage:  $(owimage_lnx)
-          owtools:  GCC
-          owscript: $(owscript_lnx)
+          image:    $(owimage_lnx)
+          tools:    GCC
+          pscript:  $(owscript_lnx)
   - stage: bootnt
     displayName: "Bootstrap Windows"
     dependsOn:
@@ -128,9 +128,9 @@ stages:
         parameters:
           arch:     nt
           title:    Bootstrap Windows
-          owimage:  $(owimage_nt)
-          owtools:  VISUALC
-          owscript: $(owscript_nt)
+          image:    $(owimage_nt)
+          tools:    VISUALC
+          pscript:  $(owscript_nt)
   - stage: buildnt
     displayName: "Build Windows"
     dependsOn:
@@ -140,9 +140,9 @@ stages:
         parameters:
           arch:     nt
           title:    Build Windows
-          owimage:  $(owimage_nt)
-          owtools:  VISUALC
-          owscript: $(owscript_nt)
+          image:    $(owimage_nt)
+          tools:    VISUALC
+          pscript:  $(owscript_nt)
   - stage: testsnt
     displayName: "Tests Windows"
     dependsOn:
@@ -152,9 +152,9 @@ stages:
         parameters:
           arch:     nt
           title:    Tests Windows
-          owimage:  $(owimage_nt)
-          owtools:  VISUALC
-          owscript: $(owscript_nt)
+          image:    $(owimage_nt)
+          tools:    VISUALC
+          pscript:  $(owscript_nt)
   - stage: docsnt
     displayName: "Docs Build Windows"
     dependsOn:
@@ -163,9 +163,9 @@ stages:
       - template: ci/docbuild.yml
         parameters:
           arch:     nt
-          owimage:  $(owimage_nt)
-          owtools:  VISUALC
-          owscript: $(owscript_nt)
+          image:    $(owimage_nt)
+          tools:    VISUALC
+          pscript:  $(owscript_nt)
   - stage: instalnt
     displayName: "Installers Build Windows"
     dependsOn:
@@ -177,6 +177,6 @@ stages:
         parameters:
           arch:     nt
           title:    Installers Build Windows
-          owimage:  $(owimage_nt)
-          owtools:  VISUALC
-          owscript: $(owscript_nt)
+          image:    $(owimage_nt)
+          tools:    VISUALC
+          pscript:  $(owscript_nt)

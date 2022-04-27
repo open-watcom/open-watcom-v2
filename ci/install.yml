@@ -1,19 +1,19 @@
 parameters:
   arch:     ''
   title:    ''
-  owimage:  ''
-  owtools:  ''
-  owscript: ''
+  image:    ''
+  tools:    ''
+  pscript:  ''
 
 jobs:
   - job: instal${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
     variables:
       owbuild.stage: inst
-      owimage:  ${{ parameters.owimage }}
-      owtools:  ${{ parameters.owtools }}
+      owimage:  ${{ parameters.image }}
+      owtools:  ${{ parameters.tools }}
     pool:
-      vmImage: ${{ parameters.owimage }}
+      vmImage: ${{ parameters.image }}
     steps:
     - template: artfload.yml
       parameters:
@@ -39,7 +39,7 @@ jobs:
     # consolidate documentation
     - template: docsload.yml
     # run build script
-    - script: ${{ parameters.owscript }}
+    - script: ${{ parameters.pscript }}
       displayName: "Build Installers"
     # create full binary archive
     - ${{ if eq(parameters.arch, 'lnx') }}:

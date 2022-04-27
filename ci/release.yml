@@ -1,8 +1,8 @@
 parameters:
   arch:     ''
   title:    ''
-  owimage:  ''
-  owtools:  ''
+  image:    ''
+  tools:    ''
 
 jobs:
   - job: release
@@ -10,8 +10,9 @@ jobs:
     variables:
       owtag:            Current-build
       owsubtag:         Build
+      owtools:  ${{ parameters.tools }}
     pool:
-      vmImage: ${{ parameters.owimage }}
+      vmImage:  ${{ parameters.image }}
     steps:
     - template: gituser.yml
     - checkout: self

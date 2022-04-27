@@ -1,30 +1,30 @@
 parameters:
   arch:     ''
   title:    ''
-  owdoctarget: ''
-  owimage:  ''
-  owtools:  ''
-  owscript: ''
+  doctarget: ''
+  image:    ''
+  tools:    ''
+  pscript:  ''
 
 jobs:
-  - job: docs${{ parameters.owdoctarget }}
+  - job: docs${{ parameters.doctarget }}
     displayName: "${{ parameters.title }}"
     timeoutInMinutes: 90
     variables:
       owbuild.stage: docs
-      owimage:  ${{ parameters.owimage }}
-      owtools:  ${{ parameters.owtools }}
-      owdoctarget:  ${{ parameters.owdoctarget }}
+      owimage:  ${{ parameters.image }}
+      owtools:  ${{ parameters.tools }}
+      owdoctarget:  ${{ parameters.doctarget }}
     pool:
-      vmImage: ${{ parameters.owimage }}
+      vmImage: ${{ parameters.image }}
     steps:
     - template: artfload.yml
       parameters:
         path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
-    - script: ${{ parameters.owscript }}
+    - script: ${{ parameters.pscript }}
       displayName: "Documentation Build"
     - template: artfsave.yml
       parameters:
         path:       rel
-        artifname:  rel-${{ parameters.owdoctarget }}
+        artifname:  rel-${{ parameters.doctarget }}

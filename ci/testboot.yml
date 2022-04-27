@@ -1,17 +1,17 @@
 parameters:
   arch:     ''
   title:    ''
-  owimage:  ''
-  owtools:  ''
-  owscript: ''
+  image:    ''
+  tools:    ''
+  pscript:  ''
 
 jobs:
   - job: testboot${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
     variables:
       owbuild.stage: boot
-      owimage:  ${{ parameters.owimage }}
-      owtools:  ${{ parameters.owtools }}
+      owimage:  ${{ parameters.image }}
+      owtools:  ${{ parameters.tools }}
       #
       ${{ if eq(parameters.arch, 'lnx') }}:
         watcom:       $(owroot)/rel
@@ -22,11 +22,11 @@ jobs:
         include:      $(watcom)\h;$(watcom)\h\nt
         watcom.path:  $(watcom)\binnt
     pool:
-      vmImage: ${{ parameters.owimage }}
+      vmImage: ${{ parameters.image }}
     steps:
     - template: artfload.yml
       parameters:
         path:       rel
         artifname:  rel-${{ parameters.arch }}
-    - script: ${{ parameters.owscript }}
+    - script: ${{ parameters.pscript }}
       displayName: "Test Bootstrap OW"
