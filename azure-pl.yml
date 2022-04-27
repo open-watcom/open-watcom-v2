@@ -20,9 +20,9 @@ variables:
   owobjdir:         binbuild
   owgitverbose:     -v
 
-  #owimage_lnx:      'ubuntu-18.04'
-  #owimage_nt:       'vs2017-win2016'
-  #owimage_osx:      'macOS-10.14'
+# owimage_lnx:      'ubuntu-18.04'
+# owimage_nt:       'vs2017-win2016'
+# owimage_osx:      'macOS-10.14'
   owimage_lnx:      'ubuntu-20.04'
   owimage_nt:       'windows-2019'
   owimage_osx:      'macOS-11'
