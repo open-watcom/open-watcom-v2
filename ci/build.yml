@@ -27,9 +27,9 @@ jobs:
     - script: ${{ parameters.owscript }}
       displayName: "Build"
       env:
-        owbuild_stage: build
-        owimage:    ${{ parameters.owimage }}
-        owtools:    ${{ parameters.owtools }}
+        OWBUILD_STAGE: build
+        OWIMAGE:    ${{ parameters.owimage }}
+        OWTOOLS:    ${{ parameters.owtools }}
     - ${{ if in(parameters.arch, 'lnx', 'nt') }}:
       - template: artfsave.yml
         parameters:

@@ -62,9 +62,9 @@ jobs:
     - script: ${{ parameters.owscript }}
       displayName: "Build Installers"
       env:
-        owbuild_stage:  inst
-        owimage:    ${{ parameters.owimage }}
-        owtools:    ${{ parameters.owtools }}
+        OWBUILD_STAGE:  inst
+        OWIMAGE:    ${{ parameters.owimage }}
+        OWTOOLS:    ${{ parameters.owtools }}
     # create full binary archive
     - ${{ if eq(parameters.arch, 'lnx') }}:
       - task: ArchiveFiles@2

@@ -23,6 +23,6 @@ jobs:
     - script: ${{ parameters.owscript }}
       displayName: "Bootstrap OW"
       env:
-        owbuild_stage:  boot
-        owimage:    ${{ parameters.owimage }}
-        owtools:    ${{ parameters.owtools }}
+        OWBUILD_STAGE:  boot
+        OWIMAGE:    ${{ parameters.owimage }}
+        OWTOOLS:    ${{ parameters.owtools }}

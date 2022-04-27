@@ -33,9 +33,9 @@ jobs:
     - script: ${{ parameters.owscript }}
       displayName: "Documentation Build"
       env:
-        owbuild_stage:  docs
-        owimage:    ${{ parameters.owimage }}
-        owtools:    ${{ parameters.owtools }}
+        OWBUILD_STAGE:  docs
+        OWIMAGE:    ${{ parameters.owimage }}
+        OWTOOLS:    ${{ parameters.owtools }}
     - template: artfsave.yml
       parameters:
         path:       rel

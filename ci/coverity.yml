@@ -50,8 +50,8 @@ jobs:
       - script: $(owscript)
         displayName: "Build Coverity data"
         env:
-          owimage:  ${{ parameters.owimage }}
-          owtools:  ${{ parameters.owtools }}
+          OWIMAGE:  ${{ parameters.owimage }}
+          OWTOOLS:  ${{ parameters.owtools }}
       - bash: echo "##vso[task.setvariable variable=owsha;]`git rev-parse --short HEAD`"
         displayName: "Get commit SHA"
       - ${{ if eq(parameters.arch, 'lnx') }}:
