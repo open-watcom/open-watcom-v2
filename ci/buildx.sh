@@ -94,4 +94,5 @@ build_proc()
     return $RC
 }
 
+env
 build_proc $*
