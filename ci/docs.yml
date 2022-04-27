@@ -2,7 +2,7 @@ parameters:
   arch:     ''
   title:    ''
   doctype:  ''
-  owdoctarget ''
+  owdoctarget: ''
   owimage:  ''
   owtools:  ''
   owscript: ''
