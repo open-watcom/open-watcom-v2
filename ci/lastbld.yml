@@ -5,10 +5,10 @@ jobs:
   - job: lastbuild
     displayName: "${{ parameters.title }}"
     variables:
+      owbuild.stage:    inst
       owimage:          $(owimage_lnx)
       owtools:          GCC
       owscript:         $(owscript_lnx)
-      owbuild.stage:    inst
       owtag:            Last-CI-build
     pool:
       vmImage:      $(owimage_lnx)

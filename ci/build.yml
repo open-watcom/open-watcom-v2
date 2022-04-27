@@ -8,7 +8,10 @@ parameters:
 jobs:
   - job: build${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
-    #variables:
+    variables:
+      owbuild.stage: build
+      owimage:  ${{ parameters.owimage }}
+      owtools:  ${{ parameters.owtools }}
     pool:
       vmImage: ${{ parameters.owimage }}
     timeoutInMinutes: 120
@@ -26,10 +29,6 @@ jobs:
         artifname:  bld-watcom-${{ parameters.arch }}
     - script: ${{ parameters.owscript }}
       displayName: "Build"
-      env:
-        OWBUILD_STAGE: build
-        OWIMAGE:    ${{ parameters.owimage }}
-        OWTOOLS:    ${{ parameters.owtools }}
     - ${{ if in(parameters.arch, 'lnx', 'nt') }}:
       - template: artfsave.yml
         parameters:

@@ -11,6 +11,10 @@ jobs:
     displayName: "${{ parameters.title }}"
     timeoutInMinutes: 90
     variables:
+      owbuild.stage: docs
+      owimage:  ${{ parameters.owimage }}
+      owtools:  ${{ parameters.owtools }}
+      #
       ${{ if eq(parameters.doctype, 'docdos') }}:
         owdoctarget:    docdos
       ${{ if eq(parameters.doctype, 'dochtml') }}:
@@ -32,10 +36,6 @@ jobs:
         artifname:  build-${{ parameters.arch }}
     - script: ${{ parameters.owscript }}
       displayName: "Documentation Build"
-      env:
-        OWBUILD_STAGE:  docs
-        OWIMAGE:    ${{ parameters.owimage }}
-        OWTOOLS:    ${{ parameters.owtools }}
     - template: artfsave.yml
       parameters:
         path:       rel

@@ -9,6 +9,10 @@ jobs:
   - job: boot${{ parameters.arch }}ow
     displayName: "${{ parameters.title }}"
     variables:
+      owbuild.stage: boot
+      owimage:  ${{ parameters.owimage }}
+      owtools:  ${{ parameters.owtools }}
+      #
       ${{ if eq(parameters.arch, 'lnx') }}:
         watcom:       $(owciroot_lnx)/ow
         include:      $(watcom)/lh
@@ -22,7 +26,3 @@ jobs:
     steps:
     - script: ${{ parameters.owscript }}
       displayName: "Bootstrap OW"
-      env:
-        OWBUILD_STAGE:  boot
-        OWIMAGE:    ${{ parameters.owimage }}
-        OWTOOLS:    ${{ parameters.owtools }}

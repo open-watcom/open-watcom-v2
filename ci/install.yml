@@ -8,7 +8,10 @@ parameters:
 jobs:
   - job: instal${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
-    #variables:
+    variables:
+      owbuild.stage: inst
+      owimage:  ${{ parameters.owimage }}
+      owtools:  ${{ parameters.owtools }}
     pool:
       vmImage: ${{ parameters.owimage }}
     steps:
@@ -61,10 +64,6 @@ jobs:
     # run build script
     - script: ${{ parameters.owscript }}
       displayName: "Build Installers"
-      env:
-        OWBUILD_STAGE:  inst
-        OWIMAGE:    ${{ parameters.owimage }}
-        OWTOOLS:    ${{ parameters.owtools }}
     # create full binary archive
     - ${{ if eq(parameters.arch, 'lnx') }}:
       - task: ArchiveFiles@2

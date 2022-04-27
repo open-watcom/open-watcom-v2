@@ -8,15 +8,15 @@ parameters:
 jobs:
   - job: boot${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
+    variables:
+      owbuild.stage: boot
+      owimage:  ${{ parameters.owimage }}
+      owtools:  ${{ parameters.owtools }}
     pool:
       vmImage: ${{ parameters.owimage }}
     steps:
     - script: ${{ parameters.owscript }}
       displayName:  "Bootstrap"
-      env:
-        OWBUILD_STAGE: boot
-        OWIMAGE:    ${{ parameters.owimage }}
-        OWTOOLS:    ${{ parameters.owtools }}
     - template: artfsave.yml
       parameters:
         path:       build/$(owobjdir)
