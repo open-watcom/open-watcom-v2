@@ -26,30 +26,7 @@ jobs:
         path:       rel
         artifname:  rel-lnx
     # consolidate documentation
-    - template: artfload.yml
-      parameters:
-        path:       rel
-        artifname:  rel-docdos
-    - template: artfload.yml
-      parameters:
-        path:       rel
-        artifname:  rel-dochtml
-    - template: artfload.yml
-      parameters:
-        path:       rel
-        artifname:  rel-docnt
-    - template: artfload.yml
-      parameters:
-        path:       rel
-        artifname:  rel-docos2
-    - template: artfload.yml
-      parameters:
-        path:       rel
-        artifname:  rel-docpdf
-    - template: artfload.yml
-      parameters:
-        path:       rel
-        artifname:  rel-docwin
+    - template: docsload.yml
     # create full binary archive
     - task: ArchiveFiles@2
       inputs:

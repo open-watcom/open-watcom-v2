@@ -139,7 +139,7 @@ ps        Here the post script documentation is created.
 
 html      Html version of the documentation is there.
 
-htmlhelp  Windows Html version of the documentation is there.
+chm       Windows Html version of the documentation is there.
 
 pdf       Here the PDF documentation is created.
 
@@ -220,9 +220,9 @@ For Microsoft Windows Help formats:
 
     or for win32 .chm format by
 
-        builder rel dochtmlhelp
+        builder rel docchm
 
-    files are created in the docs\htmlhelp directory.
+    files are created in the docs\chm directory.
 
 
 For Watcom Help format (for Watcom WHELP command):

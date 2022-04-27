@@ -32,7 +32,7 @@ cdsay <PROJDIR>
     <CCCMD> os2/*.hlp       <OWRELROOT>/binp/help/
     <CCCMD> nt/*.hlp        <OWRELROOT>/binnt/
     <CCCMD> nt/*.cnt        <OWRELROOT>/binnt/
-    <CCCMD> htmlhelp/*.chm  <OWRELROOT>/binnt/help/
+    <CCCMD> chm/*.chm       <OWRELROOT>/binnt/help/
     <CCCMD> pdf/*.pdf       <OWRELROOT>/docs/
 
 [ BLOCK . . ]

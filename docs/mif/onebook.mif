@@ -111,10 +111,10 @@ dep_dos = $(hbook).ihp
 !endif
 dep_html = $(hbook).htm
 !ifneq hc_hh
-dep_htmlhelp = $(hbook).chm
+dep_chm = $(hbook).chm
 !endif
 !ifneq hc_chmcmd
-dep_htmlhelp = $(hbook).chm
+dep_chm = $(hbook).chm
 !endif
 dep_ps = $(hbook).ps
 !ifdef %OWGHOSTSCRIPTPATH
@@ -140,7 +140,7 @@ dep_pdf = $(hbook).pdf
 !message !!!     You must setup OWWIN95HC environment variable     !!!
 !message !!!          in Your copy of the setvars script           !!!
 !message !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!else ifeq dotarget htmlhelp
+!else ifeq dotarget chm
 !message !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !message !!!       WARNING You are trying to build Html help       !!!
 !message !!!            without configured Help compiler           !!!
@@ -259,7 +259,7 @@ $(hbook).ib $(hbook).gh : $(cop_files) $(book_objs) $(proj_objs)
 # make HTML Help files
 #
 ####################################################
-!else ifeq dotarget htmlhelp
+!else ifeq dotarget chm
 
 .EXTENSIONS: .chm
 
@@ -377,7 +377,7 @@ $(hbook).ps : $(cop_files) $(book_objs) $(book_objs_ps) $(proj_objs)
 .EXTENSIONS: .htm
 
 $(hbook).gh $(hbook).htm : $(cop_files) $(book_objs) $(proj_objs)
-!ifneq dotarget htmlhelp
+!ifneq dotarget chm
 !ifdef book_bmroot
     @for %f in ($(book_bmroot)/*.bmp) do $(noecho)copy %f .
 !endif

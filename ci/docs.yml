@@ -1,14 +1,13 @@
 parameters:
   arch:     ''
   title:    ''
-  doctype:  ''
   owdoctarget: ''
   owimage:  ''
   owtools:  ''
   owscript: ''
 
 jobs:
-  - job: docs${{ parameters.doctype }}
+  - job: docs${{ parameters.owdoctarget }}
     displayName: "${{ parameters.title }}"
     timeoutInMinutes: 90
     variables:
@@ -28,4 +27,4 @@ jobs:
     - template: artfsave.yml
       parameters:
         path:       rel
-        artifname:  rel-${{ parameters.doctype }}
+        artifname:  rel-${{ parameters.owdoctarget }}
