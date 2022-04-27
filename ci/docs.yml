@@ -2,6 +2,7 @@ parameters:
   arch:     ''
   title:    ''
   doctype:  ''
+  owdoctarget ''
   owimage:  ''
   owtools:  ''
   owscript: ''
@@ -14,19 +15,7 @@ jobs:
       owbuild.stage: docs
       owimage:  ${{ parameters.owimage }}
       owtools:  ${{ parameters.owtools }}
-      #
-      ${{ if eq(parameters.doctype, 'docdos') }}:
-        owdoctarget:    docdos
-      ${{ if eq(parameters.doctype, 'dochtml') }}:
-        owdoctarget:    dochtmlhelp
-      ${{ if eq(parameters.doctype, 'docnt') }}:
-        owdoctarget:    docnt
-      ${{ if eq(parameters.doctype, 'docos2') }}:
-        owdoctarget:    docos2
-      ${{ if eq(parameters.doctype, 'docpdf') }}:
-        owdoctarget:    docpdf
-      ${{ if eq(parameters.doctype, 'docwin') }}:
-        owdoctarget:    docwin
+      owdoctarget:  ${{ parameters.owdoctarget }}
     pool:
       vmImage: ${{ parameters.owimage }}
     steps:

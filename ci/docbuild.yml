@@ -1,0 +1,61 @@
+parameters:
+  arch:     ''
+  owimage:  ''
+  owtools:  ''
+  owscript: ''
+
+jobs:
+      - template: docs.yml
+        parameters:
+          arch:     ${{ parameters.arch }}
+          title:    Documentation Build DOS
+          doctype:  docdos
+          owdoctarget: docdos
+          owimage:  ${{ parameters.owimage }}
+          owtools:  ${{ parameters.owtools }}
+          owscript: ${{ parameters.owscript }}
+      - template: docs.yml
+        parameters:
+          arch:     ${{ parameters.arch }}
+          title:    Documentation Build Html
+          doctype:  dochtml
+          owdoctarget: dochtmlhelp
+          owimage:  ${{ parameters.owimage }}
+          owtools:  ${{ parameters.owtools }}
+          owscript: ${{ parameters.owscript }}
+      - template: docs.yml
+        parameters:
+          arch:     ${{ parameters.arch }}
+          title:    Documentation Build NT
+          doctype:  docnt
+          owdoctarget: docnt
+          owimage:  ${{ parameters.owimage }}
+          owtools:  ${{ parameters.owtools }}
+          owscript: ${{ parameters.owscript }}
+      - template: docs.yml
+        parameters:
+          arch:     ${{ parameters.arch }}
+          title:    Documentation Build OS2
+          doctype:  docos2
+          owdoctarget: docos2
+          owimage:  ${{ parameters.owimage }}
+          owtools:  ${{ parameters.owtools }}
+          owscript: ${{ parameters.owscript }}
+      - template: docs.yml
+        parameters:
+          arch:     ${{ parameters.arch }}
+          title:    Documentation Build PDF
+          doctype:  docpdf
+          owdoctarget: docpdf
+          owimage:  ${{ parameters.owimage }}
+          owtools:  ${{ parameters.owtools }}
+          owscript: ${{ parameters.owscript }}
+      - template: docs.yml
+        parameters:
+          arch:     ${{ parameters.arch }}
+          title:    Documentation Build WIN
+          doctype:  docwin
+          owdoctarget: docwin
+          owimage:  ${{ parameters.owimage }}
+          owtools:  ${{ parameters.owtools }}
+          owscript: ${{ parameters.owscript }}

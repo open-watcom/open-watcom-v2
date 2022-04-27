@@ -146,51 +146,9 @@ stages:
     dependsOn:
       - bootnt
     jobs:
-      - template: ci/docs.yml
+      - template: ci/docbuild.yml
         parameters:
           arch:     nt
-          title:    Documentation Build DOS
-          doctype:  docdos
-          owimage:  $(owimage_nt)
-          owtools:  VISUALC
-          owscript: $(owscript_nt)
-      - template: ci/docs.yml
-        parameters:
-          arch:     nt
-          title:    Documentation Build Html
-          doctype:  dochtml
-          owimage:  $(owimage_nt)
-          owtools:  VISUALC
-          owscript: $(owscript_nt)
-      - template: ci/docs.yml
-        parameters:
-          arch:     nt
-          title:    Documentation Build NT
-          doctype:  docnt
-          owimage:  $(owimage_nt)
-          owtools:  VISUALC
-          owscript: $(owscript_nt)
-      - template: ci/docs.yml
-        parameters:
-          arch:     nt
-          title:    Documentation Build OS2
-          doctype:  docos2
-          owimage:  $(owimage_nt)
-          owtools:  VISUALC
-          owscript: $(owscript_nt)
-      - template: ci/docs.yml
-        parameters:
-          arch:     nt
-          title:    Documentation Build PDF
-          doctype:  docpdf
-          owimage:  $(owimage_nt)
-          owtools:  VISUALC
-          owscript: $(owscript_nt)
-      - template: ci/docs.yml
-        parameters:
-          arch:     nt
-          title:    Documentation Build WIN
-          doctype:  docwin
           owimage:  $(owimage_nt)
           owtools:  VISUALC
           owscript: $(owscript_nt)
