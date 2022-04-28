@@ -19,6 +19,7 @@ variables:
   owroot:           $(Build.SourcesDirectory)
   owobjdir:         binbuild
   owgitverbose:     -v
+  owartifactfile:   owartifact.tar.xz
 
 # owimage_lnx:      'ubuntu-18.04'
 # owimage_nt:       'vs2017-win2016'
@@ -29,12 +30,9 @@ variables:
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh
-  owartifactfile:   owartifact.tar.xz
   owciroot_lnx:     $(owroot)/ci
   owciroot_nt:      $(owroot)\ci
   owciroot_osx:     $(owroot)/ci
-  owcibin32:        $(owciroot_nt)\nt386
-  owcibin64:        $(owciroot_nt)\ntx64
 
 stages:
   - stage: start
@@ -49,156 +47,211 @@ stages:
     displayName: "Bootstrap OSX"
     dependsOn:
       - start
+    variables:
+      owbuild.stage: boot
+      owimage:      $(owimage_osx)
+      owtools:      CLANG
     jobs:
       - template: ci/boot.yml
         parameters:
           arch:     osx
           title:    Bootstrap OSX
           image:    $(owimage_osx)
-          tools:    CLANG
           pscript:  $(owscript_osx)
   - stage: buildosx
     displayName: "Build OSX"
     dependsOn:
       - bootosx
+    variables:
+      owbuild.stage: build
+      owimage:      $(owimage_osx)
+      owtools:      CLANG
+      owdosbox:     dosbox
     jobs:
       - template: ci/build.yml
         parameters:
           arch:     osx
           title:    Build OSX
           image:    $(owimage_osx)
-          tools:    CLANG
           pscript:  $(owscript_osx)
   - stage: bootlnxow
     displayName: "Bootstrap Linux OW"
     dependsOn:
       - start
+    variables:
+      owbuild.stage: boot
+      owimage:      $(owimage_lnx)
+      owtools:      WATCOM
+      watcom:       $(owciroot_lnx)/ow
+      include:      $(owciroot_lnx)/ow/lh
+      watcom.path:  $(owciroot_lnx)/ow/binl
     jobs:
       - template: ci/bootow.yml
         parameters:
           arch:     lnx
           title:    Bootstrap Linux OW
           image:    $(owimage_lnx)
-          tools:    WATCOM
           pscript:  $(owscript_lnx)
   - stage: bootlnx
     displayName: "Bootstrap Linux"
     dependsOn:
       - start
+    variables:
+      owbuild.stage: boot
+      owimage:      $(owimage_lnx)
+      owtools:      GCC
     jobs:
       - template: ci/boot.yml
         parameters:
           arch:     lnx
           title:    Bootstrap Linux
           image:    $(owimage_lnx)
-          tools:    GCC
           pscript:  $(owscript_lnx)
   - stage: buildlnx
     displayName: "Build Linux"
     dependsOn:
       - bootlnx
+    variables:
+      owbuild.stage: build
+      owimage:      $(owimage_lnx)
+      owtools:      GCC
+      owdosbox:     dosbox
     jobs:
       - template: ci/build.yml
         parameters:
           arch:     lnx
           title:    Build Linux
           image:    $(owimage_lnx)
-          tools:    GCC
           pscript:  $(owscript_lnx)
   - stage: bootntow
     displayName: "Bootstrap Windows OW"
     dependsOn:
       - start
+    variables:
+      owbuild.stage: boot
+      owimage:      $(owimage_nt)
+      owtools:      WATCOM
+      watcom:       $(owciroot_nt)\ow
+      include:      $(owciroot_nt)\ow\h;$(owciroot_nt)\ow\h\nt
+      watcom.path:  $(owciroot_nt)\ow\binnt
     jobs:
       - template: ci/bootow.yml
         parameters:
           arch:     nt
           title:    Bootstrap Windows OW
           image:    $(owimage_nt)
-          tools:    WATCOM
           pscript:  $(owscript_nt)
   - stage: bootnt
     displayName: "Bootstrap Windows"
     dependsOn:
       - start
+    variables:
+      owbuild.stage: boot
+      owimage:      $(owimage_nt)
+      owtools:      VISUALC
     jobs:
       - template: ci/boot.yml
         parameters:
           arch:     nt
           title:    Bootstrap Windows
           image:    $(owimage_nt)
-          tools:    VISUALC
           pscript:  $(owscript_nt)
   - stage: buildnt
     displayName: "Build Windows"
     dependsOn:
       - bootnt
+    variables:
+      owbuild.stage: build
+      owimage:      $(owimage_nt)
+      owtools:      VISUALC
+      owdosbox:     dosbox.exe
+      owdosboxpath: $(owciroot_nt)\nt386
     jobs:
       - template: ci/build.yml
         parameters:
           arch:     nt
           title:    Build Windows
           image:    $(owimage_nt)
-          tools:    VISUALC
           pscript:  $(owscript_nt)
   - stage: docsnt
     displayName: "Docs Build Windows"
     dependsOn:
       - bootnt
+    variables:
+      owbuild.stage: docs
+      owtools:      VISUALC
+      owimage:      $(owimage_nt)
+      owdosbox:     dosbox.exe
+      owdosboxpath: $(owciroot_nt)\nt386
     jobs:
       - template: ci/docbuild.yml
         parameters:
           arch:     nt
           image:    $(owimage_nt)
-          tools:    VISUALC
           pscript:  $(owscript_nt)
   - stage: testslnx
     displayName: "Tests Linux"
     dependsOn:
       - buildlnx
+    variables:
+      owbuild.stage: tests
+      owtools:      GCC
     jobs:
       - template: ci/tests.yml
         parameters:
           arch:     lnx
           title:    Tests Linux
           image:    $(owimage_lnx)
-          tools:    GCC
           pscript:  $(owscript_lnx)
   - stage: testbootlnxow
     displayName: "Test Bootstrap Linux OW"
     dependsOn:
       - testslnx
+    variables:
+      owbuild.stage: boot
+      owimage:      $(owimage_lnx)
+      owtools:      WATCOM
+      watcom:       $(owroot)/rel
+      include:      $(owroot)/rel/lh
+      watcom.path:  $(owroot)/rel/binl
     jobs:
       - template: ci/testboot.yml
         parameters:
           arch:     lnx
           title:    Test Bootstrap Linux OW
           image:    $(owimage_lnx)
-          tools:    WATCOM
           pscript:  $(owscript_lnx)
   - stage: testsnt
     displayName: "Tests Windows"
     dependsOn:
       - buildnt
+    variables:
+      owbuild.stage: tests
+      owtools:      VISUALC
     jobs:
       - template: ci/tests.yml
         parameters:
           arch:     nt
           title:    Tests Windows
           image:    $(owimage_nt)
-          tools:    VISUALC
           pscript:  $(owscript_nt)
   - stage: testbootntow
     displayName: "Test Bootstrap Windows OW"
     dependsOn:
       - testsnt
+    variables:
+      owbuild.stage: boot
+      owimage:      $(owimage_nt)
+      owtools:      WATCOM
+      watcom:       $(owroot)\rel
+      include:      $(owroot)\rel\h;$(owroot)\rel\h\nt
+      watcom.path:  $(owroot)\rel\binnt
     jobs:
       - template: ci/testboot.yml
         parameters:
           arch:     nt
           title:    Test Bootstrap Windows OW
           image:    $(owimage_nt)
-          tools:    WATCOM
           pscript:  $(owscript_nt)
   - stage: lastbuild
     displayName: "Last CI build"
@@ -206,6 +259,8 @@ stages:
       - testbootlnxow
       - testbootntow
       - docsnt
+    variables:
+      owbuild.stage: inst
     jobs:
       - template: ci/lastbld.yml
         parameters:

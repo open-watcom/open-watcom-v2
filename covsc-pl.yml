@@ -7,6 +7,7 @@
 variables: 
   owroot:           $(Build.SourcesDirectory)
   owobjdir:         binbuild
+  owcoverity.project: open-watcom/open-watcom-v2
 
   owimage_lnx:      'ubuntu-20.04'
   owimage_nt:       'windows-2019'
@@ -17,8 +18,6 @@ variables:
   owciroot_lnx:     $(owroot)/ci
   owciroot_nt:      $(owroot)\ci
   owciroot_osx:     $(owroot)/ci
-  owcibin32:        $(owciroot_nt)\nt386
-  owcibin64:        $(owciroot_nt)\ntx64
 
 stages:
   - stage: start
@@ -33,16 +32,42 @@ stages:
     displayName: "Coverity Scan Linux"
     dependsOn:
       - start
+    variables:
+      owtools:      GCC
+      owimage:      $(owimage_lnx)
+      owciroot:     $(owciroot_lnx)
+      owcoverity.script: $(owciroot_lnx)/covbuild.sh
+      owcoverity.tool.src: linux64
+      owcoverity.tool.archive: /tmp/cov-analysis-linux.tgz
+      owcoverity.tool.base: /tmp/coverity-scan-analysis
+      owcoverity.results.archive: open-watcom-v2.tgz
+      owdosbox:     dosbox
     jobs:
       - template: ci/coverity.yml
         parameters:
           arch:     lnx
           title:    Coverity Scan Linux
           image:    $(owimage_lnx)
-          tools:    GCC
+          pscript:  $(owciroot_lnx)/coverity.sh
+#  - stage: scannt
+#    displayName: "Coverity Scan Windows"
+#    dependsOn:
+#      - start
+#    variables:
+#      owtools:      VISUALC
+#      owimage:      $(owimage_nt)
+#      owciroot:     $(owciroot_nt)
+#      owcoverity.script: $(owciroot_nt)\covbuild.cmd
+#      owcoverity.tool.src: win64
+#      owcoverity.tool.archive: $(TEMP)\cov-analysis-windows.zip
+#      owcoverity.tool.base: $(TEMP)\coverity-scan-analysis
+#      owcoverity.results.archive: open-watcom-v2.zip
+#      owdosbox:     dosbox.exe
+#      owdosboxpath: $(owciroot_nt)\nt386
+#    jobs:
 #      - template: ci/coverity.yml
 #        parameters:
 #          arch:     nt
 #          title:    Coverity Scan Windows
 #          image:    $(owimage_nt)
-#          tools:    VISUALC
+#          pscript:  $(owciroot_nt)\coverity.cmd

@@ -2,25 +2,11 @@ parameters:
   arch:     ''
   title:    ''
   image:    ''
-  tools:    ''
   pscript:  ''
 
 jobs:
   - job: testboot${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
-    variables:
-      owbuild.stage: boot
-      owimage:  ${{ parameters.image }}
-      owtools:  ${{ parameters.tools }}
-      #
-      ${{ if eq(parameters.arch, 'lnx') }}:
-        watcom:       $(owroot)/rel
-        include:      $(watcom)/lh
-        watcom.path:  $(watcom)/binl
-      ${{ if eq(parameters.arch, 'nt') }}:
-        watcom:       $(owroot)\rel
-        include:      $(watcom)\h;$(watcom)\h\nt
-        watcom.path:  $(watcom)\binnt
     pool:
       vmImage: ${{ parameters.image }}
     steps:

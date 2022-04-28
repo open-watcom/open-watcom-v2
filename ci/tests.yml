@@ -2,14 +2,11 @@ parameters:
   arch:     ''
   title:    ''
   image:    ''
-  tools:    ''
   pscript:  ''
 
 jobs:
   - job: tests${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
-    variables:
-      owtools:  ${{ parameters.tools }}
     pool:
       vmImage:  ${{ parameters.image }}
     steps:

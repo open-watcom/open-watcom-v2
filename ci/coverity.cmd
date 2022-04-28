@@ -4,8 +4,6 @@ if "%OWIMAGE%" == "windows-2019" call "C:\Program Files (x86)\Microsoft Visual S
 if "%OWIMAGE%" == "windows-2022" call "C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
 echo on
-set OWDOSBOXPATH=%OWCIBIN32%
-set OWDOSBOX=dosbox.exe
 
 call %OWROOT%\cmnvars.bat
 

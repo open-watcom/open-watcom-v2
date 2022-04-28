@@ -2,16 +2,11 @@ parameters:
   arch:     ''
   title:    ''
   image:    ''
-  tools:    ''
   pscript:  ''
 
 jobs:
   - job: boot${{ parameters.arch }}
     displayName: "${{ parameters.title }}"
-    variables:
-      owbuild.stage: boot
-      owimage:  ${{ parameters.image }}
-      owtools:  ${{ parameters.tools }}
     pool:
       vmImage: ${{ parameters.image }}
     steps:

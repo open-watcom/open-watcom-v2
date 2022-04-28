@@ -1,7 +1,6 @@
 parameters:
   arch:     ''
   image:    ''
-  tools:    ''
   pscript:  ''
 
 jobs:
@@ -11,7 +10,6 @@ jobs:
           title:    Documentation Build DOS
           doctarget: docdos
           image:    ${{ parameters.image }}
-          tools:    ${{ parameters.tools }}
           pscript:  ${{ parameters.pscript }}
       - template: docs.yml
         parameters:
@@ -19,7 +17,6 @@ jobs:
           title:    Documentation Build CHM
           doctarget: docchm
           image:    ${{ parameters.image }}
-          tools:    ${{ parameters.tools }}
           pscript:  ${{ parameters.pscript }}
       - template: docs.yml
         parameters:
@@ -27,7 +24,6 @@ jobs:
           title:    Documentation Build NT
           doctarget: docnt
           image:    ${{ parameters.image }}
-          tools:    ${{ parameters.tools }}
           pscript:  ${{ parameters.pscript }}
       - template: docs.yml
         parameters:
@@ -35,7 +31,6 @@ jobs:
           title:    Documentation Build OS2
           doctarget: docos2
           image:    ${{ parameters.image }}
-          tools:    ${{ parameters.tools }}
           pscript:  ${{ parameters.pscript }}
       - template: docs.yml
         parameters:
@@ -43,7 +38,6 @@ jobs:
           title:    Documentation Build PDF
           doctarget: docpdf
           image:    ${{ parameters.image }}
-          tools:    ${{ parameters.tools }}
           pscript:  ${{ parameters.pscript }}
       - template: docs.yml
         parameters:
@@ -51,5 +45,4 @@ jobs:
           title:    Documentation Build WIN
           doctarget: docwin
           image:    ${{ parameters.image }}
-          tools:    ${{ parameters.tools }}
           pscript:  ${{ parameters.pscript }}

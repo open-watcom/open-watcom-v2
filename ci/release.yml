@@ -2,7 +2,6 @@ parameters:
   arch:     ''
   title:    ''
   image:    ''
-  tools:    ''
 
 jobs:
   - job: release
@@ -10,7 +9,6 @@ jobs:
     variables:
       owtag:            Current-build
       owsubtag:         Build
-      owtools:  ${{ parameters.tools }}
     pool:
       vmImage:  ${{ parameters.image }}
     steps:
