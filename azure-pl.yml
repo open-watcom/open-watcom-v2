@@ -181,6 +181,7 @@ stages:
       owbuild.stage: docs
       owtools:      VISUALC
       owimage:      $(owimage_nt)
+      owciroot:     $(owciroot_nt)
       owdosbox:     dosbox.exe
       owdosboxpath: $(owciroot_nt)\nt386
     jobs:
