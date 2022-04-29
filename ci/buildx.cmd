@@ -21,7 +21,7 @@ if "%OWBUILD_STAGE%" == "docs" (
     set OWGHOSTSCRIPTPATH=%OWCIROOT%\ntx64
     set OWWIN95HC=%OWCIROOT%\nt386\hcrtf.exe
     set OWHHC=%OWCIROOT%\nt386\hhc.exe
-}
+)
 REM ...
 call %OWROOT%\cmnvars.bat
 REM ...
