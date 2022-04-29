@@ -30,7 +30,7 @@ jobs:
         rootFolderOrFile: '$(owroot)/rel'
         includeRootFolder: false
         archiveType: 'tar'
-        archiveFile: '$(owroot)/ow-snapshot.tar.gz'
+        archiveFile: '$(owroot)/$(owsnapshotfile)'
         replaceExistingArchive: true
     - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
       displayName: "Get current timestamp"

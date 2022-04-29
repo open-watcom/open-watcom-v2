@@ -43,7 +43,7 @@ jobs:
           rootFolderOrFile: '$(owroot)/rel'
           includeRootFolder: false
           archiveType: 'tar'
-          archiveFile: '$(owroot)/distrib/ow/bin/ow-snapshot.tar.gz'
+          archiveFile: '$(owroot)/distrib/ow/bin/$(owsnapshotfile)'
           replaceExistingArchive: true
     # save all artifacts for distribution
     - template: artfsave.yml

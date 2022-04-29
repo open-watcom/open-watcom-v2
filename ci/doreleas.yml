@@ -37,15 +37,15 @@ steps:
           ${{ if eq(parameters.fullset, 'true') }}:
             assets: |
               distrib\ow\bin\open-watcom-*
-              distrib\ow\bin\ow-snapshot.tar.gz
+              distrib\ow\bin\$(owsnapshotfile)
           ${{ if not(eq(parameters.fullset, 'true')) }}:
-            assets: $(owroot)\ow-snapshot.tar.gz
+            assets: $(owroot)\$(owsnapshotfile)
         ${{ if in(parameters.arch, 'lnx', 'osx') }}:
           ${{ if eq(parameters.fullset, 'true') }}:
             assets: |
               distrib/ow/bin/open-watcom-*
-              distrib/ow/bin/ow-snapshot.tar.gz
+              distrib/ow/bin/$(owsnapshotfile)
           ${{ if not(eq(parameters.fullset, 'true')) }}:
-            assets: $(owroot)/ow-snapshot.tar.gz
+            assets: $(owroot)/$(owsnapshotfile)
         isPreRelease: true
         addChangeLog: false
