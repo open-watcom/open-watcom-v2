@@ -67,6 +67,7 @@ jobs:
     - template: doreleas.yml
       parameters:
         arch:      ${{ parameters.arch }}
+        update:    'false'
         fullset:   'true'
         disp:      'Add monthly Release'
         title:     '$(owmtagstamp) $(owsubtag)'
