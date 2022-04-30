@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,7 @@
     #include <sys/utime.h>
 #endif
 #ifdef __UNIX__
+    #include <sys/utsname.h>
     #include <dirent.h>
 #else
     #include <direct.h>
@@ -2443,17 +2444,33 @@ static void FreeDefinedVars( void )
     }
 }
 
-#if defined( __NT__ ) && !defined( _M_X64 )
-static bool CheckWow64( void )
+#if !defined( _M_X64 )
+
+#if defined( __NT__ )
+static bool isOS64bit( void )
 {
     DWORD   version = GetVersion();
-    if( version < 0x80000000 && LOBYTE( LOWORD( version ) ) >= 5 && IsWOW64() ) {
-        char *msg = "You are using 32-bit installer on 64-bit host\n"
-                    "It is recommended to use 64-bit installer\n"
-                    "\ton 64-bit host\n"
-                    "Press OK button to continue with installation\n"
-                    "\tor Cancel button to abort it\n";
 
+    return( version < 0x80000000 && LOBYTE( LOWORD( version ) ) >= 5 && IsWOW64() );
+}
+#endif
+
+#if defined( __UNIX__ )
+static bool isOS64bit( void )
+{
+    struct utsname name;
+
+    return( uname( &name ) != -1 && ( stricmp( name.machine, "x86_64" ) == 0 || stricmp( name.machine, "amd64" ) == 0 ) );
+}
+#endif
+
+#if defined( __NT__ ) || defined( __UNIX__ )
+static bool check32bitOn64bit( void )
+{
+    if( isOS64bit() ) {
+        char *msg = "You are using the 32-bit installer on a 64-bit host.\n"
+                    "It is recommended to use the 64-bit installer on a 64-bit host.\n"
+                    "Press OK button to continue with installation or Cancel button to abort it.\n";
         SetVariableByName( "IDS_USEINST64BIT", "%s");
         if( MsgBox( NULL, "IDS_USEINST64BIT", GUI_OK_CANCEL, msg ) != GUI_RET_OK ) {
             /* return true to terminate installer */
@@ -2462,6 +2479,8 @@ static bool CheckWow64( void )
     }
     return( false );
 }
+#endif
+
 #endif
 
 static void dispUsage( void )
@@ -2500,11 +2519,13 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
     VBUF                drive;
     int                 i;
 
-#if defined( __NT__ ) && !defined( _M_X64 )
-    if( CheckWow64() ) {
+#if !defined( _M_X64 )
+  #if defined( __NT__ ) || defined( __UNIX__ )
+    if( check32bitOn64bit() ) {
         /* return false to terminate installer */
         return( false );
     }
+  #endif
 #endif
 
     Invisible           = false;
