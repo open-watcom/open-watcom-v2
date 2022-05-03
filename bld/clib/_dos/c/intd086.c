@@ -39,10 +39,9 @@
 
 _WCRTLINK int intdos( union REGS *inregs, union REGS *outregs )
 {
-    register short          status;
+    int reg_ax;
 
-    status = DoDosCall( inregs, outregs );
-    outregs->x.cflag = (status & 1);
-    _dosretax( outregs->x.ax, status );
-    return( outregs->x.ax );
+    reg_ax = DoDosCall( inregs, outregs );
+    _dosretax( reg_ax, outregs->x.cflag );
+    return( reg_ax );
 }

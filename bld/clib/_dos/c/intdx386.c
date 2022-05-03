@@ -46,11 +46,10 @@ _WCRTLINK int intdosx( union REGS *inregs, union REGS *outregs, struct SREGS *se
 #if defined( __WINDOWS_386__ )
     return( _clib_intdosx( inregs, outregs, segregs ) );
 #else
-    register int            status;
+    int reg_eax;
 
-    status = DoDosxCall( inregs, outregs, segregs );
-    outregs->x.cflag = (status & 1);
-    _dosretax( outregs->x.eax, status );
-    return( outregs->x.eax );
+    reg_eax = DoDosxCall( inregs, outregs, segregs );
+    _dosretax( reg_eax, outregs->x.cflag );
+    return( reg_eax );
 #endif
 }
