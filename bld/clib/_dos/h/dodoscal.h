@@ -31,13 +31,17 @@
 ****************************************************************************/
 
 
+#if defined( WIN386 )
+#define WIN386FAR   __far
+#else
+#define WIN386FAR
+#endif
+
+extern int  DoDosCall( union REGS WIN386FAR *in, union REGS WIN386FAR *out );
+extern int  DoDosxCall( union REGS WIN386FAR *in, union REGS WIN386FAR *out, struct SREGS WIN386FAR *sr );
+
 #if defined( _M_I86 )
 
-#if defined( WIN386 )
-extern short    DoDosCall( void __far *in, void __far *out );
-#else
-extern short    DoDosCall( void *in, void *out );
-#endif
 #if defined( __BIG_DATA__ ) || defined( WIN386 )
 #pragma aux DoDosCall = \
         "push ds"           \
@@ -98,11 +102,6 @@ extern short    DoDosCall( void *in, void *out );
     __modify        [__bx __cx __dx __di __si]
 #endif
 
-#if defined( WIN386 )
-extern short    DoDosxCall( void __far *in, void __far *out, void __far *sr );
-#else
-extern short    DoDosxCall( void *in, void *out, void *sr );
-#endif
 #if defined( __BIG_DATA__ ) || defined( WIN386 )
 #pragma aux DoDosxCall = \
         "push ds"        /* ----------. */ \
@@ -194,7 +193,6 @@ extern short    DoDosxCall( void *in, void *out, void *sr );
 
 #elif defined( _M_IX86 ) && !defined( __WINDOWS__ )
 
-extern int      DoDosCall( void *in, void *out );
 #pragma aux DoDosCall = \
         "push ebp"          \
         "push edx"          \
@@ -220,7 +218,6 @@ extern int      DoDosCall( void *in, void *out );
     __value         [__eax] \
     __modify        [__ebx __ecx __edx __edi __esi]
 
-extern int      DoDosxCall( void *in, void *out, void *sr );
 #pragma aux DoDosxCall = \
         "push ebp"         /* -----------. */ \
         "push es"          /* ----------.| */ \
