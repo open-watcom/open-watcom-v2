@@ -52,7 +52,7 @@ objs_vxd = wdebug.obj &
 .asm : ../conv/win386;../asm
 .c : ../conv/win386;../c
 
-inc_dirs = -I"../h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/_dos/h" -I"$(clib_dir)/intel/h"
+inc_dirs = -I"../h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/_dos/h" -I"$(clib_dir)/intel/h" -I"$(clib_dir)/h"
 
 # cflags stuff
 ###############

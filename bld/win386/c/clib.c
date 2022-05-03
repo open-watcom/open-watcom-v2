@@ -41,7 +41,7 @@
 #include <time.h>
 #include "clibxw32.h"
 #include "dodoscal.h"
-#include "dosret.h"
+#include "seterrno.h"
 #include "dointr.h"
 
 
@@ -61,7 +61,8 @@ int __far __pascal _clib_intdos( union REGS __far *inregs, union REGS __far *out
     int reg_ax;
 
     reg_ax = DoDosCall( inregs, outregs );
-    _dosretax( reg_ax, outregs->x.cflag );
+    if( outregs->x.cflag )
+        return( __set_errno_dos_reterr( reg_ax ) );
     return( reg_ax );
 }
 
@@ -71,7 +72,8 @@ int __far __pascal _clib_intdosx( union REGS __far *inregs, union REGS __far *ou
     int reg_ax;
 
     reg_ax = DoDosxCall( inregs, outregs, segregs );
-    _dosretax( reg_ax, outregs->x.cflag );
+    if( outregs->x.cflag )
+        return( __set_errno_dos_reterr( reg_ax ) );
     return( reg_ax );
 }
 
