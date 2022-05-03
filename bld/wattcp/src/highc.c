@@ -84,7 +84,7 @@ static int Execute (char *path, char *args)
   fflush (stderr);
 
   intdos (&reg, &reg);
-  if (reg.x.cflag & 1)          /* carry set, return -1 */
+  if (reg.x.cflag)              /* carry set, return -1 */
      return (-1);
 
   reg.x.ax = 0x4D00;
@@ -121,7 +121,7 @@ int _mw_watt_system (const char *cmd)
  */
 
 #pragma Off(call_trace)      /* no trace of trace itself */
-#pragma Off(prolog_trace)  
+#pragma Off(prolog_trace)
 #pragma Off(epilog_trace)
 #pragma Global_aliasing_convention("%r")
 

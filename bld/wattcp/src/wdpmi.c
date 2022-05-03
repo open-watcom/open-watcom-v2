@@ -83,7 +83,7 @@ WORD dpmi_real_malloc (WORD size, WORD *selector)
   r.x.eax = 0x0100;             /* DPMI allocate DOS memory */
   r.x.ebx = (size + 15) / 16;   /* Number of paragraphs requested */
   int386 (0x31, &r, &r);
-  if (r.w.cflag & 1)
+  if (r.w.cflag)
      return (0);
 
   *selector = r.w.dx;
@@ -110,7 +110,7 @@ int dpmi_lock_region (void *address, unsigned length)
   r.x.esi = (length >> 16);       /* Length in SI:DI */
   r.x.edi = (length & 0xFFFF);
   int386 (0x31, &r, &r);
-  return ((r.w.cflag & 1) == 0);
+  return (r.w.cflag == 0);
 }
 
 int dpmi_unlock_region (void *address, unsigned length)
@@ -124,7 +124,7 @@ int dpmi_unlock_region (void *address, unsigned length)
   r.x.esi = (length >> 16);       /* Length in SI:DI */
   r.x.edi = (length & 0xFFFF);
   int386 (0x31, &r, &r);
-  return ((r.w.cflag & 1) == 0);  /* Return 0 if failed */
+  return (r.w.cflag == 0);  /* Return 0 if failed */
 }
 
 int dpmi_real_interrupt (int intr, struct DPMI_regs *reg)
@@ -143,7 +143,7 @@ int dpmi_real_interrupt (int intr, struct DPMI_regs *reg)
   reg->r_ss = reg->r_sp = 0;      /* DPMI host provides stack */
 
   int386x (0x31, &r, &r, &s);
-  return ((r.w.cflag & 1) == 0);  /* Return 0 if failed */
+  return (r.w.cflag == 0);  /* Return 0 if failed */
 }
 
 int dpmi_alloc_callback (void (*callback)(void), struct DPMI_callback *cb)
@@ -159,7 +159,7 @@ int dpmi_alloc_callback (void (*callback)(void), struct DPMI_callback *cb)
   s.es    = s.ds;
   r.x.edi = (DWORD) &cb->cb_reg;
   int386x (0x31, &r, &r, &s);
-  if (r.w.cflag & 1)
+  if (r.w.cflag)
      return (0);
 
   cb->cb_segment = r.w.cx;
@@ -173,7 +173,7 @@ int dpmi_cpu_type (void)
 
   r.x.eax = 0x400;              /* Get DPMI Version */
   int386 (0x31, &r, &r);
-  if (r.w.cflag & 1)
+  if (r.w.cflag)
      return (-1);
   return (r.h.cl);
 }
