@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -35,7 +36,7 @@ include msdos.inc
 include struct.inc
 
         name    dospawn
-        xrefp   __dosretax
+        xrefp   "C",__set_errno_dos
         extrn   __close_ovl_file    :dword
 if _MODEL eq _SMALL
         extrn   __GETDS         :near
@@ -200,8 +201,9 @@ endif
         _if     nc                      ; If spawn was successful
           callos wait                   ; .. wait for child to complete
         _endif                          ; Endif
-        sbb     dx,dx                   ; set dx = status of carry flag
-        call    __dosretax
+        _if     c                       ; If spawn was failed
+          call  __set_errno_dos         ; .. set errno and return -1
+        _endif                          ; Endif
         pop     ds                      ; restore segment registers
         pop     es                      ;
         pop     bx                      ; restore registers

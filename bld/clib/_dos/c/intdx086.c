@@ -34,7 +34,7 @@
 #include "variety.h"
 #include <dos.h>
 #include "dodoscal.h"
-#include "dosret.h"
+#include "seterrno.h"
 
 
 _WCRTLINK int intdosx( union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
@@ -42,6 +42,7 @@ _WCRTLINK int intdosx( union REGS *inregs, union REGS *outregs, struct SREGS *se
     int reg_ax;
 
     reg_ax = DoDosxCall( inregs, outregs, segregs );
-    _dosretax( reg_ax, outregs->x.cflag );
+    if( outregs->x.cflag )
+        return( __set_errno_dos_reterr( reg_ax ) );
     return( reg_ax );
 }

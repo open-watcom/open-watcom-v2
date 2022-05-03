@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,6 @@
 #include "rtdata.h"
 #include "rterrno.h"
 #include "seterrno.h"
-#include "dosret.h"
 #include "thread.h"
 
 #if defined(__NT__) || defined(__OS2__)
@@ -353,22 +352,6 @@ static signed char xlat[] = {
 #define E_EXIST         14      /* file already exists, DOS 3.0 */
 #define E_MAXERR        19      /* unknown error, DOS 2.0 */
 #endif
-
-int _dosretax( int ax, int carry )
-{
-    if( carry == 0 ) {
-        return( ax );
-    }
-    return( __set_errno_dos( ax ) );
-}
-
-int _dosret0( int ax, int carry )
-{
-    if( carry == 0 ) {
-        return( 0 );
-    }
-    return( __set_errno_dos( ax ) );
-}
 
 int __set_errno_dos( unsigned int err )
 {
