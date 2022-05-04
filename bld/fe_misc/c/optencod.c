@@ -2299,7 +2299,12 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
         *buf++ = '-';
         buf = cvtOptionSpec( buf, o->pattern, CVT_USAGE );
     }
-    if( o->usage_argid != NULL ) {
+    if( o->is_special ) {
+        if( o->usage_argid != NULL ) {
+            strcpy( buf, o->usage_argid );
+            buf += strlen( buf );
+        }
+    } else if( o->usage_argid != NULL ) {
         if( o->is_optional ) {
             buf = catArg( "[=", buf );
             buf = catArg( o->usage_argid, buf );
@@ -2340,7 +2345,6 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
         }
     } else if( o->is_negate ) {
         buf = catArg( "[-]", buf );
-    } else if( o->is_special ) {
     }
     return( buf );
 }
