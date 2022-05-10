@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,4 +38,4 @@ extern void         GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 imm
 extern void         GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, uint_8 rt );
 extern void         GenIShift( uint_8 fc, uint_8 rd, uint_8 rt, uint_8 sa );
 extern void         GenJType( uint_8 opcode, pointer label );
-extern void         GenRET( void );
+extern void         GenReturn( void );

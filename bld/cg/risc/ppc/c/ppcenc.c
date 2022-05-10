@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -565,8 +565,8 @@ static  void    DbgBlkInfo( instruction *ins )
 }
 
 
-void    GenRET( void )
-/********************/
+void    GenReturn( void )
+/***********************/
 {
    ins_encoding = 0x4e800020;       // FIXME - need linkage docs
    _EmitIns( ins_encoding );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -380,8 +380,8 @@ void    GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src )
     GenMEMINS( 0x27, RegTrans( src ), RegTrans( dst ), displacement );
 }
 
-void    GenRET( void )
-/********************/
+void    GenReturn( void )
+/***********************/
 {
     any_oc      oc;
 
@@ -952,7 +952,7 @@ void    GenJumpIf( instruction *ins, pointer label )
 void    GenLabelReturn( void ) {
 /******************************/
 
-    GenRET();
+    GenReturn();
 }
 
 

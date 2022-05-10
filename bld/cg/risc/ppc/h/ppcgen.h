@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,4 +36,4 @@ extern  void            GenMEMINS( gen_opcode, reg_idx, reg_idx, signed_16 );
 extern  void            GenOPINS( gen_opcode, gen_opcode, reg_idx, reg_idx, reg_idx );
 extern  void            GenOPIMM( gen_opcode, reg_idx, reg_idx, signed_16 );
 extern  void            GenMTSPR( reg_idx, uint_32, bool );
-extern  void            GenRET( void );
+extern  void            GenReturn( void );

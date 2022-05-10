@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -507,7 +507,7 @@ void    GenEpilog( void )
     }
     // Pop();
     emitEpilog( &CurrProc->targ.stack_map );
-    GenRET();
+    GenReturn();
     CurrProc->prolog_state |= GENERATED_EPILOG;
     lc = AskLocation();
     if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
