@@ -47,8 +47,6 @@ void    RetAftrCall( ins_entry *ret_instr )
 /*****************************************/
 {
     ins_entry   *call_instr;
-    oc_class    call_attr;
-    oc_class    ret_attr;
 
   optbegin
     if( _IsTargetModel( NO_CALL_RET_TRANSFORM ) )
@@ -59,14 +57,12 @@ void    RetAftrCall( ins_entry *ret_instr )
     if( PrevClass( call_instr ) != OC_CALL )
         optreturnvoid;
     call_instr = PrevIns( call_instr );
-    call_attr = _Attr( call_instr );
-    if( (call_attr & OC_ATTR_POP) != 0 )
+    if( _ChkAttr( call_instr, OC_ATTR_POP ) )
         optreturnvoid;
-    ret_attr = _Attr( ret_instr );
-    if( (ret_attr & OC_ATTR_POP) != 0 )
+    if( _ChkAttr( ret_instr, OC_ATTR_POP ) )
         optreturnvoid;
 #if( OPTIONS & SEGMENTED )
-    if( ( (call_attr & OC_ATTR_FAR) ^ (ret_attr & OC_ATTR_FAR) ) != 0 )
+    if( ( _ChkAttr( call_instr, OC_ATTR_FAR ) ^ _ChkAttr( ret_instr, OC_ATTR_FAR ) ) != 0 )
         optreturnvoid;
 #endif
     InsDelete = true;
@@ -117,7 +113,7 @@ bool    RetAftrLbl( ins_entry *ret )
                 JmpToRet( ref, ret );
                 change = true;
             } else if( _Class( ref ) == OC_CALL ) {
-                if( (_Attr( ret ) & OC_ATTR_POP) == 0 ) {
+                if( !_ChkAttr( ret, OC_ATTR_POP ) ) {
                     _Savings( OPT_CALLTORET, _ObjLen( ref ) );
                     DelInstr( ref );
                     change = true;

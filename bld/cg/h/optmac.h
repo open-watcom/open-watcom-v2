@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +36,15 @@
 #define optreturn( x )  { --InOptimizer; return( x ); }
 #define optreturnvoid   { --InOptimizer; return; }
 
-#define _Class( var )       (((ins_entry *)(var))->oc.oc_header.class & GET_BASE)
-#define _Attr( var )        (((ins_entry *)(var))->oc.oc_header.class &~GET_BASE)
-#define _SetAttr( v1, v2 )  ((ins_entry *)(v1))->oc.oc_header.class |= v2
-#define _ChgClass( v1,v2 )  ((ins_entry *)(v1))->oc.oc_header.class = _Attr( v1 ) | v2
-#define _SetClass( v1,v2 )  ((ins_entry *)(v1))->oc.oc_header.class = v2
-
 #define _TransferClass( var ) ( (var) >= OC_JMP )
+//#define _TransferClass( var ) ((var) == OC_JMP || (var) == OC_JMPI || (var) == OC_RET || (var) == OC_IDATA)
+
+#define _Class( var )       (((ins_entry *)(var))->oc.oc_header.class & GET_BASE)
+#define _GetAttr( var )     (((ins_entry *)(var))->oc.oc_header.class &~GET_BASE)
+#define _ChkAttr( v1, v2 )  ((((ins_entry *)(v1))->oc.oc_header.class & v2) != 0)
+#define _SetAttr( v1, v2 )  ((ins_entry *)(v1))->oc.oc_header.class |= v2
+#define _ChgClass( v1,v2 )  ((ins_entry *)(v1))->oc.oc_header.class = _GetAttr( v1 ) | v2
+#define _SetClass( v1,v2 )  ((ins_entry *)(v1))->oc.oc_header.class = v2
 
 #define _Label( var )       (((ins_entry *)(var))->oc.oc_handle.handle)
 #define _LblRef( var )      (((ins_entry *)(var))->oc.oc_handle.ref)

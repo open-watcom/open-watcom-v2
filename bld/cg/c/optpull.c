@@ -51,7 +51,7 @@ bool    FindShort( ins_entry *ins, ins_entry *end )
 {
     for( ; ins != NULL && ins != end; ins = NextIns( ins ) ) {
         if( _Class( ins ) == OC_LABEL ) {
-            if( _Attr( ins ) & OC_ATTR_SHORT )
+            if( _ChkAttr( ins, OC_ATTR_SHORT ) )
                 return( true );
             _ClrStatus( _Label( ins ), SHORTREACH );
         }
@@ -108,6 +108,7 @@ void    CloneCode( label_handle lbl )
     ins_entry   *jmp;
     unsigned    size;
     unsigned    max_size;
+    oc_class    cl;
 
     lbl_ins = lbl->ins;
     if( lbl_ins == NULL )
@@ -117,13 +118,14 @@ void    CloneCode( label_handle lbl )
     for( next = hoist; ; next = NextIns( next ) ) {
         if( next == NULL )
             return;
-        if( _Class( next ) == OC_CODE && CodeHasAbsPatch( &next->oc.oc_entry ) )
+        cl = _Class( next );
+        if( cl == OC_CODE && CodeHasAbsPatch( &next->oc.oc_entry ) )
             return;
-        if( _Class( next ) != OC_LABEL ) {
+        if( cl != OC_LABEL ) {
             size += _ObjLen( next );
             if( size > MAX_CLONE_SIZE )
                 return;
-            if( _TransferClass( _Class( next ) ) ) {
+            if( _TransferClass( cl ) ) {
                 break;
             }
         }
@@ -133,7 +135,8 @@ void    CloneCode( label_handle lbl )
     for( jmp = lbl->refs; jmp != NULL; jmp = _LblRef( jmp ) ) {
         if( next == jmp )
             continue;
-        if( !_TransferClass( _Class( jmp ) ) )
+        cl = _Class( jmp );
+        if( !_TransferClass( cl ) )
             continue;
         max_size = _ObjLen( jmp );
         if( size > max_size && FindShort( jmp, NULL ) )
@@ -251,12 +254,14 @@ void    CheckStraightenCode( ins_entry  *lbl_ins )
 {
     label_handle    lbl;
     ins_entry       *jmp;
+    oc_class        cl;
 
   optbegin
     if( lbl_ins != NULL ) {
         lbl = _Label( lbl_ins );
         for( jmp = lbl->refs; jmp != NULL; jmp = _LblRef( jmp ) ) {
-            if( !_TransferClass( _Class( jmp ) ) )
+            cl = _Class( jmp );
+            if( !_TransferClass( cl ) )
                 continue;
             if( StraightenCode( jmp ) ) {
                 break;
@@ -273,7 +278,7 @@ void    CallRet( ins_entry *instr )
     ins_entry   *lbl;
 
   optbegin
-    if( _Attr( instr ) & OC_ATTR_POP )
+    if( _ChkAttr( instr, OC_ATTR_POP ) )
         optreturnvoid;
     lbl = _Label( instr )->ins;
     if( lbl == NULL )

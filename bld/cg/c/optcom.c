@@ -63,7 +63,7 @@ static  bool    JustMoveLabel( common_info *max, ins_entry *ins )
     if( PrevClass( max->start_del ) != OC_LABEL )
         optreturn( false );
     lbl = PrevIns( max->start_del );
-    if( _Attr( lbl ) & OC_ATTR_SHORT )
+    if( _ChkAttr( lbl, OC_ATTR_SHORT ) )
         optreturn( false );
     cl = PrevClass( lbl );
     if( !_TransferClass( cl ) )
@@ -105,7 +105,7 @@ static  void    TransformJumps( ins_entry *ins, ins_entry *first )
         if( _TransferClass( cl ) )
             break;
         if( cl == OC_LABEL ) {
-            if( _Attr( add ) & OC_ATTR_SHORT )
+            if( _ChkAttr( add, OC_ATTR_SHORT ) )
                 optreturnvoid;
             _ClrStatus( _Label( add ), SHORTREACH );
         }
@@ -173,7 +173,7 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
         break;
     case OC_RET:
         if( _RetPop( old ) != _RetPop( add )
-          || (_Attr( old ) & OC_ATTR_NORET) != (_Attr( add ) & OC_ATTR_NORET) )
+          || _ChkAttr( old, OC_ATTR_NORET ) != _ChkAttr( add, OC_ATTR_NORET ) )
             optreturn( false );
         break;
     default:

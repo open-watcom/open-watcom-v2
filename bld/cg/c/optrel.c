@@ -68,6 +68,7 @@ static  bool    CanReach( label_handle lbl, ins_entry **add_ptr,
     ins_entry   *instr;
     ins_entry   *lbl_ins;
     offset      obj_len;
+    oc_class    cl;
 
     add = NULL;
     jmp = NULL;
@@ -84,8 +85,11 @@ static  bool    CanReach( label_handle lbl, ins_entry **add_ptr,
                 break;
             if( Jmp_to_lbl( instr ) ) {
                 jmp = instr;
-            } else if( _TransferClass( _Class( instr ) ) ) {
-                add = instr;
+            } else {
+                cl = _Class( instr );
+                if( _TransferClass( cl ) ) {
+                    add = instr;
+                }
             }
             if( instr == lbl_ins ) {
                 return( true );
@@ -188,7 +192,7 @@ static  void    SetShort( void )
 
   optbegin
     floating = false;
-    if( _Attr( FirstIns ) & OC_ATTR_FLOAT ) {
+    if( _ChkAttr( FirstIns, OC_ATTR_FLOAT ) ) {
         floating = true;
     }
     size = OptInsSize( _Class( FirstIns ), OC_DEST_SHORT );
@@ -231,7 +235,7 @@ void    SetBranches( void )
         HndlRedirect( NULL );
         SetShort();
     } else {
-        if( _Attr( FirstIns ) & OC_ATTR_SHORT ) {
+        if( _ChkAttr( FirstIns, OC_ATTR_SHORT ) ) {
             /* HAS to be a short branch */
             next = NextIns( FirstIns );
             if( _Class(next) == OC_JMP && CanReach(_Label(next), NULL, NULL) ) {

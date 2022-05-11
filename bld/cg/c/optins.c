@@ -122,7 +122,7 @@ static  bool    UnTangle1( ins_entry *jmp, ins_entry **instr )
     if( _Class( c_jmp ) != OC_JCOND )
         return( false );
 #if( OPTIONS & SEGMENTED )
-    if( _Label( c_jmp ) == _Label( *instr ) && ( _Attr( jmp ) & OC_ATTR_FAR ) == 0 ) {
+    if( _Label( c_jmp ) == _Label( *instr ) && !_ChkAttr( jmp, OC_ATTR_FAR ) ) {
 #else
     if( _Label( c_jmp ) == _Label( *instr ) ) {
 #endif
@@ -161,7 +161,7 @@ static  bool    UnTangle2( ins_entry *jmp, ins_entry **instr )
     if( cl != OC_JMP )
         return( false );
 #if( OPTIONS & SEGMENTED )
-    if( _Attr( jmp ) & OC_ATTR_FAR )
+    if( _ChkAttr( jmp, OC_ATTR_FAR ) )
         return( false );
 #endif
     if( _Label( *instr )->ins == NULL )
@@ -255,7 +255,7 @@ static  ins_entry       *Redirect( ins_entry *l_ins, ins_entry *j_ins )
     }
     if( new_ins == NULL
      || _Class( new_ins ) == OC_DEAD
-     || ( _Attr( l_ins ) & OC_ATTR_SHORT )
+     || _ChkAttr( l_ins, OC_ATTR_SHORT )
      || _TstStatus( _Label( l_ins ), REDIRECTION ) ) {
          optreturn( NextIns( l_ins ) );
     } else {
@@ -301,7 +301,7 @@ void    OptPush( void )
                 RetAftrCall( ins );
             }
             if( !InsDelete ) {
-                if( _Attr( ins ) & OC_ATTR_NORET ) {
+                if( _ChkAttr( ins, OC_ATTR_NORET ) ) {
                     ComTail( NoRetList, ins );
                 } else {
                     ComTail( RetList, ins );
@@ -397,7 +397,7 @@ void    OptPull( void )
     case OC_JCOND:
     case OC_JMP:
 #if( OPTIONS & SHORT_JUMPS )
-        if( (_Attr( FirstIns ) & OC_ATTR_FAR) == 0 ) {
+        if( !_ChkAttr( FirstIns, OC_ATTR_FAR ) ) {
             SetBranches();
         }
 #endif

@@ -168,7 +168,7 @@ ins_entry       *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl )
             _LblLine( newlbl ) = _LblLine( oldlbl );
         }
 #endif
-        _SetAttr( newlbl, _Attr( oldlbl ) & OC_ATTR_SHORT );
+        _SetAttr( newlbl, _GetAttr( oldlbl ) & OC_ATTR_SHORT );
         new = _Label( newlbl );
         old = _Label( oldlbl );
         if( new->redirect == old ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,13 +138,18 @@ static  bool    LDone( any_oc *oc )
 void    InputOC( any_oc *oc )
 /***************************/
 {
+    oc_class        cl;
+
   optbegin
     PSBlip();
     if( !LDone( oc ) ) {
         if( (oc->oc_header.class & GET_BASE) != OC_INFO
-         && (oc->oc_header.class & GET_BASE) != OC_LABEL
-         && _TransferClass( PrevClass( NULL ) ) )
-            optreturnvoid; /*dead code*/
+         && (oc->oc_header.class & GET_BASE) != OC_LABEL ) {
+            cl = PrevClass( NULL );
+            if( _TransferClass( cl ) ) {
+                optreturnvoid; /*dead code*/
+            }
+        }
         while( QCount >= Q_MAX ) {
             PullQueue();
         }
