@@ -49,24 +49,24 @@ typedef enum {
 #define GET_BASE        0x0f            /* get base from class */
 #define BASE_CLASS(x)   ((x)&GET_BASE)
 
-#define INFO_LINE               0x00
-#define INFO_LDONE              0x10
-#define INFO_DEAD_JMP           0x20
-#define INFO_DBG_RTN_BEG        0x30
-#define INFO_DBG_BLK_BEG        0x40
-#define INFO_DBG_PRO_END        0x50
-#define INFO_DBG_EPI_BEG        0x60
-#define INFO_DBG_BLK_END        0x70
-#define INFO_DBG_RTN_END        0x80
-#define INFO_SELECT             0x90
-#define INFO_FUNC_START         0xa0
-#define INFO_FUNC_END           0xb0
+#define OC_INFO_LINE               0x00
+#define OC_INFO_LDONE              0x10
+#define OC_INFO_DEAD_JMP           0x20
+#define OC_INFO_DBG_RTN_BEG        0x30
+#define OC_INFO_DBG_BLK_BEG        0x40
+#define OC_INFO_DBG_PRO_END        0x50
+#define OC_INFO_DBG_EPI_BEG        0x60
+#define OC_INFO_DBG_BLK_END        0x70
+#define OC_INFO_DBG_RTN_END        0x80
+#define OC_INFO_SELECT             0x90
+#define OC_INFO_FUNC_START         0xa0
+#define OC_INFO_FUNC_END           0xb0
 
-#define INFO_MASK               0xf0
+#define OC_INFO_MASK               0xf0
 
-#define OC_LINENUM              (OC_INFO + INFO_LINE)
-#define OC_LDONE                (OC_INFO + INFO_LDONE)
-#define OC_DEAD_JMP             (OC_INFO + INFO_DEAD_JMP)
+#define OC_LINENUM              (OC_INFO + OC_INFO_LINE)
+#define OC_LDONE                (OC_INFO + OC_INFO_LDONE)
+#define OC_DEAD_JMP             (OC_INFO + OC_INFO_DEAD_JMP)
 
 typedef byte                    oc_length;
 typedef byte                    obj_length;

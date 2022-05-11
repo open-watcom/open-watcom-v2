@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -789,14 +789,14 @@ static  void    EmitDbg( oc_class class, pointer ptr )
 void    EmitRtnBeg( void )
 /************************/
 {
-    EmitDbg( INFO_DBG_RTN_BEG, CurrProc->targ.debug );
+    EmitDbg( OC_INFO_DBG_RTN_BEG, CurrProc->targ.debug );
 }
 
 
 void    EmitProEnd( void )
 /************************/
 {
-    EmitDbg( INFO_DBG_PRO_END, CurrProc->targ.debug );
+    EmitDbg( OC_INFO_DBG_PRO_END, CurrProc->targ.debug );
 }
 
 
@@ -804,9 +804,9 @@ void    EmitDbgInfo( instruction *ins )
 /*************************************/
 {
     if( ins->flags.nop_flags & NOP_DBGINFO_START ) {
-        EmitDbg( INFO_DBG_BLK_BEG, ins->operands[0] );
+        EmitDbg( OC_INFO_DBG_BLK_BEG, ins->operands[0] );
     } else {
-        EmitDbg( INFO_DBG_BLK_END, ins->operands[0] );
+        EmitDbg( OC_INFO_DBG_BLK_END, ins->operands[0] );
     }
 }
 
@@ -814,7 +814,7 @@ void    EmitDbgInfo( instruction *ins )
 void    EmitEpiBeg( void )
 /************************/
 {
-    EmitDbg( INFO_DBG_EPI_BEG, CurrProc->targ.debug );
+    EmitDbg( OC_INFO_DBG_EPI_BEG, CurrProc->targ.debug );
 }
 
 
@@ -823,7 +823,7 @@ void    EmitRtnEnd( void )
 {
     segment_id      old_segid;
 
-    EmitDbg( INFO_DBG_RTN_END, CurrProc->targ.debug );
+    EmitDbg( OC_INFO_DBG_RTN_END, CurrProc->targ.debug );
     old_segid = SetOP( AskCodeSeg() );
     EmptyQueue();
     SetOP( old_segid );

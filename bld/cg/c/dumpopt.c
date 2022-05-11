@@ -153,48 +153,48 @@ static  void    CheckAttr( oc_class cl ) {
 static  void    DoInfo( any_oc *oc ) {
 /**************************************/
 
-    switch( oc->oc_header.class & INFO_MASK ) {
-    case INFO_LINE:
+    switch( oc->oc_header.class & OC_INFO_MASK ) {
+    case OC_INFO_LINE:
         DumpLiteral( "LINE " );
         DumpInt( oc->oc_linenum.line );
         if( oc->oc_linenum.label_line ) {
             DumpLiteral( " (Label)" );
         }
         break;
-    case INFO_LDONE:
+    case OC_INFO_LDONE:
         DumpLiteral( "LDONE " );
         LblName( oc->oc_handle.handle, false );
         break;
-    case INFO_DEAD_JMP:
+    case OC_INFO_DEAD_JMP:
         DumpLiteral( "DEAD  " );
         DumpLiteral( "jmp  " );
         DoRef( &(oc->oc_handle) );
         break;
-    case INFO_DBG_RTN_BEG:
+    case OC_INFO_DBG_RTN_BEG:
         DumpLiteral( "RTN BEGIN " );
         DumpPtr( oc->oc_debug.ptr );
         break;
-    case INFO_DBG_BLK_BEG:
+    case OC_INFO_DBG_BLK_BEG:
         DumpLiteral( "BLOCK BEGIN " );
         DumpPtr( oc->oc_debug.ptr );
         break;
-    case INFO_DBG_PRO_END:
+    case OC_INFO_DBG_PRO_END:
         DumpLiteral( "PROLOG END " );
         DumpPtr( oc->oc_debug.ptr );
         break;
-    case INFO_DBG_EPI_BEG:
+    case OC_INFO_DBG_EPI_BEG:
         DumpLiteral( "EPILOG BEGIN " );
         DumpPtr( oc->oc_debug.ptr );
         break;
-    case INFO_DBG_BLK_END:
+    case OC_INFO_DBG_BLK_END:
         DumpLiteral( "BLOCK END " );
         DumpPtr( oc->oc_debug.ptr );
         break;
-    case INFO_DBG_RTN_END:
+    case OC_INFO_DBG_RTN_END:
         DumpLiteral( "RTN END " );
         DumpPtr( oc->oc_debug.ptr );
         break;
-    case INFO_SELECT:
+    case OC_INFO_SELECT:
         DumpLiteral( "SELECT TABLE " );
         if( oc->oc_select.starts ) {
             DumpLiteral( "STARTS" );

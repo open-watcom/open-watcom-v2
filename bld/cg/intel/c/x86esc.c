@@ -228,8 +228,9 @@ static void SendBytes( const byte *ptr, unsigned len )
     }
 }
 
-#define INFO_NOT_DEBUG      INFO_SELECT
-static oc_class SaveDbgOc = INFO_NOT_DEBUG;
+#define OC_INFO_NOT_DEBUG   OC_INFO_SELECT
+
+static oc_class SaveDbgOc = OC_INFO_NOT_DEBUG;
 static pointer  SaveDbgPtr;
 static offset   LastUnique = ADDR_UNKNOWN;
 
@@ -237,17 +238,17 @@ static  void    DumpSavedDebug( void )
 /******************************/
 {
     switch( SaveDbgOc ) {
-    case INFO_DBG_RTN_BEG:
+    case OC_INFO_DBG_RTN_BEG:
         DbgRtnBeg( SaveDbgPtr, AskLocation() );
         break;
-    case INFO_DBG_BLK_BEG:
+    case OC_INFO_DBG_BLK_BEG:
         DbgBlkBeg( SaveDbgPtr, AskLocation() );
         break;
-    case INFO_DBG_EPI_BEG:
+    case OC_INFO_DBG_EPI_BEG:
         DbgEpiBeg( SaveDbgPtr, AskLocation() );
         break;
     }
-    SaveDbgOc = INFO_NOT_DEBUG;
+    SaveDbgOc = OC_INFO_NOT_DEBUG;
 }
 
 void DoAlignment( int len )
@@ -646,34 +647,34 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
         }
         break;
     case OC_INFO:
-        base = oc->oc_header.class & INFO_MASK;
+        base = oc->oc_header.class & OC_INFO_MASK;
         switch( base ) {
-        case INFO_LINE:
+        case OC_INFO_LINE:
             OutLineNum( oc->oc_linenum.line, oc->oc_linenum.label_line );
             break;
-        case INFO_LDONE:
+        case OC_INFO_LDONE:
             TellScrapLabel( oc->oc_handle.handle );
             break;
-        case INFO_DEAD_JMP:
+        case OC_INFO_DEAD_JMP:
             _Zoiks( ZOIKS_036 );
             break;
-        case INFO_DBG_RTN_BEG:
-        case INFO_DBG_BLK_BEG:
-        case INFO_DBG_EPI_BEG:
+        case OC_INFO_DBG_RTN_BEG:
+        case OC_INFO_DBG_BLK_BEG:
+        case OC_INFO_DBG_EPI_BEG:
             SaveDbgOc = base;
             SaveDbgPtr = oc->oc_debug.ptr;
             break;
-        case INFO_DBG_BLK_END:
+        case OC_INFO_DBG_BLK_END:
             DbgBlkEnd( oc->oc_debug.ptr, AskLocation() );
             break;
-        case INFO_DBG_PRO_END:
+        case OC_INFO_DBG_PRO_END:
             DbgProEnd( oc->oc_debug.ptr, AskLocation() );
             break;
-        case INFO_DBG_RTN_END:
+        case OC_INFO_DBG_RTN_END:
             DbgRtnEnd( oc->oc_debug.ptr, AskLocation() );
             OutLineNum( 0, false ); /* Kill pending line number */
             break;
-        case INFO_SELECT:
+        case OC_INFO_SELECT:
             OutSelect( oc->oc_select.starts );
             break;
         }

@@ -459,7 +459,7 @@ void    GenSelEntry( bool starts )
 {
     any_oc      oc;
 
-    oc.oc_select.hdr.class = OC_INFO + INFO_SELECT;
+    oc.oc_select.hdr.class = OC_INFO + OC_INFO_SELECT;
     oc.oc_select.hdr.reclen = sizeof( oc_select );
     oc.oc_select.hdr.objlen = 0;
     oc.oc_select.starts = starts;

@@ -73,21 +73,21 @@ static  void    dumpDebug( void ) {
     if( ( class & GET_BASE ) != OC_INFO )
         return;
     loc = AskLocation();
-    switch( class & INFO_MASK ) {
-    case INFO_LINE:
+    switch( class & OC_INFO_MASK ) {
+    case OC_INFO_LINE:
         OutLineNum( debugOC.oc_linenum.line, debugOC.oc_linenum.label_line );
         break;
-    case INFO_DBG_RTN_BEG:
+    case OC_INFO_DBG_RTN_BEG:
         if( _IsModel( DBG_LOCALS ) ) {
             DbgRtnBeg( debugOC.oc_debug.ptr, loc );
         }
         break;
-    case INFO_DBG_EPI_BEG:
+    case OC_INFO_DBG_EPI_BEG:
         if( _IsModel( DBG_LOCALS ) ) {
             DbgEpiBeg( debugOC.oc_debug.ptr, loc );
         }
         break;
-    case INFO_DBG_BLK_BEG:
+    case OC_INFO_DBG_BLK_BEG:
         DbgBlkBeg( debugOC.oc_debug.ptr, loc );
         break;
     }
@@ -101,32 +101,32 @@ static  void    doInfo( any_oc *oc ) {
     offset              lc;
 
     lc = 0;
-    base = oc->oc_header.class & INFO_MASK;
+    base = oc->oc_header.class & OC_INFO_MASK;
     switch( base ) {
-    case INFO_LDONE:
+    case OC_INFO_LDONE:
         TellScrapLabel( oc->oc_handle.handle );
         break;
-    case INFO_DEAD_JMP:
+    case OC_INFO_DEAD_JMP:
         _Zoiks( ZOIKS_036 );
         break;
-    case INFO_DBG_RTN_BEG:
-    case INFO_DBG_EPI_BEG:
-    case INFO_DBG_BLK_BEG:
-    case INFO_FUNC_START:
-    case INFO_LINE:
+    case OC_INFO_DBG_RTN_BEG:
+    case OC_INFO_DBG_EPI_BEG:
+    case OC_INFO_DBG_BLK_BEG:
+    case OC_INFO_FUNC_START:
+    case OC_INFO_LINE:
         saveDebug( oc );
         break;
-    case INFO_DBG_BLK_END:
+    case OC_INFO_DBG_BLK_END:
         DbgBlkEnd( oc->oc_debug.ptr, AskLocation() );
         break;
-    case INFO_DBG_PRO_END:
+    case OC_INFO_DBG_PRO_END:
         lc = AskLocation();
         if( _IsModel( DBG_LOCALS ) ) {
             DbgProEnd( oc->oc_debug.ptr, lc );
         }
         prologueEnd = lc;
         break;
-    case INFO_DBG_RTN_END:
+    case OC_INFO_DBG_RTN_END:
         if( _IsModel( DBG_NUMBERS ) ) {
             OutFuncEnd( lc );
         }
