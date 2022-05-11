@@ -115,9 +115,7 @@ void    CloneCode( label_handle lbl )
         return;
     size = 0;
     hoist = NextIns( lbl_ins );
-    for( next = hoist; ; next = NextIns( next ) ) {
-        if( next == NULL )
-            return;
+    for( next = hoist; next != NULL; next = NextIns( next ) ) {
         cl = _Class( next );
         if( cl == OC_CODE && CodeHasAbsPatch( &next->oc.oc_entry ) )
             return;
@@ -130,7 +128,8 @@ void    CloneCode( label_handle lbl )
             }
         }
     }
-    if( _Class( next ) == OC_JMP && _Label( next ) == lbl )
+    if( next == NULL
+      || _Class( next ) == OC_JMP && _Label( next ) == lbl )
         return;
     for( jmp = lbl->refs; jmp != NULL; jmp = _LblRef( jmp ) ) {
         if( next == jmp )
