@@ -389,7 +389,7 @@ void    GenReturn( void )
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
     oc.oc_ret.hdr.objlen = 4;
     oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = false;            /* not used */
+    oc.oc_ret.pops = 0;         /* not used */
     InputOC( &oc );
 }
 
@@ -472,7 +472,7 @@ static  void    GenNoReturn( void ) {
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
     oc.oc_ret.hdr.objlen = 0;
     oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = 0;
+    oc.oc_ret.pops = 0;         /* not used */
     InputOC( &oc );
 }
 
