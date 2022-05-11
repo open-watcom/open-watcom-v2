@@ -284,7 +284,7 @@ static  void    ExpandCJ( any_oc *oc )
 
     class = oc->oc_header.class;
     objlen = oc->oc_header.objlen;
-    if( (class & GET_BASE) == OC_JCOND ) {
+    if( OC_BASE_CLASS( class ) == OC_JCOND ) {
         if( objlen == OptInsSize( OC_JCOND, OC_DEST_NEAR ) ) {
             if( _CPULevel( CPU_386 ) ) {
                 _OutJCondNear( oc->oc_jcond.cond );
@@ -298,14 +298,14 @@ static  void    ExpandCJ( any_oc *oc )
             _OutJCond( oc->oc_jcond.cond );
             OutShortDisp( oc->oc_jcond.handle );
         }
-    } else if( (class & GET_BASE) == OC_JMP && objlen == OptInsSize( OC_JMP, OC_DEST_SHORT ) ) {
+    } else if( OC_BASE_CLASS( class ) == OC_JMP && objlen == OptInsSize( OC_JMP, OC_DEST_SHORT ) ) {
         _OutJShort;
         OutShortDisp( oc->oc_handle.handle );
     } else {
         if( class & OC_ATTR_FAR ) {
             f = F_PTR;
             rel = false;
-            if( ( class & GET_BASE ) == OC_CALL ) {
+            if( OC_BASE_CLASS( class ) == OC_CALL ) {
                 if( objlen == OptInsSize( OC_CALL, OC_DEST_CHEAP ) ) {
                     f = F_OFFSET;
                     rel = true;
@@ -320,7 +320,7 @@ static  void    ExpandCJ( any_oc *oc )
         } else {
             f = F_OFFSET;
             rel = true;
-            if( ( class & GET_BASE ) == OC_CALL ) {
+            if( OC_BASE_CLASS( class ) == OC_CALL ) {
                 _OutCNear;
             } else {
                 _OutJNear;
@@ -530,7 +530,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
     offset          lc;
     byte            *ptr;
 
-    base = oc->oc_header.class & GET_BASE;
+    base = OC_BASE_CLASS( oc->oc_header.class );
     if( base == OC_RET && (oc->oc_header.class & OC_ATTR_NORET) )
         return;
     if( base != OC_LABEL ) {
@@ -647,7 +647,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
         }
         break;
     case OC_INFO:
-        base = oc->oc_header.class & OC_INFO_MASK;
+        base = OC_INFO_CLASS( oc->oc_header.class );
         switch( base ) {
         case OC_INFO_LINE:
             OutLineNum( oc->oc_linenum.line, oc->oc_linenum.label_line );

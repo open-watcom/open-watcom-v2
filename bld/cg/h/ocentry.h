@@ -48,8 +48,10 @@ typedef enum {
 
 #define OC_ATTR_IRET    OC_ATTR_SHORT   /* dual purpose bit */
 #define OC_ATTR_NORET   OC_ATTR_FLOAT   /* dual purpose bit */
-#define GET_BASE        ((1 << OC_INFO_SHIFT) - 1) /* get base from class */
-#define BASE_CLASS(x)   ((x)&GET_BASE)
+
+#define OC_BASE_MASK        ((1 << OC_INFO_SHIFT) - 1)
+#define OC_BASE_CLASS(x)    ((x)&OC_BASE_MASK)  /* get base from class */
+#define OC_INFO_CLASS(x)    ((x)&~OC_BASE_MASK) /* get info from class */
 
 #define OC_INFO_LINE            (0 << OC_INFO_SHIFT)
 #define OC_INFO_LDONE           (1 << OC_INFO_SHIFT)
@@ -63,8 +65,6 @@ typedef enum {
 #define OC_INFO_SELECT          (9 << OC_INFO_SHIFT)
 #define OC_INFO_FUNC_START      (10 << OC_INFO_SHIFT)
 #define OC_INFO_FUNC_END        (11 << OC_INFO_SHIFT)
-
-#define OC_INFO_MASK            (~GET_BASE)
 
 #define OC_LINENUM              (OC_INFO + OC_INFO_LINE)
 #define OC_LDONE                (OC_INFO + OC_INFO_LDONE)

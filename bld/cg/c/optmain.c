@@ -143,8 +143,8 @@ void    InputOC( any_oc *oc )
   optbegin
     PSBlip();
     if( !LDone( oc ) ) {
-        if( (oc->oc_header.class & GET_BASE) != OC_INFO
-         && (oc->oc_header.class & GET_BASE) != OC_LABEL ) {
+        if( OC_BASE_CLASS( oc->oc_header.class ) != OC_INFO
+         && OC_BASE_CLASS( oc->oc_header.class ) != OC_LABEL ) {
             cl = PrevClass( NULL );
             if( _TransferClass( cl ) ) {
                 optreturnvoid; /*dead code*/

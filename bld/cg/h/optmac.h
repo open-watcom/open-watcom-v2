@@ -39,8 +39,8 @@
 #define _TransferClass( var ) ( (var) >= OC_JMP )
 //#define _TransferClass( var ) ((var) == OC_JMP || (var) == OC_JMPI || (var) == OC_RET || (var) == OC_IDATA)
 
-#define _Class( var )       (((ins_entry *)(var))->oc.oc_header.class & GET_BASE)
-#define _GetAttr( var )     (((ins_entry *)(var))->oc.oc_header.class &~GET_BASE)
+#define _Class( var )       OC_BASE_CLASS(((ins_entry *)(var))->oc.oc_header.class)
+#define _GetAttr( var )     OC_INFO_CLASS(((ins_entry *)(var))->oc.oc_header.class)
 #define _ChkAttr( v1, v2 )  ((((ins_entry *)(v1))->oc.oc_header.class & v2) != 0)
 #define _SetAttr( v1, v2 )  ((ins_entry *)(v1))->oc.oc_header.class |= v2
 #define _ChgClass( v1,v2 )  ((ins_entry *)(v1))->oc.oc_header.class = _GetAttr( v1 ) | v2

@@ -57,7 +57,7 @@ static  label_handle procLabel;
 static  void    saveDebug( any_oc *oc ) {
 /***************************************/
 
-    if( ( debugOC.oc_header.class & GET_BASE ) != OC_DEAD ) {
+    if( OC_BASE_CLASS( debugOC.oc_header.class ) != OC_DEAD ) {
         _Zoiks( ZOIKS_103 );
     }
     Copy( oc, &debugOC, oc->oc_header.reclen );
@@ -70,10 +70,10 @@ static  void    dumpDebug( void ) {
     oc_class            class;
 
     class = debugOC.oc_header.class;
-    if( ( class & GET_BASE ) != OC_INFO )
+    if( OC_BASE_CLASS( class ) != OC_INFO )
         return;
     loc = AskLocation();
-    switch( class & OC_INFO_MASK ) {
+    switch( OC_INFO_CLASS( class ) ) {
     case OC_INFO_LINE:
         OutLineNum( debugOC.oc_linenum.line, debugOC.oc_linenum.label_line );
         break;
@@ -101,7 +101,7 @@ static  void    doInfo( any_oc *oc ) {
     offset              lc;
 
     lc = 0;
-    base = oc->oc_header.class & OC_INFO_MASK;
+    base = OC_INFO_CLASS( oc->oc_header.class );
     switch( base ) {
     case OC_INFO_LDONE:
         TellScrapLabel( oc->oc_handle.handle );
@@ -153,7 +153,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
 
     /* unused parameters */ (void)next_lbl;
 
-    base = oc->oc_header.class & GET_BASE;
+    base = OC_BASE_CLASS( oc->oc_header.class );
     if( base == OC_RET && (oc->oc_header.class & OC_ATTR_NORET) )
         return;
     if( base != OC_LABEL ) {

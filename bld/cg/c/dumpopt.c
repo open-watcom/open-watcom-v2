@@ -153,7 +153,7 @@ static  void    CheckAttr( oc_class cl ) {
 static  void    DoInfo( any_oc *oc ) {
 /**************************************/
 
-    switch( oc->oc_header.class & OC_INFO_MASK ) {
+    switch( OC_INFO_CLASS( oc->oc_header.class ) ) {
     case OC_INFO_LINE:
         DumpLiteral( "LINE " );
         DumpInt( oc->oc_linenum.line );
