@@ -31,38 +31,40 @@
 ****************************************************************************/
 
 
+#define OC_INFO_SHIFT   4
+
 /* aligned */
 typedef enum {
     // base class 0x00 - 0x0F
-#define pick_class(x) x,
-#include "occlasss.h"
-#undef pick_class
+    #define pick_class(x) x,
+    #include "occlasss.h"
+    #undef pick_class
     // base class attributes
-    OC_ATTR_FAR   = 0x10,
-    OC_ATTR_SHORT = 0x20,
-    OC_ATTR_POP   = 0x40,
-    OC_ATTR_FLOAT = 0x80
+    OC_ATTR_FAR   = (0x01 << OC_INFO_SHIFT),
+    OC_ATTR_SHORT = (0x02 << OC_INFO_SHIFT),
+    OC_ATTR_POP   = (0x04 << OC_INFO_SHIFT),
+    OC_ATTR_FLOAT = (0x08 << OC_INFO_SHIFT)
 } oc_class;
 
 #define OC_ATTR_IRET    OC_ATTR_SHORT   /* dual purpose bit */
 #define OC_ATTR_NORET   OC_ATTR_FLOAT   /* dual purpose bit */
-#define GET_BASE        0x0f            /* get base from class */
+#define GET_BASE        ((1 << OC_INFO_SHIFT) - 1) /* get base from class */
 #define BASE_CLASS(x)   ((x)&GET_BASE)
 
-#define OC_INFO_LINE               0x00
-#define OC_INFO_LDONE              0x10
-#define OC_INFO_DEAD_JMP           0x20
-#define OC_INFO_DBG_RTN_BEG        0x30
-#define OC_INFO_DBG_BLK_BEG        0x40
-#define OC_INFO_DBG_PRO_END        0x50
-#define OC_INFO_DBG_EPI_BEG        0x60
-#define OC_INFO_DBG_BLK_END        0x70
-#define OC_INFO_DBG_RTN_END        0x80
-#define OC_INFO_SELECT             0x90
-#define OC_INFO_FUNC_START         0xa0
-#define OC_INFO_FUNC_END           0xb0
+#define OC_INFO_LINE            (0 << OC_INFO_SHIFT)
+#define OC_INFO_LDONE           (1 << OC_INFO_SHIFT)
+#define OC_INFO_DEAD_JMP        (2 << OC_INFO_SHIFT)
+#define OC_INFO_DBG_RTN_BEG     (3 << OC_INFO_SHIFT)
+#define OC_INFO_DBG_BLK_BEG     (4 << OC_INFO_SHIFT)
+#define OC_INFO_DBG_PRO_END     (5 << OC_INFO_SHIFT)
+#define OC_INFO_DBG_EPI_BEG     (6 << OC_INFO_SHIFT)
+#define OC_INFO_DBG_BLK_END     (7 << OC_INFO_SHIFT)
+#define OC_INFO_DBG_RTN_END     (8 << OC_INFO_SHIFT)
+#define OC_INFO_SELECT          (9 << OC_INFO_SHIFT)
+#define OC_INFO_FUNC_START      (10 << OC_INFO_SHIFT)
+#define OC_INFO_FUNC_END        (11 << OC_INFO_SHIFT)
 
-#define OC_INFO_MASK               0xf0
+#define OC_INFO_MASK            (~GET_BASE)
 
 #define OC_LINENUM              (OC_INFO + OC_INFO_LINE)
 #define OC_LDONE                (OC_INFO + OC_INFO_LDONE)
