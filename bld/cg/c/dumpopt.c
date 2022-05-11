@@ -212,76 +212,78 @@ static  void    DoInfo( any_oc *oc ) {
 void    DumpOc( ins_entry *ins )
 /******************************/
 {
+    oc_class   cl;
+
     DumpPtr( ins );
+    cl = _Class( ins );
     DumpChar( ' ' );
-    DumpString(  CNames[_Class( ins )] );
+    DumpString(  CNames[cl] );
     DumpChar( ' ' );
-    if( _Class( ins ) != OC_INFO ) {
-        CheckAttr( ins->oc.oc_header.class );
-    }
-    switch( _Class( ins ) ) {
-    case OC_INFO:
+    if( cl == OC_INFO ) {
         DoInfo ( &ins->oc );
-        break;
-    case OC_CODE:
-        DoData ( &ins->oc.oc_entry );
-        break;
-    case OC_DATA:
-        DoData ( &ins->oc.oc_entry );
-        break;
-    case OC_IDATA:
-        DoData( &ins->oc.oc_entry );
-        break;
-    case OC_BDATA:
-        DoData ( &ins->oc.oc_entry );
-        break;
-    case OC_LABEL:
-        DoLabel( &ins->oc.oc_handle );
-        break;
-    case OC_LREF:
-        DumpLiteral( "dw   " );
-        DoRef  ( &ins->oc.oc_handle );
-        break;
-    case OC_CALL:
-        DumpLiteral( "call " );
-        DoRef  ( &ins->oc.oc_handle );
-        break;
-    case OC_CALLI:
-        DoData ( &ins->oc.oc_entry );
-        break;
-    case OC_JCOND:
-        DumpString( CondName( &ins->oc.oc_jcond ) );
-        DoRef( &ins->oc.oc_handle );
-        break;
-    case OC_JCONDI:
-        DoData( &ins->oc.oc_entry );
-        break;
-    case OC_JMP:
-        DumpLiteral( "jmp  " );
-        DoRef  ( &ins->oc.oc_handle );
-        break;
-    case OC_JMPI:
-        DoData ( &ins->oc.oc_entry );
-        break;
-    case OC_RET:
-        DumpInt( ins->oc.oc_ret.pops );
-        DumpNL();
-        break;
+    } else {
+        CheckAttr( ins->oc.oc_header.class );
+        switch( cl ) {
+        case OC_CODE:
+            DoData ( &ins->oc.oc_entry );
+            break;
+        case OC_DATA:
+            DoData ( &ins->oc.oc_entry );
+            break;
+        case OC_IDATA:
+            DoData( &ins->oc.oc_entry );
+            break;
+        case OC_BDATA:
+            DoData ( &ins->oc.oc_entry );
+            break;
+        case OC_LABEL:
+            DoLabel( &ins->oc.oc_handle );
+            break;
+        case OC_LREF:
+            DumpLiteral( "dw   " );
+            DoRef  ( &ins->oc.oc_handle );
+            break;
+        case OC_CALL:
+            DumpLiteral( "call " );
+            DoRef  ( &ins->oc.oc_handle );
+            break;
+        case OC_CALLI:
+            DoData ( &ins->oc.oc_entry );
+            break;
+        case OC_JCOND:
+            DumpString( CondName( &ins->oc.oc_jcond ) );
+            DoRef( &ins->oc.oc_handle );
+            break;
+        case OC_JCONDI:
+            DoData( &ins->oc.oc_entry );
+            break;
+        case OC_JMP:
+            DumpLiteral( "jmp  " );
+            DoRef  ( &ins->oc.oc_handle );
+            break;
+        case OC_JMPI:
+            DoData ( &ins->oc.oc_entry );
+            break;
+        case OC_RET:
+            DumpInt( ins->oc.oc_ret.pops );
+            DumpNL();
+            break;
 #if _TARGET & _TARG_RISC
-    case OC_RCODE:
-        DumpPtr( (pointer)(pointer_uint)ins->oc.oc_rins.opcode );
-        if( _HasReloc( &ins->oc.oc_rins ) ) {
-            DumpLiteral( " [ " );
-            LblName( ins->oc.oc_rins.sym, false );
-            DumpChar( ',' );
-            DumpInt( ins->oc.oc_rins.reloc );
-            DumpLiteral( " ] " );
-        }
-        break;
+        case OC_RCODE:
+            DumpPtr( (pointer)(pointer_uint)ins->oc.oc_rins.opcode );
+            if( _HasReloc( &ins->oc.oc_rins ) ) {
+                DumpLiteral( " [ " );
+                LblName( ins->oc.oc_rins.sym, false );
+                DumpChar( ',' );
+                DumpInt( ins->oc.oc_rins.reloc );
+                DumpLiteral( " ] " );
+            }
+            break;
 #endif
-    default:
-        DumpLiteral( "*** unknown class ***" );
-        break;
+        default:
+            DumpLiteral( "*** unknown class ***" );
+            break;
+        }
     }
     DumpNL();
 }
