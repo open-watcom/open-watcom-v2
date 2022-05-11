@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -519,7 +519,7 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     lbl = AskForNewLabel();
     lbl_2 = AskForNewLabel();
 
-    oc.oc_jcond.hdr.class = OC_JCOND | ATTR_SHORT;
+    oc.oc_jcond.hdr.class = OC_JCOND | OC_ATTR_SHORT;
     oc.oc_jcond.hdr.reclen = sizeof( oc_jcond );
     oc.oc_jcond.hdr.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
     oc.oc_jcond.ref = NULL;
@@ -597,7 +597,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     lbl = AskForNewLabel();
     lbl_2 = AskForNewLabel();
 
-    oc.oc_jcond.hdr.class = OC_JCOND | ATTR_SHORT;
+    oc.oc_jcond.hdr.class = OC_JCOND | OC_ATTR_SHORT;
     oc.oc_jcond.hdr.reclen = sizeof( oc_jcond );
     oc.oc_jcond.hdr.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
     oc.oc_jcond.ref = NULL;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -210,9 +210,9 @@ void    DoCall( label_handle lbl, bool imported, bool big, bool pop )
 
     occlass = OC_CALL;
     if( pop )
-        occlass |= ATTR_POP;
+        occlass |= OC_ATTR_POP;
     if( big )
-        occlass |= ATTR_FAR;
+        occlass |= OC_ATTR_FAR;
     if( !big ) {
         len = OptInsSize( OC_CALL, OC_DEST_NEAR );
     } else if( AskIfRTLabel( lbl )
@@ -331,7 +331,7 @@ static  void    GenNoReturn( void ) {
 
     any_oc      oc;
 
-    oc.oc_ret.hdr.class = OC_RET | ATTR_NORET;
+    oc.oc_ret.hdr.class = OC_RET | OC_ATTR_NORET;
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
     oc.oc_ret.hdr.objlen = 0;
     oc.oc_ret.ref = NULL;
@@ -370,8 +370,8 @@ void    GenCall( instruction *ins ) {
     } else if( ( cclass & SUICIDAL ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
-        if( (cclass & FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
-            CodeHandle( OC_JMP | ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
+        if( cclass & FAR_CALL ) {
+            CodeHandle( OC_JMP | OC_ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
         } else {
             CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), lbl );
         }
@@ -403,7 +403,7 @@ void    GenICall( instruction *ins ) {
     }
     entry = 0;
     if( ins->flags.call_flags & CALL_POPS_PARMS ) {
-        entry |= ATTR_POP;
+        entry |= OC_ATTR_POP;
     }
     if( ( ins->flags.call_flags & CALL_ABORTS ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         entry |= OC_JMPI;
@@ -412,7 +412,7 @@ void    GenICall( instruction *ins ) {
     }
     if( ins->operands[CALL_OP_ADDR]->n.type_class == PT
      || ins->operands[CALL_OP_ADDR]->n.type_class == CP ) {
-        entry |= ATTR_FAR;
+        entry |= OC_ATTR_FAR;
         opcode = M_CJILONG;
     } else {
         opcode = M_CJINEAR;
@@ -434,7 +434,7 @@ void    GenRCall( instruction *ins )
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    ReFormat( ( (ins->flags.call_flags & CALL_POPS_PARMS) != 0 ) ? OC_CALLI | ATTR_POP : OC_CALLI );
+    ReFormat( ( (ins->flags.call_flags & CALL_POPS_PARMS) != 0 ) ? OC_CALLI | OC_ATTR_POP : OC_CALLI );
     LayOpword( M_CJINEAR );
     op = ins->operands[CALL_OP_ADDR];
     LayRegRM( op->r.reg );
@@ -539,13 +539,13 @@ void    GenReturn( int pop, bool is_long, bool iret ) {
 
     oc.oc_ret.hdr.class = OC_RET;
     if( pop != 0 ) {
-        oc.oc_ret.hdr.class |= ATTR_POP;
+        oc.oc_ret.hdr.class |= OC_ATTR_POP;
     }
     if( is_long ) {
-        oc.oc_ret.hdr.class |= ATTR_FAR;
+        oc.oc_ret.hdr.class |= OC_ATTR_FAR;
     }
     if( iret ) {
-        oc.oc_ret.hdr.class |= ATTR_IRET;
+        oc.oc_ret.hdr.class |= OC_ATTR_IRET;
     }
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
     oc.oc_ret.hdr.objlen = 1;
@@ -566,7 +566,7 @@ void    GenMJmp( instruction *ins ) {
     name            *base;
 
     if( ins->head.opcode != OP_SELECT && _IsTargetModel( BIG_CODE ) ) {
-        ReFormat( OC_JMPI | ATTR_FAR );
+        ReFormat( OC_JMPI | OC_ATTR_FAR );
         LayOpword( M_CJILONG );
     } else {
         ReFormat( OC_JMPI );

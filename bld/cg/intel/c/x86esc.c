@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -301,14 +301,14 @@ static  void    ExpandCJ( any_oc *oc )
         _OutJShort;
         OutShortDisp( oc->oc_handle.handle );
     } else {
-        if( class & ATTR_FAR ) {
+        if( class & OC_ATTR_FAR ) {
             f = F_PTR;
             rel = false;
             if( ( class & GET_BASE ) == OC_CALL ) {
                 if( objlen == OptInsSize( OC_CALL, OC_DEST_CHEAP ) ) {
                     f = F_OFFSET;
                     rel = true;
-                    class &= ~ ATTR_FAR;
+                    class &= ~ OC_ATTR_FAR;
                     _OutCCyp;
                 } else {
                     _OutCFar;
@@ -354,7 +354,7 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
     sym = AskForLblSym( lbl );
     if( AskIfRTLabel( lbl ) ) {
         OutRTImport( SYM2RTIDX( sym ), f );
-        if( class & ATTR_FAR ) {
+        if( class & OC_ATTR_FAR ) {
             _OutFarD( 0, 0 );
         } else {
             _OutFarOff( 0 );
@@ -364,14 +364,14 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
         _OutFarOff( 0 );
     } else if( sym != NULL && UseImportForm( FEAttr( sym ) ) ) { /* 90-05-22 */
         OutImport( sym, f, rel );
-        if( class & ATTR_FAR ) {
+        if( class & OC_ATTR_FAR ) {
             _OutFarD( 0, 0 );
         } else {
             _OutFarOff( 0 );
         }
     } else {                /* patch, to be done later*/
         addr = AskAddress( lbl );
-        if( ( class & ATTR_FAR ) == 0 ) {
+        if( ( class & OC_ATTR_FAR ) == 0 ) {
             if( addr == ADDR_UNKNOWN ) {
                 OutPatch( lbl, _NEAR_PATCH );
                 addr = 0;
@@ -530,7 +530,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
     byte            *ptr;
 
     base = oc->oc_header.class & GET_BASE;
-    if( base == OC_RET && (oc->oc_header.class & ATTR_NORET) )
+    if( base == OC_RET && (oc->oc_header.class & OC_ATTR_NORET) )
         return;
     if( base != OC_LABEL ) {
         DumpSavedDebug();
@@ -632,13 +632,13 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
         _OutOpndSize;
         len = M_RET;
         base = oc->oc_header.class;
-        if( base & ATTR_FAR ) {
+        if( base & OC_ATTR_FAR ) {
             len |= B_RET_LONG;
         }
-        if( base & ATTR_IRET ) {
+        if( base & OC_ATTR_IRET ) {
             len |= B_RET_IRET;
         }
-        if( base & ATTR_POP ) {
+        if( base & OC_ATTR_POP ) {
             OutDataByte( len );
             OutDataShort( oc->oc_ret.pops );
         } else {

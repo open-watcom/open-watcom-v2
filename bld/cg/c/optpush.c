@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,13 +60,13 @@ void    RetAftrCall( ins_entry *ret_instr )
         optreturnvoid;
     call_instr = PrevIns( call_instr );
     call_attr = _Attr( call_instr );
-    if( (call_attr & ATTR_POP) != 0 )
+    if( (call_attr & OC_ATTR_POP) != 0 )
         optreturnvoid;
     ret_attr = _Attr( ret_instr );
-    if( (ret_attr & ATTR_POP) != 0 )
+    if( (ret_attr & OC_ATTR_POP) != 0 )
         optreturnvoid;
 #if( OPTIONS & SEGMENTED )
-    if( ( (call_attr & ATTR_FAR) ^ (ret_attr & ATTR_FAR) ) != 0 )
+    if( ( (call_attr & OC_ATTR_FAR) ^ (ret_attr & OC_ATTR_FAR) ) != 0 )
         optreturnvoid;
 #endif
     InsDelete = true;
@@ -73,7 +74,7 @@ void    RetAftrCall( ins_entry *ret_instr )
     /* NB! this code assumes that we aren't making the instruction longer */
     if( _ObjLen( call_instr ) == OptInsSize( OC_CALL, OC_DEST_CHEAP ) ) {
         _ObjLen( call_instr ) = OptInsSize( OC_JMP, OC_DEST_NEAR );
-        _ClassInfo( call_instr ) &= ~ATTR_FAR;
+        _ClassInfo( call_instr ) &= ~OC_ATTR_FAR;
     } else if( _ObjLen( call_instr ) == OptInsSize( OC_CALL, OC_DEST_FAR ) ) {
         _ObjLen( call_instr ) = OptInsSize( OC_JMP, OC_DEST_FAR );
     } else {
@@ -116,7 +117,7 @@ bool    RetAftrLbl( ins_entry *ret )
                 JmpToRet( ref, ret );
                 change = true;
             } else if( _Class( ref ) == OC_CALL ) {
-                if( (_Attr( ret ) & ATTR_POP) == 0 ) {
+                if( (_Attr( ret ) & OC_ATTR_POP) == 0 ) {
                     _Savings( OPT_CALLTORET, _ObjLen( ref ) );
                     DelInstr( ref );
                     change = true;

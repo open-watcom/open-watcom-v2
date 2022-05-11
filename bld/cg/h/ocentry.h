@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,15 +38,15 @@ typedef enum {
 #include "occlasss.h"
 #undef pick_class
     // base class attributes
-    ATTR_FAR   = 0x10,
-    ATTR_SHORT = 0x20,
-    ATTR_POP   = 0x40,
-    ATTR_FLOAT = 0x80
+    OC_ATTR_FAR   = 0x10,
+    OC_ATTR_SHORT = 0x20,
+    OC_ATTR_POP   = 0x40,
+    OC_ATTR_FLOAT = 0x80
 } oc_class;
 
-#define ATTR_IRET       ATTR_SHORT      /*  dual purpose bit */
-#define ATTR_NORET      ATTR_FLOAT      /*  dual purpose bit */
-#define GET_BASE        0x0f            /*  get base from class */
+#define OC_ATTR_IRET    OC_ATTR_SHORT   /* dual purpose bit */
+#define OC_ATTR_NORET   OC_ATTR_FLOAT   /* dual purpose bit */
+#define GET_BASE        0x0f            /* get base from class */
 #define BASE_CLASS(x)   ((x)&GET_BASE)
 
 #define INFO_LINE               0x00

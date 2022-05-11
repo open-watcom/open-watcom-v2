@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,7 +122,7 @@ static  bool    UnTangle1( ins_entry *jmp, ins_entry **instr )
     if( _Class( c_jmp ) != OC_JCOND )
         return( false );
 #if( OPTIONS & SEGMENTED )
-    if( _Label( c_jmp ) == _Label( *instr ) && ( _Attr( jmp ) & ATTR_FAR ) == 0 ) {
+    if( _Label( c_jmp ) == _Label( *instr ) && ( _Attr( jmp ) & OC_ATTR_FAR ) == 0 ) {
 #else
     if( _Label( c_jmp ) == _Label( *instr ) ) {
 #endif
@@ -161,7 +161,7 @@ static  bool    UnTangle2( ins_entry *jmp, ins_entry **instr )
     if( cl != OC_JMP )
         return( false );
 #if( OPTIONS & SEGMENTED )
-    if( _Attr( jmp ) & ATTR_FAR )
+    if( _Attr( jmp ) & OC_ATTR_FAR )
         return( false );
 #endif
     if( _Label( *instr )->ins == NULL )
@@ -255,7 +255,7 @@ static  ins_entry       *Redirect( ins_entry *l_ins, ins_entry *j_ins )
     }
     if( new_ins == NULL
      || _Class( new_ins ) == OC_DEAD
-     || ( _Attr( l_ins ) & ATTR_SHORT )
+     || ( _Attr( l_ins ) & OC_ATTR_SHORT )
      || _TstStatus( _Label( l_ins ), REDIRECTION ) ) {
          optreturn( NextIns( l_ins ) );
     } else {
@@ -301,7 +301,7 @@ void    OptPush( void )
                 RetAftrCall( ins );
             }
             if( !InsDelete ) {
-                if( _Attr( ins ) & ATTR_NORET ) {
+                if( _Attr( ins ) & OC_ATTR_NORET ) {
                     ComTail( NoRetList, ins );
                 } else {
                     ComTail( RetList, ins );
@@ -397,7 +397,7 @@ void    OptPull( void )
     case OC_JCOND:
     case OC_JMP:
 #if( OPTIONS & SHORT_JUMPS )
-        if( (_Attr( FirstIns ) & ATTR_FAR) == 0 ) {
+        if( (_Attr( FirstIns ) & OC_ATTR_FAR) == 0 ) {
             SetBranches();
         }
 #endif

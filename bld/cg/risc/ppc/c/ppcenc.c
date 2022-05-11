@@ -331,7 +331,7 @@ static  void    GenNoReturn( void ) {
 
     any_oc      oc;
 
-    oc.oc_ret.hdr.class = OC_RET | ATTR_NORET;
+    oc.oc_ret.hdr.class = OC_RET | OC_ATTR_NORET;
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
     oc.oc_ret.hdr.objlen = 0;
     oc.oc_ret.ref = NULL;

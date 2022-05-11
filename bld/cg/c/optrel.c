@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -188,7 +188,7 @@ static  void    SetShort( void )
 
   optbegin
     floating = false;
-    if( _Attr( FirstIns ) & ATTR_FLOAT ) {
+    if( _Attr( FirstIns ) & OC_ATTR_FLOAT ) {
         floating = true;
     }
     size = OptInsSize( _Class( FirstIns ), OC_DEST_SHORT );
@@ -197,19 +197,19 @@ static  void    SetShort( void )
         _ObjLen( FirstIns ) = size;
         _SetClass( FirstIns, OC_JMP );
         if( floating ) {
-            _SetAttr( FirstIns, ATTR_FLOAT );
+            _SetAttr( FirstIns, OC_ATTR_FLOAT );
         }
     } else {
         _Savings( OPT_JCONDS, _ObjLen( FirstIns ) - size );
         _ObjLen( FirstIns ) = size;
         _SetClass( FirstIns, OC_JCOND );
         if( floating ) {
-            _SetAttr( FirstIns, ATTR_FLOAT );
+            _SetAttr( FirstIns, OC_ATTR_FLOAT );
         }
     }
     l_ins = _Label( FirstIns )->ins;
     if( l_ins != NULL ) {
-        _SetAttr( l_ins, ATTR_SHORT );
+        _SetAttr( l_ins, OC_ATTR_SHORT );
     }
   optend
 }
@@ -231,7 +231,7 @@ void    SetBranches( void )
         HndlRedirect( NULL );
         SetShort();
     } else {
-        if( _Attr( FirstIns ) & ATTR_SHORT ) {
+        if( _Attr( FirstIns ) & OC_ATTR_SHORT ) {
             /* HAS to be a short branch */
             next = NextIns( FirstIns );
             if( _Class(next) == OC_JMP && CanReach(_Label(next), NULL, NULL) ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -169,12 +169,12 @@ static  void    DoCondJump( instruction *cond )
         oc.oc_jcond.hdr.class = OC_JCOND;
 #if _TARGET & _TARG_INTEL
         if( !_CPULevel( CPU_386 ) ) {
-            oc.oc_jcond.hdr.class |= ATTR_SHORT;
+            oc.oc_jcond.hdr.class |= OC_ATTR_SHORT;
         }
 #endif
 #if _TARGET & _TARG_RISC
         if( _IsFloating( cond->type_class ) ) {
-            oc.oc_jcond.hdr.class |= ATTR_FLOAT;
+            oc.oc_jcond.hdr.class |= OC_ATTR_FLOAT;
         }
 #endif
         oc.oc_jcond.hdr.reclen = sizeof( oc_jcond );

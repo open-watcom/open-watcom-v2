@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ bool    FindShort( ins_entry *ins, ins_entry *end )
 {
     for( ; ins != NULL && ins != end; ins = NextIns( ins ) ) {
         if( _Class( ins ) == OC_LABEL ) {
-            if( _Attr( ins ) & ATTR_SHORT )
+            if( _Attr( ins ) & OC_ATTR_SHORT )
                 return( true );
             _ClrStatus( _Label( ins ), SHORTREACH );
         }
@@ -273,7 +273,7 @@ void    CallRet( ins_entry *instr )
     ins_entry   *lbl;
 
   optbegin
-    if( _Attr( instr ) & ATTR_POP )
+    if( _Attr( instr ) & OC_ATTR_POP )
         optreturnvoid;
     lbl = _Label( instr )->ins;
     if( lbl == NULL )

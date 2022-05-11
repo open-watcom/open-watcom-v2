@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +82,7 @@ void EncodeCond( oc_jcond *oc ) {
     int         floating;
 
     floating = 0;
-    if( oc->hdr.class & ATTR_FLOAT ) {
+    if( oc->hdr.class & OC_ATTR_FLOAT ) {
         floating = 1;
     }
     opcode = BranchOpcodes[oc->cond - FIRST_COMPARISON][floating];

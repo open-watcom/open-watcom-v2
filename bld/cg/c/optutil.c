@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,7 +149,7 @@ void    AddInstr( ins_entry *instr, ins_entry *insert )
         AddLblRef( instr );
         break;
     case OC_RET:
-        if( _Attr( instr ) & ATTR_NORET ) {
+        if( _Attr( instr ) & OC_ATTR_NORET ) {
             _LblRef( instr ) = NoRetList;
             NoRetList = instr;
         } else {
@@ -222,7 +222,7 @@ static  ins_entry *DelInstr_Helper( ins_entry *old )
         DelLblRef( old );
         break;
     case OC_RET:
-        if( _Attr( old ) & ATTR_NORET ) {
+        if( _Attr( old ) & OC_ATTR_NORET ) {
             DelRef( &NoRetList, old );
         } else {
             DelRef( &RetList, old );

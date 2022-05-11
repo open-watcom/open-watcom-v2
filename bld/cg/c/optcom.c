@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ static  bool    JustMoveLabel( common_info *max, ins_entry *ins )
     if( PrevClass( max->start_del ) != OC_LABEL )
         optreturn( false );
     lbl = PrevIns( max->start_del );
-    if( _Attr( lbl ) & ATTR_SHORT )
+    if( _Attr( lbl ) & OC_ATTR_SHORT )
         optreturn( false );
     cl = PrevClass( lbl );
     if( !_TransferClass( cl ) )
@@ -105,7 +105,7 @@ static  void    TransformJumps( ins_entry *ins, ins_entry *first )
         if( _TransferClass( cl ) )
             break;
         if( cl == OC_LABEL ) {
-            if( _Attr( add ) & ATTR_SHORT )
+            if( _Attr( add ) & OC_ATTR_SHORT )
                 optreturnvoid;
             _ClrStatus( _Label( add ), SHORTREACH );
         }
@@ -173,7 +173,7 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
         break;
     case OC_RET:
         if( _RetPop( old ) != _RetPop( add )
-          || (_Attr( old ) & ATTR_NORET) != (_Attr( add ) & ATTR_NORET) )
+          || (_Attr( old ) & OC_ATTR_NORET) != (_Attr( add ) & OC_ATTR_NORET) )
             optreturn( false );
         break;
     default:

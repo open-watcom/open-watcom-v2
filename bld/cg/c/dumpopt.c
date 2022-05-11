@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,16 +135,16 @@ static  bool    LblName( label_handle lbl, bool no_prefix )
 static  void    CheckAttr( oc_class cl ) {
 /****************************************/
 
-    if( cl & ATTR_FAR ) {
+    if( cl & OC_ATTR_FAR ) {
         DumpLiteral( "far " );
     }
-    if( cl & ATTR_SHORT ) {
+    if( cl & OC_ATTR_SHORT ) {
         DumpLiteral( "short " );
     }
-    if( cl & ATTR_POP ) {
+    if( cl & OC_ATTR_POP ) {
         DumpLiteral( "popping " );
     }
-    if( cl & ATTR_FLOAT ) {
+    if( cl & OC_ATTR_FLOAT ) {
         DumpLiteral( "floating " );
     }
 }
