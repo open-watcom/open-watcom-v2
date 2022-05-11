@@ -95,12 +95,7 @@ static  void    TransformJumps( ins_entry *ins, ins_entry *first )
     if( _Class( ins ) == OC_RET )
         optreturnvoid;
     lbl = _Label( ins )->ins;
-    if( lbl == NULL )
-        optreturnvoid;
-    add = lbl;
-    for( ;; ) {
-        if( add == NULL )
-            optreturnvoid;
+    for( add = lbl; add != NULL; add = NextIns( add ) ) {
         cl = _Class( add );
         if( _TransferClass( cl ) )
             break;
@@ -109,9 +104,8 @@ static  void    TransformJumps( ins_entry *ins, ins_entry *first )
                 optreturnvoid;
             _ClrStatus( _Label( add ), SHORTREACH );
         }
-        add = NextIns( add );
     }
-    if( add == first || add == ins )
+    if( add == NULL || add == first || add == ins )
         optreturnvoid;
     if( FindShort( first, lbl ) )
         optreturnvoid;
