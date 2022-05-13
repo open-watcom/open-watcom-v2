@@ -217,7 +217,7 @@ void    DumpOc( ins_entry *ins )
     DumpPtr( ins );
     cl = _Class( ins );
     DumpChar( ' ' );
-    DumpString(  CNames[cl] );
+    DumpString( CNames[cl] );
     DumpChar( ' ' );
     if( cl == OC_INFO ) {
         DoInfo ( &ins->oc );
@@ -266,6 +266,9 @@ void    DumpOc( ins_entry *ins )
             break;
         case OC_RET:
             DumpInt( ins->oc.oc_ret.pops );
+            DumpNL();
+            break;
+        case OC_NORET:
             DumpNL();
             break;
 #if _TARGET & _TARG_RISC

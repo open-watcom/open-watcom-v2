@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,5 +43,6 @@ extern void     GenCodePtr( pointer label );
 extern void     GenMJmp( instruction *ins );
 extern void     GenRJmp( instruction *ins );
 extern void     EyeCatchBytes( const void *src, byte_seq_len len );
-extern void     GenReturn( int pop, bool is_long, bool iret );
+extern void     GenReturn( int pop, bool is_long );
+extern void     GenIRET( void );
 extern void     CodeBytes( const void *src, byte_seq_len len );

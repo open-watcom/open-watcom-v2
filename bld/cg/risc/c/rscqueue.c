@@ -154,7 +154,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
     /* unused parameters */ (void)next_lbl;
 
     base = OC_BASE_CLASS( oc->oc_header.class );
-    if( base == OC_RET && (oc->oc_header.class & OC_ATTR_NORET) )
+    if( base == OC_NORET )
         return;
     if( base != OC_LABEL ) {
         dumpDebug();

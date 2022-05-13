@@ -149,13 +149,12 @@ void    AddInstr( ins_entry *instr, ins_entry *insert )
         AddLblRef( instr );
         break;
     case OC_RET:
-        if( _ChkAttr( instr, OC_ATTR_NORET ) ) {
-            _LblRef( instr ) = NoRetList;
-            NoRetList = instr;
-        } else {
-            _LblRef( instr ) = RetList;
-            RetList = instr;
-        }
+        _LblRef( instr ) = RetList;
+        RetList = instr;
+        break;
+    case OC_NORET:
+        _LblRef( instr ) = NoRetList;
+        NoRetList = instr;
         break;
     }
   optend
@@ -222,11 +221,10 @@ static  ins_entry *DelInstr_Helper( ins_entry *old )
         DelLblRef( old );
         break;
     case OC_RET:
-        if( _ChkAttr( old, OC_ATTR_NORET ) ) {
-            DelRef( &NoRetList, old );
-        } else {
-            DelRef( &RetList, old );
-        }
+        DelRef( &RetList, old );
+        break;
+    case OC_NORET:
+        DelRef( &NoRetList, old );
         break;
     }
     _SetClass( old, OC_DEAD );

@@ -51,6 +51,7 @@
 #include "x86esc.h"
 #include "encode.h"
 #include "pccode.h"
+#include "pcencode.h"
 #include "x86enc.h"
 #include "x86nopli.h"
 #include "feprotos.h"
@@ -531,7 +532,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
     byte            *ptr;
 
     base = OC_BASE_CLASS( oc->oc_header.class );
-    if( base == OC_RET && (oc->oc_header.class & OC_ATTR_NORET) )
+    if( base == OC_NORET )
         return;
     if( base != OC_LABEL ) {
         DumpSavedDebug();
@@ -631,19 +632,20 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
         break;
     case OC_RET:
         _OutOpndSize;
-        len = M_RET;
         base = oc->oc_header.class;
-        if( base & OC_ATTR_FAR ) {
-            len |= B_RET_LONG;
-        }
+        len = M_RET;
         if( base & OC_ATTR_IRET ) {
             len |= B_RET_IRET;
         }
+        if( base & OC_ATTR_FAR ) {
+            len |= B_RET_LONG;
+        }
+        if( (base & OC_ATTR_POP) == 0 ) {
+            len |= B_RET_NOPOP;
+        }
+        OutDataByte( len );
         if( base & OC_ATTR_POP ) {
-            OutDataByte( len );
             OutDataShort( oc->oc_ret.pops );
-        } else {
-            OutDataByte( len | B_RET_NOPOP );
         }
         break;
     case OC_INFO:

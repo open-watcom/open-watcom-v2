@@ -92,7 +92,8 @@ static  void    TransformJumps( ins_entry *ins, ins_entry *first )
     oc_class            cl;
 
   optbegin
-    if( _Class( ins ) == OC_RET )
+    cl = _Class( ins );
+    if( cl == OC_RET || cl == OC_NORET )
         optreturnvoid;
     lbl = _Label( ins )->ins;
     for( add = lbl; add != NULL; add = NextIns( add ) ) {
@@ -166,9 +167,10 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
 #endif
         break;
     case OC_RET:
-        if( _RetPop( old ) != _RetPop( add )
-          || _ChkAttr( old, OC_ATTR_NORET ) != _ChkAttr( add, OC_ATTR_NORET ) )
+        if( _RetPop( old ) != _RetPop( add ) )
             optreturn( false );
+        break;
+    case OC_NORET:
         break;
     default:
         if( !Equal( &add->oc.oc_entry.data, &old->oc.oc_entry.data, _InsLen( add ) - offsetof( oc_entry, data ) ) )

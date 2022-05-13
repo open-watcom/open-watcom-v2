@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#define OC_INFO_SHIFT   4
+#define OC_INFO_SHIFT   5
 
 /* aligned */
 typedef enum {
@@ -45,9 +45,6 @@ typedef enum {
     OC_ATTR_POP   = (0x04 << OC_INFO_SHIFT),
     OC_ATTR_FLOAT = (0x08 << OC_INFO_SHIFT)
 } oc_class;
-
-#define OC_ATTR_IRET    OC_ATTR_SHORT   /* dual purpose bit */
-#define OC_ATTR_NORET   OC_ATTR_FLOAT   /* dual purpose bit */
 
 #define OC_BASE_MASK        ((1 << OC_INFO_SHIFT) - 1)
 #define OC_BASE_CLASS(x)    ((x)&OC_BASE_MASK)  /* get base from class */

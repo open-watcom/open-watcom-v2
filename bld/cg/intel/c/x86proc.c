@@ -795,11 +795,11 @@ static  void    DoEpilog( void )
 #endif
 
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
-        GenReturn( 0, false, true );
+        GenIRET();
     } else if( CurrProc->state.attr & ROUTINE_REMOVES_PARMS ) {
-        GenReturn( CurrProc->parms.size, is_long, false );
+        GenReturn( CurrProc->parms.size, is_long );
     } else {
-        GenReturn( 0, is_long, false );
+        GenReturn( 0, is_long );
     }
 }
 

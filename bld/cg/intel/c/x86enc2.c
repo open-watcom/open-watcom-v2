@@ -331,11 +331,9 @@ static  void    GenNoReturn( void ) {
 
     any_oc      oc;
 
-    oc.oc_ret.hdr.class = OC_RET | OC_ATTR_NORET;
-    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
-    oc.oc_ret.hdr.objlen = 0;
-    oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = 0;
+    oc.oc_entry.hdr.class = OC_NORET;
+    oc.oc_entry.hdr.reclen = offsetof( oc_entry, data );
+    oc.oc_entry.hdr.objlen = 0;
     InputOC( &oc );
 }
 
@@ -527,33 +525,43 @@ void    GenLabelReturn( void ) {
     generate a return from CALL_LABEL instruction (near return)
 */
 
-    GenReturn( 0, false, false );
+    GenReturn( 0, false );
 }
 
-void    GenReturn( int pop, bool is_long, bool iret ) {
-/**************************************************************
+void    GenReturn( int pop, bool is_long )
+/*****************************************
     Generate a return instruction
 */
-
+{
     any_oc      oc;
 
     oc.oc_ret.hdr.class = OC_RET;
+    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
+    oc.oc_ret.hdr.objlen = 1;
     if( pop != 0 ) {
         oc.oc_ret.hdr.class |= OC_ATTR_POP;
+        oc.oc_ret.hdr.objlen += 2;
     }
     if( is_long ) {
         oc.oc_ret.hdr.class |= OC_ATTR_FAR;
     }
-    if( iret ) {
-        oc.oc_ret.hdr.class |= OC_ATTR_IRET;
-    }
-    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
-    oc.oc_ret.hdr.objlen = 1;
-    if( pop != 0 ) {
-        oc.oc_ret.hdr.objlen += 2;
-    }
     oc.oc_ret.ref = NULL;
     oc.oc_ret.pops = pop;
+    InputOC( &oc );
+}
+
+void    GenIRET( void )
+/*******************************
+    Generate a IRET instruction
+*/
+{
+    any_oc      oc;
+
+    oc.oc_ret.hdr.class = OC_RET | OC_ATTR_IRET;
+    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
+    oc.oc_ret.hdr.objlen = 1;
+    oc.oc_ret.ref = NULL;
+    oc.oc_ret.pops = 0;
     InputOC( &oc );
 }
 
@@ -613,7 +621,7 @@ static  void    JumpReg( instruction *ins, name *reg_name ) {
         LayOpbyte( M_PUSH );
         LayRegAC( Low32Reg( regs ) );
         _Emit;
-        GenReturn( 0, true, false );
+        GenReturn( 0, true );
     } else {
         ReFormat( OC_JMPI );
         LayOpword( M_CJINEAR );

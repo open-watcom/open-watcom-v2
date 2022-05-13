@@ -36,8 +36,8 @@
 #define optreturn( x )  { --InOptimizer; return( x ); }
 #define optreturnvoid   { --InOptimizer; return; }
 
-#define _TransferClass( var ) ( (var) >= OC_JMP )
-//#define _TransferClass( var ) ((var) == OC_JMP || (var) == OC_JMPI || (var) == OC_RET || (var) == OC_IDATA)
+#define _TransferClass( var ) ((var) >= OC_JMP)
+//#define _TransferClass( var ) ((var) == OC_JMP || (var) == OC_JMPI || (var) == OC_RET || (var) == OC_NORET || (var) == OC_IDATA)
 
 #define _Class( var )       OC_BASE_CLASS(((ins_entry *)(var))->oc.oc_header.class)
 #define _GetAttr( var )     OC_INFO_CLASS(((ins_entry *)(var))->oc.oc_header.class)

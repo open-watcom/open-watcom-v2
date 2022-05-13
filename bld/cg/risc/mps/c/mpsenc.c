@@ -505,11 +505,9 @@ static  void    GenNoReturn( void ) {
 
     any_oc      oc;
 
-    oc.oc_ret.hdr.class = OC_RET | OC_ATTR_NORET;
-    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
-    oc.oc_ret.hdr.objlen = 0;
-    oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = 0;         /* not used */
+    oc.oc_entry.hdr.class = OC_NORET;
+    oc.oc_entry.hdr.reclen = offsetof( oc_entry, data );
+    oc.oc_entry.hdr.objlen = 0;
     InputOC( &oc );
 }
 

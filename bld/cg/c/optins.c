@@ -301,11 +301,12 @@ void    OptPush( void )
                 RetAftrCall( ins );
             }
             if( !InsDelete ) {
-                if( _ChkAttr( ins, OC_ATTR_NORET ) ) {
-                    ComTail( NoRetList, ins );
-                } else {
-                    ComTail( RetList, ins );
-                }
+                ComTail( RetList, ins );
+            }
+            break;
+        case OC_NORET:
+            if( !InsDelete ) {
+                ComTail( NoRetList, ins );
             }
             break;
         }
@@ -374,6 +375,7 @@ void    OptPull( void )
             Untangle( NextIns( FirstIns ) );
             break;
         case OC_RET:
+        case OC_NORET:
             if( _IsntModel( NO_OPTIMIZATION ) ) {
                 IsolatedCode( FirstIns );
                 if( !InsDelete ) {
