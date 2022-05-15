@@ -230,6 +230,58 @@ static omf_idx GetNameIdx( const char *name, const char *suff, bool alloc )
     return( NameIndex );
 }
 
+static  byte    DoSum( const byte *buff, uint len )
+/*************************************************/
+{
+    byte        sum;
+
+    sum = 0;
+    while( len > 0 ) {
+        sum += *buff++;
+        --len;
+    }
+    return( sum );
+}
+
+static void PutObjOMFRec( byte class, const void *buff, size_t len )
+/******************************************************************/
+{
+    unsigned_16     blen;
+    byte            cksum;
+
+    blen = _TargetShort( len + 1 );
+    cksum = class;
+    cksum += DoSum( (const void *)&blen, sizeof( blen ) );
+    cksum += DoSum( buff, len );
+    cksum = -cksum;
+    PutObjBytes( &class, 1 );
+    PutObjBytes( (const byte *)&blen, sizeof( blen ) );
+    PutObjBytes( buff, len );
+    PutObjBytes( &cksum, 1 );
+}
+
+
+static void PatchObj( objhandle rec, objoffset roffset, const byte *buff, size_t len )
+/************************************************************************************/
+{
+    byte            cksum;
+    unsigned_16     reclen;
+    byte            inbuff[80];
+
+    SeekGetObj( rec, 1, (byte *)&reclen, 2 );
+    reclen = _HostShort( reclen );
+    SeekGetObj( rec, roffset + 3, inbuff, len );
+    SeekPutObj( rec, roffset + 3, buff, len );
+    SeekGetObj( rec, 2 + reclen, &cksum, 1 );
+
+    cksum += DoSum( inbuff, len );
+    cksum -= DoSum( buff, len );
+
+    SeekPutObj( rec, 2 + reclen, &cksum, 1 );
+    NeedSeekObj( true );
+}
+
+
 static void FlushNames( void )
 /****************************/
 {

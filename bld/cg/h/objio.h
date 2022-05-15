@@ -31,13 +31,14 @@
 ****************************************************************************/
 
 
-extern  void            CloseObj( void );
-extern  void            OpenObj( void );
-extern  bool            CGOpenf( void );
-extern  void            AbortObj( void );
-extern  void            ScratchObj( void );
-extern  void            PatchObj(objhandle,objoffset,const byte *,uint);
-extern  void            GetFromObj(objhandle,objoffset,byte*,uint);
-extern  objhandle       AskObjHandle( void );
-extern  void            PutObjBytes( const void *buff, size_t len );
-extern  void            PutObjOMFRec( byte class, const void *buff, uint len );
+extern void         CloseObj( void );
+extern void         OpenObj( void );
+extern bool         CGOpenf( void );
+extern void         AbortObj( void );
+extern void         ScratchObj( void );
+extern void         GetFromObj( objhandle, objoffset, byte *, size_t );
+extern objhandle    AskObjHandle( void );
+extern void         PutObjBytes( const void *buff, size_t len );
+extern void         SeekGetObj( objhandle rec, objoffset roffset, byte *b, size_t len );
+extern void         SeekPutObj( objhandle rec, objoffset roffset, const byte *b, size_t len );
+extern void         NeedSeekObj( bool set );

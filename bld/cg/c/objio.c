@@ -157,19 +157,6 @@ void    OpenObj( void )
 }
 
 
-static  byte    DoSum( const byte *buff, uint len )
-/*************************************************/
-{
-    byte        sum;
-
-    sum = 0;
-    while( len > 0 ) {
-        sum += *buff++;
-        --len;
-    }
-    return( sum );
-}
-
 static  objoffset   Byte( objhandle rec )
 /***************************************/
 {
@@ -300,63 +287,8 @@ void    PutObjBytes( const void *buff, size_t len )
     ObjOffset += len;
 }
 
-void    PutObjOMFRec( byte class, const void *buff, uint len )
-/************************************************************/
-{
-    unsigned_16     blen;
-    byte            cksum;
-
-    if( NeedSeek ) {
-        SeekStream( ObjFile, ObjOffset );
-        NeedSeek = false;
-    }
-    blen = _TargetShort( len + 1 );
-    cksum = class;
-    cksum += DoSum( (const void *)&blen, sizeof( blen ) );
-    cksum += DoSum( buff, len );
-    cksum = -cksum;
-    PutStream( ObjFile, &class, 1 );
-    PutStream( ObjFile, (const byte *)&blen, sizeof( blen ) );
-    PutStream( ObjFile, buff, len );
-    PutStream( ObjFile, &cksum, 1 );
-    ObjOffset += len + 4;
-}
-
-
-void    PatchObj( objhandle rec, objoffset roffset, const byte *buff, uint len )
-/******************************************************************************/
-{
-    objoffset       recoffset;
-    byte            cksum;
-    unsigned_16     reclen;
-    byte            inbuff[80];
-
-    recoffset = Byte( rec );
-
-    SeekStream( ObjFile, recoffset + 1 );
-    GetStream( ObjFile, (byte *)&reclen, 2 );
-    reclen = _HostShort( reclen );
-    SeekStream( ObjFile, recoffset + roffset + 3 );
-    GetStream( ObjFile, inbuff, len );
-
-    SeekStream( ObjFile, recoffset + roffset + 3 );
-    PutStream( ObjFile, buff, len );
-
-    SeekStream( ObjFile, recoffset + 2 + reclen );
-    GetStream( ObjFile, &cksum, 1 );
-
-    cksum += DoSum( inbuff, len );
-    cksum -= DoSum( buff, len );
-
-    SeekStream( ObjFile, recoffset + 2 + reclen );
-    PutStream( ObjFile, &cksum, 1 );
-
-    NeedSeek = true;
-}
-
-
-void    GetFromObj( objhandle rec, objoffset roffset, byte *buff, uint len )
-/**************************************************************************/
+void    GetFromObj( objhandle rec, objoffset roffset, byte *buff, size_t len )
+/****************************************************************************/
 {
     SeekStream( ObjFile, Byte( rec ) + roffset + 3 );
     GetStream( ObjFile, buff, len );
@@ -409,4 +341,29 @@ void    ScratchObj( void )
 {
     EraseObj = true;
     CloseObj();
+}
+
+void SeekGetObj( objhandle rec, objoffset roffset, byte *b, size_t len )
+/**********************************************************************/
+{
+    SeekStream( ObjFile, Byte( rec ) + roffset );
+    GetStream( ObjFile, b, len );
+}
+
+void SeekPutObj( objhandle rec, objoffset roffset, const byte *b, size_t len )
+/****************************************************************************/
+{
+    SeekStream( ObjFile, Byte( rec ) + roffset );
+    PutStream( ObjFile, b, len );
+}
+
+void NeedSeekObj( bool set )
+/**************************/
+{
+    if( set ) {
+        NeedSeek = true;
+    } else if( NeedSeek ) {
+        SeekStream( ObjFile, ObjOffset );
+        NeedSeek = false;
+    }
 }
