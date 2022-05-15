@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +58,6 @@
 #define IOBUFSIZE       8192
 
 typedef FILE            *handle;
-
-typedef objhandle       objoffset;
 
 typedef struct buf {
     struct buf  *nextbuf;
@@ -152,7 +151,7 @@ bool    CGOpenf( void )
 void    OpenObj( void )
 /*********************/
 {
-    ObjOffset = INVALID_OBJHANDLE;
+    ObjOffset = 0;
     NeedSeek = false;
     EraseObj = false;
 }
@@ -171,10 +170,10 @@ static  byte    DoSum( const byte *buff, uint len )
     return( sum );
 }
 
-static  objoffset   Byte( objhandle i )
-/*************************************/
+static  objoffset   Byte( objhandle rec )
+/***************************************/
 {
-    return( i );
+    return( (objoffset)rec );
 }
 
 
@@ -185,7 +184,7 @@ static  objhandle   Offset( objoffset offset )
         FatalError( "Object file too large" );
         return( INVALID_OBJHANDLE );
     } else {
-        return( offset );
+        return( (objhandle)offset );
     }
 }
 
@@ -324,8 +323,8 @@ void    PutObjOMFRec( byte class, const void *buff, uint len )
 }
 
 
-void    PatchObj( objhandle rec, uint roffset, const byte *buff, uint len )
-/*************************************************************************/
+void    PatchObj( objhandle rec, objoffset roffset, const byte *buff, uint len )
+/******************************************************************************/
 {
     objoffset       recoffset;
     byte            cksum;
@@ -356,8 +355,8 @@ void    PatchObj( objhandle rec, uint roffset, const byte *buff, uint len )
 }
 
 
-void    GetFromObj( objhandle rec, uint roffset, byte *buff, uint len )
-/*********************************************************************/
+void    GetFromObj( objhandle rec, objoffset roffset, byte *buff, uint len )
+/**************************************************************************/
 {
     SeekStream( ObjFile, Byte( rec ) + roffset + 3 );
     GetStream( ObjFile, buff, len );

@@ -52,7 +52,7 @@ typedef struct array_control {
 } array_control;
 
 typedef struct obj_patch {
-        int                     where;
+        objoffset               where;
         objhandle               ref;
         patch_attr              attr;
 } obj_patch;
