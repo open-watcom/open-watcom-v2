@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -273,7 +273,7 @@
 
 :option. zku8
 :target. any
-:usage.  Unicode UTF-8
+:usage.  Unicode(NT)/UTF-8(Windows,OS2), UTF-8 source
 :jusage.
 
 :option. zku0
