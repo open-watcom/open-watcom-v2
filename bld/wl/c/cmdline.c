@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -436,8 +436,11 @@ void DoCmdFile( const char *fname )
     } else {
         MapFlags = 0;   // if main isn't set, don't set anything.
     }
-    if( SymFileName == NULL && ( (CmdFlags & CF_SEPARATE_SYM) ||
-                   (LinkFlags & LF_OLD_DBI_FLAG) && (FmtData.type & MK_COM) ) ) {
+    if( SymFileName == NULL && ( (CmdFlags & CF_SEPARATE_SYM)
+      || (FmtData.type & MK_COM) && (LinkFlags & LF_ANY_DBI_FLAG)
+      || (FmtData.type & MK_ELF) && (LinkFlags & (LF_OLD_DBI_FLAG | LF_CV_DBI_FLAG))
+      || (FmtData.type & MK_RAW) && (LinkFlags & LF_ANY_DBI_FLAG)
+      ) ) {
         SymFileName = FileName( Name, namelen, E_SYM, true );
     }
     if( FmtData.make_implib && FmtData.implibname == NULL ) {

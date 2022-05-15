@@ -90,7 +90,7 @@ static int              NumPhdr = 0;    /* just for now untill dynamic objects s
 /* Put debugging info into section WITHIN the file instead of appending a
  * separate elf file at the end */
 
-#define INJECT_DEBUG ( SymFileName == NULL && (LinkFlags & LF_DWARF_DBI_FLAG) )
+#define INJECT_ELF_DEBUG ( SymFileName == NULL && (LinkFlags & LF_DWARF_DBI_FLAG) )
 
 static void InitSections( ElfHdr *hdr )
 /*************************************/
@@ -121,7 +121,7 @@ static void InitSections( ElfHdr *hdr )
     hdr->i.symtab = num++;
     hdr->i.symstr = num++;
     hdr->i.symhash = num++;
-    if( INJECT_DEBUG ) {
+    if( INJECT_ELF_DEBUG ) {
         hdr->i.dbgnum = DwarfCountDebugSections();
     }
     hdr->i.dbgbegin = num;
@@ -376,7 +376,7 @@ void FiniELFLoadFile( void )
 
     WriteELFGroups( &hdr ); // Write out all groups
     WriteRelocsSections( &hdr );        // Relocations
-    if( INJECT_DEBUG ) {                // Debug info
+    if( INJECT_ELF_DEBUG ) {            // Debug info
         hdr.curr_off = DwarfWriteElf( hdr.curr_off, &hdr.secstrtab, hdr.sh + hdr.i.dbgbegin );
     }
     if( ElfSymTab != NULL ) {           // Symbol tables
@@ -390,7 +390,7 @@ void FiniELFLoadFile( void )
     hdr.eh.e_shoff = hdr.curr_off;
     WriteLoad( hdr.sh, hdr.sh_size );
     hdr.curr_off += hdr.sh_size;
-    if( !INJECT_DEBUG ) {
+    if( !INJECT_ELF_DEBUG ) {
         DBIWrite();
     }
     SeekLoad( 0 );
