@@ -230,8 +230,8 @@ static omf_idx GetNameIdx( const char *name, const char *suff, bool alloc )
     return( NameIndex );
 }
 
-static  byte    DoSum( const byte *buff, uint len )
-/*************************************************/
+static  byte    DoSum( const byte *buff, size_t len )
+/***************************************************/
 {
     byte        sum;
 
@@ -278,7 +278,7 @@ static void PatchObj( objhandle rec, objoffset roffset, const byte *buff, size_t
     cksum -= DoSum( buff, len );
 
     SeekPutObj( rec, 2 + reclen, &cksum, 1 );
-    NeedSeekObj( true );
+    NeedSeekObj();
 }
 
 

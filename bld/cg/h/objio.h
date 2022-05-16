@@ -41,4 +41,4 @@ extern objhandle    AskObjHandle( void );
 extern void         PutObjBytes( const void *buff, size_t len );
 extern void         SeekGetObj( objhandle rec, objoffset roffset, byte *b, size_t len );
 extern void         SeekPutObj( objhandle rec, objoffset roffset, const byte *b, size_t len );
-extern void         NeedSeekObj( bool set );
+extern void         NeedSeekObj( void );

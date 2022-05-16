@@ -357,13 +357,8 @@ void SeekPutObj( objhandle rec, objoffset roffset, const byte *b, size_t len )
     PutStream( ObjFile, b, len );
 }
 
-void NeedSeekObj( bool set )
+void NeedSeekObj( void )
 /**************************/
 {
-    if( set ) {
-        NeedSeek = true;
-    } else if( NeedSeek ) {
-        SeekStream( ObjFile, ObjOffset );
-        NeedSeek = false;
-    }
+    NeedSeek = true;
 }
