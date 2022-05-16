@@ -51,7 +51,6 @@
 
 #define DOS4G_COMM_VECTOR       0x15
 #define NUM_BUFF_RELOCS         16
-#define DEFAULT_TRP_EXT         "TRP"
 #define TRAP_VECTOR             0x1a
 #define PSP_ENVSEG_OFF          0x2c
 
@@ -504,7 +503,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
 #endif
     *p = '\0';
-    fp = DIGLoader( Open )( filename, p - filename, DEFAULT_TRP_EXT, NULL, 0 );
+    fp = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
     if( fp == NULL ) {
         sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
