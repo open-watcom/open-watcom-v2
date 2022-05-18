@@ -264,7 +264,7 @@ resource
     : normal-resource
     | string-table-resource
     | message-table-resource
-    | pragma-statment
+    | pragma-statement
     | codepage-statement
     ;
 
@@ -317,7 +317,7 @@ type-id
         { $$ = WResIDFromNum( $1.Value ); }
     ;
 
-pragma-statment
+pragma-statement
     : Y_POUND_PRAGMA Y_CODEPAGE  Y_LPAREN constant-expression Y_RPAREN
         { SemOS2SetCodepage( $4.Value ); }
     ;

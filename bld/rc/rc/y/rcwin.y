@@ -314,7 +314,7 @@ resource
     : normal-resource
     | string-table-resource
     | error-table-resource
-    | pragma-statment
+    | pragma-statement
     | includeres-statement
     ;
 
@@ -375,7 +375,7 @@ includeres-statement
         }
     ;
 
-pragma-statment
+pragma-statement
     : Y_POUND_PRAGMA Y_CODEPAGE  Y_LPAREN constant-expression Y_RPAREN
       {}
     ;
