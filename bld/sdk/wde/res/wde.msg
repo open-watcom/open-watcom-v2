@@ -102,6 +102,9 @@ pick(   WDE_HINT_SELECT_DIALOG,
 pick(   WDE_HINT_REMOVE_DIALOG,
         "Remove dialog(s) from a resource.",
         "Remove dialog(s) from a resource." )
+pick(   WDE_HINT_HIDE_DIALOG,
+        "Hide current dialog(s) from a resource.",
+        "Hide current dialog(s) from a resource." )
 pick(   WDE_HINT_DIALOG_RESTORE,
         "Revert dialog to state after last save operation.",
         "Revert dialog to state after last save operation." )
