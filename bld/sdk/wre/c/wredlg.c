@@ -48,6 +48,7 @@
 #include "wrelist.h"
 #include "wredde.h"
 #include "wre.rh"
+#include "wreddeop.h"
 #include "wredlg.h"
 #include "wresdefn.h"
 
@@ -56,8 +57,6 @@
 /* macro definitions                                                        */
 /****************************************************************************/
 #define MAX_RETRIES 99
-
-#define DDE_OPT     "-DDE"
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -479,7 +478,7 @@ WREDialogSession *WREStartDialogSession( WRECurrentResInfo *curr )
 
     PendingSession = session;
 
-    if( WinExec( "wde.exe " DDE_OPT, SW_SHOW ) < 32 ) {
+    if( WinExec( "wde.exe " DDE_OPT_STR, SW_SHOW ) < 32 ) {
         WREDisplayErrorMsg( WRE_DLGEDITNOTSPAWNED );
         WREFreeEditSession( session );
         PendingSession = NULL;

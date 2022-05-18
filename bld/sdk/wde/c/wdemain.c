@@ -71,6 +71,7 @@
 #include "wrdll.h"
 #include "wrdmsg.h"
 #include "jdlg.h"
+#include "wreddeop.h"
 
 #include "wwinhelp.h"
 #include "aboutdlg.h"
@@ -86,7 +87,6 @@
 /****************************************************************************/
 #define ABOUT_TIMER     666
 #define ABOUT_TIMEOUT   2000
-#define DDE_OPT         "-DDE"
 #define CREATE_NEW_FLAG "n"
 
 /****************************************************************************/
@@ -1274,12 +1274,12 @@ bool WdeIsDDEArgs( char **argv, int argc )
     int         i;
 
     for( i = 1; i < argc; i++ ) {
-        if( stricmp( argv[i], DDE_OPT ) == 0 ) {
-            return( TRUE );
+        if( stricmp( argv[i], DDE_OPT_STR ) == 0 ) {
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool WdeProcessArgs( char **argv, int argc )
@@ -1290,9 +1290,11 @@ bool WdeProcessArgs( char **argv, int argc )
     ok = true;
 
     for( i = 1; i < argc; i++ ) {
-        if( ( argv[i][0] == '/' || argv[i][0] == '-' ) && stricmp( argv[i] + 1, CREATE_NEW_FLAG ) == 0 ) {
-            WdeCreateNewFiles = TRUE;
-        } else if( stricmp( argv[i], DDE_OPT ) ) {
+        if( stricmp( argv[i], DDE_OPT_STR ) ) {
+            /* skip */
+        } else if( ( argv[i][0] == '/' || argv[i][0] == '-' ) && stricmp( argv[i] + 1, CREATE_NEW_FLAG ) == 0 ) {
+            WdeCreateNewFiles = true;
+        } else {
             if( WRFileExists( argv[i] ) ) {
                 ok = ( WdeOpenResource( argv[i] ) && ok );
             } else if( WdeCreateNewFiles ) {

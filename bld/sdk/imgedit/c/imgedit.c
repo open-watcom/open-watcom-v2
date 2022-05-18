@@ -36,11 +36,11 @@
 #include <stdarg.h>
 #include "title.h"
 #include "iedde.h"
+#include "wreddeop.h"
 
 #include "clibint.h"
 
 
-#define DDE_OPT     "-DDE"
 #define NEW_OPT     "n"
 #define NOTITLE_OPT "notitle"
 #define FUSION_OPT  "fusion"
@@ -347,10 +347,10 @@ static void parseCmdLine( int count, char **cmdline )
     int         i;
 
     for( i = 1; i < count; i++ ) {
+        if( stricmp( cmdline[i], DDE_OPT_STR ) == 0 ) {
+            continue;
+        }
         if( cmdline[i][0] == '/' || cmdline[i][0] == '-' ) {
-            if( stricmp( cmdline[i] + 1, DDE_OPT ) == 0 ) {
-                continue;
-            }
             if( stricmp( cmdline[i] + 1, NEW_OPT ) == 0 ) {
                 continue;
             }
@@ -375,11 +375,11 @@ static void parseArgs( int count, char **cmdline )
     int         i;
 
     for( i = 1; i < count; i++ ) {
+        if( stricmp( cmdline[i], DDE_OPT_STR ) == 0 ) {
+            ImgedIsDDE = true;
+            continue;
+        }
         if( cmdline[i][0] == '/' || cmdline[i][0] == '-' ) {
-            if( stricmp( cmdline[i] + 1, DDE_OPT ) == 0 ) {
-                ImgedIsDDE = true;
-                continue;
-            }
             if( stricmp( cmdline[i] + 1, NEW_OPT ) == 0 ) {
                 OpenNewFiles = true;
                 continue;

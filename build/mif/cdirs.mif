@@ -37,6 +37,12 @@ wddespy_dir     = $(src_dir)/sdk/ddespy
 !ifndef wimgedit_dir
 wimgedit_dir    = $(src_dir)/sdk/imgedit
 !endif
+!ifndef wre_dir
+wre_dir         = $(src_dir)/sdk/wre
+!endif
+!ifndef wresedit_dir
+wresedit_dir    = $(src_dir)/sdk/wresedit
+!endif
 !ifndef wspy_dir
 wspy_dir        = $(src_dir)/sdk/spy
 !endif
@@ -267,9 +273,6 @@ idedemo_dir     = $(src_dir)/idedemo
 !endif
 !ifndef version_dir
 version_dir     = $(src_dir)/version
-!endif
-!ifndef wresedit_dir
-wresedit_dir    = $(src_dir)/sdk/wresedit
 !endif
 !ifndef pmake_dir
 pmake_dir       = $(src_dir)/pmake
