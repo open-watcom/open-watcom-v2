@@ -30,6 +30,7 @@ jobs:
         rootFolderOrFile: '$(owroot)/rel'
         includeRootFolder: false
         archiveType: 'tar'
+        tarCompression: 'xz'
         archiveFile: '$(owroot)/$(owsnapshotfile)'
         replaceExistingArchive: true
     - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
