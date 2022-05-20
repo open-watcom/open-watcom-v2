@@ -9,7 +9,7 @@ variables:
   owobjdir:         binbuild
   owgitverbose:     -v
   owartifactfile:   owartifact.tar.xz
-  owsnapshotfile:   ow-snapshot.tar.gz
+  owsnapshotfile:   ow-snapshot.tar.xz
 
   owimage_lnx:      'ubuntu-18.04'
 # owimage_nt:       'vs2017-win2016'
