@@ -1908,16 +1908,16 @@ The
 field indicates the type of the input file.
 File types can be:
 .millust begin
-TF_FILE_EXE  =  0
-TF_FILE_DBG  =  1
-TF_FILE_PRS  =  2
-TF_FILE_HLP  =  3
+TF_TYPE_EXE  =  0
+TF_TYPE_DBG  =  1
+TF_TYPE_PRS  =  2
+TF_TYPE_HLP  =  3
 .millust end
 .pp
 This is
 so the trap file can search different paths for the different types of files.
 For example, under QNX, the PATH environment variable is searched for the
-FILE_EXE type, and the WD_PATH environment variable is searched for the others.
+TF_TYPE_EXE type, and the WD_PATH environment variable is searched for the others.
 The
 .id file_name
 field contains the file name to be converted.
