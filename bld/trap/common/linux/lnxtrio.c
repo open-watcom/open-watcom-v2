@@ -42,6 +42,7 @@
     #include <process.h>
 #endif
 #include "trptypes.h"
+#include "trpfile.h"
 #include "digcli.h"
 #include "digld.h"
 #include "servio.h"
@@ -150,7 +151,7 @@ static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name
     }
 }
 
-static unsigned FindFilePath( const char *name, char *result )
+static unsigned FindFilePath( int file_type, const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;
@@ -161,33 +162,37 @@ static unsigned FindFilePath( const char *name, char *result )
         end = StrCopy( name, result );
         return( end - result );
     }
-    len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-    if( len != 0 )
-        return( len );
-    len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-    if( len != 0 )
-        return( len );
-    if( _cmdname( cmd ) != NULL ) {
-        end = strrchr( cmd, '/' );
-        if( end != NULL ) {
-            *end = '\0';
-            /* look in the executable's directory */
-            len = TryOnePath( cmd, &tmp, name, result );
-            if( len != 0 )
-                return( len );
+    if( file_type == TF_TYPE_EXE ) {
+        return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
+    } else {
+        len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
+        if( len != 0 )
+            return( len );
+        len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
+        if( len != 0 )
+            return( len );
+        if( _cmdname( cmd ) != NULL ) {
             end = strrchr( cmd, '/' );
             if( end != NULL ) {
-                /* look in the wd sibling directory of where the command
-                   came from */
-                StrCopy( "wd", end + 1 );
+                *end = '\0';
+                /* look in the executable's directory */
                 len = TryOnePath( cmd, &tmp, name, result );
-                if( len != 0 ) {
+                if( len != 0 )
                     return( len );
+                end = strrchr( cmd, '/' );
+                if( end != NULL ) {
+                    /* look in the wd sibling directory of where the command
+                       came from */
+                    StrCopy( "wd", end + 1 );
+                    len = TryOnePath( cmd, &tmp, name, result );
+                    if( len != 0 ) {
+                        return( len );
+                    }
                 }
             }
         }
+        return( TryOnePath( "/opt/watcom/wd", &tmp, name, result ) );
     }
-    return( TryOnePath( "/opt/watcom/wd", &tmp, name, result ) );
 }
 
 FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
@@ -235,7 +240,7 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, c
                 break;
             }
         }
-    } else if( FindFilePath( trpfile, result ) ) {
+    } else if( FindFilePath( TF_TYPE_DBG, trpfile, result ) ) {
         fp = fopen( result, "rb" );
     }
     return( fp );

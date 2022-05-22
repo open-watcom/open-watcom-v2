@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@
 
 extern void Out( const char *str );
 extern void OutNum( unsigned long i );
-#define dbg_print( x )  printf x 
+#define dbg_print( x )  printf x
 
 #else
 
@@ -87,7 +88,7 @@ extern char         **dbg_environ;
 /* Internal trap file helper functions */
 extern char         *StrCopy( const char *, char * );
 extern unsigned     TryOnePath( const char *, struct stat *, const char *, char * );
-extern unsigned     FindFilePath( bool, const char *, char * );
+extern unsigned     FindFilePath( int, const char *, char * );
 //extern char         *CollectNid( char *name, unsigned len, nid_t *nidp );
 
 extern unsigned     ReadMem( pid_handle procfs_fd, void *ptr, addr_off offv, unsigned size );

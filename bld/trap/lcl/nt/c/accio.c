@@ -39,7 +39,6 @@
 #include <windows.h>
 #include "ntext.h"
 #include "stdnt.h"
-#include "ntextx.h"
 
 
 #ifdef _WIN64
@@ -285,7 +284,6 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     file_string_to_fullpath_ret *ret;
     char                        *name;
     char                        *fullname;
-    const char                  *ext_list;
 
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
@@ -296,12 +294,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
         strcpy( fullname, name );
         ret->err = 0;
     } else {
-        if( acc->file_type != TF_TYPE_EXE ) {
-            ext_list = "";
-        } else {
-            ext_list = NtExtList;
-        }
-        ret->err = FindProgFile( name, fullname, ext_list );
+        ret->err = FindFilePath( acc->file_type, name, fullname );
     }
     if( ret->err != 0 )
         *fullname = '\0';

@@ -91,7 +91,7 @@ static long TryPath( const char *name, char *end, const char *ext_list )
     return 0xffff0000 | rc;
 }
 
-unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list )
+unsigned long FindFilePath( int file_type, const char *pgm, char *buffer )
 {
     const char      *p;
     char            *p2;
@@ -115,8 +115,10 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
             break;
         }
     }
-    if( have_ext )
-        ext_list = "";
+    ext_list = "";
+    if( have_ext == 0 && file_type == TF_TYPE_EXE ) {
+        ext_list = ".exe\0";
+    }
     rc = TryPath( buffer, p2, ext_list );
     if( rc == 0 || have_path )
         return rc;

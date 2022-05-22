@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -253,7 +253,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     if( pid == 0 || ptrace( PTRACE_ATTACH, pid, NULL, NULL ) == -1 ) {
         attached = false;
         args[0] = name;
-        if( FindFilePath( true, args[0], exe_name ) == 0 ) {
+        if( FindFilePath( TF_TYPE_EXE, args[0], exe_name ) == 0 ) {
             exe_name[0] = '\0';
         }
         save_pgrp = getpgrp();
@@ -629,7 +629,6 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
-    int                         exe;
     int                         len;
     const char                  *name;
     char                        *fullname;
@@ -640,14 +639,13 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    exe = ( acc->file_type == TF_TYPE_EXE );
-    if( exe ) {
+    if( acc->file_type == TF_TYPE_EXE ) {
         pidd = RunningProc( name, &name );
     }
     if( pidd != 0 ) {
         len = GetExeNameFromPid( pidd, fullname, PATH_MAX );
     } else {
-        len = FindFilePath( exe, name, fullname );
+        len = FindFilePath( acc->file_type, name, fullname );
     }
     if( len == 0 ) {
         ret->err = ENOENT;      /* File not found */

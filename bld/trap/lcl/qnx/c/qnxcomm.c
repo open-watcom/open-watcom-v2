@@ -136,7 +136,7 @@ unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char 
     }
 }
 
-unsigned FindFilePath( bool exe, const char *name, char *result )
+unsigned FindFilePath( int file_type, const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;
@@ -146,13 +146,15 @@ unsigned FindFilePath( bool exe, const char *name, char *result )
         end = StrCopy( name, result );
         return( end - result );
     }
-    if( exe ) {
+    if( file_type == TF_TYPE_EXE ) {
         return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
     } else {
         len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-        if( len != 0 ) return( len );
+        if( len != 0 )
+            return( len );
         len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-        if( len != 0 ) return( len );
+        if( len != 0 )
+            return( len );
         return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
     }
 }

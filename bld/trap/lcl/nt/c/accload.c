@@ -38,12 +38,9 @@
 #include "trperr.h"
 #include "srvcdbg.h"
 #include "doserr.h"
-#include "ntextx.h"
 
 #include "clibext.h"
 
-
-const char  NtExtList[] = NTEXTLIST;
 
 /*
  * executeUntilStart - run program until start address hit
@@ -317,7 +314,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     IsDOS = FALSE;
 #endif
     if( pid == 0 ) {
-        ret->err = FindProgFile( parm, exe_name, NtExtList );
+        ret->err = FindFilePath( TF_TYPE_EXE, parm, exe_name );
         if( ret->err != 0 ) {
             goto error_exit;
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,6 @@
 #include "getsaddr.h"
 #include "winerr.h"
 #include "di386cli.h"
-#include "dosextx.h"
 #include "dosfile.h"
 #include "pathgrp2.h"
 #include "dbgrmsg.h"
@@ -171,7 +170,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
      * get the file to execute
      */
     if( tid == 0 ) {
-        if( TINY_ERROR( FindProgFile( parm, exe_name, DosExtList ) ) ) {
+        if( TINY_ERROR( FindFilePath( TF_TYPE_EXE, parm, exe_name ) ) ) {
             exe_name[0] = 0;
         } else {
             _splitpath2( exe_name, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );

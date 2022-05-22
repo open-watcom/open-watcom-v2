@@ -45,7 +45,6 @@
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "cpuglob.h"
-#include "os2extx.h"
 #include "os2v2acc.h"
 
 typedef void (*excfn)();
@@ -81,7 +80,6 @@ extern scrtype          Screen;
 static TRACEBUF         Buff;
 static USHORT           SessionType;
 __GINFOSEG              __far *GblInfo;
-const char              OS2ExtList[] = OS2EXTLIST;
 
 
 typedef struct watch_point {
@@ -770,7 +768,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ExceptNum = -1;
     AtEnd = FALSE;
     prog = GetInPtr( sizeof( prog_load_req ) );
-    if( FindProgFile( prog, exe_name, OS2ExtList ) != 0 ) {
+    if( FindFilePath( TF_TYPE_EXE, prog, exe_name ) != 0 ) {
         exe_name[0] = '\0';
     }
     parms = AddDriveAndPath( exe_name, UtilBuff );

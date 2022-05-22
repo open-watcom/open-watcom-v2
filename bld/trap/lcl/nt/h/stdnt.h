@@ -197,7 +197,7 @@ extern DWORD            ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD si
 
 /* accmisc.c */
 extern BOOL             IsBigSel( WORD sel );
-extern unsigned long    FindProgFile( const char *pgm, char *buffer, const char *ext_list );
+extern unsigned long    FindFilePath( int file_type, const char *pgm, char *buffer );
 extern void             AddMessagePrefix( char *buff, size_t len );
 
 /* accrun.c */

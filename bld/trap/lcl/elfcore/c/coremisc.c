@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -292,7 +292,7 @@ static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name
     }
 }
 
-unsigned FindFilePath( int exe, const char *name, char *result )
+unsigned FindFilePath( int file_type, const char *name, char *result )
 {
     struct stat     tmp;
     unsigned        len;
@@ -301,7 +301,7 @@ unsigned FindFilePath( int exe, const char *name, char *result )
         strcpy( result, name );
         return( strlen( result ) + 1 );
     }
-    if( exe ) {
+    if( file_type == TF_TYPE_EXE ) {
         return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
     } else {
         len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );

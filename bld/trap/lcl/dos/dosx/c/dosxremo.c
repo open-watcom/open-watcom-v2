@@ -44,7 +44,6 @@
 #include "madregs.h"
 #include "dosxlink.h"
 #include "dosxfork.h"
-#include "dosextx.h"
 #include "dosfile.h"
 
 
@@ -307,7 +306,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     _DBG_EnterFunc( "AccLoadProg()" );
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
-    rc = FindProgFile( src, buffer, DosExtList );
+    rc = FindFilePath( TF_TYPE_EXE, src, buffer );
     endparm = LinkParms;
     while( *endparm++ != '\0' ) {}      // skip trap parameters
     strcpy( endparm, buffer );          // add command line

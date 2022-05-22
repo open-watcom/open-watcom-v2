@@ -58,7 +58,6 @@
 #include "exeos2.h"
 #include "exeflat.h"
 #include "x86cpu.h"
-#include "os2extx.h"
 #include "dbgthrd.h"
 
 
@@ -127,7 +126,6 @@ static unsigned_32      lastEIP;
 static unsigned_32      lastESP;
 
 bool        ExpectingAFault;
-const char  OS2ExtList[] = OS2EXTLIST;
 
 static bool Is32BitSeg( unsigned seg )
 {
@@ -1099,7 +1097,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     /* If PID was not specified, start the debuggee process */
     if( attach_pid == -1 ) {
         isAttached = FALSE;
-        if( FindProgFile( prog, exe_name, OS2ExtList ) != 0 ) {
+        if( FindFilePath( TF_TYPE_EXE, prog, exe_name ) != 0 ) {
             exe_name[0] = '\0';
         }
         parms = AddDriveAndPath( exe_name, UtilBuff );

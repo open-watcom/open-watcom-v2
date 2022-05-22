@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,6 @@
 #include "trpcomm.h"
 #include "dosenv.h"
 #include "doschk.h"
-#include "dosextx.h"
 #include "dosfile.h"
 
 
@@ -48,8 +47,6 @@
 
 /* fork.asm prototype */
 extern tiny_ret_t   __near Fork( const char __far *, unsigned );
-
-const char DosExtList[] = DOSEXTLIST;
 
 static const seek_info  local_seek_method[] = { TIO_SEEK_SET, TIO_SEEK_CUR, TIO_SEEK_END };
 
@@ -190,7 +187,8 @@ static tiny_ret_t TryPath( const char *name, char *end, const char *ext_list )
     done = 0;
     mode = 0 ; //IsDOS3 ? 0x40 : 0;
     do {
-        if( *ext_list == '\0' ) done = 1;
+        if( *ext_list == '\0' )
+            done = 1;
         for( p = end; *p = *ext_list; ++p, ++ext_list )
             {}
         rc = TinyOpen( name, mode );
@@ -203,7 +201,7 @@ static tiny_ret_t TryPath( const char *name, char *end, const char *ext_list )
     return( rc );
 }
 
-unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list )
+unsigned long FindFilePath( int file_type, const char *pgm, char *buffer )
 {
     const char  __far *path;
     char        *p2;
@@ -211,6 +209,7 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
     tiny_ret_t  rc;
     int         have_ext;
     int         have_path;
+    const char  *ext_list;
 
     have_ext = 0;
     have_path = 0;
@@ -227,8 +226,18 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
             break;
         }
     }
-    if( have_ext )
-        ext_list = "";
+    ext_list = "";
+    if( have_ext == 0 && file_type == TF_TYPE_EXE ) {
+#if defined( DOSXTRAP )
+  #if defined( DOS4G )
+        ext_list = ".exe\0";
+  #else
+        ext_list = ".exp\0.rex\0.exe\0";
+  #endif
+#else
+        ext_list = ".com\0.exe\0";
+#endif
+    }
     rc = TryPath( buffer, p2, ext_list );
     if( TINY_OK( rc ) || have_path )
         return( rc );
@@ -264,7 +273,6 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
 {
     char                        *name;
     char                        *fullname;
-    const char                  *ext_list;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
     tiny_ret_t                  rc;
@@ -273,12 +281,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    if( acc->file_type == TF_TYPE_EXE ) {
-        ext_list = DosExtList;
-    } else {
-        ext_list = "";
-    }
-    rc = FindProgFile( name, fullname, ext_list );
+    rc = FindFilePath( acc->file_type, name, fullname );
     if( TINY_OK( rc ) ) {
         ret->err = 0;
     } else {

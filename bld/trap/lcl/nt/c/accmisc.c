@@ -447,7 +447,7 @@ static int tryPath( const char *name, char *end, const char *ext_list )
     return( -1 );
 }
 
-unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list )
+unsigned long FindFilePath( int file_type, const char *pgm, char *buffer )
 {
     const char      *p;
     char            *p2;
@@ -457,6 +457,7 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
     char            *envbuf;
     DWORD           envlen;
     unsigned long   rc;
+    const char      *ext_list;
 
     have_ext = FALSE;
     have_path = FALSE;
@@ -473,8 +474,9 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
             break;
         }
     }
-    if( have_ext ) {
-        ext_list = "";
+    ext_list = "";
+    if( have_ext == 0 && file_type == TF_TYPE_EXE ) {
+        ext_list = ".com\0.exe\0";
     }
     if( !tryPath( buffer, p2, ext_list ) ) {
         return( 0 );

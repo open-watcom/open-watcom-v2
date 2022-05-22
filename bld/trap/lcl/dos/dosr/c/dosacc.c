@@ -52,7 +52,6 @@
 #include "miscx87.h"
 #include "dosredir.h"
 #include "cpuglob.h"
-#include "dosextx.h"
 #include "dosovl.h"
 #include "dbgpsp.h"
 #include "dosfile.h"
@@ -521,7 +520,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     Flags &= ~F_BoundApp;
     psp = DbgPSP();
     parm = name = GetInPtr( sizeof( prog_load_req ) );
-    if( TINY_ERROR( FindProgFile( name, exe_name, DosExtList ) ) ) {
+    if( TINY_ERROR( FindFilePath( TF_TYPE_EXE, name, exe_name ) ) ) {
         exe_name[0] = '\0';
     }
     while( *parm++ != '\0' )        // skip program name

@@ -858,7 +858,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ProcInfo.loaded_proc = false;
     } else {
         args[0] = name;
-        if( FindFilePath( true, args[0], exe_name ) == 0 ) {
+        if( FindFilePath( TF_TYPE_EXE, args[0], exe_name ) == 0 ) {
             exe_name[0] = '\0';
         }
         save_pgrp = getpgrp();
@@ -1431,7 +1431,6 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     struct _psinfo     proc;
     pid_t              pid;
     nid_t              nid;
-    bool               exe;
     int                len;
     char               *name;
     char               *fullname;
@@ -1446,14 +1445,13 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    exe = ( acc->file_type == TF_TYPE_EXE ) ? true : false;
-    if( exe ) {
+    if( acc->file_type == TF_TYPE_EXE ) {
         pid = RunningProc( &nid, name, &proc, &name );
     }
     if( pid != 0 ) {
         len = StrCopy( proc.un.proc.name, fullname ) - fullname;
     } else {
-        len = FindFilePath( exe, name, fullname );
+        len = FindFilePath( acc->file_type, name, fullname );
     }
     if( len == 0 ) {
         ret->err = ENOENT;      /* File not found */
