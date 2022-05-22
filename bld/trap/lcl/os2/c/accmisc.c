@@ -467,8 +467,10 @@ static void DOSEnvLkup( char *src, char *dst )
 
 char *StrCopy( const char *src, char *dst )
 {
-    strcpy( dst, src );
-    return( strlen( dst ) + dst );
+    while( (*dst = *src++) != '\0' ) {
+        ++dst;
+    }
+    return( dst );
 }
 
 trap_retval TRAP_FILE( run_cmd )( void )
