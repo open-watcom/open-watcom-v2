@@ -583,6 +583,7 @@ unsigned long FindFilePath( int file_type, const char *pgm, char *buffer )
     unsigned long   rc;
     int             have_ext;
     int             have_path;
+    const char      *ext_list;
 
     have_ext = 0;
     have_path = 0;
