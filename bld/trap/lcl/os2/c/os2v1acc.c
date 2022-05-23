@@ -768,7 +768,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ExceptNum = -1;
     AtEnd = FALSE;
     prog = GetInPtr( sizeof( prog_load_req ) );
-    if( FindFilePath( TF_TYPE_EXE, prog, exe_name ) != 0 ) {
+    if( FindFilePath( DIG_FILETYPE_EXE, prog, exe_name ) != 0 ) {
         exe_name[0] = '\0';
     }
     parms = AddDriveAndPath( exe_name, UtilBuff );

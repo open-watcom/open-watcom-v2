@@ -43,7 +43,7 @@
 #include "mad.h"
 #include "madregs.h"
 
-//extern unsigned FindFilePath( int file_type, const char *name, char *result );
+//extern unsigned FindFilePath( dig_filetype file_type, const char *name, char *result );
 
 #ifdef __BIG_ENDIAN__
     #define SWAP_16     CONV_LE_16
@@ -584,7 +584,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     fullname = GetOutPtr( sizeof( *ret ) );
     fullname[0] = '\0';
     len = 0;
-    if( acc->file_type != TF_TYPE_EXE || core_info.mapping_shared ) {
+    if( acc->file_type != DIG_FILETYPE_EXE || core_info.mapping_shared ) {
         len = FindFilePath( acc->file_type, name, fullname );
     } else {
         save_handle = core_info.fd;

@@ -92,7 +92,7 @@ unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char 
     }
 }
 
-unsigned FindFilePath( int file_type, const char *name, char *result )
+unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;
@@ -104,7 +104,7 @@ unsigned FindFilePath( int file_type, const char *name, char *result )
     }
     // TODO: Need to find out how to get at the environment for the
     //       debug server process (I think!).
-    if( file_type == TF_TYPE_EXE ) {
+    if( file_type == DIG_FILETYPE_EXE ) {
         return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
     } else {
         len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );

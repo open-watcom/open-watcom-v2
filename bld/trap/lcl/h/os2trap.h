@@ -125,7 +125,7 @@ typedef struct __LINFOSEG {      /* lis */
 char            *StrCopy( const char *, char * );
 long            OpenFile( char *, USHORT, int );
 void            RestoreScreen( void );
-unsigned long   FindFilePath( int file_type, const char *, char * );
+unsigned long   FindFilePath( dig_filetype file_type, const char *, char * );
 char            *AddDriveAndPath( char *, char * );
 void            MergeArgvArray( char *, char *, unsigned );
 long            TaskOpenFile( char *name, int mode, int flags );

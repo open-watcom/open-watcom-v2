@@ -306,7 +306,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     _DBG_EnterFunc( "AccLoadProg()" );
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
-    rc = FindFilePath( TF_TYPE_EXE, src, buffer );
+    rc = FindFilePath( DIG_FILETYPE_EXE, src, buffer );
     endparm = LinkParms;
     while( *endparm++ != '\0' ) {}      // skip trap parameters
     strcpy( endparm, buffer );          // add command line

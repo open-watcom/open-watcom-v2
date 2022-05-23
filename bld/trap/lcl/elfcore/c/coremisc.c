@@ -292,7 +292,7 @@ static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name
     }
 }
 
-unsigned FindFilePath( int file_type, const char *name, char *result )
+unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
 {
     struct stat     tmp;
     unsigned        len;
@@ -301,7 +301,7 @@ unsigned FindFilePath( int file_type, const char *name, char *result )
         strcpy( result, name );
         return( strlen( result ) + 1 );
     }
-    if( file_type == TF_TYPE_EXE ) {
+    if( file_type == DIG_FILETYPE_EXE ) {
         return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
     } else {
         len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );

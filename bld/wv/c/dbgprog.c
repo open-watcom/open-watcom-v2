@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -927,7 +927,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
             FileClose( fh );
         }
     } else {
-        len = RemoteStringToFullName( true, name, fullname, sizeof( fullname ) );
+        len = RemoteStringToFullName( DIG_FILETYPE_EXE, name, fullname, sizeof( fullname ) );
         fullname[len] = NULLCHAR;
     }
     image = CreateImage( fullname, symfile );
@@ -1040,7 +1040,7 @@ size_t GetProgName( char *where, size_t len )
     /*
         Before, we did a:
 
-            RemoteStringToFullName( true, TaskCmd, where, len );
+            RemoteStringToFullName( DIG_FILETYPE_EXE, TaskCmd, where, len );
 
         but that screws up when the user specified something other than
         just an executable on the command line. E.g. a PID to connect

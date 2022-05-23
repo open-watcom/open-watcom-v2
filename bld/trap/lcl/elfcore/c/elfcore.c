@@ -652,7 +652,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     fullname = GetOutPtr( sizeof( *ret ) );
     fullname[0] = '\0';
     len = 0;
-    if( acc->file_type != TF_TYPE_EXE || Core.mapping_shared ) {
+    if( acc->file_type != DIG_FILETYPE_EXE || Core.mapping_shared ) {
         len = FindFilePath( acc->file_type, name, fullname );
     } else {
         fd = load_elf_header( name, &ehdr, &phdr );

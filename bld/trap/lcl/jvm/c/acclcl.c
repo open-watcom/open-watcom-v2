@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -297,7 +297,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    if( acc->file_type == TF_TYPE_EXE ) {
+    if( acc->file_type == DIG_FILETYPE_EXE ) {
         strcpy( fullname, JAVAPREFIX );
         strcat( fullname, name );
     } else {

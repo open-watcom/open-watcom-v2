@@ -201,7 +201,7 @@ static tiny_ret_t TryPath( const char *name, char *end, const char *ext_list )
     return( rc );
 }
 
-unsigned long FindFilePath( int file_type, const char *pgm, char *buffer )
+unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffer )
 {
     const char  __far *path;
     char        *p2;
@@ -227,7 +227,7 @@ unsigned long FindFilePath( int file_type, const char *pgm, char *buffer )
         }
     }
     ext_list = "";
-    if( have_ext == 0 && file_type == TF_TYPE_EXE ) {
+    if( have_ext == 0 && file_type == DIG_FILETYPE_EXE ) {
 #if defined( DOSXTRAP )
   #if defined( DOS4G )
         ext_list = ".exe\0";

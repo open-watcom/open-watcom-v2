@@ -377,6 +377,13 @@ typedef unsigned_8  dig_seek; enum {
     DIG_END
 };
 
+typedef enum {
+    DIG_FILETYPE_EXE,
+    DIG_FILETYPE_DBG,
+    DIG_FILETYPE_PRS,
+    DIG_FILETYPE_HLP
+} dig_filetype;
+
 typedef unsigned_8  dig_open; enum {
     DIG_READ        = 0x01,
     DIG_WRITE       = 0x02,

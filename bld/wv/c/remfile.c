@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,7 +159,7 @@ bool HaveRemoteFiles( void )
 }
 
 //NYI: The 'bool executable' should be changed to allow different file types
-size_t RemoteStringToFullName( bool executable, const char *name, char *res,
+size_t RemoteStringToFullName( dig_filetype file_type, const char *name, char *res,
                                  trap_elen res_len )
 {
     in_mx_entry         in[2];
@@ -179,7 +179,7 @@ size_t RemoteStringToFullName( bool executable, const char *name, char *res,
         return( strlen( res ) );
     }
     SUPP_FILE_SERVICE( acc, REQ_FILE_STRING_TO_FULLPATH );
-    acc.file_type = ( executable ? TF_TYPE_EXE : TF_TYPE_PRS );
+    acc.file_type = file_type;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = (void *)name;

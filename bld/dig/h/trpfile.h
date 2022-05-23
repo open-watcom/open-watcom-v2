@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -166,13 +166,6 @@ typedef struct {
 } file_erase_ret;
 
 /*====================== REQ_FILE_STRING_TO_FULLPATH =================*/
-enum {
-    TF_TYPE_EXE,
-    TF_TYPE_DBG,
-    TF_TYPE_PRS,
-    TF_TYPE_HLP
-};
-
 typedef struct {
     supp_prefix         supp;
     access_req          req;

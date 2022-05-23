@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -520,7 +521,7 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
     }
     *p = NULLCHAR;
     if( oattrs & OP_REMOTE ) {
-        RemoteStringToFullName( false, buffer, result, (trap_elen)max_result );
+        RemoteStringToFullName( DIG_FILETYPE_PRS, buffer, result, (trap_elen)max_result );
         fh = FileOpen( result, OP_READ | OP_REMOTE );
     } else if( have_path ) {
         StrCopy( buffer, result );

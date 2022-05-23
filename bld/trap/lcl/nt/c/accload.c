@@ -314,7 +314,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     IsDOS = FALSE;
 #endif
     if( pid == 0 ) {
-        ret->err = FindFilePath( TF_TYPE_EXE, parm, exe_name );
+        ret->err = FindFilePath( DIG_FILETYPE_EXE, parm, exe_name );
         if( ret->err != 0 ) {
             goto error_exit;
         }

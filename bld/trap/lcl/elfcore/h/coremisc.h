@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern  unsigned    FindFilePath( int file_type, const char *name, char *result );
+extern  unsigned    FindFilePath( dig_filetype file_type, const char *name, char *result );

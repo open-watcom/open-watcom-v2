@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern unsigned long FindFilePath( int file_type, const char *pgm, char *buffer );
+extern unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffer );

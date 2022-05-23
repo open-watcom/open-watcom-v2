@@ -170,7 +170,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
      * get the file to execute
      */
     if( tid == 0 ) {
-        if( TINY_ERROR( FindFilePath( TF_TYPE_EXE, parm, exe_name ) ) ) {
+        if( TINY_ERROR( FindFilePath( DIG_FILETYPE_EXE, parm, exe_name ) ) ) {
             exe_name[0] = 0;
         } else {
             _splitpath2( exe_name, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );

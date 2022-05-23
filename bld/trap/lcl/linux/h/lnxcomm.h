@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -316,7 +316,7 @@ u_long inpd(u_long port);
 /* Internal helper functions */
 
 extern unsigned     TryOnePath( const char *, struct stat *, const char *, char * );
-extern unsigned     FindFilePath( int, const char *, char * );
+extern unsigned     FindFilePath( dig_filetype, const char *, char * );
 extern u_long       GetDR6( void );
 extern void         ClearDebugRegs( void );
 extern int          SetDebugRegs( void );

@@ -37,6 +37,7 @@
 #include <fcntl.h>
 #include <sys/ptrace.h>
 #include "bool.h"
+#include "digtypes.h"
 #include "lnxcomm.h"
 
 #ifdef DEBUG_OUT

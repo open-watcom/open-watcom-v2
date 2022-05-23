@@ -151,7 +151,7 @@ static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name
     }
 }
 
-static unsigned FindFilePath( int file_type, const char *name, char *result )
+static unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;
@@ -162,7 +162,7 @@ static unsigned FindFilePath( int file_type, const char *name, char *result )
         end = StrCopy( name, result );
         return( end - result );
     }
-    if( file_type == TF_TYPE_EXE ) {
+    if( file_type == DIG_FILETYPE_EXE ) {
         return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
     } else {
         len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
@@ -240,7 +240,7 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, c
                 break;
             }
         }
-    } else if( FindFilePath( TF_TYPE_DBG, trpfile, result ) ) {
+    } else if( FindFilePath( DIG_FILETYPE_DBG, trpfile, result ) ) {
         fp = fopen( result, "rb" );
     }
     return( fp );

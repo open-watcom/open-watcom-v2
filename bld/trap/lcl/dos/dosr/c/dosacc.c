@@ -520,7 +520,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     Flags &= ~F_BoundApp;
     psp = DbgPSP();
     parm = name = GetInPtr( sizeof( prog_load_req ) );
-    if( TINY_ERROR( FindFilePath( TF_TYPE_EXE, name, exe_name ) ) ) {
+    if( TINY_ERROR( FindFilePath( DIG_FILETYPE_EXE, name, exe_name ) ) ) {
         exe_name[0] = '\0';
     }
     while( *parm++ != '\0' )        // skip program name
