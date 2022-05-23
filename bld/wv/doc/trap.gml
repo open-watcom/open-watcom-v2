@@ -1655,25 +1655,25 @@ The
 field stores the access mode of the file.
 The following bits are defined:
 .millust begin
-Bit 0      :  TF_READ
-Bit 1      :  TF_WRITE
-Bit 2      :  TF_CREATE
-Bit 3      :  TF_EXEC
-Bit 4      :  not used
-Bit 5      :  not used
-Bit 6      :  not used
-Bit 7      :  not used
+Bit 0      :  DIG_OPEN_READ
+Bit 1      :  DIG_OPEN_WRITE
+Bit 2      :  DIG_OPEN_CREATE
+Bit 3      :  DIG_OPEN_TRUNC
+Bit 4      :  DIG_OPEN_APPEND
+Bit 5      :  reserved
+Bit 6      :  reserved
+Bit 7      :  reserved
 .millust end
 .pp
 For read/write mode, turn both
-.id TF_READ
+.id DIG_OPEN_READ
 and
-.id TF_WRITE
+.id DIG_OPEN_WRITE
 bits on.
 The
-.id TF_EXEC
+.id DIG_OPEN_TRUNC
 bit should only be used together with
-.id TF_CREATE
+.id DIG_OPEN_CREATE
 and indicates that the created file needs executable permission (if relevant
 on the target platform).
 .np
@@ -1711,9 +1711,9 @@ The
 field stores the seek mode.
 There are three seek modes:
 .millust begin
-TF_SEEK_ORG = 0  - Relative to the start of file
-TF_SEEK_CUR = 1  - Relative to the current file position
-TF_SEEK_END = 2  - Rrelative to the end of file
+DIG_SEEK_ORG = 0  - Relative to the start of file
+DIG_SEEK_CUR = 1  - Relative to the current file position
+DIG_SEEK_END = 2  - Rrelative to the end of file
 .millust end
 .pp
 The position to seek to is in the
@@ -1908,16 +1908,16 @@ The
 field indicates the type of the input file.
 File types can be:
 .millust begin
-TF_TYPE_EXE  =  0
-TF_TYPE_DBG  =  1
-TF_TYPE_PRS  =  2
-TF_TYPE_HLP  =  3
+DIG_FILETYPE_EXE  =  0
+DIG_FILETYPE_DBG  =  1
+DIG_FILETYPE_PRS  =  2
+DIG_FILETYPE_HLP  =  3
 .millust end
 .pp
 This is
 so the trap file can search different paths for the different types of files.
 For example, under QNX, the PATH environment variable is searched for the
-TF_TYPE_EXE type, and the WD_PATH environment variable is searched for the others.
+DIG_FILETYPE_EXE type, and the WD_PATH environment variable is searched for the others.
 The
 .id file_name
 field contains the file name to be converted.
