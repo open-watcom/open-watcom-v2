@@ -385,16 +385,16 @@ typedef enum {
     DIG_FILETYPE_GEN
 } dig_filetype;
 
-typedef unsigned_8  dig_open; enum {
-    DIG_READ        = 0x01,
-    DIG_WRITE       = 0x02,
-    DIG_CREATE      = 0x04,
-    DIG_TRUNC       = 0x08,
-    DIG_APPEND      = 0x10,
-    DIG_REMOTE      = 0x20,
-    DIG_LOCAL       = 0x40,
-    DIG_SEARCH      = 0x80
-};
+typedef enum {
+    DIG_OPEN_READ   = 0x01,
+    DIG_OPEN_WRITE  = 0x02,
+    DIG_OPEN_CREATE = 0x04,
+    DIG_OPEN_TRUNC  = 0x08,
+    DIG_OPEN_APPEND = 0x10,
+    DIG_OPEN_REMOTE = 0x20,
+    DIG_OPEN_LOCAL  = 0x40,
+    DIG_OPEN_SEARCH = 0x80
+} dig_open;
 
 enum archtypes {
     DIG_ARCH_NIL,

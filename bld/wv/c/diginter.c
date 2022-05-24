@@ -66,28 +66,28 @@ static obj_attrs DIG2WVOpenMode( dig_open mode )
     obj_attrs   oattrs;
 
     oattrs = 0;
-    if( mode & DIG_READ ) {
+    if( mode & DIG_OPEN_READ ) {
         oattrs |= OP_READ;
     }
-    if( mode & DIG_WRITE ) {
+    if( mode & DIG_OPEN_WRITE ) {
         oattrs |= OP_WRITE;
     }
-    if( mode & DIG_CREATE ) {
+    if( mode & DIG_OPEN_CREATE ) {
         oattrs |= OP_CREATE;
     }
-    if( mode & DIG_TRUNC ) {
+    if( mode & DIG_OPEN_TRUNC ) {
         oattrs |= OP_TRUNC;
     }
-    if( mode & DIG_APPEND ) {
+    if( mode & DIG_OPEN_APPEND ) {
         oattrs |= OP_APPEND;
     }
-    if( mode & DIG_REMOTE ) {
+    if( mode & DIG_OPEN_REMOTE ) {
         oattrs |= OP_REMOTE;
     }
-    if( mode & DIG_LOCAL ) {
+    if( mode & DIG_OPEN_LOCAL ) {
         oattrs |= OP_LOCAL;
     }
-    if( mode & DIG_SEARCH ) {
+    if( mode & DIG_OPEN_SEARCH ) {
         oattrs |= OP_SEARCH;
     }
     return( oattrs );

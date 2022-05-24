@@ -74,7 +74,7 @@ FILE *PathOpen( char *name, unsigned len, const char *ext )
     _searchenv( realname, "PATH", path );
     if( *path == '\0' )
         return( NULL );
-    return( DIGCli( Open )( path, DIG_READ ) );
+    return( DIGCli( Open )( path, DIG_OPEN_READ ) );
 }
 #endif
 
@@ -127,9 +127,9 @@ FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
 {
     const char  *access;
 
-    if( mode & DIG_APPEND ) {
+    if( mode & DIG_OPEN_APPEND ) {
         access = "ab";
-    } else if( mode & (DIG_WRITE | DIG_CREATE) ) {
+    } else if( mode & (DIG_OPEN_WRITE | DIG_OPEN_CREATE) ) {
         access = "wb";
     } else {
         access = "rb";

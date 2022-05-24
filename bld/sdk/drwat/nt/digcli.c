@@ -88,13 +88,13 @@ FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
     OFSTRUCT            tmp;
 
     flags = 0;
-    if( mode & DIG_READ )
+    if( mode & DIG_OPEN_READ )
         flags |= OF_READ;
-    if( mode & DIG_WRITE )
+    if( mode & DIG_OPEN_WRITE )
         flags |= OF_WRITE;
-    if( mode & DIG_TRUNC )
+    if( mode & DIG_OPEN_TRUNC )
         flags |= OF_CREATE;
-    if( mode & DIG_CREATE )
+    if( mode & DIG_OPEN_CREATE )
         flags |= OF_CREATE;
     //NYI: should check for DIG_SEARCH
     ret = OpenFile( path, &tmp, flags );

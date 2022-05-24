@@ -82,9 +82,9 @@ FILE * DIGCLIENTRY( Open )( const char *name, dig_open mode )
 {
     const char  *access;
 
-    if( mode & DIG_APPEND ) {
+    if( mode & DIG_OPEN_APPEND ) {
         access = "ab";
-    } else if( mode & (DIG_WRITE | DIG_CREATE) ) {
+    } else if( mode & (DIG_OPEN_WRITE | DIG_OPEN_CREATE) ) {
         access = "wb";
     } else {
         access = "rb";
