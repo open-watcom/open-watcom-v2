@@ -75,17 +75,24 @@ trap_retval TRAP_FILE( get_config )( void )
 
 trap_retval TRAP_FILE( open )( void )
 {
-    file_open_req       *acc;
-    file_open_ret       *ret;
+    file_open_req   *acc;
+    file_open_ret   *ret;
     int             retval;
-    static int MapAcc[] = { O_RDONLY, O_WRONLY, O_RDWR };
+    int             mode;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    if( acc->mode & TF_CREATE ) {
+    if( acc->mode & DIG_OPEN_CREATE ) {
         retval = IOCreat( GetInPtr( sizeof( *acc ) ) );
     } else {
-        retval = IOOpen( GetInPtr( sizeof( *acc ) ), MapAcc[acc->mode - 1] );
+        mode = O_RDONLY;
+        if( acc->mode & DIG_OPEN_WRITE ) {
+            mode = O_WRONLY;
+            if( acc->mode & DIG_OPEN_READ ) {
+                mode = O_RDWR;
+            }
+        }
+        retval = IOOpen( GetInPtr( sizeof( *acc ) ), mode );
     }
     if( retval < 0 ) {
         ret->err = retval;

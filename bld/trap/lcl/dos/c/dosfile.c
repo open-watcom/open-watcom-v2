@@ -72,15 +72,20 @@ trap_retval TRAP_FILE( open )( void )
     char            *filename;
     file_open_req   *acc;
     file_open_ret   *ret;
-    static int MapAcc[] = { TIO_READ, TIO_WRITE, TIO_READ_WRITE };
 
     acc = GetInPtr( 0 );
     filename = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
-    if( acc->mode & TF_CREATE ) {
+    if( acc->mode & DIG_OPEN_CREATE ) {
         rc = TinyCreate( filename, TIO_NORMAL );
     } else {
-        mode = MapAcc[acc->mode - 1];
+        mode = TIO_READ;
+        if( acc->mode & DIG_OPEN_WRITE ) {
+            mode = TIO_WRITE;
+            if( acc->mode & DIG_OPEN_READ ) {
+                mode = TIO_READ_WRITE;
+            }
+        }
         if( IsDOS3 )
             mode |= 0x80; /* set no inheritance */
         rc = TinyOpen( filename, mode );

@@ -147,18 +147,22 @@ trap_retval TRAP_FILE( open )( void )
     file_open_ret       *ret;
     unsigned_8          flags;
     long                retval;
-    static int MapAcc[] = { READONLY, WRITEONLY, READWRITE };
+    int                 mode;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    if( acc->mode & TF_CREATE ) {
-        flags = OPEN_PRIVATE | OPEN_CREATE;
-        acc->mode &= ~TF_CREATE;
-    } else {
-        flags = OPEN_PRIVATE;
+    mode = READONLY;
+    if( acc->mode & DIG_OPEN_WRITE ) {
+        mode = WRITEONLY;
+        if( acc->mode & DIG_OPEN_READ ) {
+            mode = READWRITE;
+        }
     }
-    retval = OpenFile( GetInPtr( sizeof(file_open_req) ),
-                       MapAcc[acc->mode - 1], flags );
+    flags = OPEN_PRIVATE;
+    if( acc->mode & DIG_OPEN_CREATE ) {
+        flags |= OPEN_CREATE;
+    }
+    retval = OpenFile( GetInPtr( sizeof(file_open_req) ), mode, flags );
     if( retval < 0 ) {
         ret->err = retval;
         LH2TRPH( ret, 0 );

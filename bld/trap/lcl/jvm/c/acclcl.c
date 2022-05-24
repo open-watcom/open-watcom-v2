@@ -39,8 +39,10 @@
 #include <ctype.h>
 #include "trpimp.h"
 #include "packet.h"
+#include "ntext.h"
 #include "javaname.h"
 #include "jvmerr.h"
+
 
 #define OP_TRUNC        0x08
 
@@ -88,7 +90,6 @@ trap_retval TRAP_FILE( open )( void )
     file_open_ret       *ret;
     void                *buff;
     unsigned            mode;
-    static int          mapAcc[] = { 0, 1, 2 };
 
     ret = GetOutPtr( 0 );
     if( TaskLoaded ) {
@@ -104,25 +105,28 @@ trap_retval TRAP_FILE( open )( void )
 
     ret->err = 0;
     {
+        DWORD   share_mode,desired_access,attr;
+        DWORD   create_disp;
+
+        mode = O_RDONLY;
+        if( acc->mode & DIG_OPEN_WRITE ) {
+            mode = O_WRONLY;
+            if( acc->mode & DIG_OPEN_READ ) {
+                mode = O_RDWR;
+            }
+        }
         /*
          * these __GetNT... routines are in the C library.  they turn
          * DOS style access and share bits into NT style ones
          */
-        extern void __GetNTAccessAttr( int rwmode, LPDWORD desired_access,
-                                        LPDWORD attr );
-        extern void __GetNTShareAttr( int share, LPDWORD share_mode );
-        DWORD   share_mode,desired_access,attr;
-        DWORD   create_disp;
-
-        mode = mapAcc[ (0x3 & acc->mode) -1 ];
         __GetNTAccessAttr( mode & 0x7, &desired_access, &attr );
         __GetNTShareAttr( mode & 0x70, &share_mode );
-        if( acc->mode & TF_CREATE ) {
+        if( acc->mode & DIG_OPEN_CREATE ) {
             create_disp = CREATE_ALWAYS;
         } else {
             create_disp = OPEN_EXISTING;
         }
-        h = CreateFile( (LPTSTR) buff, desired_access, share_mode, 0, create_disp, FILE_ATTRIBUTE_NORMAL, NULL );
+        h = CreateFile( (LPTSTR)buff, desired_access, share_mode, 0, create_disp, FILE_ATTRIBUTE_NORMAL, NULL );
         if( h == INVALID_HANDLE_VALUE ) {
             ret->err = GetLastError();
             h = 0;

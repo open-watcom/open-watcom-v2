@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <time.h>
+#include <fcntl.h>
 #include <windows.h>
 #include "ntext.h"
 #include "stdnt.h"
@@ -91,7 +92,6 @@ trap_retval TRAP_FILE( open )( void )
     file_open_ret           *ret;
     char                    *buff;
     unsigned                mode;
-    static unsigned const   mapAcc[] = { 0, 1, 2 };
 
     acc = GetInPtr( 0 );
     buff = GetInPtr( sizeof( *acc ) );
@@ -113,10 +113,16 @@ trap_retval TRAP_FILE( open )( void )
         DWORD   attr;
         DWORD   create_disp;
 
-        mode = mapAcc[ ( 0x3 & acc->mode ) - 1];
+        mode = O_RDONLY;
+        if( acc->mode & DIG_OPEN_WRITE ) {
+            mode = O_WRONLY;
+            if( acc->mode & DIG_OPEN_READ ) {
+                mode = O_RDWR;
+            }
+        }
         __GetNTAccessAttr( mode & 0x7, &desired_access, &attr );
         __GetNTShareAttr( mode & 0x70, &share_mode );
-        if( acc->mode & TF_CREATE ) {
+        if( acc->mode & DIG_OPEN_CREATE ) {
             create_disp = CREATE_ALWAYS;
         } else {
             create_disp = OPEN_EXISTING;

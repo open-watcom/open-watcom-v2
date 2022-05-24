@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,15 +119,21 @@ trap_retval TRAP_FILE( open )( void )
     file_open_req       *acc;
     file_open_ret       *ret;
     int                 handle;
-    static const int    MapAcc[] = { O_RDONLY, O_WRONLY, O_RDWR };
     int                 mode;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    mode = MapAcc[ (acc->mode & (TF_READ|TF_WRITE)) - 1];
-    if( acc->mode & TF_CREATE ) mode |= O_CREAT | O_TRUNC;
-    handle = open( (char *)GetInPtr( sizeof( *acc ) ), mode,
-                    S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP | S_IROTH|S_IWOTH );
+    mode = O_RDONLY;
+    if( acc->mode & DIG_OPEN_WRITE ) {
+        mode = O_WRONLY;
+        if( acc->mode & DIG_OPEN_READ ) {
+            mode = O_RDWR;
+        }
+    }
+    if( acc->mode & DIG_OPEN_CREATE )
+        mode |= O_CREAT | O_TRUNC;
+    handle = open( (char *)GetInPtr( sizeof( *acc ) ), mode, 
+                   S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
     if( handle != -1 ) {
         fcntl( handle, F_SETFD, FD_CLOEXEC );
         errno = 0;

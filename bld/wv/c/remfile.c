@@ -78,7 +78,7 @@ static FILE             *logf;
 static trap_shandle     SuppFileId = 0;
 static fcache_t         fcache[CACHED_HANDLES];
 static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
-static const unsigned_8 remote_seek_method[] = { TF_SEEK_ORG, TF_SEEK_CUR, TF_SEEK_END };
+static const unsigned_8 remote_seek_method[] = { DIG_SEEK_ORG, DIG_SEEK_CUR, DIG_SEEK_END };
 
 /* Return local handle of remote file equivalent */
 static loc_handle GetCachedHandle( sys_handle remote )
@@ -233,13 +233,13 @@ sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
     SUPP_FILE_SERVICE( acc, REQ_FILE_OPEN );
     acc.mode = 0;
     if( oattrs & OP_READ )
-        acc.mode |= TF_READ;
+        acc.mode |= DIG_OPEN_READ;
     if( oattrs & OP_WRITE )
-        acc.mode |= TF_WRITE;
+        acc.mode |= DIG_OPEN_WRITE;
     if( oattrs & OP_CREATE ) {
-        acc.mode |= TF_CREATE;
+        acc.mode |= DIG_OPEN_CREATE;
         if( oattrs & OP_EXEC ) {
-            acc.mode |= TF_EXEC;
+            acc.mode |= DIG_OPEN_TRUNC;
         }
     }
     in[0].ptr = &acc;

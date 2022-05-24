@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,16 +110,16 @@ trap_retval TRAP_FILE( seek )( void )
     ret->err = 0;
     ret->pos = 0;
     switch( acc->mode ) {
-    case TF_SEEK_ORG:
+    case DIG_SEEK_ORG:
         RdosSetFilePos( TRPH2LH( acc ), pos );
         ret->pos = pos;
         break;
-    case TF_SEEK_CUR:
+    case DIG_SEEK_CUR:
         pos += RdosGetFilePos( TRPH2LH( acc ) );
         RdosSetFilePos( TRPH2LH( acc ), pos );
         ret->pos = pos;
         break;
-    case TF_SEEK_END:
+    case DIG_SEEK_END:
         pos += RdosGetFileSize( TRPH2LH( acc ) );
         RdosSetFilePos( TRPH2LH( acc ), pos );
         ret->pos = pos;

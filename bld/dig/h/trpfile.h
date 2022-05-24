@@ -72,13 +72,6 @@ typedef struct {
 } file_get_config_ret;
 
 /*==================== REQ_FILE_OPEN ===================*/
-enum {
-    TF_READ     = 0x1,
-    TF_WRITE    = 0x2,
-    TF_CREATE   = 0x4,
-    TF_EXEC     = 0x8
-};
-
 typedef struct {
     supp_prefix         supp;
     access_req          req;
@@ -91,12 +84,6 @@ typedef struct {
 } file_open_ret;
 
 /*====================== REQ_FILE_SEEK ===================*/
-enum {
-    TF_SEEK_ORG,
-    TF_SEEK_CUR,
-    TF_SEEK_END
-};
-
 typedef struct {
     supp_prefix         supp;
     access_req          req;

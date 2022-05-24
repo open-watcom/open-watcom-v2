@@ -74,7 +74,6 @@ trap_retval TRAP_FILE( open )( void )
     file_open_req       *acc;
     file_open_ret       *ret;
     int                 handle;
-    static const int    MapAcc[] = { O_RDONLY, O_WRONLY, O_RDWR };
     int                 mode;
     int                 access;
     const char          *name;
@@ -82,11 +81,17 @@ trap_retval TRAP_FILE( open )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
-    mode = MapAcc[ (acc->mode & (TF_READ|TF_WRITE)) - 1];
-    access = S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP | S_IROTH|S_IWOTH;
-    if( acc->mode & TF_CREATE ) {
+    mode = O_RDONLY;
+    if( acc->mode & DIG_OPEN_WRITE ) {
+        mode = O_WRONLY;
+        if( acc->mode & DIG_OPEN_READ ) {
+            mode = O_RDWR;
+        }
+    }
+    access = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+    if( acc->mode & DIG_OPEN_CREATE ) {
         mode |= O_CREAT | O_TRUNC;
-        if( acc->mode & TF_EXEC ) {
+        if( acc->mode & DIG_OPEN_TRUNC ) {
             access |= S_IXUSR | S_IXGRP | S_IXOTH;
         }
     }
