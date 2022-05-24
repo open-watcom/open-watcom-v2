@@ -128,7 +128,7 @@ bool LoadDbgInfo( void )
     DEBUGOUT( "Enter LoadDbgInfo" );
     curModHdl = NO_MOD;
     curProcess = DIPCreateProcess();
-    fp = DIGCli( Open )( DTModuleEntry.szExePath , DIG_OPEN_READ );
+    fp = DIGCli( Open )( DTModuleEntry.szExePath, DIG_OPEN_READ );
     if( fp != NULL ) {
         DEBUGOUT( "File open OK" );
         for( priority = 0; (priority = DIPPriority( priority )) != 0; ) {

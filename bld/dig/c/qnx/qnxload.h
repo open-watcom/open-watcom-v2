@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ static supp_header *ReadSupp( FILE *fp )
         case _LMF_RESOURCE_REC:
         case _LMF_ENDDATA_REC:
         case _LMF_FIXUP_80X87_REC:
-            DIGLoader( Seek )( fp, head.data_nbytes, DIG_CUR );
+            DIGLoader( Seek )( fp, head.data_nbytes, DIG_SEEK_CUR );
             break;
         case _LMF_DATA_REC:
             if( DIGLoader( Read )( fp, &rec, sizeof( rec.data ) ) )

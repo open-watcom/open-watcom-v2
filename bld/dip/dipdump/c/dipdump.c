@@ -906,7 +906,7 @@ static int DumpFile( const char *file, char **dips )
     /*
      * Open the file
      */
-    fp = DIGCli( Open )( file, DIG_READ );
+    fp = DIGCli( Open )( file, DIG_OPEN_READ );
     if( fp == NULL ) {
         return( ErrorMsg( "Failed to open '%s'\n", file ) );
     }

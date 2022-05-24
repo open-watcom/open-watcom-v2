@@ -92,10 +92,10 @@ FILE * DIGCLIENTRY( Open )( const char *name, dig_open mode )
     return( fopen( name, access ) );
 }
 
-int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
-/**************************************************************/
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek where )
+/******************************************************************/
 {
-    return( fseek( fp, p, k ) );
+    return( fseek( fp, p, where ) );
 }
 
 unsigned long DIGCLIENTRY( Tell )( FILE *fp )

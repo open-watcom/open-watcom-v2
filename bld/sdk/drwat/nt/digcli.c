@@ -96,7 +96,7 @@ FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
         flags |= OF_CREATE;
     if( mode & DIG_OPEN_CREATE )
         flags |= OF_CREATE;
-    //NYI: should check for DIG_SEARCH
+    //NYI: should check for DIG_OPEN_SEARCH
     ret = OpenFile( path, &tmp, flags );
     if( ret == HFILE_ERROR )
         return( NULL );

@@ -112,9 +112,9 @@ FILE * DIGCLIENTRY( Open )( char const *name, dig_open mode )
     return( POSIX2FP( fh ) );
 }
 
-int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek where )
 {
-    return( SeekStream( FP2POSIX( fp ), p, k ) == ERR_SEEK );
+    return( SeekStream( FP2POSIX( fp ), p, where ) == ERR_SEEK );
 }
 
 unsigned long DIGCLIENTRY( Tell )( FILE *fp )

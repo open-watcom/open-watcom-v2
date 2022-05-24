@@ -72,14 +72,14 @@ FILE *DIGCLIENTRY( Open )( char const *name, dig_open mode )
     const char  *fmode;
 
     /* convert flags. */
-    switch( mode & (DIG_READ | DIG_WRITE) ) {
-    case DIG_READ:
+    switch( mode & (DIG_OPEN_READ | DIG_OPEN_WRITE) ) {
+    case DIG_OPEN_READ:
         fmode = "rb";
         break;
-    case DIG_WRITE:
+    case DIG_OPEN_WRITE:
         fmode = "wb";
         break;
-    case DIG_WRITE | DIG_READ:
+    case DIG_OPEN_WRITE | DIG_OPEN_READ:
         fmode = "r+b";
         break;
     default:
@@ -107,7 +107,7 @@ unsigned long DIGCLIENTRY( Tell )( FILE *fp )
     return( ftell( fp ) );
 }
 
-size_t DIGCLIENTRY( Read )( FILE *fp, void *b , size_t s )
+size_t DIGCLIENTRY( Read )( FILE *fp, void *b, size_t s )
 {
     return( fread( b, 1, s, fp ) );
 }
