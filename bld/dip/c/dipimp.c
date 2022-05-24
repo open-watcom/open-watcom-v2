@@ -202,14 +202,14 @@ void DCAddrSection( address *a )
     DIPClient->AddrSection( a );
 }
 
-FILE *DCOpen( const char *path, dig_open flags )
+FILE *DCOpen( const char *path, dig_open mode )
 {
-    return( DIPClient->Open( path, flags ) );
+    return( DIPClient->Open( path, mode ) );
 }
 
-int DCSeek( FILE *fp, unsigned long p, dig_seek w )
+int DCSeek( FILE *fp, unsigned long p, dig_seek where )
 {
-    return( DIPClient->Seek( fp, p, w ) );
+    return( DIPClient->Seek( fp, p, where ) );
 }
 
 unsigned long DCTell( FILE *fp )
@@ -224,7 +224,7 @@ size_t DCRead( FILE *fp, void *b, size_t s )
 
 dip_status DCReadAt( FILE *fp, void *b, size_t s, unsigned long p )
 {
-    if( DIPClient->Seek( fp, p, DIG_ORG ) ) {
+    if( DIPClient->Seek( fp, p, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DIPClient->Read( fp, b, s ) != s ) {
@@ -243,9 +243,9 @@ void DCClose( FILE *fp )
     DIPClient->Close( fp );
 }
 
-void DCRemove( const char *path, dig_open flags )
+void DCRemove( const char *path, dig_open mode )
 {
-    DIPClient->Remove( path, flags );
+    DIPClient->Remove( path, mode );
 }
 
 void DCStatus( dip_status ds )

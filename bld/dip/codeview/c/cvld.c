@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +90,7 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     unsigned_32         debug_rva;
     debug_directory     dir;
 
-    if( DCSeek( fp, 0, DIG_ORG ) ) {
+    if( DCSeek( fp, 0, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, &hdr.dos, sizeof( hdr.dos ) ) != sizeof( hdr.dos ) ) {
@@ -98,13 +99,13 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     if( hdr.dos.signature != DOS_SIGNATURE ) {
         return( DS_FAIL );
     }
-    if( DCSeek( fp, NH_OFFSET, DIG_ORG ) ) {
+    if( DCSeek( fp, NH_OFFSET, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, &nh_off, sizeof( nh_off ) ) != sizeof( nh_off ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( DCSeek( fp, nh_off, DIG_ORG ) ) {
+    if( DCSeek( fp, nh_off, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, &hdr.pe, sizeof( hdr.pe ) ) != sizeof( hdr.pe ) ) {
@@ -122,7 +123,7 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     section_off = nh_off + offsetof( pe_header, flags ) +
                         sizeof( hdr.pe.flags ) + hdr.pe.nt_hdr_size;
 
-    if( DCSeek( fp, section_off, DIG_ORG ) ) {
+    if( DCSeek( fp, section_off, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     for( i = 0; i < hdr.pe.num_objects; i++ ) {
@@ -132,7 +133,7 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
         if( obj.rva == debug_rva ) {
             debug_rva = obj.physical_offset +
                             hdr.pe.table[PE_TBL_DEBUG].rva - debug_rva;
-            if( DCSeek( fp, debug_rva, DIG_ORG ) ) {
+            if( DCSeek( fp, debug_rva, DIG_SEEK_ORG ) ) {
                 return( DS_ERR | DS_FSEEK_FAILED );
             }
             if( DCRead( fp, &dir, sizeof( dir ) ) != sizeof( dir ) ) {
@@ -153,7 +154,7 @@ static dip_status TryFindTrailer( FILE *fp, unsigned long *offp, unsigned long *
     cv_trailer          sig;
     unsigned long       pos;
 
-    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END ) ) {
+    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_SEEK_END ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     pos = DCTell( fp );
@@ -182,7 +183,7 @@ static dip_status FindCV( FILE *fp, unsigned long *offp, unsigned long *sizep )
             return( ds );
         }
     }
-    if( DCSeek( fp, *offp, DIG_ORG ) ) {
+    if( DCSeek( fp, *offp, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, sig, sizeof( sig ) ) != sizeof( sig ) ) {
@@ -204,13 +205,13 @@ static dip_status LoadDirectory( imp_image_handle *iih, unsigned long off )
     size_t                      block_size;
     unsigned                    num;
 
-    if( DCSeek( iih->sym_fp, off, DIG_ORG ) ) {
+    if( DCSeek( iih->sym_fp, off, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( iih->sym_fp, &directory, sizeof( directory ) ) != sizeof( directory ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( DCSeek( iih->sym_fp, iih->bias + directory, DIG_ORG ) ) {
+    if( DCSeek( iih->sym_fp, iih->bias + directory, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( iih->sym_fp, &dir_header, sizeof( dir_header ) ) != sizeof( dir_header ) ) {

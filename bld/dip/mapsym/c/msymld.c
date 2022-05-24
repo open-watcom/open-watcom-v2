@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,19 +57,19 @@ static struct {
     unsigned_8          data[4096];
 } Buff;
 
-static unsigned long BSeek( FILE *fp, unsigned long p, dig_seek w )
+static unsigned long BSeek( FILE *fp, unsigned long p, dig_seek where )
 {
     unsigned long       bpos;
     unsigned long       npos = 0;
 
     bpos = Buff.fpos - Buff.len;
-    switch( w ) {
-    case DIG_END:
+    switch( where ) {
+    case DIG_SEEK_END:
         return( DIG_SEEK_ERROR ); /* unsupported */
-    case DIG_CUR:
+    case DIG_SEEK_CUR:
         npos = bpos + p + Buff.off;
         break;
-    case DIG_ORG:
+    case DIG_SEEK_ORG:
         npos = p;
         break;
     }
@@ -76,7 +77,7 @@ static unsigned long BSeek( FILE *fp, unsigned long p, dig_seek w )
         Buff.off = npos - bpos;
         return( npos );
     }
-    DCSeek( fp, npos, DIG_ORG );
+    DCSeek( fp, npos, DIG_SEEK_ORG );
     Buff.fpos = DCTell( fp );
     Buff.off = 0;
     Buff.len = 0;
@@ -89,7 +90,7 @@ static size_t BRead( FILE *fp, void *b, size_t s )
     size_t      want;
 
     if( s > sizeof( Buff.data ) ) {
-        DCSeek( fp, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
+        DCSeek( fp, Buff.fpos + Buff.off - Buff.len, DIG_SEEK_ORG );
         Buff.fpos = DCTell( fp );
         Buff.len = 0;
         Buff.off = 0;
@@ -247,7 +248,7 @@ static dip_status CheckSymFile( FILE *fp )
     unsigned long       pos;
 
     /* seek to the end, read and check end map record */
-    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( end_map ) ), DIG_END ) ) {
+    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( end_map ) ), DIG_SEEK_END ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     pos = DCTell( fp );
@@ -311,7 +312,7 @@ static dip_status LoadSymTable( FILE *fp, imp_image_handle *iih, unsigned count,
     if( sym_tbl == NULL ) {
         return( DS_ERR | DS_NO_MEM );
     }
-    if( BSeek( fp, base_ofs + table_ofs, DIG_ORG ) == DIG_SEEK_ERROR ) {
+    if( BSeek( fp, base_ofs + table_ofs, DIG_SEEK_ORG ) == DIG_SEEK_ERROR ) {
         ds = DS_ERR | DS_FSEEK_FAILED;
         goto done;
     }
@@ -323,7 +324,7 @@ static dip_status LoadSymTable( FILE *fp, imp_image_handle *iih, unsigned count,
     sym.offset = 0;
     sym_32.offset = 0;
     for( i = 0; i < count; ++i ) {
-        if( BSeek( fp, base_ofs + sym_tbl[i], DIG_ORG ) == DIG_SEEK_ERROR ) {
+        if( BSeek( fp, base_ofs + sym_tbl[i], DIG_SEEK_ORG ) == DIG_SEEK_ERROR ) {
             ds = DS_ERR | DS_FSEEK_FAILED;
             goto done;
         }
@@ -382,7 +383,7 @@ static dip_status LoadSegments( FILE *fp, imp_image_handle *iih, int count )
     int             is_code;
 
     for( i = 0; i < count; ++i ) {
-        seg_start = BSeek( fp, 0, DIG_CUR );
+        seg_start = BSeek( fp, 0, DIG_SEEK_CUR );
         if( seg_start == DIG_SEEK_ERROR ) {
             return( DS_ERR | DS_FSEEK_FAILED );
         }
@@ -408,7 +409,7 @@ static dip_status LoadSegments( FILE *fp, imp_image_handle *iih, int count )
         LoadSymTable( fp, iih, seg.num_syms, seg_start, seg.sym_tab_ofs,
             seg.load_addr, (seg.sym_type & SYM_FLAG_32BIT) != 0 );
 
-        if( BSeek( fp, SYM_PTR_TO_OFS( seg.next_ptr ), DIG_ORG ) == DIG_SEEK_ERROR ) {
+        if( BSeek( fp, SYM_PTR_TO_OFS( seg.next_ptr ), DIG_SEEK_ORG ) == DIG_SEEK_ERROR ) {
             return( DS_ERR | DS_FSEEK_FAILED );
         }
     }
@@ -423,7 +424,7 @@ static dip_status LoadSymFile( FILE *fp, imp_image_handle *iih )
     char            name[256];
     unsigned        name_len;
 
-    if( BSeek( fp, 0, DIG_ORG ) == DIG_SEEK_ERROR ) {
+    if( BSeek( fp, 0, DIG_SEEK_ORG ) == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
 
@@ -440,7 +441,7 @@ static dip_status LoadSymFile( FILE *fp, imp_image_handle *iih )
     if( ds != DS_OK )
         return( ds );
 
-    if( BSeek( fp, SYM_PTR_TO_OFS( map.seg_ptr ), DIG_ORG ) == DIG_SEEK_ERROR ) {
+    if( BSeek( fp, SYM_PTR_TO_OFS( map.seg_ptr ), DIG_SEEK_ORG ) == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     ds = LoadSegments( fp, iih, map.num_segs );

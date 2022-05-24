@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,12 +81,12 @@ imp_header *ReadInImp( FILE *fp )
     imp_start = DIGCli( Alloc )( size + bss_size );
     if( imp_start == NULL )
         return( NULL );
-    DIGLoader( Seek )( fp, hdr_size, DIG_ORG );
+    DIGLoader( Seek )( fp, hdr_size, DIG_SEEK_ORG );
     if( DIGLoader( Read )( fp, imp_start, size ) ) {
         DIGCli( Free )( imp_start );
         return( NULL );
     }
-    DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_ORG );
+    DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_SEEK_ORG );
     bunch = RELOC_BUFF_SIZE;
     reloc_size = RELOC_BUFF_SIZE * sizeof( buff[0] );
     while( hdr.num_relocs != 0 ) {

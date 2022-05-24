@@ -371,17 +371,18 @@ typedef enum {
     TM_UNICODE,
 } type_modifier;
 
-typedef unsigned_8  dig_seek; enum {
-    DIG_ORG,
-    DIG_CUR,
-    DIG_END
-};
+typedef enum {
+    DIG_SEEK_ORG,
+    DIG_SEEK_CUR,
+    DIG_SEEK_END
+} dig_seek;
 
 typedef enum {
     DIG_FILETYPE_EXE,
     DIG_FILETYPE_DBG,
     DIG_FILETYPE_PRS,
-    DIG_FILETYPE_HLP
+    DIG_FILETYPE_HLP,
+    DIG_FILETYPE_GEN
 } dig_filetype;
 
 typedef unsigned_8  dig_open; enum {

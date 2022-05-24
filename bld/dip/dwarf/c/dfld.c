@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,7 +106,7 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
     uint                sect;
 
     // Find TIS header seek to elf header
-    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( dbg_head ) ), DIG_END ) )
+    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( dbg_head ) ), DIG_SEEK_END ) )
         return( DS_FAIL );
     start = DCTell( fp );
     for( ;; ) {
@@ -115,11 +116,11 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
         if( dbg_head.signature != TIS_TRAILER_SIGNATURE ) {
             /* Seek to start of file and hope it's in ELF format */
             start = 0;
-            DCSeek( fp, 0, DIG_ORG );
+            DCSeek( fp, 0, DIG_SEEK_ORG );
             break;
         }
         start -= dbg_head.size - sizeof( dbg_head );
-        DCSeek( fp, start, DIG_ORG );
+        DCSeek( fp, start, DIG_SEEK_ORG );
         if( dbg_head.vendor == TIS_TRAILER_VENDOR_TIS && dbg_head.type == TIS_TRAILER_TYPE_TIS_DWARF ) {
             break;
         }
@@ -168,14 +169,14 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
     memset( bases, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
     memset( sizes, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
     offset = elf_head.e_shoff + elf_head.e_shstrndx * elf_head.e_shentsize + start;
-    DCSeek( fp, offset, DIG_ORG );
+    DCSeek( fp, offset, DIG_SEEK_ORG );
     DCRead( fp, &elf_sec, sizeof( Elf32_Shdr ) );
     ByteSwapShdr( &elf_sec, *byteswap );
     string_table = DCAlloc( elf_sec.sh_size );
-    DCSeek( fp, elf_sec.sh_offset + start, DIG_ORG );
+    DCSeek( fp, elf_sec.sh_offset + start, DIG_SEEK_ORG );
     DCRead( fp, string_table, elf_sec.sh_size );
     for( i = 0; i < elf_head.e_shnum; i++ ) {
-        DCSeek( fp, elf_head.e_shoff + i * elf_head.e_shentsize + start, DIG_ORG );
+        DCSeek( fp, elf_head.e_shoff + i * elf_head.e_shentsize + start, DIG_SEEK_ORG );
         DCRead( fp, &elf_sec, sizeof( Elf32_Shdr ) );
         ByteSwapShdr( &elf_sec, *byteswap );
         sect = Lookup_section_name( &string_table[elf_sec.sh_name] );
@@ -215,7 +216,7 @@ static void DWRSeek( void *_f, dr_section sect, long offs )
     long        base;
 
     base = f->dwarf->sect_offsets[sect];
-    DCSeek( f->sym_fp, offs + base, DIG_ORG );
+    DCSeek( f->sym_fp, offs + base, DIG_SEEK_ORG );
 }
 
 

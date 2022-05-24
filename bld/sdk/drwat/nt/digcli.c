@@ -106,18 +106,18 @@ FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
 /*
  * DIGCliSeek
  */
-int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek dipmode )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
 {
     int         mode;
 
-    switch( dipmode ) {
-    case DIG_ORG:
+    switch( where ) {
+    case DIG_SEEK_ORG:
         mode = FILE_BEGIN;
         break;
-    case DIG_CUR:
+    case DIG_SEEK_CUR:
         mode = FILE_CURRENT;
         break;
-    case DIG_END:
+    case DIG_SEEK_END:
         mode = FILE_END;
         break;
     }

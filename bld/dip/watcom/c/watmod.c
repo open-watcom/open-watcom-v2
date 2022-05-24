@@ -248,7 +248,7 @@ dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long a
     }
     if( !iih->v2 ) {
         off = first_link + adjust;
-        if( DCSeek( iih->sym_fp, off, DIG_ORG ) ) {
+        if( DCSeek( iih->sym_fp, off, DIG_SEEK_ORG ) ) {
             DCStatus( DS_ERR | DS_FSEEK_FAILED );
             return( DS_ERR | DS_FSEEK_FAILED );
         }

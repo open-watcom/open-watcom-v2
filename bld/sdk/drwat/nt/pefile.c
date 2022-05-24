@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@
  */
 static BOOL seekRead( FILE *fp, DWORD offset, void *buf, DWORD size )
 {
-    if( DIGCli( Seek )( fp, offset, DIG_ORG ) ) {
+    if( DIGCli( Seek )( fp, offset, DIG_SEEK_ORG ) ) {
         return( FALSE );
     }
     if( DIGCli( Read )( fp, buf, size ) != size ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +103,7 @@ static dip_status LoadDirectory( imp_image_handle *iih, unsigned long offent )
     memset( iih->directory, 0, block_count * sizeof( void * ) );
 
     /* skip to the first entry */
-    if( DCSeek( iih->sym_fp, offent, DIG_ORG ) ) {
+    if( DCSeek( iih->sym_fp, offent, DIG_SEEK_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
 
@@ -219,7 +220,7 @@ static dip_status FoundHLLSign( imp_image_handle *iih, unsigned long off,
         unsigned long   cur;
         unsigned        overlap = 0;
 
-        DCSeek( iih->sym_fp, 0, DIG_END );
+        DCSeek( iih->sym_fp, 0, DIG_SEEK_END );
         cur = DCTell( iih->sym_fp );
         if( cur > size + off && size + off > size ) {
             cur = off + size;
@@ -431,7 +432,7 @@ static dip_status FindHLLInLXImage( imp_image_handle *iih, unsigned long nh_off 
             /*
              * Get segment info from the object table.
              */
-            if( DCSeek( iih->sym_fp, buf.flat.objtab_off + nh_off, DIG_ORG ) ) {
+            if( DCSeek( iih->sym_fp, buf.flat.objtab_off + nh_off, DIG_SEEK_ORG ) ) {
                 return( DS_ERR | DS_FSEEK_FAILED );
             }
 
@@ -545,7 +546,7 @@ static dip_status TryFindTrailer( imp_image_handle *iih )
     hll_trailer         sig;
     unsigned long       pos;
 
-    if( DCSeek( iih->sym_fp, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END ) ) {
+    if( DCSeek( iih->sym_fp, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_SEEK_END ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     pos = DCTell( iih->sym_fp );

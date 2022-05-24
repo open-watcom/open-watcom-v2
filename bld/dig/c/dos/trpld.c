@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,9 +86,9 @@ static char *ReadInTrap( FILE *fp )
     }
     start_seg = TINY_INFO( ret );
     TrapCode = _MK_FP( start_seg, 0 );
-    DIGLoader( Seek )( fp, hdr_size, DIG_ORG );
+    DIGLoader( Seek )( fp, hdr_size, DIG_SEEK_ORG );
     DIGLoader( Read )( fp, TrapCode, size );
-    DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_ORG );
+    DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_SEEK_ORG );
     p = &buff[NUM_BUFF_RELOCS];
     for( relocs = hdr.num_relocs; relocs != 0; --relocs ) {
         if( p >= &buff[ NUM_BUFF_RELOCS ] ) {

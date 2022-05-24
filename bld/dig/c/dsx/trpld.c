@@ -404,11 +404,11 @@ static char *ReadInTrap( FILE *fp )
     if( TrapMem.pm == 0 ) {
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
-    DIGLoader( Seek )( fp, hdrsize, DIG_ORG );
+    DIGLoader( Seek )( fp, hdrsize, DIG_SEEK_ORG );
     if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapMem.pm ), imagesize ) ) {
         return( TC_ERR_CANT_LOAD_TRAP );
     }
-    DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_ORG );
+    DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_SEEK_ORG );
     for( relocnb = NUM_BUFF_RELOCS; hdr.num_relocs > 0; --hdr.num_relocs, ++relocnb ) {
         if( relocnb >= NUM_BUFF_RELOCS ) {
             if( DIGLoader( Read )( fp, relocbuff, sizeof( memptr ) * NUM_BUFF_RELOCS ) ) {

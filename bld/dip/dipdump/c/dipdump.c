@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -922,7 +922,7 @@ static int DumpFile( const char *file, char **dips )
             mod_handle      mh = 0;
 
             for( priority = 0; (priority = DIPPriority( priority )) != 0;  ) {
-                DIGCli( Seek )( fp, 0, DIG_ORG );
+                DIGCli( Seek )( fp, 0, DIG_SEEK_ORG );
                 mh = DIPLoadInfo( fp, 0, priority );
                 if( mh != NO_MOD ) {
                     break;

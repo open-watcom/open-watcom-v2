@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,7 +156,7 @@ static dip_status GetNumSect( FILE *fp, unsigned long curr, unsigned long end, u
         }
         (*count)++;
         curr += header.section_size;
-        DCSeek( fp, curr, DIG_ORG );
+        DCSeek( fp, curr, DIG_SEEK_ORG );
     }
     if( curr > end ) {
         DCStatus( DS_ERR | DS_INFO_INVALID );
@@ -214,7 +214,7 @@ static dip_status ProcSectionsInfo( imp_image_handle *iih, unsigned num_sects )
         }
         iih->num_sects++;
         pos += header.section_size;
-        if( DCSeek( iih->sym_fp, pos, DIG_ORG ) ) {
+        if( DCSeek( iih->sym_fp, pos, DIG_SEEK_ORG ) ) {
             DCStatus( DS_ERR | DS_INFO_INVALID );
             return( DS_ERR | DS_INFO_INVALID );
         }
@@ -234,7 +234,7 @@ static dip_status DoPermInfo( imp_image_handle *iih )
     bool                v2;
     char                *new;
 
-    if( DCSeek( iih->sym_fp, DIG_SEEK_POSBACK( sizeof( header ) ), DIG_END ) )
+    if( DCSeek( iih->sym_fp, DIG_SEEK_POSBACK( sizeof( header ) ), DIG_SEEK_END ) )
         return( DS_FAIL );
     end = DCTell( iih->sym_fp );
     if( DCRead( iih->sym_fp, &header, sizeof( header ) ) != sizeof( header ) ) {
@@ -248,7 +248,7 @@ static dip_status DoPermInfo( imp_image_handle *iih )
             return( DS_ERR | DS_INFO_INVALID );
         }
         end -= header.debug_size;
-        DCSeek( iih->sym_fp, end, DIG_ORG );
+        DCSeek( iih->sym_fp, end, DIG_SEEK_ORG );
         DCRead( iih->sym_fp, &header, sizeof( header ) );
     }
     if( header.signature != WAT_DBG_SIGNATURE )
@@ -281,7 +281,7 @@ static dip_status DoPermInfo( imp_image_handle *iih )
         return( DS_ERR | DS_INFO_INVALID );
     }
     num_segs = header.segment_size / sizeof( addr_seg );
-    DCSeek( iih->sym_fp, header.lang_size + header.segment_size - header.debug_size, DIG_CUR );
+    DCSeek( iih->sym_fp, header.lang_size + header.segment_size - header.debug_size, DIG_SEEK_CUR );
     curr = DCTell( iih->sym_fp );
     ds = GetNumSect( iih->sym_fp, curr, end, &num_sects );
     if( ds != DS_OK )
@@ -300,7 +300,7 @@ static dip_status DoPermInfo( imp_image_handle *iih )
     iih->real_segs = (void *)( iih->map_segs + num_segs );
     iih->sect = (void *)( iih->real_segs + num_segs );
     iih->num_sects = 0;
-    DCSeek( iih->sym_fp, curr - header.lang_size - header.segment_size, DIG_ORG );
+    DCSeek( iih->sym_fp, curr - header.lang_size - header.segment_size, DIG_SEEK_ORG );
     if( DCRead( iih->sym_fp, iih->lang, header.lang_size ) != header.lang_size ) {
         DCStatus( DS_ERR | DS_INFO_INVALID );
         return( DS_ERR | DS_INFO_INVALID );
@@ -341,7 +341,7 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 
 dip_status InfoRead( FILE *fp, unsigned long offset, size_t size, void *buff )
 {
-    if( DCSeek( fp, offset, DIG_ORG ) ) {
+    if( DCSeek( fp, offset, DIG_SEEK_ORG ) ) {
         DCStatus( DS_ERR | DS_FSEEK_FAILED );
         return( DS_ERR | DS_FSEEK_FAILED );
     }

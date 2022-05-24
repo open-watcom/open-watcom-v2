@@ -88,14 +88,14 @@ FILE *DIGCLIENTRY( Open )( char const *name, dig_open mode )
     return( fopen( name, fmode ) );
 }
 
-int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek where )
 {
     int     whence;
 
-    switch( k ) {
-    case DIG_ORG:   whence = SEEK_SET; break;
-    case DIG_CUR:   whence = SEEK_CUR; break;
-    case DIG_END:   whence = SEEK_END; break;
+    switch( where ) {
+    case DIG_SEEK_ORG:   whence = SEEK_SET; break;
+    case DIG_SEEK_CUR:   whence = SEEK_CUR; break;
+    case DIG_SEEK_END:   whence = SEEK_END; break;
     default:
         return( true );
     }
