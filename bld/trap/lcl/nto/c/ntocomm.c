@@ -38,10 +38,10 @@
 #include "trpimp.h"
 
 
-char *StrCopy( const char *src, char *dst )
+char *StrCopyDst( const char *src, char *dst )
 {
     while( (*dst = *src++) != '\0' ) {
-        ++dst;
+        dst++;
     }
     return( dst );
 }
@@ -104,7 +104,7 @@ unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char 
         case '\0':
             if( ptr != result && ptr[-1] != '/' )
                 *ptr++ = '/';
-            end = StrCopy( name, ptr );
+            end = StrCopyDst( name, ptr );
             //NYI: really should check permission bits
             if( stat( result, tmp ) == 0 )
                 return( end - result );
@@ -130,7 +130,7 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
     char        *end;
 
     if( stat( (char *)name, &tmp ) == 0 ) {
-        end = StrCopy( name, result );
+        end = StrCopyDst( name, result );
         return( end - result );
     }
     if( file_type == DIG_FILETYPE_EXE ) {

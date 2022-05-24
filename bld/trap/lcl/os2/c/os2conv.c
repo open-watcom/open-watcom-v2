@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +113,7 @@ int GetDos32Debug( char __far *err )
 
     rc = DosGetModName( ThisDLLModHandle, sizeof( buff ), buff );
     if( rc ) {
-        StrCopy( TRP_OS2_no_dll, err );
+        StrCopyDst( TRP_OS2_no_dll, err );
         return( FALSE );
     }
     start = buff;
@@ -126,9 +126,9 @@ int GetDos32Debug( char __far *err )
            break;
         }
     }
-    p = StrCopy( LOCATOR, start );
+    p = StrCopyDst( LOCATOR, start );
     if( DosMakePipe( &inh, &outh, sizeof( data ) ) ) {
-        StrCopy( TRP_OS2_no_pipe, err );
+        StrCopyDst( TRP_OS2_no_pipe, err );
         return( FALSE );
     }
     *++p = outh + '0';
@@ -138,13 +138,13 @@ int GetDos32Debug( char __far *err )
     DosClose( outh );
     if( rc )  {
         DosClose( inh );
-        StrCopy( TRP_OS2_no_help, err );
+        StrCopyDst( TRP_OS2_no_help, err );
         return( FALSE );
     }
     rc = DosRead( inh, &data, sizeof( data ), &dummy );
     DosClose( inh );
     if( rc ) {
-        StrCopy( TRP_OS2_no_help, err );
+        StrCopyDst( TRP_OS2_no_help, err );
         return( FALSE );
     }
     DebugFunc = (void __far *)data.dos_debug;

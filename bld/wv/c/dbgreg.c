@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1054,10 +1054,10 @@ void RegNewValue( const mad_reg_info *reginfo,
     MadTypeToDipTypeInfo( mth, &src_ti );
     PushLocation( &src_ll, &src_ti );
     DoAssign();
-    p = StrCopy( GetCmdName( CMD_ASSIGN ), TxtBuff );
-    p = StrCopy( " ", p );
+    p = StrCopyDst( GetCmdName( CMD_ASSIGN ), TxtBuff );
+    p = StrCopyDst( " ", p );
     p += MADRegFullName( reginfo, ".", p, TXT_LEN );
-    p = StrCopy( "=", p );
+    p = StrCopyDst( "=", p );
     max = TXT_LEN - ( p - TxtBuff );
     MADTypeHandleToString( CurrRadix, mth, new_val, p, &max );
     p += max;

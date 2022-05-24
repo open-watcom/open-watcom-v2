@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -220,7 +220,7 @@ static  void    VarModify( a_window wnd, wnd_row row, wnd_piece piece )
             old_radix = VarNewCurrRadix( v );
             ExprValue( ExprSP );
             VarBuildName( &var->i, v, false );
-            StrCopy( TxtBuff, title );
+            StrCopyDst( TxtBuff, title );
             VarPrintText( &var->i, value, PrintValue, TXT_LEN );
             VarKillExprSPCache( &var->i );
             v = VarFindRow( &var->i, row );
@@ -910,11 +910,11 @@ static  void VarRefresh( a_window wnd )
         var->initialized = true;
         repaint = VarInfoWndRefresh( var->vtype, &var->i, &addr, wnd );
         if( var->vtype == VAR_LOCALS ) {
-            p = StrCopy( LIT_DUI( WindowLocals ), TxtBuff );
+            p = StrCopyDst( LIT_DUI( WindowLocals ), TxtBuff );
             if( !IS_NIL_ADDR( addr ) ) {
-                p = StrCopy( " (", p );
+                p = StrCopyDst( " (", p );
                 p = CnvNearestAddr( addr, p, TXT_LEN - ( p - TxtBuff ) );
-                p = StrCopy( ")", p );
+                p = StrCopyDst( ")", p );
             }
             WndSetTitle( wnd, TxtBuff );
         }

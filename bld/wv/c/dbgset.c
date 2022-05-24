@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -274,7 +274,7 @@ bool LangSetInit( void )
     _Alloc( Language, sizeof( InitialLang ) + 1 );
     if( Language == NULL )
         return( false );
-    StrCopy( InitialLang, Language );
+    StrCopyDst( InitialLang, Language );
     return( LangLoad( Language, strlen( Language ) ) );
 }
 
@@ -586,7 +586,7 @@ static char *DumpAToggle( char *p, dig_arch arch, char *toggle )
             }
         }
         *p++ = '/';
-        p = StrCopy( toggle, p );
+        p = StrCopyDst( toggle, p );
         *p++ = ' ';
     }
     return( p );
@@ -941,7 +941,7 @@ static void SupportConf( void )
 
     p = TxtBuff;
     for( curr = SupportRtns; curr != NULL; curr = curr->next ) {
-        p = StrCopy( "}", StrCopy( curr->name, StrCopy( "{", p ) ) );
+        p = StrCopyDst( "}", StrCopyDst( curr->name, StrCopyDst( "{", p ) ) );
         if( p - TxtBuff > 50 ) {
             ConfigLine( TxtBuff );
             p = TxtBuff;

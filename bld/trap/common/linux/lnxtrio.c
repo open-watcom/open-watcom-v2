@@ -116,10 +116,10 @@ int WantUsage( const char *ptr )
     return( *ptr == '?' );
 }
 
-static char *StrCopy( const char *src, char *dst )
+static char *StrCopyDst( const char *src, char *dst )
 {
     while( (*dst = *src++) != '\0' ) {
-        ++dst;
+        dst++;
     }
     return( dst );
 }
@@ -136,7 +136,7 @@ static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name
         if( *path == '\0' || *path == ':' ) {
             if( ptr != result )
                 *ptr++ = '/';
-            end = StrCopy( name, ptr );
+            end = StrCopyDst( name, ptr );
             if( stat( result, tmp ) == 0 )
                 return( end - result );
             if( *path == '\0' )
@@ -159,7 +159,7 @@ static unsigned FindFilePath( dig_filetype file_type, const char *name, char *re
     char        cmd[256];
 
     if( stat( name, &tmp ) == 0 ) {
-        end = StrCopy( name, result );
+        end = StrCopyDst( name, result );
         return( end - result );
     }
     if( file_type == DIG_FILETYPE_EXE ) {
@@ -183,7 +183,7 @@ static unsigned FindFilePath( dig_filetype file_type, const char *name, char *re
                 if( end != NULL ) {
                     /* look in the wd sibling directory of where the command
                        came from */
-                    StrCopy( "wd", end + 1 );
+                    StrCopyDst( "wd", end + 1 );
                     len = TryOnePath( cmd, &tmp, name, result );
                     if( len != 0 ) {
                         return( len );

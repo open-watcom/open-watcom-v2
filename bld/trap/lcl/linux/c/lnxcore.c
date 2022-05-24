@@ -607,7 +607,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
                 }
             }
             if( core_info.ignore_timestamp || chk.st_mtime == core_info.hdr.cmdtime ) {
-                len = StrCopy( name, fullname ) - fullname;
+                len = StrCopyDst( name, fullname ) - fullname;
             }
 #endif
             close( core_info.fd );

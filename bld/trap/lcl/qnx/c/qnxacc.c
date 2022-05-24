@@ -1449,7 +1449,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
         pid = RunningProc( &nid, name, &proc, &name );
     }
     if( pid != 0 ) {
-        len = StrCopy( proc.un.proc.name, fullname ) - fullname;
+        len = StrCopyDst( proc.un.proc.name, fullname ) - fullname;
     } else {
         len = FindFilePath( acc->file_type, name, fullname );
     }

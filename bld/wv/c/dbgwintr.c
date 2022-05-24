@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +109,7 @@ static void MenuDump( int indent, const gui_menu_items *menus )
         while( j-- > 0 )
             *p++ = ' ';
         if( menus->menu[i].style & GUI_STYLE_MENU_SEPARATOR ) {
-            StrCopy( "---------", p );
+            StrCopyDst( "---------", p );
         } else {
             MenuCopy( TxtBuff, menus->menu[i].label, p );
         }
@@ -119,8 +119,8 @@ static void MenuDump( int indent, const gui_menu_items *menus )
             j = indent;
             while( j-- > 0 )
                 *p++ = ' ';
-            p = StrCopy( "- ", p );
-            p = StrCopy( menus->menu[i].hinttext, p );
+            p = StrCopyDst( "- ", p );
+            p = StrCopyDst( menus->menu[i].hinttext, p );
             WndDlgTxt( TxtBuff );
         }
         MenuDump( indent + 4, &menus->menu[i].child );
@@ -134,9 +134,9 @@ static void XDumpMenus( void )
 
     ReqEOC();
     for( wndclass = 0; wndclass < NUM_WNDCLS; wndclass++ ) {
-        p = StrCopy( "The ", TxtBuff );
+        p = StrCopyDst( "The ", TxtBuff );
         p = GetCmdEntry( WndNameTab, wndclass, p );
-        p = StrCopy( " Window", p );
+        p = StrCopyDst( " Window", p );
         WndDlgTxt( TxtBuff );
         MenuDump( 4, &WndInfoTab[wndclass]->popup );
     }

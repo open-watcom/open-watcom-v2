@@ -242,19 +242,19 @@ void LookConf( void )
         if( ptr != TxtBuff ) {
             *ptr = NULLCHAR;
             ConfigLine( TxtBuff );
-            ptr = StrCopy( "/add ", TxtBuff );
+            ptr = StrCopyDst( "/add ", TxtBuff );
             respect = true;
         }
         if( respect != curr->respect_case ) {
             respect = curr->respect_case;
             if( respect ) {
-                ptr = StrCopy( "/respect ", ptr );
+                ptr = StrCopyDst( "/respect ", ptr );
             } else {
-                ptr = StrCopy( "/ignore ", ptr );
+                ptr = StrCopyDst( "/ignore ", ptr );
             }
         }
         *ptr++ = '{';
-        ptr = StrCopy( curr->data, ptr );
+        ptr = StrCopyDst( curr->data, ptr );
         *ptr++ = '}';
     }
     *ptr = NULLCHAR;

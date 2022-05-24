@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -219,7 +219,7 @@ void CallConf( void )
                 if( !first ) {
                     *ptr++ = ',';
                 }
-                ptr = StrCopy( DefParms[i], ptr );
+                ptr = StrCopyDst( DefParms[i], ptr );
                 first = false;
             }
         }
@@ -228,7 +228,7 @@ void CallConf( void )
             *ptr++ = '/';
             *ptr = NULLCHAR;
         } else {
-            StrCopy( DefReturn, ptr );
+            StrCopyDst( DefReturn, ptr );
         }
         ConfigLine( TxtBuff );
     }
@@ -283,10 +283,10 @@ void ProcCall( void )
             if( parm > 0 ) {
                 *p++ = ',';
             }
-            p = StrCopy( parm_reg[parm]->name, p );
+            p = StrCopyDst( parm_reg[parm]->name, p );
         }
         *p++ = ')';
-        StrCopy( MADCallReturnReg( ctype, start )->name, p );
+        StrCopyDst( MADCallReturnReg( ctype, start )->name, p );
         old = ReScan( TxtBuff );
         DoCallSet();
         ReScan( old );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,10 +179,10 @@ void SourceConf( void )
         if( ptr != TxtBuff ) {
             *ptr = NULLCHAR;
             ConfigLine( TxtBuff );
-            ptr = StrCopy( "/add ", TxtBuff );
+            ptr = StrCopyDst( "/add ", TxtBuff );
         }
         *ptr++ = '{';
-        ptr = StrCopy( curr->name, ptr );
+        ptr = StrCopyDst( curr->name, ptr );
         *ptr++ = '}';
     }
     *ptr = NULLCHAR;
@@ -237,7 +237,7 @@ void *OpenSrcFile( cue_handle *cueh )
 #endif
             d = AppendPathDelim( TxtBuff, 0 );
             if( !IsAbsolutePath( buff ) ) {
-                StrCopy( buff, d );
+                StrCopyDst( buff, d );
                 hndl = FOpenSource( TxtBuff, DIPCueMod( cueh ), DIPCueFileId( cueh ) );
                 if( hndl != NULL ) {
                     return( hndl );
@@ -256,7 +256,7 @@ void *OpenSrcFile( cue_handle *cueh )
             rem_name = SkipPathInfo( buff, OP_REMOTE );
             if( rem_name > p )
                 p = rem_name;
-            d = StrCopy( p, d );
+            d = StrCopyDst( p, d );
             *d = NULLCHAR;
         }
         hndl = FOpenSource( TxtBuff, DIPCueMod( cueh ), DIPCueFileId( cueh ) );

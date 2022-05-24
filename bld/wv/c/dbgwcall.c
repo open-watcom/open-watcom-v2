@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,7 +123,7 @@ static  bool    CallGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
     line->extent = WND_MAX_EXTEND;
     switch( piece ) {
     case PIECE_SYMBOL:
-        StrCopy( ":", StrCopy( chain->symbol, TxtBuff ) );
+        StrCopyDst( ":", StrCopyDst( chain->symbol, TxtBuff ) );
         line->text = TxtBuff;
         return( true );
     case PIECE_SOURCE:

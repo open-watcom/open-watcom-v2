@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -249,10 +249,10 @@ static void Usage( void )
     Error( "Usage: rfx trap_file[;trap_parm] [rfx_command]" );
 }
 
-char *StrCopy( const char *src, char *dest )
+char *StrCopyDst( const char *src, char *dest )
 {
     while( (*dest = *src++) != NULLCHAR ) {
-        ++dest;
+        dest++;
     }
     return( dest );
 }
@@ -627,7 +627,7 @@ static void    CopyStrMax( const char *src, char *dst, size_t max_len )
         Copy( src, dst, max_len );
         dst[max_len] = NULLCHAR;
     } else {
-        StrCopy( src, dst );
+        StrCopyDst( src, dst );
     }
 }
 

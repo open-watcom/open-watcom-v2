@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +47,9 @@ void    DlgAbout( void )
     int         i;
     char        *p;
 
-    p = StrCopy( LIT_ENG( Empty ), TxtBuff );
+    p = StrCopyDst( LIT_ENG( Empty ), TxtBuff );
     for( i = 0; i < AboutSize; ++i ) {
-        p = StrCopy( "\r", StrCopy( GetAboutMessage( i ), p ) );
+        p = StrCopyDst( "\r", StrCopyDst( GetAboutMessage( i ), p ) );
     }
     Say2( LIT_DUI( About_The_WATCOM_Debugger ), TxtBuff );
 }

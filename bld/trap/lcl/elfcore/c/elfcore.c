@@ -670,7 +670,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
                     chk.st_mtime = 0;
                 }
                 if( Core.ignore_timestamp || chk.st_mtime == Core.hdr.cmdtime ) {
-                    len = StrCopy( name, fullname ) - fullname;
+                    len = StrCopyDst( name, fullname ) - fullname;
                 } else {
                     /* Executable and core file timestaps don't match */
                     len = 0;

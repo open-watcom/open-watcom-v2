@@ -713,13 +713,12 @@ static int RegAt( const char *from, const char *reg, unsigned len )
     return( 1 );
 }
 
-static char *StrCopy( const char *s, char *d )
+static char *StrCopyDst( const char *src, char *dst )
 {
-    while( ( *d = *s ) != '\0' ) {
-        ++s;
-        ++d;
+    while( ( *dst = *src++ ) != '\0' ) {
+        dst++;
     }
-    return( d );
+    return( dst );
 }
 
 mad_status MADIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
@@ -739,17 +738,17 @@ mad_status MADIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, ma
             *to++ = '+';
             *to++ = '(';
             if( RegAt( start, "bp", 2 ) || RegAt( start, "sp", 2 ) ) {
-                to = StrCopy( "ss", to );
+                to = StrCopyDst( "ss", to );
             } else {
-                to = StrCopy( "ds", to );
+                to = StrCopyDst( "ds", to );
             }
-            to = StrCopy( ":(", to );
+            to = StrCopyDst( ":(", to );
             break;
         case ']':
-            to = StrCopy( "))", to );
+            to = StrCopyDst( "))", to );
             break;
         case ':':
-            to = StrCopy( "):(", to );
+            to = StrCopyDst( "):(", to );
             ++parens;
             break;
         default:

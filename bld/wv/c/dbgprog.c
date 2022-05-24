@@ -548,7 +548,7 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh, dip_priority
                 symfile = image->image_name;
             endstr = Format( buff, LIT_ENG( Sym_Info_Load_Failed ), symfile );
             *endstr++ = ' ';
-            StrCopy( DIPMsgText( DIPStatus ), endstr );
+            StrCopyDst( DIPMsgText( DIPStatus ), endstr );
             Warn( buff );
             break;
         }

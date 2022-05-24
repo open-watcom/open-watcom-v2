@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,7 +118,7 @@ static void AddMessageText( char *str )
         len = strlen( MsgText );
     }
     MsgText = DbgRealloc( MsgText, len + strlen( str ) + 1 );
-    StrCopy( str, MsgText + len );
+    StrCopyDst( str, MsgText + len );
 }
 
 bool SetMsgText( char *message, unsigned *conditions )
@@ -462,11 +463,11 @@ bool ReportTrap( unsigned conditions, bool stack_cmds )
 
     if( conditions & COND_EXCEPTION ) {
         RecordMsgText( &conditions ); // get the 'access violation, etc' message
-        p = StrCopy( LIT_ENG( Task_Exception ), TxtBuff );
+        p = StrCopyDst( LIT_ENG( Task_Exception ), TxtBuff );
         if( MsgText != NULL )
-            StrCopy( MsgText, p );
+            StrCopyDst( MsgText, p );
         MsgText = DbgRealloc( MsgText, strlen( TxtBuff ) + 1 );
-        StrCopy( TxtBuff, MsgText );
+        StrCopyDst( TxtBuff, MsgText );
         DUIMsgBox( MsgText );
     }
     if( conditions & (COND_EXCEPTION|COND_TERMINATE) ) {
@@ -547,7 +548,7 @@ unsigned Go( bool do_flip )
     char        *p;
     unsigned    conditions;
 
-    p = StrCopy( GetCmdName( CMD_GO ), TxtBuff );
+    p = StrCopyDst( GetCmdName( CMD_GO ), TxtBuff );
     if( UserTmpBrk.status.b.active ) {
         p = Format( p, " %A", UserTmpBrk.loc.addr );
         RecordEvent( TxtBuff );

@@ -1564,11 +1564,11 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
     DosGetVersion( &os2ver );
     if( os2ver < 0x200 ) {
-        StrCopy( TRP_OS2_Wrong_Version, err );
+        StrCopyDst( TRP_OS2_Wrong_Version, err );
         return( ver );
     }
     if( DosGetInfoSeg( &gi, &li ) != 0  ) {
-        StrCopy( TRP_OS2_no_info, err );
+        StrCopyDst( TRP_OS2_no_info, err );
         return( ver );
     }
     GblInfo = _MK_FP( gi, 0 );

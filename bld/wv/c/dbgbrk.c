@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -347,18 +347,18 @@ void GetBPAddr( brkp *bp, char *buff )
     char                *p;
 
     if( bp->status.b.unmapped ) {
-        p = StrCopy( LIT_ENG( Image_Not_Loaded ), buff );
+        p = StrCopyDst( LIT_ENG( Image_Not_Loaded ), buff );
         if( bp->image_name != NULL ) {
             *p++ = '(';
-            p = StrCopy( bp->image_name, p );
+            p = StrCopyDst( bp->image_name, p );
             *p++ = ')';
         }
     } else if( !IS_BP_EXECUTE( bp->mth ) && bp->source_line != NULL ) {
-        p = StrCopy( bp->source_line, buff );
+        p = StrCopyDst( bp->source_line, buff );
     } else {
         p = CnvNearestAddr( bp->loc.addr, buff, TXT_LEN );
     }
-    StrCopy( ":", p );
+    StrCopyDst( ":", p );
 }
 
 
@@ -446,9 +446,9 @@ static char     *GetBPAddrText( brkp *bp, char *p )
         p = Format( p, LIT_ENG( Break_on_execute ) );
         p = Format( p, BrkFmt(), bp->loc.addr );
     } else {
-        p = StrCopy( LIT_ENG( Break_on_write ), p );
+        p = StrCopyDst( LIT_ENG( Break_on_write ), p );
         if( bp->source_line != NULL ) {
-            p = StrCopy( bp->source_line, p );
+            p = StrCopyDst( bp->source_line, p );
         } else {
             p = Format( p, "%a", bp->loc.addr );
         }
@@ -481,7 +481,7 @@ bool DispBPMsg( bool stack_cmds )
         if( !bp->status.b.silent ) {
             p = GetBPAddrText( bp, TxtBuff );
             if( !IS_BP_EXECUTE( bp->mth ) ) {
-                p = StrCopy( " - ", p );
+                p = StrCopyDst( " - ", p );
                 p = StrVal( LIT_ENG( OldVal ), bp, p );
                 GetWPVal( bp );
                 p = StrVal( LIT_ENG( NewVal ), bp, p );
@@ -560,7 +560,7 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
             *p++ = '/';
             p = GetCmdEntry( PointNameTab, B_MAPADDRESS, p );
             *p++ = ' ';
-            p = StrCopy( bp->loc.image_name, p );
+            p = StrCopyDst( bp->loc.image_name, p );
             *p++ = ' ';
             p = AddHexSpec( p );
             p = CnvULongHex( bp->loc.addr.mach.segment, p, end - p );
@@ -575,11 +575,11 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
             *p++ = '/';
             p = GetCmdEntry( PointNameTab, B_SYMADDRESS, p );
             *p++ = ' ';
-            p = StrCopy( bp->image_name, p );
+            p = StrCopyDst( bp->image_name, p );
             *p++ = ' ';
-            p = StrCopy( bp->mod_name, p );
+            p = StrCopyDst( bp->mod_name, p );
             *p++ = ' ';
-            p = StrCopy( bp->sym_name, p );
+            p = StrCopyDst( bp->sym_name, p );
             *p++ = ' ';
             p = AddHexSpec( p );
             p = CnvULongHex( bp->cue_diff, p, end - p );
@@ -593,7 +593,7 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
         }
         p = Format( p, " {%s} {%s}", cmds, cond );
         if( bp->initial_countdown != 0 ) {
-            p = StrCopy( " ", p );
+            p = StrCopyDst( " ", p );
             p = AddHexSpec( p );
             p = CnvULongHex( bp->initial_countdown, p, end - p );
         }
@@ -782,7 +782,7 @@ void GetBreakOnImageCmd( const char *name, char *buff, bool clear )
         p = GetCmdEntry( PointNameTab, B_CLEAR, p );
     }
     *p++ = ' ';
-    p = StrCopy( name, p );
+    p = StrCopyDst( name, p );
 }
 
 
@@ -1055,12 +1055,12 @@ bool GetBPSymAddr( brkp *bp, address *addr )
 
     p = buff;
     if( bp->image_name != NULL ) {
-        p = StrCopy( bp->image_name, p );
-        p = StrCopy( "@", p );
+        p = StrCopyDst( bp->image_name, p );
+        p = StrCopyDst( "@", p );
     }
-    p = StrCopy( bp->mod_name, p );
-    p = StrCopy( "@", p );
-    p = StrCopy( bp->sym_name, p );
+    p = StrCopyDst( bp->mod_name, p );
+    p = StrCopyDst( "@", p );
+    p = StrCopyDst( bp->sym_name, p );
     _SwitchOn( SW_AMBIGUITY_FATAL );
     rc = DlgScanCodeAddr( buff, addr );
     _SwitchOff( SW_AMBIGUITY_FATAL );
@@ -1339,7 +1339,7 @@ void SetBPPatch( brkp *bp, char *patch )
 {
     char        *end;
 
-    end = StrCopy( patch, StrCopy( " ", StrCopy( GetCmdName( CMD_DO ), TxtBuff ) ) );
+    end = StrCopyDst( patch, StrCopyDst( " ", StrCopyDst( GetCmdName( CMD_DO ), TxtBuff ) ) );
     if( bp->cmds != NULL ) {
         FreeCmdList( bp->cmds );
     }

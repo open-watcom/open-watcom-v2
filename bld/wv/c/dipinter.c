@@ -1020,11 +1020,11 @@ void InitDbgInfo( void )
         }
         if( dip_count == 0 ) {
             DIPFini();
-            d = StrCopy( LIT_ENG( No_DIPs_Found ), TxtBuff );
+            d = StrCopyDst( LIT_ENG( No_DIPs_Found ), TxtBuff );
             *d++ = ' ';
             *d++ = '(';
             for( p = DIPDefaults; *p != NULLCHAR; p += strlen( p ) + 1 ) {
-                d = StrCopy( p, d );
+                d = StrCopyDst( p, d );
                 *d++ = ',';
             }
             --d;

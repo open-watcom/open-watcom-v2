@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +61,7 @@ static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
 void LocalErrMsg( sys_error code, char *buff )
 {
-    StrCopy( strerror( code ), buff );
+    StrCopyDst( strerror( code ), buff );
 }
 
 sys_handle LocalOpen( const char *name, obj_attrs oattrs )

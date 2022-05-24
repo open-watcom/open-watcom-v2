@@ -468,10 +468,10 @@ static void DOSEnvLkup( char *src, char *dst )
     }
 }
 
-char *StrCopy( const char *src, char *dst )
+char *StrCopyDst( const char *src, char *dst )
 {
     while( (*dst = *src++) != '\0' ) {
-        ++dst;
+        dst++;
     }
     return( dst );
 }
@@ -504,9 +504,9 @@ trap_retval TRAP_FILE( run_cmd )( void )
         args = NULL;
     } else {
         args = UtilBuff + strlen( UtilBuff ) + 1;
-        // StrCopy return a ptr pointing to the end of string at dst
-        dst = StrCopy( UtilBuff, args ) + 1;
-        dst = StrCopy( "/C ", dst );
+        // StrCopyDst return a ptr pointing to the end of string at dst
+        dst = StrCopyDst( UtilBuff, args ) + 1;
+        dst = StrCopyDst( "/C ", dst );
         while( --length >= 0 ) {
             *dst = *src;
             ++dst;
@@ -720,7 +720,7 @@ char *AddDriveAndPath( char *exe_name, char *buff )
             *dst++ = '\\';
         }
     }
-    return( StrCopy( src, dst ) + 1 );
+    return( StrCopyDst( src, dst ) + 1 );
 }
 
 void MergeArgvArray( char *argv, char *dst, unsigned len )

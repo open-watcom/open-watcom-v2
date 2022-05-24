@@ -404,11 +404,11 @@ size_t MakeFileName( char *result, const char *name, const char *ext, obj_attrs 
     const file_components   *info;
     char                    *p;
 
-    p = StrCopy( name, result );
+    p = StrCopyDst( name, result );
     if( *ExtPointer( result, oattrs ) == NULLCHAR ) {
         info = PathInfo( name, oattrs );
         *p++ = info->ext_separator;
-        p = StrCopy( ext, p );
+        p = StrCopyDst( ext, p );
     }
     return( p - result );
 }
@@ -517,14 +517,14 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
     }
     if( !have_ext ) {
         *p++ = file->ext_separator;
-        p = StrCopy( ext, p );
+        p = StrCopyDst( ext, p );
     }
     *p = NULLCHAR;
     if( oattrs & OP_REMOTE ) {
         RemoteStringToFullName( DIG_FILETYPE_PRS, buffer, result, (trap_elen)max_result );
         fh = FileOpen( result, OP_READ | OP_REMOTE );
     } else if( have_path ) {
-        StrCopy( buffer, result );
+        StrCopyDst( buffer, result );
         fh = FileOpen( buffer, OP_READ );
     } else {
         fh = LclStringToFullName( buffer, p - buffer, result );
@@ -604,7 +604,7 @@ bool FindWritable( char const *src, char *dst )
     oattrs = 0;
     src = RealFName( src, &oattrs );
     if( IsWritable( src, oattrs ) ) {
-        StrCopy( src, dst );
+        StrCopyDst( src, dst );
         return( true );
     }
     name = SkipPathInfo( src, oattrs );
@@ -800,11 +800,11 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
     }
     if( !have_ext ) {
         *p++ = LclFile.ext_separator;
-        p = StrCopy( ext, p );
+        p = StrCopyDst( ext, p );
     }
     *p = NULLCHAR;
     if( have_path ) {
-        StrCopy( buffer, buff );
+        StrCopyDst( buffer, buff );
         fp = fopen( buffer, "rb" );
     } else {
         // check open file in current directory or in full path

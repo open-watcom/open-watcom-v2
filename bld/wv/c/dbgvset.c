@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,49 +96,49 @@ static char *Attributes( type_display *curr, char *p )
         for( alias = curr->alias; alias != curr; alias = alias->alias ) {
             if( !alias->is_field && alias->is_struct ) {
                 p = GetCmdEntry( TypeSettings, TY_ISSTRUCT, p );
-                p = StrCopy( " ", p );
-                p = StrCopy( alias->name, p );
-                p = StrCopy( " ", p );
+                p = StrCopyDst( " ", p );
+                p = StrCopyDst( alias->name, p );
+                p = StrCopyDst( " ", p );
                 break;
             }
         }
     }
     if( curr->on_top ) {
         p = GetCmdEntry( TypeSettings, TY_ONTOP, p );
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( curr->has_top ) {
         p = GetCmdEntry( TypeSettings, TY_HASTOP, p );
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( curr->autoexpand ) {
         p = GetCmdEntry( TypeSettings, TY_AUTOEXPAND, p );
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( curr->display & VARDISP_HEX ) {
         p = GetCmdEntry( TypeSettings, TY_HEX, p );
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( curr->display & VARDISP_DECIMAL ) {
         p = GetCmdEntry( TypeSettings, TY_DECIMAL, p );
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( curr->display & VARDISP_CHARACTER ) {
         p = GetCmdEntry( TypeSettings, TY_CHARACTER, p );
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( curr->display & VARDISP_STRING ) {
         p = GetCmdEntry( TypeSettings, TY_STRING, p );
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( curr->display & VARDISP_POINTER ) {
         p = GetCmdEntry( TypeSettings, TY_POINTER, p );
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
 #ifdef I_EVER_SOLVE_THIS_THORNY_HIDE_PROBLEM
     if( curr->display & VARDISP_HIDE ) {
         p = GetCmdEntry( TypeSettings, TY_HIDE, p );
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
 #endif
     if( VarDisplayIsHidden( NULL, VARNODE_CODE ) !=
@@ -148,7 +148,7 @@ static char *Attributes( type_display *curr, char *p )
         } else {
             p = GetCmdEntry( TypeSettings, TY_CODE, p );
         }
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( VarDisplayIsHidden( NULL, VARNODE_INHERIT ) !=
       ( ( ( curr->hide & VARNODE_INHERIT ) != 0 ) ) ) {
@@ -157,7 +157,7 @@ static char *Attributes( type_display *curr, char *p )
         } else {
             p = GetCmdEntry( TypeSettings, TY_INHERIT, p );
         }
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( VarDisplayIsHidden( NULL, VARNODE_COMPILER ) !=
       ( ( ( curr->hide & VARNODE_COMPILER ) != 0 ) ) ) {
@@ -166,7 +166,7 @@ static char *Attributes( type_display *curr, char *p )
         } else {
             p = GetCmdEntry( TypeSettings, TY_COMPILER, p );
         }
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( VarDisplayIsHidden( NULL, VARNODE_PRIVATE ) !=
       ( ( ( curr->hide & VARNODE_PRIVATE ) != 0 ) ) ) {
@@ -175,7 +175,7 @@ static char *Attributes( type_display *curr, char *p )
         } else {
             p = GetCmdEntry( TypeSettings, TY_PRIVATE, p );
         }
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( VarDisplayIsHidden( NULL, VARNODE_PROTECTED ) !=
       ( ( ( curr->hide & VARNODE_PROTECTED ) != 0 ) ) ) {
@@ -184,7 +184,7 @@ static char *Attributes( type_display *curr, char *p )
         } else {
             p = GetCmdEntry( TypeSettings, TY_PROTECTED, p );
         }
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     if( VarDisplayIsHidden( NULL, VARNODE_STATIC ) !=
       ( ( ( curr->hide & VARNODE_STATIC ) != 0 ) ) ) {
@@ -193,7 +193,7 @@ static char *Attributes( type_display *curr, char *p )
         } else {
             p = GetCmdEntry( TypeSettings, TY_STATIC, p );
         }
-        p = StrCopy( " ", p );
+        p = StrCopyDst( " ", p );
     }
     return( p );
 }
@@ -352,28 +352,28 @@ void TypeConf( void )
     type_display *curr;
     type_display *fcurr;
 
-    StrCopy( " {", StrCopy( NameBuff, TxtBuff ) );
+    StrCopyDst( " {", StrCopyDst( NameBuff, TxtBuff ) );
     DUIDlgTxt( TxtBuff );
     for( curr = TypeDisplay; curr != NULL; curr = curr->next ) {
         if( !curr->dirty )
             continue;
         Attributes( curr,
-                    StrCopy( " { ",
-                    StrCopy( curr->name,
-                    StrCopy( " ",
+                    StrCopyDst( " { ",
+                    StrCopyDst( curr->name,
+                    StrCopyDst( " ",
                     GetCmdEntry( TypeSettings, TY_STRUCT,
-                    StrCopy( "  ", TxtBuff ) ) ) ) ) );
+                    StrCopyDst( "  ", TxtBuff ) ) ) ) ) );
         DUIDlgTxt( TxtBuff );
         for( fcurr = curr->fields; fcurr != NULL; fcurr = fcurr->next ) {
             if( !fcurr->dirty )
                 continue;
-            StrCopy( "}",
+            StrCopyDst( "}",
             Attributes( fcurr,
-            StrCopy( " { ",
-            StrCopy( fcurr->name,
-            StrCopy( " ",
+            StrCopyDst( " { ",
+            StrCopyDst( fcurr->name,
+            StrCopyDst( " ",
             GetCmdEntry( TypeSettings, TY_FIELD,
-            StrCopy( "   ", TxtBuff ) ) ) ) ) ) );
+            StrCopyDst( "   ", TxtBuff ) ) ) ) ) ) );
             DUIDlgTxt( TxtBuff );
         }
         DUIDlgTxt( "  }" );

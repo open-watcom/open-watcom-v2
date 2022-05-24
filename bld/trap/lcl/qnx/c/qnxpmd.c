@@ -686,7 +686,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
                 }
             }
             if( PmdInfo.ignore_timestamp || chk.st_mtime==PmdInfo.hdr.cmdtime ) {
-                len = StrCopy( name, fullname ) - fullname;
+                len = StrCopyDst( name, fullname ) - fullname;
             }
             close( PmdInfo.fd );
         }

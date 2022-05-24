@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -175,9 +175,9 @@ long _fork( const char *cmd, size_t len )
         --len;
     }
     args = buff + cmd_len + 1;
-    dst = StrCopy( buff, args ) + 1;
+    dst = StrCopyDst( buff, args ) + 1;
     if( len != 0 ) {
-        dst = StrCopy( "/C ", dst );
+        dst = StrCopyDst( "/C ", dst );
 #ifdef _M_I86
         _fmemcpy( dst, cmd, len );
 #else

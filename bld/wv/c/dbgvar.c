@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -422,14 +422,14 @@ char *VarDisplayType( var_node *v, char *buff, size_t buff_len )
 
     if( v->node_type == NODE_INHERIT ) {
         if( VarNodeExpr( v )[0] != NULLCHAR ) {
-            return( StrCopy( VarNodeExpr( v ), buff ) );
+            return( StrCopyDst( VarNodeExpr( v ), buff ) );
         } else {
-            StrCopy( LIT_ENG( Unknown_type ), buff );
+            StrCopyDst( LIT_ENG( Unknown_type ), buff );
             return( NULL );
         }
     }
     if( !v->have_type || ( len = DIPTypeName( v->th, 0, &tag, buff, buff_len ) ) == 0 ) {
-        StrCopy( LIT_ENG( Unknown_type ), buff );
+        StrCopyDst( LIT_ENG( Unknown_type ), buff );
         return( NULL );
     }
     tag_name = TagName( tag );
@@ -437,7 +437,7 @@ char *VarDisplayType( var_node *v, char *buff, size_t buff_len )
         tag_len = strlen( tag_name );
         if( len + tag_len < buff_len ) {
             memmove( buff+tag_len+1, buff, len+1 );
-            *StrCopy( tag_name, buff ) = ' ';
+            *StrCopyDst( tag_name, buff ) = ' ';
         }
     }
     buff += strlen( buff );
@@ -1550,13 +1550,13 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
     /* unused parameters */ (void)info;
 
     if( v->node_type == NODE_INHERIT ) {
-        name = StrCopy( ": ", TxtBuff );
+        name = StrCopyDst( ": ", TxtBuff );
         if( v->bits & VARNODE_PROTECTED ) {
-            StrCopy( "protected", name );
+            StrCopyDst( "protected", name );
         } else if( v->bits & VARNODE_PRIVATE ) {
-            StrCopy( "private", name );
+            StrCopyDst( "private", name );
         } else {
-            StrCopy( "public", name );
+            StrCopyDst( "public", name );
         }
         return;
     }
@@ -2151,13 +2151,13 @@ char *VarGetValue( var_info *i, var_node *v )
     if( v->value_valid )
         return( v->value );
     if( v->node_type == NODE_INHERIT ) {
-        p = StrCopy( "(", TxtBuff );
+        p = StrCopyDst( "(", TxtBuff );
         if( VarNodeExpr( v )[0] != NULLCHAR ) {
-            p = StrCopy( VarNodeExpr( v ), p );
+            p = StrCopyDst( VarNodeExpr( v ), p );
         } else {
-            p = StrCopy( LIT_ENG( inherited_members ), p );
+            p = StrCopyDst( LIT_ENG( inherited_members ), p );
         }
-        p = StrCopy( ")", p );
+        p = StrCopyDst( ")", p );
         return( TxtBuff );
     }
     old_radix = VarNewCurrRadix( v );
@@ -2609,12 +2609,12 @@ void VarDoAssign( var_info *i, var_node *v, const char *value )
     char        *p;
     char        buff[TXT_LEN];
 
-    p = StrCopy( GetCmdName( CMD_ASSIGN ), buff );
-    p = StrCopy( " ", p );
+    p = StrCopyDst( GetCmdName( CMD_ASSIGN ), buff );
+    p = StrCopyDst( " ", p );
     VarBuildName( i, v, false );
-    p = StrCopy( TxtBuff, p );
-    p = StrCopy( "=", p );
-    p = StrCopy( value, p );
+    p = StrCopyDst( TxtBuff, p );
+    p = StrCopyDst( "=", p );
+    p = StrCopyDst( value, p );
     if( AdvMachState( ACTION_MODIFY_VARIABLE ) ) {
         _SwitchOn( SW_RECORD_LOCATION_ASSIGN );
         if( Spawn( DoAssign ) == 0 ) {
