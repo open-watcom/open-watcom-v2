@@ -127,16 +127,13 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
         return( rc );
     for( p = p2; *p != '\0'; ++p ) {
         p2 = buffer;
-        while( *p != '\0' ) {
-            if( *p == ';' )
-                break;
+        while( *p != '\0' && *p != ';' ) {
             *p2++ = *p++;
         }
         if( p2[-1] != '\\' && p2[-1] != '/' ) {
             *p2++ = '\\';
         }
-        for( p3 = pgm; *p2 = *p3; ++p2, ++p3 )
-            ;
+        p2 = StrCopyDst( pgm, p2 );
         rc = TryPath( buffer, p2, ext_list );
         if( rc == 0 )
             break;

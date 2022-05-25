@@ -308,7 +308,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     src = name = GetInPtr( sizeof( prog_load_req ) );
     rc = FindFilePath( DIG_FILETYPE_EXE, src, buffer );
     endparm = LinkParms;
-    while( *endparm++ != '\0' ) {}      // skip trap parameters
+    while( *endparm++ != '\0' )         // skip trap parameters
+        {}
     strcpy( endparm, buffer );          // add command line
     // result is as follow
     // "trap parameters string"+"\0"+"command line string"+"\0"
@@ -321,10 +322,12 @@ trap_retval TRAP_CORE( Prog_load )( void )
         len = 0;
     } else {
         if( TINY_OK( rc ) ) {
-            while( *src++ != '\0' ) {}
+            while( *src++ != '\0' )
+                {}
             len = GetTotalSizeIn() - ( src - name ) - sizeof( prog_load_req );
             dst = (char *)buffer;
-            while( *dst++ != '\0' ) {};
+            while( *dst++ != '\0' )
+                {}
             memcpy( dst, src, len );
             dst += len;
             _DBG_Writeln( "StartPacket" );

@@ -529,10 +529,10 @@ trap_retval TRAP_CORE( Prog_load )( void )
     if( len > 126 )
         len = 126;
     dst = _MK_FP( psp, CMD_OFFSET + 1 );
-    for( ; len > 0; --len ) {
+    for( ; len-- > 0; ) {
         ch = *parm++;
         if( ch == '\0' ) {
-            if( len == 1 )
+            if( len == 0 )
                 break;
             ch = ' ';
         }

@@ -96,11 +96,9 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;
-    char        *end;
 
     if( stat( name, &tmp ) == 0 ) {
-        end = StrCopyDst( name, result );
-        return( end - result );
+        return( StrCopyDst( name, result ) - result );
     }
     // TODO: Need to find out how to get at the environment for the
     //       debug server process (I think!).

@@ -140,11 +140,9 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;
-    char        *end;
 
     if( stat( (char *)name, &tmp ) == 0 ) {
-        end = StrCopyDst( name, result );
-        return( end - result );
+        return( StrCopyDst( name, result ) - result );
     }
     if( file_type == DIG_FILETYPE_EXE ) {
         return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );

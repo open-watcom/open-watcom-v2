@@ -89,9 +89,7 @@ static void ThreadName( Classjava_lang_Thread* trd, char *buff, int len )
     src = unhand( trd->name )->body;
     len = obj_length( trd->name );
     p = buff;
-    while( *src ) {
-        if( --len < 0 )
-            break;
+    while( *src != '\0' && len-- > 0 ) {
         *p++ = *src++;
     }
     *p = '\0';
@@ -396,8 +394,10 @@ static void LineNumLookup( mad_jvm_findline_ret *info )
     best_ln = ~0L;
     for( cb_idx = 0; cb_idx < nbinclasses; ++cb_idx ) {
         cb = binclasses[cb_idx];
-        if( cb->source_name == NULL ) continue;
-        if( stricmp( cb->source_name, ((ClassClass*)(FindLineInfo.l.class_pointer))->source_name ) != 0 ) continue;
+        if( cb->source_name == NULL )
+            continue;
+        if( stricmp( cb->source_name, ((ClassClass*)(FindLineInfo.l.class_pointer))->source_name ) != 0 )
+            continue;
         mb = cbMethods(cb);
         for( mb_idx = 0; mb_idx < cb->methods_count; ++mb_idx, ++mb ) {
             ln = mb->line_number_table;
@@ -439,10 +439,13 @@ static void LineAddrLookup( mad_jvm_findline_ret *info )
     mb = cbMethods( cc );
     i = 0;
     for( ;; ) {
-        if( i >= cc->methods_count ) return;
+        if( i >= cc->methods_count )
+            return;
         if( !(mb->fb.access & ACC_NATIVE) ) {
             if( FindLineInfo.a.addr >= (unsigned_32)mb->code
-             && FindLineInfo.a.addr < (unsigned_32)mb->code + mb->code_length ) break;
+             && FindLineInfo.a.addr < (unsigned_32)mb->code + mb->code_length ) {
+                break;
+            }
         }
         ++mb;
         ++i;
@@ -466,7 +469,8 @@ static void LineAddrLookup( mad_jvm_findline_ret *info )
             return;
         }
     }
-    if( hi < 0 ) return;
+    if( hi < 0 )
+        return;
     info->line_index = hi;
     info->ret = SR_CLOSEST;
 }
@@ -492,17 +496,21 @@ trap_retval TRAP_CORE( Read_mem )( void )
     case MAD_JVM_FINDCLASS_SELECTOR:
         DoRead( acc->mem_addr.offset, buff, sizeof( buff ) );
         p = strchr( buff, ';' );
-        if( p ) *p = '\0';
+        if( p != NULL )
+            *p = '\0';
         cb = FindClass( EE(), buff, FALSE );
-        if( length < sizeof( cb ) ) return( 0 );
+        if( length < sizeof( cb ) )
+            return( 0 );
         memcpy( data, (char const*)&cb, sizeof( cb ) );
         return( sizeof( cb ) );
     case MAD_JVM_FINDLINECUE_SELECTOR:
-        if( length < sizeof( mad_jvm_findline_ret ) ) return( 0 );
+        if( length < sizeof( mad_jvm_findline_ret ) )
+            return( 0 );
         LineNumLookup( (mad_jvm_findline_ret*)data );
         return( sizeof( mad_jvm_findline_ret ) );
     case MAD_JVM_FINDADDRCUE_SELECTOR:
-        if( length < sizeof( mad_jvm_findline_ret ) ) return( 0 );
+        if( length < sizeof( mad_jvm_findline_ret ) )
+            return( 0 );
         LineAddrLookup( (mad_jvm_findline_ret*)data );
         return( sizeof( mad_jvm_findline_ret ) );
     }
@@ -567,17 +575,26 @@ static void GetRegs( unsigned_32 *pc,
     ExecEnv             *ee;
 
     if( CurrThread == NULL ) {
-        if( pc ) *pc = 0;
-        if( frame ) *frame = 0;
-        if( optop ) *optop = 0;
-        if( vars ) *vars = 0;
+        if( pc != NULL )
+            *pc = 0;
+        if( frame != NULL )
+            *frame = 0;
+        if( optop != NULL )
+            *optop = 0;
+        if( vars != NULL )
+            *vars = 0;
         return;
     }
     ee = (ExecEnv*)CurrThread->eetop;
-    if( pc ) *pc = (unsigned_32)ee->current_frame->lastpc;
-    if( optop ) *optop = (unsigned_32)ee->current_frame->optop;
-    if( vars ) *vars = (unsigned_32)ee->current_frame->vars;
-    if( frame ) *frame = (unsigned_32)ee->current_frame;
+    if( pc != NULL )
+        *pc = (unsigned_32)ee->current_frame->lastpc;
+    if( optop != NULL )
+        *optop = (unsigned_32)ee->current_frame->optop;
+    if( vars != NULL )
+        *vars = (unsigned_32)ee->current_frame->vars;
+    if( frame != NULL ) {
+        *frame = (unsigned_32)ee->current_frame;
+    }
 }
 
 trap_retval TRAP_CORE( Read_regs )( void )
@@ -720,25 +737,27 @@ stack_item *PlantAppletBreak( stack_item *p, ExecEnv *ee )
     buff = walloca( len + 1 );
     dst = buff;
     src = unhand(applet->value)->body;
-    while( *src ) {
-        if( --len < 0 ) break;
+    while( *src != '\0' && len-- > 0 ) {
         *dst++ = *src++;
     }
     *dst = '\0';
     dst = buff;
     for( ;; ) {
         dot = strchr( dst, '.' );
-        if( dot == NULL ) break;
+        if( dot == NULL )
+            break;
         if( stricmp( dot, ".class" ) == 0 ) {
             *dot = '\0';
             break;
         }
-        dst = dot+1;
+        dst = dot + 1;
     }
     cb = FindClass(ee, buff, TRUE);
-    if( cb == NULL ) return( p );
+    if( cb == NULL )
+        return( p );
     mb = FindMethod(cb, "init", "()V");
-    if( mb == NULL ) return( p );
+    if( mb == NULL )
+        return( p );
     AddStartingBreakpoint( (unsigned)mb->code );
     ++AppsLoaded;
     return( p );
@@ -769,25 +788,21 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
-        for( ;; ) {
-            if( len == 0 ) break;
+        for( ; len-- > 0; ) {
             if( *parms == '\0' ) {
                 i++;
             }
             ++parms;
-            --len;
         }
         args = walloca( i * sizeof( *args ) );
         parms = parm_start;
         len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
-        for( ;; ) {
-            if( len == 0 ) break;
+        for( ; len-- > 0; ) {
             if( *parms == '\0' ) {
                 args[ i++ ] = parms + 1;
             }
             ++parms;
-            --len;
         }
         args[ i-1 ] = NULL;
     } else {
@@ -1274,11 +1289,13 @@ trap_retval TRAP_FILE( read )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
-    if( CbOpened == NULL ) return( sizeof( *ret ) );
+    if( CbOpened == NULL )
+        return( sizeof( *ret ) );
     strcpy( tmp, PREFIX );
     *((void**)(tmp+PREFIX_SIZE)) = (void*)CbOpened;
     bytes=LENGTH;
-    if( bytes > acc->len ) bytes = acc->len;
+    if( bytes > acc->len )
+        bytes = acc->len;
     memcpy( buff, tmp, bytes );
     ret->err = 0;
     return( sizeof( *ret ) + bytes );

@@ -40,6 +40,14 @@
 #include "x86cpu.h"
 #endif
 
+static char *StrCopyDst( const char *src, char *dst )
+{
+    while( (*dst = *src++) != '\0' ) {
+        ++dst;
+    }
+    return( dst );
+}
+
 BOOL IsBigSel( WORD sel )
 {
 #if defined( MD_axp ) | defined( MD_ppc )
@@ -451,7 +459,6 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
 {
     const char      *p;
     char            *p2;
-    const char      *p3;
     BOOL            have_ext;
     BOOL            have_path;
     char            *envbuf;
@@ -492,17 +499,13 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
     rc = ERROR_FILE_NOT_FOUND;
     for( p = envbuf; *p != '\0'; ++p ) {
         p2 = buffer;
-        while( *p != '\0' ) {
-            if( *p == ';' ) {
-                break;
-            }
+        while( *p != '\0' && *p != ';' ) {
             *p2++ = *p++;
         }
         if( p2[-1] != '\\' && p2[-1] != '/' ) {
             *p2++ = '\\';
         }
-        for( p3 = pgm; (*p2 = *p3) != '\0'; ++p2, ++p3 ) {
-        }
+        p2 = StrCopyDst( pgm, p2 );
         if( !tryPath( buffer, p2, ext_list ) ) {
             rc = 0;
             break;

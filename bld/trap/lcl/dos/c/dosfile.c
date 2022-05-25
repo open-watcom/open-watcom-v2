@@ -50,6 +50,14 @@ extern tiny_ret_t   __near Fork( const char __far *, unsigned );
 
 static const seek_info  local_seek_method[] = { TIO_SEEK_SET, TIO_SEEK_CUR, TIO_SEEK_END };
 
+static char *StrCopyDst( const char *src, char *dst )
+{
+    while( (*dst = *src++) != '\0' ) {
+        ++dst;
+    }
+    return( dst );
+}
+
 trap_retval TRAP_FILE( get_config )( void )
 {
     file_get_config_ret *ret;
@@ -249,26 +257,21 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
     path = DOSEnvFind( "PATH" );
     if( path == NULL )
         return( rc );
-    for( ;; ) {
-        if( *path == '\0' )
-            break;
+    for( ; *path != '\0'; path++ ) {
         p2 = buffer;
-        while( *path ) {
-            if( *path == ';' )
-                break;
+        while( *path != '\0' && *path != ';' ) {
             *p2++ = *path++;
         }
         if( p2[-1] != '\\' && p2[-1] != '/' ) {
             *p2++ = '\\';
         }
-        for( p3 = pgm; *p2 = *p3; ++p2, ++p3 )
-            {}
+        p2 = StrCopyDst( pgm, p2 );
         rc = TryPath( buffer, p2, ext_list );
         if( TINY_OK( rc ) )
             break;
-        if( *path == '\0' )
+        if( *path == '\0' ) {
             break;
-        ++path;
+        }
     }
     return( rc );
 }

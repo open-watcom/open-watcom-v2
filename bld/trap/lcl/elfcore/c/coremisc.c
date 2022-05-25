@@ -303,8 +303,7 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
     unsigned        len;
 
     if( stat( name, &tmp ) == 0 ) {
-        strcpy( result, name );
-        return( strlen( result ) + 1 );
+        return( StrCopyDst( name, result ) - result );
     }
     if( file_type == DIG_FILETYPE_EXE ) {
         return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );

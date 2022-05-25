@@ -1097,7 +1097,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     /* If PID was not specified, start the debuggee process */
     if( attach_pid == -1 ) {
         isAttached = FALSE;
-        if( FindFilePath( DIG_FILETYPE_EXE, prog, exe_name ) != 0 ) {
+        if( FindFilePath( DIG_FILETYPE_EXE, prog, exe_name ) ) {
             exe_name[0] = '\0';
         }
         parms = AddDriveAndPath( exe_name, UtilBuff );
