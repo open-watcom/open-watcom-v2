@@ -58,6 +58,14 @@ static char *StrCopyDst( const char *src, char *dst )
     return( dst );
 }
 
+static const char *StrCopySrc( const char *src, char *dst )
+{
+    while( (*dst++ = *src) != '\0' ) {
+        src++;
+    }
+    return( src );
+}
+
 trap_retval TRAP_FILE( get_config )( void )
 {
     file_get_config_ret *ret;
@@ -193,24 +201,17 @@ trap_retval TRAP_FILE( erase )( void )
 static tiny_ret_t TryPath( const char *name, char *end, const char *ext_list )
 {
     tiny_ret_t  rc;
-    char        *p;
-    int         done;
     int         mode;
 
-    done = 0;
     mode = 0 ; //IsDOS3 ? 0x40 : 0;
     do {
-        if( *ext_list == '\0' )
-            done = 1;
-        for( p = end; *p = *ext_list; ++p, ++ext_list )
-            {}
+        ext_list = StrCopySrc( ext_list, end ) + 1;
         rc = TinyOpen( name, mode );
         if( TINY_OK( rc ) ) {
             TinyClose( TINY_INFO( rc ) );
             return( rc );
         }
-        ++ext_list;
-    } while( !done );
+    } while( *ext_list != '\0' );
     return( rc );
 }
 
@@ -239,7 +240,7 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
             break;
         }
     }
-    ext_list = "";
+    ext_list = "\0";
     if( have_ext == 0 && file_type == DIG_FILETYPE_EXE ) {
 #if defined( DOSXTRAP )
   #if defined( DOS4G )
@@ -262,7 +263,7 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
         while( *path != '\0' && *path != ';' ) {
             *p2++ = *path++;
         }
-        if( p2[-1] != '\\' && p2[-1] != '/' ) {
+        if( p2 != buffer && p2[-1] != '\\' && p2[-1] != '/' ) {
             *p2++ = '\\';
         }
         p2 = StrCopyDst( pgm, p2 );

@@ -48,6 +48,14 @@ static char *StrCopyDst( const char *src, char *dst )
     return( dst );
 }
 
+static const char *StrCopySrc( const char *src, char *dst )
+{
+    while( (*dst++ = *src) != '\0' ) {
+        src++;
+    }
+    return( src );
+}
+
 BOOL IsBigSel( WORD sel )
 {
 #if defined( MD_axp ) | defined( MD_ppc )
@@ -433,25 +441,16 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 
 static int tryPath( const char *name, char *end, const char *ext_list )
 {
-    char    *p;
-    BOOL    done;
     HANDLE  h;
 
-    done = FALSE;
     do {
-        if( *ext_list == 0 ) {
-            done = 1;
-        }
-        for( p = end; (*p = *ext_list) != 0; ++p,++ext_list ) {
-        }
-
+        ext_list = StrCopySrc( ext_list, end ) + 1;
         h = CreateFile( name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
         if( h != INVALID_HANDLE_VALUE ) {
             CloseHandle( h );
             return( 0 );
         }
-        ++ext_list;
-    } while( !done );
+    } while( *ext_list != '\0' );
     return( -1 );
 }
 
@@ -481,7 +480,7 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
             break;
         }
     }
-    ext_list = "";
+    ext_list = "\0";
     if( have_ext == 0 && file_type == DIG_FILETYPE_EXE ) {
         ext_list = ".com\0.exe\0";
     }
@@ -502,7 +501,7 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
         while( *p != '\0' && *p != ';' ) {
             *p2++ = *p++;
         }
-        if( p2[-1] != '\\' && p2[-1] != '/' ) {
+        if( p2 != buffer && p2[-1] != '\\' && p2[-1] != '/' ) {
             *p2++ = '\\';
         }
         p2 = StrCopyDst( pgm, p2 );
