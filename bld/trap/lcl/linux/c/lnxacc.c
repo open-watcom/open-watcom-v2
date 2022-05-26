@@ -634,11 +634,11 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     char                        *fullname;
     pid_t                       pidd;
 
-    pidd = 0;
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
+    pidd = 0;
     if( acc->file_type == DIG_FILETYPE_EXE ) {
         pidd = RunningProc( name, &name );
     }

@@ -403,8 +403,9 @@ trap_retval TRAP_CORE( Get_err_text )( void )
                 break;
             if( ch == '\n' )
                 ch = ' ';
-            if( ch != '\r' )
+            if( ch != '\r' ) {
                 *d++ = ch;
+            }
         }
         while( d > err_txt && d[-1] == ' ' )
             --d;
@@ -601,7 +602,7 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
 
     have_ext = 0;
     have_path = 0;
-    for( p = pgm, p2 = buffer; *p2 = *p; ++p, ++p2 ) {
+    for( p = pgm, p2 = buffer; (*p2 = *p) != '\0'; ++p, ++p2 ) {
         switch( *p ) {
         case '\\':
         case '/':
@@ -623,8 +624,7 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
         return( rc );
     if( DosScanEnv( "PATH", &p2 ) != 0 )
         return( rc );
-    p = p2;
-    for( ; *p != '\0'; p++ ) {
+    for( p = p2; *p != '\0'; p++ ) {
         p2 = buffer;
         while( *p != '\0' && *p != ';' ) {
             *p2++ = *p++;
@@ -743,16 +743,13 @@ void MergeArgvArray( char *argv, char *dst, unsigned len )
     bool    have_extra;
 
     have_extra = FALSE;
-    for( ;; ) {
-        if( len == 0 )
-            break;
+    for( ; len-- > 0; ) {
         ch = *argv;
         if( ch == '\0' )
             ch = ' ';
         *dst = *argv;
         ++dst;
         ++argv;
-        --len;
         have_extra = TRUE;
     }
     if( have_extra )

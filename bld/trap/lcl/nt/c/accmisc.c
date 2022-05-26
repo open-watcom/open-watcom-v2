@@ -43,7 +43,7 @@
 static char *StrCopyDst( const char *src, char *dst )
 {
     while( (*dst = *src++) != '\0' ) {
-        ++dst;
+        dst++;
     }
     return( dst );
 }

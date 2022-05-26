@@ -203,7 +203,7 @@ static tiny_ret_t TryPath( const char *name, char *end, const char *ext_list )
     tiny_ret_t  rc;
     int         mode;
 
-    mode = 0 ; //IsDOS3 ? 0x40 : 0;
+    mode = 0; //IsDOS3 ? 0x40 : 0;
     do {
         ext_list = StrCopySrc( ext_list, end ) + 1;
         rc = TinyOpen( name, mode );

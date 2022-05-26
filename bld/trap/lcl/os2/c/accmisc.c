@@ -318,13 +318,13 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     starttime = GblInfo->msecs;
     for( ;; ) {
         keysize = sizeof( key );
-        rc = DosMonRead( (void *)&ibuff, DCWW_NOWAIT, (void *)&key,
-                         &keysize );
+        rc = DosMonRead( (void *)&ibuff, DCWW_NOWAIT, (void *)&key, &keysize );
         switch( rc ) {
         case 0:
             break;
         default:
-            if( delay == 0 ) delay = 5000;
+            if( delay == 0 )
+                delay = 5000;
             /* fall through */
         case ERROR_MON_BUFFER_EMPTY:
             key.flag = 0;
@@ -374,21 +374,28 @@ trap_retval TRAP_CORE( Get_err_text )( void )
             s += 3;
             for( ;; ) {
                 ch = *s++;
-                if( ch == ':' ) break;
+                if( ch == ':' )
+                    break;
                 if( ch < '0' || ch > '9' ) {
                     s = err_txt;
                     break;
                 }
             }
         }
-        while( *s == ' ' ) ++s;
+        while( *s == ' ' )
+            ++s;
         for( ;; ) {
             ch = *s++;
-            if( ch == '\0' ) break;
-            if( ch == '\n' ) ch = ' ';
-            if( ch != '\r' ) *d++ = ch;
+            if( ch == '\0' )
+                break;
+            if( ch == '\n' )
+                ch = ' ';
+            if( ch != '\r' ) {
+                *d++ = ch;
+            }
         }
-        while( d > err_txt && d[-1] == ' ' ) --d;
+        while( d > err_txt && d[-1] == ' ' )
+            --d;
         *d = '\0';
     } else if( err < ERR_LAST ) {
         strcpy( err_txt, DosErrMsgs[ err ] );
@@ -593,7 +600,7 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
 
     have_ext = 0;
     have_path = 0;
-    for( p = pgm, p2 = buffer; *p2 = *p; ++p, ++p2 ) {
+    for( p = pgm, p2 = buffer; (*p2 = *p) != '\0'; ++p, ++p2 ) {
         switch( *p ) {
         case '\\':
         case '/':
@@ -617,7 +624,7 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
         return( rc );
     for( ; *p != '\0'; p++ ) {
         p2 = buffer;
-        while( *p != '\0' && *p != ';' )
+        while( *p != '\0' && *p != ';' ) {
             *p2++ = *p++;
         }
         if( p2 != buffer && p2[-1] != '\\' && p2[-1] != '/' ) {
@@ -728,16 +735,13 @@ void MergeArgvArray( char *argv, char *dst, unsigned len )
     bool    have_extra;
 
     have_extra = FALSE;
-    for( ;; ) {
-        if( len == 0 )
-            break;
+    for( ; len-- > 0; ) {
         ch = *argv;
         if( ch == '\0' )
             ch = ' ';
         *dst = *argv;
         ++dst;
         ++argv;
-        --len;
         have_extra = TRUE;
     }
     if( have_extra )
