@@ -275,7 +275,7 @@ int toupper( int c )
 #if defined( __NETWARE_LIBC__ )
 int     __deinit_environment( void *reserved )
 #else
-static void _Stop( void )
+void    _Stop( void )
 #endif
 {
     if( screenID )
@@ -377,6 +377,8 @@ int     __init_environment( void *reserved )
     char    *cmdLineP = Command;
   #endif
 
+    /* unused parameters */ (void)reserved;
+
 #else
 
 LONG _Prelude(
@@ -392,6 +394,10 @@ LONG _Prelude(
 {
     Command = (char *)cmdLineP;
     MyNLMHandle = NLMHandle;
+
+    /* unused parameters */ (void)NLMfileHandle; (void)uninitializedDataLength; (void)loadDirectoryPath;
+    /* unused parameters */ (void)customDataOffset; (void)customDataSize; (void)readRoutineP;
+    /* unused parameters */ (void)initializationErrorScreenID;
 
   #ifdef __NW30__
     if( FileServerMajorVersionNumber != 3 ) {

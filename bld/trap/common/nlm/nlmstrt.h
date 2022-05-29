@@ -30,6 +30,18 @@
 ****************************************************************************/
 
 
+typedef LONG     prelude_func(
+    struct LoadDefinitionStructure  *NLMHandle,
+    struct ScreenStruct             *initializationErrorScreenID,
+    BYTE                            *cmdLineP,
+    BYTE                            *loadDirectoryPath,
+    LONG                            uninitializedDataLength,
+    LONG                            NLMfileHandle,
+    LONG                            (*readRoutineP)(),
+    LONG                            customDataOffset,
+    LONG                            customDataSize
+    );
+
 extern char     *getcmd( char *buff );
 extern char     upper( char ch );
 extern char     lower( char ch );
@@ -52,29 +64,20 @@ extern int      toupper( int c );
 extern int      __init_environment( void *reserved );
 extern int      __deinit_environment( void *reserved );
 #else
-//extern void     _Stop( void );
+extern void     _Stop( void );
 extern int      _Check( void );
-extern void     MainHelper( void );
+//extern void     MainHelper( void );
 extern void     __Null_Argv(void);
 extern void     __Init_Argv(void);
 #endif
 #if defined( __NETWARE_LIBC__ )
-extern LONG     _LibCPrelude(
+extern prelude_func	_LibCPrelude;
+extern prelude_func	_PreludeHook;
 #else
-extern LONG     _Prelude(
+extern prelude_func	_Prelude;
 #endif
-    struct LoadDefinitionStructure  *NLMHandle,
-    struct ScreenStruct             *initializationErrorScreenID,
-    BYTE                            *cmdLineP,
-    BYTE                            *loadDirectoryPath,
-    LONG                            uninitializedDataLength,
-    LONG                            NLMfileHandle,
-    LONG                            (*readRoutineP)(),
-    LONG                            customDataOffset,
-    LONG                            customDataSize
-    );
-extern void __WATCOM_Prelude(void);
+extern void     __WATCOM_Prelude(void);
 #ifdef DEBUG_ME
-extern void ConsolePrintf( char *format, ... );
+extern void     ConsolePrintf( char *format, ... );
 #endif
-extern void WriteStdErr( char *str, int len );
+extern void     WriteStdErr( char *str, int len );
