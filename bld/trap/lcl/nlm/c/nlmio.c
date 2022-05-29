@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,9 +41,9 @@
 #undef FALSE
 
 #include "miniproc.h"
-#if defined ( __NW40__ )
+#if defined( __NW40__ )
     #include "datamig.h"
-#elif defined ( __NW30__ )
+#elif defined( __NW30__ )
     #include "cconfig.h"
 #endif
 

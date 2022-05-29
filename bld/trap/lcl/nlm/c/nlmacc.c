@@ -40,7 +40,7 @@
 
 #include "loader.h"
 //#include "nlmheadr.h"
-#if !defined ( _USE_NEW_KERNEL )
+#if !defined( _USE_NEW_KERNEL )
 #include "nwsemaph.h"
 #endif
 #include "debugapi.h"
@@ -57,6 +57,7 @@
 #include "nw3to5.h"
 #include "nlmport.h"
 #include "nlmclib.h"
+#include "nlmlibc.h"
 #include "nlmio.h"
 
 #include "x86cpu.h"
@@ -69,7 +70,7 @@
 
 #define MH2NLMENTRY(h)  ((nlm_entry *)(h))
 
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
 void *          kSemaphoreAlloc( const char *, long );
 unsigned long   kSemaphoreExamineCount( void *sp );
 int             kSemaphoreFree( void *sp );
@@ -105,7 +106,7 @@ typedef struct msb {
         dword                           errnum;
         trap_cpu_regs                   cpu;
         trap_fpu_regs                   fpu;
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
         void *                          ksem;
         void *                          tksem;
 #else
@@ -145,7 +146,7 @@ msb                                     *MSB;
 msb                                     *MSBHead;
 trap_cpu_regs                           HelperThreadRegs;
 dword                                   ThreadId;
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
 void *                                  kDebugSem = NULL;
 void *                                  kHelperSem = NULL;
 #else
@@ -177,21 +178,8 @@ extern void                     Return( void );
 extern int                      AdjustStack( dword old_esp, dword adjust );
 
 
-/* Must be CLIB! */
+/* Must be CLIB or LIBC! */
 void  _exit( int __status );
-#if defined ( __NW50__ )
-void  NXVmExit( int status ) ;
-
-int   get_app_type       ( void );
-
-/* return flags for get_app_type()... */
-#define LIBRARY_UNKNOWN      0x01  /* thread has default library context     */
-#define LIBRARY_LIBC         0x02  /* thread has specific NKS/LibC context   */
-#define LIBRARY_CLIB         0x04  /* thread has CLib context                */
-#define LIBRARY_JAVA         0x08  /* thread belongs to Java Virtual Machine */
-
-#endif
-
 
 /* from SERVNAME.C */
 extern char ServPref[];
@@ -211,7 +199,7 @@ int         WatchCount;
 /*
 //  Code to release all waiters on a semaphore and delete it
 */
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
 static int msb_KernelSemaphoreReleaseAll( msb * m )
 {
     void *      ksem = m->ksem;
@@ -294,7 +282,7 @@ static msb *LocateThread( T_ProcessID *pid )
     m->in_start_proc = FALSE;
     m->clib_created = FALSE;
     m->to_be_killed = FALSE;
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
     m->ksem = NULL;
     m->tksem = NULL;
 #else
@@ -320,7 +308,7 @@ static void FreeThread( msb *m )
         if( curr == m ) {
             *owner = curr->next;
             _DBG_THREAD(( "Freed it\r\n" ));
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
             if( m->ksem){
                 kSemaphoreFree( m->ksem );
                 m->ksem = NULL;
@@ -350,7 +338,7 @@ static void FreeInvalidThreads( void )
             return;
         if( !ValidatePID( curr->os_id ) ) {
             *owner = curr->next;    /* remove MSB from chain */
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
             if( curr->ksem ){
                 kSemaphoreFree( curr->ksem );
                 curr->ksem = NULL;
@@ -388,7 +376,7 @@ static void WakeDebugger( void )
     if( !DebuggerRunning ) {
         ClearDebugRegs();
         DebuggerRunning = TRUE;
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
         kSemaphoreSignal( kDebugSem );
 #else
         CVSemaphore( DebugSem );
@@ -400,7 +388,7 @@ static void WakeDebugger( void )
 static void SleepDebugger( void )
 {
     DebuggerRunning = FALSE;
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
     kSemaphoreWait( kDebugSem );
 #else
     CPSemaphore( DebugSem );
@@ -448,9 +436,9 @@ static unsigned_8 NPX( void )
 {
     if( HAVE_EMU == 0 )
         return( RealNPXType );
-#if defined ( __NW50__ ) || defined ( __NW40__ )
+#if defined( __NETWARE_LIBC__ ) || defined( __NW40__ )
     return( X86_EMU );
-#elif defined ( __NW30__ )
+#elif defined( __NW30__ )
     {
         struct ExternalPublicDefinitionStructure    *epd;
 
@@ -712,7 +700,7 @@ void BigKludge( msb *m )
 {
     _DBG_EVENT(( "*BigKludge: MSB=%8x xnum=%d PID=%8x\r\n", m, m->xnum, m->os_id ));
     m->asleep = TRUE;
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
     if( NULL == m->ksem ){
         m->ksem = kSemaphoreAlloc( NULL, 0 );
         if( NULL == m->ksem ){
@@ -732,7 +720,7 @@ void BigKludge( msb *m )
         }
         WakeDebugger();
     }
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
     _DBG_THREAD(( "Putting to sleep MSB=%8x on sem=%8x\r\n", m, m->ksem ));
     kSemaphoreWait( m->ksem );
 #else
@@ -767,7 +755,7 @@ void BigKludge( msb *m )
                 _DBG_EVENT(( "  NLMState = NLM_FORCED_INIT_FAILURE\r\n" ));
             }
         } else if( m->clib_created ) {
-#if defined ( __NW50__ )
+#if defined( __NETWARE_LIBC__ )
             int type = get_app_type();
 
             if( type & LIBRARY_CLIB ) {
@@ -792,7 +780,7 @@ void BigKludge( msb *m )
     JumpTo( m );
 }
 
-#if defined ( __NW50__ )    /* This is duplicate to 4.0 but I want to change soon */
+#if defined( __NETWARE_LIBC__ )    /* This is duplicate to 4.0 but I want to change soon */
     static struct debuggerStructure DbgStruct = {
         NULL,
         NULL,
@@ -800,7 +788,7 @@ void BigKludge( msb *m )
         AT_FIRST,
         TSS_FRAME_BIT
     };
-#elif defined ( __NW40__ )
+#elif defined( __NW40__ )
     static struct debuggerStructure DbgStruct = {
         NULL,
         NULL,
@@ -808,7 +796,7 @@ void BigKludge( msb *m )
         AT_FIRST,
         TSS_FRAME_BIT
     };
-#elif defined ( __NW30__ )
+#elif defined( __NW30__ )
     static T_DebuggerStruct DbgStruct = {
         0,
         NULL,
@@ -1155,7 +1143,7 @@ static void LoadHelper( void )
     if( NLMState != NLM_NONE) {
         NLMState = NLM_LOADED;
         _DBG_EVENT(( "LoadHelper: NLMState = NLM_LOADED\r\n" ));
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
         kSemaphoreWait( kHelperSem );
 #else
         CPSemaphore( HelperSem );
@@ -1304,7 +1292,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
                 DebuggerLoadedNLM = NULL;
                 SetupPIDForACleanExit( m->os_id );
             }
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
             _DBG_THREAD(( "----- Releasing semaphore for MSB=%8x, sem=%8x\r\n", m, m->ksem ));
             msb_KernelSemaphoreReleaseAll( m );
             m->ksem = NULL;
@@ -1320,7 +1308,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
         FreeAnNLMListEntry();
     }
     LastNLMListEntry = NULL;
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
     kSemaphoreSignal( kHelperSem );
 #else
     CVSemaphore( HelperSem );
@@ -1339,7 +1327,7 @@ static trap_conditions Execute( msb *which )
         _DBG_THREAD(( "check thread msb=%8x: frozen=%d, asleep=%d\r\n", m, m->frozen, m->asleep ));
         if( !m->frozen && m->asleep ) {
             if( which == NULL || which == m ) {
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
                 _DBG_THREAD(( "Letting a thread execute, MSB=%8x, sem=%8x\r\n", m, m->ksem ));
                 kSemaphoreSignal( m->ksem );
 #else
@@ -1907,7 +1895,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     trap_version        ver;
     extern              struct LoadDefinitionStructure *MyNLMHandle;
 
-#if defined ( __NW40__ )
+#if defined( __NW40__ )
     ImportCLIBSymbols();
 #endif
     remote = remote; parms = parms;
@@ -1918,7 +1906,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     FakeBreak = FALSE;
     RealNPXType = NPXType();
     WatchCount = 0;
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
     kDebugSem = kSemaphoreAlloc( NULL, 0 );
     kHelperSem = kSemaphoreAlloc( NULL, 0 );
 #else
@@ -1941,7 +1929,7 @@ void TRAPENTRY TrapFini( void )
     ExpectingEvent = FALSE;
     while( MSBHead )
         FreeThread( MSBHead );
-#if defined ( _USE_NEW_KERNEL )
+#if defined( _USE_NEW_KERNEL )
     if( kDebugSem )
         KernelSemaphoreReleaseAll( kDebugSem );
     kDebugSem = NULL;

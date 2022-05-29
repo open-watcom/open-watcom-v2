@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,11 +40,11 @@
 #undef ConsolePrintf
 #include "nw3to5.h"
 #include "servio.h"
-
-#include <ecb.h>
-#if defined ( __NW50__ )
-void  NXVmExit( int status ) ;
+#include "nlmlibc.h"
+#if !defined( __NETWARE_LIBC__ )
+    #include <ecb.h>
 #endif
+
 
 extern struct ScreenStruct                     *screenID;
 extern struct LoadDefinitionStruct             *MyNLMHandle;
@@ -60,7 +61,7 @@ void SayGNiteGracey( int return_code )
 {
     return_code = return_code;
     KillMe( MyNLMHandle );
-#if defined ( __NW50__ )
+#if defined( __NETWARE_LIBC__ )
     NXVmExit(return_code);
     // never return
 #else

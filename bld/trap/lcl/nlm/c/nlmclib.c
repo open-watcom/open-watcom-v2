@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include "nw3to5.h"
 #include "nlmclib.h"
 
-#if defined ( __NW50__ )
+#if defined( __NETWARE_LIBC__ )
 
     /*
     //  LibC definitions
@@ -54,7 +55,7 @@
     extern struct   LoadDefinitionStructure * DebugGetNLMFromPID( void *pPID );
     extern void     DebugSetupPIDForACleanExit( void *pPID );
 
-#elif defined ( __NW40__ )
+#elif defined( __NW40__ )
     #define PCBProcessName ProcessName
     #define T_ThreadControlStruct T_ThreadStruct
     #define T_ThreadGroupControlStruct T_ThreadGroupStruct
@@ -80,12 +81,12 @@
 
     static int SymbolsImported = FALSE;
 
-#elif defined ( __NW30__ )
+#elif defined( __NW30__ )
 #else
     #error No Netware Version defined.
 #endif
 
-#if defined ( __NW40__ )
+#if defined( __NW40__ )
 int ImportCLIBSymbols( void )
 {
     unsigned int handle;
@@ -111,7 +112,7 @@ int ValidatePID( T_ProcessID *pPID )
 /*
 //  NW5 and later cannot use PCB ID etc
 */
-#if defined ( __NW50__)
+#if defined( __NETWARE_LIBC__)
     return(DebugValidatePID(pPID));
 #else
     #ifdef __NW40__
@@ -130,7 +131,7 @@ int ValidatePID( T_ProcessID *pPID )
 }
 
 
-#if !defined (  __NW50__ )
+#if !defined( __NETWARE_LIBC__ )
 static T_ThreadControlStruct *GetTCSFromPID( T_ProcessID *pPID )
 {
     if( pPID == NULL ) return( NULL );
@@ -142,7 +143,7 @@ static T_ThreadControlStruct *GetTCSFromPID( T_ProcessID *pPID )
 }
 #endif
 
-#if !defined (  __NW50__ )
+#if !defined( __NETWARE_LIBC__ )
 static T_NLMControlStruct *GetNCSFromPID( T_ProcessID *pPID )
 {
     T_ThreadGroupControlStruct  *pTGCS;
@@ -163,7 +164,7 @@ static T_NLMControlStruct *GetNCSFromPID( T_ProcessID *pPID )
 
 void BoobyTrapPID( T_ProcessID *pPID )
 {
-#if defined (  __NW50__ )
+#if defined( __NETWARE_LIBC__ )
     DebugBoobyTrapPID( pPID );
 #else
     T_ThreadGroupControlStruct  *pTGCS;
@@ -189,7 +190,7 @@ void BoobyTrapPID( T_ProcessID *pPID )
 
 void UnBoobyTrapPID( T_ProcessID *pPID )
 {
-#if defined ( __NW50__ )
+#if defined( __NETWARE_LIBC__ )
     DebugUnBoobyTrapPID( pPID );
     return;
 #else
@@ -216,7 +217,7 @@ void UnBoobyTrapPID( T_ProcessID *pPID )
 
 char *GetPIDName( T_ProcessID *pPID )
 {
-#if defined ( __NW50__ )
+#if defined( __NETWARE_LIBC__ )
     return(DebugGetPIDName( pPID ));
 #else
     #ifdef __NW40__
@@ -232,7 +233,7 @@ char *GetPIDName( T_ProcessID *pPID )
 
 struct LoadDefinitionStructure *GetNLMFromPID( T_ProcessID *pPID )
 {
-#if defined ( __NW50__ )
+#if defined( __NETWARE_LIBC__ )
     return( DebugGetNLMFromPID( pPID ) );
 #else
     T_NLMControlStruct          *pNCS;
@@ -251,7 +252,7 @@ struct LoadDefinitionStructure *GetNLMFromPID( T_ProcessID *pPID )
 
 void SetupPIDForACleanExit( T_ProcessID *pPID )
 {
-#if defined ( __NW50__ )
+#if defined( __NETWARE_LIBC__ )
     DebugSetupPIDForACleanExit( pPID );
     return;
 #else

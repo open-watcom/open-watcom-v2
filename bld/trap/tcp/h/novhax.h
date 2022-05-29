@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,18 +34,18 @@
 ****************************************************************************/
 
 
-#if !defined (_NOVHAX_H)
+#ifndef _NOVHAX_H
 #define _NOVHAX_H
 
 #if defined __cplusplus
 extern "C" {
 #endif
 
-#if !defined ( __NETWARE_LIBC__ )
+#if !defined( __NETWARE_LIBC__ )
 #error  This file is Netware LIBC only
 #endif
 
-#define SOL_SOCKET      0xffff       /* set self socket level */
+#define SOL_SOCKET      0xffff      /* set self socket level */
 #define SO_LINGER       0x0080      /* linger on close if data available */
 #define TCP_NODELAY     1           /* turn off Nagle coalescing */
 #define AF_INET         2           /* Address family internet : UDP, TCP, IP */
@@ -163,7 +164,6 @@ struct timeval {
 
 extern int              select( size_t nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, const struct timeval *timeout );
 
-extern int              setsockopt( int s, int level, int optname, const void *optval, size_t optlen );
 extern int              accept( int s, struct sockaddr *addr, int *len );   //size_t *len);
 
 extern ssize_t          send( int s, const void *msg, size_t len, int flags );

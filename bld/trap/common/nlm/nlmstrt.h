@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,37 +30,50 @@
 ****************************************************************************/
 
 
-extern char *getcmd( char *buff );
-extern char upper( char ch );
-extern char lower( char ch );
-extern int isalpha( char ch );
-extern int strnicmp( const char *a, const char *b, size_t len );
-extern int stricmp( const char *a, const char *b );
-extern char *strupr( char *str );
-extern char *strcpy( char *dst, const char *src );
-extern char *strcat( char *dst, const char *src );
-extern size_t strlen( const char *str );
-extern void * memcpy( void *_dst, const void * _src, size_t len );
-extern int memcmp( const void *a_in, const void *b_in, size_t len );
-extern void *memset( void *dst, int c, size_t len );
-extern char *strchr( const char *s, int c );
-extern int toupper( int c );
-extern void _Stop( void );
-extern int _Check( void );
-extern void    MainHelper( void );
-extern LONG _Prelude(
-         struct LoadDefinitionStructure  *NLMHandle,
-         struct ScreenStruct            *initializationErrorScreenID,
-         BYTE *                           cmdLineP,
-         BYTE *                           loadDirectoryPath,
-         LONG                             uninitializedDataLength,
-         LONG                             NLMfileHandle,
-         LONG                           (*readRoutineP)(),
-         LONG                             customDataOffset,
-         LONG                             customDataSize );
+extern char     *getcmd( char *buff );
+extern char     upper( char ch );
+extern char     lower( char ch );
+extern int      isalpha( char ch );
+#if defined( __NETWARE_LIBC__ )
+extern int      isdigit( char ch );
+#endif
+extern int      strnicmp( const char *a, const char *b, size_t len );
+extern int      stricmp( const char *a, const char *b );
+extern char     *strupr( char *str );
+extern char     *strcpy( char *dst, const char *src );
+extern char     *strcat( char *dst, const char *src );
+extern size_t   strlen( const char *str );
+extern void     *memcpy( void *_dst, const void * _src, size_t len );
+extern int      memcmp( const void *a_in, const void *b_in, size_t len );
+extern void     *memset( void *dst, int c, size_t len );
+extern char     *strchr( const char *s, int c );
+extern int      toupper( int c );
+#if defined( __NETWARE_LIBC__ )
+extern int      __init_environment( void *reserved );
+extern int      __deinit_environment( void *reserved );
+#else
+//extern void     _Stop( void );
+extern int      _Check( void );
+extern void     MainHelper( void );
+extern void     __Null_Argv(void);
+extern void     __Init_Argv(void);
+#endif
+#if defined( __NETWARE_LIBC__ )
+extern LONG     _LibCPrelude(
+#else
+extern LONG     _Prelude(
+#endif
+    struct LoadDefinitionStructure  *NLMHandle,
+    struct ScreenStruct             *initializationErrorScreenID,
+    BYTE                            *cmdLineP,
+    BYTE                            *loadDirectoryPath,
+    LONG                            uninitializedDataLength,
+    LONG                            NLMfileHandle,
+    LONG                            (*readRoutineP)(),
+    LONG                            customDataOffset,
+    LONG                            customDataSize
+    );
 extern void __WATCOM_Prelude(void);
-extern void __Null_Argv(void);
-extern void __Init_Argv(void);
 #ifdef DEBUG_ME
 extern void ConsolePrintf( char *format, ... );
 #endif

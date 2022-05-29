@@ -31,12 +31,15 @@
 ****************************************************************************/
 
 
-#if defined( __NW40__ )
-extern int      ImportCLIBSymbols( void );
+#if defined( __NETWARE_LIBC__ )
+
+/* return flags for get_app_type()... */
+#define LIBRARY_UNKNOWN      0x01  /* thread has default library context     */
+#define LIBRARY_LIBC         0x02  /* thread has specific NKS/LibC context   */
+#define LIBRARY_CLIB         0x04  /* thread has CLib context                */
+#define LIBRARY_JAVA         0x08  /* thread belongs to Java Virtual Machine */
+
+extern int      get_app_type( void );
+extern void     NXVmExit( int status );
+
 #endif
-extern int      ValidatePID( T_ProcessID *pPID );
-extern void     BoobyTrapPID( T_ProcessID *pPID );
-extern void     UnBoobyTrapPID( T_ProcessID *pPID );
-extern char     *GetPIDName( T_ProcessID *pPID );
-extern struct   LoadDefinitionStructure *GetNLMFromPID( T_ProcessID *pPID );
-extern void     SetupPIDForACleanExit( T_ProcessID *pPID );
