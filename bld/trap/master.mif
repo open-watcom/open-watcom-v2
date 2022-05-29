@@ -98,9 +98,7 @@ xname = z$(name)
 xname = $(name)
 !endif
 
-!ifeq target_sys nlm_libc
-os_prefix = libc
-!else ifeq target_os linux
+!ifeq target_os linux
 os_prefix = lnx
 !else ifeq target_os os2v2
 os_prefix = os22
@@ -108,9 +106,7 @@ os_prefix = os22
 os_prefix = $(target_os)
 !endif
 
-!ifeq target_sys nlm_libc
-srv_prefix = nlm
-!else ifeq srv ped
+!ifeq srv ped
 srv_prefix = pls
 !else
 srv_prefix = $(srv)

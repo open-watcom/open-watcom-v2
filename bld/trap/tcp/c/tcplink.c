@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #define BSD_SELECT
 #endif
 
-#if defined ( __NETWARE__ )
+#if defined( __NETWARE__ )
 #define __FUNCTION_DATA_ACCESS
 #endif
 
@@ -47,11 +47,11 @@
 #include <string.h>
 #include <ctype.h>
 
-#if defined ( __RDOS__ )
+#if defined( __RDOS__ )
     #include "rdos.h"
 #elif defined( __NT__ ) || defined( __WINDOWS__ )
     #include <winsock.h>
-#elif defined ( __NETWARE__ )
+#elif defined( __NETWARE__ )
     #include <sys/types.h>
     #include <unistd.h>
 #else
@@ -62,7 +62,7 @@
   #endif
     #include <unistd.h>
     #include <sys/socket.h>
-  #if !defined ( __LINUX__ )
+  #if !defined( __LINUX__ )
     #include <sys/select.h>
   #endif
     #include <sys/time.h>
@@ -90,11 +90,11 @@
 #endif
 
 #include "watcom.h"
-#if defined ( __NETWARE__ )
+#if defined( __NETWARE__ )
     #include "novhax.h"
 #endif
 
-#if defined ( __NETWARE__ )
+#if defined( __NETWARE__ )
     #include "debugme.h"
 #endif
 
@@ -115,7 +115,7 @@
 #endif
 
 
-#if !defined ( __NETWARE__ )
+#if !defined( __NETWARE__ )
     #define _DBG_THREAD( x )
     #define _DBG_DR( x )
     #define _DBG_EVENT( x )
@@ -152,6 +152,13 @@
     #define IS_RET_OK(x)            (x!=-1)
     #define trp_socket              int
     #define trp_socklen             int
+#elif defined( __NETWARE__ )
+    #define INVALID_SOCKET          -1
+    #define IS_VALID_SOCKET(x)      (x>=0)
+    #define IS_RET_OK(x)            (x!=-1)
+    #define trp_socket              int
+    #define trp_socklen             int
+    #define soclose( s )            close( s )
 #else   /* POSIX */
     #define INVALID_SOCKET          -1
     #define IS_VALID_SOCKET(x)      (x>=0)

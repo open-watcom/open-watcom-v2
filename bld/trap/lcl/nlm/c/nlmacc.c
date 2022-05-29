@@ -212,7 +212,7 @@ int         WatchCount;
 //  Code to release all waiters on a semaphore and delete it
 */
 #if defined ( _USE_NEW_KERNEL )
-int msb_KernelSemaphoreReleaseAll( msb * m )
+static int msb_KernelSemaphoreReleaseAll( msb * m )
 {
     void *      ksem = m->ksem;
     m->ksem = NULL;
@@ -221,7 +221,7 @@ int msb_KernelSemaphoreReleaseAll( msb * m )
     return( kSemaphoreSignalAll( ksem ) );
 }
 
-int KernelSemaphoreReleaseAll( void * sp )
+static int KernelSemaphoreReleaseAll( void * sp )
 {
     kSemaphoreSignalAll( sp );
     return ( kSemaphoreFree( sp ) );

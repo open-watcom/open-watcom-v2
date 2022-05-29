@@ -4,6 +4,7 @@ host_os  = nov
 
 target_cpu = x86
 target_os  = nlm
+target_sys = nlm_clib
 
 nlm_ver = 4
 srv   = nov

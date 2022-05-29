@@ -44,7 +44,7 @@ sys_x86_nlm_libc = form novell nlm $(description) &
                         @nversion.tmp &
                         import _cstart_, _argc &
                         file $(%NOVELLNDK)/../libc/imports/libcpre.obj
-sys_x86_nlm     = sys novell $(description) &
+sys_x86_nlm_clib = sys novell $(description) &
                         op st=8k &
                         @nversion.tmp &
                         import @$(nwoss_dir)/common/imp/ownwos.imp &
