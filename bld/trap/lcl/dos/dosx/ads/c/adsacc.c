@@ -67,7 +67,7 @@ typedef struct watch_point {
     word        len;
 } watch_point;
 
-extern void StackCheck();
+extern void StackCheck( void );
 #pragma aux StackCheck "__STK";
 
 trap_cpu_regs           Regs;
@@ -114,54 +114,56 @@ struct {
  * Debugging output code for ADS
  */
 
-int _cnt;
-static int _line=0;
+extern void       InitMeg1( void );
+extern short      Meg1;
 
-extern void InitMeg1();
+int         _cnt;
+
+static int  _line = 0;
 
 static char __far *GetScreenPointer( void )
 {
-    extern      short           Meg1;
     InitMeg1();
     return( _MK_FP( Meg1, 0xB0000 ) );
 }
 
-void MyClearScreen()
+void MyClearScreen( void )
 {
     int i;
 
     char __far *scrn = GetScreenPointer();
 
-    for( i=0;i<80*25;i++ ) {
-        scrn[i*2] = ' ';
-        scrn[i*2+1] = 7;
+    for( i = 0; i < 80 * 25; i++ ) {
+        scrn[i * 2] = ' ';
+        scrn[i * 2 + 1] = 7;
     }
 }
 
 void RawOut( char *str )
 {
-    int         len,i;
+    int         len;
+    int         i;
     char        __far *scr;
     char        __far *scrn = GetScreenPointer();
 
     len = strlen( str );
-    scr = &scrn[_line*80*2];
-    for( i=0;i<len;i++ ) {
-        scr[i*2] = str[i];
-        scr[i*2+1] = 7;
+    scr = &scrn[_line * 80 * 2];
+    for( i = 0; i < len; i++ ) {
+        scr[i * 2] = str[i];
+        scr[i * 2 + 1] = 7;
     }
-    for( i=len;i<80;i++ ) {
-        scr[i*2] = ' ';
-        scr[i*2+1] = 7;
+    for( i = len; i < 80; i++ ) {
+        scr[i * 2] = ' ';
+        scr[i * 2 + 1] = 7;
     }
     _line++;
     if( _line > 24 )
         _line = 0;
 
-    scr = &scrn[_line*80*2];
-    for( i=0;i<80;i++ ) {
-        scr[i*2] = ' ';
-        scr[i*2+1] = 7;
+    scr = &scrn[_line * 80 * 2];
+    for( i = 0; i < 80; i++ ) {
+        scr[i * 2] = ' ';
+        scr[i * 2 + 1] = 7;
     }
 }
 
@@ -170,9 +172,9 @@ void MyOut( char *str, ... )
     va_list     args;
     char        tmpbuff[128];
 
-    sprintf( tmpbuff,"%03d) ",++_cnt );
+    sprintf( tmpbuff, "%03d) ", ++_cnt );
     va_start( args, str );
-    vsprintf( &tmpbuff[5],str, args );
+    vsprintf( &tmpbuff[5], str, args );
     va_end( args );
 
     RawOut( tmpbuff );
@@ -206,7 +208,7 @@ static  word    LookUp( word sdtseg, word seg, word global_sel )
             continue;
         if( GetLinear( otherseg, 0 ) != linear )
             continue;
-                                                                          _DBG3(("lookup %4.4x", otherseg));
+        _DBG3(("lookup %4.4x", otherseg));
         return( otherseg );
     }
     return( 0 );
@@ -234,42 +236,41 @@ static int ReadWrite( int (*r)(word,dword,char*), addr48_ptr *addr, char *data, 
 
     offset = addr->offset;
     segment = addr->segment;
-                                                                          _DBG2(("Read Write %4.4x:%8.8lx",segment,offset));
+    _DBG2(("Read Write %4.4x:%8.8lx", segment, offset));
     if( SegLimit( segment ) >= offset + req - 1 ) {
-                                                                          _DBG2(("Read Write Ok for %d", req));
+        _DBG2(("Read Write Ok for %d", req));
         if( !r( segment, offset, data ) ) {
             segment = AltSegment( segment );
         }
         if( SegLimit( segment ) < offset + req - 1 ) {
-                                                                          _DBG3(("Gosh, we're in trouble dudes"));
+            _DBG3(("Gosh, we're in trouble dudes"));
             if( SegLimit( segment ) == 0 ) {
-                                                                          _DBG3(("Gosh, we're in SERIOUS trouble dudes"));
+                _DBG3(("Gosh, we're in SERIOUS trouble dudes"));
             }
         } else {
-            len = req;
-            while( --len >= 0 ) {
+            for( len = req; len-- > 0; ) {
                 if( !r( segment, offset++, data++ ) ) {
-                                                                          _DBG3(("failed for %4.4x:%8.8lx", segment, offset-1));
+                    _DBG3(("failed for %4.4x:%8.8lx", segment, offset - 1));
                 }
             }
-                                                                          _DBG2(("Read Write Done"));
+            _DBG2(("Read Write Done"));
             return( req );
         }
     }
     len = 0;
-                                                                          _DBG2(("Read Write One byte at a time for %d", req));
-    while( --req >= 0 ) {
+    _DBG2(("Read Write One byte at a time for %d", req));
+    while( req-- > 0 ) {
         if( SegLimit( segment ) < offset )
             break;
         if( !r( segment, offset, data ) ) {
             segment = AltSegment( segment );
         }
         if( !r( segment, offset++, data++ ) ) {
-                                                                          _DBG3(("failed for %4.4x:%8.8lx", segment, offset-1));
+            _DBG3(("failed for %4.4x:%8.8lx", segment, offset - 1));
         }
         ++len;
     }
-                                                                          _DBG2(("Read Write Done"));
+    _DBG2(("Read Write Done"));
     return( len );
 }
 
@@ -290,7 +291,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
-                                                                          _DBG1(( "AccGetConfig" ));
+    _DBG1(( "AccGetConfig" ));
     ret = GetOutPtr( 0 );
     ret->sys.os = DIG_OS_AUTOCAD;
     ret->sys.osmajor = _osmajor;
@@ -342,34 +343,30 @@ trap_retval TRAP_CORE( Machine_data )( void )
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    unsigned       len;
-    int            i;
-    int            read;
+    unsigned            len;
+    unsigned            size;
+    int                 i;
+    int                 read;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-                                                                          _DBG1(( "AccChkSum" ));
+    _DBG1(( "AccChkSum" ));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     len = acc->len;
     ret->result = 0;
-    while( len >= BUFF_SIZE ) {
-        read = ReadMemory( &acc->in_addr, (byte *)&UtilBuff, BUFF_SIZE );
-        acc->in_addr.offset += BUFF_SIZE;
+    size = BUFF_SIZE;
+    while( len > 0 ) {
+        if( size > len )
+            size = len;
+        read = ReadMemory( &acc->in_addr, (byte *)&UtilBuff, size );
+        acc->in_addr.offset += size;
         for( i = 0; i < read; ++i ) {
             ret->result += UtilBuff[i];
         }
-        if( read != BUFF_SIZE )
+        if( read != size )
             return( sizeof( *ret ) );
-        len -= BUFF_SIZE;
-    }
-    if( len != 0 ) {
-        read = ReadMemory( &acc->in_addr, (byte *)&UtilBuff, len );
-        if( read == len ) {
-            for( i = 0; i < len; ++i ) {
-                ret->result += UtilBuff[i];
-            }
-        }
+        len -= size;
     }
     return( sizeof( *ret ) );
 }
@@ -380,7 +377,8 @@ trap_retval TRAP_CORE( Read_mem )( void )
     read_mem_req        *acc;
     void                *ret;
     unsigned            len;
-                                                                          _DBG1(( "ReadMem" ));
+
+    _DBG1(( "ReadMem" ));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     len = ReadMemory( &acc->mem_addr, ret, acc->len );
@@ -391,7 +389,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
-                                                                          _DBG1(( "WriteMem" ));
+
+    _DBG1(( "WriteMem" ));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
@@ -419,7 +418,7 @@ trap_retval TRAP_CORE( Read_io )( void )
 
 trap_retval TRAP_CORE( Write_io )( void )
 {
-    int              len;
+    int                 len;
     write_io_req        *acc;
     write_io_ret        *ret;
     void                *data;
@@ -461,31 +460,27 @@ trap_retval TRAP_CORE( Write_regs )( void )
 
 #pragma aux StackCheck "__STK";
 
-void StackCheck()
+void StackCheck( void )
 {
 }
 
-static void ADSLoop()
+static void ADSLoop( void )
 {
     short scode = RSRSLT;             /* Normal result code (default) */
     int stat;
 
-    for ( ;; ) {                      /* Request/Result loop */
-//                                                                        _DBG0(("ADS Loop"));
-
-        if ((stat = ads_link(scode)) < 0) {
-            cputs( "ADSHELP: bad status from ads_link()\r\n");
-            exit(1);
+    for( ;; ) {                       /* Request/Result loop */
+//        _DBG0(("ADS Loop"));
+        if( (stat = ads_link( scode )) < 0 ) {
+            cputs( "ADSHELP: bad status from ads_link()\r\n" );
+            exit( 1 );
         }
 
         scode = RSRSLT;               /* Reset result code */
-
-        switch (stat) {
-
+        switch( stat ) {
         case RQSUBR:                  /* Handle external function requests */
             scode = RSERR;
             break;
-
         case RQXUNLD:                 /* Handle external function requests */
             DoneAutoCAD = true;
             AtEnd = true;
@@ -500,7 +495,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
 {
     prog_load_ret       *ret;
 
-                                                                          _DBG(("We're in AccLoadProg"));
+    _DBG(("We're in AccLoadProg"));
     GetSysRegs( &SysRegs );
     ret = GetOutPtr( 0 );
     ret->err = 0;
@@ -516,13 +511,14 @@ trap_retval TRAP_CORE( Prog_load )( void )
     Regs.EAX = Regs.EBX = Regs.ECX = Regs.EDX = Regs.ESI = 0;
     Regs.EDI = Regs.EBP = 0;
     IntNum = -1;
-                                                                          _DBG(("We're back from AccLoadProg"));
+    _DBG(("We're back from AccLoadProg"));
     return( sizeof( *ret ) );
 }
 
 void DumpRegs( trap_cpu_regs *regs )
 {
-    regs=regs;
+    (void)regs;
+
     _DBG0(("EAX=%8.8x EBX=%8.8x ECX=%8.8x EDX=%8.8x",
     regs->EAX, regs->EBX, regs->ECX, regs->EDX ));
     _DBG0(("ESI=%8.8x EDI=%8.8x ESP=%8.8x EBP=%8.8x",
@@ -533,7 +529,7 @@ void DumpRegs( trap_cpu_regs *regs )
     regs->CS, regs->EIP, regs->EFL, regs->SS ));
 }
 
-static void MyRunProg()
+static void MyRunProg( void )
 {
     _DBG0(( "RunProg - Regs" ));
     DumpRegs( &Regs );
@@ -550,7 +546,8 @@ static void MyRunProg()
 trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
-                                                                          _DBG1(( "AccKillProg" ));
+
+    _DBG1(( "AccKillProg" ));
     ret = GetOutPtr( 0 );
     RedirectFini();
     AtEnd = true;
@@ -569,7 +566,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
     watch_point     *wp;
     set_watch_req   *acc;
     set_watch_ret   *ret;
-    int             i, needed;
+    int             i;
+    int             needed;
 
     _DBG0(( "AccSetWatch" ));
     acc = GetInPtr( 0 );
@@ -591,8 +589,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
         }
         if( needed <= 4 )
             ret->multiplier |= USING_DEBUG_REG;
-        _DBG0(("addr %4.4x:%8.8lx " "linear %8.8x " "len %d " "needed %d "
-            ,wp->addr.segment, wp->addr.offset, wp->linear, wp->len, needed));
+        _DBG0(("addr %4.4x:%8.8lx " "linear %8.8x " "len %d " "needed %d ",
+               wp->addr.segment, wp->addr.offset, wp->linear, wp->len, needed));
     }
     return( sizeof( *ret ) );
 }
@@ -611,7 +609,7 @@ trap_retval TRAP_CORE( Set_break )( void )
     set_break_ret       *ret;
     opcode_type         brk_opcode; /* cause maybe SS != DS */
 
-_DBG1(( "AccSetBreak" ));
+    _DBG1(( "AccSetBreak" ));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     if( ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) ) == 0 ) {
@@ -641,12 +639,12 @@ static dword *DR[] = { &SysRegs.dr0, &SysRegs.dr1, &SysRegs.dr2, &SysRegs.dr3 };
 static void SetDRnBW( int dr, dword linear, int len ) /* Set DRn for break on write */
 {
     *DR[dr] = linear;
-    SysRegs.dr7 |= ( ( DRLen( len )+DR7_BWR) << DR7_RWLSHIFT( dr ) )
+    SysRegs.dr7 |= ( ( DRLen( len ) + DR7_BWR ) << DR7_RWLSHIFT( dr ) )
                      | ( DR7_GEMASK << DR7_GLSHIFT( dr ) );
 }
 
 
-static bool SetDebugRegs()
+static bool SetDebugRegs( void )
 {
     int         needed;
     int         i;
@@ -680,16 +678,16 @@ static unsigned ProgRun( bool step )
     dword       value;
     prog_go_ret *ret;
 
-                                                                          _DBG1(( "ProgRun" ));
+    _DBG1(( "ProgRun" ));
     ret = GetOutPtr( 0 );
     ret->conditions = COND_CONFIG;
     trace = step ? TRACE_BIT : 0;
     Regs.EFL |= trace;
     if( AtEnd ) {
-                                                                          _DBG2(("No RunProg"));
+        _DBG2(("No RunProg"));
         ;
     } else if( !trace && WatchCount != 0 ) {
-                                                                          _DBG2(("All that trace goop"));
+        _DBG2(("All that trace goop"));
         if( SetDebugRegs() ) {
             MyRunProg();
             SysRegs.dr6 = 0;
@@ -772,15 +770,15 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;
 
-                                                                        _DBG(("AccGetNextAlias"));
+    _DBG(("AccGetNextAlias"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     if( acc->seg == 0 ) {
-                                                                        _DBG(("acc->seg == 0"));
+        _DBG(("acc->seg == 0"));
         ret->seg = Regs.CS;
         ret->alias = Regs.DS;
     } else {
-                                                                        _DBG(("acc->seg == other"));
+        _DBG(("acc->seg == other"));
         ret->seg = 0;
         ret->alias = 0;
     }
@@ -788,7 +786,7 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
 }
 
 #if 0
-static unsigned_16 AccReadUserKey()
+static unsigned_16 AccReadUserKey( void )
 {
     rd_key_return FAR *retblk;
 
@@ -860,8 +858,9 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
 
-                                                                          _DBG0(( "TrapInit" ));
-    remote = remote; parms = parms;
+    /* unused parameters */ (void)remote; (void)parms;
+
+    _DBG0(( "TrapInit" ));
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
@@ -871,11 +870,11 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     WatchCount = 0;
     FakeBreak = false;
     GrabVects();
-                                                                          _DBG0(( "Done TrapInit" ));
+    _DBG0(( "Done TrapInit" ));
     return( ver );
 }
 
-void LetACADDie()
+void LetACADDie( void )
 {
     if( DoneAutoCAD ) {
         DoneAutoCAD = false;
@@ -885,13 +884,13 @@ void LetACADDie()
 
 void TRAPENTRY TrapFini( void )
 {
-                                                                          _DBG0(( "TrapFini" ));
+    _DBG0(( "TrapFini" ));
     ReleVects();
-                                                                          _DBG0(( "Done TrapFini" ));
+    _DBG0(( "Done TrapFini" ));
 }
 
 #if 0
-void GotInt3()
+void GotInt3( void )
 {
     _DBG0(( "Got Int 3!!!" ));
 }
