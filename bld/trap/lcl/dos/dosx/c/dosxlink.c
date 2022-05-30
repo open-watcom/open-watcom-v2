@@ -275,11 +275,10 @@ void __far BackFromProtMode( void )
     SetPSP( OldPSP );
 }
 
-static char *CopyStr( const char __far *src, char *dst )
+static char *StrCopyDst( const char __far *src, char *dst )
 {
-    while( *dst = *src ) {
+    while( (*dst = *src++) != '\0' ) {
         dst++;
-        src++;
     }
     return( dst );
 }
@@ -294,9 +293,9 @@ static char *doSearchPath( const char __far *env, const char *file, char *buff, 
     char        *ptr;
 
     if( env == NULL ) {
-        CopyStr( ";", buff );
+        StrCopyDst( ";", buff );
     } else {
-        CopyStr( ";", CopyStr( env, CopyStr( ".;", buff ) ) );
+        StrCopyDst( ";", StrCopyDst( env, StrCopyDst( ".;", buff ) ) );
     }
     name = buff;
     len = strlen( file );
@@ -345,24 +344,24 @@ static char *FindExtender( char *fullpath, char **endname )
 
     d4gname = DOSEnvFind( "DOS4GPATH" );
     if( d4gname != NULL ) {
-_DBG_Write("Got DOS4GPATH -<");
-_DBG_Write(d4gname);
-_DBG_Writeln(">");
+        _DBG_Write("Got DOS4GPATH -<");
+        _DBG_Write(d4gname);
+        _DBG_Writeln(">");
         len = _fstrlen( d4gname );
         if( len > 4 ) {
             const char __far *ext = d4gname + len - 4;
             if( ext[0] == '.'
-                && LOW( ext[1] ) == 'e'
-                && LOW( ext[2] ) == 'x'
-                && LOW( ext[3] ) == 'e' ) {
-_DBG_Writeln( "is exe\r\n" );
-                *endname = CopyStr( d4gname, fullpath );
+              && LOW( ext[1] ) == 'e'
+              && LOW( ext[2] ) == 'x'
+              && LOW( ext[3] ) == 'e' ) {
+                _DBG_Writeln( "is exe\r\n" );
+                *endname = StrCopyDst( d4gname, fullpath );
                 return( fullpath );
             }
         }
         name = CheckPath( d4gname, fullpath, endname );
         if( name != NULL ) {
-_DBG_Writeln( "found in path\r\n" );
+            _DBG_Writeln( "found in path\r\n" );
             return( name );
         }
     }
@@ -532,11 +531,11 @@ const char *RemoteLink( const char *parms, bool server )
   #endif
         _DBG_Write( "Extender help name: " );
         _DBG_NoTabWriteln( buffp );
-        endparm = CopyStr( parms, endname + 1 );     // reserve length byte
-        endparm = CopyStr( buffp, CopyStr( " ", endparm ) );
+        endparm = StrCopyDst( parms, endname + 1 );     // reserve length byte
+        endparm = StrCopyDst( buffp, StrCopyDst( " ", endparm ) );
   #if defined(PHARLAP)
-        endparm = CopyStr( " ", endparm );
-        endparm = CopyStr( exe_name, endparm );     // add extra executable name
+        endparm = StrCopyDst( " ", endparm );
+        endparm = StrCopyDst( exe_name, endparm );     // add extra executable name
   #endif
         len = endparm - ( endname + 1 );
         if( len > 126 )
