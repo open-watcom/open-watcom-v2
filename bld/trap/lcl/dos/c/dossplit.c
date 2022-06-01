@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,9 +48,7 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     ret->parm_start = 0;
     while( len != 0 ) {
         switch( *cmd ) {
-        case '\0':
-        case ' ':
-        case '\t':
+        CASE_SEPS
             ret->parm_start = 1;
             /* fall down */
         case '/':

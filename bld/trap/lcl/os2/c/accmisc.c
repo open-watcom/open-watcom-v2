@@ -673,9 +673,7 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     ret->parm_start = 0;
     while( len != 0 ) {
         switch( *cmd ) {
-        case '\0':
-        case ' ':
-        case '\t':
+        CASE_SEPS
             ret->parm_start = 1;
             /* fall down */
         case '/':

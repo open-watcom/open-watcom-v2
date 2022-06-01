@@ -183,14 +183,14 @@ bool InitCmd( void )
             *ptr = ' ';
         }
     }
-    memmove( ptr + 1, parm, last - parm + 1 );
-    *ptr = NULLCHAR;
-    ptr = TaskCmd;
     // If the program name was quoted, strip off the quotes
-    if( *ptr == '"' ) {
-        memmove( ptr, ptr + 1, end - ptr );
-        memmove( end - 2, end, last - end + 1 );
+    if( *TaskCmd == '"' ) {
+        memmove( TaskCmd, TaskCmd + 1, end - TaskCmd - 1 );
+        ptr -= 2;
     }
+    // terminate program name and append all parameters
+    *ptr = NULLCHAR;
+    memmove( ptr + 1, parm, last - parm + 1 );
     return( true );
 }
 

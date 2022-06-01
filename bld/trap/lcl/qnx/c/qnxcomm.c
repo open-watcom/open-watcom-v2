@@ -221,7 +221,6 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    char                ch;
     char                *cmd;
     char                *start;
     split_cmd_ret       *ret;
@@ -236,21 +235,23 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     cmd = CollectNid( cmd, len, &nid );
     len -= cmd - start;
     while( len != 0 ) {
-        ch = *cmd;
-        if( !( ch == '\0' || ch == ' ' || ch == '\t' ) ) break;
-        ++cmd;
-        --len;
-    }
-    while( len != 0 ) {
         switch( *cmd ) {
-        case '\0':
-        case ' ':
-        case '\t':
-            ret->parm_start = 1;
-            len = 0;
+        CASE_SEPS
+            break;
+        default:
+            while( len != 0 ) {
+                switch( *cmd ) {
+                CASE_SEPS
+                    ret->parm_start = 1;
+                    len = 0;
+                    continue;
+                }
+                ++cmd;
+            }
             continue;
         }
         ++cmd;
+        --len;
     }
     ret->parm_start += cmd - start;
     ret->cmd_end = cmd - start;

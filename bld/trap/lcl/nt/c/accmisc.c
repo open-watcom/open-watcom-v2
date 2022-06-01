@@ -532,14 +532,18 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     while( len != 0 ) {
         switch( *cmd ) {
         case '\"':
-            while( --len && (*++cmd != '\"') )
+            cmd++;
+            while( --len > 0 && ( *cmd++ != '\"' ) )
                 ;
-            if( len != 0 )
-                break;
-            /* fall down */
-        case '\0':
-        case ' ':
-        case '\t':
+            if( len == 0 )
+                continue;
+            switch( *cmd ) {
+            CASE_SEPS
+                ret->parm_start = 1;
+            }
+            len = 0;
+            continue;
+        CASE_SEPS
             ret->parm_start = 1;
             /* fall down */
         case '/':

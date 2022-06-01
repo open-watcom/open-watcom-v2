@@ -1872,12 +1872,10 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    while( len == 0 ) {
+    while( len != 0 ) {
         switch( *cmd ) {
-        case ' ':
-        case '\t':
+        CASE_SEPS
             ret->parm_start = 1;
-        case '\0':
             len = 0;
             continue;
         }
