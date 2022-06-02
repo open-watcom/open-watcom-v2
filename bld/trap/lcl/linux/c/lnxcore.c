@@ -309,7 +309,8 @@ trap_retval TRAP_CORE( Read_mem )( void )
         int             read_len;
         Elf32_Off       rel_ofs;    // Relative offset within segment
 
-        if( e_phdr->p_type != PT_LOAD ) continue;
+        if( e_phdr->p_type != PT_LOAD )
+            continue;
         if( (acc->mem_addr.offset < e_phdr->p_vaddr) ||
             (acc->mem_addr.offset > e_phdr->p_vaddr + e_phdr->p_memsz - 1) ) {
             continue;
@@ -323,8 +324,9 @@ trap_retval TRAP_CORE( Read_mem )( void )
         /* Adjust length to read from file if p_memsz > p_filesz */
         if( (acc->mem_addr.offset + len) > (e_phdr->p_vaddr + e_phdr->p_filesz) ) {
             read_len = e_phdr->p_filesz - rel_ofs;
-            if( read_len < 0 )
+            if( read_len < 0 ) {
                 read_len = 0;
+            }
         }
         if( len != 0 ) {
             if( read_len != 0 ) {
@@ -404,7 +406,9 @@ static void ReadFPU( struct x86_fpu *r )
     if( core_info.loaded ) {
 #if 0
         memcpy( r, core_info.hdr.x87, sizeof( core_info.hdr.x87 ) );
-        if( !core_info.fpu32 ) FPUExpand( r );
+        if( !core_info.fpu32 ) {
+            FPUExpand( r );
+        }
 #endif
     }
 }
@@ -433,8 +437,9 @@ static int load_core_header( const char *core_name )
     result = false;
     if( core_info.e_hdr == NULL ) {
         core_info.e_hdr = malloc( sizeof( *core_info.e_hdr ) );
-        if( core_info.e_hdr == NULL )
+        if( core_info.e_hdr == NULL ) {
             return( result );
+        }
     }
     fd = open( core_name, O_RDONLY );
     if( fd < 0 )
@@ -601,7 +606,8 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
             if( stat( name, &chk ) != 0 ) {
                 /* try it without the node number */
                 name += 2;
-                while( *name != '/' ) ++name;
+                while( *name != '/' )
+                    ++name;
                 if( stat( name, &chk ) != 0 ) {
                     chk.st_mtime = 0;
                 }

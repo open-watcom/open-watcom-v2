@@ -132,7 +132,7 @@ trap_retval TRAP_FILE( open )( void )
     }
     if( acc->mode & DIG_OPEN_CREATE )
         mode |= O_CREAT | O_TRUNC;
-    handle = open( (char *)GetInPtr( sizeof( *acc ) ), mode, 
+    handle = open( (char *)GetInPtr( sizeof( *acc ) ), mode,
                    S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
     if( handle != -1 ) {
         fcntl( handle, F_SETFD, FD_CLOEXEC );
@@ -203,9 +203,11 @@ static unsigned DoWrite( int hdl, unsigned_8 *ptr, unsigned len )
 
     total = 0;
     for( ;; ) {
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         curr = len;
-        if( curr > INT_MAX ) curr = INT_MAX;
+        if( curr > INT_MAX )
+            curr = INT_MAX;
         rv = write( hdl, ptr, curr );
         if( rv <= 0 ) {
             total = -1;

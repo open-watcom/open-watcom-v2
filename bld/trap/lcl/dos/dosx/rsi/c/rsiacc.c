@@ -472,7 +472,8 @@ static void GetObjectInfo( char *name )
     }   head;
 
     handle = open( name, O_BINARY | O_RDONLY, 0 );
-    if( handle == -1 ) return;
+    if( handle == -1 )
+        return;
     read( handle, &head.dos, sizeof( head.dos ) );
     if( head.dos.signature != DOS_SIGNATURE ) {
         close( handle );
@@ -593,7 +594,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
     for( i = 0; i < WatchCount; ++i ) {
         needed += WatchPoints[i].dregs;
     }
-    if( needed <= 4 ) ret->multiplier |= USING_DEBUG_REG;
+    if( needed <= 4 )
+        ret->multiplier |= USING_DEBUG_REG;
     return( sizeof( *ret ) );
 }
 

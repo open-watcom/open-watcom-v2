@@ -65,9 +65,11 @@ char *CollectNid( char *ptr, unsigned len, nid_t *nidp )
     nid = 0;
     // NYI: will need beefing up when NID's can be symbolic
     for( ;; ) {
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         ch = *ptr;
-        if( ch < '0' || ch > '9' ) break;
+        if( ch < '0' || ch > '9' )
+            break;
         nid = (nid * 10) + ( ch - '0' );
         ++ptr;
         --len;
@@ -172,7 +174,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     tv.tv_sec = acc->wait;
     tv.tv_usec = 0;
     ptv = &tv;
-    if( acc->wait == 0 ) ptv = NULL;
+    if( acc->wait == 0 )
+        ptv = NULL;
 
     ret->key = '\0';
     if ( select( 1, &rdfs, NULL, NULL, ptv ) )

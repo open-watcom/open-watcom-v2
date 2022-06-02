@@ -85,7 +85,7 @@ static void OutNum( ULONG i )
     char    numbuff[NSIZE];
     char    *ptr;
 
-    ptr = numbuff+NSIZE;
+    ptr = numbuff + NSIZE;
     *--ptr = '\0';
     if( i == 0 ) {
         *--ptr = '0';
@@ -187,11 +187,12 @@ static BOOL FindNewHeader( char *name, HFILE *hdl,
     }
     h = open_rc;
     rc = FALSE;
-    while( 1 ) {
+    for( ;; ) {
         if( !SeekRead( h, 0x00, &data, sizeof( data ) ) ) {
             break;
         }
-        if( data != EXE_MZ ) break;   /* MZ */
+        if( data != EXE_MZ )
+            break;   /* MZ */
 
         if( !SeekRead( h, 0x18, &data, sizeof( data ) ) ) {
             break;

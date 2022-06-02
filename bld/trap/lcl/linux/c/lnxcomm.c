@@ -66,7 +66,8 @@ unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char 
     char        *end;
     char        *ptr;
 
-    if( path == NULL ) return( 0 );
+    if( path == NULL )
+        return( 0 );
     ptr = result;
     for( ;; ) {
         switch( *path ) {
@@ -143,7 +144,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     tv.tv_sec = acc->wait;
     tv.tv_usec = 0;
     ptv = &tv;
-    if( acc->wait == 0 ) ptv = NULL;
+    if( acc->wait == 0 )
+        ptv = NULL;
 
     ret->key = '\0';
     if ( select( 1, &rdfs, NULL, NULL, ptv ) )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +84,8 @@ static void PmHelp( int command )
     USHORT      dummy;
     pmhelp_packet       data;
 
-    if( !HaveHelper ) return;
+    if( !HaveHelper )
+        return;
     data.command = command;
     DosWrite( PmOuth, &data, sizeof( data ), &dummy );
 }
@@ -106,7 +108,8 @@ static VOID __far SwitchBack( VOID )
 
 void StopPMHelp( void )
 {
-    if( !HaveHelper ) return;
+    if( !HaveHelper )
+        return;
     PmHelp( PMHELP_EXIT );
     DosClose( PmInh );
     DosClose( PmOuth );
@@ -127,10 +130,12 @@ void PMUnLock( void )
 
 int PMFlip( void )
 {
-    if( !HaveHelper ) return( FALSE );
+    if( !HaveHelper )
+        return( FALSE );
     Response = 0;
     DosSelectSession( SID, 0 );
-    while( !Response ) DosSleep( 100 );
+    while( !Response )
+        DosSleep( 100 );
     return( TRUE );
 }
 
@@ -142,9 +147,13 @@ void StartPMHelp( void )
     TID         tid;
 
     HaveHelper = FALSE;
-    if( DosMakePipe( &PmInh, &HisOuth, sizeof( pmhelp_packet ) ) ) return;
-    if( DosMakePipe( &HisInh, &PmOuth, sizeof( pmhelp_packet ) ) ) return;
-    if( SpawnLocker( HisInh, HisOuth ) ) return;
-    if( DosCreateThread( SwitchBack, &tid, thestack + STACK_SIZE ) ) return;
+    if( DosMakePipe( &PmInh, &HisOuth, sizeof( pmhelp_packet ) ) )
+        return;
+    if( DosMakePipe( &HisInh, &PmOuth, sizeof( pmhelp_packet ) ) )
+        return;
+    if( SpawnLocker( HisInh, HisOuth ) )
+        return;
+    if( DosCreateThread( SwitchBack, &tid, thestack + STACK_SIZE ) )
+        return;
     HaveHelper = TRUE;
 }

@@ -184,7 +184,8 @@ ULONG MakeLocalPtrFlat( void __far *ptr )
  */
 int IsFlatSeg( USHORT seg )
 {
-    if( seg == FlatCS || seg == FlatDS ) return( TRUE );
+    if( seg == FlatCS || seg == FlatDS )
+        return( TRUE );
     return( FALSE );
 
 } /* IsFlatSeg */
@@ -198,15 +199,15 @@ int IsUnknownGDTSeg( USHORT seg )
     if( seg == FlatCS || seg == FlatDS ) {
         return( FALSE );
     }
-    #if 0
-        if( !(seg & 0x04) ) {
-            return( TRUE );
-        }
-    #else
-        if( seg == TaskFS ) {
-            return( TRUE );
-        }
-    #endif
+#if 0
+    if( !(seg & 0x04) ) {
+        return( TRUE );
+    }
+#else
+    if( seg == TaskFS ) {
+        return( TRUE );
+    }
+#endif
     return( FALSE );
 
 } /* IsUnknownGDTSeg */
@@ -219,7 +220,8 @@ ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset )
 {
     dos_debug   buff;
 
-    if( IsFlatSeg( seg ) ) return( offset );
+    if( IsFlatSeg( seg ) )
+        return( offset );
     buff.Pid = Buff.Pid;
     buff.Cmd = DBG_C_SelToLin;
     buff.Value = seg;

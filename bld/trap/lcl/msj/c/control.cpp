@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -183,10 +183,12 @@ extern bool InitProc( void )
     ManagerCB.refcount = 0;
     ProcessCB.refcount = 0;
     MainThreadId = GetCurrentThreadId();
-    if( !SUCCEEDED( CoInitialize( NULL ) ) ) return( FALSE );
+    if( !SUCCEEDED( CoInitialize( NULL ) ) )
+        return( FALSE );
     if( !SUCCEEDED( CoCreateInstance( CLSID_RemoteJavaDebugManager, NULL,
                            CLSCTX_LOCAL_SERVER, IID_IRemoteDebugManager,
-                           (PVOID *)&DbgManager ) ) ) return FALSE;
+                           (PVOID *)&DbgManager ) ) )
+        return FALSE;
     DbgManager->AddRef();
     return( SUCCEEDED( DbgManager->RegisterCallback( &ManagerCB ) ) );
 }
@@ -237,12 +239,15 @@ extern bool FakeRead( HANDLE h, void* buff, unsigned len, unsigned*amtRead )
 /**************************************************************************/
 {
     char *data;
-    if( h != FakeHandle ) return( FALSE );
+    if( h != FakeHandle )
+        return( FALSE );
     data = "JAVAxxxx";
     *(int*)(data+4)=LastNameGiven;
-    if( len > 8 ) len = 8;
+    if( len > 8 )
+        len = 8;
     memcpy( buff, data, len );
-    if( amtRead ) *amtRead = len;
+    if( amtRead )
+        *amtRead = len;
     return( TRUE );
 }
 
@@ -253,11 +258,13 @@ void AddAddressInfo( int idx )
     ImageEntry          *image;
 
     image = &ImageMap[idx];
-    if( image->addrinfo_loaded ) return;
+    if( image->addrinfo_loaded )
+        return;
     MustBeMainThread();
     image->addrinfo_loaded = TRUE;
     cls = image->cls;
-    if( !SUCCEEDED( cls->GetFields(&image->pEnum,FIELD_KIND_METHOD,0,NULL) ) ) return;
+    if( !SUCCEEDED( cls->GetFields(&image->pEnum,FIELD_KIND_METHOD,0,NULL) ) )
+        return;
     image->pEnum->GetCount( &image->num_methods );
     image->base_addr = MAKE_OFFSET( idx, 0, 0 );
     image->end_addr = MAKE_OFFSET( idx, image->num_methods-1, 0xFFFF );
@@ -272,7 +279,8 @@ void AddModuleInfo( int idx )
     ImageEntry          *image;
 
     image = &ImageMap[idx];
-    if( image->modinfo_loaded ) return;
+    if( image->modinfo_loaded )
+        return;
     MustBeMainThread();
     image->modinfo_loaded = TRUE;
     AddAddressInfo( idx );
@@ -302,14 +310,16 @@ void AddCueInfo( int idx )
 
     AddModuleInfo( idx );
     image = &ImageMap[idx];
-    if( image->cues_loaded ) return;
+    if( image->cues_loaded )
+        return;
     MustBeMainThread();
     image->cues_loaded = TRUE;
     image->num_cues = 0;
     for( i = 0; i < image->num_methods; ++i ) {
         pLines = NULL;
         image->methods[i]->GetLineInfo( &pLines );
-        if( pLines == NULL ) continue;
+        if( pLines == NULL )
+            continue;
         pLines->GetCount( &count );
         image->num_cues += count;
         pLines->Release();
@@ -318,7 +328,8 @@ void AddCueInfo( int idx )
     for( i = 0; i < image->num_methods; ++i ) {
         pLines = NULL;
         image->methods[i]->GetLineInfo( &pLines );
-        if( pLines == NULL ) continue;
+        if( pLines == NULL )
+            continue;
         pLines->GetCount( &count );
         for( j = 0; j < count; ++j ) {
             pLines->Next( 1, &curr_cue, &fetched );
@@ -371,7 +382,8 @@ void InitImageMap( void )
                 }
                 MSJFree( image->methods );
             }
-            if( image->cues ) MSJFree( image->cues );
+            if( image->cues )
+                MSJFree( image->cues );
             ++image;
         }
         MSJFree( ImageMap );
@@ -406,8 +418,10 @@ void *GetMethodPointer( addr48_off *poff )
     int image,method;
     image = OFFSET_IMAGE(offset);
     method = OFFSET_METHOD(offset);
-    if( image >= ImageMapTop ) return( NULL );
-    if( method >= ImageMap[image].num_methods ) return( NULL );
+    if( image >= ImageMapTop )
+        return( NULL );
+    if( method >= ImageMap[image].num_methods )
+        return( NULL );
     *poff = OFFSET_OFFSET( offset );
     return( ImageMap[ image ].methods[ method ] );
 }
@@ -511,7 +525,8 @@ static void GetCurrThreadPointerForThisThread()
 extern void ResumeProc( addr48_ptr *pc )
 /**************************************/
 {
-    if( Process.flags != 0 ) return;    // something happened while away
+    if( Process.flags != 0 )
+        return;    // something happened while away
     Process.waiting = TRUE;
     GetCurrThreadPointerForThisThread();
     MustSucceed( CurrThread_T2->Go() );
@@ -522,7 +537,8 @@ extern void ResumeProc( addr48_ptr *pc )
 extern void TraceProc( addr48_ptr *pc )
 /*************************************/
 {
-    if( Process.flags != 0 ) return;    // something happened while away
+    if( Process.flags != 0 )
+        return;    // something happened while away
     Process.waiting = TRUE;
     GetCurrThreadPointerForThisThread();
     TraceThread = CurrThread;
@@ -618,7 +634,8 @@ extern unsigned_32 SetThread( unsigned_32 id )
 
     retval = Process.threadtable;
     while( retval != NULL ) {
-        if( retval->handle == CurrThread ) break;
+        if( retval->handle == CurrThread )
+            break;
         retval = retval->next;
     }
     if( id != 0 ) {
@@ -655,7 +672,8 @@ static unsigned SetCharReturn( wchar_t *uname, void *buff )
         ret->offset = (long)"";
         ret->len = 0;
     } else {
-        if( ReturnValue != NULL ) MSJFree( ReturnValue );
+        if( ReturnValue != NULL )
+            MSJFree( ReturnValue );
         ReturnValue = UnicodeToASCII( uname );
         ret->offset = (long)ReturnValue;
         ret->len = strlen( ReturnValue ) + 1;
@@ -705,16 +723,19 @@ unsigned MadUpStack( addr48_ptr *pc, addr48_ptr *newpc )
     MustBeMainThread();
     newpc->segment = 0;
     newpc->offset = 0;
-    if( CurrThread == NULL ) return( sizeof( *newpc ) );
+    if( CurrThread == NULL )
+        return( sizeof( *newpc ) );
     CurrThread->GetCurrentFrame( &frame );
-    if( frame == NULL ) return( sizeof( *newpc ) );
+    if( frame == NULL )
+        return( sizeof( *newpc ) );
     MapFrameToPC( frame, &curr );
     for( ;; ) {
         junk = frame;
         frame = NULL;
         junk->GetCallingFrame( &frame );
         junk->Release();
-        if( frame == NULL ) return( sizeof( *newpc ) );
+        if( frame == NULL )
+            return( sizeof( *newpc ) );
         prev = curr;
         MapFrameToPC( frame, &curr );
         if( OFFSET_IMAGE( pc->offset ) == OFFSET_IMAGE( prev.offset ) &&
@@ -785,9 +806,12 @@ static void RecordPaint( HWND hwnd )
     int i;
 
     for( i = 0; i < NumInvalid; ++i ) {
-        if( InvalidHWNDs[i] == hwnd ) return;
+        if( InvalidHWNDs[i] == hwnd ) {
+            return;
+        }
     }
-    if( NumInvalid == MAX_HWNDS ) return;
+    if( NumInvalid == MAX_HWNDS )
+        return;
     InvalidHWNDs[NumInvalid] = hwnd;
     ++NumInvalid;
 }
@@ -810,7 +834,8 @@ static void WaitForEvent( void )
     BOOL        is_dbg_wnd;
     int         num_paints;
 
-    if( !IsWindow( DebuggerWindow ) ) DebuggerWindow = NULL;
+    if( !IsWindow( DebuggerWindow ) )
+        DebuggerWindow = NULL;
     if( DebuggerWindow == NULL ) {
 #if 1
         while( WaitForSingleObject( EventSem, 10 ) == WAIT_TIMEOUT ) {
@@ -1031,7 +1056,8 @@ HRESULT __stdcall WProcessCallback::ThreadDestroyEvent( IRemoteThread *thread )
 
     curr = &Process.threadtable;
     while( *curr != NULL ) {
-        if( (*curr)->handle == thread ) break;
+        if( (*curr)->handle == thread )
+            break;
         curr = &(*curr)->next;
     }
     if( *curr != NULL ) {
@@ -1118,13 +1144,16 @@ HRESULT __stdcall WProcessCallback::ClassUnloadEvent( IRemoteThread *,
                 image->methods[j]->Release();
                 image->methods[j] = NULL;
             }
-            if( image->methods ) MSJFree( image->methods );
+            if( image->methods )
+                MSJFree( image->methods );
             image->methods = NULL;
             image->num_methods = 0;
-            if( image->cues ) MSJFree( image->cues );
+            if( image->cues )
+                MSJFree( image->cues );
             image->cues = NULL;
             image->num_cues = 0;
-            if( image->pEnum ) image->pEnum->Release();
+            if( image->pEnum )
+                image->pEnum->Release();
             image->pEnum = NULL;
             break;
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +69,8 @@ unsigned JVMReadMethod(addr48_ptr *addr, void *buf, unsigned len, IUnknown *d)
     ILockBytes *bytes = NULL;
     IEnumLINEINFO *lines = NULL;
     meth->GetBytes(&bytes);
-    if( bytes == NULL ) return 0;
+    if( bytes == NULL )
+        return 0;
     ULARGE_INTEGER i;
     ULONG       amtRead;
     i.LowPart = addr->offset;
@@ -107,12 +109,14 @@ void MapFrameToPC( IRemoteStackFrame * frame, addr48_ptr *addr )
     frame->GetPC( &offpc );
     IRemoteContainerObject *obj = NULL;
     frame->GetMethodObject( &obj );
-    if( obj == NULL ) return;
+    if( obj == NULL )
+        return;
     IRemoteField *field = NULL;
     field = NULL;
     obj->GetType( &field );
     obj->Release();
-    if( field == NULL ) return;
+    if( field == NULL )
+        return;
     IRemoteMethodField *meth = NULL;
     field->QueryInterface( IID_IRemoteMethodField, (void**)&meth );
     if( meth == NULL ) {
@@ -122,11 +126,13 @@ void MapFrameToPC( IRemoteStackFrame * frame, addr48_ptr *addr )
     IRemoteContainerField *cField = NULL;
     field->GetContainer( &cField );
     field->Release();
-    if( cField == NULL ) return;
+    if( cField == NULL )
+        return;
     IRemoteClassField *cls = NULL;
     cField->QueryInterface( IID_IRemoteClassField, (void**)&cls );
     cField->Release();
-    if( cls == NULL ) return;
+    if( cls == NULL )
+        return;
     addr->segment = JVM_CODE_SELECTOR;
     addr->offset = MakeMethodOffset( (void*)cls, (void *)meth, offpc );
     cls->Release();
@@ -191,9 +197,11 @@ extern void GetPCFromThread( IRemoteThread *thd, addr48_ptr *addr )
 
     addr->segment = 0;
     addr->offset = 0;
-    if( thd == NULL ) return;
+    if( thd == NULL )
+        return;
     thd->GetCurrentFrame( &frame );
-    if( frame == NULL ) return;
+    if( frame == NULL )
+        return;
     MapFrameToPC( frame, addr );
     frame->Release();
 }

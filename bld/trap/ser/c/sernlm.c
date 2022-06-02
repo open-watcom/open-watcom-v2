@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -155,8 +155,10 @@ bool Baud( int index )
 {
     LONG        rc;
 
-    if( index == MIN_BAUD ) return( TRUE );
-    if( index == CurrentBaud ) return( TRUE );
+    if( index == MIN_BAUD )
+        return( TRUE );
+    if( index == CurrentBaud )
+        return( TRUE );
     rc = AIOConfigurePort( ComPortHandle, Divisor[index], AIO_DATA_BITS_8,
                     AIO_STOP_BITS_1, AIO_PARITY_NONE,
                     AIO_HARDWARE_FLOW_CONTROL_OFF );
@@ -206,8 +208,10 @@ char *ParsePortSpec( const char **spec )
         } while( *parm >= '0' && *parm <= '9' );
         *var = num;
     }
-    if( *parm != '\0' && *parm != '.' ) return( TRP_ERR_invalid_serial_port_number );
-    if( spec != NULL ) *spec = parm;
+    if( *parm != '\0' && *parm != '.' )
+        return( TRP_ERR_invalid_serial_port_number );
+    if( spec != NULL )
+        *spec = parm;
 
     if( PortNumber != -1 ) {
         AIOReleasePort( ComPortHandle );
@@ -217,7 +221,8 @@ char *ParsePortSpec( const char **spec )
                                         (BYTE *)"Debug Server Serial IO",
                                         ASYNCIOSignature );
     }
-    if( port == -1 ) port = com_num - 1;
+    if( port == -1 )
+        port = com_num - 1;
     num = port;
     hardware_type = AIO_COMX_TYPE;
     switch( rc = AIOAcquirePortWithRTag( &hardware_type, &board_number,
@@ -225,7 +230,9 @@ char *ParsePortSpec( const char **spec )
     case AIO_SUCCESS:
         break;
     case AIO_QUALIFIED_SUCCESS:
-        if( port == num ) break;
+        if( port == num )
+            break;
+        /* fall through */
     case AIO_TYPE_NUMBER_INVALID:
     case AIO_BOARD_NUMBER_INVALID:
     case AIO_PORT_NUMBER_INVALID:
@@ -234,16 +241,16 @@ char *ParsePortSpec( const char **spec )
     case AIO_FAILURE:
         return( TRP_ERR_serial_port_not_available );
     default:
-        {
-            #undef static
-            static char num[2];
+      {
+        #undef static
+        static char num[2];
 
-            rc = -rc;
-            num[0] = rc / 10 + '0';
-            num[1] = rc % 10;
-            num[2] = 0;
-            return( num );
-        }
+        rc = -rc;
+        num[0] = rc / 10 + '0';
+        num[1] = rc % 10;
+        num[2] = 0;
+        return( num );
+      }
     }
     PortNumber = port;
     return( NULL );

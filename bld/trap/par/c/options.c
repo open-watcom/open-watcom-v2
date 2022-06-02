@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,9 +82,12 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
             SetDlgItemText( hwnd, IDDI_PORT_EDIT, ServParms + 1 );
             EnableWindow( edit, TRUE );
         }
-        if( num < 3 ) EnableWindow( GetDlgItem( hwnd, IDDI_LPT3 ), FALSE );
-        if( num < 2 ) EnableWindow( GetDlgItem( hwnd, IDDI_LPT2 ), FALSE );
-        if( num < 1 ) EnableWindow( GetDlgItem( hwnd, IDDI_LPT1 ), FALSE );
+        if( num < 3 )
+            EnableWindow( GetDlgItem( hwnd, IDDI_LPT3 ), FALSE );
+        if( num < 2 )
+            EnableWindow( GetDlgItem( hwnd, IDDI_LPT2 ), FALSE );
+        if( num < 1 )
+            EnableWindow( GetDlgItem( hwnd, IDDI_LPT1 ), FALSE );
         return( TRUE );
 
     case WM_COMMAND:

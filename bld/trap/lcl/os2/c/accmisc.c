@@ -141,7 +141,8 @@ long OpenFile( char *name, USHORT mode, int flags )
                 openflags,      /* open the file */
                 openmode,       /* deny-none, inheritance */
                 0 );            /* reserved */
-    if( rc != 0 ) return( 0xFFFF0000 | rc );
+    if( rc != 0 )
+        return( 0xFFFF0000 | rc );
     return( hdl );
 }
 
@@ -302,7 +303,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     delay = acc->wait * 1000UL;
     ret->key = 0;
     if( DosMonOpen( "kbd$", &mon ) != 0 ) {
-        if( delay == 0 ) delay = 5000;
+        if( delay == 0 )
+            delay = 5000;
         DosSleep( delay );
         return( sizeof( *ret ) );
     }
@@ -311,7 +313,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     if( DosMonReg( mon, (void *)&ibuff, (void *)&obuff,
                     1, GblInfo->sgCurrent ) != 0 ) {
         DosMonClose( mon );
-        if( delay == 0 ) delay = 5000;
+        if( delay == 0 )
+            delay = 5000;
         DosSleep( delay );
         return( sizeof( *ret ) );
     }
@@ -334,7 +337,9 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
             DosMonClose( mon );
             return( sizeof( *ret ) );
         }
-        if( key.flag & 0x40 ) break; /* a key break code */
+        if( key.flag & 0x40 ) {
+            break; /* a key break code */
+        }
     }
     DosMonClose( mon );
     ret->key = key.info.chChar + ( (unsigned)key.info.chScan << 8 );
@@ -467,7 +472,8 @@ static char *DOSEnvFind( char *src )
 {
     char        *env;
 
-    if( DosScanEnv( src, &env ) == 0 ) return( env );
+    if( DosScanEnv( src, &env ) == 0 )
+        return( env );
     return( NULL );
 }
 

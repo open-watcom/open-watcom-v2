@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,7 +100,8 @@ void puthex( unsigned long x )
 
 void putrc( char *func, WORD rc )
 {
-    if( rc == 0 ) return;
+    if( rc == 0 )
+        return;
     putstring( func );
     putstring( " returned " );
     puthex( rc );
@@ -249,7 +251,8 @@ putconnstatus( Connection );
         p = -1;
         for( ;; ) {
             if( i < 0 ) {
-                if( p != -1 ) break;
+                if( p != -1 )
+                    break;
                 DosSemWait( &RecvSem, 1000 );
                 i = NUM_REC_BUFFS-1;
             }
@@ -265,7 +268,8 @@ putconnstatus( Connection );
         _fmemcpy( data, Buffer[p], got );
         recvd += got;
         PostAListen( p );
-        if( got != MAX_DATA_SIZE ) break;
+        if( got != MAX_DATA_SIZE )
+            break;
         data = (char *)data + got;
     }
 

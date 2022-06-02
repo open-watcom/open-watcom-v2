@@ -61,7 +61,8 @@ void AddAllCurrentModules( void )
     MODULEENTRY me;
 
     me.dwSize = sizeof( MODULEENTRY );
-    if( !ModuleFirst( &me ) ) return;
+    if( !ModuleFirst( &me ) )
+        return;
     do {
         if( me.hModule != DebugeeModule ) {
             AddModuleLoaded( me.hModule, FALSE );

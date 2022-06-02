@@ -438,7 +438,8 @@ static pid_t RunningProc( char *name, char **name_ret )
 
     for( ;; ) {
         ch = *name;
-        if( ch != ' ' && ch != '\t' ) break;
+        if( ch != ' ' && ch != '\t' )
+            break;
         ++name;
     }
     if( name_ret != NULL ) {
@@ -446,7 +447,8 @@ static pid_t RunningProc( char *name, char **name_ret )
     }
     pid = 0;
     for( ;; ) {
-        if( *name < '0' || *name > '9' ) break;
+        if( *name < '0' || *name > '9' )
+            break;
         pid = (pid * 10) + (*name - '0');
         ++name;
     }
@@ -467,8 +469,7 @@ static int nto_breakpoint( addr_off addr, int type, int size )
     if( devctl( ProcInfo.procfd, DCMD_PROC_BREAK, &brk, sizeof( brk ), 0 ) != EOK ) {
         dbg_print(( "failed to manipulate breakpoint!\n" ));
         return( 1 );
-    }
-    else {
+    } else {
         return( 0 );
     }
 }
@@ -555,7 +556,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     if( acc->true_argv ) {
         i = 1;
         for( ;; ) {
-            if( len == 0 ) break;
+            if( len == 0 )
+                break;
             if( *parms == '\0' ) {
                 i++;
             }
@@ -567,7 +569,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
         len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
         for( ;; ) {
-            if( len == 0 ) break;
+            if( len == 0 )
+                break;
             if( *parms == '\0' ) {
                 args[i++] = parms + 1;
             }

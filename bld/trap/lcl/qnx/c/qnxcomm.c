@@ -75,22 +75,26 @@ char *CollectNid( char *ptr, unsigned len, nid_t *nidp )
 
     *nidp = 0;
     start = ptr;
-    if( ptr[0] != '/' || ptr[1] != '/' ) return( ptr );
+    if( ptr[0] != '/' || ptr[1] != '/' )
+        return( ptr );
     len -= 2;
     ptr += 2;
     nid = 0;
     //NYI: will need beefing up when NID's can be symbolic
     for( ;; ) {
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         ch = *ptr;
-        if( ch < '0' || ch > '9' ) break;
+        if( ch < '0' || ch > '9' )
+            break;
         nid = (nid * 10) + ( ch - '0' );
         ++ptr;
         --len;
     }
     *nidp = nid;
     //NYI: how do I check to see if NID is valid?
-    if( len == 0 ) return( ptr );
+    if( len == 0 )
+        return( ptr );
     switch( ptr[0] ) {
     case ' ':
     case '\t':
@@ -176,7 +180,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     timeout = acc->wait * 10;
-    if( timeout == 0 ) timeout = -1;
+    if( timeout == 0 )
+        timeout = -1;
     ret->key = '\0';
     con = console_open( 2, O_WRONLY );
     if( con == NULL ) {
@@ -189,7 +194,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
 
     con_hdl = open( con_name, O_RDONLY );
     if( con_hdl < 0 ) {
-        if( timeout == -1 ) timeout = 50;
+        if( timeout == -1 )
+            timeout = 50;
         sleep( timeout / 10 );
         return( sizeof( *ret ) );
     }

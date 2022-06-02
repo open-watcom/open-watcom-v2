@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,9 @@ int NumPrinters()
 
     par = _MK_FP( INFO_SEG, PAR_BASE );
     for( i = 3; i > 0; --i ) {
-        if( par[i-1] != 0 ) return( i );
+        if( par[i-1] != 0 ) {
+            return( i );
+        }
     }
     return( 0 );
 }

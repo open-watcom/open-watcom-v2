@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -163,7 +164,8 @@ unsigned int CallDosDebug( dos_debug __far *buff )
                     strcmp( class_name, "WTool" ) == 0 ) {
                     switch( qmsg.msg ) {
                     case WM_PAINT:
-                        if( num_paints >= MAX_PAINTS ) --num_paints;
+                        if( num_paints >= MAX_PAINTS )
+                            --num_paints;
                         paints[num_paints].hwnd = qmsg.hwnd;
                         ps = WinBeginPaint( qmsg.hwnd, 0, &paints[ num_paints ].rcl );
                         GpiErase( ps );
@@ -176,13 +178,13 @@ unsigned int CallDosDebug( dos_debug __far *buff )
                         CantDoIt();
                         break;
                     case WM_MOUSEMOVE:
-                    {
+                      {
                         HPOINTER hourglass = WinQuerySysPointer( HWND_DESKTOP, SPTR_WAIT, FALSE );
                         if( WinQueryPointer( HWND_DESKTOP ) != hourglass ) {
                             WinSetPointer( HWND_DESKTOP, hourglass );
                         }
                         break;
-                    }
+                      }
                     default:
                         WinDefWindowProc( qmsg.hwnd, qmsg.msg, qmsg.mp1, qmsg.mp2 );
                     }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -205,7 +206,8 @@ static DWORD WINAPI Responder( LPVOID parm )
     for( ;; ) {
         from_length = sizeof( struct sockaddr_ipx );
 
-        if( from_length == 0 ) break;   //to keep the compiler quiet
+        if( from_length == 0 )
+            break;   //to keep the compiler quiet
         if( recvfrom( ResponderSocket,
                         buffer,
                         sizeof( buffer ),

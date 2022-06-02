@@ -164,7 +164,8 @@ static unsigned MoveMem( int op, char *data, addr_seg segv, addr_off offv,
     unsigned            amount;
     struct _seginfo     info;
 
-    if( ProcInfo.pid == 0 ) return( 0 );
+    if( ProcInfo.pid == 0 )
+        return( 0 );
     if( qnx_segment_info( ProcInfo.proc, ProcInfo.pid, segv, &info ) == -1 ) {
         info.nbytes = 0;
     }
@@ -175,7 +176,8 @@ static unsigned MoveMem( int op, char *data, addr_seg segv, addr_off offv,
     }
     length = size;
     for( ;; ) {
-        if( length == 0 ) break;
+        if( length == 0 )
+            break;
         trans = (length > MAX_MEM_TRANS) ? MAX_MEM_TRANS : length;
         if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, op, data, trans, offv, segv ) != 0 ) {
             /* something went wrong. need to find out how much trans'ed */
@@ -187,7 +189,9 @@ static unsigned MoveMem( int op, char *data, addr_seg segv, addr_off offv,
         data += amount;
         offv += amount;
         length -= amount;
-        if( amount != trans ) break;
+        if( amount != trans ) {
+            break;
+        }
     }
     return( size - length );
 }
@@ -213,7 +217,8 @@ static thread_info *find_thread(pid_t tid)
 
     for( thread = ProcInfo.thread; thread < &ProcInfo.thread[ProcInfo.max_threads]; thread++ ) {
         if( thread->tid == tid ) {
-            if( tid == 0 ) thread->dying = false;
+            if( tid == 0 )
+                thread->dying = false;
             return( thread );
         }
     }
@@ -241,23 +246,27 @@ static pid_t next_thread(pid_t last, int state) {
     pid_t               curr;
 
     for( thread = ProcInfo.thread; thread < &ProcInfo.thread[ProcInfo.max_threads]; thread++ ) {
-        if( thread->dying ) continue;
+        if( thread->dying )
+            continue;
         curr = thread->tid;
         switch( state ) {
         case THREAD_ALL:
             break;
         case THREAD_THAWED:
-           if( thread->frozen && (ProcInfo.pid != curr) ) continue;
-           break;
+            if( thread->frozen && (ProcInfo.pid != curr) )
+                continue;
+            break;
         case THREAD_FROZEN:
-           if( !thread->frozen ) continue;
-           break;
+            if( !thread->frozen )
+                continue;
+            break;
         }
         if( curr > last && curr < tid ) {
             tid = curr;
         }
     }
-    if( tid == NO_TID ) return( 0 );
+    if( tid == NO_TID )
+        return( 0 );
     return( tid );
 }
 
@@ -450,7 +459,8 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
         length = acc->len;
         offv = acc->in_addr.offset;
         for( ;; ) {
-            if( length == 0 ) break;
+            if( length == 0 )
+                break;
             size = (length > sizeof( UtilBuff )) ? sizeof( UtilBuff ) : length;
             amount = MoveMem( _DEBUG_MEM_RD, UtilBuff, acc->in_addr.segment,
                                 offv, size );
@@ -459,7 +469,9 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
             }
             offv += amount;
             length -= amount;
-            if( amount != size ) break;
+            if( amount != size ) {
+                break;
+            }
         }
     }
     ret->result = sum;
@@ -598,7 +610,9 @@ static void ReadFPU( struct x86_fpu *r )
     }
     if( ProcInfo.pid != 0 && __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_80X87_RD, r,
                         state_size, 0, 0 ) == 0 ) {
-        if( !ProcInfo.fpu32 ) FPUExpand( r );
+        if( !ProcInfo.fpu32 ) {
+            FPUExpand( r );
+        }
     }
 }
 
@@ -647,7 +661,8 @@ static void WriteFPU( struct x86_fpu *r )
     unsigned            state_size;
 
     if( ProcInfo.pid != 0 ) {
-        if( !ProcInfo.fpu32 ) FPUContract( r );
+        if( !ProcInfo.fpu32 )
+            FPUContract( r );
         if( ProcInfo.fpu32 ) {
             state_size = 108;
         } else {
@@ -731,26 +746,33 @@ static pid_t RunningProc( nid_t *nid, char *name, struct _psinfo *info, char **n
 
     for( ;; ) {
         ch = *name;
-        if( ch != ' ' && ch != '\t' ) break;
+        if( ch != ' ' && ch != '\t' )
+            break;
         ++name;
     }
-    if( name_ret != NULL ) *name_ret = name;
+    if( name_ret != NULL )
+        *name_ret = name;
     pid = 0;
     for( ;; ) {
-        if( *name < '0' || *name > '9' ) break;
+        if( *name < '0' || *name > '9' )
+            break;
         pid = (pid*10) + (*name - '0');
         ++name;
     }
-    if( *name != '\0') return( 0 );
+    if( *name != '\0')
+        return( 0 );
     for( ;; ) {
         proc = qnx_vc_attach( *nid, PROC_PID,
                      sizeof( struct _proc_psinfo_reply ), 0 );
         info->pid = 0;
         qnx_psinfo( proc, pid, info, 0, 0 );
         qnx_vc_detach( proc );
-        if( info->pid != pid ) return( 0 );
-        if( info->flags & ( _PPF_MID | _PPF_VMID ) ) return( 0 );
-        if( !(info->flags & _PPF_VID) ) break;
+        if( info->pid != pid )
+            return( 0 );
+        if( info->flags & ( _PPF_MID | _PPF_VMID ) )
+            return( 0 );
+        if( !(info->flags & _PPF_VID) )
+            break;
         *nid = info->un.vproc.remote_nid;
         pid = info->un.vproc.remote_pid;
     }
@@ -821,7 +843,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     if( acc->true_argv ) {
         i = 1;
         for( ;; ) {
-            if( len == 0 ) break;
+            if( len == 0 )
+                break;
             if( *parms == '\0' ) {
                 i++;
             }
@@ -833,7 +856,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
         len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
         for( ;; ) {
-            if( len == 0 ) break;
+            if( len == 0 )
+                break;
             if( *parms == '\0' ) {
                 args[ i++ ] = parms + 1;
             }
@@ -878,7 +902,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ProcInfo.proc = qnx_vc_attach( nid, PROC_PID, 1000, 0 );
         ProcInfo.mid = qnx_proxy_rem_attach( nid, MID );
         //NYI: temp kludge
-        if( ProcInfo.mid == PROC_PID ) ProcInfo.mid = MID;
+        if( ProcInfo.mid == PROC_PID )
+            ProcInfo.mid = MID;
         ProcInfo.nid = nid;
         if( proc.flags & _PPF_VID ) {
             ProcInfo.pid = proc.un.vproc.remote_pid;
@@ -970,7 +995,9 @@ trap_retval TRAP_CORE( Prog_kill )( void )
             }
         }
         __qnx_debug_detach( ProcInfo.proc, pid );
-        if( ProcInfo.loaded_proc ) waitpid( -1, NULL, 0 );
+        if( ProcInfo.loaded_proc ) {
+            waitpid( -1, NULL, 0 );
+        }
     }
     if( ProcInfo.pid ) {
         qnx_proxy_rem_detach( ProcInfo.nid, ProcInfo.mid );
@@ -1118,28 +1145,28 @@ static trap_conditions RunIt( unsigned step )
                     break;
                 case _DEBUG_STATE_HELD:
                     conditions |= COND_USER;
-                    if(pid != ProcInfo.pid) {
+                    if( pid != ProcInfo.pid ) {
                         ProcInfo.pid = pid;
                         conditions |= COND_THREAD;
                     }
                     break;
                 case _DEBUG_STATE_TRACE:
                     conditions |= COND_TRACE;
-                    if(pid != ProcInfo.pid) {
+                    if( pid != ProcInfo.pid ) {
                         ProcInfo.pid = pid;
                         conditions |= COND_THREAD;
                     }
                     break;
                 case _DEBUG_STATE_BRK:
                     conditions |= COND_BREAK;
-                    if(pid != ProcInfo.pid) {
+                    if( pid != ProcInfo.pid ) {
                         ProcInfo.pid = pid;
                         conditions |= COND_THREAD;
                     }
                     break;
                 case _DEBUG_STATE_WATCH:
                     conditions |= COND_WATCH;
-                    if(pid != ProcInfo.pid) {
+                    if( pid != ProcInfo.pid ) {
                         ProcInfo.pid = pid;
                         conditions |= COND_THREAD;
                     }
@@ -1213,17 +1240,19 @@ static unsigned ProgRun( bool step )
     } else if( step ) {
         ret->conditions = RunIt( 1 );
     } else {
-        #if 0
-        { int i;
-        for( i = 0; i < WatchCount; ++i ) {
-            Out( "watch at " );
-            OutNum( WatchPoints[i].seg );
-            Out( ":" );
-            OutNum( WatchPoints[i].off );
-            Out( "\n" );
+#if 0
+        {
+            int i;
+
+            for( i = 0; i < WatchCount; ++i ) {
+                Out( "watch at " );
+                OutNum( WatchPoints[i].seg );
+                Out( ":" );
+                OutNum( WatchPoints[i].off );
+                Out( "\n" );
+            }
         }
-        }
-        #endif
+#endif
         for( pid = 0; pid = next_thread( pid, THREAD_THAWED ) ; ) {
             __qnx_debug_xfer( ProcInfo.proc, pid, _DEBUG_WATCH_WR, WatchPoints,
                     WatchCount * sizeof( struct _watch_struct ), 0, 0 );
@@ -1232,13 +1261,13 @@ static unsigned ProgRun( bool step )
     }
     if( (ret->conditions & COND_TERMINATE) == 0 ) {
         __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_REG_RD, &regs, sizeof( regs ), 0, 0 );
-        #if 0
+#if 0
         Out( "stopped at " );
         OutNum( regs.ip );
         Out( " because of " );
         OutNum( ret->conditions );
         Out( "\n" );
-        #endif
+#endif
         ret->program_counter.offset = regs.ip;
         ret->program_counter.segment = regs.cs;
         ret->stack_pointer.offset = regs.sp;
@@ -1327,7 +1356,8 @@ static unsigned_16 Redir32( bool input )
         Receive( 0, 0, 0 );
         __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_REG_RD, &new,
             sizeof( new ), 0, 0 );
-        if( (unsigned)new.ax == -1 ) ret->err = 1;
+        if( (unsigned)new.ax == -1 )
+            ret->err = 1;
         *save_hdl = new.ax;
     }
     __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_REG_WR, &save,
@@ -1400,7 +1430,8 @@ static unsigned Redir16( bool input )
         Receive( 0, 0, 0 );
         __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_REG_RD, &new,
             sizeof( new ), 0, 0 );
-        if( (unsigned)new.ax == -1 ) ret->err = 1;
+        if( (unsigned)new.ax == -1 )
+            ret->err = 1;
         *save_hdl = new.ax;
     }
     __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_REG_WR, &save,
@@ -1507,7 +1538,7 @@ trap_retval TRAP_CORE( Get_message_text )( void )
     } else {
         if( ProcInfo.sig == -1 ) {
             err_txt[0] = '\0';
-        } else if( ProcInfo.sig > ( (sizeof(ExceptionMsgs) / sizeof(char *) - 1) ) ) {
+        } else if( ProcInfo.sig > ( ( sizeof( ExceptionMsgs ) / sizeof( char * ) - 1 ) ) ) {
             strcpy( err_txt, TRP_EXC_unknown );
         } else {
             strcpy( err_txt, ExceptionMsgs[ ProcInfo.sig ] );
@@ -1599,7 +1630,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
                     proc = qnx_vc_attach( ProcInfo.nid, PROC_PID, 0, 0 );
                 }
                 if( proc != -1 ) {
-                    if( qnx_psinfo( proc, pid, &info, 0, 0 ) == pid ) {;
+                    if( qnx_psinfo( proc, pid, &info, 0, 0 ) == pid ) {
                         p = info.un.proc.name;
                         qnx_vc_detach( proc );
                     }

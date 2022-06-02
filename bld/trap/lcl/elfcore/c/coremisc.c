@@ -144,16 +144,19 @@ trap_retval TRAP_FILE( read )( void )
     len = acc->len;
     total = 0;
     for( ;; ) {
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         curr = len;
-        if( curr > INT_MAX ) curr = INT_MAX;
+        if( curr > INT_MAX )
+            curr = INT_MAX;
         rv = read( TRPH2LH( acc ), ptr, curr );
         if( rv < 0 ) {
             total = -1;
             break;
         }
         total += rv;
-        if( rv != curr ) break;
+        if( rv != curr )
+            break;
         ptr += rv;
         len -= rv;
     }
@@ -175,9 +178,11 @@ static unsigned DoWrite( int hdl, unsigned_8 *ptr, unsigned len )
 
     total = 0;
     for( ;; ) {
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         curr = len;
-        if( curr > INT_MAX ) curr = INT_MAX;
+        if( curr > INT_MAX )
+            curr = INT_MAX;
         rv = write( hdl, ptr, curr );
         if( rv <= 0 ) {
             total = -1;

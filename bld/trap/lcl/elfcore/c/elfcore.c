@@ -263,7 +263,8 @@ static size_t read_from_elf( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr,
         int             read_len;
         Elf32_Off       rel_ofs;    // Relative offset within segment
 
-        if( phdr->p_type != PT_LOAD ) continue;
+        if( phdr->p_type != PT_LOAD )
+            continue;
         if( (va < phdr->p_vaddr) ||
             (va > phdr->p_vaddr + phdr->p_memsz - 1) ) {
             continue;
@@ -277,8 +278,9 @@ static size_t read_from_elf( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr,
         /* Adjust length to read from file if p_memsz > p_filesz */
         if( (va + len) > (phdr->p_vaddr + phdr->p_filesz) ) {
             read_len = phdr->p_filesz - rel_ofs;
-            if( read_len < 0 )
+            if( read_len < 0 ) {
                 read_len = 0;
+            }
         }
         if( len != 0 ) {
             if( read_len != 0 ) {
@@ -409,7 +411,8 @@ char *find_note( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr,
         off_t           read_len;
         off_t           skip;
 
-        if( phdr->p_type != PT_NOTE ) continue;
+        if( phdr->p_type != PT_NOTE )
+            continue;
 
         /* We found a note segment, loop over the notes */
         read_len = 0;
@@ -550,8 +553,10 @@ trap_retval TRAP_CORE( Prog_kill )( void )
             close( Core.x_fd );
             Core.x_fd = NO_FILE;
         }
-        if( Core.c_phdr ) free( Core.c_phdr );
-        if( Core.x_phdr ) free( Core.x_phdr );
+        if( Core.c_phdr )
+            free( Core.c_phdr );
+        if( Core.x_phdr )
+            free( Core.x_phdr );
         Core.fd = NO_FILE;
     }
     Core.mapping_shared = false;
@@ -835,6 +840,9 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
 void TRAPENTRY TrapFini( void )
 {
-    if( Core.c_ehdr ) free( Core.c_ehdr );
-    if( Core.x_ehdr ) free( Core.x_ehdr );
+    if( Core.c_ehdr )
+        free( Core.c_ehdr );
+    if( Core.x_ehdr ) {
+        free( Core.x_ehdr );
+    }
 }

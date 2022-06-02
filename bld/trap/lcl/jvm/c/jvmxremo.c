@@ -67,7 +67,8 @@ trap_retval DoAccess( void )
         left = len;
         i = 0;
         for( ;; ) {
-            if( i >= Out_Mx_Num ) break;
+            if( i >= Out_Mx_Num )
+                break;
             if( left > Out_Mx_Ptr[i].len ) {
                 piece = Out_Mx_Ptr[i].len;
             } else {
@@ -76,7 +77,9 @@ trap_retval DoAccess( void )
             RemovePacket( Out_Mx_Ptr[i].ptr, piece );
             i++;
             left -= piece;
-            if( left == 0 ) break;
+            if( left == 0 ) {
+                break;
+            }
         }
     } else {
         len = 0;
@@ -267,7 +270,8 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
 
 trap_retval TRAP_CORE( Read_mem )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
@@ -326,7 +330,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     RemovePacket( ret, sizeof( *ret ) );
     if( ret->err == 0 ) {
         TaskLoaded = TRUE;
-        if( DebuggerHwnd != NULL ) SetForegroundWindow( DebuggerHwnd );
+        if( DebuggerHwnd != NULL )
+            SetForegroundWindow( DebuggerHwnd );
         return( len );
     } else {
         prog_kill_req   killacc;
@@ -360,49 +365,57 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 
 trap_retval TRAP_CORE( Write_regs )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
 trap_retval TRAP_CORE( Clear_break )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
 trap_retval TRAP_CORE( Get_message_text )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
 trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
 trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
@@ -434,25 +447,29 @@ trap_retval TRAP_THREAD( get_next )( void )
 
 trap_retval TRAP_THREAD( set )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
 trap_retval TRAP_THREAD( freeze )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
 trap_retval TRAP_THREAD( thaw )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 
 trap_retval TRAP_THREAD( get_extra )( void )
 {
-    if( !TaskLoaded ) return( 0 );
+    if( !TaskLoaded )
+        return( 0 );
     return( DoAccess() );
 }
 

@@ -115,18 +115,19 @@ int ValidatePID( T_ProcessID *pPID )
 #if defined( __NETWARE_LIBC__)
     return(DebugValidatePID(pPID));
 #else
-    #ifdef __NW40__
-        ImportCLIBSymbols();
-        if( pDebugValidatePID ) {
-            return( pDebugValidatePID( pPID ) );
-        }
-    #endif
-    if( pPID == NULL ) return( FALSE );
-    #ifdef __NW40__
-        return( pPID->UniquePCBID == PCBSignature );
-    #else
-        return( ((T_ThreadControlStruct*)pPID)->PCBStructID == PCBSignature );
-    #endif
+  #ifdef __NW40__
+    ImportCLIBSymbols();
+    if( pDebugValidatePID ) {
+        return( pDebugValidatePID( pPID ) );
+    }
+  #endif
+    if( pPID == NULL )
+        return( FALSE );
+  #ifdef __NW40__
+    return( pPID->UniquePCBID == PCBSignature );
+  #else
+    return( ((T_ThreadControlStruct*)pPID)->PCBStructID == PCBSignature );
+  #endif
 #endif
 }
 
@@ -134,12 +135,13 @@ int ValidatePID( T_ProcessID *pPID )
 #if !defined( __NETWARE_LIBC__ )
 static T_ThreadControlStruct *GetTCSFromPID( T_ProcessID *pPID )
 {
-    if( pPID == NULL ) return( NULL );
-    #ifdef __NW40__
-        return( __GetThreadIDFromPCB( pPID ) );
-    #else
-        return( (T_ThreadControlStruct*)pPID );
-    #endif
+    if( pPID == NULL )
+        return( NULL );
+  #ifdef __NW40__
+    return( __GetThreadIDFromPCB( pPID ) );
+  #else
+    return( (T_ThreadControlStruct*)pPID );
+  #endif
 }
 #endif
 
@@ -150,14 +152,19 @@ static T_NLMControlStruct *GetNCSFromPID( T_ProcessID *pPID )
     T_NLMControlStruct          *pNCS;
     T_ThreadControlStruct       *pTCS;
 
-    if( pPID == NULL ) return( NULL );
+    if( pPID == NULL )
+        return( NULL );
     pTCS = GetTCSFromPID( pPID );
-    if( pTCS == NULL ) return( NULL );
+    if( pTCS == NULL )
+        return( NULL );
     pTGCS = pTCS->TCSTGCSp;
-    if( pTGCS->TGCSStructID != TGCSSignature ) return( NULL );
-    if( pTGCS == NULL ) return( NULL );
+    if( pTGCS->TGCSStructID != TGCSSignature )
+        return( NULL );
+    if( pTGCS == NULL )
+        return( NULL );
     pNCS = pTGCS->TGCSNCSp;
-    if( pNCS->NCSStructID != NCSSignature ) return( NULL );
+    if( pNCS->NCSStructID != NCSSignature )
+        return( NULL );
     return( pNCS );
 }
 #endif
@@ -171,15 +178,16 @@ void BoobyTrapPID( T_ProcessID *pPID )
     T_ThreadControlStruct       *pTCS;
     T_NLMControlStruct          *pNCS;
 
-    #ifdef __NW40__
-        ImportCLIBSymbols();
-        if( pDebugBoobyTrapPID ) {
-            pDebugBoobyTrapPID( pPID );
-            return;
-        }
-    #endif
+  #ifdef __NW40__
+    ImportCLIBSymbols();
+    if( pDebugBoobyTrapPID ) {
+        pDebugBoobyTrapPID( pPID );
+        return;
+    }
+  #endif
     pNCS = GetNCSFromPID( pPID );
-    if( pNCS == NULL ) return;
+    if( pNCS == NULL )
+        return;
     for( pTGCS = pNCS->NCSTGCSLHead; pTGCS != NULL; pTGCS = pTGCS->TGCSLink ) {
         for( pTCS = pTGCS->TGCSTCSLHead; pTCS != NULL; pTCS = pTCS->TCSLink ) {
             pTCS->TCSSuspendOrStop |= THREAD_DEBUG;
@@ -198,15 +206,16 @@ void UnBoobyTrapPID( T_ProcessID *pPID )
     T_ThreadControlStruct       *pTCS;
     T_NLMControlStruct          *pNCS;
 
-    #ifdef __NW40__
-        ImportCLIBSymbols();
-        if( pDebugUnBoobyTrapPID ) {
-            pDebugUnBoobyTrapPID( pPID );
-            return;
-        }
-    #endif
+  #ifdef __NW40__
+    ImportCLIBSymbols();
+    if( pDebugUnBoobyTrapPID ) {
+        pDebugUnBoobyTrapPID( pPID );
+        return;
+    }
+  #endif
     pNCS = GetNCSFromPID( pPID );
-    if( pNCS == NULL ) return;
+    if( pNCS == NULL )
+        return;
     for( pTGCS = pNCS->NCSTGCSLHead; pTGCS != NULL; pTGCS = pTGCS->TGCSLink ) {
         for( pTCS = pTGCS->TGCSTCSLHead; pTCS != NULL; pTCS = pTCS->TCSLink ) {
             pTCS->TCSSuspendOrStop &= ~THREAD_DEBUG;
@@ -220,13 +229,14 @@ char *GetPIDName( T_ProcessID *pPID )
 #if defined( __NETWARE_LIBC__ )
     return(DebugGetPIDName( pPID ));
 #else
-    #ifdef __NW40__
-        ImportCLIBSymbols();
-        if( pDebugGetPIDName ) {
-            return( pDebugGetPIDName( pPID ) );
-        }
-    #endif
-    if( pPID == NULL ) return( NULL );
+  #ifdef __NW40__
+    ImportCLIBSymbols();
+    if( pDebugGetPIDName ) {
+        return( pDebugGetPIDName( pPID ) );
+    }
+  #endif
+    if( pPID == NULL )
+        return( NULL );
     return( (char *)pPID->PCBProcessName );
 #endif
 }
@@ -238,14 +248,15 @@ struct LoadDefinitionStructure *GetNLMFromPID( T_ProcessID *pPID )
 #else
     T_NLMControlStruct          *pNCS;
 
-    #ifdef __NW40__
-        ImportCLIBSymbols();
-        if( pDebugGetNLMFromPID ) {
-            return( pDebugGetNLMFromPID( pPID ) );
-        }
-    #endif
+  #ifdef __NW40__
+    ImportCLIBSymbols();
+    if( pDebugGetNLMFromPID ) {
+        return( pDebugGetNLMFromPID( pPID ) );
+    }
+  #endif
     pNCS = GetNCSFromPID( pPID );
-    if( pNCS == NULL ) return( NULL );
+    if( pNCS == NULL )
+        return( NULL );
     return( pNCS->NCSNLMHandle );
 #endif
 }
@@ -259,15 +270,16 @@ void SetupPIDForACleanExit( T_ProcessID *pPID )
     T_OpenScreenStruct  *screen;
     T_NLMControlStruct          *pNCS;
 
-    #ifdef __NW40__
-        ImportCLIBSymbols();
-        if( pDebugSetupPIDForACleanExit ) {
-            pDebugSetupPIDForACleanExit( pPID );
-            return;
-        }
-    #endif
+  #ifdef __NW40__
+    ImportCLIBSymbols();
+    if( pDebugSetupPIDForACleanExit ) {
+        pDebugSetupPIDForACleanExit( pPID );
+        return;
+    }
+  #endif
     pNCS = GetNCSFromPID( pPID );
-    if( pNCS == NULL ) return;
+    if( pNCS == NULL )
+        return;
     for( screen = pNCS->NCSOSSLHead; screen; screen = screen->OSSLink ) {
         screen->OSSAttributes |= AUTO_DESTROY_SCREEN;
     }

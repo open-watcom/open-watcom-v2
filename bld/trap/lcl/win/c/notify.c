@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -171,7 +171,8 @@ static BOOL doOutStr( DWORD data )
         if( *src == '\r' || OutPos == (MAX_STR-1) ) {
             OutBuff[ OutPos++ ] = '\0';
             Out((OUT_RUN,"Going to debugger for OUT_STR '%s'",OutBuff));
-            if( DebugeeTask == NULL ) return( 0 );
+            if( DebugeeTask == NULL )
+                return( 0 );
             ToDebugger( OUT_STR );
         }
         if( *src != '\n' && *src != '\t' ) {
@@ -193,7 +194,8 @@ static BOOL doOutStr( DWORD data )
 static BOOL doInChar( void )
 {
 
-    if( DebuggerState != RUNNING_DEBUGEE ) return( 'i' ); // cover our ass!
+    if( DebuggerState != RUNNING_DEBUGEE )
+        return( 'i' ); // cover our ass!
     Out((OUT_RUN,"Going to debugger for GET_CHAR"));
     return( 'b' );
 //  ToDebugger( GET_CHAR );

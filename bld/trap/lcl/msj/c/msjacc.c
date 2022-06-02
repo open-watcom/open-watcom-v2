@@ -153,7 +153,8 @@ trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req *acc;
 
-    if( !TaskLoaded ) return 0;
+    if( !TaskLoaded )
+        return 0;
     acc = GetInPtr( 0 );
     switch( acc->mem_addr.segment ) {
     case JVM_DIP_GETCUE_SELECTOR:
@@ -294,7 +295,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     acc = GetInPtr( 0 );
     parm = GetInPtr( sizeof( prog_load_req ) );
     ret->err = ERR_MSJ_CANT_LOAD;
-    if( parm == NULL ) return sizeof( *ret );
+    if( parm == NULL )
+        return sizeof( *ret );
     strcpy( buff, parm );
     dst = &buff[strlen(buff)];
     src = parm;
@@ -303,7 +305,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     }
     len = &parm[ GetTotalSizeIn() - sizeof( *acc ) ] - src;
     for( ;; ) {
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         ch = *src;
         if( ch == 0 ) {
             ch = ' ';
@@ -318,13 +321,16 @@ trap_retval TRAP_CORE( Prog_load )( void )
     len = strlen(name);
     name = strtok( name, "@" );
     clname = strtok( NULL, "@" );
-    if( clname == NULL ) return sizeof(*ret);
+    if( clname == NULL )
+        return sizeof(*ret);
     clname = TrimName( clname );
-    if( *clname == '\0' ) return sizeof(*ret);
+    if( *clname == '\0' )
+        return sizeof(*ret);
     TaskLoaded = StartProc( name, clname );
     InitMappings();
     if( TaskLoaded ) {
-        if( DebuggerWindow != NULL ) SetForegroundWindow( DebuggerWindow );
+        if( DebuggerWindow != NULL )
+            SetForegroundWindow( DebuggerWindow );
         ret->err = 0;
         ret->task_id = 0;
         ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_HAVE_RUNTIME_DLLS;

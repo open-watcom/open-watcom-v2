@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,8 +79,11 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     SetEventHook( DebuggerHookRtn );
     end_time = GetTickCount() + acc->wait*1000L;
     for( ;; ) {
-        if( HaveKey ) break;
-        if( (acc->wait > 0) && (GetTickCount() > end_time) ) break;
+        if( HaveKey )
+            break;
+        if( (acc->wait > 0) && (GetTickCount() > end_time) ) {
+            break;
+        }
     }
     ret->key = _info;
     SetEventHook( NULL );

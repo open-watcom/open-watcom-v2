@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,11 +174,15 @@ void GrabThreadQueue( PID pid, TID tid )
     thread_data         thread;
     int                 i;
 
-    if( HwndDummy == NULL ) CreateDummyWindow();
+    if( HwndDummy == NULL )
+        CreateDummyWindow();
     thread.hmq = WinQueueFromID( HabDebugger, pid, tid );
-    if( thread.hmq == NULL ) return;
+    if( thread.hmq == NULL )
+        return;
     for( i = 0; i < NumAssumedQueues; ++i ) {
-        if( thread.hmq == AssumedQueues[i] ) return;
+        if( thread.hmq == AssumedQueues[i] ) {
+            return;
+        }
     }
     AssumedQueues[ NumAssumedQueues ] = thread.hmq;
     ++NumAssumedQueues;
@@ -192,7 +196,8 @@ void ReleaseThreadQueue( PID pid, TID tid )
 
     pid=pid;tid=tid;
     hmq = WinQueueFromID( HabDebugger, pid, tid );
-    if( hmq == NULL ) return;
+    if( hmq == NULL )
+        return;
     for( i = 0; i < NumAssumedQueues; ++i ) {
         if( hmq == AssumedQueues[i] ) {
             WinPostQueueMsg( hmq, WM_QUIT, 0, 0 ); // break one soft mode loop
@@ -228,12 +233,15 @@ VOID WakeThreads( PID pid )
 
 void EnterSoftMode( PID pid )
 {
-    if( NumAssumedQueues != 0 ) return;
+    if( NumAssumedQueues != 0 )
+        return;
     ForAllTids( pid, GrabThreadQueue );
 //    AppFocusWnd = WinQueryFocus( HWND_DESKTOP, 0 );
 //    AppActiveWnd = WinQueryActiveWindow( HWND_DESKTOP, 0 );
-//    if( WinIsWindow( HabDebugger, DBFocusWnd ) ) WinSetFocus( HWND_DESKTOP, DBFocusWnd );
-//    if( WinIsWindow( HabDebugger, DBActiveWnd ) ) WinSetActiveWindow( HWND_DESKTOP, DBActiveWnd );
+//    if( WinIsWindow( HabDebugger, DBFocusWnd ) )
+//        WinSetFocus( HWND_DESKTOP, DBFocusWnd );
+//    if( WinIsWindow( HabDebugger, DBActiveWnd ) )
+//        WinSetActiveWindow( HWND_DESKTOP, DBActiveWnd );
 }
 
 void ExitSoftMode( PID pid )
@@ -250,13 +258,16 @@ void ExitSoftMode( PID pid )
     NumAssumedQueues = 0;
 //    DBFocusWnd = WinQueryFocus( HWND_DESKTOP, 0 );
 //    DBActiveWnd = WinQueryActiveWindow( HWND_DESKTOP, 0 );
-//    if( WinIsWindow( HabDebugger, AppFocusWnd ) ) WinSetFocus( HWND_DESKTOP, AppFocusWnd );
-//    if( WinIsWindow( HabDebugger, AppActiveWnd ) ) WinSetActiveWindow( HWND_DESKTOP, AppActiveWnd );
+//    if( WinIsWindow( HabDebugger, AppFocusWnd ) )
+//        WinSetFocus( HWND_DESKTOP, AppFocusWnd );
+//    if( WinIsWindow( HabDebugger, AppActiveWnd ) )
+//        WinSetActiveWindow( HWND_DESKTOP, AppActiveWnd );
 }
 
 void EnterHardMode( void )
 {
-    if( InHardMode ) return;
+    if( InHardMode )
+        return;
     WinLockInput( 0, TRUE );
     InHardMode = TRUE;
 }

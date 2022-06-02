@@ -309,7 +309,7 @@ static void FreeThread( msb *m )
             *owner = curr->next;
             _DBG_THREAD(( "Freed it\r\n" ));
 #if defined( _USE_NEW_KERNEL )
-            if( m->ksem){
+            if( m->ksem ) {
                 kSemaphoreFree( m->ksem );
                 m->ksem = NULL;
             }
@@ -339,7 +339,7 @@ static void FreeInvalidThreads( void )
         if( !ValidatePID( curr->os_id ) ) {
             *owner = curr->next;    /* remove MSB from chain */
 #if defined( _USE_NEW_KERNEL )
-            if( curr->ksem ){
+            if( curr->ksem ) {
                 kSemaphoreFree( curr->ksem );
                 curr->ksem = NULL;
             }
@@ -573,8 +573,9 @@ static LONG DebugEntry( StackFrame *frame )
             WakeDebugger();
         } else {
             DeadNLMListEntry( load );
-            if( DebuggerLoadedNLM != NULL )
+            if( DebuggerLoadedNLM != NULL ) {
                 break;
+            }
         }
         return( RETURN_TO_PROGRAM );
     case START_THREAD_EVENT:
@@ -1151,8 +1152,9 @@ static void LoadHelper( void )
         _DBG_EVENT(( "LoadHelper: Helper awake -- calling KillMe NLM=%8x!\r\n", DebuggerLoadedNLM ));
         NLMState = NLM_NONE;
         _DBG_EVENT(( "LoadHelper: NLMState = NLM_NONE\r\n" ));
-        if( DebuggerLoadedNLM )
+        if( DebuggerLoadedNLM ) {
             KillMe( DebuggerLoadedNLM );
+        }
     }
     DebuggerLoadedNLM = NULL;
     _DBG_EVENT(( "LoadHelper: Helper killing itself\r\n" ));
@@ -1204,7 +1206,8 @@ static void LoadHelper( void )
         NLMState = NLM_NONE;
         _DBG_EVENT(( "  NLMState = NLM_NONE\r\n" ));
         DebuggerLoadedNLM = NULL;
-        if( LoadRet != NULL ) LoadRet->err = 2;
+        if( LoadRet != NULL )
+            LoadRet->err = 2;
         _DBG_EVENT(( "  Waking up the debugger for noopen event\r\n" ));
         WakeDebugger();
     } else {
@@ -1343,8 +1346,7 @@ static trap_conditions Execute( msb *which )
     _DBG_EVENT(( "Execute: Debugger awake after execution\r\n" ));
     if( MSB == NULL )
         return( COND_TERMINATE );
-    switch( MSB->xnum )
-    {
+    switch( MSB->xnum ) {
     case 1:
         if( FakeBreak ) {
             FakeBreak = FALSE;
@@ -1411,16 +1413,18 @@ trap_retval TRAP_CORE( Set_watch )( void )
         }
         for( i = 0; i < NUM_DREG; ++i ) {
             dreg_avail[i] = DoReserveBreakpoint();
-            if( dreg_avail[i] < 0 )
+            if( dreg_avail[i] < 0 ) {
                 break;
+            }
         }
         for( i = 0; i < NUM_DREG; ++i ) {
             if( dreg_avail[i] < 0 )
                 break;
             UnReserveABreakpoint( dreg_avail[i] );
         }
-        if( needed <= i )
+        if( needed <= i ) {
             ret->multiplier |= USING_DEBUG_REG;
+        }
     }
     return( sizeof( *ret ) );
 }
@@ -1514,8 +1518,9 @@ static bool SetDebugRegs( void )
         if( !SetDR( wp->linear, wp->len ) )
             return( FALSE );
         if( wp->dregs == 2 ) {
-            if( !SetDR( wp->linear+wp->len, wp->len ) )
+            if( !SetDR( wp->linear+wp->len, wp->len ) ) {
                 return( FALSE );
+            }
         }
     }
     return( TRUE );
@@ -1630,8 +1635,9 @@ trap_retval TRAP_THREAD( get_next )( void )
         m = MSBHead;
     } else {
         m = LocateTid( acc->thread );
-        if( m != NULL )
+        if( m != NULL ) {
             m = m->next;
+        }
     }
     if( m != NULL ) {
         ret->thread = m->dbg_id;

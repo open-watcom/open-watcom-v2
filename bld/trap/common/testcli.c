@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,8 +85,8 @@ void RunTime( test_type test, unsigned bytes, unsigned iterations )
         printf( "%ld ticks to transfer %ld bytes in %d byte blocks - BPS = %ld\n",
                 diff, total, block_size, (total * CLOCKS_PER_SEC) / diff );
     } else {
-	printf( "%ld bytes in %d byte blocks were transferred too quickly\n",
-	        total, block_size );
+        printf( "%ld bytes in %d byte blocks were transferred too quickly\n",
+                total, block_size );
     }
 }
 
@@ -114,8 +115,10 @@ int main( unsigned argc, char *argv[] )
         for( ;; ) {
             printf( "enter> " );
             fflush( stdout );
-            if( !gets( Data + 1 ) ) break;
-            if( Data[1] == 'q' ) break;
+            if( !gets( Data + 1 ) )
+                break;
+            if( Data[1] == 'q' )
+                break;
             if( Data[1] == '~' ) {
                 /* speed test */
                 p = Data + 2;
@@ -127,9 +130,11 @@ int main( unsigned argc, char *argv[] )
                     test = TEST_CLIENT_GET;
                     ++p;
                 }
-                while( isspace( *p ) ) ++p;
+                while( isspace( *p ) )
+                    ++p;
                 iterations = strtoul( p, NULL, 0 );
-                if( iterations == 0 ) iterations = 1;
+                if( iterations == 0 )
+                    iterations = 1;
                 RunTime( test | TEST_FULL, 1000, iterations );
                 RunTime( test, 100, iterations );
             } else {

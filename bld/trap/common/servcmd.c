@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,15 +61,22 @@ static const char *GetFilename( const char *ptr, char *buff )
 {
     ptr = SkipSpaces( ptr );
     for( ;; ) {
-        if( *ptr == '\0' ) break;
-        if( *ptr == ' ' ) break;
-        if( *ptr == '\t' ) break;
+        if( *ptr == '\0' )
+            break;
+        if( *ptr == ' ' )
+            break;
+        if( *ptr == '\t' )
+            break;
 #if !defined(__UNIX__)
-        if( *ptr == '/' ) break;
-        if( *ptr == '-' ) break;
+        if( *ptr == '/' )
+            break;
+        if( *ptr == '-' )
+            break;
 #endif
-        if( *ptr == TRAP_PARM_SEPARATOR ) break;
-        if( *ptr == '{' ) break;
+        if( *ptr == TRAP_PARM_SEPARATOR )
+            break;
+        if( *ptr == '{' )
+            break;
         *buff++ = *ptr++;
     }
     *buff = '\0';

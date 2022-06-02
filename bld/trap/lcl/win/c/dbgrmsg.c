@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,9 +105,12 @@ static void EnableMainMenu( UINT bit )
         hmenu = GetMenu( DebuggerWindow );
     }
     Out((OUT_SOFT,"Enable menu item, DebuggerWindow=%04x, menu=%04x", DebuggerWindow, hmenu));
-    if( hmenu == NULL ) return;
+    if( hmenu == NULL )
+        return;
     for( i = 0; ; ++i ) {
-        if( EnableMenuItem( hmenu, i, MF_BYPOSITION | bit ) == -1 ) break;
+        if( EnableMenuItem( hmenu, i, MF_BYPOSITION | bit ) == -1 ) {
+            break;
+        }
     }
 }
 /*

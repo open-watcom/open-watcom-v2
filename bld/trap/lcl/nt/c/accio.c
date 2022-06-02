@@ -76,7 +76,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     delay = acc->wait * 1000;
-    //  if( delay == 0 ) delay = 10000;
+//    if( delay == 0 )
+//        delay = 10000;
     Sleep( delay );
 
     //NYI: get user input

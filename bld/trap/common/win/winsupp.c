@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +102,8 @@ int xp,yp,xs,ys;
         NULL                    /* create parms */
         );
 
-    if( win == NULL ) return( FALSE );
+    if( win == NULL )
+        return( FALSE );
     EditChild = win;
 
     SendMessage( win, EM_LIMITTEXT, MAX_SERVER_NAME, 0L );
@@ -124,7 +126,8 @@ int xp,yp,xs,ys;
         NULL                    /* create parms */
         );
 
-    if( win == NULL ) return( FALSE );
+    if( win == NULL )
+        return( FALSE );
     SelectChild = win;
     ShowWindow( win, SW_SHOWNORMAL );
     UpdateWindow( win );

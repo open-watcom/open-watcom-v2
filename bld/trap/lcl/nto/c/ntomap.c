@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +61,9 @@ lib_load_info *FindLib( addr_off dynsection )
     unsigned    i;
 
     for( i = 0; i < ModuleTop; ++i ) {
-        if( moduleInfo[i].dbg_dyn_sect == dynsection )
+        if( moduleInfo[i].dbg_dyn_sect == dynsection ) {
             return( &moduleInfo[i] );
+        }
     }
     return( NULL );
 }
@@ -74,7 +75,8 @@ addr_off FindLibInLinkMap( pid_handle pid, addr_off first_lmap, addr_off dyn_bas
 
     dbg_lmap = first_lmap;
     while( dbg_lmap ) {
-        if( !GetLinkMap( pid, dbg_lmap, &lmap ) ) break;
+        if( !GetLinkMap( pid, dbg_lmap, &lmap ) )
+            break;
         if( (addr_off)lmap.l_ld == dyn_base )
             return( dbg_lmap );
         dbg_lmap = (addr_off)lmap.l_next;
@@ -181,7 +183,8 @@ int AddLibs( pid_handle pid, addr_off first_lmap )
 
     dbg_lmap = first_lmap;
     while( dbg_lmap ) {
-        if( !GetLinkMap( pid, dbg_lmap, &lmap ) ) break;
+        if( !GetLinkMap( pid, dbg_lmap, &lmap ) )
+            break;
         lli = FindLib( (addr_off)lmap.l_ld );
         if( lli == NULL ) {
             AddLib( pid, &lmap );

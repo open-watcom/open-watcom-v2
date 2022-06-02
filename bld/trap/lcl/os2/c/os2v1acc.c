@@ -167,7 +167,8 @@ static USHORT WriteBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT si
                 Buff.value &= 0xff00;
                 Buff.value |= *data;
                 DosPTrace( &Buff );
-                if( Buff.cmd != PT_RET_SUCCESS ) break;
+                if( Buff.cmd != PT_RET_SUCCESS )
+                    break;
                 data++;
                 length--;
                 offv++;
@@ -179,7 +180,8 @@ static USHORT WriteBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT si
                 Buff.offv = offv;
                 Buff.segv = segv;
                 DosPTrace( &Buff );
-                if( Buff.cmd != PT_RET_SUCCESS ) break;
+                if( Buff.cmd != PT_RET_SUCCESS )
+                    break;
                 length -= 2;
                 offv += 2;
             }
@@ -200,7 +202,8 @@ static USHORT ReadBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT siz
             Buff.offv = offv;
             Buff.segv = segv;
             DosPTrace( &Buff );
-            if( Buff.cmd != PT_RET_SUCCESS ) break;
+            if( Buff.cmd != PT_RET_SUCCESS )
+                break;
             *data = Buff.value & 0xff;
             data++;
             offv++;
@@ -237,7 +240,8 @@ static void ExecuteCode( TRACEBUF __far *buff )
         buff->cmd = PT_CMD_GO;
         buff->value = 0;
         DosPTrace( buff ); // go here
-        if( buff->cmd != PT_RET_LIB_LOADED ) break;
+        if( buff->cmd != PT_RET_LIB_LOADED )
+            break;
         RecordModHandle( buff->value );
     }
 }
@@ -371,7 +375,9 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
         buff.tid = 1;
         buff.pid = Pid;
         DosPTrace( &buff );
-        if( buff.cmd != PT_RET_SUCCESS ) ret->sys.fpu = X86_NO;
+        if( buff.cmd != PT_RET_SUCCESS ) {
+            ret->sys.fpu = X86_NO;
+        }
     }
     DosGetHugeShift( &shift );
     ret->sys.huge_shift = shift;
@@ -446,7 +452,8 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
             Buff.offv = offset;
             Buff.segv = acc->in_addr.segment;
             DosPTrace( &Buff );
-            if( Buff.cmd != PT_RET_SUCCESS ) break;
+            if( Buff.cmd != PT_RET_SUCCESS )
+                break;
             sum += Buff.value & 0xff;
             offset++;
             length--;
@@ -586,7 +593,8 @@ USHORT LibLoadPTrace( TRACEBUF *buff )
     rv = DosPTrace( buff );
     RecordModHandle( buff->mte );
     for( ;; ) {
-        if( buff->cmd != PT_RET_LIB_LOADED ) return( rv );
+        if( buff->cmd != PT_RET_LIB_LOADED )
+            return( rv );
         RecordModHandle( buff->value );
         buff->value = value;
         buff->cmd = cmd;
@@ -612,41 +620,66 @@ static bool GetExeInfo( USHORT __far *pCS, USHORT __far *pIP, USHORT __far *pExe
     bool        rc;
 
     open_rc = OpenFile( name, 0, OPEN_PRIVATE );
-    if( open_rc < 0 ) return( FALSE );
+    if( open_rc < 0 )
+        return( FALSE );
     handle = open_rc;
     rc = FALSE;
     for( ;; ) { /* guess */
-        if( DosChgFilePtr( handle, 0x00, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 ) break;
-        if( read != sizeof( shorty ) ) break;
-        if( shorty != 0x5a4d ) break;   /* MZ */
+        if( DosChgFilePtr( handle, 0x00, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 )
+            break;
+        if( read != sizeof( shorty ) )
+            break;
+        if( shorty != 0x5a4d )
+            break;   /* MZ */
 
-        if( DosChgFilePtr( handle, 0x18, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 ) break;
-        if( read != sizeof( shorty ) ) break;
-        if( shorty < 0x40 ) break;      /* offset of relocation header */
+        if( DosChgFilePtr( handle, 0x18, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 )
+            break;
+        if( read != sizeof( shorty ) )
+            break;
+        if( shorty < 0x40 )
+            break;      /* offset of relocation header */
 
-        if( DosChgFilePtr( handle, 0x3c, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, &new_head, sizeof( new_head ), &read) != 0 ) break;
-        if( read != sizeof( new_head ) ) break;
+        if( DosChgFilePtr( handle, 0x3c, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, &new_head, sizeof( new_head ), &read) != 0 )
+            break;
+        if( read != sizeof( new_head ) )
+            break;
 
-        if( DosChgFilePtr( handle, new_head, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 ) break;
-        if( read != sizeof( shorty ) ) break;
-        if( shorty != 0x454e ) break;   /* NE */
+        if( DosChgFilePtr( handle, new_head, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, &shorty, sizeof( shorty ), &read ) != 0 )
+            break;
+        if( read != sizeof( shorty ) )
+            break;
+        if( shorty != 0x454e )
+            break;   /* NE */
 
-        if( DosChgFilePtr( handle, new_head+0x0c, 0, &pos ) != 0 ) break;
-        if( DosRead(handle,pExeType,sizeof( *pExeType ),&read) != 0 ) break;
-        if( read != sizeof( *pExeType ) ) break;
+        if( DosChgFilePtr( handle, new_head+0x0c, 0, &pos ) != 0 )
+            break;
+        if( DosRead(handle,pExeType,sizeof( *pExeType ),&read) != 0 )
+            break;
+        if( read != sizeof( *pExeType ) )
+            break;
         *pExeType &= 0x0700;
 
-        if( DosChgFilePtr( handle, new_head+0x14, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, pIP, sizeof( *pIP ), &read ) != 0 ) break;
-        if( read != sizeof( *pIP ) ) break;
+        if( DosChgFilePtr( handle, new_head+0x14, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, pIP, sizeof( *pIP ), &read ) != 0 )
+            break;
+        if( read != sizeof( *pIP ) )
+            break;
 
-        if( DosChgFilePtr( handle, new_head+0x16, 0, &pos ) != 0 ) break;
-        if( DosRead( handle, pCS, sizeof( *pCS ), &read ) != 0 ) break;
-        if( read != sizeof( *pCS ) ) break;
+        if( DosChgFilePtr( handle, new_head+0x16, 0, &pos ) != 0 )
+            break;
+        if( DosRead( handle, pCS, sizeof( *pCS ), &read ) != 0 )
+            break;
+        if( read != sizeof( *pCS ) )
+            break;
         rc = TRUE;
         break;
     }
@@ -772,7 +805,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
         exe_name[0] = '\0';
     }
     parms = AddDriveAndPath( exe_name, UtilBuff );
-    while( *prog != '\0' ) ++prog;
+    while( *prog != '\0' )
+        ++prog;
     ++prog;
     end = (char *)GetInPtr( GetTotalSizeIn() - 1 ) + 1;
     MergeArgvArray( prog, parms, end - prog );
@@ -1024,7 +1058,8 @@ static unsigned ProgRun( bool step )
         for( ;; ) {
             Buff.cmd = PT_CMD_SINGLE_STEP;
             DosPTrace( &Buff );
-            if( Buff.cmd != PT_RET_STEP ) break;
+            if( Buff.cmd != PT_RET_STEP )
+                break;
             for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
                 Buff.cmd = PT_CMD_READ_MEM_D;
                 Buff.segv = wp->addr.segment;
@@ -1097,7 +1132,8 @@ trap_retval TRAP_FILE( write_console )( void )
         ret->err = 0;
         while( len != 0 ) {
             curr = len;
-            if( len > sizeof( UtilBuff ) ) len = sizeof( UtilBuff );
+            if( len > sizeof( UtilBuff ) )
+                len = sizeof( UtilBuff );
             WriteBuffer( ptr, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), curr );
             Buff.u.r.AX = _FP_OFF( UtilBuff );
             Buff.u.r.DX = _FP_SEG( UtilBuff );

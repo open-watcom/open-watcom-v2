@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +78,8 @@ TID             TidDebugee;
     char Message[ 256 ] = { "All is well" };
     static void Say( char *str )
     {
-        if( str != NULL ) strcpy( Message, str );
+        if( str != NULL )
+            strcpy( Message, str );
         WinInvalidateRegion( hwndClient, 0L, FALSE );
     }
 #else
@@ -126,8 +128,10 @@ static VOID APIENTRY ServiceRequests( VOID )
 
     WinCreateMsgQueue( Hab, 0 );
     for( ;; ) {
-        if( DosRead( InStream, &data, sizeof( data ), &len ) != 0 ) break;
-        if( len != sizeof( data ) ) break;
+        if( DosRead( InStream, &data, sizeof( data ), &len ) != 0 )
+            break;
+        if( len != sizeof( data ) )
+            break;
         switch( data.command ) {
         case PMHELP_LOCK:
             PidDebugee = data.pid;

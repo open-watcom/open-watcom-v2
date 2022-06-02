@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,8 @@ int myread( bhandle handle, void *buff, int len )
     ULONG       bytes_read;
 
     rc = DosRead( handle, buff, len, &bytes_read );
-    if( rc != 0 ) return( 0 );
+    if( rc != 0 )
+        return( 0 );
     return( bytes_read );
 }
 
@@ -73,7 +74,8 @@ int mywrite( bhandle handle, void *buff, int len )
     ULONG       bytes_written;
 
     rc = DosWrite( handle, buff, len, &bytes_written );
-    if( rc != 0 ) return( 0 );
+    if( rc != 0 )
+        return( 0 );
     return( bytes_written );
 }
 

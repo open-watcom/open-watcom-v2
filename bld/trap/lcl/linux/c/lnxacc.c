@@ -98,7 +98,9 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
                 sum += buf[ i - 1 ];
             offv += amount;
             length -= amount;
-            if( amount != size ) break;
+            if( amount != size ) {
+                break;
+            }
         }
     }
     ret->result = sum;
@@ -216,7 +218,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     if( acc->true_argv ) {
         i = 1;
         for( ;; ) {
-            if( len == 0 ) break;
+            if( len == 0 )
+                break;
             if( *parms == '\0' ) {
                 i++;
             }
@@ -228,7 +231,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
         len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
         for( ;; ) {
-            if( len == 0 ) break;
+            if( len == 0 )
+                break;
             if( *parms == '\0' ) {
                 args[i++] = parms + 1;
             }
@@ -287,16 +291,19 @@ trap_retval TRAP_CORE( Prog_load )( void )
             goto fail;
         if( attached ) {
             ret->flags |= LD_FLAG_IS_STARTED;
-            if( WSTOPSIG( status ) != SIGSTOP )
+            if( WSTOPSIG( status ) != SIGSTOP ) {
                 goto fail;
+            }
         } else {
-            if( WSTOPSIG( status ) != SIGTRAP )
+            if( WSTOPSIG( status ) != SIGTRAP ) {
                 goto fail;
+            }
         }
 
 #if defined( MD_x86 )
-        if( !GetFlatSegs( &flatCS, &flatDS ) )
+        if( !GetFlatSegs( &flatCS, &flatDS ) ) {
             goto fail;
+        }
 #endif
 
         dbg_dyn = GetDebuggeeDynSection( exe_name );
@@ -429,12 +436,14 @@ static trap_elen ProgRun( int step )
         old = setsig( SIGINT, SIG_IGN );
         if( step ) {
             Out( "PTRACE_SINGLESTEP\n" );
-            if( ptrace( PTRACE_SINGLESTEP, pid, NULL, (void *)ptrace_sig ) == -1 )
+            if( ptrace( PTRACE_SINGLESTEP, pid, NULL, (void *)ptrace_sig ) == -1 ) {
                 perror( "PTRACE_SINGLESTEP" );
+            }
         } else {
             Out( "PTRACE_CONT\n" );
-            if( ptrace( PTRACE_CONT, pid, NULL, (void *)ptrace_sig ) == -1 )
+            if( ptrace( PTRACE_CONT, pid, NULL, (void *)ptrace_sig ) == -1 ) {
                 perror( "PTRACE_CONT" );
+            }
         }
         waitpid( pid, &status, 0 );
         setsig( SIGINT, old );

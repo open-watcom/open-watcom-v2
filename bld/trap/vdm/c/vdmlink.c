@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,19 +46,29 @@ int ValidName( const char *name ) {
     char *dot;
 
     end = memchr( name, 0, MAX_NAME );
-    if( end == NULL ) return( 0 );
-    if( end == name ) return( 0 );
+    if( end == NULL )
+        return( 0 );
+    if( end == name )
+        return( 0 );
     dot = memchr( name, '.', end - name );
     if( dot != NULL ) {
-        if( dot == name ) return( 0 );
-        if( dot - name > 8 ) return( 0 );
-        if( end - dot > 4 ) return( 0 );
-        if( dot[1] == '.' || dot[2] == '.' || dot[3] == '.' ) return( 0 );
+        if( dot == name )
+            return( 0 );
+        if( dot - name > 8 )
+            return( 0 );
+        if( end - dot > 4 )
+            return( 0 );
+        if( dot[1] == '.' || dot[2] == '.' || dot[3] == '.' ) {
+            return( 0 );
+        }
     } else {
-        if( end - name > 8 ) return( 0 );
+        if( end - name > 8 ) {
+            return( 0 );
+        }
     }
     while( name < end ) {
-        if( *name <= 0x1f ) return( 0 );
+        if( *name <= 0x1f )
+            return( 0 );
         switch( *name ) {
         case '"':
         case '/':

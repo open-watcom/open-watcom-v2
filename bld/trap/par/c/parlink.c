@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -605,10 +606,12 @@ static bool Synch( void )
         }
         break;
     case LAPLINK_VAL:
-        if( LL_Ctl1Lo() ) return( true );
+        if( LL_Ctl1Lo() )
+            return( true );
         break;
     case DUTCHMAN_VAL:
-        if( FD_Ctl1Lo() ) return( true );
+        if( FD_Ctl1Lo() )
+            return( true );
         break;
     }
     return( false );
@@ -714,39 +717,56 @@ static bool LineTest( void )
     dbgrtn( "\r\n-LineTest-" );
     for( send = 1; send != 256; send *= 2 ) {
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time++;
-        if( time == KEEP ) time++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         ret = DataPut( send, time );
-        if( ret == TIMEOUT ) return( false );
+        if( ret == TIMEOUT )
+            return( false );
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time++;
-        if( time == KEEP ) time++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         ret = DataGet( time );
-        if( ret == TIMEOUT ) return( false );
+        if( ret == TIMEOUT )
+            return( false );
         if( ret != send ) {
             return( false );
         }
     }
     time = Ticks() + LINE_TEST_WAIT;
-    if( time == RELINQUISH ) time++;
-    if( time == KEEP ) time++;
+    if( time == RELINQUISH )
+        time++;
+    if( time == KEEP )
+        time++;
     ret = DataPut( DONE_LINE_TEST, time );
-    if( ret == TIMEOUT ) return( false );
+    if( ret == TIMEOUT )
+        return( false );
 #else
     dbgrtn( "\r\n-LineTest-" );
     send = 0;
     for( ;; ) {
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time++;
-        if( time == KEEP ) time++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         send = DataGet( time );
-        if( send == TIMEOUT ) return( false );
-        if( send == DONE_LINE_TEST ) break;
+        if( send == TIMEOUT )
+            return( false );
+        if( send == DONE_LINE_TEST )
+            break;
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time++;
-        if( time == KEEP ) time++;
+        if( time == RELINQUISH )
+            time++;
+        if( time == KEEP )
+            time++;
         send = DataPut( send, time );
-        if( send == TIMEOUT ) return( false );
+        if( send == TIMEOUT ) {
+            return( false );
+        }
     }
 #endif
     return( true );
@@ -841,9 +861,12 @@ const char *RemoteLink( const char *parms, bool server )
         for( ;; ) {
             ++parms;
             ch = *parms;
-            if( ch == 0 ) break;
-            if( ch == ' ' ) break;
-            if( ch == '\t' ) break;
+            if( ch == 0 )
+                break;
+            if( ch == ' ' )
+                break;
+            if( ch == '\t' )
+                break;
             if( ch >= 'A' && ch <= 'F' ) {
                 ch = ch - 'A' + 0x0a;
             } else if( ch >= 'a' && ch <= 'f' ) {

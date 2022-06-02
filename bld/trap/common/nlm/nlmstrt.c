@@ -149,7 +149,8 @@ int strnicmp( const char *a, const char *b, size_t len )
 
     while( len != 0 ) {
         diff = lower( *a ) - lower( *b );
-        if( diff != 0 ) return( diff );
+        if( diff != 0 )
+            return( diff );
         ++a;
         ++b;
         --len;
@@ -163,8 +164,10 @@ int stricmp( const char *a, const char *b )
 
     for( ;; ) {
         diff = lower( *a ) - lower( *b );
-        if( diff != 0 ) return( diff );
-        if( *a == '\0' ) return( 0 );
+        if( diff != 0 )
+            return( diff );
+        if( *a == '\0' )
+            return( 0 );
         ++a;
         ++b;
     }
@@ -238,7 +241,8 @@ int memcmp( const void *a_in, const void *b_in, size_t len )
     const char *b = b_in;
 
     while( len != 0 ) {
-        if( *a - *b != 0 ) return( *a - *b );
+        if( *a - *b != 0 )
+            return( *a - *b );
         ++a;
         ++b;
         --len;
@@ -259,7 +263,9 @@ void *memset( void *dst, int c, size_t len )
 char *strchr( const char *s, int c )
 {
     do {
-        if( *s == c ) return( (char *)s );
+        if( *s == c ) {
+            return( (char *)s );
+        }
     } while( *s++ != '\0' );
     return( NULL );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,9 +72,11 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
         return( FALSE );
     }
     codesize = (char *)EndLoadThisDLL - (char *)LoadThisDLL;
-    if( codesize > LOAD_THIS_DLL_SIZE ) return( FALSE );
+    if( codesize > LOAD_THIS_DLL_SIZE )
+        return( FALSE );
     ReadLinear( savecode, startLinear, codesize );
-    if( Buff.Cmd != DBG_N_Success ) return( FALSE );
+    if( Buff.Cmd != DBG_N_Success )
+        return( FALSE );
     WriteLinear( (byte __far *)LoadThisDLL, startLinear, codesize );
 
     /*
@@ -94,7 +96,8 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
     loadstack->phmod[0] = _FP_OFF( ptr );
     loadstack->phmod[1] = _FP_SEG( ptr );
     len = WriteBuffer( (byte __far *)loadstack, Buff.SS, Buff.ESP, size );
-    if( len != size ) return( FALSE );
+    if( len != size )
+        return( FALSE );
 
     /*
      * set up 16:16 CS:IP, SS:SP for execution

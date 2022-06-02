@@ -83,7 +83,8 @@ void OutNum( ULONG i )
 {
     char numbuff[NSIZE];
     char *ptr;
-ptr = numbuff+NSIZE;
+
+    ptr = numbuff + NSIZE;
     *--ptr = '\0';
     if( i == 0 ) {
         *--ptr = '0';
@@ -969,14 +970,16 @@ static BOOL ExecuteUntilLinearAddressHit( ULONG lin )
 
 void AppSession( void )
 {
-    if( !IsPMDebugger() )
+    if( !IsPMDebugger() ) {
         DosSelectSession( SID, 0 );
+    }
 }
 
 void DebugSession( void )
 {
-    if( !IsPMDebugger() )
+    if( !IsPMDebugger() ) {
         DosSelectSession( 0, 0 );
+    }
 }
 
 trap_retval TRAP_CORE( Prog_load )( void )
@@ -1024,7 +1027,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
             ret->err = ERROR_OS2_TRAP( ERROR_NOT_IN_WINDOW );
         } else {
             start.SessionType = SSF_TYPE_PM;
-            if( !IsPMDebugger() ) StartPMHelp();
+            if( !IsPMDebugger() ) {
+                StartPMHelp();
+            }
         }
     } else if( TypeProcess == PT_WINDOWABLEVIO || TypeProcess == PT_PM ) {
         start.SessionType = SSF_TYPE_WINDOWABLEVIO;
@@ -1413,7 +1418,8 @@ static int ValidThread( TID thread )
     struct thd_state state;
     TID save;
 
-    if( thread == 0 ) return( 0 );
+    if( thread == 0 )
+        return( 0 );
     save = Buff.Tid;
     Buff.Tid = thread;
     Buff.Cmd = DBG_C_ThrdStat;

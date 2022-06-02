@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,17 +75,19 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
 
     Instance = this_inst;
     if( !prev_inst ) {
-        if( !FirstInstance( this_inst ) ) return( FALSE );
+        if( !FirstInstance( this_inst ) ) {
+            return( FALSE );
+        }
     }
-    if( !AnyInstance( this_inst, cmdshow, cmdline ) ) return( FALSE );
+    if( !AnyInstance( this_inst, cmdshow, cmdline ) )
+        return( FALSE );
 
     while( GetMessage( (LPVOID)&msg, (HWND)0, 0, 0 ) ) {
-
         TranslateMessage( &msg );
         DispatchMessage( &msg );
-
     }
-    if( Linked ) RemoteUnLink();
+    if( Linked )
+        RemoteUnLink();
     KillTrap();
 
     return( msg.wParam );
@@ -125,7 +127,8 @@ static void EnableMenus( HWND hwnd, BOOL connected, BOOL session )
     HMENU hMenu;
 
     hMenu = GetMenu( hwnd );
-    if( hMenu == NULL ) return;
+    if( hMenu == NULL )
+        return;
     EnableMenuItem( hMenu, MENU_EXIT, !session ? MENU_ON : MENU_OFF );
     EnableMenuItem( hMenu, MENU_CONNECT, !connected ? MENU_ON : MENU_OFF );
     EnableMenuItem( hMenu, MENU_OPTIONS, !connected ? MENU_ON : MENU_OFF );
@@ -168,7 +171,8 @@ static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
         NULL                    /* create parms */
         );
 
-    if( !hwndMain ) return( FALSE );
+    if( !hwndMain )
+        return( FALSE );
 
 #ifdef __NT__
     TRAP_EXTFUNC( InfoFunction )( hwndMain );
@@ -266,7 +270,8 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
                         ShowWindow( hwnd, SW_RESTORE );
                         RemoteDisco();
                         Connected = FALSE;
-                        if( OneShot ) PostQuitMessage( 0 );
+                        if( OneShot )
+                            PostQuitMessage( 0 );
                         break;
                     }
                     NothingToDo();
@@ -276,8 +281,8 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             if( !Disconnect && !SessionError ) {
                 SendMessage( hwndMain, WM_COMMAND, MENU_CONNECT, 0 );
             }
-            if( Exit ) PostQuitMessage( 0 );
-
+            if( Exit )
+                PostQuitMessage( 0 );
             break;
         case MENU_OPTIONS:
             dlgproc = MakeProcInstance_DLG( OptionsDlgProc, Instance );
@@ -314,9 +319,9 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
         break;
 
     case WM_CLOSE:
-        if( Connected ) return( 0 );
+        if( Connected )
+            return( 0 );
         /* fall through to default */
-
     default:
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
     }

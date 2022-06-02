@@ -96,7 +96,8 @@ void MyOut( unsigned f, char *str, ... )
     char        *scr;
     char        *scrn=GetScreenPointer();
 
-    if( ( f & DbgFlags ) == 0 ) return;
+    if( ( f & DbgFlags ) == 0 )
+        return;
     sprintf( res,"%03d) ",++_cnt );
     va_start( args, str );
     vsprintf( &res[5],str, args );
@@ -117,7 +118,8 @@ void MyOut( unsigned f, char *str, ... )
         scr[i*2+1] = 7;
     }
     _line++;
-    if( _line > 24 ) _line = 0;
+    if( _line > 24 )
+        _line = 0;
 
     scr = &scrn[_line*80*2];
     for( i=0;i<80;i++ ) {
