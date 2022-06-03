@@ -664,13 +664,23 @@ out( "done AccKillProg\r\n" );
     return( sizeof( *ret ) );
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     watch_point         *curr;
     set_watch_req       *wp;
     set_watch_ret       *wr;
-    int                 i, needed;
 
     wp = GetInPtr( 0 );
     wr = GetOutPtr( 0 );
@@ -688,11 +698,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         curr->dregs = ( wp->watch_addr.offset & ( curr->len - 1 ) ) ? 2 : 1;
         ++WatchCount;
         if( Flags & F_DRsOn ) {
-            needed = 0;
-            for( i = 0; i < WatchCount; ++i ) {
-                needed += WatchPoints[i].dregs;
-            }
-            if( needed <= 4 ) {
+            if( DRegsCount() <= 4 ) {
                 wr->multiplier |= USING_DEBUG_REG;
             }
         }
@@ -789,7 +795,6 @@ static int ClearDebugRegs( int trap )
 
 static bool SetDebugRegs( void )
 {
-    int                 needed;
     int                 i;
     int                 dr;
     unsigned long       dr7;
@@ -799,13 +804,9 @@ static bool SetDebugRegs( void )
 
     if( (Flags & F_DRsOn) == 0 )
         return( false );
-    needed = 0;
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-        needed += wp->dregs;
-    }
     dr  = 0;
     dr7 = 0;
-    if( needed > 4 ) {
+    if( DRegsCount() > 4 ) {
         watch386 = false;
     } else {
         for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {

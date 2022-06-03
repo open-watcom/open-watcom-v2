@@ -52,6 +52,14 @@
 
 static const ULONG      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
+static char *StrCopyDst( const char *src, char *dst )
+{
+    while( (*dst = *src++) != '\0' ) {
+        dst++;
+    }
+    return( dst );
+}
+
 static const char *StrCopySrc( const char *src, char *dst )
 {
     while( (*dst++ = *src) != '\0' ) {
@@ -97,7 +105,6 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
 {
     const char      *p;
     char            *p2;
-    const char      *p3;
     unsigned long   rc;
     int             have_ext;
     int             have_path;

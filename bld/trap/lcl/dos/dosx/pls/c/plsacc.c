@@ -772,6 +772,17 @@ static trap_conditions Execute( void )
     return( conditions );
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
@@ -779,7 +790,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
     watch_point     *curr;
     set_watch_req   *acc;
     set_watch_ret   *ret;
-    int             i, needed;
     ULONG           linear;
     PTR386          addr;
 
@@ -803,11 +813,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         curr->linear &= ~( curr->len - 1 );
         curr->dregs = ( linear & ( curr->len - 1 ) ) ? 2 : 1;
         ++WatchCount;
-        needed = 0;
-        for( i = 0; i < WatchCount; ++i ) {
-            needed += WatchPoints[i].dregs;
-        }
-        if( needed <= 4 ) {
+        if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
     }
@@ -865,16 +871,11 @@ static void SetDRnBW( int dr, ULONG linear, int len ) /* Set DRn for break on wr
 
 static bool SetDebugRegs()
 {
-    int         needed;
     int         i;
     int         dr;
     watch_point *wp;
 
-    needed = 0;
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-        needed += wp->dregs;
-    }
-    if( needed > 4 )
+    if( DRegsCount() > 4 )
         return( FALSE );
     dr = 0;
     Mach.msb_dreg[7] = DR7_GE;

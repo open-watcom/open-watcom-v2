@@ -213,16 +213,25 @@ void ClearDebugRegs( void )
     SetDR7( 0 );
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
+
 int SetDebugRegs( void )
 {
-    int         needed,i,dr;
+    int         i,dr;
     u_long      dr7;
     watch_point *wp;
 
-    needed = 0;
-    for( i = 0; i < WatchCount; i++)
-        needed += WatchPoints[i].dregs;
-    if( needed > 4 )
+    if( DRegsCount() > 4 )
         return( false );
     dr  = 0;
     dr7 = 0;
@@ -259,7 +268,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
     u_long          value;
     watch_point     *curr;
     u_long          linear;
-    unsigned        i,needed;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -277,11 +285,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         curr->linear = linear = acc->watch_addr.offset;
         curr->linear &= ~(curr->len-1);
         curr->dregs = (linear & (curr->len-1) ) ? 2 : 1;
-        needed = 0;
-        for( i = 0; i < WatchCount; ++i ) {
-            needed += WatchPoints[i].dregs;
-        }
-        if( needed <= 4 ) {
+        if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
     }

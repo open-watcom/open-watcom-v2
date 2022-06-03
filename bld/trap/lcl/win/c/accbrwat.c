@@ -228,21 +228,28 @@ void ClearDebugRegs( void )
     }
 } /* ClearDebugRegs */
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
 
 BOOL SetDebugRegs( void )
 {
-    int         needed,i,dr;
+    int         i,dr;
     DWORD       dr7;
     watch_point *wp;
 
     if( !WDebug386 )
         return( FALSE );
 
-    needed = 0;
-    for( i = 0; i < WatchCount; i++ ) {
-        needed += WatchPoints[i].dregs;
-    }
-    if( needed > 4 )
+    if( DRegsCount() > 4 )
         return( FALSE );
 
     dr  = 0;
@@ -281,7 +288,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req       *acc;
     set_watch_ret       *ret;
     DWORD               value;
-    int                 i, needed;
     watch_point         *curr;
     WORD                desc[4];
     DWORD               linear;
@@ -307,11 +313,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         curr->dregs = ( linear & ( curr->len - 1 ) ) ? 2 : 1;
         WatchCount++;
         if( WDebug386 ) {
-            needed = 0;
-            for( i = 0; i < WatchCount; ++i ) {
-                needed += WatchPoints[i].dregs;
-            }
-            if( needed <= 4 ) {
+            if( DRegsCount() <= 4 ) {
                 ret->multiplier |= USING_DEBUG_REG;
             }
         }

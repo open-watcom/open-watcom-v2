@@ -560,13 +560,23 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     return( sizeof( *ret ) );
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     watch_point     *wp;
     set_watch_req   *acc;
     set_watch_ret   *ret;
-    int             i;
     int             needed;
 
     _DBG0(( "AccSetWatch" ));
@@ -583,10 +593,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->len = acc->size;
         wp->dregs = ( wp->linear & ( wp->len - 1 ) ) ? 2 : 1;
         wp->linear &= ~( wp->len - 1 );
-        needed = 0;
-        for( i = 0; i < WatchCount; ++i ) {
-            needed += WatchPoints[i].dregs;
-        }
+        needed = DRegsCount();
         if( needed <= 4 )
             ret->multiplier |= USING_DEBUG_REG;
         _DBG0(("addr %4.4x:%8.8lx " "linear %8.8x " "len %d " "needed %d ",
@@ -646,16 +653,11 @@ static void SetDRnBW( int dr, dword linear, int len ) /* Set DRn for break on wr
 
 static bool SetDebugRegs( void )
 {
-    int         needed;
     int         i;
     int         dr;
     watch_point *wp;
 
-    needed = 0;
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-        needed += wp->dregs;
-    }
-    if( needed > 4 )
+    if( DRegsCount() > 4 )
         return( false );
     dr = 0;
     SysRegs.dr7 = DR7_GE;

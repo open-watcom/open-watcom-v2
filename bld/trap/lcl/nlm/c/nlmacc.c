@@ -1384,13 +1384,25 @@ static trap_conditions Execute( msb *which )
     }
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     dword           l;
     set_watch_req   *acc;
     set_watch_ret   *ret;
     watch_point     *wp;
-    int             i, needed;
+    int             i;
     int             dreg_avail[4];
 
     acc = GetInPtr( 0 );
@@ -1408,10 +1420,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->dregs = ( wp->addr.offset & (wp->len-1) ) ? 2 : 1;
         wp->value = l;
         ++WatchCount;
-        needed = 0;
-        for( i = 0; i < WatchCount; ++i ) {
-            needed += WatchPoints[i].dregs;
-        }
         for( i = 0; i < NUM_DREG; ++i ) {
             dreg_avail[i] = DoReserveBreakpoint();
             if( dreg_avail[i] < 0 ) {
@@ -1423,7 +1431,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
                 break;
             UnReserveABreakpoint( dreg_avail[i] );
         }
-        if( needed <= i ) {
+        if( DRegsCount() <= i ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
     }

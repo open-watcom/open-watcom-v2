@@ -565,14 +565,23 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     return( sizeof( *ret ) );
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     watch_point     *curr;
     set_watch_req   *acc;
     set_watch_ret   *ret;
-    int             i;
-    int             needed;
 
     _DBG_Writeln( "AccSetWatch" );
 
@@ -591,11 +600,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     curr->value = 0;
     ReadMemory( (addr48_ptr *)&acc->watch_addr, &curr->value, curr->len );
     ++WatchCount;
-    needed = 0;
-    for( i = 0; i < WatchCount; ++i ) {
-        needed += WatchPoints[i].dregs;
-    }
-    if( needed <= 4 )
+    if( DRegsCount() <= 4 )
         ret->multiplier |= USING_DEBUG_REG;
     return( sizeof( *ret ) );
 }
@@ -686,17 +691,12 @@ static void ClearDebugRegs( void )
 
 static bool SetDebugRegs( void )
 {
-    int                 needed;
     int                 i;
     watch_point         *wp;
     bool                success;
     long                rc;
 
-    needed = 0;
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-        needed += wp->dregs;
-    }
-    if( needed > 4 )
+    if( DRegsCount() > 4 )
         return( false );
     if( IsDPMI ) {
         success = true;

@@ -113,7 +113,6 @@ static UCHAR        TypeProcess;
 static BOOL         Is32Bit;
 static watch        WatchPoints[MAX_WATCHES];
 static short        WatchCount = 0;
-static short        DebugRegsNeeded = 0;
 static unsigned_16  lastCS;
 static unsigned_16  lastSS;
 static unsigned_32  lastEIP;
@@ -1149,6 +1148,18 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].addr.offset & ( WatchPoints[i].len -1 ) ? 2 : 1;
+    }
+    return( needed );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
@@ -1164,12 +1175,11 @@ trap_retval TRAP_CORE( Set_watch )( void )
         WatchPoints[WatchCount].len = acc->size;
         ReadBuffer( (byte *)&buff, acc->watch_addr.segment, acc->watch_addr.offset, sizeof( dword ) );
         WatchPoints[WatchCount].value = buff;
-        DebugRegsNeeded += ( acc->watch_addr.offset & ( acc->size-1 ) ) ? 2 : 1;
         ret->err = 0;
         ++WatchCount;
     }
     ret->multiplier = 50000;
-    if( ret->err == 0 && DebugRegsNeeded <= 4 ) {
+    if( ret->err == 0 && DRegsCount() <= 4 ) {
         ret->multiplier |= USING_DEBUG_REG;
     }
     return( sizeof( *ret ) );
@@ -1198,7 +1208,6 @@ trap_retval TRAP_CORE( Clear_watch )( void )
         }
         ++src;
     }
-    DebugRegsNeeded -= ( acc->watch_addr.offset & ( acc->size-1 ) ) ? 2 : 1;
     --WatchCount;
     return( 0 );
 }
@@ -1268,15 +1277,10 @@ static trap_conditions MapReturn( trap_conditions conditions )
 
 static bool setDebugRegs( void )
 {
-    int                 needed;
     int                 i;
 
-    needed = 0;
-    for( i = 0; i < WatchCount; ++i ) {
-        needed += WatchPoints[i].addr.offset & ( WatchPoints[i].len -1 ) ? 2 : 1;
-        if( needed > 4 ) {
-            return( FALSE );
-        }
+    if( DRegsCount() > 4 ) {
+        return( FALSE );
     }
     for( i = 0; i < WatchCount; ++i ) {
         Buff.Cmd = DBG_C_SetWatch;

@@ -202,13 +202,24 @@ void ClearDebugRegs( void )
 #endif
 }
 
+static int DRegsCount( void )
+{
+    int     needed;
+    int     i;
+
+    needed = 0;
+    for( i = 0; i < WatchCount; i++ ) {
+        needed += WatchPoints[i].dregs;
+    }
+    return( needed );
+}
+
 /*
  * SetDebugRegs - set debug registers for watch points
  */
 BOOL SetDebugRegs( void )
 {
 #if defined( MD_x86 ) || defined( MD_x64 )
-    int         needed;
     int         i;
     int         dr;
     DWORD       dr7;
@@ -230,11 +241,7 @@ BOOL SetDebugRegs( void )
          *  3 registers - 1@1, 2@2 and 1@3
          *
          */
-        needed = 0;
-        for( i = 0; i < WatchCount; i++ ) {
-            needed += WatchPoints[i].dregs;
-        }
-        if( needed > 4 ) {
+        if( DRegsCount() > 4 ) {
             return( FALSE );
         }
 
@@ -303,11 +310,7 @@ BOOL SetDebugRegs( void )
 
     } else {
 
-        needed = 0;
-        for( i = 0; i < WatchCount; i++ ) {
-            needed += WatchPoints[i].dregs;
-        }
-        if( needed > 4 ) {
+        if( DRegsCount() > 4 ) {
             return( FALSE );
         }
 
@@ -496,18 +499,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
                 return 0;   /* Error!!! */
             }
         }
-        if(1) /* New scope */
-        {
-            unsigned    i;
-            unsigned    needed;
-
-            needed = 0;
-            for( i = 0; i < WatchCount; ++i ) {
-                needed += WatchPoints[i].dregs;
-            }
-            if( needed <= 4 ) {
-                ret->multiplier |= USING_DEBUG_REG;
-            }
+        if( DRegsCount() <= 4 ) {
+            ret->multiplier |= USING_DEBUG_REG;
         }
 #endif
     }
