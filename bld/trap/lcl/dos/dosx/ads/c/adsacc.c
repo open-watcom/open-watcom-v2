@@ -83,9 +83,9 @@ char                    UtilBuff[BUFF_SIZE];
 #define ADSSTACK_SIZE      4096
 char                    ADSStack[ADSSTACK_SIZE];
 
-#define MAX_WP  8
+#define MAX_WATCHES     8
 
-watch_point WatchPoints[MAX_WP];
+watch_point WatchPoints[MAX_WATCHES];
 int         WatchCount;
 
 #define _DBG3( x ) // MyOut x
@@ -574,7 +574,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret = GetOutPtr( 0 );
     ret->multiplier = 20000;
     ret->err = 1;
-    if( WatchCount < MAX_WP ) {
+    if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;
         wp = WatchPoints + WatchCount++;
         wp->addr = acc->watch_addr;

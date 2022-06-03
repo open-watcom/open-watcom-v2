@@ -43,8 +43,8 @@
 #include "lnxcomm.h"
 #include "x86cpu.h"
 
-static watch_point      wpList[ MAX_WP ];
-static int              wpCount = 0;
+static watch_point      WatchPoints[MAX_WATCHES];
+static int              WatchCount = 0;
 
 static void ReadCPU( struct x86_cpu *r )
 {
@@ -220,13 +220,13 @@ int SetDebugRegs( void )
     watch_point *wp;
 
     needed = 0;
-    for( i = 0; i < wpCount; i++)
-        needed += wpList[i].dregs;
+    for( i = 0; i < WatchCount; i++)
+        needed += WatchPoints[i].dregs;
     if( needed > 4 )
         return( false );
     dr  = 0;
     dr7 = 0;
-    for( i = 0, wp = wpList; i < wpCount; i++, wp++ ) {
+    for( i = 0, wp = WatchPoints; i < WatchCount; i++, wp++ ) {
         dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
         dr++;
         if( wp->dregs == 2 ) {
@@ -243,9 +243,9 @@ int CheckWatchPoints( void )
     u_long  value;
     int     i;
 
-    for( i = 0; i < wpCount; i++ ) {
-        ReadMem( pid, &value, wpList[i].loc.offset, sizeof( value ) );
-        if( value != wpList[i].value ) {
+    for( i = 0; i < WatchCount; i++ ) {
+        ReadMem( pid, &value, WatchPoints[i].loc.offset, sizeof( value ) );
+        if( value != WatchPoints[i].value ) {
             return( true );
         }
     }
@@ -265,21 +265,21 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret = GetOutPtr( 0 );
     ret->multiplier = 100000;
     ret->err = 1;
-    if( wpCount < MAX_WP ) {
+    if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;
-        curr = wpList + wpCount;
+        curr = WatchPoints + WatchCount;
         curr->loc.segment = acc->watch_addr.segment;
         curr->loc.offset = acc->watch_addr.offset;
         ReadMem( pid, &value, acc->watch_addr.offset, sizeof( dword ) );
         curr->value = value;
         curr->len = acc->size;
-        wpCount++;
+        WatchCount++;
         curr->linear = linear = acc->watch_addr.offset;
         curr->linear &= ~(curr->len-1);
         curr->dregs = (linear & (curr->len-1) ) ? 2 : 1;
         needed = 0;
-        for( i = 0; i < wpCount; ++i ) {
-            needed += wpList[ i ].dregs;
+        for( i = 0; i < WatchCount; ++i ) {
+            needed += WatchPoints[i].dregs;
         }
         if( needed <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
@@ -296,8 +296,8 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     int             i;
 
     acc = GetInPtr( 0 );
-    dst = src = wpList;
-    for( i = 0; i < wpCount; i++ ) {
+    dst = src = WatchPoints;
+    for( i = 0; i < WatchCount; i++ ) {
         if( src->loc.segment != acc->watch_addr.segment
                 || src->loc.offset != acc->watch_addr.offset ) {
             dst->loc.offset = src->loc.offset;
@@ -307,7 +307,7 @@ trap_retval TRAP_CORE( Clear_watch )( void )
         }
         src++;
     }
-    wpCount--;
+    WatchCount--;
     return( 0 );
 }
 

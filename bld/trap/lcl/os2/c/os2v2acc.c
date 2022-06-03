@@ -111,7 +111,7 @@ void OutNum( ULONG i )
 static ULONG        ExceptLinear;
 static UCHAR        TypeProcess;
 static BOOL         Is32Bit;
-static watch        WatchPoints[ MAX_WP ];
+static watch        WatchPoints[MAX_WATCHES];
 static short        WatchCount = 0;
 static short        DebugRegsNeeded = 0;
 static unsigned_16  lastCS;
@@ -1158,12 +1158,12 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->err = 1;
-    if( WatchCount < MAX_WP ) { // nyi - artificial limit (32 should be lots)
-        WatchPoints[ WatchCount ].addr.segment = acc->watch_addr.segment;
-        WatchPoints[ WatchCount ].addr.offset = acc->watch_addr.offset;
-        WatchPoints[ WatchCount ].len = acc->size;
+    if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
+        WatchPoints[WatchCount].addr.segment = acc->watch_addr.segment;
+        WatchPoints[WatchCount].addr.offset = acc->watch_addr.offset;
+        WatchPoints[WatchCount].len = acc->size;
         ReadBuffer( (byte *)&buff, acc->watch_addr.segment, acc->watch_addr.offset, sizeof( dword ) );
-        WatchPoints[ WatchCount ].value = buff;
+        WatchPoints[WatchCount].value = buff;
         DebugRegsNeeded += ( acc->watch_addr.offset & ( acc->size-1 ) ) ? 2 : 1;
         ret->err = 0;
         ++WatchCount;
@@ -1273,22 +1273,22 @@ static bool setDebugRegs( void )
 
     needed = 0;
     for( i = 0; i < WatchCount; ++i ) {
-        needed += WatchPoints[ i ].addr.offset & ( WatchPoints[ i ].len -1 ) ? 2 : 1;
+        needed += WatchPoints[i].addr.offset & ( WatchPoints[i].len -1 ) ? 2 : 1;
         if( needed > 4 ) {
             return( FALSE );
         }
     }
     for( i = 0; i < WatchCount; ++i ) {
         Buff.Cmd = DBG_C_SetWatch;
-        Buff.Addr = MakeItFlatNumberOne( WatchPoints[ i ].addr.segment,
-                                         WatchPoints[ i ].addr.offset & ~( WatchPoints[ i ].len -1 ) );
-        Buff.Len = WatchPoints[ i ].len;
+        Buff.Addr = MakeItFlatNumberOne( WatchPoints[i].addr.segment,
+                                         WatchPoints[i].addr.offset & ~( WatchPoints[i].len -1 ) );
+        Buff.Len = WatchPoints[i].len;
         Buff.Index = 0;
         Buff.Value = DBG_W_Write | DBG_W_Local;
         CallDosDebug( &Buff );
-        if( WatchPoints[ i ].addr.offset & ( WatchPoints[ i ].len-1 ) ) {
+        if( WatchPoints[i].addr.offset & ( WatchPoints[i].len-1 ) ) {
             Buff.Cmd = DBG_C_SetWatch;
-            Buff.Addr += WatchPoints[ i ].len;
+            Buff.Addr += WatchPoints[i].len;
             Buff.Index = 0;
             CallDosDebug( &Buff );
         }
@@ -1306,9 +1306,9 @@ static void watchSingleStep( void )
     while( Buff.Cmd == DBG_N_SStep ) {
         for( i = 0; i < WatchCount; ++i ) {
             ReadRegs( &save );
-            ReadBuffer( (byte *)&memval, WatchPoints[ i ].addr.segment, WatchPoints[ i ].addr.offset, sizeof( memval ) );
+            ReadBuffer( (byte *)&memval, WatchPoints[i].addr.segment, WatchPoints[i].addr.offset, sizeof( memval ) );
             WriteRegs( &save );
-            if( WatchPoints[ i ].value != memval ) {
+            if( WatchPoints[i].value != memval ) {
                 Buff.Cmd = DBG_N_Watchpoint;
                 return;
             }

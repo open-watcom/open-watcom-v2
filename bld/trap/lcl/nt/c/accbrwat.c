@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
   #include "dbg386.h"
 #endif
 
-#define MAX_WP  32
+#define MAX_WATCHES     32
 
 typedef struct {
     addr48_ptr      loc;
@@ -49,7 +49,7 @@ typedef struct {
     word            dregs;
 }                   watch_point;
 
-static watch_point  wpList[MAX_WP];
+static watch_point  WatchPoints[MAX_WATCHES];
 
 typedef struct break_point {
     struct break_point  *next;
@@ -231,8 +231,8 @@ BOOL SetDebugRegs( void )
          *
          */
         needed = 0;
-        for( i = 0; i < WPCount; i++ ) {
-            needed += wpList[i].dregs;
+        for( i = 0; i < WatchCount; i++ ) {
+            needed += WatchPoints[i].dregs;
         }
         if( needed > 4 ) {
             return( FALSE );
@@ -240,7 +240,7 @@ BOOL SetDebugRegs( void )
 
         dr  = 0;
         dr7 = 0;
-        for( i = 0, wp = wpList; i < WPCount; i++, wp++ ) {
+        for( i = 0, wp = WatchPoints; i < WatchCount; i++, wp++ ) {
 
             DWORD   boundary_check = wp->linear & 0x3;
 
@@ -304,8 +304,8 @@ BOOL SetDebugRegs( void )
     } else {
 
         needed = 0;
-        for( i = 0; i < WPCount; i++ ) {
-            needed += wpList[i].dregs;
+        for( i = 0; i < WatchCount; i++ ) {
+            needed += WatchPoints[i].dregs;
         }
         if( needed > 4 ) {
             return( FALSE );
@@ -313,7 +313,7 @@ BOOL SetDebugRegs( void )
 
         dr  = 0;
         dr7 = 0;
-        for( i = 0, wp = wpList; i < WPCount; i++, wp++ ) {
+        for( i = 0, wp = WatchPoints; i < WatchCount; i++, wp++ ) {
             dr7 |= setDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
             dr++;
             /* This watchpoint must cross dword boundaries or be larger than 4 bytes    */
@@ -353,14 +353,14 @@ BOOL CheckWatchPoints( void )
     DWORD   value;
     int     i;
 
-    for( i = 0; i < WPCount; i++ ) {
-        ReadMem( wpList[i].loc.segment, wpList[i].loc.offset, &value, sizeof( value ) );
-        if( value != wpList[i].value ) {
+    for( i = 0; i < WatchCount; i++ ) {
+        ReadMem( WatchPoints[i].loc.segment, WatchPoints[i].loc.offset, &value, sizeof( value ) );
+        if( value != WatchPoints[i].value ) {
             return( TRUE );
         }
-        if( wpList[i].len == 8 ) {
-            ReadMem( wpList[i].loc.segment, wpList[i].loc.offset + sizeof( value ), &value, sizeof( value ) );
-            if( value != wpList[i].value_high ) {
+        if( WatchPoints[i].len == 8 ) {
+            ReadMem( WatchPoints[i].loc.segment, WatchPoints[i].loc.offset + sizeof( value ), &value, sizeof( value ) );
+            if( value != WatchPoints[i].value_high ) {
                 return( TRUE );
             }
         }
@@ -404,9 +404,9 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret = GetOutPtr( 0 );
     ret->multiplier = 100000;
     ret->err = 1;
-    if( WPCount < MAX_WP && acc->size <= 8 ) {
+    if( WatchCount < MAX_WATCHES && acc->size <= 8 ) {
         ret->err = 0;
-        curr = wpList + WPCount;
+        curr = WatchPoints + WatchCount;
         curr->loc.segment = acc->watch_addr.segment;
         curr->loc.offset = acc->watch_addr.offset;
 
@@ -429,7 +429,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
             curr->value_high = value_high;
         }
 
-        WPCount++;
+        WatchCount++;
 #if defined( MD_x86 )
         linear = CalcLinear( acc->watch_addr.segment, acc->watch_addr.offset );
         lencalc = curr->len;
@@ -502,8 +502,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
             unsigned    needed;
 
             needed = 0;
-            for( i = 0; i < WPCount; ++i ) {
-                needed += wpList[i].dregs;
+            for( i = 0; i < WatchCount; ++i ) {
+                needed += WatchPoints[i].dregs;
             }
             if( needed <= 4 ) {
                 ret->multiplier |= USING_DEBUG_REG;
@@ -522,8 +522,8 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     int             i;
 
     acc = GetInPtr( 0 );
-    dst = src = wpList;
-    for( i = 0; i < WPCount; i++ ) {
+    dst = src = WatchPoints;
+    for( i = 0; i < WatchCount; i++ ) {
         if( src->loc.segment != acc->watch_addr.segment || src->loc.offset != acc->watch_addr.offset ) {
             dst->loc.offset = src->loc.offset;
             dst->loc.segment = src->loc.segment;
@@ -533,6 +533,6 @@ trap_retval TRAP_CORE( Clear_watch )( void )
         }
         src++;
     }
-    WPCount--;
+    WatchCount--;
     return( 0 );
 }

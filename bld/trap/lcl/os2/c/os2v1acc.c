@@ -87,9 +87,9 @@ typedef struct watch_point {
     dword       value;
 } watch_point;
 
-#define MAX_WP  32
+#define MAX_WATCHES     32
 
-watch_point WatchPoints[ MAX_WP ];
+watch_point WatchPoints[MAX_WATCHES];
 short       WatchCount = 0;
 
 #if 0
@@ -945,11 +945,11 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
     wp = GetInPtr( 0 );
     wr = GetOutPtr( 0 );
-    if( WatchCount < MAX_WP ) { // nyi - artificial limit (32 should be lots)
-        WatchPoints[ WatchCount ].addr.segment = wp->watch_addr.segment;
-        WatchPoints[ WatchCount ].addr.offset = wp->watch_addr.offset;
+    if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
+        WatchPoints[WatchCount].addr.segment = wp->watch_addr.segment;
+        WatchPoints[WatchCount].addr.offset = wp->watch_addr.offset;
         ReadBuffer( (byte __far *)&buff, wp->watch_addr.segment, wp->watch_addr.offset, sizeof( dword ) );
-        WatchPoints[ WatchCount ].value = buff;
+        WatchPoints[WatchCount].value = buff;
         ++WatchCount;
     } else {
         wr->err = 84; /* out of structures */

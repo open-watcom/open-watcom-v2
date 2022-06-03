@@ -132,8 +132,9 @@ typedef struct watch_point {
     word        len;
 } watch_point;
 
-#define MAX_WP  32
-watch_point WatchPoints[MAX_WP];
+#define MAX_WATCHES     32
+
+watch_point WatchPoints[MAX_WATCHES];
 int         WatchCount;
 
 typedef struct {
@@ -787,7 +788,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret = GetOutPtr( 0 );
     ret->err = 1;
     ret->multiplier = 10000;
-    if( WatchCount < MAX_WP ) {
+    if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;
         addr.offset = acc->watch_addr.offset;
         addr.selector = acc->watch_addr.segment;

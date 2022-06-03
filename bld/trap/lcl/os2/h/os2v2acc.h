@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +80,7 @@ typedef struct watch {
     int         len;
 } watch;
 
-#define MAX_WP  32
+#define MAX_WATCHES     32
 
 extern bool             ExpectingAFault;
 extern scrtype          Screen;
@@ -96,9 +97,9 @@ extern unsigned         NumModHandles;
 extern unsigned         CurrModHandle;
 extern ULONG            ExceptNum;
 extern HMODULE          ThisDLLModHandle;
-//extern dos_debug      Buff;
-//extern watch          WatchPoints[ MAX_WP ];
-//extern short          WatchCount;
+//extern dos_debug        Buff;
+//extern watch            WatchPoints[MAX_WATCHES];
+//extern short            WatchCount;
 extern USHORT           FlatCS,FlatDS;
 
 #define _RetCodes( retblk, rc, value ) \

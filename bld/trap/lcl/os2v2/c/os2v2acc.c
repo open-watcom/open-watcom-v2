@@ -117,7 +117,7 @@ static void OutNum( ULONG i )
 static ULONG            ExceptLinear;
 static UCHAR            TypeProcess;
 static BOOL             Is32Bit;
-static watch_point      WatchPoints[MAX_WP];
+static watch_point      WatchPoints[MAX_WATCHES];
 static short            WatchCount = 0;
 static short            DebugRegsNeeded = 0;
 static unsigned_16      lastCS;
@@ -1267,7 +1267,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->err = 1;
-    if( WatchCount < MAX_WP ) { // nyi - artificial limit (32 should be lots)
+    if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
         WatchPoints[WatchCount].addr.segment = acc->watch_addr.segment;
         WatchPoints[WatchCount].addr.offset = acc->watch_addr.offset;
         WatchPoints[WatchCount].len = acc->size;

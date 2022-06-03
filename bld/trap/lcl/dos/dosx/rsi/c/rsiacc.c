@@ -89,8 +89,9 @@ static unsigned_8       RealNPXType;
 
 static char             UtilBuff[BUFF_SIZE];
 
-#define MAX_WP 32
-static watch_point      WatchPoints[MAX_WP];
+#define MAX_WATCHES     32
+
+static watch_point      WatchPoints[MAX_WATCHES];
 static int              WatchCount;
 
 static void EMURestore( _word seg, const void __far *data )

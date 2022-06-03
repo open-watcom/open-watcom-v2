@@ -130,8 +130,9 @@ static process_info ProcInfo;
 
 #define PRIV_MASK   3
 
-#define MAX_WP  32
-struct _watch_struct    WatchPoints[ MAX_WP ];
+#define MAX_WATCHES     32
+
+struct _watch_struct    WatchPoints[MAX_WATCHES];
 short   WatchCount = 0;
 
 #if 0
@@ -1050,12 +1051,12 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     for( size = acc->size; size != 0; --size ) {
-        WatchPoints[ WatchCount ].seg = acc->watch_addr.segment;
-        WatchPoints[ WatchCount ].off = acc->watch_addr.offset;
-        #if 0
-        ReadBuffer( &WatchPoints[ WatchCount ].byte,
-            WatchPoints[ WatchCount ].seg, WatchPoints[ WatchCount ].off, 1 );
-        #endif
+        WatchPoints[WatchCount].seg = acc->watch_addr.segment;
+        WatchPoints[WatchCount].off = acc->watch_addr.offset;
+#if 0
+        ReadBuffer( &WatchPoints[WatchCount].byte,
+            WatchPoints[WatchCount].seg, WatchPoints[WatchCount].off, 1 );
+#endif
         ++acc->watch_addr.offset;
         ++WatchCount;
     }

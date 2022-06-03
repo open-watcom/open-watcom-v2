@@ -55,8 +55,8 @@ static pid_t            OrigPGrp;
 
 process_info        ProcInfo;
 
-//#define MAX_WP  32
-//struct _watch_struct    WatchPoints[MAX_WP];
+//#define MAX_WATCHES     32
+//struct _watch_struct    WatchPoints[MAX_WATCHES];
 short               WatchCount = 0;
 
 

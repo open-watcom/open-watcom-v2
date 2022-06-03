@@ -169,8 +169,8 @@ bool                    BoundAppLoading;
 
 FLAGS                   Flags;
 
-#define MAX_WP          32
-static watch_point      WatchPoints[MAX_WP];
+#define MAX_WATCHES     32
+static watch_point      WatchPoints[MAX_WATCHES];
 static short            WatchCount;
 
 static bool             IsBreak[4];
@@ -676,7 +676,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     wr = GetOutPtr( 0 );
     wr->err = 1;
     wr->multiplier = 0;
-    if( WatchCount < MAX_WP ) {
+    if( WatchCount < MAX_WATCHES ) {
         wr->err = 0;
         curr = WatchPoints + WatchCount;
         curr->addr.segment = wp->watch_addr.segment;

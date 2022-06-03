@@ -142,7 +142,7 @@ typedef struct {
 } watch_point;
 
 
-#define MAX_WP          32
+#define MAX_WATCHES     32
 
 #endif
 
