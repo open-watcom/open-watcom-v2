@@ -43,6 +43,7 @@
 #include "lnxcomm.h"
 #include "x86cpu.h"
 
+
 static watch_point      WatchPoints[MAX_WATCHES];
 static int              WatchCount = 0;
 
@@ -227,7 +228,8 @@ static int DRegsCount( void )
 
 int SetDebugRegs( void )
 {
-    int         i,dr;
+    int         i;
+    int         dr;
     u_long      dr7;
     watch_point *wp;
 

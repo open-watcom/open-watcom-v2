@@ -170,6 +170,7 @@ bool                    BoundAppLoading;
 FLAGS                   Flags;
 
 #define MAX_WATCHES     32
+
 static watch_point      WatchPoints[MAX_WATCHES];
 static short            WatchCount;
 

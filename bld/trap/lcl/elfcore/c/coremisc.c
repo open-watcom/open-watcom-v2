@@ -38,7 +38,7 @@
 #include <sys/stat.h>
 #include "trpimp.h"
 #include "trpcomm.h"
-#include "coremisc.h"
+#include "lnxcomm.h"
 
 
 #define TRPH2LH(th)     (th)->handle.u._32[0]

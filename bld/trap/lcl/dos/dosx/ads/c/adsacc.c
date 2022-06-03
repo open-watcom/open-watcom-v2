@@ -687,7 +687,6 @@ static unsigned ProgRun( bool step )
     Regs.EFL |= trace;
     if( AtEnd ) {
         _DBG2(("No RunProg"));
-        ;
     } else if( !trace && WatchCount != 0 ) {
         _DBG2(("All that trace goop"));
         if( SetDebugRegs() ) {

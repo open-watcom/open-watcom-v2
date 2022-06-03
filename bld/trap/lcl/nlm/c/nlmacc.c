@@ -1416,8 +1416,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->addr.offset = acc->watch_addr.offset;
         wp->linear = acc->watch_addr.offset;
         wp->len = acc->size;
-        wp->linear &= ~(wp->len-1);
-        wp->dregs = ( wp->addr.offset & (wp->len-1) ) ? 2 : 1;
+        wp->linear &= ~(wp->len - 1);
+        wp->dregs = ( wp->addr.offset & (wp->len - 1) ) ? 2 : 1;
         wp->value = l;
         ++WatchCount;
         for( i = 0; i < NUM_DREG; ++i ) {
