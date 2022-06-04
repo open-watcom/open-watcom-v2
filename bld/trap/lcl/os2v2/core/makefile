@@ -10,10 +10,10 @@ target_os  = os2v2
 # Create the 32-bit OS/2 core.dll
 #
 
-srv     = lcl
-name    = core
-which   = TRAP
-core_only = 1
+srv          = lcl
+name         = core
+which        = TRAP
+core_entries = 1
 
 extra_cppflags = -DELFCORE
 extra_cflags = -bd
