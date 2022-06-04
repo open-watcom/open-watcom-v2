@@ -180,7 +180,7 @@ trap_retval TRAP_CORE( Split_cmd )( void )
         case '\"':
             cmd++;
             while( --len > 0 && ( *cmd++ != '\"' ) )
-                ;
+                {}
             if( len == 0 )
                 continue;
             switch( *cmd ) {

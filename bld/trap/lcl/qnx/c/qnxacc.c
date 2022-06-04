@@ -1668,7 +1668,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         if( p[0] == '/' ) {
             if( p[1] == '/' ) {
                 for( p += 2; *p >= '0' && *p <= '9'; p++ ) {
-                    ;
+                    {}
                 }
             }
             strncpy( name, p, max_len );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -462,17 +462,17 @@ static bool BlockSend( trap_elen len, const void *data, unsigned timeout )
                 if( reply == SDATA_ACK ) {
                     ++SendBlkNo;
                     return( true );         /* done, exit from BlockSend() */
-                } else if( reply == SDATA_NAK ) {  /* unsuccessful, re-send block */
+                } else if( reply == SDATA_NAK ) { /* unsuccessful, re-send block */
                     ++Errors;
-                    break;     /* break out of acknowledgement loop;
-                                  i.e. back to send block loop */
-                } else if( reply == SDATA_RLR ) {  /* request last response */
+                    break;                  /* break out of acknowledgement loop;
+                                                i.e. back to send block loop */
+                } else if( reply == SDATA_RLR ) { /* request last response */
                     SendByte( LastResponse );
-                    break;     /* break out ackno loop; re-send block */
-                } else {       /* things are totally messed up */
+                    break;                  /* break out ackno loop; re-send block */
+                } else {                    /* things are totally messed up */
                     while( WaitByte( MSEC2TICK( 750 ) ) != SDATA_NO_DATA )
-                        ;             /* discard all characters sent */
-                    SendByte( SDATA_RLR );     /* request last response */
+                        {}                  /* discard all characters sent */
+                    SendByte( SDATA_RLR );  /* request last response */
                     ++Errors;
                 }
             }
@@ -615,7 +615,7 @@ static bool ReSync( void )
     if( BaudCounter > MIN_BAUD )
         BaudCounter = MIN_BAUD;
     while( !SetSyncTime() )
-        ;
+        {}
     return( Speed() );  /* sync */
 }
 

@@ -451,8 +451,7 @@ trap_retval TRAP_RFX( nametocanonical )( void )
             level++;
             do {
                 *fullname++ = *p++;
-            } while( *p != '\0' )
-                ;
+            } while( *p != '\0' );
             *fullname = '\0';
         }
     }

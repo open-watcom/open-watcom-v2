@@ -140,8 +140,9 @@ const char *DOSEnvFind( const char *src )
                 return( env + 1 );
             }
         } while( *env++ == *p++ );
-        while( *env++ != '\0' )
-            ;
+        while( *env++ != '\0' ) {
+            {}
+        }
     } while( *env != '\0' );
     return( NULL );
 }

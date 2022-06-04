@@ -61,7 +61,7 @@ static int CheckForPort( int i, unsigned char value )
 
     outp( PortTest[ i ], value );
     for( j = 100; j != 0; j-- )
-        ;
+        {}
     return( inp( PortTest[ i ] ) == value );
 }
 

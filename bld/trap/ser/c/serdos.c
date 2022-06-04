@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,14 +160,13 @@ void ResetSys( void )
 
 void SendByte( int value )
 {
-    do {
-        ;
-    } while( (inp( LSR ) & LSR_THRE) == 0 );
+    while( (inp( LSR ) & LSR_THRE) == 0 )
+        {}
     if( Modem ) {
         /* talking over a modem - check the data set ready line */
-        do {
-            ;
-        } while( (inp( MSR ) & MSR_CTS) == 0 );
+        while( (inp( MSR ) & MSR_CTS) == 0 ) {
+            {}
+        }
     }
     outp( IOBase, value );
 }
@@ -180,9 +179,9 @@ void StopBlockTrans( void )
 {
     if( Modem ) {
         /* talking over a modem - check the data set ready line */
-        do {
-            ;
-        } while( (inp( MSR ) & MSR_CTS) == 0 );
+        while( (inp( MSR ) & MSR_CTS) == 0 ) {
+            {}
+        }
     }
 }
 
@@ -311,7 +310,7 @@ bool CheckPendingError( void )
 void ClearLastChar( void )
 {
     /* wait for last character to be sent */
-    do {
-        ;
-    } while( (inp( LSR ) & LSR_TSRE) == 0 );
+    while( (inp( LSR ) & LSR_TSRE) == 0 ) {
+        {}
+    }
 }

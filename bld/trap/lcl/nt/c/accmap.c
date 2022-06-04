@@ -385,8 +385,9 @@ static BOOL NameFromHandle( HANDLE hFile, char *name )
             }
 
             // Go to the next NULL character.
-            while( *p++ != '\0' )
-                ;
+            while( *p++ != '\0' ) {
+                {}
+            }
         } while( *p != '\0' ); // end of string
     }
 
