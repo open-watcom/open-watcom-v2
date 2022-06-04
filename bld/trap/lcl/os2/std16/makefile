@@ -8,9 +8,10 @@ host_os  = os2
 target_cpu = x86
 target_os  = os2
 
-srv     = lcl
-name    = std16
-which = TRAP
+srv          = lcl
+name         = std16
+which        = TRAP
+core_entries = 1
 
 extra_objs = &
         accmisc.obj &
