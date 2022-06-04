@@ -38,6 +38,7 @@
 #include "trperr.h"
 #include "mad.h"
 #include "madregs.h"
+#include "trpcomm.h"
 #include "lnxcomm.h"
 
 /* Implementation notes:
@@ -49,7 +50,7 @@
  */
 
 /* Macros to get at GP/FP registers based on their index; useful in loops */
-#define TRANS_GPREG_32( mr, idx ) (*((unsigned_32 *)(&(mr->r0.u._32[I64LO32])) + (2 * idx)))
+#define TRANS_GPREG_32( mr, idx ) (*((unsigned_32 *)(&(mr->u0.r0.u._32[I64LO32])) + (2 * idx)))
 #define TRANS_FPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr->f0.u64.u._32[I64LO32])) + (2 * idx)))
 #define TRANS_FPREG_HI( mr, idx ) (*((unsigned_32 *)(&(mr->f0.u64.u._32[I64HI32])) + (2 * idx)))
 
