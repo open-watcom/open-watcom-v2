@@ -7,11 +7,7 @@ linux_trap_objs = &
     supp.obj &
     core.obj
 
-!ifeq target_cpu mps
-linux_trap_objs += lnxmips.obj
-!else
 linux_trap_objs += lnx$(target_cpu).obj
-!endif
 !ifeq target_cpu x86
 linux_trap_objs += x86cpu.obj
 !endif
