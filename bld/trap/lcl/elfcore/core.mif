@@ -1,7 +1,7 @@
 srv     = lcl
 name    = elf
 which   = TRAP
-core_only = 1
+core_entries = 1
 
 extra_cppflags = -DELFCORE
 
