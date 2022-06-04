@@ -80,6 +80,7 @@ static void Out( char *str )
 }
 
 #define NSIZE 20
+
 static void OutNum( ULONG i )
 {
     char    numbuff[NSIZE];
@@ -1264,7 +1265,7 @@ static int DRegsCount( void )
 
     needed = 0;
     for( i = 0; i < WatchCount; i++ ) {
-        needed += WatchPoints[i].addr.offset & ( WatchPoints[i].len -1 ) ? 2 : 1;
+        needed += WatchPoints[i].addr.offset & ( WatchPoints[i].len - 1 ) ? 2 : 1;
     }
     return( needed );
 }

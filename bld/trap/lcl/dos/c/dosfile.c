@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Low-level trap file I/O for DOS.
+* Description:  Low-level trap file I/O for DOS (16-bit code).
 *
 ****************************************************************************/
 
@@ -46,7 +46,7 @@
 #define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
 
 /* fork.asm prototype */
-extern tiny_ret_t   __near Fork( const char __far *, unsigned );
+extern tiny_ret_t   __near Fork( const char __far *, size_t );
 
 static const seek_info  local_seek_method[] = { TIO_SEEK_SET, TIO_SEEK_CUR, TIO_SEEK_END };
 
@@ -303,26 +303,25 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
 trap_retval TRAP_FILE( run_cmd )( void )
 {
     file_run_cmd_ret    *ret;
-#if defined(__WINDOWS__)
-
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
-#else
+#if !defined(__WINDOWS__)
     bool                chk;
     char                buff[_MAX_PATH];
     file_run_cmd_req    *acc;
-    unsigned            len;
+    size_t              len;
     tiny_ret_t          rc;
+#endif
 
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
+#if !defined(__WINDOWS__)
     acc = GetInPtr( 0 );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr( 0 );
-
     chk = CheckPointMem( ON_DISK, acc->chk_size, buff );
     rc = Fork( GetInPtr( sizeof( *acc ) ), len );
     if( chk )
         CheckPointRestore( ON_DISK );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
 #endif
     return( sizeof( *ret ) );
 }

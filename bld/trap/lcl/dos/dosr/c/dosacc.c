@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  DOS real mode debugger access functions.
+* Description:  DOS real mode debugger access functions (16-bit code).
 *
 ****************************************************************************/
 

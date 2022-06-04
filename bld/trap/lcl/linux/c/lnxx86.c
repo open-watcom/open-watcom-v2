@@ -249,6 +249,7 @@ int SetDebugRegs( void )
     return( true );
 }
 
+#if 0
 int CheckWatchPoints( void )
 {
     u_long  value;
@@ -262,6 +263,7 @@ int CheckWatchPoints( void )
     }
     return( false );
 }
+#endif
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {

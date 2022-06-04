@@ -1108,7 +1108,7 @@ trap_retval TRAP_THREAD( get_next )( void )
             return( sizeof( *ret ) );
         }
     }
-    if( SysThreads[ret->thread-1] && SysThreads[ret->thread-1]->state == RUNNABLE ) {
+    if( SysThreads[ret->thread - 1] && SysThreads[ret->thread - 1]->state == RUNNABLE ) {
         ret->state = THREAD_THAWED;
     } else {
         ret->state = THREAD_FROZEN;
@@ -1127,9 +1127,9 @@ trap_retval TRAP_THREAD( set )( void )
     ret->old_thread = CurrThreadIdx+1;
     ret->err = 0;
     if( acc->thread != 0 ) {
-        if( acc->thread <= NumThreads && SysThreads[acc->thread-1] &&
-            SysThreads[acc->thread-1]->state == RUNNABLE ) {
-            CurrThreadIdx = acc->thread-1;
+        if( acc->thread <= NumThreads && SysThreads[acc->thread - 1] &&
+            SysThreads[acc->thread - 1]->state == RUNNABLE ) {
+            CurrThreadIdx = acc->thread - 1;
         } else {
             ret->err = ERR_JVM_THREAD_NOT_RUNNABLE;
         }
@@ -1176,13 +1176,13 @@ trap_retval TRAP_THREAD( get_extra )( void )
     name = GetOutPtr( 0 );
     strcpy( name, "" );
     if( acc->thread != 0 ) {
-        trd = (Classjava_lang_Thread*)unhand(Threads[acc->thread-1]);
+        trd = (Classjava_lang_Thread*)unhand(Threads[acc->thread - 1]);
         ThreadName( trd, buff, sizeof( buff ) );
         strcat( name, buff );
 
         strcat( name, " (" );
-        if( SysThreads[acc->thread-1] ) {
-            switch( SysThreads[acc->thread-1]->state ) {
+        if( SysThreads[acc->thread - 1] ) {
+            switch( SysThreads[acc->thread - 1]->state ) {
             case RUNNABLE:
                 strcat( name, "running, " );
                 break;

@@ -49,7 +49,7 @@ int NumPrinters()
 
     par = _MK_FP( INFO_SEG, PAR_BASE );
     for( i = 3; i > 0; --i ) {
-        if( par[i-1] != 0 ) {
+        if( par[i - 1] != 0 ) {
             return( i );
         }
     }

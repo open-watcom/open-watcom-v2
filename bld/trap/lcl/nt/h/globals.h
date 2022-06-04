@@ -41,7 +41,6 @@ TRPGLOBAL DWORD                 DebugeePid;
 TRPGLOBAL DWORD                 DebugeeTid;
 TRPGLOBAL process_info          ProcessInfo;
 TRPGLOBAL BOOL                  DebugeeEnded;
-TRPGLOBAL WORD                  WatchCount;
 TRPGLOBAL DWORD                 LastExceptionCode;
 TRPGLOBAL DWORD                 CurrentModule TRPGLOBINIT( 1 );
 TRPGLOBAL DWORD                 ModuleTop;

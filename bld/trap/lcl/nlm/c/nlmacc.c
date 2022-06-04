@@ -194,8 +194,8 @@ typedef struct watch_point {
 
 #define MAX_WATCHES     32
 
-watch_point WatchPoints[MAX_WATCHES];
-int         WatchCount;
+static watch_point      WatchPoints[MAX_WATCHES];
+static int              WatchCount;
 
 /*
 //  Code to release all waiters on a semaphore and delete it

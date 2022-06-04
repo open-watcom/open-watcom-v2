@@ -239,6 +239,7 @@ extern void             ClearDebugRegs( void );
 extern DWORD            GetDR6( void );
 extern void             SetDR7( DWORD tmp );
 extern BOOL             FindBreak( WORD segment, DWORD offset, BYTE *ch );
+extern bool             IsWatch( void );
 
 /* dbgthrd.c */
 extern DWORD            StartControlThread( char *name, DWORD *pid, DWORD cr_flags );

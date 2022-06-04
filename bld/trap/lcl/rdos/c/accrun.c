@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,12 +75,13 @@ trap_retval TRAP_CORE( Prog_go )( void )
             if( HasTraceOccurred( thread ) )
                 ret->conditions |= COND_WATCH;
 
-            if( HasFaultOccurred( thread ) )
+            if( HasFaultOccurred( thread ) ) {
                 ret->conditions |= COND_EXCEPTION;
+            }
         }
-    } else
+    } else {
         ret->conditions |= COND_TERMINATE;
-
+    }
     if( thread ) {
         ret->program_counter.offset = thread->Eip;
         ret->stack_pointer.offset = thread->Esp;
@@ -106,8 +107,8 @@ trap_retval TRAP_CORE( Prog_step )( void )
 
     obj = GetCurrentDebug();
 
-        if (obj) {
-            Trace( obj );
+    if( obj != NULL ) {
+        Trace( obj );
 
         if( IsTerminated( obj ) )
             ret->conditions |= COND_TERMINATE;
@@ -129,12 +130,13 @@ trap_retval TRAP_CORE( Prog_step )( void )
             if( HasTraceOccurred( thread ) )
                 ret->conditions |= COND_TRACE;
 
-            if( HasFaultOccurred( thread ) )
+            if( HasFaultOccurred( thread ) ) {
                 ret->conditions |= COND_EXCEPTION;
+            }
         }
-    } else
+    } else {
         ret->conditions |= COND_TERMINATE;
-
+    }
     if( thread ) {
         ret->program_counter.offset = thread->Eip;
         ret->stack_pointer.offset = thread->Esp;

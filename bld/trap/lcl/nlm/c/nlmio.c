@@ -242,7 +242,7 @@ void StringToNLMPath( char *name, char *res )
     for( ;; ) {
         if( i == 0 )
             break;
-        if( name[i-1] != ' ' )
+        if( name[i - 1] != ' ' )
             break;
         --i;
     }

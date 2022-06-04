@@ -132,11 +132,6 @@ typedef struct watch_point {
     word        len;
 } watch_point;
 
-#define MAX_WATCHES     32
-
-watch_point WatchPoints[MAX_WATCHES];
-int         WatchCount;
-
 typedef struct {
         long    have_vmm;
         long    nconvpg;
@@ -161,6 +156,11 @@ typedef struct {
         long    vmflags;
         long    reserved[4];
 } memory_stats;
+
+#define MAX_WATCHES     32
+
+static watch_point WatchPoints[MAX_WATCHES];
+static int         WatchCount;
 
 int SetUsrTask( void )
 {
@@ -223,7 +223,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         ret->out_addr.segment = Mach.msb_cs;
         break;
     }
-    ret->out_addr.offset = acc->in_addr.offset + ObjOffReloc[object-1];
+    ret->out_addr.offset = acc->in_addr.offset + ObjOffReloc[object - 1];
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
     return( sizeof( *ret ) );

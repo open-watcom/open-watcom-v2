@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ extern unsigned DPMIVersion( void );
     __value     [__dx] \
     __modify    [__ax __bx __cx __dx __si __es __di]
 
-const char DOSEMUString[] = "$DOSEMU$";
+static const char DOSEMUString[] = "$DOSEMU$";
 
 extern int DOSEMUCheck( void );
 #pragma aux DOSEMUCheck = \

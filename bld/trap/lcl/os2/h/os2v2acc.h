@@ -98,8 +98,6 @@ extern unsigned         CurrModHandle;
 extern ULONG            ExceptNum;
 extern HMODULE          ThisDLLModHandle;
 //extern dos_debug        Buff;
-//extern watch            WatchPoints[MAX_WATCHES];
-//extern short            WatchCount;
 extern USHORT           FlatCS,FlatDS;
 
 #define _RetCodes( retblk, rc, value ) \

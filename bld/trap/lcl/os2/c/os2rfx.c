@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,10 +195,16 @@ static void mylocaltime( unsigned long date_time, unsigned *time, unsigned *date
         }
     }
     if( ( ( num_yr_since_1970 - 2 ) % 4 ) == 0 ) {
-        for( month=2; month<=12; ++day_since_jan[month], ++month ) {}
+        for( month = 2; month <= 12; ++month ) {
+            ++day_since_jan[month];
+        }
     }
     year = num_yr_since_1970 - 10;
-    for( month=1;( day > day_since_jan[month] && month <= 12 ); month++ ) {}
+    for( month = 1; month <= 12; month++ ) {
+        if( day <= day_since_jan[month] ) {
+            break;
+        }
+    }
     day -= day_since_jan[month - 1];
     date_time %= 86400;
     hour = date_time / 3600;

@@ -47,17 +47,17 @@ typedef struct {
     DWORD           linear;
     word            len;
     word            dregs;
-}                   watch_point;
-
-static watch_point  WatchPoints[MAX_WATCHES];
+}           watch_point;
 
 typedef struct break_point {
     struct break_point  *next;
     addr48_ptr          addr;
     BYTE                byte;
-}                       break_point;
+}           break_point;
 
-static break_point      *Breaks = NULL;
+static watch_point  WatchPoints[MAX_WATCHES];
+static int          WatchCount = 0;
+static break_point  *Breaks = NULL;
 
 trap_retval TRAP_CORE( Set_break )( void )
 {
@@ -200,6 +200,11 @@ void ClearDebugRegs( void )
 #else
     #error ClearDebugRegs not configured
 #endif
+}
+
+bool IsWatch( void )
+{
+    return( WatchCount != 0 );
 }
 
 static int DRegsCount( void )

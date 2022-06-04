@@ -51,14 +51,13 @@
 typedef unsigned short  USHORT;
 typedef unsigned long   ULONG;
 
-static pid_t            OrigPGrp;
-
-process_info        ProcInfo;
+process_info            ProcInfo;
 
 //#define MAX_WATCHES     32
 //struct _watch_struct    WatchPoints[MAX_WATCHES];
-short               WatchCount = 0;
+static short            WatchCount = 0;
 
+static pid_t            OrigPGrp;
 
 unsigned nto_node( void )
 {

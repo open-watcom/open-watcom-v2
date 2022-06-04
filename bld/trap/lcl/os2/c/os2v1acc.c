@@ -89,8 +89,8 @@ typedef struct watch_point {
 
 #define MAX_WATCHES     32
 
-watch_point WatchPoints[MAX_WATCHES];
-short       WatchCount = 0;
+static watch_point      WatchPoints[MAX_WATCHES];
+static short            WatchCount = 0;
 
 #if 0
 static void Out( char __far *str )

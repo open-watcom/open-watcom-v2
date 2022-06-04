@@ -91,7 +91,7 @@ static trap_elen runProg( bool single_step )
 
     if( single_step ) {
         SingleStepMode();
-    } else if( WatchCount != 0 ) {
+    } else if( IsWatch() ) {
         dowatch = TRUE;
         watch386 = SetDebugRegs();
     }

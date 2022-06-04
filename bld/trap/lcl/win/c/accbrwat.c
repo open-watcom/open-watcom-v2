@@ -51,11 +51,12 @@
  * Under Windows 3.1, it seems bloody unlikely that segments move, so
  * maintaining a breakpoint list is unnecessary.
  */
-static break_point      __huge *brkList;
-static WORD             numBreaks;
-static HGLOBAL          brkHandle;
+
+#define GMEM_FLAGS      (GMEM_SHARE + GMEM_MOVEABLE + GMEM_ZEROINIT)
+#define BREAK_INCREMENT 64
 
 #define MAX_WATCHES     8
+
 typedef struct {
     addr48_ptr  loc;
     DWORD       value;
@@ -64,11 +65,11 @@ typedef struct {
     word        len;
 } watch_point;
 
+static break_point      __huge *brkList;
+static WORD             numBreaks;
+static HGLOBAL          brkHandle;
 static watch_point      WatchPoints[MAX_WATCHES];
-WORD                    WatchCount;
-
-#define GMEM_FLAGS      (GMEM_SHARE + GMEM_MOVEABLE + GMEM_ZEROINIT)
-#define BREAK_INCREMENT 64
+static WORD             WatchCount;
 
 /*
  * IsOurBreakpoint - check if a segment/offset is a break point we set
@@ -227,6 +228,11 @@ void ClearDebugRegs( void )
         setDR7( 0 );
     }
 } /* ClearDebugRegs */
+
+bool IsWatch( void )
+{
+    return( WatchCount != 0 );
+}
 
 static int DRegsCount( void )
 {

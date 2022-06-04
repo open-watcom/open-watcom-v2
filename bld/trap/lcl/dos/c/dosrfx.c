@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS version of RFX stuff (16-bit code)
 *
 ****************************************************************************/
 
@@ -190,10 +189,16 @@ static void mylocaltime( unsigned long date_time, tiny_ftime_t *time, tiny_fdate
         }
     }
     if( ( ( num_yr_since_1970 - 2 ) % 4 ) == 0 ) {
-        for( month=2; month<=12; ++day_since_jan[month], ++month ) {}
+        for( month = 2; month <= 12; ++month ) {
+            ++day_since_jan[month];
+        }
     }
     date->year = num_yr_since_1970 - 10;
-    for( month=1;( day > day_since_jan[month] && month <= 12 ); month++ ) {}
+    for( month = 1; month <= 12; month++ ) {
+        if( day <= day_since_jan[month] ) {
+            break;
+        }
+    }
     date->month = month;
     date->day = day - day_since_jan[month - 1];
     date_time %= 86400;
@@ -241,8 +246,8 @@ static unsigned long mymktime( unsigned time, unsigned date )
     }
     day += ( num_leap_since_1980 * 366
              + ( num_yr_since_1980 - num_leap_since_1980 ) * 365
-             + day_since_jan[month-1] - 1 );
-    return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
+             + day_since_jan[month - 1] - 1 );
+    return( NM_SEC_1970_1980 + day * 86400 + hour * 3600 + min * 60 + sec );
 }
 
 trap_retval TRAP_RFX( getdatetime )( void )

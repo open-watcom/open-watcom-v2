@@ -649,7 +649,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
     Buff.Value = seg;
     CallDosDebug( &Buff );
     Buff.MTE = ModHandles[ 0 ];
-    flags = ObjInfo[seg-1].flags;
+    flags = ObjInfo[seg - 1].flags;
     if( flags & OBJECT_IS_BIG ) {
         ret->out_addr.segment = (flags & OBJECT_IS_CODE) ? FlatCS : FlatDS;
         ret->out_addr.offset = Buff.Addr + off;

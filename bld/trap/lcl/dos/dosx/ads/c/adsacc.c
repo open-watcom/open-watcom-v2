@@ -83,11 +83,6 @@ char                    UtilBuff[BUFF_SIZE];
 #define ADSSTACK_SIZE      4096
 char                    ADSStack[ADSSTACK_SIZE];
 
-#define MAX_WATCHES     8
-
-watch_point WatchPoints[MAX_WATCHES];
-int         WatchCount;
-
 #define _DBG3( x ) // MyOut x
 #define _DBG2( x ) // MyOut x
 #define _DBG1( x ) // MyOut x
@@ -108,6 +103,11 @@ struct {
     dword   res4;
     dword   res5;
 } SysRegs;
+
+#define MAX_WATCHES     8
+
+static watch_point WatchPoints[MAX_WATCHES];
+static int         WatchCount;
 
 #if 0
 /*

@@ -669,7 +669,7 @@ static trap_elen runProg( bool single_step )
         setTBit( T_ON_NEXT );
     } else {
         setTBit( T_OFF );
-        if( WatchCount != 0 ) {
+        if( IsWatch() ) {
             state |= STATE_WATCH;
 #if defined( MD_x86 )
             if( SetDebugRegs() ) {

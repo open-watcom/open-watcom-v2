@@ -132,8 +132,8 @@ static process_info ProcInfo;
 
 #define MAX_WATCHES     32
 
-struct _watch_struct    WatchPoints[MAX_WATCHES];
-short   WatchCount = 0;
+static struct _watch_struct WatchPoints[MAX_WATCHES];
+static short                WatchCount = 0;
 
 #if 0
 void Out( char *str )

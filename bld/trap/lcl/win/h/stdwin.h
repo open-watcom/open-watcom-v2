@@ -110,7 +110,6 @@ extern int                      CurrentModule;
 extern bool                     FaultHandlerEntered;
 extern int                      SaveStdIn;
 extern int                      SaveStdOut;
-extern WORD                     WatchCount;
 extern HMODULE                  DebugeeModule;
 extern bool                     WasInt32;
 extern BOOL                     DebugDebugeeOnly;
@@ -144,6 +143,7 @@ BOOL SetDebugRegs( void );
 void ClearDebugRegs( void );
 DWORD GetDR6( void );
 BOOL CheckWatchPoints( void );
+bool IsWatch( void );
 
 /* asyhook.c */
 extern void InitASynchHook( void );

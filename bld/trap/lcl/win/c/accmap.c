@@ -108,7 +108,7 @@ void AddDebugeeModule( void )
 {
     int i;
     for( i = ModuleTop; i > 0; i-- ) {
-        moduleIDs[i] = moduleIDs[i-1];
+        moduleIDs[i] = moduleIDs[i - 1];
     }
     ModuleTop++;
     Out((OUT_MAP,"AddDebugeeModule - ModuleTop=%d",ModuleTop));

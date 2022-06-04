@@ -592,6 +592,8 @@ static unsigned RemoteGet(
     unsigned    get_len;
     unsigned    i;
 
+    /* unused parameters */ (void)len;
+
     get_len = DataGet( ext, RELINQUISH );
     if( get_len & 0x80 ) {
         get_len = ((get_len & 0x7f) << 8) | DataGet( ext, KEEP );
@@ -1179,6 +1181,7 @@ VOID ParCancel(
     IN  PDEVICE_OBJECT  DeviceObject,
     IN  PIRP            Irp)
 {
+    /* unused parameters */ (void)DeviceObject; (void)Irp;
 }
 
 /****************************************************************************
@@ -1267,6 +1270,8 @@ NTSTATUS ParCleanup(
     IN  PDEVICE_OBJECT  DeviceObject,
     IN  PIRP            Irp)
 {
+    /* unused parameters */ (void)DeviceObject;
+
     Irp->IoStatus.Status = STATUS_CANCELLED;
     Irp->IoStatus.Information = 0;
     IoCompleteRequest(Irp, IO_NO_INCREMENT);
@@ -1346,6 +1351,8 @@ NTSTATUS DriverEntry(
     IN  PUNICODE_STRING RegistryPath)
 {
     ULONG       i;
+
+    /* unused parameters */ (void)RegistryPath;
 
     // TODO: We should be able to re-code this driver to use a call-gate
     //               to give the calling process full IOPL access, without needing

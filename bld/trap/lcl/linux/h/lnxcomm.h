@@ -320,7 +320,7 @@ extern unsigned     FindFilePath( dig_filetype, const char *, char * );
 extern u_long       GetDR6( void );
 extern void         ClearDebugRegs( void );
 extern int          SetDebugRegs( void );
-extern int          CheckWatchPoints( void );
+//extern int          CheckWatchPoints( void );
 extern int          GetLinkMap( pid_t pid, struct link_map *, struct link_map * );
 extern int          AddInitialLibs( struct link_map * );
 extern int          AddOneLib( struct link_map * );
