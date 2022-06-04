@@ -195,7 +195,7 @@ typedef struct user {
 
 #endif
 
-#if defined( MD_mips )
+#if defined( MD_mps )
 
 typedef struct {
     unsigned long eax;
