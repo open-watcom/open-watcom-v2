@@ -78,11 +78,11 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    FILE                *fp;
     trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
     char                chr;
 #if !defined( BUILTIN_TRAP_FILE )
+    FILE                *fp;
     char                trap_name[_MAX_PATH];
     char                *p;
 #endif
