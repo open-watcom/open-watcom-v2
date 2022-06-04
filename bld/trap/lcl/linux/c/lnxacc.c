@@ -453,7 +453,7 @@ static trap_elen ProgRun( int step )
 #elif defined( MD_ppc )
         regs.eip = ptrace( PTRACE_PEEKUSER, pid, REGSIZE * PT_NIP, NULL );
         regs.esp = ptrace( PTRACE_PEEKUSER, pid, REGSIZE * PT_R1, NULL );
-#elif defined( MD_mips )
+#elif defined( MD_mps )
         regs.eip = ptrace( PTRACE_PEEKUSER, pid, (void *)PC, NULL );
         regs.esp = ptrace( PTRACE_PEEKUSER, pid, (void *)29, NULL );
 #endif
@@ -507,7 +507,7 @@ static trap_elen ProgRun( int step )
     if( ret->conditions == COND_BREAK ) {
 #if defined( MD_x86 )
         if( regs.eip == rdebug.r_brk + sizeof( saved_opcode ) ) {
-#elif defined( MD_ppc ) || defined( MD_mips )
+#elif defined( MD_ppc ) || defined( MD_mps )
         if( regs.eip == rdebug.r_brk ) {
 #endif
             int         psig = 0;
