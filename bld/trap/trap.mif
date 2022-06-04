@@ -41,7 +41,7 @@ TRAP_remote_objs =
 !include dllbase.mif
 
 !ifndef remote_link
-!ifndef core_only
+!ifndef core_entries
 full_export = 1
 !endif
 !endif
