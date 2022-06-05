@@ -27,7 +27,7 @@ common_dir = ../../common
 #
 # cflags
 #
-.c : ../$(host_os);../c;$(dig_srcs);$(mad_srcs);$(dis_srcs);$(commonui_dir)/c
+.c : ../$(host_os);../c;$(dig_srcs);$(mad_srcs);$(dis_srcs);$(commonui_dir)/c;$(watcom_dir)/c
 
 inc_dirs = -I. -I"../$(host_os)" -I"../h" -I"$(dig_dir)/h" $(dis_includes) $(commonui_inc_dirs)
 
@@ -75,7 +75,7 @@ exetarg_objs_nt       = global.obj param.obj procctl.obj memory.obj &
     drproc.obj handler.obj memview.obj proclist.obj thrdctl.obj &
     pefile.obj autoget.obj lddips.obj memwndcd.obj &
     madrtn.obj madsys1.obj regstr.obj reglist.obj bitman.obj &
-    strcnv.obj regcrt.obj $(mad_objs)
+    strcnv.obj regcrt.obj $(mad_objs) i64.obj
 !ifeq drwatcom_95 1
 exetarg_objs_nt      += reg95.obj
 !else
