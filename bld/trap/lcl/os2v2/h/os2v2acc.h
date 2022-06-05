@@ -30,67 +30,6 @@
 ****************************************************************************/
 
 
-typedef void(*excfn)();
-
-void   WriteRegs( uDB_t * );
-void   ReadRegs( uDB_t * );
-void   WriteLinear( void *data, ULONG lin, USHORT size );
-void   ReadLinear( void *data, ULONG lin, USHORT size );
-USHORT WriteBuffer( void *data, USHORT segv, ULONG offv, USHORT size );
-char   *GetExceptionText( void );
-ULONG  MakeItFlatNumberOne( USHORT seg, ULONG offset );
-ULONG  MakeItSegmentedNumberOne( USHORT seg, ULONG offset );
-ULONG  MakeSegmentedPointer( ULONG val );
-int    GetDos32Debug( char *err );
-void   SetTaskDirectories( void );
-bool   DebugExecute( uDB_t *buff, ULONG cmd, bool );
-int    IsUnknownGDTSeg( USHORT seg );
-
-extern  void    LoadHelperDLL( void );
-extern  void    EndLoadHelperDLL( void );
-
-/* Stack layout for calling Dos32LoadModule */
-typedef struct {
-    PSZ        fail_name;           /* 32-bit flat address */
-    ULONG      fail_len;
-    PSZ        mod_name;            /* 32-bit flat address */
-    PHMODULE   phmod;               /* 32-bit flat address */
-    HMODULE    hmod;
-    CHAR       load_name[2];
-} loadstack_t;
-
-//#pragma aux intrface modify [];
-//#pragma aux (intrface) TrapInit;
-//#pragma aux (intrface) TrapAccess;
-//#pragma aux (intrface) TrapFini;
-
-typedef struct watch_point {
-    addr48_ptr  addr;
-    dword       value;
-    word        len;
-} watch_point;
-
-/* Maximum watchpoints */
-#define MAX_WATCHES     32
-
-extern bool             ExpectingAFault;
-extern scrtype          Screen;
-extern PID              Pid;
-extern bool             AtEnd;
-extern ULONG            SID;
-extern bool             Remote;
-extern char             UtilBuff[BUFF_SIZE];
-extern HFILE            SaveStdIn;
-extern HFILE            SaveStdOut;
-extern bool             CanExecTask;
-extern HMODULE          *ModHandles;
-extern unsigned         NumModHandles;
-extern unsigned         CurrModHandle;
-extern ULONG            ExceptNum;
-extern HMODULE          ThisDLLModHandle;
-//extern uDB_t            Buff;
-extern USHORT           FlatCS,FlatDS;
-
 #define _RetCodes( retblk, rc, value ) \
     { \
         USHORT return_code; \
@@ -113,23 +52,72 @@ extern USHORT           FlatCS,FlatDS;
         } \
     }
 
-bool CausePgmToLoadHelperDLL( ULONG startLinear );
-long TaskExecute( excfn rtn );
-bool TaskReadWord( USHORT seg, ULONG off, USHORT *data );
-bool TaskWriteWord( USHORT seg, ULONG off, USHORT data );
-void TaskPrint( byte *data, unsigned len );
-void TaskReadXMMRegs( struct x86_xmm *xmm_regs );
-void TaskWriteXMMRegs( struct x86_xmm *xmm_regs );
+typedef void(*excfn)();
+
+/* Stack layout for calling Dos32LoadModule */
+typedef struct {
+    PSZ        fail_name;           /* 32-bit flat address */
+    ULONG      fail_len;
+    PSZ        mod_name;            /* 32-bit flat address */
+    PHMODULE   phmod;               /* 32-bit flat address */
+    HMODULE    hmod;
+    CHAR       load_name[2];
+} loadstack_t;
+
+extern void         WriteRegs( uDB_t * );
+extern void         ReadRegs( uDB_t * );
+extern void         WriteLinear( void *data, ULONG lin, USHORT size );
+extern void         ReadLinear( void *data, ULONG lin, USHORT size );
+extern USHORT       WriteBuffer( void *data, USHORT segv, ULONG offv, USHORT size );
+extern char         *GetExceptionText( void );
+extern ULONG        MakeItFlatNumberOne( USHORT seg, ULONG offset );
+extern ULONG        MakeItSegmentedNumberOne( USHORT seg, ULONG offset );
+extern ULONG        MakeSegmentedPointer( ULONG val );
+extern int          GetDos32Debug( char *err );
+extern void         SetTaskDirectories( void );
+extern bool         DebugExecute( uDB_t *buff, ULONG cmd, bool );
+extern int          IsUnknownGDTSeg( USHORT seg );
+
+extern void         LoadHelperDLL( void );
+extern void         EndLoadHelperDLL( void );
+
+extern bool         ExpectingAFault;
+extern scrtype      Screen;
+extern PID          Pid;
+extern bool         AtEnd;
+extern ULONG        SID;
+extern bool         Remote;
+extern char         UtilBuff[BUFF_SIZE];
+extern HFILE        SaveStdIn;
+extern HFILE        SaveStdOut;
+extern bool         CanExecTask;
+extern HMODULE      *ModHandles;
+extern unsigned     NumModHandles;
+extern unsigned     CurrModHandle;
+extern ULONG        ExceptNum;
+extern HMODULE      ThisDLLModHandle;
+//extern uDB_t        Buff;
+extern USHORT       FlatCS;
+extern USHORT       FlatDS;
+
+extern bool     CausePgmToLoadHelperDLL( ULONG startLinear );
+extern long     TaskExecute( excfn rtn );
+extern bool     TaskReadWord( USHORT seg, ULONG off, USHORT *data );
+extern bool     TaskWriteWord( USHORT seg, ULONG off, USHORT data );
+extern void     TaskPrint( byte *data, unsigned len );
+extern void     TaskReadXMMRegs( struct x86_xmm *xmm_regs );
+extern void     TaskWriteXMMRegs( struct x86_xmm *xmm_regs );
+
+extern void     AppSession( void );
+extern void     DebugSession( void );
+extern void     SetBrkPending( void );
 
 //#define DEBUG_OUT
 
 #ifdef DEBUG_OUT
-void Out( char *str );
-void OutNum( ULONG i );
+extern void     Out( char *str );
+extern void     OutNum( ULONG i );
 #else
 #define Out( a )
 #define OutNum( a )
 #endif
-
-extern void AppSession( void );
-extern void DebugSession( void );
