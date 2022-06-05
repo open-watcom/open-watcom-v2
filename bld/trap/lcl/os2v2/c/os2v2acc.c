@@ -111,6 +111,10 @@ static HMODULE          LastMTE;
 static unsigned         NumObjects;
 static object_record    ObjInfo[MAX_OBJECTS];
 
+static HMODULE          *ModHandles = NULL;
+static unsigned         NumModHandles = 0;
+static unsigned         CurrModHandle = 0;
+
 #ifdef DEBUG_OUT
 
 static void Out( char *str )
@@ -1286,6 +1290,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->multiplier = 50000;
     ret->err = 1;
     if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
         WatchPoints[WatchCount].addr.segment = acc->watch_addr.segment;
@@ -1296,10 +1301,9 @@ trap_retval TRAP_CORE( Set_watch )( void )
         WatchPoints[WatchCount].value = buff;
         ret->err = 0;
         ++WatchCount;
-    }
-    ret->multiplier = 50000;
-    if( ret->err == 0 && DRegsCount() <= 4 ) {
-        ret->multiplier |= USING_DEBUG_REG;
+        if( DRegsCount() <= 4 ) {
+            ret->multiplier |= USING_DEBUG_REG;
+        }
     }
     return( sizeof( *ret ) );
 }

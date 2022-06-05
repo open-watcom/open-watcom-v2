@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,12 @@
 #include "softmode.h"
 #include "trperr.h"
 #include "dbgthrd.h"
+#include "os2v2acc.h"
+
+
+#define STACK_SIZE      32768
+#define MAX_PAINTS      100
+#define MAX_CLASS_NAME  80
 
 static uDB_t            *DebugReqBuff;
 static uDB_t            StopBuff;
@@ -53,10 +60,6 @@ static HEV              DebugReqSem = NULLHANDLE;
 static HEV              DebugDoneSem = NULLHANDLE;
 static HEV              StopDoneSem = NULLHANDLE;
 static BOOL             InDosDebug;
-
-#define STACK_SIZE      32768
-#define MAX_PAINTS      100
-#define MAX_CLASS_NAME  80
 
 static void StopApplication(void)
 {
