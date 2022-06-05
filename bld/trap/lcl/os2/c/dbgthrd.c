@@ -45,11 +45,11 @@
 #define INCL_WINMESSAGEMGR
 #include <os2.h>
 #include <os2dbg.h>
-#include "dosdebug.h"
+#include "os2v2acc.h"
 #include "softmode.h"
-#include "trptypes.h"
 #include "trperr.h"
 #include "dbgthrd.h"
+
 
 dos_debug __far         *DebugReqBuff;
 unsigned int            DebugReqResult;
