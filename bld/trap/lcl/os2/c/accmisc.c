@@ -39,15 +39,12 @@
 #define INCL_DOSSIGNALS
 #include <os2.h>
 #include <os2dbg.h>
-#include "trpimp.h"
+#include "os2v2acc.h"
 #include "trpcomm.h"
-#include "dosdebug.h"
 #include "softmode.h"
-#include "os2trap.h"
 #include "trperr.h"
 #include "os2err.h"
 #include "doserr.h"
-#include "os2v2acc.h"
 
 
 #define TRPH2LH(th)     (HFILE)((th)->handle.u._32[0])
