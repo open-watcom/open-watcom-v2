@@ -64,6 +64,22 @@ typedef struct {
     CHAR       load_name[2];
 } loadstack_t;
 
+extern bool         ExpectingAFault;
+extern scrtype      Screen;
+extern PID          Pid;
+extern bool         AtEnd;
+extern ULONG        SID;
+extern bool         Remote;
+extern char         UtilBuff[BUFF_SIZE];
+extern HFILE        SaveStdIn;
+extern HFILE        SaveStdOut;
+extern bool         CanExecTask;
+extern ULONG        ExceptNum;
+extern HMODULE      ThisDLLModHandle;
+//extern uDB_t        Buff;
+extern USHORT       FlatCS;
+extern USHORT       FlatDS;
+
 extern void         WriteRegs( uDB_t * );
 extern void         ReadRegs( uDB_t * );
 extern void         WriteLinear( void *data, ULONG lin, USHORT size );
@@ -80,22 +96,6 @@ extern int          IsUnknownGDTSeg( USHORT seg );
 
 extern void         LoadHelperDLL( void );
 extern void         EndLoadHelperDLL( void );
-
-extern bool         ExpectingAFault;
-extern scrtype      Screen;
-extern PID          Pid;
-extern bool         AtEnd;
-extern ULONG        SID;
-extern bool         Remote;
-extern char         UtilBuff[BUFF_SIZE];
-extern HFILE        SaveStdIn;
-extern HFILE        SaveStdOut;
-extern bool         CanExecTask;
-extern ULONG        ExceptNum;
-extern HMODULE      ThisDLLModHandle;
-//extern uDB_t        Buff;
-extern USHORT       FlatCS;
-extern USHORT       FlatDS;
 
 extern bool         CausePgmToLoadHelperDLL( ULONG startLinear );
 extern long         TaskExecute( excfn rtn );
