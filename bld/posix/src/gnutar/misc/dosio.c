@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,33 +93,29 @@ int drive;
 long blocknr;
 char *buff;
 {
-union REGS iregs;
-union REGS oregs;
-int track;
+    union REGS iregs;
+    union REGS oregs;
+    int track;
 
-        iregs.h.ah = fn;
-        iregs.h.dl = drive;
-        track = blocknr / 9;
-        iregs.h.dh = track & 1;
-        iregs.h.ch = track >> 1;
-        iregs.h.cl = (blocknr % 9) + 1;
-        iregs.h.al = 1;
-        iregs.x.bx = (int)buff;
+    iregs.h.ah = fn;
+    iregs.h.dl = drive;
+    track = blocknr / 9;
+    iregs.h.dh = track & 1;
+    iregs.h.ch = track >> 1;
+    iregs.h.cl = ( blocknr % 9 ) + 1;
+    iregs.h.al = 1;
+    iregs.x.bx = (int)buff;
 
-        int86(0x13, &iregs, &oregs);
+    int86( 0x13, &iregs, &oregs );
 
-        if (oregs.x.cflag)
-        {
+    if( oregs.x.cflag ) {
 #ifdef DEBUGIO
-                fprintf(stderr, "absio: error %sing drv %c block %d address %x: bios code %x\n",
-                        fn==2? "read" : "writ", 'A'+drive, blocknr, buff, oregs.h.ah&0xff);
+        fprintf( stderr, "absio: error %sing drv %c block %d address %x: bios code %x\n",
+                fn == 2 ? "read" : "writ", 'A' + drive, blocknr, buff, oregs.h.ah );
 #endif /* DEBUGIO */
-                return(oregs.h.ah&0xff);
-        }
-        else
-        {
-                return(0);
-        }
+        return( oregs.h.ah );
+    }
+    return( 0 );
 }
 
 /*
@@ -126,53 +123,43 @@ int track;
  * a local buffer for us to use, if this is the first time it is
  * called.  Otherwise, it does nothing.
  */
-static void
-initdskio()
+static void initdskio( void )
 {
-        if (!inited)
-        {
-                absio(0, 0, 0, 0);
-                if (DMAoverrun(buf1))
-                        iobuf = buf2;
-                else
-                        iobuf = buf1;
-                inited++;
+    if( !inited ) {
+        absio( 0, 0, 0, 0 );
+        if( DMAoverrun( buf1 ) ) {
+            iobuf = buf2;
+        } else {
+            iobuf = buf1;
         }
+        inited++;
+    }
 }
 
 /*
  * absread performs an absolute disk read of "drive"'s block
  * "blocknr", reading into the buffer at "buff".
  */
-static int
-absread(drive, blocknr, buff)
-int drive;
-long blocknr;
-char *buff;
+static int absread( int drive, long blocknr, char *buff )
 {
-int err;
+    int err;
 
-        initdskio();
-        err = absio(2, drive, blocknr, iobuf);
-        if (!err)
-                memcpy(buff, iobuf, 512);
-        return(err);
+    initdskio();
+    err = absio( 2, drive, blocknr, iobuf );
+    if( !err )
+        memcpy( buff, iobuf, 512 );
+    return( err );
 }
 
 /*
  * abswrite performs an absolute disk write of "drive"'s block
  * "blocknr", reading into the buffer at "buff".
  */
-static int
-abswrite(drive, blocknr, buff)
-int drive;
-long blocknr;
-char *buff;
+static int abswrite( int drive, long blocknr, char *buff )
 {
-
-        initdskio();
-        memcpy(iobuf, buff, 512);
-        return(absio(3, drive, blocknr, iobuf));
+    initdskio();
+    memcpy( iobuf, buff, 512 );
+    return( absio( 3, drive, blocknr, iobuf ) );
 }
 
 /*
@@ -184,62 +171,55 @@ char *buff;
  * devsize) it asks the user to change disks before it performs the I/O,
  * then performs the I/O to block 0 of the new disk.
  */
-static int
-physrw(buf, len, fread)
-char *buf;
-int len;
-int fread;
+static int physrw( char *buf, int len, int fread )
 {
-int err;
-int errct = 0;
-int nbytes;
+    int err;
+    int errct = 0;
+    int nbytes;
 
-        nbytes = len; /* save for return value */
+    nbytes = len; /* save for return value */
 
-        /* be sure size of xfer is a multiple of DOS physical block size */
-        if (len & 0x1ff)
-        {
-                fprintf(stderr, "tar: fatal error: phys disk I/O must be ");
-                fprintf(stderr, "multiple of 512 bytes\n");
-                exit(1);
+    /* be sure size of xfer is a multiple of DOS physical block size */
+    if( len & 0x1ff ) {
+        fprintf( stderr, "tar: fatal error: phys disk I/O must be " );
+        fprintf( stderr, "multiple of 512 bytes\n" );
+        exit( 1 );
+    }
+
+    /* convert byte count to DOS block count */
+    len >>= 9;
+
+    /* now read or write a block at a time into the buffer */
+    while( len > 0 ) {
+        /* check for time to change disks */
+        if( curblk >= devsize ) {
+            uprintf( ftty, "\ntar: Change disks and press [Enter]: " );
+            while( ugetc( ftty ) != '\n' )
+                ;
+            curblk = 0;
         }
 
-        /* convert byte count to DOS block count */
-        len >>= 9;
-
-        /* now read or write a block at a time into the buffer */
-        while (len > 0)
-        {
-                /* check for time to change disks */
-                if (curblk >= devsize)
-                {
-                        uprintf(ftty, "\ntar: Change disks and press [Enter]: ");
-                        while (ugetc(ftty)!='\n') ;
-                        curblk = 0;
-                }
-
-                /* read or write the next block */
-                if (fread)
-                        err = absread(physdrv, curblk, buf);
-                else
-                        err = abswrite(physdrv, curblk, buf);
-
-                /* check for an error */
-                if (err)
-                {
-                        diskerr(fread? "reading" : "writing",
-                                 physdrv, curblk, err);
-                        errct++;
-                }
-                /* increment block number & buf addr, decrement count */
-                curblk++;
-                buf += 512;
-                len--;
+        /* read or write the next block */
+        if( fread ) {
+            err = absread( physdrv, curblk, buf );
+        } else {
+            err = abswrite( physdrv, curblk, buf );
         }
-        if (errct)
-                return(-1);
-        else
-                return(nbytes);
+
+        /* check for an error */
+        if( err ) {
+            diskerr( fread ? "reading" : "writing", physdrv, curblk, err );
+            errct++;
+        }
+        /* increment block number & buf addr, decrement count */
+        curblk++;
+        buf += 512;
+        len--;
+    }
+    if( errct ) {
+        return( -1 );
+    }
+    return( nbytes );
 }
 
 /*
@@ -248,23 +228,17 @@ int nbytes;
  * length "len", which must be a multiple of 512 bytes, as described
  * above under "physrw".
  */
-int
-physwrite(buf, len)
-char *buf;
-int len;
+int physwrite( char *buf, int len )
 {
-        return(physrw(buf, len, 0));
+    return( physrw( buf, len, 0 ) );
 }
 
 /*
  * see comments for physwrite
  */
-int
-physread(buf, len)
-char *buf;
-int len;
+int physread( char *buf, int len )
 {
-        return(physrw(buf, len, 1));
+    return( physrw( buf, len, 1 ) );
 }
 
 /*
@@ -273,55 +247,51 @@ int len;
  * the sector number in "sectnum", and the BIOS AH return code
  * is in "err".
  */
-static void
-diskerr(s,drive,sectnum,err)
-int sectnum, err,drive;
-char *s;
+static void diskerr( char *s, int drive, int sectnum, int err )
 {
-  extern char *derrtab[];
-  char *mp;
-  fprintf(stderr, "Error %s drive %c, sector: %d, code: %d = '",
-           s, drive+'A',sectnum, err);
-  switch (err)
-  {
-        case 0:
-                mp = "No error";
-                break;
-        case 1:
-                mp = "Bad command passed to BIOS";
-                break;
-        case 2:
-                mp = "Address mark not found";
-                break;
-        case 3:
-                mp = "Disk is write protected";
-                break;
-        case 4:
-                mp = "Sector not found";
-                break;
-        case 8:
-                mp = "DMA overrun";
-                break;
-        case 9:
-                mp = "DMA crosses 64K boundary (internal error)";
-                break;
-        case 0x10:
-                mp = "Bad CRC on disk read";
-                break;
-        case 0x20:
-                mp = "Disk controller has failed";
-                break;
-        case 0x40:
-                mp = "Seek failed";
-                break;
-        case 0x80:
-                mp = "No response from controller";
-                break;
-        default:
-                mp = "Unknown error";
-                break;
-        }
-        fprintf(stderr,"%s'\n", mp);
+    extern char *derrtab[];
+    char *mp;
+
+    fprintf( stderr, "Error %s drive %c, sector: %d, code: %d = '", s, drive + 'A', sectnum, err );
+    switch( err ) {
+    case 0:
+        mp = "No error";
+        break;
+    case 1:
+        mp = "Bad command passed to BIOS";
+        break;
+    case 2:
+        mp = "Address mark not found";
+        break;
+    case 3:
+        mp = "Disk is write protected";
+        break;
+    case 4:
+        mp = "Sector not found";
+        break;
+    case 8:
+        mp = "DMA overrun";
+        break;
+    case 9:
+        mp = "DMA crosses 64K boundary (internal error)";
+        break;
+    case 0x10:
+        mp = "Bad CRC on disk read";
+        break;
+    case 0x20:
+        mp = "Disk controller has failed";
+        break;
+    case 0x40:
+        mp = "Seek failed";
+        break;
+    case 0x80:
+        mp = "No response from controller";
+        break;
+    default:
+        mp = "Unknown error";
+        break;
+    }
+    fprintf( stderr, "%s'\n", mp );
 }
 
 #endif /* MSDOS */
