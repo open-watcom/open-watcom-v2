@@ -45,6 +45,7 @@
 #include "trperr.h"
 #include "os2err.h"
 #include "doserr.h"
+#include "accmisc.h"
 
 
 #define TRPH2LH(th)     (HFILE)((th)->handle.u._32[0])
@@ -61,7 +62,6 @@ char            UtilBuff[BUFF_SIZE];
 HFILE           SaveStdIn;
 HFILE           SaveStdOut;
 bool            CanExecTask;
-ULONG           ExceptNum;
 scrtype         Screen;
 
 static const ULONG      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };

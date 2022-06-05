@@ -89,11 +89,13 @@ static void PmHelp( int command )
 }
 
 
-static VOID SwitchBack( VOID )
+static void APIENTRY SwitchBack( ULONG arg )
 {
     APIRET         rc;
     pmhelp_packet  data;
     ULONG          dummy;
+
+    /* unused parameters */ (void)arg;
 
     for( ; ; ) {
         rc = DosRead( PmInh, &data, sizeof( data ), &dummy );
@@ -149,7 +151,7 @@ void StartPMHelp()
         return;
     if( SpawnLocker( HisInh, HisOuth ) )
         return;
-    if( DosCreateThread( &tid, (PFNTHREAD)SwitchBack, 0, 0, STACK_SIZE ) )
+    if( DosCreateThread( &tid, SwitchBack, 0, CREATE_READY | STACK_SPARSE, STACK_SIZE ) )
         return;
     HaveHelper = TRUE;
 }

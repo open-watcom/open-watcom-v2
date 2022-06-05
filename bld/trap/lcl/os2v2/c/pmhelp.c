@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +80,7 @@ static TID             TidDebugee;
 #endif
 
 
-static VOID AbortLocker(HWND hwndFrame, HWND hwndClient)
+static void AbortLocker(HWND hwndFrame, HWND hwndClient)
 {
     PERRINFO     pErrInfoBlk;
     PSZ          pszOffSet;
@@ -118,7 +119,7 @@ static void UnLockIt( void )
     }
 }
 
-static VOID APIENTRY CleanUp( void )
+static void APIENTRY CleanUp( void )
 {
     UnLockIt();
     DosExitList(EXLST_EXIT, (PFNEXITLIST)CleanUp);
@@ -140,14 +141,16 @@ static void SwitchBack( void )
     static      pmhelp_packet data;
 
     data.command = PMHELP_SWITCHBACK;
-    DosWrite(OutStream, &data, sizeof(data), &written);
+    DosWrite( OutStream, &data, sizeof( data ), &written );
 }
 
 
-static VOID APIENTRY ServiceRequests(VOID)
+static void APIENTRY ServiceRequests( ULONG arg )
 {
     ULONG               len;
     pmhelp_packet       data;
+
+    /* unused parameters */ (void)arg;
 
 #ifdef DEBUG
     /* We don't need a message queue to post messages */
@@ -310,7 +313,7 @@ INT main( int argc, char **argv )
                    height, SWP_MOVE | SWP_SHOW | SWP_SIZE | SWP_ACTIVATE));
 
     /* Spawn the thread waiting for commands from the debugger */
-    AbortIf(DosCreateThread(&tid, (PFNTHREAD)ServiceRequests, 0, CREATE_READY, STACK_SIZE));
+    AbortIf( DosCreateThread( &tid, ServiceRequests, 0, CREATE_READY | STACK_SPARSE, STACK_SIZE ) );
 
     /* Message loop */
     while (WinGetMsg(Hab, &qmsg, 0L, 0, 0)) {

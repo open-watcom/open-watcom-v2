@@ -44,6 +44,7 @@
 #include <os2dbg.h>
 #include "os2v2acc.h"
 #include "softmode.h"
+#include "trpimp.h"
 #include "trperr.h"
 #include "dbgthrd.h"
 
@@ -60,8 +61,10 @@ static HEV              DebugDoneSem = NULLHANDLE;
 static HEV              StopDoneSem = NULLHANDLE;
 static BOOL             InDosDebug;
 
-static void StopApplication(void)
+static void APIENTRY StopApplication( ULONG arg )
 {
+    /* unused parameters */ (void)arg;
+
     StopBuff.Cmd = DBG_C_Stop;
     DosDebug(&StopBuff);
     DosPostEventSem(StopDoneSem);
@@ -134,7 +137,7 @@ ULONG CallDosDebug(uDB_t *buff)
                     ULONG    ulCount;
 
                     SetBrkPending();
-                    DosCreateThread(&tid, (PFNTHREAD)StopApplication, NULLHANDLE, 0, STACK_SIZE);
+                    DosCreateThread(&tid, StopApplication, 0, CREATE_READY | STACK_SPARSE, STACK_SIZE);
                     DosSetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 10, tid);
                     WakeThreads(StopBuff.Pid);
                     DosWaitEventSem(StopDoneSem, SEM_INDEFINITE_WAIT);
@@ -194,7 +197,7 @@ ULONG CallDosDebug(uDB_t *buff)
     return DebugReqResult;
 }
 
-static VOID APIENTRY DoDebugRequests(ULONG arg)
+static void APIENTRY DoDebugRequests( ULONG arg )
 {
     ULONG   ulCount;
 
@@ -214,7 +217,7 @@ static VOID APIENTRY DoDebugRequests(ULONG arg)
     }
 }
 
-VOID InitDebugThread( VOID )
+void InitDebugThread( void )
 {
     TID                 tid;
     ULONG               ulCount;
@@ -231,6 +234,6 @@ VOID InitDebugThread( VOID )
     DosResetEventSem(StopDoneSem, &ulCount);
     DosResetEventSem(DebugReqSem, &ulCount);
     DosResetEventSem(DebugDoneSem, &ulCount);
-    DosCreateThread(&tid, DoDebugRequests, NULLHANDLE, 0, STACK_SIZE);
+    DosCreateThread(&tid, DoDebugRequests, 0, CREATE_READY | STACK_SPARSE, STACK_SIZE);
     DosSetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid);
 }

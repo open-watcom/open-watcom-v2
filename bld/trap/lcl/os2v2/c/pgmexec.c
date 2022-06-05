@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,14 +67,23 @@
 #include <string.h>
 #include "cpuglob.h"
 #include "os2v2acc.h"
-#include "os2trap.h"
 #include "madregs.h"
 #include "splice.h"
 
 
 #define LOAD_HELPER_DLL_SIZE      8
 
-extern uDB_t            Buff;
+/* Stack layout for calling Dos32LoadModule */
+typedef struct {
+    PSZ        fail_name;           /* 32-bit flat address */
+    ULONG      fail_len;
+    PSZ        mod_name;            /* 32-bit flat address */
+    PHMODULE   phmod;               /* 32-bit flat address */
+    HMODULE    hmod;
+    CHAR       load_name[2];
+} loadstack_t;
+
+typedef void(*excfn)();
 
 bool CausePgmToLoadHelperDLL( ULONG startLinear )
 {
@@ -152,7 +162,7 @@ bool CausePgmToLoadHelperDLL( ULONG startLinear )
 }
 
 
-long TaskExecute( excfn rtn )
+static long TaskExecute( excfn rtn )
 {
     long        retval;
 

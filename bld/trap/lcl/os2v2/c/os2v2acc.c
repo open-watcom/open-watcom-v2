@@ -56,6 +56,7 @@
 #include "exeflat.h"
 #include "x86cpu.h"
 #include "dbgthrd.h"
+#include "accmisc.h"
 
 
 /* Maximum watchpoints */
@@ -86,6 +87,7 @@ typedef struct watch_point {
 
 uDB_t                   Buff;
 USHORT                  TaskFS;
+ULONG                   ExceptNum;
 bool                    ExpectingAFault;
 
 static BOOL             stopOnSecond;

@@ -25,15 +25,11 @@
 *
 *  ========================================================================
 *
-* Description:  PM mesagge queue hook function prototypes for WD PM helper.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-typedef void EXPENTRY HOOKPROC( HAB hab, PSMHSTRUCT smh, BOOL interthread );
-typedef void EXPENTRY SETHMQPROC( HMQ hmq, HWND hwnd );
-
-HOOKPROC   SendMsgHookProc;
-SETHMQPROC SetHmqDebugee;
-
-#define HOOKER "WDPMHOOK"
+extern void         AppSession( void );
+extern void         DebugSession( void );

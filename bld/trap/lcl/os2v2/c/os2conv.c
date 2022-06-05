@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,16 +41,11 @@
 #include "os2v2acc.h"
 #include "trperr.h"
 #include "bsexcpt.h"
+#include "dbgthrd.h"
 
-
-extern uDB_t            Buff;
-
-extern USHORT           TaskFS;
 
 /* Hardcoded selector values - extremely unlikely to change. */
 USHORT FlatCS = 0x5B, FlatDS = 0x53;
-
-extern ULONG            ExceptNum;
 
 
 /*

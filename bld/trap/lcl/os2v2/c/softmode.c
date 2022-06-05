@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,12 +150,11 @@ static void APIENTRY SoftModeThread( thread_data *thread )
 // Note: Currently thread_data only contains a single HMQ field. We could
 // just pass it as a thread argument and skip these shenanigans. But hey,
 // it's fun and it would be needed anyway if thread_data were extended.
-static VOID APIENTRY BeginThreadHelper( ULONG arg )
+static void APIENTRY BeginThreadHelper( ULONG arg )
 {
     thread_data tdata;
-    thread_data *_arg = (thread_data*)arg;
 
-    tdata = *_arg;
+    tdata = *(thread_data *)arg;
     DosPostEventSem( BeginThreadSem );
     SoftModeThread( &tdata );
     DosExit( EXIT_THREAD, 0 );
@@ -168,7 +168,7 @@ static void BeginSoftModeThread( thread_data *arglist )
     ULONG       ulCount;
 
     DosResetEventSem( BeginThreadSem , &ulCount );
-    DosCreateThread( &tid, BeginThreadHelper, (ULONG)arglist, 0, STACK_SIZE );
+    DosCreateThread( &tid, BeginThreadHelper, (ULONG)arglist, CREATE_READY | STACK_SPARSE, STACK_SIZE );
     DosWaitEventSem( BeginThreadSem, SEM_INDEFINITE_WAIT );
 }
 
