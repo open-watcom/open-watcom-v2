@@ -30,6 +30,12 @@
 ****************************************************************************/
 
 
+#include "digtypes.h"
+#include "trpimp.h"
+#include "os2trap.h"
+#include "dosdebug.h"
+
+
 #define _RetCodes( retblk, rc, value ) \
     { \
         USHORT return_code; \
