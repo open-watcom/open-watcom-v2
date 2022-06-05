@@ -42,11 +42,10 @@
 #define INCL_WINMESSAGEMGR
 #include <os2.h>
 #include <os2dbg.h>
-#include "dosdebug.h"
+#include "os2v2acc.h"
 #include "softmode.h"
 #include "trperr.h"
 #include "dbgthrd.h"
-#include "os2v2acc.h"
 
 
 #define STACK_SIZE      32768

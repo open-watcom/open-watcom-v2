@@ -41,13 +41,10 @@
 #define INCL_DOSMODULEMGR
 #include <os2.h>
 #include "cpuglob.h"
-#include "dosdebug.h"
-#include "trpimp.h"
+#include "os2v2acc.h"
 #include "trpcomm.h"
 #include "trpld.h"
 #include "trpsys.h"
-#include "os2trap.h"
-#include "os2v2acc.h"
 #include "bsexcpt.h"
 #include "wdpmhelp.h"
 #include "softmode.h"

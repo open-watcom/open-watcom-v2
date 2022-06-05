@@ -65,12 +65,11 @@
 #include <os2.h>
 #include <string.h>
 #include "cpuglob.h"
-#include "dosdebug.h"
-#include "trpimp.h"
-#include "os2trap.h"
 #include "os2v2acc.h"
+#include "os2trap.h"
 #include "madregs.h"
 #include "splice.h"
+
 
 #define LOAD_HELPER_DLL_SIZE      8
 
