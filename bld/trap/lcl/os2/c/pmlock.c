@@ -39,7 +39,7 @@
 #define INCL_DOSFILEMGR
 #define INCL_DOSMEMMGR
 #define INCL_DOSSIGNALS
-#include <os2.h>
+#include <wos2.h>
 #include <os2dbg.h>
 #include "os2v2acc.h"
 #include "trperr.h"
@@ -75,7 +75,7 @@ static int SpawnLocker( HFILE inh, HFILE outh )
     start.Environment = NULL;
     start.InheritOpt = 1;
     start.SessionType = SSF_TYPE_PM;
-    return( DosStartSession( (void __far *) &start, &lockSID, &pid ) );
+    return( DosStartSession( (PVOID)&start, &lockSID, &pid ) );
 }
 
 static void PmHelp( int command )
@@ -90,7 +90,7 @@ static void PmHelp( int command )
 }
 
 
-static VOID __far SwitchBack( VOID )
+static void __far SwitchBack( void )
 {
     USHORT      rc;
     pmhelp_packet       data;

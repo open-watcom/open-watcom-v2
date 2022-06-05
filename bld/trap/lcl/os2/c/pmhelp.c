@@ -66,22 +66,23 @@ HFILE           OutStream;
 ULONG           DebuggerSID;
 HWND            hwndClient;
 HWND            hwndFrame;
-HWND            FocusWnd;
+//HWND            FocusWnd;
 HWND            ActiveWnd;
 int             Locked;
 
 PID             PidDebugee;
 TID             TidDebugee;
 
+static HWND     FocusWnd;
 
 #ifdef DEBUG
-    char Message[ 256 ] = { "All is well" };
-    static void Say( char *str )
-    {
-        if( str != NULL )
-            strcpy( Message, str );
-        WinInvalidateRegion( hwndClient, 0L, FALSE );
-    }
+char Message[256] = { "All is well" };
+static void Say( char *str )
+{
+    if( str != NULL )
+        strcpy( Message, str );
+    WinInvalidateRegion( hwndClient, 0L, FALSE );
+}
 #else
     #define Say( x )
 #endif
@@ -96,7 +97,7 @@ static void UnLockIt( void )
     }
 }
 
-static VOID APIENTRY CleanUp( void )
+static void APIENTRY CleanUp( void )
 {
     UnLockIt();
     DosExitList( EXLST_EXIT, (PFNEXITLIST)CleanUp );
@@ -121,7 +122,7 @@ static void SwitchBack( void )
 }
 
 
-static VOID APIENTRY ServiceRequests( VOID )
+static void __far ServiceRequests( void )
 {
     USHORT              len;
     pmhelp_packet       data;
@@ -216,7 +217,7 @@ static MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM 
 }
 
 
-static VOID AbortLocker( HWND hwndFrame, HWND hwndClient )
+static void AbortLocker( HWND hwndFrame, HWND hwndClient )
 {
    PERRINFO     pErrInfoBlk;
    PSZ          pszOffSet;
@@ -275,7 +276,7 @@ INT main( int argc, char **argv )
                    WinQuerySysValue( HWND_DESKTOP, SV_CYSCREEN ) - height,
                    width / 3,
                    height, SWP_MOVE | SWP_SHOW | SWP_SIZE | SWP_ACTIVATE ) );
-    AbortIf( DosCreateThread( (PFNTHREAD)ServiceRequests, &tid, stack + STACK_SIZE ) );
+    AbortIf( DosCreateThread( ServiceRequests, &tid, stack + STACK_SIZE ) );
     while( WinGetMsg( Hab, &qmsg, 0L, 0, 0 ) ) {
         WinDispatchMsg( Hab, &qmsg );
     }

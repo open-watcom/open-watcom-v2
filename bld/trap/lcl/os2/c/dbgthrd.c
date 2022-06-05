@@ -51,34 +51,25 @@
 #include "dbgthrd.h"
 
 
-dos_debug __far         *DebugReqBuff;
-unsigned int            DebugReqResult;
-ULONG                   DebugReqSem;
-ULONG                   DebugDoneSem;
-ULONG                   StopDoneSem;
-HWND                    FocusWnd;
-BOOL                    InDosDebug;
-
-extern HAB              HabDebugger;
-extern HWND             HwndDebugger;
-
-#define STACK_SIZE 8192
-
-static byte     stack[STACK_SIZE];
-static byte     stack2[STACK_SIZE];
-
-extern unsigned int Call32BitDosDebug( dos_debug __far *buff );
-extern void WakeThreads( PID );
-extern void WakeOneThread( PID, TID );
-extern void SetBrkPending( void );
-
+#define STACK_SIZE      8192
 
 #define MAX_PAINTS      100
 #define MAX_CLASS_NAME  80
 
-static dos_debug StopBuff;
+extern HAB              HabDebugger;
+extern HWND             HwndDebugger;
 
-VOID APIENTRY StopApplication( VOID )
+static byte             stack[STACK_SIZE];
+static byte             stack2[STACK_SIZE];
+static dos_debug        StopBuff;
+static dos_debug __far  *DebugReqBuff;
+static unsigned         DebugReqResult;
+static ULONG            DebugReqSem;
+static ULONG            DebugDoneSem;
+static ULONG            StopDoneSem;
+static BOOL             InDosDebug;
+
+static void __far StopApplication( void )
 {
     StopBuff.Cmd = DBG_C_Stop;
     Call32BitDosDebug( &StopBuff );
@@ -209,7 +200,7 @@ unsigned int CallDosDebug( dos_debug __far *buff )
     return( DebugReqResult );
 }
 
-static VOID APIRET DoDebugRequests( VOID )
+static void __far DoDebugRequests( void )
 {
     for( ;; ) {
         DosSemWait( &DebugReqSem, SEM_INDEFINITE_WAIT );
@@ -225,7 +216,7 @@ static VOID APIRET DoDebugRequests( VOID )
     }
 }
 
-VOID InitDebugThread( VOID )
+void InitDebugThread( void )
 {
     TID                 tid;
 

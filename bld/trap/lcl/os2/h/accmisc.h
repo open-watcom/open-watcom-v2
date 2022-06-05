@@ -25,16 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  PM debugging helper routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern void TellSoftModeHandles( HAB, HWND );
-extern void AssumeQueue( PID pid, TID tid );
-extern void ReleaseQueue( PID pid, TID tid );
-extern void InitSoftDebug( void );
-extern BOOL IsPMDebugger( void );
-extern char SetHardMode( char hard );
-extern void WakeThreads( PID pid );
-//extern void WakeOneThread( PID, TID );
+extern __GINFOSEG   __far *GblInfo;
+
+extern void         AppSession( void );
+extern void         DebugSession( void );

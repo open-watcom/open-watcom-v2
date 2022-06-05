@@ -31,6 +31,12 @@
 ****************************************************************************/
 
 
+#include "digtypes.h"
+#include "trpimp.h"
+#include "os2trap.h"
+#include "dosdebug.h"
+
+
 #define _RetCodes( retblk, rc, value ) \
     { \
         USHORT return_code; \
@@ -53,98 +59,66 @@
         } \
     }
 
-typedef void (*excfn)();
+extern bool         ExpectingAFault;
+extern scrtype      Screen;
+extern PID          Pid;
+extern bool         AtEnd;
+extern USHORT       SID;
+extern bool         Remote;
+extern char         UtilBuff[BUFF_SIZE];
+extern HFILE        SaveStdIn;
+extern HFILE        SaveStdOut;
+extern bool         CanExecTask;
+extern USHORT       TaskFS;
+extern ULONG        ExceptNum;
+extern HMODULE      ThisDLLModHandle;
+extern dos_debug    Buff;
+extern USHORT       FlatCS;
+extern USHORT       FlatDS;
 
-typedef struct {
-        USHORT  phmod[2];               /* offset-segment */
-        USHORT  mod_name[2];            /* offset-segment */
-        USHORT  fail_len;
-        PSZ     fail_name;              /* offset-segment */
-        USHORT  hmod;
-        CHAR    load_name[2];
-} loadstack_t;
+extern void         WriteRegs( dos_debug __far * );
+extern void         ReadRegs( dos_debug __far * );
+extern void         WriteLinear( PVOID data, ULONG lin, USHORT size );
+extern void         ReadLinear( PVOID data, ULONG lin, USHORT size );
+extern USHORT       WriteBuffer( PBYTE data, USHORT segv, ULONG offv, USHORT size );
+extern PCHAR        GetExceptionText( void );
+extern ULONG        MakeItFlatNumberOne( USHORT seg, ULONG offset );
+extern PVOID        MakeItSegmentedNumberOne( USHORT seg, ULONG offset );
+extern PVOID        MakeSegmentedPointer( ULONG val );
+extern int          GetDos32Debug( PCHAR err );
+extern unsigned     Call32BitDosDebug( dos_debug __far *buff );
+extern void         SetTaskDirectories( void );
+extern bool         DebugExecute( dos_debug __far *buff, ULONG cmd, bool );
+extern int          IsUnknownGDTSeg( USHORT seg );
 
-typedef struct watch {
-    addr48_ptr  addr;
-    dword       value;
-    int         len;
-} watch;
+extern void         LoadThisDLL( void );
+extern void         EndLoadThisDLL( void );
 
-extern PVOID Automagic( unsigned short );
-#pragma aux Automagic = \
-        "sub  sp,ax"    \
-        "mov  ax,sp"    \
-        "mov  dx,ss"    \
-    __parm __caller [__ax] \
-    __value         [__ax __dx] \
-    __modify        [__sp]
+extern ULONG        MakeItFlatNumberOne( USHORT seg, ULONG offset );
+extern ULONG        MakeLocalPtrFlat( PVOID ptr );
 
-#define MAX_WATCHES     32
+extern bool         CausePgmToLoadThisDLL( ULONG startLinear );
+extern bool         TaskReadWord( USHORT seg, ULONG off, USHORT __far *data );
+extern bool         TaskWriteWord( USHORT seg, ULONG off, USHORT data );
+extern void         TaskPrint( PBYTE data, unsigned len );
 
-extern bool             ExpectingAFault;
-extern scrtype          Screen;
-extern PID              Pid;
-extern bool             AtEnd;
-extern USHORT           SID;
-extern bool             Remote;
-extern char             UtilBuff[BUFF_SIZE];
-extern HFILE            SaveStdIn;
-extern HFILE            SaveStdOut;
-extern bool             CanExecTask;
-extern HMODULE          __far *ModHandles;
-extern unsigned         NumModHandles;
-extern unsigned         CurrModHandle;
-extern ULONG            ExceptNum;
-extern HMODULE          ThisDLLModHandle;
-//extern dos_debug        Buff;
-extern USHORT           FlatCS;
-extern USHORT           FlatDS;
+extern void         SetBrkPending( void );
 
-extern void     WriteRegs( dos_debug __far * );
-extern void     ReadRegs( dos_debug __far * );
-extern void     RecordModHandle( ULONG value );
-extern void     WriteLinear( PVOID data, ULONG lin, USHORT size );
-extern void     ReadLinear( PVOID data, ULONG lin, USHORT size );
-extern USHORT   WriteBuffer( PBYTE data, USHORT segv, ULONG offv, USHORT size );
-extern char __far *GetExceptionText( void );
-extern ULONG    MakeItFlatNumberOne( USHORT seg, ULONG offset );
-extern PVOID    MakeItSegmentedNumberOne( USHORT seg, ULONG offset );
-extern PVOID    MakeSegmentedPointer( ULONG val );
-extern int      GetDos32Debug( char __far *err );
-extern void     SetTaskDirectories( void );
-extern bool     DebugExecute( dos_debug __far *buff, ULONG cmd, bool );
-extern int      IsUnknownGDTSeg( USHORT seg );
+//#define DEBUG_OUT
 
-extern void     LoadThisDLL( void );
-extern void     EndLoadThisDLL( void );
+#ifdef DEBUG_OUT
+extern void         Out( char *str );
+extern void         OutNum( ULONG i );
+#else
+#define Out( a )
+#define OutNum( a )
+#endif
 
-extern ULONG    MakeItFlatNumberOne( USHORT seg, ULONG offset );
-extern ULONG    MakeLocalPtrFlat( PVOID ptr );
-
-extern bool CausePgmToLoadThisDLL( ULONG startLinear );
-extern long TaskExecute( excfn rtn );
-extern void DoOpen( char __far *name, int mode, int flags );
+extern void DoOpen( PCHAR name, int mode, int flags );
 #pragma aux DoOpen __parm [__dx __ax] [__bx] [__cx]
 extern void DoClose( HFILE hdl );
 #pragma aux DoClose __parm [__ax]
 extern void DoDupFile( HFILE old, HFILE new );
 #pragma aux DoDupFile __parm [__ax] [__dx]
-extern void DoWritePgmScrn( char __far *buff, USHORT len );
+extern void DoWritePgmScrn( PCHAR buff, USHORT len );
 #pragma aux DoWritePgmScrn __parm [__dx __ax] [__bx]
-extern bool TaskReadWord( USHORT seg, ULONG off, USHORT __far *data );
-extern bool TaskWriteWord( USHORT seg, ULONG off, USHORT data );
-extern void TaskPrint( PBYTE data, unsigned len );
-
-extern void AppSession( void );
-extern void DebugSession( void );
-extern void SetBrkPending( void );
-
-//#define DEBUG_OUT
-
-#ifdef DEBUG_OUT
-extern void Out( char *str );
-extern void OutNum( ULONG i );
-#else
-#define Out( a )
-#define OutNum( a )
-#endif

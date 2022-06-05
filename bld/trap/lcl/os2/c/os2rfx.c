@@ -37,13 +37,17 @@
 #define INCL_DOSDEVICES
 #define INCL_DOSMEMMGR
 #define INCL_DOSSIGNALS
-#include <os2.h>
+#define INCL_DOSFILEMGR
+#include <wos2.h>
 #include <os2dbg.h>
 #include "trpimp.h"
 #include "trpcomm.h"
 
 
 #define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
+
+#define TRPH2LH(th)     (HFILE)((th)->handle.u._32[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
 
 #define IsDot(p)        ((p)[0] == '.' && (p)[1] == '\0')
 #define IsDotDot(p)     ((p)[0] == '.' && (p)[1] == '.' && (p)[2] == '\0')
@@ -231,7 +235,7 @@ trap_retval TRAP_RFX( setdatetime )( void )
     *(USHORT *)&info.ftimeLastAccess = time;
     *(USHORT *)&info.fdateLastWrite = date;
     *(USHORT *)&info.ftimeLastWrite = time;
-    DosSetFileInfo( acc->handle, 1, (byte __far *)&info, sizeof( info ) );
+    DosSetFileInfo( TRPH2LH( acc ), FIL_STANDARD, (PBYTE)&info, sizeof( info ) );
     return( 0 );
 }
 
@@ -272,7 +276,7 @@ trap_retval TRAP_RFX( getdatetime )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    DosQFileInfo( acc->handle, 1, (PVOID)&info, sizeof( info ) );
+    DosQFileInfo( TRPH2LH( acc ), FIL_STANDARD, (PVOID)&info, sizeof( info ) );
     ret->time = mymktime( *(USHORT *)&info.ftimeLastWrite, *(USHORT *)&info.fdateLastWrite );
     return( sizeof( *ret ) );
 }
@@ -432,7 +436,7 @@ trap_retval TRAP_RFX( nametocanonical )( void )
             p++;
             if( *p == '\0' ) {
                 break;
-            } else if( IsDot( p ) )
+            } else if( IsDot( p ) ) {
                 break;
             } else if( IsDotDot( p ) ) {
                 if( level > 0 ) {

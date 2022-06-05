@@ -38,8 +38,9 @@
 #define INCL_DOSMEMMGR
 #define INCL_DOSSIGNALS
 #define INCL_DOSPROCESS
-#undef INCL_DOSINFOSEG
-#include <os2.h>
+#undef  INCL_DOSINFOSEG
+//#define INCL_DOSSESMGR
+#include <wos2.h>
 #include <os2dbg.h>
 #include "os2v2acc.h"
 #include "trpcomm.h"
@@ -57,6 +58,7 @@
 #include "x86cpu.h"
 #include "cpuglob.h"
 #include "dbgthrd.h"
+#include "accmisc.h"
 
 
 #define MAX_OBJECTS         128
@@ -72,7 +74,16 @@
 #define EXE_IS_PMC          0x0200
 #define EXE_IS_PM           0x0300
 
-__GINFOSEG              *GblInfo;
+#define MAX_WATCHES     32
+
+/* Structure used internally to set hardware watch points */
+typedef struct watch_point {
+    addr48_ptr  addr;
+    dword       value;
+    int         len;
+} watch_point;
+
+ULONG                   ExceptNum;
 dos_debug               Buff;
 USHORT                  TaskFS;
 bool                    ExpectingAFault;
@@ -81,7 +92,7 @@ static BOOL             stopOnSecond;
 static ULONG            ExceptLinear;
 static UCHAR            TypeProcess;
 static BOOL             Is32Bit;
-static watch            WatchPoints[MAX_WATCHES];
+static watch_point  WatchPoints[MAX_WATCHES];
 static short            WatchCount = 0;
 static unsigned_16      lastCS;
 static unsigned_16      lastSS;
@@ -90,6 +101,9 @@ static unsigned_32      lastESP;
 static HMODULE          LastMTE;
 static unsigned         NumObjects;
 static object_record    ObjInfo[MAX_OBJECTS];
+static HMODULE          *ModHandles = NULL;
+static unsigned         NumModHandles = 0;
+static unsigned         CurrModHandle = 0;
 
 #ifdef DEBUG_OUT
 
@@ -131,7 +145,7 @@ static bool Is32BitSeg( unsigned seg )
 /*
  * RecordModHandle - save module handle for later reference
  */
-void RecordModHandle( HMODULE value )
+static void RecordModHandle( ULONG value )
 {
     SEL         sel;
 
@@ -148,7 +162,7 @@ void RecordModHandle( HMODULE value )
 /*
  * SeekRead - seek to a file position, and read the data
  */
-BOOL SeekRead( HFILE handle, ULONG newpos, void *ptr, USHORT size )
+static BOOL SeekRead( HFILE handle, ULONG newpos, void *ptr, USHORT size )
 {
     USHORT      read;
     ULONG       pos;
@@ -411,7 +425,7 @@ void ReadRegs( dos_debug *buff )
     CallDosDebug( buff );
 }
 
-void ReadLinear( void __far *data, ULONG lin, USHORT size )
+void ReadLinear( PVOID data, ULONG lin, USHORT size )
 {
     Buff.Cmd = DBG_C_ReadMemBuf;
     Buff.Addr = lin;
@@ -420,7 +434,7 @@ void ReadLinear( void __far *data, ULONG lin, USHORT size )
     CallDosDebug( &Buff );
 }
 
-void WriteLinear( void __far *data, ULONG lin, USHORT size )
+void WriteLinear( PVOID data, ULONG lin, USHORT size )
 {
     Buff.Cmd = DBG_C_WriteMemBuf;
     Buff.Addr = lin;
@@ -429,7 +443,7 @@ void WriteLinear( void __far *data, ULONG lin, USHORT size )
     CallDosDebug( &Buff );
 }
 
-USHORT WriteBuffer( byte __far *data, USHORT segv, ULONG offv, USHORT size )
+USHORT WriteBuffer( PBYTE data, USHORT segv, ULONG offv, USHORT size )
 {
     USHORT      length;
     bool        iugs;
@@ -504,7 +518,7 @@ USHORT WriteBuffer( byte __far *data, USHORT segv, ULONG offv, USHORT size )
 }
 
 
-static USHORT ReadBuffer( byte __far *data, USHORT segv, ULONG offv, USHORT size )
+static USHORT ReadBuffer( PBYTE data, USHORT segv, ULONG offv, USHORT size )
 {
     USHORT      length;
     bool        iugs;
@@ -554,7 +568,7 @@ static USHORT ReadBuffer( byte __far *data, USHORT segv, ULONG offv, USHORT size
 }
 
 
-void DoWritePgmScrn( char *buff, USHORT len )
+void DoWritePgmScrn( PCHAR buff, USHORT len )
 {
     USHORT  written;
 
@@ -1161,6 +1175,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->multiplier = 50000;
     ret->err = 1;
     if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
         WatchPoints[WatchCount].addr.segment = acc->watch_addr.segment;
@@ -1170,20 +1185,19 @@ trap_retval TRAP_CORE( Set_watch )( void )
         WatchPoints[WatchCount].value = buff;
         ret->err = 0;
         ++WatchCount;
-    }
-    ret->multiplier = 50000;
-    if( ret->err == 0 && DRegsCount() <= 4 ) {
-        ret->multiplier |= USING_DEBUG_REG;
+        if( DRegsCount() <= 4 ) {
+            ret->multiplier |= USING_DEBUG_REG;
+        }
     }
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 {
-    clear_watch_req     *acc;
-    watch            *dst;
-    watch            *src;
-    int              i;
+    clear_watch_req *acc;
+    watch_point     *dst;
+    watch_point     *src;
+    int             i;
 
 
     acc = GetInPtr( 0 );
@@ -1212,7 +1226,7 @@ void SetBrkPending( void )
     BrkPending = TRUE;
 }
 
-static void __pascal __far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
+static void EXPENTRY BrkHandler( USHORT sig_arg, USHORT sig_num )
 {
     PFNSIGHANDLER   prev_hdl;
     USHORT          prev_act;

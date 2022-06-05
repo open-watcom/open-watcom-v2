@@ -36,14 +36,20 @@
 #define INCL_DOSDEVICES
 #define INCL_DOSMEMMGR
 #define INCL_DOSSIGNALS
-#include <os2.h>
+//#define INCL_DOSSESMGR
+#include <wos2.h>
 #include <os2dbg.h>
-#include "os2v2acc.h"
+#include "trptypes.h"
+#include "trpcomm.h"
+#include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
+#include "os2trap.h"
 #include "madregs.h"
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "cpuglob.h"
+#include "accmisc.h"
 
 
 #define EXE_IS_FULLSCREEN       0x0100
@@ -54,6 +60,15 @@
 
 #define LOAD_THIS_DLL_SIZE      6
 
+extern PVOID my_alloca( unsigned short );
+#pragma aux my_alloca = \
+        "sub  sp,ax"    \
+        "mov  ax,sp"    \
+        "mov  dx,ss"    \
+    __parm __caller [__ax] \
+    __value         [__ax __dx] \
+    __modify        [__sp]
+
 typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
@@ -62,22 +77,13 @@ typedef struct watch_point {
 typedef void (*excfn)();
 
 typedef struct {
-        USHORT  phmod[2];               /* offset-segment */
-        USHORT  mod_name[2];            /* offset-segment */
-        USHORT  fail_len;
-        PSZ     fail_name;              /* offset-segment */
-        USHORT  hmod;
-        CHAR    load_name[2];
+    USHORT  phmod[2];               /* offset-segment */
+    USHORT  mod_name[2];            /* offset-segment */
+    USHORT  fail_len;
+    PSZ     fail_name;              /* offset-segment */
+    USHORT  hmod;
+    CHAR    load_name[2];
 } loadstack_t;
-
-extern void __far *Automagic( unsigned short );
-#pragma aux Automagic = \
-        "sub sp,ax"     \
-        "mov ax,sp"     \
-        "mov dx,ss"     \
-    __parm __caller [__ax] \
-    __value         [__dx __ax] \
-    __modify        [__sp]
 
 extern void             LoadThisDLL( void );
 extern void             EndLoadThisDLL( void );
@@ -90,23 +96,24 @@ extern char             UtilBuff[BUFF_SIZE];
 extern HFILE            SaveStdIn;
 extern HFILE            SaveStdOut;
 extern bool             CanExecTask;
-extern HMODULE          __far *ModHandles;
-extern unsigned         NumModHandles;
-extern unsigned         CurrModHandle;
-extern int              ExceptNum;
 extern HMODULE          ThisDLLModHandle;
 extern scrtype          Screen;
-
-__GINFOSEG              __far *GblInfo;
 
 static TRACEBUF         Buff;
 static USHORT           SessionType;
 static watch_point      WatchPoints[MAX_WATCHES];
 static short            WatchCount = 0;
 static volatile bool    BrkPending;
+static int              ExceptNum;
+
+static HMODULE          __far *ModHandles = NULL;
+static unsigned         NumModHandles = 0;
+static unsigned         CurrModHandle = 0;
+
+static char             stack[1024];
 
 #if 0
-static void Out( char __far *str )
+static void Out( PCHAR str )
 {
     USHORT      written;
 
@@ -120,8 +127,8 @@ static void OutNL()
 
 static void OutNum( unsigned i )
 {
-    char numbuff[10];
-    char __far *ptr;
+    char    numbuff[10];
+    PCHAR   ptr;
 
     ptr = numbuff + 10;
     *--ptr = '\0';
@@ -161,7 +168,7 @@ static USHORT ReadRegs( TRACEBUF __far *buff )
 }
 
 
-static USHORT WriteBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT size )
+static USHORT WriteBuffer( PBYTE data, USHORT segv, USHORT offv, USHORT size )
 {
     USHORT  length;
 
@@ -204,7 +211,7 @@ static USHORT WriteBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT si
 }
 
 
-static USHORT ReadBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT size )
+static USHORT ReadBuffer( PBYTE data, USHORT segv, USHORT offv, USHORT size )
 {
     USHORT      length;
 
@@ -238,7 +245,7 @@ static void RecordModHandle( HMODULE value )
     SEL         sel;
 
     if( ModHandles == NULL ) {
-        DosAllocSeg( sizeof( USHORT ), (PSEL)&sel, 0 );
+        DosAllocSeg( sizeof( HMODULE ), (PSEL)&sel, 0 );
         ModHandles = _MK_FP( sel, 0 );
     } else {
         DosReallocSeg( ( NumModHandles + 1 ) * sizeof( HMODULE ), _FP_SEG( ModHandles ) );
@@ -259,20 +266,17 @@ static void ExecuteCode( TRACEBUF __far *buff )
     }
 }
 
-
 #pragma aux DoOpen __parm [__dx __ax] [__bx] [__cx]
 static void DoOpen( char FAR *name, int mode, int flags )
 {
     BreakPointParm( OpenFile( name, mode, flags ) );
 }
 
-
 #pragma aux DoClose __parm [__ax]
 static void DoClose( HFILE hdl )
 {
     BreakPointParm( DosClose( hdl ) );
 }
-
 
 #pragma aux DoDupFile __parm [__ax] [__dx]
 static void DoDupFile( HFILE old, HFILE new )
@@ -290,7 +294,7 @@ static void DoDupFile( HFILE old, HFILE new )
 }
 
 #pragma aux DoWritePgmScrn __parm [__dx __ax] [__bx]
-static void DoWritePgmScrn( char __far *buff, USHORT len )
+static void DoWritePgmScrn( PCHAR buff, USHORT len )
 {
     USHORT  written;
 
@@ -324,9 +328,9 @@ static long TaskExecute( excfn rtn )
 }
 
 
-long TaskOpenFile( char __far *name, int mode, int flags )
+long TaskOpenFile( PCHAR name, int mode, int flags )
 {
-    WriteBuffer( (byte __far *)name, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), strlen( name ) + 1 );
+    WriteBuffer( (PBYTE)name, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), strlen( name ) + 1 );
     Buff.u.r.DX = _FP_SEG( UtilBuff );
     Buff.u.r.AX = _FP_OFF( UtilBuff );
     Buff.u.r.BX = mode;
@@ -590,7 +594,7 @@ trap_retval TRAP_CORE( Write_regs )( void )
     return( 0 );
 }
 
-USHORT LibLoadPTrace( TRACEBUF *buff )
+static USHORT LibLoadPTrace( TRACEBUF *buff )
 {
     int         cmd;
     int         value;
@@ -617,7 +621,7 @@ USHORT LibLoadPTrace( TRACEBUF *buff )
 }
 
 
-static bool GetExeInfo( USHORT __far *pCS, USHORT __far *pIP, USHORT __far *pExeType, char __far *name )
+static bool GetExeInfo( USHORT __far *pCS, USHORT __far *pIP, USHORT __far *pExeType, PCHAR name )
 {
     long        open_rc;
     HFILE       handle;
@@ -720,14 +724,14 @@ static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
         return( FALSE );
 
     /* write the routine LoadThisDLL into program's code */
-    len = WriteBuffer( (byte __far *)LoadThisDLL, startCS, startIP, codesize );
+    len = WriteBuffer( (PBYTE)LoadThisDLL, startCS, startIP, codesize );
     if( len != codesize )
         return( FALSE );
 
     /* set up the stack for the routine LoadThisDLL */
 
     dll_name_len = ( strlen( this_dll ) + 1 ) & ~1;
-    loadstack = Automagic( sizeof( loadstack_t ) + dll_name_len );
+    loadstack = my_alloca( sizeof( loadstack_t ) + dll_name_len );
     Buff.u.r.SP -= sizeof( loadstack_t ) + dll_name_len;
     strcpy( loadstack->load_name, this_dll );
     loadstack->fail_name = NULL;
@@ -736,7 +740,7 @@ static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
     loadstack->mod_name[1] = Buff.u.r.SS;
     loadstack->phmod[0] = Buff.u.r.SP + offsetof( loadstack_t, hmod );
     loadstack->phmod[1] = Buff.u.r.SS;
-    len = WriteBuffer( (byte __far *)loadstack, Buff.u.r.SS, Buff.u.r.SP, sizeof( loadstack_t ) + dll_name_len );
+    len = WriteBuffer( (PBYTE)loadstack, Buff.u.r.SS, Buff.u.r.SP, sizeof( loadstack_t ) + dll_name_len );
     if( len != sizeof( loadstack_t ) + dll_name_len )
         return( FALSE );
 
@@ -945,7 +949,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
         WatchPoints[WatchCount].addr.segment = wp->watch_addr.segment;
         WatchPoints[WatchCount].addr.offset = wp->watch_addr.offset;
-        ReadBuffer( (byte __far *)&buff, wp->watch_addr.segment, wp->watch_addr.offset, sizeof( dword ) );
+        ReadBuffer( (PBYTE)&buff, wp->watch_addr.segment, wp->watch_addr.offset, sizeof( dword ) );
         WatchPoints[WatchCount].value = buff;
         ++WatchCount;
     } else {
@@ -975,7 +979,7 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     return( 0 );
 }
 
-static void __pascal __far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
+static void EXPENTRY BrkHandler( USHORT sig_arg, USHORT sig_num )
 {
     PFNSIGHANDLER   prev_hdl;
     USHORT          prev_act;
@@ -1304,7 +1308,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
     USHORT              os2ver;
-    SEL                 li,gi;
+    SEL                 li;
+    SEL                 gi;
     __LINFOSEG          __far *linfo;
 
     parms = parms;

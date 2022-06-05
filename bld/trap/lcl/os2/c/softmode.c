@@ -48,6 +48,8 @@
 #include <i86.h>
 #include "pmhook.h"//
 #include "trpimp.h"
+#include "softmode.h"
+
 
 extern BOOL APIENTRY WinLockInput( HWND, USHORT );
 extern BOOL APIENTRY WinQuerySendMsg( HAB, HMQ, HMQ, PQMSG );
@@ -84,7 +86,7 @@ static  thread_data     *BeginThreadArg;
 
 #define STACK_SIZE 10000
 
-void APIENTRY SoftModeThread( thread_data *thread )
+static void APIENTRY SoftModeThread( thread_data *thread )
 {
     QMSG        qmsg;
     ULONG       rc;
@@ -113,7 +115,7 @@ void APIENTRY SoftModeThread( thread_data *thread )
     WinPostMsg( HwndDebugger, WM_QUIT, 0, 0 ); // tell debugger we're done
 }
 
-static void BeginThreadHelper( void )
+static void __far BeginThreadHelper( void )
 {
     thread_data *_arg;
 
@@ -125,7 +127,7 @@ static void BeginThreadHelper( void )
 }
 
 
-void BeginSoftModeThread( thread_data *arglist )
+static void BeginSoftModeThread( thread_data *arglist )
 {
     TID         tid;
     SEL         sel;
@@ -137,7 +139,7 @@ void BeginSoftModeThread( thread_data *arglist )
     BeginThreadArg = (thread_data*)stack;
     stack += sizeof( thread_data );
     *BeginThreadArg = *arglist;
-    DosCreateThread( (PFNTHREAD)BeginThreadHelper, &tid, stack + STACK_SIZE );
+    DosCreateThread( BeginThreadHelper, &tid, stack + STACK_SIZE );
 }
 
 
@@ -155,7 +157,7 @@ BOOL IsPMDebugger( void )
     return( HabDebugger != NULL );
 }
 
-void CreateDummyWindow( void )
+static void CreateDummyWindow( void )
 {
     ULONG flCreate;
     HWND        frame;
@@ -169,7 +171,7 @@ void CreateDummyWindow( void )
     }
 }
 
-void GrabThreadQueue( PID pid, TID tid )
+static void GrabThreadQueue( PID pid, TID tid )
 {
     thread_data         thread;
     int                 i;
@@ -189,7 +191,7 @@ void GrabThreadQueue( PID pid, TID tid )
     BeginSoftModeThread( &thread );
 }
 
-void ReleaseThreadQueue( PID pid, TID tid )
+static void ReleaseThreadQueue( PID pid, TID tid )
 {
     HMQ                 hmq;
     int                 i;
@@ -207,7 +209,7 @@ void ReleaseThreadQueue( PID pid, TID tid )
     }
 }
 
-void ForAllTids( PID pid, void (*rtn)( PID pid, TID tid ) )
+static void ForAllTids( PID pid, void (*rtn)( PID pid, TID tid ) )
 {
     TID tid;
 
@@ -216,7 +218,7 @@ void ForAllTids( PID pid, void (*rtn)( PID pid, TID tid ) )
     }
 }
 
-void WakeOneThread( PID pid, TID tid )
+static void WakeOneThread( PID pid, TID tid )
 {
     HMQ         hmq;
 
@@ -226,12 +228,12 @@ void WakeOneThread( PID pid, TID tid )
     }
 }
 
-VOID WakeThreads( PID pid )
+void WakeThreads( PID pid )
 {
     ForAllTids( pid, WakeOneThread );
 }
 
-void EnterSoftMode( PID pid )
+static void EnterSoftMode( PID pid )
 {
     if( NumAssumedQueues != 0 )
         return;
@@ -244,7 +246,7 @@ void EnterSoftMode( PID pid )
 //        WinSetActiveWindow( HWND_DESKTOP, DBActiveWnd );
 }
 
-void ExitSoftMode( PID pid )
+static void ExitSoftMode( PID pid )
 {
     int         i;
     QMSG        qmsg;
@@ -264,7 +266,7 @@ void ExitSoftMode( PID pid )
 //        WinSetActiveWindow( HWND_DESKTOP, AppActiveWnd );
 }
 
-void EnterHardMode( void )
+static void EnterHardMode( void )
 {
     if( InHardMode )
         return;
@@ -272,7 +274,7 @@ void EnterHardMode( void )
     InHardMode = TRUE;
 }
 
-void ExitHardMode( void )
+static void ExitHardMode( void )
 {
     if( !InHardMode )
         return;
@@ -314,7 +316,7 @@ void TellSoftModeHandles( HAB hab, HWND hwnd )
     HwndDebugger = hwnd;
 }
 
-VOID InitSoftDebug( VOID )
+void InitSoftDebug( void )
 {
     DosLoadModule( NULL, 0, HOOKER, &HookDLL );
     DosGetProcAddr( HookDLL, "SENDMSGHOOKPROC", (PFN*)&PSendMsgHookProc );

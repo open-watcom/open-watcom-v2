@@ -39,21 +39,18 @@
 #define INCL_DOSSIGNALS
 #include <os2.h>
 #include <os2dbg.h>
-#include "os2v2acc.h"
+#include "trpimp.h"
 #include "trpcomm.h"
+#include "os2trap.h"
 #include "softmode.h"
 #include "trperr.h"
 #include "os2err.h"
 #include "doserr.h"
+#include "accmisc.h"
 
 
 #define TRPH2LH(th)     (HFILE)((th)->handle.u._32[0])
 #define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
-
-extern  __GINFOSEG  *GblInfo;
-
-extern  void    DebugSession( void );
-extern  void    AppSession( void );
 
 /*
  * globals
@@ -66,12 +63,9 @@ char            UtilBuff[BUFF_SIZE];
 HFILE           SaveStdIn;
 HFILE           SaveStdOut;
 bool            CanExecTask;
-HMODULE         *ModHandles = NULL;
-unsigned        NumModHandles = 0;
-unsigned        CurrModHandle = 0;
-ULONG           ExceptNum;
 HMODULE         ThisDLLModHandle;
 scrtype         Screen;
+__GINFOSEG      __far *GblInfo;
 
 static const USHORT     local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 

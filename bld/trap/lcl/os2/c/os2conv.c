@@ -46,13 +46,15 @@
 #include "os2v2acc.h"
 #include "trperr.h"
 #include "bsexcpt.h"
+#include "dbgthrd.h"
 
 
 #define LOCATOR     "OS2V2HLP.EXE"
 
 extern unsigned APIENTRY Dos16SelToFlat( PVOID );
-extern long CallDosSelToFlat( long );
+extern ULONG CallDosSelToFlat( PVOID );
 #pragma aux CallDosSelToFlat = \
+        ".386"          \
         "xchg eax,edx"  \
         "shl  eax,16"   \
         "xchg ax,dx"    \
@@ -69,10 +71,7 @@ extern USHORT   DoCall( PVOID, ULONG, ULONG );
 
 extern PVOID DoReturn();
 
-extern USHORT           TaskFS;
-extern dos_debug        Buff;
 extern HMODULE          ThisDLLModHandle;
-extern ULONG            ExceptNum;
 
 USHORT          (APIENTRY *DebugFunc)( PVOID );
 USHORT          FlatCS;
@@ -85,11 +84,11 @@ static ULONG    _retaddr;
  */
 ULONG MakeLocalPtrFlat( PVOID ptr )
 {
-    return( CallDosSelToFlat( (long) ptr ) );
+    return( CallDosSelToFlat( ptr ) );
 
 } /* MakeLocalPtrFlat */
 
-unsigned int Call32BitDosDebug( dos_debug __far *buff )
+unsigned Call32BitDosDebug( dos_debug __far *buff )
 {
     return( DoCall( DebugFunc, MakeLocalPtrFlat( buff ), _retaddr ) );
 }
@@ -97,7 +96,7 @@ unsigned int Call32BitDosDebug( dos_debug __far *buff )
 /*
  * get the address of Dos32Debug, and get the flat selectors, too.
  */
-int GetDos32Debug( char __far *err )
+int GetDos32Debug( PCHAR err )
 {
     char        buff[256];
     RESULTCODES resc;
@@ -151,8 +150,8 @@ int GetDos32Debug( char __far *err )
         return( FALSE );
     }
     DebugFunc = (PVOID)data.dos_debug;
-    FlatCS = (USHORT) data.cs;
-    FlatDS = (USHORT) data.ds;
+    FlatCS = (USHORT)data.cs;
+    FlatDS = (USHORT)data.ds;
 
     _retaddr = MakeLocalPtrFlat( (PVOID)DoReturn );
     return( TRUE );
@@ -240,9 +239,9 @@ PVOID MakeItSegmentedNumberOne( USHORT seg, ULONG offset )
 /*
  * GetExceptionText - return text for last exception
  */
-char __far *GetExceptionText( void )
+PCHAR GetExceptionText( void )
 {
-    char        __far *str;
+    PCHAR   str;
 
     switch( ExceptNum ) {
     case XCPT_DATATYPE_MISALIGNMENT:

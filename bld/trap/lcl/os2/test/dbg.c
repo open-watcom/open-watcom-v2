@@ -106,7 +106,7 @@ InitIt( char *trp, void __far *hab, void __far *hwnd )
     TrpFile = DbgAlloc( 512 );
     strcpy( TrpFile, trp );
     InitTrap( TRUE );  // Init rfx
-    TellHandles( hab, hwnd );
+    TRAPENTRY_FUNC( TellHandles )( hab, hwnd );
 }
 
 int LoadIt()

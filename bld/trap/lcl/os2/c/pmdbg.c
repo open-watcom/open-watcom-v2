@@ -46,7 +46,7 @@ extern int LoadIt();
 extern int RunIt();
 extern KillIt();
 extern FiniIt();
-extern char TellHardMode( char );
+//extern char TellHardMode( char );
 extern BOOL APIENTRY WinLockInput( HWND, USHORT );
 
 enum {
@@ -222,7 +222,7 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
             if( State == RUNNING )
                 break;
             HardMode = !HardMode;
-            TellHardMode( HardMode ? (char)-1 : 0 );
+            TRAPENTRY_FUNC( TellHardMode )( HardMode ? (char)-1 : 0 );
             ReDraw( hwnd );
             break;
         case ID_EXITPROG:
