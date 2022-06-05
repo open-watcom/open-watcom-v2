@@ -41,14 +41,10 @@
 #undef INCL_DOSINFOSEG
 #include <os2.h>
 #include <os2dbg.h>
-#include <string.h>
-#include "trpimp.h"
+#include "os2v2acc.h"
 #include "trpcomm.h"
 #include "trpld.h"
 #include "trpsys.h"
-#include "dosdebug.h"
-#include "os2trap.h"
-#include "os2v2acc.h"
 #include "bsexcpt.h"
 #include "wdpmhelp.h"
 #include "softmode.h"
@@ -63,11 +59,37 @@
 #include "dbgthrd.h"
 
 
+#define MAX_OBJECTS         128
+
+#define EXE_NE              0x454e
+#define EXE_LE              0x454c
+#define EXE_LX              0x584c
+
+#define OBJECT_IS_CODE      0x0004L
+#define OBJECT_IS_BIG       0x2000L
+
+#define EXE_IS_FULLSCREEN   0x0100
+#define EXE_IS_PMC          0x0200
+#define EXE_IS_PM           0x0300
+
 __GINFOSEG              *GblInfo;
 dos_debug               Buff;
 USHORT                  TaskFS;
+bool                    ExpectingAFault;
 
 static BOOL             stopOnSecond;
+static ULONG            ExceptLinear;
+static UCHAR            TypeProcess;
+static BOOL             Is32Bit;
+static watch            WatchPoints[MAX_WATCHES];
+static short            WatchCount = 0;
+static unsigned_16      lastCS;
+static unsigned_16      lastSS;
+static unsigned_32      lastEIP;
+static unsigned_32      lastESP;
+static HMODULE          LastMTE;
+static unsigned         NumObjects;
+static object_record    ObjInfo[MAX_OBJECTS];
 
 #ifdef DEBUG_OUT
 
@@ -96,29 +118,6 @@ void OutNum( ULONG i )
     Out( ptr );
 }
 #endif
-
-#define EXE_NE              0x454e
-#define EXE_LE              0x454c
-#define EXE_LX              0x584c
-
-#define OBJECT_IS_CODE      0x0004L
-#define OBJECT_IS_BIG       0x2000L
-
-#define EXE_IS_FULLSCREEN   0x0100
-#define EXE_IS_PMC          0x0200
-#define EXE_IS_PM           0x0300
-
-static ULONG        ExceptLinear;
-static UCHAR        TypeProcess;
-static BOOL         Is32Bit;
-static watch        WatchPoints[MAX_WATCHES];
-static short        WatchCount = 0;
-static unsigned_16  lastCS;
-static unsigned_16  lastSS;
-static unsigned_32  lastEIP;
-static unsigned_32  lastESP;
-
-bool        ExpectingAFault;
 
 static bool Is32BitSeg( unsigned seg )
 {
@@ -215,12 +214,6 @@ static BOOL FindNewHeader( char *name, HFILE *hdl,
     return( rc );
 
 } /* FindNewHeader */
-
-#define MAX_OBJECTS     128
-
-static HMODULE          LastMTE;
-static unsigned         NumObjects;
-static object_record    ObjInfo[MAX_OBJECTS];
 
 static void GetObjectInfo( HMODULE mte )
 {
