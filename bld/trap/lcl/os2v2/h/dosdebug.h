@@ -33,6 +33,6 @@
 #define DBG_N_SStep             -101
 #define DBG_N_Signal            -102
 
-extern ULONG CallDosDebug( uDB_t *buff );
-extern ULONG MakeFlatPointer( PVOID ptr );
-extern int IsFlatSeg( USHORT seg );
+extern ULONG     CallDosDebug( uDB_t *buff );
+extern ULONG     MakeFlatPointer( PVOID ptr );
+extern int       IsFlatSeg( USHORT seg );
