@@ -41,11 +41,10 @@
 #define INCL_DOSSIGNALS
 #include <os2.h>
 #include <os2dbg.h>
-#include "os2trap.h"
-#include "dosdebug.h"
-#include "trpimp.h"
+#include "os2v2acc.h"
 #include "trperr.h"
 #include "wdpmhelp.h"
+
 
 static HFILE            PmInh;
 static HFILE            PmOuth;
@@ -53,7 +52,7 @@ static HFILE            HisInh;
 static HFILE            HisOuth;
 static bool             Response;
 static bool             HaveHelper;
-static USHORT   SID;
+static USHORT           lockSID;
 
 static int SpawnLocker( HFILE inh, HFILE outh )
 {
@@ -76,7 +75,7 @@ static int SpawnLocker( HFILE inh, HFILE outh )
     start.Environment = NULL;
     start.InheritOpt = 1;
     start.SessionType = SSF_TYPE_PM;
-    return( DosStartSession( (void __far *) &start, &SID, &pid ) );
+    return( DosStartSession( (void __far *) &start, &lockSID, &pid ) );
 }
 
 static void PmHelp( int command )
@@ -133,7 +132,7 @@ int PMFlip( void )
     if( !HaveHelper )
         return( FALSE );
     Response = 0;
-    DosSelectSession( SID, 0 );
+    DosSelectSession( lockSID, 0 );
     while( !Response )
         DosSleep( 100 );
     return( TRUE );

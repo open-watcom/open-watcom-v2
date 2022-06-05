@@ -39,13 +39,10 @@
 #define INCL_DOSSIGNALS
 #include <os2.h>
 #include <os2dbg.h>
-#include <string.h>
-#include "dosdebug.h"
-#include "bsexcpt.h"
-#include "trpimp.h"
-#include "os2trap.h"
 #include "os2v2acc.h"
+#include "bsexcpt.h"
 #include "cpuglob.h"
+
 
 #define LOAD_THIS_DLL_SIZE      6
 

@@ -38,14 +38,12 @@
 #define INCL_DOSSIGNALS
 #include <os2.h>
 #include <os2dbg.h>
-#include "trpimp.h"
+#include "os2v2acc.h"
 #include "trperr.h"
-#include "os2trap.h"
 #include "madregs.h"
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "cpuglob.h"
-#include "os2v2acc.h"
 
 
 #define EXE_IS_FULLSCREEN       0x0100

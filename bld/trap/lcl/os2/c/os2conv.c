@@ -43,24 +43,14 @@
 #define INCL_WINSYS
 #include <os2.h>
 #include <os2dbg.h>
-#include "trpimp.h"
-#include "trperr.h"
-#include "dosdebug.h"
-#include "os2trap.h"
-#include "bsexcpt.h"
 #include "os2v2acc.h"
-
-extern USHORT           TaskFS;
-
-ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset );
-extern dos_debug        Buff;
+#include "trperr.h"
+#include "bsexcpt.h"
 
 
-extern HMODULE          ThisDLLModHandle;
-extern ULONG            ExceptNum;
+#define LOCATOR     "OS2V2HLP.EXE"
 
-extern unsigned short __pascal __far Dos16SelToFlat();
-
+extern unsigned APIENTRY Dos16SelToFlat( PVOID );
 extern long CallDosSelToFlat( long );
 #pragma aux CallDosSelToFlat = \
         "xchg eax,edx"  \
@@ -72,19 +62,32 @@ extern long CallDosSelToFlat( long );
     __parm  [__dx __ax] \
     __value [__dx __ax]
 
-ULONG MakeLocalPtrFlat( void __far *ptr );
-
-USHORT  (APIENTRY *DebugFunc)( PVOID );
-USHORT  FlatCS,FlatDS;
-static ULONG    _retaddr;
-extern void __far *DoReturn();
-
-extern USHORT   DoCall( void __far *, ULONG, ULONG );
+extern USHORT   DoCall( PVOID, ULONG, ULONG );
 #pragma aux DoCall \
     __parm      [__dx __ax] [__cx __bx] [__di __si] \
     __modify    [__ax __bx __cx __dx __si __di __es]
 
-#define LOCATOR     "OS2V2HLP.EXE"
+extern PVOID DoReturn();
+
+extern USHORT           TaskFS;
+extern dos_debug        Buff;
+extern HMODULE          ThisDLLModHandle;
+extern ULONG            ExceptNum;
+
+USHORT          (APIENTRY *DebugFunc)( PVOID );
+USHORT          FlatCS;
+USHORT          FlatDS;
+
+static ULONG    _retaddr;
+
+/*
+ * MakeLocalPtrFlat - create a 0:32 ptr from a 16:16 ptr
+ */
+ULONG MakeLocalPtrFlat( PVOID ptr )
+{
+    return( CallDosSelToFlat( (long) ptr ) );
+
+} /* MakeLocalPtrFlat */
 
 unsigned int Call32BitDosDebug( dos_debug __far *buff )
 {
@@ -147,18 +150,18 @@ int GetDos32Debug( char __far *err )
         StrCopyDst( TRP_OS2_no_help, err );
         return( FALSE );
     }
-    DebugFunc = (void __far *)data.dos_debug;
+    DebugFunc = (PVOID)data.dos_debug;
     FlatCS = (USHORT) data.cs;
     FlatDS = (USHORT) data.ds;
 
-    _retaddr = MakeLocalPtrFlat( (void __far *)DoReturn );
+    _retaddr = MakeLocalPtrFlat( (PVOID)DoReturn );
     return( TRUE );
 }
 
 /*
  * MakeSegmentedPointer - create a 16:16 ptr from a 0:32 ptr
  */
-void __far *MakeSegmentedPointer( ULONG val )
+PVOID MakeSegmentedPointer( ULONG val )
 {
     dos_debug   buff;
 
@@ -169,15 +172,6 @@ void __far *MakeSegmentedPointer( ULONG val )
     return( _MK_FP( (USHORT)buff.Value, (USHORT)buff.Index ) );
 
 } /* MakeSegmentedPointer */
-
-/*
- * MakeLocalPtrFlat - create a 0:32 ptr from a 16:16 ptr
- */
-ULONG MakeLocalPtrFlat( void __far *ptr )
-{
-    return( CallDosSelToFlat( (long) ptr ) );
-
-} /* MakeLocalPtrFlat */
 
 /*
  * IsFlatSeg - check for flat segment
@@ -234,7 +228,7 @@ ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset )
 /*
  * MakeItSegmentedNumberOne - make a (sel,offset) into a 16:16 pointer
  */
-void __far * MakeItSegmentedNumberOne( USHORT seg, ULONG offset )
+PVOID MakeItSegmentedNumberOne( USHORT seg, ULONG offset )
 {
     if( !IsFlatSeg( seg ) )
         return( _MK_FP( seg, (USHORT) offset ) );
