@@ -91,32 +91,29 @@ extern char         UtilBuff[BUFF_SIZE];
 extern HFILE        SaveStdIn;
 extern HFILE        SaveStdOut;
 extern bool         CanExecTask;
-extern HMODULE      *ModHandles;
-extern unsigned     NumModHandles;
-extern unsigned     CurrModHandle;
 extern ULONG        ExceptNum;
 extern HMODULE      ThisDLLModHandle;
 //extern uDB_t        Buff;
 extern USHORT       FlatCS;
 extern USHORT       FlatDS;
 
-extern bool     CausePgmToLoadHelperDLL( ULONG startLinear );
-extern long     TaskExecute( excfn rtn );
-extern bool     TaskReadWord( USHORT seg, ULONG off, USHORT *data );
-extern bool     TaskWriteWord( USHORT seg, ULONG off, USHORT data );
-extern void     TaskPrint( byte *data, unsigned len );
-extern void     TaskReadXMMRegs( struct x86_xmm *xmm_regs );
-extern void     TaskWriteXMMRegs( struct x86_xmm *xmm_regs );
+extern bool         CausePgmToLoadHelperDLL( ULONG startLinear );
+extern long         TaskExecute( excfn rtn );
+extern bool         TaskReadWord( USHORT seg, ULONG off, USHORT *data );
+extern bool         TaskWriteWord( USHORT seg, ULONG off, USHORT data );
+extern void         TaskPrint( byte *data, unsigned len );
+extern void         TaskReadXMMRegs( struct x86_xmm *xmm_regs );
+extern void         TaskWriteXMMRegs( struct x86_xmm *xmm_regs );
 
-extern void     AppSession( void );
-extern void     DebugSession( void );
-extern void     SetBrkPending( void );
+extern void         AppSession( void );
+extern void         DebugSession( void );
+extern void         SetBrkPending( void );
 
 //#define DEBUG_OUT
 
 #ifdef DEBUG_OUT
-extern void     Out( char *str );
-extern void     OutNum( ULONG i );
+extern void         Out( char *str );
+extern void         OutNum( ULONG i );
 #else
 #define Out( a )
 #define OutNum( a )

@@ -53,9 +53,6 @@
 #define TRPH2LH(th)     (HFILE)((th)->handle.u._32[0])
 #define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
 
-extern  void    DebugSession( void );
-extern  void    AppSession( void );
-
 /*
  * globals
  */
@@ -67,9 +64,6 @@ char            UtilBuff[BUFF_SIZE];
 HFILE           SaveStdIn;
 HFILE           SaveStdOut;
 bool            CanExecTask;
-HMODULE         *ModHandles = NULL;
-unsigned        NumModHandles = 0;
-unsigned        CurrModHandle = 0;
 ULONG           ExceptNum;
 scrtype         Screen;
 

@@ -387,6 +387,7 @@ trap_retval TRAP_FILE( run_cmd )( void )
     return( sizeof( *ret ) );
 }
 
+#if 0
 trap_retval TRAP_CORE( Get_err_text )( void )
 {
     get_err_text_req    *acc;
@@ -397,3 +398,4 @@ trap_retval TRAP_CORE( Get_err_text )( void )
     strcpy( err_txt, "Unknown error" );
     return( strlen( err_txt ) + 1 );
 }
+#endif

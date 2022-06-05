@@ -43,4 +43,5 @@ objs = &
     pathlist.obj &
     wpwind.obj &
     autoenv.obj &
+    i64.obj &
     $(dip_objs) $(mad_objs) $(dig_objs)
