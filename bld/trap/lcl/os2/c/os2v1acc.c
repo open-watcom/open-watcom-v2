@@ -47,7 +47,30 @@
 #include "cpuglob.h"
 #include "os2v2acc.h"
 
+
+#define EXE_IS_FULLSCREEN       0x0100
+#define EXE_IS_PMC              0x0200
+#define EXE_IS_PM               0x0300
+
+#define MAX_WATCHES             32
+
+#define LOAD_THIS_DLL_SIZE      6
+
+typedef struct watch_point {
+    addr48_ptr  addr;
+    dword       value;
+} watch_point;
+
 typedef void (*excfn)();
+
+typedef struct {
+        USHORT  phmod[2];               /* offset-segment */
+        USHORT  mod_name[2];            /* offset-segment */
+        USHORT  fail_len;
+        PSZ     fail_name;              /* offset-segment */
+        USHORT  hmod;
+        CHAR    load_name[2];
+} loadstack_t;
 
 extern void __far *Automagic( unsigned short );
 #pragma aux Automagic = \
@@ -58,9 +81,8 @@ extern void __far *Automagic( unsigned short );
     __value         [__dx __ax] \
     __modify        [__sp]
 
-
-extern  void    LoadThisDLL( void );
-extern  void    EndLoadThisDLL( void );
+extern void             LoadThisDLL( void );
+extern void             EndLoadThisDLL( void );
 
 extern PID              Pid;
 extern bool             AtEnd;
@@ -77,20 +99,13 @@ extern int              ExceptNum;
 extern HMODULE          ThisDLLModHandle;
 extern scrtype          Screen;
 
-static TRACEBUF         Buff;
-static USHORT           SessionType;
 __GINFOSEG              __far *GblInfo;
 
-
-typedef struct watch_point {
-    addr48_ptr  addr;
-    dword       value;
-} watch_point;
-
-#define MAX_WATCHES     32
-
+static TRACEBUF         Buff;
+static USHORT           SessionType;
 static watch_point      WatchPoints[MAX_WATCHES];
 static short            WatchCount = 0;
+static volatile bool    BrkPending;
 
 #if 0
 static void Out( char __far *str )
@@ -110,10 +125,10 @@ static void OutNum( unsigned i )
     char numbuff[10];
     char __far *ptr;
 
-    ptr = numbuff+10;
+    ptr = numbuff + 10;
     *--ptr = '\0';
     while( i != 0 ) {
-        *--ptr = "0123456789abcdef"[ i & 0x0f ];
+        *--ptr = "0123456789abcdef"[i & 0x0f];
         i >>= 4;
     }
     Out( ptr );
@@ -291,7 +306,6 @@ static void DoGetMSW( void )
 }
 
 
-static char stack[1024];
 
 static long TaskExecute( excfn rtn )
 {
@@ -312,8 +326,8 @@ static long TaskExecute( excfn rtn )
 }
 
 
-long TaskOpenFile( char __far *name, int mode, int flags ) {
-
+long TaskOpenFile( char __far *name, int mode, int flags )
+{
     WriteBuffer( (byte __far *)name, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), strlen( name ) + 1 );
     Buff.u.r.DX = _FP_SEG( UtilBuff );
     Buff.u.r.AX = _FP_OFF( UtilBuff );
@@ -363,7 +377,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     } else {
         ret->sys.fpu = X86_NO;
     }
-    emu = TaskExecute( (excfn)&DoGetMSW );
+    emu = TaskExecute( (excfn)DoGetMSW );
     if( emu != -1 && (emu & 0x04) ) { /* if EM bit is on in the MSW */
         ret->sys.fpu = X86_EMU;
     }
@@ -604,10 +618,6 @@ USHORT LibLoadPTrace( TRACEBUF *buff )
     }
 }
 
-#define EXE_IS_FULLSCREEN       0x0100
-#define EXE_IS_PMC              0x0200
-#define EXE_IS_PM               0x0300
-
 
 static bool GetExeInfo( USHORT __far *pCS, USHORT __far *pIP, USHORT __far *pExeType, char __far *name )
 {
@@ -687,17 +697,6 @@ static bool GetExeInfo( USHORT __far *pCS, USHORT __far *pIP, USHORT __far *pExe
     return( rc );
 }
 
-
-typedef struct {
-        USHORT  phmod[2];               /* offset-segment */
-        USHORT  mod_name[2];            /* offset-segment */
-        USHORT  fail_len;
-        PSZ     fail_name;              /* offset-segment */
-        USHORT  hmod;
-        CHAR    load_name[2];
-} loadstack_t;
-
-#define LOAD_THIS_DLL_SIZE      6
 
 static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
 {
@@ -977,8 +976,6 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     --WatchCount;
     return( 0 );
 }
-
-static volatile bool     BrkPending;
 
 static void __pascal __far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
 {
@@ -1305,7 +1302,7 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
     return( sizeof( *ret ) );
 }
 
-trap_version TRAPENTRY TrapInit( const char *parms, char *err, unsigned_8 remote )
+trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
     USHORT              os2ver;
