@@ -86,26 +86,26 @@
 #define DBG_N_SStep             -101
 #define DBG_N_Signal            -102
 
-#define XCPT_DIV        1
-#define XCPT_OVERFLOW   2
-#define XCPT_BOUND      3
-#define XCPT_OP         4
-#define XCPT_GP         5
-#define XCPT_FPERR      6
-#define XCPT_GPF        7
-#define XCPT_GPAF       8
-#define XCPT_1X_PARITY  9
+#define XCPT_DIV                1
+#define XCPT_OVERFLOW           2
+#define XCPT_BOUND              3
+#define XCPT_OP                 4
+#define XCPT_GP                 5
+#define XCPT_FPERR              6
+#define XCPT_GPF                7
+#define XCPT_GPAF               8
+#define XCPT_1X_PARITY          9
 
-#define DBG_L_386       1
+#define DBG_L_386               1
 
-#define DBG_W_Global    1
-#define DBG_W_Local     2
-#define DBG_W_Execute   0x00010000
-#define DBG_W_Write     0x00020000
-#define DBG_W_ReadWrite 0x00030000
+#define DBG_W_Global            1
+#define DBG_W_Local             2
+#define DBG_W_Execute           0x00010000
+#define DBG_W_Write             0x00020000
+#define DBG_W_ReadWrite         0x00030000
 
-#define DBG_CO_387      1
-#define DBG_CO_SIZE     108
+#define DBG_CO_387              1
+#define DBG_CO_SIZE             108
 
 #define DBG_X_PRE_FIRST_CHANCE  0
 #define DBG_X_FIRST_CHANCE      1
@@ -166,6 +166,6 @@ typedef struct  {
 } dos_debug;
 
 extern unsigned  CallDosDebug( dos_debug __far *ptr );
-extern ULONG     MakeLocalPtrFlat( void __far *ptr );
+extern ULONG     MakeLocalPtrFlat( PVOID ptr );
 extern ULONG     MakeFlatPointer( PVOID ptr );
 extern int       IsFlatSeg( USHORT seg );
