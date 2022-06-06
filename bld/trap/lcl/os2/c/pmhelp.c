@@ -47,7 +47,9 @@
 #include <string.h>
 #include <stdio.h>
 #include "trperr.h"
+#include "wdpmhelp.rh"
 #include "wdpmhelp.h"
+
 
 #ifdef USE_16_BIT_API
 //extern BOOL __far16 __pascal WinThreadAssocQueue( HAB, HMQ );

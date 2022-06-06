@@ -42,8 +42,10 @@
 #include <os2.h>
 #include <string.h>
 #include <stdio.h>
+#include "wdpmhelp.rh"
 #include "wdpmhelp.h"
 #include "trperr.h"
+
 
 /* "Secret" PM APIs useful to a debugger */
 extern BOOL APIENTRY WinLockInput(HMQ, BOOL);
