@@ -175,11 +175,11 @@ static unsigned MoveMem( int op, char *data, addr_seg segv, addr_off offv,
     } else if( offv + size > info.nbytes ) {
         size = info.nbytes - offv;
     }
+    trans = MAX_MEM_TRANS;
     length = size;
-    for( ;; ) {
-        if( length == 0 )
-            break;
-        trans = (length > MAX_MEM_TRANS) ? MAX_MEM_TRANS : length;
+    for( ; length > 0; ) {
+        if( trans > length )
+            trans = length;
         if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, op, data, trans, offv, segv ) != 0 ) {
             /* something went wrong. need to find out how much trans'ed */
             //NYI
@@ -458,13 +458,12 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     sum = 0;
     if( ProcInfo.pid != 0 ) {
         length = acc->len;
+        size = sizeof( UtilBuff );
         offv = acc->in_addr.offset;
-        for( ;; ) {
-            if( length == 0 )
-                break;
-            size = (length > sizeof( UtilBuff )) ? sizeof( UtilBuff ) : length;
-            amount = MoveMem( _DEBUG_MEM_RD, UtilBuff, acc->in_addr.segment,
-                                offv, size );
+        for( ; length > 0; ) {
+            if( size > length )
+                size = length;
+            amount = MoveMem( _DEBUG_MEM_RD, UtilBuff, acc->in_addr.segment, offv, size );
             for( i = amount; i != 0; --i ) {
                 sum += UtilBuff[ i - 1 ];
             }
@@ -819,7 +818,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     prog_load_req               *acc;
     prog_load_ret               *ret;
     bool                        has_flat;
-    unsigned                    len;
+    size_t                      len;
+    char                        *p;
 
     lseek( 0, StdPos.in , SEEK_SET );
     lseek( 1, StdPos.out, SEEK_SET );
@@ -838,46 +838,34 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ProcInfo.fpu32  = false;
     ProcInfo.fork   = false;
     memset( ProcInfo.thread, 0, sizeof( ProcInfo.thread[0] ) * ProcInfo.max_threads );
-    parms = (char *)GetInPtr( sizeof( *acc ) );
-    parm_start = parms;
+    parms = parm_start = (char *)GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
-        for( ;; ) {
-            if( len == 0 )
-                break;
-            if( *parms == '\0' ) {
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
                 i++;
             }
-            ++parms;
-            --len;
         }
         args = walloca( i * sizeof( *args ) );
         parms = parm_start;
         len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
-        for( ;; ) {
-            if( len == 0 )
-                break;
-            if( *parms == '\0' ) {
-                args[ i++ ] = parms + 1;
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
+                args[i++] = parms;
             }
-            ++parms;
-            --len;
         }
-        args[i - 1] = NULL;
     } else {
-        while( *parms != '\0' ) {
-            ++parms;
-            --len;
-        }
-        ++parms;
-        --len;
-        i = SplitParms( parms, NULL, len );
-        args = walloca( ( i + 2 ) * sizeof( *args ) );
-        args[SplitParms( parms, (const char **)&args[1], len ) + 1] = NULL;
+        while( --len, *parms++ != '\0' )
+            {}
+        i = SplitParms( parms, NULL, len ) + 2;
+        args = alloca( i * sizeof( *args ) + len );
+        p = memcpy( (void *)( args + i ), parms, len );
+        SplitParms( p, args + 1, len );
     }
     args[0] = parm_start;
+    args[i - 1] = NULL;
     ProcInfo.pid = RunningProc( &nid, args[0], &proc, &name );
     if( ProcInfo.pid != 0 ) {
         ProcInfo.loaded_proc = false;
