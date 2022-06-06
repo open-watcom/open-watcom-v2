@@ -168,9 +168,10 @@ static pid_t RunningProc( const char *name, const char **name_ret )
         *name_ret = name;
     pidd = 0;
     for( ;; ) {
-        if( *name < '0' || *name > '9' )
+        ch = *name;
+        if( ch < '0' || ch > '9' )
             break;
-        pidd = (pidd * 10) + (*name - '0');
+        pidd = (pidd * 10) + (ch - '0');
         ++name;
     }
     if( *name != '\0')
@@ -204,6 +205,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     prog_load_ret               *ret;
     trap_elen                   len;
     int                         status;
+    char                        *p;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -212,46 +214,34 @@ trap_retval TRAP_CORE( Prog_load )( void )
     have_rdebug = false;
     dbg_dyn = NULL;
     at_end = false;
-    parms = (char *)GetInPtr( sizeof( *acc ) );
-    parm_start = parms;
+    parm_start = parms = (char *)GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
-        for( ;; ) {
-            if( len == 0 )
-                break;
-            if( *parms == '\0' ) {
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
                 i++;
             }
-            ++parms;
-            --len;
         }
         args = alloca( i * sizeof( *args ) );
         parms = parm_start;
         len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
-        for( ;; ) {
-            if( len == 0 )
-                break;
-            if( *parms == '\0' ) {
-                args[i++] = parms + 1;
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
+                args[i++] = parms;
             }
-            ++parms;
-            --len;
         }
-        args[i - 1] = NULL;
     } else {
-        while( *parms != '\0' ) {
-            ++parms;
-            --len;
-        }
-        ++parms;
-        --len;
-        i = SplitParms( parms, NULL, len );
-        args = alloca( ( i + 2 ) * sizeof( *args ) );
-        args[SplitParms( parms, args + 1, len ) + 1] = NULL;
+        while( --len, *parms++ != '\0' ) 
+            {}
+        i = SplitParms( parms, NULL, len ) + 2;
+        args = alloca( i * sizeof( *args ) + len );
+        p = memcpy( (void *)( args + i ), parms, len );
+        SplitParms( p, args + 1, len );
     }
     args[0] = parm_start;
+    args[i - 1] = NULL;
     attached = true;
     pid = RunningProc( args[0], &name );
     if( pid == 0 || ptrace( PTRACE_ATTACH, pid, NULL, NULL ) == -1 ) {
