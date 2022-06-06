@@ -89,10 +89,10 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     if( pid != 0 ) {
         length = acc->len;
         offv = acc->in_addr.offset;
-        for( ;; ) {
-            if( length == 0 )
-                break;
-            size = (length > sizeof( buf )) ? sizeof( buf ) : length;
+        size = sizeof( buf );
+        for( ; length > 0; ) {
+            if( size > length )
+                size = length;
             amount = ReadMem( pid, buf, offv, size );
             for( i = amount; i != 0; --i )
                 sum += buf[ i - 1 ];
@@ -214,7 +214,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     have_rdebug = false;
     dbg_dyn = NULL;
     at_end = false;
-    parm_start = parms = (char *)GetInPtr( sizeof( *acc ) );
+    parms = parm_start = (char *)GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
