@@ -356,12 +356,12 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     length = acc->len;
     sum = 0;
     offset = acc->in_addr.offset;
-    while( length != 0 ) {
+    while( length > 0 ) {
         DoRead( offset, (char*)&value, sizeof( value ) );
         sum += value & 0xff;
         offset++;
         length--;
-        if( length != 0 ) {
+        if( length > 0 ) {
             sum += value >> 8;
             offset++;
             length--;
@@ -771,11 +771,13 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
     prog_load_ret       *ret;
     char                *parm;
     char                *parms;
-    int                 i,len;
+    int                 i;
+    size_t              len;
     char                *parm_start;
     char                **args;
     struct methodblock  *mb;
     bool                html;
+    char                *p;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -783,40 +785,34 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
        already at main */
     ret->flags = LD_FLAG_IS_STARTED | LD_FLAG_IGNORE_SEGMENTS | LD_FLAG_HAVE_RUNTIME_DLLS;
     parm = GetInPtr( sizeof( *acc ) );
-    parms = (char *)GetInPtr( sizeof( *acc ) );
-    parm_start = parms;
+    parms = parm_start = (char *)GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
-        for( ; len-- > 0; ) {
-            if( *parms == '\0' ) {
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
                 i++;
             }
-            ++parms;
         }
         args = walloca( i * sizeof( *args ) );
         parms = parm_start;
         len = GetTotalSizeIn() - sizeof( *acc );
         i = 1;
-        for( ; len-- > 0; ) {
-            if( *parms == '\0' ) {
-                args[ i++ ] = parms + 1;
+        while( len-- > 0 ) {
+            if( *parms++ == '\0' ) {
+                args[i++] = parms;
             }
-            ++parms;
         }
-        args[ i-1 ] = NULL;
     } else {
-        while( *parms != '\0' ) {
-            ++parms;
-            --len;
-        }
-        ++parms;
-        --len;
-        i = SplitParms( parms, NULL, len );
-        args = walloca( ( i + 3 ) * sizeof( *args ) );
-        args[ SplitParms( parms, args + 1, len ) + 1 ] = NULL;
+        while( --len, *parms++ != '\0' )
+            {}
+        i = SplitParms( parms, NULL, len ) + 2;
+        args = alloca( i * sizeof( *args ) + len );
+        p = memcpy( (void *)( args + i ), parms, len );
+        SplitParms( p, args + 1, len );
     }
     args[0] = parm_start;
+    args[i - 1] = NULL;
 
     html = FALSE;
     CbMain = FindClass(ee, parm, TRUE);
