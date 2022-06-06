@@ -131,19 +131,6 @@ typedef struct {
 
 #define O_DEBUGREG(r)   (void *)offsetof(user_struct,u_debugreg[r])
 
-/* Structure used internally to set hardware watch points */
-
-typedef struct {
-    addr48_ptr  loc;
-    u_long      value;
-    u_long      linear;
-    u_short     len;
-    u_short     dregs;
-} watch_point;
-
-
-#define MAX_WATCHES     32
-
 #endif
 
 #if defined( MD_ppc )

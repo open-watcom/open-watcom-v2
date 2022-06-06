@@ -38,13 +38,21 @@
 #include <sys/stat.h>
 #include "trpimp.h"
 #include "trpcomm.h"
-#include "lnxcomm.h"
+#include "coremisc.h"
 
 
 #define TRPH2LH(th)     (th)->handle.u._32[0]
 #define LH2TRPH(th,lh)  (th)->handle.u._32[0]=lh;(th)->handle.u._32[1]=0
 
 static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
+
+char *StrCopyDst( const char *src, char *dst )
+{
+    while( (*dst = *src++) != '\0' ) {
+        dst++;
+    }
+    return( dst );
+}
 
 trap_retval TRAP_FILE( get_config )( void )
 {

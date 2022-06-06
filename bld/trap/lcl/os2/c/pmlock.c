@@ -46,6 +46,9 @@
 #include "wdpmhelp.h"
 
 
+#define STACK_SIZE      8192
+
+static byte             thestack[STACK_SIZE];
 static HFILE            PmInh;
 static HFILE            PmOuth;
 static HFILE            HisInh;
@@ -56,9 +59,9 @@ static USHORT           lockSID;
 
 static int SpawnLocker( HFILE inh, HFILE outh )
 {
-    NEWSTARTDATA        start;
-    char        parms[20];
-    PID         pid;
+    NEWSTARTDATA    start;
+    char            parms[20];
+    PID             pid;
 
     parms[0] = inh + ADJUST_HFILE;
     parms[1] = ' ';
@@ -80,8 +83,8 @@ static int SpawnLocker( HFILE inh, HFILE outh )
 
 static void PmHelp( int command )
 {
-    USHORT      dummy;
-    pmhelp_packet       data;
+    USHORT          dummy;
+    pmhelp_packet   data;
 
     if( !HaveHelper )
         return;
@@ -92,9 +95,9 @@ static void PmHelp( int command )
 
 static void __far SwitchBack( void )
 {
-    USHORT      rc;
-    pmhelp_packet       data;
-    USHORT      dummy;
+    USHORT          rc;
+    pmhelp_packet   data;
+    USHORT          dummy;
 
     for( ;; ) {
         rc = DosRead( PmInh, &data, sizeof( data ), &dummy );
@@ -118,7 +121,8 @@ void StopPMHelp( void )
 
 void PMLock( unsigned long pid, unsigned long tid )
 {
-    pid=pid;tid=tid;
+    /* unused parameters */ (void)pid; (void)tid;
+
     PmHelp( PMHELP_LOCK );
 }
 
@@ -137,9 +141,6 @@ int PMFlip( void )
         DosSleep( 100 );
     return( TRUE );
 }
-
-#define STACK_SIZE 8192
-byte    thestack[STACK_SIZE];
 
 void StartPMHelp( void )
 {

@@ -92,7 +92,7 @@ static BOOL             stopOnSecond;
 static ULONG            ExceptLinear;
 static UCHAR            TypeProcess;
 static BOOL             Is32Bit;
-static watch_point  WatchPoints[MAX_WATCHES];
+static watch_point      WatchPoints[MAX_WATCHES];
 static short            WatchCount = 0;
 static unsigned_16      lastCS;
 static unsigned_16      lastSS;

@@ -44,6 +44,17 @@
 #include "x86cpu.h"
 
 
+#define MAX_WATCHES     32
+
+/* Structure used internally to set hardware watch points */
+typedef struct {
+    addr48_ptr  loc;
+    u_long      value;
+    u_long      linear;
+    u_short     len;
+    u_short     dregs;
+} watch_point;
+
 static watch_point      WatchPoints[MAX_WATCHES];
 static int              WatchCount = 0;
 

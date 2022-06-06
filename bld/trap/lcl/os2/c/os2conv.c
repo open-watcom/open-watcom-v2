@@ -51,7 +51,7 @@
 
 #define LOCATOR     "OS2V2HLP.EXE"
 
-extern unsigned APIENTRY Dos16SelToFlat( PVOID );
+extern long APIENTRY Dos16SelToFlat( long );
 extern ULONG CallDosSelToFlat( PVOID );
 #pragma aux CallDosSelToFlat = \
         ".386"          \

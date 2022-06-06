@@ -30,4 +30,5 @@
 ****************************************************************************/
 
 
-extern  unsigned    FindFilePath( dig_filetype file_type, const char *name, char *result );
+extern char     *StrCopyDst( const char *src, char *dst );
+extern unsigned FindFilePath( dig_filetype file_type, const char *name, char *result );
