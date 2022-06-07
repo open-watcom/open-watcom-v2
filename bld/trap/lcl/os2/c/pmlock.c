@@ -59,7 +59,7 @@ static USHORT           lockSID;
 
 static int SpawnLocker( HFILE inh, HFILE outh )
 {
-    NEWSTARTDATA    start;
+    STARTDATA       start;
     char            parms[20];
     PID             pid;
 
@@ -67,7 +67,7 @@ static int SpawnLocker( HFILE inh, HFILE outh )
     parms[1] = ' ';
     parms[2] = outh + ADJUST_HFILE;
     parms[3] = '\0';
-    start.Length = offsetof( NEWSTARTDATA, IconFile );
+    start.Length = offsetof( STARTDATA, IconFile );
     start.Related = 1;
     start.FgBg = 1;
     start.TraceOpt = 0;
