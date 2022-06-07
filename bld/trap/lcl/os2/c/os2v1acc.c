@@ -786,7 +786,7 @@ void DebugSession( void )
 
 trap_retval TRAP_CORE( Prog_load )( void )
 {
-    NEWSTARTDATA        start;
+    STARTDATA           start;
     char                *parms;
     char                *end;
     char                *prog;
@@ -816,22 +816,20 @@ trap_retval TRAP_CORE( Prog_load )( void )
         CanExecTask = FALSE;
         exe_type = EXE_IS_FULLSCREEN;
     }
-    start.Length = 50;
-    start.Related = 1;
-    start.FgBg = !Remote;
-    start.TraceOpt = 1;
     strcpy( appname, TRP_The_WATCOM_Debugger );
     strcat( appname, ": " );
     strcat( appname, exe_name );
+
+    start.Length = offsetof( STARTDATA, IconFile );
+    start.Related = 1;
+    start.FgBg = !Remote;
+    start.TraceOpt = 1;
     start.PgmTitle = appname;
     start.PgmName = UtilBuff;
     start.PgmInputs = (PBYTE)parms;
     start.TermQ = 0;
     start.Environment = NULL;
     start.InheritOpt = 1;
-    start.IconFile = NULL;
-    start.PgmHandle = 0;
-    start.PgmControl = 0;
     if( exe_type == EXE_IS_PM ) {
         start.SessionType = SSF_TYPE_PM;
     } else {
