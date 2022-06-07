@@ -38,33 +38,6 @@ typedef enum { USER_SCREEN, DEBUG_SCREEN } scrtype;
 
 #ifdef _M_I86
 
-/*
- * from BSEDOS16.H, OS/2 2.0
- */
-typedef struct _NEWSTARTDATA {  /* stdata */
-    USHORT  Length;
-    USHORT  Related;
-    USHORT  FgBg;
-    USHORT  TraceOpt;
-    PSZ     PgmTitle;
-    PSZ     PgmName;
-    PBYTE   PgmInputs;
-    PBYTE   TermQ;
-    PBYTE   Environment;
-    USHORT  InheritOpt;
-    USHORT  SessionType;
-    PSZ     IconFile;
-    ULONG   PgmHandle;
-    USHORT  PgmControl;
-    USHORT  InitXPos;
-    USHORT  InitYPos;
-    USHORT  InitXSize;
-    USHORT  InitYSize;
-    USHORT  Reserved;
-    PSZ     ObjectBuffer;
-    ULONG   ObjectBuffLen;
-} NEWSTARTDATA;
-
 /* Global Information Segment */
 
 typedef struct __GINFOSEG {      /* gis */
