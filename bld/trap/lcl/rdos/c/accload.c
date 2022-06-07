@@ -43,6 +43,24 @@
 #include "pathgrp2.h"
 
 
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+{
+    char    ch;
+    char    *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\0';
+    return( dst - start );
+}
+
 /*
  * AccLoadProg - create a new process for debugging
  */
@@ -58,8 +76,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char            argstr[256];
     char            *src;
     char            *dst;
-    int             len;
-    char            ch;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -80,23 +96,15 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ret->mod_handle = 0;
     ret->flags = 0;
 
-    dst = argstr;
     src = parm;
-    while( *src != 0 ) {
-        ++src;
-    }
-    src++;
-
+    while( *src++ != 0 )
+        {}
+    
     // parm layout
     // <--parameters-->0<--program_name-->0<--arguments-->0
     //
-    for( len = GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) - 1; len > 0; --len ) {
-        ch = *src;
-        *dst = ch;
-        ++dst;
-        ++src;
-    }
-    *dst = 0;
+    dst = argstr;
+    MergeArgvArray( src, dst, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
 
     if( access( name, 0 ) == 0 ) {
         obj = (struct TDebug *)malloc( sizeof( struct TDebug ) );
