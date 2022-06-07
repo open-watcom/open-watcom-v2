@@ -490,7 +490,7 @@ void ProcCmd( void )
     ProcSysOptInit();
     DUIScreenOptInit();
 
-    have_env = DUIEnvLkup( EXENAME, buff, sizeof( buff ) );
+    have_env = DUIEnvLkup( WDENVNAME, buff, sizeof( buff ) );
     for( pass = 1; pass <= 2; ++pass ) {
         if( have_env ) {
             GetArg = &GetEnvArg;
