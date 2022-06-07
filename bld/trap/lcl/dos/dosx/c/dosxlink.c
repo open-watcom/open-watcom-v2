@@ -53,6 +53,7 @@
     #include "tinyio.h"
     #include "trapdbg.h"
     #include "dbgpsp.h"
+    #include "dosfile.h"
   #if defined(PHARLAP)
     #include "exedos.h"
     #include "exeos2.h"
@@ -273,14 +274,6 @@ void __far BackFromProtMode( void )
         longjmp( RealModeState, 0 );
     }
     SetPSP( OldPSP );
-}
-
-static char *StrCopyDst( const char __far *src, char *dst )
-{
-    while( (*dst = *src++) != '\0' ) {
-        dst++;
-    }
-    return( dst );
 }
 
 static char *doSearchPath( const char __far *env, const char *file, char *buff, char **pendname )

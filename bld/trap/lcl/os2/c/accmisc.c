@@ -69,7 +69,15 @@ __GINFOSEG      __far *GblInfo;
 
 static const USHORT     local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
-static const char *StrCopySrc( const char *src, char *dst )
+char *StrCopyDst( const char *src, char *dst )
+{
+    while( (*dst = *src++) != '\0' ) {
+        dst++;
+    }
+    return( dst );
+}
+
+const char *StrCopySrc( const char *src, char *dst )
 {
     while( (*dst++ = *src) != '\0' ) {
         src++;

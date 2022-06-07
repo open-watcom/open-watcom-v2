@@ -74,7 +74,7 @@ char *StrCopyDst( const char *src, char *dst )
     return( dst );
 }
 
-static const char *StrCopySrc( const char *src, char *dst )
+const char *StrCopySrc( const char *src, char *dst )
 {
     while( (*dst++ = *src) != '\0' ) {
         src++;

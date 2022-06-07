@@ -96,6 +96,7 @@ typedef struct __LINFOSEG {      /* lis */
 #endif
 
 char            *StrCopyDst( const char *, char * );
+const char      *StrCopySrc( const char *, char * );
 long            OpenFile( char *, USHORT, int );
 void            RestoreScreen( void );
 unsigned long   FindFilePath( dig_filetype file_type, const char *, char * );

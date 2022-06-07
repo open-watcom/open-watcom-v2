@@ -50,7 +50,7 @@ extern tiny_ret_t   __near Fork( const char __far *, size_t );
 
 static const seek_info  local_seek_method[] = { TIO_SEEK_SET, TIO_SEEK_CUR, TIO_SEEK_END };
 
-static char *StrCopyDst( const char *src, char *dst )
+char *StrCopyDst( const char *src, char *dst )
 {
     while( (*dst = *src++) != '\0' ) {
         ++dst;
@@ -58,7 +58,7 @@ static char *StrCopyDst( const char *src, char *dst )
     return( dst );
 }
 
-static const char *StrCopySrc( const char *src, char *dst )
+const char *StrCopySrc( const char *src, char *dst )
 {
     while( (*dst++ = *src) != '\0' ) {
         src++;
