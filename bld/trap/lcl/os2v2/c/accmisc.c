@@ -733,22 +733,18 @@ char *AddDriveAndPath( char *exe_name, char *buff )
     return( StrCopyDst( src, dst ) + 1 );
 }
 
-void MergeArgvArray( char *argv, char *dst, unsigned len )
+void MergeArgvArray( const char *src, char *dst, size_t len )
 {
     char    ch;
-    bool    have_extra;
 
-    have_extra = FALSE;
-    for( ; len-- > 0; ) {
-        ch = *argv;
-        if( ch == '\0' )
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
             ch = ' ';
-        *dst = *argv;
-        ++dst;
-        ++argv;
-        have_extra = TRUE;
+        }
+        *dst++ = ch;
     }
-    if( have_extra )
-        --dst;
     *dst = '\0';
 }
