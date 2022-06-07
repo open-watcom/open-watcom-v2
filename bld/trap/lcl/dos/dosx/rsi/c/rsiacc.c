@@ -503,10 +503,28 @@ static void GetObjectInfo( char *name )
     close( handle );
 }
 
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+/********************************************************************/
+{
+    char    ch;
+    char    *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\0';
+    return( dst - start );
+}
+
 trap_retval TRAP_CORE( Prog_load )( void )
 {
     char            *src;
-    char            *dst;
     char            *name;
     char            ch;
     prog_load_ret   *ret;
@@ -514,23 +532,14 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
     _DBG_Writeln( "AccLoadProg" );
     AtEnd = false;
-    dst = UtilBuff;
     src = name = GetInPtr( sizeof( prog_load_req ) );
     ret = GetOutPtr( 0 );
-    while( *src++ != '\0' ) {};
-    len = GetTotalSizeIn() - (src - name) - sizeof( prog_load_req );
+    while( *src++ != '\0' )
+        {}
+    len = GetTotalSizeIn() - sizeof( prog_load_req ) - (src - name);
     if( len > 126 )
         len = 126;
-    for( ; len > 0; --len ) {
-        ch = *src++;
-        if( ch == '\0' ) {
-            if( len == 1 )
-                break;
-            ch = ' ';
-        }
-        *dst++ = ch;
-    }
-    *dst = '\0';
+    MergeArgvArray( src, UtilBuff, len );
     _DBG_Writeln( "about to debugload" );
     _DBG_Write( "Name : " );
     _DBG_Writeln( name );

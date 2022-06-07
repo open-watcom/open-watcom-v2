@@ -1075,39 +1075,36 @@ static char *LoadName;
 static unsigned LoadLen;
 static prog_load_ret *LoadRet;
 
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+{
+    char    ch;
+    char    *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\0';
+    return( dst - start );
+}
+
 static void LoadHelper( void )
 {
     int         err;
     int         handle;
-    char        *src, *dst;
     char        nlm_name[256];
-    char        ch;
-    unsigned    len;
 
     Enable();
     MSBHead = NULL;
     ThreadId = 0;
     MSB = NULL;
-    src = LoadName;
-    StringToNLMPath( src, nlm_name );
-    dst = CmdLine;
-    len = LoadLen;
-
-    for( ;; ) {
-        if( len == 0 )
-            break;
-        ch = *src;
-        if( ch == '\0' )
-            ch = ' ';
-        *dst = ch;
-        ++dst;
-        ++src;
-        --len;
-    }
-
-    if( dst > CmdLine && src[-1] == '\0' )
-        --dst;
-    *dst = '\0';
+    StringToNLMPath( LoadName, nlm_name );
+    MergeArgvArray( LoadName, CmdLine, LoadLen )
     LoadRet->err = 0;
     NLMState = NLM_PRELOADING;
     _DBG_EVENT(( "*LoadHelper: NLMState = NLM_PRELOADING\r\n" ));

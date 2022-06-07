@@ -279,16 +279,35 @@ static char * TrimName( char * name )
     return name;
 }
 
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+{
+    char    ch;
+    char    *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\0';
+    return( dst - start );
+}
+
 trap_retval TRAP_CORE( Prog_load )( void )
 /****************************************/
 {
-    prog_load_ret *     ret;
-    prog_load_req *     acc;
-    char *              parm;
-    char *              clname;
+    prog_load_ret       *ret;
+    prog_load_req       *acc;
+    char                *parm;
+    char                *clname;
     unsigned            len;
-    char                buff[_MAX_PATH*2];
-    char                *dst,*src,ch;
+    char                buff[_MAX_PATH * 2];
+    char                *dst;
+    char                *src;
     char                *name;
 
     ret = GetOutPtr( 0 );
@@ -297,26 +316,11 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ret->err = ERR_MSJ_CANT_LOAD;
     if( parm == NULL )
         return sizeof( *ret );
-    strcpy( buff, parm );
-    dst = &buff[strlen(buff)];
+    dst = StrCopyDst( parm, buff ) + 1;
     src = parm;
-    while( *src != 0 ) {
-        ++src;
-    }
-    len = &parm[ GetTotalSizeIn() - sizeof( *acc ) ] - src;
-    for( ;; ) {
-        if( len == 0 )
-            break;
-        ch = *src;
-        if( ch == 0 ) {
-            ch = ' ';
-        }
-        *dst = ch;
-        ++dst;
-        ++src;
-        --len;
-    }
-    *dst = 0;
+    while( *src++ != 0 )
+        {}
+    MergeArgvArray( src, dst, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) )
     name = buff;
     len = strlen(name);
     name = strtok( name, "@" );

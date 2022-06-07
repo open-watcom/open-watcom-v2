@@ -1068,9 +1068,8 @@ static unsigned StartProcess( const char *exe_name, char *parms )
 trap_retval TRAP_CORE( Prog_load )( void )
 {
     char            *parms;
-    char            *end;
     char            *src;
-    char            *prog;
+    char            *name;
     char            *endsrc;
     char            exe_name[CCHMAXPATH];
     ULONG           startLinear;
@@ -1083,7 +1082,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     AtEnd      = FALSE;
     TaskFS     = 0;
     attach_pid = -1;
-    src = prog = GetInPtr( sizeof( prog_load_req ) );
+    src = name = GetInPtr( sizeof( prog_load_req ) );
 
     // See if a PID was specified; if so, we will be attaching to
     // an existing process, not loading a new one. The PID may
@@ -1101,23 +1100,22 @@ trap_retval TRAP_CORE( Prog_load )( void )
             }
             src++;
         }
-        if( *src == 0 && src != prog ) {
-            attach_pid = atoi( prog );
+        if( *src == 0 && src != name ) {
+            attach_pid = atoi( name );
         }
     }
 
     /* If PID was not specified, start the debuggee process */
     if( attach_pid == -1 ) {
         isAttached = FALSE;
-        if( FindFilePath( DIG_FILETYPE_EXE, prog, exe_name ) ) {
+        if( FindFilePath( DIG_FILETYPE_EXE, name, exe_name ) ) {
             exe_name[0] = '\0';
         }
-        parms = AddDriveAndPath( exe_name, UtilBuff );
-        while( *prog != '\0' )
-            ++prog;
-        ++prog;
-        end = (char *)GetInPtr( GetTotalSizeIn() - 1 ) + 1;
-        MergeArgvArray( prog, parms, end - prog );
+        parms = AddDriveAndPath( exe_name, UtilBuff ) + 1;
+        src = name;
+        while( *src++ != '\0' )
+            {}
+        MergeArgvArray( src, parms, GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name ) );
         ret->err = StartProcess( exe_name, parms );
     } else {
         isAttached = TRUE;
@@ -1152,8 +1150,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             Buff.Cmd   = DBG_C_Connect;
             Buff.Value = DBG_L_386;
             CallDosDebug( &Buff );
-        }
-        else {
+        } else {
             ret->flags |= LD_FLAG_IS_STARTED;
             // TODO: figure out if 32-bit process
             Is32Bit = TRUE;

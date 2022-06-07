@@ -224,6 +224,24 @@ static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
 #endif
 #endif
 
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+{
+    char    ch;
+    char    *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\0';
+    return( dst - start );
+}
+
 /*
  * AccLoadProg - create a new process for debugging
  */
@@ -346,17 +364,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         // parm layout
         // <--parameters-->0<--program_name-->0<--arguments-->0
         //
-        len = GetTotalSizeIn() - sizeof( *acc ) - ( src - parm );
-        while( len-- > 0 ) {
-            ch = *src++;
-            if( ch == '\0' ) {
-                if( len == 0 )
-                    break;
-                ch = ' ';
-            }
-            *dst++ = ch;
-        }
-        *dst = '\0';
+        MergeArgvArray( src, dst, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) )
 
         cr_flags = DEBUG_ONLY_THIS_PROCESS;
 

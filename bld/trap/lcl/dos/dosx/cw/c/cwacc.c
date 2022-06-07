@@ -721,11 +721,29 @@ trap_retval TRAP_CORE( Prog_step )( void )
     return( ProgRun( true ) );
 }
 
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+/********************************************************************/
+{
+    char    ch;
+    char    *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\0';
+    return( dst - start );
+}
+
 trap_retval TRAP_CORE( Prog_load )( void )
 /****************************************/
 {
     char            *src;
-    char            *dst;
     char            *name;
     char            ch;
     prog_load_ret   *ret;
@@ -736,22 +754,12 @@ trap_retval TRAP_CORE( Prog_load )( void )
     _DBG1( "AccLoadProg\r\n" );
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
-    while( *src++ != '\0' ) {}
-    len = GetTotalSizeIn() - ( src - name ) - sizeof( prog_load_req );
+    while( *src++ != '\0' )
+        {}
+    len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
     if( len > 126 )
         len = 126;
-    dst = cmdl + 1;
-    for( ; len > 0; --len ) {
-        ch = *src++;
-        if( ch == '\0' ) {
-            if( len == 1 )
-                break;
-            ch = ' ';
-        }
-        *dst++ = ch;
-    }
-    *dst = '\0';
-    *cmdl = dst - cmdl - 1;
+    *cmdl = MergeArgvArray( src, cmdl + 1, len )
     rc = DebugLoad( name, cmdl );
     _DBG1( "back from debugload - %d\r\n", rc );
     ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_DISPLAY_DAMAGED | LD_FLAG_HAVE_RUNTIME_DLLS;
