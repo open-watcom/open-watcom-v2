@@ -236,7 +236,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char            exe_name[PATH_MAX];
     char            ch;
     BOOL            rc;
-    int             len;
+    size_t          len;
     MYCONTEXT       con;
     thread_info     *ti;
     HANDLE          handle;
@@ -333,30 +333,30 @@ trap_retval TRAP_CORE( Prog_load )( void )
          * get the parm list
          */
         if( strchr( CurrEXEName, ' ' ) != NULL ) {
-            strcpy( buff, "\"" );
-            strcat( buff, CurrEXEName );
-            strcat( buff, "\"" );
+            dst = StrCopyDst( "\"", buff );
+            dst = StrCopyDst( CurrEXEName, dst );
+            dst = StrCopyDst( "\"", dst );
         } else {
-            strcpy( buff, CurrEXEName );
+            dst = StrCopyDst( CurrEXEName, buff );
         }
-        dst = &buff[strlen( buff )];
+        *dst++ = ' ';
         src = parm;
-        while( *src != 0 ) {
-            ++src;
-        }
+        while( *src++ != '\0' )
+            {}
         // parm layout
         // <--parameters-->0<--program_name-->0<--arguments-->0
         //
-        for( len = GetTotalSizeIn() - sizeof( *acc ) - (src - parm) - 1; len > 0; --len ) {
-            ch = *src;
-            if( ch == 0 ) {
+        len = GetTotalSizeIn() - sizeof( *acc ) - ( src - parm );
+        while( len-- > 0 ) {
+            ch = *src++;
+            if( ch == '\0' ) {
+                if( len == 0 )
+                    break;
                 ch = ' ';
             }
-            *dst = ch;
-            ++dst;
-            ++src;
+            *dst++ = ch;
         }
-        *dst = 0;
+        *dst = '\0';
 
         cr_flags = DEBUG_ONLY_THIS_PROCESS;
 

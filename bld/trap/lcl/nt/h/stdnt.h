@@ -199,6 +199,8 @@ extern DWORD            ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD si
 extern BOOL             IsBigSel( WORD sel );
 extern unsigned long    FindFilePath( dig_filetype file_type, const char *pgm, char *buffer );
 extern void             AddMessagePrefix( char *buff, size_t len );
+extern char             *StrCopyDst( const char *src, char *dst );
+extern const char       *StrCopySrc( const char *src, char *dst );
 
 /* accrun.c */
 extern myconditions     DebugExecute( DWORD state, int *tsc, bool );
