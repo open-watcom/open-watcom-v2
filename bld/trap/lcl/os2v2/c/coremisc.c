@@ -43,6 +43,8 @@
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "coremisc.h"
+#include "os2trap.h"
+
 
 #define OPEN_CREATE  1
 #define OPEN_PRIVATE 2
@@ -51,22 +53,6 @@
 #define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
 
 static const ULONG      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
-
-static char *StrCopyDst( const char *src, char *dst )
-{
-    while( (*dst = *src++) != '\0' ) {
-        dst++;
-    }
-    return( dst );
-}
-
-static const char *StrCopySrc( const char *src, char *dst )
-{
-    while( (*dst++ = *src) != '\0' ) {
-        src++;
-    }
-    return( src );
-}
 
 trap_retval TRAP_FILE( get_config )( void )
 {
