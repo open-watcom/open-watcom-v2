@@ -184,13 +184,14 @@ bool InitCmd( void )
         }
     }
     // If the program name was quoted, strip off the quotes
-    if( *TaskCmd == '"' ) {
+    if( TaskCmd != end && *TaskCmd == '"' ) {
         memmove( TaskCmd, TaskCmd + 1, end - TaskCmd - 1 );
         ptr -= 2;
     }
-    // terminate program name and append all parameters
-    *ptr = NULLCHAR;
+    // copy all parameters, including debugger terminate character
     memmove( ptr + 1, parm, last - parm + 1 );
+    // terminate program name
+    *ptr = NULLCHAR;
     return( true );
 }
 
