@@ -222,6 +222,7 @@ char *hex( unsigned long num )
     #define hex( n )
 #endif
 
+
 trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
@@ -487,6 +488,24 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
     return( EXE_UNKNOWN );
 }
 
+static size_t MergeArgvArray( const char *src, char __far *dst, size_t len )
+{
+    char    ch;
+    char    __far *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\r';
+    return( dst - start );
+}
+
 trap_retval TRAP_CORE( Prog_load )( void )
 {
     addr_seg        psp;
@@ -494,12 +513,11 @@ trap_retval TRAP_CORE( Prog_load )( void )
     tiny_ret_t      rc;
     char            *parm;
     char            *name;
-    char            __far *dst;
     char            exe_name[128];
     char            ch;
     EXE_TYPE        exe;
     prog_load_ret   *ret;
-    unsigned        len;
+    size_t          len;
     union {
         tiny_ret_t        rc;
         tiny_file_stamp_t stamp;
@@ -520,27 +538,17 @@ trap_retval TRAP_CORE( Prog_load )( void )
     /* build a DOS command line parameter in our PSP command area */
     Flags &= ~F_BoundApp;
     psp = DbgPSP();
-    parm = name = GetInPtr( sizeof( prog_load_req ) );
+    name = GetInPtr( sizeof( prog_load_req ) );
     if( TINY_ERROR( FindFilePath( DIG_FILETYPE_EXE, name, exe_name ) ) ) {
         exe_name[0] = '\0';
     }
+    parm = name;
     while( *parm++ != '\0' )        // skip program name
         {}
-    len = GetTotalSizeIn() - ( parm - name ) - sizeof( prog_load_req );
+    len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( parm - name );
     if( len > 126 )
         len = 126;
-    dst = _MK_FP( psp, CMD_OFFSET + 1 );
-    for( ; len-- > 0; ) {
-        ch = *parm++;
-        if( ch == '\0' ) {
-            if( len == 0 )
-                break;
-            ch = ' ';
-        }
-        *dst++ = ch;
-    }
-    *dst = '\r';
-    *(byte __far *)_MK_FP( psp, CMD_OFFSET ) = _FP_OFF( dst ) - ( CMD_OFFSET + 1 );
+    *(byte __far *)_MK_FP( psp, CMD_OFFSET ) = MergeArgvArray( parm, _MK_FP( psp, CMD_OFFSET + 1 ), len );
     parmblock.envstring = 0;
     parmblock.commandln.segment = psp;
     parmblock.commandln.offset =  CMD_OFFSET;
