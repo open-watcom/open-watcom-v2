@@ -71,6 +71,24 @@ typedef struct
     DWORD       reserved;
 } lm_parms;
 
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+{
+    char    ch;
+    char    *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\0';
+    return( dst - start );
+}
+
 /*
  * AccLoadProg
  *
@@ -106,7 +124,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char                *parm;
     char                *src;
     char                *dst;
-    char                ch;
     unsigned            a,b;
     private_msg         pmsg;
     char                sig[sizeof(DWORD)];
@@ -183,27 +200,10 @@ trap_retval TRAP_CORE( Prog_load )( void )
         /*
          * get the parm list
          */
-
         src = parm;
-        while( *src != 0 )
-            ++src;
-        ++src;
-        end = GetInPtr( GetTotalSizeIn() - 1 );
-        dst = &buff[1];
-        for( ;; ) {
-            if( src > end )
-                break;
-            ch = *src;
-            if( ch == 0 )
-                ch = ' ';
-            *dst = ch;
-            ++dst;
-            ++src;
-        }
-        if( dst > &buff[1] )
-            --dst;
-        *dst = '\0';
-        buff[0] = dst - buff - 1;
+        while( *src++ != 0 )
+            {}
+        buff[0] = MergeArgvArray( src, buff + 1, GetInPtr( GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) )
 
         /*
          * get starting point in task
