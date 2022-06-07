@@ -992,8 +992,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
 {
     STARTDATA           start;
     char                *parms;
-    char                *end;
-    char                *prog;
+    char                *src;
+    char                *name;
     char                exe_name[255];
     char                appname[200];
     ULONG               startLinear;
@@ -1004,15 +1004,15 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ret = GetOutPtr( 0 );
     AtEnd = FALSE;
     TaskFS = 0;
-    prog = GetInPtr( sizeof( prog_load_req ) );
-    if( FindFilePath( DIG_FILETYPE_EXE, prog, exe_name ) != 0 ) {
+    name = GetInPtr( sizeof( prog_load_req ) );
+    if( FindFilePath( DIG_FILETYPE_EXE, name, exe_name ) != 0 ) {
         exe_name[0] = '\0';
     }
-    parms = AddDriveAndPath( exe_name, UtilBuff );
-    while( *prog != '\0' ) ++prog;
-    ++prog;
-    end = (char *)GetInPtr( GetTotalSizeIn() - 1 ) + 1;
-    MergeArgvArray( prog, parms, end - prog );
+    parms = AddDriveAndPath( exe_name, UtilBuff ) + 1;
+    src = name;
+    while( *src++ != '\0' )
+        {}
+    MergeArgvArray( src, parms, GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name ) );
 
     start.Length = offsetof( STARTDATA, IconFile ); /* default for the rest */
     start.Related = 1;
