@@ -614,12 +614,29 @@ static void CheckForPE( char *name )
     close( handle );
 }
 
+static size_t MergeArgvArray( const char *src, char *dst, size_t len )
+/********************************************************************/
+{
+    char    ch;
+    char    *start = dst;
+
+    while( len-- > 0 ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 0 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
+    }
+    *dst = '\r';
+    return( dst - start );
+}
 
 trap_retval TRAP_CORE( Prog_load )( void )
 {
     char            ch;
     char            *src;
-    char            *dst;
     char            *name;
     prog_load_ret   *ret;
     unsigned        len;
@@ -628,25 +645,14 @@ trap_retval TRAP_CORE( Prog_load )( void )
     memset( ObjOffReloc, 0, sizeof( ObjOffReloc ) );
     AtEnd = FALSE;
     ReportedAlias = FALSE;
-    dst = UtilBuff + 1;
-    src = name = GetInPtr( sizeof( prog_load_req ) );
     ret = GetOutPtr( 0 );
+    src = name = GetInPtr( sizeof( prog_load_req ) );
     while( *src++ != '\0' )
         {}
-    len = GetTotalSizeIn() - ( src - name ) - sizeof( prog_load_req );
+    len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
     if( len > 126 )
         len = 126;
-    for( ; len > 0; -- len ) {
-        ch = *src++;
-        if( ch == '\0' ) {
-            if( len == 1 )
-                break;
-            ch = ' ';
-        }
-        *dst++ = ch;
-    }
-    *dst = '\r';
-    UtilBuff[0] = dst - (UtilBuff + 1);
+    UtilBuff[0] = MergeArgvArray( src, UtilBuff + 1, len )
     ret->err = map_dbe( dbg_load( (unsigned char *)name, NULL, (unsigned char *)UtilBuff ) );
     if( ret->err == 0 ) {
         HavePSP = TRUE;
