@@ -30,5 +30,6 @@
 ****************************************************************************/
 
 
-
+extern char             *StrCopyDst( const char *src, char *dst );
+extern const char       *StrCopySrc( const char *src, char *dst );
 extern unsigned long    FindFilePath( dig_filetype file_type, const char *pgm, char *buffer );
