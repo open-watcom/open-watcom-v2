@@ -95,11 +95,11 @@ typedef struct __LINFOSEG {      /* lis */
 
 #endif
 
-char            *StrCopyDst( const char *, char * );
-const char      *StrCopySrc( const char *, char * );
+char            *StrCopyDst( const char *src, char *dst );
+const char      *StrCopySrc( const char *src, char *dst );
 long            OpenFile( char *, USHORT, int );
 void            RestoreScreen( void );
-unsigned long   FindFilePath( dig_filetype file_type, const char *, char * );
+unsigned long   FindFilePath( dig_filetype file_type, const char *src, char *dst );
 char            *AddDriveAndPath( const char *src, char *dst );
 void            MergeArgvArray( const char *src, char *dst, size_t len );
 long            TaskOpenFile( char *name, int mode, int flags );
