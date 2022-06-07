@@ -418,38 +418,14 @@ static void __far Sleeper( void )
     }
 }
 
-typedef struct _NEWSTARTDATA {  /* stdata */
-    USHORT  Length;
-    USHORT  Related;
-    USHORT  FgBg;
-    USHORT  TraceOpt;
-    PSZ     PgmTitle;
-    PSZ     PgmName;
-    PBYTE   PgmInputs;
-    PBYTE   TermQ;
-    PBYTE   Environment;
-    USHORT  InheritOpt;
-    USHORT  SessionType;
-    PSZ     IconFile;
-    ULONG   PgmHandle;
-    USHORT  PgmControl;
-    USHORT  InitXPos;
-    USHORT  InitYPos;
-    USHORT  InitXSize;
-    USHORT  InitYSize;
-    USHORT  Reserved;
-    PSZ     ObjectBuffer;
-    ULONG   ObjectBuffLen;
-} NEWSTARTDATA;
-
 static void LoadProg( char *cmd, char *cmd_args )
 {
     RESULTCODES         res;
-    NEWSTARTDATA        start;
+    STARTDATA           start;
     USHORT              SID;
 
     if( NewSession ) {
-        start.Length = 50;
+        start.Length = offsetof( STARTDATA, IconFile );
         start.Related = 1;
         start.FgBg = 0;
         start.TraceOpt = 1;
@@ -460,9 +436,6 @@ static void LoadProg( char *cmd, char *cmd_args )
         start.Environment = NULL;
         start.InheritOpt = 1;
         start.SessionType = SSF_TYPE_DEFAULT;
-        start.IconFile = NULL;
-        start.PgmHandle = 0;
-        start.PgmControl = 0;
         if( DosStartSession( (void __far *)&start, &SID, &Pid ) != 0 ) {
             internalErrorMsg( MSG_SAMPLE_3 );
         }
