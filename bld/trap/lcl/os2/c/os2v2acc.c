@@ -990,7 +990,7 @@ void DebugSession( void )
 
 trap_retval TRAP_CORE( Prog_load )( void )
 {
-    NEWSTARTDATA        start;
+    STARTDATA           start;
     char                *parms;
     char                *end;
     char                *prog;
@@ -1014,7 +1014,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     end = (char *)GetInPtr( GetTotalSizeIn() - 1 ) + 1;
     MergeArgvArray( prog, parms, end - prog );
 
-    start.Length = offsetof( NEWSTARTDATA, IconFile ); /* default for the rest */
+    start.Length = offsetof( STARTDATA, IconFile ); /* default for the rest */
     start.Related = 1;
     start.FgBg = !Remote;
     start.TraceOpt = 1;
@@ -1043,7 +1043,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         start.SessionType = SSF_TYPE_FULLSCREEN;
     }
     if( ret->err == 0 ) {
-        ret->err = DosStartSession( (void *) &start, &SID, &Pid );
+        ret->err = DosStartSession( (void *)&start, &SID, &Pid );
     }
     if( ret->err == ERROR_SMG_START_IN_BACKGROUND ) {
         ret->err = 0;
