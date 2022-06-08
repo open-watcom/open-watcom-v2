@@ -652,7 +652,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
     if( len > 126 )
         len = 126;
-    UtilBuff[0] = MergeArgvArray( src, UtilBuff + 1, len )
+    UtilBuff[0] = MergeArgvArray( src, UtilBuff + 1, len );
     ret->err = map_dbe( dbg_load( (unsigned char *)name, NULL, (unsigned char *)UtilBuff ) );
     if( ret->err == 0 ) {
         HavePSP = TRUE;
