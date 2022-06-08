@@ -1104,7 +1104,7 @@ static void LoadHelper( void )
     ThreadId = 0;
     MSB = NULL;
     StringToNLMPath( LoadName, nlm_name );
-    MergeArgvArray( LoadName, CmdLine, LoadLen )
+    MergeArgvArray( LoadName, CmdLine, LoadLen );
     LoadRet->err = 0;
     NLMState = NLM_PRELOADING;
     _DBG_EVENT(( "*LoadHelper: NLMState = NLM_PRELOADING\r\n" ));
