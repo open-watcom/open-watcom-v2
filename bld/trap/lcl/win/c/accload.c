@@ -123,15 +123,15 @@ trap_retval TRAP_CORE( Prog_load )( void )
     word_struct         cmdshow;
     char                *parm;
     char                *src;
-    char                *dst;
-    unsigned            a,b;
+    unsigned            a;
+    unsigned            b;
     private_msg         pmsg;
     char                sig[sizeof(DWORD)];
     HTASK               tid;
     DWORD               csip;
     prog_load_req       *acc;
     prog_load_ret       *ret;
-    char                *end;
+    char                ch;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -156,13 +156,13 @@ trap_retval TRAP_CORE( Prog_load )( void )
         src++;
         tid = (HTASK)strtol( src, NULL, 16 );
     } else {
-        while( *src != 0 ) {
+        while( *src != '\0' ) {
             if( !isdigit( *src ) ) {
                 break;
             }
             src++;
         }
-        if( *src == 0 && src != parm ) {
+        if( *src == '\0' && src != parm ) {
             tid = (HTASK)atoi( parm );
         }
     }
@@ -188,12 +188,12 @@ trap_retval TRAP_CORE( Prog_load )( void )
      */
     if( tid == 0 ) {
         if( TINY_ERROR( FindFilePath( DIG_FILETYPE_EXE, parm, exe_name ) ) ) {
-            exe_name[0] = 0;
+            exe_name[0] = '\0';
         } else {
             _splitpath2( exe_name, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
             a = tolower( pg.drive[0] ) - 'a' + 1;
             _dos_setdrive( a, &b );
-            pg.dir[strlen( pg.dir ) - 1] = 0;
+            pg.dir[strlen( pg.dir ) - 1] = '\0';
             chdir( pg.dir );
         }
 
@@ -203,7 +203,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         src = parm;
         while( *src++ != 0 )
             {}
-        buff[0] = MergeArgvArray( src, buff + 1, GetInPtr( GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
+        buff[0] = MergeArgvArray( src, buff + 1, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
 
         /*
          * get starting point in task

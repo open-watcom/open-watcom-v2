@@ -86,7 +86,6 @@ trap_retval TRAP_CORE( Read_mem )( void )
 
 trap_retval TRAP_CORE( Write_mem )( void )
 {
-    trap_elen           len;
     LPVOID              data;
     write_mem_req       *acc;
     write_mem_ret       *ret;
@@ -94,9 +93,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
     acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    ret->len = WriteMem( acc->mem_addr.segment, acc->mem_addr.offset, data, len );
+    ret->len = WriteMem( acc->mem_addr.segment, acc->mem_addr.offset,
+                            data, GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 

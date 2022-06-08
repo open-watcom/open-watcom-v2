@@ -698,18 +698,16 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     return( sizeof( *ret ) );
 }
 
-char *AddDriveAndPath( char *exe_name, char *buff )
+char *AddDriveAndPath( const char *src, char *buff )
 {
     ULONG       drive;
     ULONG       map;
-    char        *src;
     char        *dst;
     ULONG       len;
 
-    src = exe_name;
     dst = buff;
     DosQueryCurrentDisk( &drive, &map );
-    if( src[0] == '\0' || src[1] == '\0' || src[1] != ':' ) {
+    if( src[0] == '\0' || src[1] != ':' ) {
         *dst++ = drive - 1 + 'A';
         *dst++ = ':';
     } else {
@@ -730,7 +728,7 @@ char *AddDriveAndPath( char *exe_name, char *buff )
             *dst++ = '\\';
         }
     }
-    return( StrCopyDst( src, dst ) + 1 );
+    return( StrCopyDst( src, dst ) );
 }
 
 void MergeArgvArray( const char *src, char *dst, size_t len )

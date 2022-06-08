@@ -253,7 +253,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char            *endsrc;
     char            exe_name[PATH_MAX];
     BOOL            rc;
-    size_t          len;
     MYCONTEXT       con;
     thread_info     *ti;
     HANDLE          handle;
