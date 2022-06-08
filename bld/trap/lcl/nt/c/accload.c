@@ -364,7 +364,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         // parm layout
         // <--parameters-->0<--program_name-->0<--arguments-->0
         //
-        MergeArgvArray( src, dst, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) )
+        MergeArgvArray( src, dst, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
 
         cr_flags = DEBUG_ONLY_THIS_PROCESS;
 

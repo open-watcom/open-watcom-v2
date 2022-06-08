@@ -759,7 +759,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
     if( len > 126 )
         len = 126;
-    *cmdl = MergeArgvArray( src, cmdl + 1, len )
+    *cmdl = MergeArgvArray( src, cmdl + 1, len );
     rc = DebugLoad( name, cmdl );
     _DBG1( "back from debugload - %d\r\n", rc );
     ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_DISPLAY_DAMAGED | LD_FLAG_HAVE_RUNTIME_DLLS;
