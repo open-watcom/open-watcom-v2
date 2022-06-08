@@ -320,7 +320,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     src = parm;
     while( *src++ != 0 )
         {}
-    MergeArgvArray( src, dst, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) )
+    MergeArgvArray( src, dst, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
     name = buff;
     len = strlen(name);
     name = strtok( name, "@" );
