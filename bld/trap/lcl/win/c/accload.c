@@ -203,7 +203,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         src = parm;
         while( *src++ != 0 )
             {}
-        buff[0] = MergeArgvArray( src, buff + 1, GetInPtr( GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) )
+        buff[0] = MergeArgvArray( src, buff + 1, GetInPtr( GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
 
         /*
          * get starting point in task
