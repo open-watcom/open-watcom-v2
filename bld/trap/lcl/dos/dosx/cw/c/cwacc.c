@@ -745,7 +745,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
 {
     char            *src;
     char            *name;
-    char            ch;
     prog_load_ret   *ret;
     unsigned        len;
     int             rc;

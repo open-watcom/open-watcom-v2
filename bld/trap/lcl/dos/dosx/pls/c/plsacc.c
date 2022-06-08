@@ -635,7 +635,6 @@ static size_t MergeArgvArray( const char *src, char *dst, size_t len )
 
 trap_retval TRAP_CORE( Prog_load )( void )
 {
-    char            ch;
     char            *src;
     char            *name;
     prog_load_ret   *ret;

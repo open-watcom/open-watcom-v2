@@ -514,7 +514,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char            *parm;
     char            *name;
     char            exe_name[128];
-    char            ch;
     EXE_TYPE        exe;
     prog_load_ret   *ret;
     size_t          len;
