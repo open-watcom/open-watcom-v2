@@ -303,7 +303,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     src = name = GetInPtr( sizeof( prog_load_req ) );
     strcpy( buffer, src );
     endparm = LinkParms;
-    while( *endparm++ != '\0' ) ;
+    while( *endparm++ != '\0' )
+        {}
     strcpy( endparm, buffer );
     if( *name == '\0' ) {
         ret->err = ERROR_FILE_NOT_FOUND;
@@ -316,10 +317,12 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ret->err = ERR_JVM_SAVED_ERROR;
         return( sizeof( *ret ) );
     }
-    while( *src++ != '\0' ) ;
-    len = GetTotalSizeIn() - (src - name) - sizeof( prog_load_req );
+    while( *src++ != '\0' )
+        {}
+    len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - parm );
     dst = (char *)buffer;
-    while( *dst++ != '\0' ) ;
+    while( *dst++ != '\0' )
+        {}
     memcpy( dst, src, len );
     dst += len;
     StartPacket();

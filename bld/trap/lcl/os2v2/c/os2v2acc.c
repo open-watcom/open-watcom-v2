@@ -173,10 +173,10 @@ static BOOL SeekRead( HFILE handle, ULONG newpos, void *ptr, ULONG size )
     ULONG       read;
     ULONG       pos;
 
-    if( DosSetFilePtr(handle, newpos, 0, &pos) != 0 ) {
+    if( DosSetFilePtr( handle, newpos, 0, &pos ) != 0 ) {
         return( FALSE );
     }
-    if( DosRead(handle, ptr, size, &read) != 0 ) {
+    if( DosRead( handle, ptr, size, &read ) != 0 ) {
         return( FALSE );
     }
     if( read != size ) {
@@ -396,7 +396,7 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
             buff->SS  = fcr.ctx_SegSs;
             buff->EIP = fcr.ctx_RegEip;
             buff->EFlags = fcr.ctx_EFlags;
-            WriteRegs(buff);
+            WriteRegs( buff );
 
             if( ExpectingAFault || got_second_notification ) {
                 break;
@@ -468,7 +468,7 @@ void ReadLinear( void *data, ULONG lin, USHORT size )
     Buff.Addr = lin;
     Buff.Buffer = (ULONG)data;
     Buff.Len = size;
-    CallDosDebug(&Buff);
+    CallDosDebug( &Buff );
 }
 
 void WriteLinear( void *data, ULONG lin, USHORT size )
@@ -477,7 +477,7 @@ void WriteLinear( void *data, ULONG lin, USHORT size )
     Buff.Addr   = lin;
     Buff.Buffer = (ULONG)data;
     Buff.Len    = size;
-    CallDosDebug(&Buff);
+    CallDosDebug( &Buff );
 }
 
 USHORT WriteBuffer( void *src, USHORT segv, ULONG offv, USHORT size )
@@ -586,7 +586,7 @@ static USHORT ReadBuffer( void *dst, USHORT segv, ULONG offv, USHORT size )
             } else {
                 Buff.Cmd = DBG_C_ReadMem_D;
                 Buff.Addr = MakeItFlatNumberOne( segv, offv );
-                CallDosDebug(&Buff);
+                CallDosDebug( &Buff );
                 if( Buff.Cmd != DBG_N_Success ) {
                     break;
                 }
@@ -622,7 +622,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     ret->sys.osmajor = version[0];
     ret->sys.cpu     = X86CPUType();
     ret->sys.fpu     = ret->sys.cpu & X86_CPU_MASK;
-    WriteRegs(&Buff);
+    WriteRegs( &Buff );
 
     buff.Cmd    = DBG_C_ReadCoRegs;
     buff.Buffer = (ULONG)tmp;
@@ -683,7 +683,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
     Buff.MTE = ModHandles[acc->mod_handle];
     Buff.Cmd = DBG_C_NumToAddr;
     Buff.Value = seg;
-    CallDosDebug(&Buff);
+    CallDosDebug( &Buff );
     Buff.MTE = ModHandles[0];
     flags = ObjInfo[seg - 1].flags;
     if( flags & OBJECT_IS_BIG ) {
@@ -1094,7 +1094,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             attach_pid = -1;
 //        strcpy( buff, endsrc );
     } else {
-        while( *src ) {
+        while( *src != '\0' ) {
             if( !isdigit( *src ) ) {
                 break;
             }
@@ -1384,7 +1384,7 @@ static trap_conditions MapReturn( trap_conditions conditions )
     }
 }
 
-static bool setDebugRegs(void)
+static bool setDebugRegs( void )
 {
     int                 i;
 
@@ -1421,7 +1421,7 @@ static void watchSingleStep(void)
             ReadRegs( &save );
             ReadBuffer( (char *)&memval, WatchPoints[i].addr.segment,
                        WatchPoints[i].addr.offset, sizeof( memval ) );
-            WriteRegs(&save);
+            WriteRegs( &save );
             if( WatchPoints[i].value != memval ) {
                 Buff.Cmd = DBG_N_Watchpoint;
                 return;

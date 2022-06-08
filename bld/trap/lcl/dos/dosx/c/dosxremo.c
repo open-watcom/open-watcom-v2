@@ -324,7 +324,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         if( TINY_OK( rc ) ) {
             while( *src++ != '\0' )
                 {}
-            len = GetTotalSizeIn() - ( src - name ) - sizeof( prog_load_req );
+            len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
             dst = (char *)buffer;
             while( *dst++ != '\0' )
                 {}

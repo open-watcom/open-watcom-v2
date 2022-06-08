@@ -123,7 +123,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     ret->result = 0;
     if( TaskLoaded ) {
         acc = GetInPtr( 0 );
-        buffer = (unsigned_8 *) alloca( acc->len );
+        buffer = (unsigned_8 *)alloca( acc->len );
         if( buffer != NULL ) {
             sum = 0;
             actual = ReadMemory( &acc->in_addr, buffer, acc->len );
@@ -144,7 +144,7 @@ unsigned DoRead( int addr, char *buff, unsigned length )
     DWORD               bytes;
 
     ReadProcessMemory( GetCurrentProcess(), (LPVOID)addr, buff,
-                        length, (LPDWORD) &bytes );
+                        length, (LPDWORD)&bytes );
     return( bytes );
 }
 
@@ -182,7 +182,7 @@ unsigned DoWrite( int addr, char *buff, unsigned length )
     DWORD               bytes;
 
     WriteProcessMemory( GetCurrentProcess(), (LPVOID)addr, buff,
-                        length, (LPDWORD) &bytes );
+                        length, (LPDWORD)&bytes );
     return( bytes );
 }
 
@@ -198,8 +198,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
     ret->len = 0;
     if( TaskLoaded ) {
         acc = GetInPtr( 0 );
-        length = GetTotalSizeIn() - sizeof(*acc);
-        data = GetInPtr( sizeof(*acc) );
+        length = GetTotalSizeIn() - sizeof( *acc );
+        data = GetInPtr( sizeof( *acc ) );
         switch( acc->mem_addr.segment ) {
         case JVM_DIP_READMEM_SELECTOR:
             ret->len = DoRead( acc->mem_addr.offset, GetOutPtr( 0 ), length );
@@ -266,7 +266,7 @@ trap_retval TRAP_CORE( Prog_step )( void )
 static char * TrimName( char * name )
 /***********************************/
 {
-    char * endptr;
+    char    *endptr;
 
     while( isspace( *name ) ) {
         name++;
@@ -322,14 +322,14 @@ trap_retval TRAP_CORE( Prog_load )( void )
         {}
     MergeArgvArray( src, dst, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
     name = buff;
-    len = strlen(name);
+    len = strlen( name );
     name = strtok( name, "@" );
     clname = strtok( NULL, "@" );
     if( clname == NULL )
-        return sizeof(*ret);
+        return( sizeof( *ret ) );
     clname = TrimName( clname );
     if( *clname == '\0' )
-        return sizeof(*ret);
+        return( sizeof( *ret ) );
     TaskLoaded = StartProc( name, clname );
     InitMappings();
     if( TaskLoaded ) {
@@ -339,7 +339,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ret->task_id = 0;
         ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_HAVE_RUNTIME_DLLS;
     }
-    return sizeof( *ret );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Prog_kill )( void )

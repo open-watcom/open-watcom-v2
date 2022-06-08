@@ -123,7 +123,7 @@ typedef enum {
 /* user modifiable flags */
 #define USR_FLAGS (FLG_C | FLG_P | FLG_A | FLG_Z | FLG_S | FLG_I | FLG_D | FLG_O)
 
-extern void MoveBytes( short, short, short, short, short );
+extern void MoveBytes( short, short, short, short, size_t );
 /*  MoveBytes( fromseg, fromoff, toseg, tooff, len ); */
 #pragma aux MoveBytes = \
         "rep movsb" \
@@ -306,14 +306,14 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     unsigned_8          __far *ptr;
     unsigned long       sum = 0;
-    unsigned            len;
+    size_t              len;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ptr = _MK_FP( acc->in_addr.segment, acc->in_addr.offset );
-    for( len = acc->len; len != 0; --len ) {
+    for( len = acc->len; len > 0; --len ) {
         sum += *ptr++;
     }
     ret->result = sum;
@@ -321,12 +321,12 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 }
 
 
-static bool IsInterrupt( addr48_ptr addr, unsigned length )
+static bool IsInterrupt( addr48_ptr addr, size_t len )
 {
     dword   start, end;
 
     start = ((dword)addr.segment << 4) + addr.offset;
-    end = start + length;
+    end = start + len;
     return( start < 0x400 || end < 0x400 );
 }
 
@@ -336,7 +336,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
     bool            int_tbl;
     read_mem_req    *acc;
     void            *data;
-    trap_elen       len;
+    size_t          len;
 
     acc = GetInPtr( 0 );
     data = GetOutPtr( 0 );
@@ -361,7 +361,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
     bool            int_tbl;
     write_mem_req   *acc;
     write_mem_ret   *ret;
-    trap_elen       len;
+    size_t          len;
     void            *data;
 
     acc = GetInPtr( 0 );
@@ -394,13 +394,13 @@ trap_retval TRAP_CORE( Read_io )( void )
     acc = GetInPtr( 0 );
     data = GetOutPtr( 0 );
     if( acc->len == 1 ) {
-       *(byte __far *)data = In_b( acc->IO_offset );
+       *(byte *)data = In_b( acc->IO_offset );
        len = 1;
     } else if( acc->len == 2 ) {
-       *(word __far *)data = In_w( acc->IO_offset );
+       *(word *)data = In_w( acc->IO_offset );
        len = 2;
     } else if( Flags & F_Is386 ) {
-       *(dword __far *)data = In_d( acc->IO_offset );
+       *(dword *)data = In_d( acc->IO_offset );
        len = 4;
     } else {
        len = 0;
@@ -414,20 +414,20 @@ trap_retval TRAP_CORE( Write_io )( void )
     write_io_req        *acc;
     write_io_ret        *ret;
     void                *data;
-    trap_elen           len;
+    size_t              len;
 
     acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     ret = GetOutPtr( 0 );
     if( len == 1 ) {
-        Out_b( acc->IO_offset, *(byte __far *)data );
+        Out_b( acc->IO_offset, *(byte *)data );
         ret->len = 1;
     } else if( len == 2 ) {
-        Out_w( acc->IO_offset, *(word __far *)data );
+        Out_w( acc->IO_offset, *(word *)data );
         ret->len = 2;
     } else if( Flags & F_Is386 ) {
-        Out_d( acc->IO_offset, *(dword __far *)data );
+        Out_d( acc->IO_offset, *(dword *)data );
         ret->len = 4;
     } else {
         ret->len = 0;
