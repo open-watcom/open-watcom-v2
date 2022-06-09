@@ -997,11 +997,11 @@ trap_retval TRAP_CORE( Write_mem )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    len = GetTotalSizeIn() - sizeof(*acc);
+    len = GetTotalSizeIn() - sizeof( *acc );
 
     addr.offset = acc->mem_addr.offset;
     addr.segment = acc->mem_addr.segment;
-    ret->len = ReadWrite( WriteMemory, &addr, GetInPtr(sizeof(*acc)), len );
+    ret->len = ReadWrite( WriteMemory, &addr, GetInPtr( sizeof( *acc ) ), len );
     return( sizeof( *ret ) );
 }
 
@@ -1014,11 +1014,11 @@ trap_retval TRAP_CORE( Read_io )( void )
     acc = GetInPtr( 0 );
     data = GetOutPtr( 0 );
     if( acc->len == 1 ) {
-        *( (byte *)data ) = in_b( acc->IO_offset );
+        *(byte *)data = in_b( acc->IO_offset );
     } else if( acc->len == 2 ) {
-        *( (word *)data ) = in_w( acc->IO_offset );
+        *(word *)data = in_w( acc->IO_offset );
     } else {
-        *( (dword *)data ) = in_d( acc->IO_offset );
+        *(dword *)data = in_d( acc->IO_offset );
     }
     return( acc->len );
 }
@@ -1036,11 +1036,11 @@ trap_retval TRAP_CORE( Write_io )( void )
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( len == 1 ) {
-        out_b( acc->IO_offset, *( (byte *)data ) );
+        out_b( acc->IO_offset, *(byte *)data );
     } else if( len == 2 ) {
-        out_w( acc->IO_offset, *( (word *)data ) );
+        out_w( acc->IO_offset, *(word *)data );
     } else {
-        out_d( acc->IO_offset, *( (dword *)data ) );
+        out_d( acc->IO_offset, *(dword *)data );
     }
     ret->len = len;
     return( sizeof( *ret ) );
@@ -1063,7 +1063,7 @@ trap_retval TRAP_CORE( Write_regs )( void )
 {
     mad_registers       *mr;
 
-    mr = GetInPtr(sizeof(write_regs_req));
+    mr = GetInPtr( sizeof( write_regs_req ) );
     if( MSB != NULL ) {
         *(struct x86_cpu *)&MSB->cpu = mr->x86.cpu;
         *(struct x86_fpu *)&MSB->fpu = mr->x86.u.fpu;
@@ -1690,6 +1690,7 @@ trap_retval TRAP_THREAD( freeze )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
 
     m = LocateTid( acc->thread );
     if( m == NULL ) {
@@ -1697,7 +1698,6 @@ trap_retval TRAP_THREAD( freeze )( void )
     } else {
         _DBG_THREAD(( "freezing %8x\r\n", m ));
         m->frozen = TRUE;
-        ret->err = 0;
     }
     return( sizeof( *ret ) );
 }
@@ -1710,6 +1710,7 @@ trap_retval TRAP_THREAD( thaw )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
 
     m = LocateTid( acc->thread );
     if( m == NULL ) {
@@ -1717,7 +1718,6 @@ trap_retval TRAP_THREAD( thaw )( void )
     } else {
         _DBG_THREAD(( "thawing %8x\r\n", m ));
         m->frozen = FALSE;
-        ret->err = 0;
     }
     return( sizeof( *ret ) );
 }
@@ -1760,7 +1760,7 @@ trap_retval TRAP_CORE( Get_message_text )( void )
     char                        *err_txt;
 
     ret = GetOutPtr( 0 );
-    err_txt = GetOutPtr( sizeof(*ret) );
+    err_txt = GetOutPtr( sizeof( *ret ) );
     if( MSB->description != NULL ) {
         strcpy( err_txt, MSB->description );
     } else {
@@ -1874,8 +1874,8 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    char             *cmd;
-    char             *start;
+    const char          *cmd;
+    const char          *start;
     split_cmd_ret       *ret;
     unsigned            len;
 
@@ -1884,7 +1884,7 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
         CASE_SEPS
             ret->parm_start = 1;

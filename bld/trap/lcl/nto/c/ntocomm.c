@@ -49,45 +49,39 @@ char *StrCopyDst( const char *src, char *dst )
 #if 0
 // TODO: NIDs don't exist on Neutrino. There is a different mechanism
 // available to support distributed computing.
-char *CollectNid( char *ptr, unsigned len, nid_t *nidp )
+const char *CollectNid( const char *ptr, size_t len, nid_t *nidp )
 {
-    char        *start;
+    const char  *start;
     nid_t       nid;
     char        ch;
 
-    *nidp = 0;
-    start = ptr;
-    if( ptr[0] != '/' || ptr[1] != '/' ) {
-        return( ptr );
-    }
-    len -= 2;
-    ptr += 2;
     nid = 0;
-    // NYI: will need beefing up when NID's can be symbolic
-    for( ;; ) {
-        if( len == 0 )
-            break;
-        ch = *ptr;
-        if( ch < '0' || ch > '9' )
-            break;
-        nid = (nid * 10) + ( ch - '0' );
-        ++ptr;
-        --len;
+    if( ptr[0] == '/' && ptr[1] == '/' ) {
+        start = ptr;
+        len -= 2;
+        ptr += 2;
+        // NYI: will need beefing up when NID's can be symbolic
+        while( len > 0 ) {
+            ch = *ptr;
+            if( ch < '0' || ch > '9' )
+                break;
+            nid = ( nid * 10 ) + ( ch - '0' );
+            ++ptr;
+            --len;
+        }
+        // NYI: how do I check to see if NID is valid?
+        if( len > 0 ) {
+            switch( ptr[0] ) {
+            CASE_SEPS
+                break;
+            default:
+                *nidp = 0;
+                ptr = start;
+                break;
+            }
+        }
     }
     *nidp = nid;
-    // NYI: how do I check to see if NID is valid?
-    if( len == 0 ) {
-        return( ptr );
-    }
-    switch( ptr[0] ) {
-    case ' ':
-    case '\t':
-    case '\0':
-        break;
-    default:
-        *nidp = 0;
-        return( start );
-    }
     return( ptr );
 }
 #endif
@@ -125,10 +119,10 @@ unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char 
     }
 }
 
-unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
+size_t FindFilePath( dig_filetype file_type, const char *name, char *result )
 {
     struct stat tmp;
-    unsigned    len;
+    size_t      len;
 
     if( stat( (char *)name, &tmp ) == 0 ) {
         return( StrCopyDst( name, result ) - result );
@@ -137,10 +131,10 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
         return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
     } else {
         len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-        if( len != 0 )
+        if( len > 0 )
             return( len );
         len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-        if( len != 0 )
+        if( len > 0 )
             return( len );
         return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
     }
@@ -202,10 +196,10 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
     char                ch;
-    char                *cmd;
-    char                *start;
+    const char          *cmd;
+    const char          *start;
     split_cmd_ret       *ret;
-    unsigned            len;
+    size_t              len;
 //    nid_t               nid;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
@@ -215,12 +209,12 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     ret->parm_start = 0;
 //    cmd = CollectNid( cmd, len, &nid );
     len -= cmd - start;
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
         CASE_SEPS
             break;
         defaults:
-            while( len != 0 ) {
+            while( len > 0 ) {
                 switch( *cmd ) {
                 CASE_SEPS
                     ret->parm_start = 1;

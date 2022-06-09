@@ -746,12 +746,13 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char            *src;
     char            *name;
     prog_load_ret   *ret;
-    unsigned        len;
+    size_t          len;
     int             rc;
     char            cmdl[128];
 
     _DBG1( "AccLoadProg\r\n" );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     src = name = GetInPtr( sizeof( prog_load_req ) );
     while( *src++ != '\0' )
         {}
@@ -764,7 +765,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_DISPLAY_DAMAGED | LD_FLAG_HAVE_RUNTIME_DLLS;
     ret->mod_handle = 0;
     if( rc == 0 ) {
-        ret->err = 0;
         ret->task_id = DebugPSP;
         AddModsInfo( name, (epsp_t *)GetModuleHandle( DebugPSP ) );
     } else {
@@ -792,9 +792,11 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     _DBG( "AccKillProg\r\n" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     RedirectFini();
     FreeModsInfo();
-    ret->err = ( RelSel( acc->task_id ) ) ? ERR_INVALID_HANDLE : 0;
+    if( RelSel( acc->task_id ) )
+        ret->err = ERR_INVALID_HANDLE;
     return( sizeof( *ret ) );
 }
 
@@ -810,6 +812,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( acc->size == 1 || acc->size == 2 || acc->size == 4 ) {
         for( i = 0; i < 4; ++i ) {
             if( !HBRKTable[i].inuse ) {
@@ -818,7 +821,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
                 HBRKTable[i].address = GetLinAddr( acc->watch_addr );
                 HBRKTable[i].size = acc->size;
                 HBRKTable[i].type = DPMI_WATCH_WRITE;
-                ret->err = 0;
                 ret->multiplier = 10 | USING_DEBUG_REG;
                 return( sizeof( *ret ) );
             }
@@ -837,7 +839,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
                 }
                 WatchPoints[i].check = sum;
                 ++WatchCount;
-                ret->err = 0;
                 ret->multiplier = 5000;
                 return( sizeof( *ret ) );
             }

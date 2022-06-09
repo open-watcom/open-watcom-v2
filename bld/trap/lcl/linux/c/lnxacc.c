@@ -203,7 +203,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     pid_t                       save_pgrp;
     prog_load_req               *acc;
     prog_load_ret               *ret;
-    trap_elen                   len;
+    size_t                      len;
     int                         status;
     char                        *p;
 
@@ -233,7 +233,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             }
         }
     } else {
-        while( --len, *parms++ != '\0' ) 
+        while( --len, *parms++ != '\0' )
             {}
         i = SplitParms( parms, NULL, len ) + 2;
         args = alloca( i * sizeof( *args ) + len );
@@ -636,6 +636,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
     pidd = 0;
     if( acc->file_type == DIG_FILETYPE_EXE ) {
@@ -648,8 +649,6 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     }
     if( len == 0 ) {
         ret->err = ENOENT;      /* File not found */
-    } else {
-        ret->err = 0;
     }
     CONV_LE_32( ret->err );
     return( sizeof( *ret ) + len + 1 );

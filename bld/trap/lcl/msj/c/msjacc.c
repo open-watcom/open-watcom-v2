@@ -113,9 +113,9 @@ trap_retval TRAP_CORE( Map_addr )( void )
 trap_retval TRAP_CORE( Checksum_mem )( void )
 /*******************************************/
 {
-    unsigned_8 *        buffer;
-    checksum_mem_req *  acc;
-    checksum_mem_ret *  ret;
+    unsigned_8          *buffer;
+    checksum_mem_req    *acc;
+    checksum_mem_ret    *ret;
     unsigned            actual;
     unsigned            sum;
 
@@ -236,7 +236,6 @@ static unsigned runProg( bool single_step )
 
     ret = GetOutPtr( 0 );
     if( !TaskLoaded ) {
-        ret = GetOutPtr( 0 );
         ret->conditions = COND_TERMINATE;
         return sizeof( *ret );
     }
@@ -304,7 +303,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     prog_load_req       *acc;
     char                *parm;
     char                *clname;
-    unsigned            len;
+    size_t              len;
     char                buff[_MAX_PATH * 2];
     char                *dst;
     char                *src;
@@ -523,8 +522,8 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
 trap_retval TRAP_CORE( Split_cmd )( void )
 /****************************************/
 {
-    char                *cmd;
-    char                *start;
+    const char          *cmd;
+    const char          *start;
     split_cmd_ret       *ret;
     unsigned            len;
 
@@ -533,7 +532,7 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     ret->parm_start = 0;
     start = cmd;
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
         CASE_SEPS
             ret->parm_start = 1;

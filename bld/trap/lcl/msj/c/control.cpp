@@ -221,10 +221,12 @@ extern void TraceOff( void )
 
 #define CLASSNAME_SUFFIX        " [Class]"
 
-extern HANDLE FakeOpen( char *name )
-/*******************************/
+HANDLE FakeOpen( char *name )
+/***************************/
 {
-    int len = strlen( name );
+    size_t  len;
+
+    len = strlen( name );
     if( len > sizeof( CLASSNAME_SUFFIX ) - 1 ) {
         if( strcmp( name + len - sizeof( CLASSNAME_SUFFIX ) + 1, CLASSNAME_SUFFIX ) == 0 ) {
             return( FakeHandle );
@@ -235,18 +237,19 @@ extern HANDLE FakeOpen( char *name )
 
 static int LastNameGiven;
 
-extern bool FakeRead( HANDLE h, void* buff, unsigned len, unsigned*amtRead )
-/**************************************************************************/
+bool FakeRead( HANDLE h, void* buff, unsigned len, DWORD *amtRead )
+/*****************************************************************/
 {
     char *data;
+
     if( h != FakeHandle )
         return( FALSE );
     data = "JAVAxxxx";
-    *(int*)(data+4)=LastNameGiven;
+    *(int *)( data + 4 ) = LastNameGiven;
     if( len > 8 )
         len = 8;
     memcpy( buff, data, len );
-    if( amtRead )
+    if( amtRead != NULL )
         *amtRead = len;
     return( TRUE );
 }

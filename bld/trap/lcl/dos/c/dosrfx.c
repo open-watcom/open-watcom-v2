@@ -50,8 +50,10 @@ trap_retval TRAP_RFX( rename )( void )
     old_name = GetInPtr( sizeof( rfx_rename_req ) );
     new_name = GetInPtr( sizeof( rfx_rename_req ) + strlen( old_name ) + 1 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinyRename( old_name, new_name );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -61,8 +63,10 @@ trap_retval TRAP_RFX( mkdir )( void )
     rfx_mkdir_ret   *ret;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinyMakeDir( (char *)GetInPtr( sizeof( rfx_mkdir_req ) ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -72,8 +76,10 @@ trap_retval TRAP_RFX( rmdir )( void )
     rfx_mkdir_ret   *ret;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinyRemoveDir( (char *)GetInPtr( sizeof( rfx_rmdir_req ) ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -84,8 +90,8 @@ trap_retval TRAP_RFX( setdrive )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    TinySetCurrDrive( acc->drive );
     ret->err = 0;
+    TinySetCurrDrive( acc->drive );
     return( sizeof( *ret ) );
 }
 
@@ -104,8 +110,10 @@ trap_retval TRAP_RFX( setcwd )( void )
     rfx_setcwd_ret      *ret;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinyChangeDir( GetInPtr( sizeof( rfx_setcwd_req ) ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -124,6 +132,7 @@ trap_retval TRAP_RFX( getcwd )( void )
     if( TINY_ERROR( rc ) ) {
         ret->err = TINY_INFO( rc );
         *cwd = '\0';
+        return( sizeof( *ret ) + 1 );
     }
     return( sizeof( *ret ) + 1 + strlen( cwd ) );
 }
@@ -136,8 +145,10 @@ trap_retval TRAP_RFX( setfileattr )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinySetFileAttr( GetInPtr( sizeof( *acc ) ), acc->attribute );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -275,9 +286,11 @@ trap_retval TRAP_RFX( findfirst )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     TinySetDTA( GetOutPtr( sizeof( *ret ) ) );
     rc = TinyFindFirst( (char *)GetInPtr( sizeof( *acc ) ), acc->attrib );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) + sizeof( tiny_find_t ) );
 }
 
@@ -290,12 +303,12 @@ trap_retval TRAP_RFX( findnext )( void )
     info = GetInPtr( sizeof( rfx_findnext_req ) );
     TinyFarSetDTA( info );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinyFindNext();
     if( TINY_ERROR( rc ) ) {
         ret->err = TINY_INFO( rc );
     } else {
         memcpy( GetOutPtr( sizeof( *ret ) ), info, sizeof( tiny_find_t ) );
-        ret->err = 0;
     }
     return( sizeof( *ret ) + sizeof( tiny_find_t ) );
 }
@@ -321,8 +334,8 @@ trap_retval TRAP_RFX( nametocanonical )( void )
 
     name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
-    ret->err = 1;
     while( *name == ' ' ) {
         name++;
     }

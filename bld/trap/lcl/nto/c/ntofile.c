@@ -40,6 +40,9 @@
 #include "ntocomm.h"
 
 
+#define TRPH2LH(th)     (th)->handle.u._32[0]
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=lh;(th)->handle.u._32[1]=0
+
 static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
 trap_retval TRAP_FILE( get_config )( void )
@@ -67,6 +70,7 @@ trap_retval TRAP_FILE( open )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     name = GetInPtr( sizeof( *acc ) );
     mode = O_RDONLY;
     if( acc->mode & DIG_OPEN_WRITE ) {
@@ -84,16 +88,14 @@ trap_retval TRAP_FILE( open )( void )
     }
     dbg_print(( "open: name '%s', mode %d/%d\n", name, acc->mode, mode ));
     handle = open( name, mode, access );
-    if( handle != -1 ) {
-        fcntl( handle, F_SETFD, FD_CLOEXEC );
-        errno = 0;
-        ret->err = 0;
-        ret->handle = handle;
-    } else {
+    if( handle == -1 ) {
         ret->err = errno;
-        ret->handle = 0;
+        handle = 0;
+    } else {
+        fcntl( handle, F_SETFD, FD_CLOEXEC );
     }
-    dbg_print(( "opened handle %ld\n", ret->handle ));
+    LH2TRPH( ret, handle );
+    dbg_print(( "opened handle %ld\n", TRPH2LH( ret ) ));
     CONV_LE_32( ret->err );
     CONV_LE_64( ret->handle );
     return( sizeof( *ret ) );
@@ -107,13 +109,11 @@ trap_retval TRAP_FILE( seek )( void )
     acc = GetInPtr( 0 );
     CONV_LE_64( acc->handle );
     CONV_LE_32( acc->pos );
-    dbg_print(( "seek: handle %ld, position %ld, mode %d\n", acc->handle, acc->pos, acc->mode ));
+    dbg_print(( "seek: handle %ld, position %ld, mode %d\n", TRPH2LH( acc ), acc->pos, acc->mode ));
     ret = GetOutPtr( 0 );
-    ret->pos = lseek( acc->handle, acc->pos, local_seek_method[acc->mode] );
-    if( ret->pos != ((off_t)-1) ) {
-        errno = 0;
-        ret->err = 0;
-    } else {
+    ret->err = 0;
+    ret->pos = lseek( TRPH2LH( acc ), acc->pos, local_seek_method[acc->mode] );
+    if( ret->pos == ((off_t)-1) ) {
         ret->err = errno;
     }
     dbg_print(( "seeked to position %ld\n", ret->pos ));
@@ -124,10 +124,10 @@ trap_retval TRAP_FILE( seek )( void )
 
 trap_retval TRAP_FILE( read )( void )
 {
-    unsigned            total;
-    unsigned            len;
+    size_t              total;
+    size_t              len;
     char                *ptr;
-    size_t              curr;
+    size_t              size;
     ssize_t             rv;
     file_read_req       *acc;
     file_read_ret       *ret;
@@ -135,53 +135,45 @@ trap_retval TRAP_FILE( read )( void )
     acc = GetInPtr( 0 );
     CONV_LE_64( acc->handle );
     CONV_LE_16( acc->len );
-    dbg_print(( "read: handle %ld, %d bytes\n", acc->handle, acc->len ));
+    dbg_print(( "read: handle %ld, %d bytes\n", TRPH2LH( acc ), acc->len ));
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     ptr = GetOutPtr( sizeof( *ret ) );
     len = acc->len;
     total = 0;
-    for( ;; ) {
-        if( len == 0 )
-            break;
-        curr = len;
-        if( curr > INT_MAX )
-            curr = INT_MAX;
-        rv = read( acc->handle, ptr, curr );
-        if( rv < 0 ) {
-            total = -1;
+    size = INT_MAX;
+    while( len > 0 ) {
+        if( size > len )
+            size = len;
+        rv = read( TRPH2LH( acc ), ptr, size );
+        if( rv == -1 ) {
+            ret->err = errno;
+            total = 0;
             break;
         }
         total += rv;
-        if( rv != curr )
+        if( rv != size )
             break;
         ptr += rv;
         len -= rv;
     }
-    if( total == -1 ) {
-        total = 0;
-    } else {
-        errno = 0;
-    }
-    ret->err = errno;
-    dbg_print(( "read %d bytes\n", total ));
+    dbg_print(( "read %d bytes\n", (int)total ));
     CONV_LE_32( ret->err );
     return( sizeof( *ret ) + total );
 }
 
-static unsigned DoWrite( int hdl, unsigned_8 *ptr, unsigned len )
+static size_t DoWrite( int hdl, unsigned_8 *ptr, size_t len )
 {
-    unsigned    total;
-    unsigned    curr;
-    int         rv;
+    size_t      total;
+    size_t      size;
+    ssize_t     rv;
 
     total = 0;
-    for( ;; ) {
-        if( len == 0 )
-            break;
-        curr = len;
-        if( curr > INT_MAX )
-            curr = INT_MAX;
-        rv = write( hdl, ptr, curr );
+    size = INT_MAX;
+    for( len > 0 ) {
+        if( size > len )
+            size = len;
+        rv = write( hdl, ptr, size );
         if( rv <= 0 ) {
             total = -1;
             break;
@@ -190,11 +182,6 @@ static unsigned DoWrite( int hdl, unsigned_8 *ptr, unsigned len )
         ptr += rv;
         len -= rv;
     }
-    if( total == -1 ) {
-        total = 0;
-    } else {
-        errno = 0;
-    }
     return( total );
 }
 
@@ -202,13 +189,18 @@ trap_retval TRAP_FILE( write )( void )
 {
     file_write_req      *acc;
     file_write_ret      *ret;
+    size_t              len;
 
     acc = GetInPtr( 0 );
     CONV_LE_64( acc->handle );
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( acc->handle, GetInPtr( sizeof( *acc ) ),
+    ret->err = 0;
+    len = DoWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ),
                         GetTotalSizeIn() - sizeof( *acc ) );
-    ret->err = errno;
+    if( len == -1 ) {
+        ret->err = errno;
+    }
+    ret->len = len;
     CONV_LE_32( ret->err );
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );
@@ -216,12 +208,17 @@ trap_retval TRAP_FILE( write )( void )
 
 trap_retval TRAP_FILE( write_console )( void )
 {
-    file_write_console_ret      *ret;
+    file_write_console_ret  *ret;
+    size_t                  len;
 
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( 2, GetInPtr( sizeof( file_write_console_req ) ),
+    ret->err = 0;
+    len = DoWrite( 2, GetInPtr( sizeof( file_write_console_req ) ),
                         GetTotalSizeIn() - sizeof( file_write_console_req ) );
-    ret->err = errno;
+    if( len == -1 ) {
+        ret->err = errno;
+    }
+    ret->len = len;
     CONV_LE_32( ret->err );
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );
@@ -234,12 +231,10 @@ trap_retval TRAP_FILE( close )( void )
 
     acc = GetInPtr( 0 );
     CONV_LE_64( acc->handle );
-    dbg_print(( "close: handle %ld\n", acc->handle ));
+    dbg_print(( "close: handle %ld\n", TRPH2LH( acc ) ));
     ret = GetOutPtr( 0 );
-    if( close( acc->handle ) != -1 ) {
-        errno = 0;
-        ret->err = 0;
-    } else {
+    ret->err = 0;
+    if( close( TRPH2LH( acc ) ) == -1 ) {
         ret->err = errno;
     }
     CONV_LE_32( ret->err );
@@ -251,11 +246,9 @@ trap_retval TRAP_FILE( erase )( void )
     file_erase_ret      *ret;
 
     ret = GetOutPtr( 0 );
-    if( unlink( (char *)GetInPtr( sizeof( file_erase_req ) ) ) != 0 ) {
+    ret->err = 0;
+    if( unlink( (char *)GetInPtr( sizeof( file_erase_req ) ) ) ) {
         ret->err = errno;
-    } else {
-        errno = 0;
-        ret->err = 0;
     }
     CONV_LE_32( ret->err );
     return( sizeof( *ret ) );
@@ -269,7 +262,7 @@ trap_retval TRAP_FILE( run_cmd )( void )
     pid_t               pid;
     int                 status;
     file_run_cmd_ret    *ret;
-    int                 len;
+    size_t              len;
 
 
     shell = getenv( "SHELL" );
@@ -278,7 +271,7 @@ trap_retval TRAP_FILE( run_cmd )( void )
     ret = GetOutPtr( 0 );
     len = GetTotalSizeIn() - sizeof( file_run_cmd_req );
     argv[0] = shell;
-    if( len != 0 ) {
+    if( len > 0 ) {
         argv[1] = "-c";
         memcpy( buff, GetInPtr( sizeof( file_run_cmd_req ) ), len );
         buff[len] = '\0';

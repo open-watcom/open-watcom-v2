@@ -121,7 +121,7 @@ trap_retval TRAP_CORE( Get_message_text )( void )
     };
     char                    *err_txt;
     get_message_text_ret    *ret;
-    unsigned                len;
+    size_t                  len;
 
     ret = GetOutPtr( 0 );
     ret->flags = MSG_NEWLINE | MSG_ERROR;

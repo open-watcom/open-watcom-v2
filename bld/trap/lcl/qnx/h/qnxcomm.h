@@ -32,7 +32,7 @@
 
 extern char         **dbg_environ;
 
-extern char         *StrCopyDst( const char *, char * );
-extern unsigned     TryOnePath( const char *, struct stat *, const char *, char * );
-extern unsigned     FindFilePath( dig_filetype, const char *, char * );
-extern char         *CollectNid( char *name, unsigned len, nid_t *nidp );
+extern char         *StrCopyDst( const char *src, char *dst );
+extern size_t       TryOnePath( const char *, struct stat *, const char *, char *dst );
+extern size_t       FindFilePath( dig_filetype, const char *src, char *dst );
+extern const char   *CollectNid( const char *name, size_t len, nid_t *nidp );

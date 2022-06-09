@@ -92,6 +92,7 @@ trap_retval TRAP_FILE( open )( void )
     acc = GetInPtr( 0 );
     filename = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( acc->mode & DIG_OPEN_CREATE ) {
         rc = TinyCreate( filename, TIO_NORMAL );
     } else {
@@ -107,7 +108,8 @@ trap_retval TRAP_FILE( open )( void )
         rc = TinyOpen( filename, mode );
     }
     LH2TRPH( ret, TINY_INFO( rc ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -120,9 +122,11 @@ trap_retval TRAP_FILE( seek )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinyLSeek( TRPH2LH( acc ), acc->pos, local_seek_method[acc->mode], &pos );
     ret->pos = pos;
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -131,21 +135,16 @@ trap_retval TRAP_FILE( read )( void )
     tiny_ret_t      rc;
     file_read_req   *acc;
     file_read_ret   *ret;
-    char            *buff;
-    unsigned        len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetOutPtr( sizeof( *ret ) );
-    rc = TinyRead( TRPH2LH( acc ), buff, acc->len );
+    ret->err = 0;
+    rc = TinyRead( TRPH2LH( acc ), GetOutPtr( sizeof( *ret ) ), acc->len );
     if( TINY_ERROR( rc ) ) {
         ret->err = TINY_INFO( rc );
-        len = 0;
-    } else {
-        ret->err = 0;
-        len = TINY_INFO( rc );
+        return( sizeof( *ret ) );
     }
-    return( sizeof( *ret ) + len );
+    return( sizeof( *ret ) + TINY_INFO( rc ) );
 }
 
 trap_retval TRAP_FILE( write )( void )
@@ -156,9 +155,11 @@ trap_retval TRAP_FILE( write )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = TinyWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), ( GetTotalSizeIn() - sizeof( *acc ) ) );
+    ret->err = 0;
+    rc = TinyWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
     ret->len = TINY_INFO( rc );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -168,9 +169,11 @@ trap_retval TRAP_FILE( write_console )( void )
     file_write_console_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    rc = TinyWrite( TINY_ERR, GetInPtr( sizeof( file_write_console_req ) ), ( GetTotalSizeIn() - sizeof( file_write_console_req ) ) );
+    ret->err = 0;
+    rc = TinyWrite( TINY_ERR, GetInPtr( sizeof( file_write_console_req ) ), GetTotalSizeIn() - sizeof( file_write_console_req ) );
     ret->len = TINY_INFO( rc );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -182,8 +185,10 @@ trap_retval TRAP_FILE( close )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinyClose( TRPH2LH( acc ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
 }
 
@@ -193,8 +198,11 @@ trap_retval TRAP_FILE( erase )( void )
     file_erase_ret  *ret;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = TinyDelete( (char *)GetInPtr( sizeof( file_erase_req ) ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) ) {
+        ret->err = TINY_INFO( rc );
+    }
     return( sizeof( *ret ) );
 }
 
@@ -289,13 +297,13 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
     rc = FindFilePath( acc->file_type, name, fullname );
-    if( TINY_OK( rc ) ) {
-        ret->err = 0;
-    } else {
+    if( TINY_ERROR( rc ) ) {
         ret->err = TINY_INFO( rc );
         *fullname = '\0';
+        return( sizeof( *ret ) + 1 );
     }
     return( sizeof( *ret ) + 1 + strlen( fullname ) );
 }

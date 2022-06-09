@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,20 +149,20 @@ static const service_entry  Services[] = {
 trap_retval TRAP_CORE( Get_supplementary_service )(void)
 {
     char                                *name;
-    get_supplementary_service_ret       *out;
+    get_supplementary_service_ret       *ret;
     unsigned                            i;
 
     name = GetInPtr( sizeof( get_supplementary_service_req ) );
-    out = GetOutPtr( 0 );
-    out->err = 0;
-    out->id = 0;
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
+    ret->id = 0;
     for( i = 0; Services[i].name != NULL; ++i ) {
         if( stricmp( Services[i].name, name ) == 0 ) {
-            out->id = i + 1;
+            ret->id = i + 1;
             break;
         }
     }
-    return( sizeof( *out ) );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Perform_supplementary_service )( void )

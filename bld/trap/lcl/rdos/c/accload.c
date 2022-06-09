@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,6 +79,10 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
+    ret->task_id = 0;
+    ret->mod_handle = 0;
+    ret->flags = 0;
     parm = GetInPtr( sizeof( *acc ) );
 
     _splitpath2( parm, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
@@ -91,15 +95,10 @@ trap_retval TRAP_CORE( Prog_load )( void )
         }
     }
 
-    ret->err = 0;
-    ret->task_id = 0;
-    ret->mod_handle = 0;
-    ret->flags = 0;
-
     src = parm;
     while( *src++ != 0 )
         {}
-    
+
     // parm layout
     // <--parameters-->0<--program_name-->0<--arguments-->0
     //

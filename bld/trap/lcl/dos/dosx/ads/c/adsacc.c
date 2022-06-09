@@ -343,8 +343,8 @@ trap_retval TRAP_CORE( Machine_data )( void )
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    unsigned            len;
-    unsigned            size;
+    size_t              len;
+    size_t              size;
     int                 i;
     int                 read;
     checksum_mem_req    *acc;
@@ -376,7 +376,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
     void                *ret;
-    unsigned            len;
+    size_t              len;
 
     _DBG1(( "ReadMem" ));
     acc = GetInPtr( 0 );

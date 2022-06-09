@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -271,9 +271,8 @@ trap_retval TRAP_RUN_THREAD( set )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    ret->old_thread = 0;
     ret->err = 0;
+    ret->old_thread = 0;
 
     obj = GetCurrentDebug();
     if (obj )

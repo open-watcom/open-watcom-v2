@@ -165,17 +165,17 @@ trap_retval TRAP_CORE( Get_err_text )( void )
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    char            *cmd;
-    char            *start;
+    const char      *cmd;
+    const char      *start;
     split_cmd_ret   *ret;
-    unsigned        len;
+    size_t          len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
     start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
         case '\"':
             cmd++;
@@ -192,7 +192,7 @@ trap_retval TRAP_CORE( Split_cmd )( void )
             continue;
         CASE_SEPS
             ret->parm_start = 1;
-            /* fall down */
+            /* fall through */
         case '/':
         case '=':
         case '(':

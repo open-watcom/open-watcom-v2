@@ -82,6 +82,7 @@ trap_retval TRAP_FILE( open )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( acc->mode & DIG_OPEN_CREATE ) {
         retval = IOCreat( GetInPtr( sizeof( *acc ) ) );
     } else {
@@ -96,11 +97,9 @@ trap_retval TRAP_FILE( open )( void )
     }
     if( retval < 0 ) {
         ret->err = retval;
-        LH2TRPH( ret, 0 );
-    } else {
-        ret->err = 0;
-        LH2TRPH( ret, retval );
+        retval = 0;
     }
+    LH2TRPH( ret, retval );
     return( sizeof( *ret ) );
 }
 
@@ -117,77 +116,68 @@ trap_retval TRAP_FILE( close )( void )
 
 trap_retval TRAP_FILE( write )( void )
 {
-    int          retval;
-    file_write_req      *acc;
-    file_write_ret      *ret;
+    int             retval;
+    file_write_req  *acc;
+    file_write_ret  *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    retval = IOWrite( TRPH2LH( acc ), GetInPtr( sizeof(*acc) ), ( GetTotalSizeIn() - sizeof( *acc ) ) );
+    ret->err = 0;
+    retval = IOWrite( TRPH2LH( acc ), GetInPtr( sizeof(*acc) ), GetTotalSizeIn() - sizeof( *acc ) );
     if( retval < 0 ) {
         ret->err = retval;
-        ret->len = 0;
-    } else {
-        ret->err = 0;
-        ret->len = retval;
     }
+    ret->len = retval;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_FILE( write_console )( void )
 {
-    int          retval;
-    file_write_console_req      *acc;
-    file_write_console_ret      *ret;
+    int                     retval;
+    file_write_console_req  *acc;
+    file_write_console_ret  *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    retval = IOWriteConsole( GetInPtr( sizeof(*acc) ), ( GetTotalSizeIn() - sizeof( *acc ) ) );
+    ret->err = 0;
+    retval = IOWriteConsole( GetInPtr( sizeof(*acc) ), GetTotalSizeIn() - sizeof( *acc ) );
     if( retval < 0 ) {
         ret->err = retval;
-        ret->len = 0;
-    } else {
-        ret->err = 0;
-        ret->len = retval;
     }
+    ret->len = retval;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_FILE( seek )( void )
 {
-    file_seek_req       *acc;
-    file_seek_ret       *ret;
+    file_seek_req   *acc;
+    file_seek_ret   *ret;
     long            retval;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     retval = IOSeek( TRPH2LH( acc ), local_seek_method[acc->mode], acc->pos );
     if( retval < 0 ) {
         ret->err = retval;
-        ret->pos = 0;
-    } else {
-        ret->err = 0;
-        ret->pos = retval;
     }
+    ret->pos = retval;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_FILE( read )( void )
 {
-    file_read_req       *acc;
-    file_read_ret       *ret;
-    int           retval;
+    file_read_req   *acc;
+    file_read_ret   *ret;
+    int             retval;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     retval = IORead( TRPH2LH( acc ), GetOutPtr( sizeof( *ret ) ), acc->len );
     if( retval < 0 ) {
         ret->err = retval;
-        retval = 0;
-    } else {
-        ret->err = 0;
+        return( sizeof( *ret ) );
     }
     return( sizeof( *ret ) + retval );
 }
@@ -198,11 +188,12 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     char               *fullname;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
-    int                len;
+    size_t             len;
 
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
     if( acc->file_type == DIG_FILETYPE_EXE ) {
         StringToNLMPath( name, fullname );
@@ -210,7 +201,10 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
         strcpy( fullname, name );
     }
     len = strlen( fullname );
-    ret->err = ( len == 0 ) ? 1 : 0;
+    if( len == 0 ) {
+        ret->err = 1;
+        return( sizeof( *ret ) + 1 );
+    }
     return( sizeof( *ret ) + len + 1 );
 }
 

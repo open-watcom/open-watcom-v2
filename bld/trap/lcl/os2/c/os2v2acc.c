@@ -1002,6 +1002,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     LastMTE = 0;
     ExceptNum = -1;
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     AtEnd = FALSE;
     TaskFS = 0;
     name = GetInPtr( sizeof( prog_load_req ) );
@@ -1027,7 +1028,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     start.TermQ = 0;
     start.Environment = NULL;
     start.InheritOpt = 1;
-    ret->err = 0;
     if( GetEXEFlags( UtilBuff ) == EXE_IS_PM ) {
         if( TypeProcess == PT_WINDOWABLEVIO ) {
             ret->err = ERROR_OS2_TRAP( ERROR_NOT_IN_WINDOW );
@@ -1109,6 +1109,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     SaveStdIn = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;
     if( Pid != 0 ) {
@@ -1119,7 +1120,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     NumModHandles = 0;
     CurrModHandle = 1;
     Pid = 0;
-    ret->err = 0;
     DosSleep( 500 ); // Without this, it seems that restarts happen too fast
                      // and we end up running a 2nd instance of a dead task
                      // or some such sillyness.  I don't really know, but
@@ -1176,14 +1176,14 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 50000;
-    ret->err = 1;
+    ret->err = 1;       // fail
     if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
+        ret->err = 0;   // OK
         WatchPoints[WatchCount].addr.segment = acc->watch_addr.segment;
         WatchPoints[WatchCount].addr.offset = acc->watch_addr.offset;
         WatchPoints[WatchCount].len = acc->size;
         ReadBuffer( (byte *)&buff, acc->watch_addr.segment, acc->watch_addr.offset, sizeof( dword ) );
         WatchPoints[WatchCount].value = buff;
-        ret->err = 0;
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
@@ -1412,10 +1412,10 @@ trap_retval TRAP_FILE( write_console )( void )
     ptr = GetInPtr( sizeof( file_write_console_req ) );
     len = GetTotalSizeIn() - sizeof( file_write_console_req );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( CanExecTask ) {
         /* print/program request */
         ret->len = len;
-        ret->err = 0;
         TaskPrint( ptr, len );
     } else {
         ret->err = DosWrite( 2, ptr, len, &written_len );
@@ -1493,16 +1493,15 @@ static unsigned DoThread( trace_codes code )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 1;       // fail
     if( ValidThread( acc->thread ) ) {
+        ret->err = 0;   // OK
         save = Buff.Tid;
         Buff.Pid = Pid;
         Buff.Tid = acc->thread;
         Buff.Cmd = code;
         CallDosDebug( &Buff );
         Buff.Tid = save;
-        ret->err = 0;
-    } else {
-        ret->err = 1;   // failed
     }
     return( sizeof( *ret ) );
 }

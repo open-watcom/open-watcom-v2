@@ -135,6 +135,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     ret->flags = LD_FLAG_IS_PROT | LD_FLAG_HAVE_RUNTIME_DLLS;
     parm = GetInPtr( sizeof( *acc ) );
 
@@ -241,7 +242,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     pmsg = DebuggerWaitForMessage( WAITING_FOR_BREAKPOINT, DebugeeTask, RESTART_APP );
     if( pmsg == START_BP_HIT ) {
 
-        ret->err = 0;
         ret->task_id = (unsigned_32)DebugeeTask;
 
         /*

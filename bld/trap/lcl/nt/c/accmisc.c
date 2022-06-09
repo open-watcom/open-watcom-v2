@@ -383,10 +383,10 @@ static DWORD DoFmtMsg( char **p, DWORD err, ... )
     options = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
     len = FormatMessage( options, NULL, err,
         MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), (char *)p, 0, &args );
-    while( ( q = strchr( *p, '\r' ) ) != NULL ) {
+    while( (q = strchr( *p, '\r' )) != NULL ) {
         *q = ' ';
     }
-    while( ( q = strchr( *p, '\n' ) ) != NULL ) {
+    while( (q = strchr( *p, '\n' )) != NULL ) {
         *q = ' ';
     }
     va_end( args );
@@ -519,17 +519,17 @@ unsigned long FindFilePath( dig_filetype file_type, const char *pgm, char *buffe
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    char            *cmd;
-    char            *start;
+    const char      *cmd;
+    const char      *start;
     split_cmd_ret   *ret;
-    unsigned        len;
+    size_t          len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
     start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
         case '\"':
             cmd++;
@@ -545,7 +545,7 @@ trap_retval TRAP_CORE( Split_cmd )( void )
             continue;
         CASE_SEPS
             ret->parm_start = 1;
-            /* fall down */
+            /* fall through */
         case '/':
         case '=':
         case '(':

@@ -300,11 +300,12 @@ trap_retval TRAP_CORE( Prog_load )( void )
     const char          *err;
     tiny_ret_t          rc;
     prog_load_ret       *ret;
-    trap_elen           len;
+    size_t              len;
 
     SaveVectors( OrigVectors );
     _DBG_EnterFunc( "AccLoadProg()" );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     src = name = GetInPtr( sizeof( prog_load_req ) );
     rc = FindFilePath( DIG_FILETYPE_EXE, src, buffer );
     endparm = LinkParms;

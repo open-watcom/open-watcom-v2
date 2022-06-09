@@ -654,6 +654,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc  = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret  = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
     fullname[0] = '\0';
     len = 0;
@@ -687,8 +688,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     }
     if( len == 0 ) {
         ret->err = ENOENT;      /* File not found */
-    } else {
-        ret->err = 0;
+        return( sizeof( *ret ) + 1 );
     }
     return( sizeof( *ret ) + len + 1 );
 }

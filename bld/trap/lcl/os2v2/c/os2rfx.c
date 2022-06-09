@@ -394,7 +394,7 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    ret->err = 1;
+    ret->err = 0;
     while( *name == ' ' ) {
         name++;
     }

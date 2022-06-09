@@ -682,7 +682,7 @@ trap_retval TRAP_CORE( Write_regs )( void )
     return( 0 );
 }
 
-static int SplitParms( char *p, const char **args, unsigned len )
+static int SplitParms( char *p, const char **args, size_t len )
 {
     int     i;
     char    endc;
@@ -734,12 +734,12 @@ done:
     return( i );
 }
 
-static pid_t RunningProc( nid_t *nid, char *name, struct _psinfo *info, char **name_ret )
+static pid_t RunningProc( nid_t *nid, const char *name, struct _psinfo *info, const char **name_ret )
 {
     pid_t       pid;
     pid_t       proc;
     char        ch;
-    char        *start;
+    const char  *start;
 
     start = name;
     name = CollectNid( name, strlen( name ), nid );
@@ -754,9 +754,10 @@ static pid_t RunningProc( nid_t *nid, char *name, struct _psinfo *info, char **n
         *name_ret = name;
     pid = 0;
     for( ;; ) {
-        if( *name < '0' || *name > '9' )
+        ch = *name;
+        if( ch < '0' || ch > '9' )
             break;
-        pid = (pid*10) + (*name - '0');
+        pid = ( pid * 10 ) + ( ch - '0' );
         ++name;
     }
     if( *name != '\0')
@@ -804,7 +805,7 @@ static int net_kill( pid_t proc, pid_t pid, int signum )
 
 trap_retval TRAP_CORE( Prog_load )( void )
 {
-    char                        **args;
+    const char                  **args;
     char                        *parms;
     char                        *parm_start;
     int                         i;
@@ -813,7 +814,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     struct _psinfo              proc;
     struct _debug_psinfo        off_info;
     nid_t                       nid;
-    char                        *name;
+    const char                  *name;
     pid_t                       save_pgrp;
     prog_load_req               *acc;
     prog_load_ret               *ret;
@@ -878,7 +879,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         setpgid( 0, OrigPGrp );
         ProcInfo.pid = qnx_spawn(0, 0, nid, -1, SCHED_OTHER,
                             _SPAWN_HOLD, //NYI: | _SPAWN_NOZOMBIE,
-                            exe_name, args, dbg_environ, 0, -1);
+                            exe_name, (char **)args, dbg_environ, 0, -1);
         setpgid( 0, save_pgrp );
         if( ProcInfo.pid != -1 ) {
             qnx_psinfo( PROC_PID, ProcInfo.pid, &proc, 0, 0 );
@@ -975,6 +976,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     pid_t               pid;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     for( pid = 0; pid = next_thread( pid, THREAD_ALL ); ) {
         if( ProcInfo.loaded_proc && !ProcInfo.at_end ) {
             net_kill( ProcInfo.proc, pid, SIGKILL );
@@ -998,7 +1000,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     ProcInfo.at_end = false;
     ProcInfo.save_in = -1;
     ProcInfo.save_out = -1;
-    ret->err = 0;
     return( sizeof( *ret ) );
 }
 
@@ -1038,6 +1039,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     for( size = acc->size; size != 0; --size ) {
         WatchPoints[WatchCount].seg = acc->watch_addr.segment;
         WatchPoints[WatchCount].off = acc->watch_addr.offset;
@@ -1048,7 +1050,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
         ++acc->watch_addr.offset;
         ++WatchCount;
     }
-    ret->err = 0;
     ret->multiplier = 1000;
     return( sizeof( *ret ) );
 }
@@ -1448,12 +1449,12 @@ trap_retval TRAP_CORE( Redirect_stdout )( void )
 
 trap_retval TRAP_FILE( string_to_fullpath )( void )
 {
-    struct _psinfo     proc;
-    pid_t              pid;
-    nid_t              nid;
-    int                len;
-    char               *name;
-    char               *fullname;
+    struct _psinfo      proc;
+    pid_t               pid;
+    nid_t               nid;
+    int                 len;
+    const char          *name;
+    char                *fullname;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
 
@@ -1464,6 +1465,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
     if( acc->file_type == DIG_FILETYPE_EXE ) {
         pid = RunningProc( &nid, name, &proc, &name );
@@ -1475,8 +1477,6 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     }
     if( len == 0 ) {
         ret->err = ENOENT;      /* File not found */
-    } else {
-        ret->err = 0;
     }
     return( sizeof( *ret ) + len + 1 );
 }
@@ -1697,9 +1697,9 @@ trap_retval TRAP_THREAD( set )( void )
 
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( pid = req->thread ) {
         if( ( thread = find_thread( pid ) ) && !thread->fork ) {
-            ret->err = 0;
             ret->old_thread = ProcInfo.pid;
             ProcInfo.pid = pid;
         } else {
@@ -1707,7 +1707,6 @@ trap_retval TRAP_THREAD( set )( void )
             ret->old_thread = ProcInfo.pid;
         }
     } else {
-        ret->err = 0;
         ret->old_thread = ProcInfo.pid;
     }
     return( sizeof( *ret ) );
@@ -1721,9 +1720,9 @@ trap_retval TRAP_THREAD( freeze )( void )
 
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( thread = find_thread( req->thread ) ) {
         thread->frozen = true;
-        ret->err = 0;
     } else {
         ret->err = EINVAL;
     }
@@ -1738,9 +1737,9 @@ trap_retval TRAP_THREAD( thaw )( void )
 
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( thread = find_thread( req->thread ) ) {
         thread->frozen = false;
-        ret->err = 0;
     } else {
         ret->err = EINVAL;
     }

@@ -88,6 +88,7 @@ trap_retval TRAP_FILE( open )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     name = GetInPtr( sizeof( *acc ) );
     mode = O_RDONLY;
     if( acc->mode & DIG_OPEN_WRITE ) {
@@ -104,14 +105,11 @@ trap_retval TRAP_FILE( open )( void )
         }
     }
     handle = open( name, mode, access );
-    if( handle != -1 ) {
-        errno = 0;
-        ret->err = 0;
-        LH2TRPH( ret, handle );
-    } else {
+    if( handle == -1 ) {
         ret->err = errno;
-        LH2TRPH( ret, 0 );
+        handle = 0;
     }
+    LH2TRPH( ret, handle );
     return( sizeof( *ret ) );
 }
 
@@ -122,11 +120,9 @@ trap_retval TRAP_FILE( seek )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     ret->pos = lseek( TRPH2LH( acc ), acc->pos, local_seek_method[acc->mode] );
-    if( ret->pos != ((off_t)-1) ) {
-        errno = 0;
-        ret->err = 0;
-    } else {
+    if( ret->pos == ((off_t)-1) ) {
         ret->err = errno;
     }
     CONV_LE_32( ret->pos );
@@ -136,74 +132,63 @@ trap_retval TRAP_FILE( seek )( void )
 
 trap_retval TRAP_FILE( read )( void )
 {
-    unsigned            total;
-    unsigned            len;
+    size_t              total;
+    size_t              len;
     char                *ptr;
-    size_t              curr;
+    size_t              size;
     ssize_t             rv;
     file_read_req       *acc;
     file_read_ret       *ret;
+    int                 h;
 
     acc = GetInPtr( 0 );
     CONV_LE_64( acc->handle );
     CONV_LE_16( acc->len );
-    ret = GetOutPtr( 0 );
-    ptr = GetOutPtr( sizeof( *ret ) );
     len = acc->len;
+    h = TRPH2LH( acc );
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
+    ptr = GetOutPtr( sizeof( *ret ) );
     total = 0;
-    for( ;; ) {
-        if( len == 0 )
-            break;
-        curr = len;
-        if( curr > INT_MAX )
-            curr = INT_MAX;
-        rv = read( TRPH2LH( acc ), ptr, curr );
-        if( rv < 0 ) {
-            total = -1;
-            break;
+    size = INT_MAX;
+    while( len > 0 ) {
+        if( size > len )
+            size = len;
+        rv = read( h, ptr, size );
+        if( rv == -1 ) {
+            ret->err = errno;
+            CONV_LE_32( ret->err );
+            return( sizeof( *ret ) );
         }
         total += rv;
-        if( rv != curr )
+        if( rv != size )
             break;
         ptr += rv;
         len -= rv;
     }
-    if( total == -1 ) {
-        total = 0;
-    } else {
-        errno = 0;
-    }
-    ret->err = errno;
     CONV_LE_32( ret->err );
     return( sizeof( *ret ) + total );
 }
 
-static unsigned DoWrite( int hdl, unsigned_8 *ptr, unsigned len )
+static size_t DoWrite( int hdl, unsigned_8 *ptr, size_t len )
 {
-    unsigned    total;
-    unsigned    curr;
-    int         rv;
+    size_t      total;
+    size_t      size;
+    ssize_t     rv;
 
     total = 0;
-    for( ;; ) {
-        if( len == 0 )
-            break;
-        curr = len;
-        if( curr > INT_MAX )
-            curr = INT_MAX;
-        rv = write( hdl, ptr, curr );
-        if( rv <= 0 ) {
+    size = INT_MAX;
+    while( len > 0 ) {
+        if( size > len )
+            size = len;
+        rv = write( hdl, ptr, size );
+        if( rv == -1 || rv == 0 ) {
             total = -1;
             break;
         }
         total += rv;
         ptr += rv;
         len -= rv;
-    }
-    if( total == -1 ) {
-        total = 0;
-    } else {
-        errno = 0;
     }
     return( total );
 }
@@ -212,12 +197,18 @@ trap_retval TRAP_FILE( write )( void )
 {
     file_write_req      *acc;
     file_write_ret      *ret;
+    size_t              len;
 
     acc = GetInPtr( 0 );
     CONV_LE_64( acc->handle );
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
-    ret->err = errno;
+    ret->err = 0;
+    len = DoWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ),
+                            GetTotalSizeIn() - sizeof( *acc ) );
+    if( len == -1 ) {
+        ret->err = errno;
+    }
+    ret->len = len;
     CONV_LE_32( ret->err );
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );
@@ -225,12 +216,17 @@ trap_retval TRAP_FILE( write )( void )
 
 trap_retval TRAP_FILE( write_console )( void )
 {
-    file_write_console_ret      *ret;
+    file_write_console_ret  *ret;
+    size_t                  len;
 
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( 2, GetInPtr( sizeof( file_write_console_req ) ),
+    ret->err = 0;
+    len = DoWrite( 2, GetInPtr( sizeof( file_write_console_req ) ),
                         GetTotalSizeIn() - sizeof( file_write_console_req ) );
-    ret->err = errno;
+    if( len == -1 ) {
+        ret->err = errno;
+    }
+    ret->len = len;
     CONV_LE_32( ret->err );
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );
@@ -244,10 +240,8 @@ trap_retval TRAP_FILE( close )( void )
     acc = GetInPtr( 0 );
     CONV_LE_64( acc->handle );
     ret = GetOutPtr( 0 );
-    if( close( TRPH2LH( acc ) ) != -1 ) {
-        errno = 0;
-        ret->err = 0;
-    } else {
+    ret->err = 0;
+    if( close( TRPH2LH( acc ) ) == -1 ) {
         ret->err = errno;
     }
     CONV_LE_32( ret->err );
@@ -259,11 +253,9 @@ trap_retval TRAP_FILE( erase )( void )
     file_erase_ret      *ret;
 
     ret = GetOutPtr( 0 );
-    if( unlink( (char *)GetInPtr( sizeof( file_erase_req ) ) ) != 0 ) {
+    ret->err = 0;
+    if( unlink( (char *)GetInPtr( sizeof( file_erase_req ) ) ) ) {
         ret->err = errno;
-    } else {
-        errno = 0;
-        ret->err = 0;
     }
     CONV_LE_32( ret->err );
     return( sizeof( *ret ) );
@@ -279,7 +271,7 @@ trap_retval TRAP_CORE( Set_debug_screen )( void )
     return( 0 );
 }
 
-static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
+static size_t TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *ptr;
 
@@ -310,10 +302,10 @@ static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name
     }
 }
 
-unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
+size_t FindFilePath( dig_filetype file_type, const char *name, char *result )
 {
     struct stat     tmp;
-    unsigned        len;
+    size_t          len;
 
     if( stat( name, &tmp ) == 0 ) {
         return( StrCopyDst( name, result ) - result );
@@ -322,10 +314,10 @@ unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
         return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
     } else {
         len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-        if( len != 0 )
+        if( len > 0 )
             return( len );
         len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-        if( len != 0 )
+        if( len > 0 )
             return( len );
         return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
     }
@@ -345,17 +337,17 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    char                *cmd;
-    char                *start;
+    const char          *cmd;
+    const char          *start;
     split_cmd_ret       *ret;
-    unsigned            len;
+    size_t              len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
     start = cmd;
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
         CASE_SEPS
             ret->parm_start = 1;

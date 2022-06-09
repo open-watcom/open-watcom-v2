@@ -301,9 +301,9 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 20000;
-    ret->err = 1;
+    ret->err = 1;       // fail
     if( WatchCount < MAX_WATCHES ) {
-        ret->err = 0;
+        ret->err = 0;   // OK
         curr = WatchPoints + WatchCount;
         curr->loc.segment = acc->watch_addr.segment;
         curr->loc.offset = acc->watch_addr.offset;

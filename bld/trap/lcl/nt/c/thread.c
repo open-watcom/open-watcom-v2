@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +118,6 @@ trap_retval TRAP_THREAD( freeze )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
 
     ti = FindThread( acc->thread );
@@ -151,7 +150,6 @@ trap_retval TRAP_THREAD( thaw )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
     ti = FindThread( acc->thread );
     if( ti != NULL ) {
@@ -177,9 +175,9 @@ trap_retval TRAP_THREAD( set )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
 
     ret->old_thread = DebugeeTid;
-    ret->err = 0;
     if( acc->thread != 0 ) {
         ti = FindThread( acc->thread );
         if( ti != NULL ) {

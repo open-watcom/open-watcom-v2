@@ -661,6 +661,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     dbg_print(( "killing current process (pid %d)\n", ProcInfo.pid ));
     if( ProcInfo.pid ) {
         if( ProcInfo.loaded_proc && !ProcInfo.at_end ) {
@@ -672,7 +673,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     ProcInfo.at_end   = FALSE;
     ProcInfo.save_in  = -1;
     ProcInfo.save_out = -1;
-    ret->err = 0;
     CONV_LE_32( ret->err );
     return( sizeof( *ret ) );
 }
@@ -744,8 +744,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
     CONV_LE_32( acc->break_addr.offset );
     CONV_LE_16( acc->break_addr.segment );
     ret = GetOutPtr( 0 );
-    ret->multiplier = 1000;
     ret->err = 1;
+    ret->multiplier = 1000;
     dbg_print(( "setting watchpoint %d bytes at %04x:%08x\n", acc->size,
                acc->watch_addr.segment, (unsigned)acc->watch_addr.offset ));
     if( nto_watchpoint( acc->watch_addr.offset, acc->size, 1 ) == 0 ) {
@@ -1021,6 +1021,7 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc  = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret  = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
     if( acc->file_type == DIG_FILETYPE_EXE ) {
         pid = RunningProc( name, &name );
@@ -1034,8 +1035,6 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     }
     if( len == 0 ) {
         ret->err = ENOENT;      /* File not found */
-    } else {
-        ret->err = 0;
     }
     CONV_LE_32( ret->err );
     return( sizeof( *ret ) + len + 1 );
@@ -1157,8 +1156,8 @@ trap_retval TRAP_THREAD( set )( void )
 
     req = GetInPtr( 0 );
     CONV_LE_32( req->thread );
-    ret = GetOutPtr( 0 );
     tid = req->thread;
+    ret = GetOutPtr( 0 );
     ret->err = 0;
     ret->old_thread = ProcInfo.tid;
     dbg_print(( "setting thread %d (currently %d)\n", tid, ProcInfo.tid ));
@@ -1182,11 +1181,11 @@ trap_retval TRAP_THREAD( freeze )( void )
     thread_freeze_ret   *ret;
     pthread_t           tid;
 
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     req = GetInPtr( 0 );
     CONV_LE_32( req->thread );
-    ret = GetOutPtr( 0 );
     tid = req->thread;
-    ret->err = 0;
     dbg_print(( "freezing thread %d\n", tid ));
     if( tid ) {
         /* If debuggee isn't running, do nothing but pretend it worked */
@@ -1210,11 +1209,11 @@ trap_retval TRAP_THREAD( thaw )( void )
     thread_thaw_ret     *ret;
     pthread_t           tid;
 
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     req = GetInPtr( 0 );
     CONV_LE_32( req->thread );
-    ret = GetOutPtr( 0 );
     tid = req->thread;
-    ret->err = 0;
     dbg_print(( "thawing thread %d\n", tid ));
     if( tid ) {
         /* If debuggee isn't running, do nothing but pretend it worked */

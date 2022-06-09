@@ -532,6 +532,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
     ExceptNum = -1;
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     memset( &TaskRegs, 0, sizeof( TaskRegs ) );
     TaskRegs.EFL = MyFlags() & ~USR_FLAGS;
     /* build a DOS command line parameter in our PSP command area */
@@ -643,7 +644,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
             }
         }
     }
-    ret->err = ( TINY_ERROR( rc ) ) ? TINY_INFO( rc ) : 0;
+    if( TINY_ERROR( rc ) )
+        ret->err = TINY_INFO( rc );
     ret->task_id = psp;
     ret->flags = 0;
     ret->mod_handle = 0;

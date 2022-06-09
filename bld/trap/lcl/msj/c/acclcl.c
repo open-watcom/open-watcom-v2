@@ -44,6 +44,14 @@
 #include "msjerr.h"
 
 
+#ifdef _WIN64
+#define TRPH2LH(th)     (HANDLE)((th)->handle.u._64[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._64[0]=lh
+#else
+#define TRPH2LH(th)     (HANDLE)((th)->handle.u._32[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
+#endif
+
 #define OP_TRUNC        0x08
 
 static const DWORD      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
@@ -88,11 +96,10 @@ trap_retval TRAP_FILE( open )( void )
     unsigned            mode;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     acc = GetInPtr( 0 );
     buff = GetInPtr( sizeof(*acc) );
 
-
-    ret->err = 0;
     h = FakeOpen( buff );
     if( h == INVALID_HANDLE_VALUE ) {
         DWORD   share_mode,desired_access,attr;
@@ -123,7 +130,7 @@ trap_retval TRAP_FILE( open )( void )
         }
 
     }
-    ret->handle = (DWORD) h;
+    LH2TRPH( ret, h );
     return( sizeof( *ret ) );
 }
 
@@ -135,37 +142,27 @@ trap_retval TRAP_FILE( seek )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = SetFilePointer( (HANDLE) acc->handle, acc->pos, NULL, local_seek_method[acc->mode] );
+    ret->err = 0;
+    rc = SetFilePointer( TRPH2LH( acc ), acc->pos, NULL, local_seek_method[acc->mode] );
+    ret->pos = rc;
     if( rc == INVALID_SET_FILE_POINTER ) {
         ret->err = GetLastError();
-    } else {
-        ret->err = 0;
     }
-    ret->pos = rc;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_FILE( write )( void )
 {
     DWORD               bytes;
-    BOOL                rc;
     file_write_req      *acc;
     file_write_ret      *ret;
-    int                 len;
-    void                *buff;
 
     acc = GetInPtr( 0 );
-    buff = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
-
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    rc = WriteFile( (HANDLE) acc->handle, buff, len, &bytes, NULL );
-    if( !rc ) {
+    ret->err = 0;
+    if( WriteFile( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ),
+            GetTotalSizeIn() - sizeof( *acc ), &bytes, NULL ) == 0 ) {
         ret->err = GetLastError();
-        bytes = 0;
-    } else {
-        ret->err = 0;
     }
     ret->len = bytes;
     return( sizeof( *ret ) );
@@ -173,26 +170,16 @@ trap_retval TRAP_FILE( write )( void )
 
 trap_retval TRAP_FILE( write_console )( void )
 {
-    DWORD               bytes;
-    BOOL                rc;
-    file_write_console_req      *acc;
-    file_write_console_ret      *ret;
-    int                 len;
-    void                *buff;
-    HANDLE              handle;
+    DWORD                   bytes;
+    file_write_console_req  *acc;
+    file_write_console_ret  *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    handle = GetStdHandle( STD_ERROR_HANDLE );
-    rc = WriteFile( handle, buff, len, &bytes, NULL );
-    if( !rc ) {
+    ret->err = 0;
+    if( WriteFile( GetStdHandle( STD_ERROR_HANDLE ), GetInPtr( sizeof( *acc ) ),
+                        GetTotalSizeIn() - sizeof( *acc ), &bytes, NULL ) ) {
         ret->err = GetLastError();
-        bytes = 0;
-    } else {
-        ret->err = 0;
     }
     ret->len = bytes;
     return( sizeof( *ret ) );
@@ -205,21 +192,18 @@ trap_retval TRAP_FILE( read )( void )
     file_read_req       *acc;
     file_read_ret       *ret;
     void                *buff;
+    HANDLE              h;
 
     acc = GetInPtr( 0 );
+    h = TRPH2LH( acc );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     buff = GetOutPtr( sizeof( *ret ) );
-
-    if( FakeRead( (HANDLE) acc->handle, buff, acc->len, (unsigned*)&bytes ) ) {
-        ret->err = 0;
-        return( sizeof( *ret ) + bytes );
-    }
-    rc = ReadFile( (HANDLE) acc->handle, buff, acc->len, &bytes, NULL );
-    if( !rc ) {
-        ret->err = GetLastError();
-        bytes = 0;
-    } else {
-        ret->err = 0;
+    if( FakeRead( h, buff, acc->len, &bytes ) == 0 ) {
+        if( ReadFile( h, buff, acc->len, &bytes, NULL ) == 0 ) {
+            ret->err = GetLastError();
+            return( sizeof( *ret ) );
+        }
     }
     return( sizeof( *ret ) + bytes );
 }
@@ -232,10 +216,10 @@ trap_retval TRAP_FILE( close )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
-    if( (HANDLE)acc->handle != FakeHandle ) {
-        rc = CloseHandle( (HANDLE) acc->handle );
+
+    if( TRPH2LH( acc ) != FakeHandle ) {
+        rc = CloseHandle( TRPH2LH( acc ) );
         if( !rc ) {
             ret->err = GetLastError();
         }
@@ -246,15 +230,11 @@ trap_retval TRAP_FILE( close )( void )
 trap_retval TRAP_FILE( erase )( void )
 {
     file_erase_ret      *ret;
-    char                *buff;
 
-    buff = GetInPtr( sizeof( file_erase_req ) );
     ret = GetOutPtr( 0 );
-
-    if( DeleteFile( buff ) ) {
+    ret->err = 0;
+    if( DeleteFile( (char *)GetInPtr( sizeof( file_erase_req ) ) ) ) {
         ret->err = GetLastError();
-    } else {
-        ret->err = 0;
     }
     return( sizeof( *ret ) );
 
@@ -279,13 +259,13 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
     if( acc->file_type == DIG_FILETYPE_EXE ) {
         strcat( fullname, name );
     } else {
         _searchenv( name, "PATH", fullname );
     }
-    ret->err = 0;
     return( sizeof( *ret ) + strlen( fullname ) + 1 );
 }
 
@@ -301,7 +281,6 @@ trap_retval TRAP_ENV( set_var )( void )
     var = GetInPtr( sizeof( *req ) );
     value = GetInPtr( sizeof( *req ) + strlen( var ) + 1 );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
     if( value[0] == '\0' )
         value = NULL;
@@ -321,14 +300,13 @@ trap_retval TRAP_ENV( get_var )( void )
     req = GetInPtr( 0 );
     var = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
-    value = GetOutPtr( sizeof( *ret ) );
     ret->err = 0;
+    value = GetOutPtr( sizeof( *ret ) );
     if( GetEnvironmentVariable( var, value, req->res_len ) == 0 ) {
         ret->err = GetLastError();
         return( sizeof( *ret ) );
-    } else {
-        return( sizeof( *ret ) + strlen( value ) + 1 );
     }
+    return( sizeof( *ret ) + strlen( value ) + 1 );
 }
 
 
@@ -344,6 +322,7 @@ trap_retval TRAP_FILE_INFO( get_date )( void )
     req = GetInPtr( 0 );
     name = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     h = FindFirstFile( name, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->err = ERROR_FILE_NOT_FOUND;
@@ -351,7 +330,6 @@ trap_retval TRAP_FILE_INFO( get_date )( void )
     }
     FindClose( h );
     FileTimeToDosDateTime( &ffd.ftLastWriteTime, &md, &mt );
-    ret->err = 0;
     ret->date = ( md << 16 ) + mt;
     return( sizeof( *ret ) );
 }
@@ -369,6 +347,7 @@ trap_retval TRAP_FILE_INFO( set_date )( void )
     req = GetInPtr( 0 );
     name = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     md = ( req->date >> 16 ) & 0xffff;
     mt = req->date;
     DosDateTimeToFileTime( md, mt, &ft );
@@ -382,6 +361,5 @@ trap_retval TRAP_FILE_INFO( set_date )( void )
         return( sizeof( *ret ) );
     }
     CloseHandle( h );
-    ret->err = 0;
     return( sizeof( *ret ) );
 }

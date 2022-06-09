@@ -894,6 +894,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     SaveStdIn = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;
     if( Pid != 0 ) {
@@ -903,7 +904,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     NumModHandles = 0;
     CurrModHandle = 1;
     Pid = 0;
-    ret->err = 0;
     return( sizeof( *ret ) );
 }
 
@@ -937,36 +937,36 @@ trap_retval TRAP_CORE( Clear_break )( void )
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    set_watch_req       *wp;
-    set_watch_ret       *wr;
+    set_watch_req       *acc;
+    set_watch_ret       *ret;
     dword               buff;
 
-    wp = GetInPtr( 0 );
-    wr = GetOutPtr( 0 );
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    ret->err = 84; /* out of structures */
+    ret->multiplier = 50000;
     if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
-        WatchPoints[WatchCount].addr.segment = wp->watch_addr.segment;
-        WatchPoints[WatchCount].addr.offset = wp->watch_addr.offset;
-        ReadBuffer( (PBYTE)&buff, wp->watch_addr.segment, wp->watch_addr.offset, sizeof( dword ) );
+        ret->err = 0;
+        WatchPoints[WatchCount].addr.segment = acc->watch_addr.segment;
+        WatchPoints[WatchCount].addr.offset = acc->watch_addr.offset;
+        ReadBuffer( (PBYTE)&buff, acc->watch_addr.segment, acc->watch_addr.offset, sizeof( dword ) );
         WatchPoints[WatchCount].value = buff;
         ++WatchCount;
-    } else {
-        wr->err = 84; /* out of structures */
     }
-    wr->multiplier = 50000;
-    return( sizeof( *wr ) );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
 {
-    clear_watch_req     *wp;
+    clear_watch_req     *acc;
     watch_point         *dst;
     watch_point         *src;
     int                 i;
 
-    wp = GetInPtr( 0 );
+    acc = GetInPtr( 0 );
     dst = src = WatchPoints;
     for( i = 0; i < WatchCount; ++i ) {
-        if( src->addr.segment != wp->watch_addr.segment || src->addr.offset != wp->watch_addr.offset ) {
+        if( src->addr.segment != acc->watch_addr.segment || src->addr.offset != acc->watch_addr.offset ) {
             *dst = *src;
             ++dst;
         }
@@ -1112,31 +1112,30 @@ trap_retval TRAP_FILE( write_console )( void )
     unsigned     save_dx;
     unsigned     save_bx;
     byte         *ptr;
-    unsigned            curr;
+    unsigned     size;
     file_write_console_ret      *ret;
 
     ptr = GetInPtr( sizeof( file_write_console_req ) );
     len = GetTotalSizeIn() - sizeof( file_write_console_req );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( CanExecTask ) {
         ret->len = len;
-        ret->err = 0;
         /* print/program request */
         save_ax = Buff.u.r.AX;
         save_dx = Buff.u.r.DX;
         save_bx = Buff.u.r.BX;
-        ret->err = 0;
-        while( len != 0 ) {
-            curr = len;
-            if( len > sizeof( UtilBuff ) )
-                len = sizeof( UtilBuff );
-            WriteBuffer( ptr, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), curr );
+        size = sizeof( UtilBuff );
+        while( len > 0 ) {
+            if( size > len )
+                size = len;
+            WriteBuffer( ptr, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), size );
             Buff.u.r.AX = _FP_OFF( UtilBuff );
             Buff.u.r.DX = _FP_SEG( UtilBuff );
-            Buff.u.r.BX = curr;
+            Buff.u.r.BX = size;
             TaskExecute( (excfn)DoWritePgmScrn );
-            ptr += curr;
-            len -= curr;
+            ptr += size;
+            len -= size;
         }
         Buff.u.r.AX = save_ax;
         Buff.u.r.DX = save_dx;
@@ -1217,15 +1216,14 @@ static unsigned DoThread( trace_codes code )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 1;       // failed
     if( ValidThread( acc->thread ) ) {
+        ret->err = 0;   // OK
         save = Buff.tid;
         Buff.tid = acc->thread;
         Buff.cmd = code;
         DosPTrace( &Buff );
         Buff.tid = save;
-        ret->err = 0;
-    } else {
-        ret->err = 1;   // failed
     }
     return( sizeof( *ret ) );
 }

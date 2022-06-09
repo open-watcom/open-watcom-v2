@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,22 +41,13 @@ trap_retval TRAP_CORE( Set_break )( void )
     set_break_req   *acc;
     set_break_ret   *ret;
     struct TDebug   *obj;
-    int             sel;
-    int             offset;
-    int             hw;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    sel = acc->break_addr.segment;
-    offset = acc->break_addr.offset;
-
-    hw = ( (sel & 3) == 0 );
-
     obj = GetCurrentDebug();
-
-    if( obj )
-        AddBreak( obj, sel, offset, hw );
-
+    if( obj != NULL ) {
+        AddBreak( obj, acc->break_addr.segment, acc->break_addr.offset, (acc->break_addr.segment & 3) == 0 );
+    }
     return( sizeof( *ret ) );
 }
 
@@ -66,12 +57,10 @@ trap_retval TRAP_CORE( Clear_break )( void )
     struct TDebug   *obj;
 
     acc = GetInPtr( 0 );
-
     obj = GetCurrentDebug();
-
-    if( obj )
+    if( obj != NULL ) {
         ClearBreak( obj, acc->break_addr.segment, acc->break_addr.offset );
-
+    }
     return( 0 );
 }
 
@@ -80,25 +69,15 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req   *acc;
     set_watch_ret   *ret;
     struct TDebug   *obj;
-    int             sel;
-    int             offset;
-    int             size;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    sel = acc->watch_addr.segment;
-    offset = acc->watch_addr.offset;
-    size = acc->size;
-
-    obj = GetCurrentDebug();
-
-    if( obj )
-        AddWatch( obj, sel, offset, size );
-
-    ret->multiplier = 100000 | USING_DEBUG_REG;
     ret->err = 0;
-
+    obj = GetCurrentDebug();
+    if( obj != NULL ) {
+        AddWatch( obj, acc->watch_addr.segment, acc->watch_addr.offset, acc->size );
+    }
+    ret->multiplier = 100000 | USING_DEBUG_REG;
     return( sizeof( *ret ) );
 }
 
@@ -108,11 +87,9 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     struct TDebug   *obj;
 
     acc = GetInPtr( 0 );
-
     obj = GetCurrentDebug();
-
-    if( obj )
+    if( obj != NULL ) {
         ClearWatch( obj, acc->watch_addr.segment, acc->watch_addr.offset, acc->size );
-
+    }
     return( 0 );
 }

@@ -35,14 +35,18 @@
 #include <string.h>
 #include "trpimp.h"
 #include "trperr.h"
+#include "trpcomm.h"
 #include "packet.h"
 #include "jvmerr.h"
 #include "madregs.h"
+#include "jvmxremo.h"
 
-static char             LinkParms[256];
+
 bool                    TaskLoaded;
 HANDLE                  FakeHandle;
 HWND                    DebuggerHwnd;
+
+static char             LinkParms[256];
 static char             SavedError[256];
 
 trap_retval DoAccess( void )
@@ -65,10 +69,7 @@ trap_retval DoAccess( void )
     if( Out_Mx_Num != 0 ) {
         len = GetPacket();
         left = len;
-        i = 0;
-        for( ;; ) {
-            if( i >= Out_Mx_Num )
-                break;
+        for( i = 0; i < Out_Mx_Num; ) {
             if( left > Out_Mx_Ptr[i].len ) {
                 piece = Out_Mx_Ptr[i].len;
             } else {
@@ -117,8 +118,10 @@ static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
     len = FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
         NULL, err, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
         (LPSTR) p, 0, &args );
-    while( ( q = strchr( *p, '\r' ) ) != NULL ) *q = ' ';
-    while( ( q = strchr( *p, '\n' ) ) != NULL ) *q = ' ';
+    while( ( q = strchr( *p, '\r' ) ) != NULL )
+        *q = ' ';
+    while( ( q = strchr( *p, '\n' ) ) != NULL )
+        *q = ' ';
     va_end( args );
     return( len );
 }
@@ -296,8 +299,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char                *endparm;
     const char          *err;
     prog_load_ret       *ret;
-    trap_elen           len;
-    char                *loaderr;
+    size_t              len;
+    const char          *loaderr;
 
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
@@ -319,8 +322,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
     }
     while( *src++ != '\0' )
         {}
-    len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - parm );
-    dst = (char *)buffer;
+    len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
+    dst = buffer;
     while( *dst++ != '\0' )
         {}
     memcpy( dst, src, len );
@@ -520,21 +523,21 @@ trap_retval TRAP_CORE( Perform_supplementary_service )( void )
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    char                *cmd;
-    char                *start;
+    const char          *cmd;
+    const char          *start;
     split_cmd_ret       *ret;
-    trap_elen           len;
+    size_t              len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
     start = cmd;
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    while( len != 0 ) {
+    while( len > 0 ) {
         switch( *cmd ) {
         CASE_SEPS
             ret->parm_start = 1;
-            /* fall down */
+            /* fall through */
         case '/':
         case '=':
         case '(':

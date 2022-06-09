@@ -98,6 +98,7 @@ trap_retval TRAP_FILE( open )( void )
     buff = GetInPtr( sizeof( *acc ) );
 
     ret = GetOutPtr( 0 );
+    ret->err = 0;
 
     /*
      * GetMagicalFileHandle checks if a file name is of a special syntax.
@@ -107,7 +108,6 @@ trap_retval TRAP_FILE( open )( void )
      * asks to open up a fake name, we reuse the handle
      */
     h = GetMagicalFileHandle( buff );
-    ret->err = 0;
     if( h == NULL ) {
         DWORD   share_mode;
         DWORD   desired_access;
@@ -147,11 +147,10 @@ trap_retval TRAP_FILE( seek )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     rc = SetFilePointer( TRPH2LH( acc ), acc->pos, NULL, local_seek_method[acc->mode] );
     if( rc == INVALID_SET_FILE_POINTER ) {
         ret->err = GetLastError();
-    } else {
-        ret->err = 0;
     }
     ret->pos = rc;
     return( sizeof( *ret ) );
@@ -160,24 +159,15 @@ trap_retval TRAP_FILE( seek )( void )
 trap_retval TRAP_FILE( write )( void )
 {
     DWORD           bytes;
-    BOOL            rc;
     file_write_req  *acc;
     file_write_ret  *ret;
-    DWORD           len;
-    void            *buff;
 
     acc = GetInPtr( 0 );
-    buff = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
-
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    rc = WriteFile( TRPH2LH( acc ), buff, len, &bytes, NULL );
-    if( !rc ) {
+    ret->err = 0;
+    if( WriteFile( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ),
+            GetTotalSizeIn() - sizeof( *acc ), &bytes, NULL ) == 0 ) {
         ret->err = GetLastError();
-        bytes = 0;
-    } else {
-        ret->err = 0;
     }
     ret->len = bytes;
     return( sizeof( *ret ) );
@@ -186,28 +176,19 @@ trap_retval TRAP_FILE( write )( void )
 trap_retval TRAP_FILE( write_console )( void )
 {
     DWORD                   bytes;
-    BOOL                    rc;
     file_write_console_req  *acc;
     file_write_console_ret  *ret;
-    DWORD                   len;
-    void                    *buff;
-    HANDLE                  h;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    h = GetStdHandle( STD_ERROR_HANDLE );
+    ret->err = 0;
     if( DebugeePid ) {
         //NYI: write to program screen
+        ret->len = GetTotalSizeIn() - sizeof( *acc );
     } else {
-        rc = WriteFile( h, buff, len, &bytes, NULL );
-        if( !rc ) {
+        if( WriteFile( GetStdHandle( STD_ERROR_HANDLE ), GetInPtr( sizeof( *acc ) ),
+                        GetTotalSizeIn() - sizeof( *acc ), &bytes, NULL ) == 0 ) {
             ret->err = GetLastError();
-            bytes = 0;
-        } else {
-            ret->err = 0;
         }
         ret->len = bytes;
     }
@@ -217,20 +198,15 @@ trap_retval TRAP_FILE( write_console )( void )
 trap_retval TRAP_FILE( read )( void )
 {
     DWORD           bytes;
-    BOOL            rc;
     file_read_req   *acc;
     file_read_ret   *ret;
-    void            *buff;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetOutPtr( sizeof( *ret ) );
-    rc = ReadFile( TRPH2LH( acc ), buff, acc->len, &bytes, NULL );
-    if( !rc ) {
+    ret->err = 0;
+    if( ReadFile( TRPH2LH( acc ), GetOutPtr( sizeof( *ret ) ), acc->len, &bytes, NULL ) == 0 ) {
         ret->err = GetLastError();
-        bytes = 0;
-    } else {
-        ret->err = 0;
+        return( sizeof( *ret ) );
     }
     return( sizeof( *ret ) + bytes );
 }
@@ -239,19 +215,19 @@ trap_retval TRAP_FILE( close )( void )
 {
     file_close_req  *acc;
     file_close_ret  *ret;
-    BOOL            rc;
+    HANDLE          h;
 
     acc = GetInPtr( 0 );
+    h = TRPH2LH( acc );
     ret = GetOutPtr( 0 );
-
     ret->err = 0;
+
     /*
      * we do not close the file handle if it was a magical one that
      * we remembered from a DLL load
      */
-    if( !IsMagicalFileHandle( TRPH2LH( acc ) ) ) {
-        rc = CloseHandle( TRPH2LH( acc ) );
-        if( !rc ) {
+    if( !IsMagicalFileHandle( h ) ) {
+        if( CloseHandle( h ) == 0 ) {
             ret->err = GetLastError();
         }
     }
@@ -261,15 +237,11 @@ trap_retval TRAP_FILE( close )( void )
 trap_retval TRAP_FILE( erase )( void )
 {
     file_erase_ret  *ret;
-    char            *buff;
 
-    buff = GetInPtr( sizeof( file_erase_req ) );
     ret = GetOutPtr( 0 );
-
-    if( DeleteFile( buff ) ) {
+    ret->err = 0;
+    if( DeleteFile( (char *)GetInPtr( sizeof( file_erase_req ) ) ) ) {
         ret->err = GetLastError();
-    } else {
-        ret->err = 0;
     }
     return( sizeof( *ret ) );
 
@@ -295,11 +267,11 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
 
     if( GetMagicalFileHandle( name ) != NULL ) {
         strcpy( fullname, name );
-        ret->err = 0;
     } else {
         ret->err = FindFilePath( acc->file_type, name, fullname );
     }

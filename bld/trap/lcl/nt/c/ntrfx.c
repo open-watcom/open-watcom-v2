@@ -336,6 +336,7 @@ trap_retval TRAP_RFX( findnext )( void )
 
     info = GetInPtr( sizeof( rfx_findnext_req ) );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( DTARFX_HANDLE_OF( info ) == DTARFX_INVALID_HANDLE ) {
         ret->err = -1;
         return( sizeof( *ret ) );
@@ -349,7 +350,6 @@ trap_retval TRAP_RFX( findnext )( void )
         DTARFX_HANDLE_OF( info ) = DTARFX_INVALID_HANDLE;
         return( sizeof( *ret ) );
     }
-    ret->err = 0;
     makeDTARFX( &ffd, info, h, nt_attribs );
     return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
@@ -385,7 +385,7 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
     max_len = GetTotalSizeOut() - 1 -  sizeof( *ret );
-    ret->err = 1;
+    ret->err = 0;
     while( *name == ' ' ) {
         name++;
     }

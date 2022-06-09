@@ -527,7 +527,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char            *src;
     char            *name;
     prog_load_ret   *ret;
-    unsigned        len;
+    size_t          len;
 
     _DBG_Writeln( "AccLoadProg" );
     AtEnd = false;
@@ -535,7 +535,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ret = GetOutPtr( 0 );
     while( *src++ != '\0' )
         {}
-    len = GetTotalSizeIn() - sizeof( prog_load_req ) - (src - name);
+    len = GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name );
     if( len > 126 )
         len = 126;
     MergeArgvArray( src, UtilBuff, len );

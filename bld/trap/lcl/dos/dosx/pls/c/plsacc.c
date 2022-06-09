@@ -638,7 +638,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char            *src;
     char            *name;
     prog_load_ret   *ret;
-    unsigned        len;
+    size_t          len;
 
     _DBG(("AccLoadProg\r\n"));
     memset( ObjOffReloc, 0, sizeof( ObjOffReloc ) );

@@ -40,6 +40,7 @@
 #include "javaname.h"
 #include "jvmerr.h"
 
+
 ClassClass              *cbCallJava;
 HANDLE                  EventSem;
 HANDLE                  EventDoneSem;
@@ -1277,22 +1278,21 @@ trap_retval TRAP_FILE( read )( void )
 {
     file_read_req       *acc;
     file_read_ret       *ret;
-    void                *buff;
     char                tmp[LENGTH];
     size_t              bytes;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetOutPtr( sizeof( *ret ) );
-    if( CbOpened == NULL )
+    ret->err = 0;
+    if( CbOpened == NULL ) {
         return( sizeof( *ret ) );
+    }
     strcpy( tmp, PREFIX );
     *((void **)( tmp + PREFIX_SIZE )) = (void *)CbOpened;
     bytes = LENGTH;
     if( bytes > acc->len )
         bytes = acc->len;
-    memcpy( buff, tmp, bytes );
-    ret->err = 0;
+    memcpy( GetOutPtr( sizeof( *ret ) ), tmp, bytes );
     return( sizeof( *ret ) + bytes );
 }
 
