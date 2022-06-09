@@ -43,5 +43,5 @@ extern mx_entry_p       Out_Mx_Ptr;
 
 extern void             *GetInPtr( trap_elen );
 extern void             *GetOutPtr( trap_elen );
-extern trap_elen        GetTotalSizeIn( void );
-extern trap_elen        GetTotalSizeOut( void );
+extern size_t           GetTotalSizeIn( void );
+extern size_t           GetTotalSizeOut( void );
