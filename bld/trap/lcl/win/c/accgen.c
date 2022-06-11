@@ -37,7 +37,7 @@
 #include "stdwin.h"
 #include "winctrl.h"
 #include "trperr.h"
-#include "dosenv.h"
+#include "winenv.h"
 #include "winerr.h"
 
 
@@ -125,24 +125,4 @@ trap_retval TRAP_CORE( Get_err_text )( void )
         ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
     }
     return( strlen( err_txt ) + 1 );
-}
-
-const char *DOSEnvFind( const char *src )
-{
-    const char  *p;
-    const char  *env;
-
-    env = GetDOSEnvironment();
-    do {
-        p = src;
-        do {
-            if( *p == '\0' && *env == '=' ) {
-                return( env + 1 );
-            }
-        } while( *env++ == *p++ );
-        while( *env++ != '\0' ) {
-            {}
-        }
-    } while( *env != '\0' );
-    return( NULL );
 }

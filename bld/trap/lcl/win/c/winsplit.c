@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,10 +25,44 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS command line split stuff (16-bit code)
 *
 ****************************************************************************/
 
 
-extern const char *DOSEnvFind( const char *src );
+#include "trpimp.h"
+#include "trpcomm.h"
+
+
+trap_retval TRAP_CORE( Split_cmd )( void )
+{
+    const char      *cmd;
+    const char      *start;
+    split_cmd_ret   *ret;
+    size_t          len;
+
+    cmd = GetInPtr( sizeof( split_cmd_req ) );
+    len = GetTotalSizeIn() - sizeof( split_cmd_req );
+    start = cmd;
+    ret = GetOutPtr( 0 );
+    ret->parm_start = 0;
+    while( len > 0 ) {
+        switch( *cmd ) {
+        CASE_SEPS
+            ret->parm_start = 1;
+            /* fall through */
+        case '/':
+        case '=':
+        case '(':
+        case ';':
+        case ',':
+            len = 0;
+            continue;
+        }
+        ++cmd;
+        --len;
+    }
+    ret->parm_start += cmd - start;
+    ret->cmd_end = cmd - start;
+    return( sizeof( *ret ) );
+}

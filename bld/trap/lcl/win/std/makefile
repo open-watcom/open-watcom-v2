@@ -34,9 +34,10 @@ extra_objs = &
         accmisc.obj &
         accgen.obj &
         out.obj &
-        dosfile.obj &
-        dosrfx.obj &
-        dossplit.obj &
+        winenv.obj &
+        winfile.obj &
+        winrfx.obj &
+        winsplit.obj &
         x86cpu.obj &
         misc7086.obj &
         supp.obj &

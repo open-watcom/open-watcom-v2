@@ -43,7 +43,7 @@
 #include "getsaddr.h"
 #include "winerr.h"
 #include "di386cli.h"
-#include "dosfile.h"
+#include "winfile.h"
 #include "pathgrp2.h"
 #include "dbgrmsg.h"
 
