@@ -426,32 +426,33 @@ static void proc_detach( char *args )
     ProcInfo.pid    = 0;
 }
 
-static pid_t RunningProc( char *name, char **name_ret )
+static pid_t RunningProc( const char *name, const char **name_ret )
 {
     pid_t       pid;
     char        ch;
-    char        *start;
+    const char  *ptr;
 
-    start = name;
-//    name = CollectNid( name, strlen( name ), nid );
+    ptr = name;
+//    ptr = CollectNid( name, strlen( name ), nid );
 
     for( ;; ) {
-        ch = *name;
+        ch = *ptr;
         if( ch != ' ' && ch != '\t' )
             break;
-        ++name;
+        ++ptr;
     }
     if( name_ret != NULL ) {
-        *name_ret = name;
+        *name_ret = ptr;
     }
     pid = 0;
     for( ;; ) {
-        if( *name < '0' || *name > '9' )
+        ch = *ptr;
+        if( ch < '0' || ch > '9' )
             break;
-        pid = (pid * 10) + (*name - '0');
-        ++name;
+        pid = ( pid * 10 ) + ( ch - '0' );
+        ++ptr;
     }
-    if( *name != '\0') {
+    if( *ptr != '\0') {
         return( 0 );
     }
     return( pid );
@@ -530,7 +531,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char                    *parm_start;
     int                     i;
     char                    exe_name[PATH_MAX];
-    char                    *name;
+    const char              *name;
     pid_t                   save_pgrp;
     sigset_t                sig_set;
     prog_load_req           *acc;
@@ -1007,10 +1008,10 @@ trap_retval TRAP_CORE( Redirect_stdout )( void  )
 
 trap_retval TRAP_FILE( string_to_fullpath )( void )
 {
-    pid_t              pid;
-    int                len;
-    char               *name;
-    char               *fullname;
+    pid_t               pid;
+    int                 len;
+    const char          *name;
+    char                *fullname;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
 

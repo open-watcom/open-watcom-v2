@@ -739,28 +739,26 @@ static pid_t RunningProc( nid_t *nid, const char *name, struct _psinfo *info, co
     pid_t       pid;
     pid_t       proc;
     char        ch;
-    const char  *start;
+    const char  *ptr;
 
-    start = name;
-    name = CollectNid( name, strlen( name ), nid );
-
+    ptr = CollectNid( name, strlen( name ), nid );
     for( ;; ) {
-        ch = *name;
+        ch = *ptr;
         if( ch != ' ' && ch != '\t' )
             break;
-        ++name;
+        ++ptr;
     }
     if( name_ret != NULL )
-        *name_ret = name;
+        *name_ret = (char *)ptr;
     pid = 0;
     for( ;; ) {
-        ch = *name;
+        ch = *ptr;
         if( ch < '0' || ch > '9' )
             break;
         pid = ( pid * 10 ) + ( ch - '0' );
-        ++name;
+        ++ptr;
     }
-    if( *name != '\0')
+    if( *ptr != '\0' )
         return( 0 );
     for( ;; ) {
         proc = qnx_vc_attach( *nid, PROC_PID,
@@ -768,11 +766,11 @@ static pid_t RunningProc( nid_t *nid, const char *name, struct _psinfo *info, co
         info->pid = 0;
         qnx_psinfo( proc, pid, info, 0, 0 );
         qnx_vc_detach( proc );
-        if( info->pid != pid )
-            return( 0 );
-        if( info->flags & ( _PPF_MID | _PPF_VMID ) )
-            return( 0 );
-        if( !(info->flags & _PPF_VID) )
+        if( info->pid != pid || (info->flags & (_PPF_MID | _PPF_VMID)) ) {
+            pid = 0;
+            break;
+        }
+        if( (info->flags & _PPF_VID) == 0 )
             break;
         *nid = info->un.vproc.remote_nid;
         pid = info->un.vproc.remote_pid;

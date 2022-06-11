@@ -67,15 +67,15 @@ char *StrCopyDst( const char *src, char *dst )
     return( dst );
 }
 
-const char *CollectNid( const char *ptr, unsigned len, nid_t *nidp )
+const char *CollectNid( const char *name, size_t len, nid_t *nidp )
 {
-    const char  *start;
+    const char  *ptr;
     nid_t       nid;
     char        ch;
 
     nid = 0;
+    ptr = name;
     if( ptr[0] == '/' && ptr[1] == '/' ) {
-        start = ptr;
         len -= 2;
         ptr += 2;
         //NYI: will need beefing up when NID's can be symbolic
@@ -88,13 +88,13 @@ const char *CollectNid( const char *ptr, unsigned len, nid_t *nidp )
             --len;
         }
         //NYI: how do I check to see if NID is valid?
-        if( len != 0 ) {
+        if( len > 0 ) {
             switch( ptr[0] ) {
             CASE_SEPS
                 break;
             default:
                 nid = 0;
-                ptr = start;
+                ptr = name;
                 break;
             }
         }
@@ -226,22 +226,21 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     const char          *cmd;
     const char          *start;
     split_cmd_ret       *ret;
-    unsigned            len;
+    size_t              len;
     nid_t               nid;
 
-    cmd = GetInPtr( sizeof( split_cmd_req ) );
+    start = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
-    cmd = CollectNid( cmd, len, &nid );
+    cmd = CollectNid( start, len, &nid );
     len -= cmd - start;
     while( len > 0 ) {
         switch( *cmd ) {
         CASE_SEPS
             break;
         default:
-            while( len != 0 ) {
+            while( len > 0 ) {
                 switch( *cmd ) {
                 CASE_SEPS
                     ret->parm_start = 1;

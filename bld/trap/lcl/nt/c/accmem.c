@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,57 +174,34 @@ DWORD WriteMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 
 trap_retval TRAP_CORE( Read_mem )( void )
 {
-    WORD            seg;
-    ULONG_PTR       offset;
-    DWORD           length;
-    LPSTR           data;
     read_mem_req    *acc;
 
     acc = GetInPtr( 0 );
-
     if( DebugeePid == 0 ) {
         return( 0 );
     }
-
-    seg = acc->mem_addr.segment;
-    offset = acc->mem_addr.offset;
-    length = acc->len;
-    data = ( LPSTR ) GetOutPtr( 0 );
-
-    length = ReadMem( seg, offset, data, length );
-    return( length );
+    return( ReadMem( acc->mem_addr.segment, acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
 {
-    WORD            seg;
-    ULONG_PTR       offset;
-    DWORD           length;
-    LPSTR           data;
     write_mem_req   *acc;
     write_mem_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
     ret->len = 0;
     if( DebugeePid == 0 ) {
         return( sizeof( *ret ) );
     }
-
-    seg = acc->mem_addr.segment;
-    offset = acc->mem_addr.offset;
-    length = GetTotalSizeIn() - sizeof( *acc );
-    data = ( LPSTR ) GetInPtr( sizeof( *acc ) );
-
-    ret->len = WriteMem( seg, offset, data, length );
+    ret->len = WriteMem( acc->mem_addr.segment, acc->mem_addr.offset, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     ULONG_PTR           offset;
-    WORD                length;
+    size_t              len;
     WORD                value;
     WORD                segment;
     DWORD               sum;
@@ -234,20 +211,20 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    length = acc->len;
+    len = acc->len;
     sum = 0;
     if( DebugeePid ) {
         offset = acc->in_addr.offset;
         segment = acc->in_addr.segment;
-        while( length != 0 ) {
+        while( len > 0 ) {
             ReadMem( segment, offset, &value, sizeof( value ) );
             sum += value & 0xff;
             offset++;
-            length--;
-            if( length != 0 ) {
+            len--;
+            if( len > 0 ) {
                 sum += value >> 8;
                 offset++;
-                length--;
+                len--;
             }
         }
     }

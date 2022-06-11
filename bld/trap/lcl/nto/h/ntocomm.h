@@ -89,7 +89,7 @@ extern char         **dbg_environ;
 extern char         *StrCopyDst( const char *, char * );
 extern unsigned     TryOnePath( const char *, struct stat *, const char *, char * );
 extern unsigned     FindFilePath( dig_filetype, const char *, char * );
-//extern char         *CollectNid( char *name, unsigned len, nid_t *nidp );
+//extern const char   *CollectNid( const char *name, size_t len, nid_t *nidp );
 
 extern unsigned     ReadMem( pid_handle procfs_fd, void *ptr, addr_off offv, unsigned size );
 extern unsigned     WriteMem( pid_handle procfs_fd, void *ptr, addr_off offv, unsigned size );
