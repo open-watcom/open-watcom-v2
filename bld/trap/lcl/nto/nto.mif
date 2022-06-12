@@ -28,6 +28,3 @@ extra_srcs = $(trap_dir)/lcl/nto/c;$(clib_dir)/environ/c
 inc_dirs   = -I"$(trap_dir)/lcl/nto/h" -I"$(lib_misc_dir)/h"
 
 !endif
-
-!include $(trap_dir)/lcl/lcl.mif
-
