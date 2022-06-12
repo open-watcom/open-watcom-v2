@@ -46,6 +46,7 @@
 #include "digcli.h"
 #include "digld.h"
 #include "servio.h"
+#include "lnxcomm.h"
 
 
 void Output( const char *str )
@@ -116,7 +117,7 @@ int WantUsage( const char *ptr )
     return( *ptr == '?' );
 }
 
-static char *StrCopyDst( const char *src, char *dst )
+char *StrCopyDst( const char *src, char *dst )
 {
     while( (*dst = *src++) != '\0' ) {
         dst++;
@@ -124,7 +125,7 @@ static char *StrCopyDst( const char *src, char *dst )
     return( dst );
 }
 
-static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
+unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *end;
     char        *ptr;
@@ -151,7 +152,7 @@ static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name
     }
 }
 
-static unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
+unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;
@@ -192,70 +193,4 @@ static unsigned FindFilePath( dig_filetype file_type, const char *name, char *re
         }
         return( TryOnePath( "/opt/watcom/wd", &tmp, name, result ) );
     }
-}
-
-FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
-{
-    bool                has_ext;
-    bool                has_path;
-    const char          *src;
-    char                *dst;
-    char                trpfile[256];
-    FILE                *fp;
-    char                c;
-
-    max_result = max_result;
-    has_ext = false;
-    has_path = false;
-    src = name;
-    dst = trpfile;
-    while( name_len-- > 0 ) {
-        c = *src++;
-        *dst++ = c;
-        switch( c ) {
-        case '.':
-            has_ext = true;
-            break;
-        case '/':
-            has_ext = false;
-            has_path = true;
-            /* fall through */
-            break;
-        }
-    }
-    if( !has_ext ) {
-        *dst++ = '.';
-        name_len = strlen( ext );
-        memcpy( dst, ext, name_len );
-        dst += name_len;
-    }
-    *dst = '\0';
-    fp = NULL;
-    if( has_path ) {
-        fp = fopen( trpfile, "rb" );
-        for( src = trpfile, dst = result; (*dst = *src++) != '\0'; ++dst ) {
-            if( max_result-- < 2 ) {
-                *dst = '\0';
-                break;
-            }
-        }
-    } else if( FindFilePath( DIG_FILETYPE_DBG, trpfile, result ) ) {
-        fp = fopen( result, "rb" );
-    }
-    return( fp );
-}
-
-int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
-{
-    return( fread( buff, 1, len, fp ) != len );
-}
-
-int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
-{
-    return( fseek( fp, offs, where ) );
-}
-
-int DIGLoader( Close )( FILE *fp )
-{
-    return( fclose( fp ) );
 }

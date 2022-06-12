@@ -11,4 +11,5 @@ remote_link = 1
 
 extra_objs = serqnx.obj
 
+!include $(trap_dir)/lcl/qnx/qnx.mif
 !include $(trap_dir)/master.mif

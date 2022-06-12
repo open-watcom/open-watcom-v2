@@ -19,6 +19,5 @@ extra_objs = &
         supp.obj &
         core.obj
 
-inc_dirs = -I"$(trap_dir)/lcl/h"
-
+!include $(trap_dir)/lcl/qnx/qnx.mif
 !include $(trap_dir)/master.mif

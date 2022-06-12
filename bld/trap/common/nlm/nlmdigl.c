@@ -25,55 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  DOS specific trap I/O.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dos.h>
-#include "tinyio.h"
-#include "trptypes.h"
-#include "digcli.h"
-#include "digld.h"
-#include "servio.h"
-#include "int16.h"
-
-
-void Output( const char *str )
-{
-    TinyWrite( TINY_ERR, str, strlen( str ) );
-}
-
-void SayGNiteGracey( int return_code )
-{
-    TinyTerminateProcess( return_code );
-    // never return
-}
-
-void StartupErr( const char *err )
-{
-    Output( err );
-    Output( "\r\n" );
-    SayGNiteGracey( 1 );
-    // never return
-}
-
-int KeyPress( void )
-{
-    return( _BIOSKeyboardHit( KEYB_STD ) );
-}
-
-int KeyGet( void )
-{
-    return( _BIOSKeyboardGet( KEYB_STD ) );
-}
-
-int WantUsage( const char *ptr )
-{
-    if( (*ptr == '-') || (*ptr == '/') )
-        ++ptr;
-    return( *ptr == '?' );
-}
+// Nothing to do here

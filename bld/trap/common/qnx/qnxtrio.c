@@ -47,6 +47,7 @@
 #include "servio.h"
 #include "digcli.h"
 #include "digld.h"
+#include "qnxcomm.h"
 
 
 void Output( const char *str )
@@ -103,14 +104,6 @@ int KeyGet( void )
     return( key );
 }
 
-static char *StrCopyDst( const char *src, char *dst )
-{
-    while( (*dst = *src++) != '\0' ) {
-        dst++;
-    }
-    return( dst );
-}
-
 int WantUsage( const char *ptr )
 {
     /*
@@ -127,7 +120,15 @@ int WantUsage( const char *ptr )
     return( false );
 }
 
-static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
+char *StrCopyDst( const char *src, char *dst )
+{
+    while( (*dst = *src++) != '\0' ) {
+        dst++;
+    }
+    return( dst );
+}
+
+unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *end;
     char        *ptr;
@@ -154,7 +155,7 @@ static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name
     }
 }
 
-static unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
+unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;
@@ -191,69 +192,4 @@ static unsigned FindFilePath( dig_filetype file_type, const char *name, char *re
         }
         return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
     }
-}
-
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *exts, char *result, size_t max_result )
-{
-    bool            has_ext;
-    bool            has_path;
-    const char      *ptr;
-    const char      *endptr;
-    char            trpfile[PATH_MAX + 1];
-    FILE            *fp;
-
-    result = result; max_result = max_result;
-    has_ext = false;
-    has_path = false;
-    endptr = name + name_len;
-    for( ptr = name; ptr != endptr; ++ptr ) {
-        switch( *ptr ) {
-        case '.':
-            has_ext = true;
-            break;
-        case '/':
-            has_ext = false;
-            has_path = true;
-            /* fall through */
-            break;
-        }
-    }
-    memcpy( trpfile, name, name_len );
-    trpfile[name_len] = '\0';
-    if( !has_ext ) {
-        trpfile[name_len++] = '.';
-        memcpy( trpfile + name_len, exts, strlen( exts ) + 1 );
-    }
-    fp = NULL;
-    if( has_path ) {
-        fp = fopen( trpfile, "rb" );
-    } else if( FindFilePath( DIG_FILETYPE_DBG, trpfile, RWBuff ) ) {
-        fp = fopen( RWBuff, "rb" );
-    }
-    return( fp );
-}
-
-int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
-{
-    return( fread( buff, 1, len, fp ) != len );
-}
-
-int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
-{
-    return( fseek( fp, offs, where ) );
-}
-
-int DIGLoader( Close )( FILE *fp )
-{
-    return( fclose( fp ) );
-}
-
-void *DIGCLIENTRY( Alloc )( size_t amount )
-{
-    return( malloc( amount ) );
-}
-
-void DIGCLIENTRY( Free )( void *p )
-{
-    free( p );
 }

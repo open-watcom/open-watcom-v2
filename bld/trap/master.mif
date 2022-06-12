@@ -268,8 +268,8 @@ $(resource_file) : $(trap_dir)/common/wserver.rc
     $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 !endif
 
-inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(target_os)"
-inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h"
+inc_dirs += -I. -I"../h" -I"$(trap_dir)/common/$(target_os)"
+inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
 !ifeq host_os nov
 inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/h"
 inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/src" -I"$(nwoss_dir)/common/h"

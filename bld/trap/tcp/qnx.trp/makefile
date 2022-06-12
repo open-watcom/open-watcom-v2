@@ -13,4 +13,5 @@ extra_objs = qtcpsupp.obj
 extra_libs = $(watcom_dir)/lib/qnx/socket3r.lib
 inc_dirs = -I"$(watcom_dir)/qnx_h"
 
+!include $(trap_dir)/lcl/qnx/qnx.mif
 !include $(trap_dir)/master.mif

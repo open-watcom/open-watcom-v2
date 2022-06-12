@@ -11,4 +11,5 @@ remote_link = 1
 
 extra_objs = parqnx.obj
 
+!include $(trap_dir)/lcl/qnx/qnx.mif
 !include $(trap_dir)/master.mif

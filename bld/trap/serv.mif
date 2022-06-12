@@ -105,7 +105,7 @@ resource_file = $(serv_basename).res
 !else
 SERVER_remote_objs = serv.obj $(os_prefix)trio.obj
 !endif
-SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(trp_objs) $(dig_objs)
+SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(os_prefix)digl.obj $(trp_objs) $(dig_objs)
 extra_srcs +=;$(dig_srcs)
 !endif
 SERVER_remote_objs += $(os_prefix)noth.obj

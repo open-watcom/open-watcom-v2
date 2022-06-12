@@ -1,0 +1,5 @@
+!ifeq which SERVER
+inc_dirs += -I"$(trap_dir)/lcl/qnx/h"
+!else
+inc_dirs += -I"$(trap_dir)/lcl/h"
+!endif
