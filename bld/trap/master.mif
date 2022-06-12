@@ -3,6 +3,15 @@ proj_name = trap
 !ifndef trap_autodepends
 trap_autodepends = .AUTODEPEND
 !endif
+#
+# optimization for size
+# only 16-bit DOS executable
+#
+!ifeq host_os dos
+!ifeq host_cpu i86
+dft_oflags = -oais
+!endif
+!endif
 
 trap_nofpu = 1
 
@@ -61,7 +70,8 @@ additional_clean_dos = *.trp
 additional_clean_os2 = *.d32
 additional_clean_qnx = usage.u
 
-!ifeq srv lcl
+!ifdef name
+!else ifeq srv lcl
 name = std
 ! ifndef test
 !  ifdef %OWUSE_FILENAME_VERSION
@@ -268,7 +278,7 @@ $(resource_file) : $(trap_dir)/common/wserver.rc
     $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 !endif
 
-inc_dirs += -I. -I"../h" -I"$(trap_dir)/common/$(target_os)"
+inc_dirs += -I. -I"../h" $(extra_incs) -I"$(trap_dir)/common/$(target_os)"
 inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
 !ifeq host_os nov
 inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/h"
