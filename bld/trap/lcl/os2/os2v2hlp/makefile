@@ -17,8 +17,9 @@ os2v2hlp_autodepends = .AUTODEPEND
 
 .asm : ../asm
 
-extra_l_flags = op dosseg imp DOS32WRITE DOSCALLS.282,DOS32DEBUG DOSCALLS.317
+extra_l_flags = op dosseg &
+    imp DOS32WRITE DOSCALLS.282 &
+    imp DOS32DEBUG DOSCALLS.317
 
 exetarg_objs = os2v2hlp.obj
 !include exetarg.mif
-

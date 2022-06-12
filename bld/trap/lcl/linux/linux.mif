@@ -29,5 +29,3 @@ extra_srcs = $(trap_dir)/lcl/linux/c
 !endif
 
 inc_dirs   = -I"$(trap_dir)/lcl/linux/h"
-
-!include $(trap_dir)/lcl/lcl.mif

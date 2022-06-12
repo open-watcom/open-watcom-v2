@@ -35,3 +35,5 @@ dosx_serv_objs = &
         $(dosx_serv_objs_$(host_cpu))
 
 !include tools.mif
+
+!include $(trap_dir)/lcl/lcl.mif

@@ -12,4 +12,5 @@ srv   = lcl
 which = TRAP
 
 !include $(trap_dir)/lcl/nto/nto.mif
+!include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
