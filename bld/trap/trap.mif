@@ -143,12 +143,12 @@ target = $(trap_basename)$(ext_lib_shared)
 !endif
 
 TRAP_common_objs = $(os_prefix)strt.obj
+TRAP_remote_objs = remote.obj
+
+!endif
+
 !ifeq srv par
 TRAP_common_objs += $(os_prefix)noth.obj
 !else ifeq srv ser
 TRAP_common_objs += $(os_prefix)noth.obj
-!endif
-
-TRAP_remote_objs = remote.obj
-
 !endif
