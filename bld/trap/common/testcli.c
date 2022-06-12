@@ -36,6 +36,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <conio.h>
+#include "trptypes.h"
 #include "testlink.h"
 #include "packet.h"
 
@@ -46,7 +47,7 @@ full_block      Data;
 HANDLE  Instance;
 #endif
 
-void RunTime( test_type test, unsigned bytes, unsigned iterations )
+static void RunTime( test_type test, unsigned bytes, unsigned iterations )
 {
     clock_t         start;
     unsigned long   diff;
@@ -104,7 +105,7 @@ int main( unsigned argc, char *argv[] )
     Instance = *_MainWindowData;
     }
 #endif
-    err = RemoteLink( ( argc > 1 ) ? argv[1] : "", FALSE );
+    err = RemoteLink( ( argc > 1 ) ? argv[1] : "", false );
     if( err != NULL ) {
         printf( "Error: %s\n", err );
         return( 1 );
