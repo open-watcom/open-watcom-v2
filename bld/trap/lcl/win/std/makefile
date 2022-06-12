@@ -63,3 +63,6 @@ inc_dirs = -I"$(trap_dir)/lcl/win/h" $(windbg_inc_dirs)
 extra_libs = $(windbg_lib)
 
 !include $(trap_dir)/lcl/win/win.mif
+!include $(trap_dir)/lcl/dos/dos.mif
+!include $(trap_dir)/lcl/lcl.mif
+!include $(trap_dir)/master.mif
