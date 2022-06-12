@@ -6,7 +6,7 @@ extra_cppflags += -DDOSXTRAP
 extra_objs     += $(dosx_trap_objs)
 !endif
 
-inc_dirs += -I"$(trap_dir)/lcl/dos/dosx/h"
+extra_incs += -I"$(trap_dir)/lcl/dos/dosx/h"
 
 !include $(trap_dir)/lcl/dos/dos.mif
 
@@ -16,7 +16,7 @@ dosx_serv_objs_386 = misc7386.obj
 dosx_link_objs = dosxlink.obj packet.obj
 
 dosx_trap_objs = &
-        $(dos_objs) &
+        $(dos_trap_objs) &
         $(dosx_link_objs) &
         dosxremo.obj &
         dosxfork.obj &

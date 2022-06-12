@@ -18,7 +18,7 @@ extra_objs += $(nlm_trap_objs)
 !endif
 
 extra_srcs = ;$(trap_dir)/lcl/nlm/c;$(trap_dir)/lcl/nlm/asm
-inc_dirs   = -I"$(trap_dir)/lcl/nlm/h"
+extra_incs = -I"$(trap_dir)/lcl/nlm/h"
 
 extra_a_flags = -3s
 

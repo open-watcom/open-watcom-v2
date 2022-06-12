@@ -1,1 +1,1 @@
-inc_dirs += -I"$(trap_dir)/lcl/os2/h"
+extra_incs += -I"$(trap_dir)/lcl/os2/h"
