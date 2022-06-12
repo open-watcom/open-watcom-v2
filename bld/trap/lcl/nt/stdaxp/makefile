@@ -14,4 +14,5 @@ which   = TRAP
 extra_objs =
 
 !include $(trap_dir)/lcl/nt/nt.mif
-
+!include $(trap_dir)/lcl/lcl.mif
+!include $(trap_dir)/master.mif
