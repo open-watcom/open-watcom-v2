@@ -1,0 +1,1 @@
+inc_dirs += -I"$(trap_dir)/lcl/os2v2/h"
