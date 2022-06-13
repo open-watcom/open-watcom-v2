@@ -24,3 +24,6 @@ extra_linker = &
 
 !include $(trap_dir)/lcl/dos/dosx/pls/pls.mif
 !include $(trap_dir)/master.mif
+
+plsord.obj : plsord.asm
+    $(as) $[@ -fo=.obj
