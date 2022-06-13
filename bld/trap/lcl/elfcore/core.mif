@@ -5,4 +5,5 @@ core_entries = 1
 
 extra_cppflags = -DELFCORE
 
-inc_dirs   = -I"$(trap_dir)/lcl/elfcore/h"
+extra_incs = -I"$(trap_dir)/lcl/elfcore/h"
+extra_srcs =;$(trap_dir)/lcl/elfcore/c
