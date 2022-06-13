@@ -123,7 +123,7 @@
         #undef  WANT_OVL
         #undef  WANT_THREAD
         #undef  WANT_RUN_THREAD
-        #define WANT_RFX
+        #undef  WANT_RFX
     #else
         #define WANT_FILE_INFO
         #define WANT_ENV
