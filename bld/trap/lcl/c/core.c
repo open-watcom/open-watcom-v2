@@ -42,6 +42,7 @@
 #elif defined( __WINDOWS__ ) && defined( _M_I86 )
     #define WIN16
     #include "winctrl.h"
+    #include "winpath.h"
 #endif
 
 static trap_retval (* const CoreRequests[])(void) = {
@@ -65,7 +66,7 @@ trap_retval TRAP_CORE( Connect )( void )
     /* version ok... already checked by initialization  */
     err = GetOutPtr(sizeof(*ret));
 #if defined( WIN16 )
-    strcpy( err, InitDebugging() );
+    StrCopyDst( InitDebugging(), err );
 #else
     *err = '\0';
 #endif

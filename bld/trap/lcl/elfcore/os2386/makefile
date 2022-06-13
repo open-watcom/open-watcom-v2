@@ -17,6 +17,7 @@ extra_cflags = -bd
 
 extra_objs = &
     $(elfcore_objs) &
+    os22path.obj &
     supp.obj &
     core.obj
 

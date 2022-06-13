@@ -43,15 +43,13 @@
 #include "getsaddr.h"
 #include "winerr.h"
 #include "di386cli.h"
-#include "winfile.h"
+#include "winpath.h"
 #include "pathgrp2.h"
 #include "dbgrmsg.h"
 
 
 #define SIG_OFF         0
 #define SIG_SIZE        4
-
-#define TINY_ERROR(x)  ((signed long)x < 0)
 
 const unsigned short __based(__segname("_CONST")) win386sig[] = { 0xDEAD,0xBEEF };
 const unsigned short __based(__segname("_CONST")) win386sig2[] = { 0xBEEF,0xDEAD };

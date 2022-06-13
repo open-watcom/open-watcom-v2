@@ -25,36 +25,18 @@
 *
 *  ========================================================================
 *
-* Description:  Get Debugee Environment variable for DOS (16-bit code).
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include <i86.h>
-#include "dbgpsp.h"
-#include "dosenv.h"
-
-
-const char __far *DOSEnvFind( char *src )
-{
-    const char  __far *env;
-    char        *p;
-    char        c1;
-    char        c2;
-
-    env = _MK_FP( *(unsigned __far *)_MK_FP( DbgPSP(), 0x2c ), 0 );
-    do {
-        p = src;
-        do {
-            c1 = *p++;
-            c2 = *env++;
-        } while( c1 == c2 && c1 != '\0' && c2 != '=' );
-        if( c1 == '\0' && c2 == '=' )
-            return( env );
-        while( c2 != '\0' ) {
-            c2 = *env++;
-        }
-    } while( *env != '\0' );
-    return( NULL );
-}
+extern char             *StrCopyDst( const char *src, char *dst );
+extern const char       *StrCopySrc( const char *src, char *dst );
+#if defined( SERVER )
+extern const char       *DOSEnvFind( const char *src );
+#else
+extern const char       __far *DOSEnvFind( const char *src );
+#endif
+extern tiny_ret_t       TryPath( const char *name, char *end, const char *ext_list );
+extern unsigned long    FindFilePath( dig_filetype file_type, const char *pgm, char *buffer );

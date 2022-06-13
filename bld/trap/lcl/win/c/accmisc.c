@@ -43,6 +43,7 @@
 #include "madregs.h"
 #include "x86cpu.h"
 #include "di386cli.h"
+#include "winpath.h"
 
 
 BOOL IsSegSize32( WORD seg )
@@ -135,9 +136,9 @@ trap_retval TRAP_CORE( Get_message_text )( void )
             ret->flags |= MSG_MORE;
         }
     } else if( IntResult.InterruptNumber < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
-        strcpy( err_txt, ExceptionMsgs[IntResult.InterruptNumber] );
+        StrCopyDst( ExceptionMsgs[IntResult.InterruptNumber], err_txt );
     } else {
-        strcpy( err_txt, TRP_EXC_unknown );
+        StrCopyDst( TRP_EXC_unknown, err_txt );
     }
     return( sizeof( ret ) + strlen( err_txt ) + 1 );
 }

@@ -39,7 +39,7 @@
 #include "digtypes.h"
 #include "digcli.h"
 #include "digld.h"
-#include "ntocomm.h"
+#include "ntopath.h"
 #include "servio.h"
 
 

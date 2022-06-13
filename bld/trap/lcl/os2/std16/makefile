@@ -16,6 +16,7 @@ core_entries = 1
 extra_objs = &
         accmisc.obj &
         os2v1acc.obj &
+        os2path.obj &
         os2rfx.obj &
         loadstd.obj &
         misc7086.obj &

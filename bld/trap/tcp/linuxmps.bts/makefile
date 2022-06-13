@@ -14,4 +14,5 @@ remote_link = 1
 builtin_trap = 1
 
 !include $(trap_dir)/lcl/linux/linux.mif
+!include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

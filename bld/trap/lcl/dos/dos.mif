@@ -1,6 +1,6 @@
 dos_trap_core_objs = &
     dossplit.obj &
-    dosenv.obj &
+    dospath.obj &
     dosrfx.obj &
     dosfile.obj &
     doschk.obj &

@@ -17,6 +17,7 @@ nt_trap_objs = &
         peread.obj &
         supp.obj &
         dbgthrd.obj &
+        ntpath.obj &
         ntrfx.obj &
         core.obj
 

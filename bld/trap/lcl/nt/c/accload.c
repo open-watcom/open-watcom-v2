@@ -38,6 +38,7 @@
 #include "trperr.h"
 #include "srvcdbg.h"
 #include "doserr.h"
+#include "ntpath.h"
 
 #include "clibext.h"
 

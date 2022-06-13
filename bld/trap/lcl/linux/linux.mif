@@ -6,6 +6,7 @@ linux_trap_objs = &
     lnxmap.obj &
     lnxcomm.obj &
     lnxfile.obj &
+    lnxpath.obj &
     lnxutl.obj &
     supp.obj &
     core.obj

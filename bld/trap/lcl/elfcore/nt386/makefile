@@ -15,6 +15,7 @@ core_entries = 1
 
 extra_objs = &
     $(elfcore_objs) &
+    ntpath.obj &
     supp.obj &
     core.obj
 

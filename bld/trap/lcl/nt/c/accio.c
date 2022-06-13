@@ -40,6 +40,7 @@
 #include <windows.h>
 #include "ntext.h"
 #include "stdnt.h"
+#include "ntpath.h"
 
 
 #ifdef _WIN64

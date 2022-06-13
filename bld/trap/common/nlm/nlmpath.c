@@ -25,31 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  Get Debugee Environment variable for DOS (16-bit code).
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include <windows.h>
-#include "winenv.h"
-
-
-const char *DOSEnvFind( const char *src )
-{
-    const char  *p;
-    const char  *env;
-
-    env = GetDOSEnvironment();
-    do {
-        p = src;
-        do {
-            if( *p == '\0' && *env == '=' ) {
-                return( env + 1 );
-            }
-        } while( *env++ == *p++ );
-        while( *env++ != '\0' ) {
-            {}
-        }
-    } while( *env != '\0' );
-    return( NULL );
-}
+#include "nlmpath.h"

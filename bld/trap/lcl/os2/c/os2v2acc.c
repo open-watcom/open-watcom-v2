@@ -58,6 +58,7 @@
 #include "x86cpu.h"
 #include "cpuglob.h"
 #include "dbgthrd.h"
+#include "os2path.h"
 #include "accmisc.h"
 
 

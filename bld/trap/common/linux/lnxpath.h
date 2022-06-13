@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,4 +31,6 @@
 ****************************************************************************/
 
 
-extern const char __far *DOSEnvFind( char *src );
+extern char         *StrCopyDst( const char *src, char *dst );
+extern unsigned     TryOnePath( const char *, struct stat *, const char *, char * );
+extern unsigned     FindFilePath( dig_filetype, const char *, char * );

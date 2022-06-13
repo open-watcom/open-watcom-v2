@@ -49,6 +49,7 @@
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "cpuglob.h"
+#include "os2path.h"
 #include "accmisc.h"
 
 

@@ -302,8 +302,6 @@ u_long inpd(u_long port);
 
 /* Internal helper functions */
 
-extern unsigned     TryOnePath( const char *, struct stat *, const char *, char * );
-extern unsigned     FindFilePath( dig_filetype, const char *, char * );
 extern u_long       GetDR6( void );
 extern void         ClearDebugRegs( void );
 extern int          SetDebugRegs( void );
@@ -315,7 +313,6 @@ extern int          DelOneLib( struct link_map * );
 extern void         AddProcess( void );
 extern void         DelProcess( void );
 extern void         print_msg( const char *format, ... );
-extern char         *StrCopyDst( const char *src, char *dst );
 
 /* Utility functions shared with execution sampler */
 extern unsigned     ReadMem( pid_t pid, void *ptr, addr_off offv, unsigned size );

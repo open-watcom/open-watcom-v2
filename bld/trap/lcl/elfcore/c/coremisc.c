@@ -46,14 +46,6 @@
 
 static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
-char *StrCopyDst( const char *src, char *dst )
-{
-    while( (*dst = *src++) != '\0' ) {
-        dst++;
-    }
-    return( dst );
-}
-
 trap_retval TRAP_FILE( get_config )( void )
 {
     file_get_config_ret *ret;
@@ -268,59 +260,6 @@ trap_retval TRAP_CORE( Set_user_screen )( void )
 
 trap_retval TRAP_CORE( Set_debug_screen )( void )
 {
-    return( 0 );
-}
-
-static size_t TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
-{
-    char        *ptr;
-
-    if( path == NULL )
-        return( 0 );
-    ptr = result;
-    for( ;; ) {
-        switch( *path ) {
-        case ':':
-        case '\0':
-            if( ptr != result && ptr[-1] != '/' )
-                *ptr++ = '/';
-            strcpy( ptr, name );
-            if( stat( result, tmp ) == 0 )
-                return( strlen( result ) + 1 );
-            if( *path == '\0' )
-                return( 0 );
-            ptr = result;
-            break;
-        case ' ':
-        case '\t':
-            break;
-        default:
-            *ptr++ = *path;
-            break;
-        }
-        ++path;
-    }
-}
-
-size_t FindFilePath( dig_filetype file_type, const char *name, char *result )
-{
-    struct stat     tmp;
-    size_t          len;
-
-    if( stat( name, &tmp ) == 0 ) {
-        return( StrCopyDst( name, result ) - result );
-    }
-    if( file_type == DIG_FILETYPE_EXE ) {
-        return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
-    } else {
-        len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-        if( len > 0 )
-            return( len );
-        len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-        if( len > 0 )
-            return( len );
-        return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
-    }
     return( 0 );
 }
 

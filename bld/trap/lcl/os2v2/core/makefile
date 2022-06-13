@@ -20,6 +20,7 @@ extra_cflags = -bd
 extra_objs = &
     elfcore.obj &
     coremisc.obj &
+    os22path.obj &
 #    accmisc.obj &
     x86cpu.obj &
     supp.obj &

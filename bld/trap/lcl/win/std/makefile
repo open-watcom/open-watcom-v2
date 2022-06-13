@@ -34,7 +34,7 @@ extra_objs = &
         accmisc.obj &
         accgen.obj &
         out.obj &
-        winenv.obj &
+        winpath.obj &
         winfile.obj &
         winrfx.obj &
         winsplit.obj &
@@ -63,6 +63,5 @@ extra_incs = $(windbg_inc_dirs)
 extra_libs = $(windbg_lib)
 
 !include $(trap_dir)/lcl/win/win.mif
-!include $(trap_dir)/lcl/dos/dos.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

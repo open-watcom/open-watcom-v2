@@ -35,7 +35,8 @@
 #include <string.h>
 #include "digtypes.h"
 #include "digld.h"
-#include "lnxcomm.h"
+#include "lnxpath.h"
+#include "servio.h"
 
 
 FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )

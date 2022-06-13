@@ -13,11 +13,12 @@ name    = core
 which   = TRAP
 
 extra_objs = &
-        lnxcore.obj &
-        lnxcomm.obj &
-        lnxfile.obj &
-        supp.obj &
-        core.obj
+    lnxcore.obj &
+    lnxcomm.obj &
+    lnxfile.obj &
+    lnxpath.obj &
+    supp.obj &
+    core.obj
 
 !include $(trap_dir)/lcl/linux/linux.mif
 !include $(trap_dir)/lcl/lcl.mif

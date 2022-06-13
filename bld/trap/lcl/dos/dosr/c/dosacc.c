@@ -54,7 +54,7 @@
 #include "cpuglob.h"
 #include "dosovl.h"
 #include "dbgpsp.h"
-#include "dosfile.h"
+#include "dospath.h"
 
 
 typedef enum {

@@ -59,14 +59,6 @@
 #include "qnxcomm.h"
 
 
-char *StrCopyDst( const char *src, char *dst )
-{
-    while( (*dst = *src++) != '\0' ) {
-        dst++;
-    }
-    return( dst );
-}
-
 const char *CollectNid( const char *name, size_t len, nid_t *nidp )
 {
     const char  *ptr;
@@ -101,60 +93,6 @@ const char *CollectNid( const char *name, size_t len, nid_t *nidp )
     }
     *nidp = nid;
     return( ptr );
-}
-
-size_t TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
-{
-    char        *end;
-    char        *ptr;
-
-    if( path == NULL )
-        return( 0 );
-    ptr = result;
-    for( ;; ) {
-        switch( *path ) {
-        case ':':
-        case '\0':
-            if( ptr != result && ptr[-1] != '/' )
-                *ptr++ = '/';
-            end = StrCopyDst( name, ptr );
-            //NYI: really should check permission bits
-            if( stat( result, tmp ) == 0 )
-                return( end - result );
-            if( *path == '\0' )
-                return( 0 );
-            ptr = result;
-            break;
-        case ' ':
-        case '\t':
-            break;
-        default:
-            *ptr++ = *path;
-            break;
-        }
-        ++path;
-    }
-}
-
-size_t FindFilePath( dig_filetype file_type, const char *name, char *result )
-{
-    struct stat tmp;
-    size_t      len;
-
-    if( stat( (char *)name, &tmp ) == 0 ) {
-        return( StrCopyDst( name, result ) - result );
-    }
-    if( file_type == DIG_FILETYPE_EXE ) {
-        return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
-    } else {
-        len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-        if( len > 0 )
-            return( len );
-        len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-        if( len > 0 )
-            return( len );
-        return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
-    }
 }
 
 

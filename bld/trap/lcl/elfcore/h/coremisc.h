@@ -30,5 +30,10 @@
 ****************************************************************************/
 
 
-extern char     *StrCopyDst( const char *src, char *dst );
-extern unsigned FindFilePath( dig_filetype file_type, const char *name, char *result );
+#if defined( __LINUX__ )
+    #include "lnxpath.h"
+#elif defined( __NT__ )
+    #include "ntpath.h"
+#elif defined( __OS2__ )
+    #include "os22path.h"
+#endif

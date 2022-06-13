@@ -16,6 +16,7 @@ which = TRAP
 extra_objs =          &
         accmisc.obj   &
         os2v2acc.obj  &
+        os22path.obj  &
         os2rfx.obj    &
         pgmexec.obj   &
         softmode.obj  &

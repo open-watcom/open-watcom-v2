@@ -52,7 +52,9 @@
 #include "mad.h"
 #include "madregs.h"
 #include "lnxcomm.h"
+#include "lnxpath.h"
 #include "cpuglob.h"
+
 
 u_short                 flatCS;
 u_short                 flatDS;

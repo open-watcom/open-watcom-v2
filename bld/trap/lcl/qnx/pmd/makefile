@@ -16,6 +16,7 @@ extra_objs = &
         qnxpmd.obj &
         qnxcomm.obj &
         qnxfile.obj &
+        qnxpath.obj &
         misc7386.obj &
         supp.obj &
         core.obj

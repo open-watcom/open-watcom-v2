@@ -56,6 +56,7 @@
 #include "exeflat.h"
 #include "x86cpu.h"
 #include "dbgthrd.h"
+#include "os22path.h"
 #include "accmisc.h"
 
 

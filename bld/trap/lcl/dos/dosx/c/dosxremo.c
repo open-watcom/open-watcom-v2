@@ -44,7 +44,7 @@
 #include "madregs.h"
 #include "dosxlink.h"
 #include "dosxfork.h"
-#include "dosfile.h"
+#include "dospath.h"
 
 
 static char             LinkParms[256];

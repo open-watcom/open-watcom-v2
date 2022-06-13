@@ -39,11 +39,11 @@
 #include "trpcomm.h"
 #include "exeelf.h"
 #include "lnxcomm.h"
+#include "lnxpath.h"
 //#include "miscx87.h"
 #include "mad.h"
 #include "madregs.h"
 
-//extern unsigned FindFilePath( dig_filetype file_type, const char *name, char *result );
 
 #ifdef __BIG_ENDIAN__
     #define SWAP_16     CONV_LE_16

@@ -17,6 +17,7 @@ extra_c_flags = -I"$(os2api_dir)/os2286/h" -I"$(os2api_dir)/os2386/h"
 extra_objs = &
         accmisc.obj &
         os2v2acc.obj &
+        os2path.obj &
         os2rfx.obj &
         pgmexec.obj &
         softmode.obj &

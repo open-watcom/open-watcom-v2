@@ -47,6 +47,7 @@
 #include "trperr.h"
 #include "bsexcpt.h"
 #include "dbgthrd.h"
+#include "os2path.h"
 
 
 #define LOCATOR     "OS2V2HLP.EXE"

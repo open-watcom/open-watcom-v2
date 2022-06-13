@@ -39,7 +39,7 @@
 #include "digtypes.h"
 #include "digcli.h"
 #include "digld.h"
-#include "qnxcomm.h"
+#include "qnxpath.h"
 #include "servio.h"
 
 

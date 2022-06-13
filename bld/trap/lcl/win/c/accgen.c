@@ -32,12 +32,11 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "tinyio.h"
 #include "wdebug.h"
 #include "stdwin.h"
 #include "winctrl.h"
 #include "trperr.h"
-#include "winenv.h"
+#include "winpath.h"
 #include "winerr.h"
 
 
@@ -119,9 +118,9 @@ trap_retval TRAP_CORE( Get_err_text )( void )
     err_txt = GetOutPtr( 0 );
 
     if( acc->err < ERR_LAST ) {
-        strcpy( err_txt, doswinErrMsgs[ acc->err ] );
+        StrCopyDst( doswinErrMsgs[acc->err], err_txt );
     } else {
-        strcpy( err_txt, TRP_ERR_unknown_system_error );
+        StrCopyDst( TRP_ERR_unknown_system_error, err_txt );
         ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
     }
     return( strlen( err_txt ) + 1 );

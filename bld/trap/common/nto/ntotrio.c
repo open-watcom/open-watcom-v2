@@ -37,10 +37,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include "trpimp.h"
 #include "servio.h"
-#include "digcli.h"
-#include "digld.h"
 
 
 void Output( const char *str )
@@ -105,14 +102,6 @@ int KeyGet( void )
 }
 
 
-static char *StrCopyDst( const char *src, char *dst )
-{
-    while( (*dst = *src++) != '\0' ) {
-        dst++;
-    }
-    return( dst );
-}
-
 int WantUsage( const char *ptr )
 {
     /*
@@ -127,70 +116,4 @@ int WantUsage( const char *ptr )
     if( *ptr == '?' )
         return( TRUE );
     return( FALSE );
-}
-
-static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
-{
-    char        *end;
-    char        *ptr;
-
-    if( path == NULL )
-        return( 0 );
-    ptr = result;
-    for( ;; ) {
-        if( *path == '\0' || *path == ':' ) {
-            if( ptr != result )
-                *ptr++ = '/';
-            end = StrCopyDst( name, ptr );
-            if( stat( result, tmp ) == 0 )
-                return( end - result );
-            if( *path == '\0' )
-                return( 0 );
-            ++path;
-            ptr = result;
-        }
-        if( *path != ' ' && *path != '\t' ) {
-            *ptr++ = *path;
-        }
-        ++path;
-    }
-}
-
-static unsigned FindFilePath( dig_filetype file_type, const char *name, char *result )
-{
-    struct stat tmp;
-    unsigned    len;
-    char        *end;
-    char        cmd[256];
-
-    if( stat( name, &tmp ) == 0 ) {
-        return( StrCopyDst( name, result ) - result );
-    }
-    if( file_type == DIG_FILETYPE_EXE ) {
-        return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
-    } else {
-        len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-        if( len != 0 )
-            return( len );
-        len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-        if( len != 0 )
-            return( len );
-        if( _cmdname( cmd ) != NULL ) {
-            end = strrchr( cmd, '/' );
-            if( end != NULL ) {
-                *end = '\0';
-                end = strrchr( cmd, '/' );
-                if( end != NULL ) {
-                    /* look in the wd sibling directory of where the command
-                       came from */
-                    StrCopyDst( "wd", end + 1 );
-                    len = TryOnePath( cmd, &tmp, name, result );
-                    if( len != 0 ) {
-                        return( len );
-                    }
-                }
-            }
-        }
-        return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
-    }
 }

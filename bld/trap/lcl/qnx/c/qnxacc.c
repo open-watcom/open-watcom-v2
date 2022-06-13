@@ -59,6 +59,7 @@
 #include "trperr.h"
 #include "trpcomm.h"
 #include "qnxcomm.h"
+#include "qnxpath.h"
 #include "miscx87.h"
 #include "mad.h"
 #include "madregs.h"
