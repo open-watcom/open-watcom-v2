@@ -8,6 +8,11 @@ host_os  = os2
 target_cpu = x86
 target_os  = os2v2
 
+srv     = lcl
+name    = elf
+which   = TRAP
+core_entries = 1
+
 extra_cflags = -bd
 
 extra_objs = &
