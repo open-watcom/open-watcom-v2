@@ -19,7 +19,6 @@ extra_objs = &
         supp.obj &
         core.obj
 
-inc_dirs   = -I"$(trap_dir)/lcl/linux/h"
-
+!include $(trap_dir)/linux/linux.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

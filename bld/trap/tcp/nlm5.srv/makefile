@@ -12,7 +12,8 @@ which = SERVER
 remote_link = 1
 builtin_trap = 1
 
-extra_objs = $(nlm_objs)
+extra_objs = $(nlm_objs) $(nlm_trap_objs)
 
 !include $(trap_dir)/lcl/nlm/nlm.mif
+!include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

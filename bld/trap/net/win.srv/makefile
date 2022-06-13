@@ -10,4 +10,5 @@ which = SERVER
 gui = 1
 remote_link = 1
 
+!include $(trap_dir)/lcl/win/win.mif
 !include $(trap_dir)/master.mif
