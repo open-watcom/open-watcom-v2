@@ -6,16 +6,15 @@ host_cpu = 386
 target_cpu = x86
 target_os  = os2v2
 
-#
-# Create the 32-bit OS/2 core.dll
-#
-
 srv          = lcl
 name         = core
 which        = TRAP
 core_entries = 1
 
-extra_cppflags = -DELFCORE
+#
+# Create the 32-bit OS/2 core.dll
+#
+
 extra_cflags = -bd
 
 extra_objs = &
@@ -26,9 +25,7 @@ extra_objs = &
     supp.obj &
     core.obj
 
-inc_dirs = -I"../h" -I"$(trap_dir)/lcl/elfcore/h"
-
+!include $(trap_dir)/lcl/elfcore/elfcore.mif
+!include $(trap_dir)/lcl/os2v2/os2v2.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
-
-.c : $(trap_dir)/lcl/elfcore/c
