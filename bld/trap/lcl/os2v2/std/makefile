@@ -36,5 +36,6 @@ extra_linker = &
         imp _XferBuff wdsplice, DoDupFile_ wdsplice    &
         lib $(os2api_dir)/os2286/lib/os2.lib
 
+!include $(trap_dir)/lcl/os2v2/os2v2.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
