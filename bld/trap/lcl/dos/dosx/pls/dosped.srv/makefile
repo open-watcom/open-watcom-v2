@@ -14,7 +14,7 @@ trap_nodoslfn = 1
 
 !include tools.mif
 
-extra_objs = $(pls_objs)
+extra_objs = plsord.obj $(pls_objs)
 
 extra_linker = &
         op offset=0, objalign=4k &
@@ -24,6 +24,3 @@ extra_linker = &
 
 !include $(trap_dir)/lcl/dos/dosx/pls/pls.mif
 !include $(trap_dir)/master.mif
-
-plsord.obj : plsord.asm
-    $(as) $[@ -fo=.obj
