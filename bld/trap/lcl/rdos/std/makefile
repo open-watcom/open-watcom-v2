@@ -40,5 +40,3 @@ extra_incs = -I"$(clib_dir)/h"
 !include $(trap_dir)/lcl/rdos/rdos.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
-
-globals.obj :: $(trap_dir)/lcl/rdos/h/globals.h
