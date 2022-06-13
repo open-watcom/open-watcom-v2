@@ -7,7 +7,7 @@ dosr_objs = &
         misc7086.obj
 
 extra_cppflags += -DREAL_MODE
-extra_a_flags = -DREAL_MODE
+extra_a_flags += -DREAL_MODE
 
 !include $(trap_dir)/lcl/dos/dos.mif
 !include $(trap_dir)/lcl/lcl.mif
