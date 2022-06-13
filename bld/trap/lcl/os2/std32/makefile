@@ -32,5 +32,6 @@ extra_objs = &
 extra_linker = &
         imp DOS16SELTOFLAT DOSCALLS.424
 
+!include $(trap_dir)/lcl/os2/os2.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
