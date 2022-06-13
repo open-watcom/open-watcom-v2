@@ -11,12 +11,9 @@ target_os  = os2v2
 extra_cflags = -bd
 
 extra_objs = &
-        elfcore.obj &
-        core_fbsd.obj &
-        core_nto.obj &
-        coremisc.obj &
-        supp.obj &
-        core.obj
+    $(elfcore_objs) &
+    supp.obj &
+    core.obj
 
 !include ../core.mif
 !include $(trap_dir)/lcl/os2v2/os2v2.mif
