@@ -16,7 +16,3 @@ extra_objs += &
 extra_srcs =;$(plsdir)
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
-!include $(trap_dir)/master.mif
-
-plsord.obj : plsord.asm
-    $(as) $[@ -fo=.obj
