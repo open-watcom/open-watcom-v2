@@ -9,14 +9,11 @@ target_cpu = x86
 target_os  = linux
 
 extra_objs = &
-        elfcore.obj &
-        core_fbsd.obj &
-        core_nto.obj &
-        coremisc.obj &
-        supp.obj &
-        core.obj
+    $(elfcore_objs) &
+    supp.obj &
+    core.obj
 
-!include ../core.mif
+!include ../elfcore.mif
 !include $(trap_dir)/lcl/linux/linux.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
