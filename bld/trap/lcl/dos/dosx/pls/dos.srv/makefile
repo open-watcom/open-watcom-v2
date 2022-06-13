@@ -8,9 +8,9 @@ target_os  = pls
 srv = pls
 which = SERVER
 
-!include tools.mif
-
 trap_nodoslfn = 1
+
+!include tools.mif
 
 extra_objs =
 
