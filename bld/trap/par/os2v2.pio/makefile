@@ -19,13 +19,17 @@ sys_dll = 1
 !include defrule.mif
 !include deftarg.mif
 
-!include ../os2io.mif
-
 .c : ../c
 
 inc_dirs = -I"../h"
 
+extra_c_flags_wdio = -nt=port -nc=IOPL_CODE
+
 extra_l_flags = op protmode
+
+extra_linker = segment 'port' IOPL &
+	export INPORT 2 &
+	export OUTPORT 4
 
 dlltarg_objs    = wdio.obj
 dlltarg_name    = wdio
