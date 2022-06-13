@@ -17,5 +17,6 @@ extra_objs = &
         core.obj
 
 !include ../core.mif
+!include $(trap_dir)/lcl/linux/linux.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
