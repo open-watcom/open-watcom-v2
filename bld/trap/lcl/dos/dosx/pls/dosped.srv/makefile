@@ -14,7 +14,7 @@ trap_nodoslfn = 1
 
 !include tools.mif
 
-extra_objs = plsord.obj   # must be first
+extra_objs = $(pls_objs)
 
 extra_linker = &
         op offset=0, objalign=4k &

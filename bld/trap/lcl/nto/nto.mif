@@ -2,7 +2,7 @@
 
 nto_trap_objs_x86 = x86cpu.obj
 nto_trap_objs = &
-    $(nto_trap_objs_$(target_cpu))
+    $(nto_trap_objs_$(target_cpu)) &
     ntoacc.obj &
     ntomap.obj &
     ntoutl.obj &
