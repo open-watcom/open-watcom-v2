@@ -13,7 +13,7 @@ extra_objs = &
     supp.obj &
     core.obj
 
-!include ../core.mif
+!include ../elfcore.mif
 !include $(trap_dir)/lcl/nt/nt.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
