@@ -35,10 +35,10 @@ extra_objs = &
         supp.obj &
         core.obj
 
-inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(clib_dir)/h"
+extra_incs = -I"$(clib_dir)/h"
 
+!include $(trap_dir)/lcl/rdos/rdos.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
 
-globals.obj :: ../h/globals.h
-
+globals.obj :: $(trap_dir)/lcl/rdos/h/globals.h

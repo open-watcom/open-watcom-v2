@@ -6,14 +6,14 @@ host_cpu = i86
 target_cpu = x86
 target_os  = win
 
+srv   = lcl
+which = TRAP
+
 sys_windowed = 1
 
 #
 # Create the Windows 3.x std.dll
 #
-
-srv   = lcl
-which = TRAP
 
 extra_objs = &
         initfini.obj &

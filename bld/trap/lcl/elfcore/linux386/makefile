@@ -8,15 +8,17 @@ host_os  = linux
 target_cpu = x86
 target_os  = linux
 
-extra_objs = &
-        elfcore.obj &
-        core_fbsd.obj &
-        core_nto.obj &
-        coremisc.obj &
-        supp.obj &
-        core.obj
+srv     = lcl
+name    = elf
+which   = TRAP
+core_entries = 1
 
-!include ../core.mif
+extra_objs = &
+    $(elfcore_objs) &
+    supp.obj &
+    core.obj
+
+!include ../elfcore.mif
 !include $(trap_dir)/lcl/linux/linux.mif
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

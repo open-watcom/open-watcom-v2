@@ -1,0 +1,10 @@
+extra_cppflags += -DELFCORE
+
+extra_incs += -I"$(trap_dir)/lcl/elfcore/h"
+extra_srcs +=;$(trap_dir)/lcl/elfcore/c
+
+elfcore_objs = &
+    elfcore.obj &
+    core_fbsd.obj &
+    core_nto.obj &
+    coremisc.obj

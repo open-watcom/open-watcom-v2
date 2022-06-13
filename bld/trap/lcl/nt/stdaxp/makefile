@@ -11,7 +11,7 @@ target_os  = nt
 srv     = lcl
 which   = TRAP
 
-extra_objs =
+extra_objs = $(nt_trap_objs)
 
 !include $(trap_dir)/lcl/nt/nt.mif
 !include $(trap_dir)/lcl/lcl.mif
