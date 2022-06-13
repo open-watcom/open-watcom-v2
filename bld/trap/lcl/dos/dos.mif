@@ -1,4 +1,4 @@
-dos_core_objs = dossplit.obj &
+dos_trap_core_objs = dossplit.obj &
         dosenv.obj &
         dosrfx.obj &
         dosfile.obj &
