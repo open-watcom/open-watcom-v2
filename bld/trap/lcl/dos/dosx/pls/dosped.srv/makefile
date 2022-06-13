@@ -12,6 +12,8 @@ which = SERVER
 
 trap_nodoslfn = 1
 
+!include tools.mif
+
 extra_objs = plsord.obj   # must be first
 
 extra_linker = &
@@ -21,3 +23,7 @@ extra_linker = &
         file $(plsdir)/dilseg.obj
 
 !include $(trap_dir)/lcl/dos/dosx/pls/pls.mif
+!include $(trap_dir)/master.mif
+
+plsord.obj : plsord.asm
+    $(as) $[@ -fo=.obj

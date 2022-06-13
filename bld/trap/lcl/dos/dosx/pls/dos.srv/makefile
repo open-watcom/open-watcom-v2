@@ -8,6 +8,8 @@ target_os  = pls
 srv = pls
 which = SERVER
 
+!include tools.mif
+
 trap_nodoslfn = 1
 
 extra_objs =
@@ -18,3 +20,7 @@ extra_linker = &
         file $(plsdir)/dilseg.obj
 
 !include $(trap_dir)/lcl/dos/dosx/pls/pls.mif
+!include $(trap_dir)/master.mif
+
+plsord.obj : plsord.asm
+    $(as) $[@ -fo=.obj

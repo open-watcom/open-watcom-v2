@@ -8,6 +8,8 @@ target_os  = ads
 srv = ads
 which = SERVER
 
+!include tools.mif
+
 extra_objs = adsacc.obj adsintr.obj
 
 extra_c_flags = -I"$(adsdir)"

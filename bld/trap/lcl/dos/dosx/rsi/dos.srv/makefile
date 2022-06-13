@@ -12,11 +12,11 @@ which = SERVER
 !include $(rsilib_dir)/client.mif
 
 extra_objs = rsiacc.obj
+extra_incs = $(rsilib_inc_dirs)
 extra_libs = $(rsilib_lib)
 
 extra_cppflags = -DDOS4G
 extra_c_flags = -zu
-inc_dirs = $(rsilib_inc_dirs)
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
 !include $(trap_dir)/master.mif

@@ -9,17 +9,10 @@ extra_c_flags_plsacc = $(pharlap_c_flags)
 
 extra_a_flags = -dPHARLAP
 
-inc_dirs = -I"../h"
-
 extra_objs += &
     plsacc.obj &
     plsintr.obj &
     dilglue.obj
+extra_srcs =;$(plsdir)
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
-!include $(trap_dir)/master.mif
-
-.c: $(plsdir)
-
-plsord.obj : plsord.asm
-    $(as) $[@ -fo=.obj
