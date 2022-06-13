@@ -8,6 +8,11 @@ host_os  = linux
 target_cpu = x86
 target_os  = linux
 
+srv     = lcl
+name    = elf
+which   = TRAP
+core_entries = 1
+
 extra_objs = &
     $(elfcore_objs) &
     supp.obj &
