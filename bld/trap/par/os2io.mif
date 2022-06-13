@@ -1,3 +1,0 @@
-extra_c_flags_wdio = -nt=port -nc=IOPL_CODE
-
-extra_linker = segment 'port' IOPL export INPORT 2, OUTPORT 4

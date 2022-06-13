@@ -11,5 +11,9 @@ remote_link = 1
 
 extra_objs = paros2.obj
 
-!include ../os2v2.mif
+extra_linker = &
+    imp OUTPUT_PORT wdio.OUTPORT &
+    imp INPUT_PORT wdio.INPORT &
+    imp DOSPORTACCESS DOSCALLS.69
+
 !include $(trap_dir)/master.mif
