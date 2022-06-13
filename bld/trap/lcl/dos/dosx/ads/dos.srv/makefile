@@ -11,8 +11,7 @@ which = SERVER
 !include tools.mif
 
 extra_objs = adsacc.obj adsintr.obj
-
-extra_c_flags = -I"$(adsdir)"
+extra_incs = -I"$(adsdir)"
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
 !include $(trap_dir)/master.mif
