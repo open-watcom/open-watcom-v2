@@ -16,7 +16,7 @@ dosx_serv_objs_386 = misc7386.obj
 dosx_link_objs = dosxlink.obj packet.obj
 
 dosx_trap_objs = &
-        $(dos_trap_objs) &
+        $(dos_core_objs) &
         $(dosx_link_objs) &
         dosxremo.obj &
         dosxfork.obj &
