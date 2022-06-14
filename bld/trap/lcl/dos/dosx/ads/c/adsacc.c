@@ -405,12 +405,18 @@ trap_retval TRAP_CORE( Read_io )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    if( acc->len == 1 ) {
-        *( (byte *)ret ) = In_b( acc->IO_offset );
-    } else if( acc->len == 2 ) {
-        *( (word *)ret ) = In_w( acc->IO_offset );
-    } else {
-        *( (dword *)ret ) = In_d( acc->IO_offset );
+    switch( acc->len ) {
+    case 1:
+        *(byte *)ret = In_b( acc->IO_offset );
+        break;
+    case 2:
+        *(word *)ret = In_w( acc->IO_offset );
+        break;
+    case 4:
+        *(dword *)ret = In_d( acc->IO_offset );
+        break;
+    default:
+        return( 0 );
     }
     return( acc->len );
 }
@@ -418,7 +424,7 @@ trap_retval TRAP_CORE( Read_io )( void )
 
 trap_retval TRAP_CORE( Write_io )( void )
 {
-    int                 len;
+    size_t              len;
     write_io_req        *acc;
     write_io_ret        *ret;
     void                *data;
@@ -426,14 +432,21 @@ trap_retval TRAP_CORE( Write_io )( void )
     acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr( 0 );
-    if( len == 1 ) {
+    switch( len ) {
+    case 1:
         Out_b( acc->IO_offset, *( (byte *)data ) );
-    } else if( len == 2 ) {
+        break;
+    case 2:
         Out_w( acc->IO_offset, *( (word *)data ) );
-    } else {
+        break;
+    case 4:
         Out_d( acc->IO_offset, *( (dword *)data ) );
+        break;
+    default:
+        len = 0;
+        break;
     }
+    ret = GetOutPtr( 0 );
     ret->len = len;
     return( sizeof( *ret ) );
 }

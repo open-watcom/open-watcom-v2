@@ -1013,12 +1013,18 @@ trap_retval TRAP_CORE( Read_io )( void )
 
     acc = GetInPtr( 0 );
     data = GetOutPtr( 0 );
-    if( acc->len == 1 ) {
+    switch( acc->len ) {
+    case 1:
         *(byte *)data = in_b( acc->IO_offset );
-    } else if( acc->len == 2 ) {
+        break;
+    case 2:
         *(word *)data = in_w( acc->IO_offset );
-    } else {
+        break;
+    case 4:
         *(dword *)data = in_d( acc->IO_offset );
+        break;
+    default:
+        return( 0 );
     }
     return( acc->len );
 }
@@ -1029,19 +1035,26 @@ trap_retval TRAP_CORE( Write_io )( void )
     write_io_req    *acc;
     write_io_ret    *ret;
     void            *data;
-    trap_elen       len;
+    size_t          len;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    if( len == 1 ) {
+    switch( len ) {
+    case 1:
         out_b( acc->IO_offset, *(byte *)data );
-    } else if( len == 2 ) {
+        break;
+    case 2:
         out_w( acc->IO_offset, *(word *)data );
-    } else {
+        break;
+    case 4:
         out_d( acc->IO_offset, *(dword *)data );
+        break;
+    default:
+        len = 0;
+        break;
     }
+    ret = GetOutPtr( 0 );
     ret->len = len;
     return( sizeof( *ret ) );
 }

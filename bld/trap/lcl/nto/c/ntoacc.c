@@ -195,32 +195,64 @@ trap_retval TRAP_CORE( Write_mem )( void )
 
 
 trap_retval TRAP_CORE( Read_io )( void )
+/*
+ * TODO: implement I/O port writes (if possible)
+ */
 {
+#if 0
     read_io_req *acc;
     void        *ret;
-    unsigned    len;
 
-// TODO: implement I/O port reads (if possible)
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    len = 0;
-    return( len );
+    switch( acc->len ) {
+    case 1:
+        break;
+    case 2:
+        break;
+    case 4:
+        break;
+    default:
+        return( 0 );
+    }
+    return( acc->len );
+#else
+    return( 0 );
+#endif
 }
 
 
 trap_retval TRAP_CORE( Write_io )( void )
+/*
+ * TODO: implement I/O port writes (if possible)
+ */
 {
-    write_io_req    *acc;
     write_io_ret    *ret;
+#if 0
+    write_io_req    *acc;
     void            *data;
-    unsigned        len;
+    size_t          len;
 
-// TODO: implement I/O port writes (if possible)
     acc  = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len  = GetTotalSizeIn() - sizeof( *acc );
+    switch( len ) {
+    case 1:
+        break;
+    case 2:
+        break;
+    case 4:
+        break;
+    default:
+        len = 0;
+        break;
+    }
+    ret  = GetOutPtr( 0 );
+    ret->len = len;
+#else
     ret  = GetOutPtr( 0 );
     ret->len = 0;
+#endif
     return( sizeof( *ret ) );
 }
 

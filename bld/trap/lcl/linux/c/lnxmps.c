@@ -141,22 +141,13 @@ trap_retval TRAP_CORE( Clear_watch )( void )
  */
 trap_retval TRAP_CORE( Read_io )( void )
 {
-    read_io_req *acc;
-    void        *ret;
-
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
     return( 0 );
 }
 
 trap_retval TRAP_CORE( Write_io )( void )
 {
-    write_io_req    *acc;
     write_io_ret    *ret;
-    void            *data;
 
-    acc = GetInPtr( 0 );
-    data = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );

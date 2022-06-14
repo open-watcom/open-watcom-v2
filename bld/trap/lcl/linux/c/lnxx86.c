@@ -331,23 +331,22 @@ trap_retval TRAP_CORE( Clear_watch )( void )
 }
 
 trap_retval TRAP_CORE( Read_io )( void )
+/*
+ * Perform I/O on the target machine on behalf of the debugger.
+ * Since there are no kernel APIs in Linux to do this, we just
+ * enable IOPL and use regular I/O. We will bail if we can't get
+ * IOPL=3, so the debugger trap file will need to be run as root
+ * before it can be used for I/O access.
+ */
 {
+#ifdef __WATCOMC__
     read_io_req *acc;
     void        *ret;
-    trap_elen   len;
 
-    /* Perform I/O on the target machine on behalf of the debugger.
-     * Since there are no kernel APIs in Linux to do this, we just
-     * enable IOPL and use regular I/O. We will bail if we can't get
-     * IOPL=3, so the debugger trap file will need to be run as root
-     * before it can be used for I/O access.
-     */
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-#ifdef __WATCOMC__
     if( iopl( 3 ) == 0 ) {
-        len = acc->len;
-        switch( len ) {
+        switch( acc->len ) {
         case 1:
             *((unsigned_8*)ret) = inpb( acc->IO_offset );
             break;
@@ -357,36 +356,35 @@ trap_retval TRAP_CORE( Read_io )( void )
         case 4:
             *((unsigned_32*)ret) = inpd( acc->IO_offset );
             break;
+        default:
+            return( 0 );
         }
-    } else {
-        len = 0;
+        return( acc->len );
     }
-#else
-    len = 0;
 #endif
-    return( len );
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Write_io )( void )
+/*
+ * Perform I/O on the target machine on behalf of the debugger.
+ * Since there are no kernel APIs in Linux to do this, we just
+ * enable IOPL and use regular I/O. We will bail if we can't get
+ * IOPL=3, so the debugger trap file will need to be run as root
+ * before it can be used for I/O access.
+ */
 {
-    write_io_req    *acc;
     write_io_ret    *ret;
+#ifdef __WATCOMC__
+    write_io_req    *acc;
     void            *data;
-    trap_elen       len;
+    size_t          len;
 
-    /* Perform I/O on the target machine on behalf of the debugger.
-     * Since there are no kernel APIs in Linux to do this, we just
-     * enable IOPL and use regular I/O. We will bail if we can't get
-     * IOPL=3, so the debugger trap file will need to be run as root
-     * before it can be used for I/O access.
-     */
     acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
-    len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr( 0 );
-#ifdef __WATCOMC__
+    len = 0;
     if( iopl( 3 ) == 0 ) {
-        ret->len = len;
+        len = GetTotalSizeIn() - sizeof( *acc );
         switch( len ) {
         case 1:
             outpb( acc->IO_offset, *((unsigned_8*)data) );
@@ -397,11 +395,15 @@ trap_retval TRAP_CORE( Write_io )( void )
         case 4:
             outpd( acc->IO_offset, *((unsigned_32*)data) );
             break;
+        default:
+            len = 0;
+            break;
         }
-    } else {
-        ret->len = 0;
     }
+    ret = GetOutPtr( 0 );
+    ret->len = len;
 #else
+    ret = GetOutPtr( 0 );
     ret->len = 0;
 #endif
     return( sizeof( *ret ) );

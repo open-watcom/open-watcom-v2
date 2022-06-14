@@ -427,7 +427,6 @@ trap_retval TRAP_CORE( Read_io )( void )
     int                 err;
     read_io_req         *acc;
     void                *ret;
-    unsigned            len;
 
     _DBG(("ReadPort\r\n"));
     acc = GetInPtr( 0 );
@@ -446,18 +445,16 @@ trap_retval TRAP_CORE( Read_io )( void )
         err = DBE_INVWID;
     }
     if( err != 0 ) {
-        len = 0;
-    } else {
-        len = acc->len;
+        return( 0 );
     }
-    return( len );
+    return( acc->len );
 }
 
 
 trap_retval TRAP_CORE( Write_io )( void )
 {
     int             err;
-    int             len;
+    size_t          len;
     write_io_req    *acc;
     write_io_ret    *ret;
     void            *data;
@@ -466,7 +463,6 @@ trap_retval TRAP_CORE( Write_io )( void )
     acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr( 0 );
     switch( len ) {
     case 1:
         err = dbg_oport( acc->IO_offset, *(byte *)data, 1 );
@@ -480,10 +476,10 @@ trap_retval TRAP_CORE( Write_io )( void )
     default:
         err = DBE_INVWID;
     }
+    ret = GetOutPtr( 0 );
+    ret->len = len;
     if( err != 0 ) {
         ret->len = 0;
-    } else {
-        ret->len = len;
     }
     return( sizeof( *ret ) );
 }

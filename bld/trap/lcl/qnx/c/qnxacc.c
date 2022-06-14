@@ -513,29 +513,30 @@ trap_retval TRAP_CORE( Read_io )( void )
 {
     union _port_struct  port;
     read_io_req         *acc;
-    void                *ret;
-    unsigned            len;
+    void                *data;
+    size_t              len;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_IO_RD, &port, acc->len,
-            acc->IO_offset, 0 ) == 0 ) {
-        len = acc->len;
+    data = GetOutPtr( 0 );
+    len = acc->len;
+    if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_IO_RD, &port, len, acc->IO_offset, 0 ) == 0 ) {
         switch( len ) {
         case 1:
-            *( (unsigned_8 *)ret ) = port.byte;
+            *(unsigned_8 *)data = port.byte;
             break;
         case 2:
-            *( (unsigned_16 *)ret ) = port.word;
+            *(unsigned_16 *)data = port.word;
             break;
         case 4:
-            *( (unsigned_32 *)ret ) = port.dword;
+            *(unsigned_32 *)data = port.dword;
+            break;
+        default:
+            len = 0;
             break;
         }
-    } else {
-        len = 0;
+        return( len );
     }
-    return( len );
+    return( 0 );
 }
 
 
@@ -545,29 +546,32 @@ trap_retval TRAP_CORE( Write_io )( void )
     write_io_req        *acc;
     write_io_ret        *ret;
     void                *data;
-    unsigned            len;
+    size_t              len;
 
     acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr( 0 );
     switch( len ) {
     case 1:
-        port.byte = *( (unsigned_8 *)data );
+        port.byte = *(unsigned_8 *)data;
         break;
     case 2:
-        port.word = *( (unsigned_16 *)data );
+        port.word = *(unsigned_16 *)data;
         break;
     case 4:
-        port.dword = *( (unsigned_32 *)data );
+        port.dword = *(unsigned_32 *)data;
+        break;
+    default:
+        len = 0;
         break;
     }
-    if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_IO_WR, &port, len,
-            acc->IO_offset, 0 ) != 0 ) {
-        ret->len = 0;
-    } else {
-        ret->len = len;
+    if( len > 0 ) {
+        if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_IO_WR, &port, len, acc->IO_offset, 0 ) != 0 ) {
+            len = 0;
+        }
     }
+    ret = GetOutPtr( 0 );
+    ret->len = len;
     return( sizeof( *ret ) );
 }
 

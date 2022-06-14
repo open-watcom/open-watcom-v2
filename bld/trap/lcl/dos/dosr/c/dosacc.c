@@ -389,23 +389,26 @@ trap_retval TRAP_CORE( Read_io )( void )
 {
     read_io_req     *acc;
     void            *data;
-    trap_elen       len;
 
     acc = GetInPtr( 0 );
     data = GetOutPtr( 0 );
-    if( acc->len == 1 ) {
-       *(byte *)data = In_b( acc->IO_offset );
-       len = 1;
-    } else if( acc->len == 2 ) {
-       *(word *)data = In_w( acc->IO_offset );
-       len = 2;
-    } else if( Flags & F_Is386 ) {
-       *(dword *)data = In_d( acc->IO_offset );
-       len = 4;
-    } else {
-       len = 0;
+    switch( acc->len ) {
+    case 1:
+        *(byte *)data = In_b( acc->IO_offset );
+        break;
+    case 2:
+        *(word *)data = In_w( acc->IO_offset );
+        break;
+    case 4:
+        if( Flags & F_Is386 ) {
+            *(dword *)data = In_d( acc->IO_offset );
+            break;
+        }
+        /* fall through */
+    default:
+        return( 0 );
     }
-    return( len );
+    return( acc->len );
 }
 
 
@@ -419,19 +422,25 @@ trap_retval TRAP_CORE( Write_io )( void )
     acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
-    ret = GetOutPtr( 0 );
-    if( len == 1 ) {
+    switch( len ) {
+    case 1:
         Out_b( acc->IO_offset, *(byte *)data );
-        ret->len = 1;
-    } else if( len == 2 ) {
+        break;
+    case 2:
         Out_w( acc->IO_offset, *(word *)data );
-        ret->len = 2;
-    } else if( Flags & F_Is386 ) {
-        Out_d( acc->IO_offset, *(dword *)data );
-        ret->len = 4;
-    } else {
-        ret->len = 0;
+        break;
+    case 4:
+        if( Flags & F_Is386 ) {
+            Out_d( acc->IO_offset, *(dword *)data );
+            break;
+        }
+        /* fall through */
+    default:
+        len = 0;
+        break;
     }
+    ret = GetOutPtr( 0 );
+    ret->len = len;
     return( sizeof( *ret ) );
 }
 
