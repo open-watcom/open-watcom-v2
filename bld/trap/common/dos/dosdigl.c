@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "digtypes.h"
 #include "digld.h"
 #include "tinyio.h"
@@ -44,7 +45,7 @@
 #define FP2HANDLE(fp)    ((int)((unsigned long)(fp) - 1))
 
 
-FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *exts, char *result, unsigned max_result )
+FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *defext, char *result, unsigned max_result )
 {
     bool        has_ext;
     bool        has_path;
@@ -77,9 +78,7 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *exts, 
     }
     if( !has_ext ) {
         *dst++ = '.';
-        name_len = strlen( exts );
-        memcpy( dst, exts, name_len );
-        dst += name_len;
+        dst = StrCopyDst( defext, dst );
     }
     *dst = '\0';
     src = trpfile;
