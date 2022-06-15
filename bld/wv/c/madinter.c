@@ -245,7 +245,7 @@ void ReportMADFailure( mad_status ms )
         StartupErr( LIT_ENG( LMS_RECURSIVE_MAD_FAILURE ) );
     }
     arch_old = SysConfig.arch;
-    MADNameFile( arch_old, buff, sizeof( buff ) );
+    MADBaseName( arch_old, buff, sizeof( buff ) );
     SysConfig.arch = DIG_ARCH_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
     MADRegister( arch_old, NULL, NULL );
@@ -383,14 +383,14 @@ static walk_result FindTheMad( dig_arch arch, void *d )
     char                buff[80];
 //    char                *p;
 
-    MADNameFile( arch, buff, sizeof( buff ) );
+    MADBaseName( arch, buff, sizeof( buff ) );
 //    p = SkipPathInfo( buff, 0 );
     SkipPathInfo( buff, 0 );
     if( strnicmp( buff, fd->name, fd->len ) == 0 ) {
         fd->arch = arch;
         return( WR_STOP );
     }
-    MADNameDescription( arch, buff, sizeof( buff ) );
+    MADDescription( arch, buff, sizeof( buff ) );
     doNormalizedString( buff );
     if( strnicmp( buff, fd->name, fd->len ) == 0 ) {
         fd->arch = arch;
