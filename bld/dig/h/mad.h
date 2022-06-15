@@ -53,8 +53,8 @@ void            MADFini( void );
 typedef         walk_result (MAD_WALKER)( dig_arch, void * );
 walk_result     MADWalk( MAD_WALKER *, void * );
 
-size_t          MADNameFile( dig_arch, char *buff, size_t buff_size );
-size_t          MADNameDescription( dig_arch, char *buff, size_t buff_size );
+size_t          MADBaseName( dig_arch, char *buff, size_t buff_size );
+size_t          MADDescription( dig_arch, char *buff, size_t buff_size );
 
 /*
  *      Address Arithmetic
