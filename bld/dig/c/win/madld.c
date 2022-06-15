@@ -62,7 +62,7 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
     }
 }
 
-mad_status MADSysLoad( const char *path, mad_client_routines *cli,
+mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
                                 mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     HINSTANCE           dip_dll;
@@ -84,7 +84,7 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
     UINT                prev;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, path );
+    strcpy( newpath, base_name );
     strcat( newpath, ".dll" );
     p = parm;
     *p++ = ' ';
