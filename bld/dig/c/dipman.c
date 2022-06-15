@@ -203,7 +203,7 @@ static void SetHdlSizes( dip_imp_routines *rtns )
     }
 }
 
-dip_status DIPLoad( const char *path )
+dip_status DIPLoad( const char *base_name )
 {
     int         i;
     dip_status  ds;
@@ -213,7 +213,7 @@ dip_status DIPLoad( const char *path )
             return( DS_ERR | DS_TOO_MANY_DIPS );
         }
     }
-    ds = DIPSysLoad( path, &DIPClientInterface, &LoadedDIPs[i].rtns, &LoadedDIPs[i].sys_hdl );
+    ds = DIPSysLoad( base_name, &DIPClientInterface, &LoadedDIPs[i].rtns, &LoadedDIPs[i].sys_hdl );
     if( ds != DS_OK )
         return( ds );
     if( DIPClientInterface.major != LoadedDIPs[i].rtns->major
