@@ -65,7 +65,6 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *defext
         case '/':
             has_ext = false;
             has_path = true;
-            /* fall through */
             break;
         }
     }
