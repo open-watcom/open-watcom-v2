@@ -47,7 +47,7 @@ extern const address    NilAddr;
  */
 
 dip_status      DIPInit( void );
-dip_status      DIPLoad( const char *path );
+dip_status      DIPLoad( const char *base_name );
 dip_status      DIPRegister( dip_imp_routines * );
 void            DIPCancel( void );
 void            DIPFini( void );
