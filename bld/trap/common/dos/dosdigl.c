@@ -38,6 +38,7 @@
 #include "digtypes.h"
 #include "digld.h"
 #include "tinyio.h"
+#include "dospath.h"
 #include "servio.h"
 
 
