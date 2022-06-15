@@ -48,7 +48,7 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
     }
 }
 
-dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
+dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     dip_sys_handle      dip_dll;
     dip_init_func       *init_func;
@@ -56,7 +56,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     dip_status          ds;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, path );
+    strcpy( newpath, base_name );
     strcat( newpath, ".dll" );
     dip_dll = RdosLoadDll( newpath );
     if( dip_dll == NULL_SYSHDL ) {
