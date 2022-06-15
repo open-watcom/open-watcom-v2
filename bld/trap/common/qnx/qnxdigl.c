@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include "digtypes.h"
 #include "digcli.h"
@@ -43,7 +44,7 @@
 #include "servio.h"
 
 
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *exts, char *result, size_t max_result )
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *result, size_t max_result )
 {
     bool            has_ext;
     bool            has_path;
@@ -72,7 +73,7 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *exts, ch
     trpfile[name_len] = '\0';
     if( !has_ext ) {
         trpfile[name_len++] = '.';
-        memcpy( trpfile + name_len, exts, strlen( exts ) + 1 );
+        StrCopyDst( defext, trpfile + name_len );
     }
     fp = NULL;
     if( has_path ) {
