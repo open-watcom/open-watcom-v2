@@ -770,7 +770,7 @@ static FILE *MakeNameWithPathOpen( const char *path, const char *name, size_t nl
     return( fopen( res, "rb" ) );
 }
 
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *buff, size_t buff_size )
 {
     char            buffer[TXT_LEN];
     char            *p;
@@ -800,7 +800,7 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
     }
     if( !have_ext ) {
         *p++ = LclFile.ext_separator;
-        p = StrCopyDst( ext, p );
+        p = StrCopyDst( defext, p );
     }
     *p = NULLCHAR;
     if( have_path ) {
