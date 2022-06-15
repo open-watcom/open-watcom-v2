@@ -48,7 +48,7 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
     }
 }
 
-mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
+mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     mad_sys_handle      dip_dll;
     mad_init_func       *init_func;
@@ -56,7 +56,7 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routi
     mad_status          status;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, path );
+    strcpy( newpath, base_name );
     strcat( newpath, ".dll" );
     dip_dll = LoadLibrary( newpath );
     if( dip_dll == NULL ) {
