@@ -48,33 +48,35 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, 
 {
     bool                has_ext;
     bool                has_path;
-    char                *ptr;
-    char                *endptr;
+    const char          *src;
+    char                *dst;
+    char                c;
     char                trpfile[256];
     FILE                *fp;
 
     result = result; max_result = max_result;
     has_ext = FALSE;
     has_path = FALSE;
-    endptr = name + name_len;
-    for( ptr = name; ptr != endptr; ++ptr ) {
-        switch( *ptr ) {
+    src = name;
+    dst = trpfile;
+    while( name_len-- > 0 ) {
+        c = *src++;
+        *dst++ = c;
+        switch( c ) {
         case '.':
             has_ext = TRUE;
             break;
         case '/':
             has_ext = FALSE;
             has_path = TRUE;
-            /* fall through */
             break;
         }
     }
-    memcpy( trpfile, name, name_len );
-    trpfile[name_len] = '\0';
     if( !has_ext ) {
-        trpfile[name_len++] = '.';
-        memcpy( trpfile + name_len, defext, strlen( defext ) + 1 );
+        *dst++ = '.';
+        dst = StrCopyDst( defext, dst );
     }
+    *dst = '\0';
     fp = NULL;
     if( has_path ) {
         fp = fopen( trpfile, "rb" );
