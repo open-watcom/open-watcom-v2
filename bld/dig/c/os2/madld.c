@@ -57,7 +57,7 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
     }
 }
 
-mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
+mad_status MADSysLoad( const char *base_name, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     HMODULE             dip_mod;
     mad_init_func       *init_func;
@@ -70,14 +70,14 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routi
     /* To prevent conflicts with the 16-bit MAD DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
-    strcpy( madname, path );
+    strcpy( madname, base_name );
     strcat( madname, ".D32" );
     _searchenv( madname, "PATH", madpath );
     if( *madpath == '\0' )
         return( MS_ERR | MS_FOPEN_FAILED );
-    path = madpath;
+    base_name = madpath;
 #endif
-    if( LOAD_MODULE( path, dip_mod ) ) {
+    if( LOAD_MODULE( base_name, dip_mod ) ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
     status = MS_ERR | MS_INVALID_MAD;
