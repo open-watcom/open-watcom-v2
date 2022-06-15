@@ -841,34 +841,34 @@ static bool InitDIP( char **dips )
     bool    rc = false;
 
     if( !(DIPInit() & DS_ERR) ) {
-        char        *ptr;
+        char        *base_name;
         unsigned    dips_loaded = 0;
 
-        for( ptr = *dips++; ptr != NULL; ptr = *dips++ ) {
+        for( base_name = *dips++; base_name != NULL; base_name = *dips++ ) {
             dip_status  ds;
 
-            ds = DIPLoad( ptr );
+            ds = DIPLoad( base_name );
             if( ds & DS_ERR ) {
                 ds &= ~DS_ERR;
                 switch( ds ) {
                 case DS_FOPEN_FAILED:
-                    ErrorMsg( "%s - not found\n", ptr );
+                    ErrorMsg( "%s - not found\n", base_name );
                     break;
                 case DS_INVALID_DIP_VERSION:
-                    ErrorMsg( "%s - wrong DIP version\n", ptr );
+                    ErrorMsg( "%s - wrong DIP version\n", base_name );
                     break;
                 case DS_INVALID_DIP:
-                    ErrorMsg( "%s - invalid DIP\n", ptr );
+                    ErrorMsg( "%s - invalid DIP\n", base_name );
                     break;
                 case DS_TOO_MANY_DIPS:
-                    ErrorMsg( "%s - too many DIPs\n", ptr );
+                    ErrorMsg( "%s - too many DIPs\n", base_name );
                     break;
                 default:
-                    ErrorMsg( "%s - status=%#x (%d)\n", ptr, ds, ds );
+                    ErrorMsg( "%s - status=%#x (%d)\n", base_name, ds, ds );
                     break;
                 }
             } else {
-                InfoMsg( "Loaded DIP %s\n", ptr);
+                InfoMsg( "Loaded DIP %s\n", base_name);
                 dips_loaded++;
             }
         }
