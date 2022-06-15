@@ -579,7 +579,7 @@ static void ToggleWindowSwitches( window_toggle *toggle, size_t len,
 static char *DumpAToggle( char *p, dig_arch arch, char *toggle )
 {
     if( toggle[0] != NULLCHAR ) {
-        MADNameDescription( arch, p, TXT_LEN - ( p - TxtBuff ) );
+        MADDescription( arch, p, TXT_LEN - ( p - TxtBuff ) );
         for( ; *p != NULLCHAR; ++p ) {
             if( *p == ' ' ) {
                 break;

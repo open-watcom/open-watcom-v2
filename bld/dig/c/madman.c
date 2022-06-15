@@ -454,7 +454,7 @@ walk_result     MADWalk( MAD_WALKER *wk, void *d )
     return( WR_CONTINUE );
 }
 
-size_t MADNameBaseName( dig_arch arch, char *buff, size_t buff_size )
+size_t MADBaseName( dig_arch arch, char *buff, size_t buff_size )
 {
     mad_entry   *me;
     size_t      len;
@@ -475,7 +475,7 @@ size_t MADNameBaseName( dig_arch arch, char *buff, size_t buff_size )
     return( len );
 }
 
-size_t MADNameDescription( dig_arch arch, char *buff, size_t buff_size )
+size_t MADDescription( dig_arch arch, char *buff, size_t buff_size )
 {
     mad_entry   *me;
     size_t      len;
