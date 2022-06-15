@@ -295,7 +295,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
     read_mem_req        *acc;
     void                *ret;
     unsigned            i;
-    unsigned            len;
+    size_t              len;
     Elf32_Phdr          *e_phdr;
 
     acc = GetInPtr( 0 );
@@ -670,7 +670,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
     strncpy( name, p, max_len );
     name[max_len] = '\0';

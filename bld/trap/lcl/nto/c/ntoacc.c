@@ -156,19 +156,18 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req    *acc;
-    unsigned        len = 0;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->mem_addr.offset );
     CONV_LE_16( acc->mem_addr.segment );
     CONV_LE_16( acc->len );
-    if( ProcInfo.pid && !ProcInfo.at_end ) {
+    if( ProcInfo.pid != 0 && !ProcInfo.at_end ) {
 #ifdef DEBUG_MEM
         dbg_print(( "mem read at %08x, %d bytes\n", (unsigned)acc->mem_addr.offset, acc->len ));
 #endif
-        len = ReadMem( ProcInfo.procfd, GetOutPtr( 0 ), acc->mem_addr.offset, acc->len );
+        return( ReadMem( ProcInfo.procfd, GetOutPtr( 0 ), acc->mem_addr.offset, acc->len ) );
     }
-    return( len );
+    return( 0 );
 }
 
 
@@ -176,7 +175,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req   *acc;
     write_mem_ret   *ret;
-    unsigned        len;
+    size_t          len;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->mem_addr.offset );
@@ -186,9 +185,11 @@ trap_retval TRAP_CORE( Write_mem )( void )
     ret->len = 0;
     if( ProcInfo.pid && !ProcInfo.at_end ) {
 #ifdef DEBUG_MEM
-        dbg_print(( "mem write at %08x, %d bytes\n", (unsigned)acc->mem_addr.offset, len ));
+        dbg_print(( "mem write at %08x, %d bytes\n",
+                    (unsigned)acc->mem_addr.offset, len ));
 #endif
-        ret->len = WriteMem( ProcInfo.procfd, GetInPtr( sizeof( *acc ) ), acc->mem_addr.offset, len );
+        ret->len = WriteMem( ProcInfo.procfd, GetInPtr( sizeof( *acc ) ),
+                                acc->mem_addr.offset, len );
     }
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );}
@@ -583,7 +584,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ProcInfo.have_rdebug = FALSE;
     ProcInfo.rdebug_va = 0;
     ProcInfo.dynsec_va = 0;
-    parms = parm_start = (char *)GetInPtr( sizeof( *acc ) );
+    parms = parm_start = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;

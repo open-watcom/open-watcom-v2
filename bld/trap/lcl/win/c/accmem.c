@@ -75,13 +75,10 @@ trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
     LPVOID              data;
-    trap_elen           len;
 
     acc = GetInPtr( 0 );
     data = GetOutPtr( 0 );
-
-    len = ReadMem( acc->mem_addr.segment, acc->mem_addr.offset, data, acc->len );
-    return( len );
+    return( ReadMem( acc->mem_addr.segment, acc->mem_addr.offset, data, acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )

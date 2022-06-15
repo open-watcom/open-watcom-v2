@@ -634,7 +634,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
+    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
+                                GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -959,7 +960,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
     if( ModHandles[handle].loaded ) {
-        max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+        max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
         strncpy( name, ModHandles[handle].epsp->FileName, max_len );
         name[max_len] = '\0';
     }

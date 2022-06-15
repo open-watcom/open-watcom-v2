@@ -404,10 +404,10 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     } else {
         DosQueryCurrentDisk( &drive, &map );
     }
-    len = RFX_NAME_MAX + 1;
     if( *name != '\\' ) {
         *fullname++ = '\\';
         // DOS : TinyGetCWDir( fullname, TinyGetCurrDrive() + 1 );
+        len = RFX_NAME_MAX;
         DosQueryCurrentDir( drive + 1, (PBYTE)fullname, &len );
         if( *fullname != '\0' ) {
             level++;

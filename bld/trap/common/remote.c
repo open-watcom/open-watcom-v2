@@ -97,7 +97,7 @@ static trap_retval ReqRemoteConnect( void )
 
     _DBG_EnterFunc( "ReqRemoteConnect" );
     connect = GetOutPtr( 0 );
-    data = (char *)GetOutPtr( sizeof( connect_ret ) );
+    data = GetOutPtr( sizeof( connect_ret ) );
     if( !RemoteConnect() ) {
         strcpy( data, TRP_ERR_CANT_CONNECT );
         _DBG_WriteErr( "!RemoteConnect" );

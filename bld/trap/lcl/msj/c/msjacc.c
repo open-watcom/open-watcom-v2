@@ -189,23 +189,23 @@ unsigned DoWrite( int addr, char *buff, unsigned length )
 trap_retval TRAP_CORE( Write_mem )( void )
 /****************************************/
 {
-    write_mem_ret *     ret;
-    write_mem_req *     acc;
-    unsigned            length;
-    void *              data;
+    write_mem_ret   *ret;
+    write_mem_req   *acc;
+    size_t          len;
+    void            *data;
 
     ret = GetOutPtr( 0 );
     ret->len = 0;
     if( TaskLoaded ) {
         acc = GetInPtr( 0 );
-        length = GetTotalSizeIn() - sizeof( *acc );
+        len = GetTotalSizeIn() - sizeof( *acc );
         data = GetInPtr( sizeof( *acc ) );
         switch( acc->mem_addr.segment ) {
         case JVM_DIP_READMEM_SELECTOR:
-            ret->len = DoRead( acc->mem_addr.offset, GetOutPtr( 0 ), length );
+            ret->len = DoRead( acc->mem_addr.offset, GetOutPtr( 0 ), len );
             break;
         default:
-            ret->len = WriteMemory( &acc->mem_addr, data, length );
+            ret->len = WriteMemory( &acc->mem_addr, data, len );
             break;
         }
     }
@@ -443,7 +443,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     name = GetOutPtr( sizeof( *ret ) );
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     ret->mod_handle = GetLibName( acc->mod_handle, name, max_len );
     if( ret->mod_handle )
         return( sizeof( *ret ) + strlen( name ) + 1 );

@@ -246,7 +246,7 @@ trap_retval TRAP_FILE( erase )( void )
 
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    if( unlink( (char *)GetInPtr( sizeof( file_erase_req ) ) ) ) {
+    if( unlink( GetInPtr( sizeof( file_erase_req ) ) ) ) {
         ret->err = errno;
     }
     CONV_LE_32( ret->err );

@@ -393,18 +393,16 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 
 trap_retval TRAP_CORE( Read_mem )( void )
 {
-    PTR386            addr;
-    read_mem_req        *acc;
-    void                *ret;
-    unsigned            len;
+    PTR386          addr;
+    read_mem_req    *acc;
+    void            *ret;
 
     _DBG(("ReadMem\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     addr.offset = acc->mem_addr.offset;
     addr.selector = acc->mem_addr.segment;
-    len = ReadMemory( &addr, ret, acc->len );
-    return( len );
+    return( ReadMemory( &addr, ret, acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -418,7 +416,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
     ret = GetOutPtr( 0 );
     addr.offset = acc->mem_addr.offset;
     addr.selector = acc->mem_addr.segment;
-    ret->len = WriteMemory( &addr, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
+    ret->len = WriteMemory( &addr, GetInPtr( sizeof( *acc ) ),
+                            GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 

@@ -323,7 +323,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
     _DBG_Writeln( "WriteMem" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( (addr48_ptr *)&acc->mem_addr, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
+    ret->len = WriteMemory( (addr48_ptr *)&acc->mem_addr, GetInPtr( sizeof( *acc ) ),
+                            GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 

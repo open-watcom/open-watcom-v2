@@ -133,7 +133,7 @@ trap_retval TRAP_FILE( open )( void )
     }
     if( acc->mode & DIG_OPEN_CREATE )
         mode |= O_CREAT | O_TRUNC;
-    handle = open( (char *)GetInPtr( sizeof( *acc ) ), mode,
+    handle = open( GetInPtr( sizeof( *acc ) ), mode,
                    S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
     if( handle == -1 ) {
         ret->err = errno;
@@ -166,7 +166,7 @@ trap_retval TRAP_FILE( erase )( void )
 
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    if( unlink( (char *)GetInPtr( sizeof( file_erase_req ) ) ) ) {
+    if( unlink( GetInPtr( sizeof( file_erase_req ) ) ) ) {
         ret->err = errno;
     }
     return( sizeof( *ret ) );

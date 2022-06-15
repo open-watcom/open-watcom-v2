@@ -911,7 +911,7 @@ HRESULT __stdcall WDbgMgrCallback::QueryInterface( REFIID id, void **object )
 
     if( id == IID_IRemoteDebugManagerCallback || id == IID_IUnknown ) {
         AddRef();
-        *object = (void *) this;
+        *object = (void *)this;
         retval = S_OK;
     } else {
         *object = NULL;
@@ -954,7 +954,7 @@ HRESULT __stdcall WProcessCallback::QueryInterface( REFIID id, void **object )
 
     if( id == IID_IRemoteProcessCallback || id == IID_IUnknown ) {
         AddRef();
-        *object = (void *) this;
+        *object = (void *)this;
         retval = S_OK;
     } else {
         *object = NULL;

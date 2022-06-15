@@ -483,12 +483,9 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
-    unsigned            len;
 
     acc = GetInPtr( 0 );
-
-    len = ReadBuffer( GetOutPtr( 0 ), acc->mem_addr.segment, acc->mem_addr.offset, acc->len );
-    return( len );
+    return( ReadBuffer( GetOutPtr( 0 ), acc->mem_addr.segment, acc->mem_addr.offset, acc->len ) );
 }
 
 
@@ -496,15 +493,11 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
-    unsigned            len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    len = GetTotalSizeIn() - sizeof(*acc);
-
-    ret->len = WriteBuffer( GetInPtr(sizeof(*acc)),
-                            acc->mem_addr.segment, acc->mem_addr.offset, len );
+    ret->len = WriteBuffer( GetInPtr( sizeof( *acc ) ), acc->mem_addr.segment,
+                        acc->mem_addr.offset, GetTotalSizeIn() - sizeof(*acc) );
     return( sizeof( *ret ) );
 }
 
@@ -842,7 +835,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     ProcInfo.fpu32  = false;
     ProcInfo.fork   = false;
     memset( ProcInfo.thread, 0, sizeof( ProcInfo.thread[0] ) * ProcInfo.max_threads );
-    parms = parm_start = (char *)GetInPtr( sizeof( *acc ) );
+    parms = parm_start = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
@@ -1599,7 +1592,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
     strncpy( name, p, max_len );
     name[max_len] = '\0';
@@ -1655,7 +1648,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
     if( p != NULL ) {
-        max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+        max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
         if( p[0] == '/' ) {
             if( p[1] == '/' ) {
                 for( p += 2; *p >= '0' && *p <= '9'; p++ ) {

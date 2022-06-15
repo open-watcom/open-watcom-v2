@@ -69,7 +69,7 @@ int CurrThreadIdx;
 int NumThreads;
 #define CurrThread ( ( CurrThreadIdx == -1 ) \
                    ? ( NULL ) \
-                   : ((Classjava_lang_Thread*)unhand(Threads[CurrThreadIdx])) )
+                   : ((Classjava_lang_Thread*)unhand( Threads[CurrThreadIdx] )) )
 
 #define OP_BREAK        "\xCA"
 
@@ -522,7 +522,6 @@ trap_retval TRAP_CORE( Write_mem )( void )
 /****************************************/
 {
     DWORD               offset;
-    size_t              len;
     LPSTR               data;
     write_mem_req       *acc;
     write_mem_ret       *ret;
@@ -532,7 +531,6 @@ trap_retval TRAP_CORE( Write_mem )( void )
 
     ret->len = 0;
     offset = acc->mem_addr.offset;
-    len = GetTotalSizeIn() - sizeof( *acc );
     data = (LPSTR)GetInPtr( sizeof( *acc ) );
     switch( acc->mem_addr.segment ) {
     case MAD_JVM_FINDLINECUE_SELECTOR:
@@ -544,7 +542,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
         ret->len = sizeof( mad_jvm_findaddrcue_acc );
         break;
     default:
-        ret->len = DoWrite( offset, data, len );
+        ret->len = DoWrite( offset, data, GetTotalSizeIn() - sizeof( *acc ) );
         break;
     }
     return( sizeof( *ret ) );
@@ -785,7 +783,7 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
     /* the IS_STARTED flag is to stop the "go main" in the profile. We're
        already at main */
     ret->flags = LD_FLAG_IS_STARTED | LD_FLAG_IGNORE_SEGMENTS | LD_FLAG_HAVE_RUNTIME_DLLS;
-    parms = parm_start = (char *)GetInPtr( sizeof( *acc ) );
+    parms = parm_start = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;
@@ -1059,7 +1057,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         cb = binclasses[ first ];
     }
 
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
     strncpy( name, JAVAPREFIX, max_len );
     name[max_len] = '\0';
@@ -1120,7 +1118,7 @@ trap_retval TRAP_THREAD( set )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->old_thread = CurrThreadIdx+1;
+    ret->old_thread = CurrThreadIdx + 1;
     ret->err = 0;
     if( acc->thread != 0 ) {
         if( acc->thread <= NumThreads && SysThreads[acc->thread - 1] &&

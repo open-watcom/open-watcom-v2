@@ -64,7 +64,7 @@ trap_retval TRAP_CORE( Connect )( void )
     ret->max_msg_size = 0xFFFF;
 #endif
     /* version ok... already checked by initialization  */
-    err = GetOutPtr(sizeof(*ret));
+    err = GetOutPtr( sizeof( *ret ) );
 #if defined( WIN16 )
     StrCopyDst( InitDebugging(), err );
 #else

@@ -64,7 +64,7 @@ trap_retval TRAP_RFX( mkdir )( void )
 
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    rc = TinyMakeDir( (char *)GetInPtr( sizeof( rfx_mkdir_req ) ) );
+    rc = TinyMakeDir( GetInPtr( sizeof( rfx_mkdir_req ) ) );
     if( TINY_ERROR( rc ) )
         ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
@@ -77,7 +77,7 @@ trap_retval TRAP_RFX( rmdir )( void )
 
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    rc = TinyRemoveDir( (char *)GetInPtr( sizeof( rfx_rmdir_req ) ) );
+    rc = TinyRemoveDir( GetInPtr( sizeof( rfx_rmdir_req ) ) );
     if( TINY_ERROR( rc ) )
         ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) );
@@ -288,7 +288,7 @@ trap_retval TRAP_RFX( findfirst )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     TinySetDTA( GetOutPtr( sizeof( *ret ) ) );
-    rc = TinyFindFirst( (char *)GetInPtr( sizeof( *acc ) ), acc->attrib );
+    rc = TinyFindFirst( GetInPtr( sizeof( *acc ) ), acc->attrib );
     if( TINY_ERROR( rc ) )
         ret->err = TINY_INFO( rc );
     return( sizeof( *ret ) + sizeof( tiny_find_t ) );

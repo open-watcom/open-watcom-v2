@@ -236,7 +236,7 @@ trap_retval TRAP_FILE( erase )( void )
     file_erase_ret      *ret;
 
     ret = GetOutPtr( 0 );
-    ret->err = DosDelete( (char *)GetInPtr( sizeof( file_erase_req ) ) );
+    ret->err = DosDelete( GetInPtr( sizeof( file_erase_req ) ) );
     return( sizeof( *ret ) );
 }
 

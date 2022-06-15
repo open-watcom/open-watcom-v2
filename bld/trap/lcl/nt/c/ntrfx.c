@@ -275,7 +275,7 @@ trap_retval TRAP_RFX( getcwd )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     nt_getdcwd( acc->drive, buff, max_len );
     return( sizeof( *ret ) + strlen( buff ) + 1 );
 }
@@ -384,7 +384,7 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     name = GetInPtr( sizeof( rfx_nametocanonical_req ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    max_len = GetTotalSizeOut() - 1 -  sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     ret->err = 0;
     while( *name == ' ' ) {
         name++;

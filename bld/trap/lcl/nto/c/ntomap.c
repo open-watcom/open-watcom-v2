@@ -344,7 +344,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
             dbg_print(( "(lib loaded, '%s')\n", name ));
             moduleInfo[i].newly_loaded = FALSE;
             ret->mod_handle = i;
-            max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+            max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
             name = GetOutPtr( sizeof( *ret ) );
             strncpy( name, moduleInfo[i].filename, max_len );
             name[max_len] = '\0';

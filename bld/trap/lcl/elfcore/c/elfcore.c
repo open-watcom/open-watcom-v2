@@ -301,9 +301,9 @@ static size_t read_from_elf( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr,
 
 trap_retval TRAP_CORE( Read_mem )( void )
 {
-    read_mem_req        *acc;
-    void                *ret;
-    unsigned            len;
+    read_mem_req    *acc;
+    void            *ret;
+    size_t          len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -736,7 +736,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
     strncpy( name, p, max_len );
     name[max_len] = '\0';

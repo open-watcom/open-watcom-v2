@@ -376,13 +376,11 @@ trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
     void                *ret;
-    size_t              len;
 
     _DBG1(( "ReadMem" ));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    len = ReadMemory( &acc->mem_addr, ret, acc->len );
-    return( len );
+    return( ReadMemory( &acc->mem_addr, ret, acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )

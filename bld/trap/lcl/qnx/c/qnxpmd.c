@@ -784,7 +784,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     default:
         return( sizeof( *ret ) );
     }
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
     strncpy( name, p, max_len );
     name[max_len] = '\0';

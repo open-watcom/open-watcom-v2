@@ -489,11 +489,9 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
-    unsigned            len;
 
     acc = GetInPtr( 0 );
-    len = ReadBuffer( GetOutPtr( 0 ), acc->mem_addr.segment, acc->mem_addr.offset, acc->len );
-    return( len );
+    return( ReadBuffer( GetOutPtr( 0 ), acc->mem_addr.segment, acc->mem_addr.offset, acc->len ) );
 }
 
 
@@ -501,14 +499,11 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
-    unsigned            len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    ret->len = WriteBuffer( GetInPtr( sizeof( *ret ) ), acc->mem_addr.segment, acc->mem_addr.offset, len );
+    ret->len = WriteBuffer( GetInPtr( sizeof( *ret ) ), acc->mem_addr.segment,
+                        acc->mem_addr.offset, GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 

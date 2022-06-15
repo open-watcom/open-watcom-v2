@@ -667,7 +667,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
             return( sizeof( *ret ) + 1 );
         } else if( moduleInfo[i].newly_loaded ) {
             ret->mod_handle = i;
-            max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+            max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
             name = GetOutPtr( sizeof( *ret ) );
             strncpy( name, moduleInfo[i].filename, max_len );
             name[max_len] = '\0';

@@ -757,12 +757,10 @@ trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
     void                *ret;
-    trap_elen           len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    len = ReadBuffer( ret, acc->mem_addr.segment, acc->mem_addr.offset, acc->len );
-    return( len );
+    return( ReadBuffer( ret, acc->mem_addr.segment, acc->mem_addr.offset, acc->len ) );
 }
 
 
@@ -770,14 +768,11 @@ trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
-    trap_elen           len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    len = GetTotalSizeIn() - sizeof( *acc );
-
-    ret->len = WriteBuffer( GetInPtr( sizeof( *acc ) ), acc->mem_addr.segment, acc->mem_addr.offset, len );
+    ret->len = WriteBuffer( GetInPtr( sizeof( *acc ) ), acc->mem_addr.segment,
+                        acc->mem_addr.offset, GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -888,7 +883,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         return( sizeof( *ret ) );
     }
     Buff.Value = ModHandles[CurrModHandle];
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     name = GetOutPtr( sizeof( *ret ) );
     DosQueryModuleName( ModHandles[CurrModHandle], max_len + 1, name );
     name[max_len] = '\0';

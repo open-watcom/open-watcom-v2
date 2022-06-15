@@ -177,10 +177,9 @@ trap_retval TRAP_CORE( Read_mem )( void )
     read_mem_req    *acc;
 
     acc = GetInPtr( 0 );
-    if( DebugeePid == 0 ) {
-        return( 0 );
-    }
-    return( ReadMem( acc->mem_addr.segment, acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
+    if( DebugeePid != 0 )
+        return( ReadMem( acc->mem_addr.segment, acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -191,10 +190,10 @@ trap_retval TRAP_CORE( Write_mem )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->len = 0;
-    if( DebugeePid == 0 ) {
-        return( sizeof( *ret ) );
+    if( DebugeePid != 0 ) {
+        ret->len = WriteMem( acc->mem_addr.segment, acc->mem_addr.offset,
+                    GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
     }
-    ret->len = WriteMem( acc->mem_addr.segment, acc->mem_addr.offset, GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 

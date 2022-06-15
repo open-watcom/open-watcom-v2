@@ -977,14 +977,11 @@ trap_retval TRAP_CORE( Read_mem )( void )
 {
     addr48_ptr          addr;
     read_mem_req        *acc;
-    trap_elen           len;
 
     acc = GetInPtr( 0 );
-
     addr.offset = acc->mem_addr.offset;
     addr.segment = acc->mem_addr.segment;
-    len = ReadWrite( ReadMemory, &addr, GetOutPtr( 0 ), acc->len );
-    return( len );
+    return( ReadWrite( ReadMemory, &addr, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -992,16 +989,13 @@ trap_retval TRAP_CORE( Write_mem )( void )
     addr48_ptr          addr;
     write_mem_req       *acc;
     write_mem_ret       *ret;
-    trap_elen           len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    len = GetTotalSizeIn() - sizeof( *acc );
-
     addr.offset = acc->mem_addr.offset;
     addr.segment = acc->mem_addr.segment;
-    ret->len = ReadWrite( WriteMemory, &addr, GetInPtr( sizeof( *acc ) ), len );
+    ret->len = ReadWrite( WriteMemory, &addr, GetInPtr( sizeof( *acc ) ),
+                                GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -1258,7 +1252,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     struct LoadDefinitionStructure *ld;
     LoadedListHandle    nlm;
 
-    LoadName = (char *)GetInPtr( sizeof( prog_load_req ) );
+    LoadName = GetInPtr( sizeof( prog_load_req ) );
     LoadLen = GetTotalSizeIn() - sizeof( prog_load_req );
     ret = GetOutPtr( 0 );
     LoadRet = ret;
@@ -1826,7 +1820,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     }
     ret->mod_handle = (unsigned_32)curr;
     len = curr->ld.LDFileName[0];
-    max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+    max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
     if( len > max_len )
         len = max_len;
     name = GetOutPtr( sizeof( *ret ) );

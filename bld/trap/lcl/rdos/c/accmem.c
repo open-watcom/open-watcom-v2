@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,42 +43,29 @@ trap_retval TRAP_CORE( Read_mem )( void )
     struct TDebug       *obj;
 
     acc = GetInPtr( 0 );
-    data = ( void * ) GetOutPtr( 0 );
+    data = GetOutPtr( 0 );
 
     obj = GetCurrentDebug();
-    if (obj)
-        return( ReadMem(    obj,
-                            acc->mem_addr.segment,
-                            acc->mem_addr.offset,
-                            data,
-                            acc->len ) );
-    else
-        return( 0 );
+    if( obj != NULL )
+        return( ReadMem( obj, acc->mem_addr.segment, acc->mem_addr.offset, data, acc->len ) );
+    return( 0 );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
 {
     void                *data;
-    int                 len;
     write_mem_req       *acc;
     write_mem_ret       *ret;
     struct TDebug       *obj;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    len = GetTotalSizeIn() - sizeof( *acc );
-    data = ( void * ) GetInPtr( sizeof( *acc ) );
-
     ret->len = 0;
-
+    data = GetInPtr( sizeof( *acc ) );
     obj = GetCurrentDebug();
-    if (obj)
-        ret->len = WriteMem(obj,
-                            acc->mem_addr.segment,
-                            acc->mem_addr.offset,
-                            data,
-                            len );
-
+    if( obj != NULL )
+        ret->len = WriteMem( obj, acc->mem_addr.segment, acc->mem_addr.offset,
+                            data, GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 

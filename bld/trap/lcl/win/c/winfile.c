@@ -177,7 +177,7 @@ trap_retval TRAP_FILE( erase )( void )
 
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    rc = TinyDelete( (char *)GetInPtr( sizeof( file_erase_req ) ) );
+    rc = TinyDelete( GetInPtr( sizeof( file_erase_req ) ) );
     if( TINY_ERROR( rc ) ) {
         ret->err = TINY_INFO( rc );
     }

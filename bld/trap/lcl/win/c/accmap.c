@@ -175,7 +175,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     *name = '\0';
     me.dwSize = sizeof( me );
     if( ModuleFindHandle( &me, moduleIDs[ CurrentModule ] ) ) {
-        max_len = GetTotalSizeOut() - 1 - sizeof( *ret );
+        max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
         strncpy( name, me.szExePath, max_len );
         name[max_len] = '\0';
     }

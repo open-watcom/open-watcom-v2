@@ -408,7 +408,7 @@ trap_retval TRAP_RFX( nametocanonical )( void )
     d = fullname;
     *d++ = drive + 'A';
     *d++ = ':';
-    len += 2;
+    len -= 2;
     if( IsPathSep( name ) ) {
         name++;
         if( *name == '\0' ) {

@@ -112,28 +112,25 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req    *acc;
-    trap_elen       len;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->mem_addr.offset );
     CONV_LE_16( acc->mem_addr.segment );
     CONV_LE_16( acc->len );
-    len = ReadMem( pid, GetOutPtr( 0 ), acc->mem_addr.offset, acc->len );
-    return( len );
+    return( ReadMem( pid, GetOutPtr( 0 ), acc->mem_addr.offset, acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req   *acc;
     write_mem_ret   *ret;
-    trap_elen       len;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->mem_addr.offset );
     CONV_LE_16( acc->mem_addr.segment );
     ret = GetOutPtr( 0 );
-    len = GetTotalSizeIn() - sizeof( *acc );
-    ret->len = WriteMem( pid, GetInPtr( sizeof( *acc ) ), acc->mem_addr.offset, len );
+    ret->len = WriteMem( pid, GetInPtr( sizeof( *acc ) ), acc->mem_addr.offset,
+                                GetTotalSizeIn() - sizeof( *acc ) );
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );
 }
@@ -216,7 +213,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     have_rdebug = false;
     dbg_dyn = NULL;
     at_end = false;
-    parms = parm_start = (char *)GetInPtr( sizeof( *acc ) );
+    parms = parm_start = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
     if( acc->true_argv ) {
         i = 1;

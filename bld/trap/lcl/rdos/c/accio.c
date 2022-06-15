@@ -185,7 +185,7 @@ trap_retval TRAP_FILE( erase )( void )
 
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    if( RdosDeleteFile( (char *)GetInPtr( sizeof( file_erase_req ) ) ) == 0 ) {
+    if( RdosDeleteFile( GetInPtr( sizeof( file_erase_req ) ) ) == 0 ) {
         ret->err = MSG_FILE_NOT_FOUND;
     }
     return( sizeof( *ret ) );
