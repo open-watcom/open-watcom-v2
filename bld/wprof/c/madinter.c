@@ -208,7 +208,7 @@ static void ReportMADFailure( mad_status ms )
         fatal( LIT( LMS_RECURSIVE_MAD_FAILURE ) );
     }
     arch = CurrSIOData->config.arch;
-    MADNameFile( arch, buff, sizeof( buff ) );
+    MADBaseName( arch, buff, sizeof( buff ) );
     CurrSIOData->config.arch = DIG_ARCH_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
     MADRegister( arch, NULL, NULL );
