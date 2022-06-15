@@ -200,7 +200,7 @@ void PathFini( void )
     free( FilePathList );
 }
 
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *result, size_t max_result )
 /************************************************************************************************************/
 {
     char        fullname[_MAX_PATH2];
@@ -211,9 +211,9 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
 
     memcpy( filename, name, name_len );
     filename[name_len] = '\0';
-    if( ext != NULL && *ext != '\0' ) {
+    if( defext != NULL && *defext != '\0' ) {
         _splitpath2( filename, fullname, NULL, NULL, &p, NULL );
-        _makepath( filename, NULL, NULL, p, ext );
+        _makepath( filename, NULL, NULL, p, defext );
     }
     strcpy( fullname, filename );
     fp = fopen( fullname, "rb" );

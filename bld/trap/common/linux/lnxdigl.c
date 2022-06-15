@@ -33,13 +33,14 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "digtypes.h"
 #include "digld.h"
 #include "lnxpath.h"
 #include "servio.h"
 
 
-FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
+FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *defext, char *result, unsigned max_result )
 {
     bool                has_ext;
     bool                has_path;
@@ -64,15 +65,12 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, c
         case '/':
             has_ext = false;
             has_path = true;
-            /* fall through */
             break;
         }
     }
     if( !has_ext ) {
         *dst++ = '.';
-        name_len = strlen( ext );
-        memcpy( dst, ext, name_len );
-        dst += name_len;
+        dst = StrCopyDst( defext, dst );
     }
     *dst = '\0';
     fp = NULL;

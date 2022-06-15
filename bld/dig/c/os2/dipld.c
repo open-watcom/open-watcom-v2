@@ -57,7 +57,7 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
     }
 }
 
-dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
+dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     dip_sys_handle      dip_mod;
     dip_init_func       *init_func;
@@ -70,14 +70,14 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
-    strcpy( dipname, path );
+    strcpy( dipname, base_name );
     strcat( dipname, ".D32" );
     _searchenv( dipname, "PATH", dippath );
     if( *dippath == '\0' )
         return( DS_ERR | DS_FOPEN_FAILED );
-    path = dippath;
+    base_name = dippath;
 #endif
-    if( LOAD_MODULE( path, dip_mod ) ) {
+    if( LOAD_MODULE( base_name, dip_mod ) ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
     ds = DS_ERR | DS_INVALID_DIP;

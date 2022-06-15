@@ -981,16 +981,16 @@ char *DIPMsgText( dip_status ds )
     return( *DIPErrTxt[ds] );
 }
 
-static bool CheckDIPLoad( char *dip, bool defaults )
+static bool CheckDIPLoad( char *base_name, bool defaults )
 {
     dip_status  ds;
 
-    ds = DIPLoad( dip );
+    ds = DIPLoad( base_name );
     if( ds != DS_OK ) {
         if( defaults && ( ds == (DS_ERR | DS_FOPEN_FAILED) ) )
             return( false );
         DIPFini();
-        Format( TxtBuff, LIT_ENG( DIP_load_failed ), dip, DIPMsgText( ds ) );
+        Format( TxtBuff, LIT_ENG( DIP_load_failed ), base_name, DIPMsgText( ds ) );
         StartupErr( TxtBuff );
     }
     return( true );
@@ -999,7 +999,7 @@ static bool CheckDIPLoad( char *dip, bool defaults )
 void InitDbgInfo( void )
 {
     char        **dip;
-    char        *p;
+    char        *base_name;
     char        *d;
     unsigned    dip_count;
 
@@ -1013,8 +1013,8 @@ void InitDbgInfo( void )
     dip = DipFiles;
     if( *dip == NULL ) {
         dip_count = 0;
-        for( p = DIPDefaults; *p != NULLCHAR; p += strlen( p ) + 1 ) {
-            if( CheckDIPLoad( p, true ) ) {
+        for( base_name = DIPDefaults; *base_name != NULLCHAR; base_name += strlen( base_name ) + 1 ) {
+            if( CheckDIPLoad( base_name, true ) ) {
                 ++dip_count;
             }
         }
@@ -1023,8 +1023,8 @@ void InitDbgInfo( void )
             d = StrCopyDst( LIT_ENG( No_DIPs_Found ), TxtBuff );
             *d++ = ' ';
             *d++ = '(';
-            for( p = DIPDefaults; *p != NULLCHAR; p += strlen( p ) + 1 ) {
-                d = StrCopyDst( p, d );
+            for( base_name = DIPDefaults; *base_name != NULLCHAR; base_name += strlen( base_name ) + 1 ) {
+                d = StrCopyDst( base_name, d );
                 *d++ = ',';
             }
             --d;

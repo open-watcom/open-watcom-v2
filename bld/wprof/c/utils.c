@@ -150,8 +150,8 @@ char *FindHelpFile( char *fullname, const char *help_name )
 }
 
 #if defined( __UNIX__ ) || defined( __DOS__ )
-FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
-/************************************************************************************************************/
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *result, size_t max_result )
+/***************************************************************************************************************/
 {
     char        realname[ _MAX_PATH2 ];
     char        *filename;
@@ -161,11 +161,11 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
 
     memcpy( realname, name, name_len );
     realname[name_len] = '\0';
-    if( ext != NULL && *ext != NULLCHAR ) {
+    if( defext != NULL && *defext != NULLCHAR ) {
         pgroup2     pg;
 
         _splitpath2( realname, pg.buffer, NULL, NULL, &pg.fname, NULL );
-        _makepath( realname, NULL, NULL, pg.fname, ext );
+        _makepath( realname, NULL, NULL, pg.fname, defext );
     }
     filename = findFile( result, realname, FilePathList );
     if( filename == NULL ) {

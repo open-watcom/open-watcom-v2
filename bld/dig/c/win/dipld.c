@@ -62,7 +62,7 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
     }
 }
 
-dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
+dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     HINSTANCE           dip_dll;
     char                newpath[256];
@@ -83,7 +83,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     UINT                prev;
 
     *sys_hdl = NULL_SYSHDL;
-    strcpy( newpath, path );
+    strcpy( newpath, base_name );
     strcat( newpath, ".dll" );
     p = parm;
     *p++ = ' ';

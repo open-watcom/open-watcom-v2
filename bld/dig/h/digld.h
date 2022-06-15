@@ -34,7 +34,7 @@
 
 #define DIGLoader(n)    DIGLoader ## n
 
-extern FILE     *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size );
+extern FILE     *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *buff, size_t buff_size );
 extern int      DIGLoader( Close )( FILE *fp );
 extern int      DIGLoader( Read )( FILE *fp, void *buff, size_t len );
 extern int      DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where );
