@@ -52,7 +52,7 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
     }
 }
 
-mad_status MADSysLoad( const char *path, mad_client_routines *cli,
+mad_status MADSysLoad( const char *base_name, mad_client_routines *cli,
                                 mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     FILE                *fp;
@@ -61,7 +61,7 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
     mad_status          status;
 
     *sys_hdl = NULL_SYSHDL;
-    fp = DIGLoader( Open )( path, strlen( path ), "mad", NULL, 0 );
+    fp = DIGLoader( Open )( base_name, strlen( base_name ), "mad", NULL, 0 );
     if( fp == NULL ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
