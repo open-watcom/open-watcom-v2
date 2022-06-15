@@ -39,7 +39,7 @@
  */
 
 mad_status      MADInit( void );
-mad_status      MADRegister( dig_arch, const char *file, const char *desc );
+mad_status      MADRegister( dig_arch, const char *base_name, const char *desc );
 mad_status      MADLoad( dig_arch );
 void            MADUnload( dig_arch );
 mad_status      MADLoaded( dig_arch );
