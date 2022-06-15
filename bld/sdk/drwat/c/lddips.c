@@ -57,10 +57,10 @@ static int              dipCnt;
 
 static void initDipMsgs( void )
 {
-    char        *ptr;
+    char        *base_name;
 
     dipCnt = 0;
-    for( ptr = DIPDefaults; *ptr != '\0'; ptr += strlen( ptr ) + 1 ) {
+    for( base_name = DIPDefaults; *base_name != '\0'; base_name += strlen( base_name ) + 1 ) {
         dipCnt++;
     }
     theLoadInfo = MemAlloc( dipCnt * sizeof( LoadInfo ) );
@@ -114,7 +114,7 @@ bool LoadTheDips( void )
 {
     int         rc;
     unsigned    i;
-    char        *ptr;
+    char        *base_name;
     char        buf[256];
     char        status[80];
     bool        diploaded;
@@ -122,8 +122,8 @@ bool LoadTheDips( void )
     diploaded = false;
     initDipMsgs();
     i = 0;
-    for( ptr = DIPDefaults; *ptr != '\0'; ptr += strlen( ptr ) + 1 ) {
-        rc = DIPLoad( ptr );
+    for( base_name = DIPDefaults; *base_name != '\0'; base_name += strlen( base_name ) + 1 ) {
+        rc = DIPLoad( base_name );
         if( rc & DS_ERR ) {
             rc &= ~DS_ERR;
             switch( rc ) {
@@ -147,7 +147,7 @@ bool LoadTheDips( void )
             CopyRCString( STR_DIP_LOADED, status, sizeof( status) );
             diploaded = true;
         }
-        sprintf( buf, "%-18s %s", ptr, status );
+        sprintf( buf, "%-18s %s", base_name, status );
         theLoadInfo[i].loadmsg = MemAlloc( strlen( buf ) + 1 );
         theLoadInfo[i].loaded = ( (rc & DS_ERR) == 0 );
 #ifdef __WINDOWS__
