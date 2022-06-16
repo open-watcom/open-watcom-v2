@@ -734,7 +734,7 @@ void PathInit( void )
 }
 
 #if defined( __DOS__ ) || defined( __UNIX__ )
-static FILE *MakeNameWithPathOpen( const char *path, const char *name, size_t nlen, char *res, size_t rlen )
+static size_t MakeName( const char *path, const char *name, size_t nlen, char *res, size_t rlen )
 {
     char        *p;
     size_t      len;
@@ -742,32 +742,27 @@ static FILE *MakeNameWithPathOpen( const char *path, const char *name, size_t nl
     if( rlen < 2 ) {
         if( rlen == 1 )
             *res = NULLCHAR;
-        return( NULL );
+        return( 0 );
     }
     p = res;
     --rlen;     // save space for terminator
     len = 0;
     if( path != NULL ) {
-        len = strlen( path );
-        if( len > rlen )
-            len = rlen;
-        memcpy( p, path, len );
-        p += len;
-        if( !CHK_PATH_SEP( p[-1], &LclFile ) ) {
-            if( len < rlen ) {
-                *p++ = LclFile.path_separator[0];
-                ++len;
-            }
+        while( len < rlen && *path != '\0' ) {
+            *p++ = *path++;
+            ++len;
+        }
+        if( len > 0 && len < rlen && !CHK_PATH_SEP( p[-1], &LclFile ) ) {
+            *p++ = LclFile.path_separator[0];
+            ++len;
         }
     }
-    if( nlen > 0 && len < rlen ) {
-        if( len + nlen > rlen )
-            nlen = rlen - len;
-        memcpy( p, name, nlen );
-        p += nlen;
+    while( len < rlen && nlen-- > 0 ) {
+        *p++ = *name++;
+        ++len;
     }
     *p = NULLCHAR;
-    return( fopen( res, "rb" ) );
+    return( p - res );
 }
 
 FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, char *buff, size_t buff_size )
@@ -804,24 +799,29 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, 
     }
     *p = NULLCHAR;
     if( have_path ) {
-        StrCopyDst( buffer, buff );
         fp = fopen( buffer, "rb" );
     } else {
         // check open file in current directory or in full path
-        fp = MakeNameWithPathOpen( NULL, buffer, p - buffer, buff, buff_size );
-        if( fp == NULL ) {
-            // check open file in debugger directory list
-            for( curr = LclPath; curr != NULL; curr = curr->next ) {
-                fp = MakeNameWithPathOpen( curr->name, buffer, p - buffer, buff, buff_size );
+        MakeName( NULL, buffer, p - buffer, buff, buff_size );
+        fp = fopen( buff, "rb" );
+        if( fp != NULL )
+            return( fp );
+        // check open file in debugger directory list
+        for( curr = LclPath; curr != NULL; curr = curr->next ) {
+            if( MakeName( curr->name, buffer, p - buffer, buff, buff_size ) ) {
+                fp = fopen( buff, "rb" );
                 if( fp != NULL ) {
-                    break;
+                    return( fp );
                 }
             }
         }
     }
-    if( fp == NULL )
-        strcpy( buff, buffer );
-    return( fp );
+    if( buff_size > 0 ) { 
+        --buff_size;
+        if( buff_size > 0 )
+            strncpy( buff, buffer, buff_size );
+        buff[buff_size] = '\0';
+    }
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
