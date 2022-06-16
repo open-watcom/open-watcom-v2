@@ -752,11 +752,9 @@ static size_t MakeName( const char *path, const char *name, size_t nlen, char *r
             *p++ = *path++;
             ++len;
         }
-        if( !CHK_PATH_SEP( p[-1], &LclFile ) ) {
-            if( len < rlen ) {
-                *p++ = LclFile.path_separator[0];
-                ++len;
-            }
+        if( len > 0 && len < rlen && !CHK_PATH_SEP( p[-1], &LclFile ) ) {
+            *p++ = LclFile.path_separator[0];
+            ++len;
         }
     }
     while( len < rlen && nlen-- > 0 ) {
