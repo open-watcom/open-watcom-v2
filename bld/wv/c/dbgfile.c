@@ -822,6 +822,7 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *defext, 
             strncpy( buff, buffer, buff_size );
         buff[buff_size] = '\0';
     }
+    return( fp );
 }
 
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
