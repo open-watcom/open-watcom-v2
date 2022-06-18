@@ -431,7 +431,8 @@ static char *StrVal( char *which, brkp *wp, char *p )
 {
     size_t      max;
 
-    for( *p++ = ' '; *which != NULLCHAR; *p++ = *which++ ) {}
+    for( *p++ = ' '; *which != NULLCHAR; *p++ = *which++ )
+        {}
     *p++ = '=';
     max = ~0;
     MADTypeHandleToString( CurrRadix, wp->mth, &wp->item, p, &max );
@@ -1042,7 +1043,8 @@ char *CopySourceLine( cue_handle *cueh )
 
     if( !DUIGetSourceLine( cueh, TxtBuff, TXT_LEN ) )
         return( NULL );
-    for( p = TxtBuff; *p == ' '; ++p ) ;
+    for( p = TxtBuff; *p == ' '; ++p )
+        {}
     source_line = DupStr( p );
     return( source_line );
 }
@@ -1217,7 +1219,7 @@ static brkp *AddPoint( address loc, mad_type_handle mth, bool unmapped )
     bp->status.b.use_condition = false;
     bp->error = NULL;
     for( owner = &BrkList; *owner != NULL; owner = &((*owner)->next) )
-        ;
+        {}
     bp->next = NULL;
     *owner = bp;
     if( HaveRemoteAsync() && IS_BP_EXECUTE( bp->mth ) ) {
@@ -1763,8 +1765,9 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
                             }
                         }
 
-                        if( !drop_hit )
+                        if( !drop_hit ) {
                             hit = true;
+                        }
                     } else {
                         if( ( memcmp( &bp->item, &item, BITS2BYTES( mti.b.bits ) ) != 0 ) || !bp->status.b.has_value ) {
                             hit = true;
@@ -2008,7 +2011,7 @@ brkp *GetBPAtIndex( int index )
     brkp    *bp = NULL;
 
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
-        if ( bp->index == index ) {
+        if( bp->index == index ) {
             break;
         }
     }
