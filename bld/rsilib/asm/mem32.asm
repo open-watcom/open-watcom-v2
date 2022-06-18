@@ -16,28 +16,33 @@
         .386
 
 ;
-; void __cdecl peek32(long off32, int sel, char far *dest, unsigned short count)
+; void peek32(unsigned long off32, unsigned sel, void FarPtr dest, size_t count)
 ;
-peek32 proc C public uses es ds esi edi ecx, off32:dword, sel:word, dest:dword, count:word
-        mov     esi,off32
-        mov     ds,sel
+peek32 proc WATCOM_C public uses es ds esi edi ecx, offs32_lo:word, offs32_hi:word, sel:word, dest:dword, count:word
+        movzx   ecx,count
+        jcxz nocopy1
+        mov     si,offs32_hi
+        shl     esi,16
+        mov     si,offs32_lo
         les     di,dest
         movzx   edi,di
-        mov     cx,count
-        jcxz nocopy1
-        movzx   ecx,cx
+        mov     ds,sel
         rep     movs byte ptr[edi],[esi]
 nocopy1:
         ret
 peek32 endp
 
 ;
-; int __cdecl poke32(long offset32, int sel, const char far *dest, unsigned short count)
+; int poke32(unsigned long offset32, unsigned sel, const void FarPtr dest, size_t count)
 ;
-poke32 proc C public uses es ds bx ecx esi edi, off32:dword, sel:word, src:dword, count:word
-        mov     bx,sel
+poke32 proc WATCOM_C public uses es ds esi edi ecx, offs32_lo:word, offs32_hi:word, sel:word, src:dword, count:word
+        movzx   ecx,count
+        jcxz short finish
+        mov     di,offs32_hi
+        shl     edi,16
+        mov     di,offs32_lo
         xor     ax,ax
-        verw    bx
+        verw    sel
         jz short writeable
         ;
         ; create code segment alias descriptor (writable)
@@ -45,17 +50,12 @@ poke32 proc C public uses es ds bx ecx esi edi, off32:dword, sel:word, src:dword
         mov     ax,0AH
         int 31H
         jc short finish
-        mov     bx,ax
+        mov     sel,ax
 writeable:
-        mov     es,bx
-        mov     edi,off32
         lds     si,src
         movzx   esi,si
-        mov     cx,count
-        jcxz nocopy2
-        movzx   ecx,cx
+        mov     es,sel
         rep     movs byte ptr[edi],[esi]
-nocopy2:
         or      ax,ax
         je short finish
         ;
@@ -63,7 +63,7 @@ nocopy2:
         ;
         mov     ax,01H
         int 31H
-        xor     ax,ax
+        clc
 finish:
         sbb     ax,ax
         ret

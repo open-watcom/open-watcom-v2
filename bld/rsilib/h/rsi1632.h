@@ -179,8 +179,8 @@ extern int          D32DebugLoad( const char *, const char FarPtr, TSF32 FarPtr 
 extern int          D32Relocate( Fptr32 FarPtr fp );
 extern int          D32Unrelocate( Fptr32 FarPtr fp );
 /* mem32.asm */
-extern void         __cdecl peek32( OFFSET32, SELECTOR, void FarPtr, size_t );
-extern int          __cdecl poke32( OFFSET32, SELECTOR, const void FarPtr, size_t );
+extern void         peek32( OFFSET32, SELECTOR, void FarPtr, size_t );
+extern int          poke32( OFFSET32, SELECTOR, const void FarPtr, size_t );
 /* d32dbgrd.c */
 extern int          D32DebugRead( OFFSET32, SELECTOR, int, void FarPtr, size_t );
 /* d32dbgwr.c */
