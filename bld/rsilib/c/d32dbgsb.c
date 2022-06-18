@@ -34,6 +34,6 @@ void D32DebugSetBreak( OFFSET32 off, SELECTOR sel, int translate, opcode_type Fa
     */
     if( temp != *to ) {
         *from = temp;
-        poke32( off, sel, to, sizeof( to ) );
+        poke32( off, sel, to, sizeof( *to ) );
     }
 }
