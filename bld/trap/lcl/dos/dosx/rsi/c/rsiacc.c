@@ -59,7 +59,7 @@
 #include "miscx87.h"
 #include "dosredir.h"
 #include "doscomm.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
 
 #define INT_PRT_SCRN_KEY    0x05
 
@@ -113,9 +113,9 @@ void SetDbgTask( void )
 {
 }
 
-static unsigned short ReadMemory( addr48_ptr *addr, void FarPtr data, unsigned short req_len )
+static size_t ReadMemory( addr48_ptr *addr, void FarPtr data, size_t req_len )
 {
-    unsigned short  len;
+    size_t  len;
 
     _DBG_Write( "checking " );
     _DBG_Write16( addr->segment );
@@ -146,9 +146,9 @@ static unsigned short ReadMemory( addr48_ptr *addr, void FarPtr data, unsigned s
     return( len );
 }
 
-static unsigned short WriteMemory( addr48_ptr *addr, const void FarPtr data, unsigned short req_len )
+static size_t WriteMemory( addr48_ptr *addr, const void FarPtr data, size_t req_len )
 {
-    unsigned short  len;
+    size_t      len;
 
     _DBG_Write( "checking " );
     _DBG_Write16( addr->segment );
@@ -645,9 +645,9 @@ trap_retval TRAP_CORE( Set_break )( void )
     _DBG_Writeln( "AccSetBreak" );
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    brk_opcode = ret->old;
     D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, false, &Break, &brk_opcode );
+    ret = GetOutPtr( 0 );
+    ret->old = brk_opcode;
     return( sizeof( *ret ) );
 }
 

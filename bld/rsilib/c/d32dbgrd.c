@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 * Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 * Copyright (c) 1987-1992 Rational Systems, Incorporated. All Rights Reserved.
 *
@@ -17,7 +17,7 @@
 
 /* Return value: not used.
 */
-int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, unsigned short len )
+int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, size_t len )
 {
     Fptr32      fp;
     OFFSET32    new_len;
@@ -47,7 +47,7 @@ int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, uns
         if( check != MEMBLK_VALID ) {
             far_setmem( (unsigned char FarPtr)to + new_len, len - new_len, 0xFF );
         }
-        len = (unsigned short)new_len;
+        len = (size_t)new_len;
         page_fault = 0;
         peek32( fp.off, fp.sel, to, len );
 
@@ -62,7 +62,7 @@ int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, uns
             if( len == 1 ) {
                 *(unsigned char FarPtr)to = 0xFF;
             } else {
-                unsigned short  check_len = ( len >> 1 );
+                size_t  check_len = ( len >> 1 );
                 D32DebugRead( off, sel, 0, to, check_len );
                 D32DebugRead( off + check_len, sel, 0, (unsigned char FarPtr)to + check_len, len - check_len );
             }

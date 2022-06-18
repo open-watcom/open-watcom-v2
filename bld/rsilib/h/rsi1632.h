@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 * =========================================================================
 *
@@ -19,6 +19,8 @@
 #define DOS16LIB_INCLUDED
 #include <dos16.h>
 #include <dpmi.h>
+#include "brkptcpu.h"
+
 
 #undef  RMCALL_INT
 #define RMCALL_INT      0x18
@@ -156,7 +158,7 @@ extern void         FarPtr rsi_get_rm_ptr( void FarPtr );
 extern int          rsi_addr32_check( OFFSET32, SELECTOR, OFFSET32, OFFSET32 * );
 
 /* dbglib.c */
-extern void         D32DebugBreakOp( unsigned char * );
+extern void         D32DebugBreakOp( opcode_type FarPtr );
 extern int          D32DebugInit( TSF32 FarPtr, int );
 extern void         D32DebugTerm( void );
 extern void         D32DebugRun( TSF32 FarPtr );
@@ -177,14 +179,14 @@ extern int          D32DebugLoad( const char *, const char FarPtr, TSF32 FarPtr 
 extern int          D32Relocate( Fptr32 FarPtr fp );
 extern int          D32Unrelocate( Fptr32 FarPtr fp );
 /* mem32.asm */
-extern void         __cdecl peek32( OFFSET32, SELECTOR, void FarPtr, unsigned short );
-extern int          __cdecl poke32( OFFSET32, SELECTOR, const void FarPtr, unsigned short );
+extern void         __cdecl peek32( OFFSET32, SELECTOR, void FarPtr, size_t );
+extern int          __cdecl poke32( OFFSET32, SELECTOR, const void FarPtr, size_t );
 /* d32dbgrd.c */
-extern int          D32DebugRead( OFFSET32, SELECTOR, int, void FarPtr, unsigned short );
+extern int          D32DebugRead( OFFSET32, SELECTOR, int, void FarPtr, size_t );
 /* d32dbgwr.c */
-extern int          D32DebugWrite( OFFSET32, SELECTOR, int, const void FarPtr, unsigned short );
+extern int          D32DebugWrite( OFFSET32, SELECTOR, int, const void FarPtr, size_t );
 /* d32dbgsb.c */
-extern void         D32DebugSetBreak( OFFSET32, SELECTOR, int, const unsigned char FarPtr, unsigned char FarPtr );
+extern void         D32DebugSetBreak( OFFSET32, SELECTOR, int, opcode_type FarPtr, opcode_type FarPtr );
 
 // global variables
 extern int          addr_mode;

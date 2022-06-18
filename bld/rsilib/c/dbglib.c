@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 * Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 * Copyright (c) 1987-1992 Rational Systems, Incorporated. All Rights Reserved.
 *
@@ -16,6 +16,8 @@
 #include <conio.h>
 #include "rsi1632.h"
 #include "loader.h"
+#include "brkptcpu.h"
+
 
 /* config items */
 #define OUTDATEDWINDOWSCRAP     0
@@ -130,7 +132,7 @@ static char debugging = 0;      /* Tells crash handler to take charge */
 static char being_debugged = 0; /* Another D present? */
 
 static int  first_time = 1;
-static unsigned char saved_opcode;
+static opcode_type saved_opcode;
 
 /*
  * This is the list of exceptions which 4gw hooks when it starts up.
@@ -231,7 +233,7 @@ static TSF32 FarPtr find_user_code( TSF32 FarPtr client )
     return( client );
 }
 
-static unsigned char hotkey_opcode;
+static opcode_type hotkey_opcode;
 static unsigned char hotkey_hit;
 static int  hotkey_int = INT_RM_PASSUP;
 
@@ -581,16 +583,16 @@ char Timer_Mod( void )
 #endif
 
 
-void D32DebugBreakOp( unsigned char *Int_3 )
+void D32DebugBreakOp( opcode_type FarPtr Int_3 )
 {
 #if OUTDATEDWINDOWSCRAP
     if( _d16info.swmode == 0 ) {
-        *Int_3 = 0xF1;
+        *Int_3 = FAKE_BRKPOINT;
     } else {
-        *Int_3 = 0xCC;
+        *Int_3 = BRKPOINT;
     }
 #else
-    *Int_3 = 0xCC;
+    *Int_3 = BRKPOINT;
 #endif
 }
 
@@ -750,15 +752,15 @@ void D32DebugRun( TSF32 FarPtr process_regs )
 #if OUTDATEDWINDOWSCRAP
         /* Windows 3.00 gibberish */
         if( dbgregs.int_id == 6 ) {  /* NEEDWORK */
-            static unsigned char opcode[3];
+            static opcode_type  brk_opcode;
 
             /* If illegal instruction, check to see if WIN 3.00 BP */
             /* This code used to look in dbgregs.ds (perhaps the   */
             /* access rights aren't right under Windows?) but that */
             /* was clearly wrong when not in flat model            */
 
-            peek32( dbgregs.eip, dbgregs.cs, &opcode, 1 );
-            if( opcode[0] == (unsigned char)0xF1 ) {
+            peek32( dbgregs.eip, dbgregs.cs, &brk_opcode, sizeof( brk_opcode ) );
+            if( brk_opcode == FAKE_BRKPOINT ) {
                 dbgregs.int_id = 3; /* Fake breakpoint */
             }
         }
