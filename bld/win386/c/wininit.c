@@ -50,6 +50,8 @@
 #include "_windpmi.h"
 #include "wininit.h"
 #include "windata.h"
+#include "brkptcpu.h"
+
 
 // define FLAT to 1 to get flat address space for entire memory
 #define FLAT    1
@@ -73,9 +75,6 @@ struct  fpu_area {
     unsigned short      fpregs[5 * 8];
 };
 
-
-extern void BreakPoint( void );
-#pragma aux BreakPoint = "int 3"
 
 #include "pushpck1.h"
 struct wstart_vars {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +51,6 @@
 #error This file is for the NetWare LibC based library only
 #endif
 
-extern void BreakPointInt3( void );
-#pragma aux BreakPointInt3 = 0xCC;
 
 static void __LibCKeyValueDestructor( void * pPerThreadData )
 {
