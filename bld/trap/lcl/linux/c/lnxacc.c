@@ -53,7 +53,7 @@
 #include "madregs.h"
 #include "lnxcomm.h"
 #include "lnxpath.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
 
 
 u_short                 flatCS;

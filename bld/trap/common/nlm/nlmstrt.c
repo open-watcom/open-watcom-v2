@@ -33,7 +33,6 @@
 #include "miniproc.h"
 #include "debugme.h"
 #include <string.h>
-#include "cpuglob.h"
 #undef POP_UP_SCREEN
 #define ConsolePrintf _
 #include <conio.h>

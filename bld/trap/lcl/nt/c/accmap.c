@@ -493,7 +493,7 @@ void DelProcess( BOOL closeHandles )
  * force16SegmentLoad - force a wow app to access its segment so that it
  *                      will be loaded into memory.
  */
-#ifdef WOW
+#if defined( WOW )
 #if !defined( MD_x64 )
 
 #define INS_BYTES 7
@@ -527,8 +527,9 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
     MySetThreadContext( ti, &oldcon );
     WriteMem( WOWAppInfo.segment, WOWAppInfo.offset, origBytes, INS_BYTES );
 }
-#endif
-#endif
+
+#endif  /* !defined( MD_x64 ) */
+#endif  /* defined( WOW ) */
 
 trap_retval TRAP_CORE( Map_addr )( void )
 {

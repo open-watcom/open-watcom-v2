@@ -39,6 +39,7 @@
 #include "srvcdbg.h"
 #include "doserr.h"
 #include "ntpath.h"
+#include "segmcpu.h"
 
 #include "clibext.h"
 

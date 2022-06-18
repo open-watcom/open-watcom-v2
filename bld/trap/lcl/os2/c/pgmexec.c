@@ -41,7 +41,6 @@
 #include <os2dbg.h>
 #include "os2v2acc.h"
 #include "bsexcpt.h"
-#include "cpuglob.h"
 
 
 #define LOAD_THIS_DLL_SIZE      6

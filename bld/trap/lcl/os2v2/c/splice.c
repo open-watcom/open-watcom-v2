@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,8 @@
 #include <os2.h>
 #include "madregs.h"
 #include "splice.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
+
 
 /* We need separate stack for executing spliced code. We really wouldn't
  * want to mess up debuggee's stack!
@@ -162,8 +163,8 @@ void __export DoReadXMMRegs( struct x86_xmm *xmm_regs )
 
 extern void fxrstor( unsigned char *addr );
 #pragma aux fxrstor = \
-        ".XMM"          \
         ".686"          \
+        ".XMM"          \
         "fxrstor [eax]" \
     __parm      [__eax] \
     __value     \

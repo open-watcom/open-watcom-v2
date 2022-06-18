@@ -51,7 +51,7 @@
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "dosredir.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
 #include "dosovl.h"
 #include "dbgpsp.h"
 #include "dospath.h"
@@ -632,13 +632,13 @@ trap_retval TRAP_CORE( Prog_load )( void )
     if( TINY_OK( rc ) ) {
         if( (Flags & F_NoOvlMgr) || !CheckOvl( parmblock.startcsip ) ) {
             if( exe == EXE_OS2 ) {
-                opcode_type __far *loc_brk_opcode;
+                opcode_type __far *brk_opcode;
 
                 BoundAppLoading = true;
                 RunProg( &TaskRegs, &TaskRegs );
-                loc_brk_opcode = _MK_FP(TaskRegs.CS, TaskRegs.EIP);
-                if( *loc_brk_opcode == BRKPOINT ) {
-                    *loc_brk_opcode = saved_opcode;
+                brk_opcode = _MK_FP(TaskRegs.CS, TaskRegs.EIP);
+                if( *brk_opcode == BRKPOINT ) {
+                    *brk_opcode = saved_opcode;
                 }
                 BoundAppLoading = false;
                 rc = TinyOpen( exe_name, TIO_READ_WRITE );
@@ -734,17 +734,17 @@ trap_retval TRAP_CORE( Clear_watch )( void )
 
 trap_retval TRAP_CORE( Set_break )( void )
 {
-    opcode_type     __far *loc_brk_opcode;
+    opcode_type     __far *brk_opcode;
     set_break_req   *acc;
     set_break_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    loc_brk_opcode = _MK_FP( acc->break_addr.segment, acc->break_addr.offset );
-    ret->old = *loc_brk_opcode;
-    *loc_brk_opcode = BRKPOINT;
-    if( *loc_brk_opcode != BRKPOINT ) {
+    brk_opcode = _MK_FP( acc->break_addr.segment, acc->break_addr.offset );
+    ret->old = *brk_opcode;
+    *brk_opcode = BRKPOINT;
+    if( *brk_opcode != BRKPOINT ) {
         BadBreak = acc->break_addr;
         GotABadBreak = true;
     }

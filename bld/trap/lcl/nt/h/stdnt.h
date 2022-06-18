@@ -34,7 +34,7 @@
 #include <windows.h>
 #undef WIN32_LEAN_AND_MEAN
 #include <tlhelp32.h>
-#include "cpuglob.h"
+#include "brkptcpu.h"
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "packet.h"
@@ -44,6 +44,7 @@
 #if defined( MD_x86 ) && defined( WOW )
 #include "vdmdbg.h"
 #endif
+
 
 #define EXE_PE  PE_SIGNATURE
 #define EXE_NE  OS2_SIGNATURE_WORD
@@ -154,12 +155,10 @@ typedef enum {
     SS_POSIX_CHAR       = 0x0007
 } subsystems;
 
-typedef struct msg_list msg_list;
-
-struct msg_list {
-    msg_list    *next;
-    char        msg[1]; /* variable size */
-};
+typedef struct msg_list {
+    struct msg_list *next;
+    char            msg[1]; /* variable size */
+} msg_list;
 
 typedef unsigned        myconditions;
 

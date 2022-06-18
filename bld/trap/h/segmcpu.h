@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,15 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  Global CPU segment and breakpoint related definition.
+* Description:  Global CPU segment related definitions.
 *
 ****************************************************************************/
 
 
 #if defined( _M_IX86 )
-
-#define TRACE_BIT       0x100
-#define BRKPOINT        0xCC
 
 extern unsigned GetDS( void );
 extern unsigned GetCS( void );
@@ -47,60 +44,29 @@ extern unsigned GetSS( void );
 #pragma aux GetSS = "mov eax,ss" __value [__eax]
 #endif
 
-extern void BreakPoint( void );
-#pragma aux BreakPoint = BRKPOINT;
-
-extern void BreakPointParm( unsigned long );
-#if defined( _M_I86 )
-#pragma aux BreakPointParm = BRKPOINT __parm [__dx __ax] __aborts
-#else
-#pragma aux BreakPointParm = BRKPOINT __parm [__eax] __aborts
-#endif
-
-typedef unsigned char   opcode_type;
-
 #elif defined( _M_X64 )
-
-#define TRACE_BIT       0x100
-#define BRKPOINT        0xCC
 
 #define GetDS()         0
 #define GetCS()         0
 #define GetSS()         0
 
-extern void BreakPoint( void );
-
-typedef unsigned char   opcode_type;
-
 #elif defined( __PPC__ )
-
-#define TRACE_BIT       (1U << MSR_L_se)
-#define BRKPOINT        0x7FE00008
 
 #define GetDS()         0
 #define GetCS()         0
-
-typedef unsigned        opcode_type;
+#define GetSS()         0
 
 #elif defined( __MIPS__ )
 
-//#define TRACE_BIT      0
-#define BRKPOINT        0x0000000D
-
 #define GetDS()         0
 #define GetCS()         0
-
-typedef unsigned        opcode_type;
+#define GetSS()         0
 
 #elif defined( __AXP__ )
 
-//#define TRACE_BIT      0
-#define BRKPOINT        0x00000080
-
 #define GetDS()         0
 #define GetCS()         0
-
-typedef unsigned        opcode_type;
+#define GetSS()         0
 
 #else
 

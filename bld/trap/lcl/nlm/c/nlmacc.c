@@ -45,7 +45,8 @@
 #endif
 #include "debugapi.h"
 
-#include "cpuglob.h"
+#include "brkptcpu.h"
+#include "segmcpu.h"
 #include "dbg386.h"
 #include "trpimp.h"
 #include "trpcomm.h"

@@ -65,7 +65,6 @@
 #define INCL_DOSSIGNALS
 #include <os2.h>
 #include <string.h>
-#include "cpuglob.h"
 #include "os2v2acc.h"
 #include "madregs.h"
 #include "splice.h"

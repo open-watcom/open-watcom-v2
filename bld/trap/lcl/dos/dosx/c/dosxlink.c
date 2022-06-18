@@ -36,7 +36,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <i86.h>
-#include "cpuglob.h"
+#include "segmcpu.h"
 #include "trptypes.h"
 #include "packet.h"
 #include "trperr.h"

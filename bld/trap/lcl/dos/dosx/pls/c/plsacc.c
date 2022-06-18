@@ -46,7 +46,7 @@
 #include "exeos2.h"
 #include "exepe.h"
 #include "madregs.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "dosredir.h"

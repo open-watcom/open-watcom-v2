@@ -40,7 +40,7 @@
 #define INCL_DOSSESMGR
 #define INCL_DOSMODULEMGR
 #include <os2.h>
-#include "cpuglob.h"
+#include "brkptcpu.h"
 #include "os2v2acc.h"
 #include "trpcomm.h"
 #include "trpld.h"

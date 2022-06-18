@@ -56,7 +56,7 @@
 #include "exeos2.h"
 #include "exeflat.h"
 #include "x86cpu.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
 #include "dbgthrd.h"
 #include "os2path.h"
 #include "accmisc.h"

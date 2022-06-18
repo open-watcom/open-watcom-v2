@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,13 +36,15 @@
 #include <dos.h>
 #include <windows.h>
 #include "bool.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
+#include "segmcpu.h"
 #include "wdebug.h"
 #include "winintrf.h"
 #include "di386dll.h"
 
 
 #define MAX_ISTACK      4096
+#define IDT_ENTRY_SIZE  sizeof( idt )
 
 typedef union {
     char            bytes[8];
@@ -61,8 +63,10 @@ extern void ReleaseIDTSel( void );
 extern void InterruptCallback( void );
 extern void ReflectInt1Int3( void );
 
-static idt     IdtInt1,IdtInt3;
-//static idt     NewIdtInt1,NewIdtInt3;
+static idt     IdtInt1;
+static idt     IdtInt3;
+//static idt     NewIdtInt1;
+//static idt     NewIdtInt3;
 static char    IStack[MAX_ISTACK];
 static int     SetCount = 0;
 static int     IntAccessed = 0;
@@ -121,9 +125,9 @@ int FAR PASCAL SetDebugInterrupts32( void )
     /*
      * set up to be notified of faults by wgod
      */
-    RegisterInterruptCallback( (LPVOID) InterruptCallback,
-                        (LPVOID) &IntRegsSave,
-                        (LPVOID) &IStack[MAX_ISTACK-16] );
+    RegisterInterruptCallback( (LPVOID)InterruptCallback,
+                        (LPVOID)&IntRegsSave,
+                        (LPVOID)&IStack[MAX_ISTACK - 16] );
 
     return( 1 );
 
@@ -141,11 +145,11 @@ void FAR PASCAL ResetDebugInterrupts32( void )
 {
     SetCount--;
     if( SetCount == 0 ) {
-        CopyMemory386( IDTSel, (DWORD) 1*8, GetDS(), (DWORD) &IdtInt1, 8 );
-        CopyMemory386( IDTSel, (DWORD) 3*8, GetDS(), (DWORD) &IdtInt3, 8 );
+        CopyMemory386( IDTSel, 1 * IDT_ENTRY_SIZE, GetDS(), (DWORD)&IdtInt1, IDT_ENTRY_SIZE );
+        CopyMemory386( IDTSel, 3 * IDT_ENTRY_SIZE, GetDS(), (DWORD)&IdtInt3, IDT_ENTRY_SIZE );
         IDTFini();
         ReleaseIDTSel();
-        UnRegisterInterruptCallback( (LPVOID) InterruptCallback );
+        UnRegisterInterruptCallback( (LPVOID)InterruptCallback );
     }
 
 } /* ResetDebugInterrupts32 */

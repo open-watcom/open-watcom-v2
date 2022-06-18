@@ -53,7 +53,7 @@
 #include "trperr.h"
 #include "doserr.h"
 #include "doscomm.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
 #include "adsintr.h"
 #include "adsacc.h"
 #include "int16.h"
@@ -630,9 +630,8 @@ trap_retval TRAP_CORE( Set_break )( void )
     _DBG1(( "AccSetBreak" ));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    if( ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) ) == 0 ) {
-        ret->old = 0;
-    } else {
+    ret->old = 0;
+    if( ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) ) ) {
         ret->old = brk_opcode;
         brk_opcode = BRKPOINT;
         WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );

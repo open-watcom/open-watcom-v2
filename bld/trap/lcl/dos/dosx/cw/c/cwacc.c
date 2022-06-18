@@ -49,7 +49,7 @@
 #include "tinyio.h"
 #include "exeos2.h"
 #include "exeflat.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
 #include "cwacc.h"
 
 

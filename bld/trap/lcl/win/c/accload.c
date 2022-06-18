@@ -36,7 +36,7 @@
 #include <direct.h>
 #include <ctype.h>
 #include <dos.h>
-#include "cpuglob.h"
+#include "brkptcpu.h"
 #include "wdebug.h"
 #include "stdwin.h"
 #include "getcsip.h"

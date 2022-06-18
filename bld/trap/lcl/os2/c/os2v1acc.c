@@ -48,7 +48,7 @@
 #include "madregs.h"
 #include "x86cpu.h"
 #include "miscx87.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
 #include "os2path.h"
 #include "accmisc.h"
 
