@@ -105,8 +105,7 @@ typedef struct {
 
 #if defined( MD_x86 ) && defined( WOW )
 typedef struct {
-    WORD        offset;
-    WORD        segment;
+    addr48_ptr  addr;
     DWORD       tid;
     WORD        htask;
     DWORD       hmodule;
