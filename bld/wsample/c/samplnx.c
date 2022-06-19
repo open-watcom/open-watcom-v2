@@ -55,7 +55,7 @@
 #endif
 #include "exeelf.h"
 #include "lnxcomm.h"
-#include "cpuglob.h"
+#include "brkptcpu.h"
 
 #if 0
     #define dbg_printf( ... ) printf( __VA_ARGS__ )
