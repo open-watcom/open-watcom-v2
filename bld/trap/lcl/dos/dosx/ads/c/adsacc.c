@@ -245,7 +245,7 @@ static  word    LookUp( word sdtseg, word seg, word global_sel )
         if( sdtoff == ( seg & 0xfff8 ) )
             continue;
         otherseg = sdtoff + ( global_sel ? 0 : 4 );
-        if( !WriteOk( otherseg ) )
+        if( !WriteOK( otherseg ) )
             continue;
         if( GetLinear( otherseg, 0 ) != linear )
             continue;

@@ -63,48 +63,46 @@ long                    orig_eax;
 long                    last_eip;
 
 static pid_t            OrigPGrp;
-static int              attached;
+static bool             attached;
 static int              last_sig;
-static int              at_end;
+static bool             at_end;
 static struct r_debug   rdebug;         /* Copy of debuggee's r_debug (if present) */
 static struct r_debug   *dbg_rdebug;    /* Ptr to r_debug in debuggee's space */
-static int              have_rdebug;    /* Flag indicating valid r_debug */
+static bool             have_rdebug;    /* Flag indicating valid r_debug */
 static Elf32_Dyn        *dbg_dyn;       /* VA of debuggee's dynamic section (if present) */
 static opcode_type      saved_opcode;
 
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    char                buf[256];
+    unsigned char       buf[256];
     addr_off            offv;
-    u_short             length;
-    u_short             size;
-    int                 i;
-    u_short             amount;
+    size_t              len;
+    size_t              want;
+    size_t              i;
+    size_t              got;
     u_long              sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
     sum = 0;
     if( pid != 0 ) {
-        length = acc->len;
+        want = sizeof( buf );
+        acc = GetInPtr( 0 );
         offv = acc->in_addr.offset;
-        size = sizeof( buf );
-        for( ; length > 0; ) {
-            if( size > length )
-                size = length;
-            amount = ReadMem( pid, buf, offv, size );
-            for( i = amount; i != 0; --i )
-                sum += buf[ i - 1 ];
-            offv += amount;
-            length -= amount;
-            if( amount != size ) {
+        for( len = acc->len; len > 0; len -= want ) {
+            if( want > len )
+                want = len;
+            got = ReadMem( pid, buf, offv, want );
+            for( i = 0; i < got; ++i )
+                sum += buf[i];
+            if( got != want ) {
                 break;
             }
+            offv += want;
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }
@@ -136,7 +134,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
 }
 
 #if defined( MD_x86 )
-static int GetFlatSegs( u_short *cs, u_short *ds )
+static bool GetFlatSegs( u_short *cs, u_short *ds )
 {
     user_regs_struct    regs;
 
@@ -170,23 +168,24 @@ static pid_t RunningProc( const char *name, const char **name_ret )
         ch = *name;
         if( ch < '0' || ch > '9' )
             break;
-        pidd = (pidd * 10) + (ch - '0');
+        pidd = ( pidd * 10 ) + ( ch - '0' );
         ++name;
     }
-    if( *name != '\0')
+    if( *name != '\0' )
         return( 0 );
     return( pidd );
 }
 
-static int GetExeNameFromPid( pid_t pid, char *buffer, int max_len )
+static size_t GetExeNameFromPid( pid_t pid, char *buffer, size_t max_len )
 {
     char        procfile[24];
-    int         len;
+    size_t      len;
 
     sprintf( procfile, "/proc/%d/exe", pid );
-    len = readlink( procfile, buffer, max_len );
-    if( len < 0 )
+    len = readlink( procfile, buffer, max_len - 1 );
+    if( len == -1 ) {
         len = 0;
+    }
     buffer[len] = '\0';
     return( len );
 }
@@ -267,7 +266,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     }
     ret->flags = 0;
     ret->mod_handle = 0;
-    if( (pid != -1) && (pid != 0) ) {
+    if( ( pid != -1 ) && ( pid != 0 ) ) {
         int status;
 
         ret->task_id = pid;
@@ -400,7 +399,7 @@ static sighandler_t setsig( int sig, sighandler_t handler )
     return old_sa.sa_handler;
 }
 
-static trap_elen ProgRun( int step )
+static trap_elen ProgRun( bool step )
 {
     static int          ptrace_sig = 0;
     static int          ld_state = 0;
@@ -408,7 +407,7 @@ static trap_elen ProgRun( int step )
     int                 status;
     prog_go_ret         *ret;
     void                (*old)(int);
-    int                 debug_continue;
+    bool                debug_continue;
 
     if( pid == 0 )
         return( 0 );
@@ -627,15 +626,13 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
-    int                         len;
+    size_t                      len;
     const char                  *name;
     char                        *fullname;
     pid_t                       pidd;
 
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
     fullname = GetOutPtr( sizeof( *ret ) );
     pidd = 0;
     if( acc->file_type == DIG_FILETYPE_EXE ) {
@@ -646,6 +643,8 @@ trap_retval TRAP_FILE( string_to_fullpath )( void )
     } else {
         len = FindFilePath( acc->file_type, name, fullname );
     }
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( len == 0 ) {
         ret->err = ENOENT;      /* File not found */
     }
@@ -665,7 +664,7 @@ trap_retval TRAP_CORE( Get_message_text )( void )
     } else if( last_sig > (sizeof( ExceptionMsgs ) / sizeof( char * ) - 1) ) {
         strcpy( err_txt, TRP_EXC_unknown );
     } else {
-        strcpy( err_txt, ExceptionMsgs[ last_sig ] );
+        strcpy( err_txt, ExceptionMsgs[last_sig] );
         last_sig = -1;
         ret->flags = MSG_NEWLINE | MSG_ERROR;
     }

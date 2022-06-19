@@ -288,7 +288,7 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
     ibuff.length = sizeof( ibuff );
     obuff.length = sizeof( obuff );
     /* Register monitor for debuggee's session */
-    if( DosMonReg( mon, (void *)&ibuff, (void *)&obuff, 1, SID) != 0 ) {
+    if( DosMonReg( mon, (void *)&ibuff, (void *)&obuff, 1, SID ) != 0 ) {
         DosMonClose(mon);
         if( delay == 0 )
             delay = 5000;
@@ -311,7 +311,7 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
             break;
         }
         DosQuerySysInfo( QSV_MS_COUNT, QSV_MS_COUNT, &msecs, sizeof( msecs ) );
-        if( delay != 0 && (msecs - starttime) > delay ) {
+        if( delay != 0 && ( msecs - starttime ) > delay ) {
             DosMonClose( mon );
             return( sizeof( *ret ) );
         }
@@ -366,10 +366,7 @@ trap_retval TRAP_CORE( Get_err_text )( void )
         }
         while( *s == ' ' )
             ++s;
-        for( ;; ) {
-            ch = *s++;
-            if( ch == '\0' )
-                break;
+        while( (ch = *s++) != '\0' ) {
             if( ch == '\n' )
                 ch = ' ';
             if( ch != '\r' ) {
@@ -437,12 +434,12 @@ static trap_elen Redirect( bool input )
 
 trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
-    return( Redirect( TRUE ) );
+    return( Redirect( true ) );
 }
 
 trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
-    return( Redirect( FALSE ) );
+    return( Redirect( false ) );
 }
 
 static char *DOSEnvFind( char *src )
