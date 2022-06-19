@@ -514,18 +514,18 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
 
     if( !gotOrig ) {
         gotOrig = TRUE;
-        ReadMem( WOWAppInfo.segment, WOWAppInfo.offset, origBytes, INS_BYTES );
+        ReadMem( WOWAppInfo.addr.segment, WOWAppInfo.addr.offset, origBytes, INS_BYTES );
     }
-    WriteMem( WOWAppInfo.segment, WOWAppInfo.offset, getMemIns, INS_BYTES );
+    WriteMem( WOWAppInfo.addr.segment, WOWAppInfo.addr.offset, getMemIns, INS_BYTES );
     MyGetThreadContext( ti, &con );
     oldcon = con;
     con.Eax = sel;
-    con.Eip = WOWAppInfo.offset;
-    con.SegCs = WOWAppInfo.segment;
+    con.Eip = WOWAppInfo.addr.offset;
+    con.SegCs = WOWAppInfo.addr.segment;
     MySetThreadContext( ti, &con );
     DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD | STATE_EXPECTING_FAULT, NULL, FALSE );
     MySetThreadContext( ti, &oldcon );
-    WriteMem( WOWAppInfo.segment, WOWAppInfo.offset, origBytes, INS_BYTES );
+    WriteMem( WOWAppInfo.addr.segment, WOWAppInfo.addr.offset, origBytes, INS_BYTES );
 }
 
 #endif  /* !defined( MD_x64 ) */
