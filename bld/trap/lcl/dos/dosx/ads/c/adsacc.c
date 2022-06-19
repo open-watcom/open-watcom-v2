@@ -70,6 +70,46 @@ typedef struct watch_point {
 extern void StackCheck( void );
 #pragma aux StackCheck "__STK";
 
+static dword    SegLimit( dword );
+#pragma aux SegLimit = \
+        "lsl eax,eax" \
+        "jz short L1" \
+        "xor eax,eax" \
+    "L1: " \
+    __parm [__eax] \
+    __value [__eax]
+
+
+static bool         WriteOK( word sel );
+#pragma aux WriteOK = \
+        "verw ax" /* if ok for write */\
+        "sete al" /* then return TRUE */\
+    __parm [__ax] __value [__al]
+
+static bool         ReadOK( word sel );
+#pragma aux ReadOK = \
+        "verr ax" /* if ok for read */\
+        "sete al" /* then return TRUE */\
+    __parm [__ax] __value [__al]
+
+static void         DoReadByte( word sel, dword offs, void *data );
+#pragma aux DoReadByte = \
+        "push ds" \
+        "mov ds,dx" \
+        "mov al,[ebx]" \
+        "pop ds" \
+        "mov [ecx],al" \
+    __parm [__dx] [__ebx] [__ecx]
+
+static void         DoWriteByte( word sel, dword offs, void *data );
+#pragma aux DoWriteByte = \
+        "mov al,[ecx]" \
+        "push ds" \
+        "mov ds,dx" \
+        "mov [ebx],al" \
+        "pop ds" \
+    __parm [__dx] [__ebx] [__ecx]
+
 trap_cpu_regs           Regs;
 int                     IntNum;
 char                    Break;
@@ -228,7 +268,7 @@ static word    AltSegment( word seg )
     return( seg );
 }
 
-static int ReadWrite( int (*r)(word,dword,char*), addr48_ptr *addr, char *data, int req ) {
+static int ReadWrite( int (*r)(word, dword, void *), addr48_ptr *addr, char *data, int req ) {
 
     int         len;
     word        segment;
@@ -274,17 +314,34 @@ static int ReadWrite( int (*r)(word,dword,char*), addr48_ptr *addr, char *data, 
     return( len );
 }
 
-
-static int ReadMemory( addr48_ptr *addr, byte *data, int len )
+static int DoReadMem( word sel, dword offs, void *data )
 {
-    return( ReadWrite( DoReadMem, addr, (char *)data, len ) );
+    if( ReadOK( sel ) ) {
+        DoReadByte( sel, offs, data );
+        return( 1 );
+    }
+    return( 0 );
 }
 
-static int WriteMemory( addr48_ptr *addr, byte *data, int len )
+static int DoWriteMem( word sel, dword offs, void *data )
+{
+    if( WriteOK( sel ) ) {
+        DoWriteByte( sel, offs, data );
+        return( 1 );
+    }
+    return( 0 );
+}
+
+static int ReadMemory( addr48_ptr *addr, void *data, int len )
+{
+    return( ReadWrite( DoReadMem, addr, data, len ) );
+}
+
+static int WriteMemory( addr48_ptr *addr, void *data, int len )
 {
     if( addr->segment == Regs.CS )
         addr->segment = Regs.DS; // hack, ack
-    return( ReadWrite( DoWriteMem, addr, (char *)data, len ) );
+    return( ReadWrite( DoWriteMem, addr, data, len ) );
 }
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
