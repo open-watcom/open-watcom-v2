@@ -304,68 +304,6 @@ GetLinear       proc    near
                 ret
 GetLinear       endp
 
-
-public          SegLimit
-SegLimit        proc    near
-                lsl     eax,word ptr 4[esp]; get segment limit of selector
-                jne     nogood          ; if good selector
-                ret                     ; - return segment limit
-nogood:         xor     eax,eax         ; else
-                ret                     ; - return( 0 )
-SegLimit        endp
-
-public          DoReadMem
-DoReadMem       proc    near
-                mov     ax,4[esp]       ; load segment
-                verr    ax              ; if not ok for read
-                je      readok          ; - then
-                xor     eax,eax         ; - return( 0 )
-                ret                     ; - ...
-readok:         push    ebx             ; save regs
-                push    edx             ; ...
-                push    ds              ; ...
-                mov     ds,16[esp]      ; load seg
-                mov     edx,20[esp]     ; load offset
-                mov     ebx,24[esp]     ; address of buffer
-                mov     al,[edx]        ; get byte at seg:offset
-                pop     ds              ; restore reg
-                mov     [ebx],al        ; save byte in buffer
-                pop     edx             ; restore regs
-                pop     ebx             ; ...
-                mov     eax,1           ; return( 1 )
-                ret                     ; ...
-DoReadMem       endp
-
-public          WriteOk
-WriteOk         proc    near
-                mov     ax,4[esp]       ; load segment
-                verw    ax              ; if ok for write
-                sete    al              ; return TRUE
-                movzx   eax,al          ; ...
-                ret                     ; ...
-WriteOk         endp
-
-
-public          DoWriteMem
-DoWriteMem      proc    near
-                mov     ax,4[esp]       ; load segment
-                verw    ax              ; if not ok for read
-                je      writeisok       ; - then
-                xor     eax,eax         ; - return( 0 )
-                ret                     ; - ...
-writeisok:      push    edx             ; save regs
-                push    ds              ; ...
-                mov     edx,20[esp]     ; get address of buffer
-                mov     al,[edx]        ; load byte from buffer
-                mov     ds,12[esp]      ; get seg
-                mov     edx,16[esp]     ; load offset
-                mov     [edx],al        ; store byte at seg:offset
-                pop     ds              ; restore regs
-                pop     edx             ; ...
-                mov     eax,1           ; return( 1 )
-                ret                     ; ...
-DoWriteMem      endp
-
 sysregs         macro   write
                 push    ebx                     ; save regs
                 push    edx                     ; ...
