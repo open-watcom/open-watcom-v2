@@ -495,8 +495,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
          */
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-        WOWAppInfo.segment = (WORD)con.SegCs;
-        WOWAppInfo.offset = (WORD)con.Eip;
+        WOWAppInfo.addr.segment = (WORD)con.SegCs;
+        WOWAppInfo.addr.offset = (WORD)con.Eip;
         con.SegSs = con.SegDs; // Wow lies about the stack segment.  Reset it
         con.Esp = stack;
         MySetThreadContext( ti, &con );
@@ -528,8 +528,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
          */
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-        WOWAppInfo.segment = (WORD)con.SegCs;
-        WOWAppInfo.offset = (WORD)con.Eip;
+        WOWAppInfo.addr.segment = (WORD)con.SegCs;
+        WOWAppInfo.addr.offset = (WORD)con.Eip;
         con.SegSs = con.SegDs; // Wow lies about the stack segment.  Reset it
         con.Esp = stack;
         MySetThreadContext( ti, &con );
