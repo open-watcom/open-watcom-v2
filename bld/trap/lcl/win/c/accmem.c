@@ -74,55 +74,51 @@ DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
-    LPVOID              data;
 
     acc = GetInPtr( 0 );
-    data = GetOutPtr( 0 );
-    return( ReadMem( acc->mem_addr.segment, acc->mem_addr.offset, data, acc->len ) );
+    return( ReadMem( acc->mem_addr.segment, acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
 {
-    LPVOID              data;
     write_mem_req       *acc;
     write_mem_ret       *ret;
 
     acc = GetInPtr( 0 );
-    data = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     ret->len = WriteMem( acc->mem_addr.segment, acc->mem_addr.offset,
-                            data, GetTotalSizeIn() - sizeof( *acc ) );
+                            GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     DWORD               offset;
-    trap_elen           length;
+    WORD                sel;
+    size_t              len;
     WORD                value;
     DWORD               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
-    length = acc->len;
     sum = 0;
     if( DebugeeTask != NULL ) {
+        acc = GetInPtr( 0 );
         offset = acc->in_addr.offset;
-        while( length != 0 ) {
-            ReadMem( acc->in_addr.segment, offset, (LPVOID)&value, 2 );
+        sel = acc->in_addr.segment;
+        for( len = acc->len; len > 0; ) {
+            ReadMem( sel, offset, (LPVOID)&value, 2 );
             sum += value & 0xff;
             offset++;
-            length--;
-            if( length != 0 ) {
+            len--;
+            if( len > 0 ) {
                 sum += value >> 8;
                 offset++;
-                length--;
+                len--;
             }
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }
