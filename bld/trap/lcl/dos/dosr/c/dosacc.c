@@ -304,18 +304,18 @@ trap_retval TRAP_CORE( Machine_data )( void )
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    unsigned_8          __far *ptr;
+    unsigned char       __far *ptr;
     unsigned long       sum = 0;
     size_t              len;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
     ptr = _MK_FP( acc->in_addr.segment, acc->in_addr.offset );
     for( len = acc->len; len > 0; --len ) {
         sum += *ptr++;
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }

@@ -720,34 +720,35 @@ trap_retval TRAP_CORE( Machine_data )( void )
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     ULONG               offset;
-    trap_elen           length;
+    USHORT              segment;
+    size_t              len;
     ULONG               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    length = acc->len;
     sum = 0;
     if( Pid != 0 ) {
+        acc = GetInPtr( 0 );
         offset = acc->in_addr.offset;
-        while( length != 0 ) {
+        segment = acc->in_addr.segment;
+        for( len = acc->len; len > 0; ) {
             Buff.Cmd  = DBG_C_ReadMem_D;
-            Buff.Addr = MakeItFlatNumberOne( acc->in_addr.segment, offset );
+            Buff.Addr = MakeItFlatNumberOne( segment, offset );
             CallDosDebug( &Buff );
             if( Buff.Cmd != DBG_N_Success ) {
                 break;
             }
             sum += Buff.Value & 0xff;
             offset++;
-            length--;
-            if( length != 0 ) {
+            len--;
+            if( len > 0 ) {
                 sum += Buff.Value >> 8;
                 offset++;
-                length--;
+                len--;
             }
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }

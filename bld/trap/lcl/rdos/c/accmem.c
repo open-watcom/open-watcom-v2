@@ -71,37 +71,34 @@ trap_retval TRAP_CORE( Write_mem )( void )
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    long                offset;
-    int                 segment;
-    WORD                length;
+    DWORD               offset;
+    WORD                segment;
+    size_t              len;
     WORD                value;
     DWORD               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
     struct TDebug       *obj;
 
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
-    length = acc->len;
     sum = 0;
-
     obj = GetCurrentDebug();
-    if( obj ) {
+    if( obj != NULL ) {
+        acc = GetInPtr( 0 );
         offset = acc->in_addr.offset;
         segment = acc->in_addr.segment;
-        while( length != 0 ) {
-            ReadMem( obj, segment, offset, (char *)&value, sizeof( value ) );
+        for( len = acc->len; len > 0; ) {
+            ReadMem( obj, segment, offset, &value, sizeof( value ) );
             sum += value & 0xff;
             offset++;
-            length--;
-            if( length != 0 ) {
+            len--;
+            if( len > 0 ) {
                 sum += value >> 8;
                 offset++;
-                length--;
+                len--;
             }
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,8 +116,8 @@ struct TDebugThread
 
 int IsDebug( struct TDebugThread *obj );
 
-int ReadMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size );
-int WriteMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size );
+int ReadMem( struct TDebug *obj, int Sel, long Offset, void *Buf, int Size );
+int WriteMem( struct TDebug *obj, int Sel, long Offset, void *Buf, int Size );
 void WriteRegs( struct TDebugThread *obj );
 
 int WasTrace( struct TDebugThread *obj );

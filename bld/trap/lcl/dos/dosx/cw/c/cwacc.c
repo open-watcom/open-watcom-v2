@@ -585,35 +585,33 @@ static trap_elen WriteMemory( addr48_ptr *addr, void *data, trap_elen len )
 trap_retval TRAP_CORE( Checksum_mem )( void )
 /*******************************************/
 {
-    trap_elen           len;
-    int                 i;
-    trap_elen           read;
+    size_t              len;
+    size_t              i;
+    size_t              want;
+    size_t              got;
+    unsigned long       sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
-    char                buffer[256];
+    unsigned char       buffer[256];
 
     _DBG1(( "AccChkSum\n" ));
 
     acc = GetInPtr( 0 );
+    want = sizeof( buffer );
+    sum = 0;
+    for( len = acc->len; len > 0; len -= want ) {
+        if( want > len )
+            want = len;
+        got = ReadMemory( &acc->in_addr, buffer, want );
+        for( i = 0; i < got; ++i ) {
+            sum += buffer[i];
+        }
+        if( got != want )
+            break;
+        acc->in_addr.offset += want;
+    }
     ret = GetOutPtr( 0 );
-    len = acc->len;
-    ret->result = 0;
-    while( len >= sizeof( buffer ) ) {
-        read = ReadMemory( &acc->in_addr, buffer, sizeof( buffer ) );
-        for( i = 0; i < read; ++i ) {
-            ret->result += buffer[i];
-        }
-        if( read != sizeof( buffer ) )
-            return( sizeof( *ret ) );
-        len -= sizeof( buffer );
-        acc->in_addr.offset += sizeof( buffer );
-    }
-    if( len != 0 ) {
-        read = ReadMemory( &acc->in_addr, buffer, len );
-        for( i = 0; i < read; ++i ) {
-            ret->result += buffer[i];
-        }
-    }
+    ret->result = sum;
     return( sizeof( ret ) );
 }
 

@@ -71,7 +71,7 @@ typedef unsigned long   ULONG;
 
 static pid_t            MID;
 static pid_t            OrigPGrp;
-static char             UtilBuff[BUFF_SIZE];
+static unsigned char    UtilBuff[BUFF_SIZE];
 static struct {
     unsigned long       in;
     unsigned long       out;
@@ -158,12 +158,11 @@ void OutNum( unsigned long i )
 #endif
 
 #define MAX_MEM_TRANS   256
-static unsigned MoveMem( int op, char *data, addr_seg segv, addr_off offv,
-                unsigned size )
+static size_t MoveMem( int op, void *data, addr_seg segv, addr_off offv, size_t req_len )
 {
-    unsigned            length;
-    unsigned            trans;
-    unsigned            amount;
+    size_t              len;
+    size_t              want;
+    size_t              got;
     struct _seginfo     info;
 
     if( ProcInfo.pid == 0 )
@@ -172,42 +171,40 @@ static unsigned MoveMem( int op, char *data, addr_seg segv, addr_off offv,
         info.nbytes = 0;
     }
     if( offv >= info.nbytes ) {
-        size = 0;
-    } else if( offv + size > info.nbytes ) {
-        size = info.nbytes - offv;
+        req_len = 0;
+    } else if( offv + req_len > info.nbytes ) {
+        req_len = info.nbytes - offv;
     }
-    trans = MAX_MEM_TRANS;
-    length = size;
-    for( ; length > 0; ) {
-        if( trans > length )
-            trans = length;
-        if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, op, data, trans, offv, segv ) != 0 ) {
+    want = MAX_MEM_TRANS;
+    len = 0;
+    for( ; req_len-- > 0; req_len -= want ) {
+        if( want > req_len )
+            want = req_len;
+        if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, op, data, want, offv, segv ) != 0 ) {
             /* something went wrong. need to find out how much trans'ed */
             //NYI
-            amount = 0;
+            got = 0;
         } else {
-            amount = trans;
+            got = want;
         }
-        data += amount;
-        offv += amount;
-        length -= amount;
-        if( amount != trans ) {
+        len += got;
+        if( got != want ) {
             break;
         }
+        data = (char *)data + want;
+        offv += want;
     }
-    return( size - length );
+    return( len );
 }
 
 
-static unsigned WriteBuffer( char *data, addr_seg segv, addr_off offv,
-            unsigned size )
+static size_t WriteBuffer( void *data, addr_seg segv, addr_off offv, size_t size )
 {
     return( MoveMem( _DEBUG_MEM_WR, data, segv, offv, size ) );
 }
 
 
-static unsigned ReadBuffer( char *data, addr_seg segv, addr_off offv,
-            unsigned size )
+static size_t ReadBuffer( void *data, addr_seg segv, addr_off offv, size_t size )
 {
     return( MoveMem( _DEBUG_MEM_RD, data, segv, offv, size ) );
 }
@@ -446,35 +443,35 @@ trap_retval TRAP_CORE( Map_addr )( void )
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     addr_off            offv;
-    USHORT              length;
-    USHORT              size;
-    int                 i;
-    USHORT              amount;
+    word                segv;
+    size_t              len;
+    size_t              want;
+    size_t              i;
+    size_t              got;
     ULONG               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
     sum = 0;
     if( ProcInfo.pid != 0 ) {
-        length = acc->len;
-        size = sizeof( UtilBuff );
+        acc = GetInPtr( 0 );
+        want = sizeof( UtilBuff );
         offv = acc->in_addr.offset;
-        for( ; length > 0; ) {
-            if( size > length )
-                size = length;
-            amount = MoveMem( _DEBUG_MEM_RD, UtilBuff, acc->in_addr.segment, offv, size );
-            for( i = amount; i != 0; --i ) {
-                sum += UtilBuff[ i - 1 ];
+        segv = acc->in_addr.segment;
+        for( len = acc->len; len > 0; len -= want ) {
+            if( want > len )
+                want = len;
+            got = MoveMem( _DEBUG_MEM_RD, UtilBuff, segv, offv, want );
+            for( i = 0; i < got; ++i ) {
+                sum += UtilBuff[i];
             }
-            offv += amount;
-            length -= amount;
-            if( amount != size ) {
+            if( got != want ) {
                 break;
             }
+            offv += want;
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }

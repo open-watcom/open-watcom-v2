@@ -110,7 +110,7 @@ extern  long            _STACKTOP;
 bool                    FakeBreak;
 bool                    AtEnd;
 bool                    ReportedAlias;
-char                    SavedByte;
+opcode_type             SavedByte;
 short                   InitialSS;
 short                   InitialCS;
 
@@ -299,7 +299,7 @@ static int RunProgram()
 }
 
 
-static int _ReadMemory( PTR386 *addr, unsigned long req, void *buf )
+static int DoReadMemory( PTR386 *addr, unsigned long req, void *buf )
 {
     if( IsProtSeg( addr->selector ) ) {
         return( dbg_pread( addr, req, buf ) );
@@ -308,26 +308,27 @@ static int _ReadMemory( PTR386 *addr, unsigned long req, void *buf )
     }
 }
 
-static unsigned short ReadMemory( PTR386 *addr, char *buff, unsigned short requested )
+static unsigned short ReadMemory( PTR386 *addr, void *buff, unsigned short requested )
 {
     int                 err;
     unsigned short      len;
 
-    err = _ReadMemory( addr, (unsigned long)requested, buff );
+    err = DoReadMemory( addr, (unsigned long)requested, buff );
     if( err == 0 ) {
         addr->offset += requested;
         return( requested );
     }
     for( len = requested; len != 0; --len ) {
-        if( _ReadMemory( addr, 1UL, buff++ ) != 0 )
+        if( DoReadMemory( addr, 1, buff ) != 0 )
             break;
+        buff = (char *)buff + 1;
         addr->offset++;
     }
     return( requested - len );
 }
 
 
-static int _WriteMemory( PTR386 *addr, unsigned long req, void *buf )
+static int DoWriteMemory( PTR386 *addr, unsigned long req, void *buf )
 {
     if( IsProtSeg( addr->selector ) ) {
         return( dbg_pwrite( addr, req, buf ) );
@@ -336,19 +337,20 @@ static int _WriteMemory( PTR386 *addr, unsigned long req, void *buf )
     }
 }
 
-static unsigned short WriteMemory( PTR386 *addr, char *buff, unsigned short requested )
+static unsigned short WriteMemory( PTR386 *addr, void *buff, unsigned short requested )
 {
     int                 err;
     unsigned short      len;
 
-    err = _WriteMemory( addr, (unsigned long)requested, buff );
+    err = DoWriteMemory( addr, (unsigned long)requested, buff );
     if( err == 0 ) {
         addr->offset += requested;
         return( requested );
     }
     for( len = requested; len != 0; --len ) {
-        if( _WriteMemory( addr, 1UL, buff++ ) != 0 )
+        if( DoWriteMemory( addr, 1, buff ) != 0 )
             break;
+        buff = (char *)buff + 1;
         addr->offset++;
     }
     return( requested - len );
@@ -357,37 +359,34 @@ static unsigned short WriteMemory( PTR386 *addr, char *buff, unsigned short requ
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    unsigned short      len;
-    unsigned short      read;
+    size_t              len;
+    size_t              got;
     PTR386              addr;
-    int                 i;
+    size_t              i;
+    size_t              want;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
+    unsigned long       sum;
 
     _DBG(("AccChkSum\r\n"));
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    len = acc->len;
     addr.offset = acc->in_addr.offset;
     addr.selector = acc->in_addr.segment;
-    ret->result = 0;
-    while( len >= BUFF_SIZE ) {
-        read = ReadMemory( &addr, UtilBuff, BUFF_SIZE );
-        for( i = 0; i < read; ++i ) {
-            ret->result += UtilBuff[i];
+    want = sizeof( UtilBuff );
+    sum = 0;
+    for( len = acc->len; len > 0; len -= want ) {
+        if( want > len )
+            want = len;
+        got = ReadMemory( &addr, UtilBuff, want );
+        for( i = 0; i < got; ++i ) {
+            sum += ((unsigned char *)UtilBuff)[i];
         }
-        if( read != BUFF_SIZE )
-            return( sizeof( *ret ) );
-        len -= BUFF_SIZE;
-    }
-    if( len != 0 ) {
-        read = ReadMemory( &addr, UtilBuff, len );
-        if( read == len ) {
-            for( i = 0; i < len; ++i ) {
-                ret->result += UtilBuff[i];
-            }
+        if( got != want ) {
+            break;
         }
     }
+    ret = GetOutPtr( 0 );
+    ret->result = sum;
     return( sizeof( *ret ) );
 }
 
@@ -739,7 +738,7 @@ static void FixFakeBreak( void )
 
     addr.selector = Mach.msb_cs;
     addr.offset = Mach.msb_eip;
-    WriteMemory( &addr, (char *)&SavedByte, 1 );
+    WriteMemory( &addr, &SavedByte, sizeof( SavedByte ) );
 }
 
 
@@ -803,7 +802,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         ret->err = 0;
         addr.offset = acc->watch_addr.offset;
         addr.selector = acc->watch_addr.segment;
-        _ReadMemory( &addr, 4UL, &l );
+        DoReadMemory( &addr, 4, &l );
         curr = WatchPoints + WatchCount;
         curr->addr.segment = acc->watch_addr.segment;
         curr->addr.offset = acc->watch_addr.offset;
@@ -839,10 +838,10 @@ trap_retval TRAP_CORE( Set_break )( void )
     ret = GetOutPtr( 0 );
     addr.offset = acc->break_addr.offset;
     addr.selector = acc->break_addr.segment;
-    _ReadMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
+    DoReadMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
     ret->old = brk_opcode;
     brk_opcode = BRKPOINT;
-    _WriteMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
+    DoWriteMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
     return( sizeof( *ret ) );
 }
 
@@ -858,7 +857,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     addr.offset = acc->break_addr.offset;
     addr.selector = acc->break_addr.segment;
     brk_opcode = acc->old;
-    _WriteMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
+    DoWriteMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
     return( 0 );
 }
 
@@ -927,7 +926,7 @@ static unsigned ProgRun( bool step )
                 for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
                     addr.offset = wp->addr.offset;
                     addr.selector = wp->addr.segment;
-                    _ReadMemory( &addr, 4UL, &value );
+                    DoReadMemory( &addr, 4, &value );
                     if( value != wp->value ) {
                         ret->conditions = COND_WATCH;
                         Mach.msb_eflags &= ~EF_TF;

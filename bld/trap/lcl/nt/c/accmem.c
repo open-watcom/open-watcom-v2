@@ -207,15 +207,12 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
-    len = acc->len;
     sum = 0;
     if( DebugeePid ) {
+        acc = GetInPtr( 0 );
         offset = acc->in_addr.offset;
         segment = acc->in_addr.segment;
-        while( len > 0 ) {
+        for( len = acc->len; len > 0; ) {
             ReadMem( segment, offset, &value, sizeof( value ) );
             sum += value & 0xff;
             offset++;
@@ -227,6 +224,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
             }
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }

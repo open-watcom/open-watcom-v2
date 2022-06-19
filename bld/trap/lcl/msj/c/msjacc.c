@@ -113,28 +113,26 @@ trap_retval TRAP_CORE( Map_addr )( void )
 trap_retval TRAP_CORE( Checksum_mem )( void )
 /*******************************************/
 {
-    unsigned_8          *buffer;
+    unsigned char       *buffer;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
-    unsigned            actual;
-    unsigned            sum;
+    size_t              got;
+    unsigned long       sum;
 
-    ret = GetOutPtr( 0 );
-    ret->result = 0;
+    sum = 0;
     if( TaskLoaded ) {
         acc = GetInPtr( 0 );
-        buffer = (unsigned_8 *)alloca( acc->len );
+        buffer = (unsigned char *)alloca( acc->len );
         if( buffer != NULL ) {
-            sum = 0;
-            actual = ReadMemory( &acc->in_addr, buffer, acc->len );
-            while( actual > 0 ) {
-                sum += *buffer;
-                buffer++;
-                actual--;
+            got = ReadMemory( &acc->in_addr, buffer, acc->len );
+            while( got-- > 0 ) {
+                sum += *buffer++;
             }
             ret->result = sum;
         }
     }
+    ret = GetOutPtr( 0 );
+    ret->result = sum;
     return sizeof( *ret );
 }
 

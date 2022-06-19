@@ -944,32 +944,33 @@ static unsigned short ReadWrite( int (*rtn)(addr48_ptr *, unsigned long, void *)
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    trap_elen           len;
+    size_t              len;
     addr48_ptr          addr;
-    int                 i;
+    size_t              i;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
-    trap_elen           want;
-    trap_elen           got;
+    size_t              want;
+    size_t              got;
+    unsigned long       sum;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    len = acc->len;
     addr.offset = acc->in_addr.offset;
     addr.segment = acc->in_addr.segment;
-    ret->result = 0;
-    while( len > 0 ) {
-        want = len;
-        if( want > BUFF_SIZE )
-            want = BUFF_SIZE;
+    want = sizeof( UtilBuff );
+    sum = 0;
+    for( len = acc->len; len > 0; len -= want ) {
+        if( want > len )
+            want = len;
         got = ReadWrite( ReadMemory, &addr, UtilBuff, want );
         for( i = 0; i < got; ++i ) {
-            ret->result += UtilBuff[i];
+            sum += ((unsigned char *)UtilBuff)[i];
         }
-        if( got != want )
+        if( got != want ) {
             break;
-        len -= want;
+        }
     }
+    ret = GetOutPtr( 0 );
+    ret->result = sum;
     return( sizeof( *ret ) );
 }
 

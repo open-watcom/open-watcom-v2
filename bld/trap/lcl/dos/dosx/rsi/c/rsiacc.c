@@ -275,31 +275,32 @@ trap_retval TRAP_CORE( Machine_data )( void )
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    unsigned short      len;
-    int                 i;
-    unsigned short      read;
+    size_t              len;
+    size_t              i;
+    size_t              got;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
-    unsigned short      buff_len;
+    size_t              want;
+    unsigned long       sum;
 
     _DBG_Writeln( "AccChkSum" );
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
-    ret->result = 0;
-    buff_len = BUFF_SIZE;
-    for( len = acc->len; len > 0; len -= buff_len ) {
-        if( buff_len > len )
-            buff_len = len;
-        read = ReadMemory( (addr48_ptr *)&acc->in_addr, &UtilBuff, buff_len );
-        for( i = 0; i < read; ++i ) {
-            ret->result += UtilBuff[i];
+    want = sizeof( UtilBuff );
+    sum = 0;
+    for( len = acc->len; len > 0; len -= want ) {
+        if( want > len )
+            want = len;
+        got = ReadMemory( &acc->in_addr, UtilBuff, want );
+        for( i = 0; i < got; ++i ) {
+            sum += ((unsigned char *)UtilBuff)[i];
         }
-        if( read != buff_len ) {
+        if( got != want ) {
             break;
         }
     }
+    ret = GetOutPtr( 0 );
+    ret->result = sum;
     return( sizeof( ret ) );
 }
 

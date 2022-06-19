@@ -353,13 +353,10 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     checksum_mem_ret    *ret;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
-    len = acc->len;
-    sum = 0;
     offset = acc->in_addr.offset;
-    while( len > 0 ) {
-        DoRead( offset, (char*)&value, sizeof( value ) );
+    sum = 0;
+    for( len = acc->len; len > 0; ) {
+        DoRead( offset, &value, sizeof( value ) );
         sum += value & 0xff;
         offset++;
         len--;
@@ -369,6 +366,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
             len--;
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }

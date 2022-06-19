@@ -1004,7 +1004,7 @@ struct TDebugThread *GetCurrentThread( struct TDebug *obj )
     return obj->CurrentThread;
 }
 
-int ReadMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size )
+int ReadMem( struct TDebug *obj, int Sel, long Offset, void *Buf, int Size )
 {
     struct TDebugBreak *b;
     struct TDebugThread *Thread;
@@ -1028,7 +1028,7 @@ int ReadMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size )
                 diff = b->Offset - Offset;
 
                 if( diff >= 0 && diff < len ) {
-                    Buf[diff] = b->Instr;
+                    *(opcode_type *)( (char *)Buf + diff ) = b->Instr;
                 }
             }
         }
@@ -1037,7 +1037,7 @@ int ReadMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size )
     return( len );
 }
 
-int WriteMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size )
+int WriteMem( struct TDebug *obj, int Sel, long Offset, void *Buf, int Size )
 {
     struct TDebugBreak *b;
     struct TDebugThread *Thread;
@@ -1056,8 +1056,8 @@ int WriteMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size )
                     diff = b->Offset - Offset;
 
                     if( diff >= 0 && diff < Size ) {
-                        b->Instr = Buf[diff];
-                        Buf[diff] = (char)BRKPOINT;
+                        b->Instr = *(opcode_type *)( (char *)Buf + diff );
+                        *(opcode_type *)( (char *)Buf + diff ) = BRKPOINT;
                     }
                 }
             }

@@ -116,38 +116,36 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
-    char                buf[256];
+    unsigned char       buf[256];
     addr_off            offv;
-    USHORT              length;
-    USHORT              size;
-    int                 i;
-    USHORT              amount;
+    size_t              len;
+    size_t              want;
+    size_t              i;
+    size_t              got;
     ULONG               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    dbg_print(( "mem checksum at %08x, %d bytes\n",
-                (unsigned)acc->in_addr.offset, acc->len ));
     sum = 0;
     if( ProcInfo.pid && !ProcInfo.at_end ) {
-        length = acc->len;
+        acc = GetInPtr( 0 );
+        dbg_print(( "mem checksum at %08x, %d bytes\n",
+                (unsigned)acc->in_addr.offset, acc->len ));
         offv = acc->in_addr.offset;
-        for( ;; ) {
-            if( length == 0 )
-                break;
-            size = (length > sizeof( buf )) ? sizeof( buf ) : length;
-            amount = ReadMem( ProcInfo.procfd, buf, offv, size );
-            for( i = amount; i != 0; --i )
-                sum += buf[i - 1];
-            offv += amount;
-            length -= amount;
-            if( amount != size ) {
+        want = sizeof( buf );
+        for( len = acc->len; len > 0; len -= want ) {
+            if( want > len )
+                want = len;
+            got = ReadMem( ProcInfo.procfd, buf, offv, want );
+            for( i = 0; i < got; ++i )
+                sum += buf[i];
+            if( got != want ) {
                 break;
             }
+            offv += want;
         }
     }
+    ret = GetOutPtr( 0 );
     ret->result = sum;
     return( sizeof( *ret ) );
 }

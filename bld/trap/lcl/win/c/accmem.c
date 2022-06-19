@@ -94,7 +94,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     DWORD               offset;
-    WORD                sel;
+    WORD                segment;
     size_t              len;
     WORD                value;
     DWORD               sum;
@@ -105,9 +105,9 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     if( DebugeeTask != NULL ) {
         acc = GetInPtr( 0 );
         offset = acc->in_addr.offset;
-        sel = acc->in_addr.segment;
+        segment = acc->in_addr.segment;
         for( len = acc->len; len > 0; ) {
-            ReadMem( sel, offset, (LPVOID)&value, 2 );
+            ReadMem( segment, offset, (LPVOID)&value, 2 );
             sum += value & 0xff;
             offset++;
             len--;

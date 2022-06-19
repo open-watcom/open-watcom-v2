@@ -121,7 +121,7 @@ bool                    DoneAutoCAD;
 
 static unsigned_8       RealNPXType;
 char                    UtilBuff[BUFF_SIZE];
-#define ADSSTACK_SIZE      4096
+#define ADSSTACK_SIZE   4096
 char                    ADSStack[ADSSTACK_SIZE];
 
 #define _DBG3( x ) // MyOut x
@@ -415,14 +415,14 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 
     _DBG1(( "AccChkSum" ));
     acc = GetInPtr( 0 );
-    want = BUFF_SIZE;
+    want = sizeof( UtilBuff );
     sum = 0;
     for( len = acc->len; len > 0; len -= want ) {
         if( want > len )
             want = len;
         got = ReadMemory( &acc->in_addr, UtilBuff, want );
         for( i = 0; i < got; ++i ) {
-            sum += UtilBuff[i];
+            sum += ((unsigned char *)UtilBuff)[i];
         }
         if( got != want )
             break;
