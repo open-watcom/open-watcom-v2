@@ -57,6 +57,7 @@
 #include "adsintr.h"
 #include "adsacc.h"
 #include "int16.h"
+#include "segmcpu.h"
 
 
 typedef struct watch_point {
