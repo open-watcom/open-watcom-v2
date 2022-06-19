@@ -55,6 +55,7 @@
 #include "trperr.h"
 #include "doserr.h"
 #include "plsintr.h"
+#include "segmcpu.h"
 
 
 #ifdef DEBUG_TRAP
