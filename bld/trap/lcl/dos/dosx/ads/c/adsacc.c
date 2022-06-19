@@ -71,6 +71,46 @@ typedef struct watch_point {
 extern void StackCheck( void );
 #pragma aux StackCheck "__STK";
 
+static dword    SegLimit( dword );
+#pragma aux SegLimit = \
+        "lsl eax,eax" \
+        "jz short L1" \
+        "xor eax,eax" \
+    "L1: " \
+    __parm [__eax] \
+    __value [__eax]
+
+
+static bool         WriteOK( word sel );
+#pragma aux WriteOK = \
+        "verw ax" /* if ok for write */\
+        "sete al" /* then return TRUE */\
+    __parm [__ax] __value [__al]
+
+static bool         ReadOK( word sel );
+#pragma aux ReadOK = \
+        "verr ax" /* if ok for read */\
+        "sete al" /* then return TRUE */\
+    __parm [__ax] __value [__al]
+
+static void         DoReadByte( word sel, dword offs, void *data );
+#pragma aux DoReadByte = \
+        "push ds" \
+        "mov ds,dx" \
+        "mov al,[ebx]" \
+        "pop ds" \
+        "mov [ecx],al" \
+    __parm [__dx] [__ebx] [__ecx]
+
+static void         DoWriteByte( word sel, dword offs, void *data );
+#pragma aux DoWriteByte = \
+        "mov al,[ecx]" \
+        "push ds" \
+        "mov ds,dx" \
+        "mov [ebx],al" \
+        "pop ds" \
+    __parm [__dx] [__ebx] [__ecx]
+
 trap_cpu_regs           Regs;
 int                     IntNum;
 char                    Break;
@@ -229,63 +269,84 @@ static word    AltSegment( word seg )
     return( seg );
 }
 
-static int ReadWrite( int (*r)(word,dword,char*), addr48_ptr *addr, char *data, int req ) {
+static size_t ReadWrite( int (*r)(word, dword, void *), addr48_ptr *addr, void *data, size_t req_len ) {
 
-    int         len;
+    size_t      len;
     word        segment;
     dword       offset;
 
     offset = addr->offset;
     segment = addr->segment;
     _DBG2(("Read Write %4.4x:%8.8lx", segment, offset));
-    if( SegLimit( segment ) >= offset + req - 1 ) {
-        _DBG2(("Read Write Ok for %d", req));
+    if( SegLimit( segment ) >= offset + req_len - 1 ) {
+        _DBG2(("Read Write Ok for %d", req_len));
         if( !r( segment, offset, data ) ) {
             segment = AltSegment( segment );
         }
-        if( SegLimit( segment ) < offset + req - 1 ) {
+        if( SegLimit( segment ) < offset + req_len - 1 ) {
             _DBG3(("Gosh, we're in trouble dudes"));
             if( SegLimit( segment ) == 0 ) {
                 _DBG3(("Gosh, we're in SERIOUS trouble dudes"));
             }
         } else {
-            for( len = req; len-- > 0; ) {
-                if( !r( segment, offset++, data++ ) ) {
-                    _DBG3(("failed for %4.4x:%8.8lx", segment, offset - 1));
+            for( len = req_len; len-- > 0; ) {
+                if( !r( segment, offset, data ) ) {
+                    _DBG3(("failed for %4.4x:%8.8lx", segment, offset));
                 }
+                offset++;
+                data = (char *)data + 1;
             }
             _DBG2(("Read Write Done"));
-            return( req );
+            return( req_len );
         }
     }
+    _DBG2(("Read Write One byte at a time for %d", req_len));
     len = 0;
-    _DBG2(("Read Write One byte at a time for %d", req));
-    while( req-- > 0 ) {
+    while( req_len-- > 0 ) {
         if( SegLimit( segment ) < offset )
             break;
         if( !r( segment, offset, data ) ) {
             segment = AltSegment( segment );
         }
-        if( !r( segment, offset++, data++ ) ) {
-            _DBG3(("failed for %4.4x:%8.8lx", segment, offset - 1));
+        if( !r( segment, offset, data ) ) {
+            _DBG3(("failed for %4.4x:%8.8lx", segment, offset));
         }
+        offset++;
+        data = (char *)data + 1;
         ++len;
     }
     _DBG2(("Read Write Done"));
     return( len );
 }
 
-
-static int ReadMemory( addr48_ptr *addr, byte *data, int len )
+static int DoReadMem( word sel, dword offs, void *data )
 {
-    return( ReadWrite( DoReadMem, addr, (char *)data, len ) );
+    if( ReadOK( sel ) ) {
+        DoReadByte( sel, offs, data );
+        return( 1 );
+    }
+    return( 0 );
 }
 
-static int WriteMemory( addr48_ptr *addr, byte *data, int len )
+static int DoWriteMem( word sel, dword offs, void *data )
+{
+    if( WriteOK( sel ) ) {
+        DoWriteByte( sel, offs, data );
+        return( 1 );
+    }
+    return( 0 );
+}
+
+static size_t ReadMemory( addr48_ptr *addr, void *data, size_t len )
+{
+    return( ReadWrite( DoReadMem, addr, data, len ) );
+}
+
+static size_t WriteMemory( addr48_ptr *addr, void *data, size_t len )
 {
     if( addr->segment == Regs.CS )
         addr->segment = Regs.DS; // hack, ack
-    return( ReadWrite( DoWriteMem, addr, (char *)data, len ) );
+    return( ReadWrite( DoWriteMem, addr, data, len ) );
 }
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
@@ -345,30 +406,30 @@ trap_retval TRAP_CORE( Machine_data )( void )
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     size_t              len;
-    size_t              size;
-    int                 i;
-    int                 read;
+    size_t              want;
+    size_t              i;
+    size_t              got;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
+    unsigned long       sum;
 
     _DBG1(( "AccChkSum" ));
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    len = acc->len;
-    ret->result = 0;
-    size = BUFF_SIZE;
-    while( len > 0 ) {
-        if( size > len )
-            size = len;
-        read = ReadMemory( &acc->in_addr, (byte *)&UtilBuff, size );
-        acc->in_addr.offset += size;
-        for( i = 0; i < read; ++i ) {
-            ret->result += UtilBuff[i];
+    want = BUFF_SIZE;
+    sum = 0;
+    for( len = acc->len; len > 0; len -= want ) {
+        if( want > len )
+            want = len;
+        got = ReadMemory( &acc->in_addr, UtilBuff, want );
+        for( i = 0; i < got; ++i ) {
+            sum += UtilBuff[i];
         }
-        if( read != size )
-            return( sizeof( *ret ) );
-        len -= size;
+        if( got != want )
+            break;
+        acc->in_addr.offset += want;
     }
+    ret = GetOutPtr( 0 );
+    ret->result = sum;
     return( sizeof( *ret ) );
 }
 
@@ -376,12 +437,10 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
-    void                *ret;
 
     _DBG1(( "ReadMem" ));
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    return( ReadMemory( &acc->mem_addr, ret, acc->len ) );
+    return( ReadMemory( &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
