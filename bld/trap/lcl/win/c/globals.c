@@ -37,6 +37,9 @@
 #include "dbgrmsg.h"
 
 
+const unsigned short    __based(__segname("_CONST")) win386sig[SIG_SIZE / sizeof( short )] = { 0xDEAD,0xBEEF };
+const unsigned short    __based(__segname("_CONST")) win386sig2[SIG_SIZE / sizeof( short )] = { 0xBEEF,0xDEAD };
+
 dll_info                DLLLoad;
 BOOL                    TraceOn;
 HTASK                   DebuggerTask;
