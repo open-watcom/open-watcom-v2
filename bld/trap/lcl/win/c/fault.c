@@ -66,12 +66,6 @@
  *           causes us to end up in IntHandler.
  */
 
-// nyi - put in header or something!
-#define SIG_OFF         0
-#define SIG_SIZE        4
-extern const unsigned short __based(__segname("_CONST")) win386sig[SIG_SIZE / sizeof( unsigned short )];
-extern const unsigned short __based(__segname("_CONST")) win386sig2[SIG_SIZE / sizeof( unsigned short )];
-
 extern WORD     __far NewAX;
 extern WORD     __far NewCS;
 extern WORD     __far NewIP;
