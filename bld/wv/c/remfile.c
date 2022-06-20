@@ -211,9 +211,8 @@ size_t RemoteStringToFullName( dig_filetype file_type, const char *name, char *r
     if( ret.err != 0 ) {
         *res = NULLCHAR;
         return( 0 );
-    } else {
-        return( strlen( res ) );
     }
+    return( strlen( res ) );
 }
 
 sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
@@ -250,31 +249,31 @@ sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
     CONV_LE_32( ret.err );
-    CONV_LE_64( ret.handle );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
         SET_SYSHANDLE_NULL( sh );
         return( sh );
-    } else {
-        /* See if the file is available locally. If so, open it here as
-         * well as on the remote machine.
-         */
-        // TODO: check if remote file is the same!
-
-#ifdef LOGGING
-        fprintf( logf, "Trying to open local copy of remote file (remote handle %d)\n", ret.handle );
-        fprintf( logf, "%s\n", name );
-#endif
-
-        if( (lochandle = open( name, O_RDONLY | O_BINARY, 0 )) != LOC_NIL_HANDLE ) {
-            if( AddCachedHandle( lochandle, ret.handle ) != 0 )
-                close( lochandle );
-#ifdef LOGGING
-            fprintf( logf, "Success\n", name );
-#endif
-        }
-        return( ret.handle );
     }
+    CONV_LE_64( ret.handle );
+
+    /* See if the file is available locally. If so, open it here as
+     * well as on the remote machine.
+     */
+    // TODO: check if remote file is the same!
+
+#ifdef LOGGING
+    fprintf( logf, "Trying to open local copy of remote file (remote handle %d)\n", ret.handle );
+    fprintf( logf, "%s\n", name );
+#endif
+
+    if( (lochandle = open( name, O_RDONLY | O_BINARY, 0 )) != LOC_NIL_HANDLE ) {
+        if( AddCachedHandle( lochandle, ret.handle ) != 0 )
+            close( lochandle );
+#ifdef LOGGING
+        fprintf( logf, "Success\n", name );
+#endif
+    }
+    return( ret.handle );
 }
 
 static size_t doWrite( sys_handle sh, const void *buff, size_t len )
@@ -303,11 +302,11 @@ static size_t doWrite( sys_handle sh, const void *buff, size_t len )
         in[1].len = piece_len;
         TrapAccess( 2, in, 1, out );
         CONV_LE_32( ret.err );
-        CONV_LE_16( ret.len );
         if( ret.err != 0 ) {
             StashErrCode( ret.err, OP_REMOTE );
             return( ERR_RETURN );
         }
+        CONV_LE_16( ret.len );
         total += ret.len;
         if( ret.len != piece_len )
             break;
@@ -349,11 +348,11 @@ static size_t doWriteConsole( const void *buff, size_t len )
         in[1].len = piece_len;
         TrapAccess( 2, in, 1, out );
         CONV_LE_32( ret.err );
-        CONV_LE_16( ret.len );
         if( ret.err != 0 ) {
             StashErrCode( ret.err, OP_REMOTE );
             return( ERR_RETURN );
         }
+        CONV_LE_16( ret.len );
         total += ret.len;
         if( ret.len != piece_len )
             break;
@@ -412,6 +411,7 @@ static size_t doRead( sys_handle sh, void *buff, size_t len )
             StashErrCode( ret.err, OP_REMOTE );
             return( ERR_RETURN );
         }
+        CONV_LE_16( ret.len );
         total += read_len;
         if( read_len != piece_len )
             break;
@@ -459,14 +459,13 @@ unsigned long RemoteSeek( sys_handle sh, unsigned long pos, seek_method method )
     CONV_LE_64( acc.handle );
     CONV_LE_32( acc.pos );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    CONV_LE_32( ret.pos );
     CONV_LE_32( ret.err );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
         return( ERR_SEEK );
-    } else {
-        return( ret.pos );
     }
+    CONV_LE_32( ret.pos );
+    return( ret.pos );
 }
 
 error_handle RemoteClose( sys_handle sh )

@@ -31,10 +31,9 @@ static bool CapabilitiesGet8ByteBreakpointSupport( void )
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( false );
-    } else {
-        Supports8ByteBreakpoints = true;    /* The trap supports 8 byte breakpoints */
-        return( true );
     }
+    Supports8ByteBreakpoints = true;    /* The trap supports 8 byte breakpoints */
+    return( true );
 }
 
 static bool CapabilitiesSet8ByteBreakpointSupport( bool status )
@@ -51,10 +50,9 @@ static bool CapabilitiesSet8ByteBreakpointSupport( bool status )
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( false );
-    } else {
-        Supports8ByteBreakpoints = ret.status ? true : false;
-        return( true );
     }
+    Supports8ByteBreakpoints = ret.status ? true : false;
+    return( true );
 }
 
 static bool CapabilitiesGetExactBreakpointSupport( void )
@@ -71,11 +69,10 @@ static bool CapabilitiesGetExactBreakpointSupport( void )
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( false );
-    } else {
-        /* The trap may support it, but it is not possible currently */
-        SupportsExactBreakpoints = ret.status ? true : false;
-        return( true );
     }
+    /* The trap may support it, but it is not possible currently */
+    SupportsExactBreakpoints = ret.status ? true : false;
+    return( true );
 }
 
 static bool CapabilitiesSetExactBreakpointSupport( bool status )
@@ -92,10 +89,9 @@ static bool CapabilitiesSetExactBreakpointSupport( bool status )
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
         return( false );
-    } else {
-        _SwitchSet( SW_BREAK_ON_WRITE, ret.status ? true : false );
-        return( true );
     }
+    _SwitchSet( SW_BREAK_ON_WRITE, ret.status ? true : false );
+    return( true );
 }
 
 bool SetCapabilitiesExactBreakpointSupport( bool status, bool set_switch )

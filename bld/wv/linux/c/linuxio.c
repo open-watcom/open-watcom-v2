@@ -49,8 +49,6 @@
 #define SYSH2LH(sh)     (int)((sh).u._32[0])
 #define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
 
-typedef long   dosret;
-
 const file_components   LclFile = { '.', NULLCHAR, { '/' }, { '\n' } };
 const char              LclPathSep = { ':' };
 
