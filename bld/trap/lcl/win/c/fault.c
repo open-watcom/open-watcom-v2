@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,8 +69,8 @@
 // nyi - put in header or something!
 #define SIG_OFF         0
 #define SIG_SIZE        4
-extern const unsigned short __based(__segname("_CONST")) win386sig[];
-extern const unsigned short __based(__segname("_CONST")) win386sig2[];
+extern const unsigned short __based(__segname("_CONST")) win386sig[SIG_SIZE / sizeof( unsigned short )];
+extern const unsigned short __based(__segname("_CONST")) win386sig2[SIG_SIZE / sizeof( unsigned short )];
 
 extern WORD     __far NewAX;
 extern WORD     __far NewCS;
@@ -255,7 +255,7 @@ void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
 {
     appl_action         appl_act = CHAIN;
     private_msg         pmsg = FAULT_HIT;
-    WORD                sig[2];
+    WORD                sig[SIG_SIZE / sizeof( WORD )];
 
     WasInt32 = false;
     if( WDebug386 ) {
@@ -288,39 +288,48 @@ void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
     ff.intf.oldEBP = (WORD) ff.intf.oldEBP;
 
     if( ff.intf.intnumber == INT_3 ) {
+        opcode_type     brk_opcode;
+        addr48_ptr      sig_addr;
+
         if( !WasInt32 ) {
             ff.intf.IP--;
         }
         Out((OUT_ERR,"BP at '(%d) %4.4x:%4.4x %4.4x:%8.8lx'",WasInt32,ff.intf.CS,ff.intf.IP,
         IntResult.CS,IntResult.EIP));
-        if( ( WasInt32 && IntResult.CS == DLLLoadCS && IntResult.EIP == DLLLoadIP ) ||
-            ( !WasInt32 && ff.intf.CS == DLLLoadCS && ff.intf.IP == DLLLoadIP ) ) {
-            Out((OUT_RUN,"Caught DLL Loaded '%4.4x:%4.4x'",DLLLoadCS,DLLLoadIP));
-            WriteMem( DLLLoadCS, DLLLoadIP, &DLLLoadSaveByte, 1 );
-            ReadMem( IntResult.CS, SIG_OFF, sig, sizeof( DWORD ) );
-            if( memcmp( sig, win386sig, 4 ) == 0 ) {
+        if( ( WasInt32 && IntResult.CS == DLLLoad.addr.segment && IntResult.EIP == DLLLoad.addr.offset ) ||
+            ( !WasInt32 && ff.intf.CS == DLLLoad.addr.segment && ff.intf.IP == DLLLoad.addr.offset ) ) {
+            Out((OUT_RUN,"Caught DLL Loaded '%4.4x:%4.4x'",DLLLoad.addr.segment,DLLLoad.addr.offset));
+
+            brk_opcode = DLLLoad.old_opcode;
+            WriteMemory( &DLLLoad.addr, &brk_opcode, sizeof( brk_opcode ) );
+
+            sig_addr.segment = IntResult.CS;
+            sig_addr.offset = SIG_OFF;
+            ReadMemory( &sig_addr, sig, SIG_SIZE );
+            if( memcmp( sig, win386sig, SIG_SIZE ) == 0 ) {
                 Out((OUT_RUN,"Zapped sig"));
-                WriteMem( IntResult.CS, SIG_OFF, win386sig2, sizeof( DWORD ) );
+                WriteMemory( &sig_addr, win386sig2, SIG_SIZE );
                 pmsg = DLL_LOAD32;
-                DLLLoadExpectingInt1 = TRUE;
+                DLLLoad.expecting_int1 = true;
             } else {
                 pmsg = DLL_LOAD;
             }
-            DLLLoadCS = 0;
-            DLLLoadIP = 0;
+            DLLLoad.addr.segment = 0;
+            DLLLoad.addr.offset = 0;
         } else if( DebuggerState == WAITING_FOR_BREAKPOINT ) {
             if( (WasInt32 && IntResult.CS == StopNewTask.loc.segment &&
                         IntResult.EIP == StopNewTask.loc.offset ) ||
                 (!WasInt32 && ff.intf.CS == StopNewTask.loc.segment &&
                         ff.intf.IP == StopNewTask.loc.offset) ) {
-                WriteMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
-                            &StopNewTask.value, 1 );
+
+                brk_opcode = StopNewTask.old_opcode;
+                WriteMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
                 pmsg = START_BP_HIT;
             }
         }
-    } else if( ff.intf.intnumber == 1 && WasInt32 && DLLLoadExpectingInt1 ) {
+    } else if( ff.intf.intnumber == 1 && WasInt32 && DLLLoad.expecting_int1 ) {
             // 32-bit dll load from above
-        DLLLoadExpectingInt1 = FALSE;
+        DLLLoad.expecting_int1 = false;
         pmsg = DLL_LOAD;
     } else if( ff.intf.intnumber == WGOD_ASYNCH_STOP_INT ) {
         pmsg = ASYNCH_STOP;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,10 +37,7 @@
 #include "dbgrmsg.h"
 
 
-BYTE                    DLLLoadSaveByte;
-WORD                    DLLLoadIP;
-WORD                    DLLLoadCS;
-BOOL                    DLLLoadExpectingInt1;
+dll_info                DLLLoad;
 BOOL                    TraceOn;
 HTASK                   DebuggerTask;
 HTASK                   DebugeeTask;

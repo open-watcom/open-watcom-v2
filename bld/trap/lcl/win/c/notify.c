@@ -94,26 +94,26 @@ static BOOL doLoadSeg( DWORD data )
  */
 static BOOL doStartTask( DWORD data )
 {
-    char        val;
     TASKENTRY   te;
 
     te.dwSize = sizeof( te );
     TaskFindHandle( &te, TaskAtNotify );
 
     if( DebuggerState == LOADING_DEBUGEE ) {
+        opcode_type     brk_opcode;
+
         DebugeeModule = te.hModule;
         DebugeeTask = TaskAtNotify;
         StopNewTask.loc.segment = HIWORD( data );
-        ReadMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
-                &StopNewTask.value, 1 );
-        val = '\xcc';
-        WriteMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
-                    &val, 1 );
-        ReadMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
-                &val, 1 );
+
+        ReadMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
+        StopNewTask.old_opcode = brk_opcode;
+        brk_opcode = BRKPOINT;
+        WriteMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
+        ReadMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
+
         Out((OUT_RUN,"           wrote breakpoint at %04x:%04lx, oldbyte=%02x(is now %02x)",
-                    StopNewTask.loc.segment, StopNewTask.loc.offset,
-                    StopNewTask.value, val ));
+                    StopNewTask.loc.segment, StopNewTask.loc.offset, StopNewTask.old_opcode, brk_opcode ));
         Out((OUT_RUN,"   StartTask: cs:ip = %Fp", data ));
         ToDebugger( TASK_LOADED );
     } else {
@@ -133,16 +133,19 @@ static BOOL doStartTask( DWORD data )
 static BOOL doStartDLL( DWORD data )
 {
     NFYSTARTDLL *sd;
-    char        val;
 
     sd = (NFYSTARTDLL *) data;
     AddModuleLoaded( sd->hModule, TRUE );
     if( DebuggerState == RUNNING_DEBUGEE ) {
-        ReadMem( sd->wCS, sd->wIP, &DLLLoadSaveByte, 1 );
-        DLLLoadCS = sd->wCS;
-        DLLLoadIP = sd->wIP;
-        val = '\xcc';
-        WriteMem( sd->wCS, sd->wIP, &val, 1 );
+        opcode_type     brk_opcode;
+
+        DLLLoad.addr.segment = sd->wCS;
+        DLLLoad.addr.offset = sd->wIP;
+
+        ReadMemory( &DLLLoad.addr, &brk_opcode, sizeof( brk_opcode ) );
+        DLLLoad.old_opcode = brk_opcode;
+        brk_opcode = BRKPOINT;
+        WriteMemory( &DLLLoad.addr, &brk_opcode, sizeof( brk_opcode ) );
     }
     Out((OUT_ERR,"DLL Loaded '%4.4x:%4.4x'",sd->wCS,sd->wIP));
     return( FALSE );

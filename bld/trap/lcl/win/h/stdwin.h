@@ -38,6 +38,7 @@
 #include "trperr.h"
 #include "packet.h"
 #include "winintrf.h"
+#include "brkptcpu.h"
 
 
 #define MAGIC_COOKIE    0x66600666L
@@ -69,9 +70,9 @@ typedef enum {
 #define MAX_STR 512
 
 typedef struct {
-    addr48_ptr  loc;
+    addr48_ptr          loc;
     WORD                segment_number;
-    char                value;
+    opcode_type         old_opcode;
     char                hard_mode:1;
     char                in_use:1;
 } break_point;
@@ -84,13 +85,16 @@ struct fp_state {
     unsigned char fp[108];
 };
 
+typedef struct dll_info {
+    addr48_ptr          addr;
+    opcode_type         old_opcode;
+    bool                expecting_int1;
+} dll_info;
+
 /*
  * global variables
  */
-extern BYTE                     DLLLoadSaveByte;
-extern WORD                     DLLLoadCS;
-extern WORD                     DLLLoadIP;
-extern BOOL                     DLLLoadExpectingInt1;
+extern dll_info                 DLLLoad;
 extern unsigned_8               FPUType;
 extern HWND                     DesktopWindow;
 extern HINSTANCE                Instance;
@@ -181,8 +185,8 @@ void InitDebugHook( void );
 void FAR PASCAL IntHandler( void );
 
 /* mem.c */
-DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
-DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
+DWORD WriteMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
+DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
 
 /* notify.c */
 BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );

@@ -36,7 +36,6 @@
 #include <direct.h>
 #include <ctype.h>
 #include <dos.h>
-#include "brkptcpu.h"
 #include "stdwin.h"
 #include "dbg386.h"
 #include "wdebug.h"
@@ -94,14 +93,13 @@ BOOL IsOurBreakpoint( WORD sel, DWORD off )
  */
 void ResetBreakpoints( WORD sel )
 {
-    int         i;
-    char        ch;
+    int             i;
+    opcode_type     brk_opcode = BRKPOINT;
 
     for( i = 0; i < numBreaks; i++ ) {
         if( brkList[i].in_use ) {
             if( brkList[i].loc.segment == sel ) {
-                ch = '\xCC';
-                WriteMem( brkList[i].loc.segment, brkList[i].loc.offset, &ch, sizeof( BYTE ) );
+                WriteMemory( &brkList[i].loc, &brk_opcode, sizeof( brk_opcode ) );
             }
         }
     }
@@ -142,13 +140,14 @@ trap_retval TRAP_CORE( Set_break )( void )
 
     Out((OUT_BREAK,"AccSetBreak %4.4x:%8.8x", acc->break_addr.segment, acc->break_addr.offset ));
     Out((OUT_BREAK,"task=%4.4x", DebugeeTask ));
-    ReadMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
+
+    ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
     ret->old = brk_opcode;
     brk_opcode = BRKPOINT;
-    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
+    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
 
     brk = findBrkEntry();
-    brk->value = ret->old;
+    brk->old_opcode = ret->old;
     brk->loc = acc->break_addr;
     brk->in_use = TRUE;
     brk->hard_mode = TRUE;
@@ -162,10 +161,12 @@ trap_retval TRAP_CORE( Clear_break )( void )
     clear_break_req     *acc;
 
     acc = GetInPtr( 0 );
-    brk_opcode = acc->old;
     Out((OUT_BREAK,"AccRestoreBreak %4.4x:%8.8x", acc->break_addr.segment, acc->break_addr.offset ));
     Out((OUT_BREAK,"task=%4.4x", DebugeeTask ));
-    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
+
+    brk_opcode = acc->old;
+    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
+
     for( i = 0; i < numBreaks; i++ ) {
         if( brkList[i].loc.segment == acc->break_addr.segment &&
                         brkList[i].loc.offset == acc->break_addr.offset ) {
@@ -281,7 +282,7 @@ BOOL CheckWatchPoints( void )
     int         i;
 
     for( i = 0; i < WatchCount; i++ ) {
-        ReadMem( WatchPoints[i].loc.segment, WatchPoints[i].loc.offset, &value, sizeof( value ) );
+        ReadMemory( &WatchPoints[i].loc, &value, sizeof( value ) );
         if( value != WatchPoints[i].value ) {
             return( TRUE );
         }
@@ -307,7 +308,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         curr = WatchPoints + WatchCount;
         curr->loc.segment = acc->watch_addr.segment;
         curr->loc.offset = acc->watch_addr.offset;
-        ReadMem( acc->watch_addr.segment, acc->watch_addr.offset, &value, sizeof( DWORD ) );
+        ReadMemory( &acc->watch_addr, &value, sizeof( DWORD ) );
         curr->value = value;
         GetDescriptor( curr->loc.segment, desc );
         linear = (DWORD)desc[1] + ( (DWORD)( desc[2] & 0xFF ) << 16L ) +

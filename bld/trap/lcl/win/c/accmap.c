@@ -198,13 +198,15 @@ static void accessSegment( GLOBALHANDLE gh, WORD segment )
     WORD                i;
     WORD                sel;
     WORD                offset;
+    addr48_ptr          addr;
 
-    ReadMem( (WORD)gh, 0x22, &offset, sizeof( offset ) );
-    i = 0;
-    while( i < segment ) {
-        ReadMem( (WORD)gh, offset+8, &sel, sizeof( sel ) );
+    addr.segment = (WORD)gh;
+    addr.offset = 0x22;
+    ReadMemory( &addr, &offset, sizeof( offset ) );
+    for( i = 0; i < segment; i++ ) {
+        addr.offset = offset + 8;
+        ReadMemory( &addr, &sel, sizeof( sel ) );
         offset += 10;
-        i++;
     }
     SegmentToAccess = sel;
     DebuggerWaitForMessage( RUNNING_DEBUGEE, TaskAtFault, ACCESS_SEGMENT );

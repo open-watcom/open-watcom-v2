@@ -36,9 +36,8 @@
 #include <direct.h>
 #include <ctype.h>
 #include <dos.h>
-#include "brkptcpu.h"
-#include "wdebug.h"
 #include "stdwin.h"
+#include "wdebug.h"
 #include "getcsip.h"
 #include "getsaddr.h"
 #include "winerr.h"
@@ -51,8 +50,8 @@
 #define SIG_OFF         0
 #define SIG_SIZE        4
 
-const unsigned short __based(__segname("_CONST")) win386sig[] = { 0xDEAD,0xBEEF };
-const unsigned short __based(__segname("_CONST")) win386sig2[] = { 0xBEEF,0xDEAD };
+const unsigned short __based(__segname("_CONST")) win386sig[SIG_SIZE / sizeof( short )] = { 0xDEAD,0xBEEF };
+const unsigned short __based(__segname("_CONST")) win386sig2[SIG_SIZE / sizeof( short )] = { 0xBEEF,0xDEAD };
 
 BOOL WasStarted;
 
@@ -124,12 +123,11 @@ trap_retval TRAP_CORE( Prog_load )( void )
     unsigned            a;
     unsigned            b;
     private_msg         pmsg;
-    char                sig[sizeof(DWORD)];
+    char                sig[SIG_SIZE];
     HTASK               tid;
     DWORD               csip;
     prog_load_req       *acc;
     prog_load_ret       *ret;
-    char                ch;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -170,13 +168,16 @@ trap_retval TRAP_CORE( Prog_load )( void )
         if( csip == 0 ) {
             tid = 0;
         } else {
+            opcode_type brk_opcode;
+
             DebugeeTask = tid;
             StopNewTask.loc.segment = _FP_SEG( (LPVOID) csip );
             StopNewTask.loc.offset = _FP_OFF( (LPVOID) csip );
-            ReadMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
-                    &StopNewTask.value, 1 );
-            ch = '\xcc';
-            WriteMem( StopNewTask.loc.segment, StopNewTask.loc.offset, &ch, 1 );
+
+            ReadMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
+            StopNewTask.old_opcode = brk_opcode;
+            brk_opcode = BRKPOINT;
+            WriteMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
         }
     } else {
         tid = 0;
@@ -239,15 +240,18 @@ trap_retval TRAP_CORE( Prog_load )( void )
     AddDebugeeModule();
     pmsg = DebuggerWaitForMessage( WAITING_FOR_BREAKPOINT, DebugeeTask, RESTART_APP );
     if( pmsg == START_BP_HIT ) {
+        addr48_ptr  sig_addr;
 
         ret->task_id = (unsigned_32)DebugeeTask;
 
         /*
          * look for 32-bit windows application
          */
-        ReadMem( IntResult.CS, SIG_OFF, sig, sizeof( DWORD ) );
-        if( !StopOnExtender && (!memcmp( sig, win386sig, 4 ) ||
-                !memcmp( sig, win386sig2, 4 )) ) {
+        sig_addr.segment = IntResult.CS;
+        sig_addr.offset = SIG_OFF;
+        ReadMemory( &sig_addr, sig, SIG_SIZE );
+        if( !StopOnExtender && (!memcmp( sig, win386sig, SIG_SIZE ) ||
+                !memcmp( sig, win386sig2, SIG_SIZE )) ) {
             Out((OUT_LOAD,"Is Win32App" ));
             Debugging32BitApp = TRUE;
             /*
@@ -260,7 +264,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             }
             ret->flags |= LD_FLAG_IS_BIG;
             if( tid == 0 ) {
-                WriteMem( IntResult.CS, SIG_OFF, win386sig2, sizeof( DWORD ) );
+                WriteMemory( &sig_addr, win386sig2, SIG_SIZE );
                 pmsg = DebuggerWaitForMessage( GOING_TO_32BIT_START, DebugeeTask, RESTART_APP );
                 if( pmsg == FAULT_HIT && IntResult.InterruptNumber == INT_3 ) {
                     IntResult.EIP++;
