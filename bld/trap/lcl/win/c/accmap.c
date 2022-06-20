@@ -37,11 +37,21 @@
 #include <ctype.h>
 #include <dos.h>
 #include "stdwin.h"
-#include "ismod32.h"
 #include "dbgrmsg.h"
 
 
 #define MAX_MODULE      256
+
+typedef struct {
+    WORD        sig[2];
+    WORD        dataseg_off;
+    WORD        codeinfo_off;
+    WORD        stacksize_off;
+    BYTE        call_cleanup[3];
+    BYTE        mov_ax_4c00[3];
+    BYTE        int_21[2];
+    WORD        new_sig[2];
+} winext_data;
 
 int        ModuleTop=0;
 int        CurrentModule = 0;
@@ -71,6 +81,46 @@ void AddAllCurrentModules( void )
     } while( ModuleNext( &me ) );
 
 } /* AddAllCurrentModules */
+
+/*
+ * CheckIsModuleWin32App - check if a given module handle is a win32 app
+ */
+static bool CheckIsModuleWin32App( HMODULE hmod, WORD *win32ds, WORD *win32cs, DWORD *win32initialeip )
+{
+    GLOBALENTRY ge;
+    winext_data wedata;
+    int         segnum;
+    addr48_ptr  addr;
+
+    *win32cs = *win32ds = 0;
+    ge.dwSize = sizeof( GLOBALENTRY );
+    if( !GlobalEntryModule( &ge, hmod, 1 ) ) {
+        return( false );
+    }
+    addr.segment = (WORD)ge.hBlock;
+    addr.offset = 0;
+    ReadMemory( &addr, &wedata, sizeof( wedata ) );
+    if( memcmp( wedata.sig, win386sig, SIG_SIZE ) == 0 || memcmp( wedata.sig, win386sig2, SIG_SIZE ) == 0 ) {
+        if( memcmp( wedata.new_sig, win386sig2, SIG_SIZE ) == 0 ) {
+            segnum = 2;
+        } else {
+            segnum = 3;
+        }
+        if( !GlobalEntryModule( &ge, hmod, segnum ) ) {
+            return( false );
+        }
+        addr.segment = (WORD)ge.hBlock;
+        addr.offset = wedata.dataseg_off;
+        ReadMemory( &addr, win32ds, sizeof( WORD ) );
+        addr.offset = wedata.stacksize_off;
+        ReadMemory( &addr, win32initialeip, sizeof( DWORD ) );
+        addr.offset = wedata.codeinfo_off + 4;
+        ReadMemory( &addr, win32cs, sizeof( WORD ) );
+        return( true );
+    }
+    return( false );
+
+} /* CheckIsModuleWin32App */
 
 /*
  * try32:
