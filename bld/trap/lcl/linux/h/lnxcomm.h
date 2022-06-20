@@ -315,8 +315,8 @@ extern void         DelProcess( void );
 extern void         print_msg( const char *format, ... );
 
 /* Utility functions shared with execution sampler */
-extern unsigned     ReadMem( pid_t pid, void *ptr, addr_off offv, unsigned size );
-extern unsigned     WriteMem( pid_t pid, void *ptr, addr_off offv, unsigned size );
+extern size_t       ReadMemory( pid_t pid, void *ptr, addr_off offv, size_t size );
+extern size_t       WriteMemory( pid_t pid, void *ptr, addr_off offv, size_t size );
 extern Elf32_Dyn    *GetDebuggeeDynSection( const char *exe_name );
 extern int          Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struct r_debug **dbg_rdebug_ptr );
 extern char         *dbg_strcpy( pid_t pid, char *, const char * );

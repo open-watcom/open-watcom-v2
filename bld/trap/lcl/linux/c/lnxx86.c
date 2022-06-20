@@ -267,7 +267,7 @@ int CheckWatchPoints( void )
     int     i;
 
     for( i = 0; i < WatchCount; i++ ) {
-        ReadMem( pid, &value, WatchPoints[i].loc.offset, sizeof( value ) );
+        ReadMemory( pid, &value, WatchPoints[i].loc.offset, sizeof( value ) );
         if( value != WatchPoints[i].value ) {
             return( true );
         }
@@ -293,7 +293,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         curr = WatchPoints + WatchCount;
         curr->loc.segment = acc->watch_addr.segment;
         curr->loc.offset = acc->watch_addr.offset;
-        ReadMem( pid, &value, acc->watch_addr.offset, sizeof( dword ) );
+        ReadMemory( pid, &value, acc->watch_addr.offset, sizeof( dword ) );
         curr->value = value;
         curr->len = acc->size;
         WatchCount++;

@@ -93,7 +93,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
         for( len = acc->len; len > 0; len -= want ) {
             if( want > len )
                 want = len;
-            got = ReadMem( pid, buf, offv, want );
+            got = ReadMemory( pid, buf, offv, want );
             for( i = 0; i < got; ++i )
                 sum += buf[i];
             if( got != want ) {
@@ -115,7 +115,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
     CONV_LE_32( acc->mem_addr.offset );
     CONV_LE_16( acc->mem_addr.segment );
     CONV_LE_16( acc->len );
-    return( ReadMem( pid, GetOutPtr( 0 ), acc->mem_addr.offset, acc->len ) );
+    return( ReadMemory( pid, GetOutPtr( 0 ), acc->mem_addr.offset, acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -127,7 +127,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
     CONV_LE_32( acc->mem_addr.offset );
     CONV_LE_16( acc->mem_addr.segment );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMem( pid, GetInPtr( sizeof( *acc ) ), acc->mem_addr.offset,
+    ret->len = WriteMemory( pid, GetInPtr( sizeof( *acc ) ), acc->mem_addr.offset,
                                 GetTotalSizeIn() - sizeof( *acc ) );
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );
@@ -357,10 +357,10 @@ trap_retval TRAP_CORE( Set_break )( void )
     ret = GetOutPtr( 0 );
     CONV_LE_32( acc->break_addr.offset );
     CONV_LE_16( acc->break_addr.segment );
-    ReadMem( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
+    ReadMemory( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
     ret->old = brk_opcode;
     brk_opcode = BRKPOINT;
-    WriteMem( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
+    WriteMemory( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
     Out( "ReqSet_break at " );
     OutNum( acc->break_addr.offset );
     Out( " (was " );
@@ -378,7 +378,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     CONV_LE_32( acc->break_addr.offset );
     CONV_LE_16( acc->break_addr.segment );
     brk_opcode = acc->old;
-    WriteMem( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
+    WriteMemory( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
     Out( "ReqClear_break at " );
     OutNum( acc->break_addr.offset );
     Out( " (setting to " );
@@ -508,8 +508,8 @@ static trap_elen ProgRun( bool step )
              * at the breakpoint and execute it, but we still want to
              * keep the breakpoint.
              */
-            WriteMem( pid, &saved_opcode, rdebug.r_brk, sizeof( saved_opcode ) );
-            ReadMem( pid, &rdebug, (addr48_off)dbg_rdebug, sizeof( rdebug ) );
+            WriteMemory( pid, &saved_opcode, rdebug.r_brk, sizeof( saved_opcode ) );
+            ReadMemory( pid, &rdebug, (addr48_off)dbg_rdebug, sizeof( rdebug ) );
             Out( "ld breakpoint hit, state is " );
             switch( rdebug.r_state ) {
             case RT_ADD:
@@ -541,7 +541,7 @@ static trap_elen ProgRun( bool step )
             waitpid( pid, &status, 0 );
             setsig( SIGINT, oldsig );
             brk_opcode = BRKPOINT;
-            WriteMem( pid, &brk_opcode, rdebug.r_brk, sizeof( brk_opcode ) );
+            WriteMemory( pid, &brk_opcode, rdebug.r_brk, sizeof( brk_opcode ) );
             ret->conditions = COND_LIBRARIES;
         } else {
 #if defined( MD_x86 )
@@ -575,14 +575,14 @@ static trap_elen ProgRun( bool step )
             /* Set a breakpoint in dynamic linker. That way we can be
              * informed on dynamic library load/unload events.
              */
-            ReadMem( pid, &saved_opcode, rdebug.r_brk, sizeof( saved_opcode ) );
+            ReadMemory( pid, &saved_opcode, rdebug.r_brk, sizeof( saved_opcode ) );
             Out( "Setting ld breakpoint at " );
             OutNum( rdebug.r_brk );
             Out( " old opcode was " );
             OutNum( saved_opcode );
             Out( "\n" );
             brk_opcode = BRKPOINT;
-            WriteMem( pid, &brk_opcode, rdebug.r_brk, sizeof( brk_opcode ) );
+            WriteMemory( pid, &brk_opcode, rdebug.r_brk, sizeof( brk_opcode ) );
         }
     }
  end:

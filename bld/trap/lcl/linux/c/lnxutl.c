@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,10 +63,10 @@ void OutNum( unsigned long i )
 }
 #endif
 
-unsigned WriteMem( pid_t pid, void *ptr, addr_off offv, unsigned size )
+size_t WriteMemory( pid_t pid, void *ptr, addr_off offv, size_t size )
 {
     char    *data = ptr;
-    int     count;
+    size_t  count;
 
     /* Write the process memory 32-bits at a time. Kind of silly that
      * Linux does not have an extended ptrace call to read and write
@@ -117,10 +117,10 @@ unsigned WriteMem( pid_t pid, void *ptr, addr_off offv, unsigned size )
     return( size );
 }
 
-unsigned ReadMem( pid_t pid, void *ptr, addr_off offv, unsigned size )
+size_t ReadMemory( pid_t pid, void *ptr, addr_off offv, size_t size )
 {
     char    *data = ptr;
-    int     count;
+    size_t  count;
 
     if( size > 16 ) {
         char    procpidmem[6+20+4+1];
@@ -234,7 +234,7 @@ int Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struc
         return( false );
     }
     read_len = sizeof( loc_dyn );
-    if( ReadMem( pid, &loc_dyn, (addr_off)dbg_dyn, read_len ) != read_len ) {
+    if( ReadMemory( pid, &loc_dyn, (addr_off)dbg_dyn, read_len ) != read_len ) {
         Out( "Get_ld_info: failed to copy first dynamic entry\n" );
         return( false );
     }
@@ -245,7 +245,7 @@ int Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struc
             break;
         }
         dbg_dyn++;
-        if( ReadMem( pid, &loc_dyn, (addr_off)dbg_dyn, read_len ) != read_len ) {
+        if( ReadMemory( pid, &loc_dyn, (addr_off)dbg_dyn, read_len ) != read_len ) {
             Out( "Get_ld_info: failed to copy dynamic entry\n" );
             return( false );
         }
@@ -255,7 +255,7 @@ int Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struc
         return( false );
     }
     read_len = sizeof( *debug_ptr );
-    if( ReadMem( pid, debug_ptr, (addr_off)rdebug, read_len ) != read_len ) {
+    if( ReadMemory( pid, debug_ptr, (addr_off)rdebug, read_len ) != read_len ) {
         Out( "Get_ld_info: failed to copy r_debug struct\n" );
         return( false );
     }
@@ -273,7 +273,7 @@ char *dbg_strcpy( pid_t pid, char *s1, const char *s2 )
     char    c;
 
     do {
-        if( ReadMem( pid, &c, (addr48_off)s2, 1 ) != 1 ) {
+        if( ReadMemory( pid, &c, (addr48_off)s2, 1 ) != 1 ) {
             Out( "dbg_strcpy: failed at " );
             OutNum( (addr48_off)s2 );
             Out( "\n" );
@@ -294,7 +294,7 @@ int GetLinkMap( pid_t pid, struct link_map *dbg_lmap, struct link_map *local_lma
     unsigned    read_len;
 
     read_len = sizeof( *local_lmap );
-    if( ReadMem( pid, local_lmap, (addr_off)dbg_lmap, read_len ) != read_len ) {
+    if( ReadMemory( pid, local_lmap, (addr_off)dbg_lmap, read_len ) != read_len ) {
         Out( "GetLinkMap: failed to copy link_map struct at " );
         OutNum( (addr48_off)dbg_lmap );
         Out( "\n" );
