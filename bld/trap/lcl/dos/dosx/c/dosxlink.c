@@ -281,7 +281,7 @@ static char *doSearchPath( const char __far *env, const char *file, char *buff, 
     char        *name;
     tiny_ret_t  rc;
     char        save[20];
-    unsigned    len;
+    size_t      len;
     char        *ptr;
 
     if( env == NULL ) {
@@ -289,15 +289,14 @@ static char *doSearchPath( const char __far *env, const char *file, char *buff, 
     } else {
         StrCopyDst( ";", StrCopyDst( env, StrCopyDst( ".;", buff ) ) );
     }
-    name = buff;
     len = strlen( file );
-    while( *name ) {
+    for( name = buff; *name != '\0'; name = endname + 1 ) {
         endname = name;
         while( *endname != ';' )
             ++endname;
         memcpy( save, endname, len + 2 );
         ptr = endname;
-        if( name != ptr && ptr[-1]!=':' && ptr[-1]!='/' && ptr[-1]!='\\' ) {
+        if( name != ptr && ptr[-1] != ':' && ptr[-1] != '/' && ptr[-1] != '\\' ) {
             *ptr++ = '\\';
         }
         memcpy( ptr, file, len + 1 );
@@ -307,7 +306,6 @@ static char *doSearchPath( const char __far *env, const char *file, char *buff, 
             break;
         }
         memcpy( endname, save, len + 2 );
-        name = endname + 1;
     }
     *pendname = endname;
     return( name );
@@ -332,13 +330,13 @@ static char *FindExtender( char *fullpath, char **endname )
 #if defined(DOS4G)
     char        *name;
     const char  __far *d4gname;
-    unsigned    len;
+    size_t      len;
 
     d4gname = DOSEnvFind( "DOS4GPATH" );
     if( d4gname != NULL ) {
-        _DBG_Write("Got DOS4GPATH -<");
-        _DBG_Write(d4gname);
-        _DBG_Writeln(">");
+        _DBG_Write( "Got DOS4GPATH -<" );
+        _DBG_Write( d4gname );
+        _DBG_Writeln( ">" );
         len = _fstrlen( d4gname );
         if( len > 4 ) {
             const char __far *ext = d4gname + len - 4;
@@ -408,7 +406,9 @@ static const char *GetHelpName( const char *exe_name )
     _DBG_Writeln( "Want PLSHELP" );
     return( HELPNAME );
 }
+
 #endif
+
 #endif
 
 const char *RemoteLink( const char *parms, bool server )
@@ -429,7 +429,7 @@ const char *RemoteLink( const char *parms, bool server )
         CONFIG_INF              config;
         static unsigned char    buff[256];
 
-        _dx_config_inf(&config, buff );
+        _dx_config_inf( &config, buff );
         XVersion = config.c_major;
         if( XVersion >= 3 ) {
             Meg1 = config.c_dos_sel;
@@ -442,7 +442,7 @@ const char *RemoteLink( const char *parms, bool server )
   #endif
     parms = parms;
     link = GetDosLong( LINK_VECTOR * 4 );
-    if( link >= (1024UL * 1024UL) || LINK( 0 ) != LINK_SIGNATURE ) {
+    if( link >= ( 1024UL * 1024UL ) || LINK( 0 ) != LINK_SIGNATURE ) {
         return( TRP_ERR_not_from_command );
     }
     RMBuffPtr = RMLinToPM( LINK( 1 ), 0 );
@@ -457,7 +457,7 @@ const char *RemoteLink( const char *parms, bool server )
     char            *endparm;
     void            __far *link[4];
     void            __far * __far *link_ptr;
-    unsigned        len;
+    size_t          len;
   #if defined(PHARLAP)
     const char      *exe_name;
   #endif

@@ -1401,7 +1401,7 @@ trap_retval TRAP_CORE( Prog_step )( void )
 
 trap_retval TRAP_FILE( write_console )( void )
 {
-    USHORT                  len;
+    size_t                  len;
     USHORT                  written_len;
     byte                    *ptr;
     file_write_console_ret  *ret;

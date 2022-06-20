@@ -1698,13 +1698,11 @@ trap_retval TRAP_THREAD( freeze )( void )
     thread_freeze_ret   *ret;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
-
     m = LocateTid( acc->thread );
-    if( m == NULL ) {
-        ret->err = 1;  // Failed
-    } else {
+    ret = GetOutPtr( 0 );
+    ret->err = 1;       // Failed
+    if( m != NULL ) {
+        ret->err = 0;   // OK
         _DBG_THREAD(( "freezing %8x\r\n", m ));
         m->frozen = TRUE;
     }
@@ -1718,13 +1716,11 @@ trap_retval TRAP_THREAD( thaw )( void )
     thread_thaw_ret     *ret;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
-
     m = LocateTid( acc->thread );
-    if( m == NULL ) {
-        ret->err = 1;  // Failed
-    } else {
+    ret = GetOutPtr( 0 );
+    ret->err = 1;       // Failed
+    if( m != NULL ) {
+        ret->err = 0;   // OK
         _DBG_THREAD(( "thawing %8x\r\n", m ));
         m->frozen = FALSE;
     }
@@ -1883,10 +1879,10 @@ trap_retval TRAP_CORE( Read_user_keyboard )( void )
 
 trap_retval TRAP_CORE( Split_cmd )( void )
 {
-    const char          *cmd;
-    const char          *start;
-    split_cmd_ret       *ret;
-    unsigned            len;
+    const char      *cmd;
+    const char      *start;
+    split_cmd_ret   *ret;
+    size_t          len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     start = cmd;

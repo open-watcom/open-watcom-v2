@@ -940,10 +940,10 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = 84; /* out of structures */
+    ret->err = 84;      /* failed, out of structures */
     ret->multiplier = 50000;
     if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
-        ret->err = 0;
+        ret->err = 0;   // OK
         WatchPoints[WatchCount].addr.segment = acc->watch_addr.segment;
         WatchPoints[WatchCount].addr.offset = acc->watch_addr.offset;
         ReadBuffer( (PBYTE)&buff, acc->watch_addr.segment, acc->watch_addr.offset, sizeof( dword ) );
@@ -1110,7 +1110,7 @@ trap_retval TRAP_FILE( write_console )( void )
     unsigned     save_bx;
     byte         *ptr;
     unsigned     size;
-    file_write_console_ret      *ret;
+    file_write_console_ret  *ret;
 
     ptr = GetInPtr( sizeof( file_write_console_req ) );
     len = GetTotalSizeIn() - sizeof( file_write_console_req );
