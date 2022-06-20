@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,10 +43,10 @@
 #include "rsi1632.h"
 
 
-static TSF32   Proc;
-static byte    Break;
+static TSF32        Proc;
+static opcode_type  Break;
 
-static seg_offset       CommonAddr = { 0, 0 };
+static seg_offset   CommonAddr = { 0, 0 };
 
 unsigned NextThread( unsigned tid )
 {

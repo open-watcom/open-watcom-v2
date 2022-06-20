@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -403,7 +403,7 @@ void GetCommArea( void )
         Comm.push_no = 0;
         Comm.in_hook = 1;               /* don't record this sample */
     } else {
-        ReadMem( Pid, &Comm, CommonAddr.offset, sizeof( Comm ) );
+        ReadMemory( Pid, &Comm, CommonAddr.offset, sizeof( Comm ) );
     }
 }
 
@@ -413,7 +413,7 @@ void ResetCommArea( void )
     if( CommonAddr.segment != 0 ) {     /* reset common variables */
         Comm.pop_no = 0;
         Comm.push_no = 0;
-        WriteMem( Pid, &Comm.pop_no, CommonAddr.offset + 11, 2 * sizeof( short ) );
+        WriteMemory( Pid, &Comm.pop_no, CommonAddr.offset + 11, 2 * sizeof( short ) );
     }
 }
 
@@ -430,7 +430,7 @@ void GetNextAddr( void )
         CGraphOff = 0;
         CGraphSeg = 0;
     } else {
-        ReadMem( Pid, &stack_entry, Comm.cgraph_top, sizeof( stack_entry ) );
+        ReadMemory( Pid, &stack_entry, Comm.cgraph_top, sizeof( stack_entry ) );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
         Comm.cgraph_top = stack_entry.ptr;
@@ -483,7 +483,7 @@ static bool ProcessMark( pid_t pid, user_regs_struct *regs )
         for( ;; ) {
             if( len >= (BUFF_SIZE - 1) )
                 break;
-            ReadMem( pid, buff + len, regs->eax + len, 1 );
+            ReadMemory( pid, buff + len, regs->eax + len, 1 );
             if( buff[len] == '\0' )
                 break;
             ++len;
@@ -531,9 +531,9 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
          * at the breakpoint and execute it, but we still want to
          * keep the breakpoint.
          */
-        if( WriteMem( pid, &saved_opcode, Rdebug.r_brk, sizeof( saved_opcode ) ) != sizeof( saved_opcode ) )
-            printf( "WriteMem() #1 failed\n" );
-        ReadMem( pid, &Rdebug, (addr_off)DbgRdebug, sizeof( Rdebug ) );
+        if( WriteMemory( pid, &saved_opcode, Rdebug.r_brk, sizeof( saved_opcode ) ) != sizeof( saved_opcode ) )
+            printf( "WriteMemory() #1 failed\n" );
+        ReadMemory( pid, &Rdebug, (addr_off)DbgRdebug, sizeof( Rdebug ) );
         dbg_printf( "ld breakpoint hit, state is " );
         switch( Rdebug.r_state ) {
         case RT_ADD:
@@ -567,8 +567,8 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
         } while( (ret < 0) && (errno == EINTR) );
         if( ret == -1)
             perror( "waitpid()" );
-        if( WriteMem( pid, &brk_opcode, Rdebug.r_brk, sizeof( brk_opcode ) ) != sizeof( brk_opcode ) )
-            dbg_printf( "WriteMem() #2 failed with errno %d for pid %d, %d bytes (at %p)!\n", errno, pid, sizeof( brk_opcode ), Rdebug.r_brk );
+        if( WriteMemory( pid, &brk_opcode, Rdebug.r_brk, sizeof( brk_opcode ) ) != sizeof( brk_opcode ) )
+            dbg_printf( "WriteMemory() #2 failed with errno %d for pid %d, %d bytes (at %p)!\n", errno, pid, sizeof( brk_opcode ), Rdebug.r_brk );
         return( true ); // indicate this was our breakpoint
     } else {
         dbg_printf( "Not an ld breakpoint, assuming mark\n" );
@@ -678,9 +678,9 @@ static void SampleLoop( pid_t pid )
                     /* Set a breakpoint in dynamic linker. That way we can be
                      * informed on dynamic library load/unload events.
                      */
-                    ReadMem( pid, &saved_opcode, Rdebug.r_brk, sizeof( saved_opcode ) );
+                    ReadMemory( pid, &saved_opcode, Rdebug.r_brk, sizeof( saved_opcode ) );
                     dbg_printf( "setting ld breakpoint at %p, old opcode was %X\n", Rdebug.r_brk, saved_opcode );
-                    WriteMem( pid, &brk_opcode, Rdebug.r_brk, sizeof( brk_opcode ) );
+                    WriteMemory( pid, &brk_opcode, Rdebug.r_brk, sizeof( brk_opcode ) );
                 }
             }
 
@@ -778,13 +778,20 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
 
         /* massage 'full_args' into argv format */
         len = strlen( full_args );
-        /* SplitParms changes input string, use copy of it now */
-        args = alloca( len + 1 );
-        strcpy( args, full_args );
-        num_args = SplitParms( args, NULL, len );
-        argv = alloca( ( num_args + 2 ) * sizeof( *argv ) );
-        argv[SplitParms( args, argv + 1, len ) + 1] = NULL;
+        /*
+         * SplitParms calculate number of arguments
+         * if no output then no changes in input string
+         */
+        num_args = SplitParms( (char *)full_args, NULL, len ) + 2;
+        argv = alloca( num_args * sizeof( *argv ) + len + 1 );
+        args = memcpy( (void *)( argv + num_args ), full_args, len + 1 );
+        /*
+         * SplitParms changes input string if output specified
+         * use copy of it now
+         */
+        SplitParms( args, argv + 1, len );
         argv[0] = prog;
+        argv[num_args - 1] = NULL;
 
         OutputMsgParmNL( MSG_SAMPLE_1, prog );
 
