@@ -177,6 +177,7 @@ static short            WatchCount;
 static bool             IsBreak[4];
 
 static word             NumSegments;
+static opcode_type      BreakOpcode;
 static addr48_ptr       BadBreak;
 static bool             GotABadBreak;
 static int              ExceptNum;
@@ -515,6 +516,49 @@ static size_t MergeArgvArray( const char *src, char __far *dst, size_t len )
     return( dst - start );
 }
 
+static opcode_type place_breakpoint_file( tiny_handle_t handle, dword pos )
+{
+    opcode_type old_opcode;
+
+    TinySeek( handle, pos, TIO_SEEK_START );
+    TinyFarRead( handle, &old_opcode, sizeof( old_opcode ) );
+    TinySeek( handle, pos, TIO_SEEK_START );
+    TinyFarWrite( handle, &BreakOpcode, sizeof( BreakOpcode ) );
+    return( old_opcode );
+}
+
+static void remove_breakpoint_file( tiny_handle_t handle, dword pos, opcode_type old_opcode )
+{
+    TinySeek( handle, pos, TIO_SEEK_START );
+    TinyFarWrite( handle, &old_opcode, sizeof( old_opcode ) );
+}
+
+static opcode_type place_breakpoint( addr48_ptr *addr )
+{
+    opcode_type __far *paddr;
+    opcode_type old_opcode;
+
+    paddr = MK_FP( addr->segment, addr->offset );
+    old_opcode = *paddr;
+    *paddr = BreakOpcode;
+    if( *paddr != BreakOpcode ) {
+        BadBreak = *addr;
+        GotABadBreak = true;
+    }
+    return( old_opcode );
+}
+
+static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+{
+    opcode_type __far *paddr;
+
+    paddr = MK_FP( addr->segment, addr->offset );
+    if( *paddr == BreakOpcode ) {
+        *paddr = old_opcode;
+    }
+    GotABadBreak = false;
+}
+
 trap_retval TRAP_CORE( Prog_load )( void )
 {
     addr_seg        psp;
@@ -531,13 +575,13 @@ trap_retval TRAP_CORE( Prog_load )( void )
         tiny_file_stamp_t stamp;
     } exe_time;
     word            value;
-    opcode_type     brk_opcode;
+    opcode_type     old_opcode;
     os2_exe_header  os2_head;
     tiny_handle_t   handle;
     dword           NEOffset;
     dword           StartPos;
-    opcode_type     saved_opcode;
     dword           SegTable;
+    addr48_ptr      start_addr;
 
     ExceptNum = -1;
     ret = GetOutPtr( 0 );
@@ -587,11 +631,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
                     TinySeek( handle, SegTable + ( os2_head.entrynum - 1 ) * 8, TIO_SEEK_START );
                     TinyFarRead( handle, &value, sizeof( value ) );
                     StartPos = ( (dword)value << os2_head.align ) + os2_head.IP;
-                    TinySeek( handle, StartPos, TIO_SEEK_START );
-                    TinyFarRead( handle, &saved_opcode, sizeof( saved_opcode ) );
-                    TinySeek( handle, StartPos, TIO_SEEK_START );
-                    brk_opcode = BRKPOINT;
-                    rc = TinyFarWrite( handle, &brk_opcode, sizeof( brk_opcode ) );
+                    old_opcode = place_breakpoint_file( handle, StartPos );
                 } else {
                     exe = EXE_UNKNOWN;
                 }
@@ -632,20 +672,16 @@ trap_retval TRAP_CORE( Prog_load )( void )
     if( TINY_OK( rc ) ) {
         if( (Flags & F_NoOvlMgr) || !CheckOvl( parmblock.startcsip ) ) {
             if( exe == EXE_OS2 ) {
-                opcode_type __far *brk_opcode;
-
                 BoundAppLoading = true;
                 RunProg( &TaskRegs, &TaskRegs );
-                brk_opcode = _MK_FP(TaskRegs.CS, TaskRegs.EIP);
-                if( *brk_opcode == BRKPOINT ) {
-                    *brk_opcode = saved_opcode;
-                }
+                start_addr.segment = TaskRegs.CS;
+                start_addr.offset = TaskRegs.EIP;
+                remove_breakpoint( &start_addr, old_opcode );
                 BoundAppLoading = false;
                 rc = TinyOpen( exe_name, TIO_READ_WRITE );
                 if( TINY_OK( rc ) ) {
                     handle = TINY_INFO( rc );
-                    TinySeek( handle, StartPos, TIO_SEEK_START );
-                    TinyFarWrite( handle, &saved_opcode, sizeof( saved_opcode ) );
+                    remove_breakpoint_file( handle, StartPos, old_opcode );
                     TinySetFileStamp( handle, exe_time.stamp.time, exe_time.stamp.date );
                     TinyClose( handle );
                     Flags |= F_BoundApp;
@@ -734,31 +770,22 @@ trap_retval TRAP_CORE( Clear_watch )( void )
 
 trap_retval TRAP_CORE( Set_break )( void )
 {
-    opcode_type     __far *brk_opcode;
     set_break_req   *acc;
     set_break_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    brk_opcode = _MK_FP( acc->break_addr.segment, acc->break_addr.offset );
-    ret->old = *brk_opcode;
-    *brk_opcode = BRKPOINT;
-    if( *brk_opcode != BRKPOINT ) {
-        BadBreak = acc->break_addr;
-        GotABadBreak = true;
-    }
+    ret->old = place_breakpoint( &acc->break_addr );
     return( sizeof( *ret ) );
 }
 
 
 trap_retval TRAP_CORE( Clear_break )( void )
 {
-    clear_break_req     *bp;
+    clear_break_req     *acc;
 
-    bp = GetInPtr( 0 );
-    *(opcode_type __far *)_MK_FP( bp->break_addr.segment, bp->break_addr.offset ) = bp->old;
-    GotABadBreak = false;
+    acc = GetInPtr( 0 );
+    remove_breakpoint( &acc->break_addr, acc->old );
     return( 0 );
 }
 
@@ -818,7 +845,6 @@ static bool SetDebugRegs( void )
     int                 dr;
     unsigned long       dr7;
     unsigned long       linear;
-    watch_point         *wp;
     bool                watch386;
 
     if( (Flags & F_DRsOn) == 0 )
@@ -828,11 +854,11 @@ static bool SetDebugRegs( void )
     if( DRegsCount() > 4 ) {
         watch386 = false;
     } else {
-        for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-            dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
+        for( i = 0; i < WatchCount; ++i ) {
+            dr7 |= SetDRn( dr, WatchPoints[i].linear, DRLen( WatchPoints[i].len ) | DR7_BWR );
             ++dr;
-            if( wp->dregs == 2 ) {
-                dr7 |= SetDRn( dr, wp->linear + 4, DRLen( wp->len ) | DR7_BWR );
+            if( WatchPoints[i].dregs == 2 ) {
+                dr7 |= SetDRn( dr, WatchPoints[i].linear + 4, DRLen( WatchPoints[i].len ) | DR7_BWR );
                 ++dr;
             }
             watch386 = true;
@@ -1051,6 +1077,7 @@ out( "    done checking environment\r\n" );
     RedirectInit();
     ExceptNum = -1;
     WatchCount = 0;
+    BreakOpcode = BRKPOINT;
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
     ver.remote = false;
