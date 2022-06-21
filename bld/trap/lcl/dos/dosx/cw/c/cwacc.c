@@ -225,8 +225,8 @@ extern int GetExecCount( unsigned_32 * );
     __modify    [__bx]
 
 extern unsigned     MemoryCheck( unsigned_32, unsigned, unsigned );
-extern unsigned     MemoryRead( unsigned_32, unsigned, void *, unsigned );
-extern unsigned     MemoryWrite( unsigned_32, unsigned, void *, unsigned );
+extern size_t       MemoryRead( unsigned_32, unsigned, void *, size_t );
+extern size_t       MemoryWrite( unsigned_32, unsigned, void *, size_t );
 extern unsigned     Execute( bool );
 extern int          DebugLoad( char *prog_name, char *cmdl );
 extern int          GrabVectors( void );
@@ -248,6 +248,8 @@ static int          NumModHandles = 0;
 
 static selector     flatCode = FLAT_SEL;
 static selector     flatData = FLAT_SEL;
+
+static opcode_type  BreakOpcode;
 
 #ifdef DEBUG_TRAP
 void dos_printf( const char *format, ... )
@@ -570,14 +572,14 @@ trap_retval TRAP_CORE( Map_addr )( void )
     return( sizeof( *ret ) );
 }
 
-static trap_elen ReadMemory( addr48_ptr *addr, void *data, trap_elen len )
-/************************************************************************/
+static size_t ReadMemory( addr48_ptr *addr, void *data, size_t len )
+/******************************************************************/
 {
     return( MemoryRead( addr->offset, addr->segment, data, len ) );
 }
 
-static trap_elen WriteMemory( addr48_ptr *addr, void *data, trap_elen len )
-/*************************************************************************/
+static size_t WriteMemory( addr48_ptr *addr, void *data, size_t len )
+/*******************************************************************/
 {
     return( MemoryWrite( addr->offset, addr->segment, data, len ) );
 }
@@ -589,7 +591,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     size_t              i;
     size_t              want;
     size_t              got;
-    unsigned long       sum;
+    unsigned_32         sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
     unsigned char       buffer[256];
@@ -896,33 +898,41 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     return( 0 );
 }
 
+static opcode_type place_breakpoint( addr48_ptr *addr )
+{
+    opcode_type     old_opcode;
+
+    ReadMemory( addr, &old_opcode, sizeof( old_opcode ) );
+    WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
+    return( old_opcode );
+}
+
+static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+{
+    WriteMemory( addr, &old_opcode, sizeof( old_opcode ) );
+}
+
 trap_retval TRAP_CORE( Set_break )( void )
 /****************************************/
 {
-    opcode_type     brk_opcode;
     set_break_req   *acc;
     set_break_ret   *ret;
 
     _DBG( "AccSetBreak\r\n" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
-    ret->old = brk_opcode;
-    brk_opcode = BRKPOINT;
-    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
+    ret->old = place_breakpoint( &acc->break_addr );
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_break )( void )
 /******************************************/
 {
-    opcode_type     brk_opcode;
     clear_break_req *acc;
 
     _DBG( "AccClearBreak\r\n" );
     acc = GetInPtr( 0 );
-    brk_opcode = acc->old;
-    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
+    remove_breakpoint( &acc->break_addr, acc->old );
     return( 0 );
 }
 
@@ -1074,6 +1084,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     HBRKInit();
     WatchCount = 0;
     FakeBreak = false;
+    BreakOpcode = BRKPOINT;
     XVersion = GrabVectors();
     ver_msg[23] = XVersion / 256 + '0';
     ver_msg[25] = ( XVersion % 256 ) / 10 + '0';
