@@ -123,13 +123,21 @@ typedef enum {
 /* user modifiable flags */
 #define USR_FLAGS (FLG_C | FLG_P | FLG_A | FLG_Z | FLG_S | FLG_I | FLG_D | FLG_O)
 
-extern void MoveBytes( short, short, short, short, size_t );
-/*  MoveBytes( fromseg, fromoff, toseg, tooff, len ); */
-#pragma aux MoveBytes = \
+extern void ReadMemory( unsigned, unsigned, void __far *, size_t );
+/*  ReadMemory( fromseg, fromoff, toptr, len ); */
+#pragma aux ReadMemory = \
         "rep movsb" \
-    __parm __caller [__ds] [__si] [__es] [__di] [__cx] \
+    __parm __caller [__ds] [__si] [__es __di] [__cx] \
     __value         \
-    __modify        [__si __di]
+    __modify        [__si __di __cx]
+
+extern void WriteMemory( void __far *, unsigned, unsigned, size_t );
+/*  WriteMemory( fromptr, toseg, tooff, len ); */
+#pragma aux WriteMemory = \
+        "rep movsb" \
+    __parm __caller [__ds __si] [__es] [__di] [__cx] \
+    __value         \
+    __modify        [__si __di __cx]
 
 extern unsigned short MyFlags( void );
 #pragma aux MyFlags = \
@@ -336,11 +344,9 @@ trap_retval TRAP_CORE( Read_mem )( void )
 {
     bool            int_tbl;
     read_mem_req    *acc;
-    void            *data;
     size_t          len;
 
     acc = GetInPtr( 0 );
-    data = GetOutPtr( 0 );
     acc->mem_addr.offset &= 0xffff;
     int_tbl = IsInterrupt( acc->mem_addr, acc->len );
     if( int_tbl )
@@ -349,8 +355,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
     if( ( acc->mem_addr.offset + len ) > 0xffff ) {
         len = 0x10000 - acc->mem_addr.offset;
     }
-    MoveBytes( acc->mem_addr.segment, acc->mem_addr.offset,
-               _FP_SEG( data ), _FP_OFF( data ), len );
+    ReadMemory( acc->mem_addr.segment, acc->mem_addr.offset, GetOutPtr( 0 ), len );
     if( int_tbl )
         ClrIntVecs();
     return( len );
@@ -363,11 +368,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
     write_mem_req   *acc;
     write_mem_ret   *ret;
     size_t          len;
-    void            *data;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSizeIn() - sizeof( *acc );
 
     acc->mem_addr.offset &= 0xffff;
@@ -377,10 +379,10 @@ trap_retval TRAP_CORE( Write_mem )( void )
     if( ( acc->mem_addr.offset + len ) > 0xffff ) {
         len = 0x10000 - acc->mem_addr.offset;
     }
-    MoveBytes( _FP_SEG( data ), _FP_OFF( data ),
-               acc->mem_addr.segment, acc->mem_addr.offset, len );
+    WriteMemory( GetInPtr( sizeof( *acc ) ), acc->mem_addr.segment, acc->mem_addr.offset, len );
     if( int_tbl )
         ClrIntVecs();
+    ret = GetOutPtr( 0 );
     ret->len = len;
     return( sizeof( *ret ) );
 }
