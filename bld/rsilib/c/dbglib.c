@@ -132,7 +132,6 @@ static char debugging = 0;      /* Tells crash handler to take charge */
 static char being_debugged = 0; /* Another D present? */
 
 static int  first_time = 1;
-static opcode_type saved_opcode;
 
 /*
  * This is the list of exceptions which 4gw hooks when it starts up.
@@ -233,15 +232,20 @@ static TSF32 FarPtr find_user_code( TSF32 FarPtr client )
     return( client );
 }
 
-static opcode_type hotkey_opcode;
-static unsigned char hotkey_hit;
-static int  hotkey_int = INT_RM_PASSUP;
+static opcode_type      hotkey_opcode;
+static opcode_type      old_hotkey_opcode;
+static unsigned char    hotkey_hit;
+static int              hotkey_int = INT_RM_PASSUP;
 
 static void set_hotkey_break( TSF32 FarPtr client )
 {
+    addr48_ptr  fp;
+
     client = find_user_code( client );
+    fp.segment = client->cs;
+    fp.offset = client->eip;
     D32DebugBreakOp( &hotkey_opcode );
-    D32DebugSetBreak( client->eip, client->cs, 0, &hotkey_opcode, &saved_opcode );
+    D32DebugSetBreak( &fp, 0, &hotkey_opcode, &old_hotkey_opcode );
     hotkey_hit = 1;
 #ifdef DEBUGHOTKEY
     outs( "hotkey break set\r\n" );
@@ -251,6 +255,8 @@ static void set_hotkey_break( TSF32 FarPtr client )
 
 static void check_hotkey( int eip_mod, TSF32 FarPtr client )
 {
+    addr48_ptr  fp;
+
     if( hotkey_hit ) {
         hotkey_hit = 0;
 #ifdef DEBUGHOTKEY
@@ -258,7 +264,9 @@ static void check_hotkey( int eip_mod, TSF32 FarPtr client )
         outi( _FP_OFF( client ) );
         outi( client->cs ); outi( (int)client->eip ); outs( "\r\n" );
 #endif
-        D32DebugSetBreak( client->eip + eip_mod, client->cs, 0, &saved_opcode, &hotkey_opcode );
+        fp.segment = client->cs;
+        fp.offset = client->eip + eip_mod;
+        D32DebugSetBreak( &fp, 0, &old_hotkey_opcode, &hotkey_opcode );
         client->int_id = hotkey_int; /* Attribute to Hotkey */
     }
 }
@@ -365,11 +373,12 @@ coverup:
 
 static unsigned __loadds __saveregs __cdecl __far debug_handler( unsigned int hNext, TSF32 FarPtr client )
 {
-    int     eip_mod = 0;
+    int     eip_mod;
     char    in_debuggee;
 
     __asm   cld;        /* CLD to be safe */
 
+    eip_mod = 0;
     in_debuggee = debugging;
 #ifdef TIMER
     if( client->int_id == INT_TIMER ) {
@@ -430,10 +439,15 @@ analyze:
 #if OUTDATEDWINDOWSCRAP
         /* NEEDWORK */
         /* If the trace bit is not turned on, assume illegal OP code */
-        if( _d16info.swmode == 0 && (client->eflags & 0x100) == 0 ) {
-            /* Running under Windows 3.00 and took illegal opcode */
-            client->int_id = 6; /* Attribute this problem properly  */
-            eip_mod = -1;       /* And back up an instruction */
+        if( _d16info.swmode == 0 && (client->eflags & TRACE_BIT) == 0 ) {
+            /*
+             * Running under Windows 3.00 and took illegal opcode
+             *
+             * Attribute this problem properly
+             */
+            client->int_id = EXC_UNDEF_OPCODE;
+            /* And back up an instruction */
+            eip_mod = -1;
             goto analyze;
         }
 #endif
@@ -443,7 +457,7 @@ analyze:
         if( fixcrash( client ) )
             return( 0 );
         break;
-    case EXC_PAGE_FAULT:      /* Page fault */
+    case EXC_PAGE_FAULT:    /* Page fault */
         /* If we get a page fault while the user program is running,
             we want to flag it immediately.  If VM is present, it will
             already have covered up any of its own page faults; the
@@ -516,8 +530,9 @@ static USHORT my_package_bind( char *package, char *action, PACKAGE FarPtr *boun
     return( 0 );
 }
 
-/* Returns 0 if successful
-*/
+/*
+ * Returns 0 if successful
+ */
 static int hook_debug_interrupts( void )
 {
     int         i;
@@ -529,8 +544,9 @@ static int hook_debug_interrupts( void )
     if( my_package_bind( DOS4G_KERNEL_PACKAGE_NAME, DOS4G_INTCHAIN_ENTRY, &package, (ACTION **)&chain_interrupt ) )
         return( 2 );
 
-    /* OK to not find this entry point
-    */
+    /*
+     * OK to not find this entry point
+     */
     my_package_bind( DOS4G_KERNEL_PACKAGE_NAME, DOS4G_NULLP_ENTRY, &package, (ACTION **)&D32NullPtrCheck );
 
     if( D32NullPtrCheck != NULL_PTR )           /* Disable NULLP checking for now */
@@ -541,8 +557,9 @@ static int hook_debug_interrupts( void )
     for( i = 0; i < sizeof( hook_interrupts ) / sizeof( hook_interrupts[0] ); i++ )
         debug_hook( hook_interrupts[i], 0, debug_handler );
 
-    /*  Hook the hot key interrupt in protected mode and make it pass up.
-    */
+    /*
+     * Hook the hot key interrupt in protected mode and make it pass up.
+     */
     if( _d16info.miscellaneous & D16misc_AT_compat ) {
         debug_hook( hotkey_int, 1, debug_handler );
         debug_hook( hotkey_int, 0, debug_handler );
@@ -726,7 +743,7 @@ void D32DebugRun( TSF32 FarPtr process_regs )
             we get the single-step interrupt we're expecting.
         */
 
-        if( need_fixtrap && (dbgregs.eflags & 0x100) )
+        if( need_fixtrap && (dbgregs.eflags & TRACE_BIT) )
             fixtrap();
 
         debugging = 1;              /* Tell debug_handler to be active */

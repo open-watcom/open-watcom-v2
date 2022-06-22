@@ -81,7 +81,7 @@ static struct {
 } *ObjInfo;
 
 static TSF32            Proc;
-static opcode_type      Break;
+static opcode_type      BreakOpcode;
 static bool             FakeBreak;
 static bool             AtEnd;
 static unsigned         NumObjects;
@@ -313,7 +313,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
     _DBG_Writeln( "ReadMem" );
     acc = GetInPtr( 0 );
     buff = GetOutPtr( 0 );
-    return( ReadMemory( (addr48_ptr *)&acc->mem_addr, buff, acc->len ) );
+    return( ReadMemory( &acc->mem_addr, buff, acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -324,7 +324,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
     _DBG_Writeln( "WriteMem" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( (addr48_ptr *)&acc->mem_addr, GetInPtr( sizeof( *acc ) ),
+    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
                             GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
@@ -621,7 +621,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     curr->handle = -1;
     curr->handle2 = -1;
     curr->value = 0;
-    ReadMemory( (addr48_ptr *)&acc->watch_addr, &curr->value, curr->len );
+    ReadMemory( &acc->watch_addr, &curr->value, curr->len );
     ++WatchCount;
     if( DRegsCount() <= 4 )
         ret->multiplier |= USING_DEBUG_REG;
@@ -641,14 +641,14 @@ trap_retval TRAP_CORE( Set_break )( void )
 {
     set_break_req       *acc;
     set_break_ret       *ret;
-    opcode_type         brk_opcode;
+    opcode_type         old_opcode;
 
     _DBG_Writeln( "AccSetBreak" );
 
     acc = GetInPtr( 0 );
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, false, &Break, &brk_opcode );
+    D32DebugSetBreak( &acc->break_addr, false, &BreakOpcode, &old_opcode );
     ret = GetOutPtr( 0 );
-    ret->old = brk_opcode;
+    ret->old = old_opcode;
     return( sizeof( *ret ) );
 }
 
@@ -656,14 +656,13 @@ trap_retval TRAP_CORE( Set_break )( void )
 trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req     *acc;
-    opcode_type         dummy;
-    opcode_type         brk_opcode;
+    opcode_type         old_opcode;
 
     acc = GetInPtr( 0 );
     _DBG_Writeln( "AccRestoreBreak" );
     /* assume all breaks removed at same time */
-    brk_opcode = acc->old;
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, false, &brk_opcode, &dummy );
+    old_opcode = acc->old;
+    D32DebugSetBreak( &acc->break_addr, false, &old_opcode, &old_opcode );
     return( 0 );
 }
 
@@ -819,10 +818,9 @@ static bool CheckWatchPoints( void )
 static unsigned ProgRun( bool step )
 {
     prog_go_ret *ret;
-    byte        int_buff[2];
-    addr48_ptr  addr;
-    opcode_type brk_opcode;
-    opcode_type saved_opcode;
+    byte        int_buff[2 + sizeof( opcode_type )];
+    addr48_ptr  start_addr;
+    opcode_type old_opcode;
 
     _DBG_Writeln( "AccRunProg" );
 
@@ -842,22 +840,18 @@ static unsigned ProgRun( bool step )
             }
         } else {
             for( ;; ) {
-                addr.segment = Proc.cs;
-                addr.offset = Proc.eip;
-
-                /* have to breakpoint across software interrupts because Intel
-                    doesn't know how to design chips */
-                if( ReadMemory( &addr, int_buff, 2 ) == 2 && int_buff[0] == 0xcd ) {
-                    addr.offset += 2;
-                } else {
-                    int_buff[0] = 0;
-                }
-                if( int_buff[0] != 0 && ReadMemory( &addr, &saved_opcode, sizeof( saved_opcode ) ) == sizeof( saved_opcode ) ) {
-                    brk_opcode = BRKPOINT;
-                    WriteMemory( &addr, &brk_opcode, sizeof( brk_opcode ) );
+                start_addr.segment = Proc.cs;
+                start_addr.offset = Proc.eip;
+                /*
+                 * have to breakpoint across software interrupts because Intel
+                 * doesn't know how to design chips
+                 */
+                if( ReadMemory( &start_addr, int_buff, 2 + sizeof( opcode_type ) ) == ( 2 + sizeof( opcode_type ) ) && int_buff[0] == 0xcd ) {
+                    start_addr.offset += 2;
+                    D32DebugSetBreak( &start_addr, false, &BreakOpcode, &old_opcode );
                     ret->conditions = DoRun();
-                    addr.offset = Proc.eip;
-                    WriteMemory( &addr, &saved_opcode, sizeof( saved_opcode ) );
+                    start_addr.offset = Proc.eip;
+                    D32DebugSetBreak( &start_addr, false, &old_opcode, &old_opcode );
                 } else {
                     Proc.eflags |= TRACE_BIT;
                     ret->conditions = DoRun();
@@ -986,7 +980,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         exit(1);
     }
     Proc.int_id = -1;
-    D32DebugBreakOp( &Break );  /* Get the 1 byte break op */
+    D32DebugBreakOp( &BreakOpcode );  /* Get the break opcode */
     return( ver );
 }
 

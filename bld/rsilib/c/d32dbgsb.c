@@ -15,25 +15,23 @@
 
 #include "rsi1632.h"
 
-void D32DebugSetBreak( OFFSET32 off, SELECTOR sel, int translate, opcode_type FarPtr to, opcode_type FarPtr from )
+void D32DebugSetBreak( addr48_ptr FarPtr addr, int translate, opcode_type FarPtr to, opcode_type FarPtr from )
 {
     addr48_ptr  fp;
     opcode_type temp;
 
+    fp.segment = addr->segment;
+    fp.offset = addr->offset;
     if( translate ) {
-        fp.segment = sel;
-        fp.offset = off;
         D32Relocate( &fp );
-        sel = fp.segment;
-        off = fp.offset;
     }
-    peek32( off, sel, &temp, sizeof( temp ) );
+    peek32( fp.offset, fp.segment, &temp, sizeof( temp ) );
 
     /* Don't set a breakpoint if there's already one there, or we lose
             the previously saved byte.
     */
     if( temp != *to ) {
         *from = temp;
-        poke32( off, sel, to, sizeof( *to ) );
+        poke32( fp.offset, fp.segment, to, sizeof( *to ) );
     }
 }

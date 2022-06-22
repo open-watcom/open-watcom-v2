@@ -182,7 +182,7 @@ extern int          D32DebugRead( OFFSET32, SELECTOR, int, void FarPtr, size_t )
 /* d32dbgwr.c */
 extern int          D32DebugWrite( OFFSET32, SELECTOR, int, const void FarPtr, size_t );
 /* d32dbgsb.c */
-extern void         D32DebugSetBreak( OFFSET32, SELECTOR, int, opcode_type FarPtr, opcode_type FarPtr );
+extern void         D32DebugSetBreak( addr48_ptr FarPtr, int, opcode_type FarPtr, opcode_type FarPtr );
 
 // global variables
 extern int          addr_mode;
