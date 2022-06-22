@@ -124,26 +124,23 @@ static size_t ReadMemory( addr48_ptr *addr, void FarPtr data, size_t req_len )
     _DBG_Write( " for 0x" );
     _DBG_Write16( req_len );
     _DBG_Write( " bytes -- " );
-    if( rsi_addr32_check( addr->offset, addr->segment, req_len, NULL ) == MEMBLK_VALID ) {
-        if( D32DebugRead( addr->offset, addr->segment, 0, data, req_len ) == 0 ) {
+    if( D32AddressCheck( addr, req_len, NULL ) ) {
+        if( D32DebugRead( addr, 0, data, req_len ) == 0 ) {
             _DBG_Writeln( "OK" );
             addr->offset += req_len;
             return( req_len );
         }
     }
     _DBG_Writeln(( "Bad" ));
-    len = 0;
-    while( req_len > 0 ) {
-        if( rsi_addr32_check( addr->offset, addr->segment, 1, NULL ) != MEMBLK_VALID )
+    for( len = req_len; len > 0; len-- ) {
+        if( !D32AddressCheck( addr, 1, NULL ) )
             break;
-        if( D32DebugRead( addr->offset, addr->segment, 0, data, 1 ) != 0 )
+        if( D32DebugRead( addr, 0, data, 1 ) != 0 )
             break;
-        ++addr->offset;
+        addr->offset++;
         data = (char FarPtr)data + 1;
-        ++len;
-        --req_len;
     }
-    return( len );
+    return( req_len - len );
 }
 
 static size_t WriteMemory( addr48_ptr *addr, const void FarPtr data, size_t req_len )
@@ -157,26 +154,23 @@ static size_t WriteMemory( addr48_ptr *addr, const void FarPtr data, size_t req_
     _DBG_Write( " for 0x" );
     _DBG_Write16( req_len );
     _DBG_Write( " bytes -- " );
-    if( rsi_addr32_check( addr->offset, addr->segment, req_len, NULL ) == MEMBLK_VALID ) {
-        if( D32DebugWrite( addr->offset, addr->segment, 0, data, req_len ) == 0 ) {
+    if( D32AddressCheck( addr, req_len, NULL ) ) {
+        if( D32DebugWrite( addr, 0, data, req_len ) == 0 ) {
             _DBG_Writeln( "OK" );
             addr->offset += req_len;
             return( req_len );
         }
     }
     _DBG_Writeln(( "Bad" ));
-    len = 0;
-    while( req_len > 0 ) {
-        if( rsi_addr32_check( addr->offset, addr->segment, 1, NULL ) != MEMBLK_VALID )
+    for( len = req_len; len > 0; len-- ) {
+        if( !D32AddressCheck( addr, 1, NULL ) )
             break;
-        if( D32DebugWrite( addr->offset, addr->segment, 0, data, 1 ) != 0 )
+        if( D32DebugWrite( addr, 0, data, 1 ) != 0 )
             break;
-        ++addr->offset;
+        addr->offset++;
         data = (char FarPtr)data + 1;
-        ++len;
-        --req_len;
     }
-    return( len );
+    return( req_len - len );
 }
 
 
@@ -255,6 +249,7 @@ trap_retval TRAP_CORE( Machine_data )( void )
     machine_data_req    *acc;
     machine_data_ret    *ret;
     machine_data_spec   *data;
+    addr48_ptr          addr;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -263,7 +258,9 @@ trap_retval TRAP_CORE( Machine_data )( void )
     if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
         data = GetOutPtr( sizeof( *ret ) );
         data->x86_addr_flags = 0;
-        if( rsi_addr32_check( 0, acc->addr.segment, 1, NULL ) == MEMBLK_VALID ) {
+        addr.segment = acc->addr.segment;
+        addr.offset = 0;
+        if( D32AddressCheck( &addr, 1, NULL ) ) {
             if( GetLAR( acc->addr.segment ) & 0x400000 ) {
                 data->x86_addr_flags = X86AC_BIG;
             }

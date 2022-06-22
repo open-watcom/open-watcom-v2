@@ -15,8 +15,8 @@
 
 #include "rsi1632.h"
 
-/* Returns 
-    MEMBLK_INVALID if range is completely invalid, 
+/* Returns
+    MEMBLK_INVALID if range is completely invalid,
     MEMBLK_PARTIAL if partially valid,
     MEMBLK_VALID if completely valid.  Assumes, of course, that valid segments
     are contiguous and begin at zero.
@@ -41,22 +41,20 @@ int rsi_addr32_check( OFFSET32 off, SELECTOR sel, OFFSET32 for_length, OFFSET32 
         if( (sel & 3) > g.type.dpl || !g.type.present || !g.type.mustbe_1 ) {
             return( MEMBLK_INVALID );    /* Bad access bits */
         }
-        --for_length;       /* to get address of the last byte looked at */
-        if( off + for_length < off ) {
+        if( off + for_length - 1 < off          /* wrapped */
+          || off + for_length - 1 > limit ) {   /* beyond end */
             if( valid_length ) {
                 *valid_length = limit - off + 1;
             }
-            return( MEMBLK_PARTIAL );    /* wrapped */
+            return( MEMBLK_PARTIAL );
         }
-        if( off + for_length > limit ) {
-            if( valid_length ) {
-                *valid_length = limit - off + 1;
-            }
-            return( MEMBLK_PARTIAL );    /* beyond end */
-        }
-        ++for_length;
     }
     if( valid_length != NULL )
         *valid_length = for_length;
     return( MEMBLK_VALID );
+}
+
+int D32AddressCheck( addr48_ptr FarPtr addr, OFFSET32 for_length, OFFSET32 *valid_length )
+{
+    return( rsi_addr32_check( addr->offset, addr->segment, for_length, valid_length ) == MEMBLK_VALID );
 }

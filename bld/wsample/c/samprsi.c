@@ -44,9 +44,9 @@
 
 
 static TSF32        Proc;
-static opcode_type  Break;
+static opcode_type  BreakOpcode;
 
-static seg_offset   CommonAddr = { 0, 0 };
+static addr48_ptr   CommonAddr = { 0, 0 };
 
 unsigned NextThread( unsigned tid )
 {
@@ -101,14 +101,14 @@ void GetCommArea( void )
         Comm.push_no = 0;
         Comm.in_hook = 1;               /* don't record this sample */
     } else {
-        D32DebugRead( CommonAddr.offset, CommonAddr.segment, 0, &Comm, sizeof( Comm ) );
+        D32DebugRead( &CommonAddr, 0, &Comm, sizeof( Comm ) );
     }
 }
 
 
 void GetNextAddr( void )
 {
-    seg_offset  addr;
+    addr48_ptr  addr;
     struct {
         unsigned long   ptr;
         seg             cs;
@@ -121,7 +121,7 @@ void GetNextAddr( void )
     } else {
         addr.segment = CommonAddr.segment;
         addr.offset = Comm.cgraph_top;
-        D32DebugRead( addr.offset, addr.segment, 0, &stack_entry, sizeof( stack_entry ) );
+        D32DebugRead( &addr, 0, &stack_entry, sizeof( stack_entry ) );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
         Comm.cgraph_top = stack_entry.ptr;
@@ -135,7 +135,7 @@ void ResetCommArea( void )
         Comm.pop_no = 0;
         Comm.push_no = 0;
         CommonAddr.offset += 11;
-        D32DebugWrite( CommonAddr.offset, CommonAddr.segment, 0, &Comm.pop_no, 4 );
+        D32DebugWrite( &CommonAddr, 0, &Comm.pop_no, 4 );
         CommonAddr.offset -= 11;
     }
 }
@@ -151,8 +151,8 @@ void StopProg( void )
 
 void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
-
     seg_offset  where;
+    addr48_ptr  addr;
     int         error_num;
     char        buff[BSIZE];
     addr48_ptr  fp;
@@ -164,8 +164,8 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     SampleIndex = 0;
     CurrTick  = 0L;
 
-    D32HookTimer( TimerMult );  /* ask for timer - before D32DebugInit!! */
-    D32DebugBreakOp( &Break );  /* Get the 1 byte break op */
+    D32HookTimer( TimerMult );          /* ask for timer - before D32DebugInit!! */
+    D32DebugBreakOp( &BreakOpcode );    /* Get the 1 byte break op */
 
     error_num = D32DebugInit( &Proc, -1 );
     if( error_num == 0 ) {
@@ -199,18 +199,18 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
             --InsiderTime;
         } else if( Proc.int_id == 3 && (Proc.edx & 0xffff) != 0 ) {
             len = 0;                                    /* this is a mark */
-            where.segment = Proc.edx & 0xffff;
-            where.offset = Proc.eax;
+            addr.segment = Proc.edx & 0xffff;
+            addr.offset = Proc.eax;
             for( ;; ) {
-                if( rsi_addr32_check( where.offset, where.segment, 1, NULL ) != MEMBLK_VALID )
+                if( !D32AddressCheck( &addr, 1, NULL ) )
                     break;
-                D32DebugRead( where.offset, where.segment, 0, &buff[len], 1 );
+                D32DebugRead( &addr, 0, &buff[len], 1 );
                 if( len == BSIZE )
                     break;
                 if( buff[len] == '\0' )
                     break;
                 len++;
-                where.offset++;
+                addr.offset++;
             }
             buff[len] = '\0';
             where.segment = Proc.cs;

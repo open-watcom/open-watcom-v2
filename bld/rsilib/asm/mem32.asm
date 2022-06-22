@@ -45,7 +45,7 @@ poke32 proc WATCOM_C public uses es ds esi edi ecx, offs32_lo:word, offs32_hi:wo
         verw    sel
         jz short writeable
         ;
-        ; create code segment alias descriptor (writable)
+        ; create segment alias descriptor (writable)
         ;
         mov     ax,0AH
         int 31H

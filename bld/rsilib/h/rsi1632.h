@@ -153,6 +153,8 @@ extern SELECTOR     rsi_seg_realloc( SELECTOR csel );
 extern void         FarPtr rsi_get_rm_ptr( void FarPtr );
 extern int          rsi_addr32_check( OFFSET32, SELECTOR, OFFSET32, OFFSET32 * );
 
+/* adr32chk.c */
+extern int          D32AddressCheck( addr48_ptr FarPtr, OFFSET32, OFFSET32 * );
 /* dbglib.c */
 extern void         D32DebugBreakOp( opcode_type FarPtr );
 extern int          D32DebugInit( TSF32 FarPtr, int );
@@ -178,9 +180,9 @@ extern int          D32Unrelocate( addr48_ptr FarPtr fp );
 extern void         peek32( OFFSET32, SELECTOR, void FarPtr, size_t );
 extern int          poke32( OFFSET32, SELECTOR, const void FarPtr, size_t );
 /* d32dbgrd.c */
-extern int          D32DebugRead( OFFSET32, SELECTOR, int, void FarPtr, size_t );
+extern int          D32DebugRead( addr48_ptr FarPtr, int, void FarPtr, size_t );
 /* d32dbgwr.c */
-extern int          D32DebugWrite( OFFSET32, SELECTOR, int, const void FarPtr, size_t );
+extern int          D32DebugWrite( addr48_ptr FarPtr, int, const void FarPtr, size_t );
 /* d32dbgsb.c */
 extern void         D32DebugSetBreak( addr48_ptr FarPtr, int, opcode_type FarPtr, opcode_type FarPtr );
 

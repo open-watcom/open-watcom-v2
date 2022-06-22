@@ -15,13 +15,13 @@
 
 #include "rsi1632.h"
 
-int D32DebugWrite( OFFSET32 off, SELECTOR sel, int translate, const void FarPtr from, size_t len )
+int D32DebugWrite( addr48_ptr FarPtr addr, int translate, const void FarPtr from, size_t len )
 {
     addr48_ptr  fp;
     OFFSET32    new_len;
 
-    fp.segment = sel;
-    fp.offset = off;
+    fp.segment = addr->segment;
+    fp.offset = addr->offset;
     if( translate )
         D32Relocate( &fp );
 
