@@ -233,7 +233,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
         break;
     }
-    D32Relocate(&fp);
+    D32Relocate( &fp );
     ret->out_addr.segment = fp.segment;
     ret->out_addr.offset = fp.offset;
     return( sizeof( *ret ) );
@@ -308,12 +308,10 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
-    void                FarPtr buff;
 
     _DBG_Writeln( "ReadMem" );
     acc = GetInPtr( 0 );
-    buff = GetOutPtr( 0 );
-    return( ReadMemory( &acc->mem_addr, buff, acc->len ) );
+    return( ReadMemory( &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -797,18 +795,15 @@ static trap_conditions DoRun( void )
 
 static bool CheckWatchPoints( void )
 {
-    addr48_ptr  addr;
     dword       val;
-    watch_point *wp;
+    int         i;
 
-    for( wp = WatchPoints; wp < WatchPoints + WatchCount; ++wp ) {
-        addr.segment = wp->addr.segment;
-        addr.offset = wp->addr.offset;
+    for( i = 0; i < WatchCount; ++i ) {
         val = 0;
-        if( ReadMemory( &addr, &val, wp->len ) != wp->len ) {
+        if( ReadMemory( &WatchPoints[i].addr, &val, WatchPoints[i].len ) != WatchPoints[i].len ) {
             return( true );
         }
-        if( val != wp->value ) {
+        if( val != WatchPoints[i].value ) {
             return( true );
         }
     }
