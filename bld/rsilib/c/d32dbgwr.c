@@ -17,15 +17,15 @@
 
 int D32DebugWrite( OFFSET32 off, SELECTOR sel, int translate, const void FarPtr from, size_t len )
 {
-    Fptr32      fp;
+    addr48_ptr  fp;
     OFFSET32    new_len;
 
-    fp.sel = sel;
-    fp.off = off;
+    fp.segment = sel;
+    fp.offset = off;
     if( translate )
         D32Relocate( &fp );
 
-    if( rsi_addr32_check( fp.off, fp.sel, len, &new_len ) == MEMBLK_INVALID )
+    if( rsi_addr32_check( fp.offset, fp.segment, len, &new_len ) == MEMBLK_INVALID )
         return( 1 );
-    return( poke32( fp.off, fp.sel, from, (size_t)new_len ) );
+    return( poke32( fp.offset, fp.segment, from, (size_t)new_len ) );
 }

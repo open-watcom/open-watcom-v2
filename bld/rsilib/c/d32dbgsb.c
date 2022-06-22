@@ -17,15 +17,15 @@
 
 void D32DebugSetBreak( OFFSET32 off, SELECTOR sel, int translate, opcode_type FarPtr to, opcode_type FarPtr from )
 {
-    Fptr32      fp;
+    addr48_ptr  fp;
     opcode_type temp;
 
     if( translate ) {
-        fp.sel = sel;
-        fp.off = off;
+        fp.segment = sel;
+        fp.offset = off;
         D32Relocate( &fp );
-        sel = fp.sel;
-        off = fp.off;
+        sel = fp.segment;
+        off = fp.offset;
     }
     peek32( off, sel, &temp, sizeof( temp ) );
 

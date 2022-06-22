@@ -155,7 +155,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     seg_offset  where;
     int         error_num;
     char        buff[BSIZE];
-    Fptr32      fp;
+    addr48_ptr  fp;
     short       initial_cs;
     int         len;
 
@@ -182,10 +182,10 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     where.segment = 0;
     WriteCodeLoad( where, ExeName, SAMP_MAIN_LOAD );
 
-    fp.sel = 1;
-    fp.off = 0;
-    D32Relocate(&fp);
-    WriteAddrMap( 1, fp.sel, fp.off );
+    fp.segment = 1;
+    fp.offset = 0;
+    D32Relocate( &fp );
+    WriteAddrMap( 1, fp.segment, fp.offset );
 
     initial_cs = Proc.cs;
     for( ;; ) {

@@ -19,15 +19,15 @@
 */
 int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, size_t len )
 {
-    Fptr32      fp;
+    addr48_ptr  fp;
     OFFSET32    new_len;
     int         check;
 
     if( len == 0 )
         return( 0 );
 
-    fp.sel = sel;
-    fp.off = off;
+    fp.segment = sel;
+    fp.offset = off;
 
     if( translate )
         D32Relocate( &fp );
@@ -38,7 +38,7 @@ int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, siz
         If the range is partially valid, we clip the address range to fit
         and read the memory.
     */
-    check = rsi_addr32_check( fp.off, fp.sel, (OFFSET32)len, &new_len );
+    check = rsi_addr32_check( fp.offset, fp.segment, (OFFSET32)len, &new_len );
 
     if( check == MEMBLK_INVALID ) {
         far_setmem( to, len, 0xFF );
@@ -49,7 +49,7 @@ int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, siz
         }
         len = (size_t)new_len;
         page_fault = 0;
-        peek32( fp.off, fp.sel, to, len );
+        peek32( fp.offset, fp.segment, to, len );
 
         /* If a page fault occurred while reading the range, recurse until
             we either read without getting a page fault, or reach a 1-byte

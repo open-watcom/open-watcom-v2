@@ -19,6 +19,7 @@
 #define DOS16LIB_INCLUDED
 #include <dos16.h>
 #include <dpmi.h>
+#include "machtype.h"
 #include "brkptcpu.h"
 
 
@@ -45,11 +46,6 @@
 #define MEMBLK_VALID    2
 
 #include "pushpck1.h"
-typedef struct {
-    OFFSET32 off;
-    SELECTOR sel;
-} Fptr32;
-
 typedef struct _null_checks {
     long        prev_val;
     long        match_val;
@@ -176,8 +172,8 @@ extern void         FAR16 passup_hotkey( void );
 /* d32dbgld.c */
 extern void         D32SetCurrentObject( long cookie );
 extern int          D32DebugLoad( const char *, const char FarPtr, TSF32 FarPtr );
-extern int          D32Relocate( Fptr32 FarPtr fp );
-extern int          D32Unrelocate( Fptr32 FarPtr fp );
+extern int          D32Relocate( addr48_ptr FarPtr fp );
+extern int          D32Unrelocate( addr48_ptr FarPtr fp );
 /* mem32.asm */
 extern void         peek32( OFFSET32, SELECTOR, void FarPtr, size_t );
 extern int          poke32( OFFSET32, SELECTOR, const void FarPtr, size_t );

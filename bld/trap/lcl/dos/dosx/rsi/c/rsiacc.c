@@ -204,7 +204,7 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
 
 trap_retval TRAP_CORE( Map_addr )( void )
 {
-    Fptr32              fp;
+    addr48_ptr          fp;
     map_addr_req        *acc;
     map_addr_ret        *ret;
     unsigned            i;
@@ -215,17 +215,17 @@ trap_retval TRAP_CORE( Map_addr )( void )
     ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
-    fp.off = acc->in_addr.offset;
-    fp.sel = acc->in_addr.segment;
-    switch( fp.sel ) {
+    fp.offset = acc->in_addr.offset;
+    fp.segment = acc->in_addr.segment;
+    switch( fp.segment ) {
     case MAP_FLAT_CODE_SELECTOR:
     case MAP_FLAT_DATA_SELECTOR:
-        fp.sel = 1;
-        fp.off += ObjInfo[0].start;
+        fp.segment = 1;
+        fp.offset += ObjInfo[0].start;
         for( i = 0; i < NumObjects; ++i ) {
-            if( ObjInfo[i].start <= fp.off && ( ObjInfo[i].start + ObjInfo[i].size ) > fp.off ) {
-                fp.sel = i + 1;
-                fp.off -= ObjInfo[i].start;
+            if( ObjInfo[i].start <= fp.offset && ( ObjInfo[i].start + ObjInfo[i].size ) > fp.offset ) {
+                fp.segment = i + 1;
+                fp.offset -= ObjInfo[i].start;
                 ret->lo_bound = ObjInfo[i].start - ObjInfo[0].start;
                 ret->hi_bound = ret->lo_bound + ObjInfo[i].size - 1;
                 break;
@@ -234,8 +234,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
         break;
     }
     D32Relocate(&fp);
-    ret->out_addr.segment = fp.sel;
-    ret->out_addr.offset = fp.off;
+    ret->out_addr.segment = fp.segment;
+    ret->out_addr.offset = fp.offset;
     return( sizeof( *ret ) );
 }
 

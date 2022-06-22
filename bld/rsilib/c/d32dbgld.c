@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 * Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 * Copyright (c) 1987-1992 Rational Systems, Incorporated. All Rights Reserved.
 *
@@ -206,7 +206,7 @@ retry:
     ep.w.off += 2;
     *ep.ip++ = 1;
     while( (*ep.cip++ = *p++) != '\0' && --maxp > 0 )
-        ;
+        {}
     *ep.ip = 0;
 
     /* Update debuggee's descriptor table as well as our own.
@@ -376,7 +376,7 @@ int D32DebugUnLoad( void )
     return( 0 );
 }
 
-static Fptr32 fptr = { 0, 0 };
+static addr48_ptr fptr = { 0, 0 };
 #endif
 
 static SELECTOR exp_relocate( SELECTOR sel )
@@ -414,29 +414,29 @@ static SELECTOR exp_unrelocate( SELECTOR sel )
     return( sel - exp_base );
 }
 
-int D32Unrelocate( Fptr32 FarPtr fptrp )
+int D32Unrelocate( addr48_ptr FarPtr fptrp )
 {
-    Fptr32 old;
+    addr48_ptr  old;
 
     old = *fptrp;
     if( exp_loaded ) {
-        fptrp->sel = exp_unrelocate( fptrp->sel );
+        fptrp->segment = exp_unrelocate( fptrp->segment );
     } else if( LOADER_UNREL( &lv_curr ) ) {
         LOADER_UNREL( &lv_curr )( fptrp, current_cookie );
     }
-    return( ( fptrp->sel != old.sel ) || ( fptrp->off != old.off ) );
+    return( ( fptrp->segment != old.segment ) || ( fptrp->offset != old.offset ) );
 }
 
-int D32Relocate( Fptr32 FarPtr fptrp )
+int D32Relocate( addr48_ptr FarPtr fptrp )
 {
-    Fptr32 old;
+    addr48_ptr  old;
 
     old = *fptrp;
     if( exp_loaded ) {
-        fptrp->sel = exp_relocate( fptrp->sel );
+        fptrp->segment = exp_relocate( fptrp->segment );
     } else if( LOADER_REL( &lv_curr ) ) {
         /* Make sure there's a relo function */
         LOADER_REL( &lv_curr )( fptrp, current_cookie );
     }
-    return( ( fptrp->sel != old.sel ) || ( fptrp->off != old.off ) );
+    return( ( fptrp->segment != old.segment ) || ( fptrp->offset != old.offset ) );
 }
