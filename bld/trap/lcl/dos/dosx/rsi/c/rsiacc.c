@@ -576,9 +576,9 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
     _DBG_Writeln( "AccKillProg" );
-    ret = GetOutPtr( 0 );
     RedirectFini();
     AtEnd = true;
+    ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );
 }
@@ -604,9 +604,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
     _DBG_Writeln( "AccSetWatch" );
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->multiplier = 5000;
-    ret->err = 0;
     curr = WatchPoints + WatchCount;
     curr->addr.segment = acc->watch_addr.segment;
     curr->addr.offset = acc->watch_addr.offset;
@@ -618,6 +615,9 @@ trap_retval TRAP_CORE( Set_watch )( void )
     curr->value = 0;
     ReadMemory( &acc->watch_addr, &curr->value, curr->len );
     ++WatchCount;
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
+    ret->multiplier = 5000;
     if( DRegsCount() <= 4 )
         ret->multiplier |= USING_DEBUG_REG;
     return( sizeof( *ret ) );
@@ -686,17 +686,16 @@ static unsigned long SetDRn( int i, unsigned long linear, long type )
 static void ClearDebugRegs( void )
 {
     int         i;
-    watch_point *wp;
 
     if( IsDPMI ) {
-        for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-            if( wp->handle >= 0 ) {
-                DPMIClearWatch( wp->handle );
-                wp->handle = -1;
+        for( i = 0; i < WatchCount; ++i ) {
+            if( WatchPoints[i].handle >= 0 ) {
+                DPMIClearWatch( WatchPoints[i].handle );
+                WatchPoints[i].handle = -1;
             }
-            if( wp->handle2 >= 0 ) {
-                DPMIClearWatch( wp->handle2 );
-                wp->handle2 = -1;
+            if( WatchPoints[i].handle2 >= 0 ) {
+                DPMIClearWatch( WatchPoints[i].handle2 );
+                WatchPoints[i].handle2 = -1;
             }
         }
     } else {
@@ -709,7 +708,6 @@ static void ClearDebugRegs( void )
 static bool SetDebugRegs( void )
 {
     int                 i;
-    watch_point         *wp;
     bool                success;
     long                rc;
 
@@ -717,30 +715,30 @@ static bool SetDebugRegs( void )
         return( false );
     if( IsDPMI ) {
         success = true;
-        for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-            wp->handle = -1;
-            wp->handle2 = -1;
+        for( i = 0; i < WatchCount; ++i ) {
+            WatchPoints[i].handle = -1;
+            WatchPoints[i].handle2 = -1;
         }
-        for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
+        for( i = 0; i < WatchCount; ++i ) {
             _DBG_Write( "Setting Watch On " );
-            _DBG_Write32( wp->linear );
+            _DBG_Write32( WatchPoints[i].linear );
             _DBG_NewLine();
             success = false;
-            rc = DPMISetWatch( wp->linear, wp->len, DPMI_WATCH_WRITE );
+            rc = DPMISetWatch( WatchPoints[i].linear, WatchPoints[i].len, DPMI_WATCH_WRITE );
             _DBG_Write( "OK 1 = " );
             _DBG_Write16( rc >= 0 );
             _DBG_NewLine();
             if( rc < 0 )
                 break;
-            wp->handle = rc;
-            if( wp->dregs == 2 ) {
-                rc = DPMISetWatch( wp->linear + 4, wp->len, DPMI_WATCH_WRITE );
+            WatchPoints[i].handle = rc;
+            if( WatchPoints[i].dregs == 2 ) {
+                rc = DPMISetWatch( WatchPoints[i].linear + 4, WatchPoints[i].len, DPMI_WATCH_WRITE );
                 _DBG_Write( "OK 2 = " );
                 _DBG_Write16( rc >= 0 );
                 _DBG_NewLine();
                 if( rc < 0 )
                     break;
-                wp->handle2 = rc;
+                WatchPoints[i].handle2 = rc;
             }
             success = true;
         }
@@ -754,11 +752,11 @@ static bool SetDebugRegs( void )
 
         dr = 0;
         dr7 = 0;
-        for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-            dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
+        for( i = 0; i < WatchCount; ++i ) {
+            dr7 |= SetDRn( dr, WatchPoints[i].linear, DRLen( WatchPoints[i].len ) | DR7_BWR );
             ++dr;
-            if( wp->dregs == 2 ) {
-                dr7 |= SetDRn( dr, wp->linear + 4, DRLen( wp->len ) | DR7_BWR );
+            if( WatchPoints[i].dregs == 2 ) {
+                dr7 |= SetDRn( dr, WatchPoints[i].linear + 4, DRLen( WatchPoints[i].len ) | DR7_BWR );
                 ++dr;
             }
         }
@@ -822,7 +820,7 @@ static unsigned ProgRun( bool step )
         Proc.eflags |= TRACE_BIT;
         ret->conditions = DoRun();
         Proc.eflags &= ~TRACE_BIT;
-    } else if( WatchCount != 0 ) {
+    } else if( WatchCount > 0 ) {
         if( SetDebugRegs() ) {
             ret->conditions = DoRun();
             ClearDebugRegs();

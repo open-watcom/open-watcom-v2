@@ -805,10 +805,10 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 
     _DBG( "AccKillProg\r\n" );
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
     RedirectFini();
     FreeModsInfo();
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     if( RelSel( acc->task_id ) )
         ret->err = ERR_INVALID_HANDLE;
     return( sizeof( *ret ) );

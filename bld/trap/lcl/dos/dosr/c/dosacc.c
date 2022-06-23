@@ -314,13 +314,14 @@ trap_retval TRAP_CORE( Machine_data )( void )
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     unsigned char       __far *ptr;
-    unsigned long       sum = 0;
+    unsigned_32         sum;
     size_t              len;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
     acc = GetInPtr( 0 );
     ptr = _MK_FP( acc->in_addr.segment, acc->in_addr.offset );
+    sum = 0;
     for( len = acc->len; len > 0; --len ) {
         sum += *ptr++;
     }
@@ -705,7 +706,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
 out( "in AccKillProg\r\n" );
-    ret = GetOutPtr( 0 );
     RedirectFini();
     if( DOSTaskPSP() != NULL ) {
 out( "enduser\r\n" );
@@ -716,6 +716,7 @@ out( "null87emu\r\n" );
     Null87Emu();
     NullOvlHdlr();
     ExceptNum = -1;
+    ret = GetOutPtr( 0 );
     ret->err = 0;
 out( "done AccKillProg\r\n" );
     return( sizeof( *ret ) );

@@ -58,11 +58,76 @@
 #include "segmcpu.h"
 
 
+#define MAX_OBJECTS     128
+
+#define DBE_BASE        1000
+
+#define MAX_WATCHES     32
+
 #ifdef DEBUG_TRAP
 #define _DBG( x )  cputs x
 #else
 #define _DBG( x )
 #endif
+
+typedef struct watch_point {
+    addr48_ptr  addr;
+    dword       value;
+    dword       linear;
+    word        dregs;
+    word        len;
+} watch_point;
+
+typedef struct {
+        long    have_vmm;
+        long    nconvpg;
+        long    nbimpg;
+        long    nextpg;
+        long    extlim;
+        long    aphyseg;
+        long    alockpg;
+        long    sysphyspg;
+        long    nfreepg;
+        long    beglinaddr;
+        long    endlinaddr;
+        long    secsincelastvmstat;
+        long    pgfaults;
+        long    pgswritten;
+        long    pgsreclaimed;
+        long    vmpages;
+        long    pgfilesize;
+        long    emspages;
+        long    mincomvmem;
+        long    maxpagefile;
+        long    vmflags;
+        long    reserved[4];
+} memory_stats;
+
+#pragma aux (metaware)  _dil_global;
+#pragma aux (metaware)  _dx_config_inf;
+
+
+extern  long            _STACKTOP;
+
+opcode_type             OldFakeOpcode;
+bool                    FakeBreak;
+bool                    AtEnd;
+bool                    ReportedAlias;
+short                   InitialSS;
+short                   InitialCS;
+
+static unsigned         SaveMSW;
+static unsigned_8       RealNPXType;
+static char             UtilBuff[BUFF_SIZE];
+static MSB              Mach;
+static SEL_REMAP        SelBlk;
+static bool             HavePSP;
+static unsigned long    ObjOffReloc[MAX_OBJECTS];
+
+static watch_point      WatchPoints[MAX_WATCHES];
+static int              WatchCount;
+
+static opcode_type      BreakOpcode;
 
 #define DBG_ERROR "System error: "
 static char *DBErrors[] = {
@@ -100,68 +165,6 @@ static char *DBErrors[] = {
         "DILIB loadable portion not yet loaded",
         "Incorrect DILIB loadable portion version"
 };
-
-extern  long            _STACKTOP;
-
-#pragma aux (metaware)  _dil_global;
-#pragma aux (metaware)  _dx_config_inf;
-
-
-bool                    FakeBreak;
-bool                    AtEnd;
-bool                    ReportedAlias;
-opcode_type             SavedByte;
-short                   InitialSS;
-short                   InitialCS;
-
-static unsigned         SaveMSW;
-static unsigned_8       RealNPXType;
-char                    UtilBuff[BUFF_SIZE];
-static MSB              Mach;
-static SEL_REMAP        SelBlk;
-static bool             HavePSP;
-#define MAX_OBJECTS     128
-static unsigned long    ObjOffReloc[MAX_OBJECTS];
-
-#define DBE_BASE        1000
-
-typedef struct watch_point {
-    addr48_ptr  addr;
-    dword       value;
-    dword       linear;
-    word        dregs;
-    word        len;
-} watch_point;
-
-typedef struct {
-        long    have_vmm;
-        long    nconvpg;
-        long    nbimpg;
-        long    nextpg;
-        long    extlim;
-        long    aphyseg;
-        long    alockpg;
-        long    sysphyspg;
-        long    nfreepg;
-        long    beglinaddr;
-        long    endlinaddr;
-        long    secsincelastvmstat;
-        long    pgfaults;
-        long    pgswritten;
-        long    pgsreclaimed;
-        long    vmpages;
-        long    pgfilesize;
-        long    emspages;
-        long    mincomvmem;
-        long    maxpagefile;
-        long    vmflags;
-        long    reserved[4];
-} memory_stats;
-
-#define MAX_WATCHES     32
-
-static watch_point WatchPoints[MAX_WATCHES];
-static int         WatchCount;
 
 int SetUsrTask( void )
 {
@@ -261,13 +264,13 @@ trap_retval TRAP_CORE( Machine_data )( void )
     return( sizeof( *ret ) );
 }
 
-static ULONG RealAddr( PTR386 *addr )
+static ULONG RealAddr( addr48_ptr *addr )
 {
-    return( ( (long)addr->selector << 16 ) + ( addr->offset & 0xFFFF ) );
+    return( ( (ULONG)addr->segment << 16 ) + ( addr->offset & 0xFFFF ) );
 }
 
 
-static int RunProgram()
+static int RunProgram( void )
 {
     MSB         temp;
     int         rc;
@@ -299,61 +302,69 @@ static int RunProgram()
 }
 
 
-static int DoReadMemory( PTR386 *addr, unsigned long req, void *buf )
+static int DoReadMemory( addr48_ptr *addr, unsigned long req, void *buf )
 {
-    if( IsProtSeg( addr->selector ) ) {
-        return( dbg_pread( addr, req, buf ) );
+    if( IsProtSeg( addr->segment ) ) {
+        PTR386  paddr;
+
+        paddr.selector = addr->segment;
+        paddr.offset = addr->offset;
+        return( dbg_pread( &paddr, req, buf ) );
     } else {
         return( dbg_rread( RealAddr( addr ), req, buf ) );
     }
 }
 
-static unsigned short ReadMemory( PTR386 *addr, void *buff, unsigned short requested )
+static size_t ReadMemory( addr48_ptr *addr, void *buff, size_t req_len )
 {
-    int                 err;
-    unsigned short      len;
+    int         err;
+    size_t      len;
 
-    err = DoReadMemory( addr, (unsigned long)requested, buff );
+    err = DoReadMemory( addr, req_len, buff );
     if( err == 0 ) {
-        addr->offset += requested;
-        return( requested );
+        addr->offset += req_len;
+        return( req_len );
     }
-    for( len = requested; len != 0; --len ) {
+    for( len = req_len; len != 0; --len ) {
         if( DoReadMemory( addr, 1, buff ) != 0 )
             break;
         buff = (char *)buff + 1;
         addr->offset++;
     }
-    return( requested - len );
+    return( req_len - len );
 }
 
 
-static int DoWriteMemory( PTR386 *addr, unsigned long req, void *buf )
+static int DoWriteMemory( addr48_ptr *addr, unsigned long req, void *buf )
 {
-    if( IsProtSeg( addr->selector ) ) {
-        return( dbg_pwrite( addr, req, buf ) );
+    if( IsProtSeg( addr->segment ) ) {
+        PTR386  paddr;
+
+        paddr.selector = addr->segment;
+        paddr.offset = addr->offset;
+        return( dbg_pwrite( &paddr, req, buf ) );
     } else {
         return( dbg_rwrite( RealAddr( addr ), req, buf ) );
     }
 }
 
-static unsigned short WriteMemory( PTR386 *addr, void *buff, unsigned short requested )
+static size_t WriteMemory( addr48_ptr *addr, void *buff, size_t req_len )
 {
-    int                 err;
-    unsigned short      len;
+    int         err;
+    size_t      len;
 
-    err = DoWriteMemory( addr, (unsigned long)requested, buff );
+    err = DoWriteMemory( addr, req_len, buff );
     if( err == 0 ) {
-        addr->offset += requested;
-        return( requested );
+        addr->offset += req_len;
+        return( req_len );
     }
-    for( len = requested; len != 0; --len ) {
+    for( len = req_len; len != 0; --len ) {
         if( DoWriteMemory( addr, 1, buff ) != 0 )
             break;
         buff = (char *)buff + 1;
         addr->offset++;
     }
-    return( requested - len );
+    return( req_len - len );
 }
 
 
@@ -361,7 +372,6 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     size_t              len;
     size_t              got;
-    PTR386              addr;
     size_t              i;
     size_t              want;
     checksum_mem_req    *acc;
@@ -370,14 +380,12 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 
     _DBG(("AccChkSum\r\n"));
     acc = GetInPtr( 0 );
-    addr.offset = acc->in_addr.offset;
-    addr.selector = acc->in_addr.segment;
     want = sizeof( UtilBuff );
     sum = 0;
     for( len = acc->len; len > 0; len -= want ) {
         if( want > len )
             want = len;
-        got = ReadMemory( &addr, UtilBuff, want );
+        got = ReadMemory( &acc->in_addr, UtilBuff, want );
         for( i = 0; i < got; ++i ) {
             sum += ((unsigned char *)UtilBuff)[i];
         }
@@ -393,30 +401,24 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 
 trap_retval TRAP_CORE( Read_mem )( void )
 {
-    PTR386          addr;
     read_mem_req    *acc;
     void            *ret;
 
     _DBG(("ReadMem\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    addr.offset = acc->mem_addr.offset;
-    addr.selector = acc->mem_addr.segment;
-    return( ReadMemory( &addr, ret, acc->len ) );
+    return( ReadMemory( &acc->mem_addr, ret, acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
 {
-    PTR386              addr;
     write_mem_req       *acc;
     write_mem_ret       *ret;
 
     _DBG(("WriteMem\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    addr.offset = acc->mem_addr.offset;
-    addr.selector = acc->mem_addr.segment;
-    ret->len = WriteMemory( &addr, GetInPtr( sizeof( *acc ) ),
+    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
                             GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
@@ -687,7 +689,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
     _DBG(("AccKillProg\r\n"));
-    ret = GetOutPtr( 0 );
     RedirectFini();
     AtEnd = TRUE;
     if( RealNPXType != X86_NO ) {
@@ -699,11 +700,26 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     SetMSW( SaveMSW );
     dbg_kill();
     HavePSP = FALSE;
-    ret->err = 0;
     Mach.msb_event = -1;
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     return( sizeof( *ret ) );
 }
 
+
+static opcode_type place_breakpoint( addr48_ptr *addr )
+{
+    opcode_type old_opcode;
+
+    ReadMemory( addr, &old_opcode, sizeof( old_opcode ) );
+    WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
+    return( old_opcode );
+}
+
+static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+{
+    WriteMemory( addr, &old_opcode, sizeof( old_opcode ) );
+}
 
 static trap_conditions MapReturn( void )
 {
@@ -734,11 +750,11 @@ static trap_conditions MapReturn( void )
 
 static void FixFakeBreak( void )
 {
-    PTR386      addr;
+    addr48_ptr  addr;
 
-    addr.selector = Mach.msb_cs;
+    addr.segment = Mach.msb_cs;
     addr.offset = Mach.msb_eip;
-    WriteMemory( &addr, &SavedByte, sizeof( SavedByte ) );
+    remove_breakpoint( &addr, OldFakeOpcode );
 }
 
 
@@ -796,18 +812,18 @@ trap_retval TRAP_CORE( Set_watch )( void )
     _DBG(("AccSetWatch\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = 1;
     ret->multiplier = 10000;
+    ret->err = 1;       // failed
     if( WatchCount < MAX_WATCHES ) {
-        ret->err = 0;
+        ret->err = 0;   // OK
+        DoReadMemory( &acc->watch_addr, 4, &l );
         addr.offset = acc->watch_addr.offset;
         addr.selector = acc->watch_addr.segment;
-        DoReadMemory( &addr, 4, &l );
-        curr = WatchPoints + WatchCount;
-        curr->addr.segment = acc->watch_addr.segment;
-        curr->addr.offset = acc->watch_addr.offset;
-        curr->value = l;
         dbg_ptolin( &addr, &linear );
+        curr = WatchPoints + WatchCount;
+        curr->addr.segment = addr.selector;
+        curr->addr.offset = addr.offset;
+        curr->value = l;
         curr->linear = linear;
         curr->len = acc->size;
         curr->linear &= ~( curr->len - 1 );
@@ -828,36 +844,24 @@ trap_retval TRAP_CORE( Clear_watch )( void )
 
 trap_retval TRAP_CORE( Set_break )( void )
 {
-    opcode_type         brk_opcode;
     set_break_req       *acc;
     set_break_ret       *ret;
-    PTR386              addr;
 
     _DBG(("AccSetBreak\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    addr.offset = acc->break_addr.offset;
-    addr.selector = acc->break_addr.segment;
-    DoReadMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
-    ret->old = brk_opcode;
-    brk_opcode = BRKPOINT;
-    DoWriteMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
+    ret->old = place_breakpoint( &acc->break_addr );
     return( sizeof( *ret ) );
 }
 
 
 trap_retval TRAP_CORE( Clear_break )( void )
 {
-    opcode_type         brk_opcode;
     clear_break_req     *acc;
-    PTR386              addr;
 
     _DBG(("AccRestoreBreak\r\n"));
     acc = GetInPtr( 0 );
-    addr.offset = acc->break_addr.offset;
-    addr.selector = acc->break_addr.segment;
-    brk_opcode = acc->old;
-    DoWriteMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
+    remove_breakpoint( &acc->break_addr, acc->old );
     return( 0 );
 }
 
@@ -897,7 +901,6 @@ static unsigned ProgRun( bool step )
     int         i;
     dword       value;
     prog_go_ret *ret;
-    PTR386      addr;
 
     ret = GetOutPtr( 0 );
     Mach.msb_dreg[6] = 0;
@@ -924,9 +927,7 @@ static unsigned ProgRun( bool step )
                 if( ( Mach.msb_dreg[6] & DR6_BS ) == 0 )
                     break;
                 for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                    addr.offset = wp->addr.offset;
-                    addr.selector = wp->addr.segment;
-                    DoReadMemory( &addr, 4, &value );
+                    DoReadMemory( &wp->addr, 4, &value );
                     if( value != wp->value ) {
                         ret->conditions = COND_WATCH;
                         Mach.msb_eflags &= ~EF_TF;
@@ -1064,6 +1065,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     HavePSP = FALSE;
     WatchCount = 0;
     FakeBreak = FALSE;
+    BreakOpcode = BRKPOINT;
     if( getenv( "DBDB" ) ) {
         _DBG(( "Calling dbg_edebug()\r\n" ));
         dbg_edebug();

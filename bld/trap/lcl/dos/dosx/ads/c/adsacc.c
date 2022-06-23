@@ -84,32 +84,34 @@ static dword    SegLimit( dword );
 static bool         WriteOK( word sel );
 #pragma aux WriteOK = \
         "verw ax" /* if ok for write */\
-        "sete al" /* then return TRUE */\
+        "sete al" /* then return true */\
     __parm [__ax] __value [__al]
 
 static bool         ReadOK( word sel );
 #pragma aux ReadOK = \
         "verr ax" /* if ok for read */\
-        "sete al" /* then return TRUE */\
+        "sete al" /* then return true */\
     __parm [__ax] __value [__al]
 
-static void         DoReadByte( word sel, dword offs, void *data );
-#pragma aux DoReadByte = \
-        "push ds" \
-        "mov ds,dx" \
-        "mov al,[ebx]" \
-        "pop ds" \
-        "mov [ecx],al" \
-    __parm [__dx] [__ebx] [__ecx]
+static void         DoReadBytes( word sel, dword offs, void *data, size_t len );
+#pragma aux DoReadBytes = \
+        "push es" \
+        "mov  eax,ds" \
+        "mov  es,eax" \
+        "mov  ds,edx" \
+        "rep movsb" \
+        "mov  ds,eax" \
+        "pop  es" \
+    __parm [__dx] [__esi] [__edi] [__ecx] \
+    __modify [__eax]
 
-static void         DoWriteByte( word sel, dword offs, void *data );
-#pragma aux DoWriteByte = \
-        "mov al,[ecx]" \
-        "push ds" \
-        "mov ds,dx" \
-        "mov [ebx],al" \
-        "pop ds" \
-    __parm [__dx] [__ebx] [__ecx]
+static void         DoWriteBytes( word sel, dword offs, void *data, size_t len );
+#pragma aux DoWriteBytes = \
+        "push es" \
+        "mov es,edx" \
+        "rep movsb" \
+        "pop es" \
+    __parm [__dx] [__edi] [__esi] [__ecx]
 
 trap_cpu_regs           Regs;
 int                     IntNum;
@@ -147,20 +149,22 @@ struct {
 
 #define MAX_WATCHES     8
 
-static watch_point WatchPoints[MAX_WATCHES];
-static int         WatchCount;
+static watch_point  WatchPoints[MAX_WATCHES];
+static int          WatchCount;
+
+static opcode_type  BreakOpcode;
 
 #if 0
 /*
  * Debugging output code for ADS
  */
 
-extern void       InitMeg1( void );
-extern short      Meg1;
+extern void     InitMeg1( void );
+extern short    Meg1;
 
-int         _cnt;
+int             _cnt;
 
-static int  _line = 0;
+static int      _line = 0;
 
 static char __far *GetScreenPointer( void )
 {
@@ -170,7 +174,7 @@ static char __far *GetScreenPointer( void )
 
 void MyClearScreen( void )
 {
-    int i;
+    size_t  i;
 
     char __far *scrn = GetScreenPointer();
 
@@ -182,20 +186,25 @@ void MyClearScreen( void )
 
 void RawOut( char *str )
 {
-    int         len;
-    int         i;
+    size_t      len;
+    size_t      i;
     char        __far *scr;
     char        __far *scrn = GetScreenPointer();
 
     len = strlen( str );
+    if( len > 80 )
+        len = 80;
     scr = &scrn[_line * 80 * 2];
-    for( i = 0; i < len; i++ ) {
+    i = 0;
+    while( i < len ) {
         scr[i * 2] = str[i];
         scr[i * 2 + 1] = 7;
+        i++;
     }
-    for( i = len; i < 80; i++ ) {
+    while( i < 80 ) {
         scr[i * 2] = ' ';
         scr[i * 2 + 1] = 7;
+        i++;
     }
     _line++;
     if( _line > 24 )
@@ -269,84 +278,73 @@ static word    AltSegment( word seg )
     return( seg );
 }
 
-static size_t ReadWrite( int (*r)(word, dword, void *), addr48_ptr *addr, void *data, size_t req_len ) {
+static size_t ReadWrite( int (*r)(word, dword, void *, size_t), addr48_ptr *addr, void *data, size_t req_len ) {
 
     size_t      len;
     word        segment;
     dword       offset;
+    dword       limit;
 
     offset = addr->offset;
     segment = addr->segment;
+    limit = SegLimit( segment );
     _DBG2(("Read Write %4.4x:%8.8lx", segment, offset));
-    if( SegLimit( segment ) >= offset + req_len - 1 ) {
-        _DBG2(("Read Write Ok for %d", req_len));
-        if( !r( segment, offset, data ) ) {
-            segment = AltSegment( segment );
+    if( limit >= offset + req_len - 1 ) {
+        _DBG2(("Read Write Ok for %d", (int)req_len));
+        if( !r( segment, offset, data, req_len ) ) {
+            _DBG3(("failed for %4.4x:%8.8lx", segment, offset));
         }
-        if( SegLimit( segment ) < offset + req_len - 1 ) {
-            _DBG3(("Gosh, we're in trouble dudes"));
-            if( SegLimit( segment ) == 0 ) {
-                _DBG3(("Gosh, we're in SERIOUS trouble dudes"));
-            }
-        } else {
-            for( len = req_len; len-- > 0; ) {
-                if( !r( segment, offset, data ) ) {
-                    _DBG3(("failed for %4.4x:%8.8lx", segment, offset));
-                }
-                offset++;
-                data = (char *)data + 1;
-            }
-            _DBG2(("Read Write Done"));
-            return( req_len );
-        }
+        _DBG2(("Read Write Done"));
+        return( req_len );
     }
     _DBG2(("Read Write One byte at a time for %d", req_len));
-    len = 0;
-    while( req_len-- > 0 ) {
-        if( SegLimit( segment ) < offset )
-            break;
-        if( !r( segment, offset, data ) ) {
-            segment = AltSegment( segment );
-        }
-        if( !r( segment, offset, data ) ) {
+    for( len = req_len; offset <= limit && len > 0; len-- ) {
+        if( !r( segment, offset, data, 1 ) ) {
             _DBG3(("failed for %4.4x:%8.8lx", segment, offset));
         }
         offset++;
         data = (char *)data + 1;
-        ++len;
     }
     _DBG2(("Read Write Done"));
-    return( len );
+    return( req_len - len );
 }
 
-static int DoReadMem( word sel, dword offs, void *data )
+static int DoReadMemory( word sel, dword offs, void *data, size_t len )
 {
-    if( ReadOK( sel ) ) {
-        DoReadByte( sel, offs, data );
-        return( 1 );
-    }
-    return( 0 );
+    DoReadBytes( sel, offs, data, len );
+    return( 1 );
 }
 
-static int DoWriteMem( word sel, dword offs, void *data )
+static int DoWriteMemory( word sel, dword offs, void *data, size_t len )
 {
-    if( WriteOK( sel ) ) {
-        DoWriteByte( sel, offs, data );
-        return( 1 );
-    }
-    return( 0 );
+    DoWriteBytes( sel, offs, data, len );
+    return( 1 );
 }
 
 static size_t ReadMemory( addr48_ptr *addr, void *data, size_t len )
 {
-    return( ReadWrite( DoReadMem, addr, data, len ) );
+    word        segment;
+
+    segment = addr->segment;
+    if( !ReadOK( segment ) ) {
+        segment = AltSegment( segment );
+    }
+    addr->segment = segment;
+    return( ReadWrite( DoReadMemory, addr, data, len ) );
 }
 
 static size_t WriteMemory( addr48_ptr *addr, void *data, size_t len )
 {
-    if( addr->segment == Regs.CS )
-        addr->segment = Regs.DS; // hack, ack
-    return( ReadWrite( DoWriteMem, addr, data, len ) );
+    word        segment;
+
+    segment = addr->segment;
+    if( segment == Regs.CS )
+        segment = Regs.DS; // hack, ack
+    if( !WriteOK( segment ) ) {
+        segment = AltSegment( segment );
+    }
+    addr->segment = segment;
+    return( ReadWrite( DoWriteMemory, addr, data, len ) );
 }
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
@@ -492,13 +490,13 @@ trap_retval TRAP_CORE( Write_io )( void )
     len = GetTotalSizeIn() - sizeof( *acc );
     switch( len ) {
     case 1:
-        Out_b( acc->IO_offset, *( (byte *)data ) );
+        Out_b( acc->IO_offset, *(byte *)data );
         break;
     case 2:
-        Out_w( acc->IO_offset, *( (word *)data ) );
+        Out_w( acc->IO_offset, *(word *)data );
         break;
     case 4:
-        Out_d( acc->IO_offset, *( (dword *)data ) );
+        Out_d( acc->IO_offset, *(dword *)data );
         break;
     default:
         len = 0;
@@ -619,7 +617,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
 
     _DBG1(( "AccKillProg" ));
-    ret = GetOutPtr( 0 );
     RedirectFini();
     AtEnd = true;
     if( !DoneAutoCAD ) {
@@ -627,6 +624,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
         cputs( "*** Please quit AUTOCAD in order to restart debugger ***\r\n" );
         MyRunProg();
     }
+    ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );
 }
@@ -654,12 +652,12 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 20000;
-    ret->err = 1;
+    ret->err = 1;       // failed
     if( WatchCount < MAX_WATCHES ) {
-        ret->err = 0;
+        ret->err = 0;   // OK
         wp = WatchPoints + WatchCount++;
         wp->addr = acc->watch_addr;
-        ReadMemory( &acc->watch_addr, (byte *)&wp->value, 4 );
+        ReadMemory( &acc->watch_addr, &wp->value, 4 );
         wp->linear = GetLinear( wp->addr.segment, wp->addr.offset );
         wp->len = acc->size;
         wp->dregs = ( wp->linear & ( wp->len - 1 ) ) ? 2 : 1;
@@ -681,32 +679,40 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     return( 0 );
 }
 
+static opcode_type place_breakpoint( addr48_ptr *addr )
+{
+    opcode_type old_opcode;
+
+    if( ReadMemory( addr, &old_opcode, sizeof( old_opcode ) ) == sizeof( old_opcode ) ) {
+        WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
+        return( old_opcode );
+    }
+    return( 0 );
+}
+
+static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+{
+    WriteMemory( addr, &old_opcode, sizeof( old_opcode ) );
+}
+
 trap_retval TRAP_CORE( Set_break )( void )
 {
     set_break_req       *acc;
     set_break_ret       *ret;
-    opcode_type         brk_opcode; /* cause maybe SS != DS */
 
     _DBG1(( "AccSetBreak" ));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->old = 0;
-    if( ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) ) ) {
-        ret->old = brk_opcode;
-        brk_opcode = BRKPOINT;
-        WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
-    }
+    ret->old = place_breakpoint( &acc->break_addr );
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req     *acc;
-    opcode_type         brk_opcode;
 
     acc = GetInPtr( 0 );
-    brk_opcode = acc->old;
-    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
+    remove_breakpoint( &acc->break_addr, acc->old );
     _DBG1(( "AccRestoreBreak" ));
     return( 0 );
 }
@@ -725,17 +731,16 @@ static bool SetDebugRegs( void )
 {
     int         i;
     int         dr;
-    watch_point *wp;
 
     if( DRegsCount() > 4 )
         return( false );
     dr = 0;
     SysRegs.dr7 = DR7_GE;
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-        SetDRnBW( dr, wp->linear, wp->len );
+    for( i = 0; i < WatchCount; ++i ) {
+        SetDRnBW( dr, WatchPoints[i].linear, WatchPoints[i].len );
         ++dr;
-        if( wp->dregs == 2 ) {
-            SetDRnBW( dr, wp->linear+4, wp->len );
+        if( WatchPoints[i].dregs == 2 ) {
+            SetDRnBW( dr, WatchPoints[i].linear + 4, WatchPoints[i].len );
             ++dr;
         }
     }
@@ -744,7 +749,6 @@ static bool SetDebugRegs( void )
 
 static unsigned ProgRun( bool step )
 {
-    watch_point *wp;
     long        trace;
     int         i;
     dword       value;
@@ -773,9 +777,9 @@ static unsigned ProgRun( bool step )
                     break;
                 if( ( SysRegs.dr6 & DR6_BS ) == 0 )
                     break;
-                for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                    ReadMemory( &wp->addr, (void *)&value, 4 );
-                    if( value != wp->value ) {
+                for( i = 0; i < WatchCount; ++i ) {
+                    ReadMemory( &WatchPoints[i].addr, &value, 4 );
+                    if( value != WatchPoints[i].value ) {
                         ret->conditions |= COND_WATCH;
                         goto leave;
                     }
@@ -940,6 +944,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     RealNPXType = NPXType();
     WatchCount = 0;
     FakeBreak = false;
+    BreakOpcode = BRKPOINT;
     GrabVects();
     _DBG0(( "Done TrapInit" ));
     return( ver );
