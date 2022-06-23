@@ -134,14 +134,14 @@ set PROJDIR=<CWD>
 
     <CCCMD> lcl/linux/std386/std*.trp               <OWRELROOT>/binl/
     <CCCMD> lcl/linux/std386/std*.sym               <OWRELROOT>/binl/
-    <CCCMD> par/linux.trp/par*.trp                  <OWRELROOT>/binl/
-    <CCCMD> par/linux.trp/par*.sym                  <OWRELROOT>/binl/
-    <CCCMD> par/linux.srv/parserv.exe               <OWRELROOT>/binl/parserv
-    <CCCMD> par/linux.srv/parserv.sym               <OWRELROOT>/binl/
-    <CCCMD> tcp/linux.trp/tcp*.trp                  <OWRELROOT>/binl/
-    <CCCMD> tcp/linux.trp/tcp*.sym                  <OWRELROOT>/binl/
-    <CCCMD> tcp/linux.srv/tcpserv.exe               <OWRELROOT>/binl/tcpserv
-    <CCCMD> tcp/linux.srv/tcpserv.sym               <OWRELROOT>/binl/
+    <CCCMD> par/linux386.trp/par*.trp               <OWRELROOT>/binl/
+    <CCCMD> par/linux386.trp/par*.sym               <OWRELROOT>/binl/
+    <CCCMD> par/linux386.srv/parserv.exe            <OWRELROOT>/binl/parserv
+    <CCCMD> par/linux386.srv/parserv.sym            <OWRELROOT>/binl/
+    <CCCMD> tcp/linux386.trp/tcp*.trp               <OWRELROOT>/binl/
+    <CCCMD> tcp/linux386.trp/tcp*.sym               <OWRELROOT>/binl/
+    <CCCMD> tcp/linux386.srv/tcpserv.exe            <OWRELROOT>/binl/tcpserv
+    <CCCMD> tcp/linux386.srv/tcpserv.sym            <OWRELROOT>/binl/
 
     <CCCMD> lcl/rdos/std/std*.dll                   <OWRELROOT>/rdos/
     <CCCMD> lcl/rdos/std/std*.sym                   <OWRELROOT>/rdos/
