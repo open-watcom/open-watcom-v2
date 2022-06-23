@@ -267,7 +267,7 @@ int CheckWatchPoints( void )
     int     i;
 
     for( i = 0; i < WatchCount; i++ ) {
-        ReadMemory( pid, &value, WatchPoints[i].loc.offset, sizeof( value ) );
+        ReadMemory( pid, WatchPoints[i].loc.offset, &value, sizeof( value ) );
         if( value != WatchPoints[i].value ) {
             return( true );
         }
@@ -293,13 +293,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
         curr = WatchPoints + WatchCount;
         curr->loc.segment = acc->watch_addr.segment;
         curr->loc.offset = acc->watch_addr.offset;
-        ReadMemory( pid, &value, acc->watch_addr.offset, sizeof( dword ) );
+        ReadMemory( pid, acc->watch_addr.offset, &value, sizeof( value ) );
         curr->value = value;
         curr->len = acc->size;
         WatchCount++;
         curr->linear = linear = acc->watch_addr.offset;
         curr->linear &= ~(curr->len-1);
-        curr->dregs = (linear & (curr->len-1) ) ? 2 : 1;
+        curr->dregs = (linear & ( curr->len - 1 )) ? 2 : 1;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
@@ -348,13 +348,13 @@ trap_retval TRAP_CORE( Read_io )( void )
     if( iopl( 3 ) == 0 ) {
         switch( acc->len ) {
         case 1:
-            *((unsigned_8*)ret) = inpb( acc->IO_offset );
+            *(unsigned_8 *)ret = inpb( acc->IO_offset );
             break;
         case 2:
-            *((unsigned_16*)ret) = inpw( acc->IO_offset );
+            *(unsigned_16 *)ret = inpw( acc->IO_offset );
             break;
         case 4:
-            *((unsigned_32*)ret) = inpd( acc->IO_offset );
+            *(unsigned_32 *)ret = inpd( acc->IO_offset );
             break;
         default:
             return( 0 );
@@ -387,13 +387,13 @@ trap_retval TRAP_CORE( Write_io )( void )
         len = GetTotalSizeIn() - sizeof( *acc );
         switch( len ) {
         case 1:
-            outpb( acc->IO_offset, *((unsigned_8*)data) );
+            outpb( acc->IO_offset, *(unsigned_8 *)data );
             break;
         case 2:
-            outpw( acc->IO_offset, *((unsigned_16*)data) );
+            outpw( acc->IO_offset, *(unsigned_16 *)data );
             break;
         case 4:
-            outpd( acc->IO_offset, *((unsigned_32*)data) );
+            outpd( acc->IO_offset, *(unsigned_32 *)data );
             break;
         default:
             len = 0;

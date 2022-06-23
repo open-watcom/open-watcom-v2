@@ -63,9 +63,8 @@ void OutNum( unsigned long i )
 }
 #endif
 
-size_t WriteMemory( pid_t pid, void *ptr, addr_off offv, size_t size )
+size_t WriteMemory( pid_t pid, addr_off offv, void *data, size_t size )
 {
-    char    *data = ptr;
     size_t  count;
 
     /* Write the process memory 32-bits at a time. Kind of silly that
@@ -74,11 +73,11 @@ size_t WriteMemory( pid_t pid, void *ptr, addr_off offv, size_t size )
      * need to do for now.
      * ... but reads can be done from /proc/pid/mem: see below.
      */
-    for( count = size; count >= 4; count -= 4 ) {
-        if( ptrace( PTRACE_POKETEXT, pid, (void *)offv, (void *)(*(unsigned_32*)data) ) != 0 )
+    for( count = size; count >= sizeof( u_long ); count -= sizeof( u_long ) ) {
+        if( ptrace( PTRACE_POKETEXT, pid, (void *)offv, (void *)(*(u_long *)data) ) != 0 )
             return( size - count );
-        data += 4;
-        offv += 4;
+        data = (char *)data + sizeof( u_long );
+        offv += sizeof( u_long );
     }
 
     /* Now handle last partial write if neccesary. Note that we first
@@ -87,14 +86,13 @@ size_t WriteMemory( pid_t pid, void *ptr, addr_off offv, size_t size )
      */
     if( count ) {
         u_long      val;
-        unsigned_8  *src = (unsigned_8 *)data;
-        unsigned_8  *dst = (unsigned_8 *)&val;
         int         i;
 
         errno = 0;
         if( (val = ptrace( PTRACE_PEEKTEXT, pid, (void *)offv, &val )) == -1 ) {
-            if( errno )
+            if( errno ) {
                 return( size - count );
+            }
         }
 #if DEBUG_WRITEMEM
         Out( "writemem:" );
@@ -103,23 +101,23 @@ size_t WriteMemory( pid_t pid, void *ptr, addr_off offv, size_t size )
 #endif
         /* we have to maintain byte order here! */
         for( i = 0; i < count; ++i ) {
-            dst[i] = src[i];
+            ((char *)&val)[i] = ((char *)data)[i];
         }
 #if DEBUG_WRITEMEM
         Out( "writemem:" );
         OutNum( val );
         Out( "\n" );
 #endif
-        if( ptrace( PTRACE_POKETEXT, pid, (void *)offv, (void *)val ) != 0 )
+        if( ptrace( PTRACE_POKETEXT, pid, (void *)offv, (void *)val ) != 0 ) {
             return( size - count );
+        }
     }
 
     return( size );
 }
 
-size_t ReadMemory( pid_t pid, void *ptr, addr_off offv, size_t size )
+size_t ReadMemory( pid_t pid, addr_off offv, void *data, size_t size )
 {
-    char    *data = ptr;
     size_t  count;
 
     if( size > 16 ) {
@@ -139,13 +137,14 @@ size_t ReadMemory( pid_t pid, void *ptr, addr_off offv, size_t size )
             if( res != -1 )
                 count = read( fd, data, size );
             close( fd );
-            if( count != -1 )
+            if( count != -1 ) {
                 return( count );
+            }
         }
     }
 
     /* Read the process memory 32-bits at a time */
-    for( count = size; count >= 4; count -= 4 ) {
+    for( count = size; count >= sizeof( u_long ); count -= sizeof( u_long ) ) {
         u_long  val;
 
         errno = 0;
@@ -155,16 +154,14 @@ size_t ReadMemory( pid_t pid, void *ptr, addr_off offv, size_t size )
             }
         }
         *(u_long *)data = val;
-        data += 4;
-        offv += 4;
+        data = (char *)data + sizeof( u_long );
+        offv += sizeof( u_long );
     }
 
     /* Now handle last partial read if neccesary */
     if( count ) {
-        u_long      val;
-        unsigned_8  *src = (unsigned_8 *)&val;
-        unsigned_8  *dst = (unsigned_8 *)data;
-        int         i;
+        u_long  val;
+        int     i;
 
         errno = 0;
         if( (val = ptrace( PTRACE_PEEKTEXT, pid, (void *)offv, &val )) == -1 ) {
@@ -173,7 +170,7 @@ size_t ReadMemory( pid_t pid, void *ptr, addr_off offv, size_t size )
             }
         }
         for( i = 0; i < count; ++i ) {
-            dst[i] = src[i];
+            ((char *)data)[i] = ((char *)&val)[i];
         }
         count = 0;
     }
@@ -227,14 +224,12 @@ int Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struc
 {
     Elf32_Dyn       loc_dyn;
     struct r_debug  *rdebug = NULL;
-    unsigned        read_len;
 
     if( dbg_dyn == NULL ) {
         Out( "Get_ld_info: dynamic section not available\n" );
         return( false );
     }
-    read_len = sizeof( loc_dyn );
-    if( ReadMemory( pid, &loc_dyn, (addr_off)dbg_dyn, read_len ) != read_len ) {
+    if( ReadMemory( pid, (addr_off)dbg_dyn, &loc_dyn, sizeof( loc_dyn ) ) != sizeof( loc_dyn ) ) {
         Out( "Get_ld_info: failed to copy first dynamic entry\n" );
         return( false );
     }
@@ -245,7 +240,7 @@ int Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struc
             break;
         }
         dbg_dyn++;
-        if( ReadMemory( pid, &loc_dyn, (addr_off)dbg_dyn, read_len ) != read_len ) {
+        if( ReadMemory( pid, (addr_off)dbg_dyn, &loc_dyn, sizeof( loc_dyn ) ) != sizeof( loc_dyn ) ) {
             Out( "Get_ld_info: failed to copy dynamic entry\n" );
             return( false );
         }
@@ -254,8 +249,7 @@ int Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struc
         Out( "Get_ld_info: DT_DEBUG entry not found or not set\n" );
         return( false );
     }
-    read_len = sizeof( *debug_ptr );
-    if( ReadMemory( pid, debug_ptr, (addr_off)rdebug, read_len ) != read_len ) {
+    if( ReadMemory( pid, (addr_off)rdebug, debug_ptr, sizeof( *debug_ptr ) ) != sizeof( *debug_ptr ) ) {
         Out( "Get_ld_info: failed to copy r_debug struct\n" );
         return( false );
     }
@@ -273,15 +267,15 @@ char *dbg_strcpy( pid_t pid, char *s1, const char *s2 )
     char    c;
 
     do {
-        if( ReadMemory( pid, &c, (addr48_off)s2, 1 ) != 1 ) {
+        if( ReadMemory( pid, (addr_off)s2, &c, 1 ) != 1 ) {
             Out( "dbg_strcpy: failed at " );
-            OutNum( (addr48_off)s2 );
+            OutNum( (addr_off)s2 );
             Out( "\n" );
             return( NULL );
         }
         *dst++ = c;
         ++s2;
-    } while( c );
+    } while( c != '\0' );
 
     return( s1 );
 }
@@ -291,12 +285,9 @@ char *dbg_strcpy( pid_t pid, char *s1, const char *s2 )
  */
 int GetLinkMap( pid_t pid, struct link_map *dbg_lmap, struct link_map *local_lmap )
 {
-    unsigned    read_len;
-
-    read_len = sizeof( *local_lmap );
-    if( ReadMemory( pid, local_lmap, (addr_off)dbg_lmap, read_len ) != read_len ) {
+    if( ReadMemory( pid, (addr_off)dbg_lmap, local_lmap, sizeof( *local_lmap ) ) != sizeof( *local_lmap ) ) {
         Out( "GetLinkMap: failed to copy link_map struct at " );
-        OutNum( (addr48_off)dbg_lmap );
+        OutNum( (addr_off)dbg_lmap );
         Out( "\n" );
         return( false );
     }
@@ -307,7 +298,7 @@ int GetLinkMap( pid_t pid, struct link_map *dbg_lmap, struct link_map *local_lma
  * individual components. Useful for passing argv style array to
  * exec().
  */
-int SplitParms( char *p, const char **args, unsigned len )
+int SplitParms( char *p, const char **args, size_t len )
 {
     int     i;
     char    endc;
@@ -341,8 +332,13 @@ int SplitParms( char *p, const char **args, unsigned len )
             if( len == 0 )
                 goto done;
             if( *p == endc || *p == '\0' || (endc == ' ' && *p == '\t') ) {
+                /*
+                 * if output array is not specified then source string
+                 * is not changed and it calculates number of parameters only
+                 * as soon as output array is specified then source is modified
+                 */
                 if( args != NULL ) {
-                    *p = '\0';  //NYI: not a good idea, should make a copy
+                    *p = '\0';
                 }
                 ++p;
                 --len;

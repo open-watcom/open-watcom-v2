@@ -56,8 +56,8 @@
 #include "brkptcpu.h"
 
 
-u_short                 flatCS;
-u_short                 flatDS;
+addr_seg                flatCS;
+addr_seg                flatDS;
 pid_t                   pid;
 long                    orig_eax;
 long                    last_eip;
@@ -70,8 +70,8 @@ static struct r_debug   rdebug;         /* Copy of debuggee's r_debug (if presen
 static struct r_debug   *dbg_rdebug;    /* Ptr to r_debug in debuggee's space */
 static bool             have_rdebug;    /* Flag indicating valid r_debug */
 static Elf32_Dyn        *dbg_dyn;       /* VA of debuggee's dynamic section (if present) */
-static opcode_type      saved_opcode;
-
+static opcode_type      BreakOpcode;
+static opcode_type      old_ld_opcode;
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
@@ -93,7 +93,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
         for( len = acc->len; len > 0; len -= want ) {
             if( want > len )
                 want = len;
-            got = ReadMemory( pid, buf, offv, want );
+            got = ReadMemory( pid, offv, buf, want );
             for( i = 0; i < got; ++i )
                 sum += buf[i];
             if( got != want ) {
@@ -115,7 +115,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
     CONV_LE_32( acc->mem_addr.offset );
     CONV_LE_16( acc->mem_addr.segment );
     CONV_LE_16( acc->len );
-    return( ReadMemory( pid, GetOutPtr( 0 ), acc->mem_addr.offset, acc->len ) );
+    return( ReadMemory( pid, acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -127,14 +127,14 @@ trap_retval TRAP_CORE( Write_mem )( void )
     CONV_LE_32( acc->mem_addr.offset );
     CONV_LE_16( acc->mem_addr.segment );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( pid, GetInPtr( sizeof( *acc ) ), acc->mem_addr.offset,
+    ret->len = WriteMemory( pid, acc->mem_addr.offset, GetInPtr( sizeof( *acc ) ),
                                 GetTotalSizeIn() - sizeof( *acc ) );
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );
 }
 
 #if defined( MD_x86 )
-static bool GetFlatSegs( u_short *cs, u_short *ds )
+static bool GetFlatSegs( addr_seg *cs, addr_seg *ds )
 {
     user_regs_struct    regs;
 
@@ -347,20 +347,30 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     return( sizeof( *ret ) );
 }
 
+static opcode_type place_breakpoint( addr_off offv )
+{
+    opcode_type old_opcode;
+
+    ReadMemory( pid, offv, &old_opcode, sizeof( old_opcode ) );
+    WriteMemory( pid, offv, &BreakOpcode, sizeof( BreakOpcode ) );
+    return( old_opcode );
+}
+
+static void remove_breakpoint( addr_off offv, opcode_type old_opcode )
+{
+    WriteMemory( pid, offv, &old_opcode, sizeof( old_opcode ) );
+}
+
 trap_retval TRAP_CORE( Set_break )( void )
 {
     set_break_req   *acc;
     set_break_ret   *ret;
-    opcode_type     brk_opcode;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     CONV_LE_32( acc->break_addr.offset );
     CONV_LE_16( acc->break_addr.segment );
-    ReadMemory( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
-    ret->old = brk_opcode;
-    brk_opcode = BRKPOINT;
-    WriteMemory( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
+    ret->old = place_breakpoint( acc->break_addr.offset );
     Out( "ReqSet_break at " );
     OutNum( acc->break_addr.offset );
     Out( " (was " );
@@ -372,17 +382,15 @@ trap_retval TRAP_CORE( Set_break )( void )
 trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req *acc;
-    opcode_type     brk_opcode;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->break_addr.offset );
     CONV_LE_16( acc->break_addr.segment );
-    brk_opcode = acc->old;
-    WriteMemory( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
+    remove_breakpoint( acc->break_addr.offset, acc->old );
     Out( "ReqClear_break at " );
     OutNum( acc->break_addr.offset );
     Out( " (setting to " );
-    OutNum( brk_opcode );
+    OutNum( acc->old );
     Out( ")\n" );
     return( 0 );
 }
@@ -494,13 +502,12 @@ static trap_elen ProgRun( bool step )
 
     if( ret->conditions == COND_BREAK ) {
 #if defined( MD_x86 )
-        if( regs.eip == rdebug.r_brk + sizeof( saved_opcode ) ) {
+        if( regs.eip == rdebug.r_brk + sizeof( opcode_type ) ) {
 #elif defined( MD_ppc ) || defined( MD_mps )
         if( regs.eip == rdebug.r_brk ) {
 #endif
             int         psig = 0;
             void        (*oldsig)(int);
-            opcode_type brk_opcode;
 
             /* The dynamic linker breakpoint was hit, meaning that
              * libraries are being loaded or unloaded. This gets a bit
@@ -508,8 +515,8 @@ static trap_elen ProgRun( bool step )
              * at the breakpoint and execute it, but we still want to
              * keep the breakpoint.
              */
-            WriteMemory( pid, &saved_opcode, rdebug.r_brk, sizeof( saved_opcode ) );
-            ReadMemory( pid, &rdebug, (addr48_off)dbg_rdebug, sizeof( rdebug ) );
+            remove_breakpoint( rdebug.r_brk, old_ld_opcode );
+            ReadMemory( pid, (addr_off)dbg_rdebug, &rdebug, sizeof( rdebug ) );
             Out( "ld breakpoint hit, state is " );
             switch( rdebug.r_state ) {
             case RT_ADD:
@@ -540,8 +547,10 @@ static trap_elen ProgRun( bool step )
             ptrace( PTRACE_SINGLESTEP, pid, NULL, (void *)psig );
             waitpid( pid, &status, 0 );
             setsig( SIGINT, oldsig );
-            brk_opcode = BRKPOINT;
-            WriteMemory( pid, &brk_opcode, rdebug.r_brk, sizeof( brk_opcode ) );
+            /*
+             * put back ld breakpoint
+             */
+            place_breakpoint( rdebug.r_brk );
             ret->conditions = COND_LIBRARIES;
         } else {
 #if defined( MD_x86 )
@@ -566,8 +575,6 @@ static trap_elen ProgRun( bool step )
      */
     if( !have_rdebug && (dbg_dyn != NULL) ) {
         if( Get_ld_info( pid, dbg_dyn, &rdebug, &dbg_rdebug ) ) {
-            opcode_type     brk_opcode;
-
             AddInitialLibs( rdebug.r_map );
             have_rdebug = true;
             ret->conditions |= COND_LIBRARIES;
@@ -575,14 +582,12 @@ static trap_elen ProgRun( bool step )
             /* Set a breakpoint in dynamic linker. That way we can be
              * informed on dynamic library load/unload events.
              */
-            ReadMemory( pid, &saved_opcode, rdebug.r_brk, sizeof( saved_opcode ) );
+            old_ld_opcode = place_breakpoint( rdebug.r_brk );
             Out( "Setting ld breakpoint at " );
             OutNum( rdebug.r_brk );
             Out( " old opcode was " );
-            OutNum( saved_opcode );
+            OutNum( old_ld_opcode );
             Out( "\n" );
-            brk_opcode = BRKPOINT;
-            WriteMemory( pid, &brk_opcode, rdebug.r_brk, sizeof( brk_opcode ) );
         }
     }
  end:
@@ -681,6 +686,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     ver.minor = TRAP_MINOR_VERSION;
     ver.remote = false;
     OrigPGrp = getpgrp();
+    BreakOpcode = BRKPOINT;
 
     return( ver );
 }

@@ -315,12 +315,12 @@ extern void         DelProcess( void );
 extern void         print_msg( const char *format, ... );
 
 /* Utility functions shared with execution sampler */
-extern size_t       ReadMemory( pid_t pid, void *ptr, addr_off offv, size_t size );
-extern size_t       WriteMemory( pid_t pid, void *ptr, addr_off offv, size_t size );
+extern size_t       ReadMemory( pid_t pid, addr_off offv, void *ptr, size_t size );
+extern size_t       WriteMemory( pid_t pid, addr_off offv, void *ptr, size_t size );
 extern Elf32_Dyn    *GetDebuggeeDynSection( const char *exe_name );
 extern int          Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struct r_debug **dbg_rdebug_ptr );
 extern char         *dbg_strcpy( pid_t pid, char *, const char * );
-extern int          SplitParms( char *p, const char **args, unsigned len );
+extern int          SplitParms( char *p, const char **args, size_t len );
 
 /* Copy of parent's environment */
 #if !defined( BUILTIN_TRAP_FILE )
@@ -349,8 +349,8 @@ extern void OutNum( unsigned long i );
 
 /* Global trap file vairables */
 
-extern u_short          flatCS;
-extern u_short          flatDS;
+extern addr_seg         flatCS;
+extern addr_seg         flatDS;
 extern pid_t            pid;
 
 #include "poppck.h"
