@@ -132,8 +132,8 @@ set PROJDIR=<CWD>
     <CCCMD> tcp/qnx.trp/tcp*.trp                    <OWRELROOT>/qnx/watcom/wd/
     <CCCMD> tcp/qnx.srv/tcpserv.exe                 <OWRELROOT>/qnx/binq/tcpserv
 
-    <CCCMD> lcl/linux/std/std*.trp                  <OWRELROOT>/binl/
-    <CCCMD> lcl/linux/std/std*.sym                  <OWRELROOT>/binl/
+    <CCCMD> lcl/linux/std386/std*.trp               <OWRELROOT>/binl/
+    <CCCMD> lcl/linux/std386/std*.sym               <OWRELROOT>/binl/
     <CCCMD> par/linux.trp/par*.trp                  <OWRELROOT>/binl/
     <CCCMD> par/linux.trp/par*.sym                  <OWRELROOT>/binl/
     <CCCMD> par/linux.srv/parserv.exe               <OWRELROOT>/binl/parserv
