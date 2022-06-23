@@ -403,7 +403,7 @@ void GetCommArea( void )
         Comm.push_no = 0;
         Comm.in_hook = 1;               /* don't record this sample */
     } else {
-        ReadMemory( Pid, &Comm, CommonAddr.offset, sizeof( Comm ) );
+        ReadMemory( Pid, CommonAddr.offset, &Comm, sizeof( Comm ) );
     }
 }
 
@@ -413,7 +413,7 @@ void ResetCommArea( void )
     if( CommonAddr.segment != 0 ) {     /* reset common variables */
         Comm.pop_no = 0;
         Comm.push_no = 0;
-        WriteMemory( Pid, &Comm.pop_no, CommonAddr.offset + 11, 2 * sizeof( short ) );
+        WriteMemory( Pid, CommonAddr.offset + 11, &Comm.pop_no, 2 * sizeof( short ) );
     }
 }
 
@@ -430,7 +430,7 @@ void GetNextAddr( void )
         CGraphOff = 0;
         CGraphSeg = 0;
     } else {
-        ReadMemory( Pid, &stack_entry, Comm.cgraph_top, sizeof( stack_entry ) );
+        ReadMemory( Pid, Comm.cgraph_top, &stack_entry, sizeof( stack_entry ) );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
         Comm.cgraph_top = stack_entry.ptr;
@@ -483,7 +483,7 @@ static bool ProcessMark( pid_t pid, user_regs_struct *regs )
         for( ;; ) {
             if( len >= (BUFF_SIZE - 1) )
                 break;
-            ReadMemory( pid, buff + len, regs->eax + len, 1 );
+            ReadMemory( pid, regs->eax + len, buff + len, 1 );
             if( buff[len] == '\0' )
                 break;
             ++len;
@@ -531,9 +531,9 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
          * at the breakpoint and execute it, but we still want to
          * keep the breakpoint.
          */
-        if( WriteMemory( pid, &saved_opcode, Rdebug.r_brk, sizeof( saved_opcode ) ) != sizeof( saved_opcode ) )
+        if( WriteMemory( pid, Rdebug.r_brk, &saved_opcode, sizeof( saved_opcode ) ) != sizeof( saved_opcode ) )
             printf( "WriteMemory() #1 failed\n" );
-        ReadMemory( pid, &Rdebug, (addr_off)DbgRdebug, sizeof( Rdebug ) );
+        ReadMemory( pid, (addr_off)DbgRdebug, &Rdebug, sizeof( Rdebug ) );
         dbg_printf( "ld breakpoint hit, state is " );
         switch( Rdebug.r_state ) {
         case RT_ADD:
@@ -567,7 +567,7 @@ static bool ProcessBreakpoint( pid_t pid, u_long ip )
         } while( (ret < 0) && (errno == EINTR) );
         if( ret == -1)
             perror( "waitpid()" );
-        if( WriteMemory( pid, &brk_opcode, Rdebug.r_brk, sizeof( brk_opcode ) ) != sizeof( brk_opcode ) )
+        if( WriteMemory( pid, Rdebug.r_brk, &brk_opcode, sizeof( brk_opcode ) ) != sizeof( brk_opcode ) )
             dbg_printf( "WriteMemory() #2 failed with errno %d for pid %d, %d bytes (at %p)!\n", errno, pid, sizeof( brk_opcode ), Rdebug.r_brk );
         return( true ); // indicate this was our breakpoint
     } else {
@@ -678,9 +678,9 @@ static void SampleLoop( pid_t pid )
                     /* Set a breakpoint in dynamic linker. That way we can be
                      * informed on dynamic library load/unload events.
                      */
-                    ReadMemory( pid, &saved_opcode, Rdebug.r_brk, sizeof( saved_opcode ) );
+                    ReadMemory( pid, Rdebug.r_brk, &saved_opcode, sizeof( saved_opcode ) );
                     dbg_printf( "setting ld breakpoint at %p, old opcode was %X\n", Rdebug.r_brk, saved_opcode );
-                    WriteMemory( pid, &brk_opcode, Rdebug.r_brk, sizeof( brk_opcode ) );
+                    WriteMemory( pid, Rdebug.r_brk, &brk_opcode, sizeof( brk_opcode ) );
                 }
             }
 
