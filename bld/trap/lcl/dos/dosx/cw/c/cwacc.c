@@ -907,9 +907,9 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
     return( old_opcode );
 }
 
-static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
 {
-    WriteMemory( addr, &old_opcode, sizeof( old_opcode ) );
+    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )

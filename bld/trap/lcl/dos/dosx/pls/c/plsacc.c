@@ -402,12 +402,10 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req    *acc;
-    void            *ret;
 
     _DBG(("ReadMem\r\n"));
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    return( ReadMemory( &acc->mem_addr, ret, acc->len ) );
+    return( ReadMemory( &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -716,9 +714,9 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
     return( old_opcode );
 }
 
-static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
 {
-    WriteMemory( addr, &old_opcode, sizeof( old_opcode ) );
+    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
 }
 
 static trap_conditions MapReturn( void )

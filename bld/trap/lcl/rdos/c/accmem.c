@@ -38,16 +38,13 @@
 
 trap_retval TRAP_CORE( Read_mem )( void )
 {
-    void                *data;
     read_mem_req        *acc;
     struct TDebug       *obj;
 
     acc = GetInPtr( 0 );
-    data = GetOutPtr( 0 );
-
     obj = GetCurrentDebug();
     if( obj != NULL )
-        return( ReadMem( obj, acc->mem_addr.segment, acc->mem_addr.offset, data, acc->len ) );
+        return( ReadMem( obj, acc->mem_addr.segment, acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
     return( 0 );
 }
 

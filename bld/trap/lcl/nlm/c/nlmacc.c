@@ -896,49 +896,48 @@ trap_retval TRAP_CORE( Machine_data )( void )
     return( sizeof( *ret ) );
 }
 
-static int ReadMemory( addr48_ptr *addr, unsigned long req, void *buf )
+static int ReadMemory( addr48_ptr *addr, void *buf, unsigned long len )
 {
     if( MSB == NULL )
         return( -1 );
     if( CValidatePointer( (char *)addr->offset ) == 0 )
         return( -1 );
-    if( CValidatePointer( (char *)addr->offset + req - 1 ) == 0 )
+    if( CValidatePointer( (char *)addr->offset + len - 1 ) == 0 )
         return( -1 );
-    memcpy( buf, (void *)addr->offset, req );
+    memcpy( buf, (void *)addr->offset, len );
     return( 0 );
 }
 
-static int WriteMemory( addr48_ptr *addr, unsigned long req, void *buf )
+static int WriteMemory( addr48_ptr *addr, void *buf, unsigned long len )
 {
     if( MSB == NULL )
         return( -1 );
     if( CValidatePointer( (char *)addr->offset ) == 0 )
         return( -1 );
-    if( CValidatePointer( (char *)addr->offset + req - 1 ) == 0 )
+    if( CValidatePointer( (char *)addr->offset + len - 1 ) == 0 )
         return( -1 );
-    memcpy( (void *)addr->offset, buf, req );
+    memcpy( (void *)addr->offset, buf, len );
     return( 0 );
 }
 
-static unsigned short ReadWrite( int (*rtn)(addr48_ptr *, unsigned long, void *), addr48_ptr *addr,
-                                char *buff, unsigned short requested )
+static size_t ReadWrite( int (*rtn)(addr48_ptr *, void *, unsigned long), addr48_ptr *addr,
+                                void *buff, size_t req_len )
 {
-    int                 err;
-    unsigned short      len;
+    int         err;
+    size_t      len;
 
-    err = rtn( addr, (unsigned long)requested, buff );
+    err = rtn( addr, buff, (unsigned long)req_len );
     if( err == 0 ) {
-        addr->offset += requested;
-        return( requested );
+        addr->offset += req_len;
+        return( req_len );
     }
-    len = requested;
-    while( len != 0 ) {
-        if( rtn( addr, 1UL, buff++ ) != 0 )
+    for( len = req_len; len > 0; len++ ) {
+        if( rtn( addr, buff, 1 ) != 0 )
             break;
-        --len;
+        buff = (char *)buff + 1;
         addr->offset++;
     }
-    return( requested - len );
+    return( req_len - len );
 }
 
 

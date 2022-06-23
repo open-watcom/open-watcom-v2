@@ -728,11 +728,9 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
-    void                *ret;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    return( ReadBuffer( ret, acc->mem_addr.segment, acc->mem_addr.offset, acc->len ) );
+    return( ReadBuffer( GetOutPtr( 0 ), acc->mem_addr.segment, acc->mem_addr.offset, acc->len ) );
 }
 
 
