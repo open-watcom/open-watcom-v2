@@ -315,7 +315,7 @@ static trap_conditions handleInt1( DWORD state )
  */
 static void getImageNote( IMAGE_NOTE *pin )
 {
-    ReadMem( FlatDS, (DWORD)DW3( DebugEvent.u.Exception.ExceptionRecord ), pin, sizeof( IMAGE_NOTE ) );
+    ReadMemory( FlatDS, (DWORD)DW3( DebugEvent.u.Exception.ExceptionRecord ), pin, sizeof( IMAGE_NOTE ) );
 }
 #endif
 #endif
@@ -603,7 +603,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
             }
             len = DebugEvent.u.DebugString.nDebugStringLength;
             p = LocalAlloc( LMEM_FIXED, len + 1 );
-            ReadMem( FlatDS, (ULONG_PTR)DebugEvent.u.DebugString.lpDebugStringData, p, len );
+            ReadMemory( FlatDS, (ULONG_PTR)DebugEvent.u.DebugString.lpDebugStringData, p, len );
             p[len] = '\0';
             #define GOOFY_NT_MESSAGE "LDR: LdrpMapDll Relocating:"
             if( strncmp( p, GOOFY_NT_MESSAGE, sizeof( GOOFY_NT_MESSAGE ) - 1 ) == 0 ) {

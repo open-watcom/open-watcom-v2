@@ -86,9 +86,9 @@ static ULONG_PTR getRealBase( WORD seg, ULONG_PTR base, ULONG_PTR *limit )
 }
 
 /*
- * ReadMem - read some memory
+ * ReadMemory - read some memory
  */
-DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
+DWORD ReadMemory( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 {
     SIZE_T      bytes;
     ULONG_PTR   limit;
@@ -137,7 +137,7 @@ DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
     }
     if( bytes != size ) {
         io = fopen( "t.t", "a+" );
-        fprintf( io, "got=%d\n", bytes );
+        fprintf( io, "got=%d\n", (int)bytes );
         fclose( io );
     }
 #endif
@@ -145,9 +145,9 @@ DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 }
 
 /*
- * WriteMem - write some memory
+ * WriteMemory - write some memory
  */
-DWORD WriteMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
+DWORD WriteMemory( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 {
     SIZE_T      bytes;
     ULONG_PTR   limit;
@@ -178,7 +178,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
 
     acc = GetInPtr( 0 );
     if( DebugeePid != 0 )
-        return( ReadMem( acc->mem_addr.segment, acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
+        return( ReadMemory( acc->mem_addr.segment, acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
     return( 0 );
 }
 
@@ -191,7 +191,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
     ret = GetOutPtr( 0 );
     ret->len = 0;
     if( DebugeePid != 0 ) {
-        ret->len = WriteMem( acc->mem_addr.segment, acc->mem_addr.offset,
+        ret->len = WriteMemory( acc->mem_addr.segment, acc->mem_addr.offset,
                     GetInPtr( sizeof( *acc ) ), GetTotalSizeIn() - sizeof( *acc ) );
     }
     return( sizeof( *ret ) );
@@ -213,12 +213,12 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
         offset = acc->in_addr.offset;
         segment = acc->in_addr.segment;
         for( len = acc->len; len > 0; ) {
-            ReadMem( segment, offset, &value, sizeof( value ) );
+            ReadMemory( segment, offset, &value, sizeof( value ) );
             sum += value & 0xff;
             offset++;
             len--;
             if( len > 0 ) {
-                sum += value >> 8;
+                sum += ( value >> 8 ) & 0xff;
                 offset++;
                 len--;
             }
