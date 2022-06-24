@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,6 +89,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     //say( "base address=%8.8x", ((char*)&GetInPtr)-0x2f );
     DLLPath = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT, strlen( err ) + 1 );
     strcpy( DLLPath, err );
+
+    BreakOpcode = BRKPOINT;
 
     StopForDLLs = TRUE;
     BreakOnKernelMessage = FALSE;

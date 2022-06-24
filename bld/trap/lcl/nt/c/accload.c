@@ -50,10 +50,8 @@
 static BOOL executeUntilStart( BOOL was_running )
 {
     HANDLE      ph;
-    opcode_type saved_opcode;
-    opcode_type brk_opcode = BRKPOINT;
+    opcode_type old_opcode;
     LPVOID      base;
-    SIZE_T      bytes;
     MYCONTEXT   con;
     thread_info *ti;
 
@@ -64,8 +62,7 @@ static BOOL executeUntilStart( BOOL was_running )
          * plant a breakpoint at the first instruction of our new app
          */
         base = (LPVOID)DebugEvent.u.CreateProcessInfo.lpStartAddress;
-        ReadProcessMemory( ph, base, (LPVOID)&saved_opcode, sizeof( saved_opcode ), &bytes );
-        WriteProcessMemory( ph, base, (LPVOID)&brk_opcode, sizeof( brk_opcode ), &bytes );
+        old_opcode = place_breakpoint_lin( ph, base );
     } else {
         // a trick to make app execute long enough to hit a breakpoint
         PostMessage( HWND_TOPMOST, WM_NULL, 0, 0L );
@@ -80,7 +77,7 @@ static BOOL executeUntilStart( BOOL was_running )
             ti = FindThread( DebugEvent.dwThreadId );
             MyGetThreadContext( ti, &con );
             if( was_running ) {
-                AdjustIP( &con, sizeof( brk_opcode ) );
+                AdjustIP( &con, sizeof( opcode_type ) );
                 MySetThreadContext( ti, &con );
                 return( TRUE );
             }
@@ -89,8 +86,8 @@ static BOOL executeUntilStart( BOOL was_running )
                  * the user has asked us to stop before any DLL's run
                  * their startup code (";dll"), so we do.
                  */
-                WriteProcessMemory( ph, base, (LPVOID)&saved_opcode, sizeof( saved_opcode ), &bytes );
-                AdjustIP( &con, sizeof( brk_opcode ) );
+                remove_breakpoint_lin( ph, base, old_opcode );
+                AdjustIP( &con, sizeof( opcode_type ) );
                 MySetThreadContext( ti, &con );
                 return( TRUE );
             }
@@ -99,19 +96,18 @@ static BOOL executeUntilStart( BOOL was_running )
                  * we stopped at the applications starting address,
                  * so we can offically declare that the app has loaded
                  */
-                WriteProcessMemory( ph, base, (LPVOID)&saved_opcode, sizeof( saved_opcode ), &bytes );
+                remove_breakpoint_lin( ph, base, old_opcode );
                 return( TRUE );
             }
             /*
              * skip this breakpoint and continue
              */
-            AdjustIP( &con, sizeof( brk_opcode ) );
+            AdjustIP( &con, sizeof( opcode_type ) );
             MySetThreadContext( ti, &con );
         } else {
             return( FALSE );
         }
     }
-
 }
 
 #if defined( MD_x86 )
@@ -596,9 +592,9 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret   *ret;
 
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
     DelProcess( TRUE );
     StopControlThread();
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     return( sizeof( *ret ) );
 }

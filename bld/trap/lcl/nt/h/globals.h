@@ -69,6 +69,7 @@ TRPGLOBAL BOOL                  PendingProgramInterrupt;
 TRPGLOBAL char                  *MsgPrefix TRPGLOBINIT( NULL );
 TRPGLOBAL BOOL                  Supporting8ByteBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
 TRPGLOBAL BOOL                  SupportingExactBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
+TRPGLOBAL opcode_type           BreakOpcode;
 
 #if defined( MD_x86 ) && defined( WOW )
 TRPGLOBAL wow_info              WOWAppInfo;

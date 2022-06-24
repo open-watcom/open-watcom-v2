@@ -110,7 +110,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-BOOL FindBreak( WORD segment, DWORD offset, BYTE *ch )
+BOOL FindBreak( WORD segment, DWORD offset, opcode_type *old_opcode )
 {
     break_point *brk;
 
@@ -121,7 +121,7 @@ BOOL FindBreak( WORD segment, DWORD offset, BYTE *ch )
         if( brk->addr.offset != offset ) {
             continue;
         }
-        *ch = brk->byte;
+        *old_opcode = brk->old_opcode;
         return( TRUE );
     }
     return( FALSE );

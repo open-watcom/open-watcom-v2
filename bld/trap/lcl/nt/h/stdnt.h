@@ -129,7 +129,7 @@ typedef struct thread_info {
     HANDLE              thread_handle;
     LPVOID              start_addr;
     addr_off            brk_addr;
-    opcode_type         brk_opcode;
+    opcode_type         old_opcode;
     char                alive:1;
     char                suspended:1;
     char                is_wow:1;
@@ -198,6 +198,8 @@ extern BOOL             IsBigSel( WORD sel );
 extern void             AddMessagePrefix( char *buff, size_t len );
 
 /* accrun.c */
+extern opcode_type      place_breakpoint_lin( HANDLE process, LPVOID base );
+extern int              remove_breakpoint_lin( HANDLE process, LPVOID base, opcode_type old_opcode );
 extern myconditions     DebugExecute( DWORD state, int *tsc, bool );
 extern void             InterruptProgram( void );
 extern bool             Terminate( void );
@@ -235,7 +237,7 @@ extern BOOL             SetDebugRegs( void );
 extern void             ClearDebugRegs( void );
 extern DWORD            GetDR6( void );
 extern void             SetDR7( DWORD tmp );
-extern BOOL             FindBreak( WORD segment, DWORD offset, BYTE *ch );
+extern BOOL             FindBreak( WORD segment, DWORD offset, opcode_type *old_opcode );
 extern bool             IsWatch( void );
 
 /* dbgthrd.c */

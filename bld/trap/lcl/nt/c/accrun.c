@@ -47,6 +47,27 @@ typedef enum {
     T_ON_NEXT
 }   set_t;
 
+opcode_type place_breakpoint_lin( HANDLE process, LPVOID base )
+{
+    opcode_type old_opcode;
+    DWORD       bytes;
+
+    ReadProcessMemory( process, base, &old_opcode, sizeof( old_opcode ), &bytes );
+    if( bytes == sizeof( old_opcode ) && old_opcode != BreakOpcode ) {
+        WriteProcessMemory( process, base, &BreakOpcode, sizeof( BreakOpcode ), &bytes );
+        return( old_opcode );
+    }
+    return( 0 );
+}
+
+int remove_breakpoint_lin( HANDLE process, LPVOID base, opcode_type old_opcode )
+{
+    DWORD       bytes;
+
+    WriteProcessMemory( process, base, &old_opcode, sizeof( old_opcode ), &bytes );
+    return( bytes != sizeof( old_opcode ) );
+}
+
 /*
  * setATBit - control if we are tracing
  */
@@ -65,30 +86,18 @@ static void setATBit( thread_info *ti, set_t set )
     con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
 #elif defined( MD_axp )
-    {
-        DWORD           bytes;
-
-        if( set != T_OFF ) {
-            ti->brk_addr = AdjustIP( &con, 0 );
-            if( set == T_ON_NEXT )
-                ti->brk_addr += 4;
-                ReadProcessMemory( ProcessInfo.process_handle,
-                    (LPVOID)ti->brk_addr, (LPVOID)&ti->brk_opcode,
-                    sizeof( ti->brk_opcode ), (LPDWORD)&bytes );
-            if( ti->brk_opcode != BRKPOINT ) {
-                opcode_type brk_opcode = BRKPOINT;
-                WriteProcessMemory( ProcessInfo.process_handle,
-                    (LPVOID)ti->brk_addr, (LPVOID)&brk_opcode, sizeof( brk_opcode ),
-                    (LPDWORD)&bytes );
-            } else {
-                ti->brk_addr = 0;
-            }
-        } else if( ti->brk_addr != 0 ) {
-            WriteProcessMemory( ProcessInfo.process_handle,
-                (LPVOID)ti->brk_addr, (LPVOID)&ti->brk_opcode,
-                sizeof( ti->brk_opcode ), (LPDWORD)&bytes );
+    if( set != T_OFF ) {
+        ti->brk_addr = AdjustIP( &con, 0 );
+        if( set == T_ON_NEXT ) {
+            ti->brk_addr += 4;
+        }
+        ti->old_opcode = place_breakpoint_lin( ProcessInfo.process_handle, ti->brk_addr );
+        if( ti->old_opcode == 0 ) {
             ti->brk_addr = 0;
         }
+    } else if( ti->brk_addr != 0 ) {
+        remove_breakpoint_lin( ProcessInfo.process_handle, ti->brk_addr, ti->old_opcode );
+        ti->brk_addr = 0;
     }
 #elif defined( MD_ppc )
     if( set != T_OFF ) {
@@ -211,19 +220,18 @@ static trap_conditions handleInt3( DWORD state )
         ti->is_foreign = TRUE;
     }
     if( ti->is_foreign ) {
-        HANDLE  proc;
-        SIZE_T  written;
-        BYTE    ch;
+        HANDLE      proc;
+        opcode_type old_opcode;
 
         MyGetThreadContext( ti, &con );
         con.Eip--;
-        if( !FindBreak( (WORD)con.SegCs, (DWORD)con.Eip, &ch ) ) {
+        if( !FindBreak( (WORD)con.SegCs, (DWORD)con.Eip, &old_opcode ) ) {
             MySetThreadContext( ti, &con );
             return( COND_BREAK );
         }
         BreakFixed = con.Eip;
         proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-        WriteProcessMemory( proc, (LPVOID)con.Eip, &ch, 1, &written );
+        remove_breakpoint_lin( proc, (LPVOID)con.Eip, old_opcode );
         con.EFlags |= TRACE_BIT;
         MySetThreadContext( ti, &con );
         CloseHandle( proc );
@@ -279,8 +287,6 @@ static trap_conditions handleInt1( DWORD state )
     } else {
 #if defined( MD_x86 ) || defined( MD_x64 )
         HANDLE      proc;
-        DWORD       written;
-        opcode_type brk_opcode;
         thread_info *ti;
 
         if( BreakFixed == 0 ) {
@@ -290,9 +296,8 @@ static trap_conditions handleInt1( DWORD state )
         if( ti && !ti->is_foreign ) {
             return( COND_TRACE );
         }
-        brk_opcode = BRKPOINT;
         proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-        WriteProcessMemory( proc, (LPVOID)BreakFixed, &brk_opcode, sizeof( brk_opcode ), &written );
+        place_breakpoint_lin( proc, (LPVOID)BreakFixed );
         CloseHandle( proc );
         BreakFixed = 0;
         return( 0 );
