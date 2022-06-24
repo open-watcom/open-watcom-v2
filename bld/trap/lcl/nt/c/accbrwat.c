@@ -52,38 +52,48 @@ typedef struct {
 typedef struct break_point {
     struct break_point  *next;
     addr48_ptr          addr;
-    BYTE                byte;
+    opcode_type         old_opcode;
 }           break_point;
 
 static watch_point  WatchPoints[MAX_WATCHES];
 static int          WatchCount = 0;
 static break_point  *Breaks = NULL;
 
+static opcode_type place_breakpoint( addr48_ptr *addr )
+{
+    opcode_type old_opcode;
+
+    if( ReadMem( addr->segment, addr->offset, &old_opcode, sizeof( old_opcode ) ) == sizeof( old_opcode ) ) {
+        WriteMem( addr->segment, addr->offset, &BreakOpcode, sizeof( BreakOpcode ) );
+        return( old_opcode );
+    }
+    return( 0 );
+}
+
+static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+{
+    return( WriteMem( addr->segment, addr->offset, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
+}
+
 trap_retval TRAP_CORE( Set_break )( void )
 {
-    opcode_type     brk_opcode;
     set_break_req   *acc;
     set_break_ret   *ret;
     break_point     *new;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
-    ReadMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
-    ret->old = brk_opcode;
     new = LocalAlloc( LMEM_FIXED, sizeof( *new ) );
-    new->byte = brk_opcode;
+    new->old_opcode = place_breakpoint( &acc->break_addr );
     new->addr = acc->break_addr;
     new->next = Breaks;
     Breaks = new;
-    brk_opcode = BRKPOINT;
-    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
+    ret = GetOutPtr( 0 );
+    ret->old = new->old_opcode;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_break )( void )
 {
-    opcode_type     brk_opcode;
     clear_break_req *acc;
     break_point     *brk;
     break_point     *next;
@@ -96,8 +106,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     }
     Breaks = NULL;
     acc = GetInPtr( 0 );
-    brk_opcode = acc->old;
-    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
+    remove_breakpoint( &acc->break_addr, acc->old );
     return( 0 );
 }
 

@@ -1566,7 +1566,7 @@ static trap_elen ProgRun( bool step )
                 if( !( MSB->errnum & DR6_BS ) )
                     break;
                 for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                    ReadMemory( &wp->addr, &value, 4 );
+                    ReadMemory( &wp->addr, &value, sizeof( value ) );
                     if( value != wp->value ) {
                         ret->conditions |= COND_WATCH;
                         goto leave;
