@@ -162,16 +162,10 @@ trap_retval TRAP_CORE( Prog_load )( void )
         if( csip == 0 ) {
             tid = 0;
         } else {
-            opcode_type brk_opcode;
-
             DebugeeTask = tid;
-            StopNewTask.loc.segment = _FP_SEG( (LPVOID) csip );
-            StopNewTask.loc.offset = _FP_OFF( (LPVOID) csip );
-
-            ReadMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
-            StopNewTask.old_opcode = brk_opcode;
-            brk_opcode = BRKPOINT;
-            WriteMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
+            StopNewTask.loc.segment = _FP_SEG( (LPVOID)csip );
+            StopNewTask.loc.offset = _FP_OFF( (LPVOID)csip );
+            StopNewTask.old_opcode = place_breakpoint( &StopNewTask.loc );
         }
     } else {
         tid = 0;
@@ -314,8 +308,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
     Out((OUT_LOAD,"KILL: DebugeeTask=%04x, WasStarted=%d",
         DebugeeTask, WasStarted ));
     if( DebugeeTask != NULL ) {
@@ -354,5 +346,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     SaveStdIn = NIL_HANDLE;
     SaveStdOut = NIL_HANDLE;
     Debugging32BitApp = FALSE;
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     return( sizeof( *ret ) );
 }

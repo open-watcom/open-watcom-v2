@@ -158,6 +158,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     ClearScreen();
     Out(( OUT_INIT,"TrapInit entered, debugger task=%04x", DebuggerTask ));
 
+    BreakOpcode = BRKPOINT;
+
 #ifdef DEBUG
     if( *parms == '[' ) {
         unsigned    bit;

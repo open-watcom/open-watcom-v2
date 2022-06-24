@@ -40,6 +40,7 @@
 #include "dbg386.h"
 #include "wdebug.h"
 #include "di386cli.h"
+#include "initfini.h"
 
 /*
  * We keep a breakpoint list to support the "debug debugee only" and
@@ -64,11 +65,27 @@ typedef struct {
     word        len;
 } watch_point;
 
+opcode_type             BreakOpcode;
+
 static break_point      __huge *brkList;
 static WORD             numBreaks;
 static HGLOBAL          brkHandle;
 static watch_point      WatchPoints[MAX_WATCHES];
 static WORD             WatchCount;
+
+opcode_type place_breakpoint( addr48_ptr *addr )
+{
+    opcode_type old_opcode;
+
+    ReadMemory( addr, &old_opcode, sizeof( old_opcode ) );
+    WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
+    return( old_opcode );
+}
+
+int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+{
+    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
+}
 
 /*
  * IsOurBreakpoint - check if a segment/offset is a break point we set
@@ -94,12 +111,11 @@ BOOL IsOurBreakpoint( WORD sel, DWORD off )
 void ResetBreakpoints( WORD sel )
 {
     int             i;
-    opcode_type     brk_opcode = BRKPOINT;
 
     for( i = 0; i < numBreaks; i++ ) {
         if( brkList[i].in_use ) {
             if( brkList[i].loc.segment == sel ) {
-                WriteMemory( &brkList[i].loc, &brk_opcode, sizeof( brk_opcode ) );
+                place_breakpoint( &brkList[i].loc );
             }
         }
     }
@@ -130,33 +146,28 @@ static break_point __far * findBrkEntry( void )
 
 trap_retval TRAP_CORE( Set_break )( void )
 {
-    opcode_type         brk_opcode;
     set_break_req       *acc;
     set_break_ret       *ret;
     break_point         *brk;
 
     acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
 
     Out((OUT_BREAK,"AccSetBreak %4.4x:%8.8x", acc->break_addr.segment, acc->break_addr.offset ));
     Out((OUT_BREAK,"task=%4.4x", DebugeeTask ));
 
-    ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
-    ret->old = brk_opcode;
-    brk_opcode = BRKPOINT;
-    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
-
     brk = findBrkEntry();
-    brk->old_opcode = ret->old;
+    brk->old_opcode = place_breakpoint( &acc->break_addr );
     brk->loc = acc->break_addr;
     brk->in_use = TRUE;
     brk->hard_mode = TRUE;
+
+    ret = GetOutPtr( 0 );
+    ret->old = brk->old_opcode;
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_break )( void )
 {
-    opcode_type         brk_opcode;
     int                 i;
     clear_break_req     *acc;
 
@@ -164,8 +175,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     Out((OUT_BREAK,"AccRestoreBreak %4.4x:%8.8x", acc->break_addr.segment, acc->break_addr.offset ));
     Out((OUT_BREAK,"task=%4.4x", DebugeeTask ));
 
-    brk_opcode = acc->old;
-    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
+    remove_breakpoint( &acc->break_addr, acc->old );
 
     for( i = 0; i < numBreaks; i++ ) {
         if( brkList[i].loc.segment == acc->break_addr.segment &&

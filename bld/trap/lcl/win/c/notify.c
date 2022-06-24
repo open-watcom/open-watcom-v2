@@ -100,20 +100,13 @@ static BOOL doStartTask( DWORD data )
     TaskFindHandle( &te, TaskAtNotify );
 
     if( DebuggerState == LOADING_DEBUGEE ) {
-        opcode_type     brk_opcode;
-
         DebugeeModule = te.hModule;
         DebugeeTask = TaskAtNotify;
         StopNewTask.loc.segment = HIWORD( data );
-
-        ReadMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
-        StopNewTask.old_opcode = brk_opcode;
-        brk_opcode = BRKPOINT;
-        WriteMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
-        ReadMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
-
+//        StopNewTask.loc.offset = LOWORD( data );
+        StopNewTask.old_opcode = place_breakpoint( &StopNewTask.loc );
         Out((OUT_RUN,"           wrote breakpoint at %04x:%04lx, oldbyte=%02x(is now %02x)",
-                    StopNewTask.loc.segment, StopNewTask.loc.offset, StopNewTask.old_opcode, brk_opcode ));
+                    StopNewTask.loc.segment, StopNewTask.loc.offset, StopNewTask.old_opcode, BreakOpcode ));
         Out((OUT_RUN,"   StartTask: cs:ip = %Fp", data ));
         ToDebugger( TASK_LOADED );
     } else {
@@ -137,15 +130,9 @@ static BOOL doStartDLL( DWORD data )
     sd = (NFYSTARTDLL *) data;
     AddModuleLoaded( sd->hModule, TRUE );
     if( DebuggerState == RUNNING_DEBUGEE ) {
-        opcode_type     brk_opcode;
-
         DLLLoad.addr.segment = sd->wCS;
         DLLLoad.addr.offset = sd->wIP;
-
-        ReadMemory( &DLLLoad.addr, &brk_opcode, sizeof( brk_opcode ) );
-        DLLLoad.old_opcode = brk_opcode;
-        brk_opcode = BRKPOINT;
-        WriteMemory( &DLLLoad.addr, &brk_opcode, sizeof( brk_opcode ) );
+        DLLLoad.old_opcode = place_breakpoint( &DLLLoad.addr );
     }
     Out((OUT_ERR,"DLL Loaded '%4.4x:%4.4x'",sd->wCS,sd->wIP));
     return( FALSE );

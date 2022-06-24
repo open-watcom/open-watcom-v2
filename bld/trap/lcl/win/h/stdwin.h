@@ -147,13 +147,15 @@ extern BOOL                     Debugging32BitApp;
  * function prototypes
  */
 /* accbrwat.c */
-BOOL IsOurBreakpoint( WORD sel, DWORD off );
-void ResetBreakpoints( WORD sel );
-BOOL SetDebugRegs( void );
-void ClearDebugRegs( void );
-DWORD GetDR6( void );
-BOOL CheckWatchPoints( void );
-bool IsWatch( void );
+extern opcode_type  place_breakpoint( addr48_ptr *addr );
+extern int          remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode );
+extern BOOL         IsOurBreakpoint( WORD sel, DWORD off );
+extern void         ResetBreakpoints( WORD sel );
+extern BOOL         SetDebugRegs( void );
+extern void         ClearDebugRegs( void );
+extern DWORD        GetDR6( void );
+extern BOOL         CheckWatchPoints( void );
+extern bool         IsWatch( void );
 
 /* asyhook.c */
 extern void InitASynchHook( void );
