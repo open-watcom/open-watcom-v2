@@ -523,7 +523,7 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     const char          *cmd;
     const char          *start;
     split_cmd_ret       *ret;
-    unsigned            len;
+    size_t              len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     ret = GetOutPtr( 0 );

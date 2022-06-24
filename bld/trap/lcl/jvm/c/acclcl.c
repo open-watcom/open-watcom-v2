@@ -355,7 +355,8 @@ trap_retval TRAP_FILE_INFO( set_date )( void )
     file_info_set_date_req      *req;
     file_info_set_date_ret      *ret;
     HANDLE              h;
-    WORD                md,mt;
+    WORD                md;
+    WORD                mt;
     FILETIME            ft;
 
     req = GetInPtr( 0 );

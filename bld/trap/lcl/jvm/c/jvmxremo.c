@@ -359,13 +359,13 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
     if( TaskLoaded ) {
         DoAccess();
         TaskLoaded = FALSE;
         RemoteUnLink();
     }
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     return( sizeof( *ret ) );
 }
 
@@ -528,10 +528,9 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     split_cmd_ret       *ret;
     size_t              len;
 
-    cmd = GetInPtr( sizeof( split_cmd_req ) );
+    start = cmd = GetInPtr( sizeof( split_cmd_req ) );
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
-    start = cmd;
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
     while( len > 0 ) {
         switch( *cmd ) {

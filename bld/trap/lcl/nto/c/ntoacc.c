@@ -692,8 +692,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
     dbg_print(( "killing current process (pid %d)\n", ProcInfo.pid ));
     if( ProcInfo.pid ) {
         if( ProcInfo.loaded_proc && !ProcInfo.at_end ) {
@@ -705,6 +703,8 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     ProcInfo.at_end   = FALSE;
     ProcInfo.save_in  = -1;
     ProcInfo.save_out = -1;
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     CONV_LE_32( ret->err );
     return( sizeof( *ret ) );
 }

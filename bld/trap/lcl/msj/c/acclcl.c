@@ -213,13 +213,15 @@ trap_retval TRAP_FILE( close )( void )
     file_close_req      *acc;
     file_close_ret      *ret;
     BOOL                rc;
+    HANDLE              h;
 
     acc = GetInPtr( 0 );
+    h = TRPH2LH( acc );
     ret = GetOutPtr( 0 );
     ret->err = 0;
 
-    if( TRPH2LH( acc ) != FakeHandle ) {
-        rc = CloseHandle( TRPH2LH( acc ) );
+    if( h != FakeHandle ) {
+        rc = CloseHandle( h );
         if( !rc ) {
             ret->err = GetLastError();
         }
