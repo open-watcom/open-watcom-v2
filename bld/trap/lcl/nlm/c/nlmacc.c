@@ -1443,7 +1443,7 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
         WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
         return( old_opcode );
     }
-    return( 0 )
+    return( 0 );
 }
 
 static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
