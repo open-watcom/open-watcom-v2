@@ -31,14 +31,4 @@
 ****************************************************************************/
 
 
-#if defined( __NW40__ )
-extern int      ImportCLIBSymbols( void );
-#endif
-extern int      ValidatePID( T_ProcessID *pPID );
-extern void     BoobyTrapPID( T_ProcessID *pPID );
-extern void     UnBoobyTrapPID( T_ProcessID *pPID );
-extern char     *GetPIDName( T_ProcessID *pPID );
-extern struct   LoadDefinitionStructure *GetNLMFromPID( T_ProcessID *pPID );
-extern void     SetupPIDForACleanExit( T_ProcessID *pPID );
-extern int      WriteStdErr( char *buff, int len );
-
+extern dword           ReturnESP;

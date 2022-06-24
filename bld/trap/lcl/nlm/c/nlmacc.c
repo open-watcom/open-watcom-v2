@@ -60,43 +60,19 @@
 #include "nlmclib.h"
 #include "nlmlibc.h"
 #include "nlmio.h"
+#include "nlmglob.h"
 
 #include "x86cpu.h"
 #include "miscx87.h"
 
+
 #define NO_DREG     ((byte)-1)
 #define NUM_DREG    4
+#define MAX_WATCHES     32
 
 #define FLG_T           0x0100UL
 
 #define MH2NLMENTRY(h)  ((nlm_entry *)(h))
-
-#if defined( _USE_NEW_KERNEL )
-void *          kSemaphoreAlloc( const char *, long );
-unsigned long   kSemaphoreExamineCount( void *sp );
-int             kSemaphoreFree( void *sp );
-int             kSemaphoreWait( void *sp );
-int             kSemaphoreTimedWait( void *sp, unsigned long ms);
-int             kSemaphoreSignal( void *sp );
-int             kSemaphoreTry( void *sp );
-int             kSemaphoreValidate( void *sp );
-int             kGetSemaphoreInfo( void *sp, char *name, size_t nameMax,
-                    unsigned long *count, int *waitingThreads, void *owner );
-
-// R.E.
-int             kSemaphoreSignalAll( void *sp );
-
-#endif
-
-/* Forward declarations */
-static void ClearDebugRegs( void );
-static void ActivateDebugRegs( void );
-
-struct      {
-    dword   address;
-    byte    type;
-    byte    size;
-} DR[NUM_DREG];
 
 typedef struct msb {
         struct msb                      *next;
@@ -137,54 +113,6 @@ typedef struct nlm_entry {
         bool                            is_load;
 } nlm_entry;
 
-static unsigned_8                       RealNPXType;
-
-nlmstate                                NLMState;
-char                                    CmdLine[BUFF_SIZE];
-char                                    NLMName[14];
-char                                    UtilBuff[BUFF_SIZE];
-msb                                     *MSB;
-msb                                     *MSBHead;
-trap_cpu_regs                           HelperThreadRegs;
-dword                                   ThreadId;
-#if defined( _USE_NEW_KERNEL )
-void *                                  kDebugSem = NULL;
-void *                                  kHelperSem = NULL;
-#else
-dword                                   DebugSem = 0;
-dword                                   HelperSem = 0;
-#endif
-struct LoadDefinitionStructure         *DebuggerLoadedNLM = NULL;
-nlm_entry                               *NLMList = NULL;
-nlm_entry                               *LastNLMListEntry = NULL;
-bool                                    FakeBreak;
-bool                                    DebuggerRunning;
-bool                                    ExpectingEvent;
-bool                                    TrapInt1;
-opcode_type                             saved_opcode;
-dword                                   DebugProcess;
-byte                                    DebugPriority;
-byte                                    RunningPriority;
-
-/* from MYPRELUD.C */
-extern struct ResourceTagStructure      *AllocTag;
-extern struct ResourceTagStructure      *SemaphoreTag;
-extern struct ResourceTagStructure      *ProcessTag;
-
-
-/* from NLMINTR.ASM */
-extern void                     DoALongJumpTo( unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32 );
-dword                           ReturnESP;
-extern void                     Return( void );
-extern int                      AdjustStack( dword old_esp, dword adjust );
-
-
-/* Must be CLIB or LIBC! */
-void  _exit( int __status );
-
-/* from SERVNAME.C */
-extern char ServPref[];
-
 typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
@@ -193,10 +121,91 @@ typedef struct watch_point {
     short       len;
 } watch_point;
 
-#define MAX_WATCHES     32
+typedef struct {
+    dword   address;
+    byte    type;
+    byte    size;
+} dreg_info;
 
-static watch_point      WatchPoints[MAX_WATCHES];
-static int              WatchCount;
+/* Must be CLIB or LIBC! */
+extern void            _exit( int __status );
+
+#if defined( _USE_NEW_KERNEL )
+extern void *          kSemaphoreAlloc( const char *, long );
+extern unsigned long   kSemaphoreExamineCount( void *sp );
+extern int             kSemaphoreFree( void *sp );
+extern int             kSemaphoreWait( void *sp );
+extern int             kSemaphoreTimedWait( void *sp, unsigned long ms);
+extern int             kSemaphoreSignal( void *sp );
+extern int             kSemaphoreTry( void *sp );
+extern int             kSemaphoreValidate( void *sp );
+extern int             kGetSemaphoreInfo( void *sp, char *name, size_t nameMax,
+                           unsigned long *count, int *waitingThreads, void *owner );
+
+// R.E.
+extern int             kSemaphoreSignalAll( void *sp );
+
+#endif
+
+/* from MYPRELUD.C */
+extern struct ResourceTagStructure  *AllocTag;
+extern struct ResourceTagStructure  *SemaphoreTag;
+extern struct ResourceTagStructure  *ProcessTag;
+
+
+/* from NLMINTR.ASM */
+extern void                 DoALongJumpTo( unsigned_32, unsigned_32, unsigned_32,
+                                unsigned_32, unsigned_32, unsigned_32, unsigned_32,
+                                unsigned_32, unsigned_32, unsigned_32 );
+extern void                 Return( void );
+extern int                  AdjustStack( dword old_esp, dword adjust );
+
+/* from SERVNAME.C */
+extern char                 ServPref[];
+
+dword                       ReturnESP;
+
+static nlmstate             NLMState;
+static char                 CmdLine[BUFF_SIZE];
+static char                 NLMName[14];
+static char                 UtilBuff[BUFF_SIZE];
+static msb                  *MSB;
+static msb                  *MSBHead;
+static trap_cpu_regs        HelperThreadRegs;
+static dword                ThreadId;
+#if defined( _USE_NEW_KERNEL )
+static void                 *kDebugSem = NULL;
+static void                 *kHelperSem = NULL;
+#else
+static dword                DebugSem = 0;
+static dword                HelperSem = 0;
+#endif
+static struct LoadDefinitionStructure  *DebuggerLoadedNLM = NULL;
+static nlm_entry            *NLMList = NULL;
+static nlm_entry            *LastNLMListEntry = NULL;
+static bool                 FakeBreak;
+static opcode_type          BreakOpcode;
+static bool                 DebuggerRunning;
+static bool                 ExpectingEvent;
+static bool                 TrapInt1;
+static opcode_type          saved_opcode;
+//dword                       DebugProcess;
+//byte                        DebugPriority;
+//byte                        RunningPriority;
+static dreg_info            DR[NUM_DREG];
+
+static unsigned_8           RealNPXType;
+
+static watch_point          WatchPoints[MAX_WATCHES];
+static int                  WatchCount;
+
+static char                 *LoadName;
+static unsigned             LoadLen;
+static prog_load_ret        *LoadRet;
+
+/* Forward declarations */
+static void                 ClearDebugRegs( void );
+static void                 ActivateDebugRegs( void );
 
 /*
 //  Code to release all waiters on a semaphore and delete it
@@ -1079,10 +1088,6 @@ trap_retval TRAP_CORE( Write_regs )( void )
     return( 0 );
 }
 
-static char *LoadName;
-static unsigned LoadLen;
-static prog_load_ret *LoadRet;
-
 static size_t MergeArgvArray( const char *src, char *dst, size_t len )
 {
     char    ch;
@@ -1449,33 +1454,38 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     return( 0 );
 }
 
+static opcode_type place_breakpoint( addr48_ptr *addr )
+{
+    opcode_type old_opcode;
+
+    ReadMemory( addr, &old_opcode, sizeof( old_opcode ) );
+    WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
+    return( old_opcode );
+
+}
+
+static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+{
+    WriteMemory( addr, &old_opcode, sizeof( old_opcode ) );
+}
+
 trap_retval TRAP_CORE( Set_break )( void )
 {
     set_break_req   *acc;
     set_break_ret   *ret;
-    opcode_type     brk_opcode;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-
-    if( ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) ) != 0 ) {
-        ret->old = 0;
-    } else {
-        ret->old = brk_opcode;
-        brk_opcode = BRKPOINT;
-        WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
-    }
+    ret->old = place_breakpoint( &acc->break_addr );
     return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req     *acc;
-    opcode_type         brk_opcode;
 
     acc = GetInPtr( 0 );
-    brk_opcode = acc->old;
-    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
+    remove_breakpoint( &acc->break_addr, acc->old );
     return( 0 );
 }
 
@@ -1574,7 +1584,7 @@ static trap_elen ProgRun( bool step )
                 if( !( MSB->errnum & DR6_BS ) )
                     break;
                 for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                    ReadMemory( &wp->addr, &value, sizeof( value ) );
+                    ReadMemory( &wp->addr, &value, 4 );
                     if( value != wp->value ) {
                         ret->conditions |= COND_WATCH;
                         goto leave;
@@ -1918,6 +1928,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     ver.minor = TRAP_MINOR_VERSION;
     ver.remote = FALSE;
     FakeBreak = FALSE;
+    BreakOpcode = BRKPOINT;
     RealNPXType = NPXType();
     WatchCount = 0;
 #if defined( _USE_NEW_KERNEL )

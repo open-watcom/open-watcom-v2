@@ -50,34 +50,25 @@
 #include "locks.h"
 #include "bits.h"
 #include "nlmio.h"
+#include "nw3to5.h"
+#include "nlmclib.h"
 
-
-typedef LONG file_fn( LONG, LONG, LONG, LONG, BYTE *, LONG, LONG, LONG, LONG, BYTE, LONG *, LONG *, void ** );
-
-extern LONG ConvertPathString(
-                LONG stationNumber,
-                BYTE base,
-                BYTE *modifierString,
-                LONG *volumeNumber,
-                LONG *pathBase,
-                BYTE *pathString,
-                LONG *pathCount);
 
 #define FIRST_HANDLE    5
 
-#define     FILE_ATTRIB_MASK    (_A_NORMAL | _A_HIDDEN | _A_RDONLY)
+#define FILE_ATTRIB_MASK    (_A_NORMAL | _A_HIDDEN | _A_RDONLY)
 /*
 //  RWPRIVS | DENYW -
 //  as 0x0B is 1011 I don't know which one is which or has two bits
 //  though I would hazard a guess as RWPRIVS
 */
-#define     FILE_OPEN_PRIVS 0x0B
+#define FILE_OPEN_PRIVS 0x0B
 
-/* From NLMCLIB.C */
+#define NIL_DOS_HANDLE  ((short)0xFFFF)
+#define NUM_FILES       (100 - FIRST_HANDLE)
 
-extern int WriteStdErr( char *buff, int len );
+typedef LONG file_fn( LONG, LONG, LONG, LONG, BYTE *, LONG, LONG, LONG, LONG, BYTE, LONG *, LONG *, void ** );
 
-int     ccode;
 typedef enum {
         FILE_INVALID,
         FILE_DOS,
@@ -93,11 +84,8 @@ typedef struct {
         int     handlenum;
 } my_file;
 
-
-#define NIL_DOS_HANDLE  ((short)0xFFFF)
-#define NUM_FILES       (100-FIRST_HANDLE)
-
-my_file                 Files[NUM_FILES];
+int             ccode;
+my_file         Files[NUM_FILES];
 
 static int AppendStr( char *dst, char *src )
 {

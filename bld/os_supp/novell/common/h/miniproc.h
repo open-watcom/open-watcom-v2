@@ -4,8 +4,9 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.                      
+*    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,7 +31,7 @@
 *   This header file was generated for the OpenWatcom project by Carl Young
 *       carl.young@keycomm.co.uk
 *   Any problems or updates required, please either contact the author or
-*   the OpenWatcom contributors forums. 
+*   the OpenWatcom contributors forums.
 *       http://www.openwatcom.com/
 *
 * Description:  Defines most of the O/S level APIs required by OpenWatcom
@@ -41,7 +42,7 @@
 #include <ownwsupp.h>
 
 #include <debugapi.h>
-#include <loader.h>		/* defines MODULE_HANDLE (LoadDefinitionStructure) */
+#include <loader.h>             /* defines MODULE_HANDLE (LoadDefinitionStructure) */
 #include <nw_sigs.h>
 #include <ownwcnio.h>
 #include <ecb.h>
@@ -54,285 +55,307 @@ struct ScreenStruct;
 struct ResourceTagStructure;
 struct LoadDefinitionStructure;
 
-extern struct LoadDefinitionStructure *	    LoadedList;
-extern struct ScreenStruct *		        systemConsoleScreen;
-extern LONG							        FileServerMajorVersionNumber;
+extern struct LoadDefinitionStructure *LoadedList;
+extern struct ScreenStruct          *systemConsoleScreen;
+extern LONG                         FileServerMajorVersionNumber;
 
 CPP_END
 
 CPP_START
 
 extern void CRescheduleLast(
-	void
-	);
+        void
+);
 
 extern void CDestroyProcess(
-	LONG							processID
+        LONG    processID
 );
 
 extern LONG CMakeProcess(
-	LONG							schedulingPriority,
-	void							(*codeAddress)(void),
-	void *							stackTopAddress,
-	LONG							stackLength,
-	void *							processName,
-	struct ResourceTagStructure *	RTag);
+        LONG    schedulingPriority,
+        void    (*codeAddress)(void),
+        void    *stackTopAddress,
+        LONG    stackLength,
+        void    *processName,
+        struct ResourceTagStructure *RTag
+);
 
 extern LONG CGetMyProcessID(
-	void
+        void
 );
 
 struct ResourceTagStructure *AllocateResourceTag(
-	struct LoadDefinitionStructure *NLMHandle,
-	const BYTE *					descriptionString,
-	LONG							resourceType
+        struct LoadDefinitionStructure *NLMHandle,
+        const BYTE  *descriptionString,
+        LONG        resourceType
 );
 
 extern void OutputToScreen(
-	struct ScreenStruct *			screenID,
-	void *							controlString,
-	...
+        struct ScreenStruct *screenID,
+        void                *controlString,
+        ...
 );
 
 extern void OutputToScreenWithPointer(
-	struct ScreenStruct *			screenID,
-	void *							controlString,
-	void *							arguments
+        struct ScreenStruct *screenID,
+        void                *controlString,
+        void                *arguments
 );
 
 extern void CloseScreen(
-	struct ScreenStruct *			screenID
+        struct ScreenStruct *screenID
 );
 
 extern struct ScreenStruct *GetSystemConsoleScreen(
-	void
+        void
 );
 
 extern void EnableInputCursor(
-	struct ScreenStruct *			screenID
+        struct ScreenStruct *screenID
 );
 
 extern void SetInputToOutputCursorPosition(
-	struct ScreenStruct *			screenID
+        struct ScreenStruct *screenID
 );
 
 extern LONG OpenScreen(
-	void *							screenName,
-	struct ResourceTagStructure *	resourceTag,
-	struct ScreenStruct **			newScreenID
+        void *screenName,
+        struct ResourceTagStructure *resourceTag,
+        struct ScreenStruct **newScreenID
 );
 
 extern void ActivateScreen(
-	struct ScreenStruct *			screenID
+        struct ScreenStruct *screenID
 );
 
 extern void *Alloc(
-	LONG							numberOfBytes,
-	struct ResourceTagStructure *	RTag
+        LONG    numberOfBytes,
+        struct ResourceTagStructure *RTag
 );
 
 extern void Free(
-	void *							address
+        void *address
 );
 
 extern void CDeAllocateSemaphore(
-	LONG							semaphoreNumber
+        LONG    semaphoreNumber
 );
 
 extern void CSleepUntilInterrupt(
-	void
+        void
 );
 
 extern void CPSemaphore(
-	LONG							semaphoreNumber
+        LONG    semaphoreNumber
 );
 
 extern void CVSemaphore(
-	LONG							semaphoreNumber
+        LONG    semaphoreNumber
 );
 
 extern LONG GetRunningProcess(
-	void
+        void
 );
 
 extern LONG CAllocSemaphore(
-	LONG							initialSemaphoreValue,
-	struct ResourceTagStructure *	RTag
+        LONG    initialSemaphoreValue,
+        struct ResourceTagStructure *RTag
 );
 
 extern LONG LoadModule(
-	struct ScreenStruct *			screenID,
-	BYTE *							commandLine,
-	LONG							loadOptions
+        struct ScreenStruct *screenID,
+        BYTE    *commandLine,
+        LONG    loadOptions
 );
 
 extern void KillMe(
-	struct LoadDefinitionStructure *MyLoadRecord);
+        struct LoadDefinitionStructure *MyLoadRecord
+);
 
 extern void Enable(
-	void
+        void
 );
 
 extern void Disable(
-	void
+        void
 );
 
 void UnReserveABreakpoint(
-	/* IN */	int						/* BP number							*/
-	);
+        /* IN */        int                                             /* BP number                                                    */
+);
 
 extern void CSemaphoreReleaseAll(
-	LONG								semaphoreNumber
-	);
+        LONG                                                            semaphoreNumber
+);
 
-int	CSetABreakpoint(
-	/* IN */	int,					/* breakpoint number					*/
-	/* IN */	LONG,					/* address								*/
-	/* IN */	int,					/* type									*/
-	/* IN */	LONG					/* size									*/
-	);
+int     CSetABreakpoint(
+        /* IN */        int,                                    /* breakpoint number                                    */
+        /* IN */        LONG,                                   /* address                                                              */
+        /* IN */        int,                                    /* type                                                                 */
+        /* IN */        LONG                                    /* size                                                                 */
+);
 
 /*
 //
-//		from miniproc.h
+//              from miniproc.h
 */
 
 extern LONG CheckKeyStatus(
-	struct ScreenStruct *				screenID
-	);
+        struct ScreenStruct *screenID
+);
 
 extern void GetKey(
-	struct ScreenStruct *				screenID,
-	BYTE *								keyType,
-	BYTE *								keyValue,
-	BYTE *								keyStatus,
-	BYTE *								scanCode,
-	LONG								linesToProtect
-	);
+        struct ScreenStruct *screenID,
+        BYTE                *keyType,
+        BYTE                *keyValue,
+        BYTE                *keyStatus,
+        BYTE                *scanCode,
+        LONG                linesToProtect
+);
 
 extern LONG OpenFile(
-	LONG								Station,
-	LONG								Task,
-	LONG								Volume,
-	LONG								PathBase,
-	BYTE *								PathString,
-	LONG								PathCount,
-	LONG								NameSpace,
-	LONG								MatchBits,
-	LONG								RequestedRights,
-	BYTE								DataStreamNumber,
-	LONG *								Handle,
-	LONG *								DirectoryNumber,
-	void **								DirectoryEntry
+        LONG    Station,
+        LONG    Task,
+        LONG    Volume,
+        LONG    PathBase,
+        BYTE    *PathString,
+        LONG    PathCount,
+        LONG    NameSpace,
+        LONG    MatchBits,
+        LONG    RequestedRights,
+        BYTE    DataStreamNumber,
+        LONG    *Handle,
+        LONG    *DirectoryNumber,
+        void    **DirectoryEntry
 );
 
 extern LONG CreateFile(
-		LONG Station,
-		LONG Task,
-		LONG Volume,
-		LONG PathBase,
-		BYTE *PathString,
-		LONG PathCount,
-		LONG NameSpace,
-		LONG CreatedAttributes,
-		LONG FlagBits,
-		BYTE DataStreamNumber,
-		LONG *Handle,
-		LONG *DirectoryNumber,
-		void **DirectoryEntry);
+        LONG    Station,
+        LONG    Task,
+        LONG    Volume,
+        LONG    PathBase,
+        BYTE    *PathString,
+        LONG    PathCount,
+        LONG    NameSpace,
+        LONG    CreatedAttributes,
+        LONG    FlagBits,
+        BYTE    DataStreamNumber,
+        LONG    *Handle,
+        LONG    *DirectoryNumber,
+        void    **DirectoryEntry
+);
 
 extern LONG WriteFile(
-		LONG stationNumber,
-		LONG handle,
-		LONG startingOffset,
-		LONG bytesToWrite,
-		void *buffer);
+        LONG    stationNumber,
+        LONG    handle,
+        LONG    startingOffset,
+        LONG    bytesToWrite,
+        void    *buffer
+);
 
 extern LONG ReadFile(
-		LONG stationNumber,
-		LONG handle,
-		LONG startingOffset,
-		LONG bytesToRead,
-		LONG *actualBytesRead,
-		void *buffer);
+        LONG    stationNumber,
+        LONG    handle,
+        LONG    startingOffset,
+        LONG    bytesToRead,
+        LONG    *actualBytesRead,
+        void    *buffer
+);
 
 extern LONG INWDOSRead(
-		LONG handle,
-		LONG offset,
-		void *buffer,
-		LONG numberOfBytes,
-		LONG *bytesRead);
+        LONG    handle,
+        LONG    offset,
+        void    *buffer,
+        LONG    numberOfBytes,
+        LONG    *bytesRead
+);
 
 /*
 //
-//		from miniproc.h
+//              from miniproc.h
 */
 void Abend(
-	/* IN */	void *				/*	abendDescription						*/
-	);
+        /* IN */ void * /* abendDescription */
+);
 
 LONG OpenFileUsingSearchPath(
-		BYTE *fileNameAndPath,
-		LONG *handle,
-		BYTE *isDOSFlag,
-		BYTE *openedFilePath,
-		BYTE *openedFileName,
-		BYTE overrideExistingExtension,
-		LONG numberOfExtensions,
-		...);
+        BYTE    *fileNameAndPath,
+        LONG    *handle,
+        BYTE    *isDOSFlag,
+        BYTE    *openedFilePath,
+        BYTE    *openedFileName,
+        BYTE    overrideExistingExtension,
+        LONG    numberOfExtensions,
+        ...
+);
 
 extern LONG INWDOSFindFirstFile(
-		BYTE *fileName,
-		WORD attributes,
-		void *DTA);
+        BYTE    *fileName,
+        WORD    attributes,
+        void    *DTA
+);
 
 extern LONG CloseFile(
-		LONG Station,
-		LONG Task,
-		LONG Handle);
+        LONG    Station,
+        LONG    Task,
+        LONG    Handle
+);
 
 extern LONG GetFileSize(
-		LONG station,
-		LONG handle,
-		LONG *filesize);
+        LONG    station,
+        LONG    handle,
+        LONG    *filesize
+);
 
 extern LONG INWDOSClose(
-		LONG handle);
+        LONG    handle
+);
 
 extern LONG MapAbsoluteAddressToDataOffset(
-	LONG	AbsoluteAddress
-	);
+        LONG    AbsoluteAddress
+);
 
 extern LONG MapAbsoluteAddressToCodeOffset(
-	LONG	AbsoluteAddress
-	);
+        LONG    AbsoluteAddress
+);
 
 extern LONG MapDataOffsetToAbsoluteAddress(
-	LONG	DataOffset
-	);
+        LONG    DataOffset
+);
 
 extern LONG MapCodeOffsetToAbsoluteAddress(
-	LONG	CodeOffset
-	);
+        LONG    CodeOffset
+);
 
 extern LONG GetServerPhysicalOffset(
-	void
-	);
+        void
+);
 
 extern LONG RegisterForEventNotification(
-	struct ResourceTagStructure *	resourceTag,
-	LONG							eventType,
-	LONG							priority,
-	LONG							(*warnProcedure)(
-										void (*OutputRoutine)(void *controlString, ...),
-										LONG parameter),
-	void							(*reportProcedure)(
-										LONG parameter)
-	);
+        struct ResourceTagStructure *resourceTag,
+        LONG                        eventType,
+        LONG                        priority,
+        LONG                        (*warnProcedure)(
+                                        void (*OutputRoutine)(void *controlString, ...),
+                                        LONG parameter
+                                    ),
+        void                        (*reportProcedure)(LONG parameter)
+);
 
 extern LONG UnRegisterEventNotification(
-	LONG eventID
-	);
+        LONG    eventID
+);
+
+extern LONG ConvertPathString(
+        LONG    stationNumber,
+        BYTE    base,
+        BYTE    *modifierString,
+        LONG    *volumeNumber,
+        LONG    *pathBase,
+        BYTE    *pathString,
+        LONG    *pathCount
+);
+
 
 CPP_END
 
