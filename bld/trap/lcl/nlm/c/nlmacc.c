@@ -896,7 +896,7 @@ trap_retval TRAP_CORE( Machine_data )( void )
     return( sizeof( *ret ) );
 }
 
-static int ReadMemory( addr48_ptr *addr, void *buf, unsigned long len )
+static int ReadMemory( addr48_ptr *addr, void *buf, size_t len )
 {
     if( MSB == NULL )
         return( -1 );
@@ -908,7 +908,7 @@ static int ReadMemory( addr48_ptr *addr, void *buf, unsigned long len )
     return( 0 );
 }
 
-static int WriteMemory( addr48_ptr *addr, void *buf, unsigned long len )
+static int WriteMemory( addr48_ptr *addr, void *buf, size_t len )
 {
     if( MSB == NULL )
         return( -1 );
@@ -920,13 +920,13 @@ static int WriteMemory( addr48_ptr *addr, void *buf, unsigned long len )
     return( 0 );
 }
 
-static size_t ReadWrite( int (*rtn)(addr48_ptr *, void *, unsigned long), addr48_ptr *addr,
+static size_t ReadWrite( int (*rtn)(addr48_ptr *, void *, size_t), addr48_ptr *addr,
                                 void *buff, size_t req_len )
 {
     int         err;
     size_t      len;
 
-    err = rtn( addr, buff, (unsigned long)req_len );
+    err = rtn( addr, buff, req_len );
     if( err == 0 ) {
         addr->offset += req_len;
         return( req_len );
@@ -1414,7 +1414,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret = GetOutPtr( 0 );
     ret->err = 1;
     ret->multiplier = 2000;
-    if( WatchCount < MAX_WATCHES && ReadMemory( &acc->watch_addr, 4UL, &l ) == 0 ) {
+    if( WatchCount < MAX_WATCHES && ReadMemory( &acc->watch_addr, &l, sizeof( l ) ) == 0 ) {
         ret->err = 0;
         wp = WatchPoints + WatchCount;
         wp->addr.segment = acc->watch_addr.segment;
@@ -1458,12 +1458,12 @@ trap_retval TRAP_CORE( Set_break )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    if( ReadMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode ) != 0 ) {
+    if( ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) ) != 0 ) {
         ret->old = 0;
     } else {
         ret->old = brk_opcode;
         brk_opcode = BRKPOINT;
-        WriteMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode );
+        WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
     }
     return( sizeof( *ret ) );
 }
@@ -1475,7 +1475,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
 
     acc = GetInPtr( 0 );
     brk_opcode = acc->old;
-    WriteMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode );
+    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
     return( 0 );
 }
 
@@ -1574,7 +1574,7 @@ static trap_elen ProgRun( bool step )
                 if( !( MSB->errnum & DR6_BS ) )
                     break;
                 for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                    ReadMemory( &wp->addr, 4UL, &value );
+                    ReadMemory( &wp->addr, &value, sizeof( value ) );
                     if( value != wp->value ) {
                         ret->conditions |= COND_WATCH;
                         goto leave;
