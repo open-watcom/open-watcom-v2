@@ -968,8 +968,6 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     prog_kill_ret       *ret;
     pid_t               pid;
 
-    ret = GetOutPtr( 0 );
-    ret->err = 0;
     for( pid = 0; pid = next_thread( pid, THREAD_ALL ); ) {
         if( ProcInfo.loaded_proc && !ProcInfo.at_end ) {
             net_kill( ProcInfo.proc, pid, SIGKILL );
@@ -993,6 +991,8 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     ProcInfo.at_end = false;
     ProcInfo.save_in = -1;
     ProcInfo.save_out = -1;
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
     return( sizeof( *ret ) );
 }
 

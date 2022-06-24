@@ -131,10 +131,8 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret   *ret;
 
+    SetCurrentDebug( 0 );
     ret = GetOutPtr( 0 );
     ret->err = 0;
-
-    SetCurrentDebug( 0 );
-
     return( sizeof( *ret ) );
 }
