@@ -140,9 +140,8 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     size_t              len;
 //    nid_t               nid;
 
-    cmd = GetInPtr( sizeof( split_cmd_req ) );
+    start = cmd = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
 //    cmd = CollectNid( cmd, len, &nid );

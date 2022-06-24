@@ -265,7 +265,9 @@ static void nt_getdcwd( int drive, char *buff, size_t max_len )
 }
 
 trap_retval TRAP_RFX( getcwd )( void )
-/* entry 0=current drive,1=A,2=B,... */
+/*************************************
+ * entry 0=current drive,1=A,2=B,...
+ */
 {
     rfx_getcwd_req      *acc;
     rfx_getcwd_ret      *ret;

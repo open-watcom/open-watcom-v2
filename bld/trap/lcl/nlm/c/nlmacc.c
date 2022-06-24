@@ -1177,33 +1177,14 @@ static void LoadHelper( void )
 {
     int         err;
     int         handle;
-    char        *src, *dst;
     char        nlm_name[256];
-    char        ch;
-    unsigned    len;
 
     Enable();
     MSBHead = NULL;
     ThreadId = 0;
     MSB = NULL;
-    src = LoadName;
-    StringToNLMPath( src, nlm_name );
-    dst = CmdLine;
-    len = LoadLen;
-    for( ;; ) {
-        if( len == 0 )
-            break;
-        ch = *src;
-        if( ch == '\0' )
-            ch = ' ';
-        *dst = ch;
-        ++dst;
-        ++src;
-        --len;
-    }
-    if( dst > CmdLine && src[-1] == '\0' )
-        --dst;
-    *dst = '\0';
+    StringToNLMPath( LoadName, nlm_name );
+    MergeArgvArray( LoadName, CmdLine, LoadLen );
     LoadRet->err = 0;
     NLMState = NLM_PRELOADING;
     _DBG_EVENT(( "*LoadHelper: NLMState = NLM_PRELOADING\r\n" ));
@@ -1458,15 +1439,16 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
 {
     opcode_type old_opcode;
 
-    ReadMemory( addr, &old_opcode, sizeof( old_opcode ) );
-    WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
-    return( old_opcode );
-
+    if( ReadMemory( addr, &old_opcode, sizeof( old_opcode ) ) == sizeof( old_opcode ) ) {
+        WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
+        return( old_opcode );
+    }
+    return( 0 )
 }
 
-static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
+static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
 {
-    WriteMemory( addr, &old_opcode, sizeof( old_opcode ) );
+    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )

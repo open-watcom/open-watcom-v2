@@ -564,9 +564,8 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     split_cmd_ret   *ret;
     size_t          len;
 
-    cmd = GetInPtr( sizeof( split_cmd_req ) );
+    start = cmd = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
     while( len > 0 ) {
@@ -601,7 +600,7 @@ char *AddDriveAndPath( const char *exe_name, char *buff )
     src = exe_name;
     dst = buff;
     DosQCurDisk( &drive, &map );
-    if( src[0] == '\0' || src[1] == '\0' || src[1] != ':' ) {
+    if( src[0] == '\0' || src[1] != ':' ) {
         *dst++ = drive - 1 + 'A';
         *dst++ = ':';
     } else {
@@ -609,20 +608,19 @@ char *AddDriveAndPath( const char *exe_name, char *buff )
         *dst++ = *src++;
     }
     if( src[0] != '\\' && src[0] != '/' ) {
-        ++dst;
+        *dst++ = '\\';
         len = BUFF_SIZE - ( dst - buff );
         DosQCurDir( drive, (PBYTE)dst, &len );
-        dst[ -1 ] = '\\';
-        if( *dst == '\\' || *dst == '\0' ) {
+        if( *dst == '\\' )
             *dst = '\0';
-        } else {
-            while( *dst != '\0' ) {
-                ++dst;
-            }
+        while( *dst != '\0' ) {
+            ++dst;
+        }
+        if( buff[3] != '\0' ) {
             *dst++ = '\\';
         }
     }
-    return( StrCopyDst( src, dst ) + 1 );
+    return( StrCopyDst( src, dst ) );
 }
 
 void MergeArgvArray( const char *src, char *dst, size_t len )

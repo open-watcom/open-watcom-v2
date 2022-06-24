@@ -67,6 +67,7 @@ static int SpawnLocker( HFILE inh, HFILE outh )
     parms[1] = ' ';
     parms[2] = outh + ADJUST_HFILE;
     parms[3] = '\0';
+
     start.Length = offsetof( STARTDATA, IconFile );
     start.Related = 1;
     start.FgBg = 1;

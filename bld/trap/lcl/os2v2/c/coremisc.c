@@ -77,9 +77,8 @@ trap_retval TRAP_CORE( Split_cmd )( void )
     split_cmd_ret       *ret;
     size_t              len;
 
-    cmd = GetInPtr( sizeof( split_cmd_req ) );
+    start = cmd = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSizeIn() - sizeof( split_cmd_req );
-    start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
     while( len > 0 ) {

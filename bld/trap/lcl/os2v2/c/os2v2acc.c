@@ -1021,13 +1021,14 @@ static unsigned StartProcess( const char *exe_name, char *parms )
     char            appname[CCHMAXPATH];
     unsigned        rc;
 
+    strcpy( appname, TRP_The_WATCOM_Debugger );
+    strcat( appname, ": " );
+    strcat( appname, exe_name );
+
     start.Length = offsetof( STARTDATA, IconFile ); /* default for the rest */
     start.Related = 1;
     start.FgBg = !Remote;
     start.TraceOpt = 1;
-    strcpy( appname, TRP_The_WATCOM_Debugger );
-    strcat( appname, ": " );
-    strcat( appname, exe_name );
     start.PgmTitle = (PSZ)appname;
     start.PgmName = UtilBuff;
     start.PgmInputs = (PBYTE)parms;

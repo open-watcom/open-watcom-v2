@@ -1010,13 +1010,14 @@ trap_retval TRAP_CORE( Prog_load )( void )
         {}
     MergeArgvArray( src, parms, GetTotalSizeIn() - sizeof( prog_load_req ) - ( src - name ) );
 
+    strcpy( appname, TRP_The_WATCOM_Debugger );
+    strcat( appname, ": " );
+    strcat( appname, exe_name );
+
     start.Length = offsetof( STARTDATA, IconFile ); /* default for the rest */
     start.Related = 1;
     start.FgBg = !Remote;
     start.TraceOpt = 1;
-    strcpy( appname, TRP_The_WATCOM_Debugger );
-    strcat( appname, ": " );
-    strcat( appname, exe_name );
     start.PgmTitle = (PSZ)appname;
     start.PgmName = UtilBuff;
     start.PgmInputs = (PBYTE)parms;
