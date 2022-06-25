@@ -95,7 +95,7 @@ size_t WriteMemory( pid_t pid, addr_off offv, void *data, size_t size )
             }
         }
 #if DEBUG_WRITEMEM
-        Out( "writemem:" );
+        Out( "WriteMemory:" );
         OutNum( val );
         Out( "\n" );
 #endif
@@ -104,7 +104,7 @@ size_t WriteMemory( pid_t pid, addr_off offv, void *data, size_t size )
             ((char *)&val)[i] = ((char *)data)[i];
         }
 #if DEBUG_WRITEMEM
-        Out( "writemem:" );
+        Out( "WriteMemory:" );
         OutNum( val );
         Out( "\n" );
 #endif
