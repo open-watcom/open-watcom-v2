@@ -431,7 +431,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
          *  the rest is NULed out for comparison purposes. Could read past a segment end
          *  otherwise
          */
-        ReadMemory( &acc->watch_addr, &value, sizeof( dword ) );
+        ReadMemory( &acc->watch_addr, &value, sizeof( value ) );
         curr->value = value;
         curr->len = acc->size;
 
@@ -488,13 +488,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
                     curr->dregs = 1;    /* 0x00-0x03:   4B@0x00 */
                     break;
                 case 1:
-                    curr->dregs = 3;    /* 0x01-0x04:   1B@0x01, 2B@0x02, 1@0x04 */
+                    curr->dregs = 3;    /* 0x01-0x04:   1B@0x01, 2B@0x02, 1B@0x04 */
                     break;
                 case 2:
                     curr->dregs = 2;    /* 0x02-0x05:   2B@0x02, 2B@0x04 */
                     break;
                 case 3:
-                    curr->dregs = 3;    /* 0x03-0x06L   1B@0x03, 2B@0x04, 1@0x06 */
+                    curr->dregs = 3;    /* 0x03-0x06L   1B@0x03, 2B@0x04, 1B@0x06 */
                     break;
                 }
             } else if ( 8 == curr->len ) {

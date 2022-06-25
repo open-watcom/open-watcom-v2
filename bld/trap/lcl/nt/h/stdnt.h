@@ -195,7 +195,7 @@ extern DWORD            ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
 
 /* accmisc.c */
 extern bool             GetSelectorLDTEntry( WORD sel, LDT_ENTRY *ldt );
-extern BOOL             IsBigSel( WORD sel );
+extern bool             IsBigSel( WORD sel );
 extern void             AddMessagePrefix( char *buff, size_t len );
 
 /* accrun.c */

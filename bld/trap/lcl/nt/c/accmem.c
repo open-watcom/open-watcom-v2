@@ -100,7 +100,7 @@ DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
         return( 0 );
     }
     base = getRealBase( addr, &limit );
-    if( base > limit ) {
+    if( limit < base ) {
         limit = base;
     }
     if( base + size < base ) { // wants to wrap segment
