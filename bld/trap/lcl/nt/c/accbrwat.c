@@ -63,8 +63,8 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
 {
     opcode_type old_opcode;
 
-    if( ReadMemory( addr->segment, addr->offset, &old_opcode, sizeof( old_opcode ) ) == sizeof( old_opcode ) ) {
-        WriteMemory( addr->segment, addr->offset, &BreakOpcode, sizeof( BreakOpcode ) );
+    if( ReadMemory( addr, &old_opcode, sizeof( old_opcode ) ) == sizeof( old_opcode ) ) {
+        WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
         return( old_opcode );
     }
     return( 0 );
@@ -72,7 +72,7 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
 
 static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
 {
-    return( WriteMemory( addr->segment, addr->offset, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
+    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )
@@ -371,12 +371,16 @@ BOOL CheckWatchPoints( void )
     int     i;
 
     for( i = 0; i < WatchCount; i++ ) {
-        ReadMemory( WatchPoints[i].loc.segment, WatchPoints[i].loc.offset, &value, sizeof( value ) );
+        ReadMemory( &WatchPoints[i].loc, &value, sizeof( value ) );
         if( value != WatchPoints[i].value ) {
             return( TRUE );
         }
         if( WatchPoints[i].len == 8 ) {
-            ReadMemory( WatchPoints[i].loc.segment, WatchPoints[i].loc.offset + sizeof( value ), &value, sizeof( value ) );
+            addr48_ptr  addr;
+
+            addr.segment = WatchPoints[i].loc.segment;
+            addr.offset = WatchPoints[i].loc.offset + sizeof( value );
+            ReadMemory( &addr, &value, sizeof( value ) );
             if( value != WatchPoints[i].value_high ) {
                 return( TRUE );
             }
@@ -405,7 +409,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
-    DWORD           value, value_high;
+    DWORD           value;
     watch_point     *curr;
 #if defined( MD_x86 )
     DWORD           linear;
@@ -427,7 +431,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
          *  the rest is NULed out for comparison purposes. Could read past a segment end
          *  otherwise
          */
-        ReadMemory( acc->watch_addr.segment, acc->watch_addr.offset, &value, sizeof( dword ) );
+        ReadMemory( &acc->watch_addr, &value, sizeof( dword ) );
         curr->value = value;
         curr->len = acc->size;
 
@@ -437,8 +441,12 @@ trap_retval TRAP_CORE( Set_watch )( void )
          *  Nevertheless, I store the next 4 bytes if the watchpoint is larger than 4 bytes
          */
         if( curr->len > 4 ) {
-            ReadMemory( acc->watch_addr.segment, acc->watch_addr.offset + sizeof( dword ), &value_high, sizeof( dword ) );
-            curr->value_high = value_high;
+            addr48_ptr  addr;
+
+            addr.segment = acc->watch_addr.segment;
+            addr.offset = acc->watch_addr.offset + sizeof( value );
+            ReadMemory( &addr, &value, sizeof( value ) );
+            curr->value_high = value;
         }
 
         WatchCount++;

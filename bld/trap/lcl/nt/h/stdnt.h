@@ -190,8 +190,8 @@ extern void             FreeLibList( void );
 extern int              DoListLibs( char *buff, int is_first, int want_16, int want_32, int verbose, int sel );
 
 /* accmem.c */
-extern DWORD            WriteMemory( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
-extern DWORD            ReadMemory( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
+extern DWORD            WriteMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
+extern DWORD            ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
 
 /* accmisc.c */
 extern bool             GetSelectorLDTEntry( WORD sel, LDT_ENTRY *ldt );

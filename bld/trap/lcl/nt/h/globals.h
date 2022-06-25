@@ -37,48 +37,53 @@
 #define TRPGLOBINIT(x)
 #endif
 
-TRPGLOBAL DWORD                 DebugeePid;
-TRPGLOBAL DWORD                 DebugeeTid;
-TRPGLOBAL process_info          ProcessInfo;
-TRPGLOBAL BOOL                  DebugeeEnded;
-TRPGLOBAL DWORD                 LastExceptionCode;
-TRPGLOBAL DWORD                 CurrentModule TRPGLOBINIT( 1 );
-TRPGLOBAL DWORD                 ModuleTop;
-TRPGLOBAL WORD                  FlatCS;
-TRPGLOBAL WORD                  FlatDS;
-TRPGLOBAL BOOL                  StopForDLLs;
-TRPGLOBAL LPSTR                 DLLPath;
-TRPGLOBAL subsystems            DebugeeSubsystem;
-TRPGLOBAL msg_list              *DebugString;
-TRPGLOBAL DEBUG_EVENT           DebugEvent;
-TRPGLOBAL BOOL                  IsWOW;
-#if !defined( MD_x64 )
-TRPGLOBAL BOOL                  IsDOS;
-TRPGLOBAL BOOL                  IsWin32s;
-TRPGLOBAL BOOL                  IsWin95;
-TRPGLOBAL BOOL                  IsWinNT;
-TRPGLOBAL BOOL                  UseVDMStuff;
+
+#if defined( WOW )
+  #if defined( MD_x86 )
+//typedef void    *LPVDMCONTEXT;
+  #endif
+#else
+typedef void            *LPMODULEENTRY;
+typedef void            (WINAPI *DEBUGEVENTPROC)();
+typedef BOOL            (WINAPI *PROCESSENUMPROC)( DWORD, DWORD, LPARAM );
 #endif
-TRPGLOBAL char                  CurrEXEName[MAX_PATH];
-TRPGLOBAL BOOL                  DidWaitForDebugEvent;
-TRPGLOBAL BOOL                  Slaying;
-TRPGLOBAL HWND                  DebuggerWindow;
-TRPGLOBAL DWORD                 LastDebugEventTid;
-TRPGLOBAL BOOL                  BreakOnKernelMessage;
-TRPGLOBAL BOOL                  PendingProgramInterrupt;
-TRPGLOBAL char                  *MsgPrefix TRPGLOBINIT( NULL );
-TRPGLOBAL BOOL                  Supporting8ByteBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
-TRPGLOBAL BOOL                  SupportingExactBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
-TRPGLOBAL opcode_type           BreakOpcode;
+
+TRPGLOBAL DWORD         DebugeePid;
+TRPGLOBAL DWORD         DebugeeTid;
+TRPGLOBAL process_info  ProcessInfo;
+TRPGLOBAL BOOL          DebugeeEnded;
+TRPGLOBAL DWORD         LastExceptionCode;
+TRPGLOBAL DWORD         CurrentModule TRPGLOBINIT( 1 );
+TRPGLOBAL DWORD         ModuleTop;
+TRPGLOBAL WORD          FlatCS;
+TRPGLOBAL WORD          FlatDS;
+TRPGLOBAL BOOL          StopForDLLs;
+TRPGLOBAL LPSTR         DLLPath;
+TRPGLOBAL subsystems    DebugeeSubsystem;
+TRPGLOBAL msg_list      *DebugString;
+TRPGLOBAL DEBUG_EVENT   DebugEvent;
+TRPGLOBAL BOOL          IsWOW;
+#if !defined( MD_x64 )
+TRPGLOBAL BOOL          IsDOS;
+TRPGLOBAL BOOL          IsWin32s;
+TRPGLOBAL BOOL          IsWin95;
+TRPGLOBAL BOOL          IsWinNT;
+TRPGLOBAL BOOL          UseVDMStuff;
+#endif
+TRPGLOBAL char          CurrEXEName[MAX_PATH];
+TRPGLOBAL BOOL          DidWaitForDebugEvent;
+TRPGLOBAL BOOL          Slaying;
+TRPGLOBAL HWND          DebuggerWindow;
+TRPGLOBAL DWORD         LastDebugEventTid;
+TRPGLOBAL BOOL          BreakOnKernelMessage;
+TRPGLOBAL BOOL          PendingProgramInterrupt;
+TRPGLOBAL char          *MsgPrefix TRPGLOBINIT( NULL );
+TRPGLOBAL BOOL          Supporting8ByteBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
+TRPGLOBAL BOOL          SupportingExactBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
+TRPGLOBAL opcode_type   BreakOpcode;
 
 #if defined( MD_x86 ) && defined( WOW )
-TRPGLOBAL wow_info              WOWAppInfo;
-//typedef void    *LPVDMCONTEXT;
-#endif
-#if !defined( WOW )
-typedef void    *LPMODULEENTRY;
-typedef void    (WINAPI *DEBUGEVENTPROC)();
-typedef BOOL    (WINAPI *PROCESSENUMPROC)( DWORD, DWORD, LPARAM );
+TRPGLOBAL wow_info      WOWAppInfo;
 #endif
 
 TRPGLOBAL HANDLE
