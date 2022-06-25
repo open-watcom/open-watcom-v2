@@ -318,7 +318,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         curr = WatchPoints + WatchCount;
         curr->loc.segment = acc->watch_addr.segment;
         curr->loc.offset = acc->watch_addr.offset;
-        ReadMemory( &acc->watch_addr, &value, sizeof( DWORD ) );
+        ReadMemory( &acc->watch_addr, &value, sizeof( value ) );
         curr->value = value;
         GetDescriptor( curr->loc.segment, desc );
         linear = (DWORD)desc[1] + ( (DWORD)( desc[2] & 0xFF ) << 16L ) +

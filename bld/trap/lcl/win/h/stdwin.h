@@ -124,8 +124,6 @@ extern HMODULE                  DebugeeModule;
 extern bool                     WasInt32;
 extern BOOL                     DebugDebugeeOnly;
 extern HTASK                    TaskAtFault;
-extern WORD                     Win386Sig[];
-extern WORD                     Win386SigRev[];
 //extern FARPROC                  SubClassProcInstance;
 extern bool                     HardModeRequired;
 extern bool                     InputLocked;
