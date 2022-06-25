@@ -216,15 +216,6 @@ extern BOOL             SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD 
 extern int              GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack );
 extern int              GetModuleName( HANDLE fhdl, char *name );
 
-/* pgmexec.c */
-extern BOOL             CausePgmToLoadThisDLL( void );
-extern BOOL             TaskReadWord( WORD seg, DWORD off, LPWORD data );
-extern BOOL             TaskWriteWord( WORD seg, DWORD off, WORD data );
-extern BOOL             TaskReadFPU( LPVOID data );
-extern BOOL             TaskWriteFPU( LPVOID data );
-extern void             TaskDoExit( void );
-extern HANDLE           TaskGetModuleHandle( char *name );
-
 /* thread.c */
 extern void             AddThread( DWORD tid, HANDLE th, LPVOID sa );
 extern void             DeadThread( DWORD tid );
