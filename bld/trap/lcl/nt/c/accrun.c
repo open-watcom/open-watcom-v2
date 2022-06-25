@@ -293,7 +293,7 @@ static trap_conditions handleInt1( DWORD state )
             return( COND_TRACE );
         }
         ti = FindThread( DebugeeTid );
-        if( ti && !ti->is_foreign ) {
+        if( ti != NULL && !ti->is_foreign ) {
             return( COND_TRACE );
         }
         proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
@@ -319,7 +319,7 @@ static void getImageNote( IMAGE_NOTE *pin )
 
     addr.segment = FlatDS;
     addr.offset = (DWORD)DW3( DebugEvent.u.Exception.ExceptionRecord );
-    ReadMemory( &addr, pin, sizeof( IMAGE_NOTE ) );
+    ReadMemory( &addr, pin, sizeof( *pin ) );
 }
 #endif
 #endif

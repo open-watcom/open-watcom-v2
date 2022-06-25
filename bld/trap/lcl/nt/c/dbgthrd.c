@@ -647,7 +647,7 @@ static bool StartDebuggee( void )
                             Shared.name,        /* command line */
                             NULL,               /* process attributes */
                             NULL,               /* thread attributes */
-                            TRUE,              /* inherit handles */
+                            TRUE,               /* inherit handles */
                             Shared.flags,       /* creation flags */
                             NULL,               /* environment block */
                             NULL,               /* starting directory */
