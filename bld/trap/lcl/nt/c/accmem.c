@@ -52,7 +52,7 @@ static ULONG_PTR getRealBase( addr48_ptr *addr, ULONG_PTR *plimit )
     ULONG_PTR   selbase;
     WORD        sel;
 
-    sel = addr->offset;
+    sel = addr->segment;
     if( sel == FlatDS || sel == FlatCS ) {
         *plimit = (ULONG_PTR)-1L;
         return( addr->offset );
@@ -214,7 +214,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
             addr.offset++;
             len--;
             if( len > 0 ) {
-                sum += ( value >> 8 ) & 0xff;
+                sum += value >> 8;
                 addr.offset++;
                 len--;
             }
