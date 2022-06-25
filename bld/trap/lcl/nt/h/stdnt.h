@@ -194,6 +194,7 @@ extern DWORD            WriteMemory( WORD seg, ULONG_PTR base, LPVOID buff, DWOR
 extern DWORD            ReadMemory( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
 
 /* accmisc.c */
+extern bool             GetSelectorLDTEntry( WORD sel, LDT_ENTRY *ldt );
 extern BOOL             IsBigSel( WORD sel );
 extern void             AddMessagePrefix( char *buff, size_t len );
 

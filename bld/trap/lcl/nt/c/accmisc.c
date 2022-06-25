@@ -41,6 +41,19 @@
 #endif
 
 
+bool GetSelectorLDTEntry( WORD sel, LDT_ENTRY *ldt )
+{
+    thread_info *ti;
+
+    ti = FindThread( DebugeeTid );
+    if( ti != NULL ) {
+        if( GetThreadSelectorEntry( ti->thread_handle, sel, ldt ) ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
 BOOL IsBigSel( WORD sel )
 {
 #if defined( MD_axp ) | defined( MD_ppc )

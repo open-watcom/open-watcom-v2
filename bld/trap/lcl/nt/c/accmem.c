@@ -48,13 +48,11 @@ static ULONG_PTR getRealBase( WORD seg, ULONG_PTR base, ULONG_PTR *limit )
 
     ULONG_PTR   realbase;
     LDT_ENTRY   ldt;
-    thread_info *ti;
     ULONG_PTR   lim;
     ULONG_PTR   selbase;
 
     if( seg != FlatDS && seg != FlatCS ) {
-        ti = FindThread( DebugeeTid );
-        if( GetThreadSelectorEntry( ti->thread_handle, seg, &ldt ) ) {
+        if( GetSelectorLDTEntry( seg, &ldt ) ) {
             lim = 1 + (ULONG_PTR)ldt.LimitLow +
                 ( (ULONG_PTR)ldt.HighWord.Bits.LimitHi << 16L );
             if( ldt.HighWord.Bits.Granularity ) {

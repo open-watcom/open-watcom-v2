@@ -386,22 +386,17 @@ BOOL CheckWatchPoints( void )
 }
 
 #if defined( MD_x86 )
-static DWORD CalcLinear( WORD segment, DWORD offset )
+static DWORD CalcLinear( addr48_ptr *addr )
 {
-    LDT_ENTRY   sel;
-    thread_info *ti;
+    LDT_ENTRY   ldt;
 
-    ti = FindThread( DebugeeTid );
-    if( ti == NULL ) {
-        return( offset );
+    if( GetSelectorLDTEntry( addr->segment, &ldt ) ) {
+        return( addr->offset +
+            ( ( ldt.HighWord.Bits.BaseHi << 24 ) |
+              ( ldt.HighWord.Bits.BaseMid << 16 ) |
+              ldt.BaseLow ) );
     }
-    if( !GetThreadSelectorEntry( ti->thread_handle, segment, &sel ) ) {
-        return( offset );
-    }
-    return( offset +
-            ( ( sel.HighWord.Bits.BaseHi << 24 ) |
-              ( sel.HighWord.Bits.BaseMid << 16 ) |
-              sel.BaseLow ) );
+    return( addr->offset );
 }
 #endif
 
@@ -448,7 +443,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
         WatchCount++;
 #if defined( MD_x86 )
-        linear = CalcLinear( acc->watch_addr.segment, acc->watch_addr.offset );
+        linear = CalcLinear( &acc->watch_addr );
         lencalc = curr->len;
         if( lencalc > 4 )
             lencalc = 4;

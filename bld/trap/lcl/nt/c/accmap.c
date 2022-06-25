@@ -728,33 +728,30 @@ static int              currSeg;
  */
 static void formatSel( char *buff, int verbose )
 {
-    thread_info *ti;
     LDT_ENTRY   ldt;
     DWORD       base;
     DWORD       limit;
     DWORD       off;
-    WORD        seg;
+    WORD        sel;
 
-    seg = currInfo->segs[currSeg].segment;
+    sel = currInfo->segs[currSeg].segment;
     off = currInfo->segs[currSeg].offset;
 
     if( currInfo->is_16 ) {
-        wsprintf( buff, "%04x", seg );
+        wsprintf( buff, "%04x", sel );
     } else {
-        wsprintf( buff, "%04x:%08lx", seg, off );
+        wsprintf( buff, "%04x:%08lx", sel, off );
     }
-    if( verbose ) {
-        ti = FindThread( DebugeeTid );
-        GetThreadSelectorEntry( ti->thread_handle, seg, &ldt );
+    if( verbose && GetSelectorLDTEntry( sel, &ldt ) ) {
         base = off + ( DWORD ) ldt.BaseLow +
             ( ( DWORD ) ldt.HighWord.Bytes.BaseMid << 16L ) +
             ( ( DWORD ) ldt.HighWord.Bytes.BaseHi << 24L );
-        buff = &buff[strlen( buff )];
         limit = 1 + ( DWORD ) ldt.LimitLow +
             ( ( DWORD ) ldt.HighWord.Bits.LimitHi << 16L );
         if( ldt.HighWord.Bits.Granularity ) {
             limit *= 0x1000L;
         }
+        buff = &buff[strlen( buff )];
         if( currInfo->is_16 ) {
             wsprintf( buff, " - base:%08lx size:%04x", base, limit );
         } else {
