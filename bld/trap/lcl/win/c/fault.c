@@ -42,6 +42,7 @@
 #include "dbgrmsg.h"
 #include "di386cli.h"
 
+
 /*
  * How we get our registers:
  *
@@ -278,11 +279,10 @@ void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
     }
     UseHotKey( 0 );
 
-    ff.ESP = (WORD) ff.ESP;
-    ff.intf.oldEBP = (WORD) ff.intf.oldEBP;
+    ff.ESP = (WORD)ff.ESP;
+    ff.intf.oldEBP = (WORD)ff.intf.oldEBP;
 
     if( ff.intf.intnumber == INT_3 ) {
-        opcode_type     brk_opcode;
         addr48_ptr      sig_addr;
 
         if( !WasInt32 ) {
@@ -293,10 +293,7 @@ void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
         if( ( WasInt32 && IntResult.CS == DLLLoad.addr.segment && IntResult.EIP == DLLLoad.addr.offset ) ||
             ( !WasInt32 && ff.intf.CS == DLLLoad.addr.segment && ff.intf.IP == DLLLoad.addr.offset ) ) {
             Out((OUT_RUN,"Caught DLL Loaded '%4.4x:%4.4x'",DLLLoad.addr.segment,DLLLoad.addr.offset));
-
-            brk_opcode = DLLLoad.old_opcode;
-            WriteMemory( &DLLLoad.addr, &brk_opcode, sizeof( brk_opcode ) );
-
+            remove_breakpoint( &DLLLoad.addr, DLLLoad.old_opcode );
             sig_addr.segment = IntResult.CS;
             sig_addr.offset = SIG_OFF;
             ReadMemory( &sig_addr, sig, SIG_SIZE );
@@ -315,9 +312,7 @@ void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
                         IntResult.EIP == StopNewTask.loc.offset ) ||
                 (!WasInt32 && ff.intf.CS == StopNewTask.loc.segment &&
                         ff.intf.IP == StopNewTask.loc.offset) ) {
-
-                brk_opcode = StopNewTask.old_opcode;
-                WriteMemory( &StopNewTask.loc, &brk_opcode, sizeof( brk_opcode ) );
+                remove_breakpoint( &StopNewTask.loc, StopNewTask.old_opcode );
                 pmsg = START_BP_HIT;
             }
         }

@@ -189,7 +189,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
          * get the parm list
          */
         src = parm;
-        while( *src++ != 0 )
+        while( *src++ != '\0' )
             {}
         buff[0] = MergeArgvArray( src, buff + 1, GetTotalSizeIn() - sizeof( *acc ) - ( src - parm ) );
 
@@ -238,8 +238,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
         sig_addr.segment = IntResult.CS;
         sig_addr.offset = SIG_OFF;
         ReadMemory( &sig_addr, sig, SIG_SIZE );
-        if( !StopOnExtender && (!memcmp( sig, win386sig, SIG_SIZE ) ||
-                !memcmp( sig, win386sig2, SIG_SIZE )) ) {
+        if( !StopOnExtender && ( memcmp( sig, win386sig, SIG_SIZE ) == 0 ||
+                memcmp( sig, win386sig2, SIG_SIZE ) == 0 ) ) {
             Out((OUT_LOAD,"Is Win32App" ));
             Debugging32BitApp = TRUE;
             /*

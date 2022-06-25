@@ -127,7 +127,7 @@ static BOOL doStartDLL( DWORD data )
 {
     NFYSTARTDLL *sd;
 
-    sd = (NFYSTARTDLL *) data;
+    sd = (NFYSTARTDLL *)data;
     AddModuleLoaded( sd->hModule, TRUE );
     if( DebuggerState == RUNNING_DEBUGEE ) {
         DLLLoad.addr.segment = sd->wCS;

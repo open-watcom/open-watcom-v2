@@ -58,9 +58,9 @@ int        CurrentModule = 0;
 
 static int      mod32Top;
 
-static HMODULE moduleIDs[ MAX_MODULE ];
-static HMODULE modules32[ MAX_MODULE ];
-static BOOL moduleIsDLL[ MAX_MODULE ];
+static HMODULE moduleIDs[MAX_MODULE];
+static HMODULE modules32[MAX_MODULE];
+static BOOL moduleIsDLL[MAX_MODULE];
 
 /*
  * AddAllCurrentModules - add all currently running modules to
@@ -135,7 +135,7 @@ static void try32( HANDLE mod )
     WORD        cs;
 
     if( CheckIsModuleWin32App( mod, &ds, &cs, &off ) ) {
-        modules32[ mod32Top ] = mod;
+        modules32[mod32Top] = mod;
         mod32Top++;
     }
 
@@ -191,8 +191,8 @@ void AddModuleLoaded( HANDLE mod, BOOL is_dll )
 
     try32( mod );
 
-    moduleIsDLL[ ModuleTop ] = is_dll;
-    moduleIDs[ ModuleTop ] = mod;
+    moduleIsDLL[ModuleTop] = is_dll;
+    moduleIDs[ModuleTop] = mod;
     ModuleTop++;
 
 } /* AddModuleLoaded */
@@ -220,11 +220,11 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
         Out(( OUT_MAP,"Past end of list" ));
         return( sizeof( *ret ) );
     }
-    Out(( OUT_MAP,"ModuleTop=%d CurrentModule=%d id=%d", ModuleTop, CurrentModule, moduleIDs[ CurrentModule ] ));
+    Out(( OUT_MAP,"ModuleTop=%d CurrentModule=%d id=%d", ModuleTop, CurrentModule, moduleIDs[CurrentModule] ));
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
     me.dwSize = sizeof( me );
-    if( ModuleFindHandle( &me, moduleIDs[ CurrentModule ] ) ) {
+    if( ModuleFindHandle( &me, moduleIDs[CurrentModule] ) ) {
         max_len = GetTotalSizeOut() - sizeof( *ret ) - 1;
         strncpy( name, me.szExePath, max_len );
         name[max_len] = '\0';
@@ -291,8 +291,8 @@ static BOOL horkyFindSegment( int module, WORD segment )
     static HMODULE      lastmodid;
     HMODULE             modid;
 
-    modid = moduleIDs[ module ];
-    if( !moduleIsDLL[ module ] ) {
+    modid = moduleIDs[module];
+    if( !moduleIsDLL[module] ) {
         return( FALSE );
     }
 
@@ -353,7 +353,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
     ret->hi_bound = ~(addr48_off)0;
     module = acc->mod_handle;
     in_seg = acc->in_addr.segment;
-    if( CheckIsModuleWin32App( moduleIDs[ module ], &ds, &cs, &off ) ) {
+    if( CheckIsModuleWin32App( moduleIDs[module], &ds, &cs, &off ) ) {
         Out((OUT_MAP,"is 32 bit module"));
         if( in_seg == MAP_FLAT_DATA_SELECTOR ) {
             ret->out_addr.segment = ds;
@@ -369,9 +369,9 @@ trap_retval TRAP_CORE( Map_addr )( void )
             break;
         }
         ge.dwSize = sizeof( ge );
-        if( !GlobalEntryModule( &ge, moduleIDs[ module ], in_seg ) ) {
+        if( !GlobalEntryModule( &ge, moduleIDs[module], in_seg ) ) {
             if( horkyFindSegment( module, in_seg ) ) {
-                if( !GlobalEntryModule( &ge, moduleIDs[ module ], in_seg ) ) {
+                if( !GlobalEntryModule( &ge, moduleIDs[module], in_seg ) ) {
                     Out((OUT_MAP,"GlobalEntry 2nd time failed" ));
                     return( sizeof( *ret ) );
                 }
@@ -416,7 +416,7 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
     ret->alias = 0;
     if( mod32Top > 0 ) {
         mod32Top--;
-        CheckIsModuleWin32App( modules32[ mod32Top ], &ds, &cs, &off );
+        CheckIsModuleWin32App( modules32[mod32Top], &ds, &cs, &off );
         ret->seg = cs;
         ret->alias = ds;
     }
