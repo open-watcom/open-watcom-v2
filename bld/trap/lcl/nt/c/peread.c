@@ -39,50 +39,50 @@
 /*
  * SeekRead - seek to a specified spot in the file, and read some data
  */
-BOOL SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
+bool SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 {
     int     rc;
     DWORD   bytes;
 
     if( SetFilePointer( handle, newpos, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
-        return( FALSE );
+        return( false );
     }
     rc = ReadFile( handle, buff, size, &bytes, NULL );
     if( !rc ) {
-        return( FALSE );
+        return( false );
     }
     if( bytes != size ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 }
 
 /*
  * GetEXEHeader - get type of EXE
  */
-int GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
+bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
 {
     WORD    data;
     WORD    sig;
     DWORD   nh_offset;
 
     if( !SeekRead( handle, 0x00, &data, sizeof( data ) ) ) {
-        return( FALSE );
+        return( false );
     }
     if( data != EXE_MZ ) {
-        return( FALSE );
+        return( false );
     }
 
     //    if( !SeekRead( handle, 0x18, &data, sizeof( data ) ) ) {
-    //      return( FALSE );
+    //      return( false );
     //    }
     //    if( data < 0x40 ) {
-    //      return( FALSE );
+    //      return( false );
     //    }
 
     if( !SeekRead( handle, 0x3c, &nh_offset, sizeof( unsigned_32 ) ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !SeekRead( handle, nh_offset, &sig, sizeof( sig ) ) ) {
@@ -94,9 +94,8 @@ int GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
     }
 #if defined( MD_x86 )
     if( sig == EXE_NE ) {
-        if( !SeekRead( handle, nh_offset, &hi->u.neh, sizeof( os2_exe_header ) ) )
-        {
-            return( FALSE );
+        if( !SeekRead( handle, nh_offset, &hi->u.neh, sizeof( os2_exe_header ) ) ) {
+            return( false );
         }
         if( hi->u.neh.target == TARGET_WINDOWS ) {
             DWORD           off;
@@ -106,41 +105,41 @@ int GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
 
             off = nh_offset + hi->u.neh.resident_off;
             if( SetFilePointer( handle, off, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
-                return( FALSE );
+                return( false );
             }
             if( !ReadFile( handle, &len, sizeof( len ), &bytes, NULL ) ) {
-                return( FALSE );
+                return( false );
             }
             if( len > sizeof( hi->modname ) - 1 ) {
                 len = sizeof( hi->modname ) - 1;
             }
             if( !ReadFile( handle, hi->modname, len, &bytes, NULL ) ) {
-                return( FALSE );
+                return( false );
             }
             hi->modname[len] = 0;
             pos = nh_offset + hi->u.neh.segment_off +
                 ( hi->u.neh.adsegnum - 1 ) * sizeof( segment_record ) +
                 offsetof( segment_record, min );
             if( !SeekRead( handle, pos, stack, sizeof( *stack ) ) ) {
-                return( FALSE );
+                return( false );
             }
             *stack += hi->u.neh.stack;
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     }
     hi->sig = EXE_MZ;
-    return( TRUE );
+    return( true );
 #elif defined( MD_x64 )
-    return( FALSE );
+    return( false );
 #elif defined( MD_axp ) || defined( MD_ppc )
-    return( FALSE );
+    return( false );
 #else
     #error GetEXEHeader not configured
 #endif
 }
 
-int GetModuleName( HANDLE fhdl, char *name )
+bool GetModuleName( HANDLE fhdl, char *name )
 {
     header_info         hi;
     pe_object           obj;
@@ -154,14 +153,14 @@ int GetModuleName( HANDLE fhdl, char *name )
     DWORD               seek_offset;
 
     if( !GetEXEHeader( fhdl, &hi, &stack ) ) {
-        return( FALSE );
+        return( false );
     }
     if( hi.sig != EXE_PE ) {
-        return( FALSE );
+        return( false );
     }
     seek_offset = SetFilePointer( fhdl, 0, NULL, FILE_CURRENT );
     if( seek_offset == INVALID_SET_FILE_POINTER ) {
-        return( FALSE );
+        return( false );
     }
     if( IS_PE64( hi.u.peh ) ) {
         export_rva = PE64( hi.u.peh ).table[PE_TBL_EXPORT].rva;
@@ -173,38 +172,38 @@ int GetModuleName( HANDLE fhdl, char *name )
         seek_offset += PE32( hi.u.peh ).nt_hdr_size + offsetof( pe_header, magic ) - sizeof( exe_pe_header );
     }
     if( num_objects == 0 ) {
-        return( FALSE );
+        return( false );
     }
     /* position to begining of object table */
     if( SetFilePointer( fhdl, seek_offset, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
-        return( FALSE );
+        return( false );
     }
     for( i = 0; i < num_objects; i++ ) {
         if( !ReadFile( fhdl, &obj, sizeof( obj ), &lenread, NULL ) || lenread != sizeof( obj ) ) {
-            return( FALSE );
+            return( false );
         }
         if( export_rva >= obj.rva && export_rva < obj.rva + obj.physical_size ) {
             break;
         }
     }
     if( i == num_objects ) {
-        return( FALSE );
+        return( false );
     }
     if( !SeekRead( fhdl, obj.physical_offset + export_rva - obj.rva, &expdir, sizeof( expdir ) ) ) {
-        return( FALSE );
+        return( false );
     }
     if( !SeekRead( fhdl, obj.physical_offset + expdir.name_rva - obj.rva, buf, _MAX_PATH ) ) {
-        return( FALSE );
+        return( false );
     }
     if( SetFilePointer( fhdl, obj.physical_offset + expdir.name_rva - obj.rva, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
-        return( FALSE );
+        return( false );
     }
     if( !ReadFile( fhdl, buf, _MAX_PATH, &lenread, NULL ) ) {
-        return( FALSE );
+        return( false );
     }
     memcpy( name, buf, lenread );
     name[lenread] = '\0';
-    return( TRUE );
+    return( true );
 }
 
 #if 0

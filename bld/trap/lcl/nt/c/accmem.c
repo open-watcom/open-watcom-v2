@@ -93,7 +93,7 @@ DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
     ULONG_PTR   limit;
     ULONG_PTR   base;
 #ifdef DEBUGGING_THIS_DAMN_WIN95_PROBLEM
-    static bool first = TRUE;
+    static bool first = true;
 #endif
 
     if( DebugeePid == 0 ) {
@@ -129,7 +129,7 @@ DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
 #ifdef DEBUGGING_THIS_DAMN_WIN95_PROBLEM
     if( first ) {
         remove( "t.t" );
-        first = FALSE;
+        first = false;
     }
     if( bytes != size ) {
         io = fopen( "t.t", "a+" );

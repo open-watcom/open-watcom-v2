@@ -47,7 +47,7 @@
 /*
  * executeUntilStart - run program until start address hit
  */
-static BOOL executeUntilStart( BOOL was_running )
+static bool executeUntilStart( bool was_running )
 {
     HANDLE      ph;
     opcode_type old_opcode;
@@ -73,13 +73,13 @@ static BOOL executeUntilStart( BOOL was_running )
          * if we encounter anything but a break point, then we are in
          * trouble!
          */
-        if( DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD, NULL, FALSE ) & COND_BREAK ) {
+        if( DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD, NULL, false ) & COND_BREAK ) {
             ti = FindThread( DebugEvent.dwThreadId );
             MyGetThreadContext( ti, &con );
             if( was_running ) {
                 AdjustIP( &con, sizeof( opcode_type ) );
                 MySetThreadContext( ti, &con );
-                return( TRUE );
+                return( true );
             }
             if( StopForDLLs ) {
                 /*
@@ -89,7 +89,7 @@ static BOOL executeUntilStart( BOOL was_running )
                 remove_breakpoint_lin( ph, base, old_opcode );
                 AdjustIP( &con, sizeof( opcode_type ) );
                 MySetThreadContext( ti, &con );
-                return( TRUE );
+                return( true );
             }
             if( ( AdjustIP( &con, 0 ) == base ) ) {
                 /*
@@ -97,7 +97,7 @@ static BOOL executeUntilStart( BOOL was_running )
                  * so we can offically declare that the app has loaded
                  */
                 remove_breakpoint_lin( ph, base, old_opcode );
-                return( TRUE );
+                return( true );
             }
             /*
              * skip this breakpoint and continue
@@ -105,7 +105,7 @@ static BOOL executeUntilStart( BOOL was_running )
             AdjustIP( &con, sizeof( opcode_type ) );
             MySetThreadContext( ti, &con );
         } else {
-            return( FALSE );
+            return( false );
         }
     }
 }
@@ -136,7 +136,7 @@ static void addKERNEL( void )
         if( strnicmp( me.szModule, "KERNEL", 6 ) == 0 ) {
             memcpy( &im.Module, &me.szModule, sizeof( me.szModule ) );
             memcpy( &im.FileName, &me.szExePath, sizeof( me.szExePath ) );
-            AddLib( TRUE, &im );
+            AddLib( true, &im );
             break;
         }
         me.dwSize = sizeof( MODULEENTRY );
@@ -152,7 +152,7 @@ static void addKERNEL( void )
     strcpy( im.Module, "KERNEL" );
     GetSystemDirectory( im.FileName, sizeof( im.FileName ) );
     strcat( im.FileName, "\\KRNL386.EXE" );
-    AddLib( TRUE, &im );
+    AddLib( true, &im );
 #endif
 
 }
@@ -177,7 +177,7 @@ static void addAllWOWModules( void )
     {
         memcpy( &im.Module, &me.szModule, sizeof( me.szModule ) );
         memcpy( &im.FileName, &me.szExePath, sizeof( me.szExePath ) );
-        AddLib( TRUE, &im );
+        AddLib( true, &im );
         me.dwSize = sizeof( MODULEENTRY );
     }
 
@@ -186,16 +186,16 @@ static void addAllWOWModules( void )
 /*
  * executeUntilVDMStart - go until we hit our first VDM exception
  */
-static BOOL executeUntilVDMStart( void )
+static bool executeUntilVDMStart( void )
 {
     myconditions    rc;
 
     for( ;; ) {
-        rc = DebugExecute( STATE_WAIT_FOR_VDM_START, NULL, FALSE );
+        rc = DebugExecute( STATE_WAIT_FOR_VDM_START, NULL, false );
         if( rc == COND_VDM_START ) {
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     }
 
 }
@@ -250,7 +250,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
     char            *dst;
     char            *endsrc;
     char            exe_name[PATH_MAX];
-    BOOL            rc;
     MYCONTEXT       con;
     thread_info     *ti;
     HANDLE          handle;
@@ -271,6 +270,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
+    ret->err = 0;
     parm = GetInPtr( sizeof( *acc ) );
 
     /*
@@ -278,13 +278,13 @@ trap_retval TRAP_CORE( Prog_load )( void )
      */
     LastExceptionCode = -1;
     DebugString = NULL;
-    DebugeeEnded = FALSE;
+    DebugeeEnded = false;
     RemoveAllThreads();
     FreeLibList();
-    DidWaitForDebugEvent = FALSE;
+    DidWaitForDebugEvent = false;
     DebugeePid = 0;
     DebugeeTid = 0;
-    SupportingExactBreakpoints = 0;
+    SupportingExactBreakpoints = false;
 
     /*
      * check if pid is specified
@@ -323,9 +323,10 @@ trap_retval TRAP_CORE( Prog_load )( void )
      * get program to debug.  If the user has specified a pid, then
      * skip directly to doing a DebugActiveProcess
      */
-    IsWOW = FALSE;
+    handle = INVALID_HANDLE_VALUE;
+    IsWOW = false;
 #if !defined( MD_x64 )
-    IsDOS = FALSE;
+    IsDOS = false;
 #endif
     if( pid == 0 ) {
         ret->err = FindFilePath( DIG_FILETYPE_EXE, parm, exe_name );
@@ -338,7 +339,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
          */
         handle = CreateFile( exe_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
         if( handle == INVALID_HANDLE_VALUE ) {
-            ret->err = GetLastError();
             goto error_exit;
         }
         GetFullPathName( exe_name, MAX_PATH, CurrEXEName, NULL );
@@ -365,8 +365,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
         cr_flags = DEBUG_ONLY_THIS_PROCESS;
 
         if( !GetEXEHeader( handle, &hi, &stack ) ) {
-            ret->err = GetLastError();
-            CloseHandle( handle );
             goto error_exit;
         }
         if( hi.sig == EXE_PE ) {
@@ -375,7 +373,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             } else {
                 DebugeeSubsystem = PE32( hi.u.peh ).subsystem;
 #if defined( MD_x64 )
-                IsWOW = TRUE;
+                IsWOW = true;
 #endif
             }
             if( DebugeeSubsystem == SS_WINDOWS_CHAR ) {
@@ -383,7 +381,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             }
 #if !defined( MD_x64 )
         } else if( hi.sig == EXE_NE ) {
-            IsWOW = TRUE;
+            IsWOW = true;
             /*
              * find out the pid of WOW, if it is already running.
              */
@@ -407,15 +405,14 @@ trap_retval TRAP_CORE( Prog_load )( void )
                 }
             }
             if( pid != 0 ) {
-                ret->err = GetLastError();
-                CloseHandle( handle );
                 goto error_exit;
             }
         } else {
-            IsDOS = TRUE;
+            IsDOS = true;
 #endif
         }
         CloseHandle( handle );
+        handle = INVALID_HANDLE_VALUE;
     }
 
     /*
@@ -450,9 +447,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
      * CREATE_PROCESS_DEBUG_EVENT will always be the first debug event.
      * If it is not, then something is horribly wrong.
      */
-    rc = MyWaitForDebugEvent();
-    if( !rc || ( DebugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT ) || ( DebugEvent.dwProcessId != pid_started ) ) {
-        ret->err = GetLastError();
+    if( !MyWaitForDebugEvent() )
+        goto error_exit;
+    if( ( DebugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT ) || ( DebugEvent.dwProcessId != pid_started ) ) {
         goto error_exit;
     }
     ProcessInfo.pid = DebugEvent.dwProcessId;
@@ -477,7 +474,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
         FlatDS = GetDS();
         FlatCS = GetCS();
         if( !executeUntilVDMStart() ) {
-            ret->err = GetLastError();
             goto error_exit;
         }
         if( pid ) {
@@ -508,7 +504,6 @@ trap_retval TRAP_CORE( Prog_load )( void )
         FlatDS = GetDS();
         FlatCS = GetCS();
         if( !executeUntilVDMStart() ) {
-            ret->err = GetLastError();
             goto error_exit;
         }
 #if 0
@@ -579,8 +574,16 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ret->flags |= LD_FLAG_IS_STARTED;
     }
     ret->mod_handle = 0;
+    if( buff != NULL ) {
+        LocalFree( buff );
+    }
+    return( sizeof( *ret ) );
 
 error_exit:
+    if( ret->err == 0 )
+        ret->err = GetLastError();
+    if( handle != INVALID_HANDLE_VALUE )
+        CloseHandle( handle );
     if( buff != NULL ) {
         LocalFree( buff );
     }
@@ -592,7 +595,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret   *ret;
 
-    DelProcess( TRUE );
+    DelProcess( true );
     StopControlThread();
     ret = GetOutPtr( 0 );
     ret->err = 0;

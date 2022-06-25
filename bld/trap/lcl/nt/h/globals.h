@@ -51,35 +51,35 @@ typedef BOOL            (WINAPI *PROCESSENUMPROC)( DWORD, DWORD, LPARAM );
 TRPGLOBAL DWORD         DebugeePid;
 TRPGLOBAL DWORD         DebugeeTid;
 TRPGLOBAL process_info  ProcessInfo;
-TRPGLOBAL BOOL          DebugeeEnded;
+TRPGLOBAL bool          DebugeeEnded;
 TRPGLOBAL DWORD         LastExceptionCode;
 TRPGLOBAL DWORD         CurrentModule TRPGLOBINIT( 1 );
 TRPGLOBAL DWORD         ModuleTop;
 TRPGLOBAL WORD          FlatCS;
 TRPGLOBAL WORD          FlatDS;
-TRPGLOBAL BOOL          StopForDLLs;
+TRPGLOBAL bool          StopForDLLs;
 TRPGLOBAL LPSTR         DLLPath;
 TRPGLOBAL subsystems    DebugeeSubsystem;
 TRPGLOBAL msg_list      *DebugString;
 TRPGLOBAL DEBUG_EVENT   DebugEvent;
-TRPGLOBAL BOOL          IsWOW;
+TRPGLOBAL bool          IsWOW;
 #if !defined( MD_x64 )
-TRPGLOBAL BOOL          IsDOS;
-TRPGLOBAL BOOL          IsWin32s;
-TRPGLOBAL BOOL          IsWin95;
-TRPGLOBAL BOOL          IsWinNT;
-TRPGLOBAL BOOL          UseVDMStuff;
+TRPGLOBAL bool          IsDOS;
+TRPGLOBAL bool          IsWin32s;
+TRPGLOBAL bool          IsWin95;
+TRPGLOBAL bool          IsWinNT;
+TRPGLOBAL bool          UseVDMStuff;
 #endif
 TRPGLOBAL char          CurrEXEName[MAX_PATH];
-TRPGLOBAL BOOL          DidWaitForDebugEvent;
-TRPGLOBAL BOOL          Slaying;
+TRPGLOBAL bool          DidWaitForDebugEvent;
+TRPGLOBAL bool          Slaying;
 TRPGLOBAL HWND          DebuggerWindow;
 TRPGLOBAL DWORD         LastDebugEventTid;
-TRPGLOBAL BOOL          BreakOnKernelMessage;
-TRPGLOBAL BOOL          PendingProgramInterrupt;
+TRPGLOBAL bool          BreakOnKernelMessage;
+TRPGLOBAL bool          PendingProgramInterrupt;
 TRPGLOBAL char          *MsgPrefix TRPGLOBINIT( NULL );
-TRPGLOBAL BOOL          Supporting8ByteBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
-TRPGLOBAL BOOL          SupportingExactBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
+TRPGLOBAL bool          Supporting8ByteBreakpoints TRPGLOBINIT( false );    /* Start disabled */
+TRPGLOBAL bool          SupportingExactBreakpoints TRPGLOBINIT( false );    /* Start disabled */
 TRPGLOBAL opcode_type   BreakOpcode;
 
 #if defined( MD_x86 ) && defined( WOW )

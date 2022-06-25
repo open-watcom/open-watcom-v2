@@ -46,19 +46,19 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     HANDLE          dll;
     DWORD           osver;
 
-    IsWin32s = FALSE;
-    IsWin95 = FALSE;
-    IsWinNT = FALSE;
+    IsWin32s = false;
+    IsWin95 = false;
+    IsWinNT = false;
 #if defined( MD_x64 )
-    IsWinNT = TRUE;
+    IsWinNT = true;
 #else
     osver = GetVersion();
     if( osver < 0x80000000 ) {
-        IsWinNT = TRUE;
+        IsWinNT = true;
     } else if( LOBYTE( LOWORD( osver ) ) < 4 ) {
-        IsWin32s = TRUE;
+        IsWin32s = true;
     } else {
-        IsWin95 = TRUE;
+        IsWin95 = true;
     }
     if( IsWinNT ) {
         dll = LoadLibrary( "VDMDBG.DLL" );
@@ -92,17 +92,17 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
     BreakOpcode = BRKPOINT;
 
-    StopForDLLs = TRUE;
-    BreakOnKernelMessage = FALSE;
+    StopForDLLs = true;
+    BreakOnKernelMessage = false;
     if( *parms == 'k' ) {
-        BreakOnKernelMessage = TRUE;
+        BreakOnKernelMessage = true;
     }
     remote = remote;
 
     err[0] = 0;
     trapver.major = TRAP_MAJOR_VERSION;
     trapver.minor = TRAP_MINOR_VERSION;
-    trapver.remote = FALSE;
+    trapver.remote = false;
     return( trapver );
 }
 

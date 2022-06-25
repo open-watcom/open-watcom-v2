@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,17 +61,17 @@
 /*
  * MyGetThreadContext - get the context for a specific thread
  */
-BOOL MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
+bool MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
 {
 #ifdef WOW
-    BOOL    rc;
+    bool    rc;
 
     if( ( ti->is_wow || ti->is_dos ) && UseVDMStuff ) {
 #if defined( MD_x86 )
         VDMCONTEXT      vc;
 
         vc.ContextFlags = VDMCONTEXT_TO_USE;
-        rc = pVDMGetThreadContext( &DebugEvent, &vc );
+        rc = ( pVDMGetThreadContext( &DebugEvent, &vc ) != 0 );
         /*
          * VDMCONTEXT and CONTEXT are the same on an x86 machine.
          * If we were ever to try to port this to NT running on a RISC,
@@ -90,32 +91,32 @@ BOOL MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
             pc->Ebp = (DWORD)(WORD)pc->Ebp;
         }
 #elif defined( MD_axp ) | defined( MD_ppc )
-        rc = 0;
+        rc = false;
 #else
         #error MyGetThreadContext not configured
 #endif
         return( rc );
     } else {
         pc->ContextFlags = MYCONTEXT_TO_USE;
-        return( GetThreadContext( ti->thread_handle, pc ) );
+        return( GetThreadContext( ti->thread_handle, pc ) != 0 );
     }
 #else
 #if 1
     pc->ContextFlags = MYCONTEXT_TO_USE;
 #if defined( MD_x64 )
-    return( Wow64GetThreadContext( ti->thread_handle, pc ) );
+    return( Wow64GetThreadContext( ti->thread_handle, pc ) != 0 );
 #else
-    return( GetThreadContext( ti->thread_handle, pc ) );
+    return( GetThreadContext( ti->thread_handle, pc ) != 0 );
 #endif
 #else
 #if defined( MD_x64 )
     if( ti->is_wow ) {
         pc->ContextFlags = WOW64CONTEXT_TO_USE;
-        return( Wow64GetThreadContext( ti->thread_handle, pc ) );
+        return( Wow64GetThreadContext( ti->thread_handle, pc ) != 0 );
     }
 #endif
     pc->ContextFlags = MYCONTEXT_TO_USE;
-    return( GetThreadContext( ti->thread_handle, pc ) );
+    return( GetThreadContext( ti->thread_handle, pc ) != 0 );
 #endif
 #endif
 }
@@ -123,7 +124,7 @@ BOOL MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
 /*
  * MySetThreadContext - set the context for a specific thread
  */
-BOOL MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
+bool MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
 {
 #ifdef WOW
     if( ( ti->is_wow || ti->is_dos ) && UseVDMStuff ) {
@@ -136,33 +137,33 @@ BOOL MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
          */
         memcpy( &vc, pc, sizeof( MYCONTEXT ) );
         vc.ContextFlags = VDMCONTEXT_TO_USE;
-        return( pVDMSetThreadContext( &DebugEvent, &vc ) );
+        return( pVDMSetThreadContext( &DebugEvent, &vc ) != 0 );
 #elif defined( MD_axp ) | defined( MD_ppc )
-        return( FALSE );
+        return( false );
 #else
         #error MySetThreadContext not configured
 #endif
     } else {
         pc->ContextFlags = MYCONTEXT_TO_USE;
-        return( SetThreadContext( ti->thread_handle, pc ) );
+        return( SetThreadContext( ti->thread_handle, pc ) != 0 );
     }
 #else
 #if 1
     pc->ContextFlags = MYCONTEXT_TO_USE;
 #if defined( MD_x64 )
-    return( Wow64SetThreadContext( ti->thread_handle, pc ) );
+    return( Wow64SetThreadContext( ti->thread_handle, pc ) != 0 );
 #else
-    return( SetThreadContext( ti->thread_handle, pc ) );
+    return( SetThreadContext( ti->thread_handle, pc ) != 0 );
 #endif
 #else
 #if defined( MD_x64 )
     if( ti->is_wow ) {
         pc->ContextFlags = WOW64CONTEXT_TO_USE;
-        return( Wow64SetThreadContext( ti->thread_handle, pc ) );
+        return( Wow64SetThreadContext( ti->thread_handle, pc ) != 0 );
     }
 #endif
     pc->ContextFlags = MYCONTEXT_TO_USE;
-    return( SetThreadContext( ti->thread_handle, pc ) );
+    return( SetThreadContext( ti->thread_handle, pc ) != 0 );
 #endif
 #endif
 }

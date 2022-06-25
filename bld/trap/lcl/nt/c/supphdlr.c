@@ -36,8 +36,8 @@
 
 /* Do not like this! */
 
-extern BOOL                  Supporting8ByteBreakpoints;
-extern BOOL                  SupportingExactBreakpoints;
+extern bool                  Supporting8ByteBreakpoints;
+extern bool                  SupportingExactBreakpoints;
 
 trap_retval TRAP_CAPABILITIES( get_8b_bp )( void )
 {
@@ -60,9 +60,9 @@ trap_retval TRAP_CAPABILITIES( set_8b_bp )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
 
-    Supporting8ByteBreakpoints = req->status ? 1 : 0;
+    Supporting8ByteBreakpoints = ( req->status != 0 );
 
-    ret->status = Supporting8ByteBreakpoints ? 1 : 0;   /* And are we supporting it? */
+    ret->status = Supporting8ByteBreakpoints;   /* And are we supporting it? */
     return( sizeof( *ret ) );
 }
 
@@ -87,8 +87,8 @@ trap_retval TRAP_CAPABILITIES( set_exact_bp )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
 
-    SupportingExactBreakpoints = req->status ? 1 : 0;
+    SupportingExactBreakpoints = ( req->status != 0 );
 
-    ret->status = SupportingExactBreakpoints ? 1 : 0;
+    ret->status = SupportingExactBreakpoints;
     return( sizeof( *ret ) );
 }

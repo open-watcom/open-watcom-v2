@@ -52,11 +52,11 @@ void AddThread( DWORD tid, HANDLE th, LPVOID sa )
     ti->brk_addr = 0;
 
     ti->next = ProcessInfo.thread_list;
-    ti->alive = TRUE;
-    ti->suspended = FALSE;
-    ti->is_wow = FALSE;
-    ti->is_dos = FALSE;
-    ti->is_foreign = FALSE;
+    ti->alive = true;
+    ti->suspended = false;
+    ti->is_wow = false;
+    ti->is_dos = false;
+    ti->is_foreign = false;
     ProcessInfo.thread_list = ti;
 }
 
@@ -88,7 +88,7 @@ void DeadThread( DWORD tid )
     if( ti == NULL ) {
         return;
     }
-    ti->alive = FALSE;
+    ti->alive = false;
 }
 
 
@@ -132,7 +132,7 @@ trap_retval TRAP_THREAD( freeze )( void )
             if( rc == -1 ) {
                 ret->err = 1;
             } else {
-                ti->suspended = TRUE;
+                ti->suspended = true;
             }
         }
     } else {
@@ -158,7 +158,7 @@ trap_retval TRAP_THREAD( thaw )( void )
             if( rc == -1 ) {
                 ret->err = 1;
             } else {
-                ti->suspended = FALSE;
+                ti->suspended = false;
             }
         }
     } else {

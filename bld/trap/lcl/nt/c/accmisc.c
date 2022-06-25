@@ -57,7 +57,7 @@ bool GetSelectorLDTEntry( WORD sel, LDT_ENTRY *ldt )
 bool IsBigSel( WORD sel )
 {
 #if defined( MD_axp ) | defined( MD_ppc )
-    return( TRUE );
+    return( true );
 #elif defined( MD_x86 ) || defined( MD_x64 )
     LDT_ENTRY   ldt;
 
@@ -89,15 +89,15 @@ bool FindPData( addr_off off, axp_pdata_struct *axp_pdata )
     DWORD           bytes;
 
     if( !FindExceptInfo( off, &tbl, &size ) ) {
-        return( FALSE );
+        return( false );
     }
     for( ;; ) {
         if( size == 0 ) {
-            return( FALSE );
+            return( false );
         }
         ReadProcessMemory( ProcessInfo.process_handle, tbl, (LPVOID)&nt_pdata, sizeof( nt_pdata ), &bytes );
         if( bytes != sizeof( nt_pdata ) ) {
-            return( FALSE );
+            return( false );
         }
         if( off >= nt_pdata.beg_addr && off < nt_pdata.end_addr ) {
             /*
@@ -119,7 +119,7 @@ bool FindPData( addr_off off, axp_pdata_struct *axp_pdata )
     axp_pdata->except_handler.u._32[0] = nt_pdata.except_handler;
     axp_pdata->handler_data.u._32[0] = nt_pdata.handler_data;
     axp_pdata->pro_end_addr.u._32[0] = nt_pdata.pro_end_addr;
-    return( TRUE );
+    return( true );
 }
 #endif
 

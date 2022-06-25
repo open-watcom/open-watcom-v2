@@ -110,7 +110,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-BOOL FindBreak( WORD segment, DWORD offset, opcode_type *old_opcode )
+bool FindBreak( WORD segment, DWORD offset, opcode_type *old_opcode )
 {
     break_point *brk;
 
@@ -122,9 +122,9 @@ BOOL FindBreak( WORD segment, DWORD offset, opcode_type *old_opcode )
             continue;
         }
         *old_opcode = brk->old_opcode;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 #if defined( MD_x86 ) || defined( MD_x64 )
@@ -231,7 +231,7 @@ static int DRegsCount( void )
 /*
  * SetDebugRegs - set debug registers for watch points
  */
-BOOL SetDebugRegs( void )
+bool SetDebugRegs( void )
 {
 #if defined( MD_x86 ) || defined( MD_x64 )
     int         i;
@@ -256,7 +256,7 @@ BOOL SetDebugRegs( void )
          *
          */
         if( DRegsCount() > 4 ) {
-            return( FALSE );
+            return( false );
         }
 
         dr  = 0;
@@ -318,14 +318,14 @@ BOOL SetDebugRegs( void )
                 }
                 break;
             default:
-                return FALSE;
+                return( false );
             }
         }
 
     } else {
 
         if( DRegsCount() > 4 ) {
-            return( FALSE );
+            return( false );
         }
 
         dr  = 0;
@@ -354,9 +354,9 @@ BOOL SetDebugRegs( void )
         }
     }
     SetDR7( dr7 );
-    return( TRUE );
+    return( true );
 #elif defined( MD_axp ) || defined( MD_ppc )
-    return( FALSE );
+    return( false );
 #else
     #error SetDebugRegs not configured
 #endif
@@ -365,7 +365,7 @@ BOOL SetDebugRegs( void )
 /*
  * CheckWatchPoints - check if a watchpoint was hit
  */
-BOOL CheckWatchPoints( void )
+bool CheckWatchPoints( void )
 {
     DWORD   value;
     int     i;
@@ -373,7 +373,7 @@ BOOL CheckWatchPoints( void )
     for( i = 0; i < WatchCount; i++ ) {
         ReadMemory( &WatchPoints[i].loc, &value, sizeof( value ) );
         if( value != WatchPoints[i].value ) {
-            return( TRUE );
+            return( true );
         }
         if( WatchPoints[i].len == 8 ) {
             addr48_ptr  addr;
@@ -382,11 +382,11 @@ BOOL CheckWatchPoints( void )
             addr.offset = WatchPoints[i].loc.offset + sizeof( value );
             ReadMemory( &addr, &value, sizeof( value ) );
             if( value != WatchPoints[i].value_high ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 #if defined( MD_x86 )

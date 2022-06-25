@@ -141,7 +141,7 @@ void InterruptProgram( void )
     setTBitInAllThreads( T_ON_CURR );
     // a trick to make app execute long enough to hit a breakpoint
     PostMessage( HWND_TOPMOST, WM_NULL, 0, 0 );
-    PendingProgramInterrupt = TRUE;
+    PendingProgramInterrupt = true;
 }
 
 bool Terminate( void )
@@ -152,9 +152,9 @@ bool Terminate( void )
     if( hp != NULL ) {
         TerminateProcess( hp, 0 );
         CloseHandle( hp );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -217,7 +217,7 @@ static trap_conditions handleInt3( DWORD state )
         th = pOpenThread( DebugeeTid );
         AddThread( DebugeeTid, th, NULL );
         ti = FindThread( DebugeeTid );
-        ti->is_foreign = TRUE;
+        ti->is_foreign = true;
     }
     if( ti->is_foreign ) {
         HANDLE      proc;
@@ -269,7 +269,7 @@ static trap_conditions handleInt1( DWORD state )
          * off in all the threads
          */
         setTBitInAllThreads( T_OFF );
-        PendingProgramInterrupt = FALSE;
+        PendingProgramInterrupt = false;
         return( COND_USER );
     }
 
@@ -327,7 +327,7 @@ static void getImageNote( IMAGE_NOTE *pin )
 /*
  * DebugExecute - execute program under debug control
  */
-myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
+myconditions DebugExecute( DWORD state, bool *tsc, bool stop_on_module_load )
 {
     DWORD           continue_how;
     DWORD           code;
@@ -337,7 +337,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
     trap_conditions cond;
     char            *p;
     char            *q;
-    BOOL            rc;
+    bool            rc;
 #ifdef WOW
 #if !defined( MD_x64 )
     thread_info     *ti;
@@ -348,7 +348,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
     myconditions    returnCode;
 
     if( tsc != NULL ) {
-        *tsc = FALSE;
+        *tsc = false;
     }
     /*
      * "Slaying" gets set by AccKillProg.  Because a dead WOW app
@@ -365,7 +365,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
     continue_how = DBG_CONTINUE;
 
     for( ;; ) {
-        PendingProgramInterrupt = FALSE;
+        PendingProgramInterrupt = false;
         if( (state & STATE_WATCH) && (state & STATE_WATCH_386) == 0 ) {
             setTBit( T_OFF ); /* turn off previous T-bit */
 #if defined( MD_axp )
@@ -420,7 +420,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                     getImageNote( &imgnote );
                     RemoveModuleFromLibList( imgnote.Module, imgnote.FileName );
                     if( !stricmp( imgnote.FileName, CurrEXEName ) ) {
-                        DebugeeEnded = TRUE;
+                        DebugeeEnded = true;
                         returnCode = COND_TERMINATE;
                         goto done;
                     }
@@ -431,7 +431,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                     break;
                 case DBG_DLLSTART:
                     getImageNote( &imgnote );
-                    AddLib( TRUE, &imgnote );
+                    AddLib( true, &imgnote );
                     if( !IsWOW && stop_on_module_load ) {
                         returnCode = 0;
                         goto done;
@@ -440,7 +440,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                 case DBG_TASKSTART:
                     DebugeeTid = DebugEvent.dwThreadId;
                     ti = FindThread( DebugeeTid );
-                    ti->is_wow = TRUE;
+                    ti->is_wow = true;
                     getImageNote( &imgnote );
                     /*
                      * check and see if we have the 16-bit app that we
@@ -454,7 +454,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                         returnCode = COND_VDM_START;
                         goto done;
                     } else {
-                        AddLib( TRUE, &imgnote );
+                        AddLib( true, &imgnote );
                     }
                     break;
                 case DBG_SINGLESTEP:
@@ -477,7 +477,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                      */
                     DebugeeTid = DebugEvent.dwThreadId;
                     ti = FindThread( DebugeeTid );
-                    ti->is_dos = TRUE;
+                    ti->is_dos = true;
                     break;
                 case DBG_INIT:
                     // I have no idea how to handle this!
@@ -564,7 +564,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
         case CREATE_THREAD_DEBUG_EVENT:
             DebugeeTid = DebugEvent.dwThreadId;
             if( tsc != NULL ) {
-                *tsc = TRUE;
+                *tsc = true;
             }
             AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateThread.hThread, DebugEvent.u.CreateThread.lpStartAddress );
             break;
@@ -572,7 +572,7 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
             DebugeeTid = DebugEvent.dwThreadId;
             ClearDebugRegs();
             if( tsc != NULL ) {
-                *tsc = TRUE;
+                *tsc = true;
             }
             DeadThread( DebugEvent.dwThreadId );
             break;
@@ -582,13 +582,13 @@ myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
         case EXIT_PROCESS_DEBUG_EVENT:
             DebugeeTid = DebugEvent.dwThreadId;
             ClearDebugRegs();
-            DebugeeEnded = TRUE;
-            DelProcess( FALSE );
+            DebugeeEnded = true;
+            DelProcess( false );
             MyContinueDebugEvent( DBG_CONTINUE );
             returnCode = COND_TERMINATE;
             goto done;
         case LOAD_DLL_DEBUG_EVENT:
-            AddLib( FALSE, NULL );
+            AddLib( false, NULL );
             if( !IsWOW && stop_on_module_load ) {
                 returnCode = COND_LIBRARIES;
                 goto done;
@@ -662,7 +662,7 @@ static trap_elen runProg( bool single_step )
 {
     DWORD       state;
     MYCONTEXT   con;
-    BOOL        thread_state_changed;
+    bool        thread_state_changed;
     thread_info *ti;
     prog_go_ret *ret;
 
@@ -695,7 +695,7 @@ static trap_elen runProg( bool single_step )
     }
 
     SetConsoleCtrlHandler( consoleHandler, TRUE );
-    ret->conditions = DebugExecute( state, &thread_state_changed, TRUE );
+    ret->conditions = DebugExecute( state, &thread_state_changed, true );
     SetConsoleCtrlHandler( consoleHandler, FALSE );
 
     if( state & STATE_WATCH_386 ) {
@@ -736,10 +736,10 @@ static trap_elen runProg( bool single_step )
 
 trap_retval TRAP_CORE( Prog_go )( void )
 {
-    return( runProg( FALSE ) );
+    return( runProg( false ) );
 }
 
 trap_retval TRAP_CORE( Prog_step )( void )
 {
-    return( runProg( TRUE ) );
+    return( runProg( true ) );
 }

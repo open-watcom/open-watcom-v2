@@ -176,18 +176,18 @@ typedef void            IMAGE_NOTE;
  */
 
 /* accmap.c */
-extern BOOL             FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size );
+extern bool             FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size );
 extern void             FixUpDLLNames( void );
 extern void             RemoveModuleFromLibList( char *module, char *filename );
-extern BOOL             IsMagicalFileHandle( HANDLE h );
+extern bool             IsMagicalFileHandle( HANDLE h );
 extern HANDLE           GetMagicalFileHandle( char *name );
 extern void             AddProcess( header_info * );
-extern void             DelProcess( BOOL );
+extern void             DelProcess( bool );
 extern void             VoidProcess( void );
-extern void             AddLib( BOOL, IMAGE_NOTE *im );
+extern void             AddLib( bool, IMAGE_NOTE *im );
 extern void             DelLib( void );
 extern void             FreeLibList( void );
-extern int              DoListLibs( char *buff, int is_first, int want_16, int want_32, int verbose, int sel );
+extern bool             DoListLibs( char *buff, int is_first, int want_16, int want_32, int verbose, int sel );
 
 /* accmem.c */
 extern DWORD            WriteMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
@@ -201,20 +201,20 @@ extern void             AddMessagePrefix( char *buff, size_t len );
 /* accrun.c */
 extern opcode_type      place_breakpoint_lin( HANDLE process, LPVOID base );
 extern int              remove_breakpoint_lin( HANDLE process, LPVOID base, opcode_type old_opcode );
-extern myconditions     DebugExecute( DWORD state, int *tsc, bool );
+extern myconditions     DebugExecute( DWORD state, bool *tsc, bool );
 extern void             InterruptProgram( void );
 extern bool             Terminate( void );
 
 /* misc.c */
-extern BOOL             MyGetThreadContext( thread_info *ti, MYCONTEXT *pc );
+extern bool             MyGetThreadContext( thread_info *ti, MYCONTEXT *pc );
 #define GetThreadContext Dont_call_GetThreadContext_directly__Call_MyGetThreadContext_instead
-extern BOOL             MySetThreadContext( thread_info *ti, MYCONTEXT *pc );
+extern bool             MySetThreadContext( thread_info *ti, MYCONTEXT *pc );
 #define SetThreadContext Dont_call_SetThreadContext_directly__Call_MySetThreadContext_instead
 
 /* peread.c */
-extern BOOL             SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size );
-extern int              GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack );
-extern int              GetModuleName( HANDLE fhdl, char *name );
+extern bool             SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size );
+extern bool             GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack );
+extern bool             GetModuleName( HANDLE fhdl, char *name );
 
 /* thread.c */
 extern void             AddThread( DWORD tid, HANDLE th, LPVOID sa );
@@ -224,17 +224,17 @@ extern void             RemoveThread( DWORD tid );
 extern void             RemoveAllThreads( void );
 
 /* accbrwat.c */
-extern BOOL             CheckWatchPoints( void );
-extern BOOL             SetDebugRegs( void );
+extern bool             CheckWatchPoints( void );
+extern bool             SetDebugRegs( void );
 extern void             ClearDebugRegs( void );
 extern DWORD            GetDR6( void );
 extern void             SetDR7( DWORD tmp );
-extern BOOL             FindBreak( WORD segment, DWORD offset, opcode_type *old_opcode );
+extern bool             FindBreak( WORD segment, DWORD offset, opcode_type *old_opcode );
 extern bool             IsWatch( void );
 
 /* dbgthrd.c */
 extern DWORD            StartControlThread( char *name, DWORD *pid, DWORD cr_flags );
-extern BOOL             MyWaitForDebugEvent( void );
+extern bool             MyWaitForDebugEvent( void );
 extern void             MyContinueDebugEvent( int );
 extern void             StopControlThread( void );
 extern void             ProcessQueuedRepaints( void );
