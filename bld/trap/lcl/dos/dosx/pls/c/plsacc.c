@@ -302,71 +302,48 @@ static int RunProgram( void )
 }
 
 
-static int DoReadMemory( addr48_ptr *addr, unsigned long req, void *buf )
+static size_t ReadWrite( bool (*r)(addr48_ptr *, void *, size_t), addr48_ptr *addr, void *data, size_t req_len )
+{
+    size_t      len;
+
+    if( !r( addr, data, req_len ) ) {
+        addr->offset += req_len;
+        return( req_len );
+    }
+    for( len = req_len; len > 0; --len ) {
+        if( r( addr, data, 1 ) )
+            break;
+        data = (char *)data + 1;
+        addr->offset++;
+    }
+    return( req_len - len );
+}
+
+static bool ReadMemory( addr48_ptr *addr, void *data, size_t len )
 {
     if( IsProtSeg( addr->segment ) ) {
         PTR386  paddr;
 
         paddr.selector = addr->segment;
         paddr.offset = addr->offset;
-        return( dbg_pread( &paddr, req, buf ) );
+        return( dbg_pread( &paddr, len, data ) != 0 );
     } else {
-        return( dbg_rread( RealAddr( addr ), req, buf ) );
+        return( dbg_rread( RealAddr( addr ), len, data ) != 0 );
     }
 }
 
-static size_t ReadMemory( addr48_ptr *addr, void *buff, size_t req_len )
-{
-    int         err;
-    size_t      len;
-
-    err = DoReadMemory( addr, req_len, buff );
-    if( err == 0 ) {
-        addr->offset += req_len;
-        return( req_len );
-    }
-    for( len = req_len; len != 0; --len ) {
-        if( DoReadMemory( addr, 1, buff ) != 0 )
-            break;
-        buff = (char *)buff + 1;
-        addr->offset++;
-    }
-    return( req_len - len );
-}
-
-
-static int DoWriteMemory( addr48_ptr *addr, unsigned long req, void *buf )
+static bool WriteMemory( addr48_ptr *addr, void *data, size_t len )
 {
     if( IsProtSeg( addr->segment ) ) {
         PTR386  paddr;
 
         paddr.selector = addr->segment;
         paddr.offset = addr->offset;
-        return( dbg_pwrite( &paddr, req, buf ) );
+        return( dbg_pwrite( &paddr, len, data ) != 0 );
     } else {
-        return( dbg_rwrite( RealAddr( addr ), req, buf ) );
+        return( dbg_rwrite( RealAddr( addr ), len, data ) != 0 );
     }
 }
-
-static size_t WriteMemory( addr48_ptr *addr, void *buff, size_t req_len )
-{
-    int         err;
-    size_t      len;
-
-    err = DoWriteMemory( addr, req_len, buff );
-    if( err == 0 ) {
-        addr->offset += req_len;
-        return( req_len );
-    }
-    for( len = req_len; len != 0; --len ) {
-        if( DoWriteMemory( addr, 1, buff ) != 0 )
-            break;
-        buff = (char *)buff + 1;
-        addr->offset++;
-    }
-    return( req_len - len );
-}
-
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
@@ -382,10 +359,10 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     acc = GetInPtr( 0 );
     want = sizeof( UtilBuff );
     sum = 0;
-    for( len = acc->len; len > 0; len -= want ) {
+    for( len = acc->len; len > 0; len -= got ) {
         if( want > len )
             want = len;
-        got = ReadMemory( &acc->in_addr, UtilBuff, want );
+        got = ReadWrite( ReadMemory, &acc->in_addr, UtilBuff, want );
         for( i = 0; i < got; ++i ) {
             sum += ((unsigned char *)UtilBuff)[i];
         }
@@ -405,7 +382,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
 
     _DBG(("ReadMem\r\n"));
     acc = GetInPtr( 0 );
-    return( ReadMemory( &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
+    return( ReadWrite( ReadMemory, &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -416,7 +393,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
     _DBG(("WriteMem\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
+    ret->len = ReadWrite( WriteMemory, &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
                             GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
@@ -709,14 +686,16 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
 {
     opcode_type old_opcode;
 
-    ReadMemory( addr, &old_opcode, sizeof( old_opcode ) );
-    WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
-    return( old_opcode );
+    if( !ReadMemory( addr, &old_opcode, sizeof( old_opcode ) ) ) {
+        WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
+        return( old_opcode );
+    }
+    return( 0 );
 }
 
 static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
 {
-    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
+    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) );
 }
 
 static trap_conditions MapReturn( void )
@@ -800,7 +779,7 @@ static int DRegsCount( void )
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    dword           l;
+    dword           value;
     watch_point     *curr;
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -814,14 +793,15 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->err = 1;       // failed
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
-        DoReadMemory( &acc->watch_addr, 4, &l );
+        value = 0;
+        ReadMemory( &acc->watch_addr, &value, acc->size );
         addr.offset = acc->watch_addr.offset;
         addr.selector = acc->watch_addr.segment;
         dbg_ptolin( &addr, &linear );
         curr = WatchPoints + WatchCount;
         curr->addr.segment = addr.selector;
         curr->addr.offset = addr.offset;
-        curr->value = l;
+        curr->value = value;
         curr->linear = linear;
         curr->len = acc->size;
         curr->linear &= ~( curr->len - 1 );
@@ -925,7 +905,8 @@ static unsigned ProgRun( bool step )
                 if( ( Mach.msb_dreg[6] & DR6_BS ) == 0 )
                     break;
                 for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                    DoReadMemory( &wp->addr, 4, &value );
+                    value = 0;
+                    ReadMemory( &wp->addr, &value, wp->len );
                     if( value != wp->value ) {
                         ret->conditions = COND_WATCH;
                         Mach.msb_eflags &= ~EF_TF;

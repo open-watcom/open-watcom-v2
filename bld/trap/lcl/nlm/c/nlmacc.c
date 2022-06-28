@@ -905,55 +905,51 @@ trap_retval TRAP_CORE( Machine_data )( void )
     return( sizeof( *ret ) );
 }
 
-static int ReadMemory( addr48_ptr *addr, void *buf, size_t len )
+static size_t ReadWrite( bool (*rtn)(addr48_ptr *, void *, size_t), addr48_ptr *addr,
+                                void *data, size_t req_len )
 {
-    if( MSB == NULL )
-        return( -1 );
-    if( CValidatePointer( (char *)addr->offset ) == 0 )
-        return( -1 );
-    if( CValidatePointer( (char *)addr->offset + len - 1 ) == 0 )
-        return( -1 );
-    memcpy( buf, (void *)addr->offset, len );
-    return( 0 );
-}
-
-static int WriteMemory( addr48_ptr *addr, void *buf, size_t len )
-{
-    if( MSB == NULL )
-        return( -1 );
-    if( CValidatePointer( (char *)addr->offset ) == 0 )
-        return( -1 );
-    if( CValidatePointer( (char *)addr->offset + len - 1 ) == 0 )
-        return( -1 );
-    memcpy( (void *)addr->offset, buf, len );
-    return( 0 );
-}
-
-static size_t ReadWrite( int (*rtn)(addr48_ptr *, void *, size_t), addr48_ptr *addr,
-                                void *buff, size_t req_len )
-{
-    int         err;
     size_t      len;
 
-    err = rtn( addr, buff, req_len );
-    if( err == 0 ) {
+    if( !rtn( addr, data, req_len ) ) {
         addr->offset += req_len;
         return( req_len );
     }
     for( len = req_len; len > 0; len++ ) {
-        if( rtn( addr, buff, 1 ) != 0 )
+        if( rtn( addr, data, 1 ) )
             break;
-        buff = (char *)buff + 1;
+        data = (char *)data + 1;
         addr->offset++;
     }
     return( req_len - len );
 }
 
+static bool ReadMemory( addr48_ptr *addr, void *data, size_t len )
+{
+    if( MSB == NULL )
+        return( true );
+    if( CValidatePointer( (char *)addr->offset ) == 0 )
+        return( true );
+    if( CValidatePointer( (char *)addr->offset + len - 1 ) == 0 )
+        return( true );
+    memcpy( data, (void *)addr->offset, len );
+    return( false );
+}
+
+static bool WriteMemory( addr48_ptr *addr, void *data, size_t len )
+{
+    if( MSB == NULL )
+        return( true );
+    if( CValidatePointer( (char *)addr->offset ) == 0 )
+        return( true );
+    if( CValidatePointer( (char *)addr->offset + len - 1 ) == 0 )
+        return( true );
+    memcpy( (void *)addr->offset, data, len );
+    return( false );
+}
 
 trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     size_t              len;
-    addr48_ptr          addr;
     size_t              i;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
@@ -962,14 +958,12 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     unsigned long       sum;
 
     acc = GetInPtr( 0 );
-    addr.offset = acc->in_addr.offset;
-    addr.segment = acc->in_addr.segment;
     want = sizeof( UtilBuff );
     sum = 0;
-    for( len = acc->len; len > 0; len -= want ) {
+    for( len = acc->len; len > 0; len -= got ) {
         if( want > len )
             want = len;
-        got = ReadWrite( ReadMemory, &addr, UtilBuff, want );
+        got = ReadWrite( ReadMemory, &acc->in_addr, UtilBuff, want );
         for( i = 0; i < got; ++i ) {
             sum += ((unsigned char *)UtilBuff)[i];
         }
@@ -985,26 +979,20 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 
 trap_retval TRAP_CORE( Read_mem )( void )
 {
-    addr48_ptr          addr;
     read_mem_req        *acc;
 
     acc = GetInPtr( 0 );
-    addr.offset = acc->mem_addr.offset;
-    addr.segment = acc->mem_addr.segment;
-    return( ReadWrite( ReadMemory, &addr, GetOutPtr( 0 ), acc->len ) );
+    return( ReadWrite( ReadMemory, &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
 {
-    addr48_ptr          addr;
     write_mem_req       *acc;
     write_mem_ret       *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    addr.offset = acc->mem_addr.offset;
-    addr.segment = acc->mem_addr.segment;
-    ret->len = ReadWrite( WriteMemory, &addr, GetInPtr( sizeof( *acc ) ),
+    ret->len = ReadWrite( WriteMemory, &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
                                 GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
@@ -1389,27 +1377,30 @@ static int DRegsCount( void )
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    dword           l;
+    dword           value;
     set_watch_req   *acc;
     set_watch_ret   *ret;
     watch_point     *wp;
     int             i;
     int             dreg_avail[4];
+    dword           linear;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = 1;
     ret->multiplier = 2000;
-    if( WatchCount < MAX_WATCHES && ReadMemory( &acc->watch_addr, &l, sizeof( l ) ) == 0 ) {
-        ret->err = 0;
+    ret->err = 1;       // failed
+    if( WatchCount < MAX_WATCHES ) {
+        ret->err = 0;   // OK
+        value = 0;
+        ReadMemory( &acc->watch_addr, &value, acc->size );
+        linear = acc->watch_addr.offset;
         wp = WatchPoints + WatchCount;
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
-        wp->linear = acc->watch_addr.offset;
         wp->len = acc->size;
-        wp->linear &= ~(wp->len - 1);
-        wp->dregs = ( wp->addr.offset & (wp->len - 1) ) ? 2 : 1;
-        wp->value = l;
+        wp->linear = linear & ~(wp->len - 1);
+        wp->dregs = ( linear & (wp->len - 1) ) ? 2 : 1;
+        wp->value = value;
         ++WatchCount;
         for( i = 0; i < NUM_DREG; ++i ) {
             dreg_avail[i] = DoReserveBreakpoint();
@@ -1439,7 +1430,7 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
 {
     opcode_type old_opcode;
 
-    if( ReadMemory( addr, &old_opcode, sizeof( old_opcode ) ) == sizeof( old_opcode ) ) {
+    if( !ReadMemory( addr, &old_opcode, sizeof( old_opcode ) ) ) {
         WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
         return( old_opcode );
     }
@@ -1448,7 +1439,7 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
 
 static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
 {
-    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
+    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )
@@ -1566,7 +1557,8 @@ static trap_elen ProgRun( bool step )
                 if( !( MSB->errnum & DR6_BS ) )
                     break;
                 for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                    ReadMemory( &wp->addr, &value, sizeof( value ) );
+                    value = 0;
+                    ReadMemory( &wp->addr, &value, wp->len );
                     if( value != wp->value ) {
                         ret->conditions |= COND_WATCH;
                         goto leave;

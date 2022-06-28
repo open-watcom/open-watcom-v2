@@ -241,7 +241,7 @@ void SetDbgTask( void )
 {
 }
 
-static  word    LookUp( word sdtseg, word seg, word global_sel )
+static  word    LookUp( word sdtseg, word seg, bool global )
 {
     dword       sdtoff;
     dword       sdtlim;
@@ -253,7 +253,11 @@ static  word    LookUp( word sdtseg, word seg, word global_sel )
     for( sdtoff = 0; sdtoff < sdtlim; sdtoff += 8 ) {
         if( sdtoff == ( seg & 0xfff8 ) )
             continue;
-        otherseg = sdtoff + ( global_sel ? 0 : 4 );
+        if( global ) {
+            otherseg = sdtoff;
+        } else {
+            otherseg = sdtoff + 4;
+        }
         if( !WriteOK( otherseg ) )
             continue;
         if( GetLinear( otherseg, 0 ) != linear )
@@ -269,73 +273,56 @@ static word    AltSegment( word seg )
 {
     word        otherseg;
 
-    otherseg = LookUp( 0x30, seg, 0 );  /* try LDT */
+    otherseg = LookUp( 0x30, seg, false );  /* try LDT */
     if( otherseg != 0 )
         return( otherseg );
-    otherseg = LookUp( 0x38, seg, 1 );  /* try GDT */
+    otherseg = LookUp( 0x38, seg, true );  /* try GDT */
     if( otherseg != 0 )
         return( otherseg );
     return( seg );
 }
 
-static size_t ReadWrite( int (*r)(word, dword, void *, size_t), addr48_ptr *addr, void *data, size_t req_len ) {
+static size_t ReadWrite( bool (*r)(addr48_ptr *, void *, size_t), addr48_ptr *addr, void *data, size_t req_len ) {
 
     size_t      len;
-    word        segment;
-    dword       offset;
-    dword       limit;
 
-    offset = addr->offset;
-    segment = addr->segment;
-    limit = SegLimit( segment );
-    _DBG2(("Read Write %4.4x:%8.8lx", segment, offset));
-    if( limit >= offset + req_len - 1 ) {
-        _DBG2(("Read Write Ok for %d", (int)req_len));
-        if( !r( segment, offset, data, req_len ) ) {
-            _DBG3(("failed for %4.4x:%8.8lx", segment, offset));
-        }
+    _DBG2(("Read Write %4.4x:%8.8lx", addr->segment, addr->offset));
+    if( !r( addr, data, req_len ) ) {
         _DBG2(("Read Write Done"));
+        addr->offset += req_len;
         return( req_len );
     }
     _DBG2(("Read Write One byte at a time for %d", req_len));
-    for( len = req_len; offset <= limit && len > 0; len-- ) {
-        if( !r( segment, offset, data, 1 ) ) {
-            _DBG3(("failed for %4.4x:%8.8lx", segment, offset));
+    for( len = req_len; len > 0; --len ) {
+        if( r( addr, data, 1 ) ) {
+            _DBG3(("failed for %4.4x:%8.8lx", addr->segment, addr->offset));
+            break;
         }
-        offset++;
+        addr->offset++;
         data = (char *)data + 1;
     }
     _DBG2(("Read Write Done"));
     return( req_len - len );
 }
 
-static int DoReadMemory( word sel, dword offs, void *data, size_t len )
+static bool ReadMemory( addr48_ptr *addr, void *data, size_t len )
 {
-    DoReadBytes( sel, offs, data, len );
-    return( 1 );
-}
-
-static int DoWriteMemory( word sel, dword offs, void *data, size_t len )
-{
-    DoWriteBytes( sel, offs, data, len );
-    return( 1 );
-}
-
-static size_t ReadMemory( addr48_ptr *addr, void *data, size_t len )
-{
-    word        segment;
+    addr_seg    segment;
 
     segment = addr->segment;
     if( !ReadOK( segment ) ) {
         segment = AltSegment( segment );
     }
-    addr->segment = segment;
-    return( ReadWrite( DoReadMemory, addr, data, len ) );
+    if( SegLimit( segment ) >= addr->offset + len - 1 ) {
+        DoReadBytes( segment, addr->offset, data, len );
+        return( false );
+    }
+    return( true );
 }
 
-static size_t WriteMemory( addr48_ptr *addr, void *data, size_t len )
+static bool WriteMemory( addr48_ptr *addr, void *data, size_t len )
 {
-    word        segment;
+    addr_seg    segment;
 
     segment = addr->segment;
     if( segment == Regs.CS )
@@ -343,8 +330,11 @@ static size_t WriteMemory( addr48_ptr *addr, void *data, size_t len )
     if( !WriteOK( segment ) ) {
         segment = AltSegment( segment );
     }
-    addr->segment = segment;
-    return( ReadWrite( DoWriteMemory, addr, data, len ) );
+    if( SegLimit( segment ) >= addr->offset + len - 1 ) {
+        DoWriteBytes( segment, addr->offset, data, len );
+        return( false );
+    }
+    return( true );
 }
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
@@ -415,16 +405,16 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     acc = GetInPtr( 0 );
     want = sizeof( UtilBuff );
     sum = 0;
-    for( len = acc->len; len > 0; len -= want ) {
+    for( len = acc->len; len > 0; len -= got ) {
         if( want > len )
             want = len;
-        got = ReadMemory( &acc->in_addr, UtilBuff, want );
+        got = ReadWrite( ReadMemory, &acc->in_addr, UtilBuff, want );
         for( i = 0; i < got; ++i ) {
             sum += ((unsigned char *)UtilBuff)[i];
         }
-        if( got != want )
+        if( got != want ) {
             break;
-        acc->in_addr.offset += want;
+        }
     }
     ret = GetOutPtr( 0 );
     ret->result = sum;
@@ -438,7 +428,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
 
     _DBG1(( "ReadMem" ));
     acc = GetInPtr( 0 );
-    return( ReadMemory( &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
+    return( ReadWrite( ReadMemory, &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -449,7 +439,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
     _DBG1(( "WriteMem" ));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
+    ret->len = ReadWrite( WriteMemory, &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
                             GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
@@ -647,6 +637,8 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req   *acc;
     set_watch_ret   *ret;
     int             needed;
+    dword           value;
+    dword           linear;
 
     _DBG0(( "AccSetWatch" ));
     acc = GetInPtr( 0 );
@@ -655,13 +647,16 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->err = 1;       // failed
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
+        value = 0;
+        ReadMemory( &acc->watch_addr, &value, acc->size );
+        linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
         wp = WatchPoints + WatchCount++;
-        wp->addr = acc->watch_addr;
-        ReadMemory( &acc->watch_addr, &wp->value, 4 );
-        wp->linear = GetLinear( wp->addr.segment, wp->addr.offset );
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
         wp->len = acc->size;
-        wp->dregs = ( wp->linear & ( wp->len - 1 ) ) ? 2 : 1;
-        wp->linear &= ~( wp->len - 1 );
+        wp->value = value;
+        wp->linear = linear & ~( wp->len - 1 );
+        wp->dregs = ( linear & ( wp->len - 1 ) ) ? 2 : 1;
         needed = DRegsCount();
         if( needed <= 4 )
             ret->multiplier |= USING_DEBUG_REG;
@@ -683,7 +678,7 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
 {
     opcode_type old_opcode;
 
-    if( ReadMemory( addr, &old_opcode, sizeof( old_opcode ) ) == sizeof( old_opcode ) ) {
+    if( !ReadMemory( addr, &old_opcode, sizeof( old_opcode ) ) ) {
         WriteMemory( addr, &BreakOpcode, sizeof( BreakOpcode ) );
         return( old_opcode );
     }
@@ -692,7 +687,7 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
 
 static int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
 {
-    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) != sizeof( old_opcode ) );
+    return( WriteMemory( addr, &old_opcode, sizeof( old_opcode ) ) );
 }
 
 trap_retval TRAP_CORE( Set_break )( void )
@@ -778,7 +773,8 @@ static unsigned ProgRun( bool step )
                 if( ( SysRegs.dr6 & DR6_BS ) == 0 )
                     break;
                 for( i = 0; i < WatchCount; ++i ) {
-                    ReadMemory( &WatchPoints[i].addr, &value, 4 );
+                    value = 0;
+                    ReadMemory( &WatchPoints[i].addr, &value, WatchPoints[i].len );
                     if( value != WatchPoints[i].value ) {
                         ret->conditions |= COND_WATCH;
                         goto leave;
