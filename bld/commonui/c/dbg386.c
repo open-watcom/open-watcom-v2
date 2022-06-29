@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,12 @@
 #include "bool.h"
 #include "wdebug.h"
 #include "winintrf.h"
-#define global_di386
 #include "di386cli.h"
+
+
+#define pick(c,d,r,a) c ## _func *c;
+#include "_di386.h"
+#undef pick
 
 static HANDLE   wint32DLL;
 
@@ -48,12 +52,10 @@ bool Start386Debug( void )
     if( CheckWin386Debug() == WGOD_VERSION ) {
         wint32DLL = LoadLibrary( "wint32.dll" );
         if( (UINT)wint32DLL >= 32 ) {
-            DoneWithInterrupt = (LPVOID)GetProcAddress( wint32DLL, "DoneWithInterrupt" );
-            GetDebugInterruptData = (LPVOID)GetProcAddress( wint32DLL, "GetDebugInterruptData" );
-            ResetDebugInterrupts32 = (LPVOID)GetProcAddress( wint32DLL, "ResetDebugInterrupts32" );
-            SetDebugInterrupts32 = (LPVOID)GetProcAddress( wint32DLL, "SetDebugInterrupts32" );
-            IsDebuggerExecuting = (LPVOID)GetProcAddress( wint32DLL, "IsDebuggerExecuting" );
-            DebuggerIsExecuting = (LPVOID)GetProcAddress( wint32DLL, "DebuggerIsExecuting" );
+
+            #define pick(c,d,r,a) c = (c ## _func *)GetProcAddress( wint32DLL, #d );
+            #include "_di386.h"
+            #undef pick
 
             if( SetDebugInterrupts32() ) {
                 WDebug386 = true;

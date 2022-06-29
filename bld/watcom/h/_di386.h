@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,14 +25,16 @@
 *
 *  ========================================================================
 *
-* Description:  32-bit interrupt Win386 debugging interface.
+* Description:  32-bit interrupt Win386 debugging interface
+*                    functions declaration
 *
 ****************************************************************************/
 
 
-typedef int         FAR PASCAL IsDebuggerExecuting_func( void );
-typedef void        FAR PASCAL DoneWithInterrupt_func( interrupt_struct FAR * );
-typedef int         FAR PASCAL GetDebugInterruptData_func( interrupt_struct FAR * );
-typedef void        FAR PASCAL ResetDebugInterrupts32_func( void );
-typedef int         FAR PASCAL SetDebugInterrupts32_func( void );
-typedef void        FAR PASCAL DebuggerIsExecuting_func( int );
+/*      C name                      DLL name            return      arguments   */
+pick( IsDebuggerExecuting,      ISDEBUGGEREXECUTING,    int,    ( void ) )
+pick( DoneWithInterrupt,        DONEWITHINTERRUPT,      void,   ( interrupt_struct FAR * ) )
+pick( GetDebugInterruptData,    GETDEBUGINTERRUPTDATA,  int,    ( interrupt_struct FAR * ) )
+pick( ResetDebugInterrupts32,   RESETDEBUGINTERRUPTS32, void,   ( void ) )
+pick( SetDebugInterrupts32,     SETDEBUGINTERRUPTS32,   int,    ( void ) )
+pick( DebuggerIsExecuting,      DEBUGGERISEXECUTING,    void,   ( int ) )
