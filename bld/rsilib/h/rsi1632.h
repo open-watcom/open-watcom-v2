@@ -19,6 +19,7 @@
 #define DOS16LIB_INCLUDED
 #include <dos16.h>
 #include <dpmi.h>
+#include "bool.h"
 #include "machtype.h"
 #include "brkptcpu.h"
 
@@ -135,29 +136,27 @@ extern int rsi_mem_strategy( int );
     __value     [__ax] \
     __modify    [__dh]
 
-extern int          rsi_rm_get_vector( int, void FarPtr FarPtr );
-extern int          rsi_rm_set_vector( int, void FarPtr );
+extern bool         rsi_rm_get_vector( int, void FarPtr FarPtr );
+extern bool         rsi_rm_set_vector( int, void FarPtr );
 extern int          rsi_rm_far_call( void FarPtr, D16REGS FarPtr, D16REGS FarPtr );
-extern int          rsi_int_passdown( int );
-extern int          rsi_int_passup( int );
+extern bool         rsi_int_passdown( int );
+extern bool         rsi_int_passup( int );
 extern SELECTOR     rsi_sel_new_absolute( long, unsigned );
-extern int          rsi_sel_free( SELECTOR );
+extern bool         rsi_sel_free( SELECTOR );
 extern SELECTOR     rsi_sel_data_alias( SELECTOR );
 extern long         rsi_abs_address( void FarPtr );
 extern int          rsi_rm_interrupt( int, D16REGS FarPtr, D16REGS FarPtr );
-extern int          rsi_get_descriptor( SELECTOR, descriptor FarPtr );
-extern int          rsi_set_descriptor( SELECTOR, descriptor FarPtr );
+extern bool         rsi_get_descriptor( SELECTOR, descriptor FarPtr );
+extern bool         rsi_set_descriptor( SELECTOR, descriptor FarPtr );
 extern ACTION       *rsi_find_action( PACKAGE FarPtr, char FarPtr );
 extern PACKAGE      FarPtr rsi_find_package( char FarPtr );
 extern SELECTOR     rsi_seg_realloc( SELECTOR csel );
 extern void         FarPtr rsi_get_rm_ptr( void FarPtr );
 extern int          rsi_addr32_check( OFFSET32, SELECTOR, OFFSET32, OFFSET32 * );
 
-/* adr32chk.c */
-extern int          D32AddressCheck( addr48_ptr FarPtr, OFFSET32, OFFSET32 * );
 /* dbglib.c */
 extern void         D32DebugBreakOp( opcode_type FarPtr );
-extern int          D32DebugInit( TSF32 FarPtr, int );
+extern bool         D32DebugInit( TSF32 FarPtr, int );
 extern void         D32DebugTerm( void );
 extern void         D32DebugRun( TSF32 FarPtr );
 extern void         D32HookTimer( int );
@@ -174,17 +173,17 @@ extern void         FAR16 passup_hotkey( void );
 /* d32dbgld.c */
 extern void         D32SetCurrentObject( long cookie );
 extern int          D32DebugLoad( const char *, const char FarPtr, TSF32 FarPtr );
-extern int          D32Relocate( addr48_ptr FarPtr fp );
-extern int          D32Unrelocate( addr48_ptr FarPtr fp );
+extern bool         D32Relocate( addr48_ptr FarPtr fp );
+extern bool         D32Unrelocate( addr48_ptr FarPtr fp );
 /* mem32.asm */
 extern void         peek32( OFFSET32, SELECTOR, void FarPtr, size_t );
-extern int          poke32( OFFSET32, SELECTOR, const void FarPtr, size_t );
+extern bool         poke32( OFFSET32, SELECTOR, const void FarPtr, size_t );
 /* d32dbgrd.c */
-extern int          D32DebugRead( addr48_ptr FarPtr, int, void FarPtr, size_t );
+extern bool         D32DebugRead( addr48_ptr FarPtr, bool, void FarPtr, size_t );
 /* d32dbgwr.c */
-extern int          D32DebugWrite( addr48_ptr FarPtr, int, const void FarPtr, size_t );
+extern bool         D32DebugWrite( addr48_ptr FarPtr, bool, void FarPtr, size_t );
 /* d32dbgsb.c */
-extern void         D32DebugSetBreak( addr48_ptr FarPtr, int, opcode_type FarPtr, opcode_type FarPtr );
+extern void         D32DebugSetBreak( addr48_ptr FarPtr, bool, opcode_type FarPtr, opcode_type FarPtr );
 
 // global variables
 extern int          addr_mode;

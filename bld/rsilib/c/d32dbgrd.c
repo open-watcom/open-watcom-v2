@@ -17,14 +17,14 @@
 
 /* Return value: not used.
 */
-int D32DebugRead( addr48_ptr FarPtr addr, int translate, void FarPtr to, size_t len )
+bool D32DebugRead( addr48_ptr FarPtr addr, bool translate, void FarPtr to, size_t len )
 {
     addr48_ptr  fp;
     OFFSET32    new_len;
     int         check;
 
     if( len == 0 )
-        return( 0 );
+        return( false );
 
     fp.segment = addr->segment;
     fp.offset = addr->offset;
@@ -41,7 +41,7 @@ int D32DebugRead( addr48_ptr FarPtr addr, int translate, void FarPtr to, size_t 
     check = rsi_addr32_check( fp.offset, fp.segment, (OFFSET32)len, &new_len );
     if( check == MEMBLK_INVALID ) {
         far_setmem( to, len, 0xFF );
-        return( 1 );
+        return( true );
     } else {
         if( check != MEMBLK_VALID ) {
             far_setmem( (unsigned char FarPtr)to + new_len, len - new_len, 0xFF );
@@ -62,11 +62,11 @@ int D32DebugRead( addr48_ptr FarPtr addr, int translate, void FarPtr to, size_t 
                 *(unsigned char FarPtr)to = 0xFF;
             } else {
                 size_t  check_len = ( len >> 1 );
-                D32DebugRead( &fp, 0, to, check_len );
+                D32DebugRead( &fp, false, to, check_len );
                 fp.offset += check_len;
-                D32DebugRead( &fp, 0, (unsigned char FarPtr)to + check_len, len - check_len );
+                D32DebugRead( &fp, false, (unsigned char FarPtr)to + check_len, len - check_len );
             }
         }
-        return( 0 );
+        return( false );
     }
 }

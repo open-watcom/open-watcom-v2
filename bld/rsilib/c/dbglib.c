@@ -245,7 +245,7 @@ static void set_hotkey_break( TSF32 FarPtr client )
     fp.segment = client->cs;
     fp.offset = client->eip;
     D32DebugBreakOp( &hotkey_opcode );
-    D32DebugSetBreak( &fp, 0, &hotkey_opcode, &old_hotkey_opcode );
+    D32DebugSetBreak( &fp, false, &hotkey_opcode, &old_hotkey_opcode );
     hotkey_hit = 1;
 #ifdef DEBUGHOTKEY
     outs( "hotkey break set\r\n" );
@@ -266,12 +266,12 @@ static void check_hotkey( int eip_mod, TSF32 FarPtr client )
 #endif
         fp.segment = client->cs;
         fp.offset = client->eip + eip_mod;
-        D32DebugSetBreak( &fp, 0, &old_hotkey_opcode, &hotkey_opcode );
+        D32DebugSetBreak( &fp, false, &old_hotkey_opcode, &hotkey_opcode );
         client->int_id = hotkey_int; /* Attribute to Hotkey */
     }
 }
 
-static int fix_fpe_fault( unsigned short opcodew, TSF32 FarPtr client )
+static bool fix_fpe_fault( unsigned short opcodew, TSF32 FarPtr client )
 {
     static unsigned char imm8, val8;
     static unsigned short imm16;
@@ -306,13 +306,13 @@ static int fix_fpe_fault( unsigned short opcodew, TSF32 FarPtr client )
         client->eip += 2;
         break;
     default :
-        return( 0 );
+        return( false );
         break;
     }
-    return( 1 );
+    return( true );
 }
 
-static int fixcrash( TSF32 FarPtr client )
+static bool fixcrash( TSF32 FarPtr client )
 {
     static unsigned char opcode;
     static unsigned short opcodew;
@@ -331,7 +331,7 @@ static int fixcrash( TSF32 FarPtr client )
         client->es = 0;
 coverup:
         poke32( client->esp, client->ss, &zero, 2 );
-        return( 1 );
+        return( true );
     }
     if( opcode == 0x1F ) {      /* POP DS */
         client->ds = 0;
@@ -352,7 +352,7 @@ coverup:
         other sneaky tricks
     */
     if( fix_fpe_fault( opcodew, client ) ) {
-        return( 1 );
+        return( true );
     }
 #if 0
     /* Attempt to fix up references to Phar Lap selector 0x34
@@ -361,9 +361,10 @@ coverup:
     if( client->es == 0x34 ) client->es = client->ds, fixed++;
     if( client->fs == 0x34 ) client->fs = client->ds, fixed++;
     if( client->gs == 0x34 ) client->gs = client->ds, fixed++;
-    if( fixed ) return( 1 );
+    if( fixed )
+        return( true );
 #endif
-    return( 0 );
+    return( false );
 }
 
 /* Step interrupt handled as is */
@@ -512,22 +513,22 @@ analyze:
     return( 0 );
 }
 
-static USHORT my_package_bind( char *package, char *action, PACKAGE FarPtr *bound_package, ACTION **bound_action )
+static bool my_package_bind( char *package, char *action, PACKAGE FarPtr *bound_package, ACTION **bound_action )
 {
     ACTION      *a;
 
     if( *bound_package == NULL_PTR ) {
         *bound_package = rsi_find_package( package );
     }
-    if( *bound_package == NULL_PTR )     /* If no package must be error */
-        return( 1 );
+    if( *bound_package == NULL_PTR )    /* If no package must be error */
+        return( true );
     if( bound_action == NULL_PTR )
-        return( 0 );        /* No action requested */
+        return( false );                /* No action requested */
     a = rsi_find_action( *bound_package, action );
-    if( a == NULL_PTR )     /* Couldn't find action */
-        return( 1 );
+    if( a == NULL_PTR )                 /* Couldn't find action */
+        return( true );
     *bound_action = a;
-    return( 0 );
+    return( false );
 }
 
 /*
@@ -625,7 +626,7 @@ static void FarPtr  save_int23;
 
 /* Returns 0 for success, 1 for failure
 */
-int D32DebugInit( TSF32 FarPtr process_regs, int hkey )
+bool D32DebugInit( TSF32 FarPtr process_regs, int hkey )
 {
     farptr16    lowmem_cs;
     farptr16    org15p;
@@ -647,7 +648,7 @@ int D32DebugInit( TSF32 FarPtr process_regs, int hkey )
     being_debugged = _check_parrent_debugger();
 
     if( hook_debug_interrupts() )    /* Hook exceptions */
-        return( 1 );
+        return( true );
 
     /* Move real mode INT 5, 15, 1B, 23 handlers low and set some of
         them up to generate a passup hotkey_int.  The value of hotkey_int
@@ -665,7 +666,7 @@ int D32DebugInit( TSF32 FarPtr process_regs, int hkey )
         lowmem_cs.w.sel = rsi_seg_realloc( _FP_SEG( rm15_handler ) );
         rsi_mem_strategy( strat );
         if( lowmem_cs.w.sel == NULL_SEL )
-            return( 1 );
+            return( true );
         lowmem_cs.w.off = _FP_OFF( rm15_handler );
         lowmem_cs.pv = rsi_get_rm_ptr( lowmem_cs.pv );
 
@@ -674,7 +675,7 @@ int D32DebugInit( TSF32 FarPtr process_regs, int hkey )
         */
         org15p.w.sel = rsi_sel_data_alias( _FP_SEG( &org15_handler ) );
         if( org15p.w.sel == NULL_PTR )
-            return( 1 );
+            return( true );
         org15p.w.off = _FP_OFF( &org15_handler );
         hotkeyp.w.sel = org15p.w.sel;
         hotkeyp.w.off = _FP_OFF( &hotkey_passup );
@@ -710,7 +711,7 @@ int D32DebugInit( TSF32 FarPtr process_regs, int hkey )
     */
     tsf32_exec( &debugger_tsf, NULL );
     debugger_tsf.eflags &= ~0x200;
-    return( 0 );
+    return( false );
 }
 
 void D32DebugTerm( void )

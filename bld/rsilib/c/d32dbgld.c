@@ -44,7 +44,7 @@ typedef struct {
 static char     exp_loaded;
 static SELECTOR exp_base;
 
-static int abspath( const char *filename, char *fullpath )
+static bool abspath( const char *filename, char *fullpath )
 {
     int i;
     const char *fn;
@@ -71,7 +71,7 @@ static int abspath( const char *filename, char *fullpath )
         r.x.si = (unsigned short)fp;
         intdos( &r, &r );
         if( r.x.cflag )
-            return( 0 );
+            return( false );
         if( i = strlen( fp ) ) {
             fp += i;
             *fp++ = '\\';
@@ -87,13 +87,13 @@ static int abspath( const char *filename, char *fullpath )
                 fp -= 3;        /* back past last \ */
                 while( *--fp != '\\' ) {
                     if( fp <= fullpath ) {
-                        return( 0 );
+                        return( false );
                     }
                 }
             }
         }
     }
-    return( 1 );
+    return( true );
 }
 
 static void set_program_name( const char *filename )
@@ -265,7 +265,7 @@ static int loader_bind_util( PACKAGE FarPtr p, LOADER_VECTOR *lv )
     return( 0 );
 }
 
-static int loader_for( FDORNAME filename, ULONG start_pos, LOADER_VECTOR *lv )
+static bool loader_for( FDORNAME filename, ULONG start_pos, LOADER_VECTOR *lv )
 {
     PACKAGE FarPtr p;
 
@@ -277,11 +277,11 @@ static int loader_for( FDORNAME filename, ULONG start_pos, LOADER_VECTOR *lv )
         if( !loader_bind_util( p, lv ) ) {
             /* When we find a loader, check it out */
             if( LOADER_CANLOAD( lv )( filename, 0 ) ) {
-                return( 0 );
+                return( false );
             }
         }
     }
-    return( 1 );
+    return( true );
 }
 
 void D32SetCurrentObject( long cookie )
@@ -414,7 +414,7 @@ static SELECTOR exp_unrelocate( SELECTOR sel )
     return( sel - exp_base );
 }
 
-int D32Unrelocate( addr48_ptr FarPtr fptrp )
+bool D32Unrelocate( addr48_ptr FarPtr fptrp )
 {
     addr48_ptr  old;
 
@@ -427,7 +427,7 @@ int D32Unrelocate( addr48_ptr FarPtr fptrp )
     return( ( fptrp->segment != old.segment ) || ( fptrp->offset != old.offset ) );
 }
 
-int D32Relocate( addr48_ptr FarPtr fptrp )
+bool D32Relocate( addr48_ptr FarPtr fptrp )
 {
     addr48_ptr  old;
 

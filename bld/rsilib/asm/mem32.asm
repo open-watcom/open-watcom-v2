@@ -33,7 +33,7 @@ nocopy1:
 peek32 endp
 
 ;
-; int poke32(unsigned long offset32, unsigned sel, const void FarPtr dest, size_t count)
+; bool poke32(unsigned long offset32, unsigned sel, const void FarPtr dest, size_t count)
 ;
 poke32 proc WATCOM_C public uses es ds esi edi ecx, offs32_lo:word, offs32_hi:word, sel:word, src:dword, count:word
         movzx   ecx,count
@@ -66,6 +66,7 @@ writeable:
         clc
 finish:
         sbb     ax,ax
+        and     ax,1
         ret
 poke32 endp
 

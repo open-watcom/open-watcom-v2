@@ -101,7 +101,7 @@ void GetCommArea( void )
         Comm.push_no = 0;
         Comm.in_hook = 1;               /* don't record this sample */
     } else {
-        D32DebugRead( &CommonAddr, 0, &Comm, sizeof( Comm ) );
+        D32DebugRead( &CommonAddr, false, &Comm, sizeof( Comm ) );
     }
 }
 
@@ -121,7 +121,7 @@ void GetNextAddr( void )
     } else {
         addr.segment = CommonAddr.segment;
         addr.offset = Comm.cgraph_top;
-        D32DebugRead( &addr, 0, &stack_entry, sizeof( stack_entry ) );
+        D32DebugRead( &addr, false, &stack_entry, sizeof( stack_entry ) );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
         Comm.cgraph_top = stack_entry.ptr;
@@ -135,7 +135,7 @@ void ResetCommArea( void )
         Comm.pop_no = 0;
         Comm.push_no = 0;
         CommonAddr.offset += 11;
-        D32DebugWrite( &CommonAddr, 0, &Comm.pop_no, 4 );
+        D32DebugWrite( &CommonAddr, false, &Comm.pop_no, 4 );
         CommonAddr.offset -= 11;
     }
 }
@@ -153,7 +153,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
 {
     seg_offset  where;
     addr48_ptr  addr;
-    int         error_num;
+    bool        err;
     char        buff[BSIZE];
     addr48_ptr  fp;
     short       initial_cs;
@@ -167,12 +167,12 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     D32HookTimer( TimerMult );          /* ask for timer - before D32DebugInit!! */
     D32DebugBreakOp( &BreakOpcode );    /* Get the 1 byte break op */
 
-    error_num = D32DebugInit( &Proc, -1 );
-    if( error_num == 0 ) {
+    err = D32DebugInit( &Proc, -1 );
+    if( !err ) {
         strcpy( buff, full_args );
-        error_num = D32DebugLoad( prog, buff, &Proc );
+        err = ( D32DebugLoad( prog, buff, &Proc ) != 0 );
     }
-    if( error_num != 0 ) {
+    if( err ) {
         OutputMsgParmNL( MSG_SAMPLE_2, prog );
         MsgFini();
         exit(1);
@@ -202,9 +202,8 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
             addr.segment = Proc.edx & 0xffff;
             addr.offset = Proc.eax;
             for( ;; ) {
-                if( !D32AddressCheck( &addr, 1, NULL ) )
+                if( D32DebugRead( &addr, false, &buff[len], 1 ) )
                     break;
-                D32DebugRead( &addr, 0, &buff[len], 1 );
                 if( len == BSIZE )
                     break;
                 if( buff[len] == '\0' )

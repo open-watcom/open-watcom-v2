@@ -15,7 +15,7 @@
 
 #include "rsi1632.h"
 
-void D32DebugSetBreak( addr48_ptr FarPtr addr, int translate, opcode_type FarPtr to, opcode_type FarPtr from )
+void D32DebugSetBreak( addr48_ptr FarPtr addr, bool translate, opcode_type FarPtr to, opcode_type FarPtr from )
 {
     addr48_ptr  fp;
     opcode_type temp;

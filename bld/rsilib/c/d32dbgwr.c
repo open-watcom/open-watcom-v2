@@ -15,7 +15,7 @@
 
 #include "rsi1632.h"
 
-int D32DebugWrite( addr48_ptr FarPtr addr, int translate, const void FarPtr from, size_t len )
+bool D32DebugWrite( addr48_ptr FarPtr addr, bool translate, void FarPtr from, size_t len )
 {
     addr48_ptr  fp;
     OFFSET32    new_len;
@@ -26,6 +26,6 @@ int D32DebugWrite( addr48_ptr FarPtr addr, int translate, const void FarPtr from
         D32Relocate( &fp );
 
     if( rsi_addr32_check( fp.offset, fp.segment, len, &new_len ) == MEMBLK_INVALID )
-        return( 1 );
+        return( true );
     return( poke32( fp.offset, fp.segment, from, (size_t)new_len ) );
 }

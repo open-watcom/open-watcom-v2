@@ -75,6 +75,18 @@ typedef struct watch_point {
     long                handle2;
 } watch_point;
 
+extern bool IsSel32bit( unsigned_16 );
+#pragma aux IsSel32bit = \
+        ".386"              \
+        "movzx eax,ax"      \
+        "lar   eax,eax"     \
+        "and   eax,400000h" \
+        "jz short L1"       \
+        "mov   ax,1"        \
+    "L1:"                   \
+    __parm  [__ax] \
+    __value [__al]
+
 static struct {
     unsigned_32         size;
     unsigned_32         start;
@@ -113,7 +125,7 @@ void SetDbgTask( void )
 {
 }
 
-static size_t ReadMemory( addr48_ptr *addr, void FarPtr data, size_t req_len )
+static size_t ReadWrite( bool (*r)(addr48_ptr FarPtr, bool, void FarPtr, size_t), addr48_ptr *addr, void FarPtr data, size_t req_len )
 {
     size_t  len;
 
@@ -124,55 +136,20 @@ static size_t ReadMemory( addr48_ptr *addr, void FarPtr data, size_t req_len )
     _DBG_Write( " for 0x" );
     _DBG_Write16( req_len );
     _DBG_Write( " bytes -- " );
-    if( D32AddressCheck( addr, req_len, NULL ) ) {
-        if( D32DebugRead( addr, 0, data, req_len ) == 0 ) {
-            _DBG_Writeln( "OK" );
-            addr->offset += req_len;
-            return( req_len );
-        }
+    if( !r( addr, false, data, req_len ) ) {
+        _DBG_Writeln( "OK" );
+        addr->offset += req_len;
+        return( req_len );
     }
     _DBG_Writeln(( "Bad" ));
     for( len = req_len; len > 0; len-- ) {
-        if( !D32AddressCheck( addr, 1, NULL ) )
-            break;
-        if( D32DebugRead( addr, 0, data, 1 ) != 0 )
+        if( r( addr, false, data, 1 ) )
             break;
         addr->offset++;
         data = (char FarPtr)data + 1;
     }
     return( req_len - len );
 }
-
-static size_t WriteMemory( addr48_ptr *addr, const void FarPtr data, size_t req_len )
-{
-    size_t      len;
-
-    _DBG_Write( "checking " );
-    _DBG_Write16( addr->segment );
-    _DBG_Write( ":" );
-    _DBG_Write32( addr->offset );
-    _DBG_Write( " for 0x" );
-    _DBG_Write16( req_len );
-    _DBG_Write( " bytes -- " );
-    if( D32AddressCheck( addr, req_len, NULL ) ) {
-        if( D32DebugWrite( addr, 0, data, req_len ) == 0 ) {
-            _DBG_Writeln( "OK" );
-            addr->offset += req_len;
-            return( req_len );
-        }
-    }
-    _DBG_Writeln(( "Bad" ));
-    for( len = req_len; len > 0; len-- ) {
-        if( !D32AddressCheck( addr, 1, NULL ) )
-            break;
-        if( D32DebugWrite( addr, 0, data, 1 ) != 0 )
-            break;
-        addr->offset++;
-        data = (char FarPtr)data + 1;
-    }
-    return( req_len - len );
-}
-
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
 {
@@ -233,17 +210,6 @@ trap_retval TRAP_CORE( Map_addr )( void )
     return( sizeof( *ret ) );
 }
 
-extern unsigned long GetLAR( unsigned );
-#pragma aux GetLAR = \
-        ".386p"         \
-        "xor  edx,edx"  \
-        "mov  dx,ax"    \
-        "lar  eax,edx"  \
-        "mov  edx,eax"  \
-        "shr  edx,16"   \
-    __parm __caller [__ax] \
-    __value         [__dx __ax]
-
 trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
@@ -260,10 +226,8 @@ trap_retval TRAP_CORE( Machine_data )( void )
         data->x86_addr_flags = 0;
         addr.segment = acc->addr.segment;
         addr.offset = 0;
-        if( D32AddressCheck( &addr, 1, NULL ) ) {
-            if( GetLAR( acc->addr.segment ) & 0x400000 ) {
-                data->x86_addr_flags = X86AC_BIG;
-            }
+        if( IsSel32bit( acc->addr.segment ) ) {
+            data->x86_addr_flags = X86AC_BIG;
         }
         return( sizeof( *ret ) + sizeof( data->x86_addr_flags ) );
     }
@@ -288,7 +252,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     for( len = acc->len; len > 0; len -= want ) {
         if( want > len )
             want = len;
-        got = ReadMemory( &acc->in_addr, UtilBuff, want );
+        got = ReadWrite( D32DebugRead, &acc->in_addr, UtilBuff, want );
         for( i = 0; i < got; ++i ) {
             sum += ((unsigned char *)UtilBuff)[i];
         }
@@ -308,7 +272,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
 
     _DBG_Writeln( "ReadMem" );
     acc = GetInPtr( 0 );
-    return( ReadMemory( &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
+    return( ReadWrite( D32DebugRead, &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
 }
 
 trap_retval TRAP_CORE( Write_mem )( void )
@@ -319,7 +283,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
     _DBG_Writeln( "WriteMem" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
+    ret->len = ReadWrite( D32DebugWrite, &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
                             GetTotalSizeIn() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
@@ -600,20 +564,24 @@ trap_retval TRAP_CORE( Set_watch )( void )
     watch_point     *curr;
     set_watch_req   *acc;
     set_watch_ret   *ret;
+    dword           value;
+    dword           linear;
 
     _DBG_Writeln( "AccSetWatch" );
 
     acc = GetInPtr( 0 );
+    value = 0;
+    D32DebugRead( &acc->watch_addr, false, &value, acc->size );
+    linear = DPMIGetSegmentBaseAddress( acc->watch_addr.segment ) + acc->watch_addr.offset;
     curr = WatchPoints + WatchCount;
     curr->addr.segment = acc->watch_addr.segment;
     curr->addr.offset = acc->watch_addr.offset;
-    curr->linear = DPMIGetSegmentBaseAddress( curr->addr.segment ) + curr->addr.offset;
+    curr->linear = linear;
     curr->len = acc->size;
-    curr->dregs = ( curr->linear & ( curr->len - 1 ) ) ? 2 : 1;
+    curr->dregs = ( linear & ( curr->len - 1 ) ) ? 2 : 1;
     curr->handle = -1;
     curr->handle2 = -1;
-    curr->value = 0;
-    ReadMemory( &acc->watch_addr, &curr->value, curr->len );
+    curr->value = value;
     ++WatchCount;
     ret = GetOutPtr( 0 );
     ret->err = 0;
@@ -790,15 +758,13 @@ static trap_conditions DoRun( void )
 
 static bool CheckWatchPoints( void )
 {
-    dword       val;
+    dword       value;
     int         i;
 
     for( i = 0; i < WatchCount; ++i ) {
-        val = 0;
-        if( ReadMemory( &WatchPoints[i].addr, &val, WatchPoints[i].len ) != WatchPoints[i].len ) {
-            return( true );
-        }
-        if( val != WatchPoints[i].value ) {
+        value = 0;
+        D32DebugRead( &WatchPoints[i].addr, false, &value, WatchPoints[i].len );
+        if( value != WatchPoints[i].value ) {
             return( true );
         }
     }
@@ -836,7 +802,7 @@ static unsigned ProgRun( bool step )
                  * have to breakpoint across software interrupts because Intel
                  * doesn't know how to design chips
                  */
-                if( ReadMemory( &start_addr, int_buff, 2 + sizeof( opcode_type ) ) == ( 2 + sizeof( opcode_type ) ) && int_buff[0] == 0xcd ) {
+                if( !D32DebugRead( &start_addr, false, int_buff, 2 + sizeof( opcode_type ) ) && int_buff[0] == 0xcd ) {
                     start_addr.offset += 2;
                     D32DebugSetBreak( &start_addr, false, &BreakOpcode, &old_opcode );
                     ret->conditions = DoRun();
@@ -952,7 +918,6 @@ trap_retval TRAP_CORE( Get_message_text )( void )
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version        ver;
-    int                 error_num;
 
     _DBG_Writeln( "TrapInit" );
     remote = remote; parms = parms;
@@ -964,8 +929,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     RealNPXType = NPXType();
     WatchCount = 0;
     FakeBreak = false;
-    error_num = D32DebugInit( &Proc, INT_PRT_SCRN_KEY );
-    if( error_num ) {
+    if( D32DebugInit( &Proc, INT_PRT_SCRN_KEY ) ) {
         _DBG_Writeln( "D32DebugInit() failed:" );
         exit(1);
     }

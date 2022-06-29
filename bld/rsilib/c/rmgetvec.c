@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 * =========================================================================
 *
@@ -13,7 +13,7 @@
 
 #include "rsi1632.h"
 
-int rsi_rm_get_vector( int int_no, void FarPtr FarPtr vectp )
+bool rsi_rm_get_vector( int int_no, void FarPtr FarPtr vectp )
 {
     void FarPtr     FarPtr vect;
 
@@ -23,5 +23,5 @@ int rsi_rm_get_vector( int int_no, void FarPtr FarPtr vectp )
         vect = makeptr( mem0_sel, 0 );
         *vectp = vect[int_no];
     }
-    return( 1 );
+    return( true );
 }
