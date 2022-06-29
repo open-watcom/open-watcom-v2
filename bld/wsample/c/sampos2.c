@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,18 +39,22 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "sample.h"
-#include "wmsg.h"
-#include "smpstuff.h"
-#define INCL_BASE
 #define INCL_DOSDEVICES
 #define INCL_DOSMEMMGR
 #define INCL_DOSPROCESS
-#include "os2.h"
+#include "wos2.h"
+#include "sample.h"
+#include "wmsg.h"
+#include "smpstuff.h"
 #include "os2dbg.h"
 
 
-#define BUFF_SIZE 512
+#define EXE_LX      0x584c
+#define EXE_NE      0x454e
+
+#define BUFF_SIZE   512
+#define STACK_SIZE  4096
+
 static char             UtilBuff[BUFF_SIZE];
 static TRACEBUF         Buff;
 static USHORT           Pid;
@@ -67,7 +71,6 @@ static int              NewSession;
 
 static seg_offset       CommonAddr;
 
-#define STACK_SIZE 4096
 static unsigned char    __near Stack[STACK_SIZE];
 
 unsigned NextThread( unsigned tid )
@@ -115,9 +118,6 @@ unsigned SafeMargin( void )
 {
     return( Ceiling - 10 );
 }
-
-#define EXE_LX  0x584c
-#define EXE_NE  0x454e
 
 static int IsLX( void )
 {
@@ -493,10 +493,10 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
         }
     }
     while( (*dst++ = *src++) != '\0' )
-        ;
+        {}
     cmd_args = dst;
     while( (*dst++ = *full_args++) != '\0' )
-        ;
+        {}
     *dst = '\0';  /* Need two nulls at end */
     LoadProg( UtilBuff, cmd_args );
     OutputMsgParmNL( MSG_SAMPLE_1, UtilBuff );

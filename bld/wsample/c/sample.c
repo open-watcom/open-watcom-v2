@@ -40,7 +40,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef __WINDOWS__
-    #include "commonui.h"
+    #include <wwindows.h>
 #endif
 #include "sample.h"
 #include "wmsg.h"

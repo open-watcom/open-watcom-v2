@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,13 +36,16 @@
 #include <io.h>
 #include <dos.h>
 #include <fcntl.h>
-#include "commonui.h"
+#define INCLUDE_TOOLHELP_H
+#include <wwindows.h>
 #include "sample.h"
 #include "smpstuff.h"
 #include "sampwin.h"
 #include "exeos2.h"
 #include "exedos.h"
 #include "ismod32.h"
+#include "mythelp.h"
+#include "segmem.h"
 
 
 /*
