@@ -104,6 +104,7 @@ WP_SIZE         equ     20      ; size of the watch point structure
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 VALID   equ     1234H           ; value used to validate debugger data segment
+TRAP_BIT equ    100h
 
 public  TrapTypeInit_
 TrapTypeInit_ proc       near           ; initialize trap information
@@ -185,7 +186,7 @@ TraceTrap:                      ; T-trap trap
         mov     byte ptr CS:TrapType,TRAP_TRACE_POINT ; indicate T-bit trap
         push    BP              ; save BP
         mov     BP,SP           ; get access to stack
-        test    byte ptr 7[BP],1; check to see if the T-bit's off
+        test    byte ptr 7[BP],TRAP_BIT shr 8; check to see if the T-bit's off
         pop     BP              ; restore BP
         jnz     DebugTask       ; if T-bit is on then DebugTask
 
@@ -307,7 +308,7 @@ ExitDebugger:
         mov     CS:SaveRegs+2,CX; . . .
         mov     SI,AX           ; get pointer to the current reg set
         mov     DS,DX           ; . . .
-        test    byte ptr 1[SI].RFL,1;are we trace trapping?
+        test    byte ptr 1[SI].RFL,TRAP_BIT shr 8; are we trace trapping?
         je      not_watch       ; - quit if not
         mov     DI,CS:TraceRtn
         cmp     DI,offset _text:WatchTrap; - are we watch trapping?
@@ -470,7 +471,7 @@ start_loop:                     ; loop
         mov     CX,[BX].RCX     ; restore CX
         mov     AX,[BX].RAX     ; restore CX
         mov     BX,SP           ; get pointer to interrupt stack frame
-        or      byte ptr SS:9[BX],1; make sure the T-bit is on
+        or      byte ptr SS:9[BX],TRAP_BIT shr 8; make sure the T-bit is on
         lds     BX,SS:4[BX]     ; get return offset and segment
         mov     BX,[BX]         ; get instruction and byte following it
         cmp     BL,0CDH         ; is instruction a software interrupt?
