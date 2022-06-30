@@ -306,7 +306,7 @@ ExitDebugger:
         mov     CS:SaveRegs+2,CX; . . .
         mov     SI,AX           ; get pointer to the current reg set
         mov     DS,DX           ; . . .
-        test    byte ptr 27[SI],1;are we trace trapping?
+        test    byte ptr 1[SI].RFL,1;are we trace trapping?
         je      not_watch       ; - quit if not
         mov     DI,CS:TraceRtn
         cmp     DI,offset _text:WatchTrap; - are we watch trapping?
