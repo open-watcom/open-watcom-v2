@@ -98,6 +98,7 @@ typedef struct pblock {
 typedef struct watch_point {
     addr32_ptr  addr;
     dword       value;
+    dword       mask;
     dword       linear;
     word        dregs;
     word        len;
@@ -739,21 +740,29 @@ trap_retval TRAP_CORE( Set_watch )( void )
     watch_point         *curr;
     set_watch_req       *wp;
     set_watch_ret       *wr;
+    dword               linear;
 
     wp = GetInPtr( 0 );
     wr = GetOutPtr( 0 );
     wr->err = 1;
-    wr->multiplier = 0;
+    wr->multiplier = 200;
     if( WatchCount < MAX_WATCHES ) {
         wr->err = 0;
         curr = WatchPoints + WatchCount;
+        if( wp->size == 1 ) {
+            curr->mask = -1UL >> 24;
+        } else if( wp->size == 2 ) {
+            curr->mask = -1UL >> 16;
+        } else {
+            curr->mask = -1UL;
+        }
+        curr->value = *(dword __far *)_MK_FP( wp->watch_addr.segment, wp->watch_addr.offset ) & curr->mask;
         curr->addr.segment = wp->watch_addr.segment;
         curr->addr.offset = wp->watch_addr.offset;
-        curr->value = *(dword __far *)_MK_FP( wp->watch_addr.segment, wp->watch_addr.offset );
-        curr->linear = ( (dword)wp->watch_addr.segment << 4 ) + wp->watch_addr.offset;
         curr->len = wp->size;
-        curr->linear &= ~( curr->len - 1 );
-        curr->dregs = ( wp->watch_addr.offset & ( curr->len - 1 ) ) ? 2 : 1;
+        linear = ( (dword)wp->watch_addr.segment << 4 ) + wp->watch_addr.offset;
+        curr->linear = linear & ~( wp->size - 1 );
+        curr->dregs = ( linear & ( wp->size - 1 ) ) ? 2 : 1;
         ++WatchCount;
         if( Flags & F_DRsOn ) {
             if( DRegsCount() <= 4 ) {
@@ -761,7 +770,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
             }
         }
     }
-    wr->multiplier |= 200;
     return( sizeof( *wr ) );
 }
 
@@ -849,6 +857,7 @@ static bool SetDebugRegs( void )
     unsigned long       dr7;
     unsigned long       linear;
     bool                watch386;
+    unsigned            len;
 
     if( (Flags & F_DRsOn) == 0 )
         return( false );
@@ -858,10 +867,11 @@ static bool SetDebugRegs( void )
         watch386 = false;
     } else {
         for( i = 0; i < WatchCount; ++i ) {
-            dr7 |= SetDRn( dr, WatchPoints[i].linear, DRLen( WatchPoints[i].len ) | DR7_BWR );
+            len = WatchPoints[i].len;
+            dr7 |= SetDRn( dr, WatchPoints[i].linear, DRLen( len ) | DR7_BWR );
             ++dr;
             if( WatchPoints[i].dregs == 2 ) {
-                dr7 |= SetDRn( dr, WatchPoints[i].linear + 4, DRLen( WatchPoints[i].len ) | DR7_BWR );
+                dr7 |= SetDRn( dr, WatchPoints[i].linear + len, DRLen( len ) | DR7_BWR );
                 ++dr;
             }
             watch386 = true;

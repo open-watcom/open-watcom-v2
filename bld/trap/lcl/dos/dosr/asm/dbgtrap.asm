@@ -98,7 +98,8 @@ F_Is386         equ     0x0001
 ; These offsets must match the watch_point struct in dosacc.c
 WP_ADDR         equ     0       ; offset of watch point address
 WP_VALUE        equ     4       ; offset of watch point value
-WP_SIZE         equ     16      ; size of the watch point structure
+WP_MASK         equ     8       ; mask for watch point data lenght
+WP_SIZE         equ     20      ; size of the watch point structure
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -454,9 +455,11 @@ do_watch:
 start_loop:                     ; loop
         les     BX,WP_ADDR[SI]  ; - get address of watch point
         mov     AX,ES:[BX]      ; - get low order word
+        and     AX,WP_MASK[SI]  ; - mask value to watch point size
         cmp     AX,WP_VALUE[SI] ; - compare with entry in table
         jne     watch_trap      ; - set watchpoint trap if different
         mov     AX,ES:2[BX]     ; - get high order word
+        and     AX,WP_MASK+2[SI] ; - mask value to watch point size
         cmp     AX,WP_VALUE+2[SI];- compare with entry in table
         jne     watch_trap      ; - set watchpoint trap if different
         add     SI,WP_SIZE      ; - point to next entry
