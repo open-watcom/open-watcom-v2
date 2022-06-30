@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -48,6 +48,8 @@ WatchCnt   dw   ?               ; number of watch points
 SaveRegs   dw   ?,?             ; save regs pointer
 AreWatching db  0               ; have we got watch points
 
+public  _BreakOpcode
+_BreakOpcode db 0               ; break opcode
 public  TrapType
 TrapType   db   TRAP_NONE       ; trap type
 public  TraceRtn
@@ -477,7 +479,7 @@ start_loop:                     ; loop
         cmp     BL,0CDH         ; is instruction a software interrupt?
         cli                     ; interrupts off
         je      soft_int        ; handle software interrupt
-        cmp     BL,0CCH         ; is it a break point instruction?
+        cmp     BL,byte ptr CS:_BreakOpcode ; is it a break point instruction?
         je      brk_point       ; handle breakpoint
 cont2:
         pop     DS              ; restore DS

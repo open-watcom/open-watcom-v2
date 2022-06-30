@@ -170,6 +170,7 @@ extern unsigned         StringToFullPath( char * );
 extern int              __far NoOvlsHdlr( int, void * );
 
 extern word             __based(__segname("_CODE")) SegmentChain;
+extern opcode_type      __based(__segname("_CODE")) BreakOpcode;
 
 trap_cpu_regs           TaskRegs;
 char                    DOS_major;
@@ -186,7 +187,6 @@ static short            WatchCount;
 static bool             IsBreak[4];
 
 static word             NumSegments;
-static opcode_type      BreakOpcode;
 static addr48_ptr       BadBreak;
 static bool             GotABadBreak;
 static int              ExceptNum;
