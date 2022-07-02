@@ -103,7 +103,7 @@ static char *replace_parm( parm_list *parms, char *start, size_t len, asmlines *
 
             new_line = AsmAlloc( strlen( old_line ) - len + PLACEHOLDER_SIZE + 1 );
             before = start - old_line;
-            if( *(start - 1) == '&' )
+            if( ( start > lstruct->line ) && ( *(start - 1) == '&' ) )
                 before--;
             strncpy( new_line, old_line, before );
             *(new_line + before) = '\0';
