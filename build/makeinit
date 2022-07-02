@@ -136,6 +136,7 @@ bld_os = osx
 !else ifdef __OSXARM__
 bld_cpu = arm
 bld_os = osx
+bld64host_osx = 1
 !endif
 
 nested_wmake = wmake

@@ -26,6 +26,8 @@ skip_build: .SYMBOLIC
 !else ifeq host_cpu arm
 !ifneq bld_cpu arm
 skip_build: .SYMBOLIC
+!else ifndef bld64host_$(host_os)
+skip_build: .SYMBOLIC
 !else ifndef bootstrap
 !undef __WATCOM_TOOLS__
 !endif
