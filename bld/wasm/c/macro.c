@@ -103,16 +103,15 @@ static char *replace_parm( parm_list *parms, char *start, size_t len, asmlines *
 
             new_line = AsmAlloc( strlen( old_line ) - len + PLACEHOLDER_SIZE + 1 );
             before = start - old_line;
-            if( ( start > lstruct->line ) && ( *(start - 1) == '&' ) )
-                before--;
-            strncpy( new_line, old_line, before );
+            if( before > 0 ) {
+                if( *(start - 1) == '&' )
+                    before--;
+                strncpy( new_line, old_line, before );
+            }
             *(new_line + before) = '\0';
-            strcat( new_line, "#" );
-            if( sprintf( buffer, "%2d", count ) != 2 ) {
+            if( sprintf( buffer, "#%-2.2d", count ) != 3 ) {
                 myassert( 0 );
             }
-            if( buffer[0] == ' ' )
-                buffer[0] = '0'; /* no spaces */
             strcat( new_line, buffer );
             if( *(start + len) == '&' )
                 len++;
