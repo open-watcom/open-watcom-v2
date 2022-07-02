@@ -117,9 +117,9 @@ const FNAME *AddFlist( char const *name )
     len2 = strlen( fname ) + 1;
     last = (FNAME *)FNames;
     for( flist = last; flist != NULL; flist = flist->next ) {
-        if( memcmp( name, flist->name, len1 ) == 0 )
+        if( strcmp( name, flist->name ) == 0 )
             return( flist );
-        if( memcmp( fname, flist->fullname, len2 ) == 0 )
+        if( strcmp( fname, flist->fullname ) == 0 )
             return( flist );
         index++;
         last = flist;
