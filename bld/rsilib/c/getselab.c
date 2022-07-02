@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2011-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2011-2022 The Open Watcom Contributors. All Rights Reserved.
 *
 * =========================================================================
 *
@@ -24,11 +24,11 @@ SELECTOR rsi_sel_new_absolute( long base_addr, unsigned size )
             return( NULL_SEL );
         DPMIGetDescriptor( sel, &g );
         --size;
-        g.lim_0_15 = size;
-        g.lim_16_19 = size / 256 / 256;
-        g.base_0_15 = base_addr;
-        g.base_16_23 = base_addr >> 16;
-        g.base_24_31 = base_addr >> 24;
+        g.limit_15_0 = size;
+        g.limit_19_16 = size / 256 / 256;
+        g.base_15_0 = base_addr;
+        g.base_23_16 = base_addr >> 16;
+        g.base_31_24 = base_addr >> 24;
         if( DPMISetDescriptor( sel, &g ) ) {
             DPMIFreeLDTDescriptor( sel );
             return( NULL_SEL );

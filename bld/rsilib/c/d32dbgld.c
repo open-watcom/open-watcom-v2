@@ -212,11 +212,11 @@ retry:
     /* Update debuggee's descriptor table as well as our own.
     */
     rsi_get_descriptor( env_sel, &g );
-    g.lim_0_15 = ( blocksize << 4 ) - 1;
-    g.lim_16_19 = (( blocksize << 4 ) - 1) / 256 / 256;
-    g.base_0_15 = oldenv;
-    g.base_16_23 = oldenv >> 16;
-    g.base_24_31 = oldenv >> 24;
+    g.limit_15_0 = ( blocksize << 4 ) - 1;
+    g.limit_19_16 = (( blocksize << 4 ) - 1) / 256 / 256;
+    g.base_15_0 = oldenv;
+    g.base_23_16 = oldenv >> 16;
+    g.base_31_24 = oldenv >> 24;
     rsi_set_descriptor( env_sel, &g );
 }
 

@@ -39,6 +39,8 @@
 
 #include "dosfuncx.h"
 #include "watcom.h"
+#include "descript.h"
+
 
 #pragma pack( __push, 1 )
 
@@ -376,55 +378,6 @@ typedef struct {
         };
     };
 } rmi_struct;
-
-/* Definitions for manipulating protected mode descriptors ... used
- * with TinyDPMIGetDescriptor, TinyDPMISetDescriptor, TinyDPMISetRights, etc.
- */
-typedef enum {
-    TIO_ACCESSED        = 0x01,
-    TIO_RDWR            = 0x02,
-    TIO_EXPAND_DOWN     = 0x04,
-    TIO_EXECUTE         = 0x08,
-    TIO_MUST_BE_1       = 0x10,
-    TIO_PRESENT         = 0x80,
-    TIO_USER_AVAIL      = 0x1000,
-    TIO_MUST_BE_0       = 0x2000,
-    TIO_USE32           = 0x4000,
-    TIO_PAGE_GRANULAR   = 0x8000
-} tiny_dscp_flags;
-
-typedef struct {
-    uint_8      accessed : 1;
-    uint_8      rdwr     : 1;
-    uint_8      exp_down : 1;
-    uint_8      execute  : 1;
-    uint_8      mustbe_1 : 1;
-    uint_8      dpl      : 2;
-    uint_8      present  : 1;
-} tiny_dscp_type;
-
-typedef struct {
-    uint_8               : 4;
-    uint_8      useravail: 1;
-    uint_8      mustbe_0 : 1;
-    uint_8      use32    : 1;
-    uint_8      page_gran: 1;
-} tiny_dscp_xtype;
-
-typedef struct {
-    uint_16             lim_0_15;
-    uint_16             base_0_15;
-    uint_8              base_16_23;
-    tiny_dscp_type      type;
-    union {
-        struct {
-            uint_8      lim_16_19: 4;
-            uint_8               : 4;
-        };
-        tiny_dscp_xtype xtype;
-    };
-    uint_8              base_24_31;
-} tiny_dscp;
 
 /*
  *  DOS FCB structure definitions for TinyFCB... functions

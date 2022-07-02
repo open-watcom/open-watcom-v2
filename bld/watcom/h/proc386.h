@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 /* the 80386 task state segment (TSS) */
 
 #include "watcom.h"
+#include "descript.h"
 
 typedef struct {
     unsigned_16 backlink;
@@ -74,26 +76,3 @@ typedef struct {
     unsigned_16 t;
     unsigned_16 iobase;
 } TSS;
-
-typedef struct {
-    unsigned_16 limitlow;
-    unsigned_16 baselow;
-    unsigned_8  basemid;
-    unsigned_8  bits1;
-    unsigned_8  bits2;
-    unsigned_8  basehigh;
-} descriptor;
-
-// interesting flags in bits1 field
-
-#define DESC_READWRITE          0x02
-#define DESC_CODE               0x08
-#define DESC_APPLICATION        0x10
-#define DESC_PRESENT            0x80
-#define DESC_TSS                0x09
-
-// interesting flags in bits2 field
-
-#define DESC_GRANULARITY_BIT    0x80
-#define DESC_GENERAL            0x40
-#define DESC_LIMIT_HIGH_MASK    0x0F

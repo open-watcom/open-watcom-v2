@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -154,16 +154,16 @@ ULONG_PTR ReadMem( WORD sel, ULONG_PTR off, void *buff, ULONG_PTR size )
  */
 static void createAccessString( char *ptr, descriptor *desc )
 {
-    if( desc->type == 2 )  {
+    if( desc->type.nonsystem && !desc->type.execute )  {
         *ptr++ =  'R';
-        if( desc->writeable_or_readable ) {
+        if( desc->type.d.writeable ) {
             *ptr++ = '/';
             *ptr++ = 'W';
         }
     } else {
         *ptr++ = 'E';
         *ptr++ = 'x';
-        if( desc->writeable_or_readable ) {
+        if( desc->type.x.readable ) {
             *ptr++ = '/';
             *ptr++ = 'R';
         }
@@ -207,15 +207,15 @@ static void memDumpHeader( int hdl, MemWndInfo *info )
         write( hdl, buf, len );
         RCsprintf( buf, MWND_LIMIT, GET_DESC_LIMIT( desc), &len );
         write( hdl, buf, len );
-        if( desc.type == 2 ) {
+        if( desc.type.nonsystem && !desc.type.execute )  {
             RCsprintf( buf, MWND_TYPE_DATA, &len );
         } else {
             RCsprintf( buf, MWND_TYPE_CODE, &len );
         }
         write( hdl, buf, len );
-        sprintf( buf, "DPL:         \t%1d\n%n", desc.dpl, &len );
+        sprintf( buf, "DPL:         \t%1d\n%n", desc.type.dpl, &len );
         write( hdl, buf, len );
-        if( desc.granularity ) {
+        if( desc.xtype.page_granular ) {
             RCsprintf( buf, MWND_GRANULARITY_PAGE, &len );
         } else {
             RCsprintf( buf, MWND_GRANULARITY_BYTE, &len );
@@ -1224,16 +1224,16 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
         SetDlgItemText( hwnd, SEL_INFO_LIMIT, buf );
 //      SetDWORDStaticField( hwnd, SEL_INFO_LIMIT, GET_DESC_LIMIT( desc ) );
 
-        if( desc.type == 2 ) {
+        if( desc.type.nonsystem && !desc.type.execute )  {
             rcstr = AllocRCString( MWND_DATA );
         } else {
             rcstr = AllocRCString( MWND_CODE );
         }
         SetDlgItemText( hwnd, SEL_INFO_TYPE, rcstr );
         FreeRCString( rcstr );
-        sprintf( buf, "%1d", desc.dpl );
+        sprintf( buf, "%1d", desc.type.dpl );
         SetDlgItemText( hwnd, SEL_INFO_DPL, buf );
-        if( desc.granularity ) {
+        if( desc.xtype.page_granular ) {
             rcstr = AllocRCString( MWND_PAGE );
         } else {
             rcstr = AllocRCString( MWND_BYTE );
@@ -1325,7 +1325,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
 #ifndef __NT__
     if( isdpmi ) {
         GetADescriptor( seg, &desc );
-        if( desc.type == 2 ) {
+        if( desc.type.nonsystem && !desc.type.execute )  {
             info->disp_type = MemConfigInfo.data_type;
         } else {
             info->disp_type = MemConfigInfo.code_type;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,34 +151,38 @@ static void WriteDescriptor( unsigned_32 base, unsigned_32 limit,
 {
     descriptor  desc;
 
-    desc.baselow = base;
-    desc.basemid = base >> 16;
-    desc.basehigh = base >> 24;
-    desc.bits1 = 0;
-    desc.bits2 = 0;
+    desc.base_15_0 = base;
+    desc.base_23_16 = base >> 16;
+    desc.base_31_24 = base >> 24;
+    desc.type.val = 0;
     if( flags & DR_BASE ) {
-        desc.bits1 |= DESC_READWRITE | DESC_PRESENT;
+        desc.type.d.writeable = 1;
+        desc.type.present = 1;
     }
     if( flags & DR_TSS ) {
-        desc.bits1 |= DESC_PRESENT | DESC_TSS;
+        desc.type.s.type = 1;
+//        desc.type.s.gate = 0;
+        desc.type.s.use32 = 1;
+        desc.type.present = 1;
     }
     if( flags & DR_IS_CODE ) {
-        desc.bits1 |= DESC_CODE;
+        desc.type.execute = 1;
     }
     if( flags & DR_IS_APP ) {
-        desc.bits1 |= DESC_APPLICATION;
+        desc.type.nonsystem = 1;
     }
+    desc.xtype.flags = 0;
     if( flags & DR_IS_USER ) {
-        desc.bits2 |= DESC_GENERAL;
+        desc.xtype.use32 = 1;
     }
     if( limit > 0 )
         limit--;
     if( limit >= _1MB ) {
         limit >>= 12;
-        desc.bits2 |= DESC_GRANULARITY_BIT;
+        desc.xtype.page_granular = 1;
     }
-    desc.limitlow = limit;
-    desc.bits2 |= (limit >> 16) & DESC_LIMIT_HIGH_MASK;
+    desc.limit_15_0 = limit;
+    desc.limit_19_16 = (limit >> 16);
     WriteLoad( &desc, sizeof( descriptor ) );
 }
 

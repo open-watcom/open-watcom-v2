@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ static void read_vtable( unsigned *rmvtable, unsigned *pmvtable, uint_16 *cs,
 
 static void dump_selec( uint_16 sel )
 {
-    tiny_dscp           d;
+    descriptor          d;
     char                buff[100];
 
     if( TinyDPMIGetDescriptor( sel, &d ) ) {
@@ -140,12 +140,12 @@ static void dump_selec( uint_16 sel )
         strcpy( buff, "selector=" );
         itoa( sel, buff + strlen( buff ), 16 );
         strcat( buff, d.type.accessed ? " accessed|" : " not accessed|" );
-        strcat( buff, d.type.rdwr ? "read/write|" : "read only|" );
+        strcat( buff, d.type.d.writeable ? "read/write|" : "read only|" );
         strcat( buff, d.type.execute ? "code|" : "data|" );
-        strcat( buff, d.type.exp_down ? "expand down|" : "expand up|" );
+        strcat( buff, d.type.expand_down ? "expand down|" : "expand up|" );
         strcat( buff, d.type.present ? "present|" : "not present|" );
         strcat( buff, d.xtype.use32 ? "use32|" : "use16|" );
-        strcat( buff, d.xtype.page_gran ? "page granular" : "byte granular" );
+        strcat( buff, d.xtype.page_granular ? "page granular" : "byte granular" );
         strcat( buff, " dpl=" );
         itoa( d.type.dpl, buff + strlen( buff ), 10 );
         _debug( buff );
@@ -154,7 +154,7 @@ static void dump_selec( uint_16 sel )
 
 static void setup_sel( uint_16 cs, uint_16 ds, uint_16 *pmcs, uint_16 *pmds )
 {
-    tiny_dscp           d;
+    descriptor          d;
 
     *pmcs = TinyDPMICreateSel( 1 );
     *pmds = TinyDPMICreateSel( 1 );
@@ -165,9 +165,8 @@ static void setup_sel( uint_16 cs, uint_16 ds, uint_16 *pmcs, uint_16 *pmds )
         _debug( "error obtaining descriptor for new cs selector" );
     }
     d.xtype.use32 = 0;
-    d.xtype.page_gran = 0;
-    if( TinyDPMISetRights( *pmcs, ( *(uint_16 *)&d.xtype << 8 )
-                                  | *(uint_16 *)&d.type ) ) {
+    d.xtype.page_granular = 0;
+    if( TinyDPMISetRights( *pmcs, ( (unsigned short)d.xtype.val << 8 ) | d.type.val ) ) {
         _debug( "error setting segment rights for new cs selector" );
     }
     if( TinyDPMISetBase( *pmcs, (unsigned)cs << 4 ) ) {
@@ -180,9 +179,8 @@ static void setup_sel( uint_16 cs, uint_16 ds, uint_16 *pmcs, uint_16 *pmds )
         _debug( "error obtaining descriptor for new ds selector" );
     }
     d.xtype.use32 = 0;
-    d.xtype.page_gran = 0;
-    if( TinyDPMISetRights( *pmds, ( *(uint_16 *)&d.xtype << 8 )
-                                  | *(uint_16 *)&d.type ) ) {
+    d.xtype.page_granular = 0;
+    if( TinyDPMISetRights( *pmds, ( (unsigned short)d.xtype.val << 8 ) | d.type.val ) ) {
         _debug( "error setting segment rights for new ds selector" );
     }
     if( TinyDPMISetBase( *pmds, (unsigned)ds << 4 ) ) {

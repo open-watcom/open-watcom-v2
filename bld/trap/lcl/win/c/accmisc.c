@@ -48,11 +48,11 @@
 
 BOOL IsSegSize32( WORD seg )
 {
-    WORD        desc[4];
+    descriptor  desc;
 
     if( WDebug386 ) {
-        GetDescriptor( seg, desc );
-        if( desc[3] & 0x40 ) {
+        GetDescriptor( seg, &desc );
+        if( desc.xtype.use32 ) {
             return( TRUE );
         }
     }

@@ -167,9 +167,9 @@ WORD _DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt)
          * set new limit, address, and access rights
          */
         if( limit > 1024L * 1024L ) {
-            DPMISetDescriptorAccessRights( sel, DPL + ACCESS_DATA16BIG );
+            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_DATA16BIG );
         } else {
-            DPMISetDescriptorAccessRights( sel, DPL + ACCESS_DATA16 );
+            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_DATA16 );
         }
         DPMISetSegmentBaseAddress( sel, DataSelectorBase + offset );
         DPMISetSegmentLimit( sel, limit );
@@ -273,16 +273,16 @@ static void setLimitAndAddr( WORD sel, DWORD addr, DWORD len, WORD type )
     DPMISetSegmentBaseAddress( sel, addr );
     --len;
     if( len >= 1024L * 1024L ) {
-        if( type == ACCESS_CODE ) {
-            DPMISetDescriptorAccessRights( sel, DPL + ACCESS_CODE32BIG );
+        if( type == DESC_ACCESS_CODE ) {
+            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_CODE32BIG );
         } else {
-            DPMISetDescriptorAccessRights( sel, DPL + ACCESS_DATA32BIG );
+            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_DATA32BIG );
         }
     } else {
-        if( type == ACCESS_CODE ) {
-            DPMISetDescriptorAccessRights( sel, DPL + ACCESS_CODE32SMALL );
+        if( type == DESC_ACCESS_CODE ) {
+            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_CODE32SMALL );
         } else {
-            DPMISetDescriptorAccessRights( sel, DPL + ACCESS_DATA32SMALL );
+            DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_DATA32SMALL );
         }
     }
     DPMISetSegmentLimit( sel, len );
@@ -306,7 +306,7 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
         return( 4 );
     }
     CodeEntry.seg = sel;
-    setLimitAndAddr( sel, baseaddr, len, ACCESS_CODE );
+    setLimitAndAddr( sel, baseaddr, len, DESC_ACCESS_CODE );
     CodeSelectorBase = baseaddr;
 
     /*
@@ -318,16 +318,16 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
         return( 4 );
     }
     DataSelector = sel;
-    setLimitAndAddr( sel, baseaddr, len, ACCESS_DATA );
+    setLimitAndAddr( sel, baseaddr, len, DESC_ACCESS_DATA );
     StackSelector = sel + hugeIncrement;
-//    setLimitAndAddr( StackSelector, baseaddr, StackSize, ACCESS_DATA );
+//    setLimitAndAddr( StackSelector, baseaddr, StackSize, DESC_ACCESS_DATA );
 //      The code generator sometimes uses EBP as general purpose
 //      register for accessing data that is not in the STACK segment
 //      so we must access the same space as DS
-    setLimitAndAddr( StackSelector, baseaddr, len, ACCESS_DATA );
+    setLimitAndAddr( StackSelector, baseaddr, len, DESC_ACCESS_DATA );
     WrapAround = false;
     if( DPMIGetDescriptor( DataSelector, &desc ) == 0 ) {
-        if( desc.lim_16_19 == 0x0F && desc.lim_0_15 == 0xFFFF ) {
+        if( desc.limit_19_16 == 0x0F && desc.limit_15_0 == 0xFFFF ) {
             WrapAround = true;
         } else {
             WrapAround = false;
@@ -492,7 +492,7 @@ int InitSelectorCache( void )
             aliasCache[i].in_use = false;
             lastCacheSel = sel;
         }
-        DPMISetDescriptorAccessRights( sel, DPL + ACCESS_DATA16 );
+        DPMISetDescriptorAccessRights( sel, DPL + DESC_ACCESS_DATA16 );
         DPMISetSegmentLimit( sel, 0xFFFF );
         sel += hugeIncrement;
     }

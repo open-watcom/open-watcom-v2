@@ -38,7 +38,7 @@ int rsi_addr32_check( OFFSET32 off, SELECTOR sel, OFFSET32 for_length, OFFSET32 
         limit = GDT32LIMIT( g );
         if( off > limit )
             return( MEMBLK_INVALID );    /* Offset past end of segment */
-        if( (sel & 3) > g.type.dpl || !g.type.present || !g.type.mustbe_1 ) {
+        if( (sel & 3) > g.type.dpl || !g.type.present || !g.type.nonsystem ) {
             return( MEMBLK_INVALID );    /* Bad access bits */
         }
         if( off + for_length - 1 < off          /* wrapped */

@@ -41,6 +41,7 @@
 #include "wdebug.h"
 #include "di386cli.h"
 #include "initfini.h"
+#include "descript.h"
 
 
 /*
@@ -293,7 +294,8 @@ BOOL CheckWatchPoints( void )
     int         i;
 
     for( i = 0; i < WatchCount; i++ ) {
-        ReadMemory( &WatchPoints[i].loc, &value, sizeof( value ) );
+        value = 0;
+        ReadMemory( &WatchPoints[i].loc, &value, WatchPoints[i].len );
         if( value != WatchPoints[i].value ) {
             return( TRUE );
         }
@@ -307,7 +309,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_ret       *ret;
     DWORD               value;
     watch_point         *curr;
-    WORD                desc[4];
+    descriptor          desc;
     DWORD               linear;
 
     acc = GetInPtr( 0 );
@@ -316,18 +318,16 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->err = 1;       // fail
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
+        value = 0;
+        ReadMemory( &acc->watch_addr, &value, acc->size );
+        GetDescriptor( acc->watch_addr.segment, &desc );
+        linear = GET_DESC_BASE( desc ) + acc->watch_addr.offset;
         curr = WatchPoints + WatchCount;
         curr->loc.segment = acc->watch_addr.segment;
         curr->loc.offset = acc->watch_addr.offset;
-        ReadMemory( &acc->watch_addr, &value, sizeof( value ) );
-        curr->value = value;
-        GetDescriptor( curr->loc.segment, desc );
-        linear = (DWORD)desc[1] + ( (DWORD)( desc[2] & 0xFF ) << 16L ) +
-                 ( (DWORD)( desc[3] >> 8 ) << 24L );
-        linear += curr->loc.offset;
-        curr->linear = linear;
         curr->len = acc->size;
-        curr->linear &= ~( curr->len - 1 );
+        curr->value = value;
+        curr->linear = linear & ~( curr->len - 1 );
         curr->dregs = ( linear & ( curr->len - 1 ) ) ? 2 : 1;
         WatchCount++;
         if( WDebug386 ) {

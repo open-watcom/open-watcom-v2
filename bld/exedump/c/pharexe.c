@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -295,29 +296,20 @@ static void dmp_descriptor( unsigned_32 size )
 /********************************************/
 {
     descriptor      desc;
-    unsigned_32     value;
-    unsigned_32     limit;
-    unsigned_32     base;
     unsigned        i;
 
     Wdputslc( "      seg base       seg limit      seg flg1     seg flg2\n" );
     Wdputslc( "      ========       =========      ========     ========\n" );
     for( i = 0; i < size; i += sizeof( descriptor ) ) {
         Wread( &desc, sizeof( descriptor ) );
-        value = desc.bits2 & DESC_LIMIT_HIGH_MASK;
-        limit = desc.limitlow | value << 16;
-        value = desc.basemid;
-        base = desc.baselow | value << 16;
-        value = desc.basehigh;
-        base = base | value << 24;
         Wdputs( "      " );
-        Puthex( base, 8 );
+        Puthex( GET_DESC_BASE( desc ), 8 );
         Wdputs( "H      " );
-        Puthex( limit, 8 );
+        Puthex( GET_DESC_LIMIT( desc ), 8 );
         Wdputs( "H        " );
-        Puthex( desc.bits1, 2 );
+        Puthex( desc.type.val, 2 );
         Wdputs( "H           " );
-        Puthex( desc.bits2 >> 4, 1 );
+        Puthex( desc.xtype.flags, 1 );
         Wdputslc( "H\n" );
     }
 }
