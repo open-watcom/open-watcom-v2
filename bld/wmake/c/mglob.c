@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,7 +111,7 @@ const char FAR BuiltIns[] = {
         "__OSX386__=\n"
     #elif defined( __PPC__ ) || defined( __ppc__ ) || defined( __powerpc__ )
         "__OSXPPC__=\n"
-    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ )
+    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ ) || defined( __arm64__ )
         "__OSXARM__=\n"
     #else
         #error Unknown CPU architecture
@@ -128,7 +128,7 @@ const char FAR BuiltIns[] = {
         "__LINUXPPC__=\n"
     #elif defined( __MIPS__ ) || defined( __mips__ )
         "__LINUXMIPS__=\n"
-    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ )
+    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ ) || defined( __arm64__ )
         "__LINUXARM__=\n"
     #else
         #error Unknown CPU architecture
