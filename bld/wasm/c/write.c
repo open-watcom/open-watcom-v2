@@ -1202,7 +1202,7 @@ static unsigned long OnePass( char *string )
 void WriteObjModule( void )
 /**************************/
 {
-    uint_8              codebuf[ MAX_LEDATA_THRESHOLD ];
+    uint_8              codebuf[ MAX_LEDATA_LEN ];
     char                string[ MAX_LINE_LEN ];
     char                *p;
     unsigned long       prev_total;
