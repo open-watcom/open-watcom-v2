@@ -37,7 +37,8 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wstripx.exe     <OWRELROOT>/binnt64/wstrip.exe
     <CCCMD> linuxx64/wstripx.exe  <OWRELROOT>/binl64/wstrip
     <CCCMD> linuxarm/wstripx.exe  <OWRELROOT>/arml/wstrip
-    <CCCMD> osxx64/wstripx.exe    <OWRELROOT>/osx64/wstrip
+    <CCCMD> osxx64/wstripx.exe    <OWRELROOT>/bino64/wstrip
+    <CCCMD> osxarm/wstripx.exe    <OWRELROOT>/armo/wstrip
 
 [ BLOCK . . ]
 

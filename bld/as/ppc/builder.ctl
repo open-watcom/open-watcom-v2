@@ -41,7 +41,8 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wasppc.exe      <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wasppc.exe   <OWRELROOT>/binl64/wasppc
     <CCCMD> linuxarm/wasppc.exe   <OWRELROOT>/arml/wasppc
-    <CCCMD> osxx64/wasppc.exe     <OWRELROOT>/osx64/wasppc
+    <CCCMD> osxx64/wasppc.exe     <OWRELROOT>/bino64/wasppc
+    <CCCMD> osxarm/wasppc.exe     <OWRELROOT>/armo/wasppc
 
 [ BLOCK . . ]
 

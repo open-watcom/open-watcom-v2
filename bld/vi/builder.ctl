@@ -68,9 +68,12 @@ set PROJDIR=<CWD>
     <CCCMD> linuxarm/vi.exe           <OWRELROOT>/arml/vi
     <CCCMD> ctags/linuxarm/ctags.exe  <OWRELROOT>/arml/ctags
     <CCCMD> bind/linuxarm/edbind.exe  <OWRELROOT>/arml/edbind
-    <CCCMD> osxx64/vi.exe             <OWRELROOT>/osx64/vi
-    <CCCMD> ctags/osxx64/ctags.exe    <OWRELROOT>/osx64/ctags
-    <CCCMD> bind/osxx64/edbind.exe    <OWRELROOT>/osx64/edbind
+    <CCCMD> osxx64/vi.exe             <OWRELROOT>/bino64/vi
+    <CCCMD> ctags/osxx64/ctags.exe    <OWRELROOT>/bino64/ctags
+    <CCCMD> bind/osxx64/edbind.exe    <OWRELROOT>/bino64/edbind
+    <CCCMD> osxarm/vi.exe             <OWRELROOT>/armo/vi
+    <CCCMD> ctags/osxarm/ctags.exe    <OWRELROOT>/armo/ctags
+    <CCCMD> bind/osxarm/edbind.exe    <OWRELROOT>/armo/edbind
 
 [ BLOCK . . ]
 

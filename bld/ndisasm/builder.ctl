@@ -45,7 +45,8 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wdis.exe      <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wdis.exe   <OWRELROOT>/binl64/wdis
     <CCCMD> linuxarm/wdis.exe   <OWRELROOT>/arml/wdis
-    <CCCMD> osxx64/wdis.exe     <OWRELROOT>/osx64/wdis
+    <CCCMD> osxx64/wdis.exe     <OWRELROOT>/bino64/wdis
+    <CCCMD> osxarm/wdis.exe     <OWRELROOT>/armo/wdis
 
 [ BLOCK . . ]
 

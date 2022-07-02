@@ -41,7 +41,8 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wasaxp.exe      <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wasaxp.exe   <OWRELROOT>/binl64/wasaxp
     <CCCMD> linuxarm/wasaxp.exe   <OWRELROOT>/arml/wasaxp
-    <CCCMD> osxx64/wasaxp.exe     <OWRELROOT>/osx64/wasaxp
+    <CCCMD> osxx64/wasaxp.exe     <OWRELROOT>/bino64/wasaxp
+    <CCCMD> osxarm/wasaxp.exe     <OWRELROOT>/armo/wasaxp
 
 [ BLOCK . . ]
 

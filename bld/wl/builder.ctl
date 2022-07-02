@@ -98,11 +98,16 @@ set PROJDIR=<CWD>
     <CCCMD> exe2bin/rdos386/exe2bin.exe     <OWRELROOT>/rdos/
     <CCCMD> lnk/rdos386/wlink.lnk           <OWRELROOT>/rdos/
 
-    <CCCMD> osxx64/wlink.exe                <OWRELROOT>/osx64/wlink
-#    <CCCMD> ms2wlink/osxx64/ms2wlink.exe    <OWRELROOT>/osx64/ms2wlink
-#    <CCCMD> fcenable/osxx64/fcenable.exe    <OWRELROOT>/osx64/fcenable
-#    <CCCMD> exe2bin/osxx64/exe2bin.exe      <OWRELROOT>/osx64/exe2bin
-    <CCCMD> lnk/osxx64/wlink.lnk            <OWRELROOT>/osx64/
+    <CCCMD> osxx64/wlink.exe                <OWRELROOT>/bino64/wlink
+#    <CCCMD> ms2wlink/osxx64/ms2wlink.exe    <OWRELROOT>/bino64/ms2wlink
+#    <CCCMD> fcenable/osxx64/fcenable.exe    <OWRELROOT>/bino64/fcenable
+#    <CCCMD> exe2bin/osxx64/exe2bin.exe      <OWRELROOT>/bino64/exe2bin
+    <CCCMD> lnk/osxx64/wlink.lnk            <OWRELROOT>/bino64/
+    <CCCMD> osxarm/wlink.exe                <OWRELROOT>/armo/wlink
+#    <CCCMD> ms2wlink/osxarm/ms2wlink.exe    <OWRELROOT>/armo/ms2wlink
+#    <CCCMD> fcenable/osxarm/fcenable.exe    <OWRELROOT>/armo/fcenable
+#    <CCCMD> exe2bin/osxarm/exe2bin.exe      <OWRELROOT>/armo/exe2bin
+    <CCCMD> lnk/osxarm/wlink.lnk            <OWRELROOT>/armo/
 
 [ BLOCK . . ]
 

@@ -61,8 +61,10 @@ set PROJDIR=<CWD>
     <CCCMD> linuxx64/<OWOBJDIR>/wcci8601.int    <OWRELROOT>/binl64/
     <CCCMD> linuxarm/<OWOBJDIR>/wcc.exe         <OWRELROOT>/arml/wcc
     <CCCMD> linuxarm/<OWOBJDIR>/wcci8601.int    <OWRELROOT>/arml/
-    <CCCMD> osxx64/<OWOBJDIR>/wcc.exe           <OWRELROOT>/osx64/wcc
-    <CCCMD> osxx64/<OWOBJDIR>/wcci8601.int      <OWRELROOT>/osx64/
+    <CCCMD> osxx64/<OWOBJDIR>/wcc.exe           <OWRELROOT>/bino64/wcc
+    <CCCMD> osxx64/<OWOBJDIR>/wcci8601.int      <OWRELROOT>/bino64/
+    <CCCMD> osxarm/<OWOBJDIR>/wcc.exe           <OWRELROOT>/armo/wcc
+    <CCCMD> osxarm/<OWOBJDIR>/wcci8601.int      <OWRELROOT>/armo/
 
 [ BLOCK . . ]
 

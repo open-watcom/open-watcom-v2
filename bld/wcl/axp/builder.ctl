@@ -41,7 +41,8 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wclaxp.exe      <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wclaxp.exe   <OWRELROOT>/binl64/wclaxp
     <CCCMD> linuxarm/wclaxp.exe   <OWRELROOT>/arml/wclaxp
-    <CCCMD> osxx64/wclaxp.exe     <OWRELROOT>/osx64/wclaxp
+    <CCCMD> osxx64/wclaxp.exe     <OWRELROOT>/bino64/wclaxp
+    <CCCMD> osxarm/wclaxp.exe     <OWRELROOT>/armo/wclaxp
 
 [ BLOCK . . ]
 

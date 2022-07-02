@@ -26,7 +26,8 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64/wdump.exe     <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wdump.exe  <OWRELROOT>/binl64/wdump
     <CCCMD> linuxarm/wdump.exe  <OWRELROOT>/arml/wdump
-    <CCCMD> osxx64/wdump.exe    <OWRELROOT>/osx64/wdump
+    <CCCMD> osxx64/wdump.exe    <OWRELROOT>/bino64/wdump
+    <CCCMD> osxarm/wdump.exe    <OWRELROOT>/armo/wdump
 
 [ BLOCK . . ]
 
