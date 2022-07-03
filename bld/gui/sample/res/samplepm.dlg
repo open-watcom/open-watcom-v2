@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 DLGTEMPLATE 100
 BEGIN
     DIALOG "GUI Test Dialog #100", 100, 23, 118, 304, 96, WS_VISIBLE

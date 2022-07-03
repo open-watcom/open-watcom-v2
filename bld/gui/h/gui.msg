@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 // - the change font menu item and hint text
 
 pick(	Change_XFont_,
@@ -49,7 +51,7 @@ pick(	OK,
 
 pick(	Cancel,
 		"Cancel",
-                "キャンセル" )
+		"キャンセル" )
 
 pick(	List_Files_of_Type_Colon,
 		"List Files of Type:",

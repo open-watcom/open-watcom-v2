@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 Options DIALOG 21, 40, 183, 52
 STYLE DS_MODALFRAME | WS_POPUPWINDOW | WS_VISIBLE | WS_DLGFRAME
 CAPTION "Virtual DOS Machine Options"

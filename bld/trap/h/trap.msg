@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 trappick( TRP_ERR_BAD_TRAP_FILE,
     "Invalid trap file",
     "jInvalid trap file" )

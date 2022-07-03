@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "log.rh"
 
 LOG_EXISTS_DLG DIALOG 63, 49, 160, 62

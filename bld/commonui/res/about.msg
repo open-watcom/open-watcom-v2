@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick( ABT_COPYRIGHT,
         "Portions Copyright (c) %s Sybase, Inc.",
         "Portions Copyright (c) %s Sybase, Inc." )

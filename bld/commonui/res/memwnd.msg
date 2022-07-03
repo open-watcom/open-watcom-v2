@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick(   MWND_DISP_BYTES,
         "Data displayed as bytes",
         "Data displayed as bytes" )

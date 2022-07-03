@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick(   ALIAS_VALUE_MUST_BE_INT,
         "The value field must contain an integer",
         "The value field must contain an integer" )

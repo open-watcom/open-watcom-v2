@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "wresdefn.h"
 #include "samprc.rh"
 #include "gui.rc"

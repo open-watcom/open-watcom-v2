@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #if !defined( JAPANESE )
 
 About DIALOG 19, 17, 316, 122
