@@ -205,11 +205,11 @@ rcui_inc_dirs = -I"$(trap_dir)/h"
 
 $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) $(rc_ui_inc_path) $[@ -o$@
+    $(cpp) $(rc_ui8_flags) $(rc_ui_inc_path) $[@ -o$@
 
 $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) $[@ -o$@
+    $(cpp) $(rc_ui8_flags) -DJAPANESE $(rc_ui_inc_path) $[@ -o$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldcl
@@ -275,7 +275,7 @@ libtarg_name = dbgstr
 !ifdef resource_file
 $(resource_file) : $(trap_dir)/common/wserver.rc
     @%make echo_rc
-    $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_encoding) $(rc_flags) $(inc_path) $[@ -fo=$@
 !endif
 
 inc_dirs += -I. -I"../h" $(extra_incs) -I"$(trap_dir)/common/$(target_os)"

@@ -3,31 +3,31 @@ pick( ABT_COPYRIGHT,
         "Portions Copyright (c) %s Sybase, Inc." )
 pick( ABT_386_ENH,
         "386 Enhanced Mode",
-        "386 ƒGƒ“ƒnƒ“ƒXƒhƒ‚[ƒh" )
+        "386 ã‚¨ãƒ³ãƒãƒ³ã‚¹ãƒ‰ãƒ¢ãƒ¼ãƒ‰" )
 pick( ABT_STD_MODE,
         "Standard Mode",
-        "ƒXƒ^ƒ“ƒ_[ƒhƒ‚[ƒh" )
+        "ã‚¹ã‚¿ãƒ³ãƒ€ãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰" )
 pick( ABT_MEM_X_KB_FREE,
         "Memory:\t\t%s KB free",
-        "ƒƒ‚ƒŠ:\t\t%s KB Žg—p‰Â”\" )
+        "ãƒ¡ãƒ¢ãƒª:\t\t%s KB ä½¿ç”¨å¯èƒ½" )
 pick( ABT_SYS_RESOURCES_FREE,
         "System Resources:\t%d%% free",
-        "ƒVƒXƒeƒ€ƒŠƒ\[ƒX:\t%d%% Žg—p‰Â”\" )
+        "ã‚·ã‚¹ãƒ†ãƒ ãƒªã‚½ãƒ¼ã‚¹:\t%d%% ä½¿ç”¨å¯èƒ½" )
 pick( ABT_SYS_RESOURCES_N_A,
         "System Resources:\t\tNot available",
-        "ƒVƒXƒeƒ€ƒŠƒ\[ƒX:\t\tŽg—p•s‰Â”\" )
+        "ã‚·ã‚¹ãƒ†ãƒ ãƒªã‚½ãƒ¼ã‚¹:\t\tä½¿ç”¨ä¸å¯èƒ½" )
 pick( ABT_RUNNING_ON_386,
         "Running on an i386",
-        "i386 ã‚Å“®ì’†" )
+        "i386 ä¸Šã§å‹•ä½œä¸­" )
 pick( ABT_RUNNING_ON_486,
         "Running on an i486",
-        "i486 ã‚Å“®ì’†" )
+        "i486 ä¸Šã§å‹•ä½œä¸­" )
 pick( ABT_RUNNING_ON_586,
         "Running on a Pentium or compatible",
-        "Pentium ã‚Å“®ì’†" )
+        "Pentium ä¸Šã§å‹•ä½œä¸­" )
 pick( ABT_VIRT_MEM,
         "Virtual Memory:\t\t%d KB",
-        "‰¼‘zƒƒ‚ƒŠ:\t\t%d KB" )
+        "ä»®æƒ³ãƒ¡ãƒ¢ãƒª:\t\t%d KB" )
 pick( ABT_MEM_LOAD,
         "Memory Load:\t\t%d%%",
-        "ƒƒ‚ƒŠ ƒ[ƒh:\t\t%d%%" )
+        "ãƒ¡ãƒ¢ãƒª ãƒ­ãƒ¼ãƒ‰:\t\t%d%%" )

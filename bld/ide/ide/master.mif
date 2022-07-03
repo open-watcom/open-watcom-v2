@@ -1,3 +1,4 @@
+
 proj_name = ide
 
 sys_windowed = 1
@@ -91,11 +92,11 @@ rc_inc_dirs = $(ide_rc_inc_dirs) $(gui_rc_inc_dirs)
 
 $(exetarg_res) : ../res/$(target_$(host_os))/ide.rc $(gui_dir)/h/gui.rc
     @%make echo_rc
-    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(rc_ui8_encoding) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 ntmanif.res : ../res/win/ntmanif.rc
     @%make echo_rc
-    $(rc) $(rc_flags) -I"../res/win" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rc) $(rc_ui8_encoding) $(rc_flags) -I"../res/win" $(inc_dirs_sys_nt) $< -fo=$@
 
 curr_dir=$+$(%__CWD__)$-
 
