@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "grep.rh"
 
 GREPDLG DIALOG 6, 18, 174, 62

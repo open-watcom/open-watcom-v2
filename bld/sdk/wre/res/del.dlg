@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 WREDeleteResource DIALOG 80, 80, 166, 57
 STYLE DS_MODALFRAME | WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
 CAPTION "Delete Resource"

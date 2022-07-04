@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "repdlg.rh"
 
 REPDLG DIALOG 61, 22, 204, 169

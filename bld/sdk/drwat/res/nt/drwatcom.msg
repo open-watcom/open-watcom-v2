@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #ifdef CHICAGO
 pick( STR_APP_NAME,
     "Dr. Watcom for Windows 9x",

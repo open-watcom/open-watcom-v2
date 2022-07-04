@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 // NB the maximum allowable string length is 128 bytes
 
 // iefonts.c

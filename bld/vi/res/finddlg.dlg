@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "finddlg.rh"
 
 FINDDLG DIALOG 59, 29, 204, 124

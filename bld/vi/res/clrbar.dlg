@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "clrbar.rh"
 
 CLRBAR DIALOG 66, 46, 130, 140

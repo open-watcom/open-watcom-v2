@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick(   STR_ONLY_1_SPY_ALLOWED,
         "Only one spy allowed",
         "Only one spy allowed" )

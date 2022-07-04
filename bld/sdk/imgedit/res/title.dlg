@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 WTitleScreen DIALOG 22, 17, 229, 223
 STYLE WS_POPUP | WS_DLGFRAME
 FONT 8, "Helv"

@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "asavedlg.rh"
 
 ASAVEDLG DIALOG 108, 88, 176, 64

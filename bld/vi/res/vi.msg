@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "tooltips.msg"
 
 pick( VI_BROWSE_MSG,

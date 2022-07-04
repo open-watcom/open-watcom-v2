@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 // the following is the font used in the status bar of the window
 pick(   WDE_STATUSFONT,
         "Helv.8",

@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick( TIP_NEW, "New", "New" )
 pick( TIP_OPEN, "Open", "Open" )
 pick( TIP_SAVE, "Save", "Save" )

@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "setfs.rh"
 
 SETFS DIALOG 25, 17, 299, 208

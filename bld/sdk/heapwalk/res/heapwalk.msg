@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 // Resource Display Window headings
 
 pick(   STR_BITMAP,

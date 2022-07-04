@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 WdeLoadCustom DIALOG 10, 20, 182, 122
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Load Microsoft Custom Control"

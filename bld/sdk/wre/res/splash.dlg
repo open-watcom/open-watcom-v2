@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 WRESplashScreen DIALOG 50, 50, 239, 135
 STYLE WS_POPUP | WS_DLGFRAME
 FONT 8, "Helv"

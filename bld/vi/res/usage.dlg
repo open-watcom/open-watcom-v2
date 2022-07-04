@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 Usage DIALOG 14, 22, 356, 132
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Open Watcom Editor Command Line Usage"

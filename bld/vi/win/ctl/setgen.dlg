@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #include "setgen.rh"
 
 SETGEN DIALOG 3, 17, 305, 170

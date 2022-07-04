@@ -1,22 +1,24 @@
+/* UTF-8 encoding, Â¥ */
+
 "ZOOM_MENU" MENU
 BEGIN
     POPUP sp( "&File",
-              "ƒtƒ@ƒCƒ‹(&F)" )
+              "ãƒ•ã‚¡ã‚¤ãƒ«(&F)" )
     BEGIN
 #ifndef __NT__
         MENUITEM sp( "&Begin Zoom",
-                     "ƒY[ƒ€ŠJŽn(&B)" ), ZMMENU_BEGIN
+                     "ã‚ºãƒ¼ãƒ é–‹å§‹(&B)" ), ZMMENU_BEGIN
 #endif
         MENUITEM sp( "&Paste To Clipboard",
-                     "ƒNƒŠƒbƒvƒ{[ƒh‚É’£‚è•t‚¯(&P)" ), ZMMENU_PASTE
+                     "ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«å¼µã‚Šä»˜ã‘(&P)" ), ZMMENU_PASTE
         MENUITEM SEPARATOR
         MENUITEM sp( "&Configure...",
-                     "Ý’è(&C)" ), ZMMENU_CONFIG
+                     "è¨­å®š(&C)" ), ZMMENU_CONFIG
         MENUITEM sp( "&About...",
-                     "ƒo[ƒWƒ‡ƒ“î•ñ(&A)" ), ZMMENU_ABOUT
+                     "ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±(&A)" ), ZMMENU_ABOUT
         MENUITEM SEPARATOR
         MENUITEM sp( "E&xit",
-                     "I—¹(&x)" ), ZMMENU_EXIT
+                     "çµ‚äº†(&x)" ), ZMMENU_EXIT
     END
     MENUITEM "<<", ZMMENU_ZOOMOUT
     MENUITEM ">>", ZMMENU_ZOOMIN

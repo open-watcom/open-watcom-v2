@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 pick( STR_LOG_BIG_ERASE,
     "Log file is now %ld bytes, erase it?",
     "Log file is now %ld bytes, erase it?" )

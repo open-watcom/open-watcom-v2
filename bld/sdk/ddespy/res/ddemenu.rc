@@ -1,3 +1,5 @@
+/* UTF-8 encoding, ¥ */
+
 #ifdef JAPANESE
  #define sp( s1, s2 ) s2
 #else
@@ -7,109 +9,109 @@
 "DDEMENU" MENU
 BEGIN
     POPUP sp( "&File",
-              "�t�@�C��(&F)" )
+              "ファイル(&F)" )
     BEGIN
         MENUITEM sp( "&Save",
-                     "�㏑���ۑ�(&S)" ), DDEMENU_SAVE
+                     "上書き保存(&S)" ), DDEMENU_SAVE
         MENUITEM sp( "Save &As...",
-                     "���O��t���ĕۑ�(&A)..." ), DDEMENU_SAVE_AS
+                     "名前を付けて保存(&A)..." ), DDEMENU_SAVE_AS
         MENUITEM SEPARATOR
         MENUITEM sp( "&Log To File...",
-                     "�t�@�C���ւ̃��O(&L)..." ), DDEMENU_LOG_FILE
+                     "ファイルへのログ(&L)..." ), DDEMENU_LOG_FILE
         MENUITEM sp( "&Pause Log",
-                     "���O�̈ꎞ��~(&P)" ), DDEMENU_LOG_PAUSE
+                     "ログの一時停止(&P)" ), DDEMENU_LOG_PAUSE
         MENUITEM sp( "C&onfigure Log...",
-                     "���O�̐ݒ�(&o)..." ), DDEMENU_LOG_CONFIG
+                     "ログの設定(&o)..." ), DDEMENU_LOG_CONFIG
         MENUITEM SEPARATOR
         MENUITEM sp( "Set &Font...",
-                     "�t�H���g(&F)..." ), DDEMENU_FONT
+                     "フォント(&F)..." ), DDEMENU_FONT
         MENUITEM sp( "Show &Toolbar",
-                     "�c�|���o�|�̕\��(&h)" ), DDEMENU_TOOLBAR
+                     "ツ－ルバ－の表示(&h)" ), DDEMENU_TOOLBAR
         MENUITEM sp( "Show &Hint Bar",
-                     "�q���g�o�|�̕\��(&H)" ), DDEMENU_HINTBAR
+                     "ヒントバ－の表示(&H)" ), DDEMENU_HINTBAR
         MENUITEM sp( "Always On &Top",
                      "Always On &Top" ), DDEMENU_TOP
         MENUITEM SEPARATOR
         MENUITEM sp( "E&xit",
-                     "�I��(&x)" ), DDEMENU_EXIT
+                     "終了(&x)" ), DDEMENU_EXIT
     END
     POPUP sp( "&Output",
-              "�o��(&O)" )
+              "出力(&O)" )
     BEGIN
         MENUITEM sp( "&Clear",
-                     "����(&C)" ), DDEMENU_CLEAR
+                     "消去(&C)" ), DDEMENU_CLEAR
         MENUITEM sp( "&Mark...",
-                     "�}�|�N(&M)..." ), DDEMENU_MARK
+                     "マ－ク(&M)..." ), DDEMENU_MARK
         MENUITEM SEPARATOR
         MENUITEM sp( "&Output to Screen",
-                     "�X�N���|���ւ̏o��(&O)" ), DDEMENU_SCREEN_OUT
+                     "スクリ－ンへの出力(&O)" ), DDEMENU_SCREEN_OUT
         MENUITEM sp( "&Auto Scroll",
-                     "�����X�N���|��(&A)" ), DDEMENU_SCROLL
+                     "自動スクロ－ル(&A)" ), DDEMENU_SCROLL
     END
 
     POPUP sp( "&Monitor",
-              "���j�^�|(&M)" )
+              "モニタ－(&M)" )
     BEGIN
         sp( MENUITEM "&Posted Messages",
-                     "�|�X�g���b�Z�|�W(&P)" ), DDEMENU_MON_POST
+                     "ポストメッセ－ジ(&P)" ), DDEMENU_MON_POST
         MENUITEM sp( "&Sent Messages",
-                     "���M���b�Z�|�W(&S)" ), DDEMENU_MON_SENT
+                     "送信メッセ－ジ(&S)" ), DDEMENU_MON_SENT
         MENUITEM sp( "String &Handle Data",
-                     "������n���h���f�|�^(&H)" ), DDEMENU_MON_STR
+                     "文字列ハンドルデ－タ(&H)" ), DDEMENU_MON_STR
         MENUITEM sp( "&Callbacks",
-                     "�R�|���o�b�N(&C)" ), DDEMENU_MON_CB
+                     "コ－ルバック(&C)" ), DDEMENU_MON_CB
         MENUITEM sp( "&Errors",
-                     "�G���|(&E)" ), DDEMENU_MON_ERR
+                     "エラ－(&E)" ), DDEMENU_MON_ERR
         MENUITEM sp( "C&onversations",
-                     "�Θb(&o)" ), DDEMENU_MON_CONV
+                     "対話(&o)" ), DDEMENU_MON_CONV
         MENUITEM sp( "&Links",
-                     "�����N(&L)" ), DDEMENU_MON_LNK
+                     "リンク(&L)" ), DDEMENU_MON_LNK
         MENUITEM SEPARATOR
         MENUITEM sp( "Set Message Filter...",
-                     "���b�Z�|�W�t�B���^�|�̐ݒ�..." ), DDEMENU_MSG_FILTER
+                     "メッセ－ジフィルタ－の設定..." ), DDEMENU_MSG_FILTER
         MENUITEM sp( "Set Callback Filter...",
-                     "�R�|���o�b�N�t�B���^�|�̐ݒ�..." ), DDEMENU_CB_FILTER
+                     "コ－ルバックフィルタ－の設定..." ), DDEMENU_CB_FILTER
     END
     POPUP sp( "&Track",
-              "�ǐ�" )
+              "追跡" )
     BEGIN
         sp( MENUITEM "&Strings",
-                     "������(&S)" ), DDEMENU_TRK_STR
+                     "文字列(&S)" ), DDEMENU_TRK_STR
         MENUITEM sp( "&Conversations",
-                     "�Θb(&C)" ), DDEMENU_TRK_CONV
+                     "対話(&C)" ), DDEMENU_TRK_CONV
         MENUITEM sp( "&Links",
-                     "�����N(&L)" ), DDEMENU_TRK_LINK
+                     "リンク(&L)" ), DDEMENU_TRK_LINK
         MENUITEM sp( "S&ervers",
-                     "�T�|�o(&e)" ), DDEMENU_TRK_SERVER
+                     "サ－バ(&e)" ), DDEMENU_TRK_SERVER
     END
     POPUP sp( "&Aliases",
-              "�ʖ�(&A)" )
+              "別名(&A)" )
     BEGIN
         sp( MENUITEM "&Disable Aliases",
-                     "�ʖ��̋֎~(&D)" ), DDEMENU_NO_ALIAS
+                     "別名の禁止(&D)" ), DDEMENU_NO_ALIAS
         MENUITEM sp( "&Purge Aliases",
-                     "�ʖ��̈�|(&P)" ), DDEMENU_ALIAS_PURGE
+                     "別名の一掃(&P)" ), DDEMENU_ALIAS_PURGE
         MENUITEM SEPARATOR
         MENUITEM sp( "Add &HWND Alias...",
-                     "hwnd�̕ʖ��̒ǉ�(&h)..." ), DDEMENU_HWND_ALIAS
+                     "hwndの別名の追加(&h)..." ), DDEMENU_HWND_ALIAS
         MENUITEM sp( "Add &Task Alias...",
-                     "�^�X�N�̕ʖ��̒ǉ�(&t)" ), DDEMENU_TASK_ALIAS
+                     "タスクの別名の追加(&t)" ), DDEMENU_TASK_ALIAS
         MENUITEM sp( "Add &Conversation Alias...",
-                     "�Θb�̕ʖ��̒ǉ�(&c)" ), DDEMENU_CONV_ALIAS
+                     "対話の別名の追加(&c)" ), DDEMENU_CONV_ALIAS
     END
     POPUP sp( "&Help",
-              "�w���v(&H)" )
+              "ヘルプ(&H)" )
     BEGIN
         sp( MENUITEM "&Contents",
-                     "�ڎ�(&C)" ), DDEMENU_HELP_CONTENTS
+                     "目次(&C)" ), DDEMENU_HELP_CONTENTS
         MENUITEM sp( "&Search for Help On...",
-                     "�L�|���|�h�Ō���(&S)" ), DDEMENU_HELP_SRCH
+                     "キ－ワ－ドで検索(&S)" ), DDEMENU_HELP_SRCH
         MENUITEM SEPARATOR
         MENUITEM sp( "&How to Use Help",
-                     "�w���v�̎g����(&H)" ), DDEMENU_HELP_ON_HELP
+                     "ヘルプの使い方(&H)" ), DDEMENU_HELP_ON_HELP
         MENUITEM SEPARATOR
         MENUITEM sp( "&About...",
-                     "�o�|�W�������(&A)" ), DDEMENU_ABOUT
+                     "バ－ジョン情報(&A)" ), DDEMENU_ABOUT
     END
 END
 
