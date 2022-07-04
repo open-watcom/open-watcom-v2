@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,12 +44,10 @@ struct asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
 {
     field_list      *field;
     struct asm_sym  *sym;
-    size_t          len;
 
-    len = strlen( name ) + 1;
     for( field = ((dir_node *)symbol)->e.structinfo->head; field != NULL; field = field->next ) {
         if( (sym = field->sym) != NULL ) {
-            if( memcmp( name, sym->name, len ) == 0 ) {
+            if( strcmp( name, sym->name ) == 0 ) {
                 return( sym );
             }
         }

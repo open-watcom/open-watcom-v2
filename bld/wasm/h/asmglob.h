@@ -54,9 +54,9 @@
 #define SCRAP_INSTRUCTION       3
 #define INDIRECT_JUMP           4
 
-#define CMPLIT(s,c)     memcmp( s, c, sizeof( c ) )
-#define CMPLITBEG(s,c)  memcmp( s, c, sizeof( c ) - 1 )
-#define CMPLITEND(s,c)  memcmp( s - ( sizeof( c ) - 1 ), c, sizeof( c ) - 1 )
+#define CMPLIT(s,c)     strcmp( s, c )
+#define CMPLITBEG(sb,c) strncmp( sb, c, sizeof( c ) - 1 )
+#define CMPLITEND(se,c) strcmp( se - ( sizeof( c ) - 1 ), c )
 
 #define CPYLIT(s,c)     memcpy( s, c, sizeof( c ) )
 #define CATLIT(s,c)     (char *)memcpy( s, c, sizeof( c ) - 1 ) + sizeof( c ) - 1

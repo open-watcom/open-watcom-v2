@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,23 +156,21 @@ static struct asm_sym **AsmFind( const char *name )
 /* find a symbol in the symbol table, return NULL if not found */
 {
     struct asm_sym      **sym;
-    size_t              len;
 
 #if defined( _STANDALONE_ )
-    sym = &sym_table[ hashpjw( name ) ];
+    sym = &sym_table[hashpjw( name )];
 #else
     sym = &AsmSymHead;
 #endif
-    len = strlen( name ) + 1;
     for( ; *sym != NULL; sym = &((*sym)->next) ) {
 #if defined( _STANDALONE_ )
         if( Options.mode & MODE_IDEAL ) {
-            if( memcmp( name, (*sym)->name, len ) == 0 ) {
+            if( strcmp( name, (*sym)->name ) == 0 ) {
                 break;
             }
         } else {
 #endif
-            if( strnicmp( name, (*sym)->name, len ) == 0 ) {
+            if( stricmp( name, (*sym)->name ) == 0 ) {
                 break;
             }
 #if defined( _STANDALONE_ )
@@ -187,11 +185,9 @@ static struct asm_sym *FindLocalLabel( const char *name )
 /*******************************************************/
 {
     label_list  *curr;
-    size_t      len;
 
-    len = strlen( name ) + 1;
     for( curr = CurrProc->e.procinfo->labellist; curr != NULL; curr = curr->next ) {
-        if( memcmp( curr->sym->name, name, len ) == 0 ) {
+        if( strcmp( curr->sym->name, name ) == 0 ) {
             return( curr->sym );
         }
     }
@@ -250,7 +246,7 @@ struct asm_sym *AsmLookup( const char *name )
 #if defined( _STANDALONE_ )
     if( Options.mode & MODE_TASM ) {
         if( Options.locals_len ) {
-            if( memcmp( name, Options.locals_prefix, Options.locals_len ) == 0
+            if( strncmp( name, Options.locals_prefix, Options.locals_len ) == 0
                 && name[Options.locals_len] != '\0' ) {
                 if( CurrProc == NULL ) {
                     AsmError( LOCAL_LABEL_OUTSIDE_PROC );
