@@ -46,17 +46,17 @@
 #include "winpath.h"
 
 
-BOOL IsSegSize32( WORD seg )
+bool IsSegSize32( WORD seg )
 {
     descriptor  desc;
 
     if( WDebug386 ) {
         GetDescriptor( seg, &desc );
         if( desc.xtype.use32 ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 trap_retval TRAP_CORE( Machine_data )( void )

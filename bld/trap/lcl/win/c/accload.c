@@ -47,8 +47,6 @@
 #include "dbgrmsg.h"
 
 
-BOOL WasStarted;
-
 typedef struct {
     WORD        mustbe2;
     WORD        cmdshow;
@@ -61,6 +59,8 @@ typedef struct
     word_struct *cmdshow;
     DWORD       reserved;
 } lm_parms;
+
+static bool WasStarted;
 
 static size_t MergeArgvArray( const char *src, char *dst, size_t len )
 {
@@ -133,9 +133,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
      * reset flags
      */
     OutPos = 0;
-    WasStarted = FALSE;
-    LoadingDebugee = TRUE;
-    Debugging32BitApp = FALSE;
+    WasStarted = false;
+    LoadingDebugee = true;
+    Debugging32BitApp = false;
     AddAllCurrentModules();
 
     /*
@@ -163,9 +163,9 @@ trap_retval TRAP_CORE( Prog_load )( void )
             tid = 0;
         } else {
             DebugeeTask = tid;
-            StopNewTask.loc.segment = _FP_SEG( (LPVOID)csip );
-            StopNewTask.loc.offset = _FP_OFF( (LPVOID)csip );
-            StopNewTask.old_opcode = place_breakpoint( &StopNewTask.loc );
+            StopNewTask.addr.segment = _FP_SEG( (LPVOID)csip );
+            StopNewTask.addr.offset = _FP_OFF( (LPVOID)csip );
+            StopNewTask.old_opcode = place_breakpoint( &StopNewTask.addr );
         }
     } else {
         tid = 0;
@@ -196,15 +196,15 @@ trap_retval TRAP_CORE( Prog_load )( void )
         /*
          * get starting point in task
          */
-        if( !GetStartAddress( exe_name, &StopNewTask.loc ) ) {
+        if( !GetStartAddress( exe_name, &StopNewTask.addr ) ) {
             Out((OUT_ERR,"Could not get starting address"));
             ret->err = WINERR_NOSTART;
-            LoadingDebugee = FALSE;
+            LoadingDebugee = false;
             return( sizeof( *ret ) );
         }
-        StopNewTask.segment_number = StopNewTask.loc.segment;
-        Out((OUT_LOAD,"Loading %s, cs:ip = %04x:%04lx", exe_name, StopNewTask.loc.segment,
-                            StopNewTask.loc.offset ));
+        StopNewTask.segment_number = StopNewTask.addr.segment;
+        Out((OUT_LOAD,"Loading %s, cs:ip = %04x:%04lx", exe_name, StopNewTask.addr.segment,
+                            StopNewTask.addr.offset ));
 
         /*
          * load the task
@@ -220,7 +220,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         if( DebugeeInstance < HINSTANCE_ERROR ) {
             Out((OUT_ERR,"Debugee did not load %d", DebugeeInstance));
             ret->err = WINERR_NOLOAD;
-            LoadingDebugee = FALSE;
+            LoadingDebugee = false;
             return( sizeof( *ret ) );
         }
         DebuggerWaitForMessage( WAITING_FOR_TASK_LOAD, NULL, RESTART_APP );
@@ -241,13 +241,13 @@ trap_retval TRAP_CORE( Prog_load )( void )
         if( !StopOnExtender && ( memcmp( sig, win386sig, SIG_SIZE ) == 0 ||
                 memcmp( sig, win386sig2, SIG_SIZE ) == 0 ) ) {
             Out((OUT_LOAD,"Is Win32App" ));
-            Debugging32BitApp = TRUE;
+            Debugging32BitApp = true;
             /*
              * make sure that WDEBUG.386 is installed
              */
             if( !WDebug386 ) {
                 ret->err = WINERR_NODEBUG32; /* Can't debug 32 bit app */
-                LoadingDebugee = FALSE;
+                LoadingDebugee = false;
                 return( sizeof( *ret ) );
             }
             ret->flags |= LD_FLAG_IS_BIG;
@@ -270,7 +270,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         }
         if( tid != 0 ) {
             ret->flags |= LD_FLAG_IS_STARTED;
-            WasStarted = TRUE;
+            WasStarted = true;
         }
     } else {
         Out((OUT_ERR,"Starting breakpoint not found, pmsg=%d", pmsg ));
@@ -281,7 +281,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         InitASynchHook();
     }
 #endif
-    LoadingDebugee = FALSE;
+    LoadingDebugee = false;
     CurrentModule = 1;
     ret->mod_handle = 0;
     return( sizeof( *ret ) );
@@ -342,10 +342,10 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     ModuleTop = 0;
     CurrentModule = 1;
     FaultHandlerEntered = false;
-    PendingTrap = FALSE;
+    PendingTrap = false;
     SaveStdIn = NIL_HANDLE;
     SaveStdOut = NIL_HANDLE;
-    Debugging32BitApp = FALSE;
+    Debugging32BitApp = false;
     ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );

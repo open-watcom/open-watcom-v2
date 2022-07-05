@@ -43,7 +43,7 @@
 
 
 static redirect_stdin_ret       *redirect_ret;
-static BOOL                     redirect_input;
+static bool                     redirect_input;
 static char                     *redirect_filename;
 
 /*
@@ -96,7 +96,7 @@ void ExecuteRedirect( void )
  * do file redirection by swapping to the debugee, and having him run
  * the ExecuteRedirect code.
  */
-static trap_elen doRedirect( BOOL isin )
+static trap_elen doRedirect( bool isin )
 {
     redirect_ret = GetOutPtr( 0 );
     redirect_input = isin;
@@ -107,10 +107,10 @@ static trap_elen doRedirect( BOOL isin )
 
 trap_retval TRAP_CORE( Redirect_stdin )( void  )
 {
-    return( doRedirect( TRUE ) );
+    return( doRedirect( true ) );
 }
 
 trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
-    return( doRedirect( FALSE ) );
+    return( doRedirect( false ) );
 }

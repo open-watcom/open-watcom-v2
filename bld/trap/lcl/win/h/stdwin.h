@@ -70,11 +70,11 @@ typedef enum {
 #define MAX_STR 512
 
 typedef struct {
-    addr48_ptr          loc;
-    WORD                segment_number;
-    opcode_type         old_opcode;
-    char                hard_mode:1;
-    char                in_use:1;
+    addr48_ptr      addr;
+    WORD            segment_number;
+    opcode_type     old_opcode;
+    bool            hard_mode;
+    bool            in_use;
 } break_point;
 
 #define SIG_OFF         0
@@ -122,7 +122,7 @@ extern int                      SaveStdIn;
 extern int                      SaveStdOut;
 extern HMODULE                  DebugeeModule;
 extern bool                     WasInt32;
-extern BOOL                     DebugDebugeeOnly;
+extern bool                     DebugDebugeeOnly;
 extern HTASK                    TaskAtFault;
 //extern FARPROC                  SubClassProcInstance;
 extern bool                     HardModeRequired;
@@ -131,15 +131,14 @@ extern bool                     ForceHardMode;
 extern bool                     InSoftMode;
 extern WORD                     CSAlias;
 extern WORD                     SegmentToAccess;
-extern BOOL                     PendingTrap;
+extern bool                     PendingTrap;
 extern event_hook_fn            *HookRtn;
-extern BOOL                     IsRFX;
 extern char                     OutBuff[MAX_STR];
 extern int                      OutPos;
-extern BOOL                     StopOnExtender;
-extern BOOL                     LoadingDebugee;
-extern BOOL                     TraceOn;
-extern BOOL                     Debugging32BitApp;
+extern bool                     StopOnExtender;
+extern bool                     LoadingDebugee;
+extern bool                     TraceOn;
+extern bool                     Debugging32BitApp;
 
 /*
  * function prototypes
@@ -147,12 +146,12 @@ extern BOOL                     Debugging32BitApp;
 /* accbrwat.c */
 extern opcode_type  place_breakpoint( addr48_ptr *addr );
 extern int          remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode );
-extern BOOL         IsOurBreakpoint( WORD sel, DWORD off );
+extern bool         IsOurBreakpoint( WORD sel, DWORD off );
 extern void         ResetBreakpoints( WORD sel );
-extern BOOL         SetDebugRegs( void );
+extern bool         SetDebugRegs( void );
 extern void         ClearDebugRegs( void );
 extern DWORD        GetDR6( void );
-extern BOOL         CheckWatchPoints( void );
+extern bool         CheckWatchPoints( void );
 extern bool         IsWatch( void );
 
 /* asyhook.c */
@@ -161,41 +160,41 @@ extern void FiniASynchHook( void );
 extern void HandleAsynch( void );
 
 /* accmap.c */
-void AddModuleLoaded( HANDLE mod, BOOL );
-void AddDebugeeModule( void );
-void AddAllCurrentModules( void );
-BOOL HasSegAliases( void );
+extern void AddModuleLoaded( HANDLE mod, bool );
+extern void AddDebugeeModule( void );
+extern void AddAllCurrentModules( void );
+extern bool HasSegAliases( void );
 
 /* accmisc.c */
-BOOL IsSegSize32( WORD seg );
+extern bool IsSegSize32( WORD seg );
 
 /* accredir.c */
-void ExecuteRedirect( void );
+extern void ExecuteRedirect( void );
 
 /* accrun.c */
-void SingleStepMode( void );
+extern void SingleStepMode( void );
 
 /* initfini.c */
-void SetInputLock( bool lock_status );
+extern void SetInputLock( bool lock_status );
 
 /* dbgeemsg.c */
-void EnterSoftMode( void );
-void ExitSoftMode( void );
-//long FAR PASCAL SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam );
+extern void EnterSoftMode( void );
+extern void ExitSoftMode( void );
+//extern long FAR PASCAL SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam );
 
 /* dbghook.c */
-void FiniDebugHook( void );
-void InitDebugHook( void );
+extern void FiniDebugHook( void );
+extern void InitDebugHook( void );
 
 /* int.asm */
-void FAR PASCAL IntHandler( void );
+extern void FAR PASCAL IntHandler( void );
 
 /* mem.c */
-DWORD WriteMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
-DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
+extern DWORD WriteMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
+extern DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size );
 
 /* notify.c */
-BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );
+extern BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );
 
 /* debug output */
 extern unsigned     DbgFlags;

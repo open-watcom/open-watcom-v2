@@ -60,11 +60,11 @@
 #define MAX_WATCHES     8
 
 typedef struct {
-    addr48_ptr  loc;
+    addr48_ptr  addr;
     DWORD       value;
     DWORD       linear;
-    word        dregs;
-    word        len;
+    byte        size;
+    byte        dregs;
 } watch_point;
 
 opcode_type             BreakOpcode;
@@ -92,18 +92,18 @@ int remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
 /*
  * IsOurBreakpoint - check if a segment/offset is a break point we set
  */
-BOOL IsOurBreakpoint( WORD sel, DWORD off )
+bool IsOurBreakpoint( WORD sel, DWORD off )
 {
     int i;
 
     for( i = 0; i < numBreaks; i++ ) {
         if( brkList[i].in_use ) {
-            if( brkList[i].loc.segment == sel && brkList[i].loc.offset == off ) {
-                return( TRUE );
+            if( brkList[i].addr.segment == sel && brkList[i].addr.offset == off ) {
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* IsOurBreakpoint */
 
@@ -116,8 +116,8 @@ void ResetBreakpoints( WORD sel )
 
     for( i = 0; i < numBreaks; i++ ) {
         if( brkList[i].in_use ) {
-            if( brkList[i].loc.segment == sel ) {
-                place_breakpoint( &brkList[i].loc );
+            if( brkList[i].addr.segment == sel ) {
+                place_breakpoint( &brkList[i].addr );
             }
         }
     }
@@ -159,7 +159,7 @@ trap_retval TRAP_CORE( Set_break )( void )
 
     brk = findBrkEntry();
     brk->old_opcode = place_breakpoint( &acc->break_addr );
-    brk->loc = acc->break_addr;
+    brk->addr = acc->break_addr;
     brk->in_use = TRUE;
     brk->hard_mode = TRUE;
 
@@ -180,8 +180,8 @@ trap_retval TRAP_CORE( Clear_break )( void )
     remove_breakpoint( &acc->break_addr, acc->old );
 
     for( i = 0; i < numBreaks; i++ ) {
-        if( brkList[i].loc.segment == acc->break_addr.segment &&
-                        brkList[i].loc.offset == acc->break_addr.offset ) {
+        if( brkList[i].addr.segment == acc->break_addr.segment &&
+                        brkList[i].addr.offset == acc->break_addr.offset ) {
             brkList[i].in_use = FALSE;
             break;
         }
@@ -259,58 +259,60 @@ static int DRegsCount( void )
     return( needed );
 }
 
-BOOL SetDebugRegs( void )
+bool SetDebugRegs( void )
 {
     int         i,dr;
     DWORD       dr7;
     watch_point *wp;
 
     if( !WDebug386 )
-        return( FALSE );
+        return( false );
 
     if( DRegsCount() > 4 )
-        return( FALSE );
+        return( false );
 
     dr  = 0;
     dr7 = 0;
-    for( wp = WatchPoints, i = 0; i < WatchCount; wp++, i++ ) {
-        dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        dr7 |= SetDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
         dr++;
         if( wp->dregs == 2 ) {
-            dr7 |= SetDRn( dr, wp->linear + wp->len, DRLen( wp->len ) | DR7_BWR );
+            dr7 |= SetDRn( dr, wp->linear + wp->size, DRLen( wp->size ) | DR7_BWR );
             dr++;
         }
     }
     setDR7( dr7 );
-    return( TRUE );
+    return( true );
 } /* SetDebugRegs */
 
 /*
  * CheckWatchPoints - check if a watchpoint was hit
  */
-BOOL CheckWatchPoints( void )
+bool CheckWatchPoints( void )
 {
     DWORD       value;
     int         i;
+    watch_point *wp;
 
-    for( i = 0; i < WatchCount; i++ ) {
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         value = 0;
-        ReadMemory( &WatchPoints[i].loc, &value, WatchPoints[i].len );
-        if( value != WatchPoints[i].value ) {
-            return( TRUE );
+        ReadMemory( &wp->addr, &value, wp->size );
+        if( value != wp->value ) {
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 } /* CheckWatchPoints */
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
+    watch_point         *wp;
     DWORD               value;
-    watch_point         *curr;
-    descriptor          desc;
     DWORD               linear;
+    descriptor          desc;
+    byte                size;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -318,17 +320,18 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->err = 1;       // fail
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
+        size = acc->size;
         value = 0;
-        ReadMemory( &acc->watch_addr, &value, acc->size );
+        ReadMemory( &acc->watch_addr, &value, size );
         GetDescriptor( acc->watch_addr.segment, &desc );
         linear = GET_DESC_BASE( desc ) + acc->watch_addr.offset;
-        curr = WatchPoints + WatchCount;
-        curr->loc.segment = acc->watch_addr.segment;
-        curr->loc.offset = acc->watch_addr.offset;
-        curr->len = acc->size;
-        curr->value = value;
-        curr->linear = linear & ~( curr->len - 1 );
-        curr->dregs = ( linear & ( curr->len - 1 ) ) ? 2 : 1;
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = size;
+        wp->value = value;
+        wp->linear = linear & ~( size - 1 );
+        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         WatchCount++;
         if( WDebug386 ) {
             if( DRegsCount() <= 4 ) {
@@ -349,10 +352,10 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     acc = GetInPtr( 0 );
     dst = src = WatchPoints;
     for( i = 0; i < WatchCount; i++ ) {
-        if( src->loc.segment != acc->watch_addr.segment
-         || src->loc.offset != acc->watch_addr.offset ) {
-            dst->loc.offset = src->loc.offset;
-            dst->loc.segment = src->loc.segment;
+        if( src->addr.segment != acc->watch_addr.segment
+         || src->addr.offset != acc->watch_addr.offset ) {
+            dst->addr.offset = src->addr.offset;
+            dst->addr.segment = src->addr.segment;
             dst->value = src->value;
             dst++;
         }

@@ -60,7 +60,7 @@ static int      mod32Top;
 
 static HMODULE moduleIDs[MAX_MODULE];
 static HMODULE modules32[MAX_MODULE];
-static BOOL moduleIsDLL[MAX_MODULE];
+static bool moduleIsDLL[MAX_MODULE];
 
 /*
  * AddAllCurrentModules - add all currently running modules to
@@ -75,7 +75,7 @@ void AddAllCurrentModules( void )
         return;
     do {
         if( me.hModule != DebugeeModule ) {
-            AddModuleLoaded( me.hModule, FALSE );
+            AddModuleLoaded( me.hModule, false );
         }
         me.dwSize = sizeof( MODULEENTRY );
     } while( ModuleNext( &me ) );
@@ -144,7 +144,7 @@ static void try32( HANDLE mod )
 /*
  * HasSegAliases - report if any modules are Win386 maps
  */
-BOOL HasSegAliases( void )
+bool HasSegAliases( void )
 {
     return( (mod32Top > 0) );
 
@@ -171,7 +171,7 @@ void AddDebugeeModule( void )
 /*
  * AddModuleLoaded - add a loaded module (dll or task) to the list
  */
-void AddModuleLoaded( HANDLE mod, BOOL is_dll )
+void AddModuleLoaded( HANDLE mod, bool is_dll )
 {
     int         i;
 
@@ -182,7 +182,7 @@ void AddModuleLoaded( HANDLE mod, BOOL is_dll )
     if( ModuleTop == 0 ) {
         Out((OUT_MAP,"AddModuleLoaded ModuleTop=%d mod=%d dll=%d",ModuleTop,mod,is_dll));
     }
-    for( i=0;i<ModuleTop;i++ ) {
+    for( i = 0; i < ModuleTop; i++ ) {
         if( moduleIDs[i] == mod ) {
             Out((OUT_MAP,"Already there"));
             return;
@@ -285,7 +285,7 @@ static void accessSegment( GLOBALHANDLE gh, WORD segment )
  * other task. Why DLL's work at all (since they are not a "task") is beyond
  * me.
  */
-static BOOL horkyFindSegment( int module, WORD segment )
+static bool horkyFindSegment( int module, WORD segment )
 {
     static GLOBALENTRY  ge;
     static HMODULE      lastmodid;
@@ -293,28 +293,28 @@ static BOOL horkyFindSegment( int module, WORD segment )
 
     modid = moduleIDs[module];
     if( !moduleIsDLL[module] ) {
-        return( FALSE );
+        return( false );
     }
 
     if( lastmodid == modid ) {
         accessSegment( ge.hBlock, segment );
-        return( TRUE );
+        return( true );
     }
     lastmodid = modid;
     ge.dwSize = sizeof( ge );
     if( !GlobalFirst( &ge, GLOBAL_ALL ) ) {
         lastmodid = NULL;
-        return( FALSE );
+        return( false );
     }
     do {
         if( ge.hOwner == modid && ge.wType == GT_MODULE ) {
             accessSegment( ge.hBlock, segment );
-            return( TRUE );
+            return( true );
         }
         ge.dwSize = sizeof( ge );
     } while( GlobalNext( &ge, GLOBAL_ALL ) );
     lastmodid = NULL;
-    return( FALSE );
+    return( false );
 
 } /* horkyFindSegment */
 

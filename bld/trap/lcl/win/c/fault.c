@@ -308,11 +308,11 @@ void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
             DLLLoad.addr.segment = 0;
             DLLLoad.addr.offset = 0;
         } else if( DebuggerState == WAITING_FOR_BREAKPOINT ) {
-            if( (WasInt32 && IntResult.CS == StopNewTask.loc.segment &&
-                        IntResult.EIP == StopNewTask.loc.offset ) ||
-                (!WasInt32 && ff.intf.CS == StopNewTask.loc.segment &&
-                        ff.intf.IP == StopNewTask.loc.offset) ) {
-                remove_breakpoint( &StopNewTask.loc, StopNewTask.old_opcode );
+            if( (WasInt32 && IntResult.CS == StopNewTask.addr.segment &&
+                        IntResult.EIP == StopNewTask.addr.offset ) ||
+                (!WasInt32 && ff.intf.CS == StopNewTask.addr.segment &&
+                        ff.intf.IP == StopNewTask.addr.offset) ) {
+                remove_breakpoint( &StopNewTask.addr, StopNewTask.old_opcode );
                 pmsg = START_BP_HIT;
             }
         }

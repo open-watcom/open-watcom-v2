@@ -217,10 +217,10 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     }
 #endif
     if( parms[0] == 'c' && parms[1] == 'g' && parms[2] == 'e' ) {
-        DebugDebugeeOnly = TRUE;
+        DebugDebugeeOnly = true;
     }
     if( parms[0] == '3' && parms[1] == '2' ) {
-        StopOnExtender = TRUE;
+        StopOnExtender = true;
     }
 
     err[0] = 0;

@@ -52,7 +52,7 @@ void SingleStepMode( void )
 {
 
     IntResult.EFlags |= TRACE_BIT;
-    TraceOn = TRUE;
+    TraceOn = true;
 
 } /* SingleStepMode */
 
@@ -69,9 +69,9 @@ void SingleStepMode( void )
 static trap_elen runProg( bool single_step )
 {
     private_msg         pmsg;
-    BOOL                watch386;
-    BOOL                dowatch;
-    BOOL                ton;
+    bool                watch386;
+    bool                dowatch;
+    bool                ton;
     appl_action         appl_act;
     prog_go_ret         *ret;
 
@@ -83,15 +83,15 @@ static trap_elen runProg( bool single_step )
     }
 
     IntResult.EFlags &= ~TRACE_BIT;
-    dowatch = FALSE;
-    watch386 = FALSE;
+    dowatch = false;
+    watch386 = false;
 
     SetInputLock( false );
 
     if( single_step ) {
         SingleStepMode();
     } else if( IsWatch() ) {
-        dowatch = TRUE;
+        dowatch = true;
         watch386 = SetDebugRegs();
     }
 
@@ -103,7 +103,7 @@ static trap_elen runProg( bool single_step )
         }
         ton = TraceOn;
         pmsg = DebuggerWaitForMessage( RUNNING_DEBUGEE, TaskAtFault, appl_act );
-        TraceOn = FALSE;
+        TraceOn = false;
 
         if( pmsg == FAULT_HIT ) {
             switch( IntResult.InterruptNumber ) {

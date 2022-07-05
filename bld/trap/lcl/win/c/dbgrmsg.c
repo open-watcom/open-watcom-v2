@@ -55,7 +55,7 @@ static bool hardModeDebugState( void )
 /*
  * ToDebugger - switch to debugger
  */
-BOOL ToDebugger( private_msg pmsg )
+bool ToDebugger( private_msg pmsg )
 {
 
     SystemDebugState = GetSystemDebugState();
@@ -91,7 +91,7 @@ BOOL ToDebugger( private_msg pmsg )
         PostAppMessage( DebuggerTask, WM_NULL, pmsg, MAGIC_COOKIE );
     }
     DirectedYield( DebuggerTask );
-    return( TRUE );
+    return( true );
 
 } /* ToDebugger */
 
