@@ -303,7 +303,7 @@ trap_retval TRAP_CORE( Machine_data )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->cache_start = 0;
-    ret->cache_end = ~(addr_off)0;
+    ret->cache_end = ~(addr48_off)0;
     if( acc->info_type == X86MD_ADDR_CHARACTERISTICS ) {
         data = GetOutPtr( sizeof( *ret ) );
         data->x86_addr_flags = X86AC_REAL;
@@ -737,40 +737,40 @@ static int DRegsCount( void )
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    watch_point         *curr;
-    set_watch_req       *wp;
-    set_watch_ret       *wr;
+    watch_point         *wp;
+    set_watch_req       *acc;
+    set_watch_ret       *ret;
     dword               linear;
 
-    wp = GetInPtr( 0 );
-    wr = GetOutPtr( 0 );
-    wr->err = 1;
-    wr->multiplier = 200;
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    ret->err = 1;
+    ret->multiplier = 200;
     if( WatchCount < MAX_WATCHES ) {
-        wr->err = 0;
-        curr = WatchPoints + WatchCount;
-        if( wp->size == 1 ) {
-            curr->mask = -1UL >> 24;
-        } else if( wp->size == 2 ) {
-            curr->mask = -1UL >> 16;
+        ret->err = 0;
+        wp = WatchPoints + WatchCount;
+        if( acc->size == 1 ) {
+            wp->mask = -1UL >> 24;
+        } else if( acc->size == 2 ) {
+            wp->mask = -1UL >> 16;
         } else {
-            curr->mask = -1UL;
+            wp->mask = -1UL;
         }
-        curr->value = *(dword __far *)_MK_FP( wp->watch_addr.segment, wp->watch_addr.offset ) & curr->mask;
-        curr->addr.segment = wp->watch_addr.segment;
-        curr->addr.offset = wp->watch_addr.offset;
-        curr->len = wp->size;
-        linear = ( (dword)wp->watch_addr.segment << 4 ) + wp->watch_addr.offset;
-        curr->linear = linear & ~( wp->size - 1 );
-        curr->dregs = ( linear & ( wp->size - 1 ) ) ? 2 : 1;
+        wp->value = *(dword __far *)_MK_FP( acc->watch_addr.segment, acc->watch_addr.offset ) & wp->mask;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->len = acc->size;
+        linear = ( (dword)acc->watch_addr.segment << 4 ) + acc->watch_addr.offset;
+        wp->linear = linear & ~( acc->size - 1 );
+        wp->dregs = ( linear & ( acc->size - 1 ) ) ? 2 : 1;
         ++WatchCount;
         if( Flags & F_DRsOn ) {
             if( DRegsCount() <= 4 ) {
-                wr->multiplier |= USING_DEBUG_REG;
+                ret->multiplier |= USING_DEBUG_REG;
             }
         }
     }
-    return( sizeof( *wr ) );
+    return( sizeof( *ret ) );
 }
 
 trap_retval TRAP_CORE( Clear_watch )( void )
