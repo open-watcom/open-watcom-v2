@@ -75,7 +75,7 @@ typedef struct watch_point {
     dword       value;
     dword       linear;
     word        dregs;
-    word        len;
+    word        size;
 } watch_point;
 
 typedef struct {
@@ -777,14 +777,23 @@ static int DRegsCount( void )
     return( needed );
 }
 
+static void GetLinear( addr48_ptr *paddr, ULONG *linear )
+{
+    PTR386          addr;
+
+    addr.offset = paddr->offset;
+    addr.selector = paddr->segment;
+    dbg_ptolin( &addr, linear );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    dword           value;
-    watch_point     *curr;
     set_watch_req   *acc;
     set_watch_ret   *ret;
+    dword           value;
+    watch_point     *wp;
     ULONG           linear;
-    PTR386          addr;
+    size_t          size;
 
     _DBG(("AccSetWatch\r\n"));
     acc = GetInPtr( 0 );
@@ -793,19 +802,17 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->err = 1;       // failed
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
+        size = acc->size;
         value = 0;
-        ReadMemory( &acc->watch_addr, &value, acc->size );
-        addr.offset = acc->watch_addr.offset;
-        addr.selector = acc->watch_addr.segment;
-        dbg_ptolin( &addr, &linear );
-        curr = WatchPoints + WatchCount;
-        curr->addr.segment = addr.selector;
-        curr->addr.offset = addr.offset;
-        curr->value = value;
-        curr->linear = linear;
-        curr->len = acc->size;
-        curr->linear &= ~( curr->len - 1 );
-        curr->dregs = ( linear & ( curr->len - 1 ) ) ? 2 : 1;
+        ReadMemory( &acc->watch_addr, &value, size );
+        GetLinear( &acc->watch_addr, &linear );
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = size;
+        wp->value = value;
+        wp->linear = linear & ~( size - 1 );
+        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
@@ -861,11 +868,11 @@ static bool SetDebugRegs()
         return( FALSE );
     dr = 0;
     Mach.msb_dreg[7] = DR7_GE;
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-        SetDRnBW( dr, wp->linear, wp->len );
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; ++wp ) {
+        SetDRnBW( dr, wp->linear, wp->size );
         ++dr;
         if( wp->dregs == 2 ) {
-            SetDRnBW( dr, wp->linear + wp->len, wp->len );
+            SetDRnBW( dr, wp->linear + wp->size, wp->size );
             ++dr;
         }
     }
@@ -904,9 +911,9 @@ static unsigned ProgRun( bool step )
                     break;
                 if( ( Mach.msb_dreg[6] & DR6_BS ) == 0 )
                     break;
-                for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
+                for( wp = WatchPoints, i = WatchCount; i-- > 0; ++wp ) {
                     value = 0;
-                    ReadMemory( &wp->addr, &value, wp->len );
+                    ReadMemory( &wp->addr, &value, wp->size );
                     if( value != wp->value ) {
                         ret->conditions = COND_WATCH;
                         Mach.msb_eflags &= ~EF_TF;

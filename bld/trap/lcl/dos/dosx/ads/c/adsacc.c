@@ -65,7 +65,7 @@ typedef struct watch_point {
     dword       value;
     dword       linear;
     word        dregs;
-    word        len;
+    word        size;
 } watch_point;
 
 extern void StackCheck( void );
@@ -633,12 +633,13 @@ static int DRegsCount( void )
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    watch_point     *wp;
     set_watch_req   *acc;
     set_watch_ret   *ret;
+    watch_point     *wp;
     int             needed;
     dword           value;
     dword           linear;
+    size_t          size;
 
     _DBG0(( "AccSetWatch" ));
     acc = GetInPtr( 0 );
@@ -647,21 +648,23 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->err = 1;       // failed
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
+        size = acc->size;
         value = 0;
-        ReadMemory( &acc->watch_addr, &value, acc->size );
+        ReadMemory( &acc->watch_addr, &value, size );
         linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
-        wp = WatchPoints + WatchCount++;
+        wp = WatchPoints + WatchCount;
+        wp->size = size;
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
-        wp->len = acc->size;
         wp->value = value;
-        wp->linear = linear & ~( wp->len - 1 );
-        wp->dregs = ( linear & ( wp->len - 1 ) ) ? 2 : 1;
+        wp->linear = linear & ~( size - 1 );
+        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
+        WatchCount++;
         needed = DRegsCount();
         if( needed <= 4 )
             ret->multiplier |= USING_DEBUG_REG;
         _DBG0(("addr %4.4x:%8.8lx " "linear %8.8x " "len %d " "needed %d ",
-               wp->addr.segment, wp->addr.offset, wp->linear, wp->len, needed));
+               wp->addr.segment, wp->addr.offset, wp->linear, wp->size, wp->dreg));
     }
     return( sizeof( *ret ) );
 }
@@ -726,16 +729,17 @@ static bool SetDebugRegs( void )
 {
     int         i;
     int         dr;
+    watch_point *wp;
 
     if( DRegsCount() > 4 )
         return( false );
     dr = 0;
     SysRegs.dr7 = DR7_GE;
-    for( i = 0; i < WatchCount; ++i ) {
-        SetDRnBW( dr, WatchPoints[i].linear, WatchPoints[i].len );
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        SetDRnBW( dr, wp->linear, wp->size );
         ++dr;
-        if( WatchPoints[i].dregs == 2 ) {
-            SetDRnBW( dr, WatchPoints[i].linear + 4, WatchPoints[i].len );
+        if( wp->dregs == 2 ) {
+            SetDRnBW( dr, wp->linear + 4, wp->size );
             ++dr;
         }
     }
@@ -748,6 +752,7 @@ static unsigned ProgRun( bool step )
     int         i;
     dword       value;
     prog_go_ret *ret;
+    watch_point *wp;
 
     _DBG1(( "ProgRun" ));
     ret = GetOutPtr( 0 );
@@ -772,10 +777,10 @@ static unsigned ProgRun( bool step )
                     break;
                 if( ( SysRegs.dr6 & DR6_BS ) == 0 )
                     break;
-                for( i = 0; i < WatchCount; ++i ) {
+                for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
                     value = 0;
-                    ReadMemory( &WatchPoints[i].addr, &value, WatchPoints[i].len );
-                    if( value != WatchPoints[i].value ) {
+                    ReadMemory( &wp->addr, &value, wp->size );
+                    if( value != wp->value ) {
                         ret->conditions |= COND_WATCH;
                         goto leave;
                     }

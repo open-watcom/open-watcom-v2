@@ -70,7 +70,7 @@ typedef struct watch_point {
     dword               value;
     dword               linear;
     word                dregs;
-    word                len;
+    word                size;
     long                handle;
     long                handle2;
 } watch_point;
@@ -561,33 +561,39 @@ static int DRegsCount( void )
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    watch_point     *curr;
     set_watch_req   *acc;
     set_watch_ret   *ret;
+    watch_point     *wp;
     dword           value;
     dword           linear;
+    size_t          size;
 
     _DBG_Writeln( "AccSetWatch" );
 
     acc = GetInPtr( 0 );
-    value = 0;
-    D32DebugRead( &acc->watch_addr, false, &value, acc->size );
-    linear = DPMIGetSegmentBaseAddress( acc->watch_addr.segment ) + acc->watch_addr.offset;
-    curr = WatchPoints + WatchCount;
-    curr->addr.segment = acc->watch_addr.segment;
-    curr->addr.offset = acc->watch_addr.offset;
-    curr->linear = linear;
-    curr->len = acc->size;
-    curr->dregs = ( linear & ( curr->len - 1 ) ) ? 2 : 1;
-    curr->handle = -1;
-    curr->handle2 = -1;
-    curr->value = value;
-    ++WatchCount;
     ret = GetOutPtr( 0 );
-    ret->err = 0;
     ret->multiplier = 5000;
-    if( DRegsCount() <= 4 )
-        ret->multiplier |= USING_DEBUG_REG;
+    ret->err = 1;       // failed
+    if( WatchCount < MAX_WATCHES ) {
+        ret->err = 0;   // OK
+        size = acc->size;
+        value = 0;
+        D32DebugRead( &acc->watch_addr, false, &value, size );
+        linear = DPMIGetSegmentBaseAddress( acc->watch_addr.segment ) + acc->watch_addr.offset;
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->size = size;
+        wp->value = value;
+        wp->linear = linear & ~( size - 1 );
+        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
+        wp->handle = -1;
+        wp->handle2 = -1;
+        ++WatchCount;
+        if( DRegsCount() <= 4 ) {
+            ret->multiplier |= USING_DEBUG_REG;
+        }
+    }
     return( sizeof( *ret ) );
 }
 
@@ -678,6 +684,7 @@ static bool SetDebugRegs( void )
     int                 i;
     bool                success;
     long                rc;
+    watch_point         *wp;
 
     if( DRegsCount() > 4 )
         return( false );
@@ -687,26 +694,26 @@ static bool SetDebugRegs( void )
             WatchPoints[i].handle = -1;
             WatchPoints[i].handle2 = -1;
         }
-        for( i = 0; i < WatchCount; ++i ) {
+        for( wp = WatchPoints, i = WatchCount; i-- > 0 ; wp++ ) {
             _DBG_Write( "Setting Watch On " );
-            _DBG_Write32( WatchPoints[i].linear );
+            _DBG_Write32( wp->linear );
             _DBG_NewLine();
             success = false;
-            rc = DPMISetWatch( WatchPoints[i].linear, WatchPoints[i].len, DPMI_WATCH_WRITE );
+            rc = DPMISetWatch( wp->linear, wp->size, DPMI_WATCH_WRITE );
             _DBG_Write( "OK 1 = " );
             _DBG_Write16( rc >= 0 );
             _DBG_NewLine();
             if( rc < 0 )
                 break;
-            WatchPoints[i].handle = rc;
-            if( WatchPoints[i].dregs == 2 ) {
-                rc = DPMISetWatch( WatchPoints[i].linear + 4, WatchPoints[i].len, DPMI_WATCH_WRITE );
+            wp->handle = rc;
+            if( wp->dregs == 2 ) {
+                rc = DPMISetWatch( wp->linear + wp->size, wp->size, DPMI_WATCH_WRITE );
                 _DBG_Write( "OK 2 = " );
                 _DBG_Write16( rc >= 0 );
                 _DBG_NewLine();
                 if( rc < 0 )
                     break;
-                WatchPoints[i].handle2 = rc;
+                wp->handle2 = rc;
             }
             success = true;
         }
@@ -721,10 +728,10 @@ static bool SetDebugRegs( void )
         dr = 0;
         dr7 = 0;
         for( i = 0; i < WatchCount; ++i ) {
-            dr7 |= SetDRn( dr, WatchPoints[i].linear, DRLen( WatchPoints[i].len ) | DR7_BWR );
+            dr7 |= SetDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
             ++dr;
-            if( WatchPoints[i].dregs == 2 ) {
-                dr7 |= SetDRn( dr, WatchPoints[i].linear + 4, DRLen( WatchPoints[i].len ) | DR7_BWR );
+            if( wp->dregs == 2 ) {
+                dr7 |= SetDRn( dr, wp->linear + wp->size, DRLen( wp->size ) | DR7_BWR );
                 ++dr;
             }
         }
@@ -763,7 +770,7 @@ static bool CheckWatchPoints( void )
 
     for( i = 0; i < WatchCount; ++i ) {
         value = 0;
-        D32DebugRead( &WatchPoints[i].addr, false, &value, WatchPoints[i].len );
+        D32DebugRead( &WatchPoints[i].addr, false, &value, WatchPoints[i].size );
         if( value != WatchPoints[i].value ) {
             return( true );
         }

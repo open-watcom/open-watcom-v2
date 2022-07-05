@@ -145,7 +145,7 @@ typedef struct hbrk_t {
 typedef struct watch_point {
     unsigned_32     address;
     unsigned_32     check;
-    unsigned_8      length;
+    unsigned_8      size;
     unsigned        inuse     :1;
 } watch_point;
 
@@ -280,16 +280,17 @@ void SetHBRK( void )
 /******************/
 {
     int     i;
+    hbrk_t  *hbp;
 
     // Install hardware break points.
-    for( i = 0; i < 4; ++i ) {
-        if( HBRKTable[i].inuse ) {
+    for( hbp = HBRKTable, i = 4; i-- > 0; hbp++ ) {
+        if( hbp->inuse ) {
             long    wh;
 
-            wh = _DPMISetWatch( HBRKTable[i].address, HBRKTable[i].size, HBRKTable[i].type );
+            wh = _DPMISetWatch( hbp->address, hbp->size, hbp->type );
             if( wh >= 0 ) {
-                HBRKTable[i].installed = true;
-                HBRKTable[i].handle = wh;
+                hbp->installed = true;
+                hbp->handle = wh;
                 _DPMIResetWatch( wh );
             }
         }
@@ -300,12 +301,13 @@ void ResetHBRK( void )
 /********************/
 {
     int     i;
+    hbrk_t  *hbp;
 
     // Uninstall hardware break points.
-    for( i = 0; i < 4; ++i ) {
-        if( HBRKTable[i].inuse && HBRKTable[i].installed ) {
-            _DPMIClearWatch( HBRKTable[i].handle );
-            HBRKTable[i].installed = false;
+    for( hbp = HBRKTable, i = 4; i-- > 0; hbp++ ) {
+        if( hbp->inuse && hbp->installed ) {
+            _DPMIClearWatch( hbp->handle );
+            hbp->installed = false;
         }
     }
 }
@@ -314,10 +316,11 @@ int IsHardBreak( void )
 /*********************/
 {
     int     i;
+    hbrk_t  *hbp;
 
-    for( i = 0; i < 4; ++i ) {
-        if( HBRKTable[i].inuse && HBRKTable[i].installed ) {
-            if( _DPMITestWatch( HBRKTable[i].handle ) > 0 ) {
+    for( hbp = HBRKTable, i = 4; i-- > 0; hbp++ ) {
+        if( hbp->inuse && hbp->installed ) {
+            if( _DPMITestWatch( hbp->handle ) > 0 ) {
                 return( true );
             }
         }
@@ -332,15 +335,16 @@ int CheckWatchPoints( void )
     int         j;
     unsigned_8  *p;
     unsigned_32 sum;
+    watch_point *wp;
 
-    for( i = 0; i < MAX_WATCHES; ++i ) {
-        if( WatchPoints[i].inuse ) {
-            p = (unsigned_8 *)WatchPoints[i].address;
+    for( wp = WatchPoints, i = MAX_WATCHES; i-- > 0; wp++ ) {
+        if( wp->inuse ) {
+            p = (unsigned_8 *)wp->address;
             sum = 0;
-            for( j = 0; j < WatchPoints[i].length; ++j ) {
+            for( j = 0; j < wp->size; ++j ) {
                 sum += *(p++);
             }
-            if( sum != WatchPoints[i].check ) {
+            if( sum != wp->check ) {
                 return( true );
             }
         }
@@ -823,35 +827,37 @@ trap_retval TRAP_CORE( Set_watch )( void )
     int             j;
     unsigned_8      *p;
     unsigned_32     sum;
+    hbrk_t          *hbp;
+    watch_point     *wp;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->err = 0;
     if( acc->size == 1 || acc->size == 2 || acc->size == 4 ) {
-        for( i = 0; i < 4; ++i ) {
-            if( !HBRKTable[i].inuse ) {
-                HBRKTable[i].inuse = true;
-                HBRKTable[i].installed = false;
-                HBRKTable[i].address = GetLinAddr( acc->watch_addr );
-                HBRKTable[i].size = acc->size;
-                HBRKTable[i].type = DPMI_WATCH_WRITE;
+        for( hbp = HBRKTable, i = 4; i-- > 0; hbp++ ) {
+            if( !hbp->inuse ) {
+                hbp->inuse = true;
+                hbp->installed = false;
+                hbp->address = GetLinAddr( acc->watch_addr );
+                hbp->size = acc->size;
+                hbp->type = DPMI_WATCH_WRITE;
                 ret->multiplier = 10 | USING_DEBUG_REG;
                 return( sizeof( *ret ) );
             }
         }
     }
     if( WatchCount < MAX_WATCHES ) {
-        for( i = 0; i < MAX_WATCHES; ++i ) {
-            if( !WatchPoints[i].inuse ) {
-                WatchPoints[i].inuse = true;
-                WatchPoints[i].address = GetLinAddr( acc->watch_addr );
-                WatchPoints[i].length = acc->size;
-                p = (unsigned_8 *)WatchPoints[i].address;
+        for( wp = WatchPoints, i = MAX_WATCHES; i-- > 0; wp++ ) {
+            if( !wp->inuse ) {
+                wp->inuse = true;
+                wp->address = GetLinAddr( acc->watch_addr );
+                wp->size = acc->size;
+                p = (unsigned_8 *)wp->address;
                 sum = 0;
                 for( j = 0; j < acc->size; ++j ) {
                     sum += *(p++);
                 }
-                WatchPoints[i].check = sum;
+                wp->check = sum;
                 ++WatchCount;
                 ret->multiplier = 5000;
                 return( sizeof( *ret ) );
@@ -869,25 +875,27 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     clear_watch_req     *acc;
     int                 i;
     unsigned_32         watch_addr;
+    hbrk_t              *hbp;
+    watch_point         *wp;
 
     acc = GetInPtr( 0 );
     watch_addr = GetLinAddr( acc->watch_addr );
-    for( i = 0; i < 4; i++ ) {
-        if( HBRKTable[i].inuse ) {
-            if( HBRKTable[i].address == watch_addr ) {
-                if( HBRKTable[i].size == acc->size ) {
-                    HBRKTable[i].inuse = false;
+    for( hbp = HBRKTable, i = 4; i-- > 0; hbp++ ) {
+        if( hbp->inuse ) {
+            if( hbp->address == watch_addr ) {
+                if( hbp->size == acc->size ) {
+                    hbp->inuse = false;
                     return( 0 );
                 }
             }
         }
     }
     if( WatchCount ) {
-        for( i = 0; i < MAX_WATCHES; ++i ) {
-            if( WatchPoints[i].inuse ) {
-                if( WatchPoints[i].address == watch_addr ) {
-                    if( WatchPoints[i].length == acc->size ) {
-                        WatchPoints[i].inuse = false;
+        for( wp = WatchPoints, i = MAX_WATCHES; i-- > 0; wp++ ) {
+            if( wp->inuse ) {
+                if( wp->address == watch_addr ) {
+                    if( wp->size == acc->size ) {
+                        wp->inuse = false;
                         --WatchCount;
                         break;
                     }

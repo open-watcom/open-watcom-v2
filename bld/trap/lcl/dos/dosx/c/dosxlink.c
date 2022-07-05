@@ -196,8 +196,8 @@ trap_retval RemoteGet( void *data, trap_elen len )
     }
     _DBG(("Remote Get Done\n"));
 #else
+    (void)len;
     _DBG_EnterFunc( "RemoteGet()" );
-    len = len;
     Buff.ptr = MK_LINEAR( data );
     BackToProtMode();
     received = Buff.len;
@@ -214,7 +214,7 @@ trap_retval RemotePut( void *data, trap_elen len )
 
     _DBG(("Remote Put - %8.8lx %8.8lx\n", RMProcAddr, RMBuffPtr->ptr));
     RMBuffPtr->len = len;
-    _DBG(("Remote Put %d bytes\n",len));
+    _DBG(("Remote Put %d bytes\n", len));
     buff = RMBuffPtr->ptr;
     while( len != 0 ) {
         PutDosByte( buff, *(char *)data );
