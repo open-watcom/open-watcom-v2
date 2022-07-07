@@ -850,15 +850,15 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-static void SetDRnBW( int dr, ULONG linear, int len ) /* Set DRn for break on write */
+static void SetDRn( int dr, ULONG linear, unsigned type )
 {
     Mach.msb_dreg[dr] = linear;
-    Mach.msb_dreg[7] |= ( (DRLen( len )+DR7_BWR) << DR7_RWLSHIFT( dr ) )
-                       |  ( DR7_GEMASK << DR7_GLSHIFT( dr ) );
+    Mach.msb_dreg[7] |= ( (dword)type << DR7_RWLSHIFT( dr ) )
+                       | ( DR7_GEMASK << DR7_GLSHIFT( dr ) );
 }
 
 
-static bool SetDebugRegs()
+static bool SetDebugRegs( void )
 {
     int         i;
     int         dr;
@@ -869,10 +869,10 @@ static bool SetDebugRegs()
     dr = 0;
     Mach.msb_dreg[7] = DR7_GE;
     for( wp = WatchPoints, i = WatchCount; i-- > 0; ++wp ) {
-        SetDRnBW( dr, wp->linear, wp->size );
+        SetDRn( dr, wp->linear, DRLen( wp->size ) + DR7_BWR );
         ++dr;
         if( wp->dregs == 2 ) {
-            SetDRnBW( dr, wp->linear + wp->size, wp->size );
+            SetDRn( dr, wp->linear + wp->size, DRLen( wp->size ) + DR7_BWR );
             ++dr;
         }
     }

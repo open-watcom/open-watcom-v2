@@ -635,27 +635,13 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-static unsigned long SetDRn( int i, unsigned long linear, long type )
+static unsigned long SetDRn( int dr, unsigned long linear, unsigned type )
 {
-    switch( i ) {
-    case 0:
-        SetDR0( linear );
-        break;
-    case 1:
-        SetDR1( linear );
-        break;
-    case 2:
-        SetDR2( linear );
-        break;
-    case 3:
-        SetDR3( linear );
-        break;
-    }
-    return( ( type << DR7_RWLSHIFT(i) )
-//          | ( DR7_GEMASK << DR7_GLSHIFT(i) ) | DR7_GE
-          | ( DR7_LEMASK << DR7_GLSHIFT(i) ) | DR7_LE );
+    SetDRx( dr, linear );
+    return( ( type << DR7_RWLSHIFT( dr ) )
+//          | ( DR7_GEMASK << DR7_GLSHIFT( dr ) )
+          | ( DR7_LEMASK << DR7_GLSHIFT( dr ) ) );
 }
-
 
 static void ClearDebugRegs( void )
 {
@@ -726,7 +712,7 @@ static bool SetDebugRegs( void )
         unsigned long   dr7;
 
         dr = 0;
-        dr7 = 0;
+        dr7 = /* DR7_GE | */ DR7_LE;
         for( i = 0; i < WatchCount; ++i ) {
             dr7 |= SetDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
             ++dr;

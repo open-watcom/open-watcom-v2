@@ -717,10 +717,10 @@ trap_retval TRAP_CORE( Clear_break )( void )
 
 static dword *DR[] = { &SysRegs.dr0, &SysRegs.dr1, &SysRegs.dr2, &SysRegs.dr3 };
 
-static void SetDRnBW( int dr, dword linear, int len ) /* Set DRn for break on write */
+static void SetDRn( int dr, dword linear, unsigned type )
 {
     *DR[dr] = linear;
-    SysRegs.dr7 |= ( ( DRLen( len ) + DR7_BWR ) << DR7_RWLSHIFT( dr ) )
+    SysRegs.dr7 |= ( (dword)type << DR7_RWLSHIFT( dr ) )
                      | ( DR7_GEMASK << DR7_GLSHIFT( dr ) );
 }
 
@@ -736,10 +736,10 @@ static bool SetDebugRegs( void )
     dr = 0;
     SysRegs.dr7 = DR7_GE;
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-        SetDRnBW( dr, wp->linear, wp->size );
+        SetDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
         ++dr;
         if( wp->dregs == 2 ) {
-            SetDRnBW( dr, wp->linear + 4, wp->size );
+            SetDRn( dr, wp->linear + wp->size, DRLen( wp->size ) | DR7_BWR );
             ++dr;
         }
     }

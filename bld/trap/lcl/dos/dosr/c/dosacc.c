@@ -37,7 +37,6 @@
 #include <i86.h>
 #include "tinyio.h"
 #include "dbg386.h"
-#include "drset.h"
 #include "exedos.h"
 #include "exeos2.h"
 #include "exephar.h"
@@ -55,6 +54,7 @@
 #include "dosovl.h"
 #include "dbgpsp.h"
 #include "dospath.h"
+#include "drset.h"
 
 
 typedef enum {
@@ -802,25 +802,12 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-static unsigned long SetDRn( int i, unsigned long linear, long type )
+static unsigned long SetDRn( int dr, unsigned long linear, unsigned type )
 {
-    switch( i ) {
-    case 0:
-        SetDR0( linear );
-        break;
-    case 1:
-        SetDR1( linear );
-        break;
-    case 2:
-        SetDR2( linear );
-        break;
-    case 3:
-        SetDR3( linear );
-        break;
-    }
-    return( ( type << DR7_RWLSHIFT(i) )
-//          | ( DR7_GEMASK << DR7_GLSHIFT(i) ) | DR7_GE
-          | ( DR7_LEMASK << DR7_GLSHIFT(i) ) | DR7_LE );
+    SetDRx( dr, linear );
+    return( ( (unsigned long)type << DR7_RWLSHIFT( dr ) )
+//          | ( DR7_GEMASK << DR7_GLSHIFT( dr ) )
+          | ( DR7_LEMASK << DR7_GLSHIFT( dr ) ) );
 }
 
 
@@ -864,11 +851,11 @@ static bool SetDebugRegs( void )
 
     if( (Flags & F_DRsOn) == 0 )
         return( false );
+    watch386 = false;
     dr  = 0;
     dr7 = 0;
-    if( DRegsCount() > 4 ) {
-        watch386 = false;
-    } else {
+    if( DRegsCount() <= 4 ) {
+        dr7 = /* DR7_GE | */ DR7_LE;
         for( wp = WatchPoints, i = WatchCount; i-- > 0 ; wp++ ) {
             size = wp->size;
             dr7 |= SetDRn( dr, wp->linear, DRLen( size ) | DR7_BWR );
@@ -879,12 +866,12 @@ static bool SetDebugRegs( void )
             }
             watch386 = true;
         }
-    }
-    if( GotABadBreak && dr < 4 ) {
-        linear = ( (unsigned long)BadBreak.segment << 4 ) + BadBreak.offset;
-        dr7 |= SetDRn( dr, linear, DR7_L1 | DR7_BINST );
-        IsBreak[dr] = true;
-        ++dr;
+        if( GotABadBreak && dr < 4 ) {
+            linear = ( (unsigned long)BadBreak.segment << 4 ) + BadBreak.offset;
+            dr7 |= SetDRn( dr, linear, DRLen( 1 ) | DR7_BINST );
+            IsBreak[dr] = true;
+            ++dr;
+        }
     }
     SetDR7( dr7 );
     return( watch386 );

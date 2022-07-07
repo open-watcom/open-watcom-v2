@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,3 +114,29 @@ extern unsigned long GetDR7( void );
         "mov  eax,dr7"  \
         EAXtoDXAX        \
     __value [__dx __ax]
+
+extern void SetDRx( int dr, dword linear );
+#pragma aux SetDRx = \
+        ".386p"         \
+        "push eax"      \
+        "xchg cx,ax"    \
+        "shl  eax,16"   \
+        "mov  ax,bx"    \
+        "cmp  cl,0"     \
+        "jnz short L1"  \
+        "mov  dr0,eax"  \
+        "jmp short L4"  \
+    "L1: cmp  cl,1"     \
+        "jnz short L2"  \
+        "mov  dr1,eax"  \
+        "jmp short L4"  \
+    "L2: cmp  cl,2"     \
+        "jnz short L3"  \
+        "mov  dr2,eax"  \
+        "jmp short L4"  \
+    "L3: cmp  cl,3"     \
+        "jnz short L4"  \
+        "mov  dr3,eax"  \
+    "L4: pop  eax"      \
+    __parm [__ax] [__cx __bx] \
+    __modify [__cx]
