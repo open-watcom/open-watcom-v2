@@ -635,10 +635,10 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-static unsigned long SetDRn( int dr, unsigned long linear, unsigned type )
+static dword SetDRn( int dr, dword linear, unsigned type )
 {
     SetDRx( dr, linear );
-    return( ( type << DR7_RWLSHIFT( dr ) )
+    return( ( (dword)type << DR7_RWLSHIFT( dr ) )
 //          | ( DR7_GEMASK << DR7_GLSHIFT( dr ) )
           | ( DR7_LEMASK << DR7_GLSHIFT( dr ) ) );
 }
@@ -646,16 +646,17 @@ static unsigned long SetDRn( int dr, unsigned long linear, unsigned type )
 static void ClearDebugRegs( void )
 {
     int         i;
+    watch_point *wp;
 
     if( IsDPMI ) {
-        for( i = 0; i < WatchCount; ++i ) {
-            if( WatchPoints[i].handle >= 0 ) {
-                DPMIClearWatch( WatchPoints[i].handle );
-                WatchPoints[i].handle = -1;
+        for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+            if( wp->handle >= 0 ) {
+                DPMIClearWatch( wp->handle );
+                wp->handle = -1;
             }
-            if( WatchPoints[i].handle2 >= 0 ) {
-                DPMIClearWatch( WatchPoints[i].handle2 );
-                WatchPoints[i].handle2 = -1;
+            if( wp->handle2 >= 0 ) {
+                DPMIClearWatch( wp->handle2 );
+                wp->handle2 = -1;
             }
         }
     } else {
@@ -671,6 +672,8 @@ static bool SetDebugRegs( void )
     bool                success;
     long                rc;
     watch_point         *wp;
+    dword               linear;
+    size_t              size;
 
     if( DRegsCount() > 4 )
         return( false );
@@ -681,11 +684,13 @@ static bool SetDebugRegs( void )
             WatchPoints[i].handle2 = -1;
         }
         for( wp = WatchPoints, i = WatchCount; i-- > 0 ; wp++ ) {
+            linear = wp->linear;
+            size = wp->size;
             _DBG_Write( "Setting Watch On " );
-            _DBG_Write32( wp->linear );
+            _DBG_Write32( linear );
             _DBG_NewLine();
             success = false;
-            rc = DPMISetWatch( wp->linear, wp->size, DPMI_WATCH_WRITE );
+            rc = DPMISetWatch( linear, size, DPMI_WATCH_WRITE );
             _DBG_Write( "OK 1 = " );
             _DBG_Write16( rc >= 0 );
             _DBG_NewLine();
@@ -693,7 +698,7 @@ static bool SetDebugRegs( void )
                 break;
             wp->handle = rc;
             if( wp->dregs == 2 ) {
-                rc = DPMISetWatch( wp->linear + wp->size, wp->size, DPMI_WATCH_WRITE );
+                rc = DPMISetWatch( linear + size, size, DPMI_WATCH_WRITE );
                 _DBG_Write( "OK 2 = " );
                 _DBG_Write16( rc >= 0 );
                 _DBG_NewLine();
@@ -708,16 +713,20 @@ static bool SetDebugRegs( void )
         }
         return( success );
     } else {
-        int             dr;
-        unsigned long   dr7;
+        int         dr;
+        dword       dr7;
+        unsigned    type;
 
         dr = 0;
         dr7 = /* DR7_GE | */ DR7_LE;
-        for( i = 0; i < WatchCount; ++i ) {
-            dr7 |= SetDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
+        for( wp = WatchPoints, i = WatchCount; i-- > 0 ; wp++ ) {
+            linear = wp->linear;
+            size = wp->size;
+            type = DRLen( size ) | DR7_BWR;
+            dr7 |= SetDRn( dr, linear, type );
             ++dr;
             if( wp->dregs == 2 ) {
-                dr7 |= SetDRn( dr, wp->linear + wp->size, DRLen( wp->size ) | DR7_BWR );
+                dr7 |= SetDRn( dr, linear + size, type );
                 ++dr;
             }
         }
@@ -753,11 +762,12 @@ static bool CheckWatchPoints( void )
 {
     dword       value;
     int         i;
+    watch_point *wp;
 
-    for( i = 0; i < WatchCount; ++i ) {
+    for( wp = WatchPoints, i = WatchCount; i-- > 0 ; wp++ ) {
         value = 0;
-        D32DebugRead( &WatchPoints[i].addr, false, &value, WatchPoints[i].size );
-        if( value != WatchPoints[i].value ) {
+        D32DebugRead( &wp->addr, false, &value, wp->size );
+        if( value != wp->value ) {
             return( true );
         }
     }

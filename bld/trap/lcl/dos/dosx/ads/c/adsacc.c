@@ -730,16 +730,22 @@ static bool SetDebugRegs( void )
     int         i;
     int         dr;
     watch_point *wp;
+    dword       linear;
+    size_t      size;
+    unsigned    type;
 
     if( DRegsCount() > 4 )
         return( false );
     dr = 0;
     SysRegs.dr7 = DR7_GE;
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-        SetDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
+        size = wp->size;
+        linear = wp->linear;
+        type = DRLen( size ) | DR7_BWR;
+        SetDRn( dr, linear, type );
         ++dr;
         if( wp->dregs == 2 ) {
-            SetDRn( dr, wp->linear + wp->size, DRLen( wp->size ) | DR7_BWR );
+            SetDRn( dr, linear + size, type );
             ++dr;
         }
     }

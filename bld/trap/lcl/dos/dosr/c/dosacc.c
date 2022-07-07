@@ -91,6 +91,7 @@ typedef struct pblock {
     addr32_ptr  startsssp;
     addr32_ptr  startcsip;
 } pblock;
+#include "poppck.h"
 
 /********************************************************************
  * NOTE: if you change this structure, you must update dbgtrap.asm
@@ -100,11 +101,10 @@ typedef struct watch_point {
     dword       value;
     dword       mask;
     dword       linear;
-    word        dregs;
     word        size;
+    word        dregs;
 } watch_point;
 /********************************************************************/
-#include "poppck.h"
 
 #define CMD_OFFSET      0x80
 
@@ -148,21 +148,21 @@ extern unsigned short MyFlags( void );
     __value         [__ax] \
     __modify        []
 
-extern tiny_ret_t       DOSLoadProg(char __far *, pblock __far *);
-extern addr_seg         DOSTaskPSP(void);
-extern void             EndUser(void);
-extern unsigned_8       RunProg(trap_cpu_regs *, trap_cpu_regs *);
+extern tiny_ret_t       DOSLoadProg( char __far *, pblock __far * );
+extern addr_seg         DOSTaskPSP( void );
+extern void             EndUser( void );
+extern byte             RunProg( trap_cpu_regs *, trap_cpu_regs * );
 extern void             SetWatch386( unsigned, watch_point __far * );
-extern void             SetWatchPnt(unsigned, watch_point __far *);
-extern void             SetSingleStep(void);
-extern void             SetSingle386(void);
-extern void             InitVectors(void);
-extern void             FiniVectors(void);
-extern void             TrapTypeInit(void);
-extern void             ClrIntVecs(void);
-extern void             SetIntVecs(void);
-extern void             DoRemInt(trap_cpu_regs *, unsigned);
-extern char             Have87Emu(void);
+extern void             SetWatchPnt( unsigned, watch_point __far * );
+extern void             SetSingleStep( void );
+extern void             SetSingle386( void );
+extern void             InitVectors( void );
+extern void             FiniVectors( void );
+extern void             TrapTypeInit( void );
+extern void             ClrIntVecs( void );
+extern void             SetIntVecs( void );
+extern void             DoRemInt( trap_cpu_regs *, unsigned );
+extern char             Have87Emu( void );
 extern void             Null87Emu( void );
 extern void             Read87EmuState( void __far * );
 extern void             Write87EmuState( void __far * );
@@ -190,8 +190,8 @@ static word             NumSegments;
 static addr48_ptr       BadBreak;
 static bool             GotABadBreak;
 static int              ExceptNum;
-static unsigned_8       RealNPXType;
-static unsigned_8       CPUType;
+static byte             RealNPXType;
+static byte             CPUType;
 
 #ifdef DEBUG_ME
 int out( char *str )
@@ -232,6 +232,11 @@ char *hex( unsigned long num )
     #define hex( n )
 #endif
 
+
+static dword GetLinear( addr_seg segment, addr48_off offset )
+{
+    return( ( (dword)segment << 4 ) + offset );
+}
 
 trap_retval TRAP_CORE( Get_sys_config )( void )
 {
@@ -323,7 +328,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     acc = GetInPtr( 0 );
     ptr = _MK_FP( acc->in_addr.segment, acc->in_addr.offset );
     sum = 0;
-    for( len = acc->len; len > 0; --len ) {
+    for( len = acc->len; len-- > 0; ) {
         sum += *ptr++;
     }
     ret = GetOutPtr( 0 );
@@ -332,11 +337,12 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 }
 
 
-static bool IsInterrupt( addr48_ptr addr, size_t len )
+static bool IsInterrupt( addr48_ptr *addr, size_t len )
 {
-    dword   start, end;
+    dword   start;
+    dword   end;
 
-    start = ((dword)addr.segment << 4) + addr.offset;
+    start = GetLinear( addr->segment, addr->offset );
     end = start + len;
     return( start < 0x400 || end < 0x400 );
 }
@@ -350,10 +356,10 @@ trap_retval TRAP_CORE( Read_mem )( void )
 
     acc = GetInPtr( 0 );
     acc->mem_addr.offset &= 0xffff;
-    int_tbl = IsInterrupt( acc->mem_addr, acc->len );
+    len = acc->len;
+    int_tbl = IsInterrupt( &acc->mem_addr, len );
     if( int_tbl )
         SetIntVecs();
-    len = acc->len;
     if( ( acc->mem_addr.offset + len ) > 0xffff ) {
         len = 0x10000 - acc->mem_addr.offset;
     }
@@ -373,9 +379,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
 
     acc = GetInPtr( 0 );
     len = GetTotalSizeIn() - sizeof( *acc );
-
     acc->mem_addr.offset &= 0xffff;
-    int_tbl = IsInterrupt( acc->mem_addr, len );
+    int_tbl = IsInterrupt( &acc->mem_addr, len );
     if( int_tbl )
         SetIntVecs();
     if( ( acc->mem_addr.offset + len ) > 0xffff ) {
@@ -486,8 +491,8 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
     Flags &= ~F_Com_file;
     if( TINY_OK( TinyFarRead( handle, &head, sizeof( head ) ) ) ) {
         switch( head.signature ) {
-        case SIMPLE_SIGNATURE:      // mp
-        case REX_SIGNATURE:         // mq
+        case SIMPLE_SIGNATURE:      // 'MP'
+        case REX_SIGNATURE:         // 'MQ'
         case EXTENDED_SIGNATURE:    // 'P3'
             return( EXE_PHARLAP_SIMPLE );
         case DOS_SIGNATURE:         // 'MZ'
@@ -762,7 +767,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
         wp->size = size;
-        linear = ( (dword)acc->watch_addr.segment << 4 ) + acc->watch_addr.offset;
+        linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
         wp->linear = linear & ~( size - 1 );
         wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         ++WatchCount;
@@ -802,10 +807,10 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
-static unsigned long SetDRn( int dr, unsigned long linear, unsigned type )
+static dword SetDRn( int dr, dword linear, unsigned type )
 {
     SetDRx( dr, linear );
-    return( ( (unsigned long)type << DR7_RWLSHIFT( dr ) )
+    return( ( (dword)type << DR7_RWLSHIFT( dr ) )
 //          | ( DR7_GEMASK << DR7_GLSHIFT( dr ) )
           | ( DR7_LEMASK << DR7_GLSHIFT( dr ) ) );
 }
@@ -843,11 +848,12 @@ static bool SetDebugRegs( void )
 {
     int                 i;
     int                 dr;
-    unsigned long       dr7;
-    unsigned long       linear;
+    dword               dr7;
+    dword               linear;
     bool                watch386;
     watch_point         *wp;
     size_t              size;
+    unsigned            type;
 
     if( (Flags & F_DRsOn) == 0 )
         return( false );
@@ -858,16 +864,18 @@ static bool SetDebugRegs( void )
         dr7 = /* DR7_GE | */ DR7_LE;
         for( wp = WatchPoints, i = WatchCount; i-- > 0 ; wp++ ) {
             size = wp->size;
-            dr7 |= SetDRn( dr, wp->linear, DRLen( size ) | DR7_BWR );
+            linear = wp->linear;
+            type = DRLen( size ) | DR7_BWR;
+            dr7 |= SetDRn( dr, linear, type );
             ++dr;
             if( wp->dregs == 2 ) {
-                dr7 |= SetDRn( dr, wp->linear + size, DRLen( size ) | DR7_BWR );
+                dr7 |= SetDRn( dr, linear + size, type );
                 ++dr;
             }
             watch386 = true;
         }
         if( GotABadBreak && dr < 4 ) {
-            linear = ( (unsigned long)BadBreak.segment << 4 ) + BadBreak.offset;
+            linear = GetLinear( BadBreak.segment, BadBreak.offset );
             dr7 |= SetDRn( dr, linear, DRLen( 1 ) | DR7_BINST );
             IsBreak[dr] = true;
             ++dr;
