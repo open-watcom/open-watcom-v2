@@ -121,7 +121,7 @@ bool                    FakeBreak;
 bool                    AtEnd;
 bool                    DoneAutoCAD;
 
-static unsigned_8       RealNPXType;
+static byte             RealNPXType;
 char                    UtilBuff[BUFF_SIZE];
 #define ADSSTACK_SIZE   4096
 char                    ADSStack[ADSSTACK_SIZE];

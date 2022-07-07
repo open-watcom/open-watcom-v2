@@ -764,7 +764,7 @@ static bool CheckWatchPoints( void )
     int         i;
     watch_point *wp;
 
-    for( wp = WatchPoints, i = WatchCount; i-- > 0 ; wp++ ) {
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         value = 0;
         D32DebugRead( &wp->addr, false, &value, wp->size );
         if( value != wp->value ) {

@@ -1491,6 +1491,7 @@ static void FunctionHeader( FILE *f )
 {
     fcn         *tmpf;
     const char  *fn_name;
+    int         index;
 
     OpenHeader( f );
     fprintf( f, ";*** WINGLUE.ASM - windows glue functions                                 ***\n" );
@@ -1503,6 +1504,7 @@ static void FunctionHeader( FILE *f )
     fprintf( f, ".386p\n" );
     fprintf( f, "\n" );
     fprintf( f, "extrn        __DLLPatch:far\n" );
+    index = 0;
     for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
         if( tmpf->is_16 && tmpf->noregfor_16 ) {
             fn_name = &tmpf->fn[3];
@@ -1511,17 +1513,18 @@ static void FunctionHeader( FILE *f )
         }
         if( tmpf->thunk ) {
             if( !tmpf->is_16 || tmpf->noregfor_16 ) {
-                fprintf( f, ";extrn PASCAL %s:FAR ; t=%d (%s)\n", fn_name, tmpf->class, ThunkStrs[tmpf->thunkindex] );
+                fprintf( f, ";extrn PASCAL %s:FAR ; t=%d (%s) i=%d\n", fn_name, tmpf->class, ThunkStrs[tmpf->thunkindex], index );
             } else {
-                fprintf( f, ";      PASCAL %s ; t=%d (%s)\n", fn_name, tmpf->class, ThunkStrs[tmpf->thunkindex] );
+                fprintf( f, ";      PASCAL %s ; t=%d (%s) i=%d\n", fn_name, tmpf->class, ThunkStrs[tmpf->thunkindex], index );
             }
         } else {
             if( !tmpf->is_16 || tmpf->noregfor_16 ) {
-                fprintf( f, "extrn PASCAL %s:FAR ; t=%d\n", fn_name, tmpf->class );
+                fprintf( f, "extrn PASCAL %s:FAR ; t=%d i=%d\n", fn_name, tmpf->class, index );
             } else {
-                fprintf( f, ";      PASCAL %s ; t=%d\n", fn_name, tmpf->class );
+                fprintf( f, ";      PASCAL %s ; t=%d i=%d\n", fn_name, tmpf->class, index );
             }
         }
+        ++index;
     }
     fprintf( f, "extrn        GetFirst16Alias:near\n" );
     fprintf( f, "extrn        Get16Alias:near\n" );

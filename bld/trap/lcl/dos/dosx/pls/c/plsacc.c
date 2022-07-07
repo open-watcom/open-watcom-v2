@@ -872,9 +872,9 @@ static bool SetDebugRegs( void )
     dr = 0;
     Mach.msb_dreg[7] = DR7_GE;
     for( wp = WatchPoints, i = WatchCount; i-- > 0; ++wp ) {
-        wp->linear = wp->linear;
-        wp->size = wp->size;
-        type = DRLen( wp->size ) + DR7_BWR;
+        size = wp->size;
+        linear = wp->linear;
+        type = DRLen( size ) + DR7_BWR;
         SetDRn( dr, linear, type );
         ++dr;
         if( wp->dregs == 2 ) {

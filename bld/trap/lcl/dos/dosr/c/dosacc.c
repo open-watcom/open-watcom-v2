@@ -232,7 +232,6 @@ char *hex( unsigned long num )
     #define hex( n )
 #endif
 
-
 static dword GetLinear( addr_seg segment, addr48_off offset )
 {
     return( ( (dword)segment << 4 ) + offset );
@@ -551,7 +550,8 @@ static opcode_type place_breakpoint( addr48_ptr *addr )
     old_opcode = *paddr;
     *paddr = BreakOpcode;
     if( *paddr != BreakOpcode ) {
-        BadBreak = *addr;
+        BadBreak.segment = addr->segment;
+        BadBreak.offset = addr->offset;
         GotABadBreak = true;
     }
     return( old_opcode );
@@ -815,7 +815,6 @@ static dword SetDRn( int dr, dword linear, unsigned type )
           | ( DR7_LEMASK << DR7_GLSHIFT( dr ) ) );
 }
 
-
 static int ClearDebugRegs( int trap )
 {
     long        dr6;
@@ -994,7 +993,7 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
 
 trap_retval TRAP_CORE( Get_err_text )( void )
 {
-    static const char *const DosErrMsgs[] = {
+    static const char * const DosErrMsgs[] = {
         #define pick( a, b )    b,
         #include "dosmsgs.h"
         #undef pick
