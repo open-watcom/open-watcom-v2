@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -50,7 +51,7 @@ _DATA ends
 ;*
 _DATA segment
 
-extrn _CBJumpTable : dword
+extrn _CBJump32Table : dword
 
 _DATA ends
 
@@ -75,7 +76,7 @@ __32BitCallBack proc    far
         mov     DI,DS                   ; save 16-bit DS
         mov     DS,AX                   ; get 16-bit stack selector
         movzx   EDX,DX                  ; zero high part
-        mov     EDX,ES:_CBJumpTable[EDX]; get address of callback rtn
+        mov     EDX,ES:_CBJump32Table[EDX]; get address of callback rtn
         call    EDX                     ; call the generated callback
         mov     DS,DI                   ; restore 16-bit DS
         pop     EBX                     ; restore EBX

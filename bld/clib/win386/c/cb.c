@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #define MAX_CB_PARMS            50
 #define MAX_CB_JUMPTABLE        512
 
-#define GET_CB16_INDEX(a)       (((char *)__16BitCallBackAddr - (char *)(a)) / CB_CODE_SIZE) - 1)
+#define GET_CB16_INDEX(a)       ((((char *)__16BitCallBackAddr - (char *)(a)) / CB_CODE_SIZE) - 1)
 #define GET_CB_ADDR16(i)        (void *)((char *)__16BitCallBackAddr - ((i) + 1) * CB_CODE_SIZE)
 
 #define CB_ADDR32_TO_CODE_SEL(a)    ((DWORD)(a) - *_DataSelectorBaseAddr + *_CodeSelectorBaseAddr)
