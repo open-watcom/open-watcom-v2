@@ -71,7 +71,7 @@ typedef struct watch_point {
 extern void StackCheck( void );
 #pragma aux StackCheck "__STK";
 
-static dword    SegLimit( dword );
+static dword    SegLimit( dword sel );
 #pragma aux SegLimit = \
         "lsl eax,eax" \
         "jz short L1" \
@@ -81,19 +81,19 @@ static dword    SegLimit( dword );
     __value [__eax]
 
 
-static bool         WriteOK( word sel );
+static bool     WriteOK( word sel );
 #pragma aux WriteOK = \
         "verw ax" /* if ok for write */\
         "sete al" /* then return true */\
     __parm [__ax] __value [__al]
 
-static bool         ReadOK( word sel );
+static bool     ReadOK( word sel );
 #pragma aux ReadOK = \
         "verr ax" /* if ok for read */\
         "sete al" /* then return true */\
     __parm [__ax] __value [__al]
 
-static void         DoReadBytes( word sel, dword offs, void *data, size_t len );
+static void     DoReadBytes( word sel, dword offs, void *data, size_t len );
 #pragma aux DoReadBytes = \
         "push es" \
         "mov  eax,ds" \
@@ -105,7 +105,7 @@ static void         DoReadBytes( word sel, dword offs, void *data, size_t len );
     __parm [__dx] [__esi] [__edi] [__ecx] \
     __modify [__eax]
 
-static void         DoWriteBytes( word sel, dword offs, void *data, size_t len );
+static void     DoWriteBytes( word sel, dword offs, void *data, size_t len );
 #pragma aux DoWriteBytes = \
         "push es" \
         "mov es,edx" \
@@ -637,7 +637,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_ret   *ret;
     watch_point     *wp;
     int             needed;
-    dword           value;
     dword           linear;
     size_t          size;
 
@@ -648,15 +647,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->err = 1;       // failed
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
-        size = acc->size;
-        value = 0;
-        ReadMemory( &acc->watch_addr, &value, size );
-        linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
         wp = WatchPoints + WatchCount;
-        wp->size = size;
+        wp->size = size = acc->size;
+        wp->value = 0;
+        ReadMemory( &acc->watch_addr, &wp->value, size );
+        linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
-        wp->value = value;
         wp->linear = linear & ~( size - 1 );
         wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         WatchCount++;

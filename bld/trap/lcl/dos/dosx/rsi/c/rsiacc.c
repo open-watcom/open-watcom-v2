@@ -576,15 +576,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->err = 1;       // failed
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
-        size = acc->size;
-        value = 0;
-        D32DebugRead( &acc->watch_addr, false, &value, size );
-        linear = DPMIGetSegmentBaseAddress( acc->watch_addr.segment ) + acc->watch_addr.offset;
         wp = WatchPoints + WatchCount;
+        wp->size = size = acc->size;
+        wp->value = 0;
+        D32DebugRead( &acc->watch_addr, false, &wp->value, size );
+        linear = DPMIGetSegmentBaseAddress( acc->watch_addr.segment ) + acc->watch_addr.offset;
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
-        wp->size = size;
-        wp->value = value;
         wp->linear = linear & ~( size - 1 );
         wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         wp->handle = -1;
@@ -747,7 +745,7 @@ static trap_conditions DoRun( void )
         return( COND_USER );
     case 6:
     case 7:
-    case 0xd:
+    case 0x0d:
         return( COND_EXCEPTION );
     case 0x21:
         return( COND_TERMINATE );

@@ -605,16 +605,17 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
     acc = GetInPtr( 0 );
     want = sizeof( buffer );
     sum = 0;
-    for( len = acc->len; len > 0; len -= want ) {
+    for( len = acc->len; len > 0; len -= got ) {
         if( want > len )
             want = len;
         got = ReadMemory( &acc->in_addr, buffer, want );
         for( i = 0; i < got; ++i ) {
             sum += buffer[i];
         }
-        if( got != want )
+        acc->in_addr.offset += got;
+        if( got != want ) {
             break;
-        acc->in_addr.offset += want;
+        }
     }
     ret = GetOutPtr( 0 );
     ret->result = sum;

@@ -238,12 +238,12 @@ static bool IsProtSeg( USHORT seg )
     CD_DES      desc;
 
     if( dbg_rdsdes( seg, 1, &desc ) != 0 )
-        return( FALSE );
+        return( false );
     if( ( desc.arights & AR_CODE ) == AR_CODE )
-        return( TRUE );
+        return( true );
     if( ( desc.arights & AR_DATA ) == AR_DATA )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 trap_retval TRAP_CORE( Machine_data )( void )
@@ -614,8 +614,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
     _DBG(("AccLoadProg\r\n"));
     memset( ObjOffReloc, 0, sizeof( ObjOffReloc ) );
-    AtEnd = FALSE;
-    ReportedAlias = FALSE;
+    AtEnd = false;
+    ReportedAlias = false;
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
     while( *src++ != '\0' )
@@ -626,7 +626,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     UtilBuff[0] = MergeArgvArray( src, UtilBuff + 1, len );
     ret->err = map_dbe( dbg_load( (unsigned char *)name, NULL, (unsigned char *)UtilBuff ) );
     if( ret->err == 0 ) {
-        HavePSP = TRUE;
+        HavePSP = true;
     }
     FakeBreak = 1;
 //  _dil_global._action_flags |= ACT_DIS387;
@@ -665,7 +665,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 
     _DBG(("AccKillProg\r\n"));
     RedirectFini();
-    AtEnd = TRUE;
+    AtEnd = true;
     if( RealNPXType != X86_NO ) {
         /* mask ALL floating point exception bits */
         finit();
@@ -674,7 +674,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
     }
     SetMSW( SaveMSW );
     dbg_kill();
-    HavePSP = FALSE;
+    HavePSP = false;
     Mach.msb_event = -1;
     ret = GetOutPtr( 0 );
     ret->err = 0;
@@ -715,7 +715,7 @@ static trap_conditions MapReturn( void )
         return( COND_BREAK );
     case 32:
     case 33:
-        AtEnd = TRUE;
+        AtEnd = true;
         return( COND_TERMINATE );
     case 34: /* new linear base address */
         return( 0 );
@@ -744,18 +744,18 @@ static trap_conditions Execute( void )
         return( COND_EXCEPTION );
     err = RunProgram();
     if( err != 0 ) {
-        AtEnd = TRUE;
+        AtEnd = true;
         return( COND_EXCEPTION );
     }
     if( dbg_rdmsb( &Mach ) != 0 ) {
-        AtEnd = TRUE;
+        AtEnd = true;
         return( COND_EXCEPTION );
     }
     ReleVects();
     conditions = MapReturn();
     if( FakeBreak ) {
         FixFakeBreak();
-        FakeBreak = FALSE;
+        FakeBreak = false;
         if( !AtEnd ) {
             conditions = COND_USER;
         }
@@ -777,22 +777,24 @@ static int DRegsCount( void )
     return( needed );
 }
 
-static void GetLinear( addr48_ptr *paddr, ULONG *linear )
+static dword GetLinear( addr48_ptr *paddr )
 {
     PTR386          addr;
+    ULONG           linear;
 
     addr.offset = paddr->offset;
     addr.selector = paddr->segment;
-    dbg_ptolin( &addr, linear );
+    linear = 0;
+    dbg_ptolin( &addr, &linear );
+    return( linear );
 }
 
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
-    dword           value;
     watch_point     *wp;
-    ULONG           linear;
+    dword           linear;
     size_t          size;
 
     _DBG(("AccSetWatch\r\n"));
@@ -802,15 +804,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->err = 1;       // failed
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
-        size = acc->size;
-        value = 0;
-        ReadMemory( &acc->watch_addr, &value, size );
-        GetLinear( &acc->watch_addr, &linear );
         wp = WatchPoints + WatchCount;
+        wp->size = size = acc->size;
+        wp->value = 0;
+        ReadMemory( &acc->watch_addr, &wp->value, size );
+        linear = GetLinear( &acc->watch_addr );
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
-        wp->size = size;
-        wp->value = value;
         wp->linear = linear & ~( size - 1 );
         wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         ++WatchCount;
@@ -944,13 +944,13 @@ leave:
 trap_retval TRAP_CORE( Prog_go )( void )
 {
     _DBG(("AccProgGo\r\n"));
-    return( ProgRun( FALSE ) );
+    return( ProgRun( false ) );
 }
 
 trap_retval TRAP_CORE( Prog_step )( void )
 {
     _DBG(("AccProgStep\r\n"));
-    return( ProgRun( TRUE ) );
+    return( ProgRun( true ) );
 }
 
 trap_retval TRAP_CORE( Get_next_alias )( void )
@@ -963,7 +963,7 @@ trap_retval TRAP_CORE( Get_next_alias )( void )
         _DBG(("acc->seg == 0\r\n"));
         ret->seg = Mach.msb_cs;
         ret->alias = Mach.msb_ds;
-        ReportedAlias = TRUE;
+        ReportedAlias = true;
     } else {
         _DBG(("acc->seg == other\r\n"));
         ret->seg = 0;
@@ -1048,15 +1048,15 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
-    //ver.is_32 = TRUE;
+    ver.remote = false;
+    //ver.is_32 = true;
     RedirectInit();
     SaveMSW = GetMSW();
     RealNPXType = NPXType();
     _8087 = 0;
-    HavePSP = FALSE;
+    HavePSP = false;
     WatchCount = 0;
-    FakeBreak = FALSE;
+    FakeBreak = false;
     BreakOpcode = BRKPOINT;
     if( getenv( "DBDB" ) ) {
         _DBG(( "Calling dbg_edebug()\r\n" ));
