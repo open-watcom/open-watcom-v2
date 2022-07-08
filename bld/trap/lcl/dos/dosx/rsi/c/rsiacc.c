@@ -564,7 +564,6 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req   *acc;
     set_watch_ret   *ret;
     watch_point     *wp;
-    dword           value;
     dword           linear;
     size_t          size;
 
