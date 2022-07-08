@@ -136,7 +136,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
         for( len = acc->len; len > 0; len -= want ) {
             if( want > len )
                 want = len;
-            got = ReadMem( ProcInfo.procfd, buf, offv, want );
+            got = ReadMemory( ProcInfo.procfd, offv, buf, want );
             for( i = 0; i < got; ++i )
                 sum += buf[i];
             if( got != want ) {
@@ -163,7 +163,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
 #ifdef DEBUG_MEM
         dbg_print(( "mem read at %08x, %d bytes\n", (unsigned)acc->mem_addr.offset, acc->len ));
 #endif
-        return( ReadMem( ProcInfo.procfd, GetOutPtr( 0 ), acc->mem_addr.offset, acc->len ) );
+        return( ReadMemory( ProcInfo.procfd, acc->mem_addr.offset, GetOutPtr( 0 ), acc->len ) );
     }
     return( 0 );
 }
@@ -186,8 +186,8 @@ trap_retval TRAP_CORE( Write_mem )( void )
         dbg_print(( "mem write at %08x, %d bytes\n",
                     (unsigned)acc->mem_addr.offset, len ));
 #endif
-        ret->len = WriteMem( ProcInfo.procfd, GetInPtr( sizeof( *acc ) ),
-                                acc->mem_addr.offset, len );
+        ret->len = WriteMemory( ProcInfo.procfd, acc->mem_addr.offset,
+                                GetInPtr( sizeof( *acc ) ), len );
     }
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );}
@@ -346,7 +346,12 @@ trap_retval TRAP_CORE( Write_regs )( void )
     return( 0 );
 }
 
-static int SplitParms( char *p, const char **args, unsigned len )
+static int SplitParms( char *p, const char **args, size_t len )
+/**************************************************************
+ * Break up program arguments passed in as a single string into
+ * individual components. Useful for passing argv style array to
+ * exec().
+ */
 {
     int     i;
     char    endc;
@@ -379,11 +384,14 @@ static int SplitParms( char *p, const char **args, unsigned len )
         for( ;; ) {
             if( len == 0 )
                 goto done;
-            if( *p == endc
-             || *p == '\0'
-             || (endc == ' ' && *p == '\t' ) ) {
+            if( *p == endc || *p == '\0' || ( endc == ' ' && *p == '\t' ) ) {
+                /*
+                 * if output array is not specified then source string
+                 * is not changed and it calculates number of parameters only
+                 * as soon as output array is specified then source is modified
+                 */
                 if( args != NULL ) {
-                    *p = '\0';  //NYI: not a good idea, should make a copy
+                    *p = '\0';
                 }
                 ++p;
                 --len;
@@ -513,7 +521,7 @@ static bool setup_rdebug( void )
 
         dbg_print(( "rdebug at %08x, ld breakpoint at %08x\n",
                     (unsigned)ProcInfo.rdebug_va, (unsigned)ProcInfo.ld_bp_va ));
-        ReadMem( ProcInfo.procfd, &rdebug, ProcInfo.rdebug_va, sizeof( rdebug ) );
+        ReadMemory( ProcInfo.procfd, ProcInfo.rdebug_va, &rdebug, sizeof( rdebug ) );
         AddLibs( ProcInfo.procfd, (addr_off)rdebug.r_map );
         ProcInfo.have_rdebug = TRUE;
 

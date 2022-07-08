@@ -88,8 +88,8 @@ extern char         **dbg_environ;
 /* Internal trap file helper functions */
 //extern const char   *CollectNid( const char *name, size_t len, nid_t *nidp );
 
-extern unsigned     ReadMem( pid_handle procfs_fd, void *ptr, addr_off offv, unsigned size );
-extern unsigned     WriteMem( pid_handle procfs_fd, void *ptr, addr_off offv, unsigned size );
+extern size_t       ReadMemory( pid_handle procfs_fd, addr_off offv, void *ptr, size_t len );
+extern size_t       WriteMemory( pid_handle procfs_fd, addr_off offv, void *ptr, size_t len );
 extern int          GetLinkMap( pid_handle pid, addr_off dbg_lmap_off, struct link_map *local_lmap );
 extern int          GetLdInfo( pid_handle pid, addr_off dynsec_off, addr_off *rdebug_off, addr_off *ld_bp_off );
 extern addr_off     GetDynSection( const char *exe_name );

@@ -678,6 +678,11 @@ trap_retval TRAP_CORE( Write_regs )( void )
 }
 
 static int SplitParms( char *p, const char **args, size_t len )
+/**************************************************************
+ * Break up program arguments passed in as a single string into
+ * individual components. Useful for passing argv style array to
+ * exec().
+ */
 {
     int     i;
     char    endc;
@@ -709,11 +714,14 @@ static int SplitParms( char *p, const char **args, size_t len )
         for( ;; ) {
             if( len == 0 )
                 goto done;
-            if( *p == endc
-                || *p == '\0'
-                || (endc == ' ' && *p == '\t' ) ) {
+            if( *p == endc || *p == '\0' || ( endc == ' ' && *p == '\t' ) ) {
+                /*
+                 * if output array is not specified then source string
+                 * is not changed and it calculates number of parameters only
+                 * as soon as output array is specified then source is modified
+                 */
                 if( args != NULL ) {
-                    *p = '\0';  //NYI: not a good idea, should make a copy
+                    *p = '\0';
                 }
                 ++p;
                 --len;

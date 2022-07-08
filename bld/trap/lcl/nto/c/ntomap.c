@@ -225,7 +225,7 @@ void ProcessLdBreakpoint( pid_handle pid, addr_off rdebug_va )
     static int      ld_state;
     struct r_debug  rdebug;
 
-    ReadMem( pid, &rdebug, rdebug_va, sizeof( rdebug ) );
+    ReadMemory( pid, rdebug_va, &rdebug, sizeof( rdebug ) );
 
 #if 0
     dbg_print(( "  r_map     = %p", rdebug.r_map ));

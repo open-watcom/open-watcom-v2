@@ -294,11 +294,12 @@ int GetLinkMap( pid_t pid, struct link_map *dbg_lmap, struct link_map *local_lma
     return( true );
 }
 
-/* Break up program arguments passed in as a single string into
+int SplitParms( char *p, const char **args, size_t len )
+/**************************************************************
+ * Break up program arguments passed in as a single string into
  * individual components. Useful for passing argv style array to
  * exec().
  */
-int SplitParms( char *p, const char **args, size_t len )
 {
     int     i;
     char    endc;
@@ -331,7 +332,7 @@ int SplitParms( char *p, const char **args, size_t len )
         for( ;; ) {
             if( len == 0 )
                 goto done;
-            if( *p == endc || *p == '\0' || (endc == ' ' && *p == '\t') ) {
+            if( *p == endc || *p == '\0' || ( endc == ' ' && *p == '\t' ) ) {
                 /*
                  * if output array is not specified then source string
                  * is not changed and it calculates number of parameters only
