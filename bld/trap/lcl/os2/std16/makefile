@@ -14,15 +14,15 @@ which        = TRAP
 core_entries = 1
 
 extra_objs = &
-        accmisc.obj &
-        os2v1acc.obj &
-        os2path.obj &
-        os2rfx.obj &
-        loadstd.obj &
-        misc7086.obj &
-        x86cpu.obj &
-        supp.obj &
-        core.obj
+    accmisc.obj &
+    os2v1acc.obj &
+    os2path.obj &
+    os2rfx.obj &
+    loadstd.obj &
+    misc7086.obj &
+    x86cpu.obj &
+    supp.obj &
+    core.obj
 
 !include $(trap_dir)/lcl/os2/os2.mif
 !include $(trap_dir)/lcl/lcl.mif

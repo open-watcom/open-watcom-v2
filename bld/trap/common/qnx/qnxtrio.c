@@ -31,18 +31,10 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <termios.h>
-#include <sys/kernel.h>
-#include <sys/dev.h>
-#include <sys/proc_msg.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <string.h>
-#include <process.h>
+#include <unistd.h>
+#include <termios.h>
+#include <sys/dev.h>
 #include "servio.h"
 
 

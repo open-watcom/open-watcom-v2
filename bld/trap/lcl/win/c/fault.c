@@ -289,9 +289,9 @@ void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
             ff.intf.IP--;
         }
         Out((OUT_ERR,"BP at '(%d) %4.4x:%4.4x %4.4x:%8.8lx'",WasInt32,ff.intf.CS,ff.intf.IP,
-        IntResult.CS,IntResult.EIP));
-        if( ( WasInt32 && IntResult.CS == DLLLoad.addr.segment && IntResult.EIP == DLLLoad.addr.offset ) ||
-            ( !WasInt32 && ff.intf.CS == DLLLoad.addr.segment && ff.intf.IP == DLLLoad.addr.offset ) ) {
+            IntResult.CS,IntResult.EIP));
+        if( ( WasInt32 && IntResult.CS == DLLLoad.addr.segment && IntResult.EIP == DLLLoad.addr.offset )
+          || ( !WasInt32 && ff.intf.CS == DLLLoad.addr.segment && ff.intf.IP == DLLLoad.addr.offset ) ) {
             Out((OUT_RUN,"Caught DLL Loaded '%4.4x:%4.4x'",DLLLoad.addr.segment,DLLLoad.addr.offset));
             remove_breakpoint( &DLLLoad.addr, DLLLoad.old_opcode );
             sig_addr.segment = IntResult.CS;
