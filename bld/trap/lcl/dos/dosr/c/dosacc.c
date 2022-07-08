@@ -745,6 +745,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_ret       *ret;
     watch_point         *wp;
     dword               linear;
+    dword               value;
     size_t              size;
 
     acc = GetInPtr( 0 );
