@@ -100,8 +100,8 @@ F_Is386         equ     0x0001
 ; These offsets must match the watch_point struct in dosacc.c
 WP_ADDR         equ     0       ; offset of watch point address
 WP_VALUE        equ     4       ; offset of watch point value
-WP_MASK         equ     8       ; mask for watch point data lenght
-WP_SIZE         equ     20      ; size of the watch point structure
+WP_SIZE         equ     12      ; watch point data lenght
+WP_STRUCT_SIZE  equ     16      ; size of the watch point structure
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -457,15 +457,23 @@ do_watch:
         mov     CX,CS:WatchCnt  ; get number of watch points
 start_loop:                     ; loop
         les     BX,WP_ADDR[SI]  ; - get address of watch point
-        mov     AX,ES:[BX]      ; - get low order word
-        and     AX,WP_MASK[SI]  ; - mask value to watch point size
-        cmp     AX,WP_VALUE[SI] ; - compare with entry in table
-        jne     watch_trap      ; - set watchpoint trap if different
+        mov     AL,WP_SIZE[SI]  ; - get watch data size
+        cmp     AL,1            ; - if byte size
+        je      check_byte      ; - then go to next watch entry
+        cmp     AL,2            ; - if word size
+        je      check_word      ; - then go to next watch entry
         mov     AX,ES:2[BX]     ; - get high order word
-        and     AX,WP_MASK+2[SI] ; - mask value to watch point size
         cmp     AX,WP_VALUE+2[SI];- compare with entry in table
         jne     watch_trap      ; - set watchpoint trap if different
-        add     SI,WP_SIZE      ; - point to next entry
+check_word:
+        mov     AL,ES:1[BX]     ; - get high byte of low word
+        cmp     AL,WP_VALUE+1[SI]; - compare with entry in table
+        jne     watch_trap      ; - set watchpoint trap if different
+check_byte:
+        mov     AL,ES:[BX]      ; - get low byte of low word
+        cmp     AL,WP_VALUE[SI] ; - compare with entry in table
+        jne     watch_trap      ; - set watchpoint trap if different
+        add     SI,WP_STRUCT_SIZE; - point to next entry
         loop    start_loop      ; until --CX = 0
         lds     BX,dword ptr CS:SaveRegs; point at save area
         mov     ES,[BX].RES     ; restore ES

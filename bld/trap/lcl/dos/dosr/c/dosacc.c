@@ -99,7 +99,6 @@ typedef struct pblock {
 typedef struct watch_point {
     addr32_ptr  addr;
     dword       value;
-    dword       mask;
     dword       linear;
     word        size;
     word        dregs;
@@ -756,18 +755,13 @@ trap_retval TRAP_CORE( Set_watch )( void )
         ret->err = 0;
         size = acc->size;
         wp = WatchPoints + WatchCount;
-        if( size == 1 ) {
-            wp->mask = -1UL >> 24;
-        } else if( size == 2 ) {
-            wp->mask = -1UL >> 16;
-        } else {
-            wp->mask = -1UL;
-        }
-        wp->value = *(dword __far *)_MK_FP( acc->watch_addr.segment, acc->watch_addr.offset ) & wp->mask;
+        linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
+        value = 0;
+        ReadMemory( acc->watch_addr.segment, acc->watch_addr.offset, &value, size );
+        wp->value = value;
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
         wp->size = size;
-        linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
         wp->linear = linear & ~( size - 1 );
         wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         ++WatchCount;
