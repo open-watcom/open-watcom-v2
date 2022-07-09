@@ -64,8 +64,8 @@ typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
     dword       linear;
-    word        dregs;
     word        size;
+    word        dregs;
 } watch_point;
 
 extern void StackCheck( void );
@@ -674,7 +674,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 20000;
-    ret->err = 1;       // failed
+    ret->err = 1;       // failure
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
         wp = WatchPoints + WatchCount;
