@@ -798,10 +798,7 @@ static bool CheckWatchPoints( void )
 static unsigned ProgRun( bool step )
 {
     long        trace;
-    int         i;
-    dword       value;
     prog_go_ret *ret;
-    watch_point *wp;
 
     _DBG1(( "ProgRun" ));
     ret = GetOutPtr( 0 );
