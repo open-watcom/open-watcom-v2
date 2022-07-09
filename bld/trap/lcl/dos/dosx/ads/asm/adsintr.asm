@@ -283,49 +283,6 @@ oldvect         macro   name,num
                 ret                             ; return to caller
 ReleVects      endp
 
-public          GetFL
-GetFL           proc    near
-                pushfd
-                pop     eax
-                ret
-GetFL           endp
-
-public          GetLinear
-GetLinear       proc    near
-                push    ebx             ; save regs
-                push    ecx             ; ...
-                mov     ebx,12[esp]     ; load selector
-                mov     ax,2508H        ; get segment linear base address
-                int     21h             ; ...
-                add     ecx,16[esp]     ; add offset to base address
-                mov     eax,ecx         ; return it
-                pop     ecx
-                pop     ebx
-                ret
-GetLinear       endp
-
-sysregs         macro   write
-                push    ebx                     ; save regs
-                push    edx                     ; ...
-                mov     edx,12[esp]             ; get buffer address
-                mov     ax,02535h               ; system call
-                mov     ebx,&write              ; read/write
-                int     21h                     ; ...
-                pop     edx                     ; restore regs
-                pop     ebx                     ; ...
-                ret                             ; return to caller
-                endm
-
-public          GetSysRegs
-GetSysRegs      proc near
-                sysregs 0
-GetSysRegs      endp
-
-public          SetSysRegs
-SetSysRegs      proc near
-                sysregs 1
-SetSysRegs      endp
-
 _text           ends
 
                 end

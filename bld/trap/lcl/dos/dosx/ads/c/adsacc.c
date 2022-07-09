@@ -80,6 +80,11 @@ static dword    SegLimit( dword sel );
     __parm [__eax] \
     __value [__eax]
 
+static dword SegBase( dword sel );
+#pragma aux SegBase = \
+        "mov ax,2508H" \
+        "int 21h" \
+    __parm [__ebx] __value [__ecx] __modify [__eax]
 
 static bool     WriteOK( word sel );
 #pragma aux WriteOK = \
@@ -112,6 +117,26 @@ static void     DoWriteBytes( word sel, dword offs, void *data, size_t len );
         "rep movsb" \
         "pop es" \
     __parm [__dx] [__edi] [__esi] [__ecx]
+
+static unsigned GetFL( void );
+#pragma aux GetFL = \
+        "pushfd" \
+        "pop eax" \
+    __parm [] __value[__eax]
+
+static void GetSysRegs( void * );
+#pragma aux GetSysRegs = \
+        "mov    ax,2535h" \
+        "mov    ebx,0" \
+        "int    21h" \
+    __parm [__edx] __modify[__eax __ebx]
+
+static void SetSysRegs( void * );
+#pragma aux SetSysRegs = \
+        "mov    ax,2535h" \
+        "mov    ebx,1" \
+        "int    21h" \
+    __parm [__edx] __modify[__eax __ebx]
 
 trap_cpu_regs           Regs;
 int                     IntNum;
@@ -231,6 +256,11 @@ void MyOut( char *str, ... )
 }
 
 #endif
+
+static dword GetLinear( word segment, dword offset )
+{
+    return( SegBase( segment ) + offset );
+}
 
 int SetUsrTask( void )
 {

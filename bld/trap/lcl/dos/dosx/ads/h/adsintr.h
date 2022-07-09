@@ -34,7 +34,3 @@ extern void         DumpDbgRegs( void );
 extern void         DoRunProg( void );
 extern void         GrabVects( void );
 extern void         ReleVects( void );
-extern dword        GetFL( void );
-extern dword        GetLinear( word, dword );
-extern void         GetSysRegs( void * );
-extern void         SetSysRegs( void * );
