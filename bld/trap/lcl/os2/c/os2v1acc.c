@@ -103,7 +103,7 @@ extern scrtype          Screen;
 static TRACEBUF         Buff;
 static USHORT           SessionType;
 static watch_point      WatchPoints[MAX_WATCHES];
-static short            WatchCount = 0;
+static int              WatchCount = 0;
 static volatile bool    BrkPending;
 static int              ExceptNum;
 
@@ -937,6 +937,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req       *acc;
     set_watch_ret       *ret;
     dword               buff;
+    watch_point         *wp;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -944,10 +945,11 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->multiplier = 50000;
     if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
         ret->err = 0;   // OK
-        WatchPoints[WatchCount].addr.segment = acc->watch_addr.segment;
-        WatchPoints[WatchCount].addr.offset = acc->watch_addr.offset;
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
         ReadBuffer( (PBYTE)&buff, acc->watch_addr.segment, acc->watch_addr.offset, sizeof( dword ) );
-        WatchPoints[WatchCount].value = buff;
+        wp->value = buff;
         ++WatchCount;
     }
     return( sizeof( *ret ) );
@@ -1023,10 +1025,25 @@ static trap_conditions MapReturn( trap_conditions conditions )
     }
 }
 
+static bool CheckWatchPoints( void )
+{
+    watch_point     *wp;
+    int             i;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        Buff.cmd = PT_CMD_READ_MEM_D;
+        Buff.segv = wp->addr.segment;
+        Buff.offv = wp->addr.offset;
+        DosPTrace( &Buff );
+        if( Buff.value != wp->value ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
 static unsigned ProgRun( bool step )
 {
-    watch_point         *wp;
-    int                 i;
     PFNSIGHANDLER       prev_brk_hdl;
     USHORT              prev_brk_act;
     PFNSIGHANDLER       prev_intr_hdl;
@@ -1047,21 +1064,15 @@ static unsigned ProgRun( bool step )
     } else if( step ) {
         Buff.cmd = PT_CMD_SINGLE_STEP;
         DosPTrace( &Buff );
-    } else if( WatchCount != 0 ) {
+    } else if( WatchCount > 0 ) {
         for( ;; ) {
             Buff.cmd = PT_CMD_SINGLE_STEP;
             DosPTrace( &Buff );
             if( Buff.cmd != PT_RET_STEP )
                 break;
-            for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                Buff.cmd = PT_CMD_READ_MEM_D;
-                Buff.segv = wp->addr.segment;
-                Buff.offv = wp->addr.offset;
-                DosPTrace( &Buff );
-                if( Buff.value != wp->value ) {
-                    Buff.cmd = PT_RET_WATCH;
-                    goto leave;
-                }
+            if( CheckWatchPoints() ) {
+                Buff.cmd = PT_RET_WATCH;
+                break;
             }
         }
     } else {
@@ -1074,7 +1085,6 @@ static unsigned ProgRun( bool step )
             Buff.cmd = PT_RET_FUNERAL;
         }
     }
-leave:
     DosSetSigHandler( prev_brk_hdl, &prev_brk_hdl, &prev_brk_act,
                         prev_brk_act, SIG_CTRLBREAK );
     DosSetSigHandler( prev_brk_hdl, &prev_intr_hdl, &prev_intr_act,
