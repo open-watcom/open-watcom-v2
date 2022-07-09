@@ -197,7 +197,7 @@ static dreg_info            DR[NUM_DREG];
 static unsigned_8           RealNPXType;
 
 static watch_point          WatchPoints[MAX_WATCHES];
-static int                  WatchCount;
+static int                  WatchCount = 0;
 
 static char                 *LoadName;
 static unsigned             LoadLen;
@@ -1523,6 +1523,22 @@ static bool SetDebugRegs( void )
     return( TRUE );
 }
 
+static bool CheckWatchPoints( void )
+{
+    int         i;
+    dword       value;
+    watch_point *wp;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
+        ReadMemory( &wp->addr, &value, wp->size );
+        if( value != wp->value ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
 static trap_elen ProgRun( bool step )
 {
     watch_point *wp;
@@ -1556,20 +1572,15 @@ static trap_elen ProgRun( bool step )
                     break;
                 if( !( MSB->errnum & DR6_BS ) )
                     break;
-                for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                    value = 0;
-                    ReadMemory( &wp->addr, &value, wp->len );
-                    if( value != wp->value ) {
-                        ret->conditions |= COND_WATCH;
-                        goto leave;
-                    }
+                if( CheckWatchPoints() ) {
+                    ret->conditions |= COND_WATCH;
+                    break;
                 }
             }
         }
     } else {
         ret->conditions |= Execute( NULL );
     }
-leave:
     if( MSB == NULL ) {
         ret->program_counter.offset = 0;
         ret->program_counter.segment = 0;
