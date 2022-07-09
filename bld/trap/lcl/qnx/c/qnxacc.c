@@ -134,7 +134,7 @@ static process_info ProcInfo;
 #define MAX_WATCHES     32
 
 static struct _watch_struct WatchPoints[MAX_WATCHES];
-static short                WatchCount = 0;
+static int                  WatchCount = 0;
 
 #if 0
 void Out( char *str )
@@ -1040,7 +1040,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = 0;
+    ret->err = 0;   // OK
     for( size = acc->size; size != 0; --size ) {
         WatchPoints[WatchCount].seg = acc->watch_addr.segment;
         WatchPoints[WatchCount].off = acc->watch_addr.offset;

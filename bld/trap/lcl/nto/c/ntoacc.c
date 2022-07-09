@@ -55,7 +55,7 @@ process_info            ProcInfo;
 
 //#define MAX_WATCHES     32
 //struct _watch_struct    WatchPoints[MAX_WATCHES];
-static short            WatchCount = 0;
+//static int              WatchCount = 0;
 
 static pid_t            OrigPGrp;
 
@@ -783,14 +783,14 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->break_addr.offset );
     CONV_LE_16( acc->break_addr.segment );
-    ret = GetOutPtr( 0 );
-    ret->err = 1;
-    ret->multiplier = 1000;
     dbg_print(( "setting watchpoint %d bytes at %04x:%08x\n", acc->size,
                acc->watch_addr.segment, (unsigned)acc->watch_addr.offset ));
+    ret = GetOutPtr( 0 );
+    ret->multiplier = 1000;
+    ret->err = 1;       // failure
     if( nto_watchpoint( acc->watch_addr.offset, acc->size, 1 ) == 0 ) {
         /* Succeeded */
-        ret->err = 0;
+        ret->err = 0;   // OK
         ret->multiplier |= USING_DEBUG_REG;
     }
     CONV_LE_32( ret->err );

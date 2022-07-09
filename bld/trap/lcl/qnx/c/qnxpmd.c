@@ -614,7 +614,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_ret       *ret;
 
     ret = GetOutPtr( 0 );
-    ret->err = 0;
+    ret->err = 0;   // OK
     ret->multiplier = USING_DEBUG_REG | 1;
     return( sizeof( *ret ) );
 }
