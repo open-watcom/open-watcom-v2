@@ -742,14 +742,8 @@ static void formatSel( char *buff, int verbose )
         wsprintf( buff, "%04x:%08lx", sel, off );
     }
     if( verbose && GetSelectorLDTEntry( sel, &ldt ) ) {
-        base = off + ( DWORD ) ldt.BaseLow +
-            ( ( DWORD ) ldt.HighWord.Bytes.BaseMid << 16L ) +
-            ( ( DWORD ) ldt.HighWord.Bytes.BaseHi << 24L );
-        limit = 1 + ( DWORD ) ldt.LimitLow +
-            ( ( DWORD ) ldt.HighWord.Bits.LimitHi << 16L );
-        if( ldt.HighWord.Bits.Granularity ) {
-            limit *= 0x1000L;
-        }
+        base = off + GET_LDT_BASE( ldt );
+        limit = GET_LDT_LIMIT( ldt );
         buff = &buff[strlen( buff )];
         if( currInfo->is_16 ) {
             wsprintf( buff, " - base:%08lx size:%04x", base, limit );

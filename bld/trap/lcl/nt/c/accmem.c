@@ -37,16 +37,15 @@
 /*
  * getRealBase - get real base address, based on segment/offset
  */
-static ULONG_PTR getRealBase( addr48_ptr *addr, ULONG_PTR *plimit )
+static ULONG_PTR getRealBase( addr48_ptr *addr, ULONG_PTR *pend )
 {
 #if defined( MD_axp ) || defined( MD_ppc )
 
-    *plimit = (ULONG_PTR)-1L;
+    *pend = (ULONG_PTR)-1L;
     return( addr->offset );
 
 #elif defined( MD_x86 ) || defined( MD_x64 )
 
-    ULONG_PTR   realbase;
     LDT_ENTRY   ldt;
     ULONG_PTR   limit;
     ULONG_PTR   selbase;
@@ -54,28 +53,20 @@ static ULONG_PTR getRealBase( addr48_ptr *addr, ULONG_PTR *plimit )
 
     sel = addr->segment;
     if( sel == FlatDS || sel == FlatCS ) {
-        *plimit = (ULONG_PTR)-1L;
+        *pend = (ULONG_PTR)-1L;
         return( addr->offset );
     }
     if( !GetSelectorLDTEntry( sel, &ldt ) ) {
-        *plimit = 0;
+        *pend = 0;
         return( 0 );
     }
-    limit = 1 + (ULONG_PTR)ldt.LimitLow +
-        ( (ULONG_PTR)ldt.HighWord.Bits.LimitHi << 16L );
-    if( ldt.HighWord.Bits.Granularity ) {
-        limit *= 0x1000L;
+    limit = GET_LDT_LIMIT( ldt );
+    selbase = GET_LDT_BASE( ldt );
+    *pend = selbase + limit;
+    if( ldt.HighWord.Bits.Default_Big ) {
+        return( selbase + addr->offset );
     }
-    if( !ldt.HighWord.Bits.Default_Big ) {
-        realbase = (ULONG_PTR)(WORD)addr->offset;
-    } else {
-        realbase = addr->offset;
-    }
-    selbase = (ULONG_PTR)ldt.BaseLow +
-        ( (ULONG_PTR)ldt.HighWord.Bytes.BaseMid << 16L ) +
-        ( (ULONG_PTR)ldt.HighWord.Bytes.BaseHi << 24L );
-    *plimit = limit + selbase;
-    return( realbase + selbase );
+    return( selbase + (ULONG_PTR)(WORD)addr->offset );
 
 #else
 
@@ -90,7 +81,7 @@ static ULONG_PTR getRealBase( addr48_ptr *addr, ULONG_PTR *plimit )
 DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
 {
     SIZE_T      bytes;
-    ULONG_PTR   limit;
+    ULONG_PTR   end;
     ULONG_PTR   base;
 #ifdef DEBUGGING_THIS_DAMN_WIN95_PROBLEM
     static bool first = true;
@@ -99,19 +90,19 @@ DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
     if( DebugeePid == 0 ) {
         return( 0 );
     }
-    base = getRealBase( addr, &limit );
-    if( limit < base ) {
-        limit = base;
+    base = getRealBase( addr, &end );
+    if( end < base ) {
+        end = base;
     }
     if( base + size < base ) { // wants to wrap segment
         size = ( ~(ULONG_PTR)0 ) - base;
     }
-    if( limit != (ULONG_PTR)-1L ) {
-        if( base + size > limit ) {
-            if( limit < base ) {
+    if( end != (ULONG_PTR)-1L ) {
+        if( base + size > end ) {
+            if( end < base ) {
                 size = 0;
             } else {
-                size = limit - base;
+                size = end - base;
             }
         }
     }
@@ -121,7 +112,7 @@ DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
     FILE        *io;
     io = fopen( "t.t", "a+" );
     fprintf( io, "%4.4x:%8.8x, base=%8.8x, limit=%8.8x, size=%d\n",
-                addr->segment, addr->offset, base, limit, size );
+                addr->segment, addr->offset, base, end, size );
     fclose( io );
 #endif
     bytes = 0;
@@ -146,19 +137,19 @@ DWORD ReadMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
 DWORD WriteMemory( addr48_ptr *addr, LPVOID buff, DWORD size )
 {
     SIZE_T      bytes;
-    ULONG_PTR   limit;
+    ULONG_PTR   end;
     ULONG_PTR   base;
 
     if( DebugeePid == 0 ) {
         return( 0 );
     }
-    base = getRealBase( addr, &limit );
-    if( limit != (ULONG_PTR)-1L ) {
-        if( base + size > limit ) {
-            if( limit < base ) {
+    base = getRealBase( addr, &end );
+    if( end != (ULONG_PTR)-1L ) {
+        if( base + size > end ) {
+            if( end < base ) {
                 size = 0;
             } else {
-                size = limit - base;
+                size = end - base;
             }
         }
     }

@@ -390,15 +390,12 @@ bool CheckWatchPoints( void )
 }
 
 #if defined( MD_x86 )
-static DWORD CalcLinear( addr48_ptr *addr )
+static DWORD GetLinear( addr48_ptr *addr )
 {
     LDT_ENTRY   ldt;
 
     if( GetSelectorLDTEntry( addr->segment, &ldt ) ) {
-        return( addr->offset +
-            ( ( ldt.HighWord.Bits.BaseHi << 24 ) |
-              ( ldt.HighWord.Bits.BaseMid << 16 ) |
-              ldt.BaseLow ) );
+        return( addr->offset + GET_LDT_BASE( ldt ) );
     }
     return( addr->offset );
 }
@@ -451,7 +448,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
         WatchCount++;
 #if defined( MD_x86 )
-        linear = CalcLinear( &acc->watch_addr );
+        linear = GetLinear( &acc->watch_addr );
         lencalc = curr->len;
         if( lencalc > 4 )
             lencalc = 4;

@@ -94,6 +94,17 @@
 #define RDWORD  DWORD
 #endif
 
+#if defined( MD_x86 ) || defined( MD_x64 )
+#define GET_LDT_BASE(d) \
+    ((ULONG_PTR)(d).BaseLow + ((ULONG_PTR)(d).HighWord.Bytes.BaseMid << 16L) + \
+    ((ULONG_PTR)(d).HighWord.Bytes.BaseHi << 24L))
+
+#define GET_LDT_LIMIT(d) \
+    ((d).HighWord.Bits.Granularity ? \
+    ((1 + (ULONG_PTR)(d).LimitLow + ((ULONG_PTR)(d).HighWord.Bits.LimitHi << 16L)) << 12L) : \
+    (1 + (ULONG_PTR)(d).LimitLow + ((ULONG_PTR)(d).HighWord.Bits.LimitHi << 16L)))
+#endif
+
 typedef struct {
     WORD                sig;
     union {
