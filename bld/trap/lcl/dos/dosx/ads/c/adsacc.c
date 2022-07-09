@@ -779,6 +779,22 @@ static bool SetDebugRegs( void )
     return( true );
 }
 
+static bool CheckWatchPoints( void )
+{
+    int         i;
+    dword       value;
+    watch_point *wp;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
+        ReadMemory( &wp->addr, &value, wp->size );
+        if( value != wp->value ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
 static unsigned ProgRun( bool step )
 {
     long        trace;
@@ -794,7 +810,7 @@ static unsigned ProgRun( bool step )
     Regs.EFL |= trace;
     if( AtEnd ) {
         _DBG2(("No RunProg"));
-    } else if( !trace && WatchCount != 0 ) {
+    } else if( !trace && WatchCount > 0 ) {
         _DBG2(("All that trace goop"));
         if( SetDebugRegs() ) {
             MyRunProg();
@@ -810,13 +826,8 @@ static unsigned ProgRun( bool step )
                     break;
                 if( ( SysRegs.dr6 & DR6_BS ) == 0 )
                     break;
-                for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-                    value = 0;
-                    ReadMemory( &wp->addr, &value, wp->size );
-                    if( value != wp->value ) {
-                        ret->conditions |= COND_WATCH;
-                        goto leave;
-                    }
+                if( CheckWatchPoints() ) {
+                    break;
                 }
             }
         }
@@ -840,7 +851,6 @@ static unsigned ProgRun( bool step )
     } else {
         ret->conditions |= COND_EXCEPTION;
     }
-leave:
     Regs.EFL &= ~trace;
     ret->program_counter.offset = Regs.EIP;
     ret->program_counter.segment = Regs.CS;
