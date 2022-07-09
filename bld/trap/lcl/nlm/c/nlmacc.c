@@ -117,8 +117,8 @@ typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
     dword       linear;
-    short       dregs;
-    short       len;
+    word        size;
+    word        dregs;
 } watch_point;
 
 typedef struct {
@@ -131,7 +131,7 @@ typedef struct {
 extern void            _exit( int __status );
 
 #if defined( _USE_NEW_KERNEL )
-extern void *          kSemaphoreAlloc( const char *, long );
+extern void            *kSemaphoreAlloc( const char *, long );
 extern unsigned long   kSemaphoreExamineCount( void *sp );
 extern int             kSemaphoreFree( void *sp );
 extern int             kSemaphoreWait( void *sp );
@@ -194,7 +194,7 @@ static opcode_type          saved_opcode;
 //byte                        RunningPriority;
 static dreg_info            DR[NUM_DREG];
 
-static unsigned_8           RealNPXType;
+static byte                 RealNPXType;
 
 static watch_point          WatchPoints[MAX_WATCHES];
 static int                  WatchCount = 0;
@@ -386,7 +386,7 @@ static void WakeDebugger( void )
 {
     if( !DebuggerRunning ) {
         ClearDebugRegs();
-        DebuggerRunning = TRUE;
+        DebuggerRunning = true;
 #if defined( _USE_NEW_KERNEL )
         kSemaphoreSignal( kDebugSem );
 #else
@@ -398,13 +398,13 @@ static void WakeDebugger( void )
 
 static void SleepDebugger( void )
 {
-    DebuggerRunning = FALSE;
+    DebuggerRunning = false;
 #if defined( _USE_NEW_KERNEL )
     kSemaphoreWait( kDebugSem );
 #else
     CPSemaphore( DebugSem );
 #endif
-    DebuggerRunning = TRUE;
+    DebuggerRunning = true;
 }
 
 
@@ -419,31 +419,31 @@ bool IsInOSCode( LONG eip )
         loaded = ValidateModuleHandle( loadhandle );
         if( eip >= loaded->LDCodeImageOffset
          && eip <  loaded->LDCodeImageOffset + loaded->LDCodeImageLength ) {
-            return( FALSE );
+            return( false );
         }
     }
     if( DebuggerLoadedNLM ) { /* might not be on the LoadedList yet */
         if( eip >= DebuggerLoadedNLM->LDCodeImageOffset
          && eip <  DebuggerLoadedNLM->LDCodeImageOffset
                  + DebuggerLoadedNLM->LDCodeImageLength ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
 bool CheckIfBreakOKInOS( LONG eip )
 {
     if( !IsInOSCode( eip ) )
-        return( TRUE );
+        return( true );
     ServMessage( TRP_NLM_cant_debug_os );
-    return( FALSE );
+    return( false );
 }
 #endif
 
 
-static unsigned_8 NPX( void )
+static byte NPX( void )
 {
     if( HAVE_EMU == 0 )
         return( RealNPXType );
@@ -539,7 +539,7 @@ static LONG DebugEntry( StackFrame *frame )
             return( RETURN_TO_NEXT_DEBUGGER );
         } else {
             FieldEFLAGS( frame ) |= FLG_T;
-            FakeBreak = TRUE;
+            FakeBreak = true;
             return( RETURN_TO_PROGRAM );
         }
     }
@@ -579,7 +579,7 @@ static LONG DebugEntry( StackFrame *frame )
                         load, &(load->LDFileName[1]), DebuggerLoadedNLM ));
         if( load == DebuggerLoadedNLM ) {
             DebuggerLoadedNLM = NULL;
-            ExpectingEvent = FALSE;
+            ExpectingEvent = false;
             MSB = NULL;
             WakeDebugger();
         } else {
@@ -628,7 +628,7 @@ static LONG DebugEntry( StackFrame *frame )
         if( NLMState != NLM_FORCED_INIT_FAILURE ) {
             m = LocateThread( _RunningProcess );
             DebuggerLoadedNLM = NULL;
-            ExpectingEvent = FALSE;
+            ExpectingEvent = false;
             MSB = NULL;
             WakeDebugger();
         }
@@ -1109,7 +1109,7 @@ static void LoadHelper( void )
     LoadRet->err = 0;
     NLMState = NLM_PRELOADING;
     _DBG_EVENT(( "*LoadHelper: NLMState = NLM_PRELOADING\r\n" ));
-    ExpectingEvent = TRUE;
+    ExpectingEvent = true;
 
     if( nlm_name[0] == '\0'
      || ( handle = IOOpen( nlm_name, O_RDONLY ) ) == -1
@@ -1176,7 +1176,7 @@ static void LoadHelper( void )
     LoadRet->err = 0;
     NLMState = NLM_PRELOADING;
     _DBG_EVENT(( "*LoadHelper: NLMState = NLM_PRELOADING\r\n" ));
-    ExpectingEvent = TRUE;
+    ExpectingEvent = true;
     if( nlm_name[0] == '\0'
      || ( handle = IOOpen( nlm_name, O_RDONLY ) ) == -1
      || IOSeek( handle, SEEK_SET, offsetof( nlm_header, moduleName ) )
@@ -1329,7 +1329,7 @@ static trap_conditions Execute( msb *which )
     switch( MSB->xnum ) {
     case 1:
         if( FakeBreak ) {
-            FakeBreak = FALSE;
+            FakeBreak = false;
             return( COND_USER );
         }
         if( MSB->errnum & DR6_BS ) {
@@ -1375,32 +1375,38 @@ static int DRegsCount( void )
     return( needed );
 }
 
+static dword GetLinear( addr_seg segment, addr48_off offset )
+{
+    (void)segment;
+
+    return( offset );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
-    dword           value;
     set_watch_req   *acc;
     set_watch_ret   *ret;
     watch_point     *wp;
     int             i;
     int             dreg_avail[4];
     dword           linear;
+    size_t          size;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 2000;
-    ret->err = 1;       // failed
+    ret->err = 1;       // failure
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
-        value = 0;
-        ReadMemory( &acc->watch_addr, &value, acc->size );
-        linear = acc->watch_addr.offset;
         wp = WatchPoints + WatchCount;
+        wp->size = size = acc->size;
+        wp->value = 0;
+        ReadMemory( &acc->watch_addr, &wp->value, size );
+        linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
-        wp->len = acc->size;
-        wp->linear = linear & ~(wp->len - 1);
-        wp->dregs = ( linear & (wp->len - 1) ) ? 2 : 1;
-        wp->value = value;
+        wp->linear = linear & ~( size - 1 );
+        wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         ++WatchCount;
         for( i = 0; i < NUM_DREG; ++i ) {
             dreg_avail[i] = DoReserveBreakpoint();
@@ -1488,39 +1494,39 @@ static void ActivateDebugRegs( void )
     }
 }
 
-static bool SetDR( unsigned address, int len )
+static bool SetDR( dword address, size_t size )
 {
     int     i;
     i = DoReserveBreakpoint();
     _DBG_DR(( "reserved %d addr=%8x\r\n", i, address ));
     if( i < 0 ) {
         ClearDebugRegs();
-        return( FALSE );
+        return( false );
     }
     DR[i].address = address;
     DR[i].type = DR7_BWR;
-    DR[i].size = len;
-    return( TRUE );
+    DR[i].size = size;
+    return( true );
 }
 
 static bool SetDebugRegs( void )
 {
     int         i;
-    unsigned    address;
+    dword       address;
     watch_point *wp;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         address = wp->addr.offset;
         _DBG_DR(( "offset = %8x, addr=%8x\r\n", wp->addr.offset, address ));
-        if( !SetDR( wp->linear, wp->len ) )
-            return( FALSE );
-        if( wp->dregs == 2 ) {
-            if( !SetDR( wp->linear+wp->len, wp->len ) ) {
-                return( FALSE );
+        if( !SetDR( wp->linear, wp->size ) )
+            return( false );
+        if( wp->dregs > 1 ) {
+            if( !SetDR( wp->linear + wp->size, wp->size ) ) {
+                return( false );
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool CheckWatchPoints( void )
@@ -1549,25 +1555,25 @@ static trap_elen ProgRun( bool step )
         ret->conditions = COND_TERMINATE;
     } else if( step ) {
         MSB->cpu.EFL |= FLG_T;
-        TrapInt1 = TRUE;
+        TrapInt1 = true;
         ret->conditions |= Execute( MSB );
-        TrapInt1 = FALSE;
+        TrapInt1 = false;
     } else if( WatchCount > 0 ) {
         if( SetDebugRegs() ) {
-            TrapInt1 = TRUE;
+            TrapInt1 = true;
             ret->conditions |= Execute( NULL );
-            TrapInt1 = FALSE;
+            TrapInt1 = false;
         } else {
             for( ;; ) {
                 MSB->cpu.EFL |= FLG_T;
-                TrapInt1 = TRUE;
+                TrapInt1 = true;
                 ret->conditions |= Execute( MSB );
-                TrapInt1 = FALSE;
+                TrapInt1 = false;
                 if( ret->conditions & COND_TERMINATE )
                     break;
                 if( MSB->xnum != 1 )
                     break;
-                if( !( MSB->errnum & DR6_BS ) )
+                if( (MSB->errnum & DR6_BS) == 0 )
                     break;
                 if( CheckWatchPoints() ) {
                     ret->conditions |= COND_WATCH;
@@ -1909,7 +1915,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
     ver.remote = FALSE;
-    FakeBreak = FALSE;
+    FakeBreak = false;
     BreakOpcode = BRKPOINT;
     RealNPXType = NPXType();
     WatchCount = 0;
@@ -1922,9 +1928,9 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 #endif
     DebuggerLoadedNLM = NULL;
     NLMState = NLM_NONE;
-    DebuggerRunning = TRUE;
-    ExpectingEvent = FALSE;
-    TrapInt1 = FALSE;
+    DebuggerRunning = true;
+    ExpectingEvent = false;
+    TrapInt1 = false;
     DbgStruct.ddRTag = DebugTag;
     RegisterDebuggerRTag( &DbgStruct, ALWAYS_AT_FIRST );
     return( ver );
@@ -1933,14 +1939,14 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 void TRAPENTRY TrapFini( void )
 {
     UnRegisterDebugger( &DbgStruct );
-    ExpectingEvent = FALSE;
+    ExpectingEvent = false;
     while( MSBHead )
         FreeThread( MSBHead );
 #if defined( _USE_NEW_KERNEL )
-    if( kDebugSem )
+    if( kDebugSem != NULL )
         KernelSemaphoreReleaseAll( kDebugSem );
     kDebugSem = NULL;
-    if( kHelperSem )
+    if( kHelperSem != NULL )
         KernelSemaphoreReleaseAll( kHelperSem );
     kHelperSem = 0;
 #else

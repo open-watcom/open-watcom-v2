@@ -63,8 +63,8 @@ typedef struct {
     addr48_ptr  addr;
     DWORD       value;
     DWORD       linear;
-    byte        size;
-    byte        dregs;
+    word        size;
+    word        dregs;
 } watch_point;
 
 opcode_type             BreakOpcode;
@@ -73,7 +73,7 @@ static break_point      __huge *brkList;
 static WORD             numBreaks;
 static HGLOBAL          brkHandle;
 static watch_point      WatchPoints[MAX_WATCHES];
-static WORD             WatchCount;
+static int              WatchCount;
 
 opcode_type place_breakpoint( addr48_ptr *addr )
 {
@@ -244,7 +244,7 @@ void ClearDebugRegs( void )
 
 bool IsWatch( void )
 {
-    return( WatchCount != 0 );
+    return( WatchCount > 0 );
 }
 
 static int DRegsCount( void )
@@ -261,7 +261,8 @@ static int DRegsCount( void )
 
 bool SetDebugRegs( void )
 {
-    int         i,dr;
+    int         i;
+    int         dr;
     DWORD       dr7;
     watch_point *wp;
 
@@ -304,32 +305,35 @@ bool CheckWatchPoints( void )
     return( false );
 } /* CheckWatchPoints */
 
+static dword GetLinear( word segment, dword offset )
+{
+    descriptor          desc;
+
+    GetDescriptor( segment, &desc );
+    return( GET_DESC_BASE( desc ) + offset );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
     watch_point         *wp;
-    DWORD               value;
-    DWORD               linear;
-    descriptor          desc;
-    byte                size;
+    dword               linear;
+    size_t              size;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 20000;
-    ret->err = 1;       // fail
+    ret->err = 1;       // failure
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
-        size = acc->size;
-        value = 0;
-        ReadMemory( &acc->watch_addr, &value, size );
-        GetDescriptor( acc->watch_addr.segment, &desc );
-        linear = GET_DESC_BASE( desc ) + acc->watch_addr.offset;
         wp = WatchPoints + WatchCount;
+        wp->size = size = acc->size;
+        wp->value = 0;
+        ReadMemory( &acc->watch_addr, &wp->value, size );
+        linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
-        wp->size = size;
-        wp->value = value;
         wp->linear = linear & ~( size - 1 );
         wp->dregs = ( linear & ( size - 1 ) ) ? 2 : 1;
         WatchCount++;

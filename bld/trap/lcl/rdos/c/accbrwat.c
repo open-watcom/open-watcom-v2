@@ -36,6 +36,7 @@
 #include "stdrdos.h"
 #include "debug.h"
 
+
 trap_retval TRAP_CORE( Set_break )( void )
 {
     set_break_req   *acc;
@@ -72,7 +73,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = 0;
+    ret->err = 0;   // OK
     obj = GetCurrentDebug();
     if( obj != NULL ) {
         AddWatch( obj, acc->watch_addr.segment, acc->watch_addr.offset, acc->size );

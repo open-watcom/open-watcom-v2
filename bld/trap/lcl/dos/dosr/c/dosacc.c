@@ -181,7 +181,7 @@ FLAGS                   Flags;
 #define MAX_WATCHES     32
 
 static watch_point      WatchPoints[MAX_WATCHES];
-static short            WatchCount;
+static int              WatchCount;
 
 static bool             IsBreak[4];
 
@@ -750,7 +750,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 200;
-    ret->err = 1;       // failed
+    ret->err = 1;       // failure
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
         wp = WatchPoints + WatchCount;
@@ -853,7 +853,7 @@ static bool SetDebugRegs( void )
     dr7 = 0;
     if( DRegsCount() <= 4 ) {
         dr7 = /* DR7_GE | */ DR7_LE;
-        for( wp = WatchPoints, i = WatchCount; i-- > 0 ; wp++ ) {
+        for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
             size = wp->size;
             linear = wp->linear;
             type = DRLen( size ) | DR7_BWR;
@@ -927,7 +927,7 @@ static trap_elen ProgRun( bool step )
         TaskRegs.EFL |= FLG_T;
     } else  {
         watch386 = SetDebugRegs();
-        if( WatchCount != 0 && !watch386 ) {
+        if( WatchCount > 0 && !watch386 ) {
             if( Flags & F_DRsOn ) {
                 SetWatch386( WatchCount, WatchPoints );
             } else {

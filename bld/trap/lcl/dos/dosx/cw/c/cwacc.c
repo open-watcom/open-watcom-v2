@@ -833,7 +833,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = 0;
+    ret->err = 0;   // OK
     if( acc->size == 1 || acc->size == 2 || acc->size == 4 ) {
         for( hbp = HBRKTable, i = 4; i-- > 0; hbp++ ) {
             if( !hbp->inuse ) {
@@ -891,7 +891,7 @@ trap_retval TRAP_CORE( Clear_watch )( void )
             }
         }
     }
-    if( WatchCount ) {
+    if( WatchCount > 0 ) {
         for( wp = WatchPoints, i = MAX_WATCHES; i-- > 0; wp++ ) {
             if( wp->inuse ) {
                 if( wp->address == watch_addr ) {

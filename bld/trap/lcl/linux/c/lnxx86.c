@@ -44,19 +44,19 @@
 #include "x86cpu.h"
 
 
-#define MAX_WATCHES     32
+#define MAX_WATCHES 32
 
 /* Structure used internally to set hardware watch points */
 typedef struct {
-    addr48_ptr  loc;
+    addr48_ptr  addr;
     u_long      value;
     u_long      linear;
-    u_short     len;
-    u_short     dregs;
+    word        size;
+    word        dregs;
 } watch_point;
 
-static watch_point      WatchPoints[MAX_WATCHES];
-static int              WatchCount = 0;
+static watch_point  WatchPoints[MAX_WATCHES];
+static int          WatchCount = 0;
 
 static void ReadCPU( struct x86_cpu *r )
 {
@@ -248,11 +248,11 @@ int SetDebugRegs( void )
         return( false );
     dr  = 0;
     dr7 = 0;
-    for( i = 0, wp = WatchPoints; i < WatchCount; i++, wp++ ) {
-        dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        dr7 |= SetDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
         dr++;
         if( wp->dregs == 2 ) {
-            dr7 |= SetDRn( dr, wp->linear+wp->len, DRLen( wp->len ) | DR7_BWR );
+            dr7 |= SetDRn( dr, wp->linear + wp->size, DRLen( wp->size ) | DR7_BWR );
             dr++;
         }
     }
@@ -260,15 +260,23 @@ int SetDebugRegs( void )
     return( true );
 }
 
+static dword GetLinear( addr_seg segment, addr48_off offset )
+{
+    (void)segment;
+
+    return( offset );
+}
+
 #if 0
 int CheckWatchPoints( void )
 {
-    u_long  value;
-    int     i;
+    u_long      value;
+    int         i;
+    watch_point *wp;
 
-    for( i = 0; i < WatchCount; i++ ) {
-        ReadMemory( pid, WatchPoints[i].loc.offset, &value, sizeof( value ) );
-        if( value != WatchPoints[i].value ) {
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        ReadMemory( pid, wp->addr.offset, &value, wp->size );
+        if( value != wp->value ) {
             return( true );
         }
     }
@@ -280,26 +288,26 @@ trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
-    u_long          value;
-    watch_point     *curr;
+    watch_point     *wp;
     u_long          linear;
+    size_t          size;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 100000;
-    ret->err = 1;
+    ret->err = 1;       // failure
     if( WatchCount < MAX_WATCHES ) {
-        ret->err = 0;
-        curr = WatchPoints + WatchCount;
-        curr->loc.segment = acc->watch_addr.segment;
-        curr->loc.offset = acc->watch_addr.offset;
-        ReadMemory( pid, acc->watch_addr.offset, &value, sizeof( value ) );
-        curr->value = value;
-        curr->len = acc->size;
+        ret->err = 0;   // OK
+        wp = WatchPoints + WatchCount;
+        wp->size = size = acc->size;
+        wp->value = 0;
+        ReadMemory( pid, acc->watch_addr.offset, &wp->value, size );
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        linear = GetLinear( acc->watch_addr.segment, acc->watch_addr.offset );
+        wp->linear = linear & ~( size - 1 );
+        wp->dregs = (linear & ( size - 1 )) ? 2 : 1;
         WatchCount++;
-        curr->linear = linear = acc->watch_addr.offset;
-        curr->linear &= ~(curr->len-1);
-        curr->dregs = (linear & ( curr->len - 1 )) ? 2 : 1;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
         }
@@ -317,10 +325,10 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     acc = GetInPtr( 0 );
     dst = src = WatchPoints;
     for( i = 0; i < WatchCount; i++ ) {
-        if( src->loc.segment != acc->watch_addr.segment
-                || src->loc.offset != acc->watch_addr.offset ) {
-            dst->loc.offset = src->loc.offset;
-            dst->loc.segment = src->loc.segment;
+        if( src->addr.segment != acc->watch_addr.segment
+                || src->addr.offset != acc->watch_addr.offset ) {
+            dst->addr.offset = src->addr.offset;
+            dst->addr.segment = src->addr.segment;
             dst->value = src->value;
             dst++;
         }

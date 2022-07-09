@@ -41,11 +41,11 @@
 #define MAX_WATCHES     32
 
 typedef struct {
-    addr48_ptr      loc;
+    addr48_ptr      addr;
     DWORD           value;
     DWORD           value_high; /* Extended for 8 byte breakpoints */
     DWORD           linear;
-    word            len;
+    word            size;
     word            dregs;
 }           watch_point;
 
@@ -213,7 +213,7 @@ void ClearDebugRegs( void )
 
 bool IsWatch( void )
 {
-    return( WatchCount != 0 );
+    return( WatchCount > 0 );
 }
 
 static int DRegsCount( void )
@@ -261,26 +261,26 @@ bool SetDebugRegs( void )
 
         dr  = 0;
         dr7 = 0;
-        for( i = 0, wp = WatchPoints; i < WatchCount; i++, wp++ ) {
+        for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
 
             DWORD   boundary_check = wp->linear & 0x3;
 
             switch( wp->dregs ) {
             case 1: /* If we only need one register, then we are 1 byte anywhere, 2 bytes on word boundary, or 4 bytes on dword boundary */
                 {
-                    dr7 |= setDRn( dr+0, wp->linear, DRLen( wp->len ) | DR7_BWR );
+                    dr7 |= setDRn( dr+0, wp->linear, DRLen( wp->size ) | DR7_BWR );
                     dr++;
                 }
                 break;
             case 2: /* If we need 2 registers, then ... */
                 {
-                    if( wp->len == 2 ) {        /* For a 2 byte write, this is two 1's at any address */
+                    if( wp->size == 2 ) {        /* For a 2 byte write, this is two 1's at any address */
                         dr7 |= setDRn( dr+0, wp->linear+0, DRLen( 1 ) | DR7_BWR );
                         dr7 |= setDRn( dr+1, wp->linear+1, DRLen( 1 ) | DR7_BWR );
-                    } else if( wp->len == 4 ) { /* For a 4 byte write, this must be two 2's at a word boundary */
+                    } else if( wp->size == 4 ) { /* For a 4 byte write, this must be two 2's at a word boundary */
                         dr7 |= setDRn( dr+0, wp->linear+0, DRLen( 2 ) | DR7_BWR );
                         dr7 |= setDRn( dr+1, wp->linear+2, DRLen( 2 ) | DR7_BWR );
-                    } else if( wp->len == 8 ) { /* For an 8 byte write, this must be two 4's at a dword boundary */
+                    } else if( wp->size == 8 ) { /* For an 8 byte write, this must be two 4's at a dword boundary */
                         dr7 |= setDRn( dr+0, wp->linear+0, DRLen( 4 ) | DR7_BWR );
                         dr7 |= setDRn( dr+1, wp->linear+4, DRLen( 4 ) | DR7_BWR );
                     }
@@ -289,11 +289,11 @@ bool SetDebugRegs( void )
                 break;
             case 3: /* If we need 3 registers, then must be 4 bytes or larger, and ... */
                 {
-                    if( wp->len == 4 ) {        /* For a 4 byte write, this must be 1,2,1 at a odd boundary */
+                    if( wp->size == 4 ) {        /* For a 4 byte write, this must be 1,2,1 at a odd boundary */
                         dr7 |= setDRn( dr+0, wp->linear+0, DRLen( 1 ) | DR7_BWR );
                         dr7 |= setDRn( dr+1, wp->linear+1, DRLen( 2 ) | DR7_BWR );
                         dr7 |= setDRn( dr+2, wp->linear+3, DRLen( 1 ) | DR7_BWR );
-                    } else if( wp->len == 8 ) { /* For an 8 byte write, this must be 2,4,2 at a word boundary */
+                    } else if( wp->size == 8 ) { /* For an 8 byte write, this must be 2,4,2 at a word boundary */
                         dr7 |= setDRn( dr+0, wp->linear+0, DRLen( 2 ) | DR7_BWR );
                         dr7 |= setDRn( dr+1, wp->linear+2, DRLen( 4 ) | DR7_BWR );
                         dr7 |= setDRn( dr+2, wp->linear+6, DRLen( 2 ) | DR7_BWR );
@@ -330,8 +330,8 @@ bool SetDebugRegs( void )
 
         dr  = 0;
         dr7 = 0;
-        for( i = 0, wp = WatchPoints; i < WatchCount; i++, wp++ ) {
-            dr7 |= setDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
+        for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+            dr7 |= setDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
             dr++;
             /* This watchpoint must cross dword boundaries or be larger than 4 bytes    */
             /* as 2 byte breakpoints must be on a word boundary and 4 byte ones on a    */
@@ -341,14 +341,14 @@ bool SetDebugRegs( void )
             /* The macro DRLen supports 1, 2, 4 bytes ( >4 == 4 ) for BPlen             */
             if( wp->dregs > 1 ) {
                 /* Must be 2, 4 or 8 to cross a boundary */
-                DWORD   additive = ( wp->len == 8 ) ? 4 : wp->len;
-                dr7 |= setDRn( dr, wp->linear + additive, DRLen( wp->len ) | DR7_BWR );
+                DWORD   additive = ( wp->size == 8 ) ? 4 : wp->size;
+                dr7 |= setDRn( dr, wp->linear + additive, DRLen( wp->size ) | DR7_BWR );
                 dr++;
             }
             /* This watchpoint must cross dword boundaries AND be larger than 4B (8!)  */
             if( wp->dregs > 2 ) {
-                DWORD   additive = wp->len;
-                dr7 |= setDRn( dr, wp->linear + additive, DRLen( wp->len ) | DR7_BWR );
+                DWORD   additive = wp->size;
+                dr7 |= setDRn( dr, wp->linear + additive, DRLen( wp->size ) | DR7_BWR );
                 dr++;
             }
         }
@@ -367,23 +367,27 @@ bool SetDebugRegs( void )
  */
 bool CheckWatchPoints( void )
 {
-    DWORD   value;
-    int     i;
+    DWORD       value;
+    int         i;
+    watch_point *wp;
+    size_t      size;
 
-    for( i = 0; i < WatchCount; i++ ) {
-        ReadMemory( &WatchPoints[i].loc, &value, sizeof( value ) );
-        if( value != WatchPoints[i].value ) {
-            return( true );
-        }
-        if( WatchPoints[i].len == 8 ) {
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        size = wp->size;
+        if( size == 8 ) {
             addr48_ptr  addr;
 
-            addr.segment = WatchPoints[i].loc.segment;
-            addr.offset = WatchPoints[i].loc.offset + sizeof( value );
+            addr.segment = wp->addr.segment;
+            addr.offset = wp->addr.offset + sizeof( value );
             ReadMemory( &addr, &value, sizeof( value ) );
-            if( value != WatchPoints[i].value_high ) {
+            if( value != wp->value_high ) {
                 return( true );
             }
+            size = 4;
+        }
+        ReadMemory( &wp->addr, &value, size );
+        if( value != wp->value ) {
+            return( true );
         }
     }
     return( false );
@@ -407,7 +411,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req   *acc;
     set_watch_ret   *ret;
     DWORD           value;
-    watch_point     *curr;
+    watch_point     *wp;
 #if defined( MD_x86 )
     DWORD           linear;
     DWORD           lencalc;
@@ -416,12 +420,12 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 100000;
-    ret->err = 1;       // fail
+    ret->err = 1;       // failure
     if( WatchCount < MAX_WATCHES && acc->size <= 8 ) {
         ret->err = 0;   // OK
-        curr = WatchPoints + WatchCount;
-        curr->loc.segment = acc->watch_addr.segment;
-        curr->loc.offset = acc->watch_addr.offset;
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
 
         /*
          *  This always reads 4 bytes. I think it should read min(4, acc->size) and ensure
@@ -429,27 +433,27 @@ trap_retval TRAP_CORE( Set_watch )( void )
          *  otherwise
          */
         ReadMemory( &acc->watch_addr, &value, sizeof( value ) );
-        curr->value = value;
-        curr->len = acc->size;
+        wp->value = value;
+        wp->size = acc->size;
 
         /*
          *  Carl: The debugger main has been extended to request 8 byte breakpoints. This code was originally
          *  only storing the bytes from above - which is probably wrong as well!
          *  Nevertheless, I store the next 4 bytes if the watchpoint is larger than 4 bytes
          */
-        if( curr->len > 4 ) {
+        if( wp->size > 4 ) {
             addr48_ptr  addr;
 
             addr.segment = acc->watch_addr.segment;
             addr.offset = acc->watch_addr.offset + sizeof( value );
             ReadMemory( &addr, &value, sizeof( value ) );
-            curr->value_high = value;
+            wp->value_high = value;
         }
 
         WatchCount++;
 #if defined( MD_x86 )
         linear = GetLinear( &acc->watch_addr );
-        lencalc = curr->len;
+        lencalc = wp->size;
         if( lencalc > 4 )
             lencalc = 4;
 
@@ -458,55 +462,55 @@ trap_retval TRAP_CORE( Set_watch )( void )
         /* 2 byte breakpoint starts at previous word offset -       OK */
         /* 4 byte breakpoint starts at previous dword offset -      not sure */
         /* 8 byte breakpoint starts at previous dword offset -      not sure */
-        curr->linear = linear;
+        wp->linear = linear;
 
         /* If we are supporting exact break on write, then don't adjust the linear address */
         if( !SupportingExactBreakpoints ) {
-            curr->linear &= ~( lencalc - 1 );
+            wp->linear &= ~( lencalc - 1 );
             /* This is checking if we are crossing a DWORD boundary to use 2 registers. We need to do the same if we are a QWord */
-            curr->dregs = ( linear & ( lencalc - 1 ) ) ? 2 : 1;
+            wp->dregs = ( linear & ( lencalc - 1 ) ) ? 2 : 1;
             /* QWord always needs 1 more register */
-            if( curr->len == 8 ) {
-                curr->dregs++;
+            if( wp->size == 8 ) {
+                wp->dregs++;
             }
         } else {
             DWORD   boundary_check = linear & 0x3;
 
-            if( 1 == curr->len ) {
-                curr->dregs = 1;
-            } else if ( 2 == curr->len ) {
-                curr->dregs = 1;
+            if( wp->size == 1 ) {
+                wp->dregs = 1;
+            } else if ( wp->size == 2 ) {
+                wp->dregs = 1;
                 if( boundary_check & 1 ) {
-                    curr->dregs++;      /* Need two 1 byte watches */
+                    wp->dregs++;      /* Need two 1 byte watches */
                 }
-            } else if ( 4 == curr->len ) {
+            } else if ( wp->size == 4 ) {
                 switch( boundary_check ) {
                 case 0:
-                    curr->dregs = 1;    /* 0x00-0x03:   4B@0x00 */
+                    wp->dregs = 1;    /* 0x00-0x03:   4B@0x00 */
                     break;
                 case 1:
-                    curr->dregs = 3;    /* 0x01-0x04:   1B@0x01, 2B@0x02, 1B@0x04 */
+                    wp->dregs = 3;    /* 0x01-0x04:   1B@0x01, 2B@0x02, 1B@0x04 */
                     break;
                 case 2:
-                    curr->dregs = 2;    /* 0x02-0x05:   2B@0x02, 2B@0x04 */
+                    wp->dregs = 2;    /* 0x02-0x05:   2B@0x02, 2B@0x04 */
                     break;
                 case 3:
-                    curr->dregs = 3;    /* 0x03-0x06L   1B@0x03, 2B@0x04, 1B@0x06 */
+                    wp->dregs = 3;    /* 0x03-0x06L   1B@0x03, 2B@0x04, 1B@0x06 */
                     break;
                 }
-            } else if ( 8 == curr->len ) {
+            } else if ( wp->size == 8 ) {
                 switch( boundary_check ) {
                 case 0:
-                    curr->dregs = 2;    /* 0x00-0x07:   4B@0x00, 4B@0x04 */
+                    wp->dregs = 2;    /* 0x00-0x07:   4B@0x00, 4B@0x04 */
                     break;
                 case 1:
-                    curr->dregs = 4;    /* 0x01-0x08:   1B@0x01, 2B@0x02, 4B@0x04, 1B@0x08 */
+                    wp->dregs = 4;    /* 0x01-0x08:   1B@0x01, 2B@0x02, 4B@0x04, 1B@0x08 */
                     break;
                 case 2:
-                    curr->dregs = 3;    /* 0x02-0x09:   2B@0x02, 4B@0x04, 2B@0x08 */
+                    wp->dregs = 3;    /* 0x02-0x09:   2B@0x02, 4B@0x04, 2B@0x08 */
                     break;
                 case 3:
-                    curr->dregs = 4;    /* 0x03-0x0A:   1B@0x03, 4B@0x04, 2B@0x08, 1B@0x0A */
+                    wp->dregs = 4;    /* 0x03-0x0A:   1B@0x03, 4B@0x04, 2B@0x08, 1B@0x0A */
                     break;
                 }
             } else {
@@ -531,9 +535,9 @@ trap_retval TRAP_CORE( Clear_watch )( void )
     acc = GetInPtr( 0 );
     dst = src = WatchPoints;
     for( i = 0; i < WatchCount; i++ ) {
-        if( src->loc.segment != acc->watch_addr.segment || src->loc.offset != acc->watch_addr.offset ) {
-            dst->loc.offset = src->loc.offset;
-            dst->loc.segment = src->loc.segment;
+        if( src->addr.segment != acc->watch_addr.segment || src->addr.offset != acc->watch_addr.offset ) {
+            dst->addr.offset = src->addr.offset;
+            dst->addr.segment = src->addr.segment;
             dst->value = src->value;
             dst->value_high = src->value_high;
             dst++;

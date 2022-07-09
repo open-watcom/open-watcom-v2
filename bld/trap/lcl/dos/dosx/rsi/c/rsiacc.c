@@ -61,16 +61,17 @@
 #include "doscomm.h"
 #include "brkptcpu.h"
 
-#define INT_PRT_SCRN_KEY    0x05
 
-#define IsDPMI          (_d16info.swmode == 0)
+#define INT_PRT_SCRN_KEY    0x05
+#define MAX_WATCHES         32
+#define IsDPMI              (_d16info.swmode == 0)
 
 typedef struct watch_point {
     addr48_ptr          addr;
     dword               value;
     dword               linear;
-    word                dregs;
     word                size;
+    word                dregs;
     long                handle;
     long                handle2;
 } watch_point;
@@ -100,8 +101,6 @@ static unsigned         NumObjects;
 static unsigned_8       RealNPXType;
 
 static char             UtilBuff[BUFF_SIZE];
-
-#define MAX_WATCHES     32
 
 static watch_point      WatchPoints[MAX_WATCHES];
 static int              WatchCount;
@@ -572,7 +571,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 5000;
-    ret->err = 1;       // failed
+    ret->err = 1;       // failure
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
         wp = WatchPoints + WatchCount;
@@ -680,7 +679,7 @@ static bool SetDebugRegs( void )
             WatchPoints[i].handle = -1;
             WatchPoints[i].handle2 = -1;
         }
-        for( wp = WatchPoints, i = WatchCount; i-- > 0 ; wp++ ) {
+        for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
             linear = wp->linear;
             size = wp->size;
             _DBG_Write( "Setting Watch On " );
@@ -716,7 +715,7 @@ static bool SetDebugRegs( void )
 
         dr = 0;
         dr7 = /* DR7_GE | */ DR7_LE;
-        for( wp = WatchPoints, i = WatchCount; i-- > 0 ; wp++ ) {
+        for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
             linear = wp->linear;
             size = wp->size;
             type = DRLen( size ) | DR7_BWR;
