@@ -74,33 +74,33 @@ typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
     dword       linear;
-    word        dregs;
     word        size;
+    word        dregs;
 } watch_point;
 
 typedef struct {
-        long    have_vmm;
-        long    nconvpg;
-        long    nbimpg;
-        long    nextpg;
-        long    extlim;
-        long    aphyseg;
-        long    alockpg;
-        long    sysphyspg;
-        long    nfreepg;
-        long    beglinaddr;
-        long    endlinaddr;
-        long    secsincelastvmstat;
-        long    pgfaults;
-        long    pgswritten;
-        long    pgsreclaimed;
-        long    vmpages;
-        long    pgfilesize;
-        long    emspages;
-        long    mincomvmem;
-        long    maxpagefile;
-        long    vmflags;
-        long    reserved[4];
+    long    have_vmm;
+    long    nconvpg;
+    long    nbimpg;
+    long    nextpg;
+    long    extlim;
+    long    aphyseg;
+    long    alockpg;
+    long    sysphyspg;
+    long    nfreepg;
+    long    beglinaddr;
+    long    endlinaddr;
+    long    secsincelastvmstat;
+    long    pgfaults;
+    long    pgswritten;
+    long    pgsreclaimed;
+    long    vmpages;
+    long    pgfilesize;
+    long    emspages;
+    long    mincomvmem;
+    long    maxpagefile;
+    long    vmflags;
+    long    reserved[4];
 } memory_stats;
 
 #pragma aux (metaware)  _dil_global;
@@ -125,7 +125,7 @@ static bool             HavePSP;
 static unsigned long    ObjOffReloc[MAX_OBJECTS];
 
 static watch_point      WatchPoints[MAX_WATCHES];
-static int              WatchCount;
+static int              WatchCount = 0;
 
 static opcode_type      BreakOpcode;
 
@@ -885,12 +885,24 @@ static bool SetDebugRegs( void )
     return( true );
 }
 
+static bool CheckWatchPoints( void )
+{
+    int         i;
+    dword       value;
+    watch_point *wp;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
+        ReadMemory( &wp->addr, &value, wp->size );
+        if( value != wp->value ) {
+            return( true );
+        }
+    }
+    return( false );
+}
 
 static unsigned ProgRun( bool step )
 {
-    watch_point *wp;
-    int         i;
-    dword       value;
     prog_go_ret *ret;
 
     ret = GetOutPtr( 0 );
@@ -902,7 +914,7 @@ static unsigned ProgRun( bool step )
         Mach.msb_eflags |= EF_TF;
         ret->conditions = Execute();
         Mach.msb_eflags &= ~EF_TF;
-    } else if( WatchCount != 0 ) {
+    } else if( WatchCount > 0 ) {
         if( SetDebugRegs() ) {
             ret->conditions = Execute();
             Mach.msb_dreg[6] = 0;
@@ -917,21 +929,16 @@ static unsigned ProgRun( bool step )
                     break;
                 if( ( Mach.msb_dreg[6] & DR6_BS ) == 0 )
                     break;
-                for( wp = WatchPoints, i = WatchCount; i-- > 0; ++wp ) {
-                    value = 0;
-                    ReadMemory( &wp->addr, &value, wp->size );
-                    if( value != wp->value ) {
-                        ret->conditions = COND_WATCH;
-                        Mach.msb_eflags &= ~EF_TF;
-                        goto leave;
-                    }
+                if( CheckWatchPoints() ) {
+                    ret->conditions = COND_WATCH;
+                    Mach.msb_eflags &= ~EF_TF;
+                    break;
                 }
             }
         }
     } else {
         ret->conditions = Execute();
     }
-leave:
     ret->conditions |= COND_CONFIG;
     ret->program_counter.offset = Mach.msb_eip;
     ret->program_counter.segment = Mach.msb_cs;
