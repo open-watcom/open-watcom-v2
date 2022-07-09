@@ -94,7 +94,7 @@ static ULONG            ExceptLinear;
 static UCHAR            TypeProcess;
 static BOOL             Is32Bit;
 static watch_point      WatchPoints[MAX_WATCHES];
-static short            WatchCount = 0;
+static int              WatchCount = 0;
 static unsigned_16      lastCS;
 static unsigned_16      lastSS;
 static unsigned_32      lastEIP;
@@ -1168,6 +1168,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     set_watch_req       *acc;
     set_watch_ret       *ret;
     dword               buff;
+    watch_point         *wp;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1175,11 +1176,12 @@ trap_retval TRAP_CORE( Set_watch )( void )
     ret->err = 1;       // fail
     if( WatchCount < MAX_WATCHES ) { // nyi - artificial limit (32 should be lots)
         ret->err = 0;   // OK
-        WatchPoints[WatchCount].addr.segment = acc->watch_addr.segment;
-        WatchPoints[WatchCount].addr.offset = acc->watch_addr.offset;
-        WatchPoints[WatchCount].len = acc->size;
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->len = acc->size;
         ReadBuffer( (byte *)&buff, acc->watch_addr.segment, acc->watch_addr.offset, sizeof( dword ) );
-        WatchPoints[WatchCount].value = buff;
+        wp->value = buff;
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
@@ -1303,22 +1305,32 @@ static bool setDebugRegs( void )
     return( TRUE );
 }
 
+static bool CheckWatchPoints( void )
+{
+    watch_point     *wp;
+    int             i;
+    dword           memval;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        ReadRegs( &save );
+        ReadBuffer( (byte *)&memval, wp->addr.segment, wp->addr.offset, sizeof( memval ) );
+        WriteRegs( &save );
+        if( wp->value != memval ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
 static void watchSingleStep( void )
 {
-    dos_debug           save;
-    dword               memval;
-    int                 i;
+    dos_debug       save;
 
     DebugExecute( &Buff, DBG_C_SStep, TRUE );
     while( Buff.Cmd == DBG_N_SStep ) {
-        for( i = 0; i < WatchCount; ++i ) {
-            ReadRegs( &save );
-            ReadBuffer( (byte *)&memval, WatchPoints[i].addr.segment, WatchPoints[i].addr.offset, sizeof( memval ) );
-            WriteRegs( &save );
-            if( WatchPoints[i].value != memval ) {
-                Buff.Cmd = DBG_N_Watchpoint;
-                return;
-            }
+        if( CheckWatchPoints() ) {
+            Buff.Cmd = DBG_N_Watchpoint;
+            break;
         }
         DebugExecute( &Buff, DBG_C_SStep, TRUE );
     }

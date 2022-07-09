@@ -64,8 +64,8 @@ typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
     dword       linear;
-    word        dregs;
     word        size;
+    word        dregs;
 } watch_point;
 
 extern void StackCheck( void );
@@ -674,7 +674,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->multiplier = 20000;
-    ret->err = 1;       // failed
+    ret->err = 1;       // failure
     if( WatchCount < MAX_WATCHES ) {
         ret->err = 0;   // OK
         wp = WatchPoints + WatchCount;
@@ -779,13 +779,26 @@ static bool SetDebugRegs( void )
     return( true );
 }
 
+static bool CheckWatchPoints( void )
+{
+    int         i;
+    dword       value;
+    watch_point *wp;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
+        ReadMemory( &wp->addr, &value, wp->size );
+        if( value != wp->value ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
 static unsigned ProgRun( bool step )
 {
     long        trace;
-    int         i;
-    dword       value;
     prog_go_ret *ret;
-    watch_point *wp;
 
     _DBG1(( "ProgRun" ));
     ret = GetOutPtr( 0 );
@@ -794,7 +807,7 @@ static unsigned ProgRun( bool step )
     Regs.EFL |= trace;
     if( AtEnd ) {
         _DBG2(("No RunProg"));
-    } else if( !trace && WatchCount != 0 ) {
+    } else if( !trace && WatchCount > 0 ) {
         _DBG2(("All that trace goop"));
         if( SetDebugRegs() ) {
             MyRunProg();
@@ -810,13 +823,8 @@ static unsigned ProgRun( bool step )
                     break;
                 if( ( SysRegs.dr6 & DR6_BS ) == 0 )
                     break;
-                for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-                    value = 0;
-                    ReadMemory( &wp->addr, &value, wp->size );
-                    if( value != wp->value ) {
-                        ret->conditions |= COND_WATCH;
-                        goto leave;
-                    }
+                if( CheckWatchPoints() ) {
+                    break;
                 }
             }
         }
@@ -840,7 +848,6 @@ static unsigned ProgRun( bool step )
     } else {
         ret->conditions |= COND_EXCEPTION;
     }
-leave:
     Regs.EFL &= ~trace;
     ret->program_counter.offset = Regs.EIP;
     ret->program_counter.segment = Regs.CS;

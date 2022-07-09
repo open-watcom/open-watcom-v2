@@ -1405,23 +1405,31 @@ static bool setDebugRegs( void )
     return( TRUE );
 }
 
+static bool CheckWatchPoints( void )
+{
+    uDB_t           save;
+    watch_point     *wp;
+    dword           memval;
+    int             i;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        ReadRegs( &save );
+        ReadBuffer( (char *)&memval, wp->addr.segment, wp->addr.offset, sizeof( memval ) );
+        WriteRegs( &save );
+        if( WatchPoints[i].value != memval ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
 static void watchSingleStep(void)
 {
-    uDB_t               save;
-    dword               memval;
-    int                 i;
-
     DebugExecute( &Buff, DBG_C_SStep, TRUE );
     while( Buff.Cmd == DBG_N_SStep ) {
-        for (i = 0; i < WatchCount; ++i) {
-            ReadRegs( &save );
-            ReadBuffer( (char *)&memval, WatchPoints[i].addr.segment,
-                       WatchPoints[i].addr.offset, sizeof( memval ) );
-            WriteRegs( &save );
-            if( WatchPoints[i].value != memval ) {
-                Buff.Cmd = DBG_N_Watchpoint;
-                return;
-            }
+        if( CheckWatchPoints() ) {
+            Buff.Cmd = DBG_N_Watchpoint;
+            break;
         }
         DebugExecute( &Buff, DBG_C_SStep, TRUE );
     }

@@ -197,7 +197,7 @@ static dreg_info            DR[NUM_DREG];
 static unsigned_8           RealNPXType;
 
 static watch_point          WatchPoints[MAX_WATCHES];
-static int                  WatchCount;
+static int                  WatchCount = 0;
 
 static char                 *LoadName;
 static unsigned             LoadLen;
@@ -1509,7 +1509,7 @@ static bool SetDebugRegs( void )
     unsigned    address;
     watch_point *wp;
 
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         address = wp->addr.offset;
         _DBG_DR(( "offset = %8x, addr=%8x\r\n", wp->addr.offset, address ));
         if( !SetDR( wp->linear, wp->len ) )
@@ -1523,11 +1523,24 @@ static bool SetDebugRegs( void )
     return( TRUE );
 }
 
-static trap_elen ProgRun( bool step )
+static bool CheckWatchPoints( void )
 {
-    watch_point *wp;
     int         i;
     dword       value;
+    watch_point *wp;
+
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
+        value = 0;
+        ReadMemory( &wp->addr, &value, wp->size );
+        if( value != wp->value ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
+static trap_elen ProgRun( bool step )
+{
     prog_go_ret *ret;
 
     ret = GetOutPtr( 0 );
@@ -1539,7 +1552,7 @@ static trap_elen ProgRun( bool step )
         TrapInt1 = TRUE;
         ret->conditions |= Execute( MSB );
         TrapInt1 = FALSE;
-    } else if( WatchCount != 0 ) {
+    } else if( WatchCount > 0 ) {
         if( SetDebugRegs() ) {
             TrapInt1 = TRUE;
             ret->conditions |= Execute( NULL );
@@ -1556,20 +1569,15 @@ static trap_elen ProgRun( bool step )
                     break;
                 if( !( MSB->errnum & DR6_BS ) )
                     break;
-                for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                    value = 0;
-                    ReadMemory( &wp->addr, &value, wp->len );
-                    if( value != wp->value ) {
-                        ret->conditions |= COND_WATCH;
-                        goto leave;
-                    }
+                if( CheckWatchPoints() ) {
+                    ret->conditions |= COND_WATCH;
+                    break;
                 }
             }
         }
     } else {
         ret->conditions |= Execute( NULL );
     }
-leave:
     if( MSB == NULL ) {
         ret->program_counter.offset = 0;
         ret->program_counter.segment = 0;
