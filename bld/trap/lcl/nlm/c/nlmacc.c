@@ -1509,7 +1509,7 @@ static bool SetDebugRegs( void )
     unsigned    address;
     watch_point *wp;
 
-    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
+    for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         address = wp->addr.offset;
         _DBG_DR(( "offset = %8x, addr=%8x\r\n", wp->addr.offset, address ));
         if( !SetDR( wp->linear, wp->len ) )
@@ -1541,9 +1541,6 @@ static bool CheckWatchPoints( void )
 
 static trap_elen ProgRun( bool step )
 {
-    watch_point *wp;
-    int         i;
-    dword       value;
     prog_go_ret *ret;
 
     ret = GetOutPtr( 0 );
@@ -1555,7 +1552,7 @@ static trap_elen ProgRun( bool step )
         TrapInt1 = TRUE;
         ret->conditions |= Execute( MSB );
         TrapInt1 = FALSE;
-    } else if( WatchCount != 0 ) {
+    } else if( WatchCount > 0 ) {
         if( SetDebugRegs() ) {
             TrapInt1 = TRUE;
             ret->conditions |= Execute( NULL );
