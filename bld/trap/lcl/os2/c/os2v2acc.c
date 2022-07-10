@@ -81,7 +81,7 @@
 typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
-    int         len;
+    word        size;
 } watch_point;
 
 ULONG                   ExceptNum;
