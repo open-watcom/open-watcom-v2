@@ -73,6 +73,7 @@ extern PVOID my_alloca( unsigned short );
 typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
+    word        size;
 } watch_point;
 
 typedef void (*excfn)();
@@ -932,6 +933,38 @@ trap_retval TRAP_CORE( Clear_break )( void )
     return( 0 );
 }
 
+static dword ReadWatchData( word segv, dword offv, word size )
+{
+    dword    high_value;
+
+    high_value = 0;
+    Buff.cmd = PT_CMD_READ_MEM_D;
+    Buff.segv = segv;
+    switch( size ) {
+    case 4:
+        Buff.offv = offv + 2;
+        DosPTrace( &Buff );
+        if( Buff.cmd != PT_RET_SUCCESS )
+            break;
+        high_value = Buff.value << 16;
+        Buff.cmd = PT_CMD_READ_MEM_D;
+        /* fall through */
+    case 2:
+        Buff.offv = offv;
+        DosPTrace( &Buff );
+        if( Buff.cmd != PT_RET_SUCCESS )
+            break;
+        return( high_value + Buff.value );
+    case 1:
+        Buff.offv = offv;
+        DosPTrace( &Buff );
+        if( Buff.cmd != PT_RET_SUCCESS )
+            break;
+        return( (byte)Buff.value );
+    }
+    return( 0 );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
@@ -948,8 +981,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp = WatchPoints + WatchCount;
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
-        ReadBuffer( (PBYTE)&buff, acc->watch_addr.segment, acc->watch_addr.offset, sizeof( dword ) );
-        wp->value = buff;
+        wp->value = ReadWatchData( acc->watch_addr.segment, acc->watch_addr.offset, wp->size );
         ++WatchCount;
     }
     return( sizeof( *ret ) );
@@ -1015,9 +1047,9 @@ static trap_conditions MapReturn( trap_conditions conditions )
         return( conditions | COND_LIBRARIES );
     case PT_RET_TRD_TERMINATE:
         return( conditions );
-    // Combined PT_RET_FUNERAL & PT_RET_ERROR with default
-    // case PT_RET_FUNERAL:
-    // case PT_RET_ERROR:
+//    // Combined PT_RET_FUNERAL & PT_RET_ERROR with default
+//    case PT_RET_FUNERAL:
+//    case PT_RET_ERROR:
     default:
         CanExecTask = FALSE;
         AtEnd = TRUE;
@@ -1031,11 +1063,7 @@ static bool CheckWatchPoints( void )
     int             i;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
-        Buff.cmd = PT_CMD_READ_MEM_D;
-        Buff.segv = wp->addr.segment;
-        Buff.offv = wp->addr.offset;
-        DosPTrace( &Buff );
-        if( Buff.value != wp->value ) {
+        if( ReadWatchData( wp->addr.segment, wp->addr.offset, wp->size ) != wp->value ) {
             return( true );
         }
     }
