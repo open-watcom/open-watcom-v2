@@ -36,9 +36,14 @@
 #if defined( _M_I86 )
     #define _FAR    __far
     #define _NEAR   __near
-#elif defined( __DOS__ ) && !defined( __4G__ )
+#elif defined( __DOS__ )
+  #if defined( DOS4G ) || defined( CAUSEWAY )
+    #define _FAR
+    #define _NEAR
+  #elif defined( PHARLAP )
     #define _FAR    __far
     #define _NEAR
+  #endif
 #else
     #define _FAR
     #define _NEAR

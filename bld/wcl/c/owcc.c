@@ -1377,7 +1377,13 @@ void BuildSystemLink( FILE *fp )
             Fputnl( "option exportall", fp );
         }
   #else
+    #if defined( CAUSEWAY )
+        Fputnl( "system causeway", fp );
+    #elif defined( PHARLAP )
+        Fputnl( "system pharlap", fp );
+    #else
         Fputnl( "system dos4g", fp );
+    #endif
   #endif
     /*
      * Alpha Architecture specific

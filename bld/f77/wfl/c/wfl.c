@@ -191,17 +191,16 @@ static struct {
 static  char    *Word;                  // one parameter
 static  char    *CmpOpts[MAX_CMD];      // list of compiler options from Cmd
 static  char    PathBuffer[_MAX_PATH];  // path for compiler or linker executable file
-static  char    *LinkName = NULL;       // name for TempFile if /fd specified
-static  char    *MapName = NULL;        // map file name
-static  char    *IndirName = NULL;      // indirect name
-static  list    *ObjList;               // linked list of object filenames
-static  list    *ObjListLink;           // linked list of object full filenames
-static  list    *FileList;              // list of filenames from Cmd
-static  list    *LibList;               // list of libraries from Cmd
-static  list    *DirectList;            // list of libraries from Cmd
+static  char    *Link_Name = NULL;      // name for TempFile if /fd specified
+static  char    *Map_Name = NULL;       // map file name
+static  char    *Indir_Name = NULL;     // indirect name
+static  list    *Obj_List;              // linked list of object filenames
+static  list    *File_List;             // list of filenames from Cmd
+static  list    *Lib_List;               // list of libraries from Cmd
+static  list    *Directive_List;        // list of libraries from Cmd
 static  char    SwitchChars[3];         // valid switch characters
-static  char    *ExeName = NULL;        // name of executable
-static  char    *ObjName = NULL;        // object file name pattern
+static  char    *Exe_Name = NULL;       // name of executable
+static  char    *Obj_Name = NULL;       // object file name pattern
 static  char    *SystemName = NULL;     // system name
 static  char    *StackSize = NULL;      // stack size
 static  int     DebugFlag;              // debugging flag
@@ -388,6 +387,50 @@ static int     IsOption( const char *cmd, size_t cmd_len, const char *opt )
     return( 1 );
 }
 
+static char *DoQuoted( char *buffer, const char *name, char quote_char )
+/**********************************************************************/
+{
+    char *p;
+    int  quotes;
+
+    p = buffer;
+    if( name != NULL ) {
+        quotes = ( strchr( name, ' ' ) != NULL );
+        if( quotes )
+            *p++ = quote_char;
+        while( (*p = *name) != '\0' ) {
+            ++p;
+            ++name;
+        }
+        if( quotes ) {
+            *p++ = quote_char;
+        }
+    }
+    *p = '\0';
+    return( buffer );
+}
+
+static void AddDirectivePath( const char *directive, const char *path )
+/*********************************************************************/
+{
+    list        *new_item;
+    size_t      len;
+    char        *p;
+
+    len = strlen( directive );
+    new_item = MemAlloc( sizeof( list ) );
+    new_item->next = NULL;
+    p = new_item->item = MemAlloc( len + strlen( path ) + 2 + 1 );
+    memcpy( p, directive, len );
+    p += len;
+    DoQuoted( p, path, '\'' );
+#ifndef __UNIX__
+    while( (p = strchr( p, '/' )) != NULL ) {
+        *p++ = '\\';
+    }
+#endif
+    ListAppend( &Directive_List, new_item );
+}
 
 /*
  * THIS FUNCTION IS NOT RE-ENTRANT!
@@ -574,15 +617,15 @@ static  void    AddName( const char *name )
     pgroup2     pg2;
 
     last_name = NULL;
-    for( curr_name = ObjList; curr_name != NULL; curr_name = curr_name->next ) {
+    for( curr_name = Obj_List; curr_name != NULL; curr_name = curr_name->next ) {
         if( fname_cmp( name, curr_name->item ) == 0 )
             return;
         last_name = curr_name;
     }
-    ListAppendString( &ObjList, name );
-    if( ObjName != NULL ) {
-        // construct full name of object file from ObjName information
-        _splitpath2( ObjName, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+    ListAppendString( &Obj_List, name );
+    if( Obj_Name != NULL ) {
+        // construct full name of object file from Obj_Name information
+        _splitpath2( Obj_Name, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
         if( pg1.ext[0] == '\0' )
             pg1.ext = OBJ_EXT;
         if( ( pg1.fname[0] == '\0' )
@@ -594,10 +637,10 @@ static  void    AddName( const char *name )
         }
         _makepath( path, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
         name = path;
-        MemFree( ObjName );
-        ObjName = NULL;
+        MemFree( Obj_Name );
+        Obj_Name = NULL;
     }
-    ListAppendString( &ObjListLink, name );
+    AddDirectivePath( "file ", name );
 }
 
 static int UnquoteDirective( char *dst, size_t maxlen, const char *src )
@@ -668,7 +711,7 @@ static  int     Parse( int argc, char **argv )
     Flags.map_wanted   = false;
 
     DebugFlag = 0;
-    DirectList = NULL;
+    Directive_List = NULL;
 
     // Skip the first entry - it's the current program's name
     opt_index = 1;
@@ -691,9 +734,10 @@ static  int     Parse( int argc, char **argv )
                 Word[len] = '\0';
                 strlwr( Word );
                 if( strstr( Word, ".lib" ) != NULL ) {
-                    ListAppendString( &LibList, Word );
+                    ListAppendString( &Lib_List, Word );
+                    AddDirectivePath( "library ", Word );
                 } else {
-                    ListAppendString( &FileList, Word );
+                    ListAppendString( &File_List, Word );
                 }
             } else {            // otherwise, do option
                 --len;
@@ -704,39 +748,39 @@ static  int     Parse( int argc, char **argv )
                 case 'f':       // files option
                     switch( tolower( Word[0] ) ) {
                     case 'd':   // name of linker directive file
-                        if( LinkName != NULL )
-                            MemFree( LinkName );
+                        if( Link_Name != NULL )
+                            MemFree( Link_Name );
                         if( Word[1] == '\0' ) {
-                            LinkName = MemStrDup( TEMPFILE );
+                            Link_Name = MemStrDup( TEMPFILE );
                             cmp_option = false;
                         } else if( (Word[1] == '=') || (Word[1] == '#') ) {
                             MakeName( Word, "lnk" );    // add extension
-                            LinkName = MemStrDup( Word + 2 );
+                            Link_Name = MemStrDup( Word + 2 );
                             cmp_option = false;
                         }
                         break;
                     case 'e':   // name of exe file
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
-                            if( ExeName != NULL )
-                                MemFree( ExeName );
-                            ExeName = MemStrDup( Word + 2 );
+                            if( Exe_Name != NULL )
+                                MemFree( Exe_Name );
+                            Exe_Name = MemStrDup( Word + 2 );
                             cmp_option = false;
                         }
                         break;
                     case 'm':   // name of map file
                         Flags.map_wanted = true;
                         if( (Word[1] == '=') || (Word[1] == '#') ) {
-                            if( MapName != NULL )
-                                MemFree( MapName );
-                            MapName = MemStrDup( Word + 2 );
-                            cmp_option = false;
+                            if( Map_Name != NULL )
+                                MemFree( Map_Name );
+                            Map_Name = MemStrDup( Word + 2 );
                         }
+                        cmp_option = false;
                         break;
                     case 'i':
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
-                            if( IndirName != NULL )
-                                MemFree( IndirName );
-                            IndirName = MemStrDup( Word + 2 );
+                            if( Indir_Name != NULL )
+                                MemFree( Indir_Name );
+                            Indir_Name = MemStrDup( Word + 2 );
                             cmp_option = false;
                         }
                         break;
@@ -744,9 +788,9 @@ static  int     Parse( int argc, char **argv )
                         // parse off argument, so we get right filename
                         // in linker command file
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
-                            if( ObjName != NULL )
-                                MemFree( ObjName );
-                            ObjName = MemStrDup( Word + 2 );
+                            if( Obj_Name != NULL )
+                                MemFree( Obj_Name );
+                            Obj_Name = MemStrDup( Word + 2 );
                         }
                         break;
                     default:
@@ -800,7 +844,7 @@ static  int     Parse( int argc, char **argv )
                     break;
                 case '"':
                     UnquoteDirective( Word, MAX_CMD, Word );
-                    ListAppendString( &DirectList, Word );
+                    ListAppendString( &Directive_List, Word );
                     cmp_option = false;
                     break;
 
@@ -870,29 +914,6 @@ static  int     Parse( int argc, char **argv )
     return( 0 );
 }
 
-static char *DoQuoted( char *buffer, const char *name, char quote_char )
-/**********************************************************************/
-{
-    char *p;
-    int  quotes;
-
-    p = buffer;
-    if( name != NULL ) {
-        quotes = ( strchr( name, ' ' ) != NULL );
-        if( quotes )
-            *p++ = quote_char;
-        while( (*p = *name) != '\0' ) {
-            ++p;
-            ++name;
-        }
-        if( quotes ) {
-            *p++ = quote_char;
-        }
-    }
-    *p = '\0';
-    return( buffer );
-}
-
 static void BuildLinkFile( FILE *fp )
 {
     char tmp[_MAX_PATH];
@@ -942,42 +963,28 @@ static void BuildLinkFile( FILE *fp )
     }
 
     fputs( "name ", fp );
-    Fputnl( DoQuoted( tmp, ExeName, '\'' ), fp );
-
-    for( currobj = ObjListLink; currobj != NULL; ) {
-        fputs( "file ", fp );
-        Fputnl( DoQuoted( tmp, currobj->item, '\'' ), fp );
-        currobj = ListItemFree( currobj );
-    }
-
-    for( currobj = LibList; currobj != NULL; ) {
-        fputs( "library ", fp );
-        Fputnl( DoQuoted( tmp, currobj->item, '\'' ), fp );
-        currobj = ListItemFree( currobj );
-    }
-
-    if( Flags.map_wanted ) {
-        if( MapName == NULL || MapName[0] == '\0' ) {
-            Fputnl( "option map", fp );
-        } else {
-            fputs( "option map=", fp );
-            Fputnl( DoQuoted( tmp, MapName, '\'' ), fp );
-        }
-    }
+    Fputnl( DoQuoted( tmp, Exe_Name, '\'' ), fp );
 
     if( StackSize != NULL && StackSize[0] != '\0' ) {
         fputs( "option stack=", fp );
         Fputnl( StackSize, fp );
     }
 
-    for( currobj = DirectList; currobj != NULL; ) {
-        Fputnl( currobj->item, fp );
-        currobj = ListItemFree( currobj );
+    if( Flags.map_wanted ) {
+        if( Map_Name == NULL || Map_Name[0] == '\0' ) {
+            Fputnl( "option map", fp );
+        } else {
+            AddDirectivePath( "option map=", Map_Name );
+        }
     }
 
-    if( IndirName != NULL ) {
-        fputs( "@", fp );
-        Fputnl( DoQuoted( tmp, IndirName, '\'' ), fp );
+    if( Indir_Name != NULL ) {
+        AddDirectivePath( "@", Indir_Name );
+    }
+
+    for( currobj = Directive_List; currobj != NULL; ) {
+        Fputnl( currobj->item, fp );
+        currobj = ListItemFree( currobj );
     }
 }
 
@@ -992,9 +999,8 @@ static  int     CompLink( void )
     list        *currobj;
 
     comp_err = false;
-    ObjList = NULL;
-    ObjListLink = NULL;
-    for( currobj = FileList; currobj != NULL; ) {
+    Obj_List = NULL;
+    for( currobj = File_List; currobj != NULL; ) {
         strcpy( Word, currobj->item );
         MakeName( Word, "for" );    // if no extension, assume ".for"
         file = DoWildCard( Word );
@@ -1015,10 +1021,10 @@ static  int     CompLink( void )
                 }
             }
             _makepath( Word, NULL, NULL, pg.fname, NULL );
-            if( ExeName == NULL || ExeName[0] == '\0' ) {
-                if( ExeName != NULL )
-                    MemFree( ExeName );
-                ExeName = MemStrDup( Word );
+            if( Exe_Name == NULL || Exe_Name[0] == '\0' ) {
+                if( Exe_Name != NULL )
+                    MemFree( Exe_Name );
+                Exe_Name = MemStrDup( Word );
             }
             _makepath( Word, NULL, NULL, pg.fname, OBJ_EXT );
             AddName( Word );            // add obj filename
@@ -1042,26 +1048,28 @@ static  int     CompLink( void )
             rc = 0;
             BuildLinkFile( fp );
             fclose( fp );   // close TempFile
-            if( ( ObjList != NULL ) && !Flags.no_link ) {
+            if( ( Obj_List != NULL ) && !Flags.no_link ) {
                 rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
                 if( rc == 0 && Flags.do_cvpack ) {
-                    rc = tool_exec( TYPE_PACK, ExeName, NULL );
+                    rc = tool_exec( TYPE_PACK, Exe_Name, NULL );
                 }
                 if( rc != 0 ) {
                     rc = 2;    // return 2 to show Temp_File already closed
                 }
             }
-            if( LinkName != NULL ) {
-                if( fname_cmp( LinkName, TEMPFILE ) != 0 ) {
-                    remove( LinkName );
-                    rename( TEMPFILE, LinkName );
+            if( Link_Name != NULL ) {
+                if( fname_cmp( Link_Name, TEMPFILE ) != 0 ) {
+                    remove( Link_Name );
+                    rename( TEMPFILE, Link_Name );
                 }
+                MemFree( Link_Name );
+                Link_Name = NULL;
             } else {
                 remove( TEMPFILE );
             }
         }
     }
-    ListFree( ObjList );
+    ListFree( Obj_List );
     for( i = 0; i < TYPE_MAX; ++i ) {
         if( tools[i].path != NULL ) {
             MemFree( tools[i].path );

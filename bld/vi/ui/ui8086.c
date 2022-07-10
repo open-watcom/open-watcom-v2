@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 static int  saveRow, saveCol;
 int         PageCnt = 0;
 
-#if defined( _M_I86 ) /* || defined( __4G__ ) */
+#if defined( _M_I86 ) /* || defined( DOS4G ) || defined( CAUSEWAY ) */
 static char     colorPalette[MAX_COLOR_REGISTERS + 1];
 #else
 static char     colorPalette[MAX_COLOR_REGISTERS + 1] = {
@@ -223,7 +223,7 @@ static void setColorRegister( vi_color reg, rgb *c )
  */
 static void getColorPalette( char *p )
 {
-//#if defined( _M_I86 ) || defined( __OS2__ ) /* || defined( __4G__ ) */
+//#if defined( _M_I86 ) || defined( __OS2__ ) /* || defined( DOS4G ) || defined( CAUSEWAY ) */
     BIOSGetColorPalette( p );
 //#else
     /* unused parameters */ (void)p;
