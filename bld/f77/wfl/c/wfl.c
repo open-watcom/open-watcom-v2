@@ -557,7 +557,6 @@ static  void    AddName( const char *name, FILE *link_fp )
 {
     list        *curr_name;
     list        *last_name;
-    list        *new_name;
     char        path[_MAX_PATH];
     pgroup2     pg1;
     pgroup2     pg2;
