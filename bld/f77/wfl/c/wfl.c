@@ -125,6 +125,7 @@
 #define MAX_OPTIONS     64
 
 #define IS_OBJ(x)       (x[0] == '.' && fname_cmp(x + 1, OBJ_EXT) == 0)
+#define IS_WS(x)        ((x)==' ' || (x)=='\t')
 
 enum {
     MSG_USAGE_COUNT = 0
@@ -174,6 +175,7 @@ static  struct flags {
     boolbit     default_win  : 1;  // OS/2 default windowed application
 #endif
     boolbit     do_cvpack    : 1;  // do codeview cvpack
+    boolbit     map_wanted   : 1;  // create map file
 } Flags;
 
 static struct {
@@ -189,15 +191,19 @@ static struct {
 static  char    *Word;                  // one parameter
 static  char    *CmpOpts[MAX_CMD];      // list of compiler options from Cmd
 static  char    PathBuffer[_MAX_PATH];  // path for compiler or linker executable file
-static  FILE    *Fp;                    // file pointer for TempFile
 static  char    *LinkName = NULL;       // name for TempFile if /fd specified
+static  char    *MapName = NULL;        // map file name
+static  char    *IndirName = NULL;      // indirect name
 static  list    *ObjList;               // linked list of object filenames
+static  list    *ObjListLink;           // linked list of object full filenames
 static  list    *FileList;              // list of filenames from Cmd
 static  list    *LibList;               // list of libraries from Cmd
+static  list    *DirectList;            // list of libraries from Cmd
 static  char    SwitchChars[3];         // valid switch characters
-static  char    ExeName[_MAX_PATH];     // name of executable
+static  char    *ExeName = NULL;        // name of executable
 static  char    *ObjName = NULL;        // object file name pattern
 static  char    *SystemName = NULL;     // system name
+static  char    *StackSize = NULL;      // stack size
 static  int     DebugFlag;              // debugging flag
 
 static  HANDLE_INFO     hInstance = { 0 };
@@ -331,16 +337,22 @@ static void ListAppend( list **itm_list, list *new )
     }
 }
 
-static void ListFree( list *itm_list )
-/************************************/
+static list *ListItemFree( list *itm_list )
+/*****************************************/
 {
     list    *next;
 
+    next = itm_list->next;
+    MemFree( itm_list->item );
+    MemFree( itm_list );
+    return( next );
+}
+
+static void ListFree( list *itm_list )
+/************************************/
+{
     while( itm_list != NULL ) {
-        next = itm_list->next;
-        MemFree( itm_list->item );
-        MemFree( itm_list );
-        itm_list = next;
+        itm_list = ListItemFree( itm_list );
     }
 }
 
@@ -532,11 +544,11 @@ static int tool_exec( tool_type utl, char *target, char **options )
 }
 
 
-static  void    Fputnl( const char *text, FILE *fptr )
-/****************************************************/
+static  void    Fputnl( const char *text, FILE *fp )
+/**************************************************/
 {
-    fputs( text, fptr );
-    fputs( "\n", fptr );
+    fputs( text, fp );
+    fputs( "\n", fp );
 }
 
 
@@ -552,8 +564,8 @@ static  void    MakeName( char *name, const char *ext )
 }
 
 
-static  void    AddName( const char *name, FILE *link_fp )
-/********************************************************/
+static  void    AddName( const char *name )
+/*****************************************/
 {
     list        *curr_name;
     list        *last_name;
@@ -568,7 +580,6 @@ static  void    AddName( const char *name, FILE *link_fp )
         last_name = curr_name;
     }
     ListAppendString( &ObjList, name );
-    fputs( "file '", link_fp );
     if( ObjName != NULL ) {
         // construct full name of object file from ObjName information
         _splitpath2( ObjName, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
@@ -586,8 +597,50 @@ static  void    AddName( const char *name, FILE *link_fp )
         MemFree( ObjName );
         ObjName = NULL;
     }
-    fputs( name, link_fp );
-    Fputnl( "'", link_fp );
+    ListAppendString( &ObjListLink, name );
+}
+
+static int UnquoteDirective( char *dst, size_t maxlen, const char *src )
+/***********************************************************************
+ * Removes doublequote characters from filename and copies other content
+ * from src to dst. Only maxlen number of characters are copied to dst
+ * including terminating NUL character. Returns value 1 when quotes was
+ * removed from orginal filename, 0 otherwise.
+ */
+{
+    char    string_open = 0;
+    size_t  pos = 0;
+    char    c;
+    int     un_quoted = 0;
+
+    // leave space for NUL terminator
+    maxlen--;
+
+    while( (c = *src++) != '\0' && pos < maxlen ) {
+        if( c == '\\' ) {
+            c = *src++;
+            if( c == '"' ) {
+                un_quoted = 1;
+            } else {
+                *dst++ = '\\';
+                pos++;
+                if( pos >= maxlen ) {
+                    break;
+                }
+            }
+        } else if( c == '"' ) {
+            string_open = !string_open;
+            un_quoted = 1;
+            continue;
+        } else if( !string_open && IS_WS( c ) ) {
+            break;
+        }
+        *dst++ = c;
+        pos++;
+    }
+    *dst = '\0';
+
+    return( un_quoted );
 }
 
 static  int     Parse( int argc, char **argv )
@@ -612,8 +665,10 @@ static  int     Parse( int argc, char **argv )
     Flags.default_win  = false;
 #endif
     Flags.do_cvpack    = false;
+    Flags.map_wanted   = false;
 
     DebugFlag = 0;
+    DirectList = NULL;
 
     // Skip the first entry - it's the current program's name
     opt_index = 1;
@@ -662,26 +717,26 @@ static  int     Parse( int argc, char **argv )
                         break;
                     case 'e':   // name of exe file
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
-                            fputs( "name ", Fp );
-                            Fputnl( Word + 2, Fp );
-                            strcpy( ExeName, Word + 2 );
+                            if( ExeName != NULL )
+                                MemFree( ExeName );
+                            ExeName = MemStrDup( Word + 2 );
                             cmp_option = false;
                         }
                         break;
                     case 'm':   // name of map file
-                        if( Word[1] == '\0' ) {
-                            fputs( "option map\n", Fp );
-                            cmp_option = false;
-                        } else if( (Word[1] == '=') || (Word[1] == '#') ) {
-                            fputs( "option map=", Fp );
-                            Fputnl( Word + 2, Fp );
+                        Flags.map_wanted = true;
+                        if( (Word[1] == '=') || (Word[1] == '#') ) {
+                            if( MapName != NULL )
+                                MemFree( MapName );
+                            MapName = MemStrDup( Word + 2 );
                             cmp_option = false;
                         }
                         break;
                     case 'i':
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
-                            fputs( "@", Fp );
-                            Fputnl( Word + 2, Fp );
+                            if( IndirName != NULL )
+                                MemFree( IndirName );
+                            IndirName = MemStrDup( Word + 2 );
                             cmp_option = false;
                         }
                         break;
@@ -691,7 +746,7 @@ static  int     Parse( int argc, char **argv )
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
                             if( ObjName != NULL )
                                 MemFree( ObjName );
-                            ObjName = MemStrDup( &Word[2] );
+                            ObjName = MemStrDup( Word + 2 );
                         }
                         break;
                     default:
@@ -700,8 +755,9 @@ static  int     Parse( int argc, char **argv )
                     break;
                 case 'k':       // stack size option
                     if( ( Word[0] == '=' ) || ( Word[0] == '#' ) ) {
-                        fputs( "option stack=", Fp );
-                        Fputnl( Word + 1, Fp );
+                        if( StackSize != NULL )
+                            MemFree( StackSize );
+                        StackSize = MemStrDup( Word + 2 );
                         cmp_option = false;
                     }
                     break;
@@ -743,7 +799,8 @@ static  int     Parse( int argc, char **argv )
                     }
                     break;
                 case '"':
-                    Fputnl( &Word[0], Fp );
+                    UnquoteDirective( Word, MAX_CMD, Word );
+                    ListAppendString( &DirectList, Word );
                     cmp_option = false;
                     break;
 
@@ -813,6 +870,117 @@ static  int     Parse( int argc, char **argv )
     return( 0 );
 }
 
+static char *DoQuoted( char *buffer, const char *name, char quote_char )
+/**********************************************************************/
+{
+    char *p;
+    int  quotes;
+
+    p = buffer;
+    if( name != NULL ) {
+        quotes = ( strchr( name, ' ' ) != NULL );
+        if( quotes )
+            *p++ = quote_char;
+        while( (*p = *name) != '\0' ) {
+            ++p;
+            ++name;
+        }
+        if( quotes ) {
+            *p++ = quote_char;
+        }
+    }
+    *p = '\0';
+    return( buffer );
+}
+
+static void BuildLinkFile( FILE *fp )
+{
+    char tmp[_MAX_PATH];
+    list *currobj;
+
+    if( Flags.quiet ) {
+        Fputnl( "option quiet", fp );
+    }
+    fputs( DebugOptions[ DebugFlag ], fp );
+    if( Flags.link_for_sys ) {
+        fputs( "system ", fp );
+        Fputnl( SystemName, fp );
+        MemFree( SystemName );
+        SystemName = NULL;
+    } else {
+#if defined( __QNX__ )
+        Fputnl( "system qnx", fp );
+#elif defined( __LINUX__ )
+        Fputnl( "system linux", fp );
+#elif _CPU == 386
+    #if defined( __OS2__ )
+        Fputnl( "system os2v2", fp );
+    #elif defined( __NT__ )
+        Fputnl( "system nt", fp );
+    #else
+        Fputnl( "system dos4g", fp );
+    #endif
+#elif _CPU == 8086
+        if( Flags.windows ) {
+            Fputnl( "system windows", fp );
+        } else if( Flags.link_for_dos ) {
+            Fputnl( "system dos", fp );
+        } else if( Flags.link_for_os2 ) {
+            Fputnl( "system os2", fp );
+        } else {
+    #if defined( __OS2__ )
+            Fputnl( "system os2", fp );
+    #else
+            Fputnl( "system dos", fp );
+    #endif
+        }
+#elif _CPU == _AXP
+        Fputnl( "system ntaxp", fp );
+#else
+    #error Unknown System
+#endif
+    }
+
+    fputs( "name ", fp );
+    Fputnl( DoQuoted( tmp, ExeName, '\'' ), fp );
+
+    for( currobj = ObjListLink; currobj != NULL; ) {
+        fputs( "file ", fp );
+        Fputnl( DoQuoted( tmp, currobj->item, '\'' ), fp );
+        currobj = ListItemFree( currobj );
+    }
+
+    for( currobj = LibList; currobj != NULL; ) {
+        fputs( "library ", fp );
+        Fputnl( DoQuoted( tmp, currobj->item, '\'' ), fp );
+        currobj = ListItemFree( currobj );
+    }
+
+    if( Flags.map_wanted ) {
+        if( MapName == NULL || MapName[0] == '\0' ) {
+            Fputnl( "option map", fp );
+        } else {
+            fputs( "option map=", fp );
+            Fputnl( DoQuoted( tmp, MapName, '\'' ), fp );
+        }
+    }
+
+    if( StackSize != NULL && StackSize[0] != '\0' ) {
+        fputs( "option stack=", fp );
+        Fputnl( StackSize, fp );
+    }
+
+    for( currobj = DirectList; currobj != NULL; ) {
+        Fputnl( currobj->item, fp );
+        currobj = ListItemFree( currobj );
+    }
+
+    if( IndirName != NULL ) {
+        fputs( "@", fp );
+        Fputnl( DoQuoted( tmp, IndirName, '\'' ), fp );
+    }
+}
+
 static  int     CompLink( void )
 /******************************/
 {
@@ -822,55 +990,11 @@ static  int     CompLink( void )
     pgroup2     pg;
     int         i;
     list        *currobj;
-    list        *nextobj;
-
-    if( Flags.quiet ) {
-        Fputnl( "option quiet", Fp );
-    }
-    fputs( DebugOptions[ DebugFlag ], Fp );
-    if( Flags.link_for_sys ) {
-        fputs( "system ", Fp );
-        Fputnl( SystemName, Fp );
-        MemFree( SystemName );
-        SystemName = NULL;
-    } else {
-#if defined( __QNX__ )
-        Fputnl( "system qnx", Fp );
-#elif defined( __LINUX__ )
-        Fputnl( "system linux", Fp );
-#elif _CPU == 386
-    #if defined( __OS2__ )
-        Fputnl( "system os2v2", Fp );
-    #elif defined( __NT__ )
-        Fputnl( "system nt", Fp );
-    #else
-        Fputnl( "system dos4g", Fp );
-    #endif
-#elif _CPU == 8086
-        if( Flags.windows ) {
-            Fputnl( "system windows", Fp );
-        } else if( Flags.link_for_dos ) {
-            Fputnl( "system dos", Fp );
-        } else if( Flags.link_for_os2 ) {
-            Fputnl( "system os2", Fp );
-        } else {
-    #if defined( __OS2__ )
-            Fputnl( "system os2", Fp );
-    #else
-            Fputnl( "system dos", Fp );
-    #endif
-        }
-#elif _CPU == _AXP
-        Fputnl( "system ntaxp", Fp );
-#else
-    #error Unknown System
-#endif
-
-    }
 
     comp_err = false;
     ObjList = NULL;
-    for( currobj = FileList; currobj != NULL; currobj = nextobj ) {
+    ObjListLink = NULL;
+    for( currobj = FileList; currobj != NULL; ) {
         strcpy( Word, currobj->item );
         MakeName( Word, "for" );    // if no extension, assume ".for"
         file = DoWildCard( Word );
@@ -891,42 +1015,49 @@ static  int     CompLink( void )
                 }
             }
             _makepath( Word, NULL, NULL, pg.fname, NULL );
-            if( ExeName[0] == '\0' ) {
-                fputs( "name '", Fp );
-                fputs( Word, Fp );
-                Fputnl( "'", Fp );
-                strcpy( ExeName, Word );
+            if( ExeName == NULL || ExeName[0] == '\0' ) {
+                if( ExeName != NULL )
+                    MemFree( ExeName );
+                ExeName = MemStrDup( Word );
             }
             _makepath( Word, NULL, NULL, pg.fname, OBJ_EXT );
-            AddName( Word, Fp );        // add obj filename
+            AddName( Word );            // add obj filename
 
             file = DoWildCard( NULL );  // get next filename
         }
         DoWildCardClose();
-        nextobj = currobj->next;
-        MemFree( currobj->item );
-        MemFree( currobj );
+        currobj = ListItemFree( currobj );
     }
-    for( currobj = LibList; currobj != NULL; currobj = nextobj ) {
-        fputs( "library ", Fp );
-        Fputnl( currobj->item, Fp );
-        nextobj = currobj->next;
-        MemFree( currobj->item );
-        MemFree( currobj );
-    }
-    fclose( Fp );   // close TempFile
 
     if( comp_err ) {
         rc = 1;
     } else {
-        rc = 0;
-        if( ( ObjList != NULL ) && !Flags.no_link ) {
-            rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
-            if( rc == 0 && Flags.do_cvpack ) {
-                rc = tool_exec( TYPE_PACK, ExeName, NULL );
+        FILE    *fp;
+
+        fp = fopen( TEMPFILE, "w" );
+        if( fp == NULL ) {
+            printfMsg( CL_ERROR_OPENING_TMP_FILE );
+            rc = 1;
+        } else {
+            rc = 0;
+            BuildLinkFile( fp );
+            fclose( fp );   // close TempFile
+            if( ( ObjList != NULL ) && !Flags.no_link ) {
+                rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
+                if( rc == 0 && Flags.do_cvpack ) {
+                    rc = tool_exec( TYPE_PACK, ExeName, NULL );
+                }
+                if( rc != 0 ) {
+                    rc = 2;    // return 2 to show Temp_File already closed
+                }
             }
-            if( rc != 0 ) {
-                rc = 2;    // return 2 to show Temp_File already closed
+            if( LinkName != NULL ) {
+                if( fname_cmp( LinkName, TEMPFILE ) != 0 ) {
+                    remove( LinkName );
+                    rename( TEMPFILE, LinkName );
+                }
+            } else {
+                remove( TEMPFILE );
             }
         }
     }
@@ -993,30 +1124,12 @@ int     main( int argc, char *argv[] )
         Usage();
         rc = 1;
     } else {
-        Fp = fopen( TEMPFILE, "w" );
-        if( Fp == NULL ) {
-            printfMsg( CL_ERROR_OPENING_TMP_FILE );
-            rc = 1;
-        } else {
-            rc = Parse( argc, argv );
-            if( rc == 0 ) {
-                if( !Flags.quiet ) {
-                    PrtBanner();
-                }
-                rc = CompLink();
+        rc = Parse( argc, argv );
+        if( rc == 0 ) {
+            if( !Flags.quiet ) {
+                PrtBanner();
             }
-            if( rc == 1 )
-                fclose( Fp );
-            if( LinkName != NULL ) {
-                if( fname_cmp( LinkName, TEMPFILE ) != 0 ) {
-                    remove( LinkName );
-                    rename( TEMPFILE, LinkName );
-                }
-                MemFree( LinkName );
-                LinkName = NULL;
-            } else {
-                remove( TEMPFILE );
-            }
+            rc = CompLink();
         }
     }
     MemFree( Word );
