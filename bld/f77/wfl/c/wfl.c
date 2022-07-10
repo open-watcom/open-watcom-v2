@@ -134,7 +134,7 @@ enum {
 };
 
 typedef struct list {
-    char        *filename;
+    char        *item;
     struct list *next;
 } list;
 
@@ -300,17 +300,59 @@ static  void    *MemAlloc( size_t size )
     return( ptr );
 }
 
-static void     AddFile( list **l, const char *fname )
-/****************************************************/
+static  void    MemFree( void *ptr )
+/**********************************/
+{
+    free( ptr );
+}
+
+static char     *MemStrDup( const char *str )
+/*******************************************/
+{
+    size_t      size;
+
+    size = strlen( str ) + 1;
+    return( memcpy( MemAlloc( size ), str, size ) );
+}
+
+static void ListAppend( list **itm_list, list *new )
+/**************************************************/
+{
+    list    *itm;
+
+    if( *itm_list == NULL ) {
+        *itm_list = new;
+    } else {
+        itm = *itm_list;
+        while( itm->next != NULL ) {
+            itm = itm->next;
+        }
+        itm->next = new;
+    }
+}
+
+static void ListFree( list *itm_list )
+/************************************/
+{
+    list    *next;
+
+    while( itm_list != NULL ) {
+        next = itm_list->next;
+        MemFree( itm_list->item );
+        MemFree( itm_list );
+        itm_list = next;
+    }
+}
+
+static void     ListAppendString( list **l, const char *fname )
+/*************************************************************/
 {
     list *p;
 
     p = MemAlloc( sizeof( list ) );
-    p->filename = strdup( fname );
-    p->next = *l;
-    *l = p;
+    p->item = MemStrDup( fname );
+    ListAppend( l, p );
 }
-
 
 static int     IsOption( const char *cmd, size_t cmd_len, const char *opt )
 /*************************************************************************/
@@ -363,11 +405,11 @@ static void DoWildCardClose( void )
 /*********************************/
 {
     if( wildpath != NULL ) {
-        free( wildpath );
+        MemFree( wildpath );
         wildpath = NULL;
     }
     if( wildpattern != NULL ) {
-        free( wildpattern );
+        MemFree( wildpattern );
         wildpattern = NULL;
     }
     if( wild_dirp != NULL ) {
@@ -431,7 +473,7 @@ static char *FindToolPath( tool_type utl )
             ErrorFini();
             exit( 1 );
         }
-        tools[utl].path = strdup( PathBuffer );
+        tools[utl].path = MemStrDup( PathBuffer );
     }
     return( tools[utl].path );
 }
@@ -522,18 +564,11 @@ static  void    AddName( const char *name, FILE *link_fp )
 
     last_name = NULL;
     for( curr_name = ObjList; curr_name != NULL; curr_name = curr_name->next ) {
-        if( fname_cmp( name, curr_name->filename ) == 0 )
+        if( fname_cmp( name, curr_name->item ) == 0 )
             return;
         last_name = curr_name;
     }
-    new_name = MemAlloc( sizeof( struct list ) );
-    if( ObjList == NULL ) {
-        ObjList = new_name;
-    } else {
-        last_name->next = new_name;
-    }
-    new_name->filename = strdup( name );
-    new_name->next = NULL;
+    ListAppendString( &ObjList, name );
     fputs( "file '", link_fp );
     if( ObjName != NULL ) {
         // construct full name of object file from ObjName information
@@ -549,7 +584,7 @@ static  void    AddName( const char *name, FILE *link_fp )
         }
         _makepath( path, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
         name = path;
-        free( ObjName );
+        MemFree( ObjName );
         ObjName = NULL;
     }
     fputs( name, link_fp );
@@ -602,9 +637,9 @@ static  int     Parse( int argc, char **argv )
                 Word[len] = '\0';
                 strlwr( Word );
                 if( strstr( Word, ".lib" ) != NULL ) {
-                    AddFile( &LibList, Word );
+                    ListAppendString( &LibList, Word );
                 } else {
-                    AddFile( &FileList, Word );
+                    ListAppendString( &FileList, Word );
                 }
             } else {            // otherwise, do option
                 --len;
@@ -616,13 +651,13 @@ static  int     Parse( int argc, char **argv )
                     switch( tolower( Word[0] ) ) {
                     case 'd':   // name of linker directive file
                         if( LinkName != NULL )
-                            free( LinkName );
+                            MemFree( LinkName );
                         if( Word[1] == '\0' ) {
-                            LinkName = strdup( TEMPFILE );
+                            LinkName = MemStrDup( TEMPFILE );
                             cmp_option = false;
                         } else if( (Word[1] == '=') || (Word[1] == '#') ) {
                             MakeName( Word, "lnk" );    // add extension
-                            LinkName = strdup( Word + 2 );
+                            LinkName = MemStrDup( Word + 2 );
                             cmp_option = false;
                         }
                         break;
@@ -656,8 +691,8 @@ static  int     Parse( int argc, char **argv )
                         // in linker command file
                         if( ( Word[1] == '=' ) || ( Word[1] == '#' ) ) {
                             if( ObjName != NULL )
-                                free( ObjName );
-                            ObjName = strdup( &Word[2] );
+                                MemFree( ObjName );
+                            ObjName = MemStrDup( &Word[2] );
                         }
                         break;
                     default:
@@ -693,8 +728,8 @@ static  int     Parse( int argc, char **argv )
                     if( ( Word[0] == '=' ) || ( Word[0] == '#' ) ) {
                         Flags.link_for_sys = true;
                         if( SystemName != NULL )
-                            free( SystemName );
-                        SystemName = strdup( &Word[1] );
+                            MemFree( SystemName );
+                        SystemName = MemStrDup( &Word[1] );
                         cmp_option = false;
 #if _CPU == 8086
                     } else if( stricmp( Word, "r" ) == 0 ) {
@@ -797,7 +832,7 @@ static  int     CompLink( void )
     if( Flags.link_for_sys ) {
         fputs( "system ", Fp );
         Fputnl( SystemName, Fp );
-        free( SystemName );
+        MemFree( SystemName );
         SystemName = NULL;
     } else {
 #if defined( __QNX__ )
@@ -837,7 +872,7 @@ static  int     CompLink( void )
     comp_err = false;
     ObjList = NULL;
     for( currobj = FileList; currobj != NULL; currobj = nextobj ) {
-        strcpy( Word, currobj->filename );
+        strcpy( Word, currobj->item );
         MakeName( Word, "for" );    // if no extension, assume ".for"
         file = DoWildCard( Word );
         while( file != NULL ) {     // while more filenames:
@@ -870,15 +905,15 @@ static  int     CompLink( void )
         }
         DoWildCardClose();
         nextobj = currobj->next;
-        free( currobj->filename );
-        free( currobj );
+        MemFree( currobj->item );
+        MemFree( currobj );
     }
     for( currobj = LibList; currobj != NULL; currobj = nextobj ) {
         fputs( "library ", Fp );
-        Fputnl( currobj->filename, Fp );
+        Fputnl( currobj->item, Fp );
         nextobj = currobj->next;
-        free( currobj->filename );
-        free( currobj );
+        MemFree( currobj->item );
+        MemFree( currobj );
     }
     fclose( Fp );   // close TempFile
 
@@ -896,14 +931,10 @@ static  int     CompLink( void )
             }
         }
     }
-    for( currobj = ObjList; currobj != NULL; currobj = nextobj ) {
-        nextobj = currobj->next;
-        free( currobj->filename );
-        free( currobj );
-    }
+    ListFree( ObjList );
     for( i = 0; i < TYPE_MAX; ++i ) {
         if( tools[i].path != NULL ) {
-            free( tools[i].path );
+            MemFree( tools[i].path );
             tools[i].path = NULL;
         }
     }
@@ -982,15 +1013,15 @@ int     main( int argc, char *argv[] )
                     remove( LinkName );
                     rename( TEMPFILE, LinkName );
                 }
-                free( LinkName );
+                MemFree( LinkName );
                 LinkName = NULL;
             } else {
                 remove( TEMPFILE );
             }
         }
     }
-    free( Word );
-    free( cmd );
+    MemFree( Word );
+    MemFree( cmd );
     ErrorFini();
     return( rc );
 }
