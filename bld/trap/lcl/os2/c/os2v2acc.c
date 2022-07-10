@@ -1163,6 +1163,15 @@ static int DRegsCount( void )
     return( needed );
 }
 
+static dword ReadWatchData( word segv, dword offv, word size )
+{
+    dword   value;
+
+    value = 0;
+    ReadBuffer( &value, segv, offv, size );
+    return( value );
+}
+
 trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
@@ -1180,8 +1189,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         wp->addr.segment = acc->watch_addr.segment;
         wp->addr.offset = acc->watch_addr.offset;
         wp->len = acc->size;
-        ReadBuffer( (byte *)&buff, acc->watch_addr.segment, acc->watch_addr.offset, sizeof( dword ) );
-        wp->value = buff;
+        wp->value = ReadWatchData( acc->watch_addr.segment, acc->watch_addr.offset, acc->size );
         ++WatchCount;
         if( DRegsCount() <= 4 ) {
             ret->multiplier |= USING_DEBUG_REG;
@@ -1309,13 +1317,13 @@ static bool CheckWatchPoints( void )
 {
     watch_point     *wp;
     int             i;
-    dword           memval;
+    dword           value;
 
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         ReadRegs( &save );
-        ReadBuffer( (byte *)&memval, wp->addr.segment, wp->addr.offset, sizeof( memval ) );
+        value = ReadWatchData( wp->addr.segment, wp->addr.offset, wp->size );
         WriteRegs( &save );
-        if( wp->value != memval ) {
+        if( wp->value != value ) {
             return( true );
         }
     }
