@@ -16,8 +16,6 @@ inc_dirs = -I.. -I"../../h"
 
 extra_cpp_flags = -D__ENABLE_FNAME_PROCESSING__ $(extra_cppflags)
 
-lflags_dos_386 = system dos4g
-
 extra_l_flags_dos = op stack=20k
 
 exetarg_objs = &
