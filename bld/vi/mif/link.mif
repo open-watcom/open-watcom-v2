@@ -16,11 +16,13 @@ extra_l_flags_qnx = op stack=2k,priv=3
 
 extra_l_flags_dos_i86 = op stack=1k
 
-!ifeq dos_extender pharlap
+!ifeq dos_extender causeway
+#extra_l_flags_dos_386 =
+!else ifeq dos_extender pharlap
 extra_l_flags_dos_386 = runtime maxreal=640k runtime unpriv op offset=4k,stack=10k
 !else ifeq dos_extender dos4g
 #extra_l_flags_dos_386 =
-!else ifeq dos_extender causeway
+!else
 #extra_l_flags_dos_386 =
 !endif
 
