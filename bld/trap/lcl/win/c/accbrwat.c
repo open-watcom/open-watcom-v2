@@ -226,8 +226,8 @@ static DWORD SetDRn( int i, DWORD linear, long type )
 {
     SetDebugRegister( i,&linear );
     return( ( type << DR7_RWLSHIFT(i) )
-          | ( DR7_GEMASK << DR7_GLSHIFT(i) ) | DR7_GE
-          | ( DR7_LEMASK << DR7_GLSHIFT(i) ) | DR7_LE );
+          | ( DR7_GEMASK << DR7_GLSHIFT(i) )
+          | ( DR7_LEMASK << DR7_GLSHIFT(i) ) );
 } /* SetDRn */
 
 void ClearDebugRegs( void )
@@ -273,7 +273,7 @@ bool SetDebugRegs( void )
         return( false );
 
     dr  = 0;
-    dr7 = 0;
+    dr7 = DR7_GE | DR7_LE;
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         dr7 |= SetDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
         dr++;

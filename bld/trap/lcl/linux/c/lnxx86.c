@@ -207,12 +207,12 @@ static void SetDR7( u_long val )
     ptrace( PTRACE_POKEUSER, pid, O_DEBUGREG(7), (void *)val );
 }
 
-static u_long SetDRn( int i, u_long linear, long type )
+static u_long SetDRn( int i, u_long linear, u_long type )
 {
     ptrace( PTRACE_POKEUSER, pid, O_DEBUGREG( i ), (void *)linear );
     return( ( type << DR7_RWLSHIFT( i ) )
-//        | ( DR7_GEMASK << DR7_GLSHIFT( i ) ) | DR7_GE
-          | ( DR7_LEMASK << DR7_GLSHIFT( i ) ) | DR7_LE );
+//        | ( DR7_GEMASK << DR7_GLSHIFT( i ) )
+          | ( DR7_LEMASK << DR7_GLSHIFT( i ) ) );
 }
 
 void ClearDebugRegs( void )
@@ -247,7 +247,7 @@ int SetDebugRegs( void )
     if( DRegsCount() > 4 )
         return( false );
     dr  = 0;
-    dr7 = 0;
+    dr7 =  /* DR7_GE | */ DR7_LE;
     for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
         dr7 |= SetDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
         dr++;

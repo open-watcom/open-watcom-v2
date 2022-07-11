@@ -186,8 +186,8 @@ static DWORD setDRn( int i, DWORD linear, long type )
     MySetThreadContext( ti, &con );
 
     return( ( type << DR7_RWLSHIFT( i ) )
-//        | ( DR7_GEMASK << DR7_GLSHIFT(i) ) | DR7_GE
-          | ( DR7_LEMASK << DR7_GLSHIFT( i ) ) | DR7_LE );
+//        | ( DR7_GEMASK << DR7_GLSHIFT(i) )
+          | ( DR7_LEMASK << DR7_GLSHIFT( i ) ) );
 }
 #endif
 
@@ -248,6 +248,14 @@ bool SetDebugRegs( void )
      *  the linear address is adjusted by size so a short across a dword boundary will screw
      *  up I think!
      */
+
+    if( DRegsCount() > 4 ) {
+        return( false );
+    }
+
+    dr  = 0;
+    dr7 = /* DR7_GE | */ DR7_LE;
+
     if( SupportingExactBreakpoints ) {
         /*
          *  With SupportingExactBreakpoints enabled, the linear address will not have been
@@ -255,12 +263,7 @@ bool SetDebugRegs( void )
          *  3 registers - 1@1, 2@2 and 1@3
          *
          */
-        if( DRegsCount() > 4 ) {
-            return( false );
-        }
 
-        dr  = 0;
-        dr7 = 0;
         for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
 
             DWORD   boundary_check = wp->linear & 0x3;
@@ -324,12 +327,6 @@ bool SetDebugRegs( void )
 
     } else {
 
-        if( DRegsCount() > 4 ) {
-            return( false );
-        }
-
-        dr  = 0;
-        dr7 = 0;
         for( wp = WatchPoints, i = WatchCount; i-- > 0; wp++ ) {
             dr7 |= setDRn( dr, wp->linear, DRLen( wp->size ) | DR7_BWR );
             dr++;
