@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -168,7 +168,7 @@ static  struct flags {
     boolbit     no_link      : 1;  // compile only, no link step
     boolbit     link_for_sys : 1;  // system specified
 #if _CPU == 8086
-    boolbit     windows      : 1;  // Windows application
+    boolbit     link_for_win : 1;  // Windows application
     boolbit     link_for_dos : 1;  // produce DOS executable
     boolbit     link_for_os2 : 1;  // produce OS/2 executable
 #else
@@ -701,7 +701,7 @@ static  int     Parse( int argc, char **argv )
     Flags.link_for_sys = false;
     Flags.quiet        = false;
 #if _CPU == 8086
-    Flags.windows      = false;
+    Flags.link_for_win = false;
     Flags.link_for_dos = false;
     Flags.link_for_os2 = false;
 #else
@@ -727,7 +727,7 @@ static  int     Parse( int argc, char **argv )
             opt = ' ';
         }
 
-        len = strlen(cmd);
+        len = strlen( cmd );
         if( len != 0 ) {
             if( opt == ' ' ) {  // if filename, add to list
                 strncpy( Word, cmd, len );
@@ -829,15 +829,24 @@ static  int     Parse( int argc, char **argv )
                         if( SystemName != NULL )
                             MemFree( SystemName );
                         SystemName = MemStrDup( &Word[1] );
+#if _CPU == 8086
+                        Flags.link_for_dos = false;
+                        Flags.link_for_os2 = false;
+                        Flags.link_for_win = false;
+#endif
                         cmp_option = false;
 #if _CPU == 8086
                     } else if( stricmp( Word, "r" ) == 0 ) {
+                        Flags.link_for_sys = false;
                         Flags.link_for_dos = true;
                         Flags.link_for_os2 = false;
+                        Flags.link_for_win = false;
                         cmp_option = false;
                     } else if( stricmp( Word, "p" ) == 0 ) {
+                        Flags.link_for_sys = false;
                         Flags.link_for_os2 = true;
                         Flags.link_for_dos = false;
+                        Flags.link_for_win = false;
                         cmp_option = false;
 #endif
                     }
@@ -859,7 +868,7 @@ static  int     Parse( int argc, char **argv )
 #endif
 
                 case 'q':
-                    if( IsOption( cmd, len + sizeof( char ), "Quiet" ) ) {
+                    if( IsOption( cmd, len + 1, "Quiet" ) ) {
                         Flags.quiet = true;
                     }
                     break;
@@ -883,14 +892,17 @@ static  int     Parse( int argc, char **argv )
                     }
                     break;
                 case 's':
-                    if( IsOption( cmd, len + sizeof( char ), "SYntax" ) ) {
+                    if( IsOption( cmd, len + 1, "SYntax" ) ) {
                         Flags.no_link = true;
                     }
                     break;
 #if _CPU == 8086
                 case 'w':
-                    if( IsOption( cmd, len + sizeof( char ), "WIndows" ) ) {
-                        Flags.windows = true;
+                    if( IsOption( cmd, len + 1, "WIndows" ) ) {
+                        Flags.link_for_sys = false;
+                        Flags.link_for_dos = false;
+                        Flags.link_for_os2 = false;
+                        Flags.link_for_win = true;
                     }
                     break;
 #endif
@@ -900,7 +912,7 @@ static  int     Parse( int argc, char **argv )
 
                 // don't add linker-specific options to compiler command line
                 if( cmp_option ) {
-                    CmpOpts[cmp_opt_index] = (char *)MemAlloc((3+strlen(Word))*sizeof(char));
+                    CmpOpts[cmp_opt_index] = (char *)MemAlloc( strlen( Word ) + 2 + 1 );
                     CmpOpts[cmp_opt_index][0] = opt;
                     CmpOpts[cmp_opt_index][1] = *cmd;
                     CmpOpts[cmp_opt_index][2] = '\0';
@@ -939,10 +951,18 @@ static void BuildLinkFile( FILE *fp )
     #elif defined( __NT__ )
         Fputnl( "system nt", fp );
     #else
+      #if defined( CAUSEWAY )
+        Fputnl( "system causeway", fp );
+      #elif defined( PHARLAP )
+        Fputnl( "system pharlap", fp );
+      #elif defined( DOS4G )
         Fputnl( "system dos4g", fp );
+      #else
+        Fputnl( "system dos4g", fp );
+      #endif
     #endif
 #elif _CPU == 8086
-        if( Flags.windows ) {
+        if( Flags.link_for_win ) {
             Fputnl( "system windows", fp );
         } else if( Flags.link_for_dos ) {
             Fputnl( "system dos", fp );
