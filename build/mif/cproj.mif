@@ -172,12 +172,10 @@ nomapfile   = 0
 nomapfile   = 0
 !endif
 
-!ifndef dos_extender
 !ifdef $(proj_name)_dos_extender
 dos_extender = $($(proj_name)_dos_extender)
-!else
+!else ifndef dos_extender
 dos_extender = dos4g
-!endif
 !endif
 
 !ifeq debugfmt codeview
