@@ -13,11 +13,11 @@ inc_dirs = -I. -I.. -I"../../h"
 extra_cpp_flags_clcommon = $(trmem_cpp_flags)
 
 !ifeq dos_extender dos4g
-extra_cpp_flags_dos_386 = -DDOS4G
+extra_cpp_flags_dos = -DDOS4G
 !else ifeq dos_extender causeway
-extra_cpp_flags_dos_386 = -DCAUSEWAY
+extra_cpp_flags_dos = -DCAUSEWAY
 !else ifeq dos_extender pharlap
-extra_cpp_flags_dos_386 = -DPHARLAP
+extra_cpp_flags_dos = -DPHARLAP
 !endif
 
 extra_c_flags_owcc     = -I"$(posix_dir)/h"
