@@ -1381,6 +1381,8 @@ void BuildSystemLink( FILE *fp )
         Fputnl( "system causeway", fp );
     #elif defined( PHARLAP )
         Fputnl( "system pharlap", fp );
+    #elif defined( DOS4G )
+        Fputnl( "system dos4g", fp );
     #else
         Fputnl( "system dos4g", fp );
     #endif

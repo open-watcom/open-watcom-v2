@@ -428,7 +428,8 @@ bool KeyboardHit( void )
 
     rc = _BIOSKeyboardHit( ( EditFlags.ExtendedKeyboard ) ? KEYB_EXT : KEYB_STD );
     if( !rc ) {
-#if !( defined( _M_I86 ) || defined( DOS4G ) || defined( CAUSEWAY ) )
+#if defined( _M_I86 ) || defined( DOS4G ) || defined( CAUSEWAY )
+#else   /* defined( PHARLAP ) */
         UpdateDOSClock();
 #endif
         ReleaseVMTimeSlice();

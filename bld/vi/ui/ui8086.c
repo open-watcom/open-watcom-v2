@@ -44,7 +44,7 @@ int         PageCnt = 0;
 
 #if defined( _M_I86 ) /* || defined( DOS4G ) || defined( CAUSEWAY ) */
 static char     colorPalette[MAX_COLOR_REGISTERS + 1];
-#else
+#else   /* defined( PHARLAP ) || defined( DOS4G ) || defined( CAUSEWAY ) */
 static char     colorPalette[MAX_COLOR_REGISTERS + 1] = {
     0, 1, 2, 3, 4, 5, 0x14, 7,
     0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
