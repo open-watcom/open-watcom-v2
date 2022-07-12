@@ -12,10 +12,10 @@ system begin 286
     format dos
 end
 system begin 386
-    option osname='DOS/4G'
+    option osname='CauseWay'
     libpath %WATCOM%\lib386
     libpath %WATCOM%\lib386\dos
-    op stub=wstub.exe
+    op stub=cwstub.exe
     format os2 le
 end
 :elsesegment nt
