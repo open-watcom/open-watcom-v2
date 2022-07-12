@@ -175,7 +175,7 @@ nomapfile   = 0
 !ifdef $(proj_name)_dos_extender
 dos_extender = $($(proj_name)_dos_extender)
 !else ifndef dos_extender
-dos_extender = dos4g
+dos_extender = causeway #dos4g
 !endif
 
 !ifeq debugfmt codeview

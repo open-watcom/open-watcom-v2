@@ -18,8 +18,6 @@ wmake_trmem = 1
 #!endif
 #!endif
 
-#wmake_dos_extender = causeway
-
 !include idedlls.mif
 !include cproj.mif
 !include defrule.mif

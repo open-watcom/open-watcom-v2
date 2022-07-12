@@ -8,8 +8,6 @@ wasm_nofpu = 1
 
 wasm_trmem = 1
 
-#wasm_dos_extender = causeway
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

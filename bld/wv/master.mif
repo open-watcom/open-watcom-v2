@@ -10,6 +10,8 @@ wv_autodepends = .AUTODEPEND
 
 wv_trmem = 1
 
+wv_dos_extender = dos4g	#causeway
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
