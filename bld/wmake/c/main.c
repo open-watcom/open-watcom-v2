@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -299,6 +299,13 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                 continue;
             }
             if( p[3] == NULLCHAR ) {
+#if defined( __DOS__ )
+                if( option == 'e' && ctolower( p[2] ) == 'r' ) {
+                    Glob.redir_err = true;
+                    SET_OPTION( option );
+                    continue;
+                }
+#endif
                 if( option == 'm' && ctolower( p[2] ) == 's' ) {
                     Glob.compat_nmake = true;
                     Glob.nocheck   = true;
@@ -346,6 +353,15 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
         for( option = 'a'; option <= 'z'; ++option ) {
             if( CHK_OPTION( option ) ) {
                 switch( option ) {
+#if defined( __DOS__ )
+                case 'e':
+                    if( Glob.erase ) {
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -e" : "-e" );
+                    } else {
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -er" : "-er" );
+                    }
+                    break;
+#endif
                 case 'f':
                 case 'n':
                     break;

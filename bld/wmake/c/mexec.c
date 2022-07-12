@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1794,23 +1794,17 @@ static size_t write_block( const void *buf, size_t len, FILE *fp, const char *na
     return( writelen );
 }
 
-STATIC bool processCopy( const char *src, const char *dst )
-/*********************************************************/
+STATIC bool oneCopy( const char *src, const char *dst )
+/*****************************************************/
 {
     FILE            *fps;
     FILE            *fpd;
     bool            ok;
     char            buf[FILE_BUFFER_SIZE];
     size_t          len;
-    pgroup2         pg;
     struct stat     st;
     struct utimbuf  dsttimes;
 
-    if( chk_is_dir( dst ) ) {
-        _splitpath2( src, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
-        _makepath( buf, NULL, dst, pg.fname, pg.ext );
-        dst = strcpy( pg.buffer, buf );
-    }
     ok = false;
     fps = open_file( src, "rb" );
     if( fps != NULL ) {
@@ -1839,6 +1833,20 @@ STATIC bool processCopy( const char *src, const char *dst )
         ok &= close_file( fps, src );
     }
     return( ok );
+}
+
+STATIC bool processCopy( const char *src, const char *dst )
+/*********************************************************/
+{
+    char            buf[FILE_BUFFER_SIZE];
+    pgroup2         pg;
+
+    if( chk_is_dir( dst ) ) {
+        _splitpath2( src, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+        _makepath( buf, NULL, dst, pg.fname, pg.ext );
+        dst = strcpy( pg.buffer, buf );
+    }
+    return( oneCopy( src, dst ) );
 }
 
 STATIC bool handleCopy( char *arg )
