@@ -15,6 +15,15 @@ inc_dirs_dos = -I"../../dos"
 inc_dirs = -I. -I"../../h" -I"$(posix_dir)/h"
 
 extra_cpp_flags = -DVICOMP
+!ifeq dos_extender causeway
+extra_cpp_flags_dos_386 = -DCAUSEWAY
+!else ifeq dos_extender pharlap
+extra_cpp_flags_dos_386 = -DPHARLAP
+!else ifeq dos_extender dos4g
+extra_cpp_flags_dos_386 = -DDOS4G
+!else
+extra_cpp_flags_dos_386 = -DDOS4G
+!endif
 
 exetarg_objs = &
     vicomp.obj &
