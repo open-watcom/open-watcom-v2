@@ -1,4 +1,4 @@
-link_sys_dos   = dos4g
+link_sys_dos   = causeway
 link_sys_os2   = os2v2
 
 !ifdef link_sys_$(bld_os)

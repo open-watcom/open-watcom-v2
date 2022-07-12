@@ -44,10 +44,6 @@ extra_cpp_flags += -DDLLS_IMPLEMENTED
 extra_cpp_flags += -DCACHE_STATS
 !endif
 
-!ifdef wmake_causeway
-extra_cpp_flags_dos_386 = -DCAUSEWAY
-!endif
-
 extra_cpp_flags_memory = $(trmem_cpp_flags)
 
 extra_c_flags_i86 = -zt32
@@ -70,8 +66,13 @@ extra_l_flags_dos_i86 = opt stack=16k
 !else
 extra_l_flags_dos_i86 = opt stack=8k
 !endif
-!ifdef wmake_causeway
-extra_l_flags_dos_386 = opt stack=96k lib cwdll.lib
+
+!ifeq dos_extender causeway
+extra_l_flags_dos_386 = opt stack=16k
+!else ifeq dos_extender pharlap
+extra_l_flags_dos_386 = opt stack=8k
+!else ifeq dos_extender dos4g
+extra_l_flags_dos_386 = opt stack=8k
 !else
 extra_l_flags_dos_386 = opt stack=8k
 !endif

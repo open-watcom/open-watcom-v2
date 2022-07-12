@@ -4,6 +4,8 @@ builder_autodepends = .autodepend
 
 builder_trmem = 1
 
+builder_dos_extender = causeway
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
