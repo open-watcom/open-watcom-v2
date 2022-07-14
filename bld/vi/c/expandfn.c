@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +72,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
         // don't change to lowercase any more
         //FileLower( fullmask );
         *argv = _MemReallocList( *argv, argc + 1 );
-        new = MemAlloc( strlen( fullmask ) + 1 );
+        new = _MemAllocArray( char, strlen( fullmask ) + 1 );
         (*argv)[argc++] = new;
         strcpy( new, fullmask );
         return( argc );
@@ -84,7 +84,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
     rc = GetSortDir( fullmask, false );
     if( rc != ERR_NO_ERR ) {
         *argv = _MemReallocList( *argv, argc + 1 );
-        new = MemAlloc( strlen( fullmask ) + 1 );
+        new = _MemAllocArray( char, strlen( fullmask ) + 1 );
         (*argv)[argc++] = new;
         strcpy( new, fullmask );
         return( argc );
@@ -99,7 +99,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
             continue;
         _makepath( pathin, pg.drive, pg.dir, DirFiles[i]->name, NULL );
         *argv = _MemReallocList( *argv, argc + 1 );
-        new = MemAlloc( strlen( pathin ) + 1 );
+        new = _MemAllocArray( char, strlen( pathin ) + 1 );
         (*argv)[argc++] = new;
         strcpy( new, pathin );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -607,6 +607,7 @@ void    FiniMem( void );
 
 #define _MemAllocArray(t,c)     (t *)MemAlloc( (c) * sizeof( t ) )
 #define _MemReallocArray(p,t,c) (t *)MemRealloc( p, (c) * sizeof( t ) )
+#define _MemFreeArray(p)        MemFree( p )
 #define _MemAllocList(c)        (char **)MemAlloc( (c) * sizeof( char * ) )
 #define _MemReallocList(p,c)    (char **)MemRealloc( p, (c) * sizeof( char * ) )
 

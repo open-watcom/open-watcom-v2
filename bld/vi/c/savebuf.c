@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ static void freeSavebuf( savebuf *tmp )
     case SAVEBUF_NOP:
         break;
     case SAVEBUF_LINE:
-        MemFree( tmp->u.data );
+        _MemFreeArray( tmp->u.data );
         break;
     case SAVEBUF_FCBS:
         for( cfcb = tmp->u.fcbs.head; cfcb != NULL; cfcb = tfcb ) {
@@ -317,7 +317,7 @@ vi_rc GetSavebufString( char **data )
         rc = ERR_SAVEBUF_TOO_BIG;
     } else {
         rc = ERR_NO_ERR;
-        *data = p = MemAlloc( len );
+        *data = p = _MemAllocArray( char, len );
         switch( tmp->type ) {
         case SAVEBUF_LINE:
             strcpy( p, tmp->u.data );
@@ -421,7 +421,7 @@ void AddLineToSavebuf( char *data, int scol, int ecol )
     /*
      * get and copy buffer
      */
-    tmp->u.data = MemAlloc( len + 1 );
+    tmp->u.data = _MemAllocArray( char, len + 1 );
     for( i = scol; i <= ecol; i++ ) {
         tmp->u.data[i - scol] = data[i];
     }

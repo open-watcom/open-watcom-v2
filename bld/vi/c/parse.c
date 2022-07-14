@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -356,7 +356,7 @@ char **BuildTokenList( int num, char *list )
             break;
         }
         k = strlen( t );
-        data = MemAlloc( k + 1 );
+        data = _MemAllocArray( char, k + 1 );
         memcpy( data, t, k + 1 );
         arr[i] = data;
         off += k + 1;

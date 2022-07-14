@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,7 @@ vi_rc EnterExMode( void )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    st = MemAlloc( EditVars.MaxLine );
+    st = _MemAllocArray( char, EditVars.MaxLine );
 
     for( ;; ) {
         if( EditFlags.Appending ) {
@@ -94,7 +94,7 @@ vi_rc EnterExMode( void )
         }
         ScreenPage( -1 );
     }
-    MemFree( st );
+    _MemFreeArray( st );
     return( ERR_NO_ERR );
 
 } /* EnterExMode */

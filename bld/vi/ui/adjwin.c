@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -261,7 +261,7 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
          */
         if( done ) {
             swapTmp( tmpImage, Scrn, x1, y1, x2, y2 );
-            MemFree( tmpImage );
+            _MemFreeArray( tmpImage );
             if( *doresize ) {
                 wd->x1 = x1;
                 wd->x2 = x2;

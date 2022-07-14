@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ bool IsMagicCharRegular( char ch )
 vi_rc CurrentRegComp( char *str )
 {
     if( CurrentRegularExpression != NULL ) {
-        MemFree( CurrentRegularExpression );
+        _MemFreeArray( CurrentRegularExpression );
     }
     CurrentRegularExpression = RegComp( str );
     return( RegExpError );
@@ -70,7 +70,7 @@ int GetCurrRegExpColumn( char *data )
 {
     int cl;
 
-    cl = (int) (CurrentRegularExpression->startp[0] - data);
+    cl = (int)( CurrentRegularExpression->startp[0] - data );
     return( cl );
 
 } /* GetCurrRegExpColumn */
@@ -82,7 +82,7 @@ int GetCurrRegExpLength( void )
 {
     int len;
 
-    len = (int) (CurrentRegularExpression->endp[0] - CurrentRegularExpression->startp[0]);
+    len = (int)( CurrentRegularExpression->endp[0] - CurrentRegularExpression->startp[0] );
     return( len );
 
 } /* GetCurrRegExpLength */

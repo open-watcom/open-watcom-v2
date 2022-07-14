@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,8 +54,8 @@ static void initDCLine( dc_line *dcline )
 
 static void deinitDCLine( dc_line *dcline )
 {
-    if( dcline->text ) {
-        MemFree( dcline->text );
+    if( dcline->text != NULL ) {
+        _MemFreeArray( dcline->text );
     }
     SSKillBlock( dcline->ss );
 }
@@ -70,8 +70,8 @@ void DCCreate( void )
     nlines = WindowAuxInfo( CurrentInfo->current_window_id, WIND_INFO_TEXT_LINES );
     CurrentInfo->dclines = NULL;
     if( nlines > 0 ) {
-        dcline = _MemAllocArray( dc_line, nlines );
-        CurrentInfo->dclines = dcline;
+        CurrentInfo->dclines = _MemAllocArray( dc_line, nlines );
+        dcline = CurrentInfo->dclines;
         for( i = 0; i < nlines; i++ ) {
             initDCLine( dcline );
             dcline++;
@@ -104,8 +104,8 @@ void DCResize( info *info )
         }
         info->dclines = NULL;
     } else {
-        info->dclines = dcline = _MemReallocArray( info->dclines, dc_line, nlines );
-        dcline += info->dc_size;
+        info->dclines = _MemReallocArray( info->dclines, dc_line, nlines );
+        dcline = info->dclines + info->dc_size;
         for( ; extra-- > 0; ) {
             initDCLine( dcline );
             dcline++;
@@ -145,7 +145,7 @@ void DCScroll( int nlines )
         memmove( dcline + CurrentInfo->dc_size + nlines, dcline_temp, bit );
         dcline_i = dcline + CurrentInfo->dc_size + nlines;
     }
-    MemFree( dcline_temp );
+    _MemFreeArray( dcline_temp );
 
     a = abs( nlines );
     for( i = 0; i < a; i++ ) {
@@ -454,8 +454,8 @@ void DCValidateLine( dc_line *dcline, int start_col, char *text )
     if( dcline->text ) {
         if( dcline->textlen < nlen ) {
             // realloc might needlessly memcpy stuff around
-            MemFree( dcline->text );
-            dcline->text = MemAlloc( nlen );
+            _MemFreeArray( dcline->text );
+            dcline->text = _MemAllocArray( char, nlen );
         }
     } else {
         size_t  len;
@@ -463,7 +463,7 @@ void DCValidateLine( dc_line *dcline, int start_col, char *text )
         len = nlen;
         if( len < MIN_CACHE_LINE_LENGTH )
             len = MIN_CACHE_LINE_LENGTH;
-        dcline->text = MemAlloc( len );
+        dcline->text = _MemAllocArray( char, len );
     }
     memcpy( dcline->text, text, nlen );
     dcline->textlen = nlen;

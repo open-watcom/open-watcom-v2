@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,14 +43,14 @@ static int              fDepth;
 void InitFileStack( void )
 {
     fDepth = 0;
-    MemFree( fStack );
+    _MemFreeArray( fStack );
     fStack = _MemAllocArray( file_stack *, EditVars.MaxPush );
 
 } /* InitFileStack */
 
 void FiniFileStack( void )
 {
-    MemFree( fStack );
+    _MemFreeArray( fStack );
 
 } /* FiniFileStack */
 

@@ -91,7 +91,7 @@ char *GetConfigFileName( void )
 
 void FiniConfigFileName( void )
 {
-    MemFree( cfgFN );
+    _MemFreeArray( cfgFN );
 
 } /* FiniConfigFileName */
 
@@ -305,8 +305,8 @@ static void doInitializeEditor( int argc, char *argv[] )
     /*
      * initial configuration
      */
-    EditVars.Majick = MemStrDup( "()~@" );
-    EditVars.FileEndString = MemStrDup( "[END_OF_FILE]" );
+    EditVars.Majick = DupString( "()~@" );
+    EditVars.FileEndString = DupString( "[END_OF_FILE]" );
     MatchInit();
     SetGadgetString( NULL );
     WorkLine = MemAlloc( sizeof( line ) + EditVars.MaxLine + 2 );
@@ -358,8 +358,8 @@ static void doInitializeEditor( int argc, char *argv[] )
     AltDotBuffer = _MemAllocArray( vi_key, maxdotbuffer + 2 );
     DotCmd = _MemAllocArray( vi_key, maxdotbuffer + 2 );
     SwapBlockInit( EditVars.MaxSwapBlocks );
-    ReadBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
-    WriteBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
+    ReadBuffer = _MemAllocArray( char, MAX_IO_BUFFER + 6 );
+    WriteBuffer = _MemAllocArray( char, MAX_IO_BUFFER + 6 );
     for( h = EditVars.Hist; h - EditVars.Hist < MAX_HIST; h++ ) {
         HistInit( h, h->max );
     }

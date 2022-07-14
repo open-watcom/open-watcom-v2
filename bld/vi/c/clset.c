@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -668,7 +668,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         switch( j ) {
         case SETVAR_T_STATUSSECTIONS:
             if( EditVars.StatusSections != NULL ) {
-                MemFree( EditVars.StatusSections );
+                _MemFreeArray( EditVars.StatusSections );
                 EditVars.StatusSections = NULL;
                 EditVars.NumStatusSections = 0;
             }

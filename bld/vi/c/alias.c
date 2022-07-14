@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,9 +54,9 @@ static vi_rc setGenericAlias( const char *what, alias_list **head, alias_list **
      */
     for( curr = *head; curr != NULL; curr = curr->next ) {
         if( strcmp( str, curr->alias ) == 0 ) {
-            MemFree( curr->expand );
+            _MemFreeArray( curr->expand );
             if( *what == '\0' ) {
-                MemFree( curr->alias );
+                _MemFreeArray( curr->alias );
                 MemFree( DeleteLLItem( (ss **)head, (ss **)tail, (ss *)curr ) );
             } else {
                 curr->expand = DupString( what );

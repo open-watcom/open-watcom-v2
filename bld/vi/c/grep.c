@@ -105,7 +105,7 @@ vi_rc DoFGREP( const char *dirlist, const char *string, bool ci )
         strlwr( searchString );
     }
     rc = doGREP( dirlist );
-    MemFree( searchString );
+    _MemFreeArray( searchString );
     return( rc );
 
 } /* DoFGREP */
@@ -124,10 +124,10 @@ vi_rc DoEGREP( const char *dirlist, const char *string )
         origString = string;
         isFgrep = false;
         rc = doGREP( dirlist );
-        MemFree( searchString );
+        _MemFreeArray( searchString );
     }
     if( cRx != NULL ) {
-        MemFree( cRx );
+        _MemFreeArray( cRx );
         cRx = NULL;
     }
     return( rc );
@@ -737,7 +737,7 @@ static vi_rc fSearch( const char *fn, char *r )
     rc = FileOpen( fn, false, O_BINARY | O_RDONLY, 0, &handle );
     if( rc == ERR_NO_ERR ) {
         rc = ERR_NO_MEMORY;
-        buff = MemAlloc( MAXBYTECNT );
+        buff = _MemAllocArray( char, MAXBYTECNT );
         if( buff != NULL ) {
             /*
              * read in buffers from the file, and search through them
@@ -812,7 +812,7 @@ static vi_rc fSearch( const char *fn, char *r )
                     strncpy( context_display, buffloc - MAX_DISP, MAX_DISP );
                 }
             }
-            MemFree( buff );
+            _MemFreeArray( buff );
         }
         close( handle );
     }

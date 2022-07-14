@@ -55,9 +55,9 @@ static void freeSource( sfile *sf )
 
     for( curr = sf; curr != NULL; curr = next ) {
         next = curr->next;
-        MemFree( curr->data );
-        MemFree( curr->arg1 );
-        MemFree( curr->arg2 );
+        _MemFreeArray( curr->data );
+        _MemFreeArray( curr->arg1 );
+        _MemFreeArray( curr->arg2 );
         MemFree( curr );
     }
 }
@@ -622,7 +622,7 @@ void DeleteResidentScripts( void )
         freeSource( tmp->sf );
         MemFreeList( tmp->lab.cnt, tmp->lab.name );
         MemFree( tmp->lab.pos );
-        MemFree( tmp->fn );
+        _MemFreeArray( tmp->fn );
         MemFree( tmp );
     }
 

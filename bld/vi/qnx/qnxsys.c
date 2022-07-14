@@ -115,8 +115,8 @@ void ScreenInit( void )
     if( QNXCon == NULL ) {
         // FatalError( ERR_BAD_TERMINAL );
         ChangeDirectory( StartDirectory );
-        MemFree( StartDirectory );
-        MemFree( CurrentDirectory );
+        _MemFreeArray( StartDirectory );
+        _MemFreeArray( CurrentDirectory );
         FiniMem();
         exit( 0 );
     }

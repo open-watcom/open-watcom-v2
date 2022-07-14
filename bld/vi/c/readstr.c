@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -537,12 +537,12 @@ static vi_key specialKeyFilter( input_buffer *input, vi_key event )
         if( input->curr_pos != strlen( input->buffer ) ) {
             MyBeep();
         } else {
-            tmp = MemAlloc( input->buffer_length );
+            tmp = _MemAllocArray( char, input->buffer_length );
             assert( tmp != NULL );
             GetTextForSpecialKey( event, tmp, input->buffer_length - strlen( input->buffer ) );
             saveStr( input );
             insertString( input, tmp );
-            MemFree( tmp );
+            _MemFreeArray( tmp );
         }
         break;
     default:

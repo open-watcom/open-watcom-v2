@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,10 +60,10 @@ static bool applyToSelectedList( HWND list_box, bool (*func)( info * ) )
     count = (int)SendMessage( list_box, LB_GETCOUNT, 0, 0L );
     for( i = 0; i < count; i++ ) {
         if( SendMessage( list_box, LB_GETSEL, i, 0L ) ) {
-            name = MemAlloc( SendMessage( list_box, LB_GETTEXTLEN, i, 0L ) + 1 );
+            name = _MemAllocArray( char, SendMessage( list_box, LB_GETTEXTLEN, i, 0L ) + 1 );
             SendMessage( list_box, LB_GETTEXT, i, (LPARAM)(LPSTR)name );
             info = findInfo( name );
-            MemFree( name );
+            _MemFreeArray( name );
             if( func( info ) ) {
                 break;
             }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,9 +172,9 @@ static void finiSource( labels *lab, vars_list *vl, sfile *sf )
     for( curr = sf; curr != NULL; curr = tmp ) {
         tmp = curr->next;
 
-        MemFree( curr->data );
-        MemFree( curr->arg1 );
-        MemFree( curr->arg2 );
+        _MemFreeArray( curr->data );
+        _MemFreeArray( curr->arg1 );
+        _MemFreeArray( curr->arg2 );
         MemFree( curr );
     }
 

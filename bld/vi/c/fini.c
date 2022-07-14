@@ -133,8 +133,8 @@ void Quit( const char **usage_msg, const char *str, ... )
     // yet (this is always called from checkFlags)
     // ExitEditor( 0 );
     ChangeDirectory( StartDirectory );
-    MemFree( StartDirectory );
-    MemFree( CurrentDirectory );
+    _MemFreeArray( StartDirectory );
+    _MemFreeArray( CurrentDirectory );
     FiniMem();
     exit( 0 );
 
@@ -144,24 +144,24 @@ void Quit( const char **usage_msg, const char *str, ... )
 static void miscGlobalsFini( void )
 {
     MemFree( WorkLine );
-    MemFree( DotBuffer );
-    MemFree( AltDotBuffer );
-    MemFree( DotCmd );
-    MemFree( ReadBuffer );
-    MemFree( WriteBuffer );
-    MemFree( EditVars.TileColors );
-    MemFree( EditVars.GrepDefault );
-    MemFree( EditVars.FileEndString );
-    MemFree( EditVars.Majick );
-    MemFree( EditVars.GadgetString );
-    MemFree( EditVars.WordDefn );
-    MemFree( EditVars.WordAltDefn );
-    MemFree( EditVars.TagFileName );
-    MemFree( EditVars.StatusString );
-    MemFree( EditVars.StatusSections );
-    MemFree( EditVars.TmpDir );
-    MemFree( EditVars.SpawnPrompt );
-    MemFree( CurrentRegularExpression );
+    _MemFreeArray( DotBuffer );
+    _MemFreeArray( AltDotBuffer );
+    _MemFreeArray( DotCmd );
+    _MemFreeArray( ReadBuffer );
+    _MemFreeArray( WriteBuffer );
+    _MemFreeArray( EditVars.TileColors );
+    _MemFreeArray( EditVars.GrepDefault );
+    _MemFreeArray( EditVars.FileEndString );
+    _MemFreeArray( EditVars.Majick );
+    _MemFreeArray( EditVars.GadgetString );
+    _MemFreeArray( EditVars.WordDefn );
+    _MemFreeArray( EditVars.WordAltDefn );
+    _MemFreeArray( EditVars.TagFileName );
+    _MemFreeArray( EditVars.StatusString );
+    _MemFreeArray( EditVars.StatusSections );
+    _MemFreeArray( EditVars.TmpDir );
+    _MemFreeArray( EditVars.SpawnPrompt );
+    _MemFreeArray( CurrentRegularExpression );
 }
 
 /*
@@ -222,8 +222,8 @@ void ExitEditor( int rc )
         SetConsoleActiveScreenBuffer( GetStdHandle( STD_OUTPUT_HANDLE ) );
     }
 #endif
-    MemFree( StartDirectory );
-    MemFree( CurrentDirectory );
+    _MemFreeArray( StartDirectory );
+    _MemFreeArray( CurrentDirectory );
 #if defined( VI_RCS )
     ViRCSFini();
 #endif

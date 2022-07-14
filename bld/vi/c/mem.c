@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,7 +159,8 @@ static void tossBoundData( void )
 {
     if( BoundData ) {
         if( !EditFlags.BndMemoryLocked ) {
-            MemFreePtr( (void **)&BndMemory );
+            _MemFreeArray( BndMemory );
+            BndMemory = NULL;
         }
     }
 
@@ -430,9 +431,9 @@ void StaticStart( void )
 {
     int i, bs;
 
-    MemFree( StaticBuffer );
+    _MemFreeArray( StaticBuffer );
     bs = EditVars.MaxLine + 2;
-    StaticBuffer = MemAlloc( MAX_STATIC_BUFFERS * bs );
+    StaticBuffer = _MemAllocArray( char, MAX_STATIC_BUFFERS * bs );
     for( i = 0; i < MAX_STATIC_BUFFERS; i++ ) {
         staticUse[i] = false;
         staticBuffs[i] = &StaticBuffer[i * bs];
@@ -442,23 +443,7 @@ void StaticStart( void )
 
 void StaticFini( void )
 {
-    MemFree( StaticBuffer );
-}
-
-/*
- * MemStrDup - Safe strdup()
- */
-char *MemStrDup( const char *string )
-{
-    char *rptr;
-
-    if( string == NULL ) {
-        rptr = NULL;
-    } else {
-        rptr = (char *)MemAlloc( strlen( string ) + 1 );
-        strcpy( rptr, string );
-    }
-    return( rptr );
+    _MemFreeArray( StaticBuffer );
 }
 
 #if defined( __LINUX__ )

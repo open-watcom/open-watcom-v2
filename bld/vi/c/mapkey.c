@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +150,7 @@ vi_rc MapKey( int flag, const char *data )
                     MySprintf( WorkLine->data, "%d %s", key, scr.data );
                 }
             }
-            MemFree( scr.data );
+            _MemFreeArray( scr.data );
             return( rc );
 
         } else {
@@ -162,7 +162,7 @@ vi_rc MapKey( int flag, const char *data )
 
     maps[key].inuse = false;
     maps[key].is_base = false;
-    MemFree( maps[key].data );
+    _MemFreeArray( maps[key].data );
     maps[key].data = NULL;
     if( (flag & MAPFLAG_UNMAP) == 0 ) {
         if( flag & MAPFLAG_BASE ) {
@@ -447,21 +447,21 @@ void FiniKeyMaps( void )
 {
     int i;
 
-    MemFree( keyVals );
-    MemFree( CharTokens );
+    _MemFreeArray( keyVals );
+    _MemFreeArray( CharTokens );
 
     // assuming Keymaps and InputKeymaps are inited to 0
     // this should be OK
     for( i = 0; i < MAX_EVENTS; i++ ) {
         if( KeyMaps[i].data != NULL ) {
-            MemFree( KeyMaps[i].data );
+            _MemFreeArray( KeyMaps[i].data );
         }
         if( InputKeyMaps[i].data != NULL ) {
-            MemFree( InputKeyMaps[i].data );
+            _MemFreeArray( InputKeyMaps[i].data );
         }
     }
-    MemFree( KeyMaps );
-    MemFree( InputKeyMaps );
+    _MemFreeArray( KeyMaps );
+    _MemFreeArray( InputKeyMaps );
 
 } /* InitKeyMaps */
 
@@ -481,11 +481,11 @@ vi_rc ExecuteBuffer( void )
     rc = GetSavebufString( &data );
     if( rc == ERR_NO_ERR ) {
         rc = AddKeyMap( &scr, data );
-        MemFree( data );
+        _MemFreeArray( data );
         if( rc == ERR_NO_ERR ) {
             rc = RunKeyMap( &scr, 1L );
         }
-        MemFree( scr.data );
+        _MemFreeArray( scr.data );
     }
     return( rc );
 

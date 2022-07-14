@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,8 +179,9 @@ static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entr
     } TmpValue;
     TmpValue    *tmpValue, *tmpIndex;
 
-    tmpValue = tmpIndex = _MemAllocArray( TmpValue, NumKeyword );
+    tmpValue = _MemAllocArray( TmpValue, NumKeyword );
     keyword = Keyword;
+    tmpIndex = tmpValue;
     for( i = 0; i < NumKeyword; i++ ) {
         tmpIndex->hashValue = hashpjw( keyword, entries );
         tmpIndex->keyword = keyword;
@@ -211,7 +213,7 @@ static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entr
         tmpIndex++;
     }
 
-    MemFree( tmpValue );
+    _MemFreeArray( tmpValue );
 }
 
 static int nkeywords = 0;
@@ -308,16 +310,16 @@ void LangFini( lang_t language )
     }
     langInfo[language].ref_count--;
     if( langInfo[language].ref_count == 0 ) {
-        MemFree( langInfo[language].keyword_table );
-        MemFree( langInfo[language].read_buf );
+        _MemFreeArray( langInfo[language].keyword_table );
+        _MemFreeArray( langInfo[language].read_buf );
         langInfo[language].keyword_table = NULL;
         langInfo[language].table_entries = 0;
         langInfo[language].read_buf = NULL;
     }
     if( language == VI_LANG_C || language == VI_LANG_CPP ) {
         if( langInfo[VI_LANG_C].ref_count == 0 && langInfo[VI_LANG_CPP].ref_count == 0 ) {
-            MemFree( pragma_table );
-            MemFree( pragma_read_buf );
+            _MemFreeArray( pragma_table );
+            _MemFreeArray( pragma_read_buf );
             pragma_table = NULL;
             pragma_table_entries = 0;
             pragma_read_buf = NULL;

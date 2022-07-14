@@ -87,7 +87,7 @@ static bool isOS2( void )
  */
 void InitCommandLine( void )
 {
-    dataBuff = MemAlloc( EditVars.MaxLine );
+    dataBuff = _MemAllocArray( char, EditVars.MaxLine );
 
 } /* InitCommandLine */
 
@@ -96,7 +96,7 @@ void InitCommandLine( void )
  */
 void FiniCommandLine( void )
 {
-    MemFree( dataBuff );
+    _MemFreeArray( dataBuff );
 
 } /* FiniCommandLine */
 
@@ -120,14 +120,14 @@ static vi_rc doProcessCommandLine( bool is_fancy )
 #ifdef __WIN__
     if( is_fancy ) {
         if( !GetCmdDialog( st, EditVars.MaxLine ) ) {
-            MemFree( st );
+            _MemFreeArray( st );
             return( ERR_NO_ERR );
         }
     } else {
 #endif
         rc = PromptForString( ":", st, EditVars.MaxLine, &EditVars.Hist[HIST_CMD] );
         if( rc != ERR_NO_ERR ) {
-            MemFree( st );
+            _MemFreeArray( st );
             if( rc == NO_VALUE_ENTERED ) {
                 return( ERR_NO_ERR );
             }
@@ -142,7 +142,7 @@ static vi_rc doProcessCommandLine( bool is_fancy )
         rc = RunCommandLine( st );
     }
     CommandBuffer = NULL;
-    MemFree( st );
+    _MemFreeArray( st );
     return( rc );
 
 } /* doProcessCommandLine */
@@ -327,7 +327,7 @@ vi_rc RunCommandLine( const char *cmdl )
             if( rc == ERR_NO_ERR ) {
                 rc = RunKeyMap( &scr, 1L );
             }
-            MemFree( scr.data );
+            _MemFreeArray( scr.data );
         }
         break;
 
