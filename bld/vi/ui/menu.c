@@ -425,8 +425,7 @@ vi_rc DoItemDelete( const char *data )
 
     cmenu->itemcnt--;
     cmenu->maxwidth = maxwidth;
-    DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)dmi );
-    MemFree( dmi );
+    MemFree( DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)dmi ) );
     initMenuList( cmenu );
     return( ERR_NO_ERR );
 
@@ -478,8 +477,7 @@ vi_rc DoMenuDelete( const char *data )
         *predef_menu = NULL;
         return( ERR_NO_ERR );
     }
-    DeleteLLItem( (ss **)&menuHead, (ss **)&menuTail, (ss *)cmenu );
-    freeMenu( cmenu );
+    freeMenu( DeleteLLItem( (ss **)&menuHead, (ss **)&menuTail, (ss *)cmenu ) );
     maxMenuId--;
     InitMenu();
     return( ERR_NO_ERR );
@@ -530,8 +528,7 @@ static void removeFileList( menu *cmenu )
     }
     for( ; citem != NULL; citem = next ) {
         next = citem->next;
-        DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)citem );
-        MemFree( citem );
+        MemFree( DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)citem ) );
         cmenu->itemcnt--;
     }
     cmenu->maxwidth = cmenu->orig_maxwidth;

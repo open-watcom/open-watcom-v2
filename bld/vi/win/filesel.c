@@ -139,7 +139,7 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
 #if defined( __NT__ ) && !defined( _WIN64 )
         if( !is_chicago ) {
 #endif
-            _MemFreeArray( (char*)of.lpstrFile );
+            _MemFreeArray( (char *)of.lpstrFile );
             *result = FileNameList;
 #if defined( __NT__ ) && !defined( _WIN64 )
         }

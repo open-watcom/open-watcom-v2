@@ -759,7 +759,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                     MySprintf( fn, "fignore reset" );
                 }
             } else {
-                EditVars.FIgnore = MemRealloc( EditVars.FIgnore, EXTENSION_LENGTH * (EditVars.CurrFIgnore + 1) );
+                EditVars.FIgnore = _MemReallocArray( EditVars.FIgnore, char, EXTENSION_LENGTH * (EditVars.CurrFIgnore + 1) );
                 str[0] = '.';
                 str[1] = '\0';
                 strcat( str, fn );

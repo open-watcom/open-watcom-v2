@@ -58,7 +58,7 @@ static void setPrompt( void )
     if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != '\0' ) {
         tmp = getenv( PROMPT_ENVIRONMENT_VARIABLE );
         if( tmp != NULL ) {
-            oldPrompt = MemAlloc( strlen( tmp ) + 1 );
+            oldPrompt = _MemAllocArray( char, strlen( tmp ) + 1 );
             strcpy( oldPrompt, tmp );
         } else {
             oldPrompt = NULL;
@@ -72,7 +72,7 @@ static void restorePrompt( void )
     if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != '\0' ) {
         setenv( PROMPT_ENVIRONMENT_VARIABLE, oldPrompt, 1 );
         if( oldPrompt != NULL ) {
-            MemFree( oldPrompt );
+            _MemFreeArray( oldPrompt );
             oldPrompt = NULL;
         }
     }

@@ -106,7 +106,7 @@ static vi_rc removeGenericAlias( const char *which, alias_list **head, alias_lis
     if( curr == NULL ) {
         return( ERR_NO_SUCH_ALIAS );
     }
-    DeleteLLItem( (ss **)head, (ss **)tail, (ss *)curr );
+    MemFree( DeleteLLItem( (ss **)head, (ss **)tail, (ss *)curr ) );
     Message1( "%s removed", which );
     return( ERR_NO_ERR );
 

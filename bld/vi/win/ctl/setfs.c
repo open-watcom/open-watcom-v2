@@ -357,7 +357,7 @@ static void dlgDataInit( void )
 
 static void dlgDataFini( void )
 {
-    MemFree( dlgDataArray );
+    _MemFreeArray( dlgDataArray );
 }
 
 static void filldlgData( dlg_data *data, const char *match, info *useInfo )

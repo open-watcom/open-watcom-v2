@@ -792,12 +792,12 @@ bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str, size_
     input.window.id = wid;
     input.window.line = line;
 #ifdef __WIN__
-    input.cache = (char *)MemAlloc( max_len );
+    input.cache = _MemAllocArray( char, max_len );
     input.cache[0] = '\0';
 #endif
     rc = getStringInWindow( &input );
 #ifdef __WIN__
-    MemFree( input.cache );
+    _MemFreeArray( input.cache );
 #endif
     return( rc );
 

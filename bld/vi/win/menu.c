@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -364,8 +364,7 @@ static bool freeItem( menu *m, int pos )
             DeleteMenu( m->hmenu, pos, MF_BYPOSITION );
         }
         m->num_items -= 1;
-        DeleteLLItem( (ss **)&m->item_head, (ss **)&m->item_tail, (ss *)citem );
-        MemFree( citem );
+        MemFree( DeleteLLItem( (ss **)&m->item_head, (ss **)&m->item_tail, (ss *)citem ) );
         return( true );
     }
     return( false );
@@ -446,8 +445,7 @@ static void freeMenu( menu *parent, menu *m )
         DestroyMenu( m->hmenu );
     }
     parent->num_items -= 1;
-    DeleteLLItem( (ss **)&parent->item_head, (ss **)&parent->item_tail, (ss *)m );
-    MemFree( m );
+    MemFree( DeleteLLItem( (ss **)&parent->item_head, (ss **)&parent->item_tail, (ss *)m ) );
 
 } /* freeMenu */
 
@@ -702,8 +700,7 @@ void FiniMenu( void )
                     clearMenu( m );
                     // DestroyMenu( m->hmenu );
                 }
-                DeleteLLItem( (ss **)&rootMenu->item_head, (ss **)&rootMenu->item_tail, (ss *)m );
-                MemFree( m );
+                MemFree( DeleteLLItem( (ss **)&rootMenu->item_head, (ss **)&rootMenu->item_tail, (ss *)m ) );
             }
             // DestroyMenu( rootMenu->hmenu );
         }
@@ -919,8 +916,7 @@ static void purgeOldMenuBottom( menu *cmenu )
         for( ; cnt < cmenu->num_items; cnt++ ) {
             next = citem->next;
             DeleteMenu( cmenu->hmenu, cmenu->orig_num_items, MF_BYPOSITION );
-            DeleteLLItem( (ss **)&cmenu->item_head, (ss **)&cmenu->item_tail, (ss *)citem );
-            MemFree( citem );
+            MemFree( DeleteLLItem( (ss **)&cmenu->item_head, (ss **)&cmenu->item_tail, (ss *)citem ) );
             citem = next;
         }
         cmenu->num_items = cmenu->orig_num_items;

@@ -274,7 +274,7 @@ static void getOneFile( HWND dlg, char **files, int *count, bool leave )
       #ifdef __NT__
             }
       #endif
-            MemFree( files[i] );
+            _MemFreeArray( files[i] );
             for( j = i; j < *count; j++ ) {
                 files[j] = files[j + 1];
             }
@@ -563,7 +563,7 @@ static vi_rc doGREP( const char *dirlist )
                         si.event == VI_KEY( F1 ) || si.event == VI_KEY( F3 ) ) {
                         break;
                     }
-                    MemFree( list[si.num] );
+                    _MemFreeArray( list[si.num] );
                     for( i = si.num; i < clist - 1; i++ ) {
                         list[i] = list[i + 1];
                     }

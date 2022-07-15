@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -209,7 +210,7 @@ void SwapBlockInit( int i )
         EditVars.MaxSwapBlocks = i;
         EditVars.MaxSwapBlocks /= (MAX_IO_BUFFER / 1024);
         SwapBlockArraySize = EditVars.MaxSwapBlocks >> 3;
-        SwapBlocks = MemAlloc( SwapBlockArraySize + 1 );
+        SwapBlocks = _MemAllocArray( unsigned char, SwapBlockArraySize + 1 );
         for( k = 0; k < SwapBlockArraySize; k++ ) {
             SwapBlocks[k] = 0xff;
         }
@@ -223,7 +224,7 @@ void SwapBlockInit( int i )
 void SwapBlockFini( void )
 {
     if( SwapBlocks != NULL ) {
-        MemFree( SwapBlocks );
+        _MemFreeArray( SwapBlocks );
     }
 
 } /* SwapBlockFini */

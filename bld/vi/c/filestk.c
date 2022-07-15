@@ -34,23 +34,31 @@
 #include "vi.h"
 #include <stddef.h>
 
-static file_stack       **fStack;
-static int              fDepth;
+static file_stack       **fStack = NULL;
+static int              fDepth = 0;
 
 /*
  * InitFileStack - initialize the push stack
  */
 void InitFileStack( void )
 {
-    fDepth = 0;
-    _MemFreeArray( fStack );
-    fStack = _MemAllocArray( file_stack *, EditVars.MaxPush );
+    int     i;
+
+    while( fDepth > EditVars.MaxPush ) {
+        for( i = 1; i < fDepth; i++ ) {
+            fStack[i - 1] = fStack[i];
+        }
+        fDepth--;
+    }
+    fStack = _MemReallocPtrArray( fStack, file_stack, EditVars.MaxPush );
 
 } /* InitFileStack */
 
 void FiniFileStack( void )
 {
-    _MemFreeArray( fStack );
+    _MemFreePtrArray( fStack, 0, NULL );
+    fStack = NULL;
+    fDepth = 0;
 
 } /* FiniFileStack */
 
@@ -117,14 +125,12 @@ vi_rc PopFileStack( void )
     fStack[fDepth] = NULL;
 
     rc = EditFile( fs->fname, false );
-    if( rc != ERR_NO_ERR ) {
-        MemFree( fs );
-        return( rc );
+    if( rc == ERR_NO_ERR ) {
+        GoToLineNoRelCurs( fs->p.line );
+        GoToColumnOnCurrentLine( fs->p.column );
+        Message2( "%d entries left on file stack", fDepth );
     }
-    GoToLineNoRelCurs( fs->p.line );
-    GoToColumnOnCurrentLine( fs->p.column );
     MemFree( fs );
-    Message2( "%d entries left on file stack", fDepth );
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* PopFileStack */
