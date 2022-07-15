@@ -535,6 +535,7 @@ void    AddNewLineAroundCurrent( const char *, int, insert_dir );
 void    InsertNewLine( line *, line_list *, const char *, int, insert_dir );
 void    CreateNullLine( fcb * );
 line    *LineAlloc( const char *, int );
+void    LineFree( line * );
 
 /* linenum.c */
 vi_rc   LineNumbersSetup( void );
@@ -593,23 +594,23 @@ void    MatchFini( void );
 void    *MemAlloc( size_t );
 void    *MemAllocUnsafe( size_t );
 void    MemFree( void * );
-void    MemFreePtr( void ** );
-void    MemFreeList( list_linenum, char ** );
+void    MemFreePtrArray( void **ptr, size_t count, void(*free_fn)(void *) );
 void    *MemRealloc( void *, size_t );
 void    *MemReallocUnsafe( void *ptr, size_t size );
 void    *StaticAlloc( void );
 void    StaticFree( char * );
 void    StaticStart( void );
 void    StaticFini( void );
-char    *MemStrDup( const char * );
 void    InitMem( void );
 void    FiniMem( void );
 
-#define _MemAllocArray(t,c)     (t *)MemAlloc( (c) * sizeof( t ) )
-#define _MemReallocArray(p,t,c) (t *)MemRealloc( p, (c) * sizeof( t ) )
-#define _MemFreeArray(p)        MemFree( p )
-#define _MemAllocList(c)        (char **)MemAlloc( (c) * sizeof( char * ) )
-#define _MemReallocList(p,c)    (char **)MemRealloc( p, (c) * sizeof( char * ) )
+#define _MemAllocArray(t,c)         (t *)MemAlloc( (c) * sizeof( t ) )
+#define _MemReallocArray(p,t,c)     (t *)MemRealloc( p, (c) * sizeof( t ) )
+#define _MemFreeArray(p)            MemFree( p )
+#define _MemAllocPtrArray(t,c)      (t **)MemAlloc( (c) * sizeof( t * ) )
+#define _MemReallocPtrArray(p,t,c)  (t **)MemRealloc( p, (c) * sizeof( t * ) )
+#define _MemFreePtrArray(p,c,fn)     MemFreePtrArray((void **)(p), (c), fn)
+#define _MemReallocPtrArrayUnsafe(p,t,c)    (t **)MemReallocUnsafe( p, (c) * sizeof( t * ) )
 
 /* misc.c */
 long    ExecCmd( const char *, const char *, const char * );

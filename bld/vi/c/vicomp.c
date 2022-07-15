@@ -75,7 +75,7 @@ void MemFree( void *ptr )
 /*
  * MemFreeList - free up memory
  */
-void MemFreeList( list_linenum count, char **ptr )
+void MemFreeList( list_linenum count, void **ptr )
 {
     if( ptr != NULL ) {
         list_linenum i;
@@ -163,8 +163,8 @@ static void finiSource( labels *lab, vars_list *vl, sfile *sf )
     sfile       *curr, *tmp;
 
     if( lab != NULL ) {
-        MemFreeList( lab->cnt, lab->name );
-        MemFree( lab->pos );
+        _MemFreePtrArray( lab->name, lab->cnt, MemFree );
+        _MemFreePtrArray( lab->pos, lab->cnt, MemFree );
     }
 
     VarListDelete( vl );

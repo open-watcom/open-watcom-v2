@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ void AddNewLineAroundCurrent( const char *data, int copylen, insert_dir dir )
     FetchFcb( CurrentFcb );
     wasnull = CurrentFcb->nullfcb;
     if( wasnull ) {
-        MemFree( CurrentFcb->lines.head );
+        LineFree( CurrentFcb->lines.head );
         CurrentFcb->lines.head = CurrentFcb->lines.tail = NULL;
         CurrentFcb->nullfcb = false;
         CurrentFcb->byte_cnt = 0;
@@ -117,6 +118,15 @@ line *LineAlloc( const char *data, int len )
     return( tmp );
 
 } /* LineAlloc */
+
+/*
+ * LineFree - allocate a line
+ */
+void LineFree( line *ln )
+{
+    MemFree( ln );
+
+} /* LineFree */
 
 /*
  * CreateNullLine - put a single null line in an fcb

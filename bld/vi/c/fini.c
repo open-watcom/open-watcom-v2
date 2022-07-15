@@ -134,7 +134,9 @@ void Quit( const char **usage_msg, const char *str, ... )
     // ExitEditor( 0 );
     ChangeDirectory( StartDirectory );
     _MemFreeArray( StartDirectory );
+    StartDirectory = NULL;
     _MemFreeArray( CurrentDirectory );
+    CurrentDirectory = NULL;
     FiniMem();
     exit( 0 );
 
@@ -223,7 +225,9 @@ void ExitEditor( int rc )
     }
 #endif
     _MemFreeArray( StartDirectory );
+    StartDirectory = NULL;
     _MemFreeArray( CurrentDirectory );
+    CurrentDirectory = NULL;
 #if defined( VI_RCS )
     ViRCSFini();
 #endif

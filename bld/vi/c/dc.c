@@ -56,6 +56,7 @@ static void deinitDCLine( dc_line *dcline )
 {
     if( dcline->text != NULL ) {
         _MemFreeArray( dcline->text );
+        dcline->text = NULL;
     }
     SSKillBlock( dcline->ss );
 }
@@ -91,8 +92,7 @@ void DCResize( info *info )
         return;
     }
     nlines = WindowAuxInfo( info->current_window_id, WIND_INFO_TEXT_LINES );
-    dcline = info->dclines;
-    dcline += info->dc_size - 1;
+    dcline = info->dclines + info->dc_size - 1;
     for( extra = nlines - info->dc_size; extra < 0; ++extra ) {
         deinitDCLine( dcline );
         dcline--;
@@ -100,9 +100,9 @@ void DCResize( info *info )
     if( nlines == 0 ) {
         // no room to display anything - trash the cache
         if( info->dclines != NULL ) {
-            MemFree( info->dclines );
+            _MemFreeArray( info->dclines );
+            info->dclines = NULL;
         }
-        info->dclines = NULL;
     } else {
         info->dclines = _MemReallocArray( info->dclines, dc_line, nlines );
         dcline = info->dclines + info->dc_size;
@@ -170,7 +170,7 @@ void DCDestroy( void )
         deinitDCLine( dcline );
         dcline++;
     }
-    MemFree( CurrentInfo->dclines );
+    _MemFreeArray( CurrentInfo->dclines );
     CurrentInfo->dclines = NULL;
     CurrentInfo->dc_size = 0;
 }
@@ -381,8 +381,7 @@ void DCDisplaySomeLines( int start, int end )
     CTurnOffFileDisplayBits();
     cfcb->on_display = true;
 
-    dcline = CurrentInfo->dclines;
-    dcline += start;
+    dcline = CurrentInfo->dclines + start;
     for( i = start; i <= end; i++ ) {
         dcline->display = true;
         dcline++;
@@ -411,8 +410,7 @@ void DCInvalidateSomeLines( int start, int end )
         return;
     }
 
-    dcline = CurrentInfo->dclines;
-    dcline += start;
+    dcline = CurrentInfo->dclines + start;
     for( i = start; i <= end; i++ ) {
         dcline->valid = false;
         dcline++;
@@ -431,13 +429,11 @@ void DCInvalidateAllLines( void )
 dc_line *DCFindLine( int c_line_no, window_id wid )
 {
     info        *info;
-    dc_line     *dcline;
 
     for( info = InfoHead; info != NULL; info = info->next ) {
         if( info->current_window_id == wid ) {
             assert( c_line_no >= 0 && c_line_no < info->dc_size );
-            dcline = info->dclines;
-            return( dcline + c_line_no );
+            return( info->dclines + c_line_no );
         }
     }
     assert( info );
@@ -451,7 +447,7 @@ void DCValidateLine( dc_line *dcline, int start_col, char *text )
     // assumes ss has already been filled correctly
     dcline->start_col = start_col;
     nlen = strlen( text ) + 1;
-    if( dcline->text ) {
+    if( dcline->text != NULL ) {
         if( dcline->textlen < nlen ) {
             // realloc might needlessly memcpy stuff around
             _MemFreeArray( dcline->text );

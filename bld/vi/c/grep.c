@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -311,7 +311,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
         SendMessage( list_box, WM_SETFONT, (WPARAM)FontHandle( dirw_info.text_style.font ), 0L );
         MySprintf( tmp, "Files Containing \"%s\"", searchString );
         SetWindowText( dlg, tmp );
-        fileList = _MemAllocList( MAX_FILES );
+        fileList = _MemAllocPtrArray( char, MAX_FILES );
         fileCount = (int)initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             /* tell him that there are no matches and close down? */
@@ -344,7 +344,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
         }
         break;
     case WM_DESTROY:
-        MemFreeList( fileCount, fileList );
+        _MemFreePtrArray( fileList, fileCount, MemFree );
         break;
     }
     return( FALSE );
@@ -384,7 +384,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
         lvc.pszText = "Line";
         lvc.iSubItem = 1;
         SendMessage( list_box, LVM_INSERTCOLUMN, 1, (LPARAM)&lvc );
-        fileList = _MemAllocList( MAX_FILES );
+        fileList = _MemAllocPtrArray( char, MAX_FILES );
         fileCount = (int)initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             Message1( "String \"%s\" not found", searchString );
@@ -419,7 +419,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
         }
         break;
     case WM_DESTROY:
-        MemFreeList( fileCount, fileList );
+        _MemFreePtrArray( fileList, fileCount, MemFree );
         break;
     }
     return( FALSE );
@@ -484,7 +484,7 @@ static vi_rc doGREP( const char *dirlist )
      * prepare list array
      */
     clist = 0;
-    list = _MemAllocList( MAX_FILES );
+    list = _MemAllocPtrArray( char, MAX_FILES );
 
     /*
      * create info. window
@@ -584,7 +584,7 @@ static vi_rc doGREP( const char *dirlist )
     /*
      * cleanup
      */
-    MemFreeList( clist, list );
+    _MemFreePtrArray( list, clist, MemFree );
     return( rc );
 
 } /* DoFGREP */

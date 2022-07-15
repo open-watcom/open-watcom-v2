@@ -752,7 +752,8 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             break;
         case SETVAR_T_FIGNORE:
             if( *fn == '\0' ) {
-                MemFreePtr( (void **)&EditVars.FIgnore );
+                _MemFreeArray( EditVars.FIgnore );
+                EditVars.FIgnore = NULL;
                 EditVars.CurrFIgnore = 0;
                 if( msgFlag ) {
                     MySprintf( fn, "fignore reset" );
@@ -1124,9 +1125,9 @@ static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
     tc1 = GetNumberOfTokens( SetVarTokens );
     tc2 = GetNumberOfTokens( SetFlagTokens );
     tc = tc1 + tc2;
-    sdata = _MemAllocArray( set_data *, tc );
-    *list = _MemAllocList( tc );
-    *vals = _MemAllocList( tc );
+    sdata = _MemAllocPtrArray( set_data, tc );
+    *list = _MemAllocPtrArray( char, tc );
+    *vals = _MemAllocPtrArray( char, tc );
 
     for( i1 = 0; i1 < tc1; i1++ ) {
         sdata[i1] = MemAlloc( sizeof( set_data ) );
@@ -1142,9 +1143,8 @@ static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
     for( i = 0; i < tc; i++ ) {
         (*list)[i] = sdata[i]->setting;
         (*vals)[i] = sdata[i]->val;
-        MemFree( sdata[i] );
     }
-    MemFree( sdata );
+    _MemFreePtrArray( sdata, tc, MemFree );
     i1 = GetLongestTokenLength( SetVarTokens );
     i2 = GetLongestTokenLength( SetFlagTokens );
     if( i1 > i2 ) {
@@ -1208,8 +1208,8 @@ vi_rc Set( const char *name )
         }
         rc = SelectItemAndValue( &setw_info, "Settings", list, tc, SettingSelected, 1, vals, longest + 3 );
         setw_info.area.y2 = tmp;
-        MemFreeList( tc, vals );
-        MemFreeList( tc, list );
+        _MemFreePtrArray( vals, tc, MemFree );
+        _MemFreePtrArray( list, tc, MemFree );
         ReDisplayScreen();
   #endif
 #endif /* VICOMP */

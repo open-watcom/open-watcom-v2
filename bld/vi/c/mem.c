@@ -249,33 +249,15 @@ void MemFree( void *ptr )
 } /* MemFree */
 
 /*
- * MemFreePtr - free up memory
- */
-void MemFreePtr( void **ptr )
-{
-#ifdef TRMEM
-#ifndef __WATCOMC__
-    _trmem_free( *ptr, (WHO_PTR)5, trmemHandle );
-#else
-    _trmem_free( *ptr, _trmem_guess_who(), trmemHandle );
-#endif
-#else
-    free( *ptr );
-#endif
-    *ptr = NULL;
-
-} /* MemFreePtr */
-
-
-/*
  * MemFreeList - free up memory
  */
-void MemFreeList( list_linenum count, char **ptr )
+void MemFreePtrArray( void **ptr, size_t count, void(*free_fn)(void *) )
 {
     if( ptr != NULL ) {
-        list_linenum    i;
-        for( i = 0; i < count; i++ ) {
-            MemFree( ptr[i] );
+        if( free_fn != NULL ) {
+            while( count-- > 0 ) {
+                free_fn( ptr[count] );
+            }
         }
         MemFree( ptr );
     }

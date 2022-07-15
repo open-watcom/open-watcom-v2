@@ -348,7 +348,7 @@ char **BuildTokenList( int num, char *list )
     char        **arr, *data, *t;
     int         k, i = 0, off = 0;
 
-    arr = _MemAllocList( num );
+    arr = _MemAllocPtrArray( char, num );
     for( ;; ) {
 
         t = &list[off];

@@ -116,7 +116,9 @@ void ScreenInit( void )
         // FatalError( ERR_BAD_TERMINAL );
         ChangeDirectory( StartDirectory );
         _MemFreeArray( StartDirectory );
+        StartDirectory = NULL;
         _MemFreeArray( CurrentDirectory );
+        CurrentDirectory = NULL;
         FiniMem();
         exit( 0 );
     }

@@ -347,8 +347,8 @@ static void finiSource( labels *lab, vars_list *vl, sfile *sf, undo_stack *atomi
     info        *cinfo;
 
     if( lab != NULL ) {
-        MemFreeList( lab->cnt, lab->name );
-        MemFree( lab->pos );
+        _MemFreePtrArray( lab->name, lab->cnt, MemFree );
+        _MemFreePtrArray( lab->pos, lab->cnt, MemFree );
     }
 
     VarListDelete( vl );
@@ -620,8 +620,8 @@ void DeleteResidentScripts( void )
     for( tmp = resHead; tmp != NULL; tmp = tmp_next ) {
         tmp_next = tmp->next;
         freeSource( tmp->sf );
-        MemFreeList( tmp->lab.cnt, tmp->lab.name );
-        MemFree( tmp->lab.pos );
+        _MemFreePtrArray( tmp->lab.name, tmp->lab.cnt, MemFree );
+        _MemFreePtrArray( tmp->lab.pos, tmp->lab.cnt, MemFree );
         _MemFreeArray( tmp->fn );
         MemFree( tmp );
     }

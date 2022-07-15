@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +68,7 @@ vi_rc ReplaceCurrentLine( void )
     tmp->u.ld.mark = CurrentLine->u.ld.mark;
     ReplaceLLItem( (ss **)&CurrentFcb->lines.head, (ss **)&CurrentFcb->lines.tail,
                    (ss *)CurrentLine, (ss *)tmp );
-    MemFree( CurrentLine );
+    LineFree( CurrentLine );
     CurrentLine = tmp;
 
     WorkLine->len = -1;

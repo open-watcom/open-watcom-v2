@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -295,7 +295,7 @@ static void initMenuList( menu *cmenu )
 
     MemFree( cmenu->list );
     MemFree( cmenu->hi_list );
-    cmenu->list = _MemAllocList( cmenu->itemcnt );
+    cmenu->list = _MemAllocPtrArray( char, cmenu->itemcnt );
     cmenu->hi_list = _MemAllocArray( hichar, cmenu->itemcnt + 1 );
 
     cmi = cmenu->itemhead;

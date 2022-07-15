@@ -303,7 +303,7 @@ vi_rc EditFile( const char *name, bool dammit )
                 }
             }
         }
-        MemFreeList( ocnt, list );
+        _MemFreePtrArray( list, ocnt, MemFree );
 
         if( EditFlags.BreakPressed ) {
             ClearBreak();
@@ -382,7 +382,7 @@ vi_rc EditFileFromList( void )
              * allocate a buffer for strings, add strings
              */
             fcnt = GimmeFileCount();
-            list = _MemAllocList( fcnt );
+            list = _MemAllocPtrArray( char, fcnt );
             cinfo = InfoHead;
             for( i = 0; i < fcnt; i++ ) {
                 list[i] = _MemAllocArray( char, strlen( cinfo->CurrentFile->name ) + 3 );
@@ -445,7 +445,7 @@ vi_rc EditFileFromList( void )
                 }
             }
             filelistw_info.area.y2 = tmp;
-            MemFreeList( fcnt, list );
+            _MemFreePtrArray( list, fcnt, MemFree );
         }
         /*
          * get rid of option stuff

@@ -110,7 +110,7 @@ vi_rc ConditionalChangeDirectory( const char *where )
 void UpdateCurrentDirectory( void )
 {
 
-    MemFreePtr( (void **)&CurrentDirectory );
+    _MemFreeArray( CurrentDirectory );
     GetCWD1( &CurrentDirectory );
 
 } /* UpdateCurrentDirectory */

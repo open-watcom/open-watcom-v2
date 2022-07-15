@@ -502,7 +502,7 @@ static void doInitializeEditor( int argc, char *argv[] )
                 break;
             }
         }
-        MemFreeList( ocnt, list );
+        _MemFreePtrArray( list, ocnt, MemFree );
         if( EditFlags.BreakPressed ) {
             ClearBreak();
             break;
