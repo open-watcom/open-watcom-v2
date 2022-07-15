@@ -151,7 +151,6 @@ static void finiSource( labels *lab, vars_list *vl, sfile *sf )
     if( lab != NULL ) {
         for( i = 0; i < lab->cnt; i++ ) {
             MemFree( lab->name[i] );
-            MemFree( lab->pos[i] );
         }
         MemFree( lab->name );
         MemFree( lab->pos );
