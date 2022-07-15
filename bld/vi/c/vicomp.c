@@ -73,21 +73,6 @@ void MemFree( void *ptr )
 } /* MemFree */
 
 /*
- * MemFreeList - free up memory
- */
-void MemFreeList( list_linenum count, void **ptr )
-{
-    if( ptr != NULL ) {
-        list_linenum i;
-        for( i = 0; i < count; i++ ) {
-            free( ptr[i] );
-        }
-        free( ptr );
-    }
-
-} /* MemFreeList */
-
-/*
  * MemRealloc - reallocate a block, and it will succeed.
  */
 void *MemRealloc( void *ptr, size_t size )
@@ -161,10 +146,15 @@ static vi_rc initSource( vars_list *vl )
 static void finiSource( labels *lab, vars_list *vl, sfile *sf )
 {
     sfile       *curr, *tmp;
+    int         i;
 
     if( lab != NULL ) {
-        _MemFreePtrArray( lab->name, lab->cnt, MemFree );
-        _MemFreePtrArray( lab->pos, lab->cnt, MemFree );
+        for( i = 0; i < lab->cnt; i++ ) {
+            MemFree( lab->name[i] );
+            MemFree( lab->pos[i] );
+        }
+        MemFree( lab->name );
+        MemFree( lab->pos );
     }
 
     VarListDelete( vl );
@@ -172,9 +162,9 @@ static void finiSource( labels *lab, vars_list *vl, sfile *sf )
     for( curr = sf; curr != NULL; curr = tmp ) {
         tmp = curr->next;
 
-        _MemFreeArray( curr->data );
-        _MemFreeArray( curr->arg1 );
-        _MemFreeArray( curr->arg2 );
+        MemFree( curr->data );
+        MemFree( curr->arg1 );
+        MemFree( curr->arg2 );
         MemFree( curr );
     }
 
